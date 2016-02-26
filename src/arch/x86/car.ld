@@ -18,6 +18,7 @@
 /* This file is included inside a SECTIONS block */
 . = CONFIG_DCACHE_RAM_BASE;
 .car.data . (NOLOAD) : {
+	_car_region_start = . ;
 	/* Vboot work buffer is completely volatile outside of verstage and
 	 * romstage. Appropriate code needs to handle the transition. */
 #if IS_ENABLED(CONFIG_SEPARATE_VERSTAGE)
@@ -36,12 +37,12 @@
 	 * so that multiple stages (romstage and verstage) have a consistent
 	 * link address of these shared objects. */
 	PRERAM_CBMEM_CONSOLE(., (CONFIG_LATE_CBMEM_INIT ? 0 : 0xc00))
-	_car_data_start = .;
+	_car_relocatable_data_start = .;
 	/* The timestamp implementation relies on this storage to be around
 	 * after migration. One of the fields indicates not to use it as the
 	 * backing store once cbmem comes online. Therefore, this data needs
-	 * to reside in the migrated area (between _car_data_start and
-	 * _car_data_end). */
+	 * to reside in the migrated area (between _car_relocatable_data_start
+	 * and _car_relocatable_data_end). */
 	TIMESTAMP(., 0x100)
 	/* _car_global_start and _car_global_end provide symbols to per-stage
 	 * variables that are not shared like the timestamp and the pre-ram
@@ -51,7 +52,9 @@
 	*(.car.global_data);
 	. = ALIGN(ARCH_POINTER_ALIGN_SIZE);
 	_car_global_end = .;
-	_car_data_end = .;
+	_car_relocatable_data_end = .;
+
+	_car_region_end = . + CONFIG_DCACHE_RAM_SIZE - (. - _car_region_start);
 }
 
 /* Global variables are not allowed in romstage

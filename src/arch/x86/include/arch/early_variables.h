@@ -16,6 +16,7 @@
 #ifndef ARCH_EARLY_VARIABLES_H
 #define ARCH_EARLY_VARIABLES_H
 
+#include <arch/symbols.h>
 #include <stdlib.h>
 #include <rules.h>
 
@@ -59,18 +60,15 @@ void *car_sync_var_ptr(void *var);
 #define car_set_var(var, val) \
 	do { car_get_var(var) = (val); } while(0)
 
-extern char _car_data_start[];
-extern char _car_data_end[];
-
 static inline size_t car_data_size(void)
 {
-	size_t car_size = &_car_data_end[0] - &_car_data_start[0];
+	size_t car_size = _car_relocatable_data_size;
 	return ALIGN(car_size, 64);
 }
 
 static inline size_t car_object_offset(void *ptr)
 {
-	return (char *)ptr - &_car_data_start[0];
+	return (char *)ptr - &_car_relocatable_data_start[0];
 }
 
 #else

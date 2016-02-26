@@ -150,11 +150,11 @@ void post_cache_as_ram(void)
 	void *migrated_car = (void *)(CONFIG_RAMTOP - car_size);
 
 	print_car_debug("Copying data from cache to RAM...");
-	memcpy_(migrated_car, &_car_data_start[0], car_size);
+	memcpy_(migrated_car, _car_relocatable_data_start, car_size);
 	print_car_debug(" Done\n");
 
 	print_car_debug("Verifying data integrity in RAM...");
-	if (memcmp_(migrated_car, &_car_data_start[0], car_size) == 0)
+	if (memcmp_(migrated_car, _car_relocatable_data_start, car_size) == 0)
 		print_car_debug(" Done\n");
 	else
 		print_car_debug(" FAILED\n");

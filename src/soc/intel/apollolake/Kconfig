@@ -90,4 +90,17 @@ config C_ENV_BOOTBLOCK_SIZE
 config X86_TOP4G_BOOTMEDIA_MAP
 	bool
 	default n
+
+config ROMSTAGE_ADDR
+	hex
+	default 0xfef2e000
+	help
+	  The base address (in CAR) where romstage should be linked
+
+config FSPM_STACK_SIZE
+	hex
+	default 0x40000
+	help
+	  The amount of CAR memory FSPM needs. Recommended at least 256KiB
+
 endif

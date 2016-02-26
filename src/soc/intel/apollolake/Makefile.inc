@@ -17,6 +17,7 @@ bootblock-y += tsc_freq.c
 bootblock-$(CONFIG_SOC_UART_DEBUG) += uart_early.c
 
 romstage-y += placeholders.c
+romstage-$(CONFIG_PLATFORM_USES_FSP2_0) += romstage.c
 romstage-y += gpio.c
 romstage-$(CONFIG_SOC_UART_DEBUG) += uart_early.c
 romstage-y += mmap_boot.c

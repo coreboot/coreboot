@@ -78,8 +78,8 @@ CC := $(CC_$(ARCH-y))
 AS := $(AS_$(ARCH-y))
 OBJCOPY := $(OBJCOPY_$(ARCH-y))
 
-LPCC := CC=$(CC) $(LIBPAYLOAD_DIR)/libpayload/bin/lpgcc
-LPAS := AS=$(AS) $(LIBPAYLOAD_DIR)/libpayload/bin/lpas
+LPCC := CC="$(CC)" $(LIBPAYLOAD_DIR)/libpayload/bin/lpgcc
+LPAS := AS="$(AS)" $(LIBPAYLOAD_DIR)/libpayload/bin/lpas
 
 CFLAGS += -Wall -Werror -Os -fno-builtin $(CFLAGS_$(ARCH-y)) $(INCLUDES)
 

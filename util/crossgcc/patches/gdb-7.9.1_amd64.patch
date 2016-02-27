@@ -1,0 +1,15 @@
+diff -urN gdb-7.9.1.orig/gdb/configure.tgt gdb-7.9.1/gdb/configure.tgt
+--- gdb-7.9.1.orig/gdb/configure.tgt	2015-05-13 10:36:05.000000000 -0700
++++ gdb-7.9.1/gdb/configure.tgt	2016-02-27 11:26:26.386113921 -0800
+@@ -683,6 +683,11 @@
+ 			i387-tdep.o i386bsd-tdep.o i386obsd-tdep.o \
+ 			obsd-tdep.o bsd-uthread.o solib-svr4.o"
+ 	;;
++x86_64-*-*)
++	# Target: amd64
++	gdb_target_obs="amd64-tdep.o i386-tdep.o i387-tdep.o"
++	;;
++
+ xtensa*-*-linux*)	gdb_target=linux
+ 	# Target: GNU/Linux Xtensa
+ 	gdb_target_obs="xtensa-tdep.o xtensa-config.o xtensa-linux-tdep.o \

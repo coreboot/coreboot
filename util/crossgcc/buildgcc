@@ -627,9 +627,10 @@ case "$PACKAGE" in
 		;;
 	GDB|gdb)
 		NAME="${TARGETARCH} cross GDB"
-		PACKAGES="GDB"
 		if [ $SKIPPYTHON -eq 0 ]; then
-			PACKAGES="EXPAT PYTHON $PACKAGES"
+			PACKAGES="EXPAT PYTHON GDB"
+		else
+			PACKAGES="EXPAT GDB"
 		fi
 		;;
 	CLANG|clang)

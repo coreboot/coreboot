@@ -1,5 +1,6 @@
 # if no architecture is specified, set a default
 BUILD_PLATFORM ?= i386-elf
+DEST ?= $(PWD)/xgcc
 
 # For the toolchain builds, use CPUS=x to use multiple processors to build
 # use KEEP_SOURCES=1 to keep temporary files after the build
@@ -23,19 +24,20 @@ build_tools: build_gcc build_gdb
 
 build_gcc:
 	bash ./buildgcc -p $(BUILD_PLATFORM) $(if $(CPUS),-j $(CPUS)) $(if $(KEEP_SOURCES),-t) $(BUILDGCC_OPTIONS) \
-			$(if $(BUILD_LANGUAGES),-l $(BUILD_LANGUAGES))
+			$(if $(BUILD_LANGUAGES),-l $(BUILD_LANGUAGES)) -d $(DEST)
 
 build_gdb:
 ifeq ($(SKIP_GDB),)
-	bash ./buildgcc -p $(BUILD_PLATFORM) -P gdb $(if $(CPUS),-j $(CPUS))  $(if $(KEEP_SOURCES),-t) $(BUILDGCC_OPTIONS)
+	bash ./buildgcc -p $(BUILD_PLATFORM) -P gdb $(if $(CPUS),-j $(CPUS))  $(if $(KEEP_SOURCES),-t) \
+			$(BUILDGCC_OPTIONS) -d $(DEST)
 endif
 
 build_iasl:
-	bash ./buildgcc -P iasl $(if $(CPUS),-j $(CPUS))  $(if $(KEEP_SOURCES),-t) $(BUILDGCC_OPTIONS)
+	bash ./buildgcc -P iasl $(if $(CPUS),-j $(CPUS))  $(if $(KEEP_SOURCES),-t) $(BUILDGCC_OPTIONS) -d $(DEST)
 
 build_clang:
 ifeq ($(SKIP_CLANG),)
-	bash ./buildgcc -P clang $(if $(CPUS),-j $(CPUS))  $(if $(KEEP_SOURCES),-t) $(BUILDGCC_OPTIONS)
+	bash ./buildgcc -P clang $(if $(CPUS),-j $(CPUS))  $(if $(KEEP_SOURCES),-t) $(BUILDGCC_OPTIONS) -d $(DEST)
 endif
 
 ###########################################################

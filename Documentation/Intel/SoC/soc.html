@@ -33,6 +33,7 @@
     </ol>
   </li>
   <li><a href="#AcpiTables">ACPI Tables</a></li>
+  <li><a href="#LegacyHardware">Legacy Hardware</a></li>
 </ol>
 
 
@@ -560,7 +561,7 @@ Use the following steps to debug the call to TempRamInit:
 <hr>
 <h1><a name="AcpiTables">ACPI Tables</a></h1>
 <p>
-  One of the payloads that needs ACPI tables is the EDK2 CorebootPayloadPkg.
+  One of the payloads that needs ACPI tables is the EDK2 <a target="_blank" href="quark.html#CorebootPayloadPkg">CorebootPayloadPkg</a>.
 </p>
 
 <h2>FADT</h2>
@@ -663,6 +664,57 @@ Use the following steps to debug the call to TempRamInit:
   </li>
 </ol>
 
+
+
+<hr>
+<h1><a name="LegacyHardware">Legacy Hardware</a></h1>
+<p>
+  One of the payloads that needs legacy hardare is the EDK2 <a target="_blank" href="quark.html#CorebootPayloadPkg">CorebootPayloadPkg</a>.
+</p>
+
+<table border="1">
+  <tr bgcolor="c0ffc0">
+    <th>Peripheral</th>
+    <th>Use</th>
+    <th>8259 Interrupt Vector</th>
+    <th>IDT Base Offset</th>
+    <th>Interrupt Handler</th>
+  </tr>
+  <tr>
+    <td>
+      <a target="_blank" href="http://www.scs.stanford.edu/10wi-cs140/pintos/specs/8254.pdf">8254</a>
+      Programmable Interval Timer
+    </td>
+    <td>
+      EDK2: PcAtChipsetPkg/8254TimerDxe/<a target="_blank" href="https://github.com/tianocore/edk2/blob/master/PcAtChipsetPkg/8254TimerDxe/Timer.c">Timer.c</a>
+    </td>
+    <td>0</td>
+    <td>0x340</td>
+    <td>
+      <a target="_blank" href="https://github.com/tianocore/edk2/blob/master/PcAtChipsetPkg/8254TimerDxe/Timer.c#l71">TimerInterruptHandler</a>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <a target="_blank" href="https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&cad=rja&uact=8&ved=0ahUKEwibxYKU3ZDLAhVOzWMKHfuqB40QFggcMAA&url=http%3A%2F%2Fbochs.sourceforge.net%2Ftechspec%2Fintel-8259a-pic.pdf.gz&usg=AFQjCNF1NT0OQ6ys1Pn6Iv9sv6cKRzZbGg&sig2=HfBszp9xTVO_fajjPWCsJw">8259</a>
+      Programmable Interrupt Controller
+    </td>
+    <td>
+      EDK2: PcAtChipsetPkg/8259InterruptControllerDxe/<a target="_blank" href="https://github.com/tianocore/edk2/blob/master/PcAtChipsetPkg/8259InterruptControllerDxe/8259.c">8259.c</a>
+    </td>
+    <td>
+      Master interrupts: 0, 2 - 7<br>
+      Slave interrupts: 8 - 15<br>
+      Interrupt vector 1 is never generated, the cascaded input generates interrupts 8 - 15
+    </td>
+    <td>
+      Master: 0x340, 0x350 - 0x378<br>
+      Slave: 0x380 - 0x3b8<br>
+      Interrupt descriptors are 8 bytes each
+    </td>
+    <td>&nbsp;</td>
+  </tr>
+</table>
 
 <hr>
 <p>Modified: 28 February 2016</p>

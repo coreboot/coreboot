@@ -82,3 +82,22 @@ payloads/external/U-Boot/u-boot/u-boot-dtb.bin u-boot: $(top)/$(DOTCONFIG)
 	$(MAKE) -C payloads/external/U-Boot -f Makefile.inc \
 			CONFIG_UBOOT_MASTER=$(CONFIG_UBOOT_MASTER) \
 			CONFIG_UBOOT_STABLE=$(CONFIG_UBOOT_STABLE)
+
+cbfs-files-$(CONFIG_MEMTEST_SECONDARY_PAYLOAD) += img/memtest
+img/memtest-file := payloads/external/Memtest86Plus/memtest86plus/memtest
+img/memtest-type := payload
+
+ifeq ($(CONFIG_CONSOLE_SERIAL)$(CONFIG_DRIVERS_UART_8250IO),yy)
+	MEMTEST_SERIAL_OPTIONS=SERIAL_CONSOLE_DEFAULT=1 \
+		SERIAL_TTY=$(CONFIG_UART_FOR_CONSOLE) \
+		SERIAL_BAUD_RATE=$(CONFIG_TTYS0_BAUD)
+endif
+
+payloads/external/Memtest86Plus/memtest86plus/memtest: $(top)/$(DOTCONFIG)
+	$(MAKE) -C payloads/external/Memtest86Plus -f Makefile.inc all \
+		CC="$(CC_x86_32)" \
+		LD="$(LD_x86_32)" \
+		OBJCOPY="$(OBJCOPY_x86_32)" \
+		AS="$(AS_x86_32)" \
+		$(MEMTEST_SERIAL_OPTIONS) \
+		MFLAGS= MAKEFLAGS=

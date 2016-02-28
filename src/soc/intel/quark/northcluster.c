@@ -59,7 +59,13 @@ static void nc_read_resources(device_t dev)
 	size_k = (unsigned long)cbmem_top() - base_k;
 	ram_resource(dev, index++, RES_IN_KIB(base_k), RES_IN_KIB(size_k));
 
-	/* cbmem_top -> 4GiB is mmio. */
+	/* cbmem_top -> 0xc0000000 - reserved */
+	base_k += size_k;
+	size_k = 0xc0000000 - base_k;
+	reserved_ram_resource(dev, index++, RES_IN_KIB(base_k),
+		RES_IN_KIB(size_k));
+
+	/* 0xc0000000 -> 4GiB is mmio. */
 	base_k += size_k;
 	size_k = 0x100000000ull - base_k;
 	mmio_resource(dev, index++, RES_IN_KIB(base_k), RES_IN_KIB(size_k));

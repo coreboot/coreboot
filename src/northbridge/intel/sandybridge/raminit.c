@@ -27,6 +27,8 @@
 #include <timestamp.h>
 #include <pc80/mc146818rtc.h>
 #include <device/pci_def.h>
+#include <memory_info.h>
+#include <smbios.h>
 #include "raminit_native.h"
 #include "sandybridge.h"
 #include <delay.h>
@@ -230,6 +232,45 @@ static void toggle_io_reset(void) {
 	udelay(1);
 	write32(DEFAULT_MCHBAR + 0x5030, r32 & ~0x20);
 	udelay(1);
+}
+
+/*
+ * Fill cbmem with information for SMBIOS type 17.
+ */
+static void fill_smbios17(dimm_info *info, uint16_t ddr_freq)
+{
+	struct memory_info *mem_info;
+	int channel, slot;
+	struct dimm_info *dimm;
+
+	/*
+	 * Allocate CBMEM area for DIMM information used to populate SMBIOS
+	 * table 17
+	 */
+	mem_info = cbmem_add(CBMEM_ID_MEMINFO, sizeof(*mem_info));
+	printk(BIOS_DEBUG, "CBMEM entry for DIMM info: 0x%p\n", mem_info);
+	if (!mem_info)
+		return;
+
+	memset(mem_info, 0, sizeof(*mem_info));
+
+	FOR_ALL_CHANNELS for(slot = 0; slot < NUM_SLOTS; slot++) {
+		dimm = &mem_info->dimm[mem_info->dimm_cnt];
+		if (info->dimm[channel][slot].size_mb) {
+			dimm->ddr_type = MEMORY_TYPE_DDR3;
+			dimm->ddr_frequency = ddr_freq;
+			dimm->dimm_size = info->dimm[channel][slot].size_mb;
+			dimm->channel_num = channel;
+			dimm->rank_per_dimm = info->dimm[channel][slot].ranks;
+			dimm->dimm_num = slot;
+			memcpy(dimm->module_part_number,
+				   info->dimm[channel][slot].part_number, 16);
+			dimm->mod_id = info->dimm[channel][slot].manufacturer_id;
+			dimm->mod_type = info->dimm[channel][slot].dimm_type;
+			dimm->bus_width = info->dimm[channel][slot].width;
+			mem_info->dimm_cnt++;
+		}
+	}
 }
 
 /*
@@ -3901,6 +3942,7 @@ void init_dram_ddr3(spd_raw_data * spds, int mobile, int min_tck,
 {
 	int me_uma_size;
 	int cbmem_was_inited;
+	dimm_info info;
 
 	MCHBAR32(0x5f00) |= 1;
 
@@ -3954,8 +3996,6 @@ void init_dram_ddr3(spd_raw_data * spds, int mobile, int min_tck,
 	}
 
 	if (!s3resume) {
-		dimm_info info;
-
 		/* Get DDR3 SPD data */
 		dram_find_spds_ddr3(spds, &info, &ctrl);
 
@@ -4082,6 +4122,8 @@ void init_dram_ddr3(spd_raw_data * spds, int mobile, int min_tck,
 		outb(0x6, 0xcf9);
 		halt();
 	}
+
+	fill_smbios17(&info, (1000 << 8) / ctrl.tCK);
 }
 
 #define HOST_BRIDGE	PCI_DEVFN(0, 0)

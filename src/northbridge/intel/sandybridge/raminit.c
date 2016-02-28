@@ -3435,9 +3435,12 @@ static void discover_timC_write(ramctr_timing * ctrl)
 					u32 raw_statistics[MAX_TIMC + 1];
 					int statistics[MAX_TIMC + 1];
 
+					/* Make sure rn.start < rn.end */
+					statistics[MAX_TIMC] = 1;
+
 					fill_pattern5(ctrl, channel, pat);
 					write32(DEFAULT_MCHBAR + 0x4288 + 0x400 * channel, 0x1f);
-					for (timC = 0; timC < MAX_TIMC + 1; timC++) {
+					for (timC = 0; timC < MAX_TIMC; timC++) {
 						FOR_ALL_LANES
 							ctrl->timings[channel][slotrank].lanes[lane].timC = timC;
 						program_timings(ctrl, channel);
@@ -3449,10 +3452,11 @@ static void discover_timC_write(ramctr_timing * ctrl)
 					}
 					FOR_ALL_LANES {
 						struct run rn;
-						for (timC = 0; timC <= MAX_TIMC; timC++)
+						for (timC = 0; timC < MAX_TIMC; timC++)
 							statistics[timC] =
 								!!(raw_statistics[timC] &
 								   (1 << lane));
+
 						rn = get_longest_zero_run(statistics,
 									  MAX_TIMC + 1);
 						if (rn.all)

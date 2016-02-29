@@ -239,4 +239,13 @@ static inline void get_fms(struct cpuinfo_x86 *c, uint32_t tfms)
 #define asmlinkage __attribute__((regparm(0)))
 #define alwaysinline inline __attribute__((always_inline))
 
+#ifndef __ROMCC__
+/*
+ * When using CONFIG_C_ENVIRONMENT_BOOTBLOCK the car_stage_entry()
+ * is the symbol jumped to for each stage after bootblock using
+ * cache-as-ram.
+ */
+void asmlinkage car_stage_entry(void);
+#endif
+
 #endif /* ARCH_CPU_H */

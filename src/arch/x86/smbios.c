@@ -131,6 +131,10 @@ void smbios_fill_dimm_manufacturer_from_id(uint16_t mod_id, struct smbios_type17
 			t->manufacturer = smbios_add_string(t->eos,
 							    "Crucial");
 			break;
+		case 0x4f01:
+			t->manufacturer = smbios_add_string(t->eos,
+							    "Transcend");
+			break;
 		case 0x9801:
 			t->manufacturer = smbios_add_string(t->eos,
 							    "Kingston");
@@ -143,9 +147,17 @@ void smbios_fill_dimm_manufacturer_from_id(uint16_t mod_id, struct smbios_type17
 			t->manufacturer = smbios_add_string(t->eos,
 							    "Corsair");
 			break;
+		case 0xb004:
+			t->manufacturer = smbios_add_string(t->eos,
+							    "OCZ");
+			break;
 		case 0xad80:
 			t->manufacturer = smbios_add_string(t->eos,
 							    "Hynix/Hyundai");
+			break;
+		case 0xcd04:
+			t->manufacturer = smbios_add_string(t->eos,
+							    "GSkill");
 			break;
 		case 0xce80:
 			t->manufacturer = smbios_add_string(t->eos,

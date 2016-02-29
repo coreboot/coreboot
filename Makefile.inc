@@ -422,6 +422,8 @@ $(BIMGTOOL): $(top)/util/bimgtool/bimgtool.c
 	@printf "    HOSTCC     $(subst $(obj)/,,$(@))\n"
 	$(HOSTCC) $(HOSTCFLAGS) -o $@ $<
 
+$(obj)/config.h: $(objutil)/kconfig/conf
+
 #######################################################################
 # needed objects that every mainboard uses
 # Creation of these is architecture and mainboard independent

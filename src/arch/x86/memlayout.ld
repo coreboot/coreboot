@@ -31,14 +31,14 @@ SECTIONS
 #elif ENV_ROMSTAGE
 	/* The 1M size is not allocated. It's just for basic size checking.
 	 * Link at 32MiB address and rely on cbfstool to relocate to XIP. */
-	ROMSTAGE(32M, 1M)
+	ROMSTAGE(CONFIG_ROMSTAGE_ADDR, 1M)
 
 	/* Pull in the cache-as-ram rules. */
 	#include "car.ld"
 #elif ENV_VERSTAGE
 	/* The 1M size is not allocated. It's just for basic size checking.
 	 * Link at 32MiB address and rely on cbfstool to relocate to XIP. */
-	VERSTAGE(32M, 1M)
+	VERSTAGE(CONFIG_VERSTAGE_ADDR, 1M)
 
 	/* Pull in the cache-as-ram rules. */
 	#include "car.ld"

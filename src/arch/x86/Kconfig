@@ -161,3 +161,13 @@ config COMPILE_IN_DSDT
 config C_ENV_BOOTBLOCK_SIZE
 	hex
 	default 0x10000
+
+# Default address romstage is to be linked at
+config ROMSTAGE_ADDR
+	hex
+	default 0x2000000
+
+# Default address verstage is to be linked at
+config VERSTAGE_ADDR
+	hex
+	default 0x2000000

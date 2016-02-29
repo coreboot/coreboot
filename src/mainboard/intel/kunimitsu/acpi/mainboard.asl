@@ -308,3 +308,22 @@ Scope (\_SB.PCI0.I2C4)
 		}
 	}
 }
+
+Scope (\_SB.PCI0.SDXC)
+{
+	Name (_CRS, ResourceTemplate () {
+		GpioInt (Edge, ActiveBoth, SharedAndWake, PullNone, 10000,
+			 "\\_SB.PCI0.GPIO", 0, ResourceConsumer)
+		{
+			GPIO_SD_CARD_DETECT
+		}
+	})
+
+	Name (_DSD, Package () {
+		ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+		Package ()
+		{
+			Package () { "cd-gpio", Package () { ^SDXC, 0, 0, 1 } },
+		}
+	})
+}

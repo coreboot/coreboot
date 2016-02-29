@@ -23,6 +23,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/dram/ddr3.h>
+#include <string.h>
 
 /*==============================================================================
  * = DDR3 SPD decoding helpers
@@ -339,6 +340,13 @@ int spd_decode_ddr3(dimm_attr * dimm, spd_raw_data spd)
 
 	dimm->reference_card = spd[62] & 0x1f;
 	printram("  DIMM Reference card %c\n", 'A' + dimm->reference_card);
+
+	dimm->manufacturer_id = (spd[118] << 8) | spd[117];
+	printram("  DIMM Manufacturer ID %x\n", dimm->manufacturer_id);
+
+	dimm->part_number[16] = 0;
+	memcpy(dimm->part_number, &spd[128], 16);
+	printram("  DIMM Part number %s\n", dimm->part_number);
 
 	return ret;
 }

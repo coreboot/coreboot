@@ -167,6 +167,10 @@ typedef struct dimm_attr_st {
 	u16 voltage;
 	/* XMP: max DIMMs per channel supported (1-4) */
 	u8 dimms_per_channel;
+	/* Manufacturer ID */
+	u16 manufacturer_id;
+	/* ASCII part number - NULL terminated */
+	u8 part_number[17];
 } dimm_attr;
 
 /** Result of the SPD decoding process */

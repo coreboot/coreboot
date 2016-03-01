@@ -1,6 +1,6 @@
 # if no architecture is specified, set a default
 BUILD_PLATFORM ?= i386-elf
-DEST ?= $(PWD)/xgcc
+DEST ?= $(CURDIR)/xgcc
 
 # For the toolchain builds, use CPUS=x to use multiple processors to build
 # use KEEP_SOURCES=1 to keep temporary files after the build

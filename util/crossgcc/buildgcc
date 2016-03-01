@@ -315,6 +315,7 @@ myhelp()
 	printf "    [-c|--clean]                  remove temporary files before build\n"
 	printf "    [-t|--savetemps]              don't remove temporary files after build\n"
 	printf "    [-y|--ccache]                 Use ccache when building cross compiler\n"
+	printf "       [--nocolor]                don't print color codes in output\n"
 	printf "    [-j|--jobs <num>]             run <num> jobs in parallel in make\n"
 	printf "    [-s]--supported <tool>        print supported version of a tool"
 	printf "    [-d|--directory <target dir>] target directory to install cross compiler to\n"
@@ -589,6 +590,8 @@ while true ; do
 		-S|--scripting) shift; SKIPPYTHON=0;;
 		-y|--ccache)	shift; USECCACHE=1;;
 		-s|--supported) shift; PRINTSTABLE="$1"; shift;;
+		   --nocolor)	shift; \
+			unset red RED green GREEN blue BLUE cyan CYAN NC;;
 		--)		shift; break;;
 		-*)		printf "Invalid option\n\n"; myhelp; exit 1;;
 		*)		break;;

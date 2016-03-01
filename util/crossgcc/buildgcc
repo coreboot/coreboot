@@ -64,6 +64,11 @@ CRT_ARCHIVE="http://llvm.org/releases/${CLANG_VERSION}/compiler-rt-${CLANG_VERSI
 CTE_ARCHIVE="http://llvm.org/releases/${CLANG_VERSION}/clang-tools-extra-${CLANG_VERSION}.src.tar.xz"
 MAKE_ARCHIVE="http://ftpmirror.gnu.org/make/make-${MAKE_VERSION}.tar.bz2"
 
+ALL_ARCHIVES="$GMP_ARCHIVE $MPFR_ARCHIVE $MPC_ARCHIVE $LIBELF_ARCHIVE \
+	$GCC_ARCHIVE $BINUTILS_ARCHIVE $GDB_ARCHIVE $IASL_ARCHIVE \
+	$PYTHON_ARCHIVE $EXPAT_ARCHIVE $LLVM_ARCHIVE $CFE_ARCHIVE \
+	$CRT_ARCHIVE $CTE_ARCHIVE $MAKE_ARCHIVE"
+
 # GCC toolchain directories
 GMP_DIR="gmp-${GMP_VERSION}"
 MPFR_DIR="mpfr-${MPFR_VERSION}"
@@ -316,6 +321,7 @@ myhelp()
 	printf "    [-t|--savetemps]              don't remove temporary files after build\n"
 	printf "    [-y|--ccache]                 Use ccache when building cross compiler\n"
 	printf "       [--nocolor]                don't print color codes in output\n"
+	printf "       [--urls]                   print the urls for all packages\n"
 	printf "    [-j|--jobs <num>]             run <num> jobs in parallel in make\n"
 	printf "    [-s]--supported <tool>        print supported version of a tool"
 	printf "    [-d|--directory <target dir>] target directory to install cross compiler to\n"
@@ -590,6 +596,7 @@ while true ; do
 		-S|--scripting) shift; SKIPPYTHON=0;;
 		-y|--ccache)	shift; USECCACHE=1;;
 		-s|--supported) shift; PRINTSTABLE="$1"; shift;;
+		   --urls)	shift; printf "%s\n" "$ALL_ARCHIVES"; exit 0;;
 		   --nocolor)	shift; \
 			unset red RED green GREEN blue BLUE cyan CYAN NC;;
 		--)		shift; break;;

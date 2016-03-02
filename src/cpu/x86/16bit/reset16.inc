@@ -1,7 +1,7 @@
 	.section ".reset", "ax", %progbits
 	.code16
-.globl	reset_vector
-reset_vector:
+.globl	_start
+_start:
 	.byte  0xe9
 	.int   _start16bit - ( . + 2 )
 	/* Note: The above jump is hand coded to work around bugs in binutils.

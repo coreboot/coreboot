@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  */
 
-ENTRY(reset_vector)
+ENTRY(_start)
 
 MEMORY {
 	rom : ORIGIN = 0xffff0000, LENGTH = 64K

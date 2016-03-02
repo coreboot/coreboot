@@ -1,0 +1,34 @@
+config SOC_QC_IPQ40XX
+	bool
+	default n
+	select ARCH_BOOTBLOCK_ARMV7
+	select ARCH_VERSTAGE_ARMV7
+	select ARCH_ROMSTAGE_ARMV7
+	select ARCH_RAMSTAGE_ARMV7
+	select BOOTBLOCK_CONSOLE
+	select HAVE_UART_SPECIAL
+	select SPI_ATOMIC_SEQUENCING
+	select GENERIC_GPIO_LIB
+
+if SOC_QC_IPQ40XX
+
+config CHROMEOS
+	select CHROMEOS_VBNV_FLASH
+	select SEPARATE_VERSTAGE
+	select RETURN_FROM_VERSTAGE
+
+config MBN_ENCAPSULATION
+	depends on USE_BLOBS
+	bool "bootblock encapsulation for ipq40xx"
+	default y
+
+config SBL_BLOB
+	depends on USE_BLOBS
+	string "file name of the Qualcomm SBL blob"
+	default "3rdparty/blobs/cpu/qualcomm/ipq40xx/uber-sbl.mbn"
+	help
+	  The path and filename of the binary blob containing
+	  ipq40xx early initialization code, as supplied by the
+	  vendor.
+
+endif

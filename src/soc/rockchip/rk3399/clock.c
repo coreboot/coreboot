@@ -19,6 +19,7 @@
 #include <soc/addressmap.h>
 #include <soc/clock.h>
 #include <soc/grf.h>
+#include <soc/i2c.h>
 #include <soc/soc.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -94,6 +95,14 @@ enum {
 	SPI3_DIV_CON_MASK		= 0x7f,
 	SPI3_DIV_CON_SHIFT		= 0x0,
 
+	/* PMUCRU_CLKSEL_CON2 */
+	I2C_DIV_CON_MASK		= 0x7f,
+	I2C8_DIV_CON_SHIFT		= 8,
+	I2C0_DIV_CON_SHIFT		= 0,
+
+	/* PMUCRU_CLKSEL_CON3 */
+	I2C4_DIV_CON_SHIFT		= 0,
+
 	/* CLKSEL_CON0 */
 	ACLKM_CORE_L_DIV_CON_MASK	= 0x1f,
 	ACLKM_CORE_L_DIV_CON_SHIFT	= 8,
@@ -165,6 +174,27 @@ enum {
 	CLK_SPI4_PLL_DIV_CON_SHIFT	= 8,
 	CLK_SPI2_PLL_SEL_SHIFT		= 7,
 	CLK_SPI2_PLL_DIV_CON_SHIFT	= 0,
+
+	/* CLKSEL_CON61 */
+	CLK_I2C_PLL_SEL_MASK		= 1,
+	CLK_I2C_PLL_SEL_CPLL		= 0,
+	CLK_I2C_PLL_SEL_GPLL		= 1,
+	CLK_I2C5_PLL_SEL_SHIFT		= 15,
+	CLK_I2C5_DIV_CON_SHIFT		= 8,
+	CLK_I2C1_PLL_SEL_SHIFT		= 7,
+	CLK_I2C1_DIV_CON_SHIFT		= 0,
+
+	/* CLKSEL_CON62 */
+	CLK_I2C6_PLL_SEL_SHIFT		= 15,
+	CLK_I2C6_DIV_CON_SHIFT		= 8,
+	CLK_I2C2_PLL_SEL_SHIFT		= 7,
+	CLK_I2C2_DIV_CON_SHIFT		= 0,
+
+	/* CLKSEL_CON63 */
+	CLK_I2C7_PLL_SEL_SHIFT		= 15,
+	CLK_I2C7_DIV_CON_SHIFT		= 8,
+	CLK_I2C3_PLL_SEL_SHIFT		= 7,
+	CLK_I2C3_DIV_CON_SHIFT		= 0,
 
 	/* CRU_SOFTRST_CON4 */
 	RESETN_DDR0_REQ_MASK		= 1,
@@ -470,4 +500,78 @@ void rkclk_configure_spi(unsigned int bus, unsigned int hz)
 	default:
 		printk(BIOS_ERR, "do not support this spi bus\n");
 	}
+}
+
+#define I2C_CLK_REG_VALUE(bus, clk_div) \
+		RK_CLRSETBITS(I2C_DIV_CON_MASK << \
+					CLK_I2C ##bus## _DIV_CON_SHIFT | \
+			      CLK_I2C_PLL_SEL_MASK << \
+					CLK_I2C ##bus## _PLL_SEL_SHIFT, \
+			      (clk_div - 1) << \
+					CLK_I2C ##bus## _DIV_CON_SHIFT | \
+			      CLK_I2C_PLL_SEL_GPLL << \
+					CLK_I2C ##bus## _PLL_SEL_SHIFT)
+#define PMU_I2C_CLK_REG_VALUE(bus, clk_div) \
+		RK_CLRSETBITS(I2C_DIV_CON_MASK << I2C ##bus## _DIV_CON_SHIFT, \
+			      (clk_div - 1) << I2C ##bus## _DIV_CON_SHIFT)
+
+static void rkclk_configure_i2c(unsigned int bus, unsigned int hz)
+{
+	int src_clk_div;
+	int pll;
+
+	/* i2c0,4,8 src clock from ppll, i2c1,2,3,5,6,7 src clock from gpll*/
+	pll = (bus == 0 || bus == 4 || bus == 8) ? PPLL_HZ : GPLL_HZ;
+	src_clk_div = pll / hz;
+	assert((src_clk_div - 1 < 127) && (src_clk_div * hz == pll));
+
+	switch (bus) {
+	case 0:
+		write32(&pmucru_ptr->pmucru_clksel[2],
+			PMU_I2C_CLK_REG_VALUE(0, src_clk_div));
+		break;
+	case 1:
+		write32(&cru_ptr->clksel_con[61],
+			I2C_CLK_REG_VALUE(1, src_clk_div));
+		break;
+	case 2:
+		write32(&cru_ptr->clksel_con[62],
+			I2C_CLK_REG_VALUE(2, src_clk_div));
+		break;
+	case 3:
+		write32(&cru_ptr->clksel_con[63],
+			I2C_CLK_REG_VALUE(3, src_clk_div));
+		break;
+	case 4:
+		write32(&pmucru_ptr->pmucru_clksel[3],
+			PMU_I2C_CLK_REG_VALUE(4, src_clk_div));
+		break;
+	case 5:
+		write32(&cru_ptr->clksel_con[61],
+			I2C_CLK_REG_VALUE(5, src_clk_div));
+		break;
+	case 6:
+		write32(&cru_ptr->clksel_con[62],
+			I2C_CLK_REG_VALUE(6, src_clk_div));
+		break;
+	case 7:
+		write32(&cru_ptr->clksel_con[63],
+			I2C_CLK_REG_VALUE(7, src_clk_div));
+		break;
+	case 8:
+		write32(&pmucru_ptr->pmucru_clksel[2],
+			PMU_I2C_CLK_REG_VALUE(8, src_clk_div));
+		break;
+	default:
+		printk(BIOS_ERR, "do not support this i2c bus\n");
+	}
+}
+
+uint32_t rkclk_i2c_clock_for_bus(unsigned bus)
+{
+	uint32_t freq = 198 * 1000 * 1000;
+
+	rkclk_configure_i2c(bus, freq);
+
+	return freq;
 }

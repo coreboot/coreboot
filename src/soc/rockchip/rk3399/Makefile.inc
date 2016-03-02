@@ -51,6 +51,7 @@ ramstage-y += sdram.c
 ramstage-y += ../common/spi.c
 ramstage-$(CONFIG_DRIVERS_UART) += ../common/uart.c
 ramstage-y += clock.c
+ramstage-y += ../common/i2c.c
 ramstage-y += soc.c
 ramstage-y += timer.c
 

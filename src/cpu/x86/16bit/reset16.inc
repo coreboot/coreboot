@@ -10,7 +10,4 @@ reset_vector:
 	 * instead of the weird 16 bit relocations that binutils does not
 	 * handle consistenly between versions because they are used so rarely.
 	 */
-	.org 0x8;
-	.code32
-	jmp	protected_start
 	.previous

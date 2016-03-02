@@ -447,6 +447,7 @@ sub build_and_parse_kconfig_tree {
     my @inside_menu   = ();    # stack of menu names
     my $inside_choice = "";
     my $configs_inside_choice;
+    my %fileinfo;
 
     #start the tree off by loading the top level kconfig
     @config_to_parse = load_kconfig_file( $top_level_kconfig, "", 0, 0, "", 0 );
@@ -601,12 +602,14 @@ sub build_and_parse_kconfig_tree {
             my $expr = $1;
             push( @inside_if, $expr );
             handle_expressions( $expr, $inside_config, $filename, $line_no );
+            $fileinfo{$filename}{iflevel}++;
         }
 
         # endif
         elsif ( $line =~ /^\s*endif/ ) {
             $inside_config = "";
             pop(@inside_if);
+            $fileinfo{$filename}{iflevel}--;
         }
 
         #range <symbol> <symbol> [if <expr>]
@@ -664,6 +667,16 @@ sub build_and_parse_kconfig_tree {
             }
         }
         push @wholeconfig, @parseline;
+    }
+
+    foreach my $file ( keys %fileinfo ) {
+        if ( $fileinfo{$file}{iflevel} > 0 ) {
+            show_error("$file has $fileinfo{$file}{iflevel} more 'if' statement(s) than 'endif' statements.");
+        }
+        elsif ( $fileinfo{$file}{iflevel} < 0 ) {
+            show_error(
+                "$file has " . ( $fileinfo{$file}{iflevel} * -1 ) . " more 'endif' statement(s) than 'if' statements." );
+        }
     }
 }
 

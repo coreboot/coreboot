@@ -67,6 +67,7 @@ ramstage-y += timer.c
 ramstage-$(CONFIG_DRIVERS_UART) += uart.c
 ramstage-y += pmic_wrap.c mt6391.c i2c.c
 ramstage-y += mt6311.c
+ramstage-y += da9212.c
 ramstage-y += gpio.c
 ramstage-y += wdt.c
 ramstage-y += pll.c

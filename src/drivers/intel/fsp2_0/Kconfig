@@ -1,0 +1,6 @@
+config PLATFORM_USES_FSP2_0
+	bool
+	help
+	  Include FSP 2.0 wrappers and functionality
+
+

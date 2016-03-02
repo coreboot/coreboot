@@ -18,8 +18,8 @@
 
 cd $(dirname $0)
 
-CROSSGCC_DATE="January 29th, 2016"
-CROSSGCC_VERSION="1.35"
+CROSSGCC_DATE="March 1st, 2016"
+CROSSGCC_VERSION="1.36"
 
 # default settings
 PACKAGE=GCC

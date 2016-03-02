@@ -1,0 +1,63 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright 2014 Google Inc.
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+
+if BOARD_GOOGLE_GALE
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select SOC_QC_IPQ40XX
+	select BOARD_ID_AUTO
+	select BOARD_ROMSIZE_KB_8192
+	select COMMON_CBFS_SPI_WRAPPER
+	select DRIVERS_I2C_WW_RING
+	select HAVE_HARD_RESET
+	select MAINBOARD_HAS_CHROMEOS
+	select SPI_FLASH
+	select SPI_FLASH_SPANSION
+	select SPI_FLASH_STMICRO
+	select DRIVERS_UART
+
+config CHROMEOS
+	select VBOOT_DISABLE_DEV_ON_RECOVERY
+	select VIRTUAL_DEV_SWITCH
+	select WIPEOUT_SUPPORTED
+
+config BOARD_VARIANT_DK01
+	bool "pick this to build an image for DK01"
+	default n
+
+config MAINBOARD_DIR
+	string
+	default google/gale
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "DK01" if BOARD_VARIANT_DK01
+	default "Gale"
+
+config DRAM_SIZE_MB
+	int
+	default 512 if BOARD_VARIANT_DK01
+	default 512
+
+config DRIVER_TPM_I2C_BUS
+	hex
+	default 0x1
+
+config DRIVER_TPM_I2C_ADDR
+	hex
+	default 0x20
+
+endif # BOARD_GOOGLE_GALE

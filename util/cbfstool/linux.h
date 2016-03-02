@@ -31,9 +31,9 @@ typedef uint64_t u64;
 
 #define E820MAX	32		/* number of entries in E820MAP */
 struct e820entry {
-	unsigned long long addr;	/* start of memory segment */
-	unsigned long long size;	/* size of memory segment */
-	unsigned long type;	/* type of memory segment */
+	u64 addr;		/* start of memory segment */
+	u64 size;		/* size of memory segment */
+	u32 type;		/* type of memory segment */
 #define E820_RAM	1
 #define E820_RESERVED	2
 #define E820_ACPI	3	/* usable as RAM once ACPI tables have been read */

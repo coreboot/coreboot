@@ -118,7 +118,8 @@ static void pch_log_state(void *unused)
 	pch_log_power_and_resets(ps);
 
 	/* Wake Sources */
-	pch_log_wake_source(ps);
+	if (ps->prev_sleep_state > 0)
+		pch_log_wake_source(ps);
 }
 
 BOOT_STATE_INIT_ENTRY(BS_DEV_INIT, BS_ON_ENTRY, pch_log_state, NULL);

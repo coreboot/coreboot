@@ -224,6 +224,8 @@ int parse_bzImage_to_payload(const struct buffer *input,
 
 	/* Setup parameter block. Imitate FILO. */
 	struct linux_params params;
+
+	memset(&params, 0, sizeof(struct linux_params));
 	params.mount_root_rdonly = hdr->root_flags;
 	params.orig_root_dev = hdr->root_dev;
 	/* Sensible video defaults. Might be overridden on runtime by coreboot tables. */

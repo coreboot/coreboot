@@ -57,7 +57,8 @@ build-mips:
 	@$(MAKE) build_tools BUILD_PLATFORM=mipsel-elf
 
 build-riscv:
-	@$(MAKE) build_tools BUILD_PLATFORM=riscv-elf
+	# GDB is currently not supported on RISC-V
+	@$(MAKE) build_gcc BUILD_PLATFORM=riscv-elf
 
 build-power8:
 	@$(MAKE) build_tools BUILD_PLATFORM=powerpc64le-linux-gnu

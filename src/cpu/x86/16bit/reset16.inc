@@ -1,4 +1,4 @@
-	.section ".reset"
+	.section ".reset", "ax", %progbits
 	.code16
 .globl	reset_vector
 reset_vector:

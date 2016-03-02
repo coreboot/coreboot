@@ -36,7 +36,7 @@
 
 #define i2c_info(x...) do {if (0) printk(BIOS_DEBUG, x); } while (0)
 
-struct rk3288_i2c_regs {
+struct rk_i2c_regs {
 	u32 i2c_con;
 	u32 i2c_clkdiv;
 	u32 i2c_mrxaddr;
@@ -52,14 +52,7 @@ struct rk3288_i2c_regs {
 	u32 rxdata[8];
 };
 
-struct rk3288_i2c_regs *i2c_bus[] = {
-	(struct rk3288_i2c_regs *)0xff650000,
-	(struct rk3288_i2c_regs *)0xff140000,
-	(struct rk3288_i2c_regs *)0xff660000,
-	(struct rk3288_i2c_regs *)0xff150000,
-	(struct rk3288_i2c_regs *)0xff160000,
-	(struct rk3288_i2c_regs *)0xff170000,
-};
+static const uintptr_t i2c_bus[] = IC_BASES;
 
 /* Con register bits. */
 #define I2C_ACT2NAK			(1<<6)
@@ -87,7 +80,7 @@ struct rk3288_i2c_regs *i2c_bus[] = {
 #define I2C_BTFI	(1<<0)
 #define I2C_CLEANI	0x7F
 
-static int i2c_send_start(struct rk3288_i2c_regs *reg_addr)
+static int i2c_send_start(struct rk_i2c_regs *reg_addr)
 {
 	int res = 0;
 	int timeout = I2C_TIMEOUT_US;
@@ -109,7 +102,7 @@ static int i2c_send_start(struct rk3288_i2c_regs *reg_addr)
 	return res;
 }
 
-static int i2c_send_stop(struct rk3288_i2c_regs *reg_addr)
+static int i2c_send_stop(struct rk_i2c_regs *reg_addr)
 {
 	int res = 0;
 	int timeout = I2C_TIMEOUT_US;
@@ -131,14 +124,14 @@ static int i2c_send_stop(struct rk3288_i2c_regs *reg_addr)
 	return res;
 }
 
-static int i2c_read(struct rk3288_i2c_regs *reg_addr, struct i2c_seg segment)
+static int i2c_read(struct rk_i2c_regs *reg_addr, struct i2c_seg segment)
 {
 	int res = 0;
 	uint8_t *data = segment.buf;
 	int timeout = I2C_TIMEOUT_US;
 	unsigned int bytes_remaining = segment.len;
-	unsigned int bytes_transfered = 0;
-	unsigned int words_transfered = 0;
+	unsigned int bytes_transferred = 0;
+	unsigned int words_transferred = 0;
 	unsigned int rxdata = 0;
 	unsigned int con = 0;
 	unsigned int i, j;
@@ -147,15 +140,15 @@ static int i2c_read(struct rk3288_i2c_regs *reg_addr, struct i2c_seg segment)
 	write32(&reg_addr->i2c_mrxraddr, 0);
 	con = I2C_MODE_TRX | I2C_EN | I2C_ACT2NAK;
 	while (bytes_remaining) {
-		bytes_transfered = MIN(bytes_remaining, 32);
-		bytes_remaining -= bytes_transfered;
+		bytes_transferred = MIN(bytes_remaining, 32);
+		bytes_remaining -= bytes_transferred;
 		if (!bytes_remaining)
 			con |= I2C_EN | I2C_NAK;
-		words_transfered = ALIGN_UP(bytes_transfered, 4) / 4;
+		words_transferred = ALIGN_UP(bytes_transferred, 4) / 4;
 
 		write32(&reg_addr->i2c_ipd, I2C_CLEANI);
 		write32(&reg_addr->i2c_con, con);
-		write32(&reg_addr->i2c_mrxcnt, bytes_transfered);
+		write32(&reg_addr->i2c_mrxcnt, bytes_transferred);
 
 		timeout = I2C_TIMEOUT_US;
 		while (timeout--) {
@@ -175,11 +168,11 @@ static int i2c_read(struct rk3288_i2c_regs *reg_addr, struct i2c_seg segment)
 			return I2C_TIMEOUT;
 		}
 
-		for (i = 0; i < words_transfered; i++) {
+		for (i = 0; i < words_transferred; i++) {
 			rxdata = read32(&reg_addr->rxdata[i]);
 			i2c_info("I2c Read::RXDATA[%d] = 0x%x\n", i, rxdata);
 			for (j = 0; j < 4; j++) {
-				if ((i * 4 + j) == bytes_transfered)
+				if ((i * 4 + j) == bytes_transferred)
 					break;
 				*data++ = (rxdata >> (j * 8)) & 0xff;
 			}
@@ -189,25 +182,25 @@ static int i2c_read(struct rk3288_i2c_regs *reg_addr, struct i2c_seg segment)
 	return res;
 }
 
-static int i2c_write(struct rk3288_i2c_regs *reg_addr, struct i2c_seg segment)
+static int i2c_write(struct rk_i2c_regs *reg_addr, struct i2c_seg segment)
 {
 	int res = 0;
 	uint8_t *data = segment.buf;
 	int timeout = I2C_TIMEOUT_US;
 	int bytes_remaining = segment.len + 1;
-	int bytes_transfered = 0;
-	int words_transfered = 0;
+	int bytes_transferred = 0;
+	int words_transferred = 0;
 	unsigned int i;
 	unsigned int j = 1;
 	u32 txdata = 0;
 
 	txdata |= (segment.chip << 1);
 	while (bytes_remaining) {
-		bytes_transfered = MIN(bytes_remaining, 32);
-		words_transfered = ALIGN_UP(bytes_transfered, 4) / 4;
-		for (i = 0; i < words_transfered; i++) {
+		bytes_transferred = MIN(bytes_remaining, 32);
+		words_transferred = ALIGN_UP(bytes_transferred, 4) / 4;
+		for (i = 0; i < words_transferred; i++) {
 			do {
-				if ((i * 4 + j) == bytes_transfered)
+				if ((i * 4 + j) == bytes_transferred)
 					break;
 				txdata |= (*data++) << (j * 8);
 			} while (++j < 4);
@@ -220,7 +213,7 @@ static int i2c_write(struct rk3288_i2c_regs *reg_addr, struct i2c_seg segment)
 		write32(&reg_addr->i2c_ipd, I2C_CLEANI);
 		write32(&reg_addr->i2c_con,
 			I2C_EN | I2C_MODE_TX | I2C_ACT2NAK);
-		write32(&reg_addr->i2c_mtxcnt, bytes_transfered);
+		write32(&reg_addr->i2c_mtxcnt, bytes_transferred);
 
 		timeout = I2C_TIMEOUT_US;
 		while (timeout--) {
@@ -241,7 +234,7 @@ static int i2c_write(struct rk3288_i2c_regs *reg_addr, struct i2c_seg segment)
 			return I2C_TIMEOUT;
 		}
 
-		bytes_remaining -= bytes_transfered;
+		bytes_remaining -= bytes_transferred;
 	}
 	return res;
 }
@@ -263,7 +256,7 @@ int platform_i2c_transfer(unsigned bus, struct i2c_seg *segments, int seg_count)
 {
 	int i;
 	int res = 0;
-	struct rk3288_i2c_regs *regs = i2c_bus[bus];
+	struct rk_i2c_regs *regs = (struct rk_i2c_regs *)(i2c_bus[bus]);
 	struct i2c_seg *seg = segments;
 
 	for (i = 0; i < seg_count; i++, seg++) {
@@ -279,26 +272,10 @@ void i2c_init(unsigned int bus, unsigned int hz)
 	unsigned int clk_div;
 	unsigned int divl;
 	unsigned int divh;
-	unsigned int i2c_src_clk = 0;
-	struct rk3288_i2c_regs *regs = i2c_bus[bus];
+	unsigned int i2c_src_clk;
+	struct rk_i2c_regs *regs = (struct rk_i2c_regs *)(i2c_bus[bus]);
 
-	/*i2c0,i2c2 src clk from pd_bus_pclk
-	other i2c src clk from peri_pclk
-	*/
-	switch (bus) {
-	case 0:
-	case 2:
-		i2c_src_clk = PD_BUS_PCLK_HZ;
-		break;
-	case 1:
-	case 3:
-	case 4:
-	case 5:
-		i2c_src_clk = PERI_PCLK_HZ;
-		break;
-	default:
-		break;
-	}
+	i2c_src_clk = rkclk_i2c_clock_for_bus(bus);
 
 	/*SCL Divisor = 8*(CLKDIVL + 1 + CLKDIVH + 1)
 	  SCL = PCLK/ SCLK Divisor

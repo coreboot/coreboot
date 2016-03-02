@@ -21,6 +21,7 @@
 #include <soc/addressmap.h>
 #include <soc/clock.h>
 #include <soc/grf.h>
+#include <soc/i2c.h>
 #include <soc/soc.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -666,4 +667,26 @@ int rkclk_was_watchdog_reset(void)
 {
 	/* Bits 5 and 4 are "second" and "first" global watchdog reset. */
 	return read32(&cru_ptr->cru_glb_rst_st) & 0x30;
+}
+
+unsigned rkclk_i2c_clock_for_bus(unsigned bus)
+{
+	/*i2c0,i2c2 src clk from pd_bus_pclk
+	other i2c src clk from peri_pclk
+	*/
+	switch (bus) {
+	case 0:
+	case 2:
+		return PD_BUS_PCLK_HZ;
+
+	case 1:
+	case 3:
+	case 4:
+	case 5:
+		return PERI_PCLK_HZ;
+
+	default:
+		return -1; /* Should never happen. */
+	}
+
 }

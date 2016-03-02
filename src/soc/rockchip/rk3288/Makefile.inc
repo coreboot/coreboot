@@ -74,6 +74,6 @@ CPPFLAGS_common += -Isrc/soc/rockchip/rk3288/include/
 $(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.raw.bin
 	@printf "Generating: $(subst $(obj)/,,$(@))\n"
 	@mkdir -p $(dir $@)
-	@$(IDBTOOL) --from=$< --to=$@ --enable-align
+	@$(IDBTOOL) --from=$< --to=$@ --enable-align --chip=RK32
 
 endif

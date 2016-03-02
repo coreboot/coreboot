@@ -29,7 +29,7 @@ class IDBTool:
       k = (S[i] + S[j]) % 256
       buf[x] = struct.pack('B', ord(buf[x]) ^ S[k])
 
-  def makeIDB(self, from_file, to_file, rc4_flag = False, align_flag = False):
+  def makeIDB(self, chip, from_file, to_file, rc4_flag = False, align_flag = False):
     try:
       fin = open(from_file, 'rb')
     except:
@@ -52,7 +52,7 @@ class IDBTool:
     sectors = pages * PAGE_ALIGN;
 
     buf = [B'\0'] * sectors * SECTOR_SIZE
-    buf[:4] = "RK32"
+    buf[:4] = chip
     buf[4 : 4+data_len] = data
 
     idblock = [B'\0'] * 4 * SECTOR_SIZE
@@ -95,11 +95,13 @@ class IDBTool:
     print "DONE"
 
 def usage():
-  print "Usage: make_idb.py [--enable-rc4] [--enable-align] [--to=out] --from=in"
+  print "Usage: make_idb.py [--chip=RKXX] [--enable-rc4] [--enable-align] [--to=out] --from=in"
+  print "       --chip: default is RK32"
 
 if __name__ == '__main__':
   rc4_flag = align_flag = False
   to_file = "IDBlock.bin"
+  chip = "RK32"
 
   for para in sys.argv[1:]:
     if (para == "--enable-rc4"):
@@ -110,6 +112,8 @@ if __name__ == '__main__':
       to_file = para.split('=')[1]
     elif (para.startswith("--from=")):
       from_file = para.split('=')[1]
+    elif (para.startswith("--chip=")):
+      chip = para.split('=')[1]
     elif (para == "--help" or para == "-h"):
       usage()
       sys.exit()
@@ -121,4 +125,4 @@ if __name__ == '__main__':
     sys.exit()
 
   idbtool = IDBTool()
-  idbtool.makeIDB(from_file, to_file, rc4_flag, align_flag)
+  idbtool.makeIDB(chip, from_file, to_file, rc4_flag, align_flag)

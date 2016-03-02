@@ -20,12 +20,14 @@ romstage-y += placeholders.c
 romstage-$(CONFIG_PLATFORM_USES_FSP2_0) += romstage.c
 romstage-y += gpio.c
 romstage-$(CONFIG_SOC_UART_DEBUG) += uart_early.c
+romstage-y += memmap.c
 romstage-y += mmap_boot.c
 
 smm-y += placeholders.c
 ramstage-y += placeholders.c
 ramstage-y += gpio.c
 ramstage-$(CONFIG_SOC_UART_DEBUG) += uart_early.c
+ramstage-y += memmap.c
 ramstage-y += mmap_boot.c
 
 CPPFLAGS_common += -I$(src)/soc/intel/apollolake/include

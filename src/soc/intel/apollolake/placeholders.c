@@ -3,11 +3,6 @@
 #include <delay.h>
 #include <rules.h>
 
-void *cbmem_top(void)
-{
-	return NULL;
-}
-
 void southbridge_smi_set_eos(void)
 {
 }

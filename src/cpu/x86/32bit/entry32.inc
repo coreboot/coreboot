@@ -2,6 +2,7 @@
 
 #include <arch/rom_segs.h>
 #include <cpu/x86/post_code.h>
+#include <rules.h>
 
 	.code32
 
@@ -44,10 +45,17 @@ gdt_end:
  *
  *	NOTE aligned to 4 so that we are sure that the prefetch
  *	cache will be reloaded.
+ *
+ *	In the bootblock there is already a ljmp to __protected_start and
+ *	the reset vector jumps to symbol _start16bit in entry16.inc from
+ *	the reset vectors's symbol which is _start. Therefore, don't
+ *	expose the _start symbol for bootblock.
  */
 	.align	4
-.globl protected_start
-protected_start:
+#if !ENV_BOOTBLOCK
+.globl _start
+_start:
+#endif
 
 	lgdt	%cs:gdtptr
 	ljmp	$ROM_CODE_SEG, $__protected_start

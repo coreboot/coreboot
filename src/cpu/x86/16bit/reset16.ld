@@ -5,7 +5,7 @@
 
 SECTIONS {
 	/* Trigger an error if I have an unuseable start address */
-	_bogus = ASSERT(_start >= 0xffff0000, "_start too low. Please report.");
+	_bogus = ASSERT(_start16bit >= 0xffff0000, "_start16bit too low. Please report.");
 	_ROMTOP = 0xfffffff0;
 	. = _ROMTOP;
 	.reset . : {

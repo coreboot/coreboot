@@ -29,10 +29,10 @@
 
 #include <arch/rom_segs.h>
 .code16
-.globl _start
-.type _start, @function
+.globl _start16bit
+.type _start16bit, @function
 
-_start:
+_start16bit:
 	cli
 	/* Save the BIST result */
 	movl	%eax, %ebp
@@ -80,12 +80,12 @@ _start:
 	 * The criteria for relocation have been relaxed to their
 	 * utmost, so that we can use the same code for both
 	 * our initial entry point and startup of the second cpu.
-	 * The code assumes when executing at _start that:
-	 * (((cs & 0xfff) == 0) and (ip == _start & 0xffff))
+	 * The code assumes when executing at _start16bit that:
+	 * (((cs & 0xfff) == 0) and (ip == _start16bit & 0xffff))
 	 * or
 	 * ((cs == anything) and (ip == 0)).
 	 *
-	 * The restrictions in reset16.inc mean that _start initially
+	 * The restrictions in reset16.inc mean that _start16bit initially
 	 * must be loaded at or above 0xffff0000 or below 0x100000.
 	 *
 	 * The linker scripts computes gdtptr16_offset by simply returning
@@ -136,6 +136,6 @@ nullidt:
 	.long	0
 	.word	0
 
-.globl _estart
-_estart:
+.globl _estart16bit
+_estart16bit:
 	.code32

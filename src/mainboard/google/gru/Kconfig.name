@@ -1,0 +1,3 @@
+config BOARD_GOOGLE_KEVIN
+	bool "Kevin"
+	select BOARD_GOOGLE_GRU

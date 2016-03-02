@@ -1,0 +1,67 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright 2016 Rockchip Inc.
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+
+config BOARD_GOOGLE_GRU  # Umbrella option to be selected by variant boards.
+	def_bool n
+
+if BOARD_GOOGLE_GRU
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select BOARD_ID_AUTO
+	select BOARD_ROMSIZE_KB_8192
+	select COMMON_CBFS_SPI_WRAPPER
+	select HAVE_HARD_RESET
+	select MAINBOARD_HAS_CHROMEOS
+	select SOC_ROCKCHIP_RK3399
+	select SPI_FLASH
+	select SPI_FLASH_GIGADEVICE
+	select SPI_FLASH_WINBOND
+
+config CHROMEOS
+	select CHROMEOS_VBNV_FLASH
+	select VBOOT2_MOCK_SECDATA
+	select VIRTUAL_DEV_SWITCH
+
+config MAINBOARD_DIR
+	string
+	default google/gru
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Gru"
+
+config MAINBOARD_VENDOR
+	string
+	default "Google"
+
+config DRAM_SIZE_MB
+	int
+	default 2048
+
+config EC_GOOGLE_CHROMEEC_SPI_BUS
+	hex
+	default 0
+
+config BOOT_MEDIA_SPI_BUS
+	int
+	default 1
+
+config CONSOLE_SERIAL_UART_ADDRESS
+	hex
+	depends on DRIVERS_UART
+	default 0xFF1A0000
+
+endif # BOARD_GOOGLE_GRU

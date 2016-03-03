@@ -260,7 +260,7 @@ void mmu_config_range(void *start, size_t size, uint64_t tag)
  * Desc : Initialize mmu based on the mmu_memrange passed. ttb_buffer is used as
  * the base address for xlat tables. TTB_DEFAULT_SIZE defines the max number of
  * tables that can be used
- * Assuming that memory 0-2GiB is device memory.
+ * Assuming that memory 0-4GiB is device memory.
  */
 uint64_t mmu_init(struct mmu_ranges *mmu_ranges)
 {
@@ -275,7 +275,14 @@ uint64_t mmu_init(struct mmu_ranges *mmu_ranges)
 	printf("Libpayload ARM64: TTB_BUFFER: 0x%p Max Tables: %d\n",
 	       (void*)xlat_addr, max_tables);
 
-	mmu_config_range(NULL, 0x80000000, TYPE_DEV_MEM);
+	/*
+	 * To keep things simple we start with mapping the entire base 4GB as
+	 * device memory. This accommodates various architectures' default
+	 * settings (for instance rk3399 mmio starts at 0xf8000000); it is
+	 * fine tuned (e.g. mapping DRAM areas as write-back) later in the
+	 * boot process.
+	 */
+	mmu_config_range(NULL, 0x100000000, TYPE_DEV_MEM);
 
 	for (; i < mmu_ranges->used; i++)
 		mmu_config_range((void *)mmu_ranges->entries[i].base,

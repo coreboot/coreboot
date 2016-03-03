@@ -16,6 +16,7 @@
 #include <commonlib/region.h>
 #include <console/console.h>
 #include <fmap.h>
+#include <soc/intel/common/nvm.h>
 
 /* The 128 KiB right below 4G are decoded by readonly SRAM, not boot media */
 #define IFD_BIOS_MAX_MAPPED	(CONFIG_IFD_BIOS_END - 128 * KiB)
@@ -72,3 +73,10 @@ const struct cbfs_locator cbfs_master_header_locator = {
 	.name = "IAFW Locator",
 	.locate = iafw_boot_region_properties,
 };
+
+uint32_t nvm_mmio_to_flash_offset(void *p)
+{
+	uintptr_t xlate_base;
+	xlate_base = VIRTUAL_ROM_BASE;
+	return (uintptr_t)p - xlate_base + CONFIG_IFD_BIOS_START;
+}

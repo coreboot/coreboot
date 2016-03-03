@@ -218,8 +218,14 @@ void mmu_config_range_kb(u32 start_kb, u32 size_kb, enum dcache_policy policy)
 	u32 mask = BLOCK_SIZE/KiB - 1;
 	printk(BIOS_DEBUG, "Mapping address range [%#.8x:%#.8x) as %s\n",
 	       start_kb * KiB, (start_kb + size_kb) * KiB, attrs[policy].name);
+
+	u32 end_kb = ALIGN_UP((start_kb + size_kb), PAGE_SIZE/KiB) -
+			(start_kb & ~mask);
+
+	assert(end_kb <= BLOCK_SIZE/KiB);
+
 	mmu_fill_table(table, (start_kb & mask) / (PAGE_SIZE/KiB),
-		       div_round_up((start_kb + size_kb) & mask, PAGE_SIZE/KiB),
+		       end_kb / (PAGE_SIZE/KiB),
 		       (start_kb & ~mask) * KiB, PAGE_SHIFT, ATTR_PAGE | attr);
 }
 

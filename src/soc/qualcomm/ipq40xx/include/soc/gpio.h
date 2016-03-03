@@ -69,16 +69,22 @@
 #define GPIO_MAX_NUM  68
 
 /* GPIO TLMM: Mask */
-#define GPIO_CFG_PULL_MASK    0x3
-#define GPIO_CFG_FUNC_MASK    0xF
-#define GPIO_CFG_DRV_MASK     0x7
-#define GPIO_CFG_OE_MASK      0x1
+#define GPIO_CFG_PULL_MASK	0x3
+#define GPIO_CFG_FUNC_MASK	0xF
+#define GPIO_CFG_DRV_MASK	0x7
+#define GPIO_CFG_OE_MASK	0x1
+#define GPIO_CFG_VM_MASK	0x1
+#define GPIO_CFG_OD_EN_MASK	0x1
+#define GPIO_CFG_PU_REMASKFT	0x3
 
 /* GPIO TLMM: Shift */
-#define GPIO_CFG_PULL_SHIFT   0
-#define GPIO_CFG_FUNC_SHIFT   2
-#define GPIO_CFG_DRV_SHIFT    6
-#define GPIO_CFG_OE_SHIFT     9
+#define GPIO_CFG_PULL_SHIFT	0
+#define GPIO_CFG_FUNC_SHIFT	2
+#define GPIO_CFG_DRV_SHIFT	6
+#define GPIO_CFG_OE_SHIFT	9
+#define GPIO_CFG_VM_SHIFT	11
+#define GPIO_CFG_OD_EN_SHIFT	12
+#define GPIO_CFG_PU_RES_SHIFT	13
 
 /* GPIO IO: Mask */
 #define GPIO_IO_IN_MASK       0x1

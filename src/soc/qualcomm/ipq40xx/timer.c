@@ -32,20 +32,10 @@
 #include <soc/ipq_timer.h>
 #include <timer.h>
 
-/*
- * DGT runs at 25 MHz / 4, or 6.25 ticks per microsecond
- */
-#define DGT_MHZ_NUM	25
-#define DGT_MHZ_DEN	4
+#define GCNT_FREQ_MHZ		48
 
-#define TIMER_TICKS(us) ((DGT_MHZ_NUM*(us) + (DGT_MHZ_DEN - 1)) / DGT_MHZ_DEN)
-#define TIMER_USECS(ticks) (DGT_MHZ_DEN*(ticks) / DGT_MHZ_NUM)
-
-/* Clock divider values for the timer. */
-#define DGT_CLK_DIV_1	0
-#define DGT_CLK_DIV_2	1
-#define DGT_CLK_DIV_3	2
-#define DGT_CLK_DIV_4	3
+#define TIMER_TICKS(us)		(GCNT_FREQ_MHZ * (us))
+#define TIMER_USECS(ticks)	((ticks) / GCNT_FREQ_MHZ)
 
 /**
  * init_timer - initialize timer
@@ -53,18 +43,26 @@
 void init_timer(void)
 {
 	/* disable timer */
-	writel_i(0, DGT_ENABLE);
+	write32(GCNT_CNTCR, 0);
 
-	/* DGT uses TCXO source which is 25MHz.
-	 * The timer should run at 1/4th the frequency of TCXO
-	 * according to clock plan.
-	 * Set clock divider to 4.
-	 */
-	writel_i(DGT_CLK_DIV_4, DGT_CLK_CTL);
+	/* Reset the counters to zero */
+	write32(GCNT_GLB_CNTCV_LO, 0);
+	write32(GCNT_GLB_CNTCV_HI, 0);
 
 	/* Enable timer */
-	writel_i(0, DGT_CLEAR);
-	writel_i(DGT_ENABLE_EN, DGT_ENABLE);
+	write32(GCNT_CNTCR, 1);
+}
+
+static inline uint64_t read_gcnt_val(void)
+{
+	uint32_t hi, lo;
+
+	do {
+		hi = read32(GCNT_CNTCV_HI);
+		lo = read32(GCNT_CNTCV_LO);
+	} while (hi != read32(GCNT_CNTCV_HI));
+
+	return ((((uint64_t)hi) << 32) | lo);
 }
 
 /**
@@ -73,26 +71,15 @@ void init_timer(void)
  */
 void udelay(unsigned usec)
 {
-	uint32_t now;
-	uint32_t last;
-	uint32_t ticks;
-	uint32_t curr_ticks = 0;
+	uint64_t expire;
 
-	/* Calculate number of ticks required. */
-	ticks = TIMER_TICKS(usec);
+	expire = read_gcnt_val() + TIMER_TICKS(usec);
 
-	/* Obtain the current timer value. */
-	last = readl_i(DGT_COUNT_VAL);
-
-	/* Loop until the right number of ticks. */
-	while (curr_ticks < ticks) {
-		now = readl_i(DGT_COUNT_VAL);
-		curr_ticks += now - last;
-		last = now;
-	}
+	while (expire >= read_gcnt_val())
+		;
 }
 
 void timer_monotonic_get(struct mono_time *mt)
 {
-	mono_time_set_usecs(mt, TIMER_USECS(readl_i(DGT_COUNT_VAL)));
+	mono_time_set_usecs(mt, TIMER_USECS(read_gcnt_val()));
 }

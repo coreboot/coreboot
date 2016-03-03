@@ -44,9 +44,8 @@
 
 typedef struct {
 	void *uart_dm_base;
-	void *uart_gsbi_base;
-	unsigned uart_gsbi;
 	uart_clk_mnd_t mnd_value;
+	unsigned blsp_uart;
 	gpio_func_data_t dbg_uart_gpio[NO_OF_DBG_UART_GPIOS];
 } uart_params_t;
 
@@ -55,28 +54,25 @@ typedef struct {
  * board/qcom/ipq40xx_cdp/ipq40xx_board_param.h
  */
 static const uart_params_t uart_board_param = {
-	.uart_dm_base = (void *)UART4_DM_BASE,
-	.uart_gsbi_base = (void *)UART_GSBI4_BASE,
-	.uart_gsbi = GSBI_4,
-	.mnd_value = { 12, 625, 313 },
-		.dbg_uart_gpio = {
-			{
-				.gpio = 10,
-				.func = 1,
-				.dir = GPIO_OUTPUT,
-				.pull = GPIO_NO_PULL,
-				.drvstr = GPIO_12MA,
-				.enable = GPIO_DISABLE
-			},
-			{
-				.gpio = 11,
-				.func = 1,
-				.dir = GPIO_INPUT,
-				.pull = GPIO_NO_PULL,
-				.drvstr = GPIO_12MA,
-				.enable = GPIO_DISABLE
-			},
-		}
+	.uart_dm_base = UART1_DM_BASE,
+	.mnd_value = { 24, 625, 313 },
+	.blsp_uart = BLSP1_UART1,
+	.dbg_uart_gpio = {
+		{
+			.gpio = 60,
+			.func = 2,
+			.dir = GPIO_INPUT,
+			.pull = GPIO_NO_PULL,
+			.enable = GPIO_ENABLE
+		},
+		{
+			.gpio = 61,
+			.func = 2,
+			.dir = GPIO_OUTPUT,
+			.pull = GPIO_NO_PULL,
+			.enable = GPIO_ENABLE
+		},
+	},
 };
 
 /**
@@ -115,84 +111,10 @@ static int valid_data = 0;
 /* Received data */
 static unsigned int word = 0;
 
-/**
- * msm_boot_uart_dm_read - reads a word from the RX FIFO.
- * @data: location where the read data is stored
- * @count: no of valid data in the FIFO
- * @wait: indicates blocking call or not blocking call
- *
- * Reads a word from the RX FIFO. If no data is available blocks if
- * @wait is true, else returns %MSM_BOOT_UART_DM_E_RX_NOT_READY.
- */
- #if 0 /* Not used yet */
-static unsigned int
-msm_boot_uart_dm_read(unsigned int *data, int *count, int wait)
-{
-	static int total_rx_data = 0;
-	static int rx_data_read = 0;
-	void *base;
-	uint32_t status_reg;
-
-	base = uart_board_param.uart_dm_base;
-
-	if (data == NULL)
-		return MSM_BOOT_UART_DM_E_INVAL;
-
-	status_reg = readl(MSM_BOOT_UART_DM_MISR(base));
-
-	/* Check for DM_RXSTALE for RX transfer to finish */
-	while (!(status_reg & MSM_BOOT_UART_DM_RXSTALE)) {
-		status_reg = readl(MSM_BOOT_UART_DM_MISR(base));
-		if (!wait)
-			return MSM_BOOT_UART_DM_E_RX_NOT_READY;
-	}
-
-	/* Check for Overrun error. We'll just reset Error Status */
-	if (readl(MSM_BOOT_UART_DM_SR(base)) &
-			MSM_BOOT_UART_DM_SR_UART_OVERRUN) {
-		writel(MSM_BOOT_UART_DM_CMD_RESET_ERR_STAT,
-			MSM_BOOT_UART_DM_CR(base));
-		total_rx_data = rx_data_read = 0;
-		msm_boot_uart_dm_init(base);
-		return MSM_BOOT_UART_DM_E_RX_NOT_READY;
-	}
-
-	/* Read UART_DM_RX_TOTAL_SNAP for actual number of bytes received */
-	if (total_rx_data == 0)
-		total_rx_data =  readl(MSM_BOOT_UART_DM_RX_TOTAL_SNAP(base));
-
-	/* Data available in FIFO; read a word. */
-	*data = readl(MSM_BOOT_UART_DM_RF(base, 0));
-
-	/* WAR for http://prism/CR/548280 */
-	if (*data == 0)
-		return MSM_BOOT_UART_DM_E_RX_NOT_READY;
-
-	/* increment the total count of chars we've read so far */
-	rx_data_read += FIFO_DATA_SIZE;
-
-	/* actual count of valid data in word */
-	*count = ((total_rx_data < rx_data_read) ?
-			(FIFO_DATA_SIZE - (rx_data_read - total_rx_data)) :
-			FIFO_DATA_SIZE);
-
-	/* If there are still data left in FIFO we'll read them before
-	 * initializing RX Transfer again
-	 */
-	if (rx_data_read < total_rx_data)
-		return MSM_BOOT_UART_DM_E_SUCCESS;
-
-	msm_boot_uart_dm_init_rx_transfer(base);
-	total_rx_data = rx_data_read = 0;
-
-	return MSM_BOOT_UART_DM_E_SUCCESS;
-}
-#endif
 
 void uart_tx_byte(int idx, unsigned char data)
 {
 	int num_of_chars = 1;
-	unsigned tx_data = 0;
 	void *base = uart_board_param.uart_dm_base;
 
 	/* Wait until transmit FIFO is empty. */
@@ -206,7 +128,7 @@ void uart_tx_byte(int idx, unsigned char data)
 	write32(MSM_BOOT_UART_DM_NO_CHARS_FOR_TX(base), num_of_chars);
 
 	/* And now write the character(s) */
-	write32(MSM_BOOT_UART_DM_TF(base, 0), tx_data);
+	write32(MSM_BOOT_UART_DM_TF(base, 0), data);
 }
 #endif /* CONFIG_SERIAL_UART */
 
@@ -230,7 +152,7 @@ static unsigned int msm_boot_uart_dm_reset(void *base)
  * msm_boot_uart_dm_init - initilaizes UART controller
  * @uart_dm_base: UART controller base address
  */
-static unsigned int msm_boot_uart_dm_init(void  *uart_dm_base)
+unsigned int msm_boot_uart_dm_init(void  *uart_dm_base)
 {
 	/* Configure UART mode registers MR1 and MR2 */
 	/* Hardware flow control isn't supported */
@@ -303,26 +225,21 @@ void uart_init(int idx)
 {
 	/* Note int idx isn't used in this driver. */
 	void *dm_base;
-	void *gsbi_base;
 
 	dm_base = uart_board_param.uart_dm_base;
 
 	if (read32(MSM_BOOT_UART_DM_CSR(dm_base)) == UART_DM_CLK_RX_TX_BIT_RATE)
 		return; /* UART must have been already initialized. */
 
-	gsbi_base = uart_board_param.uart_gsbi_base;
 	ipq_configure_gpio(uart_board_param.dbg_uart_gpio,
 			   NO_OF_DBG_UART_GPIOS);
 
 	/* Configure the uart clock */
-	uart_clock_config(uart_board_param.uart_gsbi,
+	uart_clock_config(uart_board_param.blsp_uart,
 		uart_board_param.mnd_value.m_value,
 		uart_board_param.mnd_value.n_value,
-		uart_board_param.mnd_value.d_value,
-		0);
+		uart_board_param.mnd_value.d_value);
 
-	write32(GSBI_CTRL_REG(gsbi_base),
-		GSBI_PROTOCOL_CODE_I2C_UART << GSBI_CTRL_REG_PROTOCOL_CODE_S);
 	write32(MSM_BOOT_UART_DM_CSR(dm_base), UART_DM_CLK_RX_TX_BIT_RATE);
 
 	/* Initialize UART_DM */
@@ -334,13 +251,6 @@ void ipq40xx_uart_init(void)
 {
 	uart_init(0);
 }
-
-#if 0 /* Not used yet */
-uint32_t uartmem_getbaseaddr(void)
-{
-	return (uint32_t)uart_board_param.uart_dm_base;
-}
-#endif
 
 /**
  * uart_tx_flush - transmits a string of data
@@ -355,27 +265,6 @@ void uart_tx_flush(int idx)
 		;
 }
 
-/**
- * uart_can_rx_byte - checks if data available for reading
- *
- * Returns 1 if data available, 0 otherwise
- */
- #if 0 /* Not used yet */
-int uart_can_rx_byte(void)
-{
-	/* Return if data is already read */
-	if (valid_data)
-		return 1;
-
-	/* Read data from the FIFO */
-	if (msm_boot_uart_dm_read(&word, &valid_data, 0) !=
-	    MSM_BOOT_UART_DM_E_SUCCESS)
-		return 0;
-
-	return 1;
-}
-#endif
-
 #if IS_ENABLED(CONFIG_DRIVERS_UART)
 /**
  * ipq40xx_serial_getc - reads a character
@@ -386,10 +275,6 @@ uint8_t uart_rx_byte(int idx)
 {
 	uint8_t byte;
 
-#if 0 /* Not used yet */
-	while (!uart_can_rx_byte())
-		;	/* wait for incoming data */
-#endif
 	byte = (uint8_t)(word & 0xff);
 	word = word >> 8;
 	valid_data--;

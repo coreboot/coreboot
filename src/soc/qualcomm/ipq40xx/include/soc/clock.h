@@ -34,7 +34,7 @@
 #include <soc/iomap.h>
 
 /* UART clock @ 7.3728 MHz */
-#define UART_DM_CLK_RX_TX_BIT_RATE 0xCC
+#define UART_DM_CLK_RX_TX_BIT_RATE 0xFF
 
 /* UART specific definitions */
 
@@ -205,8 +205,8 @@
 /* Uart specific clock settings */
 
 void uart_pll_vote_clk_enable(unsigned int);
-void uart_clock_config(unsigned int gsbi_port, unsigned int m, unsigned int n,
-		unsigned int d, unsigned int clk_dummy);
+void uart_clock_config(unsigned int blsp_uart, unsigned int m, unsigned int n,
+		unsigned int d);
 void nand_clock_config(void);
 void usb_clock_config(void);
 int audio_clock_config(unsigned frequency);

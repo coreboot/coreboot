@@ -30,7 +30,7 @@
 #ifndef __UART_DM_H__
 #define __UART_DM_H__
 
-#define PERIPH_BLK_BLSP 0
+#define PERIPH_BLK_BLSP 1
 
 #define MSM_BOOT_UART_DM_EXTR_BITS(value, start_pos, end_pos) \
 	((value << (32 - end_pos)) >> (32 - (end_pos - start_pos)))

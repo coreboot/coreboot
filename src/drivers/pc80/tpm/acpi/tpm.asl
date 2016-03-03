@@ -15,6 +15,8 @@
 
 /* Trusted Platform Module */
 
+#if CONFIG_LPC_TPM
+
 Device (TPM)
 {
 	Name (_HID, EISAID ("PNP0C31"))
@@ -41,7 +43,7 @@ Device (TPM)
 
 	Method (_STA, 0)
 	{
-#if CONFIG_LPC_TPM && !CONFIG_TPM_DEACTIVATE
+#if !CONFIG_TPM_DEACTIVATE
 		If (LAnd (LGreater (DVID, 0), LLess (DVID, 0xffffffff))) {
 			Return (0xf)
 		} Else {
@@ -213,3 +215,5 @@ Device (TPM)
 		Return (Buffer (1) { 0 })
 	}
 }
+
+#endif /* CONFIG_LPC_TPM */

@@ -1146,6 +1146,7 @@ static void dqsTrainRcvrEn_SW_Fam15(struct MCTStatStruc *pMCTstat,
 	uint8_t lane;
 	uint8_t nibble;
 	uint8_t mem_clk;
+	uint16_t min_mem_clk;
 	uint16_t initial_seed;
 	uint8_t train_both_nibbles;
 	uint16_t current_total_delay[MAX_BYTE_LANES];
@@ -1162,6 +1163,8 @@ static void dqsTrainRcvrEn_SW_Fam15(struct MCTStatStruc *pMCTstat,
 
 	print_debug_dqs("\nTrainRcvEn: Node", pDCTstat->Node_ID, 0);
 	print_debug_dqs("TrainRcvEn: Pass", Pass, 0);
+
+	min_mem_clk = mctGet_NVbits(NV_MIN_MEMCLK);
 
 	train_both_nibbles = 0;
 	if (pDCTstat->Dimmx4Present)
@@ -1274,7 +1277,7 @@ static void dqsTrainRcvrEn_SW_Fam15(struct MCTStatStruc *pMCTstat,
 
 						/* Adjust seed for the minimum platform supported frequency */
 						initial_seed = (uint16_t) (((((uint64_t) initial_seed) *
-							fam15h_freq_tab[mem_clk] * 100) / (mctGet_NVbits(NV_MIN_MEMCLK) * 100)));
+							fam15h_freq_tab[mem_clk] * 100) / (min_mem_clk * 100)));
 
 						for (lane = 0; lane < MAX_BYTE_LANES; lane++) {
 							uint16_t wl_pass1_delay;
@@ -1304,7 +1307,7 @@ static void dqsTrainRcvrEn_SW_Fam15(struct MCTStatStruc *pMCTstat,
 
 						for (lane = 0; lane < MAX_BYTE_LANES; lane++) {
 							seed_prescaling = current_total_delay[lane] - register_delay - 0x20;
-							seed[lane] = (uint16_t) (register_delay + ((((uint64_t) seed_prescaling) * fam15h_freq_tab[mem_clk] * 100) / (mctGet_NVbits(NV_MIN_MEMCLK) * 100)));
+							seed[lane] = (uint16_t) (register_delay + ((((uint64_t) seed_prescaling) * fam15h_freq_tab[mem_clk] * 100) / (min_mem_clk * 100)));
 						}
 					}
 

@@ -33,4 +33,7 @@ int nvm_is_write_protected(void);
 /* Apply protection to a range of flash */
 int nvm_protect(void *start, size_t size);
 
+/* Map MMIO address to actual address in flash */
+uint32_t nvm_mmio_to_flash_offset(void *p);
+
 #endif /* _COMMON_NVM_H_ */

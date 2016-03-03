@@ -46,8 +46,20 @@ static int nvm_init(void)
 	return 0;
 }
 
-/* Convert memory mapped pointer to flash offset. */
-static inline uint32_t to_flash_offset(void *p)
+/*
+ * Convert memory mapped pointer to flash offset.
+ *
+ * This is weak because not every platforms memory-maps the NVM media in the
+ * same manner. This is a stop-gap solution.
+ *
+ * The root of the problem is that users of this API work in memory space for
+ * both reads and writes, but erase and write must be done in flash space. This
+ * also only works when the media is memory-mapped, which is no longer
+ * universally true. The long-term approach should be to rewrite this and its
+ * users to work in flash space, while using rdev_read() instead of rdev_mmap().
+ */
+__attribute__((weak))
+uint32_t nvm_mmio_to_flash_offset(void *p)
 {
 	return CONFIG_ROM_SIZE + (uintptr_t)p;
 }
@@ -70,7 +82,7 @@ int nvm_erase(void *start, size_t size)
 {
 	if (nvm_init() < 0)
 		return -1;
-	return flash->erase(flash, to_flash_offset(start), size);
+	return flash->erase(flash, nvm_mmio_to_flash_offset(start), size);
 }
 
 /* Write data to NVM. Returns 0 on success < 0 on error.  */
@@ -78,7 +90,7 @@ int nvm_write(void *start, const void *data, size_t size)
 {
 	if (nvm_init() < 0)
 		return -1;
-	return flash->write(flash, to_flash_offset(start), size, data);
+	return flash->write(flash, nvm_mmio_to_flash_offset(start), size, data);
 }
 
 /* Read flash status register to determine if write protect is active */
@@ -115,7 +127,7 @@ int nvm_protect(void *start, size_t size)
 #if IS_ENABLED(CONFIG_MRC_SETTINGS_PROTECT)
 	if (nvm_init() < 0)
 		return -1;
-	return spi_flash_protect(to_flash_offset(start), size);
+	return spi_flash_protect(nvm_mmio_to_flash_offset(start), size);
 #else
 	return -1;
 #endif

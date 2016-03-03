@@ -54,3 +54,30 @@ struct chip_operations soc_intel_quark_ops = {
 	.init		= &chip_init,
 	.enable_dev	= chip_enable_dev,
 };
+
+void soc_silicon_init_params(SILICON_INIT_UPD *params)
+{
+	struct soc_intel_quark_config *config;
+	device_t dev;
+
+	/* Locate the configuration data from devicetree.cb */
+	dev = dev_find_slot(0, LPC_DEV_FUNC);
+	if (!dev) {
+		printk(BIOS_ERR,
+			"Error! Device (PCI:0:%02x.%01x) not found, "
+			"soc_silicon_init_params!\n", PCI_DEVICE_NUMBER_QNC_LPC,
+			PCI_FUNCTION_NUMBER_QNC_LPC);
+		return;
+	}
+	config = dev->chip_info;
+
+	/* Set the parameters for SiliconInit */
+//	printk(BIOS_DEBUG, "Updating UPD values for SiliconInit\n");
+}
+
+void soc_display_silicon_init_params(const SILICON_INIT_UPD *old,
+	SILICON_INIT_UPD *new)
+{
+	/* Display the parameters for SiliconInit */
+//	printk(BIOS_SPEW, "UPD values for SiliconInit:\n");
+}

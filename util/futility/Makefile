@@ -12,6 +12,8 @@ clean:
 	$(RM) $(objutil)/futility/futility
 	$(RM) -r $(objutil)/futility/build
 
+distclean: clean
+
 ifneq ($(V),1)
 ifneq ($(Q),)
 .SILENT:

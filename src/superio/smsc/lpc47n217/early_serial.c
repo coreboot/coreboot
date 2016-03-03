@@ -105,7 +105,7 @@ static void lpc47n217_pnp_set_enable(pnp_devfn_t dev, int enable)
  * @param dev High 8 bits = Super I/O port, low 8 bits = logical device number.
  * @param iobase Processor I/O port address to assign to this serial device.
  */
-static void lpc47n217_enable_serial(pnp_devfn_t dev, u16 iobase)
+void lpc47n217_enable_serial(pnp_devfn_t dev, u16 iobase)
 {
 	/*
 	 * NOTE: Cannot use pnp_set_XXX() here because they assume chip

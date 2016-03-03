@@ -30,7 +30,7 @@
 #include <cpu/x86/bist.h>
 #include <cpu/x86/lapic.h>
 #include <southbridge/amd/agesa/hudson/hudson.h>
-#include <superio/smsc/lpc47n217/early_serial.c>
+#include <superio/smsc/lpc47n217/lpc47n217.h>
 #include <cpu/amd/agesa/s3_resume.h>
 #include "cbmem.h"
 

@@ -37,8 +37,8 @@ chip soc/intel/quark
 		device pci 14.5 on end	# 8086 0936 - HSUART 1
 		device pci 14.6 off end	# 8086 0937 - 10/100 Ethernet MAC 0
 		device pci 14.7 off end	# 8086 0937 - 10/100 Ethernet MAC 1
-		device pci 15.0 off end	# 8086 0935 - SPI controller 0
-		device pci 15.1 off end	# 8086 0935 - SPI controller 1
+		device pci 15.0 on end	# 8086 0935 - SPI controller 0
+		device pci 15.1 on end	# 8086 0935 - SPI controller 1
 		device pci 15.2 off end	# 8086 0934 - I2C/GPIO controller
 		device pci 17.0 on end	# 8086 11C3 - PCIe Root Port 0
 		device pci 17.1 off end	# 8086 11C4 - PCIe Root Port 1

@@ -16,6 +16,16 @@
 
 chip soc/intel/quark
 
+	############################################################
+	# Set the parameters for MemoryInit
+	############################################################
+
+	register "PcdSmmTsegSize" = "0"	# SMM Region size in MiB
+
+	############################################################
+	# Enable the devices
+	############################################################
+
 	device domain 0 on
 					# EDS Table 3
 		device pci 00.0 on end	# 8086 0958 - Host Bridge

@@ -1,6 +1,6 @@
 /** @file
 
-Copyright (c) 2015-2016, Intel Corporation. All rights reserved.<BR>
+Copyright (c) 2016, Intel Corporation. All rights reserved.<BR>
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -33,139 +33,138 @@ are permitted provided that the following conditions are met:
 #ifndef __FSPUPDVPD_H__
 #define __FSPUPDVPD_H__
 
-#pragma pack(push, 1)
+#pragma pack(1)
+
+
+//
+// TODO - Port to fit Quark SoC.
+//
 
 #define MAX_CHANNELS_NUM       2
 #define MAX_DIMMS_NUM          2
 
 typedef struct {
-  UINT8         DimmId;
-  UINT32        SizeInMb;
-  UINT16        MfgId;
-  UINT8         ModulePartNum[20];/* Module part number for DDR3 is 18 bytes however for DRR4 20 bytes as per JEDEC Spec, so reserving 20 bytes */
+	UINT8         DimmId;
+	UINT32        SizeInMb;
+	UINT16        MfgId;
+	UINT8         ModulePartNum[20];/* Module part number for DDR3 is 18 bytes however for DRR4 20 bytes as per JEDEC Spec, so reserving 20 bytes */
 } DIMM_INFO;
 
 typedef struct {
-  UINT8         ChannelId;
-  UINT8         DimmCount;
-  DIMM_INFO     DimmInfo[MAX_DIMMS_NUM];
+	UINT8         ChannelId;
+	UINT8         DimmCount;
+	DIMM_INFO     DimmInfo[MAX_DIMMS_NUM];
 } CHANNEL_INFO;
 
 typedef struct {
-  UINT8         Revision;
-  UINT16        DataWidth;
-  /** As defined in SMBIOS 3.0 spec
-    Section 7.18.2 and Table 75
-  **/
-  UINT8         MemoryType;
-  UINT16        MemoryFrequencyInMHz;
-  /** As defined in SMBIOS 3.0 spec
-    Section 7.17.3 and Table 72
-  **/
-  UINT8         ErrorCorrectionType;
-  UINT8         ChannelCount;
-  CHANNEL_INFO  ChannelInfo[MAX_CHANNELS_NUM];
+	UINT8         Revision;
+	UINT16        DataWidth;
+	/** As defined in SMBIOS 3.0 spec
+	Section 7.18.2 and Table 75
+	**/
+	UINT8         MemoryType;
+	UINT16        MemoryFrequencyInMHz;
+	/** As defined in SMBIOS 3.0 spec
+	Section 7.17.3 and Table 72
+	**/
+	UINT8         ErrorCorrectionType;
+	UINT8         ChannelCount;
+	CHANNEL_INFO  ChannelInfo[MAX_CHANNELS_NUM];
 } FSP_SMBIOS_MEMORY_INFO;
 
-/** UPD data structure for FspMemoryInitApi
-**/
-typedef struct {
 
+
+typedef struct {
 /** Offset 0x0020
 **/
   UINT64                      Signature;
-
-/** Offset 0x0028 - Revision
-  Revision version of the MemoryInitUpd Region
+/** Offset 0x0028
 **/
   UINT8                       Revision;
+/** Offset 0x0029
+    Tseg Size
+    Size of SMRAM memory reserved.
+**/
+  UINT8                       PcdSmmTsegSize;
+/** Offset 0x002A
+**/
+  UINT32                      PcdPlatformDataBaseAddress;
+/** Offset 0x002E
+**/
+  UINT32                      PcdPlatformDataMaxLen;
+/** Offset 0x0032
+**/
+  UINT8                       ReservedMemoryInitUpd[14];
 } MEMORY_INIT_UPD;
 
-/** UPD data structure for FspSiliconInitApi
-**/
 typedef struct {
-
-/** Offset 0x0200
+/** Offset 0x0040
 **/
   UINT64                      Signature;
-
-/** Offset 0x0208 - Revision
-  Revision version of the SiliconInitUpd Region
+/** Offset 0x0048
 **/
   UINT8                       Revision;
+/** Offset 0x0049
+**/
+  UINT8                       ReservedSiliconInitUpd[183];
 } SILICON_INIT_UPD;
 
 #define FSP_UPD_SIGNATURE                0x244450554B525124        /* '$QRKUPD$' */
 #define FSP_MEMORY_INIT_UPD_SIGNATURE    0x244450554D454D24        /* '$MEMUPD$' */
 #define FSP_SILICON_INIT_UPD_SIGNATURE   0x244450555F495324        /* '$SI_UPD$' */
 
-/** UPD data structure. The UPD_DATA_REGION may contain some reserved or unused fields in the data structure. These fields are required to use the default values provided in the FSP binary. Intel always recommends copying the whole UPD_DATA_REGION from the flash to a local structure in the stack before overriding any field.
-**/
-typedef struct {
-
+typedef struct _UPD_DATA_REGION {
 /** Offset 0x0000
 **/
   UINT64                      Signature;
-
-/** Offset 0x0008 - This field is not an option and is a Revision of the UPD_DATA_REGION. It can be used by the boot loader to validate the UPD region. If the value in this field is changed for an FSP release, the boot loader should not assume the same layout for the UPD_DATA_REGION data structure. Instead it should use the new FspUpdVpd.h from the FSP release package.
-  Size of SMRAM memory reserved. 0x400000 for Release build and 0x1000000 for Debug build
+/** Offset 0x0008
 **/
   UINT8                       Revision;
-
 /** Offset 0x0009
 **/
   UINT8                       ReservedUpd0[7];
-
-/** Offset 0x0010 - MemoryInitUpdOffset
-  This field contains the offset of the MemoryInitUpd structure relative to UPD_DATA_REGION
+/** Offset 0x0010
 **/
   UINT32                      MemoryInitUpdOffset;
-
-/** Offset 0x0014 - SiliconInitUpdOffset
-  This field contains the offset of the SiliconInitUpd structure relative to UPD_DATA_REGION
+/** Offset 0x0014
 **/
   UINT32                      SiliconInitUpdOffset;
-
 /** Offset 0x0018
 **/
   UINT64                      ReservedUpd1;
-
 /** Offset 0x0020
 **/
   MEMORY_INIT_UPD             MemoryInitUpd;
-
-/** Offset 0x0200
+/** Offset 0x0040
 **/
   SILICON_INIT_UPD            SiliconInitUpd;
-
-/** Offset 0x03FA - RegionTerminator
-  This field is not an option and is a termination field at the end of the data structure. This field is will have a value 0x55AA indicating the end of UPD data.The boot loader should never override this field.
+/** Offset 0x0100
 **/
-  UINT16                      RegionTerminator;
+  UINT16                      PcdRegionTerminator;
 } UPD_DATA_REGION;
 
-#define FSP_IMAGE_ID    0x305053462D4B5551	/* 'QUK-FSP0' */
-#define FSP_IMAGE_REV   0x00000000		/* 0.0 */
+#define FSP_IMAGE_ID    0x305053462D4B5551        /* 'QUK-FSP0' */
+#define FSP_IMAGE_REV   0x00000000
 
-/** VPD data structure
-**/
-typedef struct {
-
+typedef struct _VPD_DATA_REGION {
 /** Offset 0x0000
 **/
   UINT64                      PcdVpdRegionSign;
-
-/** Offset 0x0008 - PcdImageRevision
-  This field is not an option and is a revision ID for the FSP release. It can be used by the boot loader to validate the VPD/UPD region. If the value in this field is changed for an FSP release, the boot loader should not assume the same layout for the UPD_DATA_REGION/VPD_DATA_REGION data structure. Instead it should use the new FspUpdVpd.h from the FSP release package.  This should match the ImageRevision in FSP_INFO_HEADER.
+/** Offset 0x0008
+    PcdImageRevision
 **/
   UINT32                      PcdImageRevision;
-
-/** Offset 0x000C - PcdUpdRegionOffset
-  This field is not an option and contains the offset of the UPD data region within the FSP release image. The boot loader can use it to find the location of UPD_DATA_REGION.
+/** Offset 0x000C
 **/
   UINT32                      PcdUpdRegionOffset;
+/** Offset 0x0010
+**/
+  UINT8                       UnusedVpdSpace0[16];
+/** Offset 0x0020
+**/
+  UINT32                      PcdFspReservedMemoryLength;
 } VPD_DATA_REGION;
 
-#pragma pack(pop)
+#pragma pack()
 
 #endif

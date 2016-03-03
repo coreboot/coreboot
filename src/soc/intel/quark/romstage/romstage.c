@@ -13,9 +13,12 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
+#define __SIMPLE_DEVICE__
 
 #include <arch/early_variables.h>
 #include <console/console.h>
+#include <cbfs.h>
+#include "../chip.h"
 #include <device/pci_def.h>
 #include <fsp/car.h>
 #include <fsp/util.h>
@@ -46,4 +49,55 @@ struct chipset_power_state *fill_power_state(void)
 	ps->prev_sleep_state = 0;
 	printk(BIOS_DEBUG, "prev_sleep_state %d\n", ps->prev_sleep_state);
 	return ps;
+}
+
+/* Initialize the UPD parameters for MemoryInit */
+void soc_memory_init_params(struct romstage_params *params,
+			    MEMORY_INIT_UPD *upd)
+{
+	const struct device *dev;
+	char *pdat_file;
+	size_t pdat_file_len;
+	const struct soc_intel_quark_config *config;
+
+	/* Locate the pdat.bin file */
+	pdat_file = cbfs_boot_map_with_leak("pdat.bin", CBFS_TYPE_RAW,
+		&pdat_file_len);
+	if (!pdat_file) {
+		printk(BIOS_DEBUG,
+			"Platform configuration file (pdat.bin) not found.");
+		pdat_file_len = 0;
+	}
+
+	/* Locate the configuration data from devicetree.cb */
+	dev = dev_find_slot(0, LPC_DEV_FUNC);
+	if (!dev) {
+		printk(BIOS_ERR,
+			"Error! Device (PCI:0:%02x.%01x) not found, "
+			"soc_memory_init_params!\n", PCI_DEVICE_NUMBER_QNC_LPC,
+			PCI_FUNCTION_NUMBER_QNC_LPC);
+		return;
+	}
+	config = dev->chip_info;
+
+	/* Set the parameters for MemoryInit */
+	printk(BIOS_DEBUG, "Updating UPD values for MemoryInit\n");
+	upd->PcdSmmTsegSize = IS_ENABLED(CONFIG_HAVE_SMI_HANDLER) ?
+		config->PcdSmmTsegSize : 0;
+	upd->PcdPlatformDataBaseAddress = (UINT32)pdat_file;
+	upd->PcdPlatformDataMaxLen = (UINT32)pdat_file_len;
+}
+
+void soc_display_memory_init_params(const MEMORY_INIT_UPD *old,
+	MEMORY_INIT_UPD *new)
+{
+	/* Display the parameters for MemoryInit */
+	printk(BIOS_SPEW, "UPD values for MemoryInit:\n");
+	fsp_display_upd_value("PcdSmmTsegSize", 2,
+		old->PcdSmmTsegSize, new->PcdSmmTsegSize);
+	fsp_display_upd_value("PcdPlatformDataBaseAddress", 4,
+		old->PcdPlatformDataBaseAddress,
+		new->PcdPlatformDataBaseAddress);
+	fsp_display_upd_value("PcdPlatformDataMaxLen", 4,
+		old->PcdPlatformDataMaxLen, new->PcdPlatformDataMaxLen);
 }

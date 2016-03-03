@@ -18,6 +18,7 @@
 #ifndef _QUARK_PCI_DEVS_H_
 #define _QUARK_PCI_DEVS_H_
 
+#include <arch/io.h>
 #include <device/pci.h>
 #include <soc/QuarkNcSocId.h>
 
@@ -30,5 +31,9 @@
 #define SIO1_DEV 0x14
 # define HSUART1_DEV SIO1_DEV
 # define HSUART1_FUNC 5
+
+/* Platform Controller Unit */
+# define LPC_DEV_FUNC	PCI_DEVFN(PCI_DEVICE_NUMBER_QNC_LPC, \
+				PCI_FUNCTION_NUMBER_QNC_LPC)
 
 #endif /* _QUARK_PCI_DEVS_H_ */

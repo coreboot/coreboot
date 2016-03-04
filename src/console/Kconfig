@@ -133,6 +133,7 @@ endif # CONSOLE_SERIAL
 config SPKMODEM
 	bool "spkmodem (console on speaker) console output"
 	default n
+	depends on ARCH_X86
 	help
 	  Send coreboot debug output through speaker
 
@@ -150,12 +151,14 @@ config CONSOLE_USB
 config ONBOARD_VGA_IS_PRIMARY
 	bool "Use onboard VGA as primary video device"
 	default n
+	depends on PCI
 	help
 	  If not selected, the last adapter found will be used.
 
 config CONSOLE_NE2K
 	bool "Network console over NE2000 compatible Ethernet adapter"
 	default n
+	depends on PCI
 	help
 	  Send coreboot debug output to a Ethernet console, it works
 	  same way as Linux netconsole, packets are received to UDP
@@ -357,8 +360,10 @@ config POST_DEVICE_NONE
 	bool "None"
 config POST_DEVICE_LPC
 	bool "LPC"
+	depends on PCI
 config POST_DEVICE_PCI_PCIE
 	bool "PCI/PCIe"
+	depends on PCI
 endchoice
 
 config POST_IO

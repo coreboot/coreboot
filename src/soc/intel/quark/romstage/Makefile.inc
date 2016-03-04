@@ -16,6 +16,7 @@
 cpu_incs-y += $(src)/soc/intel/quark/romstage/esram_init.inc
 cpu_incs-y += $(src)/soc/intel/quark/romstage/cache_as_ram.inc
 
+romstage-y += mtrr.c
 romstage-y += report_platform.c
 romstage-y += romstage.c
 romstage-$(CONFIG_ENABLE_BUILTIN_HSUART1) += uart.c

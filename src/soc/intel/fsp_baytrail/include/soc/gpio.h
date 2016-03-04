@@ -181,14 +181,14 @@
 	  .is_gpio   = 1 }
 
 #define GPIO_INPUT_NOPU \
-	{ .pad_conf0 = PAD_PU_10K | PAD_PULL_DISABLE | PAD_CONFIG0_DEFAULT, \
+	{ .pad_conf0 = PAD_PU_20K | PAD_PULL_DISABLE | PAD_CONFIG0_DEFAULT, \
 	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
 	  .pad_val   = PAD_VAL_INPUT, \
 	  .use_sel   = GPIO_USE_MMIO, \
 	  .is_gpio   = 1 }
 
 #define GPIO_INPUT_LEGACY_NOPU \
-	{ .pad_conf0 = PAD_PU_10K | PAD_PULL_DISABLE | PAD_CONFIG0_DEFAULT, \
+	{ .pad_conf0 = PAD_PU_20K | PAD_PULL_DISABLE | PAD_CONFIG0_DEFAULT, \
 	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
 	  .pad_val   = PAD_VAL_INPUT, \
 	  .use_sel   = GPIO_USE_LEGACY, \
@@ -197,7 +197,7 @@
 
 /* Direct / dedicated IRQ input - pass signal directly to apic */
 #define GPIO_DIRQ \
-	{ .pad_conf0 = PAD_PU_10K | PAD_PULL_DISABLE | PAD_CONFIG0_DEFAULT \
+	{ .pad_conf0 = PAD_PU_20K | PAD_PULL_DISABLE | PAD_CONFIG0_DEFAULT \
 		     | PAD_FUNC0 | PAD_IRQ_EN | PAD_TPE_IRQ | PAD_LEVEL_IRQ, \
 	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
 	  .pad_val   = PAD_VAL_INPUT, }
@@ -247,13 +247,13 @@
 	  .pad_val   = PAD_VAL_DEFAULT }
 
 /* Default functional configs -- no PU */
-#define GPIO_FUNC0		GPIO_FUNC(0, PULL_DISABLE, 10K)
-#define GPIO_FUNC1		GPIO_FUNC(1, PULL_DISABLE, 10K)
-#define GPIO_FUNC2		GPIO_FUNC(2, PULL_DISABLE, 10K)
-#define GPIO_FUNC3		GPIO_FUNC(3, PULL_DISABLE, 10K)
-#define GPIO_FUNC4		GPIO_FUNC(4, PULL_DISABLE, 10K)
-#define GPIO_FUNC5		GPIO_FUNC(5, PULL_DISABLE, 10K)
-#define GPIO_FUNC6		GPIO_FUNC(6, PULL_DISABLE, 10K)
+#define GPIO_FUNC0		GPIO_FUNC(0, PULL_DISABLE, 20K)
+#define GPIO_FUNC1		GPIO_FUNC(1, PULL_DISABLE, 20K)
+#define GPIO_FUNC2		GPIO_FUNC(2, PULL_DISABLE, 20K)
+#define GPIO_FUNC3		GPIO_FUNC(3, PULL_DISABLE, 20K)
+#define GPIO_FUNC4		GPIO_FUNC(4, PULL_DISABLE, 20K)
+#define GPIO_FUNC5		GPIO_FUNC(5, PULL_DISABLE, 20K)
+#define GPIO_FUNC6		GPIO_FUNC(6, PULL_DISABLE, 20K)
 
 /* ACPI GPIO routing. Assume everything is externally pulled and negative edge
  * triggered. SCI implies WAKE, but WAKE doesn't imply SCI. */
@@ -292,9 +292,9 @@
 /* Common default GPIO settings */
 #define GPIO_INPUT 	GPIO_INPUT_NOPU
 #define GPIO_INPUT_LEGACY	GPIO_INPUT_LEGACY_NOPU
-#define GPIO_INPUT_PU	GPIO_INPUT_PU_10K
-#define GPIO_INPUT_PD 	GPIO_INPUT_PD_10K
-#define GPIO_NC			GPIO_INPUT_PU_10K
+#define GPIO_INPUT_PU	GPIO_INPUT_PU_20K
+#define GPIO_INPUT_PD 	GPIO_INPUT_PD_20K
+#define GPIO_NC			GPIO_INPUT_PU_20K
 #define GPIO_DEFAULT 	GPIO_FUNC0
 
 /* 16 DirectIRQs per supported bank */

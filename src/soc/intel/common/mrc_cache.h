@@ -34,8 +34,8 @@ int mrc_cache_get_current_with_version(const struct mrc_saved_data **cache,
 					uint32_t version);
 
 /* Stash the resulting MRC data to be saved in non-volatile storage later. */
-int mrc_cache_stash_data(void *data, size_t size);
-int mrc_cache_stash_data_with_version(void *data, size_t size,
+int mrc_cache_stash_data(const void *data, size_t size);
+int mrc_cache_stash_data_with_version(const void *data, size_t size,
 					uint32_t version);
 
 #endif /* _COMMON_MRC_CACHE_H_ */

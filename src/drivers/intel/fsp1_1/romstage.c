@@ -372,7 +372,7 @@ __attribute__((weak)) int mrc_cache_get_current(
 }
 
 /* Save the memory configuration data */
-__attribute__((weak)) int mrc_cache_stash_data(void *data, size_t size)
+__attribute__((weak)) int mrc_cache_stash_data(const void *data, size_t size)
 {
 	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
 	return -1;

@@ -162,7 +162,7 @@ int mrc_cache_get_current(const struct mrc_saved_data **cache)
 	return mrc_cache_get_current_with_version(cache, 0);
 }
 /* Fill in mrc_saved_data structure with payload. */
-static void mrc_cache_fill(struct mrc_saved_data *cache, void *data,
+static void mrc_cache_fill(struct mrc_saved_data *cache, const void *data,
                            size_t size, uint32_t version)
 {
 	cache->signature = MRC_DATA_SIGNATURE;
@@ -173,7 +173,7 @@ static void mrc_cache_fill(struct mrc_saved_data *cache, void *data,
 	                                      cache->size);
 }
 
-int mrc_cache_stash_data_with_version(void *data, size_t size,
+int mrc_cache_stash_data_with_version(const void *data, size_t size,
 					uint32_t version)
 {
 	int cbmem_size;
@@ -199,7 +199,7 @@ int mrc_cache_stash_data_with_version(void *data, size_t size,
 	return 0;
 }
 
-int mrc_cache_stash_data(void *data, size_t size)
+int mrc_cache_stash_data(const void *data, size_t size)
 {
 	return mrc_cache_stash_data_with_version(data, size, 0);
 }

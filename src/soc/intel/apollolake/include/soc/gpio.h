@@ -53,28 +53,28 @@
 		PAD_PULL(pull))
 
 /* General purpose input, routed to APIC */
-#define PAD_CFG_GPI_APIC(pad, pull, rst) \
+#define PAD_CFG_GPI_APIC(pad, pull, rst, trig, inv) \
 	_PAD_CFG_STRUCT(pad,		\
 		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_CFG0_TX_DISABLE | \
-		PAD_IRQ_CFG(IOAPIC, LEVEL, NONE), PAD_PULL(pull))
+		PAD_IRQ_CFG(IOAPIC, trig, inv), PAD_PULL(pull))
 
 /* General purpose input, routed to SMI */
-#define PAD_CFG_GPI_SMI(pad, pull, rst, inv) \
+#define PAD_CFG_GPI_SMI(pad, pull, rst, trig, inv) \
 	_PAD_CFG_STRUCT(pad,		\
 		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_CFG0_TX_DISABLE | \
-		PAD_IRQ_CFG(SMI, LEVEL, inv), PAD_PULL(pull))
+		PAD_IRQ_CFG(SMI, trig, inv), PAD_PULL(pull))
 
 /* General purpose input, routed to SCI */
-#define PAD_CFG_GPI_SCI(pad, pull, rst, inv) \
+#define PAD_CFG_GPI_SCI(pad, pull, rst, trig, inv) \
 	_PAD_CFG_STRUCT(pad,		\
 		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_CFG0_TX_DISABLE | \
-		PAD_IRQ_CFG(SCI, LEVEL, inv), PAD_PULL(pull))
+		PAD_IRQ_CFG(SCI, trig, inv), PAD_PULL(pull))
 
 /* General purpose input, routed to NMI */
-#define PAD_CFG_GPI_NMI(pad, pull, rst, inv) \
+#define PAD_CFG_GPI_NMI(pad, pull, rst, trig, inv) \
 	_PAD_CFG_STRUCT(pad,		\
 		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_CFG0_TX_DISABLE | \
-		PAD_IRQ_CFG(NMI, LEVEL, inv), PAD_PULL(pull))
+		PAD_IRQ_CFG(NMI, trig, inv), PAD_PULL(pull))
 
 struct pad_config {
 	uint32_t config0;

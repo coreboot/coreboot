@@ -54,7 +54,7 @@ static void LZ4_copy8(void *dst, const void *src)
 			((uint8_t *)dst)[i] = ((uint8_t *)src)[i];
 	#else
 		uint32_t x0, x1;
-		asm volatile (
+		__asm__ volatile (
 			"ldr %[x0], [%[src]]\n\t"
 			"ldr %[x1], [%[src], #4]\n\t"
 			"str %[x0], [%[dst]]\n\t"

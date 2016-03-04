@@ -86,6 +86,11 @@ static const uint8_t uuid_owner_tseg[16] = {
 	0xb3, 0x19, 0x49, 0x01, 0x99, 0xa4, 0x7d, 0x55
 };
 
+static const uint8_t uuid_fsp_nv_storage[16] = {
+       0x02, 0xcf, 0x1a, 0x72, 0x77, 0x4d, 0x2a, 0x4c,
+       0xb3, 0xdc, 0x27, 0x0b, 0x7b, 0xa9, 0xe4, 0xb0
+};
+
 static const uint8_t empty_uuid[16] = {
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
@@ -97,6 +102,7 @@ static const struct uuid_name_map {
 	{ uuid_owner_bootloader_tolum,	"BOOTLOADER_TOLUM" },
 	{ uuid_owner_fsp,		"FSP_RESERVED_MEMORY" },
 	{ uuid_owner_tseg,		"TSEG" },
+	{ uuid_fsp_nv_storage,		"FSP_NV_STORAGE" },
 };
 
 static const char *resource_name(enum resource_type type)
@@ -290,4 +296,10 @@ const void *fsp_find_extension_hob_by_uuid(const uint8_t *uuid, size_t *size)
 	}
 
 	return NULL;
+}
+
+
+const void *fsp_find_nv_storage_data(size_t *size)
+{
+	return fsp_find_extension_hob_by_uuid(uuid_fsp_nv_storage, size);
 }

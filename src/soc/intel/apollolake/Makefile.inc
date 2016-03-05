@@ -6,6 +6,7 @@ subdirs-y += ../../../cpu/x86/lapic
 subdirs-y += ../../../cpu/x86/mtrr
 subdirs-y += ../../../cpu/x86/smm
 subdirs-y += ../../../cpu/x86/tsc
+subdirs-y += ../../../cpu/x86/cache
 
 bootblock-y += bootblock/bootblock.c
 bootblock-y += bootblock/cache_as_ram.S
@@ -24,6 +25,7 @@ romstage-y += memmap.c
 romstage-y += mmap_boot.c
 
 smm-y += placeholders.c
+ramstage-y += cpu.c
 ramstage-y += placeholders.c
 ramstage-y += gpio.c
 ramstage-$(CONFIG_SOC_UART_DEBUG) += uart_early.c

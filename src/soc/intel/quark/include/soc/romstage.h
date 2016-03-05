@@ -30,6 +30,8 @@ void mcr_write(uint8_t opcode, uint8_t port, uint32_t reg_address);
 uint32_t mdr_read(void);
 void mdr_write(uint32_t value);
 void mea_write(uint32_t reg_address);
+uint32_t port_reg_read(uint8_t port, uint32_t offset);
+void port_reg_write(uint8_t port, uint32_t offset, uint32_t value);
 void report_platform_info(void);
 int set_base_address_and_enable_uart(u8 bus, u8 dev, u8 func, u32 mmio_base);
 

@@ -269,6 +269,8 @@ Definitions beginning with "N_" are the bit position
 //
 #define QNC_MSG_FSBIC_REG_HMISC                0x03       // Host Misellaneous Controls
 #define   SMI_EN                              (BIT19)     // SMI Global Enable (from Legacy Bridge)
+#define   FSEG_RD_DRAM                        (BIT2)      // Enable RAM for 0x000f0000 - 0x000fffff
+#define   ESEG_RD_DRAM                        (BIT1)      // Enable RAM for 0x000e0000 - 0x000effff
 #define QNC_MSG_FSBIC_REG_HSMMC                0x04       // Host SMM Control
 #define   NON_HOST_SMM_WR_OPEN                (BIT18)     // SMM Writes OPEN
 #define   NON_HOST_SMM_RD_OPEN                (BIT17)     // SMM Writes OPEN

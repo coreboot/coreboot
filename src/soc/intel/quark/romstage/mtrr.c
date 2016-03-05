@@ -73,6 +73,23 @@ static uint32_t mtrr_index_to_host_bridge_register_offset(unsigned long index)
 	return offset;
 }
 
+uint32_t port_reg_read(uint8_t port, uint32_t offset)
+{
+	/* Read the port register */
+	offset = QNC_MSG_FSBIC_REG_HMISC;
+	mea_write(offset);
+	mcr_write(QUARK_OPCODE_READ, port, offset);
+	return mdr_read();
+}
+
+void port_reg_write(uint8_t port, uint32_t offset, uint32_t value)
+{
+	/* Write the port register */
+	mea_write(offset);
+	mdr_write(value);
+	mcr_write(QUARK_OPCODE_WRITE, port, offset);
+}
+
 msr_t soc_mtrr_read(unsigned long index)
 {
 	uint32_t offset;
@@ -83,18 +100,14 @@ msr_t soc_mtrr_read(unsigned long index)
 
 	/* Read the low 32-bits of the register */
 	offset = mtrr_index_to_host_bridge_register_offset(index);
-	mea_write(offset);
-	mcr_write(QUARK_OPCODE_READ, QUARK_NC_HOST_BRIDGE_SB_PORT_ID, offset);
-	value.u64 = mdr_read();
+	value.u64 = port_reg_read(QUARK_NC_HOST_BRIDGE_SB_PORT_ID, offset);
 
 	/* For 64-bit registers, read the upper 32-bits */
 	if ((offset >=  QUARK_NC_HOST_BRIDGE_MTRR_FIX64K_00000)
 		&& (offset <= QUARK_NC_HOST_BRIDGE_MTRR_FIX4K_F8000)) {
 		offset += 1;
-		mea_write(offset);
-		mcr_write(QUARK_OPCODE_READ, QUARK_NC_HOST_BRIDGE_SB_PORT_ID,
-			offset);
-		value.u64 |= mdr_read();
+		value.u64 |= port_reg_read(QUARK_NC_HOST_BRIDGE_SB_PORT_ID,
+					   offset);
 	}
 	return value.msr;
 }
@@ -110,18 +123,14 @@ void soc_mtrr_write(unsigned long index, msr_t msr)
 	/* Write the low 32-bits of the register */
 	value.msr = msr;
 	offset = mtrr_index_to_host_bridge_register_offset(index);
-	mea_write(offset);
-	mdr_write(value.u32[0]);
-	mcr_write(QUARK_OPCODE_WRITE, QUARK_NC_HOST_BRIDGE_SB_PORT_ID, offset);
+	port_reg_write(QUARK_NC_HOST_BRIDGE_SB_PORT_ID, offset, value.u32[0]);
 
 	/* For 64-bit registers, write the upper 32-bits */
 	if ((offset >=  QUARK_NC_HOST_BRIDGE_MTRR_FIX64K_00000)
 		&& (offset <= QUARK_NC_HOST_BRIDGE_MTRR_FIX4K_F8000)) {
 		offset += 1;
-		mea_write(offset);
-		mdr_write(value.u32[1]);
-		mcr_write(QUARK_OPCODE_WRITE, QUARK_NC_HOST_BRIDGE_SB_PORT_ID,
-			offset);
+		port_reg_write(QUARK_NC_HOST_BRIDGE_SB_PORT_ID, offset,
+				value.u32[1]);
 	}
 }
 

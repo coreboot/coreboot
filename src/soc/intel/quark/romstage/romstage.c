@@ -22,6 +22,7 @@
 #include <device/pci_def.h>
 #include <fsp/car.h>
 #include <fsp/util.h>
+#include <lib.h>
 #include <soc/intel/common/util.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
@@ -86,6 +87,30 @@ void soc_memory_init_params(struct romstage_params *params,
 		config->PcdSmmTsegSize : 0;
 	upd->PcdPlatformDataBaseAddress = (UINT32)pdat_file;
 	upd->PcdPlatformDataMaxLen = (UINT32)pdat_file_len;
+
+	/* Display the ROM shadow data */
+	hexdump((void *)0x000ffff0, 0x10);
+}
+
+void soc_after_ram_init(struct romstage_params *params)
+{
+	uint32_t data;
+
+	/* Determine if the shadow ROM is enabled */
+	data = port_reg_read(QUARK_NC_HOST_BRIDGE_SB_PORT_ID,
+				QNC_MSG_FSBIC_REG_HMISC);
+	printk(BIOS_DEBUG, "0x%08x: HMISC\n", data);
+	if ((data & (ESEG_RD_DRAM | FSEG_RD_DRAM))
+		!= (ESEG_RD_DRAM | FSEG_RD_DRAM)) {
+
+		/* Disable the ROM shadow 0x000e0000 - 0x000fffff */
+		data |= ESEG_RD_DRAM | FSEG_RD_DRAM;
+		port_reg_write(QUARK_NC_HOST_BRIDGE_SB_PORT_ID,
+			QNC_MSG_FSBIC_REG_HMISC, data);
+	}
+
+	/* Display the DRAM data */
+	hexdump((void *)0x000ffff0, 0x10);
 }
 
 void soc_display_memory_init_params(const MEMORY_INIT_UPD *old,

@@ -26,6 +26,7 @@ romstage-y += mmap_boot.c
 
 smm-y += placeholders.c
 ramstage-y += cpu.c
+ramstage-y += chip.c
 ramstage-y += placeholders.c
 ramstage-y += gpio.c
 ramstage-$(CONFIG_SOC_UART_DEBUG) += uart_early.c

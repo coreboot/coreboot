@@ -14,17 +14,8 @@
  */
 #include <arm_tf.h>
 #include <assert.h>
-#include <soc/bl31_plat_params.h>
-
-static struct bl31_plat_param *plat_params;
-
-void register_bl31_param(struct bl31_plat_param *param)
-{
-	param->next = (void *)plat_params;
-	plat_params = param;
-}
 
 void *soc_get_bl31_plat_params(bl31_params_t *bl31_params)
 {
-	return (void *)plat_params;
+	return (void *)NULL;
 }

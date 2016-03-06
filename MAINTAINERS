@@ -200,6 +200,46 @@ M:	York Yang <york.yang@intel.com>
 S:	Supported
 F:	src/drivers/intel/fsp1_1/
 
+ASUS KFSN4-DRE & KFSN4-DRE_K8 MAINBOARDS
+M:	Timothy Pearson <tpearson@raptorengineeringinc.com>
+S:	Supported
+F:	src/mainboard/asus/kfsn4-dre/
+F:	src/mainboard/asus/kfsn4-dre_k8/
+
+ASUS KCMA-D8 MAINBOARD
+M:	Timothy Pearson <tpearson@raptorengineeringinc.com>
+S:	Supported
+F:	src/mainboard/asus/kcma-d8/
+
+ASUS KGPE-D16 MAINBOARD
+M:	Timothy Pearson <tpearson@raptorengineeringinc.com>
+S:	Supported
+F:	src/mainboard/asus/kgpe-d16/
+
+AMD FAMILY10H & FAMILY15H (NON-AGESA) CPUS & NORTHBRIDGE
+M:	Timothy Pearson <tpearson@raptorengineeringinc.com>
+S:	Supported
+F:	src/cpu/amd/family_10h-family_15h/
+F:	src/northbridge/amd/amdfam10/
+F:	src/northbridge/amd/amdmct/
+F:	src/northbridge/amd/amdht/
+
+AMD SB700 (NON-CIMX) SOUTHBRIDGE
+M:	Timothy Pearson <tpearson@raptorengineeringinc.com>
+S:	Supported
+F:	src/southbridge/amd/sb700/
+
+AMD SR5650 SOUTHBRIDGE
+M:	Timothy Pearson <tpearson@raptorengineeringinc.com>
+S:	Supported
+F:	src/southbridge/amd/sr5650/
+
+ASPEED AST2050 DRIVER & COMMON CODE
+M:	Timothy Pearson <tpearson@raptorengineeringinc.com>
+S:	Supported
+F:	src/drivers/aspeed/common/
+F:	src/drivers/aspeed/ast2050/
+
 ATI MACH64 Driver
 S:	Orphan
 F:	src/drivers/ati/mach64/

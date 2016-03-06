@@ -10,12 +10,12 @@ DEST ?= $(CURDIR)/xgcc
 all all_with_gdb:
 	$(MAKE) build-i386 build-x64 build-arm build-mips \
 		build-riscv build-aarch64 build-power8 build-nds32le \
-		build_clang build_iasl
+		build_clang build_iasl build_make
 
 all_without_gdb:
 	$(MAKE) SKIP_GDB=1 build-i386 build-x64 build-arm build-mips \
 		build-riscv build-aarch64 build-power8 build-nds32le \
-		build_clang build_iasl
+		build_clang build_iasl build_make
 
 build_tools: build_gcc build_gdb
 
@@ -39,6 +39,9 @@ build_clang:
 ifeq ($(SKIP_CLANG),)
 	bash ./buildgcc -P clang $(if $(CPUS),-j $(CPUS))  $(if $(KEEP_SOURCES),-t) $(BUILDGCC_OPTIONS) -d $(DEST)
 endif
+
+build_make:
+	bash ./buildgcc -P make $(if $(CPUS),-j $(CPUS))  $(if $(KEEP_SOURCES),-t) $(BUILDGCC_OPTIONS) -d $(DEST)
 
 ###########################################################
 build-i386:

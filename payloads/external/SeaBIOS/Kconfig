@@ -12,8 +12,24 @@ config SEABIOS_MASTER
 	bool "master"
 	help
 	  Newest SeaBIOS version
+config SEABIOS_REVISION
+	bool "git revision"
+	help
+	  Select this option if you have a specific commit or branch
+	  that you want to use as the revision from which to
+	  build SeaBIOS.
+
+	  You will be able to specify the name of a branch or a commit id
+	  later.
 
 endchoice
+
+config SEABIOS_REVISION_ID
+	string "Insert a commit's SHA-1 or a branch name"
+	depends on SEABIOS_REVISION
+	default "origin/master"
+	help
+	   The commit's SHA-1 or branch name of the revision to use.
 
 config SEABIOS_PS2_TIMEOUT
 	prompt "PS/2 keyboard controller initialization timeout (milliseconds)"

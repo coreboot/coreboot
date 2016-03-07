@@ -17,15 +17,15 @@
 src := $(shell pwd)
 srctree := $(src)
 srck := $(src)/../../util/kconfig
-obj := $(src)/build
+coreinfo_obj := $(src)/build
 objk := $(src)/build/util/kconfig
 
 export KERNELVERSION      := 0.1.0
-export KCONFIG_AUTOHEADER := $(obj)/config.h
-export KCONFIG_AUTOCONFIG := $(obj)/auto.conf
-export KCONFIG_DEPENDENCIES := $(obj)/auto.conf.cmd
-export KCONFIG_SPLITCONFIG := $(obj)/config
-export KCONFIG_TRISTATE := $(obj)/tristate.conf
+export KCONFIG_AUTOHEADER := $(coreinfo_obj)/config.h
+export KCONFIG_AUTOCONFIG := $(coreinfo_obj)/auto.conf
+export KCONFIG_DEPENDENCIES := $(coreinfo_obj)/auto.conf.cmd
+export KCONFIG_SPLITCONFIG := $(coreinfo_obj)/config
+export KCONFIG_TRISTATE := $(coreinfo_obj)/tristate.conf
 export KCONFIG_NEGATIVES := 1
 export Kconfig := Kconfig
 
@@ -53,12 +53,12 @@ HAVE_LIBPAYLOAD := $(wildcard $(LIBPAYLOAD_DIR)/libpayload/lib/libpayload.a)
 LIB_CONFIG ?= defconfig
 OBJCOPY ?= objcopy
 
-INCLUDES = -I$(obj) -include $(LIBPAYLOAD_DIR)/libpayload/include/kconfig.h
+INCLUDES = -I$(coreinfo_obj) -include $(LIBPAYLOAD_DIR)/libpayload/include/kconfig.h
 OBJECTS = cpuinfo_module.o cpuid.S.o pci_module.o coreboot_module.o \
 	  nvram_module.o bootlog_module.o ramdump_module.o lar_module.o \
 	  multiboot_module.o cbfs_module.o coreinfo.o
-OBJS    = $(patsubst %,$(obj)/%,$(OBJECTS))
-TARGET  = $(obj)/coreinfo.elf
+OBJS    = $(patsubst %,$(coreinfo_obj)/%,$(OBJECTS))
+TARGET  = $(coreinfo_obj)/coreinfo.elf
 
 all: real-all
 
@@ -87,18 +87,18 @@ ifneq ($(strip $(HAVE_DOTCONFIG)),)
 include $(src)/.config
 real-all: $(TARGET)
 
-$(TARGET): $(src)/.config $(obj)/config.h $(OBJS) libpayload
+$(TARGET): $(src)/.config $(coreinfo_obj)/config.h $(OBJS) libpayload
 	printf "    LPCC       $(subst $(shell pwd)/,,$(@)) (LINK)\n"
 	$(LPCC) -o $@ $(OBJS)
 	$(OBJCOPY) --only-keep-debug $@ $(TARGET).debug
 	$(OBJCOPY) --strip-debug $@
 	$(OBJCOPY) --add-gnu-debuglink=$(TARGET).debug $@
 
-$(obj)/%.S.o: $(src)/%.S libpayload
+$(coreinfo_obj)/%.S.o: $(src)/%.S libpayload
 	printf "    LPAS       $(subst $(shell pwd)/,,$(@))\n"
 	$(LPAS) -o $@ $<
 
-$(obj)/%.o: $(src)/%.c libpayload
+$(coreinfo_obj)/%.o: $(src)/%.c libpayload
 	printf "    LPCC       $(subst $(shell pwd)/,,$(@))\n"
 	$(LPCC) $(CFLAGS) -c -o $@ $<
 
@@ -121,10 +121,10 @@ libpayload:
 	$(MAKE) -C $(LIBCONFIG_PATH) DESTDIR=$(shell pwd)/$(LIBPAYLOAD_DIR) install
 endif
 
-$(obj)/config.h:
+$(coreinfo_obj)/config.h:
 	$(MAKE) oldconfig
 
-$(shell mkdir -p $(obj) $(objk)/lxdialog $(KCONFIG_SPLITCONFIG))
+$(shell mkdir -p $(coreinfo_obj) $(objk)/lxdialog $(KCONFIG_SPLITCONFIG))
 
 clean:
 	rm -rf build/*.elf build/*.o .xcompile

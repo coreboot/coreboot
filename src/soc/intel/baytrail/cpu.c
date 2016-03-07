@@ -83,8 +83,7 @@ void baytrail_init_cpus(device_t dev)
 	void *default_smm_area;
 
 	/* Set up MTRRs based on physical address size. */
-	x86_setup_fixed_mtrrs();
-	x86_setup_var_mtrrs(pattrs->address_bits, 2);
+	x86_setup_mtrrs_with_detect();
 	x86_mtrr_check();
 
 	mp_params.num_cpus = pattrs->num_cpus,

@@ -717,8 +717,7 @@ static void configure_mca(void)
 static void bsp_init_before_ap_bringup(struct bus *cpu_bus)
 {
 	/* Setup MTRRs based on physical address size. */
-	x86_setup_fixed_mtrrs();
-	x86_setup_var_mtrrs(cpuid_eax(0x80000008) & 0xff, 2);
+	x86_setup_mtrrs_with_detect();
 	x86_mtrr_check();
 
 	initialize_vr_config();

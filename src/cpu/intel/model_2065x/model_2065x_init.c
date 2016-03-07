@@ -358,7 +358,6 @@ static void intel_cores_init(struct device *cpu)
 static void model_2065x_init(struct device *cpu)
 {
 	char processor_name[49];
-	struct cpuid_result cpuid_regs;
 
 	/* Turn on caching if we haven't already */
 	x86_enable_cache();
@@ -374,9 +373,7 @@ static void model_2065x_init(struct device *cpu)
 	printk(BIOS_INFO, "CPU:lapic=%ld, boot_cpu=%d\n", lapicid (), boot_cpu ());
 
 	/* Setup MTRRs based on physical address size */
-	cpuid_regs = cpuid(0x80000008);
-	x86_setup_fixed_mtrrs();
-	x86_setup_var_mtrrs(cpuid_regs.eax & 0xff, 2);
+	x86_setup_mtrrs_with_detect();
 	x86_mtrr_check();
 
 	/* Setup Page Attribute Tables (PAT) */

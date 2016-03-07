@@ -28,4 +28,9 @@
 
 #define LPC47N227_MAX_CONFIG_REGISTER	0x39
 
+void pnp_enter_conf_state(pnp_devfn_t dev);
+void pnp_exit_conf_state(pnp_devfn_t dev);
+
+void lpc47n227_enable_serial(pnp_devfn_t dev, u16 iobase);
+
 #endif

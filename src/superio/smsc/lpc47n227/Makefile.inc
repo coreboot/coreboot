@@ -13,4 +13,5 @@
 ## GNU General Public License for more details.
 ##
 
+romstage-$(CONFIG_SUPERIO_SMSC_LPC47N227) += early_serial.c
 ramstage-$(CONFIG_SUPERIO_SMSC_LPC47N227) += superio.c

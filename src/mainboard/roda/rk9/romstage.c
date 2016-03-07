@@ -29,7 +29,7 @@
 #include <console/console.h>
 #include <southbridge/intel/i82801ix/i82801ix.h>
 #include <northbridge/intel/gm45/gm45.h>
-#include <superio/smsc/lpc47n227/early_serial.c>
+#include <superio/smsc/lpc47n227/lpc47n227.h>
 
 #define LPC_DEV PCI_DEV(0, 0x1f, 0)
 #define SERIAL_DEV PNP_DEV(0x2e, LPC47N227_SP1)

@@ -19,13 +19,13 @@
 #include <arch/io.h>
 #include "lpc47n227.h"
 
-static void pnp_enter_conf_state(pnp_devfn_t dev)
+void pnp_enter_conf_state(pnp_devfn_t dev)
 {
 	u16 port = dev >> 8;
 	outb(0x55, port);
 }
 
-static void pnp_exit_conf_state(pnp_devfn_t dev)
+void pnp_exit_conf_state(pnp_devfn_t dev)
 {
 	u16 port = dev >> 8;
 	outb(0xaa, port);
@@ -107,7 +107,7 @@ static void lpc47n227_pnp_set_enable(pnp_devfn_t dev, int enable)
  * @param dev High 8 bits = Super I/O port, low 8 bits = logical device number.
  * @param iobase Processor I/O port address to assign to this serial device.
  */
-static void lpc47n227_enable_serial(pnp_devfn_t dev, u16 iobase)
+void lpc47n227_enable_serial(pnp_devfn_t dev, u16 iobase)
 {
 	/*
 	 * NOTE: Cannot use pnp_set_XXX() here because they assume chip

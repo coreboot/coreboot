@@ -25,6 +25,8 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <pc80/keyboard.h>
+#include <superio/conf_mode.h>
+
 #include "lpc47n227.h"
 
 /* Forward declarations. */
@@ -38,8 +40,6 @@ void lpc47n227_pnp_set_iobase(struct device *dev, u16 iobase);
 void lpc47n227_pnp_set_drq(struct device *dev, u8 drq);
 void lpc47n227_pnp_set_irq(struct device *dev, u8 irq);
 void lpc47n227_pnp_set_enable(struct device *dev, int enable);
-static void pnp_enter_conf_state(struct device *dev);
-static void pnp_exit_conf_state(struct device *dev);
 
 struct chip_operations superio_smsc_lpc47n227_ops = {
 	CHIP_NAME("SMSC LPC47N227 Super I/O")
@@ -86,10 +86,10 @@ void lpc47n227_pnp_set_resources(struct device *dev)
 {
 	struct resource *res;
 
-	pnp_enter_conf_state(dev);
+	pnp_enter_conf_mode_55(dev);
 	for (res = dev->resource_list; res; res = res->next)
 		lpc47n227_pnp_set_resource(dev, res);
-	pnp_exit_conf_state(dev);
+	pnp_exit_conf_mode_aa(dev);
 }
 
 /*
@@ -98,9 +98,9 @@ void lpc47n227_pnp_set_resources(struct device *dev)
  */
 void lpc47n227_pnp_enable_resources(struct device *dev)
 {
-	pnp_enter_conf_state(dev);
+	pnp_enter_conf_mode_55(dev);
 	lpc47n227_pnp_set_enable(dev, 1);
-	pnp_exit_conf_state(dev);
+	pnp_exit_conf_mode_aa(dev);
 }
 
 /*
@@ -109,9 +109,9 @@ void lpc47n227_pnp_enable_resources(struct device *dev)
  */
 void lpc47n227_pnp_enable(struct device *dev)
 {
-	pnp_enter_conf_state(dev);
+	pnp_enter_conf_mode_55(dev);
 	lpc47n227_pnp_set_enable(dev, !!dev->enabled);
-	pnp_exit_conf_state(dev);
+	pnp_exit_conf_mode_aa(dev);
 }
 
 /**
@@ -270,14 +270,4 @@ void lpc47n227_pnp_set_enable(struct device *dev, int enable)
 		lpc47n227_pnp_set_iobase(dev, 0);
 	}
 	pnp_write_config(dev, power_register, new_power);
-}
-
-static void pnp_enter_conf_state(struct device *dev)
-{
-	outb(0x55, dev->path.pnp.port);
-}
-
-static void pnp_exit_conf_state(struct device *dev)
-{
-	outb(0xaa, dev->path.pnp.port);
 }

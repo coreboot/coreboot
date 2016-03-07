@@ -132,6 +132,7 @@ endif
 
 ifeq ($(NOCOMPILE),1)
 include $(TOPLEVEL)/Makefile.inc
+include $(TOPLEVEL)/payloads/Makefile.inc
 real-all: config
 
 else
@@ -321,7 +322,7 @@ clean-cscope:
 clean-ctags:
 	rm -f tags
 
-distclean: clean clean-ctags clean-cscope
+distclean: clean clean-ctags clean-cscope distclean-payloads
 	rm -f .config .config.old ..config.tmp .kconfig.d .tmpconfig* .ccwrap .xcompile
 
 .PHONY: $(PHONY) clean clean-for-update clean-cscope cscope distclean doxygen doxy doxygen_simple

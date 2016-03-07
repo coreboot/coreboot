@@ -449,7 +449,7 @@ $(objgenerated)/libverstage.a: $$(libverstage-objs)
 clean-abuild:
 	rm -rf coreboot-builds
 
-clean-for-update-target:
+clean-for-update-target: clean-payloads
 	rm -f $(obj)/ramstage?* $(obj)/coreboot.romstage $(obj)/coreboot.pre* $(obj)/coreboot.bootblock $(obj)/coreboot.a
 	rm -rf $(obj)/bootblock?* $(obj)/romstage?* $(obj)/location.*
 	rm -f $(obj)/option_table.* $(obj)/crt0.S $(obj)/ldscript
@@ -458,8 +458,6 @@ clean-for-update-target:
 	rm -f $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc
 	rm -f $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.* $(obj)/dsdt.*
 	rm -f $(obj)/cpu/x86/smm/smm_bin.c $(obj)/cpu/x86/smm/smm.* $(obj)/cpu/x86/smm/smm
-	$(MAKE) -C payloads/external/SeaBIOS -f Makefile.inc clean
-	$(MAKE) -C payloads/external/U-Boot -f Makefile.inc clean
 
 clean-target:
 	rm -f $(obj)/coreboot*

@@ -8,3 +8,5 @@ all: nvramcui.elf
 .PHONY:
 clean:
 	rm -f nvramcui.elf
+
+distclean: clean

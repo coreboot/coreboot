@@ -789,8 +789,6 @@ void x86_setup_var_mtrrs(unsigned int address_bits, unsigned int above4gb)
 	addr_space = get_physical_address_space();
 
 	if (sol == NULL) {
-		if (above4gb == 2)
-			detect_var_mtrrs();
 		sol = &mtrr_global_solution;
 		sol->mtrr_default_type =
 			calc_var_mtrrs(addr_space, !!above4gb, address_bits);
@@ -804,10 +802,19 @@ void x86_setup_var_mtrrs(unsigned int address_bits, unsigned int above4gb)
 void x86_setup_mtrrs(void)
 {
 	int address_size;
+
 	x86_setup_fixed_mtrrs();
 	address_size = cpu_phys_address_size();
-	printk(BIOS_DEBUG, "CPU physical address size: %d bits\n", address_size);
+	printk(BIOS_DEBUG, "CPU physical address size: %d bits\n",
+		address_size);
+	/* Always handle addresses above 4GiB. */
 	x86_setup_var_mtrrs(address_size, 1);
+}
+
+void x86_setup_mtrrs_with_detect(void)
+{
+	detect_var_mtrrs();
+	x86_setup_mtrrs();
 }
 
 void x86_mtrr_check(void)

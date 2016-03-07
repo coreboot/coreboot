@@ -56,14 +56,20 @@
  *    of the nature of the global MTRR enable flag. Therefore, all direct
  *    or indirect callers of enable_fixed_mtrr() should ensure that the
  *    variable MTRR MSRs do not contain bad ranges.
+ *
+ * Note that this function sets up MTRRs for addresses above 4GiB.
  */
 void x86_setup_mtrrs(void);
 /*
+ * x86_setup_mtrrs_with_detect() does the same thing as x86_setup_mtrrs(), but
+ * it always dynamically detects the number of variable MTRRs available.
+ */
+void x86_setup_mtrrs_with_detect(void);
+/*
  * x86_setup_var_mtrrs() parameters:
  * address_bits - number of physical address bits supported by cpu
- * above4gb - 2 means dynamically detect number of variable MTRRs available.
- *            non-zero means handle memory ranges above 4GiB.
- *            0 means ignore memory ranges above 4GiB
+ * above4gb - if set setup MTRRs for addresses above 4GiB else ignore
+ *            memory ranges above 4GiB
  */
 void x86_setup_var_mtrrs(unsigned int address_bits, unsigned int above4gb);
 void enable_fixed_mtrr(void);

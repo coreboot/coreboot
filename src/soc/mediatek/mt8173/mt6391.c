@@ -299,7 +299,7 @@ static void mt6391_init_setting(void)
 	/* [6:0]: VSRMCA7_VOSEL_SLEEP; */
 	mt6391_write(PMIC_RG_VSRMCA7_CON11, 0x18, 0x7F, 0);
 	/* [8:8]: VSRMCA7_VSLEEP_EN; */
-	mt6391_write(PMIC_RG_VSRMCA7_CON18, 0x1, 0x1, 8);
+	mt6391_write(PMIC_RG_VSRMCA7_CON18, 0x0, 0x1, 8);
 	/* [5:4]: VSRMCA7_VOSEL_TRANS_EN; */
 	mt6391_write(PMIC_RG_VSRMCA7_CON18, 0x3, 0x3, 4);
 	/* [8:8]: VDRM_VSLEEP_EN; */
@@ -362,6 +362,8 @@ static void mt6391_init_setting(void)
 	mt6391_write(PMIC_RG_VPCA7_CON5, 0x0, 0x1, 1);
 	/* [1:1]: VSRMCA7_VOSEL_CTRL; */
 	mt6391_write(PMIC_RG_VSRMCA7_CON5, 0x0, 0x1, 1);
+	/* [0:0]: VSRMCA7_EN_CTRL; */
+	mt6391_write(PMIC_RG_VSRMCA7_CON5, 0x1, 0x1, 0);
 	/* [4:4]: VCA15_TRACK_ON_CTRL; DVFS tracking enable */
 	mt6391_write(PMIC_RG_VCA15_CON5, 0x1, 0x1, 4);
 	/* [4:4]: VSRMCA15_TRACK_ON_CTRL; */

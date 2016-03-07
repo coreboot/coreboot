@@ -1342,14 +1342,11 @@ static uint8_t TrainDQSRdWrPos_D_Fam15(struct MCTStatStruc *pMCTstat,
 
 	Errors = 0;
 	dual_rank = 0;
-	Receiver = mct_InitReceiver_D(pDCTstat, dct);
-	if (receiver_start > Receiver)
-		Receiver = receiver_start;
 
 	/* There are four receiver pairs, loosely associated with chipselects.
 	 * This is essentially looping over each rank within each DIMM.
 	 */
-	for (; Receiver < receiver_end; Receiver++) {
+	for (Receiver = receiver_start; Receiver < receiver_end; Receiver++) {
 		dimm = (Receiver >> 1);
 		if ((Receiver & 0x1) == 0) {
 			/* Even rank of DIMM */

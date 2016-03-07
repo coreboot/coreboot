@@ -1522,6 +1522,9 @@ static uint8_t TrainDQSRdWrPos_D_Fam15(struct MCTStatStruc *pMCTstat,
 				print_debug_dqs("\t\t\t\tTrainDQSRdWrPos: 143 largest read passing region start ", best_pos, 4);
 				print_debug_dqs("\t\t\t\tTrainDQSRdWrPos: 144 largest read passing region center (raw hardware value) ", region_center, 4);
 			} else {
+				 /* Restore current settings of other (previously trained) lanes to the active array */
+				memcpy(current_read_dqs_delay, initial_read_dqs_delay, sizeof(current_read_dqs_delay));
+
 				/* Reprogram the Read DQS Timing Control register with the original settings */
 				write_dqs_read_data_timing_registers(initial_read_dqs_delay, dev, dct, dimm, index_reg);
 			}
@@ -1571,6 +1574,9 @@ static uint8_t TrainDQSRdWrPos_D_Fam15(struct MCTStatStruc *pMCTstat,
 				print_debug_dqs("\t\t\t\tTrainDQSRdWrPos: 145 largest write passing region ", best_count, 4);
 				print_debug_dqs("\t\t\t\tTrainDQSRdWrPos: 146 largest write passing region start ", best_pos, 4);
 			} else {
+				/* Restore current settings of other (previously trained) lanes to the active array */
+				memcpy(current_write_dqs_delay, initial_write_data_timing, sizeof(current_write_data_delay));
+
 				/* Reprogram the Write DQS Timing Control register with the original settings */
 				write_dqs_write_data_timing_registers(current_write_dqs_delay, dev, dct, dimm, index_reg);
 			}

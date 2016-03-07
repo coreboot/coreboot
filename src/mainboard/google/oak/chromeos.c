@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <boardid.h>
 #include <boot/coreboot_tables.h>
 #include <console/console.h>
 #include <ec/google/chromeec/ec.h>
@@ -30,7 +31,8 @@ void setup_chromeos_gpios(void)
 	gpio_input_pullup(EC_IRQ);
 	gpio_input_pullup(LID);
 	gpio_input_pullup(POWER_BUTTON);
-	gpio_output(EC_SUSPEND_L, 1);
+	if (board_id() < 5)
+		gpio_output(EC_SUSPEND_L, 1);
 }
 
 void fill_lb_gpios(struct lb_gpios *gpios)

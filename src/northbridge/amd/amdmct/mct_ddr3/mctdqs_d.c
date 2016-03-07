@@ -1717,6 +1717,7 @@ static void TrainDQSReceiverEnCyc_D_Fam15(struct MCTStatStruc *pMCTstat,
 		/* 2.10.5.8.3 */
 		Receiver = mct_InitReceiver_D(pDCTstat, dct);
 
+		/* Indicate success unless training the DCT explicitly fails */
 		dct_training_success = 1;
 
 		/* There are four receiver pairs, loosely associated with chipselects.
@@ -1729,8 +1730,9 @@ static void TrainDQSReceiverEnCyc_D_Fam15(struct MCTStatStruc *pMCTstat,
 				continue;
 			}
 
-			for (lane = 0; lane < MAX_BYTE_LANES; lane++)
-				lane_training_success[lane] = 0;
+			/* Initialize variables */
+			memset(lane_training_success, 0, sizeof(lane_training_success));
+			memset(current_phy_phase_delay, 0, sizeof(current_phy_phase_delay));
 
 			/* 2.10.5.8.3 (2) */
 			read_dqs_receiver_enable_control_registers(initial_phy_phase_delay, dev, dct, dimm, index_reg);
@@ -1792,14 +1794,17 @@ static void TrainDQSReceiverEnCyc_D_Fam15(struct MCTStatStruc *pMCTstat,
 #endif
 
 				/* 2.10.5.8.3 (5) */
-				prev = 0;
-				for (current_phy_phase_delay[lane] = rx_en_offset; current_phy_phase_delay[lane] < 0x3ff; current_phy_phase_delay[lane] += ren_step) {
+				prev = dqs_results_array[rx_en_offset];
+				for (current_phy_phase_delay[lane] = rx_en_offset + ren_step; current_phy_phase_delay[lane] < 0x3ff; current_phy_phase_delay[lane] += ren_step) {
 					if ((dqs_results_array[current_phy_phase_delay[lane]] == 0) && (prev == 1)) {
 						/* Restore last known good delay */
 						current_phy_phase_delay[lane] -= ren_step;
 
 						/* 2.10.5.8.3 (5 A B) */
-						current_phy_phase_delay[lane] -= 0x10;
+						if (current_phy_phase_delay[lane] < 0x10)
+							current_phy_phase_delay[lane] = 0x0;
+						else
+							current_phy_phase_delay[lane] -= 0x10;
 
 						/* Update hardware registers with final values */
 						write_dqs_receiver_enable_control_registers(current_phy_phase_delay, dev, dct, dimm, index_reg);

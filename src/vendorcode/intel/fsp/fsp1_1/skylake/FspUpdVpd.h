@@ -1,6 +1,6 @@
 /** @file
 
-Copyright (c) 2015, Intel Corporation. All rights reserved.<BR>
+Copyright (c) 2016, Intel Corporation. All rights reserved.<BR>
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -370,9 +370,15 @@ typedef struct {
 **/
   UINT32                      FspCarSize;
 
-/** Offset 0x015C
+/** Offset 0x015C - SMBUS SPD Write Disable
+  Set/Clear Smbus SPD Write Disable. 0: leave SPD Write Disable bit; 1: set SPD Write Disable bit. For security recommendations, SPD write disable bit must be set.
+  $EN_DIS
 **/
-  UINT8                       ReservedMemoryInitUpd[164];
+  UINT8                       SmbusSpdWriteDisable;
+
+/** Offset 0x015D
+**/
+  UINT8                       ReservedMemoryInitUpd[163];
 } MEMORY_INIT_UPD;
 
 /** UPD data structure for FspSiliconInitApi
@@ -477,7 +483,7 @@ typedef struct {
   UINT8                       HsioMessaging;
 
 /** Offset 0x0227 - HECI3 state
-  The HECI3 state from Mbp for reference in S3 path or when MbpHob is not installed. 0: disable, 1: enable
+  The HECI3 state from Mbp for reference in S3 path or when MbpHob is not installed. This must be enabled if Integrated Touch (iTouch) is supported. 0: disable, 1: enable
   $EN_DIS
 **/
   UINT8                       Heci3Enabled;
@@ -654,304 +660,304 @@ typedef struct {
 **/
   UINT8                       Usb3HsioTxDownscaleAmp[10];
 
-/** Offset 0x02EB
-**/
-  UINT8                       UnusedUpdSpace6[1];
-
-/** Offset 0x02EC - Enable PCIE RP
+/** Offset 0x02EB - Enable PCIE RP
   Enable/disable PCIE Root Ports. 0: disable, 1: enable. One byte for each port, byte0 for port1, byte1 for port2, and so on.
 **/
   UINT8                       PcieRpEnable[20];
 
-/** Offset 0x0300 - Enable PCIE RP PMSCI
+/** Offset 0x02FF - Enable PCIE RP PMSCI
   Indicate whether the root port power manager SCI is enabled - 0: disable, 1: enable. One byte for each port, byte0 for port1, byte1 for port2, and so on.
 **/
   UINT8                       PcieRpPmSci[20];
 
-/** Offset 0x0314 - Enable PCIE RP CLKREQ Support
+/** Offset 0x0313 - Enable PCIE RP CLKREQ Support
   Enable/disable PCIE Root Port CLKREQ support. 0: disable, 1: enable. One byte for each port, byte0 for port1, byte1 for port2, and so on.
 **/
   UINT8                       PcieRpClkReqSupport[20];
 
-/** Offset 0x0328 - Configure CLKREQ Number
+/** Offset 0x0327 - Configure CLKREQ Number
   Configure Root Port CLKREQ Number if CLKREQ is supported. Each value in arrary can be between 0-6. One byte for each port, byte0 for port1, byte1 for port2, and so on.
 **/
   UINT8                       PcieRpClkReqNumber[20];
 
-/** Offset 0x033C - Enable LAN
+/** Offset 0x033B - Enable LAN
   Enable/Disable LAN controller.
   $EN_DIS
 **/
   UINT8                       EnableLan;
 
-/** Offset 0x033D - LAN LTR Programming
+/** Offset 0x033C - LAN LTR Programming
   Enable/Disable LTR capabilty of PCH internal LAN.
   $EN_DIS
 **/
   UINT8                       LanLtrEnable;
 
-/** Offset 0x033E - SATA eSATASpeedLimit
-  When enabled, BIOS will configure the PxSCTL.SPD to 2 to limit the eSATA port speed. 0: disable, 1: enable.
+/** Offset 0x033D - SATA eSATASpeedLimit
+  When enabled, BIOS will configure the PxSCTL.SPD to 2 to limit the eSATA port speed. 0: disable, 1: enable. 
   $EN_DIS
 **/
   UINT8                       eSATASpeedLimit;
 
-/** Offset 0x033F - SATA RST RAID0
+/** Offset 0x033E - SATA RST RAID0
   Enable/Disable RAID0.
   $EN_DIS
 **/
   UINT8                       SataRstRaid0;
 
-/** Offset 0x0340 - SATA RST RAID1
+/** Offset 0x033F - SATA RST RAID1
   Enable/Disable RAID1.
   $EN_DIS
 **/
   UINT8                       SataRstRaid1;
 
-/** Offset 0x0341 - SATA RST RAID10
+/** Offset 0x0340 - SATA RST RAID10
   Enable/Disable RAID10.
   $EN_DIS
 **/
   UINT8                       SataRstRaid10;
 
-/** Offset 0x0342 - SATA RST RAID5
+/** Offset 0x0341 - SATA RST RAID5
   Enable/Disable RAID5.
   $EN_DIS
 **/
   UINT8                       SataRstRaid5;
 
-/** Offset 0x0343 - Skip Multi-Processor Initialization
+/** Offset 0x0342 - Skip Multi-Processor Initialization
   When this is skipped, boot loader must initialize processors before SilicionInit API. 0: Initialize, 1: Skip
   $EN_DIS
 **/
   UINT8                       SkipMpInit;
 
-/** Offset 0x0344 - Enable PCIE RP HotPlug
+/** Offset 0x0343 - Enable PCIE RP HotPlug
   Enable/disable PCIE Root Ports HogPlug. 0: disable, 1: enable. One byte for each port, byte0 for port1, byte1 for port2, and so on.
 **/
   UINT8                       PcieRpHotPlug[20];
 
-/** Offset 0x0358 - Enable PCIE RP Function Swap
+/** Offset 0x0357 - Enable PCIE RP Function Swap
   Enable/disable PCIE RP function swap. 0: disable, 1: enable. It allows BIOS to use root port function number swapping when root port of function 0 is disabled. NOTE: This option will not work if ports 1, 9, 17 are fused or configured for RST PCIe storage. Disabling function swap may have adverse impact on power management.
   $EN_DIS
 **/
   UINT8                       RpFunctionSwap;
 
-/** Offset 0x0359 - USB2 Port Over Current Configuration
+/** Offset 0x0358 - USB2 Port Over Current Configuration
   Configure over current pin assignment per USB2 ports. Refer to USB_OVERCURRENT_PIN. 0x08 means "skip over current pin". One byte for each port, byte0 for port0, byte1 for port1, and so on.
 **/
   UINT8                       Usb2OverCurrentPin[16];
 
-/** Offset 0x0369 - USB3 Port Over Current Configuration
+/** Offset 0x0368 - USB3 Port Over Current Configuration
   Configure over current pin assignment per USB3 ports. Refer to USB_OVERCURRENT_PIN. 0x08 means "skip over current pin". One byte for each port, byte0 for port0, byte1 for port1, and so on.
 **/
   UINT8                       Usb3OverCurrentPin[10];
 
-/** Offset 0x0373
-**/
-  UINT8                       UnusedUpdSpace7[1];
-
-/** Offset 0x0374 - Psi1Threshold
+/** Offset 0x0372 - Psi1Threshold
   Power State 1 current cuttof in 1/4 Amp increments. Range is 0-128A. Array index maps to VR 0 = System Agent, 1 = IA Core, 2 = Ring, 3 = GT unsliced,  4 = GT sliced
 **/
   UINT16                      Psi1Threshold[5];
 
-/** Offset 0x037E - Psi2Threshold
+/** Offset 0x037C - Psi2Threshold
   Power State 2 current cuttof in 1/4 Amp increments. Range is 0-128A. Array index maps to VR 0 = System Agent, 1 = IA Core, 2 = Ring, 3 = GT unsliced,  4 = GT sliced
 **/
   UINT16                      Psi2Threshold[5];
 
-/** Offset 0x0388 - Psi3Threshold
+/** Offset 0x0386 - Psi3Threshold
   State 3 current cuttof in 1/4 Amp increments. Range is 0-128A. Array index maps to VR 0 = System Agent, 1 = IA Core, 2 = Ring, 3 = GT unsliced,  4 = GT sliced
 **/
   UINT16                      Psi3Threshold[5];
 
-/** Offset 0x0392 - Psi3Enable
+/** Offset 0x0390 - Psi3Enable
   Power State 3 0: Disable 1: Enable. Array index maps to VR 0 = System Agent, 1 = IA Core, 2 = Ring, 3 = GT unsliced,  4 = GT sliced
 **/
   UINT8                       Psi3Enable[5];
 
-/** Offset 0x0397 - Psi4Enable
+/** Offset 0x0395 - Psi4Enable
   Power State 4 0: Disable 1: Enable. Array index maps to VR 0 = System Agent, 1 = IA Core, 2 = Ring, 3 = GT unsliced,  4 = GT sliced
 **/
   UINT8                       Psi4Enable[5];
 
-/** Offset 0x039C - ImonSlope
+/** Offset 0x039A - ImonSlope
   Imon slope correction. Specified in 1/100 increment values. Range is 0-200. 125 = 1.25. 0: Auto Array index maps to VR 0 = System Agent, 1 = IA Core, 2 = Ring, 3 = GT unsliced,  4 = GT sliced
 **/
   UINT8                       ImonSlope[5];
 
-/** Offset 0x03A1 - ImonOffset
+/** Offset 0x039F - ImonOffset
   Imon offset correction. Units 1/4, Range 0-255. Value of 100 = 100/4 = 25 offset. 0: Auto Array index maps to VR 0 = System Agent, 1 = IA Core, 2 = Ring, 3 = GT unsliced,  4 = GT sliced
 **/
   UINT8                       ImonOffset[5];
 
-/** Offset 0x03A6 - IccMax
+/** Offset 0x03A4 - IccMax
   VR Icc Max limit. 0-255A in 1/4 A units. 400 = 100A Array index maps to VR 0 = System Agent, 1 = IA Core, 2 = Ring, 3 = GT unsliced,  4 = GT sliced
 **/
   UINT16                      IccMax[5];
 
-/** Offset 0x03B0 - VrVoltageLimit
+/** Offset 0x03AE - VrVoltageLimit
   VR Voltage Limit. Range is 0-7999mV. Array index maps to VR 0 = System Agent, 1 = IA Core, 2 = Ring, 3 = GT unsliced,  4 = GT sliced
 **/
   UINT16                      VrVoltageLimit[5];
 
-/** Offset 0x03BA - VrConfigEnable
+/** Offset 0x03B8 - VrConfigEnable
   BIOS configuration of VR 0: Disable 1: Enable. Array index maps to VR 0 = System Agent, 1 = IA Core, 2 = Ring, 3 = GT unsliced,  4 = GT sliced
 **/
   UINT8                       VrConfigEnable[5];
 
-/** Offset 0x03BF
-**/
-  UINT8                       UnusedUpdSpace8;
-
-/** Offset 0x03C0 - CPU S3 Resume Hob Data
-  CPU S3 Resume Hob Data
+/** Offset 0x03BD - CPU S3 Resume Data
+  CPU S3 Resume Data passed from the FSP CPU S3 Resume HOB during normal boot.
 **/
   UINT32                      CpuS3ResumeHobData;
 
-/** Offset 0x03C4 - CpuS3ResumeMtrrData
+/** Offset 0x03C1 - CpuS3ResumeMtrrData
   Pointer CPU S3 Resume MTRR Data
 **/
   UINT32                      CpuS3ResumeMtrrData;
 
-/** Offset 0x03C8 - CpuS3ResumeMtrrDataSize
+/** Offset 0x03C5 - CpuS3ResumeMtrrDataSize
   Size of S3 resume MTRR data.
 **/
   UINT16                      CpuS3ResumeMtrrDataSize;
 
-/** Offset 0x03CA - Lock Down Config Global Smi
+/** Offset 0x03C7 - Lock Down Config Global Smi
   Enable SMI_LOCK bit to prevent writes to the Global SMI Enable bit. Value 0: Disable, 1: Enable.
   $EN_DIS
 **/
   UINT8                       LockDownConfigGlobalSmi;
 
-/** Offset 0x03CB - Lock Down Config Bios Interface
+/** Offset 0x03C8 - Lock Down Config Bios Interface
   Enable BIOS Interface Lock Down bit to prevent writes to the Backup Control Register. Top Swap bit and the General Control and Status Registers Boot BIOS Straps. Value 0: Disable, 1: Enable.
   $EN_DIS
 **/
   UINT8                       LockDownConfigBiosInterface;
 
-/** Offset 0x03CC - Lock Down Config Bios Lock
+/** Offset 0x03C9 - Lock Down Config Bios Lock
   When enabled, the BIOS Region can only be modified from SMM after EndOfDxe protocol is installed. Value 0: Disable, 1: Enable.
   $EN_DIS
 **/
   UINT8                       LockDownConfigBiosLock;
 
-/** Offset 0x03CD - Lock Down Config Spi Eiss
+/** Offset 0x03CA - Lock Down Config Spi Eiss
   Enable InSMM.STS (EISS) in SPI If this bit is set, then WPD must be a '1' and InSMM.STS must be '1' also in order to write to BIOS regions of SPI Flash. If this bit is clear, then the InSMM.STS is a don't care. The BIOS must set the EISS bit while BIOS Guard support is enabled. Value 0: Clear EISS bit, 1: Set EISS bit.
   $EN_DIS
 **/
   UINT8                       LockDownConfigSpiEiss;
 
-/** Offset 0x03CE - Subsystem Vendor ID
+/** Offset 0x03CB - Subsystem Vendor ID
   Subsystem Vendor ID of the PCH devices.
 **/
   UINT16                      PchConfigSubSystemVendorId;
 
-/** Offset 0x03D0 - Subsystem ID
+/** Offset 0x03CD - Subsystem ID
   Subsystem ID of the PCH devices.
 **/
   UINT16                      PchConfigSubSystemId;
 
-/** Offset 0x03D2 - Wol Enable Override
+/** Offset 0x03CF - Wol Enable Override
   Corresponds to the "WOL Enable Override" bit in the General PM Configuration B (GEN_PMCON_B) register. Value 0: Disable, 1: Enable.
   $EN_DIS
 **/
   UINT8                       WakeConfigWolEnableOverride;
 
-/** Offset 0x03D3 - Pcie Wake From DeepSx
+/** Offset 0x03D0 - Pcie Wake From DeepSx
   Determine if enable PCIe to wake from deep Sx. Value 0: Disable, 1: Enable.
   $EN_DIS
 **/
   UINT8                       WakeConfigPcieWakeFromDeepSx;
 
-/** Offset 0x03D4 - Power Management DeepSxPolicy
+/** Offset 0x03D1 - Power Management DeepSxPolicy
   Deep Sx Policy. Values 0: PchDeepSxPolDisable, 1: PchDpS5BatteryEn, 2: PchDpS5AlwaysEn, 3: PchDpS4S5BatteryEn, 4: PchDpS4S5AlwaysEn, 5: PchDpS3S4S5BatteryEn, 6: PchDpS3S4S5AlwaysEn.
   0 : 0x06
 **/
   UINT8                       PmConfigDeepSxPol;
 
-/** Offset 0x03D5 - Power Management SlpS3MinAssert
+/** Offset 0x03D2 - Power Management SlpS3MinAssert
   SLP_S3 Minimum Assertion Width Policy. Values 0: PchSlpS360us, 1: PchSlpS31ms, 2: PchSlpS350ms, 3: PchSlpS32s.
   0 : 0x03
 **/
   UINT8                       PmConfigSlpS3MinAssert;
 
-/** Offset 0x03D6 - Power Management SlpS4MinAssert
+/** Offset 0x03D3 - Power Management SlpS4MinAssert
   SLP_S4 Minimum Assertion Width Policy. Values 0: PchSlpS4PchTime, 1: PchSlpS41s, 2: PchSlpS42s, 3: PchSlpS43s, 4: PchSlpS44s.
   0 : 0x04
 **/
   UINT8                       PmConfigSlpS4MinAssert;
 
-/** Offset 0x03D7 - Power Management SlpSusMinAssert
+/** Offset 0x03D4 - Power Management SlpSusMinAssert
   SLP_SUS Minimum Assertion Width Policy. Values 0: PchSlpSus0ms, 1: PchSlpSus500ms, 2: PchSlpSus1s, 3: PchSlpSus4s.
   0 : 0x03
 **/
   UINT8                       PmConfigSlpSusMinAssert;
 
-/** Offset 0x03D8 - Power Management SlpAMinAssert
+/** Offset 0x03D5 - Power Management SlpAMinAssert
   SLP_A Minimum Assertion Width Policy. Values 0: PchSlpA0ms, 1: PchSlpA4s, 2: PchSlpA98ms, 3: PchSlpA2s.
   0 : 0x03
 **/
   UINT8                       PmConfigSlpAMinAssert;
 
-/** Offset 0x03D9 - Power Management Pci Clock Run
+/** Offset 0x03D6 - Power Management Pci Clock Run
   This member describes whether or not the PCI ClockRun feature of PCH should be enabled. Values 0: Disabled, 1: Enabled
   $EN_DIS
 **/
   UINT8                       PmConfigPciClockRun;
 
-/** Offset 0x03DA - Power Management SLP_X Stretching After SUS Well
+/** Offset 0x03D7 - Power Management SLP_X Stretching After SUS Well
   SLP_X Stretching After SUS Well Power Up. Values 0: Disabled, 1: Enabled
   $EN_DIS
 **/
   UINT8                       PmConfigSlpStrchSusUp;
 
-/** Offset 0x03DB - Power Management Power Button Override Period
+/** Offset 0x03D8 - Power Management Power Button Override Period
   PCH power button override period. Values: 0x0 - 4s, 0x1 - 6s, 0x2 - 8s, 0x3 - 10s, 0x4 - 12s, 0x5 - 14s.
   0 : 0x05
 **/
   UINT8                       PmConfigPwrBtnOverridePeriod;
 
-/** Offset 0x03DC - Power Management Power Reset Power Cycle Duration
+/** Offset 0x03D9 - Power Management Power Reset Power Cycle Duration
   Reset Power Cycle Duration could be customized in the unit of second. PCH HW default is 4 seconds, and range is 1~4 seconds. Values: 0x0 - 0s, 0x1 - 1s, 0x2 - 2s, 0x3 - 3s, 0x4 - 4s.
   0 : 0x04
 **/
   UINT8                       PmConfigPwrCycDur;
 
-/** Offset 0x03DD - PCH Serial IRQ Configuration
+/** Offset 0x03DA - PCH Serial IRQ Configuration
   Determines if enable Serial IRQ. Values 0: Disabled, 1: Enabled
   $EN_DIS
 **/
   UINT8                       SerialIrqConfigSirqEnable;
 
-/** Offset 0x03DE - PCH Serial IRQ Mode Select
+/** Offset 0x03DB - PCH Serial IRQ Mode Select
   Serial IRQ Mode Select. Values: 0: PchQuietMode, 1: PchContinuousMode.
   0 : 0x01
 **/
   UINT8                       SerialIrqConfigSirqMode;
 
-/** Offset 0x03DF - PCH Serial IRQ Start Frame Pulse Width
+/** Offset 0x03DC - PCH Serial IRQ Start Frame Pulse Width
   Start Frame Pulse Width. Values: 0: PchSfpw4Clk, 1: PchSfpw6Clk, 2: PchSfpw8Clk.
   0 : 0x02
 **/
   UINT8                       SerialIrqConfigStartFramePulse;
 
-/** Offset 0x03E0 - PSF Unlock
+/** Offset 0x03DD - PSF Unlock
   The PSF registers will be locked before 3rd party code execution. This policy unlock the PSF space. NOTE: Do not set this policy "PsfUnlock" unless necessary.
   $EN_DIS
 **/
   UINT8                       PsfUnlock;
 
-/** Offset 0x03E1 - IO voltage for I2C controllers
+/** Offset 0x03DE - IO voltage for I2C controllers
   Selects the IO voltage for I2C controllers, 0: PchSerialIoIs33V, 1: PchSerialIoIs18V.
 **/
   UINT8                       SerialIoI2cVoltage[6];
 
-/** Offset 0x03E7
+/** Offset 0x03E4 - Enable 8254 Static Clock Gating in early POST time
+  Set 8254CGE=1 is required for C11 support. However, set 8254CGE=1 in POST time might fail to boot legacy OS which using 8254 timer. Make sure it won't break legacy OS boot before enabling this.
+  $EN_DIS
 **/
-  UINT8                       ReservedSiliconInitUpd[19];
+  UINT8                       Early8254ClockGatingEnable;
+
+/** Offset 0x03E5 - Enable VR specific mailbox command
+  When set, an extra VR mailbox command specifically for the MPS IMPV8 VR will be sent. This for FSP only. 0 - Don't Send, 1 - Send
+  $EN_DIS
+**/
+  UINT8                       SendVrMbxCmd;
+
+/** Offset 0x03E6
+**/
+  UINT8                       ReservedSiliconInitUpd[20];
 } SILICON_INIT_UPD;
 
 #define FSP_UPD_SIGNATURE                0x244450554C4B5324        /* '$SKLUPD$' */
@@ -1004,7 +1010,7 @@ typedef struct {
 } UPD_DATA_REGION;
 
 #define FSP_IMAGE_ID    0x245053464C4B5324        /* '$SKLFSP$' */
-#define FSP_IMAGE_REV   0x01080100
+#define FSP_IMAGE_REV   0x01090000 
 
 /** VPD data structure
 **/
@@ -1019,8 +1025,7 @@ typedef struct {
 **/
   UINT32                      PcdImageRevision;
 
-/** Offset 0x000C - PcdUpdRegionOffset
-  This field is not an option and contains the offset of the UPD data region within the FSP release image. The boot loader can use it to find the location of UPD_DATA_REGION.
+/** Offset 0x000C
 **/
   UINT32                      PcdUpdRegionOffset;
 
@@ -1029,7 +1034,7 @@ typedef struct {
   UINT8                       UnusedVpdSpace0[32];
 
 /** Offset 0x0030 - PcdSerialIoUartDebugEnable
-  Enable SerialIo Uart debug library with/without initializing SerialIo Uart device in FSP.
+  Enable SerialIo Uart debug library with/without initializing SerialIo Uart device in FSP. 
   0:Disable, 1:Enable and Initialize, 2:Enable without Initializing
 **/
   UINT8                       PcdSerialIoUartDebugEnable;

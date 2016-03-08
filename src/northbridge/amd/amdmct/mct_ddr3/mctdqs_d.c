@@ -1318,6 +1318,8 @@ static uint8_t TrainDQSRdWrPos_D_Fam15(struct MCTStatStruc *pMCTstat,
 	uint8_t write_iter;
 	uint8_t read_iter;
 	uint8_t check_antiphase;
+	uint8_t passing_read_dqs_delay_found;
+	uint8_t passing_write_dqs_delay_found;
 	uint16_t initial_write_dqs_delay[MAX_BYTE_LANES];
 	uint16_t initial_read_dqs_delay[MAX_BYTE_LANES];
 	uint16_t initial_write_data_timing[MAX_BYTE_LANES];
@@ -1385,6 +1387,9 @@ static uint8_t TrainDQSRdWrPos_D_Fam15(struct MCTStatStruc *pMCTstat,
 		memcpy(current_write_data_delay, initial_write_data_timing, sizeof(current_write_data_delay));
 
 		for (lane = lane_start; lane < lane_end; lane++) {
+			passing_read_dqs_delay_found = 0;
+			passing_write_dqs_delay_found = 0;
+
 			/* 2.10.5.8.4 (2)
 			 * For each Write Data Delay value from Write DQS Delay to Write DQS Delay + 1 UI
 			 */
@@ -1510,7 +1515,7 @@ static uint8_t TrainDQSRdWrPos_D_Fam15(struct MCTStatStruc *pMCTstat,
 
 				/* Program the Read DQS Timing Control register with the center of the passing window */
 				current_read_dqs_delay[lane] = region_center << 1;
-				passing_dqs_delay_found[lane] = 1;
+				passing_read_dqs_delay_found = 1;
 
 				/* Commit the current Read DQS Timing Control settings to the hardware registers */
 				write_dqs_read_data_timing_registers(current_read_dqs_delay, dev, dct, dimm, index_reg);
@@ -1563,7 +1568,7 @@ static uint8_t TrainDQSRdWrPos_D_Fam15(struct MCTStatStruc *pMCTstat,
 					current_write_dqs_delay[lane] = ((best_pos + initial_write_dqs_delay[lane]) + (best_count / 3));
 				else
 					current_write_dqs_delay[lane] = ((best_pos + initial_write_dqs_delay[lane]) + (best_count / 2));
-				passing_dqs_delay_found[lane] = 1;
+				passing_write_dqs_delay_found = 1;
 
 				/* Commit the current Write DQS Timing Control settings to the hardware registers */
 				write_dqs_write_data_timing_registers(current_write_dqs_delay, dev, dct, dimm, index_reg);
@@ -1580,6 +1585,9 @@ static uint8_t TrainDQSRdWrPos_D_Fam15(struct MCTStatStruc *pMCTstat,
 				/* Reprogram the Write DQS Timing Control register with the original settings */
 				write_dqs_write_data_timing_registers(current_write_dqs_delay, dev, dct, dimm, index_reg);
 			}
+
+			if (passing_read_dqs_delay_found && passing_write_dqs_delay_found)
+				passing_dqs_delay_found[lane] = 1;
 		}
 
 #ifdef PRINT_PASS_FAIL_BITMAPS

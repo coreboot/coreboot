@@ -75,22 +75,22 @@ lib: $$(library-targets) $(obj)/head.o
 extract_nth=$(word $(1), $(subst |, ,$(2)))
 
 #######################################################################
-# Add handler for special include files 
+# Add handler for special include files
 $(call add-special-class,includes)
 includes-handler= \
 		$(if $(wildcard $(1)$(call extract_nth,1,$(2))), \
 			$(eval includes += $(1)$(2)))
 
 $(obj)/libpayload.a: $(foreach class,$(libraries),$$($(class)-objs))
-	printf "    AR         $(subst $(shell pwd)/,,$(@))\n"
+	printf "    AR         $(subst $(CURDIR)/,,$(@))\n"
 	$(AR) rc $@ $^
 
 $(obj)/%.a: $$(%-objs)
-	printf "    AR         $(subst $(shell pwd)/,,$(@))\n"
+	printf "    AR         $(subst $(CURDIR)/,,$(@))\n"
 	$(AR) rc $@ $^
 
 $(obj)/head.o: $(obj)/arch/$(ARCHDIR-y)/head.head.o.o
-	printf "    CP         $(subst $(shell pwd)/,,$(@))\n"
+	printf "    CP         $(subst $(CURDIR)/,,$(@))\n"
 	cp $^ $@
 
 install: real-target

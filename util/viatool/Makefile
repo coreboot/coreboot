@@ -21,7 +21,7 @@ PROGRAM = viatool
 CC      ?= gcc
 INSTALL ?= /usr/bin/install
 PREFIX  ?= /usr/local
-CFLAGS  ?= -O2 -g -Wall -W -I$(shell pwd)
+CFLAGS  ?= -O2 -g -Wall -W -I$(CURDIR)
 LDFLAGS += -lpci -lz
 
 SRCS =  viatool.c \

@@ -14,7 +14,7 @@
 ## GNU General Public License for more details.
 ##
 
-src := $(shell pwd)
+src := $(CURDIR)
 srctree := $(src)
 srck := $(src)/../../util/kconfig
 coreinfo_obj := $(src)/build
@@ -88,18 +88,18 @@ include $(src)/.config
 real-all: $(TARGET)
 
 $(TARGET): $(src)/.config $(coreinfo_obj)/config.h $(OBJS) libpayload
-	printf "    LPCC       $(subst $(shell pwd)/,,$(@)) (LINK)\n"
+	printf "    LPCC       $(subst $(CURDIR)/,,$(@)) (LINK)\n"
 	$(LPCC) -o $@ $(OBJS)
 	$(OBJCOPY) --only-keep-debug $@ $(TARGET).debug
 	$(OBJCOPY) --strip-debug $@
 	$(OBJCOPY) --add-gnu-debuglink=$(TARGET).debug $@
 
 $(coreinfo_obj)/%.S.o: $(src)/%.S libpayload
-	printf "    LPAS       $(subst $(shell pwd)/,,$(@))\n"
+	printf "    LPAS       $(subst $(CURDIR)/,,$(@))\n"
 	$(LPAS) -o $@ $<
 
 $(coreinfo_obj)/%.o: $(src)/%.c libpayload
-	printf "    LPCC       $(subst $(shell pwd)/,,$(@))\n"
+	printf "    LPCC       $(subst $(CURDIR)/,,$(@))\n"
 	$(LPCC) $(CFLAGS) -c -o $@ $<
 
 else

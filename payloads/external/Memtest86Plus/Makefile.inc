@@ -14,7 +14,7 @@
 ##
 
 project_name=Memtest86+
-project_dir=$(shell pwd)/memtest86plus
+project_dir=$(CURDIR)/memtest86plus
 project_git_repo=https://review.coreboot.org/memtest86plus
 
 all: build

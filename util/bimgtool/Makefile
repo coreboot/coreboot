@@ -1,4 +1,4 @@
-obj ?= $(shell pwd)
+obj ?= $(CURDIR)
 
 HOSTCC ?= gcc
 CFLAGS ?= -g

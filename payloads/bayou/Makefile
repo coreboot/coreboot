@@ -20,7 +20,7 @@ CONFIG_BUILTIN_LAR=y
 PBUILDER_CONFIG=bayou.xml
 BUILTIN_LAR=builtin.lar
 
-export src := $(shell pwd)
+export src := $(CURDIR)
 export obj := $(src)/build
 
 LIBPAYLOAD_DIR := $(obj)/libpayload

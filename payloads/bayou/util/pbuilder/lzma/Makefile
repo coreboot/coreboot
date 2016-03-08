@@ -30,29 +30,29 @@ $(obj)/util/lzma/:
 	$(Q)mkdir -p $(obj)/util/lzma/
 
 $(obj)/util/lzma/%.o: $(src)/util/lzma/C/7zip/Compress/LZMA/%.cpp
-	$(Q)printf "  HOSTCXX $(subst $(shell pwd)/,,$(@))\n"
+	$(Q)printf "  HOSTCXX $(subst $(CURDIR)/,,$(@))\n"
 	$(Q)$(HOSTCXX) $(HOSTCXXFLAGS) -o $@ -c $<
 
 $(obj)/util/lzma/%.o: $(src)/util/lzma/C/7zip/Compress/LZ/%.cpp
-	$(Q)printf "  HOSTCXX $(subst $(shell pwd)/,,$(@))\n"
+	$(Q)printf "  HOSTCXX $(subst $(CURDIR)/,,$(@))\n"
 	$(Q)$(HOSTCXX) $(HOSTCXXFLAGS) -o $@ -c $<
 
 $(obj)/util/lzma/%.o: $(src)/util/lzma/C/7zip/Compress/RangeCoder/%.cpp
-	$(Q)printf "  HOSTCXX $(subst $(shell pwd)/,,$(@))\n"
+	$(Q)printf "  HOSTCXX $(subst $(CURDIR)/,,$(@))\n"
 	$(Q)$(HOSTCXX) $(HOSTCXXFLAGS) -o $@ -c $<
 
 $(obj)/util/lzma/%.o: $(src)/util/lzma/C/7zip/Decompress/%.cpp
-	$(Q)printf "  HOSTCXX $(subst $(shell pwd)/,,$(@))\n"
+	$(Q)printf "  HOSTCXX $(subst $(CURDIR)/,,$(@))\n"
 	$(Q)$(HOSTCXX) $(HOSTCXXFLAGS) -o $@ -c $<
 
 $(obj)/util/lzma/%.o: $(src)/util/lzma/C/7zip/Common/%.cpp
-	$(Q)printf "  HOSTCXX $(subst $(shell pwd)/,,$(@))\n"
+	$(Q)printf "  HOSTCXX $(subst $(CURDIR)/,,$(@))\n"
 	$(Q)$(HOSTCXX) $(HOSTCXXFLAGS) -o $@ -c $<
 
 $(obj)/util/lzma/%.o: $(src)/util/lzma/C/Common/%.cpp
-	$(Q)printf "  HOSTCXX $(subst $(shell pwd)/,,$(@))\n"
+	$(Q)printf "  HOSTCXX $(subst $(CURDIR)/,,$(@))\n"
 	$(Q)$(HOSTCXX) $(HOSTCXXFLAGS) -o $@ -c $<
 
 $(obj)/util/lzma/%.o: $(src)/util/lzma/%.cc
-	$(Q)printf "  HOSTCXX $(subst $(shell pwd)/,,$(@))\n"
+	$(Q)printf "  HOSTCXX $(subst $(CURDIR)/,,$(@))\n"
 	$(Q)$(HOSTCXX) $(HOSTCXXFLAGS) -o $@ -c $<

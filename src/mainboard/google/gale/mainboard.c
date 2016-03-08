@@ -22,6 +22,7 @@
 #include <soc/clock.h>
 #include <soc/soc_services.h>
 #include <soc/usb.h>
+#include <soc/blsp.h>
 #include <symbols.h>
 
 #include <vendorcode/google/chromeos/chromeos.h>
@@ -37,7 +38,7 @@ static void setup_usb(void)
 }
 
 #define TPM_RESET_GPIO		19
-static void ipq_setup_tpm(void)
+void ipq_setup_tpm(void)
 {
 #ifdef CONFIG_I2C_TPM
 	gpio_tlmm_config_set(TPM_RESET_GPIO, FUNC_SEL_GPIO,

@@ -38,6 +38,7 @@
 
 #include <arch/io.h>
 #include <soc/cdp.h>
+#include <soc/blsp.h>
 
 /* Typecast to allow integers being passed as address
    This needs to be included because vendor code is not compliant with our
@@ -70,6 +71,13 @@
 #define		CRYPTO			(1 << 2)
 #define		CRYPTO_AXI		(1 << 1)
 #define		CRYPTO_AHB		(1 << 0)
+
+#define GCC_BLSP1_QUP1_I2C_APPS_CBCR		(MSM_CLK_CTL_BASE + 0x2008)
+#define GCC_BLSP1_QUP1_I2C_APPS_CMD_RCGR	(MSM_CLK_CTL_BASE + 0x200c)
+#define GCC_BLSP1_QUP1_I2C_APPS_CFG_RCGR	(MSM_CLK_CTL_BASE + 0x2010)
+#define GCC_BLSP1_QUP2_I2C_APPS_CBCR		(MSM_CLK_CTL_BASE + 0x3010)
+#define GCC_BLSP1_QUP2_I2C_APPS_CMD_RCGR	(MSM_CLK_CTL_BASE + 0x3000)
+#define GCC_BLSP1_QUP2_I2C_APPS_CFG_RCGR	(MSM_CLK_CTL_BASE + 0x3004)
 
 #define GCNT_GLOBAL_CTRL_BASE	((void *)0x004a0000u)
 #define GCNT_CNTCR		(GCNT_GLOBAL_CTRL_BASE + 0x1000)
@@ -117,55 +125,28 @@ enum {
 #define GCC_BLSP1_UART_APPS_D(x)	(GCC_BLSP1_UART_APPS_N(x) + 4)
 #define GCC_BLSP1_UART_MISC(x)		(GCC_BLSP1_UART_APPS_D(x) + 4)
 
-#define GSBI1_BASE		((void *)0x12440000)
-#define GSBI2_BASE		((void *)0x12480000)
-#define GSBI3_BASE		((void *)0x16200000)
-#define GSBI4_BASE		((void *)0x16300000)
-#define GSBI5_BASE		((void *)0x1A200000)
-#define GSBI6_BASE		((void *)0x16500000)
-#define GSBI7_BASE		((void *)0x16600000)
+#define BLSP1_QUP0_BASE		((void *)0x078B5000)
+#define BLSP1_QUP1_BASE		((void *)0x078B6000)
+#define BLSP1_QUP2_BASE		((void *)0x078B7000)
+#define BLSP1_QUP3_BASE		((void *)0x078B8000)
 
-#define GSBI1_CTL_REG		(GSBI1_BASE + (0x0))
-#define GSBI2_CTL_REG		(GSBI2_BASE + (0x0))
-#define GSBI3_CTL_REG		(GSBI3_BASE + (0x0))
-#define GSBI4_CTL_REG		(GSBI4_BASE + (0x0))
-#define GSBI5_CTL_REG		(GSBI5_BASE + (0x0))
-#define GSBI6_CTL_REG		(GSBI6_BASE + (0x0))
-#define GSBI7_CTL_REG		(GSBI7_BASE + (0x0))
+static inline void *blsp_qup_base(blsp_qup_id_t id)
+{
+	switch (id) {
+	case BLSP_QUP_ID_0: return BLSP1_QUP0_BASE;
+	case BLSP_QUP_ID_1: return BLSP1_QUP1_BASE;
+	case BLSP_QUP_ID_2: return BLSP1_QUP2_BASE;
+	case BLSP_QUP_ID_3: return BLSP1_QUP3_BASE;
+	}
+	return NULL;
+}
 
-#define GSBI_QUP1_BASE		(GSBI1_BASE + 0x20000)
-#define GSBI_QUP2_BASE		(GSBI2_BASE + 0x20000)
-#define GSBI_QUP3_BASE		(GSBI3_BASE + 0x80000)
-#define GSBI_QUP4_BASE		(GSBI4_BASE + 0x80000)
-#define GSBI_QUP5_BASE		(GSBI5_BASE + 0x80000)
-#define GSBI_QUP6_BASE		(GSBI6_BASE + 0x80000)
-#define GSBI_QUP7_BASE		(GSBI7_BASE + 0x80000)
+#define BLSP_MINI_CORE_SHIFT		8
+#define BLSP_MINI_CORE_I2C		(0x2u << BLSP_MINI_CORE_SHIFT)
+#define BLSP_MINI_CORE_MASK		(0xfu << BLSP_MINI_CORE_SHIFT)
 
-#define GSBI_CTL_PROTO_I2C              2
-#define GSBI_CTL_PROTO_CODE_SFT         4
-#define GSBI_CTL_PROTO_CODE_MSK         0x7
-#define GSBI_HCLK_CTL_GATE_ENA          6
-#define GSBI_HCLK_CTL_BRANCH_ENA        4
-#define GSBI_QUP_APPS_M_SHFT            16
-#define GSBI_QUP_APPS_M_MASK            0xFF
-#define GSBI_QUP_APPS_D_SHFT            0
-#define GSBI_QUP_APPS_D_MASK            0xFF
-#define GSBI_QUP_APPS_N_SHFT            16
-#define GSBI_QUP_APPS_N_MASK            0xFF
-#define GSBI_QUP_APPS_ROOT_ENA_SFT      11
-#define GSBI_QUP_APPS_BRANCH_ENA_SFT    9
-#define GSBI_QUP_APPS_MNCTR_EN_SFT      8
-#define GSBI_QUP_APPS_MNCTR_MODE_MSK    0x3
-#define GSBI_QUP_APPS_MNCTR_MODE_SFT    5
-#define GSBI_QUP_APPS_PRE_DIV_MSK       0x3
-#define GSBI_QUP_APPS_PRE_DIV_SFT       3
-#define GSBI_QUP_APPS_SRC_SEL_MSK       0x7
+#define ETIMEDOUT -10
+#define EINVAL -11
+#define EIO -12
 
-
-#define GSBI_QUP_APSS_MD_REG(gsbi_n)	((MSM_CLK_CTL_BASE + 0x29c8) + \
-							(32*(gsbi_n-1)))
-#define GSBI_QUP_APSS_NS_REG(gsbi_n)	((MSM_CLK_CTL_BASE + 0x29cc) + \
-							(32*(gsbi_n-1)))
-#define GSBI_HCLK_CTL(n)		((MSM_CLK_CTL_BASE + 0x29C0) + \
-							(32*(n-1)))
 #endif // __SOC_QUALCOMM_IPQ40XX_IOMAP_H_

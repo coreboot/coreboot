@@ -27,34 +27,47 @@
  * SUCH DAMAGE.
  */
 
+#include <gpio.h>
 #include <soc/gpio.h>
-#include <soc/gsbi.h>
+#include <soc/blsp.h>
 #include <soc/qup.h>
 
-#define GPIO_FUNC_I2C		0x1
+#define IPQ40XX_I2C0_PINGROUP_1		1
+#define IPQ40XX_I2C0_PINGROUP_2		(!IPQ40XX_I2C0_PINGROUP_1)
 
-int gsbi_init_board(gsbi_id_t gsbi_id)
+#if IPQ40XX_I2C0_PINGROUP_1
+
+#define SCL_GPIO		20
+#define SDA_GPIO		21
+#define GPIO_FUNC_SCL		0x1
+#define GPIO_FUNC_SDA		0x1
+
+#elif IPQ40XX_I2C0_PINGROUP_2
+
+#define SCL_GPIO		58
+#define SDA_GPIO		59
+#define GPIO_FUNC_SCL		0x3
+#define GPIO_FUNC_SDA		0x2
+
+#else
+
+#warning "TPM: I2C pingroup not specified"
+
+#endif
+
+int blsp_i2c_init_board(blsp_qup_id_t id)
 {
-	switch (gsbi_id) {
-	case GSBI_ID_7:
-			gpio_tlmm_config_set(8, GPIO_FUNC_I2C,
-					     GPIO_NO_PULL, GPIO_2MA, 1);
-			gpio_tlmm_config_set(9, GPIO_FUNC_I2C,
-					     GPIO_NO_PULL, GPIO_2MA, 1);
-		break;
-	case GSBI_ID_4:
-			/* Configure GPIOs 13 - SCL, 12 - SDA, 2mA gpio_en */
-			gpio_tlmm_config_set(12, GPIO_FUNC_I2C,
-					     GPIO_NO_PULL, GPIO_2MA, 1);
-			gpio_tlmm_config_set(13, GPIO_FUNC_I2C,
-					     GPIO_NO_PULL, GPIO_2MA, 1);
-		break;
-	case GSBI_ID_1:
-			/* Configure GPIOs 54 - SCL, 53 - SDA, 2mA gpio_en */
-			gpio_tlmm_config_set(54, GPIO_FUNC_I2C,
-					     GPIO_NO_PULL, GPIO_2MA, 1);
-			gpio_tlmm_config_set(53, GPIO_FUNC_I2C,
-					     GPIO_NO_PULL, GPIO_2MA, 1);
+	switch (id) {
+	case BLSP_QUP_ID_0:
+	case BLSP_QUP_ID_1:
+	case BLSP_QUP_ID_2:
+	case BLSP_QUP_ID_3:
+#if defined(IPQ40XX_I2C0_PINGROUP_1) || defined(IPQ40XX_I2C0_PINGROUP_2)
+		gpio_tlmm_config_set(SDA_GPIO, GPIO_FUNC_SDA,
+				     GPIO_NO_PULL, GPIO_2MA, 1);
+		gpio_tlmm_config_set(SCL_GPIO, GPIO_FUNC_SCL,
+				     GPIO_NO_PULL, GPIO_2MA, 1);
+#endif /* Pin Group 1 or 2 */
 		break;
 	default:
 		return 1;

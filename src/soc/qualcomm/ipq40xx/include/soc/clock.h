@@ -210,5 +210,7 @@ void uart_clock_config(unsigned int blsp_uart, unsigned int m, unsigned int n,
 void nand_clock_config(void);
 void usb_clock_config(void);
 int audio_clock_config(unsigned frequency);
+int blsp_i2c_clock_config(blsp_qup_id_t id);
+
 
 #endif  /*  __PLATFORM_IPQ40XX_CLOCK_H_ */

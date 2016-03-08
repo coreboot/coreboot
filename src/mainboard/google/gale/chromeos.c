@@ -20,7 +20,7 @@
 #include <drivers/i2c/ww_ring/ww_ring.h>
 #include <gpio.h>
 #include <soc/cdp.h>
-#include <soc/gsbi.h>
+#include <soc/blsp.h>
 #include <string.h>
 #include <timer.h>
 #include <vendorcode/google/chromeos/chromeos.h>

@@ -36,29 +36,38 @@
 #include <device/i2c.h>
 #include <stdlib.h>
 #include <string.h>
-#include <soc/gsbi.h>
+#include <soc/blsp.h>
 #include <soc/qup.h>
+#include <soc/gpio.h>
 
-static qup_config_t gsbi1_qup_config = {
+static qup_config_t blsp1_qup0_config = {
 	QUP_MINICORE_I2C_MASTER,
 	100000,
-	24000000,
+	19050000,
 	QUP_MODE_FIFO,
 	0
 };
 
-static qup_config_t gsbi4_qup_config = {
+static qup_config_t blsp1_qup1_config = {
 	QUP_MINICORE_I2C_MASTER,
 	100000,
-	24000000,
+	19050000,
 	QUP_MODE_FIFO,
 	0
 };
 
-static qup_config_t gsbi7_qup_config = {
+static qup_config_t blsp1_qup2_config = {
 	QUP_MINICORE_I2C_MASTER,
 	100000,
-	24000000,
+	19050000,
+	QUP_MODE_FIFO,
+	0
+};
+
+static qup_config_t blsp1_qup3_config = {
+	QUP_MINICORE_I2C_MASTER,
+	100000,
+	19050000,
 	QUP_MODE_FIFO,
 	0
 };
@@ -101,41 +110,43 @@ static int i2c_write(uint32_t gsbi_id, uint8_t slave,
 		return 0;
 }
 
-static int i2c_init(unsigned bus)
+static int i2c_init(blsp_qup_id_t id)
 {
-	unsigned gsbi_id = bus;
 	qup_config_t *qup_config;
 
-	switch (gsbi_id) {
-	case GSBI_ID_1:
-		qup_config = &gsbi1_qup_config;
+	switch (id) {
+	case BLSP_QUP_ID_0:
+		qup_config = &blsp1_qup0_config;
 		break;
-	case GSBI_ID_4:
-		qup_config = &gsbi4_qup_config;
+	case BLSP_QUP_ID_1:
+		qup_config = &blsp1_qup1_config;
 		break;
-	case GSBI_ID_7:
-		qup_config = &gsbi7_qup_config;
+	case BLSP_QUP_ID_2:
+		qup_config = &blsp1_qup2_config;
+		break;
+	case BLSP_QUP_ID_3:
+		qup_config = &blsp1_qup3_config;
 		break;
 	default:
-		printk(BIOS_ERR, "QUP configuration not defind for GSBI%d.\n",
-		       gsbi_id);
+		printk(BIOS_ERR, "QUP configuration not defined for BLSP%d.\n",
+		       id);
 		return 1;
 	}
 
 	if (qup_config->initialized)
 		return 0;
 
-	if (gsbi_init(gsbi_id, GSBI_PROTO_I2C_ONLY)) {
-		printk(BIOS_ERR, "failed to initialize gsbi\n");
+	if (blsp_i2c_init(id)) {
+		printk(BIOS_ERR, "failed to initialize blsp\n");
 		return 1;
 	}
 
-	if (qup_init(gsbi_id, qup_config)) {
+	if (qup_init(id, qup_config)) {
 		printk(BIOS_ERR, "failed to initialize qup\n");
 		return 1;
 	}
 
-	if (qup_reset_i2c_master_status(gsbi_id)) {
+	if (qup_reset_i2c_master_status(id)) {
 		printk(BIOS_ERR, "failed to reset i2c master status\n");
 		return 1;
 	}

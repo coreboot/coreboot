@@ -32,40 +32,50 @@
 #ifndef __QUP_H__
 #define __QUP_H__
 
-#include <soc/gsbi.h>
+#include <soc/blsp.h>
 
 /* QUP block registers */
-#define QUP_CONFIG			0x0
-#define QUP_STATE			0x4
-#define QUP_IO_MODES			0x8
-#define QUP_SW_RESET			0xc
-#define QUP_TIME_OUT			0x10
-#define QUP_TIME_OUT_CURRENT		0x14
-#define QUP_OPERATIONAL			0x18
-#define QUP_ERROR_FLAGS			0x1c
-#define QUP_ERROR_FLAGS_EN		0x20
-#define QUP_TEST_CTRL			0x24
+#define QUP_CONFIG			0x000
+#define QUP_STATE			0x004
+#define QUP_IO_MODES			0x008
+#define QUP_SW_RESET			0x00C
+#define QUP_TRANSFER_CANCEL		0x014
+#define QUP_OPERATIONAL			0x018
+#define QUP_ERROR_FLAGS			0x01C
+#define QUP_ERROR_FLAGS_EN		0x020
+#define QUP_TEST_CTRL			0x024
+#define QUP_OPERATIONAL_MASK		0x028
+#define QUP_HW_VERSION			0x030
 #define QUP_MX_OUTPUT_COUNT		0x100
 #define QUP_MX_OUTPUT_CNT_CURRENT	0x104
 #define QUP_OUTPUT_DEBUG		0x108
-#define QUP_OUTPUT_FIFO_WORD_CNT	0x10c
+#define QUP_OUTPUT_FIFO_WORD_CNT	0x10C
 #define QUP_OUTPUT_FIFO			0x110
+#define QUP_OUTPUT_FIFO_SIZE		64	/* bytes */
 #define QUP_MX_WRITE_COUNT		0x150
-#define QUP_WRITE_CNT_CURRENT		0x154
+#define QUP_MX_WRITE_CNT_CURRENT	0x154
 #define QUP_MX_INPUT_COUNT		0x200
-#define QUP_READ_COUNT			0x208
-#define QUP_MX_READ_CNT_CURRENT		0x20c
+#define QUP_MX_INPUT_CNT_CURRENT	0x204
+#define QUP_MX_READ_COUNT		0x208
+#define QUP_MX_READ_CNT_CURRENT		0x20C
 #define QUP_INPUT_DEBUG			0x210
 #define QUP_INPUT_FIFO_WORD_CNT		0x214
 #define QUP_INPUT_FIFO			0x218
+#define QUP_INPUT_FIFO_SIZE		64	/* bytes */
 #define QUP_I2C_MASTER_CLK_CTL		0x400
 #define QUP_I2C_MASTER_STATUS		0x404
+#define QUP_I2C_MASTER_CONFIG		0x408
+#define QUP_I2C_MASTER_BUS_CLEAR	0x40C
+#define QUP_I2C_MASTER_LOCAL_ID		0x410
+#define QUP_I2C_MASTER_COMMAND		0x414
 
 #define OUTPUT_FIFO_FULL		(1<<6)
 #define INPUT_FIFO_NOT_EMPTY		(1<<5)
 #define OUTPUT_FIFO_NOT_EMPTY		(1<<4)
 #define INPUT_SERVICE_FLAG		(1<<9)
 #define OUTPUT_SERVICE_FLAG		(1<<8)
+#define QUP_UNPACK_EN			(1<<14)
+#define QUP_PACK_EN			(1<<15)
 #define QUP_OUTPUT_BIT_SHIFT_EN		(1<<16)
 
 #define QUP_MODE_MASK			(0x03)
@@ -74,6 +84,8 @@
 
 #define QUP_FS_DIVIDER_MASK		(0xFF)
 
+#define QUP_APP_CLK_ON_EN		(1 << 12)
+#define QUP_CORE_CLK_ON_EN		(1 << 13)
 #define QUP_MINI_CORE_PROTO_SHFT	(8)
 #define QUP_MINI_CORE_PROTO_MASK	(0x0F)
 
@@ -170,50 +182,50 @@ typedef struct {
 } qup_data_t;
 
 /*
- * Initialize GSBI QUP block for FIFO I2C transfers.
- * gsbi_id[IN]: GSBI for which QUP is to be initialized.
+ * Initialize BLSP QUP block for FIFO I2C transfers.
+ * id[IN]: BLSP for which QUP is to be initialized.
  * config_ptr[IN]: configurations parameters for the QUP.
  *
  * return: QUP_SUCCESS, if initialization succeeds.
  */
-qup_return_t qup_init(gsbi_id_t gsbi_id, const qup_config_t *config_ptr);
+qup_return_t qup_init(blsp_qup_id_t id, const qup_config_t *config_ptr);
 
 /*
  * Set QUP state to run, pause, reset.
- * gsbi_id[IN]: GSBI block for which QUP state is to be set.
+ * id[IN]: BLSP block for which QUP state is to be set.
  * state[IN]: New state to transition to.
  *
  * return: QUP_SUCCESS, if state transition succeeds.
  */
-qup_return_t qup_set_state(gsbi_id_t gsbi_id, uint32_t state);
+qup_return_t qup_set_state(blsp_qup_id_t id, uint32_t state);
 
 /*
  * Reset the status bits set during an i2c transfer.
- * gsbi_id[IN]: GSBI block for which i2c status bits are to be cleared.
+ * id[IN]: BLSP block for which i2c status bits are to be cleared.
  *
  * return: QUP_SUCCESS, if status bits are cleared successfully.
  */
-qup_return_t qup_reset_i2c_master_status(gsbi_id_t gsbi_id);
+qup_return_t qup_reset_i2c_master_status(blsp_qup_id_t id);
 
 /*
  * Send data to the peripheral on the bus.
- * gsbi_id[IN]: GSBI block for which data is to be sent.
+ * id[IN]: BLSP block for which data is to be sent.
  * p_tx_obj[IN]: Data to be sent to the slave on the bus.
  * stop_seq[IN]: When set to non-zero QUP engine sends i2c stop sequnce.
  *
  * return: QUP_SUCCESS, when data is sent successfully to the peripheral.
  */
-qup_return_t qup_send_data(gsbi_id_t gsbi_id, qup_data_t *p_tx_obj,
+qup_return_t qup_send_data(blsp_qup_id_t id, qup_data_t *p_tx_obj,
 			   uint8_t stop_seq);
 
 /*
  * Receive data from peripheral on the bus.
- * gsbi_id[IN]: GSBI block from which data is to be received.
+ * id[IN]: BLSP block from which data is to be received.
  * p_tx_obj[IN]: length of data to be received, slave address.
  *      [OUT]: buffer filled with data from slave.
  *
  * return: QUP_SUCCESS, when data is received successfully.
  */
-qup_return_t qup_recv_data(gsbi_id_t gsbi_id, qup_data_t *p_tx_obj);
+qup_return_t qup_recv_data(blsp_qup_id_t id, qup_data_t *p_tx_obj);
 
 #endif //__QUP_H__

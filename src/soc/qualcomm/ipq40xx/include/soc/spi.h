@@ -1,5 +1,5 @@
 /*
- * Register definitions for the IPQ GSBI Controller
+ * Register definitions for the IPQ BLSP SPI Controller
  *
  * Copyright (c) 2012 The Linux Foundation. All rights reserved.
  *
@@ -34,263 +34,152 @@
 
 #include <spi_flash.h>
 #include <soc/iomap.h>
+#include <soc/qup.h>
 
-#define QUP5_BASE	((uint32_t)GSBI_QUP5_BASE)
-#define QUP6_BASE	((uint32_t)GSBI_QUP6_BASE)
-#define QUP7_BASE	((uint32_t)GSBI_QUP7_BASE)
+#define BLSP0_QUP_REG_BASE		((void *)0x78b5000u)
+#define BLSP1_QUP_REG_BASE		((void *)0x78b6000u)
 
-#define GSBI5_QUP5_REG_BASE		(QUP5_BASE + 0x00000000)
-#define GSBI6_QUP6_REG_BASE		(QUP6_BASE + 0x00000000)
-#define GSBI7_QUP7_REG_BASE		(QUP7_BASE + 0x00000000)
+#define BLSP0_SPI_CONFIG_REG		(BLSP0_QUP_REG_BASE + 0x00000300)
+#define BLSP1_SPI_CONFIG_REG		(BLSP1_QUP_REG_BASE + 0x00000300)
 
-#define GSBI5_REG_BASE			((uint32_t)(GSBI5_BASE + 0x00000000))
-#define GSBI6_REG_BASE			((uint32_t)(GSBI6_BASE + 0x00000000))
-#define GSBI7_REG_BASE			((uint32_t)(GSBI7_BASE + 0x00000000))
+#define BLSP0_SPI_IO_CONTROL_REG	(BLSP0_QUP_REG_BASE + 0x00000304)
+#define BLSP1_SPI_IO_CONTROL_REG	(BLSP1_QUP_REG_BASE + 0x00000304)
 
-#define BOOT_SPI_PORT5_BASE		QUP5_BASE
-#define BOOT_SPI_PORT6_BASE		QUP6_BASE
-#define BOOT_SPI_PORT7_BASE		QUP7_BASE
+#define BLSP0_SPI_ERROR_FLAGS_REG	(BLSP0_QUP_REG_BASE + 0x00000308)
+#define BLSP1_SPI_ERROR_FLAGS_REG	(BLSP1_QUP_REG_BASE + 0x00000308)
 
-#define GSBI5_SPI_CONFIG_REG		(GSBI5_QUP5_REG_BASE + 0x00000300)
-#define GSBI6_SPI_CONFIG_REG		(GSBI6_QUP6_REG_BASE + 0x00000300)
-#define GSBI7_SPI_CONFIG_REG		(GSBI7_QUP7_REG_BASE + 0x00000300)
+#define BLSP0_SPI_DEASSERT_WAIT_REG	(BLSP0_QUP_REG_BASE + 0x00000310)
+#define BLSP1_SPI_DEASSERT_WAIT_REG	(BLSP1_QUP_REG_BASE + 0x00000310)
+#define BLSP0_SPI_ERROR_FLAGS_EN_REG	(BLSP0_QUP_REG_BASE + 0x0000030c)
+#define BLSP1_SPI_ERROR_FLAGS_EN_REG	(BLSP1_QUP_REG_BASE + 0x0000030c)
 
-#define GSBI5_SPI_IO_CONTROL_REG	(GSBI5_QUP5_REG_BASE + 0x00000304)
-#define GSBI6_SPI_IO_CONTROL_REG	(GSBI6_QUP6_REG_BASE + 0x00000304)
-#define GSBI7_SPI_IO_CONTROL_REG	(GSBI7_QUP7_REG_BASE + 0x00000304)
+#define BLSP0_QUP_CONFIG_REG		(BLSP0_QUP_REG_BASE + 0x00000000)
+#define BLSP1_QUP_CONFIG_REG		(BLSP1_QUP_REG_BASE + 0x00000000)
 
-#define GSBI5_SPI_ERROR_FLAGS_REG	(GSBI5_QUP5_REG_BASE + 0x00000308)
-#define GSBI6_SPI_ERROR_FLAGS_REG	(GSBI6_QUP6_REG_BASE + 0x00000308)
-#define GSBI7_SPI_ERROR_FLAGS_REG	(GSBI7_QUP7_REG_BASE + 0x00000308)
+#define BLSP0_QUP_ERROR_FLAGS_REG	(BLSP0_QUP_REG_BASE + 0x0000001c)
+#define BLSP1_QUP_ERROR_FLAGS_REG	(BLSP1_QUP_REG_BASE + 0x0000001c)
 
-#define GSBI5_SPI_ERROR_FLAGS_EN_REG	(GSBI5_QUP5_REG_BASE + 0x0000030c)
-#define GSBI6_SPI_ERROR_FLAGS_EN_REG	(GSBI6_QUP6_REG_BASE + 0x0000030c)
-#define GSBI7_SPI_ERROR_FLAGS_EN_REG	(GSBI7_QUP7_REG_BASE + 0x0000030c)
+#define BLSP0_QUP_ERROR_FLAGS_EN_REG	(BLSP0_QUP_REG_BASE + 0x00000020)
+#define BLSP1_QUP_ERROR_FLAGS_EN_REG	(BLSP1_QUP_REG_BASE + 0x00000020)
 
-#define GSBI5_GSBI_CTRL_REG_REG		(GSBI5_REG_BASE + 0x00000000)
-#define GSBI6_GSBI_CTRL_REG_REG		(GSBI6_REG_BASE + 0x00000000)
-#define GSBI7_GSBI_CTRL_REG_REG		(GSBI7_REG_BASE + 0x00000000)
+#define BLSP0_QUP_OPERATIONAL_MASK	(BLSP0_QUP_REG_BASE + 0x00000028)
+#define BLSP1_QUP_OPERATIONAL_MASK	(BLSP1_QUP_REG_BASE + 0x00000028)
 
-#define GSBI5_QUP_CONFIG_REG		(GSBI5_QUP5_REG_BASE + 0x00000000)
-#define GSBI6_QUP_CONFIG_REG		(GSBI6_QUP6_REG_BASE + 0x00000000)
-#define GSBI7_QUP_CONFIG_REG		(GSBI7_QUP7_REG_BASE + 0x00000000)
+#define BLSP0_QUP_OPERATIONAL_REG	(BLSP0_QUP_REG_BASE + 0x00000018)
+#define BLSP1_QUP_OPERATIONAL_REG	(BLSP1_QUP_REG_BASE + 0x00000018)
 
-#define GSBI5_QUP_ERROR_FLAGS_REG	(GSBI5_QUP5_REG_BASE      + 0x0000001c)
-#define GSBI6_QUP_ERROR_FLAGS_REG	(GSBI6_QUP6_REG_BASE      + 0x0000001c)
-#define GSBI7_QUP_ERROR_FLAGS_REG	(GSBI7_QUP7_REG_BASE      + 0x0000001c)
+#define BLSP0_QUP_IO_MODES_REG		(BLSP0_QUP_REG_BASE + 0x00000008)
+#define BLSP1_QUP_IO_MODES_REG		(BLSP1_QUP_REG_BASE + 0x00000008)
 
-#define GSBI5_QUP_ERROR_FLAGS_EN_REG	(GSBI5_QUP5_REG_BASE + 0x00000020)
-#define GSBI6_QUP_ERROR_FLAGS_EN_REG	(GSBI6_QUP6_REG_BASE + 0x00000020)
-#define GSBI7_QUP_ERROR_FLAGS_EN_REG	(GSBI7_QUP7_REG_BASE + 0x00000020)
+#define BLSP0_QUP_STATE_REG		(BLSP0_QUP_REG_BASE + 0x00000004)
+#define BLSP1_QUP_STATE_REG		(BLSP1_QUP_REG_BASE + 0x00000004)
 
-#define GSBI5_QUP_OPERATIONAL_REG	(GSBI5_QUP5_REG_BASE + 0x00000018)
-#define GSBI6_QUP_OPERATIONAL_REG	(GSBI6_QUP6_REG_BASE + 0x00000018)
-#define GSBI7_QUP_OPERATIONAL_REG	(GSBI7_QUP7_REG_BASE + 0x00000018)
+#define BLSP0_QUP_INPUT_FIFOc_REG(c) \
+		(BLSP0_QUP_REG_BASE + 0x00000218 + 4 * (c))
+#define BLSP1_QUP_INPUT_FIFOc_REG(c) \
+		(BLSP1_QUP_REG_BASE + 0x00000218 + 4 * (c))
 
-#define GSBI5_QUP_IO_MODES_REG		(GSBI5_QUP5_REG_BASE + 0x00000008)
-#define GSBI6_QUP_IO_MODES_REG		(GSBI6_QUP6_REG_BASE + 0x00000008)
-#define GSBI7_QUP_IO_MODES_REG		(GSBI7_QUP7_REG_BASE + 0x00000008)
+#define BLSP0_QUP_OUTPUT_FIFOc_REG(c) \
+		(BLSP0_QUP_REG_BASE + 0x00000110 + 4 * (c))
+#define BLSP1_QUP_OUTPUT_FIFOc_REG(c) \
+		(BLSP1_QUP_REG_BASE + 0x00000110 + 4 * (c))
 
-#define GSBI5_QUP_STATE_REG		(GSBI5_QUP5_REG_BASE + 0x00000004)
-#define GSBI6_QUP_STATE_REG		(GSBI6_QUP6_REG_BASE + 0x00000004)
-#define GSBI7_QUP_STATE_REG		(GSBI7_QUP7_REG_BASE + 0x00000004)
+#define BLSP0_QUP_MX_INPUT_COUNT_REG	(BLSP0_QUP_REG_BASE + 0x00000200)
+#define BLSP1_QUP_MX_INPUT_COUNT_REG	(BLSP1_QUP_REG_BASE + 0x00000200)
 
-#define GSBI5_QUP_OUT_FIFO_WORD_CNT_REG	(GSBI5_QUP5_REG_BASE + 0x0000010c)
-#define GSBI6_QUP_OUT_FIFO_WORD_CNT_REG	(GSBI6_QUP6_REG_BASE + 0x0000010c)
-#define GSBI7_QUP_OUT_FIFO_WORD_CNT_REG	(GSBI7_QUP7_REG_BASE + 0x0000010c)
+#define BLSP0_QUP_MX_OUTPUT_COUNT_REG	(BLSP0_QUP_REG_BASE + 0x00000100)
+#define BLSP1_QUP_MX_OUTPUT_COUNT_REG	(BLSP1_QUP_REG_BASE + 0x00000100)
 
-#define GSBI5_QUP_IN_FIFO_WORD_CNT_REG	(GSBI5_QUP5_REG_BASE + 0x00000214)
-#define GSBI6_QUP_IN_FIFO_WORD_CNT_REG	(GSBI6_QUP6_REG_BASE + 0x00000214)
-#define GSBI7_QUP_IN_FIFO_WORD_CNT_REG	(GSBI7_QUP7_REG_BASE + 0x00000214)
+#define BLSP0_QUP_SW_RESET_REG		(BLSP0_QUP_REG_BASE + 0x0000000c)
+#define BLSP1_QUP_SW_RESET_REG		(BLSP1_QUP_REG_BASE + 0x0000000c)
 
-#define GSBI5_QUP_INPUT_FIFOc_REG(c) \
-		(GSBI5_QUP5_REG_BASE + 0x00000218 + 4 * (c))
-#define GSBI6_QUP_INPUT_FIFOc_REG(c) \
-		(GSBI6_QUP6_REG_BASE + 0x00000218 + 4 * (c))
-#define GSBI7_QUP_INPUT_FIFOc_REG(c) \
-		(GSBI7_QUP7_REG_BASE + 0x00000218 + 4 * (c))
-
-#define GSBI5_QUP_OUTPUT_FIFOc_REG(c) \
-		(GSBI5_QUP5_REG_BASE + 0x00000110 + 4 * (c))
-#define GSBI6_QUP_OUTPUT_FIFOc_REG(c) \
-		(GSBI6_QUP6_REG_BASE + 0x00000110 + 4 * (c))
-#define GSBI7_QUP_OUTPUT_FIFOc_REG(c) \
-		(GSBI7_QUP7_REG_BASE + 0x00000110 + 4 * (c))
-
-#define GSBI5_QUP_MX_INPUT_COUNT_REG	(GSBI5_QUP5_REG_BASE + 0x00000200)
-#define GSBI6_QUP_MX_INPUT_COUNT_REG	(GSBI6_QUP6_REG_BASE + 0x00000200)
-#define GSBI7_QUP_MX_INPUT_COUNT_REG	(GSBI7_QUP7_REG_BASE + 0x00000200)
-
-#define GSBI5_QUP_MX_OUTPUT_COUNT_REG	(GSBI5_QUP5_REG_BASE + 0x00000100)
-#define GSBI6_QUP_MX_OUTPUT_COUNT_REG	(GSBI6_QUP6_REG_BASE + 0x00000100)
-#define GSBI7_QUP_MX_OUTPUT_COUNT_REG	(GSBI7_QUP7_REG_BASE + 0x00000100)
-
-#define GSBI5_QUP_SW_RESET_REG		(GSBI5_QUP5_REG_BASE + 0x0000000c)
-#define GSBI6_QUP_SW_RESET_REG		(GSBI6_QUP6_REG_BASE + 0x0000000c)
-#define GSBI7_QUP_SW_RESET_REG		(GSBI7_QUP7_REG_BASE + 0x0000000c)
-
-#define CLK_CTL_REG_BASE		0x00900000
-#define GSBIn_RESET_REG(n) \
-		(CLK_CTL_REG_BASE      + 0x000029dc + 32 * ((n)-1))
-
-#define SFAB_AHB_S3_FCLK_CTL_REG \
-		(CLK_CTL_REG_BASE      + 0x0000216c)
-#define CFPB_CLK_NS_REG \
-		(CLK_CTL_REG_BASE      + 0x0000264c)
-#define SFAB_CFPB_S_HCLK_CTL_REG \
-		(CLK_CTL_REG_BASE      + 0x000026c0)
-#define CFPB_SPLITTER_HCLK_CTL_REG \
-		(CLK_CTL_REG_BASE      + 0x000026e0)
-#define CFPB0_HCLK_CTL_REG \
-		(CLK_CTL_REG_BASE      + 0x00002650)
-#define CFPB2_HCLK_CTL_REG \
-		(CLK_CTL_REG_BASE      + 0x00002658)
-#define GSBIn_HCLK_CTL_REG(n) \
-		(CLK_CTL_REG_BASE      + 0x000029c0 + 32 * ((n)-1))
-#define GSBIn_QUP_APPS_NS_REG(n) \
-	(CLK_CTL_REG_BASE      + 0x000029cc + 32 * ((n)-1))
-#define GSBIn_QUP_APPS_MD_REG(n) \
-		(CLK_CTL_REG_BASE      + 0x000029c8 + 32 * ((n)-1))
-#define CLK_HALT_CFPB_STATEB_REG \
-		(CLK_CTL_REG_BASE      + 0x00002fd0)
-
-#define GSBI5_HCLK				23
-#define GSBI6_HCLK				19
-#define GSBI7_HCLK				15
-#define GSBI5_QUP_APPS_CLK			20
-#define GSBI6_QUP_APPS_CLK			16
-#define GSBI7_QUP_APPS_CLK			12
-#define GSBI_CLK_BRANCH_ENA_MSK			(1 << 4)
-#define GSBI_CLK_BRANCH_ENA			(1 << 4)
-#define GSBI_CLK_BRANCH_DIS			(0 << 4)
-#define QUP_CLK_BRANCH_ENA_MSK			(1 << 9)
-#define QUP_CLK_BRANCH_ENA			(1 << 9)
-#define QUP_CLK_BRANCH_DIS			(0 << 9)
-#define CLK_ROOT_ENA_MSK			(1 << 11)
-#define CLK_ROOT_ENA				(1 << 11)
-#define CLK_ROOT_DIS				(0 << 11)
-
-#define QUP_STATE_VALID_BIT			2
-#define QUP_STATE_VALID				1
-#define QUP_STATE_MASK				0x3
 #define QUP_CONFIG_MINI_CORE_MSK		(0x0F << 8)
 #define QUP_CONFIG_MINI_CORE_SPI		(1 << 8)
-#define SPI_QUP_CONF_INPUT_MSK			(1 << 7)
-#define SPI_QUP_CONF_INPUT_ENA			(0 << 7)
-#define SPI_QUP_CONF_NO_INPUT			(1 << 7)
-#define SPI_QUP_CONF_OUTPUT_MSK			(1 << 6)
-#define SPI_QUP_CONF_OUTPUT_ENA			(0 << 6)
-#define SPI_QUP_CONF_NO_OUTPUT			(1 << 6)
-#define SPI_QUP_CONF_OUTPUT_ENA			(0 << 6)
-#define QUP_STATE_RESET_STATE			0x0
-#define QUP_STATE_RUN_STATE			0x1
-#define QUP_STATE_PAUSE_STATE			0x3
-#define SPI_BIT_WORD_MSK			0x1F
-#define SPI_8_BIT_WORD				0x07
-#define PROTOCOL_CODE_MSK			(0x07 << 4)
-#define PROTOCOL_CODE_SPI			(0x03 << 4)
-#define LOOP_BACK_MSK				(1 << 8)
-#define NO_LOOP_BACK				(0 << 8)
-#define SLAVE_OPERATION_MSK			(1 << 5)
-#define SLAVE_OPERATION				(0 << 5)
-#define CLK_ALWAYS_ON				(0 << 9)
-#define MX_CS_MODE				(0 << 8)
-#define NO_TRI_STATE				(1 << 0)
-#define OUTPUT_BIT_SHIFT_MSK			(1 << 16)
-#define OUTPUT_BIT_SHIFT_EN			(1 << 16)
-#define INPUT_BLOCK_MODE_MSK			(0x03 << 12)
-#define INPUT_BLOCK_MODE			(0x01 << 12)
-#define OUTPUT_BLOCK_MODE_MSK			(0x03 << 10)
-#define OUTPUT_BLOCK_MODE			(0x01 << 10)
-#define GSBI1_RESET				(1 << 0)
-#define GSBI1_RESET_MSK				0x1
+#define QUP_CONF_INPUT_MSK			(1 << 7)
+#define QUP_CONF_INPUT_ENA			(0 << 7)
+#define QUP_CONF_NO_INPUT			(1 << 7)
+#define QUP_CONF_OUTPUT_MSK			(1 << 6)
+#define QUP_CONF_OUTPUT_ENA			(0 << 6)
+#define QUP_CONF_NO_OUTPUT			(1 << 6)
+#define QUP_CONF_N_MASK				0x1F
+#define QUP_CONF_N_SPI_8_BIT_WORD		0x07
 
-#define GSBI_M_VAL_SHFT				16
-#define GSBIn_M_VAL_MSK				(0xFF << GSBI_M_VAL_SHFT)
-#define GSBI_N_VAL_SHFT				16
-#define GSBIn_N_VAL_MSK				(0xFF << GSBI_N_VAL_SHFT)
-#define GSBI_D_VAL_SHFT				0
-#define GSBIn_D_VAL_MSK				(0xFF << GSBI_D_VAL_SHFT)
-#define MNCNTR_RST_MSK				(1 << 7)
-#define MNCNTR_RST_ENA				(1 << 7)
-#define MNCNTR_RST_DIS				(0 << 7)
-#define MNCNTR_MSK				(1 << 8)
-#define MNCNTR_EN				(1 << 8)
-#define MNCNTR_DIS				(0 << 8)
-#define MNCNTR_MODE_MSK				(0x3 << 5)
-#define MNCNTR_MODE_BYPASS			(0 << 5)
-#define MNCNTR_MODE_DUAL_EDGE			(0x2 << 5)
-#define GSBI_PRE_DIV_SEL_SHFT			3
-#define GSBIn_PRE_DIV_SEL_MSK			(0x3 << GSBI_PRE_DIV_SEL_SHFT)
-#define GSBIn_PLL_SRC_MSK			(0x03 << 0)
-#define GSBIn_PLL_SRC_PXO			(0 << 0)
-#define GSBIn_PLL_SRC_PLL8			(0x3 << 0)
+#define SPI_CONFIG_INPUT_FIRST			(1 << 9)
+#define SPI_CONFIG_INPUT_FIRST_BACK		(0 << 9)
+#define SPI_CONFIG_LOOP_BACK_MSK		(1 << 8)
+#define SPI_CONFIG_NO_LOOP_BACK			(0 << 8)
+#define SPI_CONFIG_NO_SLAVE_OPER_MSK		(1 << 5)
+#define SPI_CONFIG_NO_SLAVE_OPER		(0 << 5)
 
-#define SPI_INPUT_FIRST_MODE			(1 << 9)
-#define SPI_IO_CONTROL_CLOCK_IDLE_HIGH		(1 << 10)
-#define QUP_DATA_AVAILABLE_FOR_READ		(1 << 5)
-#define QUP_OUTPUT_FIFO_NOT_EMPTY		(1 << 4)
-#define OUTPUT_SERVICE_FLAG			(1 << 8)
-#define INPUT_SERVICE_FLAG			(1 << 9)
-#define QUP_OUTPUT_FIFO_FULL			(1 << 6)
-#define QUP_INPUT_FIFO_NOT_EMPTY		(1 << 5)
+#define SPI_IO_CTRL_CLK_ALWAYS_ON		(0 << 9)
+#define SPI_IO_CTRL_MX_CS_MODE			(1 << 8)
+#define SPI_IO_CTRL_NO_TRI_STATE		(1 << 0)
+#define SPI_IO_CTRL_FORCE_CS_MSK		(1 << 11)
+#define SPI_IO_CTRL_FORCE_CS_EN			(1 << 11)
+#define SPI_IO_CTRL_FORCE_CS_DIS		(0 << 11)
+#define SPI_IO_CTRL_CLOCK_IDLE_HIGH		(1 << 10)
+
+#define QUP_IO_MODES_OUTPUT_BIT_SHIFT_MSK	(1 << 16)
+#define QUP_IO_MODES_OUTPUT_BIT_SHIFT_EN	(1 << 16)
+#define QUP_IO_MODES_INPUT_MODE_MSK		(0x03 << 12)
+#define QUP_IO_MODES_INPUT_BLOCK_MODE		(0x01 << 12)
+#define QUP_IO_MODES_OUTPUT_MODE_MSK		(0x03 << 10)
+#define QUP_IO_MODES_OUTPUT_BLOCK_MODE		(0x01 << 10)
+
 #define SPI_INPUT_BLOCK_SIZE			4
 #define SPI_OUTPUT_BLOCK_SIZE			4
-#define GSBI5_SPI_CLK				21
-#define GSBI5_SPI_MISO				19
-#define GSBI5_SPI_MOSI				18
-#define GSBI5_SPI_CS_0				20
-#define GSBI5_SPI_CS_1				61
-#define GSBI5_SPI_CS_2				62
-#define GSBI5_SPI_CS_3				2
-#define GSBI6_SPI_CLK				30
-#define GSBI6_SPI_CS_0				29
-#define GSBI6_SPI_MISO				28
-#define GSBI6_SPI_MOSI				27
-#define GSBI7_SPI_CLK				9
-#define GSBI7_SPI_CS_0				8
-#define GSBI7_SPI_MISO				7
-#define GSBI7_SPI_MOSI				6
 
-#define MSM_GSBI_MAX_FREQ			51200000
+#define MAX_COUNT_SIZE				0xffff
 
-#define SPI_RESET_STATE				0
-#define SPI_RUN_STATE				1
-#define SPI_PAUSE_STATE				3
 #define SPI_CORE_RESET				0
 #define SPI_CORE_RUNNING			1
-#define GSBI_SPI_MODE_0				0
-#define GSBI_SPI_MODE_1				1
-#define GSBI_SPI_MODE_2				2
-#define GSBI_SPI_MODE_3				3
-#define GSBI5_SPI				0
-#define GSBI6_SPI				1
-#define GSBI7_SPI				2
+#define SPI_MODE0				0
+#define SPI_MODE1				1
+#define SPI_MODE2				2
+#define SPI_MODE3				3
+#define BLSP0_SPI				0
+#define BLSP1_SPI				1
 
-struct gsbi_spi {
-	unsigned int     spi_config;
-	unsigned int     io_control;
-	unsigned int     error_flags;
-	unsigned int     error_flags_en;
-	unsigned int     gsbi_ctrl;
-	unsigned int     qup_config;
-	unsigned int     qup_error_flags;
-	unsigned int     qup_error_flags_en;
-	unsigned int     qup_operational;
-	unsigned int     qup_io_modes;
-	unsigned int     qup_state;
-	unsigned int     qup_input_fifo;
-	unsigned int     qup_output_fifo;
-	unsigned int     qup_mx_input_count;
-	unsigned int     qup_mx_output_count;
-	unsigned int     qup_sw_reset;
-	unsigned int     qup_ns_reg;
-	unsigned int     qup_md_reg;
+struct blsp_spi {
+	void *spi_config;
+	void *io_control;
+	void *error_flags;
+	void *error_flags_en;
+	void *qup_config;
+	void *qup_error_flags;
+	void *qup_error_flags_en;
+	void *qup_operational;
+	void *qup_io_modes;
+	void *qup_state;
+	void *qup_input_fifo;
+	void *qup_output_fifo;
+	void *qup_mx_input_count;
+	void *qup_mx_output_count;
+	void *qup_sw_reset;
+	void *qup_ns_reg;
+	void *qup_md_reg;
+	void *qup_op_mask;
+	void *qup_deassert_wait;
 };
+
+
+#define SUCCESS		0
+
+#define DUMMY_DATA_VAL		0
+#define TIMEOUT_CNT		100
+
+#define ETIMEDOUT -10
+#define EINVAL -11
+#define EIO -12
+
+/* MX_INPUT_COUNT and MX_OUTPUT_COUNT are 16-bits. Zero has a special meaning
+ * (count function disabled) and does not hold significance in the count. */
+#define MAX_PACKET_COUNT	((64 * KiB) - 1)
+
 
 struct ipq_spi_slave {
 	struct spi_slave slave;
-	const struct gsbi_spi *regs;
+	const struct blsp_spi *regs;
 	unsigned int mode;
 	unsigned int initialized;
 	unsigned long freq;

@@ -35,7 +35,7 @@
 #include <delay.h>
 #include <gpio.h>
 #include <soc/clock.h>
-#include <soc/gsbi.h>
+#include <soc/blsp.h>
 #include <soc/ipq_uart.h>
 #include <stdint.h>
 #include <stdlib.h>

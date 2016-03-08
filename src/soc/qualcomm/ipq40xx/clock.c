@@ -28,8 +28,10 @@
  */
 
 #include <delay.h>
+#include <soc/blsp.h>
 #include <soc/clock.h>
 #include <types.h>
+#include <console/console.h>
 
 #define CLOCK_UPDATE_DELAY		1000
 
@@ -67,6 +69,7 @@ void uart_clock_config(unsigned int blsp_uart, unsigned int m,
 		udelay(1);
 	}
 
+	/* Please refer to the comments in blsp_i2c_clock_config() */
 	setbits_le32(GCC_CLK_BRANCH_ENA, BLSP1_AHB | BLSP1_SLEEP);
 }
 
@@ -109,4 +112,68 @@ void usb_clock_config(void)
 		1 << 0);		/* assert PHY async reset */
 	udelay(5);
 	write32(USB30_RESET, 0);	/* deassert all USB resets again */
+}
+
+int blsp_i2c_clock_config(blsp_qup_id_t id)
+{
+	int i;
+	const int max_tries = 200;
+	struct { void *cbcr, *cmd, *cfg; } clk[] = {
+		{
+			GCC_BLSP1_QUP1_I2C_APPS_CBCR,
+			GCC_BLSP1_QUP1_I2C_APPS_CMD_RCGR,
+			GCC_BLSP1_QUP1_I2C_APPS_CFG_RCGR,
+		},
+		{
+			GCC_BLSP1_QUP1_I2C_APPS_CBCR,
+			GCC_BLSP1_QUP1_I2C_APPS_CMD_RCGR,
+			GCC_BLSP1_QUP1_I2C_APPS_CFG_RCGR,
+		},
+		{
+			GCC_BLSP1_QUP1_I2C_APPS_CBCR,
+			GCC_BLSP1_QUP1_I2C_APPS_CMD_RCGR,
+			GCC_BLSP1_QUP1_I2C_APPS_CFG_RCGR,
+		},
+		{
+			GCC_BLSP1_QUP1_I2C_APPS_CBCR,
+			GCC_BLSP1_QUP1_I2C_APPS_CMD_RCGR,
+			GCC_BLSP1_QUP1_I2C_APPS_CFG_RCGR,
+		},
+	};
+
+	/*
+	 * uart_clock_config() does this. Ideally, setting these bits once
+	 * should suffice. However, if for some reason the order of invocation
+	 * of uart_clock_config and blsp_i2c_clock_config gets changed or
+	 * something, then one of the functions might not work. Hence, to steer
+	 * clear of such dependencies, just replicating the setting of this
+	 * bits.
+	 *
+	 * Moreover, they are read-modify-write and HW wise repeated setting of
+	 * the same bits is harmless. Hence repeating them here should be ok.
+	 * This will ensure root and branch clocks remain on.
+	 */
+	setbits_le32(GCC_CLK_BRANCH_ENA, BLSP1_AHB | BLSP1_SLEEP);
+
+	/* Src Sel 1 (fepll 200), Src Div 10.5 */
+	write32(clk[id].cfg, (1u << 8) | (20u << 0));
+
+	write32(clk[id].cmd, BIT(0)); /* Update En */
+
+	for (i = 0; i < max_tries; i++) {
+		if (read32(clk[id].cmd) & BIT(0)) {
+			udelay(5);
+			continue;
+		}
+		break;
+	}
+
+	if (i == max_tries) {
+		printk(BIOS_ERR, "%s failed\n", __func__);
+		return -ETIMEDOUT;
+	}
+
+	write32(clk[id].cbcr, BIT(0));	/* Enable */
+
+	return 0;
 }

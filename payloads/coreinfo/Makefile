@@ -48,12 +48,12 @@ HOSTCFLAGS := -I$(srck) -I$(objk)
 HOSTCXXFLAGS := -I$(srck) -I$(objk)
 
 LIBCONFIG_PATH := ../libpayload
-LIBPAYLOAD_DIR := build/libpayload
-HAVE_LIBPAYLOAD := $(wildcard $(LIBPAYLOAD_DIR)/libpayload/lib/libpayload.a)
+LIBPAYLOAD_DIR := $(coreinfo_obj)/libpayload
+HAVE_LIBPAYLOAD := $(wildcard $(LIBPAYLOAD_DIR)/lib/libpayload.a)
 LIB_CONFIG ?= defconfig
 OBJCOPY ?= objcopy
 
-INCLUDES = -I$(coreinfo_obj) -include $(LIBPAYLOAD_DIR)/libpayload/include/kconfig.h
+INCLUDES = -I$(coreinfo_obj) -include $(LIBPAYLOAD_DIR)/include/kconfig.h
 OBJECTS = cpuinfo_module.o cpuid.S.o pci_module.o coreboot_module.o \
 	  nvram_module.o bootlog_module.o ramdump_module.o lar_module.o \
 	  multiboot_module.o cbfs_module.o coreinfo.o
@@ -78,8 +78,8 @@ CC := $(CC_$(ARCH-y))
 AS := $(AS_$(ARCH-y))
 OBJCOPY := $(OBJCOPY_$(ARCH-y))
 
-LPCC := CC="$(CC)" $(LIBPAYLOAD_DIR)/libpayload/bin/lpgcc
-LPAS := AS="$(AS)" $(LIBPAYLOAD_DIR)/libpayload/bin/lpas
+LPCC := CC="$(CC)" $(LIBPAYLOAD_DIR)/bin/lpgcc
+LPAS := AS="$(AS)" $(LIBPAYLOAD_DIR)/bin/lpas
 
 CFLAGS += -Wall -Werror -Os -fno-builtin $(CFLAGS_$(ARCH-y)) $(INCLUDES)
 
@@ -116,9 +116,9 @@ libpayload:
 else
 libpayload:
 	printf "Building libpayload @ $(LIBCONFIG_PATH).\n"
-	$(MAKE) -C $(LIBCONFIG_PATH) distclean
+	$(MAKE) -C $(LIBCONFIG_PATH) distclean coreinfo_obj=$(coreinfo_obj)/libptmp
 	$(MAKE) -C $(LIBCONFIG_PATH) $(LIB_CONFIG)
-	$(MAKE) -C $(LIBCONFIG_PATH) DESTDIR=$(shell pwd)/$(LIBPAYLOAD_DIR) install
+	$(MAKE) -C $(LIBCONFIG_PATH) install DESTDIR=$(coreinfo_obj)
 endif
 
 $(coreinfo_obj)/config.h:

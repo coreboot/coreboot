@@ -38,7 +38,8 @@ crossgcc: clean-for-update
 .PHONY: crossgcc crossgcc-i386 crossgcc-x64 crossgcc-arm crossgcc-aarch64 \
 	crossgcc-mips crossgcc-riscv crossgcc-power8 crossgcc-clean iasl \
 	clang crosstools-i386 crosstools-x64 crosstools-arm \
-	crosstools-aarch64 crosstools-mips crosstools-riscv crosstools-power8
+	crosstools-aarch64 crosstools-mips crosstools-riscv crosstools-power8 \
+	jenkins-build-toolchain
 
 $(foreach arch,$(TOOLCHAIN_ARCHES),crossgcc-$(arch)): clean-for-update
 	$(MAKE) -C util/crossgcc $(patsubst crossgcc-%,build-%,$@) build_iasl SKIP_GDB=1
@@ -65,3 +66,8 @@ ifeq ($(COMPILER_OUT_OF_DATE),1)
 else
 	echo "The coreboot toolchain is the current version."
 endif # ifeq ($(COMPILER_OUT_OF_DATE),1)
+
+# This target controls what the jenkins builder tests
+jenkins-build-toolchain:
+	$(MAKE) crosstools clang \
+		BUILDGCC_OPTIONS='-y --nocolor'

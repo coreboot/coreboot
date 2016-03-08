@@ -47,6 +47,9 @@ CLANG_VERSION=3.7.1
 MAKE_VERSION=4.1
 
 # GCC toolchain archive locations
+# These are sanitized by the jenkins toolchain test builder, so if
+# a completely new URL is added here, it probably needs to be added
+# to the jenkins build as well, or the builder won't download it.
 GMP_ARCHIVE="http://ftpmirror.gnu.org/gmp/gmp-${GMP_VERSION}.tar.bz2"
 MPFR_ARCHIVE="http://ftpmirror.gnu.org/mpfr/mpfr-${MPFR_VERSION}.tar.bz2"
 MPC_ARCHIVE="http://ftpmirror.gnu.org/mpc/mpc-${MPC_VERSION}.tar.gz"

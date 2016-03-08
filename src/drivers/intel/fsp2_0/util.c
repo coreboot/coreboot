@@ -78,6 +78,7 @@ void fsp_print_header_info(const struct fsp_header *hdr)
 
 }
 
+/* TODO: this won't work for SoC's that need to XIP certain modules. */
 enum cb_err fsp_load_binary(struct fsp_header *hdr,
 			    const char *name,
 			    struct range_entry *range)
@@ -118,6 +119,7 @@ enum cb_err fsp_load_binary(struct fsp_header *hdr,
 	}
 
 	/* Check if the binary load address is within expected range */
+	/* TODO: this doesn't check the current running program footprint. */
 	if (range_entry_base(range) > hdr->image_base ||
 	    range_entry_end(range) <= hdr->image_base + hdr->image_size) {
 		printk(BIOS_ERR, "%s is outside of allowed range\n", name);

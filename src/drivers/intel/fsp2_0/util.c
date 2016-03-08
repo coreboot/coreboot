@@ -95,10 +95,19 @@ enum cb_err fsp_load_binary(struct fsp_header *hdr,
 
 	/* Map just enough of the file to be able to parse the header. */
 	membase = rdev_mmap(&file_data, FSP_HDR_OFFSET, FSP_HDR_LEN);
+
+	if (membase == NULL) {
+		printk(BIOS_ERR, "Could not mmap() '%s' FSP header.\n", name);
+		return CB_ERR;
+	}
+
 	if (fsp_identify(hdr, membase) != CB_SUCCESS) {
+		rdev_munmap(&file_data, membase);
 		printk(BIOS_ERR, "%s did not have a valid FSP header\n", name);
 		return CB_ERR;
 	}
+
+	rdev_munmap(&file_data, membase);
 
 	fsp_print_header_info(hdr);
 

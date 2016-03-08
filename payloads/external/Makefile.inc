@@ -35,10 +35,11 @@ payload_revision-file := $(PAYLOAD_VERSION)
 payload_revision-type := raw
 
 SEABIOS_CC_OFFSET=$(if $(filter %ccache,$(HOSTCC)),2,1)
-seabios:
+payloads/external/SeaBIOS/seabios/out/bios.bin.elf seabios: $(top)/$(DOTCONFIG)
 	$(MAKE) -C payloads/external/SeaBIOS -f Makefile.inc \
 			HOSTCC="$(HOSTCC)" \
-			CC=$(word $(SEABIOS_CC_OFFSET),$(CC_x86_32)) CFLAGS="$(patsubst $(word $(SEABIOS_CC_OFFSET),$(CC_x86_32))%,,$(wordlist $(SEABIOS_CC_OFFSET),9999,$(CC_x86_32)))" \
+			CC=$(word $(SEABIOS_CC_OFFSET),$(CC_x86_32)) \
+			CFLAGS="$(patsubst $(word $(SEABIOS_CC_OFFSET),$(CC_x86_32))%,,$(wordlist $(SEABIOS_CC_OFFSET),9999,$(CC_x86_32)))" \
 			LD=$(word 1,$(LD_x86_32)) LDFLAGS="$(patsubst $(word 1,$(LD_x86_32))%,,$(LD_x86_32))" \
 			OBJDUMP="$(OBJDUMP_x86_32)" \
 			OBJCOPY="$(OBJCOPY_x86_32)" STRIP="$(STRIP_x86_32)" \
@@ -53,9 +54,8 @@ seabios:
 			CONFIG_TTYS0_BASE=$(CONFIG_TTYS0_BASE)
 
 payloads/external/SeaBIOS/seabios/out/vgabios.bin: seabios
-payloads/external/SeaBIOS/seabios/out/bios.bin.elf: seabios
-payloads/external/SeaBIOS/seabios/.config: seabios
-payloads/external/SeaBIOS/seabios/out/autoversion.h: seabios
+payloads/external/SeaBIOS/seabios/.config: payloads/external/SeaBIOS/seabios/out/bios.bin.elf
+payloads/external/SeaBIOS/seabios/out/autoversion.h: payloads/external/SeaBIOS/seabios/out/bios.bin.elf
 
 filo:
 	$(MAKE) -C payloads/external/FILO -f Makefile.inc \

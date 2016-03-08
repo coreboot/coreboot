@@ -15,8 +15,10 @@ seabios:
 	git clone http://review.coreboot.org/p/seabios.git seabios
 
 fetch: seabios
-	cd seabios; git show $(TAG-y) >/dev/null 2>&1 ;	if [ $$? -ne 0 ]; \
-	then echo "    Fetching new commits from the SeaBIOS git repo"; git fetch; fi
+	cd seabios; git show $(TAG-y) >/dev/null 2>&1 ;	if [ $$? -ne 0 ] || \
+		[ "$(TAG-y)" = "origin/master" ]; then \
+		echo "    Fetching new commits from the SeaBIOS git repo"; \
+		git fetch; fi
 
 checkout: fetch
 	echo "    Checking out SeaBIOS revision $(TAG-y)"

@@ -37,6 +37,18 @@ struct range_entry {
 	struct range_entry *next;
 };
 
+/* Initialize a range_entry with inclusive beginning address and exclusive
+ * end address along with the appropriate tag. */
+static inline void range_entry_init(struct range_entry *re,
+				resource_t incl_begin, resource_t excl_end,
+				unsigned long tag)
+{
+	re->begin = incl_begin;
+	re->end = excl_end - 1;
+	re->tag = tag;
+	re->next = NULL;
+}
+
 /* Return inclusive base address of memory range. */
 static inline resource_t range_entry_base(const struct range_entry *r)
 {

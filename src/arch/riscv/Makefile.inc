@@ -19,6 +19,10 @@ riscv_flags = -I$(src)/arch/riscv/
 
 riscv_asm_flags =
 
+ifeq ($(CONFIG_ARCH_RAMSTAGE_RISCV),y)
+check-ramstage-overlap-regions += stack
+endif
+
 ################################################################################
 ## bootblock
 ################################################################################

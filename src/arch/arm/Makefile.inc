@@ -25,6 +25,10 @@ ifeq ($(CONFIG_ARCH_ROMSTAGE_ARM),y)
 CBFSTOOL_PRE1_OPTS = -m arm -s $(CONFIG_CBFS_SIZE)
 endif
 
+ifeq ($(CONFIG_ARCH_RAMSTAGE_ARM),y)
+check-ramstage-overlap-regions += postram_cbfs_cache stack ttb
+endif
+
 ifeq ($(CONFIG_ARCH_ARM),y)
 subdirs-y += libgcc/
 subdirs-y += armv4/ armv7/

@@ -33,6 +33,10 @@ ifeq ($(CONFIG_ARCH_ROMSTAGE_ARM64),y)
 CBFSTOOL_PRE1_OPTS = -m arm64 -s $(CONFIG_CBFS_SIZE)
 endif
 
+ifeq ($(CONFIG_ARCH_RAMSTAGE_ARM64),y)
+check-ramstage-overlap-regions += postram_cbfs_cache stack ttb
+endif
+
 ################################################################################
 # bootblock
 ################################################################################
@@ -182,6 +186,8 @@ $(BL31_CBFS)-type := stage
 $(BL31_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
 cbfs-files-y += $(BL31_CBFS)
 
+check-ramstage-overlap-files += $(BL31_CBFS)
+
 ifeq ($(CONFIG_ARM64_USE_SECURE_OS),y)
 
 SECURE_OS_FILE := $(CONFIG_ARM64_SECURE_OS_FILE)
@@ -189,6 +195,8 @@ SECURE_OS_FILE_CBFS := $(CONFIG_CBFS_PREFIX)/secure_os
 $(SECURE_OS_FILE_CBFS)-file := $(SECURE_OS_FILE)
 $(SECURE_OS_FILE_CBFS)-type := stage
 cbfs-files-y += $(SECURE_OS_FILE_CBFS)
+
+check-ramstage-overlap-files += $(SECURE_OS_FILE_CBFS)
 
 endif # CONFIG_ARM64_USE_SECURE_OS
 

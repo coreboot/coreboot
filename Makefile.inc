@@ -846,6 +846,52 @@ board_id-type := raw
 $(obj)/board_id:
 	printf $(CONFIG_BOARD_ID_STRING) > $@
 
+# Ensure that no payload segment overlaps with memory regions used by ramstage
+# (not for x86 since it can relocate itself in that case)
+ifneq ($(CONFIG_ARCH_X86),y)
+check-ramstage-overlap-regions := ramstage
+check-ramstage-overlap-files :=
+ifneq ($(CONFIG_PAYLOAD_NONE),y)
+check-ramstage-overlap-files += $(CONFIG_CBFS_PREFIX)/payload
+endif
+
+# will output one or more lines of "<load address in hex> <memlen in decimal>"
+cbfs-get-segments-cmd = $(CBFSTOOL) $(obj)/coreboot.pre print -v | sed -n \
+	'\%$(1)%,\%^[^ ]\{4\}%s%    .*load: \(0x[0-9a-fA-F]*\),.*length: [0-9]*/\([0-9]*\).*%\1 \2%p'
+
+ramstage-symbol-addr-cmd = $(OBJDUMP_ramstage) -t $(objcbfs)/ramstage.elf | \
+	sed -n '/ $(1)$$/s/^\([0-9a-fA-F]*\) .*/0x\1/p'
+
+check-ramstage-overlaps: $(obj)/coreboot.pre
+	programs=$$($(foreach file,$(check-ramstage-overlap-files), \
+		$(call cbfs-get-segments-cmd,$(file)) ; )) ; \
+	regions=$$($(foreach region,$(check-ramstage-overlap-regions), \
+		echo $(region) ; \
+		$(call ramstage-symbol-addr-cmd,_$(region)) ; \
+		$(call ramstage-symbol-addr-cmd,_e$(region)) ; )) ; \
+	pstart= ; pend= ; \
+	for x in $$programs; do \
+	    if [ -z $$pstart ]; then pstart=$$(($$x)) ; continue ; fi ; \
+	    pend=$$(($$pstart + $$x)) ; \
+	    rname= ; rstart= ; rend= ; \
+	    for y in $$regions ; do \
+	        if [ -z $$rname ]; then rname=$$y ; continue ; fi ; \
+	        if [ -z $$rstart ]; then rstart=$$(($$y)) ; continue ; fi ; \
+	        rend=$$(($$y)) ; \
+	        if [ $$pstart -lt $$rend -a $$rstart -lt $$pend ]; then \
+	            echo "ERROR: Ramstage region _$$rname overlapped by:" \
+	                 $(check-ramstage-overlap-files) ; \
+	            exit 1 ; \
+	        fi ; \
+	        rname= ; rstart= ; rend= ; \
+	    done ; \
+	    pstart= ; pend= ; \
+	done
+
+INTERMEDIATE+=check-ramstage-overlaps
+PHONY+=check-ramstage-overlaps
+endif
+
 junit.xml:
 	echo "Building $(UTIL)"
 	echo '<?xml version="1.0" encoding="utf-8"?><testsuite>' > $@.tmp

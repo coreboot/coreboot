@@ -127,7 +127,7 @@ $(obj)/config.h:
 $(shell mkdir -p $(obj) $(objk)/lxdialog $(KCONFIG_SPLITCONFIG))
 
 clean:
-	rm -rf build/*.elf build/*.o
+	rm -rf build/*.elf build/*.o .xcompile
 
 distclean: clean
 	rm -rf build

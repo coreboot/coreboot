@@ -75,11 +75,10 @@ static void disable_watchdog(void)
 	outl(reg, ACPI_PMIO_BASE + 0x68);
 }
 
-
 asmlinkage void car_stage_entry(void)
 {
 	void *hob_list_ptr;
-	struct resource fsp_mem;
+	struct range_entry fsp_mem;
 	struct range_entry reg_car;
 
 	printk(BIOS_DEBUG, "Starting romstage...\n");
@@ -89,9 +88,8 @@ asmlinkage void car_stage_entry(void)
 	soc_early_romstage_init();
 
 	/* Make sure the blob does not override our data in CAR */
-	memset(&reg_car, 0, sizeof(reg_car));
-	reg_car.begin = (uintptr_t) _car_relocatable_data_end;
-	reg_car.end = (uintptr_t) _car_region_end;
+	range_entry_init(&reg_car, (uintptr_t)_car_relocatable_data_end,
+			(uintptr_t)_car_region_end, 0);
 
 	if (fsp_memory_init(&hob_list_ptr, &reg_car) != FSP_SUCCESS) {
 		die("FSP memory init failed. Giving up.");
@@ -101,10 +99,11 @@ asmlinkage void car_stage_entry(void)
 
 	/* initialize cbmem by adding FSP reserved memory first thing */
 	cbmem_initialize_empty_id_size(CBMEM_ID_FSP_RESERVED_MEMORY,
-					fsp_mem.size);
+					range_entry_size(&fsp_mem));
 
 	/* make sure FSP memory is reserved in cbmem */
-	if (fsp_mem.base != (uintptr_t)cbmem_find(CBMEM_ID_FSP_RESERVED_MEMORY))
+	if (range_entry_base(&fsp_mem) !=
+		(uintptr_t)cbmem_find(CBMEM_ID_FSP_RESERVED_MEMORY))
 		die("Failed to accommodate FSP reserved memory request");
 
 	/* Now that CBMEM is up, save the list so ramstage can use it */

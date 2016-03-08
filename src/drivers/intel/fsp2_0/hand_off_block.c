@@ -208,11 +208,11 @@ struct hob_resource *find_resource_hob_by_uuid(const struct hob_header *hob,
 	return NULL;
 }
 
-void fsp_find_reserved_memory(struct resource *res, const void *hob_list)
+void fsp_find_reserved_memory(struct range_entry *re, const void *hob_list)
 {
 	const struct hob_resource *fsp_mem;
 
-	memset(res, 0, sizeof(*res));
+	range_entry_init(re, 0, 0, 0);
 
 	fsp_mem = find_resource_hob_by_uuid(hob_list, uuid_owner_fsp);
 
@@ -220,8 +220,7 @@ void fsp_find_reserved_memory(struct resource *res, const void *hob_list)
 		return;
 	}
 
-	res->base = fsp_mem->addr;
-	res->size = fsp_mem->length;
+	range_entry_init(re, fsp_mem->addr, fsp_mem->addr + fsp_mem->length, 0);
 }
 
 /*

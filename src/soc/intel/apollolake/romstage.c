@@ -142,7 +142,7 @@ void platform_fsp_memory_init_params_cb(struct FSPM_UPD *mupd)
 	mupd->FspmConfig.FitTablePtr = read32((void*) FIT_POINTER);
 	/* Reserve enough memory under TOLUD to save CBMEM header */
 	mupd->FspmArchUpd.BootLoaderTolumSize = cbmem_overhead_size();
-	/* Let FSPM use memory right at the bottom of CAR */
+	/* Let FSPM use memory right at the top of CAR */
 	/* TODO: Add checks to see if we collide with other areas */
 	mupd->FspmArchUpd.StackBase = _car_region_end - CONFIG_FSPM_STACK_SIZE;
 	mupd->FspmArchUpd.StackSize = CONFIG_FSPM_STACK_SIZE;

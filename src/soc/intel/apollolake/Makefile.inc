@@ -32,6 +32,7 @@ ramstage-y += gpio.c
 ramstage-$(CONFIG_SOC_UART_DEBUG) += uart_early.c
 ramstage-y += memmap.c
 ramstage-y += mmap_boot.c
+ramstage-y += uart.c
 
 CPPFLAGS_common += -I$(src)/soc/intel/apollolake/include
 

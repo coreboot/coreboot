@@ -465,14 +465,17 @@ static void gma_func0_disable(struct device *dev)
 static void gma_func1_init(struct device *dev)
 {
 	u32 reg32;
+	u8 val;
 
 	/* IGD needs to be Bus Master, also enable IO accesss */
 	reg32 = pci_read_config32(dev, PCI_COMMAND);
 	pci_write_config32(dev, PCI_COMMAND, reg32 |
 			PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY | PCI_COMMAND_IO);
 
-	/* Permanently set tft_brightness to 0xff. Ignore nvramtool configuration */
-	pci_write_config8(dev, 0xf4, 0xff);
+	if (get_option(&val, "tft_brightness") == CB_SUCCESS)
+		pci_write_config8(dev, 0xf4, val);
+	else
+		pci_write_config8(dev, 0xf4, 0xff);
 }
 
 static void gma_set_subsystem(device_t dev, unsigned vendor, unsigned device)

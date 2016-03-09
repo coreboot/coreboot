@@ -1670,9 +1670,11 @@ static void TrainDQSReceiverEnCyc_D_Fam15(struct MCTStatStruc *pMCTstat,
 	uint8_t lane;
 	uint32_t dword;
 	uint32_t rx_en_offset;
+	uint8_t internal_lane;
 	uint8_t dct_training_success;
 	uint16_t initial_phy_phase_delay[MAX_BYTE_LANES];
 	uint16_t current_phy_phase_delay[MAX_BYTE_LANES];
+	uint16_t current_read_dqs_delay[MAX_BYTE_LANES];
 	uint8_t lane_training_success[MAX_BYTE_LANES];
 	uint8_t dqs_results_array[1024];
 
@@ -1760,6 +1762,11 @@ static void TrainDQSReceiverEnCyc_D_Fam15(struct MCTStatStruc *pMCTstat,
 
 					/* 2.10.5.8.3 (4 A) */
 					write_dqs_receiver_enable_control_registers(current_phy_phase_delay, dev, dct, dimm, index_reg);
+
+					/* Reset the read data timing registers to 1UI before calculating MaxRdLatency */
+					for (internal_lane = 0; internal_lane < MAX_BYTE_LANES; internal_lane++)
+						current_read_dqs_delay[internal_lane] = 0x20 << 1;
+					write_dqs_read_data_timing_registers(current_read_dqs_delay, dev, dct, dimm, index_reg);
 
 					/* Calculate and program MaxRdLatency */
 					Calc_SetMaxRdLatency_D_Fam15(pMCTstat, pDCTstat, dct, 0);

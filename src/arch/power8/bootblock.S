@@ -1,6 +1,7 @@
 /*
- * Early initialization code for power8.
+ * Early initialization code for POWER8.
  *
+ * Copyright 2016 Raptor Engineering, LLC
  * Copyright 2013 Google Inc.
  *
  * This program is free software; you can redistribute it and/or
@@ -16,6 +17,7 @@
 
 .section ".text._start", "ax", %progbits
 .globl _start
+.org 0x100, 0xff
 _start:
 	b _start
 	.section ".id", "a", %progbits

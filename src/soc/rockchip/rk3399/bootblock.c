@@ -11,15 +11,13 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
  */
 
-#include <arch/io.h>
-#include <arch/mmu.h>
 #include <bootblock_common.h>
-#include <console/console.h>
-#include <symbols.h>
+#include <soc/clock.h>
 
 void bootblock_soc_init(void)
 {
+	rkclk_init();
+	rkclk_configure_cpu(APLL_L_600_MHZ);
 }

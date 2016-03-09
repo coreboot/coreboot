@@ -18,6 +18,7 @@
 
 #define PMUGRF_BASE		0xff320000
 #define PMUSGRF_BASE		0xff330000
+#define PMUCRU_BASE		0xff750000
 #define CRU_BASE		0xff760000
 #define GRF_BASE		0xff770000
 #define TIMER0_BASE		0xff850000

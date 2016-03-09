@@ -1,0 +1,85 @@
+config SOC_INTEL_FSP_BROADWELL_DE
+	bool
+	help
+	  Broadwell-DE support using the Intel FSP.
+
+if SOC_INTEL_FSP_BROADWELL_DE
+
+config CPU_SPECIFIC_OPTIONS
+	def_bool y
+	select ARCH_BOOTBLOCK_X86_32
+	select ARCH_VERSTAGE_X86_32
+	select ARCH_ROMSTAGE_X86_32
+	select ARCH_RAMSTAGE_X86_32
+	select HAVE_HARD_RESET
+	select MMCONF_SUPPORT
+	select MMCONF_SUPPORT_DEFAULT
+	select RELOCATABLE_MODULES
+	select PARALLEL_MP
+	select SMP
+	select IOAPIC
+	select SPI_FLASH
+	select UDELAY_TSC
+	select SUPPORT_CPU_UCODE_IN_CBFS
+	# Microcode header files are delivered in FSP package
+	select USES_MICROCODE_HEADER_FILES if HAVE_FSP_BIN
+
+config CBFS_SIZE
+	hex
+	default 0x200000
+
+config RAMTOP
+	hex
+	default 0x400000
+
+config HEAP_SIZE
+	hex
+	default 0x100000
+
+config BOOTBLOCK_CPU_INIT
+	string
+	default "soc/intel/fsp_broadwell_de/bootblock/bootblock.c"
+
+config MMCONF_BASE_ADDRESS
+	hex
+	default 0x80000000
+
+config MAX_CPUS
+	int
+	default 16
+
+config CPU_ADDR_BITS
+	int
+	default 36
+
+config VGA_BIOS
+	bool
+	default n
+
+config INTEGRATED_UART
+	bool "Integrated UART ports"
+	default y
+	select HAVE_UART_SPECIAL
+	select CONSOLE_SERIAL
+	help
+	  Use Broadwell-DE Integrated UART ports @3F8h and 2F8h.
+
+config DRIVERS_UART_8250IO
+	bool "Serial port on SuperIO (Broadwell-DE's UART ports unselected)"
+	depends on !INTEGRATED_UART
+	help
+	  Select to choose SuperIO's serial port for console output.
+	  CANNOT select if intend to use SoC integrated serial ports.
+
+config CONSOLE_CBMEM
+	bool "Send console output to a CBMEM buffer"
+	default n
+
+config CPU_MICROCODE_HEADER_FILES
+	string
+	default "../intel/cpu/broadwell_de/microcode/M1050663_07000001.h ../intel/cpu/broadwell_de/microcode/M1050662_0000000A.h ../intel/cpu/broadwell_de/microcode/MFF50661_F1000008.h"
+
+## Broadwell-DE Specific FSP Kconfig
+source src/soc/intel/fsp_broadwell_de/fsp/Kconfig
+
+endif	# SOC_INTEL_FSP_BROADWELL_DE

@@ -1,0 +1,93 @@
+config BROADWELL_DE_FSP_SPECIFIC_OPTIONS
+	def_bool y
+	select PLATFORM_USES_FSP1_0
+	select USE_GENERIC_FSP_CAR_INC
+	select FSP_USES_UPD
+
+config FSP_FILE
+	string
+	default "../intel/fsp/broadwell_de/BROADWELLDE_FSP.bin"
+	help
+	  The path and filename of the Intel FSP binary for this platform.
+
+config FSP_LOC
+	hex
+	default 0xffeb0000
+	help
+	  The location in CBFS that the FSP is located. This must match the
+	  value that is set in the FSP binary.  If the FSP needs to be moved,
+	  rebase the FSP with Intel's BCT (tool).
+
+	  The Broadwell-DE FSP is built with a preferred base address of
+	  0xffeb0000.
+
+config FSP_MEMORY_DOWN
+	bool "Enable Memory Down"
+	default n
+	help
+	  Load SPD data from ROM instead of trying to read from SMBus.
+
+	  If the platform has DIMM sockets, say N. If memory is down, say Y and
+	  supply the appropriate SPD data for each Channel/DIMM.
+
+config FSP_MEMORY_DOWN_CH0DIMM0_SPD_PRESENT
+	bool "Channel 0, DIMM 0 Present"
+	default n
+	depends on FSP_MEMORY_DOWN
+	help
+	  Select Y if Channel 0, DIMM 0 is present.
+
+config FSP_MEMORY_DOWN_CH0DIMM0_SPD_FILE
+	string "Channel 0, DIMM 0 SPD File"
+	default "spd_ch0_dimm0.bin"
+	depends on FSP_MEMORY_DOWN_CH0DIMM0_SPD_PRESENT
+	help
+	  Path to the file which contains the SPD data for Channel 0, DIMM 0.
+
+config FSP_MEMORY_DOWN_CH0DIMM1_SPD_PRESENT
+	bool "Channel 0, DIMM 1 Present"
+	default n
+	depends on FSP_MEMORY_DOWN
+	help
+	  Select Y if Channel 0, DIMM 1 is present.
+
+config FSP_MEMORY_DOWN_CH0DIMM1_SPD_FILE
+	string "Channel 0, DIMM 1 SPD File"
+	default "spd_ch0_dimm1.bin"
+	depends on FSP_MEMORY_DOWN_CH0DIMM1_SPD_PRESENT
+	help
+	  Path to the file which contains the SPD data for Channel 0, DIMM 1.
+
+config FSP_MEMORY_DOWN_CH1DIMM0_SPD_PRESENT
+	bool "Channel 1, DIMM 0 Present"
+	default n
+	depends on FSP_MEMORY_DOWN
+	help
+	  Select Y if Channel 1, DIMM 0 is present.
+
+config FSP_MEMORY_DOWN_CH1DIMM0_SPD_FILE
+	string "Channel 1, DIMM 0 SPD File"
+	default "spd_ch1_dimm0.bin"
+	depends on FSP_MEMORY_DOWN_CH1DIMM0_SPD_PRESENT
+	help
+	  Path to the file which contains the SPD data for Channel 1, DIMM 0.
+
+config FSP_MEMORY_DOWN_CH1DIMM1_SPD_PRESENT
+	bool "Channel 1, DIMM 1 Present"
+	default n
+	depends on FSP_MEMORY_DOWN
+	help
+	  Select Y if Channel 1, DIMM 1 is present.
+
+config FSP_MEMORY_DOWN_CH1DIMM1_SPD_FILE
+	string "Channel 1, DIMM 1 SPD File"
+	default "spd_ch1_dimm1.bin"
+	depends on FSP_MEMORY_DOWN_CH1DIMM1_SPD_PRESENT
+	help
+	  Path to the file which contains the SPD data for Channel 1, DIMM 1.
+
+config FSP_HYPERTHREADING
+	bool "Enable Hyper-Threading"
+	default y
+	help
+	  Enable Intel(r) Hyper-Threading Technology for the Broadwell-DE SoC.

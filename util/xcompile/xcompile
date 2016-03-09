@@ -4,6 +4,7 @@
 #
 # Copyright (C) 2007-2010 coresystems GmbH
 # Copyright (C) 2012 Google Inc
+# Copyright (C) 2016 Raptor Engineering, LLC
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -367,12 +368,12 @@ arch_config_mipsel() {
 
 arch_config_power8() {
 	TARCH="power8"
-	TBFDARCHS="powerpcle"
-	TCLIST="powerpc64 powerpc64le"
+	TBFDARCHS="powerpc"
+	TCLIST="powerpc64"
 	TWIDTH="64"
 	TSUPP="power8"
-	TABI="linux" # there is no generic ABI on ppc64
-	CC_RT_EXTRA_GCC="-mcpu=power8 -mlittle-endian"
+	TABI="linux-gnu" # there is no generic ABI on ppc64
+	CC_RT_EXTRA_GCC="-mcpu=power8 -mbig-endian"
 }
 
 test_architecture() {

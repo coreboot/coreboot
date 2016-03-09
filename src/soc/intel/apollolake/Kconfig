@@ -98,10 +98,4 @@ config ROMSTAGE_ADDR
 	help
 	  The base address (in CAR) where romstage should be linked
 
-config FSPM_STACK_SIZE
-	hex
-	default 0x40000
-	help
-	  The amount of CAR memory FSPM needs. Recommended at least 256KiB
-
 endif

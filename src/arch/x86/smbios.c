@@ -473,6 +473,7 @@ static int smbios_write_type11(unsigned long *current, int *handle)
 static int smbios_write_type17(unsigned long *current, int *handle)
 {
 	int len = sizeof(struct smbios_type17);
+	int totallen = 0;
 	int i;
 
 	struct memory_info *meminfo;
@@ -486,8 +487,9 @@ static int smbios_write_type17(unsigned long *current, int *handle)
 		dimm = &meminfo->dimm[i];
 		len = create_smbios_type17_for_dimm(dimm, current, handle);
 		*current += len;
+		totallen += len;
 	}
-	return meminfo->dimm_cnt * len;
+	return totallen;
 }
 
 static int smbios_write_type32(unsigned long *current, int handle)

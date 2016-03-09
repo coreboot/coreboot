@@ -17,8 +17,11 @@
 static void write_dqs_receiver_enable_control_registers(uint16_t* current_total_delay,
 			uint32_t dev, uint8_t dct, uint8_t dimm, uint32_t index_reg);
 
-static void read_read_dqs_timing_control_registers(uint16_t* current_total_delay,
-			uint32_t dev, uint8_t dct, uint8_t dimm, uint32_t index_reg);
+static void read_dqs_read_data_timing_registers(uint16_t* delay, uint32_t dev,
+			uint8_t dct, uint8_t dimm, uint32_t index_reg);
+
+static void write_dqs_read_data_timing_registers(uint16_t* delay, uint32_t dev,
+			uint8_t dct, uint8_t dimm, uint32_t index_reg);
 
 static void dqsTrainMaxRdLatency_SW_Fam15(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat);
@@ -381,76 +384,6 @@ static void write_dqs_write_data_timing_registers(uint16_t* delay, uint32_t dev,
 	dword &= ~mask;
 	dword |= delay[8] & mask;
 	Set_NB32_index_wait_DCT(dev, dct, index_reg, 0x3 | (dimm << 8), dword);
-}
-
-static void read_dqs_read_data_timing_registers(uint16_t* delay, uint32_t dev, uint8_t dct, uint8_t dimm, uint32_t index_reg)
-{
-	uint32_t dword;
-	uint32_t mask;
-
-	if (is_fam15h())
-		mask = 0x3e;
-	else
-		mask = 0x3f;
-
-	/* Lanes 0 - 3 */
-	dword = Get_NB32_index_wait_DCT(dev, dct, index_reg, 0x5 | (dimm << 8));
-	delay[3] = (dword >> 24) & mask;
-	delay[2] = (dword >> 16) & mask;
-	delay[1] = (dword >> 8) & mask;
-	delay[0] = dword & mask;
-
-	/* Lanes 4 - 7 */
-	dword = Get_NB32_index_wait_DCT(dev, dct, index_reg, 0x6 | (dimm << 8));
-	delay[7] = (dword >> 24) & mask;
-	delay[6] = (dword >> 16) & mask;
-	delay[5] = (dword >> 8) & mask;
-	delay[4] = dword & mask;
-
-	/* Lane 8 (ECC) */
-	dword = Get_NB32_index_wait_DCT(dev, dct, index_reg, 0x7 | (dimm << 8));
-	delay[8] = dword & mask;
-}
-
-static void write_dqs_read_data_timing_registers(uint16_t* delay, uint32_t dev, uint8_t dct, uint8_t dimm, uint32_t index_reg)
-{
-	uint32_t dword;
-	uint32_t mask;
-
-	if (is_fam15h())
-		mask = 0x3e;
-	else
-		mask = 0x3f;
-
-	/* Lanes 0 - 3 */
-	dword = Get_NB32_index_wait_DCT(dev, dct, index_reg, 0x5 | (dimm << 8));
-	dword &= ~(mask << 24);
-	dword &= ~(mask << 16);
-	dword &= ~(mask << 8);
-	dword &= ~mask;
-	dword |= (delay[3] & mask) << 24;
-	dword |= (delay[2] & mask) << 16;
-	dword |= (delay[1] & mask) << 8;
-	dword |= delay[0] & mask;
-	Set_NB32_index_wait_DCT(dev, dct, index_reg, 0x5 | (dimm << 8), dword);
-
-	/* Lanes 4 - 7 */
-	dword = Get_NB32_index_wait_DCT(dev, dct, index_reg, 0x6 | (dimm << 8));
-	dword &= ~(mask << 24);
-	dword &= ~(mask << 16);
-	dword &= ~(mask << 8);
-	dword &= ~mask;
-	dword |= (delay[7] & mask) << 24;
-	dword |= (delay[6] & mask) << 16;
-	dword |= (delay[5] & mask) << 8;
-	dword |= delay[4] & mask;
-	Set_NB32_index_wait_DCT(dev, dct, index_reg, 0x6 | (dimm << 8), dword);
-
-	/* Lane 8 (ECC) */
-	dword = Get_NB32_index_wait_DCT(dev, dct, index_reg, 0x7 | (dimm << 8));
-	dword &= ~mask;
-	dword |= delay[8] & mask;
-	Set_NB32_index_wait_DCT(dev, dct, index_reg, 0x7 | (dimm << 8), dword);
 }
 
 /* DQS Position Training
@@ -982,7 +915,7 @@ static void Calc_SetMaxRdLatency_D_Fam15(struct MCTStatStruc *pMCTstat,
 				continue;
 
 			read_dqs_receiver_enable_control_registers(current_phy_phase_delay, dev, dct, dimm, index_reg);
-			read_read_dqs_timing_control_registers(current_read_dqs_delay, dev, dct, dimm, index_reg);
+			read_dqs_read_data_timing_registers(current_read_dqs_delay, dev, dct, dimm, index_reg);
 			for (lane = 0; lane < MAX_BYTE_LANES; lane++)
 				if ((current_phy_phase_delay[lane] + current_read_dqs_delay[lane]) > max_delay)
 					max_delay = (current_phy_phase_delay[lane] + current_read_dqs_delay[lane]);
@@ -1409,10 +1342,10 @@ static uint8_t TrainDQSRdWrPos_D_Fam15(struct MCTStatStruc *pMCTstat,
 				/* 2.10.5.8.4 (2 C)
 				 * For each Read DQS Delay value from 0 to 1 UI
 				 */
-				for (current_read_dqs_delay[lane] = 0; current_read_dqs_delay[lane] < 0x40; current_read_dqs_delay[lane] += 2) {
+				for (current_read_dqs_delay[lane] = 0; current_read_dqs_delay[lane] < 0x20; current_read_dqs_delay[lane]++) {
 					print_debug_dqs("\t\t\t\t\tTrainDQSRdWrPos: 161 current_read_dqs_delay[lane] ", current_read_dqs_delay[lane], 6);
 
-					if ((current_read_dqs_delay[lane] >> 1) >= (32 - 16)) {
+					if (current_read_dqs_delay[lane] >= (32 - 16)) {
 						check_antiphase = 1;
 					} else {
 						check_antiphase = 0;
@@ -1433,7 +1366,7 @@ static uint8_t TrainDQSRdWrPos_D_Fam15(struct MCTStatStruc *pMCTstat,
 						dword = Get_NB32_DCT(dev, dct, 0x264);
 						if ((dword & 0x1ffffff) != 0) {
 							print_debug_dqs("\t\t\t\t\tTrainDQSRdWrPos: 162 early abort: F2x264 ", dword, 6);
-							dqs_results_array[Receiver & 0x1][lane - lane_start][current_write_data_delay[lane] - initial_write_dqs_delay[lane]][(current_read_dqs_delay[lane] >> 1) + 16] = 0;	/* Fail */
+							dqs_results_array[Receiver & 0x1][lane - lane_start][current_write_data_delay[lane] - initial_write_dqs_delay[lane]][current_read_dqs_delay[lane] + 16] = 0;	/* Fail */
 							continue;
 						}
 					}
@@ -1444,16 +1377,16 @@ static uint8_t TrainDQSRdWrPos_D_Fam15(struct MCTStatStruc *pMCTstat,
 					dword = Get_NB32_DCT(dev, dct, 0x268) & 0x3ffff;
 					print_debug_dqs("\t\t\t\t\tTrainDQSRdWrPos: 163 read results: F2x268 ", dword, 6);
 					if (dword & (0x3 << (lane * 2)))
-						dqs_results_array[Receiver & 0x1][lane - lane_start][current_write_data_delay[lane] - initial_write_dqs_delay[lane]][(current_read_dqs_delay[lane] >> 1) + 16] = 0;	/* Fail */
+						dqs_results_array[Receiver & 0x1][lane - lane_start][current_write_data_delay[lane] - initial_write_dqs_delay[lane]][current_read_dqs_delay[lane] + 16] = 0;	/* Fail */
 					else
-						dqs_results_array[Receiver & 0x1][lane - lane_start][current_write_data_delay[lane] - initial_write_dqs_delay[lane]][(current_read_dqs_delay[lane] >> 1) + 16] = 1;	/* Pass */
+						dqs_results_array[Receiver & 0x1][lane - lane_start][current_write_data_delay[lane] - initial_write_dqs_delay[lane]][current_read_dqs_delay[lane] + 16] = 1;	/* Pass */
 					if (check_antiphase == 1) {
 						/* Check antiphase results */
 						dword = Get_NB32_DCT(dev, dct, 0x26c) & 0x3ffff;
 						if (dword & (0x3 << (lane * 2)))
-							dqs_results_array[Receiver & 0x1][lane - lane_start][current_write_data_delay[lane] - initial_write_dqs_delay[lane]][16 - (32 - (current_read_dqs_delay[lane] >> 1))] = 0;	/* Fail */
+							dqs_results_array[Receiver & 0x1][lane - lane_start][current_write_data_delay[lane] - initial_write_dqs_delay[lane]][16 - (32 - current_read_dqs_delay[lane])] = 0;	/* Fail */
 						else
-							dqs_results_array[Receiver & 0x1][lane - lane_start][current_write_data_delay[lane] - initial_write_dqs_delay[lane]][16 - (32 - (current_read_dqs_delay[lane] >> 1))] = 1;	/* Pass */
+							dqs_results_array[Receiver & 0x1][lane - lane_start][current_write_data_delay[lane] - initial_write_dqs_delay[lane]][16 - (32 - current_read_dqs_delay[lane])] = 1;	/* Pass */
 					}
 				}
 			}
@@ -1511,8 +1444,8 @@ static uint8_t TrainDQSRdWrPos_D_Fam15(struct MCTStatStruc *pMCTstat,
 				memcpy(current_read_dqs_delay, initial_read_dqs_delay, sizeof(current_read_dqs_delay));
 
 				/* Program the Read DQS Timing Control register with the center of the passing window */
-				current_read_dqs_delay[lane] = region_center << 1;
-				passing_read_dqs_delay_found = 1;
+				current_read_dqs_delay[lane] = region_center;
+				passing_dqs_delay_found[lane] = 1;
 
 				/* Commit the current Read DQS Timing Control settings to the hardware registers */
 				write_dqs_read_data_timing_registers(current_read_dqs_delay, dev, dct, dimm, index_reg);

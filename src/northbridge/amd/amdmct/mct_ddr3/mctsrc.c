@@ -475,40 +475,84 @@ static void write_dram_phase_recovery_control_registers(uint16_t* current_total_
 	}
 }
 
-static void read_read_dqs_timing_control_registers(uint16_t* current_total_delay, uint32_t dev, uint8_t dct, uint8_t dimm, uint32_t index_reg)
+static void read_dqs_read_data_timing_registers(uint16_t* delay, uint32_t dev, uint8_t dct, uint8_t dimm, uint32_t index_reg)
 {
-	uint8_t lane;
+	uint8_t shift;
 	uint32_t dword;
+	uint32_t mask;
 
-	for (lane = 0; lane < MAX_BYTE_LANES; lane++) {
-		uint32_t rdt_reg;
-
-		/* Calculate DRAM Read DQS Timing register location */
-		if ((lane == 0) || (lane == 1) || (lane == 2) || (lane == 3))
-			rdt_reg = 0x5;
-		if ((lane == 4) || (lane == 5) || (lane == 6) || (lane == 7))
-			rdt_reg = 0x6;
-		if (lane == 8)
-			rdt_reg = 0x7;
-		rdt_reg |= (dimm << 8);
-
-		dword = Get_NB32_index_wait_DCT(dev, dct, index_reg, rdt_reg);
-		if ((lane == 7) || (lane == 3)) {
-			current_total_delay[lane] = (dword >> 24) & 0x3f;
-		}
-		if ((lane == 6) || (lane == 2)) {
-			current_total_delay[lane] = (dword >> 16) & 0x3f;
-		}
-		if ((lane == 5) || (lane == 1)) {
-			current_total_delay[lane] = (dword >> 8) & 0x3f;
-		}
-		if ((lane == 8) || (lane == 4) || (lane == 0)) {
-			current_total_delay[lane] = dword & 0x3f;
-		}
-
-		if (is_fam15h())
-			current_total_delay[lane] >>= 1;
+	if (is_fam15h()) {
+		mask = 0x3e;
+		shift = 1;
 	}
+	else {
+		mask = 0x3f;
+		shift = 0;
+	}
+
+	/* Lanes 0 - 3 */
+	dword = Get_NB32_index_wait_DCT(dev, dct, index_reg, 0x5 | (dimm << 8));
+	delay[3] = ((dword >> 24) & mask) >> shift;
+	delay[2] = ((dword >> 16) & mask) >> shift;
+	delay[1] = ((dword >> 8) & mask) >> shift;
+	delay[0] = (dword & mask) >> shift;
+
+	/* Lanes 4 - 7 */
+	dword = Get_NB32_index_wait_DCT(dev, dct, index_reg, 0x6 | (dimm << 8));
+	delay[7] = ((dword >> 24) & mask) >> shift;
+	delay[6] = ((dword >> 16) & mask) >> shift;
+	delay[5] = ((dword >> 8) & mask) >> shift;
+	delay[4] = (dword & mask) >> shift;
+
+	/* Lane 8 (ECC) */
+	dword = Get_NB32_index_wait_DCT(dev, dct, index_reg, 0x7 | (dimm << 8));
+	delay[8] = (dword & mask) >> shift;
+}
+
+static void write_dqs_read_data_timing_registers(uint16_t* delay, uint32_t dev, uint8_t dct, uint8_t dimm, uint32_t index_reg)
+{
+	uint8_t shift;
+	uint32_t dword;
+	uint32_t mask;
+
+	if (is_fam15h()) {
+		mask = 0x3e;
+		shift = 1;
+	}
+	else {
+		mask = 0x3f;
+		shift = 0;
+	}
+
+	/* Lanes 0 - 3 */
+	dword = Get_NB32_index_wait_DCT(dev, dct, index_reg, 0x5 | (dimm << 8));
+	dword &= ~(mask << 24);
+	dword &= ~(mask << 16);
+	dword &= ~(mask << 8);
+	dword &= ~mask;
+	dword |= ((delay[3] << shift) & mask) << 24;
+	dword |= ((delay[2] << shift) & mask) << 16;
+	dword |= ((delay[1] << shift) & mask) << 8;
+	dword |= (delay[0] << shift) & mask;
+	Set_NB32_index_wait_DCT(dev, dct, index_reg, 0x5 | (dimm << 8), dword);
+
+	/* Lanes 4 - 7 */
+	dword = Get_NB32_index_wait_DCT(dev, dct, index_reg, 0x6 | (dimm << 8));
+	dword &= ~(mask << 24);
+	dword &= ~(mask << 16);
+	dword &= ~(mask << 8);
+	dword &= ~mask;
+	dword |= ((delay[7] << shift) & mask) << 24;
+	dword |= ((delay[6] << shift) & mask) << 16;
+	dword |= ((delay[5] << shift) & mask) << 8;
+	dword |= (delay[4] << shift) & mask;
+	Set_NB32_index_wait_DCT(dev, dct, index_reg, 0x6 | (dimm << 8), dword);
+
+	/* Lane 8 (ECC) */
+	dword = Get_NB32_index_wait_DCT(dev, dct, index_reg, 0x7 | (dimm << 8));
+	dword &= ~mask;
+	dword |= (delay[8] << shift) & mask;
+	Set_NB32_index_wait_DCT(dev, dct, index_reg, 0x7 | (dimm << 8), dword);
 }
 
 static uint32_t convert_testaddr_and_channel_to_address(struct DCTStatStruc *pDCTstat, uint32_t testaddr, uint8_t channel)
@@ -1596,7 +1640,7 @@ static void dqsTrainMaxRdLatency_SW_Fam15(struct MCTStatStruc *pMCTstat,
 
 			/* Retrieve the total delay values from pass 1 of DQS receiver enable training */
 			read_dqs_receiver_enable_control_registers(current_total_delay, dev, Channel, dimm, index_reg);
-			read_read_dqs_timing_control_registers(current_rdqs_total_delay, dev, Channel, dimm, index_reg);
+			read_dqs_read_data_timing_registers(current_rdqs_total_delay, dev, Channel, dimm, index_reg);
 
 			for (lane = 0; lane < 8; lane++) {
 				current_total_delay[lane] += current_rdqs_total_delay[lane];

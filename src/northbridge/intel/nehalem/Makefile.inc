@@ -21,12 +21,10 @@ ramstage-y += smi.c
 ramstage-y += gma.c
 
 ramstage-y += acpi.c
-ramstage-y += ../sandybridge/mrccache.c
 
 romstage-y += ram_calc.c
 romstage-y += raminit.c
 romstage-y += early_init.c
-romstage-y += ../sandybridge/mrccache.c
 romstage-y += ../../../arch/x86/walkcbfs.S
 
 smm-$(CONFIG_HAVE_SMI_HANDLER) += finalize.c

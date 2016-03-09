@@ -20,12 +20,10 @@ ramstage-y += northbridge.c
 ramstage-y += gma.c
 
 ramstage-y += acpi.c
-ramstage-y += mrccache.c
 ramstage-y += minihd.c
 
 romstage-y += ram_calc.c
 romstage-y += raminit.c
-romstage-y += mrccache.c
 romstage-y += early_init.c
 romstage-y += report_platform.c
 romstage-y += ../../../arch/x86/walkcbfs.S

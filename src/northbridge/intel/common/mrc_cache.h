@@ -12,4 +12,6 @@ struct mrc_data_container {
 	u8	mrc_data[0];	// Variable size, platform/run time dependent.
 } __attribute__ ((packed));
 
+struct mrc_data_container *find_current_mrc_cache(void);
+
 #endif /* NORTHBRIDGE_INTEL_COMMON_MRC_CACHE_H */

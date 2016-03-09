@@ -20,13 +20,11 @@
 #include <cbfs.h>
 #include <fmap.h>
 #include <ip_checksum.h>
-#include <northbridge/intel/common/mrc_cache.h>
 #include <device/device.h>
 #include <cbmem.h>
-#include "pei_data.h"
-#include "haswell.h"
 #include <spi-generic.h>
 #include <spi_flash.h>
+#include "mrc_cache.h"
 
 /* convert a pointer to flash area into the offset inside the flash */
 static inline u32 to_flash_offset(struct spi_flash *flash, void *p) {
@@ -161,6 +159,7 @@ static void update_mrc_cache(void *unused)
 	struct mrc_data_container *current = cbmem_find(CBMEM_ID_MRCDATA);
 	struct mrc_data_container *cache, *cache_base;
 	u32 cache_size;
+	int ret;
 
 	if (!current) {
 		printk(BIOS_ERR, "No MRC cache in cbmem. Can't update flash.\n");
@@ -221,8 +220,14 @@ static void update_mrc_cache(void *unused)
 	//  4. write mrc data with flash->write()
 	printk(BIOS_DEBUG, "Finally: write MRC cache update to flash at %p\n",
 	       cache);
-	flash->write(flash, to_flash_offset(flash, cache),
+	ret = flash->write(flash, to_flash_offset(flash, cache),
 		     current->mrc_data_size + sizeof(*current), current);
+
+	if (ret)
+		printk(BIOS_WARNING, "Writing the MRC cache failed with ret %d\n",
+				ret);
+	else
+		printk(BIOS_DEBUG, "Successfully wrote MRC cache\n");
 }
 
 BOOT_STATE_INIT_ENTRY(BS_WRITE_TABLES, BS_ON_ENTRY, update_mrc_cache, NULL);

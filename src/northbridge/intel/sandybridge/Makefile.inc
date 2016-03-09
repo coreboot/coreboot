@@ -22,7 +22,6 @@ ramstage-$(CONFIG_SANDYBRIDGE_IVYBRIDGE_LVDS) += gma_sandybridge_lvds.c
 ramstage-$(CONFIG_SANDYBRIDGE_IVYBRIDGE_LVDS) += gma_ivybridge_lvds.c
 
 ramstage-y += acpi.c
-ramstage-y += mrccache.c
 
 romstage-y += ram_calc.c
 ifeq ($(CONFIG_USE_NATIVE_RAMINIT),y)
@@ -36,7 +35,6 @@ mrc.bin-position := 0xfffa0000
 mrc.bin-type := mrc
 endif
 romstage-y += romstage.c
-romstage-y += mrccache.c
 romstage-y += iommu.c
 romstage-y += early_init.c
 romstage-y += report_platform.c

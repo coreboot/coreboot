@@ -40,6 +40,7 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/intel/speedstep.h>
 #include <cpu/intel/turbo.h>
+#include <northbridge/intel/common/mrc_cache.h>
 #endif
 
 #if !REAL

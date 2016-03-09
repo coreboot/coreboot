@@ -24,6 +24,7 @@
 #include <cbmem.h>
 #include "pei_data.h"
 #include "sandybridge.h"
+#include <northbridge/intel/common/mrc_cache.h>
 #include <spi-generic.h>
 #include <spi_flash.h>
 

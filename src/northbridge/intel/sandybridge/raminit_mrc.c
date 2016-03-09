@@ -24,6 +24,7 @@
 #include <ip_checksum.h>
 #include <pc80/mc146818rtc.h>
 #include <device/pci_def.h>
+#include <northbridge/intel/common/mrc_cache.h>
 #include <halt.h>
 #include <timestamp.h>
 #include "raminit.h"

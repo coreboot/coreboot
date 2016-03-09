@@ -20,6 +20,7 @@
 #include <cbfs.h>
 #include <fmap.h>
 #include <ip_checksum.h>
+#include <northbridge/intel/common/mrc_cache.h>
 #include <device/device.h>
 #include <cbmem.h>
 #include "pei_data.h"

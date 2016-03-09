@@ -26,6 +26,7 @@
 #include <ip_checksum.h>
 #include <timestamp.h>
 #include <pc80/mc146818rtc.h>
+#include <northbridge/intel/common/mrc_cache.h>
 #include <device/pci_def.h>
 #include <memory_info.h>
 #include <smbios.h>

@@ -215,10 +215,6 @@ void dump_mem(unsigned start, unsigned end);
 void report_platform_info(void);
 #endif /* !__SMM__ */
 
-
-#define MRC_DATA_ALIGN           0x1000
-#define MRC_DATA_SIGNATURE       (('M'<<0)|('R'<<8)|('C'<<16)|('D'<<24))
-
 #if !defined(__PRE_RAM__)
 #include "gma.h"
 int init_igd_opregion(igd_opregion_t *igd_opregion);

@@ -158,8 +158,8 @@ config COMPRESS_RAMSTAGE
 
 config COMPRESS_PRERAM_STAGES
 	bool "Compress romstage and verstage with LZ4"
-	default y if !ARCH_X86
-	default n
+	depends on !ARCH_X86
+	default y
 	help
 	  Compress romstage and (if it exists) verstage with LZ4 to save flash
 	  space and speed up boot, since the time for reading the image from SPI

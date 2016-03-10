@@ -28,6 +28,7 @@
 #endif
 
 static int ifd_version;
+static int selected_chip = 0;
 
 static const struct region_name region_names[MAX_REGIONS] = {
 	{ "Flash Descriptor", "fd" },
@@ -748,6 +749,59 @@ static void set_em100_mode(char *filename, char *image, int size)
 	set_spi_frequency(filename, image, size, freq);
 }
 
+static void set_chipdensity(char *filename, char *image, int size,
+                            unsigned int density)
+{
+	fdbar_t *fdb = find_fd(image, size);
+	fcba_t *fcba = (fcba_t *) (image + (((fdb->flmap0) & 0xff) << 4));
+
+	printf("Setting chip density to ");
+	decode_component_density(density);
+	printf("\n");
+
+	switch (ifd_version) {
+	case IFD_VERSION_1:
+		/* fail if selected density is not supported by this version */
+		if ( (density == COMPONENT_DENSITY_32MB) ||
+		     (density == COMPONENT_DENSITY_64MB) ||
+		     (density == COMPONENT_DENSITY_UNUSED) ) {
+			printf("error: Selected density not supported in IFD version 1.\n");
+			exit(EXIT_FAILURE);
+		}
+		break;
+	case IFD_VERSION_2:
+		/* I do not have a version 2 IFD nor do i have the docs. */
+		printf("error: Changing the chip density for IFD version 2 has not been"
+		       " implemented yet.\n");
+		exit(EXIT_FAILURE);
+	default:
+		printf("error: Unknown IFD version\n");
+		exit(EXIT_FAILURE);
+		break;
+	}
+
+	/* clear chip density for corresponding chip */
+	switch (selected_chip) {
+	case 1:
+		fcba->flcomp &= ~(0x7);
+		break;
+	case 2:
+		fcba->flcomp &= ~(0x7 << 3);
+		break;
+	default: /*both chips*/
+		fcba->flcomp &= ~(0x3F);
+		break;
+	}
+
+	/* set the new density */
+	if (selected_chip == 1 || selected_chip == 0)
+		fcba->flcomp |= (density); /* first chip */
+	if (selected_chip == 2 || selected_chip == 0)
+		fcba->flcomp |= (density << 3); /* second chip */
+
+	write_image(filename, image, size);
+}
+
 static void lock_descriptor(char *filename, char *image, int size)
 {
 	int wr_shift, rd_shift;
@@ -1075,6 +1129,10 @@ static void print_usage(const char *name)
 	       "   -i | --inject <region>:<module>    inject file <module> into region <region>\n"
 	       "   -n | --newlayout <filename>        update regions using a flashrom layout file\n"
 	       "   -s | --spifreq <17|20|30|33|48|50> set the SPI frequency\n"
+	       "   -D | --density <512|1|2|4|8|16>    set chip density (512 in KByte, others in MByte)\n"
+	       "   -C | --chip <0|1|2>                select spi chip on which to operate\n"
+	       "                                      can only be used once per run:\n"
+	       "                                      0 - both chips (default), 1 - first chip, 2 - second chip\n"
 	       "   -e | --em100                       set SPI frequency to 20MHz and disable\n"
 	       "                                      Dual Output Fast Read Support\n"
 	       "   -l | --lock                        Lock firmware descriptor and ME region\n"
@@ -1090,9 +1148,10 @@ int main(int argc, char *argv[])
 	int opt, option_index = 0;
 	int mode_dump = 0, mode_extract = 0, mode_inject = 0, mode_spifreq = 0;
 	int mode_em100 = 0, mode_locked = 0, mode_unlocked = 0;
-	int mode_layout = 0, mode_newlayout = 0;
+	int mode_layout = 0, mode_newlayout = 0, mode_density = 0;
 	char *region_type_string = NULL, *region_fname = NULL, *layout_fname = NULL;
 	int region_type = -1, inputfreq = 0;
+	unsigned int new_density = 0;
 	enum spi_frequency spifreq = SPI_FREQUENCY_20MHZ;
 
 	static struct option long_options[] = {
@@ -1102,6 +1161,8 @@ int main(int argc, char *argv[])
 		{"inject", 1, NULL, 'i'},
 		{"newlayout", 1, NULL, 'n'},
 		{"spifreq", 1, NULL, 's'},
+		{"density", 1, NULL, 'D'},
+		{"chip", 1, NULL, 'C'},
 		{"em100", 0, NULL, 'e'},
 		{"lock", 0, NULL, 'l'},
 		{"unlock", 0, NULL, 'u'},
@@ -1110,7 +1171,7 @@ int main(int argc, char *argv[])
 		{0, 0, 0, 0}
 	};
 
-	while ((opt = getopt_long(argc, argv, "df:xi:n:s:eluvh?",
+	while ((opt = getopt_long(argc, argv, "df:D:C:xi:n:s:eluvh?",
 				  long_options, &option_index)) != EOF) {
 		switch (opt) {
 		case 'd':
@@ -1165,6 +1226,51 @@ int main(int argc, char *argv[])
 			layout_fname = strdup(optarg);
 			if (!layout_fname) {
 				fprintf(stderr, "No layout file specified\n");
+				print_usage(argv[0]);
+				exit(EXIT_FAILURE);
+			}
+			break;
+		case 'D':
+			mode_density = 1;
+			new_density = strtoul(optarg, NULL, 0);
+			switch (new_density) {
+			case 512:
+				new_density = COMPONENT_DENSITY_512KB;
+				break;
+			case 1:
+				new_density = COMPONENT_DENSITY_1MB;
+				break;
+			case 2:
+				new_density = COMPONENT_DENSITY_2MB;
+				break;
+			case 4:
+				new_density = COMPONENT_DENSITY_4MB;
+				break;
+			case 8:
+				new_density = COMPONENT_DENSITY_8MB;
+				break;
+			case 16:
+				new_density = COMPONENT_DENSITY_16MB;
+				break;
+			case 32:
+				new_density = COMPONENT_DENSITY_32MB;
+				break;
+			case 64:
+				new_density = COMPONENT_DENSITY_64MB;
+				break;
+			case 0:
+				new_density = COMPONENT_DENSITY_UNUSED;
+				break;
+			default:
+				printf("error: Unknown density\n");
+				print_usage(argv[0]);
+				exit(EXIT_FAILURE);
+			}
+			break;
+		case 'C':
+			selected_chip = strtol(optarg, NULL, 0);
+			if (selected_chip > 2) {
+				fprintf(stderr, "error: Invalid chip selection\n");
 				print_usage(argv[0]);
 				exit(EXIT_FAILURE);
 			}
@@ -1239,7 +1345,7 @@ int main(int argc, char *argv[])
 
 	if ((mode_dump + mode_layout + mode_extract + mode_inject +
 	     mode_newlayout + mode_spifreq + mode_em100 + mode_locked +
-	     mode_unlocked) == 0) {
+	     mode_unlocked + mode_density) == 0) {
 		fprintf(stderr, "You need to specify a mode.\n\n");
 		print_usage(argv[0]);
 		exit(EXIT_FAILURE);
@@ -1299,6 +1405,9 @@ int main(int argc, char *argv[])
 
 	if (mode_spifreq)
 		set_spi_frequency(filename, image, size, spifreq);
+
+	if (mode_density)
+		set_chipdensity(filename, image, size, new_density);
 
 	if (mode_em100)
 		set_em100_mode(filename, image, size);

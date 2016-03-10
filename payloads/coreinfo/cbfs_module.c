@@ -134,10 +134,15 @@ static int cbfs_module_redraw(WINDOW * win)
 			wattrset(win, COLOR_PAIR(3) | A_BOLD);
 		else
 			wattrset(win, COLOR_PAIR(2));
-		if (i == filecount - 1)
-			mvwprintw(win, 2 + i, 1, "<free space>");
-		else
+
+		if (strlen(filenames[i]) == 0) {
+			if (findfile(filenames[i])->type == COMPONENT_NULL)
+				mvwprintw(win, 2 + i, 1, "<free space>");
+			else
+				mvwprintw(win, 2 + i, 1, "<unnamed>");
+		} else {
 			mvwprintw(win, 2 + i, 1, "%.25s", filenames[i]);
+		}
 	}
 
 	f = findfile(filenames[selected]);

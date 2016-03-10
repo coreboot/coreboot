@@ -225,6 +225,16 @@ static void print_no_modules_selected(void)
 	center(height / 2, "No modules selected");
 }
 
+static int first_nonempty_category(void)
+{
+	int i;
+
+	for (i = 0; i < ARRAY_SIZE(categories); i++)
+		if (categories[i].count > 0)
+			return i;
+	return 0;
+}
+
 static void loop(void)
 {
 	int key;
@@ -233,6 +243,7 @@ static void loop(void)
 	print_no_modules_selected();
 	refresh();
 
+	curwin = first_nonempty_category();
 	print_menu();
 	print_submenu(&categories[curwin]);
 	redraw_module(&categories[curwin]);

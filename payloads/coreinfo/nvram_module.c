@@ -26,7 +26,7 @@ static void dump_nvram(WINDOW *win, int row, int col)
 
 	/* Print vertical and horizontal index numbers. */
 	for (i = 0; i < 16; i++) {
-		mvwprintw(win, ((i < 8) ? 4 : 5) + i, 1, "%2.2X ", i);
+		mvwprintw(win, ((i < 8) ? 4 : 5) + i, 1, "%2.2X ", i * 0x10);
 		mvwprintw(win, 2, 4 + (i * 3), "%2.2X ", i);
 	}
 

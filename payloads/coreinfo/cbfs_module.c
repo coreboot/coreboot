@@ -23,9 +23,14 @@
 #define LARCHIVE_MAGIC		0x455649484352414cLL	/* "LARCHIVE" */
 
 #define COMPONENT_DELETED	0x00
+#define COMPONENT_BOOTBLOCK	0x01
+#define COMPONENT_CBFSHEADER	0x02
 #define COMPONENT_STAGE		0x10
 #define COMPONENT_PAYLOAD	0x20
 #define COMPONENT_OPTIONROM	0x30
+#define COMPONENT_RAW		0x50
+#define COMPONENT_MICROCODE	0x53
+#define COMPONENT_CMOS_LAYOUT	0x1aa
 #define COMPONENT_NULL		0xffffffff
 
 struct cbheader {
@@ -156,6 +161,12 @@ static int cbfs_module_redraw(WINDOW * win)
 	/* mvwprintw(win, row++, 32, "Offset: 0x%x", f->offset); *//* FIXME */
 	mvwprintw(win, row, 32, "Type: ");
 	switch (ntohl(f->type)) {
+	case COMPONENT_BOOTBLOCK:
+		mvwprintw(win, row++, 38, "bootblock");
+		break;
+	case COMPONENT_CBFSHEADER:
+		mvwprintw(win, row++, 38, "CBFS header");
+		break;
 	case COMPONENT_STAGE:
 		mvwprintw(win, row++, 38, "stage");
 		break;
@@ -164,6 +175,15 @@ static int cbfs_module_redraw(WINDOW * win)
 		break;
 	case COMPONENT_OPTIONROM:
 		mvwprintw(win, row++, 38, "optionrom");
+		break;
+	case COMPONENT_RAW:
+		mvwprintw(win, row++, 38, "raw");
+		break;
+	case COMPONENT_MICROCODE:
+		mvwprintw(win, row++, 38, "microcode");
+		break;
+	case COMPONENT_CMOS_LAYOUT:
+		mvwprintw(win, row++, 38, "cmos layout");
 		break;
 	case COMPONENT_NULL:
 		mvwprintw(win, row++, 38, "free");

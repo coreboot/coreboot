@@ -58,6 +58,7 @@ ramstage-y += ../common/i2c.c
 ramstage-y += soc.c
 ramstage-y += timer.c
 
+BL31_MAKEARGS += PLAT=rk3399
 ################################################################################
 
 CPPFLAGS_common += -Isrc/soc/rockchip/rk3399/include

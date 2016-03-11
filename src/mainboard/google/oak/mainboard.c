@@ -22,8 +22,9 @@
 
 #include <elog.h>
 #include <gpio.h>
-#include <soc/bl31_plat_params.h>
+#include <soc/da9212.h>
 #include <soc/i2c.h>
+#include <soc/mt6311.h>
 #include <soc/mt6391.h>
 #include <soc/mtcmos.h>
 #include <soc/pinmux.h>
@@ -31,67 +32,30 @@
 #include <soc/usb.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
-static void register_da9212_to_bl31(void)
+enum {
+	CODEC_I2C_BUS = 0,
+	EXT_BUCK_I2C_BUS = 1,
+};
+
+static void configure_ext_buck(void)
 {
-#if IS_ENABLED(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE)
-	static struct bl31_da9212_param param_da9212 = {
-		.h = {
-			.type = PARAM_CLUSTER1_DA9212,
-		},
-		.i2c_bus = 1,
-		.ic_en = {
-			.type = PARAM_GPIO_MT6391,
-			.polarity = PARAM_GPIO_ACTIVE_HIGH,
-			.index = MT6391_KP_ROW3,
-		},
-		.en_a = {
-			.type = PARAM_GPIO_MT6391,
-			.polarity = PARAM_GPIO_ACTIVE_HIGH,
-			.index = MT6391_KP_ROW4,
-		},
-		.en_b = {
-			.type = PARAM_GPIO_NONE,
-		},
-	};
-	if (board_id() == 2) {
-		param_da9212.ic_en.type = PARAM_GPIO_SOC;
-		param_da9212.ic_en.index = PAD_UCTS2;
-	}
-	register_bl31_param(&param_da9212.h);
+	mtk_i2c_bus_init(EXT_BUCK_I2C_BUS);
 
-	/* Init i2c bus Timing register for da9212 */
-	mtk_i2c_bus_init(param_da9212.i2c_bus);
-#endif
-}
-
-static void register_mt6311_to_bl31(void)
-{
-#if IS_ENABLED(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE)
-	static struct bl31_mt6311_param param_mt6311 = {
-		.h = {
-			.type = PARAM_CLUSTER1_MT6311,
-		},
-		.i2c_bus = 1,
-	};
-	register_bl31_param(&param_mt6311.h);
-
-	/* Init i2c bus Timing register for mt6311 */
-	mtk_i2c_bus_init(param_mt6311.i2c_bus);
-#endif
-}
-
-static void configure_bl31(void)
-{
 	switch (board_id()) {
 	case 3:
 	case 4:
 		/* rev-3 and rev-4 use mt6311 as external buck */
-		register_mt6311_to_bl31();
+		gpio_output(PAD_EINT15, 1);
+		udelay(500);
+		mt6311_probe(EXT_BUCK_I2C_BUS);
 		break;
 	case 2:
 	default:
 		/* rev-2 and rev-5 use da9212 as external buck */
-		register_da9212_to_bl31();
+		mt6391_gpio_output(MT6391_KP_ROW3, 1); /* DA9212_IC_EN */
+		mt6391_gpio_output(MT6391_KP_ROW4, 1); /* DA9212_EN_A */
+		udelay(500);	/* add 500us delay for powering on da9212 */
+		da9212_probe(EXT_BUCK_I2C_BUS);
 		break;
 	}
 }
@@ -125,7 +89,7 @@ static void configure_audio(void)
 	mt6391_gpio_output(MT6391_KP_COL5, 1);
 
 	/* Init i2c bus Timing register for audio codecs */
-	mtk_i2c_bus_init(0);
+	mtk_i2c_bus_init(CODEC_I2C_BUS);
 
 	/* set I2S clock to 48KHz */
 	mt_pll_set_aud_div(48 * KHz);
@@ -197,7 +161,7 @@ static void mainboard_init(device_t dev)
 	configure_backlight();
 	configure_usb();
 	configure_usb_hub();
-	configure_bl31();
+	configure_ext_buck();
 
 	elog_init();
 	elog_add_boot_reason();

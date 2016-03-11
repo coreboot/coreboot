@@ -49,6 +49,7 @@ romstage-y += reset.c
 ramstage-y += reset.c
 ramstage-y += cpu.c
 ramstage-y += acpi.c
+ramstage-y += lpe.c
 smm-$(CONFIG_HAVE_SMI_HANDLER) += pmutil.c
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smm.c

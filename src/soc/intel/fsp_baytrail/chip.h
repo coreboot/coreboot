@@ -342,6 +342,10 @@ struct soc_intel_fsp_baytrail_config {
 	uint8_t  DIMMtFAW;
 	#define  DIMM_TFAW_DEFAULT	UPD_DEFAULT
 
+	/* LPE Audio Clock configuration. */
+	int lpe_codec_clk_freq; /* 19 or 25 are valid. */
+	int lpe_codec_clk_num; /* Platform clock pins. [0:5] are valid. */
+
 /* ***** ACPI configuration ***** */
 	/* Options for these are in src/arch/x86/include/arch/acpi.h */
 	uint8_t  fadt_pm_profile;

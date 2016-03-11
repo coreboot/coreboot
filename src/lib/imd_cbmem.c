@@ -272,11 +272,11 @@ void cbmem_region_used(uintptr_t *base, size_t *size)
 
 void cbmem_add_bootmem(void)
 {
-	void *base = NULL;
+	uintptr_t base = 0;
 	size_t size = 0;
 
-	cbmem_region_used(base, &size);
-	bootmem_add_range((uintptr_t)base, size, LB_MEM_TABLE);
+	cbmem_region_used(&base, &size);
+	bootmem_add_range(base, size, LB_MEM_TABLE);
 }
 
 #if ENV_RAMSTAGE

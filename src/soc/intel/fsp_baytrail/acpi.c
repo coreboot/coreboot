@@ -85,9 +85,6 @@ static acpi_cstate_t cstate_map[] = {
 
 void acpi_init_gnvs(global_nvs_t *gnvs)
 {
-	/* Clear gnvs area so uninitialized portions are defined */
-	memset(gnvs, 0, sizeof(*gnvs));
-
 	/* CPU core count */
 	gnvs->pcnt = dev_count_cpu();
 

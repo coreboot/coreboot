@@ -36,18 +36,20 @@ are permitted provided that the following conditions are met:
 #pragma pack(1)
 
 
-//
-// TODO - Port to fit Quark SoC.
-//
+/** TODO - Port to fit Quark SoC.
+**/
 
-#define MAX_CHANNELS_NUM       2
-#define MAX_DIMMS_NUM          2
+#define MAX_CHANNELS_NUM       1
+#define MAX_DIMMS_NUM          1
 
 typedef struct {
 	UINT8         DimmId;
 	UINT32        SizeInMb;
 	UINT16        MfgId;
-	UINT8         ModulePartNum[20];/* Module part number for DDR3 is 18 bytes however for DRR4 20 bytes as per JEDEC Spec, so reserving 20 bytes */
+	/** Module part number for DDR3 is 18 bytes however for
+	 DRR4 20 bytes as per JEDEC Spec, so reserving 20 bytes
+	 **/
+	UINT8         ModulePartNum[20];
 } DIMM_INFO;
 
 typedef struct {
@@ -80,33 +82,34 @@ typedef struct {
   UINT64                      Signature;
 /** Offset 0x0028
 **/
-  UINT8                       Revision;
-/** Offset 0x0029
-    Tseg Size
-    Size of SMRAM memory reserved.
+  UINT64                      Revision;
+/** Offset 0x0030
+**/
+  UINT32                      PcdRmuBinaryBaseAddress;
+/** Offset 0x0034
+**/
+  UINT32                      PcdRmuBinaryLen;
+/** Offset 0x0038
 **/
   UINT8                       PcdSmmTsegSize;
-/** Offset 0x002A
+/** Offset 0x0039
 **/
-  UINT32                      PcdPlatformDataBaseAddress;
-/** Offset 0x002E
+  UINT8                       PcdPlatformType;
+/** Offset 0x003A
 **/
-  UINT32                      PcdPlatformDataMaxLen;
-/** Offset 0x0032
-**/
-  UINT8                       ReservedMemoryInitUpd[14];
+  UINT8                       ReservedMemoryInitUpd[22];
 } MEMORY_INIT_UPD;
 
 typedef struct {
-/** Offset 0x0040
+/** Offset 0x0050
 **/
   UINT64                      Signature;
-/** Offset 0x0048
+/** Offset 0x0058
 **/
-  UINT8                       Revision;
-/** Offset 0x0049
+  UINT64                      Revision;
+/** Offset 0x0060
 **/
-  UINT8                       ReservedSiliconInitUpd[183];
+  UINT8                       ReservedSiliconInitUpd[32];
 } SILICON_INIT_UPD;
 
 #define FSP_UPD_SIGNATURE                0x244450554B525124        /* '$QRKUPD$' */
@@ -119,10 +122,7 @@ typedef struct _UPD_DATA_REGION {
   UINT64                      Signature;
 /** Offset 0x0008
 **/
-  UINT8                       Revision;
-/** Offset 0x0009
-**/
-  UINT8                       ReservedUpd0[7];
+  UINT64                      Revision;
 /** Offset 0x0010
 **/
   UINT32                      MemoryInitUpdOffset;
@@ -135,10 +135,10 @@ typedef struct _UPD_DATA_REGION {
 /** Offset 0x0020
 **/
   MEMORY_INIT_UPD             MemoryInitUpd;
-/** Offset 0x0040
+/** Offset 0x0050
 **/
   SILICON_INIT_UPD            SiliconInitUpd;
-/** Offset 0x0100
+/** Offset 0x0080
 **/
   UINT16                      PcdRegionTerminator;
 } UPD_DATA_REGION;
@@ -157,12 +157,6 @@ typedef struct _VPD_DATA_REGION {
 /** Offset 0x000C
 **/
   UINT32                      PcdUpdRegionOffset;
-/** Offset 0x0010
-**/
-  UINT8                       UnusedVpdSpace0[16];
-/** Offset 0x0020
-**/
-  UINT32                      PcdFspReservedMemoryLength;
 } VPD_DATA_REGION;
 
 #pragma pack()

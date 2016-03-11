@@ -81,13 +81,6 @@ void soc_memory_init_params(struct romstage_params *params,
 	}
 	config = dev->chip_info;
 
-	/* Set the parameters for MemoryInit */
-	printk(BIOS_DEBUG, "Updating UPD values for MemoryInit\n");
-	upd->PcdSmmTsegSize = IS_ENABLED(CONFIG_HAVE_SMI_HANDLER) ?
-		config->PcdSmmTsegSize : 0;
-	upd->PcdPlatformDataBaseAddress = (UINT32)pdat_file;
-	upd->PcdPlatformDataMaxLen = (UINT32)pdat_file_len;
-
 	/* Display the ROM shadow data */
 	hexdump((void *)0x000ffff0, 0x10);
 }
@@ -116,13 +109,4 @@ void soc_after_ram_init(struct romstage_params *params)
 void soc_display_memory_init_params(const MEMORY_INIT_UPD *old,
 	MEMORY_INIT_UPD *new)
 {
-	/* Display the parameters for MemoryInit */
-	printk(BIOS_SPEW, "UPD values for MemoryInit:\n");
-	fsp_display_upd_value("PcdSmmTsegSize", 2,
-		old->PcdSmmTsegSize, new->PcdSmmTsegSize);
-	fsp_display_upd_value("PcdPlatformDataBaseAddress", 4,
-		old->PcdPlatformDataBaseAddress,
-		new->PcdPlatformDataBaseAddress);
-	fsp_display_upd_value("PcdPlatformDataMaxLen", 4,
-		old->PcdPlatformDataMaxLen, new->PcdPlatformDataMaxLen);
 }

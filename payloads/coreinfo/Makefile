@@ -55,7 +55,7 @@ OBJCOPY ?= objcopy
 
 INCLUDES = -I$(coreinfo_obj) -include $(LIBPAYLOAD_DIR)/include/kconfig.h
 OBJECTS = cpuinfo_module.o cpuid.S.o pci_module.o coreboot_module.o \
-	  nvram_module.o bootlog_module.o ramdump_module.o lar_module.o \
+	  nvram_module.o bootlog_module.o ramdump_module.o \
 	  multiboot_module.o cbfs_module.o coreinfo.o
 OBJS    = $(patsubst %,$(coreinfo_obj)/%,$(OBJECTS))
 TARGET  = $(coreinfo_obj)/coreinfo.elf

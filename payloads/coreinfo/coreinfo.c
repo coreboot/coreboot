@@ -24,7 +24,6 @@ extern struct coreinfo_module multiboot_module;
 extern struct coreinfo_module nvram_module;
 extern struct coreinfo_module bootlog_module;
 extern struct coreinfo_module ramdump_module;
-extern struct coreinfo_module lar_module;
 extern struct coreinfo_module cbfs_module;
 
 struct coreinfo_module *system_modules[] = {
@@ -51,9 +50,6 @@ struct coreinfo_module *firmware_modules[] = {
 #endif
 #if IS_ENABLED(CONFIG_MODULE_BOOTLOG)
 	&bootlog_module,
-#endif
-#if IS_ENABLED(CONFIG_MODULE_LAR)
-	&lar_module,
 #endif
 #if IS_ENABLED(CONFIG_MODULE_CBFS)
 	&cbfs_module,

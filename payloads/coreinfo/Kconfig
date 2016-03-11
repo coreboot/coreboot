@@ -98,12 +98,6 @@ config MODULE_RAMDUMP
 	bool "Enable the RAM dump module"
 	default y
 
-config MODULE_LAR
-	bool "Enable the coreboot v3 LAR module"
-	help
-	  LAR support must also be enabled in libpayload.
-	default n
-
 config MODULE_CBFS
 	bool "Enable the coreboot CBFS module"
 	default y

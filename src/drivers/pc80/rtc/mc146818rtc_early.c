@@ -22,11 +22,11 @@ static int cmos_chksum_valid(void)
 #if CONFIG_USE_OPTION_TABLE
 	unsigned char addr;
 	u16 sum, old_sum;
+
 	sum = 0;
 	/* Compute the cmos checksum */
-	for(addr = LB_CKS_RANGE_START; addr <= LB_CKS_RANGE_END; addr++) {
+	for (addr = LB_CKS_RANGE_START; addr <= LB_CKS_RANGE_END; addr++)
 		sum += cmos_read(addr);
-	}
 
 	/* Read the stored checksum */
 	old_sum = cmos_read(LB_CKS_LOC) << 8;
@@ -95,6 +95,7 @@ unsigned read_option_lowlevel(unsigned start, unsigned size, unsigned def)
 {
 #if CONFIG_USE_OPTION_TABLE
 	unsigned byte;
+
 	byte = cmos_read(start/8);
 	return (byte >> (start & 7U)) & ((1U << size) - 1U);
 #else

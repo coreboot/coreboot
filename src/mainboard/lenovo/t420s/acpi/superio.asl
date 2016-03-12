@@ -1,1 +1,1 @@
-#include <drivers/pc80/ps2_controller.asl>
+#include <drivers/pc80/pc/ps2_controller.asl>

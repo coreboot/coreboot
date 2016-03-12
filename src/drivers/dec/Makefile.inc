@@ -1,1 +1,0 @@
-subdirs-$(CONFIG_DRIVERS_DEC_21143) += 21143

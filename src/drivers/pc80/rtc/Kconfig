@@ -1,0 +1,4 @@
+config DRIVERS_MC146818
+	bool
+	default y if ARCH_X86
+	depends on PC80_SYSTEM

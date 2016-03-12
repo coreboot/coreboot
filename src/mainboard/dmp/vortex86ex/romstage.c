@@ -21,7 +21,7 @@
 #include <console/console.h>
 #include <cpu/x86/cache.h>
 #include <halt.h>
-#include "drivers/pc80/i8254.c"
+#include "drivers/pc80/pc/i8254.c"
 #include <northbridge/dmp/vortex86ex/northbridge.h>
 #include <southbridge/dmp/vortex86ex/southbridge.h>
 #include "northbridge/dmp/vortex86ex/raminit.c"

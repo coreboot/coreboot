@@ -27,7 +27,7 @@ romstage-y += ./../../../southbridge/via/common/early_smbus_is_busy.c
 romstage-y += ./../../../southbridge/via/common/early_smbus_print_error.c
 romstage-y += ./../../../southbridge/via/common/early_smbus_reset.c
 romstage-y += ./../../../southbridge/via/common/early_smbus_wait_until_ready.c
-romstage-y += ./../../../drivers/pc80/udelay_io.c
+romstage-y += ./../../../drivers/pc80/pc/udelay_io.c
 
 ramstage-y += pci_util.c
 ramstage-y += pcie.c

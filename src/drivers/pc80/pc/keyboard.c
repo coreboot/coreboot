@@ -67,6 +67,7 @@
 static int kbc_input_buffer_empty(void)
 {
 	u32 timeout;
+
 	for (timeout = KBC_TIMEOUT_IN_MS;
 	     timeout && (inb(KBD_STATUS) & KBD_IBF); timeout--)
 		mdelay(1);
@@ -80,6 +81,7 @@ static int kbc_input_buffer_empty(void)
 static int kbc_output_buffer_full(void)
 {
 	u32 timeout;
+
 	for (timeout = KBC_TIMEOUT_IN_MS;
 	     timeout && ((inb(KBD_STATUS) & KBD_OBF) == 0); timeout--)
 		mdelay(1);
@@ -93,6 +95,7 @@ static int kbc_output_buffer_full(void)
 static int kbc_cleanup_buffers(void)
 {
 	u32 timeout;
+
 	for (timeout = KBC_TIMEOUT_IN_MS;
 	     timeout && (inb(KBD_STATUS) & (KBD_OBF | KBD_IBF)); timeout--) {
 		mdelay(1);
@@ -221,8 +224,10 @@ static u8 send_keyboard(u8 command)
 		 * reset */
 		if (command == 0xFF) {
 			u8 retries;
+
 			for (retries = 9; retries && !kbc_output_buffer_full();
-			     retries--) ;
+			     retries--)
+				;
 		}
 		if (!kbc_output_buffer_full()) {
 			printk(BIOS_ERR,
@@ -288,7 +293,8 @@ uint8_t pc_keyboard_init(uint8_t probe_aux)
 	}
 
 	/* the reset command takes some time, so wait a little longer */
-	for (retries = 9; retries && !kbc_output_buffer_full(); retries--) ;
+	for (retries = 9; retries && !kbc_output_buffer_full(); retries--)
+		;
 
 	if (!kbc_output_buffer_full()) {
 		printk(BIOS_ERR, "Timeout waiting for keyboard after reset.\n");

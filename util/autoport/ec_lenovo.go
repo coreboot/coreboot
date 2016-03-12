@@ -57,7 +57,7 @@ Method(_PTS,1)
 	si := Create(ctx, "acpi/superio.asl")
 	defer si.Close()
 
-	si.WriteString("#include <drivers/pc80/ps2_controller.asl>\n")
+	si.WriteString("#include <drivers/pc80/pc/ps2_controller.asl>\n")
 
 	dock := Create(ctx, "dock.c")
 	defer dock.Close()

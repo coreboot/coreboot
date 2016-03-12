@@ -14,6 +14,8 @@
 # GNU General Public License for more details.
 #
 
+ifeq ($(CONFIG_PLATFORM_USES_FSP1_1),y)
+
 verstage-y += car.c
 verstage-y += fsp_util.c
 verstage-y += verstage.c
@@ -52,4 +54,6 @@ cbfs-files-y += fsp.bin
 fsp.bin-file := $(call strip_quotes,$(CONFIG_FSP_FILE))
 fsp.bin-position := $(CONFIG_FSP_LOC)
 fsp.bin-type := fsp
+endif
+
 endif

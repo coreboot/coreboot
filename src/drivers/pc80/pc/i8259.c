@@ -29,7 +29,7 @@ u16 pic_read_irq_mask(void)
 	printk(BIOS_DEBUG, "8259 PIC: OCW1 IRQ Mask: 0x%x\n", mask);
 	printk(BIOS_SPEW, "\tEnabled IRQs (0 = Unmasked, 1 = Masked off):\n"
 			"\t\tMaster\t\tSlave\n");
-	for(i = 0; i <= 7; i++) {
+	for (i = 0; i <= 7; i++) {
 		printk(BIOS_SPEW, "\t\tIRQ%X: %x\t\tIRQ%X: %x\n",
 				i, (mask >> i) & 1, i + 8, (mask >> (i + 8)) & 1);
 	}
@@ -53,8 +53,8 @@ void pic_write_irq_mask(u16 mask)
  */
 void pic_irq_enable(u8 int_num, u8 mask)
 {
-    pic_write_irq_mask(pic_read_irq_mask() & ~(mask << int_num));
-    pic_read_irq_mask();
+	pic_write_irq_mask(pic_read_irq_mask() & ~(mask << int_num));
+	pic_read_irq_mask();
 }
 
 void setup_i8259(void)
@@ -124,7 +124,8 @@ void i8259_configure_irq_trigger(int int_num, int is_level_triggered)
 	outb((u8)(int_bits >> 8), ELCR2);
 
 #ifdef PARANOID_IRQ_TRIGGERS
-	/* Try reading back the new values. This seems like an error but is not ... */
+	/* Try reading back the new values. This seems like an error
+	 * but it is not. */
 	if (inb(ELCR1) != (int_bits & 0xff)) {
 		printk(BIOS_ERR, "%s: lower order bits are wrong: want 0x%x, got 0x%x\n",
 				__func__, (int_bits & 0xff), inb(ELCR1));

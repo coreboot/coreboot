@@ -21,6 +21,6 @@ Device (SIO) {
 
 // Keyboard or AUX port (a.k.a Mouse)
 #ifdef SIO_EC_ENABLE_PS2K
-	#include <drivers/pc80/ps2_controller.asl>
+	#include <drivers/pc80/pc/ps2_controller.asl>
 #endif
 }

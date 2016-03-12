@@ -1,10 +1,10 @@
 # Might be removed (alongside with the PS/2 init code) once payloads
 # reliably support PS/2 init themselves.
-if PC80_SYSTEM
 
 config DRIVERS_PS2_KEYBOARD
 	bool "PS/2 keyboard init"
 	default n
+	depends on PC80_SYSTEM
 	help
 	  Enable this option to initialize PS/2 keyboards found connected
 	  to the PS/2 port.
@@ -16,12 +16,3 @@ config DRIVERS_PS2_KEYBOARD
 	  If you know you will only use a payload which does not require
 	  this option, then you can say N here to speed up boot time.
 	  Otherwise say Y.
-
-config DRIVERS_MC146818
-	bool
-	default y if ARCH_X86
-	select RTC
-
-source src/drivers/pc80/tpm/Kconfig
-
-endif

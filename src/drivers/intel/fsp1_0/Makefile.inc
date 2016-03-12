@@ -13,6 +13,8 @@
 # GNU General Public License for more details.
 #
 
+ifeq ($(CONFIG_PLATFORM_USES_FSP1_0),y)
+
 ramstage-y += fsp_util.c hob.c
 romstage-y += fsp_util.c hob.c
 
@@ -44,3 +46,4 @@ mrc.cache-type := mrc_cache
 endif
 endif
 
+endif

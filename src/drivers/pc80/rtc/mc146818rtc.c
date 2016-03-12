@@ -38,11 +38,11 @@
 
 #if (defined(__PRE_RAM__) &&	\
 IS_ENABLED(CONFIG_HAVE_ROMSTAGE_NVRAM_CBFS_SPINLOCK))
-	#define LOCK_NVRAM_CBFS_SPINLOCK spin_lock(romstage_nvram_cbfs_lock());
-	#define UNLOCK_NVRAM_CBFS_SPINLOCK spin_unlock(romstage_nvram_cbfs_lock());
+	#define LOCK_NVRAM_CBFS_SPINLOCK() spin_lock(romstage_nvram_cbfs_lock())
+	#define UNLOCK_NVRAM_CBFS_SPINLOCK() spin_unlock(romstage_nvram_cbfs_lock())
 #else
-	#define LOCK_NVRAM_CBFS_SPINLOCK
-	#define UNLOCK_NVRAM_CBFS_SPINLOCK
+	#define LOCK_NVRAM_CBFS_SPINLOCK() { }
+	#define UNLOCK_NVRAM_CBFS_SPINLOCK() { }
 #endif
 
 static void cmos_reset_date(void)
@@ -63,11 +63,12 @@ static void cmos_reset_date(void)
 
 static int cmos_checksum_valid(int range_start, int range_end, int cks_loc)
 {
+	int i;
+	u16 sum, old_sum;
+
 	if (IS_ENABLED(CONFIG_STATIC_OPTION_TABLE))
 		return 1;
 
-	int i;
-	u16 sum, old_sum;
 	sum = 0;
 	for (i = range_start; i <= range_end; i++)
 		sum += cmos_read(i);
@@ -80,6 +81,7 @@ static void cmos_set_checksum(int range_start, int range_end, int cks_loc)
 {
 	int i;
 	u16 sum;
+
 	sum = 0;
 	for (i = range_start; i <= range_end; i++)
 		sum += cmos_read(i);
@@ -155,7 +157,7 @@ void cmos_init(bool invalid)
 	if (IS_ENABLED(CONFIG_USE_OPTION_TABLE)) {
 		/* See if there is a LB CMOS checksum error */
 		checksum_invalid = !cmos_checksum_valid(LB_CKS_RANGE_START,
-				LB_CKS_RANGE_END,LB_CKS_LOC);
+				LB_CKS_RANGE_END, LB_CKS_LOC);
 		if (checksum_invalid)
 			printk(BIOS_DEBUG, "RTC: coreboot checksum invalid\n");
 
@@ -180,7 +182,7 @@ static enum cb_err get_cmos_value(unsigned long bit, unsigned long length,
 				  void *vret)
 {
 	unsigned char *ret;
-	unsigned long byte,byte_bit;
+	unsigned long byte, byte_bit;
 	unsigned long i;
 	unsigned char uchar;
 
@@ -215,7 +217,7 @@ enum cb_err get_option(void *dest, const char *name)
 	if (!IS_ENABLED(CONFIG_USE_OPTION_TABLE))
 		return CB_CMOS_OTABLE_DISABLED;
 
-	LOCK_NVRAM_CBFS_SPINLOCK
+	LOCK_NVRAM_CBFS_SPINLOCK();
 
 	/* Figure out how long name is */
 	namelen = strnlen(name, CMOS_MAX_NAME_LENGTH);
@@ -227,12 +229,12 @@ enum cb_err get_option(void *dest, const char *name)
 		printk(BIOS_ERR, "RTC: cmos_layout.bin could not be found. "
 						"Options are disabled\n");
 
-		UNLOCK_NVRAM_CBFS_SPINLOCK
+		UNLOCK_NVRAM_CBFS_SPINLOCK();
 		return CB_CMOS_LAYOUT_NOT_FOUND;
 	}
-	ce = (struct cmos_entries*)((unsigned char *)ct + ct->header_length);
-	for(; ce->tag == LB_TAG_OPTION;
-		ce = (struct cmos_entries*)((unsigned char *)ce + ce->size)) {
+	ce = (struct cmos_entries *)((unsigned char *)ct + ct->header_length);
+	for (; ce->tag == LB_TAG_OPTION;
+		ce = (struct cmos_entries *)((unsigned char *)ce + ce->size)) {
 		if (memcmp(ce->name, name, namelen) == 0) {
 			found = 1;
 			break;
@@ -240,19 +242,19 @@ enum cb_err get_option(void *dest, const char *name)
 	}
 	if (!found) {
 		printk(BIOS_DEBUG, "WARNING: No CMOS option '%s'.\n", name);
-		UNLOCK_NVRAM_CBFS_SPINLOCK
+		UNLOCK_NVRAM_CBFS_SPINLOCK();
 		return CB_CMOS_OPTION_NOT_FOUND;
 	}
 
 	if (get_cmos_value(ce->bit, ce->length, dest) != CB_SUCCESS) {
-		UNLOCK_NVRAM_CBFS_SPINLOCK
+		UNLOCK_NVRAM_CBFS_SPINLOCK();
 		return CB_CMOS_ACCESS_ERROR;
 	}
 	if (!cmos_checksum_valid(LB_CKS_RANGE_START, LB_CKS_RANGE_END, LB_CKS_LOC)) {
-		UNLOCK_NVRAM_CBFS_SPINLOCK
+		UNLOCK_NVRAM_CBFS_SPINLOCK();
 		return CB_CMOS_CHECKSUM_INVALID;
 	}
-	UNLOCK_NVRAM_CBFS_SPINLOCK
+	UNLOCK_NVRAM_CBFS_SPINLOCK();
 	return CB_SUCCESS;
 }
 
@@ -260,7 +262,7 @@ static enum cb_err set_cmos_value(unsigned long bit, unsigned long length,
 				  void *vret)
 {
 	unsigned char *ret;
-	unsigned long byte,byte_bit;
+	unsigned long byte, byte_bit;
 	unsigned long i;
 	unsigned char uchar, mask;
 	unsigned int chksum_update_needed = 0;
@@ -319,9 +321,9 @@ enum cb_err set_option(const char *name, void *value)
 				 "Options are disabled\n");
 		return CB_CMOS_LAYOUT_NOT_FOUND;
 	}
-	ce = (struct cmos_entries*)((unsigned char *)ct + ct->header_length);
-	for(; ce->tag == LB_TAG_OPTION;
-		ce = (struct cmos_entries*)((unsigned char *)ce + ce->size)) {
+	ce = (struct cmos_entries *)((unsigned char *)ct + ct->header_length);
+	for (; ce->tag == LB_TAG_OPTION;
+		ce = (struct cmos_entries *)((unsigned char *)ce + ce->size)) {
 		if (memcmp(ce->name, name, namelen) == 0) {
 			found = 1;
 			break;
@@ -338,11 +340,11 @@ enum cb_err set_option(const char *name, void *value)
 		/* make sure the string is null terminated */
 		if (set_cmos_value(ce->bit + ce->length - 8, 8, &(u8[]){0})
 		    != CB_SUCCESS)
-			return (CB_CMOS_ACCESS_ERROR);
+			return CB_CMOS_ACCESS_ERROR;
 	}
 
 	if (set_cmos_value(ce->bit, length, value) != CB_SUCCESS)
-		return (CB_CMOS_ACCESS_ERROR);
+		return CB_CMOS_ACCESS_ERROR;
 
 	return CB_SUCCESS;
 }
@@ -352,7 +354,7 @@ enum cb_err set_option(const char *name, void *value)
  * hurts some OSes. Even if we don't set USE_OPTION_TABLE, we need
  * to make sure the date is valid.
  */
-void cmos_check_update_date()
+void cmos_check_update_date(void)
 {
 	u8 year, century;
 
@@ -369,7 +371,8 @@ void cmos_check_update_date()
 		cmos_reset_date();
 }
 
-int rtc_set(const struct rtc_time *time){
+int rtc_set(const struct rtc_time *time)
+{
 	cmos_write(bin2bcd(time->sec), RTC_CLK_SECOND);
 	cmos_write(bin2bcd(time->min), RTC_CLK_MINUTE);
 	cmos_write(bin2bcd(time->hour), RTC_CLK_HOUR);

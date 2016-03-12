@@ -43,7 +43,7 @@ enum {
 	PIT_CTRL_SELECT_1 = 0x40,
 	PIT_CTRL_SELECT_2 = 0x80,
 
-	PIT_CTRL_READLOAD_MASK= 0x30,
+	PIT_CTRL_READLOAD_MASK = 0x30,
 	PIT_CTRL_COUNTER_LATCH = 0x00,
 	PIT_CTRL_READLOAD_LSB = 0x10,
 	PIT_CTRL_READLOAD_MSB = 0x20,
@@ -68,28 +68,28 @@ enum {
 
 
 static void
-make_tone (uint16_t freq_count, unsigned int duration)
+make_tone(uint16_t freq_count, unsigned int duration)
 {
-	outb (PIT_CTRL_SELECT_2
+	outb(PIT_CTRL_SELECT_2
 		   | PIT_CTRL_READLOAD_WORD
 		   | PIT_CTRL_SQUAREWAVE_GEN
 		   | PIT_CTRL_COUNT_BINARY, PIT_CTRL);
 
-	outb (freq_count & 0xff, PIT_COUNTER_2);
+	outb(freq_count & 0xff, PIT_COUNTER_2);
 
-	outb ((freq_count >> 8) & 0xff, PIT_COUNTER_2);
+	outb((freq_count >> 8) & 0xff, PIT_COUNTER_2);
 
-	outb (inb (PIT_SPEAKER_PORT)
+	outb(inb(PIT_SPEAKER_PORT)
 		   | PIT_SPK_TMR2 | PIT_SPK_DATA,
 		   PIT_SPEAKER_PORT);
 
 	for (; duration; duration--) {
 		unsigned short counter, previous_counter = 0xffff;
+
 		while (1) {
-			counter = inb (PIT_COUNTER_2);
-			counter |= ((uint16_t) inb (PIT_COUNTER_2)) << 8;
-			if (counter > previous_counter)
-			{
+			counter = inb(PIT_COUNTER_2);
+			counter |= ((uint16_t)inb(PIT_COUNTER_2)) << 8;
+			if (counter > previous_counter) {
 				previous_counter = counter;
 				break;
 			}
@@ -102,20 +102,22 @@ void spkmodem_tx_byte(unsigned char c)
 {
 	int i;
 
-	make_tone (SPEAKER_PIT_FREQUENCY / 200, 4);
+	make_tone(SPEAKER_PIT_FREQUENCY / 200, 4);
 	for (i = 7; i >= 0; i--) {
 		if ((c >> i) & 1)
-			make_tone (SPEAKER_PIT_FREQUENCY / 2000, 20);
+			make_tone(SPEAKER_PIT_FREQUENCY / 2000, 20);
 		else
-			make_tone (SPEAKER_PIT_FREQUENCY / 4000, 40);
-		make_tone (SPEAKER_PIT_FREQUENCY / 1000, 10);
+			make_tone(SPEAKER_PIT_FREQUENCY / 4000, 40);
+		make_tone(SPEAKER_PIT_FREQUENCY / 1000, 10);
 	}
-	make_tone (SPEAKER_PIT_FREQUENCY / 200, 0);
+	make_tone(SPEAKER_PIT_FREQUENCY / 200, 0);
 }
 
 void spkmodem_init(void)
 {
-	/* Some cards need time to come online.  Output some message to get it started.  */
+	/* Some cards need time to come online.
+	 * Output some message to get it started.
+	 */
 	spkmodem_tx_byte('S');
 	spkmodem_tx_byte('P');
 	spkmodem_tx_byte('K');

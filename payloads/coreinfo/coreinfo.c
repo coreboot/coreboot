@@ -247,6 +247,8 @@ static void loop(void)
 	halfdelay(10);
 
 	while (1) {
+		int ch = -1;
+
 #if IS_ENABLED(CONFIG_SHOW_DATE_TIME)
 		print_time_and_date();
 		wrefresh(menuwin);
@@ -257,20 +259,21 @@ static void loop(void)
 		if (key == ERR)
 			continue;
 
-		if (key >= KEY_F(1) && key <= KEY_F(9)) {
-			unsigned char ch = key - KEY_F(1);
+		if (key >= KEY_F(1) && key <= KEY_F(9))
+			ch = key - KEY_F(1);
+		if (key >= '1' && key <= '9')
+			ch = key - '1';
 
-			if (ch <= ARRAY_SIZE(categories)) {
-				if (ch == ARRAY_SIZE(categories))
-					continue;
-				if (categories[ch].count == 0)
-					continue;
-
-				curwin = ch;
-				print_submenu(&categories[curwin]);
-				redraw_module(&categories[curwin]);
+		if (ch >= 0 && ch <= ARRAY_SIZE(categories)) {
+			if (ch == ARRAY_SIZE(categories))
 				continue;
-			}
+			if (categories[ch].count == 0)
+				continue;
+
+			curwin = ch;
+			print_submenu(&categories[curwin]);
+			redraw_module(&categories[curwin]);
+			continue;
 		}
 
 		if (key == KEY_ESC)

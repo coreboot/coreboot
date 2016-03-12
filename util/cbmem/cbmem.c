@@ -362,7 +362,7 @@ static int parse_cbtable(u64 address, size_t table_size, uint8_t abort_on_failur
 
 #if defined(linux) && (defined(__i386__) || defined(__x86_64__))
 /*
- * read CPU frequency from a sysfs file, return an frequency in Kilohertz as
+ * read CPU frequency from a sysfs file, return an frequency in Megahertz as
  * an int or exit on any error.
  */
 static unsigned long arch_tick_frequency(void)
@@ -394,7 +394,8 @@ static unsigned long arch_tick_frequency(void)
 	rv = strtoull(freqs, &endp, 10);
 
 	if (*endp == '\0' || *endp == '\n')
-		return rv;
+	/* cpuinfo_max_freq is in kHz. Convert it to MHz. */
+		return rv / 1000;
 	fprintf(stderr, "Wrong formatted value ^%s^ read from %s\n",
 		freqs, freq_file);
 	exit(1);

@@ -50,7 +50,7 @@ HOSTCXXFLAGS := -I$(srck) -I$(objk)
 LIBCONFIG_PATH := ../libpayload
 LIBPAYLOAD_DIR := $(coreinfo_obj)/libpayload
 HAVE_LIBPAYLOAD := $(wildcard $(LIBPAYLOAD_DIR)/lib/libpayload.a)
-LIB_CONFIG ?= defconfig
+LIBPAYLOAD_CONFIG ?= configs/defconfig-tinycurses
 OBJCOPY ?= objcopy
 
 INCLUDES = -I$(coreinfo_obj) -include $(LIBPAYLOAD_DIR)/include/kconfig.h
@@ -117,7 +117,7 @@ else
 libpayload:
 	printf "Building libpayload @ $(LIBCONFIG_PATH).\n"
 	$(MAKE) -C $(LIBCONFIG_PATH) distclean coreinfo_obj=$(coreinfo_obj)/libptmp
-	$(MAKE) -C $(LIBCONFIG_PATH) $(LIB_CONFIG)
+	$(MAKE) -C $(LIBCONFIG_PATH) defconfig KBUILD_DEFCONFIG=$(LIBPAYLOAD_CONFIG)
 	$(MAKE) -C $(LIBCONFIG_PATH) install DESTDIR=$(coreinfo_obj)
 endif
 

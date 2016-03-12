@@ -80,6 +80,10 @@ config REMOTEGDB
 	help
 	  Enable Remote GDB debugging support.
 
+config MEMMAP_RAM_ONLY
+	bool "Only consider RAM entries in memory map for further processing"
+	default n
+
 endmenu
 
 menu "Architecture Options"
@@ -109,10 +113,6 @@ config ARCH_MIPS
 	  Support the MIPS architecture
 
 endchoice
-
-config MEMMAP_RAM_ONLY
-	bool "Only consider RAM entries in memory map for further processing"
-	default n
 
 config MULTIBOOT
 	bool "Multiboot header support"

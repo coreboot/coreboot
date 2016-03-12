@@ -42,4 +42,3 @@ enum {
 int ps8640_init(uint8_t bus, uint8_t chip);
 int ps8640_get_edid(uint8_t bus, uint8_t chip, struct edid *out);
 #endif
-

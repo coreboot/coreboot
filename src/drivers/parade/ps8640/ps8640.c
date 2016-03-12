@@ -25,7 +25,7 @@ int ps8640_get_edid(uint8_t bus, uint8_t chip, struct edid *out)
 {
 	int ret;
 	u8 edid[EDID_LENGTH * 2];
-	u32 edid_size;
+	int edid_size;
 
 	i2c_writeb(bus, chip + 2, PAGE2_I2C_BYPASS,
 		   EDID_I2C_ADDR | I2C_BYPASS_EN);

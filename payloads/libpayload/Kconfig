@@ -623,10 +623,12 @@ config LITTLE_ENDIAN
 	default n
 	bool
 
-# Whether the target system has an IO address space.
 config IO_ADDRESS_SPACE
 	default n
 	bool
+	help
+	  This option is turned on if the target system has a separate
+	  IO address space. This is typically only the case on x86.
 
 source "arch/arm/Kconfig"
 source "arch/arm64/Kconfig"

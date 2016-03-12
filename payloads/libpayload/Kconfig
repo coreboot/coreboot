@@ -80,12 +80,6 @@ config REMOTEGDB
 	help
 	  Enable Remote GDB debugging support.
 
-config CHROMEOS
-	bool "ChromeOS specific features"
-	default n
-	help
-	  Enable ChromeOS specific features.
-
 endmenu
 
 menu "Architecture Options"

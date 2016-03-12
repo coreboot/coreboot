@@ -78,7 +78,6 @@ static void cb_parse_serial(void *ptr, struct sysinfo_t *info)
 	info->serial = ((struct cb_serial *)ptr);
 }
 
-#if IS_ENABLED(CONFIG_LP_CHROMEOS)
 static void cb_parse_vboot_handoff(unsigned char *ptr, struct sysinfo_t *info)
 {
 	struct lb_range *vbho = (struct lb_range *)ptr;
@@ -127,8 +126,6 @@ static void cb_parse_mac_addresses(unsigned char *ptr,
 	for (i = 0; i < info->num_macs; i++)
 		info->macs[i] = macs->mac_addrs[i];
 }
-
-#endif
 
 static void cb_parse_tstamp(unsigned char *ptr, struct sysinfo_t *info)
 {
@@ -349,7 +346,6 @@ int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 		case CB_TAG_MAINBOARD:
 			info->mainboard = (struct cb_mainboard *)ptr;
 			break;
-#if IS_ENABLED(CONFIG_LP_CHROMEOS)
 		case CB_TAG_GPIO:
 			cb_parse_gpios(ptr, info);
 			break;
@@ -368,7 +364,6 @@ int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 		case CB_TAG_SERIALNO:
 			cb_parse_string(ptr, &info->serialno);
 			break;
-#endif
 		case CB_TAG_TIMESTAMPS:
 			cb_parse_tstamp(ptr, info);
 			break;

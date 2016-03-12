@@ -1703,7 +1703,7 @@ static void TrainDQSReceiverEnCyc_D_Fam15(struct MCTStatStruc *pMCTstat,
 
 					/* Reset the read data timing registers to 1UI before calculating MaxRdLatency */
 					for (internal_lane = 0; internal_lane < MAX_BYTE_LANES; internal_lane++)
-						current_read_dqs_delay[internal_lane] = 0x20 << 1;
+						current_read_dqs_delay[internal_lane] = 0x20;
 					write_dqs_read_data_timing_registers(current_read_dqs_delay, dev, dct, dimm, index_reg);
 
 					/* Calculate and program MaxRdLatency */

@@ -1,2 +1,0 @@
-source src/drivers/xgi/common/Kconfig
-source src/drivers/xgi/z9s/Kconfig

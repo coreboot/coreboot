@@ -187,6 +187,10 @@ else
             _LDFLAGS="$_LDFLAGS -Wl,--fix-cortex-a53-843419"
     fi
 
+    _LDFLAGS="$_LDFLAGS -Wl,--defsym=CONFIG_LP_BASE_ADDRESS=$CONFIG_LP_BASE_ADDRESS"
+    _LDFLAGS="$_LDFLAGS -Wl,--defsym=CONFIG_LP_HEAP_SIZE=$CONFIG_LP_HEAP_SIZE"
+    _LDFLAGS="$_LDFLAGS -Wl,--defsym=CONFIG_LP_STACK_SIZE=$CONFIG_LP_STACK_SIZE"
+
     if [ $DEBUGME -eq 1 ]; then
 	echo "$DEFAULT_CC $_LDFLAGS $HEAD_O $CMDLINE $_CFLAGS -lpayload $_LIBGCC"
     fi

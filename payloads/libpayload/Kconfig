@@ -119,6 +119,35 @@ config MULTIBOOT
 	depends on ARCH_X86
 	default y
 
+config HEAP_SIZE
+	int "Heap size"
+	default 131072
+	help
+	  This is the heap size (malloc'able size) available
+	  to the payload.
+
+	  If unsure, set to 131072 (128K)
+
+config STACK_SIZE
+	int "Stack size"
+	default 16384
+	help
+	  This is the stack size available to the payload.
+
+	  If unsure, set to 16384 (16K)
+
+config BASE_ADDRESS
+	hex "Base address"
+	default 0x04000000 if ARCH_ARM
+	default 0x80100000 if ARCH_ARM64
+	default 0x00000000 if ARCH_MIPS
+	default 0x00100000 if ARCH_X86
+	help
+	  This is the base address for the payload.
+
+	  If unsure, set to 0x00100000 on x86, 0x00000000 on MIPS,
+	  0x04000000 on ARM or 0x80100000 on ARM64.
+
 endmenu
 
 menu "Standard Libraries"

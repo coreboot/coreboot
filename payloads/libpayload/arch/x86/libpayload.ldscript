@@ -27,19 +27,14 @@
  * SUCH DAMAGE.
  */
 
-BASE_ADDRESS = 0x100000;
-
 OUTPUT_FORMAT(elf32-i386)
 OUTPUT_ARCH(i386)
 
 ENTRY(_entry)
 
-HEAP_SIZE = 2*64*1024;
-STACK_SIZE = 16384;
-
 SECTIONS
 {
-	. = BASE_ADDRESS;
+	. = CONFIG_LP_BASE_ADDRESS;
 
 	. = ALIGN(16);
 	_start = .;
@@ -73,12 +68,12 @@ SECTIONS
 
 		. = ALIGN(16);
 		_heap = .;
-		. += HEAP_SIZE;
+		. += CONFIG_LP_HEAP_SIZE;
 		. = ALIGN(16);
 		_eheap = .;
 
 		_estack = .;
-		. += STACK_SIZE;
+		. += CONFIG_LP_STACK_SIZE;
 		. = ALIGN(16);
 		_stack = .;
 	}

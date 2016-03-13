@@ -23,7 +23,8 @@ payloads/libpayload \
 payloads/external/depthcharge \
 payloads/external/SeaBIOS \
 payloads/external/U-Boot \
-payloads/external/Memtest86Plus
+payloads/external/Memtest86Plus \
+payloads/external/iPXE
 
 payloads/coreinfo/build/coreinfo.elf coreinfo:
 	$(MAKE) -C payloads/coreinfo defaultbuild

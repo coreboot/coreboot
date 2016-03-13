@@ -1,0 +1,74 @@
+##
+## This file is part of the coreboot project.
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+
+choice
+	prompt "Add a PXE ROM"
+	default PXE_ROM
+	depends on ARCH_X86
+	optional
+
+config PXE_ROM
+	bool "Add an existing PXE ROM image"
+	help
+	  Select this option if you have a PXE ROM image that you would
+	  like to add to your ROM.
+
+config BUILD_IPXE
+	bool "Build and add an iPXE ROM"
+	help
+	  Select this option to fetch and build a ROM from the iPXE project.
+
+endchoice
+
+choice
+	prompt "iPXE version"
+	default IPXE_STABLE
+	depends on BUILD_IPXE
+
+config IPXE_STABLE
+	bool "2016.2"
+	help
+	  iPXE uses a rolling release with no stable version, for
+	  reproducibility, use the last commit of a given month as the
+	  'stable' version.
+	  This is iPXE from the end of February, 2016.
+
+config IPXE_MASTER
+	bool "master"
+	help
+	  Newest iPXE version.
+
+endchoice
+
+config PXE_ROM_FILE
+	string "PXE ROM filename"
+	depends on PXE_ROM
+	default "pxe.rom"
+	help
+	  The path and filename of the file to use as PXE ROM.
+
+config PXE_ROM_ID
+	string "network card PCI IDs"
+	depends on PXE_ROM || BUILD_IPXE
+	default "10ec,8168"
+	help
+	  The comma-separated PCI vendor and device ID that would associate
+	  your PXE ROM to your network card.
+
+	  Example: 10ec,8168
+
+	  In the above example 10ec is the PCI vendor ID (in hex, but without
+	  the "0x" prefix) and 8168 specifies the PCI device ID of the
+	  network card (also in hex, without "0x" prefix).
+
+	  Under GNU/Linux you can run `lspci -nn` to list the IDs of your PCI devices.

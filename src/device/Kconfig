@@ -351,36 +351,6 @@ config MBI_FILE
 	help
 	  The path and filename of the file to use as VGA BIOS.
 
-config PXE_ROM
-	bool "Add a PXE ROM image"
-	depends on ARCH_X86
-	help
-	  Select this option if you have a PXE ROM image that you would
-	  like to add to your ROM.
-
-config PXE_ROM_FILE
-	string "PXE ROM filename"
-	depends on PXE_ROM
-	default "pxe.rom"
-	help
-	  The path and filename of the file to use as PXE ROM.
-
-config PXE_ROM_ID
-	string "network card PCI IDs"
-	depends on PXE_ROM
-	default "10ec,8168"
-	help
-	  The comma-separated PCI vendor and device ID that would associate
-	  your PXE ROM to your network card.
-
-	  Example: 10ec,8168
-
-	  In the above example 10ec is the PCI vendor ID (in hex, but without
-	  the "0x" prefix) and 8168 specifies the PCI device ID of the
-	  network card (also in hex, without "0x" prefix).
-
-	  Under GNU/Linux you can run `lspci -nn` to list the IDs of your PCI devices.
-
 config SOFTWARE_I2C
 	bool "Enable I2C controller emulation in software"
 	default n

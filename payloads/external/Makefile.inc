@@ -112,3 +112,31 @@ payloads/external/Memtest86Plus/memtest86plus/memtest: $(top)/$(DOTCONFIG)
 		AS="$(AS_x86_32)" \
 		$(MEMTEST_SERIAL_OPTIONS) \
 		MFLAGS= MAKEFLAGS=
+
+PXE_ROM_PCI_ID:=$(subst $(comma),,$(CONFIG_PXE_ROM_ID))
+
+ifeq ($(CONFIG_PXE_ROM),y)
+PXE_ROM_FILE:=$(CONFIG_PXE_ROM_FILE)
+endif
+ifeq ($(CONFIG_BUILD_IPXE),y)
+PXE_ROM_FILE:=payloads/external/iPXE/ipxe/ipxe.rom
+endif
+
+ifeq ($(CONFIG_CONSOLE_SERIAL)$(CONFIG_DRIVERS_UART_8250IO),yy)
+IPXE_UART=COM$(call int-add,$(CONFIG_UART_FOR_CONSOLE) 1)
+endif
+
+cbfs-files-$(CONFIG_PXE_ROM)$(CONFIG_BUILD_IPXE) += pci$(CONFIG_PXE_ROM_ID).rom
+pci$(CONFIG_PXE_ROM_ID).rom-file := $(PXE_ROM_FILE)
+pci$(CONFIG_PXE_ROM_ID).rom-type := raw
+
+payloads/external/iPXE/ipxe/ipxe.rom ipxe: $(top)/$(DOTCONFIG)
+	$(MAKE) -C payloads/external/iPXE all \
+	CROSS_COMPILE="$(CROSS_COMPILE_$(ARCH-ramstage-y))" \
+	PXE_ROM_PCI_ID=$(PXE_ROM_PCI_ID) \
+	CONFIG_IPXE_MASTER=$(CONFIG_IPXE_MASTER) \
+	CONFIG_IPXE_STABLE=$(CONFIG_IPXE_STABLE) \
+	CONSOLE_SERIAL=$(CONFIG_CONSOLE_SERIAL)$(CONFIG_DRIVERS_UART_8250IO) \
+	IPXE_UART=$(IPXE_UART) \
+	CONFIG_TTYS0_BAUD=$(CONFIG_TTYS0_BAUD) \
+	MFLAGS= MAKEFLAGS=

@@ -829,10 +829,6 @@ cbfs-files-$(CONFIG_SEABIOS_VGA_COREBOOT) += vgaroms/seavgabios.bin
 vgaroms/seavgabios.bin-file := $(CONFIG_PAYLOAD_VGABIOS_FILE)
 vgaroms/seavgabios.bin-type := raw
 
-cbfs-files-$(CONFIG_PXE_ROM) += pci$(CONFIG_PXE_ROM_ID).rom
-pci$(CONFIG_PXE_ROM_ID).rom-file := $(CONFIG_PXE_ROM_FILE)
-pci$(CONFIG_PXE_ROM_ID).rom-type := raw
-
 cbfs-files-$(CONFIG_INCLUDE_CONFIG_FILE) += config
 config-file := $(DOTCONFIG):defconfig
 config-type := raw

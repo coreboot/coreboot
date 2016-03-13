@@ -24,7 +24,7 @@ export TZ=UTC
 
 top=`dirname $0`/../..
 
-if [ "${BUILD_TIMELESS}" -eq 1 ]; then
+if [ "${BUILD_TIMELESS}" = "1" ]; then
 	GITREV=Timeless
 	TIMESOURCE="fixed"
 	DATE=0

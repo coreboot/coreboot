@@ -135,6 +135,7 @@ struct ram_rank_timings {
 struct ramctr_timing_st;
 
 typedef struct ramctr_timing_st {
+	u16 spd_crc[NUM_CHANNELS][NUM_SLOTS];
 	int mobile;
 
 	u16 cas_supported;
@@ -324,6 +325,24 @@ static void report_memory_config(void)
 	}
 }
 
+/*
+ * Return CRC16 match for all SPDs.
+ */
+static int verify_crc16_spds_ddr3(spd_raw_data *spd, ramctr_timing *ctrl)
+{
+	int channel, slot, spd_slot;
+	int match = 1;
+
+	FOR_ALL_CHANNELS {
+		for (slot = 0; slot < NUM_SLOTS; slot++) {
+			spd_slot = 2 * channel + slot;
+			match &= ctrl->spd_crc[channel][slot] ==
+					spd_ddr3_calc_crc(spd[spd_slot], sizeof(spd_raw_data));
+		}
+	}
+	return match;
+}
+
 void read_spd(spd_raw_data * spd, u8 addr)
 {
 	int j;
@@ -375,6 +394,10 @@ static void dram_find_spds_ddr3(spd_raw_data *spd, ramctr_timing *ctrl)
 						 dimm->dimm[channel][slot].voltage);
 				spd_decode_ddr3(&dimm->dimm[channel][slot], spd[spd_slot]);
 			}
+
+			/* fill in CRC16 for MRC cache */
+			ctrl->spd_crc[channel][slot] =
+					spd_ddr3_calc_crc(spd[spd_slot], sizeof(spd_raw_data));
 
 			if (dimm->dimm[channel][slot].dram_type != SPD_MEMORY_TYPE_SDRAM_DDR3) {
 				// set dimm invalid
@@ -4014,12 +4037,14 @@ static void restore_timings(ramctr_timing * ctrl)
 	write32(DEFAULT_MCHBAR + 0x4ea8, 0);
 }
 
-static int try_init_dram_ddr3(ramctr_timing *ctrl, int s3resume,
+static int try_init_dram_ddr3(ramctr_timing *ctrl, int fast_boot,
 		int me_uma_size)
 {
 	int err;
 
-	if (!s3resume) {
+	printk(BIOS_DEBUG, "Starting RAM training (%d).\n", fast_boot);
+
+	if (!fast_boot) {
 		/* Find fastest common supported parameters */
 		dram_find_common_params(ctrl);
 
@@ -4029,7 +4054,7 @@ static int try_init_dram_ddr3(ramctr_timing *ctrl, int s3resume,
 	/* Set MCU frequency */
 	dram_freq(ctrl);
 
-	if (!s3resume) {
+	if (!fast_boot) {
 		/* Calculate timings */
 		dram_timing(ctrl);
 	}
@@ -4072,7 +4097,7 @@ static int try_init_dram_ddr3(ramctr_timing *ctrl, int s3resume,
 
 	udelay(1);
 
-	if (s3resume) {
+	if (fast_boot) {
 		restore_timings(ctrl);
 	} else {
 		/* Do jedec ddr3 reset sequence */
@@ -4123,11 +4148,9 @@ static int try_init_dram_ddr3(ramctr_timing *ctrl, int s3resume,
 
 	write_controller_mr(ctrl);
 
-	if (!s3resume) {
-		err = channel_test(ctrl);
-		if (err)
-			return err;
-	}
+	err = channel_test(ctrl);
+	if (err)
+		return err;
 
 	return 0;
 }
@@ -4138,6 +4161,9 @@ void init_dram_ddr3(spd_raw_data *spds, int mobile, int min_tck,
 	int me_uma_size;
 	int cbmem_was_inited;
 	ramctr_timing ctrl;
+	int fast_boot;
+	struct mrc_data_container *mrc_cache;
+	ramctr_timing *ctrl_cached;
 	int err;
 
 	MCHBAR32(0x5f00) |= 1;
@@ -4171,28 +4197,54 @@ void init_dram_ddr3(spd_raw_data *spds, int mobile, int min_tck,
 	early_pch_init_native();
 	early_thermal_init();
 
-	ctrl.mobile = mobile;
-	ctrl.tCK = min_tck;
-
-	/* FIXME: for non-S3 we should be able to use timing caching with
-	   proper verification. Right now we use timings only for S3 case.
-	 */
-	if (s3resume) {
-		struct mrc_data_container *mrc_cache;
-
-		mrc_cache = find_current_mrc_cache();
-		if (!mrc_cache || (mrc_cache->mrc_data_size < sizeof(ctrl))) {
+	/* try to find timings in MRC cache */
+	mrc_cache = find_current_mrc_cache();
+	if (!mrc_cache || (mrc_cache->mrc_data_size < sizeof(ctrl))) {
+		if (s3resume) {
 			/* Failed S3 resume, reset to come up cleanly */
 			outb(0x6, 0xcf9);
 			halt();
 		}
-		memcpy(&ctrl, mrc_cache->mrc_data, sizeof(ctrl));
+		ctrl_cached = NULL;
 	} else {
-		/* Get DDR3 SPD data */
-		dram_find_spds_ddr3(spds, &ctrl);
+		ctrl_cached = (ramctr_timing *)mrc_cache->mrc_data;
 	}
 
-	err = try_init_dram_ddr3(&ctrl, s3resume, me_uma_size);
+	/* verify MRC cache for fast boot */
+	if (ctrl_cached) {
+		/* check SPD CRC16 to make sure the DIMMs haven't been replaced */
+		fast_boot = verify_crc16_spds_ddr3(spds, ctrl_cached);
+		if (!fast_boot)
+			printk(BIOS_DEBUG, "Stored timings CRC16 mismatch.\n");
+		if (!fast_boot && s3resume) {
+			/* Failed S3 resume, reset to come up cleanly */
+			outb(0x6, 0xcf9);
+			halt();
+		}
+	} else
+		fast_boot = 0;
+
+	if (fast_boot) {
+		printk(BIOS_DEBUG, "Trying stored timings.\n");
+		memcpy(&ctrl, ctrl_cached, sizeof(ctrl));
+
+		err = try_init_dram_ddr3(&ctrl, fast_boot, me_uma_size);
+		if (err) {
+			/* no need to erase bad mrc cache here, it gets overritten on
+			 * successful boot. */
+			printk(BIOS_ERR, "Stored timings are invalid !\n");
+			fast_boot = 0;
+		}
+	}
+	if (!fast_boot) {
+		ctrl.mobile = mobile;
+		ctrl.tCK = min_tck;
+
+		/* Get DDR3 SPD data */
+		dram_find_spds_ddr3(spds, &ctrl);
+
+		err = try_init_dram_ddr3(&ctrl, fast_boot, me_uma_size);
+	}
 	if (err)
 		die("raminit failed");
 
@@ -4208,7 +4260,7 @@ void init_dram_ddr3(spd_raw_data *spds, int mobile, int min_tck,
 	/* Zone config */
 	dram_zones(&ctrl, 0);
 
-	if (!s3resume)
+	if (!fast_boot)
 		quick_ram_check();
 
 	intel_early_me_status();
@@ -4218,7 +4270,7 @@ void init_dram_ddr3(spd_raw_data *spds, int mobile, int min_tck,
 	report_memory_config();
 
 	cbmem_was_inited = !cbmem_recovery(s3resume);
-	if (!s3resume)
+	if (!fast_boot)
 		save_timings(&ctrl);
 	if (s3resume && !cbmem_was_inited) {
 		/* Failed S3 resume, reset to come up cleanly */

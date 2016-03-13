@@ -230,6 +230,36 @@ const char *smbios_mainboard_serial_number(void)
 	return serial;
 }
 
+/*
+ * Set up "Over Current Control 1" (reg 0x58) on the first OHCI device.
+ * The remaining ports on the second device are for mcpie2/sdcard and
+ * can stay at the power-on default value.
+ *
+ * The schematic shows this transposed mapping for the first device:
+ * chipset port 0 -> port 1 (j12 external 2, usboc0#)
+ * chipset port 1 -> port 4 (j17 mpcie1)
+ * chipset port 2 -> port 2 (j14 header row1, usboc1#)
+ * chipset port 3 -> port 3 (j14 header row2, usboc1#)
+ * chipset port 4 -> port 0 (j12 external 1. usboc0#)
+ *
+ * Register mapping:
+ * bit0-3: Mapping for HS Port 0
+ * bit4-7: Mapping for HS Port 1
+ * bit8-11: Mapping for HS Port 2
+ * bit12-15: Mapping for HS Port 3
+ * bit16-19: Mapping for HS Port 4
+ * bit20-31: Reserved (0)
+ *
+ * power-on default: 0xfffff
+ * A value >7 will disable the overcurrent detection.
+ */
+static void usb_oc_setup(void)
+{
+	device_t dev = dev_find_slot(0, PCI_DEVFN(0x12, 0));
+
+	pci_write_config32(dev, 0x58, 0x011f0);
+}
+
 static void mainboard_final(void *chip_info)
 {
 	u32 mmio_base;
@@ -245,6 +275,7 @@ static void mainboard_final(void *chip_info)
 	configure_gpio(mmio_base, GPIO_189, GPIO_FTN_1, GPIO_OUTPUT | GPIO_DATA_LOW);
 	configure_gpio(mmio_base, GPIO_190, GPIO_FTN_1, GPIO_OUTPUT | GPIO_DATA_HIGH);
 	configure_gpio(mmio_base, GPIO_191, GPIO_FTN_1, GPIO_OUTPUT | GPIO_DATA_HIGH);
+	usb_oc_setup();
 }
 
 struct chip_operations mainboard_ops = {

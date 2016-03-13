@@ -137,9 +137,9 @@ int spd_decode_ddr3(dimm_attr * dimm, spd_raw_data spd)
 		ret = SPD_STATUS_CRC_ERROR;
 	};
 
-	printram("  Revision: %x\n", spd[1]);
-	printram("  Type    : %x\n", spd[2]);
-	printram("  Key     : %x\n", spd[3]);
+	printram("  Revision           : %x\n", spd[1]);
+	printram("  Type               : %x\n", spd[2]);
+	printram("  Key                : %x\n", spd[3]);
 
 	reg8 = spd[4];
 	/* Number of memory banks */
@@ -149,7 +149,7 @@ int spd_decode_ddr3(dimm_attr * dimm, spd_raw_data spd)
 		ret = SPD_STATUS_INVALID_FIELD;
 	}
 	param = 1 << (val + 3);
-	printram("  Banks   : %u\n", param);
+	printram("  Banks              : %u\n", param);
 	/* SDRAM capacity */
 	capacity_shift = reg8 & 0x0f;
 	if (capacity_shift > 0x06) {
@@ -157,9 +157,9 @@ int spd_decode_ddr3(dimm_attr * dimm, spd_raw_data spd)
 		ret = SPD_STATUS_INVALID_FIELD;
 	}
 	if (capacity_shift < 0x02) {
-		printram("  Capacity: %u Mb\n", 256 << capacity_shift);
+		printram("  Capacity           : %u Mb\n", 256 << capacity_shift);
 	} else {
-		printram("  Capacity: %u Gb\n", 1 << (capacity_shift - 2));
+		printram("  Capacity           : %u Gb\n", 1 << (capacity_shift - 2));
 	}
 
 	reg8 = spd[5];
@@ -180,7 +180,7 @@ int spd_decode_ddr3(dimm_attr * dimm, spd_raw_data spd)
 
 	/* Module nominal voltage */
 	reg8 = spd[6];
-	printram("  Supported voltages:");
+	printram("  Supported voltages :");
 	if (reg8 & (1 << 2)) {
 		dimm->flags.operable_1_25V = 1;
 		dimm->voltage = 1250;
@@ -214,7 +214,7 @@ int spd_decode_ddr3(dimm_attr * dimm, spd_raw_data spd)
 		ret = SPD_STATUS_INVALID_FIELD;
 	}
 	dimm->width = (4 << val);
-	printram("  SDRAM width       : %u\n", dimm->width);
+	printram("  SDRAM width        : %u\n", dimm->width);
 
 	/* Memory bus width */
 	reg8 = spd[8];
@@ -225,7 +225,7 @@ int spd_decode_ddr3(dimm_attr * dimm, spd_raw_data spd)
 		ret = SPD_STATUS_INVALID_FIELD;
 	}
 	dimm->flags.is_ecc = val ? 1 : 0;
-	printram("  Bus extension     : %u bits\n", val ? 8 : 0);
+	printram("  Bus extension      : %u bits\n", val ? 8 : 0);
 	/* Bus width */
 	val = reg8 & 0x07;
 	if (val > 3) {
@@ -233,7 +233,7 @@ int spd_decode_ddr3(dimm_attr * dimm, spd_raw_data spd)
 		ret = SPD_STATUS_INVALID_FIELD;
 	}
 	bus_width = 8 << val;
-	printram("  Bus width         : %u\n", bus_width);
+	printram("  Bus width          : %u\n", bus_width);
 
 	/* We have all the info we need to compute the dimm size */
 	/* Capacity is 256Mbit multiplied by the power of 2 specified in
@@ -282,7 +282,7 @@ int spd_decode_ddr3(dimm_attr * dimm, spd_raw_data spd)
 
 	/* SDRAM Optional Features */
 	reg8 = spd[30];
-	printram("  Optional features :");
+	printram("  Optional features  :");
 	if (reg8 & 0x80) {
 		dimm->flags.dll_off_mode = 1;
 		printram(" DLL-Off_mode");
@@ -299,7 +299,7 @@ int spd_decode_ddr3(dimm_attr * dimm, spd_raw_data spd)
 
 	/* SDRAM Thermal and Refresh Options */
 	reg8 = spd[31];
-	printram("  Thermal features  :");
+	printram("  Thermal features   :");
 	if (reg8 & 0x80) {
 		dimm->flags.pasr = 1;
 		printram(" PASR");
@@ -326,27 +326,28 @@ int spd_decode_ddr3(dimm_attr * dimm, spd_raw_data spd)
 	reg8 = spd[32];
 	if (reg8 & 0x80)
 		dimm->flags.therm_sensor = 1;
-	printram("  Thermal sensor    : %s\n",
+	printram("  Thermal sensor     : %s\n",
 		 dimm->flags.therm_sensor ? "yes" : "no");
 
 	/*  SDRAM Device Type */
 	reg8 = spd[33];
-	printram("  Standard SDRAM    : %s\n", (reg8 & 0x80) ? "no" : "yes");
+	printram("  Standard SDRAM     : %s\n", (reg8 & 0x80) ? "no" : "yes");
 
 	if (spd[63] & 0x01) {
 		dimm->flags.pins_mirrored = 1;
-		printram("  DIMM Rank1 Address bits mirrored!!!\n");
 	}
+	printram("  Rank1 Address bits : %s\n",
+			(spd[63] & 0x01) ? "mirrored" : "normal");
 
 	dimm->reference_card = spd[62] & 0x1f;
-	printram("  DIMM Reference card %c\n", 'A' + dimm->reference_card);
+	printram("  DIMM Reference card: %c\n", 'A' + dimm->reference_card);
 
 	dimm->manufacturer_id = (spd[118] << 8) | spd[117];
-	printram("  DIMM Manufacturer ID %x\n", dimm->manufacturer_id);
+	printram("  Manufacturer ID    : %x\n", dimm->manufacturer_id);
 
 	dimm->part_number[16] = 0;
 	memcpy(dimm->part_number, &spd[128], 16);
-	printram("  DIMM Part number %s\n", dimm->part_number);
+	printram("  Part number        : %s\n", dimm->part_number);
 
 	return ret;
 }
@@ -397,7 +398,8 @@ int spd_xmp_decode_ddr3(dimm_attr *dimm,
 			dimm->dram_type = SPD_MEMORY_TYPE_UNDEFINED;
 			return SPD_STATUS_INVALID;
 		}
-		printram("  XMP Profile 1\n");
+
+		printram("  XMP Profile        : 1\n");
 		xmp = &spd[185];
 
 		/* Medium Timebase =
@@ -412,7 +414,7 @@ int spd_xmp_decode_ddr3(dimm_attr *dimm,
 			dimm->dram_type = SPD_MEMORY_TYPE_UNDEFINED;
 			return SPD_STATUS_INVALID;
 		}
-		printram("  XMP Profile 2\n");
+		printram("  XMP Profile        : 2\n");
 		xmp = &spd[220];
 
 		/* Medium Timebase =
@@ -422,16 +424,18 @@ int spd_xmp_decode_ddr3(dimm_attr *dimm,
 
 		dimm->dimms_per_channel = ((spd[178] >> 4) & 0x3) + 1;
 	}
-	printram("  Max DIMMs per channel: %u\n",
+
+	printram("  Max DIMMs/channel  : %u\n",
 			dimm->dimms_per_channel);
 
-	printram("  XMP Revision: %u.%u\n", spd[179] >> 4, spd[179] & 0xf);
+	printram("  XMP Revision       : %u.%u\n", spd[179] >> 4, spd[179] & 0xf);
 
 	/* calculate voltage in mV */
 	dimm->voltage = (xmp[0] & 1) * 50;
 	dimm->voltage += ((xmp[0] >> 1) & 0xf) * 100;
 	dimm->voltage += ((xmp[0] >> 5) & 0x3) * 1000;
-	printram("  Requested voltage: %u mV\n", dimm->voltage);
+
+	printram("  Requested voltage  : %u mV\n", dimm->voltage);
 
 	/* SDRAM Minimum Cycle Time (tCKmin) */
 	dimm->tCK = xmp[1] * mtb;

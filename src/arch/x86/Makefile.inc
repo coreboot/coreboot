@@ -274,16 +274,6 @@ ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_64),y)
 target-objcopy=-O elf64-x86-64 -B i386:x86-64
 endif
 
-ifeq ($(CONFIG_COMPILE_IN_DSDT),y)
-ramstage-srcs += $(obj)/dsdt.aml
-
-define ramstage-objs_aml_template
-$(call src-to-obj,ramstage,$(1).aml): $(1).aml
-	@printf "    OBJCOPY    $$(subst $$(obj)/,,$$(@))\n"
-	cd $$(dir $$@) && $$(OBJCOPY_ramstage) -I binary $$(target-objcopy) $$(notdir $$<) $$(notdir $$@)
-endef
-endif
-
 ramstage-srcs += $(wildcard src/mainboard/$(MAINBOARDDIR)/mainboard.c)
 ifeq ($(CONFIG_GENERATE_MP_TABLE),y)
 ifneq ($(wildcard src/mainboard/$(MAINBOARDDIR)/mptable.c),)
@@ -298,11 +288,7 @@ ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/reset.c
 endif
 ifeq ($(CONFIG_HAVE_ACPI_TABLES),y)
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/acpi_tables.c
-ifeq ($(CONFIG_COMPILE_IN_DSDT),y)
-$(eval $(call asl_template,dsdt,n))
-else
 $(eval $(call asl_template,dsdt))
-endif
 ifneq ($(wildcard src/mainboard/$(MAINBOARDDIR)/fadt.c),)
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/fadt.c
 endif

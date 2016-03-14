@@ -1,0 +1,143 @@
+/*
+ * This file is part of the coreboot project.
+ *
+ * Copyright (C) 2016 Intel Corp.
+ * (Alexandru Gagniuc <alexandrux.gagniuc@intel.com> for Intel Corp.)
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+#include <device/device.h>
+#include <soc/gpio.h>
+
+/* TODO: Move GPIO config to its own file once we get more GPIOs in the list */
+static const struct pad_config amenia_gpios[] = {
+	PAD_CFG_NF(GPIO_46, NATIVE, DEEP, NF1),		/* UART2 RX*/
+	PAD_CFG_NF(GPIO_47, NATIVE, DEEP, NF1),		/* UART2 TX*/
+	PAD_CFG_NF(GPIO_193, NATIVE, DEEP, NF1),	/* PANEL0_VDDEN */
+	PAD_CFG_NF(GPIO_194, NATIVE, DEEP, NF1),	/* PANEL0_BKLTEN */
+	PAD_CFG_NF(GPIO_195, NATIVE, DEEP, NF1),	/* PANEL0_BKLTCTL */
+
+	PAD_CFG_GPI(GPIO_9, UP_20K, DEEP),		/* SPI_TPM_IRQ_N  */
+	PAD_CFG_GPI_SCI(GPIO_11, UP_20K, DEEP, LEVEL, NONE),	/* SOC_WAKE_SCI_N */
+	PAD_CFG_GPI_APIC(GPIO_18, UP_20K, DEEP, LEVEL, NONE),	/* Trackpad_INT_N */
+	PAD_CFG_GPI_APIC(GPIO_19, UP_20K, DEEP, LEVEL, NONE),	/* Audio_Jack_Present_N */
+	PAD_CFG_GPI_APIC(GPIO_21, UP_20K, DEEP, LEVEL, NONE),	/* TCH_INT_N */
+	PAD_CFG_GPI_APIC(GPIO_22, UP_20K, DEEP, LEVEL, NONE),	/* EC_SOC_WAKE_1P8_N */
+	PAD_CFG_GPO(GPIO_23, 1, DEEP),			/* GPS_NSTANDBY */
+	PAD_CFG_GPO(GPIO_24, 1, DEEP),			/* SSD_SATA_DEVSLP */
+	PAD_CFG_GPI_APIC(GPIO_30, UP_20K, DEEP, LEVEL, NONE),	/* EC_KBD_IRQ_SOC_N */
+	PAD_CFG_NF(GPIO_32, NATIVE, DEEP, NF5),		/* GPS_SUSCLK_32K */
+	PAD_CFG_GPI(GPIO_33, UP_20K, DEEP),		/* EC_KBD_IRQ_SOC_N */
+	PAD_CFG_GPO(GPIO_36, 0, DEEP),			/* TOUCH_PNL_RST */
+	PAD_CFG_NF(GPIO_37, NATIVE, DEEP, NF1),		/* SOC_BUZZER */
+	PAD_CFG_GPI(GPIO_41, UP_20K, DEEP),		/* LPSS_UART0_CTS_B */
+
+	PAD_CFG_NF(GPIO_42, NATIVE, DEEP, NF1),		/* GPS_UART_RXD */
+	PAD_CFG_NF(GPIO_43, NATIVE, DEEP, NF1),		/* GPS_UART_TXD */
+	PAD_CFG_NF(GPIO_44, NATIVE, DEEP, NF1),		/* GPS_UART_RTS_B */
+	PAD_CFG_NF(GPIO_45, NATIVE, DEEP, NF1),		/* GPS_UART_CTS_N */
+
+	PAD_CFG_GPI_SMI(GPIO_49, UP_20K, DEEP, LEVEL, NONE),	/* EC_SMI_N */
+	PAD_CFG_GPI(GPIO_75, UP_20K, DEEP),		/* SPI_WP_STAT */
+
+	PAD_CFG_NF(GPIO_79, NATIVE, DEEP, NF1),		/* DMIC_CLK_A1 */
+	PAD_CFG_NF(GPIO_80, NATIVE, DEEP, NF1),		/* DMIC_CLK_B1 */
+	PAD_CFG_NF(GPIO_81, NATIVE, DEEP, NF1),		/* DMIC_DATA_1 */
+	PAD_CFG_NF(GPIO_82, NATIVE, DEEP, NF1),		/* DMIC_CLK_AB2 */
+	PAD_CFG_NF(GPIO_83, NATIVE, DEEP, NF1),		/* DMIC_DATA_2 */
+	PAD_CFG_NF(GPIO_84, NATIVE, DEEP, NF1),		/* MCLK */
+
+	PAD_CFG_NF(GPIO_85, NATIVE, DEEP, NF1),		/* I2S2_BCLK_AMP */
+	PAD_CFG_NF(GPIO_86, NATIVE, DEEP, NF1),		/* I2S2_SYNC_AMP */
+	PAD_CFG_NF(GPIO_87, NATIVE, DEEP, NF1),		/* I2S2_SDI_AMP */
+	PAD_CFG_NF(GPIO_88, NATIVE, DEEP, NF1),		/* I2S2_SDO_AMP */
+	PAD_CFG_NF(GPIO_106, NATIVE, DEEP, NF3),	/* FST_SPI_CS2_N */
+	PAD_CFG_GPI_APIC(GPIO_116, UP_20K, DEEP, LEVEL, INVERT),	/* AUDIO_CODEC_IRQ_N */
+
+	PAD_CFG_NF(GPIO_124, UP_2K, DEEP, NF1),		/* I2C_SDA for Audio Codec */
+	PAD_CFG_NF(GPIO_125, UP_2K, DEEP, NF1),		/* I2C_SCL for Audio Codec */
+
+	PAD_CFG_NF(GPIO_128, UP_5K, DEEP, NF1),		/* I2C_SDA for ALS */
+	PAD_CFG_NF(GPIO_129, UP_5K, DEEP, NF1),		/* I2C_SCL for ALS */
+
+	PAD_CFG_NF(GPIO_130, UP_2K, DEEP, NF1),		/* I2C_SDA for Touch Screen */
+	PAD_CFG_NF(GPIO_131, UP_2K, DEEP, NF1),		/* I2C_SCL for Touchscreen */
+
+	PAD_CFG_NF(GPIO_132, UP_2K, DEEP, NF1),		/* I2C_SDA for Trackpad */
+	PAD_CFG_NF(GPIO_133, UP_2K, DEEP, NF1),		/* I2C_SCL for Trackpad */
+
+	PAD_CFG_NF(GPIO_146, NATIVE, DEEP, NF2),	/* I2S6_BCLK_Codec */
+	PAD_CFG_NF(GPIO_147, NATIVE, DEEP, NF2),	/* I2S6_SYNC_Codec */
+	PAD_CFG_NF(GPIO_148, NATIVE, DEEP, NF2),	/* I2S6_SDI_Codec */
+	PAD_CFG_NF(GPIO_149, NATIVE, DEEP, NF2),	/* I2S6_SDO_Codec */
+
+	PAD_CFG_GPO(GPIO_150, 1, DEEP),			/* WIFI_PERST_1P8_N */
+	PAD_CFG_GPI(GPIO_151, UP_20K, DEEP),		/* RSVD (ISH_BASE_ACCEL_INT_N) */
+	PAD_CFG_GPI(GPIO_152, UP_20K, DEEP),		/* RSVD (ALS_IRQ_N) */
+
+	PAD_CFG_GPO(GPIO_154, 1, DEEP),			/* BT_DISABLE_1P8_N */
+	PAD_CFG_GPI(GPIO_167, NONE, DEEP),		/* DB_ID */
+
+
+	PAD_CFG_NF(GPIO_172, UP_20K, DEEP, NF1),	/* SDCARD_CLK */
+	PAD_CFG_NF(GPIO_173, UP_20K, DEEP, NF1),	/* SDCARD_D0 */
+	PAD_CFG_NF(GPIO_174, UP_20K, DEEP, NF1),	/* SDCARD_D1 */
+	PAD_CFG_NF(GPIO_175, UP_20K, DEEP, NF1),	/* SDCARD_D2 */
+	PAD_CFG_NF(GPIO_176, UP_20K, DEEP, NF1),	/* SDCARD_D3 */
+	PAD_CFG_NF(GPIO_177, NATIVE, DEEP, NF1),	/* SDCARD_CD_B */
+	PAD_CFG_NF(GPIO_178, UP_20K, DEEP, NF1),	/* SDCARD_CMD */
+	PAD_CFG_NF(GPIO_179, NATIVE, DEEP, NF1),	/* SDCARD_CLK_FB */
+	PAD_CFG_GPO(GPIO_183, 1, DEEP),			/* SDCARD_PWR_EN_N */
+
+
+	/* Configure eMMC pins for proper pull UP/DN */
+	PAD_CFG_NF(GPIO_156, DN_20K, DEEP, NF1),    /* EMMC0_CLK */
+	PAD_CFG_NF(GPIO_157, UP_20K, DEEP, NF1),    /* EMMC0_D0 */
+	PAD_CFG_NF(GPIO_158, UP_20K, DEEP, NF1),    /* EMMC0_D1 */
+	PAD_CFG_NF(GPIO_159, UP_20K, DEEP, NF1),    /* EMMC0_D2 */
+	PAD_CFG_NF(GPIO_160, UP_20K, DEEP, NF1),    /* EMMC0_D3 */
+	PAD_CFG_NF(GPIO_161, UP_20K, DEEP, NF1),    /* EMMC0_D4 */
+	PAD_CFG_NF(GPIO_162, UP_20K, DEEP, NF1),    /* EMMC0_D5 */
+	PAD_CFG_NF(GPIO_163, UP_20K, DEEP, NF1),    /* EMMC0_D6 */
+	PAD_CFG_NF(GPIO_164, UP_20K, DEEP, NF1),    /* EMMC0_D7 */
+	PAD_CFG_NF(GPIO_165, UP_20K, DEEP, NF1),    /* EMMC0_CMD */
+	PAD_CFG_NF(GPIO_182, DN_20K, DEEP, NF1),    /* EMMC_RCLK */
+
+	PAD_CFG_NF(GPIO_199, UP_20K, DEEP, NF1),	/* DDI0_HPD */
+	PAD_CFG_NF(GPIO_200, UP_20K, DEEP, NF1),	/* DDI1_HPD */
+
+	PAD_CFG_NF(GPIO_203, NATIVE, DEEP, NF1),	/* USB2_OC0_3p3_N */
+	PAD_CFG_NF(GPIO_204, NATIVE, DEEP, NF1),	/* USB2_OC2_N */
+
+	PAD_CFG_NF(GPIO_205, NATIVE, DEEP, NF1),	/* PCIE_WLAN_WAKE3_N */
+	PAD_CFG_NF(GPIO_208, UP_20K, DEEP, NF1),	/* PCIE_SSD_WAKE0_N */
+	PAD_CFG_NF(GPIO_209, UP_20K, DEEP, NF1),	/* SSD CLKREQ */
+	PAD_CFG_NF(GPIO_212, NATIVE, DEEP, NF1),	/* Wifi CLKREQ */
+
+	PAD_CFG_GPO(PMU_BATLOW_B, 0, DEEP),		/* EMMC_PLTRST_N ?? */
+	PAD_CFG_NF(LPC_ILB_SERIRQ, NATIVE, DEEP, NF1),	/* LPC_SERIRQ */
+	PAD_CFG_NF(LPC_CLKRUNB, NATIVE, DEEP, NF1),	/* LPC_CLKRUN_N */
+
+	PAD_CFG_NF(GPIO_199,NATIVE,DEEP,NF2),		/* HV_DDI1_HPD */
+	PAD_CFG_NF(GPIO_200,NATIVE,DEEP,NF2),		/* HV_DDI0_HPD */
+	PAD_CFG_NF(PMC_SPI_FS1,NATIVE,DEEP,NF2),	/* HV_DDI2_HPD */
+
+};
+
+static void mainboard_init(void *chip_info)
+{
+	gpio_configure_pads(amenia_gpios, ARRAY_SIZE(amenia_gpios));
+}
+
+struct chip_operations mainboard_ops = {
+	.init = mainboard_init,
+};

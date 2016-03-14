@@ -1,0 +1,4 @@
+Vendor name: Intel
+Board name: Amenia Board
+Category: eval
+Flashrom support: y

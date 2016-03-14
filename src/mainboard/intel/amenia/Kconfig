@@ -1,0 +1,53 @@
+if BOARD_INTEL_AMENIA
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select SOC_INTEL_APOLLOLAKE
+	select BOARD_ROMSIZE_KB_8192
+	select MAINBOARD_HAS_CHROMEOS
+	select HAVE_ACPI_TABLES
+	select MAINBOARD_HAS_LPC_TPM
+	select HAVE_ACPI_RESUME
+	select MAINBOARD_HAS_CHROMEOS
+
+config CHROMEOS
+	bool
+	default y
+
+config MAINBOARD_DIR
+	string
+	default intel/amenia
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Amenia"
+
+config MAINBOARD_VENDOR
+	string
+	default "Intel"
+
+config FMAP_FILE
+	string
+	default "amenia"
+
+config PREBUILT_SPI_IMAGE
+	string
+	default "amenia.bin.orig.a0"
+
+config IFD_BIOS_END
+	hex
+	default 0x6FF000
+
+config IFD_BIOS_START
+	hex
+	default 0x1000
+
+config FLASHMAP_OFFSET
+	hex
+	default 0x200000
+
+config MAX_CPUS
+	int
+	default 8
+
+endif # BOARD_INTEL_AMENIA

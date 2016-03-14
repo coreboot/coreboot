@@ -38,6 +38,12 @@ config CPU_SPECIFIC_OPTIONS
 	select TSC_MONOTONIC_TIMER
 	select HAVE_MONOTONIC_TIMER
 	select PLATFORM_USES_FSP2_0
+	select HAVE_HARD_RESET
+	select SOC_INTEL_COMMON
+
+config SOC_INTEL_COMMON_RESET
+	bool
+	default y
 
 config MMCONF_BASE_ADDRESS
 	hex "PCI MMIO Base Address"

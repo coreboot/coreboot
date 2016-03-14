@@ -1,0 +1,37 @@
+FLASH 8M {
+    WP_RO 4M {
+        SI_ALL 2M {
+            SI_DESC 4K
+            bootblock@509056 32K
+        }
+        RO_SECTION@2M 2M {
+            FMAP 2K
+            RO_FRID 0x40
+            RO_VPD @4K 16K
+            COREBOOT(CBFS)
+            SIGN_CSE@0x180000 64K
+            GBB
+        }
+    }
+    MISC_RW  {
+        RW_MRC_CACHE 64K
+        RW_ELOG 16K
+        RW_SHARED 16K {
+            SHARED_DATA 8K
+            VBLOCK_DEV 8K
+        }
+        RW_VPD 8K
+    }
+    RW_SECTION_A 0xf0000 {
+        VBLOCK_A 64K
+        FW_MAIN_A(CBFS) 768K
+        RW_FWID_A 64
+    }
+    RW_SECTION_B 0xf0000 {
+        VBLOCK_B 64K
+        FW_MAIN_B(CBFS) 768K
+        RW_FWID_B 64
+    }
+    DEVICE_EXTENSION@7M 1M
+}
+

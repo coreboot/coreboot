@@ -94,7 +94,7 @@ $(foreach supported_arch,$(ARCH_SUPPORTED), \
 	$(eval rmodules_$(supported_arch)-generic-ccopts += -D__RMODULE__))
 
 #######################################################################
-# Helper functions for math and various file placement matters.
+# Helper functions for math, strings, and various file placement matters.
 # macros work on all formats understood by printf(1)
 # values are space separated if using more than one value
 #
@@ -108,6 +108,9 @@ $(foreach supported_arch,$(ARCH_SUPPORTED), \
 # int-eq:        1 if the two values are equal.  0 otherwise
 # int-align:     align $1 to $2 units
 # file-size:     returns the filesize of the given file
+# tolower:       returns the value in all lowercase
+# toupper:       returns the value in all uppercase
+# ws_to_under:   returns the value with any whitespace changed to underscores
 _toint=$(shell printf "%d" $1)
 _int-add2=$(shell expr $(call _toint,$1) + $(call _toint,$2))
 int-add=$(if $(filter 1,$(words $1)),$(strip $1),$(call int-add,$(call _int-add2,$(word 1,$1),$(word 2,$1)) $(wordlist 3,$(words $1),$1)))
@@ -121,6 +124,9 @@ int-gt=$(if $(filter 1,$(words $1)),$(strip $1),$(shell expr $(call _toint,$(wor
 int-eq=$(if $(filter 1,$(words $1)),$(strip $1),$(shell expr $(call _toint,$(word 1,$1)) = $(call _toint,$(word 2,$1))))
 int-align=$(shell A=$(call _toint,$1) B=$(call _toint,$2); expr $$A + \( \( $$B - \( $$A % $$B \) \) % $$B \) )
 file-size=$(shell cat $1 | wc -c)
+tolower=$(shell echo '$1' | tr '[:upper:]' '[:lower:]')
+toupper=$(shell echo '$1' | tr '[:lower:]' '[:upper:]')
+ws_to_under=$(shell echo '$1' | tr ' \t' '_')
 
 #######################################################################
 # Helper functions for ramstage postprocess

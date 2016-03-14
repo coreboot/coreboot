@@ -304,13 +304,6 @@ void verstage_main(void)
 	/* Read nvdata from a non-volatile storage */
 	read_vbnv(ctx.nvdata);
 
-	/* Read secdata from TPM. Initialize TPM if secdata not found. We don't
-	 * check the return value here because vb2api_fw_phase1 will catch
-	 * invalid secdata and tell us what to do (=reboot). */
-	timestamp_add_now(TS_START_TPMINIT);
-	antirollback_read_space_firmware(&ctx);
-	timestamp_add_now(TS_END_TPMINIT);
-
 	/* Set S3 resume flag if vboot should behave differently when selecting
 	 * which slot to boot.  This is only relevant to vboot if the platform
 	 * does verification of memory init and thus must ensure it resumes with
@@ -319,6 +312,13 @@ void verstage_main(void)
 	    IS_ENABLED(CONFIG_VBOOT_STARTS_IN_BOOTBLOCK) &&
 	    vboot_platform_is_resuming())
 		ctx.flags |= VB2_CONTEXT_S3_RESUME;
+
+	/* Read secdata from TPM. Initialize TPM if secdata not found. We don't
+	 * check the return value here because vb2api_fw_phase1 will catch
+	 * invalid secdata and tell us what to do (=reboot). */
+	timestamp_add_now(TS_START_TPMINIT);
+	antirollback_read_space_firmware(&ctx);
+	timestamp_add_now(TS_END_TPMINIT);
 
 	if (!IS_ENABLED(CONFIG_VIRTUAL_DEV_SWITCH) &&
 	    get_developer_mode_switch())

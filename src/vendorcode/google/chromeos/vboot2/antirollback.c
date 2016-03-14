@@ -249,6 +249,14 @@ uint32_t setup_tpm(struct vb2_context *ctx)
 
 	RETURN_ON_FAILURE(tlcl_lib_init());
 
+	/* Handle special init for S3 resume path */
+	if (ctx->flags & VB2_CONTEXT_S3_RESUME) {
+		result = tlcl_resume();
+		if (result == TPM_E_INVALID_POSTINIT)
+			printk(BIOS_DEBUG, "TPM: Already initialized.\n");
+		return TPM_SUCCESS;
+	}
+
 #ifdef TEGRA_SOFT_REBOOT_WORKAROUND
 	result = tlcl_startup();
 	if (result == TPM_E_INVALID_POSTINIT) {

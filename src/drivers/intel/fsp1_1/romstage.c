@@ -173,8 +173,15 @@ void romstage_common(struct romstage_params *params)
 		hard_reset();
 	}
 
-	if (IS_ENABLED(CONFIG_LPC_TPM))
-		init_tpm(params->power_state->prev_sleep_state == SLEEP_STATE_S3);
+	/*
+	 * Initialize the TPM, unless the TPM was already initialized
+	 * in verstage and used to verify romstage.
+	 */
+	if (IS_ENABLED(CONFIG_LPC_TPM) &&
+	    !IS_ENABLED(CONFIG_RESUME_PATH_SAME_AS_BOOT) &&
+	    !IS_ENABLED(CONFIG_VBOOT_STARTS_IN_BOOTBLOCK))
+		init_tpm(params->power_state->prev_sleep_state ==
+			 SLEEP_STATE_S3);
 }
 
 void after_cache_as_ram_stage(void)

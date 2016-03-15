@@ -30,7 +30,7 @@ config MAINBOARD_PART_NUMBER
 
 config MMCONF_BASE_ADDRESS
 	hex
-	default 0xf0000000
+	default 0xf8000000
 
 config MAX_CPUS
 	int

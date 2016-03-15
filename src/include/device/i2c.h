@@ -45,6 +45,11 @@ void software_i2c_wedge_ack(unsigned bus, u8 chip);
 void software_i2c_wedge_read(unsigned bus, u8 chip, u8 reg, int bit_count);
 void software_i2c_wedge_write(unsigned bus, u8 chip, u8 reg, int bit_count);
 
+int i2c_read_field(unsigned bus, uint8_t chip, uint8_t reg, uint8_t *data,
+		   uint8_t mask, uint8_t shift);
+int i2c_write_field(unsigned bus, uint8_t chip, uint8_t reg, uint8_t data,
+		    uint8_t mask, uint8_t shift);
+
 /*
  * software_i2c is supposed to be a debug feature. It's usually not compiled in,
  * but when it is it can be dynamically enabled at runtime for certain busses.

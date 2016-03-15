@@ -423,7 +423,7 @@ $(AMDFWTOOL): $(top)/util/amdfwtool/amdfwtool.c
 
 CBOOTIMAGE:=$(objutil)/cbootimage/cbootimage
 
-FUTILITY:=$(objutil)/futility/futility
+FUTILITY?=$(objutil)/futility/futility
 
 subdirs-y += util/nvidia
 

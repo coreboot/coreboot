@@ -20,14 +20,6 @@ void set_var_mtrr(
 }
 
 #if !IS_ENABLED(CONFIG_CACHE_AS_RAM)
-static void cache_ramstage(void)
-{
-	/* Enable caching for lower 1MB and ram stage using variable mtrr */
-	disable_cache();
-	set_var_mtrr(0, 0x00000000, CONFIG_RAMTOP, MTRR_TYPE_WRBACK);
-	enable_cache();
-}
-
 const int addr_det = 0;
 
 /* the fixed and variable MTRRs are power-up with random values,

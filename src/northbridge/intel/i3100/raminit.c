@@ -926,6 +926,13 @@ static void set_receive_enable(const struct mem_controller *ctrl)
 	write32(MCBAR+0x154, recenb);
 }
 
+static void cache_ramstage(void)
+{
+	/* Enable caching for lower 1MB and ram stage using variable mtrr */
+	disable_cache();
+	set_var_mtrr(0, 0x00000000, CONFIG_RAMTOP, MTRR_TYPE_WRBACK);
+	enable_cache();
+}
 
 static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 {
@@ -1189,7 +1196,6 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	pci_write_config16(ctrl->f0, MCHSCRB, data16);
 
 	/* The memory is now setup, use it */
-#if !CONFIG_CACHE_AS_RAM
-	cache_ramstage();
-#endif
+	if (!IS_ENABLED(CONFIG_CACHE_AS_RAM))
+		cache_ramstage();
 }

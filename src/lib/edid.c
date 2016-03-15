@@ -28,6 +28,7 @@
  * at present.
  */
 
+#include <assert.h>
 #include <stddef.h>
 #include <console/console.h>
 #include <arch/io.h>
@@ -478,30 +479,12 @@ detailed_block(struct edid *result_edid, unsigned char *x, int in_extension,
 	out->mode.vso = ((x[10] >> 4) + ((x[11] & 0x0C) << 2));
 	out->mode.vspw = ((x[10] & 0x0F) + ((x[11] & 0x03) << 4));
 	out->mode.vborder = x[16];
-	/* set up some reasonable defaults for payloads.
-	 * We observe that most modern chipsets we work with
-	 * tend to support rgb888 without regard to the
-	 * panel bits per color or other settings. The rgb888
-	 * is a convenient layout for software because
-	 * it avoids the messy bit stuffing of rgb565 or rgb444.
-	 * It makes a reasonable trade of memory for speed.
-	 * So, set up the default for
-	 * 32 bits per pixel
-	 * rgb888 (i.e. no alpha, but pixels on 32-bit boundaries)
-	 * The mainboard can modify these if needed, though
-	 * we have yet to see a case where that will happen.
-	 * The existing ARM mainboards don't even call this function
-	 * so this will not affect them.
-	 */
-	out->framebuffer_bits_per_pixel = 32;
 
-	out->x_resolution = ALIGN(out->mode.ha *
-				  ((out->framebuffer_bits_per_pixel + 7) / 8),
-				  64) / (out->framebuffer_bits_per_pixel/8);
-	out->y_resolution = out->mode.va;
-	out->bytes_per_line = ALIGN(out->mode.ha *
-				    ((out->framebuffer_bits_per_pixel + 7)/8),
-				    64);
+	/* We assume rgb888 (32 bits per pixel) framebuffers by default.
+	 * Chipsets that want something else will need to override this
+	 * with another call to edid_set_framebuffer_bits_per_pixel(). */
+	edid_set_framebuffer_bits_per_pixel(out, 32);
+
 	switch ((x[17] & 0x18) >> 3) {
 	case 0x00:
 		extra_info.syncmethod = " analog composite";
@@ -1539,6 +1522,20 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
  * SPWG also says something strange about the LSB of detailed descriptor 1:
  * "LSB is set to "1" if panel is DE-timing only. H/V can be ignored."
  */
+
+/* Set the framebuffer bits-per-pixel, recalculating all dependent values. */
+void edid_set_framebuffer_bits_per_pixel(struct edid *edid, int fb_bpp)
+{
+	/* Caller should pass a supported value, everything else is BUG(). */
+	assert(fb_bpp == 32 || fb_bpp == 24 || fb_bpp == 16);
+
+	edid->framebuffer_bits_per_pixel = fb_bpp;
+	edid->bytes_per_line = ALIGN_UP(edid->mode.ha *
+					div_round_up(fb_bpp, 8), 64);
+	edid->x_resolution = edid->bytes_per_line / (fb_bpp / 8);
+	edid->y_resolution = edid->mode.va;
+}
+
 /*
  * Take an edid, and create a framebuffer. Set vbe_valid to 1.
  */

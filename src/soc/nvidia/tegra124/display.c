@@ -331,10 +331,9 @@ void display_startup(device_t dev)
 	/* tell depthcharge ...
 	 */
 	struct edid edid;
-	edid.bytes_per_line = ((config->xres * config->framebuffer_bits_per_pixel / 8 + 31) /
-				32 * 32);
-	edid.x_resolution = edid.bytes_per_line / (config->framebuffer_bits_per_pixel / 8);
-	edid.y_resolution = config->yres;
-	edid.framebuffer_bits_per_pixel = config->framebuffer_bits_per_pixel;
+	edid.mode.va = config->yres;
+	edid.mode.ha = config->xres;
+	edid_set_framebuffer_bits_per_pixel(&edid,
+					    config->framebuffer_bits_per_pixel);
 	set_vbe_mode_info_valid(&edid, (uintptr_t)(framebuffer_base_mb*MiB));
 }

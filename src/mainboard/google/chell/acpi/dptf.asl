@@ -29,7 +29,7 @@
 
 #define DPTF_TSR2_SENSOR_ID	3
 #define DPTF_TSR2_SENSOR_NAME	"DRAM"
-#define DPTF_TSR2_PASSIVE	55
+#define DPTF_TSR2_PASSIVE	51
 #define DPTF_TSR2_CRITICAL	75
 
 #define DPTF_TSR3_SENSOR_ID	4
@@ -63,7 +63,7 @@ Name (DTRT, Package () {
 	Package () { \_SB.PCI0.B0D4, \_SB.DPTF.TSR1, 100, 600, 0, 0, 0, 0 },
 
 	/* CPU Effect on Temp Sensor 2 */
-	Package () { \_SB.PCI0.B0D4, \_SB.DPTF.TSR2, 100, 600, 0, 0, 0, 0 },
+	Package () { \_SB.PCI0.B0D4, \_SB.DPTF.TSR2, 100, 90, 0, 0, 0, 0 },
 
 	/* Charger Effect on Temp Sensor 2 */
 	Package () { \_SB.DPTF.TCHG, \_SB.DPTF.TSR2, 200, 600, 0, 0, 0, 0 },
@@ -77,11 +77,11 @@ Name (MPPC, Package ()
 	0x2,		/* Revision */
 	Package () {	/* Power Limit 1 */
 		0,	/* PowerLimitIndex, 0 for Power Limit 1 */
-		1600,	/* PowerLimitMinimum */
-		6000,	/* PowerLimitMaximum */
+		2500,	/* PowerLimitMinimum */
+		7000,	/* PowerLimitMaximum */
 		1000,	/* TimeWindowMinimum */
 		1000,	/* TimeWindowMaximum */
-		200	/* StepSize */
+		250	/* StepSize */
 	},
 	Package () {	/* Power Limit 2 */
 		1,	/* PowerLimitIndex, 1 for Power Limit 2 */

@@ -35,8 +35,8 @@ config CPU_SPECIFIC_OPTIONS
 	select SPI_FLASH
 	select UDELAY_TSC
 	select TSC_CONSTANT_RATE
-	select UDELAY_TSC
-	select TSC_CONSTANT_RATE
+	select TSC_MONOTONIC_TIMER
+	select HAVE_MONOTONIC_TIMER
 	select PLATFORM_USES_FSP2_0
 
 config MMCONF_BASE_ADDRESS
@@ -99,5 +99,9 @@ config ROMSTAGE_ADDR
 	default 0xfef2e000
 	help
 	  The base address (in CAR) where romstage should be linked
+
+config CACHE_MRC_SETTINGS
+	bool
+	default y
 
 endif

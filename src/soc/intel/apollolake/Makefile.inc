@@ -44,6 +44,7 @@ postcar-y += exit_car.S
 postcar-y += memmap.c
 postcar-y += mmap_boot.c
 postcar-$(CONFIG_SOC_UART_DEBUG) += uart_early.c
+postcar-y += tsc_freq.c
 
 CPPFLAGS_common += -I$(src)/soc/intel/apollolake/include
 

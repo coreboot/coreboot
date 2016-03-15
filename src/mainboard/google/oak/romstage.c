@@ -59,7 +59,7 @@ void main(void)
 		;
 
 	/* Set to maximum frequency */
-	if (board_id() < 5)
+	if (board_id() + CONFIG_BOARD_ID_ADJUSTMENT < 5)
 		mt_pll_raise_ca53_freq(1600 * MHz);
 	else
 		mt_pll_raise_ca53_freq(1700 * MHz);

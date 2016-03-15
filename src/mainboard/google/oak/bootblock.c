@@ -81,7 +81,7 @@ void bootblock_mainboard_init(void)
 	nor_set_gpio_pinmux();
 
 	/* SPI_LEVEL_ENABLE: Enable 1.8V to 3.3V level shifter for EC SPI bus */
-	if (board_id() > 4)
+	if (board_id() + CONFIG_BOARD_ID_ADJUSTMENT > 4)
 		gpio_output(PAD_SRCLKENAI2, 1);
 
 	/* Init i2c bus 2 Timing register for TPM */
@@ -91,6 +91,6 @@ void bootblock_mainboard_init(void)
 
 	setup_chromeos_gpios();
 
-	if (board_id() < 4)
+	if (board_id() + CONFIG_BOARD_ID_ADJUSTMENT < 4)
 		mt6391_enable_reset_when_ap_resets();
 }

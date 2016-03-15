@@ -13,7 +13,10 @@
 ## GNU General Public License for more details.
 ##
 
-if BOARD_GOOGLE_OAK
+config BOARD_GOOGLE_OAK_COMMON
+	def_bool n
+
+if BOARD_GOOGLE_OAK_COMMON
 
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
@@ -41,7 +44,11 @@ config MAINBOARD_DIR
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "oak"
+	default "Oak"
+
+config MAINBOARD_VENDOR
+	string
+	default "Google"
 
 config EC_GOOGLE_CHROMEEC_SPI_BUS
 	hex
@@ -71,4 +78,11 @@ config GBB_HWID
 	string
 	depends on CHROMEOS
 	default "OAK TEST 6858"
+
+# All Oak-derivatives count their board IDs as 0 being equivalent to Oak rev6.
+config BOARD_ID_ADJUSTMENT
+	int
+	default 0 if BOARD_GOOGLE_OAK
+	default 6
+
 endif # BOARD_GOOGLE_OAK

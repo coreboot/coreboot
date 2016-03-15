@@ -47,7 +47,7 @@ static void configure_ext_buck(void)
 {
 	mtk_i2c_bus_init(EXT_BUCK_I2C_BUS);
 
-	switch (board_id()) {
+	switch (board_id() + CONFIG_BOARD_ID_ADJUSTMENT) {
 	case 3:
 	case 4:
 		/* rev-3 and rev-4 use mt6311 as external buck */
@@ -78,7 +78,7 @@ static void configure_audio(void)
 	mt6391_configure_ldo(LDO_VCAMA, LDO_1P8);
 
 	/* reset ALC5676 */
-	if (board_id() < 5)
+	if (board_id() + CONFIG_BOARD_ID_ADJUSTMENT < 5)
 		gpio_output(PAD_LCM_RST, 1);
 
 	/* SoC I2S */
@@ -87,7 +87,7 @@ static void configure_audio(void)
 	gpio_set_mode(PAD_I2S0_MCK, PAD_I2S0_MCK_FUNC_I2S1_MCK);
 	gpio_set_mode(PAD_I2S0_DATA0, PAD_I2S0_DATA0_FUNC_I2S1_DO_1);
 	gpio_set_mode(PAD_I2S0_DATA1, PAD_I2S0_DATA1_FUNC_I2S2_DI_2);
-	if (board_id() >= 5)
+	if (board_id() + CONFIG_BOARD_ID_ADJUSTMENT >= 5)
 		gpio_set_mode(PAD_UCTS0, PAD_UCTS0_FUNC_I2S2_DI_1);
 
 	/* codec ext MCLK ON */
@@ -105,7 +105,7 @@ static void configure_usb(void)
 {
 	setup_usb_host();
 
-	if (board_id() > 3) {
+	if (board_id() + CONFIG_BOARD_ID_ADJUSTMENT > 3) {
 		/* Enable current limit */
 		gpio_output(PAD_CM2MCLK, 1);
 		/* Configure USB OC pins*/
@@ -114,7 +114,7 @@ static void configure_usb(void)
 		gpio_input_pullup(PAD_PCM_SYNC);
 	}
 
-	if (board_id() > 4) {
+	if (board_id() + CONFIG_BOARD_ID_ADJUSTMENT > 4) {
 		/* USB 2.0 type A port over current interrupt pin(low active) */
 		gpio_input_pullup(PAD_UCTS2);
 		/* USB 2.0 type A port BC1.2 STATUS(low active) */
@@ -125,7 +125,7 @@ static void configure_usb(void)
 static void configure_usb_hub(void)
 {
 	/* set usb hub reset pin (low active) to high */
-	if (board_id() > 4)
+	if (board_id() + CONFIG_BOARD_ID_ADJUSTMENT > 4)
 		gpio_output(PAD_UTXD3, 1);
 }
 
@@ -133,7 +133,7 @@ static void configure_usb_hub(void)
 static void configure_backlight(void)
 {
 	/* Configure PANEL_LCD_POWER_EN */
-	switch (board_id()) {
+	switch (board_id() + CONFIG_BOARD_ID_ADJUSTMENT) {
 	case 1:
 	case 2:
 		break;
@@ -156,7 +156,7 @@ static void configure_display(void)
 {
 	mtcmos_display_power_on();
 
-	switch (board_id()) {
+	switch (board_id() + CONFIG_BOARD_ID_ADJUSTMENT) {
 	case 0:
 		/* board from Rev0, Rev1 */
 		/* vgp2 set to 1.8V for it6151 */
@@ -182,11 +182,17 @@ static void configure_display(void)
 		mt6391_configure_ldo(LDO_VGP2, LDO_3P3);
 		gpio_output(PAD_URTS0, 0); /* PS8640_SYSRSTN */
 		/* PS8640_1V2_ENABLE */
-		gpio_output(board_id() == 4 ? PAD_SRCLKENAI2 : PAD_URTS2, 1);
+		if (board_id() + CONFIG_BOARD_ID_ADJUSTMENT == 4)
+			gpio_output(PAD_SRCLKENAI2, 1);
+		else
+			gpio_output(PAD_URTS2, 1);
 		/* delay 2ms for vgp2 and PS8640_1V2_ENABLE stable */
 		mdelay(2);
 		/* PS8640_PDN */
-		gpio_output(board_id() > 4 ? PAD_LCM_RST : PAD_UCTS0, 1);
+		if (board_id() + CONFIG_BOARD_ID_ADJUSTMENT > 4)
+			gpio_output(PAD_LCM_RST, 1);
+		else
+			gpio_output(PAD_UCTS0, 1);
 		gpio_output(PAD_PCM_CLK, 1); /* PS8640_MODE_CONF */
 		gpio_output(PAD_URTS0, 1); /* PS8640_SYSRSTN */
 		/* for level shift(1.8V to 3.3V) on */
@@ -200,7 +206,7 @@ static void display_startup(void)
 	u8 i2c_bus;
 	int ret;
 
-	switch (board_id()) {
+	switch (board_id() + CONFIG_BOARD_ID_ADJUSTMENT) {
 	case 0:
 	case 1:
 		i2c_bus = 3;
@@ -240,7 +246,7 @@ static void mainboard_init(device_t dev)
 	/* TP_SHIFT_EN: Enables the level shifter for I2C bus 4 (TPAD), which
 	 * also contains the PS8640 eDP brige and the USB hub.
 	 */
-	if (board_id() < 5)
+	if (board_id() + CONFIG_BOARD_ID_ADJUSTMENT < 5)
 		mt6391_gpio_output(MT6391_KP_ROW2, 1);
 
 	/* Config SD card detection pin */

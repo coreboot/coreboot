@@ -47,13 +47,13 @@ HOSTCXX ?= g++
 HOSTCFLAGS := -I$(srck) -I$(objk)
 HOSTCXXFLAGS := -I$(srck) -I$(objk)
 
-LIBCONFIG_PATH := ../libpayload
-LIBPAYLOAD_DIR := $(coreinfo_obj)/libpayload
-HAVE_LIBPAYLOAD := $(wildcard $(LIBPAYLOAD_DIR)/lib/libpayload.a)
+LIBPAYLOAD_PATH := ../libpayload
+LIBPAYLOAD_OBJ := $(coreinfo_obj)/libpayload
+HAVE_LIBPAYLOAD := $(wildcard $(LIBPAYLOAD_OBJ)/lib/libpayload.a)
 LIBPAYLOAD_CONFIG ?= configs/defconfig-tinycurses
 OBJCOPY ?= objcopy
 
-INCLUDES = -I$(coreinfo_obj) -include $(LIBPAYLOAD_DIR)/include/kconfig.h
+INCLUDES = -I$(coreinfo_obj) -include $(LIBPAYLOAD_OBJ)/include/kconfig.h
 OBJECTS = cpuinfo_module.o cpuid.S.o pci_module.o coreboot_module.o \
 	  nvram_module.o bootlog_module.o ramdump_module.o \
 	  multiboot_module.o cbfs_module.o coreinfo.o
@@ -78,8 +78,8 @@ CC := $(CC_$(ARCH-y))
 AS := $(AS_$(ARCH-y))
 OBJCOPY := $(OBJCOPY_$(ARCH-y))
 
-LPCC := CC="$(CC)" $(LIBPAYLOAD_DIR)/bin/lpgcc
-LPAS := AS="$(AS)" $(LIBPAYLOAD_DIR)/bin/lpas
+LPCC := CC="$(CC)" $(LIBPAYLOAD_OBJ)/bin/lpgcc
+LPAS := AS="$(AS)" $(LIBPAYLOAD_OBJ)/bin/lpas
 
 CFLAGS += -Wall -Werror -Os -fno-builtin $(CFLAGS_$(ARCH-y)) $(INCLUDES)
 
@@ -112,13 +112,13 @@ defaultbuild:
 
 ifneq ($(strip $(HAVE_LIBPAYLOAD)),)
 libpayload:
-	printf "Found Libpayload $(LIBPAYLOAD_DIR).\n"
+	printf "Found Libpayload $(LIBPAYLOAD_OBJ).\n"
 else
 libpayload:
-	printf "Building libpayload @ $(LIBCONFIG_PATH).\n"
-	$(MAKE) -C $(LIBCONFIG_PATH) distclean coreinfo_obj=$(coreinfo_obj)/libptmp
-	$(MAKE) -C $(LIBCONFIG_PATH) defconfig KBUILD_DEFCONFIG=$(LIBPAYLOAD_CONFIG)
-	$(MAKE) -C $(LIBCONFIG_PATH) install DESTDIR=$(coreinfo_obj)
+	printf "Building libpayload @ $(LIBPAYLOAD_PATH).\n"
+	$(MAKE) -C $(LIBPAYLOAD_PATH) distclean coreinfo_obj=$(coreinfo_obj)/libptmp
+	$(MAKE) -C $(LIBPAYLOAD_PATH) defconfig KBUILD_DEFCONFIG=$(LIBPAYLOAD_CONFIG)
+	$(MAKE) -C $(LIBPAYLOAD_PATH) install DESTDIR=$(coreinfo_obj)
 endif
 
 $(coreinfo_obj)/config.h:

@@ -2,6 +2,30 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/msr.h>
 
+/* Get first available variable MTRR.
+ * Returns var# if available, else returns -1.
+ */
+int get_free_var_mtrr(void)
+{
+	msr_t msr, maskm;
+	int vcnt;
+	int i;
+
+	/* Read MTRRCap and get vcnt - variable memory type ranges. */
+	msr = rdmsr(MTRR_CAP_MSR);
+	vcnt = msr.lo & 0xff;
+
+	/* Identify the first var mtrr which is not valid. */
+	for (i = 0; i < vcnt; i++) {
+		maskm = rdmsr(MTRR_PHYS_MASK(i));
+		if ((maskm.lo & MTRR_PHYS_MASK_VALID) == 0)
+			return i;
+	}
+
+	/* No free var mtrr. */
+	return -1;
+}
+
 #ifdef __ROMCC__
 static
 #endif

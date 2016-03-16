@@ -81,6 +81,7 @@ void x86_mtrr_check(void);
 
 #if !defined(__ASSEMBLER__) && defined(__PRE_RAM__) && !defined(__ROMCC__)
 void set_var_mtrr(unsigned reg, unsigned base, unsigned size, unsigned type);
+int get_free_var_mtrr(void);
 #endif
 
 /* Align up to next power of 2, suitable for ROMCC and assembler too.

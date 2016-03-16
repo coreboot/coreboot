@@ -23,18 +23,18 @@ payloads/coreinfo/build/coreinfo.elf coreinfo:
 clean-payloads:
 	$(MAKE) -C payloads/coreinfo clean
 	$(MAKE) -C payloads/libpayload clean
-	$(MAKE) -C payloads/external/depthcharge -f Makefile.inc clean
-	$(MAKE) -C payloads/external/SeaBIOS -f Makefile.inc clean
-	$(MAKE) -C payloads/external/U-Boot -f Makefile.inc clean
-	$(MAKE) -C payloads/external/Memtest86Plus -f Makefile.inc clean
+	$(MAKE) -C payloads/external/depthcharge clean
+	$(MAKE) -C payloads/external/SeaBIOS clean
+	$(MAKE) -C payloads/external/U-Boot clean
+	$(MAKE) -C payloads/external/Memtest86Plus clean
 
 
 distclean-payloads:
 	$(MAKE) -C payloads/coreinfo distclean
 	$(MAKE) -C payloads/libpayload distclean
-	$(MAKE) -C payloads/external/depthcharge -f Makefile.inc distclean
-	$(MAKE) -C payloads/external/SeaBIOS -f Makefile.inc distclean
-	$(MAKE) -C payloads/external/U-Boot -f Makefile.inc distclean
-	$(MAKE) -C payloads/external/Memtest86Plus -f Makefile.inc distclean
+	$(MAKE) -C payloads/external/depthcharge distclean
+	$(MAKE) -C payloads/external/SeaBIOS distclean
+	$(MAKE) -C payloads/external/U-Boot distclean
+	$(MAKE) -C payloads/external/Memtest86Plus distclean
 
 .phony: clean-payloads distclean-payloads

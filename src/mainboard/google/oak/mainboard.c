@@ -87,12 +87,23 @@ static void configure_audio(void)
 	gpio_set_mode(PAD_I2S0_MCK, PAD_I2S0_MCK_FUNC_I2S1_MCK);
 	gpio_set_mode(PAD_I2S0_DATA0, PAD_I2S0_DATA0_FUNC_I2S1_DO_1);
 	gpio_set_mode(PAD_I2S0_DATA1, PAD_I2S0_DATA1_FUNC_I2S2_DI_2);
-	if (board_id() + CONFIG_BOARD_ID_ADJUSTMENT >= 5)
-		gpio_set_mode(PAD_UCTS0, PAD_UCTS0_FUNC_I2S2_DI_1);
-
 	/* codec ext MCLK ON */
 	mt6391_gpio_output(MT6391_KP_COL4, 1);
-	mt6391_gpio_output(MT6391_KP_COL5, 1);
+
+	switch (board_id() + CONFIG_BOARD_ID_ADJUSTMENT) {
+	case 2:
+	case 3:
+	case 4:
+		mt6391_gpio_output(MT6391_KP_COL5, 1);
+		break;
+	case 5:
+	case 6:
+		gpio_set_mode(PAD_UCTS0, PAD_UCTS0_FUNC_I2S2_DI_1);
+		mt6391_gpio_output(MT6391_KP_COL5, 1);
+		break;
+	default:
+		break;
+	}
 
 	/* Init i2c bus Timing register for audio codecs */
 	mtk_i2c_bus_init(CODEC_I2C_BUS);
@@ -111,10 +122,13 @@ static void configure_usb(void)
 		/* Configure USB OC pins*/
 		gpio_input_pullup(PAD_MSDC3_DSL);
 		gpio_input_pullup(PAD_CMPCLK);
-		gpio_input_pullup(PAD_PCM_SYNC);
+		if (board_id() + CONFIG_BOARD_ID_ADJUSTMENT < 7)
+			gpio_input_pullup(PAD_PCM_SYNC);
 	}
 
-	if (board_id() + CONFIG_BOARD_ID_ADJUSTMENT > 4) {
+	if (board_id() + CONFIG_BOARD_ID_ADJUSTMENT > 4 &&
+	    board_id() + CONFIG_BOARD_ID_ADJUSTMENT < 7)
+	{
 		/* USB 2.0 type A port over current interrupt pin(low active) */
 		gpio_input_pullup(PAD_UCTS2);
 		/* USB 2.0 type A port BC1.2 STATUS(low active) */
@@ -134,9 +148,6 @@ static void configure_backlight(void)
 {
 	/* Configure PANEL_LCD_POWER_EN */
 	switch (board_id() + CONFIG_BOARD_ID_ADJUSTMENT) {
-	case 1:
-	case 2:
-		break;
 	case 3:
 		gpio_output(PAD_UCTS2, 0);
 		break;
@@ -156,69 +167,47 @@ static void configure_display(void)
 {
 	mtcmos_display_power_on();
 
-	switch (board_id() + CONFIG_BOARD_ID_ADJUSTMENT) {
-	case 0:
-		/* board from Rev0, Rev1 */
-		/* vgp2 set to 1.8V for it6151 */
-		mt6391_configure_ldo(LDO_VGP2, LDO_1P8);
-		gpio_output(PAD_PCM_RX, 0); /* IT6151_SYSRSTN */
-		gpio_output(PAD_CMMCLK, 1); /* PANEL_3V3_ENABLE */
-		gpio_output(PAD_PCM_SYNC, 1); /* IT6151_1V2_ENABLE */
-		gpio_output(PAD_PCM_RX, 1); /* IT6151_SYSRSTN */
-		break;
-	case 1:
-		/* board from Rev0, Rev1 */
-		/* vgp2 set to 1.8V for it6151 */
-		mt6391_configure_ldo(LDO_VGP2, LDO_1P8);
-		gpio_output(PAD_URTS0, 0); /* IT6151_SYSRSTN */
-		gpio_output(PAD_URTS2, 1); /* IT6151_1V2_ENABLE */
-		gpio_output(PAD_CMMCLK, 1); /* PANEL_3V3_ENABLE */
-		gpio_output(PAD_URTS0, 1); /* IT6151_SYSRSTN */
-		break;
-	default:
-		/* board from Rev2 */
-		gpio_output(PAD_CMMCLK, 1); /* PANEL_3V3_ENABLE */
-		/* vgp2 set to 3.3V for ps8640 */
-		mt6391_configure_ldo(LDO_VGP2, LDO_3P3);
-		gpio_output(PAD_URTS0, 0); /* PS8640_SYSRSTN */
-		/* PS8640_1V2_ENABLE */
-		if (board_id() + CONFIG_BOARD_ID_ADJUSTMENT == 4)
-			gpio_output(PAD_SRCLKENAI2, 1);
-		else
-			gpio_output(PAD_URTS2, 1);
-		/* delay 2ms for vgp2 and PS8640_1V2_ENABLE stable */
-		mdelay(2);
-		/* PS8640_PDN */
-		if (board_id() + CONFIG_BOARD_ID_ADJUSTMENT > 4)
-			gpio_output(PAD_LCM_RST, 1);
-		else
-			gpio_output(PAD_UCTS0, 1);
-		gpio_output(PAD_PCM_CLK, 1); /* PS8640_MODE_CONF */
-		gpio_output(PAD_URTS0, 1); /* PS8640_SYSRSTN */
-		/* for level shift(1.8V to 3.3V) on */
-		udelay(100);
-	}
+	/* board from Rev2 */
+	gpio_output(PAD_CMMCLK, 1); /* PANEL_3V3_ENABLE */
+	/* vgp2 set to 3.3V for ps8640 */
+	mt6391_configure_ldo(LDO_VGP2, LDO_3P3);
+	gpio_output(PAD_URTS0, 0); /* PS8640_SYSRSTN */
+	/* PS8640_1V2_ENABLE */
+	if (board_id() + CONFIG_BOARD_ID_ADJUSTMENT == 4)
+		gpio_output(PAD_SRCLKENAI2, 1);
+	else
+		gpio_output(PAD_URTS2, 1);
+	/* delay 2ms for vgp2 and PS8640_1V2_ENABLE stable */
+	mdelay(2);
+	/* PS8640_PDN */
+	if (board_id() + CONFIG_BOARD_ID_ADJUSTMENT > 4)
+		gpio_output(PAD_LCM_RST, 1);
+	else
+		gpio_output(PAD_UCTS0, 1);
+	gpio_output(PAD_PCM_CLK, 1); /* PS8640_MODE_CONF */
+	gpio_output(PAD_URTS0, 1); /* PS8640_SYSRSTN */
+	/* for level shift(1.8V to 3.3V) on */
+	udelay(100);
 }
 
 static void display_startup(void)
 {
 	struct edid edid;
-	u8 i2c_bus;
+	u8 i2c_bus, i2c_addr;
 	int ret;
 
-	switch (board_id() + CONFIG_BOARD_ID_ADJUSTMENT) {
-	case 0:
-	case 1:
-		i2c_bus = 3;
-		break;
-	default:
+	if (board_id() + CONFIG_BOARD_ID_ADJUSTMENT > 6) {
+		i2c_bus = 0;
+		i2c_addr = 0x8;
+	} else {
 		i2c_bus = 4;
-		break;
+		i2c_addr = 0x18;
 	}
+
 	mtk_i2c_bus_init(i2c_bus);
 
-	ps8640_init(i2c_bus, 0x18);
-	if (ps8640_get_edid(i2c_bus, 0x18, &edid)) {
+	ps8640_init(i2c_bus, i2c_addr);
+	if (ps8640_get_edid(i2c_bus, i2c_addr, &edid)) {
 		printk(BIOS_ERR, "Can't get panel's edid\n");
 		return;
 	}

@@ -17,8 +17,11 @@
 #define __MAINBOARD_GOOGLE_OAK_GPIO_H__
 #include <soc/pinmux.h>
 
+#define LID ((board_id() + CONFIG_BOARD_ID_ADJUSTMENT < 7) ? \
+	PAD_EINT12 : PAD_SPI_CK)
+
+
 enum {
-	LID		= PAD_EINT12,
 	/* Board ID related GPIOS. */
 	BOARD_ID_0	= PAD_RDN3_A,
 	BOARD_ID_1	= PAD_RDP3_A,

@@ -83,6 +83,6 @@ config GBB_HWID
 config BOARD_ID_ADJUSTMENT
 	int
 	default 0 if BOARD_GOOGLE_OAK
-	default 6
+	default 7
 
 endif # BOARD_GOOGLE_OAK

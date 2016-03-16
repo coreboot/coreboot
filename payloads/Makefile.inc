@@ -17,24 +17,21 @@ cbfs-files-$(CONFIG_COREINFO_SECONDARY_PAYLOAD) += img/coreinfo
 img/coreinfo-file := payloads/coreinfo/build/coreinfo.elf
 img/coreinfo-type := payload
 
+PAYLOADS_LIST=\
+payloads/coreinfo \
+payloads/libpayload \
+payloads/external/depthcharge \
+payloads/external/SeaBIOS \
+payloads/external/U-Boot \
+payloads/external/Memtest86Plus
+
 payloads/coreinfo/build/coreinfo.elf coreinfo:
 	$(MAKE) -C payloads/coreinfo defaultbuild
 
 clean-payloads:
-	$(MAKE) -C payloads/coreinfo clean
-	$(MAKE) -C payloads/libpayload clean
-	$(MAKE) -C payloads/external/depthcharge clean
-	$(MAKE) -C payloads/external/SeaBIOS clean
-	$(MAKE) -C payloads/external/U-Boot clean
-	$(MAKE) -C payloads/external/Memtest86Plus clean
-
+	$(foreach payload, $(PAYLOADS_LIST), $(MAKE) -C $(payload) clean; )
 
 distclean-payloads:
-	$(MAKE) -C payloads/coreinfo distclean
-	$(MAKE) -C payloads/libpayload distclean
-	$(MAKE) -C payloads/external/depthcharge distclean
-	$(MAKE) -C payloads/external/SeaBIOS distclean
-	$(MAKE) -C payloads/external/U-Boot distclean
-	$(MAKE) -C payloads/external/Memtest86Plus distclean
+	$(foreach payload, $(PAYLOADS_LIST), $(MAKE) -C $(payload) distclean; )
 
-.phony: clean-payloads distclean-payloads
+.PHONY: clean-payloads distclean-payloads

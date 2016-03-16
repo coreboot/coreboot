@@ -16,11 +16,11 @@
 # DESCR: Check that every board has a meaningful board_info.txt
 
 LC_ALL=C export LC_ALL
-for mobodir in $(git diff --diff-filter ACMR --name-only src/mainboard | sed -n 's,^\(src/mainboard/[^/]*/[^/]*\)/.*$,\1,p'|sort|uniq); do
+for mobodir in $(git ls-files src/mainboard | sed -n 's,^\(src/mainboard/[^/]*/[^/]*\)/.*$,\1,p'|sort|uniq); do
     board_info="$mobodir/board_info.txt"
     if ! [ -f "$board_info" ]; then
        echo "No $board_info found"
-       exit 1
+       continue
     fi
     category="$(sed -n 's#^Category: \(.*\)$#\1#p' < "$board_info")"
     case "$category" in
@@ -28,11 +28,11 @@ for mobodir in $(git diff --diff-filter ACMR --name-only src/mainboard | sed -n 
 	    ;;
 	"")
 	    echo "$board_info doesn't contain 'Category' tag"
-	    exit 1
+	    continue
 	    ;;
 	*)
 	    echo "$board_info specifies unknown category '$category'"
-	    exit 1
+	    continue
 	    ;;
     esac
 done

@@ -68,4 +68,7 @@ clean:
 distclean:
 	rm -rf $(project_dir)
 
-.PHONY: checkout config build clean distclean clone fetch
+print-repo-info:
+	echo "$(project_git_repo) $(project_dir)"
+
+.PHONY: checkout config build clean distclean clone fetch print-repo-info

@@ -34,4 +34,7 @@ clean-payloads:
 distclean-payloads:
 	$(foreach payload, $(PAYLOADS_LIST), $(MAKE) -C $(payload) distclean; )
 
-.PHONY: clean-payloads distclean-payloads
+print-repo-info-payloads:
+	-$(foreach payload, $(PAYLOADS_LIST), $(MAKE) -C $(payload) print-repo-info 2>/dev/null; )
+
+.PHONY: clean-payloads distclean-payloads print-repo-info-payloads

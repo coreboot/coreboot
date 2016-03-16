@@ -39,4 +39,7 @@ clean:
 distclean:
 	rm -rf $(project_dir)
 
-.PHONY: all build fetch clean distclean
+print-repo-info:
+	echo "$(project_git_repo) $(project_dir)"
+
+.PHONY: all build fetch clean distclean print-repo-info

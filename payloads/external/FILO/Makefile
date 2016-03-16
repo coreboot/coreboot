@@ -3,6 +3,9 @@ NAME-$(CONFIG_FILO_MASTER)=MASTER
 TAG-$(CONFIG_FILO_STABLE)=4dbb31a64fe5b1c7e3025ab34619220609897646
 NAME-$(CONFIG_FILO_STABLE)=STABLE
 
+project_git_repo=http://review.coreboot.org/p/filo.git
+project_dir=filo
+
 unexport KCONFIG_AUTOHEADER
 unexport KCONFIG_AUTOCONFIG
 unexport KCONFIG_DEPENDENCIES
@@ -15,7 +18,7 @@ all: filo
 checkout:
 	echo "    GIT        FILO $(NAME-y)"
 	test -d filo || \
-		git clone http://review.coreboot.org/p/filo.git
+		git clone $(project_git_repo) $(project_dir)
 	cd filo && \
 		git checkout master && \
 		git remote update && \
@@ -46,4 +49,7 @@ clean:
 distclean:
 	rm -rf filo
 
-.PHONY: checkout config filo clean distclean
+print-repo-info:
+	echo "$(project_git_repo) $(project_dir)"
+
+.PHONY: checkout config filo clean distclean print-repo-info

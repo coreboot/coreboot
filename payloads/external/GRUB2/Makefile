@@ -1,6 +1,9 @@
 TAG-$(CONFIG_GRUB2_MASTER)=
 NAME-$(CONFIG_GRUB2_MASTER)=HEAD
 
+project_git_repo=git://git.sv.gnu.org/grub.git
+project_dir=grub2
+
 unexport KCONFIG_AUTOCONFIG
 unexport CFLAGS
 unexport CPPFLAGS
@@ -22,7 +25,7 @@ all: grub2
 checkout:
 	echo "    GIT        GRUB2 $(NAME-y)"
 	test -d grub2 || \
-		git clone git://git.sv.gnu.org/grub.git grub2
+		git clone $(project_git_repo) $(project_dir)
 	cd grub2 && \
 		git checkout master && \
 		git pull; \
@@ -50,4 +53,7 @@ clean:
 distclean:
 	rm -rf grub2
 
-.PHONY: checkout config grub2 clean distclean
+print-repo-info:
+	echo "$(project_git_repo) $(project_dir)"
+
+.PHONY: checkout config grub2 clean distclean print-repo-info

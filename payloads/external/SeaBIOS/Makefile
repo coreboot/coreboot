@@ -2,6 +2,9 @@ TAG-$(CONFIG_SEABIOS_MASTER)=origin/master
 TAG-$(CONFIG_SEABIOS_STABLE)=b3ef39f532db52bf17457ba931da758eeb38d6b4
 TAG-$(CONFIG_SEABIOS_REVISION)=$(CONFIG_SEABIOS_REVISION_ID)
 
+project_git_repo=http://review.coreboot.org/p/seabios.git
+project_dir=seabios
+
 unexport KCONFIG_AUTOHEADER
 unexport KCONFIG_AUTOCONFIG
 unexport KCONFIG_DEPENDENCIES
@@ -13,7 +16,7 @@ all: build
 
 seabios:
 	echo "    Cloning SeaBIOS from Git"
-	git clone http://review.coreboot.org/p/seabios.git seabios
+	git clone $(project_git_repo) $(project_dir)
 
 fetch: seabios
 ifeq ($(TAG-y),)
@@ -71,4 +74,7 @@ clean:
 distclean:
 	rm -rf seabios
 
-.PHONY: checkout config build clean distclean clone fetch
+print-repo-info:
+	echo "$(project_git_repo) $(project_dir)"
+
+.PHONY: checkout config build clean distclean clone fetch print-repo-info

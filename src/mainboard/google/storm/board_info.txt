@@ -1,0 +1,6 @@
+Vendor name: Google
+Board name: Storm Qualcomm IPQ806X board
+Category: settop
+ROM protocol: SPI
+ROM socketed: n
+Flashrom support: y

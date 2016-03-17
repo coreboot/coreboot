@@ -310,6 +310,7 @@ F:	src/southbridge/via/
 
 LINT SCRIPTS
 M:	Patrick Georgi <patrick@georgi-clan.de>
+M:	Martin Roth <gaumless@gmail.com>
 S:	Supported
 F:	util/lint/
 
@@ -333,6 +334,8 @@ F:	util/kconfig/
 F:	util/sconfig/
 
 BOARD STATUS
+M:	Martin Roth <gaumless@gmail.com>
+S:	Supported
 F:	util/board_status/
 
 BINARY OBJECTS
@@ -383,6 +386,7 @@ F:	payloads/coreinfo/
 
 EXTERNAL PAYLOADS INTEGRATION
 M:	Stefan Reinauer <stefan.reinauer@coreboot.org>
+M:	Martin Roth <gaumless@gmail.com>
 F:	payloads/external
 
 VERIFIED BOOT 2

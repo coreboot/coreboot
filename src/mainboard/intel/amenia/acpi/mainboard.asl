@@ -14,7 +14,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
-#include <soc/gpio_defs.h>
+#include <on_board.h>
 
 Scope (\_SB)
 {
@@ -65,7 +65,7 @@ Scope (\_SB.PCI0.I2C4)
 			)
 			Interrupt (ResourceConsumer, Edge, ActiveLow)
 			{
-				GPIO_18_IRQ
+				TOUCHPAD_INT
 			}
 		})
 

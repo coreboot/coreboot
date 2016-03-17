@@ -12,8 +12,10 @@
 
 #include <types.h>
 
-extern u8 _rpm[];
-extern u8 _erpm[];
+extern u8 _wifi_imem_0[];	/* Linker script supplied */
+extern u8 _ewifi_imem_0[];
+extern u8 _wifi_imem_1[];
+extern u8 _ewifi_imem_1[];
 
 enum dram_state {
 	DRAM_INITIALIZED = 0,

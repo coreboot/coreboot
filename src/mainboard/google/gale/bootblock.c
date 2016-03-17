@@ -40,8 +40,8 @@ void bootblock_mainboard_init(void)
 
 	setup_mmu(DRAM_NOT_INITIALIZED);
 
-	if (((uintptr_t)maskrom_param < (uintptr_t)&_sram) ||
-	    ((uintptr_t)maskrom_param > (uintptr_t)&_esram)) {
+	if (((uintptr_t)maskrom_param < (uintptr_t)&_wifi_imem_0) ||
+	    ((uintptr_t)maskrom_param > (uintptr_t)&_ewifi_imem_0)) {
 		printk(BIOS_INFO, "No uber-sbl parameter detected\n");
 		return;
 	}

@@ -275,6 +275,20 @@ usb_decode_mps0(usb_speed speed, u8 bMaxPacketSize0)
 	}
 }
 
+int speed_to_default_mps(usb_speed speed)
+{
+	switch (speed) {
+	case LOW_SPEED:
+		return 8;
+	case FULL_SPEED:
+	case HIGH_SPEED:
+		return 64;
+	case SUPER_SPEED:
+	default:
+		return 512;
+	}
+}
+
 /* Normalize bInterval to log2 of microframes */
 static int
 usb_decode_interval(usb_speed speed, const endpoint_type type, const unsigned char bInterval)

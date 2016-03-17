@@ -263,6 +263,7 @@ void usb_poll (void);
 usbdev_t *init_device_entry (hci_t *controller, int num);
 
 int usb_decode_mps0 (usb_speed speed, u8 bMaxPacketSize0);
+int speed_to_default_mps(usb_speed speed);
 int set_feature (usbdev_t *dev, int endp, int feature, int rtype);
 int get_status (usbdev_t *dev, int endp, int rtype, int len, void *data);
 int get_descriptor (usbdev_t *dev, int rtype, int descType, int descIdx,

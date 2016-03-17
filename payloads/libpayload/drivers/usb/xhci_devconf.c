@@ -185,7 +185,7 @@ xhci_set_address (hci_t *controller, usb_speed speed, int hubport, int hubaddr)
 	ic->dev.ep0->tr_dq_high	= 0;
 	EC_SET(TYPE,	ic->dev.ep0, EP_CONTROL);
 	EC_SET(AVRTRB,	ic->dev.ep0, 8);
-	EC_SET(MPS,	ic->dev.ep0, 8);
+	EC_SET(MPS,	ic->dev.ep0, speed_to_default_mps(speed));
 	EC_SET(CERR,	ic->dev.ep0, 3);
 	EC_SET(DCS,	ic->dev.ep0, 1);
 

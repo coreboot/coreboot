@@ -35,7 +35,7 @@ int gpio_base2_value(gpio_t gpio[], int num_gpio)
 	return result;
 }
 
-int gpio_base3_value(gpio_t gpio[], int num_gpio)
+int _gpio_base3_value(gpio_t gpio[], int num_gpio, int binary_first)
 {
 	/*
 	 * GPIOs which are tied to stronger external pull up or pull down
@@ -50,6 +50,8 @@ int gpio_base3_value(gpio_t gpio[], int num_gpio)
 	int temp;
 	int index;
 	int result = 0;
+	int has_z = 0;
+	int binary_below = 0;
 	char value[32];
 	assert(num_gpio <= 32);
 
@@ -85,8 +87,51 @@ int gpio_base3_value(gpio_t gpio[], int num_gpio)
 		temp |= ((value[index] ^ temp) << 1);
 		printk(BIOS_DEBUG, "%c ", tristate_char[temp]);
 		result = (result * 3) + temp;
+
+		/*
+		 * For binary_first we keep track of the normal ternary result
+		 * and whether we found any pin that was a Z. We also determine
+		 * the amount of numbers that can be represented with only
+		 * binary digits (no Z) whose value in the normal ternary system
+		 * is lower than the one we are parsing. Counting from the left,
+		 * we add 2^i for any '1' digit to account for the binary
+		 * numbers whose values would be below it if all following
+		 * digits we parsed would be '0'. As soon as we find a '2' digit
+		 * we can total the remaining binary numbers below as 2^(i+1)
+		 * because we know that all binary representations counting only
+		 * this and following digits must have values below our number
+		 * (since 1xxx is always smaller than 2xxx).
+		 *
+		 * Example: 1 0 2 1 (counting from the left / most significant)
+		 * '1' at 3^3: Add 2^3 = 8 to account for binaries 0000-0111
+		 * '0' at 3^2: Ignore (not all binaries 1000-1100 are below us)
+		 * '2' at 3^1: Add 2^(1+1) = 4 to account for binaries 1000-1011
+		 * Stop adding for lower digits (3^0), all already accounted
+		 * now. We know that there can be no binary numbers 1020-102X.
+		 */
+		if (binary_first && !has_z) {
+			switch(temp) {
+			case 0:	/* Ignore '0' digits. */
+				break;
+			case 1:	/* Account for binaries 0 to 2^index - 1. */
+				binary_below += 1 << index;
+				break;
+			case 2:	/* Account for binaries 0 to 2^(index+1) - 1. */
+				binary_below += 1 << (index + 1);
+				has_z = 1;
+			}
+		}
 	}
-	printk(BIOS_DEBUG, "= %d\n", result);
+
+	if (binary_first) {
+		if (has_z)
+			result = result + (1 << num_gpio) - binary_below;
+		else /* binary_below is normal binary system value if !has_z. */
+			result = binary_below;
+	}
+
+	printk(BIOS_DEBUG, "= %d (%s base3 number system)\n", result,
+	       binary_first ? "binary_first" : "standard");
 
 	/* Disable pull up / pull down to conserve power */
 	for (index = 0; index < num_gpio; ++index)

@@ -145,6 +145,26 @@ M:      Patrick Rudolph <siro@das-labor.org>
 S:	Maintained
 F:	src/mainboard/lenovo/
 
+INTEL PINEVIEW CHIPSET
+M:	Damien Zammit <damien@zamaudio.com>
+S:	Maintained
+F:	src/northbridge/intel/pineview/
+
+INTEL D510MO MAINBOARD
+M:	Damien Zammit <damien@zamaudio.com>
+S:	Maintained
+F:	src/mainboard/intel/d510mo
+
+INTEL X4X CHIPSET
+M:	Damien Zammit <damien@zamaudio.com>
+S:	Maintained
+F:	src/northbridge/intel/x4x/
+
+GIGABYTE GA-G41M-ES2L MAINBOARD
+M:	Damien Zammit <damien@zamaudio.com>
+S:	Maintained
+F:	src/mainboard/gigabyte/ga-g41m-es2l
+
 GOOGLE PANTHER MAINBOARD
 M:	Stefan Reinauer <stefan.reinauer@coreboot.org>
 S:	Supported

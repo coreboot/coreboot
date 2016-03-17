@@ -126,6 +126,14 @@ F:	src/arch/riscv/
 F:	src/soc/ucb/
 F:	src/mainboard/emulation/qemu-riscv/
 
+POWER8 ARCHITECTURE
+M:	Ronald Minnich <rminnich@gmail.com>
+M:	Timothy Pearson <tpearson@raptorengineeringinc.com>
+S:	Maintained
+F:	src/arch/power8/
+F:	src/cpu/qemu-power8/
+F:	src/mainboard/emulation/qemu-power8/
+
 LENOVO EC
 M:	Alexander Couzens <lynxis@fe80.eu>
 S:	Maintained

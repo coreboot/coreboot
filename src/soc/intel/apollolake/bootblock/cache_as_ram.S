@@ -16,8 +16,7 @@
 #include <cpu/x86/cache.h>
 #include <cpu/x86/cr.h>
 #include <cpu/x86/post_code.h>
-
-#define EVICT_CTL_MSR		0x2e0
+#include <soc/cpu.h>
 
 .global bootblock_pre_c_entry
 bootblock_pre_c_entry:
@@ -96,7 +95,7 @@ clear_var_mtrr:
 	mov	%eax, %cr0
 
 	/* Disable cache eviction (setup stage) */
-	mov	$EVICT_CTL_MSR, %ecx
+	mov	$MSR_EVICT_CTL, %ecx
 	rdmsr
 	or	$0x1, %eax
 	wrmsr
@@ -112,7 +111,7 @@ clear_var_mtrr:
 	post_code(0x27)
 
 	/* Disable cache eviction (run stage) */
-	mov	$EVICT_CTL_MSR, %ecx
+	mov	$MSR_EVICT_CTL, %ecx
 	rdmsr
 	or	$0x2, %eax
 	wrmsr

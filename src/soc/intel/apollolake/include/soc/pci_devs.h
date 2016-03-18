@@ -7,7 +7,7 @@
 #define _LPSS_PCI_DEVFN(slot, func)		PCI_DEVFN(LPSS_DEV_SLOT_##slot, func)
 
 
-#if ENV_RAMSTAGE
+#if !defined(__SIMPLE_DEVICE__)
 #include <device/device.h>
 #include <device/pci_def.h>
 #define _NB_DEV(slot)				dev_find_slot(0, _NB_DEVFN(slot))

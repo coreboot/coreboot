@@ -37,6 +37,11 @@ ramstage-y += mmap_boot.c
 ramstage-y += uart.c
 ramstage-y += northbridge.c
 
+postcar-y += exit_car.S
+postcar-y += memmap.c
+postcar-y += mmap_boot.c
+postcar-$(CONFIG_SOC_UART_DEBUG) += uart_early.c
+
 CPPFLAGS_common += -I$(src)/soc/intel/apollolake/include
 
 endif

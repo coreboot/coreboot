@@ -11,6 +11,7 @@
  * (at your option) any later version.
  */
 
+#include <arch/cpu.h>
 #include <arch/io.h>
 #include <arch/symbols.h>
 #include <cbfs.h>
@@ -80,6 +81,7 @@ asmlinkage void car_stage_entry(void)
 	void *hob_list_ptr;
 	struct range_entry fsp_mem;
 	struct range_entry reg_car;
+	struct postcar_frame pcf;
 
 	printk(BIOS_DEBUG, "Starting romstage...\n");
 
@@ -109,7 +111,10 @@ asmlinkage void car_stage_entry(void)
 	/* Now that CBMEM is up, save the list so ramstage can use it */
 	fsp_save_hob_list(hob_list_ptr);
 
-	run_ramstage();
+	if (postcar_frame_init(&pcf, 1*KiB))
+		die("Unable to initialize postcar frame.\n");
+
+	run_postcar_phase(&pcf);
 }
 
 static void fill_console_params(struct FSPM_UPD *mupd)

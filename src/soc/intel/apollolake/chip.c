@@ -19,6 +19,7 @@
 #include <fsp/api.h>
 #include <fsp/util.h>
 #include <memrange.h>
+#include <soc/iomap.h>
 #include <soc/cpu.h>
 #include <soc/pci_devs.h>
 
@@ -88,6 +89,12 @@ void platform_fsp_silicon_init_params_cb(struct FSPS_UPD *silupd)
 	silconfig->PcieRpClkReqNumber[3] = cfg->pcie_rp3_clkreq_pin;
 	silconfig->PcieRpClkReqNumber[4] = cfg->pcie_rp4_clkreq_pin;
 	silconfig->PcieRpClkReqNumber[5] = cfg->pcie_rp5_clkreq_pin;
+
+	/* Our defaults may not match FSP defaults, so set them explicitly */
+	silconfig->AcpiBase = ACPI_PMIO_BASE;
+	/* First 4k in BAR0 is used for IPC, real registers start at 4k offset */
+	silconfig->PmcBase = PMC_BAR0 + 0x1000;
+	silconfig->P2sbBase = P2SB_BAR;
 }
 
 struct chip_operations soc_intel_apollolake_ops = {

@@ -40,7 +40,7 @@ config MAINBOARD_PART_NUMBER
 
 config MAINBOARD_FAMILY
 	string
-	default "Intel_Kunimitsu"
+	default "Google_Lars"
 
 config MAX_CPUS
 	int

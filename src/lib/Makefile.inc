@@ -131,12 +131,15 @@ ramstage-$(CONFIG_ACPI_NHLT) += nhlt.c
 
 romstage-y += cbmem_common.c
 romstage-y += imd_cbmem.c
+romstage-y += imd.c
 
 ramstage-y += cbmem_common.c
 ramstage-y += imd_cbmem.c
-
-romstage-y += imd.c
 ramstage-y += imd.c
+
+postcar-y += cbmem_common.c
+postcar-y += imd_cbmem.c
+postcar-y += imd.c
 
 bootblock-y += hexdump.c
 ramstage-y += hexdump.c
@@ -167,12 +170,14 @@ romstage-y += version.c
 ramstage-y += version.c
 smm-y += version.c
 verstage-y += version.c
+postcar-y += version.c
 
 $(call src-to-obj,bootblock,$(dir)/version.c) : $(obj)/build.h
 $(call src-to-obj,romstage,$(dir)/version.c) : $(obj)/build.h
 $(call src-to-obj,ramstage,$(dir)/version.c) : $(obj)/build.h
 $(call src-to-obj,smm,$(dir)/version.c) : $(obj)/build.h
 $(call src-to-obj,verstage,$(dir)/version.c) : $(obj)/build.h
+$(call src-to-obj,postcar,$(dir)/version.c) : $(obj)/build.h
 
 romstage-y += bootmode.c
 ramstage-y += bootmode.c
@@ -183,9 +188,27 @@ romstage-y += halt.c
 ramstage-y += halt.c
 smm-y += halt.c
 
+postcar-y += bootmode.c
+postcar-y += boot_device.c
+postcar-y += cbfs.c
+postcar-$(CONFIG_COMMON_CBFS_SPI_WRAPPER) += cbfs_spi.c
+postcar-y += delay.c
+postcar-y += fmap.c
+postcar-y += gcc.c
+postcar-y += halt.c
+postcar-y += libgcc.c
+postcar-$(CONFIG_COMPRESS_RAMSTAGE) += lzma.c lzmadecode.c
+postcar-y += memchr.c
+postcar-y += memcmp.c
+postcar-y += prog_loaders.c
+postcar-y += prog_ops.c
+postcar-y += rmodule.c
+postcar-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
+
 # Use program.ld for all the platforms which use C fo the bootblock.
 bootblock-$(CONFIG_C_ENVIRONMENT_BOOTBLOCK) += program.ld
 
+postcar-y += program.ld
 romstage-y += program.ld
 ramstage-y += program.ld
 verstage-y += program.ld

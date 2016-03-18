@@ -7,3 +7,4 @@ bootblock-y += boot_cpu.c
 verstage-y += boot_cpu.c
 romstage-y += boot_cpu.c
 ramstage-y += boot_cpu.c
+postcar-y += boot_cpu.c

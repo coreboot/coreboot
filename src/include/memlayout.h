@@ -160,6 +160,18 @@
 	#define OVERLAP_VERSTAGE_ROMSTAGE(addr, size) ROMSTAGE(addr, size)
 #endif
 
+#if ENV_POSTCAR
+	#define POSTCAR(addr, sz) \
+		SYMBOL(postcar, addr) \
+		_epostcar = _postcar + sz; \
+		_ = ASSERT(_eprogram - _program <= sz, \
+			STR(Aftercar exceeded its allotted size! (sz))); \
+		INCLUDE "postcar/lib/program.ld"
+#else
+	#define POSTCAR(addr, sz) \
+		REGION(postcar, addr, sz, 1)
+#endif
+
 #define WATCHDOG_TOMBSTONE(addr, size) \
 	REGION(watchdog_tombstone, addr, size, 4) \
 	_ = ASSERT(size == 4, "watchdog tombstones should be exactly 4 byte!");

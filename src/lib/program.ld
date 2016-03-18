@@ -80,7 +80,14 @@
 	. = ALIGN(ARCH_CACHELINE_ALIGN_SIZE);
 	_data = .;
 
-#if ENV_RMODULE
+/*
+ * The postcar phase uses a stack value that is located in the relocatable
+ * module section. While the postcar stage could be linked like smm and
+ * other rmodules the postcar stage needs similar semantics of the more
+ * traditional stages in the coreboot infrastructure. Therefore it's easier
+ * to specialize this case.
+ */
+#if ENV_RMODULE || ENV_POSTCAR
 	_rmodule_params = .;
 	KEEP(*(.module_parameters));
 	_ermodule_params = .;

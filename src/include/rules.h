@@ -26,6 +26,7 @@
 #define ENV_SMM 0
 #define ENV_VERSTAGE 0
 #define ENV_RMODULE 0
+#define ENV_POSTCAR 0
 #define ENV_STRING "bootblock"
 
 #elif defined(__ROMSTAGE__)
@@ -35,6 +36,7 @@
 #define ENV_SMM 0
 #define ENV_VERSTAGE 0
 #define ENV_RMODULE 0
+#define ENV_POSTCAR 0
 #define ENV_STRING "romstage"
 
 #elif defined(__SMM__)
@@ -44,6 +46,7 @@
 #define ENV_SMM 1
 #define ENV_VERSTAGE 0
 #define ENV_RMODULE 0
+#define ENV_POSTCAR 0
 #define ENV_STRING "smm"
 
 #elif defined(__VERSTAGE__)
@@ -53,6 +56,7 @@
 #define ENV_SMM 0
 #define ENV_VERSTAGE 1
 #define ENV_RMODULE 0
+#define ENV_POSTCAR 0
 #define ENV_STRING "verstage"
 
 #elif defined(__RAMSTAGE__)
@@ -62,6 +66,7 @@
 #define ENV_SMM 0
 #define ENV_VERSTAGE 0
 #define ENV_RMODULE 0
+#define ENV_POSTCAR 0
 #define ENV_STRING "ramstage"
 
 #elif defined(__RMODULE__)
@@ -71,7 +76,18 @@
 #define ENV_SMM 0
 #define ENV_VERSTAGE 0
 #define ENV_RMODULE 1
+#define ENV_POSTCAR 0
 #define ENV_STRING "rmodule"
+
+#elif defined(__POSTCAR__)
+#define ENV_BOOTBLOCK 0
+#define ENV_ROMSTAGE 0
+#define ENV_RAMSTAGE 0
+#define ENV_SMM 0
+#define ENV_VERSTAGE 0
+#define ENV_RMODULE 0
+#define ENV_POSTCAR 1
+#define ENV_STRING "postcar"
 
 #else
 /*
@@ -86,18 +102,21 @@
 #define ENV_SMM 0
 #define ENV_VERSTAGE 0
 #define ENV_RMODULE 0
+#define ENV_POSTCAR 0
 #define ENV_STRING "UNKNOWN"
 #endif
 
-/* For romstage and ramstage always build with simple device model, ie.
- * PCI, PNP and CPU functions operate without use of devicetree.
+/* For pre-DRAM stages and post-CAR always build with simple device model, ie.
+ * PCI, PNP and CPU functions operate without use of devicetree. The reason
+ * post-CAR utilizes __SIMPLE_DEVICE__ is for simplicity. Currently there's
+ * no known requirement that devicetree would be needed during that stage.
  *
  * For ramstage individual source file may define __SIMPLE_DEVICE__
  * before including any header files to force that particular source
  * be built with simple device model.
  */
 
-#if defined(__PRE_RAM__) || defined(__SMM__)
+#if defined(__PRE_RAM__) || ENV_SMM || ENV_POSTCAR
 #define __SIMPLE_DEVICE__
 #endif
 

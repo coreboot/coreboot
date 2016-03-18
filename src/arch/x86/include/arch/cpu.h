@@ -15,6 +15,7 @@
 #define ARCH_CPU_H
 
 #include <stdint.h>
+#include <stddef.h>
 #include <rules.h>
 
 /*
@@ -246,6 +247,42 @@ static inline void get_fms(struct cpuinfo_x86 *c, uint32_t tfms)
  * cache-as-ram.
  */
 void asmlinkage car_stage_entry(void);
+
+/*
+ * Support setting up a stack frame consisting of MTRR information
+ * for use in bootstrapping the caching attributes after cache-as-ram
+ * is torn down.
+ */
+
+struct postcar_frame {
+	uintptr_t stack;
+	uint32_t upper_mask;
+	int max_var_mttrs;
+	int num_var_mttrs;
+};
+
+/*
+ * Initialize postcar_frame object allocating stack size in cbmem
+ * with the provided size. Returns 0 on success, < 0 on error.
+ */
+int postcar_frame_init(struct postcar_frame *pcf, size_t stack_size);
+
+/*
+ * Add variable MTRR covering the provided range with MTRR type.
+ */
+void postcar_frame_add_mtrr(struct postcar_frame *pcf,
+				uintptr_t addr, size_t size, int type);
+
+/*
+ * Load and run a program that takes control of execution that
+ * tears down CAR and loads ramstage. The postcar_frame object
+ * indicates how to set up the frame. If caching is enabled at
+ * the time of the call it is up to the platform code to handle
+ * coherency with dirty lines in the cache using some mechansim
+ * such as platform_prog_run() because run_postcar_phase()
+ * utilizes prog_run() internally.
+ */
+void run_postcar_phase(struct postcar_frame *pcf);
 #endif
 
 #endif /* ARCH_CPU_H */

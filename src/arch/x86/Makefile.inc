@@ -331,6 +331,7 @@ endif # CONFIG_ARCH_RAMSTAGE_X86_32 / CONFIG_ARCH_RAMSTAGE_X86_64
 
 ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32)$(CONFIG_ARCH_ROMSTAGE_X86_64),y)
 
+romstage-$(CONFIG_POSTCAR_STAGE) += postcar_loader.c
 romstage-y += cbmem.c
 romstage-y += boot.c
 
@@ -390,3 +391,27 @@ rmodules_x86_64-y += memmove.c
 endif
 
 endif # CONFIG_ARCH_RAMSTAGE_X86_32 / CONFIG_ARCH_RAMSTAGE_X86_64
+
+$(eval $(call create_class_compiler,postcar,x86_32))
+postcar-generic-ccopts += -D__POSTCAR__
+
+postcar-y += boot.c
+postcar-y += cbfs_and_run.c
+postcar-y += exit_car.S
+postcar-y += memset.c
+postcar-y += memcpy.c
+postcar-y += memmove.c
+postcar-y += memlayout.ld
+postcar-$(CONFIG_X86_TOP4G_BOOTMEDIA_MAP) += mmap_boot.c
+
+$(objcbfs)/postcar.debug: $$(postcar-objs)
+	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
+	$(LD_postcar) $(LDFLAGS_postcar) -o $@ -L$(obj) $(COMPILER_RT_FLAGS_postcar) --whole-archive --start-group $(filter-out %.ld,$^) --no-whole-archive $(COMPILER_RT_postcar) --end-group -T $(call src-to-obj,postcar,src/arch/x86/memlayout.ld)
+
+$(objcbfs)/postcar.elf: $(objcbfs)/postcar.debug.rmod
+	cp $< $@
+
+cbfs-files-$(CONFIG_POSTCAR_STAGE)  += $(CONFIG_CBFS_PREFIX)/postcar
+$(CONFIG_CBFS_PREFIX)/postcar-file := $(objcbfs)/postcar.elf
+$(CONFIG_CBFS_PREFIX)/postcar-type := stage
+$(CONFIG_CBFS_PREFIX)/postcar-compression := none

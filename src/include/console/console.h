@@ -47,7 +47,7 @@ void __attribute__ ((noreturn)) die(const char *msg);
 
 #define __CONSOLE_ENABLE__ \
 	((ENV_BOOTBLOCK && CONFIG_BOOTBLOCK_CONSOLE) || \
-	ENV_VERSTAGE || ENV_ROMSTAGE || ENV_RAMSTAGE || \
+	ENV_VERSTAGE || ENV_ROMSTAGE || ENV_RAMSTAGE || ENV_POSTCAR || \
 	(ENV_SMM && CONFIG_DEBUG_SMI))
 
 #if __CONSOLE_ENABLE__

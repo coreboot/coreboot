@@ -51,6 +51,8 @@ SECTIONS
 	/* Pull in the cache-as-ram rules. */
 	#include "car.ld"
 
+#elif ENV_POSTCAR
+	POSTCAR(32M, 1M)
 #endif
 }
 

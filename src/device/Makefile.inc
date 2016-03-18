@@ -13,6 +13,7 @@ ramstage-$(CONFIG_ARCH_RAMSTAGE_X86_32) += pnp_device.c
 ramstage-$(CONFIG_ARCH_RAMSTAGE_X86_64) += pnp_device.c
 ramstage-$(CONFIG_PCI) += pci_ops.c
 ramstage-$(CONFIG_PCI) += pci_early.c
+ramstage-$(CONFIG_PCI) += pci_rom.c
 ramstage-y += smbus_ops.c
 
 ifeq ($(CONFIG_AZALIA_PLUGIN_SUPPORT),y)
@@ -24,8 +25,6 @@ romstage-y += device_romstage.c
 romstage-$(CONFIG_PCI) += pci_early.c
 
 subdirs-y += oprom dram
-
-ramstage-$(CONFIG_VGA_ROM_RUN) += pci_rom.c
 
 bootblock-$(CONFIG_SOFTWARE_I2C) += software_i2c.c
 verstage-$(CONFIG_SOFTWARE_I2C) += software_i2c.c

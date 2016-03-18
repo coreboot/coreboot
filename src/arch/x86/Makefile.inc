@@ -184,7 +184,7 @@ verstage-$(CONFIG_ARCH_RAMSTAGE_X86_32) += cpu_common.c
 verstage-y += memset.c
 verstage-y += memcpy.c
 verstage-y += memmove.c
-verstage-y += mmap_boot.c
+verstage-$(CONFIG_X86_TOP4G_BOOTMEDIA_MAP) += mmap_boot.c
 
 verstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 

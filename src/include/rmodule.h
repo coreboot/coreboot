@@ -55,6 +55,7 @@ struct prog;
 struct rmod_stage_load {
 	uint32_t cbmem_id;
 	struct prog *prog;
+	void *params;
 };
 
 /* Both of the following functions return 0 on success, -1 on error. */

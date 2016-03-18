@@ -296,5 +296,8 @@ int rmodule_stage_load(struct rmod_stage_load *rsl)
 			rmodule_memory_size(&rmod_stage));
 	prog_set_entry(rsl->prog, rmodule_entry(&rmod_stage), NULL);
 
+	/* Allow caller to pick up parameters, if available. */
+	rsl->params = rmodule_parameters(&rmod_stage);
+
 	return 0;
 }

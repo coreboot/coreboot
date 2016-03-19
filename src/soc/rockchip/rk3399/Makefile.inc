@@ -23,6 +23,7 @@ bootblock-$(CONFIG_DRIVERS_UART) += ../common/uart.c
 endif
 bootblock-y += bootblock.c
 bootblock-y += clock.c
+bootblock-y += mmu_operations.c
 bootblock-y += timer.c
 
 verstage-y += ../common/cbmem.c
@@ -39,6 +40,7 @@ romstage-y += sdram.c
 romstage-y += ../common/spi.c
 romstage-$(CONFIG_DRIVERS_UART) += ../common/uart.c
 romstage-y += clock.c
+romstage-y += mmu_operations.c
 romstage-y += timer.c
 romstage-y += romstage.c
 

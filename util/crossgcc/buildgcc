@@ -243,10 +243,13 @@ unpack_and_patch() {
 		printf " * $(basename $archive)\n"
 		FLAGS=zxf
 		suffix=$(echo $archive | sed 's,.*\.,,')
-		test "$suffix" = "gz" && FLAGS=zxf
-		test "$suffix" = "bz2" && FLAGS=jxf
-		test "$suffix" = "xz" && FLAGS="--xz -xf"
-		test "$suffix" = "lzma" && FLAGS="--lzma -xf"
+		if [ "$suffix" = "gz" ] && [ -n "$PIGZ" ]; then FLAGS="-I pigz -xf"
+		elif [ "$suffix" = "gz" ]; then FLAGS=zxf
+		elif [ "$suffix" = "bz2" ] && [ -n "$LBZIP2" ]; then FLAGS="-I lbzip2 -xf"
+		elif [ "$suffix" = "bz2" ]; then FLAGS=jxf
+		elif [ "$suffix" = "xz" ]; then FLAGS="--xz -xf"
+		elif [ "$suffix" = "lzma" ]; then FLAGS="--lzma -xf"
+		fi
 		$TAR $FLAGS tarballs/$(basename $archive)
 		for patch in patches/${dir}_*.patch; do
 			test -r $patch || continue
@@ -675,6 +678,8 @@ MAKE=$(searchtool make) || exit $?
 SHA1SUM=$(searchtool sha1sum)
 SHA512SUM=$(searchtool sha512sum)
 CHECKSUM=$SHA1SUM
+LBZIP2=$(searchtool lbzip2 "" nofail)
+PIGZ=$(searchtool pigz "" nofail)
 
 searchtool m4 > /dev/null
 searchtool bison > /dev/null

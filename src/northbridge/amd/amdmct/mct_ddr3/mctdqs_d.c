@@ -1725,6 +1725,12 @@ static void TrainDQSReceiverEnCyc_D_Fam15(struct MCTStatStruc *pMCTstat,
 							"Training for receiver %d on DCT %d aborted\n",
 							__func__, lane, Receiver, dct);
 					}
+
+					/* Restore BlockRxDqsLock setting to normal operation in preparation for retraining */
+					dword = Get_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0f0030 | (lane << 8));
+					dword &= ~(0x1 << 8);								/* BlockRxDqsLock = 0 */
+					Set_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0f0030 | (lane << 8), dword);
+
 					break;
 				}
 

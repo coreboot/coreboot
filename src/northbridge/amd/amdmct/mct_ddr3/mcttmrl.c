@@ -191,7 +191,7 @@ static void maxRdLatencyTrain_D(struct MCTStatStruc *pMCTstat,
 		u8 ChannelDTD;
 		printk(BIOS_DEBUG, "maxRdLatencyTrain: CH_MaxRdLat:\n");
 		for(ChannelDTD = 0; ChannelDTD<2; ChannelDTD++) {
-			printk(BIOS_DEBUG, "Channel: %02x: %02x\n", ChannelDTD, pDCTstat->CH_MaxRdLat[ChannelDTD]);
+			printk(BIOS_DEBUG, "Channel: %02x: %02x\n", ChannelDTD, pDCTstat->CH_MaxRdLat[ChannelDTD][0]);
 		}
 	}
 #endif
@@ -208,9 +208,9 @@ static void mct_setMaxRdLatTrnVal_D(struct DCTStatStruc *pDCTstat,
 	if (pDCTstat->GangedMode) {
 		Channel = 0; /* for safe */
 		for (i=0; i<2; i++)
-			pDCTstat->CH_MaxRdLat[i] = MaxRdLatVal;
+			pDCTstat->CH_MaxRdLat[i][0] = MaxRdLatVal;
 	} else {
-		pDCTstat->CH_MaxRdLat[Channel] = MaxRdLatVal;
+		pDCTstat->CH_MaxRdLat[Channel][0] = MaxRdLatVal;
 	}
 
 	dev = pDCTstat->dev_dct;

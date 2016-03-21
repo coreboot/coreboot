@@ -998,7 +998,7 @@ static void dqsTrainRcvrEn_SW_Fam10(struct MCTStatStruc *pMCTstat,
 		printk(BIOS_DEBUG, "TrainRcvrEn: CH_MaxRdLat:\n");
 		for(ChannelDTD = 0; ChannelDTD<2; ChannelDTD++) {
 			printk(BIOS_DEBUG, "Channel:%x: %x\n",
-			       ChannelDTD, pDCTstat->CH_MaxRdLat[ChannelDTD]);
+			       ChannelDTD, pDCTstat->CH_MaxRdLat[ChannelDTD][0]);
 		}
 	}
 #endif
@@ -1498,7 +1498,7 @@ static void dqsTrainRcvrEn_SW_Fam15(struct MCTStatStruc *pMCTstat,
 		printk(BIOS_DEBUG, "TrainRcvrEn: CH_MaxRdLat:\n");
 		for(ChannelDTD = 0; ChannelDTD<2; ChannelDTD++) {
 			printk(BIOS_DEBUG, "Channel:%x: %x\n",
-			       ChannelDTD, pDCTstat->CH_MaxRdLat[ChannelDTD]);
+			       ChannelDTD, pDCTstat->CH_MaxRdLat[ChannelDTD][0]);
 		}
 	}
 #endif
@@ -1533,7 +1533,7 @@ static void dqsTrainRcvrEn_SW_Fam15(struct MCTStatStruc *pMCTstat,
 }
 
 static void write_max_read_latency_to_registers(struct MCTStatStruc *pMCTstat,
-				struct DCTStatStruc *pDCTstat, uint8_t dct, uint16_t latency)
+				struct DCTStatStruc *pDCTstat, uint8_t dct, uint16_t *latency)
 {
 	uint32_t dword;
 	uint8_t nb_pstate;
@@ -1541,7 +1541,7 @@ static void write_max_read_latency_to_registers(struct MCTStatStruc *pMCTstat,
 	for (nb_pstate = 0; nb_pstate < 2; nb_pstate++) {
 		dword = Get_NB32_DCT_NBPstate(pDCTstat->dev_dct, dct, nb_pstate, 0x210);
 		dword &= ~(0x3ff << 22);
-		dword |= ((latency & 0x3ff) << 22);
+		dword |= ((latency[nb_pstate] & 0x3ff) << 22);
 		Set_NB32_DCT_NBPstate(pDCTstat->dev_dct, dct, nb_pstate, 0x210, dword);
 	}
 }
@@ -1665,7 +1665,7 @@ static void dqsTrainMaxRdLatency_SW_Fam15(struct MCTStatStruc *pMCTstat,
 		/* 2.10.5.8.5.1.4
 		 * Incrementally test each MaxRdLatency candidate
 		 */
-		for (; pDCTstat->CH_MaxRdLat[Channel] < 0x3ff; pDCTstat->CH_MaxRdLat[Channel]++) {
+		for (; pDCTstat->CH_MaxRdLat[Channel][0] < 0x3ff; pDCTstat->CH_MaxRdLat[Channel][0]++) {
 			write_max_read_latency_to_registers(pMCTstat, pDCTstat, Channel, pDCTstat->CH_MaxRdLat[Channel]);
 			read_dram_dqs_training_pattern_fam15(pMCTstat, pDCTstat, Channel, current_worst_case_total_delay_dimm << 1, 0xff, 0);
 			dword = Get_NB32_DCT(dev, Channel, 0x268) & 0x3ffff;
@@ -1683,8 +1683,8 @@ static void dqsTrainMaxRdLatency_SW_Fam15(struct MCTStatStruc *pMCTstat,
 		dword = Get_NB32(pDCTstat->dev_nbctl, (0x160 + (nb_pstate * 4)));		/* Retrieve NbDid, NbFid */
 		nb_clk = (200 * (((dword >> 1) & 0x1f) + 0x4)) / (((dword >> 7) & 0x1)?2:1);
 
-		pDCTstat->CH_MaxRdLat[Channel]++;
-		pDCTstat->CH_MaxRdLat[Channel] += ((((uint64_t)15 * 100000000000ULL) / ((uint64_t)fam15h_freq_tab[mem_clk] * 1000000ULL))
+		pDCTstat->CH_MaxRdLat[Channel][0]++;
+		pDCTstat->CH_MaxRdLat[Channel][0] += ((((uint64_t)15 * 100000000000ULL) / ((uint64_t)fam15h_freq_tab[mem_clk] * 1000000ULL))
 							 * ((uint64_t)nb_clk * 1000)) / 1000000000ULL;
 
 		write_max_read_latency_to_registers(pMCTstat, pDCTstat, Channel, pDCTstat->CH_MaxRdLat[Channel]);
@@ -1712,7 +1712,7 @@ static void dqsTrainMaxRdLatency_SW_Fam15(struct MCTStatStruc *pMCTstat,
 		printk(BIOS_DEBUG, "TrainMaxRdLatency: CH_MaxRdLat:\n");
 		for(ChannelDTD = 0; ChannelDTD<2; ChannelDTD++) {
 			printk(BIOS_DEBUG, "Channel:%x: %x\n",
-			       ChannelDTD, pDCTstat->CH_MaxRdLat[ChannelDTD]);
+			       ChannelDTD, pDCTstat->CH_MaxRdLat[ChannelDTD][0]);
 		}
 	}
 #endif
@@ -1904,9 +1904,9 @@ static void mct_SetMaxLatency_D(struct DCTStatStruc *pDCTstat, u8 Channel, u16 D
 	 */
 	SubTotal += (cpu_val_n) / 2;
 
-	pDCTstat->CH_MaxRdLat[Channel] = SubTotal;
+	pDCTstat->CH_MaxRdLat[Channel][0] = SubTotal;
 	if(pDCTstat->GangedMode) {
-		pDCTstat->CH_MaxRdLat[1] = SubTotal;
+		pDCTstat->CH_MaxRdLat[1][0] = SubTotal;
 	}
 
 	/* Program the F2x[1, 0]78[MaxRdLatency] register with

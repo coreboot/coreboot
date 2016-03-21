@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
+ * Copyright (C) 2015-2016 Raptor Engineering, LLC
  * Copyright (C) 2010 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -498,7 +498,7 @@ struct DCTStatStruc {		/* A per Node structure*/
 	u16 CSUsrTestFail;	/* Chip selects excluded by user */
 /* DCTStatStruct_F -  end */
 
-	u16 CH_MaxRdLat[2];	/* Max Read Latency (ns) for DCT 0*/
+	u16 CH_MaxRdLat[2][2];	/* Max Read Latency (nclks) [dct][pstate] */
 		/* Max Read Latency (ns) for DCT 1*/
 	u8 CH_D_DIR_B_DQS[2][4][2][9];	/* [A/B] [DIMM1-4] [R/W] [DQS] */
 		/* CHA DIMM0 Byte 0 - 7 and Check Write DQS Delay*/

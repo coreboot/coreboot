@@ -877,7 +877,8 @@ static void Calc_SetMaxRdLatency_D_Fam15(struct MCTStatStruc *pMCTstat,
 
 	mem_clk = Get_NB32_DCT(dev, dct, 0x94) & 0x1f;
 	if (fam15h_freq_tab[mem_clk] == 0) {
-		pDCTstat->CH_MaxRdLat[dct] = 0x55;
+		pDCTstat->CH_MaxRdLat[dct][0] = 0x55;
+		pDCTstat->CH_MaxRdLat[dct][1] = 0x55;
 		return;
 	}
 
@@ -947,10 +948,10 @@ static void Calc_SetMaxRdLatency_D_Fam15(struct MCTStatStruc *pMCTstat,
 		}
 
 		/* Save result for later use */
-		pDCTstat->CH_MaxRdLat[dct] = n - 1;
+		pDCTstat->CH_MaxRdLat[dct][nb_pstate] = n - 1;
 
 #if DQS_TRAIN_DEBUG > 0
-		printk(BIOS_DEBUG, "%s: CH_MaxRdLat[%d]: %03x\n", __func__, dct, pDCTstat->CH_MaxRdLat[dct]);
+		printk(BIOS_DEBUG, "%s: CH_MaxRdLat[%d][%d]: %03x\n", __func__, dct, nb_pstate, pDCTstat->CH_MaxRdLat[dct][nb_pstate]);
 #endif
 	}
 

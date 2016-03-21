@@ -3798,7 +3798,7 @@ static void LoadDQSSigTmgRegs_D(struct MCTStatStruc *pMCTstat,
 				reg = 0x78;
 				val = Get_NB32_DCT(dev, Channel, reg);
 				val &= ~(0x3ff<<22);
-				val |= ((u32) pDCTstat->CH_MaxRdLat[Channel] << 22);
+				val |= ((u32) pDCTstat->CH_MaxRdLat[Channel][0] << 22);
 				val &= ~(1<<DqsRcvEnTrain);
 				Set_NB32_DCT(dev, Channel, reg, val);	/* program MaxRdLatency to correspond with current delay*/
 			}
@@ -7391,7 +7391,7 @@ static void mct_ResetDataStruct_D(struct MCTStatStruc *pMCTstat,
 
 		p = (u8 *) pDCTstat;
 		start = 0;
-		stop = ((u32) &((struct DCTStatStruc *)0)->CH_MaxRdLat[2]);
+		stop = ((u32) &((struct DCTStatStruc *)0)->CH_D_DIR_B_DQS);
 		for (i = start; i < stop ; i++) {
 			p[i] = 0;
 		}

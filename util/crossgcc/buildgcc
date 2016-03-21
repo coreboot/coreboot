@@ -126,9 +126,9 @@ please_install()
 	*) solution="using your OS packaging system" ;;
 	esac
 
-	printf "${RED}ERROR:${red} Missing tool: Please install \'$1\' utility. (eg $solution)${NC}\n" >&2
+	printf "${RED}ERROR:${red} Missing tool: Please install \'$1\'. (eg $solution)${NC}\n" >&2
 	if [ -n "$2" ]; then
-		printf "${RED}ERROR:${red}               or install \'$2\' utility. (eg $solution)${NC}\n" >&2
+		printf "${RED}ERROR:${red}               or install \'$2\'.${NC}\n" >&2
 	fi
 }
 
@@ -186,6 +186,19 @@ searchtool()
 
 	[ -z "$3" ] && please_install $1 $4
 	false
+}
+
+# Run a compile check of the specified library option to see if it's installed
+check_for_library() {
+	local LIBRARY_FLAGS=$1
+	local LIBRARY_PACKAGES=$2
+	local LIBTEST_FILE=.libtest
+
+	echo "int main(int argc, char **argv) { (void) argc; (void) argv; return 0; }" > "${LIBTEST_FILE}.c"
+
+	cc $CFLAGS $LIBRARY_FLAGS "${LIBTEST_FILE}.c" -o "${LIBTEST_FILE}" >/dev/null 2>&1 || \
+		please_install "$LIBRARY_PACKAGES"
+	rm -rf "${LIBTEST_FILE}.c" "${LIBTEST_FILE}"
 }
 
 check_sum() {
@@ -689,6 +702,8 @@ searchtool clang "clang version" nofail > /dev/null || \
 searchtool clang "LLVM" "" "g++" > /dev/null
 searchtool wget > /dev/null
 searchtool bzip2 "bzip2," > /dev/null
+
+check_for_library "-lz" "zlib (zlib1g-dev or zlib-devel)"
 
 if [ "$HALT_FOR_TOOLS" -ne 0 ]; then
 	exit 1

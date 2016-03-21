@@ -126,6 +126,14 @@ static const struct winbond_spi_flash_params winbond_spi_flash_table[] = {
 		.nr_blocks		= 256,
 		.name			= "W25Q128FW",
 	},
+	{
+		.id			= 0x4019,
+		.l2_page_size		= 8,
+		.pages_per_sector	= 16,
+		.sectors_per_block	= 16,
+		.nr_blocks		= 512,
+		.name			= "W25Q256",
+	},
 };
 
 static int winbond_write(struct spi_flash *flash,

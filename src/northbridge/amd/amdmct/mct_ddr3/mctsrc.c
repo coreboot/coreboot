@@ -1555,7 +1555,6 @@ static void dqsTrainMaxRdLatency_SW_Fam15(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat)
 {
 	u8 Channel;
-	u8 Addl_Index = 0;
 	u8 Receiver;
 	u8 _DisableDramECC = 0, _Wrap32Dis = 0, _SSE2 = 0;
 	u32 Errors;
@@ -1629,10 +1628,9 @@ static void dqsTrainMaxRdLatency_SW_Fam15(struct MCTStatStruc *pMCTstat,
 		 * This is essentially looping over each DIMM.
 		 */
 		for (; Receiver < 8; Receiver += 2) {
-			Addl_Index = (Receiver >> 1) * 3 + 0x10;
 			dimm = (Receiver >> 1);
 
-			print_debug_dqs("\t\tTrainMaxRdLatency52: index ", Addl_Index, 2);
+			print_debug_dqs("\t\tTrainMaxRdLatency52: Receiver ", Receiver, 2);
 
 			if (!mct_RcvrRankEnabled_D(pMCTstat, pDCTstat, Channel, Receiver)) {
 				continue;

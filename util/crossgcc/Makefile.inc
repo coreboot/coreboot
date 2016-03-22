@@ -71,3 +71,5 @@ endif # ifeq ($(COMPILER_OUT_OF_DATE),1)
 jenkins-build-toolchain:
 	$(MAKE) crosstools clang \
 		BUILDGCC_OPTIONS='-y --nocolor'
+	rm -f .xcompile
+	$(MAKE) what-jenkins-does

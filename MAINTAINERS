@@ -337,6 +337,10 @@ INTELTOOL
 M:	Stefan Reinauer <stefan.reinauer@coreboot.org>
 F:	util/inteltool/
 
+INTELMETOOL
+M:	Philipp Deppenwiese <zaolin.daisuki@gmail.com>
+F:	util/intelmetool/
+
 IFDTOOL
 M:	Stefan Reinauer <stefan.reinauer@coreboot.org>
 F:	util/ifdtool/

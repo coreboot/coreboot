@@ -172,7 +172,7 @@ Scope (\_SB.PCI0.I2C4)
 				 * Compatibility Kit and a Chell EVT
 				 */
 				Package () {"nuvoton,sar-threshold",
-					Package () {0x20, 0x32, 0x50, 0x70}},
+					Package () {0x0c, 0x1c, 0x38, 0x60}},
 				Package () {"nuvoton,sar-hysteresis", 1},
 				/* VDDA for button impedance measurement */
 				Package () {"nuvoton,sar-voltage", 0},

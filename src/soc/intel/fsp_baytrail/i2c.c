@@ -23,7 +23,8 @@
 /* Wait for the transmit FIFO till there is at least one slot empty.
  * FIFO stall due to transmit abort will be checked and resolved
  */
-static int wait_tx_fifo(char *base_adr) {
+static int wait_tx_fifo(char *base_adr)
+{
 	int i;
 
 	if (read32(base_adr + I2C_ABORT_SOURCE) & 0x1ffff) {
@@ -35,7 +36,7 @@ static int wait_tx_fifo(char *base_adr) {
 
 	/* Wait here for a free slot in TX-FIFO */
 	i = I2C_TIMEOUT_US;
-	while ((!(*((volatile unsigned int *)(base_adr + I2C_STATUS)) & I2C_TFNF))) {
+	while (!(read32(base_adr + I2C_STATUS) & I2C_TFNF)) {
 		udelay(1);
 		if (!--i)
 			return I2C_ERR_TIMEOUT;
@@ -47,7 +48,8 @@ static int wait_tx_fifo(char *base_adr) {
 /* Wait for the receive FIFO till there is at least one valid entry to read.
  * FIFO stall due to transmit abort will be checked and resolved
  */
-static int wait_rx_fifo(char *base_adr) {
+static int wait_rx_fifo(char *base_adr)
+{
 	int i;
 	if (read32(base_adr + I2C_ABORT_SOURCE) & 0x1ffff) {
 		/* Reading back I2C_CLR_TX_ABRT resets abort lock on TX FIFO */
@@ -58,7 +60,7 @@ static int wait_rx_fifo(char *base_adr) {
 
 	/* Wait here for a received entry in RX-FIFO */
 	i = I2C_TIMEOUT_US;
-	while ((!(*((volatile unsigned int *)(base_adr + I2C_STATUS)) & I2C_RFNE))) {
+	while (!(read32(base_adr + I2C_STATUS) & I2C_RFNE)) {
 		udelay(1);
 		if (!--i)
 			return I2C_ERR_TIMEOUT;
@@ -74,20 +76,19 @@ static int wait_rx_fifo(char *base_adr) {
 static int wait_for_idle(char *base_adr)
 {
 	int i;
-	volatile int status;
+	int status;
 
 	/* For IDLE, increase timeout by ten times */
 	i = I2C_TIMEOUT_US * 10;
-	status = *((volatile unsigned int *)(base_adr + I2C_STATUS));
+	status = read32(base_adr + I2C_STATUS);
 	while (((status & I2C_MST_ACTIVITY) || (!(status & I2C_TFE)))) {
-		status = *((volatile unsigned int *)(base_adr + I2C_STATUS));
+		status = read32(base_adr + I2C_STATUS);
 		udelay(1);
 		if (!--i)
 			return I2C_ERR_TIMEOUT;
 	}
 
 	return I2C_SUCCESS;
-
 }
 
 /** \brief Enables I2C-controller, sets up BAR and timing parameters
@@ -101,6 +102,7 @@ int i2c_init(unsigned bus)
 			   I2C3_MEM_BASE, I2C4_MEM_BASE, I2C5_MEM_BASE,
 			   I2C6_MEM_BASE};
 	char *base_ptr;
+
 	/* Ensure the desired device is valid */
 	if (bus >= ARRAY_SIZE(base_adr)) {
 		printk(BIOS_ERR, "I2C: Only I2C controllers 0...6 are available.\n");
@@ -126,20 +128,19 @@ int i2c_init(unsigned bus)
 			   (pci_read_config32(dev, PCI_COMMAND) | 0x2));
 
 	/* Set up some settings of I2C controller */
-	*((unsigned int *)(base_ptr + I2C_CTRL)) = (I2C_RESTART_EN |
-					          (I2C_STANDARD_MODE << 1) |
-						   I2C_MASTER_ENABLE);
+	write32(base_ptr + I2C_CTRL,
+		I2C_RESTART_EN | (I2C_STANDARD_MODE << 1) | I2C_MASTER_ENABLE);
 	/* Adjust frequency for standard mode to 100 kHz */
 	/* The counter value can be computed by N=100MHz/2/I2C_CLK */
 	/* Thus, for 100 kHz I2C_CLK, N is 0x1F4 */
-	*((unsigned int *)(base_ptr + I2C_SS_SCL_HCNT)) = 0x1f4;
-	*((unsigned int *)(base_ptr + I2C_SS_SCL_LCNT)) = 0x1f4;
+	write32(base_ptr + I2C_SS_SCL_HCNT, 0x1f4);
+	write32(base_ptr + I2C_SS_SCL_LCNT, 0x1f4);
 	/* For 400 kHz, the counter value is 0x7d */
-	*((unsigned int *)(base_ptr + I2C_FS_SCL_HCNT)) = 0x7d;
-	*((unsigned int *)(base_ptr + I2C_FS_SCL_LCNT)) = 0x7d;
+	write32(base_ptr + I2C_FS_SCL_HCNT, 0x7d);
+	write32(base_ptr + I2C_FS_SCL_LCNT, 0x7d);
 
 	/* Enable the I2C controller for operation */
-	*((unsigned int *)(base_ptr + I2C_ENABLE)) = 0x1;
+	write32(base_ptr + I2C_ENABLE, 0x1);
 
 	printk(BIOS_INFO, "I2C: Controller %d enabled.\n", bus);
 	return I2C_SUCCESS;
@@ -177,20 +178,20 @@ int i2c_read(unsigned bus, unsigned chip, unsigned addr,
 	if (stat != I2C_SUCCESS)
 		return stat;
 	/* Now we can program the desired slave address and start transfer */
-	*((unsigned int *)(base_ptr + I2C_TARGET_ADR)) = (chip & 0xff);
+	write32(base_ptr + I2C_TARGET_ADR, chip & 0xff);
 	/* Send address inside slave to read from */
-	*((unsigned int *)(base_ptr + I2C_DATA_CMD)) = (addr & 0xff);
+	write32(base_ptr + I2C_DATA_CMD, addr & 0xff);
 
 	/* For the next byte we need a repeated start condition */
 	val = I2C_RW_CMD | I2C_RESTART;
 	/* Now we can read desired amount of data over I2C */
 	for (i = 0; i < len; i++) {
 		/* A read is initiated by writing dummy data to the DATA-register */
-		*((unsigned int *)(base_ptr + I2C_DATA_CMD)) = val;
+		write32(base_ptr + I2C_DATA_CMD, val);
 		stat = wait_rx_fifo(base_ptr);
 		if (stat)
 			return stat;
-		buf[i] = (*((unsigned int *)(base_ptr + I2C_DATA_CMD))) & 0xff;
+		buf[i] = read32(base_ptr + I2C_DATA_CMD) & 0xff;
 		val = I2C_RW_CMD;
 		if (i == (len - 2)) {
 			/* For the last byte we need a stop condition to be generated */
@@ -232,10 +233,10 @@ int i2c_write(unsigned bus, unsigned chip, unsigned addr,
 		return stat;
 	}
 	/* Program slave address to use for this transfer */
-	*((unsigned int *)(base_ptr + I2C_TARGET_ADR)) = (chip & 0xff);
+	write32(base_ptr + I2C_TARGET_ADR, chip & 0xff);
 
 	/* Send address inside slave to write data to */
-	*((unsigned int *)(base_ptr + I2C_DATA_CMD)) = (addr & 0xff);
+	write32(base_ptr + I2C_DATA_CMD, addr & 0xff);
 
 	for (i = 0; i < len; i++) {
 		val = (unsigned int)(buf[i] & 0xff);	/* Take only 8 bits */
@@ -247,7 +248,7 @@ int i2c_write(unsigned bus, unsigned chip, unsigned addr,
 		if (stat) {
 			return stat;
 		}
-		*((unsigned int *)(base_ptr + I2C_DATA_CMD)) = val;
+		write32(base_ptr + I2C_DATA_CMD, val);
 	}
 	return I2C_SUCCESS;
 }

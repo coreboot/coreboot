@@ -155,6 +155,10 @@ enum {
 	HCLK_PERILP1_DIV_CON_MASK	= 0x1f,
 	HCLK_PERILP1_DIV_CON_SHIFT	= 0,
 
+	/* CLKSEL_CON26 */
+	CLK_SARADC_DIV_CON_MASK		= 0xff,
+	CLK_SARADC_DIV_CON_SHIFT	= 8,
+
 	/* CLKSEL_CON58 */
 	CLK_SPI_PLL_SEL_MASK		= 1,
 	CLK_SPI_PLL_SEL_CPLL		= 0,
@@ -574,4 +578,18 @@ uint32_t rkclk_i2c_clock_for_bus(unsigned bus)
 	rkclk_configure_i2c(bus, freq);
 
 	return freq;
+}
+
+void rkclk_configure_saradc(unsigned int hz)
+{
+	int src_clk_div;
+
+	/* saradc src clk from 24MHz */
+	src_clk_div = 24 * MHz / hz;
+	assert((src_clk_div - 1 < 255) && (src_clk_div * hz == 24 * MHz));
+
+	write32(&cru_ptr->clksel_con[26],
+		RK_CLRSETBITS(CLK_SARADC_DIV_CON_MASK <<
+						CLK_SARADC_DIV_CON_SHIFT,
+			      (src_clk_div - 1) << CLK_SARADC_DIV_CON_SHIFT));
 }

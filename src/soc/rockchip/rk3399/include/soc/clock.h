@@ -105,6 +105,7 @@ enum apll_l_frequencies {
 void rkclk_init(void);
 void rkclk_configure_cpu(enum apll_l_frequencies apll_l_freq);
 void rkclk_configure_ddr(unsigned int hz);
+void rkclk_configure_saradc(unsigned int hz);
 void rkclk_configure_spi(unsigned int bus, unsigned int hz);
 void rkclk_ddr_reset(u32 ch, u32 ctl, u32 phy);
 uint32_t rkclk_i2c_clock_for_bus(unsigned bus);

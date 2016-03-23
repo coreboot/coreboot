@@ -26,12 +26,13 @@
 static int wait_tx_fifo(char *base_adr)
 {
 	int i;
+	u32 as;
 
-	if (read32(base_adr + I2C_ABORT_SOURCE) & 0x1ffff) {
+	as = read32(base_adr + I2C_ABORT_SOURCE) & 0x1ffff;
+	if (as) {
 		/* Reading back I2C_CLR_TX_ABRT resets abort lock on TX FIFO */
-		i = *((volatile unsigned int *)(base_adr + I2C_CLR_TX_ABRT));
-		return I2C_ERR_ABORT |
-		 (*((unsigned int *)(base_adr + I2C_ABORT_SOURCE)) & 0x1ffff);
+		i = read32(base_adr + I2C_CLR_TX_ABRT);
+		return I2C_ERR_ABORT | as;
 	}
 
 	/* Wait here for a free slot in TX-FIFO */
@@ -51,11 +52,13 @@ static int wait_tx_fifo(char *base_adr)
 static int wait_rx_fifo(char *base_adr)
 {
 	int i;
-	if (read32(base_adr + I2C_ABORT_SOURCE) & 0x1ffff) {
+	u32 as;
+
+	as = read32(base_adr + I2C_ABORT_SOURCE) & 0x1ffff;
+	if (as) {
 		/* Reading back I2C_CLR_TX_ABRT resets abort lock on TX FIFO */
-		i = *((volatile unsigned int *)(base_adr + I2C_CLR_TX_ABRT));
-		return I2C_ERR_ABORT |
-		 (*((unsigned int *)(base_adr + I2C_ABORT_SOURCE)) & 0x1ffff);
+		i = read32(base_adr + I2C_CLR_TX_ABRT);
+		return I2C_ERR_ABORT | as;
 	}
 
 	/* Wait here for a received entry in RX-FIFO */
@@ -177,6 +180,10 @@ int i2c_read(unsigned bus, unsigned chip, unsigned addr,
 	stat = wait_for_idle(base_ptr);
 	if (stat != I2C_SUCCESS)
 		return stat;
+
+	/* clear any abort status from a previous transaction */
+	read32(base_ptr + I2C_CLR_TX_ABRT);
+
 	/* Now we can program the desired slave address and start transfer */
 	write32(base_ptr + I2C_TARGET_ADR, chip & 0xff);
 	/* Send address inside slave to read from */
@@ -232,6 +239,10 @@ int i2c_write(unsigned bus, unsigned chip, unsigned addr,
 	if (stat) {
 		return stat;
 	}
+
+	/* clear any abort status from a previous transaction */
+	read32(base_ptr + I2C_CLR_TX_ABRT);
+
 	/* Program slave address to use for this transfer */
 	write32(base_ptr + I2C_TARGET_ADR, chip & 0xff);
 

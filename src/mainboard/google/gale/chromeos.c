@@ -25,11 +25,11 @@
 #include <timer.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
-#define DEV_SW 15
+#define DEV_SW 41
 #define DEV_POL ACTIVE_LOW
-#define REC_SW 16
+#define REC_SW 7
 #define REC_POL ACTIVE_LOW
-#define WP_SW  17
+#define WP_SW  6
 #define WP_POL ACTIVE_LOW
 
 static int read_gpio(gpio_t gpio_num)

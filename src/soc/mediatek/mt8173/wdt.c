@@ -18,6 +18,7 @@
 #include <reset.h>
 #include <soc/addressmap.h>
 #include <soc/wdt.h>
+#include <vendorcode/google/chromeos/chromeos.h>
 
 static struct mt8173_wdt_regs * const mt8173_wdt = (void *)RGU_BASE;
 
@@ -29,9 +30,10 @@ int mtk_wdt_init(void)
 	wdt_sta = read32(&mt8173_wdt->wdt_status);
 
 	printk(BIOS_INFO, "WDT: Last reset was ");
-	if (wdt_sta & MTK_WDT_STA_HW_RST)
+	if (wdt_sta & MTK_WDT_STA_HW_RST) {
 		printk(BIOS_INFO, "hardware watchdog\n");
-	else if (wdt_sta & MTK_WDT_STA_SW_RST)
+		mark_watchdog_tombstone();
+	} else if (wdt_sta & MTK_WDT_STA_SW_RST)
 		printk(BIOS_INFO, "normal software reboot\n");
 	else if (wdt_sta & MTK_WDT_STA_SPM_RST)
 		printk(BIOS_INFO, "SPM reboot\n");

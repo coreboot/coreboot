@@ -30,9 +30,14 @@ void elog_add_watchdog_reset(void)
 	write32(_watchdog_tombstone, 0);
 }
 
+void mark_watchdog_tombstone(void)
+{
+	write32(_watchdog_tombstone, WATCHDOG_TOMBSTONE_MAGIC);
+}
+
 void reboot_from_watchdog(void)
 {
 	printk(BIOS_INFO, "Last reset was watchdog, reboot again to reset TPM!\n");
-	write32(_watchdog_tombstone, WATCHDOG_TOMBSTONE_MAGIC);
+	mark_watchdog_tombstone();
 	hard_reset();
 }

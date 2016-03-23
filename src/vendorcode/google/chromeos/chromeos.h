@@ -34,10 +34,12 @@ void elog_add_boot_reason(void);
 
 /* functions implemented in watchdog.c */
 void elog_add_watchdog_reset(void);
+void mark_watchdog_tombstone(void);
 void reboot_from_watchdog(void);
 #else
 static inline void elog_add_boot_reason(void) { return; }
 static inline void elog_add_watchdog_reset(void) { return; }
+static inline void mark_watchdog_tombstone(void) { return; }
 static inline void reboot_from_watchdog(void) { return; }
 #endif /* CONFIG_CHROMEOS */
 

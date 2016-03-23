@@ -95,6 +95,8 @@ static struct rk3399_cru_reg * const cru_ptr = (void *)CRU_BASE;
 #define PERILP1_HCLK_HZ	(99000*KHz)
 #define PERILP1_PCLK_HZ	(49500*KHz)
 
+#define PWM_CLOCK_HZ    PMU_PCLK_HZ
+
 enum apll_l_frequencies {
 	APLL_L_1600_MHZ,
 	APLL_L_600_MHZ,

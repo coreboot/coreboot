@@ -303,13 +303,13 @@ clean-for-update: doxygen-clean clean-for-update-target
 	rmdir -p $(alldirs) 2>/dev/null >/dev/null || true
 
 clean: clean-for-update clean-target
-	rm -f .ccwrap
+	rm -f .ccwrap junit_config junit_config.old
 
 clean-cscope:
 	rm -f cscope.out
 
 distclean: clean-cscope
 	rm -rf $(obj)
-	rm -f .config .config.old ..config.tmp .kconfig.d .tmpconfig* .ccwrap .xcompile
+	rm -f .config .config.old ..config.tmp .kconfig.d .tmpconfig* .ccwrap .xcompile junit.xml
 
 .PHONY: $(PHONY) clean clean-cscope cscope distclean doxygen doxy

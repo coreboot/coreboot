@@ -130,9 +130,10 @@ junit.xml:
 	echo '<?xml version="1.0" encoding="utf-8"?><testsuite>' > $@.tmp
 	for i in $(filter-out %.old,$(wildcard configs/*)); do \
 		$(MAKE) clean; \
-		yes "" | $(MAKE) oldconfig DOTCONFIG=$$i V=$(V) Q=$(Q) 2>/dev/null >/dev/null; \
+		cp "$$i" junit_config; \
+		$(MAKE) olddefconfig DOTCONFIG=junit_config V=$(V) Q=$(Q) 2>/dev/null >/dev/null; \
 		echo "<testcase classname='libpayload' name='$$i'>" >> $@.tmp; \
-		$(MAKE) V=$(V) Q=$(Q) CONFIG_LP_CCACHE=$(CONFIG_LP_CCACHE) DOTCONFIG=$$i >> $@.tmp.2 2>&1 && type="system-out" || type="failure"; \
+		$(MAKE) V=$(V) Q=$(Q) CONFIG_LP_CCACHE=$(CONFIG_LP_CCACHE) DOTCONFIG=junit_config >> $@.tmp.2 2>&1 && type="system-out" || type="failure"; \
 		if [ $$type = "failure" ]; then \
 			echo "<failure type='buildFailed'>" >> $@.tmp; \
 		else \

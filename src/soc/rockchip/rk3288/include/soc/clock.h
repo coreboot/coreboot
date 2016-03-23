@@ -39,6 +39,8 @@ enum apll_frequencies {
 #define PERI_HCLK_HZ	(148500*KHz)
 #define PERI_PCLK_HZ	(74250*KHz)
 
+#define PWM_CLOCK_HZ	PD_BUS_PCLK_HZ
+
 void rkclk_init(void);
 void rkclk_configure_spi(unsigned int bus, unsigned int hz);
 void rkclk_ddr_reset(u32 ch, u32 ctl, u32 phy);

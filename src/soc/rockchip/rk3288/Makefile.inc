@@ -49,7 +49,7 @@ romstage-y += gpio.c
 romstage-y += ../common/spi.c
 romstage-y += sdram.c
 romstage-y += ../common/rk808.c
-romstage-y += pwm.c
+romstage-y += ../common/pwm.c
 romstage-y += tsadc.c
 
 ramstage-y += soc.c
@@ -62,7 +62,7 @@ ramstage-y += ../common/spi.c
 ramstage-y += sdram.c
 ramstage-y += gpio.c
 ramstage-y += ../common/rk808.c
-ramstage-y += pwm.c
+ramstage-y += ../common/pwm.c
 ramstage-y += vop.c
 ramstage-y += edp.c
 ramstage-y += hdmi.c

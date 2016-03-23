@@ -64,7 +64,7 @@ build-riscv:
 	@$(MAKE) build_gcc BUILD_PLATFORM=riscv-elf
 
 build-power8:
-	@$(MAKE) build_tools BUILD_PLATFORM=powerpc64le-linux-gnu
+	@$(MAKE) build_tools BUILD_PLATFORM=powerpc64-linux-gnu
 
 build-nds32le:
 	@$(MAKE) build_tools BUILD_PLATFORM=nds32le-elf

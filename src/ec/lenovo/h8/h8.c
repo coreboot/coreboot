@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/acpi.h>
 #include <arch/io.h>
 #include <console/console.h>
 #include <device/device.h>
@@ -258,7 +259,7 @@ static void h8_enable(struct device *dev)
 	h8_trackpoint_enable(1);
 	h8_usb_power_enable(1);
 
-	if (get_option(&val, "volume") == CB_SUCCESS)
+	if (get_option(&val, "volume") == CB_SUCCESS && !acpi_is_wakeup_s3())
 		ec_write(H8_VOLUME_CONTROL, val);
 
 	if (get_option(&val, "bluetooth") != CB_SUCCESS)

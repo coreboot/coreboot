@@ -36,6 +36,8 @@
  */
 /* ToDO: change kbd irq to gpio bank index */
 #define BOARD_I8042_IRQ			182
+#define BOARD_TOUCH_IRQ			184
+#define BOARD_PRE_EVT_TOUCH_IRQ		156
 
 
 /* SCI: Gpio index in N bank */

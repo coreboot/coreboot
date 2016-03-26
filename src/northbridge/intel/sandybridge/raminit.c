@@ -184,6 +184,8 @@ typedef struct ramctr_timing_st {
 	int rank_mirror[NUM_CHANNELS][NUM_SLOTRANKS];
 
 	struct ram_rank_timings timings[NUM_CHANNELS][NUM_SLOTRANKS];
+
+	dimm_info info;
 } ramctr_timing;
 
 #define SOUTHBRIDGE PCI_DEV(0, 0x1f, 0)
@@ -238,11 +240,15 @@ static void toggle_io_reset(void) {
 /*
  * Fill cbmem with information for SMBIOS type 17.
  */
-static void fill_smbios17(dimm_info *info, uint16_t ddr_freq)
+static void fill_smbios17(ramctr_timing *ctrl)
 {
 	struct memory_info *mem_info;
 	int channel, slot;
 	struct dimm_info *dimm;
+	uint16_t ddr_freq;
+	dimm_info *info = &ctrl->info;
+
+	ddr_freq = (1000 << 8) / ctrl->tCK;
 
 	/*
 	 * Allocate CBMEM area for DIMM information used to populate SMBIOS
@@ -323,11 +329,11 @@ void read_spd(spd_raw_data * spd, u8 addr)
 		(*spd)[j] = do_smbus_read_byte(SMBUS_IO_BASE, addr, j);
 }
 
-static void dram_find_spds_ddr3(spd_raw_data * spd, dimm_info * dimm,
-				ramctr_timing * ctrl)
+static void dram_find_spds_ddr3(spd_raw_data *spd, ramctr_timing *ctrl)
 {
 	int dimms = 0, dimms_on_channel;
 	int channel, slot, spd_slot;
+	dimm_info *dimm = &ctrl->info;
 
 	memset (ctrl->rankmap, 0, sizeof (ctrl->rankmap));
 
@@ -408,11 +414,12 @@ static void dram_find_spds_ddr3(spd_raw_data * spd, dimm_info * dimm,
 		die("No DIMMs were found");
 }
 
-static void dram_find_common_params(const dimm_info * dimms,
-				    ramctr_timing * ctrl)
+static void dram_find_common_params(ramctr_timing *ctrl)
 {
 	size_t valid_dimms;
 	int channel, slot;
+	dimm_info *dimms = &ctrl->info;
+
 	ctrl->cas_supported = 0xff;
 	valid_dimms = 0;
 	FOR_ALL_CHANNELS for (slot = 0; slot < 2; slot++) {
@@ -928,10 +935,11 @@ static void dram_timing_regs(ramctr_timing * ctrl)
 	}
 }
 
-static void dram_dimm_mapping(dimm_info * info, ramctr_timing * ctrl)
+static void dram_dimm_mapping(ramctr_timing *ctrl)
 {
 	u32 reg, val32;
 	int channel;
+	dimm_info *info = &ctrl->info;
 
 	FOR_ALL_CHANNELS {
 		dimm_attr *dimmA = 0;
@@ -3943,7 +3951,7 @@ void init_dram_ddr3(spd_raw_data * spds, int mobile, int min_tck,
 {
 	int me_uma_size;
 	int cbmem_was_inited;
-	dimm_info info;
+	ramctr_timing ctrl;
 
 	MCHBAR32(0x5f00) |= 1;
 
@@ -3971,8 +3979,6 @@ void init_dram_ddr3(spd_raw_data * spds, int mobile, int min_tck,
 		halt();
 	}
 
-	ramctr_timing ctrl;
-
 	memset(&ctrl, 0, sizeof (ctrl));
 
 	early_pch_init_native();
@@ -3998,12 +4004,12 @@ void init_dram_ddr3(spd_raw_data * spds, int mobile, int min_tck,
 
 	if (!s3resume) {
 		/* Get DDR3 SPD data */
-		dram_find_spds_ddr3(spds, &info, &ctrl);
+		dram_find_spds_ddr3(spds, &ctrl);
 
 		/* Find fastest common supported parameters */
-		dram_find_common_params(&info, &ctrl);
+		dram_find_common_params(&ctrl);
 
-		dram_dimm_mapping(&info, &ctrl);
+		dram_dimm_mapping(&ctrl);
 	}
 
 	/* Set MCU frequency */
@@ -4124,7 +4130,7 @@ void init_dram_ddr3(spd_raw_data * spds, int mobile, int min_tck,
 		halt();
 	}
 
-	fill_smbios17(&info, (1000 << 8) / ctrl.tCK);
+	fill_smbios17(&ctrl);
 }
 
 #define HOST_BRIDGE	PCI_DEVFN(0, 0)

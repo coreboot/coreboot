@@ -3946,7 +3946,108 @@ static void restore_timings(ramctr_timing * ctrl)
 	write32(DEFAULT_MCHBAR + 0x4ea8, 0);
 }
 
-void init_dram_ddr3(spd_raw_data * spds, int mobile, int min_tck,
+static int try_init_dram_ddr3(ramctr_timing *ctrl, int s3resume,
+		int me_uma_size)
+{
+	if (!s3resume) {
+		/* Find fastest common supported parameters */
+		dram_find_common_params(ctrl);
+
+		dram_dimm_mapping(ctrl);
+	}
+
+	/* Set MCU frequency */
+	dram_freq(ctrl);
+
+	if (!s3resume) {
+		/* Calculate timings */
+		dram_timing(ctrl);
+	}
+
+	/* Set version register */
+	MCHBAR32(0x5034) = 0xC04EB002;
+
+	/* Enable crossover */
+	dram_xover(ctrl);
+
+	/* Set timing and refresh registers */
+	dram_timing_regs(ctrl);
+
+	/* Power mode preset */
+	MCHBAR32(0x4e80) = 0x5500;
+
+	/* Set scheduler parameters */
+	MCHBAR32(0x4c20) = 0x10100005;
+
+	/* Set cpu specific register */
+	set_4f8c();
+
+	/* Clear IO reset bit */
+	MCHBAR32(0x5030) &= ~0x20;
+
+	/* Set MAD-DIMM registers */
+	dram_dimm_set_mapping(ctrl);
+	printk(BIOS_DEBUG, "Done dimm mapping\n");
+
+	/* Zone config */
+	dram_zones(ctrl, 1);
+
+	/* Set memory map */
+	dram_memorymap(ctrl, me_uma_size);
+	printk(BIOS_DEBUG, "Done memory map\n");
+
+	/* Set IO registers */
+	dram_ioregs(ctrl);
+	printk(BIOS_DEBUG, "Done io registers\n");
+
+	udelay(1);
+
+	if (s3resume) {
+		restore_timings(ctrl);
+	} else {
+		/* Do jedec ddr3 reset sequence */
+		dram_jedecreset(ctrl);
+		printk(BIOS_DEBUG, "Done jedec reset\n");
+
+		/* MRS commands */
+		dram_mrscommands(ctrl);
+		printk(BIOS_DEBUG, "Done MRS commands\n");
+
+		/* Prepare for memory training */
+		prepare_training(ctrl);
+
+		read_training(ctrl);
+		write_training(ctrl);
+
+		printram("CP5a\n");
+
+		discover_edges(ctrl);
+
+		printram("CP5b\n");
+
+		command_training(ctrl);
+
+		printram("CP5c\n");
+
+		discover_edges_write(ctrl);
+
+		discover_timC_write(ctrl);
+
+		normalize_training(ctrl);
+	}
+
+	set_4008c(ctrl);
+
+	write_controller_mr(ctrl);
+
+	if (!s3resume) {
+		channel_test(ctrl);
+	}
+
+	return 0;
+}
+
+void init_dram_ddr3(spd_raw_data *spds, int mobile, int min_tck,
 	int s3resume)
 {
 	int me_uma_size;
@@ -3994,111 +4095,18 @@ void init_dram_ddr3(spd_raw_data * spds, int mobile, int min_tck,
 		struct mrc_data_container *mrc_cache;
 
 		mrc_cache = find_current_mrc_cache();
-		if (!mrc_cache || mrc_cache->mrc_data_size < sizeof (ctrl)) {
+		if (!mrc_cache || (mrc_cache->mrc_data_size < sizeof(ctrl))) {
 			/* Failed S3 resume, reset to come up cleanly */
 			outb(0x6, 0xcf9);
 			halt();
 		}
-		memcpy(&ctrl, mrc_cache->mrc_data, sizeof (ctrl));
-	}
-
-	if (!s3resume) {
+		memcpy(&ctrl, mrc_cache->mrc_data, sizeof(ctrl));
+	} else {
 		/* Get DDR3 SPD data */
 		dram_find_spds_ddr3(spds, &ctrl);
-
-		/* Find fastest common supported parameters */
-		dram_find_common_params(&ctrl);
-
-		dram_dimm_mapping(&ctrl);
 	}
 
-	/* Set MCU frequency */
-	dram_freq(&ctrl);
-
-	if (!s3resume) {
-		/* Calculate timings */
-		dram_timing(&ctrl);
-	}
-
-	/* Set version register */
-	MCHBAR32(0x5034) = 0xC04EB002;
-
-	/* Enable crossover */
-	dram_xover(&ctrl);
-
-	/* Set timing and refresh registers */
-	dram_timing_regs(&ctrl);
-
-	/* Power mode preset */
-	MCHBAR32(0x4e80) = 0x5500;
-
-	/* Set scheduler parameters */
-	MCHBAR32(0x4c20) = 0x10100005;
-
-	/* Set cpu specific register */
-	set_4f8c();
-
-	/* Clear IO reset bit */
-	MCHBAR32(0x5030) &= ~0x20;
-
-	/* Set MAD-DIMM registers */
-	dram_dimm_set_mapping(&ctrl);
-	printk(BIOS_DEBUG, "Done dimm mapping\n");
-
-	/* Zone config */
-	dram_zones(&ctrl, 1);
-
-	/* Set memory map */
-	dram_memorymap(&ctrl, me_uma_size);
-	printk(BIOS_DEBUG, "Done memory map\n");
-
-	/* Set IO registers */
-	dram_ioregs(&ctrl);
-	printk(BIOS_DEBUG, "Done io registers\n");
-
-	udelay(1);
-
-	if (s3resume) {
-		restore_timings(&ctrl);
-	} else {
-		/* Do jedec ddr3 reset sequence */
-		dram_jedecreset(&ctrl);
-		printk(BIOS_DEBUG, "Done jedec reset\n");
-
-		/* MRS commands */
-		dram_mrscommands(&ctrl);
-		printk(BIOS_DEBUG, "Done MRS commands\n");
-
-		/* Prepare for memory training */
-		prepare_training(&ctrl);
-
-		read_training(&ctrl);
-		write_training(&ctrl);
-
-		printram("CP5a\n");
-
-		discover_edges(&ctrl);
-
-		printram("CP5b\n");
-
-		command_training(&ctrl);
-
-		printram("CP5c\n");
-
-		discover_edges_write(&ctrl);
-
-		discover_timC_write(&ctrl);
-
-		normalize_training(&ctrl);
-	}
-
-	set_4008c(&ctrl);
-
-	write_controller_mr(&ctrl);
-
-	if (!s3resume) {
-		channel_test(&ctrl);
-	}
+	try_init_dram_ddr3(&ctrl, s3resume, me_uma_size);
 
 	/* FIXME: should be hardware revision-dependent.  */
 	write32(DEFAULT_MCHBAR + 0x5024, 0x00a030ce);

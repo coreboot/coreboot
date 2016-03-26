@@ -25,10 +25,12 @@
 #include <program_loading.h>
 #include <romstage_handoff.h>
 #include <symbols.h>
+#include <soc/addressmap.h>
 #include <soc/mmu_operations.h>
 #include <soc/sdram.h>
 
-static const uint64_t dram_size = (uint64_t)CONFIG_DRAM_SIZE_MB * MiB;
+static const uint64_t dram_size =
+	(uint64_t)min((uint64_t)CONFIG_DRAM_SIZE_MB * MiB, MAX_DRAM_ADDRESS);
 
 void main(void)
 {

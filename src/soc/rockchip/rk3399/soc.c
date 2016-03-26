@@ -13,18 +13,19 @@
  * GNU General Public License for more details.
  */
 
-#include <cpu/cpu.h>
 #include <console/console.h>
+#include <cpu/cpu.h>
 #include <device/device.h>
-#include <stdlib.h>
+#include <soc/addressmap.h>
 #include <stddef.h>
+#include <stdlib.h>
 #include <string.h>
 #include <symbols.h>
 
 static void soc_read_resources(device_t dev)
 {
 	ram_resource(dev, 0, (uintptr_t)_dram / KiB,
-		     CONFIG_DRAM_SIZE_MB * KiB);
+		     min(CONFIG_DRAM_SIZE_MB * KiB, MAX_DRAM_ADDRESS / KiB));
 }
 
 static void soc_init(device_t dev)

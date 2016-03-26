@@ -810,6 +810,17 @@ static void dram_freq(ramctr_timing * ctrl)
 		/* Frequency mulitplier.  */
 		u32 FRQ = get_FRQ(ctrl->tCK);
 
+		/* The PLL will never lock if the required frequency is
+		 * already set. Exit early to prevent a system hang.
+		 */
+		reg1 = MCHBAR32(0x5e04);
+		val2 = (u8) reg1;
+		if (val2 == FRQ) {
+			printk(BIOS_DEBUG, "MCU frequency is set at : %d MHz\n",
+			       (1000 << 8) / ctrl->tCK);
+			return;
+		}
+
 		/* Step 2 - Select frequency in the MCU */
 		reg1 = FRQ;
 		reg1 |= 0x80000000;	// set running bit

@@ -107,7 +107,7 @@ static void sata_init(struct device *dev)
 	if (conf->sata0_enable) {
 		/* Enable primary SATA interface. */
 		dword |= (1 << 1);
-		printk(BIOS_DEBUG, "SATA P \n");
+		printk(BIOS_DEBUG, "SATA P\n");
 	}
 #if 0
 	/* Write back */

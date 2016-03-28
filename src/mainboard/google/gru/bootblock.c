@@ -22,6 +22,19 @@
 
 void bootblock_mainboard_early_init(void)
 {
+	/* Let gpio2ab io domains works at 1.8V.
+	 *
+	 * If io_vsel[0] == 0(default value), gpio2ab io domains is 3.0V
+	 * powerd by APIO2_VDD, otherwise, 1.8V supplied by APIO2_VDDPST.
+	 * But from the schematic of kevin rev0, the APIO2_VDD and
+	 * APIO2_VDDPST both are 1.8V(intentionally?).
+	 *
+	 * So, by default, CPU1_SDIO_PWREN(GPIO2_A2) can't output 3.0V
+	 * because the supply is 1.8V.
+	 * Let ask GPIO2_A2 output 1.8V to make GPIO interal logic happy.
+	 */
+	write32(&rk3399_grf->io_vsel, RK_SETBITS(1 << 0));
+
 	if (IS_ENABLED(CONFIG_DRIVERS_UART)) {
 		_Static_assert(CONFIG_CONSOLE_SERIAL_UART_ADDRESS == UART2_BASE,
 			       "CONSOLE_SERIAL_UART should be UART2");

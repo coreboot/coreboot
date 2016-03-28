@@ -120,6 +120,8 @@ void platform_fsp_silicon_init_params_cb(struct FSPS_UPD *silupd)
 	/* First 4k in BAR0 is used for IPC, real registers start at 4k offset */
 	silconfig->PmcBase = PMC_BAR0 + 0x1000;
 	silconfig->P2sbBase = P2SB_BAR;
+
+	silconfig->IshEnable = cfg->integrated_sensor_hub_enable;
 }
 
 struct chip_operations soc_intel_apollolake_ops = {

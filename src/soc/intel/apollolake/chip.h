@@ -42,6 +42,9 @@ struct soc_intel_apollolake_config {
 
 	/* Configure serial IRQ (SERIRQ) line. */
 	enum serirq_mode serirq_mode;
+
+	/* Integrated Sensor Hub */
+	uint8_t integrated_sensor_hub_enable;
 };
 
 #endif	/* _SOC_APOLLOLAKE_CHIP_H_ */

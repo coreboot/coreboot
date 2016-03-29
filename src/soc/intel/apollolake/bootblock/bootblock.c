@@ -20,6 +20,7 @@
 #include <device/pci.h>
 #include <lib.h>
 #include <soc/bootblock.h>
+#include <soc/iomap.h>
 #include <soc/cpu.h>
 #include <soc/gpio.h>
 #include <soc/northbridge.h>
@@ -34,6 +35,17 @@ static void tpm_enable(void)
 {
 	/* Configure gpios */
 	gpio_configure_pads(tpm_spi_configs, ARRAY_SIZE(tpm_spi_configs));
+}
+
+static void enable_pm_timer(void)
+{
+	/* ACPI PM timer emulation */
+	msr_t msr;
+	/* Multiplier value that somehow 3.579545MHz freq */
+	msr.hi = 0x2FBA2E25;
+	/* Set PM1 timer IO port and enable*/
+	msr.lo = EMULATE_PM_TMR_EN | (ACPI_PMIO_BASE + R_ACPI_PM1_TMR);
+	wrmsr(MSR_EMULATE_PM_TMR, msr);
 }
 
 void asmlinkage bootblock_c_entry(void)
@@ -79,6 +91,8 @@ void bootblock_soc_early_init(void)
 
 	if (IS_ENABLED(CONFIG_TPM_ON_FAST_SPI))
 		tpm_enable();
+
+	enable_pm_timer();
 
 	cache_bios_region();
 }

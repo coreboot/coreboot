@@ -12,6 +12,7 @@
 
 #include <arch/cache.h>
 #include <symbols.h>
+#include <soc/soc_services.h>
 #include "mmu.h"
 
 #define WIFI_IMEM_0_START	((uintptr_t)_wifi_imem_0 / KiB)
@@ -33,6 +34,8 @@ void setup_dram_mappings(enum dram_state dram)
 		mmu_config_range(DRAM_START, DRAM_SIZE, DCACHE_WRITEBACK);
 		/* Map DMA memory */
 		mmu_config_range(DMA_START, DMA_SIZE, DCACHE_OFF);
+		/* Mark cbmem backing store as ready. */
+		ipq_cbmem_backing_store_ready();
 	} else {
 		mmu_disable_range(DRAM_START, DRAM_SIZE);
 		/* Map DMA memory */

@@ -32,4 +32,7 @@ int tz_init_wrapper(int, int, void *);
 /* Load RPM code into memory and trigger its execution. */
 void start_rpm(void);
 
+/* Mark cbmem backing store as ready. */
+void ipq_cbmem_backing_store_ready(void);
+
 #endif

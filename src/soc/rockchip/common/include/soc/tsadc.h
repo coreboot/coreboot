@@ -13,9 +13,9 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __SOC_ROCKCHIP_RK3288_TSADC_H__
-#define __SOC_ROCKCHIP_RK3288_TSADC_H__
+#ifndef __COREBOOT_SRC_SOC_ROCKCHIP_COMMON_INCLUDE_SOC_TSADC_H
+#define __COREBOOT_SRC_SOC_ROCKCHIP_COMMON_INCLUDE_SOC_TSADC_H
 
 void tsadc_init(void);
 
-#endif
+#endif  /* ! __COREBOOT_SRC_SOC_ROCKCHIP_COMMON_INCLUDE_SOC_TSADC_H */

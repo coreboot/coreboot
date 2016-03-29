@@ -18,58 +18,59 @@ ifeq ($(CONFIG_SOC_ROCKCHIP_RK3288),y)
 IDBTOOL = util/rockchip/make_idb.py
 
 bootblock-y += bootblock.c
-bootblock-y += cbmem.c
+bootblock-y += ../common/cbmem.c
 ifeq ($(CONFIG_BOOTBLOCK_CONSOLE),y)
-bootblock-$(CONFIG_DRIVERS_UART) += uart.c
+bootblock-$(CONFIG_DRIVERS_UART) += ../common/uart.c
 endif
 bootblock-y += timer.c
 bootblock-y += clock.c
-bootblock-y += spi.c
+bootblock-y += ../common/spi.c
 bootblock-y += gpio.c
 bootblock-y += i2c.c
 bootblock-$(CONFIG_SOFTWARE_I2C) += software_i2c.c
-bootblock-y += rk808.c
+bootblock-y += ../common/rk808.c
 
-verstage-y += spi.c
+verstage-y += ../common/spi.c
 verstage-y += timer.c
-verstage-$(CONFIG_DRIVERS_UART) += uart.c
+verstage-$(CONFIG_DRIVERS_UART) += ../common/uart.c
 verstage-y += gpio.c
 verstage-y += clock.c
 libverstage-y += crypto.c
 verstage-y += i2c.c
 verstage-$(CONFIG_SOFTWARE_I2C) += software_i2c.c
 
-romstage-y += cbmem.c
+romstage-y += ../common/cbmem.c
 romstage-y += timer.c
-romstage-$(CONFIG_DRIVERS_UART) += uart.c
+romstage-$(CONFIG_DRIVERS_UART) += ../common/uart.c
 romstage-y += i2c.c
 romstage-$(CONFIG_SOFTWARE_I2C) += software_i2c.c
 romstage-y += clock.c
 romstage-y += gpio.c
-romstage-y += spi.c
+romstage-y += ../common/spi.c
 romstage-y += sdram.c
-romstage-y += rk808.c
+romstage-y += ../common/rk808.c
 romstage-y += pwm.c
 romstage-y += tsadc.c
 
 ramstage-y += soc.c
-ramstage-y += cbmem.c
+ramstage-y += ../common/cbmem.c
 ramstage-y += timer.c
 ramstage-y += i2c.c
 ramstage-$(CONFIG_SOFTWARE_I2C) += software_i2c.c
 ramstage-y += clock.c
-ramstage-y += spi.c
+ramstage-y += ../common/spi.c
 ramstage-y += sdram.c
 ramstage-y += gpio.c
-ramstage-y += rk808.c
+ramstage-y += ../common/rk808.c
 ramstage-y += pwm.c
 ramstage-y += vop.c
 ramstage-y += edp.c
 ramstage-y += hdmi.c
 ramstage-y += display.c
-ramstage-$(CONFIG_DRIVERS_UART) += uart.c
+ramstage-$(CONFIG_DRIVERS_UART) += ../common/uart.c
 
-CPPFLAGS_common += -Isrc/soc/rockchip/rk3288/include/
+CPPFLAGS_common += -Isrc/soc/rockchip/rk3288/include
+CPPFLAGS_common += -Isrc/soc/rockchip/common/include
 
 $(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.raw.bin
 	@printf "Generating: $(subst $(obj)/,,$(@))\n"

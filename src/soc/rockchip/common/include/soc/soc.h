@@ -13,11 +13,14 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __SOC_ROCKCHIP_RK3288_PMIC_H__
-#define __SOC_ROCKCHIP_RK3288_PMIC_H__
+#ifndef __COREBOOT_SRC_SOC_ROCKCHIP_COMMON_INCLUDE_SOC_SOC_H
+#define __COREBOOT_SRC_SOC_ROCKCHIP_COMMON_INCLUDE_SOC_SOC_H
 
-void rk808_configure_switch(int sw, int enabled);
-void rk808_configure_ldo(int ldo, int millivolts);
-void rk808_configure_buck(int buck, int millivolts);
+#include <arch/io.h>
+#include <symbols.h>
 
-#endif
+#define RK_CLRSETBITS(clr, set) ((((clr) | (set)) << 16) | set)
+#define RK_SETBITS(set) RK_CLRSETBITS(0, set)
+#define RK_CLRBITS(clr) RK_CLRSETBITS(clr, 0)
+
+#endif  /* ! __COREBOOT_SRC_SOC_ROCKCHIP_COMMON_INCLUDE_SOC_SOC_H */

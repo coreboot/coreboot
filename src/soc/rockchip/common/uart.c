@@ -27,7 +27,7 @@
  * This driver can be replaced once the IO calls are sorted.
  */
 
-struct rk3288_uart {
+struct rk_uart {
 	union {
 		uint32_t thr; /* Transmit holding register. */
 		uint32_t rbr; /* Receive buffer register. */
@@ -70,13 +70,13 @@ struct rk3288_uart {
 } __attribute__ ((packed));
 
 
-static struct rk3288_uart * const uart_ptr =
+static struct rk_uart * const uart_ptr =
 	(void *)CONFIG_CONSOLE_SERIAL_UART_ADDRESS;
 
-static void rk3288_uart_tx_flush(void);
-static int rk3288_uart_tst_byte(void);
+static void rk_uart_tx_flush(void);
+static int rk_uart_tst_byte(void);
 
-static void rk3288_uart_init(void)
+static void rk_uart_init(void)
 {
 	/* FIXME: Use a hardcoded divisor for now.
 	 * uint16_t divisor = (u16) uart_baudrate_divisor(default_baudrate(),
@@ -85,7 +85,7 @@ static void rk3288_uart_init(void)
 	const unsigned divisor = 13;
 	const uint8_t line_config = UART8250_LCR_WLS_8; // 8n1
 
-	rk3288_uart_tx_flush();
+	rk_uart_tx_flush();
 
 	// Disable interrupts.
 	write32(&uart_ptr->ier, 0);
@@ -103,25 +103,25 @@ static void rk3288_uart_init(void)
 		UART8250_FCR_CLEAR_RCVR | UART8250_FCR_CLEAR_XMIT);
 }
 
-static void rk3288_uart_tx_byte(unsigned char data)
+static void rk_uart_tx_byte(unsigned char data)
 {
 	while (!(read32(&uart_ptr->lsr) & UART8250_LSR_THRE));
 	write32(&uart_ptr->thr, data);
 }
 
-static void rk3288_uart_tx_flush(void)
+static void rk_uart_tx_flush(void)
 {
 	while (!(read32(&uart_ptr->lsr) & UART8250_LSR_TEMT));
 }
 
-static unsigned char rk3288_uart_rx_byte(void)
+static unsigned char rk_uart_rx_byte(void)
 {
-	if (!rk3288_uart_tst_byte())
+	if (!rk_uart_tst_byte())
 		return 0;
 	return read32(&uart_ptr->rbr);
 }
 
-static int rk3288_uart_tst_byte(void)
+static int rk_uart_tst_byte(void)
 {
 	return (read32(&uart_ptr->lsr) & UART8250_LSR_DR) == UART8250_LSR_DR;
 }
@@ -130,22 +130,22 @@ static int rk3288_uart_tst_byte(void)
 
 void uart_init(int idx)
 {
-	rk3288_uart_init();
+	rk_uart_init();
 }
 
 unsigned char uart_rx_byte(int idx)
 {
-	return rk3288_uart_rx_byte();
+	return rk_uart_rx_byte();
 }
 
 void uart_tx_byte(int idx, unsigned char data)
 {
-	rk3288_uart_tx_byte(data);
+	rk_uart_tx_byte(data);
 }
 
 void uart_tx_flush(int idx)
 {
-	rk3288_uart_tx_flush();
+	rk_uart_tx_flush();
 }
 
 #ifndef __PRE_RAM__

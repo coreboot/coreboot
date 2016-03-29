@@ -13,9 +13,11 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __SOC_ROCKCHIP_RK3288_PWM_H__
-#define __SOC_ROCKCHIP_RK3288_PWM_H__
+#ifndef __COREBOOT_SRC_SOC_ROCKCHIP_COMMON_INCLUDE_SOC_RK808_H
+#define __COREBOOT_SRC_SOC_ROCKCHIP_COMMON_INCLUDE_SOC_RK808_H
 
-void pwm_init(u32 id, u32 period_ns, u32 duty_ns);
+void rk808_configure_switch(int sw, int enabled);
+void rk808_configure_ldo(int ldo, int millivolts);
+void rk808_configure_buck(int buck, int millivolts);
 
-#endif
+#endif  /* ! __COREBOOT_SRC_SOC_ROCKCHIP_COMMON_INCLUDE_SOC_RK808_H */

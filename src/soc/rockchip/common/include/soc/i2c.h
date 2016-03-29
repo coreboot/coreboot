@@ -13,11 +13,11 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __SOC_ROCKCHIP_RK3288_I2C_H__
-#define __SOC_ROCKCHIP_RK3288_I2C_H__
+#ifndef __COREBOOT_SRC_SOC_ROCKCHIP_COMMON_INCLUDE_SOC_I2C_H
+#define __COREBOOT_SRC_SOC_ROCKCHIP_COMMON_INCLUDE_SOC_I2C_H
 
 void i2c_init(unsigned int bus, unsigned int hz);
 void software_i2c_attach(unsigned bus);
 void software_i2c_detach(unsigned bus);
 
-#endif
+#endif  /* ! __COREBOOT_SRC_SOC_ROCKCHIP_COMMON_INCLUDE_SOC_I2C_H */

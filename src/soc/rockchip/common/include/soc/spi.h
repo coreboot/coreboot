@@ -13,12 +13,12 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __SOC_ROCKCHIP_RK3288_SPI_H__
-#define __SOC_ROCKCHIP_RK3288_SPI_H__
+#ifndef __COREBOOT_SRC_SOC_ROCKCHIP_COMMON_INCLUDE_SOC_SPI_H
+#define __COREBOOT_SRC_SOC_ROCKCHIP_COMMON_INCLUDE_SOC_SPI_H
 
 /* This driver serves as a CBFS media source. */
 #include <spi-generic.h>
-#include <stdint.h>
+#include <stddef.h>
 
 struct rockchip_spi {
 	u32  ctrlr0;
@@ -192,4 +192,4 @@ check_member(rockchip_spi, rxdr, 0x800);
 
 void rockchip_spi_init(unsigned int bus, unsigned int speed_hz);
 
-#endif
+#endif  /* ! __COREBOOT_SRC_SOC_ROCKCHIP_COMMON_INCLUDE_SOC_SPI_H */

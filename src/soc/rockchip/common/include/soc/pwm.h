@@ -13,14 +13,9 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __SOC_ROCKCHIP_RK3288_CPU_H__
-#define __SOC_ROCKCHIP_RK3288_CPU_H__
+#ifndef __COREBOOT_SRC_SOC_ROCKCHIP_COMMON_INCLUDE_SOC_PWM_H
+#define __COREBOOT_SRC_SOC_ROCKCHIP_COMMON_INCLUDE_SOC_PWM_H
 
-#include <arch/io.h>
-#include <symbols.h>
+void pwm_init(u32 id, u32 period_ns, u32 duty_ns);
 
-#define RK_CLRSETBITS(clr, set) ((((clr) | (set)) << 16) | set)
-#define RK_SETBITS(set) RK_CLRSETBITS(0, set)
-#define RK_CLRBITS(clr) RK_CLRSETBITS(clr, 0)
-
-#endif
+#endif  /* ! __COREBOOT_SRC_SOC_ROCKCHIP_COMMON_INCLUDE_SOC_PWM_H */

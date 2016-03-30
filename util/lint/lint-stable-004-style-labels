@@ -2,6 +2,7 @@
 # This file is part of the coreboot project.
 #
 # Copyright (C) 2012 Patrick Georgi <patrick@georgi-clan.de>
+# Copyright (C) 2016 Google Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,4 +16,15 @@
 # DESCR: Check that C labels begin at start-of-line
 
 LC_ALL=C export LC_ALL
-git diff --name-status |grep -v "^D" |cut -c3- |grep "^src/.*\.[csS]" | xargs grep -Hn '^[[:space:]][[:space:]]*[a-z][a-z]*:[[:space:]]*$' |grep -v "[^a-z_]default:"
+
+# Use git ls-files if the code is in a git repo, otherwise use find.
+if [ -n "$(command -v git)" ] && [ -d .git ]; then
+	FIND_FILES="git ls-files"
+else
+	FIND_FILES="find src"
+fi
+
+${FIND_FILES} | \
+	grep "^src/.*\.[csS]$" | \
+	xargs grep -Hn '^[[:space:]][[:space:]]*[a-z][a-z]*:[[:space:]]*$' | \
+	grep -v "[^a-z_]default:"

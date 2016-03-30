@@ -59,6 +59,10 @@ int google_chromeec_vstore_info(uint32_t *locked);
 int google_chromeec_vstore_read(int slot, uint8_t *data);
 int google_chromeec_vstore_write(int slot, uint8_t *data, size_t size);
 
+/* MEC uses 0x800/0x804 as register/index pair, thus an 8-byte resource. */
+#define MEC_EMI_BASE		0x800
+#define MEC_EMI_SIZE		8
+
 /* For MEC, access ranges 0x800 thru 0x9ff using EMI interface instead of LPC */
 #define MEC_EMI_RANGE_START EC_HOST_CMD_REGION0
 #define MEC_EMI_RANGE_END   (EC_LPC_ADDR_MEMMAP + EC_MEMMAP_SIZE)

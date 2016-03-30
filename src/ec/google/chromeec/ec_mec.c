@@ -32,7 +32,6 @@ enum {
 };
 
 /* EMI registers are relative to base */
-#define MEC_EMI_BASE		0x800
 #define MEC_EMI_HOST_TO_EC	(MEC_EMI_BASE + 0)
 #define MEC_EMI_EC_TO_HOST	(MEC_EMI_BASE + 1)
 #define MEC_EMI_EC_ADDRESS_B0	(MEC_EMI_BASE + 2)

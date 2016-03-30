@@ -340,7 +340,7 @@ int init_processor_name(void)
 			}
 		}
 
-	done:
+done:
 		strcpymax(&program_string[j], processor_name_string,
 			sizeof(program_string) - j);
 	}

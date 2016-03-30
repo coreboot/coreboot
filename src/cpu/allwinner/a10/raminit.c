@@ -317,7 +317,7 @@ static int dramc_scan_dll_para(void)
 		return dramc_scan_readpipe();
 	}
 
- fail:
+fail:
 	clrbits_le32(&dram->dllcr[0], 0x3f << 6);
 	for (cr_i = 1; cr_i < 5; cr_i++)
 		clrbits_le32(&dram->dllcr[cr_i], 0x4f << 14);

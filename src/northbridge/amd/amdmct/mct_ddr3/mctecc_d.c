@@ -84,8 +84,6 @@ u8 ECCInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)
 	u32 val;
 	u16 nvbits;
 
-	uint32_t dword;
-
 	mctHookBeforeECC();
 
 	/* Construct these booleans, based on setup options, for easy handling
@@ -266,14 +264,6 @@ u8 ECCInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)
 				/* Clear MC4 error status */
 				pci_write_config32(pDCTstat->dev_nbmisc, 0x48, 0x0);
 				pci_write_config32(pDCTstat->dev_nbmisc, 0x4c, 0x0);
-
-				/* Restore previous MCA error handling settings */
-				if (pDCTstat->mca_config_backed_up) {
-					dword = Get_NB32(pDCTstat->dev_nbmisc, 0x44);
-					dword |= (pDCTstat->sync_flood_on_dram_err & 0x1) << 30;
-					dword |= (pDCTstat->sync_flood_on_any_uc_err & 0x1) << 21;
-					Set_NB32(pDCTstat->dev_nbmisc, 0x44, dword);
-				}
 			}
 		}
 	}

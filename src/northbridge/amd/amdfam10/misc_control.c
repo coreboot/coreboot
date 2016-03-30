@@ -30,6 +30,7 @@
 #include <device/pci_ops.h>
 #include <pc80/mc146818rtc.h>
 #include <lib.h>
+#include <cbmem.h>
 #include <cpu/amd/model_10xxx_rev.h>
 
 #include "amdfam10.h"
@@ -151,6 +152,51 @@ static void misc_control_init(struct device *dev)
 	uint8_t current_boost;
 
 	printk(BIOS_DEBUG, "NB: Function 3 Misc Control.. ");
+
+#if IS_ENABLED(CONFIG_DIMM_DDR3) && !IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AGESA)
+	uint8_t node;
+	uint8_t slot;
+	uint8_t dimm_present;
+
+	/* Restore DRAM MCA registers */
+	struct amdmct_memory_info *mem_info;
+	mem_info = cbmem_find(CBMEM_ID_AMDMCT_MEMINFO);
+	if (mem_info) {
+		node = PCI_SLOT(dev->path.pci.devfn) - 0x18;
+
+		/* Check node for installed DIMMs */
+		dimm_present = 0;
+
+		/* Check all slots for installed DIMMs */
+		for (slot = 0; slot < MAX_DIMMS_SUPPORTED; slot++) {
+			if (mem_info->dct_stat[node].DIMMPresent & (1 << slot)) {
+				dimm_present = 1;
+				break;
+			}
+		}
+
+		if (dimm_present) {
+			uint32_t mc4_status_high = pci_read_config32(dev, 0x4c);
+			uint32_t mc4_status_low = pci_read_config32(dev, 0x48);
+			if (mc4_status_high != 0) {
+				printk(BIOS_WARNING, "\nWARNING: MC4 Machine Check Exception detected on node %d!\n"
+					"Signature: %08x%08x\n", node, mc4_status_high, mc4_status_low);
+			}
+
+			/* Clear MC4 error status */
+			pci_write_config32(dev, 0x48, 0x0);
+			pci_write_config32(dev, 0x4c, 0x0);
+
+			if (mem_info->dct_stat[node].mca_config_backed_up) {
+				dword = pci_read_config32(dev, 0x44);
+				dword |= (mem_info->dct_stat[node].sync_flood_on_dram_err & 0x1) << 30;
+				dword |= (mem_info->dct_stat[node].sync_flood_on_any_uc_err & 0x1) << 21;
+				dword |= (mem_info->dct_stat[node].sync_flood_on_uc_dram_ecc_err & 0x1) << 2;
+				pci_write_config32(dev, 0x44, dword);
+			}
+		}
+	}
+#endif
 
 	/* Disable Machine checks from Invalid Locations.
 	 * This is needed for PC backwards compatibility.

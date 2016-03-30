@@ -93,9 +93,9 @@ generate_fake_intel_oprom(const struct i915_gpu_controller_info *conf,
 		pcir->device = dev->device;
 		pcir->length = sizeof(*pcir);
 		pcir->revision = dev->class;
-		pcir->classcode[0] = dev->class >> 8;
-		pcir->classcode[1] = dev->class >> 16;
-		pcir->classcode[2] = dev->class >> 24;
+		pcir->classcode[0] = dev->class;
+		pcir->classcode[1] = dev->class >> 8;
+		pcir->classcode[2] = dev->class >> 16;
 		pcir->indicator = 0x80;
 
 		vbt_size = generate_vbt (conf, (void *)(PCI_VGA_RAM_IMAGE_START + 0x80), idstr);

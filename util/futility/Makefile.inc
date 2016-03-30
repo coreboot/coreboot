@@ -2,7 +2,7 @@ additional-dirs += $(objutil)/futility
 
 $(objutil)/futility/build/futility/futility:
 	@printf "    MAKE       $(subst $(objutil)/,,$(@))\n"
-	$(MAKE) -C $(VB_SOURCE) \
+	unset CFLAGS LDFLAGS; $(MAKE) -C $(VB_SOURCE) \
 		BUILD=$(abspath $@/../..) \
 		CC="$(HOSTCC)" \
 		V=$(V) \

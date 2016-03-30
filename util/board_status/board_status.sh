@@ -333,6 +333,21 @@ if [ $UPLOAD_RESULTS -eq 1 ]; then
 	fi
 
 	cd "board-status"
+
+	echo "Checking for duplicate results"
+	# get any updates to board-status
+	git pull
+
+	echo "${tagged_version}" | grep dirty >/dev/null 2>&1
+	clean_version=$?
+	existing_results=$(git ls-files "${mainboard_dir}/${tagged_version}")
+
+	# reject duplicate results of non-dirty versions
+	if [ "${clean_version}" -eq 1 ] && [ -n "${existing_results}" ] ; then
+		echo "Result is a duplicate, aborting"
+		exit $EXIT_FAILURE
+	fi
+
 	echo "Copying results to $(pwd)/${results}"
 
 	# Note: Result directory should be unique due to the timestamp.

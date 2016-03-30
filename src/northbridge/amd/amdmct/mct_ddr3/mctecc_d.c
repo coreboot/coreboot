@@ -85,8 +85,6 @@ u8 ECCInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)
 	u16 nvbits;
 
 	uint32_t dword;
-	uint8_t sync_flood_on_dram_err[MAX_NODES_SUPPORTED];
-	uint8_t sync_flood_on_any_uc_err[MAX_NODES_SUPPORTED];
 
 	mctHookBeforeECC();
 
@@ -120,17 +118,6 @@ u8 ECCInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)
 		pDCTstat = pDCTstatA + Node;
 
 		if (NodePresent_D(Node)) {
-			dword = Get_NB32(pDCTstat->dev_nbmisc, 0x44);
-			sync_flood_on_dram_err[Node] = (dword >> 30) & 0x1;
-			sync_flood_on_any_uc_err[Node] = (dword >> 21) & 0x1;
-			dword &= ~(0x1 << 30);
-			dword &= ~(0x1 << 21);
-			Set_NB32(pDCTstat->dev_nbmisc, 0x44, dword);
-
-			/* Clear MC4 error status */
-			pci_write_config32(pDCTstat->dev_nbmisc, 0x48, 0x0);
-			pci_write_config32(pDCTstat->dev_nbmisc, 0x4c, 0x0);
-
 			/* Clear the RAM before enabling ECC to prevent MCE-related lockups */
 			DCTMemClr_Init_D(pMCTstat, pDCTstat);
 			DCTMemClr_Sync_D(pMCTstat, pDCTstat);
@@ -263,10 +250,17 @@ u8 ECCInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)
 		pDCTstat = pDCTstatA + Node;
 
 		if (NodePresent_D(Node)) {
-			dword = Get_NB32(pDCTstat->dev_nbmisc, 0x44);
-			dword |= (sync_flood_on_dram_err[Node] & 0x1) << 30;
-			dword |= (sync_flood_on_any_uc_err[Node] & 0x1) << 21;
-			Set_NB32(pDCTstat->dev_nbmisc, 0x44, dword);
+			/* Clear MC4 error status */
+			pci_write_config32(pDCTstat->dev_nbmisc, 0x48, 0x0);
+			pci_write_config32(pDCTstat->dev_nbmisc, 0x4c, 0x0);
+
+			/* Restore previous MCA error handling settings */
+			if (pDCTstat->mca_config_backed_up) {
+				dword = Get_NB32(pDCTstat->dev_nbmisc, 0x44);
+				dword |= (pDCTstat->sync_flood_on_dram_err & 0x1) << 30;
+				dword |= (pDCTstat->sync_flood_on_any_uc_err & 0x1) << 21;
+				Set_NB32(pDCTstat->dev_nbmisc, 0x44, dword);
+			}
 		}
 	}
 

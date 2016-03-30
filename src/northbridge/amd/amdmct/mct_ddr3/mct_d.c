@@ -8048,6 +8048,10 @@ void mct_SetDramConfigHi_D(struct MCTStatStruc *pMCTstat,
 		Set_NB32_index_wait_DCT(pDCTstat->dev_dct, dct, index_reg, 0x0d0fe006, dword);
 	}
 
+	/* Clear MC4 error status */
+	pci_write_config32(pDCTstat->dev_nbmisc, 0x48, 0x0);
+	pci_write_config32(pDCTstat->dev_nbmisc, 0x4c, 0x0);
+
 	printk(BIOS_DEBUG, "%s: Done\n", __func__);
 }
 

@@ -250,16 +250,30 @@ u8 ECCInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)
 		pDCTstat = pDCTstatA + Node;
 
 		if (NodePresent_D(Node)) {
-			/* Clear MC4 error status */
-			pci_write_config32(pDCTstat->dev_nbmisc, 0x48, 0x0);
-			pci_write_config32(pDCTstat->dev_nbmisc, 0x4c, 0x0);
+			dev = pDCTstat->dev_map;
+			reg = 0x40 + (Node << 3);	/* Dram Base Node 0 + index */
+			val = Get_NB32(dev, reg);
 
-			/* Restore previous MCA error handling settings */
-			if (pDCTstat->mca_config_backed_up) {
-				dword = Get_NB32(pDCTstat->dev_nbmisc, 0x44);
-				dword |= (pDCTstat->sync_flood_on_dram_err & 0x1) << 30;
-				dword |= (pDCTstat->sync_flood_on_any_uc_err & 0x1) << 21;
-				Set_NB32(pDCTstat->dev_nbmisc, 0x44, dword);
+			/* WE/RE is checked */
+			if ((val & 0x3) == 0x3) {	/* Node has dram populated */
+				uint32_t mc4_status_high = pci_read_config32(pDCTstat->dev_nbmisc, 0x4c);
+				uint32_t mc4_status_low = pci_read_config32(pDCTstat->dev_nbmisc, 0x48);
+				if (mc4_status_high != 0) {
+					printk(BIOS_WARNING, "WARNING: MC4 Machine Check Exception detected!\n"
+						"Signature: %08x%08x\n", mc4_status_high, mc4_status_low);
+				}
+
+				/* Clear MC4 error status */
+				pci_write_config32(pDCTstat->dev_nbmisc, 0x48, 0x0);
+				pci_write_config32(pDCTstat->dev_nbmisc, 0x4c, 0x0);
+
+				/* Restore previous MCA error handling settings */
+				if (pDCTstat->mca_config_backed_up) {
+					dword = Get_NB32(pDCTstat->dev_nbmisc, 0x44);
+					dword |= (pDCTstat->sync_flood_on_dram_err & 0x1) << 30;
+					dword |= (pDCTstat->sync_flood_on_any_uc_err & 0x1) << 21;
+					Set_NB32(pDCTstat->dev_nbmisc, 0x44, dword);
+				}
 			}
 		}
 	}

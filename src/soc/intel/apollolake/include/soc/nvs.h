@@ -36,7 +36,9 @@ struct global_nvs_t {
 	uint32_t	cbmc; /* 0x05 - 0x08 - Coreboot Memory Console */
 	uint64_t	pm1i; /* 0x09 - 0x10 - System Wake Source - PM1 Index */
 	uint64_t	gpei; /* 0x11 - 0x18 - GPE Wake Source */
-	uint8_t		unused[231];
+	uint64_t	nhla; /* 0x19 - 0x20 - NHLT Address */
+	uint32_t	nhll; /* 0x21 - 0x24 - NHLT Length */
+	uint8_t		unused[219];
 
 	/* ChromeOS specific (0x100 - 0xfff) */
 	chromeos_acpi_t chromeos;

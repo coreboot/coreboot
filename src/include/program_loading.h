@@ -37,8 +37,15 @@ enum prog_type {
 	PROG_BL32,
 };
 
-/* Called for each segment of a program loaded. The SEG_FINAL flag will be
- * set on the last segment loaded. */
+/*
+ * prog_segment_loaded() is called for each segment of a program loaded. The
+ * SEG_FINAL flag will be set on the last segment loaded. The following two
+ * functions, platform_segment_loaded() and arch_segment_loaded(), are called
+ * in that order within prog_segment_loaded(). In short, rely on
+ * prog_segment_loaded() to perform the proper dispatch sequence.
+ */
+void prog_segment_loaded(uintptr_t start, size_t size, int flags);
+void platform_segment_loaded(uintptr_t start, size_t size, int flags);
 void arch_segment_loaded(uintptr_t start, size_t size, int flags);
 
 /* Return true if arch supports bounce buffer.  */

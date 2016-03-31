@@ -17,6 +17,18 @@
 #include <program_loading.h>
 
 /* For each segment of a program loaded this function is called*/
+void prog_segment_loaded(uintptr_t start, size_t size, int flags)
+{
+	platform_segment_loaded(start, size, flags);
+	arch_segment_loaded(start, size, flags);
+}
+
+void __attribute__ ((weak)) platform_segment_loaded(uintptr_t start,
+							size_t size, int flags)
+{
+	/* do nothing */
+}
+
 void __attribute__ ((weak)) arch_segment_loaded(uintptr_t start, size_t size,
 						int flags)
 {

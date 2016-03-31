@@ -452,7 +452,7 @@ static int load_self_segments(
 			 * Each architecture can perform additonal operations
 			 * on the loaded segment
 			 */
-			arch_segment_loaded((uintptr_t)dest, ptr->s_memsz,
+			prog_segment_loaded((uintptr_t)dest, ptr->s_memsz,
 					last_non_empty == ptr ? SEG_FINAL : 0);
 		}
 	}

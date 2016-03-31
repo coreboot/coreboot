@@ -132,7 +132,7 @@ enum cb_err fsp_load_binary(struct fsp_header *hdr,
 		return CB_ERR;
 
 	/* Signal that FSP component has been loaded. */
-	arch_segment_loaded(hdr->image_base, hdr->image_size, SEG_FINAL);
+	prog_segment_loaded(hdr->image_base, hdr->image_size, SEG_FINAL);
 
 	return CB_SUCCESS;
 }

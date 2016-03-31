@@ -206,7 +206,7 @@ int cbfs_prog_stage_load(struct prog *pstage)
 	/* Clear area not covered by file. */
 	memset(&load[fsize], 0, stage.memlen - fsize);
 
-	arch_segment_loaded((uintptr_t)load, stage.memlen, SEG_FINAL);
+	prog_segment_loaded((uintptr_t)load, stage.memlen, SEG_FINAL);
 
 out:
 	prog_set_area(pstage, load, stage.memlen);

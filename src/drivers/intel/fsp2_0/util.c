@@ -17,6 +17,7 @@
 #include <fsp/util.h>
 #include <lib.h>
 #include <memrange.h>
+#include <program_loading.h>
 #include <string.h>
 
 static bool looks_like_fsp_header(const uint8_t *raw_hdr)
@@ -129,6 +130,9 @@ enum cb_err fsp_load_binary(struct fsp_header *hdr,
 	/* Load binary into memory. */
 	if (rdev_readat(&file_data, (void *)hdr->image_base, 0, hdr->image_size) < 0)
 		return CB_ERR;
+
+	/* Signal that FSP component has been loaded. */
+	arch_segment_loaded(hdr->image_base, hdr->image_size, SEG_FINAL);
 
 	return CB_SUCCESS;
 }

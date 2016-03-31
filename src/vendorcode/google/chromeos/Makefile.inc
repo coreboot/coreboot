@@ -91,11 +91,12 @@ GBB_FLAGS := $(call int-add, \
 	)
 
 ifneq ($(CONFIG_GBB_BMPFV_FILE),)
-$(obj)/gbb.stub: $(obj)/coreboot.rom $(FUTILITY)
+$(obj)/gbb.sizetmp: $(obj)/coreboot.rom
+	$(CBFSTOOL) $< read -r GBB -f $@
+
+$(obj)/gbb.stub: $(obj)/coreboot.rom $(FUTILITY) $(obj)/gbb.sizetmp
 	@printf "    CREATE GBB (with BMPFV)\n"
-	$(CBFSTOOL) $< read -r GBB -f $(obj)/gbb.stub.tmp
-	$(FUTILITY) gbb_utility -c 0x100,0x1000,$(call int-subtract $(call file-size,$(obj)/gbb.stub.tmp) 0x2180),0x1000 $@.tmp
-	rm -f $(obj)/gbb.stub.tmp
+	$(FUTILITY) gbb_utility -c 0x100,0x1000,$(call int-subtract,$(call file-size,$(obj)/gbb.sizetmp) 0x2180),0x1000 $@.tmp
 	mv $@.tmp $@
 else
 $(obj)/gbb.stub: $(obj)/coreboot.rom $(FUTILITY)
@@ -113,6 +114,11 @@ $(obj)/gbb.region: $(obj)/gbb.stub
 		--recoverykey="$(CONFIG_VBOOT_RECOVERY_KEY)" \
 		--flags=$(GBB_FLAGS) \
 		$@.tmp
+ifneq ($(CONFIG_GBB_BMPFV_FILE),)
+	$(FUTILITY) gbb_utility -s \
+		--bmpfv="$(CONFIG_GBB_BMPFV_FILE)" \
+		$@.tmp
+endif
 	mv $@.tmp $@
 
 build_complete:: $(obj)/gbb.region

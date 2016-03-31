@@ -30,13 +30,15 @@ static uint32_t get_bar(device_t dev, unsigned int index)
 
 static int mc_add_fixed_mmio_resources(device_t dev, int index)
 {
+	unsigned long addr;
+
 	/* PCI extended config region */
-	mmio_resource(dev, index++, ALIGN_DOWN(get_bar(dev, PCIEXBAR), 256*MiB),
-						PCIEX_SIZE / KiB);
+	addr = ALIGN_DOWN(get_bar(dev, PCIEXBAR), 256*MiB) / KiB;
+	mmio_resource(dev, index++, addr, PCIEX_SIZE / KiB);
 
 	/* Memory Controller Hub */
-	mmio_resource(dev, index++, ALIGN_DOWN(get_bar(dev, MCHBAR), 32*KiB),
-						MCH_BASE_SIZE / KiB);
+	addr = ALIGN_DOWN(get_bar(dev, MCHBAR), 32*KiB) / KiB;
+	mmio_resource(dev, index++, addr, MCH_BASE_SIZE / KiB);
 
 	return index;
 }

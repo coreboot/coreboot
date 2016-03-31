@@ -67,7 +67,7 @@
 #define	AMD_DR_GT_B0		(AMD_DR_ALL & ~(AMD_DR_B0))
 #define	AMD_DR_GT_Bx		(AMD_DR_ALL & ~(AMD_DR_Ax | AMD_DR_Bx))
 #define	AMD_DR_GT_D0		((AMD_DR_Dx & ~(AMD_HY_D0)) | AMD_DR_Ex)
-#define	AMD_DR_ALL		(AMD_DR_Bx)
+#define	AMD_DR_ALL		(AMD_DR_Ax | AMD_DR_Bx | AMD_DR_Cx | AMD_DR_Dx | AMD_DR_Ex)
 #define	AMD_FAM10_ALL		(AMD_DR_ALL | AMD_RB_C2 | AMD_HY_D0 | AMD_DA_C3 | AMD_DA_C2 | AMD_RB_C3 | AMD_HY_D1 | AMD_PH_E0)
 #define AMD_FAM10_LT_D  	(AMD_FAM10_ALL & ~(AMD_HY_D0))
 #define	AMD_FAM10_GT_B0		(AMD_FAM10_ALL & ~(AMD_DR_B0))

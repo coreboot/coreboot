@@ -111,5 +111,12 @@ void run_postcar_phase(struct postcar_frame *pcf)
 
 	*(uintptr_t *)rsl.params = pcf->stack;
 
+	/*
+	 * Signal to rest of system that another update was made to the
+	 * postcar program prior to running it.
+	 */
+	arch_segment_loaded((uintptr_t)rsl.params, sizeof(uintptr_t),
+		SEG_FINAL);
+
 	prog_run(&prog);
 }

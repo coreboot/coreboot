@@ -26,8 +26,10 @@ static void flush_l1d_to_l2(void)
 	wrmsr(MSR_POWER_MISC, msr);
 }
 
-void arch_segment_loaded(uintptr_t start, size_t size, int flags)
+void platform_segment_loaded(uintptr_t start, size_t size, int flags)
 {
+	/* TODO: filter on address to see if L1D flushing required. */
+
 	/* Flush L1D cache to L2 on final segment loaded */
 	if (flags & SEG_FINAL)
 		flush_l1d_to_l2();

@@ -169,3 +169,68 @@ struct rom_header *pci_rom_load(struct device *dev,
 	pci_ram_image_start += rom_size;
 	return (struct rom_header *) (pci_ram_image_start-rom_size);
 }
+
+/* ACPI */
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+static unsigned long
+pci_rom_acpi_fill_vfct(struct device *device,
+					   struct acpi_vfct *vfct_struct,
+					   unsigned long current)
+{
+	struct acpi_vfct_image_hdr *header = &vfct_struct->image_hdr;
+	struct rom_header *rom;
+
+	vfct_struct->VBIOSImageOffset = (size_t)header - (size_t)vfct_struct;
+
+	rom = pci_rom_probe(device);
+	if (!rom) {
+		printk(BIOS_ERR, "pci_rom_acpi_fill_vfct failed\n");
+		return current;
+	}
+
+	header->DeviceID = device->device;
+	header->VendorID = device->vendor;
+	header->PCIBus = device->bus->secondary;
+	header->PCIFunction = PCI_FUNC(device->path.pci.devfn);
+	header->PCIDevice = PCI_SLOT(device->path.pci.devfn);
+	header->ImageLength = rom->size * 512;
+	memcpy((void *)&header->VbiosContent, rom, header->ImageLength);
+
+	current += header->ImageLength;
+	return current;
+}
+
+unsigned long
+pci_rom_write_acpi_tables(struct device *device,
+						  unsigned long current,
+						  struct acpi_rsdp *rsdp)
+{
+	struct acpi_vfct *vfct;
+	struct rom_header *rom;
+
+	/* Only handle VGA devices */
+	if ((device->class >> 8) != PCI_CLASS_DISPLAY_VGA)
+		return current;
+
+	/* Only handle enabled devices */
+	if (!device->enabled)
+		return current;
+
+	/* Probe for option rom */
+	rom = pci_rom_probe(device);
+	if (!rom)
+		return current;
+
+	/* AMD/ATI uses VFCT */
+	if (device->vendor == PCI_VENDOR_ID_ATI) {
+		current = ALIGN(current, 8);
+		printk(BIOS_DEBUG, "ACPI:   * VFCT at %lx\n", current);
+		vfct = (struct acpi_vfct *)current;
+		acpi_create_vfct(device, vfct, pci_rom_acpi_fill_vfct);
+		current += vfct->header.length;
+		acpi_add_table(rsdp, vfct);
+	}
+
+	return current;
+}
+#endif

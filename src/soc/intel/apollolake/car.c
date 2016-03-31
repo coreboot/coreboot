@@ -26,8 +26,9 @@ static void flush_l1d_to_l2(void)
 	wrmsr(MSR_POWER_MISC, msr);
 }
 
-void platform_prog_run(struct prog *prog)
+void arch_segment_loaded(uintptr_t start, size_t size, int flags)
 {
-	/* Flush L1D cache to L2 */
-	flush_l1d_to_l2();
+	/* Flush L1D cache to L2 on final segment loaded */
+	if (flags & SEG_FINAL)
+		flush_l1d_to_l2();
 }

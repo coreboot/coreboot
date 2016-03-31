@@ -140,6 +140,7 @@ struct rk3399_grf_regs {
 		u32 iomux_pwm_1;
 		u32 iomux_uart2b;
 		u32 iomux_uart2c;
+		u32 iomux_edp_hotplug;
 		u32 gpio4c_iomux;
 	};
 	u32 gpio4d_iomux;
@@ -346,4 +347,5 @@ static struct rk3399_pmusgrf_regs * const rk3399_pmusgrf = (void *)PMUSGRF_BASE;
 #define IOMUX_PWM_3_A	RK_SETBITS(1 << 12)
 #define IOMUX_PWM_3_B	RK_SETBITS(1 << 12)
 #define IOMUX_TSADC_INT	RK_CLRSETBITS(3 << 12, 1 << 12)
+#define IOMUX_EDP_HOTPLUG	RK_CLRSETBITS(3 << 14, 2 << 14)
 #endif	/* __SOC_ROCKCHIP_RK3399_GRF_H__ */

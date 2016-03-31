@@ -233,6 +233,11 @@ config GBB_FLAG_DISABLE_LID_SHUTDOWN
 config GBB_FLAG_FORCE_DEV_BOOT_FASTBOOT_FULL_CAP
 	bool "Allow fastboot even if dev_boot_fastboot_full_cap=0"
 	default n
+
+config GBB_FLAG_ENABLE_SERIAL
+	bool "Tell vboot to enable serial console"
+	default n
+
 endmenu # GBB
 
 menu "Vboot Keys"

@@ -735,6 +735,9 @@ struct device_operations default_pci_ops_dev = {
 	.read_resources   = pci_dev_read_resources,
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+	.write_acpi_tables = pci_rom_write_acpi_tables,
+#endif
 	.init             = pci_dev_init,
 	.scan_bus         = 0,
 	.enable           = 0,

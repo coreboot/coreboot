@@ -589,6 +589,31 @@ void acpi_create_hpet(acpi_hpet_t *hpet)
 	header->checksum = acpi_checksum((void *)hpet, sizeof(acpi_hpet_t));
 }
 
+void acpi_create_vfct(struct device *device,
+		      struct acpi_vfct *vfct,
+		      unsigned long (*acpi_fill_vfct)(struct device *device, struct acpi_vfct *vfct_struct, unsigned long current))
+{
+	acpi_header_t *header = &(vfct->header);
+	unsigned long current = (unsigned long)vfct + sizeof(struct acpi_vfct);
+
+	memset((void *)vfct, 0, sizeof(struct acpi_vfct));
+
+	/* Fill out header fields. */
+	memcpy(header->signature, "VFCT", 4);
+	memcpy(header->oem_id, OEM_ID, 6);
+	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
+	memcpy(header->asl_compiler_id, ASLC, 4);
+
+	header->length = sizeof(struct acpi_vfct);
+	header->revision = 1; /* ACPI 1.0: N/A, ACPI 2.0/3.0/4.0: 1 */
+
+	current = acpi_fill_vfct(device, vfct, current);
+
+	/* (Re)calculate length and checksum. */
+	header->length = current - (unsigned long)vfct;
+	header->checksum = acpi_checksum((void *)vfct, header->length);
+}
+
 void acpi_create_ivrs(acpi_ivrs_t *ivrs,
 		      unsigned long (*acpi_fill_ivrs)(acpi_ivrs_t* ivrs_struct, unsigned long current))
 {

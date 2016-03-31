@@ -220,6 +220,30 @@ typedef struct acpi_madt {
 	u32 flags;			/* Multiple APIC flags */
 } __attribute__ ((packed)) acpi_madt_t;
 
+/* VFCT image header */
+struct acpi_vfct_image_hdr {
+	u32 PCIBus;
+	u32 PCIDevice;
+	u32 PCIFunction;
+	u16 VendorID;
+	u16 DeviceID;
+	u16 SSVID;
+	u16 SSID;
+	u32 Revision;
+	u32 ImageLength;
+	u8  VbiosContent;	// dummy - copy VBIOS here
+} __attribute__ ((packed));
+
+/* VFCT (VBIOS Fetch Table) */
+struct acpi_vfct {
+	struct acpi_table_header header;
+	u8  TableUUID[16];
+	u32 VBIOSImageOffset;
+	u32 Lib1ImageOffset;
+	u32 Reserved[4];
+	struct acpi_vfct_image_hdr image_hdr;
+} __attribute__ ((packed));
+
 typedef struct acpi_ivrs_info {
 } __attribute__ ((packed)) acpi_ivrs_info_t;
 
@@ -600,6 +624,11 @@ void acpi_create_srat(acpi_srat_t *srat,
 
 void acpi_create_slit(acpi_slit_t *slit,
 		      unsigned long (*acpi_fill_slit)(unsigned long current));
+
+void acpi_create_vfct(struct device *device,
+		      struct acpi_vfct *vfct,
+		      unsigned long (*acpi_fill_vfct)(struct device *device,
+		          struct acpi_vfct *vfct_struct, unsigned long current));
 
 void acpi_create_ivrs(acpi_ivrs_t *ivrs,
 		      unsigned long (*acpi_fill_ivrs)(acpi_ivrs_t* ivrs_struct, unsigned long current));

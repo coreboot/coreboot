@@ -12,7 +12,6 @@
 #include <arch/cpu.h>
 #include <bootblock_common.h>
 #include <device/pci.h>
-#include <program_loading.h>
 #include <soc/bootblock.h>
 #include <soc/cpu.h>
 #include <soc/northbridge.h>
@@ -34,14 +33,6 @@ void asmlinkage bootblock_c_entry(void)
 
 	/* Call lib/bootblock.c main */
 	main();
-}
-
-void platform_prog_run(struct prog *prog)
-{
-	/* Flush L1D cache to L2 */
-	msr_t msr = rdmsr(MSR_POWER_MISC);
-	msr.lo |= (1 << 8);
-	wrmsr(MSR_POWER_MISC, msr);
 }
 
 void bootblock_soc_early_init(void)

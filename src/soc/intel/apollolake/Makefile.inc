@@ -11,6 +11,7 @@ subdirs-y += ../../../cpu/x86/cache
 bootblock-y += bootblock/bootblock.c
 bootblock-y += bootblock/cache_as_ram.S
 bootblock-y += bootblock/bootblock.c
+bootblock-y += car.c
 bootblock-y += gpio.c
 bootblock-y += mmap_boot.c
 bootblock-y += placeholders.c
@@ -18,6 +19,7 @@ bootblock-y += tsc_freq.c
 bootblock-$(CONFIG_SOC_UART_DEBUG) += uart_early.c
 
 romstage-y += placeholders.c
+romstage-y += car.c
 romstage-$(CONFIG_PLATFORM_USES_FSP2_0) += romstage.c
 romstage-y += gpio.c
 romstage-$(CONFIG_SOC_UART_DEBUG) += uart_early.c

@@ -15,4 +15,7 @@
 
 chip soc/rockchip/rk3399
 	device cpu_cluster 0 on end
+	register "vop_id" = "0"
+	register "vop_mode" = "VOP_MODE_EDP"
+	register "framebuffer_bits_per_pixel" = "16"
 end

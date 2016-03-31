@@ -86,6 +86,11 @@ for region in $FMAP_REGIONS; do
 		IS_CBFS="(CBFS)"
 	fi
 
+	# also mark RW_LEGACY (seabios et al) as CBFS
+	if [ "${REGION_NAME}" = "RW_LEGACY" ]; then
+		IS_CBFS="(CBFS)"
+	fi
+
 	# special handling: COREBOOT region at 0, inject a 128K bootblock
 	# The size may need changes to accomodate the chipsets,
 	# but should work for now.

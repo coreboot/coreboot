@@ -37,67 +37,17 @@ void setup_chromeos_gpios(void)
 
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
-	int count = 0;
-
-	/* Write protect : active low */
-	gpios->gpios[count].port = WRITE_PROTECT;
-	gpios->gpios[count].polarity = ACTIVE_LOW;
-	gpios->gpios[count].value = gpio_get(WRITE_PROTECT);
-	strncpy((char *)gpios->gpios[count].name, "write protect",
-	        GPIO_MAX_NAME_LENGTH);
-	count++;
-
-	/* Recovery: active high */
-	gpios->gpios[count].port = -1;
-	gpios->gpios[count].polarity = ACTIVE_HIGH;
-	gpios->gpios[count].value = get_recovery_mode_switch();
-	strncpy((char *)gpios->gpios[count].name, "recovery",
-		GPIO_MAX_NAME_LENGTH);
-	count++;
-
-	/* Lid: active high */
-	gpios->gpios[count].port = LID;
-	gpios->gpios[count].polarity = ACTIVE_HIGH;
-	gpios->gpios[count].value = -1;
-	strncpy((char *)gpios->gpios[count].name, "lid", GPIO_MAX_NAME_LENGTH);
-	count++;
-
-	/* Power: active high */
-	gpios->gpios[count].port = POWER_BUTTON;
-	gpios->gpios[count].polarity = ACTIVE_HIGH;
-	gpios->gpios[count].value = -1;
-	strncpy((char *)gpios->gpios[count].name, "power",
-		GPIO_MAX_NAME_LENGTH);
-	count++;
-
-	/* Developer: virtual GPIO active high */
-	gpios->gpios[count].port = -1;
-	gpios->gpios[count].polarity = ACTIVE_HIGH;
-	gpios->gpios[count].value = get_developer_mode_switch();
-	strncpy((char *)gpios->gpios[count].name, "developer",
-		GPIO_MAX_NAME_LENGTH);
-	count++;
-
-	/* EC in RW: active high */
-	gpios->gpios[count].port = EC_IN_RW;
-	gpios->gpios[count].polarity = ACTIVE_HIGH;
-	gpios->gpios[count].value = -1;
-	strncpy((char *)gpios->gpios[count].name, "EC in RW",
-		GPIO_MAX_NAME_LENGTH);
-	count++;
-
-	/* EC interrupt: GPIO active low */
-	gpios->gpios[count].port = EC_IRQ;
-	gpios->gpios[count].polarity = ACTIVE_LOW;
-	gpios->gpios[count].value = -1;
-	strncpy((char *)gpios->gpios[count].name, "EC interrupt",
-		GPIO_MAX_NAME_LENGTH);
-	count++;
-
-	gpios->size = sizeof(*gpios) + (count * sizeof(struct lb_gpio));
-	gpios->count = count;
-
-	printk(BIOS_ERR, "Added %d GPIOS size %d\n", count, gpios->size);
+	struct lb_gpio chromeos_gpios[] = {
+		{WRITE_PROTECT, ACTIVE_LOW,
+			gpio_get(WRITE_PROTECT), "write protect"},
+		{-1, ACTIVE_HIGH, get_recovery_mode_switch(), "recovery"},
+		{LID, ACTIVE_HIGH, -1, "lid"},
+		{POWER_BUTTON, ACTIVE_HIGH, -1, "power"},
+		{-1, ACTIVE_HIGH, get_developer_mode_switch(), "developer"},
+		{EC_IN_RW, ACTIVE_HIGH, -1, "EC in RW"},
+		{EC_IRQ, ACTIVE_LOW, -1, "EC interrupt"},
+	};
+	lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios));
 }
 
 int get_developer_mode_switch(void)

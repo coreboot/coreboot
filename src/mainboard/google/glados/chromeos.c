@@ -33,24 +33,17 @@
 
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
-	struct lb_gpio *start_gpio = gpios->gpios;
-	struct lb_gpio *gpio = start_gpio;
-
-	fill_lb_gpio(gpio++, -1, ACTIVE_HIGH, "write protect",
-		     get_write_protect_state());
-	fill_lb_gpio(gpio++, -1, ACTIVE_HIGH, "recovery",
-		     get_recovery_mode_switch());
-	fill_lb_gpio(gpio++, -1, ACTIVE_HIGH, "developer",
-		     get_developer_mode_switch());
-	fill_lb_gpio(gpio++, -1, ACTIVE_HIGH, "lid",
-		     get_lid_switch());
-	fill_lb_gpio(gpio++, -1, ACTIVE_HIGH, "power", 0);
-	fill_lb_gpio(gpio++, -1, ACTIVE_HIGH, "oprom", gfx_get_init_done());
-	fill_lb_gpio(gpio++, GPIO_EC_IN_RW, ACTIVE_HIGH, "EC in RW",
-		     gpio_get(GPIO_EC_IN_RW));
-
-	gpios->count = gpio - start_gpio;
-	gpios->size = sizeof(*gpios) + (gpios->count * sizeof(*gpio));
+	struct lb_gpio chromeos_gpios[] = {
+		{-1, ACTIVE_HIGH, get_write_protect_state(), "write protect"},
+		{-1, ACTIVE_HIGH, get_recovery_mode_switch(), "recovery"},
+		{-1, ACTIVE_HIGH, get_developer_mode_switch(), "developer"},
+		{-1, ACTIVE_HIGH, get_lid_switch(), "lid"},
+		{-1, ACTIVE_HIGH, 0, "power"},
+		{-1, ACTIVE_HIGH, gfx_get_init_done(), "oprom"},
+		{GPIO_EC_IN_RW, ACTIVE_HIGH,
+			gpio_get(GPIO_EC_IN_RW), "EC in RW"},
+	};
+	lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios));
 }
 #endif /* ENV_RAMSTAGE */
 

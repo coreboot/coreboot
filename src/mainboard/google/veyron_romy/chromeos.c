@@ -34,52 +34,15 @@ void setup_chromeos_gpios(void)
 
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
-	int count = 0;
-
-	/* Write Protect: active low */
-	gpios->gpios[count].port = GPIO_WP.raw;
-	gpios->gpios[count].polarity = ACTIVE_LOW;
-	gpios->gpios[count].value = gpio_get(GPIO_WP);
-	strncpy((char *)gpios->gpios[count].name, "write protect",
-		GPIO_MAX_NAME_LENGTH);
-	count++;
-
-	/* Recovery: active low */
-	gpios->gpios[count].port = GPIO_RECOVERY.raw;
-	gpios->gpios[count].polarity = ACTIVE_LOW;
-	gpios->gpios[count].value = gpio_get(GPIO_RECOVERY);
-	strncpy((char *)gpios->gpios[count].name, "recovery",
-		GPIO_MAX_NAME_LENGTH);
-	count++;
-
-	/* Power Button: GPIO active low */
-	gpios->gpios[count].port = GPIO_POWER.raw;
-	gpios->gpios[count].polarity = ACTIVE_LOW;
-	gpios->gpios[count].value = -1;
-	strncpy((char *)gpios->gpios[count].name, "power",
-		GPIO_MAX_NAME_LENGTH);
-	count++;
-
-	/* Developer: GPIO active high */
-	gpios->gpios[count].port = -1;
-	gpios->gpios[count].polarity = ACTIVE_HIGH;
-	gpios->gpios[count].value = get_developer_mode_switch();
-	strncpy((char *)gpios->gpios[count].name, "developer",
-		GPIO_MAX_NAME_LENGTH);
-	count++;
-
-	/* Reset: GPIO active high (output) */
-	gpios->gpios[count].port = GPIO_RESET.raw;
-	gpios->gpios[count].polarity = ACTIVE_HIGH;
-	gpios->gpios[count].value = -1;
-	strncpy((char *)gpios->gpios[count].name, "reset",
-		GPIO_MAX_NAME_LENGTH);
-	count++;
-
-	gpios->size = sizeof(*gpios) + (count * sizeof(struct lb_gpio));
-	gpios->count = count;
-
-	printk(BIOS_ERR, "Added %d GPIOS size %d\n", count, gpios->size);
+	struct lb_gpio chromeos_gpios[] = {
+		{GPIO_WP.raw, ACTIVE_LOW, gpio_get(GPIO_WP), "write protect"},
+		{GPIO_RECOVERY.raw, ACTIVE_LOW,
+			gpio_get(GPIO_RECOVERY), "recovery"},
+		{GPIO_POWER.raw, ACTIVE_LOW, -1, "power"},
+		{-1, ACTIVE_HIGH, get_developer_mode_switch(), "developer"},
+		{GPIO_RESET.raw, ACTIVE_HIGH, -1, "reset"},
+	};
+	lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios));
 }
 
 int get_developer_mode_switch(void)

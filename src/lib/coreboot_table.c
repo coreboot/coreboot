@@ -148,27 +148,53 @@ void __attribute__((weak)) lb_framebuffer(struct lb_header *header)
 #endif
 }
 
-void fill_lb_gpio(struct lb_gpio *gpio, int num,
-			 int polarity, const char *name, int value)
+void lb_add_gpios(struct lb_gpios *gpios, const struct lb_gpio *gpio_table,
+		  size_t count)
 {
-	memset(gpio, 0, sizeof(*gpio));
-	gpio->port = num;
-	gpio->polarity = polarity;
-	if (value >= 0)
-		gpio->value = value;
-	strncpy((char *)gpio->name, name, GPIO_MAX_NAME_LENGTH);
+	size_t table_size = count * sizeof(struct lb_gpio);
+
+	memcpy(&gpios->gpios[gpios->count], gpio_table, table_size);
+	gpios->count += count;
+	gpios->size += table_size;
 }
 
 #if CONFIG_CHROMEOS
 static void lb_gpios(struct lb_header *header)
 {
 	struct lb_gpios *gpios;
+	struct lb_gpio *g;
 
 	gpios = (struct lb_gpios *)lb_new_record(header);
 	gpios->tag = LB_TAG_GPIO;
 	gpios->size = sizeof(*gpios);
 	gpios->count = 0;
 	fill_lb_gpios(gpios);
+
+	printk(BIOS_INFO, "Passing %u GPIOs to payload:\n"
+		"            NAME |       PORT | POLARITY |     VALUE\n",
+		gpios->count);
+	for (g = &gpios->gpios[0]; g < &gpios->gpios[gpios->count]; g++) {
+		printk(BIOS_INFO, "%16s | ", g->name);
+		if (g->port == -1)
+			printk(BIOS_INFO, " undefined | ");
+		else
+			printk(BIOS_INFO, "%#.8x | ", g->port);
+		if (g->polarity == ACTIVE_HIGH)
+			printk(BIOS_INFO, "    high | ");
+		else
+			printk(BIOS_INFO, "     low | ");
+		switch (g->value) {
+		case 0:
+			printk(BIOS_INFO, "     high\n");
+			break;
+		case 1:
+			printk(BIOS_INFO, "      low\n");
+			break;
+		default:
+			printk(BIOS_INFO, "undefined\n");
+			break;
+		}
+	}
 }
 
 static void lb_vdat(struct lb_header *header)

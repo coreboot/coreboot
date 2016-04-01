@@ -33,62 +33,18 @@ static inline uint32_t get_pwr_btn_polarity(void)
 
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
-	int count = 0;
+	struct lb_gpio chromeos_gpios[] = {
+		{WRITE_PROTECT_L, ACTIVE_LOW, gpio_get(WRITE_PROTECT_L),
+		 "write protect"},
+		{-1, ACTIVE_HIGH, get_recovery_mode_switch(), "recovery"},
+		/* TODO(adurbin): add lid switch */
+		{POWER_BUTTON, get_pwr_btn_polarity(), -1, "power"},
+		{-1, ACTIVE_HIGH, get_developer_mode_switch(), "developer"},
+		{EC_IN_RW, ACTIVE_HIGH, -1, "EC in RW"},
+		{AP_SYS_RESET_L, ACTIVE_LOW, -1, "reset"},
+	};
 
-	/* Write Protect: active low */
-	gpios->gpios[count].port = WRITE_PROTECT_L;
-	gpios->gpios[count].polarity = ACTIVE_LOW;
-	gpios->gpios[count].value = gpio_get(WRITE_PROTECT_L);
-	strncpy((char *)gpios->gpios[count].name, "write protect",
-		GPIO_MAX_NAME_LENGTH);
-	count++;
-
-	/* Recovery: active high */
-	gpios->gpios[count].port = -1;
-	gpios->gpios[count].polarity = ACTIVE_HIGH;
-	gpios->gpios[count].value = get_recovery_mode_switch();
-	strncpy((char *)gpios->gpios[count].name, "recovery",
-		GPIO_MAX_NAME_LENGTH);
-	count++;
-
-	/* TODO(adurbin): add lid switch */
-
-	/* Power: active low / high depending on board id */
-	gpios->gpios[count].port = POWER_BUTTON;
-	gpios->gpios[count].polarity = get_pwr_btn_polarity();
-	gpios->gpios[count].value = -1;
-	strncpy((char *)gpios->gpios[count].name, "power",
-		GPIO_MAX_NAME_LENGTH);
-	count++;
-
-	/* Developer: virtual GPIO active high */
-	gpios->gpios[count].port = -1;
-	gpios->gpios[count].polarity = ACTIVE_HIGH;
-	gpios->gpios[count].value = get_developer_mode_switch();
-	strncpy((char *)gpios->gpios[count].name, "developer",
-		GPIO_MAX_NAME_LENGTH);
-	count++;
-
-	/* EC in RW: active high */
-	gpios->gpios[count].port = EC_IN_RW;
-	gpios->gpios[count].polarity = ACTIVE_HIGH;
-	gpios->gpios[count].value = -1;
-	strncpy((char *)gpios->gpios[count].name, "EC in RW",
-		GPIO_MAX_NAME_LENGTH);
-	count++;
-
-	/* Reset: active low (output) */
-	gpios->gpios[count].port = AP_SYS_RESET_L;
-	gpios->gpios[count].polarity = ACTIVE_LOW;
-	gpios->gpios[count].value = -1;
-	strncpy((char *)gpios->gpios[count].name, "reset",
-		GPIO_MAX_NAME_LENGTH);
-	count++;
-
-	gpios->size = sizeof(*gpios) + (count * sizeof(struct lb_gpio));
-	gpios->count = count;
-
-	printk(BIOS_ERR, "Added %d GPIOS size %d\n", count, gpios->size);
+	lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios));
 }
 
 int get_developer_mode_switch(void)

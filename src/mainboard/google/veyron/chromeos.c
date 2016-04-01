@@ -41,83 +41,19 @@ void setup_chromeos_gpios(void)
 
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
-	int count = 0;
-
-	/* Write Protect: active low */
-	gpios->gpios[count].port = GPIO_WP.raw;
-	gpios->gpios[count].polarity = ACTIVE_LOW;
-	gpios->gpios[count].value = gpio_get(GPIO_WP);
-	strncpy((char *)gpios->gpios[count].name, "write protect",
-		GPIO_MAX_NAME_LENGTH);
-	count++;
-
-	/* Recovery: active low */
-	gpios->gpios[count].port = GPIO_RECOVERY.raw;
-	gpios->gpios[count].polarity = ACTIVE_HIGH;
-	gpios->gpios[count].value = get_recovery_mode_switch();
-	strncpy((char *)gpios->gpios[count].name, "recovery",
-		GPIO_MAX_NAME_LENGTH);
-	count++;
-
-	/* Lid: active high */
-	gpios->gpios[count].port = GPIO_LID.raw;
-	gpios->gpios[count].polarity = ACTIVE_HIGH;
-	gpios->gpios[count].value = -1;
-	strncpy((char *)gpios->gpios[count].name, "lid", GPIO_MAX_NAME_LENGTH);
-	count++;
-
-	/* Power:GPIO active high */
-	gpios->gpios[count].port = GPIO_POWER.raw;
-	gpios->gpios[count].polarity = ACTIVE_LOW;
-	gpios->gpios[count].value = -1;
-	strncpy((char *)gpios->gpios[count].name, "power",
-		GPIO_MAX_NAME_LENGTH);
-	count++;
-
-	/* Developer: GPIO active high */
-	gpios->gpios[count].port = -1;
-	gpios->gpios[count].polarity = ACTIVE_HIGH;
-	gpios->gpios[count].value = get_developer_mode_switch();
-	strncpy((char *)gpios->gpios[count].name, "developer",
-		GPIO_MAX_NAME_LENGTH);
-	count++;
-
-	/* EC in RW: GPIO active high */
-	gpios->gpios[count].port = GPIO_ECINRW.raw;
-	gpios->gpios[count].polarity = ACTIVE_HIGH;
-	gpios->gpios[count].value = -1;
-	strncpy((char *)gpios->gpios[count].name, "EC in RW",
-		GPIO_MAX_NAME_LENGTH);
-	count++;
-
-	/* EC interrupt: GPIO active high */
-	gpios->gpios[count].port = GPIO_ECIRQ.raw;
-	gpios->gpios[count].polarity = ACTIVE_LOW;
-	gpios->gpios[count].value = -1;
-	strncpy((char *)gpios->gpios[count].name, "EC interrupt",
-		GPIO_MAX_NAME_LENGTH);
-	count++;
-
-	/* Reset: GPIO active high (output) */
-	gpios->gpios[count].port = GPIO_RESET.raw;
-	gpios->gpios[count].polarity = ACTIVE_HIGH;
-	gpios->gpios[count].value = -1;
-	strncpy((char *)gpios->gpios[count].name, "reset",
-		GPIO_MAX_NAME_LENGTH);
-	count++;
-
-	/* Backlight: GPIO active high (output) */
-	gpios->gpios[count].port = GPIO_BACKLIGHT.raw;
-	gpios->gpios[count].polarity = ACTIVE_HIGH;
-	gpios->gpios[count].value = -1;
-	strncpy((char *)gpios->gpios[count].name, "backlight",
-		GPIO_MAX_NAME_LENGTH);
-	count++;
-
-	gpios->size = sizeof(*gpios) + (count * sizeof(struct lb_gpio));
-	gpios->count = count;
-
-	printk(BIOS_ERR, "Added %d GPIOS size %d\n", count, gpios->size);
+	struct lb_gpio chromeos_gpios[] = {
+		{GPIO_WP.raw, ACTIVE_LOW, gpio_get(GPIO_WP), "write protect"},
+		{GPIO_RECOVERY.raw, ACTIVE_LOW,
+			get_recovery_mode_switch(), "recovery"},
+		{GPIO_LID.raw, ACTIVE_HIGH, -1, "lid"},
+		{GPIO_POWER.raw, ACTIVE_LOW, -1, "power"},
+		{-1, ACTIVE_HIGH, get_developer_mode_switch(), "developer"},
+		{GPIO_ECINRW.raw, ACTIVE_HIGH, -1, "EC in RW"},
+		{GPIO_ECIRQ.raw, ACTIVE_LOW, -1, "EC interrupt"},
+		{GPIO_RESET.raw, ACTIVE_HIGH, -1, "reset"},
+		{GPIO_BACKLIGHT.raw, ACTIVE_HIGH, -1, "backlight"},
+	};
+	lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios));
 }
 
 int get_developer_mode_switch(void)

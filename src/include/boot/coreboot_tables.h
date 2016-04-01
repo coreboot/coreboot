@@ -2,6 +2,7 @@
 #define COREBOOT_TABLES_H
 
 #include <commonlib/coreboot_tables.h>
+#include <stddef.h>
 /* function prototypes for building the coreboot table */
 
 unsigned long write_coreboot_table(
@@ -9,8 +10,8 @@ unsigned long write_coreboot_table(
 	unsigned long rom_table_start, unsigned long rom_table_end);
 
 void fill_lb_gpios(struct lb_gpios *gpios);
-void fill_lb_gpio(struct lb_gpio *gpio, int num,
-			 int polarity, const char *name, int value);
+void lb_add_gpios(struct lb_gpios *gpios, const struct lb_gpio *gpio_table,
+		  size_t count);
 
 void uart_fill_lb(void *data);
 void lb_add_serial(struct lb_serial *serial, void *data);

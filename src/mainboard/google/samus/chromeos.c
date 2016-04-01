@@ -31,25 +31,17 @@
 #ifndef __PRE_RAM__
 #include <boot/coreboot_tables.h>
 
-#define GPIO_COUNT	6
-
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
-	struct lb_gpio *gpio;
-
-	gpios->size = sizeof(*gpios) + (GPIO_COUNT * sizeof(struct lb_gpio));
-	gpios->count = GPIO_COUNT;
-
-	gpio = gpios->gpios;
-	fill_lb_gpio(gpio++, CROS_WP_GPIO, ACTIVE_HIGH, "write protect", 0);
-	fill_lb_gpio(gpio++, -1, ACTIVE_HIGH, "recovery",
-		     get_recovery_mode_switch());
-	fill_lb_gpio(gpio++, -1, ACTIVE_HIGH, "developer",
-		     get_developer_mode_switch());
-	fill_lb_gpio(gpio++, -1, ACTIVE_HIGH, "lid",
-		     get_lid_switch());
-	fill_lb_gpio(gpio++, -1, ACTIVE_HIGH, "power", 0);
-	fill_lb_gpio(gpio++, -1, ACTIVE_HIGH, "oprom", gfx_get_init_done());
+	struct lb_gpio chromeos_gpios[] = {
+		{CROS_WP_GPIO, ACTIVE_HIGH, 0, "write protect"},
+		{-1, ACTIVE_HIGH, get_recovery_mode_switch(), "recovery"},
+		{-1, ACTIVE_HIGH, get_developer_mode_switch(), "developer"},
+		{-1, ACTIVE_HIGH, get_lid_switch(), "lid"},
+		{-1, ACTIVE_HIGH, 0, "power"},
+		{-1, ACTIVE_HIGH, gfx_get_init_done(), "oprom"},
+	};
+	lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios));
 }
 #endif
 

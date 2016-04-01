@@ -28,67 +28,16 @@
 
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
-	int count = 0;
-
-	/* Write Protect: active low */
-	gpios->gpios[count].port = GPIO(R1);
-	gpios->gpios[count].polarity = ACTIVE_LOW;
-	gpios->gpios[count].value = gpio_get(GPIO(R1));
-	strncpy((char *)gpios->gpios[count].name, "write protect",
-		GPIO_MAX_NAME_LENGTH);
-	count++;
-
-	/* Recovery: active high */
-	gpios->gpios[count].port = -1;
-	gpios->gpios[count].polarity = ACTIVE_HIGH;
-	gpios->gpios[count].value = get_recovery_mode_switch();
-	strncpy((char *)gpios->gpios[count].name, "recovery",
-		GPIO_MAX_NAME_LENGTH);
-	count++;
-
-	/* Lid: active high */
-	gpios->gpios[count].port = GPIO(R4);
-	gpios->gpios[count].polarity = ACTIVE_HIGH;
-	gpios->gpios[count].value = -1;
-	strncpy((char *)gpios->gpios[count].name, "lid", GPIO_MAX_NAME_LENGTH);
-	count++;
-
-	/* Power: active low */
-	gpios->gpios[count].port = GPIO(Q0);
-	gpios->gpios[count].polarity = ACTIVE_LOW;
-	gpios->gpios[count].value = -1;
-	strncpy((char *)gpios->gpios[count].name, "power",
-		GPIO_MAX_NAME_LENGTH);
-	count++;
-
-	/* Developer: virtual GPIO active high */
-	gpios->gpios[count].port = -1;
-	gpios->gpios[count].polarity = ACTIVE_HIGH;
-	gpios->gpios[count].value = get_developer_mode_switch();
-	strncpy((char *)gpios->gpios[count].name, "developer",
-		GPIO_MAX_NAME_LENGTH);
-	count++;
-
-	/* EC in RW: active high */
-	gpios->gpios[count].port = GPIO(U4);
-	gpios->gpios[count].polarity = ACTIVE_HIGH;
-	gpios->gpios[count].value = -1;
-	strncpy((char *)gpios->gpios[count].name, "EC in RW",
-		GPIO_MAX_NAME_LENGTH);
-	count++;
-
-	/* Reset: active low (output) */
-	gpios->gpios[count].port = GPIO(I5);
-	gpios->gpios[count].polarity = ACTIVE_LOW;
-	gpios->gpios[count].value = -1;
-	strncpy((char *)gpios->gpios[count].name, "reset",
-		GPIO_MAX_NAME_LENGTH);
-	count++;
-
-	gpios->size = sizeof(*gpios) + (count * sizeof(struct lb_gpio));
-	gpios->count = count;
-
-	printk(BIOS_ERR, "Added %d GPIOS size %d\n", count, gpios->size);
+	struct lb_gpio chromeos_gpios[] = {
+		{GPIO(R1), ACTIVE_LOW, gpio_get(GPIO(R1)), "write protect"},
+		{-1, ACTIVE_HIGH, get_recovery_mode_switch(), "recovery"},
+		{GPIO(R4), ACTIVE_HIGH, -1, "lid"},
+		{GPIO(Q0), ACTIVE_LOW, -1, "power"},
+		{-1, ACTIVE_HIGH, get_developer_mode_switch(), "developer"},
+		{GPIO(U4), ACTIVE_HIGH, -1, "EC in RW"},
+		{GPIO(I5), ACTIVE_LOW, -1, "reset"},
+	};
+	lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios));
 }
 
 int get_developer_mode_switch(void)

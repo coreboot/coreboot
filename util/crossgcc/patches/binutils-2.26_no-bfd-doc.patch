@@ -1,7 +1,7 @@
-diff -ur binutils-2.25/bfd/Makefile.in binutils-2.25.patched/bfd/Makefile.in
---- binutils-2.25/bfd/Makefile.in	2015-09-15 06:25:42.000000000 -0700
-+++ binutils-2.25.patched/bfd/Makefile.in	2015-09-15 05:51:01.000000000 -0700
-@@ -339,7 +339,7 @@
+diff -ur binutils-2.26/bfd/Makefile.in binutils-2.26.patched/bfd/Makefile.in
+--- binutils-2.26/bfd/Makefile.in	2015-11-13 16:27:40.000000000 +0800
++++ binutils-2.26.patched/bfd/Makefile.in	2016-04-02 11:05:43.398422394 +0800
+@@ -341,7 +341,7 @@
  ACLOCAL_AMFLAGS = -I . -I .. -I ../config
  INCDIR = $(srcdir)/../include
  CSEARCH = -I. -I$(srcdir) -I$(INCDIR)

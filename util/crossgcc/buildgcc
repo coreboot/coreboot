@@ -286,13 +286,25 @@ is_package_enabled()
 	echo "$PACKAGES" |grep -q "\<$1\>"
 }
 
+package_uses_targetarch()
+{
+	if [ "$1" = "GCC" ] || [ "$1" = "GDB" ] || [ "$1" = "BINUTILS" ] || \
+		[ "$1" = "PYTHON" ] || [ "$1" = "EXPAT" ]; then
+		true
+	else
+		false
+	fi
+}
+
 build() {
 	package=$1
 
 	fn_exists build_$package || return
 
 	version="$(eval echo \$$package"_VERSION")"
-	BUILDDIR=build-${TARGETARCH}-$package
+	package_uses_targetarch "$package" && \
+		BUILDDIR=build-${TARGETARCH}-$package || \
+		BUILDDIR=build-$package
 
 	mkdir -p ${BUILDDIR}
 
@@ -321,7 +333,7 @@ cleanup()
 {
 	printf "Cleaning up temporary files... "
 	for package in $PACKAGES; do
-		rm -rf build-${TARGETARCH}-$package $(eval echo \$$package"_DIR")
+		rm -rf build-${TARGETARCH}-$package build-$package $(eval echo \$$package"_DIR")
 	done
 	rm -f getopt
 	printf "${green}ok${NC}\n"

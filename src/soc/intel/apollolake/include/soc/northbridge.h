@@ -23,4 +23,11 @@
 #define TOLUD		0xbc	/* Top of Low Used Memory */
 #define TOUUD		0xa8	/* Top of Upper Usable DRAM */
 
+/* IMR registers are found under MCHBAR. */
+#define MCHBAR_IMR0BASE		0x6870
+#define MCHBAR_IMR0MASK		0x6874
+#define MCH_IMR_PITCH		0x20
+#define MCH_NUM_IMRS		20
+
+
 #endif /* _SOC_APOLLOLAKE_NORTHBRIDGE_H_ */

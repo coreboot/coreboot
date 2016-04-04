@@ -43,6 +43,47 @@ static int mc_add_fixed_mmio_resources(device_t dev, int index)
 	return index;
 }
 
+static bool is_imr_enabled(uint32_t imr_base_reg)
+{
+	return !!(imr_base_reg & (1 << 31));
+}
+
+static void imr_resource(device_t dev, int idx, uint32_t base, uint32_t mask)
+{
+	uint32_t base_k, size_k;
+	/* Bits 28:0 encode the base address bits 38:10, hence the KiB unit. */
+	base_k = (base & 0x0fffffff);
+	/* Bits 28:0 encode the AND mask used for comparison, in KiB. */
+	size_k = ((~mask & 0x0fffffff) + 1);
+	/*
+	 * IMRs sit in lower DRAM. Mark them cacheable, otherwise we run
+	 * out of MTRRs. Memory reserved by IMRs is not usable for host
+	 * so mark it reserved.
+	 */
+	reserved_ram_resource(dev, idx, base_k, size_k);
+}
+
+static int mc_add_imr_resources(device_t dev, int index)
+{
+	uint8_t *mchbar;
+	size_t i, imr_offset;
+	uint32_t base, mask;
+
+	mchbar = (void *)(ALIGN_DOWN(get_bar(dev, MCHBAR), 32*KiB));
+
+	for (i = 0; i < MCH_NUM_IMRS; i ++) {
+		imr_offset = i * MCH_IMR_PITCH;
+		base = read32(mchbar + imr_offset + MCHBAR_IMR0BASE);
+		mask = read32(mchbar + imr_offset + MCHBAR_IMR0MASK);
+
+		if (is_imr_enabled(base)) {
+			imr_resource(dev, index++, base, mask);
+		}
+	}
+
+	return index;
+}
+
 
 static int mc_add_dram_resources(device_t dev, int index)
 {
@@ -99,7 +140,11 @@ static void northbridge_read_resources(device_t dev)
 	index = mc_add_fixed_mmio_resources(dev, index);
 
 	/* Calculate and add DRAM resources. */
-	mc_add_dram_resources(dev, index);
+	index = mc_add_dram_resources(dev, index);
+
+	/* Add the isolated memory ranges (IMRs). */
+	mc_add_imr_resources(dev, index);
+
 }
 
 static struct device_operations northbridge_ops = {

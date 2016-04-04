@@ -15,12 +15,15 @@
  * GNU General Public License for more details.
  */
 
+#include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <soc/acpi.h>
 #include <soc/lpc.h>
 #include <soc/pci_ids.h>
+
+#include "chip.h"
 
 /*
  * SCOPE:
@@ -39,6 +42,26 @@
  * parses that list and looks for resources needed by the child devices. It
  * opens up IO and memory windows as needed.
  */
+
+static void lpc_init(struct device *dev)
+{
+	uint8_t scnt;
+	struct soc_intel_apollolake_config *cfg;
+
+	cfg = dev->chip_info;
+	if (!cfg) {
+		printk(BIOS_ERR, "BUG! Could not find SOC devicetree config\n");
+		return;
+	}
+
+	scnt = pci_read_config8(dev, REG_SERIRQ_CTL);
+	scnt &= ~(SCNT_EN | SCNT_MODE);
+	if (cfg->serirq_mode == SERIRQ_QUIET)
+		scnt |= SCNT_EN;
+	else if (cfg->serirq_mode == SERIRQ_CONTINUOUS);
+		scnt |= SCNT_EN | SCNT_MODE;
+	pci_write_config8(dev, REG_SERIRQ_CTL, scnt);
+}
 
 static void soc_lpc_add_io_resources(device_t dev)
 {
@@ -116,6 +139,7 @@ static struct device_operations device_ops = {
 	.enable_resources = &pci_dev_enable_resources,
 	.write_acpi_tables = southbridge_write_acpi_tables,
 	.acpi_inject_dsdt_generator = southbridge_inject_dsdt,
+	.init = lpc_init,
 	.scan_bus = scan_lpc_bus,
 };
 

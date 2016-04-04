@@ -20,6 +20,13 @@
 
 #define CLKREQ_DISABLED		0xf
 
+/* Serial IRQ control. SERIRQ_QUIET is the default (0). */
+enum serirq_mode {
+	SERIRQ_QUIET,
+	SERIRQ_CONTINUOUS,
+	SERIRQ_OFF,
+};
+
 struct soc_intel_apollolake_config {
 	/*
 	 * Mapping from PCIe root port to CLKREQ input on the SOC. The SOC has
@@ -32,6 +39,9 @@ struct soc_intel_apollolake_config {
 	uint8_t pcie_rp3_clkreq_pin;
 	uint8_t pcie_rp4_clkreq_pin;
 	uint8_t pcie_rp5_clkreq_pin;
+
+	/* Configure serial IRQ (SERIRQ) line. */
+	enum serirq_mode serirq_mode;
 };
 
 #endif	/* _SOC_APOLLOLAKE_CHIP_H_ */

@@ -18,8 +18,8 @@
 
 cd $(dirname $0)
 
-CROSSGCC_DATE="March 21st, 2016"
-CROSSGCC_VERSION="1.37"
+CROSSGCC_DATE="April 3rd, 2016"
+CROSSGCC_VERSION="1.38"
 
 # default settings
 PACKAGE=GCC
@@ -453,13 +453,20 @@ build_BINUTILS() {
 
 
 build_GCC() {
+	# Work around crazy code generator in GCC that confuses CLANG.
+	$CC --version | grep clang &>/dev/null &&
+		HOSTCFLAGS="$HOSTCFLAGS -fbracket-depth=1024"
+
 	# GCC does not honor HOSTCFLAGS at all. CFLAGS are used for
 	# both target and host object files.
 	# There's a work-around called CFLAGS_FOR_BUILD and CFLAGS_FOR_TARGET
 	# but it does not seem to work properly. At least the host library
 	# libiberty is not compiled with CFLAGS_FOR_BUILD.
+	# Also set the CXX version of the flags because GCC is now compiled
+	# using C++.
 	CC="$CC" CFLAGS_FOR_TARGET="-O2 -Dinhibit_libc" CFLAGS="$HOSTCFLAGS" \
-		CFLAGS_FOR_BUILD="$HOSTCFLAGS" ../gcc-${GCC_VERSION}/configure \
+		CFLAGS_FOR_BUILD="$HOSTCFLAGS" CXXFLAGS="$HOSTCFLAGS" \
+		CXXFLAGS_FOR_BUILD="$HOSTCFLAGS" ../gcc-${GCC_VERSION}/configure \
 		--prefix=$TARGETDIR --libexecdir=$TARGETDIR/lib \
 		--target=${TARGETARCH} --disable-werror --disable-shared \
 		--enable-lto --enable-plugins --enable-gold --enable-ld=default \

@@ -23,6 +23,7 @@
 #include <device/resource.h>
 #include <string.h>
 #include <soc/iomap.h>
+#include <soc/intel/common/mrc_cache.h>
 #include <soc/pci_devs.h>
 #include <soc/northbridge.h>
 #include <soc/romstage.h>
@@ -78,10 +79,10 @@ static void disable_watchdog(void)
 
 asmlinkage void car_stage_entry(void)
 {
-	void *hob_list_ptr;
-	struct range_entry fsp_mem;
-	struct range_entry reg_car;
+	void *hob_list_ptr, *mrc_data;
+	struct range_entry fsp_mem, reg_car;
 	struct postcar_frame pcf;
+	size_t  mrc_data_size;
 
 	printk(BIOS_DEBUG, "Starting romstage...\n");
 
@@ -111,6 +112,15 @@ asmlinkage void car_stage_entry(void)
 	/* Now that CBMEM is up, save the list so ramstage can use it */
 	fsp_save_hob_list(hob_list_ptr);
 
+	/* Save MRC Data to CBMEM */
+	if (IS_ENABLED(CONFIG_CACHE_MRC_SETTINGS))
+	{
+		/* TODO: treat MRC data as const */
+		mrc_data = (void*) fsp_find_nv_storage_data(&mrc_data_size);
+		if (mrc_data && mrc_cache_stash_data(mrc_data, mrc_data_size) < 0)
+			printk(BIOS_ERR, "Failed to stash MRC data\n");
+	}
+
 	if (postcar_frame_init(&pcf, 1*KiB))
 		die("Unable to initialize postcar frame.\n");
 
@@ -134,6 +144,9 @@ static void fill_console_params(struct FSPM_UPD *mupd)
 
 void platform_fsp_memory_init_params_cb(struct FSPM_UPD *mupd)
 {
+	const struct mrc_saved_data *mrc_cache;
+	struct FSP_M_ARCH_UPD *arch_upd = &mupd->FspmArchUpd;
+
 	fill_console_params(mupd);
 	mainboard_memory_init_params(mupd);
 
@@ -154,6 +167,18 @@ void platform_fsp_memory_init_params_cb(struct FSPM_UPD *mupd)
 	 */
 	mupd->FspmArchUpd.StackBase = _car_region_end -
 					mupd->FspmArchUpd.StackSize;
+
+	arch_upd->Bootmode = FSP_BOOT_WITH_FULL_CONFIGURATION;
+
+	if (IS_ENABLED(CONFIG_CACHE_MRC_SETTINGS)) {
+		if (!mrc_cache_get_current_with_version(&mrc_cache, 0)) {
+			/* MRC cache found */
+			arch_upd->NvsBufferPtr = (void *)mrc_cache->data;
+			arch_upd->Bootmode = FSP_BOOT_ASSUMING_NO_CONFIGURATION_CHANGES;
+			printk(BIOS_DEBUG, "MRC cache found, size %x\n", mrc_cache->size);
+		} else
+			printk(BIOS_DEBUG, "MRC cache was not found\n");
+	}
 }
 
 __attribute__ ((weak))

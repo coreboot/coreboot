@@ -120,7 +120,7 @@ static void print_time_and_date(void)
 
 	rtc_read_clock(&tm);
 
-	mvwprintw(menuwin, 0, 57, "%02d/%02d/%04d - %02d:%02d:%02d",
+	mvwprintw(menuwin, 1, 57, "%02d/%02d/%04d - %02d:%02d:%02d",
 		  tm.tm_mon + 1, tm.tm_mday, 1900 + tm.tm_year, tm.tm_hour,
 		  tm.tm_min, tm.tm_sec);
 }

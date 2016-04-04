@@ -20,6 +20,7 @@
 #include <device/pci_ops.h>
 #include <device/pci_ehci.h>
 #include <arch/io.h>
+#include <option.h>
 #include "sb700.h"
 
 static struct pci_operations lops_pci = {
@@ -76,10 +77,16 @@ static void usb_init(struct device *dev)
 
 static void usb_init2(struct device *dev)
 {
-	u32 dword;
+	uint32_t dword;
 	void *usb2_bar0;
 	device_t sm_dev;
-	u8 rev;
+	uint8_t rev;
+	uint8_t ehci_async_data_cache;
+	uint8_t nvram;
+
+	ehci_async_data_cache = 1;
+	if (get_option(&nvram, "ehci_async_data_cache") == CB_SUCCESS)
+		ehci_async_data_cache = !!nvram;
 
 	sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
 	rev = get_sb700_revision(sm_dev);
@@ -174,6 +181,12 @@ static void usb_init2(struct device *dev)
 		dword |= 1 << 8;
 		dword &= ~(1 << 27); /* 6.23 */
 	}
+#if CONFIG_SOUTHBRIDGE_AMD_SUBTYPE_SP5100
+	/* SP5100 Erratum 36 */
+	dword &= ~(1 << 26);
+	if (!ehci_async_data_cache)
+		dword |= 1 << 26;
+#endif
 	pci_write_config32(dev, 0x50, dword);
 	printk(BIOS_DEBUG, "rpr 6.23, final dword=%x\n", dword);
 }

@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2003 Eric W. Biederman <ebiederm@xmission.com>
  * Copyright (C) 2009 Ron Minnich <rminnich@gmail.com>
+ * Copyright (C) 2016 George Trudeau <george.trudeau@usherbrooke.ca>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,9 +16,9 @@
  */
 
 #include <commonlib/compression.h>
+#include <commonlib/endian.h>
 #include <console/console.h>
 #include <cpu/cpu.h>
-#include <endian.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
@@ -209,68 +210,89 @@ static int relocate_segment(unsigned long buffer, struct segment *seg)
 	return ret;
 }
 
+/* Decode a serialized cbfs payload segment
+ * from memory into native endianness.
+ */
+static void cbfs_decode_payload_segment(struct cbfs_payload_segment *segment,
+		const struct cbfs_payload_segment *src)
+{
+	segment->type        = read_be32(&src->type);
+	segment->compression = read_be32(&src->compression);
+	segment->offset      = read_be32(&src->offset);
+	segment->load_addr   = read_be64(&src->load_addr);
+	segment->len         = read_be32(&src->len);
+	segment->mem_len     = read_be32(&src->mem_len);
+}
 
 static int build_self_segment_list(
 	struct segment *head,
 	struct cbfs_payload *cbfs_payload, uintptr_t *entry)
 {
 	struct segment *new;
-	struct segment *ptr;
-	struct cbfs_payload_segment *segment, *first_segment;
+	struct cbfs_payload_segment *current_segment, *first_segment, segment;
+
 	memset(head, 0, sizeof(*head));
 	head->next = head->prev = head;
-	first_segment = segment = &cbfs_payload->segments;
 
-	while(1) {
-		printk(BIOS_DEBUG, "Loading segment from rom address 0x%p\n", segment);
-		switch(segment->type) {
+	first_segment = &cbfs_payload->segments;
+
+	for (current_segment = first_segment;; ++current_segment) {
+		printk(BIOS_DEBUG,
+			"Loading segment from rom address 0x%p\n",
+			current_segment);
+
+		cbfs_decode_payload_segment(&segment, current_segment);
+
+		switch (segment.type) {
 		case PAYLOAD_SEGMENT_PARAMS:
 			printk(BIOS_DEBUG, "  parameter section (skipped)\n");
-			segment++;
 			continue;
 
 		case PAYLOAD_SEGMENT_CODE:
 		case PAYLOAD_SEGMENT_DATA:
 			printk(BIOS_DEBUG, "  %s (compression=%x)\n",
-					segment->type == PAYLOAD_SEGMENT_CODE ?  "code" : "data",
-					ntohl(segment->compression));
-			new = malloc(sizeof(*new));
-			new->s_dstaddr = ntohll(segment->load_addr);
-			new->s_memsz = ntohl(segment->mem_len);
-			new->compression = ntohl(segment->compression);
+				segment.type == PAYLOAD_SEGMENT_CODE
+				?  "code" : "data", segment.compression);
 
+			new = malloc(sizeof(*new));
+			new->s_dstaddr = segment.load_addr;
+			new->s_memsz = segment.mem_len;
+			new->compression = segment.compression;
 			new->s_srcaddr = (uintptr_t)
 				((unsigned char *)first_segment)
-				+ ntohl(segment->offset);
-			new->s_filesz = ntohl(segment->len);
+				+ segment.offset;
+			new->s_filesz = segment.len;
+
 			printk(BIOS_DEBUG, "  New segment dstaddr 0x%lx memsize 0x%lx srcaddr 0x%lx filesize 0x%lx\n",
 				new->s_dstaddr, new->s_memsz, new->s_srcaddr, new->s_filesz);
+
 			/* Clean up the values */
 			if (new->s_filesz > new->s_memsz)  {
 				new->s_filesz = new->s_memsz;
 				printk(BIOS_DEBUG,
-				       "  cleaned up filesize 0x%lx\n",
-				       new->s_filesz);
+					"  cleaned up filesize 0x%lx\n",
+					new->s_filesz);
 			}
 			break;
 
 		case PAYLOAD_SEGMENT_BSS:
 			printk(BIOS_DEBUG, "  BSS 0x%p (%d byte)\n", (void *)
-					(intptr_t)ntohll(segment->load_addr),
-				 	ntohl(segment->mem_len));
+				(intptr_t)segment.load_addr, segment.mem_len);
+
 			new = malloc(sizeof(*new));
 			new->s_filesz = 0;
 			new->s_srcaddr = (uintptr_t)
 				((unsigned char *)first_segment)
-				+ ntohl(segment->offset);
-			new->s_dstaddr = ntohll(segment->load_addr);
-			new->s_memsz = ntohl(segment->mem_len);
+				+ segment.offset;
+			new->s_dstaddr = segment.load_addr;
+			new->s_memsz = segment.mem_len;
 			break;
 
 		case PAYLOAD_SEGMENT_ENTRY:
-			printk(BIOS_DEBUG, "  Entry Point 0x%p\n",
-			       (void *)(intptr_t)ntohll(segment->load_addr));
-			*entry =  ntohll(segment->load_addr);
+			printk(BIOS_DEBUG, "  Entry Point 0x%p\n", (void *)
+				(intptr_t)segment.load_addr);
+
+			*entry =  segment.load_addr;
 			/* Per definition, a payload always has the entry point
 			 * as last segment. Thus, we use the occurrence of the
 			 * entry point as break condition for the loop.
@@ -282,24 +304,17 @@ static int build_self_segment_list(
 			/* We found something that we don't know about. Throw
 			 * hands into the sky and run away!
 			 */
-			printk(BIOS_EMERG, "Bad segment type %x\n", segment->type);
+			printk(BIOS_EMERG, "Bad segment type %x\n",
+				segment.type);
 			return -1;
 		}
 
 		/* We have found another CODE, DATA or BSS segment */
-		segment++;
-
-		/* Find place where to insert our segment */
-		for(ptr = head->next; ptr != head; ptr = ptr->next) {
-			if (new->s_srcaddr < ntohll(segment->load_addr))
-				break;
-		}
-
-		/* Order by stream offset */
-		new->next = ptr;
-		new->prev = ptr->prev;
-		ptr->prev->next = new;
-		ptr->prev = new;
+		/* Insert new segment at the end of the list */
+		new->next = head;
+		new->prev = head->prev;
+		head->prev->next = new;
+		head->prev = new;
 	}
 
 	return 1;

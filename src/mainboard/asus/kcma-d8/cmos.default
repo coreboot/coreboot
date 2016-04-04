@@ -24,6 +24,7 @@ maximum_p_state_limit = 0xf
 probe_filter = Auto
 l3_cache_partitioning = Disable
 gart = Enable
+ehci_async_data_cache = Enable
 experimental_memory_speed_boost = Disable
 power_on_after_fail = On
 boot_option = Fallback

@@ -12,6 +12,7 @@
 #ifndef TPM_LITE_TLCL_H_
 #define TPM_LITE_TLCL_H_
 #include <stdint.h>
+#include <types.h>
 
 #include "tss_constants.h"
 
@@ -56,11 +57,33 @@ uint32_t tlcl_self_test_full(void);
  */
 uint32_t tlcl_continue_self_test(void);
 
+#if IS_ENABLED(CONFIG_TPM)
 /**
  * Define a space with permission [perm].  [index] is the index for the space,
  * [size] the usable data size.  The TPM error code is returned.
  */
 uint32_t tlcl_define_space(uint32_t index, uint32_t perm, uint32_t size);
+
+#elif IS_ENABLED(CONFIG_TPM2)
+
+/*
+ * This enum allows to communicate firmware privilege levels to the TPM layer,
+ * which can map them into its own attributes.
+ */
+enum privilege_level {
+	high_privilege = 1,
+	low_privilege
+};
+
+/*
+ * Define a TPM space. Privilege level describes who can modify the space
+ * (high_privilege - the RO code only, low_privilege - ether RO or RW. The
+ * privilege level needs to be dropped below low_privilege before starting the
+ * kernel.
+ */
+uint32_t tlcl_define_space(uint32_t space_index,
+			   enum privilege_level priv_level, size_t space_size);
+#endif
 
 /**
  * Write [length] bytes of [data] to space at [index].  The TPM error code is

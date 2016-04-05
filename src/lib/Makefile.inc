@@ -54,7 +54,8 @@ verstage-$(CONFIG_COMMON_CBFS_SPI_WRAPPER) += cbfs_spi.c
 ifeq ($(MOCK_TPM),1)
 libverstage-y += mocked_tlcl.c
 else
-libverstage-y += tlcl.c
+libverstage-$(CONFIG_TPM) += tlcl.c
+libverstage-$(CONFIG_TPM2) += tpm2_tlcl.c
 endif
 
 verstage-$(CONFIG_GENERIC_UDELAY) += timer.c

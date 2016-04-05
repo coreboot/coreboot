@@ -15,15 +15,23 @@
  * GNU General Public License for more details.
  */
 
+#define __SIMPLE_DEVICE__
+
 #include <arch/io.h>
 #include <console/console.h>
 #include <rules.h>
 #include <device/pci_def.h>
 #include <soc/iomap.h>
+#include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <device/device.h>
 #include <device/pci.h>
 
+static uintptr_t read_pmc_mmio_bar(void)
+{
+	uint32_t bar = pci_read_config32(PMC_DEV, PCI_BASE_ADDRESS_0);
+	return bar & ~PCI_BASE_ADDRESS_MEM_ATTR_MASK;
+}
 
 static void print_num_status_bits(int num_bits, uint32_t status,
 				  const char * const bit_names[])
@@ -261,13 +269,14 @@ void clear_pmc_status(void)
 {
 	uint32_t prsts;
 	uint32_t gen_pmcon1;
+	uintptr_t pmc_bar0 = read_pmc_mmio_bar();
 
-	prsts = read32((void *)(PMC_BAR0 + PRSTS));
-	gen_pmcon1 = read32((void *)(PMC_BAR0 + GEN_PMCON1));
+	prsts = read32((void *)(pmc_bar0 + PRSTS));
+	gen_pmcon1 = read32((void *)(pmc_bar0 + GEN_PMCON1));
 
 	/* Clear the status bits. The RPS field is cleared on a 0 write. */
-	write32((void *)(PMC_BAR0 + GEN_PMCON1), gen_pmcon1 & ~RPS);
-	write32((void *)(PMC_BAR0 + PRSTS), prsts);
+	write32((void *)(pmc_bar0 + GEN_PMCON1), gen_pmcon1 & ~RPS);
+	write32((void *)(pmc_bar0 + PRSTS), prsts);
 }
 
 
@@ -296,14 +305,16 @@ int chipset_prev_sleep_state(struct chipset_power_state *ps)
 int fill_power_state(struct chipset_power_state *ps)
 {
 	int i;
+	uintptr_t pmc_bar0 = read_pmc_mmio_bar();
+
 	ps->pm1_sts = inw(ACPI_PMIO_BASE + PM1_STS);
 	ps->pm1_en = inw(ACPI_PMIO_BASE + PM1_EN);
 	ps->pm1_cnt = inl(ACPI_PMIO_BASE + PM1_CNT);
 	ps->tco_sts = inl(ACPI_PMIO_BASE + TCO_STS);
-	ps->prsts = read32((void *)(PMC_BAR0 + PRSTS));
-	ps->gen_pmcon1 =read32((void *)(PMC_BAR0 + GEN_PMCON1));
-	ps->gen_pmcon2 = read32((void *)(PMC_BAR0 + GEN_PMCON2));
-	ps->gen_pmcon3 = read32((void *)(PMC_BAR0 + GEN_PMCON3));
+	ps->prsts = read32((void *)(pmc_bar0 + PRSTS));
+	ps->gen_pmcon1 =read32((void *)(pmc_bar0 + GEN_PMCON1));
+	ps->gen_pmcon2 = read32((void *)(pmc_bar0 + GEN_PMCON2));
+	ps->gen_pmcon3 = read32((void *)(pmc_bar0 + GEN_PMCON3));
 
 	ps->prev_sleep_state = chipset_prev_sleep_state(ps);
 

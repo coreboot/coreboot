@@ -366,7 +366,7 @@ static struct align_region_t *allocate_region(int alignment, int num_elements,
 	if (r == NULL)
 		return NULL;
 
-	memset(r, 0, sizeof(r));
+	memset(r, 0, sizeof(*r));
 
 	if (num_elements != 0) {
 		r->alignment = alignment;

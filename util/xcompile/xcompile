@@ -332,7 +332,7 @@ arch_config_arm64() {
 arch_config_riscv() {
 	TARCH="riscv"
 	TBFDARCHS="littleriscv"
-	TCLIST="riscv"
+	TCLIST="riscv riscv64"
 	TWIDTH="64"
 	TABI="elf"
 }

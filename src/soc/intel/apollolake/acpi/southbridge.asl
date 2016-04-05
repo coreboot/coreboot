@@ -15,6 +15,8 @@
  * GNU General Public License for more details.
  */
 
+#include <soc/gpe.h>
+
 /* LPSS device */
 #include "lpss.asl"
 
@@ -23,3 +25,5 @@
 
 /* GPIO controller */
 #include "gpio.asl"
+
+#include "xhci.asl"

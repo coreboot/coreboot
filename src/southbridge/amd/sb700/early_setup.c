@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2010 Advanced Micro Devices, Inc.
- * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
+ * Copyright (C) 2015 - 2016 Raptor Engineering, LLC
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -756,6 +756,17 @@ static void sb700_por_init(void)
 
 	/* sbPmioPorInitTable + sbK8PmioPorInitTable */
 	sb700_pmio_por_init();
+}
+
+uint16_t sb7xx_51xx_decode_last_reset(void) {
+	uint16_t reset_status = 0;
+	reset_status |= pmio_read(0x44);
+	reset_status |= (pmio_read(0x45) << 8);
+	printk(BIOS_INFO, "sb700 reset flags: %04x\n", reset_status);
+	if (reset_status & (0x1 << 10))
+		printk(BIOS_WARNING, "WARNING: Last reset was caused by fatal error / sync flood!\n");
+
+	return reset_status;
 }
 
 /*

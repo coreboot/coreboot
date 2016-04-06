@@ -66,6 +66,7 @@ void sb7xx_51xx_enable_wideio(u8 wio_index, u16 base);
 void sb7xx_51xx_disable_wideio(u8 wio_index);
 void sb7xx_51xx_early_setup(void);
 void sb7xx_51xx_before_pci_init(void);
+uint16_t sb7xx_51xx_decode_last_reset(void);
 #else
 #include <device/pci.h>
 /* allow override in mainboard.c */

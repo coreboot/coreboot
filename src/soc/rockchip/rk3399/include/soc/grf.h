@@ -128,7 +128,10 @@ struct rk3399_grf_regs {
 		u32 iomux_spi5;
 	};
 	u32 gpio2d_iomux;
-	u32 gpio3a_iomux;
+	union {
+		u32 gpio3a_iomux;
+		u32 iomux_spi0;
+	};
 	u32 gpio3b_iomux;
 	u32 gpio3c_iomux;
 	union {
@@ -341,11 +344,13 @@ static struct rk3399_pmusgrf_regs * const rk3399_pmusgrf = (void *)PMUSGRF_BASE;
 #define IOMUX_UART2A	RK_CLRSETBITS(3 << 2 | 3 << 0, 2 << 2 | 2 << 0)
 #define IOMUX_UART2B	RK_CLRSETBITS(3 << 2 | 3 << 0, 2 << 2 | 2 << 0)
 #define IOMUX_UART2C	RK_CLRSETBITS(3 << 8 | 3 << 6, 1 << 8 | 1 << 6)
-#define IOMUX_SPI2	RK_CLRSETBITS(0xff << 2, 1 << 8 | 1 << 6 |\
-				      1 << 4 | 1 << 2)
+#define IOMUX_SPI0	RK_CLRSETBITS(0xff << 8, \
+				      2 << 14 | 2 << 12 | 2 << 10 | 2 << 8)
 #define IOMUX_SPI1_RX	RK_CLRSETBITS(3 << 14, 2 << 14)
 #define IOMUX_SPI1_CSCLKTX	RK_CLRSETBITS(0x3f << 0, 2 << 4 |\
 					      2 << 2 | 2 << 0)
+#define IOMUX_SPI2	RK_CLRSETBITS(0xff << 2, 1 << 8 | 1 << 6 |\
+				      1 << 4 | 1 << 2)
 #define IOMUX_SPI5     RK_CLRSETBITS(0xff << 8, \
 				     2 << 14 | 2 << 12 | 2 << 10 | 2 << 8)
 #define IOMUX_SDMMC	RK_CLRSETBITS(0xfff, 1 << 10 | 1 << 8 | 1 << 6 |\

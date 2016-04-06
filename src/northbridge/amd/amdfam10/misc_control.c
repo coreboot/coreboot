@@ -178,7 +178,7 @@ static void misc_control_init(struct device *dev)
 		if (dimm_present) {
 			uint32_t mc4_status_high = pci_read_config32(dev, 0x4c);
 			uint32_t mc4_status_low = pci_read_config32(dev, 0x48);
-			if (mc4_status_high != 0) {
+			if ((mc4_status_high & (0x1 << 31)) && (mc4_status_high != 0xffffffff)) {
 				printk(BIOS_WARNING, "\nWARNING: MC4 Machine Check Exception detected on node %d!\n"
 					"Signature: %08x%08x\n", node, mc4_status_high, mc4_status_low);
 			}

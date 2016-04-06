@@ -76,7 +76,6 @@ static uint32_t mtrr_index_to_host_bridge_register_offset(unsigned long index)
 uint32_t port_reg_read(uint8_t port, uint32_t offset)
 {
 	/* Read the port register */
-	offset = QNC_MSG_FSBIC_REG_HMISC;
 	mea_write(offset);
 	mcr_write(QUARK_OPCODE_READ, port, offset);
 	return mdr_read();

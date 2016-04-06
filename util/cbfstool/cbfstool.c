@@ -845,59 +845,6 @@ static int cbfs_print(void)
 		return cbfs_print_directory(&image);
 }
 
-/* Forward declared so there aren't type collisions with cbfstool proper
- * and commonlib. */
-int cbfs_calculate_hash(void *cbfs, size_t cbfs_sz,
-			enum vb2_hash_algorithm hash_algo,
-			void *digest, size_t digest_sz);
-
-static int cbfs_hash(void)
-{
-	struct cbfs_image src_image;
-	struct buffer src_buf;
-	struct buffer *dst = param.image_region;
-
-	if (param.hash == VB2_HASH_INVALID) {
-		ERROR("You need to specify -A/--hash-algorithm.\n");
-		return 1;
-	}
-
-	if (!param.source_region) {
-		ERROR("You need to specify -R/--source-region.\n");
-		return 1;
-	}
-
-	unsigned hash_size = widths_cbfs_hash[param.hash];
-	if (hash_size == 0)
-		return 1;
-
-	if (buffer_size(param.image_region) != hash_size) {
-		ERROR("Region '%s' size (%zd) not equal to hash size (%d).\n",
-			param.region_name, buffer_size(param.image_region),
-			hash_size);
-		return 1;
-	}
-
-	/* Obtain the source region and convert it to a cbfs_image. */
-	if (!partitioned_file_read_region(&src_buf, param.image_file,
-						param.source_region)) {
-		ERROR("Region not found in image: %s\n", param.source_region);
-		return 1;
-	}
-
-	if (cbfs_image_from_buffer(&src_image, &src_buf, param.headeroffset))
-		return 1;
-
-	if (cbfs_calculate_hash(buffer_get(&src_image.buffer),
-				buffer_size(&src_image.buffer),
-				param.hash, buffer_get(dst), hash_size)) {
-		ERROR("Hash calculation failed.\n");
-		return 1;
-	}
-
-	return 0;
-}
-
 static int cbfs_extract(void)
 {
 	if (!param.filename) {
@@ -1077,7 +1024,6 @@ static const struct command commands[] = {
 	{"compact", "r:h?", cbfs_compact, true, true},
 	{"copy", "r:R:h?", cbfs_copy, true, true},
 	{"create", "M:r:s:B:b:H:o:m:vh?", cbfs_create, true, true},
-	{"hashcbfs", "r:R:A:vh?", cbfs_hash, true, true},
 	{"extract", "H:r:m:n:f:vh?", cbfs_extract, true, false},
 	{"layout", "wvh?", cbfs_layout, false, false},
 	{"print", "H:r:vkh?", cbfs_print, true, false},
@@ -1227,8 +1173,6 @@ static void usage(char *name)
 			"Show the contents of the ROM\n"
 	     " extract [-r image,regions] [-m ARCH] -n NAME -f FILE        "
 			"Extracts a raw payload from ROM\n"
-	     " hashcbfs -r image_region -R source-region                   "
-			"Hashes CBFS source-region and saves digest\n"
 	     " write -r image,regions -f file [-u | -d]                    "
 			"Write file into same-size [or larger] raw region\n"
 	     " read [-r fmap-region] -f file                               "

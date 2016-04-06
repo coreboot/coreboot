@@ -2,7 +2,6 @@ cbfsobj :=
 cbfsobj += cbfstool.o
 cbfsobj += common.o
 cbfsobj += compress.o
-cbfsobj += cbfs_hash.o
 cbfsobj += cbfs_image.o
 cbfsobj += cbfs-mkstage.o
 cbfsobj += cbfs-mkpayload.o

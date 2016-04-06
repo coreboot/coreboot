@@ -23,6 +23,7 @@
 #define MCH_BASE_SIZE			(32 * KiB)
 
 #define ACPI_PMIO_BASE			0x400
+#define ACPI_PMIO_SIZE			0x100
 #define  R_ACPI_PM1_TMR			0x8
 
 /* Accesses to these BARs are hardcoded in FSP */

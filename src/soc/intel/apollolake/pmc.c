@@ -1,7 +1,8 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2015-2016 Intel Corp.
+ * Copyright (C) 2016 Intel Corp.
+ * (Written by Alexandru Gagniuc <alexandrux.gagniuc@intel.com> for Intel Corp.)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,39 +15,33 @@
  * GNU General Public License for more details.
  */
 
-#include <console/console.h>
-#include <cpu/cpu.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <soc/iomap.h>
 #include <soc/pci_ids.h>
 
-static void pmc_init(device_t dev)
-{
-	printk(BIOS_SPEW, "%s/%s ( %s )\n",
-		__FILE__, __func__, dev_name(dev));
-}
-
-static void pmc_read_resources(device_t dev)
+/*
+ * The ACPI IO BAR (offset 0x20) is not PCI compliant. We've observed cases
+ * where the BAR reads back as 0, but the IO window is open. This also means
+ * that it will not respond to PCI probing. In the event that probing the BAR
+ * fails, we still need to create a resource for it.
+ */
+static void read_resources(device_t dev)
 {
 	struct resource *res;
-
-	mmio_resource(dev, PCI_BASE_ADDRESS_0, PMC_BAR0/KiB, 1);
-	mmio_resource(dev, PCI_BASE_ADDRESS_2, PMC_BAR1/KiB, 2);
+	pci_dev_read_resources(dev);
 
 	res = new_resource(dev, PCI_BASE_ADDRESS_4);
 	res->base = ACPI_PMIO_BASE;
-	res->size = KiB;
+	res->size = ACPI_PMIO_SIZE;
 	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 }
 
 static const struct device_operations device_ops = {
-	.read_resources		= pmc_read_resources,
-	.set_resources		= DEVICE_NOOP,
-	.enable_resources	= DEVICE_NOOP,
-	.init			= pmc_init,
-	.enable			= DEVICE_NOOP,
+	.read_resources		= read_resources,
+	.set_resources		= pci_dev_set_resources,
+	.enable_resources	= pci_dev_enable_resources,
 };
 
 static const struct pci_driver pmc __pci_driver = {

@@ -543,12 +543,12 @@ static void sb700_devices_por_init(void)
 
 			/* set Device ID consistent with IDE emulation mode configuration */
 			pci_write_config32(dev, 0x0, 0x43901002);
-
-			/* rpr v2.13 4.17 Reset CPU on Sync Flood */
-			abcfg_reg(0x10050, 1 << 2, 1 << 2);
 		}
 #endif
 	}
+
+	/* rpr v2.13 4.17 Reset CPU on Sync Flood */
+	abcfg_reg(0x10050, 1 << 2, 1 << 2);
 
 	/* SATA Device, BDF:0-17-0, Non-Raid-5 SATA controller */
 	printk(BIOS_INFO, "sb700_devices_por_init(): SATA Device, BDF:0-17-0\n");

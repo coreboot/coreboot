@@ -2944,6 +2944,29 @@ fatalexit:
 	die("mct_d: fatalexit");
 }
 
+void initialize_mca(uint8_t bsp, uint8_t suppress_errors) {
+	uint8_t node;
+	uint32_t mc4_status_high;
+	uint32_t mc4_status_low;
+
+	for (node = 0; node < MAX_NODES_SUPPORTED; node++) {
+		if (bsp && (node > 0))
+			break;
+
+		mc4_status_high = pci_read_config32(PCI_DEV(0, 0x18 + node, 3), 0x4c);
+		mc4_status_low = pci_read_config32(PCI_DEV(0, 0x18 + node, 3), 0x48);
+		if ((mc4_status_high & (0x1 << 31)) && (mc4_status_high != 0xffffffff)) {
+			if (!suppress_errors)
+				printk(BIOS_WARNING, "WARNING: MC4 Machine Check Exception detected on node %d!\n"
+					"Signature: %08x%08x\n", node, mc4_status_high, mc4_status_low);
+
+			/* Clear MC4 error status */
+			pci_write_config32(PCI_DEV(0, 0x18 + node, 3), 0x48, 0x0);
+			pci_write_config32(PCI_DEV(0, 0x18 + node, 3), 0x4c, 0x0);
+		}
+	}
+}
+
 static u8 ReconfigureDIMMspare_D(struct MCTStatStruc *pMCTstat,
 					struct DCTStatStruc *pDCTstatA)
 {

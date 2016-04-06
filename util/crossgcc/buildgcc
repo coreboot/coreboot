@@ -20,6 +20,7 @@ cd $(dirname $0)
 
 CROSSGCC_DATE="April 3rd, 2016"
 CROSSGCC_VERSION="1.38"
+CROSSGCC_COMMIT=$( git describe )
 
 # default settings
 PACKAGE=GCC
@@ -780,6 +781,7 @@ fi
 # Prepare target directory for building GCC
 # (dependencies must be in the PATH)
 mkdir -p $DESTDIR$TARGETDIR/bin
+mkdir -p $DESTDIR$TARGETDIR/share
 export PATH=$DESTDIR$TARGETDIR/bin:$PATH
 
 # Download, unpack, patch and build all packages
@@ -806,8 +808,8 @@ printf "Packages built ... ${green}ok${NC}\n"
 # Adding git information of current tree to target directory
 # for reproducibility
 PROGNAME=$(basename "$0")
-rm -f "$DESTDIR$TARGETDIR/$PROGNAME".commit.*
-cp "$PROGNAME" $DESTDIR$TARGETDIR/"$PROGNAME.commit.$(git describe)"
+rm -f "$DESTDIR$TARGETDIR/share/$PROGNAME-*"
+cp "$PROGNAME" "$DESTDIR$TARGETDIR/share/$PROGNAME-$CROSSGCC_VERSION-$CROSGCC_COMMIT"
 
 if [ $SAVETEMPS -eq 0 ]; then
 	cleanup

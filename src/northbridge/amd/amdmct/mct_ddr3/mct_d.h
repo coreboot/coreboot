@@ -300,6 +300,7 @@ struct MCTStatStruc {
 	u32 SysLimit;		/* LIMIT[39:8] (system address)*/
 	uint32_t TSCFreq;
 	uint16_t nvram_checksum;
+	uint8_t try_ecc;
 } __attribute__((packed));
 
 /*=============================================================================

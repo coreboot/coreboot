@@ -336,9 +336,8 @@ uint8_t is_ecc_enabled(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTs
 {
 	uint8_t ecc_enabled = 1;
 
-	if (!mctGet_NVbits(NV_ECC_CAP) || !mctGet_NVbits(NV_ECC)) {
-		return 0;
-	}
+	if (!pMCTstat->try_ecc)
+		ecc_enabled = 0;
 
 	if (pDCTstat->NodePresent && pDCTstat->DIMMValid) {
 		if (!(pDCTstat->Status & (1 << SB_ECCDIMMs))) {
@@ -2659,6 +2658,12 @@ static void mctAutoInitMCT_D(struct MCTStatStruc *pMCTstat,
 	uint8_t s3resume = acpi_is_wakeup_s3();
 
 restartinit:
+
+	if (!mctGet_NVbits(NV_ECC_CAP) || !mctGet_NVbits(NV_ECC))
+		pMCTstat->try_ecc = 0;
+	else
+		pMCTstat->try_ecc = 1;
+
 	mctInitMemGPIOs_A_D();		/* Set any required GPIOs*/
 	if (s3resume) {
 		printk(BIOS_DEBUG, "mctAutoInitMCT_D: mct_ForceNBPState0_En_Fam15\n");

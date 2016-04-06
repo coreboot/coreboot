@@ -332,6 +332,11 @@ build() {
 
 cleanup()
 {
+	if [ $SAVETEMPS -ne 0 ]; then
+		printf "Leaving temporary files around... ${green}ok${NC}\n"
+		return
+	fi
+
 	printf "Cleaning up temporary files... "
 	for package in $PACKAGES; do
 		rm -rf build-${TARGETARCH}-$package build-$package $(eval echo \$$package"_DIR")
@@ -811,10 +816,6 @@ PROGNAME=$(basename "$0")
 rm -f "$DESTDIR$TARGETDIR/share/$PROGNAME-*"
 cp "$PROGNAME" "$DESTDIR$TARGETDIR/share/$PROGNAME-$CROSSGCC_VERSION-$CROSGCC_COMMIT"
 
-if [ $SAVETEMPS -eq 0 ]; then
-	cleanup
-else
-	printf "Leaving temporary files around... ${green}ok${NC}\n"
-fi
+cleanup
 
 printf "\n${green}You can now run your $NAME toolchain from $TARGETDIR.${NC}\n"

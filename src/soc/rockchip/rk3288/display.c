@@ -95,7 +95,7 @@ void rk_display_init(device_t dev, u32 lcdbase,
 	}
 
 	edid_set_framebuffer_bits_per_pixel(&edid,
-					    conf->framebuffer_bits_per_pixel);
+		conf->framebuffer_bits_per_pixel, 0);
 	rkvop_mode_set(conf->vop_id, &edid, detected_mode);
 
 	rkvop_enable(conf->vop_id, lcdbase, &edid);

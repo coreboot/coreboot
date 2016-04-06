@@ -230,7 +230,7 @@ void pass_mode_info_to_payload(
 	edid.mode.va = config->display_yres;
 	edid.mode.ha = config->display_xres;
 	edid_set_framebuffer_bits_per_pixel(&edid,
-					    config->framebuffer_bits_per_pixel);
+		config->framebuffer_bits_per_pixel, 0);
 
 	printk(BIOS_INFO, "%s: bytes_per_line: %d, bits_per_pixel: %d\n "
 			"               x_res x y_res: %d x %d, size: %d\n",

@@ -332,7 +332,7 @@ static void cirrus_init(struct device *dev)
 	edid.mode.va = height;
 	edid.panel_bits_per_color = 8;
 	edid.panel_bits_per_pixel = 24;
-	edid_set_framebuffer_bits_per_pixel(&edid, 32);
+	edid_set_framebuffer_bits_per_pixel(&edid, 32, 0);
 	set_vbe_mode_info_valid(&edid, addr);
 #else
 	vga_misc_write(0x1);

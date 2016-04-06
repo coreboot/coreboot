@@ -93,7 +93,8 @@ struct edid {
 
 /* Defined in src/lib/edid.c */
 int decode_edid(unsigned char *edid, int size, struct edid *out);
-void edid_set_framebuffer_bits_per_pixel(struct edid *edid, int fb_bpp);
+void edid_set_framebuffer_bits_per_pixel(struct edid *edid, int fb_bpp,
+					 int row_byte_alignment);
 void set_vbe_mode_info_valid(struct edid *edid, uintptr_t fb_addr);
 int set_display_mode(struct edid *edid, enum edid_modes mode);
 

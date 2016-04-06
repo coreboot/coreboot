@@ -481,9 +481,14 @@ detailed_block(struct edid *result_edid, unsigned char *x, int in_extension,
 	out->mode.vborder = x[16];
 
 	/* We assume rgb888 (32 bits per pixel) framebuffers by default.
-	 * Chipsets that want something else will need to override this
-	 * with another call to edid_set_framebuffer_bits_per_pixel(). */
-	edid_set_framebuffer_bits_per_pixel(out, 32);
+	 * Chipsets that want something else will need to override this with
+	 * another call to edid_set_framebuffer_bits_per_pixel(). As a cheap
+	 * heuristic, assume that X86 systems require a 64-byte row alignment
+	 * (since that seems to be true for most Intel chipsets). */
+	if (IS_ENABLED(CONFIG_ARCH_X86))
+		edid_set_framebuffer_bits_per_pixel(out, 32, 64);
+	else
+		edid_set_framebuffer_bits_per_pixel(out, 32, 0);
 
 	switch ((x[17] & 0x18) >> 3) {
 	case 0x00:
@@ -1524,14 +1529,16 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
  */
 
 /* Set the framebuffer bits-per-pixel, recalculating all dependent values. */
-void edid_set_framebuffer_bits_per_pixel(struct edid *edid, int fb_bpp)
+void edid_set_framebuffer_bits_per_pixel(struct edid *edid, int fb_bpp,
+					 int row_byte_alignment)
 {
 	/* Caller should pass a supported value, everything else is BUG(). */
 	assert(fb_bpp == 32 || fb_bpp == 24 || fb_bpp == 16);
+	row_byte_alignment = max(row_byte_alignment, 1);
 
 	edid->framebuffer_bits_per_pixel = fb_bpp;
 	edid->bytes_per_line = ALIGN_UP(edid->mode.ha *
-					div_round_up(fb_bpp, 8), 64);
+		div_round_up(fb_bpp, 8), row_byte_alignment);
 	edid->x_resolution = edid->bytes_per_line / (fb_bpp / 8);
 	edid->y_resolution = edid->mode.va;
 }

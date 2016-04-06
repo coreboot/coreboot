@@ -324,6 +324,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	uint32_t bsp_apicid = 0, val;
 	uint8_t byte;
+	uint8_t power_on_reset = 0;
 	msr_t msr;
 
 	int s3resume = acpi_is_wakeup_s3();
@@ -388,6 +389,10 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	/* Setup sysinfo defaults */
 	set_sysinfo_in_ram(0);
 
+	if (!sb7xx_51xx_decode_last_reset())
+		power_on_reset = 1;
+
+	initialize_mca(1, power_on_reset);
 	update_microcode(val);
 
 	post_code(0x33);
@@ -404,6 +409,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	/* Setup any mainboard PCI settings etc. */
 	setup_mb_resource_map();
+	initialize_mca(0, power_on_reset);
 	post_code(0x36);
 
 	/* Wait for all the APs core0 started by finalize_node_setup. */

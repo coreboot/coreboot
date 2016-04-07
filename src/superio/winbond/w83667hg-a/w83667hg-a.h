@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2014 Felix Held <felix-coreboot@felixheld.de>
- * Copyright (C) 2015 Raptor Engineering
+ * Copyright (C) 2015 - 2016 Raptor Engineering, LLC
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +34,8 @@
 #define W83667HG_A_VID_BUSSEL	0x0D /* VID and BUSSEL */
 #define W83667HG_A_GPIO_PP_OD	0x0F /* GPIO Push-Pull/Open drain select */
 
-/* virtual LDN for GPIO */
+/* Virtual LDN for GPIO and SPI */
+#define W83667HG_A_SPI1			((1 << 8) | W83667HG_A_SPI)
 #define W83667HG_A_GPIO1		((1 << 8) | W83667HG_A_WDT1)
 #define W83667HG_A_GPIO2		((0 << 8) | W83667HG_A_GPIO2345_V)
 #define W83667HG_A_GPIO3		((1 << 8) | W83667HG_A_GPIO2345_V)

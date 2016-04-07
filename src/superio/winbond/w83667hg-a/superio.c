@@ -99,7 +99,7 @@ static struct pnp_info pnp_dev_info[] = {
 	{ &ops, W83667HG_A_SP1, PNP_IO0 | PNP_IRQ0, {0x0ff8, 0}, },
 	{ &ops, W83667HG_A_SP2, PNP_IO0 | PNP_IRQ0, {0x0ff8, 0}, },
 	{ &ops, W83667HG_A_KBC, PNP_IO0 | PNP_IO1 | PNP_IRQ0 | PNP_IRQ1, {0x0fff, 0}, {0x0fff, 4}, },
-	{ &ops, W83667HG_A_SPI, PNP_IO1, {0x0ff8, 0}},
+	{ &ops, W83667HG_A_SPI1, PNP_IO1, {}, {0x0ff8, 0}},
 	{ &ops, W83667HG_A_WDT1},
 	{ &ops, W83667HG_A_ACPI},
 	{ &ops, W83667HG_A_HWM_TSI, PNP_IO0 | PNP_IRQ0, {0x0ffe, 0}, },

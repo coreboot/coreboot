@@ -455,7 +455,7 @@ build_BINUTILS() {
 
 build_GCC() {
 	# Work around crazy code generator in GCC that confuses CLANG.
-	$CC --version | grep clang &>/dev/null &&
+	$CC --version | grep clang >/dev/null 2>&1 && \
 		HOSTCFLAGS="$HOSTCFLAGS -fbracket-depth=1024"
 
 	# GCC does not honor HOSTCFLAGS at all. CFLAGS are used for

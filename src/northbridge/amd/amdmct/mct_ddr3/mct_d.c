@@ -5152,7 +5152,9 @@ static u8 AutoConfig_D(struct MCTStatStruc *pMCTstat,
 
 	if (Status & (1 << SB_Registered)) {
 		/* Registered DIMMs */
-		DramConfigLo |= 1 << ParEn;
+		if (!is_fam15h()) {
+			DramConfigLo |= 1 << ParEn;
+		}
 	} else {
 		/* Unbuffered DIMMs */
 		DramConfigLo |= 1 << UnBuffDimm;

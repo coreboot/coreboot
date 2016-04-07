@@ -191,7 +191,7 @@ searchtool()
 # Run a compile check of the specified library option to see if it's installed
 check_for_library() {
 	local LIBRARY_FLAGS=$1
-	local LIBRARY_PACKAGES=$2
+	local LIBRARY_PACKAGES="$2"
 	local LIBTEST_FILE=.libtest
 
 	echo "int main(int argc, char **argv) { (void) argc; (void) argv; return 0; }" > "${LIBTEST_FILE}.c"

@@ -93,9 +93,9 @@ Method (_CRS, 0, Serialized)
 	CreateDwordField (MCRS, ^PM01._LEN, PLEN)
 
 	/* Read C-Unit PCI CFG Reg. 0xBC for TOLUD (shadow from B-Unit) */
-	And(^MCHC.TLUD, 0xFFF00000, PMIN)
+	And(^TLUD, 0xFFF00000, PMIN)
 	/* Read MMCONF base */
-	And(^MCHC.MCNF, 0xF0000000, PMAX)
+	And(^MCNF, 0xF0000000, PMAX)
 
 	/* Calculate PCI MMIO Length */
 	Add(Subtract(PMAX, PMIN), 1, PLEN)
@@ -106,10 +106,10 @@ Method (_CRS, 0, Serialized)
 	CreateDwordField(MCRS, ^STOM._LEN, GLEN)
 
 	/* Read BGSM */
-	And(^MCHC.BGSM, 0xFFF00000, GMIN)
+	And(^BGSM, 0xFFF00000, GMIN)
 
 	/* Read TOLUD */
-	And(^MCHC.TLUD, 0xFFF00000, GMAX)
+	And(^TLUD, 0xFFF00000, GMAX)
 	Decrement(GMAX)
 	Add(Subtract(GMAX, GMIN), 1, GLEN)
 
@@ -118,9 +118,9 @@ Method (_CRS, 0, Serialized)
 	CreateQwordField (MCRS, ^PM02._MAX, MMAX)
 	CreateQwordField (MCRS, ^PM02._LEN, MLEN)
 
-	Store (^MCHC.TUUD, Local0)
-
-	If (LLessEqual (Local0, 0x1000000000)) {
+	Store (^TUUD, Local0)
+	If (LLessEqual (Local0, 0x1000000000))
+        {
 		Store (0, MMIN)
 		Store (0, MLEN)
 	}

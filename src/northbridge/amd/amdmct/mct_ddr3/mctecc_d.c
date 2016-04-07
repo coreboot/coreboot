@@ -264,6 +264,15 @@ u8 ECCInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)
 				/* Clear MC4 error status */
 				pci_write_config32(pDCTstat->dev_nbmisc, 0x48, 0x0);
 				pci_write_config32(pDCTstat->dev_nbmisc, 0x4c, 0x0);
+
+				/* Restore MCA settings */
+				if (pDCTstat->mca_config_backed_up) {
+					val = pci_read_config32(pDCTstat->dev_nbmisc, 0x44);
+					val |= (pDCTstat->sync_flood_on_dram_err & 0x1) << 30;
+					val |= (pDCTstat->sync_flood_on_any_uc_err & 0x1) << 21;
+					val |= (pDCTstat->sync_flood_on_uc_dram_ecc_err & 0x1) << 2;
+					pci_write_config32(pDCTstat->dev_nbmisc, 0x44, val);
+				}
 			}
 		}
 	}

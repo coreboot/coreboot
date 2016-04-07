@@ -186,14 +186,6 @@ static void misc_control_init(struct device *dev)
 			/* Clear MC4 error status */
 			pci_write_config32(dev, 0x48, 0x0);
 			pci_write_config32(dev, 0x4c, 0x0);
-
-			if (mem_info->dct_stat[node].mca_config_backed_up) {
-				dword = pci_read_config32(dev, 0x44);
-				dword |= (mem_info->dct_stat[node].sync_flood_on_dram_err & 0x1) << 30;
-				dword |= (mem_info->dct_stat[node].sync_flood_on_any_uc_err & 0x1) << 21;
-				dword |= (mem_info->dct_stat[node].sync_flood_on_uc_dram_ecc_err & 0x1) << 2;
-				pci_write_config32(dev, 0x44, dword);
-			}
 		}
 	}
 #endif

@@ -133,6 +133,20 @@ enum {
 	ACLK_PERIHP_DIV_CON_MASK	= 0x1f,
 	ACLK_PERIHP_DIV_CON_SHIFT	= 0,
 
+	/* CLKSEL_CON21 */
+	ACLK_EMMC_PLL_SEL_MASK          = 0x1,
+	ACLK_EMMC_PLL_SEL_SHIFT         = 7,
+	ACLK_EMMC_PLL_SEL_GPLL          = 0x1,
+	ACLK_EMMC_DIV_CON_MASK          = 0x1f,
+	ACLK_EMMC_DIV_CON_SHIFT         = 0,
+
+	/* CLKSEL_CON22 */
+	CLK_EMMC_PLL_MASK               = 0x7,
+	CLK_EMMC_PLL_SHIFT              = 8,
+	CLK_EMMC_PLL_SEL_GPLL           = 0x1,
+	CLK_EMMC_DIV_CON_MASK           = 0x7f,
+	CLK_EMMC_DIV_CON_SHIFT          = 0,
+
 	/* CLKSEL_CON23 */
 	PCLK_PERILP0_DIV_CON_MASK	= 0x7,
 	PCLK_PERILP0_DIV_CON_SHIFT	= 12,
@@ -735,4 +749,33 @@ void rkclk_configure_tsadc(unsigned int hz)
 			CLK_TSADC_SEL_MASK << CLK_TSADC_SEL_SHIFT,
 			src_clk_div << CLK_TSADC_DIV_CON_SHIFT |
 			CLK_TSADC_SEL_X24M << CLK_TSADC_SEL_SHIFT));
+}
+
+void rkclk_configure_emmc(void)
+{
+	int src_clk_div;
+	int aclk_emmc = 198*MHz;
+	int clk_emmc = 198*MHz;
+
+	/* Select aclk_emmc source from GPLL */
+	src_clk_div = GPLL_HZ / aclk_emmc;
+	assert((src_clk_div - 1 < 31) && (src_clk_div * aclk_emmc == GPLL_HZ));
+
+	write32(&cru_ptr->clksel_con[21],
+		RK_CLRSETBITS(ACLK_EMMC_PLL_SEL_MASK <<
+						ACLK_EMMC_PLL_SEL_SHIFT |
+			      ACLK_EMMC_DIV_CON_MASK << ACLK_EMMC_DIV_CON_SHIFT,
+			      ACLK_EMMC_PLL_SEL_GPLL <<
+						ACLK_EMMC_PLL_SEL_SHIFT |
+			      (src_clk_div - 1) << ACLK_EMMC_DIV_CON_SHIFT));
+
+	/* Select clk_emmc source from GPLL too */
+	src_clk_div = GPLL_HZ / clk_emmc;
+	assert((src_clk_div - 1 < 127) && (src_clk_div * clk_emmc == GPLL_HZ));
+
+	write32(&cru_ptr->clksel_con[22],
+		RK_CLRSETBITS(CLK_EMMC_PLL_MASK << CLK_EMMC_PLL_SHIFT |
+			      CLK_EMMC_DIV_CON_MASK << CLK_EMMC_DIV_CON_SHIFT,
+			      CLK_EMMC_PLL_SEL_GPLL << CLK_EMMC_PLL_SHIFT |
+			      (src_clk_div - 1) << CLK_EMMC_DIV_CON_SHIFT));
 }

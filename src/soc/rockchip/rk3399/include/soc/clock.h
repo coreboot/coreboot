@@ -106,6 +106,7 @@ void rkclk_init(void);
 int rkclk_configure_vop_dclk(u32 vop_id, u32 dclk_hz);
 void rkclk_configure_cpu(enum apll_l_frequencies apll_l_freq);
 void rkclk_configure_ddr(unsigned int hz);
+void rkclk_configure_emmc(void);
 void rkclk_configure_saradc(unsigned int hz);
 void rkclk_configure_spi(unsigned int bus, unsigned int hz);
 void rkclk_configure_tsadc(unsigned int hz);

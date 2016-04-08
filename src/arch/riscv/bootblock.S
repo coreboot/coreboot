@@ -35,7 +35,7 @@ machine_handler:
 _start:
 
 	// pending figuring out this f-ing toolchain. Hardcode what we know works.
-  la sp, 0x80FFF0 // stack start + stack size
+  li sp, 0x80FFF0 // stack start + stack size
 
   # make room for HLS and initialize it
   addi sp, sp, -64 // MENTRY_FRAME_SIZE
@@ -43,7 +43,7 @@ _start:
   call hls_init
 
   //poison the stack
-  la t1, 0x800000
+  li t1, 0x800000
   li t0, 0xdeadbeef
   sd t0, 0(t1)
 

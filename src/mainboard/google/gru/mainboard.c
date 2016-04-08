@@ -20,6 +20,20 @@
 #include <soc/clock.h>
 #include <soc/grf.h>
 
+static void configure_emmc(void)
+{
+	/* Host controller does not support programmable clock generator.
+	 * If we don't do this setting, when we use phy to control the
+	 * emmc clock(when clock exceed 50MHz), it will get wrong clock.
+	 *
+	 * Refer to TRM V0.3 Part 1 Chapter 15 PAGE 782 for this register.
+	 * Please search "_CON11[7:0]" to locate register description.
+	 */
+	write32(&rk3399_grf->emmccore_con[11], RK_CLRSETBITS(0xff, 0));
+
+	rkclk_configure_emmc();
+}
+
 static void configure_sdmmc(void)
 {
 	gpio_output(GPIO(4, D, 5), 1);  /* SDMMC_PWR_EN */
@@ -72,6 +86,7 @@ static void configure_sdmmc(void)
 static void mainboard_init(device_t dev)
 {
 	configure_sdmmc();
+	configure_emmc();
 }
 
 static void mainboard_enable(device_t dev)

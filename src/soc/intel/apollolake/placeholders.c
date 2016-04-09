@@ -6,9 +6,3 @@
 void southbridge_smi_set_eos(void)
 {
 }
-
-#if ENV_BOOTBLOCK
-void init_timer(void)
-{
-}
-#endif

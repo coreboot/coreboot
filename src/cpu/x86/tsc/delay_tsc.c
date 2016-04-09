@@ -1,3 +1,4 @@
+#include <arch/early_variables.h>
 #include <console/console.h>
 #include <arch/io.h>
 #include <cpu/x86/msr.h>
@@ -6,9 +7,7 @@
 #include <delay.h>
 #include <thread.h>
 
-#if !defined(__PRE_RAM__)
-
-static unsigned long clocks_per_usec;
+static unsigned long clocks_per_usec CAR_GLOBAL;
 
 #if CONFIG_TSC_CONSTANT_RATE
 static unsigned long calibrate_tsc(void)
@@ -94,22 +93,15 @@ bad_ctc:
 
 void init_timer(void)
 {
-	if (!clocks_per_usec)
-		clocks_per_usec = calibrate_tsc();
+	if (!car_get_var(clocks_per_usec))
+		car_set_var(clocks_per_usec, calibrate_tsc());
 }
 
 static inline unsigned long get_clocks_per_usec(void)
 {
 	init_timer();
-	return clocks_per_usec;
+	return car_get_var(clocks_per_usec);
 }
-#else /* !defined(__PRE_RAM__) */
-/* romstage calls into cpu/board specific function every time. */
-static inline unsigned long get_clocks_per_usec(void)
-{
-	return tsc_freq_mhz();
-}
-#endif /* !defined(__PRE_RAM__) */
 
 void udelay(unsigned us)
 {
@@ -130,18 +122,18 @@ void udelay(unsigned us)
 	}
 }
 
-#if CONFIG_TSC_MONOTONIC_TIMER && !defined(__PRE_RAM__)
+#if CONFIG_TSC_MONOTONIC_TIMER
 #include <timer.h>
 
 static struct monotonic_counter {
 	int initialized;
 	struct mono_time time;
 	uint64_t last_value;
-} mono_counter_g;
+} mono_counter_g CAR_GLOBAL;
 
 static inline struct monotonic_counter *get_monotonic_context(void)
 {
-	return &mono_counter_g;
+	return car_get_var_ptr(&mono_counter_g);
 }
 
 void timer_monotonic_get(struct mono_time *mt)

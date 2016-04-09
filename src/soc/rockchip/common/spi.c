@@ -183,10 +183,9 @@ static void set_transfer_mode(struct rockchip_spi *regs,
 }
 
 /* returns 0 to indicate success, <0 otherwise */
-static int do_xfer(struct spi_slave *slave, const void *dout,
-	unsigned int *bytes_out, void *din, unsigned int *bytes_in)
+static int do_xfer(struct rockchip_spi *regs, const void *dout,
+		   unsigned int *bytes_out, void *din, unsigned int *bytes_in)
 {
-	struct rockchip_spi *regs = to_rockchip_spi(slave)->regs;
 	uint8_t *in_buf = din;
 	uint8_t *out_buf = (uint8_t *)dout;
 	unsigned int min_xfer;
@@ -264,7 +263,7 @@ int spi_xfer(struct spi_slave *slave, const void *dout,
 
 		in_rem = in_now;
 		out_rem = out_now;
-		ret = do_xfer(slave, dout, &out_rem, din, &in_rem);
+		ret = do_xfer(regs, dout, &out_rem, din, &in_rem);
 		if (ret < 0)
 			break;
 

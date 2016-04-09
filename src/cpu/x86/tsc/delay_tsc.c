@@ -9,12 +9,6 @@
 
 static unsigned long clocks_per_usec CAR_GLOBAL;
 
-#if CONFIG_TSC_CONSTANT_RATE
-static unsigned long calibrate_tsc(void)
-{
-	return tsc_freq_mhz();
-}
-#else /* CONFIG_TSC_CONSTANT_RATE */
 #define CLOCK_TICK_RATE	1193180U /* Underlying HZ */
 
 /* ------ Calibrate the TSC -------
@@ -28,7 +22,7 @@ static unsigned long calibrate_tsc(void)
 #define CALIBRATE_INTERVAL ((2*CLOCK_TICK_RATE)/1000) /* 2ms */
 #define CALIBRATE_DIVISOR  (2*1000) /* 2ms / 2000 == 1usec */
 
-static unsigned long long calibrate_tsc(void)
+static unsigned long calibrate_tsc_with_pit(void)
 {
 	/* Set the Gate high, disable speaker */
 	outb((inb(0x61) & ~0x02) | 0x01, 0x61);
@@ -89,7 +83,13 @@ bad_ctc:
 	return 0;
 }
 
-#endif /* CONFIG_TSC_CONSTANT_RATE */
+static unsigned long calibrate_tsc(void)
+{
+	if (IS_ENABLED(CONFIG_TSC_CONSTANT_RATE))
+		return tsc_freq_mhz();
+	else
+		return calibrate_tsc_with_pit();
+}
 
 void init_timer(void)
 {

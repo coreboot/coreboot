@@ -49,12 +49,6 @@ config TSC_MONOTONIC_TIMER
 	  Expose monotonic time using the TSC.
 
 # This option is used in code but never selected.
-config TSC_CALIBRATE_WITH_IO
-	bool
-	depends on UDELAY_TSC
-	default n
-
-# This option is used in code but never selected.
 config UDELAY_TIMER2
 	bool
 	default n

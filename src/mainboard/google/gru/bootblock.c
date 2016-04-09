@@ -64,9 +64,13 @@ void bootblock_mainboard_init(void)
 	write32(&rk3399_pmugrf->spi1_csclktx, IOMUX_SPI1_CSCLKTX);
 	rockchip_spi_init(CONFIG_BOOT_MEDIA_SPI_BUS, 24750*KHz);
 
-	/* Set pinmux and configure EC flashrom. */
+	/* Set pinmux and configure EC SPI. */
 	write32(&rk3399_grf->iomux_spi5, IOMUX_SPI5);
 	rockchip_spi_init(CONFIG_EC_GOOGLE_CHROMEEC_SPI_BUS, 3093750);
+
+	/* Set pinmux and configure TPM SPI, which is not very fast. */
+	write32(&rk3399_grf->iomux_spi0, IOMUX_SPI0);
+	rockchip_spi_init(CONFIG_DRIVER_TPM_SPI_BUS, 1500*KHz);
 
 	setup_chromeos_gpios();
 }

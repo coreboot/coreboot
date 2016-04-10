@@ -71,9 +71,7 @@ chip northbridge/intel/sandybridge
 			register "c2_latency" = "101"  # c2 not supported
 			register "p_cnt_throttling_supported" = "1"
 
-			device pci 16.0 on
-				subsystemid 0x17aa 0x21db
-			end # Management Engine Interface 1
+			device pci 16.0 off end # Management Engine Interface 1
 			device pci 16.1 off end # Management Engine Interface 2
 			device pci 16.2 off end # Management Engine IDE-R
 			device pci 16.3 off end # Management Engine KT

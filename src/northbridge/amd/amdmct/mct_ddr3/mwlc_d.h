@@ -106,7 +106,7 @@
 typedef struct _sMCTStruct
 {
 	void (*AgesaDelay)(u32 delayval);	/* IBV defined Delay Function */
-} sMCTStruct;
+} __attribute__((packed, aligned(4))) sMCTStruct;
 
 /* DCT 0 and DCT 1 Data structure */
 typedef struct _sDCTStruct
@@ -161,6 +161,6 @@ typedef struct _sDCTStruct
 	u8 DimmRanks[MAX_TOTAL_DIMMS];	/* Total Number of Ranks(per Dimm) */
 	uint64_t LogicalCPUID;
 	u8 WLPass;
-} sDCTStruct;
+} __attribute__((packed, aligned(4))) sDCTStruct;
 
 #endif

@@ -677,6 +677,11 @@ static void sb700_pmio_por_init(void)
 	pmio_write(0xbb, byte);
 
 #if CONFIG_SOUTHBRIDGE_AMD_SUBTYPE_SP5100
+	/* RPR 2.26 Alter CPU reset timing */
+	byte = pmio_read(0xb2);
+	byte |= 0x1 << 2;	/* Enable CPU reset timing option */
+	pmio_write(0xb2, byte);
+
 	/* Work around system clock drift issues */
 	byte = pmio_read(0xd4);
 	byte |= 0x1 << 6;	/* Enable alternate 14MHz clock source */

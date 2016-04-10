@@ -607,40 +607,50 @@ static void sb700_pmio_por_init(void)
 	byte |= 0x20;
 	pmio_write(0x66, byte);
 
-	/* RPR2.31 PM_TURN_OFF_MSG during ASF Shutdown. */
-	if (get_sb700_revision(pci_locate_device(PCI_ID(0x1002, 0x4385), 0)) <= 0x12) {
+	if (IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_SUBTYPE_SP5100)) {
+		/* RPR 2.11 Sx State Settings */
 		byte = pmio_read(0x65);
-		byte &= ~(1 << 7);
+		byte &= ~(1 << 7);		/* SpecialFunc = 0 */
 		pmio_write(0x65, byte);
 
-		byte = pmio_read(0x75);
-		byte &= 0xc0;
-		byte |= 0x05;
-		pmio_write(0x75, byte);
-
-		byte = pmio_read(0x52);
-		byte &= 0xc0;
-		byte |= 0x08;
-		pmio_write(0x52, byte);
+		byte = pmio_read(0x68);
+		byte |= 1 << 2;			/* MaskApicEn = 1 */
+		pmio_write(0x68, byte);
 	} else {
-		byte = pmio_read(0xD7);
-		byte |= 1 << 0;
-		pmio_write(0xD7, byte);
+		/* RPR2.31 PM_TURN_OFF_MSG during ASF Shutdown. */
+		if (get_sb700_revision(pci_locate_device(PCI_ID(0x1002, 0x4385), 0)) <= 0x12) {
+			byte = pmio_read(0x65);
+			byte &= ~(1 << 7);
+			pmio_write(0x65, byte);
 
-		byte = pmio_read(0x65);
-		byte |= 1 << 7;
-		pmio_write(0x65, byte);
+			byte = pmio_read(0x75);
+			byte &= 0xc0;
+			byte |= 0x05;
+			pmio_write(0x75, byte);
 
-		byte = pmio_read(0x75);
-		byte &= 0xc0;
-		byte |= 0x01;
-		pmio_write(0x75, byte);
+			byte = pmio_read(0x52);
+			byte &= 0xc0;
+			byte |= 0x08;
+			pmio_write(0x52, byte);
+		} else {
+			byte = pmio_read(0xD7);
+			byte |= 1 << 0;
+			pmio_write(0xD7, byte);
 
-		byte = pmio_read(0x52);
-		byte &= 0xc0;
-		byte |= 0x02;
-		pmio_write(0x52, byte);
+			byte = pmio_read(0x65);
+			byte |= 1 << 7;
+			pmio_write(0x65, byte);
 
+			byte = pmio_read(0x75);
+			byte &= 0xc0;
+			byte |= 0x01;
+			pmio_write(0x75, byte);
+
+			byte = pmio_read(0x52);
+			byte &= 0xc0;
+			byte |= 0x02;
+			pmio_write(0x52, byte);
+		}
 	}
 
 	/* Watch Dog Timer Control

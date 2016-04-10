@@ -37,6 +37,7 @@
 #define SMBSLVCMD_SHADOW 0x9
 #define SMBSLVEVT 0xa
 #define SMBSLVDAT 0xc
+#define SMBSLVMISC 0xd
 
 #define AX_INDXC  0
 #define AX_INDXP  1

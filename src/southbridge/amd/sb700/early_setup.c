@@ -399,8 +399,15 @@ static void sb700_devices_por_init(void)
 	if (inb(SMBUS_IO_BASE) == 0xff)
 		printk(BIOS_INFO, "%s: Primary SMBUS controller I/O not found\n", __func__);
 
-	if (inb(SMBUS_AUX_IO_BASE) == 0xff)
+	if (inb(SMBUS_AUX_IO_BASE) == 0xff) {
 		printk(BIOS_INFO, "%s: Secondary SMBUS controller I/O not found\n", __func__);
+	}
+	else {
+		if (IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_SUBTYPE_SP5100)) {
+			/* Disable legacy sensor support / reset ASF Slave state machine per RPR 2.27 step 3 */
+			outb(0x40, SMBUS_AUX_IO_BASE + SMBSLVMISC);
+		}
+	}
 
 	/* KB2RstEnable */
 	pci_write_config8(dev, 0x40, 0x44);

@@ -1,5 +1,7 @@
 # SPI flash driver interface
 
+subdirs-y += tpm
+
 ifeq ($(CONFIG_SPI_CONSOLE),y)
 ramstage-y += spiconsole.c
 smm-$(CONFIG_DEBUG_SMI) += spiconsole.c

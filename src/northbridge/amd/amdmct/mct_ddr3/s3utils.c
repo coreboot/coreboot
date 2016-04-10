@@ -1132,11 +1132,6 @@ int8_t save_mct_information_to_nvram(void)
 	s3nv_offset &= ~(CONFIG_S3_DATA_SIZE-1);
 	s3nv_offset += CONFIG_S3_DATA_SIZE;
 
-	/* Set temporary SPI MMIO address */
-	device_t lpc_dev = dev_find_slot(0, PCI_DEVFN(0x14, 3));
-	uint32_t spi_mmio_prev = pci_read_config32(lpc_dev, 0xa0);
-	pci_write_config32(lpc_dev, 0xa0, (spi_mmio_prev & 0x1f) | 0xf0000000);
-
 	/* Initialize SPI and detect devices */
 	spi_init();
 	flash = spi_flash_probe(0, 0);
@@ -1159,9 +1154,6 @@ int8_t save_mct_information_to_nvram(void)
 	/* Tear down SPI flash access */
 	flash->spi->rw = SPI_WRITE_FLAG;
 	spi_release_bus(flash->spi);
-
-	/* Restore SPI MMIO address */
-	pci_write_config32(lpc_dev, 0xa0, spi_mmio_prev);
 
 	/* Allow training bypass if DIMM configuration is unchanged on next boot */
 	nvram = 1;

@@ -1975,10 +1975,6 @@ static void root_complex_enable_dev(struct device *dev)
 	/* Do not delay UMA setup, as a device on the PCI bus may evaluate
 	   the global uma_memory variables already in its enable function. */
 	if (!done) {
-#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME) && IS_ENABLED(CONFIG_DIMM_DDR3)
-		save_mct_information_to_nvram();
-#endif
-
 		setup_bsp_ramtop();
 		setup_uma_memory();
 		done = 1;
@@ -1992,7 +1988,14 @@ static void root_complex_enable_dev(struct device *dev)
 	}
 }
 
+static void root_complex_finalize(void *chip_info) {
+#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME) && IS_ENABLED(CONFIG_DIMM_DDR3)
+	save_mct_information_to_nvram();
+#endif
+}
+
 struct chip_operations northbridge_amd_amdfam10_root_complex_ops = {
 	CHIP_NAME("AMD Family 10h/15h Root Complex")
 	.enable_dev = root_complex_enable_dev,
+	.final = root_complex_finalize,
 };

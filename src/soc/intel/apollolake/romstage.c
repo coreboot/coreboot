@@ -46,13 +46,12 @@ static void soc_early_romstage_init(void)
 	/* Set MCH base address and enable bit */
 	pci_write_config32(NB_DEV_ROOT, MCHBAR, MCH_BASE_ADDR | 1);
 
-	/* Set PMC base address */
+	/* Set PMC base addresses and enable decoding. */
 	pci_write_config32(pmc, PCI_BASE_ADDRESS_0, PMC_BAR0);
 	pci_write_config32(pmc, PCI_BASE_ADDRESS_1, 0);	/* 64-bit BAR */
 	pci_write_config32(pmc, PCI_BASE_ADDRESS_2, PMC_BAR1);
 	pci_write_config32(pmc, PCI_BASE_ADDRESS_3, 0);	/* 64-bit BAR */
-
-	/* PMIO BAR4 was already set earlier, hence the COMMAND_IO below */
+	pci_write_config16(pmc, PCI_BASE_ADDRESS_4, ACPI_PMIO_BASE);
 	pci_write_config32(pmc, PCI_COMMAND,
 				PCI_COMMAND_IO | PCI_COMMAND_MEMORY |
 				PCI_COMMAND_MASTER);
@@ -64,12 +63,6 @@ static void soc_early_romstage_init(void)
 static void disable_watchdog(void)
 {
 	uint32_t reg;
-	device_t dev = PMC_DEV;
-
-	/* Open up an IO window */
-	pci_write_config16(dev, PCI_BASE_ADDRESS_4, ACPI_PMIO_BASE);
-	pci_write_config32(dev, PCI_COMMAND,
-			   PCI_COMMAND_MASTER | PCI_COMMAND_IO);
 
 	/* Stop TCO timer */
 	reg = inl(ACPI_PMIO_BASE + 0x68);
@@ -86,9 +79,9 @@ asmlinkage void car_stage_entry(void)
 
 	printk(BIOS_DEBUG, "Starting romstage...\n");
 
-	disable_watchdog();
-
 	soc_early_romstage_init();
+
+	disable_watchdog();
 
 	/* Make sure the blob does not override our data in CAR */
 	range_entry_init(&reg_car, (uintptr_t)_car_relocatable_data_end,

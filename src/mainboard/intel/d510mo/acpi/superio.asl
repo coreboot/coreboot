@@ -1,1 +1,1 @@
-/* dummy */
+/* Dummy file - No license required. */

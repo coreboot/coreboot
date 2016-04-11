@@ -40,7 +40,14 @@ EXAMPLE|\
 _shipped$|\
 /microcode-[^/]*.h$|\
 /sdram-.*\.inc$|\
-Makefile\.inc\
+Makefile\.inc|\
+\.fmd|\
+devicetree.cb|\
+\.cfg$|\
+\.spd|\
+config|\
+cmos\.layout|\
+cmos\.default\
 "
 
 #space separated list of directories to test
@@ -58,14 +65,14 @@ headerlist=$(git ls-files $HEADER_DIRS | egrep -v "($HEADER_EXCLUDED)")
 
 #update headerlist by removing files that match the license string
 check_for_license() {
-	if [ -z "$2" ]; then
+	if [ -n "$headerlist" ] && [ -z "$2" ]; then
 		headerlist="$(grep -iL "$1" $headerlist 2>/dev/null)"
-	else
-		local p1list="$(grep -il "$1" $headerlist 2>/dev/null)"
-		local p2list="$(grep -il "$2" $headerlist 2>/dev/null)"
+	elif [ -n "$headerlist" ]; then
+		p1list="$(grep -il "$1" $headerlist 2>/dev/null)"
+		p2list="$(grep -il "$2" $headerlist 2>/dev/null)"
 
 		# Make list of files that were in both previous lists
-		local pbothlist="$(echo $p1list $p2list | tr ' ' "\n" | \
+		pbothlist="$(echo $p1list $p2list | tr ' ' "\n" | \
 			sort | uniq -d)"
 
 		# Remove all files that were in both of the previous lists
@@ -80,8 +87,10 @@ check_for_license() {
 check_for_license "under the terms of the GNU General Public License" \
 		"WITHOUT ANY WARRANTY"
 check_for_license 'IS PROVIDED .*"AS IS"'
+check_for_license 'IS DISTRIBUTED .*"AS IS"'
 check_for_license "IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE"
 check_for_license '"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES'
+check_for_license 'No license required'
 
 for file in $headerlist; do
 	#verify the file exists, and has content that requires a header

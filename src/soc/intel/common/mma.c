@@ -204,6 +204,7 @@ void setup_mma(MEMORY_INIT_UPD *memory_params)
 	memory_params->MmaTestConfigPtr = (uintptr_t) mma_test_param;
 	memory_params->MmaTestConfigSize = mma_test_param_file_len;
 	memory_params->MrcFastBoot = 0x00;
+	memory_params->SaGv = 0x02;
 
 	printk(BIOS_DEBUG, "MMA Test name %s\n", test_filename);
 	printk(BIOS_DEBUG, "MMA Test Config name %s\n", test_param_filename);
@@ -218,6 +219,9 @@ void setup_mma(MEMORY_INIT_UPD *memory_params)
 			memory_params->MmaTestConfigSize);
 	printk(BIOS_DEBUG, "memory_params->MrcFastBoot = %d\n",
 			memory_params->MrcFastBoot);
+	printk(BIOS_DEBUG, "memory_params->SaGv = %d\n",
+			memory_params->SaGv);
+
 	printk(BIOS_DEBUG, "MMA setup successfully\n");
 }
 

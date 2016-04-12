@@ -35,23 +35,27 @@ struct mrc_data_region {
 /* common code */
 static int mrc_cache_get_region(struct mrc_data_region *region)
 {
-	if (IS_ENABLED(CONFIG_CHROMEOS)) {
-		struct region_device rdev;
+	bool located_by_fmap = true;
+	struct region_device rdev;
 
-		if (fmap_locate_area_as_rdev("RW_MRC_CACHE", &rdev))
-			return -1;
+	if (fmap_locate_area_as_rdev("RW_MRC_CACHE", &rdev))
+		located_by_fmap =  false;
 
+	/* CHROMEOS builds must get their MRC cache from FMAP. */
+	if (IS_ENABLED(CONFIG_CHROMEOS) && !located_by_fmap)
+		return -1;
+
+	if (located_by_fmap) {
 		region->size = region_device_sz(&rdev);
 		region->base = rdev_mmap_full(&rdev);
 
 		if (region->base == NULL)
 			return -1;
-
-		return 0;
 	} else {
 		region->base = (void *)CONFIG_MRC_SETTINGS_CACHE_BASE;
 		region->size = CONFIG_MRC_SETTINGS_CACHE_SIZE;
 	}
+
 	return 0;
 }
 

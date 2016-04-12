@@ -15,14 +15,13 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include <bootmode.h>
 #include <console/console.h>
 #include <string.h>
 #include <spi-generic.h>
 #include <spi_flash.h>
 #include <soc/spi.h>
-#if CONFIG_CHROMEOS
 #include <vendorcode/google/chromeos/chromeos.h>
-#endif
 #include "nvm.h"
 
 /* This module assumes the flash is memory mapped just below 4GiB in the
@@ -96,29 +95,31 @@ int nvm_write(void *start, const void *data, size_t size)
 /* Read flash status register to determine if write protect is active */
 int nvm_is_write_protected(void)
 {
-	u8 sr1;
-	u8 wp_gpio = 0;
-	u8 wp_spi;
-
 	if (nvm_init() < 0)
 		return -1;
 
-#if IS_ENABLED(CONFIG_CHROMEOS)
-	/* Read Write Protect GPIO if available */
-	wp_gpio = get_write_protect_state();
-#endif
+	if (IS_ENABLED(CONFIG_CHROMEOS)) {
+		u8 sr1;
+		u8 wp_gpio;
+		u8 wp_spi;
 
-	/* Read Status Register 1 */
-	if (flash->status(flash, &sr1) < 0) {
-		printk(BIOS_ERR, "Failed to read SPI status register 1\n");
-		return -1;
+		/* Read Write Protect GPIO if available */
+		wp_gpio = get_write_protect_state();
+
+		/* Read Status Register 1 */
+		if (flash->status(flash, &sr1) < 0) {
+			printk(BIOS_ERR,
+				"Failed to read SPI status register 1\n");
+			return -1;
+		}
+		wp_spi = !!(sr1 & 0x80);
+
+		printk(BIOS_DEBUG, "SPI flash protection: WPSW=%d SRP0=%d\n",
+		       wp_gpio, wp_spi);
+
+		return wp_gpio && wp_spi;
 	}
-	wp_spi = !!(sr1 & 0x80);
-
-	printk(BIOS_DEBUG, "SPI flash protection: WPSW=%d SRP0=%d\n",
-	       wp_gpio, wp_spi);
-
-	return wp_gpio && wp_spi;
+	return 0;
 }
 
 /* Apply protection to a range of flash */

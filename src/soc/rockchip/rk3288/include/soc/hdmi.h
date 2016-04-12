@@ -1,4 +1,6 @@
 /*
+ * This file is part of the coreboot project.
+ *
  * Copyright (C) 2015 Rockchip, Inc.
  * Copyright (C) 2011 Freescale Semiconductor, Inc.
  *
@@ -6,6 +8,11 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  */
 
 #ifndef __SOC_HDMI_H__

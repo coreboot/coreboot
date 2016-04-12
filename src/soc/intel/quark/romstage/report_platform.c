@@ -86,6 +86,7 @@ static void report_cpu_info(void)
 		& B_ROM_FUSE_IN_SECURE_SKU));
 
 	/* TODO: Determine if this is a D variant */
+	d_variant = 0;
 	if (ecc_enabled && secure_boot)
 		d_variant = 0;	/* or 1 */
 

@@ -155,6 +155,7 @@ static struct pci_dev *pci_me_interface_scan(char **name) {
 	struct pci_access *pacc;
 	struct pci_dev *dev;
 	char namebuf[1024];
+	int me = 0;
 
 	pacc = pci_alloc();
 	pacc->method = PCI_ACCESS_I386_TYPE1;
@@ -168,12 +169,13 @@ static struct pci_dev *pci_me_interface_scan(char **name) {
 			PCI_LOOKUP_DEVICE, dev->vendor_id, dev->device_id);
 		if (dev->vendor_id == 0x8086) {
 			if (PCI_DEV_HAS_SUPPORTED_ME(dev->device_id)) {
+				me = 1;
 				break;
 			}
 		}
 	}
 
-	if (!PCI_DEV_HAS_SUPPORTED_ME(dev->device_id)) {
+	if (!me) {
 		rehide_me();
 
 		printf("MEI device not found\n");

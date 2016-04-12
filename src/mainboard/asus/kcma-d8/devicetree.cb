@@ -201,7 +201,7 @@ chip northbridge/amd/amdfam10/root_complex	# Root complex
 							device pnp 2e.a on end		# ACPI
 							device pnp 2e.b on		# HW Monitor
 								io 0x60 = 0x290
-								irq 0x70 = 5
+								# IRQ purposefully not assigned to prevent lockups
 							end
 							device pnp 2e.c off end		# PECI
 							device pnp 2e.d off end		# VID_BUSSEL

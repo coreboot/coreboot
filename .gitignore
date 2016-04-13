@@ -96,8 +96,7 @@ util/nvramtool/.dependencies
 util/nvramtool/nvramtool
 util/optionlist/Options.wiki
 util/romcc/romcc
-util/romcc/tests/fail_test*.S
-util/romcc/tests/*.S-O2-mmmx
+util/romcc/build
 util/runfw/googlesnow
 util/superiotool/superiotool
 util/vgabios/testbios

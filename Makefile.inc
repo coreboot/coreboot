@@ -742,18 +742,6 @@ $(obj)/coreboot.pre: $$(prebuilt-files) $(CBFSTOOL)
 	mv $@.tmp $@
 endif # ifneq ($(CONFIG_UPDATE_IMAGE),y)
 
-ifeq ($(CONFIG_PAYLOAD_LINUX),y)
-ifneq ($(strip $(call strip_quotes,$(CONFIG_LINUX_COMMAND_LINE))),)
-      ADDITIONAL_PAYLOAD_CONFIG+=-C $(CONFIG_LINUX_COMMAND_LINE)
-endif
-ifneq ($(strip $(call strip_quotes,$(CONFIG_LINUX_INITRD))),)
-      ADDITIONAL_PAYLOAD_CONFIG+=-I $(CONFIG_LINUX_INITRD)
-endif
-endif
-ifneq ($(strip $(call strip_quotes,$(CONFIG_PAYLOAD_OPTIONS))),)
-      ADDITIONAL_PAYLOAD_CONFIG+=$(strip $(call strip_quotes,$(CONFIG_PAYLOAD_OPTIONS)))
-endif
-
 ifeq ($(CONFIG_HAVE_REFCODE_BLOB),y)
 REFCODE_BLOB=$(obj)/refcode.rmod
 $(REFCODE_BLOB): $(RMODTOOL)

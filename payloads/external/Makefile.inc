@@ -30,6 +30,18 @@ PAYLOAD_CONFIG=payloads/external/depthcharge/depthcharge/.config
 #TODO: Figure out version
 endif
 
+ifeq ($(CONFIG_PAYLOAD_LINUX),y)
+ifneq ($(strip $(call strip_quotes,$(CONFIG_LINUX_COMMAND_LINE))),)
+      ADDITIONAL_PAYLOAD_CONFIG+=-C $(CONFIG_LINUX_COMMAND_LINE)
+endif
+ifneq ($(strip $(call strip_quotes,$(CONFIG_LINUX_INITRD))),)
+      ADDITIONAL_PAYLOAD_CONFIG+=-I $(CONFIG_LINUX_INITRD)
+endif
+endif
+ifneq ($(strip $(call strip_quotes,$(CONFIG_PAYLOAD_OPTIONS))),)
+      ADDITIONAL_PAYLOAD_CONFIG+=$(strip $(call strip_quotes,$(CONFIG_PAYLOAD_OPTIONS)))
+endif
+
 cbfs-files-$(CONFIG_INCLUDE_CONFIG_FILE) += payload_config
 payload_config-file := $(PAYLOAD_CONFIG)
 payload_config-type := raw

@@ -214,7 +214,8 @@ void main(FSP_INFO_HEADER *fsp_info_header)
  * The FSP early_init function returns to this function.
  * Memory is setup and the stack is set by the FSP.
  */
-void romstage_main_continue(EFI_STATUS status, void *hob_list_ptr) {
+void romstage_main_continue(EFI_STATUS status, void *hob_list_ptr)
+{
 	int cbmem_was_initted;
 	void *cbmem_hob_ptr;
 	uint32_t prev_sleep_state;

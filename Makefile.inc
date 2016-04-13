@@ -230,6 +230,7 @@ ifeq ($(CONFIG_IASL_WARNINGS_ARE_ERRORS),y)
 else
 	cd $$(dir $$@); $(IASL) -p $$(notdir $$@) $$(notdir $$@)
 endif
+	if [ -z "$$$$($(IASL) -d $$@ 2>&1 | grep 'ACPI Warning')" ]; then echo "    IASL       $$@ disassembled correctly."; true; else echo "Error: Could not correctly disassemble $$@"; $(IASL) -d $$@; false; fi
 endef
 
 #######################################################################

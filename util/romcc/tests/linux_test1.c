@@ -2,7 +2,7 @@
 
 static void main(void)
 {
-	static const char msg[] = "hello world\r\n";
+	static const char msg[] = "hello world\n";
 	write(STDOUT_FILENO, msg, sizeof(msg));
 	_exit(0);
 }

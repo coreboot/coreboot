@@ -640,7 +640,7 @@ static void setup_coherent_ht_domain(void)
 	};
 	int i;
 	int max;
-	print_debug("setting up coherent ht domain....\r\n");
+	print_debug("setting up coherent ht domain....\n");
 	max = sizeof(register_values)/sizeof(register_values[0]);
 	for(i = 0; i < max; i += 3) {
 		unsigned long reg;
@@ -648,7 +648,7 @@ static void setup_coherent_ht_domain(void)
 		print_debug_hex32(register_values[i]);
 		print_debug(" <-");
 		print_debug_hex32(register_values[i+2]);
-		print_debug("\r\n");
+		print_debug("\n");
 #endif
 #if 0
 		reg = pci_read_config32(register_values[i]);
@@ -657,12 +657,12 @@ static void setup_coherent_ht_domain(void)
 		pci_write_config32(register_values[i], reg);
 #endif
 	}
-	print_debug("done.\r\n");
+	print_debug("done.\n");
 }
 
 static void main(void)
 {
-	static const char msg[] = "hello world\r\n";
+	static const char msg[] = "hello world\n";
 #if 0
 	write(STDOUT_FILENO, msg, sizeof(msg));
 #endif

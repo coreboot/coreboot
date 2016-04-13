@@ -9,13 +9,13 @@ struct mem_param {
 	unsigned dch_memclk;
 	unsigned short dch_tref4k, dch_tref8k;
 	unsigned char dtl_twr;
-	char name[9];
+	char name[8];
 };
 
 static void test(void)
 {
 	static const struct mem_param param0 = {
-		.name = "166Mhz\r\n",
+		.name = "166Mhz\n",
 		.cycle_time = 0x60,
 		.divisor = (6<<1),
 		.tRC = 0x3C,
@@ -34,6 +34,6 @@ static void test(void)
 	clocks = (value + (param->divisor << 1) - 1)/(param->divisor << 1);
 	print_debug("clocks: ");
 	print_debug_hex32(clocks);
-	print_debug("\r\n");
+	print_debug("\n");
 	_exit(0);
 }

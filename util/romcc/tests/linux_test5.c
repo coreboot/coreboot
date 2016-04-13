@@ -93,7 +93,7 @@ static void disable_dimm(unsigned index)
 {
 	print_debug("disabling dimm");
 	print_debug_hex8(index);
-	print_debug("\r\n");
+	print_debug("\n");
 #if 0
 	pci_write_config32(PCI_DEV(0, 0x18, 2), DRAM_CSBASE + (((index << 1)+0)<<2), 0);
 	pci_write_config32(PCI_DEV(0, 0x18, 2), DRAM_CSBASE + (((index << 1)+1)<<2), 0);
@@ -145,7 +145,6 @@ static const struct mem_param *get_mem_param(unsigned min_cycle_time)
 static void debug(int c)
 {
 	print_debug_char(c);
-	print_debug_char('\r');
 	print_debug_char('\n');
 }
 #endif
@@ -179,7 +178,7 @@ static const struct mem_param *spd_set_memclk(void)
 	print_debug_hex8(min_cycle_time);
 	print_debug(" min_latency: ");
 	print_debug_hex8(min_latency);
-	print_debug("\r\n");
+	print_debug("\n");
 #endif
 
 	/* Compute the least latency with the fastest clock supported
@@ -240,7 +239,7 @@ static const struct mem_param *spd_set_memclk(void)
 				print_debug_hex8(new_cycle_time);
 				print_debug(" new_latency: ");
 				print_debug_hex8(new_latency);
-				print_debug("\r\n");
+				print_debug("\n");
 #endif
 			}
 			debug('G');
@@ -253,7 +252,7 @@ static const struct mem_param *spd_set_memclk(void)
 		print_debug_hex8(new_cycle_time);
 		print_debug(" new_latency: ");
 		print_debug_hex8(new_latency);
-		print_debug("\r\n");
+		print_debug("\n");
 #endif
 		if (new_latency > 4){
 			continue;
@@ -274,7 +273,7 @@ static const struct mem_param *spd_set_memclk(void)
 		print_debug_hex8(min_cycle_time);
 		print_debug(" min_latency: ");
 		print_debug_hex8(min_latency);
-		print_debug("\r\n");
+		print_debug("\n");
 #endif
 	}
 	/* Make a second pass through the dimms and disable
@@ -328,7 +327,7 @@ static const struct mem_param *spd_set_memclk(void)
 	print_debug_hex8(min_cycle_time);
 	print_debug(" min_latency: ");
 	print_debug_hex8(min_latency);
-	print_debug("\r\n");
+	print_debug("\n");
 #endif
 	/* Now that I know the minimum cycle time lookup the memory parameters */
 	param = get_mem_param(min_cycle_time);

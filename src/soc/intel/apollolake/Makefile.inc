@@ -25,6 +25,7 @@ romstage-y += gpio.c
 romstage-$(CONFIG_SOC_UART_DEBUG) += uart_early.c
 romstage-y += memmap.c
 romstage-y += mmap_boot.c
+romstage-y += tsc_freq.c
 
 smm-y += placeholders.c
 
@@ -40,6 +41,7 @@ ramstage-y += mmap_boot.c
 ramstage-y += uart.c
 ramstage-y += northbridge.c
 ramstage-y += spi.c
+ramstage-y += tsc_freq.c
 
 postcar-y += exit_car.S
 postcar-y += memmap.c

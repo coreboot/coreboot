@@ -13,11 +13,9 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __SOC_ROCKCHIP_RK3399_SDRAM_H__
-#define __SOC_ROCKCHIP_RK3399_SDRAM_H__
+#include <soc/sdram.h>
 
-#include <stddef.h>
-
-size_t sdram_size_mb(void);
-
-#endif
+size_t sdram_size_mb(void)
+{
+	return CONFIG_DRAM_SIZE_MB;
+}

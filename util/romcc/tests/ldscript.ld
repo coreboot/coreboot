@@ -3,7 +3,7 @@ ENTRY(_start)
 
 SECTIONS
 {
-	. = 0x1000;
+	. = 0x20000;
 	__cpu_reset = 0xdeadbeef;
 	.text . : {
 		. = ALIGN(16);

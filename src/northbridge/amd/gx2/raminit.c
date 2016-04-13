@@ -16,6 +16,7 @@
 
 #include <cpu/amd/gx2def.h>
 #include <spd.h>
+#include <stddef.h>
 
 static const unsigned char NumColAddr[] = {
 	0x00, 0x10, 0x11, 0x00, 0x00, 0x00, 0x00, 0x07,
@@ -596,10 +597,8 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 
 	/* The RAM dll needs a write to lock on so generate a few dummy writes */
 	/* Note: The descriptor needs to be enabled to point at memory */
-	volatile unsigned long *ptr;
 	for (i = 0; i < 5; i++) {
-		ptr = (void *)i;
-		*ptr = (unsigned long)i;
+		write32(zeroptr + i, i);
 	}
 
 	printk(BIOS_INFO, "RAM DLL lock\n");

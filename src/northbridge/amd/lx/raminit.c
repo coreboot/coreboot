@@ -18,6 +18,7 @@
 #include <cpu/amd/lxdef.h>
 #include <arch/io.h>
 #include <spd.h>
+#include <stddef.h>
 #include "southbridge/amd/cs5536/cs5536.h"
 #include "raminit.h"
 #include "northbridge.h"
@@ -747,10 +748,8 @@ void sdram_enable(int controllers, const struct mem_controller *ctrl)
 
 	/* The RAM dll needs a write to lock on so generate a few dummy writes */
 	/* Note: The descriptor needs to be enabled to point at memory */
-	volatile unsigned long *ptr;
 	for (i = 0; i < 5; i++) {
-		ptr = (void *)i;
-		*ptr = (unsigned long)i;
+		write32(zeroptr + i, i);
 	}
 	/* SWAPSiF for PBZ 4112 (Errata 34) */
 	/* check for failed DLL settings now that we have done a memory write. */

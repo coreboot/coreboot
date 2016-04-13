@@ -86,6 +86,14 @@ enum {
 	PMU_PCLK_DIV_CON_MASK		= 0x1f,
 	PMU_PCLK_DIV_CON_SHIFT		= 0,
 
+	/* PMUCRU_CLKSEL_CON1 */
+	SPI3_PLL_SEL_MASK		= 1,
+	SPI3_PLL_SEL_SHIFT		= 7,
+	SPI3_PLL_SEL_24M		= 0,
+	SPI3_PLL_SEL_PPLL		= 1,
+	SPI3_DIV_CON_MASK		= 0x7f,
+	SPI3_DIV_CON_SHIFT		= 0x0,
+
 	/* CLKSEL_CON0 */
 	ACLKM_CORE_L_DIV_CON_MASK	= 0x1f,
 	ACLKM_CORE_L_DIV_CON_SHIFT	= 8,
@@ -137,6 +145,26 @@ enum {
 	HCLK_PERILP1_PLL_SEL_GPLL	= 1,
 	HCLK_PERILP1_DIV_CON_MASK	= 0x1f,
 	HCLK_PERILP1_DIV_CON_SHIFT	= 0,
+
+	/* CLKSEL_CON58 */
+	CLK_SPI_PLL_SEL_MASK		= 1,
+	CLK_SPI_PLL_SEL_CPLL		= 0,
+	CLK_SPI_PLL_SEL_GPLL		= 1,
+	CLK_SPI_PLL_DIV_CON_MASK	= 0x7f,
+	CLK_SPI5_PLL_DIV_CON_SHIFT	= 8,
+	CLK_SPI5_PLL_SEL_SHIFT		= 15,
+
+	/* CLKSEL_CON59 */
+	CLK_SPI1_PLL_SEL_SHIFT		= 15,
+	CLK_SPI1_PLL_DIV_CON_SHIFT	= 8,
+	CLK_SPI0_PLL_SEL_SHIFT		= 7,
+	CLK_SPI0_PLL_DIV_CON_SHIFT	= 0,
+
+	/* CLKSEL_CON60 */
+	CLK_SPI4_PLL_SEL_SHIFT		= 15,
+	CLK_SPI4_PLL_DIV_CON_SHIFT	= 8,
+	CLK_SPI2_PLL_SEL_SHIFT		= 7,
+	CLK_SPI2_PLL_DIV_CON_SHIFT	= 0,
 
 	/* CRU_SOFTRST_CON4 */
 	RESETN_DDR0_REQ_MASK		= 1,
@@ -391,6 +419,55 @@ void rkclk_configure_ddr(unsigned int hz)
 	rkclk_set_pll(&cru_ptr->dpll_con[0], &dpll_cfg);
 }
 
+#define SPI_CLK_REG_VALUE(bus, clk_div) \
+		RK_CLRSETBITS(CLK_SPI_PLL_SEL_MASK << \
+					CLK_SPI ##bus## _PLL_SEL_SHIFT | \
+			      CLK_SPI_PLL_DIV_CON_MASK << \
+					CLK_SPI ##bus## _PLL_DIV_CON_SHIFT, \
+			      CLK_SPI_PLL_SEL_GPLL << \
+					CLK_SPI ##bus## _PLL_SEL_SHIFT | \
+			      (clk_div - 1) << \
+					CLK_SPI ##bus## _PLL_DIV_CON_SHIFT)
+
 void rkclk_configure_spi(unsigned int bus, unsigned int hz)
 {
+	int src_clk_div;
+	int pll;
+
+	/* spi3 src clock from ppll, while spi0,1,2,4,5 src clock from gpll */
+	pll = (bus == 3) ? PPLL_HZ : GPLL_HZ;
+	src_clk_div = pll / hz;
+	assert((src_clk_div - 1 < 127) && (src_clk_div * hz == pll));
+
+	switch (bus) {
+	case 0:
+		write32(&cru_ptr->clksel_con[59],
+			SPI_CLK_REG_VALUE(0, src_clk_div));
+		break;
+	case 1:
+		write32(&cru_ptr->clksel_con[59],
+			SPI_CLK_REG_VALUE(1, src_clk_div));
+		break;
+	case 2:
+		write32(&cru_ptr->clksel_con[60],
+			SPI_CLK_REG_VALUE(2, src_clk_div));
+		break;
+	case 3:
+		write32(&pmucru_ptr->pmucru_clksel[1],
+			RK_CLRSETBITS(SPI3_PLL_SEL_MASK << SPI3_PLL_SEL_SHIFT |
+				      SPI3_DIV_CON_MASK << SPI3_DIV_CON_SHIFT,
+				      SPI3_PLL_SEL_PPLL << SPI3_PLL_SEL_SHIFT |
+				      (src_clk_div - 1) << SPI3_DIV_CON_SHIFT));
+		break;
+	case 4:
+		write32(&cru_ptr->clksel_con[60],
+			SPI_CLK_REG_VALUE(4, src_clk_div));
+		break;
+	case 5:
+		write32(&cru_ptr->clksel_con[58],
+			SPI_CLK_REG_VALUE(5, src_clk_div));
+		break;
+	default:
+		printk(BIOS_ERR, "do not support this spi bus\n");
+	}
 }

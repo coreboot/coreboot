@@ -39,7 +39,7 @@ typedef unsigned int wint_t;
  * undefined behaviour and do whatever" trickery in compilers.
  * Use when you _really_ need to read32(zeroptr) (ie. read address 0).
  */
-extern void *zeroptr;
+extern char zeroptr[];
 #endif
 
 #endif /* STDDEF_H */

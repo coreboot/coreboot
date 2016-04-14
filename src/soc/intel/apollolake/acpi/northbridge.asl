@@ -15,10 +15,10 @@
  * GNU General Public License for more details.
  */
 
-        Name(_HID, EISAID("PNP0A08"))	/* PCIe */
-        Name(_CID, EISAID("PNP0A03"))	/* PCI */
-        Name(_ADR, 0)
-        Name(_BBN, 0)
+	Name(_HID, EISAID("PNP0A08"))	/* PCIe */
+	Name(_CID, EISAID("PNP0A03"))	/* PCI */
+	Name(_ADR, 0)
+	Name(_BBN, 0)
 
 Device (MCHC)
 {
@@ -81,51 +81,52 @@ Device (MCHC)
 				NonCacheable, ReadWrite,
 				0x00000000, 0x10000, 0x1ffff, 0x00000000,
 				0x10000,,, PM02)
-})
+	})
 
-/* Current Resource Settings */
-Method (_CRS, 0, Serialized)
-{
+	/* Current Resource Settings */
+	Method (_CRS, 0, Serialized)
+	{
 
-	/* Find PCI resource area in MCRS */
-	CreateDwordField (MCRS, ^PM01._MIN, PMIN)
-	CreateDwordField (MCRS, ^PM01._MAX, PMAX)
-	CreateDwordField (MCRS, ^PM01._LEN, PLEN)
+		/* Find PCI resource area in MCRS */
+		CreateDwordField (MCRS, ^PM01._MIN, PMIN)
+		CreateDwordField (MCRS, ^PM01._MAX, PMAX)
+		CreateDwordField (MCRS, ^PM01._LEN, PLEN)
 
-	/* Read C-Unit PCI CFG Reg. 0xBC for TOLUD (shadow from B-Unit) */
-	And(^TLUD, 0xFFF00000, PMIN)
-	/* Read MMCONF base */
-	And(^MCNF, 0xF0000000, PMAX)
+		/* Read C-Unit PCI CFG Reg. 0xBC for TOLUD (shadow from B-Unit) */
+		And(^TLUD, 0xFFF00000, PMIN)
+		/* Read MMCONF base */
+		And(^MCNF, 0xF0000000, PMAX)
 
-	/* Calculate PCI MMIO Length */
-	Add(Subtract(PMAX, PMIN), 1, PLEN)
+		/* Calculate PCI MMIO Length */
+		Add(Subtract(PMAX, PMIN), 1, PLEN)
 
-	/* Find GFX resource area in GCRS */
-	CreateDwordField(MCRS, ^STOM._MIN, GMIN)
-	CreateDwordField(MCRS, ^STOM._MAX, GMAX)
-	CreateDwordField(MCRS, ^STOM._LEN, GLEN)
+		/* Find GFX resource area in GCRS */
+		CreateDwordField(MCRS, ^STOM._MIN, GMIN)
+		CreateDwordField(MCRS, ^STOM._MAX, GMAX)
+		CreateDwordField(MCRS, ^STOM._LEN, GLEN)
 
-	/* Read BGSM */
-	And(^BGSM, 0xFFF00000, GMIN)
+		/* Read BGSM */
+		And(^BGSM, 0xFFF00000, GMIN)
 
-	/* Read TOLUD */
-	And(^TLUD, 0xFFF00000, GMAX)
-	Decrement(GMAX)
-	Add(Subtract(GMAX, GMIN), 1, GLEN)
+		/* Read TOLUD */
+		And(^TLUD, 0xFFF00000, GMAX)
+		Decrement(GMAX)
+		Add(Subtract(GMAX, GMIN), 1, GLEN)
 
-	/* Patch PM02 range based on Memory Size */
-	CreateQwordField (MCRS, ^PM02._MIN, MMIN)
-	CreateQwordField (MCRS, ^PM02._MAX, MMAX)
-	CreateQwordField (MCRS, ^PM02._LEN, MLEN)
+		/* Patch PM02 range based on Memory Size */
+		CreateQwordField (MCRS, ^PM02._MIN, MMIN)
+		CreateQwordField (MCRS, ^PM02._MAX, MMAX)
+		CreateQwordField (MCRS, ^PM02._LEN, MLEN)
 
-	Store (^TUUD, Local0)
-	If (LLessEqual (Local0, 0x1000000000))
-        {
-		Store (0, MMIN)
-		Store (0, MLEN)
+		Store (^TUUD, Local0)
+
+		If (LLessEqual (Local0, 0x1000000000))
+		{
+			Store (0, MMIN)
+			Store (0, MLEN)
+		}
+		Subtract (Add (MMIN, MLEN), 1, MMAX)
+
+		Return (MCRS)
 	}
-	Subtract (Add (MMIN, MLEN), 1, MMAX)
-
-	Return (MCRS)
-}
 }

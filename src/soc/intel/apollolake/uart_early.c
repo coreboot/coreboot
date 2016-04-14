@@ -52,7 +52,7 @@ void lpss_console_uart_init(void)
 	pci_write_config32(uart, PCI_COMMAND,
 			   PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER);
 
-        /* Take UART out of reset */
+	/* Take UART out of reset */
 	lpss_uart_write(UART_RESET, UART_RESET_UART_EN);
 
 	/* These values get us a 1.836 MHz clock (ideally we want 1.843 MHz) */

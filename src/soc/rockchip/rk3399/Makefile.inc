@@ -38,6 +38,7 @@ romstage-y += ../common/spi.c
 romstage-$(CONFIG_DRIVERS_UART) += ../common/uart.c
 romstage-y += clock.c
 romstage-y += timer.c
+romstage-y += romstage.c
 
 ################################################################################
 

@@ -14,12 +14,7 @@
  *
  */
 
-#include <arch/cache.h>
-#include <arch/io.h>
-#include <boardid.h>
-#include <boot/coreboot_tables.h>
 #include <device/device.h>
-#include <console/console.h>
 
 static void mainboard_init(device_t dev)
 {

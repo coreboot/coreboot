@@ -15,10 +15,6 @@
  */
 
 #include <boot/coreboot_tables.h>
-#include <console/console.h>
-#include <ec/google/chromeec/ec.h>
-#include <ec/google/chromeec/ec_commands.h>
-#include <string.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
 void fill_lb_gpios(struct lb_gpios *gpios)

@@ -198,7 +198,7 @@ static void nc_enable(device_t dev)
 static struct device_operations nc_ops = {
 	.read_resources   = nc_read_resources,
 	.acpi_fill_ssdt_generator = generate_cpu_entries,
-	.set_resources    = NULL,
+	.set_resources    = DEVICE_NOOP,
 	.enable_resources = NULL,
 	.init             = NULL,
 	.enable           = &nc_enable,

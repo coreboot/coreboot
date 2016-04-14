@@ -21,11 +21,7 @@
  * GNU General Public License for more details.
  */
 
-#define CR0_MP		(1 << 1)
-#define CR0_EM		(1 << 2)
-
-#define CR4_OSFXSR	(1 << 9)
-#define CR4_OSXMMEXCPT	(1 << 10)
+#include <cpu/x86/cr.h>
 
 /*
  * Include the old code for reset vector and protected mode entry. That code has

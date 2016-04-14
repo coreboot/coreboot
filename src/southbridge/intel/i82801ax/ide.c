@@ -35,7 +35,7 @@ static void ide_init(struct device *dev)
 	if (!conf || conf->ide0_enable)
 		reg16 |= IDE_DECODE_ENABLE;
 	printk(BIOS_DEBUG, "IDE: %s IDE interface: %s\n", "Primary",
-	       conf->ide0_enable ? "on" : "off");
+	       (reg16 & IDE_DECODE_ENABLE) ? "on" : "off");
 	pci_write_config16(dev, IDE_TIM_PRI, reg16);
 
 	reg16 = pci_read_config16(dev, IDE_TIM_SEC);
@@ -43,7 +43,7 @@ static void ide_init(struct device *dev)
 	if (!conf || conf->ide1_enable)
 		reg16 |= IDE_DECODE_ENABLE;
 	printk(BIOS_DEBUG, "IDE: %s IDE interface: %s\n", "Secondary",
-	       conf->ide0_enable ? "on" : "off");
+	       (reg16 & IDE_DECODE_ENABLE) ? "on" : "off");
 	pci_write_config16(dev, IDE_TIM_SEC, reg16);
 }
 

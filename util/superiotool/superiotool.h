@@ -191,6 +191,10 @@ void print_amd_chips(void);
 void probe_idregs_serverengines(uint16_t port);
 void print_serverengines_chips(void);
 
+/* exar.c */
+void probe_idregs_exar(uint16_t port);
+void print_exar_chips(void);
+
 /* fintek.c */
 void probe_idregs_fintek(uint16_t port);
 void probe_idregs_fintek_alternative(uint16_t port);
@@ -232,6 +236,7 @@ static const struct {
 	int ports[MAXNUMPORTS]; /* Signed, as we need EOT. */
 } superio_ports_table[] = {
 	{probe_idregs_ali,	{0x3f0, 0x370, EOT}},
+	{probe_idregs_exar,	{0x2e, 0x4e, EOT}},
 	{probe_idregs_fintek,	{0x2e, 0x4e, EOT}},
 	{probe_idregs_fintek_alternative,	{0x2e, 0x4e, EOT}},
 	/* Only use 0x370 for ITE, but 0x3f0 or 0x3bd would also be valid. */
@@ -256,6 +261,7 @@ static const struct {
 	void (*print_list) (void);
 } vendor_print_functions[] = {
 	{print_ali_chips},
+	{print_exar_chips},
 	{print_fintek_chips},
 	{print_ite_chips},
 	{print_nsc_chips},

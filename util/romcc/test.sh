@@ -79,9 +79,9 @@ init_stats() {
 }
 
 get_romcc() {
-	ROMCC="$BASEDIR/romcc"
+	ROMCC="$BUILDDIR/romcc"
 	if [ ! -f "$ROMCC" ]; then
-		echo "romcc not found! Please run \"make romcc\"."
+		echo "romcc not found! Please run \"make\"."
 		exit 1
 	fi
 }

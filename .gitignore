@@ -96,7 +96,6 @@ util/msrtool/msrtool
 util/nvramtool/.dependencies
 util/nvramtool/nvramtool
 util/optionlist/Options.wiki
-util/romcc/romcc
 util/romcc/build
 util/runfw/googlesnow
 util/superiotool/superiotool

@@ -150,18 +150,6 @@ M:	Stefan Reinauer <stefan.reinauer@coreboot.org>
 S:	Supported
 F:	src/mainboard/google/panther/
 
-INTEL FSP IVYBRIDGE/PANTHERPOINT/CAVECREEK & CRBs
-M:	York Yang <york.yang@intel.com>
-S:	Supported
-F:	src/cpu/intel/fsp_model_206ax/
-F:	src/northbridge/intel/fsp_sandybridge/
-F:	src/southbridge/intel/fsp_bd82x6x/
-F:	src/southbridge/intel/fsp_i89xx/
-F:	src/vendorcode/intel/fsp1_0/ivybridge_bd82x6x
-F:	src/vendorcode/intel/fsp1_0/ivybridge_i89xx
-F:	src/mainboard/intel/cougar_canyon2/
-F:	src/mainboard/intel/stargo2/
-
 INTEL MINNOWBOARD MAX MAINBOARD
 M:	Huang Jin <huang.jin@intel.com>
 M:	York Yang <york.yang@intel.com>
@@ -178,6 +166,25 @@ F:	src/soc/intel/fsp_baytrail/
 F:	src/vendorcode/intel/fsp1_0/baytrail/
 F:	src/mainboard/intel/bakersport_fsp/
 F:	src/mainboard/intel/bayleybay_fsp/
+
+INTEL FSP BROADWELL-DE SOC & CRB
+M:	York Yang <york.yang@intel.com>
+S:	Supported
+F:	src/soc/intel/fsp_broadwell_de/
+F:	src/vendorcode/intel/fsp1_0/broadwell_de/
+F:	src/mainboard/intel/camelbackmountain_fsp/
+
+INTEL FSP IVYBRIDGE/PANTHERPOINT/CAVECREEK & CRBs
+M:	York Yang <york.yang@intel.com>
+S:	Supported
+F:	src/cpu/intel/fsp_model_206ax/
+F:	src/northbridge/intel/fsp_sandybridge/
+F:	src/southbridge/intel/fsp_bd82x6x/
+F:	src/southbridge/intel/fsp_i89xx/
+F:	src/vendorcode/intel/fsp1_0/ivybridge_bd82x6x
+F:	src/vendorcode/intel/fsp1_0/ivybridge_i89xx
+F:	src/mainboard/intel/cougar_canyon2/
+F:	src/mainboard/intel/stargo2/
 
 FSP 1.0 RANGELEY & CRB
 M:	David Guckian <david.guckian@intel.com>

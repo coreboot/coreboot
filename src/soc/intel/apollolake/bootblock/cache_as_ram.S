@@ -25,10 +25,6 @@
 
 .global bootblock_pre_c_entry
 bootblock_pre_c_entry:
-	/*
-	 * eax:  BIST value
-	 */
-	movd	%eax, %mm2
 
 .global cache_as_ram
 cache_as_ram:

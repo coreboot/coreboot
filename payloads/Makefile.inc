@@ -17,8 +17,13 @@ cbfs-files-$(CONFIG_COREINFO_SECONDARY_PAYLOAD) += img/coreinfo
 img/coreinfo-file := payloads/coreinfo/build/coreinfo.elf
 img/coreinfo-type := payload
 
+cbfs-files-$(CONFIG_NVRAMCUI_SECONDARY_PAYLOAD) += img/nvramcui
+img/nvramcui-file := payloads/nvramcui/nvramcui.elf
+img/nvramcui-type := payload
+
 PAYLOADS_LIST=\
 payloads/coreinfo \
+payloads/nvramcui \
 payloads/libpayload \
 payloads/external/depthcharge \
 payloads/external/SeaBIOS \
@@ -28,6 +33,9 @@ payloads/external/iPXE
 
 payloads/coreinfo/build/coreinfo.elf coreinfo:
 	$(MAKE) -C payloads/coreinfo defaultbuild
+
+payloads/nvramcui/nvramcui.elf:
+	$(MAKE) -C payloads/nvramcui
 
 clean-payloads:
 	$(foreach payload, $(PAYLOADS_LIST), $(MAKE) -C $(payload) clean; )

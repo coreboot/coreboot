@@ -51,7 +51,7 @@ clean_up() {
 }
 
 # Create temporary file(s).
-TMPFILE="$(mktemp /tmp/temp.XXXX 2>/dev/null || echo /tmp/temp.78gOIUGz)"
+TMPFILE="$(mktemp /tmp/temp.XXXXXX 2>/dev/null || echo /tmp/temp.coreboot.$RANDOM)"
 touch "$TMPFILE"
 trap clean_up EXIT
 

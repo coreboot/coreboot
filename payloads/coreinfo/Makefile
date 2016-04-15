@@ -114,11 +114,12 @@ ifneq ($(strip $(HAVE_LIBPAYLOAD)),)
 libpayload:
 	printf "Found Libpayload $(LIBPAYLOAD_OBJ).\n"
 else
+LPOPTS=obj="$(CURDIR)/lpbuild" DOTCONFIG="$(CURDIR)/lp.config"
 libpayload:
 	printf "Building libpayload @ $(LIBPAYLOAD_PATH).\n"
-	$(MAKE) -C $(LIBPAYLOAD_PATH) distclean coreinfo_obj=$(coreinfo_obj)/libptmp
-	$(MAKE) -C $(LIBPAYLOAD_PATH) defconfig KBUILD_DEFCONFIG=$(LIBPAYLOAD_CONFIG)
-	$(MAKE) -C $(LIBPAYLOAD_PATH) install DESTDIR=$(coreinfo_obj)
+	$(MAKE) -C $(LIBPAYLOAD_PATH) $(LPOPTS) distclean coreinfo_obj=$(coreinfo_obj)/libptmp
+	$(MAKE) -C $(LIBPAYLOAD_PATH) $(LPOPTS) defconfig KBUILD_DEFCONFIG=$(LIBPAYLOAD_CONFIG)
+	$(MAKE) -C $(LIBPAYLOAD_PATH) $(LPOPTS) install DESTDIR=$(coreinfo_obj)
 endif
 
 $(coreinfo_obj)/config.h:
@@ -130,8 +131,8 @@ clean:
 	rm -rf build/*.elf build/*.o .xcompile
 
 distclean: clean
-	rm -rf build
-	rm -f .config .config.old ..config.tmp .kconfig.d .tmpconfig*
+	rm -rf build lpbuild
+	rm -f *.config *.config.old ..config.tmp .kconfig.d .tmpconfig*
 
 include $(srck)/Makefile
 

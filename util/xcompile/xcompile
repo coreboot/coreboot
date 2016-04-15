@@ -27,6 +27,12 @@ fi
 TMPFILE=""
 XGCCPATH=$1
 
+# payloads under payloads/external crossgcc path
+if [ -d "$(pwd)/../../../../util/crossgcc/xgcc/bin/" ]
+then
+	XGCCPATH=${XGCCPATH:-"$(pwd)/../../../../util/crossgcc/xgcc/bin/"}
+fi
+
 # libpayload crossgcc path
 if [ -d "$(pwd)/../../util/crossgcc/xgcc/bin/" ]
 then

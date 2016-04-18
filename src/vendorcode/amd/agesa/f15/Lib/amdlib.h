@@ -313,22 +313,9 @@ LibAmdMemCopy (
   IN OUT   AMD_CONFIG_PARAMS *StdHeader
   );
 
-VOID *
-LibAmdLocateImage (
-  IN       VOID *StartAddress,
-  IN       VOID *EndAddress,
-  IN       UINT32 Alignment,
-  IN       CHAR8 ModuleSignature[8]
-  );
-
 UINT32
 LibAmdGetPackageType (
   IN       AMD_CONFIG_PARAMS *StdHeader
-  );
-
-BOOLEAN
-LibAmdVerifyImageChecksum (
-  IN       VOID *ImagePtr
   );
 
 UINT8

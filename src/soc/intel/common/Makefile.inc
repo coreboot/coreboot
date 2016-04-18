@@ -16,6 +16,7 @@ ramstage-$(CONFIG_MMA) += mma.c
 ramstage-$(CONFIG_SOC_INTEL_COMMON_ACPI_WAKE_SOURCE) += acpi_wake_source.c
 ramstage-y += vbt.c
 ramstage-$(CONFIG_SOC_INTEL_COMMON_GFX_OPREGION) += opregion.c
+ramstage-$(CONFIG_SOC_INTEL_COMMON_ACPI) += ./acpi/acpi.c
 
 smm-$(CONFIG_SOC_INTEL_COMMON_SMI) += smihandler.c
 

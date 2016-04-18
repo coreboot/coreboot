@@ -33,38 +33,17 @@
 
 void DispatcherEntry(void *pConfig){
 
-#ifdef  B1_IMAGE
-        void    *pB2ImagePtr = NULL;
-        CIM_IMAGE_ENTRY pB2ImageEntry;
-#endif
-
 //#if CIM_DEBUG
 //        InitSerialOut();
 //#endif
 
         TRACE((DMSG_SB_TRACE, "CIM - SB700 Entry\n"));
 
-#ifdef  B1_IMAGE
-        if ((UINT32)(((STDCFG*)pConfig)->pB2ImageBase) != 0xffffffff){
-                if (((STDCFG*)pConfig)->pB2ImageBase)
-                        pB2ImagePtr = CheckImage('007S',(void*)((STDCFG*)pConfig)->pB2ImageBase);
-                if (pB2ImagePtr == NULL)
-                        pB2ImagePtr = LocateImage('007S');
-                if (pB2ImagePtr!=NULL){
-                        TRACE((DMSG_SB_TRACE, "CIM - SB700 Redirect to B2 Image\n"));
-                        ((STDCFG*)pConfig)->pImageBase = (UINT32)pB2ImagePtr;
-                        pB2ImageEntry = (CIM_IMAGE_ENTRY)(*((UINT32*)pB2ImagePtr+1) + (UINT32)pB2ImagePtr);
-                        (*pB2ImageEntry)(pConfig);
-                        return;
-                }
-        }
-#endif
         saveConfigPointer(pConfig);
 
         if      (((STDCFG*)pConfig)->Func == SB_POWERON_INIT)
                 sbPowerOnInit((AMDSBCFG*)pConfig);
 
-#ifndef B1_IMAGE
         if      (((STDCFG*)pConfig)->Func == SB_BEFORE_PCI_INIT)
                 sbBeforePciInit((AMDSBCFG*)pConfig);
         if      (((STDCFG*)pConfig)->Func == SB_AFTER_PCI_INIT)
@@ -81,42 +60,9 @@ void DispatcherEntry(void *pConfig){
         }
         if      (((STDCFG*)pConfig)->Func == SB_SMM_ACPION)
                 sbSmmAcpiOn((AMDSBCFG*)pConfig);
-#endif
+
         TRACE((DMSG_SB_TRACE, "CIMx - SB Exit\n"));
 }
-
-
-void* LocateImage(UINT32 Signature){
-        void    *Result;
-        UINT8   *ImagePtr = (UINT8*)(0xffffffff - (IMAGE_ALIGN-1));
-        while   ((UINTN)ImagePtr>=(0xfffffff - (NUM_IMAGE_LOCATION*IMAGE_ALIGN -1))){
-                Result = CheckImage(Signature,(void*)ImagePtr);
-                if (Result != NULL)
-                        return Result;
-                ImagePtr -= IMAGE_ALIGN;
-        }
-        return NULL;
-}
-
-
-void* CheckImage(UINT32 Signature, void* ImagePtr){
-        UINT8   *TempImagePtr;
-        UINT8   Sum = 0;
-        UINT32  i;
-//        if      ((*((UINT32*)ImagePtr) == 'ITA$' && ((CIMFILEHEADER*)ImagePtr)->ModuleLogo == Signature)){
-        if      ((*((UINT32*)ImagePtr) == Int32FromChar ('$', 'A', 'T', 'I')) && (((CIMFILEHEADER*)ImagePtr)->ModuleLogo == Signature)){
-                //GetImage Image size
-                TempImagePtr = (UINT8*)ImagePtr;
-                for (i=0;i<(((CIMFILEHEADER*)ImagePtr)->ImageSize);i++){
-                        Sum += *TempImagePtr;
-                        TempImagePtr++;
-                }
-                if      (Sum == 0)
-                        return ImagePtr;
-        }
-        return NULL;
-}
-
 
 UINT32 GetPciebase(){
         AMDSBCFG* Result;

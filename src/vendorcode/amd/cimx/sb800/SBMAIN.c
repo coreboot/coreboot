@@ -46,8 +46,6 @@
 #include "SBPLATFORM.h"
 #include "cbtypes.h"
 
-#ifndef B1_IMAGE
-
 /*----------------------------------------------------------------------------------------*/
 /**
  * sbBeforePciInit - Config Southbridge before PCI emulation
@@ -227,8 +225,6 @@ sbSmmAcpiOn (
   RWMEM (ACPI_MMIO_BASE + SMI_BASE + SB_SMI_REGB2, AccWidthUint8, ~(BIT4 + BIT5), 0);
   RWMEM (ACPI_MMIO_BASE + SMI_BASE + SB_SMI_REGAC, AccWidthUint8, ~(BIT6 + BIT7), 0);
 }
-
-#endif
 
 /*----------------------------------------------------------------------------------------*/
 /**

@@ -31,8 +31,6 @@
 
 #include	"Platform.h"
 
-#ifndef	B1_IMAGE
-
 BUILDPARAM	DfltStaticOptions={
 	BIOS_SIZE,							// BIOS Size
 	LEGACY_FREE,						// Legacy Free Option
@@ -285,5 +283,3 @@ UINT32	CallBackToOEM(UINT32 Func, UINTN Data,AMDSBCFG* pConfig){
 	TRACE((DMSG_SB_TRACE,"SB Hook Status [%x]\n",Result));
 	return Result;
 }
-
-#endif

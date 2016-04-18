@@ -66,16 +66,9 @@
 //#define STALL(Ptr, TimeUs, Flag) LibAmdSbStall(TimeUs)
 #define STALL(Ptr, TimeUs, Flag) LibAmdSbStall(TimeUs, Ptr)
 
-#ifdef  B2_IMAGE
-#define REPORT_EVENT(Class, Info, Param1, Param2, Param3, Param4, CfgPtr) LibNbEventLog(Class, Info, Param1, Param2, Param3, Param4, CfgPtr)
-#else
 #define REPORT_EVENT(Class, Info, Param1, Param2, Param3, Param4, CfgPtr)
-#endif
-
-
 
 // CIMX configuration parameters
-//#define CIMX_B2_IMAGE_BASE_ADDRESS      0xFFF40000
 /*
  * PCIEX_BASE_ADDRESS  - Define PCIE base address
  */

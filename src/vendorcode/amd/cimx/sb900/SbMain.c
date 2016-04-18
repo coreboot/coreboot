@@ -44,8 +44,6 @@
 #include "cbtypes.h"
 #include "AmdSbLib.h"
 
-#ifndef B1_IMAGE
-
 /*----------------------------------------------------------------------------------------*/
 /**
  * sbBeforePciInit - Config Southbridge before PCI emulation
@@ -262,8 +260,6 @@ sbSmmAcpiOn (
   //RWMEM (0x1C, AccWidthUint32, 0, 0);
   //RWMEM (0x20, AccWidthUint32, 0, 0);
 }
-
-#endif
 
 /*----------------------------------------------------------------------------------------*/
 /**

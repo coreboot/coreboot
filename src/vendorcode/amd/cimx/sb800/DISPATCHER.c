@@ -62,8 +62,6 @@
 //
 
 VOID  saveConfigPointer (IN AMDSBCFG* pConfig);
-VOID* VerifyImage (IN UINT64 Signature, IN VOID* ImagePtr);
-VOID* LocateImage (IN UINT64 Signature);
 
 /*----------------------------------------------------------------------------------------
  *                  T Y P E D E F S     A N D     S T R U C T U  R E S
@@ -90,42 +88,17 @@ AmdSbDispatcher (
 {
   AGESA_STATUS Status;
 
-#ifdef B1_IMAGE
-  VOID *pAltImagePtr;
-  CIM_IMAGE_ENTRY   AltImageEntry;
-#endif
-
   UINT64  tdValue;
   tdValue = 0x32314130384253ULL;
 
-#ifdef B1_IMAGE
-  pAltImagePtr = NULL;
-#endif
   Status = AGESA_UNSUPPORTED;
 
-#ifdef B1_IMAGE
-  if ((UINT32) (UINTN) (((AMD_CONFIG_PARAMS*)pConfig)->AltImageBasePtr) != 0xffffffff ) {
-    if ( ((AMD_CONFIG_PARAMS*)pConfig)->AltImageBasePtr ) {
-      pAltImagePtr = VerifyImage ( tdValue, (VOID*) (UINTN) ((AMD_CONFIG_PARAMS*)pConfig)->AltImageBasePtr);
-    }
-    if ( pAltImagePtr == NULL ) {
-      pAltImagePtr = LocateImage ( tdValue );
-    }
-    if ( pAltImagePtr != NULL ) {
-      ((AMD_CONFIG_PARAMS*)pConfig)->ImageBasePtr = (UINT32) (UINTN) pAltImagePtr;
-      AltImageEntry = (CIM_IMAGE_ENTRY) (UINTN) ((UINT32) (UINTN) pAltImagePtr + (UINT32) (((AMD_IMAGE_HEADER*) (UINTN) pAltImagePtr)->EntryPointAddress));
-      (*AltImageEntry) (pConfig);
-      return Status;
-    }
-  }
-#endif
   saveConfigPointer (pConfig);
 
   if ( ((AMD_CONFIG_PARAMS*)pConfig)->Func == SB_POWERON_INIT ) {
     sbPowerOnInit ((AMDSBCFG*) pConfig);
   }
 
-#ifndef B1_IMAGE
   if ( ((AMD_CONFIG_PARAMS*)pConfig)->Func == SB_BEFORE_PCI_INIT ) {
     sbBeforePciInit ((AMDSBCFG*)pConfig);
   }
@@ -161,67 +134,7 @@ AmdSbDispatcher (
   if ( ((AMD_CONFIG_PARAMS*)pConfig)->Func == SB_EC_FANCONTROL ) {
     sbECfancontrolservice((AMDSBCFG*)pConfig);
   }
-#endif
   return Status;
-}
-
-/**
- * LocateImage - Locate Southbridge CIMx module
- *
- *
- *
- * @param[in] Signature   Southbridge CIMx image signature.
- *
- */
-VOID*
-LocateImage (
-  IN       UINT64 Signature
-  )
-{
-  VOID  *Result;
-  UINT32   ImagePtr;
-  ImagePtr = 0xffffffff - (IMAGE_ALIGN - 1);
-
-  while ( ImagePtr >= (0xfffffff - (NUM_IMAGE_LOCATION * IMAGE_ALIGN - 1)) ) {
-    Result = VerifyImage (Signature, (VOID*)(UINTN)ImagePtr);
-    if ( Result != NULL ) {
-      return Result;
-    }
-    ImagePtr -= IMAGE_ALIGN;
-  }
-  return NULL;
-}
-
-/**
- * VerifyImage - Verify Southbridge CIMx module
- *
- *
- * @param[in] Signature   Southbridge CIMx image signature.
- * @param[in] ImagePtr    Southbridge CIMx image address.
- *
- */
-VOID*
-VerifyImage (
-  IN       UINT64 Signature,
-  IN       VOID* ImagePtr
-  )
-{
-  UINT16 *TempImagePtr;
-  UINT16 Sum;
-  UINT32  i;
-  Sum = 0;
-  if ( (*((UINT32*)ImagePtr) == Int32FromChar('$', 'A', 'M', 'D') && ((CIMFILEHEADER*)ImagePtr)->CreatorID == Signature) ) {
-    //GetImage Image size
-    TempImagePtr = (UINT16*)ImagePtr;
-    for ( i = 0; i < (((CIMFILEHEADER*)ImagePtr)->ImageSize); i += 2 ) {
-      Sum = Sum + *TempImagePtr;
-      TempImagePtr++;
-    }
-    if ( Sum == 0 ) {
-      return ImagePtr;
-    }
-  }
-  return NULL;
 }
 
 /**

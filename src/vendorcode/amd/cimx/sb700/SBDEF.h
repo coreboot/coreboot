@@ -59,8 +59,6 @@ UINT32	IsFamily10(void);
 UINT64	ReadMSR(UINT32	Address);
 void	WriteMSR(UINT32	Address,UINT64	Value);
 void	RWMSR(UINT32 Address, UINT64 Mask, UINT64 Value);
-void*	LocateImage(UINT32 Signature);
-void*	CheckImage(	UINT32	Signature, void*	ImagePtr);
 void	Stall(UINT32	uSec);
 void	Reset(void);
 CIM_STATUS	RWSMBUSBlock(UINT8 Controller, UINT8 Address, UINT8 Offset, UINT8  BufferSize, UINT8* BufferPrt);

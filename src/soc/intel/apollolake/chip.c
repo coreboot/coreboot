@@ -16,6 +16,7 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/acpi.h>
 #include <bootstate.h>
 #include <cbmem.h>
 #include <console/console.h>
@@ -56,6 +57,7 @@ static struct device_operations cpu_bus_ops = {
 	.enable_resources = DEVICE_NOOP,
 	.init = apollolake_init_cpus,
 	.scan_bus = NULL,
+	.acpi_fill_ssdt_generator = generate_cpu_entries,
 };
 
 static void enable_dev(device_t dev)

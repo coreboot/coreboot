@@ -19,9 +19,20 @@
 #include <device/pci.h>
 #include <soc/bootblock.h>
 #include <soc/cpu.h>
+#include <soc/gpio.h>
 #include <soc/northbridge.h>
 #include <soc/pci_devs.h>
 #include <soc/uart.h>
+
+static const struct pad_config tpm_spi_configs[] = {
+	PAD_CFG_NF(GPIO_106, NATIVE, DEEP, NF3),	/* FST_SPI_CS2_N */
+};
+
+static void tpm_enable(void)
+{
+	/* Configure gpios */
+	gpio_configure_pads(tpm_spi_configs, ARRAY_SIZE(tpm_spi_configs));
+}
 
 void asmlinkage bootblock_c_entry(void)
 {
@@ -45,4 +56,7 @@ void bootblock_soc_early_init(void)
 	/* Prepare UART for serial console. */
 	if (IS_ENABLED(CONFIG_SOC_UART_DEBUG))
 		soc_console_uart_init();
+
+	if (IS_ENABLED(CONFIG_LPC_TPM))
+		tpm_enable();
 }

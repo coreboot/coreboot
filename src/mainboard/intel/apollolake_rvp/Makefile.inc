@@ -1,3 +1,2 @@
-bootblock-$(CONFIG_LPC_TPM) += bootblock.c
-
+#Nothing here yet
 

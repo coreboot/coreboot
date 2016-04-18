@@ -22,9 +22,18 @@
 #include <cbmem.h>
 #include <cpu/x86/smm.h>
 #include <soc/acpi.h>
+#include <soc/intel/common/acpi.h>
 #include <soc/iomap.h>
 #include <soc/pm.h>
 #include <soc/nvs.h>
+
+#define CSTATE_RES(address_space, width, offset, address)		\
+	{								\
+	.space_id = address_space,					\
+	.bit_width = width,						\
+	.bit_offset = offset,						\
+	.addrl = address,						\
+	}
 
 unsigned long acpi_fill_mcfg(unsigned long current)
 {
@@ -156,4 +165,36 @@ void southbridge_inject_dsdt(device_t device)
 		acpigen_write_name_dword("NVSA", (uintptr_t)gnvs);
 		acpigen_pop_len();
 	}
+}
+static acpi_cstate_t cstate_map[] = {
+	{
+		/* C1 */
+		.ctype = 1, /* ACPI C1 */
+		.latency = 1,
+		.power = 1000,
+		.resource = CSTATE_RES(ACPI_ADDRESS_SPACE_FIXED, 0, 0, 0),
+	},
+	{
+		.ctype = 2, /* ACPI C2 */
+		.latency = 50,
+		.power = 10,
+		.resource = CSTATE_RES(ACPI_ADDRESS_SPACE_IO, 8, 0, 0x415),
+	},
+	{
+		.ctype = 3, /* ACPI C3 */
+		.latency = 150,
+		.power = 10,
+		.resource = CSTATE_RES(ACPI_ADDRESS_SPACE_IO, 8, 0, 0x419),
+	}
+};
+
+acpi_cstate_t *soc_get_cstate_map(int *entries)
+{
+	*entries = ARRAY_SIZE(cstate_map);
+	return cstate_map;
+}
+
+uint16_t soc_get_acpi_base_address(void)
+{
+	return ACPI_PMIO_BASE;
 }

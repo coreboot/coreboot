@@ -109,7 +109,7 @@ AmdAgesaDispatcher (
 
   // 3. If not this image specific function, see if we can find alternative image instead
   if (Status == AGESA_UNSUPPORTED) {
-    if ((((AMD_CONFIG_PARAMS *)ConfigPtr)->AltImageBasePtr != 0xFFFFFFFF  ) || (((AMD_CONFIG_PARAMS *)ConfigPtr)->AltImageBasePtr != 0)) {
+    if ((((AMD_CONFIG_PARAMS *)ConfigPtr)->AltImageBasePtr != 0xFFFFFFFF  ) && (((AMD_CONFIG_PARAMS *)ConfigPtr)->AltImageBasePtr != 0)) {
       ImageStart = ((AMD_CONFIG_PARAMS *)ConfigPtr)->AltImageBasePtr;
       ImageEnd = ImageStart + 4;
       // Locate/test image base that matches this component

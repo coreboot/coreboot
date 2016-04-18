@@ -337,4 +337,125 @@
 #define PAD_W(pad)			(pad - W_OFFSET)
 #define PAD_SW(pad)			(pad - SW_OFFSET)
 
+/* Default configurations */
+#define PAD_CFG0_DEFAULT_FUNC(x)	(PAD_CFG0_RESET_DEEP | PAD_CFG0_MODE_FUNC(x))
+#define PAD_CFG0_DEFAULT_NATIVE		PAD_CFG0_DEFAULT_FUNC(1)
+
+#define PAD_CFG1_DEFAULT_PULLUP		PAD_CFG1_PULL_UP_20K
+#define PAD_CFG1_DEFAULT_NATIVE		PAD_CFG1_PULL_NATIVE
+
+/*
+ * IOxAPIC IRQs for the GPIOs, overlap is expected as we encourage to use
+ * shared IRQ instead of direct IRQ, in case of overlapping, we can easily
+ * program one of the overlap to shared IRQ to avoid the conflict.
+ */
+
+/* NorthWest community pads */
+#define PMIC_I2C_SDA_IRQ		0x32
+#define GPIO_74_IRQ			0x33
+#define GPIO_75_IRQ			0x34
+#define GPIO_76_IRQ			0x35
+#define GPIO_77_IRQ			0x36
+#define GPIO_78_IRQ			0x37
+#define GPIO_79_IRQ			0x38
+#define GPIO_80_IRQ			0x39
+#define GPIO_81_IRQ			0x3A
+#define GPIO_82_IRQ			0x3B
+#define GPIO_83_IRQ			0x3C
+#define GPIO_84_IRQ			0x3D
+#define GPIO_85_IRQ			0x3E
+#define GPIO_86_IRQ			0x3F
+#define GPIO_87_IRQ			0x40
+#define GPIO_88_IRQ			0x41
+#define GPIO_89_IRQ			0x42
+#define GPIO_90_IRQ			0x43
+#define GPIO_91_IRQ			0x44
+#define GPIO_97_IRQ			0x49
+#define GPIO_98_IRQ			0x4A
+#define GPIO_99_IRQ			0x4B
+#define GPIO_100_IRQ			0x4C
+#define GPIO_101_IRQ			0x4D
+#define GPIO_102_IRQ			0x4E
+#define GPIO_103_IRQ			0x4F
+#define GPIO_104_IRQ			0x50
+#define GPIO_105_IRQ			0x51
+#define GPIO_106_IRQ			0x52
+#define GPIO_109_IRQ			0x54
+#define GPIO_110_IRQ			0x55
+#define GPIO_111_IRQ			0x56
+#define GPIO_112_IRQ			0x57
+#define GPIO_113_IRQ			0x58
+#define GPIO_116_IRQ			0x5B
+#define GPIO_117_IRQ			0x5C
+#define GPIO_118_IRQ			0x5D
+#define GPIO_119_IRQ			0x5E
+#define GPIO_120_IRQ			0x5F
+#define GPIO_121_IRQ			0x60
+#define GPIO_122_IRQ			0x61
+#define GPIO_123_IRQ			0x62
+
+/* North community pads */
+#define GPIO_0_IRQ			0x63
+#define GPIO_1_IRQ			0x64
+#define GPIO_2_IRQ			0x65
+#define GPIO_3_IRQ			0x66
+#define GPIO_4_IRQ			0x67
+#define GPIO_5_IRQ			0x68
+#define GPIO_6_IRQ			0x69
+#define GPIO_7_IRQ			0x6A
+#define GPIO_8_IRQ			0x6B
+#define GPIO_9_IRQ			0x6C
+#define GPIO_10_IRQ			0x6D
+#define GPIO_11_IRQ			0x6E
+#define GPIO_12_IRQ			0x6F
+#define GPIO_13_IRQ			0x6F
+#define GPIO_14_IRQ			0x71
+#define GPIO_15_IRQ			0x72
+#define GPIO_16_IRQ			0x73
+#define GPIO_17_IRQ			0x74
+#define GPIO_18_IRQ			0x75
+#define GPIO_19_IRQ			0x76
+#define GPIO_20_IRQ			0x77
+#define GPIO_21_IRQ			0x32
+#define GPIO_22_IRQ			0x33
+#define GPIO_23_IRQ			0x34
+#define GPIO_24_IRQ			0x35
+#define GPIO_25_IRQ			0x36
+#define GPIO_26_IRQ			0x37
+#define GPIO_27_IRQ			0x38
+#define GPIO_28_IRQ			0x39
+#define GPIO_29_IRQ			0x3A
+#define GPIO_30_IRQ			0x3B
+#define GPIO_31_IRQ			0x3C
+#define GPIO_32_IRQ			0x3D
+#define GPIO_33_IRQ			0x3E
+#define GPIO_34_IRQ			0x3F
+#define GPIO_35_IRQ			0x40
+#define GPIO_36_IRQ			0x41
+#define GPIO_37_IRQ			0x42
+#define GPIO_38_IRQ			0x43
+#define GPIO_39_IRQ			0x44
+#define GPIO_40_IRQ			0x45
+#define GPIO_41_IRQ			0x46
+#define GPIO_42_IRQ			0x47
+#define GPIO_43_IRQ			0x48
+#define GPIO_44_IRQ			0x49
+#define GPIO_45_IRQ			0x4A
+#define GPIO_46_IRQ			0x4B
+#define GPIO_47_IRQ			0x4C
+#define GPIO_48_IRQ			0x4D
+#define GPIO_49_IRQ			0x4E
+#define GPIO_62_IRQ			0x5B
+#define GPIO_63_IRQ			0x5C
+#define GPIO_64_IRQ			0x5D
+#define GPIO_65_IRQ			0x5E
+#define GPIO_66_IRQ			0x5F
+#define GPIO_67_IRQ			0x60
+#define GPIO_68_IRQ			0x61
+#define GPIO_69_IRQ			0x62
+#define GPIO_70_IRQ			0x63
+#define GPIO_71_IRQ			0x64
+#define GPIO_72_IRQ			0x65
+#define GPIO_73_IRQ			0x66
+
 #endif /* _SOC_APOLLOLAKE_GPIO_DEFS_H_ */

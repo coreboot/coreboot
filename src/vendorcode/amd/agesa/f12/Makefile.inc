@@ -91,7 +91,6 @@ CPPFLAGS_x86_64 += $(AGESA_INC)
 libagesa-y += Legacy/Proc/agesaCallouts.c
 libagesa-y += Legacy/Proc/Dispatcher.c
 libagesa-y += Legacy/Proc/hobTransfer.c
-libagesa-y += Lib/amdlib.c
 libagesa-y += Proc/Common/AmdInitEarly.c
 libagesa-y += Proc/Common/AmdInitEnv.c
 libagesa-y += Proc/Common/AmdInitLate.c

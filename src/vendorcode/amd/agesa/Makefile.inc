@@ -8,6 +8,8 @@ subdirs-$(CONFIG_CPU_AMD_AGESA_FAMILY16_KB) += f16kb
 
 ifeq ($(CONFIG_CPU_AMD_AGESA),y)
 
+subdirs-y += common
+
 classes-y += libagesa
 libagesa-y =
 

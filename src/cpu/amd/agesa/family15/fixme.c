@@ -17,6 +17,35 @@
 #include <northbridge/amd/agesa/agesawrapper.h>
 #include "amdlib.h"
 
+UINT64
+MsrRead (
+  IN       UINT32 MsrAddress
+  );
+
+VOID
+MsrWrite (
+  IN       UINT32 MsrAddress,
+  IN			 UINT64 Value
+  );
+
+
+UINT64
+MsrRead (
+  IN       UINT32 MsrAddress
+  )
+{
+  return __readmsr (MsrAddress);
+}
+
+VOID
+MsrWrite (
+  IN       UINT32 MsrAddress,
+  IN			 UINT64 Value
+  )
+{
+  __writemsr (MsrAddress, Value);
+}
+
 #if !IS_ENABLED(CONFIG_BOARD_AMD_DINAR)
 void amd_initcpuio(void)
 {

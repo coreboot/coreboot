@@ -106,7 +106,7 @@
 #endif
 
 #include "Fch.h"
-#include <Lib/amdlib.h>
+#include "amdlib.h"
 #include "Common/FchCommonCfg.h"
 #include "Common/AcpiLib.h"
 #include "Common/FchDef.h"

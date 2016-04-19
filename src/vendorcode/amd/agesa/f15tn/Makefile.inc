@@ -88,7 +88,6 @@ CPPFLAGS_x86_64 += $(AGESA_INC)
 libagesa-y += Legacy/Proc/Dispatcher.c
 libagesa-y += Legacy/Proc/agesaCallouts.c
 libagesa-y += Legacy/Proc/hobTransfer.c
-libagesa-y += Lib/amdlib.c
 libagesa-y += Proc/CPU/Family/0x15/TN/F15TnC6State.c
 libagesa-y += Proc/CPU/Family/0x15/TN/F15TnCpb.c
 libagesa-y += Proc/CPU/Family/0x15/TN/F15TnEquivalenceTable.c

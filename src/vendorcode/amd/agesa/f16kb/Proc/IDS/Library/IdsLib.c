@@ -1013,3 +1013,12 @@ IdsLibDataMaskSet32 (
 
 
 
+VOID
+IdsOutPort (
+  IN       UINT32 Addr,
+  IN       UINT32 Value,
+  IN       UINT32 Flag
+  )
+{
+  __outdword ((UINT16) Addr, Value);
+}

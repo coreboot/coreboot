@@ -98,7 +98,6 @@ libagesa-y += Proc/Common/AmdS3LateRestore.c
 libagesa-y += Proc/CPU/Table.c
 libagesa-y += Proc/HT/htInterface.c
 libagesa-y += Proc/IDS/Perf/IdsPerf.c
-libagesa-y += Lib/amdlib.c
 libagesa-y += Proc/CPU/Feature/cpuCacheFlushOnHalt.c
 libagesa-y += Proc/Mem/Main/minit.c
 libagesa-y += Proc/Mem/Feat/INTLVRN/mfintlvrn.c

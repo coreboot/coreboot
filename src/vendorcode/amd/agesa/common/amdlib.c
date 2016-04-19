@@ -9,11 +9,11 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:      AGESA
  * @e sub-project:  Lib
- * @e \$Revision: 44323 $   @e \$Date: 2010-12-22 01:24:58 -0700 (Wed, 22 Dec 2010) $
+ * @e \$Revision: 44325 $   @e \$Date: 2010-12-22 03:29:53 -0700 (Wed, 22 Dec 2010) $
  *
  */
 /*
- ******************************************************************************
+ *****************************************************************************
  *
  * Copyright (c) 2011, Advanced Micro Devices, Inc.
  * All rights reserved.
@@ -40,7 +40,8 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- ******************************************************************************
+ * ***************************************************************************
+ *
  */
 
 
@@ -54,6 +55,9 @@
 #include "cpuRegisters.h"
 #include "amdlib.h"
 #include "Filecode.h"
+CODE_GROUP (G1_PEICC)
+RDATA_GROUP (G1_PEICC)
+
 #define FILECODE LIB_AMDLIB_FILECODE
 
 /*----------------------------------------------------------------------------------------
@@ -86,8 +90,8 @@ VOID
 STATIC
 LibAmdGetDataFromPtr (
   IN       ACCESS_WIDTH AccessWidth,
-  IN       VOID         *Data,
-  IN       VOID         *DataMask,
+  IN       CONST VOID   *Data,
+  IN       CONST VOID   *DataMask,
      OUT   UINT32       *TemData,
      OUT   UINT32       *TempDataMask
   );
@@ -282,6 +286,7 @@ LibAmdReadCpuReg (
       break;
     default:
       *Value = -1;
+      break;
   }
 }
 VOID
@@ -310,7 +315,7 @@ LibAmdWriteCpuReg (
       __writedr (7, Value);
       break;
     default:
-      ;
+      break;
   }
 }
 VOID
@@ -443,15 +448,6 @@ LibAmdCLFlush (
 #endif //__SSE3__
 
 VOID
-IdsOutPort (
-  IN       UINT32 Addr,
-  IN       UINT32 Value,
-  IN       UINT32 Flag
-  )
-{
-  __outdword ((UINT16) Addr, Value);
-}
-VOID
 StopHere (
   VOID
   )
@@ -460,6 +456,12 @@ StopHere (
   while (x);
 }
 
+VOID
+LibAmdFinit()
+{
+	/* TODO: finit */
+	__asm__ volatile ("finit");
+}
 /*---------------------------------------------------------------------------------------*/
 /**
  * Read IO port
@@ -480,20 +482,21 @@ LibAmdIoRead (
   )
 {
   switch (AccessWidth) {
-  case AccessWidth8:
-  case AccessS3SaveWidth8:
-    *(UINT8 *) Value = ReadIo8 (IoAddress);
-    break;
-  case AccessWidth16:
-  case AccessS3SaveWidth16:
-    *(UINT16 *) Value = ReadIo16 (IoAddress);
-    break;
-  case AccessWidth32:
-  case AccessS3SaveWidth32:
-    *(UINT32 *) Value = ReadIo32 (IoAddress);
-    break;
+    case AccessWidth8:
+    case AccessS3SaveWidth8:
+      *(UINT8 *) Value = ReadIo8 (IoAddress);
+      break;
+    case AccessWidth16:
+    case AccessS3SaveWidth16:
+      *(UINT16 *) Value = ReadIo16 (IoAddress);
+      break;
+    case AccessWidth32:
+    case AccessS3SaveWidth32:
+      *(UINT32 *) Value = ReadIo32 (IoAddress);
+      break;
   default:
     ASSERT (FALSE);
+    break;
   }
 }
 
@@ -512,25 +515,26 @@ VOID
 LibAmdIoWrite (
   IN       ACCESS_WIDTH AccessWidth,
   IN       UINT16 IoAddress,
-  IN       VOID *Value,
+  IN       CONST VOID *Value,
   IN OUT   AMD_CONFIG_PARAMS *StdHeader
   )
 {
   switch (AccessWidth) {
-  case AccessWidth8:
-  case AccessS3SaveWidth8:
-    WriteIo8 (IoAddress, *(UINT8 *) Value);
-    break;
-  case AccessWidth16:
-  case AccessS3SaveWidth16:
-    WriteIo16 (IoAddress, *(UINT16 *) Value);
-    break;
-  case AccessWidth32:
-  case AccessS3SaveWidth32:
-    WriteIo32 (IoAddress, *(UINT32 *) Value);
-    break;
-  default:
-    ASSERT (FALSE);
+    case AccessWidth8:
+    case AccessS3SaveWidth8:
+      WriteIo8 (IoAddress, *(UINT8 *) Value);
+      break;
+    case AccessWidth16:
+    case AccessS3SaveWidth16:
+      WriteIo16 (IoAddress, *(UINT16 *) Value);
+      break;
+    case AccessWidth32:
+    case AccessS3SaveWidth32:
+      WriteIo32 (IoAddress, *(UINT32 *) Value);
+      break;
+    default:
+     ASSERT (FALSE);
+     break;
   }
 }
 
@@ -550,14 +554,14 @@ VOID
 LibAmdIoRMW (
   IN       ACCESS_WIDTH AccessWidth,
   IN       UINT16 IoAddress,
-  IN       VOID *Data,
-  IN       VOID *DataMask,
+  IN       CONST VOID *Data,
+  IN       CONST VOID *DataMask,
   IN OUT   AMD_CONFIG_PARAMS *StdHeader
   )
 {
   UINT32  TempData = 0;
   UINT32  TempMask = 0;
-  UINT32  Value;
+  UINT32  Value = 0;
   LibAmdGetDataFromPtr (AccessWidth, Data,  DataMask, &TempData, &TempMask);
   LibAmdIoRead (AccessWidth, IoAddress, &Value, StdHeader);
   Value = (Value & (~TempMask)) | TempData;
@@ -582,8 +586,8 @@ VOID
 LibAmdIoPoll (
   IN       ACCESS_WIDTH AccessWidth,
   IN       UINT16 IoAddress,
-  IN       VOID *Data,
-  IN       VOID *DataMask,
+  IN       CONST VOID *Data,
+  IN       CONST VOID *DataMask,
   IN       UINT64 Delay,
   IN OUT   AMD_CONFIG_PARAMS *StdHeader
   )
@@ -617,20 +621,21 @@ LibAmdMemRead (
   )
 {
   switch (AccessWidth) {
-  case AccessWidth8:
-  case AccessS3SaveWidth8:
-    *(UINT8 *) Value = Read64Mem8 (MemAddress);
-    break;
-  case AccessWidth16:
-  case AccessS3SaveWidth16:
-    *(UINT16 *) Value = Read64Mem16 (MemAddress);
-    break;
-  case AccessWidth32:
-  case AccessS3SaveWidth32:
-    *(UINT32 *) Value = Read64Mem32 (MemAddress);
-    break;
-  default:
-    ASSERT (FALSE);
+    case AccessWidth8:
+    case AccessS3SaveWidth8:
+      *(UINT8 *) Value = Read64Mem8 (MemAddress);
+      break;
+    case AccessWidth16:
+    case AccessS3SaveWidth16:
+      *(UINT16 *) Value = Read64Mem16 (MemAddress);
+      break;
+    case AccessWidth32:
+    case AccessS3SaveWidth32:
+      *(UINT32 *) Value = Read64Mem32 (MemAddress);
+      break;
+    default:
+      ASSERT (FALSE);
+      break;
   }
 }
 
@@ -649,26 +654,27 @@ VOID
 LibAmdMemWrite (
   IN       ACCESS_WIDTH AccessWidth,
   IN       UINT64 MemAddress,
-  IN       VOID *Value,
+  IN       CONST VOID *Value,
   IN OUT   AMD_CONFIG_PARAMS *StdHeader
   )
 {
 
   switch (AccessWidth) {
-  case AccessWidth8:
-  case AccessS3SaveWidth8:
-    Write64Mem8 (MemAddress, *((UINT8 *) Value));
-    break;
-  case AccessWidth16:
-  case AccessS3SaveWidth16:
-    Write64Mem16 (MemAddress, *((UINT16 *) Value));
-    break;
-  case AccessWidth32:
-  case AccessS3SaveWidth32:
-    Write64Mem32 (MemAddress, *((UINT32 *) Value));
-    break;
-  default:
-    ASSERT (FALSE);
+    case AccessWidth8:
+    case AccessS3SaveWidth8:
+      Write64Mem8 (MemAddress, *((UINT8 *) Value));
+      break;
+    case AccessWidth16:
+    case AccessS3SaveWidth16:
+      Write64Mem16 (MemAddress, *((UINT16 *) Value));
+      break;
+    case AccessWidth32:
+    case AccessS3SaveWidth32:
+      Write64Mem32 (MemAddress, *((UINT32 *) Value));
+      break;
+    default:
+      ASSERT (FALSE);
+      break;
   }
 }
 /*---------------------------------------------------------------------------------------*/
@@ -687,8 +693,8 @@ VOID
 LibAmdMemRMW (
   IN       ACCESS_WIDTH AccessWidth,
   IN       UINT64 MemAddress,
-  IN       VOID *Data,
-  IN       VOID *DataMask,
+  IN       CONST VOID *Data,
+  IN       CONST VOID *DataMask,
   IN OUT   AMD_CONFIG_PARAMS *StdHeader
   )
 {
@@ -719,8 +725,8 @@ VOID
 LibAmdMemPoll (
   IN       ACCESS_WIDTH AccessWidth,
   IN       UINT64 MemAddress,
-  IN       VOID *Data,
-  IN       VOID *DataMask,
+  IN       CONST VOID *Data,
+  IN       CONST VOID *DataMask,
   IN       UINT64 Delay,
   IN OUT   AMD_CONFIG_PARAMS *StdHeader
   )
@@ -798,7 +804,7 @@ VOID
 LibAmdPciWrite (
   IN       ACCESS_WIDTH AccessWidth,
   IN       PCI_ADDR PciAddress,
-  IN       VOID *Value,
+  IN       CONST VOID *Value,
   IN OUT   AMD_CONFIG_PARAMS *StdHeader
   )
 {
@@ -848,8 +854,8 @@ VOID
 LibAmdPciRMW (
   IN       ACCESS_WIDTH AccessWidth,
   IN       PCI_ADDR PciAddress,
-  IN       VOID *Data,
-  IN       VOID *DataMask,
+  IN       CONST VOID *Data,
+  IN       CONST VOID *DataMask,
   IN OUT   AMD_CONFIG_PARAMS *StdHeader
   )
 {
@@ -880,8 +886,8 @@ VOID
 LibAmdPciPoll (
   IN       ACCESS_WIDTH AccessWidth,
   IN       PCI_ADDR PciAddress,
-  IN       VOID *Data,
-  IN       VOID *DataMask,
+  IN       CONST VOID *Data,
+  IN       CONST VOID *DataMask,
   IN       UINT64 Delay,
   IN OUT   AMD_CONFIG_PARAMS *StdHeader
   )
@@ -980,7 +986,7 @@ LibAmdPciWriteBits (
   IN       PCI_ADDR Address,
   IN       UINT8 Highbit,
   IN       UINT8 Lowbit,
-  IN       UINT32 *Value,
+  IN       CONST UINT32 *Value,
   IN       AMD_CONFIG_PARAMS *StdHeader
   )
 {
@@ -1116,13 +1122,13 @@ LibAmdMemFill (
 VOID
 LibAmdMemCopy (
   IN       VOID *Destination,
-  IN       VOID *Source,
+  IN       CONST VOID *Source,
   IN       UINTN CopyLength,
   IN OUT   AMD_CONFIG_PARAMS *StdHeader
   )
 {
   UINT8 *Dest;
-  UINT8 *SourcePtr;
+  CONST UINT8 *SourcePtr;
   ASSERT (StdHeader != NULL);
   Dest = Destination;
   SourcePtr = Source;
@@ -1130,7 +1136,6 @@ LibAmdMemCopy (
     *Dest++ = *SourcePtr++;
   }
 }
-
 
 /*---------------------------------------------------------------------------------------*/
 /**
@@ -1171,30 +1176,31 @@ VOID
 STATIC
 LibAmdGetDataFromPtr (
   IN       ACCESS_WIDTH AccessWidth,
-  IN       VOID         *Data,
-  IN       VOID         *DataMask,
+  IN       CONST VOID   *Data,
+  IN       CONST VOID   *DataMask,
      OUT   UINT32       *TemData,
      OUT   UINT32       *TempDataMask
   )
 {
   switch (AccessWidth) {
-  case AccessWidth8:
-  case AccessS3SaveWidth8:
-    *TemData = (UINT32)*(UINT8 *) Data;
-    *TempDataMask = (UINT32)*(UINT8 *) DataMask;
-    break;
-  case AccessWidth16:
-  case AccessS3SaveWidth16:
-    *TemData = (UINT32)*(UINT16 *) Data;
-    *TempDataMask = (UINT32)*(UINT16 *) DataMask;
-    break;
-  case AccessWidth32:
-  case AccessS3SaveWidth32:
-    *TemData = *(UINT32 *) Data;
-    *TempDataMask = *(UINT32 *) DataMask;
-    break;
-  default:
-    IDS_ERROR_TRAP;
+    case AccessWidth8:
+    case AccessS3SaveWidth8:
+      *TemData = (UINT32)*(UINT8 *) Data;
+      *TempDataMask = (UINT32)*(UINT8 *) DataMask;
+      break;
+    case AccessWidth16:
+    case AccessS3SaveWidth16:
+      *TemData = (UINT32)*(UINT16 *) Data;
+      *TempDataMask = (UINT32)*(UINT16 *) DataMask;
+      break;
+    case AccessWidth32:
+    case AccessS3SaveWidth32:
+      *TemData = *(UINT32 *) Data;
+      *TempDataMask = *(UINT32 *) DataMask;
+      break;
+    default:
+      IDS_ERROR_TRAP;
+      break;
   }
 }
 
@@ -1216,25 +1222,26 @@ LibAmdAccessWidth (
   UINT8 Width;
 
   switch (AccessWidth) {
-  case AccessWidth8:
-  case AccessS3SaveWidth8:
-    Width = 1;
-    break;
-  case AccessWidth16:
-  case AccessS3SaveWidth16:
-    Width = 2;
-    break;
-  case AccessWidth32:
-  case AccessS3SaveWidth32:
-    Width = 4;
-    break;
-  case AccessWidth64:
-  case AccessS3SaveWidth64:
-    Width = 8;
-    break;
-  default:
-    Width = 0;
-    IDS_ERROR_TRAP;
+    case AccessWidth8:
+    case AccessS3SaveWidth8:
+      Width = 1;
+      break;
+    case AccessWidth16:
+    case AccessS3SaveWidth16:
+      Width = 2;
+      break;
+    case AccessWidth32:
+    case AccessS3SaveWidth32:
+      Width = 4;
+      break;
+    case AccessWidth64:
+    case AccessS3SaveWidth64:
+      Width = 8;
+      break;
+    default:
+      Width = 0;
+      IDS_ERROR_TRAP;
+      break;
   }
   return Width;
 }

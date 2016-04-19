@@ -190,7 +190,6 @@ libagesa-y += Proc/CPU/Family/0x14/cpuF14Utilities.c
 libagesa-y += Proc/HT/htInterface.c
 libagesa-y += Proc/GNB/Gfx/GfxStrapsInit.c
 libagesa-y += Proc/GNB/Nb/NbInitAtEarly.c
-libagesa-y += Lib/amdlib.c
 libagesa-y += Proc/CPU/Feature/cpuCacheFlushOnHalt.c
 libagesa-y += Proc/CPU/Feature/cpuCpb.c
 libagesa-y += Proc/Mem/Main/minit.c

@@ -63,31 +63,6 @@
 #define    DR3_REG  0x13
 #define    DR7_REG  0x17
 
-/*----------------------------------------------------------------------------------------
- *                  T Y P E D E F S     A N D     S T R U C T U  R E S
- *----------------------------------------------------------------------------------------
- */
-/*----------------------------------------------------------------------------------------
- *           P R O T O T Y P E S     O F     L O C A L     F U  N C T I O N S
- *----------------------------------------------------------------------------------------
- */
-
-
-/*----------------------------------------------------------------------------------------
- *                          E X P O R T E D    F U N C T I O N S
- *----------------------------------------------------------------------------------------
- */
-
-#if !defined __GNUC__
-// PROTOTYPES FOR amdlib32.asm
-void _mm_stream_si128_fs (void *__A, void *__B);
-void _mm_store_si128_fs (void *dest, void *data);
-void _mm_clflush_fs (void *address32);
-#endif
-/*---------------------------------------------------------------------------------------
- *                          L O C A L    F U N C T I O N S
- *---------------------------------------------------------------------------------------
- */
 UINT8
 ReadIo8 (
   IN       UINT16 Address
@@ -382,11 +357,10 @@ VOID F10RevDProbeFilterCritical (
   IN       PCI_ADDR PciAddress,
   IN       UINT32   PciRegister
   );
+
 VOID
-IdsOutPort (
-  IN       UINT32 Addr,
-  IN       UINT32 Value,
-  IN       UINT32 Flag
+LibAmdFinit (
+  VOID
   );
 
 VOID
@@ -394,6 +368,7 @@ StopHere (
   VOID
   );
 
+/* For f14 or older. */
 VOID
 CpuidRead (
   IN        UINT32      CpuidFcnAddress,
@@ -404,5 +379,20 @@ UINT8
 ReadNumberOfCpuCores(
   VOID
   );
+
+/* From 16kb, no implementation supplied. */
+VOID
+LibAmdFnclex (
+  VOID);
+
+VOID
+LibAmdReadMxcsr (
+     OUT   UINT32 *Value
+  );
+VOID
+LibAmdWriteMxcsr (
+  IN       UINT32 *Value
+  );
+
 
 #endif // _AMD_LIB_H_

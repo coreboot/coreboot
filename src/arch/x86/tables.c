@@ -212,7 +212,4 @@ void write_tables(void)
 		write_coreboot_table(low_table_start, low_table_end,
 				     rom_table_start, rom_table_end);
 	}
-
-	/* Print CBMEM sections */
-	cbmem_list();
 }

@@ -572,6 +572,9 @@ unsigned long write_coreboot_table(
 	/* Add all cbmem entries into the coreboot tables. */
 	cbmem_add_records_to_cbtable(head);
 
+	/* Print CBMEM sections */
+	cbmem_list();
+
 	/* Remember where my valid memory ranges are */
 	return lb_table_fini(head);
 }

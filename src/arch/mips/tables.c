@@ -51,9 +51,6 @@ void write_tables(void)
 	       new_table_pointer - table_pointer);
 
 	post_code(0x9e);
-
-	/* Print CBMEM sections */
-	cbmem_list();
 }
 
 void lb_arch_add_records(struct lb_header *header)

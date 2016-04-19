@@ -445,6 +445,19 @@ static unsigned long lb_table_fini(struct lb_header *head)
 	return (unsigned long)rec + rec->size;
 }
 
+size_t write_coreboot_forwarding_table(uintptr_t entry, uintptr_t target)
+{
+	struct lb_header *head;
+
+	printk(BIOS_DEBUG, "Writing table forward entry at 0x%p\n",
+		(void *)entry);
+
+	head = lb_table_init(entry);
+	lb_forward(head, (struct lb_header*)target);
+
+	return (uintptr_t)lb_table_fini(head) - entry;
+}
+
 unsigned long write_coreboot_table(
 	unsigned long low_table_start, unsigned long low_table_end,
 	unsigned long rom_table_start __unused, unsigned long rom_table_end)

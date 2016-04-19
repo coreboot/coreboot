@@ -17,6 +17,7 @@
 
 #include <console/console.h>
 #include <cpu/cpu.h>
+#include <bootmem.h>
 #include <boot/tables.h>
 #include <boot/coreboot_tables.h>
 #include <arch/pirq_routing.h>
@@ -178,6 +179,10 @@ static unsigned long write_smbios_table(unsigned long rom_table_end)
 	}
 
 	return rom_table_end;
+}
+
+void bootmem_arch_add_ranges(void)
+{
 }
 
 void write_tables(void)

@@ -18,11 +18,16 @@
 
 #include <console/console.h>
 #include <cpu/cpu.h>
+#include <bootmem.h>
 #include <boot/tables.h>
 #include <boot/coreboot_tables.h>
 #include <string.h>
 #include <cbmem.h>
 #include <lib.h>
+
+void bootmem_arch_add_ranges(void)
+{
+}
 
 #define MAX_COREBOOT_TABLE_SIZE CONFIG_COREBOOT_TABLE_SIZE
 

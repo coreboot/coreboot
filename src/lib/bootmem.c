@@ -39,6 +39,8 @@ void bootmem_init(void)
 
 	/* Add memory used by CBMEM. */
 	cbmem_add_bootmem();
+
+	bootmem_arch_add_ranges();
 }
 
 void bootmem_add_range(uint64_t start, uint64_t size, uint32_t type)

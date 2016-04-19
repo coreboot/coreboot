@@ -26,6 +26,9 @@
  */
 void bootmem_init(void);
 
+/* Architecture hook to add bootmem areas the architecture controls. */
+void bootmem_arch_add_ranges(void);
+
 /* Add a range of a given type to the bootmem address space. */
 void bootmem_add_range(uint64_t start, uint64_t size, uint32_t type);
 

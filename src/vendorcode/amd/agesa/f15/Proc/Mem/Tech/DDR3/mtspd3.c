@@ -154,7 +154,7 @@ MemTDIMMPresence3 (
   UINT8 Channel;
   UINT8 i;
   MEM_PARAMETER_STRUCT *RefPtr;
-  UINT8 *SpdBufferPtr;
+  UINT8 *SpdBufferPtr = NULL;
   DIE_STRUCT *MCTPtr;
   DCT_STRUCT *DCTPtr;
   CH_DEF_STRUCT *ChannelPtr;
@@ -461,7 +461,7 @@ MemTSPDGetTargetSpeed3 (
   IN OUT   MEM_TECH_BLOCK *TechPtr
   )
 {
-  UINT8 *SpdBufferPtr;
+  UINT8 *SpdBufferPtr = NULL;
   UINT8 Dimm;
   UINT8 Dct;
   UINT8 Channel;
@@ -541,8 +541,8 @@ MemTSPDCalcWidth3 (
   IN OUT   MEM_TECH_BLOCK *TechPtr
   )
 {
-  UINT8 *SpdBufferAPtr;
-  UINT8 *SpdBufferBPtr;
+  UINT8 *SpdBufferAPtr = NULL;
+  UINT8 *SpdBufferBPtr = NULL;
   MEM_NB_BLOCK *NBPtr;
   DIE_STRUCT *MCTPtr;
   DCT_STRUCT *DCTPtr;
@@ -662,7 +662,7 @@ MemTAutoCycTiming3 (
     0
   };
 
-  UINT8  *SpdBufferPtr;
+  UINT8  *SpdBufferPtr = NULL;
   INT32  MiniMaxTmg[GET_SIZE_OF (SpdIndexes)];
   UINT8  MiniMaxTrfc[4];
 
@@ -788,7 +788,7 @@ MemTSPDSetBanks3 (
   IN OUT   MEM_TECH_BLOCK *TechPtr
   )
 {
-  UINT8 *SpdBufferPtr;
+  UINT8 *SpdBufferPtr = NULL;
   UINT8 i;
   UINT8 ChipSel;
   UINT8 DimmID;
@@ -1009,7 +1009,7 @@ MemTSPDGetTCL3 (
   IN OUT   MEM_TECH_BLOCK *TechPtr
   )
 {
-  UINT8  *SpdBufferPtr;
+  UINT8  *SpdBufferPtr = NULL;
   UINT8 CLdesired;
   UINT8 CLactual;
   UINT8 Dimm;

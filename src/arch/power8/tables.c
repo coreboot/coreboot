@@ -25,8 +25,7 @@
 
 #define MAX_COREBOOT_TABLE_SIZE (8 * 1024)
 
-// WTF. this does not agree with the prototype!
-static struct lb_memory *wtf_write_tables(void)
+void write_tables(void)
 {
 	unsigned long table_pointer, new_table_pointer;
 
@@ -36,7 +35,7 @@ static struct lb_memory *wtf_write_tables(void)
 						MAX_COREBOOT_TABLE_SIZE);
 	if (!table_pointer) {
 		printk(BIOS_ERR, "Could not add CBMEM for coreboot table.\n");
-		return NULL;
+		return;
 	}
 
 	new_table_pointer = write_coreboot_table(0UL, 0UL,
@@ -55,16 +54,8 @@ static struct lb_memory *wtf_write_tables(void)
 
 	/* Print CBMEM sections */
 	cbmem_list();
-
-//	return get_lb_mem();
-	return NULL;
 }
 
 void lb_arch_add_records(struct lb_header *header)
 {
-}
-
-void write_tables(void)
-{
-	wtf_write_tables();
 }

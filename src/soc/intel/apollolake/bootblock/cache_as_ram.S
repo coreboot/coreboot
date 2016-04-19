@@ -63,7 +63,9 @@ clear_var_mtrr:
 	/* Configure default memory type to uncacheable (UC) */
 	mov	$MTRR_DEF_TYPE_MSR, %ecx
 	rdmsr
-	and	$MTRR_DEF_TYPE_MASK, %eax
+	/* Clear enable bits and set default type to UC. */
+	and	$~(MTRR_DEF_TYPE_MASK | MTRR_DEF_TYPE_EN | \
+		   MTRR_DEF_TYPE_FIX_EN), %eax
 	wrmsr
 
 	post_code(0x24)

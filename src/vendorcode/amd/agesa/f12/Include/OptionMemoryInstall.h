@@ -4033,7 +4033,7 @@ BOOLEAN MemFS3DefConstructorRet (
    *---------------------------------------------------------------------------------------------------
    */
   MEM_FEAT_BLOCK_MAIN MemFeatMain = {
-    NULL
+    0
   };
 
   /*---------------------------------------------------------------------------------------------------
@@ -4086,18 +4086,18 @@ BOOLEAN MemFS3DefConstructorRet (
    */
   #if OPTION_DDR2
     MEM_TECH_FEAT_BLOCK  memTechTrainingFeatDDR2 = {
-      NULL
+      0
     };
     MEM_FEAT_TRAIN_SEQ memTrainSequenceDDR2[] = {
-      NULL
+      0
     };
   #endif
   #if OPTION_DDR3
     MEM_TECH_FEAT_BLOCK  memTechTrainingFeatDDR3 = {
-      NULL
+      0
     };
     MEM_FEAT_TRAIN_SEQ memTrainSequenceDDR3[] = {
-      NULL
+      0
     };
   #endif
     /*---------------------------------------------------------------------------------------------------

@@ -447,7 +447,7 @@ static unsigned long lb_table_fini(struct lb_header *head)
 
 unsigned long write_coreboot_table(
 	unsigned long low_table_start, unsigned long low_table_end,
-	unsigned long rom_table_start, unsigned long rom_table_end)
+	unsigned long rom_table_start __unused, unsigned long rom_table_end)
 {
 	struct lb_header *head;
 
@@ -468,10 +468,6 @@ unsigned long write_coreboot_table(
 		rom_table_end);
 
 	head = lb_table_init(rom_table_end);
-	rom_table_end = (unsigned long)head;
-	printk(BIOS_DEBUG, "rom_table_end = 0x%08lx\n", rom_table_end);
-	rom_table_end = ALIGN(rom_table_end, (64 * 1024));
-	printk(BIOS_DEBUG, "... aligned to 0x%08lx\n", rom_table_end);
 
 #if CONFIG_USE_OPTION_TABLE
 	{
@@ -498,15 +494,6 @@ unsigned long write_coreboot_table(
 		/* Record the mptable and the the lb_table.
 		 * (This will be adjusted later)  */
 		bootmem_add_range(low_table_start, size, LB_MEM_TABLE);
-	}
-
-	/* Record the pirq table, acpi tables, and maybe the mptable. However,
-	 * these only need to be added when the rom_table is sitting below
-	 * 1MiB. If it isn't that means high tables are being written.
-	 * The code below handles high tables correctly. */
-	if (rom_table_end <= (1 << 20)) {
-		uint64_t size = rom_table_end - rom_table_start;
-		bootmem_add_range(rom_table_start, size, LB_MEM_TABLE);
 	}
 
 	/* No other memory areas can be added after the memory table has been

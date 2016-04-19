@@ -183,7 +183,7 @@ static unsigned long write_smbios_table(unsigned long rom_table_end)
 void write_tables(void)
 {
 	unsigned long low_table_start, low_table_end;
-	unsigned long rom_table_start, rom_table_end;
+	unsigned long rom_table_end;
 
 	/* Even if high tables are configured, some tables are copied both to
 	 * the low and the high area, so payloads and OSes don't need to know
@@ -191,7 +191,6 @@ void write_tables(void)
 	 */
 	unsigned long high_table_pointer;
 
-	rom_table_start = 0xf0000;
 	rom_table_end =   0xf0000;
 
 	/* Start low addr at 0x500, so we don't run into conflicts with the BDA
@@ -242,8 +241,6 @@ void write_tables(void)
 			printk(BIOS_DEBUG, "coreboot table: %ld bytes.\n",
 				new_high_table_pointer - high_table_pointer);
 	} else {
-		/* The coreboot table must be in 0-4K or 960K-1M */
-		write_coreboot_table(low_table_start, low_table_end,
-				     rom_table_start, rom_table_end);
+		printk(BIOS_ERR, "Could not add CBMEM for coreboot table.\n");
 	}
 }

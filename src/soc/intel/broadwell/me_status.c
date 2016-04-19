@@ -23,6 +23,12 @@
 #include <soc/me.h>
 #include <delay.h>
 
+#define ARRAY_TO_ELEMENT(__array__, __index__, __default__) \
+	(((__index__) < ARRAY_SIZE((__array__))) ? \
+		(__array__)[(__index__)] : \
+		(__default__))
+
+
 static inline void me_read_dword_ptr(void *ptr, int offset)
 {
 	u32 dword = pci_read_config32(PCH_DEV_ME, offset);
@@ -225,23 +231,37 @@ void intel_me_status(void)
 	printk(BIOS_DEBUG, "ME: Update In Progress      : %s\n",
 	       hfs->update_in_progress ? "YES" : "NO");
 	printk(BIOS_DEBUG, "ME: Current Working State   : %s\n",
-	       me_cws_values[hfs->working_state]);
+	       ARRAY_TO_ELEMENT(me_cws_values,
+				hfs->working_state,
+				"Unknown (OOB)"));
 	printk(BIOS_DEBUG, "ME: Current Operation State : %s\n",
-	       me_opstate_values[hfs->operation_state]);
+	       ARRAY_TO_ELEMENT(me_opstate_values,
+				hfs->operation_state,
+				"Unknown (OOB)"));
 	printk(BIOS_DEBUG, "ME: Current Operation Mode  : %s\n",
-	       me_opmode_values[hfs->operation_mode]);
+	       ARRAY_TO_ELEMENT(me_opmode_values,
+				hfs->operation_mode,
+				"Unknown (OOB)"));
 	printk(BIOS_DEBUG, "ME: Error Code              : %s\n",
-	       me_error_values[hfs->error_code]);
+	       ARRAY_TO_ELEMENT(me_error_values,
+				hfs->error_code,
+				"Unknown (OOB)"));
 	printk(BIOS_DEBUG, "ME: Progress Phase          : %s\n",
-	       me_progress_values[hfs2->progress_code]);
+	       ARRAY_TO_ELEMENT(me_progress_values,
+				hfs2->progress_code,
+				"Unknown (OOB)"));
 	printk(BIOS_DEBUG, "ME: Power Management Event  : %s\n",
-	       me_pmevent_values[hfs2->current_pmevent]);
+	       ARRAY_TO_ELEMENT(me_pmevent_values,
+				hfs2->current_pmevent,
+				"Unknown (OOB)"));
 
 	printk(BIOS_DEBUG, "ME: Progress Phase State    : ");
 	switch (hfs2->progress_code) {
 	case ME_HFS2_PHASE_ROM:		/* ROM Phase */
 		printk(BIOS_DEBUG, "%s",
-		       me_progress_rom_values[hfs2->current_state]);
+		       ARRAY_TO_ELEMENT(me_progress_rom_values,
+					hfs2->current_state,
+					"Unknown (OOB)"));
 		break;
 
 	case ME_HFS2_PHASE_UKERNEL:	/* uKernel Phase */
@@ -249,19 +269,23 @@ void intel_me_status(void)
 		break;
 
 	case ME_HFS2_PHASE_BUP:		/* Bringup Phase */
-		if (hfs2->current_state < ARRAY_SIZE(me_progress_bup_values)
-		    && me_progress_bup_values[hfs2->current_state])
+		if (ARRAY_TO_ELEMENT(me_progress_bup_values,
+					hfs2->current_state, NULL))
 			printk(BIOS_DEBUG, "%s",
-			       me_progress_bup_values[hfs2->current_state]);
+			       ARRAY_TO_ELEMENT(me_progress_bup_values,
+						hfs2->current_state,
+						NULL));
 		else
 			printk(BIOS_DEBUG, "0x%02x", hfs2->current_state);
 		break;
 
 	case ME_HFS2_PHASE_POLICY:	/* Policy Module Phase */
-		if (hfs2->current_state < ARRAY_SIZE(me_progress_policy_values)
-		    && me_progress_policy_values[hfs2->current_state])
+		if (ARRAY_TO_ELEMENT(me_progress_policy_values,
+					hfs2->current_state, NULL))
 			printk(BIOS_DEBUG, "%s",
-			       me_progress_policy_values[hfs2->current_state]);
+			       ARRAY_TO_ELEMENT(me_progress_policy_values,
+						hfs2->current_state,
+						NULL));
 		else
 			printk(BIOS_DEBUG, "0x%02x", hfs2->current_state);
 		break;

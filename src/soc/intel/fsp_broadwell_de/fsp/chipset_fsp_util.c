@@ -62,16 +62,16 @@ static void ConfigureDefaultUpdData(UPD_DATA_REGION *UpdData)
 
 		if (IS_ENABLED(CONFIG_FSP_MEMORY_DOWN_CH0DIMM0_SPD_PRESENT))
 			UpdData->MemDownCh0Dimm0SpdPtr
-			= (UINT32)cbfs_boot_map_with_leak("spd_ch0_dimm0.bin", CBFS_TYPE_RAW, NULL);
+			= (UINT32)cbfs_boot_map_with_leak("spd_ch0_dimm0.bin", CBFS_TYPE_SPD, NULL);
 		if (IS_ENABLED(CONFIG_FSP_MEMORY_DOWN_CH0DIMM1_SPD_PRESENT))
 			UpdData->MemDownCh0Dimm1SpdPtr
-			= (UINT32)cbfs_boot_map_with_leak("spd_ch0_dimm1.bin", CBFS_TYPE_RAW, NULL);
+			= (UINT32)cbfs_boot_map_with_leak("spd_ch0_dimm1.bin", CBFS_TYPE_SPD, NULL);
 		if (IS_ENABLED(CONFIG_FSP_MEMORY_DOWN_CH1DIMM0_SPD_PRESENT))
 			UpdData->MemDownCh1Dimm0SpdPtr
-			= (UINT32)cbfs_boot_map_with_leak("spd_ch1_dimm0.bin", CBFS_TYPE_RAW, NULL);
+			= (UINT32)cbfs_boot_map_with_leak("spd_ch1_dimm0.bin", CBFS_TYPE_SPD, NULL);
 		if (IS_ENABLED(CONFIG_FSP_MEMORY_DOWN_CH1DIMM1_SPD_PRESENT))
 			UpdData->MemDownCh1Dimm1SpdPtr
-			= (UINT32)cbfs_boot_map_with_leak("spd_ch1_dimm1.bin", CBFS_TYPE_RAW, NULL);
+			= (UINT32)cbfs_boot_map_with_leak("spd_ch1_dimm1.bin", CBFS_TYPE_SPD, NULL);
 	} else {
 		UpdData->MemDownEnable = 0;
 	}

@@ -27,7 +27,6 @@
 
 #include <stdlib.h>
 #include "AGESA.h"
-#include "CommonReturns.h"
 #include "Filecode.h"
 #define FILECODE PLATFORM_SPECIFIC_OPTIONS_FILECODE
 
@@ -103,20 +102,6 @@
 #define BLDOPT_REMOVE_GFX_RECOVERY        TRUE
 #define BLDOPT_REMOVE_EARLY_SAMPLES            TRUE
 
-/*
- * Agesa entry points used in this implementation.
- */
-#define AGESA_ENTRY_INIT_RESET                    TRUE
-#define AGESA_ENTRY_INIT_RECOVERY                 FALSE
-#define AGESA_ENTRY_INIT_EARLY                    TRUE
-#define AGESA_ENTRY_INIT_POST                     TRUE
-#define AGESA_ENTRY_INIT_ENV                      TRUE
-#define AGESA_ENTRY_INIT_MID                      TRUE
-#define AGESA_ENTRY_INIT_LATE                     TRUE
-#define AGESA_ENTRY_INIT_S3SAVE                   TRUE
-#define AGESA_ENTRY_INIT_RESUME                   TRUE
-#define AGESA_ENTRY_INIT_LATE_RESTORE             TRUE
-#define AGESA_ENTRY_INIT_GENERAL_SERVICES         FALSE
 
 /*
  * Agesa configuration values selection.
@@ -246,7 +231,6 @@ CONST AP_MTRR_SETTINGS ROMDATA OntarioApMtrrSettingsList[] =
 #include "CreateStruct.h"
 #include "cpuFeatures.h"
 #include "Table.h"
-#include "CommonReturns.h"
 #include "cpuEarlyInit.h"
 #include "cpuLateInit.h"
 #include "GnbInterface.h"

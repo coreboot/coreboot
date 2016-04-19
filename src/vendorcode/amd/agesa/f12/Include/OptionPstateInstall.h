@@ -129,7 +129,7 @@
     #if AGESA_ENTRY_INIT_LATE == TRUE
       #define USER_PSTATE_OPTION_MAIN   CreatePStateAcpiTables
     #else
-      OPTION_ACPI_FEATURE               CreateAcpiTablesStub;
+//      OPTION_ACPI_FEATURE               CreateAcpiTablesStub;
       #define USER_PSTATE_OPTION_MAIN   CreateAcpiTablesStub
     #endif
     #if AGESA_ENTRY_INIT_POST == TRUE

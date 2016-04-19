@@ -94,8 +94,6 @@
       #endif
     #endif
 
-    #undef AGESA_ENTRY_LATE_RUN_AP_TASK
-    #define AGESA_ENTRY_LATE_RUN_AP_TASK TRUE
     #undef L3_FEAT_AP_DISABLE_CACHE
     #define L3_FEAT_AP_DISABLE_CACHE {AP_LATE_TASK_DISABLE_CACHE, (IMAGE_ENTRY) DisableAllCaches},
     #undef L3_FEAT_AP_ENABLE_CACHE

@@ -101,20 +101,6 @@
 #define BLDOPT_REMOVE_GFX_RECOVERY		TRUE
 #define BLDOPT_REMOVE_EARLY_SAMPLES		TRUE
 
-/*
- * Agesa entry points used in this implementation.
- */
-#define AGESA_ENTRY_INIT_RESET			TRUE
-#define AGESA_ENTRY_INIT_RECOVERY		FALSE
-#define AGESA_ENTRY_INIT_EARLY			TRUE
-#define AGESA_ENTRY_INIT_POST			TRUE
-#define AGESA_ENTRY_INIT_ENV			TRUE
-#define AGESA_ENTRY_INIT_MID			TRUE
-#define AGESA_ENTRY_INIT_LATE			TRUE
-#define AGESA_ENTRY_INIT_S3SAVE			TRUE
-#define AGESA_ENTRY_INIT_RESUME			TRUE
-#define AGESA_ENTRY_INIT_LATE_RESTORE		FALSE
-#define AGESA_ENTRY_INIT_GENERAL_SERVICES	FALSE
 
 #define BLDCFG_PCI_MMIO_BASE			CONFIG_MMCONF_BASE_ADDRESS
 #define BLDCFG_PCI_MMIO_SIZE			CONFIG_MMCONF_BUS_NUMBER
@@ -218,7 +204,6 @@
  * needed by the system.
  */
 #include "AGESA.h"
-#include "CommonReturns.h"
 
 /* The fixed MTRR values to be set after memory initialization. */
 CONST AP_MTRR_SETTINGS ROMDATA OntarioApMtrrSettingsList[] =

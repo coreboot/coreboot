@@ -16,7 +16,6 @@
 #include <stdlib.h>
 
 #include "AGESA.h"
-#include "CommonReturns.h"
 #include "AdvancedApi.h"
 #include "Filecode.h"
 #define FILECODE PLATFORM_SPECIFIC_OPTIONS_FILECODE
@@ -338,17 +337,6 @@ CONST AP_MTRR_SETTINGS ROMDATA h8scm_ap_mtrr_list[] =
 /*  Process the options...
  * This file include MUST occur AFTER the user option selection settings
  */
-#define AGESA_ENTRY_INIT_RESET                    TRUE//FALSE
-#define AGESA_ENTRY_INIT_RECOVERY                 FALSE
-#define AGESA_ENTRY_INIT_EARLY                    TRUE
-#define AGESA_ENTRY_INIT_POST                     TRUE
-#define AGESA_ENTRY_INIT_ENV                      TRUE
-#define AGESA_ENTRY_INIT_MID                      TRUE
-#define AGESA_ENTRY_INIT_LATE                     TRUE
-#define AGESA_ENTRY_INIT_S3SAVE                   TRUE
-#define AGESA_ENTRY_INIT_RESUME                   TRUE
-#define AGESA_ENTRY_INIT_LATE_RESTORE             TRUE
-#define AGESA_ENTRY_INIT_GENERAL_SERVICES         TRUE
 
 #include "SanMarinoInstall.h"
 

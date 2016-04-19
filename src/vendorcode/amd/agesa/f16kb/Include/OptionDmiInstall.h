@@ -75,8 +75,6 @@ OPTION_DMI_RELEASE_BUFFER           ReleaseDmiBufferStub;
     // This additional check keeps AP launch routines from being unnecessarily included
     // in single socket systems.
     #if OPTION_MULTISOCKET == TRUE
-      #undef AGESA_ENTRY_LATE_RUN_AP_TASK
-      #define AGESA_ENTRY_LATE_RUN_AP_TASK TRUE
       #undef CPU_DMI_AP_GET_TYPE4_TYPE7
       #define CPU_DMI_AP_GET_TYPE4_TYPE7 {AP_LATE_TASK_GET_TYPE4_TYPE7, (IMAGE_ENTRY) GetType4Type7Info},
     #endif

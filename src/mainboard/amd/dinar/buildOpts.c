@@ -26,7 +26,6 @@
  */
 #include <stdlib.h>
 #include "AGESA.h"
-#include "CommonReturns.h"
 #include "Filecode.h"
 #define FILECODE PLATFORM_SPECIFIC_OPTIONS_FILECODE
 //#define OPTION_HW_DQS_REC_EN_TRAINING TRUE
@@ -153,24 +152,9 @@
 #define BLDCFG_PSTATE_HPC_MODE                    FALSE
 
 #define BLDCFG_HTDEVICE_CAPABILITIES_OVERRIDE_LIST &MaranelloOverrideDevCap
-/*
- * Agesa entry points used in this implementation.
- */
 /*  Process the options...
  * This file include MUST occur AFTER the user option selection settings
  */
-#define AGESA_ENTRY_INIT_RESET                    TRUE//FALSE
-#define AGESA_ENTRY_INIT_RECOVERY                 FALSE
-#define AGESA_ENTRY_INIT_EARLY                    TRUE
-#define AGESA_ENTRY_INIT_POST                     TRUE
-#define AGESA_ENTRY_INIT_ENV                      TRUE
-#define AGESA_ENTRY_INIT_MID                      TRUE
-#define AGESA_ENTRY_INIT_LATE                     TRUE
-#define AGESA_ENTRY_INIT_S3SAVE                   TRUE
-#define AGESA_ENTRY_INIT_RESUME                   TRUE
-#define AGESA_ENTRY_INIT_LATE_RESTORE             TRUE
-#define AGESA_ENTRY_INIT_GENERAL_SERVICES         TRUE
-#define AGESA_ENTRY_LATE_RUN_AP_TASK              TRUE
 
 
 /*****************************************************************************
@@ -395,7 +379,6 @@ CONST DEVICE_CAP_OVERRIDE ROMDATA MaranelloOverrideDevCap[2] =
 #include "CreateStruct.h"
 #include "cpuFeatures.h"
 #include "Table.h"
-#include "CommonReturns.h"
 #include "cpuEarlyInit.h"
 #include "cpuLateInit.h"
 #include "GnbInterfaceStub.h"

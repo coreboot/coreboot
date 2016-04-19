@@ -79,8 +79,6 @@
       &HtAssistFamilyServiceArray[0]
     };
 
-    #undef AGESA_ENTRY_LATE_RUN_AP_TASK
-    #define AGESA_ENTRY_LATE_RUN_AP_TASK TRUE
     #undef HT_ASSIST_AP_DISABLE_CACHE
     #define HT_ASSIST_AP_DISABLE_CACHE {AP_LATE_TASK_DISABLE_CACHE, (IMAGE_ENTRY) DisableAllCaches},
     #undef HT_ASSIST_AP_ENABLE_CACHE

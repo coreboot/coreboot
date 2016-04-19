@@ -60,8 +60,6 @@
     #define USER_DMI_OPTION     &GetDmiInfoMain
     #define USER_DMI_RELEASE_BUFFER &ReleaseDmiBuffer
 
-    #undef AGESA_ENTRY_LATE_RUN_AP_TASK
-    #define AGESA_ENTRY_LATE_RUN_AP_TASK TRUE
     #define CPU_DMI_AP_GET_TYPE4_TYPE7 {AP_LATE_TASK_GET_TYPE4_TYPE7, (IMAGE_ENTRY) GetType4Type7Info},
 
     #ifdef OPTION_FAMILY10H

@@ -27,7 +27,6 @@
 
 #include <stdlib.h>
 #include "AGESA.h"
-#include "CommonReturns.h"
 #include "Filecode.h"
 #define FILECODE PLATFORM_SPECIFIC_OPTIONS_FILECODE
 
@@ -83,20 +82,6 @@
 //For revision C single-link processors
 #define BLDCFG_SUPPORT_ACPI_PSTATES_PSD_INDPX  TRUE
 
-/*
- * Agesa entry points used in this implementation.
- */
-#define AGESA_ENTRY_INIT_RESET                    TRUE
-#define AGESA_ENTRY_INIT_RECOVERY                 FALSE
-#define AGESA_ENTRY_INIT_EARLY                    TRUE
-#define AGESA_ENTRY_INIT_POST                     TRUE
-#define AGESA_ENTRY_INIT_ENV                      TRUE
-#define AGESA_ENTRY_INIT_MID                      TRUE
-#define AGESA_ENTRY_INIT_LATE                     TRUE
-#define AGESA_ENTRY_INIT_S3SAVE                   TRUE
-#define AGESA_ENTRY_INIT_RESUME                   TRUE
-#define AGESA_ENTRY_INIT_LATE_RESTORE             FALSE
-#define AGESA_ENTRY_INIT_GENERAL_SERVICES         TRUE
 
 /*****************************************************************************
  *   Define the RELEASE VERSION string
@@ -230,7 +215,6 @@ CONST AP_MTRR_SETTINGS ROMDATA LlanoApMtrrSettingsList[] =
 #include "CreateStruct.h"
 #include "cpuFeatures.h"
 #include "Table.h"
-#include "CommonReturns.h"
 #include "cpuEarlyInit.h"
 #include "cpuLateInit.h"
 #include "GnbInterface.h"

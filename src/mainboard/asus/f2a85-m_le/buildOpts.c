@@ -31,7 +31,6 @@
 
 /*  Include the files that instantiate the configuration definitions.  */
 #include <vendorcode/amd/agesa/f15tn/Include/AdvancedApi.h>
-#include <vendorcode/amd/agesa/f15tn/Include/CommonReturns.h>
 #include <vendorcode/amd/agesa/f15tn/Proc/CPU/cpuFamilyTranslation.h>
 #include <vendorcode/amd/agesa/f15tn/Proc/CPU/Feature/cpuFeatures.h>
 #include <vendorcode/amd/agesa/f15tn/Proc/CPU/heapManager.h>
@@ -187,17 +186,6 @@
 /*  Process the options...
  * This file include MUST occur AFTER the user option selection settings
  */
-#define AGESA_ENTRY_INIT_RESET                    TRUE
-#define AGESA_ENTRY_INIT_RECOVERY                 FALSE
-#define AGESA_ENTRY_INIT_EARLY                    TRUE
-#define AGESA_ENTRY_INIT_POST                     TRUE
-#define AGESA_ENTRY_INIT_ENV                      TRUE
-#define AGESA_ENTRY_INIT_MID                      TRUE
-#define AGESA_ENTRY_INIT_LATE                     TRUE
-#define AGESA_ENTRY_INIT_S3SAVE                   TRUE
-#define AGESA_ENTRY_INIT_RESUME                   TRUE //TRUE
-#define AGESA_ENTRY_INIT_LATE_RESTORE             TRUE
-#define AGESA_ENTRY_INIT_GENERAL_SERVICES         TRUE
 /*
  * Customized OEM build configurations for FCH component
  */

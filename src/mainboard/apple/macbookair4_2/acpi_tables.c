@@ -1,1 +1,2 @@
+/* No license required */
 /* dummy */

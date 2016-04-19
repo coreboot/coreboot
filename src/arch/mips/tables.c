@@ -24,7 +24,7 @@
 #include <cbmem.h>
 #include <lib.h>
 
-#define MAX_COREBOOT_TABLE_SIZE (8 * 1024)
+#define MAX_COREBOOT_TABLE_SIZE CONFIG_COREBOOT_TABLE_SIZE
 
 void write_tables(void)
 {

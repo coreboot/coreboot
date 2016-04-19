@@ -26,6 +26,8 @@
 #include <cbmem.h>
 #include <smbios.h>
 
+#define MAX_COREBOOT_TABLE_SIZE CONFIG_COREBOOT_TABLE_SIZE
+
 void write_tables(void)
 {
 	unsigned long low_table_start, low_table_end;
@@ -181,7 +183,6 @@ void write_tables(void)
 
 	post_code(0x9e);
 
-#define MAX_COREBOOT_TABLE_SIZE (32 * 1024)
 	post_code(0x9d);
 
 	high_table_pointer = (unsigned long)cbmem_add(CBMEM_ID_CBTABLE, MAX_COREBOOT_TABLE_SIZE);

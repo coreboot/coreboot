@@ -181,29 +181,9 @@ static unsigned long write_smbios_table(unsigned long rom_table_end)
 	return rom_table_end;
 }
 
-void bootmem_arch_add_ranges(void)
+void arch_write_tables(uintptr_t coreboot_table)
 {
-}
-
-void write_tables(void)
-{
-	unsigned long low_table_start, low_table_end;
-	unsigned long rom_table_end;
-
-	/* Even if high tables are configured, some tables are copied both to
-	 * the low and the high area, so payloads and OSes don't need to know
-	 * about the high tables.
-	 */
-	unsigned long high_table_pointer;
-
-	rom_table_end =   0xf0000;
-
-	/* Start low addr at 0x500, so we don't run into conflicts with the BDA
-	 * in case our data structures grow beyond 0x400. Only GDT
-	 * and the coreboot table use low_tables.
-	 */
-	low_table_start = 0;
-	low_table_end = 0x500;
+	unsigned long rom_table_end = 0xf0000;
 
 	/* This table must be between 0x0f0000 and 0x100000 */
 	if (IS_ENABLED(CONFIG_GENERATE_PIRQ_TABLE))
@@ -218,6 +198,28 @@ void write_tables(void)
 
 	if (IS_ENABLED(CONFIG_GENERATE_SMBIOS_TABLES))
 		rom_table_end = write_smbios_table(rom_table_end);
+}
+
+void bootmem_arch_add_ranges(void)
+{
+}
+
+void write_tables(void)
+{
+	unsigned long low_table_start, low_table_end;
+
+	/* Even if high tables are configured, some tables are copied both to
+	 * the low and the high area, so payloads and OSes don't need to know
+	 * about the high tables.
+	 */
+	unsigned long high_table_pointer;
+
+	/* Start low addr at 0x500, so we don't run into conflicts with the BDA
+	 * in case our data structures grow beyond 0x400. Only GDT
+	 * and the coreboot table use low_tables.
+	 */
+	low_table_start = 0;
+	low_table_end = 0x500;
 
 	post_code(0x9e);
 

@@ -19,6 +19,7 @@
 #include <console/uart.h>
 #include <ip_checksum.h>
 #include <boot/coreboot_tables.h>
+#include <boot/tables.h>
 #include <boot_device.h>
 #include <string.h>
 #include <version.h>
@@ -463,6 +464,8 @@ unsigned long write_coreboot_table(
 	unsigned long rom_table_start __unused, unsigned long rom_table_end)
 {
 	struct lb_header *head;
+
+	arch_write_tables(rom_table_end);
 
 	if (low_table_start || low_table_end) {
 		printk(BIOS_DEBUG, "Writing table forward entry at 0x%08lx\n",

@@ -24,6 +24,10 @@
 #include <cbmem.h>
 #include <lib.h>
 
+void arch_write_tables(uintptr_t coreboot_table)
+{
+}
+
 void bootmem_arch_add_ranges(void)
 {
 }

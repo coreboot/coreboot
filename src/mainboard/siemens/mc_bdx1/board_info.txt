@@ -1,0 +1,5 @@
+Board name: MC BDX1
+Category: misc
+ROM protocol: SPI
+ROM socketed: no
+Release year: 2016

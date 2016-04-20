@@ -1,0 +1,52 @@
+if BOARD_SIEMENS_MC_BDX1
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select SOC_INTEL_FSP_BROADWELL_DE
+	select BOARD_ROMSIZE_KB_16384
+	select HAVE_ACPI_TABLES
+	select HAVE_OPTION_TABLE
+	select TSC_MONOTONIC_TIMER
+	select HAVE_FSP_BIN if FSP_PACKAGE_DEFAULT
+	select CBFS_AUTOGEN_ATTRIBUTES
+
+config MAINBOARD_DIR
+	string
+	default "siemens/mc_bdx1"
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "MC BDX1"
+
+config IRQ_SLOT_COUNT
+	int
+	default 18
+
+config CACHE_ROM_SIZE_OVERRIDE
+	hex
+	default 0x1000000
+
+config CBFS_SIZE
+	hex
+	default 0x00D00000
+
+config VIRTUAL_ROM_SIZE
+	hex
+	default 0x1000000
+
+config CONSOLE_POST
+	bool
+	default y
+
+config INTEGRATED_UART
+	bool
+	default n
+
+config DRIVERS_UART_8250IO
+	def_bool y
+
+config FSP_PACKAGE_DEFAULT
+	bool "Configure defaults for the Intel FSP package"
+	default n
+
+endif # BOARD_SIEMENS_MC_BDX1

@@ -27,8 +27,6 @@
 #include <cbmem.h>
 #include <smbios.h>
 
-#define MAX_COREBOOT_TABLE_SIZE CONFIG_COREBOOT_TABLE_SIZE
-
 static unsigned long write_pirq_table(unsigned long rom_table_end)
 {
 	unsigned long high_table_pointer;
@@ -181,8 +179,15 @@ static unsigned long write_smbios_table(unsigned long rom_table_end)
 	return rom_table_end;
 }
 
+/* Start forwarding table at 0x500, so we don't run into conflicts with the BDA
+ * in case our data structures grow beyond 0x400. Only GDT
+ * and the coreboot table use low_tables.
+ */
+static uintptr_t forwarding_table = 0x500;
+
 void arch_write_tables(uintptr_t coreboot_table)
 {
+	size_t sz;
 	unsigned long rom_table_end = 0xf0000;
 
 	/* This table must be between 0x0f0000 and 0x100000 */
@@ -198,56 +203,18 @@ void arch_write_tables(uintptr_t coreboot_table)
 
 	if (IS_ENABLED(CONFIG_GENERATE_SMBIOS_TABLES))
 		rom_table_end = write_smbios_table(rom_table_end);
+
+	sz = write_coreboot_forwarding_table(forwarding_table, coreboot_table);
+
+	forwarding_table += sz;
+	/* Align up to page boundary for historical consistency. */
+	forwarding_table = ALIGN_UP(forwarding_table, 4*KiB);
 }
 
 void bootmem_arch_add_ranges(void)
 {
-}
+	/* Memory from 0 through the forwarding_table is reserved. */
+	const uintptr_t base = 0;
 
-void write_tables(void)
-{
-	unsigned long low_table_start, low_table_end;
-
-	/* Even if high tables are configured, some tables are copied both to
-	 * the low and the high area, so payloads and OSes don't need to know
-	 * about the high tables.
-	 */
-	unsigned long high_table_pointer;
-
-	/* Start low addr at 0x500, so we don't run into conflicts with the BDA
-	 * in case our data structures grow beyond 0x400. Only GDT
-	 * and the coreboot table use low_tables.
-	 */
-	low_table_start = 0;
-	low_table_end = 0x500;
-
-	post_code(0x9e);
-
-	post_code(0x9d);
-
-	high_table_pointer = (unsigned long)cbmem_add(CBMEM_ID_CBTABLE, MAX_COREBOOT_TABLE_SIZE);
-
-	if (high_table_pointer) {
-		unsigned long new_high_table_pointer;
-
-		/* FIXME: The high_table_base parameter is not reference when tables are high,
-		 * or high_table_pointer >1 MB.
-		 */
-		u64 fixme_high_tables_base = 0;
-
-		/* Also put a forwarder entry into 0-4K */
-		new_high_table_pointer = write_coreboot_table(low_table_start, low_table_end,
-				fixme_high_tables_base, high_table_pointer);
-
-		if (new_high_table_pointer > (high_table_pointer +
-					MAX_COREBOOT_TABLE_SIZE))
-			printk(BIOS_ERR, "%s: coreboot table didn't fit (%lx)\n",
-				   __func__, new_high_table_pointer -
-				   high_table_pointer);
-
-			printk(BIOS_DEBUG, "coreboot table: %ld bytes.\n",
-				new_high_table_pointer - high_table_pointer);
-	} else {
-		printk(BIOS_ERR, "Could not add CBMEM for coreboot table.\n");
-	}
+	bootmem_add_range(base, forwarding_table - base, LB_MEM_TABLE);
 }

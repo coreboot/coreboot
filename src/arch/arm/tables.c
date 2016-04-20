@@ -15,14 +15,9 @@
  * GNU General Public License for more details.
  */
 
-#include <console/console.h>
-#include <cpu/cpu.h>
 #include <bootmem.h>
 #include <boot/tables.h>
 #include <boot/coreboot_tables.h>
-#include <string.h>
-#include <cbmem.h>
-#include <lib.h>
 
 void arch_write_tables(uintptr_t coreboot_table)
 {
@@ -30,35 +25,6 @@ void arch_write_tables(uintptr_t coreboot_table)
 
 void bootmem_arch_add_ranges(void)
 {
-}
-
-#define MAX_COREBOOT_TABLE_SIZE CONFIG_COREBOOT_TABLE_SIZE
-
-void write_tables(void)
-{
-	unsigned long table_pointer, new_table_pointer;
-
-	post_code(0x9d);
-
-	table_pointer = (unsigned long)cbmem_add(CBMEM_ID_CBTABLE,
-						MAX_COREBOOT_TABLE_SIZE);
-	if (!table_pointer) {
-		printk(BIOS_ERR, "Could not add CBMEM for coreboot table.\n");
-		return;
-	}
-
-	new_table_pointer = write_coreboot_table(0UL, 0UL,
-				table_pointer, table_pointer);
-
-	if (new_table_pointer > (table_pointer + MAX_COREBOOT_TABLE_SIZE)) {
-		printk(BIOS_ERR, "coreboot table didn't fit (%lx/%x bytes)\n",
-			   new_table_pointer - table_pointer, MAX_COREBOOT_TABLE_SIZE);
-	}
-
-	printk(BIOS_DEBUG, "coreboot table: %ld bytes.\n",
-			new_table_pointer - table_pointer);
-
-	post_code(0x9e);
 }
 
 void lb_arch_add_records(struct lb_header *header)

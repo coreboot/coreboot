@@ -5,10 +5,6 @@
 #include <stddef.h>
 /* function prototypes for building the coreboot table */
 
-unsigned long write_coreboot_table(
-	unsigned long low_table_start, unsigned long low_table_end,
-	unsigned long rom_table_start, unsigned long rom_table_end);
-
 /*
  * Write forwarding table of target address at entry address returning size
  * of table written.

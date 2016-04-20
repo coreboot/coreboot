@@ -173,6 +173,9 @@ chip soc/intel/skylake
 	# PL2 override 25W
 	register "tdp_pl2_override" = "25"
 
+	# Send an extra VR mailbox command for the PS4 exit issue
+	register "SendVrMbxCmd" = "2"
+
 	device cpu_cluster 0 on
 		device lapic 0 on end
 	end

@@ -330,9 +330,10 @@ struct soc_intel_skylake_config {
 	u8 speed_shift_enable;
 	/*
 	 * Enable VR specific mailbox command
-	 * When set, an extra VR mailbox command specifically
-	 * for the MPS IMPV8 VR will be sent.
-	 * 0 - Don't Send, 1 - Send
+	 * 000b - Don't Send any VR command
+	 * 001b - VR command specifically for the MPS IMPV8 VR will be sent
+	 * 010b - VR specific command sent for PS4 exit issue
+	 * 011b - VR specific command sent for both MPS IMPV8 & PS4 exit issue
 	*/
 	u8 SendVrMbxCmd;
 	/* Statically clock gate 8254 PIT. */

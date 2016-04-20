@@ -20,8 +20,8 @@
 /* SRAM memory is mapped in two different locations. Define regions in both for
  * full overlap checking and use this to guarantee they're kept in sync. */
 #define ASSERT_MIRRORED(r1, r2) \
-	_ = ASSERT(_e##r1 - _##r1 == _e##r2 - _##r2 && \
-		   _##r1 & 0x7fffffff == _##r2 & 0x7fffffff, \
+	_ = ASSERT((_e##r1 - _##r1) == (_e##r2 - _##r2) && \
+		   (_##r1 & 0x7fffffff) == (_##r2 & 0x7fffffff), \
 		   STR(r1 and r2 do not match!));
 
 SECTIONS

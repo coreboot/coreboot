@@ -315,9 +315,9 @@ struct rk3399_pmusgrf_regs {
 };
 check_member(rk3399_pmusgrf_regs, slv_secure_con4, 0xe3d4);
 
-extern struct rk3399_grf_regs * const rk3399_grf;
-extern struct rk3399_pmugrf_regs * const rk3399_pmugrf;
-extern struct rk3399_pmusgrf_regs * const rk3399_pmusgrf;
+static struct rk3399_grf_regs * const rk3399_grf = (void *)GRF_BASE;
+static struct rk3399_pmugrf_regs * const rk3399_pmugrf = (void *)PMUGRF_BASE;
+static struct rk3399_pmusgrf_regs * const rk3399_pmusgrf = (void *)PMUSGRF_BASE;
 
 #define UART2A_SEL	RK_CLRSETBITS(3 << 10, 0 << 10)
 #define UART2B_SEL	RK_CLRSETBITS(3 << 10, 1 << 10)

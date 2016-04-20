@@ -4038,7 +4038,7 @@ static void restore_timings(ramctr_timing * ctrl)
 }
 
 static int try_init_dram_ddr3(ramctr_timing *ctrl, int fast_boot,
-		int me_uma_size)
+		int s3_resume, int me_uma_size)
 {
 	int err;
 
@@ -4148,9 +4148,11 @@ static int try_init_dram_ddr3(ramctr_timing *ctrl, int fast_boot,
 
 	write_controller_mr(ctrl);
 
-	err = channel_test(ctrl);
-	if (err)
-		return err;
+	if (!s3_resume) {
+		err = channel_test(ctrl);
+		if (err)
+			return err;
+	}
 
 	return 0;
 }
@@ -4228,9 +4230,14 @@ void init_dram_ddr3(spd_raw_data *spds, int mobile, int min_tck,
 		printk(BIOS_DEBUG, "Trying stored timings.\n");
 		memcpy(&ctrl, ctrl_cached, sizeof(ctrl));
 
-		err = try_init_dram_ddr3(&ctrl, fast_boot, me_uma_size);
+		err = try_init_dram_ddr3(&ctrl, fast_boot, s3resume, me_uma_size);
 		if (err) {
-			/* no need to erase bad mrc cache here, it gets overritten on
+			if (s3resume) {
+				/* Failed S3 resume, reset to come up cleanly */
+				outb(0x6, 0xcf9);
+				halt();
+			}
+			/* no need to erase bad mrc cache here, it gets overwritten on
 			 * successful boot. */
 			printk(BIOS_ERR, "Stored timings are invalid !\n");
 			fast_boot = 0;
@@ -4243,7 +4250,7 @@ void init_dram_ddr3(spd_raw_data *spds, int mobile, int min_tck,
 		/* Get DDR3 SPD data */
 		dram_find_spds_ddr3(spds, &ctrl);
 
-		err = try_init_dram_ddr3(&ctrl, fast_boot, me_uma_size);
+		err = try_init_dram_ddr3(&ctrl, fast_boot, s3resume, me_uma_size);
 	}
 	if (err)
 		die("raminit failed");

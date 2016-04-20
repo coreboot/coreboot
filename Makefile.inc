@@ -22,6 +22,7 @@ CONFIG_FMDFILE:=$(call strip_quotes,$(CONFIG_FMDFILE))
 
 #######################################################################
 # misleadingly named, this is the coreboot version
+ifeq ($(KERNELVERSION),)
 ifeq ($(BUILD_TIMELESS),1)
 export KERNELVERSION := TIMELESS
 else
@@ -30,6 +31,7 @@ export KERNELVERSION := $(strip $(if $(GIT),\
 	$(if $(wildcard $(top)/.coreboot-version),\
 		$(shell cat $(top)/.coreboot-version),\
 		coreboot-unknown$(KERNELREVISION))))
+endif
 endif
 
 #######################################################################
@@ -174,12 +176,15 @@ ifeq ($(CONFIG_COVERAGE),y)
 ramstage-c-ccopts += -fprofile-arcs -ftest-coverage
 endif
 
+ifneq ($(UPDATED_SUBMODULES),1)
 # try to fetch non-optional submodules if the source is under git
 forgetthis:=$(if $(GIT),$(shell git submodule update --init))
 ifeq ($(CONFIG_USE_BLOBS),y)
 # this is necessary because 3rdparty/blobs is update=none, and so is ignored
 # unless explicitly requested and enabled through --checkout
 forgetthis:=$(if $(GIT),$(shell git submodule update --init --checkout 3rdparty/blobs))
+endif
+export UPDATED_SUBMODULES:=1
 endif
 
 ramstage-c-deps:=$$(OPTION_TABLE_H)

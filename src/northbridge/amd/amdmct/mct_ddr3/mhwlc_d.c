@@ -1366,27 +1366,20 @@ void setWLByteDelay(struct DCTStatStruc *pDCTstat, uint8_t dct, u8 ByteLane, u8 
 		EccValue = 0;
 		while (ByteLane < lane_count)
 		{
-			if (is_fam15h()) {
-				grossDelayValue = pDCTData->WLGrossDelay[index+ByteLane];
-			} else {
-				/* This subtract 0xC workaround might be temporary. */
-				if ((pDCTData->WLPass==2) && (pDCTData->RegMan1Present & (1<<(dimm*2+dct))))
-				{
-					tempW = (pDCTData->WLGrossDelay[index+ByteLane] << 5) | pDCTData->WLFineDelay[index+ByteLane];
-					tempW -= 0xC;
-					pDCTData->WLGrossDelay[index+ByteLane] = (u8)(tempW >> 5);
-					pDCTData->WLFineDelay[index+ByteLane] = (u8)(tempW & 0x1F);
-				}
-				grossDelayValue = pDCTData->WLGrossDelay[index+ByteLane];
-				/* Adjust seed gross delay overflow (greater than 3):
-				 *      - Program seed gross delay as 2 (gross is 4 or 6) or 1 (gross is 5).
-				 *      - Keep original seed gross delay for later reference.
-				 */
-				if(grossDelayValue >= 3)
-				{
-					grossDelayValue = (grossDelayValue&1)? 1 : 2;
-				}
+			/* This subtract 0xC workaround might be temporary. */
+			if ((pDCTData->WLPass==2) && (pDCTData->RegMan1Present & (1<<(dimm*2+dct)))) {
+				tempW = (pDCTData->WLGrossDelay[index+ByteLane] << 5) | pDCTData->WLFineDelay[index+ByteLane];
+				tempW -= 0xC;
+				pDCTData->WLGrossDelay[index+ByteLane] = (u8)(tempW >> 5);
+				pDCTData->WLFineDelay[index+ByteLane] = (u8)(tempW & 0x1F);
 			}
+			grossDelayValue = pDCTData->WLGrossDelay[index+ByteLane];
+			/* Adjust seed gross delay overflow (greater than 3):
+			 *      - Program seed gross delay as 2 (gross is 4 or 6) or 1 (gross is 5).
+			 *      - Keep original seed gross delay for later reference.
+			 */
+			if(grossDelayValue >= 3)
+				grossDelayValue = (grossDelayValue&1)? 1 : 2;
 			fineDelayValue = pDCTData->WLFineDelay[index+ByteLane];
 			if (ByteLane < 4)
 				ValueLow |= ((grossDelayValue << 5) | fineDelayValue) << 8*ByteLane;
@@ -1405,7 +1398,9 @@ void setWLByteDelay(struct DCTStatStruc *pDCTstat, uint8_t dct, u8 ByteLane, u8 
 	}
 	else
 	{
-		/* Fam10h BKDG Rev. 3.62 2.8.9.9.1 (6) */
+		/* Fam10h BKDG: Rev. 3.62 2.8.9.9.1 (6)
+		 * Fam15h BKDG: Rev. 3.14 2.10.5.8.1
+		 */
 		index = (u8)(lane_count * dimm);
 		grossDelayValue = pDCTData->WLGrossDelay[index+ByteLane];
 		fineDelayValue = pDCTData->WLFineDelay[index+ByteLane];
@@ -1433,7 +1428,7 @@ void setWLByteDelay(struct DCTStatStruc *pDCTstat, uint8_t dct, u8 ByteLane, u8 
 		fineStartLoc = (u8)(tempB % 32);
 		fineEndLoc = (u8)(fineStartLoc + 4);
 		grossStartLoc = (u8)(fineEndLoc + 1);
-		grossEndLoc = (u8)(grossStartLoc + 1);
+		grossEndLoc = (u8)(grossStartLoc + 2);
 
 		set_DCT_ADDR_Bits(pDCTData, dct, pDCTData->NodeId, FUN_DCT,
 				(u16)addr, fineStartLoc, fineEndLoc,(u32)fineDelayValue);
@@ -1498,29 +1493,30 @@ void getWLByteDelay(struct DCTStatStruc *pDCTstat, uint8_t dct, u8 ByteLane, u8 
 	gross = get_ADD_DCT_Bits(pDCTData, dct, pDCTData->NodeId,
 				FUN_DCT, (u16)addr, grossStartLoc, grossEndLoc);
 
-	printk(BIOS_SPEW, "\tLane %02x raw readback: %04x\n", ByteLane, ((gross & 0x1f) << 5) | (fine & 0x1f));
+	printk(BIOS_SPEW, "\tLane %02x nibble %01x raw readback: %04x\n", ByteLane, nibble, ((gross & 0x1f) << 5) | (fine & 0x1f));
 
-	if (!is_fam15h()) {
-		/* Adjust seed gross delay overflow (greater than 3):
-		 * - Adjust the trained gross delay to the original seed gross delay.
-		 */
-		if(pDCTData->WLGrossDelay[index+ByteLane] >= 3)
-		{
-			gross += pDCTData->WLGrossDelay[index+ByteLane];
-			if(pDCTData->WLGrossDelay[index+ByteLane] & 1)
-				gross -= 1;
-			else
-				gross -= 2;
-		}
-		else if((pDCTData->WLGrossDelay[index+ByteLane] == 0) && (gross == 3))
-		{
-			/* If seed gross delay is 0 but PRE result gross delay is 3, it is negative.
-			 * We will then round the negative number to 0.
-			 */
-			gross = 0;
-			fine = 0;
-		}
+	/* Adjust seed gross delay overflow (greater than 3):
+	 * - Adjust the trained gross delay to the original seed gross delay.
+	 */
+	if (pDCTData->WLGrossDelay[index+ByteLane] >= 3)
+	{
+		gross += pDCTData->WLGrossDelay[index+ByteLane];
+		if(pDCTData->WLGrossDelay[index+ByteLane] & 1)
+			gross -= 1;
+		else
+			gross -= 2;
 	}
+	else if ((pDCTData->WLGrossDelay[index+ByteLane] == 0) && (gross == 3))
+	{
+		/* If seed gross delay is 0 but PRE result gross delay is 3, it is negative.
+		 * We will then round the negative number to 0.
+		 */
+		gross = 0;
+		fine = 0;
+	}
+	printk(BIOS_SPEW, "\tLane %02x nibble %01x adjusted value (pre nibble): %04x\n", ByteLane, nibble, ((gross & 0x1f) << 5) | (fine & 0x1f));
+
+	/* Nibble adjustments */
 	if (nibble == 0) {
 		pDCTData->WLFineDelay[index+ByteLane] = (uint8_t)fine;
 		pDCTData->WLGrossDelay[index+ByteLane] = (uint8_t)gross;
@@ -1531,6 +1527,5 @@ void getWLByteDelay(struct DCTStatStruc *pDCTstat, uint8_t dct, u8 ByteLane, u8 
 		pDCTData->WLFineDelay[index+ByteLane] = (uint8_t)(WLTotalDelay & 0x1f);
 		pDCTData->WLGrossDelay[index+ByteLane] = (uint8_t)((WLTotalDelay >> 5) & 0x1f);
 	}
-
-	printk(BIOS_SPEW, "\tLane %02x adjusted value: %04x\n", ByteLane, ((pDCTData->WLGrossDelay[index+ByteLane] & 0x1f) << 5) | (pDCTData->WLFineDelay[index+ByteLane] & 0x1f));
+	printk(BIOS_SPEW, "\tLane %02x nibble %01x adjusted value (post nibble): %04x\n", ByteLane, nibble, ((pDCTData->WLGrossDelay[index+ByteLane] & 0x1f) << 5) | (pDCTData->WLFineDelay[index+ByteLane] & 0x1f));
 }

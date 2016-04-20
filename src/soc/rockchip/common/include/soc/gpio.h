@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright 2014 Rockchip Inc.
+ * Copyright 2016 Rockchip Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,14 +13,14 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __SOC_ROCKCHIP_RK3288_GPIO_H__
-#define __SOC_ROCKCHIP_RK3288_GPIO_H__
+#ifndef __COREBOOT_SRC_SOC_ROCKCHIP_COMMON_INCLUDE_SOC_GPIO_H
+#define __COREBOOT_SRC_SOC_ROCKCHIP_COMMON_INCLUDE_SOC_GPIO_H
 
 #include <types.h>
 
 #define GPIO(p, b, i) ((gpio_t){.port = p, .bank = GPIO_##b, .idx = i})
 
-struct rk3288_gpio_regs {
+struct rockchip_gpio_regs {
 	u32 swporta_dr;
 	u32 swporta_ddr;
 	u32 reserved0[(0x30 - 0x08) / 4];
@@ -36,7 +36,7 @@ struct rk3288_gpio_regs {
 	u32 reserved1[(0x60 - 0x54) / 4];
 	u32 ls_sync;
 };
-check_member(rk3288_gpio_regs, ls_sync, 0x60);
+check_member(rockchip_gpio_regs, ls_sync, 0x60);
 
 typedef union {
 	u32 raw;
@@ -44,13 +44,13 @@ typedef union {
 		u16 port;
 		union {
 			struct {
-				u16 num:5;
-				u16 :11;
+				u16 num : 5;
+				u16 reserved1 : 11;
 			};
 			struct {
-				u16 idx:3;
-				u16 bank:2;
-				u16 :11;
+				u16 idx : 3;
+				u16 bank : 2;
+				u16 reserved2 : 11;
 			};
 		};
 	};
@@ -63,4 +63,11 @@ enum {
 	GPIO_D,
 };
 
-#endif	/* __SOC_ROCKCHIP_RK3288_GPIO_H__ */
+extern struct rockchip_gpio_regs *gpio_port[];
+
+/* Check if the gpio port is a pmu gpio */
+int is_pmu_gpio(gpio_t gpio);
+
+/* Return the io addr of gpio register */
+void *gpio_grf_reg(gpio_t gpio);
+#endif

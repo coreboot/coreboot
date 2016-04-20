@@ -56,6 +56,7 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <arch/types.h>
 #include <arch/io.h>
 #include <arch/virtual.h>
@@ -351,20 +352,6 @@ void SHA1Update(SHA1_CTX *context, const u8 *data, size_t len);
 void SHA1Pad(SHA1_CTX *context);
 void SHA1Final(u8 digest[SHA1_DIGEST_LENGTH], SHA1_CTX *context);
 u8 *sha1(const u8 *data, size_t len, u8 *buf);
-/** @} */
-
-/**
- * @defgroup time Time functions
- * @{
- */
-
-/** System time structure */
-struct timeval {
-	time_t tv_sec;       /**< Seconds */
-	suseconds_t tv_usec; /**< Microseconds */
-};
-
-int gettimeofday(struct timeval *tv, void *tz);
 /** @} */
 
 /**

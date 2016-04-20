@@ -86,6 +86,7 @@ static struct device_operations device_ops = {
 	.set_resources = &pci_dev_set_resources,
 	.enable_resources = &pci_dev_enable_resources,
 	.write_acpi_tables = southbridge_write_acpi_tables,
+	.acpi_inject_dsdt_generator = southbridge_inject_dsdt,
 	.init = &lpc_init
 };
 

@@ -17,6 +17,7 @@
  */
 
 #include <bootstate.h>
+#include <cbmem.h>
 #include <console/console.h>
 #include <cpu/cpu.h>
 #include <device/device.h>
@@ -26,6 +27,7 @@
 #include <memrange.h>
 #include <soc/iomap.h>
 #include <soc/cpu.h>
+#include <soc/nvs.h>
 #include <soc/pci_devs.h>
 
 #include "chip.h"
@@ -65,11 +67,15 @@ static void enable_dev(device_t dev)
 static void soc_init(void *data)
 {
 	struct range_entry range;
+	struct global_nvs_t *gnvs;
 
 	/* TODO: tigten this resource range */
 	/* TODO: fix for S3 resume, as this would corrupt OS memory */
 	range_entry_init(&range, 0x200000, 4ULL*GiB, 0);
 	fsp_silicon_init(&range);
+
+	/* Allocate ACPI NVS in CBMEM */
+	gnvs = cbmem_add(CBMEM_ID_ACPI_GNVS, sizeof(*gnvs));
 }
 
 void platform_fsp_silicon_init_params_cb(struct FSPS_UPD *silupd)

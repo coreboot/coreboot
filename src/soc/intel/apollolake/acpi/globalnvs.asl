@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2016 Intel Corp.
- * (Written by Lance Zhao <lijian.zhao@intel.com> for Intel Corp.)
+ * (Written by Alexandru Gagniuc <alexandrux.gagniuc@intel.com> for Intel Corp.)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,16 +15,21 @@
  * GNU General Public License for more details.
  */
 
-#ifndef _SOC_APOLLOLAKE_ACPI_H_
-#define _SOC_APOLLOLAKE_ACPI_H_
+/*
+ * NOTE: The layout of the GNVS structure below must match the layout in
+ * soc/intel/apollolake/include/soc/nvs.h !!!
+ *
+ */
 
-#include <arch/acpi.h>
+External (NVSA)
 
-void soc_fill_common_fadt(acpi_fadt_t * fadt);
+OperationRegion (GNVS, SystemMemory, NVSA, 0x1000)
+Field (GNVS, ByteAcc, NoLock, Preserve)
+{
+	/* Nothing here yet, folks */
+	Offset (0x00),
 
-unsigned long southbridge_write_acpi_tables(device_t device,
-		unsigned long current, struct acpi_rsdp *rsdp);
-
-void southbridge_inject_dsdt(device_t device);
-
-#endif	/* _SOC_APOLLOLAKE_ACPI_H_ */
+	/* ChromeOS stuff (0x100 -> 0xfff, size 0xeff) */
+	Offset (0x100),
+	#include <vendorcode/google/chromeos/acpi/gnvs.asl>
+}

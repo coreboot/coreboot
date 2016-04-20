@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2016 Intel Corp.
+ * Copyright (C) 2015 Intel Corp.
  * (Written by Lance Zhao <lijian.zhao@intel.com> for Intel Corp.)
  *
  * This program is free software; you can redistribute it and/or modify
@@ -15,16 +15,23 @@
  * GNU General Public License for more details.
  */
 
-#ifndef _SOC_APOLLOLAKE_ACPI_H_
-#define _SOC_APOLLOLAKE_ACPI_H_
+/*
+ * NOTE: The layout of the global_nvs_t structure below must match the layout
+ * in soc/intel/apollolake/acpi/globalnvs.asl !!!
+ *
+ */
 
-#include <arch/acpi.h>
+#ifndef _SOC_APOLLOLAKE_NVS_H_
+#define _SOC_APOLLOLAKE_NVS_H_
 
-void soc_fill_common_fadt(acpi_fadt_t * fadt);
+#include <vendorcode/google/chromeos/gnvs.h>
 
-unsigned long southbridge_write_acpi_tables(device_t device,
-		unsigned long current, struct acpi_rsdp *rsdp);
+struct global_nvs_t {
+	/* Miscellaneous */
+	uint8_t unused[256];
 
-void southbridge_inject_dsdt(device_t device);
+	/* ChromeOS specific (0x100 - 0xfff) */
+	chromeos_acpi_t chromeos;
+} __attribute__((packed));
 
-#endif	/* _SOC_APOLLOLAKE_ACPI_H_ */
+#endif	/* _SOC_APOLLOLAKE_NVS_H_ */

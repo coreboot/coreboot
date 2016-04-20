@@ -16,12 +16,15 @@
  */
 
 #include <arch/acpi.h>
+#include <arch/acpigen.h>
 #include <arch/ioapic.h>
 #include <arch/smp/mpspec.h>
+#include <cbmem.h>
 #include <cpu/x86/smm.h>
 #include <soc/acpi.h>
 #include <soc/iomap.h>
 #include <soc/pm.h>
+#include <soc/nvs.h>
 
 unsigned long acpi_fill_mcfg(unsigned long current)
 {
@@ -124,4 +127,30 @@ unsigned long southbridge_write_acpi_tables(device_t device,
 		struct acpi_rsdp *rsdp)
 {
 	return acpi_write_hpet(device, current, rsdp);
+}
+
+static void acpi_create_gnvs(struct global_nvs_t *gnvs)
+{
+	if (IS_ENABLED(CONFIG_CHROMEOS)) {
+		/* Initialize Verified Boot data */
+		chromeos_init_vboot(&gnvs->chromeos);
+		gnvs->chromeos.vbt2 = ACTIVE_ECFW_RO;
+	}
+}
+
+void southbridge_inject_dsdt(device_t device)
+{
+	struct global_nvs_t *gnvs;
+
+	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
+
+	if (gnvs) {
+		acpi_create_gnvs(gnvs);
+		acpi_save_gnvs((uintptr_t)gnvs);
+
+		/* Add it to DSDT.  */
+		acpigen_write_scope("\\");
+		acpigen_write_name_dword("NVSA", (uintptr_t)gnvs);
+		acpigen_pop_len();
+	}
 }

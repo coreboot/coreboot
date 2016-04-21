@@ -51,6 +51,7 @@
 #define SPI2_INT	37
 #define UFS_INT		38
 #define EMMC_INT	39
+#define PMC_INT		40
 #define SDIO_INT	42
 
 #endif	/* _SOC_INT_DEFINE_ASL_ */

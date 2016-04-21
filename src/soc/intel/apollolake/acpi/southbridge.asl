@@ -17,3 +17,6 @@
 
 /* LPSS device */
 #include "lpss.asl"
+
+/* PCI IRQ assignment */
+#include "pci_irqs.asl"

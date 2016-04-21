@@ -109,8 +109,12 @@ static int mc_add_dram_resources(device_t dev, int index)
 	/* 0 - > 0xa0000: 640kb of DOS memory. Not enough for anybody nowadays */
 	ram_resource(dev, index++, 0, 640);
 
-	/* 0xc0000 -> top_of_ram, skipping the legacy VGA region */
-	base_k = 768;
+	/* 0xa0000 - 0xbffff: legacy VGA */
+	mmio_resource(dev, index++, 640, 128);
+
+	/* 0xc0000 -> 0xfffff: leave without e820 entry, as it has special uses */
+	/* 0x100000 -> top_of_ram  */
+	base_k = 1024;
 	size_k = (tseg / KiB) - base_k;
 	ram_resource(dev, index++, base_k, size_k);
 
@@ -128,8 +132,6 @@ static int mc_add_dram_resources(device_t dev, int index)
 	size_k = (touud / KiB) - base_k;
 	ram_resource(dev, index++, base_k, size_k);
 
-	/* 0xa0000 - 0xbffff: legacy VGA */
-	mmio_resource(dev, index++, 640, 128);
 
 	return index;
 }

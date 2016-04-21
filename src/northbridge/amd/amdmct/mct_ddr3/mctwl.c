@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2010 Advanced Micro Devices, Inc.
- * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
+ * Copyright (C) 2015 - 2016 Raptor Engineering, LLC
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -358,8 +358,12 @@ void SetTargetFreq(struct MCTStatStruc *pMCTstat,
 	uint32_t dword;
 	uint8_t package_type = mctGet_NVbits(NV_PACK_TYPE);
 
+	printk(BIOS_DEBUG, "%s: Start\n", __func__);
+
 	struct DCTStatStruc *pDCTstat;
 	pDCTstat = pDCTstatA + Node;
+
+	printk(BIOS_DEBUG, "%s: Node %d: New frequency code: %04x\n", __func__, Node, pDCTstat->TargetFreq);
 
 	if (is_fam15h()) {
 		/* Program F2x[1, 0]90[DisDllShutDownSR]=1. */
@@ -448,6 +452,8 @@ void SetTargetFreq(struct MCTStatStruc *pMCTstat,
 			FreqChgCtrlWrd(pMCTstat, pDCTstat, 1);
 		}
 	}
+
+	printk(BIOS_DEBUG, "%s: Done\n", __func__);
 }
 
 static void Modify_OnDimmMirror(struct DCTStatStruc *pDCTstat, u8 dct, u8 set)

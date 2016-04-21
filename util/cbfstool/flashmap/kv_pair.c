@@ -56,7 +56,7 @@ struct kv_pair *kv_pair_new(void)
 {
 	struct kv_pair *kv;
 
-	kv = calloc(0, sizeof(*kv));
+	kv = calloc(1, sizeof(*kv));
 	if (!kv)
 		return NULL;
 

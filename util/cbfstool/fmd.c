@@ -48,10 +48,23 @@
  * @return      Whether the node is valid
  */
 static bool validate_descriptor_node(const struct flashmap_descriptor *node,
-		struct unsigned_option start, struct unsigned_option end) {
+		struct unsigned_option start, struct unsigned_option end)
+{
 	assert(node);
 
+#if __GLIBC__
+	/* GLIBC is different than the BSD libc implementations:
+	 *   The  hdestroy() [function does] not free the buffers pointed
+	 *   to by the key and data elements of the hash table entries.
+	 * vs:
+	 *   The hdestroy() function calls free(3) for each comparison key in
+	 *   the search table but not the data item associated with the key.
+	 */
 	ENTRY search_key = {node->name, NULL};
+#else
+	ENTRY search_key = {strdup(node->name), NULL};
+#endif
+
 	if (hsearch(search_key, FIND)) {
 		ERROR("Multiple sections with name '%s'\n", node->name);
 		return false;

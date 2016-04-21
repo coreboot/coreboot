@@ -39,7 +39,7 @@ chip northbridge/intel/sandybridge
 		device pci 00.0 on
 			subsystemid 0x17aa 0x21d2
 		end # host bridge
-		device pci 01.0 off end # NVIDIA Corporation GF119M [NVS 4200M]
+		device pci 01.0 on end # NVIDIA Corporation GF119M [NVS 4200M]
 		device pci 02.0 on
 			subsystemid 0x17aa 0x21d3
 		end # Integrated Graphics Controller

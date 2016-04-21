@@ -27,6 +27,7 @@ chip northbridge/intel/gm45
 		device pci 00.0 on
 			subsystemid 0x17aa 0x20e0
 		end # host bridge
+		device pci 01.0 on end # PCIe Bridge for discrete graphics
 		device pci 02.0 on # VGA
 			subsystemid 0x17aa 0x20e4
 			ioapic_irq 2 INTA 0x10

@@ -8049,19 +8049,6 @@ void mct_SetDramConfigHi_D(struct MCTStatStruc *pMCTstat,
 
 	printk(BIOS_DEBUG, "mct_SetDramConfigHi_D: DramConfigHi:    %08x\n", DramConfigHi);
 
-	/* Prevent lockups on parity errors during initial DCT startup */
-	if (!pDCTstat->mca_config_backed_up) {
-		dword = Get_NB32(pDCTstat->dev_nbmisc, 0x44);
-		pDCTstat->sync_flood_on_dram_err = (dword >> 30) & 0x1;
-		pDCTstat->sync_flood_on_any_uc_err = (dword >> 21) & 0x1;
-		pDCTstat->sync_flood_on_uc_dram_ecc_err = (dword >> 2) & 0x1;
-		dword &= ~(0x1 << 30);
-		dword &= ~(0x1 << 21);
-		dword &= ~(0x1 << 2);
-		Set_NB32(pDCTstat->dev_nbmisc, 0x44, dword);
-		pDCTstat->mca_config_backed_up = 1;
-	}
-
 	/* Program the DRAM Configuration High register */
 	Set_NB32_DCT(dev, dct, 0x94, DramConfigHi);
 

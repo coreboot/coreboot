@@ -581,12 +581,6 @@ struct DCTStatStruc {		/* A per Node structure*/
 	uint8_t NbPstateThreshold;
 	uint8_t NbPstateHi;
 
-	/* MCA backup variables */
-	uint8_t mca_config_backed_up;
-	uint8_t sync_flood_on_dram_err;
-	uint8_t sync_flood_on_any_uc_err;
-	uint8_t sync_flood_on_uc_dram_ecc_err;
-
 	/* New for LB Support */
 	u8 NodePresent;
 	u32 dev_host;

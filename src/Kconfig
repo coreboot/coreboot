@@ -658,15 +658,6 @@ config ACPI_NHLT
 	help
 	  Build support for NHLT (non HD Audio) ACPI table generation.
 
-
-config COREBOOT_TABLE_SIZE
-	hex
-	default 0x8000 if ARCH_X86
-	default 0x2000 if !ARCH_X86
-	help
-	  The amount of memory to reserve for the coreboot tables in
-	  cbmem.
-
 #These Options are here to avoid "undefined" warnings.
 #The actual selection and help texts are in the following menu.
 

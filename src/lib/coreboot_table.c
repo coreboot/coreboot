@@ -15,6 +15,7 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/cbconfig.h>
 #include <console/console.h>
 #include <console/uart.h>
 #include <ip_checksum.h>
@@ -560,7 +561,7 @@ void write_tables(void)
 	uintptr_t cbtable_start;
 	uintptr_t cbtable_end;
 	size_t cbtable_size;
-	const size_t max_table_size = CONFIG_COREBOOT_TABLE_SIZE;
+	const size_t max_table_size = COREBOOT_TABLE_SIZE;
 
 	cbtable_start = (uintptr_t)cbmem_add(CBMEM_ID_CBTABLE, max_table_size);
 

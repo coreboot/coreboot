@@ -23,4 +23,6 @@
  * to have the same name across all architectures.
  */
 
+#define COREBOOT_TABLE_SIZE 0x2000
+
 #endif

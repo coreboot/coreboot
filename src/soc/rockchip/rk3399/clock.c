@@ -137,6 +137,16 @@ enum {
 	HCLK_PERILP1_PLL_SEL_GPLL	= 1,
 	HCLK_PERILP1_DIV_CON_MASK	= 0x1f,
 	HCLK_PERILP1_DIV_CON_SHIFT	= 0,
+
+	/* CRU_SOFTRST_CON4 */
+	RESETN_DDR0_REQ_MASK		= 1,
+	RESETN_DDR0_REQ_SHIFT		= 8,
+	RESETN_DDRPHY0_REQ_MASK		= 1,
+	RESETN_DDRPHY0_REQ_SHIFT	= 9,
+	RESETN_DDR1_REQ_MASK		= 1,
+	RESETN_DDR1_REQ_SHIFT		= 12,
+	RESETN_DDRPHY1_REQ_MASK		= 1,
+	RESETN_DDRPHY1_REQ_SHIFT	= 13,
 };
 
 #define VCO_MAX_KHZ	(3200 * (MHz / KHz))
@@ -348,6 +358,37 @@ void rkclk_configure_cpu(enum apll_l_frequencies apll_l_freq)
 			      ATCLK_CORE_L_DIV_MASK << ATCLK_CORE_L_DIV_SHIFT,
 			      pclk_dbg_div << PCLK_DBG_L_DIV_SHIFT |
 			      atclk_div << ATCLK_CORE_L_DIV_SHIFT));
+}
+
+void rkclk_configure_ddr(unsigned int hz)
+{
+	struct pll_div dpll_cfg;
+
+	/* IC ECO bug, need to set this register */
+	write32(&rk3399_pmusgrf->ddr_rgn_con[16], 0xc000c000);
+
+	/* clk_ddrc == DPLL = 24MHz / refdiv * fbdiv / postdiv1 / postdiv2 */
+	switch (hz) {
+	case 200*MHz:
+		dpll_cfg = (struct pll_div)
+		{.refdiv = 1, .fbdiv = 50, .postdiv1 = 6, .postdiv2 = 1};
+		break;
+	case 300*MHz:
+		dpll_cfg = (struct pll_div)
+		{.refdiv = 2, .fbdiv = 100, .postdiv1 = 4, .postdiv2 = 1};
+		break;
+	case 666*MHz:
+		dpll_cfg = (struct pll_div)
+		{.refdiv = 2, .fbdiv = 111, .postdiv1 = 2, .postdiv2 = 1};
+		break;
+	case 800*MHz:
+		dpll_cfg = (struct pll_div)
+		{.refdiv = 1, .fbdiv = 100, .postdiv1 = 3, .postdiv2 = 1};
+		break;
+	default:
+		die("Unsupported SDRAM frequency, add to clock.c!");
+	}
+	rkclk_set_pll(&cru_ptr->dpll_con[0], &dpll_cfg);
 }
 
 void rkclk_configure_spi(unsigned int bus, unsigned int hz)

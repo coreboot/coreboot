@@ -102,5 +102,6 @@ enum apll_l_frequencies {
 
 void rkclk_init(void);
 void rkclk_configure_cpu(enum apll_l_frequencies apll_l_freq);
+void rkclk_configure_ddr(unsigned int hz);
 void rkclk_configure_spi(unsigned int bus, unsigned int hz);
 #endif	/* __SOC_ROCKCHIP_RK3399_CLOCK_H__ */

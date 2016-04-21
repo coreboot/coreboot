@@ -412,7 +412,23 @@ EOF
 		if [ -z "$lastgood" ]; then
 			echo "| style=\"background:red\" | Unknown"
 		else
-			echo "| style=\"background:lime\" | [[#$vendor/$board|$lastgood]]"
+			lastgood_diff=0
+			lastgood_ts=$(date -d "$lastgood" "+%s")
+			if [ "$lastgood_ts" != "" ]; then
+				current_ts=$(date "+%s")
+				if [ "$lastgood_ts" -lt "$current_ts" ]; then
+					lastgood_diff=$(( current_ts - lastgood_ts ))
+					# Convert seconds to days
+					lastgood_diff=$(( lastgood_diff / 86400 ))
+					# Set maximum age at 255 days for convenience of code
+					if [ $lastgood_diff -gt 255 ]; then
+						lastgood_diff=255
+					fi
+				fi
+			fi
+			lastgood_diff_hex=$(echo "obase=16; $lastgood_diff" | bc)
+			cell_bgcolor="#${lastgood_diff_hex}ff00"
+			echo "| style=\"background:${cell_bgcolor}\" | [[#$vendor/$board|$lastgood]]"
 		fi
 
 		echo "| $northbridge_nice"

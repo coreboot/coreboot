@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 #
 # This file is part of the coreboot project.
 #
@@ -54,7 +54,8 @@ extract_partition()
 	_bs=1024
 
 	debug "Extracting ROOT-A partition"
-	ROOTP=$( printf "unit\nB\nprint\nquit\n" | parted $FILE | grep $NAME )
+	ROOTP=$( printf "unit\nB\nprint\nquit\n" | \
+		 parted $FILE 2>/dev/null | grep $NAME )
 
 	START=$(( $( echo $ROOTP | cut -f2 -d\ | tr -d "B" ) ))
 	SIZE=$(( $( echo $ROOTP | cut -f4 -d\ | tr -d "B" ) ))

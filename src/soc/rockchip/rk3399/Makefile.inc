@@ -21,8 +21,10 @@ bootblock-y += ../common/spi.c
 ifeq ($(CONFIG_BOOTBLOCK_CONSOLE),y)
 bootblock-$(CONFIG_DRIVERS_UART) += ../common/uart.c
 endif
+bootblock-y += ../common/gpio.c
 bootblock-y += bootblock.c
 bootblock-y += clock.c
+bootblock-y += gpio.c
 bootblock-y += mmu_operations.c
 bootblock-y += timer.c
 

@@ -17,6 +17,7 @@
 #include <arch/io.h>
 #include <bootblock_common.h>
 #include <soc/grf.h>
+#include <gpio.h>
 #include <soc/spi.h>
 #include <console/console.h>
 
@@ -34,6 +35,13 @@ void bootblock_mainboard_early_init(void)
 	 * Let ask GPIO2_A2 output 1.8V to make GPIO interal logic happy.
 	 */
 	write32(&rk3399_grf->io_vsel, RK_SETBITS(1 << 0));
+
+	/*
+	 * Let's enable these power rails here, we are already running the SPI
+	 * Flash based code.
+	 */
+	gpio_output(GPIO(0, B, 2), 1);  /* PP1500_EN */
+	gpio_output(GPIO(0, B, 4), 1);  /* PP3000_EN */
 
 	if (IS_ENABLED(CONFIG_DRIVERS_UART)) {
 		_Static_assert(CONFIG_CONSOLE_SERIAL_UART_ADDRESS == UART2_BASE,

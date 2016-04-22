@@ -51,8 +51,8 @@ MAKE_VERSION=4.1
 # These are sanitized by the jenkins toolchain test builder, so if
 # a completely new URL is added here, it probably needs to be added
 # to the jenkins build as well, or the builder won't download it.
-GMP_ARCHIVE="http://ftpmirror.gnu.org/gmp/gmp-${GMP_VERSION}.tar.bz2"
-MPFR_ARCHIVE="http://ftpmirror.gnu.org/mpfr/mpfr-${MPFR_VERSION}.tar.bz2"
+GMP_ARCHIVE="http://ftpmirror.gnu.org/gmp/gmp-${GMP_VERSION}.tar.xz"
+MPFR_ARCHIVE="http://ftpmirror.gnu.org/mpfr/mpfr-${MPFR_VERSION}.tar.xz"
 MPC_ARCHIVE="http://ftpmirror.gnu.org/mpc/mpc-${MPC_VERSION}.tar.gz"
 LIBELF_ARCHIVE="http://www.mr511.de/software/libelf-${LIBELF_VERSION}.tar.gz"
 GCC_ARCHIVE="http://ftpmirror.gnu.org/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.bz2"

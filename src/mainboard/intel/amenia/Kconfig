@@ -20,6 +20,9 @@ config CHROMEOS
 	default y
 	select VIRTUAL_DEV_SWITCH
 
+config CHROMEOS
+	select EC_SOFTWARE_SYNC
+
 config MAINBOARD_DIR
 	string
 	default intel/amenia

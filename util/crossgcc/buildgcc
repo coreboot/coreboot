@@ -289,8 +289,7 @@ is_package_enabled()
 
 package_uses_targetarch()
 {
-	if [ "$1" = "GCC" ] || [ "$1" = "GDB" ] || [ "$1" = "BINUTILS" ] || \
-		[ "$1" = "PYTHON" ] || [ "$1" = "EXPAT" ]; then
+	if [ "$1" = "GCC" ] || [ "$1" = "GDB" ] || [ "$1" = "BINUTILS" ]; then
 		true
 	else
 		false
@@ -511,7 +510,7 @@ build_GCC() {
 
 build_EXPAT() {
 	CC="$CC" CFLAGS="$HOSTCFLAGS" ../${EXPAT_DIR}/configure --disable-shared \
-		--prefix=$TARGETDIR --target=${TARGETARCH} || touch .failed
+		--prefix=$TARGETDIR || touch .failed
 	$MAKE || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
 
@@ -520,7 +519,7 @@ build_EXPAT() {
 
 build_PYTHON() {
 	CC="$CC" CFLAGS="$HOSTCFLAGS" ../${PYTHON_DIR}/configure --prefix=$TARGETDIR \
-		--target=${TARGETARCH} || touch .failed
+		|| touch .failed
 	$MAKE $JOBS || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
 

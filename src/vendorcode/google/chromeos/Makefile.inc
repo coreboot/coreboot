@@ -138,7 +138,7 @@ $(obj)/FW_MAIN_%.bin: $(obj)/coreboot.rom
 		tail -1 | \
 		sed "s,^(empty)[[:space:]]\(0x[0-9a-f]*\)\tnull\t.*$$,\1," \
 		> $@.tmp.size
-	if [ -n "$$(cat $@.tmp.size)" ]; then \
+	if [ -n "$$(cat $@.tmp.size)" ] && [ $$( printf "%d" $$(cat $@.tmp.size)) -gt 0 ]; then \
 		head -c $$( printf "%d" $$(cat $@.tmp.size)) $@.tmp > $@.tmp2 && \
 		mv $@.tmp2 $@; \
 	else \

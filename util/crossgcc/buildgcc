@@ -39,10 +39,10 @@ LIBELF_VERSION=0.8.13
 GCC_VERSION=5.3.0
 GCC_AUTOCONF_VERSION=2.69
 BINUTILS_VERSION=2.26
-GDB_VERSION=7.9.1
+GDB_VERSION=7.11
 IASL_VERSION=20160318
 PYTHON_VERSION=3.4.3
-EXPAT_VERSION=2.1.0
+EXPAT_VERSION=2.1.1
 # CLANG version number
 CLANG_VERSION=3.8.0
 MAKE_VERSION=4.1
@@ -60,7 +60,7 @@ BINUTILS_ARCHIVE="http://ftpmirror.gnu.org/binutils/binutils-${BINUTILS_VERSION}
 GDB_ARCHIVE="http://ftpmirror.gnu.org/gdb/gdb-${GDB_VERSION}.tar.xz"
 IASL_ARCHIVE="https://acpica.org/sites/acpica/files/acpica-unix2-${IASL_VERSION}.tar.gz"
 PYTHON_ARCHIVE="http://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tar.xz"
-EXPAT_ARCHIVE="http://downloads.sourceforge.net/sourceforge/expat/expat-${EXPAT_VERSION}.tar.gz"
+EXPAT_ARCHIVE="http://downloads.sourceforge.net/sourceforge/expat/expat-${EXPAT_VERSION}.tar.bz2"
 # CLANG toolchain archive locations
 LLVM_ARCHIVE="http://llvm.org/releases/${CLANG_VERSION}/llvm-${CLANG_VERSION}.src.tar.xz"
 CFE_ARCHIVE="http://llvm.org/releases/${CLANG_VERSION}/cfe-${CLANG_VERSION}.src.tar.xz"

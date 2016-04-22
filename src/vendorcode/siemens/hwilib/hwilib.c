@@ -1,0 +1,321 @@
+/*
+ * This file is part of the coreboot project.
+ *
+ * Copyright (C) 2014 Siemens AG.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+#include <cbfs.h>
+#include <string.h>
+#include <console/console.h>
+#include <arch/io.h>
+#include <arch/early_variables.h>
+#include "hwilib.h"
+
+
+#define MAX_BLOCK_NUM		3
+#define LEN_HIB			0x1fd
+#define LEN_SIB			0x121
+#define LEN_EIB			0x0b5
+#define NEXT_OFFSET_HIB		0x1dc
+#define NEXT_OFFSET_SIB		0x104
+#define NEXT_OFFSET_EIB		0x0b0
+#define LEN_UNIQUEL_NUM		0x010
+#define LEN_HW_REV		0x002
+#define LEN_MAC_ADDRESS		0x006
+#define LEN_SPD			0x080
+#define LEN_EDID		0x080
+#define LEN_OFFSET		0x00c
+#define EIB_FEATRUE_OFFSET	0x00e
+#define LEN_MAGIC_NUM		0x007
+#define BLOCK_MAGIC		"H1W2M3I"
+
+/* Define all supported block types. */
+enum {
+	BLK_HIB,
+	BLK_SIB,
+	BLK_EIB,
+};
+
+/* This structure holds a valid position for a given field
+ * Every field can have multiple positions of which the first available
+ * will be taken by the library.
+ */
+struct param_pos {
+	uint8_t blk_type;	/* Valid for a specific block type */
+	uint32_t offset;	/* Offset in given block */
+	uint32_t len;		/* Length for the field in this block */
+};
+
+/* This structure holds all the needed information for a given field type
+ * and a pointer to a function which is able to extract the desired data.
+ */
+struct param_info {
+	struct param_pos pos[MAX_BLOCK_NUM];
+	uint64_t mask;
+	uint8_t mask_offset;
+	uint32_t (*get_field)(const struct param_info *param, uint8_t *dst,
+				uint32_t maxlen);
+};
+
+/* Storage for pointers to the different blocks. The contents will be filled
+ * in hwilib_find_blocks().
+ */
+static uint8_t *all_blocks[MAX_BLOCK_NUM] CAR_GLOBAL;
+
+static uint32_t hwilib_read_bytes (const struct param_info *param, uint8_t *dst,
+					uint32_t maxlen);
+
+/* Add all supported fields to this variable. It is important to use the
+ * field type of a given field as the array index so that all the information
+ * is on the appropriate place inside the array. In this way one do not need
+ * to search for fields but can simply use an index into the array.
+ */
+static const struct param_info params[] = {
+	[HIB_VerID] = {
+		.pos[0] = {.blk_type = BLK_HIB, .offset = 0x8, .len = 4},
+		.get_field = hwilib_read_bytes },
+	[SIB_VerID] = {
+		.pos[0] = {.blk_type = BLK_SIB, .offset = 0x8, .len = 4},
+		.get_field = hwilib_read_bytes },
+	[EIB_VerID] = {
+		.pos[0] = {.blk_type = BLK_EIB, .offset = 0x8, .len = 4},
+		.get_field = hwilib_read_bytes },
+	[HIB_HwRev] = {
+		.pos[0] = {.blk_type = BLK_HIB, .offset = 0xbe, .len = 2},
+		.get_field = hwilib_read_bytes },
+	[SIB_HwRev] = {
+		.pos[0] = {.blk_type = BLK_SIB, .offset = 0xc8, .len = 2},
+		.get_field = hwilib_read_bytes },
+	[UniqueNum] = {
+		.pos[0] = {.blk_type = BLK_HIB, .offset = 0xa2, .len = 10},
+		.pos[1] = {.blk_type = BLK_SIB, .offset = 0xa2, .len = 10},
+		.get_field = hwilib_read_bytes },
+	[Mac1] = {
+		.pos[0] = {.blk_type = BLK_HIB, .offset = 0xc0, .len = 6},
+		.get_field = hwilib_read_bytes },
+	[Mac1Aux] = {
+		.pos[0] = {.blk_type = BLK_HIB, .offset = 0xc6, .len = 1},
+		.get_field = hwilib_read_bytes },
+	[Mac2] = {
+		.pos[0] = {.blk_type = BLK_HIB, .offset = 0xc8, .len = 6},
+		.get_field = hwilib_read_bytes },
+	[Mac2Aux] = {
+		.pos[0] = {.blk_type = BLK_HIB, .offset = 0xce, .len = 1},
+		.get_field = hwilib_read_bytes },
+	[Mac3] = {
+		.pos[0] = {.blk_type = BLK_HIB, .offset = 0xd0, .len = 6},
+		.get_field = hwilib_read_bytes },
+	[Mac3Aux] = {
+		.pos[0] = {.blk_type = BLK_HIB, .offset = 0xd6, .len = 1},
+		.get_field = hwilib_read_bytes },
+	[Mac4] = {
+		.pos[0] = {.blk_type = BLK_HIB, .offset = 0xd8, .len = 6},
+		.get_field = hwilib_read_bytes },
+	[Mac4Aux] = {
+		.pos[0] = {.blk_type = BLK_HIB, .offset = 0xde, .len = 1},
+		.get_field = hwilib_read_bytes },
+	[SPD] = {
+		.pos[0] = {.blk_type = BLK_HIB, .offset = 0xe0, .len = 0x80},
+		.get_field = hwilib_read_bytes },
+	[FF_FreezeDis] = {
+		.pos[0] = {.blk_type = BLK_HIB, .offset = 0x1b8, .len = 4},
+		.mask = 0x10,
+		.mask_offset = 4,
+		.get_field = hwilib_read_bytes },
+	[FF_FanReq] = {
+		.pos[0] = {.blk_type = BLK_HIB, .offset = 0x1b8, .len = 4},
+		.mask = 0x400,
+		.mask_offset = 10,
+		.get_field = hwilib_read_bytes },
+	[BiosFlags] = {
+		.pos[0] = {.blk_type = BLK_HIB, .offset = 0x1c0, .len = 4},
+		.get_field = hwilib_read_bytes },
+	[MacMapping1] = {
+		.pos[0] = {.blk_type = BLK_HIB, .offset = 0x1cc, .len = 4},
+		.get_field = hwilib_read_bytes },
+	[MacMapping2] = {
+		.pos[0] = {.blk_type = BLK_HIB, .offset = 0x1d0, .len = 4},
+		.get_field = hwilib_read_bytes },
+	[MacMapping3] = {
+		.pos[0] = {.blk_type = BLK_HIB, .offset = 0x1d4, .len = 4},
+		.get_field = hwilib_read_bytes },
+	[MacMapping4] = {
+		.pos[0] = {.blk_type = BLK_HIB, .offset = 0x1d8, .len = 4},
+		.get_field = hwilib_read_bytes },
+	[PF_Color_Depth] = {
+		.pos[0] = {.blk_type = BLK_SIB, .offset = 0xea, .len = 1},
+		.mask = 0x03,
+		.mask_offset = 0,
+		.get_field = hwilib_read_bytes },
+	[PF_DisplType] = {
+		.pos[0] = {.blk_type = BLK_SIB, .offset = 0xe3, .len = 1},
+		.get_field = hwilib_read_bytes },
+	[PF_DisplCon] = {
+		.pos[0] = {.blk_type = BLK_SIB, .offset = 0xf2, .len = 1},
+		.get_field = hwilib_read_bytes },
+	[Edid] = {
+		.pos[0] = {.blk_type = BLK_EIB, .offset = 0x10, .len = 0x80},
+		.get_field = hwilib_read_bytes },
+	[VddRef] = {
+		.pos[0] = {.blk_type = BLK_EIB, .offset = 0x90, .len = 2},
+		.get_field = hwilib_read_bytes },
+};
+
+/** \brief This functions reads the given field from the first valid hwinfo
+ *         block
+ * @param  *param	Parameter to read from hwinfo
+ * @param  *dst		Pointer to memory where the data will be stored in
+ * @return		number of copied bytes on success, 0 on error
+ */
+static uint32_t hwilib_read_bytes (const struct param_info *param, uint8_t *dst,
+					uint32_t maxlen)
+{
+	uint8_t i = 0, *blk = NULL;
+	uint8_t **blk_ptr = car_get_var_ptr(&all_blocks[0]);
+	static const uint16_t all_blk_size[MAX_BLOCK_NUM] =
+						{LEN_HIB, LEN_SIB, LEN_EIB};
+
+	if (!param || !dst)
+		return 0;
+	/* Take the first valid block to get the parameter from */
+	do {
+		if ((param->pos[i].len) && (param->pos[i].offset)) {
+			blk =  blk_ptr[param->pos[i].blk_type];
+			break;
+		}
+		i++;
+	} while (i < MAX_BLOCK_NUM);
+
+	/* Ensure there is a valid block available for this parameter and
+	 * the length of the parameter do not exceed maxlen or block len.
+	 */
+	if ((!blk) || (param->pos[i].len > maxlen) ||
+	    (param->pos[i].len + param->pos[i].offset >
+	     all_blk_size[param->pos[i].blk_type]))
+		return 0;
+	/* We can now copy the wanted data. */
+	memcpy(dst, (blk + param->pos[i].offset), param->pos[i].len);
+	/* If there is a mask given, apply it only for parameters with a
+	 * length of 1, 2, 4 or 8 bytes.
+	 */
+	if (param->mask) {
+		switch (param->pos[i].len) {
+		case 1:
+			/* Apply a mask on a 8 bit value */
+			*dst &= (param->mask & 0xff);
+			*dst >>= (param->mask_offset);
+			break;
+		case 2:
+			/* Apply mask on a 16 bit value */
+			*((uint16_t *)(dst)) &= (param->mask & 0xffff);
+			*((uint16_t *)(dst)) >>= (param->mask_offset);
+			break;
+		case 4:
+			/* Apply mask on a 32 bit value */
+			*((uint32_t *)(dst)) &= (param->mask & 0xffffffff);
+			*((uint32_t *)(dst)) >>= (param->mask_offset);
+			break;
+		case 8:
+			/* Apply mask on a 64 bit value */
+			*((uint64_t *)(dst)) &= (param->mask);
+			*((uint64_t *)(dst)) >>= (param->mask_offset);
+			break;
+		default:
+			/* Warn if there is a mask for an invalid length. */
+			printk(BIOS_WARNING,
+			      "HWILIB: Invalid field length for given mask.\n");
+			break;
+		}
+	}
+	return param->pos[i].len;
+}
+
+/** \brief This function finds all available block types in a given cbfs file.
+ * @param  *hwi_filename	Name of the cbfs-file to use.
+ * @return			CB_SUCCESS when no error, otherwise error code
+ */
+enum cb_err hwilib_find_blocks (const char *hwi_filename)
+{
+	uint8_t *ptr = NULL, *base = NULL;
+	uint32_t next_offset = 1;
+	uint8_t **blk_ptr = car_get_var_ptr(&all_blocks[0]);
+	size_t filesize = 0;
+
+	/* Check for a valid parameter */
+	if (!hwi_filename)
+		return CB_ERR_ARG;
+	ptr = cbfs_boot_map_with_leak(hwi_filename, CBFS_TYPE_RAW, &filesize);
+	if (!ptr) {
+		printk(BIOS_ERR,"HWILIB: Missing file \"%s\" in cbfs.\n",
+			hwi_filename);
+		return CB_ERR;
+	}
+	/* Ensure the block has the right magic */
+	if (strncmp((char*)ptr, BLOCK_MAGIC, LEN_MAGIC_NUM)) {
+		printk(BIOS_ERR, "HWILIB: Bad magic at start of block!\n");
+		return CB_ERR;
+	}
+	/* Reset all static pointers to blocks as they might have been set
+	 *  in prior calls to this function.
+	 * This way the caller do not need to "close" already opened blocks.
+	 */
+	memset(blk_ptr, 0, (MAX_BLOCK_NUM * sizeof (uint8_t *)));
+	/* Check which blocks are available by examining the length field. */
+	base = ptr;
+	while(!(strncmp((char *)ptr, BLOCK_MAGIC, LEN_MAGIC_NUM)) &&
+		next_offset) {
+		uint16_t len = read16(ptr + LEN_OFFSET);
+		/* Ensure file size boundaries for a given block. */
+		if ((ptr - base + len) > filesize)
+			break;
+		if (len == LEN_HIB) {
+			blk_ptr[BLK_HIB] = ptr;
+			next_offset = read32(ptr + NEXT_OFFSET_HIB);
+			if (next_offset)
+				ptr = base + next_offset;
+		} else if (len == LEN_SIB) {
+			blk_ptr[BLK_SIB] = ptr;
+			next_offset = read32(ptr + NEXT_OFFSET_SIB);
+			if (next_offset)
+				ptr = base + next_offset;
+		} else if (len == LEN_EIB) {
+			/* Skip preliminary blocks */
+			if (!(read16(ptr + EIB_FEATRUE_OFFSET) & 0x01))
+				blk_ptr[BLK_EIB] = ptr;
+			next_offset = read32(ptr + NEXT_OFFSET_EIB);
+			if (next_offset)
+				ptr = base + next_offset;
+		} else {
+			next_offset = 0;
+		}
+	}
+	/* We should have found at least one valid block */
+	if (blk_ptr[BLK_HIB] || blk_ptr[BLK_SIB] || blk_ptr[BLK_EIB])
+		return CB_SUCCESS;
+	else
+		return CB_ERR;
+}
+
+/** \brief This functions is used from caller to get a specific field from
+ *         hwinfo block.
+ * @param  field	Field type to read from hwinfo
+ * @param  *dst		Pointer to memory where the data will be stored in
+ * @return		number of copied bytes on success, 0 on error
+ */
+uint32_t hwilib_get_field (hwinfo_field_t field, uint8_t *dst, uint32_t maxlen)
+{
+	/* Check the boundaries of params-variable */
+	if ((uint32_t)field < ARRAY_SIZE(params))
+		return params[field].get_field(&params[field], dst, maxlen);
+	else
+		return 0;
+}

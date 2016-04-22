@@ -45,14 +45,8 @@
 #define  ME_HFS_MODE_OVER_JMPR	4
 #define  ME_HFS_MODE_OVER_MEI	5
 #define  ME_HFS_BIOS_DRAM_ACK	1
-#define  ME_HFS_ACK_NO_DID	0
-#define  ME_HFS_ACK_RESET	1
-#define  ME_HFS_ACK_PWR_CYCLE	2
-#define  ME_HFS_ACK_S3		3
-#define  ME_HFS_ACK_S4		4
-#define  ME_HFS_ACK_S5		5
-#define  ME_HFS_ACK_GBL_RESET	6
-#define  ME_HFS_ACK_CONTINUE	7
+#define  ME_HFS_POWER_SOURCE_AC 1
+#define  ME_HFS_POWER_SOURCE_DC 2
 
 struct me_hfs {
 	u32 working_state: 4;
@@ -64,10 +58,14 @@ struct me_hfs {
 	u32 update_in_progress: 1;
 	u32 error_code: 4;
 	u32 operation_mode: 4;
-	u32 reserved: 4;
+	u32 reset_count: 4;
 	u32 boot_options_present: 1;
-	u32 ack_data: 3;
-	u32 bios_msg_ack: 4;
+	u32 reserved1: 1;
+	u32 bist_test_state: 1;
+	u32 bist_reset_request: 1;
+	u32 current_power_source: 2;
+	u32 d3_support_valid: 1;
+	u32 d0i3_support_valid: 1;
 } __attribute__ ((packed));
 
 #define PCI_ME_HFSTS2		0x48
@@ -163,6 +161,20 @@ struct me_hfs2 {
 	u32 current_state: 8;
 	u32 current_pmevent: 4;
 	u32 progress_code: 4;
+} __attribute__ ((packed));
+
+#define PCI_ME_HFSTS3			0x60
+#define  ME_HFS3_FW_SKU_CONSUMER	0x2
+#define  ME_HFS3_FW_SKU_CORPORATE	0x3
+
+struct me_hfs3 {
+	u32 reserved1: 4;
+	u32 fw_sku: 3;
+	u32 encrypt_key_check: 1;
+	u32 pch_config_change: 1;
+	u32 reserved2: 21;
+	u32 encrypt_key_override: 1;
+	u32 power_down_mitigation: 1;
 } __attribute__ ((packed));
 
 void intel_me_status(void);

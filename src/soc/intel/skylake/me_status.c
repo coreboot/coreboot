@@ -206,9 +206,11 @@ void intel_me_status(void)
 {
 	struct me_hfs _hfs, *hfs = &_hfs;
 	struct me_hfs2 _hfs2, *hfs2 = &_hfs2;
+	struct me_hfs3 _hfs3, *hfs3 = &_hfs3;
 
 	me_read_dword_ptr(hfs, PCI_ME_HFSTS1);
 	me_read_dword_ptr(hfs2, PCI_ME_HFSTS2);
+	me_read_dword_ptr(hfs3, PCI_ME_HFSTS3);
 
 	/* Check Current States */
 	printk(BIOS_DEBUG, "ME: FW Partition Table      : %s\n",
@@ -223,6 +225,14 @@ void intel_me_status(void)
 	       hfs->boot_options_present ? "YES" : "NO");
 	printk(BIOS_DEBUG, "ME: Update In Progress      : %s\n",
 	       hfs->update_in_progress ? "YES" : "NO");
+	printk(BIOS_DEBUG, "ME: D3 Support              : %s\n",
+	       hfs->d3_support_valid ? "YES" : "NO");
+	printk(BIOS_DEBUG, "ME: D0i3 Support            : %s\n",
+	       hfs->d0i3_support_valid ? "YES" : "NO");
+	printk(BIOS_DEBUG, "ME: Low Power State Enabled : %s\n",
+	       hfs2->low_power_state ? "YES" : "NO");
+	printk(BIOS_DEBUG, "ME: Power Gated             : %s\n",
+	       hfs2->power_gating_ind ? "YES" : "NO");
 	printk(BIOS_DEBUG, "ME: CPU Replaced            : %s\n",
 	       hfs2->cpu_replaced_sts  ? "YES" : "NO");
 	printk(BIOS_DEBUG, "ME: CPU Replacement Valid   : %s\n",
@@ -272,4 +282,43 @@ void intel_me_status(void)
 		       hfs2->progress_code, hfs2->current_state);
 	}
 	printk(BIOS_DEBUG, "\n");
+
+	/* Power Down Mitigation Status */
+	printk(BIOS_DEBUG, "ME: Power Down Mitigation   : %s\n",
+	       hfs3->power_down_mitigation ? "YES" : "NO");
+
+	if (hfs3->power_down_mitigation) {
+		printk(BIOS_INFO, "ME: PD Mitigation State     : ");
+		if (hfs3->encrypt_key_override == 1 &&
+		    hfs3->encrypt_key_check == 0 &&
+		    hfs3->pch_config_change == 0)
+			printk(BIOS_INFO, "Normal Operation");
+		else if (hfs3->encrypt_key_override == 1 &&
+			 hfs3->encrypt_key_check == 1 &&
+			 hfs3->pch_config_change == 0)
+			printk(BIOS_INFO, "Issue Detected and Recovered");
+		else
+			printk(BIOS_INFO, "Issue Detected but not Recovered");
+		printk(BIOS_INFO, "\n");
+
+		printk(BIOS_DEBUG, "ME: Encryption Key Override : %s\n",
+		       hfs3->encrypt_key_override ? "Workaround Applied" :
+		       "Unable to override");
+		printk(BIOS_DEBUG, "ME: Encryption Key Check    : %s\n",
+		       hfs3->encrypt_key_check ? "FAIL" : "PASS");
+		printk(BIOS_DEBUG, "ME: PCH Configuration Info  : %s\n",
+		       hfs3->pch_config_change ? "Changed" : "No Change");
+
+		printk(BIOS_DEBUG, "ME: Firmware SKU            : ");
+		switch (hfs3->fw_sku) {
+		case ME_HFS3_FW_SKU_CONSUMER:
+			printk(BIOS_DEBUG, "Consumer\n");
+			break;
+		case ME_HFS3_FW_SKU_CORPORATE:
+			printk(BIOS_DEBUG, "Corporate\n");
+			break;
+		default:
+			printk(BIOS_DEBUG, "Unknown (0x%x)\n", hfs3->fw_sku);
+		}
+	}
 }

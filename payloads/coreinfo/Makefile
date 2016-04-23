@@ -47,7 +47,7 @@ HOSTCXX ?= g++
 HOSTCFLAGS := -I$(srck) -I$(objk)
 HOSTCXXFLAGS := -I$(srck) -I$(objk)
 
-LIBPAYLOAD_PATH := ../libpayload
+LIBPAYLOAD_PATH := $(realpath ../libpayload)
 LIBPAYLOAD_OBJ := $(coreinfo_obj)/libpayload
 HAVE_LIBPAYLOAD := $(wildcard $(LIBPAYLOAD_OBJ)/lib/libpayload.a)
 LIBPAYLOAD_CONFIG ?= configs/defconfig-tinycurses
@@ -132,7 +132,7 @@ clean:
 
 distclean: clean
 	rm -rf build lpbuild
-	rm -f *.config *.config.old ..config.tmp .kconfig.d .tmpconfig*
+	rm -f .config* lp.config*
 
 include $(srck)/Makefile
 

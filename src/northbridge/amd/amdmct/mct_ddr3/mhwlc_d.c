@@ -1212,7 +1212,7 @@ void procConfig(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, ui
 						((pDCTData->WLGrossDelayPrevPass[lane_count*dimm+ByteLane] & 0x1f) << 5);
 					SeedTotalPreScaling[ByteLane] = (SeedTotal[ByteLane] - RegisterDelay - (0x20 * WrDqDqsEarly));
 					SeedTotal[ByteLane] = (int32_t) (RegisterDelay + ((((int64_t) SeedTotalPreScaling[ByteLane]) *
-						fam15h_freq_tab[MemClkFreq] * 100) / (fam15h_freq_tab[pDCTData->WLPrevMemclkFreq] * 100)));
+						fam15h_freq_tab[MemClkFreq] * 100) / (fam15h_freq_tab[pDCTData->WLPrevMemclkFreq[dimm]] * 100)));
 				}
 
 				/* Generate register values from seeds */
@@ -1326,7 +1326,7 @@ void procConfig(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, ui
 		}
 	}
 
-	pDCTData->WLPrevMemclkFreq = MemClkFreq;
+	pDCTData->WLPrevMemclkFreq[dimm] = MemClkFreq;
 	setWLByteDelay(pDCTstat, dct, ByteLane, dimm, 0, pass, lane_count);
 }
 

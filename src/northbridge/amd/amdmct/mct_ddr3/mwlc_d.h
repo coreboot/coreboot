@@ -145,7 +145,7 @@ typedef struct _sDCTStruct
 	int32_t WLCriticalGrossDelayFirstPass;
 	int32_t WLCriticalGrossDelayPrevPass;
 	int32_t WLCriticalGrossDelayFinalPass;
-	uint16_t WLPrevMemclkFreq;
+	uint16_t WLPrevMemclkFreq[MAX_TOTAL_DIMMS];
 	u16 RegMan1Present;
 	u8 DimmPresent[MAX_TOTAL_DIMMS];/* Indicates which DIMMs are present */
 					/* from Total Number of DIMMs(per Node)*/

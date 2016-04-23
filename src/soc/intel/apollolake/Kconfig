@@ -73,7 +73,7 @@ config DCACHE_RAM_BASE
 
 config DCACHE_RAM_SIZE
 	hex "Length in bytes of cache-as-RAM"
-	default 0x80000
+	default 0x100000
 	help
 	  The size of the cache-as-ram region required during bootblock
 	  and/or romstage.
@@ -116,7 +116,7 @@ config X86_TOP4G_BOOTMEDIA_MAP
 
 config ROMSTAGE_ADDR
 	hex
-	default 0xfef2e000
+	default 0xfef3e000
 	help
 	  The base address (in CAR) where romstage should be linked
 

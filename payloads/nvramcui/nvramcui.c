@@ -13,12 +13,12 @@
  * GNU General Public License for more details.
  */
 
-#include <libpayload.h>
 #include <coreboot_tables.h>
+#include <libpayload.h>
 
 #include <curses.h>
-#include <menu.h>
 #include <form.h>
+#include <menu.h>
 
 #ifndef HOSTED
 #define HOSTED 0
@@ -43,14 +43,15 @@ void render_form(FORM *form)
 	int y, x, line;
 	WINDOW *w = form_win(form);
 	WINDOW *inner_w = form_sub(form);
-	int numlines = getmaxy(w)-2;
+	int numlines = getmaxy(w) - 2;
 	getyx(inner_w, y, x);
 	line = y - (y % numlines);
-	WINDOW *der = derwin(w, getmaxy(w)-2, getmaxx(w)-2, 1, 1);
+	WINDOW *der = derwin(w, getmaxy(w) - 2, getmaxx(w) - 2, 1, 1);
 	wclear(der);
 	wrefresh(der);
 	delwin(der);
-	copywin(inner_w, w, line, 0, 1, 1, min(numlines, getmaxy(inner_w)-line), 68, 0);
+	copywin(inner_w, w, line, 0, 1, 1,
+		min(numlines, getmaxy(inner_w) - line), 68, 0);
 	wmove(w, y + 1 - line, x + 1);
 	wrefresh(w);
 }
@@ -58,7 +59,7 @@ void render_form(FORM *form)
 int main()
 {
 	int ch, done;
-	
+
 	/* coreboot data structures */
 	lib_get_sysinfo();
 
@@ -70,13 +71,14 @@ int main()
 	}
 
 	/* prep CMOS layout into libcurses data structures */
-	
+
 	/* determine number of options, and maximum option name length */
-	int numopts=0;
-	int maxlength=0;
+	int numopts = 0;
+	int maxlength = 0;
 	struct cb_cmos_entries *option = first_cmos_entry(opttbl);
 	while (option) {
-		if ((option->config != 'r') && (strcmp("check_sum", option->name) != 0)) {
+		if ((option->config != 'r') &&
+		    (strcmp("check_sum", option->name) != 0)) {
 			maxlength = max(maxlength, strlen(option->name));
 			numopts++;
 		}
@@ -86,36 +88,42 @@ int main()
 		printf("NO CMOS OPTIONS FOUND. EXITING!!!");
 		return 1;
 	}
-	FIELD **fields = malloc(sizeof(FIELD*)*(2*numopts+1));
+	FIELD **fields = malloc(sizeof(FIELD *) * (2 * numopts + 1));
 	int i;
 
 	/* walk over options, fetch details */
 	option = first_cmos_entry(opttbl);
-	for (i=0;i<numopts;i++) {
-		while ((option->config == 'r') || (strcmp("check_sum", option->name) == 0)) {
+	for (i = 0; i < numopts; i++) {
+		while ((option->config == 'r') ||
+		       (strcmp("check_sum", option->name) == 0)) {
 			option = next_cmos_entry(option);
 		}
-		fields[2*i] = new_field(1, strlen(option->name), i*2, 1, 0, 0);
-		set_field_buffer(fields[2*i], 0, option->name);
-		field_opts_off(fields[2*i], O_ACTIVE);
+		fields[2 * i] =
+		    new_field(1, strlen(option->name), i * 2, 1, 0, 0);
+		set_field_buffer(fields[2 * i], 0, option->name);
+		field_opts_off(fields[2 * i], O_ACTIVE);
 
-		fields[2*i+1] = new_field(1, 40, i*2, maxlength+2, 0, 0);
+		fields[2 * i + 1] =
+		    new_field(1, 40, i * 2, maxlength + 2, 0, 0);
 		char *buf = NULL;
-		int fail = get_option_as_string(use_nvram, opttbl, &buf, option->name);
+		int fail =
+		    get_option_as_string(use_nvram, opttbl, &buf, option->name);
 		switch (option->config) {
 		case 'h': {
-			set_field_type(fields[2*i+1], TYPE_INTEGER, 0, 0, (1<<option->length)-1);
-			field_opts_on(fields[2*i+1], O_BLANK);
+			set_field_type(fields[2 * i + 1], TYPE_INTEGER, 0, 0,
+				       (1 << option->length) - 1);
+			field_opts_on(fields[2 * i + 1], O_BLANK);
 			break;
-			  }
+		}
 		case 's': {
-			set_max_field(fields[2*i+1], option->length/8);
-			field_opts_off(fields[2*i+1], O_STATIC);
+			set_max_field(fields[2 * i + 1], option->length / 8);
+			field_opts_off(fields[2 * i + 1], O_STATIC);
 			break;
-			  }
+		}
 		case 'e': {
 			int numvals = 0;
-			struct cb_cmos_enums *cmos_enum = first_cmos_enum_of_id(opttbl, option->config_id);
+			struct cb_cmos_enums *cmos_enum =
+			    first_cmos_enum_of_id(opttbl, option->config_id);
 
 			/* if invalid data in CMOS, set buf to first enum */
 			if (fail && cmos_enum) {
@@ -124,37 +132,43 @@ int main()
 
 			while (cmos_enum) {
 				numvals++;
-				cmos_enum = next_cmos_enum_of_id(cmos_enum, option->config_id);
+				cmos_enum = next_cmos_enum_of_id(
+				    cmos_enum, option->config_id);
 			}
 
-			char **values = malloc(sizeof(char*)*(numvals + 1));
+			char **values = malloc(sizeof(char *) * (numvals + 1));
 			int cnt = 0;
 
-			cmos_enum = first_cmos_enum_of_id(opttbl, option->config_id);
+			cmos_enum =
+			    first_cmos_enum_of_id(opttbl, option->config_id);
 			while (cmos_enum) {
 				values[cnt] = cmos_enum->text;
 				cnt++;
-				cmos_enum = next_cmos_enum_of_id(cmos_enum, option->config_id);
+				cmos_enum = next_cmos_enum_of_id(
+				    cmos_enum, option->config_id);
 			}
 			values[cnt] = NULL;
-			field_opts_off(fields[2*i+1], O_EDIT);
-			set_field_type(fields[2*i+1], TYPE_ENUM, values, 1, 1);
+			field_opts_off(fields[2 * i + 1], O_EDIT);
+			set_field_type(fields[2 * i + 1], TYPE_ENUM, values, 1,
+				       1);
 			free(values); // copied by set_field_type
 			break;
-			  }
-		default:
-			  break;
 		}
-		if (buf) set_field_buffer(fields[2*i+1], 0, buf);
+		default:
+			break;
+		}
+		if (buf)
+			set_field_buffer(fields[2 * i + 1], 0, buf);
 #if HOSTED
-// underline is non-trivial on VGA text
-		set_field_back(fields[2*i+1], A_UNDERLINE);
+		// underline is non-trivial on VGA text
+		set_field_back(fields[2 * i + 1], A_UNDERLINE);
 #endif
-		field_opts_off(fields[2*i+1], O_BLANK | O_AUTOSKIP | O_NULLOK);
+		field_opts_off(fields[2 * i + 1],
+			       O_BLANK | O_AUTOSKIP | O_NULLOK);
 
 		option = next_cmos_entry(option);
 	}
-	fields[2*numopts]=NULL;
+	fields[2 * numopts] = NULL;
 
 	/* display initialization */
 	initscr();
@@ -163,7 +177,7 @@ int main()
 	noecho();
 
 	if (start_color()) {
-		assume_default_colors (COLOR_BLUE, COLOR_CYAN);
+		assume_default_colors(COLOR_BLUE, COLOR_CYAN);
 	}
 	leaveok(stdscr, TRUE);
 	curs_set(1);
@@ -174,9 +188,9 @@ int main()
 	refresh();
 
 	FORM *form = new_form(fields);
-	int numlines = min(numopts*2, 16);
-	WINDOW *w = newwin(numlines+2, 70, 2, 1);
-	WINDOW *inner_w = newpad(numopts*2, 68);
+	int numlines = min(numopts * 2, 16);
+	WINDOW *w = newwin(numlines + 2, 70, 2, 1);
+	WINDOW *inner_w = newpad(numopts * 2, 68);
 	box(w, 0, 0);
 	mvwaddstr(w, 0, 2, "Press F1 when done");
 	set_form_win(form, w);
@@ -184,10 +198,11 @@ int main()
 	post_form(form);
 
 	done = 0;
-	while(!done) {
+	while (!done) {
 		render_form(form);
-		ch=getch();
-		if (ch == ERR) continue;
+		ch = getch();
+		if (ch == ERR)
+			continue;
 		switch (ch) {
 		case KEY_DOWN:
 			form_driver(form, REQ_NEXT_FIELD);
@@ -217,7 +232,7 @@ int main()
 			form_driver(form, REQ_DEL_CHAR);
 			break;
 		case KEY_F(1):
-			done=1;
+			done = 1;
 			break;
 		default:
 			form_driver(form, ch);
@@ -228,11 +243,12 @@ int main()
 	endwin();
 
 	for (i = 0; i < numopts; i++) {
-		char *name = field_buffer(fields[2*i], 0);
-		char *value = field_buffer(fields[2*i+1], 0);
+		char *name = field_buffer(fields[2 * i], 0);
+		char *value = field_buffer(fields[2 * i + 1], 0);
 		char *ptr;
-		for (ptr = value + strlen (value) - 1;
-		     ptr >= value && *ptr == ' '; ptr--);
+		for (ptr = value + strlen(value) - 1;
+		     ptr >= value && *ptr == ' '; ptr--)
+			;
 		ptr[1] = '\0';
 		set_option_from_string(use_nvram, opttbl, value, name);
 	}
@@ -241,6 +257,6 @@ int main()
 	free_form(form);
 
 	/* reboot */
-	outb (0x6, 0xcf9);
+	outb(0x6, 0xcf9);
 	halt();
 }

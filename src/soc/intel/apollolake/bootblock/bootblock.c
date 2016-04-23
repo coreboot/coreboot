@@ -16,7 +16,9 @@
  */
 #include <arch/cpu.h>
 #include <bootblock_common.h>
+#include <cpu/x86/mtrr.h>
 #include <device/pci.h>
+#include <lib.h>
 #include <soc/bootblock.h>
 #include <soc/cpu.h>
 #include <soc/gpio.h>
@@ -76,6 +78,24 @@ void asmlinkage bootblock_c_entry(void)
 	main();
 }
 
+static void cache_bios_region(void)
+{
+	int mtrr;
+	uint32_t rom_size, alignment;
+
+	mtrr = get_free_var_mtrr();
+
+	if (mtrr==-1)
+		return;
+
+	/* Only the IFD BIOS region is memory mapped (at top of 4G) */
+	rom_size =  CONFIG_IFD_BIOS_END - CONFIG_IFD_BIOS_START;
+	/* Round to power of two */
+	alignment = 1 << (log2_ceil(rom_size));
+	rom_size = ALIGN_UP(rom_size, alignment);
+	set_var_mtrr(mtrr, 4ULL*GiB - rom_size, rom_size, MTRR_TYPE_WRPROT);
+}
+
 void bootblock_soc_early_init(void)
 {
 	/* Prepare UART for serial console. */
@@ -88,4 +108,5 @@ void bootblock_soc_early_init(void)
 	if (IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC_LPC))
 		early_lpc_enable();
 
+	cache_bios_region();
 }

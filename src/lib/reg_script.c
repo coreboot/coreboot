@@ -521,6 +521,41 @@ static void reg_script_rmw(struct reg_script_context *ctx)
 	reg_script_set_step(ctx, step);
 }
 
+static void reg_script_rxw(struct reg_script_context *ctx)
+{
+	uint64_t value;
+	const struct reg_script *step = reg_script_get_step(ctx);
+	struct reg_script write_step = *step;
+
+/*
+ * XOR logic table
+ *      Input  XOR  Value
+ *        0     0     0
+ *        0     1     1
+ *        1     0     1
+ *        1     1     0
+ *
+ * Supported operations
+ *
+ *      Input  Mask  Temp  XOR  Value  Operation
+ *        0      0    0     0     0    Clear bit
+ *        1      0    0     0     0
+ *        0      0    0     1     1    Set bit
+ *        1      0    0     1     1
+ *        0      1    0     0     0    Preserve bit
+ *        1      1    1     0     1
+ *        0      1    0     1     1    Toggle bit
+ *        1      1    1     1     0
+ */
+	value = reg_script_read(ctx);
+	value &= step->mask;
+	value ^= step->value;
+	write_step.value = value;
+	reg_script_set_step(ctx, &write_step);
+	reg_script_write(ctx);
+	reg_script_set_step(ctx, step);
+}
+
 /* In order to easily chain scripts together handle the REG_SCRIPT_COMMAND_NEXT
  * as recursive call with a new context that has the same dev and resource
  * as the previous one. That will run to completion and then move on to the
@@ -543,6 +578,9 @@ static void reg_script_run_step(struct reg_script_context *ctx,
 		break;
 	case REG_SCRIPT_COMMAND_RMW:
 		reg_script_rmw(ctx);
+		break;
+	case REG_SCRIPT_COMMAND_RXW:
+		reg_script_rxw(ctx);
 		break;
 	case REG_SCRIPT_COMMAND_POLL:
 		for (try = 0; try < step->timeout; try += POLL_DELAY) {

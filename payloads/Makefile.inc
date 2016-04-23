@@ -34,7 +34,7 @@ payloads/external/iPXE
 payloads/coreinfo/build/coreinfo.elf coreinfo:
 	$(MAKE) -C payloads/coreinfo defaultbuild
 
-payloads/nvramcui/nvramcui.elf:
+payloads/nvramcui/nvramcui.elf nvramcui:
 	$(MAKE) -C payloads/nvramcui
 
 clean-payloads:
@@ -46,4 +46,4 @@ distclean-payloads:
 print-repo-info-payloads:
 	-$(foreach payload, $(PAYLOADS_LIST), $(MAKE) -C $(payload) print-repo-info 2>/dev/null; )
 
-.PHONY: clean-payloads distclean-payloads print-repo-info-payloads
+.PHONY: clean-payloads distclean-payloads print-repo-info-payloads nvramcui coreinfo

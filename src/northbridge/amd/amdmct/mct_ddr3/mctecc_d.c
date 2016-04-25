@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2010 Advanced Micro Devices, Inc.
- * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
+ * Copyright (C) 2015 - 2016 Raptor Engineering, LLC
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -137,10 +137,6 @@ u8 ECCInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)
 			/* Clear MC4 error status */
 			pci_write_config32(pDCTstat->dev_nbmisc, 0x48, 0x0);
 			pci_write_config32(pDCTstat->dev_nbmisc, 0x4c, 0x0);
-
-			/* Clear the RAM before enabling ECC to prevent MCE-related lockups */
-			DCTMemClr_Init_D(pMCTstat, pDCTstat);
-			DCTMemClr_Sync_D(pMCTstat, pDCTstat);
 		}
 	}
 

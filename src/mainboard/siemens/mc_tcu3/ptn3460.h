@@ -17,7 +17,6 @@
 #define PTN3460_H_
 
 #include <delay.h>
-#include "modhwinfo.h"
 #include "lcd_panel.h"
 
 #define PTN_SLAVE_ADR		0x20
@@ -66,7 +65,7 @@ struct ptn_3460_flash{
 }__attribute__((packed));
 
 
-int ptn3460_init(char lcd_type, struct edidinfo *eib, struct shortinfo *sib);
+int ptn3460_init(char *hwi_block);
 int ptn3460_read_edid(u8 edid_num, u8 *data);
 int ptn3460_write_edid(u8 edid_num, u8 *data);
 int ptn_select_edid(u8 edid_num);

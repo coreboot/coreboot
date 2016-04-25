@@ -15,10 +15,10 @@
 #include <cbfs.h>
 #include <console/console.h>
 #include <string.h>
-#include "modhwinfo.h"
 #include "soc/gpio.h"
 #include "lcd_panel.h"
 #include "ptn3460.h"
+
 
 /** \brief Reads GPIOs used for LCD panel encoding and returns the 4 bit value
  * @param  no parameters
@@ -42,10 +42,8 @@ u8 get_lcd_panel_type(void)
  */
 int setup_lcd_panel(void)
 {
-	u8	lcd_type;
+	u8 lcd_type;
 	int status;
-	struct edidinfo *eib = NULL;
-	struct shortinfo *sib = NULL;
 	char blockname[33];
 
 	lcd_type = get_lcd_panel_type();
@@ -71,20 +69,12 @@ int setup_lcd_panel(void)
 		status = 1;
 		break;
 	}
-
-	/* Now that we have the panel type, get the matching block and setup */
-	/* the DP2LVDS converter accordingly */
-	eib = get_edidinfo(blockname);
-	sib = get_shortinfo(blockname);
-
-	if ((!eib) || (!sib)) {
-		printk(BIOS_ERR, "LCD: Info block named \"%s\" not found!\n", blockname);
-		status = 1;
-	} else {
-		printk(BIOS_INFO, "LCD: Found SIB at 0x%x, EIB at 0x%x\n",
-				  (int)sib, (int)eib);
-		status = ptn3460_init(lcd_type, eib, sib);
+	/* Now that we have the panel type, setup the DP2LVDS converter */
+	status = ptn3460_init(blockname);
+	if (status)
+		printk(BIOS_ERR, "LCD: Setup PTN with status 0x%x\n", status);
+	else
 		printk(BIOS_INFO, "LCD: Setup PTN with status 0x%x\n", status);
-	}
+
 	return status;
 }

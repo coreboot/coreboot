@@ -14,33 +14,52 @@
  */
 
 #include <console/console.h>
+#include <hwilib.h>
 #include "soc/i2c.h"
 #include "ptn3460.h"
 
 /** \brief This functions sets up the DP2LVDS-converter to be used with the
  *         appropriate lcd panel
- * @param  lcd_type  Type of LCD we should set up the converter for
- * @param  *sib      Pointer to short info block structure
- * @param  *eib      Pointer to EDID info block structure
- * @return           0 on success or error code
+ * @param  *hwi_block	Filename in CBFS of the block to use as HW-Info
+ * @return		0 on success or error code
  */
-int ptn3460_init(char lcd_type, struct edidinfo *eib, struct shortinfo *sib)
+int ptn3460_init(char *hwi_block)
 {
 	struct ptn_3460_config cfg;
 	int status;
+	uint8_t disp_con = 0, color_depth = 0;
+	uint8_t edid_data[0x80];
 
+	if (!hwi_block || hwilib_find_blocks(hwi_block) != CB_SUCCESS) {
+		printk(BIOS_ERR, "LCD: Info block \"%s\" not found!\n",
+			hwi_block);
+		return 1;
+	}
 
 	status = i2c_init(PTN_I2C_CONTROLER);
 	if (status)
 		return (PTN_BUS_ERROR | status);
 
-	/* If we are here, we have all the desired information for setting up */
-	/* DP2LVDS converter. In addition, the information matches the connected */
-	/* LCD-panel and therefore, we do not have to distinguish between */
-	/* different panels here for the timing. Inside the converter, table 6 */
-	/* will be used for the timings. */
-	status = ptn3460_write_edid(6, eib->edid);
-	if (status)
+	/* Get all needed information from hwinfo block */
+	if (hwilib_get_field(Edid, edid_data, 0x80) != sizeof(edid_data)) {
+		printk(BIOS_ERR, "LCD: No EDID data available in %s\n",
+			hwi_block);
+		return 1;
+	}
+	if ((hwilib_get_field(PF_DisplCon, &disp_con, 1) != 1)) {
+		printk(BIOS_ERR, "LCD: Missing panel features from %s\n",
+			hwi_block);
+		return 1;
+	}
+	if (hwilib_get_field(PF_Color_Depth ,&color_depth, 1) != 1) {
+		printk(BIOS_ERR, "LCD: Missing panel features from %s\n",
+			hwi_block);
+		return 1;
+	}
+	/* Here, all the desired information for setting up DP2LVDS converter*/
+	/* are present. Inside the converter, table 6 will be used for */
+	/* the timings. */
+	if ((status = ptn3460_write_edid(6, edid_data)) != 0)
 		return status;
 	/* Select this table to be emulated */
 	ptn_select_edid(6);
@@ -50,12 +69,12 @@ int ptn3460_init(char lcd_type, struct edidinfo *eib, struct shortinfo *sib)
 	if (status)
 		return (PTN_BUS_ERROR | status);
 
-	/* Set up configuration data according to the information blocks we get */
+	/* Set up configuration data according to the hwinfo blocks we get */
 	cfg.dp_interface_ctrl = 0;
 	cfg.lvds_interface_ctrl1 = 0x00;
-	if (sib->panelFeatures[SIB_DISP_CON_IDX] == SIB_LVDS_DUAL_LANE)
+	if (disp_con == PF_DISPLCON_LVDS_DUAL)
 		cfg.lvds_interface_ctrl1 |= 0x0b; /* Turn on dual LVDS lane and clock */
-	if ((sib->panelFeatures[SIB_HWINIT_IDX] & 0x03) == SIB_COLOR_6BIT)
+	if (color_depth == PF_COLOR_DEPTH_6BIT)
 		cfg.lvds_interface_ctrl1 |= 0x20; /* Use 18 bits per pixel */
 
 	cfg.lvds_interface_ctrl2 = 0x03;  /* no clock spreading, 300 mV LVDS swing */

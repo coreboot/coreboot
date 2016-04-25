@@ -33,7 +33,7 @@
 #include <soc/acpi.h>
 #include <soc/baytrail.h>
 #include <drivers/intel/fsp1_0/fsp_util.h>
-#include "modhwinfo.h"
+#include <hwilib.h>
 
 /**
  * /brief mainboard call for setup that needs to be done before fsp init
@@ -166,35 +166,44 @@ const PCH_AZALIA_CONFIG mainboard_AzaliaConfig = {
  */
 void romstage_fsp_rt_buffer_callback(FSP_INIT_RT_BUFFER *FspRtBuffer)
 {
-	struct hwinfo *hwi_main;
+	uint8_t spd[0x80];
 	UPD_DATA_REGION *UpdData = FspRtBuffer->Common.UpdDataRgnPtr;
 
-	/* Initialize the Azalia Verb Tables to mainboard specific version */
+	/* Initialize the Azalia Verb Tables to mainboard specific version. */
 	UpdData->AzaliaConfigPtr  = (UINT32)&mainboard_AzaliaConfig;
 
-	/* Get SPD data from hardware information block and setup memory down */
-	/* parameters for FSP accordingly */
-	hwi_main = get_hwinfo((char*)"hwinfo.hex");
-	if (hwi_main) {
-		UpdData->PcdMemoryParameters.EnableMemoryDown = 1;
-		UpdData->PcdMemoryParameters.DRAMType = hwi_main->SPD[2];
-		UpdData->PcdMemoryParameters.DIMM0Enable = hwi_main->SPD[3] & 0x01;
-		UpdData->PcdMemoryParameters.DIMM1Enable = (hwi_main->SPD[3] >> 1) & 0x01;
-		UpdData->PcdMemoryParameters.DIMMDensity = hwi_main->SPD[4];
-		UpdData->PcdMemoryParameters.DIMMDWidth = hwi_main->SPD[5];
-		UpdData->PcdMemoryParameters.DIMMSides = hwi_main->SPD[7];
-		UpdData->PcdMemoryParameters.DIMMBusWidth = hwi_main->SPD[8];
-		UpdData->PcdMemoryParameters.DRAMSpeed = hwi_main->SPD[12];
-		UpdData->PcdMemoryParameters.DIMMtCL = hwi_main->SPD[14];
-		UpdData->PcdMemoryParameters.DIMMtWR = hwi_main->SPD[17];
-		UpdData->PcdMemoryParameters.DIMMtRPtRCD = hwi_main->SPD[18];
-		UpdData->PcdMemoryParameters.DIMMtRRD = hwi_main->SPD[19];
-		UpdData->PcdMemoryParameters.DIMMtWTR = hwi_main->SPD[26];
-		UpdData->PcdMemoryParameters.DIMMtRTP = hwi_main->SPD[27];
-		UpdData->PcdMemoryParameters.DIMMtFAW = hwi_main->SPD[28];
-		/*If one need output from MRC to be used in Intel RMT, simply */
-		/*enable the following line */
-		//UpdData->PcdMrcDebugMsg = 1;
-	} else
-		printk(BIOS_ERR, "HWInfo not found, leave default timings for DDR3.\n");
+	/* Get SPD data from hwinfo block and set up memory down */
+	/* parameters for FSP accordingly. */
+	if (hwilib_find_blocks("hwinfo.hex")) {
+		printk(BIOS_ERR,
+			"HWInfo not found, use default timings for DDR3.\n");
+		return;
+	}
+
+	if (hwilib_get_field(SPD, spd, sizeof(spd)) != sizeof(spd)) {
+		printk(BIOS_ERR,
+			"SPD not found in HWInfo, use defaults for DDR3.\n");
+		return;
+	}
+	/*Set up DDR timings from HWInfo. */
+	UpdData->PcdMemoryParameters.EnableMemoryDown = 1;
+	UpdData->PcdMemoryParameters.DRAMType = spd[2];
+	UpdData->PcdMemoryParameters.DIMM0Enable = spd[3] & 0x01;
+	UpdData->PcdMemoryParameters.DIMM1Enable = (spd[3] >> 1) & 0x01;
+	UpdData->PcdMemoryParameters.DIMMDensity = spd[4];
+	UpdData->PcdMemoryParameters.DIMMDWidth = spd[5];
+	UpdData->PcdMemoryParameters.DIMMSides = spd[7];
+	UpdData->PcdMemoryParameters.DIMMBusWidth = spd[8];
+	UpdData->PcdMemoryParameters.DRAMSpeed = spd[12];
+	UpdData->PcdMemoryParameters.DIMMtCL = spd[14];
+	UpdData->PcdMemoryParameters.DIMMtWR = spd[17];
+	UpdData->PcdMemoryParameters.DIMMtRPtRCD = spd[18];
+	UpdData->PcdMemoryParameters.DIMMtRRD = spd[19];
+	UpdData->PcdMemoryParameters.DIMMtWTR = spd[26];
+	UpdData->PcdMemoryParameters.DIMMtRTP = spd[27];
+	UpdData->PcdMemoryParameters.DIMMtFAW = spd[28];
+
+	/*If one need output from MRC to be used in Intel RMT, simply */
+	/*enable the following line */
+	//UpdData->PcdMrcDebugMsg = 1;
 }

@@ -193,7 +193,7 @@ static void mt6391_init_setting(void)
 	/* [12:0]: BUCK_RSV; for OC protection */
 	mt6391_write(PMIC_RG_BUCK_CON3, 0x600, 0x0FFF, 0);
 	/* [11:10]: QI_VCORE_VSLEEP; sleep mode only (0.7V) */
-	mt6391_write(PMIC_RG_BUCK_CON8, 0x1, 0x3, 10);
+	mt6391_write(PMIC_RG_BUCK_CON8, 0x0, 0x3, 10);
 	/* [7:6]: QI_VSRMCA7_VSLEEP; sleep mode only (0.85V) */
 	mt6391_write(PMIC_RG_BUCK_CON8, 0x0, 0x3, 6);
 	/* [5:4]: QI_VSRMCA15_VSLEEP; sleep mode only (0.7V) */

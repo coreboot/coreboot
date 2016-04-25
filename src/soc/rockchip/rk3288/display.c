@@ -39,6 +39,7 @@ void rk_display_init(device_t dev, u32 lcdbase,
 		unsigned long fb_size)
 {
 	struct edid edid;
+	uint32_t val;
 	struct soc_rockchip_rk3288_config *conf = dev->chip_info;
 	uint32_t lower = ALIGN_DOWN(lcdbase, MiB);
 	uint32_t upper = ALIGN_UP(lcdbase + fb_size, MiB);
@@ -58,7 +59,16 @@ void rk_display_init(device_t dev, u32 lcdbase,
 		printk(BIOS_DEBUG, "Attempting to setup EDP display.\n");
 		rkclk_configure_edp();
 		rkclk_configure_vop_aclk(conf->vop_id, 192 * MHz);
-		rk_edp_init(conf->vop_id);
+
+		/* grf_edp_ref_clk_sel: from internal 24MHz or 27MHz clock */
+		write32(&rk3288_grf->soc_con12, RK_SETBITS(1 << 4));
+
+		/* select epd signal from vop0 or vop1 */
+		val = (conf->vop_id == 1) ? RK_SETBITS(1 << 5) :
+					    RK_CLRBITS(1 << 5);
+		write32(&rk3288_grf->soc_con6, val);
+
+		rk_edp_init();
 
 		if (rk_edp_get_edid(&edid) == 0) {
 			detected_mode = VOP_MODE_EDP;

@@ -13,13 +13,13 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __RK32_DP_H
-#define __RK32_DP_H
+#ifndef __RK_DP_H
+#define __RK_DP_H
 
 #include <edid.h>
 #include <stdlib.h>
 
-struct rk3288_edp_regs {
+struct rk_edp_regs {
 	u8	res0[0x10];
 	u32	dp_tx_version;
 	u8	res1[0x4];
@@ -165,7 +165,7 @@ struct rk3288_edp_regs {
 	u8	res30[0x10];
 	u32	pll_reg_5;
 };
-check_member(rk3288_edp_regs, pll_reg_5, 0xa00);
+check_member(rk_edp_regs, pll_reg_5, 0xa00);
 
 /* func_en_1 */
 #define VID_CAP_FUNC_EN_N			(0x1 << 6)
@@ -242,10 +242,6 @@ check_member(rk3288_edp_regs, pll_reg_5, 0xa00);
 #define PD_CH2					(0x1 << 2)
 #define PD_CH1					(0x1 << 1)
 #define PD_CH0					(0x1 << 0)
-
-/* pll_reg_1 */
-#define REF_CLK_24M				(0x1 << 1)
-#define REF_CLK_27M				(0x0 << 1)
 
 /* line_map */
 #define LANE3_MAP_LOGIC_LANE_0			(0x0 << 6)
@@ -650,13 +646,12 @@ struct link_train {
 };
 
 struct rk_edp {
-	struct rk3288_edp_regs	*regs;
+	struct rk_edp_regs	*regs;
 	struct link_train	link_train;
 	u8 train_set[4];
 };
 
 int rk_edp_enable(void);
-void rk_edp_init(u32 vop_id);
+void rk_edp_init(void);
 int rk_edp_get_edid(struct edid *edid);
-
 #endif

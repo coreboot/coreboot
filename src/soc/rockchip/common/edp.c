@@ -17,17 +17,15 @@
 #include <assert.h>
 #include <console/console.h>
 #include <delay.h>
+#include <device/device.h>
 #include <edid.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
 #include <soc/addressmap.h>
+#include <soc/display.h>
 #include <soc/edp.h>
-#include <soc/grf.h>
-#include <soc/vop.h>
 #include <timer.h>
-
-#include "chip.h"
 
 #define edp_debug(x...) do {if (0) printk(BIOS_DEBUG, x); } while (0)
 
@@ -285,12 +283,14 @@ static int rk_edp_dpcd_transfer(struct rk_edp *edp,
 	return 0;
 }
 
-static int rk_edp_dpcd_read(struct rk_edp *edp, u32 addr, u8 *values, size_t size)
+static int rk_edp_dpcd_read(struct rk_edp *edp, u32 addr,
+			    u8 *values, size_t size)
 {
 	return rk_edp_dpcd_transfer(edp, addr, values, size, DPCD_READ);
 }
 
-static int rk_edp_dpcd_write(struct rk_edp *edp, u32 addr, u8 *values, size_t size)
+static int rk_edp_dpcd_write(struct rk_edp *edp, u32 addr,
+			     u8 *values, size_t size)
 {
 	return rk_edp_dpcd_transfer(edp, addr, values, size, DPCD_WRITE);
 }
@@ -361,6 +361,7 @@ static u8 edp_get_lane_status(const u8 *link_status, int lane)
 	int i = DPCD_LANE0_1_STATUS + (lane >> 1);
 	int s = (lane & 1) * 4;
 	u8 l = edp_link_status(link_status, i);
+
 	return (l >> s) & 0xf;
 }
 
@@ -549,8 +550,11 @@ static int rk_edp_link_train_ce(struct rk_edp *edp)
 	channel_eq = 0;
 	for (tries = 0; tries < 5; tries++) {
 		rk_edp_set_link_training(edp, edp->train_set);
-		udelay(400);
+		rk_edp_dpcd_write(edp, DPCD_TRAINING_LANE0_SET,
+					edp->train_set,
+					edp->link_train.lane_count);
 
+		udelay(400);
 		if (rk_edp_dpcd_read_link_status(edp, status) < 0) {
 			printk(BIOS_ERR, "displayport link status failed\n");
 			return -1;
@@ -700,7 +704,7 @@ static int rk_edp_read_bytes_from_i2c(struct rk_edp *edp,
 
 			/*
 			 * If Rx sends defer, Tx sends only reads
-			 * request without sending addres
+			 * request without sending address
 			 */
 			if (!defer)
 				retval = rk_edp_select_i2c_device(edp,
@@ -946,16 +950,16 @@ static int rockchip_edp_get_plug_in_status(struct rk_edp *edp)
 /*
  * support edp HPD function
  * some hardware version do not support edp hdp,
- * we use 200ms to try to get the hpd single now,
- * if we can not get edp hpd single, it will delay 200ms,
+ * we use 360ms to try to get the hpd single now,
+ * if we can not get edp hpd single, it will delay 360ms,
  * also meet the edp power timing request, to compatible
  * all of the hardware version
  */
-static void rockchip_edp_wait_hpd(struct rk_edp *edp)
+static void rk_edp_wait_hpd(struct rk_edp *edp)
 {
 	struct stopwatch hpd;
 
-	stopwatch_init_msecs_expire(&hpd, 200);
+	stopwatch_init_msecs_expire(&hpd, 360);
 	do {
 		if (rockchip_edp_get_plug_in_status(edp))
 			return;
@@ -998,20 +1002,11 @@ int rk_edp_enable(void)
 	return ret;
 }
 
-void rk_edp_init(u32 vop_id)
+void rk_edp_init(void)
 {
-	u32 val;
+	rk_edp.regs = (struct rk_edp_regs *)EDP_BASE;
 
-	rk_edp.regs = (struct rk3288_edp_regs *)EDP_BASE;
-
-	/* grf_edp_ref_clk_sel: from internal 24MHz or 27MHz clock */
-	write32(&rk3288_grf->soc_con12, RK_SETBITS(1 << 4));
-
-	/* select epd signal from vop0 or vop1 */
-	val = (vop_id == 1) ? RK_SETBITS(1 << 5) : RK_CLRBITS(1 << 5);
-	write32(&rk3288_grf->soc_con6, val);
-
-	rockchip_edp_wait_hpd(&rk_edp);
+	rk_edp_wait_hpd(&rk_edp);
 
 	rk_edp_init_refclk(&rk_edp);
 	rk_edp_init_interrupt(&rk_edp);

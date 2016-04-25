@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2015 Raptor Engineering
+ * Copyright (C) 2015 - 2016 Raptor Engineering, LLC
  *
  * Copyright (C) 2007 AMD
  * Written by Yinghai Lu <yinghailu@amd.com> for AMD.
@@ -246,26 +246,74 @@ static void execute_memory_test(void)
 {
 	/* Test DRAM functionality */
 	uint32_t i;
+	uint32_t v;
+	uint32_t w;
+	uint32_t x;
+	uint32_t y;
+	uint32_t z;
 	uint32_t* dataptr;
-	printk(BIOS_DEBUG, "Writing test patterns to memory...\n");
+	uint32_t readback;
+	uint32_t start = 0x300000;
+	printk(BIOS_DEBUG, "Writing test pattern 1 to memory...\n");
 	for (i=0; i < 0x1000000; i = i + 8) {
-		dataptr = (void *)(0x300000 + i);
+		dataptr = (void *)(start + i);
 		*dataptr = 0x55555555;
-		dataptr = (void *)(0x300000 + i + 4);
+		dataptr = (void *)(start + i + 4);
 		*dataptr = 0xaaaaaaaa;
 	}
 	printk(BIOS_DEBUG, "Done!\n");
 	printk(BIOS_DEBUG, "Testing memory...\n");
-	uint32_t readback;
 	for (i=0; i < 0x1000000; i = i + 8) {
-		dataptr = (void *)(0x300000 + i);
+		dataptr = (void *)(start + i);
 		readback = *dataptr;
 		if (readback != 0x55555555)
 			printk(BIOS_DEBUG, "%p: INCORRECT VALUE %08x (should have been %08x)\n", dataptr, readback, 0x55555555);
-		dataptr = (void *)(0x300000 + i + 4);
+		dataptr = (void *)(start + i + 4);
 		readback = *dataptr;
 		if (readback != 0xaaaaaaaa)
 			printk(BIOS_DEBUG, "%p: INCORRECT VALUE %08x (should have been %08x)\n", dataptr, readback, 0xaaaaaaaa);
+	}
+	printk(BIOS_DEBUG, "Done!\n");
+	printk(BIOS_DEBUG, "Writing test pattern 2 to memory...\n");
+	/* Set up the PRNG seeds for initial write */
+	w = 0x55555555;
+	x = 0xaaaaaaaa;
+	y = 0x12345678;
+	z = 0x87654321;
+	for (i=0; i < 0x1000000; i = i + 4) {
+		/* Use Xorshift as a PRNG to stress test the bus */
+		v = x;
+		v ^= v << 11;
+		v ^= v >> 8;
+		x = y;
+		y = z;
+		z = w;
+		w ^= w >> 19;
+		w ^= v;
+		dataptr = (void *)(start + i);
+		*dataptr = w;
+	}
+	printk(BIOS_DEBUG, "Done!\n");
+	printk(BIOS_DEBUG, "Testing memory...\n");
+	/* Reset the PRNG seeds for readback */
+	w = 0x55555555;
+	x = 0xaaaaaaaa;
+	y = 0x12345678;
+	z = 0x87654321;
+	for (i=0; i < 0x1000000; i = i + 4) {
+		/* Use Xorshift as a PRNG to stress test the bus */
+		v = x;
+		v ^= v << 11;
+		v ^= v >> 8;
+		x = y;
+		y = z;
+		z = w;
+		w ^= w >> 19;
+		w ^= v;
+		dataptr = (void *)(start + i);
+		readback = *dataptr;
+		if (readback != w)
+			printk(BIOS_DEBUG, "%p: INCORRECT VALUE %08x (should have been %08x)\n", dataptr, readback, w);
 	}
 	printk(BIOS_DEBUG, "Done!\n");
 }

@@ -427,6 +427,9 @@ EOF
 				fi
 			fi
 			lastgood_diff_hex=$(echo "obase=16; $lastgood_diff" | bc)
+			if [ "$lastgood_diff" -lt 16 ]; then
+				lastgood_diff_hex="0${lastgood_diff_hex}"
+			fi
 			cell_bgcolor="#${lastgood_diff_hex}ff00"
 			echo "| style=\"background:${cell_bgcolor}\" | [[#$vendor/$board|$lastgood]]"
 		fi

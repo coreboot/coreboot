@@ -13,8 +13,10 @@
 ## GNU General Public License for more details.
 ##
 
-TAG-y=origin/master
-NAME-y=MASTER
+TAG-$(CONFIG_MEMTEST_MASTER)=origin/master
+NAME-$(CONFIG_MEMTEST_MASTER)=Master
+TAG-$(CONFIG_MEMTEST_STABLE)=ca352c9a6bd8c1bba16ea22cbfc7028d97bacec9
+NAME-$(CONFIG_MEMTEST_STABLE)=Stable
 
 project_name=Memtest86+
 project_dir=$(CURDIR)/memtest86plus
@@ -33,7 +35,7 @@ fetch: $(project_dir)
 		git fetch; fi
 
 checkout: fetch
-	echo "    Checking out $(project_name) revision $(NAME-y)"
+	echo "    Checking out $(project_name) revision $(NAME-y) ($(TAG-y))"
 	cd $(project_dir); \
 		git checkout master; \
 		git branch -D coreboot 2>/dev/null; \

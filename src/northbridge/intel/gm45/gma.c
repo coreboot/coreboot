@@ -340,7 +340,7 @@ static void intel_gma_init(const struct northbridge_intel_gm45_config *info,
 		write32(mmio + PIPESRC(0), (639 << 16) | 399);
 		write32(mmio + PF_CTL(0), PF_ENABLE | PF_FILTER_MED_3x3);
 		write32(mmio + PF_WIN_SZ(0), vactive | (hactive << 16));
-		write32(mmio + PFIT_CONTROL, 0xa0000000);
+		write32(mmio + PFIT_CONTROL, 0x80000000);
 	}
 
 	mdelay(1);
@@ -362,12 +362,12 @@ static void intel_gma_init(const struct northbridge_intel_gm45_config *info,
 	write32(mmio + PIPECONF(0), PIPECONF_ENABLE | PIPECONF_BPP_6 | PIPECONF_DITHER_EN);
 
 	if (IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)) {
-		write32(mmio + VGACNTRL, 0x22c4008e | VGA_DISP_DISABLE);
+		write32(mmio + VGACNTRL, 0xc4008e | VGA_DISP_DISABLE);
 		write32(mmio + DSPCNTR(0), DISPLAY_PLANE_ENABLE
 			| DISPPLANE_BGRX888);
 		mdelay(1);
 	} else {
-		write32(mmio + VGACNTRL, 0x22c4008e);
+		write32(mmio + VGACNTRL, 0xc4008e);
 	}
 
 	write32(mmio + TRANS_HTOTAL(0),

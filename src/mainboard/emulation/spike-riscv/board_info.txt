@@ -1,2 +1,2 @@
-Board name: QEMU RISCV
+Board name: Spike RISCV
 Category: emulation

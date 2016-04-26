@@ -346,6 +346,8 @@
  */
 #ifndef __ACPI__
 
+#include <stdint.h>
+
 /*
  * Define __packed if someone hasn't beat us to it.  Linux kernel style
  * checking prefers __packed over __attribute__((packed)).

@@ -39,10 +39,11 @@
  * @param  mac     buffer where to store the MAC address
  * @return cb_err  CB_ERR or CB_SUCCESS
  */
-enum cb_err mainboard_get_mac_address(u16 bus, u8 devfn, u8 mac[6])
+enum cb_err mainboard_get_mac_address(uint16_t bus, uint8_t devfn,
+					uint8_t mac[6])
 {
 	uint8_t mac_adr[6];
-	u32 i;
+	uint32_t i;
 
 	/* Open main hwinfo block */
 	if (hwilib_find_blocks("hwinfo.hex") != CB_SUCCESS)

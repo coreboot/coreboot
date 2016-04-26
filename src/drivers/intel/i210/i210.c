@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2014 Siemens AG.
+ * Copyright (C) 2014-2016 Siemens AG.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,13 +25,14 @@
 
 /* We need one function we can call to get a MAC address to use */
 /* This function can be coded somewhere else but must exist. */
-extern enum cb_err mainboard_get_mac_address(u16 bus, u8 devfn, u8 mac[6]);
+extern enum cb_err mainboard_get_mac_address(uint16_t bus, uint8_t devfn,
+					     uint8_t mac[6]);
 
 /* This is a private function to wait for a bit mask in a given register */
 /* To avoid endless loops, a time-out is implemented here. */
-static int wait_done(u32* reg, u32 mask)
+static int wait_done(uint32_t* reg, uint32_t mask)
 {
-	u32 timeout = I210_POLL_TIMEOUT_US;
+	uint32_t timeout = I210_POLL_TIMEOUT_US;
 
 	while (!(*reg & mask)) {
 		udelay(1);
@@ -50,17 +51,18 @@ static int wait_done(u32* reg, u32 mask)
  * @param *buffer  Pointer to the buffer where to store read data
  * @return void    I210_NO_ERROR or an error code
  */
-static u32 read_flash(struct device *dev, u32 address, u32 count, u16 *buffer)
+static uint32_t read_flash(struct device *dev, uint32_t address,
+			   uint32_t count, uint16_t *buffer)
 {
-	u32 bar;
-	u32 *eeprd;
-	u32 i;
+	uint32_t bar;
+	uint32_t *eeprd;
+	uint32_t i;
 
 	/* Get the BAR to memory mapped space*/
 	bar = pci_read_config32(dev, PCI_BASE_ADDRESS_0);
 	if ((!bar) || ((address + count) > 0x40))
 		return I210_INVALID_PARAM;
-	eeprd = (u32*)(bar + I210_REG_EEREAD);
+	eeprd = (uint32_t*)(bar + I210_REG_EEREAD);
 	/* Prior to start ensure flash interface is ready by checking DONE-bit */
 	if (wait_done(eeprd, I210_DONE))
 		return I210_NOT_READY;
@@ -84,10 +86,10 @@ static u32 read_flash(struct device *dev, u32 address, u32 count, u16 *buffer)
  * @param *checksum Pointer to the buffer where to store the checksum
  * @return void     I210_NO_ERROR or an error code
  */
-static u32 compute_checksum(struct device *dev, u16 *checksum)
+static uint32_t compute_checksum(struct device *dev, uint16_t *checksum)
 {
-	u16 eep_data[0x40];
-	u32 i;
+	uint16_t eep_data[0x40];
+	uint32_t i;
 
 	/* First read back data to compute the checksum for */
 	if (read_flash(dev, 0, 0x3f, eep_data))
@@ -111,20 +113,21 @@ static u32 compute_checksum(struct device *dev, u16 *checksum)
  * @param *buffer Pointer to the buffer where data to write is stored in
  * @return void   I210_NO_ERROR or an error code
  */
-static u32 write_flash(struct device *dev, u32 address, u32 count, u16 *buffer)
+static uint32_t write_flash(struct device *dev, uint32_t address,
+			    uint32_t count, uint16_t *buffer)
 {
-	u32 bar;
-	u32 *eepwr;
-	u32 *eectrl;
-	u16 checksum;
-	u32 i;
+	uint32_t bar;
+	uint32_t *eepwr;
+	uint32_t *eectrl;
+	uint16_t checksum;
+	uint32_t i;
 
 	/* Get the BAR to memory mapped space */
 	bar = pci_read_config32(dev, 0x10);
 	if ((!bar) || ((address + count) > 0x40))
 		return I210_INVALID_PARAM;
-	eepwr = (u32*)(bar + I210_REG_EEWRITE);
-	eectrl = (u32*)(bar + I210_REG_EECTRL);
+	eepwr = (uint32_t*)(bar + I210_REG_EEWRITE);
+	eectrl = (uint32_t*)(bar + I210_REG_EECTRL);
 	/* Prior to start ensure flash interface is ready by checking DONE-bit */
 	if (wait_done(eepwr, I210_DONE))
 		return I210_NOT_READY;
@@ -145,8 +148,8 @@ static u32 write_flash(struct device *dev, u32 address, u32 count, u16 *buffer)
 	if (wait_done(eepwr, I210_DONE))
 		return I210_WRITE_ERROR;
 	/* Up to now, desired data was written into shadowed RAM. We now need */
-	/* to perform a flash cycle to bring the shadowed RAM into flash memory. */
-	/* To start a flash cycle we need to set FLUPD-bit and wait for FLDONE. */
+	/* to perform a flash cycle to bring the shadowed RAM into flash. */
+	/* To start a flash cycle we need to set FLUPD and wait for FLDONE. */
 	*eectrl = *eectrl | I210_FLUPD;
 	if (wait_done(eectrl, I210_FLUDONE))
 		return I210_FLASH_UPDATE_ERROR;
@@ -158,16 +161,16 @@ static u32 write_flash(struct device *dev, u32 address, u32 count, u16 *buffer)
  * @param *MACAdr Pointer to the buffer where to store read MAC address
  * @return void   I210_NO_ERROR or an error code
  */
-static u32 read_mac_adr(struct device *dev, u8 *mac_adr)
+static uint32_t read_mac_adr(struct device *dev, uint8_t *mac_adr)
 {
-	u16 adr[3];
+	uint16_t adr[3];
 	if (!dev || !mac_adr)
 		return I210_INVALID_PARAM;
 	if (read_flash(dev, 0, 3, adr))
 		return I210_READ_ERROR;
-	/* Copy the address into destination. This is done because of */
-	/* possible not matching alignment for destination to u16 boundary. */
-	memcpy(mac_adr, (u8*)adr, 6);
+	/* Copy the address into destination. This is done because of possible */
+	/* not matching alignment for destination to uint16_t boundary. */
+	memcpy(mac_adr, (uint8_t*)adr, 6);
 	return I210_SUCCESS;
 }
 
@@ -176,13 +179,13 @@ static u32 read_mac_adr(struct device *dev, u8 *mac_adr)
  * @param *MACAdr Pointer to the buffer where the desired MAC address is
  * @return void   I210_NO_ERROR or an error code
  */
-static u32 write_mac_adr(struct device *dev, u8 *mac_adr)
+static uint32_t write_mac_adr(struct device *dev, uint8_t *mac_adr)
 {
-	u16 adr[3];
+	uint16_t adr[3];
 	if (!dev || !mac_adr)
 		return I210_INVALID_PARAM;
 	/* Copy desired address into a local buffer to avoid alignment issues */
-	memcpy((u8*)adr, mac_adr, 6);
+	memcpy((uint8_t*)adr, mac_adr, 6);
 	return write_flash(dev, 0, 3, adr);
 }
 
@@ -194,8 +197,8 @@ static u32 write_mac_adr(struct device *dev, u8 *mac_adr)
  */
 static void init(struct device *dev)
 {
-	u8 cur_adr[6];
-	u8 adr_to_set[6];
+	uint8_t cur_adr[6];
+	uint8_t adr_to_set[6];
 	enum cb_err status;
 
 	/*Check first whether there is a valid MAC address available */

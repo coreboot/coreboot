@@ -70,5 +70,6 @@ enum cb_err hwilib_find_blocks (const char *hwi_filename);
 uint32_t hwilib_get_field (hwinfo_field_t field, uint8_t *data, uint32_t maxlen);
 
 /* This functions needs to be implemented for every mainboard that uses i210. */
-enum cb_err mainboard_get_mac_address(u16 bus, u8 devfn, u8 mac[6]);
+enum cb_err mainboard_get_mac_address(uint16_t bus, uint8_t devfn,
+					uint8_t mac[6]);
 #endif /* SIEMENS_HWI_LIB_H_ */

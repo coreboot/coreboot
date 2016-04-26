@@ -13,10 +13,10 @@
 ## GNU General Public License for more details.
 ##
 
-config BOARD_GOOGLE_GRU  # Umbrella option to be selected by variant boards.
+config BOARD_GOOGLE_GRU_COMMON  # Umbrella option to be selected by variant boards.
 	def_bool n
 
-if BOARD_GOOGLE_GRU
+if BOARD_GOOGLE_GRU_COMMON
 
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
@@ -65,4 +65,4 @@ config CONSOLE_SERIAL_UART_ADDRESS
 	depends on DRIVERS_UART
 	default 0xFF1A0000
 
-endif # BOARD_GOOGLE_GRU
+endif # BOARD_GOOGLE_GRU_COMMON

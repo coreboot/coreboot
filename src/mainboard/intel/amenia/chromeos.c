@@ -15,6 +15,9 @@
  * GNU General Public License for more details.
  */
 
+#include "ec.h"
+
+#include <ec/google/chromeec/ec.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
 int get_lid_switch(void)
@@ -31,6 +34,13 @@ int get_developer_mode_switch(void)
 
 int get_recovery_mode_switch(void)
 {
+	uint32_t ec_events;
+
+	/* Recovery mode via ESC + Refresh + PWR ? */
+	ec_events = google_chromeec_get_events_b();
+	if (ec_events & EC_HOST_EVENT_MASK(EC_HOST_EVENT_KEYBOARD_RECOVERY))
+		return 1;
+
 	return 0;
 }
 

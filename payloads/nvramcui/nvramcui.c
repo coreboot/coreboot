@@ -78,8 +78,8 @@ int main()
 	struct cb_cmos_entries *option = first_cmos_entry(opttbl);
 	while (option) {
 		if ((option->config != 'r') &&
-		    (strcmp("check_sum", option->name) != 0)) {
-			maxlength = max(maxlength, strlen(option->name));
+		    (strcmp("check_sum", (char *)option->name) != 0)) {
+			maxlength = max(maxlength, strlen((char *)option->name));
 			numopts++;
 		}
 		option = next_cmos_entry(option);
@@ -95,19 +95,19 @@ int main()
 	option = first_cmos_entry(opttbl);
 	for (i = 0; i < numopts; i++) {
 		while ((option->config == 'r') ||
-		       (strcmp("check_sum", option->name) == 0)) {
+		       (strcmp("check_sum", (char *)option->name) == 0)) {
 			option = next_cmos_entry(option);
 		}
 		fields[2 * i] =
-		    new_field(1, strlen(option->name), i * 2, 1, 0, 0);
-		set_field_buffer(fields[2 * i], 0, option->name);
+		    new_field(1, strlen((char *)option->name), i * 2, 1, 0, 0);
+		set_field_buffer(fields[2 * i], 0, (char *)option->name);
 		field_opts_off(fields[2 * i], O_ACTIVE);
 
 		fields[2 * i + 1] =
 		    new_field(1, 40, i * 2, maxlength + 2, 0, 0);
 		char *buf = NULL;
 		int fail =
-		    get_option_as_string(use_nvram, opttbl, &buf, option->name);
+		    get_option_as_string(use_nvram, opttbl, &buf, (char *)option->name);
 		switch (option->config) {
 		case 'h': {
 			set_field_type(fields[2 * i + 1], TYPE_INTEGER, 0, 0,
@@ -127,7 +127,7 @@ int main()
 
 			/* if invalid data in CMOS, set buf to first enum */
 			if (fail && cmos_enum) {
-				buf = cmos_enum->text;
+				buf = (char *)cmos_enum->text;
 			}
 
 			while (cmos_enum) {
@@ -142,7 +142,7 @@ int main()
 			cmos_enum =
 			    first_cmos_enum_of_id(opttbl, option->config_id);
 			while (cmos_enum) {
-				values[cnt] = cmos_enum->text;
+				values[cnt] = (char *)cmos_enum->text;
 				cnt++;
 				cmos_enum = next_cmos_enum_of_id(
 				    cmos_enum, option->config_id);

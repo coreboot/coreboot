@@ -188,31 +188,57 @@ Options
 "
 }
 
-while getopts "Chi:r:s:S:u" opt; do
-	case "$opt" in
-		h)
+getopt -T
+if [ $? -ne 4 ]; then
+	echo "GNU-compatible getopt(1) required."
+	exit $EXIT_FAILURE
+fi
+
+# TODO: add longopts in the quotes after -l
+ARGS=$(getopt -o Chi:r:s:S:u -l "" -n "$0" -- "$@");
+if [ $? != 0 ] ; then echo "Terminating..." >&2 ; exit 1 ; fi
+eval set -- "$ARGS"
+while true ; do
+	case "$1" in
+		-h)
 			show_help
 			exit $EXIT_SUCCESS
 			;;
-		C)
+		-C)
 			CLOBBER_OUTPUT=1
 			;;
-		i)
-			COREBOOT_IMAGE="$OPTARG"
+		-i)
+			shift
+			COREBOOT_IMAGE="$1"
 			;;
-		r)
-			REMOTE_HOST="$OPTARG"
+		-r)
+			shift
+			REMOTE_HOST="$1"
 			;;
-		s)
-			SERIAL_DEVICE="$OPTARG"
+		-s)
+			shift
+			SERIAL_DEVICE="$1"
 			;;
-		S)
-			SERIAL_PORT_SPEED="$OPTARG"
+		-S)
+			shift
+			SERIAL_PORT_SPEED="$1"
 			;;
-		u)
+		-u)
 			UPLOAD_RESULTS=1
 			;;
+		--)
+			shift
+			if [ -n "$*" ]; then
+				echo "Non-option parameters detected: '$*'"
+				exit $EXIT_FAILURE
+			fi
+			break
+			;;
+		*)
+			echo "error processing options at '$1'"
+			exit $EXIT_FAILURE
 	esac
+	shift
 done
 
 grep -rH 'coreboot.org' .git/config >/dev/null 2>&1

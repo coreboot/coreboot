@@ -1,2 +1,2 @@
 Category: emulation
-Board URL: http://fabrice.bellard.free.fr/qemu/
+Board URL: http://wiki.qemu.org/Main_Page

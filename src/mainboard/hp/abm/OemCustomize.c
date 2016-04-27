@@ -18,6 +18,7 @@
 #include "amdlib.h"
 #include "Ids.h"
 #include "heapManager.h"
+#include <PlatformMemoryConfiguration.h>
 #include "Filecode.h"
 
 #include <northbridge/amd/agesa/agesawrapper.h>
@@ -146,6 +147,36 @@ static AGESA_STATUS OemInitMid(AMD_MID_PARAMS * InitMid)
 	InitMid->GnbMidConfiguration.iGpuVgaMode = 0;
 	return AGESA_SUCCESS;
 }
+
+/*----------------------------------------------------------------------------------------
+ *                        CUSTOMER OVERIDES MEMORY TABLE
+ *----------------------------------------------------------------------------------------
+ */
+
+/*
+ *  Platform Specific Overriding Table allows IBV/OEM to pass in platform information to AGESA
+ *  (e.g. MemClk routing, the number of DIMM slots per channel,...). If PlatformSpecificTable
+ *  is populated, AGESA will base its settings on the data from the table. Otherwise, it will
+ *  use its default conservative settings.
+ */
+CONST PSO_ENTRY ROMDATA DefaultPlatformMemoryConfiguration[] = {
+	#define SEED_A 0x12
+	HW_RXEN_SEED(
+		ANY_SOCKET, CHANNEL_A, ALL_DIMMS,
+		SEED_A, SEED_A, SEED_A, SEED_A, SEED_A, SEED_A, SEED_A, SEED_A,
+		SEED_A),
+
+  NUMBER_OF_DIMMS_SUPPORTED (ANY_SOCKET, ANY_CHANNEL, ONE_DIMM),
+  NUMBER_OF_CHANNELS_SUPPORTED (ANY_SOCKET, ONE_DIMM),
+  MOTHER_BOARD_LAYERS (LAYERS_6),
+
+  MEMCLK_DIS_MAP (ANY_SOCKET, ANY_CHANNEL, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00),
+  CKE_TRI_MAP (ANY_SOCKET, ANY_CHANNEL, 0x01, 0x02, 0x04, 0x08), /* TODO: bit2map, bit3map */
+  ODT_TRI_MAP (ANY_SOCKET, ANY_CHANNEL, 0x01, 0x02, 0x04, 0x08),
+  CS_TRI_MAP (ANY_SOCKET, ANY_CHANNEL, 0x01, 0x02, 0x04, 0x08, 0x00, 0x00, 0x00, 0x00),
+
+  PSO_END
+};
 
 const struct OEM_HOOK OemCustomize = {
 	.InitEarly = OemInitEarly,

@@ -315,17 +315,3 @@ const AP_MTRR_SETTINGS ROMDATA OntarioApMtrrSettingsList[] =
 /* Instantiate all solution relevant data. */
 #include <vendorcode/amd/agesa/f14/Include/PlatformInstall.h>
 
-/**
- * @brief Customer Overides Memory Table
- *
- * Platform Specific Overriding Table allows IBV/OEM to pass in platform
- * information to AGESA
- * (e.g. MemClk routing, the number of DIMM slots per channel,...).
- * If PlatformSpecificTable is populated, AGESA will base its settings on the
- * data from the table. Otherwise, it will use its default conservative settings.
- */
-const PSO_ENTRY ROMDATA DefaultPlatformMemoryConfiguration[] = {
-	NUMBER_OF_DIMMS_SUPPORTED (ANY_SOCKET, ANY_CHANNEL, 2),
-	NUMBER_OF_CHANNELS_SUPPORTED (ANY_SOCKET, 1),
-	PSO_END
-};

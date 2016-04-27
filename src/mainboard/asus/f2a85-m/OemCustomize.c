@@ -19,6 +19,7 @@
 
 #include <northbridge/amd/agesa/agesawrapper.h>
 #include <vendorcode/amd/agesa/f15tn/Proc/CPU/heapManager.h>
+#include <PlatformMemoryConfiguration.h>
 
 #define FILECODE PROC_GNB_PCIE_FAMILY_0X15_F15PCIECOMPLEXCONFIG_FILECODE
 
@@ -198,6 +199,33 @@ static AGESA_STATUS OemInitMid(AMD_MID_PARAMS * InitMid)
 	InitMid->GnbMidConfiguration.iGpuVgaMode = 0;
 	return AGESA_SUCCESS;
 }
+
+/*----------------------------------------------------------------------------------------
+ *                        CUSTOMER OVERIDES MEMORY TABLE
+ *----------------------------------------------------------------------------------------
+ */
+
+#if IS_ENABLED(CONFIG_BOARD_ASUS_F2A85_M)
+/*
+ *  Platform Specific Overriding Table allows IBV/OEM to pass in platform information to AGESA
+ *  (e.g. MemClk routing, the number of DIMM slots per channel,...). If PlatformSpecificTable
+ *  is populated, AGESA will base its settings on the data from the table. Otherwise, it will
+ *  use its default conservative settings.
+ */
+CONST PSO_ENTRY ROMDATA DefaultPlatformMemoryConfiguration[] = {
+
+  NUMBER_OF_DIMMS_SUPPORTED (ANY_SOCKET, ANY_CHANNEL, 2),
+  NUMBER_OF_CHANNELS_SUPPORTED (ANY_SOCKET, 2),
+/*
+  TODO: is this OK for DDR3 socket FM2?
+  MEMCLK_DIS_MAP (ANY_SOCKET, ANY_CHANNEL, 0x01, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00),
+  CKE_TRI_MAP (ANY_SOCKET, ANY_CHANNEL, 0x05, 0x0A),
+  ODT_TRI_MAP (ANY_SOCKET, ANY_CHANNEL, 0x01, 0x02, 0x00, 0x00),
+  CS_TRI_MAP (ANY_SOCKET, ANY_CHANNEL, 0x01, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00),
+  */
+  PSO_END
+};
+#endif /* CONFIG_BOARD_ASUS_F2A85_M */
 
 const struct OEM_HOOK OemCustomize = {
 	.InitEarly = OemInitEarly,

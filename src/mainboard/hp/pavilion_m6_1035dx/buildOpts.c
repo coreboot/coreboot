@@ -402,26 +402,3 @@ SCI_MAP_CONTROL m6_1035dx_sci_map[] = {
 /* AGESA nonsense: this header depends on the definitions above */
 #include <vendorcode/amd/agesa/f15tn/Include/PlatformInstall.h>
 
-/*----------------------------------------------------------------------------------------
- *                        CUSTOMER OVERIDES MEMORY TABLE
- *----------------------------------------------------------------------------------------
- */
-
-/*
- * Platform Specific Overriding Table allows IBV/OEM to pass in platform
- * information to AGESA
- * (e.g. MemClk routing, the number of DIMM slots per channel,...).
- * If PlatformSpecificTable is populated, AGESA will base its settings on the
- * data from the table. Otherwise, it will use its default conservative settings
- */
-CONST PSO_ENTRY ROMDATA DefaultPlatformMemoryConfiguration[] = {
-
-  NUMBER_OF_DIMMS_SUPPORTED (ANY_SOCKET, ANY_CHANNEL, 1),
-  NUMBER_OF_CHANNELS_SUPPORTED (ANY_SOCKET, 2),
-  MEMCLK_DIS_MAP (ANY_SOCKET, ANY_CHANNEL, 0x01, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00),
-  CKE_TRI_MAP (ANY_SOCKET, ANY_CHANNEL, 0x05, 0x0A),
-  ODT_TRI_MAP (ANY_SOCKET, ANY_CHANNEL, 0x01, 0x02, 0x00, 0x00),
-  CS_TRI_MAP (ANY_SOCKET, ANY_CHANNEL, 0x01, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00),
-
-  PSO_END
-};

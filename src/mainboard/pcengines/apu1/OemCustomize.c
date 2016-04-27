@@ -19,6 +19,7 @@
 #include <string.h>
 #include <northbridge/amd/agesa/agesawrapper.h>
 #include <vendorcode/amd/agesa/f14/Proc/CPU/heapManager.h>
+#include <PlatformMemoryConfiguration.h>
 
 /**
  *	OemCustomizeInitEarly
@@ -125,6 +126,34 @@ PCIe_COMPLEX_DESCRIPTOR Brazos = {
 	InitEarly->GnbConfig.PsppPolicy		= 0;
 	return AGESA_SUCCESS;
 }
+
+/*----------------------------------------------------------------------------------------
+ *						CUSTOMER OVERIDES MEMORY TABLE
+ *----------------------------------------------------------------------------------------
+ */
+
+/*
+ *	Platform Specific Overriding Table allows IBV/OEM to pass in platform information to AGESA
+ *	(e.g. MemClk routing, the number of DIMM slots per channel,...). If PlatformSpecificTable
+ *	is populated, AGESA will base its settings on the data from the table. Otherwise, it will
+ *	use its default conservative settings.
+ */
+CONST PSO_ENTRY ROMDATA DefaultPlatformMemoryConfiguration[] = {
+
+	NUMBER_OF_DIMMS_SUPPORTED (ANY_SOCKET, ANY_CHANNEL, TWO_DIMM),
+	NUMBER_OF_CHANNELS_SUPPORTED (ANY_SOCKET, ONE_DIMM),
+
+	// APU soldered down memory uses memory CLK0 and CLK1 on CS0
+	MEMCLK_DIS_MAP(ANY_SOCKET, ANY_CHANNEL, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00),
+
+	// APU soldered down memory requires different seeds
+#define WLSEED 0x08
+#define RXSEED 0x40
+	WRITE_LEVELING_SEED(ANY_SOCKET, ANY_CHANNEL, WLSEED, WLSEED, WLSEED, WLSEED, WLSEED, WLSEED, WLSEED, WLSEED, WLSEED),
+	HW_RXEN_SEED( ANY_SOCKET, ANY_CHANNEL, RXSEED, RXSEED, RXSEED, RXSEED, RXSEED, RXSEED, RXSEED, RXSEED, RXSEED),
+
+	PSO_END
+};
 
 const struct OEM_HOOK OemCustomize = {
 	.InitEarly = OemInitEarly,

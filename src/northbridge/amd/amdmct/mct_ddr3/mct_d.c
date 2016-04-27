@@ -32,6 +32,8 @@
  * supported.
  */
 
+#include <reset.h>
+
 // #define DEBUG_DIMM_SPD 1
 
 static u8 ReconfigureDIMMspare_D(struct MCTStatStruc *pMCTstat,
@@ -3685,7 +3687,8 @@ retry_dqs_training_and_levelization:
 
 			if (pDCTstat->NodePresent) {
 				if (pDCTstat->TrainErrors & (1 << SB_FatalError)) {
-					die("DIMM training FAILED!  Halting system.");
+					printk(BIOS_ERR, "DIMM training FAILED!  Restarting system...");
+					soft_reset();
 				}
 				if (pDCTstat->TrainErrors & (1 << SB_RetryConfigTrain)) {
 					retry_requested = 1;

@@ -655,17 +655,23 @@ static void mmu_add_fb_range(struct mmu_ranges *mmu_ranges)
 	struct cb_framebuffer *framebuffer = lib_sysinfo.framebuffer;
 	uint32_t fb_size;
 
-	/*
-	 * Check whether framebuffer is needed
-	 * or framebuffer address has been set already
-	 */
+	/* Check whether framebuffer is needed */
 	if (framebuffer == NULL)
 		return;
-	if (framebuffer->physical_address)
-		return;
+
 	fb_size = framebuffer->bytes_per_line * framebuffer->y_resolution;
 	if (!fb_size)
 		return;
+
+	/* framebuffer address has been set already, so just add it as DMA */
+	if (framebuffer->physical_address) {
+		if (mmu_add_memrange(mmu_ranges,
+		    framebuffer->physical_address,
+		    fb_size,
+		    TYPE_DMA_MEM) == NULL)
+			mmu_error();
+		return;
+	}
 
 	/* Allocate framebuffer */
 	fb_range = _mmu_add_fb_range(fb_size, mmu_ranges);

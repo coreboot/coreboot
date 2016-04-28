@@ -20,6 +20,7 @@
 #include <console/console.h>
 #include <device/pci.h>
 #include <lib.h>
+#include <soc/gpio.h>
 #include <soc/lpc.h>
 #include <soc/pci_devs.h>
 
@@ -43,6 +44,21 @@ static const struct lpc_mmio_range {
 	{ 0xfed308f0, 8 },
 	{ 0, 0 }
 };
+
+static const struct pad_config lpc_gpios[] = {
+	PAD_CFG_NF(LPC_AD0, NATIVE, DEEP, NF1),
+	PAD_CFG_NF(LPC_AD1, NATIVE, DEEP, NF1),
+	PAD_CFG_NF(LPC_AD2, NATIVE, DEEP, NF1),
+	PAD_CFG_NF(LPC_AD3, NATIVE, DEEP, NF1),
+	PAD_CFG_NF(LPC_FRAMEB, NATIVE, DEEP, NF1),
+	PAD_CFG_NF(LPC_CLKOUT0, UP_20K, DEEP, NF1),
+	PAD_CFG_NF(LPC_CLKOUT1, UP_20K, DEEP, NF1)
+};
+
+void lpc_configure_pads(void)
+{
+	gpio_configure_pads(lpc_gpios, ARRAY_SIZE(lpc_gpios));
+}
 
 void lpc_enable_fixed_io_ranges(uint16_t io_enables)
 {

@@ -53,6 +53,8 @@
 #define  LGMR_EN			(1 << 0)
 #define LGMR_WINDOW_SIZE		(64 * KiB)
 
+/* Configure the SOC's LPC pads and mux them to the LPC function. */
+void lpc_configure_pads(void);
 /* Enable fixed IO ranges to LPC. IOE_* macros can be OR'ed together. */
 void lpc_enable_fixed_io_ranges(uint16_t io_enables);
 /* Open a generic IO window to the LPC bus. Four windows are available. */

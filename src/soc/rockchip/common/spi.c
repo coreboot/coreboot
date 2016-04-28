@@ -35,7 +35,7 @@ struct rockchip_spi_slave {
 #define SPI_SRCCLK_HZ   (99*MHz)
 #define SPI_FIFO_DEPTH	32
 
-static struct rockchip_spi_slave rockchip_spi_slaves[3] = {
+static struct rockchip_spi_slave rockchip_spi_slaves[] = {
 	{
 	 .slave = {
 		   .bus = 0,
@@ -54,7 +54,33 @@ static struct rockchip_spi_slave rockchip_spi_slaves[3] = {
 		   },
 	 .regs = (void *)SPI2_BASE,
 	},
-
+#ifdef SPI3_BASE
+	{
+	 .slave = {
+		   .bus = 3,
+		   .rw = SPI_READ_FLAG | SPI_WRITE_FLAG,
+		   },
+	 .regs = (void *)SPI3_BASE,
+	},
+#ifdef SPI4_BASE
+	{
+	 .slave = {
+		   .bus = 4,
+		   .rw = SPI_READ_FLAG | SPI_WRITE_FLAG,
+		   },
+	 .regs = (void *)SPI4_BASE,
+	},
+#ifdef SPI5_BASE
+	{
+	 .slave = {
+		   .bus = 5,
+		   .rw = SPI_READ_FLAG | SPI_WRITE_FLAG,
+		   },
+	 .regs = (void *)SPI5_BASE,
+	},
+#endif
+#endif
+#endif
 };
 
 static struct rockchip_spi_slave *to_rockchip_spi(struct spi_slave *slave)
@@ -64,7 +90,7 @@ static struct rockchip_spi_slave *to_rockchip_spi(struct spi_slave *slave)
 
 struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs)
 {
-	assert(bus >= 0 && bus < 3);
+	assert(bus >= 0 && bus < ARRAY_SIZE(rockchip_spi_slaves));
 	return &(rockchip_spi_slaves[bus].slave);
 }
 
@@ -97,6 +123,7 @@ static void rockchip_spi_set_clk(struct rockchip_spi *regs, unsigned int hz)
 
 void rockchip_spi_init(unsigned int bus, unsigned int speed_hz)
 {
+	assert(bus >= 0 && bus < ARRAY_SIZE(rockchip_spi_slaves));
 	struct rockchip_spi *regs = rockchip_spi_slaves[bus].regs;
 	unsigned int ctrlr0 = 0;
 

@@ -41,6 +41,14 @@ config CPU_SPECIFIC_OPTIONS
 	select HAVE_HARD_RESET
 	select SOC_INTEL_COMMON
 
+config TPM_ON_FAST_SPI
+	bool
+	default n
+	select LPC_TPM
+	help
+	 TPM part is conntected on Fast SPI interface, but the LPC MMIO
+	 TPM transactions are decoded and serialized over the SPI interface.
+
 config SOC_INTEL_COMMON_RESET
 	bool
 	default y

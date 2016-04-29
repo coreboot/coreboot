@@ -29,5 +29,6 @@ uint32_t port_reg_read(uint8_t port, uint32_t offset);
 void port_reg_write(uint8_t port, uint32_t offset, uint32_t value);
 void report_platform_info(void);
 int set_base_address_and_enable_uart(u8 bus, u8 dev, u8 func, u32 mmio_base);
+void pcie_init(void);
 
 #endif /* _QUARK_ROMSTAGE_H_ */

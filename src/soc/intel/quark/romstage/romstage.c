@@ -125,6 +125,9 @@ void soc_after_ram_init(struct romstage_params *params)
 
 	/* Display the DRAM data */
 	hexdump((void *)0x000ffff0, 0x10);
+
+	/* Initialize the PCIe bridges */
+	pcie_init();
 }
 
 void soc_display_memory_init_params(const MEMORY_INIT_UPD *old,

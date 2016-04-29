@@ -50,3 +50,20 @@ void mainboard_gpio_init(void)
 		script = gen1_gpio_init;
 	reg_script_run(script);
 }
+
+void mainboard_gpio_pcie_reset(uint32_t pin_value)
+{
+	uint32_t pin_number;
+	uint32_t value;
+
+	/* Determine the correct PCIe reset pin */
+	if (IS_ENABLED(CONFIG_GALILEO_GEN2))
+		pin_number = GEN2_PCI_RESET_RESUMEWELL_GPIO;
+	else
+		pin_number = GEN1_PCI_RESET_RESUMEWELL_GPIO;
+
+	/* Update the PCIe reset value */
+	value = reg_legacy_gpio_read(R_QNC_GPIO_RGLVL_RESUME_WELL);
+	value = (value & ~(1 << pin_number)) | ((pin_value & 1) << pin_number);
+	reg_legacy_gpio_write(R_QNC_GPIO_RGLVL_RESUME_WELL, value);
+}

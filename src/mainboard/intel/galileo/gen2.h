@@ -13,6 +13,9 @@
  * GNU General Public License for more details.
  */
 
+/* PCIe reset pin */
+#define GEN2_PCI_RESET_RESUMEWELL_GPIO		0
+
 static const struct reg_script gen2_gpio_init[] = {
 	/* Initialize the legacy GPIO controller */
 	REG_LEG_GPIO_WRITE(R_QNC_GPIO_CGEN_CORE_WELL, 0x03),

@@ -1687,6 +1687,11 @@ static void TrainDQSReceiverEnCyc_D_Fam15(struct MCTStatStruc *pMCTstat,
 			/* 2.10.5.8.3 (2) */
 			read_dqs_receiver_enable_control_registers(initial_phy_phase_delay, dev, dct, dimm, index_reg);
 
+			/* Reset the read data timing registers to 1UI before calculating MaxRdLatency */
+			for (internal_lane = 0; internal_lane < MAX_BYTE_LANES; internal_lane++)
+				current_read_dqs_delay[internal_lane] = 0x20;
+			write_dqs_read_data_timing_registers(current_read_dqs_delay, dev, dct, dimm, index_reg);
+
 			for (lane = 0; lane < lane_count; lane++) {
 				/* Initialize variables */
 				memset(dqs_results_array, 0, sizeof(dqs_results_array));
@@ -1710,11 +1715,6 @@ static void TrainDQSReceiverEnCyc_D_Fam15(struct MCTStatStruc *pMCTstat,
 
 					/* 2.10.5.8.3 (4 A) */
 					write_dqs_receiver_enable_control_registers(current_phy_phase_delay, dev, dct, dimm, index_reg);
-
-					/* Reset the read data timing registers to 1UI before calculating MaxRdLatency */
-					for (internal_lane = 0; internal_lane < MAX_BYTE_LANES; internal_lane++)
-						current_read_dqs_delay[internal_lane] = 0x20;
-					write_dqs_read_data_timing_registers(current_read_dqs_delay, dev, dct, dimm, index_reg);
 
 					/* Calculate and program MaxRdLatency */
 					Calc_SetMaxRdLatency_D_Fam15(pMCTstat, pDCTstat, dct, 0);
@@ -1769,6 +1769,7 @@ static void TrainDQSReceiverEnCyc_D_Fam15(struct MCTStatStruc *pMCTstat,
 
 						/* Update hardware registers with final values */
 						write_dqs_receiver_enable_control_registers(current_phy_phase_delay, dev, dct, dimm, index_reg);
+						TrainDQSRdWrPos_D_Fam15(pMCTstat, pDCTstat, dct, Receiver, Receiver + 2, lane, lane + 1);
 						break;
 					}
 					prev = dqs_results_array[current_phy_phase_delay[lane]];

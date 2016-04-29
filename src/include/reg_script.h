@@ -47,6 +47,10 @@ enum {
 	REG_SCRIPT_COMMAND_POLL,
 	REG_SCRIPT_COMMAND_SET_DEV,
 	REG_SCRIPT_COMMAND_NEXT,
+	REG_SCRIPT_COMMAND_DISPLAY,
+
+	/* Insert new types above this comment */
+
 	REG_SCRIPT_COMMAND_END,
 };
 
@@ -92,6 +96,9 @@ struct reg_script_context {
 	device_t dev;
 	struct resource *res;
 	const struct reg_script *step;
+	uint8_t display_state;    /* Only modified by reg_script_run_step */
+	uint8_t display_features; /* Step routine modifies to control display */
+	const char *display_prefix; /* Prefix tag to display */
 };
 
 struct reg_script_bus_entry {
@@ -130,6 +137,21 @@ struct reg_script_bus_entry {
 	  .value = value_,         \
 	  .timeout = timeout_,     \
 	  .res_index = res_index_, \
+	}
+
+/* Display control */
+#define REG_SCRIPT_DISPLAY_ALL		0xff
+#define REG_SCRIPT_DISPLAY_REGISTER	0x02
+#define REG_SCRIPT_DISPLAY_VALUE	0x01
+#define REG_SCRIPT_DISPLAY_NOTHING	0
+
+#define REG_SCRIPT_DISPLAY_OFF                   \
+	{ .command = REG_SCRIPT_COMMAND_DISPLAY, \
+	  .value = REG_SCRIPT_DISPLAY_NOTHING,   \
+	}
+#define REG_SCRIPT_DISPLAY_ON                    \
+	{ .command = REG_SCRIPT_COMMAND_DISPLAY, \
+	  .value = REG_SCRIPT_DISPLAY_ALL,       \
 	}
 
 /*

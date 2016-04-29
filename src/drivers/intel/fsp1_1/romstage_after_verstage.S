@@ -16,18 +16,8 @@
 #define LHLT_DELAY	0x50000		/* I/O delay between post codes on failure */
 
 .text
-.global _start
-_start:
-	/* This is the romstage entry point when CONFIG_SEPARATE_VERSTAGE
-	 * is used. The stack, descriptors, and gdt are already initialized
-	 * by verstage. However, in order to maintain the semantics of
-	 * CAR_GLOBAL variables we need to clear those to zero. */
-	cld
-	xor	%eax, %eax
-	movl	$(_car_global_end), %ecx
-	movl	$(_car_global_start), %edi
-	sub	%edi, %ecx
-	rep	stosl
+.global car_stage_entry
+car_stage_entry:
 	call	romstage_after_verstage
 	#include "after_raminit.S"
 

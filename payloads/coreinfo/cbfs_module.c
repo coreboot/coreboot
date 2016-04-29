@@ -18,6 +18,8 @@
 
 #if IS_ENABLED(CONFIG_MODULE_CBFS)
 
+#define FILES_VISIBLE		19
+
 #define HEADER_MAGIC		0x4F524243
 #define HEADER_ADDR		0xfffffffc
 #define LARCHIVE_MAGIC		0x455649484352414cLL	/* "LARCHIVE" */
@@ -53,7 +55,7 @@ struct cbfile {
 	char filename[0];
 } __attribute__ ((packed));
 
-static int filecount = 0, selected = 0;
+static int filecount = 0, selected = 0, start_row = 0;
 static char **filenames;
 static struct cbheader *header = NULL;
 
@@ -120,7 +122,7 @@ static int cbfs_module_init(void)
 static int cbfs_module_redraw(WINDOW * win)
 {
 	struct cbfile *f;
-	int i, row = 2;
+	int i, row, frow;
 
 	print_module_title(win, "CBFS Listing");
 
@@ -134,7 +136,11 @@ static int cbfs_module_redraw(WINDOW * win)
 		mvwaddch(win, i, 30, ACS_VLINE);
 
 	/* Draw the names down the left side. */
-	for (i = 0; i < filecount; i++) {
+	for (frow = 0; frow < FILES_VISIBLE; frow++) {
+		row = 2 + frow;
+		i = start_row + frow;
+		if (i >= filecount)
+			break;
 		if (i == selected)
 			wattrset(win, COLOR_PAIR(3) | A_BOLD);
 		else
@@ -142,11 +148,20 @@ static int cbfs_module_redraw(WINDOW * win)
 
 		if (strlen(filenames[i]) == 0) {
 			if (findfile(filenames[i])->type == COMPONENT_NULL)
-				mvwprintw(win, 2 + i, 1, "<free space>");
+				mvwprintw(win, row, 1, "<free space>");
 			else
-				mvwprintw(win, 2 + i, 1, "<unnamed>");
+				mvwprintw(win, row, 1, "<unnamed>");
 		} else {
-			mvwprintw(win, 2 + i, 1, "%.25s", filenames[i]);
+			mvwprintw(win, row, 1, "%.25s", filenames[i]);
+		}
+		/* show scroll arrows */
+		if (frow == 0 && start_row > 0) {
+			wattrset(win, COLOR_PAIR(2));
+			mvwaddch(win, row, 28, ACS_UARROW);
+		}
+		if (frow == FILES_VISIBLE - 1 && i != filecount - 1) {
+			wattrset(win, COLOR_PAIR(2));
+			mvwaddch(win, row, 28, ACS_DARROW);
 		}
 	}
 
@@ -158,6 +173,8 @@ static int cbfs_module_redraw(WINDOW * win)
 
 	wattrset(win, COLOR_PAIR(2));
 
+	/* Draw the file information */
+	row = 2;
 	/* mvwprintw(win, row++, 32, "Offset: 0x%x", f->offset); *//* FIXME */
 	mvwprintw(win, row, 32, "Type: ");
 	switch (ntohl(f->type)) {
@@ -212,12 +229,16 @@ static int cbfs_module_handle(int key)
 	case KEY_DOWN:
 		if (selected + 1 < filecount) {
 			selected++;
+			if (selected >= start_row + FILES_VISIBLE - 1)
+				start_row = selected - (FILES_VISIBLE - 1);
 			ret = 1;
 		}
 		break;
 	case KEY_UP:
 		if (selected > 0) {
 			selected--;
+			if (selected < start_row)
+				start_row = selected;
 			ret = 1;
 		}
 		break;

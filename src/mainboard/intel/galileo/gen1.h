@@ -13,6 +13,9 @@
  * GNU General Public License for more details.
  */
 
+/* PCIe reset pin */
+#define GEN1_PCI_RESET_RESUMEWELL_GPIO		3
+
 /* Jumper J2 determines the slave address of Cypress I/O GPIO expander */
 #define GALILEO_DETERMINE_IOEXP_SLA_RESUMEWELL_GPIO     5
 

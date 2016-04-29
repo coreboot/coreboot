@@ -15,10 +15,9 @@
 
 #define __SIMPLE_DEVICE__
 
-#include <arch/io.h>
 #include <console/console.h>
 #include <soc/pci_devs.h>
-#include <soc/reg_access.h>
+#include <soc/ramstage.h>
 
 static uint32_t *get_gpio_address(uint32_t reg_address)
 {
@@ -108,6 +107,24 @@ void reg_legacy_gpio_write(uint32_t reg_address, uint32_t value)
 	outl(value, get_legacy_gpio_address(reg_address));
 }
 
+static uint32_t reg_pcie_afe_read(uint32_t reg_address)
+{
+	/* Read the PCIE AFE register */
+	mea_write(reg_address);
+	mcr_write(QUARK_OPCODE_IO_READ, QUARK_SC_PCIE_AFE_SB_PORT_ID,
+		reg_address);
+	return mdr_read();
+}
+
+static void reg_pcie_afe_write(uint32_t reg_address, uint32_t value)
+{
+	/* Write the PCIE AFE register */
+	mea_write(reg_address);
+	mdr_write(value);
+	mcr_write(QUARK_OPCODE_IO_WRITE, QUARK_SC_PCIE_AFE_SB_PORT_ID,
+		reg_address);
+}
+
 uint32_t reg_rmu_temp_read(uint32_t reg_address)
 {
 	/* Read the RMU temperature register */
@@ -181,6 +198,10 @@ static uint64_t reg_read(struct reg_script_context *ctx)
 	case LEG_GPIO_REGS:
 		ctx->display_prefix = "Legacy GPIO: ";
 		value = reg_legacy_gpio_read(step->reg);
+
+	case PCIE_AFE_REGS:
+		ctx->display_prefix = "PCIe AFE: ";
+		value = reg_pcie_afe_read(step->reg);
 		break;
 
 	case RMU_TEMP_REGS:
@@ -221,6 +242,19 @@ static void reg_write(struct reg_script_context *ctx)
 	case LEG_GPIO_REGS:
 		ctx->display_prefix = "Legacy GPIO: ";
 		reg_legacy_gpio_write(step->reg, (uint32_t)step->value);
+		break;
+
+	case PCIE_AFE_REGS:
+		ctx->display_prefix = "PCIe AFE: ";
+		reg_pcie_afe_write(step->reg, (uint32_t)step->value);
+		break;
+
+	case PCIE_RESET:
+		if (ctx->display_features) {
+			ctx->display_prefix = "PCIe reset: ";
+			ctx->display_features &= ~REG_SCRIPT_DISPLAY_REGISTER;
+		}
+		mainboard_gpio_pcie_reset(step->value);
 		break;
 
 	case RMU_TEMP_REGS:

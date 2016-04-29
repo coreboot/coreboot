@@ -16,6 +16,9 @@
 #ifndef _QUARK_REG_ACCESS_H_
 #define _QUARK_REG_ACCESS_H_
 
+#define __SIMPLE_DEVICE__
+
+#include <arch/io.h>
 #include <delay.h>
 #include <fsp/util.h>
 #include <reg_script.h>
@@ -30,6 +33,8 @@ enum {
 	MICROSECOND_DELAY,
 	LEG_GPIO_REGS,
 	GPIO_REGS,
+	PCIE_AFE_REGS,
+	PCIE_RESET,
 };
 
 enum {
@@ -82,6 +87,31 @@ enum {
 	REG_LEG_GPIO_ACCESS(POLL, reg_, mask_, value_, timeout_)
 #define REG_LEG_GPIO_XOR(reg_, value_) \
 	REG_LEG_GPIO_RXW(reg_, 0xffffffff, value_)
+
+/* PCIE AFE register access macros */
+#define REG_PCIE_AFE_ACCESS(cmd_, reg_, mask_, value_, timeout_) \
+	SOC_ACCESS(cmd_, reg_, REG_SCRIPT_SIZE_32, mask_, value_, timeout_, \
+		PCIE_AFE_REGS)
+#define REG_PCIE_AFE_READ(reg_) \
+	REG_PCIE_AFE_ACCESS(READ, reg_, 0, 0, 0)
+#define REG_PCIE_AFE_WRITE(reg_, value_) \
+	REG_PCIE_AFE_ACCESS(WRITE, reg_, 0, value_, 0)
+#define REG_PCIE_AFE_AND(reg_, value_) \
+	REG_PCIE_AFE_RMW(reg_, value_, 0)
+#define REG_PCIE_AFE_RMW(reg_, mask_, value_) \
+	REG_PCIE_AFE_ACCESS(RMW, reg_, mask_, value_, 0)
+#define REG_PCIE_AFE_RXW(reg_, mask_, value_) \
+	REG_PCIE_AFE_ACCESS(RXW, reg_, mask_, value_, 0)
+#define REG_PCIE_AFE_OR(reg_, value_) \
+	REG_PCIE_AFE_RMW(reg_, 0xffffffff, value_)
+#define REG_PCIE_AFE_POLL(reg_, mask_, value_, timeout_) \
+	REG_PCIE_AFE_ACCESS(POLL, reg_, mask_, value_, timeout_)
+#define REG_PCIE_AFE_XOR(reg_, value_) \
+	REG_PCIE_AFE_RXW(reg_, 0xffffffff, value_)
+
+/* PCIe reset */
+#define MAINBOARD_PCIE_RESET(pin_value_) \
+	SOC_ACCESS(WRITE, 0, REG_SCRIPT_SIZE_32, 1, pin_value_, 0, PCIE_RESET)
 
 /* RMU temperature register access macros */
 #define REG_RMU_TEMP_ACCESS(cmd_, reg_, mask_, value_, timeout_) \
@@ -152,6 +182,7 @@ enum {
 
 void *get_i2c_address(void);
 void mainboard_gpio_init(void);
+void mainboard_gpio_pcie_reset(uint32_t pin_value);
 void mcr_write(uint8_t opcode, uint8_t port, uint32_t reg_address);
 uint32_t mdr_read(void);
 void mdr_write(uint32_t value);

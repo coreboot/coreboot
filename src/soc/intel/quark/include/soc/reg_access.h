@@ -16,6 +16,7 @@
 #ifndef _QUARK_REG_ACCESS_H_
 #define _QUARK_REG_ACCESS_H_
 
+#include <delay.h>
 #include <fsp/util.h>
 #include <reg_script.h>
 #include <soc/IntelQNCConfig.h>
@@ -25,6 +26,7 @@ enum {
 	USB_PHY_REGS = 1,
 	SOC_UNIT_REGS,
 	RMU_TEMP_REGS,
+	MICROSECOND_DELAY,
 };
 
 enum {
@@ -77,6 +79,10 @@ enum {
 	REG_SOC_UNIT_ACCESS(POLL, reg_, mask_, value_, timeout_)
 #define REG_SOC_UNIT_XOR(reg_, value_) \
 	REG_SOC_UNIT_RXW(reg_, 0xffffffff, value_)
+
+/* Time delays */
+#define TIME_DELAY_USEC(value_)   \
+	SOC_ACCESS(WRITE, 0, REG_SCRIPT_SIZE_32, 0, value_, 0, MICROSECOND_DELAY)
 
 /* USB register access macros */
 #define REG_USB_ACCESS(cmd_, reg_, mask_, value_, timeout_) \

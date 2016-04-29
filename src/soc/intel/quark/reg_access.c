@@ -150,6 +150,16 @@ static void reg_write(struct reg_script_context *ctx)
 		reg_soc_unit_write(step->reg, (uint32_t)step->value);
 		break;
 
+	case MICROSECOND_DELAY:
+		/* The actual delay is >= the requested delay */
+		if (ctx->display_features) {
+			/* Higher baud-rates will reduce the impact of displaying this message */
+			printk(BIOS_INFO, "Delay %lld uSec\n", step->value);
+			ctx->display_features = REG_SCRIPT_DISPLAY_NOTHING;
+		}
+		udelay(step->value);
+		break;
+
 	case USB_PHY_REGS:
 		ctx->display_prefix = "USB PHY";
 		reg_usb_write(step->reg, (uint32_t)step->value);

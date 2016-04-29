@@ -1617,6 +1617,7 @@ static void TrainDQSReceiverEnCyc_D_Fam15(struct MCTStatStruc *pMCTstat,
 	uint32_t rx_en_offset;
 	uint8_t internal_lane;
 	uint8_t dct_training_success;
+	uint8_t lane_success_count;
 	uint16_t initial_phy_phase_delay[MAX_BYTE_LANES];
 	uint16_t current_phy_phase_delay[MAX_BYTE_LANES];
 	uint16_t current_read_dqs_delay[MAX_BYTE_LANES];
@@ -1695,6 +1696,7 @@ static void TrainDQSReceiverEnCyc_D_Fam15(struct MCTStatStruc *pMCTstat,
 			for (lane = 0; lane < lane_count; lane++) {
 				/* Initialize variables */
 				memset(dqs_results_array, 0, sizeof(dqs_results_array));
+				lane_success_count = 0;
 
 				/* 2.10.5.8.3 (1) */
 				dword = Get_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0f0030 | (lane << 8));
@@ -1721,6 +1723,13 @@ static void TrainDQSReceiverEnCyc_D_Fam15(struct MCTStatStruc *pMCTstat,
 
 					/* 2.10.5.8.3 (4 B) */
 					dqs_results_array[current_phy_phase_delay[lane]] = TrainDQSRdWrPos_D_Fam15(pMCTstat, pDCTstat, dct, Receiver, Receiver + 2, lane, lane + 1);
+
+					if (dqs_results_array[current_phy_phase_delay[lane]])
+						lane_success_count++;
+
+					/* Don't bother testing larger values if the end of the passing window was already found */
+					if (!dqs_results_array[current_phy_phase_delay[lane]] && (lane_success_count > 1))
+						break;
 				}
 
 				uint16_t phase_delay;

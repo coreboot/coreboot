@@ -184,6 +184,10 @@ uint8_t AgesaHwWlPhase1(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCT
 		}
 
 		pDCTData->WLCriticalGrossDelayPrevPass = 0x0;
+
+		/* Exit nibble training if current DIMM is not x4 */
+		if ((pDCTstat->Dimmx4Present & (1 << (dimm + dct))) == 0)
+			break;
 	}
 
 	return 0;

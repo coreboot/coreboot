@@ -1439,6 +1439,10 @@ static void dqsTrainRcvrEn_SW_Fam15(struct MCTStatStruc *pMCTstat,
 						/* Back up the Nibble 0 delays for later use */
 						memcpy(nibble0_current_total_delay, current_total_delay, sizeof(current_total_delay));
 					}
+
+					/* Exit nibble training if current DIMM is not x4 */
+					if ((pDCTstat->Dimmx4Present & (1 << (dimm + Channel))) == 0)
+						break;
 				}
 
 				if (_2Ranks) {

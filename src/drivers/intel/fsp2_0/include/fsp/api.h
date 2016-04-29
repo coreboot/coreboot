@@ -47,7 +47,8 @@ enum fsp_boot_mode {
 
 enum fsp_notify_phase {
 	AFTER_PCI_ENUM = 0x20,
-	READY_TO_BOOT = 0x40
+	READY_TO_BOOT = 0x40,
+	END_OF_FIRMWARE = 0xF0
 };
 
 

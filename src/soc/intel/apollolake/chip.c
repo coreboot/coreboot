@@ -138,6 +138,9 @@ static void fsp_notify_dummy(void *arg)
 
 	if (fsp_notify(ph) != FSP_SUCCESS)
 		printk(BIOS_CRIT, "FspNotify failed!\n");
+	/* Call END_OF_FIRMWARE Notify after READY_TO_BOOT Notify */
+	if (ph == READY_TO_BOOT)
+		fsp_notify_dummy((void *)END_OF_FIRMWARE);
 }
 
 BOOT_STATE_INIT_ENTRY(BS_DEV_RESOURCES, BS_ON_EXIT, fsp_notify_dummy,

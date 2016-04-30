@@ -19,9 +19,9 @@ id, so it is possible to reproduce the build.
 
 We encourage developers and users to contribute reports so we know which
 devices are well-tested.  We have
-[http://review.coreboot.org/gitweb?p=coreboot.git;a=tree;f=util/board_status;hb=HEAD a tool in the coreboot repository]
+[https://review.coreboot.org/gitweb/cgit/coreboot.git/tree/util/board_status a tool in the coreboot repository]
 to make contributing easy.  The data resides in the
-[http://review.coreboot.org/gitweb?p=board-status.git board status repository].
+[https://review.coreboot.org/gitweb/cgit/board-status.git/ board status repository].
 Contributing requires an account on review.coreboot.org
 
 Sometimes the same board is sold under different names, we've tried to

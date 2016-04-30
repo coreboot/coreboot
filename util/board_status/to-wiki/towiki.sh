@@ -1,8 +1,8 @@
 #!/bin/sh
 export COREBOOT_DIR="../coreboot"
 export GIT_DIR="$COREBOOT_DIR/.git"
-CODE_GITWEB="http://review.coreboot.org/gitweb?p=coreboot.git;a=commitdiff;h="
-STATUS_GITWEB="http://review.coreboot.org/gitweb?p=board-status.git;a=blob;hb=HEAD;f="
+CODE_GITWEB="https://review.coreboot.org/gitweb/cgit/coreboot.git/commit/?id="
+STATUS_GITWEB="https://review.coreboot.org/gitweb/cgit/board-status.git/tree/"
 if [ -f `dirname $0`/foreword.wiki ]; then
 	cat `dirname $0`/foreword.wiki
 fi

@@ -28,7 +28,7 @@ static inline void mfence(void)
 	__asm__ __volatile__("mfence\t\n": : :"memory");
 }
 
-typedef void (*mp_callback_t)(void *arg);
+typedef void (*mp_callback_t)(void);
 
 /*
  * A mp_flight_record details a sequence of calls for the APs to perform
@@ -47,26 +47,22 @@ struct mp_flight_record {
 	atomic_t barrier;
 	atomic_t cpus_entered;
 	mp_callback_t ap_call;
-	void *ap_arg;
 	mp_callback_t bsp_call;
-	void *bsp_arg;
 } __attribute__((aligned(CACHELINE_SIZE)));
 
-#define _MP_FLIGHT_RECORD(barrier_, ap_func_, ap_arg_, bsp_func_, bsp_arg_) \
+#define _MP_FLIGHT_RECORD(barrier_, ap_func_, bsp_func_) \
 	{							\
 		.barrier = ATOMIC_INIT(barrier_),		\
 		.cpus_entered = ATOMIC_INIT(0),			\
 		.ap_call = ap_func_,				\
-		.ap_arg = ap_arg_,				\
 		.bsp_call = bsp_func_,				\
-		.bsp_arg = bsp_arg_,				\
 	}
 
-#define MP_FR_BLOCK_APS(ap_func_, ap_arg_, bsp_func_, bsp_arg_) \
-	_MP_FLIGHT_RECORD(0, ap_func_, ap_arg_, bsp_func_, bsp_arg_)
+#define MP_FR_BLOCK_APS(ap_func_, bsp_func_) \
+	_MP_FLIGHT_RECORD(0, ap_func_, bsp_func_)
 
-#define MP_FR_NOBLOCK_APS(ap_func_, ap_arg_, bsp_func_, bsp_arg_) \
-	_MP_FLIGHT_RECORD(1, ap_func_, ap_arg_, bsp_func_, bsp_arg_)
+#define MP_FR_NOBLOCK_APS(ap_func_, bsp_func_) \
+	_MP_FLIGHT_RECORD(1, ap_func_, bsp_func_)
 
 /* The mp_params structure provides the arguments to the mp subsystem
  * for bringing up APs. */
@@ -108,7 +104,7 @@ int mp_init(struct bus *cpu_bus, struct mp_params *params);
  */
 
 /* Calls cpu_initialize(info->index) which calls the coreboot CPU drivers. */
-void mp_initialize_cpu(void *unused);
+void mp_initialize_cpu(void);
 
 /* Returns apic id for coreboot cpu number or < 0 on failure. */
 int mp_get_apic_id(int cpu_slot);

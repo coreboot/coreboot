@@ -71,7 +71,7 @@ static void bsp_pre_mp_setup(void)
  */
 static struct mp_flight_record flight_plan[] = {
 	/* NOTE: MTRR solution must be calculated before firing up the APs */
-	MP_FR_NOBLOCK_APS(mp_initialize_cpu, NULL, mp_initialize_cpu, NULL),
+	MP_FR_NOBLOCK_APS(mp_initialize_cpu, mp_initialize_cpu),
 };
 
 void apollolake_init_cpus(device_t dev)

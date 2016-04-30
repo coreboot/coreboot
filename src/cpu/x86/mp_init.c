@@ -129,7 +129,7 @@ static void ap_do_flight_plan(void)
 		barrier_wait(&rec->barrier);
 
 		if (rec->ap_call != NULL) {
-			rec->ap_call(rec->ap_arg);
+			rec->ap_call();
 		}
 	}
 }
@@ -477,7 +477,7 @@ static int bsp_do_flight_plan(struct mp_params *mp_params)
 		}
 
 		if (rec->bsp_call != NULL) {
-			rec->bsp_call(rec->bsp_arg);
+			rec->bsp_call();
 		}
 
 		release_barrier(&rec->barrier);
@@ -563,7 +563,7 @@ int mp_init(struct bus *cpu_bus, struct mp_params *p)
 	return bsp_do_flight_plan(p);
 }
 
-void mp_initialize_cpu(void *unused)
+void mp_initialize_cpu(void)
 {
 	/* Call back into driver infrastructure for the AP initialization.   */
 	struct cpu_info *info = cpu_info();

@@ -32,14 +32,14 @@
 #include <soc/ramstage.h>
 #include <soc/smm.h>
 
-static void smm_relocate(void *unused);
-static void enable_smis(void *unused);
+static void smm_relocate(void);
+static void enable_smis(void);
 
 static struct mp_flight_record mp_steps[] = {
-	MP_FR_BLOCK_APS(smm_relocate, NULL, smm_relocate, NULL),
-	MP_FR_BLOCK_APS(mp_initialize_cpu, NULL, mp_initialize_cpu, NULL),
+	MP_FR_BLOCK_APS(smm_relocate, smm_relocate),
+	MP_FR_BLOCK_APS(mp_initialize_cpu, mp_initialize_cpu),
 	/* Wait for APs to finish initialization before proceeding. */
-	MP_FR_BLOCK_APS(NULL, NULL, enable_smis, NULL),
+	MP_FR_BLOCK_APS(NULL, enable_smis),
 };
 
 /* The APIC id space on Bay Trail is sparse. Each id is separated by 2. */
@@ -278,7 +278,7 @@ static int smm_load_handlers(void)
 	return 0;
 }
 
-static void smm_relocate(void *unused)
+static void smm_relocate(void)
 {
 	const struct pattrs *pattrs = pattrs_get();
 
@@ -298,7 +298,7 @@ static void smm_relocate(void *unused)
 	intel_microcode_load_unlocked(pattrs->microcode_patch);
 }
 
-static void enable_smis(void *unused)
+static void enable_smis(void)
 {
 	southcluster_smm_enable_smi();
 }

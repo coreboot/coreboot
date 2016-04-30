@@ -30,7 +30,7 @@
 static void configure_mca(void);
 
 static struct mp_flight_record mp_steps[] = {
-	MP_FR_BLOCK_APS(mp_initialize_cpu, NULL, mp_initialize_cpu, NULL),
+	MP_FR_BLOCK_APS(mp_initialize_cpu, mp_initialize_cpu),
 };
 
 static int adjust_apic_id(int index, int apic_id)

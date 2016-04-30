@@ -619,7 +619,7 @@ static int adjust_apic_id_ht_disabled(int index, int apic_id)
 	return 2 * index;
 }
 
-static void relocate_and_load_microcode(void *unused)
+static void relocate_and_load_microcode(void)
 {
 	/* Relocate the SMM handler. */
 	smm_relocate();
@@ -628,7 +628,7 @@ static void relocate_and_load_microcode(void *unused)
 	intel_microcode_load_unlocked(microcode_patch);
 }
 
-static void enable_smis(void *unused)
+static void enable_smis(void)
 {
 	/* Now that all APs have been relocated as well as the BSP let SMIs
 	 * start flowing. */
@@ -639,11 +639,11 @@ static void enable_smis(void *unused)
 }
 
 static struct mp_flight_record mp_steps[] = {
-	MP_FR_NOBLOCK_APS(relocate_and_load_microcode, NULL,
-	                  relocate_and_load_microcode, NULL),
-	MP_FR_BLOCK_APS(mp_initialize_cpu, NULL, mp_initialize_cpu, NULL),
+	MP_FR_NOBLOCK_APS(relocate_and_load_microcode,
+	                  relocate_and_load_microcode),
+	MP_FR_BLOCK_APS(mp_initialize_cpu, mp_initialize_cpu),
 	/* Wait for APs to finish initialization before proceeding. */
-	MP_FR_BLOCK_APS(NULL, NULL, enable_smis, NULL),
+	MP_FR_BLOCK_APS(NULL, enable_smis),
 };
 
 static struct device_operations cpu_dev_ops = {

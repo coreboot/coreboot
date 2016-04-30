@@ -488,8 +488,6 @@ void smi_release_lock(void);
 /* Get PMBASE address */
 u16 smm_get_pmbase(void);
 
-#if CONFIG_SMM_TSEG
-
 struct smm_runtime {
 	u32 smbase;
 	u32 save_state_size;
@@ -520,8 +518,8 @@ void asmlinkage smm_handler_start(void *params);
 /* Retrieve SMM save state for a given CPU. WARNING: This does not take into
  * account CPUs which are configured to not save their state to RAM. */
 void *smm_get_save_state(int cpu);
+#endif /* __SMM__ */
 
-#else
 /* SMM Module Loading API */
 
 /* The smm_loader_params structure provides direction to the SMM loader:
@@ -559,8 +557,6 @@ struct smm_loader_params {
 /* Both of these return 0 on success, < 0 on failure. */
 int smm_setup_relocation_handler(struct smm_loader_params *params);
 int smm_load_module(void *smram, int size, struct smm_loader_params *params);
-#endif /* __SMM__ */
-#endif /* CONFIG_SMM_TSEG */
 
 /* Backup and restore default SMM region. */
 void *backup_default_smm_area(void);

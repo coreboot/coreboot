@@ -14,6 +14,7 @@
 ##
 
 ramstage-$(CONFIG_BACKUP_DEFAULT_SMM_REGION) += backup_default_smm.c
+ramstage-y += smm_module_loader.c
 
 ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32),y)
 $(eval $(call create_class_compiler,smm,x86_32))
@@ -41,8 +42,6 @@ ifeq ($(CONFIG_SMM_TSEG),y)
 smmstub-y += smm_stub.S
 
 smm-y += smm_module_handler.c
-
-ramstage-y += smm_module_loader.c
 
 ramstage-srcs += $(obj)/cpu/x86/smm/smm.manual
 ramstage-srcs += $(obj)/cpu/x86/smm/smmstub.manual

@@ -45,6 +45,40 @@ void mea_write(uint32_t reg_address)
 		& QNC_MEA_MASK);
 }
 
+uint32_t reg_rmu_temp_read(uint32_t reg_address)
+{
+	/* Read the RMU temperature register */
+	mea_write(reg_address);
+	mcr_write(QUARK_OPCODE_READ, QUARK_NC_RMU_SB_PORT_ID, reg_address);
+	return mdr_read();
+}
+
+static void reg_rmu_temp_write(uint32_t reg_address, uint32_t value)
+{
+	/* Write the RMU temperature register */
+	mea_write(reg_address);
+	mdr_write(value);
+	mcr_write(QUARK_OPCODE_WRITE, QUARK_NC_RMU_SB_PORT_ID, reg_address);
+}
+
+static uint32_t reg_soc_unit_read(uint32_t reg_address)
+{
+	/* Read the temperature sensor register */
+	mea_write(reg_address);
+	mcr_write(QUARK_ALT_OPCODE_READ, QUARK_SCSS_SOC_UNIT_SB_PORT_ID,
+		reg_address);
+	return mdr_read();
+}
+
+static void reg_soc_unit_write(uint32_t reg_address, uint32_t value)
+{
+	/* Write the temperature sensor register */
+	mea_write(reg_address);
+	mdr_write(value);
+	mcr_write(QUARK_ALT_OPCODE_WRITE, QUARK_SCSS_SOC_UNIT_SB_PORT_ID,
+		reg_address);
+}
+
 static uint32_t reg_usb_read(uint32_t reg_address)
 {
 	/* Read the USB register */
@@ -76,6 +110,16 @@ static uint64_t reg_read(struct reg_script_context *ctx)
 		ctx->display_features = REG_SCRIPT_DISPLAY_NOTHING;
 		return 0;
 
+	case RMU_TEMP_REGS:
+		ctx->display_prefix = "RMU TEMP";
+		value = reg_rmu_temp_read(step->reg);
+		break;
+
+	case SOC_UNIT_REGS:
+		ctx->display_prefix = "SOC Unit";
+		value = reg_soc_unit_read(step->reg);
+		break;
+
 	case USB_PHY_REGS:
 		ctx->display_prefix = "USB PHY";
 		value = reg_usb_read(step->reg);
@@ -95,6 +139,16 @@ static void reg_write(struct reg_script_context *ctx)
 			step->id);
 		ctx->display_features = REG_SCRIPT_DISPLAY_NOTHING;
 		return;
+
+	case RMU_TEMP_REGS:
+		ctx->display_prefix = "RMU TEMP";
+		reg_rmu_temp_write(step->reg, (uint32_t)step->value);
+		break;
+
+	case SOC_UNIT_REGS:
+		ctx->display_prefix = "SOC Unit";
+		reg_soc_unit_write(step->reg, (uint32_t)step->value);
+		break;
 
 	case USB_PHY_REGS:
 		ctx->display_prefix = "USB PHY";

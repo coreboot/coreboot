@@ -18,10 +18,13 @@
 
 #include <fsp/util.h>
 #include <reg_script.h>
+#include <soc/IntelQNCConfig.h>
 #include <soc/QuarkNcSocId.h>
 
 enum {
 	USB_PHY_REGS = 1,
+	SOC_UNIT_REGS,
+	RMU_TEMP_REGS,
 };
 
 enum {
@@ -32,6 +35,50 @@ enum {
 #define SOC_ACCESS(cmd_, reg_, size_, mask_, value_, timeout_, reg_set_)   \
 	_REG_SCRIPT_ENCODE_RAW(REG_SCRIPT_COMMAND_##cmd_, SOC_TYPE,        \
 			       size_, reg_, mask_, value_, timeout_, reg_set_)
+
+/* RMU temperature register access macros */
+#define REG_RMU_TEMP_ACCESS(cmd_, reg_, mask_, value_, timeout_) \
+	SOC_ACCESS(cmd_, reg_, REG_SCRIPT_SIZE_32, mask_, value_, timeout_, \
+		RMU_TEMP_REGS)
+#define REG_RMU_TEMP_READ(reg_) \
+	REG_RMU_TEMP_ACCESS(READ, reg_, 0, 0, 0)
+#define REG_RMU_TEMP_WRITE(reg_, value_) \
+	REG_RMU_TEMP_ACCESS(WRITE, reg_, 0, value_, 0)
+#define REG_RMU_TEMP_AND(reg_, value_) \
+	REG_RMU_TEMP_RMW(reg_, value_, 0)
+#define REG_RMU_TEMP_RMW(reg_, mask_, value_) \
+	REG_RMU_TEMP_ACCESS(RMW, reg_, mask_, value_, 0)
+#define REG_RMU_TEMP_RXW(reg_, mask_, value_) \
+	REG_RMU_TEMP_ACCESS(RXW, reg_, mask_, value_, 0)
+#define REG_RMU_TEMP_OR(reg_, value_) \
+	REG_RMU_TEMP_RMW(reg_, 0xffffffff, value_)
+#define REG_RMU_TEMP_POLL(reg_, mask_, value_, timeout_) \
+	REG_RMU_TEMP_ACCESS(POLL, reg_, mask_, value_, timeout_)
+#define REG_RMU_TEMP_XOR(reg_, value_) \
+	REG_RMU_TEMP_RXW(reg_, 0xffffffff, value_)
+
+/* Temperature sensor access macros */
+#define REG_SOC_UNIT_ACCESS(cmd_, reg_, mask_, value_, timeout_) \
+	SOC_ACCESS(cmd_, reg_, REG_SCRIPT_SIZE_32, mask_, value_, timeout_, \
+		SOC_UNIT_REGS)
+#define REG_SOC_UNIT_READ(reg_) \
+	REG_SOC_UNIT_ACCESS(READ, reg_, 0, 0, 0)
+#define REG_SOC_UNIT_WRITE(reg_, value_) \
+	REG_SOC_UNIT_ACCESS(WRITE, reg_, 0, value_, 0)
+#define REG_SOC_UNIT_AND(reg_, value_) \
+	REG_SOC_UNIT_RMW(reg_, value_, 0)
+#define REG_SOC_UNIT_RMW(reg_, mask_, value_) \
+	REG_SOC_UNIT_ACCESS(RMW, reg_, mask_, value_, 0)
+#define REG_SOC_UNIT_RXW(reg_, mask_, value_) \
+	REG_SOC_UNIT_ACCESS(RXW, reg_, mask_, value_, 0)
+#define REG_SOC_UNIT_OR(reg_, value_) \
+	REG_SOC_UNIT_RMW(reg_, 0xffffffff, value_)
+#define REG_SOC_UNIT_POLL(reg_, mask_, value_, timeout_) \
+	REG_SOC_UNIT_ACCESS(POLL, reg_, mask_, value_, timeout_)
+#define REG_SOC_UNIT_XOR(reg_, value_) \
+	REG_SOC_UNIT_RXW(reg_, 0xffffffff, value_)
+
+/* USB register access macros */
 #define REG_USB_ACCESS(cmd_, reg_, mask_, value_, timeout_) \
 	SOC_ACCESS(cmd_, reg_, REG_SCRIPT_SIZE_32, mask_, value_, timeout_, \
 		USB_PHY_REGS)
@@ -56,5 +103,6 @@ void mcr_write(uint8_t opcode, uint8_t port, uint32_t reg_address);
 uint32_t mdr_read(void);
 void mdr_write(uint32_t value);
 void mea_write(uint32_t reg_address);
+uint32_t reg_rmu_temp_read(uint32_t reg_address);
 
 #endif /* _QUARK_REG_ACCESS_H_ */

@@ -13,7 +13,6 @@
 ## GNU General Public License for more details.
 ##
 
-ramstage-$(CONFIG_BACKUP_DEFAULT_SMM_REGION) += backup_default_smm.c
 ramstage-y += smm_module_loader.c
 
 ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32),y)

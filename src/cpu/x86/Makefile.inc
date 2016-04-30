@@ -5,6 +5,7 @@ endif
 subdirs-$(CONFIG_PARALLEL_MP) += name
 ramstage-$(CONFIG_PARALLEL_MP) += mp_init.c
 ramstage-$(CONFIG_MIRROR_PAYLOAD_TO_RAM_BEFORE_LOADING) += mirror_payload.c
+ramstage-y += backup_default_smm.c
 
 additional-dirs += $(obj)/cpu/x86
 

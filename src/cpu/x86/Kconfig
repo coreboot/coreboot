@@ -127,12 +127,6 @@ config PLATFORM_USES_FSP1_0
 	  Selected for Intel processors/platform combinations that use the
 	  Intel Firmware Support Package (FSP) 1.0 for initialization.
 
-config BACKUP_DEFAULT_SMM_REGION
-	def_bool n
-	help
-	 The CPU support will select this option if the default SMM region
-	 needs to be backed up for suspend/resume purposes.
-
 config MIRROR_PAYLOAD_TO_RAM_BEFORE_LOADING
 	def_bool n
 	help

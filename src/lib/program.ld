@@ -43,6 +43,11 @@
 	_cbmem_init_hooks = .;
 	KEEP(*(.rodata.cbmem_init_hooks));
 	_ecbmem_init_hooks = .;
+
+	. = ALIGN(ARCH_POINTER_ALIGN_SIZE);
+	_rsbe_init_begin = .;
+	KEEP(*(.rsbe_init));
+	_ersbe_init_begin = .;
 #endif
 
 #if ENV_RAMSTAGE

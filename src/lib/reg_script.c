@@ -393,35 +393,27 @@ static void reg_script_write_msr(struct reg_script_context *ctx)
 #endif
 }
 
-#ifndef __PRE_RAM__
-/* Default routine provided for systems without platform specific busses */
-const struct reg_script_bus_entry *__attribute__((weak))
-	platform_bus_table(size_t *table_entries)
-{
-	/* No platform bus type table supplied */
-	*table_entries = 0;
-	return NULL;
-}
-
 /* Locate the structure containing the platform specific bus access routines */
 static const struct reg_script_bus_entry
 	*find_bus(const struct reg_script *step)
 {
-	const struct reg_script_bus_entry *bus;
+	extern const struct reg_script_bus_entry *_rsbe_init_begin[];
+	extern const struct reg_script_bus_entry *_ersbe_init_begin[];
+	const struct reg_script_bus_entry * const * bus;
 	size_t table_entries;
 	size_t i;
 
 	/* Locate the platform specific bus */
-	bus = platform_bus_table(&table_entries);
+	bus = _rsbe_init_begin;
+	table_entries = &_ersbe_init_begin[0] - &_rsbe_init_begin[0];
 	for (i = 0; i < table_entries; i++) {
-		if (bus[i].type == step->type)
-			return &bus[i];
+		if (bus[i]->type == step->type)
+			return bus[i];
 	}
 
 	/* Bus not found */
 	return NULL;
 }
-#endif
 
 static uint64_t reg_script_read(struct reg_script_context *ctx)
 {
@@ -443,7 +435,6 @@ static uint64_t reg_script_read(struct reg_script_context *ctx)
 		return reg_script_read_iosf(ctx);
 #endif /* HAS_IOSF */
 	default:
-#ifndef __PRE_RAM__
 		{
 			const struct reg_script_bus_entry *bus;
 
@@ -452,7 +443,6 @@ static uint64_t reg_script_read(struct reg_script_context *ctx)
 			if (NULL != bus)
 				return bus->reg_script_read(ctx);
 		}
-#endif
 		printk(BIOS_ERR,
 			"Unsupported read type (0x%x) for this device!\n",
 			step->type);
@@ -487,7 +477,6 @@ static void reg_script_write(struct reg_script_context *ctx)
 		break;
 #endif /* HAS_IOSF */
 	default:
-#ifndef __PRE_RAM__
 		{
 			const struct reg_script_bus_entry *bus;
 
@@ -498,7 +487,6 @@ static void reg_script_write(struct reg_script_context *ctx)
 				return;
 			}
 		}
-#endif
 		printk(BIOS_ERR,
 			"Unsupported write type (0x%x) for this device!\n",
 			step->type);

@@ -60,7 +60,9 @@ enum {
 
 	/* Insert other platform independent values above this comment */
 
-	REG_SCRIPT_TYPE_PLATFORM_BASE = 0x10000
+	REG_SCRIPT_TYPE_PLATFORM_BASE = 0x10000,
+	REG_SCRIPT_TYPE_SOC_BASE = REG_SCRIPT_TYPE_PLATFORM_BASE,
+	REG_SCRIPT_TYPE_MAINBOARD_BASE = 0x20000
 };
 
 enum {
@@ -92,17 +94,17 @@ struct reg_script_context {
 	const struct reg_script *step;
 };
 
-#ifndef __PRE_RAM__
 struct reg_script_bus_entry {
-	int type;
+	uint32_t type;
 	uint64_t (*reg_script_read)(struct reg_script_context *ctx);
 	void (*reg_script_write)(struct reg_script_context *ctx);
 };
 
-/* Get the address and length of the platform bus table */
-const struct reg_script_bus_entry *platform_bus_table(size_t *table_entries);
+#define REG_SCRIPT_TABLE_ATTRIBUTE __attribute__ ((used,section (".rsbe_init")))
 
-#endif	/* __PRE_RAM */
+#define REG_SCRIPT_BUS_ENTRY(bus_entry_)				\
+	const struct reg_script_bus_entry *rsbe_ ## bus_entry_ 	\
+		REG_SCRIPT_TABLE_ATTRIBUTE = &bus_entry_;
 
 /* Internal helper Macros. */
 

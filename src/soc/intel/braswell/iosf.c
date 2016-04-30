@@ -190,16 +190,10 @@ void reg_script_write_iosf(struct reg_script_context *ctx)
 	}
 }
 
-const struct reg_script_bus_entry reg_script_bus_table[] = {
-	{REG_SCRIPT_TYPE_IOSF, reg_script_read_iosf, reg_script_write_iosf}
+static const struct reg_script_bus_entry reg_script_bus_table = {
+	REG_SCRIPT_TYPE_IOSF, reg_script_read_iosf, reg_script_write_iosf
 };
 
-const struct reg_script_bus_entry *platform_bus_table(size_t *table_entries)
-{
-	/* Return the table size and address */
-	*table_entries = sizeof(reg_script_bus_table)
-		/ sizeof(reg_script_bus_table[0]);
-	return &reg_script_bus_table[0];
-}
+REG_SCRIPT_BUS_ENTRY(reg_script_bus_table);
 
 #endif	/* ENV_RAMSTAGE */

@@ -1,4 +1,6 @@
 payloads/libpayload/install/
+payloads/nvramcui/build
+payloads/nvramcui/libpayload
 junit.xml
 abuild*.xml
 .config

@@ -149,9 +149,6 @@ testas() {
 	local obj_arch="$(expr "$obj_type" : '.*format \(.[a-z0-9-]*\)')"
 	[ "$obj_arch" = "$full_arch" ] || return 1
 
-	# Architecture matched.
-	GCCPREFIX="$gccprefix"
-
 	unset ASFLAGS LDFLAGS
 	unset CFLAGS_GCC CFLAGS_CLANG
 
@@ -414,10 +411,13 @@ test_architecture() {
 		for gccprefix in $search ""; do
 			program_exists "${gccprefix}as" || continue
 			for endian in $TENDIAN ""; do
+				{ testas "$gccprefix" "$TWIDTH" "$TBFDARCH" \
+					"" "$endian" ||
 				testas "$gccprefix" "$TWIDTH" "$TBFDARCH" \
-					"" "$endian" && break 3
-				testas "$gccprefix" "$TWIDTH" "$TBFDARCH" \
-					"TRUE" "$endian" && break 3
+					"TRUE" "$endian" ; } && \
+				testcc "${gccprefix}gcc" "$CFLAGS_GCC" && \
+				GCCPREFIX="$gccprefix" && \
+				break 3
 			done
 		done
 	done

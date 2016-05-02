@@ -101,6 +101,20 @@ static bool write_header(const char *out_fname,
 	fputs("#ifndef FMAPTOOL_GENERATED_HEADER_H_\n", header);
 	fputs("#define FMAPTOOL_GENERATED_HEADER_H_\n\n", header);
 	fprintf(header, "#define %s %#x\n\n", HEADER_FMAP_OFFSET, fmap_offset);
+
+	/* also add defines for each CBFS-carrying fmap region: base and size */
+	cbfs_section_iterator_t cbfs_it = cbfs_sections_iterator();
+	while (cbfs_it) {
+		const struct flashmap_descriptor *item =
+				cbfs_sections_iterator_deref(cbfs_it);
+		assert(item->offset_known && item->size_known);
+		fprintf(header, "#define ___FMAP__%s_BASE 0x%x\n",
+			item->name, item->offset);
+		fprintf(header, "#define ___FMAP__%s_SIZE 0x%x\n",
+			item->name, item->size);
+		cbfs_sections_iterator_advance(&cbfs_it);
+	}
+
 	fputs("#endif\n", header);
 
 	fclose(header);

@@ -19,6 +19,7 @@ subdirs-y += romstage
 subdirs-y += ../../../cpu/x86/tsc
 
 romstage-y += memmap.c
+romstage-y += reg_access.c
 romstage-y += tsc_freq.c
 romstage-$(CONFIG_ENABLE_BUILTIN_HSUART1) += uart_common.c
 
@@ -27,9 +28,11 @@ ramstage-y += chip.c
 ramstage-y += memmap.c
 ramstage-y += northcluster.c
 ramstage-y += pmc.c
+ramstage-y += reg_access.c
 ramstage-y += tsc_freq.c
 ramstage-$(CONFIG_ENABLE_BUILTIN_HSUART1) += uart_common.c
 ramstage-$(CONFIG_ENABLE_BUILTIN_HSUART1) += uart.c
+ramstage-y += usb.c
 
 CPPFLAGS_common += -I$(src)/soc/intel/quark
 CPPFLAGS_common += -I$(src)/soc/intel/quark/include

@@ -25,9 +25,11 @@
 /* DEVICE 0 (Memroy Controller Hub) */
 #define MC_BDF		PCI_DEV(PCI_BUS_NUMBER_QNC, MC_DEV, MC_FUN)
 
-/* IO Fabric 1 */
-#define HSUART_DEVID	0x0936
+/* Device IDs */
+#define HSUART_DEVID		0x0936
+#define EHCI_DEVID		0x0939
 
+/* IO Fabric 1 */
 #define SIO1_DEV 0x14
 # define HSUART1_DEV SIO1_DEV
 # define HSUART1_FUNC 5

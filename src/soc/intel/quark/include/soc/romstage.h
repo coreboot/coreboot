@@ -23,13 +23,8 @@
 #endif
 
 #include <fsp/romstage.h>
-#include <fsp/util.h>
-#include <soc/QuarkNcSocId.h>
+#include <soc/reg_access.h>
 
-void mcr_write(uint8_t opcode, uint8_t port, uint32_t reg_address);
-uint32_t mdr_read(void);
-void mdr_write(uint32_t value);
-void mea_write(uint32_t reg_address);
 uint32_t port_reg_read(uint8_t port, uint32_t offset);
 void port_reg_write(uint8_t port, uint32_t offset, uint32_t value);
 void report_platform_info(void);

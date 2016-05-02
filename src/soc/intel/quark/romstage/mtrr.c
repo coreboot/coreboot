@@ -21,31 +21,6 @@
 #include <soc/pci_devs.h>
 #include <soc/romstage.h>
 
-void mcr_write(uint8_t opcode, uint8_t port, uint32_t reg_address)
-{
-	pci_write_config32(MC_BDF, QNC_ACCESS_PORT_MCR,
-		(opcode << QNC_MCR_OP_OFFSET)
-		| ((uint32_t)port << QNC_MCR_PORT_OFFSET)
-		| ((reg_address & QNC_MCR_MASK) << QNC_MCR_REG_OFFSET)
-		| QNC_MCR_BYTE_ENABLES);
-}
-
-uint32_t mdr_read(void)
-{
-	return pci_read_config32(MC_BDF, QNC_ACCESS_PORT_MDR);
-}
-
-void mdr_write(uint32_t value)
-{
-	pci_write_config32(MC_BDF, QNC_ACCESS_PORT_MDR, value);
-}
-
-void mea_write(uint32_t reg_address)
-{
-	pci_write_config32(MC_BDF, QNC_ACCESS_PORT_MEA, reg_address
-		& QNC_MEA_MASK);
-}
-
 static uint32_t mtrr_index_to_host_bridge_register_offset(unsigned long index)
 {
 	uint32_t offset;

@@ -19,6 +19,8 @@
 #include <cpu/x86/post_code.h>
 #include <cbmem.h>
 
+#include "fmap_config.h"
+
 /* The full cache-as-ram size includes the cache-as-ram portion from coreboot
  * and the space used by the reference code. These 2 values combined should
  * be a power of 2 because the MTRR setup assumes that. */
@@ -27,7 +29,7 @@
 #define CACHE_AS_RAM_BASE CONFIG_DCACHE_RAM_BASE
 
 /* Cache all of CBFS just below 4GiB as Write-Protect type. */
-#define CODE_CACHE_SIZE  (CONFIG_CBFS_SIZE)
+#define CODE_CACHE_SIZE  _ALIGN_UP_POW2(___FMAP__COREBOOT_SIZE)
 #define CODE_CACHE_BASE  (-CODE_CACHE_SIZE)
 #define CODE_CACHE_MASK  (~(CODE_CACHE_SIZE - 1))
 #define CPU_PHYSMASK_HI  ((1 << (CONFIG_CPU_ADDR_BITS - 32)) - 1)

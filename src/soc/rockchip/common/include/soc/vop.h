@@ -13,12 +13,12 @@
  * GNU General Public License for more details.
  */
 
-#ifndef _RK3288_LCD_H_
-#define _RK3288_LCD_H_
+#ifndef _ROCKCHIP_LCD_H_
+#define _ROCKCHIP_LCD_H_
 #include <stdint.h>
 #include <edid.h>
 
-struct rk3288_vop_regs {
+struct rockchip_vop_regs {
 	u32 reg_cfg_done;
 	u32 version_info;
 	u32 sys_ctrl;
@@ -27,11 +27,22 @@ struct rk3288_vop_regs {
 	u32 dsp_ctrl1;
 	u32 dsp_bg;
 	u32 mcu_ctrl;
-	u32 intr_ctrl0;
-	u32 intr_ctrl1;
-	u32 intr_reserved0;
-	u32 intr_reserved1;
-
+	union {
+		u32 intr_ctrl0; /* RK3288 */
+		u32 wb_ctrl0;   /* RK3399 */
+	};
+	union {
+		u32 intr_ctrl1; /* RK3288 */
+		u32 wb_ctrl1;   /* RK3399 */
+	};
+	union {
+		u32 intr_reserved0; /* RK3288 */
+		u32 wb_yrgb_mst;    /* RK3399 */
+	};
+	union {
+		u32 intr_reserved1; /* RK3288 */
+		u32 wb_cbr_mst;     /* RK3399 */
+	};
 	u32 win0_ctrl0;
 	u32 win0_ctrl1;
 	u32 win0_color_key;
@@ -47,8 +58,10 @@ struct rk3288_vop_regs {
 	u32 win0_src_alpha_ctrl;
 	u32 win0_dst_alpha_ctrl;
 	u32 win0_fading_ctrl;
-	u32 win0_reserved0;
-
+	union {
+		u32 win0_reserved0;  /* RK3288 */
+		u32 win0_ctrl2;      /* RK3399 */
+	};
 	u32 win1_ctrl0;
 	u32 win1_ctrl1;
 	u32 win1_color_key;
@@ -64,7 +77,10 @@ struct rk3288_vop_regs {
 	u32 win1_src_alpha_ctrl;
 	u32 win1_dst_alpha_ctrl;
 	u32 win1_fading_ctrl;
-	u32 win1_reservd0;
+	union {
+		u32 win1_reservd0; /* RK3288 */
+		u32 win1_ctrl2;    /* RK3399 */
+	};
 	u32 reserved2[48];
 	u32 post_dsp_hact_info;
 	u32 post_dsp_vact_info;
@@ -79,7 +95,7 @@ struct rk3288_vop_regs {
 	u32 dsp_vs_st_end_f1;
 	u32 dsp_vact_st_end_f1;
 };
-check_member(rk3288_vop_regs, dsp_vact_st_end_f1, 0x19c);
+check_member(rockchip_vop_regs, dsp_vact_st_end_f1, 0x19c);
 
 enum rockchip_fb_data_format_t {
 	ARGB8888 = 0,
@@ -97,9 +113,9 @@ enum {
 };
 
 enum vop_modes {
-	/* EDP == 0 is used for early RK3288 products and is the most likely
-	 * use case, so keep it as the default. Other desired modes should
-	 * be set explicitly in the board's devicetree.cb.
+	/* EDP == 0 is used for most RK3288 products and is the most likely
+	 * use case for RK3399, so keep it as the default. Other desired
+	 * modes should be set explicitly in the board's devicetree.cb.
 	 */
 	VOP_MODE_EDP = 0,
 	VOP_MODE_HDMI,

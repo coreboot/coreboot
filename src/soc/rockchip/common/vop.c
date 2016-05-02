@@ -24,11 +24,10 @@
 #include <soc/edp.h>
 #include <soc/vop.h>
 
-#include "chip.h"
 
-static struct rk3288_vop_regs * const vop_regs[] = {
-	(struct rk3288_vop_regs *)VOP_BIG_BASE,
-	(struct rk3288_vop_regs *)VOP_LIT_BASE
+static struct rockchip_vop_regs * const vop_regs[] = {
+	(struct rockchip_vop_regs *)VOP_BIG_BASE,
+	(struct rockchip_vop_regs *)VOP_LIT_BASE
 };
 
 void rkvop_enable(u32 vop_id, u32 fbbase, const struct edid *edid)
@@ -42,7 +41,7 @@ void rkvop_enable(u32 vop_id, u32 fbbase, const struct edid *edid)
 	u32 vsync_len = edid->mode.vspw;
 	u32 vback_porch = edid->mode.vbl - edid->mode.vso - edid->mode.vspw;
 	u32 xpos = 0, ypos = 0;
-	struct rk3288_vop_regs *preg = vop_regs[vop_id];
+	struct rockchip_vop_regs *preg = vop_regs[vop_id];
 
 	write32(&preg->win0_act_info,
 		V_ACT_WIDTH(hactive - 1) | V_ACT_HEIGHT(vactive - 1));
@@ -89,7 +88,10 @@ void rkvop_enable(u32 vop_id, u32 fbbase, const struct edid *edid)
 
 	write32(&preg->win0_yrgb_mst, fbbase);
 
-	write32(&preg->reg_cfg_done, 0x01); /* enable reg config */
+	/* On RK3288, the reg_cfg_done[1:31] is reserved and read-only,
+	 * but it's fine to write to it
+	 */
+	write32(&preg->reg_cfg_done, 0xffff); /* enable reg config */
 }
 
 void rkvop_mode_set(u32 vop_id, const struct edid *edid, u32 mode)
@@ -102,7 +104,7 @@ void rkvop_mode_set(u32 vop_id, const struct edid *edid, u32 mode)
 	u32 vfront_porch = edid->mode.vso;
 	u32 vsync_len = edid->mode.vspw;
 	u32 vback_porch = edid->mode.vbl - edid->mode.vso - edid->mode.vspw;
-	struct rk3288_vop_regs *preg = vop_regs[vop_id];
+	struct rockchip_vop_regs *preg = vop_regs[vop_id];
 
 	switch (mode) {
 
@@ -117,7 +119,6 @@ void rkvop_mode_set(u32 vop_id, const struct edid *edid, u32 mode)
 				M_ALL_OUT_EN, V_EDP_OUT_EN(1));
 		break;
 	}
-
 	clrsetbits_le32(&preg->dsp_ctrl0,
 			M_DSP_OUT_MODE | M_DSP_VSYNC_POL | M_DSP_HSYNC_POL,
 			V_DSP_OUT_MODE(15) |
@@ -146,5 +147,8 @@ void rkvop_mode_set(u32 vop_id, const struct edid *edid, u32 mode)
 		V_VAEP(vsync_len + vback_porch + vactive) |
 		V_VASP(vsync_len + vback_porch));
 
-	write32(&preg->reg_cfg_done, 0x01); /* enable reg config */
+	/* On RK3288, the reg_cfg_done[1:31] is reserved and read-only,
+	 * but it's fine to write to it
+	 */
+	write32(&preg->reg_cfg_done, 0xffff); /* enable reg config */
 }

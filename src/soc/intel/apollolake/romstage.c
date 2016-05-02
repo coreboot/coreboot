@@ -79,7 +79,8 @@ static void disable_watchdog(void)
 
 asmlinkage void car_stage_entry(void)
 {
-	void *hob_list_ptr, *mrc_data;
+	void *hob_list_ptr;
+	const void *mrc_data;
 	struct range_entry fsp_mem, reg_car;
 	struct postcar_frame pcf;
 	size_t  mrc_data_size;
@@ -116,8 +117,7 @@ asmlinkage void car_stage_entry(void)
 	/* Save MRC Data to CBMEM */
 	if (IS_ENABLED(CONFIG_CACHE_MRC_SETTINGS))
 	{
-		/* TODO: treat MRC data as const */
-		mrc_data = (void*) fsp_find_nv_storage_data(&mrc_data_size);
+		mrc_data = fsp_find_nv_storage_data(&mrc_data_size);
 		if (mrc_data && mrc_cache_stash_data(mrc_data, mrc_data_size) < 0)
 			printk(BIOS_ERR, "Failed to stash MRC data\n");
 	}

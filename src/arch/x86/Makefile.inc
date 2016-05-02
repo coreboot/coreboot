@@ -47,9 +47,6 @@ cbfs-files-$(CONFIG_INTEL_MBI) += mbi.bin
 mbi.bin-file := $(call strip_quotes,$(CONFIG_MBI_FILE))
 mbi.bin-type := mbi
 
-## Calculate the base address of CBFS for later comparisons
-CBFS_BASE_ADDRESS=$(call int-add, $(call int-subtract, 0xffffffff $(CONFIG_CBFS_SIZE)) 1)
-
 ###############################################################################
 # common support for early assembly includes
 ###############################################################################

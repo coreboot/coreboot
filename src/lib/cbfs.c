@@ -25,6 +25,8 @@
 #include <symbols.h>
 #include <timestamp.h>
 
+#include "fmap_config.h"
+
 #define ERROR(x...) printk(BIOS_ERR, "CBFS: " x)
 #define LOG(x...) printk(BIOS_INFO, "CBFS: " x)
 #if IS_ENABLED(CONFIG_DEBUG_CBFS)
@@ -215,6 +217,7 @@ out:
 	return 0;
 }
 
+/* This only supports the "COREBOOT" fmap region. */
 static int cbfs_master_header_props(struct cbfs_props *props)
 {
 	struct cbfs_header header;
@@ -227,13 +230,15 @@ static int cbfs_master_header_props(struct cbfs_props *props)
 	if (bdev == NULL)
 		return -1;
 
+	size_t fmap_top = ___FMAP__COREBOOT_BASE + ___FMAP__COREBOOT_SIZE;
+
 	/* Find location of header using signed 32-bit offset from
 	 * end of CBFS region. */
-	offset = CONFIG_CBFS_SIZE - sizeof(int32_t);
+	offset = fmap_top - sizeof(int32_t);
 	if (rdev_readat(bdev, &rel_offset, offset, sizeof(int32_t)) < 0)
 		return -1;
 
-	offset = CONFIG_CBFS_SIZE + rel_offset;
+	offset = fmap_top + rel_offset;
 	if (rdev_readat(bdev, &header, offset, sizeof(header)) < 0)
 		return -1;
 

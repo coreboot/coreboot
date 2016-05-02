@@ -179,6 +179,13 @@ $(call src-to-obj,smm,$(dir)/version.c) : $(obj)/build.h
 $(call src-to-obj,verstage,$(dir)/version.c) : $(obj)/build.h
 $(call src-to-obj,postcar,$(dir)/version.c) : $(obj)/build.h
 
+$(call src-to-obj,bootblock,$(dir)/cbfs.c) : $(obj)/fmap_config.h
+$(call src-to-obj,romstage,$(dir)/cbfs.c) : $(obj)/fmap_config.h
+$(call src-to-obj,ramstage,$(dir)/cbfs.c) : $(obj)/fmap_config.h
+$(call src-to-obj,smm,$(dir)/cbfs.c) : $(obj)/fmap_config.h
+$(call src-to-obj,verstage,$(dir)/cbfs.c) : $(obj)/fmap_config.h
+$(call src-to-obj,postcar,$(dir)/cbfs.c) : $(obj)/fmap_config.h
+
 romstage-y += bootmode.c
 ramstage-y += bootmode.c
 verstage-y += bootmode.c

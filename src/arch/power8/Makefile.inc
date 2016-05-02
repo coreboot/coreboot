@@ -71,8 +71,6 @@ $(objcbfs)/romstage.debug: $$(romstage-objs)
 romstage-c-ccopts += $(power8_flags)
 romstage-S-ccopts += $(power8_asm_flags)
 
-CBFSTOOL_PRE1_OPTS = -v -m power8 -s $(CONFIG_CBFS_SIZE)
-
 endif
 
 ################################################################################

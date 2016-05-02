@@ -47,11 +47,6 @@ cbfs-files-$(CONFIG_INTEL_MBI) += mbi.bin
 mbi.bin-file := $(call strip_quotes,$(CONFIG_MBI_FILE))
 mbi.bin-type := mbi
 
-ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32)$(CONFIG_ARCH_ROMSTAGE_X86_64),y)
-CBFSTOOL_PRE1_OPTS = -m x86 -s $(CONFIG_ROM_SIZE) \
-		     -o $$(( $(CONFIG_ROM_SIZE) - $(CONFIG_CBFS_SIZE) ))
-endif
-
 ## Calculate the base address of CBFS for later comparisons
 CBFS_BASE_ADDRESS=$(call int-add, $(call int-subtract, 0xffffffff $(CONFIG_CBFS_SIZE)) 1)
 

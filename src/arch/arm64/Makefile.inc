@@ -29,10 +29,6 @@ subdirs-y += armv8/
 # ARM specific options
 ################################################################################
 
-ifeq ($(CONFIG_ARCH_ROMSTAGE_ARM64),y)
-CBFSTOOL_PRE1_OPTS = -m arm64 -s $(CONFIG_CBFS_SIZE)
-endif
-
 ifeq ($(CONFIG_ARCH_RAMSTAGE_ARM64),y)
 check-ramstage-overlap-regions += postram_cbfs_cache stack ttb
 endif

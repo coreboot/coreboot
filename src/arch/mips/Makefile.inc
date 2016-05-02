@@ -18,10 +18,6 @@
 # MIPS specific options
 ###############################################################################
 
-ifeq ($(CONFIG_ARCH_ROMSTAGE_MIPS),y)
-CBFSTOOL_PRE1_OPTS = -m mips -s $(CONFIG_CBFS_SIZE)
-endif
-
 ifeq ($(CONFIG_ARCH_RAMSTAGE_MIPS),y)
 check-ramstage-overlap-regions += stack
 endif

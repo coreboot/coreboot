@@ -806,16 +806,6 @@ $(CONFIG_CBFS_PREFIX)/ramstage-file := $(objcbfs)/ramstage.elf
 $(CONFIG_CBFS_PREFIX)/ramstage-type := stage
 $(CONFIG_CBFS_PREFIX)/ramstage-compression := $(CBFS_COMPRESS_FLAG)
 
-cbfs-files-y += $(CONFIG_CBFS_PREFIX)/payload
-$(CONFIG_CBFS_PREFIX)/payload-file := $(CONFIG_PAYLOAD_FILE)
-ifeq ($(CONFIG_PAYLOAD_IS_FLAT_BINARY),y)
-$(CONFIG_CBFS_PREFIX)/payload-type := flat-binary
-else
-$(CONFIG_CBFS_PREFIX)/payload-type := payload
-endif
-$(CONFIG_CBFS_PREFIX)/payload-compression := $(CBFS_PAYLOAD_COMPRESS_FLAG)
-$(CONFIG_CBFS_PREFIX)/payload-options := $(ADDITIONAL_PAYLOAD_CONFIG)
-
 cbfs-files-$(CONFIG_HAVE_REFCODE_BLOB) += $(CONFIG_CBFS_PREFIX)/refcode
 $(CONFIG_CBFS_PREFIX)/refcode-file := $(REFCODE_BLOB)
 $(CONFIG_CBFS_PREFIX)/refcode-type := stage

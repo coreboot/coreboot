@@ -53,7 +53,11 @@ static inline int smm_region_size(void)
         return CONFIG_SMM_TSEG_SIZE;
 }
 
-int smm_initialize(void);
+void smm_relocation_handler(int cpu, uintptr_t curr_smbase,
+				uintptr_t staggered_smbase);
+void smm_info(uintptr_t *perm_smbase, size_t *perm_smsize,
+		size_t *smm_save_state_size);
+void smm_initialize(void);
 void smm_relocate(void);
 
 /* These helpers are for performing SMM relocation. */

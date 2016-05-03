@@ -55,12 +55,6 @@
 void set_power_limits(u8 power_limit_1_time);
 int cpu_config_tdp_levels(void);
 
-/*
- * Determine if HyperThreading is disabled.
- * The variable is not valid until setup_ap_init() has been called.
- */
-extern int ht_disabled;
-
 /* CPU identification */
 u32 cpu_family_model(void);
 u32 cpu_stepping(void);

@@ -25,7 +25,7 @@
 #include <device/pci_ids.h>
 #include <cpu/x86/msr.h>
 
-#include "southbridge/intel/sch/nvs.h"
+#include "soc/intel/sch/nvs.h"
 
 void acpi_create_gnvs(global_nvs_t * gnvs)
 {

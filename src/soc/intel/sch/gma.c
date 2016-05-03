@@ -49,7 +49,7 @@ intel_gma_get_controller_info(void)
 	if (!dev) {
 		return NULL;
 	}
-	struct northbridge_intel_sch_config *chip = dev->chip_info;
+	struct soc_intel_sch_config *chip = dev->chip_info;
 	return &chip->gfx;
 }
 

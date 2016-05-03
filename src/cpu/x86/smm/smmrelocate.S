@@ -25,8 +25,8 @@
 #include "../../../southbridge/intel/i82801gx/i82801gx.h"
 #elif CONFIG_SOUTHBRIDGE_INTEL_I82801DX
 #include "../../../southbridge/intel/i82801dx/i82801dx.h"
-#elif CONFIG_SOUTHBRIDGE_INTEL_SCH
-#include "../../../southbridge/intel/sch/sch.h"
+#elif CONFIG_SOC_INTEL_SCH
+#include "../../../soc/intel/sch/sch.h"
 #elif CONFIG_SOUTHBRIDGE_INTEL_I82801IX
 #include "../../../southbridge/intel/i82801ix/i82801ix.h"
 #else

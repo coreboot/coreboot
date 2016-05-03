@@ -24,7 +24,7 @@
 #include <console/console.h>
 #if 0
 #include "ram/ramtest.c"
-#include "southbridge/intel/sch/early_smbus.c"
+#include "soc/intel/sch/early_smbus.c"
 #endif
 
 #define RFID_TEST 0
@@ -268,9 +268,9 @@ int selectcard(void)
 }
 #endif
 
-#include "northbridge/intel/sch/early_init.c"
-#include <northbridge/intel/sch/raminit.h>
-#include "northbridge/intel/sch/raminit.c"
+#include "soc/intel/sch/early_init.c"
+#include <soc/intel/sch/raminit.h>
+#include "soc/intel/sch/raminit.c"
 
 static void sch_enable_lpc(void)
 {

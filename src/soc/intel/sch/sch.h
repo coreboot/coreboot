@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2007-2008 coresystems GmbH
+ * Copyright (C) 2007-2010 coresystems GmbH
  * Copyright (C) 2009-2010 iWave Systems
  *
  * This program is free software; you can redistribute it and/or
@@ -15,12 +15,14 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __SCH_PULSBO_H__
-#define __SCH_PULSBO_H__
+#ifndef __SCH_POULSBO_H__
+#define __SCH_POULSBO_H__
 
+#if !defined(__ASSEMBLER__)
 int sch_port_access_read(int port, int reg, int bytes);
 void sch_port_access_write(int port, int reg, int bytes, long data);
 void sch_port_access_write_ram_cmd(int cmd, int port, int reg, int data);
+#endif
 
 /* Southbridge IO BARs */
 /* TODO Make sure these don't get changed by stage2 */
@@ -47,4 +49,21 @@ void sch_port_access_write_ram_cmd(int cmd, int port, int reg, int data);
 /* FIXME: should probably be in southbridge, but is setup in romstage, too */
 #define CMC_SHADOW 0x3faf0000
 
-#endif /* __SCH_PULSBO_H__ */
+#define DEFAULT_PMBASE		0x500
+
+/* SMBus I/O bits. */
+#define SMBHSTSTAT		0x0
+#define SMBHSTCTL		0x2
+#define SMBHSTCMD		0x3
+#define SMBXMITADD		0x4
+#define SMBHSTDAT0		0x5
+#define SMBHSTDAT1		0x6
+#define SMBBLKDAT		0x7
+#define SMBTRNSADD		0x9
+#define SMBSLVDATA		0xa
+#define SMLINK_PIN_CTL		0xe
+#define SMBUS_PIN_CTL		0xf
+
+#define SMBUS_TIMEOUT		(10 * 1000 * 100)
+
+#endif /* __SCH_POULSBO_H__ */

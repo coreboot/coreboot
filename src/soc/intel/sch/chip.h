@@ -14,13 +14,26 @@
  * GNU General Public License for more details.
  */
 
-#ifndef NORTHBRIDGE_INTEL_SCH_CHIP_H
-#define NORTHBRIDGE_INTEL_SCH_CHIP_H
+#ifndef SOC_INTEL_SCH_CHIP_H
+#define SOC_INTEL_SCH_CHIP_H
 
 #include <drivers/intel/gma/i915.h>
 
-struct northbridge_intel_sch_config {
+struct soc_intel_sch_config {
 	struct i915_gpu_controller_info gfx;
+
+	/**
+	 * Interrupt Routing configuration
+	 * If bit7 is 1, the interrupt is disabled.
+	 */
+	uint8_t pirqa_routing;
+	uint8_t pirqb_routing;
+	uint8_t pirqc_routing;
+	uint8_t pirqd_routing;
+	uint8_t pirqe_routing;
+	uint8_t pirqf_routing;
+	uint8_t pirqg_routing;
+	uint8_t pirqh_routing;
 };
 
-#endif				/* NORTHBRIDGE_INTEL_SCH_CHIP_H */
+#endif				/* SOC_INTEL_SCH_CHIP_H */

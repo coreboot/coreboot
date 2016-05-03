@@ -13,6 +13,9 @@
  * GNU General Public License for more details.
  */
 
+#ifndef SOC_INTEL_SCH_NVS_H
+#define SOC_INTEL_SCH_NVS_H
+
 typedef struct {
 	/* Miscellaneous */
 	u16	osys; /* 0x00 - Operating System */
@@ -133,3 +136,5 @@ typedef struct {
 } __attribute__((packed)) global_nvs_t;
 
 void acpi_create_gnvs(global_nvs_t * gnvs);
+
+#endif /* SOC_INTEL_SCH_NVS_H */

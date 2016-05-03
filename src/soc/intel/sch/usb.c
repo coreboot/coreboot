@@ -32,15 +32,15 @@ static void usb_init(struct device *dev)
 	reg32 = pci_read_config32(dev, 0xFC);
 	reg32 |= (1 << 2);
 	pci_write_config32(dev, 0xFC, reg32);
-	pci_write_config8(dev,0xF8,0x86);
-	pci_write_config8(dev,0xF9,0x0F);
-	pci_write_config8(dev,0xFA,0x06);
+	pci_write_config8(dev, 0xF8, 0x86);
+	pci_write_config8(dev, 0xF9, 0x0F);
+	pci_write_config8(dev, 0xFA, 0x06);
 	reg32 = pci_read_config32(dev, 0x4);
-	printk(BIOS_DEBUG, "PCI_COMMAND %x.\n",reg32);
+	printk(BIOS_DEBUG, "PCI_COMMAND %x.\n", reg32);
 	reg32 = pci_read_config32(dev, 0x20);
-	printk(BIOS_DEBUG, "PCI_BASE %x.\n",reg32);
+	printk(BIOS_DEBUG, "PCI_BASE %x.\n", reg32);
 	reg32 = pci_read_config32(dev, 0xFC);
-	printk(BIOS_DEBUG, "PCI_FD %x.\n",reg32);
+	printk(BIOS_DEBUG, "PCI_FD %x.\n", reg32);
 	printk(BIOS_DEBUG, "done.\n");
 }
 

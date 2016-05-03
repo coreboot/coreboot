@@ -27,15 +27,42 @@
 #include <soc/pattrs.h>
 #include <soc/ramstage.h>
 
-static void configure_mca(void);
+static void pre_mp_init(void)
+{
+	x86_mtrr_check();
 
-static struct mp_flight_record mp_steps[] = {
-	MP_FR_BLOCK_APS(mp_initialize_cpu, mp_initialize_cpu),
+	/* Enable the local cpu apics */
+	setup_lapic();
+}
+
+static int get_cpu_count(void)
+{
+	const struct pattrs *pattrs = pattrs_get();
+
+	return pattrs->num_cpus;
+}
+
+static void get_microcode_info(const void **microcode, int *parallel)
+{
+	const struct pattrs *pattrs = pattrs_get();
+
+	*microcode = pattrs->microcode_patch;
+	*parallel = 1;
+}
+
+static const struct mp_ops mp_ops = {
+	.pre_mp_init = pre_mp_init,
+	.get_cpu_count = get_cpu_count,
+	.get_microcode_info = get_microcode_info,
 };
 
-static int adjust_apic_id(int index, int apic_id)
+void broadwell_de_init_cpus(device_t dev)
 {
-	return index;
+	struct bus *cpu_bus = dev->link_list;
+
+	if (mp_init_with_smm(cpu_bus, &mp_ops)) {
+		printk(BIOS_ERR, "MP initialization failure.\n");
+	}
 }
 
 static void configure_mca(void)
@@ -61,29 +88,6 @@ static void configure_mca(void)
 	msr.lo = msr.hi = 0xffffffff;
 	for (i = 0; i < num_banks; i++)
 		wrmsr(MSR_IA32_MC0_STATUS + (i * 4), msr);
-}
-
-void broadwell_de_init_cpus(device_t dev)
-{
-	struct bus *cpu_bus = dev->link_list;
-	const struct pattrs *pattrs = pattrs_get();
-	struct mp_params mp_params;
-
-	x86_mtrr_check();
-
-	/* Enable the local cpu apics */
-	setup_lapic();
-
-	mp_params.num_cpus = pattrs->num_cpus,
-	mp_params.parallel_microcode_load = 1,
-	mp_params.adjust_apic_id = adjust_apic_id;
-	mp_params.flight_plan = &mp_steps[0];
-	mp_params.num_records = ARRAY_SIZE(mp_steps);
-	mp_params.microcode_pointer = pattrs->microcode_patch;
-
-	if (mp_init(cpu_bus, &mp_params)) {
-		printk(BIOS_ERR, "MP initialization failure.\n");
-	}
 }
 
 static void broadwell_de_core_init(device_t cpu)

@@ -33,40 +33,8 @@
 #include <soc/smm.h>
 #include <stdlib.h>
 
-static void smm_relocate(void);
-static void enable_smis(void);
-static void pre_smm_relocation(void);
-
-static struct mp_flight_record mp_steps[] = {
-	MP_FR_BLOCK_APS(pre_smm_relocation, pre_smm_relocation),
-	MP_FR_BLOCK_APS(smm_relocate, smm_relocate),
-	MP_FR_BLOCK_APS(mp_initialize_cpu, mp_initialize_cpu),
-	/* Wait for APs to finish initialization before proceeding. */
-	MP_FR_BLOCK_APS(NULL, enable_smis),
-};
-
-/* The APIC id space is sparse. Each id is separated by 2. */
-static int adjust_apic_id(int index, int apic_id)
-{
-	return 2 * index;
-}
-
-/* Package level MSRs */
-const struct reg_script package_msr_script[] = {
-	/* Set Package TDP to ~7W */
-	REG_MSR_WRITE(MSR_PKG_POWER_LIMIT, 0x3880fa),
-	REG_MSR_RMW(MSR_PP1_POWER_LIMIT, ~(0x7f << 17), 0),
-	REG_MSR_WRITE(MSR_PKG_TURBO_CFG1, 0x702),
-	REG_MSR_WRITE(MSR_CPU_TURBO_WKLD_CFG1, 0x200b),
-	REG_MSR_WRITE(MSR_CPU_TURBO_WKLD_CFG2, 0),
-	REG_MSR_WRITE(MSR_CPU_THERM_CFG1, 0x00000305),
-	REG_MSR_WRITE(MSR_CPU_THERM_CFG2, 0x0405500d),
-	REG_MSR_WRITE(MSR_CPU_THERM_SENS_CFG, 0x27),
-	REG_SCRIPT_END
-};
-
 /* Core level MSRs */
-const struct reg_script core_msr_script[] = {
+static const struct reg_script core_msr_script[] = {
 	/* Dynamic L2 shrink enable and threshold, clear SINGLE_PCTL bit 11 */
 	REG_MSR_RMW(MSR_PMG_CST_CONFIG_CONTROL, ~0x3f080f, 0xe0008),
 	REG_MSR_RMW(MSR_POWER_MISC,
@@ -76,50 +44,6 @@ const struct reg_script core_msr_script[] = {
 	REG_MSR_OR(MSR_POWER_MISC, 0x44),
 	REG_SCRIPT_END
 };
-
-void soc_init_cpus(device_t dev)
-{
-	struct bus *cpu_bus = dev->link_list;
-	const struct pattrs *pattrs = pattrs_get();
-	struct mp_params mp_params;
-	void *default_smm_area;
-	uint32_t bsmrwac;
-
-	printk(BIOS_SPEW, "%s/%s ( %s )\n",
-			__FILE__, __func__, dev_name(dev));
-
-	/* Set up MTRRs based on physical address size. */
-	x86_setup_mtrrs_with_detect();
-	x86_mtrr_check();
-
-	mp_params.num_cpus = pattrs->num_cpus,
-	mp_params.parallel_microcode_load = 1,
-	mp_params.adjust_apic_id = adjust_apic_id;
-	mp_params.flight_plan = &mp_steps[0];
-	mp_params.num_records = ARRAY_SIZE(mp_steps);
-	mp_params.microcode_pointer = pattrs->microcode_patch;
-
-	default_smm_area = backup_default_smm_area();
-
-	/*
-	 * Configure the BUNIT to allow dirty cache line evictions in non-SMM
-	 * mode for the lines that were dirtied while in SMM mode. Otherwise
-	 * the writes would be silently dropped.
-	 */
-	bsmrwac = iosf_bunit_read(BUNIT_SMRWAC) | SAI_IA_UNTRUSTED;
-	iosf_bunit_write(BUNIT_SMRWAC, bsmrwac);
-
-	/* Set package MSRs */
-	reg_script_run(package_msr_script);
-
-	/* Enable Turbo Mode on BSP and siblings of the BSP's building block. */
-	enable_turbo();
-
-	if (mp_init(cpu_bus, &mp_params))
-		printk(BIOS_ERR, "MP initialization failure.\n");
-
-	restore_default_smm_area(default_smm_area);
-}
 
 static void soc_core_init(device_t cpu)
 {
@@ -161,7 +85,7 @@ static const struct cpu_driver driver __cpu_driver = {
 
 
 /*
- * SMM loading and initialization.
+ * MP and SMM loading initialization.
  */
 
 struct smm_relocation_attrs {
@@ -172,32 +96,107 @@ struct smm_relocation_attrs {
 
 static struct smm_relocation_attrs relo_attrs;
 
-static void adjust_apic_id_map(struct smm_loader_params *smm_params)
-{
-	int i;
-	struct smm_runtime *runtime = smm_params->runtime;
+/* Package level MSRs */
+static const struct reg_script package_msr_script[] = {
+	/* Set Package TDP to ~7W */
+	REG_MSR_WRITE(MSR_PKG_POWER_LIMIT, 0x3880fa),
+	REG_MSR_RMW(MSR_PP1_POWER_LIMIT, ~(0x7f << 17), 0),
+	REG_MSR_WRITE(MSR_PKG_TURBO_CFG1, 0x702),
+	REG_MSR_WRITE(MSR_CPU_TURBO_WKLD_CFG1, 0x200b),
+	REG_MSR_WRITE(MSR_CPU_TURBO_WKLD_CFG2, 0),
+	REG_MSR_WRITE(MSR_CPU_THERM_CFG1, 0x00000305),
+	REG_MSR_WRITE(MSR_CPU_THERM_CFG2, 0x0405500d),
+	REG_MSR_WRITE(MSR_CPU_THERM_SENS_CFG, 0x27),
+	REG_SCRIPT_END
+};
 
-	for (i = 0; i < CONFIG_MAX_CPUS; i++)
-		runtime->apic_id_to_cpu[i] = mp_get_apic_id(i);
+static void pre_mp_init(void)
+{
+	uint32_t bsmrwac;
+
+	/* Set up MTRRs based on physical address size. */
+	x86_setup_mtrrs_with_detect();
+	x86_mtrr_check();
+
+	/*
+	 * Configure the BUNIT to allow dirty cache line evictions in non-SMM
+	 * mode for the lines that were dirtied while in SMM mode. Otherwise
+	 * the writes would be silently dropped.
+	 */
+	bsmrwac = iosf_bunit_read(BUNIT_SMRWAC) | SAI_IA_UNTRUSTED;
+	iosf_bunit_write(BUNIT_SMRWAC, bsmrwac);
+
+	/* Set package MSRs */
+	reg_script_run(package_msr_script);
+
+	/* Enable Turbo Mode on BSP and siblings of the BSP's building block. */
+	enable_turbo();
 }
 
-static void asmlinkage cpu_smm_do_relocation(void *arg)
+static int get_cpu_count(void)
+{
+	const struct pattrs *pattrs = pattrs_get();
+
+	return pattrs->num_cpus;
+}
+
+static void get_smm_info(uintptr_t *perm_smbase, size_t *perm_smsize,
+				size_t *smm_save_state_size)
+{
+	void *smm_base;
+	size_t smm_size;
+
+	/* All range registers are aligned to 4KiB */
+	const uint32_t rmask = ~((1 << 12) - 1);
+
+	/* Initialize global tracking state. */
+	smm_region(&smm_base, &smm_size);
+	relo_attrs.smbase = (uint32_t)smm_base;
+	relo_attrs.smrr_base = relo_attrs.smbase | MTRR_TYPE_WRBACK;
+	relo_attrs.smrr_mask = ~(smm_size - 1) & rmask;
+	relo_attrs.smrr_mask |= MTRR_PHYS_MASK_VALID;
+
+	*perm_smbase = relo_attrs.smbase;
+	*perm_smsize = smm_size - CONFIG_SMM_RESERVED_SIZE;
+	*smm_save_state_size = sizeof(em64t100_smm_state_save_area_t);
+}
+
+/* The APIC id space on Bay Trail is sparse. Each id is separated by 2. */
+static int adjust_apic_id(int index, int apic_id)
+{
+	return 2 * index;
+}
+
+static void get_microcode_info(const void **microcode, int *parallel)
+{
+	const struct pattrs *pattrs = pattrs_get();
+
+	*microcode = pattrs->microcode_patch;
+	*parallel = 1;
+}
+
+static void per_cpu_smm_trigger(void)
+{
+	const struct pattrs *pattrs = pattrs_get();
+	msr_t msr_value;
+
+	/* Need to make sure that all cores have microcode loaded. */
+	msr_value = rdmsr(MSR_IA32_BIOS_SIGN_ID);
+	if (msr_value.hi == 0)
+		intel_microcode_load_unlocked(pattrs->microcode_patch);
+
+	/* Relocate SMM space. */
+	smm_initiate_relocation();
+
+	/* Load microcode after SMM relocation. */
+	intel_microcode_load_unlocked(pattrs->microcode_patch);
+}
+
+static void relocation_handler(int cpu, uintptr_t curr_smbase,
+				uintptr_t staggered_smbase)
 {
 	msr_t smrr;
 	em64t100_smm_state_save_area_t *smm_state;
-	const struct smm_module_params *p;
-	const struct smm_runtime *runtime;
-	int cpu;
-
-	p = arg;
-	runtime = p->runtime;
-	cpu = p->cpu;
-
-	if (cpu >= CONFIG_MAX_CPUS) {
-		printk(BIOS_CRIT,
-		       "Invalid CPU number assigned in SMM stub: %d\n", cpu);
-		return;
-	}
 
 	/* Set up SMRR. */
 	smrr.lo = relo_attrs.smrr_base;
@@ -207,130 +206,30 @@ static void asmlinkage cpu_smm_do_relocation(void *arg)
 	smrr.hi = 0;
 	wrmsr(SMRR_PHYS_MASK, smrr);
 
-	/*
-	 * The relocated handler runs with all CPUs concurrently. Therefore
-	 * stagger the entry points adjusting SMBASE downwards by save state
-	 * size * CPU num.
-	 */
-	smm_state = (void *)(SMM_EM64T100_SAVE_STATE_OFFSET + runtime->smbase);
-	smm_state->smbase = relo_attrs.smbase - cpu * runtime->save_state_size;
-	printk(BIOS_DEBUG, "New SMBASE 0x%08x\n", smm_state->smbase);
+	smm_state = (void *)(SMM_EM64T100_SAVE_STATE_OFFSET + curr_smbase);
+	smm_state->smbase = staggered_smbase;
 }
 
-static int install_relocation_handler(int num_cpus)
+static const struct mp_ops mp_ops = {
+	.pre_mp_init = pre_mp_init,
+	.get_cpu_count = get_cpu_count,
+	.get_smm_info = get_smm_info,
+	.get_microcode_info = get_microcode_info,
+	.adjust_cpu_apic_entry = adjust_apic_id,
+	.pre_mp_smm_init = southcluster_smm_clear_state,
+	.per_cpu_smm_trigger = per_cpu_smm_trigger,
+	.relocation_handler = relocation_handler,
+	.post_mp_init = southcluster_smm_enable_smi,
+};
+
+void soc_init_cpus(device_t dev)
 {
-	const int save_state_size = sizeof(em64t100_smm_state_save_area_t);
+	struct bus *cpu_bus = dev->link_list;
 
-	struct smm_loader_params smm_params = {
-		.per_cpu_stack_size = save_state_size,
-		.num_concurrent_stacks = num_cpus,
-		.per_cpu_save_state_size = save_state_size,
-		.num_concurrent_save_states = 1,
-		.handler = (smm_handler_t)&cpu_smm_do_relocation,
-	};
+	printk(BIOS_SPEW, "%s/%s ( %s )\n",
+			__FILE__, __func__, dev_name(dev));
 
-	if (smm_setup_relocation_handler(&smm_params))
-		return -1;
-
-	adjust_apic_id_map(&smm_params);
-
-	return 0;
-}
-
-static int install_permanent_handler(int num_cpus)
-{
-	/*
-	 * There are num_cpus concurrent stacks and num_cpus concurrent save
-	 * state areas. Lastly, set the stack size to the save state size.
-	 */
-	int save_state_size = sizeof(em64t100_smm_state_save_area_t);
-	struct smm_loader_params smm_params = {
-		.per_cpu_stack_size = save_state_size,
-		.num_concurrent_stacks = num_cpus,
-		.per_cpu_save_state_size = save_state_size,
-		.num_concurrent_save_states = num_cpus,
-	};
-	void *smm_base;
-	size_t smm_size;
-	int tseg_size;
-
-	printk(BIOS_DEBUG, "Installing SMM handler to 0x%08x\n",
-	       relo_attrs.smbase);
-
-	smm_region(&smm_base, &smm_size);
-	tseg_size = smm_size - CONFIG_SMM_RESERVED_SIZE;
-	if (smm_load_module((void *)relo_attrs.smbase, tseg_size, &smm_params))
-		return -1;
-
-	adjust_apic_id_map(&smm_params);
-
-	return 0;
-}
-
-static int smm_load_handlers(void)
-{
-	/* All range registers are aligned to 4KiB */
-	const uint32_t rmask = ~((1 << 12) - 1);
-	const struct pattrs *pattrs = pattrs_get();
-	void *smm_base;
-	size_t smm_size;
-
-	/* Initialize global tracking state. */
-	smm_region(&smm_base, &smm_size);
-	relo_attrs.smbase = (uint32_t)smm_base;
-	relo_attrs.smrr_base = relo_attrs.smbase | MTRR_TYPE_WRBACK;
-	relo_attrs.smrr_mask = ~(smm_size - 1) & rmask;
-	relo_attrs.smrr_mask |= MTRR_PHYS_MASK_VALID;
-
-	/* Install handlers. */
-	if (install_relocation_handler(pattrs->num_cpus) < 0) {
-		printk(BIOS_ERR, "Unable to install SMM relocation handler.\n");
-		return -1;
+	if (mp_init_with_smm(cpu_bus, &mp_ops)) {
+		printk(BIOS_ERR, "MP initialization failure.\n");
 	}
-
-	if (install_permanent_handler(pattrs->num_cpus) < 0) {
-		printk(BIOS_ERR, "Unable to install SMM permanent handler.\n");
-		return -1;
-	}
-
-	/* Ensure the SMM handlers hit DRAM before performing first SMI. */
-	wbinvd();
-
-	return 0;
-}
-
-static void pre_smm_relocation(void)
-{
-	const struct pattrs *pattrs = pattrs_get();
-	msr_t msr_value;
-
-	/* Need to make sure that all cores have microcode loaded. */
-	msr_value = rdmsr(MSR_IA32_BIOS_SIGN_ID);
-	if (msr_value.hi == 0)
-		intel_microcode_load_unlocked(pattrs->microcode_patch);
-}
-
-static void smm_relocate(void)
-{
-	const struct pattrs *pattrs = pattrs_get();
-
-	/* Load relocation and permanent handler. */
-	if (boot_cpu()) {
-		if (smm_load_handlers() < 0) {
-			printk(BIOS_ERR, "Error loading SMM handlers.\n");
-			return;
-		}
-		southcluster_smm_clear_state();
-	}
-
-	/* Relocate SMM space. */
-	smm_initiate_relocation();
-
-	/* Load microcode after SMM relocation. */
-	intel_microcode_load_unlocked(pattrs->microcode_patch);
-}
-
-static void enable_smis(void)
-{
-	southcluster_smm_enable_smi();
 }

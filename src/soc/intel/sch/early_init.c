@@ -14,7 +14,6 @@
  */
 
 #include "sch.h"
-#include <southbridge/intel/sch/sch.h>
 
 #if 0
 static void sch_set_mtrr(void)

@@ -29,21 +29,23 @@ static void usb_ehci_init(struct device *dev)
 	reg32 = pci_read_config32(dev, PCI_COMMAND);
 	reg32 |= PCI_COMMAND_MASTER;
 	pci_write_config32(dev, PCI_COMMAND, reg32);
- 	/*Disable clock gating
+	/* Disable clock gating */
+#if 0
 	reg32 = pci_read_config32(dev, 0xc0);
 	reg32 |= (1 << 2);
-	pci_write_config32(dev, 0xc0, reg32);*/
-	//pci_write_config32(dev, 0x3c, 0x17);
+	pci_write_config32(dev, 0xc0, reg32);
+#endif
+	// pci_write_config32(dev, 0x3c, 0x17);
 	reg32 = pci_read_config32(dev, 0xFC);
 	reg32 |= (1 << 28);
 	pci_write_config32(dev, 0xFC, reg32);
 
 	reg32 = pci_read_config32(dev, 0x4);
-	printk(BIOS_DEBUG, "PCI_COMMAND %x.\n",reg32);
+	printk(BIOS_DEBUG, "PCI_COMMAND %x.\n", reg32);
 	reg32 = pci_read_config32(dev, 0x20);
-	printk(BIOS_DEBUG, "PCI_BASE %x.\n",reg32);
+	printk(BIOS_DEBUG, "PCI_BASE %x.\n", reg32);
 	reg32 = pci_read_config32(dev, 0xC0);
-	printk(BIOS_DEBUG, "PCI_FD %x.\n",reg32);
+	printk(BIOS_DEBUG, "PCI_FD %x.\n", reg32);
 	printk(BIOS_DEBUG, "done.\n");
 }
 

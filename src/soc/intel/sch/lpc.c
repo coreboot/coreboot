@@ -41,7 +41,7 @@
 #define PIRQG_ROUT	0x66
 #define PIRQH_ROUT	0x67
 
-typedef struct southbridge_intel_sch_config config_t;
+typedef struct soc_intel_sch_config config_t;
 
 /* PIRQ[n]_ROUT[3:0] - PIRQ Routing Control
  * 0x00 - 0000 = Reserved

@@ -332,6 +332,8 @@ void platform_fsp_silicon_init_params_cb(struct FSPS_UPD *silupd)
 
 	silconfig->IshEnable = cfg->integrated_sensor_hub_enable;
 
+	silconfig->LPSS_S0ixEnable = cfg->lpss_s0ix_enable;
+
 	/* Disable setting of EISS bit in FSP. */
 	silconfig->SpiEiss = 0;
 }

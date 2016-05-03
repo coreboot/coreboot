@@ -101,6 +101,9 @@ struct soc_intel_apollolake_config {
 	uint8_t gpe0_dw1; /* GPE0_63_32 STS/EN */
 	uint8_t gpe0_dw2; /* GPE0_95_64 STS/EN */
 	uint8_t gpe0_dw3; /* GPE0_127_96 STS/EN */
+
+	/* Configure LPSS S0ix Enable */
+	uint8_t lpss_s0ix_enable;
 };
 
 #endif	/* _SOC_APOLLOLAKE_CHIP_H_ */

@@ -22,9 +22,9 @@
 #include <cpu/x86/cache.h>
 #include <halt.h>
 #include "drivers/pc80/pc/i8254.c"
-#include <northbridge/dmp/vortex86ex/northbridge.h>
-#include <southbridge/dmp/vortex86ex/southbridge.h>
-#include "northbridge/dmp/vortex86ex/raminit.c"
+#include <soc/dmp/vortex86ex/northbridge.h>
+#include <soc/dmp/vortex86ex/southbridge.h>
+#include "soc/dmp/vortex86ex/raminit.c"
 #include <cpu/dmp/dmp_post_code.h>
 
 #define DMP_CPUID_SX      0x31504d44

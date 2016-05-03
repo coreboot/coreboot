@@ -13,10 +13,10 @@
  * GNU General Public License for more details.
  */
 
-#ifndef _SOUTHBRIDGE_DMP_VORTEX86EX
-#define _SOUTHBRIDGE_DMP_VORTEX86EX
+#ifndef _SOC_DMP_VORTEX86EX
+#define _SOC_DMP_VORTEX86EX
 
-struct southbridge_dmp_vortex86ex_config {
+struct soc_dmp_vortex86ex_config {
 	/* PCI function enables */
 	/* i.e. so that pci scan bus will find them. */
 	/* I am putting in IDE as an example but obviously this needs
@@ -31,4 +31,4 @@ struct southbridge_dmp_vortex86ex_config {
 	int enable_nvram;
 };
 
-#endif				/* _SOUTHBRIDGE_DMP_VORTEX86EX */
+#endif				/* _SOC_DMP_VORTEX86EX */

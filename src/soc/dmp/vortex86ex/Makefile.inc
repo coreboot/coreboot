@@ -13,7 +13,10 @@
 ## GNU General Public License for more details.
 ##
 
-ifeq ($(CONFIG_SOUTHBRIDGE_DMP_VORTEX86EX),y)
+ifeq ($(CONFIG_SOC_DMP_VORTEX86EX),y)
+
+ramstage-y += northbridge.c
+ramstage-y += xgi_oprom.c
 
 ramstage-y += southbridge.c
 ramstage-y += hard_reset.c

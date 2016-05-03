@@ -346,13 +346,6 @@ static void configure_mca(void)
 		wrmsr(IA32_MC0_STATUS + (i * 4), msr);
 }
 
-static void bsp_init_before_ap_bringup(struct bus *cpu_bus)
-{
-	/* Setup MTRRs based on physical address size. */
-	x86_setup_mtrrs_with_detect();
-	x86_mtrr_check();
-}
-
 /* All CPUs including BSP will run the following function. */
 static void cpu_core_init(device_t cpu)
 {
@@ -382,48 +375,6 @@ static void cpu_core_init(device_t cpu)
 	enable_turbo();
 }
 
-/* MP initialization support. */
-static const void *microcode_patch;
-int ht_disabled;
-
-static int adjust_apic_id_ht_disabled(int index, int apic_id)
-{
-	return 2 * index;
-}
-
-static void relocate_and_load_microcode(void)
-{
-	/* Relocate the SMM handler. */
-	smm_relocate();
-
-	/* After SMM relocation a 2nd microcode load is required. */
-	intel_microcode_load_unlocked(microcode_patch);
-}
-
-static void enable_smis(void)
-{
-	/*
-	 * Now that all APs have been relocated as well as the BSP let SMIs
-	 * start flowing.
-	 */
-	southbridge_smm_enable_smi();
-
-	/* Lock down the SMRAM space. */
-#if IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)
-	smm_lock();
-#endif
-}
-
-static struct mp_flight_record mp_steps[] = {
-	MP_FR_NOBLOCK_APS(relocate_and_load_microcode,
-			  relocate_and_load_microcode),
-#if IS_ENABLED(CONFIG_SMP)
-	MP_FR_BLOCK_APS(mp_initialize_cpu, mp_initialize_cpu),
-	/* Wait for APs to finish initialization before proceeding. */
-#endif
-	MP_FR_BLOCK_APS(NULL, enable_smis),
-};
-
 static struct device_operations cpu_dev_ops = {
 	.init = cpu_core_init,
 };
@@ -439,14 +390,22 @@ static const struct cpu_driver driver __cpu_driver = {
 	.id_table = cpu_table,
 };
 
-void soc_init_cpus(device_t dev)
+/* MP initialization support. */
+static const void *microcode_patch;
+static int ht_disabled;
+
+static void pre_mp_init(void)
 {
-	struct bus *cpu_bus = dev->link_list;
+	/* Setup MTRRs based on physical address size. */
+	x86_setup_mtrrs_with_detect();
+	x86_mtrr_check();
+}
+
+static int get_cpu_count(void)
+{
+	msr_t msr;
 	int num_threads;
 	int num_cores;
-	msr_t msr;
-	struct mp_params mp_params;
-	void *smm_save_area;
 
 	msr = rdmsr(CORE_THREAD_COUNT_MSR);
 	num_threads = (msr.lo >> 0) & 0xffff;
@@ -456,45 +415,69 @@ void soc_init_cpus(device_t dev)
 
 	ht_disabled = num_threads == num_cores;
 
-	/*
-	 * Perform any necessary BSP initialization before APs are brought up.
-	 * This call also allows the BSP to prepare for any secondary effects
-	 * from calling cpu_initialize() such as smm_init().
-	 */
-	bsp_init_before_ap_bringup(cpu_bus);
+	return num_threads;
+}
 
+static void get_microcode_info(const void **microcode, int *parallel)
+{
 	microcode_patch = intel_microcode_find();
+	*microcode = microcode_patch;
+	*parallel = 1;
+}
 
-	/* Save default SMM area before relocation occurs. */
-	if (IS_ENABLED(CONFIG_HAVE_SMI_HANDLER))
-		smm_save_area = backup_default_smm_area();
-	else
-		smm_save_area = NULL;
-
-	mp_params.num_cpus = num_threads;
-	mp_params.parallel_microcode_load = 1;
+static int adjust_apic_id(int index, int apic_id)
+{
 	if (ht_disabled)
-		mp_params.adjust_apic_id = adjust_apic_id_ht_disabled;
+		return 2 * index;
 	else
-		mp_params.adjust_apic_id = NULL;
-	mp_params.flight_plan = &mp_steps[0];
-	mp_params.num_records = ARRAY_SIZE(mp_steps);
-	mp_params.microcode_pointer = microcode_patch;
+		return index;
+}
 
-	/* Load relocation and permeanent handlers. Then initiate relocation. */
-	if (smm_initialize())
-		printk(BIOS_CRIT, "SMM Initialiazation failed...\n");
+static void per_cpu_smm_trigger(void)
+{
+	/* Relocate the SMM handler. */
+	smm_relocate();
 
-	if (IS_ENABLED(CONFIG_SMP))
-		if (mp_init(cpu_bus, &mp_params))
-			printk(BIOS_ERR, "MP initialization failure.\n");
+	/* After SMM relocation a 2nd microcode load is required. */
+	intel_microcode_load_unlocked(microcode_patch);
+}
 
+static void post_mp_init(void)
+{
 	/* Set Max Ratio */
 	set_max_ratio();
 
-	/* Restore the default SMM region. */
-	if (IS_ENABLED(CONFIG_HAVE_SMI_HANDLER))
-		restore_default_smm_area(smm_save_area);
+	/*
+	 * Now that all APs have been relocated as well as the BSP let SMIs
+	 * start flowing.
+	 */
+	southbridge_smm_enable_smi();
+
+	/* Lock down the SMRAM space. */
+#if IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)
+	smm_lock();
+#endif
+}
+
+static const struct mp_ops mp_ops = {
+	.pre_mp_init = pre_mp_init,
+	.get_cpu_count = get_cpu_count,
+	.get_smm_info = smm_info,
+	.get_microcode_info = get_microcode_info,
+	.adjust_cpu_apic_entry = adjust_apic_id,
+	.pre_mp_smm_init = smm_initialize,
+	.per_cpu_smm_trigger = per_cpu_smm_trigger,
+	.relocation_handler = smm_relocation_handler,
+	.post_mp_init = post_mp_init,
+};
+
+void soc_init_cpus(device_t dev)
+{
+	struct bus *cpu_bus = dev->link_list;
+
+	if (mp_init_with_smm(cpu_bus, &mp_ops)) {
+		printk(BIOS_ERR, "MP initialization failure.\n");
+	}
 }
 
 int soc_skip_ucode_update(u32 current_patch_id, u32 new_patch_id)

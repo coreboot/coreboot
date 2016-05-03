@@ -53,7 +53,11 @@ void mainboard_smi_gpi_handler(const struct gpi_status *sts);
 
 
 #if IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)
-int smm_initialize(void);
+void smm_relocation_handler(int cpu, uintptr_t curr_smbase,
+				uintptr_t staggered_smbase);
+void smm_info(uintptr_t *perm_smbase, size_t *perm_smsize,
+		size_t *smm_save_state_size);
+void smm_initialize(void);
 void smm_relocate(void);
 
 /* These helpers are for performing SMM relocation. */
@@ -68,10 +72,11 @@ void southbridge_clear_smi_status(void);
 void southbridge_smm_clear_state(void);
 void southbridge_smm_enable_smi(void);
 #else	/* CONFIG_HAVE_SMI_HANDLER */
-static inline int smm_initialize(void)
-{
-	return 0;
-}
+static inline void smm_relocation_handler(int cpu, uintptr_t curr_smbase,
+				uintptr_t staggered_smbase) {}
+static inline void smm_info(uintptr_t *perm_smbase, size_t *perm_smsize,
+		size_t *smm_save_state_size) {}
+static inline void smm_initialize(void) {}
 
 static inline void smm_relocate(void) {}
 static inline void southbridge_trigger_smi(void) {}

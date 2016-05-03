@@ -647,7 +647,6 @@ cbfs-files=$(cbfs-files-fixed) $(cbfs-files-aligned) $(cbfs-files-regular)
 prebuilt-files = $(foreach file,$(cbfs-files), $(call extract_nth,1,$(file)))
 prebuild-files = $(foreach file,$(cbfs-files), $(call cbfs-add-cmd,$(file),$(CONFIG_UPDATE_IMAGE)))
 
-ifneq ($(CONFIG_UPDATE_IMAGE),y)
 ifeq ($(CONFIG_FMDFILE),)
 # For a description of the flash layout described by these variables, check
 # the $(DEFAULT_FLASHMAP) .fmd files.
@@ -707,6 +706,7 @@ $(obj)/fmap.fmap: $(obj)/fmap.fmd $(FMAPTOOL)
 	echo "    FMAP       $(FMAPTOOL) -h $(obj)/fmap_config.h $< $@"
 	$(FMAPTOOL) -h $(obj)/fmap_config.h -R $(obj)/fmap.desc $< $@
 
+ifneq ($(CONFIG_UPDATE_IMAGE),y)
 $(obj)/coreboot.pre: $(objcbfs)/bootblock.bin $$(prebuilt-files) $(CBFSTOOL) $$(cpu_ucode_cbfs_file) $(obj)/fmap.fmap $(obj)/fmap.desc
 	$(CBFSTOOL) $@.tmp create -M $(obj)/fmap.fmap -r $(shell cat $(obj)/fmap.desc)
 ifeq ($(CONFIG_ARCH_X86),y)

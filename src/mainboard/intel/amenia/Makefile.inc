@@ -1,3 +1,5 @@
+bootblock-y += bootblock.c
+
 romstage-$(CONFIG_CHROMEOS) += chromeos.c
 
 ramstage-y += mainboard.c

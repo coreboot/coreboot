@@ -56,10 +56,23 @@ static void read_cpu_topology(unsigned int *num_phys, unsigned int *num_virt)
  * creates the MTRR solution that the APs will use. Otherwise APs will try to
  * apply the incomplete solution as the BSP is calculating it.
  */
-static void bsp_pre_mp_setup(void)
+static void pre_mp_init(void)
 {
 	x86_setup_mtrrs_with_detect();
 	x86_mtrr_check();
+}
+
+/* Find CPU topology */
+static int get_cpu_count(void)
+{
+	unsigned int num_virt_cores, num_phys_cores;
+
+	read_cpu_topology(&num_phys_cores, &num_virt_cores);
+
+	printk(BIOS_DEBUG, "Detected %u core, %u thread CPU.\n",
+	       num_phys_cores, num_virt_cores);
+
+	return num_virt_cores;
 }
 
 /*
@@ -69,34 +82,14 @@ static void bsp_pre_mp_setup(void)
  * the microcode on all cores before releasing them from reset. That means that
  * the BSP and all APs will come up with the same microcode revision.
  */
-static struct mp_flight_record flight_plan[] = {
-	/* NOTE: MTRR solution must be calculated before firing up the APs */
-	MP_FR_NOBLOCK_APS(mp_initialize_cpu, mp_initialize_cpu),
+static const struct mp_ops mp_ops = {
+	.pre_mp_init = pre_mp_init,
+	.get_cpu_count = get_cpu_count,
 };
 
 void apollolake_init_cpus(device_t dev)
 {
-	unsigned int num_virt_cores, num_phys_cores;
-
-	/* Pre-flight check */
-	bsp_pre_mp_setup();
-
-	/* Find CPU topology */
-	read_cpu_topology(&num_phys_cores, &num_virt_cores);
-	printk(BIOS_DEBUG, "Detected %u core, %u thread CPU.\n",
-	       num_phys_cores, num_virt_cores);
-
-	/* Systems check */
-	struct mp_params flight_data_recorder = {
-		.num_cpus = num_virt_cores,
-		.parallel_microcode_load = 0,
-		.microcode_pointer = NULL,
-		.adjust_apic_id = NULL,
-		.flight_plan = flight_plan,
-		.num_records = ARRAY_SIZE(flight_plan),
-	};
-
 	/* Clear for take-off */
-	if (mp_init(dev->link_list, &flight_data_recorder) < 0)
+	if (mp_init_with_smm(dev->link_list, &mp_ops) < 0)
 		printk(BIOS_ERR, "MP initialization failure.\n");
 }

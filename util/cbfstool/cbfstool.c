@@ -106,6 +106,21 @@ static bool region_is_modern_cbfs(const char *region)
 
 /*
  * Converts between offsets from the start of the specified image region and
+ * "top-aligned" offsets from the top of the entire boot media. See comment
+ * below for convert_to_from_top_aligned() about forming addresses.
+ */
+static unsigned convert_to_from_absolute_top_aligned(
+		const struct buffer *region, unsigned offset)
+{
+	assert(region);
+
+	size_t image_size = partitioned_file_total_size(param.image_file);
+
+	return image_size - region->offset - offset;
+}
+
+/*
+ * Converts between offsets from the start of the specified image region and
  * "top-aligned" offsets from the top of the image region. Works in either
  * direction: pass in one type of offset and receive the other type.
  * N.B. A top-aligned offset is always a positive number, and should not be
@@ -123,8 +138,7 @@ static unsigned convert_to_from_top_aligned(const struct buffer *region,
 		return region->size - offset;
 	}
 
-	size_t image_size = partitioned_file_total_size(param.image_file);
-	return image_size - region->offset - offset;
+	return convert_to_from_absolute_top_aligned(region, offset);
 }
 
 static int do_cbfs_locate(int32_t *cbfs_addr, size_t metadata_size)
@@ -462,8 +476,8 @@ static int cbfstool_convert_fsp(struct buffer *buffer,
 
 	/* Ensure the address is a memory mapped one. */
 	if (!IS_TOP_ALIGNED_ADDRESS(address))
-		address = -convert_to_from_top_aligned(param.image_region,
-								address);
+		address = -convert_to_from_absolute_top_aligned(
+				param.image_region, address);
 
 	/* Create a copy of the buffer to attempt relocation. */
 	if (buffer_create(&fsp, buffer_size(buffer), "fsp"))
@@ -498,9 +512,13 @@ static int cbfstool_convert_mkstage(struct buffer *buffer, uint32_t *offset,
 			return 1;
 		}
 
-		/* Pass in a top aligned address. */
-		address = -convert_to_from_top_aligned(param.image_region,
-								address);
+		/*
+		 * Ensure the address is a memory mapped one. This assumes
+		 * x86 semantics about th boot media being directly mapped
+		 * below 4GiB in the CPU address space.
+		 **/
+		address = -convert_to_from_absolute_top_aligned(
+				param.image_region, address);
 		*offset = address;
 
 		ret = parse_elf_to_xip_stage(buffer, &output, offset,

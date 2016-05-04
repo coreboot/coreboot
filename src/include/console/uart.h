@@ -35,6 +35,10 @@ unsigned int default_baudrate(void);
 unsigned int uart_baudrate_divisor(unsigned int baudrate,
 	unsigned int refclk, unsigned int oversample);
 
+/* Returns the oversample divisor multiplied by any other divisors that act
+ * on the input clock
+ */
+unsigned int uart_input_clock_divider(void);
 
 void uart_init(int idx);
 void uart_tx_byte(int idx, unsigned char data);

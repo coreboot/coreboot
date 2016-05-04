@@ -42,3 +42,20 @@ unsigned int uart_baudrate_divisor(unsigned int baudrate,
 {
 	return (1 + (2 * refclk) / (baudrate * oversample)) / 2;
 }
+
+#if !IS_ENABLED(CONFIG_UART_OVERRIDE_INPUT_CLOCK_DIVIDER)
+unsigned int uart_input_clock_divider(void)
+{
+	/* Specify the default oversample rate for the UART.
+	 *
+	 * UARTs oversample the receive data.  The UART's input clock first
+	 * enters the baud-rate divider to generate the oversample clock.  Then
+	 * the UART typically divides the result by 16.  The asynchronous
+	 * receive data is synchronized with the oversample clock and when a
+	 * start bit is detected the UART delays half a bit time using the
+	 * oversample clock.  Samples are then taken to verify the start bit and
+	 * if present, samples are taken for the rest of the frame.
+	 */
+	return 16;
+}
+#endif

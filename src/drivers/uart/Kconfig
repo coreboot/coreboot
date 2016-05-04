@@ -13,6 +13,13 @@ config DRIVERS_UART_8250IO
 config NO_UART_ON_SUPERIO
 	def_bool n
 
+config UART_OVERRIDE_INPUT_CLOCK_DIVIDER
+	boolean
+	default n
+	help
+	  Set to "y" when the platform overrides the uart_input_clock_divider
+	  routine.
+
 config DRIVERS_UART_8250MEM
 	bool
 	default n

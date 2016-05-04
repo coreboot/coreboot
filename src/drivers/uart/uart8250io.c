@@ -30,8 +30,12 @@
 /* Nominal values only, good for the range of choices Kconfig offers for
  * set of standard baudrates.
  */
-#define BAUDRATE_REFCLK		(115200)
-#define BAUDRATE_OVERSAMPLE	(1)
+
+/* Multiply the maximim baud-rate by the default oversample rate to compute
+ * the default input clock to the UART.  The uart_baudrate_divisor divides
+ * by the oversample clock to determine the final baud-rate.
+ */
+#define BAUDRATE_REFCLK		(115200 * 16)
 
 /* Expected character delay at 1200bps is 9ms for a working UART
  * and no flow-control. Assume UART as stuck if shift register
@@ -112,7 +116,7 @@ void uart_init(int idx)
 {
 	unsigned int div;
 	div = uart_baudrate_divisor(default_baudrate(), BAUDRATE_REFCLK,
-		BAUDRATE_OVERSAMPLE);
+		uart_input_clock_divider());
 	uart8250_init(uart_platform_base(idx), div);
 }
 

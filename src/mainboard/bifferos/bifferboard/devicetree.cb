@@ -1,8 +1,6 @@
-chip northbridge/rdc/r8610
+chip soc/rdc/r8610
 	device domain 0 on
 		device pci 0.0 on end
-		chip southbridge/rdc/r8610		# Southbridge
-			device pci 7.0 on end			# SB
-		end
+		device pci 7.0 on end			# SB
 	end
 end

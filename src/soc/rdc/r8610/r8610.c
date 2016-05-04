@@ -45,7 +45,9 @@ static void r8610_init(struct device *dev)
 
 	/* Set serial base */
 	pci_write_config32(dev, 0x54, 0x3f8);
-	/* serial IRQ disable, LPC disable, COM2 goes to LPC, internal UART for COM1 */
+	/* serial IRQ disable, LPC disable,
+	 * COM2 goes to LPC, internal UART for COM1
+	 */
 	pci_write_config32(dev, 0x50, 0x84101012);
 
 	/* Enable internal Port92, enable chipselect for flash */
@@ -55,7 +57,9 @@ static void r8610_init(struct device *dev)
 	/* buffer strength SB pins */
 	pci_write_config32(dev, 0x5c, 0x2315);
 
-	/*  EHCI 14, OHCI 15, MAC1 disable, MAC0 10, INTD 9, INTC 9, INTB 12, INTA INT10 */
+	/* EHCI 14, OHCI 15, MAC1 disable, MAC0 10, INTD 9,
+	 * INTC 9, INTB 12, INTA INT10
+	 */
 	pci_write_config32(dev, 0x58, 0xdf0311b3);
 
 	/* USB PHY control */

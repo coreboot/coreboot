@@ -88,9 +88,11 @@ static int rdc_get_smbios_data16(int handle, unsigned long *current)
 	return len;
 }
 
-static int rdc_get_smbios_data(device_t dev, int *handle, unsigned long *current)
+static int rdc_get_smbios_data(device_t dev, int *handle,
+		unsigned long *current)
 {
 	int len;
+
 	len = rdc_get_smbios_data16(*handle, current);
 	*handle += 1;
 	return len;
@@ -110,8 +112,8 @@ static struct device_operations pci_domain_ops = {
 
 static void enable_dev(struct device *dev)
 {
-	/* Set the operations if it is a special bus type */
 	if (dev->path.type == DEVICE_PATH_DOMAIN) {
+		/* Set the operations if it is a special bus type */
 		dev->ops = &pci_domain_ops;
 	}
 }

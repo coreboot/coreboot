@@ -60,6 +60,13 @@ config TTYS0_LCS
 	depends on ENABLE_BUILTIN_HSUART1
 	default 3
 
+# Console: PCI UART bus 0 << 20, device 20 << 15, function 5 << 12
+#          Valid bit, PCI UART in use: 1 << 31
+config UART_PCI_ADDR
+	hex
+	depends on ENABLE_BUILTIN_HSUART1
+	default 0x800a5000
+
 #####
 # Debug support
 #     The following options provide debug support for the Quark coreboot

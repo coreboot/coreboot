@@ -198,7 +198,7 @@ static enum cb_err get_cmos_value(unsigned long bit, unsigned long length,
 		uchar >>= byte_bit;	/* shift the bits to byte align */
 		/* clear unspecified bits */
 		ret[0] = uchar & ((1 << length) - 1);
-	} else {	/* more that one byte so transfer the whole bytes */
+	} else {	/* more than one byte so transfer the whole bytes */
 		for (i = 0; length; i++, length -= 8, byte++) {
 			/* load the byte */
 			ret[i] = cmos_read(byte);
@@ -284,11 +284,12 @@ static enum cb_err set_cmos_value(unsigned long bit, unsigned long length,
 		if (byte_bit || length % 8)
 			return CB_ERR_ARG;
 
-		for (i = 0; length; i++, length -= 8, byte++)
+		for (i = 0; length; i++, length -= 8, byte++) {
 			cmos_write(ret[i], byte);
 			if (byte >= LB_CKS_RANGE_START &&
 			    byte <= LB_CKS_RANGE_END)
 				chksum_update_needed = 1;
+		}
 	}
 
 	if (chksum_update_needed) {

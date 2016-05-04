@@ -119,6 +119,8 @@ void lb_add_serial(struct lb_serial *new_serial, void *data)
 	serial->baseaddr = new_serial->baseaddr;
 	serial->baud = new_serial->baud;
 	serial->regwidth = new_serial->regwidth;
+	serial->input_hertz = new_serial->input_hertz;
+	serial->uart_pci_addr = new_serial->uart_pci_addr;
 }
 
 void lb_add_console(uint16_t consoletype, void *data)

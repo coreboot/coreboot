@@ -156,6 +156,11 @@ void uart_fill_lb(void *data)
 		serial.regwidth = sizeof(uint32_t);
 	else
 		serial.regwidth = sizeof(uint8_t);
+	if (IS_ENABLED(CONFIG_UART_USE_REFCLK_AS_INPUT_CLOCK))
+		serial.input_hertz = uart_platform_refclk();
+	else
+		serial.input_hertz = 0;
+	serial.uart_pci_addr = CONFIG_UART_PCI_ADDR;
 	lb_add_serial(&serial, data);
 
 	lb_add_console(LB_TAG_CONSOLE_SERIAL8250MEM, data);

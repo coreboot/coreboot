@@ -159,6 +159,23 @@ enum {
 	CLK_SARADC_DIV_CON_MASK		= 0xff,
 	CLK_SARADC_DIV_CON_SHIFT	= 8,
 
+	/* CLKSEL_CON47 & CLKSEL_CON48 */
+	ACLK_VOP_PLL_SEL_MASK		= 0x3,
+	ACLK_VOP_PLL_SEL_SHIFT		= 6,
+	ACLK_VOP_PLL_SEL_CPLL		= 0x1,
+	ACLK_VOP_DIV_CON_MASK		= 0x1f,
+	ACLK_VOP_DIV_CON_SHIFT		= 0,
+
+	/* CLKSEL_CON49 & CLKSEL_CON50 */
+	DCLK_VOP_DCLK_SEL_MASK          = 1,
+	DCLK_VOP_DCLK_SEL_SHIFT         = 11,
+	DCLK_VOP_DCLK_SEL_DIVOUT        = 0,
+	DCLK_VOP_PLL_SEL_MASK   = 3,
+	DCLK_VOP_PLL_SEL_SHIFT          = 8,
+	DCLK_VOP_PLL_SEL_VPLL   = 0,
+	DCLK_VOP_DIV_CON_MASK   = 0xff,
+	DCLK_VOP_DIV_CON_SHIFT          = 0,
+
 	/* CLKSEL_CON58 */
 	CLK_SPI_PLL_SEL_MASK		= 1,
 	CLK_SPI_PLL_SEL_CPLL		= 0,
@@ -278,6 +295,70 @@ static void rkclk_set_pll(u32 *pll_con, const struct pll_div *div)
 	/* pll enter normal mode */
 	write32(&pll_con[3], RK_CLRSETBITS(PLL_MODE_MASK << PLL_MODE_SHIFT,
 					   PLL_MODE_NORM << PLL_MODE_SHIFT));
+}
+
+static int pll_para_config(u32 freq_hz, struct pll_div *div)
+{
+	u32 ref_khz = OSC_HZ / KHz, refdiv, fbdiv = 0;
+	u32 postdiv1, postdiv2 = 1;
+	u32 fref_khz;
+	u32 diff_khz, best_diff_khz;
+	const u32 max_refdiv = 63, max_fbdiv = 3200, min_fbdiv = 16;
+	const u32 max_postdiv1 = 7, max_postdiv2 = 7;
+	u32 vco_khz;
+	u32 freq_khz = freq_hz / KHz;
+
+	if (!freq_hz) {
+		printk(BIOS_ERR, "%s: the frequency can't be 0 Hz\n", __func__);
+		return -1;
+	}
+
+	postdiv1 = div_round_up(VCO_MIN_KHZ, freq_khz);
+	if (postdiv1 > max_postdiv1) {
+		postdiv2 = div_round_up(postdiv1, max_postdiv1);
+		postdiv1 = div_round_up(postdiv1, postdiv2);
+	}
+
+	vco_khz = freq_khz * postdiv1 * postdiv2;
+
+	if (vco_khz < VCO_MIN_KHZ || vco_khz > VCO_MAX_KHZ ||
+	    postdiv2 > max_postdiv2) {
+		printk(BIOS_ERR, "%s: Cannot find out a supported VCO"
+		       " for Frequency (%uHz).\n", __func__, freq_hz);
+		return -1;
+	}
+
+	div->postdiv1 = postdiv1;
+	div->postdiv2 = postdiv2;
+
+	best_diff_khz = vco_khz;
+	for (refdiv = 1; refdiv < max_refdiv && best_diff_khz; refdiv++) {
+		fref_khz = ref_khz / refdiv;
+
+		fbdiv = vco_khz / fref_khz;
+		if ((fbdiv >= max_fbdiv) || (fbdiv <= min_fbdiv))
+			continue;
+		diff_khz = vco_khz - fbdiv * fref_khz;
+		if (fbdiv + 1 < max_fbdiv && diff_khz > fref_khz / 2) {
+			fbdiv++;
+			diff_khz = fref_khz - diff_khz;
+		}
+
+		if (diff_khz >= best_diff_khz)
+			continue;
+
+		best_diff_khz = diff_khz;
+		div->refdiv = refdiv;
+		div->fbdiv = fbdiv;
+	}
+
+	if (best_diff_khz > 4 * (MHz/KHz)) {
+		printk(BIOS_ERR, "%s: Failed to match output frequency %u, "
+		       "difference is %u Hz,exceed 4MHZ\n", __func__, freq_hz,
+		       best_diff_khz * KHz);
+		return -1;
+	}
+	return 0;
 }
 
 void rkclk_init(void)
@@ -592,4 +673,44 @@ void rkclk_configure_saradc(unsigned int hz)
 		RK_CLRSETBITS(CLK_SARADC_DIV_CON_MASK <<
 						CLK_SARADC_DIV_CON_SHIFT,
 			      (src_clk_div - 1) << CLK_SARADC_DIV_CON_SHIFT));
+}
+
+void rkclk_configure_vop_aclk(u32 vop_id, u32 aclk_hz)
+{
+	u32 div;
+	void *reg_addr = vop_id ? &cru_ptr->clksel_con[48] :
+				  &cru_ptr->clksel_con[47];
+
+	/* vop aclk source clk: cpll */
+	div = CPLL_HZ / aclk_hz;
+	assert((div - 1 < 32) && (div * aclk_hz == CPLL_HZ));
+
+	write32(reg_addr, RK_CLRSETBITS(
+			ACLK_VOP_PLL_SEL_MASK << ACLK_VOP_PLL_SEL_SHIFT |
+			ACLK_VOP_DIV_CON_MASK << ACLK_VOP_DIV_CON_SHIFT,
+			ACLK_VOP_PLL_SEL_CPLL << ACLK_VOP_PLL_SEL_SHIFT |
+			(div - 1) << ACLK_VOP_DIV_CON_SHIFT));
+}
+
+int rkclk_configure_vop_dclk(u32 vop_id, u32 dclk_hz)
+{
+	struct pll_div vpll_config = {0};
+	void *reg_addr = vop_id ? &cru_ptr->clksel_con[50] :
+				  &cru_ptr->clksel_con[49];
+
+	/* vop dclk source from vpll, and equals to vpll(means div == 1) */
+	if (pll_para_config(dclk_hz, &vpll_config))
+		return -1;
+
+	rkclk_set_pll(&cru_ptr->vpll_con[0], &vpll_config);
+
+	write32(reg_addr, RK_CLRSETBITS(
+			DCLK_VOP_DCLK_SEL_MASK << DCLK_VOP_DCLK_SEL_SHIFT |
+			DCLK_VOP_PLL_SEL_MASK << DCLK_VOP_PLL_SEL_SHIFT |
+			DCLK_VOP_DIV_CON_MASK << DCLK_VOP_DIV_CON_SHIFT,
+			DCLK_VOP_DCLK_SEL_DIVOUT << DCLK_VOP_DCLK_SEL_SHIFT |
+			DCLK_VOP_PLL_SEL_VPLL << DCLK_VOP_PLL_SEL_SHIFT |
+			(1 - 1) << DCLK_VOP_DIV_CON_SHIFT));
+
+	return 0;
 }

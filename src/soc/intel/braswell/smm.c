@@ -29,10 +29,6 @@
 /* Save settings which will be committed in SMI functions. */
 static uint32_t smm_save_params[SMM_SAVE_PARAM_COUNT];
 
-void smm_init(void)
-{
-}
-
 void southcluster_smm_save_param(int param, uint32_t data)
 {
 	smm_save_params[param] = data;

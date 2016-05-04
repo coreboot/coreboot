@@ -316,15 +316,6 @@ void smm_relocate(void)
 		smm_initiate_relocation();
 }
 
-void smm_init(void)
-{
-	/* smm_init() is normally called from initialize_cpus() in
-	 * lapic_cpu_init.c. However, that path is no longer used. Don't reuse
-	 * the function name because that would cause confusion.
-	 * The smm_initialize() function above is used to setup SMM at the
-	 * appropriate time. */
-}
-
 void smm_lock(void)
 {
 	/* LOCK the SMM memory window and enable normal SMM.

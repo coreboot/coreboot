@@ -44,6 +44,21 @@
 
 static struct chipset_power_state power_state CAR_GLOBAL;
 
+/* High Performance Event Timer Configuration */
+#define P2SB_HPTC				0x60
+#define P2SB_HPTC_ADDRESS_ENABLE		(1 << 7)
+/*
+ * ADDRESS_SELECT            ENCODING_RANGE
+ *      0                 0xFED0 0000 - 0xFED0 03FF
+ *      1                 0xFED0 1000 - 0xFED0 13FF
+ *      2                 0xFED0 2000 - 0xFED0 23FF
+ *      3                 0xFED0 3000 - 0xFED0 33FF
+ */
+#define P2SB_HPTC_ADDRESS_SELECT_0		(0 << 0)
+#define P2SB_HPTC_ADDRESS_SELECT_1		(1 << 0)
+#define P2SB_HPTC_ADDRESS_SELECT_2		(2 << 0)
+#define P2SB_HPTC_ADDRESS_SELECT_3		(3 << 0)
+
 /*
  * Enables several BARs and devices which are needed for memory init
  * - MCH_BASE_ADDR is needed in order to talk to the memory controller
@@ -65,12 +80,13 @@ static void soc_early_romstage_init(void)
 	pci_write_config32(pmc, PCI_BASE_ADDRESS_2, PMC_BAR1);
 	pci_write_config32(pmc, PCI_BASE_ADDRESS_3, 0);	/* 64-bit BAR */
 	pci_write_config16(pmc, PCI_BASE_ADDRESS_4, ACPI_PMIO_BASE);
-	pci_write_config32(pmc, PCI_COMMAND,
+	pci_write_config16(pmc, PCI_COMMAND,
 				PCI_COMMAND_IO | PCI_COMMAND_MEMORY |
 				PCI_COMMAND_MASTER);
 
 	/* Enable decoding for HPET. Needed for FSP global pointer storage */
-	pci_write_config32(P2SB_DEV, 0x60, 1<<7);
+	pci_write_config8(P2SB_DEV, P2SB_HPTC, P2SB_HPTC_ADDRESS_SELECT_0 |
+						P2SB_HPTC_ADDRESS_ENABLE);
 }
 
 static void disable_watchdog(void)

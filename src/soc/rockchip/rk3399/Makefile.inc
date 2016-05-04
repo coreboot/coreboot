@@ -55,6 +55,8 @@ ramstage-y += sdram.c
 ramstage-y += ../common/spi.c
 ramstage-$(CONFIG_DRIVERS_UART) += ../common/uart.c
 ramstage-y += clock.c
+ramstage-y += display.c
+ramstage-y += ../common/edp.c
 ramstage-y += emmc.c
 ramstage-y += ../common/gpio.c
 ramstage-y += gpio.c
@@ -62,6 +64,7 @@ ramstage-y += ../common/i2c.c
 ramstage-y += saradc.c
 ramstage-y += soc.c
 ramstage-y += timer.c
+ramstage-y += ../common/vop.c
 
 BL31_MAKEARGS += PLAT=rk3399
 ################################################################################

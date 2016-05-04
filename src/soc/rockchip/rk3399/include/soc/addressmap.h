@@ -59,6 +59,11 @@
 #define TSADC_BASE		0xff260000
 #define SARADC_BASE		0xff100000
 #define RK_PWM_BASE		0xff420000
+#define EDP_BASE		0xff970000
+
+#define VOP_BIG_BASE		0xff900000 /* corresponsed to vop_id 0 */
+#define VOP_LIT_BASE		0xff8f0000 /* corresponsed to vop_id 1 */
+
 
 #define DDRC0_BASE_ADDR		0xffa80000
 #define SERVER_MSCH0_BASE_ADDR	0xffa84000

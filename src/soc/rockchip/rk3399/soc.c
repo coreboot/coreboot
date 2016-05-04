@@ -13,10 +13,12 @@
  * GNU General Public License for more details.
  */
 
+#include <bootmode.h>
 #include <console/console.h>
 #include <cpu/cpu.h>
 #include <device/device.h>
 #include <soc/addressmap.h>
+#include <soc/display.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
@@ -34,6 +36,12 @@ static void soc_init(device_t dev)
 	 * arm-trusted-firmware/plat/rockchip/rk3399/include/platform_def.h
 	 */
 	mmio_resource(dev, 1, (0x10000 / KiB), (0x80000 / KiB));
+
+	if (display_init_required())
+		rk_display_init(dev, (uintptr_t)_framebuffer,
+				_framebuffer_size);
+	else
+		printk(BIOS_INFO, "Skipping display init.\n");
 }
 
 static struct device_operations soc_ops = {

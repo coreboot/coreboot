@@ -289,6 +289,13 @@ Device (EC0)
 		Notify (BAT0, 0x80)
 	}
 
+	// MKBP interrupt.
+	Method (_Q1A, 0, NotSerialized)
+	{
+		Store ("EC: MKBP", Debug)
+		Notify (CREC, 0x80)
+	}
+
 	/*
 	 * Dynamic Platform Thermal Framework support
 	 */

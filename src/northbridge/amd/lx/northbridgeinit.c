@@ -164,7 +164,7 @@ static void SMMGL0Init(struct gliutable *gl)
 	msr.hi = offset << 8 | gl->hi;
 	msr.hi |= SMM_OFFSET >> 24;
 
-	msr.lo = SMM_OFFSET << 8;
+	msr.lo = (SMM_OFFSET & 0x00ffffff) << 8;
 	msr.lo |= ((~(SMM_SIZE * 1024) + 1) >> 12) & 0xfffff;
 
 	wrmsr(gl->desc_name, msr);	// MSR - See table above
@@ -181,7 +181,7 @@ static void SMMGL1Init(struct gliutable *gl)
 	/* I don't think this is needed */
 	msr.hi &= 0xffffff00;
 	msr.hi |= (SMM_OFFSET >> 24);
-	msr.lo = (SMM_OFFSET << 8) & 0xFFF00000;
+	msr.lo = (SMM_OFFSET & 0x00fff000) << 8;
 	msr.lo |= ((~(SMM_SIZE * 1024) + 1) >> 12) & 0xfffff;
 
 	wrmsr(gl->desc_name, msr);	// MSR - See table above

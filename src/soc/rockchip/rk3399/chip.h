@@ -13,25 +13,20 @@
  * GNU General Public License for more details.
  */
 
-#include <memlayout.h>
-#include <arch/header.ld>
+#ifndef __SOC_ROCKCHIP_RK3399_CHIP_H__
+#define __SOC_ROCKCHIP_RK3399_CHIP_H__
 
-SECTIONS
-{
-	DRAM_START(0x00000000)
-	POSTRAM_CBFS_CACHE(0x00100000, 1M)
-	RAMSTAGE(0x00300000, 256K)
-	DMA_COHERENT(0x10000000, 2M)
-	FRAMEBUFFER(0x10200000, 8M)
+#include <soc/gpio.h>
+#include <soc/vop.h>	/* for vop_modes enum used in devicetree.cb */
 
-	SRAM_START(0xFF8C0000)
-	BOOTBLOCK(0xFF8C2004, 32K - 4)
-	PRERAM_CBFS_CACHE(0xFF8CA000, 4K)
-	PRERAM_CBMEM_CONSOLE(0xFF8CB000, 4K)
-	OVERLAP_VERSTAGE_ROMSTAGE(0xFF8CC000, 64K)
-	VBOOT2_WORK(0XFF8DC000, 12K)
-	TTB(0xFF8DF000, 32K)
-	TIMESTAMP(0xFF8E7000, 1K)
-	STACK(0xFF8E7400, 24K)
-	SRAM_END(0xFF8F0000)
-}
+struct soc_rockchip_rk3399_config {
+	u32 vop_id;
+	gpio_t lcd_bl_pwm_gpio;
+	gpio_t lcd_bl_en_gpio;
+	u32 bl_power_on_udelay;
+	u32 bl_pwm_to_enable_udelay;
+	u32 framebuffer_bits_per_pixel;
+	u32 vop_mode;
+};
+
+#endif /* __SOC_ROCKCHIP_RK3399_CHIP_H__ */

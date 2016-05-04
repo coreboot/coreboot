@@ -13,25 +13,13 @@
  * GNU General Public License for more details.
  */
 
-#include <memlayout.h>
-#include <arch/header.ld>
+#ifndef __SOC_ROCKCHIP_RK3399_DISPLAY_H__
+#define __SOC_ROCKCHIP_RK3399_DISPLAY_H__
 
-SECTIONS
-{
-	DRAM_START(0x00000000)
-	POSTRAM_CBFS_CACHE(0x00100000, 1M)
-	RAMSTAGE(0x00300000, 256K)
-	DMA_COHERENT(0x10000000, 2M)
-	FRAMEBUFFER(0x10200000, 8M)
+#define REF_CLK_24M (0x1 << 0)
 
-	SRAM_START(0xFF8C0000)
-	BOOTBLOCK(0xFF8C2004, 32K - 4)
-	PRERAM_CBFS_CACHE(0xFF8CA000, 4K)
-	PRERAM_CBMEM_CONSOLE(0xFF8CB000, 4K)
-	OVERLAP_VERSTAGE_ROMSTAGE(0xFF8CC000, 64K)
-	VBOOT2_WORK(0XFF8DC000, 12K)
-	TTB(0xFF8DF000, 32K)
-	TIMESTAMP(0xFF8E7000, 1K)
-	STACK(0xFF8E7400, 24K)
-	SRAM_END(0xFF8F0000)
-}
+void rk_display_init(device_t dev, uintptr_t lcdbase,
+		     unsigned long fb_size);
+void mainboard_power_on_backlight(void);
+
+#endif

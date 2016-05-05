@@ -359,7 +359,7 @@ void ivybridge_dump_timings(const char *dump_spd_file)
 
 	printf("/* SPD matching current mode:  */\n");
 
-	FILE *dump_spd = 0;
+	FILE *dump_spd = NULL;
 
 	if (dump_spd_file) {
 		dump_spd = fopen (dump_spd_file, "wb");

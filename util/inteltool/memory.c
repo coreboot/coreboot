@@ -253,6 +253,8 @@ int print_mchbar(struct pci_dev *nb, struct pci_access *pacc, const char *dump_s
 	case PCI_DEVICE_ID_INTEL_CORE_1ST_GEN:
 		printf ("clock_speed_index = %x\n", read_500 (0,0x609, 6) >> 1);
 		dump_timings ();
+		if (dump_spd_file != NULL)
+			printf("\nCreating a memory timings file is not supported on this chipset.\n");
 		break;
 	case PCI_DEVICE_ID_INTEL_CORE_2ND_GEN_D:
 	case PCI_DEVICE_ID_INTEL_CORE_2ND_GEN_M:
@@ -263,6 +265,9 @@ int print_mchbar(struct pci_dev *nb, struct pci_access *pacc, const char *dump_s
 	case PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_015c:
 		ivybridge_dump_timings(dump_spd_file);
 		break;
+	default:
+		if (dump_spd_file != NULL)
+			printf("\nCreating a memory timings file is not supported on this chipset.\n");
 	}
 	unmap_physical((void *)mchbar, size);
 	return 0;

@@ -86,6 +86,7 @@ static const struct funit_cfg funitcfgs[] = {
 	FUNIT_CFG(SDMMC1, PLLP, 48000, sdmmc1_pad, ARRAY_SIZE(sdmmc1_pad)),
 	FUNIT_CFG(SDMMC4, PLLP, 48000, NULL, 0),
 	FUNIT_CFG(I2C1, PLLP, 100, i2c1_pad, ARRAY_SIZE(i2c1_pad)),
+	FUNIT_CFG(I2C6, PLLP, 400, audio_codec_pads, ARRAY_SIZE(audio_codec_pads)),
 	FUNIT_CFG_USB(USBD),
 };
 

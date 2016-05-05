@@ -1,8 +1,8 @@
-.TH INTELTOOL 8 "May 14, 2008"
+.TH INTELTOOL 8
 .SH NAME
 inteltool \- a tool for dumping Intel(R) CPU / chipset configuration parameters
 .SH SYNOPSIS
-.B inteltool \fR[\fB\-vh?grpmedPMa\fR]
+.B inteltool \fR[\fB\-vh?gGrpmedPMaAsfS\fR]
 .SH DESCRIPTION
 .B inteltool
 is a handy little tool for dumping the configuration space of Intel(R)
@@ -20,11 +20,13 @@ Show a help text and exit.
 Show version information and exit.
 .TP
 .B "\-a, \-\-all"
-Dump all known I/O Controller Hub (ICH) southbridge, Intel(R) northbridge
-and Intel(R) Core CPU MSRs.
+Dump all known information listed below.
 .TP
 .B "\-g, \-\-gpio"
 Dump I/O Controller Hub (ICH) southbridge GPIO registers.
+.TP
+.B "\-G, \-\-gpio-diffs"
+Show only GPIO register differences from hardware defaults.
 .TP
 .B "\-r, \-\-rcba"
 Dump I/O Controller Hub (ICH) southbridge RCBA registers.
@@ -32,11 +34,18 @@ Dump I/O Controller Hub (ICH) southbridge RCBA registers.
 .B "\-s, \-\-spi"
 Dump I/O Controller Hub (ICH) southbridge SPI registers and bios control.
 .TP
+.B "\-f, \-\-gfx"
+Dump graphics registers.
+.TP
 .B "\-p, \-\-pmbase"
 Dump I/O Controller Hub (ICH) southbridge PMBASE registers.
 .TP
 .B "\-m, \-\-mchbar"
 Dump Intel(R) northbridge MCHBAR registers.
+.TP
+.BR "\-S" " \fIfile\fR, " "\-\-spd=" "\fIfile\fR"
+Dump the memory registers as above and store the current timing settings
+into \fIfile\fR.
 .TP
 .B "\-e, \-\-epbar"
 Dump Intel(R) northbridge EPBAR registers.
@@ -49,6 +58,9 @@ Dump Intel(R) northbridge PCIEXBAR registers.
 .TP
 .B "\-M, \-\-msrs"
 Dump Intel(R) CPU MSRs.
+.TP
+.B "\-A, \-\-ambs"
+Dump Advanced Memory Buffer (AMB) registers.
 .SH BUGS
 Please report any bugs on the coreboot mailing list
 .RB "(" http://coreboot.org/Mailinglist ")."

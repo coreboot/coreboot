@@ -215,7 +215,7 @@ void print_version(void)
 
 void print_usage(const char *name)
 {
-	printf("usage: %s [-vh?gGrpmedPMas]\n", name);
+	printf("usage: %s [-vh?gGrpmedPMaAsfS]\n", name);
 	printf("\n"
 	     "   -v | --version:                   print the version\n"
 	     "   -h | --help:                      print this help\n\n"
@@ -226,7 +226,7 @@ void print_usage(const char *name)
 	     "   -r | --rcba:                      dump southbridge RCBA registers\n"
 	     "   -p | --pmbase:                    dump southbridge Power Management registers\n\n"
 	     "   -m | --mchbar:                    dump northbridge Memory Controller registers\n"
-	     "   -S FILE | --spd=FILE:             generate spd.bin equivalent to current timings\n"
+	     "   -S FILE | --spd=FILE:             create a file storing current timings (implies -m)\n"
 	     "   -e | --epbar:                     dump northbridge EPBAR registers\n"
 	     "   -d | --dmibar:                    dump northbridge DMIBAR registers\n"
 	     "   -P | --pciexpress:                dump northbridge PCIEXBAR registers\n\n"
@@ -241,7 +241,7 @@ int main(int argc, char *argv[])
 {
 	struct pci_access *pacc;
 	struct pci_dev *sb = NULL, *nb, *gfx = NULL, *dev;
-	const char *dump_spd_file = 0;
+	const char *dump_spd_file = NULL;
 	int i, opt, option_index = 0;
 	unsigned int id;
 

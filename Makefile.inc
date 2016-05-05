@@ -798,7 +798,12 @@ ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32)$(CONFIG_ARCH_ROMSTAGE_X86_64),y)
 #
 # Make sure that segment for .car.data is ignored while adding romstage.
 $(CONFIG_CBFS_PREFIX)/romstage-align := 64
-$(CONFIG_CBFS_PREFIX)/romstage-options := --xip -S .car.data -P $(CONFIG_XIP_ROM_SIZE)
+$(CONFIG_CBFS_PREFIX)/romstage-options := --xip -S .car.data
+# If XIP_ROM_SIZE isn't being used don't overly constrain romstage by passing
+# -P with a default value.
+ifneq ($(CONFIG_NO_FIXED_XIP_ROM_SIZE),y)
+$(CONFIG_CBFS_PREFIX)/romstage-options += -P $(CONFIG_XIP_ROM_SIZE)
+endif
 endif
 
 cbfs-files-y += $(CONFIG_CBFS_PREFIX)/ramstage

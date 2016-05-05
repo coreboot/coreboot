@@ -478,9 +478,10 @@ static uint64_t reg_script_read(struct reg_script_context *ctx)
 
 			/* Read from the platform specific bus */
 			bus = find_bus(step);
-			if (NULL != bus)
+			if (NULL != bus) {
 				value = bus->reg_script_read(ctx);
 				break;
+			}
 		}
 		printk(BIOS_ERR,
 			"Unsupported read type (0x%x) for this device!\n",

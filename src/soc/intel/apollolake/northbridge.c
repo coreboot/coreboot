@@ -125,7 +125,7 @@ static int mc_add_dram_resources(device_t dev, int index)
 	mmio_resource(dev, index++, bgsm / KiB, (bdsm - bgsm) / KiB);
 
 	/* BDSM -> TOLUD */
-	mmio_resource(dev, index++, tolud / KiB, (tolud - bdsm) / KiB);
+	mmio_resource(dev, index++, bdsm / KiB, (tolud - bdsm) / KiB);
 
 	/* 4G -> TOUUD */
 	base_k = 4ULL*GiB / KiB;

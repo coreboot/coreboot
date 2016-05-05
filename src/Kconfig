@@ -199,6 +199,14 @@ config INCLUDE_CONFIG_FILE
 	    config                         0x8d740    raw          3324
 	    (empty)                        0x8e480    null         3610440
 
+config NO_XIP_EARLY_STAGES
+	bool
+	default n if ARCH_X86
+	default y
+	help
+	  Identify if --xip parameter needs to be passed into cbfstool for early
+	  stages.
+
 config EARLY_CBMEM_INIT
 	def_bool !LATE_CBMEM_INIT
 

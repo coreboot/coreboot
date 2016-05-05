@@ -26,7 +26,7 @@
 #define RX_FIFO_FULL_MASK	(1 << 8)
 #define TX_FIFO_FULL_MASK	(1 << 24)
 
-
+#if 0
 /*
  * The coefficient, used to calculate the baudrate on S5P UARTs is
  * calculated as
@@ -52,6 +52,7 @@ static const int udivslot[] = {
 	0xdfdf,
 	0xffdf,
 };
+#endif
 
 static void serial_setbrg_dev(struct s5p_uart *uart)
 {

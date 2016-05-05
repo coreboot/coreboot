@@ -42,13 +42,15 @@ enum cb_err fsp_identify(struct fsp_header *hdr, const void *fsp_blob)
 	if (!looks_like_fsp_header(raw_hdr))
 		return CB_ERR;
 
+	hdr->spec_version = read8(raw_hdr + 10);
 	hdr->revision = read8(raw_hdr + 11);
 	hdr->fsp_revision = read32(raw_hdr + 12);
 	memcpy(hdr->image_id, raw_hdr + 16, ARRAY_SIZE(hdr->image_id));
 	hdr->image_id[ARRAY_SIZE(hdr->image_id) - 1] = '\0';
 	hdr->image_size = read32(raw_hdr + 24);
 	hdr->image_base = read32(raw_hdr + 28);
-	hdr->image_attribute = read32(raw_hdr + 32);
+	hdr->image_attribute = read16(raw_hdr + 32);
+	hdr->component_attribute = read16(raw_hdr + 34);
 	hdr->cfg_region_offset = read32(raw_hdr + 36);
 	hdr->cfg_region_size = read32(raw_hdr + 40);
 	hdr->notify_phase_entry_offset = read32(raw_hdr + 56);
@@ -60,17 +62,39 @@ enum cb_err fsp_identify(struct fsp_header *hdr, const void *fsp_blob)
 
 void fsp_print_header_info(const struct fsp_header *hdr)
 {
-	printk(BIOS_DEBUG, "Revision %u, image ID: %s, base 0x%lx + 0x%zx\n",
-		hdr->revision, hdr->image_id, hdr->image_base, hdr->image_size);
+	union {
+		uint32_t val;
+		struct {
+			uint8_t bld_num;
+			uint8_t revision;
+			uint8_t minor;
+			uint8_t major;
+		} rev;
+	} revision;
+
+	revision.val = hdr->fsp_revision;
+
+	printk(BIOS_DEBUG, "Spec version: v%u.%u\n", (hdr->spec_version >> 4 ),
+							hdr->spec_version & 0xf);
+	printk(BIOS_DEBUG, "Revision: %u.%u.%u, Build Number %u\n",
+							revision.rev.major,
+							revision.rev.minor,
+							revision.rev.revision,
+							revision.rev.bld_num);
+	printk(BIOS_DEBUG, "Type: %s/%s\n",
+			(hdr->component_attribute & 1 ) ? "release" : "debug",
+			(hdr->component_attribute & 2 ) ? "test" : "official");
+	printk(BIOS_DEBUG, "image ID: %s, base 0x%lx + 0x%zx\n",
+		hdr->image_id, hdr->image_base, hdr->image_size);
 	printk(BIOS_DEBUG, "\tConfig region        0x%zx + 0x%zx\n",
 		hdr->cfg_region_offset, hdr->cfg_region_size);
 
-	if (hdr->image_attribute & FSP_HDR_ATTRIB_FSPM) {
+	if ((hdr->component_attribute >> 12) == FSP_HDR_ATTRIB_FSPM) {
 		printk(BIOS_DEBUG, "\tMemory init offset   0x%zx\n",
 						hdr->memory_init_entry_offset);
 	}
 
-	if (hdr->image_attribute & FSP_HDR_ATTRIB_FSPS) {
+	if ((hdr->component_attribute >> 12) == FSP_HDR_ATTRIB_FSPS) {
 		printk(BIOS_DEBUG, "\tSilicon init offset  0x%zx\n",
 						hdr->silicon_init_entry_offset);
 		printk(BIOS_DEBUG, "\tNotify phase offset  0x%zx\n",

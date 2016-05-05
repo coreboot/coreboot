@@ -21,15 +21,17 @@
 #define FSP_HDR_OFFSET			0x94
 #define FSP_HDR_LEN			0x48
 #define FSP_HDR_SIGNATURE		"FSPH"
-#define FSP_HDR_ATTRIB_FSPT		(0b0001 << 28)
-#define FSP_HDR_ATTRIB_FSPM		(0b0010 << 28)
-#define FSP_HDR_ATTRIB_FSPS		(0b0011 << 28)
+#define FSP_HDR_ATTRIB_FSPT		0b0001
+#define FSP_HDR_ATTRIB_FSPM		0b0010
+#define FSP_HDR_ATTRIB_FSPS		0b0011
 
 struct fsp_header {
 	uint32_t fsp_revision;
 	size_t image_size;
 	uintptr_t image_base;
-	uint32_t image_attribute;
+	uint16_t image_attribute;
+	uint8_t spec_version;
+	uint16_t component_attribute;
 	size_t cfg_region_offset;
 	size_t cfg_region_size;
 	size_t notify_phase_entry_offset;

@@ -118,7 +118,7 @@ static void ddr_move_to_access_state(u32 channel)
 static void phy_dll_bypass_set(u32 channel,
 	struct rk3399_ddr_publ_regs *ddr_publ_regs, u32 freq)
 {
-	if (freq <= 125000) {
+	if (freq <= 125*MHz) {
 		/* phy_sw_master_mode_X */
 		/* PHY_86/214/342/470 4bits offset_8 */
 		setbits_le32(&ddr_publ_regs->denali_phy[86],
@@ -129,6 +129,7 @@ static void phy_dll_bypass_set(u32 channel,
 			     (0x3 << 2) << 8);
 		setbits_le32(&ddr_publ_regs->denali_phy[470],
 			     (0x3 << 2) << 8);
+
 		/* phy_adrctl_sw_master_mode */
 		/* PHY_547/675/803 4bits offset_16 */
 		setbits_le32(&ddr_publ_regs->denali_phy[547],
@@ -148,6 +149,7 @@ static void phy_dll_bypass_set(u32 channel,
 			     (0x3 << 2) << 8);
 		clrbits_le32(&ddr_publ_regs->denali_phy[470],
 			     (0x3 << 2) << 8);
+
 		/* phy_adrctl_sw_master_mode */
 		/* PHY_547/675/803 4bits offset_16 */
 		clrbits_le32(&ddr_publ_regs->denali_phy[547],
@@ -195,6 +197,9 @@ static void set_memory_map(u32 channel,
 	/* PI_41 PI_CS_MAP:RW:24:4 */
 	clrsetbits_le32(&ddr_pi_regs->denali_pi[41],
 			0xf << 24, cs_map << 24);
+	if ((sdram_params->ch[channel].rank == 1) &&
+		(sdram_params->dramtype == DDR3))
+		write32(&ddr_pi_regs->denali_pi[34], 0x2EC7FFFF);
 }
 
 static void set_ds_odt(u32 channel,
@@ -209,14 +214,13 @@ static void set_ds_odt(u32 channel,
 	tsel_wr_select = PHY_DRV_ODT_40;
 	tsel_idle_select = PHY_DRV_ODT_240;
 
-	if (sdram_params->odt == 1) {
+	if (sdram_params->odt == 1)
 		tsel_rd_en = 1;
-		tsel_idle_en = 1;
-	} else {
+	else
 		tsel_rd_en = 0;
-		tsel_idle_en = 0;
-	}
-	tsel_wr_en = 1;
+
+	tsel_wr_en = 0;
+	tsel_idle_en = 0;
 
 	/*
 	 * phy_dq_tsel_select_X 24bits DENALI_PHY_6/134/262/390 offset_0
@@ -474,6 +478,26 @@ static void pctl_cfg(u32 channel,
 			pwrup_srefresh_exit);
 }
 
+static void select_per_cs_training_index(u32 channel, u32 rank)
+{
+	struct rk3399_ddr_publ_regs *ddr_publ_regs = rk3399_ddr_publ[channel];
+
+	/*PHY_84 PHY_PER_CS_TRAINING_EN_0 1bit offset_16*/
+	if ((read32(&ddr_publ_regs->denali_phy[84])>>16) & 1) {
+		/*PHY_8/136/264/392
+		*phy_per_cs_training_index_X 1bit offset_24
+		*/
+		clrsetbits_le32(&ddr_publ_regs->denali_phy[8],
+				0x1 << 24, rank << 24);
+		clrsetbits_le32(&ddr_publ_regs->denali_phy[136],
+				0x1 << 24, rank << 24);
+		clrsetbits_le32(&ddr_publ_regs->denali_phy[264],
+				0x1 << 24, rank << 24);
+		clrsetbits_le32(&ddr_publ_regs->denali_phy[392],
+				0x1 << 24, rank << 24);
+	}
+}
+
 static int data_training(u32 channel,
 			 const struct rk3399_sdram_params *sdram_params,
 			 u32 training_flag)
@@ -519,6 +543,7 @@ static int data_training(u32 channel,
 			clrsetbits_le32(&ddr_pi_regs->denali_pi[92],
 					(0x1 << 16) | (0x3 << 24),
 					(0x1 << 16) | (i << 24));
+			select_per_cs_training_index(channel, rank);
 			while (1) {
 				/* PI_174 PI_INT_STATUS:RD:8:18 */
 				tmp = read32(&ddr_pi_regs->denali_pi[174]) >> 8;
@@ -556,6 +581,7 @@ static int data_training(u32 channel,
 			clrsetbits_le32(&ddr_pi_regs->denali_pi[59],
 					(0x1 << 8) | (0x3 << 16),
 					(0x1 << 8) | (i << 16));
+			select_per_cs_training_index(channel, rank);
 			while (1) {
 
 				/* PI_174 PI_INT_STATUS:RD:8:18 */
@@ -602,7 +628,7 @@ static int data_training(u32 channel,
 			clrsetbits_le32(&ddr_pi_regs->denali_pi[74],
 					(0x1 << 16) | (0x3 << 24),
 					(0x1 << 16) | (i << 24));
-
+			select_per_cs_training_index(channel, rank);
 			while (1) {
 				/* PI_174 PI_INT_STATUS:RD:8:18 */
 				tmp = read32(&ddr_pi_regs->denali_pi[174]) >> 8;
@@ -644,6 +670,7 @@ static int data_training(u32 channel,
 			clrsetbits_le32(&ddr_pi_regs->denali_pi[74],
 					(0x1 << 8) | (0x3 << 24),
 					(0x1 << 8) | (i << 24));
+			select_per_cs_training_index(channel, rank);
 			while (1) {
 				/* PI_174 PI_INT_STATUS:RD:8:18 */
 				tmp = read32(&ddr_pi_regs->denali_pi[174]) >> 8;
@@ -677,6 +704,7 @@ static int data_training(u32 channel,
 			clrsetbits_le32(&ddr_pi_regs->denali_pi[121],
 					(0x1 << 8) | (0x3 << 16),
 					(0x1 << 8) | (i << 16));
+			select_per_cs_training_index(channel, rank);
 			while (1) {
 				/* PI_174 PI_INT_STATUS:RD:8:18 */
 				tmp = read32(&ddr_pi_regs->denali_pi[174]) >> 8;
@@ -750,7 +778,8 @@ static void dram_all_config(const struct rk3399_sdram_params *sdram_params)
 		sys_reg |= SYS_REG_ENC_COL(info->col, channel);
 		sys_reg |= SYS_REG_ENC_BK(info->bk, channel);
 		sys_reg |= SYS_REG_ENC_CS0_ROW(info->cs0_row, channel);
-		sys_reg |= SYS_REG_ENC_CS1_ROW(info->cs1_row, channel);
+		if (sdram_params->ch[channel].rank > 1)
+			sys_reg |= SYS_REG_ENC_CS1_ROW(info->cs1_row, channel);
 		sys_reg |= SYS_REG_ENC_BW(info->bw, channel);
 		sys_reg |= SYS_REG_ENC_DBW(info->dbw, channel);
 

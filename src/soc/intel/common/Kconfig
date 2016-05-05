@@ -76,4 +76,8 @@ config SOC_INTEL_COMMON_GFX_OPREGION
 	bool
 	default n
 
+config SOC_INTEL_COMMON_SMI
+	bool
+	default n
+
 endif # SOC_INTEL_COMMON

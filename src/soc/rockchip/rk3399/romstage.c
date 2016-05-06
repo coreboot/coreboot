@@ -28,6 +28,7 @@
 #include <soc/grf.h>
 #include <soc/mmu_operations.h>
 #include <soc/pwm.h>
+#include <soc/tsadc.h>
 #include <soc/sdram.h>
 #include <symbols.h>
 
@@ -74,6 +75,7 @@ static void init_dvs_outputs(void)
 void main(void)
 {
 	console_init();
+	tsadc_init(TSHUT_POL_HIGH);
 	exception_init();
 
 	/* Init DVS to conservative values. */

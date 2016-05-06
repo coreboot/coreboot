@@ -822,7 +822,7 @@ static void sdram_timings(struct sysinfo *s)
 	MCHBAR8(0x26c) = (MCHBAR8(0x26c) & ~0xfa) | ((u8)(reg32 >> 24));
 	MCHBAR8(0x271) = MCHBAR8(0x271) & ~(1 << 7);
 	MCHBAR8(0x274) = MCHBAR8(0x274) & ~0x6;
-	reg32 = (u32) ((6 << 30) | (4 << 25) | (1 << 20) | (8 << 15) |
+	reg32 = (u32) (((6 & 0x03) << 30) | (4 << 25) | (1 << 20) | (8 << 15) |
 			(6 << 10) | (4 << 5) | 1);
 	MCHBAR32(0x278) = reg32;
 

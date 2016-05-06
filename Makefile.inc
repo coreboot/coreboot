@@ -606,12 +606,13 @@ extract_nth=$(subst *,$(spc),$(patsubst -%-,%,$(word $(1), $(subst |,- -,-$(2)-)
 # multiple CBFSes in fmap regions, override it.
 regions-for-file ?= COREBOOT
 
-# options-for-region
-# $(call options-for-region,$(filename),$(region),$(options))
+# The last sequence of the cbfs-add-cmd-for-region allows for per-file CBFS
+# options associated with a given region. The following example adds
+# '-b 0x10000' to the cbfstool arguments when being added to the COREBOOT
+# region. This allows options to specifically target certain CBFS regions.
 #
-# Returns potentially modified options, depending on file and region.
-# Default is to return it unmodified
-options-for-region ?= $(3)
+# cbfs-files-y += file.bin
+# file.bin-COREBOOT-cbfstool-opts := -b 0x10000
 
 ifeq ($(CONFIG_CBFS_AUTOGEN_ATTRIBUTES),y)
 	cbfs-autogen-attributes=-g
@@ -631,10 +632,11 @@ define cbfs-add-cmd-for-region
 	$(if $(call extract_nth,4,$(1)),-c $(call extract_nth,4,$(1))) \
 	$(cbfs-autogen-attributes) \
 	-r $(2) \
-	$(call options-for-region,$(call extract_nth,2,$(1)),$(2), \
-		$(if $(call extract_nth,6,$(1)),-a $(call extract_nth,6,$(file)), \
-			$(if $(call extract_nth,5,$(file)),-b $(call extract_nth,5,$(file)))) \
-		$(call extract_nth,7,$(1)))
+	$(if $(call extract_nth,6,$(1)),-a $(call extract_nth,6,$(file)), \
+		$(if $(call extract_nth,5,$(file)),-b $(call extract_nth,5,$(file)))) \
+		$(call extract_nth,7,$(1)) \
+	$($(call extract_nth,2,$(1))-$(2)-cbfstool-opts)
+
 
 endef
 # Empty line before endef is necessary so cbfs-add-cmd-for-region ends in a

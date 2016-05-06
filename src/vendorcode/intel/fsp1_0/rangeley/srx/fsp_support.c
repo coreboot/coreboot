@@ -56,7 +56,7 @@ GetUsableLowMemTop (
    * Collect memory ranges
    */
   MemLen = 0x100000;
-  while (!END_OF_HOB_LIST (Hob)) {
+  while (!END_OF_HOB_LIST(Hob.Raw)) {
     if (Hob.Header->HobType == EFI_HOB_TYPE_RESOURCE_DESCRIPTOR) {
       if (Hob.ResourceDescriptor->ResourceType == EFI_RESOURCE_SYSTEM_MEMORY) {
         /*
@@ -68,7 +68,7 @@ GetUsableLowMemTop (
         }
       }
     }
-    Hob.Raw = GET_NEXT_HOB (Hob);
+    Hob.Raw = GET_NEXT_HOB(Hob.Raw);
   }
 
   return MemLen;
@@ -98,7 +98,7 @@ GetUsableHighMemTop (
    * Collect memory ranges
    */
   MemTop = 0x100000000;
-  while (!END_OF_HOB_LIST (Hob)) {
+  while (!END_OF_HOB_LIST(Hob.Raw)) {
     if (Hob.Header->HobType == EFI_HOB_TYPE_RESOURCE_DESCRIPTOR) {
       if (Hob.ResourceDescriptor->ResourceType == EFI_RESOURCE_SYSTEM_MEMORY) {
         /*
@@ -109,7 +109,7 @@ GetUsableHighMemTop (
         }
       }
     }
-    Hob.Raw = GET_NEXT_HOB (Hob);
+    Hob.Raw = GET_NEXT_HOB(Hob.Raw);
   }
 
   return MemTop;
@@ -143,7 +143,7 @@ GetFspReservedMemoryFromGuid (
   /*
    * Collect memory ranges
    */
-  while (!END_OF_HOB_LIST (Hob)) {
+  while (!END_OF_HOB_LIST(Hob.Raw)) {
     if (Hob.Header->HobType == EFI_HOB_TYPE_RESOURCE_DESCRIPTOR) {
       if (Hob.ResourceDescriptor->ResourceType == EFI_RESOURCE_MEMORY_RESERVED) {
         if (CompareGuid(&Hob.ResourceDescriptor->Owner, OwnerGuid)) {
@@ -153,7 +153,7 @@ GetFspReservedMemoryFromGuid (
         }
       }
     }
-    Hob.Raw = GET_NEXT_HOB (Hob);
+    Hob.Raw = GET_NEXT_HOB(Hob.Raw);
   }
 }
 

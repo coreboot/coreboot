@@ -142,11 +142,11 @@ GetNextHob (
   //
   // Parse the HOB list until end of list or matching type is found.
   //
-  while (!END_OF_HOB_LIST (Hob)) {
+  while (!END_OF_HOB_LIST(Hob.Raw)) {
     if (Hob.Header->HobType == Type) {
       return Hob.Raw;
     }
-    Hob.Raw = GET_NEXT_HOB (Hob);
+    Hob.Raw = GET_NEXT_HOB(Hob.Raw);
   }
   return NULL;
 }
@@ -183,7 +183,7 @@ GetNextGuidHob (
     if (CompareGuid (Guid, &GuidHob.Guid->Name)) {
       break;
     }
-    GuidHob.Raw = GET_NEXT_HOB (GuidHob);
+    GuidHob.Raw = GET_NEXT_HOB(GuidHob.Raw);
   }
   return GuidHob.Raw;
 }

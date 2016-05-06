@@ -114,11 +114,11 @@ GetNextHob (
   /*
    * Parse the HOB list until end of list or matching type is found.
    */
-  while (!END_OF_HOB_LIST (Hob)) {
+  while (!END_OF_HOB_LIST(Hob.Raw)) {
     if (Hob.Header->HobType == Type) {
       return Hob.Raw;
     }
-    Hob.Raw = GET_NEXT_HOB (Hob);
+    Hob.Raw = GET_NEXT_HOB(Hob.Raw);
   }
 
   return NULL;
@@ -142,11 +142,11 @@ GetNextGuidHob (
   EFI_PEI_HOB_POINTERS  GuidHob;
 
   GuidHob.Raw = (UINT8 *) HobStart;
-  while ((GuidHob.Raw = GetNextHob (EFI_HOB_TYPE_GUID_EXTENSION, GuidHob.Raw)) != NULL) {
+  while ((GuidHob.Raw = GetNextHob(EFI_HOB_TYPE_GUID_EXTENSION, GuidHob.Raw)) != NULL) {
     if (CompareGuid (Guid, &GuidHob.Guid->Name)) {
       break;
     }
-    GuidHob.Raw = GET_NEXT_HOB (GuidHob);
+    GuidHob.Raw = GET_NEXT_HOB(GuidHob.Raw);
   }
 
   return GuidHob.Raw;
@@ -175,7 +175,7 @@ GetUsableLowMemTop (
    * Collect memory ranges
    */
   MemLen = 0x100000;
-  while (!END_OF_HOB_LIST (Hob)) {
+  while (!END_OF_HOB_LIST(Hob.Raw)) {
     if (Hob.Header->HobType == EFI_HOB_TYPE_RESOURCE_DESCRIPTOR) {
       if (Hob.ResourceDescriptor->ResourceType == EFI_RESOURCE_SYSTEM_MEMORY) {
         /*
@@ -187,7 +187,7 @@ GetUsableLowMemTop (
         }
       }
     }
-    Hob.Raw = GET_NEXT_HOB (Hob);
+    Hob.Raw = GET_NEXT_HOB(Hob.Raw);
   }
 
   return MemLen;
@@ -219,7 +219,7 @@ GetPhysicalLowMemTop (
    */
   MemBase = 0x100000;
   MemLen  = 0;
-  while (!END_OF_HOB_LIST (Hob)) {
+  while (!END_OF_HOB_LIST(Hob.Raw)) {
     if (Hob.Header->HobType == EFI_HOB_TYPE_RESOURCE_DESCRIPTOR) {
       if ((Hob.ResourceDescriptor->ResourceType == EFI_RESOURCE_SYSTEM_MEMORY) ||
            (Hob.ResourceDescriptor->ResourceType == EFI_RESOURCE_MEMORY_RESERVED)) {
@@ -233,7 +233,7 @@ GetPhysicalLowMemTop (
         }
       }
     }
-    Hob.Raw = GET_NEXT_HOB (Hob);
+    Hob.Raw = GET_NEXT_HOB(Hob.Raw);
   }
 
   return MemBase + MemLen;
@@ -262,7 +262,7 @@ GetUsableHighMemTop (
    * Collect memory ranges
    */
   MemTop = 0x100000000;
-  while (!END_OF_HOB_LIST (Hob)) {
+  while (!END_OF_HOB_LIST(Hob.Raw)) {
     if (Hob.Header->HobType == EFI_HOB_TYPE_RESOURCE_DESCRIPTOR) {
       if (Hob.ResourceDescriptor->ResourceType == EFI_RESOURCE_SYSTEM_MEMORY) {
         /*
@@ -273,7 +273,7 @@ GetUsableHighMemTop (
         }
       }
     }
-    Hob.Raw = GET_NEXT_HOB (Hob);
+    Hob.Raw = GET_NEXT_HOB(Hob.Raw);
   }
 
   return MemTop;
@@ -306,7 +306,7 @@ GetFspReservedMemoryFromGuid (
   /*
    * Collect memory ranges
    */
-  while (!END_OF_HOB_LIST (Hob)) {
+  while (!END_OF_HOB_LIST(Hob.Raw)) {
     if (Hob.Header->HobType == EFI_HOB_TYPE_RESOURCE_DESCRIPTOR) {
       if (Hob.ResourceDescriptor->ResourceType == EFI_RESOURCE_MEMORY_RESERVED) {
         if (CompareGuid(&Hob.ResourceDescriptor->Owner, OwnerGuid)) {
@@ -317,7 +317,7 @@ GetFspReservedMemoryFromGuid (
         }
       }
     }
-    Hob.Raw = GET_NEXT_HOB (Hob);
+    Hob.Raw = GET_NEXT_HOB(Hob.Raw);
   }
 
   return 0;

@@ -107,8 +107,13 @@ void run_ramstage(void)
 
 	timestamp_add_now(TS_END_ROMSTAGE);
 
-	/* Only x86 systems currently take the same firmware path on resume. */
-	if (IS_ENABLED(CONFIG_ARCH_X86) && IS_ENABLED(CONFIG_EARLY_CBMEM_INIT))
+	/*
+	 * Only x86 systems using ramstage stage cache currently take the same
+	 * firmware path on resume.
+	 */
+	if (IS_ENABLED(CONFIG_ARCH_X86) &&
+	    !IS_ENABLED(CONFIG_NO_STAGE_CACHE) &&
+	    IS_ENABLED(CONFIG_EARLY_CBMEM_INIT))
 		run_ramstage_from_resume(romstage_handoff_find_or_add(),
 						&ramstage);
 

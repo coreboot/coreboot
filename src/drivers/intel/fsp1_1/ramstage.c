@@ -158,6 +158,11 @@ static void fsp_cache_save(struct prog *fsp)
 	if (IS_ENABLED(CONFIG_DISPLAY_SMM_MEMORY_MAP))
 		smm_memory_map();
 
+	if (IS_ENABLED(CONFIG_NO_STAGE_CACHE))
+		return;
+
+	printk(BIOS_DEBUG, "FSP: Saving binary in cache\n");
+
 	if (prog_entry(fsp) == NULL) {
 		printk(BIOS_ERR, "ERROR: No FSP to save in cache.\n");
 		return;
@@ -186,12 +191,11 @@ void intel_silicon_init(void)
 	struct prog fsp = PROG_INIT(PROG_REFCODE, "fsp.bin");
 	int is_s3_wakeup = acpi_is_wakeup_s3();
 
-	if (is_s3_wakeup) {
+	if (is_s3_wakeup && !IS_ENABLED(CONFIG_NO_STAGE_CACHE)) {
 		printk(BIOS_DEBUG, "FSP: Loading binary from cache\n");
 		stage_cache_load_stage(STAGE_REFCODE, &fsp);
 	} else {
 		fsp_find_and_relocate(&fsp);
-		printk(BIOS_DEBUG, "FSP: Saving binary in cache\n");
 		fsp_cache_save(&fsp);
 	}
 

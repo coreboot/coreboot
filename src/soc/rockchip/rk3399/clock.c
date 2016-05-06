@@ -159,6 +159,13 @@ enum {
 	CLK_SARADC_DIV_CON_MASK		= 0xff,
 	CLK_SARADC_DIV_CON_SHIFT	= 8,
 
+	/* CLKSEL_CON27 */
+	CLK_TSADC_SEL_X24M		= 0x0,
+	CLK_TSADC_SEL_MASK		= 1,
+	CLK_TSADC_SEL_SHIFT		= 15,
+	CLK_TSADC_DIV_CON_MASK		= 0x3ff,
+	CLK_TSADC_DIV_CON_SHIFT		= 0,
+
 	/* CLKSEL_CON47 & CLKSEL_CON48 */
 	ACLK_VOP_PLL_SEL_MASK		= 0x3,
 	ACLK_VOP_PLL_SEL_SHIFT		= 6,
@@ -713,4 +720,19 @@ int rkclk_configure_vop_dclk(u32 vop_id, u32 dclk_hz)
 			(1 - 1) << DCLK_VOP_DIV_CON_SHIFT));
 
 	return 0;
+}
+
+void rkclk_configure_tsadc(unsigned int hz)
+{
+	int src_clk_div;
+
+	/* use 24M as src clock */
+	src_clk_div = OSC_HZ / hz;
+	assert((src_clk_div - 1 < 1024) && (src_clk_div * hz == OSC_HZ));
+
+	write32(&cru_ptr->clksel_con[27], RK_CLRSETBITS(
+			CLK_TSADC_DIV_CON_MASK << CLK_TSADC_DIV_CON_SHIFT |
+			CLK_TSADC_SEL_MASK << CLK_TSADC_SEL_SHIFT,
+			src_clk_div << CLK_TSADC_DIV_CON_SHIFT |
+			CLK_TSADC_SEL_X24M << CLK_TSADC_SEL_SHIFT));
 }

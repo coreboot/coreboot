@@ -54,8 +54,8 @@ chip northbridge/intel/sandybridge
 			register "gpi1_routing" = "2"
 			register "gpi13_routing" = "2"
 
-			# Enable SATA ports 0 (HDD bay) & 1 (ODD bay) & 2 (mSATA) & 4 (dock) & 5 (eSATA)
-			register "sata_port_map" = "0x37"
+			# Enable SATA ports 0 (HDD bay) & 1 (ODD bay) & 2 (mSATA) & 3 (eSATA) & 4 (dock)
+			register "sata_port_map" = "0x1f"
 			# Set max SATA speed to 6.0 Gb/s
 			register "sata_interface_speed_support" = "0x3"
 

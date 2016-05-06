@@ -55,9 +55,9 @@ vbt.bin-type := optionrom
 ifeq ($(CONFIG_HAVE_FSP_BIN),y)
 cbfs-files-y += fsp.bin
 fsp.bin-file := $(call strip_quotes,$(CONFIG_FSP_FILE))
-fsp.bin-position := $(CONFIG_FSP_LOC)
 fsp.bin-type := fsp
 fsp.bin-options := --xip
+fsp.bin-COREBOOT-cbfstool-opts := -b $(CONFIG_FSP_LOC)
 endif
 
 endif

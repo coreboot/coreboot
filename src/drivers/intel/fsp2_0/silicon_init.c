@@ -16,6 +16,7 @@
 #include <fsp/api.h>
 #include <fsp/util.h>
 #include <string.h>
+#include <timestamp.h>
 
 struct fsp_header fsps_hdr;
 
@@ -40,10 +41,12 @@ static enum fsp_status do_silicon_init(struct fsp_header *hdr)
 	/* Give SoC/mainboard a chance to populate entries */
 	platform_fsp_silicon_init_params_cb(&upd);
 
+	timestamp_add_now(TS_FSP_SILICON_INIT_START);
 	silicon_init = (void *) (hdr->image_base +
-						hdr->silicon_init_entry_offset);
-
+				 hdr->silicon_init_entry_offset);
 	status = silicon_init(&upd);
+	timestamp_add_now(TS_FSP_SILICON_INIT_END);
+
 	printk(BIOS_DEBUG, "FspSiliconInit returned 0x%08x\n", status);
 	return status;
 }

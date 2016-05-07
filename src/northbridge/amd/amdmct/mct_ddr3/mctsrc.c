@@ -1657,7 +1657,7 @@ static void dqsTrainMaxRdLatency_SW_Fam15(struct MCTStatStruc *pMCTstat,
 			read_dqs_receiver_enable_control_registers(current_total_delay, dev, Channel, dimm, index_reg);
 			read_dqs_read_data_timing_registers(current_rdqs_total_delay, dev, Channel, dimm, index_reg);
 
-			for (lane = 0; lane < 8; lane++) {
+			for (lane = 0; lane < lane_count; lane++) {
 				current_total_delay[lane] += current_rdqs_total_delay[lane];
 				if (current_total_delay[lane] > current_worst_case_total_delay_value) {
 					current_worst_case_total_delay_dimm = dimm;
@@ -1666,7 +1666,7 @@ static void dqsTrainMaxRdLatency_SW_Fam15(struct MCTStatStruc *pMCTstat,
 			}
 
 #if DQS_TRAIN_DEBUG > 0
-			for (lane = 0; lane < 8; lane++)
+			for (lane = 0; lane < lane_count; lane++)
 				print_debug_dqs_pair("\t\tTrainMaxRdLatency56: Lane ", lane, " current_total_delay ", current_total_delay[lane], 2);
 #endif
 		}

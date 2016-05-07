@@ -341,11 +341,9 @@ uint8_t is_ecc_enabled(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTs
 	if (!pMCTstat->try_ecc)
 		ecc_enabled = 0;
 
-	if (pDCTstat->NodePresent && pDCTstat->DIMMValid) {
-		if (!(pDCTstat->Status & (1 << SB_ECCDIMMs))) {
+	if (pDCTstat->NodePresent && (pDCTstat->DIMMValidDCT[0] || pDCTstat->DIMMValidDCT[1]))
+		if (!(pDCTstat->Status & (1 << SB_ECCDIMMs)))
 			ecc_enabled = 0;
-		}
-	}
 
 	return !!ecc_enabled;
 }

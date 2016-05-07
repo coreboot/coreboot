@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2010 Advanced Micro Devices, Inc.
- * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
+ * Copyright (C) 2015 - 2016 Raptor Engineering, LLC
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1085,7 +1085,10 @@ static void read_dram_dqs_training_pattern_fam15(struct MCTStatStruc *pMCTstat,
 		Set_NB32_DCT(dev, dct, 0x274, ~0xffffffff);
 		Set_NB32_DCT(dev, dct, 0x278, ~0xffffffff);
 		dword = Get_NB32_DCT(dev, dct, 0x27c);
-		dword &= ~(0xff);			/* EccMask = 0x0 */
+		if (get_available_lane_count(pMCTstat, pDCTstat) < 9)
+			dword |= 0xff;			/* EccMask = 0xff */
+		else
+			dword &= ~(0xff);		/* EccMask = 0x0 */
 		Set_NB32_DCT(dev, dct, 0x27c, dword);
 	} else {
 		Set_NB32_DCT(dev, dct, 0x274, ~0x0);
@@ -1178,7 +1181,10 @@ static void write_dram_dqs_training_pattern_fam15(struct MCTStatStruc *pMCTstat,
 		Set_NB32_DCT(dev, dct, 0x274, ~0xffffffff);
 		Set_NB32_DCT(dev, dct, 0x278, ~0xffffffff);
 		dword = Get_NB32_DCT(dev, dct, 0x27c);
-		dword &= ~(0xff);			/* EccMask = 0x0 */
+		if (get_available_lane_count(pMCTstat, pDCTstat) < 9)
+			dword |= 0xff;			/* EccMask = 0xff */
+		else
+			dword &= ~(0xff);		/* EccMask = 0x0 */
 		Set_NB32_DCT(dev, dct, 0x27c, dword);
 	} else {
 		Set_NB32_DCT(dev, dct, 0x274, ~0x0);
@@ -1790,7 +1796,7 @@ static void TrainDQSReceiverEnCyc_D_Fam15(struct MCTStatStruc *pMCTstat,
 				Set_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0f0030 | (lane << 8), dword);
 			}
 
-			for (lane = 0; lane < MAX_BYTE_LANES; lane++) {
+			for (lane = 0; lane < lane_count; lane++) {
 				if (!lane_training_success[lane]) {
 					dct_training_success = 0;
 					Errors |= 1 << SB_NODQSPOS;

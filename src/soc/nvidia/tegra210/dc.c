@@ -138,7 +138,7 @@ void update_display_shift_clock_divider(struct display_controller *disp_ctrl,
  *   set up window registers and activate window except two:
  *   frame buffer base address register (WINBUF_START_ADDR) and
  *   display enable register (_DISP_DISP_WIN_OPTIONS). This is
- *   becasue framebuffer is not available until payload stage.
+ *   because framebuffer is not available until payload stage.
  */
 void update_window(const struct soc_nvidia_tegra210_config *config)
 {

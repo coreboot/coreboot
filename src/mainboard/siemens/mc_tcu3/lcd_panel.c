@@ -36,7 +36,7 @@ u8 get_lcd_panel_type(void)
 	return ((~lcd_type_gpio) & 0x0f);
 }
 
-/** \brief Setup LCD panel
+/** \brief Set up LCD panel
  * @param  no parameters
  * @return 0 on success otherwise error value
  */
@@ -70,7 +70,7 @@ int setup_lcd_panel(void)
 		break;
 	}
 
-	/* Now that we have the panel type, setup the DP2LVDS converter */
+	/* Now that we have the panel type, set up the DP2LVDS converter */
 	status = ptn3460_init(blockname);
 	if (status)
 		printk(BIOS_ERR, "LCD: Setup PTN with status 0x%x\n", status);

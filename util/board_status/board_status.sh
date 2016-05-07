@@ -172,22 +172,24 @@ show_help() {
 	${0} <option>
 
 Options
-    -h
-        Show this message.
-    -C
+    -C, --clobber
         Clobber temporary output when finished. Useful for debugging.
-    -i  <image>
+    -h, --help
+        Show this message.
+    -i, --image  <image>
         Path to coreboot image (Default is $COREBOOT_IMAGE).
-    -r  <host>
+    -r, --remote-host  <host>
         Obtain machine information from remote host (using ssh).
+    -s, --serial-device  </dev/xxx>
+        Obtain boot log via serial device.
+    -S, --serial-speed  <speed>
+        Set the port speed for the serial device (Default is $SERIAL_PORT_SPEED).
+    -u, --upload-results
+        Upload results to coreboot.org.
+
+Long options:
     --ssh-port <port>
         Use a specific SSH port.
-    -s  </dev/xxx>
-        Obtain boot log via serial device.
-    -S  <speed>
-        Set the port speed for the serial device (Default is $SERIAL_PORT_SPEED).
-    -u
-        Upload results to coreboot.org.
 "
 }
 
@@ -197,41 +199,52 @@ if [ $? -ne 4 ]; then
 	exit $EXIT_FAILURE
 fi
 
-ARGS=$(getopt -o Chi:r:s:S:u -l "ssh-port:" -n "$0" -- "$@");
+LONGOPTS="clobber,help,image:,remote-host:,upload-results"
+LONGOPTS="${LONGOPTS},serial-device:,serial-speed:"
+LONGOPTS="${LONGOPTS},ssh-port:"
+
+ARGS=$(getopt -o Chi:r:s:S:u -l "$LONGOPTS" -n "$0" -- "$@");
 if [ $? != 0 ] ; then echo "Terminating..." >&2 ; exit 1 ; fi
 eval set -- "$ARGS"
 while true ; do
 	case "$1" in
-		-h)
+		# generic options
+		-C|--clobber)
+			CLOBBER_OUTPUT=1
+			;;
+		-h|--help)
 			show_help
 			exit $EXIT_SUCCESS
 			;;
-		-C)
-			CLOBBER_OUTPUT=1
-			;;
-		-i)
+		-i|--image)
 			shift
 			COREBOOT_IMAGE="$1"
 			;;
-		-r)
+		-r|--remote-host)
 			shift
 			REMOTE_HOST="$1"
 			;;
+		-u|--upload-results)
+			UPLOAD_RESULTS=1
+			;;
+
+		# serial port options
+		-s|--serial-device)
+			shift
+			SERIAL_DEVICE="$1"
+			;;
+		-S|--serial-speed)
+			shift
+			SERIAL_PORT_SPEED="$1"
+			;;
+
+		# ssh options
 		--ssh-port)
 			shift
 			REMOTE_PORT_OPTION="-p $1"
 			;;
-		-s)
-			shift
-			SERIAL_DEVICE="$1"
-			;;
-		-S)
-			shift
-			SERIAL_PORT_SPEED="$1"
-			;;
-		-u)
-			UPLOAD_RESULTS=1
-			;;
+
+		# error handling
 		--)
 			shift
 			if [ -n "$*" ]; then

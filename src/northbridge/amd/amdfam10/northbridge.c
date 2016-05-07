@@ -1199,12 +1199,27 @@ static int amdfam10_get_smbios_data17(int* count, int handle, int parent_handle,
 				* Primary data width * 2^(#rows) * 2^(#cols) * #banks * #ranks
 				*/
 				uint8_t width, rows, cols, banks, ranks;
-				width = 8;
+				uint64_t chip_size;
+				uint32_t chip_width;
 				rows = mem_info->dct_stat[node].DimmRows[slot];
 				cols = mem_info->dct_stat[node].DimmCols[slot];
 				ranks = mem_info->dct_stat[node].DimmRanks[slot];
 				banks = mem_info->dct_stat[node].DimmBanks[slot];
-				uint64_t dimm_size_bytes = width * (1ULL << rows) * (1ULL << cols) * banks * ranks;
+#if IS_ENABLED(CONFIG_DIMM_DDR3)
+				chip_size = mem_info->dct_stat[node].DimmChipSize[slot];
+				chip_width = mem_info->dct_stat[node].DimmChipWidth[slot];
+#else
+				chip_size = 0;
+				chip_width = 0;
+#endif
+				uint64_t dimm_size_bytes;
+				if (IS_ENABLED(CONFIG_DIMM_DDR3)) {
+					width = mem_info->dct_stat[node].DimmWidth[slot];
+					dimm_size_bytes = ((width / chip_width) * chip_size * ranks) / 8;
+				} else {
+					width = 8;
+					dimm_size_bytes = width * (1ULL << rows) * (1ULL << cols) * banks * ranks;
+				}
 
 				memset(t, 0, sizeof(struct smbios_type17));
 				t->type = SMBIOS_MEMORY_DEVICE;
@@ -1213,7 +1228,7 @@ static int amdfam10_get_smbios_data17(int* count, int handle, int parent_handle,
 				t->length = sizeof(struct smbios_type17) - 2;
 				if (dimm_size_bytes > 0x800000000) {
 					t->size = 0x7FFF;
-					t->extended_size = dimm_size_bytes;
+					t->extended_size = dimm_size_bytes >> 16;
 				} else {
 					t->size = dimm_size_bytes / (1024*1024);
 					t->size &= (~0x8000);	/* size specified in megabytes */

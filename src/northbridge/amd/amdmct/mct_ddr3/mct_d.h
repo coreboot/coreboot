@@ -621,6 +621,8 @@ struct DCTStatStruc {		/* A per Node structure*/
 	uint8_t DimmRanks[MAX_DIMMS_SUPPORTED];
 	uint8_t DimmBanks[MAX_DIMMS_SUPPORTED];
 	uint8_t DimmWidth[MAX_DIMMS_SUPPORTED];
+	uint64_t DimmChipSize[MAX_DIMMS_SUPPORTED];
+	uint32_t DimmChipWidth[MAX_DIMMS_SUPPORTED];
 	uint8_t DimmRegistered[MAX_DIMMS_SUPPORTED];
 	uint8_t DimmLoadReduced[MAX_DIMMS_SUPPORTED];
 

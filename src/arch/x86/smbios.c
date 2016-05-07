@@ -155,6 +155,10 @@ void smbios_fill_dimm_manufacturer_from_id(uint16_t mod_id, struct smbios_type17
 			t->manufacturer = smbios_add_string(t->eos,
 							    "Hynix/Hyundai");
 			break;
+		case 0xb502:
+			t->manufacturer = smbios_add_string(t->eos,
+							    "SuperTalent");
+			break;
 		case 0xcd04:
 			t->manufacturer = smbios_add_string(t->eos,
 							    "GSkill");

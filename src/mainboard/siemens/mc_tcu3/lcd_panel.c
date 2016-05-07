@@ -66,7 +66,6 @@ int setup_lcd_panel(void)
 		break;
 	default:
 		printk(BIOS_ERR, "LCD: No supported panel found.\n");
-		status = 1;
 		break;
 	}
 	/* Now that we have the panel type, setup the DP2LVDS converter */

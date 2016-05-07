@@ -48,6 +48,7 @@ int setup_lcd_panel(void)
 
 	lcd_type = get_lcd_panel_type();
 	printk(BIOS_INFO, "LCD: Found panel type %d\n", lcd_type);
+
 	switch (lcd_type) {
 	case LCD_PANEL_TYPE_10_INCH:
 		strcpy(blockname, "hwinfo10.hex");
@@ -68,6 +69,7 @@ int setup_lcd_panel(void)
 		printk(BIOS_ERR, "LCD: No supported panel found.\n");
 		break;
 	}
+
 	/* Now that we have the panel type, setup the DP2LVDS converter */
 	status = ptn3460_init(blockname);
 	if (status)

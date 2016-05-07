@@ -68,12 +68,6 @@ uintptr_t uart_platform_base(int idx)
 	return (CONFIG_CONSOLE_UART_BASE_ADDRESS);
 }
 
-unsigned int uart_platform_refclk(void)
-{
-	/* That's within 0.5% of the actual value we've set earlier */
-	return 115200 * 16;
-}
-
 static const struct pad_config uart_gpios[] = {
 	PAD_CFG_NF(GPIO_42, NATIVE, DEEP, NF1),		/* UART1 RX */
 	PAD_CFG_NF(GPIO_43, NATIVE, DEEP, NF1),		/* UART1 TX */

@@ -235,6 +235,7 @@ config HUDSON_UART
 	select DRIVERS_UART_8250MEM
 	select DRIVERS_UART_8250MEM_32
 	select NO_UART_ON_SUPERIO
+	select UART_OVERRIDE_REFCLK
 	help
 	  There are two UART controllers in Kern.
 	  The UART registers are memory-mapped. UART

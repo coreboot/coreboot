@@ -59,3 +59,19 @@ unsigned int uart_input_clock_divider(void)
 	return 16;
 }
 #endif
+
+#if !IS_ENABLED(CONFIG_UART_OVERRIDE_REFCLK)
+unsigned int uart_platform_refclk(void)
+{
+	/* Specify the default input clock frequency for the UART.
+	 *
+	 * The older UART's used an input clock frequency of 1.8432 MHz which
+	 * with the 16x oversampling provided the maximum baud-rate of 115200.
+	 * Specify this as maximum baud-rate multiplied by oversample so that
+	 * it is obvious that the maximum baud rate is 115200 when divided by
+	 * oversample clock.  Also note that crystal on the board does not
+	 * change when software selects another input clock divider.
+	 */
+	return 115200 * 16;
+}
+#endif

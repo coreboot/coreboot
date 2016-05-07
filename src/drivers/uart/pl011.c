@@ -48,10 +48,7 @@ void uart_fill_lb(void *data)
 	serial.baseaddr = uart_platform_base(CONFIG_UART_FOR_CONSOLE);
 	serial.baud = default_baudrate();
 	serial.regwidth = 1;
-	if (IS_ENABLED(CONFIG_UART_USE_REFCLK_AS_INPUT_CLOCK))
-		serial.input_hertz = uart_platform_refclk();
-	else
-		serial.input_hertz = 0;
+	serial.input_hertz = uart_platform_refclk();
 	serial.uart_pci_addr = CONFIG_UART_PCI_ADDR;
 	lb_add_serial(&serial, data);
 

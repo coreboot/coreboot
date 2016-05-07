@@ -18,17 +18,6 @@
 #include <soc/iomap.h>
 #include <soc/serialio.h>
 
-unsigned int uart_platform_refclk(void)
-{
-	/*
-	 * Set M and N divisor inputs and enable clock.
-	 * Main reference frequency to UART is:
-	 *  120MHz * M / N = 120MHz * 48 / 3125 = 1843200Hz
-	 * The different order below is to handle integer math overflow.
-	 */
-	return 120 * MHz / SIO_REG_PPR_CLOCK_N_DIV * SIO_REG_PPR_CLOCK_M_DIV;
-}
-
 uintptr_t uart_platform_base(int idx)
 {
 	/* Same base address for all debug port usage. In reality UART2

@@ -7,5 +7,6 @@ config CPU_TI_AM335X
 	select HAVE_UART_SPECIAL
 	select BOOTBLOCK_CONSOLE
 	select GENERIC_UDELAY
+	select UART_OVERRIDE_REFCLK
 	bool
 	default n

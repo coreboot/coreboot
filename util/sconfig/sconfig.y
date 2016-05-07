@@ -3,7 +3,7 @@
  * sconfig, coreboot device tree compiler
  *
  * Copyright (C) 2010 coresystems GmbH
- *                 written by Patrick Georgi <patrick.georgi@coresystems.de>
+ *   written by Patrick Georgi <patrick@georgi-clan.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,6 +16,9 @@
  */
 
 #include "sconfig.h"
+
+int yylex();
+void yyerror(const char *s);
 
 static struct device *cur_parent, *cur_bus;
 

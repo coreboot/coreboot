@@ -2,7 +2,7 @@
  * sconfig, coreboot device tree compiler
  *
  * Copyright (C) 2010 coresystems GmbH
- *                 written by Patrick Georgi <patrick.georgi@coresystems.de>
+ *   written by Patrick Georgi <patrick@georgi-clan.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -96,3 +96,6 @@ void alias_siblings(struct device *d);
 void add_resource(struct device *dev, int type, int index, int base);
 void add_register(struct device *dev, char *name, char *val);
 void add_pci_subsystem_ids(struct device *dev, int vendor, int device, int inherit);
+void add_ioapic_info(struct device *dev, int apicid, const char *_srcpin, int irqpin);
+
+void yyrestart(FILE *input_file);

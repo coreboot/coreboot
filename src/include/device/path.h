@@ -53,6 +53,7 @@ struct pnp_path
 struct i2c_path
 {
 	unsigned device;
+	unsigned mode_10bit;
 };
 
 struct apic_path

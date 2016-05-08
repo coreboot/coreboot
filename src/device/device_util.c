@@ -202,7 +202,7 @@ u32 dev_path_encode(device_t dev)
 		ret |= dev->path.pnp.port << 8 | dev->path.pnp.device;
 		break;
 	case DEVICE_PATH_I2C:
-		ret |= dev->bus->secondary << 8 | dev->path.pnp.device;
+		ret |= dev->path.i2c.mode_10bit << 8 | dev->path.i2c.device;
 		break;
 	case DEVICE_PATH_APIC:
 		ret |= dev->path.apic.apic_id;
@@ -334,7 +334,8 @@ int path_eq(struct device_path *path1, struct device_path *path2)
 			(path1->pnp.device == path2->pnp.device);
 		break;
 	case DEVICE_PATH_I2C:
-		equal = (path1->i2c.device == path2->i2c.device);
+		equal = (path1->i2c.device == path2->i2c.device) &&
+			(path1->i2c.mode_10bit == path2->i2c.mode_10bit);
 		break;
 	case DEVICE_PATH_APIC:
 		equal = (path1->apic.apic_id == path2->apic.apic_id);

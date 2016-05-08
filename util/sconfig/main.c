@@ -257,7 +257,7 @@ struct device *new_device(struct device *parent, struct device *busdev, const in
 		break;
 
 	case I2C:
-		new_d->path = ".type=DEVICE_PATH_I2C,{.i2c={ .device = 0x%x }}";
+		new_d->path = ".type=DEVICE_PATH_I2C,{.i2c={ .device = 0x%x, .mode_10bit = %d }}";
 		break;
 
 	case APIC:

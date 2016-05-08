@@ -49,6 +49,7 @@ end		{return(END);}
 [0-9.]+		{yylval.string = malloc(yyleng+1); strncpy(yylval.string, yytext, yyleng); yylval.string[yyleng]='\0'; return(NUMBER);}
 [0-9a-fA-F.]+	{yylval.string = malloc(yyleng+1); strncpy(yylval.string, yytext, yyleng); yylval.string[yyleng]='\0'; return(NUMBER);}
 INT[A-D]        {yylval.string = malloc(yyleng+1); strncpy(yylval.string, yytext, yyleng); yylval.string[yyleng]='\0'; return(PCIINT);}
+\"\"[^\"]+\"\"	{yylval.string = malloc(yyleng-1); strncpy(yylval.string, yytext+1, yyleng-2); yylval.string[yyleng-2]='\0'; return(STRING);}
 \"[^\"]+\"	{yylval.string = malloc(yyleng-1); strncpy(yylval.string, yytext+1, yyleng-2); yylval.string[yyleng-2]='\0'; return(STRING);}
 [^ \n\t]+	{yylval.string = malloc(yyleng+1); strncpy(yylval.string, yytext, yyleng); yylval.string[yyleng]='\0'; return(STRING);}
 %%

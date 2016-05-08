@@ -43,7 +43,7 @@ const char mainboard_name[] = CONFIG_MAINBOARD_VENDOR " " CONFIG_MAINBOARD_PART_
  * @param bus Pointer to the device to which the static buses are attached to.
  */
 
-static void scan_static_bus(device_t bus)
+void scan_static_bus(device_t bus)
 {
 	device_t child;
 	struct bus *link;

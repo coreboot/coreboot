@@ -222,6 +222,9 @@ u32 dev_path_encode(device_t dev)
 	case DEVICE_PATH_IOAPIC:
 		ret |= dev->path.ioapic.ioapic_id;
 		break;
+	case DEVICE_PATH_GENERIC:
+		ret |= dev->path.generic.subid << 8 | dev->path.generic.id;
+		break;
 	case DEVICE_PATH_NONE:
 	default:
 		break;
@@ -285,6 +288,11 @@ const char *dev_path(device_t dev)
 		case DEVICE_PATH_CPU_BUS:
 			snprintf(buffer, sizeof (buffer),
 				 "CPU_BUS: %02x", dev->path.cpu_bus.id);
+			break;
+		case DEVICE_PATH_GENERIC:
+			snprintf(buffer, sizeof (buffer),
+				 "GENERIC: %d.%d", dev->path.generic.id,
+				 dev->path.generic.subid);
 			break;
 		default:
 			printk(BIOS_ERR, "Unknown device path type: %d\n",
@@ -352,6 +360,10 @@ int path_eq(struct device_path *path1, struct device_path *path2)
 		break;
 	case DEVICE_PATH_CPU_BUS:
 		equal = (path1->cpu_bus.id == path2->cpu_bus.id);
+		break;
+	case DEVICE_PATH_GENERIC:
+		equal = (path1->generic.id == path2->generic.id) &&
+			(path1->generic.subid == path2->generic.subid);
 		break;
 	default:
 		printk(BIOS_ERR, "Unknown device type: %d\n", path1->type);

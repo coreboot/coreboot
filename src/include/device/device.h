@@ -232,6 +232,7 @@ void fixed_mem_resource(device_t dev, unsigned long index,
 		  unsigned long basek, unsigned long sizek, unsigned long type);
 
 void scan_smbus(device_t bus);
+void scan_static_bus(device_t bus);
 void scan_lpc_bus(device_t bus);
 
 /* It is the caller's responsibility to adjust regions such that ram_resource()

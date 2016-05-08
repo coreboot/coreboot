@@ -37,6 +37,7 @@ lapic		{yylval.number=APIC; return(BUS);}
 cpu_cluster	{yylval.number=CPU_CLUSTER; return(BUS);}
 cpu		{yylval.number=CPU; return(BUS);}
 domain		{yylval.number=DOMAIN; return(BUS);}
+generic		{yylval.number=GENERIC; return(BUS);}
 irq		{yylval.number=IRQ; return(RESOURCE);}
 drq		{yylval.number=DRQ; return(RESOURCE);}
 io		{yylval.number=IO; return(RESOURCE);}

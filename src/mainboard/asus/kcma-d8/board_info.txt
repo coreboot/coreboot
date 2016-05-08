@@ -1,5 +1,5 @@
 Category: server
-ROM package: PLCC-32
-ROM protocol: LPC
+ROM package: DIP-8
+ROM protocol: SPI
 ROM socketed: y
 Flashrom support: y

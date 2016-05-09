@@ -474,10 +474,39 @@ static int cbfstool_convert_fsp(struct buffer *buffer,
 
 	address = *offset;
 
-	/* Ensure the address is a memory mapped one. */
-	if (!IS_TOP_ALIGNED_ADDRESS(address))
-		address = -convert_to_from_absolute_top_aligned(
-				param.image_region, address);
+	/*
+	 * If the FSP component is xip, then ensure that the address is a memory
+	 * mapped one.
+	 * If the FSP component is not xip, then use param.baseaddress that is
+	 * passed in by the caller.
+	 *
+	 */
+	if (param.stage_xip) {
+		if (!IS_TOP_ALIGNED_ADDRESS(address))
+			address = -convert_to_from_absolute_top_aligned(
+					param.image_region, address);
+	} else {
+		if ((param.baseaddress_assigned == 0) ||
+		    (param.baseaddress == 0)) {
+			ERROR("Invalid baseaddress for non-XIP FSP.\n");
+			return 1;
+		}
+
+		address = param.baseaddress;
+
+		/*
+		 * *offset should either be 0 or the value returned by
+		 * do_cbfs_locate. do_cbfs_locate should not ever return a value
+		 * that is TOP_ALIGNED_ADDRESS. Thus, if *offset contains a top
+		 * aligned address, set it to 0.
+		 *
+		 * The only requirement in this case is that the binary should
+		 * be relocated to the base address that is requested. There is
+		 * no requirement on where the file ends up in the cbfs.
+		 */
+		if (IS_TOP_ALIGNED_ADDRESS(*offset))
+			*offset = 0;
+	}
 
 	/* Create a copy of the buffer to attempt relocation. */
 	if (buffer_create(&fsp, buffer_size(buffer), "fsp"))
@@ -603,6 +632,9 @@ static int cbfs_add(void)
 	 	if (!param.baseaddress_assigned)
 			param.alignment = 4*1024;
 		convert = cbfstool_convert_fsp;
+	} else if (param.stage_xip) {
+		ERROR("cbfs add supports xip only for FSP component type\n");
+		return 1;
 	}
 
 	if (param.alignment) {
@@ -1030,7 +1062,7 @@ static int cbfs_compact(void)
 }
 
 static const struct command commands[] = {
-	{"add", "H:r:f:n:t:c:b:a:vA:gh?", cbfs_add, true, true},
+	{"add", "H:r:f:n:t:c:b:a:yvA:gh?", cbfs_add, true, true},
 	{"add-flat-binary", "H:r:f:n:l:e:c:b:vA:gh?", cbfs_add_flat_binary,
 				true, true},
 	{"add-payload", "H:r:f:n:t:c:b:C:I:vA:gh?", cbfs_add_payload,
@@ -1153,7 +1185,8 @@ static void usage(char *name)
 	     "  -h               Display this help message\n\n"
 	     "COMMANDs:\n"
 	     " add [-r image,regions] -f FILE -n NAME -t TYPE [-A hash] \\\n"
-	     "        [-c compression] [-b base-address | -a alignment]    "
+	     "        [-c compression] [-b base-address | -a alignment] \\\n"
+	     "        [-y|--xip if TYPE is FSP]                            "
 			"Add a component\n"
 	     " add-payload [-r image,regions] -f FILE -n NAME [-A hash] \\\n"
 	     "        [-c compression] [-b base-address] \\\n"

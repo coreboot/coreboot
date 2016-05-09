@@ -54,6 +54,7 @@ cbfs-files-y += fsp.bin
 fsp.bin-file := $(call strip_quotes,$(CONFIG_FSP_FILE))
 fsp.bin-position := $(CONFIG_FSP_LOC)
 fsp.bin-type := fsp
+fsp.bin-options := --xip
 endif
 
 endif

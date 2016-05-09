@@ -350,6 +350,7 @@ ramstage-$(CONFIG_GENERATE_PIRQ_TABLE) += pirq_routing.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
 ramstage-$(CONFIG_GENERATE_SMBIOS_TABLES) += smbios.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpigen.c
+ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi_device.c
 ramstage-$(CONFIG_HAVE_ACPI_RESUME) += wakeup.S
 
 ramstage-y += c_start.S

@@ -92,6 +92,7 @@ void acpigen_write_resourcetemplate_footer(void);
 void acpigen_write_mainboard_resource_template(void);
 void acpigen_write_mainboard_resources(const char *scope, const char *name);
 void acpigen_write_irq(u16 mask);
+void acpigen_write_uuid(const char *uuid);
 
 int get_cst_entries(acpi_cstate_t **);
 

@@ -32,6 +32,15 @@ void gpio_output(gpio_t gpio, int value);
 int _gpio_base3_value(gpio_t gpio[], int num_gpio, int binary_first);
 
 /*
+ * This function may be implemented by SoC/board code to provide
+ * a mapping from a GPIO pin to controller by returning the ACPI
+ * path for the controller that owns this GPIO.
+ *
+ * If not implemented the default handler will return NULL.
+ */
+const char *gpio_acpi_path(gpio_t gpio);
+
+/*
  * Read the value presented by the set of GPIOs, when each pin is interpreted
  * as a base-2 digit (LOW = 0, HIGH = 1).
  *

@@ -20,6 +20,32 @@
 #include <device/device.h>
 #include <device/path.h>
 
+/* Write empty word value and return pointer to it */
+static void *acpi_device_write_zero_len(void)
+{
+	char *p = acpigen_get_current();
+	acpigen_emit_word(0);
+	return p;
+}
+
+/* Fill in length value from start to current at specified location */
+static void acpi_device_fill_from_len(char *ptr, char *start)
+{
+	uint16_t len = acpigen_get_current() - start;
+	ptr[0] = len & 0xff;
+	ptr[1] = (len >> 8) & 0xff;
+}
+
+/*
+ * Fill in the length field with the value calculated from after
+ * the 16bit field to acpigen current as this length value does
+ * not include the length field itself.
+ */
+static void acpi_device_fill_len(void *ptr)
+{
+	acpi_device_fill_from_len(ptr, ptr + sizeof(uint16_t));
+}
+
 /* Locate and return the ACPI name for this device */
 const char *acpi_device_name(struct device *dev)
 {
@@ -108,4 +134,53 @@ const char *acpi_device_path_join(struct device *dev, const char *name)
 	snprintf(buf + len, sizeof(buf) - len, ".%s", name);
 
 	return buf;
+}
+
+/* ACPI 6.1 section 6.4.3.6: Extended Interrupt Descriptor */
+void acpi_device_write_interrupt(const struct acpi_irq *irq)
+{
+	void *desc_length;
+	uint8_t flags;
+
+	if (!irq || !irq->pin)
+		return;
+
+	/* This is supported by GpioInt() but not Interrupt() */
+	if (irq->polarity == IRQ_ACTIVE_BOTH)
+		return;
+
+	/* Byte 0: Descriptor Type */
+	acpigen_emit_byte(ACPI_DESCRIPTOR_INTERRUPT);
+
+	/* Byte 1-2: Length (filled in later) */
+	desc_length = acpi_device_write_zero_len();
+
+	/*
+	 * Byte 3: Flags
+	 *  [7:5]: Reserved
+	 *    [4]: Wake     (0=NO_WAKE   1=WAKE)
+	 *    [3]: Sharing  (0=EXCLUSIVE 1=SHARED)
+	 *    [2]: Polarity (0=HIGH      1=LOW)
+	 *    [1]: Mode     (0=LEVEL     1=EDGE)
+	 *    [0]: Resource (0=PRODUCER  1=CONSUMER)
+	 */
+	flags = 1 << 0; /* ResourceConsumer */
+	if (irq->mode == IRQ_EDGE_TRIGGERED)
+		flags |= 1 << 1;
+	if (irq->polarity == IRQ_ACTIVE_LOW)
+		flags |= 1 << 2;
+	if (irq->shared == IRQ_SHARED)
+		flags |= 1 << 3;
+	if (irq->wake == IRQ_WAKE)
+		flags |= 1 << 4;
+	acpigen_emit_byte(flags);
+
+	/* Byte 4: Interrupt Table Entry Count */
+	acpigen_emit_byte(1);
+
+	/* Byte 5-8: Interrupt Number */
+	acpigen_emit_dword(irq->pin);
+
+	/* Fill in Descriptor Length (account for len word) */
+	acpi_device_fill_len(desc_length);
 }

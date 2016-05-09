@@ -67,6 +67,7 @@ int setup_lcd_panel(void)
 		break;
 	default:
 		printk(BIOS_ERR, "LCD: No supported panel found.\n");
+		return 1;
 		break;
 	}
 

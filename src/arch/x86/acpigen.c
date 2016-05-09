@@ -141,12 +141,30 @@ void acpigen_write_name_qword(const char *name, uint64_t val)
 	acpigen_write_qword(val);
 }
 
+void acpigen_write_name_string(const char *name, const char *string)
+{
+	acpigen_write_name(name);
+	acpigen_write_string(string);
+}
+
 void acpigen_emit_stream(const char *data, int size)
 {
 	int i;
 	for (i = 0; i < size; i++) {
 		acpigen_emit_byte(data[i]);
 	}
+}
+
+void acpigen_emit_string(const char *string)
+{
+	acpigen_emit_stream(string, string ? 0 : strlen(string));
+	acpigen_emit_byte('\0'); /* NUL */
+}
+
+void acpigen_write_string(const char *string)
+{
+	acpigen_emit_byte(0x0d);
+	acpigen_emit_string(string);
 }
 
 /*

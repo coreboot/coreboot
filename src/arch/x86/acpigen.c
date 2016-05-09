@@ -123,6 +123,49 @@ void acpigen_write_qword(uint64_t data)
 	acpigen_emit_dword((data >> 32) & 0xffffffff);
 }
 
+void acpigen_write_zero(void)
+{
+	acpigen_emit_byte(0x00);
+}
+
+void acpigen_write_one(void)
+{
+	acpigen_emit_byte(0x01);
+}
+
+void acpigen_write_ones(void)
+{
+	acpigen_emit_byte(0xff);
+}
+
+void acpigen_write_integer(uint64_t data)
+{
+	if (data == 0)
+		acpigen_write_zero();
+	else if (data == 1)
+		acpigen_write_one();
+	else if (data <= 0xff)
+		acpigen_write_byte((unsigned char)data);
+	else if (data <= 0xffff)
+		acpigen_write_word((unsigned int)data);
+	else if (data <= 0xffffffff)
+		acpigen_write_dword((unsigned int)data);
+	else
+		acpigen_write_qword(data);
+}
+
+void acpigen_write_name_zero(const char *name)
+{
+	acpigen_write_name(name);
+	acpigen_write_one();
+}
+
+void acpigen_write_name_one(const char *name)
+{
+	acpigen_write_name(name);
+	acpigen_write_zero();
+}
+
 void acpigen_write_name_byte(const char *name, uint8_t val)
 {
 	acpigen_write_name(name);
@@ -139,6 +182,12 @@ void acpigen_write_name_qword(const char *name, uint64_t val)
 {
 	acpigen_write_name(name);
 	acpigen_write_qword(val);
+}
+
+void acpigen_write_name_integer(const char *name, uint64_t val)
+{
+	acpigen_write_name(name);
+	acpigen_write_integer(val);
 }
 
 void acpigen_write_name_string(const char *name, const char *string)

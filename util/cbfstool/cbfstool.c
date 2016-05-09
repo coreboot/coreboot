@@ -29,7 +29,7 @@
 #include "cbfs_sections.h"
 #include "fit.h"
 #include "partitioned_file.h"
-#include <commonlib/fsp1_1.h>
+#include <commonlib/fsp.h>
 
 #define SECTION_WITH_FIT_TABLE	"BOOTBLOCK"
 
@@ -515,12 +515,13 @@ static int cbfstool_convert_fsp(struct buffer *buffer,
 	memcpy(buffer_get(&fsp), buffer_get(buffer), buffer_size(buffer));
 
 	/* Replace the buffer contents w/ the relocated ones on success. */
-	if (fsp1_1_relocate(address, buffer_get(&fsp), buffer_size(&fsp)) > 0) {
+	if (fsp_component_relocate(address, buffer_get(&fsp), buffer_size(&fsp))
+	    > 0) {
 		buffer_delete(buffer);
 		buffer_clone(buffer, &fsp);
 	} else {
 		buffer_delete(&fsp);
-		WARN("FSP was not a 1.1 variant.\n");
+		WARN("Invalid FSP variant.\n");
 	}
 
 	/* Let the raw path handle all the cbfs metadata logic. */

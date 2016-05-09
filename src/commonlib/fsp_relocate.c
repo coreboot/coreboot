@@ -15,7 +15,7 @@
 
 #include <console/console.h>
 #include <commonlib/endian.h>
-#include <commonlib/fsp1_1.h>
+#include <commonlib/fsp.h>
 /*
  * Intel's code does not have a handle on changing global packing state.
  * Therefore, one needs to protect against packing policies that are set
@@ -482,7 +482,7 @@ static ssize_t relocate_fvh(uintptr_t new_addr, void *fsp, size_t fsp_size,
 			}
 
 			/*
-			 * The entire FSP 1.1 image can be thought of as one
+			 * The entire FSP image can be thought of as one
 			 * program with a single link address even though there
 			 * are multiple TEs linked separately. The reason is
 			 * that each TE is linked for XIP. So in order to
@@ -511,7 +511,7 @@ static ssize_t relocate_fvh(uintptr_t new_addr, void *fsp, size_t fsp_size,
 	return fv_length;
 }
 
-ssize_t fsp1_1_relocate(uintptr_t new_addr, void *fsp, size_t size)
+ssize_t fsp_component_relocate(uintptr_t new_addr, void *fsp, size_t size)
 {
 	size_t offset;
 	size_t fih_offset;
@@ -541,4 +541,9 @@ ssize_t fsp1_1_relocate(uintptr_t new_addr, void *fsp, size_t size)
 	}
 
 	return relocate_remaining_items(fsp, size, new_addr, fih_offset);
+}
+
+ssize_t fsp1_1_relocate(uintptr_t new_addr, void *fsp, size_t size)
+{
+	return fsp_component_relocate(new_addr, fsp, size);
 }

@@ -12,7 +12,7 @@ cbfsobj += fit.o
 cbfsobj += partitioned_file.o
 # COMMONLIB
 cbfsobj += cbfs.o
-cbfsobj += fsp1_1_relocate.o
+cbfsobj += fsp_relocate.o
 cbfsobj += lz4_wrapper.o
 cbfsobj += mem_pool.o
 cbfsobj += region.o

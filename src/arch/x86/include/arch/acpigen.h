@@ -22,6 +22,18 @@
 #include <stdint.h>
 #include <arch/acpi.h>
 
+/* Values that can be returned for ACPI Device _STA method */
+#define ACPI_STATUS_DEVICE_PRESENT	(1 << 0)
+#define ACPI_STATUS_DEVICE_ENABLED	(1 << 1)
+#define ACPI_STATUS_DEVICE_SHOW_IN_UI	(1 << 2)
+#define ACPI_STATUS_DEVICE_STATE_OK	(1 << 3)
+
+#define ACPI_STATUS_DEVICE_ALL_OFF	0
+#define ACPI_STATUS_DEVICE_ALL_ON	(ACPI_STATUS_DEVICE_PRESENT |\
+					 ACPI_STATUS_DEVICE_ENABLED |\
+					 ACPI_STATUS_DEVICE_SHOW_IN_UI |\
+					 ACPI_STATUS_DEVICE_STATE_OK)
+
 void acpigen_write_len_f(void);
 void acpigen_pop_len(void);
 void acpigen_set_current(char *curr);
@@ -58,6 +70,8 @@ void acpigen_write_PPC(u8 nr);
 void acpigen_write_PPC_NVS(void);
 void acpigen_write_empty_PCT(void);
 void acpigen_write_empty_PTC(void);
+void acpigen_write_PRW(u32 wake, u32 level);
+void acpigen_write_STA(uint8_t status);
 void acpigen_write_TPC(const char *gnvs_tpc_limit);
 void acpigen_write_PSS_package(u32 coreFreq, u32 power, u32 transLat, u32 busmLat,
 			u32 control, u32 status);

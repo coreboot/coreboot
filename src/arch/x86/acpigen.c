@@ -449,6 +449,17 @@ void acpigen_write_device(const char *name)
 	acpigen_emit_namestring(name);
 }
 
+void acpigen_write_STA(uint8_t status)
+{
+	/*
+	 * Method (_STA, 0, NotSerialized) { Return (status) }
+	 */
+	acpigen_write_method("_STA", 0);
+	acpigen_emit_byte(0xa4);
+	acpigen_write_byte(status);
+	acpigen_pop_len();
+}
+
 /*
  * Generates a func with max supported P-states.
  */
@@ -500,6 +511,18 @@ void acpigen_write_TPC(const char *gnvs_tpc_limit)
 	acpigen_write_method("_TPC", 0);
 	acpigen_emit_byte(0xa4);		/* ReturnOp */
 	acpigen_emit_namestring(gnvs_tpc_limit);
+	acpigen_pop_len();
+}
+
+void acpigen_write_PRW(u32 wake, u32 level)
+{
+	/*
+	 * Name (_PRW, Package () { wake, level }
+	 */
+	acpigen_write_name("_PRW");
+	acpigen_write_package(2);
+	acpigen_write_integer(wake);
+	acpigen_write_integer(level);
 	acpigen_pop_len();
 }
 

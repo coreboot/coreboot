@@ -44,6 +44,19 @@ int checkstack(void *top_of_stack, int core);
 void hexdump(const void *memory, size_t length);
 void hexdump32(char LEVEL, const void *d, size_t len);
 
+/*
+ * hexstrtobin - Turn a string of ASCII hex characters into binary
+ *
+ * @str: String of hex characters to parse
+ * @buf: Buffer to store the resulting bytes into
+ * @len: Maximum length of buffer to fill
+ *
+ * Defined in src/lib/hexstrtobin.c
+ * Ignores non-hex characters in the string.
+ * Returns the number of bytes that have been put in the buffer.
+ */
+size_t hexstrtobin(const char *str, uint8_t *buf, size_t len);
+
 #if !defined(__ROMCC__)
 /* Count Leading Zeroes: clz(0) == 32, clz(0xf) == 28, clz(1 << 31) == 0 */
 static inline int clz(u32 x) { return x ? __builtin_clz(x) : sizeof(x) * 8; }

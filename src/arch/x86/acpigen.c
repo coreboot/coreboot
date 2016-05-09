@@ -24,6 +24,7 @@
 
 #define ACPIGEN_MAXLEN 0xfffff
 
+#include <lib.h>
 #include <string.h>
 #include <arch/acpigen.h>
 #include <console/console.h>
@@ -826,4 +827,39 @@ void acpigen_emit_eisaid(const char *eisaid)
 	acpigen_emit_byte((compact >> 16) & 0xff);
 	acpigen_emit_byte((compact >> 8) & 0xff);
 	acpigen_emit_byte(compact & 0xff);
+}
+
+/*
+ * ToUUID(uuid)
+ *
+ * ACPI 6.1 Section 19.6.136 table 19-385 defines a special output
+ * order for the bytes that make up a UUID Buffer object.
+ * UUID byte order for input:
+ *   aabbccdd-eeff-gghh-iijj-kkllmmnnoopp
+ * UUID byte order for output:
+ *   ddccbbaa-ffee-hhgg-iijj-kkllmmnnoopp
+ */
+#define UUID_LEN 16
+void acpigen_write_uuid(const char *uuid)
+{
+	uint8_t buf[UUID_LEN];
+	size_t i, order[UUID_LEN] = { 3, 2, 1, 0, 5, 4, 7, 6,
+				      8, 9, 10, 11, 12, 13, 14, 15 };
+
+	/* Parse UUID string into bytes */
+	if (hexstrtobin(uuid, buf, UUID_LEN) < UUID_LEN)
+		return;
+
+	/* BufferOp */
+	acpigen_emit_byte(0x11);
+	acpigen_write_len_f();
+
+	/* Buffer length in bytes */
+	acpigen_write_word(UUID_LEN);
+
+	/* Output UUID in expected order */
+	for (i = 0; i < UUID_LEN; i++)
+		acpigen_emit_byte(buf[order[i]]);
+
+	acpigen_pop_len();
 }

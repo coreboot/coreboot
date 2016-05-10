@@ -218,7 +218,7 @@ static void fill_console_params(struct FSPM_UPD *mupd)
 void platform_fsp_memory_init_params_cb(struct FSPM_UPD *mupd)
 {
 	const struct mrc_saved_data *mrc_cache;
-	struct FSP_M_ARCH_UPD *arch_upd = &mupd->FspmArchUpd;
+	struct FSPM_ARCH_UPD *arch_upd = &mupd->FspmArchUpd;
 	struct chipset_power_state *ps = car_get_var_ptr(&power_state);
 	int prev_sleep_state = chipset_prev_sleep_state(ps);
 
@@ -226,12 +226,7 @@ void platform_fsp_memory_init_params_cb(struct FSPM_UPD *mupd)
 	mainboard_memory_init_params(mupd);
 
 	/* Do NOT let FSP do any GPIO pad configuration */
-	mupd->FspmConfig.GpioPadInitTablePtr = NULL;
-	/*
-	 * At FIT_POINTER there is an address that points to FIT. Even though it
-	 * is technically 64bit value we know only 32bit address is used.
-	 */
-	mupd->FspmConfig.FitTablePtr = read32((void*) FIT_POINTER);
+	mupd->FspmConfig.PreMemGpioTablePtr = (uintptr_t) NULL;
 	/* Reserve enough memory under TOLUD to save CBMEM header */
 	mupd->FspmArchUpd.BootLoaderTolumSize = cbmem_overhead_size();
 	/*
@@ -247,18 +242,18 @@ void platform_fsp_memory_init_params_cb(struct FSPM_UPD *mupd)
 	mupd->FspmArchUpd.StackBase = _car_region_end -
 					mupd->FspmArchUpd.StackSize;
 #endif
-	arch_upd->Bootmode = FSP_BOOT_WITH_FULL_CONFIGURATION;
+	arch_upd->BootMode = FSP_BOOT_WITH_FULL_CONFIGURATION;
 
 	if (IS_ENABLED(CONFIG_CACHE_MRC_SETTINGS)) {
 		if (!mrc_cache_get_current_with_version(&mrc_cache, 0)) {
 			/* MRC cache found */
 			arch_upd->NvsBufferPtr = (void *)mrc_cache->data;
-			arch_upd->Bootmode =
+			arch_upd->BootMode =
 				prev_sleep_state == SLEEP_STATE_S3 ?
 				FSP_BOOT_ON_S3_RESUME:
 				FSP_BOOT_ASSUMING_NO_CONFIGURATION_CHANGES;
 			printk(BIOS_DEBUG, "MRC cache found, size %x bootmode:%d\n",
-						mrc_cache->size, arch_upd->Bootmode);
+						mrc_cache->size, arch_upd->BootMode);
 		} else
 			printk(BIOS_DEBUG, "MRC cache was not found\n");
 	}

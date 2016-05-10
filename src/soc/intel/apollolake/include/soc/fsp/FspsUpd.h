@@ -34,7 +34,7 @@ are permitted provided that the following conditions are met:
 #define __FSPSUPD_H__
 
 #include "FspUpd.h"
-
+#include <fsp/upd.h>
 
 /** Fsp S Configuration
 **/
@@ -70,7 +70,8 @@ struct FSP_S_CONFIG {
   uint8_t                       VmxEnable;
 
 /** Offset 0x0025 - Memory region allocation for Processor Trace
-  Memory region allocation for Processor Trace, allowed range is from 4K (0x0) to 128MB (0xF); <b>0xFF: Disable. 0xFF:Disable(Default)
+  Memory region allocation for Processor Trace, allowed range is from 4K (0x0) to
+  128MB (0xF); <b>0xFF: Disable. 0xFF:Disable(Default)
 **/
   uint8_t                       ProcTraceMemSize;
 
@@ -110,7 +111,8 @@ struct FSP_S_CONFIG {
   uint8_t                       BiProcHot;
 
 /** Offset 0x002C - Max Pkg Cstate
-  Max Pkg Cstate. 0:PkgC0C1, 1:PkgC2, 2:PkgC3(Default), 3:PkgC6, 4:PkgC7, 5:PkgC7s, 6:PkgC8, 7:PkgC9, 8:PkgC10, 9:PkgCMax, 254:PkgCpuDefault, 255:PkgAuto.
+  Max Pkg Cstate. 0:PkgC0C1, 1:PkgC2, 2:PkgC3(Default), 3:PkgC6, 4:PkgC7, 5:PkgC7s,
+  6:PkgC8, 7:PkgC9, 8:PkgC10, 9:PkgCMax, 254:PkgCpuDefault, 255:PkgAuto.
 **/
   uint8_t                       PkgCStateLimit;
 
@@ -119,12 +121,15 @@ struct FSP_S_CONFIG {
   uint8_t                       UnusedUpdSpace0;
 
 /** Offset 0x002E - C-State auto-demotion
-  C-State Auto Demotion. 0:Disable(Default) C1 and C3 Auto-demotion, 1:Enable C3/C6/C7 Auto-demotion to C1, 2:Enable C6/C7 Auto-demotion to C3, 3:Enable C6/C7 Auto-demotion to C1 and C3.
+  C-State Auto Demotion. 0:Disable(Default) C1 and C3 Auto-demotion, 1:Enable C3/C6/C7
+  Auto-demotion to C1, 2:Enable C6/C7 Auto-demotion to C3, 3:Enable C6/C7 Auto-demotion
+  to C1 and C3.
 **/
   uint8_t                       CStateAutoDemotion;
 
 /** Offset 0x002F - C-State un-demotion
-  C-State un-demotion. 0:Disable(Default) C1 and C3 Un-demotion, 1:Enable C1 Un-demotion, 2:Enable C3 Un-demotion, 3:Enable C1 and C3 Un-demotion.
+  C-State un-demotion. 0:Disable(Default) C1 and C3 Un-demotion, 1:Enable C1 Un-demotion,
+  2:Enable C3 Un-demotion, 3:Enable C1 and C3 Un-demotion.
 **/
   uint8_t                       CStateUnDemotion;
 
@@ -436,7 +441,8 @@ struct FSP_S_CONFIG {
 
 /** Offset 0x0091 - HD-Audio I/O Buffer Ownership
   Set HD-Audio I/O Buffer Ownership. 0:Disable(Default), 1:Enable.
-  0:HD-Audio link owns all the I/O buffers, 1:HD-Audio link owns 4 I/O buffers and I2S port owns 4 I/O buffers, 3:I2S port owns all the I/O buffers
+  0:HD-Audio link owns all the I/O buffers, 1:HD-Audio link owns 4 I/O buffers and
+  I2S port owns 4 I/O buffers, 3:I2S port owns all the I/O buffers
 **/
   uint8_t                       HdAudioIoBufferOwnership;
 
@@ -453,13 +459,15 @@ struct FSP_S_CONFIG {
   uint8_t                       HdAudioVcType;
 
 /** Offset 0x0094 - HD-Audio Link Frequency
-  HD-Audio Virtual Channel Type Selectiton. 0:6MHz(Default), 1:12MHz, 2:24MHz, 3:48MHz, 4:96MHz, 5:Invalid.
+  HD-Audio Virtual Channel Type Selectiton. 0:6MHz(Default), 1:12MHz, 2:24MHz, 3:48MHz,
+  4:96MHz, 5:Invalid.
   0: 6MHz, 1: 12MHz, 2: 24MHz, 3: 48MHz, 4: 96MHz, 5: Invalid
 **/
   uint8_t                       HdAudioLinkFrequency;
 
 /** Offset 0x0095 - HD-Audio iDisp-Link Frequency
-  HD-Audio iDisp-Link Frequency Selectiton. 0:6MHz(Default), 1:12MHz, 2:24MHz, 3:48MHz, 4:96MHz, 5:Invalid.
+  HD-Audio iDisp-Link Frequency Selectiton. 0:6MHz(Default), 1:12MHz, 2:24MHz, 3:48MHz,
+  4:96MHz, 5:Invalid.
   0: 6MHz, 1: 12MHz, 2: 24MHz, 3: 48MHz, 4: 96MHz, 5: Invalid
 **/
   uint8_t                       HdAudioIDispLinkFrequency;
@@ -495,13 +503,13 @@ struct FSP_S_CONFIG {
   uint8_t                       DspEndpointI2sHp;
 
 /** Offset 0x009B - HD-Audio Controller Power Gating
-  Enable/Disable HD-Audio Controller Power Gating. 0:Disable(Default), 1:Enable.
+  Enable/Disable HD-Audio Controller Power Gating. This option is deprecated.
   $EN_DIS
 **/
   uint8_t                       AudioCtlPwrGate;
 
 /** Offset 0x009C - HD-Audio ADSP Power Gating
-  Enable/Disable HD-Audio ADSP Power Gating. 0:Disable(Default), 1:Enable.
+  Enable/Disable HD-Audio ADSP Power Gating. This option is deprecated.
   $EN_DIS
 **/
   uint8_t                       AudioDspPwrGate;
@@ -538,13 +546,17 @@ struct FSP_S_CONFIG {
 
 /** Offset 0x00A2 - Bitmask of DSP Feature
   Set Bitmask of HD-Audio DSP Feature. 0x00000000(Default).
-  [BIT0] - WoV, [BIT1] - BT Sideband, [BIT2] - Codec VAD, [BIT5] - BT Intel HFP, [BIT6] - BT Intel A2DP, [BIT7] - DSP based speech pre-processing disabled, [BIT8] - 0: Intel WoV, 1: Windows Voice Activation
+  [BIT0] - WoV, [BIT1] - BT Sideband, [BIT2] - Codec VAD, [BIT5] - BT Intel HFP, [BIT6]
+  - BT Intel A2DP, [BIT7] - DSP based speech pre-processing disabled, [BIT8] - 0:
+  Intel WoV, 1: Windows Voice Activation
 **/
   uint32_t                      DspFeatureMask;
 
 /** Offset 0x00A6 - Bitmask of supported DSP Post-Processing Modules
   Set HD-Audio Bitmask of supported DSP Post-Processing Modules. 0x00000000(Default).
-  [BIT0] - WoV, [BIT1] - BT Sideband, [BIT2] - Codec VAD, [BIT5] - BT Intel HFP, [BIT6] - BT Intel A2DP, [BIT7] - DSP based speech pre-processing disabled, [BIT8] - 0: Intel WoV, 1: Windows Voice Activation
+  [BIT0] - WoV, [BIT1] - BT Sideband, [BIT2] - Codec VAD, [BIT5] - BT Intel HFP, [BIT6]
+  - BT Intel A2DP, [BIT7] - DSP based speech pre-processing disabled, [BIT8] - 0:
+  Intel WoV, 1: Windows Voice Activation
 **/
   uint32_t                      DspPpModuleMask;
 
@@ -624,7 +636,8 @@ struct FSP_S_CONFIG {
   uint8_t                       IshEnable;
 
 /** Offset 0x00BB - ISH Controller
-  Enable/Disable BIOS Interface Lock Down bit to prevent writes to the Backup Control Register. 0:Disable, 1:Enable(Default).
+  Enable/Disable BIOS Interface Lock Down bit to prevent writes to the Backup Control
+  Register. 0:Disable, 1:Enable(Default).
   $EN_DIS
 **/
   uint8_t                       BiosInterface;
@@ -768,11 +781,11 @@ struct FSP_S_CONFIG {
 **/
   uint8_t                       OsDbgEnable;
 
-/** Offset 0x00E3 - Exi Feature
-  Enable/Disable Exi Feature. 0:Disable(Default), 1: Enable.
+/** Offset 0x00E3 - DCI Feature
+  Enable/Disable DCI Feature. 0:Disable(Default), 1: Enable.
   $EN_DIS
 **/
-  uint8_t                       ExiEnable;
+  uint8_t                       DciEn;
 
 /** Offset 0x00E4 - Enable PCIE Clock Gating
   Enable/disable PCIE Clock Gating. 0:Enable, 1:Disable(Default).
@@ -848,7 +861,8 @@ struct FSP_S_CONFIG {
   uint8_t                       PcieRpClkReqSupported[6];
 
 /** Offset 0x011F - Configure CLKREQ Number
-  Configure Root Port CLKREQ Number if CLKREQ is supported. Default=0x04, 0x05, 0x00, 0x01, 0x02, 0x03.
+  Configure Root Port CLKREQ Number if CLKREQ is supported. Default=0x04, 0x05, 0x00,
+  0x01, 0x02, 0x03.
 **/
   uint8_t                       PcieRpClkReqNumber[6];
 
@@ -923,7 +937,8 @@ struct FSP_S_CONFIG {
   uint8_t                       PtmEnable[6];
 
 /** Offset 0x0179 - ASPM
-  PCI Express Active State Power Management settings. 0:Disable, 1:L0s, 2:L1, 3:L0sL1, 4:Auto(Default).
+  PCI Express Active State Power Management settings. 0:Disable, 1:L0s, 2:L1, 3:L0sL1,
+  4:Auto(Default).
 **/
   uint8_t                       PcieRpAspm[6];
 
@@ -949,19 +964,21 @@ struct FSP_S_CONFIG {
   uint8_t                       PmeB0S5Dis;
 
 /** Offset 0x0192 - PCI Clock Run
-  This member describes whether or not the PCI ClockRun feature of SC should be enabled. 0:Disable(Default), 1:Enable.
+  This member describes whether or not the PCI ClockRun feature of SC should be enabled.
+  0:Disable(Default), 1:Enable.
   $EN_DIS
 **/
   uint8_t                       PciClockRun;
 
 /** Offset 0x0193 - Enable/Disable Timer 8254 Clock Setting
-  Enable/Disable Timer 8254 Clock. 0:Disable, 1:Enable(Default).
+  Enable/Disable Timer 8254 Clock. 0:Disable(Default), 1:Enable.
   $EN_DIS
 **/
   uint8_t                       Timer8254ClkSetting;
 
 /** Offset 0x0194 - Chipset SATA
-  Enables or Disables the Chipset SATA Controller. The Chipset SATA controller supports the 2 black internal SATA ports (up to 3Gb/s supported per port). 0:Disable, 1:Enable(Default).
+  Enables or Disables the Chipset SATA Controller. The Chipset SATA controller supports
+  the 2 black internal SATA ports (up to 3Gb/s supported per port). 0:Disable, 1:Enable(Default).
   $EN_DIS
 **/
   uint8_t                       EnableSata;
@@ -1012,7 +1029,8 @@ struct FSP_S_CONFIG {
   uint8_t                       SataPortsHotPlug[2];
 
 /** Offset 0x01A0 - Mechanical Presence Switch
-  Controls reporting if this port has an Mechanical Presence Switch.\nNote:Requires hardware support.  0:Disable, 1:Enable(Default).
+  Controls reporting if this port has an Mechanical Presence Switch.\nNote:Requires
+  hardware support.  0:Disable, 1:Enable(Default).
 **/
   uint8_t                       SataPortsInterlockSw[2];
 
@@ -1027,7 +1045,8 @@ struct FSP_S_CONFIG {
   uint8_t                       SataPortsSpinUp[2];
 
 /** Offset 0x01A6 - SATA Solid State
-  Identify the SATA port is connected to Solid State Drive or Hard Disk Drive.  0:Hard Disk Drive(Default), 1:Solid State Drive.
+  Identify the SATA port is connected to Solid State Drive or Hard Disk Drive.  0:Hard
+  Disk Drive(Default), 1:Solid State Drive.
 **/
   uint8_t                       SataPortsSolidStateDrive[2];
 
@@ -1163,7 +1182,8 @@ struct FSP_S_CONFIG {
   uint8_t                       RsvdSmbusAddressTable[128];
 
 /** Offset 0x024F - XHCI Disable Compliance Mode
-  Options to disable XHCI Link Compliance Mode. Default is FALSE to not disable Compliance Mode. Set TRUE to disable Compliance Mode. 0:FALSE(Default), 1:True.
+  Options to disable XHCI Link Compliance Mode. Default is FALSE to not disable Compliance
+  Mode. Set TRUE to disable Compliance Mode. 0:FALSE(Default), 1:True.
   $EN_DIS
 **/
   uint8_t                       DisableComplianceMode;
@@ -1181,7 +1201,8 @@ struct FSP_S_CONFIG {
   uint8_t                       Usb30Mode;
 
 /** Offset 0x0252 - Enable USB2 ports
-  Enable/disable per USB2 ports. One byte for each port, byte0 for port0, byte1 for port1, and so on. 0x01(Default).
+  Enable/disable per USB2 ports. One byte for each port, byte0 for port0, byte1 for
+  port1, and so on. 0x01(Default).
 **/
   uint8_t                       PortUsb20Enable[8];
 
@@ -1191,7 +1212,8 @@ struct FSP_S_CONFIG {
   uint8_t                       PortUs20bOverCurrentPin[8];
 
 /** Offset 0x0262 - Enable USB3 ports
-  Enable/disable per USB3 ports. One byte for each port, byte0 for port0, byte1 for port1, and so on. 0x01(Default).
+  Enable/disable per USB3 ports. One byte for each port, byte0 for port0, byte1 for
+  port1, and so on. 0x01(Default).
 **/
   uint8_t                       PortUsb30Enable[6];
 
@@ -1213,7 +1235,8 @@ struct FSP_S_CONFIG {
   uint8_t                       HsicSupportEnable;
 
 /** Offset 0x0270 - Enable XHCI SSIC Support
-  Enable/disable XHCI SSIC ports. One byte for each port, byte0 for port0, byte1 for port1. 0x00(Default).
+  Enable/disable XHCI SSIC ports. One byte for each port, byte0 for port0, byte1 for
+  port1. 0x00(Default).
 **/
   uint8_t                       SsicPortEnable[2];
 
@@ -1235,7 +1258,8 @@ struct FSP_S_CONFIG {
   uint16_t                      ResetWaitTimer;
 
 /** Offset 0x0277 - SMI Lock bit
-  Enable/Disable SMI_LOCK bit to prevent writes to the Global SMI Enable bit. 0:Disable, 1:Enable(Default).
+  Enable/Disable SMI_LOCK bit to prevent writes to the Global SMI Enable bit. 0:Disable,
+  1:Enable(Default).
   $EN_DIS
 **/
   uint8_t                       LockDownGlobalSmi;
@@ -1269,7 +1293,8 @@ struct FSP_S_CONFIG {
   uint16_t                      PcieRpLtrMaxSnoopLatency[6];
 
 /** Offset 0x028A -   Snoop Latency Override
-  Snoop Latency Override for PCH PCIE. \nDisabled:Disable override.\nManual:Manually enter override values.\nAuto:Maintain default BIOS flow. 0:Disable, 1:Enable, 2:Auto(Default).
+  Snoop Latency Override for PCH PCIE. \nDisabled:Disable override.\nManual:Manually
+  enter override values.\nAuto:Maintain default BIOS flow. 0:Disable, 1:Enable, 2:Auto(Default).
 **/
   uint8_t                       PcieRpSnoopLatencyOverrideMode[6];
 
@@ -1279,7 +1304,8 @@ struct FSP_S_CONFIG {
   uint16_t                      PcieRpSnoopLatencyOverrideValue[6];
 
 /** Offset 0x029C -   Snoop Latency Multiplier
-  LTR Snoop Latency Multiplier of PCH PCIE. 0:1ns, 1:32ns, 2:1024ns(Default), 3:32768ns, 4:1048576ns, 5:33554432ns.
+  LTR Snoop Latency Multiplier of PCH PCIE. 0:1ns, 1:32ns, 2:1024ns(Default), 3:32768ns,
+  4:1048576ns, 5:33554432ns.
 **/
   uint8_t                       PcieRpSnoopLatencyOverrideMultiplier[6];
 
@@ -1289,7 +1315,9 @@ struct FSP_S_CONFIG {
   uint16_t                      PcieRpLtrMaxNonSnoopLatency[6];
 
 /** Offset 0x02AE -   Non Snoop Latency Override
-  Non Snoop Latency Override for PCH PCIE. \nDisabled:Disable override.\nManual:Manually enter override values.\nAuto: Maintain default BIOS flow. 0:Disable, 1:Enable, 2:Auto(Default).
+  Non Snoop Latency Override for PCH PCIE. \nDisabled:Disable override.\nManual:Manually
+  enter override values.\nAuto: Maintain default BIOS flow. 0:Disable, 1:Enable,
+  2:Auto(Default).
 **/
   uint8_t                       PcieRpNonSnoopLatencyOverrideMode[6];
 
@@ -1299,7 +1327,8 @@ struct FSP_S_CONFIG {
   uint16_t                      PcieRpNonSnoopLatencyOverrideValue[6];
 
 /** Offset 0x02C0 -   Non Snoop Latency Multiplier
-  LTR Non Snoop Latency Multiplier of PCH PCIE. 0:1ns, 1:32ns, 2:1024ns(Default), 3:32768ns, 4:1048576ns, 5:33554432ns.
+  LTR Non Snoop Latency Multiplier of PCH PCIE. 0:1ns, 1:32ns, 2:1024ns(Default),
+  3:32768ns, 4:1048576ns, 5:33554432ns.
 **/
   uint8_t                       PcieRpNonSnoopLatencyOverrideMultiplier[6];
 
@@ -1314,25 +1343,154 @@ struct FSP_S_CONFIG {
   uint8_t                       PcieRpSlotPowerLimitValue[6];
 
 /** Offset 0x02D2 - Skip Multi-Processor Initialization
-  When this is skipped, boot loader must initialize processors before SilicionInit API. 0: Initialize(Default), <b>1: Skip
+  When this is skipped, boot loader must initialize processors before SilicionInit
+  API. 0: Initialize(Default), <b>1: Skip
   $EN_DIS
 **/
   uint8_t                       SkipMpInit;
 
-/** Offset 0x02D3
+/** Offset 0x02D3 - DCI Auto Detect
+  Enable/disable DCI AUTO mode.
+  $EN_DIS
 **/
-  uint8_t                       ReservedFspsUpd[45];
+  uint8_t                       DciAutoDetect;
+
+/** Offset 0x02D4 - Halt and Lock TCO Timer
+  Halt and Lock the TCO Timer (Watchdog).
+  0:No, 1:Yes (default)
+**/
+  uint8_t                       TcoTimerHaltLock;
+
+/** Offset 0x02D5 - Power Button Override Peroid
+  specifies how long will PMC wait before initiating a global reset. 000b-4s(default),
+  001b-6s, 010b-8s, 011b-10s, 100b-12s, 101b-14s.)
+  0x0:4s, 0x1:6s, 0x2:8s, 0x3:10s, 0x4:12s, 0x5:14s
+**/
+  uint8_t                       PwrBtnOverridePeriod;
+
+/** Offset 0x02D6 - Power Button Native Mode Disable
+  Diable power button native mode, when 1, this will result in the PMC logic constantly
+  seeing the power button as de-asserted. 0 (default))
+  $EN_DIS
+**/
+  uint8_t                       DisableNativePowerButton;
+
+/** Offset 0x02D7 - Power Button Debounce Mode
+  Enable interrupt when PWRBTN# is asserted. 0:Disabled, 1:Enabled(default)
+  $EN_DIS
+**/
+  uint8_t                       PowerButterDebounceMode;
+
+/** Offset 0x02D8 - SDIO_TX_CMD_DLL_CNTL
+  SDIO_TX_CMD_DLL_CNTL. 0x505(Default).
+**/
+  uint32_t                      SdioTxCmdCntl;
+
+/** Offset 0x02DC - SDIO_TX_DATA_DLL_CNTL1
+  SDIO_TX_DATA_DLL_CNTL1. 0xE(Default).
+**/
+  uint32_t                      SdioTxDataCntl1;
+
+/** Offset 0x02E0 - SDIO_TX_DATA_DLL_CNTL2
+  SDIO_TX_DATA_DLL_CNTL2. 0x22272828(Default).
+**/
+  uint32_t                      SdioTxDataCntl2;
+
+/** Offset 0x02E4 - SDIO_RX_CMD_DATA_DLL_CNTL1
+  SDIO_RX_CMD_DATA_DLL_CNTL1. 0x16161616(Default).
+**/
+  uint32_t                      SdioRxCmdDataCntl1;
+
+/** Offset 0x02E8 - SDIO_RX_CMD_DATA_DLL_CNTL2
+  SDIO_RX_CMD_DATA_DLL_CNTL2. 0x10000(Default).
+**/
+  uint32_t                      SdioRxCmdDataCntl2;
+
+/** Offset 0x02EC - SDCARD_TX_CMD_DLL_CNTL
+  SDCARD_TX_CMD_DLL_CNTL. 0x505(Default).
+**/
+  uint32_t                      SdcardTxCmdCntl;
+
+/** Offset 0x02F0 - SDCARD_TX_DATA_DLL_CNTL1
+  SDCARD_TX_DATA_DLL_CNTL1. 0xA13(Default).
+**/
+  uint32_t                      SdcardTxDataCntl1;
+
+/** Offset 0x02F4 - SDCARD_TX_DATA_DLL_CNTL2
+  SDCARD_TX_DATA_DLL_CNTL2. 0x24242828(Default).
+**/
+  uint32_t                      SdcardTxDataCntl2;
+
+/** Offset 0x02F8 - SDCARD_RX_CMD_DATA_DLL_CNTL1
+  SDCARD_RX_CMD_DATA_DLL_CNTL1. 0x73A3637(Default).
+**/
+  uint32_t                      SdcardRxCmdDataCntl1;
+
+/** Offset 0x02FC - SDCARD_RX_STROBE_DLL_CNTL
+  SDCARD_RX_STROBE_DLL_CNTL. 0x0(Default).
+**/
+  uint32_t                      SdcardRxStrobeCntl;
+
+/** Offset 0x0300 - SDCARD_RX_CMD_DATA_DLL_CNTL2
+  SDCARD_RX_CMD_DATA_DLL_CNTL2. 0x10000(Default).
+**/
+  uint32_t                      SdcardRxCmdDataCntl2;
+
+/** Offset 0x0304 - EMMC_TX_CMD_DLL_CNTL
+  EMMC_TX_CMD_DLL_CNTL. 0x505(Default).
+**/
+  uint32_t                      EmmcTxCmdCntl;
+
+/** Offset 0x0308 - EMMC_TX_DATA_DLL_CNTL1
+  EMMC_TX_DATA_DLL_CNTL1. 0xC11(Default).
+**/
+  uint32_t                      EmmcTxDataCntl1;
+
+/** Offset 0x030C - EMMC_TX_DATA_DLL_CNTL2
+  EMMC_TX_DATA_DLL_CNTL2. 0x1C2A2927(Default).
+**/
+  uint32_t                      EmmcTxDataCntl2;
+
+/** Offset 0x0310 - EMMC_RX_CMD_DATA_DLL_CNTL1
+  EMMC_RX_CMD_DATA_DLL_CNTL1. 0x000D162F(Default).
+**/
+  uint32_t                      EmmcRxCmdDataCntl1;
+
+/** Offset 0x0314 - EMMC_RX_STROBE_DLL_CNTL
+  EMMC_RX_STROBE_DLL_CNTL. 0x0a0a(Default).
+**/
+  uint32_t                      EmmcRxStrobeCntl;
+
+/** Offset 0x0318 - EMMC_RX_CMD_DATA_DLL_CNTL2
+  EMMC_RX_CMD_DATA_DLL_CNTL2. 0x1003b(Default).
+**/
+  uint32_t                      EmmcRxCmdDataCntl2;
+
+/** Offset 0x031C - EMMC_MASTER_DLL_CNTL
+  EMMC_MASTER_DLL_CNTL. 0x001(Default).
+**/
+  uint32_t                      EmmcMasterSwCntl;
+
+/** Offset 0x0320 - PCIe Selectable De-emphasis
+  When the Link is operating at 5.0 GT/s speed, this bit selects the level of de-emphasis
+  for an Upstream component. 1b:-3.5 dB 0b:-6 dB. 0:Disable, 1:Enable(Default).
+**/
+  uint8_t                       PcieRpSelectableDeemphasis[6];
+
+/** Offset 0x0326
+**/
+  uint8_t                       ReservedFspsUpd[10];
 } __attribute__((packed));
 
 /** Fsp S Test Configuration
 **/
 struct FSP_S_TEST_CONFIG {
 
-/** Offset 0x0300
+/** Offset 0x0330
 **/
   uint32_t                      Signature;
 
-/** Offset 0x0304
+/** Offset 0x0334
 **/
   uint8_t                       ReservedFspsTestUpd[12];
 } __attribute__((packed));
@@ -1341,16 +1499,14 @@ struct FSP_S_TEST_CONFIG {
 **/
 struct FSP_S_RESTRICTED_CONFIG {
 
-/** Offset 0x0310
+/** Offset 0x0340
 **/
   uint32_t                      Signature;
 
-/** Offset 0x0314
+/** Offset 0x0344
 **/
   uint8_t                       ReservedFspsRestrictedUpd[12];
 } __attribute__((packed));
-
-#define FSPS_UPD_SIGNATURE               0x4450555F53505346        /* 'FSPS_UPD' */
 
 /** Fsp S UPD Configuration
 **/
@@ -1364,15 +1520,15 @@ struct FSPS_UPD {
 **/
   struct FSP_S_CONFIG                FspsConfig;
 
-/** Offset 0x0300
+/** Offset 0x0330
 **/
   struct FSP_S_TEST_CONFIG           FspsTestConfig;
 
-/** Offset 0x0310
+/** Offset 0x0340
 **/
   struct FSP_S_RESTRICTED_CONFIG     FspsRestrictedConfig;
 
-/** Offset 0x0320
+/** Offset 0x0350
 **/
   uint16_t                      UpdTerminator;
 } __attribute__((packed));

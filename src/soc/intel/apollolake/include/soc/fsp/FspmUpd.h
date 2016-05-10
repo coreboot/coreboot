@@ -34,111 +34,28 @@ are permitted provided that the following conditions are met:
 #define __FSPMUPD_H__
 
 #include "FspUpd.h"
-
-
-typedef union {
-  uint32_t PadCnf0;
-  struct {
-    uint32_t GPIOTxState:1; ///< 0      GPIO TX State
-    uint32_t GPIORxState:1; ///< 1      GPIO RX State, RO
-    uint32_t Reserved1:6;   ///< 2-7    Reserved, RO
-    uint32_t GPIORxTxDis:2; ///< 8-9    GPIO RX Disable[9], GPIO TX Disable[8]
-    uint32_t PMode:3;       ///< 10-12  Pad Mode, 0h = GPIO Controller controls the Pad; 1h = Native Function 1, if applicable, controls the pad; 2h = Native Function 2, if applicable, controls the pad, etc.
-    uint32_t Reserved2:4;   ///< 13-16  Reserved, RO
-    uint32_t GPIRout:4;     ///< 17-20  Route to IOxAPIC[20], SCI[19], SMI[18], NMI[17]
-    uint32_t RXTXEnCfg:2;   ///< 21-22  RX/TX Enable Config (RXTXEnCfg) RO
-    uint32_t RXINV:1;       ///< 23     RX Invert, 0 = No inversion; 1 = Inversion
-    uint32_t PreGfRXSel:1;  ///< 24     Pre Glitch Filter Stage RX Pad State Select,  RO, not support in BXT
-    uint32_t RxEvCfg:2;     ///< 25-26  0h = Level 1h  = Edge (RxInv=0 for rising edge; 1 for falling edge), 2h  = Disabled ,3h  =  Either rising edge or falling edge
-    uint32_t Reserved3:1;   ///< 27     RO
-    uint32_t RXRAW1:1;      ///< 28     Override the RX to 1
-    uint32_t RXPadStSel:1;  ///< 29     RX Pad State Select
-    uint32_t PadRstCfg:2;   ///< 30-31  Pad Reset Config
-  } r;
-} BL_CONF_PAD0;
-
-typedef union {
-  uint32_t PadCnf1;
-  struct {
-    uint32_t IntSel:7;      ///< 0-6    Interrupt Select. RO
-    uint32_t Reserved:1;    ///< 7      Reserved.
-    uint32_t IOSTerm:2;     ///< 8-9    I/O Standby Termination (IOSTerm) RW
-    uint32_t Term:4;        ///< 10-13  Termination,
-                          ///<        0 000: none;0 010: 5k wpd;0 100: 20k wpd;1 000: none;1 001: 1k wpu;1 011: 2k wpu;1 010: 5k wpu;
-                          ///<        1 100: 20k wpu;1 101: 1k & 2k wpu;1 111: (optional) Native controller selected by Pad Mode controls the Termination
-    uint32_t IOSState:4;    ///< 14-17  I/O Standby State, I/O Standby is not implemented in BXT, RW
-    uint32_t CFIOPadCfg:14; ///< 18-31  For BXT, this is done thru Family Register if necessary. RO
-  } r;
-} BL_CONF_PAD1;
-
-struct BL_GPIO_PAD_INIT {
-  BL_CONF_PAD0   PadConfg0;
-  BL_CONF_PAD1   PadConfg1;
-  uint8_t          Community;
-  uint16_t         MmioAddress;
-  bool        HostSw;
-  bool        WakeEnabled;
-  wchar_t         *PadName;
-} __attribute__((packed));
-
-/** Fsp M Architectural UPD
-**/
-struct FSP_M_ARCH_UPD {
-
-/** Offset 0x0020
-**/
-  uint8_t                       Revision;
-
-/** Offset 0x0021
-**/
-  uint8_t                       Reserved[3];
-
-/** Offset 0x0024
-**/
-  void*                       NvsBufferPtr;
-
-/** Offset 0x0028 - StackBase
-  To hold the stack base.
-**/
-  void*                       StackBase;
-
-/** Offset 0x002C - StackSize
-  To hold the stack size.
-**/
-  uint32_t                      StackSize;
-
-/** Offset 0x0030 - BootLoaderTolumSize
-  To pass Bootloader Tolum size.
-**/
-  uint32_t                      BootLoaderTolumSize;
-
-/** Offset 0x0034 - Bootmode
-  To maintain Bootmode details.
-**/
-  uint32_t                      Bootmode;
-
-/** Offset 0x0038
-**/
-  uint8_t                       Reserved1[8];
-} __attribute__((packed));
+#include <fsp/upd.h>
 
 /** Fsp M Configuration
 **/
 struct FSP_M_CONFIG {
 
 /** Offset 0x0040 - Debug Serial Port Base address
-  Debug serial port base address. This option will be used only when the 'Serial Port Debug Device' option is set to 'External Device'. 0x00000000(Default).
+  Debug serial port base address. This option will be used only when the 'Serial Port
+  Debug Device' option is set to 'External Device'. 0x00000000(Default).
 **/
   uint32_t                      SerialDebugPortAddress;
 
 /** Offset 0x0044 - Debug Serial Port Type
-  16550 compatible debug serial port resource type. NONE means no serial port support. 0x02:MMIO(Default).
+  16550 compatible debug serial port resource type. NONE means no serial port support.
+  0x02:MMIO(Default).
   0:NONE, 1:I/O, 2:MMIO
 **/
   uint8_t                       SerialDebugPortType;
 
 /** Offset 0x0045 - Serial Port Debug Device
-  Select active serial port device for debug. For SOC UART devices,'Debug Serial Port Base' options will be ignored. 0x02:SOC UART2(Default).
+  Select active serial port device for debug. For SOC UART devices,'Debug Serial Port
+  Base' options will be ignored. 0x02:SOC UART2(Default).
   0:SOC UART0, 1:SOC UART1, 2:SOC UART2, 3:External Device
 **/
   uint8_t                       SerialDebugPortDevice;
@@ -156,44 +73,63 @@ struct FSP_M_CONFIG {
   uint8_t                       MrcFastBoot;
 
 /** Offset 0x0048 - Integrated Graphics Device
-  Enable : Enable Integrated Graphics Device (IGD) when selected as the Primary Video Adaptor. Disable: Always disable IGD. 0x00:Disable, 0x01:Enable(Default).
+  Enable : Enable Integrated Graphics Device (IGD) when selected as the Primary Video
+  Adaptor. Disable: Always disable IGD. 0x00:Disable, 0x01:Enable(Default).
   $EN_DIS
 **/
   uint8_t                       Igd;
 
 /** Offset 0x0049 - DVMT Pre-Allocated
-  Select DVMT 5.0 Pre-Allocated (Fixed) Graphics Memory size used by the Internal Graphics Device. 0x02:64 MB(Default).
-  0x02:64 MB, 0x03:96 MB, 0x04:128 MB, 0x05:160 MB, 0x06:192 MB, 0x07:224 MB, 0x08:256 MB, 0x09:288 MB, 0x0A:320 MB, 0x0B:352 MB, 0x0C:384 MB, 0x0D:416 MB, 0x0E:448 MB, 0x0F:480 MB, 0x10:512 MB
+  Select DVMT 5.0 Pre-Allocated (Fixed) Graphics Memory size used by the Internal
+  Graphics Device. 0x02:64 MB(Default).
+  0x02:64 MB, 0x03:96 MB, 0x04:128 MB, 0x05:160 MB, 0x06:192 MB, 0x07:224 MB, 0x08:256
+  MB, 0x09:288 MB, 0x0A:320 MB, 0x0B:352 MB, 0x0C:384 MB, 0x0D:416 MB, 0x0E:448 MB,
+  0x0F:480 MB, 0x10:512 MB
 **/
   uint8_t                       IgdDvmt50PreAlloc;
 
 /** Offset 0x004A - Aperture Size
-  Select the Aperture Size used by the Internal Graphics Device. 0x1:128 MB(Default), 0x2:256 MB, 0x3:512 MB.
+  Select the Aperture Size used by the Internal Graphics Device. 0x1:128 MB(Default),
+  0x2:256 MB, 0x3:512 MB.
   0x1:128 MB, 0x2:256 MB, 0x3:512 MB
 **/
   uint8_t                       IgdApertureSize;
 
 /** Offset 0x004B - GTT Size
-  Select the GTT Size used by the Internal Graphics Device. 0x1:2 MB, 0x2:4 MB, 0x3:8 MB(Default).
+  Select the GTT Size used by the Internal Graphics Device. 0x1:2 MB, 0x2:4 MB, 0x3:8
+  MB(Default).
   0x1:2 MB, 0x2:4 MB, 0x3:8 MB
 **/
   uint8_t                       GttSize;
 
 /** Offset 0x004C - Primary Display
-  Select which of IGD/PCI Graphics device should be Primary Display. 0x0:AUTO(Default), 0x2:IGD, 0x3:PCI
+  Select which of IGD/PCI Graphics device should be Primary Display. 0x0:AUTO(Default),
+  0x2:IGD, 0x3:PCI
   0x0:AUTO, 0x2:IGD, 0x3:PCI
 **/
   uint8_t                       PrimaryVideoAdaptor;
 
 /** Offset 0x004D - Package
-  NOTE: First option is CoPOP if LPDDR3/LPDDR4 is being used. It is SODIMM if DDR3L is being used. 0x00(Default).
+  NOTE: First option is CoPOP if LPDDR3/LPDDR4 is being used. It is SODIMM if DDR3L
+  is being used. 0x00(Default).
   0x0:CoPop, 0x1:BGA, 0x2:LP3 ACRD
 **/
   uint8_t                       Package;
 
 /** Offset 0x004E - Profile
   Profile list. 0x19(Default).
-  0x1:WIO2_800_7_8_8, 0x2:WIO2_1066_9_10_10, 0x3:LPDDR3_1066_8_10_10, 0x4:LPDDR3_1333_10_12_12, 0x5:LPDDR3_1600_12_15_15, 0x6:LPDDR3_1866_14_17_17, 0x7:LPDDR3_2133_16_20_20, 0x8:LPDDR4_1066_10_10_10, 0x9:LPDDR4_1600_14_15_15, 0xA:LPDDR4_2133_20_20_20, 0xB:LPDDR4_2400_24_22_22, 0xC:LPDDR4_2666_24_24_24, 0xD:LPDDR4_2933_28_27_27, 0xE:LPDDR4_3200_28_29_29, 0xF:DDR3_1066_6_6_6, 0x10:DDR3_1066_7_7_7, 0x11:DDR3_1066_8_8_8, 0x12:DDR3_1333_7_7_7, 0x13:DDR3_1333_8_8_8, 0x14:DDR3_1333_9_9_9, 0x15:DDR3_1333_10_10_10, 0x16:DDR3_1600_8_8_8, 0x17:DDR3_1600_9_9_9, 0x18:DDR3_1600_10_10_10, 0x19:DDR3_1600_11_11_11, 0x1A:DDR3_1866_10_10_10, 0x1B:DDR3_1866_11_11_11, 0x1C:DDR3_1866_12_12_12, 0x1D:DDR3_1866_13_13_13, 0x1E:DDR3_2133_11_11_11, 0x1F:DDR3_2133_12_12_12, 0x20:DDR3_2133_13_13_13, 0x21:DDR3_2133_14_14_14, 0x22:DDR4_1333_10_10_10, 0x23:DDR4_1600_10_10_10, 0x24:DDR4_1600_11_11_11, 0x25:DDR4_1600_12_12_12, 0x26:DDR4_1866_12_12_12, 0x27:DDR4_1866_13_13_13, 0x28:DDR4_1866_14_14_14, 0x29:DDR4_2133_14_14_14, 0x2A:DDR4_2133_15_15_15, 0x2B:DDR4_2133_16_16_16, 0x2C:DDR4_2400_15_15_15, 0x2D:DDR4_2400_16_16_16, 0x2E:DDR4_2400_17_17_17, 0x2F:DDR4_2400_18_18_18
+  0x1:WIO2_800_7_8_8, 0x2:WIO2_1066_9_10_10, 0x3:LPDDR3_1066_8_10_10, 0x4:LPDDR3_1333_10_12_12,
+  0x5:LPDDR3_1600_12_15_15, 0x6:LPDDR3_1866_14_17_17, 0x7:LPDDR3_2133_16_20_20, 0x8:LPDDR4_1066_10_10_10,
+  0x9:LPDDR4_1600_14_15_15, 0xA:LPDDR4_2133_20_20_20, 0xB:LPDDR4_2400_24_22_22, 0xC:LPDDR4_2666_24_24_24,
+  0xD:LPDDR4_2933_28_27_27, 0xE:LPDDR4_3200_28_29_29, 0xF:DDR3_1066_6_6_6, 0x10:DDR3_1066_7_7_7,
+  0x11:DDR3_1066_8_8_8, 0x12:DDR3_1333_7_7_7, 0x13:DDR3_1333_8_8_8, 0x14:DDR3_1333_9_9_9,
+  0x15:DDR3_1333_10_10_10, 0x16:DDR3_1600_8_8_8, 0x17:DDR3_1600_9_9_9, 0x18:DDR3_1600_10_10_10,
+  0x19:DDR3_1600_11_11_11, 0x1A:DDR3_1866_10_10_10, 0x1B:DDR3_1866_11_11_11, 0x1C:DDR3_1866_12_12_12,
+  0x1D:DDR3_1866_13_13_13, 0x1E:DDR3_2133_11_11_11, 0x1F:DDR3_2133_12_12_12, 0x20:DDR3_2133_13_13_13,
+  0x21:DDR3_2133_14_14_14, 0x22:DDR4_1333_10_10_10, 0x23:DDR4_1600_10_10_10, 0x24:DDR4_1600_11_11_11,
+  0x25:DDR4_1600_12_12_12, 0x26:DDR4_1866_12_12_12, 0x27:DDR4_1866_13_13_13, 0x28:DDR4_1866_14_14_14,
+  0x29:DDR4_2133_14_14_14, 0x2A:DDR4_2133_15_15_15, 0x2B:DDR4_2133_16_16_16, 0x2C:DDR4_2400_15_15_15,
+  0x2D:DDR4_2400_16_16_16, 0x2E:DDR4_2400_17_17_17, 0x2F:DDR4_2400_18_18_18
 **/
   uint8_t                       Profile;
 
@@ -204,7 +140,7 @@ struct FSP_M_CONFIG {
   uint8_t                       MemoryDown;
 
 /** Offset 0x0050 - DDR3LPageSize
-  NOTE: Only for memory down or downgrade DDR3L frequency. 0x01:1KB, 0x02:2KB, 0x00(Default).
+  NOTE: Only for memory down or downgrade DDR3L frequency. 0x01:1KB(Default), 0x02:2KB.
   0x1:1KB, 0x2:2KB
 **/
   uint8_t                       DDR3LPageSize;
@@ -232,8 +168,8 @@ struct FSP_M_CONFIG {
   uint16_t                      SliceHashMask;
 
 /** Offset 0x0057 - InterleavedMode
-  Interleaved Mode. 0x00:Disable(Default), 0x01:Enable.
-  $EN_DIS
+  Interleaved Mode. 0x00:Disable(Default), 0x02:Enable.
+  0x0:Disable, 0x2:Enable
 **/
   uint8_t                       InterleavedMode;
 
@@ -244,7 +180,8 @@ struct FSP_M_CONFIG {
   uint8_t                       ChannelsSlicesEnable;
 
 /** Offset 0x0059 - MinRefRate2xEnable
-  Provided as a means to defend against Row-Hammer attacks. 0x00:Disable(Default), 0x01:Enable.
+  Provided as a means to defend against Row-Hammer attacks. 0x00:Disable(Default),
+  0x01:Enable.
   $EN_DIS
 **/
   uint8_t                       MinRefRate2xEnable;
@@ -262,23 +199,30 @@ struct FSP_M_CONFIG {
   uint8_t                       RmtMode;
 
 /** Offset 0x005C - MemorySizeLimit
-  Memory Size Limit: This value is used to restrict the total amount of memory and the calculations based on it. Value is in MB. Example encodings are: 0x400 = 1GB, 0x800 = 2GB, 0x1000 = 4GB, 0x2000 8GB. 0x0000(Default)
+  Memory Size Limit: This value is used to restrict the total amount of memory and
+  the calculations based on it. Value is in MB. Example encodings are: 0x400 = 1GB,
+  0x800 = 2GB, 0x1000 = 4GB, 0x2000 8GB. 0x0000(Default)
 **/
   uint16_t                      MemorySizeLimit;
 
 /** Offset 0x005E - LowMemoryMaxValue
-  Low Memory Max Value: This value is used to restrict the amount of memory below 4GB and the calculations based on it. Value is in MB.Example encodings are: 0x400 = 1GB, 0x800 = 2GB, 0x1000 = 4GB, 0x2000 8GB. 0x0000(Default).
+  Low Memory Max Value: This value is used to restrict the amount of memory below
+  4GB and the calculations based on it. Value is in MB.Example encodings are: 0x400
+  = 1GB, 0x800 = 2GB, 0x1000 = 4GB, 0x2000 8GB. 0x0000(Default).
 **/
   uint16_t                      LowMemoryMaxValue;
 
 /** Offset 0x0060 - DisableFastBoot
-  00:Disabled Used saved training data (if valid)(Default), 01:Enabled; Full re-train of memory.
+  00:Disabled Used saved training data (if valid)(Default), 01:Enabled; Full re-train
+  of memory.
   $EN_DIS
 **/
   uint8_t                       DisableFastBoot;
 
 /** Offset 0x0061 - HighMemoryMaxValue
-  High Memory Max Value: This value is used to restrict the amount of memory above 4GB and the calculations based on it. Value is in MB. Example encodings are: 0x0400:1GB, 0x0800:2GB, 0x1000:4GB, 0x2000:8GB. 0x00(Default).
+  High Memory Max Value: This value is used to restrict the amount of memory above
+  4GB and the calculations based on it. Value is in MB. Example encodings are: 0x0400:1GB,
+  0x0800:2GB, 0x1000:4GB, 0x2000:8GB. 0x00(Default).
 **/
   uint16_t                      HighMemoryMaxValue;
 
@@ -310,7 +254,12 @@ struct FSP_M_CONFIG {
   uint8_t                       Ch0_DramDensity;
 
 /** Offset 0x0068 - Ch0_Option
-  Rank Select Interleaving Enable.  See Address Mapping section for full description. 0:Rank Select Interleaving disabled, 1:Rank Select Interleaving enabled. [1] Bank Address Hashing Enable.  See Address Mapping section for full description. 0:Bank Address Hashing disabled, 1:Bank Address Hashing enabled. [3:2] Reserved. [5:4] This register specifies the address mapping to be used: 00:1KB (A), 01:2KB (B). 0x03(Default).
+  Rank Select Interleaving Enable.  See Address Mapping section for full description.
+  0:Rank Select Interleaving disabled, 1:Rank Select Interleaving enabled. [1] Bank
+  Address Hashing Enable.  See Address Mapping section for full description. 0:Bank
+  Address Hashing disabled, 1:Bank Address Hashing enabled. [3:2] Reserved. [5:4]
+  This register specifies the address mapping to be used: 00:1KB (A), 01:2KB (B).
+  0x03(Default).
 **/
   uint8_t                       Ch0_Option;
 
@@ -330,7 +279,11 @@ struct FSP_M_CONFIG {
   uint8_t                       Ch0_Mode2N;
 
 /** Offset 0x006C - Ch0_OdtLevels
-  Rank Select Interleaving Enable.  See Address Mapping section for full description. 0:Rank Select Interleaving disabled(Default), 1:Rank Select Interleaving enabled. [1] Bank Address Hashing Enable.  See Address Mapping section for full description. 0:Bank Address Hashing disabled, 1:Bank Address Hashing enabled. [3:2] Reserved. [5:4] This register specifies the address mapping to be used:00:1KB (A), 01:2KB (B).
+  Rank Select Interleaving Enable.  See Address Mapping section for full description.
+  0:Rank Select Interleaving disabled(Default), 1:Rank Select Interleaving enabled.
+  [1] Bank Address Hashing Enable.  See Address Mapping section for full description.
+  0:Bank Address Hashing disabled, 1:Bank Address Hashing enabled. [3:2] Reserved.
+  [5:4] This register specifies the address mapping to be used:00:1KB (A), 01:2KB (B).
 **/
   uint8_t                       Ch0_OdtLevels;
 
@@ -352,7 +305,12 @@ struct FSP_M_CONFIG {
   uint8_t                       Ch1_DramDensity;
 
 /** Offset 0x0070 - Ch1_Option
-  Rank Select Interleaving Enable.  See Address Mapping section for full description. 0 - Rank Select Interleaving disabled. 1 - Rank Select Interleaving enabled. [1] Bank Address Hashing Enable.  See Address Mapping section for full description. 0 - Bank Address Hashing disabled. 1 - Bank Address Hashing enabled. [3:2] Reserved. [5:4] This register specifies the address mapping to be used: 00:1KB (A), 01:2KB (B), 0x03(Default).
+  Rank Select Interleaving Enable.  See Address Mapping section for full description.
+  0 - Rank Select Interleaving disabled. 1 - Rank Select Interleaving enabled. [1]
+  Bank Address Hashing Enable.  See Address Mapping section for full description.
+  0 - Bank Address Hashing disabled. 1 - Bank Address Hashing enabled. [3:2] Reserved.
+  [5:4] This register specifies the address mapping to be used: 00:1KB (A), 01:2KB
+  (B), 0x03(Default).
 **/
   uint8_t                       Ch1_Option;
 
@@ -372,7 +330,8 @@ struct FSP_M_CONFIG {
   uint8_t                       Ch1_Mode2N;
 
 /** Offset 0x0074 - Ch1_OdtLevels
-  Parameter used to determine if ODT will be held high or low. 0:Use MRC default(Default), 1:ODT_AB_HIGH_HIGH. 3:ODT_AB_HIGH_LOW.
+  Parameter used to determine if ODT will be held high or low. 0:Use MRC default(Default),
+  1:ODT_AB_HIGH_HIGH. 3:ODT_AB_HIGH_LOW.
 **/
   uint8_t                       Ch1_OdtLevels;
 
@@ -394,7 +353,12 @@ struct FSP_M_CONFIG {
   uint8_t                       Ch2_DramDensity;
 
 /** Offset 0x0078 - Ch2_Option
-  Rank Select Interleaving Enable.  See Address Mapping section for full description.. 0 - Rank Select Interleaving disabled. 1 - Rank Select Interleaving enabled. [1] Bank Address Hashing Enable.  See Address Mapping section for full description.. 0 - Bank Address Hashing disabled. 1 - Bank Address Hashing enabled. [3:2] Reserved. [5:4] This register specifies the address mapping to be used:. 00:1KB (A)(Default). 01:2KB (B).
+  Rank Select Interleaving Enable.  See Address Mapping section for full description..
+  0 - Rank Select Interleaving disabled. 1 - Rank Select Interleaving enabled. [1]
+  Bank Address Hashing Enable.  See Address Mapping section for full description..
+  0 - Bank Address Hashing disabled. 1 - Bank Address Hashing enabled. [3:2] Reserved.
+  [5:4] This register specifies the address mapping to be used:. 00:1KB (A)(Default).
+  01:2KB (B).
 **/
   uint8_t                       Ch2_Option;
 
@@ -414,7 +378,8 @@ struct FSP_M_CONFIG {
   uint8_t                       Ch2_Mode2N;
 
 /** Offset 0x007C - Ch2_OdtLevels
-  Parameter used to determine if ODT will be held high or low. 0:Use MRC default(Default), 1:ODT_AB_HIGH_HIGH, 3:ODT_AB_HIGH_LOW.
+  Parameter used to determine if ODT will be held high or low. 0:Use MRC default(Default),
+  1:ODT_AB_HIGH_HIGH, 3:ODT_AB_HIGH_LOW.
 **/
   uint8_t                       Ch2_OdtLevels;
 
@@ -424,19 +389,26 @@ struct FSP_M_CONFIG {
   uint8_t                       Ch3_RankEnable;
 
 /** Offset 0x007E - Ch3_DeviceWidth
-  NOTE: Only for memory down. DRAM Device Data Width populated on Ranks 0 and 1. 0x00:x8(Default), 0x01:x16, 0x02:x32, 0x03:x64.
+  NOTE: Only for memory down. DRAM Device Data Width populated on Ranks 0 and 1. 0x00:x8(Default),
+  0x01:x16, 0x02:x32, 0x03:x64.
   0b0000:x8, 0b0001:x16, 0b0010:x32, 0b0011:x64
 **/
   uint8_t                       Ch3_DeviceWidth;
 
 /** Offset 0x007F - Ch3_DramDensity
-  NOTE: Only for memory down. DRAM Device Density populated on Ranks 0 and 1. 0x00:4Gb(Default), 0x01:6Gb, 0x02:8Gb, 0x03:12Gb, 0x04:16Gb.
+  NOTE: Only for memory down. DRAM Device Density populated on Ranks 0 and 1. 0x00:4Gb(Default),
+  0x01:6Gb, 0x02:8Gb, 0x03:12Gb, 0x04:16Gb.
   0b0000:4Gb, 0b0001:6Gb, 0b0010:8Gb, 0b0011:12Gb, 0b0100:16Gb
 **/
   uint8_t                       Ch3_DramDensity;
 
 /** Offset 0x0080 - Ch3_Option
-  Rank Select Interleaving Enable.  See Address Mapping section for full description.. 0 - Rank Select Interleaving disabled. 1 - Rank Select Interleaving enabled. [1] Bank Address Hashing Enable.  See Address Mapping section for full description.. 0 - Bank Address Hashing disabled. 1 - Bank Address Hashing enabled. [3:2] Reserved. [5:4] This register specifies the address mapping to be used:. 00 - 1KB (A). 01 - 2KB (B).
+  Rank Select Interleaving Enable.  See Address Mapping section for full description..
+  0 - Rank Select Interleaving disabled. 1 - Rank Select Interleaving enabled. [1]
+  Bank Address Hashing Enable.  See Address Mapping section for full description..
+  0 - Bank Address Hashing disabled. 1 - Bank Address Hashing enabled. [3:2] Reserved.
+  [5:4] This register specifies the address mapping to be used:. 00 - 1KB (A). 01
+  - 2KB (B).
 **/
   uint8_t                       Ch3_Option;
 
@@ -456,7 +428,8 @@ struct FSP_M_CONFIG {
   uint8_t                       Ch3_Mode2N;
 
 /** Offset 0x0084 - Ch3_OdtLevels
-  Parameter used to determine if ODT will be held high or low. 0:Use MRC default(Default), 1:ODT_AB_HIGH_HIGH, 3:ODT_AB_HIGH_LOW.
+  Parameter used to determine if ODT will be held high or low. 0:Use MRC default(Default),
+  1:ODT_AB_HIGH_HIGH, 3:ODT_AB_HIGH_LOW.
 **/
   uint8_t                       Ch3_OdtLevels;
 
@@ -495,25 +468,65 @@ struct FSP_M_CONFIG {
 **/
   uint32_t                      MsgLevelMask;
 
-/** Offset 0x010C - FIT Table Pointer
-  FIT table pointer. 0x00000000(Default).
+/** Offset 0x010C
 **/
-  uint32_t                      FitTablePtr;
+  uint32_t                      UnusedUpdSpace0;
 
-/** Offset 0x0110 - GPIO Table Pointer
-  GPIO table pointer to a BL_GPIO_PAD_INIT structure. 0x00000000(Default).
+/** Offset 0x0110 - PreMem GPIO Table Entry Number. Currently maximum entry number is 4
+  Number of Entries in PreMem GPIO Table. 0(Default).
 **/
-  struct BL_GPIO_PAD_INIT*           GpioPadInitTablePtr;
+  uint8_t                       PreMemGpioTableEntryNum;
 
-/** Offset 0x0114 - Enhance the port 8xh decoding
+/** Offset 0x0111 - PreMem GPIO Pin Number for each table
+  Number of Pins in each PreMem GPIO Table. 0(Default).
+**/
+  uint8_t                       PreMemGpioTablePinNum[4];
+
+/** Offset 0x0115 - PreMem GPIO Table Pointer
+  Pointer to Array of pointers to PreMem GPIO Table. 0x00000000(Default).
+**/
+  uint32_t                      PreMemGpioTablePtr;
+
+/** Offset 0x0119 - Enhance the port 8xh decoding
   Enable/Disable Enhance the port 8xh decoding. 0:Disable, 1:Enable(Default).
   $EN_DIS
 **/
   uint8_t                       EnhancePort8xhDecoding;
 
-/** Offset 0x0115
+/** Offset 0x011A - OEM File Loading Address
+  Determine the memory base address to load a specified file from CSE file system
+  after memory is available.
 **/
-  uint8_t                       ReservedFspmUpd[59];
+  uint32_t                      OemLoadingBase;
+
+/** Offset 0x011E - OEM File Name to Load
+  Specify a file name to load from CSE file system after memory is available. Empty
+  indicates no file needs to be loaded.
+**/
+  uint8_t                       OemFileName[16];
+
+/** Offset 0x012E - SPD Data Write
+  Enable/Disable SPD data write on the SMBUS. 0x00:Disable(Default), 0x01:Enable.
+  $EN_DIS
+**/
+  uint8_t                       SpdWriteEnable;
+
+/** Offset 0x012F - MRC Training Data Saving
+  Enable/Disable MRC training data saving in FSP. 0x00:Disable(Default), 0x01:Enable.
+  $EN_DIS
+**/
+  uint8_t                       MrcDataSaving;
+
+/** Offset 0x0130 - eMMC Trace Length
+  Select eMMC trace length to load OEM file from when loading OEM file name is specified.
+  0x0:Long(Default), 0x1:Short.
+  0x0:Long, 0x1:Short
+**/
+  uint8_t                       eMMCTraceLen;
+
+/** Offset 0x0131
+**/
+  uint8_t                       ReservedFspmUpd[31];
 } __attribute__((packed));
 
 /** Fsp M Test Configuration
@@ -542,8 +555,6 @@ struct FSP_M_RESTRICTED_CONFIG {
   uint8_t                       ReservedFspmRestrictedUpd[138];
 } __attribute__((packed));
 
-#define FSPM_UPD_SIGNATURE               0x4450555F4D505346        /* 'FSPM_UPD' */
-
 /** Fsp M UPD Configuration
 **/
 struct FSPM_UPD {
@@ -554,7 +565,7 @@ struct FSPM_UPD {
 
 /** Offset 0x0020
 **/
-  struct FSP_M_ARCH_UPD              FspmArchUpd;
+  struct FSPM_ARCH_UPD               FspmArchUpd;
 
 /** Offset 0x0040
 **/

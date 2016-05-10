@@ -114,6 +114,4 @@ static inline void gpio_tlmm_config(unsigned int gpio, unsigned int func,
 	gpio_tlmm_config_set(gpio, func, pull, drvstr, enable);
 }
 
-void ipq_setup_tpm(void);
-
 #endif // __SOC_QUALCOMM_IPQ40XX_GPIO_H_

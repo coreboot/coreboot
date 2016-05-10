@@ -24,6 +24,7 @@ verstage-y += chromeos.c
 verstage-y += blsp.c
 verstage-y += memlayout.ld
 verstage-y += reset.c
+verstage-y += verstage.c
 
 romstage-y += romstage.c
 romstage-y += cdp.c

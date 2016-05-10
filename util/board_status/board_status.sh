@@ -12,6 +12,7 @@ EXIT_FAILURE=1
 # Stuff from command-line switches
 COREBOOT_IMAGE="build/coreboot.rom"
 REMOTE_HOST=""
+REMOTE_PORT_OPTION=""
 CLOBBER_OUTPUT=0
 UPLOAD_RESULTS=0
 SERIAL_PORT_SPEED=115200
@@ -39,7 +40,7 @@ test_cmd()
 	fi
 
 	if [ "$1" -eq "$REMOTE" ] && [ -n "$REMOTE_HOST" ]; then
-		ssh root@${REMOTE_HOST} command -v "$2" > /dev/null
+		ssh $REMOTE_PORT_OPTION root@${REMOTE_HOST} command -v "$2" > /dev/null
 		rc=$?
 	else
 		command -v "$2" >/dev/null
@@ -71,7 +72,7 @@ _cmd()
 	fi
 
 	if [ "$1" -eq "$REMOTE" ] && [ -n "$REMOTE_HOST" ]; then
-		ssh "root@${REMOTE_HOST}" "$2" > "$pipe_location" 2>&1
+		ssh $REMOTE_PORT_OPTION "root@${REMOTE_HOST}" "$2" > "$pipe_location" 2>&1
 	else
 		$2 > "$pipe_location" 2>&1
 	fi
@@ -179,6 +180,8 @@ Options
         Path to coreboot image (Default is $COREBOOT_IMAGE).
     -r  <host>
         Obtain machine information from remote host (using ssh).
+    --ssh-port <port>
+        Use a specific SSH port.
     -s  </dev/xxx>
         Obtain boot log via serial device.
     -S  <speed>
@@ -194,8 +197,7 @@ if [ $? -ne 4 ]; then
 	exit $EXIT_FAILURE
 fi
 
-# TODO: add longopts in the quotes after -l
-ARGS=$(getopt -o Chi:r:s:S:u -l "" -n "$0" -- "$@");
+ARGS=$(getopt -o Chi:r:s:S:u -l "ssh-port:" -n "$0" -- "$@");
 if [ $? != 0 ] ; then echo "Terminating..." >&2 ; exit 1 ; fi
 eval set -- "$ARGS"
 while true ; do
@@ -214,6 +216,10 @@ while true ; do
 		-r)
 			shift
 			REMOTE_HOST="$1"
+			;;
+		--ssh-port)
+			shift
+			REMOTE_PORT_OPTION="-p $1"
 			;;
 		-s)
 			shift

@@ -19,8 +19,10 @@ config CHROMEOS
 	select RETURN_FROM_VERSTAGE
 
 config IPQ_QFN_PART
-	bool "Is the SoC a BGA part or QFN part"
+	bool
 	default n
+	help
+	  Is the SoC a QFN part (as opposed to a BGA part)
 
 config MBN_ENCAPSULATION
 	depends on USE_BLOBS

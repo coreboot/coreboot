@@ -220,7 +220,7 @@ void print_usage(const char *name)
 	     "   -v | --version:                   print the version\n"
 	     "   -h | --help:                      print this help\n\n"
 	     "   -s | --spi:                       dump southbridge spi and bios_cntrl registers\n"
-	     "   -f | --gfx:                       dump graphics registers\n"
+	     "   -f | --gfx:                       dump graphics registers (UNSAFE: may hang system!)\n"
 	     "   -g | --gpio:                      dump southbridge GPIO registers\n"
 	     "   -G | --gpio-diffs:                show GPIO differences from defaults\n"
 	     "   -r | --rcba:                      dump southbridge RCBA registers\n"
@@ -232,7 +232,7 @@ void print_usage(const char *name)
 	     "   -P | --pciexpress:                dump northbridge PCIEXBAR registers\n\n"
 	     "   -M | --msrs:                      dump CPU MSRs\n"
 	     "   -A | --ambs:                      dump AMB registers\n"
-	     "   -a | --all:                       dump all known registers\n"
+	     "   -a | --all:                       dump all known (safe) registers\n"
 	     "\n");
 	exit(1);
 }
@@ -326,7 +326,6 @@ int main(int argc, char *argv[])
 			dump_coremsrs = 1;
 			dump_ambs = 1;
 			dump_spi = 1;
-			dump_gfx = 1;
 			break;
 		case 'A':
 			dump_ambs = 1;

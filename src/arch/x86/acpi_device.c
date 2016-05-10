@@ -24,6 +24,15 @@
 #include <gpio.h>
 #endif
 
+/*
+ * Pointer to length field in device properties package
+ * Location is set in dp_header() and length filled in by dp_footer()
+ */
+static char *dp_count_ptr;
+
+/* Count of the number of device properties in the current set */
+static char dp_count;
+
 /* Write empty word value and return pointer to it */
 static void *acpi_device_write_zero_len(void)
 {
@@ -452,4 +461,130 @@ void acpi_device_write_spi(const struct acpi_spi *spi)
 
 	/* Fill in SPI Descriptor Length */
 	acpi_device_fill_len(desc_length);
+}
+
+/* Write a header for using _DSD to export Device Properties */
+void acpi_dp_write_header(void)
+{
+	/* Name (_DSD) */
+	acpigen_write_name("_DSD");
+
+	/* Package (2) */
+	acpigen_write_package(2);
+
+	/* ToUUID (ACPI_DP_UUID) */
+	acpigen_write_uuid(ACPI_DP_UUID);
+
+	/* Package (X) */
+	acpigen_emit_byte(0x12);
+	acpigen_write_len_f();
+	dp_count_ptr = acpigen_get_current();
+	acpigen_emit_byte(0); /* Number of elements, filled by dp_footer */
+
+	/* Reset element counter */
+	dp_count = 0;
+}
+
+/* Fill in length values from writing Device Properties */
+void acpi_dp_write_footer(void)
+{
+	/* Patch device property element count */
+	*dp_count_ptr = dp_count;
+
+	acpigen_pop_len(); /* Inner package length */
+	acpigen_pop_len(); /* Outer package length */
+}
+
+void acpi_dp_write_value(const struct acpi_dp *prop)
+{
+	switch (prop->type) {
+	case ACPI_DP_TYPE_INTEGER:
+		acpigen_write_integer(prop->integer);
+		break;
+	case ACPI_DP_TYPE_STRING:
+		acpigen_write_string(prop->string);
+		break;
+	case ACPI_DP_TYPE_REFERENCE:
+		acpigen_emit_namestring(prop->string);
+		break;
+	}
+}
+
+/* Write Device Property key with value as an integer */
+void acpi_dp_write_keyval(const char *key, const struct acpi_dp *prop)
+{
+	acpigen_write_package(2);
+	acpigen_write_string(key);
+	acpi_dp_write_value(prop);
+	acpigen_pop_len();
+	dp_count++;
+}
+
+/* Write Device Property key with value as an integer */
+void acpi_dp_write_integer(const char *key, uint64_t value)
+{
+	const struct acpi_dp prop = ACPI_DP_INTEGER(value);
+	acpi_dp_write_keyval(key, &prop);
+}
+
+/* Write Device Property key with value as a string */
+void acpi_dp_write_string(const char *key, const char *value)
+{
+	const struct acpi_dp prop = ACPI_DP_STRING(value);
+	acpi_dp_write_keyval(key, &prop);
+}
+
+/* Write Device Property key with value as a reference */
+void acpi_dp_write_reference(const char *key, const char *value)
+{
+	const struct acpi_dp prop = ACPI_DP_REFERENCE(value);
+	acpi_dp_write_keyval(key, &prop);
+}
+
+/* Write array of Device Properties */
+void acpi_dp_write_array(const char *key, const struct acpi_dp *array, int len)
+{
+	int i;
+	acpigen_write_package(2);
+	acpigen_write_string(key);
+	acpigen_write_package(len);
+	for (i = 0; i < len; i++)
+		acpi_dp_write_value(&array[i]);
+	acpigen_pop_len();
+	acpigen_pop_len();
+	dp_count++;
+}
+
+/* Write array of Device Properties with values as integers */
+void acpi_dp_write_integer_array(const char *key, uint64_t *array, int len)
+{
+	int i;
+	acpigen_write_package(2);
+	acpigen_write_string(key);
+	acpigen_write_package(len);
+	for (i = 0; i < len; i++)
+		acpigen_write_integer(array[i]);
+	acpigen_pop_len();
+	acpigen_pop_len();
+	dp_count++;
+}
+
+/*
+ * Device Properties for GPIO binding
+ * linux/Documentation/acpi/gpio-properties.txt
+ */
+void acpi_dp_write_gpio(const char *key, const char *ref, int index,
+			int pin, int active_low)
+{
+	const struct acpi_dp gpio_prop[] = {
+		/* The device that has _CRS containing GpioIo()/GpioInt() */
+		ACPI_DP_REFERENCE(ref),
+		/* Index of the GPIO resource in _CRS starting from zero */
+		ACPI_DP_INTEGER(index),
+		/* Pin in the GPIO resource, typically zero */
+		ACPI_DP_INTEGER(pin),
+		/* Set if pin is active low */
+		ACPI_DP_INTEGER(active_low)
+	};
+	acpi_dp_write_array(key, gpio_prop, ARRAY_SIZE(gpio_prop));
 }

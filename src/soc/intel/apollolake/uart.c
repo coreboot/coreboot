@@ -42,8 +42,8 @@ static void aplk_uart_read_resources(struct device *dev)
 
 static struct device_operations uart_ops = {
 	.read_resources   = aplk_uart_read_resources,
-	.set_resources    = DEVICE_NOOP,
-	.enable_resources = DEVICE_NOOP,
+	.set_resources    = pci_dev_set_resources,
+	.enable_resources = pci_dev_enable_resources,
 	.init             = pci_dev_init,
 	.enable           = DEVICE_NOOP
 };

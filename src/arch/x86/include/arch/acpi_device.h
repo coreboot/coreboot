@@ -228,4 +228,64 @@ struct acpi_spi {
 /* Write SPI Bus descriptor to SSDT AML output */
 void acpi_device_write_spi(const struct acpi_spi *spi);
 
+/*
+ * Device Properties with _DSD
+ * http://uefi.org/sites/default/files/resources/_DSD-device-properties-UUID.pdf
+ */
+
+#define ACPI_DP_UUID "daffd814-6eba-4d8c-8a91-bc9bbf4aa301"
+
+enum acpi_dp_type {
+	ACPI_DP_TYPE_INTEGER,
+	ACPI_DP_TYPE_STRING,
+	ACPI_DP_TYPE_REFERENCE,
+};
+
+struct acpi_dp {
+	enum acpi_dp_type type;
+	union {
+		uint64_t integer;
+		const char *string;
+	};
+};
+
+#define ACPI_DP_INTEGER(x)   { .type = ACPI_DP_TYPE_INTEGER, .integer = x }
+#define ACPI_DP_STRING(x)    { .type = ACPI_DP_TYPE_STRING, .string = x }
+#define ACPI_DP_REFERENCE(x) { .type = ACPI_DP_TYPE_REFERENCE, .string = x }
+
+/*
+ * Writing Device Properties objects via _DSD
+ */
+
+/* Start a set of Device Properties with _DSD and UUID */
+void acpi_dp_write_header(void);
+
+/* End the Device Properties set and fill in length values */
+void acpi_dp_write_footer(void);
+
+/* Write a Device Property value, but not the key */
+void acpi_dp_write_value(const struct acpi_dp *prop);
+
+/* Write a Device Property, both key and value */
+void acpi_dp_write_keyval(const char *key, const struct acpi_dp *prop);
+
+/* Write an integer as a Device Property */
+void acpi_dp_write_integer(const char *key, uint64_t value);
+
+/* Write a string as a Device Property */
+void acpi_dp_write_string(const char *key, const char *value);
+
+/* Write an ACPI reference as a Device Property */
+void acpi_dp_write_reference(const char *key, const char *value);
+
+/* Write an array of Device Properties */
+void acpi_dp_write_array(const char *key, const struct acpi_dp *array, int len);
+
+/* Write an array of integers as Device Properties */
+void acpi_dp_write_integer_array(const char *key, uint64_t *array, int len);
+
+/* Write a GPIO binding Device Property */
+void acpi_dp_write_gpio(const char *key, const char *ref, int index,
+			int pin, int active_low);
+
 #endif

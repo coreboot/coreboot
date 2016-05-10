@@ -40,7 +40,9 @@ static void setup_usb(void)
 #define TPM_RESET_GPIO		19
 void ipq_setup_tpm(void)
 {
-#ifdef CONFIG_I2C_TPM
+	if (!IS_ENABLED(CONFIG_I2C_TPM))
+		return;
+
 	gpio_tlmm_config_set(TPM_RESET_GPIO, FUNC_SEL_GPIO,
 			     GPIO_PULL_UP, GPIO_6MA, 1);
 	gpio_set(TPM_RESET_GPIO, 0);
@@ -66,8 +68,6 @@ void ipq_setup_tpm(void)
 	 * to the TPM either fail or timeout.
 	 */
 	mdelay(30);
-
-#endif /* CONFIG_I2C_TPM */
 }
 
 static void mainboard_init(device_t dev)
@@ -80,10 +80,10 @@ static void mainboard_init(device_t dev)
 	setup_usb();
 	ipq_setup_tpm();
 
-#if IS_ENABLED(CONFIG_CHROMEOS)
-	/* Copy WIFI calibration data into CBMEM. */
-	cbmem_add_vpd_calibration_data();
-#endif
+	if (IS_ENABLED(CONFIG_CHROMEOS)) {
+		/* Copy WIFI calibration data into CBMEM. */
+		cbmem_add_vpd_calibration_data();
+	}
 
 	/*
 	 * Make sure bootloader can issue sounds The frequency is calculated
@@ -114,8 +114,8 @@ void lb_board(struct lb_header *header)
 	dma->range_start = (uintptr_t)_dma_coherent;
 	dma->range_size = _dma_coherent_size;
 
-#if IS_ENABLED(CONFIG_CHROMEOS)
-	/* Retrieve the switch interface MAC addressses. */
-	lb_table_add_macs_from_vpd(header);
-#endif
+	if (IS_ENABLED(CONFIG_CHROMEOS)) {
+		/* Retrieve the switch interface MAC addressses. */
+		lb_table_add_macs_from_vpd(header);
+	}
 }

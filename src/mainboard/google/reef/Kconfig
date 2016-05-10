@@ -1,0 +1,53 @@
+if BOARD_GOOGLE_REEF
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select SOC_INTEL_APOLLOLAKE
+	# FIXME(adurbin): this SPI part is really 16MiB
+	select BOARD_ROMSIZE_KB_8192
+	select EC_GOOGLE_CHROMEEC
+	select EC_GOOGLE_CHROMEEC_LPC
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select MAINBOARD_HAS_CHROMEOS
+	select MAINBOARD_HAS_LPC_TPM
+	select SYSTEM_TYPE_LAPTOP
+
+config BOOT_MEDIA_SPI_BUS
+	int
+	default 0
+
+config IFD_BIOS_END
+	hex
+	default 0x6FF000
+
+config IFD_BIOS_START
+	hex
+	default 0x1000
+
+config CHROMEOS
+	select CHROMEOS_RAMOOPS_DYNAMIC
+	select CHROMEOS_VBNV_CMOS
+	select CHROMEOS_VBNV_CMOS_BACKUP_TO_FLASH
+	select EC_SOFTWARE_SYNC
+	select LID_SWITCH
+	select VBOOT_OPROM_MATTERS
+	select VIRTUAL_DEV_SWITCH
+
+config MAINBOARD_DIR
+	string
+	default google/reef
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Reef"
+
+config MAINBOARD_FAMILY
+	string
+	default "Google_Reef"
+
+config MAX_CPUS
+	int
+	default 8
+
+endif # BOARD_GOOGLE_REEF

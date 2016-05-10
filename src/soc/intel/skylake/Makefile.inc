@@ -53,6 +53,7 @@ ramstage-y += pei_data.c
 ramstage-y += pmc.c
 ramstage-y += pmutil.c
 ramstage-y += ramstage.c
+ramstage-y += sd.c
 ramstage-y += smbus.c
 ramstage-y += smbus_common.c
 ramstage-y += smi.c

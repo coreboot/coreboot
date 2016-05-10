@@ -19,6 +19,9 @@
 #include <arch/acpigen.h>
 #include <device/device.h>
 #include <device/path.h>
+#if IS_ENABLED(CONFIG_GENERIC_GPIO_LIB)
+#include <gpio.h>
+#endif
 
 /* Write empty word value and return pointer to it */
 static void *acpi_device_write_zero_len(void)
@@ -182,5 +185,141 @@ void acpi_device_write_interrupt(const struct acpi_irq *irq)
 	acpigen_emit_dword(irq->pin);
 
 	/* Fill in Descriptor Length (account for len word) */
+	acpi_device_fill_len(desc_length);
+}
+
+/* ACPI 6.1 section 6.4.3.8.1 - GPIO Interrupt or I/O */
+void acpi_device_write_gpio(const struct acpi_gpio *gpio)
+{
+	void *start, *desc_length;
+	void *pin_table_offset, *vendor_data_offset, *resource_offset;
+	uint16_t flags = 0;
+	int pin;
+
+	if (!gpio || gpio->type > ACPI_GPIO_TYPE_IO)
+		return;
+
+	start = acpigen_get_current();
+
+	/* Byte 0: Descriptor Type */
+	acpigen_emit_byte(ACPI_DESCRIPTOR_GPIO);
+
+	/* Byte 1-2: Length (fill in later) */
+	desc_length = acpi_device_write_zero_len();
+
+	/* Byte 3: Revision ID */
+	acpigen_emit_byte(ACPI_GPIO_REVISION_ID);
+
+	/* Byte 4: GpioIo or GpioInt */
+	acpigen_emit_byte(gpio->type);
+
+	/*
+	 * Byte 5-6: General Flags
+	 *   [15:1]: 0 => Reserved
+	 *      [0]: 1 => ResourceConsumer
+	 */
+	acpigen_emit_word(1 << 0);
+
+	switch (gpio->type) {
+	case ACPI_GPIO_TYPE_INTERRUPT:
+		/*
+		 * Byte 7-8: GPIO Interrupt Flags
+		 *   [15:5]: 0 => Reserved
+		 *      [4]: Wake     (0=NO_WAKE   1=WAKE)
+		 *      [3]: Sharing  (0=EXCLUSIVE 1=SHARED)
+		 *    [2:1]: Polarity (0=HIGH      1=LOW     2=BOTH)
+		 *      [0]: Mode     (0=LEVEL     1=EDGE)
+		 */
+		if (gpio->irq.mode == IRQ_EDGE_TRIGGERED)
+			flags |= 1 << 0;
+		if (gpio->irq.shared == IRQ_SHARED)
+			flags |= 1 << 3;
+		if (gpio->irq.wake == IRQ_WAKE)
+			flags |= 1 << 4;
+
+		switch (gpio->irq.polarity) {
+		case IRQ_ACTIVE_HIGH:
+			flags |= 0 << 1;
+			break;
+		case IRQ_ACTIVE_LOW:
+			flags |= 1 << 1;
+			break;
+		case IRQ_ACTIVE_BOTH:
+			flags |= 2 << 1;
+			break;
+		}
+		break;
+
+	case ACPI_GPIO_TYPE_IO:
+		/*
+		 * Byte 7-8: GPIO IO Flags
+		 *   [15:4]: 0 => Reserved
+		 *      [3]: Sharing  (0=EXCLUSIVE 1=SHARED)
+		 *      [2]: 0 => Reserved
+		 *    [1:0]: IO Restriction
+		 *           0 => IoRestrictionNone
+		 *           1 => IoRestrictionInputOnly
+		 *           2 => IoRestrictionOutputOnly
+		 *           3 => IoRestrictionNoneAndPreserve
+		 */
+		flags |= gpio->io_restrict & 3;
+		if (gpio->io_shared)
+			flags |= 1 << 3;
+		break;
+	}
+	acpigen_emit_word(flags);
+
+	/*
+	 * Byte 9: Pin Configuration
+	 *  0x01 => Default (no configuration applied)
+	 *  0x02 => Pull-up
+	 *  0x03 => Pull-down
+	 *  0x04-0x7F => Reserved
+	 *  0x80-0xff => Vendor defined
+	 */
+	acpigen_emit_byte(gpio->pull);
+
+	/* Byte 10-11: Output Drive Strength in 1/100 mA */
+	acpigen_emit_word(gpio->output_drive_strength);
+
+	/* Byte 12-13: Debounce Timeout in 1/100 ms */
+	acpigen_emit_word(gpio->interrupt_debounce_timeout);
+
+	/* Byte 14-15: Pin Table Offset, relative to start */
+	pin_table_offset = acpi_device_write_zero_len();
+
+	/* Byte 16: Reserved */
+	acpigen_emit_byte(0);
+
+	/* Byte 17-18: Resource Source Name Offset, relative to start */
+	resource_offset = acpi_device_write_zero_len();
+
+	/* Byte 19-20: Vendor Data Offset, relative to start */
+	vendor_data_offset = acpi_device_write_zero_len();
+
+	/* Byte 21-22: Vendor Data Length */
+	acpigen_emit_word(0);
+
+	/* Fill in Pin Table Offset */
+	acpi_device_fill_from_len(pin_table_offset, start);
+
+	/* Pin Table, one word for each pin */
+	for (pin = 0; pin < gpio->pin_count; pin++)
+		acpigen_emit_word(gpio->pins[pin]);
+
+	/* Fill in Resource Source Name Offset */
+	acpi_device_fill_from_len(resource_offset, start);
+
+	/* Resource Source Name String */
+#if IS_ENABLED(CONFIG_GENERIC_GPIO_LIB)
+	acpigen_emit_string(gpio->resource ? : gpio_acpi_path(gpio->pins[0]));
+#else
+	acpigen_emit_string(gpio->resource);
+#endif
+
+	/* Fill in Vendor Data Offset */
+	acpi_device_fill_from_len(vendor_data_offset, start);
+
+	/* Fill in GPIO Descriptor Length (account for len word) */
 	acpi_device_fill_len(desc_length);
 }

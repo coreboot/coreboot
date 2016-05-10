@@ -43,6 +43,10 @@
 #define  SA_DEVFN_IGD		_SA_DEVFN(IGD)
 #define  SA_DEV_IGD		_SA_DEV(IGD)
 
+#define SA_DEV_SLOT_DSP		0x04
+#define  SA_DEVFN_DSP		_SA_DEVFN(DSP)
+#define  SA_DEV_DSP		_SA_DEV(DSP)
+
 /* PCH Devices */
 #define PCH_DEV_SLOT_ISH	0x13
 #define  PCH_DEVFN_ISH		_PCH_DEVFN(ISH, 0)

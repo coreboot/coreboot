@@ -19,6 +19,7 @@
 #ifndef _SOC_CHIP_H_
 #define _SOC_CHIP_H_
 
+#include <arch/acpi_device.h>
 #include <stdint.h>
 #include <soc/gpio_defs.h>
 #include <soc/gpe.h>
@@ -339,6 +340,23 @@ struct soc_intel_skylake_config {
 	u8 SendVrMbxCmd;
 	/* Statically clock gate 8254 PIT. */
 	u8 clock_gate_8254;
+
+	/*
+	 * Use SD card detect GPIO with default config:
+	 * - Edge triggered
+	 * - No internal pull
+	 * - Active both (high + low)
+	 * - Can wake device from D3
+	 * - 100ms debounce timeout
+	 *
+	 * GpioInt (Edge, ActiveBoth, SharedAndWake, PullNone, 10000,
+	 *          "\\_SB.PCI0.GPIO", 0, ResourceConsumer)
+	 *          { sdcard_cd_gpio_default }
+	 */
+	unsigned sdcard_cd_gpio_default;
+
+	/* Use custom SD card detect GPIO configuration */
+	struct acpi_gpio sdcard_cd_gpio;
 };
 
 typedef struct soc_intel_skylake_config config_t;

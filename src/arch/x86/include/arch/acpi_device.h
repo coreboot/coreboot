@@ -16,11 +16,13 @@
 #ifndef __ACPI_DEVICE_H
 #define __ACPI_DEVICE_H
 
+#include <device/i2c.h>
 #include <stdint.h>
 
 #define ACPI_DESCRIPTOR_LARGE		(1 << 7)
 #define ACPI_DESCRIPTOR_INTERRUPT	(ACPI_DESCRIPTOR_LARGE | 9)
 #define ACPI_DESCRIPTOR_GPIO		(ACPI_DESCRIPTOR_LARGE | 12)
+#define ACPI_DESCRIPTOR_SERIAL_BUS	(ACPI_DESCRIPTOR_LARGE | 14)
 
 struct device;
 const char *acpi_device_name(struct device *dev);
@@ -156,5 +158,30 @@ struct acpi_gpio {
 
 /* Write GpioIo() or GpioInt() descriptor to SSDT AML output */
 void acpi_device_write_gpio(const struct acpi_gpio *gpio);
+
+/*
+ * ACPI Descriptors for Serial Bus interfaces
+ */
+
+#define ACPI_SERIAL_BUS_TYPE_I2C	1
+#define ACPI_SERIAL_BUS_REVISION_ID	1
+
+/*
+ * ACPI I2C Bus
+ */
+
+struct acpi_i2c {
+	/* I2C Address */
+	uint16_t address;
+	/* 7 or 10 bit Address Mode */
+	enum i2c_address_mode mode_10bit;
+	/* I2C Bus Speed in Hz */
+	enum i2c_speed speed;
+	/* Reference to I2C controller */
+	const char *resource;
+};
+
+/* Write I2cSerialBus() descriptor to SSDT AML output */
+void acpi_device_write_i2c(const struct acpi_i2c *i2c);
 
 #endif

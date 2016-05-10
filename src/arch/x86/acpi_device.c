@@ -18,6 +18,7 @@
 #include <arch/acpi_device.h>
 #include <arch/acpigen.h>
 #include <device/device.h>
+#include <device/i2c.h>
 #include <device/path.h>
 #if IS_ENABLED(CONFIG_GENERIC_GPIO_LIB)
 #include <gpio.h>
@@ -321,5 +322,62 @@ void acpi_device_write_gpio(const struct acpi_gpio *gpio)
 	acpi_device_fill_from_len(vendor_data_offset, start);
 
 	/* Fill in GPIO Descriptor Length (account for len word) */
+	acpi_device_fill_len(desc_length);
+}
+
+/* ACPI 6.1 section 6.4.3.8.2.1 - I2cSerialBus() */
+void acpi_device_write_i2c(const struct acpi_i2c *i2c)
+{
+	void *desc_length, *type_length;
+
+	/* Byte 0: Descriptor Type */
+	acpigen_emit_byte(ACPI_DESCRIPTOR_SERIAL_BUS);
+
+	/* Byte 1+2: Length (filled in later) */
+	desc_length = acpi_device_write_zero_len();
+
+	/* Byte 3: Revision ID */
+	acpigen_emit_byte(ACPI_SERIAL_BUS_REVISION_ID);
+
+	/* Byte 4: Resource Source Index is Reserved */
+	acpigen_emit_byte(0);
+
+	/* Byte 5: Serial Bus Type is I2C */
+	acpigen_emit_byte(ACPI_SERIAL_BUS_TYPE_I2C);
+
+	/*
+	 * Byte 6: Flags
+	 *  [7:2]: 0 => Reserved
+	 *    [1]: 1 => ResourceConsumer
+	 *    [0]: 0 => ControllerInitiated
+	 */
+	acpigen_emit_byte(1 << 1);
+
+	/*
+	 * Byte 7-8: Type Specific Flags
+	 *   [15:1]: 0 => Reserved
+	 *      [0]: 0 => 7bit, 1 => 10bit
+	 */
+	acpigen_emit_word(i2c->mode_10bit);
+
+	/* Byte 9: Type Specific Revision ID */
+	acpigen_emit_byte(ACPI_SERIAL_BUS_REVISION_ID);
+
+	/* Byte 10-11: I2C Type Data Length */
+	type_length = acpi_device_write_zero_len();
+
+	/* Byte 12-15: I2C Bus Speed */
+	acpigen_emit_dword(i2c->speed);
+
+	/* Byte 16-17: I2C Slave Address */
+	acpigen_emit_word(i2c->address);
+
+	/* Fill in Type Data Length */
+	acpi_device_fill_len(type_length);
+
+	/* Byte 18+: ResourceSource */
+	acpigen_emit_string(i2c->resource);
+
+	/* Fill in I2C Descriptor Length */
 	acpi_device_fill_len(desc_length);
 }

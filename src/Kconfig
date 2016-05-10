@@ -269,15 +269,6 @@ config NO_STAGE_CACHE
 	 Do not save any component in stage cache for resume path. On resume,
 	 all components would be read back from CBFS again.
 
-config FLASHMAP_OFFSET
-	hex "Flash Map Offset"
-	default 0x00670000 if NORTHBRIDGE_INTEL_SANDYBRIDGE
-	default 0x00610000 if NORTHBRIDGE_INTEL_IVYBRIDGE
-	default CBFS_SIZE if !ARCH_X86
-	default 0
-	help
-	  Offset of flash map in firmware image
-
 # TODO: This doesn't belong here, move to src/arch/x86/Kconfig
 choice
 	prompt "Bootblock behaviour"

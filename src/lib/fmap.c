@@ -21,6 +21,8 @@
 #include <stddef.h>
 #include <string.h>
 
+#include "fmap_config.h"
+
 /*
  * See http://code.google.com/p/flashmap/ for more information on FMAP.
  */
@@ -32,7 +34,7 @@ int find_fmap_directory(struct region_device *fmrd)
 	const struct region_device *boot;
 	struct fmap *fmap;
 	size_t fmap_size;
-	size_t offset = CONFIG_FLASHMAP_OFFSET;
+	size_t offset = FMAP_OFFSET;
 
 	boot_device_init();
 	boot = boot_device_ro();

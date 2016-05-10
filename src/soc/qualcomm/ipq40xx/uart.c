@@ -49,10 +49,6 @@ typedef struct {
 	gpio_func_data_t dbg_uart_gpio[NO_OF_DBG_UART_GPIOS];
 } uart_params_t;
 
-/*
- * All constants lifted from u-boot's
- * board/qcom/ipq40xx_cdp/ipq40xx_board_param.h
- */
 static const uart_params_t uart_board_param = {
 	.uart_dm_base = UART1_DM_BASE,
 	.mnd_value = { 24, 625, 313 },

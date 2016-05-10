@@ -164,6 +164,7 @@ void acpi_device_write_gpio(const struct acpi_gpio *gpio);
  */
 
 #define ACPI_SERIAL_BUS_TYPE_I2C	1
+#define ACPI_SERIAL_BUS_TYPE_SPI	2
 #define ACPI_SERIAL_BUS_REVISION_ID	1
 
 /*
@@ -183,5 +184,48 @@ struct acpi_i2c {
 
 /* Write I2cSerialBus() descriptor to SSDT AML output */
 void acpi_device_write_i2c(const struct acpi_i2c *i2c);
+
+/*
+ * ACPI SPI Bus
+ */
+
+enum spi_clock_phase {
+	SPI_CLOCK_PHASE_FIRST,
+	SPI_CLOCK_PHASE_SECOND
+};
+
+/* SPI Flags bit 0 */
+enum spi_wire_mode {
+	SPI_4_WIRE_MODE,
+	SPI_3_WIRE_MODE
+};
+
+/* SPI Flags bit 1 */
+enum spi_polarity {
+	SPI_POLARITY_LOW,
+	SPI_POLARITY_HIGH
+};
+
+struct acpi_spi {
+	/* Device selection */
+	uint16_t device_select;
+	/* Device selection line is active high or low */
+	enum spi_polarity device_select_polarity;
+	/* 3 or 4 wire SPI connection */
+	enum spi_wire_mode wire_mode;
+	/* Connection speed in HZ */
+	unsigned int speed;
+	/* Size in bits of smallest transfer unit */
+	u8 data_bit_length;
+	/* Phase of clock pulse on which to capture data */
+	enum spi_clock_phase clock_phase;
+	/* Indicate if clock is high or low during first phase */
+	enum spi_polarity clock_polarity;
+	/* Reference to SPI controller */
+	const char *resource;
+};
+
+/* Write SPI Bus descriptor to SSDT AML output */
+void acpi_device_write_spi(const struct acpi_spi *spi);
 
 #endif

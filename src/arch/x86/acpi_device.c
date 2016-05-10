@@ -381,3 +381,75 @@ void acpi_device_write_i2c(const struct acpi_i2c *i2c)
 	/* Fill in I2C Descriptor Length */
 	acpi_device_fill_len(desc_length);
 }
+
+/* ACPI 6.1 section 6.4.3.8.2.2 - SpiSerialBus() */
+void acpi_device_write_spi(const struct acpi_spi *spi)
+{
+	void *desc_length, *type_length;
+	uint16_t flags = 0;
+
+	/* Byte 0: Descriptor Type */
+	acpigen_emit_byte(ACPI_DESCRIPTOR_SERIAL_BUS);
+
+	/* Byte 1+2: Length (filled in later) */
+	desc_length = acpi_device_write_zero_len();
+
+	/* Byte 3: Revision ID */
+	acpigen_emit_byte(ACPI_SERIAL_BUS_REVISION_ID);
+
+	/* Byte 4: Resource Source Index is Reserved */
+	acpigen_emit_byte(0);
+
+	/* Byte 5: Serial Bus Type is SPI */
+	acpigen_emit_byte(ACPI_SERIAL_BUS_TYPE_SPI);
+
+	/*
+	 * Byte 6: Flags
+	 *  [7:2]: 0 => Reserved
+	 *    [1]: 1 => ResourceConsumer
+	 *    [0]: 0 => ControllerInitiated
+	 */
+	acpigen_emit_byte(1 << 1);
+
+	/*
+	 * Byte 7-8: Type Specific Flags
+	 *   [15:2]: 0 => Reserved
+	 *      [1]: 0 => ActiveLow, 1 => ActiveHigh
+	 *      [0]: 0 => FourWire, 1 => ThreeWire
+	 */
+	if (spi->wire_mode == SPI_3_WIRE_MODE)
+		flags |= 1 << 0;
+	if (spi->device_select_polarity == SPI_POLARITY_HIGH)
+		flags |= 1 << 1;
+	acpigen_emit_word(flags);
+
+	/* Byte 9: Type Specific Revision ID */
+	acpigen_emit_byte(ACPI_SERIAL_BUS_REVISION_ID);
+
+	/* Byte 10-11: SPI Type Data Length */
+	type_length = acpi_device_write_zero_len();
+
+	/* Byte 12-15: Connection Speed */
+	acpigen_emit_dword(spi->speed);
+
+	/* Byte 16: Data Bit Length */
+	acpigen_emit_byte(spi->data_bit_length);
+
+	/* Byte 17: Clock Phase */
+	acpigen_emit_byte(spi->clock_phase);
+
+	/* Byte 18: Clock Polarity */
+	acpigen_emit_byte(spi->clock_polarity);
+
+	/* Byte 19-20: Device Selection */
+	acpigen_emit_word(spi->device_select);
+
+	/* Fill in Type Data Length */
+	acpi_device_fill_len(type_length);
+
+	/* Byte 21+: ResourceSource String */
+	acpigen_emit_string(spi->resource);
+
+	/* Fill in SPI Descriptor Length */
+	acpi_device_fill_len(desc_length);
+}

@@ -47,3 +47,35 @@ Scope (\_SB.PCI0.I2C4)
 
 	}
 }
+
+Scope (\_SB.PCI0.I2C3)
+{
+	Device (ETSA)
+	{
+		Name (_HID, "ELAN0001")
+		Name (_DDN, "Elan Touchscreen")
+		Name (_UID, 1)
+		Name (ISTP, 0) /* TouchScreen */
+		Name (_S0W, 4)
+
+		Name (_CRS, ResourceTemplate()
+		{
+			I2cSerialBus (
+				0x10,                     // SlaveAddress
+				ControllerInitiated,      // SlaveMode
+				400000,                   // ConnectionSpeed
+				AddressingMode7Bit,       // AddressingMode
+				"\\_SB.PCI0.I2C3",        // ResourceSource
+			)
+			Interrupt (ResourceConsumer, Edge, ActiveLow)
+			{
+				GPIO_21_IRQ
+			}
+		})
+
+		Method (_STA)
+		{
+			Return (0xF)
+		}
+	}
+}

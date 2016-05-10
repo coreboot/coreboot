@@ -41,11 +41,11 @@ typedef struct {
 	void *lcc_ahbix_regs;
 	void *lcc_mi2s_regs;
 	void *lcc_pll_regs;
-} Ipq806xLccClocks;
+} IpqLccClocks;
 
 typedef struct __attribute__((packed)) {
 	uint32_t apcs;
-} Ipq806xLccGccRegs;
+} IpqLccGccRegs;
 
 typedef struct __attribute__((packed)) {
 	uint32_t mode;
@@ -55,25 +55,25 @@ typedef struct __attribute__((packed)) {
 	uint32_t UNUSED;
 	uint32_t config;
 	uint32_t status;
-} Ipq806xLccPll0Regs;
+} IpqLccPll0Regs;
 
 typedef struct __attribute__((packed)) {
 	uint32_t ns;
 	uint32_t md;
 	uint32_t UNUSED;
 	uint32_t status;
-} Ipq806xLccAhbixRegs;
+} IpqLccAhbixRegs;
 
 typedef struct __attribute__((packed)) {
 	uint32_t ns;
 	uint32_t md;
 	uint32_t status;
-} Ipq806xLccMi2sRegs;
+} IpqLccMi2sRegs;
 
 typedef struct __attribute__((packed)) {
 	uint32_t pri;
 	uint32_t sec;
-} Ipq806xLccPllRegs;
+} IpqLccPllRegs;
 
 struct lcc_freq_tbl {
 	unsigned freq;
@@ -120,11 +120,11 @@ static const struct lcc_freq_tbl lcc_mi2s_freq_tbl[] = {
 	{ }
 };
 
-static int lcc_init_enable_pll0(Ipq806xLccClocks *bus)
+static int lcc_init_enable_pll0(IpqLccClocks *bus)
 {
-	Ipq806xLccGccRegs *gcc_regs = bus->gcc_apcs_regs;
-	Ipq806xLccPll0Regs *pll0_regs = bus->lcc_pll0_regs;
-	Ipq806xLccPllRegs *pll_regs = bus->lcc_pll_regs;
+	IpqLccGccRegs *gcc_regs = bus->gcc_apcs_regs;
+	IpqLccPll0Regs *pll0_regs = bus->lcc_pll0_regs;
+	IpqLccPllRegs *pll_regs = bus->lcc_pll_regs;
 	uint32_t regval;
 
 	regval = 0;
@@ -173,9 +173,9 @@ static int lcc_init_enable_pll0(Ipq806xLccClocks *bus)
 	return 1;
 }
 
-static int lcc_init_enable_ahbix(Ipq806xLccClocks *bus)
+static int lcc_init_enable_ahbix(IpqLccClocks *bus)
 {
-	Ipq806xLccAhbixRegs *ahbix_regs = bus->lcc_ahbix_regs;
+	IpqLccAhbixRegs *ahbix_regs = bus->lcc_ahbix_regs;
 	uint32_t regval;
 
 	regval = 0;
@@ -205,9 +205,9 @@ static int lcc_init_enable_ahbix(Ipq806xLccClocks *bus)
 	return 1;
 }
 
-static int lcc_init_mi2s(Ipq806xLccClocks *bus, unsigned freq)
+static int lcc_init_mi2s(IpqLccClocks *bus, unsigned freq)
 {
-	Ipq806xLccMi2sRegs *mi2s_regs = bus->lcc_mi2s_regs;
+	IpqLccMi2sRegs *mi2s_regs = bus->lcc_mi2s_regs;
 	uint32_t regval;
 	uint8_t pd, m, n, d;
 	unsigned i;
@@ -263,9 +263,9 @@ static int lcc_init_mi2s(Ipq806xLccClocks *bus, unsigned freq)
 	return 0;
 }
 
-static int lcc_enable_mi2s(Ipq806xLccClocks *bus)
+static int lcc_enable_mi2s(IpqLccClocks *bus)
 {
-	Ipq806xLccMi2sRegs *mi2s_regs = bus->lcc_mi2s_regs;
+	IpqLccMi2sRegs *mi2s_regs = bus->lcc_mi2s_regs;
 	uint32_t regval;
 
 	regval = read32(&mi2s_regs->ns);
@@ -287,7 +287,7 @@ static int lcc_enable_mi2s(Ipq806xLccClocks *bus)
 
 int audio_clock_config(unsigned frequency)
 {
-	Ipq806xLccClocks *bus = malloc(sizeof(*bus));
+	IpqLccClocks *bus = malloc(sizeof(*bus));
 
 	if (!bus) {
 		printk(BIOS_ERR, "%s: failed to allocate bus structure\n",

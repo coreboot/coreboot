@@ -58,7 +58,7 @@ static void lpc_init(struct device *dev)
 	scnt &= ~(SCNT_EN | SCNT_MODE);
 	if (cfg->serirq_mode == SERIRQ_QUIET)
 		scnt |= SCNT_EN;
-	else if (cfg->serirq_mode == SERIRQ_CONTINUOUS);
+	else if (cfg->serirq_mode == SERIRQ_CONTINUOUS)
 		scnt |= SCNT_EN | SCNT_MODE;
 	pci_write_config8(dev, REG_SERIRQ_CTL, scnt);
 }

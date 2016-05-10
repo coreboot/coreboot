@@ -21,6 +21,9 @@
 #include <stdint.h>
 #include "ec_commands.h"
 
+/* Fill in base and size of the IO port resources used. */
+void google_chromeec_ioport_range(uint16_t *base, size_t *size);
+
 #ifndef __PRE_RAM__
 int google_chromeec_i2c_xfer(uint8_t chip, uint8_t addr, int alen,
 			     uint8_t *buffer, int len, int is_read);

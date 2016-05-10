@@ -367,6 +367,26 @@ uint8_t google_chromeec_get_switches(void)
 	return read_byte(EC_LPC_ADDR_MEMMAP + EC_MEMMAP_SWITCHES);
 }
 
+void google_chromeec_ioport_range(uint16_t *out_base, size_t *out_size)
+{
+	uint16_t base;
+	size_t size;
+
+	if (IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC_MEC)) {
+		base = MEC_EMI_BASE;
+		size = MEC_EMI_SIZE;
+	} else {
+		base = EC_HOST_CMD_REGION0;
+		size = 2 * EC_HOST_CMD_REGION_SIZE;
+		/* Make sure MEMMAP region follows host cmd region. */
+		assert(base + size == EC_LPC_ADDR_MEMMAP);
+		size += EC_MEMMAP_SIZE;
+	}
+
+	*out_base = base;
+	*out_size = size;
+}
+
 #ifdef __PRE_RAM__
 
 int google_chromeec_command(struct chromeec_command *cec_command)
@@ -423,19 +443,13 @@ static void lpc_ec_read_resources(struct device *dev)
 {
 	unsigned int idx = 0;
 	struct resource * res;
+	uint16_t base;
+	size_t size;
 
-
+	google_chromeec_ioport_range(&base, &size);
 	res = new_resource(dev, idx++);
-	if (IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC_MEC)) {
-		res->base = MEC_EMI_BASE;
-		res->size = MEC_EMI_SIZE;
-	} else {
-		res->base = EC_HOST_CMD_REGION0;
-		res->size = 2 * EC_HOST_CMD_REGION_SIZE;
-		/* Make sure MEMMAP region follows host cmd region. */
-		assert(res->base + res->size == EC_LPC_ADDR_MEMMAP);
-		res->size +=  EC_MEMMAP_SIZE;
-	}
+	res->base = base;
+	res->size = size;
 	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 }
 

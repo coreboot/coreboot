@@ -1,0 +1,2 @@
+config DRIVERS_GENERIC_MAX98357A
+	bool

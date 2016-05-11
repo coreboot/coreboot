@@ -18,6 +18,12 @@
 
 #include <stdint.h>
 
+/* WRDD Spec Revision */
+#define WRDD_REVISION 0x0
+
+/* Domain type */
+#define WRDD_DOMAIN_TYPE_WIFI 0x7
+
 /* Default regulatory domain ID */
 #define WRDD_DEFAULT_REGULATORY_DOMAIN 0x4150
 /* INDONESIA regulatory domain ID */

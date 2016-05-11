@@ -20,8 +20,6 @@
 
 #include <arch/acpi.h>
 
-void soc_fill_common_fadt(acpi_fadt_t * fadt);
-
 unsigned long southbridge_write_acpi_tables(device_t device,
 		unsigned long current, struct acpi_rsdp *rsdp);
 

@@ -67,9 +67,12 @@ unsigned long acpi_fill_madt(unsigned long current)
 	return acpi_madt_irq_overrides(current);
 }
 
-void soc_fill_common_fadt(acpi_fadt_t * fadt)
+void acpi_fill_fadt(acpi_fadt_t * fadt)
 {
 	const uint16_t pmbase = ACPI_PMIO_BASE;
+
+	/* Use ACPI 5.0 revision. */
+	fadt->header.revision = ACPI_FADT_REV_ACPI_5_0;
 
 	fadt->sci_int = acpi_sci_irq();
 	fadt->smi_cmd = 0;	/* No Smi Handler as SMI_CMD is 0*/

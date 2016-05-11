@@ -819,7 +819,7 @@ void sdram_init(const struct rk3399_sdram_params *sdram_params)
 	if ((sdram_params->dramtype == DDR3
 			&& sdram_params->ddr_freq > 800*MHz) ||
 	    (sdram_params->dramtype == LPDDR3
-			&& sdram_params->ddr_freq > 800*MHz) ||
+			&& sdram_params->ddr_freq > 928*MHz) ||
 	    (sdram_params->dramtype == LPDDR4
 			&& sdram_params->ddr_freq > 800*MHz))
 		die("SDRAM frequency is to high!");

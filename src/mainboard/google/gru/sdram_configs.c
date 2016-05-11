@@ -22,7 +22,13 @@
 #include <types.h>
 
 static struct rk3399_sdram_params sdram_configs[] = {
-#include "sdram_inf/sdram-lpddr3-hynix-4GB.inc"
+#if IS_ENABLED(CONFIG_BOARD_GOOGLE_GRU)
+#include "sdram_inf/gru-sdram-lpddr3-hynix-4GB.inc"
+#elif IS_ENABLED(CONFIG_BOARD_GOOGLE_KEVIN)
+#include "sdram_inf/kevin-sdram-lpddr3-hynix-4GB.inc"
+#else
+#error "What is your board name?"
+#endif
 };
 
 const struct rk3399_sdram_params *get_sdram_config()

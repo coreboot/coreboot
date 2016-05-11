@@ -14,12 +14,16 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/acpi_device.h>
+#include <arch/acpigen.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <smbios.h>
 #include <string.h>
+#include <wrdd.h>
+#include "chip.h"
 
 static int smbios_write_wifi(struct device *dev, int *handle,
 			     unsigned long *current)
@@ -32,15 +36,17 @@ static int smbios_write_wifi(struct device *dev, int *handle,
 		char eos[2];
 	} __attribute__((packed));
 
-	struct smbios_type_intel_wifi *t = (struct smbios_type_intel_wifi *)*current;
+	struct smbios_type_intel_wifi *t =
+		(struct smbios_type_intel_wifi *)*current;
 	int len = sizeof(struct smbios_type_intel_wifi);
 
 	memset(t, 0, sizeof(struct smbios_type_intel_wifi));
 	t->type = 0x85;
 	t->length = len - 2;
 	t->handle = *handle;
-	/* Intel wifi driver expects this string to be in the table 0x85
-	   with PCI IDs enumerated below.
+	/*
+	 * Intel wifi driver expects this string to be in the table 0x85
+	 * with PCI IDs enumerated below.
 	 */
 	t->str = smbios_add_string(t->eos, "KHOIHGIUCCHHII");
 
@@ -50,30 +56,104 @@ static int smbios_write_wifi(struct device *dev, int *handle,
 	return len;
 }
 
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+static void intel_wifi_fill_ssdt(struct device *dev)
+{
+	struct drivers_intel_wifi_config *config = dev->chip_info;
+	const char *path = acpi_device_path(dev->bus->dev);
+	u32 address;
+
+	if (!path)
+		return;
+
+	/* Device */
+	acpigen_write_scope(path);
+	acpigen_write_device(acpi_device_name(dev));
+	acpigen_write_name_integer("_UID", 0);
+	acpigen_write_name_string("_DDN", dev->chip_ops->name);
+
+	/* Address */
+	address = PCI_SLOT(dev->path.pci.devfn) & 0xffff;
+	address <<= 16;
+	address |= PCI_FUNC(dev->path.pci.devfn) & 0xffff;
+	acpigen_write_name_dword("_ADR", address);
+
+	/* Wake capabilities */
+	if (config && config->wake)
+		acpigen_write_PRW(config->wake, 3);
+
+	/* Fill regulatory domain structure */
+	if (IS_ENABLED(CONFIG_HAVE_REGULATORY_DOMAIN)) {
+		/*
+		 * Name ("WRDD", Package () {
+		 *   WRDD_REVISION, // Revision
+		 *   Package () {
+		 *     WRDD_DOMAIN_TYPE_WIFI,   // Domain Type, 7:WiFi
+		 *     wifi_regulatory_domain() // Country Identifier
+		 *   }
+		 * })
+		 */
+		acpigen_write_name("WRDD");
+		acpigen_write_package(2);
+		acpigen_write_integer(WRDD_REVISION);
+		acpigen_write_package(2);
+		acpigen_write_dword(WRDD_DOMAIN_TYPE_WIFI);
+		acpigen_write_dword(wifi_regulatory_domain());
+		acpigen_pop_len();
+		acpigen_pop_len();
+	}
+
+	acpigen_pop_len(); /* Device */
+	acpigen_pop_len(); /* Scope */
+
+	printk(BIOS_INFO, "%s.%s: %s %s\n", path, acpi_device_name(dev),
+	       dev->chip_ops->name, dev_path(dev));
+}
+
+static const char *intel_wifi_acpi_name(struct device *dev)
+{
+	return "WIFI";
+}
+#endif
+
 static struct pci_operations pci_ops = {
 	.set_subsystem = pci_dev_set_subsystem,
 };
 
 struct device_operations device_ops = {
-	.read_resources   = pci_dev_read_resources,
-	.set_resources    = pci_dev_set_resources,
-	.enable_resources = pci_dev_enable_resources,
-	.init             = pci_dev_init,
-	.scan_bus         = 0,
-	.enable           = 0,
-	.get_smbios_data  = smbios_write_wifi,
-	.ops_pci          = &pci_ops,
+	.read_resources           = pci_dev_read_resources,
+	.set_resources            = pci_dev_set_resources,
+	.enable_resources         = pci_dev_enable_resources,
+	.init                     = pci_dev_init,
+	.get_smbios_data          = smbios_write_wifi,
+	.ops_pci                  = &pci_ops,
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+	.acpi_name                = &intel_wifi_acpi_name,
+	.acpi_fill_ssdt_generator = &intel_wifi_fill_ssdt,
+#endif
 };
-
 
 static const unsigned short pci_device_ids[] = {
 	0x0084, 0x0085, 0x0089, 0x008b, 0x008e, 0x0090,
 	0x0886, 0x0888, 0x0891, 0x0893, 0x0895, 0x088f,
 	0x4236, 0x4237, 0x4238, 0x4239, 0x423b, 0x423d,
-	0 };
+	0x08b1, 0x08b2, /* Wilkins Peak 2 */
+	0x095a, 0x095b, /* Stone Peak 2 */
+	0
+};
 
 static const struct pci_driver pch_intel_wifi __pci_driver = {
 	.ops	 = &device_ops,
 	.vendor	 = PCI_VENDOR_ID_INTEL,
 	.devices = pci_device_ids,
+};
+
+static void intel_wifi_enable(struct device *dev)
+{
+	dev->ops = &device_ops;
+}
+
+struct chip_operations drivers_intel_wifi_ops = {
+	CHIP_NAME("Intel WiFi")
+	.enable_dev = &intel_wifi_enable
 };

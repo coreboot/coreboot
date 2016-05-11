@@ -1,0 +1,5 @@
+#  The Avoton/Rangeley chip does not allow devices to write into the 0xe000
+#  segment.  This means that USB/SATA devices will not work in SeaBIOS unless
+#  we put the SeaBIOS buffer area down in the 0x9000 segment.
+
+# CONFIG_MALLOC_UPPERMEMORY is not set

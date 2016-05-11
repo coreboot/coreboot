@@ -1,0 +1,2 @@
+config BOARD_ADI_RCC_DFF
+	bool "ADI RCC-DFF"

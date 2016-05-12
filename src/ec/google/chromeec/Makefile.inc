@@ -27,6 +27,7 @@ smm-$(CONFIG_VBOOT_VERIFY_FIRMWARE) += vboot_storage.c
 romstage-$(CONFIG_VBOOT_VERIFY_FIRMWARE) += vboot_storage.c
 verstage-$(CONFIG_VBOOT_VERIFY_FIRMWARE) += vboot_storage.c
 
+ifneq ($(CONFIG_EC_EXTERNAL_FIRMWARE),y)
 # These are Chrome EC firmware images that a payload (such as depthcharge) can
 # use to update the EC. ecrw is the main embedded controller's firmware,
 # pdrw is for a USB PD controller.
@@ -64,5 +65,6 @@ $(obj)/mainboard/$(MAINBOARDDIR)/pdrw:
 	cp $(obj)/external/chromeec/$(CONFIG_EC_GOOGLE_CHROMEEC_PD_BOARDNAME)/RW/ec.RW.flat $@
 
 .PHONY: $(obj)/mainboard/$(MAINBOARDDIR)/ecrw $(obj)/mainboard/$(MAINBOARDDIR)/pdrw
+endif
 
 endif

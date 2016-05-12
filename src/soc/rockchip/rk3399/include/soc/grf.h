@@ -149,7 +149,10 @@ struct rk3399_grf_regs {
 	u32 gpio2_sr[3][4];
 	u32 reserved23[4];
 	u32 gpio2_smt[3][4];
-	u32 reserved24[0x44];
+	u32 reserved24[(0xe130 - 0xe0ec)/4 - 1];
+	u32 gpio4b_e01;
+	u32 gpio4b_e2;
+	u32 reserved24a[(0xe200 - 0xe134)/4 - 1];
 	u32 soc_con0;
 	u32 soc_con1;
 	u32 soc_con2;

@@ -26,6 +26,7 @@ romstage-y += gpio.c
 romstage-$(CONFIG_SOC_UART_DEBUG) += uart_early.c
 romstage-y += lpc_lib.c
 romstage-y += memmap.c
+romstage-y += meminit.c
 romstage-y += mmap_boot.c
 romstage-y += tsc_freq.c
 romstage-y += pmutil.c

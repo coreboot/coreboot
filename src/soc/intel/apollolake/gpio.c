@@ -16,6 +16,7 @@
  */
 
 #include <assert.h>
+#include <gpio.h>
 #include <soc/gpio.h>
 #include <soc/iosf.h>
 
@@ -65,4 +66,51 @@ void gpio_configure_pads(const struct pad_config *cfg, size_t num_pads)
 
 	for (i = 0; i < num_pads; i++)
 		gpio_configure_pad(cfg + i);
+}
+
+void gpio_input_pulldown(gpio_t gpio)
+{
+	struct pad_config cfg = PAD_CFG_GPI(gpio, DN_5K, DEEP);
+	gpio_configure_pad(&cfg);
+}
+
+void gpio_input_pullup(gpio_t gpio)
+{
+	struct pad_config cfg = PAD_CFG_GPI(gpio, UP_5K, DEEP);
+	gpio_configure_pad(&cfg);
+}
+
+void gpio_input(gpio_t gpio)
+{
+	struct pad_config cfg = PAD_CFG_GPI(gpio, NONE, DEEP);
+	gpio_configure_pad(&cfg);
+}
+
+void gpio_output(gpio_t gpio, int value)
+{
+	struct pad_config cfg = PAD_CFG_GPO(gpio, value, DEEP);
+	gpio_configure_pad(&cfg);
+}
+
+int gpio_get(gpio_t gpio_num)
+{
+	uint32_t reg;
+	const struct pad_community *comm = gpio_get_community(gpio_num);
+	uint16_t config_offset = PAD_CFG_OFFSET(gpio_num - comm->first_pad);
+
+	reg = iosf_read(comm->port, config_offset);
+
+	return !!(reg & PAD_CFG0_RX_STATE);
+}
+
+void gpio_set(gpio_t gpio_num, int value)
+{
+	uint32_t reg;
+	const struct pad_community *comm = gpio_get_community(gpio_num);
+	uint16_t config_offset = PAD_CFG_OFFSET(gpio_num - comm->first_pad);
+
+	reg = iosf_read(comm->port, config_offset);
+	reg &= ~PAD_CFG0_TX_STATE;
+	reg |= !!value & PAD_CFG0_TX_STATE;
+	iosf_write(comm->port, config_offset, reg);
 }

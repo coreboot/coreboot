@@ -23,6 +23,8 @@
 #ifndef _SOC_APOLLOLAKE_GPIO_DEFS_H_
 #define _SOC_APOLLOLAKE_GPIO_DEFS_H_
 
+#define PAD_CFG0_TX_STATE		(1 << 0)
+#define PAD_CFG0_RX_STATE		(1 << 1)
 #define PAD_CFG0_TX_DISABLE		(1 << 8)
 #define PAD_CFG0_RX_DISABLE		(1 << 9)
 #define PAD_CFG0_MODE_MASK		(7 << 10)

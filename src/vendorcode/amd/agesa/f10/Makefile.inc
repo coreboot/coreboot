@@ -51,19 +51,11 @@ CPPFLAGS_x86_32 += $(AGESA_INC)
 CPPFLAGS_x86_64 += $(AGESA_INC)
 #######################################################################
 
-classes-y += libagesa
-
-ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32),y)
-$(eval $(call create_class_compiler,libagesa,x86_32))
-else
-$(eval $(call create_class_compiler,libagesa,x86_64))
-endif
-
 #libagesa-y += Proc/CPU/Family/0x10/F10IoCstate.c
 #libagesa-y += Proc/CPU/Feature/cpuIoCstate.c
 #libagesa-y += Proc/Mem/NB/ON/mnprotoon.c
 
-libagesa-y  = Proc/CPU/Family/0x10/RevD/F10MicrocodePatch010000c4.c
+libagesa-y += Proc/CPU/Family/0x10/RevD/F10MicrocodePatch010000c4.c
 libagesa-y += Proc/CPU/Family/0x10/RevD/HY/F10HyInitEarlyTable.c
 libagesa-y += Proc/CPU/cpuInitEarlyTable.c
 libagesa-y += Proc/CPU/cahalt.c

@@ -21,6 +21,8 @@
 #include <types.h>
 #include <soc/gpio_defs.h>
 
+typedef uint32_t gpio_t;
+
 #define PAD_FUNC(value)		PAD_CFG0_MODE_##value
 #define PAD_RESET(value)	PAD_CFG0_RESET_##value
 #define PAD_PULL(value)		PAD_CFG1_PULL_##value

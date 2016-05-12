@@ -29,6 +29,7 @@ smm-$(CONFIG_VBOOT) += vboot_storage.c
 romstage-$(CONFIG_VBOOT) += vboot_storage.c
 verstage-$(CONFIG_VBOOT) += vboot_storage.c
 
+ifneq ($(CONFIG_EC_EXTERNAL_FIRMWARE),y)
 # These are Chrome EC firmware images that a payload (such as depthcharge) can
 # use to update the EC. ecrw is the main embedded controller's firmware,
 # pdrw is for a USB PD controller.
@@ -79,5 +80,6 @@ $(obj)/mainboard/$(MAINBOARDDIR)/%.hash: $(obj)/mainboard/$(MAINBOARDDIR)/%
 	openssl dgst -sha256 -binary $< > $@
 
 .PHONY: $(obj)/mainboard/$(MAINBOARDDIR)/ecrw $(obj)/mainboard/$(MAINBOARDDIR)/pdrw
+endif
 
 endif

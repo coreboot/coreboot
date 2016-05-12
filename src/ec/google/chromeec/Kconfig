@@ -76,7 +76,8 @@ config EC_GOOGLE_CHROMEEC_SPI_CHIP
 
 config EC_EXTERNAL_FIRMWARE
 	depends on EC_GOOGLE_CHROMEEC
-	def_bool n
+	bool "Disable building EC firmware"
+	default n
 	help
 	  Disable building EC firmware if it's already built externally (and
 	  added manually.)

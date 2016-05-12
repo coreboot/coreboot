@@ -159,7 +159,22 @@ void *cbfs_load_payload(struct cbfs_media *media, const char *name)
 }
 
 struct cbfs_file *cbfs_find(const char *name) {
-	return cbfs_get_file(CBFS_DEFAULT_MEDIA, name);
+	struct cbfs_handle *handle = cbfs_get_handle(CBFS_DEFAULT_MEDIA, name);
+	struct cbfs_media *m = &handle->media;
+	void *ret;
+
+	if (!handle)
+		return NULL;
+
+	ret = m->map(m, handle->media_offset,
+		     handle->content_offset + handle->content_size);
+	if (ret == CBFS_MEDIA_INVALID_MAP_ADDRESS) {
+		free(handle);
+		return NULL;
+	}
+
+	free(handle);
+	return ret;
 }
 
 void *cbfs_find_file(const char *name, int type) {

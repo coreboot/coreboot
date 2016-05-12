@@ -136,12 +136,15 @@ static int get_cbfs_range(uint32_t *offset, uint32_t *cbfs_end,
 }
 
 /* public API starts here*/
-struct cbfs_file *cbfs_get_file(struct cbfs_media *media, const char *name)
+struct cbfs_handle *cbfs_get_handle(struct cbfs_media *media, const char *name)
 {
 	const char *vardata;
 	uint32_t offset, cbfs_end, vardata_len;
-	struct cbfs_file file, *file_ptr;
-	struct cbfs_media default_media;
+	struct cbfs_file file;
+	struct cbfs_handle *handle = malloc(sizeof(*handle));
+
+	if (!handle)
+		return NULL;
 
 	if (get_cbfs_range(&offset, &cbfs_end, media)) {
 		ERROR("Failed to find cbfs range\n");
@@ -149,11 +152,13 @@ struct cbfs_file *cbfs_get_file(struct cbfs_media *media, const char *name)
 	}
 
 	if (media == CBFS_DEFAULT_MEDIA) {
-		media = &default_media;
+		media = &handle->media;
 		if (init_default_cbfs_media(media) != 0) {
 			ERROR("Failed to initialize default media.\n");
 			return NULL;
 		}
+	} else {
+		memcpy(&handle->media, media, sizeof(*media));
 	}
 
 	DEBUG("CBFS location: 0x%x~0x%x\n", offset, cbfs_end);
@@ -189,10 +194,14 @@ struct cbfs_file *cbfs_get_file(struct cbfs_media *media, const char *name)
 			DEBUG("Found file (offset=0x%x, len=%d).\n",
 			    offset + file_offset, file_len);
 			media->unmap(media, vardata);
-			file_ptr = media->map(media, offset,
-					      file_offset + file_len);
 			media->close(media);
-			return file_ptr;
+			handle->type = ntohl(file.type);
+			handle->media_offset = offset;
+			handle->content_offset = file_offset;
+			handle->content_size = file_len;
+			handle->attribute_offset =
+				ntohl(file.attributes_offset);
+			return handle;
 		} else {
 			DEBUG(" (unmatched file @0x%x: %s)\n", offset,
 			      vardata);
@@ -209,118 +218,104 @@ struct cbfs_file *cbfs_get_file(struct cbfs_media *media, const char *name)
 	return NULL;
 }
 
+void *cbfs_get_contents(struct cbfs_handle *handle, size_t *size, size_t limit)
+{
+	struct cbfs_media *m = &handle->media;
+	size_t on_media_size = handle->content_size;
+	int algo = CBFS_COMPRESS_NONE;
+	void *ret = NULL;
+	size_t dummy_size;
+
+	if (!size)
+		size = &dummy_size;
+
+	struct cbfs_file_attr_compression *comp =
+		cbfs_get_attr(handle, CBFS_FILE_ATTR_TAG_COMPRESSION);
+	if (comp) {
+		algo = ntohl(comp->compression);
+		DEBUG("File '%s' is compressed (alg=%d)\n", name, algo);
+		*size = ntohl(comp->decompressed_size);
+		/* TODO: Implement partial decompression with |limit| */
+	}
+
+	if (algo == CBFS_COMPRESS_NONE) {
+		if (limit != 0 && limit < on_media_size) {
+			*size = limit;
+			on_media_size = limit;
+		} else {
+			*size = on_media_size;
+		}
+	}
+
+	void *data = m->map(m, handle->media_offset + handle->content_offset,
+			    on_media_size);
+	if (data == CBFS_MEDIA_INVALID_MAP_ADDRESS)
+		return NULL;
+
+	ret = malloc(*size);
+	if (ret != NULL && !cbfs_decompress(algo, data, ret, *size)) {
+		free(ret);
+		ret = NULL;
+	}
+
+	m->unmap(m, data);
+	return ret;
+}
+
 void *cbfs_get_file_content(struct cbfs_media *media, const char *name,
 			    int type, size_t *sz)
 {
-	/*
-	 * get file (possibly compressed) data. we pass through 'media' to
-	 * cbfs_get_file (don't call init_default_cbfs_media) here so that
-	 * cbfs_get_file can see whether the call is for CBFS_DEFAULT_MEDIA
-	 * or not. Therefore, we don't (can't) unmap the file but it's caused
-	 * by a pre-existing inherent problem with cbfs_get_file (and all
-	 * callers are suffering from it).
-	 */
-	struct cbfs_file *file = cbfs_get_file(media, name);
+	void *ret = NULL;
+	struct cbfs_handle *handle = cbfs_get_handle(media, name);
 
-	if (file == NULL) {
-		ERROR("Could not find file '%s'.\n", name);
+	if (!handle)
 		return NULL;
-	}
 
-	if (sz)
-		*sz = 0;
-
-	if (ntohl(file->type) != type) {
+	if (handle->type == type)
+		ret = cbfs_get_contents(handle, sz, 0);
+	else
 		ERROR("File '%s' is of type %x, but we requested %x.\n", name,
-		      ntohl(file->type), type);
-		return NULL;
-	}
+		      handle->type, type);
 
-	void *file_content = (void *)CBFS_SUBHEADER(file);
-
-	struct cbfs_file_attribute *attr =
-		cbfs_file_find_attr(file, CBFS_FILE_ATTR_TAG_COMPRESSION);
-
-	size_t final_size = ntohl(file->len);
-	int compression_algo = CBFS_COMPRESS_NONE;
-	if (attr) {
-		struct cbfs_file_attr_compression *comp =
-			(struct cbfs_file_attr_compression *)attr;
-		compression_algo = ntohl(comp->compression);
-		DEBUG("File '%s' is compressed (alg=%d)\n",
-		      name, compression_algo);
-		final_size = ntohl(comp->decompressed_size);
-	}
-
-	void *dst = malloc(final_size);
-	if (dst == NULL)
-		goto err;
-
-	if (!cbfs_decompress(compression_algo, file_content, dst, final_size))
-		goto err;
-
-	if (sz)
-		*sz = final_size;
-
-	return dst;
-
-err:
-	free(dst);
-	return NULL;
+	free(handle);
+	return ret;
 }
 
-struct cbfs_file_attribute *cbfs_file_first_attr(struct cbfs_file *file)
+void *cbfs_get_attr(struct cbfs_handle *handle, uint32_t tag)
 {
-	/* attributes_offset should be 0 when there is no attribute, but all
+	struct cbfs_media *m = &handle->media;
+	uint32_t offset = handle->media_offset + handle->attribute_offset;
+	uint32_t end = handle->media_offset + handle->content_offset;
+	struct cbfs_file_attribute attr;
+	void *ret;
+
+	/* attribute_offset should be 0 when there is no attribute, but all
 	 * values that point into the cbfs_file header are invalid, too. */
-	if (ntohl(file->attributes_offset) <= sizeof(*file))
+	if (handle->attribute_offset <= sizeof(struct cbfs_file))
 		return NULL;
 
-	/* There needs to be enough space for the file header and one
-	 * attribute header for this to make sense. */
-	if (ntohl(file->offset) <=
-		sizeof(*file) + sizeof(struct cbfs_file_attribute))
-		return NULL;
-
-	return (struct cbfs_file_attribute *)
-		(((uint8_t *)file) + ntohl(file->attributes_offset));
-}
-
-struct cbfs_file_attribute *cbfs_file_next_attr(struct cbfs_file *file,
-	struct cbfs_file_attribute *attr)
-{
-	/* ex falso sequitur quodlibet */
-	if (attr == NULL)
-		return NULL;
-
-	/* Is there enough space for another attribute? */
-	if ((uint8_t *)attr + ntohl(attr->len) +
-		sizeof(struct cbfs_file_attribute) >=
-		(uint8_t *)file + ntohl(file->offset))
-		return NULL;
-
-	struct cbfs_file_attribute *next = (struct cbfs_file_attribute *)
-		(((uint8_t *)attr) + ntohl(attr->len));
-	/* If any, "unused" attributes must come last. */
-	if (ntohl(next->tag) == CBFS_FILE_ATTR_TAG_UNUSED)
-		return NULL;
-	if (ntohl(next->tag) == CBFS_FILE_ATTR_TAG_UNUSED2)
-		return NULL;
-
-	return next;
-}
-
-struct cbfs_file_attribute *cbfs_file_find_attr(struct cbfs_file *file,
-	uint32_t tag)
-{
-	struct cbfs_file_attribute *attr = cbfs_file_first_attr(file);
-	while (attr) {
-		if (ntohl(attr->tag) == tag)
-			break;
-		attr = cbfs_file_next_attr(file, attr);
+	m->open(m);
+	while (offset + sizeof(attr) <= end) {
+		if (m->read(m, &attr, offset, sizeof(attr)) != sizeof(attr)) {
+			ERROR("Failed to read attribute header %#x\n", offset);
+			m->close(m);
+			return NULL;
+		}
+		if (ntohl(attr.tag) != tag) {
+			offset += ntohl(attr.len);
+			continue;
+		}
+		ret = m->map(m, offset, ntohl(attr.len));
+		if (ret == CBFS_MEDIA_INVALID_MAP_ADDRESS) {
+			ERROR("Failed to map attribute at %#x\n", offset);
+			m->close(m);
+			return NULL;
+		}
+		return ret;
 	}
-	return attr;
+	m->close(m);
 
+	return NULL;
 }
 
 int cbfs_decompress(int algo, void *src, void *dst, int len)

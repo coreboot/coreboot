@@ -168,19 +168,6 @@ struct cbfs_file_attr_hash {
 	uint8_t  hash_data[];
 } __PACKED;
 
-/* Given a cbfs_file, return the first file attribute, or NULL. */
-struct cbfs_file_attribute *cbfs_file_first_attr(struct cbfs_file *file);
-
-/* Given a cbfs_file and a cbfs_file_attribute, return the attribute that
- * follows it, or NULL. */
-struct cbfs_file_attribute *cbfs_file_next_attr(struct cbfs_file *file,
-	struct cbfs_file_attribute *attr);
-
-/* Given a cbfs_file and an attribute tag, return the first instance of the
- * attribute or NULL if none found. */
-struct cbfs_file_attribute *cbfs_file_find_attr(struct cbfs_file *file,
-	uint32_t tag);
-
 /*** Component sub-headers ***/
 
 /* Following are component sub-headers for the "standard"
@@ -224,9 +211,6 @@ struct cbfs_optionrom {
 	uint32_t len;
 } __attribute__((packed));
 
-#define CBFS_NAME(_c) (((char *) (_c)) + sizeof(struct cbfs_file))
-#define CBFS_SUBHEADER(_p) ( (void *) ((((uint8_t *) (_p)) + ntohl((_p)->offset))) )
-
 #define CBFS_MEDIA_INVALID_MAP_ADDRESS	((void*)(0xffffffff))
 #define CBFS_DEFAULT_MEDIA		((void*)(0x0))
 
@@ -258,9 +242,6 @@ struct cbfs_media {
 	int (*close)(struct cbfs_media *media);
 };
 
-/* returns pointer to a file entry inside CBFS or NULL on error */
-struct cbfs_file *cbfs_get_file(struct cbfs_media *media, const char *name);
-
 /*
  * Returns pointer to a copy of the file content or NULL on error.
  * If the file is compressed, data will be decompressed.
@@ -275,5 +256,28 @@ int cbfs_decompress(int algo, void *src, void *dst, int len);
 /* returns a pointer to CBFS master header, or CBFS_HEADER_INVALID_ADDRESS
  *  on failure */
 const struct cbfs_header *cbfs_get_header(struct cbfs_media *media);
+
+/* Persistent handle to a CBFS file that has not yet been fully mapped. */
+struct cbfs_handle {
+	struct cbfs_media media;	/* copy of original media object */
+	u32 type;			/* CBFS file type */
+	u32 media_offset;		/* offset from beginning of media */
+	u32 attribute_offset;		/* relative offset of attributes */
+	u32 content_offset;		/* relative offset of contents */
+	u32 content_size;		/* length of file contents in bytes */
+};
+
+/* Returns handle to CBFS file, or NULL on error. Does not yet map contents.
+ * Caller is responsible to free() returned handle after use. */
+struct cbfs_handle *cbfs_get_handle(struct cbfs_media *media, const char *name);
+
+/* Given a cbfs_handle and an attribute tag, return a mapping for the first
+ * instance of the attribute or NULL if none found. */
+void *cbfs_get_attr(struct cbfs_handle *handle, uint32_t tag);
+
+/* Given a cbfs_handle, returns the (decompressed) file contents in a buffer,
+ * or NULL on error. If |size| is passed, will store amount of bytes read there.
+ * If |limit| is not 0, will only return up to that many bytes. */
+void *cbfs_get_contents(struct cbfs_handle *handle, size_t *size, size_t limit);
 
 #endif

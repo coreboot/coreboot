@@ -33,6 +33,39 @@ static void configure_sdmmc(void)
 
 	gpio_output(GPIO(2, D, 4), 0);  /* Keep the max voltage */
 
+	/*
+	 * The SD card on this board is connected to port SDMMC0, which is
+	 * multiplexed with GPIO4B pins 0..5.
+	 *
+	 * Disable all pullups on these pins. For pullup configuration
+	 * register layout stacks banks 2 through 4 together, hence [2] means
+	 * group 4, [1] means bank B. This register is described on page 342
+	 * of section 1 of the TRM.
+	 *
+	 * Each GPIO pin's pull config takes two bits, writing zero to the
+	 * field disables pull ups/downs, as described on page 342 of rk3399
+	 * TRM Version 0.3 Part 1.
+	 */
+	write32(&rk3399_grf->gpio2_p[2][1], RK_CLRSETBITS(0xfff, 0));
+
+	/*
+	 * Set all outputs' drive strength to 8 mA. Group 4 bank B driver
+	 * strength requires three bits per pin. Value of 2 written in that
+	 * three bit field means '8 mA', as deduced from the kernel code.
+	 *
+	 * Thus the six pins involved in SDMMC interface require 18 bits to
+	 * configure drive strength, but each 32 bit register provides only 16
+	 * bits for this setting, this covers 5 pins fully and one bit from
+	 * the 6th pin. Two more bits spill over to the next register. This is
+	 * described on page 378 of rk3399 TRM Version 0.3 Part 1.
+	 */
+	write32(&rk3399_grf->gpio4b_e01,
+		RK_CLRSETBITS(0xffff,
+			      (2 << 0) | (2 << 3) |
+			      (2 << 6) | (2 << 9) | (2 << 12)));
+	write32(&rk3399_grf->gpio4b_e2, RK_CLRSETBITS(3, 1));
+
+	/* And now set the multiplexor to enable SDMMC0. */
 	write32(&rk3399_grf->iomux_sdmmc, IOMUX_SDMMC);
 }
 

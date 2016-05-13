@@ -27,10 +27,14 @@
 #include <memrange.h>
 #include <soc/iomap.h>
 #include <soc/cpu.h>
+#include <soc/intel/common/vbt.h>
 #include <soc/nvs.h>
 #include <soc/pci_devs.h>
 
 #include "chip.h"
+
+static void *vbt;
+static struct region_device vbt_rdev;
 
 static void pci_domain_set_resources(device_t dev)
 {
@@ -69,6 +73,10 @@ static void soc_init(void *data)
 	struct range_entry range;
 	struct global_nvs_t *gnvs;
 
+	/* Save VBT info and mapping */
+	if (locate_vbt(&vbt_rdev) != CB_ERR)
+		vbt = rdev_mmap_full(&vbt_rdev);
+
 	/* TODO: tigten this resource range */
 	/* TODO: fix for S3 resume, as this would corrupt OS memory */
 	range_entry_init(&range, 0x200000, 4ULL*GiB, 0);
@@ -78,13 +86,19 @@ static void soc_init(void *data)
 	gnvs = cbmem_add(CBMEM_ID_ACPI_GNVS, sizeof(*gnvs));
 }
 
+static void soc_final(void *data)
+{
+	if (vbt)
+		rdev_munmap(&vbt_rdev, vbt);
+}
+
 void platform_fsp_silicon_init_params_cb(struct FSPS_UPD *silupd)
 {
         struct FSP_S_CONFIG *silconfig = &silupd->FspsConfig;
 	static struct soc_intel_apollolake_config *cfg;
 
 	/* Load VBT before devicetree-specific config. */
-	silconfig->GraphicsConfigPtr = fsp_load_vbt();
+	silconfig->GraphicsConfigPtr = (uintptr_t)vbt;
 
 	struct device *dev = NB_DEV_ROOT;
 	if (!dev || !dev->chip_info) {
@@ -111,7 +125,8 @@ void platform_fsp_silicon_init_params_cb(struct FSPS_UPD *silupd)
 struct chip_operations soc_intel_apollolake_ops = {
 	CHIP_NAME("Intel Apollolake SOC")
 	.enable_dev = &enable_dev,
-	.init = &soc_init
+	.init = &soc_init,
+	.final = &soc_final
 };
 
 static void fsp_notify_dummy(void *arg)

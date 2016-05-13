@@ -25,6 +25,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <soc/cpu.h>
+#include <soc/smm.h>
 
 static struct device_operations cpu_dev_ops = {
 	.init = DEVICE_NOOP,
@@ -40,6 +41,18 @@ static const struct cpu_driver driver __cpu_driver = {
 	.ops      = &cpu_dev_ops,
 	.id_table = cpu_table,
 };
+
+
+/*
+ * MP and SMM loading initialization.
+ */
+struct smm_relocation_attrs {
+	uint32_t smbase;
+	uint32_t smrr_base;
+	uint32_t smrr_mask;
+};
+
+static struct smm_relocation_attrs relo_attrs;
 
 static void read_cpu_topology(unsigned int *num_phys, unsigned int *num_virt)
 {
@@ -75,6 +88,42 @@ static int get_cpu_count(void)
 	return num_virt_cores;
 }
 
+static void get_smm_info(uintptr_t *perm_smbase, size_t *perm_smsize,
+				size_t *smm_save_state_size)
+{
+	void *smm_base;
+	size_t smm_size;
+
+	/* All range registers are aligned to 4KiB */
+	const uint32_t rmask = ~((1 << 12) - 1);
+
+	/* Initialize global tracking state. */
+	smm_region(&smm_base, &smm_size);
+	relo_attrs.smbase = (uint32_t)smm_base;
+	relo_attrs.smrr_base = relo_attrs.smbase | MTRR_TYPE_WRBACK;
+	relo_attrs.smrr_mask = ~(smm_size - 1) & rmask;
+	relo_attrs.smrr_mask |= MTRR_PHYS_MASK_VALID;
+
+	*perm_smbase = relo_attrs.smbase;
+	*perm_smsize = smm_size - CONFIG_SMM_RESERVED_SIZE;
+	*smm_save_state_size = sizeof(em64t100_smm_state_save_area_t);
+}
+
+static void relocation_handler(int cpu, uintptr_t curr_smbase,
+				uintptr_t staggered_smbase)
+{
+	msr_t smrr;
+	em64t100_smm_state_save_area_t *smm_state;
+	/* Set up SMRR. */
+	smrr.lo = relo_attrs.smrr_base;
+	smrr.hi = 0;
+	wrmsr(SMRR_PHYS_BASE, smrr);
+	smrr.lo = relo_attrs.smrr_mask;
+	smrr.hi = 0;
+	wrmsr(SMRR_PHYS_MASK, smrr);
+	smm_state = (void *)(SMM_EM64T100_SAVE_STATE_OFFSET + curr_smbase);
+	smm_state->smbase = staggered_smbase;
+}
 /*
  * CPU initialization recipe
  *
@@ -85,6 +134,10 @@ static int get_cpu_count(void)
 static const struct mp_ops mp_ops = {
 	.pre_mp_init = pre_mp_init,
 	.get_cpu_count = get_cpu_count,
+	.get_smm_info = get_smm_info,
+	.pre_mp_smm_init = southbridge_smm_clear_state,
+	.relocation_handler = relocation_handler,
+	.post_mp_init = southbridge_smm_enable_smi,
 };
 
 void apollolake_init_cpus(device_t dev)

@@ -15,11 +15,9 @@ bootblock-y += car.c
 bootblock-y += gpio.c
 bootblock-y += lpc_lib.c
 bootblock-y += mmap_boot.c
-bootblock-y += placeholders.c
 bootblock-y += tsc_freq.c
 bootblock-$(CONFIG_SOC_UART_DEBUG) += uart_early.c
 
-romstage-y += placeholders.c
 romstage-y += car.c
 romstage-$(CONFIG_PLATFORM_USES_FSP2_0) += romstage.c
 romstage-y += gpio.c
@@ -31,13 +29,12 @@ romstage-y += mmap_boot.c
 romstage-y += tsc_freq.c
 romstage-y += pmutil.c
 
-smm-y += placeholders.c
 smm-y += pmutil.c
+smm-y += smihandler.c
 
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
 ramstage-y += cpu.c
 ramstage-y += chip.c
-ramstage-y += placeholders.c
 ramstage-y += gpio.c
 ramstage-y += graphics.c
 ramstage-$(CONFIG_SOC_UART_DEBUG) += uart_early.c
@@ -51,6 +48,7 @@ ramstage-y += spi.c
 ramstage-y += tsc_freq.c
 ramstage-y += pmutil.c
 ramstage-y += pmc.c
+ramstage-y += smi.c
 
 postcar-y += exit_car.S
 postcar-y += memmap.c

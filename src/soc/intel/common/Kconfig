@@ -72,4 +72,8 @@ config VBT_FILE
 	help
 	  The path and filename of the VBT binary.
 
+config SOC_INTEL_COMMON_GFX_OPREGION
+	bool
+	default n
+
 endif # SOC_INTEL_COMMON

@@ -59,4 +59,17 @@ config MMA_BLOBS_PATH
 	depends on MMA
 	default "3rdparty/blobs/mainboard/$(MAINBOARDDIR)/mma"
 
+config ADD_VBT_DATA_FILE
+	bool "Add a Video Bios Table (VBT) binary to CBFS"
+	help
+	  Add a VBT file data file to CBFS. The VBT describes the integrated
+	  GPU and connections, and is needed by FSP in order to initialize the
+	  display.
+
+config VBT_FILE
+	string "VBT binary path and filename"
+	depends on ADD_VBT_DATA_FILE
+	help
+	  The path and filename of the VBT binary.
+
 endif # SOC_INTEL_COMMON

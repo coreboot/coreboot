@@ -14,6 +14,7 @@ ramstage-$(CONFIG_SOC_INTEL_COMMON_RESET) += reset.c
 ramstage-y += util.c
 ramstage-$(CONFIG_MMA) += mma.c
 ramstage-$(CONFIG_SOC_INTEL_COMMON_ACPI_WAKE_SOURCE) += acpi_wake_source.c
+ramstage-y += vbt.c
 
 # Create and add the MRC cache to the cbfs image
 ifneq ($(CONFIG_CHROMEOS),y)
@@ -70,5 +71,9 @@ $(foreach mma_test, $(MMA_TEST_CONFIG_NAMES),\
 		$(eval $(call MMA_CBFS_template,$(mma_config),configs/$(mma_test),mma)))))
 
 endif
+
+cbfs-files-$(CONFIG_ADD_VBT_DATA_FILE) += vbt.bin
+vbt.bin-file := $(call strip_quotes,$(CONFIG_VBT_FILE))
+vbt.bin-type := raw
 
 endif

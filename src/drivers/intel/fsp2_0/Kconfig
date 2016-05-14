@@ -3,4 +3,32 @@ config PLATFORM_USES_FSP2_0
 	help
 	  Include FSP 2.0 wrappers and functionality
 
+if PLATFORM_USES_FSP2_0
 
+config ADD_FSP_BINARIES
+	bool "Add Intel FSP 2.0 binaries to CBFS"
+	help
+	  Add the FSP-M and FSP-S binaries to CBFS. Currently coreboot does not
+	  use the FSP-T binary and it is not added.
+
+config FSP_S_CBFS
+	string "Name of FSP-S in CBFS"
+	default "fsps.bin"
+
+config FSP_M_CBFS
+	string "Name of FSP-M in CBFS"
+	default "fspm.bin"
+
+config FSP_M_FILE
+	string "Intel FSP-M (memory init) binary path and filename"
+	depends on ADD_FSP_BINARIES
+	help
+	  The path and filename of the Intel FSP-M binary for this platform.
+
+config FSP_S_FILE
+	string "Intel FSP-S (silicon init) binary path and filename"
+	depends on ADD_FSP_BINARIES
+	help
+	  The path and filename of the Intel FSP-S binary for this platform.
+
+endif

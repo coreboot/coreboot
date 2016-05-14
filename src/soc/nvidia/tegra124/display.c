@@ -334,6 +334,6 @@ void display_startup(device_t dev)
 	edid.mode.va = config->yres;
 	edid.mode.ha = config->xres;
 	edid_set_framebuffer_bits_per_pixel(&edid,
-		config->framebuffer_bits_per_pixel, 64);
+		config->framebuffer_bits_per_pixel, 32);
 	set_vbe_mode_info_valid(&edid, (uintptr_t)(framebuffer_base_mb*MiB));
 }

@@ -88,11 +88,7 @@ static int vboot_logic_executed(void)
 
 static void vboot_prepare(void)
 {
-	int run_verification;
-
-	run_verification = verification_should_run();
-
-	if (run_verification) {
+	if (verification_should_run()) {
 		verstage_main();
 		car_set_var(vboot_executed, 1);
 	} else if (verstage_should_load()) {

@@ -54,8 +54,7 @@ static enum fsp_status do_silicon_init(struct fsp_header *hdr)
 enum fsp_status fsp_silicon_init(struct range_entry *range)
 {
 	/* Load FSP-S and save FSP header. We will need it for Notify */
-	/* TODO: do not hardcode CBFS file names */
-	if (fsp_load_binary(&fsps_hdr, "blobs/fsps.bin", range) != CB_SUCCESS)
+	if (fsp_load_binary(&fsps_hdr, CONFIG_FSP_S_CBFS, range) != CB_SUCCESS)
 		return FSP_NOT_FOUND;
 
 	return do_silicon_init(&fsps_hdr);

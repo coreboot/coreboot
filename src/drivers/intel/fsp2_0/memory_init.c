@@ -65,8 +65,7 @@ enum fsp_status fsp_memory_init(void **hob_list, struct range_entry *range)
 {
 	struct fsp_header hdr;
 
-	/* TODO: do not hardcode CBFS file names */
-	if (fsp_load_binary(&hdr, "blobs/fspm.bin", range) != CB_SUCCESS)
+	if (fsp_load_binary(&hdr, CONFIG_FSP_M_CBFS, range) != CB_SUCCESS)
 		return FSP_NOT_FOUND;
 
 	return do_fsp_memory_init(hob_list, &hdr);

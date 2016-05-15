@@ -16,3 +16,6 @@
 CPPFLAGS_common += -I$(src)/vendorcode/intel/fsp/fsp1_1/quark
 
 romstage-y += gpio.c
+
+ramstage-y += gpio.c
+ramstage-y += reg_access.c

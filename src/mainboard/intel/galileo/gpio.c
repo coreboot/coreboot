@@ -16,9 +16,28 @@
 #include <arch/io.h>
 #include <console/console.h>
 #include <soc/ramstage.h>
-#include <soc/reg_access.h>
+#include "reg_access.h"
 #include "gen1.h"
 #include "gen2.h"
+
+void mainboard_gpio_i2c_init(device_t dev)
+{
+	const struct reg_script *script;
+
+	printk(BIOS_INFO, "Galileo I2C chip initialization\n");
+
+	/* Determine the correct script for the board */
+	if (IS_ENABLED(CONFIG_GALILEO_GEN2))
+		script = gen2_i2c_init;
+	else
+		/* Determine which I2C address is in use */
+		script = (reg_legacy_gpio_read (R_QNC_GPIO_RGLVL_RESUME_WELL)
+			& GALILEO_DETERMINE_IOEXP_SLA_RESUMEWELL_GPIO)
+			? gen1_i2c_0x20_init : gen1_i2c_0x21_init;
+
+	/* Initialize the I2C chips */
+	reg_script_run(script);
+}
 
 void mainboard_gpio_init(void)
 {

@@ -34,4 +34,13 @@ config MAINBOARD_VENDOR
 	string
 	default "Intel"
 
+config GALILEO_GEN2
+	bool "Board generation: GEN1 (n) or GEN2 (y)"
+	default y
+	help
+	  The coreboot binary will configure only one generation of the Galileo
+	  board since coreboot can not determine the board generation at
+	  runtime.  Select which generation of the Galileo that coreboot
+	  should initialize.
+
 endif # BOARD_INTEL_QUARK

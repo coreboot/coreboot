@@ -25,6 +25,7 @@ romstage-$(CONFIG_ENABLE_BUILTIN_HSUART1) += uart_common.c
 
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
 ramstage-y += chip.c
+ramstage-y += gpio_i2c.c
 ramstage-y += memmap.c
 ramstage-y += northcluster.c
 ramstage-y += pmc.c

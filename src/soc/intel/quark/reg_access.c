@@ -20,6 +20,45 @@
 #include <soc/pci_devs.h>
 #include <soc/reg_access.h>
 
+static uint32_t *get_gpio_address(uint32_t reg_address)
+{
+	uint32_t gpio_base_address;
+
+	/* Get the GPIO base address */
+	gpio_base_address = pci_read_config32(I2CGPIO_BDF, PCI_BASE_ADDRESS_1);
+	gpio_base_address &= ~PCI_BASE_ADDRESS_MEM_ATTR_MASK;
+	ASSERT (gpio_base_address != 0x00000000);
+
+	/* Return the GPIO register address */
+	return (uint32_t *)(gpio_base_address + reg_address);
+}
+
+void *get_i2c_address(void)
+{
+	uint32_t gpio_base_address;
+
+	/* Get the GPIO base address */
+	gpio_base_address = pci_read_config32(I2CGPIO_BDF, PCI_BASE_ADDRESS_0);
+	gpio_base_address &= ~PCI_BASE_ADDRESS_MEM_ATTR_MASK;
+	ASSERT (gpio_base_address != 0x00000000);
+
+	/* Return the GPIO register address */
+	return (void *)gpio_base_address;
+}
+
+static uint16_t get_legacy_gpio_address(uint32_t reg_address)
+{
+	uint32_t gpio_base_address;
+
+	/* Get the GPIO base address */
+	gpio_base_address = pci_read_config32(LPC_BDF, R_QNC_LPC_GBA_BASE);
+	ASSERT (gpio_base_address >= 0x80000000);
+	gpio_base_address &= B_QNC_LPC_GPA_BASE_MASK;
+
+	/* Return the GPIO register address */
+	return (uint16_t)(gpio_base_address + reg_address);
+}
+
 void mcr_write(uint8_t opcode, uint8_t port, uint32_t reg_address)
 {
 	pci_write_config32(MC_BDF, QNC_ACCESS_PORT_MCR,
@@ -45,19 +84,6 @@ void mea_write(uint32_t reg_address)
 		& QNC_MEA_MASK);
 }
 
-static uint32_t *get_gpio_address(uint32_t reg_address)
-{
-	uint32_t gpio_base_address;
-
-	/* Get the GPIO base address */
-	gpio_base_address = pci_read_config32(I2CGPIO_BDF, PCI_BASE_ADDRESS_1);
-	gpio_base_address &= ~PCI_BASE_ADDRESS_MEM_ATTR_MASK;
-	ASSERT (gpio_base_address != 0x00000000);
-
-	/* Return the GPIO register address */
-	return (uint32_t *)(gpio_base_address + reg_address);
-}
-
 static uint32_t reg_gpio_read(uint32_t reg_address)
 {
 	/* Read the GPIO register */
@@ -68,19 +94,6 @@ static void reg_gpio_write(uint32_t reg_address, uint32_t value)
 {
 	/* Write the GPIO register */
 	*get_gpio_address(reg_address) = value;
-}
-
-static uint16_t get_legacy_gpio_address(uint32_t reg_address)
-{
-	uint32_t gpio_base_address;
-
-	/* Get the GPIO base address */
-	gpio_base_address = pci_read_config32(LPC_BDF, R_QNC_LPC_GBA_BASE);
-	ASSERT (gpio_base_address >= 0x80000000);
-	gpio_base_address &= B_QNC_LPC_GPA_BASE_MASK;
-
-	/* Return the GPIO register address */
-	return (uint16_t)(gpio_base_address + reg_address);
 }
 
 uint32_t reg_legacy_gpio_read(uint32_t reg_address)

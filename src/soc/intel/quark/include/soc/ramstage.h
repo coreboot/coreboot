@@ -22,4 +22,6 @@
 #include <fsp/ramstage.h>
 #include <soc/QuarkNcSocId.h>
 
+void mainboard_gpio_i2c_init(device_t dev);
+
 #endif /* _SOC_RAMSTAGE_H_ */

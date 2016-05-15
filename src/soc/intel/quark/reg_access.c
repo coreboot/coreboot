@@ -45,6 +45,56 @@ void mea_write(uint32_t reg_address)
 		& QNC_MEA_MASK);
 }
 
+static uint32_t *get_gpio_address(uint32_t reg_address)
+{
+	uint32_t gpio_base_address;
+
+	/* Get the GPIO base address */
+	gpio_base_address = pci_read_config32(I2CGPIO_BDF, PCI_BASE_ADDRESS_1);
+	gpio_base_address &= ~PCI_BASE_ADDRESS_MEM_ATTR_MASK;
+	ASSERT (gpio_base_address != 0x00000000);
+
+	/* Return the GPIO register address */
+	return (uint32_t *)(gpio_base_address + reg_address);
+}
+
+static uint32_t reg_gpio_read(uint32_t reg_address)
+{
+	/* Read the GPIO register */
+	return *get_gpio_address(reg_address);
+}
+
+static void reg_gpio_write(uint32_t reg_address, uint32_t value)
+{
+	/* Write the GPIO register */
+	*get_gpio_address(reg_address) = value;
+}
+
+static uint16_t get_legacy_gpio_address(uint32_t reg_address)
+{
+	uint32_t gpio_base_address;
+
+	/* Get the GPIO base address */
+	gpio_base_address = pci_read_config32(LPC_BDF, R_QNC_LPC_GBA_BASE);
+	ASSERT (gpio_base_address >= 0x80000000);
+	gpio_base_address &= B_QNC_LPC_GPA_BASE_MASK;
+
+	/* Return the GPIO register address */
+	return (uint16_t)(gpio_base_address + reg_address);
+}
+
+uint32_t reg_legacy_gpio_read(uint32_t reg_address)
+{
+	/* Read the legacy GPIO register */
+	return inl(get_legacy_gpio_address(reg_address));
+}
+
+void reg_legacy_gpio_write(uint32_t reg_address, uint32_t value)
+{
+	/* Write the legacy GPIO register */
+	outl(value, get_legacy_gpio_address(reg_address));
+}
+
 uint32_t reg_rmu_temp_read(uint32_t reg_address)
 {
 	/* Read the RMU temperature register */
@@ -110,6 +160,16 @@ static uint64_t reg_read(struct reg_script_context *ctx)
 		ctx->display_features = REG_SCRIPT_DISPLAY_NOTHING;
 		return 0;
 
+	case GPIO_REGS:
+		ctx->display_prefix = "GPIO: ";
+		value = reg_gpio_read(step->reg);
+		break;
+
+	case LEG_GPIO_REGS:
+		ctx->display_prefix = "Legacy GPIO: ";
+		value = reg_legacy_gpio_read(step->reg);
+		break;
+
 	case RMU_TEMP_REGS:
 		ctx->display_prefix = "RMU TEMP";
 		value = reg_rmu_temp_read(step->reg);
@@ -139,6 +199,16 @@ static void reg_write(struct reg_script_context *ctx)
 			step->id);
 		ctx->display_features = REG_SCRIPT_DISPLAY_NOTHING;
 		return;
+
+	case GPIO_REGS:
+		ctx->display_prefix = "GPIO: ";
+		reg_gpio_write(step->reg, (uint32_t)step->value);
+		break;
+
+	case LEG_GPIO_REGS:
+		ctx->display_prefix = "Legacy GPIO: ";
+		reg_legacy_gpio_write(step->reg, (uint32_t)step->value);
+		break;
 
 	case RMU_TEMP_REGS:
 		ctx->display_prefix = "RMU TEMP";

@@ -24,10 +24,18 @@
 /* UART MMIO */
 #define UART_BASE_ADDRESS		CONFIG_TTYS0_BASE
 
+/* I2C/GPIO Controller */
+#define I2C_GPIO_BASE_ADDRESS		0xa0020000
+
 /*
  * I/O port address space
  */
-#define ACPI_BASE_ADDRESS	0x1000
-#define ACPI_BASE_SIZE		0x100
+#define ACPI_BASE_ADDRESS		0x1000
+#define ACPI_BASE_SIZE			0x100
+
+#define LEGACY_GPIO_BASE_ADDRESS	0x1080
+#define LEGACY_GPIO_SIZE		0x80
+
+#define IO_ADDRESS_VALID		0x80000000
 
 #endif /* _QUARK_IOMAP_H_ */

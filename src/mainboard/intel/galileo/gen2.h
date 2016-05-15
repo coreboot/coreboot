@@ -48,3 +48,28 @@ static const struct reg_script gen2_gpio_init[] = {
 
 	REG_SCRIPT_END
 };
+
+static const struct reg_script gen2_i2c_init[] = {
+	/* Route I2C to Arduino Shield connector:
+	 * Set AMUX1_IN (EXP2.P1_4) low
+	 * Configure AMUX1_IN (EXP2.P1_4) as an output
+	 *
+	 *	I2C_SDA -> ANALOG_A4
+	 *	I2C_SCL -> ANALOG_A5
+	 */
+	REG_I2C_AND(GEN2_I2C_GPIO_EXP2, GEN2_GPIO_EXP_OUTPUT1, ~BIT4),
+	REG_I2C_AND(GEN2_I2C_GPIO_EXP2, GEN2_GPIO_EXP_CONFIG1, ~BIT4),
+
+	/* Set all GPIO expander pins connected to the Reset Button as inputs
+	 * Configure Reset Button(EXP1.P1_7) as an input
+	 * Disable pullup on Reset Button(EXP1.P1_7)
+	 * Configure Reset Button(EXP2.P1_7) as an input
+	 * Disable pullup on Reset Button(EXP2.P1_7)
+	 */
+	REG_I2C_OR(GEN2_I2C_GPIO_EXP1, GEN2_GPIO_EXP_CONFIG1, BIT7),
+	REG_I2C_AND(GEN2_I2C_GPIO_EXP1, GEN2_GPIO_EXP_PULL_UP_DOWN_EN1, ~BIT7),
+	REG_I2C_OR(GEN2_I2C_GPIO_EXP2, GEN2_GPIO_EXP_CONFIG1, BIT7),
+	REG_I2C_AND(GEN2_I2C_GPIO_EXP2, GEN2_GPIO_EXP_PULL_UP_DOWN_EN1, ~BIT7),
+
+	REG_SCRIPT_END
+};

@@ -97,6 +97,7 @@ ifeq ($(CONFIG_ARCH_BOOTBLOCK_X86_32)$(CONFIG_ARCH_BOOTBLOCK_X86_64),y)
 bootblock-y += boot.c
 bootblock-y += memcpy.c
 bootblock-y += memset.c
+bootblock-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 bootblock-$(CONFIG_X86_TOP4G_BOOTMEDIA_MAP) += mmap_boot.c
 
 bootblock-y += id.S
@@ -394,6 +395,7 @@ postcar-y += memset.c
 postcar-y += memcpy.c
 postcar-y += memmove.c
 postcar-y += memlayout.ld
+postcar-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 postcar-$(CONFIG_X86_TOP4G_BOOTMEDIA_MAP) += mmap_boot.c
 
 $(objcbfs)/postcar.debug: $$(postcar-objs)

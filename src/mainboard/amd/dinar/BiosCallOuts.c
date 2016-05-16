@@ -108,15 +108,3 @@ static AGESA_STATUS board_ReadSpd (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 
 	return Status;
 }
-
-static AGESA_STATUS OemInitPost(AMD_POST_PARAMS *InitPost)
-{
-	InitPost->MemConfig.UmaMode = UMA_AUTO;
-	InitPost->MemConfig.BottomIo = 0xE0;
-	InitPost->MemConfig.UmaSize = 0xE0-0xC0;
-	return AGESA_SUCCESS;
-}
-
-const struct OEM_HOOK OemCustomize = {
-	.InitPost = OemInitPost,
-};

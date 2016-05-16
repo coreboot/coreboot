@@ -102,6 +102,3 @@ static AGESA_STATUS board_ReadSpd (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 
 	return Status;
 }
-
-const struct OEM_HOOK OemCustomize = {
-};

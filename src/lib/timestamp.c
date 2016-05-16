@@ -86,9 +86,6 @@ static struct timestamp_cache *timestamp_cache_get(void)
 		ts_cache = car_get_var_ptr((void *)_timestamp);
 	}
 
-	if (ts_cache && ts_cache->cache_state == TIMESTAMP_CACHE_UNINITIALIZED)
-		timestamp_cache_init(ts_cache, 0);
-
 	return ts_cache;
 }
 

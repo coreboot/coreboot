@@ -17,11 +17,13 @@ romstage-y += rd890_cfg.c
 romstage-y += sb700_cfg.c
 romstage-y += buildOpts.c
 romstage-y += BiosCallOuts.c
+romstage-y += OemCustomize.c
 
 ramstage-y += rd890_cfg.c
 ramstage-y += sb700_cfg.c
 ramstage-y += buildOpts.c
 ramstage-y += BiosCallOuts.c
+ramstage-y += OemCustomize.c
 
 AGESA_PREFIX ?= $(src)/vendorcode/amd/agesa
 CIMX_PREFIX ?= $(src)/vendorcode/amd/cimx

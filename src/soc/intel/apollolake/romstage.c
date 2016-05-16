@@ -39,6 +39,7 @@
 #include <soc/romstage.h>
 #include <soc/uart.h>
 #include <string.h>
+#include <timestamp.h>
 
 #define FIT_POINTER				(0x100000000ULL - 0x40)
 
@@ -127,6 +128,7 @@ asmlinkage void car_stage_entry(void)
 	struct romstage_handoff *handoff;
 	struct chipset_power_state *ps = car_get_var_ptr(&power_state);
 
+	timestamp_add_now(TS_START_ROMSTAGE);
 
 	soc_early_romstage_init();
 	disable_watchdog();

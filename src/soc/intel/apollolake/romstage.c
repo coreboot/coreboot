@@ -127,11 +127,11 @@ asmlinkage void car_stage_entry(void)
 	struct romstage_handoff *handoff;
 	struct chipset_power_state *ps = car_get_var_ptr(&power_state);
 
-	printk(BIOS_DEBUG, "Starting romstage...\n");
 
 	soc_early_romstage_init();
-
 	disable_watchdog();
+
+	console_init();
 
 	prev_sleep_state = fill_power_state(ps);
 

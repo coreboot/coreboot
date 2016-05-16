@@ -17,6 +17,7 @@
 #define __BOOTBLOCK_COMMON_H
 
 #include <main_decl.h>
+#include <stdint.h>
 
 /*
  * These are defined as weak no-ops that can be overridden by mainboard/SoC.
@@ -27,5 +28,14 @@ void bootblock_mainboard_early_init(void);
 void bootblock_mainboard_init(void);
 void bootblock_soc_early_init(void);
 void bootblock_soc_init(void);
+/*
+ * This is a the same as the bootblock main(), with the difference that it does
+ * not collect a timestamp. Instead it accepts the first timestamp as an
+ * argument. This can be used in cases where an earlier stamp is available
+ * Note that this function is designed to be entered from C code.
+ * This function assumes that the timer has already been initialized, so it
+ * does not call init_timer().
+ */
+void bootblock_main_with_timestamp(uint64_t base_timestamp);
 
 #endif	/* __BOOTBLOCK_COMMON_H */

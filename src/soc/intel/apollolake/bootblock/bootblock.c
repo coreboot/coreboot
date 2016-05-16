@@ -26,6 +26,7 @@
 #include <soc/northbridge.h>
 #include <soc/pci_devs.h>
 #include <soc/uart.h>
+#include <timestamp.h>
 
 static const struct pad_config tpm_spi_configs[] = {
 	PAD_CFG_NF(GPIO_106, NATIVE, DEEP, NF3),	/* FST_SPI_CS2_N */
@@ -53,7 +54,7 @@ static void enable_pm_timer(void)
 	wrmsr(MSR_EMULATE_PM_TMR, msr);
 }
 
-void asmlinkage bootblock_c_entry(void)
+void asmlinkage bootblock_c_entry(uint32_t tsc_hi, uint32_t tsc_lo)
 {
 	device_t dev = NB_DEV_ROOT;
 
@@ -67,7 +68,7 @@ void asmlinkage bootblock_c_entry(void)
 	pci_write_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
 
 	/* Call lib/bootblock.c main */
-	main();
+	bootblock_main_with_timestamp(((uint64_t)tsc_hi << 32) | tsc_lo);
 }
 
 static void cache_bios_region(void)

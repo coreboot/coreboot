@@ -16,5 +16,5 @@
 #define _SOC_APOLLOLAKE_BOOTBLOCK_H_
 #include <arch/cpu.h>
 
-void asmlinkage bootblock_c_entry(void);
+void asmlinkage bootblock_c_entry(uint32_t tsc_hi, uint32_t tsc_lo);
 #endif

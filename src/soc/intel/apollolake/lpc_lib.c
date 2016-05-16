@@ -149,7 +149,7 @@ void lpc_open_mmio_window(uintptr_t base, size_t size)
 
 	if (lgmr & LGMR_EN) {
 		printk(BIOS_ERR,
-		       "LPC: Cannot open window to resource %lx size %lx\n",
+		       "LPC: Cannot open window to resource %lx size %zx\n",
 		       base, size);
 		printk(BIOS_ERR, "LPC: MMIO window already in use\n");
 		return;
@@ -157,7 +157,7 @@ void lpc_open_mmio_window(uintptr_t base, size_t size)
 
 	if (size > LGMR_WINDOW_SIZE) {
 		printk(BIOS_WARNING,
-		       "LPC:  Resource %lx size %lx larger than window(%x)\n",
+		       "LPC:  Resource %lx size %zx larger than window(%x)\n",
 		       base, size, LGMR_WINDOW_SIZE);
 	}
 
@@ -177,8 +177,8 @@ bool lpc_fits_fixed_mmio_window(uintptr_t base, size_t size)
 
 		if ((base >= range->base) && (res_end <= range_end)) {
 			printk(BIOS_DEBUG,
-			       "Resource %lx size %lx fits in fixed window"
-			       " %lx size %lx\n",
+			       "Resource %lx size %zx fits in fixed window"
+			       " %lx size %zx\n",
 			       base, size, range->base, range->size);
 			return true;
 		}

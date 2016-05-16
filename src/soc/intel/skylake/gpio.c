@@ -398,3 +398,8 @@ void gpio_set(gpio_t gpio_num, int value)
 	write32(&dw_regs[0], reg);
 	/* GPIO port ids support posted write semantics. */
 }
+
+const char *gpio_acpi_path(gpio_t gpio_num)
+{
+	return "\\_SB.PCI0.GPIO";
+}

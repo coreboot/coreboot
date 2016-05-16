@@ -1,5 +1,7 @@
 /*
- * Copyright 2013 Google Inc.
+ * This file is part of the libpayload project.
+ *
+ * Copyright 2016 Google Inc.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -11,6 +13,10 @@
  *    documentation and/or other materials provided with the distribution.
  * 3. The name of the author may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
+ *
+ * Alternatively, this software may be distributed under the terms of the
+ * GNU General Public License ("GPL") version 2 as published by the Free
+ * Software Foundation.
  *
  * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -25,17 +31,30 @@
  * SUCH DAMAGE.
  */
 
+#include <assert.h>
 #include <libpayload.h>
-#include <libpayload-config.h>
-
-static uint32_t * const tegra_tmrus = (void *)CONFIG_LP_TIMER_TEGRA_1US_ADDRESS;
 
 uint64_t timer_hz(void)
 {
-	return 1000 * 1000;
+	/* libc/time.c currently requires all timers to be at least 1MHz. */
+	assert(CONFIG_LP_TIMER_GENERIC_HZ >= 1000000);
+	return CONFIG_LP_TIMER_GENERIC_HZ;
 }
 
 uint64_t timer_raw_value(void)
 {
-	return readl(tegra_tmrus);
+	uint64_t cur_tick;
+	uint32_t count_h;
+	uint32_t count_l;
+
+	if (!CONFIG_LP_TIMER_GENERIC_HIGH_REG)
+		return readl(phys_to_virt(CONFIG_LP_TIMER_GENERIC_REG));
+
+	do {
+		count_h = readl(phys_to_virt(CONFIG_LP_TIMER_GENERIC_HIGH_REG));
+		count_l = readl(phys_to_virt(CONFIG_LP_TIMER_GENERIC_REG));
+		cur_tick = readl(phys_to_virt(CONFIG_LP_TIMER_GENERIC_REG));
+	} while (cur_tick != count_h);
+
+	return (cur_tick << 32) + count_l;
 }

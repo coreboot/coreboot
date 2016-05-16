@@ -46,11 +46,11 @@ config TIMER_IPQ40XX
 	  This is the timer driver for QCA IPQ40xx based
 	  platforms.
 
-config TIMER_RK
-	bool "Timer for Rockchip"
+config TIMER_RK3288
+	bool "Timer for Rockchip RK3288"
 
-config TIMER_BG4CD
-	bool "Marvell BG4CD"
+config TIMER_RK3399
+	bool "Timer for Rockchip RK3399"
 
 config TIMER_CYGNUS
 	bool "Timer for Cygnus"
@@ -65,41 +65,6 @@ config TIMER_MVMAP2315
 	bool "Timer for Marvell MVMAP2315"
 
 endchoice
-
-config TIMER_MCT_HZ
-	int "Exynos MCT frequency"
-	depends on TIMER_MCT
-	default 24000000
-
-config TIMER_MCT_ADDRESS
-	hex "Exynos MCT base address"
-	depends on TIMER_MCT
-	default 0x101c0000
-
-config TIMER_RK_ADDRESS
-	hex "Rockchip timer base address"
-	depends on TIMER_RK
-	default 0xff810020
-
-config TIMER_TEGRA_1US_ADDRESS
-	hex "Tegra u1s timer base address"
-	depends on TIMER_TEGRA_1US
-	default 0x60005010
-
-config IPQ806X_TIMER_FREQ
-	int "Hardware timer frequency"
-	default 32000
-	depends on TIMER_IPQ806X
-	help
-	  IPQ hardware presently provides a single timer running at 32KHz, a
-	  finer granulariry timer is available but is not yet enabled.
-
-config IPQ806X_TIMER_REG
-	hex "Timer register address"
-	default 0x0200A008
-	depends on TIMER_IPQ806X
-	help
-	  Address of the register to read a free running timer value.
 
 config ARMADA38X_TIMER_FREQ
         int "Hardware timer frequency"
@@ -121,21 +86,43 @@ config MVMAP2315_TIMER_REG
 	depends on TIMER_MVMAP2315
 	default 0xE1020004
 
-config IPROC_PERIPH_GLB_TIM_REG_BASE
-	hex "Cygnus timer base address"
-	depends on TIMER_CYGNUS
-	default 0x19020200
-
-config TIMER_MTK_HZ
-	int "MediaTek GPT frequency"
-	depends on TIMER_MTK
-	default 13000000
+config TIMER_GENERIC_HZ
+	int "Generic Timer Frequency"
+	default 500000000 if TIMER_CYGNUS
+	default 48000000 if TIMER_IPQ40XX
+	default 6250000 if TIMER_IPQ806X
+	default 24000000 if TIMER_MCT
+	default 13000000 if TIMER_MTK
+	default 24000000 if TIMER_RK3288
+	default 24000000 if TIMER_RK3399
+	default 1000000 if TIMER_TEGRA_1US
+	default 0
 	help
-	  Clock frequency of MediaTek General Purpose Timer.
+	  Clock frequency of generic time counter in Hertz. Leave at 0 to
+	  disable when using a non-generic timer driver.
 
-config TIMER_MTK_ADDRESS
-	hex "MTK GPT register address"
-	depends on TIMER_MTK
-	default 0x10008048
+config TIMER_GENERIC_REG
+	hex "Generic Timer Register Address"
+	default 0x19020200 if TIMER_CYGNUS
+	default 0x004A2000 if TIMER_IPQ40XX
+	default 0x0200A028 if TIMER_IPQ806X
+	default 0x101C0100 if TIMER_MCT
+	default 0x10008048 if TIMER_MTK
+	default 0xff810028 if TIMER_RK3288
+	default 0xff850008 if TIMER_RK3399
+	default 0x60005010 if TIMER_TEGRA_1US
+	default 0x0
 	help
-	  Address of GPT4's counter register to read the FREERUN-mode timer value.
+	  Register address to read generic time counter from.
+
+config TIMER_GENERIC_HIGH_REG
+	hex "Generic Timer High Register Address"
+	default 0x19020204 if TIMER_CYGNUS
+	default 0x004A2004 if TIMER_IPQ40XX
+	default 0x101C0104 if TIMER_MCT
+	default 0xff81002C if TIMER_RK3288
+	default 0xff85000C if TIMER_RK3399
+	default 0x0
+	help
+	  Register address to read high 32 bits of generic time counter from.
+	  Leave at 0x0 for 32-bit counters.

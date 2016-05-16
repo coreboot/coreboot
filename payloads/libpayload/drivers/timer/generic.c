@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2015 Google Electronics
+ * Copyright 2016 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -12,28 +12,18 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
+
+#include <assert.h>
 #include <libpayload.h>
 
-struct cygnus_timer {
-	u32 gtim_glob_low;
-	u32 gtim_glob_hi;
-	u32 gtim_glob_ctrl;
-};
-
-static struct cygnus_timer * const timer_ptr =
-		(void *)CONFIG_LP_IPROC_PERIPH_GLB_TIM_REG_BASE;
+static uint32_t *low_reg = (void *)CONFIG_LP_TIMER_GENERIC_REG;
+static uint32_t *high_reg = (void *)CONFIG_LP_TIMER_GENERIC_HIGH_REG;
 
 uint64_t timer_hz(void)
 {
-	/*
-	 * this is set up by coreboot as follows:
-	 *
-	 * PERIPH_CLOCK /
-	 * (((TIMER_GLB_TIM_CTRL_PRESC & TIMER_GLB_TIM_CTRL_PRESC_MASK)>>8) + 1)
-	 *
-	 * where PERIPH_CLOCK is typically 500000000.
-	 */
-	return 500000000;
+	/* libc/time.c currently requires all timers to be at least 1MHz. */
+	assert(CONFIG_LP_TIMER_GENERIC_HZ >= 1000000);
+	return CONFIG_LP_TIMER_GENERIC_HZ;
 }
 
 uint64_t timer_raw_value(void)
@@ -42,10 +32,13 @@ uint64_t timer_raw_value(void)
 	uint32_t count_h;
 	uint32_t count_l;
 
+	if (!high_reg)
+		return readl(low_reg);
+
 	do {
-		count_h = readl(&timer_ptr->gtim_glob_hi);
-		count_l = readl(&timer_ptr->gtim_glob_low);
-		cur_tick = readl(&timer_ptr->gtim_glob_hi);
+		count_h = readl(high_reg);
+		count_l = readl(low_reg);
+		cur_tick = readl(high_reg);
 	} while (cur_tick != count_h);
 
 	return (cur_tick << 32) + count_l;

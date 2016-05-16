@@ -46,16 +46,11 @@ libc-$(CONFIG_LP_NVRAM) += nvram.c
 libc-$(CONFIG_LP_NVRAM) += options.c
 
 # Timer drivers
-libc-$(CONFIG_LP_TIMER_MTK) += timer/mtk_timer.c
-libc-$(CONFIG_LP_TIMER_MCT) += timer/mct.c
+ifneq ($(CONFIG_LP_TIMER_GENERIC_HZ),0)
+libc-y += timer/generic.c
+endif
 libc-$(CONFIG_LP_TIMER_RDTSC) += timer/rdtsc.c
-libc-$(CONFIG_LP_TIMER_TEGRA_1US) += timer/tegra_1us.c
-libc-$(CONFIG_LP_TIMER_IPQ806X) += timer/ipq806x.c
-libc-$(CONFIG_LP_TIMER_IPQ40XX) += timer/ipq40xx.c
-libc-$(CONFIG_LP_TIMER_RK) += timer/rktimer.c
-libc-$(CONFIG_LP_TIMER_BG4CD) += timer/bg4cd.c
 libc-$(CONFIG_LP_TIMER_IMG_PISTACHIO) += timer/img_pistachio.c
-libc-$(CONFIG_LP_TIMER_CYGNUS) += timer/cygnus.c
 libc-$(CONFIG_LP_TIMER_ARMADA38X) += timer/armada38x.c
 
 # Video console drivers

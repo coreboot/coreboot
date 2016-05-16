@@ -94,9 +94,9 @@ static void disable_watchdog(void)
 	uint32_t reg;
 
 	/* Stop TCO timer */
-	reg = inl(ACPI_PMIO_BASE + 0x68);
-	reg |= 1 << 11;
-	outl(reg, ACPI_PMIO_BASE + 0x68);
+	reg = inl(ACPI_PMIO_BASE + TCO1_CNT);
+	reg |= TCO_TMR_HLT;
+	outl(reg, ACPI_PMIO_BASE + TCO1_CNT);
 }
 
 static void migrate_power_state(int is_recovery)

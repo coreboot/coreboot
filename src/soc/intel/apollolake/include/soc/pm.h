@@ -89,6 +89,7 @@
 #define TCO_STS			0x64
 #define   TCO_TIMEOUT		(1 << 3)
 #define TCO1_CNT		0x68
+#define   TCO_TMR_HLT		(1 << 11)
 
 #define GPE0_REG_MAX		4
 #define GPE0_REG_SIZE		32

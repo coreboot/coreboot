@@ -471,6 +471,7 @@ static int cbfstool_convert_fsp(struct buffer *buffer,
 {
 	uint32_t address;
 	struct buffer fsp;
+	int do_relocation = 1;
 
 	address = *offset;
 
@@ -486,13 +487,12 @@ static int cbfstool_convert_fsp(struct buffer *buffer,
 			address = -convert_to_from_absolute_top_aligned(
 					param.image_region, address);
 	} else {
-		if ((param.baseaddress_assigned == 0) ||
-		    (param.baseaddress == 0)) {
-			ERROR("Invalid baseaddress for non-XIP FSP.\n");
-			return 1;
+		if (param.baseaddress_assigned == 0) {
+			INFO("Honoring pre-linked FSP module.\n");
+			do_relocation = 0;
+		} else {
+			address = param.baseaddress;
 		}
-
-		address = param.baseaddress;
 
 		/*
 		 * *offset should either be 0 or the value returned by
@@ -507,6 +507,13 @@ static int cbfstool_convert_fsp(struct buffer *buffer,
 		if (IS_TOP_ALIGNED_ADDRESS(*offset))
 			*offset = 0;
 	}
+
+	/*
+	 * Nothing left to do if relocation is not being attempted. Just add
+	 * the file.
+	 */
+	if (!do_relocation)
+		return cbfstool_convert_raw(buffer, offset, header);
 
 	/* Create a copy of the buffer to attempt relocation. */
 	if (buffer_create(&fsp, buffer_size(buffer), "fsp"))

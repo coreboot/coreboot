@@ -12,7 +12,7 @@
 
 config STORAGE
 	bool "Support for storage devices"
-	default y
+	default y if !CHROMEOS
 	help
 	  Select this option if you want support for storage devices (like
 	  hard drives, memory sticks or optical drives).

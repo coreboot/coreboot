@@ -18,7 +18,7 @@ config USB
 config USB_UHCI
 	bool "Support for USB UHCI controllers"
 	depends on USB && ARCH_X86
-	default y
+	default y if !CHROMEOS
 	help
 	  Select this option if you are going to use USB 1.1 on an Intel based
 	  system.
@@ -26,7 +26,7 @@ config USB_UHCI
 config USB_OHCI
 	bool "Support for USB OHCI controllers"
 	depends on USB
-	default y
+	default y if !CHROMEOS
 	help
 	  Select this option if you are going to use USB 1.1 on a non-Intel based
 	  system.
@@ -34,14 +34,14 @@ config USB_OHCI
 config USB_EHCI
 	bool "Support for USB EHCI controllers"
 	depends on USB
-	default y
+	default y if !CHROMEOS
 	help
 	  Select this option if you want to use USB 2.0
 
 config USB_XHCI
 	bool "Support for USB xHCI controllers"
 	depends on USB
-	default y
+	default y if !CHROMEOS
 	help
 	  Select this option if you want to use USB 3.0
 

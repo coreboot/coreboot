@@ -34,6 +34,7 @@ menu "Generic Options"
 
 config GPL
 	bool "GPLv2-licensed Options"
+	default y if CHROMEOS
 	default n
 	help
 	  Prompt for options that will build code licensed under the GNU General
@@ -54,6 +55,12 @@ config DEVELOPER
 	help
 	  Prompt for developer options. These options are only interesting for
 	  libpayload developers.
+
+config CHROMEOS
+	bool "Chrome OS Options"
+	default n
+	help
+	  Select configuration defaults appropriate for Chrome OS boards.
 
 choice
 	prompt "Compiler to use"
@@ -117,7 +124,7 @@ endchoice
 config MULTIBOOT
 	bool "Multiboot header support"
 	depends on ARCH_X86
-	default y
+	default y if !CHROMEOS
 
 config HEAP_SIZE
 	int "Heap size"
@@ -158,7 +165,7 @@ config LIBC
 
 config CURSES
 	bool "Build a curses library"
-	default y
+	default y if !CHROMEOS
 
 choice
 	prompt "Curses implementation"
@@ -208,6 +215,7 @@ menu "Console Options"
 
 config SKIP_CONSOLE_INIT
 	bool "Skip initializing the consoles at startup"
+	default y if CHROMEOS
 	default n
 	help
 	  Normally, libpayload will initialize console input/output on startup
@@ -225,7 +233,7 @@ config SERIAL_CONSOLE
 config 8250_SERIAL_CONSOLE
 	bool "8250-compatible serial port driver (including IO and MMIO)"
 	depends on SERIAL_CONSOLE
-	default y
+	default y if ARCH_X86
 
 config S5P_SERIAL_CONSOLE
 	bool "Exynos SOC, S5P compatible serial port driver"
@@ -289,7 +297,7 @@ config VIDEO_CONSOLE
 config VGA_VIDEO_CONSOLE
 	bool "VGA video console driver"
 	depends on ARCH_X86 && VIDEO_CONSOLE
-	default y
+	default y if !CHROMEOS
 
 config GEODELX_VIDEO_CONSOLE
 	bool "Geode LX video console driver"
@@ -299,6 +307,7 @@ config GEODELX_VIDEO_CONSOLE
 config COREBOOT_VIDEO_CONSOLE
 	bool "coreboot video console driver"
 	depends on VIDEO_CONSOLE && !GEODELX_VIDEO_CONSOLE
+	default y if CHROMEOS
 	default n
 	help
 	  Say Y here if coreboot switched to a graphics mode and
@@ -352,7 +361,7 @@ config RTC_PORT_EXTENDED_VIA
 config SPEAKER
 	bool "Support for PC speaker"
 	depends on ARCH_X86
-	default y
+	default y if !CHROMEOS
 
 source "drivers/timer/Kconfig"
 source "drivers/storage/Kconfig"

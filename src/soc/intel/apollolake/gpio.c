@@ -114,3 +114,21 @@ void gpio_set(gpio_t gpio_num, int value)
 	reg |= !!value & PAD_CFG0_TX_STATE;
 	iosf_write(comm->port, config_offset, reg);
 }
+
+const char *gpio_acpi_path(gpio_t gpio_num)
+{
+	const struct pad_community *comm = gpio_get_community(gpio_num);
+
+	switch (comm->port) {
+	case GPIO_NORTH:
+		return "\\_SB.GPO0";
+	case GPIO_NORTHWEST:
+		return "\\_SB.GPO1";
+	case GPIO_WEST:
+		return "\\_SB.GPO2";
+	case GPIO_SOUTHWEST:
+		return "\\_SB.GPO3";
+	}
+
+	return NULL;
+}

@@ -379,8 +379,6 @@ config BOOTSPLASH_FILE
 
 endmenu
 
-source "src/acpi/Kconfig"
-
 menu "Mainboard"
 
 source "src/mainboard/Kconfig"
@@ -454,6 +452,8 @@ menu "Generic Drivers"
 source "src/drivers/*/Kconfig"
 source "src/drivers/*/*/Kconfig"
 endmenu
+
+source "src/acpi/Kconfig"
 
 config RTC
 	bool

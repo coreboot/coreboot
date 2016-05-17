@@ -44,7 +44,7 @@ static qup_config_t blsp1_qup0_config = {
 	QUP_MINICORE_I2C_MASTER,
 	100000,
 	19050000,
-	QUP_MODE_FIFO,
+	QUP_MODE_BLOCK,
 	0
 };
 
@@ -52,7 +52,7 @@ static qup_config_t blsp1_qup1_config = {
 	QUP_MINICORE_I2C_MASTER,
 	100000,
 	19050000,
-	QUP_MODE_FIFO,
+	QUP_MODE_BLOCK,
 	0
 };
 
@@ -60,7 +60,7 @@ static qup_config_t blsp1_qup2_config = {
 	QUP_MINICORE_I2C_MASTER,
 	100000,
 	19050000,
-	QUP_MODE_FIFO,
+	QUP_MODE_BLOCK,
 	0
 };
 
@@ -68,7 +68,7 @@ static qup_config_t blsp1_qup3_config = {
 	QUP_MINICORE_I2C_MASTER,
 	100000,
 	19050000,
-	QUP_MODE_FIFO,
+	QUP_MODE_BLOCK,
 	0
 };
 

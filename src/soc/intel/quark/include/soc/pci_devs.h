@@ -23,19 +23,22 @@
 #include <soc/QuarkNcSocId.h>
 
 /* DEVICE 0 (Memroy Controller Hub) */
-#define MC_BDF		PCI_DEV(PCI_BUS_NUMBER_QNC, MC_DEV, MC_FUN)
+#define MC_BDF			PCI_DEV(PCI_BUS_NUMBER_QNC, MC_DEV, MC_FUN)
 
 /* Device IDs */
 #define HSUART_DEVID		0x0936
 #define EHCI_DEVID		0x0939
 
 /* IO Fabric 1 */
-#define SIO1_DEV 0x14
-# define HSUART1_DEV SIO1_DEV
-# define HSUART1_FUNC 5
+#define SIO1_DEV		0x14
+#define HSUART1_DEV		SIO1_DEV
+#define HSUART1_FUNC		5
 
 /* Platform Controller Unit */
-# define LPC_DEV_FUNC	PCI_DEVFN(PCI_DEVICE_NUMBER_QNC_LPC, \
-				PCI_FUNCTION_NUMBER_QNC_LPC)
+#define LPC_DEV_FUNC		PCI_DEVFN(PCI_DEVICE_NUMBER_QNC_LPC, \
+					PCI_FUNCTION_NUMBER_QNC_LPC)
+#define LPC_BDF			PCI_DEV(PCI_BUS_NUMBER_QNC, \
+					PCI_DEVICE_NUMBER_QNC_LPC, \
+					PCI_FUNCTION_NUMBER_QNC_LPC)
 
 #endif /* _QUARK_PCI_DEVS_H_ */

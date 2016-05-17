@@ -13,9 +13,9 @@
  * GNU General Public License for more details.
  */
 
-#include <delay.h>
-#include <boardid.h>
 #include <arch/io.h>
+#include <assert.h>
+#include <delay.h>
 #include <stdlib.h>
 #include <soc/addressmap.h>
 #include <soc/dramc_common.h>
@@ -305,31 +305,27 @@ static int dqs_gw_test(u32 channel)
 static u8 dqs_gw_fine_tune_calib(u32 channel, u8 fine_val)
 {
 	u8 i, opt_fine_val;
-	s8 gw_ret[3], delta[3] = {0, -16, 16};
+	s8 delta[7] = {-48, -32, -16, 0, 16, 32, 48};
+	int matches = 0, sum = 0;
 
-	for (i = 0; i < 3; i++) {
-		/* adjust gw fine tune */
+	/*fine tune range from 0 to 127*/
+	fine_val = min(max(fine_val, 0 - delta[0]), 127 - delta[6]);
+
+	/* test gw fine tune */
+	for (i = 0; i < ARRAY_SIZE(delta); i++) {
 		opt_fine_val = fine_val + delta[i];
 		set_gw_fine_factor(channel, opt_fine_val, 0);
-		/* get gw test result */
-		gw_ret[i] = dqs_gw_test(channel);
+		if (dqs_gw_test(channel)) {
+			matches++;
+			sum += delta[i];
+		}
 	}
 
-	/* start fine tune adjustment from default fine value */
-	opt_fine_val = fine_val;
+	if (matches == 0) {
+		die("[GW] ERROR, No found fine tune\n");
+	}
 
-	if (gw_ret[0] && gw_ret[1] && gw_ret[2]) {
-		opt_fine_val += ((delta[0] + delta[1] + delta[2]) / 3);
-	}
-	else if (gw_ret[0] && gw_ret[1]) {
-		opt_fine_val += ((delta[0] + delta[1]) / 2);
-	}
-	else if (gw_ret[0] && gw_ret[2]) {
-		opt_fine_val += ((delta[0] + delta[2]) / 2);
-	}
-	else {  /* abnormal test result, set to default fine tune value */
-		printk(BIOS_ERR, "[GW] ERROR, No found fine tune!!!\n");
-	}
+	opt_fine_val = fine_val + (sum / matches);
 
 	return opt_fine_val;
 }
@@ -737,7 +733,8 @@ u8 rx_datlat_cal(u32 channel, u8 rank,
 
 	if (err[0]) {
 		/* dle test error */
-		printk(BIOS_ERR, "[DLE] calibration ERROR!\n");
+		printk(BIOS_ERR, "[DLE] CH:%d calibration ERROR CMP_ERR =%xh, \n",
+			channel, err[0]);
 	} else {
 		/* judge dle test result */
 		for (i = 0; i < DLE_TEST_NUM; i++) {

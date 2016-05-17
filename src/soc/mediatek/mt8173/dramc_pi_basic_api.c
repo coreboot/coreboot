@@ -539,8 +539,11 @@ void dramc_init(u32 channel, const struct mt8173_sdram_params *sdram_params)
 	write32(&ch[channel].ao_regs->conf1,
 		sdram_params->ac_timing.conf1);
 
+	/* bit 17,18 would bypass some dummy path*/
 	write32(&ch[channel].ddrphy_regs->dqsgctl, 0x1 << 31 |
 						   0x1 << 30 |
+						   0x1 << 17 |
+						   0x1 << 18 |
 						   0x1 << 4  |
 						   0x1 << 0);
 
@@ -691,6 +694,9 @@ void dramc_phy_reset(u32 channel)
 void dramc_runtime_config(u32 channel,
 			  const struct mt8173_sdram_params *sdram_params)
 {
+	setbits_le32(&ch[channel].ddrphy_regs->dqsgctl,
+		BIT(17)|BIT(18));
+
 	/* enable hw gating */
 	setbits_le32(&ch[channel].ao_regs->dqscal0,
 		     1 << DQSCAL0_STBCALEN_SHIFT);

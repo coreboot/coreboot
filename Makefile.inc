@@ -898,7 +898,7 @@ junit.xml:
 	echo '<?xml version="1.0" encoding="utf-8"?><testsuite>' > $@.tmp
 	echo "<testcase classname='$(UTIL)' name='$(UTIL)'>" >> $@.tmp
 	-$(MAKE) -j $(CPUS) -C "util/$(UTIL)" clean distclean > $@.tmp.2 2>&1
-	$(MAKE) -j $(CPUS) -C "util/$(UTIL)" >> $@.tmp.2 2>&1 && type="system-out" || type="failure"; \
+	$(MAKE) -j $(CPUS) -C "util/$(UTIL)" $(MAKETARGET) >> $@.tmp.2 2>&1 && type="system-out" || type="failure"; \
 	cat $@.tmp.2; \
 	if [ "$$type" = "failure" ]; then \
 		echo "<failure type='buildFailed'>" >> $@.tmp; \
@@ -932,4 +932,5 @@ what-jenkins-does:
 	util/abuild/abuild -B -J $(if $(JENKINS_NOCCACHE),,-y) -c $(CPUS) -z -p $(JENKINS_PAYLOAD) -x -X $(top)/abuild-chromeos.xml
 	util/abuild/abuild -B -J $(if $(JENKINS_NOCCACHE),,-y) -c $(CPUS) -z -p $(JENKINS_PAYLOAD)
 	(cd payloads/libpayload; unset COREBOOT_BUILD_DIR; $(MAKE) $(if $(JENKINS_NOCCACHE),,CONFIG_LP_CCACHE=y) V=$(V) Q=$(Q) junit.xml)
-	$(foreach tool, $(TOOLLIST), $(MAKE) CPUS=$(CPUS) V=$(V) Q=$(Q) UTIL="$(tool)" MFLAGS= MAKEFLAGS= junit.xml; )
+	$(foreach tool, $(TOOLLIST), $(MAKE) CPUS=$(CPUS) V=$(V) Q=$(Q) UTIL="$(tool)" MFLAGS= MAKEFLAGS= MAKETARGET= junit.xml; )
+	$(MAKE) CPUS=$(CPUS) V=$(V) Q=$(Q) UTIL="romcc" MFLAGS= MAKEFLAGS= MAKETARGET=test junit.xml

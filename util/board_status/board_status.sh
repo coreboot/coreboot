@@ -266,6 +266,12 @@ if [ $? -ne 0 ]; then
 	exit $EXIT_FAILURE
 fi
 
+if [ ! -e "$COREBOOT_IMAGE" ]; then
+	echo "board_status needs $COREBOOT_IMAGE, but it does not exist."
+	echo "Use \"-i IMAGE_FILE\" to select a different image, or \"--help\" for more options."
+	exit $EXIT_FAILURE
+fi
+
 # Results will be placed in a temporary location until we're ready to upload.
 # If the user does not wish to upload, results will remain in /tmp.
 tmpdir=$(mktemp -d --tmpdir coreboot_board_status.XXXXXXXX)

@@ -29,7 +29,6 @@ FSP_INFO_HEADER *find_fsp(uintptr_t fsp_base_address)
 		EFI_FIRMWARE_VOLUME_EXT_HEADER *fveh;
 		EFI_FIRMWARE_VOLUME_HEADER *fvh;
 		EFI_RAW_SECTION *rs;
-		u8 *u8;
 		u32 u32;
 	} fsp_ptr;
 	static const union {
@@ -50,9 +49,9 @@ FSP_INFO_HEADER *find_fsp(uintptr_t fsp_base_address)
 	}
 
 	/* Locate the file header which follows the FV header. */
-	fsp_ptr.u8 += fsp_ptr.fvh->ExtHeaderOffset;
-	fsp_ptr.u8 += fsp_ptr.fveh->ExtHeaderSize;
-	fsp_ptr.u8 = (u8 *)ALIGN_UP(fsp_ptr.u32, 8);
+	fsp_ptr.u32 += fsp_ptr.fvh->ExtHeaderOffset;
+	fsp_ptr.u32 += fsp_ptr.fveh->ExtHeaderSize;
+	fsp_ptr.u32 = ALIGN_UP(fsp_ptr.u32, 8);
 
 	/* Check the FFS GUID */
 	if ((((u32 *)&fsp_ptr.ffh->Name)[0] != 0x912740BE)
@@ -63,14 +62,14 @@ FSP_INFO_HEADER *find_fsp(uintptr_t fsp_base_address)
 	}
 
 	/* Locate the Raw Section Header */
-	fsp_ptr.u8 += sizeof(EFI_FFS_FILE_HEADER);
+	fsp_ptr.u32 += sizeof(EFI_FFS_FILE_HEADER);
 
 	if (fsp_ptr.rs->Type != EFI_SECTION_RAW) {
 		return (FSP_INFO_HEADER *)ERROR_NO_INFO_HEADER;
 	}
 
 	/* Locate the FSP INFO Header which follows the Raw Header. */
-	fsp_ptr.u8 += sizeof(EFI_RAW_SECTION);
+	fsp_ptr.u32 += sizeof(EFI_RAW_SECTION);
 
 	/* Verify that the FSP base address.*/
 	if (fsp_ptr.fih->ImageBase != fsp_base_address) {

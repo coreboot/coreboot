@@ -21,18 +21,18 @@
 
 		.gating_win = {
 			[CHANNEL_A] = {
-					{ 28, 56},
-					{ 28, 56}
+					{ 28, 64},
+					{ 28, 64}
 			},
 			[CHANNEL_B] = {
-					{ 28, 56},
-					{ 28, 56}
+					{ 28, 64},
+					{ 28, 64}
 			}
 		},
 
 		.rx_dqs_dly = {
 			[CHANNEL_A] = 0x110e0b0b,
-			[CHANNEL_B] = 0x12100d0d
+			[CHANNEL_B] = 0x0D100d0d
 		},
 
 		.rx_dq_dly = {

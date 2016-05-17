@@ -19,6 +19,7 @@
 #include <device/device.h>
 #include <device/i2c.h>
 #include <gpio.h>
+#include <soc/bl31_plat_params.h>
 #include <soc/clock.h>
 #include <soc/display.h>
 #include <soc/emmc.h>
@@ -42,6 +43,23 @@ static void configure_emmc(void)
 	rkclk_configure_emmc();
 
 	enable_emmc_clk();
+}
+
+static void register_reset_to_bl31(void)
+{
+	static struct bl31_gpio_param param_reset = {
+		.h = {
+			.type = PARAM_RESET,
+		},
+		.gpio = {
+			.polarity = 1,
+		},
+	};
+
+	/* gru/kevin reset pin: gpio0b3 */
+	param_reset.gpio.index = GET_GPIO_NUM(GPIO_RESET),
+
+	register_bl31_param(&param_reset.h);
 }
 
 static void configure_sdmmc(void)
@@ -132,6 +150,7 @@ static void mainboard_init(device_t dev)
 	configure_codec();
 	configure_display();
 	setup_usb();
+	register_reset_to_bl31();
 }
 
 static void enable_backlight_booster(void)

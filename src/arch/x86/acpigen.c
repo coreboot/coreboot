@@ -206,7 +206,7 @@ void acpigen_emit_stream(const char *data, int size)
 
 void acpigen_emit_string(const char *string)
 {
-	acpigen_emit_stream(string, string ? 0 : strlen(string));
+	acpigen_emit_stream(string, string ? strlen(string) : 0);
 	acpigen_emit_byte('\0'); /* NUL */
 }
 

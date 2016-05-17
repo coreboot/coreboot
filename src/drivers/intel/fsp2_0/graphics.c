@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2015 Intel Corp.
+ * Copyright (C) 2015 - 2016 Intel Corp.
  * (Written by Alexandru Gagniuc <alexandrux.gagniuc@intel.com> for Intel Corp.)
  *
  * This program is free software; you can redistribute it and/or modify
@@ -67,7 +67,7 @@ enum cb_err fsp_fill_lb_framebuffer(struct lb_framebuffer *framebuffer)
 		return CB_ERR;
 	}
 
-	if (ginfo->pixel_format > ARRAY_SIZE(fsp_framebuffer_format_map)) {
+	if (ginfo->pixel_format >= ARRAY_SIZE(fsp_framebuffer_format_map)) {
 		printk(BIOS_ALERT, "FSP set unknown framebuffer format: %d\n",
 		       ginfo->pixel_format);
 		return CB_ERR;

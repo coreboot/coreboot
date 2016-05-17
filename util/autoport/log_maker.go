@@ -1,6 +1,8 @@
 package main
 
 import (
+	"errors"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
@@ -45,13 +47,52 @@ func RunAndSave(output string, name string, arg ...string) {
 	}
 }
 
+const MAXPROMPTRETRY = 3
+
+func PromptUser(prompt string, opts []string) (match string, err error) {
+	for i := 1; i < MAXPROMPTRETRY; i++ {
+		fmt.Println("%s. (%s) Default:%s", prompt, strings.Join(opts, "/"), opts[0])
+		var usrInput string
+		fmt.Scanln(&usrInput)
+
+		// Check for default entry
+		if usrInput == "" {
+			match = opts[0]
+			return
+		}
+
+		for _, opt := range opts {
+			if opt == usrInput {
+				match = opt
+				return
+			}
+		}
+	}
+	err = errors.New("max retries exceeded")
+	fmt.Fprintln(os.Stderr, "ERROR: max retries exceeded")
+	return
+}
+
 func MakeLogs(outDir string) {
 	os.MkdirAll(outDir, 0700)
 	RunAndSave(outDir+"/lspci.log", "lspci", "-nnvvvxxxx")
 	RunAndSave(outDir+"/dmidecode.log", "dmidecode")
 	RunAndSave(outDir+"/acpidump.log", "acpidump")
-	/* FIXME:XX */
-	RunAndSave(outDir+"/inteltool.log", "../inteltool/inteltool", "-a")
+
+	inteltoolArgs := "-a"
+	opt, err := PromptUser("WARNING: The following tool MAY cause your system to hang when it attempts "+
+		"to probe for graphics registers.  Having the graphics registers will help create a better port. "+
+		"Should autoport probe these registers?",
+		[]string{"y", "yes", "n", "no"})
+
+	// Continue even if there is an error
+
+	switch opt {
+	case "y", "yes":
+		opt += " -f"
+	}
+
+	RunAndSave(outDir+"/inteltool.log", "../inteltool/inteltool", inteltoolArgs)
 	RunAndSave(outDir+"/ectool.log", "../ectool/ectool")
 
 	SysDir := "/sys/class/sound/card0/"

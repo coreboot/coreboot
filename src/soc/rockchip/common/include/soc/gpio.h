@@ -72,4 +72,14 @@ int is_pmu_gpio(gpio_t gpio);
 
 /* Return the io addr of gpio register */
 void *gpio_grf_reg(gpio_t gpio);
+
+enum {
+	PULLNONE = 0,
+	PULLUP,
+	PULLDOWN
+};
+
+/* The gpio pull bias setting may different from SoC */
+u32 gpio_get_pull_val(gpio_t gpio, u32 pull);
+
 #endif

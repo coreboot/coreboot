@@ -70,6 +70,7 @@ ramstage-y += timer.c
 ramstage-y += ../common/vop.c
 ramstage-y += usb.c
 
+ramstage-y += bl31_plat_params.c
 BL31_MAKEARGS += PLAT=rk3399
 ################################################################################
 

@@ -41,60 +41,52 @@ FSP_INFO_HEADER *find_fsp(uintptr_t fsp_base_address)
 
 	u32 *image_id;
 
-	for (;;) {
-		/* Get the FSP binary base address in CBFS */
-		fsp_ptr.u32 = fsp_base_address;
+	/* Get the FSP binary base address in CBFS */
+	fsp_ptr.u32 = fsp_base_address;
 
-		/* Check the FV signature, _FVH */
-		if (fsp_ptr.fvh->Signature != 0x4856465F) {
-			fsp_ptr.u8 = (u8 *)ERROR_NO_FV_SIG;
-			break;
-		}
-
-		/* Locate the file header which follows the FV header. */
-		fsp_ptr.u8 += fsp_ptr.fvh->ExtHeaderOffset;
-		fsp_ptr.u8 += fsp_ptr.fveh->ExtHeaderSize;
-		fsp_ptr.u8 = (u8 *)ALIGN_UP(fsp_ptr.u32, 8);
-
-		/* Check the FFS GUID */
-		if ((((u32 *)&fsp_ptr.ffh->Name)[0] != 0x912740BE)
-			|| (((u32 *)&fsp_ptr.ffh->Name)[1] != 0x47342284)
-			|| (((u32 *)&fsp_ptr.ffh->Name)[2] != 0xB08471B9)
-			|| (((u32 *)&fsp_ptr.ffh->Name)[3] != 0x0C3F3527)) {
-			fsp_ptr.u8 = (u8 *)ERROR_NO_FFS_GUID;
-			break;
-		}
-
-		/* Locate the Raw Section Header */
-		fsp_ptr.u8 += sizeof(EFI_FFS_FILE_HEADER);
-
-		if (fsp_ptr.rs->Type != EFI_SECTION_RAW) {
-			fsp_ptr.u8 = (u8 *)ERROR_NO_INFO_HEADER;
-			break;
-		}
-
-		/* Locate the FSP INFO Header which follows the Raw Header. */
-		fsp_ptr.u8 += sizeof(EFI_RAW_SECTION);
-
-		/* Verify that the FSP base address.*/
-		if (fsp_ptr.fih->ImageBase != fsp_base_address) {
-			fsp_ptr.u8 = (u8 *)ERROR_IMAGEBASE_MISMATCH;
-			break;
-		}
-
-		/* Verify the FSP Signature */
-		if (fsp_ptr.fih->Signature != FSP_SIG) {
-			fsp_ptr.u8 = (u8 *)ERROR_INFO_HEAD_SIG_MISMATCH;
-			break;
-		}
-
-		/* Verify the FSP ID */
-		image_id = (u32 *)&fsp_ptr.fih->ImageId[0];
-		if ((image_id[0] != fsp_id.int_id[0])
-			|| (image_id[1] != fsp_id.int_id[1]))
-			fsp_ptr.u8 = (u8 *)ERROR_FSP_SIG_MISMATCH;
-		break;
+	/* Check the FV signature, _FVH */
+	if (fsp_ptr.fvh->Signature != 0x4856465F) {
+		return (FSP_INFO_HEADER *)ERROR_NO_FV_SIG;
 	}
+
+	/* Locate the file header which follows the FV header. */
+	fsp_ptr.u8 += fsp_ptr.fvh->ExtHeaderOffset;
+	fsp_ptr.u8 += fsp_ptr.fveh->ExtHeaderSize;
+	fsp_ptr.u8 = (u8 *)ALIGN_UP(fsp_ptr.u32, 8);
+
+	/* Check the FFS GUID */
+	if ((((u32 *)&fsp_ptr.ffh->Name)[0] != 0x912740BE)
+		|| (((u32 *)&fsp_ptr.ffh->Name)[1] != 0x47342284)
+		|| (((u32 *)&fsp_ptr.ffh->Name)[2] != 0xB08471B9)
+		|| (((u32 *)&fsp_ptr.ffh->Name)[3] != 0x0C3F3527)) {
+		return (FSP_INFO_HEADER *)ERROR_NO_FFS_GUID;
+	}
+
+	/* Locate the Raw Section Header */
+	fsp_ptr.u8 += sizeof(EFI_FFS_FILE_HEADER);
+
+	if (fsp_ptr.rs->Type != EFI_SECTION_RAW) {
+		return (FSP_INFO_HEADER *)ERROR_NO_INFO_HEADER;
+	}
+
+	/* Locate the FSP INFO Header which follows the Raw Header. */
+	fsp_ptr.u8 += sizeof(EFI_RAW_SECTION);
+
+	/* Verify that the FSP base address.*/
+	if (fsp_ptr.fih->ImageBase != fsp_base_address) {
+		return (FSP_INFO_HEADER *)ERROR_IMAGEBASE_MISMATCH;
+	}
+
+	/* Verify the FSP Signature */
+	if (fsp_ptr.fih->Signature != FSP_SIG) {
+		return (FSP_INFO_HEADER *)ERROR_INFO_HEAD_SIG_MISMATCH;
+	}
+
+	/* Verify the FSP ID */
+	image_id = (u32 *)&fsp_ptr.fih->ImageId[0];
+	if ((image_id[0] != fsp_id.int_id[0])
+		|| (image_id[1] != fsp_id.int_id[1]))
+		return (FSP_INFO_HEADER *)ERROR_FSP_SIG_MISMATCH;
 
 	return fsp_ptr.fih;
 }

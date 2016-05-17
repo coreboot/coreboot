@@ -124,4 +124,10 @@ config CACHE_MRC_SETTINGS
 	bool
 	default y
 
+config FSP_M_ADDR
+	hex
+	default 0xfef60000
+	help
+	  The address FSP-M will be relocated to during build time
+
 endif

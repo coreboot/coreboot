@@ -60,4 +60,7 @@ postcar-y += tsc_freq.c
 
 CPPFLAGS_common += -I$(src)/soc/intel/apollolake/include
 
+# Since FSP-M runs in CAR we need to relocate it to a specific address
+$(CONFIG_FSP_M_CBFS)-options := -b $(CONFIG_FSP_M_ADDR)
+
 endif

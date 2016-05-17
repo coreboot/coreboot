@@ -50,3 +50,9 @@ void *gpio_grf_reg(gpio_t gpio)
 	/* There is one pmu gpio, gpio0 , so " - 1" */
 	return &rk3288_grf->gpio1_p[(gpio.port - 1)][gpio.bank];
 }
+
+u32 gpio_get_pull_val(gpio_t gpio, u32 pull)
+{
+	/* use the default gpio pull bias setting defined in soc/gpio.h */
+	return pull;
+}

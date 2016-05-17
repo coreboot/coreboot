@@ -47,3 +47,36 @@ void *gpio_grf_reg(gpio_t gpio)
 	/* There are two pmu gpio, 0 and 1, so " - 2" */
 	return &rk3399_grf->gpio2_p[(gpio.port - 2)][gpio.bank];
 }
+
+#define IS_GPIO_BANK(g, p, b) (g.port == p && g.bank == GPIO_##b)
+
+enum {
+	PULLNONE_1V8 = 0,
+	PULLDOWN_1V8 = 1,
+	PULLUP_1V8 = 3,
+};
+
+u32 gpio_get_pull_val(gpio_t gpio, u32 pull)
+{
+	/* The default pull bias setting defined in soc/gpio.h */
+	u32 pull_val = pull;
+
+	/* GPIO0_A, GPIO0_B, GPIO2_C, GPIO2_D use the 1V8 pull bias setting.
+	 * Defined in TRM V.03 Part1 Page 331 and Page 458
+	 */
+	if (IS_GPIO_BANK(gpio, 0, A) || IS_GPIO_BANK(gpio, 0, B) ||
+	    IS_GPIO_BANK(gpio, 2, C) || IS_GPIO_BANK(gpio, 2, D)) {
+		switch (pull) {
+		case PULLUP:
+			pull_val = PULLUP_1V8;
+			break;
+		case PULLDOWN:
+			pull_val = PULLDOWN_1V8;
+			break;
+		default:
+			pull_val = PULLNONE_1V8;
+		}
+	}
+
+	return pull_val;
+}

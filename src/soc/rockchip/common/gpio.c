@@ -21,21 +21,16 @@
 #include <soc/soc.h>
 #include <stdlib.h>
 
-enum {
-	PULLNONE = 0,
-	PULLUP,
-	PULLDOWN
-};
-
 static void __gpio_input(gpio_t gpio, u32 pull)
 {
+	u32 pull_val = gpio_get_pull_val(gpio, pull);
 	clrbits_le32(&gpio_port[gpio.port]->swporta_ddr, 1 << gpio.num);
 	if (is_pmu_gpio(gpio))
 		clrsetbits_le32(gpio_grf_reg(gpio), 3 << (gpio.idx * 2),
-				pull << (gpio.idx * 2));
+				pull_val << (gpio.idx * 2));
 	else
 		write32(gpio_grf_reg(gpio), RK_CLRSETBITS(3 << (gpio.idx * 2),
-			pull << (gpio.idx * 2)));
+			pull_val << (gpio.idx * 2)));
 }
 
 void gpio_input(gpio_t gpio)

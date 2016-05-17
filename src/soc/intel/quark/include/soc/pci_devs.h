@@ -22,7 +22,7 @@
 #include <device/pci.h>
 #include <soc/QuarkNcSocId.h>
 
-/* DEVICE 0 (Memroy Controller Hub) */
+/* DEVICE 0 (Memory Controller Hub) */
 #define MC_BDF			PCI_DEV(PCI_BUS_NUMBER_QNC, MC_DEV, MC_FUN)
 
 /* Device IDs */

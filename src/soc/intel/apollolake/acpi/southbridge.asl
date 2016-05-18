@@ -30,3 +30,6 @@
 
 /* LPC */
 #include "lpc.asl"
+
+/* PCI _OSC */
+#include <soc/intel/common/acpi/pci_osc.asl>

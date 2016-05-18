@@ -18,6 +18,8 @@
         <li><a target="_blank" href="soc.html">SoC</a> support</li>
         <li><a target="_blank" href="../fsp1_1.html">FSP 1.1</a> integration</li>
         <li><a target="_blank" href="../Board/board.html">Board</a> support</li>
+        <li><a target="_blank" href="#QuarkFsp">Quark&trade; FSP</a></li>
+        <li><a target="_blank" href="#CorebootPayloadPkg">CorebootPayloadPkg</a></li>
       </ul>
     </td>
   </tr>
@@ -29,7 +31,6 @@
 <h1>Quark&trade; Documentation</h1>
 <ul>
   <li><a target="_blank" href="http://www.intel.com/content/dam/www/public/us/en/images/embedded/16x9/edc-quark-block-diagram-16x9.png">Block Diagram</a></li>
-  <li>Intel&reg; 64 and IA-32 Architectures <a target="_blank" href="http://www.intel.com/content/dam/www/public/us/en/documents/manuals/64-ia-32-architectures-software-developer-manual-325462.pdf">Software Developer Manual</a></li>
   <li><a target="_blank" href="http://www.intel.com/content/www/us/en/embedded/products/quark/specifications.html">Specifications</a>:
     <ul>
       <li><a target="_blank" href="http://ark.intel.com/products/79084/Intel-Quark-SoC-X1000-16K-Cache-400-MHz">X1000</a>
@@ -42,6 +43,7 @@
       </li>
     </ul>
   </li>
+  <li><a target="_blank" href="../index.html#Documentation">More documentation</a></li>
 </ul>
 
 
@@ -53,56 +55,18 @@ Build Instructions:
 </p>
 <ol>
   <li>Set up <a href="#BuildEnvironment">build environment</a></li>
-  <li>For the Galileo Gen 2, replace the following lines in
-    CorebootPayloadPkg/CorebootPayloadPkgIa32.dsc:
-<pre><code>  gEfiMdeModulePkgTokenSpaceGuid.PcdSerialUseMmio|FALSE
-  gEfiMdeModulePkgTokenSpaceGuid.PcdSerialRegisterBase|0x03F8
-</code></pre>
-with:
-<pre><code>#
-# Quark configuration
-#
-  gUefiCpuPkgTokenSpaceGuid.PcdCpuMaxLogicalProcessorNumber|1
-
-#
-# Specify Galileo HSUART1 serial port
-#
-[PcdsPatchableInModule.common]
-  gEfiMdeModulePkgTokenSpaceGuid.PcdSerialPciDeviceInfo|{0xff}
-  gEfiMdeModulePkgTokenSpaceGuid.PcdSerialUseMmio|TRUE
-  gEfiMdeModulePkgTokenSpaceGuid.PcdSerialRegisterBase|0xA0019000
-  gEfiMdeModulePkgTokenSpaceGuid.PcdSerialRegisterStride|4
-
-  gEfiMdeModulePkgTokenSpaceGuid.PcdSerialClockRate|44236800
-  gEfiMdeModulePkgTokenSpaceGuid.PcdSerialBaudRate|921600
-  gEfiMdeModulePkgTokenSpaceGuid.PcdSerialLineControl|3 # 8-bits, no parity
-  gEfiMdeModulePkgTokenSpaceGuid.PcdSerialUseHardwareFlowControl|FALSE
-  gEfiMdeModulePkgTokenSpaceGuid.PcdSerialDetectCable|FALSE
-  gEfiMdeModulePkgTokenSpaceGuid.PcdSerialFifoControl|1 # Enable FIFO
-  gEfiMdeModulePkgTokenSpaceGuid.PcdSerialExtendedTxFifoSize|16
-</code></pre>
-  </li>
-  <li>Build Instructions:
-    <ul>
-      <li>Linux (assumes GCC48):
-        <ol type="A">
-          <li>Edit Conf/tools_def.txt to add " -march=i586" to the IA32_CC_FLAGS
-            for the GCC compiler being used:
-<pre><code>*_GCC48_IA32_CC_FLAGS             = DEF(GCC48_IA32_CC_FLAGS) -Os -march=i586</code></pre>
-          </li>
-          <li>
-<pre><code>build -p CorebootPayloadPkg/CorebootPayloadPkgIa32.dsc  -a IA32  -t GCC48  -b DEBUG  -DDEBUG_PROPERTY_MASK=0x27  -DDEBUG_PRINT_ERROR_LEVEL=0x80000042
+  <li>Linux (assumes GCC48):
+<pre><code>build  -p CorebootPayloadPkg/CorebootPayloadPkgIa32.dsc  -a IA32  \
+    -t GCC48  -b DEBUG  -DDEBUG_PROPERTY_MASK=0x27  \
+    -DDEBUG_PRINT_ERROR_LEVEL=0x80000042  -DSHELL_TYPE=BUILD_SHELL  \
+    -DMAX_LOGICAL_PROCESSORS=1
 ls Build/CorebootPayloadPkgIA32/DEBUG_GCC48/FV/UEFIPAYLOAD.fd
 </code></pre>
-          </li>
-        </ol>
-      </li>
-      <li>Windows:
-<pre><code>build -p CorebootPayloadPkg\CorebootPayloadPkgIa32.dsc  -a IA32  -t VS2012x86  -b DEBUG  -DDEBUG_PROPERTY_MASK=0x27  -DDEBUG_PRINT_ERROR_LEVEL=0x80000042
-dir Build\CorebootPayloadPkgIA32\DEBUG_VS2012x86\FV\UEFIPAYLOAD.fd
+  </li>
+  <li>Windows (assumes Visual Studio 2015):
+<pre><code>build  -p CorebootPayloadPkg\CorebootPayloadPkgIa32.dsc  -a IA32  -t VS2015x86  -b DEBUG  -DDEBUG_PROPERTY_MASK=0x27  -DDEBUG_PRINT_ERROR_LEVEL=0x80000042  -DSHELL_TYPE=BUILD_SHELL  -DMAX_LOGICAL_PROCESSORS=1
+dir Build\CorebootPayloadPkgIA32\DEBUG_VS2015x86\FV\UEFIPAYLOAD.fd
 </code></pre>
-      </li>
-    </ul>
   </li>
   <li>In the .config for coreboot, set the following Kconfig values:
     <ul>
@@ -125,7 +89,6 @@ dir Build\CorebootPayloadPkgIA32\DEBUG_VS2012x86\FV\UEFIPAYLOAD.fd
   <li>Get the EDK2 sources:
     <ol type="A">
       <li>EDK2: git clone <a target="_blank" href="https://github.com/tianocore/edk2.git">https://github.com/tianocore/edk2.git</a></li>
-      <li>EDK2-FatPkg: git clone <a target="_blank" href="https://github.com/tianocore/edk2-FatPkg.git">https://github.com/tianocore/edk2-FatPkg.git</a> FatPkg</li>
       <li>EDK2-non-osi: git clone <a target="_blank" href="https://github.com/tianocore/edk2-non-osi.git">https://github.com/tianocore/edk2-non-osi.git</a></li>
       <li>Win32 BaseTools: git clone <a target="_blank" href="https://github.com/tianocore/edk2-BaseTools-win32.git">https://github.com/tianocore/edk2-BaseTools-win32.git</a></li>
     </ol>
@@ -134,7 +97,7 @@ dir Build\CorebootPayloadPkgIA32\DEBUG_VS2012x86\FV\UEFIPAYLOAD.fd
     <ul>
       <li>Linux:
 <pre><code>export WORKSPACE=$PWD
-export PACKAGES_PATH="$PWD/edk2:$PWD/FatPkg:$PWD/edk2-non-osi"
+export PACKAGES_PATH="$PWD/edk2:$PWD/edk2-non-osi"
 cd edk2
 export WORKSPACE=$PWD
 . edksetup.sh
@@ -142,7 +105,7 @@ export WORKSPACE=$PWD
       </li>
       <li>Windows:
 <pre><code>set WORKSPACE=%CD%
-set PACKAGES_PATH=%WORKSPACE%\edk2;%WORKSPACE%\FatPkg;%WORKSPACE%\edk2-non-osi
+set PACKAGES_PATH=%WORKSPACE%\edk2;%WORKSPACE%\edk2-non-osi
 set EDK_TOOLS_BIN=%WORKSPACE%\edk2-BaseTools-win32
 cd edk2
 edksetup.bat
@@ -152,32 +115,27 @@ edksetup.bat
   </li>
 </ol>
 
-<p>
-EDK2 Documentation:
-</p>
-<ul>
-  <li>Build <a target="_blank" href="https://github.com/tianocore-docs/Docs/raw/master/Specifications/Build_Spec_1_26.pdf">V1.26</a></li>
-  <li>Coding Standards <a target="_blank" href="https://github.com/tianocore-docs/Docs/raw/master/Specifications/CCS_2_1_Draft.pdf">V2.1</a></li>
-  <li>DEC <a target="_blank" href="https://github.com/tianocore-docs/Docs/raw/master/Specifications/DEC_Spec_1_25.pdf">V1.25</a></li>
-  <li>DSC <a target="_blank" href="https://github.com/tianocore-docs/Docs/raw/master/Specifications/DSC_Spec_1_26.pdf">V1.26</a></li>
-  <li><a target="_blank" href="https://github.com/tianocore/tianocore.github.io/wiki/UEFI-Driver-Writer's-Guide">Driver Writer's Guide</a></li>
-  <li>Expression Syntax <a target="_blank" href="https://github.com/tianocore-docs/Docs/raw/master/Specifications/ExpressionSyntax_1.1.pdf">V1.1</a></li>
-  <li>FDF <a target="_blank" href="https://github.com/tianocore-docs/Docs/raw/master/Specifications/FDF_Spec_1_26.pdf">V1.26</a></li>
-  <li>INF <a target="_blank" href="https://github.com/tianocore-docs/Docs/raw/master/Specifications/INF_Spec_1_25.pdf">V1.25</a></li>
-  <li>PCD <a target="_blank" href="https://github.com/tianocore-docs/Docs/raw/master/Specifications/PCD_Infrastructure.pdf">PCD</a>V0.55</li>
-  <li>UNI <a target="_blank" href="https://github.com/tianocore-docs/Docs/raw/master/Specifications/UNI_File_Spec_v1_2_Errata_A.pdf">V1.2 Errata A</a></li>
-  <li>VRF <a target="_blank" href="https://github.com/tianocore-docs/Docs/raw/master/Specifications/VFR_1_9.pdf">V1.9</a></li>
-</ul>
-
 
 
 <hr>
-<h1>Quark&trade; FSP</h1>
+<h1><a name="QuarkFsp">Quark&trade; FSP</a></h1>
 <p>
-Documentation:
+Getting the Quark FSP source:
+</p>
+<ol>
+  <li>Set up an EDK-II <a href="#BuildEnvironment">Build Environment</a></li>
+  <li>cd edk2</li>
+  <li>mkdir QuarkFspPkg</li>
+  <li>cd QuarkFspPkg</li>
+  <li>Use git to clone <a target="_blank" href="https://review.gerrithub.io/#/admin/projects/LeeLeahy/quarkfsp">QuarkFspPkg</a> into the QuarkFpsPkg directory (.)</li>
+</ol>
+
+<p>
+Building QuarkFspPkg:
 </p>
 <ul>
-  <li>Intel&reg; Firmware Support Package External Architecture Specification <a target="_blank" href="http://www.intel.com/content/dam/www/public/us/en/documents/technical-specifications/fsp-architecture-spec-v1-1.pdf">V1.1</a></li>
+  <li>Linux: QuarkFspPkg/BuildFsp.sh  -d32</li>
+  <li>Windows: QuarkFspPkg/BuildFsp.bat  -d32</li>
 </ul>
 
 
@@ -216,6 +174,6 @@ Documentation:
 
 
 <hr>
-<p>Modified: 29 February 2016</p>
+<p>Modified: 17 May 2016</p>
   </body>
 </html>

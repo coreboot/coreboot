@@ -38,9 +38,29 @@ static void read_resources(device_t dev)
 	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 }
 
+/*
+ * Part 2:
+ * Resources are assigned, and no other device was given an IO resource to
+ * overlap with our ACPI BAR. But because the resource is FIXED,
+ * pci_dev_set_resources() will not store it for us. We need to do that
+ * explicitly.
+ */
+static void set_resources(device_t dev)
+{
+	struct resource *res;
+
+	pci_dev_set_resources(dev);
+
+	res = find_resource(dev, PCI_BASE_ADDRESS_4);
+	pci_write_config32(dev, res->index, res->base);
+	dev->command |= PCI_COMMAND_IO;
+	res->flags |= IORESOURCE_STORED;
+	report_resource_stored(dev, res, " ACPI BAR");
+}
+
 static const struct device_operations device_ops = {
 	.read_resources		= read_resources,
-	.set_resources		= pci_dev_set_resources,
+	.set_resources		= set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 };
 

@@ -1081,11 +1081,11 @@ static void cpu_bus_scan(device_t dev)
 			 * This is needed because many IO-APIC devices only have 4 bits
 			 * for their APIC id and therefore must reside at 0..15
                          */
-#ifndef CFG_PLAT_NUM_IO_APICS /* defined in mainboard buildOpts.c */
-#define CFG_PLAT_NUM_IO_APICS 3
-#endif
-			if ((node_nums * core_max) + CFG_PLAT_NUM_IO_APICS >= 0x10) {
-				lapicid_start = (CFG_PLAT_NUM_IO_APICS - 1) / core_max;
+
+                        u8 plat_num_io_apics = 3; /* FIXME */
+
+			if ((node_nums * core_max) + plat_num_io_apics >= 0x10) {
+				lapicid_start = (plat_num_io_apics - 1) / core_max;
 				lapicid_start = (lapicid_start + 1) * core_max;
 				printk(BIOS_SPEW, "lpaicid_start=0x%x ", lapicid_start);
 			}

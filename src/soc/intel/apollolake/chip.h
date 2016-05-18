@@ -40,6 +40,40 @@ struct soc_intel_apollolake_config {
 	uint8_t pcie_rp4_clkreq_pin;
 	uint8_t pcie_rp5_clkreq_pin;
 
+	/* [14:8] DDR mode Number of dealy elements.Each = 125pSec.
+	 * [6:0] SDR mode Number of dealy elements.Each = 125pSec.
+	 */
+	uint32_t emmc_tx_cmd_cntl;
+
+	/* [14:8] HS400 mode Number of dealy elements.Each = 125pSec.
+	 * [6:0] SDR104/HS200 mode Number of dealy elements.Each = 125pSec.
+	 */
+	uint32_t emmc_tx_data_cntl1;
+
+	/* [30:24] SDR50 mode Number of dealy elements.Each = 125pSec.
+	 * [22:16] DDR50 mode Number of dealy elements.Each = 125pSec.
+	 * [14:8] SDR25/HS50 mode Number of dealy elements.Each = 125pSec.
+	 * [6:0] SDR12/Compatibility mode Number of dealy elements.Each = 125pSec.
+	 */
+	uint32_t emmc_tx_data_cntl2;
+
+	/* [30:24] SDR50 mode Number of dealy elements.Each = 125pSec.
+	 * [22:16] DDR50 mode Number of dealy elements.Each = 125pSec.
+	 * [14:8] SDR25/HS50 mode Number of dealy elements.Each = 125pSec.
+	 * [6:0] SDR12/Compatibility mode Number of dealy elements.Each = 125pSec.
+	 */
+	uint32_t emmc_rx_cmd_data_cntl1;
+
+	/* [14:8] HS400 mode 1 Number of dealy elements.Each = 125pSec.
+	 * [6:0] HS400 mode 2 Number of dealy elements.Each = 125pSec.
+	 */
+	uint32_t emmc_rx_strobe_cntl;
+
+	/* [13:8] Auto Tuning mode Number of dealy elements.Each = 125pSec.
+	 * [6:0] SDR104/HS200 Number of dealy elements.Each = 125pSec.
+	 */
+	uint32_t emmc_rx_cmd_data_cntl2;
+
 	/* Configure serial IRQ (SERIRQ) line. */
 	enum serirq_mode serirq_mode;
 

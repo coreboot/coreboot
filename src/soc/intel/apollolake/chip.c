@@ -117,6 +117,19 @@ void platform_fsp_silicon_init_params_cb(struct FSPS_UPD *silupd)
 	silconfig->PcieRpClkReqNumber[4] = cfg->pcie_rp4_clkreq_pin;
 	silconfig->PcieRpClkReqNumber[5] = cfg->pcie_rp5_clkreq_pin;
 
+	if (cfg->emmc_tx_cmd_cntl != 0)
+		silconfig->EmmcTxCmdCntl = cfg->emmc_tx_cmd_cntl;
+	if (cfg->emmc_tx_data_cntl1 != 0)
+		silconfig->EmmcTxDataCntl1 = cfg->emmc_tx_data_cntl1;
+	if (cfg->emmc_tx_data_cntl2 != 0)
+		silconfig->EmmcTxDataCntl2 = cfg->emmc_tx_data_cntl2;
+	if (cfg->emmc_rx_cmd_data_cntl1 != 0)
+		silconfig->EmmcRxCmdDataCntl1 = cfg->emmc_rx_cmd_data_cntl1;
+	if (cfg->emmc_rx_strobe_cntl != 0)
+		silconfig->EmmcRxStrobeCntl = cfg->emmc_rx_strobe_cntl;
+	if (cfg->emmc_rx_cmd_data_cntl2 != 0)
+		silconfig->EmmcRxCmdDataCntl2 = cfg->emmc_rx_cmd_data_cntl2;
+
 	/* Our defaults may not match FSP defaults, so set them explicitly */
 	silconfig->AcpiBase = ACPI_PMIO_BASE;
 	/* First 4k in BAR0 is used for IPC, real registers start at 4k offset */

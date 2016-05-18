@@ -41,8 +41,13 @@ static void enable_pm_timer(void)
 {
 	/* ACPI PM timer emulation */
 	msr_t msr;
-	/* Multiplier value that somehow 3.579545MHz freq */
-	msr.hi = 0x2FBA2E25;
+	/*
+	 * The derived frequency is calculated as follows:
+	 *    (CTC_FREQ * msr[63:32]) >> 32 = target frequency.
+	 * Back solve the multiplier so the 3.579545MHz ACPI timer
+	 * frequency is used.
+	 */
+	msr.hi = (3579545ULL << 32) / CTC_FREQ;
 	/* Set PM1 timer IO port and enable*/
 	msr.lo = EMULATE_PM_TMR_EN | (ACPI_PMIO_BASE + R_ACPI_PM1_TMR);
 	wrmsr(MSR_EMULATE_PM_TMR, msr);

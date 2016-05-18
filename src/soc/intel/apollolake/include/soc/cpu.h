@@ -37,4 +37,7 @@ void apollolake_init_cpus(struct device *dev);
 
 #define BASE_CLOCK_MHZ		100
 
+/* Common Timer Copy (CTC) frequency - 19.2MHz. */
+#define CTC_FREQ 19200000
+
 #endif /* _SOC_APOLLOLAKE_CPU_H_ */

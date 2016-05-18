@@ -587,6 +587,30 @@ DefinitionBlock (
 						})
 					}
 				}
+
+				/* UART 2 */
+				Device (URT2)
+				{
+					Name (_HID, EisaId ("PNP0501"))		// "PNP0501" for UART
+					Name(_PRW, Package () {0x03, 0x04})	// Wake from S1-S4
+					Method (_STA, 0, NotSerialized)
+					{
+						Return (0x0f)			// Always enable
+					}
+					Name (_PRS, ResourceTemplate() {
+						StartDependentFn(0, 1) {
+							IO(Decode16, 0x2f8, 0x2f8, 0x8, 0x8)
+							IRQNoFlags() { 3 }
+						} EndDependentFn()
+					})
+					Method (_CRS, 0)
+					{
+						Return(ResourceTemplate() {
+							IO(Decode16, 0x2f8, 0x2f8, 0x8, 0x8)
+							IRQNoFlags() { 3 }
+						})
+					}
+				}
 			}
 
 			/* High Precision Event Timer */

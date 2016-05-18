@@ -46,7 +46,8 @@
 #include "northbridge/amd/amdfam10/debug.c"
 #include "northbridge/amd/amdfam10/setup_resource_map.c"
 
-#define SERIAL_DEV PNP_DEV(0x2e, W83667HG_A_SP1)
+#define SERIAL_0_DEV PNP_DEV(0x2e, W83667HG_A_SP1)
+#define SERIAL_1_DEV PNP_DEV(0x2e, W83667HG_A_SP2)
 
 static void activate_spd_rom(const struct mem_controller *ctrl);
 
@@ -400,8 +401,11 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		/* Initialize southbridge */
 		sb7xx_51xx_pci_port80();
 
+		/* Configure secondary serial port pin mux */
+		winbond_set_pinmux(SERIAL_1_DEV, 0x2a, W83667HG_SPI_PINMUX_GPIO4_SERIAL_B_MASK, W83667HG_SPI_PINMUX_SERIAL_B);
+
 		/* Initialize early serial */
-		winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
+		winbond_enable_serial(SERIAL_0_DEV, CONFIG_TTYS0_BASE);
 		console_init();
 
 		/* Disable LPC legacy DMA support to prevent lockup */

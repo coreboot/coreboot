@@ -15,13 +15,17 @@
  * GNU General Public License for more details.
  */
 
+#include <cbmem.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <pc80/mc146818rtc.h>
 #include <soc/acpi.h>
 #include <soc/lpc.h>
 #include <soc/pci_ids.h>
+#include <soc/pm.h>
+#include <vendorcode/google/chromeos/chromeos.h>
 
 #include "chip.h"
 
@@ -43,6 +47,25 @@
  * opens up IO and memory windows as needed.
  */
 
+static void rtc_init(void)
+{
+	int rtc_fail;
+	const struct chipset_power_state *ps = cbmem_find(CBMEM_ID_POWER_STATE);
+
+	if (!ps) {
+		printk(BIOS_ERR, "Could not find power state in cbmem, RTC init aborted\n");
+		return;
+	}
+
+	rtc_fail = !!(ps->gen_pmcon1 & RPS);
+	/* Ensure the date is set including century byte. */
+	cmos_check_update_date();
+	if (IS_ENABLED(CONFIG_CHROMEOS_VBNV_CMOS))
+		init_vbnv_cmos(rtc_fail);
+	else
+		cmos_init(rtc_fail);
+}
+
 static void lpc_init(struct device *dev)
 {
 	uint8_t scnt;
@@ -61,6 +84,9 @@ static void lpc_init(struct device *dev)
 	else if (cfg->serirq_mode == SERIRQ_CONTINUOUS)
 		scnt |= SCNT_EN | SCNT_MODE;
 	pci_write_config8(dev, REG_SERIRQ_CTL, scnt);
+
+	/* Initialize RTC */
+	rtc_init();
 }
 
 static void soc_lpc_add_io_resources(device_t dev)

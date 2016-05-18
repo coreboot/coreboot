@@ -19,6 +19,8 @@
 #include <types.h>
 
 #define GPIO(p, b, i) ((gpio_t){.port = p, .bank = GPIO_##b, .idx = i})
+#define GET_GPIO_NUM(gpio)	(gpio.port * 32 + gpio.bank * 8 + gpio.idx)
+
 
 struct rockchip_gpio_regs {
 	u32 swporta_dr;

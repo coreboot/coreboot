@@ -2000,6 +2000,31 @@ CONST UINT32 ROMDATA AmdPlatformTypeCgf = CFG_AMD_PLATFORM_TYPE;
 #else
   #define CFG_LVDS_MISC_BLON_ACTIVE_LOW                 FALSE
 #endif
+
+#ifdef BLDCFG_PLATFORM_POWER_POLICY_MODE
+  #define CFG_PLATFORM_POWER_POLICY_MODE  (BLDCFG_PLATFORM_POWER_POLICY_MODE)
+#else
+  #define CFG_PLATFORM_POWER_POLICY_MODE  (Performance)
+#endif
+
+#ifdef BLDCFG_PCI_MMIO_BASE
+  #define CFG_PCI_MMIO_BASE               (BLDCFG_PCI_MMIO_BASE)
+#else
+  #define CFG_PCI_MMIO_BASE               (0)
+#endif
+
+#ifdef BLDCFG_PCI_MMIO_SIZE
+  #define CFG_PCI_MMIO_SIZE               (BLDCFG_PCI_MMIO_SIZE)
+#else
+  #define CFG_PCI_MMIO_SIZE               (0)
+#endif
+
+#ifdef BLDCFG_AP_MTRR_SETTINGS_LIST
+  #define CFG_AP_MTRR_SETTINGS_LIST           (BLDCFG_AP_MTRR_SETTINGS_LIST)
+#else
+  #define CFG_AP_MTRR_SETTINGS_LIST           (NULL)
+#endif
+
 /*---------------------------------------------------------------------------
  *       Processing the options:  Third, perform the option cross checks
  *--------------------------------------------------------------------------*/

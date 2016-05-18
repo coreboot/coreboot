@@ -18,6 +18,7 @@ config BOARD_SPECIFIC_OPTIONS
 config CHROMEOS
 	bool
 	default y
+	select VIRTUAL_DEV_SWITCH
 
 config MAINBOARD_DIR
 	string

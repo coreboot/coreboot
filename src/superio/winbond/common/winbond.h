@@ -22,4 +22,7 @@
 
 void winbond_enable_serial(pnp_devfn_t dev, u16 iobase);
 
+void pnp_enter_conf_state(pnp_devfn_t dev);
+void pnp_exit_conf_state(pnp_devfn_t dev);
+
 #endif /* SUPERIO_WINBOND_COMMON_ROMSTAGE_H */

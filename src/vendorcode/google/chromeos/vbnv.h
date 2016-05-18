@@ -29,6 +29,7 @@ int vboot_wants_oprom(void);
 /* CMOS backend */
 void read_vbnv_cmos(uint8_t *vbnv_copy);
 void save_vbnv_cmos(const uint8_t *vbnv_copy);
+void init_vbnv_cmos(int rtc_fail);
 
 /* Flash backend */
 void read_vbnv_flash(uint8_t *vbnv_copy);

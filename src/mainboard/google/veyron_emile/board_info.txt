@@ -1,6 +1,0 @@
-Vendor name: Google
-Board name: Veyron Emile Rockchip RK3288 board
-Category: misc
-ROM protocol: SPI
-ROM socketed: n
-Flashrom support: ?

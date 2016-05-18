@@ -1,2 +1,0 @@
-config BOARD_GOOGLE_VEYRON_BRAIN
-	bool "Veyron_Brain"

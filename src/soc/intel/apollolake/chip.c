@@ -100,7 +100,7 @@ void platform_fsp_silicon_init_params_cb(struct FSPS_UPD *silupd)
 	/* Load VBT before devicetree-specific config. */
 	silconfig->GraphicsConfigPtr = (uintptr_t)vbt;
 
-	struct device *dev = NB_DEV_ROOT;
+	struct device *dev = dev_find_slot(NB_BUS, NB_DEVFN);
 	if (!dev || !dev->chip_info) {
 		printk(BIOS_ERR, "BUG! Could not find SOC devicetree config\n");
 		return;

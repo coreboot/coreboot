@@ -10,6 +10,7 @@ OBJCOPY ?= objcopy
 all: $(objutil)/cbfstool/cbfstool \
 	$(objutil)/cbfstool/fmaptool \
 	$(objutil)/cbfstool/rmodtool \
+	$(objutil)/cbfstool/ifwitool \
 
 .PHONY: clean
 clean:
@@ -17,6 +18,7 @@ clean:
 	$(RM) $(objutil)/cbfstool/cbfstool $(cbfsobj)
 	$(RM) $(objutil)/cbfstool/fmaptool $(fmapobj)
 	$(RM) $(objutil)/cbfstool/rmodtool $(rmodobj)
+	$(RM) $(objutil)/cbfstool/ifwitool $(ifwiobj)
 
 linux_trampoline.c: linux_trampoline.S
 	rm -f linux_trampoline.c

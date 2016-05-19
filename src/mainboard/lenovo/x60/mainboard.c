@@ -38,10 +38,37 @@
 
 #define PANEL INT15_5F35_CL_DISPLAY_DEFAULT
 
+#define MWAIT_RES(state, sub_state)                         \
+	{						    \
+		.space_id = ACPI_ADDRESS_SPACE_FIXED,	    \
+		.bit_width = ACPI_FFIXEDHW_VENDOR_INTEL,    \
+		.bit_offset = ACPI_FFIXEDHW_CLASS_MWAIT,    \
+		{					    \
+			.resv = 0,			    \
+		},					    \
+		.addrl = (((state) << 4) | (sub_state)),    \
+		.addrh = 0,				    \
+			 }
+
 static acpi_cstate_t cst_entries[] = {
-	{ 1,  1, 1000, { 0x7f, 1, 2, { 0 }, 1, 0 } },
-	{ 2,  1,  500, { 0x01, 8, 0, { 0 }, DEFAULT_PMBASE + LV2, 0 } },
-	{ 2, 17,  250, { 0x01, 8, 0, { 0 }, DEFAULT_PMBASE + LV3, 0 } },
+	{
+		.ctype = 1,
+		.latency = 1,
+		.power = 1000,
+		.resource = MWAIT_RES(0, 0),
+	},
+	{
+		.ctype = 2,
+		.latency = 1,
+		.power = 500,
+		.resource = MWAIT_RES(1, 0),
+	},
+	{
+		.ctype = 3,
+		.latency = 17,
+		.power = 250,
+		.resource = MWAIT_RES(2, 0),
+	},
 };
 
 int get_cst_entries(acpi_cstate_t **entries)

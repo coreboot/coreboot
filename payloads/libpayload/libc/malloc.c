@@ -480,7 +480,7 @@ look_further:
 		if ((reg->alignment == align) && (reg->free >= (size + align - 1)/align))
 		{
 #if CONFIG(LP_DEBUG_MALLOC)
-			printf("  found memalign region. %x free, %x required\n", reg->free, (size + align - 1)/align);
+			printf("  found memalign region. %u free, %zu required\n", reg->free, (size + align - 1)/align);
 #endif
 			break;
 		}
@@ -563,7 +563,7 @@ again:
 
 		/* FIXME: Verify the size of the block. */
 
-		printf("%s %x: %s (%x bytes)\n", type->name,
+		printf("%s %x: %s (%llx bytes)\n", type->name,
 		       (unsigned int)(ptr - type->start),
 		       hdr & FLAG_FREE ? "FREE" : "USED", SIZE(hdr));
 
@@ -575,7 +575,7 @@ again:
 
 	if (free_memory && (type->minimal_free > free_memory))
 		type->minimal_free = free_memory;
-	printf("%s: Maximum memory consumption: %u bytes\n", type->name,
+	printf("%s: Maximum memory consumption: %zu bytes\n", type->name,
 		(type->end - type->start) - HDRSIZE - type->minimal_free);
 
 	if (type != dma) {

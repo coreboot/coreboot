@@ -415,7 +415,6 @@ menu "Debugging"
 
 config DEBUG_MALLOC
 	bool "Debug memory allocator"
-	depends on USB
 	default n
 	help
 	  Select this option if you want to debug the memory allocator. This

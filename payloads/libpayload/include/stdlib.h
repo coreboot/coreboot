@@ -45,104 +45,6 @@
  * @defgroup malloc Memory allocation functions
  * @{
  */
-#if CONFIG(LP_DEBUG_MALLOC) && !defined(IN_MALLOC_C)
-#define free(p)	\
-	({ \
-	 extern void print_malloc_map(void); \
-	 extern void free(void *); \
-	 printf("free(%p) called from %s:%s:%d...\n", p, __FILE__, __func__, \
-	        __LINE__);\
-	 printf("PRE free()\n"); \
-	 print_malloc_map(); \
-	 free(p); \
-	 printf("POST free()\n"); \
-	 print_malloc_map(); \
-	 })
-#define malloc(s) \
-	({ \
-	 extern void print_malloc_map(void); \
-	 extern void *malloc(size_t); \
-	 void *ptr; \
-	 printf("malloc(%u) called from %s:%s:%d...\n", s, __FILE__, __func__, \
-	        __LINE__);\
-	 printf("PRE malloc\n"); \
-	 print_malloc_map(); \
-	 ptr = malloc(s); \
-	 printf("POST malloc (ptr = %p)\n", ptr); \
-	 print_malloc_map(); \
-	 ptr; \
-	 })
-#define calloc(n,s) \
-	({ \
-	 extern void print_malloc_map(void); \
-	 extern void *calloc(size_t,size_t); \
-	 void *ptr; \
-	 printf("calloc(%u, %u) called from %s:%s:%d...\n", n, s, __FILE__, \
-	        __func__, __LINE__);\
-	 printf("PRE calloc\n"); \
-	 print_malloc_map(); \
-	 ptr = calloc(n,s); \
-	 printf("POST calloc (ptr = %p)\n", ptr); \
-	 print_malloc_map(); \
-	 ptr; \
-	 })
-#define realloc(p,s) \
-	({ \
-	 extern void print_malloc_map(void); \
-	 extern void *realloc(void*,size_t); \
-	 void *ptr; \
-	 printf("realloc(%p, %u) called from %s:%s:%d...\n", p, s, __FILE__, \
-	        __func__, __LINE__);\
-	 printf("PRE realloc\n"); \
-	 print_malloc_map(); \
-	 ptr = realloc(p,s); \
-	 printf("POST realloc (ptr = %p)\n", ptr); \
-	 print_malloc_map(); \
-	 ptr; \
-	 })
-#define memalign(a,s) \
-	({ \
-	 extern void print_malloc_map(void); \
-	 extern void *memalign(size_t, size_t); \
-	 void *ptr; \
-	 printf("memalign(%u, %u) called from %s:%s:%d...\n", a, s, __FILE__, \
-	        __func__, __LINE__);\
-	 printf("PRE memalign\n"); \
-	 print_malloc_map(); \
-	 ptr = memalign(a,s); \
-	 printf("POST memalign (ptr = %p)\n", ptr); \
-	 print_malloc_map(); \
-	 ptr; \
-	 })
-#define dma_malloc(s) \
-	({ \
-	 extern void print_malloc_map(void); \
-	 extern void *dma_malloc(size_t); \
-	 void *ptr; \
-	 printf("dma_malloc(%u) called from %s:%s:%d...\n", s, __FILE__, \
-	        __func__, __LINE__);\
-	 printf("PRE dma_malloc\n"); \
-	 print_malloc_map(); \
-	 ptr = dma_malloc(s); \
-	 printf("POST dma_malloc (ptr = %p)\n", ptr); \
-	 print_malloc_map(); \
-	 ptr; \
-	 })
-#define dma_memalign(a,s) \
-	({ \
-	 extern void print_malloc_map(void); \
-	 extern void *dma_memalign(size_t, size_t); \
-	 void *ptr; \
-	 printf("dma_memalign(%u, %u) called from %s:%s:%d...\n", a, s, \
-	        __FILE__, __func__, __LINE__);\
-	 printf("PRE dma_memalign\n"); \
-	 print_malloc_map(); \
-	 ptr = dma_memalign(a,s); \
-	 printf("POST dma_memalign (ptr = %p)\n", ptr); \
-	 print_malloc_map(); \
-	 ptr; \
-	 })
-#else
 void free(void *ptr);
 void *malloc(size_t size);
 void *calloc(size_t nmemb, size_t size);
@@ -150,7 +52,95 @@ void *realloc(void *ptr, size_t size);
 void *memalign(size_t align, size_t size);
 void *dma_malloc(size_t size);
 void *dma_memalign(size_t align, size_t size);
+
+#if CONFIG(LP_DEBUG_MALLOC) && !defined(IN_MALLOC_C)
+#include <stdio.h>
+void print_malloc_map(void);
+#define free(p)	({ \
+	void *__p = p; \
+	printf("free(%p) called from %s:%s:%d...\n", __p, __FILE__, __func__, \
+	       __LINE__);\
+	printf("PRE free()\n"); \
+	print_malloc_map(); \
+	free(__p); \
+	printf("POST free()\n"); \
+	print_malloc_map(); \
+})
+#define malloc(s) ({ \
+	size_t __s = s; \
+	void *ptr; \
+	printf("malloc(%zu) called from %s:%s:%d...\n", __s, __FILE__, \
+	       __func__, __LINE__);\
+	printf("PRE malloc\n"); \
+	print_malloc_map(); \
+	ptr = malloc(__s); \
+	printf("POST malloc (ptr = %p)\n", ptr); \
+	print_malloc_map(); \
+	ptr; \
+})
+#define calloc(n, s) ({ \
+	size_t __n = n, __s = s; \
+	void *ptr; \
+	printf("calloc(%zu, %zu) called from %s:%s:%d...\n", __n, __s, \
+	       __FILE__, __func__, __LINE__);\
+	printf("PRE calloc\n"); \
+	print_malloc_map(); \
+	ptr = calloc(__n, __s); \
+	printf("POST calloc (ptr = %p)\n", ptr); \
+	print_malloc_map(); \
+	ptr; \
+})
+#define realloc(p, s) ({ \
+	void *__p = p; \
+	size_t __s = s; \
+	void *ptr; \
+	printf("realloc(%p, %zu) called from %s:%s:%d...\n", __p, __s, \
+	       __FILE__, __func__, __LINE__);\
+	printf("PRE realloc\n"); \
+	print_malloc_map(); \
+	ptr = realloc(__p, __s); \
+	printf("POST realloc (ptr = %p)\n", ptr); \
+	print_malloc_map(); \
+	ptr; \
+})
+#define memalign(a, s) ({ \
+	size_t __a = a, __s = s; \
+	void *ptr; \
+	printf("memalign(%zu, %zu) called from %s:%s:%d...\n", __a, __s, \
+		__FILE__, __func__, __LINE__);\
+	printf("PRE memalign\n"); \
+	print_malloc_map(); \
+	ptr = memalign(__a, __s); \
+	printf("POST memalign (ptr = %p)\n", ptr); \
+	print_malloc_map(); \
+	ptr; \
+})
+#define dma_malloc(s) ({ \
+	size_t __s = s; \
+	void *ptr; \
+	printf("dma_malloc(%zu) called from %s:%s:%d...\n", __s, __FILE__, \
+	       __func__, __LINE__);\
+	printf("PRE dma_malloc\n"); \
+	print_malloc_map(); \
+	ptr = dma_malloc(__s); \
+	printf("POST dma_malloc (ptr = %p)\n", ptr); \
+	print_malloc_map(); \
+	ptr; \
+})
+#define dma_memalign(a, s) ({ \
+	size_t __a = a, __s = s; \
+	void *ptr; \
+	printf("dma_memalign(%zu, %zu) called from %s:%s:%d...\n", __a, __s, \
+	       __FILE__, __func__, __LINE__);\
+	printf("PRE dma_memalign\n"); \
+	print_malloc_map(); \
+	ptr = dma_memalign(__a, __s); \
+	printf("POST dma_memalign (ptr = %p)\n", ptr); \
+	print_malloc_map(); \
+	ptr; \
+})
 #endif
+
 void init_dma_memory(void *start, u32 size);
 int dma_initialized(void);
 int dma_coherent(void *ptr);

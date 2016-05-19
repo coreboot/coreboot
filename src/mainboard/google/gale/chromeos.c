@@ -78,10 +78,7 @@ enum switch_state {
 
 static void display_pattern(int pattern)
 {
-#if IS_ENABLED(notyet)
-	if (board_id() == BOARD_ID_WHIRLWIND_SP5)
-		ww_ring_display_pattern(GSBI_ID_7, pattern);
-#endif
+	ww_ring_display_pattern(BLSP_QUP_ID_3, pattern);
 }
 
 #define WIPEOUT_MODE_DELAY_MS (8 * 1000)

@@ -364,6 +364,8 @@ void dump_pci_devices(void);
 void dump_spd_registers(void);
 void dump_mem(unsigned start, unsigned end);
 
+u32 decode_igd_memory_size(u32 gms);
+
 #endif /* __ACPI__ */
 
 #endif /* NORTHBRIDGE_INTEL_I945_H */

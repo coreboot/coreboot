@@ -686,6 +686,50 @@ uint32_t rkclk_i2c_clock_for_bus(unsigned bus)
 	return freq;
 }
 
+static u32 clk_gcd(u32 a, u32 b)
+{
+	while (b != 0) {
+		int r = b;
+		b = a % b;
+		a = r;
+	}
+	return a;
+}
+
+void rkclk_configure_i2s(unsigned int hz)
+{
+	int n, d;
+	int v;
+
+	/**
+	 * clk_i2s0_sel: divider ouput from fraction
+	 * clk_i2s0_pll_sel source clock: cpll
+	 * clk_i2s0_div_con: 1 (div+1)
+	 */
+	write32(&cru_ptr->clksel_con[28],
+		RK_CLRSETBITS(3 << 8 | 1 << 7 | 0x7f << 0,
+			      1 << 8 | 0 << 7 | 0 << 0));
+
+	/* make sure and enable i2s0 path gates */
+	write32(&cru_ptr->clkgate_con[8],
+		RK_CLRBITS(1 << 12 | 1 << 5 | 1 << 4 | 1 << 3));
+
+	/* set frac divider */
+	v = clk_gcd(CPLL_HZ, hz);
+	n = (CPLL_HZ / v) & (0xffff);
+	d = (hz / v) & (0xffff);
+	assert(hz == CPLL_HZ / n * d);
+	write32(&cru_ptr->clksel_con[96], d << 16 | n);
+
+	/**
+	 * clk_i2sout_sel clk_i2s
+	 * clk_i2s_ch_sel: clk_i2s0
+	 */
+	write32(&cru_ptr->clksel_con[31],
+		RK_CLRSETBITS(1 << 2 | 3 << 0,
+			      0 << 2 | 0 << 0));
+}
+
 void rkclk_configure_saradc(unsigned int hz)
 {
 	int src_clk_div;

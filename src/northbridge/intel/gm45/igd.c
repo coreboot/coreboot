@@ -153,10 +153,13 @@ void igd_compute_ggc(sysinfo_t *const sysinfo)
 		/* Graphics Stolen Memory: 2MB GTT (0x0300) when VT-d disabled,
 		   2MB GTT + 2MB shadow GTT (0x0b00) else. */
 		if (get_option(&gfxsize, "gfx_uma_size") != CB_SUCCESS) {
-			/* 0 for 32MB */
-			gfxsize = 0;
+			/* 4 for 32MB, default if not set in cmos */
+			gfxsize = 4;
 		}
-		sysinfo->ggc = 0x0300 | ((gfxsize + 5) << 4);
+		/* Handle invalid cmos settings */
+		if (gfxsize > 11)
+			gfxsize = 4;
+		sysinfo->ggc = 0x0300 | ((gfxsize + 1) << 4);
 		if (!(capid & (1 << (48 - 32))))
 			sysinfo->ggc |= 0x0800;
 	}

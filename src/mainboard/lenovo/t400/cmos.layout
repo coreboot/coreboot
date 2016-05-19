@@ -77,8 +77,8 @@ entries
 940         1       e       1        uwb
 
 # coreboot config options: northbridge
-941         3       e       11       gfx_uma_size
 944         2       e       12       hybrid_graphics_mode
+946         4       e       11       gfx_uma_size
 
 # coreboot config options: EC
 952         8       h       0        volume
@@ -127,12 +127,18 @@ enumerations
 9     1     Primary
 10    0     AHCI
 10    1     Compatible
-11    0     32M
-11    1     48M
-11    2     64M
-11    3     128M
-11    5     96M
-11    6     160M
+11    0     1M
+11    1     4M
+11    2     8M
+11    3     16M
+11    4     32M
+11    5     48M
+11    6     64M
+11    7     128M
+11    8     256M
+11    9     96M
+11    10     160M
+11    11     224M
 12    0     Integrated Only
 12    1     Discrete Only
 

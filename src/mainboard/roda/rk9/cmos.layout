@@ -70,9 +70,9 @@ entries
 984          16       h       0        check_sum
 
 # coreboot config options: northbridge
-1000         3       e       10       gfx_uma_size
+1000         4       e       10       gfx_uma_size
 
-#1003        21       r       0        unused
+#1004        20       r       0        unused
 
 # ram initialization internal data
 1024        128       r       0        read_training_results
@@ -112,13 +112,18 @@ enumerations
 8     1     Yes
 9     0     AHCI
 9     1     Compatible
-10    0     32M
-10    1     48M
-10    2     64M
-10    3     128M
-10    5     96M
-10    6     160M
-
+11    0     1M
+11    1     4M
+11    2     8M
+11    3     16M
+11    4     32M
+11    5     48M
+11    6     64M
+11    7     128M
+11    8     256M
+11    9     96M
+11    10     160M
+11    11     224M
 # -----------------------------------------------------------------
 checksums
 

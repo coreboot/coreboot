@@ -92,6 +92,23 @@ static void configure_sdmmc(void)
 	write32(&rk3399_grf->iomux_sdmmc, IOMUX_SDMMC);
 }
 
+static void configure_codec(void)
+{
+	write32(&rk3399_grf->iomux_i2s0, IOMUX_I2S0);
+	write32(&rk3399_grf->iomux_i2sclk, IOMUX_I2SCLK);
+
+	/* AUDIO IO domain 1.8V voltage selection */
+	write32(&rk3399_grf->io_vsel, RK_SETBITS(1 << 1));
+
+	/* CPU1_P1.8V_AUDIO_PWREN for P1.8_AUDIO */
+	gpio_output(GPIO(0, A, 2), 1);
+
+	/* set CPU1_SPK_PA_EN output */
+	gpio_output(GPIO(1, A, 2), 0);
+
+	rkclk_configure_i2s(12288000);
+}
+
 static void configure_display(void)
 {
 	/* set pinmux for edp HPD*/
@@ -105,6 +122,7 @@ static void mainboard_init(device_t dev)
 {
 	configure_sdmmc();
 	configure_emmc();
+	configure_codec();
 	configure_display();
 }
 

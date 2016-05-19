@@ -62,6 +62,27 @@ static void register_reset_to_bl31(void)
 	register_bl31_param(&param_reset.h);
 }
 
+static void register_poweroff_to_bl31(void)
+{
+	static struct bl31_gpio_param param_poweroff = {
+		.h = {
+			.type = PARAM_POWEROFF,
+		},
+		.gpio = {
+			.polarity = 1,
+		},
+	};
+
+	/*
+	 * gru/kevin power off pin: gpio1a6,
+	 * reuse with tsadc int pin, so iomux need set back to
+	 * gpio in BL31 and depthcharge before you setting this gpio
+	 */
+	param_poweroff.gpio.index = GET_GPIO_NUM(GPIO_POWEROFF),
+
+	register_bl31_param(&param_poweroff.h);
+}
+
 static void configure_sdmmc(void)
 {
 	gpio_output(GPIO(4, D, 5), 1);  /* SDMMC_PWR_EN */
@@ -151,6 +172,7 @@ static void mainboard_init(device_t dev)
 	configure_display();
 	setup_usb();
 	register_reset_to_bl31();
+	register_poweroff_to_bl31();
 }
 
 static void enable_backlight_booster(void)

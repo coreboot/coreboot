@@ -22,6 +22,7 @@
 #define GPIO_BACKLIGHT	GPIO(1, C, 1)
 #define GPIO_EC_IN_RW	GPIO(3, B, 0)
 #define GPIO_EC_IRQ	GPIO(0, A, 1)
+#define GPIO_POWEROFF	GPIO(1, A, 6)
 #define GPIO_RESET	GPIO(0, B, 3)
 #define GPIO_WP		GPIO(1, C, 2)
 

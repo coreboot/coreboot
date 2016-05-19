@@ -353,17 +353,7 @@ static int intel_gma_init(struct northbridge_intel_i945_config *conf,
 	reg16 = pci_read_config16(dev_find_slot(0, PCI_DEVFN(0, 0)), GGC);
 	uma_size = 0;
 	if (!(reg16 & 2)) {
-		reg16 >>= 4;
-		reg16 &= 7;
-		switch (reg16) {
-		case 1:
-			uma_size = 1024;
-			break;
-		case 3:
-			uma_size = 8192;
-			break;
-		}
-
+		uma_size = decode_igd_memory_size((reg16 >> 4) & 7);
 		printk(BIOS_DEBUG, "%dM UMA\n", uma_size >> 10);
 	}
 

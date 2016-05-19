@@ -23,6 +23,7 @@
 #include <halt.h>
 #include <string.h>
 #include "i945.h"
+#include <pc80/mc146818rtc.h>
 
 int i945_silicon_revision(void)
 {
@@ -145,7 +146,7 @@ static void i945_detect_chipset(void)
 
 static void i945_setup_bars(void)
 {
-	u8 reg8;
+	u8 reg8, gfxsize;
 
 	/* As of now, we don't have all the A0 workarounds implemented */
 	if (i945_silicon_revision() == 0)
@@ -178,10 +179,13 @@ static void i945_setup_bars(void)
 	pci_write_config32(PCI_DEV(0, 0x00, 0), DMIBAR, (uintptr_t)DEFAULT_DMIBAR | 1);
 	pci_write_config32(PCI_DEV(0, 0x00, 0), X60BAR, DEFAULT_X60BAR | 1);
 
-	/* Hardware default is 8MB UMA. If someone wants to make this a
-	 * CMOS or compile time option, send a patch.
-	 * pci_write_config16(PCI_DEV(0, 0x00, 0), GGC, 0x30);
-	 */
+	/* vram size from cmos option */
+	if (get_option(&gfxsize, "gfx_uma_size") != CB_SUCCESS)
+		gfxsize = 2;	/* 2 for 8MB */
+	/* make sure no invalid setting is used */
+	if (gfxsize > 6)
+		gfxsize = 2;
+	pci_write_config16(PCI_DEV(0, 0x00, 0), GGC, ((gfxsize + 1) << 4));
 
 	/* Set C0000-FFFFF to access RAM on both reads and writes */
 	pci_write_config8(PCI_DEV(0, 0x00, 0), PAM0, 0x30);

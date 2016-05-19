@@ -17,3 +17,4 @@ fn_ctrl_swap=Disable
 sticky_fn=Disable
 power_management_beeps=Enable
 low_battery_beep=Enable
+gfx_uma_size=8M

@@ -19,10 +19,11 @@
 #include <soc/saradc.h>
 
 /*
- * This matches two Kevin prototypes, needs to be sorted out with HW engs to
- * have more regular mapping between the voltage and board ID.
+ * This matches Kevin/Gru ADC value for board id.
  */
-static const int board_id_readings[] = { 42, 120 };
+static const int board_id_readings[] = { 42, 120, 181, 242, 307, 378, 444,
+                                         511, 581, 646, 704, 763, 828,
+                                         895, 956, 1023 };
 
 /*
  * The ADC produces a 10 bit value, the resistor accuracy is 1%, let's leave

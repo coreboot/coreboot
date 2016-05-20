@@ -50,9 +50,10 @@ static void mb_gpio_init(void)
 	pci_write_config32(dev, GPIO_BASE, (DEFAULT_GPIOBASE | 1));
 	pci_write_config8(dev, GPIO_CNTL, 0x10);
 
-	outl(0x1f15f7c0, DEFAULT_GPIOBASE + 0x00); /* GPIO_USE_SEL */
+	outl(0x1f35f7c0, DEFAULT_GPIOBASE + 0x00); /* GPIO_USE_SEL */
 	outl(0xe2e9ffc3, DEFAULT_GPIOBASE + 0x04); /* GP_IO_SEL */
-	outl(0xe0d7fcc3, DEFAULT_GPIOBASE + 0x0c); /* GP_LVL */
+	outl(0xe0d7ec02, DEFAULT_GPIOBASE + 0x0c); /* GP_LVL */
+	outl(0x00000000, DEFAULT_GPIOBASE + 0x18); /* GPO_BLINK */
 	outl(0x000039ff, DEFAULT_GPIOBASE + 0x2c); /* GPI_INV */
 	outl(0x000000e7, DEFAULT_GPIOBASE + 0x30);
 	outl(0x000000f0, DEFAULT_GPIOBASE + 0x34);
@@ -66,9 +67,9 @@ static void mb_gpio_init(void)
 	ite_reg_write(GPIO_DEV, 0x29, 0x0a);
 	ite_reg_write(GPIO_DEV, 0x2c, 0x01);
 	ite_reg_write(GPIO_DEV, 0x62, 0x08);
-	ite_reg_write(GPIO_DEV, 0x62, 0x08);
 	ite_reg_write(GPIO_DEV, 0x72, 0x00);
 	ite_reg_write(GPIO_DEV, 0x73, 0x00);
+	ite_reg_write(GPIO_DEV, 0xb8, 0x00);
 	ite_reg_write(GPIO_DEV, 0xbb, 0x40);
 	ite_reg_write(GPIO_DEV, 0xc0, 0x00);
 	ite_reg_write(GPIO_DEV, 0xc1, 0xc7);
@@ -89,6 +90,7 @@ static void mb_gpio_init(void)
 	ite_reg_write(EC_DEV, 0xf2, 0x0a);
 	ite_reg_write(EC_DEV, 0xf3, 0x80);
 	ite_reg_write(EC_DEV, 0x70, 0x00); // Don't use IRQ9
+	ite_reg_write(EC_DEV, 0x30, 0x01); // Enable
 
 	/* IRQ routing */
 	RCBA32(0x3100) = 0x00002210;
@@ -98,10 +100,23 @@ static void mb_gpio_init(void)
 	RCBA32(0x3110) = 0x00000001;
 	RCBA32(0x3140) = 0x00410032;
 	RCBA32(0x3144) = 0x32100237;
+	RCBA32(0x3148) = 0x00000000;
 
 	/* Enable IOAPIC */
 	RCBA8(0x31ff) = 0x03;
 	RCBA8(0x31ff);
+
+	RCBA32(0x3410) = 0x00190464;
+	RCBA32(0x3418) = 0x003c0063;
+	RCBA32(0x341c) = 0x00000000;
+	RCBA32(0x3430) = 0x00000001;
+	RCBA32(0x3e00) = 0xff000001;
+	RCBA32(0x3e08) = 0x00000080;
+	RCBA32(0x3e0c) = 0x00800000;
+	RCBA32(0x3e40) = 0xff000001;
+	RCBA32(0x3e48) = 0x00000080;
+	RCBA32(0x3e4c) = 0x00800000;
+	RCBA32(0x3f00) = 0x0000000b;
 }
 
 static void ich7_enable_lpc(void)
@@ -126,9 +141,8 @@ void main(unsigned long bist)
 	RCBA32(0x3410) = RCBA32(0x3410) | 0x20;
 
 	/* Set southbridge and Super I/O GPIOs. */
-	mb_gpio_init();
-
 	ich7_enable_lpc();
+	mb_gpio_init();
 	ite_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 
 	/* Disable SIO reboot */
@@ -146,4 +160,9 @@ void main(unsigned long bist)
 	quick_ram_check();
 	cbmem_initialize_empty();
 	printk(BIOS_DEBUG, "Memory initialized\n");
+
+	x4x_late_init();
+
+	printk(BIOS_DEBUG, "x4x late init complete\n");
+
 }

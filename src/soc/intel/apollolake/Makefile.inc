@@ -63,4 +63,9 @@ CPPFLAGS_common += -I$(src)/soc/intel/apollolake/include
 # Since FSP-M runs in CAR we need to relocate it to a specific address
 $(CONFIG_FSP_M_CBFS)-options := -b $(CONFIG_FSP_M_ADDR)
 
+ifeq ($(CONFIG_NEED_LBP2),y)
+files_added::
+	$(CBFSTOOL) $(obj)/coreboot.rom write -r $(CONFIG_LBP2_FMAP_NAME) -f $(CONFIG_LBP2_FILE_NAME) --fill-upward
+endif
+
 endif

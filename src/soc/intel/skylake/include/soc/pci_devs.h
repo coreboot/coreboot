@@ -48,6 +48,7 @@
 #define  SA_DEV_DSP		_SA_DEV(DSP)
 
 /* PCH Devices */
+
 #define PCH_DEV_SLOT_ISH	0x13
 #define  PCH_DEVFN_ISH		_PCH_DEVFN(ISH, 0)
 
@@ -55,7 +56,7 @@
 #define  PCH_DEVFN_XHCI		_PCH_DEVFN(XHCI, 0)
 #define  PCH_DEVFN_USBOTG	_PCH_DEVFN(XHCI, 1)
 #define  PCH_DEVFN_THERMAL	_PCH_DEVFN(XHCI, 2)
-#define  PCH_DEVFN_CIO	_PCH_DEVFN(XHCI, 3)
+#define  PCH_DEVFN_CIO		_PCH_DEVFN(XHCI, 3)
 #define  PCH_DEV_XHCI		_PCH_DEV(XHCI, 0)
 #define  PCH_DEV_USBOTG		_PCH_DEV(XHCI, 1)
 #define  PCH_DEV_THERMAL	_PCH_DEV(XHCI, 2)
@@ -137,7 +138,7 @@
 #define  PCH_DEVFN_SMBUS	_PCH_DEVFN(LPC, 4)
 #define  PCH_DEVFN_SPI		_PCH_DEVFN(LPC, 5)
 #define  PCH_DEVFN_GBE		_PCH_DEVFN(LPC, 6)
-#define  PCH_DEVFN_TRACEHUB		_PCH_DEVFN(LPC, 7)
+#define  PCH_DEVFN_TRACEHUB	_PCH_DEVFN(LPC, 7)
 #define  PCH_DEV_LPC		_PCH_DEV(LPC, 0)
 #define  PCH_DEV_P2SB		_PCH_DEV(LPC, 1)
 #define  PCH_DEV_PMC		_PCH_DEV(LPC, 2)
@@ -145,4 +146,5 @@
 #define  PCH_DEV_SMBUS		_PCH_DEV(LPC, 4)
 #define  PCH_DEV_SPI		_PCH_DEV(LPC, 5)
 #define  PCH_DEV_GBE		_PCH_DEV(LPC, 6)
+
 #endif

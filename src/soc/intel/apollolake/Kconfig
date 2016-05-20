@@ -130,4 +130,25 @@ config FSP_M_ADDR
 	help
 	  The address FSP-M will be relocated to during build time
 
+config NEED_LBP2
+	bool "Write contents for logical boot partition 2."
+	default n
+	help
+	  Write the contents from a file into the logical boot partition 2
+	  region defined by LBP2_FMAP_NAME.
+
+config LBP2_FMAP_NAME
+	string "Name of FMAP region to put logical boot partition 2"
+	depends on NEED_LBP2
+	default "SIGN_CSE"
+	help
+	  Name of FMAP region to write logical boot partition 2 data.
+
+config LBP2_FILE_NAME
+	string "Path of file to write to logical boot partition 2 region"
+	depends on NEED_LBP2
+	default "3rdparty/blobs/mainboard/$(CONFIG_MAINBOARD_DIR)/lbp2.bin"
+	help
+	  Name of file to store in the logical boot partition 2 region.
+
 endif

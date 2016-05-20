@@ -18,6 +18,18 @@
 
 Scope (\_SB.PCI0.I2C4)
 {
+	/* Standard Mode: HCNT, LCNT, SDA Hold Register */
+	/* SDA Hold register value of 40 indicates
+	 * sda hold time of 0.3us for ic_clk of 133MHz
+	 */
+	Name (SSCN, Package () { 0, 0, 40 })
+
+	/* Fast Mode: HCNT, LCNT, SDA Hold Register */
+	/* SDA Hold register value of 40 indicates
+	 * sda hold time of 0.3us for ic_clk of 133MHz
+	 */
+	Name (FMCN, Package () { 0, 0, 40 })
+
 	Device (ETPA)
 	{
 		Name (_HID, "ELAN0000")

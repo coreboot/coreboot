@@ -54,6 +54,11 @@ typedef uint32_t gpio_t;
 		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_CFG0_TX_DISABLE, \
 		PAD_PULL(pull))
 
+/* No Connect configuration for unused pad.
+ * NC should be GPI with Term as PU20K, PD20K, NONE depending upon default Term
+ */
+#define PAD_NC(pad, pull)	PAD_CFG_GPI(pad, pull, DEEP)
+
 /* General purpose input, routed to APIC */
 #define PAD_CFG_GPI_APIC(pad, pull, rst, trig, inv) \
 	_PAD_CFG_STRUCT(pad,		\

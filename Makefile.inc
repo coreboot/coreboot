@@ -836,9 +836,10 @@ cbfs-files-$(CONFIG_INCLUDE_CONFIG_FILE) += revision
 revision-file := $(obj)/build.h
 revision-type := raw
 
-cbfs-files-$(CONFIG_BOOTSPLASH_IMAGE) += bootsplash.jpg
-bootsplash.jpg-file := $(call strip_quotes,$(CONFIG_BOOTSPLASH_FILE))
-bootsplash.jpg-type := bootsplash
+BOOTSPLASH_SUFFIX=$(suffix $(call strip_quotes,$(CONFIG_BOOTSPLASH_FILE)))
+cbfs-files-$(CONFIG_BOOTSPLASH_IMAGE) += bootsplash$(BOOTSPLASH_SUFFIX)
+bootsplash$(BOOTSPLASH_SUFFIX)-file := $(call strip_quotes,$(CONFIG_BOOTSPLASH_FILE))
+bootsplash$(BOOTSPLASH_SUFFIX)-type := bootsplash
 
 cbfs-files-$(CONFIG_BOARD_ID_MANUAL) += board_id
 board_id-file := $(obj)/board_id

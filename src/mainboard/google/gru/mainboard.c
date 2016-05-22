@@ -25,6 +25,8 @@
 #include <soc/grf.h>
 #include <soc/i2c.h>
 
+#include "board.h"
+
 static void configure_emmc(void)
 {
 	/* Host controller does not support programmable clock generator.
@@ -144,7 +146,7 @@ static void enable_backlight_booster(void)
 
 void mainboard_power_on_backlight(void)
 {
-	gpio_output(GPIO(1, C, 1), 1);  /* BL_EN */
+	gpio_output(GPIO_BACKLIGHT, 1);  /* BL_EN */
 
 	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_GRU))
 		enable_backlight_booster();

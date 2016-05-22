@@ -31,7 +31,7 @@ chip soc/intel/quark
 		device pci 00.0 on end	# 8086 0958 - Host Bridge
 		device pci 14.0 on end	# 8086 08A7 - SD/SDIO/eMMC controller
 		device pci 14.1 off end	# 8086 0936 - HSUART 0
-		device pci 14.2 off end	# 8086 0939 - USB 2.0 Device port
+		device pci 14.2 on end	# 8086 0939 - USB 2.0 Device port
 		device pci 14.3 on end	# 8086 0939 - USB EHCI Host controller
 		device pci 14.4 on end	# 8086 093A - USB OHCI Host controller
 		device pci 14.5 on end	# 8086 0936 - HSUART 1

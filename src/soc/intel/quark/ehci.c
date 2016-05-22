@@ -28,11 +28,17 @@
 #define EHCI_OUT_THRESHOLD_VALUE        0x7f
 #define EHCI_IN_THRESHOLD_VALUE         0x7f
 
+/* Platform init USB device interrupt masks */
+#define V_IOH_USBDEVICE_D_INTR_MSK_UDC_REG    (0x0000007f)
+#define V_IOH_USBDEVICE_EP_INTR_MSK_UDC_REG   \
+	(B_IOH_USBDEVICE_EP_INTR_MSK_UDC_REG_OUT_EP_MASK \
+	| B_IOH_USBDEVICE_EP_INTR_MSK_UDC_REG_IN_EP_MASK)
+
 /* In order to configure the USB PHY to use clk120 (ickusbcoreclk) as PLL
  * reference clock and Port2 as a USB device port, the following sequence must
  * be followed
  */
-static const struct reg_script init_script[] = {
+static const struct reg_script ehci_init_script[] = {
 
 	/* Set packet buffer OUT/IN thresholds */
 	REG_MMIO_RMW32(R_IOH_EHCI_INSNREG01,
@@ -85,10 +91,31 @@ static const struct reg_script init_script[] = {
 	REG_SCRIPT_END
 };
 
+static const struct reg_script usb_device_port_init_script[] = {
+
+	/* Mask and clear controller interrupts */
+	REG_MMIO_WRITE32(R_IOH_USBDEVICE_D_INTR_MSK_UDC_REG,
+		V_IOH_USBDEVICE_D_INTR_MSK_UDC_REG),
+	REG_MMIO_WRITE32(R_IOH_USBDEVICE_D_INTR_UDC_REG,
+		V_IOH_USBDEVICE_D_INTR_MSK_UDC_REG),
+
+	/* Mask and clear end point interrupts */
+	REG_MMIO_WRITE32(R_IOH_USBDEVICE_EP_INTR_MSK_UDC_REG,
+		V_IOH_USBDEVICE_EP_INTR_MSK_UDC_REG),
+	REG_MMIO_WRITE32(R_IOH_USBDEVICE_EP_INTR_UDC_REG,
+		V_IOH_USBDEVICE_EP_INTR_MSK_UDC_REG),
+	REG_SCRIPT_END
+};
+
 static void init(device_t dev)
 {
-	printk(BIOS_INFO, "Initializing USB PLLs\n");
-	reg_script_run_on_dev(dev, init_script);
+	if ((dev->path.pci.devfn & 7) == EHCI_FUNC) {
+		printk(BIOS_INFO, "Initializing USB PLLs\n");
+		reg_script_run_on_dev(dev, ehci_init_script);
+	} else {
+		printk(BIOS_INFO, "Initializing USB device port\n");
+		reg_script_run_on_dev(dev, usb_device_port_init_script);
+	}
 }
 
 static struct device_operations device_ops = {

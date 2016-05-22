@@ -21,6 +21,8 @@
 #include <soc/spi.h>
 #include <console/console.h>
 
+#include "board.h"
+
 void bootblock_mainboard_early_init(void)
 {
 	/* Let gpio2ab io domains works at 1.8V.
@@ -62,4 +64,6 @@ void bootblock_mainboard_init(void)
 	write32(&rk3399_pmugrf->spi1_csclktx, IOMUX_SPI1_CSCLKTX);
 
 	rockchip_spi_init(CONFIG_BOOT_MEDIA_SPI_BUS, 24750*KHz);
+
+	setup_chromeos_gpios();
 }

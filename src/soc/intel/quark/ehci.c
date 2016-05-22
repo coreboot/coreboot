@@ -24,11 +24,24 @@
 #define USB2_PLL2         0x7F03
 #define USB2_COMPBG       0x7F04
 
+/* EHCI Packet Buffer OUT/IN Thresholds, values in number of DWORDs */
+#define EHCI_OUT_THRESHOLD_VALUE        0x7f
+#define EHCI_IN_THRESHOLD_VALUE         0x7f
+
 /* In order to configure the USB PHY to use clk120 (ickusbcoreclk) as PLL
  * reference clock and Port2 as a USB device port, the following sequence must
  * be followed
  */
 static const struct reg_script init_script[] = {
+
+	/* Set packet buffer OUT/IN thresholds */
+	REG_MMIO_RMW32(R_IOH_EHCI_INSNREG01,
+		~(B_IOH_EHCI_INSNREG01_OUT_THRESHOLD_MASK
+			| B_IOH_EHCI_INSNREG01_IN_THRESHOLD_MASK),
+		 (EHCI_OUT_THRESHOLD_VALUE
+			<< B_IOH_EHCI_INSNREG01_OUT_THRESHOLD_BP)
+		 | (EHCI_IN_THRESHOLD_VALUE
+			<< B_IOH_EHCI_INSNREG01_IN_THRESHOLD_BP)),
 
 	/* Sighting #4930631 PDNRESCFG [8:7] of USB2_GLOBAL_PORT = 11b.
 	 * For port 0 & 1 as host and port 2 as device.

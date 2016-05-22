@@ -30,10 +30,22 @@
 #include <soc/romstage.h>
 #include <soc/reg_access.h>
 
+static const struct reg_script clear_smi_and_wake_events[] = {
+	/* Clear any SMI or wake events */
+	REG_GPE0_READ(R_QNC_GPE0BLK_GPE0S),
+	REG_GPE0_READ(R_QNC_GPE0BLK_SMIS),
+	REG_GPE0_OR(R_QNC_GPE0BLK_GPE0S, B_QNC_GPE0BLK_GPE0S_ALL),
+	REG_GPE0_OR(R_QNC_GPE0BLK_SMIS, B_QNC_GPE0BLK_SMIS_ALL),
+	REG_SCRIPT_END
+};
+
 static const struct reg_script legacy_gpio_init[] = {
 	/* Temporarily enable the legacy GPIO controller */
 	REG_PCI_WRITE32(R_QNC_LPC_GBA_BASE, IO_ADDRESS_VALID
 		| LEGACY_GPIO_BASE_ADDRESS),
+	/* Temporarily enable the GPE controller */
+	REG_PCI_WRITE32(R_QNC_LPC_GPE0BLK, IO_ADDRESS_VALID
+		| GPE0_BASE_ADDRESS),
 	REG_PCI_OR8(PCI_COMMAND, PCI_COMMAND_IO),
 	REG_SCRIPT_END
 };
@@ -81,6 +93,7 @@ void soc_memory_init_params(struct romstage_params *params,
 	char *pdat_file;
 	size_t pdat_file_len;
 	const struct soc_intel_quark_config *config;
+	struct chipset_power_state *ps = car_get_var_ptr(&power_state);
 
 	/* Locate the pdat.bin file */
 	pdat_file = cbfs_boot_map_with_leak("pdat.bin", CBFS_TYPE_RAW,
@@ -104,6 +117,12 @@ void soc_memory_init_params(struct romstage_params *params,
 
 	/* Display the ROM shadow data */
 	hexdump((void *)0x000ffff0, 0x10);
+
+	/* Clear SMI and wake events */
+	if (ps->prev_sleep_state != 3) {
+		printk(BIOS_SPEW, "Clearing SMI interrupts and wake events\n");
+		reg_script_run_on_dev(LPC_BDF, clear_smi_and_wake_events);
+	}
 }
 
 void soc_after_ram_init(struct romstage_params *params)

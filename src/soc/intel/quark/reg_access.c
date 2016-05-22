@@ -19,6 +19,19 @@
 #include <soc/pci_devs.h>
 #include <soc/ramstage.h>
 
+static uint16_t get_gpe0_address(uint32_t reg_address)
+{
+	uint32_t gpe0_base_address;
+
+	/* Get the GPE0 base address */
+	gpe0_base_address = pci_read_config32(LPC_BDF, R_QNC_LPC_GPE0BLK);
+	ASSERT (gpe0_base_address >= 0x80000000);
+	gpe0_base_address &= B_QNC_LPC_GPE0BLK_MASK;
+
+	/* Return the GPE0 register address */
+	return (uint16_t)(gpe0_base_address + reg_address);
+}
+
 static uint32_t *get_gpio_address(uint32_t reg_address)
 {
 	uint32_t gpio_base_address;
@@ -81,6 +94,18 @@ void mea_write(uint32_t reg_address)
 {
 	pci_write_config32(MC_BDF, QNC_ACCESS_PORT_MEA, reg_address
 		& QNC_MEA_MASK);
+}
+
+static uint32_t reg_gpe0_read(uint32_t reg_address)
+{
+	/* Read the GPE0 register */
+	return inl(get_gpe0_address(reg_address));
+}
+
+static void reg_gpe0_write(uint32_t reg_address, uint32_t value)
+{
+	/* Write the GPE0 register */
+	outl(get_gpe0_address(reg_address), value);
 }
 
 static uint32_t reg_gpio_read(uint32_t reg_address)
@@ -190,6 +215,11 @@ static uint64_t reg_read(struct reg_script_context *ctx)
 		ctx->display_features = REG_SCRIPT_DISPLAY_NOTHING;
 		return 0;
 
+	case GPE0_REGS:
+		ctx->display_prefix = "GPE0: ";
+		value = reg_gpe0_read(step->reg);
+		break;
+
 	case GPIO_REGS:
 		ctx->display_prefix = "GPIO: ";
 		value = reg_gpio_read(step->reg);
@@ -233,6 +263,11 @@ static void reg_write(struct reg_script_context *ctx)
 			step->id);
 		ctx->display_features = REG_SCRIPT_DISPLAY_NOTHING;
 		return;
+
+	case GPE0_REGS:
+		ctx->display_prefix = "GPE0: ";
+		reg_gpe0_write(step->reg, (uint32_t)step->value);
+		break;
 
 	case GPIO_REGS:
 		ctx->display_prefix = "GPIO: ";

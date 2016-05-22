@@ -35,6 +35,7 @@ enum {
 	GPIO_REGS,
 	PCIE_AFE_REGS,
 	PCIE_RESET,
+	GPE0_REGS,
 };
 
 enum {
@@ -45,6 +46,27 @@ enum {
 #define SOC_ACCESS(cmd_, reg_, size_, mask_, value_, timeout_, reg_set_)   \
 	_REG_SCRIPT_ENCODE_RAW(REG_SCRIPT_COMMAND_##cmd_, SOC_TYPE,        \
 			       size_, reg_, mask_, value_, timeout_, reg_set_)
+
+/* GPE0 controller register access macros */
+#define REG_GPE0_ACCESS(cmd_, reg_, mask_, value_, timeout_) \
+	SOC_ACCESS(cmd_, reg_, REG_SCRIPT_SIZE_32, mask_, value_, timeout_, \
+		GPE0_REGS)
+#define REG_GPE0_READ(reg_) \
+	REG_GPE0_ACCESS(READ, reg_, 0, 0, 0)
+#define REG_GPE0_WRITE(reg_, value_) \
+	REG_GPE0_ACCESS(WRITE, reg_, 0, value_, 0)
+#define REG_GPE0_AND(reg_, value_) \
+	REG_GPE0_RMW(reg_, value_, 0)
+#define REG_GPE0_RMW(reg_, mask_, value_) \
+	REG_GPE0_ACCESS(RMW, reg_, mask_, value_, 0)
+#define REG_GPE0_RXW(reg_, mask_, value_) \
+	REG_GPE0_ACCESS(RXW, reg_, mask_, value_, 0)
+#define REG_GPE0_OR(reg_, value_) \
+	REG_GPE0_RMW(reg_, 0xffffffff, value_)
+#define REG_GPE0_POLL(reg_, mask_, value_, timeout_) \
+	REG_GPE0_ACCESS(POLL, reg_, mask_, value_, timeout_)
+#define REG_GPE0_XOR(reg_, value_) \
+	REG_GPE0_RXW(reg_, 0xffffffff, value_)
 
 /* GPIO controller register access macros */
 #define REG_GPIO_ACCESS(cmd_, reg_, mask_, value_, timeout_) \

@@ -30,10 +30,22 @@ static void pmc_read_resources(device_t dev)
 	/* Get the normal PCI resources of this device. */
 	pci_dev_read_resources(dev);
 
-	/* PMBASE */
+	/* GPE0 */
 	res = new_resource(dev, index++);
-	res->base = ACPI_BASE_ADDRESS;
-	res->size = ACPI_BASE_SIZE;
+	res->base = GPE0_BASE_ADDRESS;
+	res->size = GPE0_SIZE;
+	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+
+	/* PM1BLK */
+	res = new_resource(dev, index++);
+	res->base = PM1BLK_BASE_ADDRESS;
+	res->size = PM1BLK_SIZE;
+	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+
+	/* Legacy GPIO */
+	res = new_resource(dev, index++);
+	res->base = LEGACY_GPIO_BASE_ADDRESS;
+	res->size = LEGACY_GPIO_SIZE;
 	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 }
 

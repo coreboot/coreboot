@@ -25,6 +25,8 @@
 #include <soc/grf.h>
 #include <soc/i2c.h>
 
+#include "board.h"
+
 static void configure_emmc(void)
 {
 	/* Host controller does not support programmable clock generator.

@@ -216,21 +216,21 @@ static uint64_t reg_read(struct reg_script_context *ctx)
 		return 0;
 
 	case GPE0_REGS:
-		ctx->display_prefix = "GPE0: ";
+		ctx->display_prefix = "GPE0";
 		value = reg_gpe0_read(step->reg);
 		break;
 
 	case GPIO_REGS:
-		ctx->display_prefix = "GPIO: ";
+		ctx->display_prefix = "GPIO";
 		value = reg_gpio_read(step->reg);
 		break;
 
 	case LEG_GPIO_REGS:
-		ctx->display_prefix = "Legacy GPIO: ";
+		ctx->display_prefix = "Legacy GPIO";
 		value = reg_legacy_gpio_read(step->reg);
 
 	case PCIE_AFE_REGS:
-		ctx->display_prefix = "PCIe AFE: ";
+		ctx->display_prefix = "PCIe AFE";
 		value = reg_pcie_afe_read(step->reg);
 		break;
 
@@ -265,28 +265,28 @@ static void reg_write(struct reg_script_context *ctx)
 		return;
 
 	case GPE0_REGS:
-		ctx->display_prefix = "GPE0: ";
+		ctx->display_prefix = "GPE0";
 		reg_gpe0_write(step->reg, (uint32_t)step->value);
 		break;
 
 	case GPIO_REGS:
-		ctx->display_prefix = "GPIO: ";
+		ctx->display_prefix = "GPIO";
 		reg_gpio_write(step->reg, (uint32_t)step->value);
 		break;
 
 	case LEG_GPIO_REGS:
-		ctx->display_prefix = "Legacy GPIO: ";
+		ctx->display_prefix = "Legacy GPIO";
 		reg_legacy_gpio_write(step->reg, (uint32_t)step->value);
 		break;
 
 	case PCIE_AFE_REGS:
-		ctx->display_prefix = "PCIe AFE: ";
+		ctx->display_prefix = "PCIe AFE";
 		reg_pcie_afe_write(step->reg, (uint32_t)step->value);
 		break;
 
 	case PCIE_RESET:
 		if (ctx->display_features) {
-			ctx->display_prefix = "PCIe reset: ";
+			ctx->display_prefix = "PCIe reset";
 			ctx->display_features &= ~REG_SCRIPT_DISPLAY_REGISTER;
 		}
 		mainboard_gpio_pcie_reset(step->value);

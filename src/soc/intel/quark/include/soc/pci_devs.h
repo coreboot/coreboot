@@ -33,6 +33,9 @@
 /* IO Fabric 1 */
 #define SIO1_DEV		0x14
 #define HSUART1_DEV		SIO1_DEV
+#define USB_DEV_PORT_FUNC	2
+#define EHCI_FUNC		3
+#define OHCI_FUNC		4
 #define HSUART1_FUNC		5
 
 /* IO Fabric 2 */

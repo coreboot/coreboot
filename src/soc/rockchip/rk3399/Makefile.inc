@@ -47,6 +47,8 @@ romstage-y += ../common/pwm.c
 romstage-y += timer.c
 romstage-y += romstage.c
 romstage-y += tsadc.c
+romstage-y += gpio.c
+romstage-y += ../common/gpio.c
 
 ################################################################################
 

@@ -38,17 +38,23 @@ enum fsp_status fsp_notify(enum fsp_notify_phase phase)
 
 	printk(BIOS_DEBUG, "FspNotify %x\n", (uint32_t) phase);
 
-	if (phase == AFTER_PCI_ENUM)
+	if (phase == AFTER_PCI_ENUM) {
 		timestamp_add_now(TS_FSP_BEFORE_ENUMERATE);
-	else if (phase == READY_TO_BOOT)
+		post_code(POST_FSP_NOTIFY_BEFORE_ENUMERATE);
+	} else if (phase == READY_TO_BOOT) {
 		timestamp_add_now(TS_FSP_BEFORE_FINALIZE);
+		post_code(POST_FSP_NOTIFY_BEFORE_FINALIZE);
+	}
 
 	ret = fspnotify(&notify_params);
 
-	if (phase == AFTER_PCI_ENUM)
+	if (phase == AFTER_PCI_ENUM) {
 		timestamp_add_now(TS_FSP_AFTER_ENUMERATE);
-	else if (phase == READY_TO_BOOT)
+		post_code(POST_FSP_NOTIFY_BEFORE_ENUMERATE);
+	} else if (phase == READY_TO_BOOT) {
 		timestamp_add_now(TS_FSP_AFTER_FINALIZE);
+		post_code(POST_FSP_NOTIFY_BEFORE_FINALIZE);
+	}
 
 	return ret;
 }

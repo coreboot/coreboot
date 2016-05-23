@@ -42,10 +42,12 @@ static enum fsp_status do_silicon_init(struct fsp_header *hdr)
 	platform_fsp_silicon_init_params_cb(&upd);
 
 	timestamp_add_now(TS_FSP_SILICON_INIT_START);
+	post_code(POST_FSP_SILICON_INIT);
 	silicon_init = (void *) (hdr->image_base +
 				 hdr->silicon_init_entry_offset);
 	status = silicon_init(&upd);
 	timestamp_add_now(TS_FSP_SILICON_INIT_END);
+	post_code(POST_FSP_SILICON_INIT);
 
 	printk(BIOS_DEBUG, "FspSiliconInit returned 0x%08x\n", status);
 	return status;

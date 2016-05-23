@@ -254,9 +254,6 @@ static size_t widths_cbfs_hash[] unused = {
 uint32_t get_cbfs_entry_type(const char *name, uint32_t default_value);
 uint32_t get_cbfs_compression(const char *name, uint32_t unknown);
 
-/* common.c */
-void cbfs_file_get_header(struct buffer *buf, struct cbfs_file *file);
-
 /* cbfs-mkpayload.c */
 void xdr_segs(struct buffer *output,
 	      struct cbfs_payload_segment *segs, int nseg);

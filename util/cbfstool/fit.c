@@ -186,6 +186,15 @@ static void add_microcodde_entries(struct fit_table *fit,
 	}
 }
 
+static void cbfs_file_get_header(struct buffer *buf, struct cbfs_file *file)
+{
+	bgets(buf, &file->magic, sizeof(file->magic));
+	file->len = xdr_be.get32(buf);
+	file->type = xdr_be.get32(buf);
+	file->attributes_offset = xdr_be.get32(buf);
+	file->offset = xdr_be.get32(buf);
+}
+
 static int fit_header(void *ptr, uint32_t *current_offset, uint32_t *file_length)
 {
 	struct buffer buf;

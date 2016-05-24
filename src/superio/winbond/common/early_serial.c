@@ -66,3 +66,16 @@ void winbond_enable_serial(pnp_devfn_t dev, u16 iobase)
 	pnp_set_enable(dev, 1);
 	pnp_exit_conf_state(dev);
 }
+
+void winbond_set_pinmux(pnp_devfn_t dev, uint8_t offset, uint8_t mask, uint8_t state)
+{
+	uint8_t byte;
+
+	/* Configure pin mux */
+	pnp_enter_conf_state(dev);
+	byte = pnp_read_config(dev, offset);
+	byte &= ~mask;
+	byte |= state;
+	pnp_write_config(dev, offset, byte);
+	pnp_exit_conf_state(dev);
+}

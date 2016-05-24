@@ -143,7 +143,6 @@ int spi_xfer(struct spi_slave *slave, const void *dout,
 		cmd = spi_read(SPI_REG_FIFO);
 	}
 
-	reset_internal_fifo_pointer();
 	for (count = 0; count < bytesin; count++, din++) {
 		*(uint8_t *)din = spi_read(SPI_REG_FIFO);
 	}

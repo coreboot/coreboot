@@ -20,6 +20,7 @@
 #include <device/device.h>
 #include <pc80/mc146818rtc.h>
 #include <smp/spinlock.h>
+#include <rules.h>
 
 /* Write POST information */
 
@@ -41,7 +42,7 @@ void __attribute__((weak)) mainboard_post(uint8_t value)
 
 DECLARE_SPIN_LOCK(cmos_post_lock)
 
-#if !defined(__PRE_RAM__)
+#if ENV_RAMSTAGE
 void cmos_post_log(void)
 {
 	u8 code = 0;
@@ -122,7 +123,7 @@ void post_log_clear(void)
 	post_log_extra(0);
 }
 #endif /* CONFIG_CMOS_POST_EXTRA */
-#endif /* !__PRE_RAM__ */
+#endif /* ENV_RAMSTAGE */
 
 static void cmos_post_code(u8 value)
 {

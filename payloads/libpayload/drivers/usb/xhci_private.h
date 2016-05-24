@@ -515,7 +515,7 @@ int xhci_cmd_stop_endpoint(xhci_t *, int slot_id, int ep);
 int xhci_cmd_set_tr_dq(xhci_t *, int slot_id, int ep, trb_t *, int dcs);
 
 static inline int xhci_ep_id(const endpoint_t *const ep) {
-	return ((ep->endpoint & 0x7f) << 1) + (ep->direction == IN);
+	return ((ep->endpoint & 0x7f) * 2) + (ep->direction != OUT);
 }
 
 

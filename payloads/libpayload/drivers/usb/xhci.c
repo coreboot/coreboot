@@ -197,7 +197,7 @@ xhci_init (unsigned long physical_bar)
 	xhci_debug("hciversion: %"PRIx8".%"PRIx8"\n",
 		   xhci->capreg->hciver_hi, xhci->capreg->hciver_lo);
 	if ((xhci->capreg->hciversion < 0x96) ||
-			(xhci->capreg->hciversion > 0x100)) {
+			(xhci->capreg->hciversion > 0x110)) {
 		xhci_debug("Unsupported xHCI version\n");
 		goto _free_xhci;
 	}
@@ -534,6 +534,15 @@ xhci_enqueue_trb(transfer_ring_t *const tr)
 }
 
 static void
+xhci_ring_doorbell(endpoint_t *const ep)
+{
+	/* Ensure all TRB changes are written to memory. */
+	wmb();
+	XHCI_INST(ep->dev->controller)->dbreg[ep->dev->address] =
+		xhci_ep_id(ep);
+}
+
+static void
 xhci_enqueue_td(transfer_ring_t *const tr, const int ep, const size_t mps,
 		const int dalen, void *const data, const int dir)
 {
@@ -670,7 +679,7 @@ xhci_control(usbdev_t *const dev, const direction_t dir,
 	xhci_enqueue_trb(tr);
 
 	/* Ring doorbell for EP0 */
-	xhci->dbreg[dev->address] = 1;
+	xhci_ring_doorbell(&dev->endpoints[0]);
 
 	/* Wait for transfer events */
 	int i, transferred = 0;
@@ -745,7 +754,7 @@ xhci_bulk(endpoint_t *const ep, const int size, u8 *const src,
 	const unsigned mps = EC_GET(MPS, epctx);
 	const unsigned dir = (ep->direction == OUT) ? TRB_DIR_OUT : TRB_DIR_IN;
 	xhci_enqueue_td(tr, ep_id, mps, size, data, dir);
-	xhci->dbreg[ep->dev->address] = ep_id;
+	xhci_ring_doorbell(ep);
 
 	/* Wait for transfer event */
 	const int ret = xhci_wait_for_transfer(xhci, ep->dev->address, ep_id);
@@ -852,7 +861,7 @@ xhci_create_intr_queue(endpoint_t *const ep,
 	   and ring the doorbell. */
 	for (i = 0; i < (reqcount - 1); ++i)
 		xhci_enqueue_trb(tr);
-	xhci->dbreg[slot_id] = ep_id;
+	xhci_ring_doorbell(ep);
 
 	return intrq;
 
@@ -930,7 +939,7 @@ xhci_poll_intr_queue(void *const q)
 
 		/* Enqueue the last (spare) TRB and ring doorbell */
 		xhci_enqueue_trb(tr);
-		xhci->dbreg[ep->dev->address] = ep_id;
+		xhci_ring_doorbell(ep);
 
 		/* Reuse the current buffer for the next spare TRB */
 		xhci_clear_trb(tr->cur, tr->pcs);

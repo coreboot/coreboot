@@ -65,8 +65,8 @@ static struct selected_region *vb2_selected_region(void)
 {
 	struct selected_region *sel_reg = NULL;
 
-	/* Ramstage always uses cbmem as a source of truth. */
-	if (ENV_RAMSTAGE)
+	/* Ramstage and postcar always uses cbmem as a source of truth. */
+	if (ENV_RAMSTAGE || ENV_POSTCAR)
 		sel_reg = cbmem_find(CBMEM_ID_VBOOT_SEL_REG);
 	else if (ENV_ROMSTAGE) {
 		/* Try cbmem first. Fall back on working data if not found. */

@@ -26,8 +26,13 @@ External (NVSA)
 OperationRegion (GNVS, SystemMemory, NVSA, 0x1000)
 Field (GNVS, ByteAcc, NoLock, Preserve)
 {
-	/* Nothing here yet, folks */
+	/* Miscellaneous */
 	Offset (0x00),
+	PCNT,	8,      // 0x01 - Processor Count
+	PPCM,	8,      // 0x02 - Max PPC State
+	LIDS,	8,      // 0x03 - LID State
+	PWRS,	8,      // 0x04 - AC Power State
+	DPTE,	8,      // 0x05 - Enable DPTF
 
 	/* ChromeOS stuff (0x100 -> 0xfff, size 0xeff) */
 	Offset (0x100),

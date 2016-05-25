@@ -236,16 +236,31 @@ M:	York Yang <york.yang@intel.com>
 S:	Supported
 F:	src/drivers/intel/fsp1_1/
 
+INTEL FSP 2.0
+M:	Andrey Petrov <andrey.petrov@intel.com>
+S:	Supported
+F:	src/drivers/intel/fsp2_0/
+
 INTEL STRAGO MAINBOARD
 M:	Hannah Williams <hannah.williams@intel.com>
 S:	Supported
 F:	/src/mainboard/intel/strago/
+
+INTEL AMENIA MAINBOARD
+M:	Andrey Petrov <andrey.petrov@intel.com>
+S:	Supported
+F:	src/mainboard/intel/amenia/
 
 INTEL BRASWELL SOC
 M:	Hannah Williams <hannah.williams@intel.com>
 S:	Supported
 F:	/src/soc/intel/braswell
 F:	/src/vendorcode/intel/fsp/fsp1_1/braswell
+
+INTEL APOLLOLAKE_SOC
+M:	Andrey Petrov <andrey.petrov@intel.com>
+S:	Supported
+F:	src/soc/intel/apollolake/
 
 ASUS KFSN4-DRE & KFSN4-DRE_K8 MAINBOARDS
 M:	Timothy Pearson <tpearson@raptorengineeringinc.com>

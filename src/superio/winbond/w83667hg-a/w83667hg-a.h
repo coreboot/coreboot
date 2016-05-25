@@ -18,6 +18,13 @@
 #ifndef SUPERIO_WINBOND_W83667HG_A
 #define SUPERIO_WINBOND_W83667HG_A
 
+/* Pinmux configuration defines */
+#define W83667HG_SPI_PINMUX_OFFSET		0x2a
+
+#define W83667HG_SPI_PINMUX_GPIO4_SERIAL_B_MASK	(1 << 2)
+#define W83667HG_SPI_PINMUX_GPIO4		(0 << 2)
+#define W83667HG_SPI_PINMUX_SERIAL_B		(1 << 2)
+
 /* Logical Device Numbers (LDN). */
 #define W83667HG_A_FDC		0x00
 #define W83667HG_A_PP		0x01

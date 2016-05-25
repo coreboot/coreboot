@@ -27,3 +27,6 @@
 #include "gpio.asl"
 
 #include "xhci.asl"
+
+/* LPC */
+#include "lpc.asl"

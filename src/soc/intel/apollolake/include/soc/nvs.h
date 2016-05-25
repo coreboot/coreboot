@@ -28,7 +28,12 @@
 
 struct global_nvs_t {
 	/* Miscellaneous */
-	uint8_t unused[256];
+	uint8_t	pcnt; /* 0x01 - Processor Count */
+	uint8_t	ppcm; /* 0x02 - Max PPC State */
+	uint8_t	lids; /* 0x03 - LID State */
+	uint8_t	pwrs; /* 0x04 - AC Power State */
+	uint8_t	dpte; /* 0x05 - Enable DPTF */
+	uint8_t	unused[251];
 
 	/* ChromeOS specific (0x100 - 0xfff) */
 	chromeos_acpi_t chromeos;

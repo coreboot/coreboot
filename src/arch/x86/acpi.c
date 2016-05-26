@@ -307,6 +307,29 @@ static void acpi_create_tcpa(acpi_tcpa_t *tcpa)
 	header->checksum = acpi_checksum((void *)tcpa, header->length);
 }
 
+static void acpi_ssdt_write_cbtable(void)
+{
+	const struct cbmem_entry *cbtable;
+	uintptr_t base;
+	uint32_t size;
+
+	cbtable = cbmem_entry_find(CBMEM_ID_CBTABLE);
+	if (!cbtable)
+		return;
+	base = (uintptr_t)cbmem_entry_start(cbtable);
+	size = cbmem_entry_size(cbtable);
+
+	acpigen_write_device("CTBL");
+	acpigen_write_coreboot_hid(COREBOOT_ACPI_ID_CBTABLE);
+	acpigen_write_name_integer("_UID", 0);
+	acpigen_write_STA(ACPI_STATUS_DEVICE_ALL_ON);
+	acpigen_write_name("_CRS");
+	acpigen_write_resourcetemplate_header();
+	acpigen_write_mem32fixed(0, base, size);
+	acpigen_write_resourcetemplate_footer();
+	acpigen_pop_len();
+}
+
 void acpi_create_ssdt_generator(acpi_header_t *ssdt, const char *oem_table_id)
 {
 	unsigned long current = (unsigned long)ssdt + sizeof(acpi_header_t);
@@ -323,6 +346,10 @@ void acpi_create_ssdt_generator(acpi_header_t *ssdt, const char *oem_table_id)
 	ssdt->length = sizeof(acpi_header_t);
 
 	acpigen_set_current((char *) current);
+
+	/* Write object to declare coreboot tables */
+	acpi_ssdt_write_cbtable();
+
 	{
 		struct device *dev;
 		for (dev = all_devices; dev; dev = dev->next)

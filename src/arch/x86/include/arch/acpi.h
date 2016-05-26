@@ -57,6 +57,12 @@
 #define ACPI_TABLE_CREATOR	"COREBOOT"  /* Must be exactly 8 bytes long! */
 #define OEM_ID			"CORE  "    /* Must be exactly 6 bytes long! */
 #define ASLC			"CORE"      /* Must be exactly 4 bytes long! */
+#define COREBOOT_ACPI_ID	"CORE"      /* ACPI ID for coreboot HIDs */
+
+/* List of ACPI HID that use the coreboot ACPI ID */
+enum coreboot_acpi_ids {
+	COREBOOT_ACPI_ID_CBTABLE,	/* CORE0000 */
+};
 
 /* RSDP (Root System Description Pointer) */
 typedef struct acpi_rsdp {

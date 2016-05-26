@@ -595,7 +595,7 @@ out:
 int rmodule_init(struct rmod_context *ctx, const struct buffer *elfin)
 {
 	struct parsed_elf *pelf;
-	int i;
+	size_t i;
 	int ret;
 
 	ret = -1;

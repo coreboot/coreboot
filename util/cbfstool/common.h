@@ -22,16 +22,11 @@
 #include <string.h>
 #include <assert.h>
 
+#include <commonlib/helpers.h>
 #include <console/console.h>
 
 /* Endianess */
 #include "swab.h"
-
-/* Helpers */
-#define ARRAY_SIZE(a) (int)(sizeof(a) / sizeof((a)[0]))
-#define ALIGN(val, by) (((val) + (by)-1)&~((by)-1))
-#define MAX(x, y) ((x) > (y) ? (x) : (y))
-#define MIN(x, y) ((x) < (y) ? (x) : (y))
 
 #define IS_TOP_ALIGNED_ADDRESS(x)	((uint32_t)(x) > 0x80000000)
 

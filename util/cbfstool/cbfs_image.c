@@ -1251,7 +1251,7 @@ int cbfs_print_directory(struct cbfs_image *image)
 
 int cbfs_print_parseable_directory(struct cbfs_image *image)
 {
-	int i;
+	size_t i;
 	const char *header[] = {
 		"Name",
 		"Offset",

@@ -29,8 +29,11 @@ romstage-y += mmap_boot.c
 romstage-y += tsc_freq.c
 romstage-y += pmutil.c
 
+smm-y += mmap_boot.c
 smm-y += pmutil.c
 smm-y += smihandler.c
+smm-y += spi.c
+smm-y += tsc_freq.c
 
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
 ramstage-y += cpu.c

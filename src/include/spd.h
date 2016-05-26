@@ -145,6 +145,7 @@ enum spd_memory_type {
 #define SPD_CAS_LATENCY_DDR2_4		(1 << 4)
 #define SPD_CAS_LATENCY_DDR2_5		(1 << 5)
 #define SPD_CAS_LATENCY_DDR2_6		(1 << 6)
+#define SPD_CAS_LATENCY_DDR2_7		(1 << 7)
 
 /* SPD_SUPPORTED_BURST_LENGTHS values. */
 #define SPD_BURST_LENGTH_1               1

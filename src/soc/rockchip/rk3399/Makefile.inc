@@ -47,6 +47,7 @@ romstage-y += ../common/pwm.c
 romstage-y += timer.c
 romstage-y += romstage.c
 romstage-y += tsadc.c
+romstage-y += usb.c
 romstage-y += gpio.c
 romstage-y += ../common/gpio.c
 
@@ -67,6 +68,7 @@ ramstage-y += saradc.c
 ramstage-y += soc.c
 ramstage-y += timer.c
 ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += ../common/vop.c
+ramstage-y += usb.c
 
 BL31_MAKEARGS += PLAT=rk3399
 ################################################################################

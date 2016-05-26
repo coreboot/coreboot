@@ -31,6 +31,7 @@
 #include <soc/tsadc.h>
 #include <soc/sdram.h>
 #include <symbols.h>
+#include <soc/usb.h>
 
 static const uint64_t dram_size =
 	(uint64_t)min((uint64_t)CONFIG_DRAM_SIZE_MB * MiB, MAX_DRAM_ADDRESS);
@@ -72,6 +73,16 @@ static void init_dvs_outputs(void)
 		pwm_init(i, 3333, 1904);
 }
 
+static void prepare_usb(void)
+{
+	/*
+	 * Do dwc3 core soft reset and phy reset. Kick these resets
+	 * off early so they get at least 100ms to settle.
+	 */
+	reset_usb_drd0_dwc3();
+	reset_usb_drd1_dwc3();
+}
+
 void main(void)
 {
 	console_init();
@@ -80,6 +91,8 @@ void main(void)
 
 	/* Init DVS to conservative values. */
 	init_dvs_outputs();
+
+	prepare_usb();
 
 	sdram_init(get_sdram_config());
 

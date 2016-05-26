@@ -24,6 +24,7 @@
 #include <soc/emmc.h>
 #include <soc/grf.h>
 #include <soc/i2c.h>
+#include <soc/usb.h>
 
 #include "board.h"
 
@@ -118,12 +119,19 @@ static void configure_display(void)
 	gpio_output(GPIO(4, D, 3), 1); /* CPU3_EDP_VDDEN for P3.3V_DISP */
 }
 
+static void setup_usb(void)
+{
+	setup_usb_drd0_dwc3();
+	setup_usb_drd1_dwc3();
+}
+
 static void mainboard_init(device_t dev)
 {
 	configure_sdmmc();
 	configure_emmc();
 	configure_codec();
 	configure_display();
+	setup_usb();
 }
 
 static void enable_backlight_booster(void)

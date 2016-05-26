@@ -23,7 +23,7 @@
 #include <cpu/amd/amdfam15.h>
 #include <arch/cpu.h>
 #include <cpu/x86/lapic.h>
-#include "southbridge/amd/agesa/hudson/hudson.h" /* pm_ioread() */
+#include "southbridge/amd/agesa/hudson/hudson.h"
 
 
 u8 picr_data[0x54] = {

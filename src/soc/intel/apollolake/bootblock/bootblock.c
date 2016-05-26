@@ -67,6 +67,12 @@ void asmlinkage bootblock_c_entry(uint32_t tsc_hi, uint32_t tsc_lo)
 	pci_write_config32(dev, PCI_BASE_ADDRESS_1, 0);
 	pci_write_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
 
+	/* Decode the ACPI I/O port range for early firmware verification.*/
+	dev = PMC_DEV;
+	pci_write_config16(dev, PCI_BASE_ADDRESS_4, ACPI_PMIO_BASE);
+	pci_write_config16(dev, PCI_COMMAND,
+				PCI_COMMAND_IO | PCI_COMMAND_MASTER);
+
 	/* Call lib/bootblock.c main */
 	bootblock_main_with_timestamp(((uint64_t)tsc_hi << 32) | tsc_lo);
 }

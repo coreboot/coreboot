@@ -56,6 +56,12 @@ postcar-y += mmap_boot.c
 postcar-$(CONFIG_SOC_UART_DEBUG) += uart_early.c
 postcar-y += tsc_freq.c
 
+verstage-y += memmap.c
+verstage-y += mmap_boot.c
+verstage-$(CONFIG_SOC_UART_DEBUG) += uart_early.c
+verstage-y += tsc_freq.c
+verstage-y += pmutil.c
+
 CPPFLAGS_common += -I$(src)/soc/intel/apollolake/include
 
 # Since FSP-M runs in CAR we need to relocate it to a specific address

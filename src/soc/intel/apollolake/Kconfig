@@ -123,6 +123,12 @@ config ROMSTAGE_ADDR
 	help
 	  The base address (in CAR) where romstage should be linked
 
+config VERSTAGE_ADDR
+	hex
+	default 0xfef60000
+	help
+	  The base address (in CAR) where verstage should be linked
+
 config CACHE_MRC_SETTINGS
 	bool
 	default y

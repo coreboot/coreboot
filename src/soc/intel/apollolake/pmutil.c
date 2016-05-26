@@ -26,6 +26,7 @@
 #include <soc/pm.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <vendorcode/google/chromeos/vboot_common.h>
 
 static uintptr_t read_pmc_mmio_bar(void)
 {
@@ -335,4 +336,15 @@ int fill_power_state(struct chipset_power_state *ps)
 	}
 	printk(BIOS_DEBUG, "prev_sleep_state %d\n", ps->prev_sleep_state);
 	return ps->prev_sleep_state;
+}
+
+int vboot_platform_is_resuming(void)
+{
+	int typ;
+
+	if (!(inw(ACPI_PMIO_BASE + PM1_STS) & WAK_STS))
+		return 0;
+
+	typ = (inl(ACPI_PMIO_BASE + PM1_CNT) & SLP_TYP) >> SLP_TYP_SHIFT;
+	return typ == SLP_TYP_S3;
 }

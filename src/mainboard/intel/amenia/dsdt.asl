@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2015 Intel Corp.
+ * Copyright (C) 2016 Intel Corp.
  * (Written by Lance Zhao <lijian.zhao@intel.com> for Intel Corp.)
  *
  * This program is free software; you can redistribute it and/or modify
@@ -33,15 +33,16 @@ DefinitionBlock(
 	Scope (\_SB) {
 		Device (PCI0)
 		{
-                #include <soc/intel/apollolake/acpi/northbridge.asl>
-                #include <soc/intel/apollolake/acpi/southbridge.asl>
+			#include <soc/intel/apollolake/acpi/northbridge.asl>
+			#include <soc/intel/apollolake/acpi/southbridge.asl>
+			#include <soc/intel/apollolake/acpi/pch_hda.asl>
 		}
 	}
 	/* Mainboard Specific devices */
 	#include "acpi/mainboard.asl"
 
-        /* Chipset specific sleep states */
-        #include <soc/intel/apollolake/acpi/sleepstates.asl>
+	/* Chipset specific sleep states */
+	#include <soc/intel/apollolake/acpi/sleepstates.asl>
 
 	#include "acpi/superio.asl"
 }

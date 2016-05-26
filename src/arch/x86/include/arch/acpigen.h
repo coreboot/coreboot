@@ -63,6 +63,7 @@ void acpigen_write_name_dword(const char *name, uint32_t val);
 void acpigen_write_name_qword(const char *name, uint64_t val);
 void acpigen_write_name_byte(const char *name, uint8_t val);
 void acpigen_write_name_integer(const char *name, uint64_t val);
+void acpigen_write_coreboot_hid(enum coreboot_acpi_ids id);
 void acpigen_write_scope(const char *name);
 void acpigen_write_method(const char *name, int nargs);
 void acpigen_write_device(const char *name);

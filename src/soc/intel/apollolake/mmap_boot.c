@@ -23,8 +23,8 @@
 #include <fmap.h>
 #include <soc/intel/common/nvm.h>
 
-/* The 128 KiB right below 4G are decoded by readonly SRAM, not boot media */
-#define IFD_BIOS_MAX_MAPPED	(CONFIG_IFD_BIOS_END - 128 * KiB)
+/* The 256 KiB right below 4G are decoded by readonly SRAM, not boot media */
+#define IFD_BIOS_MAX_MAPPED	(CONFIG_IFD_BIOS_END - 256 * KiB)
 #define IFD_MAPPED_SIZE		(IFD_BIOS_MAX_MAPPED - CONFIG_IFD_BIOS_START)
 #define IFD_BIOS_SIZE		(CONFIG_IFD_BIOS_END - CONFIG_IFD_BIOS_START)
 

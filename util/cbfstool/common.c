@@ -139,7 +139,7 @@ static struct {
 
 uint32_t string_to_arch(const char *arch_string)
 {
-	int i;
+	size_t i;
 	uint32_t ret = CBFS_ARCHITECTURE_UNKNOWN;
 
 	for (i = 0; i < ARRAY_SIZE(arch_names); i++) {
@@ -154,7 +154,7 @@ uint32_t string_to_arch(const char *arch_string)
 
 const char *arch_to_string(uint32_t a)
 {
-	int i;
+        size_t i;
 	const char *ret = NULL;
 
 	for (i = 0; i < ARRAY_SIZE(arch_names); i++) {

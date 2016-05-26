@@ -23,7 +23,7 @@
 #include <device/pci.h>
 #include <stdint.h>
 #include <string.h>
-#include <southbridge/amd/agesa/hudson/hudson.h> /* pm_ioread() */
+#include <southbridge/amd/agesa/hudson/hudson.h>
 
 
 u8 picr_data[0x54] = {

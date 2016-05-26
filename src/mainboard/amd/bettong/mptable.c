@@ -23,7 +23,7 @@
 #include <cpu/amd/amdfam15.h>
 #include <arch/cpu.h>
 #include <cpu/x86/lapic.h>
-#include "southbridge/amd/pi/hudson/hudson.h" /* pm_ioread() */
+#include "southbridge/amd/pi/hudson/hudson.h"
 #include <southbridge/amd/common/amd_pci_util.h>
 
 static void smp_add_mpc_entry(struct mp_config_table *mc, unsigned length)

@@ -80,6 +80,7 @@
 	#define SPD_CAS_LAT_4	(1<<4)
 	#define SPD_CAS_LAT_5	(1<<5)
 	#define SPD_CAS_LAT_6	(1<<6)
+	#define SPD_CAS_LAT_7	(1<<7)
 
 #define SPD_TRP	27  /* bit [7:2] = 1-63 ns, bit [1:0] 0.25ns+, final value ((val>>2) + (val & 3) * 0.25)ns */
 #define SPD_TRRD	28

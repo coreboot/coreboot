@@ -19,7 +19,7 @@ config BOOT_MEDIA_SPI_BUS
 
 config IFD_BIOS_END
 	hex
-	default 0x6FF000
+	default 0x77F000
 
 config IFD_BIOS_START
 	hex

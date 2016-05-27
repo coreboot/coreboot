@@ -63,6 +63,11 @@ static void LZ4_copy8(void *dst, const void *src)
 			: [src]"r"(src), [dst]"r"(dst)
 			: "memory" );
 	#endif
+#elif defined(__riscv__)
+	/* RISC-V implementations may trap on any unaligned access. */
+	int i;
+	for (i = 0; i < 8; i++)
+		((uint8_t *)dst)[i] = ((uint8_t *)src)[i];
 #else
 	*(uint64_t *)dst = *(const uint64_t *)src;
 #endif

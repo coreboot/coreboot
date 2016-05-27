@@ -82,30 +82,30 @@ config DRIVERS_PS2_KEYBOARD
 
 choice
 	prompt "J19 pins 1-10"
-	default PINMUX_OFF_C
+	default APU1_PINMUX_OFF_C
 
-config PINMUX_OFF_C
+config APU1_PINMUX_OFF_C
 	bool "disable"
 
-config PINMUX_GPIO0
+config APU1_PINMUX_GPIO0
 	bool "GPIO"
 
-config PINMUX_UART_C
+config APU1_PINMUX_UART_C
 	bool "UART 0x3e8"
 
 endchoice
 
 choice
 	prompt "J19 pins 11-20"
-	default PINMUX_OFF_D
+	default APU1_PINMUX_OFF_D
 
-config PINMUX_OFF_D
+config APU1_PINMUX_OFF_D
 	bool "disable"
 
-config PINMUX_GPIO1
+config APU1_PINMUX_GPIO1
 	bool "GPIO"
 
-config PINMUX_UART_D
+config APU1_PINMUX_UART_D
 	bool "UART 0x2e8"
 
 endchoice

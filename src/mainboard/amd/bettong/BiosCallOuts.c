@@ -20,7 +20,6 @@
 #include <northbridge/amd/pi/BiosCallOuts.h>
 #include <northbridge/amd/pi/00660F01/chip.h>
 #include "Ids.h"
-#include "OptionsIds.h"
 #include "heapManager.h"
 #include "FchPlatform.h"
 #include "cbfs.h"

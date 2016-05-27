@@ -25,12 +25,12 @@
 #include <cbmem.h>
 #include "hudson.h"
 #include "pci_devs.h"
+#include <Fch/Fch.h>
 
 #if IS_ENABLED(CONFIG_HUDSON_UART)
 
 #include <cpu/x86/msr.h>
 #include <delay.h>
-#include <Fch/Fch.h>
 
 void configure_hudson_uart(void)
 {
@@ -172,6 +172,22 @@ int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos)
 	printk(BIOS_DEBUG, "Loading %x of size %d to nvram pos:%d\n", *old_dword, size,
 		nvram_pos-size);
 	return nvram_pos;
+}
+
+void hudson_clk_output_48Mhz(void)
+{
+	u32 data, *memptr;
+
+	/*
+	 * Enable the X14M_25M_48M_OSC pin and leaving it at it's default so
+	 * 48Mhz will be on ball AP13 (FT3b package)
+	 */
+	memptr = (u32 *)(ACPI_MMIO_BASE + MISC_BASE + FCH_MISC_REG40 );
+	data = *memptr;
+
+	/* clear the OSCOUT1_ClkOutputEnb to enable the 48 Mhz clock */
+	data &= (u32)~(1<<2);
+	*memptr = data;
 }
 
 #endif

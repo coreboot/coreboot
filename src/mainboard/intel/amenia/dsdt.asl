@@ -24,6 +24,12 @@ DefinitionBlock(
 	0x20110725	// OEM revision
 )
 {
+	/* global NVS and variables */
+	#include <soc/intel/apollolake/acpi/globalnvs.asl>
+
+	/* CPU */
+	#include <soc/intel/apollolake/acpi/cpu.asl>
+
 	Scope (\_SB) {
 		Device (PCI0)
 		{
@@ -38,5 +44,4 @@ DefinitionBlock(
         #include <soc/intel/apollolake/acpi/sleepstates.asl>
 
 	#include "acpi/superio.asl"
-
 }

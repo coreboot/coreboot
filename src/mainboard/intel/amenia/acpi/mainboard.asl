@@ -16,6 +16,23 @@
  */
 #include <soc/gpio_defs.h>
 
+Scope (\_SB)
+{
+	Device (LID0)
+	{
+		Name (_HID, EisaId ("PNP0C0D"))
+		Method (_LID, 0)
+		{
+			Return (\_SB.PCI0.LPCB.EC0.LIDS)
+		}
+	}
+
+	Device (PWRB)
+	{
+		Name (_HID, EisaId ("PNP0C0C"))
+	}
+}
+
 Scope (\_SB.PCI0.I2C4)
 {
 	/* Standard Mode: HCNT, LCNT, SDA Hold Register */
@@ -90,4 +107,13 @@ Scope (\_SB.PCI0.I2C3)
 			Return (0xF)
 		}
 	}
+}
+
+/*
+ * LPC Trusted Platform Module
+ */
+Scope (\_SB.PCI0.LPCB)
+{
+	#include <drivers/pc80/tpm/acpi/tpm.asl>
+	#include "ec.asl"
 }

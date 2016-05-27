@@ -20,6 +20,10 @@
 
 #include <ec/google/chromeec/ec_commands.h>
 
+/* This is the GPE status bit.
+   TODO: Fix this to proper bit matching GPE routing table */
+#define EC_SCI_GPI   15
+
 #define MAINBOARD_EC_SCI_EVENTS \
 	(EC_HOST_EVENT_MASK(EC_HOST_EVENT_LID_CLOSED)        |\
 	 EC_HOST_EVENT_MASK(EC_HOST_EVENT_LID_OPEN)          |\

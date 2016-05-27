@@ -124,6 +124,9 @@ payloads/external/U-Boot/u-boot/u-boot-dtb.bin u-boot: $(top)/$(DOTCONFIG)
 			CONFIG_UBOOT_MASTER=$(CONFIG_UBOOT_MASTER) \
 			CONFIG_UBOOT_STABLE=$(CONFIG_UBOOT_STABLE)
 
+payloads/external/tint/tint/tint.elf tint:
+	$(MAKE) -C payloads/external/tint
+
 cbfs-files-$(CONFIG_MEMTEST_SECONDARY_PAYLOAD) += img/memtest
 img/memtest-file := payloads/external/Memtest86Plus/memtest86plus/memtest
 img/memtest-type := payload
@@ -133,6 +136,10 @@ ifeq ($(CONFIG_CONSOLE_SERIAL)$(CONFIG_DRIVERS_UART_8250IO),yy)
 		SERIAL_TTY=$(CONFIG_UART_FOR_CONSOLE) \
 		SERIAL_BAUD_RATE=$(CONFIG_TTYS0_BAUD)
 endif
+
+cbfs-files-$(CONFIG_TINT_SECONDARY_PAYLOAD) += img/tint
+img/tint-file := payloads/external/tint/tint/tint.elf
+img/tint-type := payload
 
 payloads/external/Memtest86Plus/memtest86plus/memtest: $(top)/$(DOTCONFIG)
 	$(MAKE) -C payloads/external/Memtest86Plus all \

@@ -1174,3 +1174,33 @@ config DEBUG_BOOT_STATE
 	help
 	  Control debugging of the boot state machine.  When selected displays
 	  the state boundaries in ramstage.
+
+config CREATE_BOARD_CHECKLIST
+	bool
+	default n
+	help
+	  When selected, creates a webpage showing the implementation status for
+	  the board.  Routines highlighted in green are complete, yellow are
+	  optional and red are required and must be implemented.  A table is
+	  produced for each stage of the boot process except the bootblock.  The
+	  red items may be used as an implementation checklist for the board.
+
+config MAKE_CHECKLIST_PUBLIC
+	bool
+	default n
+	help
+	  When selected, build/$(CONFIG_MAINBOARD_PART_NUMBER)_checklist.html
+	  is copied into the Documentation/$(CONFIG_MAINBOARD_VENDOR)/Board
+	  directory.
+
+config CHECKLIST_DATA_FILE_LOCATION
+	string
+	help
+	  Location of the <stage>_complete.dat and <stage>_optional.dat files
+	  that are consumed during checklist processing.  <stage>_complete.dat
+	  contains the symbols that are expected to be in the resulting image.
+	  <stage>_optional.dat is a subset of <stage>_complete.dat and contains
+	  a list of weak symbols which the resulting image may consume.  Other
+	  symbols contained only in <stage>_complete.dat will be flagged as
+	  required and not implemented if a weak implementation is found in the
+	  resulting image.

@@ -85,6 +85,7 @@ subdirs-y += src/mainboard/$(MAINBOARDDIR)
 subdirs-y += payloads payloads/external
 
 subdirs-y += site-local
+subdirs-y += util/checklist
 
 #######################################################################
 # Add source classes and their build options

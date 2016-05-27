@@ -115,4 +115,8 @@ config VBT_FILE
 	depends on GOP_SUPPORT
 	default "3rdparty/blobs/mainboard/$(MAINBOARDDIR)/vbt.bin"
 
+config CHECKLIST_DATA_FILE_LOCATION
+	string
+	default "src/vendorcode/intel/fsp/fsp1_1/checklist"
+
 endif #PLATFORM_USES_FSP1_1

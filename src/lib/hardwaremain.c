@@ -227,7 +227,7 @@ static boot_state_t bs_payload_boot(void *arg)
 {
 	payload_run();
 
-	printk(BIOS_EMERG, "Boot failed");
+	printk(BIOS_EMERG, "Boot failed\n");
 	/* Returning from this state will fail because the following signals
 	 * return to a completed state. */
 	return BS_PAYLOAD_BOOT;

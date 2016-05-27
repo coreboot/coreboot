@@ -1,0 +1,91 @@
+#
+# This file is part of the coreboot project.
+#
+# Copyright (C) 2012 Advanced Micro Devices, Inc.
+# Copyright (C) 2015 Kyösti Mälkki <kyosti.malkki@gmail.com>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+
+if BOARD_PCENGINES_APU2
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select CPU_AMD_PI_00730F01
+	select NORTHBRIDGE_AMD_PI_00730F01
+	select SOUTHBRIDGE_AMD_PI_AVALON
+	select SUPERIO_NUVOTON_NCT5104D
+	select HAVE_PIRQ_TABLE
+	select HAVE_MP_TABLE
+	select HAVE_ACPI_TABLES
+	select BOARD_ROMSIZE_KB_8192
+	select SPD_CACHE
+	select HUDSON_DISABLE_IMC
+	select USE_BLOBS
+
+config MAINBOARD_DIR
+	string
+	default pcengines/apu2
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "PCEngines apu2"
+
+config MAX_CPUS
+	int
+	default 4
+
+config IRQ_SLOT_COUNT
+	int
+	default 11
+
+config ONBOARD_VGA_IS_PRIMARY
+	bool
+	default y
+
+config HUDSON_LEGACY_FREE
+	bool
+	default y
+
+config AGESA_BINARY_PI_FILE
+	string
+	default "3rdparty/blobs/mainboard/pcengines/apu2/AGESA.bin"
+
+choice
+	prompt "J19 pins 1-10"
+	default APU2_PINMUX_OFF_C
+
+config APU2_PINMUX_OFF_C
+	bool "disable"
+
+config APU2_PINMUX_GPIO0
+	bool "GPIO"
+
+config APU2_PINMUX_UART_C
+	bool "UART 0x3e8"
+
+endchoice
+
+choice
+	prompt "J19 pins 11-20"
+	default APU2_PINMUX_OFF_D
+
+config APU2_PINMUX_OFF_D
+	bool "disable"
+
+config APU2_PINMUX_GPIO1
+	bool "GPIO"
+
+config APU2_PINMUX_UART_D
+	bool "UART 0x2e8"
+
+endchoice
+
+endif # BOARD_PCENGINES_APU2

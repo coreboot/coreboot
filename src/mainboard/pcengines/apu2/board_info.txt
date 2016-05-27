@@ -1,0 +1,6 @@
+Board name: PC Engines APU2
+Board URL: http://www.pcengines.ch/apu2c2.htm
+Category: half
+ROM protocol: SPI
+ROM socketed: n
+Flashrom support: y

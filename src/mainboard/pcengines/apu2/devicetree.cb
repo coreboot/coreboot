@@ -1,0 +1,91 @@
+#
+# This file is part of the coreboot project.
+#
+# Copyright (C) 2013 Advanced Micro Devices, Inc.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+chip northbridge/amd/pi/00730F01/root_complex
+	device cpu_cluster 0 on
+		chip cpu/amd/pi/00730F01
+			device lapic 0 on  end
+		end
+	end
+
+	device domain 0 on
+		subsystemid 0x1022 0x1410 inherit
+		chip northbridge/amd/pi/00730F01 # CPU side of HT root complex
+
+			chip northbridge/amd/pi/00730F01 # PCI side of HT root complex
+				device pci 0.0 on  end # Root Complex
+				device pci 0.2 off end # IOMMU
+				device pci 1.0 off  end # Internal Graphics P2P bridge 0x9804
+				device pci 1.1 off  end # Internal Multimedia
+				device pci 2.0 on  end # PCIe Host Bridge
+				device pci 2.1 on  end # mPCIe slot 2 (on GFX lane)
+				device pci 2.2 on  end # LAN3
+				device pci 2.3 on  end # LAN2
+				device pci 2.4 on  end # LAN1
+				device pci 2.5 on  end # mPCIe slot 1
+				device pci 8.0 on  end # Platform Security Processor
+			end	#chip northbridge/amd/pi/00730F01
+
+			chip southbridge/amd/pi/hudson # it is under NB/SB Link, but on the same pci bus
+				device pci 10.0 on  end # XHCI HC0 muxed with EHCI 2
+				device pci 11.0 on  end # SATA
+				device pci 12.0 off end # USB EHCI0 usb[0:3] not connected
+				device pci 13.0 on  end # USB EHCI1 usb[4:7]
+				device pci 14.0 on  end # SM
+				device pci 14.3 on      # LPC 0x439d
+					chip superio/nuvoton/nct5104d # SIO NCT5104D
+						register "irq_trigger_type" = "0"
+						device pnp 2e.0 off end
+						device pnp 2e.2 on
+							io 0x60 = 0x3f8
+							irq 0x70 = 4
+						end
+						device pnp 2e.3 on
+							io 0x60 = 0x2f8
+							irq 0x70 = 3
+						end
+						device pnp 2e.10 on
+							# UART C is conditionally turned on
+							io 0x60 = 0x3e8
+							irq 0x70 = 4
+						end
+						device pnp 2e.11 on
+							# UART D is conditionally turned on
+							io 0x60 = 0x2e8
+							irq 0x70 = 3
+						end
+						device pnp 2e.8 off end
+						device pnp 2e.f off end
+						# GPIO0 and GPIO1 are conditionally turned on
+						device pnp 2e.007 on end
+						device pnp 2e.107 on end
+						device pnp 2e.607 off end
+						device pnp 2e.e off end
+					end # SIO NCT5104D
+					end # LPC 0x439d
+
+				device pci 14.7 on  end # SD
+				device pci 16.0 on  end # USB EHCI2 usb[8:7] - muxed with XHCI
+			end	#chip southbridge/amd/pi/hudson
+
+			device pci 18.0 on  end
+			device pci 18.1 on  end
+			device pci 18.2 on  end
+			device pci 18.3 on  end
+			device pci 18.4 on  end
+			device pci 18.5 on  end
+
+		end #chip northbridge/amd/pi/00730F01 # CPU side of HT root complex
+	end #domain
+end #northbridge/amd/pi/00730F01/root_complex

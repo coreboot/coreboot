@@ -160,4 +160,25 @@ config LBP2_FILE_NAME
 	help
 	  Name of file to store in the logical boot partition 2 region.
 
+config NEED_IFWI
+	bool "Write content into IFWI region"
+	default n
+	help
+	  Write the content from a file into IFWI region defined by
+	  IFWI_FMAP_NAME.
+
+config IFWI_FMAP_NAME
+	string "Name of FMAP region to pull IFWI into"
+	depends on NEED_IFWI
+	default "IFWI"
+	help
+	  Name of FMAP region to write IFWI.
+
+config IFWI_FILE_NAME
+	string "Path of file to write to IFWI region"
+	depends on NEED_IFWI
+	default "3rdparty/blobs/mainboard/$(CONFIG_MAINBOARD_DIR)/ifwi.bin"
+	help
+	  Name of file to store in the IFWI region.
+
 endif

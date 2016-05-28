@@ -75,4 +75,22 @@ files_added::
 	$(CBFSTOOL) $(obj)/coreboot.rom write -r $(CONFIG_LBP2_FMAP_NAME) -f $(CONFIG_LBP2_FILE_NAME) --fill-upward
 endif
 
+# Bootblock on Apollolake platform lies in the IFWI region. In order to place
+# the bootblock at the right location in IFWI image -
+# a. Using ifwitool:
+#    1. Create IFWI image (ifwi.bin.tmp) from input image
+#       (CONFIG_IFWI_FILE_NAME).
+#    2. Delete OBBP sub-partition, if present.
+#    3. Replace IBBL directory entry in IBBP sub-partition with currently
+#       generated bootblock.bin.
+# b. Using cbfstool:
+#    1. Write ifwi.bin.tmp to coreboot.rom using CONFIG_IFWI_FMAP_NAME.
+ifeq ($(CONFIG_NEED_IFWI),y)
+files_added:: $(IFWITOOL)
+	$(IFWITOOL) $(CONFIG_IFWI_FILE_NAME) create -f $(objcbfs)/ifwi.bin.tmp
+	$(IFWITOOL) $(objcbfs)/ifwi.bin.tmp delete -n OBBP
+	$(IFWITOOL) $(objcbfs)/ifwi.bin.tmp replace -n IBBP -f $(objcbfs)/bootblock.bin -d -e IBBL
+	$(CBFSTOOL) $(obj)/coreboot.rom write -r $(CONFIG_IFWI_FMAP_NAME) -f $(objcbfs)/ifwi.bin.tmp --fill-upward
+endif
+
 endif

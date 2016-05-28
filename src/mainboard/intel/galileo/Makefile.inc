@@ -13,7 +13,9 @@
 ## GNU General Public License for more details.
 ##
 
+ifeq ($(CONFIG_PLATFORM_USES_FSP1_1),y)
 CPPFLAGS_common += -I$(src)/vendorcode/intel/fsp/fsp1_1/quark
+endif
 
 romstage-y += gpio.c
 

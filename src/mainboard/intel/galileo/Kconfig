@@ -19,8 +19,8 @@ config BOARD_SPECIFIC_OPTIONS
 	def_bool y
 	select BOARD_ROMSIZE_KB_8192
 	select HAVE_ACPI_TABLES
-	select PLATFORM_USES_FSP1_1
 	select SOC_INTEL_QUARK
+	select USE_FSP1_1
 
 config MAINBOARD_DIR
 	string
@@ -42,5 +42,10 @@ config GALILEO_GEN2
 	  board since coreboot can not determine the board generation at
 	  runtime.  Select which generation of the Galileo that coreboot
 	  should initialize.
+
+config USE_FSP1_1
+	bool
+	default n
+	select PLATFORM_USES_FSP1_1
 
 endif # BOARD_INTEL_QUARK

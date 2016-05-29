@@ -3938,31 +3938,10 @@ static void final_registers(ramctr_timing * ctrl)
 		 | 0xc);
 }
 
-static void save_timings(ramctr_timing * ctrl)
+static void save_timings(ramctr_timing *ctrl)
 {
-	struct mrc_data_container *mrcdata;
-	int output_len = ALIGN(sizeof (*ctrl), 16);
-
 	/* Save the MRC S3 restore data to cbmem */
-	mrcdata = cbmem_add
-		(CBMEM_ID_MRCDATA,
-		 output_len + sizeof(struct mrc_data_container));
-
-	printk(BIOS_DEBUG, "Relocate MRC DATA from %p to %p (%u bytes)\n",
-	       ctrl, mrcdata, output_len);
-
-	mrcdata->mrc_signature = MRC_DATA_SIGNATURE;
-	mrcdata->mrc_data_size = output_len;
-	mrcdata->reserved = 0;
-	memcpy(mrcdata->mrc_data, ctrl, sizeof (*ctrl));
-
-	/* Zero the unused space in aligned buffer. */
-	if (output_len > sizeof (*ctrl))
-		memset(mrcdata->mrc_data+sizeof (*ctrl), 0,
-		       output_len - sizeof (*ctrl));
-
-	mrcdata->mrc_checksum = compute_ip_checksum(mrcdata->mrc_data,
-						    mrcdata->mrc_data_size);
+	store_current_mrc_cache(ctrl, sizeof(*ctrl));
 }
 
 static void restore_timings(ramctr_timing * ctrl)

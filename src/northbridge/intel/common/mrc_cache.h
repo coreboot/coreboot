@@ -13,5 +13,6 @@ struct mrc_data_container {
 } __attribute__ ((packed));
 
 struct mrc_data_container *find_current_mrc_cache(void);
+struct mrc_data_container *store_current_mrc_cache(void *data, unsigned length);
 
 #endif /* NORTHBRIDGE_INTEL_COMMON_MRC_CACHE_H */

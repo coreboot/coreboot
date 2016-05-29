@@ -250,3 +250,35 @@ struct mrc_data_container *find_current_mrc_cache(void)
 	//  0. compare MRC data to last mrc-cache block (exit if same)
 	return find_current_mrc_cache_local(cache_base, cache_size);
 }
+
+struct mrc_data_container *
+store_current_mrc_cache(void *data, unsigned length)
+{
+	struct mrc_data_container *mrcdata;
+	int output_len = ALIGN(length, 16);
+
+	/* Save the MRC S3 restore data to cbmem */
+	mrcdata = cbmem_add
+		(CBMEM_ID_MRCDATA,
+		 output_len + sizeof(struct mrc_data_container));
+
+	if (!mrcdata)
+		return NULL;
+
+	printk(BIOS_DEBUG, "Relocate MRC DATA from %p to %p (%u bytes)\n",
+		   data, mrcdata, output_len);
+
+	mrcdata->mrc_signature = MRC_DATA_SIGNATURE;
+	mrcdata->mrc_data_size = output_len;
+	mrcdata->reserved = 0;
+	memcpy(mrcdata->mrc_data, data, length);
+
+	/* Zero the unused space in aligned buffer. */
+	if (output_len > length)
+		memset(mrcdata->mrc_data+length, 0, output_len - length);
+
+	mrcdata->mrc_checksum = compute_ip_checksum(mrcdata->mrc_data,
+			     mrcdata->mrc_data_size);
+
+	return mrcdata;
+}

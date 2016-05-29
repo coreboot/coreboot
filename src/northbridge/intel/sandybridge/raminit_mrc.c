@@ -52,32 +52,9 @@
 void save_mrc_data(struct pei_data *pei_data)
 {
 	u16 c1, c2, checksum;
-	struct mrc_data_container *mrcdata;
-	int output_len = ALIGN(pei_data->mrc_output_len, 16);
 
 	/* Save the MRC S3 restore data to cbmem */
-	mrcdata = cbmem_add
-		(CBMEM_ID_MRCDATA,
-		 output_len + sizeof(struct mrc_data_container));
-
-	if (mrcdata != NULL) {
-		printk(BIOS_DEBUG, "Relocate MRC DATA from %p to %p (%u bytes)\n",
-			pei_data->mrc_output, mrcdata, output_len);
-
-		mrcdata->mrc_signature = MRC_DATA_SIGNATURE;
-		mrcdata->mrc_data_size = output_len;
-		mrcdata->reserved = 0;
-		memcpy(mrcdata->mrc_data, pei_data->mrc_output,
-			pei_data->mrc_output_len);
-
-		/* Zero the unused space in aligned buffer. */
-		if (output_len > pei_data->mrc_output_len)
-			memset(mrcdata->mrc_data+pei_data->mrc_output_len, 0,
-			output_len - pei_data->mrc_output_len);
-
-		mrcdata->mrc_checksum = compute_ip_checksum(mrcdata->mrc_data,
-						mrcdata->mrc_data_size);
-	}
+	store_current_mrc_cache(pei_data->mrc_output, pei_data->mrc_output_len);
 
 	/* Save the MRC seed values to CMOS */
 	cmos_write32(CMOS_OFFSET_MRC_SEED, pei_data->scrambler_seed);

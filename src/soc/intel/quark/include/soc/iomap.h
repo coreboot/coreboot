@@ -25,7 +25,8 @@
 #define UART_BASE_ADDRESS		CONFIG_TTYS0_BASE
 
 /* I2C/GPIO Controller */
-#define I2C_GPIO_BASE_ADDRESS		0xa0020000
+#define I2C_BASE_ADDRESS		0xa0020000
+#define GPIO_BASE_ADDRESS		0xa0021000
 
 /*
  * I/O port address space

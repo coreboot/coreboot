@@ -20,4 +20,3 @@ romstage-y += mtrr.c
 romstage-y += pcie.c
 romstage-y += report_platform.c
 romstage-y += romstage.c
-romstage-$(CONFIG_ENABLE_BUILTIN_HSUART1) += uart.c

@@ -67,6 +67,13 @@ static const struct reg_script hsuart_init[] = {
 
 void car_soc_pre_console_init(void)
 {
+	/* Initialize the controllers */
+	reg_script_run_on_dev(I2CGPIO_BDF, i2c_gpio_controller_init);
+	reg_script_run_on_dev(LPC_BDF, legacy_gpio_init);
+
+	/* Enable the HSUART */
+	if (IS_ENABLED(CONFIG_ENABLE_BUILTIN_HSUART0))
+		reg_script_run_on_dev(HSUART0_BDF, hsuart_init);
 	if (IS_ENABLED(CONFIG_ENABLE_BUILTIN_HSUART1))
 		reg_script_run_on_dev(HSUART1_BDF, hsuart_init);
 }
@@ -74,11 +81,6 @@ void car_soc_pre_console_init(void)
 void car_soc_post_console_init(void)
 {
 	report_platform_info();
-
-	/* Initialize the controllers */
-	reg_script_run_on_dev(I2CGPIO_BDF, i2c_gpio_controller_init);
-	reg_script_run_on_dev(LPC_BDF, legacy_gpio_init);
-	mainboard_gpio_init();
 };
 
 static struct chipset_power_state power_state CAR_GLOBAL;

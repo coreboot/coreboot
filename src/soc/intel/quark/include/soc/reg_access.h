@@ -203,7 +203,6 @@ enum {
 	REG_USB_RXW(reg_, 0xffffffff, value_)
 
 void *get_i2c_address(void);
-void mainboard_gpio_init(void);
 void mainboard_gpio_pcie_reset(uint32_t pin_value);
 void mcr_write(uint8_t opcode, uint8_t port, uint32_t reg_address);
 uint32_t mdr_read(void);

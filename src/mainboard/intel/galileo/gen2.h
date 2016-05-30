@@ -52,6 +52,28 @@ static const struct reg_script gen2_gpio_init[] = {
 	REG_SCRIPT_END
 };
 
+static const struct reg_script gen2_hsuart0[] = {
+	/* Route UART0_TXD to MUX7_Y -> BUF_IO1 -> IO1 -> DIGITAL 1
+	 * Set MUX7_SEL (EXP1.P1_5) high
+	 * Configure MUX7_SEL (EXP1.P1_5) as an output
+	 * Set LVL_B_OE6_N (EXP0.P1_4) low
+	 * Configure LVL_B_OE6_N (EXP0.P1_4) as an output
+	 */
+	REG_I2C_OR(GEN2_I2C_GPIO_EXP1, GEN2_GPIO_EXP_OUTPUT1, BIT5),
+	REG_I2C_AND(GEN2_I2C_GPIO_EXP1, GEN2_GPIO_EXP_CONFIG1, ~BIT5),
+	REG_I2C_AND(GEN2_I2C_GPIO_EXP0, GEN2_GPIO_EXP_OUTPUT1, ~BIT4),
+	REG_I2C_AND(GEN2_I2C_GPIO_EXP0, GEN2_GPIO_EXP_CONFIG1, ~BIT4),
+
+	/* Route DIGITAL 0 -> IO0 -> UART0_RXD
+	 * Set LVL_C_OE0_N (EXP1.P0_0) high
+	 * Configure LVL_C_OE0_N (EXP1.P0_0) as an output
+	 */
+	REG_I2C_OR(GEN2_I2C_GPIO_EXP1, GEN2_GPIO_EXP_OUTPUT0, BIT0),
+	REG_I2C_AND(GEN2_I2C_GPIO_EXP1, GEN2_GPIO_EXP_CONFIG0, ~BIT0),
+
+	REG_SCRIPT_END
+};
+
 static const struct reg_script gen2_i2c_init[] = {
 	/* Route I2C to Arduino Shield connector:
 	 * Set AMUX1_IN (EXP2.P1_4) low

@@ -18,6 +18,7 @@ ifeq ($(CONFIG_SOC_INTEL_QUARK),y)
 subdirs-y += romstage
 subdirs-y += ../../../cpu/x86/tsc
 
+romstage-y += i2c.c
 romstage-y += memmap.c
 romstage-y += reg_access.c
 romstage-y += tsc_freq.c
@@ -27,6 +28,7 @@ ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
 ramstage-y += chip.c
 ramstage-y += ehci.c
 ramstage-y += gpio_i2c.c
+ramstage-y += i2c.c
 ramstage-y += lpc.c
 ramstage-y += memmap.c
 ramstage-y += northcluster.c

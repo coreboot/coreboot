@@ -260,6 +260,22 @@ static void usb_oc_setup(void)
 	pci_write_config32(dev, 0x58, 0x011f0);
 }
 
+/*
+ * We will stuff the memory size into the smbios sku location.
+ */
+const char *smbios_mainboard_sku(void)
+{
+	static char sku[5];
+	if (sku[0] != 0)
+		return sku;
+
+	if (!get_spd_offset())
+		snprintf(sku, sizeof(sku), "2 GB");
+	else
+		snprintf(sku, sizeof(sku), "4 GB");
+	return sku;
+}
+
 static void mainboard_final(void *chip_info)
 {
 	u32 mmio_base;

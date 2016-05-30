@@ -22,7 +22,6 @@
 #include <soc/reg_access.h>
 #include "reg_access.h"
 
-#if ENV_RAMSTAGE
 static uint64_t reg_read(struct reg_script_context *ctx)
 {
 	int ret_code;
@@ -89,5 +88,3 @@ const struct reg_script_bus_entry mainboard_reg_script_bus_table = {
 };
 
 REG_SCRIPT_BUS_ENTRY(mainboard_reg_script_bus_table);
-
-#endif	/* ENV_RAMSTAGE */

@@ -38,6 +38,7 @@
 #define EHCI_FUNC		3
 #define OHCI_FUNC		4
 #define HSUART1_FUNC		5
+#define HSUART1_BDF	PCI_DEV(PCI_BUS_NUMBER_QNC, HSUART1_DEV, HSUART1_FUNC)
 
 /* IO Fabric 2 */
 #define SIO2_DEV		0x15

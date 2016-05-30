@@ -58,11 +58,17 @@ static const struct reg_script i2c_gpio_controller_init[] = {
 	REG_SCRIPT_END
 };
 
+static const struct reg_script hsuart_init[] = {
+	/* Enable the HSUART */
+	REG_PCI_WRITE32(PCI_BASE_ADDRESS_0, UART_BASE_ADDRESS),
+	REG_PCI_OR8(PCI_COMMAND, PCI_COMMAND_MEMORY),
+	REG_SCRIPT_END
+};
+
 void car_soc_pre_console_init(void)
 {
 	if (IS_ENABLED(CONFIG_ENABLE_BUILTIN_HSUART1))
-		set_base_address_and_enable_uart(0, HSUART1_DEV, HSUART1_FUNC,
-			UART_BASE_ADDRESS);
+		reg_script_run_on_dev(HSUART1_BDF, hsuart_init);
 }
 
 void car_soc_post_console_init(void)

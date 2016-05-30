@@ -52,7 +52,8 @@ static const struct reg_script legacy_gpio_init[] = {
 
 static const struct reg_script i2c_gpio_controller_init[] = {
 	/* Temporarily enable the GPIO controller */
-	REG_PCI_WRITE32(PCI_BASE_ADDRESS_1, I2C_GPIO_BASE_ADDRESS),
+	REG_PCI_WRITE32(PCI_BASE_ADDRESS_0, I2C_BASE_ADDRESS),
+	REG_PCI_WRITE32(PCI_BASE_ADDRESS_1, GPIO_BASE_ADDRESS),
 	REG_PCI_OR8(PCI_COMMAND, PCI_COMMAND_MEMORY),
 	REG_SCRIPT_END
 };

@@ -24,6 +24,7 @@ Definitions beginning with "N_" are the bit position
 //
 // Define the bits
 //
+#ifndef BIT0
 #define BIT0        0x00000001
 #define BIT1        0x00000002
 #define BIT2        0x00000004
@@ -56,6 +57,7 @@ Definitions beginning with "N_" are the bit position
 #define BIT29       0x20000000
 #define BIT30       0x40000000
 #define BIT31       0x80000000
+#endif
 
 //
 // QNC GMCH Equates

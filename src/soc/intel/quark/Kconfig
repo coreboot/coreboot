@@ -40,9 +40,19 @@ config CPU_SPECIFIC_OPTIONS
 #     The following options configure the debug serial port
 #####
 
+config ENABLE_BUILTIN_HSUART0
+	bool "Enable built-in HSUART0"
+	default n
+	select NO_UART_ON_SUPERIO
+	select DRIVERS_UART_8250MEM_32
+	help
+	  The Quark SoC has two HSUART. Choose this option to configure the pads
+	  and enable HSUART0, which can be used for the debug console.
+
 config ENABLE_BUILTIN_HSUART1
 	bool "Enable built-in HSUART1"
-	default y
+	default n
+	depends on ! ENABLE_BUILTIN_HSUART0
 	select NO_UART_ON_SUPERIO
 	select DRIVERS_UART_8250MEM_32
 	help
@@ -50,23 +60,24 @@ config ENABLE_BUILTIN_HSUART1
 	  and enable HSUART1, which can be used for the debug console.
 
 config TTYS0_BASE
-	hex "HSUART1 Base Address"
-	depends on ENABLE_BUILTIN_HSUART1
+	hex "HSUART Base Address"
 	default 0xA0019000
+	depends on ENABLE_BUILTIN_HSUART0 || ENABLE_BUILTIN_HSUART1
 	help
-	  Memory mapped MMIO of HSUART1.
+	  Memory mapped MMIO of HSUART.
 
 config TTYS0_LCS
 	int
-	depends on ENABLE_BUILTIN_HSUART1
 	default 3
+	depends on ENABLE_BUILTIN_HSUART0 || ENABLE_BUILTIN_HSUART1
 
-# Console: PCI UART bus 0 << 20, device 20 << 15, function 5 << 12
+# Console: PCI UART bus 0 << 20, device 20 << 15, function x << 12
 #          Valid bit, PCI UART in use: 1 << 31
 config UART_PCI_ADDR
 	hex
-	depends on ENABLE_BUILTIN_HSUART1
-	default 0x800a5000
+	default 0x800a1000 if ENABLE_BUILTIN_HSUART0
+	default 0x800a5000 if ENABLE_BUILTIN_HSUART1
+	depends on ENABLE_BUILTIN_HSUART0 || ENABLE_BUILTIN_HSUART1
 
 #####
 # Debug support

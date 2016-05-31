@@ -53,7 +53,7 @@ export objgenerated := $(obj)/generated
 #######################################################################
 # root rule to resolve if in build mode (ie. configuration exists)
 real-target: $(obj)/config.h coreboot files_added
-coreboot: build-dirs $(obj)/coreboot.rom $(obj)/cbfstool $(obj)/rmodtool
+coreboot: build-dirs $(obj)/coreboot.rom $(obj)/cbfstool $(obj)/rmodtool $(obj)/ifwitool
 
 # This target can be used in site local to run scripts or additional
 # targets after the build completes by creating a Makefile.inc in the
@@ -385,6 +385,7 @@ build-dirs:
 CBFSTOOL:=$(objutil)/cbfstool/cbfstool
 FMAPTOOL:=$(objutil)/cbfstool/fmaptool
 RMODTOOL:=$(objutil)/cbfstool/rmodtool
+IFWITOOL:=$(objutil)/cbfstool/ifwitool
 
 $(obj)/cbfstool: $(CBFSTOOL)
 	cp $< $@
@@ -393,6 +394,9 @@ $(obj)/fmaptool: $(FMAPTOOL)
 	cp $< $@
 
 $(obj)/rmodtool: $(RMODTOOL)
+	cp $< $@
+
+$(obj)/ifwitool: $(IFWITOOL)
 	cp $< $@
 
 _WINCHECK=$(shell uname -o 2> /dev/null)
@@ -512,7 +516,7 @@ gitconfig:
 include util/crossgcc/Makefile.inc
 
 .PHONY: tools
-tools: $(objutil)/kconfig/conf $(CBFSTOOL) $(FMAPTOOL) $(RMODTOOL) $(objutil)/nvramtool/nvramtool $(ROMCC_BIN) $(objutil)/sconfig/sconfig $(IFDTOOL) $(IFDFAKE) $(CBOOTIMAGE) $(AMDFWTOOL) $(FUTILITY)
+tools: $(objutil)/kconfig/conf $(CBFSTOOL) $(FMAPTOOL) $(RMODTOOL) $(IFWITOOL) $(objutil)/nvramtool/nvramtool $(ROMCC_BIN) $(objutil)/sconfig/sconfig $(IFDTOOL) $(IFDFAKE) $(CBOOTIMAGE) $(AMDFWTOOL) $(FUTILITY)
 
 ###########################################################################
 # Common recipes for all stages

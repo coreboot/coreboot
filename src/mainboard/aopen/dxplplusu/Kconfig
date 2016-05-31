@@ -12,7 +12,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select UDELAY_TSC
 	select HAVE_ACPI_TABLES
 	select BOARD_ROMSIZE_KB_512
-	select HW_SCRUBBER
+#	select HW_SCRUBBER
 
 config MAINBOARD_DIR
 	string

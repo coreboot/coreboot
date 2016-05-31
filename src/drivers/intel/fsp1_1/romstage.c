@@ -194,14 +194,12 @@ void after_cache_as_ram_stage(void)
 /* Initialize the power state */
 __attribute__((weak)) struct chipset_power_state *fill_power_state(void)
 {
-	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
 	return NULL;
 }
 
 __attribute__((weak)) void mainboard_check_ec_image(
 	struct romstage_params *params)
 {
-	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
 #if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC)
 	struct pei_data *pei_data;
 
@@ -217,8 +215,6 @@ __attribute__((weak)) void mainboard_check_ec_image(
 __attribute__((weak)) void mainboard_romstage_entry(
 	struct romstage_params *params)
 {
-	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
-
 	post_code(0x31);
 
 	/* Initliaze memory */
@@ -360,14 +356,12 @@ __attribute__((weak)) void mainboard_add_dimm_info(
 	struct memory_info *mem_info,
 	int channel, int dimm, int index)
 {
-	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
 }
 
 /* Get the memory configuration data */
 __attribute__((weak)) int mrc_cache_get_current_with_version(
 	const struct mrc_saved_data **cache, uint32_t version)
 {
-	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
 	return -1;
 }
 
@@ -375,14 +369,12 @@ __attribute__((weak)) int mrc_cache_get_current_with_version(
 __attribute__((weak)) int mrc_cache_stash_data_with_version(const void *data,
 	size_t size, uint32_t version)
 {
-	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
 	return -1;
 }
 
 /* Transition RAM from off or self-refresh to active */
 __attribute__((weak)) void raminit(struct romstage_params *params)
 {
-	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
 	post_code(0x34);
 	die("ERROR - No RAM initialization specified!\n");
 }
@@ -397,13 +389,11 @@ void ramstage_cache_invalid(void)
 /* Display the memory configuration */
 __attribute__((weak)) void report_memory_config(void)
 {
-	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
 }
 
 /* Choose top of stack and setup MTRRs */
 __attribute__((weak)) void *setup_stack_and_mtrrs(void)
 {
-	printk(BIOS_ERR, "WEAK: %s/%s called\n", __FILE__, __func__);
 	die("ERROR - Must specify top of stack!\n");
 	return NULL;
 }
@@ -411,11 +401,9 @@ __attribute__((weak)) void *setup_stack_and_mtrrs(void)
 /* SOC initialization after RAM is enabled */
 __attribute__((weak)) void soc_after_ram_init(struct romstage_params *params)
 {
-	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
 }
 
 /* SOC initialization before RAM is enabled */
 __attribute__((weak)) void soc_pre_ram_init(struct romstage_params *params)
 {
-	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
 }

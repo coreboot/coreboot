@@ -30,7 +30,6 @@
 /* SOC initialization after FSP silicon init */
 __attribute__((weak)) void soc_after_silicon_init(void)
 {
-	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
 }
 
 /* Display SMM memory map */
@@ -209,7 +208,6 @@ void intel_silicon_init(void)
 __attribute__((weak)) void mainboard_silicon_init_params(
 	SILICON_INIT_UPD *params)
 {
-	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
 };
 
 /* Display the UPD parameters for SiliconInit */
@@ -223,5 +221,4 @@ __attribute__((weak)) void soc_display_silicon_init_params(
 /* Initialize the UPD parameters for SiliconInit */
 __attribute__((weak)) void soc_silicon_init_params(SILICON_INIT_UPD *params)
 {
-	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
 }

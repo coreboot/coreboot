@@ -305,54 +305,54 @@ const struct subpart_info {
 	struct dir_ops dir_ops;
 } subparts[MAX_SUBPARTS] = {
 	/* OEM SMIP */
-	[SMIP_TYPE] = {"SMIP", "SMIP", CONTAINS_DIR, {NULL}},
+	[SMIP_TYPE] = {"SMIP", "SMIP", CONTAINS_DIR, {NULL} },
 	/* CSE RBE */
 	[CSE_RBE_TYPE] = {"RBEP", "CSE_RBE", CONTAINS_DIR |
-			  MANDATORY_BPDT_ENTRY, {NULL}},
+			  MANDATORY_BPDT_ENTRY, {NULL} },
 	/* CSE BUP */
 	[CSE_BUP_TYPE] = {"FTPR", "CSE_BUP", CONTAINS_DIR |
-			  MANDATORY_BPDT_ENTRY, {NULL}},
+			  MANDATORY_BPDT_ENTRY, {NULL} },
 	/* uCode */
-	[UCODE_TYPE] = {"UCOD", "Microcode", CONTAINS_DIR, {NULL}},
+	[UCODE_TYPE] = {"UCOD", "Microcode", CONTAINS_DIR, {NULL} },
 	/* IBB */
-	[IBB_TYPE] = {"IBBP", "Bootblock", CONTAINS_DIR, {ibbp_dir_add}},
+	[IBB_TYPE] = {"IBBP", "Bootblock", CONTAINS_DIR, {ibbp_dir_add} },
 	/* S-BPDT */
 	[S_BPDT_TYPE] = {"S_BPDT", "S-BPDT", AUTO_GENERATED |
-			 MANDATORY_BPDT_ENTRY, {NULL}},
+			 MANDATORY_BPDT_ENTRY, {NULL} },
 	/* OBB */
 	[OBB_TYPE] = {"OBBP", "OEM boot block", CONTAINS_DIR |
-		      NON_CRITICAL_SUBPART, {NULL}},
+		      NON_CRITICAL_SUBPART, {NULL} },
 	/* CSE Main */
 	[CSE_MAIN_TYPE] = {"NFTP", "CSE_MAIN", CONTAINS_DIR |
-			   NON_CRITICAL_SUBPART, {NULL}},
+			   NON_CRITICAL_SUBPART, {NULL} },
 	/* ISH */
-	[ISH_TYPE] = {"ISHP", "ISH", NON_CRITICAL_SUBPART, {NULL}},
+	[ISH_TYPE] = {"ISHP", "ISH", NON_CRITICAL_SUBPART, {NULL} },
 	/* CSE IDLM */
 	[CSE_IDLM_TYPE] = {"DLMP", "CSE_IDLM", CONTAINS_DIR |
-			   MANDATORY_BPDT_ENTRY, {NULL}},
+			   MANDATORY_BPDT_ENTRY, {NULL} },
 	/* IFP Override */
 	[IFP_OVERRIDE_TYPE] = {"IFP_OVERRIDE", "IFP_OVERRIDE",
 			       LIES_WITHIN_BPDT_4K | MANDATORY_BPDT_ENTRY,
-			       {NULL}},
+			       {NULL} },
 	/* Debug Tokens */
-	[DEBUG_TOKENS_TYPE] = {"DEBUG_TOKENS", "Debug Tokens", 0, {NULL}},
+	[DEBUG_TOKENS_TYPE] = {"DEBUG_TOKENS", "Debug Tokens", 0, {NULL} },
 	/* UFS Phy Configuration */
 	[UFS_PHY_TYPE] = {"UFS_PHY", "UFS Phy", LIES_WITHIN_BPDT_4K |
-			  MANDATORY_BPDT_ENTRY, {NULL}},
+			  MANDATORY_BPDT_ENTRY, {NULL} },
 	/* UFS GPP LUN ID */
 	[UFS_GPP_TYPE] = {"UFS_GPP", "UFS GPP", LIES_WITHIN_BPDT_4K |
-			  MANDATORY_BPDT_ENTRY, {NULL}},
+			  MANDATORY_BPDT_ENTRY, {NULL} },
 	/* PMC */
-	[PMC_TYPE] = {"PMCP", "PMC firmware", CONTAINS_DIR, {NULL}},
+	[PMC_TYPE] = {"PMCP", "PMC firmware", CONTAINS_DIR, {NULL} },
 	/* IUNIT */
-	[IUNIT_TYPE] = {"IUNP", "IUNIT", NON_CRITICAL_SUBPART, {NULL}},
+	[IUNIT_TYPE] = {"IUNP", "IUNIT", NON_CRITICAL_SUBPART, {NULL} },
 	/* NVM Config */
-	[NVM_CONFIG_TYPE] = {"NVM_CONFIG", "NVM Config", 0, {NULL}},
+	[NVM_CONFIG_TYPE] = {"NVM_CONFIG", "NVM Config", 0, {NULL} },
 	/* UEP */
 	[UEP_TYPE] = {"UEP", "UEP", LIES_WITHIN_BPDT_4K | MANDATORY_BPDT_ENTRY,
-		      {NULL}},
+		      {NULL} },
 	/* UFS Rate B Config */
-	[UFS_RATE_B_TYPE] = {"UFS_RATE_B", "UFS Rate B Config", 0, {NULL}},
+	[UFS_RATE_B_TYPE] = {"UFS_RATE_B", "UFS Rate B Config", 0, {NULL} },
 };
 
 struct ifwi_image {
@@ -480,7 +480,8 @@ static void bpdt_print_header(struct bpdt_header *h, const char *name)
 	printf("%-25s %-25d\n", "BPDT Version", h->bpdt_version);
 	printf("%-25s 0x%-23x\n", "XOR checksum", h->xor_redundant_block);
 	printf("%-25s 0x%-23x\n", "IFWI Version", h->ifwi_version);
-	printf("%-25s 0x%-23lx\n", "FIT Tool Version", h->fit_tool_version);
+	printf("%-25s 0x%-23llx\n", "FIT Tool Version",
+	       (long long)h->fit_tool_version);
 }
 
 static void bpdt_print_entries(struct bpdt_entry *e, size_t count,
@@ -519,7 +520,7 @@ static void bpdt_print_entries(struct bpdt_entry *e, size_t count,
 
 static void bpdt_validate_header(struct bpdt_header *h, const char *name)
 {
-	assert (h->signature == BPDT_SIGNATURE);
+	assert(h->signature == BPDT_SIGNATURE);
 
 	if (h->bpdt_version != 1) {
 		ERROR("Invalid header : %s\n", name);
@@ -1406,7 +1407,7 @@ static enum ifwi_ret ibbp_dir_add(int type)
 {
 #define DUMMY_IBB_SIZE			(4 * KiB)
 
-	assert (type == IBB_TYPE);
+	assert(type == IBB_TYPE);
 
 	/*
 	 * Entry # 1 - IBBP.man
@@ -1927,7 +1928,7 @@ int main(int argc, char **argv)
 				c = '?';
 			}
 
-			switch(c) {
+			switch (c) {
 			case 'n':
 				param.subpart_name = optarg;
 				break;

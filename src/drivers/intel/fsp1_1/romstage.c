@@ -364,15 +364,16 @@ __attribute__((weak)) void mainboard_add_dimm_info(
 }
 
 /* Get the memory configuration data */
-__attribute__((weak)) int mrc_cache_get_current(
-	const struct mrc_saved_data **cache)
+__attribute__((weak)) int mrc_cache_get_current_with_version(
+	const struct mrc_saved_data **cache, uint32_t version)
 {
 	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
 	return -1;
 }
 
 /* Save the memory configuration data */
-__attribute__((weak)) int mrc_cache_stash_data(const void *data, size_t size)
+__attribute__((weak)) int mrc_cache_stash_data_with_version(const void *data,
+	size_t size, uint32_t version)
 {
 	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
 	return -1;

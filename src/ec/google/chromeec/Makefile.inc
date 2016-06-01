@@ -38,13 +38,21 @@ cbfs-files-$(if $(CONFIG_EC_GOOGLE_CHROMEEC_BOARDNAME),y) += ecrw
 ecrw-file := $(obj)/mainboard/$(MAINBOARDDIR)/ecrw
 ecrw-name := ecrw
 ecrw-type := raw
-ecrw-options := -A sha256
+ecrw-compression := $(CBFS_COMPRESS_FLAG)
+cbfs-files-$(if $(CONFIG_EC_GOOGLE_CHROMEEC_BOARDNAME),y) += ecrw.hash
+ecrw.hash-file := $(obj)/mainboard/$(MAINBOARDDIR)/ecrw.hash
+ecrw.hash-name := ecrw.hash
+ecrw.hash-type := raw
 
 cbfs-files-$(if $(CONFIG_EC_GOOGLE_CHROMEEC_PD_BOARDNAME),y) += pdrw
 pdrw-file := $(obj)/mainboard/$(MAINBOARDDIR)/pdrw
 pdrw-name := pdrw
 pdrw-type := raw
-pdrw-options := -A sha256
+pdrw-compression := $(CBFS_COMPRESS_FLAG)
+cbfs-files-$(if $(CONFIG_EC_GOOGLE_CHROMEEC_PD_BOARDNAME),y) += pdrw.hash
+pdrw.hash-file := $(obj)/mainboard/$(MAINBOARDDIR)/pdrw.hash
+pdrw.hash-name := pdrw.hash
+pdrw.hash-type := raw
 
 $(obj)/mainboard/$(MAINBOARDDIR)/ecrw:
 	$(MAKE) -C $(top)/3rdparty/chromeec \
@@ -63,6 +71,9 @@ $(obj)/mainboard/$(MAINBOARDDIR)/pdrw:
 		BOARD=$(CONFIG_EC_GOOGLE_CHROMEEC_PD_BOARDNAME) \
 		rw
 	cp $(obj)/external/chromeec/$(CONFIG_EC_GOOGLE_CHROMEEC_PD_BOARDNAME)/RW/ec.RW.flat $@
+
+$(obj)/mainboard/$(MAINBOARDDIR)/%.hash: $(obj)/mainboard/$(MAINBOARDDIR)/%
+	openssl dgst -sha256 -binary $< > $@
 
 .PHONY: $(obj)/mainboard/$(MAINBOARDDIR)/ecrw $(obj)/mainboard/$(MAINBOARDDIR)/pdrw
 endif

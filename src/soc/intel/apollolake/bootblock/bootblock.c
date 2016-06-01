@@ -60,6 +60,12 @@ void asmlinkage bootblock_c_entry(uint32_t tsc_hi, uint32_t tsc_lo)
 
 	/* Set PCI Express BAR */
 	pci_io_write_config32(dev, PCIEXBAR, CONFIG_MMCONF_BASE_ADDRESS | 1);
+	/*
+	 * Clear TSEG register - TSEG register comes out of reset with a
+	 * non-zero default value. Clear this register to ensure that there are
+	 * no surprises in CBMEM handling.
+	 */
+	pci_write_config32(dev, TSEG, 0);
 
 	dev = P2SB_DEV;
 	/* BAR and MMIO enable for IOSF, so that GPIOs can be configured */

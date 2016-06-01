@@ -50,4 +50,8 @@ config MAX_CPUS
 	int
 	default 8
 
+config UART_FOR_CONSOLE
+	int
+	default 2
+
 endif # BOARD_GOOGLE_REEF

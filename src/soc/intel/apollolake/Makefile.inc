@@ -59,6 +59,7 @@ postcar-y += mmap_boot.c
 postcar-$(CONFIG_SOC_UART_DEBUG) += uart_early.c
 postcar-y += tsc_freq.c
 
+verstage-y += car.c
 verstage-y += memmap.c
 verstage-y += mmap_boot.c
 verstage-$(CONFIG_SOC_UART_DEBUG) += uart_early.c

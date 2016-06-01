@@ -17,6 +17,9 @@ config SOC_NVIDIA_TEGRA132
 
 if SOC_NVIDIA_TEGRA132
 
+config CHROMEOS
+	select VBOOT_OPROM_MATTERS
+
 config MAINBOARD_DO_DSI_INIT
 	bool "Use dsi graphics interface"
 	depends on MAINBOARD_DO_NATIVE_VGA_INIT

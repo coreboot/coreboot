@@ -141,6 +141,8 @@ int i2c_init(unsigned bus)
 	/* For 400 kHz, the counter value is 0x7d */
 	write32(base_ptr + I2C_FS_SCL_HCNT, 0x7d);
 	write32(base_ptr + I2C_FS_SCL_LCNT, 0x7d);
+	/* no interrupts in BIOS */
+	write32(base_ptr + I2C_INTR_MASK, 0);
 
 	/* Enable the I2C controller for operation */
 	write32(base_ptr + I2C_ENABLE, 0x1);

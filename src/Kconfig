@@ -204,8 +204,7 @@ config NO_XIP_EARLY_STAGES
 	default n if ARCH_X86
 	default y
 	help
-	  Identify if --xip parameter needs to be passed into cbfstool for early
-	  stages.
+	  Identify if early stages are eXecute-In-Place(XIP).
 
 config EARLY_CBMEM_INIT
 	def_bool !LATE_CBMEM_INIT

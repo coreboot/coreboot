@@ -386,6 +386,43 @@ struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs)
 	return slave;
 }
 
+int spi_flash_protect(u32 start, u32 size)
+{
+	pch_spi_regs *spi_bar = get_spi_bar();
+	u32 end = start + size - 1;
+	u32 reg;
+	int prr;
+
+	if (!spi_bar)
+		return -1;
+
+	/* Find first empty PRR */
+	for (prr = 0; prr < SPI_PRR_MAX; prr++) {
+		reg = read32(&spi_bar->pr[prr]);
+		if (reg == 0)
+			break;
+	}
+	if (prr >= SPI_PRR_MAX) {
+		printk(BIOS_ERR, "ERROR: No SPI PRR free!\n");
+		return -1;
+	}
+
+	/* Set protected range base and limit */
+	reg = SPI_PRR(start, end) | SPI_PRR_WPE;
+
+	/* Set the PRR register and verify it is protected */
+	write32(&spi_bar->pr[prr], reg);
+	reg = read32(&spi_bar->pr[prr]);
+	if (!(reg & SPI_PRR_WPE)) {
+		printk(BIOS_ERR, "ERROR: Unable to set SPI PRR %d\n", prr);
+		return -1;
+	}
+
+	printk(BIOS_INFO, "%s: PRR %d is enabled for range 0x%08x-0x%08x\n",
+	       __func__, prr, start, end);
+	return 0;
+}
+
 #if ENV_RAMSTAGE
 /*
  * spi_init() needs run unconditionally in every boot (including resume) to

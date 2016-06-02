@@ -1,9 +1,91 @@
 if PAYLOAD_TIANOCORE
 
 config PAYLOAD_FILE
-	string "Tianocore firmware volume"
-	default "COREBOOT.fd"
+	string "Tianocore binary"
+	default "payloads/external/tianocore/tianocore/Build/UEFIPAYLOAD.fd"
 	help
 	  The result of a corebootPkg build
+
+choice
+	prompt "Tianocore version"
+	default TIANOCORE_STABLE
+	help
+	  Select which version of Tianocore to build (default is to build stable)
+	  stable: a version of Tianocore that builds without any errors
+	  master: most recent version from upstream Tianocore repository
+	  revision: use specific commit or branch to build Tianocore (specified by user)
+
+config TIANOCORE_STABLE
+	bool "stable"
+	help
+	  Select this option to build the stable tianocore version 
+	  i.e. a version of Tianocore that builds without any errors
+
+config TIANOCORE_MASTER
+	bool "master"
+	help
+	  Select this option to build the master tianocore version
+	  i.e. most recent version from upstream Tianocore repository
+
+config TIANOCORE_REVISION
+	bool "git revision"
+	help
+	  Select this option if you have a specific commit or branch
+	  that you want to use as the revision from which to
+	  build Tianocore.
+
+	  You will be able to specify the name of a branch or a commit id
+	  later.
+
+endchoice
+
+config TIANOCORE_REVISION_ID
+	string "Insert a commit's SHA-1 or a branch name"
+	depends on TIANOCORE_REVISION
+	default "origin/master"
+	help
+	   The commit's SHA-1 or branch name of the revision to use.
+
+choice
+	prompt "Target architecture"
+	default TIANOCORE_TARGET_X64
+	help
+	  The Tianocore coreboot Payload Package binary can be
+	  built for either only IA32 or both X64 and IA32 architectures.
+	  Select which architecture(s) to build for; default is to build
+	  for both X64 and IA32.
+
+config TIANOCORE_TARGET_IA32
+	bool "IA32"
+	help
+	  By selecting this option, the target architecture will be built
+	  for only IA32.
+
+config TIANOCORE_TARGET_X64
+	bool "X64"
+	help
+	  By selecting this option, the target architecture will be built
+	  for X64 and IA32.
+
+endchoice
+
+choice
+	prompt "Tianocore build"
+	default TIANOCORE_RELEASE
+	help
+	  Select whether to generate a debug or release build for
+	  Tianocore; default is to generate a release build.
+
+config TIANOCORE_DEBUG
+	bool "Generate Tianocore debug build"
+	help
+	  Generate a debug build.
+
+config TIANOCORE_RELEASE
+	bool "Generate Tianocore release build"
+	help
+	  Generate a release build.
+
+endchoice
 
 endif

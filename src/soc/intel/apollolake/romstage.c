@@ -235,13 +235,9 @@ void platform_fsp_memory_init_params_cb(struct FSPM_UPD *mupd)
 	 * requests.
 	 * TODO: add checks to avoid overlap/conflict of CAR usage.
 	 */
-
-	/* fsp does not work with StackBase modified, so use default */
-#if 0
-	/* FIXME: remove this once FSP is fixed */
 	mupd->FspmArchUpd.StackBase = _car_region_end -
 					mupd->FspmArchUpd.StackSize;
-#endif
+
 	arch_upd->BootMode = FSP_BOOT_WITH_FULL_CONFIGURATION;
 
 	if (IS_ENABLED(CONFIG_CACHE_MRC_SETTINGS)) {

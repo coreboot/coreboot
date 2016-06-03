@@ -403,6 +403,14 @@ config FMDFILE
 	  but in some cases more complex setups are required.
 	  When an fmd is specified, it overrides the default format.
 
+config MAINBOARD_HAS_TPM2
+	bool
+	default n
+	help
+	  There is a TPM device installed on the mainboard, and it is
+	  compliant with version 2 TCG TPM specification. Could be connected
+	  over LPC, SPI or I2C.
+
 endmenu
 
 # load site-local kconfig to allow user specific defaults and overrides
@@ -461,11 +469,19 @@ config RTC
 config TPM
 	bool
 	default n
-	select LPC_TPM if ARCH_X86
-	select I2C_TPM if ARCH_ARM
-	select I2C_TPM if ARCH_ARM64
+	select LPC_TPM if MAINBOARD_HAS_LPC_TPM
+	select I2C_TPM if !MAINBOARD_HAS_LPC_TPM && !SPI_TPM
 	help
 	  Enable this option to enable TPM support in coreboot.
+
+	  If unsure, say N.
+
+config TPM2
+	bool
+	select LPC_TPM if MAINBOARD_HAS_LPC_TPM
+	select I2C_TPM if !MAINBOARD_HAS_LPC_TPM && !SPI_TPM
+	help
+	  Enable this option to enable TPM2 support in coreboot.
 
 	  If unsure, say N.
 
@@ -1029,7 +1045,7 @@ config X86EMU_DEBUG_TIMINGS
 config DEBUG_TPM
 	bool "Output verbose TPM debug messages"
 	default n
-	depends on TPM
+	depends on TPM || TPM2
 	help
 	  This option enables additional TPM related debug messages.
 

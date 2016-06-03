@@ -167,10 +167,10 @@ struct FSP_S_CONFIG {
   uint32_t                      HdaVerbTablePtr;
 
 /** Offset 0x0039 - Enable/Disable P2SB device hidden.
-  Enable/Disable P2SB device hidden. 0:Disable, 1:Enable(Default).
+  Enable/Disable P2SB device hidden. 0:Disable(Default), 1:Enable.
   $EN_DIS
 **/
-  uint8_t                       HideP2sb;
+  uint8_t                       P2sbUnhide;
 
 /** Offset 0x003A - IPU Enable/Disable
   Enable/Disable IPU Device. 0:Disable, 1:Enable(Default).
@@ -1477,9 +1477,15 @@ struct FSP_S_CONFIG {
 **/
   uint8_t                       PcieRpSelectableDeemphasis[6];
 
-/** Offset 0x0326
+/** Offset 0x0326 - Os Selection Mode
+  Select OS mode. 0:Windows(default), 1:Android, 2:Win7
+  $EN_DIS
 **/
-  uint8_t                       ReservedFspsUpd[10];
+  uint8_t                       OsSelection;
+
+/** Offset 0x0327
+**/
+  uint8_t                       ReservedFspsUpd[9];
 } __attribute__((packed));
 
 /** Fsp S Test Configuration

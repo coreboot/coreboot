@@ -33,10 +33,10 @@ are permitted provided that the following conditions are met:
 #ifndef __FSPUPD_H__
 #define __FSPUPD_H__
 
-#define FSPT_UPD_SIGNATURE               0x4450555F54505346        /* 'FSPT_UPD' */
+#define FSPT_UPD_SIGNATURE               0x545F4450554C5041        /* 'APLUPD_T' */
 
-#define FSPM_UPD_SIGNATURE               0x4450555F4D505346        /* 'FSPM_UPD' */
+#define FSPM_UPD_SIGNATURE               0x4D5F4450554C5041        /* 'APLUPD_M' */
 
-#define FSPS_UPD_SIGNATURE               0x4450555F53505346        /* 'FSPS_UPD' */
+#define FSPS_UPD_SIGNATURE               0x535F4450554C5041        /* 'APLUPD_S' */
 
 #endif

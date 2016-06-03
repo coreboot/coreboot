@@ -526,7 +526,11 @@ struct FSP_M_CONFIG {
 
 /** Offset 0x0131
 **/
-  uint8_t                       ReservedFspmUpd[31];
+  void*                       MrcBootDataPtr;
+
+/** Offset 0x0135
+**/
+  uint8_t                       ReservedFspmUpd[27];
 } __attribute__((packed));
 
 /** Fsp M Test Configuration

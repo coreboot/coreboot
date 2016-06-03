@@ -41,14 +41,14 @@ static void sdram_read_spds(struct sysinfo *s)
 	FOR_EACH_DIMM(i) {
 		if (s->spd_map[i] == 0) {
 			/* Non-existent SPD address */
-			s->dimms[i].card_type = 0;
+			s->dimms[i].card_type = RAW_CARD_UNPOPULATED;
 			continue;
 		}
 		for (j = 0; j < 64; j++) {
 			status = spd_read_byte(s->spd_map[i], j);
 			if (status < 0) {
 				/* No SPD here */
-				s->dimms[i].card_type = 0;
+				s->dimms[i].card_type = RAW_CARD_UNPOPULATED;
 				break;
 			}
 			s->dimms[i].spd_data[j] = (u8) status;

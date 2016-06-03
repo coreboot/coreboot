@@ -144,9 +144,10 @@
 
 #define TOTAL_CHANNELS 2
 #define TOTAL_DIMMS 4
+#define RAW_CARD_UNPOPULATED 0xff
 
-#define DIMM_IS_POPULATED(dimms, idx) (dimms[idx].card_type != 0)
-#define IF_DIMM_POPULATED(dimms, idx) if (dimms[idx].card_type != 0)
+#define DIMM_IS_POPULATED(dimms, idx) (dimms[idx].card_type != RAW_CARD_UNPOPULATED)
+#define IF_DIMM_POPULATED(dimms, idx) if (dimms[idx].card_type != RAW_CARD_UNPOPULATED)
 #define ONLY_DIMMA_IS_POPULATED(dimms, ch) ( \
 	(DIMM_IS_POPULATED(dimms, (ch == 0) ? 0 : 2) && \
 	!DIMM_IS_POPULATED(dimms, (ch == 0) ? 1 : 3)))
@@ -160,9 +161,9 @@
 	for (idx = 0; idx < TOTAL_DIMMS; ++idx)
 #define FOR_EACH_POPULATED_DIMM(dimms, idx) \
 	FOR_EACH_DIMM(idx) IF_DIMM_POPULATED(dimms, idx)
-#define CHANNEL_IS_POPULATED(dimms, idx) ((dimms[idx<<1].card_type != 0) || (dimms[(idx<<1) + 1].card_type != 0))
+#define CHANNEL_IS_POPULATED(dimms, idx) ((dimms[idx<<1].card_type != RAW_CARD_UNPOPULATED) || (dimms[(idx<<1) + 1].card_type != RAW_CARD_UNPOPULATED))
 #define CHANNEL_IS_CARDF(dimms, idx) ((dimms[idx<<1].card_type == 0xf) || (dimms[(idx<<1) + 1].card_type == 0xf))
-#define IF_CHANNEL_POPULATED(dimms, idx) if ((dimms[idx<<1].card_type != 0) || (dimms[(idx<<1) + 1].card_type != 0))
+#define IF_CHANNEL_POPULATED(dimms, idx) if ((dimms[idx<<1].card_type != RAW_CARD_UNPOPULATED) || (dimms[(idx<<1) + 1].card_type != RAW_CARD_UNPOPULATED))
 #define FOR_EACH_CHANNEL(idx) \
 	for (idx = 0; idx < TOTAL_CHANNELS; ++idx)
 #define FOR_EACH_POPULATED_CHANNEL(dimms, idx) \
@@ -170,11 +171,11 @@
 
 #define RANKS_PER_CHANNEL 4
 #define RANK_IS_POPULATED(dimms, ch, r) \
-	((dimms[ch<<1].card_type && ((r) < dimms[ch<<1].ranks)) || \
-	(dimms[(ch<<1) + 1].card_type && ((r) >= 2) && ((r) < (dimms[(ch<<1) + 1].ranks + 2))))
+	(((dimms[ch<<1].card_type != RAW_CARD_UNPOPULATED) && ((r) < dimms[ch<<1].ranks)) || \
+	((dimms[(ch<<1) + 1].card_type != RAW_CARD_UNPOPULATED) && ((r) >= 2) && ((r) < (dimms[(ch<<1) + 1].ranks + 2))))
 #define IF_RANK_POPULATED(dimms, ch, r) \
-	if ((dimms[ch<<1].card_type && ((r) < dimms[ch<<1].ranks)) || \
-	    (dimms[(ch<<1) + 1].card_type && ((r) >= 2) && ((r) < (dimms[(ch<<1) + 1].ranks + 2))))
+	if (((dimms[ch<<1].card_type != RAW_CARD_UNPOPULATED) && ((r) < dimms[ch<<1].ranks)) || \
+	    ((dimms[(ch<<1) + 1].card_type != RAW_CARD_UNPOPULATED) && ((r) >= 2) && ((r) < (dimms[(ch<<1) + 1].ranks + 2))))
 #define FOR_EACH_RANK_IN_CHANNEL(r) \
 	for (r = 0; r < RANKS_PER_CHANNEL; ++r)
 #define FOR_EACH_POPULATED_RANK_IN_CHANNEL(dimms, ch, r) \
@@ -243,7 +244,7 @@ struct timings {
 };
 
 struct dimminfo {
-	unsigned int	card_type; /* 0x0: unpopulated,
+	unsigned int	card_type; /* 0xff: unpopulated,
 				      0xa - 0xf: raw card type A - F */
 	enum chip_width	width;
 	enum chip_cap	chip_capacity;

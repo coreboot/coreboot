@@ -1506,7 +1506,7 @@ static void dradrb_ddr2(struct sysinfo *s)
 	rankpop0 = 0;
 	rankpop1 = 0;
 	FOR_EACH_POPULATED_RANK(s->dimms, ch, r) {
-		if ((s->dimms[ch<<1].card_type && ((r) < s->dimms[ch<<1].ranks))) {
+		if (((s->dimms[ch<<1].card_type != RAW_CARD_UNPOPULATED) && ((r) < s->dimms[ch<<1].ranks))) {
 			i = ch << 1;
 		} else {
 			i = (ch << 1) + 1;
@@ -1541,7 +1541,7 @@ static void dradrb_ddr2(struct sysinfo *s)
 
 	// DRB
 	FOR_EACH_POPULATED_RANK(s->dimms, ch, r) {
-		if ((s->dimms[ch<<1].card_type && ((r) < s->dimms[ch<<1].ranks))) {
+		if (((s->dimms[ch<<1].card_type != RAW_CARD_UNPOPULATED) && ((r) < s->dimms[ch<<1].ranks))) {
 			i = ch << 1;
 		} else {
 			i = (ch << 1) + 1;

@@ -25,6 +25,9 @@ DefinitionBlock(
 	/* global NVS and variables */
 	#include <soc/intel/skylake/acpi/globalnvs.asl>
 
+	/* CPU */
+	#include <soc/intel/apollolake/acpi/cpu.asl>
+
 	Scope (\_SB) {
 		Device (PCI0)
 		{

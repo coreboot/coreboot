@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright 2016 Google Inc.
+ * Copyright (C) 2015 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,30 +13,14 @@
  * GNU General Public License for more details.
  */
 
-#include "acpi/superio.asl"
+/* mainboard configuration */
+#include "../ec.h"
 
-Scope (\_SB)
-{
-	Device (LID0)
-	{
-		Name (_HID, EisaId ("PNP0C0D"))
-		Method (_LID, 0)
-		{
-			Return (\_SB.PCI0.LPCB.EC0.LIDS)
-		}
-	}
+/* Enable EC backed ALS device in ACPI */
+#define EC_ENABLE_ALS_DEVICE
 
-	Device (PWRB)
-	{
-		Name (_HID, EisaId ("PNP0C0C"))
-	}
-}
+/* Enable EC backed PD MCU device in ACPI */
+#define EC_ENABLE_PD_MCU_DEVICE
 
-/*
- * LPC Trusted Platform Module
- */
-Scope (\_SB.PCI0.LPCB)
-{
-	#include <drivers/pc80/tpm/acpi/tpm.asl>
-	#include "ec.asl"
-}
+/* ACPI code for EC functions */
+#include <ec/google/chromeec/acpi/ec.asl>

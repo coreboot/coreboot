@@ -14,8 +14,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef X230_THERMAL_H
-#define X230_THERMAL_H
+#ifndef X220_THERMAL_H
+#define X220_THERMAL_H
 
 	/* Temperature which OS will shutdown at */
 	#define CRITICAL_TEMPERATURE	100

@@ -77,39 +77,39 @@ typedef struct {
 
 
 typedef struct {
-/** Offset 0x0020
+/** Offset 0x0018
 **/
   UINT64                      Signature;
-/** Offset 0x0028
+/** Offset 0x0020
 **/
   UINT64                      Revision;
-/** Offset 0x0030
+/** Offset 0x0028
 **/
   UINT32                      PcdRmuBinaryBaseAddress;
+/** Offset 0x002C
+**/
+  UINT32                      UnusedUpdSpace0;
+/** Offset 0x0030
+**/
+  UINT32                      PcdSerialRegisterBase;
 /** Offset 0x0034
 **/
-  UINT32                      PcdRmuBinaryLen;
-/** Offset 0x0038
-**/
   UINT8                       PcdSmmTsegSize;
-/** Offset 0x0039
+/** Offset 0x0035
 **/
-  UINT8                       PcdPlatformType;
-/** Offset 0x003A
-**/
-  UINT8                       ReservedMemoryInitUpd[22];
+  UINT8                       ReservedMemoryInitUpd[3];
 } MEMORY_INIT_UPD;
 
 typedef struct {
-/** Offset 0x0050
+/** Offset 0x0038
 **/
   UINT64                      Signature;
-/** Offset 0x0058
+/** Offset 0x0040
 **/
   UINT64                      Revision;
-/** Offset 0x0060
+/** Offset 0x0048
 **/
-  UINT8                       ReservedSiliconInitUpd[32];
+  UINT16                      PcdRegionTerminator;
 } SILICON_INIT_UPD;
 
 #define FSP_UPD_SIGNATURE                0x244450554B525124        /* '$QRKUPD$' */
@@ -131,16 +131,10 @@ typedef struct _UPD_DATA_REGION {
   UINT32                      SiliconInitUpdOffset;
 /** Offset 0x0018
 **/
-  UINT64                      ReservedUpd1;
-/** Offset 0x0020
-**/
   MEMORY_INIT_UPD             MemoryInitUpd;
-/** Offset 0x0050
+/** Offset 0x0038
 **/
   SILICON_INIT_UPD            SiliconInitUpd;
-/** Offset 0x0080
-**/
-  UINT16                      PcdRegionTerminator;
 } UPD_DATA_REGION;
 
 #define FSP_IMAGE_ID    0x305053462D4B5551        /* 'QUK-FSP0' */

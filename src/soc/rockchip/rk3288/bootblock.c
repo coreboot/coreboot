@@ -26,8 +26,6 @@
 
 void bootblock_soc_init(void)
 {
-	timestamp_init(timestamp_get());
-
 	rkclk_init();
 
 	mmu_init();

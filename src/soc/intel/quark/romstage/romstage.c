@@ -132,6 +132,24 @@ void soc_memory_init_params(struct romstage_params *params,
 		printk(BIOS_SPEW, "Clearing SMI interrupts and wake events\n");
 		reg_script_run_on_dev(LPC_BDF, clear_smi_and_wake_events);
 	}
+
+	/* Update the UPD data for MemoryInit */
+	printk(BIOS_DEBUG, "Updating UPD values for MemoryInit: 0x%p\n", upd);
+	upd->PcdSerialRegisterBase = UART_BASE_ADDRESS;
+	upd->PcdSmmTsegSize = IS_ENABLED(CONFIG_HAVE_SMI_HANDLER) ?
+		config->PcdSmmTsegSize : 0;
+}
+
+void soc_display_memory_init_params(const MEMORY_INIT_UPD *old,
+	MEMORY_INIT_UPD *new)
+{
+	/* Display the parameters for MemoryInit */
+	printk(BIOS_SPEW, "UPD values for MemoryInit at: 0x%p\n", new);
+	fsp_display_upd_value("PcdSerialRegisterBase",
+		sizeof(old->PcdSerialRegisterBase),
+		old->PcdSerialRegisterBase, new->PcdSerialRegisterBase);
+	fsp_display_upd_value("PcdSmmTsegSize", sizeof(old->PcdSmmTsegSize),
+		old->PcdSmmTsegSize, new->PcdSmmTsegSize);
 }
 
 void soc_after_ram_init(struct romstage_params *params)
@@ -156,9 +174,4 @@ void soc_after_ram_init(struct romstage_params *params)
 
 	/* Initialize the PCIe bridges */
 	pcie_init();
-}
-
-void soc_display_memory_init_params(const MEMORY_INIT_UPD *old,
-	MEMORY_INIT_UPD *new)
-{
 }

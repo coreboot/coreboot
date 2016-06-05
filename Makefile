@@ -271,12 +271,11 @@ DEPENDENCIES += $(addsuffix .d,$(basename $(allobjs)))
 -include $(DEPENDENCIES)
 
 printall:
-	@$(foreach class,$(classes),echo $(class)-objs:=$($(class)-objs); )
-	@echo alldirs:=$(alldirs)
-	@echo allsrcs=$(allsrcs)
-	@echo DEPENDENCIES=$(DEPENDENCIES)
-	@$(foreach class,$(special-classes),echo $(class):='$($(class))'; )
-
+	@$(foreach class,$(classes), echo $(class)-objs: $($(class)-objs) | tr ' ' '\n'; echo; )
+	@echo alldirs: $(alldirs) | tr ' ' '\n'; echo
+	@echo allsrcs: $(allsrcs) | tr ' ' '\n'; echo
+	@echo DEPENDENCIES: $(DEPENDENCIES) | tr ' ' '\n'; echo
+	@$(foreach class,$(special-classes),echo $(class):'$($(class))' | tr ' ' '\n'; echo; )
 endif
 
 ifndef NOMKDIR

@@ -130,9 +130,9 @@ before_carstage:
 	post_code(0x2b)
 
 	/* Restore the timestamp from bootblock_crt0.S (mm2:mm1) */
-	movd	%mm1, %eax
-	push	%eax
 	movd	%mm2, %eax
+	push	%eax
+	movd	%mm1, %eax
 	push	%eax
 
 	/* We can call into C functions now */

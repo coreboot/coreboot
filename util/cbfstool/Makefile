@@ -7,12 +7,17 @@ HOSTCC ?= $(CC)
 OBJCOPY ?= objcopy
 
 .PHONY: all
-all: $(objutil)/cbfstool/cbfstool \
-	$(objutil)/cbfstool/fmaptool \
-	$(objutil)/cbfstool/rmodtool \
-	$(objutil)/cbfstool/ifwitool \
+all: cbfstool fmaptool rmodtool ifwitool
 
-.PHONY: clean
+cbfstool: $(objutil)/cbfstool/cbfstool
+
+fmaptool: $(objutil)/cbfstool/fmaptool
+
+rmodtool: $(objutil)/cbfstool/rmodtool
+
+ifwitool: $(objutil)/cbfstool/ifwitool
+
+.PHONY: clean cbfstool fmaptool rmodtool ifwitool
 clean:
 	$(RM) fmd_parser.c fmd_parser.h fmd_scanner.c fmd_scanner.h
 	$(RM) $(objutil)/cbfstool/cbfstool $(cbfsobj)

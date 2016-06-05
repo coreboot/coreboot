@@ -19,7 +19,6 @@
 #include <cpu/x86/mtrr.h>
 #include <device/pci.h>
 #include <lib.h>
-#include <soc/bootblock.h>
 #include <soc/iomap.h>
 #include <soc/cpu.h>
 #include <soc/gpio.h>
@@ -54,7 +53,7 @@ static void enable_pm_timer(void)
 	wrmsr(MSR_EMULATE_PM_TMR, msr);
 }
 
-void asmlinkage bootblock_c_entry(uint32_t tsc_hi, uint32_t tsc_lo)
+void asmlinkage bootblock_c_entry(uint64_t base_timestamp)
 {
 	device_t dev = NB_DEV_ROOT;
 
@@ -71,7 +70,8 @@ void asmlinkage bootblock_c_entry(uint32_t tsc_hi, uint32_t tsc_lo)
 	/* BAR and MMIO enable for IOSF, so that GPIOs can be configured */
 	pci_write_config32(dev, PCI_BASE_ADDRESS_0, CONFIG_IOSF_BASE_ADDRESS);
 	pci_write_config32(dev, PCI_BASE_ADDRESS_1, 0);
-	pci_write_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
+	pci_write_config16(dev, PCI_COMMAND,
+				PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
 
 	/* Decode the ACPI I/O port range for early firmware verification.*/
 	dev = PMC_DEV;
@@ -80,7 +80,7 @@ void asmlinkage bootblock_c_entry(uint32_t tsc_hi, uint32_t tsc_lo)
 				PCI_COMMAND_IO | PCI_COMMAND_MASTER);
 
 	/* Call lib/bootblock.c main */
-	bootblock_main_with_timestamp(((uint64_t)tsc_hi << 32) | tsc_lo);
+	bootblock_main_with_timestamp(base_timestamp);
 }
 
 static void cache_bios_region(void)

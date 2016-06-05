@@ -29,6 +29,12 @@ void bootblock_mainboard_early_init(void);
 void bootblock_mainboard_init(void);
 void bootblock_soc_early_init(void);
 void bootblock_soc_init(void);
+
+/*
+ * C code entry point for the boot block.
+ */
+void asmlinkage bootblock_c_entry(uint64_t base_timestamp);
+
 /*
  * This is a the same as the bootblock main(), with the difference that it does
  * not collect a timestamp. Instead it accepts the first timestamp as an

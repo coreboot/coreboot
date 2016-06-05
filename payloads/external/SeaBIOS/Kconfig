@@ -70,6 +70,22 @@ config PAYLOAD_CONFIGFILE
 	  SeaBIOS payload.  In general, if the option is used, the default
 	  would be "$(top)/src/mainboard/$(MAINBOARDDIR)/config_seabios"
 
+config SEABIOS_BOOTORDER_FILE
+	string "SeaBIOS bootorder file"
+	default ""
+	help
+	  Add a SeaBIOS bootorder file.  From the wiki:
+	  "The bootorder file may be used to configure the boot up order. The file
+	  should be ASCII text and contain one line per boot method. The description
+	  of each boot method follows an Open Firmware device path format. SeaBIOS
+	  will attempt to boot from each item in the file - first line of the file
+	  first."
+
+	  See: https://www.coreboot.org/SeaBIOS#Configuring_boot_order
+
+	  If used, a typical value would be:
+	    $(top)/src/mainboard/$(MAINBOARDDIR)/bootorder
+
 config PAYLOAD_FILE
 	default "payloads/external/SeaBIOS/seabios/out/bios.bin.elf"
 

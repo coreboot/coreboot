@@ -85,6 +85,13 @@ payloads/external/SeaBIOS/seabios/out/vgabios.bin: seabios
 payloads/external/SeaBIOS/seabios/.config: payloads/external/SeaBIOS/seabios/out/bios.bin.elf
 payloads/external/SeaBIOS/seabios/out/autoversion.h: payloads/external/SeaBIOS/seabios/out/bios.bin.elf
 
+# add a SeaBIOS bootorder file
+ifneq ($(strip $(CONFIG_SEABIOS_BOOTORDER_FILE)),)
+cbfs-files-y += bootorder
+bootorder-file := $(strip $(CONFIG_SEABIOS_BOOTORDER_FILE))
+bootorder-type := raw
+endif
+
 payloads/external/depthcharge/depthcharge/build/depthcharge.elf depthcharge: $(top)/$(DOTCONFIG) $(CBFSTOOL)
 	$(MAKE) -C payloads/external/depthcharge \
 		BOARD=$(call ws_to_under,$(call strip_quotes,$(call tolower,$(CONFIG_MAINBOARD_PART_NUMBER)))) \

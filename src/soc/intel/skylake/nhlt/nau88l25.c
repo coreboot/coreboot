@@ -15,7 +15,7 @@
 
 #include <soc/nhlt.h>
 
-/* The same DSP firmwware settings are used for both the capture and
+/* The same DSP firmware settings are used for both the capture and
  * render endpoints. */
 static const struct nhlt_format_config nau88l25_cfg[] = {
 	/* 48 KHz 24-bits per sample. */

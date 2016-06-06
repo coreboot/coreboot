@@ -133,6 +133,15 @@ config BOOTBLOCK_NORTHBRIDGE_INIT
 config BOOTBLOCK_RESETS
 	string
 
+config BOOTBLOCK_SAVE_BIST_AND_TIMESTAMP
+	bool
+	default n
+	help
+	  Select this value to provide a routine to save the BIST and timestamp
+	  values.  The default code places the BIST value in MM0 and the
+	  timestamp value in MM2:MM1.  Another file is necessary when the CPU
+	  does not support the MMx register set.
+
 config HAVE_CMOS_DEFAULT
 	def_bool n
 

@@ -18,6 +18,7 @@
 #define FILECODE PROC_GNB_PCIE_FAMILY_0X15_F15PCIECOMPLEXCONFIG_FILECODE
 
 static const PCIe_PORT_DESCRIPTOR PortList [] = {
+	/* Initialize Port descriptor (PCIe port, Lane 3, PCI Device 2, Function 5) */
 	{
 		0,
 		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 3, 3),
@@ -27,7 +28,7 @@ static const PCIe_PORT_DESCRIPTOR PortList [] = {
 				PcieGenMaxSupported,
 				AspmDisabled, 0x01, 0)
 	},
-	/* Initialize Port descriptor (PCIe port, Lanes 1, PCI Device Number 2, ...) */
+	/* Initialize Port descriptor (PCIe port, Lane 2, PCI Device 2, Function 4) */
 	{
 		0,
 		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 2, 2),
@@ -37,7 +38,7 @@ static const PCIe_PORT_DESCRIPTOR PortList [] = {
 				PcieGenMaxSupported,
 				AspmDisabled, 0x02, 0)
 	},
-	/* Initialize Port descriptor (PCIe port, Lanes 2, PCI Device Number 2, ...) */
+	/* Initialize Port descriptor (PCIe port, Lane 1, PCI Device 2, Function 3) */
 	{
 		0,
 		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 1, 1),
@@ -47,7 +48,7 @@ static const PCIe_PORT_DESCRIPTOR PortList [] = {
 				PcieGenMaxSupported,
 				AspmDisabled, 0x03, 0)
 	},
-	/* Initialize Port descriptor (PCIe port, Lanes 3, PCI Device Number 2, ...) */
+	/* Initialize Port descriptor (PCIe port, Lane 0, PCI Device 2, Function 2) */
 	{
 		0,
 		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 0, 0),
@@ -57,7 +58,7 @@ static const PCIe_PORT_DESCRIPTOR PortList [] = {
 				PcieGenMaxSupported,
 				AspmDisabled, 0x04, 0)
 	},
-	/* Initialize Port descriptor (PCIe port, Lanes 4-7, PCI Device Number 4, ...) */
+	/* Initialize Port descriptor (PCIe port, Lanes 4-7, PCI Device 2, Function 1) */
 	{
 		DESCRIPTOR_TERMINATE_LIST,
 		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 4, 7),

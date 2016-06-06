@@ -29,7 +29,9 @@
 **/
 
 #include <cpu/x86/cr.h>
+#include <cpu/x86/post_code.h>
 #include <soc/QuarkNcSocId.h>
+#include <soc/sd.h>
 
 .macro RET32
 	jmp	*%esp
@@ -97,16 +99,36 @@
 .equ  CFGNONSTICKY_W1_OFFSET, (0x52)
 .equ    FORCE_WARM_RESET, (0x00000001)
 
-verify_bist:
-	cmp	$0, %eax
-	je	setup_esram
-	mov	$POST_DEAD_CODE, %eax
-#if IS_ENABLED(CONFIG_POST_IO)
-	outb	%al, $CONFIG_POST_IO_PORT
-#else
-	post_code(POST_DEAD_CODE)
-#endif
-	jmp	.
+	.global	bootblock_save_bist_and_timestamp
+
+bootblock_save_bist_and_timestamp:
+
+	/* eax: Low 32-bits of timestamp
+	 * ebx: BIST result
+	 * ebp: return address
+	 * edx: High 32-bits of timestamp
+	 */
+
+	/* No values to save since Quark does not generate a BIST value
+	 * and the timestamp is not saved since future expansion in
+	 * bootblock_crt0.S could use ebp and edi.  This code prevents
+	 * the use of the MMx registers by the default implementation.
+	 */
+	jmp	*%ebp
+
+	.global bootblock_pre_c_entry
+
+bootblock_pre_c_entry:
+
+	/* Get the timestamp since value from bootblock_crt0.S was discarded */
+	rdtsc
+	movl	%eax, %ebp
+	movl	%edx, %edi
+
+	/* Registers:
+	*     ebp: Low 32-bits of timestamp
+	*     edi: High 32-bits of timestamp
+	*/
 
 setup_esram:
 	/* Ensure cache is disabled. */
@@ -452,27 +474,8 @@ stackless_PCIConfig_Read:
 
 esram_init_done:
 
-#if IS_ENABLED(CONFIG_PLATFORM_USES_FSP1_1)
-
-	/* Copy FSP image to eSRAM and call it. */
-	/* TODO: FSP location/size could be got in a routine. */
-	cld
-	movl	$(0x00040000), %ecx               /* 256K DWORDs = 64K */
-	shrl	$2, %ecx
-	movl	$CONFIG_FSP_LOC, %esi   /* The source address. */
-	movl	$CONFIG_FSP_ESRAM_LOC, %edi   /* FSP destination in ESRAM */
-	rep	movsl
-#endif /* CONFIG_PLATFORM_USES_FSP1_1 */
-
 #if IS_ENABLED(CONFIG_ENABLE_DEBUG_LED)
 sd_led:
-
-.equ  SD_PFA, (0x14 << 11)    		/* B0:D20:F0 - SDIO controller */
-.equ  SD_CFG_BASE, (PCI_CFG | SD_PFA)	/* SD cntrl base in PCI config space */
-.equ  SD_CFG_CMD, (SD_CFG_BASE+0x04)	/* Command reg in PCI config space */
-.equ  SD_CFG_ADDR, (SD_CFG_BASE+0x10)	/* Base address in PCI config space */
-.equ  SD_BASE_ADDR, (0xA0018000)	/* SD controller's base address */
-.equ  SD_HOST_CTRL, (SD_BASE_ADDR+0x28)	/* HOST_CTRL register */
 
 	/* Set the SDIO controller's base address */
 	movl	$(SD_BASE_ADDR), %eax
@@ -514,3 +517,23 @@ L44:
 	jmp	.
 #endif /* CONFIG_ENABLE_DEBUG_LED_ESRAM */
 #endif /* CONFIG_ENABLE_DEBUG_LED */
+
+	/* Registers:
+	*     ebp: Low 32-bits of timestamp
+	*     edi: High 32-bits of timestamp
+	*/
+
+	/* Setup bootblock stack */
+	movl	$_car_stack_end, %esp
+
+before_carstage:
+	post_code(0x2b)
+
+	/* Get the timestamp passed in bootblock_crt0.S */
+	push	%edi
+	push	%ebp
+
+	/* We can call into C functions now */
+	call bootblock_main_with_timestamp
+
+	/* Never reached */

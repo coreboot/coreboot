@@ -26,6 +26,8 @@ config CPU_SPECIFIC_OPTIONS
 	select ARCH_RAMSTAGE_X86_32
 	select ARCH_ROMSTAGE_X86_32
 	select ARCH_VERSTAGE_X86_32
+	select BOOTBLOCK_SAVE_BIST_AND_TIMESTAMP
+	select C_ENVIRONMENT_BOOTBLOCK
 	select REG_SCRIPT
 	select SOC_INTEL_COMMON
 	select SOC_SETS_MTRRS
@@ -260,5 +262,18 @@ config RMU_LOC
 	help
 	  The location in CBFS that the RMU is located. It must match the
 	  strap-determined base address.
+
+#####
+# Bootblock
+#     The following options support the C_ENVIRONMENT_BOOTBLOCK.
+#####
+
+config DCACHE_BSP_STACK_SIZE
+	hex
+	default 0x4000
+
+config C_ENV_BOOTBLOCK_SIZE
+	hex
+	default 0x8000
 
 endif # SOC_INTEL_QUARK

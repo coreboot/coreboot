@@ -29,6 +29,7 @@
 #include <soc/pm.h>
 #include <soc/romstage.h>
 #include <soc/reg_access.h>
+#include <string.h>
 
 static const struct reg_script clear_smi_and_wake_events[] = {
 	/* Clear any SMI or wake events */
@@ -64,6 +65,33 @@ static const struct reg_script hsuart_init[] = {
 	REG_PCI_OR8(PCI_COMMAND, PCI_COMMAND_MEMORY),
 	REG_SCRIPT_END
 };
+
+asmlinkage void *car_state_c_entry(void)
+{
+	post_code(0x20);
+	if (IS_ENABLED(CONFIG_PLATFORM_USES_FSP1_1)) {
+		FSP_INFO_HEADER *fih;
+		struct cache_as_ram_params car_params = {0};
+		void *top_of_stack;
+
+		/* Copy the FSP binary into ESRAM */
+		memcpy((void *)CONFIG_FSP_ESRAM_LOC, (void *)CONFIG_FSP_LOC,
+			0x00040000);
+
+		/* Locate the FSP header in ESRAM */
+		fih = find_fsp(CONFIG_FSP_ESRAM_LOC);
+
+		/* Start the early verstage/romstage code */
+		post_code(0x2A);
+		car_params.fih = fih;
+		top_of_stack = cache_as_ram_main(&car_params);
+
+		/* Initialize MTRRs and switch stacks after RAM initialized */
+		return top_of_stack;
+	}
+
+	return NULL;
+}
 
 void car_soc_pre_console_init(void)
 {

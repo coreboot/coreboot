@@ -13,9 +13,7 @@
 # GNU General Public License for more details.
 #
 
-cpu_incs-y += $(src)/soc/intel/quark/romstage/esram_init.inc
-cpu_incs-y += $(src)/soc/intel/quark/romstage/cache_as_ram.inc
-
+romstage-y += car_stage_entry.S
 romstage-y += mtrr.c
 romstage-y += pcie.c
 romstage-y += report_platform.c

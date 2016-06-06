@@ -25,6 +25,7 @@
 #include <fsp/romstage.h>
 #include <soc/reg_access.h>
 
+asmlinkage void *car_state_c_entry(void);
 uint32_t port_reg_read(uint8_t port, uint32_t offset);
 void port_reg_write(uint8_t port, uint32_t offset, uint32_t value);
 void report_platform_info(void);

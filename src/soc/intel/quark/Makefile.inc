@@ -18,6 +18,13 @@ ifeq ($(CONFIG_SOC_INTEL_QUARK),y)
 subdirs-y += romstage
 subdirs-y += ../../../cpu/x86/tsc
 
+bootblock-y += bootblock/esram_init.S
+bootblock-y += bootblock/bootblock.c
+bootblock-y += i2c.c
+bootblock-y += reg_access.c
+bootblock-y += tsc_freq.c
+bootblock-y += uart_common.c
+
 romstage-y += i2c.c
 romstage-y += memmap.c
 romstage-y += reg_access.c

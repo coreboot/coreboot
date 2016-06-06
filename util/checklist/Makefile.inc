@@ -182,6 +182,9 @@ percent_complete = $$(($(done_lines) * 100 / ($(expected_lines) - $(optional_lin
 #
 # Determine which HTML files to include into the webpage
 #
+ifeq ($(CONFIG_C_ENVIRONMENT_BOOTBLOCK),y)
+html_table_files += $(objcbfs)/bootblock.html
+endif
 ifeq ($(CONFIG_SEPARATE_VERSTAGE),y)
 html_table_files += $(objcbfs)/verstage.html
 endif

@@ -21,16 +21,6 @@ uint32_t tpm_clear_and_reenable(void)
 	return TPM_SUCCESS;
 }
 
-uint32_t safe_write(uint32_t index, const void *data, uint32_t length)
-{
-	return TPM_SUCCESS;
-}
-
-uint32_t safe_define_space(uint32_t index, uint32_t perm, uint32_t size)
-{
-	return TPM_SUCCESS;
-}
-
 uint32_t antirollback_read_space_firmware(struct vb2_context *ctx)
 {
 	vb2api_secdata_create(ctx);

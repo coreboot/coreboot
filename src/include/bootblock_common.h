@@ -16,6 +16,7 @@
 #ifndef __BOOTBLOCK_COMMON_H
 #define __BOOTBLOCK_COMMON_H
 
+#include <arch/cpu.h>
 #include <main_decl.h>
 #include <stdint.h>
 
@@ -36,6 +37,6 @@ void bootblock_soc_init(void);
  * This function assumes that the timer has already been initialized, so it
  * does not call init_timer().
  */
-void bootblock_main_with_timestamp(uint64_t base_timestamp);
+void asmlinkage bootblock_main_with_timestamp(uint64_t base_timestamp);
 
 #endif	/* __BOOTBLOCK_COMMON_H */

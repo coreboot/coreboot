@@ -10,8 +10,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <tpm_lite/tlcl.h>
-#include <tpm_lite/tss_constants.h>
 #include <vb2_api.h>
+#include <console/console.h>
 
 #ifndef offsetof
 #define offsetof(A,B) __builtin_offsetof(A,B)
@@ -36,6 +36,8 @@
 	} while (0)
 
 
+static uint32_t safe_write(uint32_t index, const void *data, uint32_t length);
+
 uint32_t tpm_extend_pcr(struct vb2_context *ctx, int pcr,
 			enum vb2_pcr_digest which_digest)
 {
@@ -50,38 +52,6 @@ uint32_t tpm_extend_pcr(struct vb2_context *ctx, int pcr,
 		return VB2_ERROR_UNKNOWN;
 
 	return tlcl_extend(pcr, buffer, NULL);
-}
-
-uint32_t tpm_clear_and_reenable(void)
-{
-	VBDEBUG("TPM: Clear and re-enable\n");
-	RETURN_ON_FAILURE(tlcl_force_clear());
-	RETURN_ON_FAILURE(tlcl_set_enable());
-	RETURN_ON_FAILURE(tlcl_set_deactivated(0));
-
-	return TPM_SUCCESS;
-}
-
-uint32_t safe_write(uint32_t index, const void *data, uint32_t length)
-{
-	uint32_t result = tlcl_write(index, data, length);
-	if (result == TPM_E_MAXNVWRITES) {
-		RETURN_ON_FAILURE(tpm_clear_and_reenable());
-		return tlcl_write(index, data, length);
-	} else {
-		return result;
-	}
-}
-
-uint32_t safe_define_space(uint32_t index, uint32_t perm, uint32_t size)
-{
-	uint32_t result = tlcl_define_space(index, perm, size);
-	if (result == TPM_E_MAXNVWRITES) {
-		RETURN_ON_FAILURE(tpm_clear_and_reenable());
-		return tlcl_define_space(index, perm, size);
-	} else {
-		return result;
-	}
 }
 
 static uint32_t read_space_firmware(struct vb2_context *ctx)
@@ -135,33 +105,110 @@ static uint32_t write_secdata(uint32_t index,
 	return TPM_E_CORRUPTED_STATE;
 }
 
-uint32_t factory_initialize_tpm(struct vb2_context *ctx)
+/*
+ * This is derived from rollback_index.h of vboot_reference. see struct
+ * RollbackSpaceKernel for details.
+ */
+static const uint8_t secdata_kernel[] = {
+	0x02,
+	0x4C, 0x57, 0x52, 0x47,
+	0x00, 0x00, 0x00, 0x00,
+	0x00, 0x00, 0x00,
+	0xE8,
+};
+
+#if IS_ENABLED(CONFIG_TPM2)
+
+/* Nothing special in the TPM2 path yet. */
+static uint32_t safe_write(uint32_t index, const void *data, uint32_t length)
+{
+	return tlcl_write(index, data, length);
+}
+
+static uint32_t set_firmware_space(const void *firmware_blob)
+{
+	RETURN_ON_FAILURE(tlcl_define_space(FIRMWARE_NV_INDEX,
+					    high_privilege,
+					    VB2_SECDATA_SIZE));
+	RETURN_ON_FAILURE(safe_write(FIRMWARE_NV_INDEX, firmware_blob,
+				     VB2_SECDATA_SIZE));
+	return TPM_SUCCESS;
+}
+
+static uint32_t set_kernel_space(const void *kernel_blob)
+{
+	RETURN_ON_FAILURE(tlcl_define_space(KERNEL_NV_INDEX,
+					    low_privilege,
+					    sizeof(secdata_kernel)));
+	RETURN_ON_FAILURE(safe_write(KERNEL_NV_INDEX, kernel_blob,
+				     sizeof(secdata_kernel)));
+	return TPM_SUCCESS;
+}
+
+static uint32_t _factory_initialize_tpm(struct vb2_context *ctx)
+{
+	RETURN_ON_FAILURE(set_firmware_space(ctx->secdata));
+	RETURN_ON_FAILURE(set_kernel_space(secdata_kernel));
+	return TPM_SUCCESS;
+}
+
+uint32_t tpm_clear_and_reenable(void)
+{
+	VBDEBUG("TPM: Clear and re-enable\n");
+	return TPM_SUCCESS;
+}
+
+#else
+
+uint32_t tpm_clear_and_reenable(void)
+{
+	VBDEBUG("TPM: Clear and re-enable\n");
+	RETURN_ON_FAILURE(tlcl_force_clear());
+	RETURN_ON_FAILURE(tlcl_set_enable());
+	RETURN_ON_FAILURE(tlcl_set_deactivated(0));
+
+	return TPM_SUCCESS;
+}
+
+/**
+ * Like tlcl_write(), but checks for write errors due to hitting the 64-write
+ * limit and clears the TPM when that happens.  This can only happen when the
+ * TPM is unowned, so it is OK to clear it (and we really have no choice).
+ * This is not expected to happen frequently, but it could happen.
+ */
+
+static uint32_t safe_write(uint32_t index, const void *data, uint32_t length)
+{
+	uint32_t result = tlcl_write(index, data, length);
+	if (result == TPM_E_MAXNVWRITES) {
+		RETURN_ON_FAILURE(tpm_clear_and_reenable());
+		return tlcl_write(index, data, length);
+	} else {
+		return result;
+	}
+}
+
+/**
+ * Similarly to safe_write(), this ensures we don't fail a DefineSpace because
+ * we hit the TPM write limit. This is even less likely to happen than with
+ * writes because we only define spaces once at initialization, but we'd
+ * rather be paranoid about this.
+ */
+static uint32_t safe_define_space(uint32_t index, uint32_t perm, uint32_t size)
+{
+	uint32_t result = tlcl_define_space(index, perm, size);
+	if (result == TPM_E_MAXNVWRITES) {
+		RETURN_ON_FAILURE(tpm_clear_and_reenable());
+		return tlcl_define_space(index, perm, size);
+	} else {
+		return result;
+	}
+}
+
+static uint32_t _factory_initialize_tpm(struct vb2_context *ctx)
 {
 	TPM_PERMANENT_FLAGS pflags;
 	uint32_t result;
-	/* this is derived from rollback_index.h of vboot_reference. see struct
-	 * RollbackSpaceKernel for details. */
-	static const uint8_t secdata_kernel[] = {
-			0x02,
-			0x4C, 0x57, 0x52, 0x47,
-			0x00, 0x00, 0x00, 0x00,
-			0x00, 0x00, 0x00,
-			0xE8,
-	};
-
-	VBDEBUG("TPM: factory initialization\n");
-
-	/*
-	 * Do a full test.  This only happens the first time the device is
-	 * turned on in the factory, so performance is not an issue.  This is
-	 * almost certainly not necessary, but it gives us more confidence
-	 * about some code paths below that are difficult to
-	 * test---specifically the ones that set lifetime flags, and are only
-	 * executed once per physical TPM.
-	 */
-	result = tlcl_self_test_full();
-	if (result != TPM_SUCCESS)
-		return result;
 
 	result = tlcl_get_permanent_flags(&pflags);
 	if (result != TPM_SUCCESS)
@@ -215,6 +262,34 @@ uint32_t factory_initialize_tpm(struct vb2_context *ctx)
 	RETURN_ON_FAILURE(write_secdata(FIRMWARE_NV_INDEX,
 					ctx->secdata,
 					VB2_SECDATA_SIZE));
+	return TPM_SUCCESS;
+}
+#endif
+
+uint32_t factory_initialize_tpm(struct vb2_context *ctx)
+{
+	uint32_t result;
+
+	/* Defines and sets vb2 secdata space */
+	vb2api_secdata_create(ctx);
+
+	VBDEBUG("TPM: factory initialization\n");
+
+	/*
+	 * Do a full test.  This only happens the first time the device is
+	 * turned on in the factory, so performance is not an issue.  This is
+	 * almost certainly not necessary, but it gives us more confidence
+	 * about some code paths below that are difficult to
+	 * test---specifically the ones that set lifetime flags, and are only
+	 * executed once per physical TPM.
+	 */
+	result = tlcl_self_test_full();
+	if (result != TPM_SUCCESS)
+		return result;
+
+	result = _factory_initialize_tpm(ctx);
+	if (result != TPM_SUCCESS)
+		return result;
 
 	VBDEBUG("TPM: factory initialization successful\n");
 

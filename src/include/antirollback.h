@@ -63,22 +63,6 @@ uint32_t tpm_extend_pcr(struct vb2_context *ctx, int pcr,
 uint32_t tpm_clear_and_reenable(void);
 
 /**
- * Like tlcl_write(), but checks for write errors due to hitting the 64-write
- * limit and clears the TPM when that happens.  This can only happen when the
- * TPM is unowned, so it is OK to clear it (and we really have no choice).
- * This is not expected to happen frequently, but it could happen.
- */
-uint32_t safe_write(uint32_t index, const void *data, uint32_t length);
-
-/**
- * Similarly to safe_write(), this ensures we don't fail a DefineSpace because
- * we hit the TPM write limit.  This is even less likely to happen than with
- * writes because we only define spaces once at initialization, but we'd rather
- * be paranoid about this.
- */
-uint32_t safe_define_space(uint32_t index, uint32_t perm, uint32_t size);
-
-/**
  * Perform one-time initializations.
  *
  * Create the NVRAM spaces, and set their initial values as needed.  Sets the

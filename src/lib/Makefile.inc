@@ -146,6 +146,7 @@ bootblock-y += hexdump.c
 ramstage-y += hexdump.c
 romstage-y += hexdump.c
 
+bootblock-$(CONFIG_REG_SCRIPT) += reg_script.c
 verstage-$(CONFIG_REG_SCRIPT) += reg_script.c
 romstage-$(CONFIG_REG_SCRIPT) += reg_script.c
 ramstage-$(CONFIG_REG_SCRIPT) += reg_script.c

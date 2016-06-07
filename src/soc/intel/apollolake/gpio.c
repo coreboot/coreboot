@@ -19,6 +19,7 @@
 #include <gpio.h>
 #include <soc/gpio.h>
 #include <soc/iosf.h>
+#include <soc/pm.h>
 
 /* This list must be in order, from highest pad numbers, to lowest pad numbers*/
 static const struct pad_community {
@@ -149,4 +150,71 @@ uint16_t gpio_acpi_pin(gpio_t gpio_num)
 	}
 
 	return gpio_num;
+}
+
+/* Helper function to map PMC register groups to tier1 sci groups */
+static int pmc_gpe_route_to_gpio(int route)
+{
+	switch(route) {
+	case PMC_GPE_SW_31_0:
+		return GPIO_GPE_SW_31_0;
+	case PMC_GPE_SW_63_32:
+		return GPIO_GPE_SW_63_32;
+	case PMC_GPE_NW_31_0:
+		return GPIO_GPE_NW_31_0;
+	case PMC_GPE_NW_63_32:
+		return GPIO_GPE_NW_63_32;
+	case PMC_GPE_NW_95_64:
+		return GPIO_GPE_NW_95_64;
+	case PMC_GPE_N_31_0:
+		return GPIO_GPE_N_31_0;
+	case PMC_GPE_N_63_32:
+		return GPIO_GPE_N_63_32;
+	case PMC_GPE_W_31_0:
+		return GPIO_GPE_W_31_0;
+	default:
+		return -1;
+	}
+}
+
+void gpio_route_gpe(uint8_t gpe0b, uint8_t gpe0c, uint8_t gpe0d)
+{
+	int i;
+	uint32_t misccfg_mask;
+	uint32_t misccfg_value;
+	uint32_t value;
+
+	/* Get the group here for community specific MISCCFG register.
+	 * If any of these returns -1 then there is some error in devicetree
+	 * where the group is probably hardcoded and does not comply with the
+	 * PMC group defines. So we return from here and MISCFG is set to
+	 * default.
+	 */
+	gpe0b = pmc_gpe_route_to_gpio(gpe0b);
+	if(gpe0b == -1)
+		return;
+	gpe0c = pmc_gpe_route_to_gpio(gpe0c);
+	if(gpe0c == -1)
+		return;
+	gpe0d = pmc_gpe_route_to_gpio(gpe0d);
+	if(gpe0d == -1)
+		return;
+
+	misccfg_value = gpe0b << MISCCFG_GPE0_DW0_SHIFT;
+	misccfg_value |= gpe0c << MISCCFG_GPE0_DW1_SHIFT;
+	misccfg_value |= gpe0d << MISCCFG_GPE0_DW2_SHIFT;
+
+	/* Program GPIO_MISCCFG */
+	misccfg_mask = ~(MISCCFG_GPE0_DW2_MASK |
+			MISCCFG_GPE0_DW1_MASK |
+			MISCCFG_GPE0_DW0_MASK);
+
+	for (i = 0; i < ARRAY_SIZE(gpio_communities); i++) {
+		const struct pad_community *comm = &gpio_communities[i];
+
+		value = iosf_read(comm->port, GPIO_MISCCFG);
+		value &= misccfg_mask;
+		value |= misccfg_value;
+		iosf_write(comm->port, GPIO_MISCCFG, value);
+	}
 }

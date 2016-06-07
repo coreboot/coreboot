@@ -129,9 +129,22 @@
 #       define RPS		(1 <<  2)
 #define GEN_PMCON3		0x1028
 #define ETR			0x1048
-#	define CF9_LOCK		(1 << 31)
-#	define CF9_GLB_RST	(1 << 20)
+#       define CF9_LOCK         (1 << 31)
+#       define CF9_GLB_RST      (1 << 20)
+#define GPIO_GPE_CFG		0x1050
+#define  GPE0_DWX_MASK		0xf
+#define  GPE0_DW1_SHIFT		4
+#define  GPE0_DW2_SHIFT		8
+#define  GPE0_DW3_SHIFT		12
 
+#define  PMC_GPE_SW_31_0	0
+#define  PMC_GPE_SW_63_32	1
+#define  PMC_GPE_NW_31_0	3
+#define  PMC_GPE_NW_63_32	4
+#define  PMC_GPE_NW_95_64	5
+#define  PMC_GPE_N_31_0		6
+#define  PMC_GPE_N_63_32	7
+#define  PMC_GPE_W_31_0		9
 
 /* Generic sleep state types */
 #define SLEEP_STATE_S0		0

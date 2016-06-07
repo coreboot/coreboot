@@ -21,6 +21,7 @@
 #include <soc/gpio.h>
 #include <soc/intel/common/lpss_i2c.h>
 #include <device/i2c.h>
+#include <soc/pm.h>
 
 #define CLKREQ_DISABLED		0xf
 #define APOLLOLAKE_I2C_DEV_MAX	8
@@ -96,6 +97,10 @@ struct soc_intel_apollolake_config {
 
 	/* I2C bus configuration */
 	struct apollolake_i2c_config i2c[APOLLOLAKE_I2C_DEV_MAX];
+
+	uint8_t gpe0_dw1; /* GPE0_63_32 STS/EN */
+	uint8_t gpe0_dw2; /* GPE0_95_64 STS/EN */
+	uint8_t gpe0_dw3; /* GPE0_127_96 STS/EN */
 };
 
 #endif	/* _SOC_APOLLOLAKE_CHIP_H_ */

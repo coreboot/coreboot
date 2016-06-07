@@ -23,6 +23,28 @@
 #ifndef _SOC_APOLLOLAKE_GPIO_DEFS_H_
 #define _SOC_APOLLOLAKE_GPIO_DEFS_H_
 
+/*
+ * Miscellaneous Configuration register(MISCCFG).These are community specific
+ * registers and are meant to house miscellaneous configuration fields per
+ * community. There are 8 GPIO groups: GPP_0 -> GPP_8 (Group 3 is absent)
+ */
+#define GPIO_MISCCFG		0x10 /* Miscellaneous Configuration offset */
+#define  GPIO_GPE_SW_31_0	0 /* SOUTHWEST GPIO#  0 ~ 31 belong to GROUP0 */
+#define  GPIO_GPE_SW_63_32	1 /* SOUTHWEST GPIO# 32 ~ 42 belong to GROUP1 */
+#define  GPIO_GPE_W_31_0	2 /* WEST      GPIO#  0 ~ 25 belong to GROUP2 */
+#define  GPIO_GPE_NW_31_0	4 /* NORTHWEST GPIO#  0 ~ 17 belong to GROUP4 */
+#define  GPIO_GPE_NW_63_32	5 /* NORTHWEST GPIO# 32 ~ 63 belong to GROUP5 */
+#define  GPIO_GPE_NW_95_64	6 /* NORTHWEST GPIO# 64 ~ 76 belong to GROUP6 */
+#define  GPIO_GPE_N_31_0	7 /* NORTH     GPIO#  0 ~ 31 belong to GROUP7 */
+#define  GPIO_GPE_N_63_32	8 /* NORTH     GPIO# 32 ~ 61 belong to GROUP8 */
+
+#define MISCCFG_GPE0_DW0_SHIFT 8
+#define MISCCFG_GPE0_DW0_MASK (0xf << MISCCFG_GPE0_DW0_SHIFT)
+#define MISCCFG_GPE0_DW1_SHIFT 12
+#define MISCCFG_GPE0_DW1_MASK (0xf << MISCCFG_GPE0_DW1_SHIFT)
+#define MISCCFG_GPE0_DW2_SHIFT 16
+#define MISCCFG_GPE0_DW2_MASK (0xf << MISCCFG_GPE0_DW2_SHIFT)
+
 #define PAD_CFG0_TX_STATE		(1 << 0)
 #define PAD_CFG0_RX_STATE		(1 << 1)
 #define PAD_CFG0_TX_DISABLE		(1 << 8)

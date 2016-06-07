@@ -51,7 +51,7 @@
 			}
 		}
 	},
-	.ddr_freq = 666*MHz,
+	.ddr_freq = 300*MHz,
 	.dramtype = LPDDR3,
 	.num_channels = 2,
 	.stride = 13,

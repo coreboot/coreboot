@@ -305,9 +305,8 @@ static void gpio_configure_pad(const struct pad_config *cfg)
 {
 	uint32_t *dw_regs;
 	uint32_t reg;
-	uint32_t termination;
 	uint32_t dw0;
-	const uint32_t termination_mask = PAD_TERM_MASK << PAD_TERM_SHIFT;
+	uint32_t mask;
 
 	dw_regs = gpio_dw_regs(cfg->pad);
 
@@ -318,10 +317,16 @@ static void gpio_configure_pad(const struct pad_config *cfg)
 
 	write32(&dw_regs[0], dw0);
 	reg = read32(&dw_regs[1]);
-	reg &= ~termination_mask;
-	termination = cfg->attrs;
-	termination &= termination_mask;
-	reg |= termination;
+
+	/* Apply termination field */
+	mask = PAD_TERM_MASK << PAD_TERM_SHIFT;
+	reg &= ~mask;
+	reg |= cfg->attrs & mask;
+
+	/* Apply voltage tolerance field */
+	mask = PAD_TOL_MASK << PAD_TOL_SHIFT;
+	reg &= ~mask;
+	reg |= cfg->attrs & mask;
 	write32(&dw_regs[1], reg);
 
 	gpio_handle_pad_mode(cfg);
@@ -329,7 +334,7 @@ static void gpio_configure_pad(const struct pad_config *cfg)
 	if ((dw0 & PAD_FIELD(GPIROUTSMI, MASK)) == PAD_FIELD(GPIROUTSMI, YES))
 		gpi_enable_smi(cfg->pad);
 
-	if(gpio_debug)
+	if (gpio_debug)
 		printk(BIOS_DEBUG,
 			"Write Pad: Base(%p) - conf0 = %x conf1= %x pad # = %d\n",
 			&dw_regs[0], dw0, reg, cfg->pad);

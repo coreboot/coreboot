@@ -189,8 +189,8 @@ static const struct pad_config gpio_table[] = {
 /* I2C2_SCL */		/* GPP_F5 */
 /* I2C3_SDA */		/* GPP_F6 */
 /* I2C3_SCL */		/* GPP_F7 */
-/* I2C4_SDA */		PAD_CFG_NF(GPP_F8, NONE, DEEP, NF1), /* Amplifiers */
-/* I2C4_SCL */		PAD_CFG_NF(GPP_F9, NONE, DEEP, NF1), /* Amplifiers */
+/* I2C4_SDA */		PAD_CFG_NF_1V8(GPP_F8, NONE, DEEP, NF1), /* Amplifiers */
+/* I2C4_SCL */		PAD_CFG_NF_1V8(GPP_F9, NONE, DEEP, NF1), /* Amplifiers */
 /* I2C5_SDA */		PAD_CFG_GPI_APIC(GPP_F10, NONE, DEEP), /* MIC_INT_L */
 /* I2C5_SCL */		/* GPP_F11 */
 /* EMMC_CMD */		PAD_CFG_NF(GPP_F12, NONE, DEEP, NF1),

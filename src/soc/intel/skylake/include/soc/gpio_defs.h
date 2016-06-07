@@ -495,6 +495,11 @@
 #define  PAD_TERM_20K_PU	12
 #define  PAD_TERM_667_PU	13
 #define  PAD_TERM_NATIVE	15
+	/* TOL - voltage tolerance */
+#define  PAD_TOL_SHIFT		25
+#define  PAD_TOL_MASK		0x1
+#define  PAD_TOL_3V3		0	/* 3.3V default */
+#define  PAD_TOL_1V8		1	/* 1.8V tolerant */
 
 #define GPI_GPE_STS_OFFSET	0x140
 #define GPI_GPE_EN_OFFSET	0x160

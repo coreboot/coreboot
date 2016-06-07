@@ -108,6 +108,12 @@ void gpio_configure_pads(const struct pad_config *cfgs, size_t num);
 	_PAD_CFG(pad_, term_, \
 	_DW0_VALS(rst_, RAW, NO, LEVEL, NO, NO, NO, NO, NO, NO, func_, NO, NO))
 
+/* Native 1.8V tolerant pad, only applies to some pads like I2C/I2S. */
+#define PAD_CFG_NF_1V8(pad_, term_, rst_, func_) \
+	_PAD_CFG_ATTRS(pad_, term_, \
+	_DW0_VALS(rst_, RAW, NO, LEVEL, NO, NO, \
+		NO, NO, NO, NO, func_, NO, NO), PAD_FIELD(PAD_TOL, 1V8))
+
 /* Unused PINS will be controlled by GPIO controller (PMODE = GPIO) and
    GPIO TX/RX will be disabled. */
 #define PAD_CFG_NC(pad_) \
@@ -149,9 +155,9 @@ void gpio_configure_pads(const struct pad_config *cfgs, size_t num);
 		NO, NO, YES, NO, GPIO, NO, YES), PAD_FIELD(HOSTSW, ACPI))
 
 /*
- * The 'attrs' field carries the termination in bits 13:10 to match up with
- * thd DW1 pad configuration register. Additionally, other attributes can
- * be applied such as the ones below. Bit allocation matters.
+ * The 'attrs' field carries the termination in bits 13:10 and tolerance in bit
+ * 25 to match up with thd DW1 pad configuration register. Additionally, other
+ * attributes can be applied such as the ones below. Bit allocation matters.
  */
 #define HOSTSW_SHIFT		0
 #define HOSTSW_MASK		1
@@ -160,7 +166,7 @@ void gpio_configure_pads(const struct pad_config *cfgs, size_t num);
 
 struct pad_config {
 	uint16_t pad;
-	uint16_t attrs;
+	uint32_t attrs;
 	uint32_t dw0;
 };
 

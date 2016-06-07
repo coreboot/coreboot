@@ -32,6 +32,15 @@
 #include <cpu/x86/16bit/reset16.inc>
 #include <cpu/x86/32bit/entry32.inc>
 
+#if IS_ENABLED(CONFIG_BOOTBLOCK_DEBUG_SPINLOOP)
+
+	/* Wait for a JTAG debugger to break in and set EBX non-zero */
+	xor	%ebx, %ebx
+
+debug_spinloop:
+	cmp	$0, %ebx
+	jz	debug_spinloop
+#endif
 
 bootblock_protected_mode_entry:
 	/* Save BIST result */

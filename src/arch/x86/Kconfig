@@ -117,6 +117,13 @@ config PC80_SYSTEM
 	bool
 	default y if ARCH_X86
 
+config BOOTBLOCK_DEBUG_SPINLOOP
+	bool
+	default n
+	help
+	  Add a spin (JMP .) in bootblock_crt0.S during early bootblock to wait
+	  for a JTAG debugger to break into the execution sequence.
+
 config BOOTBLOCK_MAINBOARD_INIT
 	string
 

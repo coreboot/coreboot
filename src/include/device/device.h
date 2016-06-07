@@ -20,6 +20,7 @@ struct device;
 typedef struct device * device_t;
 struct pci_operations;
 struct pci_bus_operations;
+struct i2c_bus_operations;
 struct smbus_bus_operations;
 struct pnp_mode_ops;
 
@@ -62,6 +63,7 @@ struct device_operations {
 	const char *(*acpi_name)(device_t dev);
 #endif
 	const struct pci_operations *ops_pci;
+	const struct i2c_bus_operations *ops_i2c_bus;
 	const struct smbus_bus_operations *ops_smbus_bus;
 	const struct pci_bus_operations * (*ops_pci_bus)(device_t dev);
 	const struct pnp_mode_ops *ops_pnp_mode;

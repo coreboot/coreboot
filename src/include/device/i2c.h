@@ -168,4 +168,26 @@ static inline int i2c_writeb(unsigned bus, uint8_t chip, uint8_t reg,
 	return i2c_transfer(bus, &seg, 1);
 }
 
+/* I2C bus operation for ramstage drivers */
+struct device;
+struct i2c_bus_operations {
+	/*
+	 * This is an SOC specific method that can be provided to translate the
+	 * 'struct device' for an I2C controller into a unique I2C bus number.
+	 * Returns -1 if the bus number for this device cannot be determined.
+	 */
+	int (*dev_to_bus)(struct device *dev);
+};
+
+/* Return I2C bus number for provided device, -1 if not found */
+int i2c_dev_find_bus(struct device *dev);
+
+/* Variants of I2C helper functions that take a device instead of bus number */
+int i2c_dev_transfer(struct device *dev, struct i2c_seg *segments, int count);
+int i2c_dev_readb(struct device *dev, uint8_t reg, uint8_t *data);
+int i2c_dev_writeb(struct device *dev, uint8_t reg, uint8_t data);
+int i2c_dev_read_bytes(struct device *dev, uint8_t reg, uint8_t *data, int len);
+int i2c_dev_read_raw(struct device *dev, uint8_t *data, int len);
+int i2c_dev_write_raw(struct device *dev, uint8_t *data, int len);
+
 #endif	/* _DEVICE_I2C_H_ */

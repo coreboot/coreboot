@@ -19,6 +19,7 @@
 
 #include <fsp/romstage.h>
 
+void i2c_early_init(void);
 void systemagent_early_init(void);
 void pch_early_init(void);
 void pch_uart_init(void);

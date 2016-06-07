@@ -64,6 +64,7 @@ void car_soc_post_console_init(void)
 	report_platform_info();
 	set_max_freq();
 	pch_early_init();
+	i2c_early_init();
 }
 
 int get_sw_write_protect_state(void)

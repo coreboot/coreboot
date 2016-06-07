@@ -1,4 +1,5 @@
 verstage-y += cpu.c
+verstage-y += i2c.c
 verstage-y += pch.c
 verstage-y += power_state.c
 verstage-y += report_platform.c
@@ -9,6 +10,7 @@ verstage-y += systemagent.c
 verstage-y += uart.c
 
 romstage-y += cpu.c
+romstage-y += i2c.c
 romstage-y += pch.c
 romstage-y += power_state.c
 romstage-y += report_platform.c

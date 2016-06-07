@@ -37,6 +37,7 @@ config CPU_SPECIFIC_OPTIONS
 	select RELOCATABLE_RAMSTAGE
 	select SOC_INTEL_COMMON
 	select SOC_INTEL_COMMON_ACPI_WAKE_SOURCE
+	select SOC_INTEL_COMMON_LPSS_I2C
 	select SOC_INTEL_COMMON_RESET
 	select SMM_TSEG
 	select SMP
@@ -71,6 +72,10 @@ config CBFS_SIZE
 config CPU_ADDR_BITS
 	int
 	default 36
+
+config SOC_INTEL_COMMON_LPSS_I2C_CLOCK_MHZ
+	int
+	default 120
 
 config DCACHE_RAM_BASE
 	hex "Base address of cache-as-RAM"

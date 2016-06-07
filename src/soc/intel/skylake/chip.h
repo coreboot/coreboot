@@ -20,6 +20,7 @@
 #define _SOC_CHIP_H_
 
 #include <arch/acpi_device.h>
+#include <device/i2c.h>
 #include <stdint.h>
 #include <soc/gpio_defs.h>
 #include <soc/gpe.h>
@@ -39,6 +40,10 @@ enum skylake_i2c_voltage {
 struct skylake_i2c_config {
 	/* Bus voltage level, default is 3.3V */
 	enum skylake_i2c_voltage voltage;
+	/* Bus speed in Hz, default is I2C_SPEED_FAST (400 KHz) */
+	enum i2c_speed speed;
+	/* Bus should be enabled prior to ramstage with temporary base */
+	int early_init;
 };
 
 struct soc_intel_skylake_config {

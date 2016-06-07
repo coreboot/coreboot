@@ -415,8 +415,9 @@ void soc_silicon_init_params(SILICON_INIT_UPD *params)
 	params->SerialIrqConfigStartFramePulse = config->SerialIrqConfigStartFramePulse;
 
 	params->SkipMpInit = config->FspSkipMpInit;
-	memcpy(params->SerialIoI2cVoltage, config->SerialIoI2cVoltage,
-			sizeof(params->SerialIoI2cVoltage));
+
+	for (i = 0; i < ARRAY_SIZE(config->i2c); i++)
+		params->SerialIoI2cVoltage[i] = config->i2c[i].voltage;
 
 	/*
 	 * To disable Heci, the Psf needs to be left unlocked

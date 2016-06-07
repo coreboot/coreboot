@@ -48,4 +48,9 @@ DefinitionBlock(
 	#include <soc/intel/apollolake/acpi/sleepstates.asl>
 
 	#include "acpi/superio.asl"
+
+	Scope (\_SB) {
+		/* Dynamic Platform Thermal Framework */
+		#include "acpi/dptf.asl"
+	}
 }

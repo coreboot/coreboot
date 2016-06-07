@@ -153,6 +153,8 @@ chip soc/intel/skylake
 	register "usb3_ports[2]" = "USB3_PORT_DEFAULT" # Type-A Port
 	register "usb3_ports[3]" = "USB3_PORT_DEFAULT" # SD
 
+	register "i2c[4].voltage" = "I2C_VOLTAGE_1V8"  # I2C4 is 1.8V
+
 	# Must leave UART0 enabled or SD/eMMC will not work as PCI
 	register "SerialIoDevMode" = "{
 		[PchSerialIoIndexI2C0]  = PchSerialIoPci,
@@ -167,9 +169,6 @@ chip soc/intel/skylake
 		[PchSerialIoIndexUart1] = PchSerialIoDisabled,
 		[PchSerialIoIndexUart2] = PchSerialIoSkipInit,
 	}"
-
-	# I2C4 is 1.8V
-	register "SerialIoI2cVoltage[4]" = "1"
 
 	# PL2 override 15W
 	register "tdp_pl2_override" = "15"

@@ -29,6 +29,18 @@
 #include <soc/usb.h>
 #include <soc/vr_config.h>
 
+#define SKYLAKE_I2C_DEV_MAX 6
+
+enum skylake_i2c_voltage {
+	I2C_VOLTAGE_3V3,
+	I2C_VOLTAGE_1V8
+};
+
+struct skylake_i2c_config {
+	/* Bus voltage level, default is 3.3V */
+	enum skylake_i2c_voltage voltage;
+};
+
 struct soc_intel_skylake_config {
 	/*
 	 * Interrupt Routing configuration
@@ -179,8 +191,8 @@ struct soc_intel_skylake_config {
 	 */
 	u8 SerialIoDevMode[PchSerialIoIndexMax];
 
-	/* I2C voltage select. Value: 0: 3.3V , 1: 1.8V.*/
-	u8 SerialIoI2cVoltage[6];
+	/* I2C */
+	struct skylake_i2c_config i2c[SKYLAKE_I2C_DEV_MAX];
 
 	/* Camera */
 	u8 Cio2Enable;

@@ -41,6 +41,21 @@ config SOC_INTEL_COMMON_ACPI_WAKE_SOURCE
 	bool
 	default n
 
+config SOC_INTEL_COMMON_LPSS_I2C
+	bool
+	default n
+	help
+	  This driver supports the Intel Low Power Subsystem (LPSS) I2C
+	  controllers that are based on Synopsys DesignWare IP.
+
+config SOC_INTEL_COMMON_LPSS_I2C_CLOCK_MHZ
+	int
+	depends on SOC_INTEL_COMMON_LPSS_I2C
+	help
+	  The clock speed that the I2C controller is running at, in MHz.
+	  No default is set here as this is an SOC-specific value and must
+	  be provided by the SOC when it selects this driver.
+
 config SOC_SETS_MTRRS
 	bool
 	default n

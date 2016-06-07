@@ -84,6 +84,7 @@ void main(void)
 	timestamp_add_now(TS_START_ROMSTAGE);
 
 	console_init();
+	exception_init();
 	configure_l2ctlr();
 	tsadc_init();
 

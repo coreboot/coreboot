@@ -99,5 +99,16 @@ struct pad_config {
 void gpio_configure_pad(const struct pad_config *cfg);
 void gpio_configure_pads(const struct pad_config *cfg, size_t num_pads);
 
+/*
+ * Set the GPIO groups for the GPE blocks. The values from PMC register GPE_CFG
+ * are passed which is then mapped to proper groups for MISCCFG. This basically
+ * sets the MISCCFG register bits:
+ *  dw0 = gpe0_route[11:8]. This is ACPI GPE0b.
+ *  dw1 = gpe0_route[15:12]. This is ACPI GPE0c.
+ *  dw2 = gpe0_route[19:16]. This is ACPI GPE0d.
+ */
+void gpio_route_gpe(uint8_t gpe0b, uint8_t gpe0c, uint8_t gpe0d);
+
 #endif /* __ACPI__ */
+
 #endif /* _SOC_APOLLOLAKE_GPIO_H_ */

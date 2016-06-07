@@ -14,9 +14,57 @@
  */
 
 #include <device/device.h>
+#include <device/i2c.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <soc/intel/common/lpss_i2c.h>
 #include <soc/ramstage.h>
+
+uintptr_t lpss_i2c_base_address(unsigned bus)
+{
+	unsigned devfn;
+	struct device *dev;
+	struct resource *res;
+
+	/* bus -> devfn */
+	devfn = i2c_bus_to_devfn(bus);
+	if (devfn >= 0) {
+		/* devfn -> dev */
+		dev = dev_find_slot(0, devfn);
+		if (dev) {
+			/* dev -> bar0 */
+			res = find_resource(dev, PCI_BASE_ADDRESS_0);
+			if (res)
+				return res->base;
+		}
+	}
+
+	return (uintptr_t)NULL;
+}
+
+static int i2c_dev_to_bus(struct device *dev)
+{
+	return i2c_devfn_to_bus(dev->path.pci.devfn);
+}
+
+/*
+ * The device should already be enabled and out of reset,
+ * either from early init in coreboot or SiliconInit in FSP.
+ */
+static void i2c_dev_init(struct device *dev)
+{
+	struct soc_intel_skylake_config *config = dev->chip_info;
+	int bus = i2c_dev_to_bus(dev);
+
+	if (!config || bus < 0)
+		return;
+
+	lpss_i2c_init(bus, config->i2c[bus].speed ? : I2C_SPEED_FAST);
+}
+
+static struct i2c_bus_operations i2c_bus_ops = {
+	.dev_to_bus		= &i2c_dev_to_bus,
+};
 
 static struct device_operations i2c_dev_ops = {
 	.read_resources		= &pci_dev_read_resources,
@@ -24,6 +72,8 @@ static struct device_operations i2c_dev_ops = {
 	.enable_resources	= &pci_dev_enable_resources,
 	.scan_bus		= &scan_smbus,
 	.ops_pci		= &soc_pci_ops,
+	.ops_i2c_bus		= &i2c_bus_ops,
+	.init			= &i2c_dev_init,
 };
 
 static const unsigned short pci_device_ids[] = {

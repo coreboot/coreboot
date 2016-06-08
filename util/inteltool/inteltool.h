@@ -235,4 +235,5 @@ int print_pciexbar(struct pci_dev *nb);
 int print_ambs(struct pci_dev *nb, struct pci_access *pacc);
 int print_spi(struct pci_dev *sb);
 int print_gfx(struct pci_dev *gfx);
+int print_ahci(struct pci_dev *ahci);
 void ivybridge_dump_timings(const char *dump_spd_file);

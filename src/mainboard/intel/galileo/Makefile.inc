@@ -17,6 +17,9 @@ ifeq ($(CONFIG_PLATFORM_USES_FSP1_1),y)
 CPPFLAGS_common += -I$(src)/vendorcode/intel/fsp/fsp1_1/quark
 endif
 
+bootblock-y += gpio.c
+bootblock-y += reg_access.c
+
 romstage-y += gpio.c
 romstage-y += reg_access.c
 

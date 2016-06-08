@@ -32,7 +32,7 @@ static void i2c_generic_fill_ssdt(struct device *dev)
 	struct acpi_i2c i2c = {
 		.address = dev->path.i2c.device,
 		.mode_10bit = dev->path.i2c.mode_10bit,
-		.speed = config->bus_speed ? : I2C_SPEED_FAST,
+		.speed = config->speed ? : I2C_SPEED_FAST,
 		.resource = scope,
 	};
 

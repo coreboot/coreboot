@@ -1,6 +1,7 @@
 arch_segment_loaded
 backup_top_of_ram
 boot_device_init
+car_stage_entry
 cbmem_fail_resume
 clear_recovery_mode_switch
 cpu_smi_handler

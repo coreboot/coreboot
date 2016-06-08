@@ -52,6 +52,17 @@ _start:
 	sub	%edi, %ecx
 	rep	stosl
 
+#if ((ENV_VERSTAGE && IS_ENABLED(CONFIG_VERSTAGE_DEBUG_SPINLOOP)) \
+	|| (ENV_ROMSTAGE && IS_ENABLED(CONFIG_ROMSTAGE_DEBUG_SPINLOOP)))
+
+	/* Wait for a JTAG debugger to break in and set EBX non-zero */
+	xor	%ebx, %ebx
+
+debug_spinloop:
+	cmp	$0, %ebx
+	jz	debug_spinloop
+#endif
+
 	jmp	car_stage_entry
 
 /* This is here for linking purposes. */

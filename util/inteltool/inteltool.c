@@ -215,12 +215,13 @@ void print_version(void)
 
 void print_usage(const char *name)
 {
-	printf("usage: %s [-vh?gGrpmedPMaAsfS]\n", name);
+	printf("usage: %s [-vh?gGrpmedPMaAsfSR]\n", name);
 	printf("\n"
 	     "   -v | --version:                   print the version\n"
 	     "   -h | --help:                      print this help\n\n"
 	     "   -s | --spi:                       dump southbridge spi and bios_cntrl registers\n"
 	     "   -f | --gfx:                       dump graphics registers (UNSAFE: may hang system!)\n"
+	     "   -R | --ahci:                      dump AHCI registers\n"
 	     "   -g | --gpio:                      dump southbridge GPIO registers\n"
 	     "   -G | --gpio-diffs:                show GPIO differences from defaults\n"
 	     "   -r | --rcba:                      dump southbridge RCBA registers\n"
@@ -240,7 +241,7 @@ void print_usage(const char *name)
 int main(int argc, char *argv[])
 {
 	struct pci_access *pacc;
-	struct pci_dev *sb = NULL, *nb, *gfx = NULL, *dev;
+	struct pci_dev *sb = NULL, *nb, *gfx = NULL, *ahci = NULL, *dev;
 	const char *dump_spd_file = NULL;
 	int i, opt, option_index = 0;
 	unsigned int id;
@@ -250,7 +251,7 @@ int main(int argc, char *argv[])
 	int dump_gpios = 0, dump_mchbar = 0, dump_rcba = 0;
 	int dump_pmbase = 0, dump_epbar = 0, dump_dmibar = 0;
 	int dump_pciexbar = 0, dump_coremsrs = 0, dump_ambs = 0;
-	int dump_spi = 0, dump_gfx = 0;
+	int dump_spi = 0, dump_gfx = 0, dump_ahci = 0;
 	int show_gpio_diffs = 0;
 
 	static struct option long_options[] = {
@@ -270,10 +271,11 @@ int main(int argc, char *argv[])
 		{"spd", 0, 0, 'S'},
 		{"all", 0, 0, 'a'},
 		{"gfx", 0, 0, 'f'},
+		{"ahci", 0, 0, 'R'},
 		{0, 0, 0, 0}
 	};
 
-	while ((opt = getopt_long(argc, argv, "vh?gGrpmedPMaAsfS:",
+	while ((opt = getopt_long(argc, argv, "vh?gGrpmedPMaAsfRS:",
                                   long_options, &option_index)) != EOF) {
 		switch (opt) {
 		case 'v':
@@ -289,6 +291,9 @@ int main(int argc, char *argv[])
 			break;
 		case 'f':
 			dump_gfx = 1;
+			break;
+		case 'R':
+			dump_ahci = 1;
 			break;
 		case 'G':
 			show_gpio_diffs = 1;
@@ -326,6 +331,7 @@ int main(int argc, char *argv[])
 			dump_coremsrs = 1;
 			dump_ambs = 1;
 			dump_spi = 1;
+			dump_ahci = 1;
 			break;
 		case 'A':
 			dump_ambs = 1;
@@ -422,6 +428,15 @@ int main(int argc, char *argv[])
 			gfx = 0;
 	}
 
+	ahci = pci_get_dev(pacc, 0, 0, 0x1f, 2);
+
+	if (ahci) {
+		pci_fill_info(ahci, PCI_FILL_IDENT|PCI_FILL_BASES|PCI_FILL_SIZES|PCI_FILL_CLASS);
+
+		if (ahci->vendor_id != PCI_VENDOR_ID_INTEL)
+			ahci = 0;
+	}
+
 	id = cpuid(1);
 
 	/* Intel has suggested applications to display the family of a CPU as
@@ -513,6 +528,10 @@ int main(int argc, char *argv[])
 
 	if (dump_gfx) {
 		print_gfx(gfx);
+	}
+
+	if (dump_ahci) {
+		print_ahci(ahci);
 	}
 
 	/* Clean up */

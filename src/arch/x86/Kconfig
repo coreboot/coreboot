@@ -179,3 +179,17 @@ config VERSTAGE_ADDR
 # from a program loaded in ram and subsequently loading ramstage.
 config POSTCAR_STAGE
 	def_bool n
+
+config VERSTAGE_DEBUG_SPINLOOP
+	bool
+	default n
+	help
+	  Add a spin (JMP .) in assembly_entry.S during early verstage to wait
+	  for a JTAG debugger to break into the execution sequence.
+
+config ROMSTAGE_DEBUG_SPINLOOP
+	bool
+	default n
+	help
+	  Add a spin (JMP .) in assembly_entry.S during early romstage to wait
+	  for a JTAG debugger to break into the execution sequence.

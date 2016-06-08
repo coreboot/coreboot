@@ -41,14 +41,10 @@ bootblock_protected_mode_entry:
 	movd	%eax, %mm1
 	movd	%edx, %mm2
 
-#if !IS_ENABLED(CONFIG_SSE)
+#if IS_ENABLED(CONFIG_SSE)
 enable_sse:
-	mov	%cr0, %eax
-	and	$~CR0_EM, %ax		/* Clear coprocessor emulation CR0.EM */
-	or	$CR0_MP, %ax		/* Set coprocessor monitoring  CR0.MP */
-	mov	%eax, %cr0
 	mov	%cr4, %eax
-	or	$(CR4_OSFXSR | CR4_OSXMMEXCPT), %ax
+	or	$CR4_OSFXSR, %ax
 	mov	%eax, %cr4
 #endif /* IS_ENABLED(CONFIG_SSE) */
 

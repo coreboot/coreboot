@@ -245,6 +245,20 @@
 #define POST_FSP_NOTIFY_BEFORE_FINALIZE		0x95
 
 /**
+ * \brief Indicate OS _PTS entry
+ *
+ * Called from _PTS asl method
+ */
+#define POST_OS_ENTER_PTS			0x96
+
+/**
+ * \brief Indicate OS _WAK entry
+ *
+ * Called from within _WAK method
+ */
+#define POST_OS_ENTER_WAKE			0x97
+
+/**
  * \brief Entry into elf boot
  *
  * This POST code is called right before invoking jmp_to_elf_entry()

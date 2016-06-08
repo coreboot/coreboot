@@ -292,7 +292,13 @@ static int smbios_write_type0(unsigned long *current, int handle)
 #endif
 #endif /* CONFIG_CHROMEOS */
 
-	t->bios_rom_size = (CONFIG_ROM_SIZE / 65535) - 1;
+	/* As a work around to prevent a compiler error, temporarily specify
+	 * 16 MiB flash sizes when ROM size >= 16 MiB.  An update is necessary
+	 * once the SMBIOS specification addresses ROM sizes > 16 MiB.
+	 */
+	uint32_t rom_size = CONFIG_ROM_SIZE;
+	rom_size = MIN(CONFIG_ROM_SIZE, 16 * MiB);
+	t->bios_rom_size = (rom_size / 65535) - 1;
 
 	t->system_bios_major_release = 4;
 	t->bios_characteristics =

@@ -38,6 +38,12 @@ DefinitionBlock(
 			#include <soc/intel/apollolake/acpi/pch_hda.asl>
 		}
 	}
+
+	#if IS_ENABLED(CONFIG_CHROMEOS)
+	#include "acpi/chromeos.asl"
+	#include <vendorcode/google/chromeos/acpi/chromeos.asl>
+	#endif
+
 	/* Mainboard Specific devices */
 	#include "acpi/mainboard.asl"
 

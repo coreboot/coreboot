@@ -204,6 +204,7 @@ typedef struct ramctr_timing_st {
 #define GET_ERR_CHANNEL(x) (x>>16)
 
 static void program_timings(ramctr_timing * ctrl, int channel);
+static unsigned int get_mmio_size(void);
 
 static const char *ecc_decoder[] = {
 	"inactive",
@@ -1086,7 +1087,7 @@ static void dram_memorymap(ramctr_timing * ctrl, int me_uma_size)
 	size_t tsegbasedelta, remapbase, remaplimit;
 	uint16_t ggc;
 
-	mmiosize = 0x400;
+	mmiosize = get_mmio_size();
 
 	ggc = pci_read_config16(NORTHBRIDGE, GGC);
 	if (!(ggc & 2)) {
@@ -4382,6 +4383,24 @@ static unsigned int get_mem_min_tck(void)
 		else
 			return TCK_400MHZ;
 	}
+}
+
+#define DEFAULT_PCI_MMIO_SIZE 2048
+
+static unsigned int get_mmio_size(void)
+{
+	const struct device *dev;
+	const struct northbridge_intel_sandybridge_config *cfg = NULL;
+
+	dev = dev_find_slot(0, HOST_BRIDGE);
+	if (dev)
+		cfg = dev->chip_info;
+
+	/* If this is zero, it just means devicetree.cb didn't set it */
+	if (!cfg || cfg->pci_mmio_size == 0)
+		return DEFAULT_PCI_MMIO_SIZE;
+	else
+		return cfg->pci_mmio_size;
 }
 
 void perform_raminit(int s3resume)

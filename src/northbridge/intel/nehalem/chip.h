@@ -41,6 +41,11 @@ struct northbridge_intel_nehalem_config {
 	u32 gpu_pch_backlight;	/* PCH Backlight PWM value */
 
 	struct i915_gpu_controller_info gfx;
+
+	/*
+	 * Maximum PCI mmio size in MiB.
+	 */
+	u16 pci_mmio_size;
 };
 
 #endif /* NORTHBRIDGE_INTEL_NEHALEM_CHIP_H */

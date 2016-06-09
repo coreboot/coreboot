@@ -47,6 +47,11 @@ struct northbridge_intel_sandybridge_config {
 	u16 max_mem_clock_mhz;
 
 	struct i915_gpu_controller_info gfx;
+
+	/*
+	 * Maximum PCI mmio size in MiB.
+	 */
+	u16 pci_mmio_size;
 };
 
 #endif /* NORTHBRIDGE_INTEL_SANDYBRIDGE_CHIP_H */

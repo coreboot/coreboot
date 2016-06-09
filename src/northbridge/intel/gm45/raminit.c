@@ -20,11 +20,13 @@
 #include <arch/io.h>
 #include <device/pci_def.h>
 #include <device/pnp_def.h>
+#include <device/device.h>
 #include <spd.h>
 #include <console/console.h>
 #include <lib.h>
 #include "delay.h"
 #include "gm45.h"
+#include "chip.h"
 
 static const gmch_gfx_t gmch_gfx_types[][5] = {
 /*  MAX_667MHz    MAX_533MHz    MAX_400MHz    MAX_333MHz    MAX_800MHz    */
@@ -1156,6 +1158,25 @@ static void vc1_program_timings(const fsb_clock_t fsb)
 	EPBAR32(0x3c) = timings_by_fsb[fsb][1];
 }
 
+#define DEFAULT_PCI_MMIO_SIZE 2048
+#define HOST_BRIDGE	PCI_DEVFN(0, 0)
+
+static unsigned int get_mmio_size(void)
+{
+	const struct device *dev;
+	const struct northbridge_intel_gm45_config *cfg = NULL;
+
+	dev = dev_find_slot(0, HOST_BRIDGE);
+	if (dev)
+		cfg = dev->chip_info;
+
+	/* If this is zero, it just means devicetree.cb didn't set it */
+	if (!cfg || cfg->pci_mmio_size == 0)
+		return DEFAULT_PCI_MMIO_SIZE;
+	else
+		return cfg->pci_mmio_size;
+}
+
 /* @prejedec if not zero, set rank size to 128MB and page size to 4KB. */
 static void program_memory_map(const dimminfo_t *const dimms, const channel_mode_t mode, const int prejedec, u16 ggc)
 {
@@ -1226,7 +1247,8 @@ static void program_memory_map(const dimminfo_t *const dimms, const channel_mode
 		}
 	}
 
-	const unsigned int MMIOstart = 0x0c00 + uma_sizem; /* 3GB, makes MTRR configuration small. */
+	const unsigned int mmio_size = get_mmio_size();
+	const unsigned int MMIOstart = 4096 - mmio_size + uma_sizem;
 	const int me_active = pci_read_config8(PCI_DEV(0, 3, 0), PCI_CLASS_REVISION) != 0xff;
 	const unsigned int ME_SIZE = prejedec || !me_active ? 0 : 32;
 	const unsigned int usedMEsize = (total_mb[0] != total_mb[1]) ? ME_SIZE : 2 * ME_SIZE;

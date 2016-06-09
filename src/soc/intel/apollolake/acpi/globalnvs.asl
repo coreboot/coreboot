@@ -34,6 +34,8 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	PWRS,	8,      // 0x03 - AC Power State
 	DPTE,	8,      // 0x04 - Enable DPTF
 	CBMC,	32,     // 0x05 - 0x08 - Coreboot Memory Console
+	PM1I,	64,     // 0x09 - 0x10 - System Wake Source - PM1 Index
+	GPEI,	64,     // 0x11 - 0x18 - GPE Wake Source
 
 	/* ChromeOS stuff (0x100 -> 0xfff, size 0xeff) */
 	Offset (0x100),

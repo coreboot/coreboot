@@ -32,10 +32,12 @@
 #include <ip_checksum.h>
 #include <pc80/mc146818rtc.h>
 #include <device/pci_def.h>
+#include <device/device.h>
 #include <arch/cpu.h>
 #include <halt.h>
 #include <spd.h>
 #include "raminit.h"
+#include "chip.h"
 #include <timestamp.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/intel/speedstep.h>
@@ -1450,6 +1452,25 @@ static void program_board_delay(struct raminfo *info)
 	}
 }
 
+#define DEFAULT_PCI_MMIO_SIZE 2048
+#define HOST_BRIDGE	PCI_DEVFN(0, 0)
+
+static unsigned int get_mmio_size(void)
+{
+	const struct device *dev;
+	const struct northbridge_intel_nehalem_config *cfg = NULL;
+
+	dev = dev_find_slot(0, HOST_BRIDGE);
+	if (dev)
+		cfg = dev->chip_info;
+
+	/* If this is zero, it just means devicetree.cb didn't set it */
+	if (!cfg || cfg->pci_mmio_size == 0)
+		return DEFAULT_PCI_MMIO_SIZE;
+	else
+		return cfg->pci_mmio_size;
+}
+
 #define BETTER_MEMORY_MAP 0
 
 static void program_total_memory_map(struct raminfo *info)
@@ -1459,6 +1480,7 @@ static void program_total_memory_map(struct raminfo *info)
 	unsigned int REMAPbase;
 	unsigned int uma_base_igd;
 	unsigned int uma_base_gtt;
+	unsigned int mmio_size;
 	int memory_remap;
 	unsigned int memory_map[8];
 	int i;
@@ -1485,11 +1507,13 @@ static void program_total_memory_map(struct raminfo *info)
 	}
 #endif
 
+	mmio_size = get_mmio_size();
+
 	TOM = info->total_memory_mb;
 	if (TOM == 4096)
 		TOM = 4032;
 	TOUUD = ALIGN_DOWN(TOM - info->memory_reserved_for_heci_mb, 64);
-	TOLUD = ALIGN_DOWN(min(3072 + ALIGN_UP(uma_size_igd + uma_size_gtt, 64)
+	TOLUD = ALIGN_DOWN(min(4096 - mmio_size + ALIGN_UP(uma_size_igd + uma_size_gtt, 64)
 			       , TOUUD), 64);
 	memory_remap = 0;
 	if (TOUUD - TOLUD > 64) {

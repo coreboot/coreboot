@@ -26,6 +26,11 @@ struct northbridge_intel_gm45_config {
 	u16 gpu_panel_power_backlight_off_delay; /* Tx time sequence */
 	u8 gpu_panel_power_cycle_delay;          /* T4 time sequence */
 	struct i915_gpu_controller_info gfx;
+
+	/*
+	 * Maximum PCI mmio size in MiB.
+	 */
+	u16 pci_mmio_size;
 };
 
 #endif				/* NORTHBRIDGE_INTEL_GM45_CHIP_H */

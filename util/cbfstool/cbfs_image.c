@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h>
+#include <commonlib/endian.h>
 
 #include "common.h"
 #include "cbfs_image.h"
@@ -827,6 +828,93 @@ static int cbfs_stage_decompress(struct cbfs_stage *stage, struct buffer *buff)
 	return 0;
 }
 
+static int cbfs_payload_decompress(struct cbfs_payload_segment *segments,
+		struct buffer *buff, int num_seg)
+{
+	struct buffer new_buffer;
+	struct buffer seg_buffer;
+	size_t new_buff_sz;
+	char *in_ptr;
+	char *out_ptr;
+	size_t new_offset;
+	decomp_func_ptr decompress;
+
+	new_offset = num_seg * sizeof(*segments);
+	new_buff_sz = num_seg * sizeof(*segments);
+
+	/* Find out and allocate the amount of memory occupied
+	 * by the binary data */
+	for (int i = 0; i < num_seg; i++)
+		new_buff_sz += segments[i].mem_len;
+
+	buffer_create(&new_buffer, new_buff_sz, "decompressed_buff");
+
+	in_ptr = buffer_get(buff) + new_offset;
+	out_ptr = buffer_get(&new_buffer) + new_offset;
+
+	for (int i = 0; i < num_seg; i++) {
+		struct buffer tbuff;
+		size_t decomp_size;
+
+		/* The payload uses an unknown compression algorithm. */
+		decompress = decompression_function(segments[i].compression);
+		if (decompress == NULL) {
+			ERROR("Unknown decompression algorithm: %u",
+					segments[i].compression);
+			return -1;
+		}
+
+		/* Segments BSS and ENTRY do not have binary data. */
+		if (segments[i].type == PAYLOAD_SEGMENT_BSS ||
+				segments[i].type == PAYLOAD_SEGMENT_ENTRY) {
+			continue;
+		} else if (segments[i].type == PAYLOAD_SEGMENT_PARAMS) {
+			memcpy(out_ptr, in_ptr, segments[i].len);
+			segments[i].offset = new_offset;
+			new_offset += segments[i].len;
+			in_ptr += segments[i].len;
+			out_ptr += segments[i].len;
+			segments[i].compression = CBFS_COMPRESS_NONE;
+			continue;
+		}
+
+		buffer_create(&tbuff, segments[i].mem_len, "segment");
+
+		if (decompress(in_ptr, segments[i].len, buffer_get(&tbuff),
+					(int) buffer_size(&tbuff),
+					&decomp_size)) {
+			ERROR("Couldn't decompress payload segment %u\n", i);
+			buffer_delete(&new_buffer);
+			return -1;
+		}
+
+		memcpy(out_ptr, buffer_get(&tbuff), decomp_size);
+
+		in_ptr += segments[i].len;
+
+		/* Update the offset of the segment. */
+		segments[i].offset = new_offset;
+		/* True decompressed size is just the data size. No metadata */
+		segments[i].len = decomp_size;
+		/* Segment is not compressed. */
+		segments[i].compression = CBFS_COMPRESS_NONE;
+
+		/* Update the offset and output buffer pointer. */
+		new_offset += decomp_size;
+		out_ptr += decomp_size;
+
+		buffer_delete(&tbuff);
+	}
+
+	buffer_splice(&seg_buffer, &new_buffer, 0, 0);
+	xdr_segs(&seg_buffer, segments, num_seg);
+
+	buffer_delete(buff);
+	*buff = new_buffer;
+
+	return 0;
+}
+
 static int init_elf_from_arch(Elf64_Ehdr *ehdr, uint32_t cbfs_arch)
 {
 	int endian;
@@ -949,6 +1037,155 @@ static int cbfs_stage_make_elf(struct buffer *buff, uint32_t arch)
 	return 0;
 }
 
+static int cbfs_payload_make_elf(struct buffer *buff, uint32_t arch)
+{
+	Elf64_Ehdr ehdr;
+	Elf64_Shdr shdr;
+	struct cbfs_payload_segment *segs;
+	struct elf_writer *ew;
+	struct buffer elf_out;
+	size_t empty_sz;
+	int segments = 0;
+
+	/* Count the number of segments inside buffer */
+	while (true) {
+		uint32_t payload_type = 0;
+
+		struct cbfs_payload_segment *seg;
+
+		seg = buffer_get(buff);
+		payload_type = read_be32(&seg[segments].type);
+
+		if (payload_type == PAYLOAD_SEGMENT_CODE) {
+			segments++;
+		} else if (payload_type == PAYLOAD_SEGMENT_DATA) {
+			segments++;
+		} else if (payload_type == PAYLOAD_SEGMENT_BSS) {
+			segments++;
+		} else if (payload_type == PAYLOAD_SEGMENT_PARAMS) {
+			segments++;
+		} else if (payload_type == PAYLOAD_SEGMENT_ENTRY) {
+			/* The last segment in a payload is always ENTRY as
+			 * specified by the  parse_elf_to_payload() function.
+			 * Therefore there is no need to continue looking for
+			 * segments.*/
+			segments++;
+			break;
+		} else {
+			ERROR("Unknown payload segment type: %x\n",
+					payload_type);
+			return -1;
+		}
+	}
+
+	segs = malloc(segments * sizeof(*segs));
+
+	/* Decode xdr segments */
+	for (int i = 0; i < segments; i++) {
+		struct cbfs_payload_segment *serialized_seg = buffer_get(buff);
+
+		xdr_get_seg(&segs[i], &serialized_seg[i]);
+	}
+
+	if (cbfs_payload_decompress(segs, buff, segments)) {
+		ERROR("Failed to decompress payload.\n");
+		return -1;
+	}
+
+	if (init_elf_from_arch(&ehdr, arch))
+		return -1;
+
+	ehdr.e_entry = segs[segments-1].load_addr;
+
+	ew = elf_writer_init(&ehdr);
+	if (ew == NULL) {
+		ERROR("Unable to init ELF writer.\n");
+		return -1;
+	}
+
+	for (int i = 0; i < segments; i++) {
+		struct buffer tbuff;
+
+		memset(&shdr, 0, sizeof(shdr));
+		char *name = NULL;
+
+		if (segs[i].type == PAYLOAD_SEGMENT_CODE) {
+			shdr.sh_type = SHT_PROGBITS;
+			shdr.sh_flags = SHF_WRITE | SHF_ALLOC | SHF_EXECINSTR;
+			shdr.sh_addr = segs[i].load_addr;
+			shdr.sh_size = segs[i].len;
+			empty_sz = segs[i].mem_len - segs[i].len;
+			name = strdup(".text");
+			buffer_splice(&tbuff, buff, segs[i].offset,
+				       segs[i].len);
+		} else if (segs[i].type == PAYLOAD_SEGMENT_DATA) {
+			shdr.sh_type = SHT_PROGBITS;
+			shdr.sh_flags = SHF_ALLOC | SHF_WRITE;
+			shdr.sh_addr = segs[i].load_addr;
+			shdr.sh_size = segs[i].len;
+			empty_sz = segs[i].mem_len - segs[i].len;
+			name = strdup(".data");
+			buffer_splice(&tbuff, buff, segs[i].offset,
+				       segs[i].len);
+		} else if (segs[i].type == PAYLOAD_SEGMENT_BSS) {
+			shdr.sh_type = SHT_NOBITS;
+			shdr.sh_flags = SHF_ALLOC | SHF_WRITE;
+			shdr.sh_addr = segs[i].load_addr;
+			shdr.sh_size = segs[i].len;
+			name = strdup(".bss");
+			buffer_splice(&tbuff, buff, 0, 0);
+		} else if (segs[i].type == PAYLOAD_SEGMENT_PARAMS) {
+			shdr.sh_type = SHT_NOTE;
+			shdr.sh_flags = 0;
+			shdr.sh_size = segs[i].len;
+			name = strdup(".note.pinfo");
+			buffer_splice(&tbuff, buff, segs[i].offset,
+				       segs[i].len);
+		} else if (segs[i].type == PAYLOAD_SEGMENT_ENTRY) {
+			break;
+		}
+
+
+		if (elf_writer_add_section(ew, &shdr, &tbuff, name)) {
+			ERROR("Unable to add ELF section: %s\n", name);
+			elf_writer_destroy(ew);
+			return -1;
+		}
+
+		if (empty_sz != 0) {
+			struct buffer b;
+
+			buffer_init(&b, NULL, NULL, 0);
+			memset(&shdr, 0, sizeof(shdr));
+			shdr.sh_type = SHT_NOBITS;
+			shdr.sh_flags = SHF_WRITE | SHF_ALLOC;
+			shdr.sh_addr = segs[i].load_addr + segs[i].len;
+			shdr.sh_size = empty_sz;
+			name = strdup(".empty");
+			if (elf_writer_add_section(ew, &shdr, &b, name)) {
+				ERROR("Unable to add ELF section: %s\n", name);
+				elf_writer_destroy(ew);
+				return -1;
+			}
+		}
+
+	}
+
+	if (elf_writer_serialize(ew, &elf_out)) {
+		ERROR("Unable to create ELF file from stage.\n");
+		elf_writer_destroy(ew);
+		return -1;
+	}
+
+	/* Flip buffer with the created ELF one. */
+	buffer_delete(buff);
+	*buff = elf_out;
+
+	elf_writer_destroy(ew);
+
+	return 0;
+}
+
 int cbfs_export_entry(struct cbfs_image *image, const char *entry_name,
 		      const char *filename, uint32_t arch)
 {
@@ -973,10 +1210,6 @@ int cbfs_export_entry(struct cbfs_image *image, const char *entry_name,
 	    entry_name, cbfs_get_entry_addr(image, entry),
 	    get_cbfs_entry_type_name(ntohl(entry->type)), decompressed_size);
 
-	if (ntohl(entry->type) == CBFS_COMPONENT_PAYLOAD) {
-		WARN("Payloads are extracted in SELF format.\n");
-	}
-
 	buffer_init(&buffer, strdup("(cbfs_export_entry)"), NULL, 0);
 
 	buffer.data = malloc(decompressed_size);
@@ -996,6 +1229,11 @@ int cbfs_export_entry(struct cbfs_image *image, const char *entry_name,
 	 */
 	if (ntohl(entry->type) == CBFS_COMPONENT_STAGE) {
 		if (cbfs_stage_make_elf(&buffer, arch)) {
+			buffer_delete(&buffer);
+			return -1;
+		}
+	} else if (ntohl(entry->type) == CBFS_COMPONENT_PAYLOAD) {
+		if (cbfs_payload_make_elf(&buffer, arch)) {
 			buffer_delete(&buffer);
 			return -1;
 		}

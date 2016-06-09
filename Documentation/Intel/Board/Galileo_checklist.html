@@ -3,9 +3,35 @@
 <title>Galileo Implementation Status</title>
 </title>
 <body>
-<h1>Galileo Implementation Status: 2016/05/31</h1>
+<h1>Galileo Implementation Status<br>2016/06/08 17:18:24 PDT</h1>
+<table>
+  <tr><td colspan=2><b>Legend</b></td></tr>
+  <tr><td bgcolor="#ffc0c0">Red</td><td>Required - To-be-implemented</td></tr>
+  <tr><td bgcolor="#ffffc0">Yellow</td><td>Optional</td></tr>
+  <tr><td bgcolor="#c0ffc0">Green</td><td>Implemented</td></tr>
+</table>
+<table>
+  <tr valign="top">
+    <td>
 <table border=1>
-<tr><th colspan=2>romstage: 65% Done</th></tr>
+<tr><th colspan=2>bootblock: 100% Done</th></tr>
+<tr><th>Type</th><th>Routine</td></tr>
+<tr bgcolor=#ffffc0><td>Optional</td><td>bootblock_c_entry</td></tr>
+<tr bgcolor=#c0ffc0><td>Required</td><td>bootblock_main_with_timestamp</td></tr>
+<tr bgcolor=#ffffc0><td>Optional</td><td>bootblock_mainboard_early_init</td></tr>
+<tr bgcolor=#ffffc0><td>Optional</td><td>bootblock_mainboard_init</td></tr>
+<tr bgcolor=#c0ffc0><td>Required</td><td>bootblock_pre_c_entry</td></tr>
+<tr bgcolor=#c0ffc0><td>Required</td><td>bootblock_protected_mode_entry</td></tr>
+<tr bgcolor=#c0ffc0><td>Required</td><td>bootblock_soc_early_init</td></tr>
+<tr bgcolor=#ffffc0><td>Optional</td><td>bootblock_soc_init</td></tr>
+<tr bgcolor=#c0ffc0><td>Required</td><td>tsc_freq_mhz</td></tr>
+<tr bgcolor=#c0ffc0><td>Required</td><td>uart_init</td></tr>
+</table>
+    </td>
+    <td width=5>&nbsp;</td>
+    <td>
+<table border=1>
+<tr><th colspan=2>romstage: 66% Done</th></tr>
 <tr><th>Type</th><th>Routine</td></tr>
 <tr bgcolor=#ffffc0><td>Optional</td><td>arch_segment_loaded</td></tr>
 <tr bgcolor=#ffffc0><td>Optional</td><td>backup_top_of_ram</td></tr>
@@ -14,6 +40,7 @@
 <tr bgcolor=#c0ffc0><td>Required</td><td>car_mainboard_pre_console_init</td></tr>
 <tr bgcolor=#c0ffc0><td>Required</td><td>car_soc_post_console_init</td></tr>
 <tr bgcolor=#c0ffc0><td>Required</td><td>car_soc_pre_console_init</td></tr>
+<tr bgcolor=#c0ffc0><td>Required</td><td>car_stage_entry</td></tr>
 <tr bgcolor=#c0ffc0><td>Required</td><td>cbfs_master_header_locator</td></tr>
 <tr bgcolor=#ffffc0><td>Optional</td><td>cbmem_fail_resume</td></tr>
 <tr bgcolor=#ffffc0><td>Optional</td><td>clear_recovery_mode_switch</td></tr>
@@ -67,7 +94,9 @@
 <tr bgcolor=#ffffc0><td>Optional</td><td>vboot_platform_prepare_reboot</td></tr>
 <tr bgcolor=#ffffc0><td>Optional</td><td>verstage_mainboard_init</td></tr>
 </table>
-<br>
+    </td>
+    <td width=5>&nbsp;</td>
+    <td>
 <table border=1>
 <tr><th colspan=2>ramstage: 55% Done</th></tr>
 <tr><th>Type</th><th>Routine</td></tr>
@@ -125,6 +154,9 @@
 <tr bgcolor=#ffffc0><td>Optional</td><td>wifi_regulatory_domain</td></tr>
 <tr bgcolor=#ffffc0><td>Optional</td><td>write_smp_table</td></tr>
 </table>
-<br>
+    </td>
+    <td width=5>&nbsp;</td>
+  </tr>
+</table>
 </body>
 </html>

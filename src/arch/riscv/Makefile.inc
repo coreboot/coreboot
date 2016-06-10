@@ -15,7 +15,7 @@
 ##
 ################################################################################
 
-riscv_flags = -I$(src)/arch/riscv/
+riscv_flags = -I$(src)/arch/riscv/ -mcmodel=medany
 
 riscv_asm_flags =
 
@@ -47,6 +47,9 @@ $(objcbfs)/bootblock.debug: $$(bootblock-objs)
 	$(LD_bootblock) $(LDFLAGS_bootblock) -o $@ -L$(obj) \
 		-T $(call src-to-obj,bootblock,src/mainboard/$(MAINBOARDDIR)/memlayout.ld) --whole-archive --start-group $(filter-out %.ld,$(bootblock-objs)) \
 		$(LIBGCC_FILE_NAME_bootblock) --end-group $(COMPILER_RT_bootblock)
+
+bootblock-c-ccopts += $(riscv_flags)
+bootblock-S-ccopts += $(riscv_asm_flags)
 
 endif
 

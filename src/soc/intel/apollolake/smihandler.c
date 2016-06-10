@@ -46,6 +46,7 @@ const struct smm_save_state_ops *get_smm_save_state_ops(void)
 const smi_handler_t southbridge_smi[32] = {
 	[SLP_SMI_STS] = southbridge_smi_sleep,
 	[APM_SMI_STS] = southbridge_smi_apmc,
+	[FAKE_PM1_SMI_STS] = southbridge_smi_pm1,
 	[TCO_SMI_STS] = southbridge_smi_tco,
 	[PERIODIC_SMI_STS] = southbridge_smi_periodic,
 };

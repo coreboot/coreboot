@@ -100,6 +100,7 @@
 #define  MC_SMI_STS		12
 #define  GPIO_UNLOCK_SMI_STS	11
 #define  GPIO_SMI_STS		10
+#define  FAKE_PM1_SMI_STS	8
 #define  SWSMI_TMR_SMI_STS	6
 #define  APM_SMI_STS		5
 #define  SLP_SMI_STS		4

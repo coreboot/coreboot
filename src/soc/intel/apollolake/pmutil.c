@@ -60,6 +60,7 @@ static uint32_t print_smi_status(uint32_t smi_sts)
 		[SLP_SMI_STS] = "SLP_SMI",
 		[APM_SMI_STS] = "APM",
 		[SWSMI_TMR_SMI_STS] = "SWSMI_TMR",
+		[FAKE_PM1_SMI_STS] = "PM1",
 		[GPIO_SMI_STS]= "GPIO_SMI",
 		[GPIO_UNLOCK_SMI_STS]= "GPIO_UNLOCK_SSMI",
 		[MC_SMI_STS] = "MCSMI",
@@ -96,7 +97,23 @@ static uint32_t reset_smi_status(void)
 
 uint32_t clear_smi_status(void)
 {
-	return print_smi_status(reset_smi_status());
+	uint32_t sts = reset_smi_status();
+
+	/*
+	 * Check for power button status if nothing else is indicating an SMI
+	 * and SMIs aren't turned into SCIs. Apparently, there is no PM1 status
+	 * bit in the SMI status register.  That makes things difficult for
+	 * determining if the power button caused an SMI.
+	 */
+	if (sts == 0 && !(inl(ACPI_PMIO_BASE + PM1_CNT) & SCI_EN)) {
+		uint16_t pm1_sts = inw(ACPI_PMIO_BASE + PM1_STS);
+
+		/* Fake PM1 status bit if power button pressed. */
+		if (pm1_sts & PWRBTN_STS)
+			sts |= (1 << FAKE_PM1_SMI_STS);
+	}
+
+	return print_smi_status(sts);
 }
 
 uint32_t get_smi_en(void)

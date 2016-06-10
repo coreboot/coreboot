@@ -84,6 +84,28 @@
 #define   GBL_SMI_EN		(1 << SMI_GBL) /* Global SMI Enable */
 
 #define SMI_STS			0x44
+/* Bits for SMI status */
+#define  PMC_OCP_SMI_STS	27
+#define  SPI_SMI_STS		26
+#define  SPI_SSMI_STS		25
+#define  SCC2_SMI_STS		21
+#define  PCIE_SMI_STS		20
+#define  SCS_SMI_STS		19
+#define  HSMBUS_SMI_STS		18
+#define  XHCI_SMI_STS		17
+#define  SMBUS_SMI_STS		16
+#define  SERIRQ_SMI_STS		15
+#define  PERIODIC_SMI_STS	14
+#define  TCO_SMI_STS		13
+#define  MC_SMI_STS		12
+#define  GPIO_UNLOCK_SMI_STS	11
+#define  GPIO_SMI_STS		10
+#define  SWSMI_TMR_SMI_STS	6
+#define  APM_SMI_STS		5
+#define  SLP_SMI_STS		4
+#define  LEGACY_USB_SMI_STS	3
+#define  BIOS_SMI_STS		2
+
 #define GPE_CNTL		0x50
 #define DEVACT_STS		0x4c
 #define TCO_STS			0x64

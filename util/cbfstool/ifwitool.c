@@ -242,47 +242,51 @@ enum bpdt_entry_type {
  * thus sub-partitions would have increasing offsets as we loop over pack_order.
  */
 const enum bpdt_entry_type bpdt_header_order[MAX_SUBPARTS] = {
+	/* Order of the following entries is mandatory. */
 	CSE_IDLM_TYPE,
 	IFP_OVERRIDE_TYPE,
 	S_BPDT_TYPE,
 	CSE_RBE_TYPE,
 	UFS_PHY_TYPE,
 	UFS_GPP_TYPE,
-	CSE_BUP_TYPE,
+	/* Order of the following entries is recommended. */
 	UEP_TYPE,
 	NVM_CONFIG_TYPE,
+	UFS_RATE_B_TYPE,
+	IBB_TYPE,
 	SMIP_TYPE,
 	PMC_TYPE,
+	CSE_BUP_TYPE,
 	UCODE_TYPE,
-	IBB_TYPE,
 	DEBUG_TOKENS_TYPE,
-	UFS_RATE_B_TYPE,
-	ISH_TYPE,
-	CSE_MAIN_TYPE,
-	OBB_TYPE,
 	IUNIT_TYPE,
+	CSE_MAIN_TYPE,
+	ISH_TYPE,
+	OBB_TYPE,
 };
 
 const enum bpdt_entry_type bpdt_pack_order[MAX_SUBPARTS] = {
-	CSE_IDLM_TYPE,
-	UFS_PHY_TYPE,
+	/* Order of the following entries is mandatory. */
 	UFS_GPP_TYPE,
+	UFS_PHY_TYPE,
 	IFP_OVERRIDE_TYPE,
 	UEP_TYPE,
-	IBB_TYPE,
 	NVM_CONFIG_TYPE,
+	UFS_RATE_B_TYPE,
+	/* Order of the following entries is recommended. */
+	IBB_TYPE,
 	SMIP_TYPE,
 	CSE_RBE_TYPE,
 	PMC_TYPE,
 	CSE_BUP_TYPE,
 	UCODE_TYPE,
+	CSE_IDLM_TYPE,
 	DEBUG_TOKENS_TYPE,
-	UFS_RATE_B_TYPE,
 	S_BPDT_TYPE,
-	ISH_TYPE,
-	CSE_MAIN_TYPE,
-	OBB_TYPE,
 	IUNIT_TYPE,
+	CSE_MAIN_TYPE,
+	ISH_TYPE,
+	OBB_TYPE,
 };
 
 /* Utility functions. */

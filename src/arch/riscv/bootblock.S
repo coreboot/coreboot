@@ -34,8 +34,11 @@ machine_handler:
 .globl _start
 _start:
 
+#define STACK_START 0x80800000 /* 2GiB + 8MiB */
+#define STACK_SIZE  0x0000fff0
+
 	// pending figuring out this f-ing toolchain. Hardcode what we know works.
-  li sp, 0x80FFF0 // stack start + stack size
+  li sp, STACK_START + STACK_SIZE
 
   # make room for HLS and initialize it
   addi sp, sp, -64 // MENTRY_FRAME_SIZE
@@ -43,7 +46,7 @@ _start:
   call hls_init
 
   //poison the stack
-  li t1, 0x800000
+  li t1, STACK_START
   li t0, 0xdeadbeef
   sd t0, 0(t1)
 

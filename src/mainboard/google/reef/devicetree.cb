@@ -6,6 +6,31 @@ chip soc/intel/apollolake
 
 	register "pcie_rp4_clkreq_pin" = "0"    # wifi/bt
 
+	# EMMC TX DATA Delay 1#
+	# 0x0C[14:8] stands for 12*125 = 1500 pSec delay for HS400
+	# 0x11[6:0] stands for 17*125 =  2125 pSec delay for SDR104/HS200
+	register "emmc_tx_data_cntl1" = "0x0C11" # HS400 required
+
+	# EMMC TX DATA Delay 2#
+	# 0x1C[30:24] stands for 28*125 = 3500 pSec delay for SDR50
+	# 0x1C[22:16] stands for 28*125 = 3500 pSec delay for DDR50
+	# 0x1C[14:8] stands for 28*125 = 3500 pSec delay for SDR25/HS50
+	# 0x00[6:0] stands for 0 delay for SDR12/Compatibility mode
+	register "emmc_tx_data_cntl2" = "0x1c1c1c00"
+
+	# EMMC RX CMD/DATA Delay 1#
+	# 0x1C[30:24] stands for 28*125 = 3500 pSec delay for SDR50
+	# 0x1C[22:16] stands for 28*125 = 3500 pSec delay for DDR50
+	# 0x1C[14:8] stands for 28*125 = 3500 pSec delay for SDR25/HS50
+	# 0x00[6:0] stands for 0 delay for SDR12/Compatibility
+	register "emmc_rx_cmd_data_cntl1" = "0x1c1c1c00"
+
+	# EMMC RX CMD/DATA Delay 2#
+	# 0x01[17:16] stands for Rx Clock before Output Buffer
+	# 0x00[14:8] stands for 0 delay for Auto Tuning Mode
+	# 0x1C[6:0] stands for 28*125 =  3500 pSec delay for SDR104/HS200
+	register "emmc_rx_cmd_data_cntl2" = "0x1001c"
+
 	device domain 0 on
 		device pci 00.0 on  end	# - Host Bridge
 		device pci 00.1 on  end	# - DPTF

@@ -101,8 +101,8 @@ struct subpart_dir_header {
 	/* Length of directory header in bytes. */
 	uint8_t header_length;
 	/*
-	 * 8-bit XOR checksum from first byte of header to last byte of
-	 * directory entry.
+	 * TODO(furquan): Add checksum calculation once more details are
+	 * available.
 	 */
 	uint8_t checksum;
 	/* ASCII short name of sub-partition. */
@@ -750,26 +750,7 @@ static void parse_sbpdt(void *data, size_t size)
 			  "S-BPDT");
 }
 
-static uint8_t calc_checksum(struct subpart_dir *s)
-{
-	size_t size = subpart_dir_size(&s->h);
-	uint8_t *data = (uint8_t *)s;
-	uint8_t checksum = 0;
-	size_t i;
-
-	uint8_t old_checksum = s->h.checksum;
-	s->h.checksum = 0;
-
-	for (i = 0; i < size; i++) {
-		checksum ^= data[i];
-	}
-
-	s->h.checksum = old_checksum;
-	return checksum;
-}
-
-static void validate_subpart_dir(struct subpart_dir *s, const char *name,
-				 bool checksum_check)
+static void validate_subpart_dir(struct subpart_dir *s, const char *name)
 {
 	if ((s->h.marker != SUBPART_DIR_MARKER) ||
 	    (s->h.header_version != SUBPART_DIR_HEADER_VERSION_SUPPORTED) ||
@@ -778,27 +759,6 @@ static void validate_subpart_dir(struct subpart_dir *s, const char *name,
 		ERROR("Invalid subpart_dir for %s.\n", name);
 		exit(-1);
 	}
-
-	if (checksum_check == 0)
-		return;
-
-	uint8_t checksum = calc_checksum(s);
-
-	if (checksum != s->h.checksum)
-		ERROR("Invalid checksum for %s(Expected=0x%x,Current=0x%x).\n",
-		      name, checksum, s->h.checksum);
-}
-
-static void validate_subpart_dir_without_checksum(struct subpart_dir *s,
-						  const char *name)
-{
-	validate_subpart_dir(s, name, 0);
-}
-
-static void validate_subpart_dir_with_checksum(struct subpart_dir *s,
-					       const char *name)
-{
-	validate_subpart_dir(s, name, 1);
 }
 
 static void parse_subpart_dir(struct buffer *subpart_dir_buf,
@@ -824,7 +784,7 @@ static void parse_subpart_dir(struct buffer *subpart_dir_buf,
 	memcpy(hdr.name, data + offset, sizeof(hdr.name));
 	offset += sizeof(hdr.name);
 
-	validate_subpart_dir_without_checksum((struct subpart_dir *)&hdr, name);
+	validate_subpart_dir((struct subpart_dir *)&hdr, name);
 
 	assert(size > subpart_dir_size(&hdr));
 	alloc_buffer(subpart_dir_buf, subpart_dir_size(&hdr), "Subpart Dir");
@@ -844,8 +804,6 @@ static void parse_subpart_dir(struct buffer *subpart_dir_buf,
 		offset = read_member(data, offset, sizeof(e[i].rsvd),
 				     &e[i].rsvd);
 	}
-
-	validate_subpart_dir_with_checksum(subpart_dir, name);
 
 	print_subpart_dir(subpart_dir);
 }
@@ -1395,7 +1353,7 @@ static void create_subpart(struct buffer *dst, struct buffer *info[],
 		       buffer_size(info[i]));
 	}
 
-	h->checksum = calc_checksum(buffer_get(&subpart_dir_buff));
+	h->checksum = 0;
 
 	struct subpart_dir *dir = buffer_get(&subpart_dir_buff);
 
@@ -1759,8 +1717,7 @@ static enum ifwi_ret ifwi_dir_replace(int type)
 		s->e[i].offset += offset;
 	}
 
-	/* Re-calculate checksum. */
-	s->h.checksum = calc_checksum(s);
+	s->h.checksum = 0;
 
 	/* Convert members to litte-endian. */
 	subpart_dir_fixup_write_buffer(&subpart_dir_buf);

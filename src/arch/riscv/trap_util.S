@@ -108,7 +108,7 @@
 supervisor_trap_entry:
     csrw mscratch, sp
     # load in the top of the machine stack
-    la sp, 0x80FFF0 - 64
+    li sp, 0x80FFF0 - 64
     1:addi sp,sp,-320
     save_tf
     move  a0,sp

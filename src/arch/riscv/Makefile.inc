@@ -34,6 +34,7 @@ bootblock-y += trap_handler.c
 bootblock-y += virtual_memory.c
 bootblock-y += boot.c
 bootblock-y += rom_media.c
+bootblock-y += misc.c
 bootblock-y += \
 	$(top)/src/lib/memchr.c \
 	$(top)/src/lib/memcmp.c \
@@ -57,6 +58,7 @@ ifeq ($(CONFIG_ARCH_ROMSTAGE_RISCV),y)
 romstage-y += boot.c
 romstage-y += stages.c
 romstage-y += rom_media.c
+romstage-y += misc.c
 romstage-y += \
 	$(top)/src/lib/memchr.c \
 	$(top)/src/lib/memcmp.c \

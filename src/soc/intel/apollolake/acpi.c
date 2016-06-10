@@ -21,6 +21,7 @@
 #include <arch/smp/mpspec.h>
 #include <cbmem.h>
 #include <cpu/x86/smm.h>
+#include <cpu/cpu.h>
 #include <soc/acpi.h>
 #include <soc/intel/common/acpi.h>
 #include <soc/iomap.h>
@@ -159,6 +160,8 @@ void southbridge_inject_dsdt(device_t device)
 	if (gnvs) {
 		acpi_create_gnvs(gnvs);
 		acpi_save_gnvs((uintptr_t)gnvs);
+		/* And tell SMI about it */
+		smm_setup_structures(gnvs, NULL, NULL);
 
 		/* Add it to DSDT.  */
 		acpigen_write_scope("\\");

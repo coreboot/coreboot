@@ -98,3 +98,10 @@ config EC_GOOGLE_CHROMEEC_PD_BOARDNAME
 	  The board name used in the Chrome EC code base to build
 	  the PD firmware.  If set, the coreboot build with also
 	  build the EC firmware and add it to the image.
+
+config EC_GOOGLE_CHROMEEC_RTC
+	depends on EC_GOOGLE_CHROMEEC
+	bool "Enable Chrome OS EC RTC"
+	help
+	  Enable support for the real-time clock on the Chrome OS EC. This
+	  uses the EC_CMD_RTC_GET_VALUE command to read the current time.

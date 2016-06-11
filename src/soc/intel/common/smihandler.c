@@ -104,15 +104,24 @@ static void busmaster_disable_on_bus(int bus)
 			reg32 &= ~PCI_COMMAND_MASTER;
 			pci_write_config32(dev, PCI_COMMAND, reg32);
 
-			/* If this is a bridge, then follow it. */
+			/* If it's not a bridge, move on. */
 			hdr = pci_read_config8(dev, PCI_HEADER_TYPE);
 			hdr &= 0x7f;
-			if (hdr == PCI_HEADER_TYPE_BRIDGE ||
-			    hdr == PCI_HEADER_TYPE_CARDBUS) {
-				unsigned int buses;
-				buses = pci_read_config32(dev, PCI_PRIMARY_BUS);
-				busmaster_disable_on_bus((buses >> 8) & 0xff);
-			}
+			if (hdr != PCI_HEADER_TYPE_BRIDGE &&
+			    hdr != PCI_HEADER_TYPE_CARDBUS)
+				continue;
+
+			/*
+			 * If secondary bus is equal to current bus bypass
+			 * the bridge because it's likely unconfigured and
+			 * would cause infinite recursion.
+			 */
+			int secbus = pci_read_config8(dev, PCI_SECONDARY_BUS);
+
+			if (secbus == bus)
+				continue;
+
+			busmaster_disable_on_bus(secbus);
 		}
 	}
 }

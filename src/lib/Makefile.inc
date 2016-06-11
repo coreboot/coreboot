@@ -79,6 +79,7 @@ ramstage-$(CONFIG_PRIMITIVE_MEMTEST) += primitive_memtest.c
 romstage-$(CONFIG_CACHE_AS_RAM) += ramtest.c
 romstage-$(CONFIG_GENERIC_GPIO_LIB) += gpio.c
 romstage-y += stack.c
+ramstage-y += rtc.c
 
 ifeq ($(CONFIG_EARLY_CBMEM_INIT),y)
 romstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c

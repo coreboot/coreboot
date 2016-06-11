@@ -18,6 +18,15 @@ chip soc/intel/apollolake
 	# LPSS S0ix Enable
 	register "lpss_s0ix_enable" = "1"
 
+	# GPE configuration
+	# Note that GPE events called out in ASL code rely on this
+	# route, i.e., if this route changes then the affected GPE
+	# offset bits also need to be changed. This sets the PMC register
+	# GPE_CFG fields.
+	register "gpe0_dw1" = "PMC_GPE_N_31_0"
+	register "gpe0_dw2" = "PMC_GPE_N_63_32"
+	register "gpe0_dw3" = "PMC_GPE_SW_31_0"
+
 	device domain 0 on
 		device pci 00.0 on end	# - Host Bridge
 		device pci 00.1 on end	# - DPTF

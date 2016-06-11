@@ -20,9 +20,11 @@
 
 #include <ec/google/chromeec/ec_commands.h>
 
-/* This is the GPE status bit.
-   TODO: Fix this to proper bit matching GPE routing table */
-#define EC_SCI_GPI   15
+/*
+ * GPIO_11 for SCI is routed to GPE0_DW1 and maps to group GPIO_GPE_N_31_0
+ * which is North community
+ */
+#define EC_SCI_GPI	GPE0_DW1_11
 
 #define MAINBOARD_EC_SCI_EVENTS \
 	(EC_HOST_EVENT_MASK(EC_HOST_EVENT_LID_CLOSED)        |\

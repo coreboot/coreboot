@@ -4374,7 +4374,11 @@ static unsigned int get_mem_min_tck(void)
 		}
 		return DEFAULT_TCK;
 	} else {
-		if (cfg->max_mem_clock_mhz >= 800)
+		if (cfg->max_mem_clock_mhz >= 1066)
+			return TCK_1066MHZ;
+		else if (cfg->max_mem_clock_mhz >= 933)
+			return TCK_933MHZ;
+		else if (cfg->max_mem_clock_mhz >= 800)
 			return TCK_800MHZ;
 		else if (cfg->max_mem_clock_mhz >= 666)
 			return TCK_666MHZ;

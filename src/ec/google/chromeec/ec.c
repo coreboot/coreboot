@@ -22,6 +22,7 @@
 #include <halt.h>
 #include <reset.h>
 #include <elog.h>
+#include <rtc.h>
 #include <stdlib.h>
 
 #include "chip.h"
@@ -141,6 +142,26 @@ int google_chromeec_check_feature(int feature)
 
 	return r.flags[feature / 32] & EC_FEATURE_MASK_0(feature);
 }
+
+#if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC_RTC)
+int rtc_get(struct rtc_time *time)
+{
+	struct chromeec_command cmd;
+	struct ec_response_rtc r;
+
+	cmd.cmd_code = EC_CMD_RTC_GET_VALUE;
+	cmd.cmd_version = 0;
+	cmd.cmd_size_in = 0;
+	cmd.cmd_data_out = &r;
+	cmd.cmd_size_out = sizeof(r);
+	cmd.cmd_dev_index = 0;
+
+	if (google_chromeec_command(&cmd) != 0)
+		return -1;
+
+	return rtc_to_tm(r.time, time);
+}
+#endif
 
 #ifndef __SMM__
 #ifdef __PRE_RAM__

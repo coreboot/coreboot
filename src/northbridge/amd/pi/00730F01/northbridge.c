@@ -2,6 +2,8 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2012 Advanced Micro Devices, Inc.
+ * Copyright (C) 2016 Raptor Engineering, LLC
+ * Copyright (C) 2018 3mdeb Embedded Systems Consulting
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -437,6 +439,208 @@ static unsigned long acpi_fill_hest(acpi_hest_t *hest)
 	return (unsigned long)current;
 }
 
+static void add_ivhd_dev_entry(struct device *parent, struct device *dev,
+			       unsigned long *current, uint16_t *length,
+			       uint8_t type, uint8_t data)
+{
+	uint8_t *p;
+	p = (uint8_t *) *current;
+
+	if (type == 0x2) {
+		/* Entry type */
+		p[0] = type;
+		/* Device */
+		p[1] = dev->path.pci.devfn;
+		/* Bus */
+		p[2] = dev->bus->secondary;
+		/* Data */
+		p[3] = data;
+		/* [4:7] Padding */
+		p[4] = 0x0;
+		p[5] = 0x0;
+		p[6] = 0x0;
+		p[7] = 0x0;
+		*length += 8;
+		*current += 8;
+	} else if (type == 0x42) {
+		/* Entry type */
+		p[0] = type;
+		/* Device */
+		p[1] = dev->path.pci.devfn;
+		/* Bus */
+		p[2] = dev->bus->secondary;
+		/* Data */
+		p[3] = 0x0;
+		/* Reserved */
+		p[4] = 0x0;
+		/* Device */
+		p[5] = parent->path.pci.devfn;
+		/* Bus */
+		p[6] = parent->bus->secondary;
+		/* Reserved */
+		p[7] = 0x0;
+		*length += 8;
+		*current += 8;
+	}
+}
+
+static void add_ivrs_device_entries(struct device *parent, struct device *dev,
+				    unsigned int depth, int linknum, int8_t *root_level,
+				    unsigned long *current, uint16_t *length)
+{
+	struct device *sibling;
+	struct bus *link;
+	unsigned int header_type;
+	unsigned int is_pcie;
+
+	if (!root_level) {
+		root_level = malloc(sizeof(int8_t));
+		*root_level = -1;
+	}
+
+	if (dev->path.type == DEVICE_PATH_PCI) {
+
+		if ((dev->bus->secondary == 0x0) &&
+		    (dev->path.pci.devfn == 0x0))
+			*root_level = depth;
+
+		if ((*root_level != -1) && (dev->enabled)) {
+			if (depth == *root_level) {
+				if (dev->path.pci.devfn == (0x14 << 3)) {
+					/* SMBUS controller */
+					add_ivhd_dev_entry(parent, dev, current, length, 0x2, 0x97);
+				} else if (dev->path.pci.devfn != 0x2 &&
+					   dev->path.pci.devfn < (0x2 << 3)) {
+					/* FCH control device */
+				} else {
+					/* Other devices */
+					add_ivhd_dev_entry(parent, dev, current, length, 0x2, 0x0);
+				}
+			} else {
+				header_type = dev->hdr_type & 0x7f;
+				is_pcie = pci_find_capability(dev, PCI_CAP_ID_PCIE);
+				if (((header_type == PCI_HEADER_TYPE_NORMAL) ||
+				     (header_type == PCI_HEADER_TYPE_BRIDGE))
+				    && is_pcie) {
+					/* Device or Bridge is PCIe */
+					add_ivhd_dev_entry(parent, dev, current, length, 0x2, 0x0);
+				} else if ((header_type == PCI_HEADER_TYPE_NORMAL) &&
+					   !is_pcie) {
+					add_ivhd_dev_entry(parent, dev, current, length, 0x42, 0x0);
+					/* Device is legacy PCI or PCI-X */
+				}
+			}
+		}
+	}
+
+	for (link = dev->link_list; link; link = link->next)
+		for (sibling = link->children; sibling; sibling =
+		     sibling->sibling)
+			add_ivrs_device_entries(dev, sibling, depth + 1, depth,
+						root_level, current, length);
+
+	free(root_level);
+}
+
+unsigned long acpi_fill_ivrs_ioapic(acpi_ivrs_t *ivrs, unsigned long current)
+{
+	uint8_t *p;
+
+	uint32_t apicid_sb800;
+	uint32_t apicid_northbridge;
+
+	apicid_sb800 = CONFIG_MAX_CPUS;
+	apicid_northbridge = CONFIG_MAX_CPUS + 1;
+
+	/* Describe NB IOAPIC */
+	p = (uint8_t *)current;
+	p[0] = 0x48;                    /* Entry type */
+	p[1] = 0;                       /* Device */
+	p[2] = 0;                       /* Bus */
+	p[3] = 0x0;                     /* Data */
+	p[4] = apicid_northbridge;      /* IOAPIC ID */
+	p[5] = 0x0;                     /* Device 0 Function 0 */
+	p[6] = 0x0;                     /* Northbridge bus */
+	p[7] = 0x1;                     /* Variety */
+	current += 8;
+
+	/* Describe SB IOAPIC */
+	p = (uint8_t *)current;
+	p[0] = 0x48;                    /* Entry type */
+	p[1] = 0;                       /* Device */
+	p[2] = 0;                       /* Bus */
+	p[3] = 0xd7;                    /* Data */
+	p[4] = apicid_sb800;            /* IOAPIC ID */
+	p[5] = 0x14 << 3;               /* Device 0x14 Function 0 */
+	p[6] = 0x0;                     /* Southbridge bus */
+	p[7] = 0x1;                     /* Variety */
+	current += 8;
+
+	return current;
+}
+
+static unsigned long acpi_fill_ivrs(acpi_ivrs_t *ivrs, unsigned long current)
+{
+	uint8_t *p;
+
+	device_t nb_dev = dev_find_slot(0, PCI_DEVFN(0, 0));
+	if (!nb_dev) {
+
+		printk(BIOS_WARNING, "%s: G-series northbridge device not present!\n", __func__);
+		printk(BIOS_WARNING, "%s: IVRS table not generated...\n", __func__);
+
+		return (unsigned long)ivrs;
+	}
+
+	ivrs->iv_info = 0x0;
+	/* Maximum supported virtual address size */
+	ivrs->iv_info |= (0x40 << 15);
+	/* Maximum supported physical address size */
+	ivrs->iv_info |= (0x30 << 8);
+	/* Guest virtual address width */
+	ivrs->iv_info |= (0x2 << 5);
+
+	ivrs->ivhd.type = 0x10;
+	ivrs->ivhd.flags = 0x0e;
+	/* Enable ATS support */
+	ivrs->ivhd.flags |= 0x10;
+	ivrs->ivhd.length = sizeof(struct acpi_ivrs_ivhd);
+	/* BDF <bus>:00.2 */
+	ivrs->ivhd.device_id = 0x2 | (nb_dev->bus->secondary << 8);
+	/* Capability block 0x40 (type 0xf, "Secure device") */
+	ivrs->ivhd.capability_offset = 0x40;
+	ivrs->ivhd.iommu_base_low = 0xfeb00000;
+	ivrs->ivhd.iommu_base_high = 0x0;
+	ivrs->ivhd.pci_segment_group = 0x0;
+	ivrs->ivhd.iommu_info = 0x0;
+	ivrs->ivhd.iommu_info |= (0x13 << 8);
+	ivrs->ivhd.iommu_feature_info = 0x0;
+
+	/* Describe HPET */
+	p = (uint8_t *)current;
+	p[0] = 0x48;			/* Entry type */
+	p[1] = 0;			/* Device */
+	p[2] = 0;			/* Bus */
+	p[3] = 0xd7;			/* Data */
+	p[4] = 0x0;			/* HPET number */
+	p[5] = 0x14 << 3;		/* HPET device */
+	p[6] = nb_dev->bus->secondary;	/* HPET bus */
+	p[7] = 0x2;			/* Variety */
+	ivrs->ivhd.length += 8;
+	current += 8;
+
+	/* Describe PCI devices */
+	add_ivrs_device_entries(NULL, all_devices, 0, -1, NULL, &current,
+				&ivrs->ivhd.length);
+
+	/* Describe IOAPICs */
+	unsigned long prev_current = current;
+	current = acpi_fill_ivrs_ioapic(ivrs, current);
+	ivrs->ivhd.length += (current - prev_current);
+
+	return current;
+}
+
 static void northbridge_fill_ssdt_generator(struct device *device)
 {
 	msr_t msr;
@@ -466,7 +670,7 @@ static unsigned long agesa_write_acpi_tables(struct device *device,
 	acpi_slit_t *slit;
 	acpi_header_t *ssdt;
 	acpi_header_t *alib;
-	acpi_header_t *ivrs;
+	acpi_ivrs_t *ivrs;
 	acpi_hest_t *hest;
 
 	/* HEST */
@@ -476,17 +680,13 @@ static unsigned long agesa_write_acpi_tables(struct device *device,
 	acpi_add_table(rsdp, (void *)current);
 	current += ((acpi_header_t *)current)->length;
 
-	current   = ALIGN(current, 8);
-	printk(BIOS_DEBUG, "ACPI:    * IVRS at %lx\n", current);
-	ivrs = agesawrapper_getlateinitptr(PICK_IVRS);
-	if (ivrs != NULL) {
-		memcpy((void *)current, ivrs, ivrs->length);
-		ivrs = (acpi_header_t *) current;
-		current += ivrs->length;
-		acpi_add_table(rsdp, ivrs);
-	} else {
-		printk(BIOS_DEBUG, "  AGESA IVRS table NULL. Skipping.\n");
-	}
+	/* IVRS */
+	current = ALIGN(current, 8);
+	printk(BIOS_DEBUG, "ACPI:   * IVRS at %lx\n", current);
+	ivrs = (acpi_ivrs_t *) current;
+	acpi_create_ivrs(ivrs, acpi_fill_ivrs);
+	current += ivrs->header.length;
+	acpi_add_table(rsdp, ivrs);
 
 	/* SRAT */
 	current = ALIGN(current, 8);

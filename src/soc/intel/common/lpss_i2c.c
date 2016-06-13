@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/acpigen.h>
 #include <arch/io.h>
 #include <commonlib/helpers.h>
 #include <console/console.h>
@@ -63,12 +64,17 @@ struct lpss_i2c_regs {
 
 /* High and low times in different speed modes (in ns) */
 enum {
+	/* SDA Hold Time */
+	DEFAULT_SDA_HOLD_TIME		= 300,
 	/* Standard Speed */
 	MIN_SS_SCL_HIGHTIME		= 4000,
 	MIN_SS_SCL_LOWTIME		= 4700,
-	/* Fast/Fast+ Speed */
+	/* Fast Speed */
 	MIN_FS_SCL_HIGHTIME		= 600,
 	MIN_FS_SCL_LOWTIME		= 1300,
+	/* Fast Plus Speed */
+	MIN_FP_SCL_HIGHTIME		= 260,
+	MIN_FP_SCL_LOWTIME		= 500,
 	/* High Speed */
 	MIN_HS_SCL_HIGHTIME		= 60,
 	MIN_HS_SCL_LOWTIME		= 160,
@@ -299,63 +305,159 @@ int platform_i2c_transfer(unsigned bus, struct i2c_seg *segments, int count)
 	return 0;
 }
 
-static void lpss_i2c_set_speed(struct lpss_i2c_regs *regs, enum i2c_speed speed)
+void lpss_i2c_acpi_write_speed_config(
+	const struct lpss_i2c_speed_config *config)
 {
-	const int ic_clk = CONFIG_SOC_INTEL_COMMON_LPSS_I2C_CLOCK_MHZ;
-	uint32_t control, hcnt_min, lcnt_min;
-	void *hcnt_reg, *lcnt_reg;
-
-	/* Clock must be provided by Kconfig */
-	if (!ic_clk || !speed)
+	if (!config)
+		return;
+	if (!config->scl_lcnt && !config->scl_hcnt && !config->sda_hold)
 		return;
 
-	control = read32(&regs->control);
-	control &= ~CONTROL_SPEED_MASK;
+	if (config->speed >= I2C_SPEED_HIGH)
+		acpigen_write_name("HSCN");
+	else if (config->speed >= I2C_SPEED_FAST_PLUS)
+		acpigen_write_name("FPCN");
+	else if (config->speed >= I2C_SPEED_FAST)
+		acpigen_write_name("FMCN");
+	else
+		acpigen_write_name("SSCN");
 
-	if (speed >= I2C_SPEED_HIGH) {
-		/* High Speed */
-		control |= CONTROL_SPEED_HS;
+	/* Package () { scl_lcnt, scl_hcnt, sda_hold } */
+	acpigen_write_package(3);
+	acpigen_write_word(config->scl_hcnt);
+	acpigen_write_word(config->scl_lcnt);
+	acpigen_write_dword(config->sda_hold);
+	acpigen_pop_len();
+}
+
+int lpss_i2c_set_speed_config(unsigned bus,
+			      const struct lpss_i2c_speed_config *config)
+{
+	struct lpss_i2c_regs *regs;
+	void *hcnt_reg, *lcnt_reg;
+
+	regs = (struct lpss_i2c_regs *)lpss_i2c_base_address(bus);
+	if (!regs || !config)
+		return -1;
+
+	/* Nothing to do if no values are set */
+	if (!config->scl_lcnt && !config->scl_hcnt && !config->sda_hold)
+		return 0;
+
+	if (config->speed >= I2C_SPEED_FAST_PLUS) {
+		/* Fast-Plus and High speed */
 		hcnt_reg = &regs->hs_scl_hcnt;
 		lcnt_reg = &regs->hs_scl_lcnt;
-		hcnt_min = MIN_HS_SCL_HIGHTIME;
-		lcnt_min = MIN_HS_SCL_LOWTIME;
-	} else if (speed >= I2C_SPEED_FAST) {
-		/* Fast Speed */
-		control |= CONTROL_SPEED_FS;
+	} else if (config->speed >= I2C_SPEED_FAST) {
+		/* Fast speed */
 		hcnt_reg = &regs->fs_scl_hcnt;
 		lcnt_reg = &regs->fs_scl_lcnt;
+	} else {
+		/* Standard speed */
+		hcnt_reg = &regs->ss_scl_hcnt;
+		lcnt_reg = &regs->ss_scl_lcnt;
+	}
+
+	/* SCL count must be set after the speed is selected */
+	if (config->scl_hcnt)
+		write32(hcnt_reg, config->scl_hcnt);
+	if (config->scl_lcnt)
+		write32(lcnt_reg, config->scl_lcnt);
+
+	/* Set SDA Hold Time register */
+	if (config->sda_hold)
+		write32(&regs->sda_hold, config->sda_hold);
+
+	return 0;
+}
+
+int lpss_i2c_gen_speed_config(enum i2c_speed speed,
+			      struct lpss_i2c_speed_config *config)
+{
+	const int ic_clk = CONFIG_SOC_INTEL_COMMON_LPSS_I2C_CLOCK_MHZ;
+	uint16_t hcnt_min, lcnt_min;
+
+	/* Clock must be provided by Kconfig */
+	if (!ic_clk || !config)
+		return -1;
+
+	if (speed >= I2C_SPEED_HIGH) {
+		/* High speed */
+		hcnt_min = MIN_HS_SCL_HIGHTIME;
+		lcnt_min = MIN_HS_SCL_LOWTIME;
+	} else if (speed >= I2C_SPEED_FAST_PLUS) {
+		/* Fast-Plus speed */
+		hcnt_min = MIN_FP_SCL_HIGHTIME;
+		lcnt_min = MIN_FP_SCL_LOWTIME;
+	} else if (speed >= I2C_SPEED_FAST) {
+		/* Fast speed */
 		hcnt_min = MIN_FS_SCL_HIGHTIME;
 		lcnt_min = MIN_FS_SCL_LOWTIME;
 	} else {
-		/* Standard Speed */
-		control |= CONTROL_SPEED_SS;
-		hcnt_reg = &regs->ss_scl_hcnt;
-		lcnt_reg = &regs->ss_scl_lcnt;
+		/* Standard speed */
 		hcnt_min = MIN_SS_SCL_HIGHTIME;
 		lcnt_min = MIN_SS_SCL_LOWTIME;
 	}
 
+	config->speed = speed;
+	config->scl_hcnt = ic_clk * hcnt_min / KHz;
+	config->scl_lcnt = ic_clk * lcnt_min / KHz;
+	config->sda_hold = ic_clk * DEFAULT_SDA_HOLD_TIME / KHz;
+
+	return 0;
+}
+
+int lpss_i2c_set_speed(unsigned bus, enum i2c_speed speed)
+{
+	struct lpss_i2c_regs *regs;
+	struct lpss_i2c_speed_config config;
+	uint32_t control;
+
+	/* Clock must be provided by Kconfig */
+	regs = (struct lpss_i2c_regs *)lpss_i2c_base_address(bus);
+	if (!regs || !speed)
+		return -1;
+
+	control = read32(&regs->control);
+	control &= ~CONTROL_SPEED_MASK;
+
+	if (speed >= I2C_SPEED_FAST_PLUS) {
+		/* High and Fast-Plus speed share config registers */
+		control |= CONTROL_SPEED_HS;
+	} else if (speed >= I2C_SPEED_FAST) {
+		/* Fast speed */
+		control |= CONTROL_SPEED_FS;
+	} else {
+		/* Standard speed */
+		control |= CONTROL_SPEED_SS;
+	}
+
+	/* Generate speed config based on clock */
+	if (lpss_i2c_gen_speed_config(speed, &config) < 0)
+		return -1;
+
 	/* Select this speed in the control register */
 	write32(&regs->control, control);
 
-	/* SCL count must be set after the speed is selected */
-	write32(hcnt_reg, ic_clk * hcnt_min / KHz);
-	write32(lcnt_reg, ic_clk * lcnt_min / KHz);
+	/* Write the speed config that was generated earlier */
+	lpss_i2c_set_speed_config(bus, &config);
+
+	return 0;
 }
 
-void lpss_i2c_init(unsigned bus, enum i2c_speed speed)
+int lpss_i2c_init(unsigned bus, enum i2c_speed speed)
 {
 	struct lpss_i2c_regs *regs;
 
 	regs = (struct lpss_i2c_regs *)lpss_i2c_base_address(bus);
 	if (!regs) {
 		printk(BIOS_ERR, "I2C bus %u base address not found\n", bus);
-		return;
+		return -1;
 	}
 
 	if (lpss_i2c_disable(regs) < 0) {
 		printk(BIOS_ERR, "I2C timeout disabling bus %u\n", bus);
-		return;
+		return -1;
 	}
 
 	/* Put controller in master mode with restart enabled */
@@ -363,7 +465,10 @@ void lpss_i2c_init(unsigned bus, enum i2c_speed speed)
 		CONTROL_RESTART_ENABLE);
 
 	/* Set bus speed to FAST by default */
-	lpss_i2c_set_speed(regs, speed ? : I2C_SPEED_FAST);
+	if (lpss_i2c_set_speed(bus, speed ? : I2C_SPEED_FAST) < 0) {
+		printk(BIOS_ERR, "I2C failed to set speed for bus %u\n", bus);
+		return -1;
+	}
 
 	/* Set RX/TX thresholds to smallest values */
 	write32(&regs->rx_thresh, 0);
@@ -376,4 +481,6 @@ void lpss_i2c_init(unsigned bus, enum i2c_speed speed)
 
 	printk(BIOS_INFO, "LPSS I2C bus %u at 0x%p (%u KHz)\n",
 	       bus, regs, (speed ? : I2C_SPEED_FAST) / KHz);
+
+	return 0;
 }

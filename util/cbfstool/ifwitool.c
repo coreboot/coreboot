@@ -1679,8 +1679,8 @@ static enum ifwi_ret ifwi_dir_replace(int type)
 	}
 
 	struct buffer dst;
-	size_t dst_size = buffer_size(&ifwi_image.subpart_buf[type] +
-				      buffer_size(&b) - s->e[i].length);
+	size_t dst_size = buffer_size(&ifwi_image.subpart_buf[type]) +
+				      buffer_size(&b) - s->e[i].length;
 	size_t subpart_start = s->e[i].offset;
 	size_t subpart_end = s->e[i].offset + s->e[i].length;
 

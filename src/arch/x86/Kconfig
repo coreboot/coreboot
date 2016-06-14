@@ -83,6 +83,11 @@ config RAMBASE
 	hex
 	default 0x100000
 
+config RAMTOP
+	hex
+	default 0x200000
+	depends on ARCH_X86
+
 # Traditionally BIOS region on SPI flash boot media was memory mapped right below
 # 4G and it was the last region in the IFD. This way translation between CPU
 # address space to flash address was trivial. However some IFDs on newer SoCs

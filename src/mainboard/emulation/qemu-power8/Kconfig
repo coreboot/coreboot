@@ -44,10 +44,4 @@ config DRAM_SIZE_MB
 	int
 	default 32768
 
-# Memory map for qemu power8
-
-config RAMTOP
-	hex
-	default 0x1000000
-
 endif #  BOARD_EMULATION_QEMU_POWER8

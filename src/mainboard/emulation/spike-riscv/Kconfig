@@ -54,8 +54,4 @@ config DRAM_SIZE_MB
 # 0x0011_0000: CBFS data
 # 0x0100_0000: reserved for ramstage
 
-config RAMTOP
-	hex
-	default 0x1000000
-
 endif #  BOARD_EMULATION_SPIKE_UCB_RISCV

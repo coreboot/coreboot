@@ -131,6 +131,10 @@ void smbios_fill_dimm_manufacturer_from_id(uint16_t mod_id, struct smbios_type17
 			t->manufacturer = smbios_add_string(t->eos,
 							    "Crucial");
 			break;
+		case 0x4304:
+			t->manufacturer = smbios_add_string(t->eos,
+							    "Ramaxel");
+			break;
 		case 0x4f01:
 			t->manufacturer = smbios_add_string(t->eos,
 							    "Transcend");

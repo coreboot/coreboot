@@ -23,7 +23,7 @@ DefinitionBlock(
 )
 {
 	/* global NVS and variables */
-	#include <soc/intel/skylake/acpi/globalnvs.asl>
+	#include <soc/intel/apollolake/acpi/globalnvs.asl>
 
 	/* CPU */
 	#include <soc/intel/apollolake/acpi/cpu.asl>

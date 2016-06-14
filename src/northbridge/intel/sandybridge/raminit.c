@@ -656,7 +656,6 @@ static void dram_timing(ramctr_timing * ctrl)
 		ctrl->timC_offset[0] = 18;
 		ctrl->timC_offset[1] = 7;
 		ctrl->timC_offset[2] = 7;
-		ctrl->reg_c14_offset = 16;
 		ctrl->reg_320c_range_threshold = 13;
 	} else if (ctrl->tCK <= TCK_933MHZ) {
 		ctrl->tCK = TCK_933MHZ;
@@ -666,7 +665,6 @@ static void dram_timing(ramctr_timing * ctrl)
 		ctrl->timC_offset[0] = 15;
 		ctrl->timC_offset[1] = 6;
 		ctrl->timC_offset[2] = 6;
-		ctrl->reg_c14_offset = 14;
 		ctrl->reg_320c_range_threshold = 15;
 	} else if (ctrl->tCK <= TCK_800MHZ) {
 		ctrl->tCK = TCK_800MHZ;
@@ -676,7 +674,6 @@ static void dram_timing(ramctr_timing * ctrl)
 		ctrl->timC_offset[0] = 14;
 		ctrl->timC_offset[1] = 5;
 		ctrl->timC_offset[2] = 5;
-		ctrl->reg_c14_offset = 12;
 		ctrl->reg_320c_range_threshold = 15;
 	} else if (ctrl->tCK <= TCK_666MHZ) {
 		ctrl->tCK = TCK_666MHZ;
@@ -686,7 +683,6 @@ static void dram_timing(ramctr_timing * ctrl)
 		ctrl->timC_offset[0] = 11;
 		ctrl->timC_offset[1] = 4;
 		ctrl->timC_offset[2] = 4;
-		ctrl->reg_c14_offset = 10;
 		ctrl->reg_320c_range_threshold = 16;
 	} else if (ctrl->tCK <= TCK_533MHZ) {
 		ctrl->tCK = TCK_533MHZ;
@@ -696,7 +692,6 @@ static void dram_timing(ramctr_timing * ctrl)
 		ctrl->timC_offset[0] = 9;
 		ctrl->timC_offset[1] = 3;
 		ctrl->timC_offset[2] = 3;
-		ctrl->reg_c14_offset = 8;
 		ctrl->reg_320c_range_threshold = 17;
 	} else  {
 		ctrl->tCK = TCK_400MHZ;
@@ -706,9 +701,11 @@ static void dram_timing(ramctr_timing * ctrl)
 		ctrl->timC_offset[0] = 6;
 		ctrl->timC_offset[1] = 2;
 		ctrl->timC_offset[2] = 2;
-		ctrl->reg_c14_offset = 8;
 		ctrl->reg_320c_range_threshold = 17;
 	}
+
+	/* Initial phase between CLK/CMD pins */
+	ctrl->reg_c14_offset = (256000 / ctrl->tCK) / 66;
 
 	/* DLL_CONFIG_MDLL_W_TIMER */
 	ctrl->reg_5064b0 = (128000 / ctrl->tCK) + 3;

@@ -35,9 +35,13 @@
  */
 #define TCK_1333MHZ     192
 #define TCK_1200MHZ     212
+#define TCK_1100MHZ     232
 #define TCK_1066MHZ     240
+#define TCK_1000MHZ     256
 #define TCK_933MHZ      274
+#define TCK_900MHZ      284
 #define TCK_800MHZ      320
+#define TCK_700MHZ      365
 #define TCK_666MHZ      384
 #define TCK_533MHZ      480
 #define TCK_400MHZ      640

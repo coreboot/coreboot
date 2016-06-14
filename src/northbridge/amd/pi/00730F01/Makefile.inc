@@ -16,3 +16,4 @@
 romstage-y += dimmSpd.c
 
 ramstage-y += northbridge.c
+ramstage-y += iommu.c

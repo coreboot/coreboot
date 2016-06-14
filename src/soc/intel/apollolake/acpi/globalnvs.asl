@@ -33,6 +33,7 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	LIDS,	8,      // 0x03 - LID State
 	PWRS,	8,      // 0x04 - AC Power State
 	DPTE,	8,      // 0x05 - Enable DPTF
+	CBMC,	32,     // 0x06 - 0x09 - Coreboot Memory Console
 
 	/* ChromeOS stuff (0x100 -> 0xfff, size 0xeff) */
 	Offset (0x100),

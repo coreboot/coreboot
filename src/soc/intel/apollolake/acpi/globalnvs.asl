@@ -28,12 +28,12 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 {
 	/* Miscellaneous */
 	Offset (0x00),
-	PCNT,	8,      // 0x01 - Processor Count
-	PPCM,	8,      // 0x02 - Max PPC State
-	LIDS,	8,      // 0x03 - LID State
-	PWRS,	8,      // 0x04 - AC Power State
-	DPTE,	8,      // 0x05 - Enable DPTF
-	CBMC,	32,     // 0x06 - 0x09 - Coreboot Memory Console
+	PCNT,	8,      // 0x00 - Processor Count
+	PPCM,	8,      // 0x01 - Max PPC State
+	LIDS,	8,      // 0x02 - LID State
+	PWRS,	8,      // 0x03 - AC Power State
+	DPTE,	8,      // 0x04 - Enable DPTF
+	CBMC,	32,     // 0x05 - 0x08 - Coreboot Memory Console
 
 	/* ChromeOS stuff (0x100 -> 0xfff, size 0xeff) */
 	Offset (0x100),

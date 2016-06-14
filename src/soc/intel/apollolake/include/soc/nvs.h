@@ -28,12 +28,12 @@
 
 struct global_nvs_t {
 	/* Miscellaneous */
-	uint8_t	pcnt; /* 0x01 - Processor Count */
-	uint8_t	ppcm; /* 0x02 - Max PPC State */
-	uint8_t	lids; /* 0x03 - LID State */
-	uint8_t	pwrs; /* 0x04 - AC Power State */
-	uint8_t	dpte; /* 0x05 - Enable DPTF */
-	uint32_t	cbmc; /* 0x06 - 0x09 - Coreboot Memory Console */
+	uint8_t	pcnt; /* 0x00 - Processor Count */
+	uint8_t	ppcm; /* 0x01 - Max PPC State */
+	uint8_t	lids; /* 0x02 - LID State */
+	uint8_t	pwrs; /* 0x03 - AC Power State */
+	uint8_t	dpte; /* 0x04 - Enable DPTF */
+	uint32_t	cbmc; /* 0x05 - 0x08 - Coreboot Memory Console */
 	uint8_t	unused[247];
 
 	/* ChromeOS specific (0x100 - 0xfff) */

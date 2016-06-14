@@ -657,7 +657,6 @@ static void dram_timing(ramctr_timing * ctrl)
 		ctrl->timC_offset[1] = 7;
 		ctrl->timC_offset[2] = 7;
 		ctrl->reg_c14_offset = 16;
-		ctrl->reg_5064b0 = 0x218;
 		ctrl->reg_320c_range_threshold = 13;
 	} else if (ctrl->tCK <= TCK_933MHZ) {
 		ctrl->tCK = TCK_933MHZ;
@@ -668,7 +667,6 @@ static void dram_timing(ramctr_timing * ctrl)
 		ctrl->timC_offset[1] = 6;
 		ctrl->timC_offset[2] = 6;
 		ctrl->reg_c14_offset = 14;
-		ctrl->reg_5064b0 = 0x1d5;
 		ctrl->reg_320c_range_threshold = 15;
 	} else if (ctrl->tCK <= TCK_800MHZ) {
 		ctrl->tCK = TCK_800MHZ;
@@ -679,7 +677,6 @@ static void dram_timing(ramctr_timing * ctrl)
 		ctrl->timC_offset[1] = 5;
 		ctrl->timC_offset[2] = 5;
 		ctrl->reg_c14_offset = 12;
-		ctrl->reg_5064b0 = 0x193;
 		ctrl->reg_320c_range_threshold = 15;
 	} else if (ctrl->tCK <= TCK_666MHZ) {
 		ctrl->tCK = TCK_666MHZ;
@@ -690,7 +687,6 @@ static void dram_timing(ramctr_timing * ctrl)
 		ctrl->timC_offset[1] = 4;
 		ctrl->timC_offset[2] = 4;
 		ctrl->reg_c14_offset = 10;
-		ctrl->reg_5064b0 = 0x150;
 		ctrl->reg_320c_range_threshold = 16;
 	} else if (ctrl->tCK <= TCK_533MHZ) {
 		ctrl->tCK = TCK_533MHZ;
@@ -701,7 +697,6 @@ static void dram_timing(ramctr_timing * ctrl)
 		ctrl->timC_offset[1] = 3;
 		ctrl->timC_offset[2] = 3;
 		ctrl->reg_c14_offset = 8;
-		ctrl->reg_5064b0 = 0x10d;
 		ctrl->reg_320c_range_threshold = 17;
 	} else  {
 		ctrl->tCK = TCK_400MHZ;
@@ -712,9 +707,11 @@ static void dram_timing(ramctr_timing * ctrl)
 		ctrl->timC_offset[1] = 2;
 		ctrl->timC_offset[2] = 2;
 		ctrl->reg_c14_offset = 8;
-		ctrl->reg_5064b0 = 0xcd;
 		ctrl->reg_320c_range_threshold = 17;
 	}
+
+	/* DLL_CONFIG_MDLL_W_TIMER */
+	ctrl->reg_5064b0 = (128000 / ctrl->tCK) + 3;
 
 	val32 = (1000 << 8) / ctrl->tCK;
 	printk(BIOS_DEBUG, "Selected DRAM frequency: %u MHz\n", val32);

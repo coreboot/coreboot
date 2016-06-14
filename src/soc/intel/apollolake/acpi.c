@@ -144,6 +144,9 @@ unsigned long southbridge_write_acpi_tables(device_t device,
 
 static void acpi_create_gnvs(struct global_nvs_t *gnvs)
 {
+	if (IS_ENABLED(CONFIG_CONSOLE_CBMEM))
+		gnvs->cbmc = (uintptr_t)cbmem_find(CBMEM_ID_CONSOLE);
+
 	if (IS_ENABLED(CONFIG_CHROMEOS)) {
 		/* Initialize Verified Boot data */
 		chromeos_init_vboot(&gnvs->chromeos);

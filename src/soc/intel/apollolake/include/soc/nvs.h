@@ -33,7 +33,8 @@ struct global_nvs_t {
 	uint8_t	lids; /* 0x03 - LID State */
 	uint8_t	pwrs; /* 0x04 - AC Power State */
 	uint8_t	dpte; /* 0x05 - Enable DPTF */
-	uint8_t	unused[251];
+	uint32_t	cbmc; /* 0x06 - 0x09 - Coreboot Memory Console */
+	uint8_t	unused[247];
 
 	/* ChromeOS specific (0x100 - 0xfff) */
 	chromeos_acpi_t chromeos;

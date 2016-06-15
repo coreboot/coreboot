@@ -3,8 +3,7 @@ if BOARD_GOOGLE_REEF
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
 	select SOC_INTEL_APOLLOLAKE
-	# FIXME(adurbin): this SPI part is really 16MiB
-	select BOARD_ROMSIZE_KB_8192
+	select BOARD_ROMSIZE_KB_16384
 	select EC_GOOGLE_CHROMEEC
 	select EC_GOOGLE_CHROMEEC_LPC
 	select HAVE_ACPI_RESUME
@@ -19,7 +18,7 @@ config BOOT_MEDIA_SPI_BUS
 
 config IFD_BIOS_END
 	hex
-	default 0x77F000
+	default 0xF7F000
 
 config IFD_BIOS_START
 	hex

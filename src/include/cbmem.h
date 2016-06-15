@@ -19,17 +19,11 @@
 
 #include <commonlib/cbmem_id.h>
 #include <rules.h>
-/* Delegation of resume backup memory so we don't have to
- * (slowly) handle backing up OS memory in romstage.c
- */
-#define CBMEM_BOOT_MODE		0x610
-#define CBMEM_RESUME_BACKUP	0x614
-#define CBMEM_FSP_HOB_PTR	0x614
-
-#ifndef __ASSEMBLER__
 #include <stddef.h>
 #include <stdint.h>
 #include <boot/coreboot_tables.h>
+
+#define CBMEM_FSP_HOB_PTR	0x614
 
 struct cbmem_entry;
 
@@ -150,8 +144,5 @@ unsigned long get_top_of_ram(void);
 void set_top_of_ram(uint64_t ramtop);
 void backup_top_of_ram(uint64_t ramtop);
 #endif
-
-#endif /* __ASSEMBLER__ */
-
 
 #endif /* _CBMEM_H_ */

@@ -17,7 +17,6 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/post_code.h>
-#include <cbmem.h>
 
 #include "fmap_config.h"
 

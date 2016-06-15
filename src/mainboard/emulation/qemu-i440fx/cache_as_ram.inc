@@ -17,7 +17,6 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/post_code.h>
-#include <cbmem.h>
 
 #define CACHE_AS_RAM_SIZE 0x10000
 #define CACHE_AS_RAM_BASE 0xd0000

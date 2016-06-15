@@ -17,7 +17,6 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/post_code.h>
-#include <cbmem.h>
 
 /* The full cache-as-ram size includes the cache-as-ram portion from coreboot
  * and the space used by the reference code. These 2 values combined should

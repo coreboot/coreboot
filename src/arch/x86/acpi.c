@@ -1127,12 +1127,6 @@ void *acpi_find_wakeup_vector(void)
 	return wake_vec;
 }
 
-#if CONFIG_SMP
-extern char *lowmem_backup;
-extern char *lowmem_backup_ptr;
-extern int lowmem_backup_size;
-#endif
-
 #define WAKEUP_BASE 0x600
 
 void (*acpi_do_wakeup)(uintptr_t vector, u32 backup_source, u32 backup_target,
@@ -1154,15 +1148,6 @@ void acpi_jump_to_wakeup(void *vector)
 			return;
 		}
 	}
-
-#if CONFIG_SMP
-	// FIXME: This should go into the ACPI backup memory, too. No pork sausages.
-	/*
-	 * Just restore the SMP trampoline and continue with wakeup on
-	 * assembly level.
-	 */
-	memcpy(lowmem_backup_ptr, lowmem_backup, lowmem_backup_size);
-#endif
 
 	/* Copy wakeup trampoline in place. */
 	memcpy((void *)WAKEUP_BASE, &__wakeup, __wakeup_size);

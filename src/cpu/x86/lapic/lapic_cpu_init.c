@@ -20,6 +20,7 @@
 #include <cpu/x86/cr.h>
 #include <cpu/x86/gdt.h>
 #include <cpu/x86/lapic.h>
+#include <arch/acpi.h>
 #include <delay.h>
 #include <halt.h>
 #include <lib.h>
@@ -46,11 +47,9 @@
 /* Start-UP IPI vector must be 4kB aligned and below 1MB. */
 #define AP_SIPI_VECTOR 0x1000
 
-#if CONFIG_HAVE_ACPI_RESUME
-char *lowmem_backup;
-char *lowmem_backup_ptr;
-int  lowmem_backup_size;
-#endif
+static char *lowmem_backup;
+static char *lowmem_backup_ptr;
+static int  lowmem_backup_size;
 
 static inline void setup_secondary_gdt(void)
 {
@@ -77,22 +76,29 @@ static void copy_secondary_start_to_lowest_1M(void)
 
 	code_size = (unsigned long)_secondary_start_end - (unsigned long)_secondary_start;
 
-#if CONFIG_HAVE_ACPI_RESUME
-	/* need to save it for RAM resume */
-	lowmem_backup_size = code_size;
-	lowmem_backup = malloc(code_size);
-	lowmem_backup_ptr = (char *)AP_SIPI_VECTOR;
+	if (acpi_is_wakeup_s3()) {
+		/* need to save it for RAM resume */
+		lowmem_backup_size = code_size;
+		lowmem_backup = malloc(code_size);
+		lowmem_backup_ptr = (char *)AP_SIPI_VECTOR;
 
-	if (lowmem_backup == NULL)
-		die("Out of backup memory\n");
+		if (lowmem_backup == NULL)
+			die("Out of backup memory\n");
 
-	memcpy(lowmem_backup, lowmem_backup_ptr, lowmem_backup_size);
-#endif
+		memcpy(lowmem_backup, lowmem_backup_ptr, lowmem_backup_size);
+	}
+
 	/* copy the _secondary_start to the ram below 1M*/
 	memcpy((unsigned char *)AP_SIPI_VECTOR, (unsigned char *)_secondary_start, code_size);
 
 	printk(BIOS_DEBUG, "start_eip=0x%08lx, code_size=0x%08lx\n",
 		(long unsigned int)AP_SIPI_VECTOR, code_size);
+}
+
+static void recover_lowest_1M(void)
+{
+	if (acpi_is_wakeup_s3())
+		memcpy(lowmem_backup_ptr, lowmem_backup, lowmem_backup_size);
 }
 
 static int lapic_start_cpu(unsigned long apicid)
@@ -592,4 +598,8 @@ void initialize_cpus(struct bus *cpu_bus)
 		smm_other_cpus(cpu_bus, info->cpu);
 #endif
 	}
+
+#if CONFIG_SMP && CONFIG_MAX_CPUS > 1
+	recover_lowest_1M();
+#endif
 }

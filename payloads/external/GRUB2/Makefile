@@ -45,7 +45,8 @@ config: checkout
 grub2: config
 	echo "    MAKE       GRUB2 $(NAME-y)"
 	$(MAKE) -C grub2/build CC="$(HOSTCC)"
-	$(MAKE) -C grub2/build default_payload.elf EXTRA_PAYLOAD_MODULES="$(GRUB2_EXTRA_MODULES)"
+	$(MAKE) -C grub2/build default_payload.elf \
+		EXTRA_PAYLOAD_MODULES="$(CONFIG_GRUB2_EXTRA_MODULES)"
 
 clean:
 	test -d grub2 && $(MAKE) -C grub2 clean || exit 0

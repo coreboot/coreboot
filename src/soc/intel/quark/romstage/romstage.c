@@ -127,19 +127,8 @@ void soc_memory_init_params(struct romstage_params *params,
 			    MEMORY_INIT_UPD *upd)
 {
 	const struct device *dev;
-	char *pdat_file;
-	size_t pdat_file_len;
 	const struct soc_intel_quark_config *config;
 	struct chipset_power_state *ps = car_get_var_ptr(&power_state);
-
-	/* Locate the pdat.bin file */
-	pdat_file = cbfs_boot_map_with_leak("pdat.bin", CBFS_TYPE_RAW,
-		&pdat_file_len);
-	if (!pdat_file) {
-		printk(BIOS_DEBUG,
-			"Platform configuration file (pdat.bin) not found.");
-		pdat_file_len = 0;
-	}
 
 	/* Locate the configuration data from devicetree.cb */
 	dev = dev_find_slot(0, LPC_DEV_FUNC);

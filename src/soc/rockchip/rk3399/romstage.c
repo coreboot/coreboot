@@ -19,6 +19,7 @@
 #include <arch/exception.h>
 #include <arch/io.h>
 #include <arch/mmu.h>
+#include <boardid.h>
 #include <cbfs.h>
 #include <console/console.h>
 #include <delay.h>
@@ -38,6 +39,7 @@ static const uint64_t dram_size =
 
 static void init_dvs_outputs(void)
 {
+	int duty_ns;
 	uint32_t i;
 
 	write32(&rk3399_grf->iomux_pwm_0, IOMUX_PWM_0);		/* GPU */
@@ -46,31 +48,41 @@ static void init_dvs_outputs(void)
 	write32(&rk3399_pmugrf->iomux_pwm_3a, IOMUX_PWM_3_A);	/* Centerlog */
 
 	/*
-	 * Notes:
+	 * Setup voltages for all DVS rails.
 	 *
-	 * design_min = 0.8
-	 * design_max = 1.5
+	 * LITTLE CPU: At the speed we're running at right now and on the
+	 * early silicon, .9V is sane.  If/when we run faster, let's bump this.
 	 *
-	 * period = 3333     # 300 kHz
-	 * volt = 1.1
+	 * CENTER LOGIC: There are some claims that this should simply always
+	 * be .9 V.  There are other claims that say that we need to adjust this
+	 * dynamically depending on the memory frequency.  Until this is sorted
+	 * out, it appears that .9 V works for the 800 MHz.
 	 *
-	 * # Intentionally round down (higher volt) to be safe.
-	 * int((period / (design_max - design_min)) * (design_max - volt))
+	 * BIG CPU / GPU: These aren't used in coreboot.  Init to .9V which is
+	 * supposed to be a good default.
 	 *
-	 * Tested on kevin rev0 board 82 w/ all 4 PWMs:
+	 * Details:
+	 *   design_min = 0.8
+	 *   design_max = 1.5
+	 *   period = 3337     # 300 kHz
+	 *   volt = 1.1
+	 *   # Intentionally round down (higher volt) to be safe.
+	 *   int((period / (design_max - design_min)) * (design_max - volt))
 	 *
-	 *   period = 3333, volt = 1.1: 1904 -- Worked for me!
-	 *   period = 3333, volt = 1.0: 2380 -- Bad
-	 *   period = 3333, volt = 0.9: 2856 -- Bad
-	 *
-	 *   period = 25000, volt = 1.1: 14285 -- Bad
-	 *   period = 25000, volt = 1.0: 17857 -- Bad
-	 *
-	 * TODO: Almost certainly we don't need all 4 PWMs set to the same
-	 * thing.  We should experiment
+	 * Apparently a period of 3333 is determined by EEs to be ideal for our
+	 * board design / resistors / capacitors / regulators but due to
+	 * clock dividers we actually get 3337.  Solving, we get:
+	 *   period = 3337, volt = 1.1: 1906
+	 *   period = 3337, volt = 1.0: 2383
+	 *   period = 3337, volt = 0.9: 2860
 	 */
+	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_KEVIN) && (board_id() <= 2))
+		duty_ns = 1906; /* 1.1v */
+	else
+		duty_ns = 2860; /* 0.9v */
+
 	for (i = 0; i < 4; i++)
-		pwm_init(i, 3333, 1904);
+		pwm_init(i, 3337, duty_ns);
 }
 
 static void prepare_usb(void)

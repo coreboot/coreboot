@@ -28,7 +28,7 @@
 #include <arch/stages.h>
 #include <device/pci_def.h>
 #include <cpu/x86/lapic.h>
-#include <cbfs.h>
+#include <cbmem.h>
 #include <romstage_handoff.h>
 #include <reset.h>
 #include <vendorcode/google/chromeos/chromeos.h>

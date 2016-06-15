@@ -18,7 +18,6 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/post_code.h>
-#include <cbmem.h>
 
 	cmp   $0, %eax
 	je    cache_as_ram

@@ -49,6 +49,7 @@ romstage-y += romstage.c
 romstage-y += tsadc.c
 romstage-y += usb.c
 romstage-y += gpio.c
+romstage-y += saradc.c
 romstage-y += ../common/gpio.c
 
 ################################################################################

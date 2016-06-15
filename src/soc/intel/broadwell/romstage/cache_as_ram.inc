@@ -26,7 +26,6 @@
 	(CONFIG_DCACHE_RAM_SIZE + CONFIG_DCACHE_RAM_MRC_VAR_SIZE)
 #define CACHE_AS_RAM_BASE CONFIG_DCACHE_RAM_BASE
 #define CACHE_AS_RAM_LIMIT (CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE)
-#define USBDEBUG_VAR_SIZE  36 /* sizeof(struct ehci_debug_info) */
 
 /* Cache 4GB - MRC_SIZE_KB for MRC */
 #define CACHE_MRC_BYTES   ((CONFIG_CACHE_MRC_SIZE_KB << 10) - 1)
@@ -166,9 +165,6 @@ clear_mtrrs:
 
 	/* Setup the stack. */
 	movl	$(CACHE_AS_RAM_LIMIT), %eax
-#if CONFIG_USBDEBUG
-	sub	$(USBDEBUG_VAR_SIZE), %eax
-#endif
 	movl	%eax, %esp
 
 	/* Restore the BIST result. */
@@ -192,15 +188,6 @@ before_romstage:
 	movl	%eax, %ebx
 
 	post_code(0x2f)
-
-	/* Copy global variable space (for USBDEBUG) to memory */
-#if CONFIG_USBDEBUG
-	cld
-	movl	$(CACHE_AS_RAM_LIMIT - USBDEBUG_VAR_SIZE), %esi
-	movl	$(CONFIG_RAMTOP - USBDEBUG_VAR_SIZE), %edi
-	movl	$USBDEBUG_VAR_SIZE, %ecx
-	rep	movsb
-#endif
 
 	post_code(0x30)
 

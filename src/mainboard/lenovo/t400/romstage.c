@@ -19,6 +19,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <arch/io.h>
+#include <arch/acpi.h>
 #include <cpu/x86/lapic.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/tsc.h>

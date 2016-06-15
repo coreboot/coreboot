@@ -18,6 +18,7 @@
 #include <stdlib.h>
 #include <console/console.h>
 #include <arch/io.h>
+#include <arch/acpi.h>
 #include <device/pci_def.h>
 #include <elog.h>
 #include <cbmem.h>

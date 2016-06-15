@@ -32,6 +32,7 @@
 #include <soc/nvs.h>
 #include <soc/pci_devs.h>
 #include <spi-generic.h>
+#include <soc/pm.h>
 
 #include "chip.h"
 
@@ -93,6 +94,11 @@ static void soc_final(void *data)
 {
 	if (vbt)
 		rdev_munmap(&vbt_rdev, vbt);
+
+	/* Disable global reset, just in case */
+	global_reset_enable(0);
+	/* Make sure payload/OS can't trigger global reset */
+	global_reset_lock();
 }
 
 void platform_fsp_silicon_init_params_cb(struct FSPS_UPD *silupd)

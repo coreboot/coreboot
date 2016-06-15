@@ -125,6 +125,7 @@ enum spd_memory_type {
 #define SPD_VOLTAGE_HSTL                 2 /* HSTL 1.5 */
 #define SPD_VOLTAGE_SSTL3                3 /* SSTL 3.3 */
 #define SPD_VOLTAGE_SSTL2                4 /* SSTL 2.5 */
+#define SPD_VOLTAGE_SSTL1                5 /* SSTL 1.8 */
 
 /* SPD_DIMM_CONFIG_TYPE values. */
 #define ERROR_SCHEME_NONE                0

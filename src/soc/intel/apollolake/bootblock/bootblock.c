@@ -25,6 +25,7 @@
 #include <soc/mmap_boot.h>
 #include <soc/northbridge.h>
 #include <soc/pci_devs.h>
+#include <soc/pm.h>
 #include <soc/uart.h>
 #include <spi-generic.h>
 #include <timestamp.h>
@@ -152,6 +153,9 @@ static void enable_pmcbar(void)
 void bootblock_soc_early_init(void)
 {
 	enable_pmcbar();
+
+	/* Clear global reset promotion bit */
+	global_reset_enable(0);
 
 	/* Prepare UART for serial console. */
 	if (IS_ENABLED(CONFIG_SOC_UART_DEBUG))

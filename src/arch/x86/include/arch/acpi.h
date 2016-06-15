@@ -24,6 +24,14 @@
 #ifndef __ASM_ACPI_H
 #define __ASM_ACPI_H
 
+#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME) && \
+	! IS_ENABLED(CONFIG_RELOCATABLE_RAMSTAGE)
+#define HIGH_MEMORY_SAVE	(CONFIG_RAMTOP - CONFIG_RAMBASE)
+#else
+#define HIGH_MEMORY_SAVE	0
+#endif
+
+#ifndef __ASSEMBLER__
 #include <stdint.h>
 #include <rules.h>
 #include <commonlib/helpers.h>
@@ -642,5 +650,7 @@ static inline uintptr_t acpi_align_current(uintptr_t current)
 {
 	return ALIGN(current, 16);
 }
+
+#endif  /* __ASSEMBLER__ */
 
 #endif  /* __ASM_ACPI_H */

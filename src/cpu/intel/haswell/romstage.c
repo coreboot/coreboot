@@ -24,6 +24,7 @@
 #include <halt.h>
 #include <lib.h>
 #include <timestamp.h>
+#include <arch/acpi.h>
 #include <arch/io.h>
 #include <arch/stages.h>
 #include <device/pci_def.h>

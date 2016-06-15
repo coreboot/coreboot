@@ -19,14 +19,6 @@
 
 #include <commonlib/cbmem_id.h>
 #include <rules.h>
-
-#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME) && \
-	! IS_ENABLED(CONFIG_RELOCATABLE_RAMSTAGE)
-#define HIGH_MEMORY_SAVE	(CONFIG_RAMTOP - CONFIG_RAMBASE)
-#else
-#define HIGH_MEMORY_SAVE	0
-#endif
-
 /* Delegation of resume backup memory so we don't have to
  * (slowly) handle backing up OS memory in romstage.c
  */

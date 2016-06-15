@@ -26,7 +26,8 @@
  * Datasheet (alternative):
  *   - Name: SERIAL PRESENCE DETECT STANDARD, General Standard
  *           JEDEC Standard No. 21-C
- *   - PDF: http://www.jedec.org/download/search/4_01_02_00R9.PDF
+ *     Annex J: Serial Presence Detects for DDR2 SDRAM (Revision 1.3):
+ *   - PDF: http://www.jedec.org/download/search/4_01_02_10R17.pdf
  */
 
 #ifndef _SPD_H_
@@ -235,12 +236,15 @@ enum spd_memory_type {
 #define RC62 62
 #define RC63 63
 
-#define SPD_UNDEFINED 0
-#define SPD_RDIMM 1
-#define SPD_UDIMM 2
-#define SPD_SODIMM 3
-#define SPD_MICRO_DIMM 4
-#define SPD_MINI_RDIMM 5
-#define SPD_MINI_UDIMM 6
+/* Byte 20: DIMM type information */
+#define SPD_UNDEFINED 0x00
+#define SPD_RDIMM 0x01
+#define SPD_UDIMM 0x02
+#define SPD_SODIMM 0x04
+#define SPD_72B_SO_CDIMM 0x06
+#define SPD_72B_SO_RDIMM 0x07
+#define SPD_MICRO_DIMM 0x08
+#define SPD_MINI_RDIMM 0x10
+#define SPD_MINI_UDIMM 0x20
 
 #endif

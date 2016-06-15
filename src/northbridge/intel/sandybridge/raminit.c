@@ -722,8 +722,16 @@ static void dram_timing(ramctr_timing * ctrl)
 		val++;
 	}
 	/* Is CAS supported */
-	if (!(ctrl->cas_supported & (1 << (val - 4))))
-		printk(BIOS_DEBUG, "CAS not supported\n");
+	if (!(ctrl->cas_supported & (1 << (val - 4)))) {
+		printk(BIOS_ERR, "CAS %uT not supported. ", val);
+		val = 18;
+		/* Find highest supported CAS latency */
+		while (!((ctrl->cas_supported >> (val - 4)) & 1))
+			val--;
+
+		printk(BIOS_ERR, "Using CAS %uT instead.\n", val);
+	}
+
 	printk(BIOS_DEBUG, "Selected CAS latency   : %uT\n", val);
 	ctrl->CAS = val;
 	ctrl->CWL = get_CWL(ctrl->CAS);

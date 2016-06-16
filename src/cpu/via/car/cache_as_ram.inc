@@ -225,15 +225,15 @@ testok:
 	movl	$(MTRR_DEF_TYPE_EN), %eax
 	wrmsr
 
-	/* Enable caching for CONFIG_RAMBASE..CONFIG_RAMTOP. */
+	/* Enable caching for 0..CONFIG_RAMTOP. */
 	movl	$MTRR_PHYS_BASE(0), %ecx
 	xorl	%edx, %edx
-	movl	$(CONFIG_RAMBASE | MTRR_TYPE_WRBACK), %eax
+	movl	$(0x0 | MTRR_TYPE_WRBACK), %eax
 	wrmsr
 
 	movl	$MTRR_PHYS_MASK(0), %ecx
 	movl	$0x0000000f, %edx	/* AMD 40 bit 0xff */
-	movl	$(~(CONFIG_RAMTOP - CONFIG_RAMBASE - 1) | MTRR_PHYS_MASK_VALID), %eax
+	movl	$(~(CONFIG_RAMTOP - 1) | MTRR_PHYS_MASK_VALID), %eax
 	wrmsr
 
 	/* Cache XIP_ROM area to speedup coreboot code. */

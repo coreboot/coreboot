@@ -18,6 +18,10 @@
 
 #include <soc/gpio.h>
 
+/* Input device interrupt configuration */
+#define TOUCHPAD_INT		GPIO_18_IRQ
+
+#ifndef __ACPI__
 /*
  * Pad configuration in ramstage. The order largely follows the 'GPIO Muxing'
  * table found in EDS vol 1, but some pins aren't grouped functionally in
@@ -339,4 +343,5 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_GPI(GPIO_75, UP_20K, DEEP),	 /* I2S1_BCLK -- PCH_WP */
 };
 
+#endif /* __ACPI__ */
 #endif /* MAINBOARD_GPIO_H */

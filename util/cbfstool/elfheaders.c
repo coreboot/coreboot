@@ -958,6 +958,7 @@ static void write_phdrs(struct elf_writer *ew, struct buffer *phdrs)
 	Elf64_Half i;
 	Elf64_Phdr phdr;
 	size_t num_written = 0;
+	size_t num_needs_write = 0;
 
 	for (i = 0; i < ew->num_secs; i++) {
 		struct elf_writer_section *sec = &ew->sections[i];
@@ -967,7 +968,7 @@ static void write_phdrs(struct elf_writer *ew, struct buffer *phdrs)
 
 		if (!section_consecutive(ew, i)) {
 			/* Write out previously set phdr. */
-			if (num_written != 0) {
+			if (num_needs_write != num_written) {
 				phdr_write(ew, phdrs, &phdr);
 				num_written++;
 			}
@@ -983,6 +984,8 @@ static void write_phdrs(struct elf_writer *ew, struct buffer *phdrs)
 			if (sec->shdr.sh_flags & SHF_WRITE)
 				phdr.p_flags |= PF_W;
 			phdr.p_align = sec->shdr.sh_addralign;
+			num_needs_write++;
+
 		} else {
 			/* Accumulate file size and memsize. The assumption
 			 * is that each section is either NOBITS or full
@@ -998,8 +1001,11 @@ static void write_phdrs(struct elf_writer *ew, struct buffer *phdrs)
 	}
 
 	/* Write out the last phdr. */
-	if (num_written != ew->ehdr.e_phnum)
+	if (num_needs_write != num_written) {
 		phdr_write(ew, phdrs, &phdr);
+		num_written++;
+	}
+	assert(num_written == ew->ehdr.e_phnum);
 }
 
 static void fixup_symbol_table(struct elf_writer *ew)

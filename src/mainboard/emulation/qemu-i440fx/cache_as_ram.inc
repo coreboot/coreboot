@@ -18,9 +18,6 @@
 #include <cpu/x86/cache.h>
 #include <cpu/x86/post_code.h>
 
-#define CACHE_AS_RAM_SIZE 0x10000
-#define CACHE_AS_RAM_BASE 0xd0000
-
 #define CPU_PHYSMASK_HI  (1 << (CONFIG_CPU_ADDR_BITS - 32) - 1)
 
 	/* Save the BIST result. */
@@ -28,17 +25,19 @@
 
 cache_as_ram:
 	post_code(0x20)
-       /* Clear the cache memory region. This will also fill up the cache */
-	movl	$CACHE_AS_RAM_BASE, %esi
-	movl	%esi, %edi
-	movl	$(CACHE_AS_RAM_SIZE >> 2), %ecx
-	// movl	$0x23322332, %eax
-	xorl	%eax, %eax
-	rep	stosl
+	/*
+	 * Nothing to do here on qemu, RAM works just fine without any
+	 * initialization.
+	 */
 
 	post_code(0x21)
-	/* Set up the stack pointer. */
-	movl	$(CACHE_AS_RAM_SIZE + CACHE_AS_RAM_BASE - 4), %eax
+	/*
+	 * Set up the stack pointer, use top of real mode (640k) memory.
+	 * This value also keeps the copy_and_run stack out of the way
+	 * of big ramstages. The ramstage will load its own %esp so
+	 * there is no harm in using this value.
+	 */
+	movl	$0xa0000, %eax
 	movl	%eax, %esp
 
 	/* Restore the BIST result. */
@@ -57,8 +56,6 @@ __main:
 	post_code(POST_PREPARE_RAMSTAGE)
 	cld			/* Clear direction flag. */
 
-	movl	$CONFIG_RAMTOP, %esp
-	movl	%esp, %ebp
 	call	copy_and_run
 
 .Lhlt:

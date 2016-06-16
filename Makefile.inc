@@ -700,7 +700,8 @@ $(obj)/fmap.fmd: $(top)/Makefile.inc $(DEFAULT_FLASHMAP) $(obj)/config.h
 	mv $@.tmp $@
 else # ifeq ($(CONFIG_FMDFILE),)
 $(obj)/fmap.fmd: $(CONFIG_FMDFILE) $(obj)/config.h
-	cp $< $@
+	$(HOSTCC) $(PREPROCESS_ONLY) -include $(obj)/config.h $< -o $@.pre
+	mv $@.pre $@
 endif # ifeq ($(CONFIG_FMDFILE),)
 
 # generated at the same time as fmap.fmap

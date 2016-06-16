@@ -21,6 +21,9 @@
 /* Input device interrupt configuration */
 #define TOUCHPAD_INT		GPIO_18_IRQ
 
+#define BOARD_HP_MIC_CODEC_IRQ	GPIO_116_IRQ
+#define BOARD_HP_MIC_CODEC_I2C_ADDR	0x1a
+
 #ifndef __ACPI__
 /*
  * Pad configuration in ramstage. The order largely follows the 'GPIO Muxing'

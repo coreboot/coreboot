@@ -208,9 +208,7 @@ done_cache_as_ram_main:
 __main:
 	post_code(POST_PREPARE_RAMSTAGE)
 
-	/* TODO For suspend/resume the cache will have to live between
-	 * CONFIG_RAMBASE and CONFIG_RAMTOP
-	 */
+	/* TODO For suspend/resume low memory needs backup store. */
 
 	cld				/* clear direction flag */
 

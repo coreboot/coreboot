@@ -13,13 +13,7 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/byteorder.h>
-#include <cbfs.h>
-#include <console/console.h>
-#include <string.h>
-#include <soc/gpio.h>
 #include <soc/pei_data.h>
-#include <soc/romstage.h>
 #include <mainboard/google/rikku/spd/spd.h>
 
 /* Copy SPD data for on-board memory */

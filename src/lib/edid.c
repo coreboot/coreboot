@@ -1547,7 +1547,7 @@ void edid_set_framebuffer_bits_per_pixel(struct edid *edid, int fb_bpp,
  * Take an edid, and create a framebuffer. Set vbe_valid to 1.
  */
 
-void set_vbe_mode_info_valid(struct edid *edid, uintptr_t fb_addr)
+void set_vbe_mode_info_valid(const struct edid *edid, uintptr_t fb_addr)
 {
 	edid_fb.physical_address = fb_addr;
 	edid_fb.x_resolution = edid->x_resolution;

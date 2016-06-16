@@ -15,6 +15,7 @@ bootblock-y += car.c
 bootblock-y += gpio.c
 bootblock-y += lpc_lib.c
 bootblock-y += mmap_boot.c
+bootblock-y += spi.c
 bootblock-y += tsc_freq.c
 bootblock-$(CONFIG_SOC_UART_DEBUG) += uart_early.c
 

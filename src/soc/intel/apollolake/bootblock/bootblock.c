@@ -25,6 +25,7 @@
 #include <soc/northbridge.h>
 #include <soc/pci_devs.h>
 #include <soc/uart.h>
+#include <spi-generic.h>
 #include <timestamp.h>
 
 static const struct pad_config tpm_spi_configs[] = {
@@ -101,6 +102,35 @@ static void cache_bios_region(void)
 	set_var_mtrr(mtrr, 4ULL*GiB - rom_size, rom_size, MTRR_TYPE_WRPROT);
 }
 
+/*
+ * Program temporary BAR for SPI in case any of the stages before ramstage need
+ * to access SPI MMIO regs. Ramstage will assign a new BAR during PCI
+ * enumeration.
+ */
+static void enable_spibar(void)
+{
+	device_t dev = SPI_DEV;
+	uint8_t val;
+
+	/* Disable Bus Master and MMIO space. */
+	val = pci_read_config8(dev, PCI_COMMAND);
+	val &= ~(PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
+	pci_write_config8(dev, PCI_COMMAND, val);
+
+	/* Program Temporary BAR for SPI */
+	pci_write_config32(dev, PCI_BASE_ADDRESS_0,
+			   PRERAM_SPI_BASE_ADDRESS |
+			   PCI_BASE_ADDRESS_SPACE_MEMORY);
+
+	/* Enable Bus Master and MMIO Space */
+	val = pci_read_config8(dev, PCI_COMMAND);
+	val |= PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY;
+	pci_write_config8(dev, PCI_COMMAND, val);
+
+	/* Initialize SPI to allow BIOS to write/erase on flash. */
+	spi_init();
+}
+
 void bootblock_soc_early_init(void)
 {
 	/* Prepare UART for serial console. */
@@ -111,6 +141,8 @@ void bootblock_soc_early_init(void)
 		tpm_enable();
 
 	enable_pm_timer();
+
+	enable_spibar();
 
 	cache_bios_region();
 }

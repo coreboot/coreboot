@@ -23,13 +23,13 @@
 #include <superio/smsc/lpc47b272/lpc47b272.h>
 #include <northbridge/intel/i82810/raminit.h>
 #include <cpu/x86/bist.h>
+#include <cpu/intel/romstage.h>
 #include <southbridge/intel/i82801ax/i82801ax.h>
 #include <lib.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, LPC47B272_SP1)
 
-#include <cpu/intel/romstage.h>
-void main(unsigned long bist)
+void mainboard_romstage_entry(unsigned long bist)
 {
 	lpc47b272_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	console_init();

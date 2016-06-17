@@ -28,6 +28,7 @@
 #include <superio/intel/i3100/i3100.h>
 #include "lib/debug.c" // XXX
 #include <cpu/x86/bist.h>
+#include <cpu/intel/romstage.h>
 #include <spd.h>
 
 #define DEVPRES_CONFIG  (DEVPRES_D1F0 | DEVPRES_D2F0 | DEVPRES_D3F0 | DEVPRES_D4F0)
@@ -42,8 +43,7 @@ static inline int spd_read_byte(u16 device, u8 address)
 
 #define SERIAL_DEV PNP_DEV(0x4e, I3100_SP1)
 
-#include <cpu/intel/romstage.h>
-void main(unsigned long bist)
+void mainboard_romstage_entry(unsigned long bist)
 {
 	static const struct mem_controller mch[] = {
 		{

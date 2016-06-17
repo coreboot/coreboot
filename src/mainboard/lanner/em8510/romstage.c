@@ -31,6 +31,7 @@
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627thg/w83627thg.h>
 #include <cpu/x86/bist.h>
+#include <cpu/intel/romstage.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627THG_SP1)
 
@@ -42,8 +43,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "northbridge/intel/i855/raminit.c"
 #include "northbridge/intel/i855/reset_test.c"
 
-#include <cpu/intel/romstage.h>
-void main(unsigned long bist)
+void mainboard_romstage_entry(unsigned long bist)
 {
 	if (bist == 0) {
 #if 0

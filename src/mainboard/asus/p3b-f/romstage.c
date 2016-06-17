@@ -24,6 +24,7 @@
 #include <northbridge/intel/i440bx/raminit.h>
 #include <delay.h>
 #include <cpu/x86/bist.h>
+#include <cpu/intel/romstage.h>
 #include <superio/winbond/common/winbond.h>
 /* FIXME: The ASUS P3B-F has a Winbond W83977EF, actually. */
 #include <superio/winbond/w83977tf/w83977tf.h>
@@ -68,8 +69,7 @@ static void disable_spd(void)
 	outb(0x67, PM_IO_BASE + 0x37);
 }
 
-#include <cpu/intel/romstage.h>
-void main(unsigned long bist)
+void mainboard_romstage_entry(unsigned long bist)
 {
 	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	console_init();

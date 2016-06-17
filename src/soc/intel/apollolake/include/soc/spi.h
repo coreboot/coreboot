@@ -59,6 +59,7 @@
 #define  SPIBAR_HSFSTS_CYCLE_WRITE	SPIBAR_HSFSTS_FCYCLE(2)
 #define  SPIBAR_HSFSTS_CYCLE_4K_ERASE	SPIBAR_HSFSTS_FCYCLE(3)
 #define  SPIBAR_HSFSTS_CYCLE_64K_ERASE	SPIBAR_HSFSTS_FCYCLE(4)
+#define  SPIBAR_HSFSTS_CYCLE_RD_STATUS	SPIBAR_HSFSTS_FCYCLE(8)
 
 /* Bit definitions for PTINX register */
 #define  SPIBAR_PTINX_COMP_0		(0 << 14)
@@ -67,5 +68,11 @@
 #define  SPIBAR_PTINX_HORD_PARAM	(1 << 12)
 #define  SPIBAR_PTINX_HORD_JEDEC	(2 << 12)
 #define  SPIBAR_PTINX_IDX_MASK		0xffc
+
+/*
+ * Reads status register. On success returns 0 and status contains the value
+ * read from the status register. On error returns -1.
+ */
+int spi_read_status(uint8_t *status);
 
 #endif

@@ -373,3 +373,16 @@ struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs)
 
 	return slave;
 }
+
+int spi_read_status(uint8_t *status)
+{
+	BOILERPLATE_CREATE_CTX(ctx);
+
+	if (exec_sync_hwseq_xfer(ctx, SPIBAR_HSFSTS_CYCLE_RD_STATUS, 0,
+				 sizeof(*status)) != SUCCESS)
+		return -1;
+
+	drain_xfer_fifo(ctx, status, sizeof(*status));
+
+	return 0;
+}

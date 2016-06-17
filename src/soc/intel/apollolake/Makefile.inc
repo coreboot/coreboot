@@ -30,6 +30,7 @@ romstage-y += mmap_boot.c
 romstage-y += tsc_freq.c
 romstage-y += pmutil.c
 romstage-y += reset.c
+romstage-y += spi.c
 
 smm-y += mmap_boot.c
 smm-y += pmutil.c

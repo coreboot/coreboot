@@ -26,6 +26,7 @@
 #include <console/console.h>
 #include <lib.h>
 #include <cpu/x86/bist.h>
+#include <cpu/amd/car.h>
 #include <string.h>
 #include <timestamp.h>
 
@@ -37,7 +38,6 @@
 #define SERIAL_DEV PNP_DEV(0x4e, F81865F_SP1)
 
 /* cache_as_ram.inc jumps to here. */
-#include <cpu/intel/romstage.h>
 void main(unsigned long bist)
 {
 	u32 tolm;

@@ -20,6 +20,7 @@
 #include <superio/winbond/w83627hf/w83627hf.h>
 #include <cpu/x86/bist.h>
 #include <cpu/x86/msr.h>
+#include <cpu/amd/car.h>
 #include <cpu/amd/gx2def.h>
 #include <spd.h>
 #include "southbridge/amd/cs5536/early_smbus.c"
@@ -43,7 +44,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "cpu/amd/geode_gx2/syspreinit.c"
 #include "cpu/amd/geode_lx/msrinit.c"
 
-#include <cpu/intel/romstage.h>
 void main(unsigned long bist)
 {
 	static const struct mem_controller memctrl [] = {

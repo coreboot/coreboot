@@ -30,6 +30,7 @@
 #include <lib.h>
 #include <northbridge/via/vx800/vx800.h>
 #include <cpu/x86/bist.h>
+#include <cpu/amd/car.h>
 #include <delay.h>
 #include <string.h>
 /* This file contains the board-special SI value for raminit.c. */
@@ -365,7 +366,6 @@ static void EmbedComInit(void)
 #endif
 
 /* cache_as_ram.inc jumps to here. */
-#include <cpu/intel/romstage.h>
 void main(unsigned long bist)
 {
 	u16 boot_mode;

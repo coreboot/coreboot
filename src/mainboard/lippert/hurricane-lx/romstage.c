@@ -25,6 +25,7 @@
 #include <console/console.h>
 #include <cpu/x86/bist.h>
 #include <cpu/x86/msr.h>
+#include <cpu/amd/car.h>
 #include <cpu/amd/lxdef.h>
 #include <southbridge/amd/cs5536/cs5536.h>
 #include <spd.h>
@@ -105,7 +106,6 @@ static void mb_gpio_init(void)
 	}
 }
 
-#include <cpu/intel/romstage.h>
 void main(unsigned long bist)
 {
 

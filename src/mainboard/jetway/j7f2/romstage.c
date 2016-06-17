@@ -23,6 +23,7 @@
 #include <console/console.h>
 #include <northbridge/via/cn700/raminit.h>
 #include <cpu/x86/bist.h>
+#include <cpu/amd/car.h>
 #include <delay.h>
 #include "southbridge/via/vt8237r/early_smbus.c"
 #include <superio/fintek/common/fintek.h>
@@ -80,7 +81,6 @@ static const struct mem_controller ctrl = {
 	.channel0 = { DIMM0 },
 };
 
-#include <cpu/intel/romstage.h>
 void main(unsigned long bist)
 {
 	/* Enable multifunction for northbridge. */

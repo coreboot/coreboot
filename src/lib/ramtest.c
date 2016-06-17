@@ -181,32 +181,37 @@ int ram_check_noprint_nodie(unsigned long start, unsigned long stop)
 	return failures;
 }
 
-void quick_ram_check(void)
+static void __quick_ram_check(uintptr_t dst)
 {
 	int fail = 0;
 	u32 backup;
-	backup = read_phys(CONFIG_RAMBASE);
-	write_phys(CONFIG_RAMBASE, 0x55555555);
+	backup = read_phys(dst);
+	write_phys(dst, 0x55555555);
 	phys_memory_barrier();
-	if (read_phys(CONFIG_RAMBASE) != 0x55555555)
+	if (read_phys(dst) != 0x55555555)
 		fail=1;
-	write_phys(CONFIG_RAMBASE, 0xaaaaaaaa);
+	write_phys(dst, 0xaaaaaaaa);
 	phys_memory_barrier();
-	if (read_phys(CONFIG_RAMBASE) != 0xaaaaaaaa)
+	if (read_phys(dst) != 0xaaaaaaaa)
 		fail=1;
-	write_phys(CONFIG_RAMBASE, 0x00000000);
+	write_phys(dst, 0x00000000);
 	phys_memory_barrier();
-	if (read_phys(CONFIG_RAMBASE) != 0x00000000)
+	if (read_phys(dst) != 0x00000000)
 		fail=1;
-	write_phys(CONFIG_RAMBASE, 0xffffffff);
+	write_phys(dst, 0xffffffff);
 	phys_memory_barrier();
-	if (read_phys(CONFIG_RAMBASE) != 0xffffffff)
+	if (read_phys(dst) != 0xffffffff)
 		fail=1;
 
-	write_phys(CONFIG_RAMBASE, backup);
+	write_phys(dst, backup);
 	if (fail) {
 		post_code(0xea);
 		die("RAM INIT FAILURE!\n");
 	}
 	phys_memory_barrier();
+}
+
+void quick_ram_check(void)
+{
+	__quick_ram_check(0x100000);
 }

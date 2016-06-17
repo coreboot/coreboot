@@ -24,6 +24,7 @@
 #include <northbridge/intel/pineview/raminit.h>
 #include <northbridge/intel/pineview/pineview.h>
 #include <cpu/x86/bist.h>
+#include <cpu/intel/romstage.h>
 #include <cpu/x86/lapic.h>
 #include <superio/winbond/w83627thg/w83627thg.h>
 #include <superio/winbond/common/winbond.h>
@@ -33,7 +34,6 @@
 #define SERIAL_DEV PNP_DEV(0x4e, W83627THG_SP1)
 #define SUPERIO_DEV PNP_DEV(0x4e, 0)
 
-#include <cpu/intel/romstage.h>
 
 /* Early mainboard specific GPIO setup */
 static void mb_gpio_init(void)
@@ -102,7 +102,7 @@ static void rcba_config(void)
 	RCBA32(0x3418) |= 1;
 }
 
-void main(unsigned long bist)
+void mainboard_romstage_entry(unsigned long bist)
 {
 	const u8 spd_addrmap[4] = { 0x50, 0x51, 0, 0 };
 

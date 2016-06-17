@@ -339,8 +339,12 @@ no_msr_11e:
 	post_code(0x2f)
 
 	/* Call romstage.c main function. */
-	call	main
-	addl	$4, %esp
+	call	romstage_main
+
+	/* Save return value from romstage_main. It contains the stack to use
+	 * after cache-as-ram is torn down. It also contains the information
+	 * for setting up MTRRs. */
+	movl	%eax, %ebx
 
 	post_code(0x30)
 
@@ -425,7 +429,8 @@ __main:
 	post_code(POST_PREPARE_RAMSTAGE)
 	cld			/* Clear direction flag. */
 
-	movl	$CONFIG_RAMTOP, %esp
+	/* Setup stack as indicated by return value from romstage_main(). */
+	movl	%ebx, %esp
 	movl	%esp, %ebp
 	call	copy_and_run
 

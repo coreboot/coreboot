@@ -23,10 +23,10 @@
 #include <southbridge/intel/i82801gx/i82801gx.h>
 #include <northbridge/intel/x4x/x4x.h>
 #include <cpu/x86/bist.h>
+#include <cpu/intel/romstage.h>
 #include <superio/ite/it8718f/it8718f.h>
 #include <superio/ite/common/ite.h>
 #include <lib.h>
-#include <cpu/intel/romstage.h>
 #include <arch/stages.h>
 #include <cbmem.h>
 
@@ -132,7 +132,7 @@ static void ich7_enable_lpc(void)
 	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x8a, 0x007c);
 }
 
-void main(unsigned long bist)
+void mainboard_romstage_entry(unsigned long bist)
 {
 	//                          ch0      ch1
 	const u8 spd_addrmap[4] = { 0x50, 0, 0x52, 0 };

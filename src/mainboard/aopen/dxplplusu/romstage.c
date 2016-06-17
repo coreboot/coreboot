@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <console/console.h>
 #include <cpu/x86/bist.h>
+#include <cpu/intel/romstage.h>
 
 #include <southbridge/intel/i82801dx/i82801dx.h>
 #include <northbridge/intel/e7505/raminit.h>
@@ -34,8 +35,7 @@ int spd_read_byte(unsigned device, unsigned address)
 	return smbus_read_byte(device, address);
 }
 
-#include <cpu/intel/romstage.h>
-void main(unsigned long bist)
+void mainboard_romstage_entry(unsigned long bist)
 {
 	static const struct mem_controller memctrl[] = {
 		{

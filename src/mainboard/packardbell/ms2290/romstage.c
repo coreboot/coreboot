@@ -272,18 +272,7 @@ void mainboard_romstage_entry(unsigned long bist)
 	 * this is not a resume. In that case we just create the cbmem toc.
 	 */
 	if (s3resume) {
-		void *resume_backup_memory;
-
-		resume_backup_memory = cbmem_find(CBMEM_ID_RESUME);
-
-		/* copy 1MB - 64K to high tables ram_base to prevent memory corruption
-		 * through stage 2. We could keep stuff like stack and heap in high tables
-		 * memory completely, but that's a wonderful clean up task for another
-		 * day.
-		 */
-		if (resume_backup_memory)
-			memcpy(resume_backup_memory, (void *)CONFIG_RAMBASE,
-			       HIGH_MEMORY_SAVE);
+		acpi_prepare_for_resume();
 
 		/* Magic for S3 resume */
 		pci_write_config32(PCI_DEV(0, 0x00, 0), SKPAD, 0xcafed00d);

@@ -172,7 +172,12 @@ clear_mtrrs:
 before_romstage:
 	post_code(0x29)
 	/* Call romstage.c main function. */
-	call	main
+	call	romstage_main
+
+	/* Save return value from romstage_main. It contains the stack to use
+	 * after cache-as-ram is torn down.
+	 */
+	movl	%eax, %ebx
 
 	post_code(0x2f)
 
@@ -303,7 +308,8 @@ __main:
 	post_code(POST_PREPARE_RAMSTAGE)
 	cld			/* Clear direction flag. */
 
-	movl	$CONFIG_RAMTOP, %esp
+	/* Setup stack as indicated by return value from romstage_main(). */
+	movl	%ebx, %esp
 	movl	%esp, %ebp
 	call	copy_and_run
 

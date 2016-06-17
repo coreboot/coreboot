@@ -365,3 +365,34 @@ int vboot_platform_is_resuming(void)
 	typ = (inl(ACPI_PMIO_BASE + PM1_CNT) & SLP_TYP) >> SLP_TYP_SHIFT;
 	return typ == SLP_TYP_S3;
 }
+
+/*
+ * If possible, lock 0xcf9. Once the register is locked, it can't be changed.
+ * This lock is reset on cold boot, hard reset, soft reset and Sx.
+ */
+void global_reset_lock(void)
+{
+	uintptr_t etr = read_pmc_mmio_bar() + ETR;
+	uint32_t reg;
+
+	reg = read32((void *)etr);
+	if (reg & CF9_LOCK)
+		return;
+	reg |= CF9_LOCK;
+	write32((void *)etr, reg);
+}
+
+/*
+ * Enable or disable global reset. If global reset is enabled, hard reset and
+ * soft reset will trigger global reset, where both host and TXE are reset.
+ * This is cleared on cold boot, hard reset, soft reset and Sx.
+ */
+void global_reset_enable(bool enable)
+{
+	uintptr_t etr = read_pmc_mmio_bar() + ETR;
+	uint32_t reg;
+
+	reg = read32((void *)etr);
+	reg = enable ? reg | CF9_GLB_RST : reg & ~CF9_GLB_RST;
+	write32((void *)etr, reg);
+}

@@ -29,6 +29,7 @@ romstage-y += meminit.c
 romstage-y += mmap_boot.c
 romstage-y += tsc_freq.c
 romstage-y += pmutil.c
+romstage-y += reset.c
 romstage-y += spi.c
 
 smm-y += mmap_boot.c
@@ -54,6 +55,7 @@ ramstage-y += spi.c
 ramstage-y += tsc_freq.c
 ramstage-y += pmutil.c
 ramstage-y += pmc.c
+ramstage-y += reset.c
 ramstage-y += smi.c
 ramstage-y += spi.c
 
@@ -70,6 +72,7 @@ verstage-y += mmap_boot.c
 verstage-$(CONFIG_SOC_UART_DEBUG) += uart_early.c
 verstage-y += tsc_freq.c
 verstage-y += pmutil.c
+verstage-y += reset.c
 verstage-y += spi.c
 
 CPPFLAGS_common += -I$(src)/soc/intel/apollolake/include

@@ -24,14 +24,14 @@
 #include <superio/winbond/w83627hf/w83627hf.h>
 #include <northbridge/intel/i82810/raminit.h>
 #include <cpu/x86/bist.h>
+#include <cpu/intel/romstage.h>
 #include <southbridge/intel/i82801ax/i82801ax.h>
 #include <lib.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 #define DUMMY_DEV PNP_DEV(0x2e, 0)
 
-#include <cpu/intel/romstage.h>
-void main(unsigned long bist)
+void mainboard_romstage_entry(unsigned long bist)
 {
 	w83627hf_set_clksel_48(DUMMY_DEV);
 	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);

@@ -24,6 +24,7 @@
 #include <northbridge/intel/i440bx/raminit.h>
 #include <delay.h>
 #include <cpu/x86/bist.h>
+#include <cpu/intel/romstage.h>
 #include <superio/ite/it8671f/it8671f.h>
 #include <lib.h>
 
@@ -34,8 +35,7 @@ int spd_read_byte(unsigned int device, unsigned int address)
 	return smbus_read_byte(device, address);
 }
 
-#include <cpu/intel/romstage.h>
-void main(unsigned long bist)
+void mainboard_romstage_entry(unsigned long bist)
 {
 	it8671f_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	console_init();

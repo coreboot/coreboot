@@ -318,7 +318,12 @@ lout:
 	/* We need to set EBP? No need. */
 	movl	%esp, %ebp
 	pushl	%eax  /* BIST */
-	call	main
+	call	romstage_main
+
+	/* Save return value from romstage_main. It contains the stack to use
+	 * after cache-as-ram is torn down. It also contains the information
+	 * for setting up MTRRs. */
+	movl	%eax, %ebx
 
 	/* We don't need CAR from now on. */
 
@@ -356,7 +361,8 @@ __main:
 	post_code(POST_PREPARE_RAMSTAGE)
 	cld			/* Clear direction flag. */
 
-	movl	$CONFIG_RAMTOP, %esp
+	/* Setup stack as indicated by return value from romstage_main(). */
+	movl	%ebx, %esp
 	movl	%esp, %ebp
 	call	copy_and_run
 

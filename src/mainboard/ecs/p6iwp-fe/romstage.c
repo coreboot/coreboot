@@ -24,6 +24,7 @@
 #include <southbridge/intel/i82801ax/i82801ax.h>
 #include <northbridge/intel/i82810/raminit.h>
 #include <cpu/x86/bist.h>
+#include <cpu/intel/romstage.h>
 #include <superio/ite/common/ite.h>
 #include <superio/ite/it8712f/it8712f.h>
 #include <lib.h>
@@ -31,8 +32,7 @@
 #define SERIAL_DEV PNP_DEV(0x2e, IT8712F_SP1)
 #define CLKIN_DEV PNP_DEV(0x2e, IT8712F_GPIO)
 
-#include <cpu/intel/romstage.h>
-void main(unsigned long bist)
+void mainboard_romstage_entry(unsigned long bist)
 {
 	ite_conf_clkin(CLKIN_DEV, ITE_UART_CLK_PREDIVIDE_24);
 	ite_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);

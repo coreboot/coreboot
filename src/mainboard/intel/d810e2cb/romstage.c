@@ -23,14 +23,14 @@
 #include <southbridge/intel/i82801bx/i82801bx.h>
 #include <northbridge/intel/i82810/raminit.h>
 #include <cpu/x86/bist.h>
+#include <cpu/intel/romstage.h>
 #include <superio/smsc/smscsuperio/smscsuperio.h>
 #include "gpio.c"
 #include <lib.h>
 
 #define SERIAL_DEV PNP_DEV(0x4e, SMSCSUPERIO_SP1)
 
-#include <cpu/intel/romstage.h>
-void main(unsigned long bist)
+void mainboard_romstage_entry(unsigned long bist)
 {
 	/* Set southbridge and Super I/O GPIOs. */
 	mb_gpio_init();

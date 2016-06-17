@@ -25,14 +25,14 @@
 /* TODO: It's i810E actually! */
 #include <northbridge/intel/i82810/raminit.h>
 #include <cpu/x86/bist.h>
+#include <cpu/intel/romstage.h>
 #include <southbridge/intel/i82801ax/i82801ax.h>
 #include <lib.h>
 
 /* TODO: It's a PC87364 actually! */
 #define SERIAL_DEV PNP_DEV(0x2e, PC87360_SP1)
 
-#include <cpu/intel/romstage.h>
-void main(unsigned long bist)
+void mainboard_romstage_entry(unsigned long bist)
 {
 	/* TODO: It's a PC87364 actually! */
 	pc87360_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);

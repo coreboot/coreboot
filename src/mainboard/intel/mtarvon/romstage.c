@@ -28,6 +28,7 @@
 #include <superio/intel/i3100/i3100.h>
 #include "northbridge/intel/i3100/memory_initialized.c"
 #include <cpu/x86/bist.h>
+#include <cpu/intel/romstage.h>
 #include <spd.h>
 
 #define DEVPRES_CONFIG  (DEVPRES_D1F0 | DEVPRES_D2F0)
@@ -46,8 +47,7 @@ static inline int spd_read_byte(u16 device, u8 address)
 #include "arch/x86/lib/stages.c"
 #endif
 
-#include <cpu/intel/romstage.h>
-void main(unsigned long bist)
+void mainboard_romstage_entry(unsigned long bist)
 {
 	msr_t msr;
 	u16 perf;

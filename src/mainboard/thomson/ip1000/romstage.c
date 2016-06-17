@@ -27,6 +27,7 @@
 #include <southbridge/intel/i82801dx/i82801dx.h>
 #include "southbridge/intel/i82801dx/reset.c"
 #include <cpu/x86/bist.h>
+#include <cpu/intel/romstage.h>
 #include "spd_table.h"
 #include "gpio.c"
 #include "southbridge/intel/i82801dx/tco_timer.c"
@@ -86,8 +87,7 @@ static void mb_early_setup(void)
 	pci_write_config8(PCI_DEV(0, 0x1f, 0), ACPI_CNTL, 0x10);
 }
 
-#include <cpu/intel/romstage.h>
-void main(unsigned long bist)
+void mainboard_romstage_entry(unsigned long bist)
 {
 	if (bist == 0) {
 		if (memory_initialized())

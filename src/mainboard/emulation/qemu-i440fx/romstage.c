@@ -21,14 +21,14 @@
 #include <pc80/mc146818rtc.h>
 #include <console/console.h>
 #include <cpu/x86/bist.h>
+#include <cpu/intel/romstage.h>
 #include <timestamp.h>
 #include <delay.h>
 #include <cpu/x86/lapic.h>
 
 #include "memory.c"
 
-#include <cpu/intel/romstage.h>
-void main(unsigned long bist)
+void * asmlinkage romstage_main(unsigned long bist)
 {
 	int cbmem_was_initted;
 
@@ -48,4 +48,6 @@ void main(unsigned long bist)
 	timestamp_init(timestamp_get());
 	timestamp_add_now(TS_START_ROMSTAGE);
 
+	/* Emulation uses fixed low stack during ramstage. */
+	return NULL;
 }

@@ -49,7 +49,7 @@ cache_as_ram:
 before_romstage:
 	post_code(0x29)
 	/* Call romstage.c main function. */
-	call	main
+	call	romstage_main
 
 	post_code(0x30)
 

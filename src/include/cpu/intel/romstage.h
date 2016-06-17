@@ -3,9 +3,6 @@
 
 #include <arch/cpu.h>
 
-/* std signature of entry-point to romstage.c */
-void main(unsigned long bist);
-
 void mainboard_romstage_entry(unsigned long bist);
 void * asmlinkage romstage_main(unsigned long bist);
 

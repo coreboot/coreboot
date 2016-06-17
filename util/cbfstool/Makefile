@@ -1,7 +1,7 @@
 top ?= $(abspath ../..)
 objutil ?= $(top)/util
 
-CONFIG_FMD_GENPARSER := y
+CONFIG_FMD_GENPARSER ?= n
 
 HOSTCC ?= $(CC)
 OBJCOPY ?= objcopy

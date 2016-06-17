@@ -24,6 +24,7 @@
 #include <lib.h>
 #include <northbridge/via/cn700/raminit.h>
 #include <cpu/x86/bist.h>
+#include <cpu/amd/car.h>
 #include <delay.h>
 #include "southbridge/via/vt8237r/early_smbus.c"
 #include <superio/ite/common/ite.h>
@@ -49,7 +50,6 @@ static const struct mem_controller ctrl = {
 	.channel0 = { DIMM0 }, /* TODO: CN700 currently only supports 1 DIMM. */
 };
 
-#include <cpu/intel/romstage.h>
 void main(unsigned long bist)
 {
 	/* Enable multifunction for northbridge. */

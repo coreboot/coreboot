@@ -23,6 +23,7 @@
 #include <lib.h>
 #include <northbridge/via/cx700/raminit.h>
 #include <cpu/x86/bist.h>
+#include <cpu/amd/car.h>
 #include <delay.h>
 #include "northbridge/via/cx700/early_smbus.c"
 #include "lib/debug.c"
@@ -76,7 +77,6 @@ static void enable_shadow_ram(const struct mem_controller *ctrl)
 	pci_write_config8(PCI_DEV(0, 0, 3), 0x83, shadowreg);
 }
 
-#include <cpu/intel/romstage.h>
 void main(unsigned long bist)
 {
 	/* Set statically so it should work with cx700 as well */

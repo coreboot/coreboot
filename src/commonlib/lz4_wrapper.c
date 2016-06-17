@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Google Inc.
+ * Copyright 2015-2016 Google Inc.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -54,14 +54,18 @@ static void LZ4_copy8(void *dst, const void *src)
 			((uint8_t *)dst)[i] = ((uint8_t *)src)[i];
 	#else
 		uint32_t x0, x1;
-		__asm__ volatile (
-			"ldr %[x0], [%[src]]\n\t"
-			"ldr %[x1], [%[src], #4]\n\t"
-			"str %[x0], [%[dst]]\n\t"
-			"str %[x1], [%[dst], #4]\n\t"
-			: [x0]"=r"(x0), [x1]"=r"(x1)
-			: [src]"r"(src), [dst]"r"(dst)
-			: "memory" );
+		__asm__ ("ldr %[x0], [%[src]]"
+			: [x0]"=r"(x0)
+			: [src]"r"(src), "m"(*(const uint32_t *)src));
+		__asm__ ("ldr %[x1], [%[src], #4]"
+			: [x1]"=r"(x1)
+			: [src]"r"(src), "m"(*(const uint32_t *)(src + 4)));
+		__asm__ ("str %[x0], [%[dst]]"
+			: "=m"(*(uint32_t *)dst)
+			: [x0]"r"(x0), [dst]"r"(dst));
+		__asm__ ("str %[x1], [%[dst], #4]"
+			: "=m"(*(uint32_t *)(dst + 4))
+			: [x1]"r"(x1), [dst]"r"(dst));
 	#endif
 #elif defined(__riscv__)
 	/* RISC-V implementations may trap on any unaligned access. */

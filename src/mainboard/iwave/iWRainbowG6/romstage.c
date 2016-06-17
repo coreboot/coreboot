@@ -20,6 +20,7 @@
 #include <device/pnp_def.h>
 #include <cpu/x86/lapic.h>
 #include <cpu/x86/cache.h>
+#include <cpu/intel/romstage.h>
 #include <arch/cpu.h>
 #include <console/console.h>
 #if 0
@@ -328,8 +329,7 @@ static void poulsbo_setup_Stage2Regs(void)
 	printk(BIOS_DEBUG, " done.\n");
 }
 
-#include <cpu/intel/romstage.h>
-void main(unsigned long bist)
+void mainboard_romstage_entry(unsigned long bist)
 {
 	int boot_mode = 0;
 

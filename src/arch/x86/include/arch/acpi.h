@@ -614,7 +614,6 @@ void acpi_resume(void *wake_vec);
 void acpi_prepare_resume_backup(void);
 void mainboard_suspend_resume(void);
 void *acpi_find_wakeup_vector(void);
-void *acpi_get_wakeup_rsdp(void);
 void acpi_jump_to_wakeup(void *wakeup_addr);
 
 /* Returns 0 = S0, 1 = S1 ... */

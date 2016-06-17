@@ -1071,23 +1071,15 @@ static acpi_rsdp_t *valid_rsdp(acpi_rsdp_t *rsdp)
 	return rsdp;
 }
 
-static acpi_rsdp_t *rsdp;
-
-void *acpi_get_wakeup_rsdp(void)
-{
-	return rsdp;
-}
-
 void *acpi_find_wakeup_vector(void)
 {
 	char *p, *end;
 	acpi_rsdt_t *rsdt;
 	acpi_facs_t *facs;
 	acpi_fadt_t *fadt = NULL;
+	acpi_rsdp_t *rsdp = NULL;
 	void *wake_vec;
 	int i;
-
-	rsdp = NULL;
 
 	if (!acpi_is_wakeup())
 		return NULL;

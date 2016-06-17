@@ -63,7 +63,7 @@ chip northbridge/intel/gm45
 			register "sata_traffic_monitor"		= "0"
 
 			# Set c-state support
-			register "c4onc3_enable"		= "0"
+			register "c4onc3_enable"		= "1"
 			register "c5_enable"			= "1"
 			register "c6_enable"			= "1"
 

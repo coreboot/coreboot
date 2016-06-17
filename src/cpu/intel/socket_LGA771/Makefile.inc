@@ -9,3 +9,4 @@ subdirs-y += ../microcode
 subdirs-y += ../hyperthreading
 
 cpu_incs-y += $(src)/cpu/intel/model_6ex/cache_as_ram.inc
+romstage-y += ../car/romstage.c

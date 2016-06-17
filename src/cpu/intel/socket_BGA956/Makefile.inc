@@ -10,3 +10,4 @@ subdirs-y += ../speedstep
 
 # Use Intel Core (not Core 2) code for CAR init, any CPU might be used.
 cpu_incs-y += $(src)/cpu/intel/model_6ex/cache_as_ram.inc
+romstage-y += ../car/romstage.c

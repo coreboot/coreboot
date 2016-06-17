@@ -278,7 +278,7 @@ static void early_ich7_init(void)
 	RCBA32(0x2034) = reg32;
 }
 
-void main(unsigned long bist)
+void mainboard_romstage_entry(unsigned long bist)
 {
 	int s3resume = 0;
 	const u8 spd_addrmap[2 * DIMM_SOCKETS] = { 0x50, 0x51, 0x52, 0x53 };

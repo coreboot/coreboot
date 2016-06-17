@@ -23,13 +23,13 @@
 #include <cpu/x86/lapic.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/tsc.h>
+#include <cpu/intel/romstage.h>
 #include <cbmem.h>
 #include <lib.h>
 #include <pc80/mc146818rtc.h>
 #include <console/console.h>
 #include <southbridge/intel/i82801ix/i82801ix.h>
 #include <northbridge/intel/gm45/gm45.h>
-#include <cpu/intel/romstage.h>
 
 #define LPC_DEV PCI_DEV(0, 0x1f, 0)
 #define MCH_DEV PCI_DEV(0, 0, 0)
@@ -67,7 +67,7 @@ static void early_lpc_setup(void)
 	pci_write_config32(LPC_DEV, D31F0_GEN3_DEC, 0x1c1681);
 }
 
-void main(unsigned long bist)
+void mainboard_romstage_entry(unsigned long bist)
 {
 	sysinfo_t sysinfo;
 	int s3resume = 0;

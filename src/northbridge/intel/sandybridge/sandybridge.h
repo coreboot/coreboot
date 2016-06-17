@@ -196,12 +196,6 @@
 
 #define DMIDRCCFG	0xeb4	/* 32bit */
 
-/* Delegation of resume backup memory so we don't have to
- * (slowly) handle backing up OS memory in romstage.c
- */
-#define CBMEM_BOOT_MODE		0x610
-#define CBMEM_RESUME_BACKUP	0x614
-
 #ifndef __ASSEMBLER__
 static inline void barrier(void) { asm("" ::: "memory"); }
 

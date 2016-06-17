@@ -43,7 +43,10 @@ static void early_pch_init(void)
 	pci_write_config8(PCH_LPC_DEV, 0xa4, reg8);
 }
 
-void main(unsigned long bist)
+/* Platform has no romstage entry point under mainboard directory,
+ * so this one is named with prefix mainboard.
+ */
+void mainboard_romstage_entry(unsigned long bist)
 {
 	int s3resume = 0;
 

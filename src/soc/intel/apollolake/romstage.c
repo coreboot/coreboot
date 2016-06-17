@@ -21,6 +21,7 @@
 #include <arch/io.h>
 #include <arch/symbols.h>
 #include <assert.h>
+#include <bootmode.h>
 #include <cbfs.h>
 #include <cbmem.h>
 #include <console/console.h>
@@ -37,6 +38,7 @@
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/romstage.h>
+#include <soc/spi.h>
 #include <soc/uart.h>
 #include <string.h>
 #include <timestamp.h>
@@ -259,4 +261,12 @@ __attribute__ ((weak))
 void mainboard_memory_init_params(struct FSPM_UPD *mupd)
 {
 	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
+}
+
+int get_sw_write_protect_state(void)
+{
+	uint8_t status;
+
+	/* Return unprotected status if status read fails. */
+	return spi_read_status(&status) ? 0 : !!(status & 0x80);
 }

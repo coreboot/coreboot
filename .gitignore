@@ -58,7 +58,8 @@ site-local
 *.o
 *.out
 *.pyc
-*.swp
+*.sw[po]
+/*.rom
 
 # Development friendly files
 tags

@@ -20,3 +20,4 @@ smm-$(CONFIG_HAVE_SMI_HANDLER) += finalize.c
 cpu_microcode_bins += 3rdparty/blobs/cpu/intel/model_2065x/microcode.bin
 
 cpu_incs-y += $(src)/cpu/intel/model_2065x/cache_as_ram.inc
+romstage-y += ../car/romstage.c

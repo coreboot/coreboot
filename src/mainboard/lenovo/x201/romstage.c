@@ -28,6 +28,7 @@
 #include <pc80/mc146818rtc.h>
 #include <console/console.h>
 #include <cpu/x86/bist.h>
+#include <cpu/intel/romstage.h>
 #include <ec/acpi/ec.h>
 #include <delay.h>
 #include <timestamp.h>
@@ -174,8 +175,7 @@ static void set_fsb_frequency(void)
 	smbus_block_write(0x69, 0, 5, block);
 }
 
-#include <cpu/intel/romstage.h>
-void main(unsigned long bist)
+void mainboard_romstage_entry(unsigned long bist)
 {
 	u32 reg32;
 	int s3resume = 0;

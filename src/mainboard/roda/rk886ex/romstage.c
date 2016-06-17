@@ -28,6 +28,7 @@
 #include <pc80/mc146818rtc.h>
 #include <console/console.h>
 #include <cpu/x86/bist.h>
+#include <cpu/intel/romstage.h>
 #include <halt.h>
 #include <northbridge/intel/i945/i945.h>
 #include <northbridge/intel/i945/raminit.h>
@@ -244,8 +245,7 @@ static void init_artec_dongle(void)
 	outb(0xf4, 0x88);
 }
 
-#include <cpu/intel/romstage.h>
-void main(unsigned long bist)
+void mainboard_romstage_entry(unsigned long bist)
 {
 	int s3resume = 0;
 

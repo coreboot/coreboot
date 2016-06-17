@@ -24,6 +24,7 @@
 #include <lib.h>
 #include <console/console.h>
 #include <cpu/x86/bist.h>
+#include <cpu/intel/romstage.h>
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627hf/w83627hf.h>
 #include <northbridge/intel/i5000/raminit.h>
@@ -106,8 +107,7 @@ int mainboard_set_fbd_clock(int speed)
 	}
 }
 
-#include <cpu/intel/romstage.h>
-void main(unsigned long bist)
+void mainboard_romstage_entry(unsigned long bist)
 {
 	if (bist == 0)
 		enable_lapic();

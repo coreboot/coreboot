@@ -22,6 +22,7 @@
 #include <cpu/x86/lapic.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/tsc.h>
+#include <cpu/intel/romstage.h>
 #include <arch/acpi.h>
 #include <cbmem.h>
 #include <lib.h>
@@ -115,8 +116,7 @@ static void default_superio_gpio_setup(void)
 	outb(0x10, 0x600 + 0xb + 4); /* GP40 - GP47 */
 }
 
-#include <cpu/intel/romstage.h>
-void main(unsigned long bist)
+void mainboard_romstage_entry(unsigned long bist)
 {
 	sysinfo_t sysinfo;
 	int s3resume = 0;

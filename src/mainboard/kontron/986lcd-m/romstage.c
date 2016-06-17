@@ -28,6 +28,7 @@
 #include "option_table.h"
 #include <console/console.h>
 #include <cpu/x86/bist.h>
+#include <cpu/intel/romstage.h>
 #include <halt.h>
 #include <superio/winbond/w83627thg/w83627thg.h>
 #include <northbridge/intel/i945/i945.h>
@@ -323,8 +324,7 @@ static void early_ich7_init(void)
 	RCBA32(0x2034) = reg32;
 }
 
-#include <cpu/intel/romstage.h>
-void main(unsigned long bist)
+void mainboard_romstage_entry(unsigned long bist)
 {
 	int s3resume = 0;
 

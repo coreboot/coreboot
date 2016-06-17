@@ -26,6 +26,7 @@
 #include <console/console.h>
 #include <delay.h>
 #include <cpu/x86/bist.h>
+#include <cpu/intel/romstage.h>
 #include <cpu/intel/speedstep.h>
 #include "southbridge/intel/i3100/early_smbus.c"
 #include "southbridge/intel/i3100/early_lpc.c"
@@ -117,8 +118,7 @@ static void early_config(void)
 	pci_write_config8(PCI_DEV(0, 0x1F, 2), SATA_MAP, (SATA_MODE_AHCI << 6) | (0 << 0));
 }
 
-#include <cpu/intel/romstage.h>
-void main(unsigned long bist)
+void mainboard_romstage_entry(unsigned long bist)
 {
 	/* int boot_mode = 0; */
 

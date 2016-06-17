@@ -433,5 +433,5 @@ static void spi_init_cb(void *unused)
 	spi_init();
 }
 
-BOOT_STATE_INIT_ENTRY(BS_DEV_ENABLE, BS_ON_EXIT, spi_init_cb, NULL);
+BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_ENTRY, spi_init_cb, NULL);
 #endif

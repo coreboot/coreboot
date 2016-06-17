@@ -28,12 +28,12 @@
 #include <pc80/mc146818rtc.h>
 #include <console/console.h>
 #include <cpu/x86/bist.h>
+#include <cpu/intel/romstage.h>
 #include <ec/acpi/ec.h>
 #include <delay.h>
 #include <timestamp.h>
 #include <arch/acpi.h>
 #include <cbmem.h>
-#include <cpu/intel/romstage.h>
 
 #include "arch/early_variables.h"
 #include <southbridge/intel/ibexpeak/pch.h>
@@ -166,8 +166,7 @@ static inline u16 read_acpi16(u32 addr)
 }
 #endif
 
-#include <cpu/intel/romstage.h>
-void main(unsigned long bist)
+void mainboard_romstage_entry(unsigned long bist)
 {
 	u32 reg32;
 	int s3resume = 0;

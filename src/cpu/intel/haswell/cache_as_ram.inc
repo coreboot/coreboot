@@ -236,7 +236,7 @@ before_romstage:
 
 	post_code(0x38)
 
-	/* Setup stack as indicated by return value from ramstage_main(). */
+	/* Setup stack as indicated by return value from romstage_main(). */
 	movl	%ebx, %esp
 
 	/* Get number of MTRRs. */

@@ -128,6 +128,10 @@
 #define GEN_PMCON2		0x1024
 #       define RPS		(1 <<  2)
 #define GEN_PMCON3		0x1028
+#define ETR			0x1048
+#	define CF9_LOCK		(1 << 31)
+#	define CF9_GLB_RST	(1 << 20)
+
 
 /* Generic sleep state types */
 #define SLEEP_STATE_S0		0
@@ -167,5 +171,8 @@ void disable_pm1_control(uint32_t mask);
 void enable_gpe(uint32_t mask);
 void disable_gpe(uint32_t mask);
 void disable_all_gpe(void);
+
+void global_reset_enable(bool enable);
+void global_reset_lock(void);
 
 #endif

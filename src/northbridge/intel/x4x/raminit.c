@@ -264,11 +264,13 @@ static u8 msbpos(u8 val) //Reverse
 
 static void mchinfo_ddr2(struct sysinfo *s)
 {
+	u8 capablefreq, maxfreq;
+
 	const u32 eax = cpuid_ext(0x04, 0).eax;
 	s->cores = ((eax >> 26) & 0x3f) + 1;
 	printk(BIOS_WARNING, "%d CPU cores\n", s->cores);
 
-	u32 capid = pci_read_config16(PCI_DEV(0,0,0), 0xe8);
+	u32 capid = pci_read_config16(PCI_DEV(0, 0, 0), 0xe8);
 	if (!(capid & (1<<(79-64)))) {
 		printk(BIOS_WARNING, "iTPM enabled\n");
 	}
@@ -282,7 +284,19 @@ static void mchinfo_ddr2(struct sysinfo *s)
 		printk(BIOS_WARNING, "AMT enabled\n");
 	}
 
-	s->max_ddr2_mhz = (capid & (1<<(53-32)))?667:800;
+	maxfreq = MEM_CLOCK_800MHz;
+	capablefreq = (u8)((pci_read_config16(PCI_DEV(0, 0, 0), 0xea) >> 4) & 0x3f);
+	capablefreq &= 0x7;
+	if (capablefreq)
+		maxfreq = capablefreq + 1;
+
+	if (maxfreq > MEM_CLOCK_800MHz)
+		maxfreq = MEM_CLOCK_800MHz;
+
+	if (maxfreq < MEM_CLOCK_667MHz)
+		maxfreq = MEM_CLOCK_667MHz;
+
+	s->max_ddr2_mhz = (maxfreq == MEM_CLOCK_800MHz) ? 800 : 667;
 	printk(BIOS_WARNING, "Capable of DDR2 of %d MHz or lower\n", s->max_ddr2_mhz);
 
 	if (!(capid & (1<<(48-32)))) {
@@ -317,19 +331,11 @@ static void sdram_detect_ram_speed(struct sysinfo *s)
 		break;
 	}
 
-	// Find RAM speed
-	maxfreq = (u8) ((pci_read_config16(PCI_DEV(0,0,0), 0xea) >> 4) & 0x3f);
+	// Max RAM speed
 	if (s->spd_type == DDR2) {
 
-		// Limit frequency for MCH
-		maxfreq &= 0x7;
-		freq = MEM_CLOCK_800MHz;
-		if (maxfreq) {
-			freq = maxfreq;
-		}
-		if (freq > MEM_CLOCK_800MHz) {
-			freq = MEM_CLOCK_800MHz;
-		}
+		// Choose max memory frequency for MCH as previously detected
+		freq = (s->max_ddr2_mhz == 800) ? MEM_CLOCK_800MHz : MEM_CLOCK_667MHz;
 
 		// Detect a common CAS latency
 		commoncas = 0xff;
@@ -411,6 +417,7 @@ static void sdram_detect_ram_speed(struct sysinfo *s)
 
 	} else { // DDR3
 		// Limit frequency for MCH
+		maxfreq = (s->max_ddr2_mhz == 800) ? MEM_CLOCK_800MHz : MEM_CLOCK_667MHz;
 		maxfreq >>= 3;
 		freq = MEM_CLOCK_1333MHz;
 		if (maxfreq) {

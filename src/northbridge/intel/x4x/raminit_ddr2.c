@@ -1625,7 +1625,8 @@ static void mmap_ddr2(struct sysinfo *s)
 	u32 gfxsize, gttsize, tsegsize, mmiosize, tom, tolud, touud;
 	u32 gfxbase, gttbase, tsegbase, reclaimbase, reclaimlimit;
 	u16 ggc;
-	u16 ggc2uma[] = { 0, 0, 0, 0, 0, 32, 48, 64, 128, 256, 96, 160, 224, 352 };
+	u16 ggc2uma[] = { 0, 1, 4, 8, 16, 32, 48, 64, 128, 256, 96,
+			  160, 224, 352 };
 	u8 ggc2gtt[] = { 0, 1, 0, 2, 0, 0, 0, 0, 0, 2, 3, 4};
 
 	ggc = pci_read_config16(PCI_DEV(0,0,0), 0x52);

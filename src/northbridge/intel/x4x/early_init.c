@@ -18,6 +18,7 @@
 #include <arch/io.h>
 #include "iomap.h"
 #include <southbridge/intel/i82801gx/i82801gx.h> /* DEFAULT_PMBASE */
+#include <pc80/mc146818rtc.h>
 #include "x4x.h"
 
 void x4x_early_init(void)
@@ -51,5 +52,12 @@ void x4x_early_init(void)
 
 	/* Enable internal GFX */
 	pci_write_config32(d0f0, D0F0_DEVEN, BOARD_DEVEN);
-	pci_write_config16(d0f0, D0F0_GGC, 0x0170);
+	/* Set preallocated IGD size from cmos */
+	u8 gfxsize;
+
+	if (get_option(&gfxsize, "gfx_uma_size") != CB_SUCCESS) {
+		/* 6 for 64MB, default if not set in cmos */
+		gfxsize = 6;
+	}
+	pci_write_config16(d0f0, D0F0_GGC, 0x0100 | ((gfxsize + 1) << 4));
 }

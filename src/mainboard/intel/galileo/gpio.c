@@ -39,7 +39,7 @@ void car_mainboard_pre_console_init(void)
 		else
 			script = (reg_legacy_gpio_read (R_QNC_GPIO_RGLVL_RESUME_WELL)
 				& GALILEO_DETERMINE_IOEXP_SLA_RESUMEWELL_GPIO)
-				? gen1_hsuart0_0x21 : gen1_hsuart0_0x20;
+				? gen1_hsuart0_0x20 : gen1_hsuart0_0x21;
 		reg_script_run(script);
 	}
 }
@@ -57,7 +57,7 @@ void mainboard_gpio_i2c_init(device_t dev)
 		/* Determine which I2C address is in use */
 		script = (reg_legacy_gpio_read (R_QNC_GPIO_RGLVL_RESUME_WELL)
 			& GALILEO_DETERMINE_IOEXP_SLA_RESUMEWELL_GPIO)
-			? gen1_i2c_0x21_init : gen1_i2c_0x20_init;
+			? gen1_i2c_0x20_init : gen1_i2c_0x21_init;
 
 	/* Initialize the I2C chips */
 	reg_script_run(script);

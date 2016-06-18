@@ -100,7 +100,7 @@ static struct rk3399_msch_regs * const rk3399_msch[2] = {
 #define PHY_DRV_ODT_40		(0xe)
 #define PHY_DRV_ODT_34_3	(0xf)
 
-static void copy_to_reg(u32 *dest, u32 *src, u32 n)
+static void copy_to_reg(u32 *dest, const u32 *src, u32 n)
 {
 	int i;
 
@@ -396,8 +396,8 @@ static void pctl_cfg(u32 channel,
 	u32 *denali_ctl = rk3399_ddr_pctl[channel]->denali_ctl;
 	u32 *denali_pi = rk3399_ddr_pi[channel]->denali_pi;
 	u32 *denali_phy = rk3399_ddr_publ[channel]->denali_phy;
-	u32 *params_ctl = (u32 *)sdram_params->pctl_regs.denali_ctl;
-	u32 *params_phy = (u32 *)sdram_params->phy_regs.denali_phy;
+	const u32 *params_ctl = sdram_params->pctl_regs.denali_ctl;
+	const u32 *params_phy = sdram_params->phy_regs.denali_phy;
 	u32 tmp, tmp1, tmp2;
 	u32 pwrup_srefresh_exit;
 
@@ -408,7 +408,7 @@ static void pctl_cfg(u32 channel,
 	copy_to_reg(&denali_ctl[1], &params_ctl[1],
 		    sizeof(struct rk3399_ddr_pctl_regs) - 4);
 	write32(&denali_ctl[0], params_ctl[0]);
-	copy_to_reg(denali_pi, (u32 *)&sdram_params->pi_regs.denali_pi[0],
+	copy_to_reg(denali_pi, &sdram_params->pi_regs.denali_pi[0],
 		    sizeof(struct rk3399_ddr_pi_regs));
 	/* rank count need to set for init */
 	set_memory_map(channel, sdram_params);

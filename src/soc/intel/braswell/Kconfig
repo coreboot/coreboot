@@ -14,7 +14,7 @@ config CPU_SPECIFIC_OPTIONS
 	select ARCH_VERSTAGE_X86_32
 	select BOOT_DEVICE_SUPPORTS_WRITES
 	select CACHE_MRC_SETTINGS
-	select CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM if RELOCATABLE_RAMSTAGE
+	select CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM
 	select COLLECT_TIMESTAMPS
 	select SUPPORT_CPU_UCODE_IN_CBFS
 	select CPU_INTEL_TURBO_NOT_PACKAGE_SCOPED
@@ -22,8 +22,6 @@ config CPU_SPECIFIC_OPTIONS
 	select HAVE_SMI_HANDLER
 	select HAVE_HARD_RESET
 	select NO_FIXED_XIP_ROM_SIZE
-	select RELOCATABLE_MODULES
-	select RELOCATABLE_RAMSTAGE
 	select PARALLEL_MP
 	select PCIEXP_ASPM
 	select PCIEXP_CLK_PM
@@ -106,7 +104,6 @@ config DCACHE_RAM_SIZE
 config RESET_ON_INVALID_RAMSTAGE_CACHE
 	bool "Reset the system on S3 wake when ramstage cache invalid."
 	default n
-	depends on RELOCATABLE_RAMSTAGE
 	help
 	  The haswell romstage code caches the loaded ramstage program
 	  in SMM space. On S3 wake the romstage will copy over a fresh

@@ -18,7 +18,6 @@ config NORTHBRIDGE_AMD_PI
 	default y if CPU_AMD_PI
 	default n
 	select CBMEM_TOP_BACKUP
-	select RELOCATABLE_RAMSTAGE
 
 if NORTHBRIDGE_AMD_PI
 

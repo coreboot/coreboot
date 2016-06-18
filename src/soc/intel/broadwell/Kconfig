@@ -15,7 +15,7 @@ config CPU_SPECIFIC_OPTIONS
 	select BOOT_DEVICE_SUPPORTS_WRITES
 	select CACHE_MRC_SETTINGS
 	select MRC_SETTINGS_PROTECT
-	select CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM if RELOCATABLE_RAMSTAGE
+	select CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM
 	select CPU_INTEL_FIRMWARE_INTERFACE_TABLE
 	select SUPPORT_CPU_UCODE_IN_CBFS
 	select HAVE_MONOTONIC_TIMER
@@ -23,8 +23,6 @@ config CPU_SPECIFIC_OPTIONS
 	select HAVE_HARD_RESET
 	select HAVE_USBDEBUG
 	select IOAPIC
-	select RELOCATABLE_MODULES
-	select RELOCATABLE_RAMSTAGE
 	select REG_SCRIPT
 	select PARALLEL_MP
 	select RTC
@@ -159,7 +157,6 @@ config PRE_GRAPHICS_DELAY
 config RESET_ON_INVALID_RAMSTAGE_CACHE
 	bool "Reset the system on S3 wake when ramstage cache invalid."
 	default n
-	depends on RELOCATABLE_RAMSTAGE
 	help
 	  The romstage code caches the loaded ramstage program in SMM space.
 	  On S3 wake the romstage will copy over a fresh ramstage that was

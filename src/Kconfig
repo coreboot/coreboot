@@ -233,8 +233,9 @@ config NO_RELOCATABLE_RAMSTAGE
 	default y
 
 config RELOCATABLE_RAMSTAGE
+	bool
 	depends on EARLY_CBMEM_INIT
-	bool "Build the ramstage to be relocatable in 32-bit address space."
+	default !NO_RELOCATABLE_RAMSTAGE
 	select RELOCATABLE_MODULES
 	help
 	 The reloctable ramstage support allows for the ramstage to be built

@@ -440,8 +440,7 @@ set_hostcflags_from_gmp() {
 }
 
 build_GMP() {
-	CC="$CC" CFLAGS="$HOSTCFLAGS" \
-		../${GMP_DIR}/configure --disable-shared --enable-fat \
+	CC="$CC" ../${GMP_DIR}/configure --disable-shared --enable-fat \
 		--prefix=$TARGETDIR $OPTIONS \
 		|| touch .failed
 	$MAKE $JOBS || touch .failed

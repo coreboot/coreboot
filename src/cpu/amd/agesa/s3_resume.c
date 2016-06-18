@@ -25,29 +25,11 @@
 #include <halt.h>
 #include "s3_resume.h"
 
-static void *backup_resume(void)
-{
-	void *resume_backup_memory;
-
-	printk(BIOS_DEBUG, "Find resume memory location\n");
-
-	if (cbmem_recovery(1)) {
-		printk(BIOS_EMERG, "Unable to recover CBMEM\n");
-		halt();
-	}
-
-	resume_backup_memory = cbmem_find(CBMEM_ID_RESUME);
-	if (resume_backup_memory == NULL) {
-		printk(BIOS_EMERG, "No storage for low-memory backup\n");
-		halt();
-	}
-
-	return resume_backup_memory;
-}
-
 static void move_stack_high_mem(void)
 {
 	void *high_stack = cbmem_find(CBMEM_ID_ROMSTAGE_RAM_STACK);
+	if (high_stack == NULL)
+		halt();
 
 	/* TODO: Make the switch with empty stack instead. */
 	memcpy(high_stack, (void *)BSP_STACK_BASE_ADDR, HIGH_ROMSTAGE_STACK_SIZE);
@@ -93,7 +75,10 @@ static void set_resume_cache(void)
 
 void prepare_for_resume(void)
 {
-	void *resume_backup_memory = backup_resume();
+	if (cbmem_recovery(1)) {
+		printk(BIOS_EMERG, "Unable to recover CBMEM\n");
+		halt();
+	}
 
 	post_code(0x62);
 	printk(BIOS_DEBUG, "Move CAR stack.\n");
@@ -108,8 +93,5 @@ void prepare_for_resume(void)
 	 * Copy the system memory that is in the ramstage area to the
 	 * reserved area.
 	 */
-	if (resume_backup_memory)
-		memcpy(resume_backup_memory, (void *)(CONFIG_RAMBASE), HIGH_MEMORY_SAVE);
-
-	printk(BIOS_DEBUG, "System memory saved. OK to load ramstage.\n");
+	acpi_prepare_for_resume();
 }

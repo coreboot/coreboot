@@ -25,6 +25,7 @@
 #include <device/device.h>
 #include <arch/io.h>
 #include <arch/acpi.h>
+#include <program_loading.h>
 #include <string.h>
 #include "Porting.h"
 #include <northbridge/amd/pi/BiosCallOuts.h>
@@ -137,12 +138,13 @@ void restore_mtrr(void)
 #ifdef __PRE_RAM__
 static void move_stack_high_mem(void)
 {
-	void *high_stack = cbmem_find(CBMEM_ID_ROMSTAGE_RAM_STACK);
-	if (high_stack == NULL)
+	uintptr_t high_stack = romstage_ram_stack_base(HIGH_ROMSTAGE_STACK_SIZE,
+		ROMSTAGE_STACK_CBMEM);
+	if (!high_stack)
 		halt();
 
 	/* TODO: Make the switch with empty stack instead. */
-	memcpy(high_stack, (void *)BSP_STACK_BASE_ADDR, HIGH_ROMSTAGE_STACK_SIZE);
+	memcpy((void*)high_stack, (void *)BSP_STACK_BASE_ADDR, HIGH_ROMSTAGE_STACK_SIZE);
 
 #ifdef __x86_64__
 	__asm__

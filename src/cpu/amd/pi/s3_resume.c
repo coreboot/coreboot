@@ -28,6 +28,7 @@
 #include <string.h>
 #include "Porting.h"
 #include <northbridge/amd/pi/BiosCallOuts.h>
+#include <halt.h>
 #include "s3_resume.h"
 
 /* The size needs to be 4k aligned, which is the sector size of most flashes. */
@@ -134,24 +135,6 @@ void restore_mtrr(void)
 }
 
 #ifdef __PRE_RAM__
-static void *backup_resume(void)
-{
-	void *resume_backup_memory;
-
-	if (cbmem_recovery(1))
-		return NULL;
-
-	resume_backup_memory = cbmem_find(CBMEM_ID_RESUME);
-	if (((u32) resume_backup_memory == 0)
-	    || ((u32) resume_backup_memory == -1)) {
-		printk(BIOS_ERR, "Error: resume_backup_memory: %x\n",
-		       (u32) resume_backup_memory);
-		for (;;) ;
-	}
-
-	return resume_backup_memory;
-}
-
 static void move_stack_high_mem(void)
 {
 	void *high_stack;
@@ -289,13 +272,14 @@ static void set_resume_cache(void)
 
 void prepare_for_resume(void)
 {
-	printk(BIOS_DEBUG, "Find resume memory location\n");
-	void *resume_backup_memory = backup_resume();
+	if (cbmem_recovery(1)) {
+		printk(BIOS_EMERG, "Unable to recover CBMEM\n");
+		halt();
+	}
 
 	post_code(0x62);
 	printk(BIOS_DEBUG, "Move CAR stack.\n");
 	move_stack_high_mem();
-	printk(BIOS_DEBUG, "stack moved to: 0x%x\n", (u32) (resume_backup_memory + HIGH_MEMORY_SAVE));
 
 	post_code(0x63);
 	disable_cache_as_ram();
@@ -306,9 +290,6 @@ void prepare_for_resume(void)
 	 * Copy the system memory that is in the ramstage area to the
 	 * reserved area.
 	 */
-	if (resume_backup_memory)
-		memcpy(resume_backup_memory, (void *)(CONFIG_RAMBASE), HIGH_MEMORY_SAVE);
-
-	printk(BIOS_DEBUG, "System memory saved. OK to load ramstage.\n");
+	acpi_prepare_for_resume();
 }
 #endif

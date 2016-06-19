@@ -182,7 +182,7 @@ clear_mtrrs:
 	xorl	%edx, %edx
 	wrmsr
 	movl	$MTRR_PHYS_MASK(0), %ecx
-	movl	$(~(CONFIG_RAMTOP - 1) | MTRR_PHYS_MASK_VALID), %eax
+	movl	$(~(CACHE_TMP_RAMTOP - 1) | MTRR_PHYS_MASK_VALID), %eax
 	movl	$CPU_PHYSMASK_HI, %edx
 	wrmsr
 

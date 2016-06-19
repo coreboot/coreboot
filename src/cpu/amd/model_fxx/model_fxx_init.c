@@ -173,12 +173,12 @@ static void set_init_ecc_mtrrs(void)
 		wrmsr(MTRR_PHYS_MASK(i), zero);
 	}
 
-	/* Write back cache the first 1MB */
+	/* Write back cache from 0x0 to CACHE_TMP_RAMTOP. */
 	msr.hi = 0x00000000;
 	msr.lo = 0x00000000 | MTRR_TYPE_WRBACK;
 	wrmsr(MTRR_PHYS_BASE(0), msr);
 	msr.hi = 0x000000ff;
-	msr.lo = ~((CONFIG_RAMTOP) - 1) | 0x800;
+	msr.lo = ~((CACHE_TMP_RAMTOP) - 1) | 0x800;
 	wrmsr(MTRR_PHYS_MASK(0), msr);
 
 	/* Set the default type to write combining */

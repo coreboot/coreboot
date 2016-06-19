@@ -271,11 +271,11 @@ static void set_resume_cache(void)
 	msr.lo &= ~(SYSCFG_MSR_MtrrFixDramEn | SYSCFG_MSR_MtrrFixDramModEn);
 	wrmsr(SYSCFG_MSR, msr);
 
-	/* Enable caching for 0 - coreboot ram using variable mtrr */
+	/* Enable cached access to RAM in the range 0M to CACHE_TMP_RAMTOP */
 	msr.lo = 0 | MTRR_TYPE_WRBACK;
 	msr.hi = 0;
 	wrmsr(MTRR_PHYS_BASE(0), msr);
-	msr.lo = ~(CONFIG_RAMTOP - 1) | MTRR_PHYS_MASK_VALID;
+	msr.lo = ~(CACHE_TMP_RAMTOP - 1) | MTRR_PHYS_MASK_VALID;
 	msr.hi = (1 << (CONFIG_CPU_ADDR_BITS - 32)) - 1;
 	wrmsr(MTRR_PHYS_MASK(0), msr);
 

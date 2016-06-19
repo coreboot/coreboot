@@ -175,8 +175,8 @@ void cache_as_ram_new_stack (void)
 	disable_cache_as_ram_bsp();
 
 	disable_cache();
-	/* Enable cached access to RAM in the range 1M to CONFIG_RAMTOP */
-	set_var_mtrr(0, 0x00000000, CONFIG_RAMTOP, MTRR_TYPE_WRBACK);
+	/* Enable cached access to RAM in the range 0M to CACHE_TMP_RAMTOP */
+	set_var_mtrr(0, 0x00000000, CACHE_TMP_RAMTOP, MTRR_TYPE_WRBACK);
 	enable_cache();
 
 	if (acpi_is_wakeup_s3()) {

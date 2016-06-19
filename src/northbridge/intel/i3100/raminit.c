@@ -928,9 +928,9 @@ static void set_receive_enable(const struct mem_controller *ctrl)
 
 static void cache_ramstage(void)
 {
-	/* Enable caching for lower 1MB and ram stage using variable mtrr */
+	/* Enable cached access to RAM in the range 0M to CACHE_TMP_RAMTOP */
 	disable_cache();
-	set_var_mtrr(0, 0x00000000, CONFIG_RAMTOP, MTRR_TYPE_WRBACK);
+	set_var_mtrr(0, 0x00000000, CACHE_TMP_RAMTOP, MTRR_TYPE_WRBACK);
 	enable_cache();
 }
 

@@ -24,4 +24,8 @@
 #define ARCH_STAGE_HAS_BSS_SECTION 0
 #endif
 
+#if !defined(CONFIG_RAMTOP) || !CONFIG_RAMTOP
+# error "CONFIG_RAMTOP not configured"
+#endif
+
 #endif /* __ARCH_MEMLAYOUT_H */

@@ -83,9 +83,9 @@ void *setup_stack_and_mttrs(void)
 	slot = stack_push(slot, ~(CONFIG_ROM_SIZE - 1) | MTRR_TYPE_WRPROT);
 	num_mtrrs++;
 
-	/* Cache RAM as WB from 0 -> CONFIG_RAMTOP. */
+	/* Cache RAM as WB from 0 -> CACHE_TMP_RAMTOP. */
 	slot = stack_push(slot, mtrr_mask_upper); /* upper mask */
-	slot = stack_push(slot, ~(CONFIG_RAMTOP - 1) | MTRR_PHYS_MASK_VALID);
+	slot = stack_push(slot, ~(CACHE_TMP_RAMTOP - 1) | MTRR_PHYS_MASK_VALID);
 	slot = stack_push(slot, 0); /* upper base */
 	slot = stack_push(slot, 0 | MTRR_TYPE_WRBACK);
 	num_mtrrs++;

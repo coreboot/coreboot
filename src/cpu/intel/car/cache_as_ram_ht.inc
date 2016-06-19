@@ -388,7 +388,7 @@ no_msr_11e:
 	wrmsr
 	movl	$MTRR_PHYS_MASK(0), %ecx
 	rdmsr
-	movl	$(~(CONFIG_RAMTOP - 1) | MTRR_PHYS_MASK_VALID), %eax
+	movl	$(~(CACHE_TMP_RAMTOP - 1) | MTRR_PHYS_MASK_VALID), %eax
 	wrmsr
 
 #if CACHE_ROM_SIZE

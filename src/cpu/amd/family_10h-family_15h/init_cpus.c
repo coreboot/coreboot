@@ -519,7 +519,7 @@ static u32 init_cpus(u32 cpu_init_detectedx, struct sys_info *sysinfo)
 
 		/* AP is ready, configure MTRRs and go to sleep */
 		if (set_mtrrs)
-			set_var_mtrr(0, 0x00000000, CONFIG_RAMTOP, MTRR_TYPE_WRBACK);
+			set_var_mtrr(0, 0x00000000, CACHE_TMP_RAMTOP, MTRR_TYPE_WRBACK);
 
 		printk(BIOS_DEBUG, "Disabling CAR on AP %02x\n", apicid);
 		if (is_fam15h()) {

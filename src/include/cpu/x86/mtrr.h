@@ -91,9 +91,11 @@ int get_free_var_mtrr(void);
 					(x>>6)|(x>>7)|(x>>8)|((1<<18)-1))
 #define _ALIGN_UP_POW2(x)	((x + _POW2_MASK(x)) & ~_POW2_MASK(x))
 
-#if !defined(CONFIG_RAMTOP) || !CONFIG_RAMTOP
-# error "CONFIG_RAMTOP not configured"
-#endif
+/* At the end of romstage, low ram 0..CACHE_TM_RAMTOP may be set
+ * as write-back cacheable to speed up ramstage decompression.
+ * Note MTRR boundaries, must be power of two.
+ */
+#define CACHE_TMP_RAMTOP (16<<20)
 
 #if ((CONFIG_XIP_ROM_SIZE & (CONFIG_XIP_ROM_SIZE -1)) != 0)
 # error "CONFIG_XIP_ROM_SIZE is not a power of 2"
@@ -121,9 +123,5 @@ int get_free_var_mtrr(void);
 #endif
 
 #define CACHE_ROM_BASE	(((1<<20) - (CACHE_ROM_SIZE>>12))<<12)
-
-#if (CONFIG_RAMTOP & (CONFIG_RAMTOP - 1)) != 0
-# error "CONFIG_RAMTOP must be a power of 2"
-#endif
 
 #endif /* CPU_X86_MTRR_H */

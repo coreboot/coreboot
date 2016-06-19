@@ -233,7 +233,7 @@ before_romstage:
 	xorl	%edx, %edx
 	wrmsr
 	movl	$MTRR_PHYS_MASK(0), %ecx
-	movl	$(~(CONFIG_RAMTOP - 1) | MTRR_PHYS_MASK_VALID), %eax
+	movl	$(~(CACHE_TMP_RAMTOP - 1) | MTRR_PHYS_MASK_VALID), %eax
 	movl	$CPU_PHYSMASK_HI, %edx	// 36bit address space
 	wrmsr
 

@@ -88,9 +88,9 @@ void *setup_stack_and_mtrrs(void)
 	 *   +0: Number of variable MTRRs to clear
 	 */
 
-	/* Cache RAM as WB from 0 -> CONFIG_RAMTOP. */
+	/* Cache RAM as WB from 0 -> CACHE_TMP_RAMTOP. */
 	slot = stack_push32(slot, mtrr_mask_upper); /* upper mask */
-	slot = stack_push32(slot, ~(CONFIG_RAMTOP - 1) | MTRR_PHYS_MASK_VALID);
+	slot = stack_push32(slot, ~(CACHE_TMP_RAMTOP - 1) | MTRR_PHYS_MASK_VALID);
 	slot = stack_push32(slot, 0); /* upper base */
 	slot = stack_push32(slot, 0 | MTRR_TYPE_WRBACK);
 	num_mtrrs++;

@@ -85,29 +85,110 @@ typedef struct {
   UINT64                      Revision;
 /** Offset 0x0028
 **/
-  UINT32                      PcdRmuBinaryBaseAddress;
+  UINT32                      RmuBaseAddress;
 /** Offset 0x002C
 **/
-  UINT32                      UnusedUpdSpace0;
+  UINT32                      RmuLength;
 /** Offset 0x0030
 **/
-  UINT32                      PcdSerialRegisterBase;
+  UINT32                      SerialPortBaseAddress;
 /** Offset 0x0034
 **/
-  UINT8                       PcdSmmTsegSize;
-/** Offset 0x0035
+  UINT32                      tRAS;
+/** Offset 0x0038
 **/
-  UINT8                       ReservedMemoryInitUpd[3];
+  UINT32                      tWTR;
+/** Offset 0x003C
+**/
+  UINT32                      tRRD;
+/** Offset 0x0040
+**/
+  UINT32                      tFAW;
+/** Offset 0x0044
+**/
+  UINT32                      Flags;
+/** Offset 0x0048
+**/
+  UINT8                       DramWidth;
+/** Offset 0x0049
+**/
+  UINT8                       DramSpeed;
+/** Offset 0x004A
+**/
+  UINT8                       DramType;
+/** Offset 0x004B
+**/
+  UINT8                       RankMask;
+/** Offset 0x004C
+**/
+  UINT8                       ChanMask;
+/** Offset 0x004D
+**/
+  UINT8                       ChanWidth;
+/** Offset 0x004E
+**/
+  UINT8                       AddrMode;
+/** Offset 0x004F
+**/
+  UINT8                       SrInt;
+/** Offset 0x0050
+**/
+  UINT8                       SrTemp;
+/** Offset 0x0051
+**/
+  UINT8                       DramRonVal;
+/** Offset 0x0052
+**/
+  UINT8                       DramRttNomVal;
+/** Offset 0x0053
+**/
+  UINT8                       DramRttWrVal;
+/** Offset 0x0054
+**/
+  UINT8                       SocRdOdtVal;
+/** Offset 0x0055
+**/
+  UINT8                       SocWrRonVal;
+/** Offset 0x0056
+**/
+  UINT8                       SocWrSlewRate;
+/** Offset 0x0057
+**/
+  UINT8                       DramDensity;
+/** Offset 0x0058
+**/
+  UINT8                       tCL;
+/** Offset 0x0059
+**/
+  UINT8                       EccScrubInterval;
+/** Offset 0x005A
+**/
+  UINT8                       EccScrubBlkSize;
+/** Offset 0x005B
+**/
+  UINT8                       SmmTsegSize;
+/** Offset 0x005C
+**/
+  UINT32                      FspReservedMemoryLength;
+/** Offset 0x0060
+**/
+  UINT32                      MrcDataPtr;
+/** Offset 0x0064
+**/
+  UINT32                      MrcDataLength;
+/** Offset 0x0068
+**/
+  UINT8                       ReservedMemoryInitUpd[8];
 } MEMORY_INIT_UPD;
 
 typedef struct {
-/** Offset 0x0038
+/** Offset 0x0070
 **/
   UINT64                      Signature;
-/** Offset 0x0040
+/** Offset 0x0078
 **/
   UINT64                      Revision;
-/** Offset 0x0048
+/** Offset 0x0080
 **/
   UINT16                      PcdRegionTerminator;
 } SILICON_INIT_UPD;
@@ -132,7 +213,7 @@ typedef struct _UPD_DATA_REGION {
 /** Offset 0x0018
 **/
   MEMORY_INIT_UPD             MemoryInitUpd;
-/** Offset 0x0038
+/** Offset 0x0070
 **/
   SILICON_INIT_UPD            SiliconInitUpd;
 } UPD_DATA_REGION;

@@ -55,6 +55,7 @@ ifeq ($(MOCK_TPM),1)
 libverstage-y += mocked_tlcl.c
 else
 libverstage-$(CONFIG_TPM) += tlcl.c
+libverstage-$(CONFIG_TPM2) += tpm2_marshaling.c
 libverstage-$(CONFIG_TPM2) += tpm2_tlcl.c
 endif
 

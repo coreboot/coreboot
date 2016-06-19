@@ -20,7 +20,32 @@ chip soc/intel/quark
 	# Set the parameters for MemoryInit
 	############################################################
 
-	register "PcdSmmTsegSize" = "0"	# SMM Region size in MiB
+	register "AddrMode" = "0"
+	register "ChanMask" = "1"		# Channel 0 enabled
+	register "ChanWidth" = "1"		# 16-bit channel
+	register "DramDensity" = "1"		# 1 Gib;
+	register "DramRonVal" = "0"		# 34 Ohm
+	register "DramRttNomVal" = "2"		# 120 Ohm
+	register "DramRttWrVal" = "0"		# off
+	register "DramSpeed" = "0"		# 800 MHz
+	register "DramType" = "0"		# DDR3
+	register "DramWidth" = "0"		# 8-bit
+	register "EccScrubBlkSize" = "2"	# 64 byte blocks
+	register "EccScrubInterval" = "0"	# ECC scrub disabled
+	register "Flags" = "MRC_FLAG_SCRAMBLE_EN"
+	register "FspReservedMemoryLength" = "0x00100000"	# Size in bytes
+	register "RankMask" = "1"		# RANK 0 enabled
+	register "SmmTsegSize" = "0"		# SMM Region size in MiB
+	register "SocRdOdtVal" = "0"		# off
+	register "SocWrRonVal" = "1"		# 32 Ohm
+	register "SocWrSlewRate" = "1"		# 4V/nSec
+	register "SrInt" = "3"			# 7.8 uSec
+	register "SrTemp" = "0"			# normal
+	register "tCL" = "6"			# clocks
+	register "tFAW" = "40000"		# picoseconds
+	register "tRAS" = "37500"		# picoseconds
+	register "tRRD" = "10000"		# picoseconds
+	register "tWTR" = "10000"		# picoseconds
 
 	############################################################
 	# Enable the devices

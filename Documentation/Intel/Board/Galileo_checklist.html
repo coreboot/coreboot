@@ -3,7 +3,7 @@
 <title>Galileo Implementation Status</title>
 </title>
 <body>
-<h1>Galileo Implementation Status<br>2016/06/08 17:18:24 PDT</h1>
+<h1>Galileo Implementation Status<br>2016/07/08 06:51:34 PDT</h1>
 <table>
   <tr><td colspan=2><b>Legend</b></td></tr>
   <tr><td bgcolor="#ffc0c0">Red</td><td>Required - To-be-implemented</td></tr>
@@ -31,7 +31,7 @@
     <td width=5>&nbsp;</td>
     <td>
 <table border=1>
-<tr><th colspan=2>romstage: 66% Done</th></tr>
+<tr><th colspan=2>romstage: 67% Done</th></tr>
 <tr><th>Type</th><th>Routine</td></tr>
 <tr bgcolor=#ffffc0><td>Optional</td><td>arch_segment_loaded</td></tr>
 <tr bgcolor=#ffffc0><td>Optional</td><td>backup_top_of_ram</td></tr>
@@ -78,7 +78,7 @@
 <tr bgcolor=#ffc0c0><td>Required</td><td>smm_region</td></tr>
 <tr bgcolor=#ffc0c0><td>Required</td><td>smm_region_size</td></tr>
 <tr bgcolor=#c0ffc0><td>Required</td><td>soc_after_ram_init</td></tr>
-<tr bgcolor=#ffffc0><td>Optional</td><td>soc_display_memory_init_params</td></tr>
+<tr bgcolor=#c0ffc0><td>Required</td><td>soc_display_memory_init_params</td></tr>
 <tr bgcolor=#c0ffc0><td>Required</td><td>soc_display_mtrrs</td></tr>
 <tr bgcolor=#c0ffc0><td>Required</td><td>soc_get_variable_mtrr_count</td></tr>
 <tr bgcolor=#c0ffc0><td>Required</td><td>soc_memory_init_params</td></tr>
@@ -98,7 +98,7 @@
     <td width=5>&nbsp;</td>
     <td>
 <table border=1>
-<tr><th colspan=2>ramstage: 55% Done</th></tr>
+<tr><th colspan=2>ramstage: 60% Done</th></tr>
 <tr><th>Type</th><th>Routine</td></tr>
 <tr bgcolor=#ffc0c0><td>Required</td><td>acpi_create_serialio_ssdt</td></tr>
 <tr bgcolor=#ffffc0><td>Optional</td><td>arch_segment_loaded</td></tr>
@@ -138,7 +138,7 @@
 <tr bgcolor=#c0ffc0><td>Required</td><td>smbios_mainboard_version</td></tr>
 <tr bgcolor=#ffffc0><td>Optional</td><td>smm_disable_busmaster</td></tr>
 <tr bgcolor=#ffffc0><td>Optional</td><td>soc_after_silicon_init</td></tr>
-<tr bgcolor=#ffffc0><td>Optional</td><td>soc_display_silicon_init_params</td></tr>
+<tr bgcolor=#c0ffc0><td>Required</td><td>soc_display_silicon_init_params</td></tr>
 <tr bgcolor=#ffc0c0><td>Required</td><td>soc_fill_acpi_wake</td></tr>
 <tr bgcolor=#c0ffc0><td>Required</td><td>soc_silicon_init_params</td></tr>
 <tr bgcolor=#ffffc0><td>Optional</td><td>soc_skip_ucode_update</td></tr>

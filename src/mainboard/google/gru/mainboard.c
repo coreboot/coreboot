@@ -19,6 +19,7 @@
 #include <device/device.h>
 #include <device/i2c.h>
 #include <ec/google/chromeec/ec.h>
+#include <elog.h>
 #include <gpio.h>
 #include <rtc.h>
 #include <soc/bl31_plat_params.h>
@@ -28,6 +29,7 @@
 #include <soc/grf.h>
 #include <soc/i2c.h>
 #include <soc/usb.h>
+#include <vendorcode/google/chromeos/chromeos.h>
 
 #include "board.h"
 
@@ -189,6 +191,9 @@ static void mainboard_init(device_t dev)
 	register_reset_to_bl31();
 	register_poweroff_to_bl31();
 	setup_rtc();
+
+	elog_init();
+	elog_add_boot_reason();
 }
 
 static void enable_backlight_booster(void)

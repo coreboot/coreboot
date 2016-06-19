@@ -14,6 +14,12 @@
  * GNU General Public License for more details.
  */
 
+/*
+ * JEDEC Standard No. 21-C
+ * Annex K: Serial Presence Detect (SPD) for DDR3 SDRAM Modules 2014
+ * http://www.jedec.org/sites/default/files/docs/4_01_02_11R24.pdf
+ */
+
 #ifndef DEVICE_DRAM_DDR3L_H
 #define DEVICE_DRAM_DDR3L_H
 
@@ -82,8 +88,8 @@ enum spd_dimm_type {
 	SPD_DIMM_TYPE_72B_SO_RDIMM		= 0x09,
 	SPD_DIMM_TYPE_72B_SO_CDIMM		= 0x0a,
 	SPD_DIMM_TYPE_LRDIMM			= 0x0b,
-	SPD_DIMM_TYPE_16B_SO_DIMM		= 0x0d,
-	SPD_DIMM_TYPE_32B_SO_DIMM		= 0x0e,
+	SPD_DIMM_TYPE_16B_SO_DIMM		= 0x0c,
+	SPD_DIMM_TYPE_32B_SO_DIMM		= 0x0d,
 	/* Masks to bits 3:0 to give the dimm type */
 	SPD_DIMM_TYPE_MASK			= 0x0f,
 };

@@ -18,8 +18,10 @@
 #ifndef _SOC_APOLLOLAKE_GPIO_H_
 #define _SOC_APOLLOLAKE_GPIO_H_
 
-#include <types.h>
 #include <soc/gpio_defs.h>
+/* __ACPI__ guard is needed to ignore below code in ACPI/ASL compilation */
+#ifndef __ACPI__
+#include <types.h>
 
 typedef uint32_t gpio_t;
 
@@ -97,4 +99,5 @@ struct pad_config {
 void gpio_configure_pad(const struct pad_config *cfg);
 void gpio_configure_pads(const struct pad_config *cfg, size_t num_pads);
 
+#endif /* __ACPI__ */
 #endif /* _SOC_APOLLOLAKE_GPIO_H_ */

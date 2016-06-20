@@ -133,6 +133,29 @@ void mem_region_device_init(struct mem_region_device *mdev, void *base,
 	mdev->rdev.region.size = size;
 }
 
+void region_device_init(struct region_device *rdev,
+			const struct region_device_ops *ops, size_t offset,
+			size_t size)
+{
+	memset(rdev, 0, sizeof(*rdev));
+	rdev->root = NULL;
+	rdev->ops = ops;
+	rdev->region.offset = offset;
+	rdev->region.size = size;
+}
+
+void xlate_region_device_init(struct xlate_region_device *xdev,
+			      const struct region_device *access_dev,
+			      size_t sub_offset, size_t sub_size,
+			      size_t parent_size)
+{
+	memset(xdev, 0, sizeof(*xdev));
+	xdev->access_dev = access_dev;
+	xdev->sub_region.offset = sub_offset;
+	xdev->sub_region.size = sub_size;
+	region_device_init(&xdev->rdev, &xlate_rdev_ops, 0, parent_size);
+}
+
 static void *mdev_mmap(const struct region_device *rd, size_t offset,
 			size_t size __unused)
 {

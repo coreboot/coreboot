@@ -90,6 +90,11 @@ struct region_device {
 		},					\
 	}
 
+/* Helper to dynamically initialize region device. */
+void region_device_init(struct region_device *rdev,
+			const struct region_device_ops *ops, size_t offset,
+			size_t size);
+
 static inline size_t region_offset(const struct region *r)
 {
 	return r->offset;
@@ -186,5 +191,11 @@ extern const struct region_device_ops xlate_rdev_ops;
 		},							\
 		.rdev = REGION_DEV_INIT(&xlate_rdev_ops, 0,  (parent_sz_)),\
 	}
+
+/* Helper to dynamically initialize xlate region device. */
+void xlate_region_device_init(struct xlate_region_device *xdev,
+			      const struct region_device *access_dev,
+			      size_t sub_offset, size_t sub_size,
+			      size_t parent_size);
 
 #endif /* _REGION_H_ */

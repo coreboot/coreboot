@@ -75,4 +75,6 @@
  */
 int spi_read_status(uint8_t *status);
 
+/* Read SPI controller register. */
+uint32_t spi_ctrlr_reg_read(uint16_t reg);
 #endif

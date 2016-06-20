@@ -70,6 +70,12 @@ static uint32_t _spi_ctrlr_reg_read(struct spi_ctx *ctx, uint16_t reg)
 	return read32((void *)addr);
 }
 
+uint32_t spi_ctrlr_reg_read(uint16_t reg)
+{
+	BOILERPLATE_CREATE_CTX(ctx);
+	return _spi_ctrlr_reg_read(ctx, reg);
+}
+
 /* Write to register in the SPI controller. 'reg' is the register offset. */
 static void _spi_ctrlr_reg_write(struct spi_ctx *ctx, uint16_t reg,
 				 uint32_t val)

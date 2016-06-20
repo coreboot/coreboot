@@ -177,7 +177,7 @@ struct xlate_region_device {
 
 extern const struct region_device_ops xlate_rdev_ops;
 
-#define XLATE_REGION_INIT(access_dev_, sub_offset_, sub_size_, parent_sz_) \
+#define XLATE_REGION_DEV_INIT(access_dev_, sub_offset_, sub_size_, parent_sz_) \
 	{								\
 		.access_dev = access_dev_,				\
 		.sub_region = {						\

@@ -108,8 +108,9 @@ static bool write_header(const char *out_fname,
 		const struct flashmap_descriptor *item =
 				cbfs_sections_iterator_deref(cbfs_it);
 		assert(item->offset_known && item->size_known);
+		unsigned abs_base = fmd_calc_absolute_offset(root, item->name);
 		fprintf(header, "#define ___FMAP__%s_BASE 0x%x\n",
-			item->name, item->offset);
+			item->name, abs_base);
 		fprintf(header, "#define ___FMAP__%s_SIZE 0x%x\n",
 			item->name, item->size);
 		cbfs_sections_iterator_advance(&cbfs_it);

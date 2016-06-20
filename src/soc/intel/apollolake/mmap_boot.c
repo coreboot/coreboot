@@ -44,7 +44,7 @@ static const struct mem_region_device shadow_dev = MEM_REGION_DEV_INIT(
  * essence this means "BIOS" region (usually starts at flash physical 0x1000 is mapped to
  * 4G - IFD_BIOS_SIZE.
  */
-static const struct xlate_region_device real_dev = XLATE_REGION_INIT(
+static const struct xlate_region_device real_dev = XLATE_REGION_DEV_INIT(
 		&shadow_dev.rdev, CONFIG_IFD_BIOS_START,
 		IFD_MAPPED_SIZE, CONFIG_ROM_SIZE
 );

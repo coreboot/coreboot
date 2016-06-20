@@ -64,14 +64,15 @@ static void _spi_get_ctx(struct spi_ctx *ctx)
 }
 
 /* Read register from the SPI controller. 'reg' is the register offset. */
-static uint32_t _spi_reg_read(struct spi_ctx *ctx, uint16_t reg)
+static uint32_t _spi_ctrlr_reg_read(struct spi_ctx *ctx, uint16_t reg)
 {
 	uintptr_t addr =  ALIGN_DOWN(ctx->mmio_base + reg, 4);
 	return read32((void *)addr);
 }
 
 /* Write to register in the SPI controller. 'reg' is the register offset. */
-static void _spi_reg_write(struct spi_ctx *ctx, uint16_t reg, uint32_t val)
+static void _spi_ctrlr_reg_write(struct spi_ctx *ctx, uint16_t reg,
+				 uint32_t val)
 {
 	uintptr_t addr =  ALIGN_DOWN(ctx->mmio_base + reg, 4);
 	write32((void *)addr, val);
@@ -92,8 +93,9 @@ static void _spi_reg_write(struct spi_ctx *ctx, uint16_t reg, uint32_t val)
 static uint32_t read_spi_sfdp_param(struct spi_ctx *ctx, uint16_t sfdp_reg)
 {
 	uint32_t ptinx_index = sfdp_reg & SPIBAR_PTINX_IDX_MASK;
-	_spi_reg_write(ctx, SPIBAR_PTINX, ptinx_index | SPIBAR_PTINX_HORD_JEDEC);
-	return _spi_reg_read(ctx, SPIBAR_PTDATA);
+	_spi_ctrlr_reg_write(ctx, SPIBAR_PTINX,
+			     ptinx_index | SPIBAR_PTINX_HORD_JEDEC);
+	return _spi_ctrlr_reg_read(ctx, SPIBAR_PTDATA);
 }
 
 /* Fill FDATAn FIFO in preparation for a write transaction. */
@@ -124,8 +126,9 @@ static void start_hwseq_xfer(struct spi_ctx *ctx, uint32_t hsfsts_cycle,
 	hsfsts |= hsfsts_cycle & SPIBAR_HSFSTS_FCYCLE_MASK;
 	hsfsts |= SPIBAR_HSFSTS_FBDC(len - 1);
 
-	_spi_reg_write(ctx, SPIBAR_FADDR, flash_addr);
-	_spi_reg_write(ctx, SPIBAR_HSFSTS_CTL, hsfsts | SPIBAR_HSFSTS_FGO);
+	_spi_ctrlr_reg_write(ctx, SPIBAR_FADDR, flash_addr);
+	_spi_ctrlr_reg_write(ctx, SPIBAR_HSFSTS_CTL,
+			     hsfsts | SPIBAR_HSFSTS_FGO);
 }
 
 static void print_xfer_error(struct spi_ctx *ctx, const char *failure_reason,
@@ -140,7 +143,7 @@ static int wait_for_hwseq_xfer(struct spi_ctx *ctx)
 {
 	uint32_t hsfsts;
 	do {
-		hsfsts = _spi_reg_read(ctx, SPIBAR_HSFSTS_CTL);
+		hsfsts = _spi_ctrlr_reg_read(ctx, SPIBAR_HSFSTS_CTL);
 
 		if (hsfsts & SPIBAR_HSFSTS_FCERR) {
 			ctx->hsfsts_on_last_error = hsfsts;

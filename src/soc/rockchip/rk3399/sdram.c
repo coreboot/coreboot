@@ -111,10 +111,6 @@ static void copy_to_reg(u32 *dest, const u32 *src, u32 n)
 	}
 }
 
-static void ddr_move_to_access_state(u32 channel)
-{
-}
-
 static void phy_dll_bypass_set(u32 channel,
 	struct rk3399_ddr_publ_regs *ddr_publ_regs, u32 freq)
 {
@@ -951,7 +947,6 @@ void sdram_init(const struct rk3399_sdram_params *sdram_params)
 
 		set_ddrconfig(sdram_params, channel,
 			      sdram_params->ch[channel].ddrconfig);
-		ddr_move_to_access_state(channel);
 	}
 	dram_all_config(sdram_params);
 	printk(BIOS_INFO, "Finish SDRAM initialization...\n");

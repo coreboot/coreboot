@@ -273,29 +273,14 @@ void romstage_common(const struct romstage_params *params)
 	}
 }
 
-static inline void prepare_for_resume(struct romstage_handoff *handoff)
-{
-/* Only need to save memory when ramstage isn't relocatable. */
-#if !CONFIG_RELOCATABLE_RAMSTAGE
-#if CONFIG_HAVE_ACPI_RESUME
-	/* Back up the OS-controlled memory where ramstage will be loaded. */
-	if (handoff != NULL && handoff->s3_resume) {
-		void *src = (void *)CONFIG_RAMBASE;
-		void *dest = cbmem_find(CBMEM_ID_RESUME);
-		if (dest != NULL)
-			memcpy(dest, src, HIGH_MEMORY_SAVE);
-	}
-#endif
-#endif
-}
-
 void romstage_after_car(void)
 {
 	struct romstage_handoff *handoff;
 
 	handoff = romstage_handoff_find_or_add();
 
-	prepare_for_resume(handoff);
+	if (handoff != NULL && handoff->s3_resume)
+		acpi_prepare_for_resume();
 
 	/* Load the ramstage. */
 	copy_and_run();

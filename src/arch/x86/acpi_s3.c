@@ -22,6 +22,8 @@
 #include <romstage_handoff.h>
 #include <rules.h>
 
+#if ENV_RAMSTAGE
+
 /* This is filled with acpi_is_wakeup() call early in ramstage. */
 int acpi_slp_type = -1;
 
@@ -74,6 +76,19 @@ void acpi_fail_wakeup(void)
 {
 	if (acpi_slp_type == 3 || acpi_slp_type == 2)
 		acpi_slp_type = 0;
+}
+#endif /* ENV_RAMSTAGE */
+
+void acpi_prepare_for_resume(void)
+{
+	if (!HIGH_MEMORY_SAVE)
+		return;
+
+	/* Back up the OS-controlled memory where ramstage will be loaded. */
+	void *src = (void *)CONFIG_RAMBASE;
+	void *dest = cbmem_find(CBMEM_ID_RESUME);
+	if (dest != NULL)
+		memcpy(dest, src, HIGH_MEMORY_SAVE);
 }
 
 void acpi_prepare_resume_backup(void)

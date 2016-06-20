@@ -3,7 +3,7 @@
 
 #include <arch/cpu.h>
 
-#if !defined(__PRE_RAM__) && !defined(__SMM__)
+#if !defined(__ROMCC__)
 void cpu_initialize(unsigned int cpu_index);
 struct bus;
 void initialize_cpus(struct bus *cpu_bus);
@@ -20,6 +20,6 @@ extern struct cpu_driver _cpu_drivers[];
 /** end of compile time generated pci driver array */
 extern struct cpu_driver _ecpu_drivers[];
 #endif
-#endif /* !__PRE_RAM__ && !__SMM__ */
+#endif /* !__ROMCC__ */
 
 #endif /* CPU_CPU_H */

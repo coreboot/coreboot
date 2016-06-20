@@ -56,11 +56,13 @@ ramstage-y += tsc_freq.c
 ramstage-y += pmutil.c
 ramstage-y += pmc.c
 ramstage-y += smi.c
+ramstage-y += spi.c
 ramstage-y += reset.c
 
 postcar-y += exit_car.S
 postcar-y += memmap.c
 postcar-y += mmap_boot.c
+postcar-y += spi.c
 postcar-$(CONFIG_SOC_UART_DEBUG) += uart_early.c
 postcar-y += tsc_freq.c
 
@@ -71,6 +73,7 @@ verstage-$(CONFIG_SOC_UART_DEBUG) += uart_early.c
 verstage-y += tsc_freq.c
 verstage-y += pmutil.c
 verstage-y += reset.c
+verstage-y += spi.c
 
 CPPFLAGS_common += -I$(src)/soc/intel/apollolake/include
 

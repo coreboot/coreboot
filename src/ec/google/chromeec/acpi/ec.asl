@@ -290,7 +290,7 @@ Device (EC0)
 	}
 
 	// MKBP interrupt.
-	Method (_Q1A, 0, NotSerialized)
+	Method (_Q1B, 0, NotSerialized)
 	{
 		Store ("EC: MKBP", Debug)
 		Notify (CREC, 0x80)

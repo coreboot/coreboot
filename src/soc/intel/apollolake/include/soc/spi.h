@@ -28,11 +28,18 @@
 #define  SPIBAR_BIOS_CONTROL_EISS	(1 << 5)
 
 /* Register offsets from the MMIO region base (PCI_BASE_ADDRESS_0) */
+#define SPIBAR_BIOS_BFPREG		0x00
 #define SPIBAR_HSFSTS_CTL		0x04
 #define SPIBAR_FADDR			0x08
 #define SPIBAR_FDATA(n)			(0x10 + ((n) & 0xf) * 4)
 #define SPIBAR_PTINX			0xcc
 #define SPIBAR_PTDATA			0xd0
+
+/* Bit definitions and masks for BIOS_BFPREG register. */
+#define  SPIBAR_BFPREG_PRB_MASK	(0x7fff)
+#define  SPIBAR_BFPREG_PRL_SHIFT	(16)
+#define  SPIBAR_BFPREG_PRL_MASK	(0x7fff << SPIBAR_BFPREG_PRL_SHIFT)
+#define  SPIBAR_BFPREG_SBRS		(1 << 31)
 
 /* Bit definitions for HSFSTS_CTL register */
 #define  SPIBAR_HSFSTS_FBDC_MASK	(0x3f << 24)

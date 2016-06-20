@@ -16,42 +16,115 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/early_variables.h>
 #include <boot_device.h>
 #include <cbfs.h>
 #include <commonlib/region.h>
 #include <console/console.h>
 #include <fmap.h>
 #include <soc/intel/common/nvm.h>
-
-/* The 256 KiB right below 4G are decoded by readonly SRAM, not boot media */
-#define IFD_BIOS_MAX_MAPPED	(CONFIG_IFD_BIOS_END - 256 * KiB)
-#define IFD_MAPPED_SIZE		(IFD_BIOS_MAX_MAPPED - CONFIG_IFD_BIOS_START)
-#define IFD_BIOS_SIZE		(CONFIG_IFD_BIOS_END - CONFIG_IFD_BIOS_START)
+#include <soc/spi.h>
 
 /*
- *  If Apollo Lake is configured to boot from SPI flash "BIOS" region
- *  (as defined in descriptor) is mapped below 4GiB.  Form a pointer for
- *  the base.
+ * BIOS region on the flash is mapped right below 4GiB in the address
+ * space. However, 256KiB right below 4GiB is decoded by read-only SRAM and not
+ * boot media.
+ *
+ *                                                            +----------------+ 0
+ *                                                            |                |
+ *                                                            |                |
+ *                                                            |                |
+ *                                                            |                |
+ *                                                            |                |
+ *                                                            |                |
+ *                                                            |                |
+ *                                                            |                |
+ *                  +------------+                            |                |
+ *                  |    IFD     |                            |                |
+ * bios_start +---> +------------+--------------------------> +----------------+ 4GiB - bios_size
+ *     ^            |            |              ^             |                |
+ *     |            |            |              |             |                |
+ *     |            |            |       bios_mapped_size     |      BIOS      |
+ *     |            |    BIOS    |              |             |                |
+ * bios_size        |            |              |             |                |
+ *     |            |            |              v             |                |
+ *     |            |            +--------------------------> +----------------+ 4GiB - 256KiB
+ *     v            |            |                            | Read only SRAM |
+ * bios_end   +---> +------------+                            +----------------+ 4GiB
+ *                  | Device ext |
+ *                  +------------+
+ *
  */
-#define VIRTUAL_ROM_BASE ((uintptr_t)(0x100000000ULL - IFD_BIOS_SIZE))
 
-static const struct mem_region_device shadow_dev = MEM_REGION_DEV_INIT(
-	VIRTUAL_ROM_BASE, IFD_BIOS_MAX_MAPPED
-);
+static size_t bios_start CAR_GLOBAL;
+static size_t bios_size CAR_GLOBAL;
 
-/*
- * This is how we translate physical SPI flash address space into CPU memory-mapped space. In
- * essence this means "BIOS" region (usually starts at flash physical 0x1000 is mapped to
- * 4G - IFD_BIOS_SIZE.
- */
-static const struct xlate_region_device real_dev = XLATE_REGION_DEV_INIT(
-		&shadow_dev.rdev, CONFIG_IFD_BIOS_START,
-		IFD_MAPPED_SIZE, CONFIG_ROM_SIZE
-);
+static struct mem_region_device shadow_dev CAR_GLOBAL;
+static struct xlate_region_device real_dev CAR_GLOBAL;
+
+static void bios_mmap_init(void)
+{
+	size_t size;
+
+	size = car_get_var(bios_size);
+
+	/* If bios_size is initialized, then bail out. */
+	if (size != 0)
+		return;
+
+	size_t start, bios_end, bios_mapped_size;
+	uintptr_t base;
+
+	/*
+	 * BIOS_BFPREG provides info about BIOS Flash Primary Region
+	 * Base and Limit.
+	 * Base and Limit fields are in units of 4KiB.
+	 */
+	uint32_t val = spi_ctrlr_reg_read(SPIBAR_BIOS_BFPREG);
+
+	start = (val & SPIBAR_BFPREG_PRB_MASK) * 4 * KiB;
+	bios_end = (((val & SPIBAR_BFPREG_PRL_MASK) >>
+		     SPIBAR_BFPREG_PRL_SHIFT) + 1) * 4 * KiB;
+	size = bios_end - start;
+
+	printk(BIOS_INFO, "IFD BIOS region info loaded from FLREG%d\n",
+	       (val & SPIBAR_BFPREG_SBRS) ? 6 : 1);
+	printk(BIOS_INFO, "IFD BIOS Start: 0x%zx\n", start);
+	printk(BIOS_INFO, "IFD BIOS End  : 0x%zx\n", bios_end);
+
+	/* BIOS region is mapped right below 4G. */
+	base = 4ULL * GiB - size;
+
+	/*
+	 * The 256 KiB right below 4G are decoded by readonly SRAM,
+	 * not boot media.
+	 */
+	bios_mapped_size = size - 256 * KiB;
+
+	struct mem_region_device *shadow_dev_ptr;
+	struct xlate_region_device *real_dev_ptr;
+	shadow_dev_ptr = car_get_var_ptr(&shadow_dev);
+	real_dev_ptr = car_get_var_ptr(&real_dev);
+
+	mem_region_device_init(shadow_dev_ptr, (void *)base,
+			       bios_mapped_size);
+
+	xlate_region_device_init(real_dev_ptr, &shadow_dev_ptr->rdev,
+				 start, bios_mapped_size,
+				 CONFIG_ROM_SIZE);
+
+	car_set_var(bios_start, start);
+	car_set_var(bios_size, size);
+}
 
 const struct region_device *boot_device_ro(void)
 {
-	return &real_dev.rdev;
+	bios_mmap_init();
+
+	struct xlate_region_device *real_dev_ptr;
+	real_dev_ptr = car_get_var_ptr(&real_dev);
+
+	return &real_dev_ptr->rdev;
 }
 
 static int iafw_boot_region_properties(struct cbfs_props *props)
@@ -81,7 +154,16 @@ const struct cbfs_locator cbfs_master_header_locator = {
 
 uint32_t nvm_mmio_to_flash_offset(void *p)
 {
-	uintptr_t xlate_base;
-	xlate_base = VIRTUAL_ROM_BASE;
-	return (uintptr_t)p - xlate_base + CONFIG_IFD_BIOS_START;
+	bios_mmap_init();
+
+	size_t start, size;
+	start = car_get_var(bios_start);
+	size = car_get_var(bios_size);
+
+	/*
+	 * Returns :
+	 * addr - base of mmaped region in addr space + offset of mmaped region
+	 * start on flash
+	 */
+	return (uintptr_t)p - (4ULL * GiB - size) + start;
 }

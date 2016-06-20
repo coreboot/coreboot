@@ -331,6 +331,7 @@ ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32)$(CONFIG_ARCH_ROMSTAGE_X86_64),y)
 romstage-$(CONFIG_POSTCAR_STAGE) += postcar_loader.c
 romstage-y += cbmem.c
 romstage-y += boot.c
+romstage-$(CONFIG_HAVE_ACPI_RESUME) += acpi_s3.c
 
 romstage-y += cbfs_and_run.c
 romstage-$(CONFIG_ARCH_RAMSTAGE_X86_32) += cpu_common.c

@@ -102,7 +102,12 @@ static void acpi_jump_to_wakeup(void *vector)
 {
 	uintptr_t acpi_backup_memory = 0;
 
-	if (HIGH_MEMORY_SAVE && acpi_s3_resume_allowed()) {
+	if (!acpi_s3_resume_allowed()) {
+		printk(BIOS_WARNING, "ACPI: S3 resume not allowed.\n");
+		return;
+	}
+
+	if (HIGH_MEMORY_SAVE) {
 		acpi_backup_memory = (uintptr_t)cbmem_find(CBMEM_ID_RESUME);
 
 		if (!acpi_backup_memory) {

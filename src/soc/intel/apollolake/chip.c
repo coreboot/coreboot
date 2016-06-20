@@ -138,6 +138,9 @@ void platform_fsp_silicon_init_params_cb(struct FSPS_UPD *silupd)
 	silconfig->P2sbBase = P2SB_BAR;
 
 	silconfig->IshEnable = cfg->integrated_sensor_hub_enable;
+
+	/* Disable setting of EISS bit in FSP. */
+	silconfig->SpiEiss = 0;
 }
 
 struct chip_operations soc_intel_apollolake_ops = {

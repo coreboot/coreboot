@@ -122,6 +122,8 @@ void trap_handler(trapframe *tf) {
 			break;
 		case 5:
 			printk(BIOS_DEBUG, "Trap: Load access fault\n");
+			printk(BIOS_DEBUG, "Bad instruction pc: %p\n", epc);
+			printk(BIOS_DEBUG, "Load Address: %p\n", badAddr);
 			break;
 		case 6:
 			printk(BIOS_DEBUG, "Trap: Store address misaligned\n");

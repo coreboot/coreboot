@@ -17,20 +17,7 @@
 #include <arch/encoding.h>
 
 .section ".text._start", "ax", %progbits
-// Maybe there's a better way.
-# machine mode handler when in supervisor mode
-.space 0x140
-supervisor_machine_handler:
-  j supervisor_trap_entry
 
-# handler for when
-.space 0x7c
-.globl machine_handler
-machine_handler:
-#  call trap_handler
-  j trap_entry
-
-.space 0x3c
 .globl _start
 _start:
 

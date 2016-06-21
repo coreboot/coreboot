@@ -16,14 +16,6 @@ config BOOT_MEDIA_SPI_BUS
 	int
 	default 0
 
-config IFD_BIOS_END
-	hex
-	default 0xF7F000
-
-config IFD_BIOS_START
-	hex
-	default 0x1000
-
 config CHROMEOS
 	select CHROMEOS_RAMOOPS_DYNAMIC
 	select CHROMEOS_VBNV_CMOS

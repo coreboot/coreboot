@@ -17,7 +17,7 @@
 
 Name (OIPG, Package () {
 	/* No physical recovery GPIO. */
-	Package () { 0x0001, 0, 0xFFFFFFFF, "INT3452:00" },
+	Package () { 0x0001, 0, 0xFFFFFFFF, "INT3452:01" },
 	/* Firmware write protect GPIO. */
-	Package () { 0x0003, 1, GPIO_75, "INT3452:00" },
+	Package () { 0x0003, 1, PAD_NW(GPIO_75), "INT3452:01" },
 })

@@ -51,6 +51,7 @@ ramstage-y += lpc_lib.c
 ramstage-y += memmap.c
 ramstage-y += mmap_boot.c
 ramstage-y += uart.c
+ramstage-y += nhlt.c
 ramstage-y += northbridge.c
 ramstage-y += spi.c
 ramstage-y += tsc_freq.c
@@ -103,5 +104,23 @@ files_added:: $(IFWITOOL)
 	$(IFWITOOL) $(objcbfs)/ifwi.bin.tmp replace -n IBBP -f $(objcbfs)/bootblock.bin -d -e IBBL
 	$(CBFSTOOL) $(obj)/coreboot.rom write -r $(CONFIG_IFWI_FMAP_NAME) -f $(objcbfs)/ifwi.bin.tmp --fill-upward
 endif
+
+# DSP firmware settings files.
+NHLT_BLOB_PATH = 3rdparty/blobs/soc/intel/apollolake/nhlt-blobs
+DMIC_2CH_48KHZ_16B = dmic-2ch-48khz-16b.bin
+MAX98357_RENDER = max98357-render-2ch-48khz-24b.bin
+DA7219_RENDER_CAPTURE = dialog-2ch-48khz-24b.bin
+
+cbfs-files-$(CONFIG_NHLT_DMIC_2CH) += $(DMIC_2CH_48KHZ_16B)
+$(DMIC_2CH_48KHZ_16B)-file := $(NHLT_BLOB_PATH)/$(DMIC_2CH_48KHZ_16B)
+$(DMIC_2CH_48KHZ_16B)-type := raw
+
+cbfs-files-$(CONFIG_NHLT_MAX98357) += $(MAX98357_RENDER)
+$(MAX98357_RENDER)-file := $(NHLT_BLOB_PATH)/$(MAX98357_RENDER)
+$(MAX98357_RENDER)-type := raw
+
+cbfs-files-$(CONFIG_NHLT_DA7219) += $(DA7219_RENDER_CAPTURE)
+$(DA7219_RENDER_CAPTURE)-file := $(NHLT_BLOB_PATH)/$(DA7219_RENDER_CAPTURE)
+$(DA7219_RENDER_CAPTURE)-type := raw
 
 endif

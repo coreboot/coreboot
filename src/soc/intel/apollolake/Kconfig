@@ -17,6 +17,9 @@ config CPU_SPECIFIC_OPTIONS
 	select SMP
 	select SSE2
 	select SUPPORT_CPU_UCODE_IN_CBFS
+	# Audio options
+	select ACPI_NHLT
+	select SOC_INTEL_COMMON_NHLT
 	# Misc options
 	select C_ENVIRONMENT_BOOTBLOCK
 	select COLLECT_TIMESTAMPS
@@ -181,5 +184,26 @@ config IFWI_FILE_NAME
 	default "3rdparty/blobs/mainboard/$(CONFIG_MAINBOARD_DIR)/ifwi.bin"
 	help
 	  Name of file to store in the IFWI region.
+
+config NHLT_DMIC_2CH_16B
+	bool
+	depends on ACPI_NHLT
+	default n
+	help
+	  Include DSP firmware settings for 2 channel 16B DMIC array.
+
+config NHLT_MAX98357
+	bool
+	depends on ACPI_NHLT
+	default n
+	help
+	  Include DSP firmware settings for headset codec.
+
+config NHLT_DA7219
+	bool
+	depends on ACPI_NHLT
+	default n
+	help
+	  Include DSP firmware settings for headset codec.
 
 endif

@@ -20,6 +20,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/i2c.h>
+#include <string.h>
 #include <timer.h>
 #include "lpss_i2c.h"
 
@@ -305,7 +306,17 @@ int platform_i2c_transfer(unsigned bus, struct i2c_seg *segments, int count)
 	return 0;
 }
 
-void lpss_i2c_acpi_write_speed_config(
+/*
+ * Write ACPI object to describe speed configuration.
+ *
+ * ACPI Object: Name ("xxxx", Package () { scl_lcnt, scl_hcnt, sda_hold }
+ *
+ * SSCN: I2C_SPEED_STANDARD
+ * FMCN: I2C_SPEED_FAST
+ * FPCN: I2C_SPEED_FAST_PLUS
+ * HSCN: I2C_SPEED_HIGH
+ */
+static void lpss_i2c_acpi_write_speed_config(
 	const struct lpss_i2c_speed_config *config)
 {
 	if (!config)
@@ -328,6 +339,37 @@ void lpss_i2c_acpi_write_speed_config(
 	acpigen_write_word(config->scl_lcnt);
 	acpigen_write_dword(config->sda_hold);
 	acpigen_pop_len();
+}
+
+void lpss_i2c_acpi_fill_ssdt(const struct lpss_i2c_speed_config *override)
+{
+	const struct lpss_i2c_speed_config *sptr;
+	struct lpss_i2c_speed_config sgen;
+	enum i2c_speed speeds[LPSS_I2C_SPEED_CONFIG_COUNT] = {
+		I2C_SPEED_STANDARD,
+		I2C_SPEED_FAST,
+		I2C_SPEED_FAST_PLUS,
+		I2C_SPEED_HIGH,
+	};
+	int i;
+
+	/* Report timing values for the OS driver */
+	for (i = 0; i < LPSS_I2C_SPEED_CONFIG_COUNT; i++) {
+		/* Generate speed config for default case */
+		if (lpss_i2c_gen_speed_config(speeds[i], &sgen) < 0)
+			continue;
+
+		/* Apply board specific override for this speed if found */
+		for (sptr = override; sptr && sptr->speed; sptr++) {
+			if (sptr->speed == speeds[i]) {
+				memcpy(&sgen, sptr, sizeof(sgen));
+				break;
+			}
+		}
+
+		/* Generate ACPI based on selected speed config */
+		lpss_i2c_acpi_write_speed_config(&sgen);
+	}
 }
 
 int lpss_i2c_set_speed_config(unsigned bus,

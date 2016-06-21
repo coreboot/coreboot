@@ -85,17 +85,10 @@ int lpss_i2c_set_speed_config(unsigned bus,
 			      const struct lpss_i2c_speed_config *config);
 
 /*
- * Write ACPI object to describe speed configuration.
- *
- * ACPI Object: Name ("xxxx", Package () { scl_lcnt, scl_hcnt, sda_hold }
- *
- * SSCN: I2C_SPEED_STANDARD
- * FMCN: I2C_SPEED_FAST
- * FPCN: I2C_SPEED_FAST_PLUS
- * HSCN: I2C_SPEED_HIGH
+ * Generate I2C timing information into the SSDT for the OS driver to consume,
+ * optionally applying override values provided by the caller.
  */
-void lpss_i2c_acpi_write_speed_config(
-	const struct lpss_i2c_speed_config *config);
+void lpss_i2c_acpi_fill_ssdt(const struct lpss_i2c_speed_config *override);
 
 /*
  * Set I2C bus speed for this controller.

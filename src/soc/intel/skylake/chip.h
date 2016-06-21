@@ -24,6 +24,7 @@
 #include <stdint.h>
 #include <soc/gpio_defs.h>
 #include <soc/gpe.h>
+#include <soc/intel/common/lpss_i2c.h>
 #include <soc/pci_devs.h>
 #include <soc/pmc.h>
 #include <soc/serialio.h>
@@ -44,6 +45,8 @@ struct skylake_i2c_config {
 	enum i2c_speed speed;
 	/* Bus should be enabled prior to ramstage with temporary base */
 	int early_init;
+	/* Custom bus speed configuration { scl_lcnt, scl_hcnt, sda_hold } */
+	struct lpss_i2c_speed_config speed_config[LPSS_I2C_SPEED_CONFIG_COUNT];
 };
 
 struct soc_intel_skylake_config {

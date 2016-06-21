@@ -22,6 +22,7 @@
 #include <soc/iomap.h>
 #include <soc/cpu.h>
 #include <soc/gpio.h>
+#include <soc/mmap_boot.h>
 #include <soc/northbridge.h>
 #include <soc/pci_devs.h>
 #include <soc/uart.h>
@@ -87,7 +88,8 @@ void asmlinkage bootblock_c_entry(uint64_t base_timestamp)
 static void cache_bios_region(void)
 {
 	int mtrr;
-	uint32_t rom_size, alignment;
+	size_t rom_size;
+	uint32_t alignment;
 
 	mtrr = get_free_var_mtrr();
 
@@ -95,7 +97,8 @@ static void cache_bios_region(void)
 		return;
 
 	/* Only the IFD BIOS region is memory mapped (at top of 4G) */
-	rom_size =  CONFIG_IFD_BIOS_END - CONFIG_IFD_BIOS_START;
+	rom_size =  get_bios_size();
+
 	/* Round to power of two */
 	alignment = 1 << (log2_ceil(rom_size));
 	rom_size = ALIGN_UP(rom_size, alignment);

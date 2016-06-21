@@ -23,6 +23,7 @@
 #include <console/console.h>
 #include <fmap.h>
 #include <soc/intel/common/nvm.h>
+#include <soc/mmap_boot.h>
 #include <soc/spi.h>
 
 /*
@@ -86,11 +87,6 @@ static void bios_mmap_init(void)
 	bios_end = (((val & SPIBAR_BFPREG_PRL_MASK) >>
 		     SPIBAR_BFPREG_PRL_SHIFT) + 1) * 4 * KiB;
 	size = bios_end - start;
-
-	printk(BIOS_INFO, "IFD BIOS region info loaded from FLREG%d\n",
-	       (val & SPIBAR_BFPREG_SBRS) ? 6 : 1);
-	printk(BIOS_INFO, "IFD BIOS Start: 0x%zx\n", start);
-	printk(BIOS_INFO, "IFD BIOS End  : 0x%zx\n", bios_end);
 
 	/* BIOS region is mapped right below 4G. */
 	base = 4ULL * GiB - size;
@@ -166,4 +162,10 @@ uint32_t nvm_mmio_to_flash_offset(void *p)
 	 * start on flash
 	 */
 	return (uintptr_t)p - (4ULL * GiB - size) + start;
+}
+
+size_t get_bios_size(void)
+{
+	bios_mmap_init();
+	return car_get_var(bios_size);
 }

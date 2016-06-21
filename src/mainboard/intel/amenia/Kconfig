@@ -40,14 +40,6 @@ config PREBUILT_SPI_IMAGE
 	string
 	default "amenia.bin.orig.a0"
 
-config IFD_BIOS_END
-	hex
-	default 0x77F000
-
-config IFD_BIOS_START
-	hex
-	default 0x1000
-
 config MAX_CPUS
 	int
 	default 8

@@ -38,10 +38,10 @@ _start:
   sd t0, 0(t1)
 
   la t0, exception_handler
-  csrw stvec, t0
+  csrw mtvec, t0
 
   # clear any pending interrupts
-  csrwi sip, 0
+  csrwi mip, 0
 
   # set up the mstatus register for VM
   call mstatus_init

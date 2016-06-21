@@ -116,3 +116,6 @@ documentation/skconfig.tex
 documentation/socketfkconfig.tex
 
 doxygen/*
+
+# blobs needed to build some boards, not under git control
+3rdparty/blobs/

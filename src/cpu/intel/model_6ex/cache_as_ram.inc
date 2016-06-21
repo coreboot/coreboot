@@ -135,8 +135,8 @@ clear_mtrrs:
 	call	romstage_main
 
 	/* Save return value from romstage_main. It contains the stack to use
-	 * after cache-as-ram is torn down. It also contains the information
-	 * for setting up MTRRs. */
+	 * after cache-as-ram is torn down.
+	 */
 	movl	%eax, %ebx
 
 	post_code(0x2f)

@@ -30,6 +30,18 @@ config CHROMEOS
 	select VIRTUAL_DEV_SWITCH
 	select EC_SOFTWARE_SYNC
 
+config DRIVERS_GENERIC_MAX98357A
+	default y
+
+config DRIVERS_I2C_GENERIC
+	default y
+
+config DRIVERS_I2C_NAU8825
+	default y
+
+config DRIVERS_INTEL_WIFI
+	default y
+
 config IRQ_SLOT_COUNT
 	int
 	default 18

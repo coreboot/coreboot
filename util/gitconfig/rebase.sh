@@ -13,7 +13,7 @@
 #
 
 # Adapt to your remote branch:
-BRANCH="cros/chromeos-2015.07"
+BRANCH="cros/chromeos-2016.05"
 
 # When pulling in patches from another tree from a gerrit repository,
 # do the following at the end of a larger cherry-pick series:

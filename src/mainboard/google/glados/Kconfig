@@ -29,6 +29,15 @@ config CHROMEOS
 	select VBOOT_OPROM_MATTERS
 	select VIRTUAL_DEV_SWITCH
 
+config DRIVERS_I2C_GENERIC
+	def_bool y
+
+config DRIVERS_I2C_NAU8825
+	def_bool y
+
+config DRIVERS_INTEL_WIFI
+	def_bool y
+
 config IRQ_SLOT_COUNT
 	int
 	default 18

@@ -461,6 +461,13 @@ VERIFIED BOOT 2
 M:	Aaron Durbin <adurbin@chromium.org>
 F:	src/vendorcode/google/chromeos/vboot2/
 
+TPM SUPPORT
+M:	Philipp Deppenwiese <zaolin.daisuki@gmail.com>
+F:	src/drivers/*/tpm/
+F:	src/security/tpm12/
+F:	src/security/tpm20/
+F:	util/tss-generator/
+
 MISSING: TIMERS / DELAYS
 
 MISSING: TIMESTAMPS

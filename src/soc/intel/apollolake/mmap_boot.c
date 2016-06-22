@@ -102,10 +102,10 @@ static void bios_mmap_init(void)
 	shadow_dev_ptr = car_get_var_ptr(&shadow_dev);
 	real_dev_ptr = car_get_var_ptr(&real_dev);
 
-	mem_region_device_init(shadow_dev_ptr, (void *)base,
+	mem_region_device_ro_init(shadow_dev_ptr, (void *)base,
 			       bios_mapped_size);
 
-	xlate_region_device_init(real_dev_ptr, &shadow_dev_ptr->rdev,
+	xlate_region_device_ro_init(real_dev_ptr, &shadow_dev_ptr->rdev,
 				 start, bios_mapped_size,
 				 CONFIG_ROM_SIZE);
 

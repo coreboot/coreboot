@@ -33,3 +33,4 @@ ramstage-y += chromeos.c
 ramstage-y += mainboard.c
 ramstage-y += memlayout.ld
 ramstage-y += reset.c
+ramstage-y += sdram_configs.c  # Needed for ram_code()

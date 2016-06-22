@@ -38,19 +38,29 @@ enum dram_speeds {
 /*	dram_928MHz = 4, */
 };
 
+static enum dram_speeds get_sdram_index(void)
+{
+	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_KEVIN))
+		return dram_300MHz;
+	else if (IS_ENABLED(CONFIG_BOARD_GOOGLE_GRU))
+		return dram_800MHz;
+	else
+		return dram_200MHz;
+}
+
 const struct rk3399_sdram_params *get_sdram_config()
 {
-	enum dram_speeds speed;
 
-	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_KEVIN))
-		speed = dram_300MHz;
-	else if (IS_ENABLED(CONFIG_BOARD_GOOGLE_GRU))
-		speed = dram_800MHz;
-	else
-		speed = dram_200MHz;
+	enum dram_speeds speed = get_sdram_index();
 
 	printk(BIOS_INFO, "Using SDRAM configuration for %d MHz\n",
 	       sdram_configs[speed].ddr_freq / (1000 * 1000));
 
 	return &sdram_configs[speed];
+}
+
+
+uint32_t ram_code(void)
+{
+	return get_sdram_index();
 }

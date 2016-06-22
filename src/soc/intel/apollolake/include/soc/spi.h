@@ -19,13 +19,14 @@
 
 /* PCI configuration registers */
 #define SPIBAR_BIOS_CONTROL		0xdc
+/* Bit definitions for BIOS_CONTROL */
+#define  SPIBAR_BIOS_CONTROL_WPD		(1 << 0)
+#define  SPIBAR_BIOS_CONTROL_CACHE_DISABLE	(1 << 2)
+#define  SPIBAR_BIOS_CONTROL_PREFETCH_ENABLE	(1 << 3)
+#define  SPIBAR_BIOS_CONTROL_EISS		(1 << 5)
 
 /* Maximum bytes of data that can fit in FDATAn registers */
 #define SPIBAR_FDATA_FIFO_SIZE		0x40
-
-/* Bit definitions for BIOS_CONTROL */
-#define SPIBAR_BIOS_CONTROL_WPD		(1 << 0)
-#define  SPIBAR_BIOS_CONTROL_EISS	(1 << 5)
 
 /* Register offsets from the MMIO region base (PCI_BASE_ADDRESS_0) */
 #define SPIBAR_BIOS_BFPREG		0x00

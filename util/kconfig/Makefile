@@ -114,6 +114,7 @@ help_kconfig help::
 	@echo  '  xconfig	  - Update current config utilising a QT based front-end'
 	@echo  '  gconfig	  - Update current config utilising a GTK based front-end'
 	@echo  '  oldconfig	  - Update current config utilising a provided .config as base'
+	@echo  '  olddefconfig    - Same as oldconfig, but with default answer to all new options'
 	#@echo  '  localmodconfig  - Update current config disabling modules not loaded'
 	#@echo  '  localyesconfig  - Update current config converting local mods to core'
 	@echo  '  silentoldconfig - Same as oldconfig, but quietly, additionally update deps'

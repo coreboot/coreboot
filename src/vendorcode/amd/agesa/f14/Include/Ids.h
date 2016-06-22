@@ -561,19 +561,11 @@ typedef enum {                        //vv- for debug reference only
     #define IDS_HDT_CONSOLE_S3_EXIT(x)
     #define IDS_HDT_CONSOLE_S3_AP_EXIT(x)
 
-    #if IDSOPT_C_OPTIMIZATION_DISABLED == TRUE
-      #ifdef __GNUC__
-        #define IDS_HDT_CONSOLE(f, s, ...)
-      #else
-        #define IDS_HDT_CONSOLE(f, s, ...)
-      #endif
+    #ifndef __GNUC__
+      #pragma warning(disable: 4127)
+      #define IDS_HDT_CONSOLE(f, s, ...)
     #else
-      #ifndef __GNUC__
-        #pragma warning(disable: 4127)
-        #define IDS_HDT_CONSOLE(f, s, ...)
-	  #else
-		#define IDS_HDT_CONSOLE(f, s, ...)        printk (BIOS_DEBUG, s, ##__VA_ARGS__);
-      #endif
+      #define IDS_HDT_CONSOLE(f, s, ...) printk (BIOS_DEBUG, s, ##__VA_ARGS__);
     #endif
 
     #define IDS_HDT_CONSOLE_FLUSH_BUFFER(x)

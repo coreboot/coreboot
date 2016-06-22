@@ -530,30 +530,11 @@ typedef enum {                        //vv- for debug reference only
     #define IDS_HDT_CONSOLE_S3_EXIT(x)
     #define IDS_HDT_CONSOLE_S3_AP_EXIT(x)
 
-      #ifdef __GNUC__
-        #if CONFIG_REDIRECT_IDS_HDT_CONSOLE_TO_SERIAL
-		/* print all*/
-		//#define IDS_HDT_CONSOLE(f, s, args...) do {do_printk(BIOS_DEBUG, s, ##args);} while (0)
-		#define IDS_HDT_CONSOLE(f, s, args...) do {\
-			if (f == MAIN_FLOW) {\
-				do_printk(BIOS_DEBUG, s, ##args);\
-			} else if (f == MEM_FLOW) {\
-				do_printk(BIOS_DEBUG, s, ##args);\
-			} else if (f == CPU_TRACE) {\
-				do_printk(BIOS_DEBUG, s, ##args);\
-			} else if (f == HT_TRACE) {\
-				do_printk(BIOS_DEBUG, s, ##args);\
-			} else if (f == GNB_TRACE) {\
-				do_printk(BIOS_DEBUG, s, ##args);\
-			} else if (f == FCH_TRACE) {\
-				do_printk(BIOS_DEBUG, s, ##args);\
-			}\
-		} while(0)
-        #else
-        #define IDS_HDT_CONSOLE(s, args...) do {} while(0)
-        #endif
-        #else
-     #define IDS_HDT_CONSOLE(s, args...)
+    #ifndef __GNUC__
+      #pragma warning(disable: 4127)
+      #define IDS_HDT_CONSOLE(f, s, ...)
+    #else
+      #define IDS_HDT_CONSOLE(f, s, ...) printk (BIOS_DEBUG, s, ##__VA_ARGS__);
     #endif
 
     #define IDS_HDT_CONSOLE_FLUSH_BUFFER(x)

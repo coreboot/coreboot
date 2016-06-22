@@ -203,6 +203,11 @@ void spi_init(void)
 	bios_ctl = pci_read_config32(ctx->pci_dev, SPIBAR_BIOS_CONTROL);
 	bios_ctl |= SPIBAR_BIOS_CONTROL_WPD;
 	bios_ctl &= ~SPIBAR_BIOS_CONTROL_EISS;
+
+	/* Enable Prefetching and caching. */
+	bios_ctl |= SPIBAR_BIOS_CONTROL_PREFETCH_ENABLE;
+	bios_ctl &= ~SPIBAR_BIOS_CONTROL_CACHE_DISABLE;
+
 	pci_write_config32(ctx->pci_dev, SPIBAR_BIOS_CONTROL, bios_ctl);
 }
 

@@ -30,7 +30,8 @@
 #include <timestamp.h>
 
 /* Only can represent up to 1 byte less than size_t. */
-const struct mem_region_device addrspace_32bit = MEM_REGION_DEV_INIT(0, ~0UL);
+const struct mem_region_device addrspace_32bit =
+	MEM_REGION_DEV_RO_INIT(0, ~0UL);
 
 int prog_locate(struct prog *prog)
 {

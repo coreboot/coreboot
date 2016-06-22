@@ -48,6 +48,20 @@ int rdev_munmap(const struct region_device *rd, void *mapping);
 ssize_t rdev_readat(const struct region_device *rd, void *b, size_t offset,
 			size_t size);
 
+/*
+ * Returns < 0 on error otherwise returns size of data wrote at provided
+ * offset from the buffer passed.
+ */
+ssize_t rdev_writeat(const struct region_device *rd, void *b, size_t offset,
+			size_t size);
+
+/*
+ * Returns < 0 on error otherwise returns size of data erased.
+ * If eraseat ops is not defined it returns size which indicates
+ * that operation was successful.
+ */
+ssize_t rdev_eraseat(const struct region_device *rd, size_t offset,
+			size_t size);
 
 /****************************************
  *  Implementation of a region device   *
@@ -67,6 +81,9 @@ struct region_device_ops {
 	void *(*mmap)(const struct region_device *, size_t, size_t);
 	int (*munmap)(const struct region_device *, void *);
 	ssize_t (*readat)(const struct region_device *, void *, size_t, size_t);
+	ssize_t (*writeat)(const struct region_device *, void *, size_t,
+		size_t);
+	ssize_t (*eraseat)(const struct region_device *, size_t, size_t);
 };
 
 struct region {
@@ -139,26 +156,38 @@ struct mem_region_device {
 	struct region_device rdev;
 };
 
-/* Iniitalize at runtime a mem_region_device. This would be used when
- * the base and size are dynamic or can't be known during linking. */
-void mem_region_device_init(struct mem_region_device *mdev, void *base,
+/* Inititalize at runtime a mem_region_device. This would be used when
+ * the base and size are dynamic or can't be known during linking.
+ * There are two variants: read-only and read-write. */
+void mem_region_device_ro_init(struct mem_region_device *mdev, void *base,
 				size_t size);
 
-extern const struct region_device_ops mem_rdev_ops;
+void mem_region_device_rw_init(struct mem_region_device *mdev, void *base,
+				size_t size);
+
+extern const struct region_device_ops mem_rdev_ro_ops;
+
+extern const struct region_device_ops mem_rdev_rw_ops;
 
 /* Statically initialize mem_region_device. */
-#define MEM_REGION_DEV_INIT(base_, size_)				\
+#define MEM_REGION_DEV_INIT(base_, size_, ops_)				\
 	{								\
 		.base = (void *)(base_),				\
-		.rdev = REGION_DEV_INIT(&mem_rdev_ops, 0, (size_)),	\
+		.rdev = REGION_DEV_INIT((ops_), 0, (size_)),		\
 	}
+
+#define MEM_REGION_DEV_RO_INIT(base_, size_)				\
+		MEM_REGION_DEV_INIT(base_, size_, &mem_rdev_ro_ops)	\
+
+#define MEM_REGION_DEV_RW_INIT(base_, size_)				\
+		MEM_REGION_DEV_INIT(base_, size_, &mem_rdev_rw_ops)	\
 
 struct mmap_helper_region_device {
 	struct mem_pool pool;
 	struct region_device rdev;
 };
 
-#define MMAP_HELPER_REGION_INIT(ops_, offset_, size_) \
+#define MMAP_HELPER_REGION_INIT(ops_, offset_, size_)			\
 	{								\
 		.rdev = REGION_DEV_INIT((ops_), (offset_), (size_)),	\
 	}
@@ -170,7 +199,7 @@ void *mmap_helper_rdev_mmap(const struct region_device *, size_t, size_t);
 int mmap_helper_rdev_munmap(const struct region_device *, void *);
 
 /* A translated region device provides the ability to publish a region device
- * in one address space and use an access mechansim within another address
+ * in one address space and use an access mechanism within another address
  * space. The sub region is the window within the 1st address space and
  * the request is modified prior to accessing the second address space
  * provided by access_dev. */
@@ -180,20 +209,38 @@ struct xlate_region_device {
 	struct region_device rdev;
 };
 
-extern const struct region_device_ops xlate_rdev_ops;
+extern const struct region_device_ops xlate_rdev_ro_ops;
 
-#define XLATE_REGION_DEV_INIT(access_dev_, sub_offset_, sub_size_, parent_sz_) \
+extern const struct region_device_ops xlate_rdev_rw_ops;
+
+#define XLATE_REGION_DEV_INIT(access_dev_, sub_offset_, sub_size_,	\
+		parent_sz_, ops_)					\
 	{								\
 		.access_dev = access_dev_,				\
 		.sub_region = {						\
 			.offset = (sub_offset_),			\
 			.size = (sub_size_),				\
 		},							\
-		.rdev = REGION_DEV_INIT(&xlate_rdev_ops, 0,  (parent_sz_)),\
+		.rdev = REGION_DEV_INIT((ops_), 0,  (parent_sz_)),	\
 	}
 
+#define XLATE_REGION_DEV_RO_INIT(access_dev_, sub_offset_, sub_size_,	\
+		parent_sz_)						\
+		XLATE_REGION_DEV_INIT(access_dev_, sub_offset_,		\
+			sub_size_, parent_sz_, &xlate_rdev_ro_ops),	\
+
+#define XLATE_REGION_DEV_RW_INIT(access_dev_, sub_offset_, sub_size_,	\
+		parent_sz_)						\
+		XLATE_REGION_DEV_INIT(access_dev_, sub_offset_,		\
+			sub_size_, parent_sz_, &xlate_rdev_rw_ops),	\
+
 /* Helper to dynamically initialize xlate region device. */
-void xlate_region_device_init(struct xlate_region_device *xdev,
+void xlate_region_device_ro_init(struct xlate_region_device *xdev,
+			      const struct region_device *access_dev,
+			      size_t sub_offset, size_t sub_size,
+			      size_t parent_size);
+
+void xlate_region_device_rw_init(struct xlate_region_device *xdev,
 			      const struct region_device *access_dev,
 			      size_t sub_offset, size_t sub_size,
 			      size_t parent_size);

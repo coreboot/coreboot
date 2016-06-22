@@ -103,6 +103,48 @@ ssize_t rdev_readat(const struct region_device *rd, void *b, size_t offset,
 	return rdev->ops->readat(rdev, b, req.offset, req.size);
 }
 
+ssize_t rdev_writeat(const struct region_device *rd, void *b, size_t offset,
+			size_t size)
+{
+	const struct region_device *rdev;
+	struct region req = {
+		.offset = offset,
+		.size = size,
+	};
+
+	if (!normalize_and_ok(&rd->region, &req))
+		return -1;
+
+	rdev = rdev_root(rd);
+
+	if (rdev->ops->writeat == NULL)
+		return -1;
+
+	return rdev->ops->writeat(rdev, b, req.offset, req.size);
+}
+
+ssize_t rdev_eraseat(const struct region_device *rd, size_t offset,
+			size_t size)
+{
+	const struct region_device *rdev;
+	struct region req = {
+		.offset = offset,
+		.size = size,
+	};
+
+	if (!normalize_and_ok(&rd->region, &req))
+		return -1;
+
+	rdev = rdev_root(rd);
+
+	/* If the eraseat ptr is NULL we assume that the erase
+	 * function was completed successfully. */
+	if (rdev->ops->eraseat == NULL)
+		return size;
+
+	return rdev->ops->eraseat(rdev, req.offset, req.size);
+}
+
 int rdev_chain(struct region_device *child, const struct region_device *parent,
 		size_t offset, size_t size)
 {
@@ -124,13 +166,25 @@ int rdev_chain(struct region_device *child, const struct region_device *parent,
 	return 0;
 }
 
-void mem_region_device_init(struct mem_region_device *mdev, void *base,
-				size_t size)
+static void mem_region_device_init(struct mem_region_device *mdev,
+		const struct region_device_ops *ops, void *base, size_t size)
 {
 	memset(mdev, 0, sizeof(*mdev));
 	mdev->base = base;
-	mdev->rdev.ops = &mem_rdev_ops;
+	mdev->rdev.ops = ops;
 	mdev->rdev.region.size = size;
+}
+
+void mem_region_device_ro_init(struct mem_region_device *mdev, void *base,
+				size_t size)
+{
+	return mem_region_device_init(mdev, &mem_rdev_ro_ops, base, size);
+}
+
+void mem_region_device_rw_init(struct mem_region_device *mdev, void *base,
+		size_t size)
+{
+	return mem_region_device_init(mdev, &mem_rdev_rw_ops, base, size);
 }
 
 void region_device_init(struct region_device *rdev,
@@ -144,16 +198,35 @@ void region_device_init(struct region_device *rdev,
 	rdev->region.size = size;
 }
 
-void xlate_region_device_init(struct xlate_region_device *xdev,
-			      const struct region_device *access_dev,
-			      size_t sub_offset, size_t sub_size,
-			      size_t parent_size)
+static void xlate_region_device_init(struct xlate_region_device *xdev,
+			const struct region_device_ops *ops,
+			const struct region_device *access_dev,
+			size_t sub_offset, size_t sub_size,
+			size_t parent_size)
 {
 	memset(xdev, 0, sizeof(*xdev));
 	xdev->access_dev = access_dev;
 	xdev->sub_region.offset = sub_offset;
 	xdev->sub_region.size = sub_size;
-	region_device_init(&xdev->rdev, &xlate_rdev_ops, 0, parent_size);
+	region_device_init(&xdev->rdev, ops, 0, parent_size);
+}
+
+void xlate_region_device_ro_init(struct xlate_region_device *xdev,
+			      const struct region_device *access_dev,
+			      size_t sub_offset, size_t sub_size,
+			      size_t parent_size)
+{
+	xlate_region_device_init(xdev, &xlate_rdev_ro_ops, access_dev,
+			sub_offset, sub_size, parent_size);
+}
+
+void xlate_region_device_rw_init(struct xlate_region_device *xdev,
+			      const struct region_device *access_dev,
+			      size_t sub_offset, size_t sub_size,
+			      size_t parent_size)
+{
+	xlate_region_device_init(xdev, &xlate_rdev_rw_ops, access_dev,
+			sub_offset, sub_size, parent_size);
 }
 
 static void *mdev_mmap(const struct region_device *rd, size_t offset,
@@ -184,10 +257,42 @@ static ssize_t mdev_readat(const struct region_device *rd, void *b,
 	return size;
 }
 
-const struct region_device_ops mem_rdev_ops = {
+static ssize_t mdev_writeat(const struct region_device *rd, void *b,
+				size_t offset, size_t size)
+{
+	const struct mem_region_device *mdev;
+
+	mdev = container_of(rd, __typeof__(*mdev), rdev);
+
+	memcpy(&mdev->base[offset], b, size);
+
+	return size;
+}
+
+static ssize_t mdev_eraseat(const struct region_device *rd, size_t offset,
+				size_t size)
+{
+	const struct mem_region_device *mdev;
+
+	mdev = container_of(rd, __typeof__(*mdev), rdev);
+
+	memset(&mdev->base[offset], 0, size);
+
+	return size;
+}
+
+const struct region_device_ops mem_rdev_ro_ops = {
 	.mmap = mdev_mmap,
 	.munmap = mdev_munmap,
 	.readat = mdev_readat,
+};
+
+const struct region_device_ops mem_rdev_rw_ops = {
+	.mmap = mdev_mmap,
+	.munmap = mdev_munmap,
+	.readat = mdev_readat,
+	.writeat = mdev_writeat,
+	.eraseat = mdev_eraseat,
 };
 
 void mmap_helper_device_init(struct mmap_helper_region_device *mdev,
@@ -275,8 +380,54 @@ static ssize_t xlate_readat(const struct region_device *rd, void *b,
 	return rdev_readat(xldev->access_dev, b, offset, size);
 }
 
-const struct region_device_ops xlate_rdev_ops = {
+static ssize_t xlate_writeat(const struct region_device *rd, void *b,
+				size_t offset, size_t size)
+{
+	struct region req = {
+		.offset = offset,
+		.size = size,
+	};
+	const struct xlate_region_device *xldev;
+
+	xldev = container_of(rd, __typeof__(*xldev), rdev);
+
+	if (!is_subregion(&xldev->sub_region, &req))
+		return -1;
+
+	offset -= region_offset(&xldev->sub_region);
+
+	return rdev_writeat(xldev->access_dev, b, offset, size);
+}
+
+static ssize_t xlate_eraseat(const struct region_device *rd,
+				size_t offset, size_t size)
+{
+	struct region req = {
+		.offset = offset,
+		.size = size,
+	};
+	const struct xlate_region_device *xldev;
+
+	xldev = container_of(rd, __typeof__(*xldev), rdev);
+
+	if (!is_subregion(&xldev->sub_region, &req))
+		return -1;
+
+	offset -= region_offset(&xldev->sub_region);
+
+	return rdev_eraseat(xldev->access_dev, offset, size);
+}
+
+const struct region_device_ops xlate_rdev_ro_ops = {
 	.mmap = xlate_mmap,
 	.munmap = xlate_munmap,
 	.readat = xlate_readat,
+};
+
+const struct region_device_ops xlate_rdev_rw_ops = {
+	.mmap = xlate_mmap,
+	.munmap = xlate_munmap,
+	.readat = xlate_readat,
+	.writeat = xlate_writeat,
+	.eraseat = xlate_eraseat,
 };

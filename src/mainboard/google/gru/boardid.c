@@ -59,8 +59,3 @@ uint8_t board_id(void)
 	       adc_reading);
 	return 0;
 }
-
-uint32_t ram_code(void)
-{
-	return 0;
-}

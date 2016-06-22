@@ -729,19 +729,11 @@ typedef enum {                        //vv- for debug reference only
       #define IDS_HDT_CONSOLE_EXIT(x)           IDSOPT_CUSTOMIZE_TRACING_SERVICE_EXIT (x)
     #endif
   #else
-    #ifdef VA_ARGS_SUPPORTED
-      #if IDSOPT_C_OPTIMIZATION_DISABLED == TRUE
-        #define IDS_HDT_CONSOLE(f, s, ...)        AmdIdsDebugPrint (f, s, __VA_ARGS__)
-      #else
-        #pragma warning(disable: 4127)
-        #define IDS_HDT_CONSOLE(f, s, ...)        if      (f == MEM_FLOW) AmdIdsDebugPrintMem (s, __VA_ARGS__); \
-                                                   else if (f == CPU_TRACE) AmdIdsDebugPrintCpu (s, __VA_ARGS__); \
-                                                    else if (f == HT_TRACE) AmdIdsDebugPrintHt (s, __VA_ARGS__); \
-                                                    else if (f == GNB_TRACE) AmdIdsDebugPrintGnb (s, __VA_ARGS__); \
-                                                   else AmdIdsDebugPrint (f, s, __VA_ARGS__)
-      #endif
+    #ifndef __GNUC__
+      #pragma warning(disable: 4127)
+      #define IDS_HDT_CONSOLE(f, s, ...)
     #else
-      #define IDS_HDT_CONSOLE    AmdIdsDebugPrint
+      #define IDS_HDT_CONSOLE(f, s, ...) printk (BIOS_DEBUG, s, ##__VA_ARGS__);
     #endif
     #define CONSOLE            AmdIdsDebugPrintAll
   #endif

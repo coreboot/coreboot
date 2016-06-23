@@ -18,6 +18,7 @@
 #include <lib.h>
 #include <memrange.h>
 #include <program_loading.h>
+#include <reset.h>
 #include <string.h>
 
 static bool looks_like_fsp_header(const uint8_t *raw_hdr)
@@ -159,4 +160,27 @@ enum cb_err fsp_load_binary(struct fsp_header *hdr,
 	prog_segment_loaded(hdr->image_base, hdr->image_size, SEG_FINAL);
 
 	return CB_SUCCESS;
+}
+
+void fsp_handle_reset(enum fsp_status status)
+{
+	switch(status) {
+	case FSP_STATUS_RESET_REQUIRED_COLD:
+		hard_reset();
+		break;
+	case FSP_STATUS_RESET_REQUIRED_WARM:
+		soft_reset();
+		break;
+	case FSP_STATUS_RESET_REQUIRED_GLOBAL_RESET:
+		global_reset();
+		break;
+	default:
+		break;
+	}
+}
+
+bool fsp_reset_requested(enum fsp_status status)
+{
+	return (status >= FSP_STATUS_RESET_REQUIRED_COLD &&
+		status <= FSP_STATUS_RESET_REQUIRED_GLOBAL_RESET);
 }

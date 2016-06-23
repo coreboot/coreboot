@@ -14,6 +14,7 @@
 #define _FSP2_0_UTIL_H_
 
 #include <boot/coreboot_tables.h>
+#include <fsp/api.h>
 #include <fsp/info_header.h>
 #include <memrange.h>
 
@@ -38,5 +39,10 @@ enum cb_err fsp_load_binary(struct fsp_header *hdr, const char *name,
 			    struct range_entry *r);
 /* Load a vbt.bin file for graphics. Returns 0 if a valid VBT is not found. */
 uintptr_t fsp_load_vbt(void);
+
+/* Trivial handling of reset exit statuses */
+void fsp_handle_reset(enum fsp_status status);
+/* Returns true if the non-success status is a reset request */
+bool fsp_reset_requested(enum fsp_status status);
 
 #endif /* _FSP2_0_UTIL_H_ */

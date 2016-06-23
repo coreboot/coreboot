@@ -59,11 +59,9 @@ config TPM_ON_FAST_SPI
 	 TPM part is conntected on Fast SPI interface, but the LPC MMIO
 	 TPM transactions are decoded and serialized over the SPI interface.
 
-# TODO(furquan): Use common reset once USB LDO issue is resolved in future
-# steppings.
 config SOC_INTEL_COMMON_RESET
 	bool
-	default n
+	default y
 
 config MMCONF_BASE_ADDRESS
 	hex "PCI MMIO Base Address"

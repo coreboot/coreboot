@@ -65,27 +65,13 @@ static struct chipset_power_state power_state CAR_GLOBAL;
 /*
  * Enables several BARs and devices which are needed for memory init
  * - MCH_BASE_ADDR is needed in order to talk to the memory controller
- * - PMC_BAR0 and PMC_BAR1 are used by FSP (with the base address hardcoded)
- *   Once raminit is done, we can safely let the allocator re-assign them
  * - HPET is enabled because FSP wants to store a pointer to global data in the
  *   HPET comparator register
  */
 static void soc_early_romstage_init(void)
 {
-	device_t pmc = PMC_DEV;
-
 	/* Set MCH base address and enable bit */
 	pci_write_config32(NB_DEV_ROOT, MCHBAR, MCH_BASE_ADDR | 1);
-
-	/* Set PMC base addresses and enable decoding. */
-	pci_write_config32(pmc, PCI_BASE_ADDRESS_0, PMC_BAR0);
-	pci_write_config32(pmc, PCI_BASE_ADDRESS_1, 0);	/* 64-bit BAR */
-	pci_write_config32(pmc, PCI_BASE_ADDRESS_2, PMC_BAR1);
-	pci_write_config32(pmc, PCI_BASE_ADDRESS_3, 0);	/* 64-bit BAR */
-	pci_write_config16(pmc, PCI_BASE_ADDRESS_4, ACPI_PMIO_BASE);
-	pci_write_config16(pmc, PCI_COMMAND,
-				PCI_COMMAND_IO | PCI_COMMAND_MEMORY |
-				PCI_COMMAND_MASTER);
 
 	/* Enable decoding for HPET. Needed for FSP global pointer storage */
 	pci_write_config8(P2SB_DEV, P2SB_HPTC, P2SB_HPTC_ADDRESS_SELECT_0 |

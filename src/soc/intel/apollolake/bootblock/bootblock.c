@@ -134,8 +134,25 @@ static void enable_spibar(void)
 	spi_init();
 }
 
+static void enable_pmcbar(void)
+{
+	device_t pmc = PMC_DEV;
+
+	/* Set PMC base addresses and enable decoding. */
+	pci_write_config32(pmc, PCI_BASE_ADDRESS_0, PMC_BAR0);
+	pci_write_config32(pmc, PCI_BASE_ADDRESS_1, 0);	/* 64-bit BAR */
+	pci_write_config32(pmc, PCI_BASE_ADDRESS_2, PMC_BAR1);
+	pci_write_config32(pmc, PCI_BASE_ADDRESS_3, 0);	/* 64-bit BAR */
+	pci_write_config16(pmc, PCI_BASE_ADDRESS_4, ACPI_PMIO_BASE);
+	pci_write_config16(pmc, PCI_COMMAND,
+				PCI_COMMAND_IO | PCI_COMMAND_MEMORY |
+				PCI_COMMAND_MASTER);
+}
+
 void bootblock_soc_early_init(void)
 {
+	enable_pmcbar();
+
 	/* Prepare UART for serial console. */
 	if (IS_ENABLED(CONFIG_SOC_UART_DEBUG))
 		soc_console_uart_init();

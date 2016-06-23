@@ -957,18 +957,15 @@ static void dram_all_config(const struct rk3399_sdram_params *sdram_params)
 	u32 sys_reg = 0;
 	unsigned int channel;
 	unsigned int use;
-	struct rk3399_msch_regs *ddr_msch_regs;
-	const struct rk3399_msch_timings *noc_timing;
 
 	sys_reg |= SYS_REG_ENC_DDRTYPE(sdram_params->dramtype);
 	sys_reg |= SYS_REG_ENC_NUM_CH(sdram_params->num_channels);
 	for (channel = 0, use = 0;
 	     (use < sdram_params->num_channels) && (channel < 2); channel++) {
-		struct rk3399_ddr_pctl_regs *ddr_pctl_regs =
-		    rk3399_ddr_pctl[channel];
 		const struct rk3399_sdram_channel *info =
 			&sdram_params->ch[channel];
-		ddr_msch_regs = rk3399_msch[channel];
+		struct rk3399_msch_regs *ddr_msch_regs;
+		const struct rk3399_msch_timings *noc_timing;
 
 		if (sdram_params->ch[channel].col == 0)
 			continue;
@@ -984,6 +981,7 @@ static void dram_all_config(const struct rk3399_sdram_params *sdram_params)
 		sys_reg |= SYS_REG_ENC_BW(info->bw, channel);
 		sys_reg |= SYS_REG_ENC_DBW(info->dbw, channel);
 
+		ddr_msch_regs = rk3399_msch[channel];
 		noc_timing = &sdram_params->ch[channel].noc_timings;
 		write32(&ddr_msch_regs->ddrtiminga0.d32,
 			noc_timing->ddrtiminga0.d32);
@@ -998,7 +996,8 @@ static void dram_all_config(const struct rk3399_sdram_params *sdram_params)
 
 		/* rank 1 memory clock disable (dfi_dram_clk_disable = 1) */
 		if (sdram_params->ch[channel].rank == 1)
-			setbits_le32(&ddr_pctl_regs->denali_ctl[276], 1 << 17);
+			setbits_le32(&rk3399_ddr_pctl[channel]->denali_ctl[276],
+				     1 << 17);
 	}
 
 	write32(&rk3399_pmugrf->os_reg2, sys_reg);

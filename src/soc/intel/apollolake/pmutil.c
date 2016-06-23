@@ -399,3 +399,16 @@ void global_reset_enable(bool enable)
 	reg = enable ? reg | CF9_GLB_RST : reg & ~CF9_GLB_RST;
 	write32((void *)etr, reg);
 }
+
+/*
+ * The PM1 control is set to S5 when vboot requests a reboot because the power
+ * state code above may not have collected its data yet. Therefore, set it to
+ * S5 when vboot requests a reboot. That's necessary if vboot fails in the
+ * resume path and requests a reboot. This prevents a reboot loop where the
+ * error is continually hit on the failing vboot resume path.
+ */
+void vboot_platform_prepare_reboot(void)
+{
+	const uint16_t port = ACPI_PMIO_BASE + PM1_CNT;
+	outl((inl(port) & ~(SLP_TYP)) | (SLP_TYP_S5 << SLP_TYP_SHIFT), port);
+}

@@ -94,4 +94,8 @@ config MRC_FILE
 	  The path and filename of the file to use as System Agent
 	  binary.
 
+config MMCONF_BASE_ADDRESS
+	hex
+	default 0xf0000000 if !USE_NATIVE_RAMINIT
+
 endif

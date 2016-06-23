@@ -8,5 +8,7 @@ void hard_reset(void);
 #endif
 void soft_reset(void);
 void cpu_reset(void);
+/* Some Intel SoCs use a special reset that is specific to SoC */
+void global_reset(void);
 
 #endif

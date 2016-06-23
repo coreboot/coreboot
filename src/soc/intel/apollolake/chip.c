@@ -101,6 +101,119 @@ static void soc_final(void *data)
 	global_reset_lock();
 }
 
+static void disable_dev(struct device *dev, struct FSP_S_CONFIG *silconfig) {
+
+	switch (dev->path.pci.devfn) {
+	case ISH_DEVFN:
+		silconfig->IshEnable = 0;
+		break;
+	case SATA_DEVFN:
+		silconfig->EnableSata = 0;
+		break;
+	case PCIEA0_DEVFN:
+		silconfig->PcieRootPortEn[0] = 0;
+		break;
+	case PCIEA1_DEVFN:
+		silconfig->PcieRootPortEn[1] = 0;
+		break;
+	case PCIEA2_DEVFN:
+		silconfig->PcieRootPortEn[2] = 0;
+		break;
+	case PCIEA3_DEVFN:
+		silconfig->PcieRootPortEn[3] = 0;
+		break;
+	case PCIEB0_DEVFN:
+		silconfig->PcieRootPortEn[4] = 0;
+		break;
+	case PCIEB1_DEVFN:
+		silconfig->PcieRootPortEn[5] = 0;
+		break;
+	case XHCI_DEVFN:
+		silconfig->Usb30Mode = 0;
+		break;
+	case XDCI_DEVFN:
+		silconfig->UsbOtg = 0;
+		break;
+	case I2C0_DEVFN:
+		silconfig->I2c0Enable = 0;
+		break;
+	case I2C1_DEVFN:
+		silconfig->I2c1Enable = 0;
+		break;
+	case I2C2_DEVFN:
+		silconfig->I2c2Enable = 0;
+		break;
+	case I2C3_DEVFN:
+		silconfig->I2c3Enable = 0;
+		break;
+	case I2C4_DEVFN:
+		silconfig->I2c4Enable = 0;
+		break;
+	case I2C5_DEVFN:
+		silconfig->I2c5Enable = 0;
+		break;
+	case I2C6_DEVFN:
+		silconfig->I2c6Enable = 0;
+		break;
+	case I2C7_DEVFN:
+		silconfig->I2c7Enable = 0;
+		break;
+	case UART0_DEVFN:
+		silconfig->Hsuart0Enable = 0;
+		break;
+	case UART1_DEVFN:
+		silconfig->Hsuart1Enable = 0;
+		break;
+	case UART2_DEVFN:
+		silconfig->Hsuart2Enable = 0;
+		break;
+	case UART3_DEVFN:
+		silconfig->Hsuart3Enable = 0;
+		break;
+	case SPI0_DEVFN:
+		silconfig->Spi0Enable = 0;
+		break;
+	case SPI1_DEVFN:
+		silconfig->Spi1Enable = 0;
+		break;
+	case SPI2_DEVFN:
+		silconfig->Spi2Enable = 0;
+		break;
+	case SDCARD_DEVFN:
+		silconfig->SdcardEnabled = 0;
+		break;
+	case EMMC_DEVFN:
+		silconfig->eMMCEnabled = 0;
+		break;
+	case SDIO_DEVFN:
+		silconfig->SdioEnabled = 0;
+		break;
+	case SMBUS_DEVFN:
+		silconfig->SmbusEnable = 0;
+		break;
+	default:
+		printk(BIOS_WARNING, "PCI:%02x.%01x: Could not disable the device\n",
+			PCI_SLOT(dev->path.pci.devfn),
+			PCI_FUNC(dev->path.pci.devfn));
+		break;
+	}
+}
+
+static void parse_devicetree(struct FSP_S_CONFIG *silconfig)
+{
+	struct device *dev = dev_find_slot(0, NB_DEVFN);
+
+	if (!dev) {
+		printk(BIOS_ERR, "Could not find root device\n");
+		return;
+	}
+	/* Only disable bus 0 devices. */
+	for (dev = dev->bus->children; dev; dev = dev->sibling) {
+		if (!dev->enabled)
+			disable_dev(dev, silconfig);
+	}
+}
+
 void platform_fsp_silicon_init_params_cb(struct FSPS_UPD *silupd)
 {
         struct FSP_S_CONFIG *silconfig = &silupd->FspsConfig;
@@ -116,6 +229,9 @@ void platform_fsp_silicon_init_params_cb(struct FSPS_UPD *silupd)
 	}
 
 	cfg = dev->chip_info;
+
+	/* Parse device tree and disable unused device*/
+	parse_devicetree(silconfig);
 
 	silconfig->PcieRpClkReqNumber[0] = cfg->pcie_rp0_clkreq_pin;
 	silconfig->PcieRpClkReqNumber[1] = cfg->pcie_rp1_clkreq_pin;

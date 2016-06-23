@@ -315,6 +315,9 @@ int chipset_prev_sleep_state(struct chipset_power_state *ps)
 			prev_sleep_state = SLEEP_STATE_S5;
 			break;
 		}
+
+		/* Clear SLP_TYP. */
+		outl(ps->pm1_cnt & ~(SLP_TYP), ACPI_PMIO_BASE + PM1_CNT);
 	}
 	return prev_sleep_state;
 }

@@ -216,8 +216,6 @@ void mainboard_fill_pei_data(struct pei_data *pei_data)
 	*pei_data = pei_data_template;
 	// leave onboard dimm address at f0, and copy spd data there.
 	memcpy(pei_data->spd_data[0], locate_spd(), 256);
-	/* read removable dimm spd */
-	read_spd(&pei_data->spd_data[2], 0x50);
 }
 
 const struct southbridge_usb_port mainboard_usb_ports[] = {

@@ -1015,26 +1015,21 @@ static void dram_all_config(const struct rk3399_sdram_params *sdram_params)
 
 void sdram_init(const struct rk3399_sdram_params *sdram_params)
 {
+	unsigned char dramtype = sdram_params->dramtype;
+	unsigned int ddr_freq = sdram_params->ddr_freq;
 	int channel;
 
 	printk(BIOS_INFO, "Starting SDRAM initialization...\n");
 
-	if ((sdram_params->dramtype == DDR3
-			&& sdram_params->ddr_freq > 800*MHz) ||
-	    (sdram_params->dramtype == LPDDR3
-			&& sdram_params->ddr_freq > 928*MHz) ||
-	    (sdram_params->dramtype == LPDDR4
-			&& sdram_params->ddr_freq > 800*MHz))
+	if ((dramtype == DDR3 && ddr_freq > 800*MHz) ||
+	    (dramtype == LPDDR3 && ddr_freq > 928*MHz) ||
+	    (dramtype == LPDDR4 && ddr_freq > 800*MHz))
 		die("SDRAM frequency is to high!");
 
-	rkclk_configure_ddr(sdram_params->ddr_freq);
+	rkclk_configure_ddr(ddr_freq);
 
 	for (channel = 0; channel < 2; channel++) {
-		struct rk3399_ddr_publ_regs *ddr_publ_regs =
-			rk3399_ddr_publ[channel];
-
-		phy_dll_bypass_set(channel, ddr_publ_regs,
-				   sdram_params->ddr_freq);
+		phy_dll_bypass_set(channel, rk3399_ddr_publ[channel], ddr_freq);
 
 		if (channel >= sdram_params->num_channels)
 			continue;
@@ -1042,7 +1037,7 @@ void sdram_init(const struct rk3399_sdram_params *sdram_params)
 		pctl_cfg(channel, sdram_params);
 
 		/* LPDDR2/LPDDR3 need to wait DAI complete, max 10us */
-		if (sdram_params->dramtype == LPDDR3)
+		if (dramtype == LPDDR3)
 			udelay(10);
 
 		if (data_training(channel, sdram_params, PI_FULL_TARINING))

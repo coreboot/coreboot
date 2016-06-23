@@ -160,9 +160,13 @@ static void fsp_notify_dummy(void *arg)
 {
 
 	enum fsp_notify_phase ph = (enum fsp_notify_phase) arg;
+	enum fsp_status ret;
 
-	if (fsp_notify(ph) != FSP_SUCCESS)
-		printk(BIOS_CRIT, "FspNotify failed!\n");
+	if ((ret = fsp_notify(ph)) != FSP_SUCCESS) {
+		printk(BIOS_CRIT, "FspNotify failed, ret = %x!\n", ret);
+		if (fsp_reset_requested(ret))
+			fsp_handle_reset(ret);
+	}
 	/* Call END_OF_FIRMWARE Notify after READY_TO_BOOT Notify */
 	if (ph == READY_TO_BOOT)
 		fsp_notify_dummy((void *)END_OF_FIRMWARE);

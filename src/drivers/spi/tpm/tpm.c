@@ -32,6 +32,7 @@
 #define TPM_DATA_FIFO_REG (TPM_LOCALITY_0_SPI_BASE + 0x24)
 #define TPM_DID_VID_REG   (TPM_LOCALITY_0_SPI_BASE + 0xf00)
 #define TPM_RID_REG       (TPM_LOCALITY_0_SPI_BASE + 0xf04)
+#define TPM_FW_VER	  (TPM_LOCALITY_0_SPI_BASE + 0xf90)
 
 /* SPI Interface descriptor used by the driver. */
 struct tpm_spi_if {
@@ -355,6 +356,35 @@ int tpm2_init(struct spi_slave *spi_if)
 	printk(BIOS_INFO, "Connected to device vid:did:rid of %4.4x:%4.4x:%2.2x\n",
 	       tpm_info.vendor_id, tpm_info.device_id, tpm_info.revision);
 
+	/* Let's report device FW version if available. */
+	if (tpm_info.vendor_id == 0x1ae0) {
+		int chunk_count = 0;
+		char vstr[sizeof(cmd) + 1];	/* room for 4 chars + zero */
+
+		printk(BIOS_INFO, "Firmware version: ");
+
+		/*
+		 * Does not really matter what's written, this just makes sure
+		 * the version is reported from the beginning.
+		 */
+		tpm2_write_reg(TPM_FW_VER, &cmd, sizeof(cmd));
+
+		/* Print it out in 4 byte chunks. */
+		vstr[sizeof(vstr) - 1] = 0;
+		do {
+			tpm2_read_reg(TPM_FW_VER, vstr, sizeof(cmd));
+			printk(BIOS_INFO, "%s", vstr);
+
+			/*
+			 * While string is not over, and no more than 200
+			 * characters.
+			 * This is likely result in one extra printk()
+			 * invocation with an empty string, not a big deal.
+			 */
+		} while (vstr[0] && (chunk_count++ < (200 / sizeof(cmd))));
+
+		printk(BIOS_INFO, "\n");
+	}
 	return 0;
 }
 

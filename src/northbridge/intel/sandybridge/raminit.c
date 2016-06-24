@@ -913,7 +913,7 @@ static void dram_timing_regs(ramctr_timing * ctrl)
 		// ODT stretch
 		reg = 0;
 
-		cpures = cpuid(0);
+		cpures = cpuid(1);
 		cpu = cpures.eax;
 		if (IS_IVY_CPU(cpu)
 		    || (IS_SANDY_CPU(cpu) && IS_SANDY_CPU_D2(cpu))) {
@@ -3779,7 +3779,7 @@ static void set_4f8c(void)
 	struct cpuid_result cpures;
 	u32 cpu;
 
-	cpures = cpuid(0);
+	cpures = cpuid(1);
 	cpu = (cpures.eax);
 	if (IS_SANDY_CPU(cpu) && (IS_SANDY_CPU_D0(cpu) || IS_SANDY_CPU_D1(cpu))) {
 		MCHBAR32(0x4f8c) = 0x141D1519;

@@ -124,7 +124,7 @@ BOOLEAN MemFS3DefConstructorRet (
   IN       UINT8 NodeID
   )
 {
-  return TRUE;
+  return FALSE;
 }
 
 #if (OPTION_MEMCTLR_DR == TRUE)

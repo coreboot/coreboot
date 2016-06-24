@@ -576,7 +576,6 @@ MemMS3Save (
 
     if (RefPtr->MemContext.NvStorage == NULL) {
       // Memory context cannot be saved succesfully
-      ASSERT (FALSE);
       return FALSE;
     }
   }

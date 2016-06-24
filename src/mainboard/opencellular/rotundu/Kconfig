@@ -1,0 +1,80 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2013-2014 Sage Electronic Engineering, LLC.
+## Copyright (C) 2014 Intel Corporation
+## Copyright (C) 2017-present Facebook, Inc.
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+
+if BOARD_OPENCELLULAR_ROTUNDU
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select SOC_INTEL_FSP_BAYTRAIL
+	select BOARD_ROMSIZE_KB_16384
+	select HAVE_ACPI_TABLES
+	select HAVE_OPTION_TABLE
+	select ENABLE_BUILTIN_COM1
+	select TSC_MONOTONIC_TIMER
+	select ENABLE_FSP_FAST_BOOT
+	select HAVE_ACPI_RESUME
+	select USE_BLOBS
+	select HAVE_FSP_BIN if FSP_PACKAGE_DEFAULT
+
+config MAINBOARD_DIR
+	string
+	default "opencellular/rotundu"
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Rotundu"
+
+config MAINBOARD_VENDOR
+	string
+	default "OpenCellular"
+
+config MAX_CPUS
+	int
+	default 16
+
+config CACHE_ROM_SIZE_OVERRIDE
+	hex
+	default 0x800000
+
+config FSP_LOC
+	hex
+	default 0xfffb0000
+
+# FIXME: Slow boot performance when increasing CBFS_SIZE beyond 8MB?
+config CBFS_SIZE
+	hex
+	default 0x00200000 if BOARD_ROMSIZE_KB_8192
+	default 0x00800000
+
+config VIRTUAL_ROM_SIZE
+	hex
+	depends on ENABLE_FSP_FAST_BOOT
+	default 0x800000
+
+config FSP_PACKAGE_DEFAULT
+	bool "Configure defaults for the Intel FSP package"
+	default n
+
+config VGA_BIOS
+	bool
+	default y if FSP_PACKAGE_DEFAULT
+
+config VGA_BIOS_ID
+	string
+	default "8086,0f31"
+
+endif # BOARD_OPENCELLULAR_ROTUNDU

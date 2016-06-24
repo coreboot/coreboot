@@ -80,7 +80,7 @@ struct bpdt {
 	struct bpdt_entry e[0];
 } __attribute__((packed));
 
-static inline size_t bpdt_size(struct bpdt_header *h)
+static inline size_t get_bpdt_size(struct bpdt_header *h)
 {
 	return (sizeof(*h) + BPDT_ENTRY_SIZE * h->descriptor_count);
 }
@@ -714,7 +714,7 @@ static size_t alloc_bpdt_buffer(void *data, size_t size, size_t offset,
 	bpdt_read_header((uint8_t *)data + offset, &bpdt_header, name);
 
 	/* Buffer to read BPDT header and entries. */
-	alloc_buffer(b, bpdt_size(&bpdt_header), name);
+	alloc_buffer(b, get_bpdt_size(&bpdt_header), name);
 
 	struct bpdt *bpdt = buffer_get(b);
 	memcpy(&bpdt->h, &bpdt_header, BPDT_HEADER_SIZE);
@@ -727,7 +727,7 @@ static size_t alloc_bpdt_buffer(void *data, size_t size, size_t offset,
 		return (offset + BPDT_HEADER_SIZE);
 
 	/* Read all entries. */
-	assert((offset + bpdt_size(&bpdt->h)) < size);
+	assert((offset + get_bpdt_size(&bpdt->h)) < size);
 	bpdt_read_entries((uint8_t *)data + offset + BPDT_HEADER_SIZE, bpdt,
 			  name);
 

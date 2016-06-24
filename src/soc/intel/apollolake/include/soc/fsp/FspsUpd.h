@@ -587,10 +587,9 @@ struct FSP_S_CONFIG {
 **/
   uint8_t                       HpetFunctionNumber;
 
-/** Offset 0x00AF - Hpet Base Address
-  Hpet Base Address. 0xFED00000(Default).
+/** Offset 0x00AF
 **/
-  uint32_t                      HpetBase;
+  uint32_t                      UnusedUpdSpace1;
 
 /** Offset 0x00B3 - IoApic Valid BDF Value
   Enable/Disable IoApic Valid BDF Value. 0:Disable(Default), 1:Enable.
@@ -635,7 +634,7 @@ struct FSP_S_CONFIG {
 **/
   uint8_t                       IshEnable;
 
-/** Offset 0x00BB - ISH Controller
+/** Offset 0x00BB - BIOS Interface Lock Down
   Enable/Disable BIOS Interface Lock Down bit to prevent writes to the Backup Control
   Register. 0:Disable, 1:Enable(Default).
   $EN_DIS
@@ -663,7 +662,7 @@ struct FSP_S_CONFIG {
   Enable/Disable LPSS IOSF Bridge PMCTL Register S0ix Bits. 0:Disable(Default), 1:Enable.
   $EN_DIS
 **/
-  uint8_t                       S0ixEnable;
+  uint8_t                       LPSS_S0ixEnable;
 
 /** Offset 0x00C0 - LPSS I2C Clock Gating Configuration
   Enable/Disable LPSS I2C Clock Gating. 0:Disable, 1:Enable(Default).
@@ -770,8 +769,8 @@ struct FSP_S_CONFIG {
 **/
   uint8_t                       Spi2Enable;
 
-/** Offset 0x00DE - UART Debug Bass Address
-  UART Debug Bass Address. 0x00000000(Default).
+/** Offset 0x00DE - UART Debug Base Address
+  UART Debug Base Address. 0x00000000(Default).
 **/
   uint32_t                      Uart2KernelDebugBaseAddress;
 
@@ -810,7 +809,7 @@ struct FSP_S_CONFIG {
 **/
   uint8_t                       PcieRootPortPeerMemoryWriteEnable;
 
-/** Offset 0x00E8 - PCIE SWSMI Nubmer
+/** Offset 0x00E8 - PCIE SWSMI Number
   This member describes the SwSmi value for override PCIe ASPM table. 0xAA(Default).
 **/
   uint8_t                       PcieAspmSwSmiNumber;
@@ -932,7 +931,7 @@ struct FSP_S_CONFIG {
   uint8_t                       PcieRpCompletionTimeout[6];
 
 /** Offset 0x0173 - PTM Support
-  Enable/Diable PTM Support. 0:Disable(Default), 1:Enable.
+  Enable/Disable PTM Support. 0:Disable(Default), 1:Enable.
 **/
   uint8_t                       PtmEnable[6];
 
@@ -957,7 +956,7 @@ struct FSP_S_CONFIG {
 **/
   uint8_t                       PcieRpLtrConfigLock[6];
 
-/** Offset 0x0191 - PME_B0_S5 Diable bit
+/** Offset 0x0191 - PME_B0_S5 Disable bit
   PME_B0_S5_DIS bit in the General PM Configuration B (GEN_PMCON_B) register. 0:Disable(Default), 1:Enable.
   $EN_DIS
 **/
@@ -1029,8 +1028,8 @@ struct FSP_S_CONFIG {
   uint8_t                       SataPortsHotPlug[2];
 
 /** Offset 0x01A0 - Mechanical Presence Switch
-  Controls reporting if this port has an Mechanical Presence Switch.\nNote:Requires
-  hardware support.  0:Disable, 1:Enable(Default).
+  Controls reporting if this port has an Mechanical Presence Switch.\n
+  Note:Requires hardware support.  0:Disable, 1:Enable(Default).
 **/
   uint8_t                       SataPortsInterlockSw[2];
 
@@ -1075,20 +1074,9 @@ struct FSP_S_CONFIG {
 **/
   uint16_t                      SubSystemId;
 
-/** Offset 0x01B4 - PM Base Address
-  PM Base Address. 0x400(Default).
+/** Offset 0x01B4
 **/
-  uint16_t                      AcpiBase;
-
-/** Offset 0x01B6 - PMC Base Address
-  PMC Base Address. 0xD10010000(Default).
-**/
-  uint32_t                      PmcBase;
-
-/** Offset 0x01BA - P2SB Base Address
-  P2SB Base Address. 0xD0000000(Default).
-**/
-  uint32_t                      P2sbBase;
+  uint8_t                       UnusedUpdSpace2[10];
 
 /** Offset 0x01BE - CRIDSettings
   PMC CRID setting. 0:Disable(Default), 1:CRID_1, 2:CRID_2, 3:CRID_3.
@@ -1150,7 +1138,7 @@ struct FSP_S_CONFIG {
 
 /** Offset 0x01C8 - Start Frame Pulse Width
   Start Frame Pulse Width Value. 0:ScSfpw4Clk(Default), 1: ScSfpw6Clk, 2:ScSfpw8Clk.
-  $EN_DIS
+  0:ScSfpw4Clk, 1:ScSfpw6Clk, 2:ScSfpw8Clk
 **/
   uint8_t                       StartFramePulse;
 
@@ -1166,10 +1154,9 @@ struct FSP_S_CONFIG {
 **/
   uint8_t                       ArpEnable;
 
-/** Offset 0x01CB - SMBus Base Address (IO space)
-  SMBUS Base Address (IO space). 0xEFA0(Default).
+/** Offset 0x01CB
 **/
-  uint16_t                      SmbusIoBase;
+  uint16_t                      UnusedUpdSpace3;
 
 /** Offset 0x01CD - SMBus Table Elements
   The number of elements in the Reserved SMBus Address Table. 0x0080(Default).
@@ -1189,14 +1176,14 @@ struct FSP_S_CONFIG {
   uint8_t                       DisableComplianceMode;
 
 /** Offset 0x0250 - USB Per-Port Control
-  Control each of the USB ports (0~3) enable/disable. 0:Disable(Default), 1:Enable.
+  Control each of the USB ports enable/disable. 0:Disable(Default), 1:Enable.
   $EN_DIS
 **/
   uint8_t                       UsbPerPortCtl;
 
 /** Offset 0x0251 - xHCI Mode
-  Mode of operation of xHCI controller. 0:Disable, 1:Enable, 2:Auto(Default), 3:SmartAuto.
-  $EN_DIS
+  Mode of operation of xHCI controller. 0:Disable, 1:Enable, 2:Auto(Default)
+  0:Disable, 1:Enable, 2:Auto
 **/
   uint8_t                       Usb30Mode;
 
@@ -1224,7 +1211,7 @@ struct FSP_S_CONFIG {
 
 /** Offset 0x026E - XDCI Support
   Enable/Disable XDCI. 0:Disable, 1:PCI_Mode(Default), 2:ACPI_mode.
-  $EN_DIS
+  0:Disable, 1:PCI_Mode, 2:ACPI_mode
 **/
   uint8_t                       UsbOtg;
 
@@ -1293,8 +1280,10 @@ struct FSP_S_CONFIG {
   uint16_t                      PcieRpLtrMaxSnoopLatency[6];
 
 /** Offset 0x028A -   Snoop Latency Override
-  Snoop Latency Override for PCH PCIE. \nDisabled:Disable override.\nManual:Manually
-  enter override values.\nAuto:Maintain default BIOS flow. 0:Disable, 1:Enable, 2:Auto(Default).
+  Snoop Latency Override for PCH PCIE. \n
+  Disabled:Disable override.\n
+  Manual:Manually enter override values.\n
+  Auto:Maintain default BIOS flow. 0:Disable, 1:Enable, 2:Auto(Default).
 **/
   uint8_t                       PcieRpSnoopLatencyOverrideMode[6];
 
@@ -1315,9 +1304,10 @@ struct FSP_S_CONFIG {
   uint16_t                      PcieRpLtrMaxNonSnoopLatency[6];
 
 /** Offset 0x02AE -   Non Snoop Latency Override
-  Non Snoop Latency Override for PCH PCIE. \nDisabled:Disable override.\nManual:Manually
-  enter override values.\nAuto: Maintain default BIOS flow. 0:Disable, 1:Enable,
-  2:Auto(Default).
+  Non Snoop Latency Override for PCH PCIE. \n
+  Disabled:Disable override.\n
+  Manual:Manually enter override values.\n
+  Auto: Maintain default BIOS flow. 0:Disable, 1:Enable, 2:Auto(Default).
 **/
   uint8_t                       PcieRpNonSnoopLatencyOverrideMode[6];
 
@@ -1361,7 +1351,7 @@ struct FSP_S_CONFIG {
 **/
   uint8_t                       TcoTimerHaltLock;
 
-/** Offset 0x02D5 - Power Button Override Peroid
+/** Offset 0x02D5 - Power Button Override Period
   specifies how long will PMC wait before initiating a global reset. 000b-4s(default),
   001b-6s, 010b-8s, 011b-10s, 100b-12s, 101b-14s.)
   0x0:4s, 0x1:6s, 0x2:8s, 0x3:10s, 0x4:12s, 0x5:14s
@@ -1369,7 +1359,7 @@ struct FSP_S_CONFIG {
   uint8_t                       PwrBtnOverridePeriod;
 
 /** Offset 0x02D6 - Power Button Native Mode Disable
-  Diable power button native mode, when 1, this will result in the PMC logic constantly
+  Disable power button native mode, when 1, this will result in the PMC logic constantly
   seeing the power button as de-asserted. 0 (default))
   $EN_DIS
 **/
@@ -1479,13 +1469,20 @@ struct FSP_S_CONFIG {
 
 /** Offset 0x0326 - Os Selection Mode
   Select OS mode. 0:Windows(default), 1:Android, 2:Win7
-  $EN_DIS
+  0:Windows, 1:Android, 2:Win7
 **/
   uint8_t                       OsSelection;
 
-/** Offset 0x0327
+/** Offset 0x0327 - Monitor Mwait Enable
+  Enable/Disable Monitor Mwait. For Windows* OS, this should be Enabled. For Linux
+  based OS, this should be Disabled. 0:Disable, 1:Enable(Default).
+  $EN_DIS
 **/
-  uint8_t                       ReservedFspsUpd[9];
+  uint8_t                       MonitorMwaitEnable;
+
+/** Offset 0x0328
+**/
+  uint8_t                       ReservedFspsUpd[8];
 } __attribute__((packed));
 
 /** Fsp S Test Configuration

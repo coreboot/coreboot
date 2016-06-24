@@ -36,6 +36,42 @@ are permitted provided that the following conditions are met:
 #include "FspUpd.h"
 #include <fsp/upd.h>
 
+#define MAX_CHANNELS_NUM 4
+#define MAX_DIMMS_NUM    1
+
+struct DIMM_INFO {
+  uint8_t         DimmId;
+  uint32_t        SizeInMb;
+  uint16_t        MfgId;
+  /** Module part number for DRR3 is 18 bytes
+  but DRR4 is 20 bytes as per JEDEC Spec, so
+  reserving 20 bytes **/
+  uint8_t         ModulePartNum[20];
+} __attribute__((packed));
+
+struct CHANNEL_INFO {
+  uint8_t         ChannelId;
+  uint8_t         DimmCount;
+  struct DIMM_INFO     DimmInfo[MAX_DIMMS_NUM];
+} __attribute__((packed));
+
+struct FSP_SMBIOS_MEMORY_INFO {
+  uint8_t         Revision;
+  uint8_t         DataWidth;
+  /** As defined in SMBIOS 3.0 spec
+    Section 7.18.2 and Table 75
+  **/
+  uint16_t         MemoryType;
+  uint16_t        MemoryFrequencyInMHz;
+  /** As defined in SMBIOS 3.0 spec
+    Section 7.17.3 and Table 72
+  **/
+  uint8_t         ErrorCorrectionType;
+  uint8_t         ChannelCount;
+  struct CHANNEL_INFO  ChannelInfo[MAX_CHANNELS_NUM];
+} __attribute__((packed));
+
+
 /** Fsp M Configuration
 **/
 struct FSP_M_CONFIG {
@@ -528,9 +564,16 @@ struct FSP_M_CONFIG {
 **/
   void*                       MrcBootDataPtr;
 
-/** Offset 0x0135
+/** Offset 0x0135 - Skip CSE RBP to support zero sized IBB
+  Enable/Disable skip CSE RBP for bootloader which loads IBB without assistance of
+  CSE. 0x00:Disable(Default), 0x01:Enable.
+  $EN_DIS
 **/
-  uint8_t                       ReservedFspmUpd[27];
+  uint8_t                       SkipCseRbp;
+
+/** Offset 0x0136
+**/
+  uint8_t                       ReservedFspmUpd[26];
 } __attribute__((packed));
 
 /** Fsp M Test Configuration

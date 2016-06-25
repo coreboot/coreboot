@@ -175,26 +175,6 @@ static void intel_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 	}
 }
 
-#if CONFIG_HAVE_ACPI_RESUME
-static void northbridge_init(struct device *dev)
-{
-	switch (pci_read_config32(dev, SKPAD)) {
-	case SKPAD_NORMAL_BOOT_MAGIC:
-		printk(BIOS_DEBUG, "Normal boot.\n");
-		acpi_slp_type = 0;
-		break;
-	case SKPAD_ACPI_S3_MAGIC:
-		printk(BIOS_DEBUG, "S3 Resume.\n");
-		acpi_slp_type = 3;
-		break;
-	default:
-		printk(BIOS_DEBUG, "Unknown boot method, assuming normal.\n");
-		acpi_slp_type = 0;
-		break;
-	}
-}
-#endif
-
 static struct pci_operations intel_pci_ops = {
 	.set_subsystem    = intel_set_subsystem,
 };
@@ -204,9 +184,6 @@ static struct device_operations mc_ops = {
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.acpi_fill_ssdt_generator = generate_cpu_entries,
-#if CONFIG_HAVE_ACPI_RESUME
-	.init             = northbridge_init,
-#endif
 	.scan_bus         = 0,
 	.ops_pci          = &intel_pci_ops,
 };

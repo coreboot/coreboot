@@ -216,28 +216,11 @@ static struct device_operations cpu_bus_ops = {
 	.scan_bus         = 0,
 };
 
-
 static void enable_dev(device_t dev)
 {
 	/* Set the operations if it is a special bus type */
 	if (dev->path.type == DEVICE_PATH_DOMAIN) {
 		dev->ops = &pci_domain_ops;
-#if CONFIG_HAVE_ACPI_RESUME
-		switch (pci_read_config32(dev_find_slot(0, PCI_DEVFN(0, 0)), /*D0F0_SKPD*/0xdc)) {
-		case SKPAD_NORMAL_BOOT_MAGIC:
-			printk(BIOS_DEBUG, "Normal boot.\n");
-			acpi_slp_type = 0;
-			break;
-		case SKPAD_ACPI_S3_MAGIC:
-			printk(BIOS_DEBUG, "S3 Resume.\n");
-			acpi_slp_type = 3;
-			break;
-		default:
-			printk(BIOS_DEBUG, "Unknown boot method, assuming normal.\n");
-			acpi_slp_type = 0;
-			break;
-		}
-#endif
 	} else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER) {
 		dev->ops = &cpu_bus_ops;
 	}

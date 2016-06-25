@@ -27,6 +27,7 @@
 #include <cbmem.h>
 #include <lib.h>
 #include <pc80/mc146818rtc.h>
+#include <romstage_handoff.h>
 #include <console/console.h>
 #include <southbridge/intel/i82801ix/i82801ix.h>
 #include <northbridge/intel/gm45/gm45.h>
@@ -156,18 +157,8 @@ void mainboard_romstage_entry(unsigned long bist)
 	outl(inl(DEFAULT_GPIOBASE + 0x38) & ~0x400, DEFAULT_GPIOBASE + 0x38);
 
 	cbmem_initted = !cbmem_recovery(s3resume);
-#if CONFIG_HAVE_ACPI_RESUME
-	/* If there is no high memory area, we didn't boot before, so
-	 * this is not a resume. In that case we just create the cbmem toc.
-	 */
-	if (s3resume && cbmem_initted) {
 
-		/* Magic for S3 resume */
-		pci_write_config32(PCI_DEV(0, 0, 0), D0F0_SKPD, SKPAD_ACPI_S3_MAGIC);
-	} else {
-		/* Magic for S3 resume */
-		pci_write_config32(PCI_DEV(0, 0, 0), D0F0_SKPD, SKPAD_NORMAL_BOOT_MAGIC);
-	}
-#endif
+	romstage_handoff_init(cbmem_initted && s3resume);
+
 	printk(BIOS_SPEW, "exit main()\n");
 }

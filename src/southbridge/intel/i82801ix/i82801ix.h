@@ -218,10 +218,6 @@
 #define FD_SAD1		(1 <<  2) /* SATA #1 */
 
 
-#define SKPAD_ACPI_S3_MAGIC	0xcafed00d
-#define SKPAD_NORMAL_BOOT_MAGIC	0xcafebabe
-
-
 #ifndef __ACPI__
 #ifndef __ASSEMBLER__
 

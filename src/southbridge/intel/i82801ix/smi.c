@@ -20,6 +20,7 @@
 #include <device/pci.h>
 #include <console/console.h>
 #include <arch/io.h>
+#include <arch/acpi.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/smm.h>
@@ -312,16 +313,6 @@ static void smm_relocate(void)
 
 static int smm_handler_copied = 0;
 
-static int is_wakeup(void)
-{
-	device_t dev0 = dev_find_slot(0, PCI_DEVFN(0,0));
-
-	if (!dev0)
-		return 0;
-
-	return pci_read_config32(dev0, 0xdc) == SKPAD_ACPI_S3_MAGIC;
-}
-
 static void smm_install(void)
 {
 	/* The first CPU running this gets to copy the SMM handler. But not all
@@ -335,7 +326,7 @@ static void smm_install(void)
 	/* if we're resuming from S3, the SMM code is already in place,
 	 * so don't copy it again to keep the current SMM state */
 
-	if (!is_wakeup()) {
+	if (!acpi_is_wakeup_s3()) {
 		/* enable the SMM memory window */
 		pci_write_config8(dev_find_slot(0, PCI_DEVFN(0, 0)), SMRAM,
 					D_OPEN | G_SMRAME | C_BASE_SEG);

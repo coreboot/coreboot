@@ -966,6 +966,11 @@ static int cbfs_stage_make_elf(struct buffer *buff, uint32_t arch)
 	size_t empty_sz;
 	int rmod_ret;
 
+	if (arch == CBFS_ARCHITECTURE_UNKNOWN) {
+		ERROR("You need to specify -m ARCH.\n");
+		return -1;
+	}
+
 	if (cbfs_stage_decompress(&stage, buff)) {
 		ERROR("Failed to decompress stage.\n");
 		return -1;
@@ -1046,6 +1051,11 @@ static int cbfs_payload_make_elf(struct buffer *buff, uint32_t arch)
 	struct buffer elf_out;
 	size_t empty_sz;
 	int segments = 0;
+
+	if (arch == CBFS_ARCHITECTURE_UNKNOWN) {
+		ERROR("You need to specify -m ARCH.\n");
+		return -1;
+	}
 
 	/* Count the number of segments inside buffer */
 	while (true) {

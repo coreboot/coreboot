@@ -21,6 +21,7 @@
 #include <device/pci_def.h>
 #include <cbmem.h>
 #include <halt.h>
+#include <romstage_handoff.h>
 #include <string.h>
 #include "i945.h"
 #include <pc80/mc146818rtc.h>
@@ -197,7 +198,6 @@ static void i945_setup_bars(void)
 	pci_write_config8(PCI_DEV(0, 0x00, 0), PAM5, 0x33);
 	pci_write_config8(PCI_DEV(0, 0x00, 0), PAM6, 0x33);
 
-	pci_write_config32(PCI_DEV(0, 0x00, 0), SKPAD, SKPAD_NORMAL_BOOT_MAGIC);
 	printk(BIOS_DEBUG, " done.\n");
 
 	/* Wait for MCH BAR to come up */
@@ -901,15 +901,7 @@ static void i945_prepare_resume(int s3resume)
 
 	cbmem_was_initted = !cbmem_recovery(s3resume);
 
-	/* If there is no high memory area, we didn't boot before, so
-	 * this is not a resume. In that case we just create the cbmem toc.
-	 */
-	if (s3resume && cbmem_was_initted) {
-
-		/* Magic for S3 resume */
-		pci_write_config32(PCI_DEV(0, 0x00, 0), SKPAD,
-				   SKPAD_ACPI_S3_MAGIC);
-	}
+	romstage_handoff_init(cbmem_was_initted && s3resume);
 }
 
 void i945_late_initialization(int s3resume)

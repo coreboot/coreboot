@@ -17,13 +17,13 @@
 
 #include <console/console.h>
 #include <device/device.h>
+#include <arch/acpi.h>
 #include <arch/io.h>
 #include <delay.h>
 #include <string.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <device/pci_ids.h>
-#include <arch/io.h>
 #include <arch/interrupt.h>
 #include <ec/lenovo/pmh7/pmh7.h>
 #include <ec/acpi/ec.h>
@@ -79,7 +79,7 @@ int get_cst_entries(acpi_cstate_t **entries)
 
 static void mainboard_init(device_t dev)
 {
-	device_t dev0, idedev, sdhci_dev;
+	device_t idedev, sdhci_dev;
 
 	ec_clr_bit(0x03, 2);
 
@@ -91,8 +91,7 @@ static void mainboard_init(device_t dev)
 	install_intel_vga_int15_handler(GMA_INT15_ACTIVE_LFP_INT_LVDS, GMA_INT15_PANEL_FIT_DEFAULT, PANEL, 3);
 
 	/* If we're resuming from suspend, blink suspend LED */
-	dev0 = dev_find_slot(0, PCI_DEVFN(0,0));
-	if (dev0 && pci_read_config32(dev0, SKPAD) == SKPAD_ACPI_S3_MAGIC)
+	if (acpi_is_wakeup_s3())
 		ec_write(0x0c, 0xc7);
 
 	idedev = dev_find_slot(0, PCI_DEVFN(0x1f,1));

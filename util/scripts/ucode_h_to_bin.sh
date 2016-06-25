@@ -56,5 +56,6 @@ int main(void)
 EOF
 
 gcc -o "$TMPFILE" "${TMPFILE}.c"
+[ -f "${TMPFILE}.exe" ] && mv "${TMPFILE}.exe" "$TMPFILE"
 "./$TMPFILE"
 rm "$TMPFILE" "${TMPFILE}.c"

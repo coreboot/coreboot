@@ -145,13 +145,13 @@ config X86_TOP4G_BOOTMEDIA_MAP
 
 config ROMSTAGE_ADDR
 	hex
-	default 0xfef3e000
+	default 0xfef20000
 	help
 	  The base address (in CAR) where romstage should be linked
 
 config VERSTAGE_ADDR
 	hex
-	default 0xfef60000
+	default 0xfef40000
 	help
 	  The base address (in CAR) where verstage should be linked
 
@@ -161,7 +161,7 @@ config CACHE_MRC_SETTINGS
 
 config FSP_M_ADDR
 	hex
-	default 0xfef60000
+	default 0xfef40000
 	help
 	  The address FSP-M will be relocated to during build time
 

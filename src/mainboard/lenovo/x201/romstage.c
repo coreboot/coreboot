@@ -26,6 +26,7 @@
 #include <cpu/x86/lapic.h>
 #include <lib.h>
 #include <pc80/mc146818rtc.h>
+#include <romstage_handoff.h>
 #include <console/console.h>
 #include <cpu/x86/bist.h>
 #include <cpu/intel/romstage.h>
@@ -277,20 +278,13 @@ void mainboard_romstage_entry(unsigned long bist)
 		outl(reg32 & ~(7 << 10), DEFAULT_PMBASE + 0x04);
 	}
 
-#if CONFIG_HAVE_ACPI_RESUME
-	/* If there is no high memory area, we didn't boot before, so
-	 * this is not a resume. In that case we just create the cbmem toc.
-	 */
-	if (s3resume) {
-		acpi_prepare_for_resume();
 
-		/* Magic for S3 resume */
-		pci_write_config32(PCI_DEV(0, 0x00, 0), SKPAD, 0xcafed00d);
-	} else {
-		pci_write_config32(PCI_DEV(0, 0x00, 0), SKPAD, 0xcafebabe);
+	romstage_handoff_init(s3resume);
+
+	if (s3resume)
+		acpi_prepare_for_resume();
+	else
 		quick_ram_check();
-	}
-#endif
 
 #if CONFIG_LPC_TPM
 	init_tpm(s3resume);

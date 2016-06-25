@@ -470,26 +470,6 @@ static void northbridge_init(struct device *dev)
 	MCHBAR32(0x5500) = 0x00100001;
 }
 
-static void northbridge_enable(device_t dev)
-{
-#if CONFIG_HAVE_ACPI_RESUME
-	switch (pci_read_config32(dev, SKPAD)) {
-	case 0xcafebabe:
-		printk(BIOS_DEBUG, "Normal boot.\n");
-		acpi_slp_type=0;
-		break;
-	case 0xcafed00d:
-		printk(BIOS_DEBUG, "S3 Resume.\n");
-		acpi_slp_type=3;
-		break;
-	default:
-		printk(BIOS_DEBUG, "Unknown boot method, assuming normal.\n");
-		acpi_slp_type=0;
-		break;
-	}
-#endif
-}
-
 static u32 northbridge_get_base_reg(device_t dev, int reg)
 {
 	u32 value;
@@ -521,7 +501,6 @@ static struct device_operations mc_ops = {
 	.set_resources    = mc_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init             = northbridge_init,
-	.enable           = northbridge_enable,
 	.scan_bus         = 0,
 	.ops_pci          = &intel_pci_ops,
 	.acpi_fill_ssdt_generator = generate_cpu_entries,

@@ -23,6 +23,7 @@
 #include <elog.h>
 #include <cbmem.h>
 #include <pc80/mc146818rtc.h>
+#include <romstage_handoff.h>
 #include "sandybridge.h"
 
 static void sandybridge_setup_bars(void)
@@ -226,19 +227,13 @@ void sandybridge_early_initialization(int chipset_type)
 
 void northbridge_romstage_finalize(int s3resume)
 {
+	struct romstage_handoff *handoff;
+
 	MCHBAR16(SSKPD) = 0xCAFE;
 
-#if CONFIG_HAVE_ACPI_RESUME
-	/* If there is no high memory area, we didn't boot before, so
-	 * this is not a resume. In that case we just create the cbmem toc.
-	 */
-
-	if (s3resume) {
-
-		/* Magic for S3 resume */
-		pci_write_config32(PCI_DEV(0, 0x00, 0), SKPAD, 0xcafed00d);
-	} else {
-		pci_write_config32(PCI_DEV(0, 0x00, 0), SKPAD, 0xcafebabe);
-	}
-#endif
+	handoff = romstage_handoff_find_or_add();
+	if (handoff != NULL)
+		handoff->s3_resume = s3resume;
+	else
+		printk(BIOS_DEBUG, "Romstage handoff structure not added!\n");
 }

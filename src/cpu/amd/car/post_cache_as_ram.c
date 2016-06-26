@@ -130,18 +130,23 @@ void post_cache_as_ram(void)
 	if ((*lower_stack_boundary) != 0xdeadbeef)
 		printk(BIOS_WARNING, "BSP overran lower stack boundary.  Undefined behaviour may result!\n");
 
-	struct romstage_handoff *handoff;
-	handoff = romstage_handoff_find_or_add();
-	if (handoff != NULL)
-		handoff->s3_resume = acpi_is_wakeup_s3();
-	else
-		printk(BIOS_DEBUG, "Romstage handoff structure not added!\n");
-
 	int s3resume = acpi_is_wakeup_s3();
-	if (s3resume)
+
+	/* Boards with EARLY_CBMEM_INIT need to do this in cache_as_ram_main().
+	 */
+	if (s3resume && !IS_ENABLED(CONFIG_EARLY_CBMEM_INIT))
 		cbmem_recovery(s3resume);
 
 	prepare_romstage_ramstack(s3resume);
+
+	if (IS_ENABLED(CONFIG_EARLY_CBMEM_INIT)) {
+		struct romstage_handoff *handoff;
+		handoff = romstage_handoff_find_or_add();
+		if (handoff != NULL)
+			handoff->s3_resume = s3resume;
+		else
+			printk(BIOS_DEBUG, "Romstage handoff structure not added!\n");
+	}
 
 	/* from here don't store more data in CAR */
 	if (family >= 0x1f && family <= 0x3f) {

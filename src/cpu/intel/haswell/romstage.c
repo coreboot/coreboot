@@ -275,13 +275,6 @@ void romstage_common(const struct romstage_params *params)
 
 void romstage_after_car(void)
 {
-	struct romstage_handoff *handoff;
-
-	handoff = romstage_handoff_find_or_add();
-
-	if (handoff != NULL && handoff->s3_resume)
-		acpi_prepare_for_resume();
-
 	/* Load the ramstage. */
 	run_ramstage();
 }

@@ -147,6 +147,7 @@ enum spd_memory_type {
 #define SPD_CAS_LATENCY_3_5              0x20
 #define SPD_CAS_LATENCY_4_0              0x40
 
+#define SPD_CAS_LATENCY_DDR2_2		(1 << 2)
 #define SPD_CAS_LATENCY_DDR2_3		(1 << 3)
 #define SPD_CAS_LATENCY_DDR2_4		(1 << 4)
 #define SPD_CAS_LATENCY_DDR2_5		(1 << 5)

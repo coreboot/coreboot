@@ -976,13 +976,6 @@ static inline int acpi_s3_resume_allowed(void)
 	return CONFIG(HAVE_ACPI_RESUME);
 }
 
-/* Return address in reserved memory where to backup low memory
- * while platform resumes from S3 suspend. Caller is responsible of
- * making a complete copy of the region base..base+size, with
- * parameteres base and size that meet page alignment requirement.
- */
-void *acpi_backup_container(uintptr_t base, size_t size);
-
 #if CONFIG(HAVE_ACPI_RESUME)
 
 #ifdef __PRE_RAM__

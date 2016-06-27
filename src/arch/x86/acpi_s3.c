@@ -116,23 +116,6 @@ static int backup_create_or_update(struct resume_backup *backup_mem,
 	return 0;
 }
 
-void *acpi_backup_container(uintptr_t base, size_t size)
-{
-	struct resume_backup *backup_mem = cbmem_find(CBMEM_ID_RESUME);
-	if (!backup_mem)
-		return NULL;
-
-	if (!IS_ALIGNED(base, BACKUP_PAGE_SZ) || !IS_ALIGNED(size,
-		BACKUP_PAGE_SZ))
-		return NULL;
-
-	if (backup_create_or_update(backup_mem, base, size) < 0)
-		return NULL;
-
-	backup_mem->valid = 1;
-	return (void *)(uintptr_t)backup_mem->cbmem;
-}
-
 void backup_ramstage_section(uintptr_t base, size_t size)
 {
 	struct resume_backup *backup_mem = cbmem_find(CBMEM_ID_RESUME);

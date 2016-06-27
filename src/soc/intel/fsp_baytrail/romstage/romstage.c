@@ -19,11 +19,11 @@
 #include <lib.h>
 #include <arch/io.h>
 #include <arch/cbfs.h>
-#include <arch/stages.h>
 #include <arch/early_variables.h>
 #include <console/console.h>
 #include <cbmem.h>
 #include <cpu/x86/mtrr.h>
+#include <program_loading.h>
 #include <romstage_handoff.h>
 #include <timestamp.h>
 #include <soc/gpio.h>
@@ -267,7 +267,7 @@ void romstage_main_continue(EFI_STATUS status, void *hob_list_ptr)
 	post_code(0x4f);
 
 	/* Load the ramstage. */
-	copy_and_run();
+	run_ramstage();
 	while (1);
 }
 

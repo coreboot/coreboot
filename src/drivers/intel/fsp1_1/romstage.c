@@ -17,7 +17,6 @@
 #include <stddef.h>
 #include <arch/io.h>
 #include <arch/cbfs.h>
-#include <arch/stages.h>
 #include <arch/early_variables.h>
 #include <boardid.h>
 #include <console/console.h>
@@ -29,6 +28,7 @@
 #include <elog.h>
 #include <fsp/romstage.h>
 #include <reset.h>
+#include <program_loading.h>
 #include <romstage_handoff.h>
 #include <smbios.h>
 #include <soc/intel/common/mrc_cache.h>
@@ -187,7 +187,7 @@ void romstage_common(struct romstage_params *params)
 void after_cache_as_ram_stage(void)
 {
 	/* Load the ramstage. */
-	copy_and_run();
+	run_ramstage();
 	die("ERROR - Failed to load ramstage!");
 }
 

@@ -18,7 +18,6 @@
 #include <arch/cpu.h>
 #include <arch/io.h>
 #include <arch/cbfs.h>
-#include <arch/stages.h>
 #include <arch/early_variables.h>
 #include <console/console.h>
 #include <cbfs.h>
@@ -26,6 +25,7 @@
 #include <cpu/x86/mtrr.h>
 #include <elog.h>
 #include <tpm.h>
+#include <program_loading.h>
 #include <romstage_handoff.h>
 #include <stage_cache.h>
 #include <timestamp.h>
@@ -129,7 +129,7 @@ void romstage_common(struct romstage_params *params)
 void asmlinkage romstage_after_car(void)
 {
 	/* Load the ramstage. */
-	copy_and_run();
+	run_ramstage();
 	while (1);
 }
 

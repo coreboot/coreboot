@@ -26,10 +26,10 @@
 #include <timestamp.h>
 #include <arch/acpi.h>
 #include <arch/io.h>
-#include <arch/stages.h>
 #include <device/pci_def.h>
 #include <cpu/x86/lapic.h>
 #include <cbmem.h>
+#include <program_loading.h>
 #include <romstage_handoff.h>
 #include <reset.h>
 #include <vendorcode/google/chromeos/chromeos.h>
@@ -283,7 +283,7 @@ void romstage_after_car(void)
 		acpi_prepare_for_resume();
 
 	/* Load the ramstage. */
-	copy_and_run();
+	run_ramstage();
 }
 
 

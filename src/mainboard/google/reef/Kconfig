@@ -25,6 +25,9 @@ config CHROMEOS
 	select VBOOT_OPROM_MATTERS
 	select VIRTUAL_DEV_SWITCH
 
+config DRIVERS_I2C_GENERIC
+	default y
+
 config MAINBOARD_DIR
 	string
 	default google/reef

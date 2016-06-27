@@ -178,8 +178,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPIO_198, NATIVE, DEEP, NF1), /* PNL1_BKLTCTL */
 
 	/* Hot plug detect. */
-	PAD_CFG_NF(GPIO_199, UP_20K, DEEP, NF1), /* HV_DDI1_HPD */
-	PAD_CFG_NF(GPIO_200, UP_20K, DEEP, NF1), /* HV_DDI0_HPD */
+	PAD_CFG_NF(GPIO_199, UP_20K, DEEP, NF2), /* HV_DDI1_HPD */
+	PAD_CFG_NF(GPIO_200, UP_20K, DEEP, NF2), /* HV_DDI0_HPD */
 
 	/* MDSI signals -- unused */
 	PAD_CFG_GPI(GPIO_201, UP_20K, DEEP),	 /* MDSI_A_TE */

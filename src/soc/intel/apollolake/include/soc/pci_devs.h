@@ -35,8 +35,16 @@
 #define NB_DEV_ROOT			_PCI_DEV(0x0, 0)
 
 #define P2SB_DEV			_PCI_DEV(0xd, 0)
+#define P2SB_DEVFN			_PCI_DEVFN(0xd, 0)
+
 #define PMC_DEV				_PCI_DEV(0xd, 1)
+#define PMC_DEVFN			_PCI_DEVFN(0xd, 1)
+
 #define SPI_DEV				_PCI_DEV(0xd, 2)
+#define SPI_DEVFN			_PCI_DEVFN(0xd, 2)
+
+#define HDA_DEV				_PCI_DEV(0xe, 0)
+#define HDA_DEVFN			_PCI_DEVFN(0xe, 0)
 
 #define ISH_DEV				_PCI_DEV(0x11, 0)
 #define ISH_DEVFN			_PCI_DEVFN(0x11, 0)
@@ -86,6 +94,10 @@
 #define  LPSS_DEVFN_SPI1		_LPSS_PCI_DEVFN(SPI, 1)
 #define  LPSS_DEVFN_SPI2		_LPSS_PCI_DEVFN(SPI, 2)
 
+/* LPSS PWM */
+#define LPSS_DEV_SLOT_PWM		0x1a
+#define  LPSS_DEVFN_PWM			_LPSS_PCI_DEVFN(PWM, 0)
+
 #define SDCARD_DEV			_PCI_DEV(0x1b, 0)
 #define SDCARD_DEVFN			_PCI_DEVFN(0x1b, 0)
 
@@ -100,4 +112,5 @@
 
 #define SMBUS_DEV			_PCI_DEV(0x1f, 1)
 #define SMBUS_DEVFN			_PCI_DEVFN(0x1f, 1)
+
 #endif

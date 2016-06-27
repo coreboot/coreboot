@@ -31,6 +31,9 @@
 #define PMC_BAR1			0xfe044000
 
 /* Temporary BAR for SPI until PCI enumeration assigns a BAR in ramstage. */
-#define PRERAM_SPI_BASE_ADDRESS	0xfe010000
+#define PRERAM_SPI_BASE_ADDRESS		0xfe010000
+
+/* Temporary BAR for early I2C bus access */
+#define PRERAM_I2C_BASE_ADDRESS(x)	(0xfe020000 + (0x1000 * (x)))
 
 #endif /* _SOC_APOLLOLAKE_IOMAP_H_ */

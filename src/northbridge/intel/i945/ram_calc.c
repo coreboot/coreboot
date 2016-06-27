@@ -20,6 +20,7 @@
 #include <cbmem.h>
 #include "i945.h"
 #include <console/console.h>
+#include <cpu/intel/romstage.h>
 
 static uintptr_t smm_region_start(void)
 {
@@ -68,4 +69,9 @@ u32 decode_igd_memory_size(const u32 gms)
 		die("Bad Graphics Mode Select (GMS) setting.\n");
 
 	return ggc2uma[gms] << 10;
+}
+
+void *setup_stack_and_mtrrs(void)
+{
+	return (void*)CONFIG_RAMTOP;
 }

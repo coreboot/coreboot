@@ -26,12 +26,12 @@
 #include <cbmem.h>
 #include <console/console.h>
 #include <drivers/intel/fsp1_0/fsp_util.h>
+#include <program_loading.h>
 #include "northbridge/intel/fsp_rangeley/northbridge.h"
 #include "southbridge/intel/fsp_rangeley/soc.h"
 #include "southbridge/intel/fsp_rangeley/gpio.h"
 #include "southbridge/intel/fsp_rangeley/romstage.h"
 #include <arch/cpu.h>
-#include <arch/stages.h>
 #include <cpu/x86/msr.h>
 #include "gpio.h"
 
@@ -129,7 +129,7 @@ void romstage_main_continue(EFI_STATUS status, void *hob_list_ptr) {
 	post_code(0x4f);
 
 	/* Load the ramstage. */
-	copy_and_run();
+	run_ramstage();
 	while (1);
 }
 

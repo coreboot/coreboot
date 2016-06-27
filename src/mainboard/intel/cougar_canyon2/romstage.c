@@ -28,6 +28,7 @@
 #include <cbmem.h>
 #include <console/console.h>
 #include <halt.h>
+#include <program_loading.h>
 #include <reset.h>
 #include <superio/smsc/sio1007/chip.h>
 #include <fsp_util.h>
@@ -39,7 +40,6 @@
 #include <arch/cpu.h>
 #include <cpu/x86/msr.h>
 #include "gpio.h"
-#include <arch/stages.h>
 
 #define SIO_PORT 0x164e
 
@@ -303,7 +303,7 @@ void romstage_main_continue(EFI_STATUS status, VOID *HobListPtr) {
 	post_code(0x4f);
 
 	/* Load the ramstage. */
-	copy_and_run();
+	run_ramstage();
 	while (1);
 }
 

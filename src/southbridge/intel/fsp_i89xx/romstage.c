@@ -21,7 +21,6 @@
 #include <timestamp.h>
 #include <arch/cpu.h>
 #include <arch/io.h>
-#include <arch/stages.h>
 #include <device/pci_def.h>
 #include <device/pnp_def.h>
 #include <cpu/x86/lapic.h>
@@ -31,6 +30,7 @@
 #include <console/console.h>
 #include <console/usb.h>
 #include <halt.h>
+#include <program_loading.h>
 #include <reset.h>
 #include <drivers/intel/fsp1_0/fsp_util.h>
 #include <northbridge/intel/fsp_sandybridge/northbridge.h>
@@ -214,7 +214,7 @@ void romstage_main_continue(EFI_STATUS status, VOID *HobListPtr) {
 
 	timestamp_add_now(TS_END_ROMSTAGE);
 
-	copy_and_run();
+	run_ramstage();
 }
 
 uint64_t get_initial_timestamp(void)

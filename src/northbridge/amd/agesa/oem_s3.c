@@ -17,6 +17,7 @@
 #include <spi_flash.h>
 #include <string.h>
 #include <cbmem.h>
+#include <program_loading.h>
 #include <cpu/amd/agesa/s3_resume.h>
 #include <northbridge/amd/agesa/agesawrapper.h>
 #include <AGESA.h>
@@ -119,8 +120,7 @@ AGESA_STATUS OemS3Save(AMD_S3SAVE_PARAMS *S3SaveParams)
 	u32 MTRRStorageSize = 0;
 	uintptr_t pos, size;
 
-	if (HIGH_ROMSTAGE_STACK_SIZE)
-		cbmem_add(CBMEM_ID_ROMSTAGE_RAM_STACK, HIGH_ROMSTAGE_STACK_SIZE);
+	romstage_ram_stack_base(HIGH_ROMSTAGE_STACK_SIZE, ROMSTAGE_STACK_CBMEM);
 
 	/* To be consumed in AmdInitResume. */
 	get_s3nv_data(S3DataTypeNonVolatile, &pos, &size);

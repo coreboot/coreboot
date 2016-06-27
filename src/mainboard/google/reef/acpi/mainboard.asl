@@ -33,54 +33,8 @@ Scope (\_SB)
 	}
 }
 
-Scope (\_SB.PCI0.I2C4)
-{
-	/* Standard Mode: HCNT, LCNT, SDA Hold Register */
-	/* SDA Hold register value of 40 indicates
-	 * sda hold time of 0.3us for ic_clk of 133MHz
-	 */
-	Name (SSCN, Package () { 0, 0, 40 })
-
-	/* Fast Mode: HCNT, LCNT, SDA Hold Register */
-	/* SDA Hold register value of 40 indicates
-	 * sda hold time of 0.3us for ic_clk of 133MHz
-	 */
-	Name (FMCN, Package () { 0, 0, 40 })
-
-	Device (ETPA)
-	{
-		Name (_HID, "ELAN0000")
-		Name (_DDN, "Elan Touchpad")
-		Name (_UID, 1)
-		Name (ISTP, 1) /* Touchpad */
-
-		Name (_CRS, ResourceTemplate()
-		{
-			I2cSerialBus (
-				0x15,                     // SlaveAddress
-				ControllerInitiated,      // SlaveMode
-				400000,                   // ConnectionSpeed
-				AddressingMode7Bit,       // AddressingMode
-				"\\_SB.PCI0.I2C4",        // ResourceSource
-			)
-			Interrupt (ResourceConsumer, Edge, ActiveLow)
-			{
-				TOUCHPAD_INT
-			}
-		})
-
-		Method (_STA)
-		{
-			Return (0xF)
-		}
-	}
-}
-
-/*
- * LPC Trusted Platform Module
- */
 Scope (\_SB.PCI0.LPCB)
 {
-	#include <drivers/pc80/tpm/acpi/tpm.asl>
+	/* Chrome OS Embedded Controller */
 	#include "ec.asl"
 }

@@ -170,6 +170,12 @@ void run_ramstage(void);
 /* Called when the stage cache couldn't load ramstage on resume. */
 void ramstage_cache_invalid(void);
 
+/* Determine where stack for ramstage loader is located. */
+enum { ROMSTAGE_STACK_CBMEM, ROMSTAGE_STACK_LOW_MEM };
+uintptr_t romstage_ram_stack_base(size_t size, int src);
+uintptr_t romstage_ram_stack_top(void);
+uintptr_t romstage_ram_stack_bottom(void);
+
 /***********************
  *   PAYLOAD LOADING   *
  ***********************/

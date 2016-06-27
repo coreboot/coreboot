@@ -21,26 +21,13 @@
 #include <cbmem.h>
 #include <cpu/x86/mtrr.h>
 #include <soc/romstage.h>
+#include <program_loading.h>
 
 static inline uint32_t *stack_push(u32 *stack, u32 value)
 {
 	stack = &stack[-1];
 	*stack = value;
 	return stack;
-}
-
-/* Romstage needs quite a bit of stack for decompressing images since the lzma
- * lib keeps its state on the stack during romstage. */
-static unsigned long choose_top_of_stack(void)
-{
-	unsigned long stack_top;
-	const unsigned long romstage_ram_stack_size = 0x5000;
-
-	/* cbmem_add() does a find() before add(). */
-	stack_top = (unsigned long)cbmem_add(CBMEM_ID_ROMSTAGE_RAM_STACK,
-	                                     romstage_ram_stack_size);
-	stack_top += romstage_ram_stack_size;
-	return stack_top;
 }
 
 /* setup_stack_and_mttrs() determines the stack to use after
@@ -54,7 +41,7 @@ void *setup_stack_and_mttrs(void)
 	uint32_t top_of_ram;
 
 	/* Top of stack needs to be aligned to a 4-byte boundary. */
-	top_of_stack = choose_top_of_stack() & ~3;
+	top_of_stack = romstage_ram_stack_top() & ~3;
 	slot = (void *)top_of_stack;
 	num_mtrrs = 0;
 

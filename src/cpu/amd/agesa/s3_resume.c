@@ -91,9 +91,4 @@ void prepare_for_resume(void)
 	printk(BIOS_DEBUG, "CAR disabled.\n");
 	set_resume_cache();
 
-	/*
-	 * Copy the system memory that is in the ramstage area to the
-	 * reserved area.
-	 */
-	acpi_prepare_for_resume();
 }

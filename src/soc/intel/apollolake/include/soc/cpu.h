@@ -34,6 +34,26 @@ void apollolake_init_cpus(struct device *dev);
 #define MSR_EVICT_CTL		0x2e0
 #define MSR_EMULATE_PM_TMR	0x121
 #define   EMULATE_PM_TMR_EN	(1 << 16)
+#define MSR_PREFETCH_CTL	0x1a4
+#define   PREFETCH_L1_DISABLE	(1 << 0)
+#define   PREFETCH_L2_DISABLE	(1 << 2)
+
+
+#define MSR_L2_QOS_MASK(reg)		(0xd10 + reg)
+#define MSR_IA32_PQR_ASSOC		0xc8f
+/* MSR bits 33:32 encode slot number 0-3 */
+#define   IA32_PQR_ASSOC_MASK		(1 << 0 | 1 << 1)
+/* 16 way cache, 8 bits per QOS, 64 byte cache line, 1024 sets */
+#define CACHE_WAYS			16
+#define CACHE_BITS_PER_MASK		8
+#define CACHE_LINE_SIZE			64
+#define CACHE_SETS			1024
+/*
+ * Each bit in QOS mask controls this many bytes. This is calculated as:
+ * (CACHE_WAYS / CACHE_BITS_PER_MASK) * CACHE_LINE_SIZE * CACHE_SETS
+ */
+#define CACHE_QOS_SIZE_PER_BIT		(128 * KiB)
+#define L2_CACHE_SIZE			0x100000
 
 #define BASE_CLOCK_MHZ		100
 

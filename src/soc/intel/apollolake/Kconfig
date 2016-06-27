@@ -227,6 +227,27 @@ config NHLT_DA7219
 	default n
 	help
 	  Include DSP firmware settings for headset codec.
+choice
+	prompt "Cache-as-ram implementation"
+	default CAR_CQOS
+	help
+	  This option allows you to select how cache-as-ram (CAR) is set up.
+
+config CAR_NEM
+	bool "Non-evict mode"
+	help
+	  Traditionally, CAR is set up by using Non-Evict mode. This method
+	  does not allow CAR and cache to co-exist, because cache fills are
+	  block in NEM mode.
+
+config CAR_CQOS
+	bool "Cache Quality of Service"
+	help
+	  Cache Quality of Service allows more fine-grained control of cache
+	  usage. As result, it is possible to set up portion of L2 cache for
+	  CAR and use remainder for actual caching.
+
+endchoice
 
 config SPI_FLASH_INCLUDE_ALL_DRIVERS
 	bool

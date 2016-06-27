@@ -21,23 +21,7 @@
 #include <fsp/romstage.h>
 #include <fsp/stack.h>
 #include <stdlib.h>
-
-const unsigned long romstage_ram_stack_size = CONFIG_ROMSTAGE_RAM_STACK_SIZE;
-
-/*
- * Romstage needs quite a bit of stack for decompressing images since the lzma
- * lib keeps its state on the stack during romstage.
- */
-static unsigned long choose_top_of_stack(void)
-{
-	unsigned long stack_top;
-
-	/* cbmem_add() does a find() before add(). */
-	stack_top = (unsigned long)cbmem_add(CBMEM_ID_ROMSTAGE_RAM_STACK,
-					     romstage_ram_stack_size);
-	stack_top += romstage_ram_stack_size;
-	return stack_top;
-}
+#include <program_loading.h>
 
 /*
  * setup_stack_and_mtrrs() determines the stack to use after
@@ -57,7 +41,7 @@ void *setup_stack_and_mtrrs(void)
 	soc_display_mtrrs();
 
 	/* Top of stack needs to be aligned to a 8-byte boundary. */
-	top_of_stack = choose_top_of_stack();
+	top_of_stack = romstage_ram_stack_top();
 	slot = (void *)top_of_stack;
 	num_mtrrs = 0;
 	max_mtrrs = soc_get_variable_mtrr_count(NULL);
@@ -68,8 +52,7 @@ void *setup_stack_and_mtrrs(void)
 	 */
 	mtrr_mask_upper = (1 << ((cpuid_eax(0x80000008) & 0xff) - 32)) - 1;
 	alignment = mmap_region_granularity();
-	aligned_ram = ALIGN_DOWN(top_of_stack - romstage_ram_stack_size,
-		alignment);
+	aligned_ram = ALIGN_DOWN(romstage_ram_stack_bottom(), alignment);
 
 	/*
 	 * The order for each MTRR is value then base with upper 32-bits of

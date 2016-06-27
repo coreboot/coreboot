@@ -65,20 +65,6 @@ static inline u32 *stack_push(u32 *stack, u32 value)
 	return stack;
 }
 
-/* Romstage needs quite a bit of stack for decompressing images since the lzma
- * lib keeps its state on the stack during romstage. */
-#define ROMSTAGE_RAM_STACK_SIZE 0x5000
-static unsigned long choose_top_of_stack(void)
-{
-	unsigned long stack_top;
-
-	/* cbmem_add() does a find() before add(). */
-	stack_top = (unsigned long)cbmem_add(CBMEM_ID_ROMSTAGE_RAM_STACK,
-	                                     ROMSTAGE_RAM_STACK_SIZE);
-	stack_top += ROMSTAGE_RAM_STACK_SIZE;
-	return stack_top;
-}
-
 /* setup_romstage_stack_after_car() determines the stack to use after
  * cache-as-ram is torn down as well as the MTRR settings to use. */
 static void *setup_romstage_stack_after_car(void)
@@ -90,7 +76,7 @@ static void *setup_romstage_stack_after_car(void)
 	u32 top_of_ram;
 
 	/* Top of stack needs to be aligned to a 4-byte boundary. */
-	top_of_stack = choose_top_of_stack() & ~3;
+	top_of_stack = romstage_ram_stack_top() & ~3;
 	slot = (void *)top_of_stack;
 	num_mtrrs = 0;
 

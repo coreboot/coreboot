@@ -17,6 +17,7 @@
  */
 
 #include <device/pci_def.h>
+#include <commonlib/helpers.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/cr.h>
@@ -70,6 +71,7 @@ clear_var_mtrr:
 
 	post_code(0x24)
 
+#if ((CONFIG_DCACHE_RAM_SIZE & (CONFIG_DCACHE_RAM_SIZE - 1)) == 0)
 	/* Configure CAR region as write-back (WB) */
 	mov	$MTRR_PHYS_BASE(0), %ecx
 	mov	$CONFIG_DCACHE_RAM_BASE, %eax
@@ -82,6 +84,31 @@ clear_var_mtrr:
 	mov	$~(CONFIG_DCACHE_RAM_SIZE - 1), %eax	/* size mask */
 	or	$MTRR_PHYS_MASK_VALID, %eax
 	wrmsr
+#elif (CONFIG_DCACHE_RAM_SIZE == 768 * KiB) /* 768 KiB */
+	mov	$MTRR_PHYS_BASE(0), %ecx
+	mov	$CONFIG_DCACHE_RAM_BASE, %eax
+	or	$MTRR_TYPE_WRBACK, %eax
+	xor	%edx,%edx
+	wrmsr
+
+	mov	$MTRR_PHYS_MASK(0), %ecx
+	mov	$~(512 * KiB - 1), %eax	/* size mask */
+	or	$MTRR_PHYS_MASK_VALID, %eax
+	wrmsr
+
+	mov	$MTRR_PHYS_BASE(1), %ecx
+	mov	$(CONFIG_DCACHE_RAM_BASE + 512 * KiB), %eax
+	or	$MTRR_TYPE_WRBACK, %eax
+	xor	%edx,%edx
+	wrmsr
+
+	mov	$MTRR_PHYS_MASK(1), %ecx
+	mov	$~(256 * KiB - 1), %eax	/* size mask */
+	or	$MTRR_PHYS_MASK_VALID, %eax
+	wrmsr
+#else
+#error "DCACHE_RAM_SIZE is not a power of 2 and setup code is missing"
+#endif
 
 	post_code(0x25)
 

@@ -85,8 +85,12 @@ int verify_vbnv(uint8_t *vbnv_copy)
 		(crc8_vbnv(vbnv_copy, CRC_OFFSET) == vbnv_copy[CRC_OFFSET]);
 }
 
-/* Read VBNV data from configured storage backend. */
-void read_vbnv(uint8_t *vbnv_copy)
+/*
+ * Read VBNV data from configured storage backend.
+ * If VBNV verification fails, reset the vbnv copy.
+ * Returns 1 if write-back of vbnv copy is required. Else, returns 0.
+ */
+int read_vbnv(uint8_t *vbnv_copy)
 {
 	if (IS_ENABLED(CONFIG_CHROMEOS_VBNV_CMOS))
 		read_vbnv_cmos(vbnv_copy);
@@ -96,8 +100,11 @@ void read_vbnv(uint8_t *vbnv_copy)
 		read_vbnv_flash(vbnv_copy);
 
 	/* Check data for consistency */
-	if (!verify_vbnv(vbnv_copy))
-		reset_vbnv(vbnv_copy);
+	if (verify_vbnv(vbnv_copy))
+		return 0;
+
+	reset_vbnv(vbnv_copy);
+	return 1;
 }
 
 /*

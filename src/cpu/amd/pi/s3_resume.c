@@ -137,11 +137,12 @@ void restore_mtrr(void)
 #ifdef __PRE_RAM__
 static void move_stack_high_mem(void)
 {
-	void *high_stack;
+	void *high_stack = cbmem_find(CBMEM_ID_ROMSTAGE_RAM_STACK);
+	if (high_stack == NULL)
+		halt();
 
-	high_stack = cbmem_find(CBMEM_ID_RESUME_SCRATCH);
-	memcpy(high_stack, (void *)BSP_STACK_BASE_ADDR,
-		(CONFIG_HIGH_SCRATCH_MEMORY_SIZE - BIOS_HEAP_SIZE));
+	/* TODO: Make the switch with empty stack instead. */
+	memcpy(high_stack, (void *)BSP_STACK_BASE_ADDR, HIGH_ROMSTAGE_STACK_SIZE);
 
 #ifdef __x86_64__
 	__asm__

@@ -39,6 +39,72 @@
 static void *vbt;
 static struct region_device vbt_rdev;
 
+static const char *soc_acpi_name(struct device *dev)
+{
+	if (dev->path.type == DEVICE_PATH_DOMAIN)
+		return "PCI0";
+
+	if (dev->path.type != DEVICE_PATH_PCI)
+		return NULL;
+
+	switch (dev->path.pci.devfn) {
+	/* DSDT: acpi/northbridge.asl */
+	case NB_DEVFN:
+		return "MCHC";
+	/* DSDT: acpi/lpc.asl */
+	case LPC_DEVFN:
+		return "LPCB";
+	/* DSDT: acpi/xhci.asl */
+	case XHCI_DEVFN:
+		return "XHCI";
+	/* DSDT: acpi/pch_hda.asl */
+	case HDA_DEVFN:
+		return "HDAS";
+	/* DSDT: acpi/lpss.asl */
+	case LPSS_DEVFN_UART0:
+		return "URT1";
+	case LPSS_DEVFN_UART1:
+		return "URT2";
+	case LPSS_DEVFN_UART2:
+		return "URT3";
+	case LPSS_DEVFN_UART3:
+		return "URT4";
+	case LPSS_DEVFN_SPI0:
+		return "SPI1";
+	case LPSS_DEVFN_SPI1:
+		return "SPI2";
+	case LPSS_DEVFN_SPI2:
+		return "SPI3";
+	case LPSS_DEVFN_PWM:
+		return "PWM";
+	case LPSS_DEVFN_I2C0:
+		return "I2C0";
+	case LPSS_DEVFN_I2C1:
+		return "I2C1";
+	case LPSS_DEVFN_I2C2:
+		return "I2C2";
+	case LPSS_DEVFN_I2C3:
+		return "I2C3";
+	case LPSS_DEVFN_I2C4:
+		return "I2C4";
+	case LPSS_DEVFN_I2C5:
+		return "I2C5";
+	case LPSS_DEVFN_I2C6:
+		return "I2C6";
+	case LPSS_DEVFN_I2C7:
+		return "I2C7";
+	/* Storage */
+	case SDCARD_DEVFN:
+		return "SDCD";
+	case EMMC_DEVFN:
+		return "EMMC";
+	case SDIO_DEVFN:
+		return "SDIO";
+	}
+
+	return NULL;
+}
+
 static void pci_domain_set_resources(device_t dev)
 {
        assign_resources(dev->link_list);
@@ -51,6 +117,7 @@ static struct device_operations pci_domain_ops = {
 	.init = NULL,
 	.scan_bus = pci_domain_scan_bus,
 	.ops_pci_bus = pci_bus_default_ops,
+	.acpi_name = &soc_acpi_name,
 };
 
 static struct device_operations cpu_bus_ops = {

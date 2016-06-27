@@ -31,4 +31,7 @@ void OemAgesaSaveMtrr (void);
 
 void spi_SaveS3info(u32 pos, u32 size, u8 *buf, u32 len);
 
+/* This covers node 0 only. */
+#define HIGH_ROMSTAGE_STACK_SIZE	(0x48000 - BSP_STACK_BASE_ADDR)
+
 #endif

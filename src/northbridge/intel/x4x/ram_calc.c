@@ -23,6 +23,7 @@
 #include <arch/io.h>
 #include <device/pci_def.h>
 #include <console/console.h>
+#include <cpu/intel/romstage.h>
 #include <northbridge/intel/x4x/x4x.h>
 
 /** Decodes used Graphics Mode Select (GMS) to kilobytes. */
@@ -92,4 +93,9 @@ void *cbmem_top(void)
 {
 	u32 ramtop = pci_read_config32(PCI_DEV(0,0,0), D0F0_TSEG);
 	return (void*)(ramtop);
+}
+
+void *setup_stack_and_mtrrs(void)
+{
+	return (void*)CONFIG_RAMTOP;
 }

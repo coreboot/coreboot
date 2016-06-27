@@ -17,6 +17,7 @@
 
 #include <arch/io.h>
 #include <cbmem.h>
+#include <cpu/intel/romstage.h>
 #include "nehalem.h"
 
 static uintptr_t smm_region_start(void)
@@ -29,4 +30,9 @@ static uintptr_t smm_region_start(void)
 void *cbmem_top(void)
 {
 	return (void *) smm_region_start();
+}
+
+void *setup_stack_and_mtrrs(void)
+{
+	return (void*)CONFIG_RAMTOP;
 }

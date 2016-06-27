@@ -159,24 +159,6 @@ void backup_ramstage_section(uintptr_t base, size_t size)
 	backup_mem->valid = 1;
 }
 
-/* Make backup of low-memory region, relying on the base and size
- * of the ramstage that was loaded before entry to ACPI S3.
- *
- * DEPRECATED
- */
-void acpi_prepare_for_resume(void)
-{
-	struct resume_backup *backup_mem = cbmem_find(CBMEM_ID_RESUME);
-	if (!backup_mem)
-		return;
-
-	/* Back up the OS-controlled memory where ramstage will be loaded. */
-	memcpy((void *)(uintptr_t)backup_mem->cbmem,
-		(void *)(uintptr_t)backup_mem->lowmem,
-		(size_t)backup_mem->size);
-	backup_mem->valid = 1;
-}
-
 /* Let's prepare the ACPI S3 Resume area now already, so we can rely on
  * it being there during reboot time. If this fails, ACPI resume will
  * be disabled. We assume that ramstage does not change while in suspend,

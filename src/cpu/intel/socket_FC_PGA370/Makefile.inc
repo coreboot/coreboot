@@ -23,4 +23,4 @@ subdirs-y += ../../x86/smm
 subdirs-y += ../microcode
 
 cpu_incs-y += $(src)/cpu/intel/car/cache_as_ram.inc
-romstage-y += ../car/romstage.c
+romstage-y += ../car/romstage_legacy.c

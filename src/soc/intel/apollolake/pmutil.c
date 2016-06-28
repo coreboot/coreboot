@@ -34,6 +34,11 @@ static uintptr_t read_pmc_mmio_bar(void)
 	return bar & ~PCI_BASE_ADDRESS_MEM_ATTR_MASK;
 }
 
+uintptr_t get_pmc_mmio_bar(void)
+{
+	return read_pmc_mmio_bar();
+}
+
 static void print_num_status_bits(int num_bits, uint32_t status,
 				  const char * const bit_names[])
 {

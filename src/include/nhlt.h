@@ -45,7 +45,7 @@ struct nhlt_format_config;
  * An example sequence:
  *
  * nhlt = nhlt_init()
- * ep = nhlt_soc_add_endpoint()
+ * ep = nhlt_add_endpoint()
  * nhlt_endpoint_append_config(ep)
  * nhlt_endpoint_add_formats(ep)
  * nhlt_soc_serialize()
@@ -97,19 +97,13 @@ int nhlt_add_ssp_endpoints(struct nhlt *nhlt, int virtual_bus_id,
 /*
  * Add endpoint to NHLT object. Returns NULL on error.
  *
- * Note that the SoC variant uses SoC-specifc types for the hardware interface
- * and device types. This is to allow the SoC code to validate its particular
- * device support for specific hardware interfaces.
- *
- * The more generic nhlt_add_endpoint() is called by the SoC code to provide
+ * generic nhlt_add_endpoint() is called by the SoC code to provide
  * the specific assumptions/uses for NHLT for that platform. All fields
  * are the NHLT enumerations found within this header file.
  */
 struct nhlt_endpoint *nhlt_add_endpoint(struct nhlt *nhlt, int link_type,
 					int device_type, int dir,
 					uint16_t vid, uint16_t did);
-struct nhlt_endpoint *nhlt_soc_add_endpoint(struct nhlt *nhlt, int soc_hwintf,
-						int soc_devtype, int dir);
 
 /*
  * Append blob of configuration to the endpoint proper. Returns 0 on

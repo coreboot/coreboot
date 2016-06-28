@@ -58,6 +58,43 @@ struct nhlt *nhlt_init(void);
 size_t nhlt_current_size(struct nhlt *nhlt);
 
 /*
+ * Helper functions for adding NHLT devices utilizing an nhlt_endp_descriptor
+ * to drive the logic.
+ */
+
+struct nhlt_endp_descriptor {
+	/* NHLT endpoint types. */
+	int link;
+	int device;
+	int direction;
+	uint16_t vid;
+	uint16_t did;
+	/* Optional endpoint specific configuration data. */
+	const void *cfg;
+	size_t cfg_size;
+	/* Formats supported for endpoint. */
+	const struct nhlt_format_config *formats;
+	size_t num_formats;
+};
+
+/*
+ * Add the number of endpoints described by each descriptor. The virtual bus
+ * id for each descriptor is the default value of 0.
+ * Returns < 0 on error, 0 on success.
+ */
+int nhlt_add_endpoints(struct nhlt *nhlt,
+			const struct nhlt_endp_descriptor *epds,
+			size_t num_epds);
+
+/*
+ * Add the number of endpoints associated with a single NHLT SSP instance id.
+ * Each endpoint described in the endpoint descriptor array uses the provided
+ * virtual bus id. Returns < 0 on error, 0 on success.
+ */
+int nhlt_add_ssp_endpoints(struct nhlt *nhlt, int virtual_bus_id,
+		const struct nhlt_endp_descriptor *epds, size_t num_epds);
+
+/*
  * Add endpoint to NHLT object. Returns NULL on error.
  *
  * Note that the SoC variant uses SoC-specifc types for the hardware interface

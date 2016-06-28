@@ -24,6 +24,7 @@
 #define NHLT_RID 1
 #define NHLT_SSID 1
 #define WAVEFORMAT_TAG 0xfffe
+#define DEFAULT_VIRTUAL_BUS_ID 0
 
 static const struct sub_format pcm_subformat = {
 	.data1 = 0x00000001,
@@ -68,7 +69,7 @@ struct nhlt_endpoint *nhlt_add_endpoint(struct nhlt *nhlt, int link_type,
 	endp->subsystem_id = NHLT_SSID;
 	endp->device_type = device_type;
 	endp->direction = dir;
-	endp->virtual_bus_id = 0;
+	endp->virtual_bus_id = DEFAULT_VIRTUAL_BUS_ID;
 
 	nhlt->num_endpoints++;
 
@@ -436,4 +437,61 @@ uintptr_t nhlt_serialize_oem_overrides(struct nhlt *nhlt,
 	acpi_addr = ALIGN_UP(acpi_addr, 16);
 
 	return acpi_addr;
+}
+
+static int _nhlt_add_single_endpoint(struct nhlt *nhlt, int virtual_bus_id,
+					const struct nhlt_endp_descriptor *epd)
+{
+	struct nhlt_endpoint *endp;
+
+	endp = nhlt_add_endpoint(nhlt, epd->link, epd->device, epd->direction,
+				epd->vid, epd->did);
+
+	if (endp == NULL)
+		return -1;
+
+	endp->virtual_bus_id = virtual_bus_id;
+
+	if (nhlt_endpoint_append_config(endp, epd->cfg, epd->cfg_size))
+		return -1;
+
+	if (nhlt_endpoint_add_formats(endp, epd->formats, epd->num_formats))
+		return -1;
+
+	return 0;
+}
+
+static int _nhlt_add_endpoints(struct nhlt *nhlt, int virtual_bus_id,
+			const struct nhlt_endp_descriptor *epds,
+			size_t num_epds)
+{
+	size_t i;
+
+	for (i = 0; i < num_epds; i++)
+		if (_nhlt_add_single_endpoint(nhlt, virtual_bus_id, &epds[i]))
+			return -1;
+
+	return 0;
+}
+
+int nhlt_add_endpoints(struct nhlt *nhlt,
+			const struct nhlt_endp_descriptor *epds,
+			size_t num_epds)
+{
+	int ret;
+	ret = _nhlt_add_endpoints(nhlt, DEFAULT_VIRTUAL_BUS_ID, epds, num_epds);
+	return ret;
+}
+
+int nhlt_add_ssp_endpoints(struct nhlt *nhlt, int virtual_bus_id,
+		const struct nhlt_endp_descriptor *epds, size_t num_epds)
+{
+	int ret;
+
+	ret = _nhlt_add_endpoints(nhlt, virtual_bus_id, epds, num_epds);
+
+	if (!ret)
+		nhlt_next_instance(nhlt, NHLT_LINK_SSP);
+
+	return ret;
 }

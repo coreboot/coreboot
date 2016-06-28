@@ -58,9 +58,3 @@ const struct rk3399_sdram_params *get_sdram_config()
 
 	return &sdram_configs[speed];
 }
-
-
-uint32_t ram_code(void)
-{
-	return get_sdram_index();
-}

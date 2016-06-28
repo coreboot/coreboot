@@ -134,49 +134,49 @@ static void disable_dev(struct device *dev, struct FSP_S_CONFIG *silconfig) {
 	case XDCI_DEVFN:
 		silconfig->UsbOtg = 0;
 		break;
-	case I2C0_DEVFN:
+	case LPSS_DEVFN_I2C0:
 		silconfig->I2c0Enable = 0;
 		break;
-	case I2C1_DEVFN:
+	case LPSS_DEVFN_I2C1:
 		silconfig->I2c1Enable = 0;
 		break;
-	case I2C2_DEVFN:
+	case LPSS_DEVFN_I2C2:
 		silconfig->I2c2Enable = 0;
 		break;
-	case I2C3_DEVFN:
+	case LPSS_DEVFN_I2C3:
 		silconfig->I2c3Enable = 0;
 		break;
-	case I2C4_DEVFN:
+	case LPSS_DEVFN_I2C4:
 		silconfig->I2c4Enable = 0;
 		break;
-	case I2C5_DEVFN:
+	case LPSS_DEVFN_I2C5:
 		silconfig->I2c5Enable = 0;
 		break;
-	case I2C6_DEVFN:
+	case LPSS_DEVFN_I2C6:
 		silconfig->I2c6Enable = 0;
 		break;
-	case I2C7_DEVFN:
+	case LPSS_DEVFN_I2C7:
 		silconfig->I2c7Enable = 0;
 		break;
-	case UART0_DEVFN:
+	case LPSS_DEVFN_UART0:
 		silconfig->Hsuart0Enable = 0;
 		break;
-	case UART1_DEVFN:
+	case LPSS_DEVFN_UART1:
 		silconfig->Hsuart1Enable = 0;
 		break;
-	case UART2_DEVFN:
+	case LPSS_DEVFN_UART2:
 		silconfig->Hsuart2Enable = 0;
 		break;
-	case UART3_DEVFN:
+	case LPSS_DEVFN_UART3:
 		silconfig->Hsuart3Enable = 0;
 		break;
-	case SPI0_DEVFN:
+	case LPSS_DEVFN_SPI0:
 		silconfig->Spi0Enable = 0;
 		break;
-	case SPI1_DEVFN:
+	case LPSS_DEVFN_SPI1:
 		silconfig->Spi1Enable = 0;
 		break;
-	case SPI2_DEVFN:
+	case LPSS_DEVFN_SPI2:
 		silconfig->Spi2Enable = 0;
 		break;
 	case SDCARD_DEVFN:
@@ -201,7 +201,7 @@ static void disable_dev(struct device *dev, struct FSP_S_CONFIG *silconfig) {
 
 static void parse_devicetree(struct FSP_S_CONFIG *silconfig)
 {
-	struct device *dev = dev_find_slot(0, NB_DEVFN);
+	struct device *dev = NB_DEV_ROOT;
 
 	if (!dev) {
 		printk(BIOS_ERR, "Could not find root device\n");
@@ -222,7 +222,8 @@ void platform_fsp_silicon_init_params_cb(struct FSPS_UPD *silupd)
 	/* Load VBT before devicetree-specific config. */
 	silconfig->GraphicsConfigPtr = (uintptr_t)vbt;
 
-	struct device *dev = dev_find_slot(NB_BUS, NB_DEVFN);
+	struct device *dev = NB_DEV_ROOT;
+
 	if (!dev || !dev->chip_info) {
 		printk(BIOS_ERR, "BUG! Could not find SOC devicetree config\n");
 		return;

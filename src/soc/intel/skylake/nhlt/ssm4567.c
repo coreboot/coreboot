@@ -15,7 +15,7 @@
 
 #include <soc/nhlt.h>
 
-static const struct nhlt_format_config ssm4567_render_cfg[] = {
+static const struct nhlt_format_config ssm4567_render_formats[] = {
 	/* 48 KHz 24-bits per sample. */
 	{
 		.num_channels = 2,
@@ -28,7 +28,7 @@ static const struct nhlt_format_config ssm4567_render_cfg[] = {
 };
 
 /* Capture Blob used for IV feedback for Speaker Protection Algorithm */
-static const struct nhlt_format_config ssm4567_capture_cfg[] = {
+static const struct nhlt_format_config ssm4567_capture_formats[] = {
 	/* 48 KHz 32-bits per sample. */
 	{
 		.num_channels = 4,
@@ -39,33 +39,32 @@ static const struct nhlt_format_config ssm4567_capture_cfg[] = {
 	},
 };
 
+static const struct nhlt_endp_descriptor ssm4567_descriptors[] = {
+	/* Render Endpoint */
+	{
+		.link = NHLT_LINK_SSP,
+		.device = NHLT_SSP_DEV_I2S,
+		.direction = NHLT_DIR_RENDER,
+		.vid = NHLT_VID,
+		.did = NHLT_DID_SSP,
+		.formats = ssm4567_render_formats,
+		.num_formats = ARRAY_SIZE(ssm4567_render_formats),
+	},
+	/* Capture Endpoint */
+	{
+		.link = NHLT_LINK_SSP,
+		.device = NHLT_SSP_DEV_I2S,
+		.direction = NHLT_DIR_CAPTURE,
+		.vid = NHLT_VID,
+		.did = NHLT_DID_SSP,
+		.formats = ssm4567_capture_formats,
+		.num_formats = ARRAY_SIZE(ssm4567_capture_formats),
+	},
+};
+
 int nhlt_soc_add_ssm4567(struct nhlt *nhlt, int hwlink)
 {
-	struct nhlt_endpoint *endp;
-
-	/* Render Endpoint */
-	endp = nhlt_soc_add_endpoint(nhlt, hwlink, AUDIO_DEV_I2S,
-					NHLT_DIR_RENDER);
-
-	if (endp == NULL)
-		return -1;
-
-	if (nhlt_endpoint_add_formats(endp, ssm4567_render_cfg,
-					ARRAY_SIZE(ssm4567_render_cfg)))
-		return -1;
-
-	/* Capture Endpoint for IV Feedback */
-	endp = nhlt_soc_add_endpoint(nhlt, hwlink, AUDIO_DEV_I2S,
-					NHLT_DIR_CAPTURE);
-
-	if (endp == NULL)
-		return -1;
-
-	if (nhlt_endpoint_add_formats(endp, ssm4567_capture_cfg,
-					ARRAY_SIZE(ssm4567_capture_cfg)))
-		return -1;
-
-	nhlt_next_instance(nhlt, NHLT_LINK_SSP);
-
-	return 0;
+	/* Virtual bus id of SSP links are the hardware port ids proper. */
+	return nhlt_add_ssp_endpoints(nhlt, hwlink, ssm4567_descriptors,
+					ARRAY_SIZE(ssm4567_descriptors));
 }

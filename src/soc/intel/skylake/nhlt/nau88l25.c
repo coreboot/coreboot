@@ -17,7 +17,7 @@
 
 /* The same DSP firmware settings are used for both the capture and
  * render endpoints. */
-static const struct nhlt_format_config nau88l25_cfg[] = {
+static const struct nhlt_format_config nau88l25_formats[] = {
 	/* 48 KHz 24-bits per sample. */
 	{
 		.num_channels = 2,
@@ -29,45 +29,43 @@ static const struct nhlt_format_config nau88l25_cfg[] = {
 	},
 };
 
+/* The nau88l25 just has headphones and a mic. Both the capture and render
+ * endpoints occupy the same virtual slot. */
+static const struct nhlt_tdm_config tdm_config = {
+	.virtual_slot = 0,
+	.config_type = NHLT_TDM_BASIC,
+};
+
+static const struct nhlt_endp_descriptor nau88l25_descriptors[] = {
+	/* Render Endpoint */
+	{
+		.link = NHLT_LINK_SSP,
+		.device = NHLT_SSP_DEV_I2S,
+		.direction = NHLT_DIR_RENDER,
+		.vid = NHLT_VID,
+		.did = NHLT_DID_SSP,
+		.cfg = &tdm_config,
+		.cfg_size = sizeof(tdm_config),
+		.formats = nau88l25_formats,
+		.num_formats = ARRAY_SIZE(nau88l25_formats),
+	},
+	/* Capture Endpoint */
+	{
+		.link = NHLT_LINK_SSP,
+		.device = NHLT_SSP_DEV_I2S,
+		.direction = NHLT_DIR_CAPTURE,
+		.vid = NHLT_VID,
+		.did = NHLT_DID_SSP,
+		.cfg = &tdm_config,
+		.cfg_size = sizeof(tdm_config),
+		.formats = nau88l25_formats,
+		.num_formats = ARRAY_SIZE(nau88l25_formats),
+	},
+};
+
 int nhlt_soc_add_nau88l25(struct nhlt *nhlt, int hwlink)
 {
-	struct nhlt_endpoint *endp;
-	/* The nau88l25 just has headphones and a mic. Both the capture and
-	 * render endpoints occupy the same virtual slot. */
-	struct nhlt_tdm_config tdm_config = {
-		.virtual_slot = 0,
-		.config_type = NHLT_TDM_BASIC,
-	};
-	const void *fmt_cfg = nau88l25_cfg;
-	size_t fmt_sz = ARRAY_SIZE(nau88l25_cfg);
-
-	/* Render Endpoint */
-	endp = nhlt_soc_add_endpoint(nhlt, hwlink, AUDIO_DEV_I2S,
-					NHLT_DIR_RENDER);
-
-	if (endp == NULL)
-		return -1;
-
-	if (nhlt_endpoint_append_config(endp, &tdm_config, sizeof(tdm_config)))
-		return -1;
-
-	if (nhlt_endpoint_add_formats(endp, fmt_cfg, fmt_sz))
-		return -1;
-
-	/* Capture Endpoint */
-	endp = nhlt_soc_add_endpoint(nhlt, hwlink, AUDIO_DEV_I2S,
-					NHLT_DIR_CAPTURE);
-
-	if (endp == NULL)
-		return -1;
-
-	if (nhlt_endpoint_append_config(endp, &tdm_config, sizeof(tdm_config)))
-		return -1;
-
-	if (nhlt_endpoint_add_formats(endp, fmt_cfg, fmt_sz))
-		return -1;
-
-	nhlt_next_instance(nhlt, NHLT_LINK_SSP);
-
-	return 0;
+	/* Virtual bus id of SSP links are the hardware port ids proper. */
+	return nhlt_add_ssp_endpoints(nhlt, hwlink, nau88l25_descriptors,
+					ARRAY_SIZE(nau88l25_descriptors));
 }

@@ -110,6 +110,18 @@ static int load_relocatable_ramstage(struct prog *ramstage)
 	return rmodule_stage_load(&rmod_ram);
 }
 
+static int load_nonrelocatable_ramstage(struct prog *ramstage)
+{
+	if (IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)) {
+		uintptr_t base = 0;
+		size_t size = cbfs_prog_stage_section(ramstage, &base);
+		if (size)
+			backup_ramstage_section(base, size);
+	}
+
+	return cbfs_prog_stage_load(ramstage);
+}
+
 void run_ramstage(void)
 {
 	struct prog ramstage =
@@ -135,7 +147,7 @@ void run_ramstage(void)
 	if (IS_ENABLED(CONFIG_RELOCATABLE_RAMSTAGE)) {
 		if (load_relocatable_ramstage(&ramstage))
 			goto fail;
-	} else if (cbfs_prog_stage_load(&ramstage))
+	} else if (load_nonrelocatable_ramstage(&ramstage))
 		goto fail;
 
 	stage_cache_add(STAGE_RAMSTAGE, &ramstage);

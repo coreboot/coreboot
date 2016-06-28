@@ -173,6 +173,10 @@ uintptr_t romstage_ram_stack_base(size_t size, int src);
 uintptr_t romstage_ram_stack_top(void);
 uintptr_t romstage_ram_stack_bottom(void);
 
+/* Backup OS memory to CBMEM_ID_RESUME on ACPI S3 resume path,
+ * if ramstage overwrites low memory. */
+void backup_ramstage_section(uintptr_t base, size_t size);
+
 /***********************
  *   PAYLOAD LOADING   *
  ***********************/

@@ -25,12 +25,7 @@
 #ifndef __ASM_ACPI_H
 #define __ASM_ACPI_H
 
-#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME) && \
-	! IS_ENABLED(CONFIG_RELOCATABLE_RAMSTAGE)
 #define HIGH_MEMORY_SAVE	(CONFIG_RAMTOP - CONFIG_RAMBASE)
-#else
-#define HIGH_MEMORY_SAVE	0
-#endif
 
 #if IS_ENABLED(CONFIG_ACPI_INTEL_HARDWARE_SLEEP_VALUES)
 /*
@@ -687,6 +682,13 @@ static inline int acpi_s3_resume_allowed(void)
 {
 	return IS_ENABLED(CONFIG_HAVE_ACPI_RESUME);
 }
+
+/* Return address in reserved memory where to backup low memory
+ * while platform resumes from S3 suspend. Caller is responsible of
+ * making a complete copy of the region base..base+size, with
+ * parameteres base and size that meet page alignment requirement.
+ */
+void *acpi_backup_container(uintptr_t base, size_t size);
 
 #if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
 extern int acpi_slp_type;

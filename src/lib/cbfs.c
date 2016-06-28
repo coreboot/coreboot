@@ -187,6 +187,18 @@ size_t cbfs_boot_load_struct(const char *name, void *buf, size_t buf_size)
 					buf, buf_size, compression_algo);
 }
 
+size_t cbfs_prog_stage_section(struct prog *pstage, uintptr_t *base)
+{
+	struct cbfs_stage stage;
+	const struct region_device *fh = prog_rdev(pstage);
+
+	if (rdev_readat(fh, &stage, 0, sizeof(stage)) != sizeof(stage))
+		return 0;
+
+	*base = (uintptr_t)stage.load;
+	return stage.memlen;
+}
+
 int cbfs_prog_stage_load(struct prog *pstage)
 {
 	struct cbfs_stage stage;

@@ -34,7 +34,7 @@ MULTIPLIER [KMG]
 0{MULTIPLIER}?              |
 [1-9][0-9]*{MULTIPLIER}?    return parse_integer(yytext, 10);
 0[0-9]+{MULTIPLIER}?        return OCTAL;
-0[xX][0-9a-f]+{MULTIPLIER}? return parse_integer(yytext + 2, 16);
+0[xX][0-9a-fA-F]+{MULTIPLIER}? return parse_integer(yytext + 2, 16);
 [^#@{}()[:space:]]*         return copy_string(yytext);
 .                           return *yytext;
 

@@ -162,6 +162,7 @@ $(objutil)/cbfstool/fmd.o: $(objutil)/cbfstool/fmd_parser.h
 $(objutil)/cbfstool/fmd.o: $(objutil)/cbfstool/fmd_scanner.h
 $(objutil)/cbfstool/fmd_parser.o: $(objutil)/cbfstool/fmd.o
 $(objutil)/cbfstool/fmd_scanner.o: $(objutil)/cbfstool/fmd.o
+$(objutil)/cbfstool/fmd_scanner.o: TOOLCFLAGS += -Wno-sign-compare
 
 $(objutil)/cbfstool/%: $(top)/util/cbfstool/%_shipped
 	mkdir -p $(dir $@)

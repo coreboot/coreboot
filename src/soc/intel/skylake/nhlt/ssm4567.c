@@ -29,14 +29,14 @@ static const struct nhlt_format_config ssm4567_render_cfg[] = {
 
 /* Capture Blob used for IV feedback for Speaker Protection Algorithm */
 static const struct nhlt_format_config ssm4567_capture_cfg[] = {
-        /* 48 KHz 32-bits per sample. */
-        {
-                .num_channels = 4,
-                .sample_freq_khz = 48,
-                .container_bits_per_sample = 32,
-                .valid_bits_per_sample = 32,
-                .settings_file = "ssm4567-capture-4ch-48khz-32b.bin",
-        },
+	/* 48 KHz 32-bits per sample. */
+	{
+		.num_channels = 4,
+		.sample_freq_khz = 48,
+		.container_bits_per_sample = 32,
+		.valid_bits_per_sample = 32,
+		.settings_file = "ssm4567-capture-4ch-48khz-32b.bin",
+	},
 };
 
 int nhlt_soc_add_ssm4567(struct nhlt *nhlt, int hwlink)

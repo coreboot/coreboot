@@ -31,12 +31,13 @@ struct pll_div {
 	u32 postdiv1;
 	u32 postdiv2;
 	u32 frac;
+	u32 freq;
 };
 
 #define PLL_DIVISORS(hz, _refdiv, _postdiv1, _postdiv2) {\
 	.refdiv = _refdiv,\
 	.fbdiv = (u32)((u64)hz * _refdiv * _postdiv1 * _postdiv2 / OSC_HZ),\
-	.postdiv1 = _postdiv1, .postdiv2 = _postdiv2};\
+	.postdiv1 = _postdiv1, .postdiv2 = _postdiv2, .freq = hz};\
 	_Static_assert(((u64)hz * _refdiv * _postdiv1 * _postdiv2 / OSC_HZ) *\
 			 OSC_HZ / (_refdiv * _postdiv1 * _postdiv2) == hz,\
 			 #hz "Hz cannot be hit with PLL "\
@@ -491,20 +492,17 @@ void rkclk_configure_cpu(enum apll_l_frequencies apll_l_freq)
 	u32 aclkm_div;
 	u32 pclk_dbg_div;
 	u32 atclk_div;
+	u32 apll_l_hz;
+
+	apll_l_hz = apll_l_cfgs[apll_l_freq]->freq;
 
 	rkclk_set_pll(&cru_ptr->apll_l_con[0], apll_l_cfgs[apll_l_freq]);
 
-	aclkm_div = APLL_HZ / ACLKM_CORE_HZ - 1;
-	assert((aclkm_div + 1) * ACLKM_CORE_HZ == APLL_HZ &&
-	       aclkm_div < 0x1f);
+	aclkm_div = div_round_up(apll_l_hz, ACLKM_CORE_HZ) - 1;
 
-	pclk_dbg_div = APLL_HZ / PCLK_DBG_HZ - 1;
-	assert((pclk_dbg_div + 1) * PCLK_DBG_HZ == APLL_HZ &&
-	       pclk_dbg_div < 0x1f);
+	pclk_dbg_div = div_round_up(apll_l_hz, PCLK_DBG_HZ) - 1;
 
-	atclk_div = APLL_HZ / ATCLK_CORE_HZ - 1;
-	assert((atclk_div + 1) * ATCLK_CORE_HZ == APLL_HZ &&
-	       atclk_div < 0x1f);
+	atclk_div = div_round_up(apll_l_hz, ATCLK_CORE_HZ) - 1;
 
 	write32(&cru_ptr->clksel_con[0],
 		RK_CLRSETBITS(ACLKM_CORE_L_DIV_CON_MASK <<

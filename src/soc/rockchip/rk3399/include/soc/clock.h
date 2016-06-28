@@ -73,7 +73,6 @@ static struct rk3399_pmucru_reg * const pmucru_ptr = (void *)PMUCRU_BASE;
 static struct rk3399_cru_reg * const cru_ptr = (void *)CRU_BASE;
 
 #define OSC_HZ		(24*MHz)
-#define APLL_HZ		(600*MHz)
 #define GPLL_HZ		(594*MHz)
 #define CPLL_HZ		(384*MHz)
 #define PPLL_HZ		(594*MHz)

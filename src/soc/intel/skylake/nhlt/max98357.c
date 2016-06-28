@@ -15,7 +15,7 @@
 
 #include <soc/nhlt.h>
 
-static const struct nhlt_format_config max98357_render_cfg[] = {
+static const struct nhlt_format_config max98357_render_formats[] = {
 	/* 48 KHz 24-bits per sample. */
 	{
 		.num_channels = 2,
@@ -27,22 +27,21 @@ static const struct nhlt_format_config max98357_render_cfg[] = {
 	},
 };
 
+static const struct nhlt_endp_descriptor max98357_descriptors[] = {
+	{
+		.link = NHLT_LINK_SSP,
+		.device = NHLT_SSP_DEV_I2S,
+		.direction = NHLT_DIR_RENDER,
+		.vid = NHLT_VID,
+		.did = NHLT_DID_SSP,
+		.formats = max98357_render_formats,
+		.num_formats = ARRAY_SIZE(max98357_render_formats),
+	},
+};
+
 int nhlt_soc_add_max98357(struct nhlt *nhlt, int hwlink)
 {
-	struct nhlt_endpoint *endp;
-
-	/* Render Endpoint */
-	endp = nhlt_soc_add_endpoint(nhlt, hwlink, AUDIO_DEV_I2S,
-					NHLT_DIR_RENDER);
-
-	if (endp == NULL)
-		return -1;
-
-	if (nhlt_endpoint_add_formats(endp, max98357_render_cfg,
-					ARRAY_SIZE(max98357_render_cfg)))
-		return -1;
-
-	nhlt_next_instance(nhlt, NHLT_LINK_SSP);
-
-	return 0;
+	/* Virtual bus id of SSP links are the hardware port ids proper. */
+	return nhlt_add_ssp_endpoints(nhlt, hwlink, max98357_descriptors,
+					ARRAY_SIZE(max98357_descriptors));
 }

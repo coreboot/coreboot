@@ -18,9 +18,14 @@
 
 #include <nhlt.h>
 
+#define NHLT_VID 0x8086
+#define NHLT_DID_DMIC 0xae20
+#define NHLT_DID_BT 0xae30
+#define NHLT_DID_SSP 0xae34
+
 /*
- * Skylake NHLT device and hardware link types. These values are to be used
- * with nhlt_soc_add_endpoint().
+ * Skylake NHLT link types. These values are to be used for the hwlink
+ * fields in the functions below to specify which link a device is on.
  */
 
 enum {
@@ -28,12 +33,6 @@ enum {
 	AUDIO_LINK_SSP1,
 	AUDIO_LINK_SSP2, /* Only Bluetooth supported on SSP2. */
 	AUDIO_LINK_DMIC,
-};
-
-enum {
-	AUDIO_DEV_I2S,
-	AUDIO_DEV_DMIC,
-	AUDIO_DEV_BT,
 };
 
 /*

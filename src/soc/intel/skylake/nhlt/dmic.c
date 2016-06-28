@@ -14,9 +14,8 @@
  */
 
 #include <soc/nhlt.h>
-#include <string.h>
 
-static const struct nhlt_format_config dmic_2ch_cfg[] = {
+static const struct nhlt_format_config dmic_2ch_formats[] = {
 	/* 48 KHz 16-bits per sample. */
 	{
 		.num_channels = 2,
@@ -37,7 +36,28 @@ static const struct nhlt_format_config dmic_2ch_cfg[] = {
 	},
 };
 
-static const struct nhlt_format_config dmic_4ch_cfg[] = {
+static const struct nhlt_dmic_array_config dmic_2ch_mic_config = {
+	.tdm_config = {
+		.config_type = NHLT_TDM_MIC_ARRAY,
+	},
+	.array_type = NHLT_MIC_ARRAY_2CH_SMALL,
+};
+
+static const struct nhlt_endp_descriptor dmic_2ch_descriptors[] = {
+	{
+		.link = NHLT_LINK_PDM,
+		.device = NHLT_PDM_DEV,
+		.direction = NHLT_DIR_CAPTURE,
+		.vid = NHLT_VID,
+		.did = NHLT_DID_DMIC,
+		.cfg = &dmic_2ch_mic_config,
+		.cfg_size = sizeof(dmic_2ch_mic_config),
+		.formats = dmic_2ch_formats,
+		.num_formats = ARRAY_SIZE(dmic_2ch_formats),
+	},
+};
+
+static const struct nhlt_format_config dmic_4ch_formats[] = {
 	/* 48 KHz 16-bits per sample. */
 	{
 		.num_channels = 4,
@@ -60,42 +80,37 @@ static const struct nhlt_format_config dmic_4ch_cfg[] = {
 	},
 };
 
+static const struct nhlt_dmic_array_config dmic_4ch_mic_config = {
+	.tdm_config = {
+		.config_type = NHLT_TDM_MIC_ARRAY,
+	},
+	.array_type = NHLT_MIC_ARRAY_4CH_L_SHAPED,
+};
+
+static const struct nhlt_endp_descriptor dmic_4ch_descriptors[] = {
+	{
+		.link = NHLT_LINK_PDM,
+		.device = NHLT_PDM_DEV,
+		.direction = NHLT_DIR_CAPTURE,
+		.vid = NHLT_VID,
+		.did = NHLT_DID_DMIC,
+		.cfg = &dmic_4ch_mic_config,
+		.cfg_size = sizeof(dmic_4ch_mic_config),
+		.formats = dmic_4ch_formats,
+		.num_formats = ARRAY_SIZE(dmic_4ch_formats),
+	},
+};
+
 int nhlt_soc_add_dmic_array(struct nhlt *nhlt, int num_channels)
 {
-	struct nhlt_endpoint *endp;
-	struct nhlt_dmic_array_config mic_config;
-	const struct nhlt_format_config *formats;
-	size_t num_formats;
-
-	if (num_channels != 2 && num_channels != 4)
-		return -1;
-
-	endp = nhlt_soc_add_endpoint(nhlt, AUDIO_LINK_DMIC, AUDIO_DEV_DMIC,
-					NHLT_DIR_CAPTURE);
-
-	if (endp == NULL)
-		return -1;
-
-	memset(&mic_config, 0, sizeof(mic_config));
-	mic_config.tdm_config.config_type = NHLT_TDM_MIC_ARRAY;
-
 	switch (num_channels) {
 	case 2:
-		formats = dmic_2ch_cfg;
-		num_formats = ARRAY_SIZE(dmic_2ch_cfg);
-		mic_config.array_type = NHLT_MIC_ARRAY_2CH_SMALL;
-		break;
+		return nhlt_add_endpoints(nhlt, dmic_2ch_descriptors,
+					ARRAY_SIZE(dmic_2ch_descriptors));
 	case 4:
-		formats = dmic_4ch_cfg;
-		num_formats = ARRAY_SIZE(dmic_4ch_cfg);
-		mic_config.array_type = NHLT_MIC_ARRAY_4CH_L_SHAPED;
-		break;
+		return nhlt_add_endpoints(nhlt, dmic_4ch_descriptors,
+					ARRAY_SIZE(dmic_4ch_descriptors));
 	default:
 		return -1;
 	}
-
-	if (nhlt_endpoint_append_config(endp, &mic_config, sizeof(mic_config)))
-		return -1;
-
-	return nhlt_endpoint_add_formats(endp, formats, num_formats);
 }

@@ -1,4 +1,3 @@
-ramstage-y += nhlt.c
 ramstage-y += dmic.c
 ramstage-y += nau88l25.c
 ramstage-y += max98357.c

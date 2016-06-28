@@ -19,43 +19,49 @@
 #include <soc/saradc.h>
 
 /*
- * This matches Kevin/Gru ADC value for board id.
+ * ID info:
+ *  ID : Volts : ADC value : Bucket
+ *  ==   =====   =========   ======
+ *  0  : 0.074V: 37.888    : 0 - <=82
+ *  1  : 0.211V: 108.032   : 82- <=136
+ *  2  : 0.319V: 163.328   : 136-<=191
+ *  3  : 0.427V: 218.624   : 191-<=248
+ *  4  : 0.542V: 277.504   : 248-<=309
+ *  5  : 0.666V: 340.992   : 309-<=370
+ *  6  : 0.781V: 399.872   : 370-  512
  */
-static const int board_id_readings[] = { 42, 120, 181, 242, 307, 378, 444,
-                                         511, 581, 646, 704, 763, 828,
-                                         895, 956, 1023 };
+static const int id_readings[] = { 82, 136, 191, 248, 309, 370, 512 };
+static int cached_board_id = -1;
+static int cached_ram_id = -1;
 
-/*
- * The ADC produces a 10 bit value, the resistor accuracy is 1%, let's leave
- * 2% room for error on both sides, total variation would be 4%, which is
- * approximately 40 points with a 10 bit ADC. The hardware specification
- * guarantees valid readings to be at least 64 bits (2^6) apart.
- */
-#define ACCEPTABLE_DELTA  (int)(1024 * .02)
-
-uint8_t board_id(void)
+static uint32_t get_index(uint32_t channel, int *cached_id)
 {
-	static int cached_board_id = -1;
 	int i;
 	int adc_reading;
 
-	if (cached_board_id != -1)
-		return cached_board_id;
+	if (*cached_id != -1)
+		return *cached_id;
 
-	adc_reading = get_saradc_value(1);
-	for (i = 0; i < ARRAY_SIZE(board_id_readings); i++) {
-		int delta = board_id_readings[i] - adc_reading;
-
-		if ((delta < ACCEPTABLE_DELTA) && (delta > -ACCEPTABLE_DELTA)) {
-			printk(BIOS_DEBUG, "ADC reading %d, "
-			       "expected value %d board ID %d\n",
-			       adc_reading, delta + adc_reading, i);
-			cached_board_id = i;
+	adc_reading = get_saradc_value(channel);
+	for (i = 0; i < ARRAY_SIZE(id_readings); i++) {
+		if (adc_reading <= id_readings[i]) {
+			printk(BIOS_DEBUG, "ADC reading %d, ID %d\n",
+			       adc_reading, i);
+			*cached_id = i;
 			return i;
 		}
 	}
 
-	printk(BIOS_ERR, "Unmatched ADC reading of %d, using Board ID of 0\n",
-	       adc_reading);
+	printk(BIOS_DEBUG, "ERROR: Unmatched ADC reading of %d\n", adc_reading);
 	return 0;
+}
+
+uint8_t board_id(void)
+{
+	return get_index(1, &cached_board_id);
+}
+
+uint32_t ram_code(void)
+{
+	return get_index(0, &cached_ram_id);
 }

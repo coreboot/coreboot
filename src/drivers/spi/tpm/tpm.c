@@ -359,7 +359,8 @@ int tpm2_init(struct spi_slave *spi_if)
 	/* Let's report device FW version if available. */
 	if (tpm_info.vendor_id == 0x1ae0) {
 		int chunk_count = 0;
-		char vstr[sizeof(cmd) + 1];	/* room for 4 chars + zero */
+		uint32_t chunk = 0;
+		char vstr[sizeof(chunk) + 1];	/* room for 4 chars + zero */
 
 		printk(BIOS_INFO, "Firmware version: ");
 
@@ -367,12 +368,12 @@ int tpm2_init(struct spi_slave *spi_if)
 		 * Does not really matter what's written, this just makes sure
 		 * the version is reported from the beginning.
 		 */
-		tpm2_write_reg(TPM_FW_VER, &cmd, sizeof(cmd));
+		tpm2_write_reg(TPM_FW_VER, &chunk, sizeof(chunk));
 
 		/* Print it out in 4 byte chunks. */
 		vstr[sizeof(vstr) - 1] = 0;
 		do {
-			tpm2_read_reg(TPM_FW_VER, vstr, sizeof(cmd));
+			tpm2_read_reg(TPM_FW_VER, vstr, sizeof(chunk));
 			printk(BIOS_INFO, "%s", vstr);
 
 			/*
@@ -381,7 +382,7 @@ int tpm2_init(struct spi_slave *spi_if)
 			 * This is likely result in one extra printk()
 			 * invocation with an empty string, not a big deal.
 			 */
-		} while (vstr[0] && (chunk_count++ < (200 / sizeof(cmd))));
+		} while (vstr[0] && (chunk_count++ < (200 / sizeof(chunk))));
 
 		printk(BIOS_INFO, "\n");
 	}

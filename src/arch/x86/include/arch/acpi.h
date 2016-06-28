@@ -26,8 +26,6 @@
 #ifndef __ASM_ACPI_H
 #define __ASM_ACPI_H
 
-#define HIGH_MEMORY_SAVE	(CONFIG_RAMTOP - CONFIG_RAMBASE)
-
 /*
  * The type and enable fields are common in ACPI, but the
  * values themselves are hardware implementation defined.

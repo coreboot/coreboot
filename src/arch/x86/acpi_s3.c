@@ -84,11 +84,6 @@ static int backup_create_or_update(struct resume_backup *backup_mem,
 {
 	uintptr_t top;
 
-	if (CONFIG(ACPI_HUGE_LOWMEM_BACKUP)) {
-		base = CONFIG_RAMBASE;
-		size = HIGH_MEMORY_SAVE;
-	}
-
 	/* Align backup region to complete pages. */
 	top = ALIGN_UP(base + size, BACKUP_PAGE_SZ);
 	base = ALIGN_DOWN(base, BACKUP_PAGE_SZ);

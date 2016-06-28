@@ -63,27 +63,32 @@ static int memcmp_(void *d, const void *s, size_t len)
 	return memcmp(d, s, len);
 }
 
-static void prepare_romstage_ramstack(void *resume_backup_memory)
+static void prepare_romstage_ramstack(int s3resume)
 {
 	size_t backup_top = backup_size();
 	print_car_debug("Prepare CAR migration and stack regions...");
 
-	if (resume_backup_memory) {
-		memcpy_(resume_backup_memory + HIGH_MEMORY_SAVE - backup_top,
-			(void *)(CONFIG_RAMTOP - backup_top), backup_top);
+	if (s3resume) {
+		void *resume_backup_memory = cbmem_find(CBMEM_ID_RESUME);
+		if (resume_backup_memory)
+			memcpy_(resume_backup_memory + HIGH_MEMORY_SAVE - backup_top,
+				(void *)(CONFIG_RAMTOP - backup_top), backup_top);
 	}
 	memset_((void *)(CONFIG_RAMTOP - backup_top), 0, backup_top);
 
 	print_car_debug(" Done\n");
 }
 
-static void prepare_ramstage_region(void *resume_backup_memory)
+static void prepare_ramstage_region(int s3resume)
 {
 	size_t backup_top = backup_size();
 	print_car_debug("Prepare ramstage memory region...");
 
-	if (resume_backup_memory) {
-		memcpy_(resume_backup_memory, (void *) CONFIG_RAMBASE, HIGH_MEMORY_SAVE - backup_top);
+	if (s3resume) {
+		void *resume_backup_memory = cbmem_find(CBMEM_ID_RESUME);
+		if (resume_backup_memory)
+			memcpy_(resume_backup_memory, (void *) CONFIG_RAMBASE,
+				HIGH_MEMORY_SAVE - backup_top);
 		memset_((void*) CONFIG_RAMBASE, 0, HIGH_MEMORY_SAVE - backup_top);
 	} else {
 		memset_((void*)0, 0, CONFIG_RAMTOP - backup_top);
@@ -115,7 +120,6 @@ static void vErrata343(void)
 
 void post_cache_as_ram(void)
 {
-	void *resume_backup_memory = NULL;
 	uint32_t family = amd_fam1x_cpu_family();
 
 	/* Verify that the BSP didn't overrun the lower stack
@@ -134,11 +138,10 @@ void post_cache_as_ram(void)
 		printk(BIOS_DEBUG, "Romstage handoff structure not added!\n");
 
 	int s3resume = acpi_is_wakeup_s3();
-	if (s3resume) {
+	if (s3resume)
 		cbmem_recovery(s3resume);
-		resume_backup_memory = cbmem_find(CBMEM_ID_RESUME);
-	}
-	prepare_romstage_ramstack(resume_backup_memory);
+
+	prepare_romstage_ramstack(s3resume);
 
 	/* from here don't store more data in CAR */
 	if (family >= 0x1f && family <= 0x3f) {
@@ -168,9 +171,6 @@ void post_cache_as_ram(void)
 
 void cache_as_ram_new_stack (void)
 {
-	void *resume_backup_memory = NULL;
-
-	print_car_debug("Top about %08x ... Done\n", (uint32_t) &resume_backup_memory);
 	print_car_debug("Disabling cache as ram now\n");
 	disable_cache_as_ram_bsp();
 
@@ -179,11 +179,7 @@ void cache_as_ram_new_stack (void)
 	set_var_mtrr(0, 0x00000000, CACHE_TMP_RAMTOP, MTRR_TYPE_WRBACK);
 	enable_cache();
 
-	if (acpi_is_wakeup_s3()) {
-		resume_backup_memory = cbmem_find(CBMEM_ID_RESUME);
-		print_car_debug("Resume backup memory location: %p\n", resume_backup_memory);
-	}
-	prepare_ramstage_region(resume_backup_memory);
+	prepare_ramstage_region(acpi_is_wakeup_s3());
 
 	set_sysinfo_in_ram(1); // So other core0 could start to train mem
 

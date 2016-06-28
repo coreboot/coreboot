@@ -22,7 +22,7 @@
 void bootblock_soc_init(void)
 {
 	rkclk_init();
-	rkclk_configure_cpu(APLL_L_600_MHZ);
+	rkclk_configure_cpu(APLL_600_MHZ);
 
 	/* all ddr range non-secure */
 	write32(&rk3399_pmusgrf->ddr_rgn_con[16], 0xff << 16 | 0);

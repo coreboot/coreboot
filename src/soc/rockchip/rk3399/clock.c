@@ -47,12 +47,12 @@ static const struct pll_div gpll_init_cfg = PLL_DIVISORS(GPLL_HZ, 2, 2, 1);
 static const struct pll_div cpll_init_cfg = PLL_DIVISORS(CPLL_HZ, 1, 2, 2);
 static const struct pll_div ppll_init_cfg = PLL_DIVISORS(PPLL_HZ, 2, 2, 1);
 
-static const struct pll_div apll_l_1600_cfg = PLL_DIVISORS(1600*MHz, 3, 1, 1);
-static const struct pll_div apll_l_600_cfg = PLL_DIVISORS(600*MHz, 1, 2, 1);
+static const struct pll_div apll_1600_cfg = PLL_DIVISORS(1600*MHz, 3, 1, 1);
+static const struct pll_div apll_600_cfg = PLL_DIVISORS(600*MHz, 1, 2, 1);
 
-static const struct pll_div *apll_l_cfgs[] = {
-	[APLL_L_1600_MHZ] = &apll_l_1600_cfg,
-	[APLL_L_600_MHZ] = &apll_l_600_cfg,
+static const struct pll_div *apll_cfgs[] = {
+	[APLL_1600_MHZ] = &apll_1600_cfg,
+	[APLL_600_MHZ] = &apll_600_cfg,
 };
 
 enum {
@@ -487,16 +487,16 @@ void rkclk_init(void)
 						HCLK_PERILP1_PLL_SEL_SHIFT));
 }
 
-void rkclk_configure_cpu(enum apll_l_frequencies apll_l_freq)
+void rkclk_configure_cpu(enum apll_frequencies apll_l_freq)
 {
 	u32 aclkm_div;
 	u32 pclk_dbg_div;
 	u32 atclk_div;
 	u32 apll_l_hz;
 
-	apll_l_hz = apll_l_cfgs[apll_l_freq]->freq;
+	apll_l_hz = apll_cfgs[apll_l_freq]->freq;
 
-	rkclk_set_pll(&cru_ptr->apll_l_con[0], apll_l_cfgs[apll_l_freq]);
+	rkclk_set_pll(&cru_ptr->apll_l_con[0], apll_cfgs[apll_l_freq]);
 
 	aclkm_div = div_round_up(apll_l_hz, ACLKM_CORE_HZ) - 1;
 

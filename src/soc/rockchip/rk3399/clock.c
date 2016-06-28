@@ -104,23 +104,23 @@ enum {
 	/* PMUCRU_CLKSEL_CON3 */
 	I2C4_DIV_CON_SHIFT		= 0,
 
-	/* CLKSEL_CON0 */
-	ACLKM_CORE_L_DIV_CON_MASK	= 0x1f,
-	ACLKM_CORE_L_DIV_CON_SHIFT	= 8,
-	CLK_CORE_L_PLL_SEL_MASK		= 3,
-	CLK_CORE_L_PLL_SEL_SHIFT	= 6,
-	CLK_CORE_L_PLL_SEL_ALPLL	= 0x0,
-	CLK_CORE_L_PLL_SEL_ABPLL	= 0x1,
-	CLK_CORE_L_PLL_SEL_DPLL		= 0x10,
-	CLK_CORE_L_PLL_SEL_GPLL		= 0x11,
-	CLK_CORE_L_DIV_MASK		= 0x1f,
-	CLK_CORE_L_DIV_SHIFT		= 0,
+	/* CLKSEL_CON0 / CLKSEL_CON2 */
+	ACLKM_CORE_DIV_CON_MASK	= 0x1f,
+	ACLKM_CORE_DIV_CON_SHIFT	= 8,
+	CLK_CORE_PLL_SEL_MASK		= 3,
+	CLK_CORE_PLL_SEL_SHIFT		= 6,
+	CLK_CORE_PLL_SEL_ALPLL		= 0x0,
+	CLK_CORE_PLL_SEL_ABPLL		= 0x1,
+	CLK_CORE_PLL_SEL_DPLL		= 0x10,
+	CLK_CORE_PLL_SEL_GPLL		= 0x11,
+	CLK_CORE_DIV_MASK		= 0x1f,
+	CLK_CORE_DIV_SHIFT		= 0,
 
-	/* CLKSEL_CON1 */
-	PCLK_DBG_L_DIV_MASK		= 0x1f,
-	PCLK_DBG_L_DIV_SHIFT		= 0x8,
-	ATCLK_CORE_L_DIV_MASK		= 0x1f,
-	ATCLK_CORE_L_DIV_SHIFT		= 0,
+	/* CLKSEL_CON1 / CLKSEL_CON3 */
+	PCLK_DBG_DIV_MASK		= 0x1f,
+	PCLK_DBG_DIV_SHIFT		= 0x8,
+	ATCLK_CORE_DIV_MASK		= 0x1f,
+	ATCLK_CORE_DIV_SHIFT		= 0,
 
 	/* CLKSEL_CON14 */
 	PCLK_PERIHP_DIV_CON_MASK	= 0x7,
@@ -411,6 +411,13 @@ void rkclk_init(void)
 	rkclk_set_pll(&cru_ptr->gpll_con[0], &gpll_init_cfg);
 	rkclk_set_pll(&cru_ptr->cpll_con[0], &cpll_init_cfg);
 
+	/*
+	 * coreboot boot from little core, but it seem if apll_b use defalut
+	 * 24MHz it will take a long time to enable big core, and will cause
+	 * a watchdog crash, so we should do apll_b initialization here
+	 */
+	rkclk_configure_cpu(APLL_600_MHZ, true);
+
 	/* configure perihp aclk, hclk, pclk */
 	aclk_div = GPLL_HZ / PERIHP_ACLK_HZ - 1;
 	assert((aclk_div + 1) * PERIHP_ACLK_HZ == GPLL_HZ && aclk_div < 0x1f);
@@ -487,16 +494,20 @@ void rkclk_init(void)
 						HCLK_PERILP1_PLL_SEL_SHIFT));
 }
 
-void rkclk_configure_cpu(enum apll_frequencies apll_l_freq)
+void rkclk_configure_cpu(enum apll_frequencies apll_freq, bool is_big)
 {
 	u32 aclkm_div;
 	u32 pclk_dbg_div;
 	u32 atclk_div;
 	u32 apll_l_hz;
+	int con_base = is_big ? 2 : 0;
+	int parent = is_big ? CLK_CORE_PLL_SEL_ABPLL : CLK_CORE_PLL_SEL_ALPLL;
+	u32 *pll_con = is_big ? &cru_ptr->apll_b_con[0] :
+				&cru_ptr->apll_l_con[0];
 
-	apll_l_hz = apll_cfgs[apll_l_freq]->freq;
+	apll_l_hz = apll_cfgs[apll_freq]->freq;
 
-	rkclk_set_pll(&cru_ptr->apll_l_con[0], apll_cfgs[apll_l_freq]);
+	rkclk_set_pll(pll_con, apll_cfgs[apll_freq]);
 
 	aclkm_div = div_round_up(apll_l_hz, ACLKM_CORE_HZ) - 1;
 
@@ -504,22 +515,20 @@ void rkclk_configure_cpu(enum apll_frequencies apll_l_freq)
 
 	atclk_div = div_round_up(apll_l_hz, ATCLK_CORE_HZ) - 1;
 
-	write32(&cru_ptr->clksel_con[0],
-		RK_CLRSETBITS(ACLKM_CORE_L_DIV_CON_MASK <<
-						ACLKM_CORE_L_DIV_CON_SHIFT |
-			      CLK_CORE_L_PLL_SEL_MASK <<
-						CLK_CORE_L_PLL_SEL_SHIFT |
-			      CLK_CORE_L_DIV_MASK << CLK_CORE_L_DIV_SHIFT,
-			      aclkm_div << ACLKM_CORE_L_DIV_CON_SHIFT |
-			      CLK_CORE_L_PLL_SEL_ALPLL <<
-						CLK_CORE_L_PLL_SEL_SHIFT |
-			      0 << CLK_CORE_L_DIV_SHIFT));
+	write32(&cru_ptr->clksel_con[con_base],
+		RK_CLRSETBITS(ACLKM_CORE_DIV_CON_MASK <<
+						ACLKM_CORE_DIV_CON_SHIFT |
+			      CLK_CORE_PLL_SEL_MASK << CLK_CORE_PLL_SEL_SHIFT |
+			      CLK_CORE_DIV_MASK << CLK_CORE_DIV_SHIFT,
+			      aclkm_div << ACLKM_CORE_DIV_CON_SHIFT |
+			      parent << CLK_CORE_PLL_SEL_SHIFT |
+			      0 << CLK_CORE_DIV_SHIFT));
 
-	write32(&cru_ptr->clksel_con[1],
-		RK_CLRSETBITS(PCLK_DBG_L_DIV_MASK << PCLK_DBG_L_DIV_SHIFT |
-			      ATCLK_CORE_L_DIV_MASK << ATCLK_CORE_L_DIV_SHIFT,
-			      pclk_dbg_div << PCLK_DBG_L_DIV_SHIFT |
-			      atclk_div << ATCLK_CORE_L_DIV_SHIFT));
+	write32(&cru_ptr->clksel_con[con_base + 1],
+		RK_CLRSETBITS(PCLK_DBG_DIV_MASK << PCLK_DBG_DIV_SHIFT |
+			      ATCLK_CORE_DIV_MASK << ATCLK_CORE_DIV_SHIFT,
+			      pclk_dbg_div << PCLK_DBG_DIV_SHIFT |
+			      atclk_div << ATCLK_CORE_DIV_SHIFT));
 }
 
 void rkclk_configure_ddr(unsigned int hz)

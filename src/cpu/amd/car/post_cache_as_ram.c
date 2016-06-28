@@ -69,7 +69,7 @@ static void prepare_romstage_ramstack(int s3resume)
 	print_car_debug("Prepare CAR migration and stack regions...");
 
 	if (s3resume) {
-		void *resume_backup_memory = cbmem_find(CBMEM_ID_RESUME);
+		void *resume_backup_memory = acpi_backup_container(CONFIG_RAMBASE, HIGH_MEMORY_SAVE);
 		if (resume_backup_memory)
 			memcpy_(resume_backup_memory + HIGH_MEMORY_SAVE - backup_top,
 				(void *)(CONFIG_RAMTOP - backup_top), backup_top);
@@ -85,7 +85,7 @@ static void prepare_ramstage_region(int s3resume)
 	print_car_debug("Prepare ramstage memory region...");
 
 	if (s3resume) {
-		void *resume_backup_memory = cbmem_find(CBMEM_ID_RESUME);
+		void *resume_backup_memory = acpi_backup_container(CONFIG_RAMBASE, HIGH_MEMORY_SAVE);
 		if (resume_backup_memory)
 			memcpy_(resume_backup_memory, (void *) CONFIG_RAMBASE,
 				HIGH_MEMORY_SAVE - backup_top);

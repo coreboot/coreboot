@@ -19,8 +19,10 @@
 #include <cbmem.h>
 #include <cpu/cpu.h>
 #include <timestamp.h>
+#include <program_loading.h>
 #include <romstage_handoff.h>
 #include <rules.h>
+#include <symbols.h>
 
 #if ENV_RAMSTAGE
 
@@ -79,30 +81,125 @@ void acpi_fail_wakeup(void)
 }
 #endif /* ENV_RAMSTAGE */
 
-void acpi_prepare_for_resume(void)
+struct resume_backup {
+	uint64_t cbmem;
+	uint64_t lowmem;
+	uint64_t size;
+	uint8_t valid;
+};
+
+#define BACKUP_PAGE_SZ 4096
+
+static int backup_create_or_update(struct resume_backup *backup_mem,
+				uintptr_t base, size_t size)
 {
-	if (!HIGH_MEMORY_SAVE)
+	uintptr_t top;
+
+	if (IS_ENABLED(CONFIG_ACPI_HUGE_LOWMEM_BACKUP)) {
+		base = CONFIG_RAMBASE;
+		size = HIGH_MEMORY_SAVE;
+	}
+
+	/* Align backup region to complete pages. */
+	top = ALIGN_UP(base + size, BACKUP_PAGE_SZ);
+	base = ALIGN_DOWN(base, BACKUP_PAGE_SZ);
+	size = top - base;
+
+	/* Cannot extend existing region, should not happen. */
+	if (backup_mem && (backup_mem->size < size))
+		return -1;
+
+	/* Allocate backup with room for header. */
+	if (!backup_mem) {
+		size_t header_sz = ALIGN_UP(sizeof(*backup_mem), BACKUP_PAGE_SZ);
+		backup_mem = cbmem_add(CBMEM_ID_RESUME, header_sz + size);
+		if (!backup_mem)
+			return -1;
+
+		/* Container starts from boundary after header. */
+		backup_mem->cbmem = (uintptr_t)backup_mem + header_sz;
+	}
+
+	backup_mem->valid = 0;
+	backup_mem->lowmem = base;
+	backup_mem->size = size;
+	return 0;
+}
+
+void *acpi_backup_container(uintptr_t base, size_t size)
+{
+	struct resume_backup *backup_mem = cbmem_find(CBMEM_ID_RESUME);
+	if (!backup_mem)
+		return NULL;
+
+	if (!IS_ALIGNED(base, BACKUP_PAGE_SZ) || !IS_ALIGNED(size, BACKUP_PAGE_SZ))
+		return NULL;
+
+	if (backup_create_or_update(backup_mem, base, size) < 0)
+		return NULL;
+
+	backup_mem->valid = 1;
+	return (void*)(uintptr_t)backup_mem->cbmem;
+}
+
+void backup_ramstage_section(uintptr_t base, size_t size)
+{
+	struct resume_backup *backup_mem = cbmem_find(CBMEM_ID_RESUME);
+
+	/* For first boot we exit here as CBMEM_ID_RESUME is only
+	 * created late in ramstage with acpi_prepare_resume_backup().
+	 */
+	if (!backup_mem)
+		return;
+
+	/* Check that the backup is not done twice. */
+	if (backup_mem->valid)
+		return;
+
+	/* When we are called from ramstage loader, update header with
+	 * properties of the ramstage we will load.
+	 */
+	if (backup_create_or_update(backup_mem, base, size) < 0)
 		return;
 
 	/* Back up the OS-controlled memory where ramstage will be loaded. */
-	void *src = (void *)CONFIG_RAMBASE;
-	void *dest = cbmem_find(CBMEM_ID_RESUME);
-	if (dest != NULL)
-		memcpy(dest, src, HIGH_MEMORY_SAVE);
+	memcpy((void*)(uintptr_t)backup_mem->cbmem,
+		(void*)(uintptr_t)backup_mem->lowmem, (size_t)backup_mem->size);
+	backup_mem->valid = 1;
 }
 
+/* Make backup of low-memory region, relying on the base and size
+ * of the ramstage that was loaded before entry to ACPI S3.
+ *
+ * DEPRECATED
+ */
+void acpi_prepare_for_resume(void)
+{
+	struct resume_backup *backup_mem = cbmem_find(CBMEM_ID_RESUME);
+	if (!backup_mem)
+		return;
+
+	/* Back up the OS-controlled memory where ramstage will be loaded. */
+	memcpy((void*)(uintptr_t)backup_mem->cbmem,
+		(void*)(uintptr_t)backup_mem->lowmem, (size_t)backup_mem->size);
+	backup_mem->valid = 1;
+}
+
+/* Let's prepare the ACPI S3 Resume area now already, so we can rely on
+ * it being there during reboot time. If this fails, ACPI resume will
+ * be disabled. We assume that ramstage does not change while in suspend,
+ * so base and size of the currently running ramstage are used
+ * for allocation.
+ */
 void acpi_prepare_resume_backup(void)
 {
 	if (!acpi_s3_resume_allowed())
 		return;
 
-	/* Let's prepare the ACPI S3 Resume area now already, so we can rely on
-	 * it being there during reboot time. We don't need the pointer, nor
-	 * the result right now. If it fails, ACPI resume will be disabled.
-	 */
+	if (IS_ENABLED(CONFIG_RELOCATABLE_RAMSTAGE))
+		return;
 
-	if (HIGH_MEMORY_SAVE)
-		cbmem_add(CBMEM_ID_RESUME, HIGH_MEMORY_SAVE);
+	backup_create_or_update(NULL, (uintptr_t)_program, _program_size);
 }
 
 #define WAKEUP_BASE 0x600
@@ -115,17 +212,22 @@ extern unsigned int __wakeup_size;
 
 static void acpi_jump_to_wakeup(void *vector)
 {
-	uintptr_t acpi_backup_memory = 0;
+	uintptr_t source = 0, target = 0;
+	size_t size = 0;
 
 	if (!acpi_s3_resume_allowed()) {
 		printk(BIOS_WARNING, "ACPI: S3 resume not allowed.\n");
 		return;
 	}
 
-	if (HIGH_MEMORY_SAVE) {
-		acpi_backup_memory = (uintptr_t)cbmem_find(CBMEM_ID_RESUME);
-
-		if (!acpi_backup_memory) {
+	if (!IS_ENABLED(CONFIG_RELOCATABLE_RAMSTAGE)) {
+		struct resume_backup *backup_mem = cbmem_find(CBMEM_ID_RESUME);
+		if (backup_mem && backup_mem->valid) {
+			backup_mem->valid = 0;
+			target = backup_mem->lowmem;
+			source = backup_mem->cbmem;
+			size = backup_mem->size;
+		} else  {
 			printk(BIOS_WARNING, "ACPI: Backup memory missing. "
 				"No S3 resume.\n");
 			return;
@@ -137,8 +239,7 @@ static void acpi_jump_to_wakeup(void *vector)
 
 	timestamp_add_now(TS_ACPI_WAKE_JUMP);
 
-	acpi_do_wakeup((uintptr_t)vector, acpi_backup_memory, CONFIG_RAMBASE,
-		       HIGH_MEMORY_SAVE);
+	acpi_do_wakeup((uintptr_t)vector, source, target, size);
 }
 
 void __attribute__((weak)) mainboard_suspend_resume(void)

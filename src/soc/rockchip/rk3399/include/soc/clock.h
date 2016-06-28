@@ -96,14 +96,14 @@ static struct rk3399_cru_reg * const cru_ptr = (void *)CRU_BASE;
 
 #define PWM_CLOCK_HZ    PMU_PCLK_HZ
 
-enum apll_l_frequencies {
-	APLL_L_1600_MHZ,
-	APLL_L_600_MHZ,
+enum apll_frequencies {
+	APLL_1600_MHZ,
+	APLL_600_MHZ,
 };
 
 void rkclk_init(void);
 int rkclk_configure_vop_dclk(u32 vop_id, u32 dclk_hz);
-void rkclk_configure_cpu(enum apll_l_frequencies apll_l_freq);
+void rkclk_configure_cpu(enum apll_frequencies apll_l_freq);
 void rkclk_configure_ddr(unsigned int hz);
 void rkclk_configure_emmc(void);
 void rkclk_configure_i2s(unsigned int hz);

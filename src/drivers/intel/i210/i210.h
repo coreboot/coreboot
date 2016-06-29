@@ -16,6 +16,9 @@
 #ifndef _INTEL_I210_H_
 #define _INTEL_I210_H_
 
+#include <types.h>
+#include <device/device.h>
+
 #define I210_PCI_MEM_BAR_OFFSET	0x10
 #define I210_REG_EECTRL		0x12010	  /* Offset for EEPROM control reg */
 #define  I210_FLUPD		0x800000  /* Start flash update bit */
@@ -37,5 +40,10 @@
 #define I210_WRITE_ERROR	0x00000008
 #define I210_CHECKSUM_ERROR	0x00000010
 #define I210_FLASH_UPDATE_ERROR	0x00000020
+
+/* We need one function we can call to get a MAC address to use */
+/* This function can be coded somewhere else but must exist. */
+extern enum cb_err mainboard_get_mac_address(struct device *dev,
+						uint8_t mac[6]);
 
 #endif /* _INTEL_I210_H_ */

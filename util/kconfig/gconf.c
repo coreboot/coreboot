@@ -26,6 +26,8 @@
 
 //#define DEBUG
 
+int kconfig_warnings = 0;
+
 enum {
 	SINGLE_VIEW, SPLIT_VIEW, FULL_VIEW
 };

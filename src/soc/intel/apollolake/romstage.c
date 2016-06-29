@@ -241,6 +241,14 @@ void platform_fsp_memory_init_params_cb(struct FSPM_UPD *mupd)
 		} else
 			printk(BIOS_DEBUG, "MRC cache was not found\n");
 	}
+
+	/*
+	 * Tell CSE we do not need to use Ring Buffer Protocol (RBP) to fetch
+	 * firmware for us if we are using memory-mapped SPI. This lets CSE
+	 * state machine transition to next boot state, so that it can function
+	 * as designed.
+	 */
+	mupd->FspmConfig.SkipCseRbp = IS_ENABLED(CONFIG_SPI_FLASH_MEMORY_MAPPED);
 }
 
 __attribute__ ((weak))

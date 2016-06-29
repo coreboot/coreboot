@@ -19,12 +19,7 @@
 #include <types.h>
 
 /* Generic functions */
-/*
- * Return value for read_vbnv:
- * 1 = write-back of vbnv copy is required.
- * 0 = otherwise
- */
-int read_vbnv(uint8_t *vbnv_copy);
+void read_vbnv(uint8_t *vbnv_copy);
 void save_vbnv(const uint8_t *vbnv_copy);
 int verify_vbnv(uint8_t *vbnv_copy);
 int get_recovery_mode_from_vbnv(void);

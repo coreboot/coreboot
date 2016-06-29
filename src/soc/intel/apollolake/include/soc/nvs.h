@@ -26,7 +26,7 @@
 
 #include <vendorcode/google/chromeos/gnvs.h>
 
-struct global_nvs_t {
+typedef struct global_nvs_t {
 	/* Miscellaneous */
 	uint8_t		pcnt; /* 0x00 - Processor Count */
 	uint8_t		ppcm; /* 0x01 - Max PPC State */
@@ -42,6 +42,6 @@ struct global_nvs_t {
 
 	/* ChromeOS specific (0x100 - 0xfff) */
 	chromeos_acpi_t chromeos;
-} __attribute__((packed));
+} __attribute__((packed)) global_nvs_t;
 
 #endif	/* _SOC_APOLLOLAKE_NVS_H_ */

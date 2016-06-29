@@ -41,6 +41,16 @@ int _gpio_base3_value(gpio_t gpio[], int num_gpio, int binary_first);
 const char *gpio_acpi_path(gpio_t gpio);
 
 /*
+ * This function may be implemented by SoC/board code to provide
+ * a mapping from the internal representation of a GPIO to the 16bit
+ * value used in an ACPI GPIO pin table entry.
+ *
+ * If not implemented by the SOC the default handler will return 0
+ * because the underlying type of gpio_t is unknown.
+ */
+uint16_t gpio_acpi_pin(gpio_t gpio);
+
+/*
  * Read the value presented by the set of GPIOs, when each pin is interpreted
  * as a base-2 digit (LOW = 0, HIGH = 1).
  *

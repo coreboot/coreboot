@@ -314,8 +314,13 @@ void acpi_device_write_gpio(const struct acpi_gpio *gpio)
 	acpi_device_fill_from_len(pin_table_offset, start);
 
 	/* Pin Table, one word for each pin */
-	for (pin = 0; pin < gpio->pin_count; pin++)
-		acpigen_emit_word(gpio->pins[pin]);
+	for (pin = 0; pin < gpio->pin_count; pin++) {
+		uint16_t acpi_pin = gpio->pins[pin];
+#if IS_ENABLED(CONFIG_GENERIC_GPIO_LIB)
+		acpi_pin = gpio_acpi_pin(acpi_pin);
+#endif
+		acpigen_emit_word(acpi_pin);
+	}
 
 	/* Fill in Resource Source Name Offset */
 	acpi_device_fill_from_len(resource_offset, start);

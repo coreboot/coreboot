@@ -140,17 +140,17 @@
 
 /* Track power state from reset to log events. */
 struct chipset_power_state {
-        uint16_t pm1_sts;
-        uint16_t pm1_en;
-        uint32_t pm1_cnt;
-        uint32_t gpe0_sts[GPE0_REG_MAX];
-        uint32_t gpe0_en[GPE0_REG_MAX];
-        uint32_t tco_sts;
-        uint32_t prsts;
-        uint32_t gen_pmcon1;
-        uint32_t gen_pmcon2;
-        uint32_t gen_pmcon3;
-        uint32_t prev_sleep_state;
+	uint16_t pm1_sts;
+	uint16_t pm1_en;
+	uint32_t pm1_cnt;
+	uint32_t gpe0_sts[GPE0_REG_MAX];
+	uint32_t gpe0_en[GPE0_REG_MAX];
+	uint32_t tco_sts;
+	uint32_t prsts;
+	uint32_t gen_pmcon1;
+	uint32_t gen_pmcon2;
+	uint32_t gen_pmcon3;
+	uint32_t prev_sleep_state;
 } __attribute__((packed));
 
 int fill_power_state(struct chipset_power_state *ps);

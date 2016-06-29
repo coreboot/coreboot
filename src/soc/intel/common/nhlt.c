@@ -15,7 +15,7 @@
 
 #include <cbmem.h>
 #include <nhlt.h>
-#include <soc/acpi.h>
+#include <soc/nvs.h>
 
 uintptr_t nhlt_soc_serialize(struct nhlt *nhlt, uintptr_t acpi_addr)
 {

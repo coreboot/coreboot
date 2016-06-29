@@ -132,3 +132,21 @@ const char *gpio_acpi_path(gpio_t gpio_num)
 
 	return NULL;
 }
+
+uint16_t gpio_acpi_pin(gpio_t gpio_num)
+{
+	const struct pad_community *comm = gpio_get_community(gpio_num);
+
+	switch (comm->port) {
+	case GPIO_NORTH:
+		return PAD_N(gpio_num);
+	case GPIO_NORTHWEST:
+		return PAD_NW(gpio_num);
+	case GPIO_WEST:
+		return PAD_W(gpio_num);
+	case GPIO_SOUTHWEST:
+		return PAD_SW(gpio_num);
+	}
+
+	return gpio_num;
+}

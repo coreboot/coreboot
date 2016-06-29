@@ -1094,6 +1094,13 @@ config DEBUG_COVERAGE
 	  If enabled, the code coverage hooks in coreboot will output some
 	  information about the coverage data that is dumped.
 
+config DEBUG_BOOT_STATE
+	bool "Debug boot state machine"
+	default n
+	help
+	  Control debugging of the boot state machine.  When selected displays
+	  the state boundaries in ramstage.
+
 endmenu
 
 # These probably belong somewhere else, but they are needed somewhere.
@@ -1178,13 +1185,6 @@ config CBFS_SIZE
 	  This is the part of the ROM actually managed by CBFS.  Set it to be
 	  equal to the full rom size if that hasn't been overridden by the
 	  chipset or mainboard.
-
-config DEBUG_BOOT_STATE
-	bool
-	default n
-	help
-	  Control debugging of the boot state machine.  When selected displays
-	  the state boundaries in ramstage.
 
 config CREATE_BOARD_CHECKLIST
 	bool

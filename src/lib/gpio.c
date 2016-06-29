@@ -145,3 +145,9 @@ __attribute__((weak)) const char *gpio_acpi_path(gpio_t gpio)
 {
 	return NULL;
 }
+
+/* Default handler returns 0 because type of gpio_t is unknown */
+__attribute__((weak)) uint16_t gpio_acpi_pin(gpio_t gpio)
+{
+	return 0;
+}

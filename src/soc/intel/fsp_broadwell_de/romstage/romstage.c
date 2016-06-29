@@ -48,6 +48,13 @@ static void init_rtc(void)
 void *asmlinkage main(FSP_INFO_HEADER *fsp_info_header)
 {
 	post_code(0x40);
+	if (!IS_ENABLED(CONFIG_INTEGRATED_UART)) {
+	/* Enable decoding of I/O locations for Super I/O devices */
+		pci_write_config16(PCI_DEV(0x0, LPC_DEV, LPC_FUNC),
+					   LPC_IO_DEC, 0x0010);
+		pci_write_config16(PCI_DEV(0x0, LPC_DEV, LPC_FUNC),
+					   LPC_EN, 0x340f);
+	}
 	console_init();
 	init_rtc();
 

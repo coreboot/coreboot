@@ -23,11 +23,6 @@
 #include <types.h>
 #include <delay.h>
 
-/* We need one function we can call to get a MAC address to use */
-/* This function can be coded somewhere else but must exist. */
-extern enum cb_err mainboard_get_mac_address(uint16_t bus, uint8_t devfn,
-					     uint8_t mac[6]);
-
 /* This is a private function to wait for a bit mask in a given register */
 /* To avoid endless loops, a time-out is implemented here. */
 static int wait_done(uint32_t* reg, uint32_t mask)
@@ -202,8 +197,7 @@ static void init(struct device *dev)
 	enum cb_err status;
 
 	/*Check first whether there is a valid MAC address available */
-	status = mainboard_get_mac_address(dev->bus->subordinate,
-					   dev->path.pci.devfn, adr_to_set);
+	status = mainboard_get_mac_address(dev, adr_to_set);
 	if (status != CB_SUCCESS) {
 		printk(BIOS_ERR, "I210: No valid MAC address found\n");
 		return;

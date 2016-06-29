@@ -30,17 +30,17 @@
 #include <arch/interrupt.h>
 #include <boot/coreboot_tables.h>
 #include <hwilib.h>
+#include <i210.h>
 #include "lcd_panel.h"
 
 
 /** \brief This function will search for a MAC address which can be assigned
  *         to a MACPHY.
- * @param  pci_bdf Bus, device and function of the given PCI-device
+ * @param  dev     pointer to PCI device
  * @param  mac     buffer where to store the MAC address
  * @return cb_err  CB_ERR or CB_SUCCESS
  */
-enum cb_err mainboard_get_mac_address(uint16_t bus, uint8_t devfn,
-					uint8_t mac[6])
+enum cb_err mainboard_get_mac_address(struct device *dev, uint8_t mac[6])
 {
 	uint8_t mac_adr[6];
 	uint32_t i;

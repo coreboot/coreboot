@@ -175,7 +175,7 @@ static inline qup_return_t qup_i2c_write_fifo_flush(blsp_qup_id_t id)
 
 	qup_write32(QUP_ADDR(id, QUP_OPERATIONAL), OUTPUT_SERVICE_FLAG);
 
-	mdelay(10);	/* TPM seems to need this */
+	mdelay(4);	/* TPM seems to need this */
 
 	ret = qup_fifo_wait_while(id, OUTPUT_FIFO_NOT_EMPTY);
 	if (ret)

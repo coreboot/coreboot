@@ -408,3 +408,8 @@ const char *gpio_acpi_path(gpio_t gpio_num)
 {
 	return "\\_SB.PCI0.GPIO";
 }
+
+uint16_t gpio_acpi_pin(gpio_t gpio_num)
+{
+	return gpio_num;
+}

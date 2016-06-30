@@ -31,9 +31,9 @@
 static void max98357a_fill_ssdt(struct device *dev)
 {
 	struct drivers_generic_max98357a_config *config = dev->chip_info;
-	const char *path = acpi_device_path(dev);
+	const char *path;
 
-	if (!dev->enabled || !path || !config)
+	if (!dev->enabled || !config)
 		return;
 
 	/* Device */
@@ -53,10 +53,8 @@ static void max98357a_fill_ssdt(struct device *dev)
 	/* _DSD for devicetree properties */
 	acpi_dp_write_header();
 	/* This points to the first pin in the first gpio entry in _CRS */
-	acpi_dp_write_gpio("maxim,sdmode-gpio", path, 0, 0, 0);
-	/* This is the correctly formatted Device Property name */
-	acpi_dp_write_integer("maxim,sdmode-delay", config->sdmode_delay);
-	/* This is used by the chromium kernel but is not upstream */
+	path = acpi_device_path(dev);
+	acpi_dp_write_gpio("sdmode-gpio", path, 0, 0, 0);
 	acpi_dp_write_integer("sdmode-delay", config->sdmode_delay);
 	acpi_dp_write_footer();
 

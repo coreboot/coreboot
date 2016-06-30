@@ -121,10 +121,15 @@ const char *acpi_device_path(struct device *dev)
 /* Return the path of the parent device as the ACPI Scope for this device */
 const char *acpi_device_scope(struct device *dev)
 {
+	static char buf[DEVICE_PATH_MAX] = {};
+
 	if (!dev || !dev->bus || !dev->bus->dev)
 		return NULL;
 
-	return acpi_device_path(dev->bus->dev);
+	if (acpi_device_path_fill(dev->bus->dev, buf, sizeof(buf), 0) <= 0)
+		return NULL;
+
+	return buf;
 }
 
 /* Concatentate the device path and provided name suffix */

@@ -47,11 +47,6 @@ config MAINBOARD_DIR
 	string
 	default google/gru
 
-config MAINBOARD_PART_NUMBER
-	string
-	default "Kevin" if BOARD_GOOGLE_KEVIN
-	default "Gru"
-
 config MAINBOARD_VENDOR
 	string
 	default "Google"
@@ -72,5 +67,19 @@ config CONSOLE_SERIAL_UART_ADDRESS
 	hex
 	depends on DRIVERS_UART
 	default 0xFF1A0000
+
+##########################################################
+#### Update below when adding a new derivative board. ####
+##########################################################
+config MAINBOARD_PART_NUMBER
+	string
+	default "Gru" if BOARD_GOOGLE_GRU
+	default "Kevin" if BOARD_GOOGLE_KEVIN
+
+config GBB_HWID
+	string
+	depends on CHROMEOS
+	default "GRU TEST 5431" if BOARD_GOOGLE_GRU
+	default "KEVIN TEST 1422" if BOARD_GOOGLE_KEVIN
 
 endif # BOARD_GOOGLE_GRU_COMMON

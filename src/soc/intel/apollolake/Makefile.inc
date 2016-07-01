@@ -52,6 +52,7 @@ ramstage-y += lpc.c
 ramstage-y += lpc_lib.c
 ramstage-y += memmap.c
 ramstage-y += mmap_boot.c
+ramstage-y += p2sb.c
 ramstage-y += uart.c
 ramstage-y += nhlt.c
 ramstage-y += northbridge.c

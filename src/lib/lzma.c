@@ -55,8 +55,3 @@ size_t ulzman(const void *src, size_t srcn, void *dst, size_t dstn)
 	}
 	return outProcessed;
 }
-
-size_t ulzma(const void *src, void *dst)
-{
-	return ulzman(src, ~(size_t)0, dst, ~(size_t)0);
-}

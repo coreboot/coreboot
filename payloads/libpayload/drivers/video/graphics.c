@@ -223,16 +223,24 @@ int clear_canvas(const struct rgb_color *rgb)
 
 int clear_screen(const struct rgb_color *rgb)
 {
-	uint32_t color;
-	struct vector p;
-
 	if (cbgfx_init())
 		return CBGFX_ERROR_INIT;
 
-	color = calculate_color(rgb);
-	for (p.y = 0; p.y < screen.size.height; p.y++)
-		for (p.x = 0; p.x < screen.size.width; p.x++)
-			set_pixel(&p, color);
+	struct vector p;
+	uint32_t color = calculate_color(rgb);
+	const int bpp = fbinfo->bits_per_pixel;
+	const int bpl = fbinfo->bytes_per_line;
+
+	/* If all significant bytes in color are equal, fastpath through memset.
+	 * We assume that for 32bpp the high byte gets ignored anyway. */
+	if ((((color >> 8) & 0xff) == (color & 0xff)) && (bpp == 16 ||
+	    (((color >> 16) & 0xff) == (color & 0xff)))) {
+		memset(fbaddr, color & 0xff, screen.size.height * bpl);
+	} else {
+		for (p.y = 0; p.y < screen.size.height; p.y++)
+			for (p.x = 0; p.x < screen.size.width; p.x++)
+				set_pixel(&p, color);
+	}
 
 	return CBGFX_SUCCESS;
 }

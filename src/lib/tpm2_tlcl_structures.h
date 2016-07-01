@@ -56,6 +56,7 @@ struct tpm_header {
 } __attribute__((packed));
 
 /* TPM command codes. */
+#define TPM2_Clear          ((TPM_CC)0x00000126)
 #define TPM2_NV_DefineSpace ((TPM_CC)0x0000012A)
 #define TPM2_NV_Write       ((TPM_CC)0x00000137)
 #define TPM2_SelfTest       ((TPM_CC)0x00000143)

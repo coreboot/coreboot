@@ -33,6 +33,7 @@
 #include <soc/pci_devs.h>
 #include <spi-generic.h>
 #include <soc/pm.h>
+#include <soc/p2sb.h>
 
 #include "chip.h"
 
@@ -152,6 +153,14 @@ static void soc_init(void *data)
 	/* TODO: fix for S3 resume, as this would corrupt OS memory */
 	range_entry_init(&range, 0x200000, 4ULL*GiB, 0);
 	fsp_silicon_init(&range);
+
+	/*
+	 * Keep the P2SB device visible so it and the other devices are
+	 * visible in coreboot for driver support and PCI resource allocation.
+	 * There is a UPD setting for this, but it's more consistent to use
+	 * hide and unhide symmetrically.
+	 */
+	p2sb_unhide();
 
 	/* Allocate ACPI NVS in CBMEM */
 	gnvs = cbmem_add(CBMEM_ID_ACPI_GNVS, sizeof(*gnvs));
@@ -346,8 +355,11 @@ static void fsp_notify_dummy(void *arg)
 			fsp_handle_reset(ret);
 	}
 	/* Call END_OF_FIRMWARE Notify after READY_TO_BOOT Notify */
-	if (ph == READY_TO_BOOT)
+	if (ph == READY_TO_BOOT) {
 		fsp_notify_dummy((void *)END_OF_FIRMWARE);
+		/* Hide the P2SB device to align with previous behavior. */
+		p2sb_hide();
+	}
 }
 
 BOOT_STATE_INIT_ENTRY(BS_DEV_RESOURCES, BS_ON_EXIT, fsp_notify_dummy,

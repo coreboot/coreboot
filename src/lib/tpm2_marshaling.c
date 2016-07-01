@@ -315,6 +315,15 @@ static void marshal_nv_read(void **buffer,
 	marshal_u16(buffer, command_body->offset, buffer_space);
 }
 
+/* TPM2_Clear command does not require paramaters. */
+static void marshal_clear(void **buffer, size_t *buffer_space)
+{
+	const uint32_t handle[] = { TPM_RH_PLATFORM };
+
+	marshal_common_session_header(buffer, handle,
+				      ARRAY_SIZE(handle), buffer_space);
+}
+
 static void marshal_selftest(void **buffer,
 			     struct tpm2_self_test *command_body,
 			     size_t *buffer_space)
@@ -357,6 +366,10 @@ int tpm_marshal_command(TPM_CC command, void *tpm_command_body,
 
 	case TPM2_SelfTest:
 		marshal_selftest(&cmd_body, tpm_command_body, &body_size);
+		break;
+
+	case TPM2_Clear:
+		marshal_clear(&cmd_body, &body_size);
 		break;
 
 	default:
@@ -517,6 +530,7 @@ struct tpm2_response *tpm_unmarshal_response(TPM_CC command,
 				  &tpm2_resp.nvr);
 		break;
 
+	case TPM2_Clear:
 	case TPM2_NV_DefineSpace:
 	case TPM2_NV_Write:
 		/* Session data included in response can be safely ignored. */

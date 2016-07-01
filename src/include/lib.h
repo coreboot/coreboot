@@ -21,7 +21,6 @@
 #include <types.h>
 
 /* Defined in src/lib/lzma.c. Returns decompressed size or 0 on error. */
-size_t ulzma(const void *src, void *dst);
 size_t ulzman(const void *src, size_t srcn, void *dst, size_t dstn);
 
 /* Defined in src/lib/ramtest.c */

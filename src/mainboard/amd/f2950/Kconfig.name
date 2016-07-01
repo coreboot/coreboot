@@ -1,0 +1,2 @@
+config BOARD_AMD_F2950
+	bool "F2950"

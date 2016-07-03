@@ -128,7 +128,6 @@ static uint32_t safe_write(uint32_t index, const void *data, uint32_t length)
 static uint32_t set_firmware_space(const void *firmware_blob)
 {
 	RETURN_ON_FAILURE(tlcl_define_space(FIRMWARE_NV_INDEX,
-					    high_privilege,
 					    VB2_SECDATA_SIZE));
 	RETURN_ON_FAILURE(safe_write(FIRMWARE_NV_INDEX, firmware_blob,
 				     VB2_SECDATA_SIZE));
@@ -138,7 +137,6 @@ static uint32_t set_firmware_space(const void *firmware_blob)
 static uint32_t set_kernel_space(const void *kernel_blob)
 {
 	RETURN_ON_FAILURE(tlcl_define_space(KERNEL_NV_INDEX,
-					    low_privilege,
 					    sizeof(secdata_kernel)));
 	RETURN_ON_FAILURE(safe_write(KERNEL_NV_INDEX, kernel_blob,
 				     sizeof(secdata_kernel)));

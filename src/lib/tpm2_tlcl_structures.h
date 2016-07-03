@@ -47,28 +47,6 @@ typedef struct {
 	uint8_t       *buffer;
 } TPM2B;
 
-typedef union {
-	uint8_t  body[512];
-} TPMU_HA;
-
-typedef struct {
-	TPMI_ALG_HASH  hashAlg;
-	TPMU_HA        digest;
-} TPMT_HA;
-
-typedef union {
-	TPMT_HA     digest;
-	TPM_HANDLE  handle;
-} TPMU_NAME;
-
-typedef union {
-	struct {
-		uint16_t  size;
-		uint8_t   name[sizeof(TPMU_NAME)];
-	} t;
-	TPM2B b;
-} TPM2B_NAME;
-
 /* Relevant TPM Command's structures. */
 /* Common command/response header. */
 struct tpm_header {

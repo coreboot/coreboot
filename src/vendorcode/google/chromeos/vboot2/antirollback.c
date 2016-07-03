@@ -145,6 +145,7 @@ static uint32_t set_kernel_space(const void *kernel_blob)
 
 static uint32_t _factory_initialize_tpm(struct vb2_context *ctx)
 {
+	RETURN_ON_FAILURE(tlcl_force_clear());
 	RETURN_ON_FAILURE(set_firmware_space(ctx->secdata));
 	RETURN_ON_FAILURE(set_kernel_space(secdata_kernel));
 	return TPM_SUCCESS;

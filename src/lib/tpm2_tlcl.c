@@ -81,7 +81,15 @@ uint32_t tlcl_finalize_physical_presence(void)
 
 uint32_t tlcl_force_clear(void)
 {
-	printk(BIOS_INFO, "%s:%s:%d\n", __FILE__, __func__, __LINE__);
+	struct tpm2_response *response;
+
+	response = tpm_process_command(TPM2_Clear, NULL);
+	printk(BIOS_INFO, "%s: response is %x\n",
+	       __func__, response ? response->hdr.tpm_code : -1);
+
+	if (!response || response->hdr.tpm_code)
+		return TPM_E_IOERROR;
+
 	return TPM_SUCCESS;
 }
 

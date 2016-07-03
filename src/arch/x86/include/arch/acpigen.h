@@ -38,7 +38,7 @@ void acpigen_write_len_f(void);
 void acpigen_pop_len(void);
 void acpigen_set_current(char *curr);
 char *acpigen_get_current(void);
-void acpigen_write_package(int nr_el);
+char *acpigen_write_package(int nr_el);
 void acpigen_write_zero(void);
 void acpigen_write_one(void);
 void acpigen_write_ones(void);

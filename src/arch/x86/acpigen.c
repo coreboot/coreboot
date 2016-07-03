@@ -87,12 +87,15 @@ void acpigen_emit_dword(unsigned int data)
 	acpigen_emit_byte((data >> 24) & 0xff);
 }
 
-void acpigen_write_package(int nr_el)
+char *acpigen_write_package(int nr_el)
 {
+	char *p;
 	/* package op */
 	acpigen_emit_byte(0x12);
 	acpigen_write_len_f();
+	p = acpigen_get_current();
 	acpigen_emit_byte(nr_el);
+	return p;
 }
 
 void acpigen_write_byte(unsigned int data)

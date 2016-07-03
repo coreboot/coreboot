@@ -229,63 +229,85 @@ struct acpi_spi {
 void acpi_device_write_spi(const struct acpi_spi *spi);
 
 /*
- * Device Properties with _DSD
- * http://uefi.org/sites/default/files/resources/_DSD-device-properties-UUID.pdf
- */
-
-#define ACPI_DP_UUID "daffd814-6eba-4d8c-8a91-bc9bbf4aa301"
-
-enum acpi_dp_type {
-	ACPI_DP_TYPE_INTEGER,
-	ACPI_DP_TYPE_STRING,
-	ACPI_DP_TYPE_REFERENCE,
-};
-
-struct acpi_dp {
-	enum acpi_dp_type type;
-	union {
-		uint64_t integer;
-		const char *string;
-	};
-};
-
-#define ACPI_DP_INTEGER(x)   { .type = ACPI_DP_TYPE_INTEGER, .integer = x }
-#define ACPI_DP_STRING(x)    { .type = ACPI_DP_TYPE_STRING, .string = x }
-#define ACPI_DP_REFERENCE(x) { .type = ACPI_DP_TYPE_REFERENCE, .string = x }
-
-/*
  * Writing Device Properties objects via _DSD
+ *
+ * http://uefi.org/sites/default/files/resources/_DSD-device-properties-UUID.pdf
+ * http://uefi.org/sites/default/files/resources/_DSD-hierarchical-data-extension-UUID-v1.pdf
+ *
+ * The Device Property Hierarchy can be multiple levels deep with multiple
+ * children possible in each level.  In order to support this flexibility
+ * the device property hierarchy must be built up before being written out.
+ *
+ * For example:
+ *
+ * // Child table with string and integer
+ * struct acpi_dp *child = acpi_dp_new_table("CHLD");
+ * acpi_dp_add_string(child, "childstring", "CHILD");
+ * acpi_dp_add_integer(child, "childint", 100);
+ *
+ * // _DSD table with integer and gpio and child pointer
+ * struct acpi_dp *dsd = acpi_dp_new_table("_DSD");
+ * acpi_dp_add_integer(dsd, "number1", 1);
+ * acpi_dp_add_gpio(dsd, "gpio", "\_SB.PCI0.GPIO", 0, 0, 1);
+ * acpi_dp_add_child(dsd, "child", child);
+ *
+ * // Write entries into SSDT and clean up resources
+ * acpi_dp_write(dsd);
+ *
+ * Name(_DSD, Package() {
+ *   ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301")
+ *   Package() {
+ *     Package() { "gpio", Package() { \_SB.PCI0.GPIO, 0, 0, 0 } }
+ *     Package() { "number1", 1 }
+ *   }
+ *   ToUUID("dbb8e3e6-5886-4ba6-8795-1319f52a966b")
+ *   Package() {
+ *     Package() { "child", CHLD }
+ *   }
+ * }
+ * Name(CHLD, Package() {
+ *   ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301")
+ *   Package() {
+ *     Package() { "childstring", "CHILD" }
+ *     Package() { "childint", 100 }
+ *   }
+ * }
  */
 
-/* Start a set of Device Properties with _DSD and UUID */
-void acpi_dp_write_header(void);
+struct acpi_dp;
 
-/* End the Device Properties set and fill in length values */
-void acpi_dp_write_footer(void);
+/* Start a new Device Property table with provided ACPI reference */
+struct acpi_dp *acpi_dp_new_table(const char *ref);
 
-/* Write a Device Property value, but not the key */
-void acpi_dp_write_value(const struct acpi_dp *prop);
+/* Add integer Device Property */
+struct acpi_dp *acpi_dp_add_integer(struct acpi_dp *dp, const char *name,
+				    uint64_t value);
 
-/* Write a Device Property, both key and value */
-void acpi_dp_write_keyval(const char *key, const struct acpi_dp *prop);
+/* Add string Device Property */
+struct acpi_dp *acpi_dp_add_string(struct acpi_dp *dp, const char *name,
+				   const char *string);
 
-/* Write an integer as a Device Property */
-void acpi_dp_write_integer(const char *key, uint64_t value);
+/* Add ACPI reference Device Property */
+struct acpi_dp *acpi_dp_add_reference(struct acpi_dp *dp, const char *name,
+				      const char *reference);
 
-/* Write a string as a Device Property */
-void acpi_dp_write_string(const char *key, const char *value);
+/* Add an array of Device Properties */
+struct acpi_dp *acpi_dp_add_array(struct acpi_dp *dp, struct acpi_dp *array);
 
-/* Write an ACPI reference as a Device Property */
-void acpi_dp_write_reference(const char *key, const char *value);
+/* Add an array of integers Device Property */
+struct acpi_dp *acpi_dp_add_integer_array(struct acpi_dp *dp, const char *name,
+					  uint64_t *array, int len);
 
-/* Write an array of Device Properties */
-void acpi_dp_write_array(const char *key, const struct acpi_dp *array, int len);
+/* Add a GPIO binding Device Property */
+struct acpi_dp *acpi_dp_add_gpio(struct acpi_dp *dp, const char *name,
+				 const char *ref, int index, int pin,
+				 int active_low);
 
-/* Write an array of integers as Device Properties */
-void acpi_dp_write_integer_array(const char *key, uint64_t *array, int len);
+/* Add a child table of Device Properties */
+struct acpi_dp *acpi_dp_add_child(struct acpi_dp *dp, const char *name,
+				  struct acpi_dp *child);
 
-/* Write a GPIO binding Device Property */
-void acpi_dp_write_gpio(const char *key, const char *ref, int index,
-			int pin, int active_low);
+/* Write Device Property hierarchy and clean up resources */
+void acpi_dp_write(struct acpi_dp *table);
 
 #endif

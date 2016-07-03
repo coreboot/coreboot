@@ -32,6 +32,7 @@ static void max98357a_fill_ssdt(struct device *dev)
 {
 	struct drivers_generic_max98357a_config *config = dev->chip_info;
 	const char *path;
+	struct acpi_dp *dp;
 
 	if (!dev->enabled || !config)
 		return;
@@ -51,12 +52,12 @@ static void max98357a_fill_ssdt(struct device *dev)
 	acpigen_write_resourcetemplate_footer();
 
 	/* _DSD for devicetree properties */
-	acpi_dp_write_header();
 	/* This points to the first pin in the first gpio entry in _CRS */
 	path = acpi_device_path(dev);
-	acpi_dp_write_gpio("sdmode-gpio", path, 0, 0, 0);
-	acpi_dp_write_integer("sdmode-delay", config->sdmode_delay);
-	acpi_dp_write_footer();
+	dp = acpi_dp_new_table("_DSD");
+	acpi_dp_add_gpio(dp, "sdmode-gpio", path, 0, 0, 0);
+	acpi_dp_add_integer(dp, "sdmode-delay", config->sdmode_delay);
+	acpi_dp_write(dp);
 
 	acpigen_pop_len(); /* Device */
 	acpigen_pop_len(); /* Scope */

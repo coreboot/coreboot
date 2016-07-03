@@ -38,6 +38,7 @@ static void sd_fill_ssdt(struct device *dev)
 		.pin_count = 1,
 		.pins = { config->sdcard_cd_gpio_default }
 	};
+	struct acpi_dp *dp;
 
 	if (!dev->enabled)
 		return;
@@ -62,9 +63,9 @@ static void sd_fill_ssdt(struct device *dev)
 	acpigen_write_resourcetemplate_footer();
 
 	/* Bind the cd-gpio name to the GpioInt() resource */
-	acpi_dp_write_header();
-	acpi_dp_write_gpio("cd-gpio", path, 0, 0, 1);
-	acpi_dp_write_footer();
+	dp = acpi_dp_new_table("_DSD");
+	acpi_dp_add_gpio(dp, "cd-gpio", path, 0, 0, 1);
+	acpi_dp_write(dp);
 
 	acpigen_pop_len();
 }

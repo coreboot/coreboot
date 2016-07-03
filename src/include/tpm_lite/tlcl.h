@@ -67,22 +67,11 @@ uint32_t tlcl_define_space(uint32_t index, uint32_t perm, uint32_t size);
 #elif IS_ENABLED(CONFIG_TPM2)
 
 /*
- * This enum allows to communicate firmware privilege levels to the TPM layer,
- * which can map them into its own attributes.
+ * Define a TPM space. The define space command TPM command used by the tlcl
+ * layer is enforcing the policy which would not allow to delete the created
+ * space after any PCR0 change from its initial value.
  */
-enum privilege_level {
-	high_privilege = 1,
-	low_privilege
-};
-
-/*
- * Define a TPM space. Privilege level describes who can modify the space
- * (high_privilege - the RO code only, low_privilege - ether RO or RW. The
- * privilege level needs to be dropped below low_privilege before starting the
- * kernel.
- */
-uint32_t tlcl_define_space(uint32_t space_index,
-			   enum privilege_level priv_level, size_t space_size);
+uint32_t tlcl_define_space(uint32_t space_index, size_t space_size);
 #endif
 
 /**

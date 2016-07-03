@@ -39,6 +39,6 @@ static void enable_soc_dev(device_t dev)
 }
 
 struct chip_operations soc_mediatek_mt8173_ops = {
-	CHIP_NAME("SOC Mediatek MT8173\n")
+	CHIP_NAME("SOC Mediatek MT8173")
 	.enable_dev = enable_soc_dev,
 };

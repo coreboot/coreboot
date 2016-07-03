@@ -28,7 +28,9 @@
 
 #define NAU8825_ACPI_NAME	"NAU8"
 #define NAU8825_ACPI_HID	"10508825"
-#define NAU8825_DP_INT(key,val)	acpi_dp_write_integer("nuvoton," key, (val))
+
+#define NAU8825_DP_INT(key,val) \
+	acpi_dp_add_integer(dp, "nuvoton," key, (val))
 
 static void nau8825_fill_ssdt(struct device *dev)
 {
@@ -40,6 +42,7 @@ static void nau8825_fill_ssdt(struct device *dev)
 		.speed = config->bus_speed ? : I2C_SPEED_FAST,
 		.resource = scope,
 	};
+	struct acpi_dp *dp = NULL;
 
 	if (!dev->enabled || !scope)
 		return;
@@ -62,7 +65,7 @@ static void nau8825_fill_ssdt(struct device *dev)
 	acpigen_write_resourcetemplate_footer();
 
 	/* Device Properties */
-	acpi_dp_write_header();
+	dp = acpi_dp_new_table("_DSD");
 	NAU8825_DP_INT("jkdet-enable", config->jkdet_enable);
 	NAU8825_DP_INT("jkdet-pull-enable", config->jkdet_pull_enable);
 	NAU8825_DP_INT("jkdet-pull-up", config->jkdet_pull_up);
@@ -77,10 +80,9 @@ static void nau8825_fill_ssdt(struct device *dev)
 	NAU8825_DP_INT("jack-insert-debounce", config->jack_insert_debounce);
 	NAU8825_DP_INT("jack-eject-deboune", config->jack_eject_debounce);
 	NAU8825_DP_INT("sar-threshold-num", config->sar_threshold_num);
-	acpi_dp_write_integer_array("nuvoton,sar-threshold",
-				    config->sar_threshold,
-				    config->sar_threshold_num);
-	acpi_dp_write_footer();
+	acpi_dp_add_integer_array(dp, "nuvoton,sar-threshold",
+			  config->sar_threshold, config->sar_threshold_num);
+	acpi_dp_write(dp);
 
 	acpigen_pop_len(); /* Device */
 	acpigen_pop_len(); /* Scope */

@@ -24,14 +24,31 @@
 #include <gpio.h>
 #endif
 
-/*
- * Pointer to length field in device properties package
- * Location is set in dp_header() and length filled in by dp_footer()
- */
-static char *dp_count_ptr;
+#define ACPI_DP_UUID		"daffd814-6eba-4d8c-8a91-bc9bbf4aa301"
+#define ACPI_DP_CHILD_UUID	"dbb8e3e6-5886-4ba6-8795-1319f52a966b"
 
-/* Count of the number of device properties in the current set */
-static char dp_count;
+enum acpi_dp_type {
+	ACPI_DP_TYPE_INTEGER,
+	ACPI_DP_TYPE_STRING,
+	ACPI_DP_TYPE_REFERENCE,
+	ACPI_DP_TYPE_TABLE,
+	ACPI_DP_TYPE_ARRAY,
+	ACPI_DP_TYPE_CHILD,
+};
+
+struct acpi_dp {
+	enum acpi_dp_type type;
+	const char *name;
+	struct acpi_dp *next;
+	union {
+		struct acpi_dp *child;
+		struct acpi_dp *array;
+	};
+	union {
+		uint64_t integer;
+		const char *string;
+	};
+};
 
 /* Write empty word value and return pointer to it */
 static void *acpi_device_write_zero_len(void)
@@ -473,39 +490,8 @@ void acpi_device_write_spi(const struct acpi_spi *spi)
 	acpi_device_fill_len(desc_length);
 }
 
-/* Write a header for using _DSD to export Device Properties */
-void acpi_dp_write_header(void)
-{
-	/* Name (_DSD) */
-	acpigen_write_name("_DSD");
-
-	/* Package (2) */
-	acpigen_write_package(2);
-
-	/* ToUUID (ACPI_DP_UUID) */
-	acpigen_write_uuid(ACPI_DP_UUID);
-
-	/* Package (X) */
-	acpigen_emit_byte(0x12);
-	acpigen_write_len_f();
-	dp_count_ptr = acpigen_get_current();
-	acpigen_emit_byte(0); /* Number of elements, filled by dp_footer */
-
-	/* Reset element counter */
-	dp_count = 0;
-}
-
-/* Fill in length values from writing Device Properties */
-void acpi_dp_write_footer(void)
-{
-	/* Patch device property element count */
-	*dp_count_ptr = dp_count;
-
-	acpigen_pop_len(); /* Inner package length */
-	acpigen_pop_len(); /* Outer package length */
-}
-
-void acpi_dp_write_value(const struct acpi_dp *prop)
+static void acpi_dp_write_array(const struct acpi_dp *array);
+static void acpi_dp_write_value(const struct acpi_dp *prop)
 {
 	switch (prop->type) {
 	case ACPI_DP_TYPE_INTEGER:
@@ -515,86 +501,266 @@ void acpi_dp_write_value(const struct acpi_dp *prop)
 		acpigen_write_string(prop->string);
 		break;
 	case ACPI_DP_TYPE_REFERENCE:
+	case ACPI_DP_TYPE_CHILD:
 		acpigen_emit_namestring(prop->string);
+		break;
+	case ACPI_DP_TYPE_ARRAY:
+		acpi_dp_write_array(prop->array);
+		break;
+	default:
 		break;
 	}
 }
 
-/* Write Device Property key with value as an integer */
-void acpi_dp_write_keyval(const char *key, const struct acpi_dp *prop)
+/* Package (2) { "prop->name", VALUE } */
+static void acpi_dp_write_property(const struct acpi_dp *prop)
 {
 	acpigen_write_package(2);
-	acpigen_write_string(key);
+	acpigen_write_string(prop->name);
 	acpi_dp_write_value(prop);
 	acpigen_pop_len();
-	dp_count++;
-}
-
-/* Write Device Property key with value as an integer */
-void acpi_dp_write_integer(const char *key, uint64_t value)
-{
-	const struct acpi_dp prop = ACPI_DP_INTEGER(value);
-	acpi_dp_write_keyval(key, &prop);
-}
-
-/* Write Device Property key with value as a string */
-void acpi_dp_write_string(const char *key, const char *value)
-{
-	const struct acpi_dp prop = ACPI_DP_STRING(value);
-	acpi_dp_write_keyval(key, &prop);
-}
-
-/* Write Device Property key with value as a reference */
-void acpi_dp_write_reference(const char *key, const char *value)
-{
-	const struct acpi_dp prop = ACPI_DP_REFERENCE(value);
-	acpi_dp_write_keyval(key, &prop);
 }
 
 /* Write array of Device Properties */
-void acpi_dp_write_array(const char *key, const struct acpi_dp *array, int len)
+static void acpi_dp_write_array(const struct acpi_dp *array)
 {
-	int i;
-	acpigen_write_package(2);
-	acpigen_write_string(key);
-	acpigen_write_package(len);
-	for (i = 0; i < len; i++)
-		acpi_dp_write_value(&array[i]);
+	const struct acpi_dp *dp;
+	char *pkg_count;
+
+	/* Package element count determined as it is populated */
+	pkg_count = acpigen_write_package(0);
+
+	for (dp = array; dp; dp = dp->next) {
+		acpi_dp_write_value(dp);
+		(*pkg_count)++;
+	}
+
 	acpigen_pop_len();
-	acpigen_pop_len();
-	dp_count++;
 }
 
-/* Write array of Device Properties with values as integers */
-void acpi_dp_write_integer_array(const char *key, uint64_t *array, int len)
+static void acpi_dp_free(struct acpi_dp *dp)
 {
-	int i;
-	acpigen_write_package(2);
-	acpigen_write_string(key);
-	acpigen_write_package(len);
-	for (i = 0; i < len; i++)
-		acpigen_write_integer(array[i]);
-	acpigen_pop_len();
-	acpigen_pop_len();
-	dp_count++;
+	while (dp) {
+		struct acpi_dp *p = dp->next;
+
+		switch (dp->type) {
+		case ACPI_DP_TYPE_CHILD:
+			acpi_dp_free(dp->child);
+			break;
+		case ACPI_DP_TYPE_ARRAY:
+			acpi_dp_free(dp->array);
+			break;
+		default:
+			break;
+		}
+
+		free(dp);
+		dp = p;
+	}
 }
 
-/*
- * Device Properties for GPIO binding
- * linux/Documentation/acpi/gpio-properties.txt
- */
-void acpi_dp_write_gpio(const char *key, const char *ref, int index,
-			int pin, int active_low)
+void acpi_dp_write(struct acpi_dp *table)
 {
-	const struct acpi_dp gpio_prop[] = {
-		/* The device that has _CRS containing GpioIo()/GpioInt() */
-		ACPI_DP_REFERENCE(ref),
-		/* Index of the GPIO resource in _CRS starting from zero */
-		ACPI_DP_INTEGER(index),
-		/* Pin in the GPIO resource, typically zero */
-		ACPI_DP_INTEGER(pin),
-		/* Set if pin is active low */
-		ACPI_DP_INTEGER(active_low)
-	};
-	acpi_dp_write_array(key, gpio_prop, ARRAY_SIZE(gpio_prop));
+	struct acpi_dp *dp, *prop;
+	char *dp_count, *prop_count;
+	int child_count = 0;
+
+	if (!table || table->type != ACPI_DP_TYPE_TABLE)
+		return;
+
+	/* Name (name) */
+	acpigen_write_name(table->name);
+
+	/* Device Property list starts with the next entry */
+	prop = table->next;
+
+	/* Package (DP), default to 2 elements (assuming no children) */
+	dp_count = acpigen_write_package(2);
+
+	/* ToUUID (ACPI_DP_UUID) */
+	acpigen_write_uuid(ACPI_DP_UUID);
+
+	/* Package (PROP), element count determined as it is populated */
+	prop_count = acpigen_write_package(0);
+
+	/* Print base properties */
+	for (dp = prop; dp; dp = dp->next) {
+		if (dp->type == ACPI_DP_TYPE_CHILD) {
+			child_count++;
+		} else {
+			(*prop_count)++;
+			acpi_dp_write_property(dp);
+		}
+	}
+
+	/* Package (PROP) length */
+	acpigen_pop_len();
+
+	if (child_count) {
+		/* Update DP package count to 4 */
+		*dp_count = 4;
+
+		/* ToUUID (ACPI_DP_CHILD_UUID) */
+		acpigen_write_uuid(ACPI_DP_CHILD_UUID);
+
+		/* Print child pointer properties */
+		acpigen_write_package(child_count);
+
+		for (dp = prop; dp; dp = dp->next)
+			if (dp->type == ACPI_DP_TYPE_CHILD)
+				acpi_dp_write_property(dp);
+
+		acpigen_pop_len();
+	}
+
+	/* Package (DP) length */
+	acpigen_pop_len();
+
+	/* Recursively parse children into separate tables */
+	for (dp = prop; dp; dp = dp->next)
+		if (dp->type == ACPI_DP_TYPE_CHILD)
+			acpi_dp_write(dp->child);
+
+	/* Clean up */
+	acpi_dp_free(table);
+}
+
+static struct acpi_dp *acpi_dp_new(struct acpi_dp *dp, enum acpi_dp_type type,
+				   const char *name)
+{
+	struct acpi_dp *new;
+
+	new = malloc(sizeof(struct acpi_dp));
+	if (!new)
+		return NULL;
+
+	memset(new, 0, sizeof(*new));
+	new->type = type;
+	new->name = name;
+
+	if (dp) {
+		/* Add to end of property list */
+		while (dp->next)
+			dp = dp->next;
+		dp->next = new;
+	}
+
+	return new;
+}
+
+struct acpi_dp *acpi_dp_new_table(const char *name)
+{
+	return acpi_dp_new(NULL, ACPI_DP_TYPE_TABLE, name);
+}
+
+struct acpi_dp *acpi_dp_add_integer(struct acpi_dp *dp, const char *name,
+				    uint64_t value)
+{
+	struct acpi_dp *new = acpi_dp_new(dp, ACPI_DP_TYPE_INTEGER, name);
+
+	if (new)
+		new->integer = value;
+
+	return new;
+}
+
+struct acpi_dp *acpi_dp_add_string(struct acpi_dp *dp, const char *name,
+				   const char *string)
+{
+	struct acpi_dp *new = acpi_dp_new(dp, ACPI_DP_TYPE_STRING, name);
+
+	if (new)
+		new->string = string;
+
+	return new;
+}
+
+struct acpi_dp *acpi_dp_add_reference(struct acpi_dp *dp, const char *name,
+				      const char *reference)
+{
+	struct acpi_dp *new = acpi_dp_new(dp, ACPI_DP_TYPE_REFERENCE, name);
+
+	if (new)
+		new->string = reference;
+
+	return new;
+}
+
+struct acpi_dp *acpi_dp_add_child(struct acpi_dp *dp, const char *name,
+				  struct acpi_dp *child)
+{
+	struct acpi_dp *new;
+
+	if (!child || child->type != ACPI_DP_TYPE_TABLE)
+		return NULL;
+
+	new = acpi_dp_new(dp, ACPI_DP_TYPE_CHILD, name);
+	if (new) {
+		new->child = child;
+		new->string = child->name;
+	}
+
+	return new;
+}
+
+struct acpi_dp *acpi_dp_add_array(struct acpi_dp *dp, struct acpi_dp *array)
+{
+	struct acpi_dp *new;
+
+	if (!array || array->type != ACPI_DP_TYPE_TABLE)
+		return NULL;
+
+	new = acpi_dp_new(dp, ACPI_DP_TYPE_ARRAY, array->name);
+	if (new)
+		new->array = array;
+
+	return new;
+}
+
+struct acpi_dp *acpi_dp_add_integer_array(struct acpi_dp *dp, const char *name,
+					  uint64_t *array, int len)
+{
+	struct acpi_dp *dp_array;
+	int i;
+
+	if (len <= 0)
+		return NULL;
+
+	dp_array = acpi_dp_new_table(name);
+	if (!dp_array)
+		return NULL;
+
+	for (i = 0; i < len; i++)
+		if (!acpi_dp_add_integer(dp_array, NULL, array[i]))
+			break;
+
+	acpi_dp_add_array(dp, dp_array);
+
+	return dp_array;
+}
+
+struct acpi_dp *acpi_dp_add_gpio(struct acpi_dp *dp, const char *name,
+				 const char *ref, int index, int pin,
+				 int active_low)
+{
+	struct acpi_dp *gpio = acpi_dp_new_table(name);
+
+	if (!gpio)
+		return NULL;
+
+	/* The device that has _CRS containing GpioIO()/GpioInt() */
+	acpi_dp_add_reference(gpio, NULL, ref);
+
+	/* Index of the GPIO resource in _CRS starting from zero */
+	acpi_dp_add_integer(gpio, NULL, index);
+
+	/* Pin in the GPIO resource, typically zero */
+	acpi_dp_add_integer(gpio, NULL, pin);
+
+	/* Set if pin is active low */
+	acpi_dp_add_integer(gpio, NULL, active_low);
+
+	acpi_dp_add_array(dp, gpio);
+
+	return gpio;
 }

@@ -25,17 +25,20 @@ typedef uint32_t TPM_CC;
 typedef uint32_t TPM_HANDLE;
 typedef uint32_t TPM_RC;
 typedef uint8_t TPMI_YES_NO;
+typedef TPM_ALG_ID TPMI_ALG_HASH;
+typedef TPM_HANDLE TPMI_DH_PCR;
 typedef TPM_HANDLE TPMI_RH_NV_INDEX;
 typedef TPM_HANDLE TPMI_RH_PROVISION;
 typedef TPM_HANDLE TPMI_SH_AUTH_SESSION;
 typedef TPM_HANDLE TPM_RH;
-typedef TPM_ALG_ID TPMI_ALG_HASH;
 
 /* Some hardcoded algorithm values. */
 #define TPM_ALG_HMAC   ((TPM_ALG_ID)0x0005)
 #define TPM_ALG_NULL   ((TPM_ALG_ID)0x0010)
 #define TPM_ALG_SHA1   ((TPM_ALG_ID)0x0004)
 #define TPM_ALG_SHA256 ((TPM_ALG_ID)0x000b)
+
+#define SHA256_DIGEST_SIZE 32
 
 /* Some hardcoded hierarchies. */
 #define TPM_RH_NULL         0x40000007
@@ -64,11 +67,13 @@ struct tpm_header {
 #define TPM2_Startup        ((TPM_CC)0x00000144)
 #define TPM2_NV_Read        ((TPM_CC)0x0000014E)
 #define TPM2_GetCapability  ((TPM_CC)0x0000017A)
+#define TPM2_PCR_Extend     ((TPM_CC)0x00000182)
 
 /* Startup values. */
 #define TPM_SU_CLEAR 0
 #define TPM_SU_STATE 1
 
+#define TPM_HT_PCR             0x00
 #define TPM_HT_NV_INDEX        0x01
 #define TPM_HT_HMAC_SESSION    0x02
 #define TPM_HT_POLICY_SESSION  0x03
@@ -241,6 +246,24 @@ typedef union {
 	TPM2B b;
 } TPM2B_MAX_NV_BUFFER;
 
+/*
+ * This is a union, but as of now we support just one digest - sha256, so
+ * there is just one element.
+ */
+typedef union {
+	uint8_t  sha256[SHA256_DIGEST_SIZE];
+} TPMU_HA;
+
+typedef struct {
+	TPMI_ALG_HASH  hashAlg;
+	TPMU_HA        digest;
+} TPMT_HA;
+
+typedef struct {
+	uint32_t   count;
+	TPMT_HA  digests[1];  /* Limit max number of hashes to 1. */
+} TPML_DIGEST_VALUES;
+
 struct nv_read_response {
 	uint32_t params_size;
 	TPM2B_MAX_NV_BUFFER buffer;
@@ -304,6 +327,11 @@ struct tpm2_nv_read_cmd {
 
 struct tpm2_nv_write_lock_cmd {
 	TPMI_RH_NV_INDEX nvIndex;
+};
+
+struct tpm2_pcr_extend_cmd {
+	TPMI_DH_PCR pcrHandle;
+	TPML_DIGEST_VALUES digests;
 };
 
 #endif // __SRC_LIB_TPM2_TLCL_STRUCTURES_H

@@ -65,10 +65,29 @@ uint32_t tlcl_assert_physical_presence(void)
 	return TPM_SUCCESS;
 }
 
+/*
+ * The caller will provide the digest in a 32 byte buffer, let's consider it a
+ * sha256 digest.
+ */
 uint32_t tlcl_extend(int pcr_num, const uint8_t *in_digest,
 		     uint8_t *out_digest)
 {
-	printk(BIOS_INFO, "%s:%s:%d\n", __FILE__, __func__, __LINE__);
+	struct tpm2_pcr_extend_cmd pcr_ext_cmd;
+	struct tpm2_response *response;
+
+	pcr_ext_cmd.pcrHandle = HR_PCR + pcr_num;
+	pcr_ext_cmd.digests.count = 1;
+	pcr_ext_cmd.digests.digests[0].hashAlg = TPM_ALG_SHA256;
+	memcpy(pcr_ext_cmd.digests.digests[0].digest.sha256, in_digest,
+	       sizeof(pcr_ext_cmd.digests.digests[0].digest.sha256));
+
+	response = tpm_process_command(TPM2_PCR_Extend, &pcr_ext_cmd);
+
+	printk(BIOS_INFO, "%s: response is %x\n",
+	       __func__, response ? response->hdr.tpm_code : -1);
+	if (!response || response->hdr.tpm_code)
+		return TPM_E_IOERROR;
+
 	return TPM_SUCCESS;
 }
 

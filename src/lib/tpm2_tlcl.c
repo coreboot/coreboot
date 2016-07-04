@@ -201,19 +201,22 @@ uint32_t tlcl_set_enable(void)
 	return TPM_SUCCESS;
 }
 
-uint32_t tlcl_set_global_lock(void)
+uint32_t tlcl_lock_nv_write(uint32_t index)
 {
-	/*
-	 * This is where the locking of the RO NVram index is supposed to
-	 * happen. The most likely way to achieve it is to extend PCR used for
-	 * policy when defining this space.
-	 */
-	printk(BIOS_INFO, "%s:%s:%d\n", __FILE__, __func__, __LINE__);
-	return TPM_SUCCESS;
-}
-uint32_t tlcl_set_nv_locked(void)
-{
-	printk(BIOS_INFO, "%s:%s:%d\n", __FILE__, __func__, __LINE__);
+	struct tpm2_response *response;
+	/* TPM Wll reject attempts to write at non-defined index. */
+	struct tpm2_nv_write_lock_cmd nv_wl = {
+		.nvIndex = HR_NV_INDEX + index,
+	};
+
+	response = tpm_process_command(TPM2_NV_WriteLock, &nv_wl);
+
+	printk(BIOS_INFO, "%s: response is %x\n",
+	       __func__, response ? response->hdr.tpm_code : -1);
+
+	if (!response || response->hdr.tpm_code)
+		return TPM_E_IOERROR;
+
 	return TPM_SUCCESS;
 }
 

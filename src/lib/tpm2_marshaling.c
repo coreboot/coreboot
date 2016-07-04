@@ -303,6 +303,15 @@ static void marshal_nv_write(void **buffer,
 	marshal_u16(buffer, command_body->offset, buffer_space);
 }
 
+static void marshal_nv_write_lock(void **buffer,
+				  struct tpm2_nv_write_lock_cmd *command_body,
+				  size_t *buffer_space)
+{
+	uint32_t handles[] = { TPM_RH_PLATFORM, command_body->nvIndex };
+	marshal_common_session_header(buffer, handles,
+				      ARRAY_SIZE(handles), buffer_space);
+}
+
 static void marshal_nv_read(void **buffer,
 			    struct tpm2_nv_read_cmd *command_body,
 			    size_t *buffer_space)
@@ -362,6 +371,10 @@ int tpm_marshal_command(TPM_CC command, void *tpm_command_body,
 
 	case TPM2_NV_Write:
 		marshal_nv_write(&cmd_body, tpm_command_body, &body_size);
+		break;
+
+	case TPM2_NV_WriteLock:
+		marshal_nv_write_lock(&cmd_body, tpm_command_body, &body_size);
 		break;
 
 	case TPM2_SelfTest:
@@ -533,6 +546,7 @@ struct tpm2_response *tpm_unmarshal_response(TPM_CC command,
 	case TPM2_Clear:
 	case TPM2_NV_DefineSpace:
 	case TPM2_NV_Write:
+	case TPM2_NV_WriteLock:
 		/* Session data included in response can be safely ignored. */
 		cr_size = 0;
 		break;

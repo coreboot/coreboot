@@ -136,6 +136,11 @@ uint32_t tlcl_get_flags(uint8_t *disable, uint8_t *deactivated,
 uint32_t tlcl_set_global_lock(void);
 
 /**
+ * Make an NV Ram location read_only.  The TPM error code is returned.
+ */
+uint32_t tlcl_lock_nv_write(uint32_t index);
+
+/**
  * Perform a TPM_Extend.
  */
 uint32_t tlcl_extend(int pcr_num, const uint8_t *in_digest,

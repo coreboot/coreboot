@@ -201,6 +201,27 @@ static void marshal_TPMS_NV_PUBLIC(void **buffer,
 	marshal_u16(buffer, nvpub->dataSize, buffer_space);
 }
 
+static void marshal_TPMT_HA(void **buffer,
+			    TPMT_HA *tpmtha,
+			    size_t *buffer_space)
+{
+	marshal_TPMI_ALG_HASH(buffer, tpmtha->hashAlg, buffer_space);
+	marshal_blob(buffer, tpmtha->digest.sha256,
+		     sizeof(tpmtha->digest.sha256),
+		     buffer_space);
+}
+
+static void marshal_TPML_DIGEST_VALUES(void **buffer,
+				       TPML_DIGEST_VALUES *dvalues,
+				       size_t *buffer_space)
+{
+	int i;
+
+	marshal_u32(buffer, dvalues->count, buffer_space);
+	for (i = 0; i < dvalues->count; i++)
+		marshal_TPMT_HA(buffer, &dvalues->digests[i], buffer_space);
+}
+
 static void marshal_session_header(void **buffer,
 				   struct tpm2_session_header *session_header,
 				   size_t *buffer_space)
@@ -312,6 +333,17 @@ static void marshal_nv_write_lock(void **buffer,
 				      ARRAY_SIZE(handles), buffer_space);
 }
 
+static void marshal_pcr_extend(void **buffer,
+			       struct tpm2_pcr_extend_cmd *command_body,
+			       size_t *buffer_space)
+{
+	uint32_t handle = command_body->pcrHandle;
+
+	marshal_common_session_header(buffer, &handle, 1, buffer_space);
+	marshal_TPML_DIGEST_VALUES(buffer,
+				   &command_body->digests, buffer_space);
+}
+
 static void marshal_nv_read(void **buffer,
 			    struct tpm2_nv_read_cmd *command_body,
 			    size_t *buffer_space)
@@ -383,6 +415,10 @@ int tpm_marshal_command(TPM_CC command, void *tpm_command_body,
 
 	case TPM2_Clear:
 		marshal_clear(&cmd_body, &body_size);
+		break;
+
+	case TPM2_PCR_Extend:
+		marshal_pcr_extend(&cmd_body, tpm_command_body, &body_size);
 		break;
 
 	default:
@@ -547,6 +583,7 @@ struct tpm2_response *tpm_unmarshal_response(TPM_CC command,
 	case TPM2_NV_DefineSpace:
 	case TPM2_NV_Write:
 	case TPM2_NV_WriteLock:
+	case TPM2_PCR_Extend:
 		/* Session data included in response can be safely ignored. */
 		cr_size = 0;
 		break;

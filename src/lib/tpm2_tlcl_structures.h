@@ -59,6 +59,7 @@ struct tpm_header {
 #define TPM2_Clear          ((TPM_CC)0x00000126)
 #define TPM2_NV_DefineSpace ((TPM_CC)0x0000012A)
 #define TPM2_NV_Write       ((TPM_CC)0x00000137)
+#define TPM2_NV_WriteLock   ((TPM_CC)0x00000138)
 #define TPM2_SelfTest       ((TPM_CC)0x00000143)
 #define TPM2_Startup        ((TPM_CC)0x00000144)
 #define TPM2_NV_Read        ((TPM_CC)0x0000014E)
@@ -299,6 +300,10 @@ struct tpm2_nv_read_cmd {
 	TPMI_RH_NV_INDEX nvIndex;
 	uint16_t size;
 	uint16_t offset;
+};
+
+struct tpm2_nv_write_lock_cmd {
+	TPMI_RH_NV_INDEX nvIndex;
 };
 
 #endif // __SRC_LIB_TPM2_TLCL_STRUCTURES_H

@@ -23,7 +23,6 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select HAVE_ACPI_TABLES
 	select HAVE_OPTION_TABLE
 	select TSC_MONOTONIC_TIMER
-	select HAVE_ACPI_RESUME
 
 config MAINBOARD_DIR
 	string

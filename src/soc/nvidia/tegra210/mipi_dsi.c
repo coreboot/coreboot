@@ -105,7 +105,7 @@ int mipi_dsi_host_register(struct mipi_dsi_host *host)
 
 /**
  * mipi_dsi_attach - attach a DSI device to its DSI host
- * @dsi: DSI peripheral
+ * @param dsi: DSI peripheral
  */
 int mipi_dsi_attach(struct mipi_dsi_device *dsi)
 {
@@ -119,7 +119,7 @@ int mipi_dsi_attach(struct mipi_dsi_device *dsi)
 
 /**
  * mipi_dsi_detach - detach a DSI device from its DSI host
- * @dsi: DSI peripheral
+ * @param dsi: DSI peripheral
  */
 int mipi_dsi_detach(struct mipi_dsi_device *dsi)
 {
@@ -134,10 +134,10 @@ int mipi_dsi_detach(struct mipi_dsi_device *dsi)
 /**
  * mipi_dsi_enslave() - use a MIPI DSI peripheral as slave for dual-channel
  *    operation
- * @master: master DSI peripheral device
- * @slave: slave DSI peripheral device
+ * @param master: master DSI peripheral device
+ * @param slave: slave DSI peripheral device
  *
- * Return: 0 on success or a negative error code on failure.
+ * @return 0 on success or a negative error code on failure.
  */
 int mipi_dsi_enslave(struct mipi_dsi_device *master,
 		     struct mipi_dsi_device *slave)
@@ -156,10 +156,10 @@ int mipi_dsi_enslave(struct mipi_dsi_device *master,
 /**
  * mipi_dsi_liberate() - stop using a MIPI DSI peripheral as slave for dual-
  *    channel operation
- * @master: master DSI peripheral device
- * @slave: slave DSI peripheral device
+ * @param master: master DSI peripheral device
+ * @param slave: slave DSI peripheral device
  *
- * Return: 0 on success or a negative error code on failure.
+ * @return 0 on success or a negative error code on failure.
  */
 int mipi_dsi_liberate(struct mipi_dsi_device *master,
 		      struct mipi_dsi_device *slave)
@@ -177,16 +177,15 @@ int mipi_dsi_liberate(struct mipi_dsi_device *master,
 
 /**
  * mipi_dsi_dcs_write() - send DCS write command
- * @dsi: DSI peripheral device
- * @cmd: DCS command
- * @data: buffer containing the command payload
- * @len: command payload length
+ * @param dsi: DSI peripheral device
+ * @param cmd: DCS command
+ * @param data: buffer containing the command payload
+ * @param len: command payload length
  *
  * This function will automatically choose the right data type depending on
  * the command payload length.
  *
- * Return: The number of bytes successfully transmitted or a negative error
- * code on failure.
+ * @return The number of bytes successfully transmitted or a negative error code on failure.
  */
 ssize_t mipi_dsi_dcs_write(struct mipi_dsi_device *dsi, u8 cmd,
 			   const void *data, size_t len)
@@ -261,9 +260,9 @@ ssize_t mipi_dsi_dcs_write(struct mipi_dsi_device *dsi, u8 cmd,
 /**
  * mipi_dsi_dcs_exit_sleep_mode() - enable all blocks inside the display
  *    module
- * @dsi: DSI peripheral device
+ * @param dsi: DSI peripheral device
  *
- * Return: 0 on success or a negative error code on failure.
+ * @return 0 on success or a negative error code on failure.
  */
 int mipi_dsi_dcs_exit_sleep_mode(struct mipi_dsi_device *dsi)
 {
@@ -279,9 +278,9 @@ int mipi_dsi_dcs_exit_sleep_mode(struct mipi_dsi_device *dsi)
 /**
  * mipi_dsi_dcs_set_display_on() - start displaying the image data on the
  *    display device
- * @dsi: DSI peripheral device
+ * @param dsi: DSI peripheral device
  *
- * Return: 0 on success or a negative error code on failure
+ * @return 0 on success or a negative error code on failure
  */
 int mipi_dsi_dcs_set_display_on(struct mipi_dsi_device *dsi)
 {
@@ -297,11 +296,11 @@ int mipi_dsi_dcs_set_display_on(struct mipi_dsi_device *dsi)
 /**
  * mipi_dsi_dcs_set_column_address() - define the column extent of the frame
  *    memory accessed by the host processor
- * @dsi: DSI peripheral device
- * @start: first column of frame memory
- * @end: last column of frame memory
+ * @param dsi: DSI peripheral device
+ * @param start: first column of frame memory
+ * @param end: last column of frame memory
  *
- * Return: 0 on success or a negative error code on failure.
+ * @return 0 on success or a negative error code on failure.
  */
 int mipi_dsi_dcs_set_column_address(struct mipi_dsi_device *dsi, u16 start,
 				    u16 end)
@@ -320,11 +319,11 @@ int mipi_dsi_dcs_set_column_address(struct mipi_dsi_device *dsi, u16 start,
 /**
  * mipi_dsi_dcs_set_page_address() - define the page extent of the frame
  *    memory accessed by the host processor
- * @dsi: DSI peripheral device
- * @start: first page of frame memory
- * @end: last page of frame memory
+ * @param dsi: DSI peripheral device
+ * @param start: first page of frame memory
+ * @param end: last page of frame memory
  *
- * Return: 0 on success or a negative error code on failure.
+ * @return 0 on success or a negative error code on failure.
  */
 int mipi_dsi_dcs_set_page_address(struct mipi_dsi_device *dsi, u16 start,
 				  u16 end)
@@ -343,10 +342,10 @@ int mipi_dsi_dcs_set_page_address(struct mipi_dsi_device *dsi, u16 start,
 /**
  * mipi_dsi_dcs_set_tear_on() - turn on the display module's Tearing Effect
  *    output signal on the TE signal line.
- * @dsi: DSI peripheral device
- * @mode: the Tearing Effect Output Line mode
+ * @param dsi: DSI peripheral device
+ * @param mode: the Tearing Effect Output Line mode
  *
- * Return: 0 on success or a negative error code on failure
+ * @return 0 on success or a negative error code on failure
  */
 int mipi_dsi_dcs_set_tear_on(struct mipi_dsi_device *dsi,
 			     enum mipi_dsi_dcs_tear_mode mode)
@@ -365,10 +364,10 @@ int mipi_dsi_dcs_set_tear_on(struct mipi_dsi_device *dsi,
 /**
  * mipi_dsi_dcs_set_pixel_format() - sets the pixel format for the RGB image
  *    data used by the interface
- * @dsi: DSI peripheral device
- * @format: pixel format
+ * @param dsi: DSI peripheral device
+ * @param format: pixel format
  *
- * Return: 0 on success or a negative error code on failure.
+ * @return 0 on success or a negative error code on failure.
  */
 int mipi_dsi_dcs_set_pixel_format(struct mipi_dsi_device *dsi, u8 format)
 {
@@ -385,17 +384,17 @@ int mipi_dsi_dcs_set_pixel_format(struct mipi_dsi_device *dsi, u8 format)
 /**
  * mipi_dsi_dcs_set_address_mode() - sets the data order for forward transfers
  *    from the host to the peripheral
- * @dsi: DSI peripheral device
- * @reverse_page_address: reverses the page addressing to bottom->top
- * @reverse_col_address: reverses the column addressing to right->left
- * @reverse_page_col_address: reverses the page/column addressing order
- * @refresh_from_bottom: refresh the display bottom to top
- * @reverse_rgb: send pixel data bgr instead of rgb
- * @latch_right_to_left: latch the incoming display data right to left
- * @flip_horizontal: flip the image horizontally, left to right
- * @flip_vertical: flip the image vertically, top to bottom
+ * @param dsi: DSI peripheral device
+ * @param reverse_page_address: reverses the page addressing to bottom->top
+ * @param reverse_col_address: reverses the column addressing to right->left
+ * @param reverse_page_col_address: reverses the page/column addressing order
+ * @param refresh_from_bottom: refresh the display bottom to top
+ * @param reverse_rgb: send pixel data bgr instead of rgb
+ * @param latch_right_to_left: latch the incoming display data right to left
+ * @param flip_horizontal: flip the image horizontally, left to right
+ * @param flip_vertical: flip the image vertically, top to bottom
  *
- * Return: 0 on success or a negative error code on failure.
+ * @return 0 on success or a negative error code on failure.
  */
 int mipi_dsi_dcs_set_address_mode(struct mipi_dsi_device *dsi,
 			bool reverse_page_address,

@@ -84,9 +84,9 @@ static void setup_dwc3(void);
 /**
  * Write register.
  *
- * @base - PHY base virtual address.
- * @offset - register offset.
- * @val - value to write.
+ * @param base - PHY base virtual address.
+ * @param offset - register offset.
+ * @param val - value to write.
  */
 static inline void qscratch_write(void *base, u32 offset, u32 val)
 {
@@ -96,10 +96,10 @@ static inline void qscratch_write(void *base, u32 offset, u32 val)
 /**
  * Write register and read back masked value to confirm it is written
  *
- * @base - base virtual address.
- * @offset - register offset.
- * @mask - register bitmask specifying what should be updated
- * @val - value to write.
+ * @param base - base virtual address.
+ * @param offset - register offset.
+ * @param mask - register bitmask specifying what should be updated
+ * @param val - value to write.
  */
 static inline void qscratch_write_readback(void *base, u32 offset,
 						const u32 mask, u32 val)

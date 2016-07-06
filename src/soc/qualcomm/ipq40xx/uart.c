@@ -82,8 +82,8 @@ static const uart_params_t uart_board_param = {
 };
 
 /**
- * msm_boot_uart_dm_init_rx_transfer - Init Rx transfer
- * @uart_dm_base: UART controller base address
+ * @brief msm_boot_uart_dm_init_rx_transfer - Init Rx transfer
+ * @param uart_dm_base: UART controller base address
  */
 static unsigned int msm_boot_uart_dm_init_rx_transfer(void *uart_dm_base)
 {
@@ -138,9 +138,9 @@ void uart_tx_byte(int idx, unsigned char data)
 }
 #endif /* CONFIG_SERIAL_UART */
 
-/*
- * msm_boot_uart_dm_reset - resets UART controller
- * @base: UART controller base address
+/**
+ * @brief msm_boot_uart_dm_reset - resets UART controller
+ * @param base: UART controller base address
  */
 static unsigned int msm_boot_uart_dm_reset(void *base)
 {
@@ -154,9 +154,9 @@ static unsigned int msm_boot_uart_dm_reset(void *base)
 	return MSM_BOOT_UART_DM_E_SUCCESS;
 }
 
-/*
- * msm_boot_uart_dm_init - initilaizes UART controller
- * @uart_dm_base: UART controller base address
+/**
+ * @brief msm_boot_uart_dm_init - initilaizes UART controller
+ * @param uart_dm_base: UART controller base address
  */
 unsigned int msm_boot_uart_dm_init(void  *uart_dm_base)
 {
@@ -223,7 +223,7 @@ unsigned int msm_boot_uart_dm_init(void  *uart_dm_base)
 }
 
 /**
- * ipq40xx_uart_init - initializes UART
+ * @brief ipq40xx_uart_init - initializes UART
  *
  * Initializes clocks, GPIO and UART controller.
  */
@@ -259,8 +259,8 @@ void ipq40xx_uart_init(void)
 }
 
 /**
- * uart_tx_flush - transmits a string of data
- * @s: string to transmit
+ * @brief uart_tx_flush - transmits a string of data
+ * @param idx: string to transmit
  */
 void uart_tx_flush(int idx)
 {

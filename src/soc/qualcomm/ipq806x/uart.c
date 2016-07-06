@@ -84,7 +84,7 @@ static const uart_params_t uart_board_param = {
 
 /**
  * msm_boot_uart_dm_init_rx_transfer - Init Rx transfer
- * @uart_dm_base: UART controller base address
+ * @param uart_dm_base: UART controller base address
  */
 static unsigned int msm_boot_uart_dm_init_rx_transfer(void *uart_dm_base)
 {

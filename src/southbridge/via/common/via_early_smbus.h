@@ -15,7 +15,7 @@
  */
 
 /**
- * @file via_early_sambus.h
+ * @file via_early_smbus.h
  *
  * This file contains generic definitions used in VIA SMBus controllers.
  *

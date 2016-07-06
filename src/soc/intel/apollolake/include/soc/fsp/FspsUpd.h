@@ -71,7 +71,7 @@ struct FSP_S_CONFIG {
 
 /** Offset 0x0025 - Memory region allocation for Processor Trace
   Memory region allocation for Processor Trace, allowed range is from 4K (0x0) to
-  128MB (0xF); <b>0xFF: Disable. 0xFF:Disable(Default)
+  128MB (0xF); 0xFF: Disable. 0xFF:Disable(Default)
 **/
   uint8_t                       ProcTraceMemSize;
 
@@ -1334,7 +1334,7 @@ struct FSP_S_CONFIG {
 
 /** Offset 0x02D2 - Skip Multi-Processor Initialization
   When this is skipped, boot loader must initialize processors before SilicionInit
-  API. 0: Initialize(Default), <b>1: Skip
+  API. 0: Initialize(Default), 1: Skip
   $EN_DIS
 **/
   uint8_t                       SkipMpInit;

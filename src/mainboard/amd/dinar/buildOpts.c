@@ -21,8 +21,6 @@
  * This file is placed in the user's platform directory and contains the
  * build option selections desired for that platform.
  *
- * For Information about this file, see @ref platforminstall.
- *
  */
 #include <stdlib.h>
 #include "AGESA.h"

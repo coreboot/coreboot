@@ -35,32 +35,28 @@ struct mipi_dsi_device;
 #define MIPI_DSI_MSG_USE_LPM	BIT(1)
 
 /**
- * struct mipi_dsi_msg - read/write DSI buffer
- * @channel: virtual channel id
- * @type: payload data type
- * @flags: flags controlling this message transmission
- * @tx_len: length of @tx_buf
- * @tx_buf: data to be written
- * @rx_len: length of @rx_buf
- * @rx_buf: data to be read, or NULL
+ * @brief mipi_dsi_msg - read/write DSI buffer
  */
 struct mipi_dsi_msg {
-	u8 channel;
-	u8 type;
-	u16 flags;
+	u8 channel;		/**< virtual channel id */
+	u8 type;		/**< payload data type */
+	u16 flags;		/**< flags controlling this message transmission */
 
-	size_t tx_len;
-	const void *tx_buf;
+	size_t tx_len;		/**< length of tx_buf */
+	const void *tx_buf;	/**< data to be written */
 
-	size_t rx_len;
-	void *rx_buf;
+	size_t rx_len;		/**< length of rx_buf */
+	void *rx_buf;		/**< data to be read, or NULL */
 };
 
 /**
- * struct mipi_dsi_host_ops - DSI bus operations
- * @attach: attach DSI device to DSI host
- * @detach: detach DSI device from DSI host
- * @transfer: transmit a DSI packet
+ * @brief mipi_dsi_host_ops - DSI bus operations
+ * @var mipi_dsi_host_ops::attach
+ *      attach DSI device to DSI host
+ * @var mipi_dsi_host_ops::detach
+ *      detach DSI device from DSI host
+ * @var mipi_dsi_host_ops::transfer
+ *     transmit a DSI packet
  *
  * DSI packets transmitted by .transfer() are passed in as mipi_dsi_msg
  * structures. This structure contains information about the type of packet
@@ -84,14 +80,12 @@ struct mipi_dsi_host_ops {
 };
 
 /**
- * struct mipi_dsi_host - DSI host device
- * @dev: driver model device node for this DSI host
- * @ops: DSI host operations
+ * @brief mipi_dsi_host - DSI host device
  */
 struct mipi_dsi_host {
 	//struct device *dev;
-	void *dev;
-	const struct mipi_dsi_host_ops *ops;
+	void *dev;	/**< driver model device node for this DSI host */
+	const struct mipi_dsi_host_ops *ops; /**< DSI host operations */
 };
 
 int mipi_dsi_host_register(struct mipi_dsi_host *host);
@@ -136,32 +130,23 @@ struct mipi_dsi_master_ops {
 };
 
 /**
- * struct mipi_dsi_device - DSI peripheral device
- * @host: DSI host for this peripheral
- * @dev: driver model device node for this peripheral
- * @channel: virtual channel assigned to the peripheral
- * @format: pixel format for video mode
- * @lanes: number of active data lanes
- * @mode_flags: DSI operation mode related flags
- * @ops: callbacks for master/slave setup
- * @master: master interface for dual-channel peripherals
- * @slave: slave interface for dual-channel peripherals
+ * @brief mipi_dsi_device - DSI peripheral device
  *
  * For dual-channel interfaces, the master interface can be identified by the
  * fact that it's .slave field is set to non-NULL. The slave interface will
  * have the .master field set to non-NULL.
  */
 struct mipi_dsi_device {
-	struct mipi_dsi_host *host;
+	struct mipi_dsi_host *host;	/**< DSI host for this peripheral */
 
-	unsigned int channel;
-	unsigned int lanes;
-	enum mipi_dsi_pixel_format format;
-	unsigned long mode_flags;
+	unsigned int channel;	/**< virtual channel assigned to the peripheral */
+	unsigned int lanes;	/**< number of active data lanes */
+	enum mipi_dsi_pixel_format format;	/**< pixel format for video mode */
+	unsigned long mode_flags;	/**< DSI operation mode related flags */
 
-	const struct mipi_dsi_master_ops *ops;
-	struct mipi_dsi_device *master;
-	struct mipi_dsi_device *slave;
+	const struct mipi_dsi_master_ops *ops;	/**< callbacks for master/slave setup */
+	struct mipi_dsi_device *master;	/**< master interface for dual-channel peripherals */
+	struct mipi_dsi_device *slave;	/**< slave interface for dual-channel peripherals */
 };
 
 int mipi_dsi_attach(struct mipi_dsi_device *dsi);
@@ -172,11 +157,12 @@ int mipi_dsi_liberate(struct mipi_dsi_device *master,
 		      struct mipi_dsi_device *slave);
 
 /**
- * enum mipi_dsi_dcs_tear_mode - Tearing Effect Output Line mode
- * @MIPI_DSI_DCS_TEAR_MODE_VBLANK: the TE output line consists of V-Blanking
- *    information only
- * @MIPI_DSI_DCS_TEAR_MODE_VHBLANK : the TE output line consists of both
- *    V-Blanking and H-Blanking information
+ * @brief mipi_dsi_dcs_tear_mode - Tearing Effect Output Line mode
+ * @var mipi_dsi_dcs_tear_mode::MIPI_DSI_DCS_TEAR_MODE_VBLANK
+ *     the TE output line consists of V-Blanking information only
+ * @var mipi_dsi_dcs_tear_mode::MIPI_DSI_DCS_TEAR_MODE_VHBLANK
+ *      the TE output line consists of both V-Blanking and H-Blanking
+ *      information
  */
 enum mipi_dsi_dcs_tear_mode {
 	MIPI_DSI_DCS_TEAR_MODE_VBLANK,

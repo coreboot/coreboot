@@ -553,6 +553,7 @@ int dp_controller_init(struct s5p_dp_device *dp_device)
 /**
  * Init the LCD controller
  *
+ * @param panel_data
  * @param lcdbase	Base address of LCD frame buffer
  * @return 0 if ok, -ve error code on error
  */

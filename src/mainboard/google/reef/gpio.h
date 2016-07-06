@@ -282,7 +282,7 @@ static const struct pad_config gpio_table[] = {
 
 	PAD_CFG_GPI_APIC(GPIO_9, NONE, DEEP, LEVEL, NONE), /* dTPM IRQ */
 	PAD_CFG_GPI(GPIO_10, UP_20K, DEEP),	 /* unused */
-	PAD_CFG_GPI_SCI(GPIO_11, NONE, DEEP, LEVEL, NONE), /* EC SCI  */
+	PAD_CFG_GPI_SCI(GPIO_11, NONE, DEEP, EDGE_SINGLE, INVERT), /* EC SCI  */
 	PAD_CFG_GPI(GPIO_12, UP_20K, DEEP),	 /* unused */
 	PAD_CFG_GPI(GPIO_13, UP_20K, DEEP),	 /* unused */
 	PAD_CFG_GPI_APIC(GPIO_14, UP_20K, DEEP, LEVEL, NONE), /* FP IRQ */

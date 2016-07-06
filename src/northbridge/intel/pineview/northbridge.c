@@ -36,7 +36,6 @@
  * 0xe0000 - 0xfffff: SeaBIOS, if used, otherwise DMI
  */
 static const int legacy_hole_base_k = 0xa0000 / 1024;
-static const int legacy_hole_size_k = 128;
 
 static void add_fixed_resources(device_t dev, int index)
 {

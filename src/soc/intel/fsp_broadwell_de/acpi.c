@@ -78,7 +78,35 @@ static acpi_cstate_t cstate_map[] = {
 
 static int acpi_sci_irq(void)
 {
-	return 9;
+	uint8_t actl = 0;
+	static uint8_t sci_irq = 0;
+	device_t dev = dev_find_slot(0, PCI_DEVFN(LPC_DEV, LPC_FUNC));
+
+	/* If this function was already called, just return the stored value. */
+	if (sci_irq)
+		return sci_irq;
+	/* Get contents of ACPI control register. */
+	actl = pci_read_config8(dev, ACPI_CNTL_OFFSET) & SCIS_MASK;
+	/* Determine how SCI is routed. */
+	switch (actl) {
+	case SCIS_IRQ9:
+	case SCIS_IRQ10:
+	case SCIS_IRQ11:
+		sci_irq = actl + 9;
+		break;
+	case SCIS_IRQ20:
+	case SCIS_IRQ21:
+	case SCIS_IRQ22:
+	case SCIS_IRQ23:
+		sci_irq = actl - SCIS_IRQ20 + 20;
+		break;
+	default:
+		printk(BIOS_DEBUG, "Invalid SCI route! Defaulting to IRQ9.\n");
+		sci_irq = 9;
+		break;
+	}
+	printk(BIOS_DEBUG, "SCI is IRQ%d\n", sci_irq);
+	return sci_irq;
 }
 
 void acpi_create_intel_hpet(acpi_hpet_t *hpet)

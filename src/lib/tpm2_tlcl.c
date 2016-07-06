@@ -246,12 +246,12 @@ uint32_t tlcl_write(uint32_t index, const void *data, uint32_t length)
 
 	response = tpm_process_command(TPM2_NV_Write, &nv_writec);
 
-	/* Need to map tpm error codes into internal values. */
-	if (!response)
-		return TPM_E_WRITE_FAILURE;
+	printk(BIOS_INFO, "%s: response is %x\n",
+	       __func__, response ? response->hdr.tpm_code : -1);
 
-	printk(BIOS_INFO, "%s:%d return code %x\n", __func__, __LINE__,
-	       response->hdr.tpm_code);
+	/* Need to map tpm error codes into internal values. */
+	if (!response || response->hdr.tpm_code)
+		return TPM_E_WRITE_FAILURE;
 
 	return TPM_SUCCESS;
 }

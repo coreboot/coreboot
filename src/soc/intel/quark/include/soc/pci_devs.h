@@ -19,6 +19,7 @@
 #define _QUARK_PCI_DEVS_H_
 
 #include <device/pci.h>
+#include <device/pci_def.h>
 #include <soc/reg_access.h>
 
 /* DEVICE 0 (Memory Controller Hub) */
@@ -54,12 +55,12 @@
 #define PCIE_DEV		0x17
 #define PCIE_PORT0_DEV		PCIE_DEV
 #define PCIE_PORT0_FUNC		0
-#define PCIE_PORT0_DEV_FUNC	DEV_FUNC(PCIE_DEV, PCIE_PORT0_FUNC)
+#define PCIE_PORT0_DEV_FUNC	PCI_DEVFN(PCIE_DEV, PCIE_PORT0_FUNC)
 #define PCIE_PORT0_BDF	PCI_DEV(PCI_BUS_NUMBER_QNC, PCIE_DEV, PCIE_PORT0_FUNC)
 
 #define PCIE_PORT1_DEV		PCIE_DEV
 #define PCIE_PORT1_FUNC		1
-#define PCIE_PORT1_DEV_FUNC	DEV_FUNC(PCIE_DEV,PCIE_PORT1_FUNC)
+#define PCIE_PORT1_DEV_FUNC	PCI_DEVFN(PCIE_DEV,PCIE_PORT1_FUNC)
 #define PCIE_PORT1_BDF	PCI_DEV(PCI_BUS_NUMBER_QNC, PCIE_DEV, PCIE_PORT1_FUNC)
 
 /* Platform Controller Unit */

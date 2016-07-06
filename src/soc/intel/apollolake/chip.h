@@ -18,6 +18,7 @@
 #ifndef _SOC_APOLLOLAKE_CHIP_H_
 #define _SOC_APOLLOLAKE_CHIP_H_
 
+#include <soc/gpio_defs.h>
 #include <soc/gpio.h>
 #include <soc/intel/common/lpss_i2c.h>
 #include <device/i2c.h>

@@ -21,15 +21,6 @@
 #include <soc/pci_devs.h>
 #include <soc/reg_access.h>
 
-static const struct reg_script clear_smi_and_wake_events[] = {
-	/* Clear any SMI or wake events */
-	REG_GPE0_READ(R_QNC_GPE0BLK_GPE0S),
-	REG_GPE0_READ(R_QNC_GPE0BLK_SMIS),
-	REG_GPE0_OR(R_QNC_GPE0BLK_GPE0S, B_QNC_GPE0BLK_GPE0S_ALL),
-	REG_GPE0_OR(R_QNC_GPE0BLK_SMIS, B_QNC_GPE0BLK_SMIS_ALL),
-	REG_SCRIPT_END
-};
-
 static const struct reg_script legacy_gpio_init[] = {
 	/* Temporarily enable the legacy GPIO controller */
 	REG_PCI_WRITE32(R_QNC_LPC_GBA_BASE, IO_ADDRESS_VALID

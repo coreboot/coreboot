@@ -198,7 +198,7 @@ typedef struct {
 typedef union {
 	struct {
 		uint16_t  size;
-		uint8_t   buffer[sizeof(TPMU_HA)];
+		const uint8_t   *buffer;
 	} t;
 	TPM2B b;
 } TPM2B_DIGEST;

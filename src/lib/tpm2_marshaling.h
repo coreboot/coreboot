@@ -25,7 +25,7 @@
  *
  */
 int tpm_marshal_command(TPM_CC command, void *tpm_command_body,
-			void *buffer, int buffer_size);
+			void *buffer, size_t buffer_size);
 
 /**
  * tpm_unmarshal_response
@@ -44,6 +44,6 @@ int tpm_marshal_command(TPM_CC command, void *tpm_command_body,
  */
 struct tpm2_response *tpm_unmarshal_response(TPM_CC command,
 					     void *response_body,
-					     int response_size);
+					     size_t response_size);
 
 #endif // __SRC_LIB_TPM2_MARSHALING_H

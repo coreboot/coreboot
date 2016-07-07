@@ -21,11 +21,14 @@ static uint16_t tpm_tag;  /* Depends on the command type. */
  * Should there be not enough data in the buffer to unmarshal the required
  * object, the remaining data size is set to -1 to indicate the error. The
  * remaining data size is expected to be set to zero once the last data item
- * has been extracted from the buffer.
+ * has been extracted from the receive buffer.
  */
 static uint16_t unmarshal_u16(void **buffer, int *buffer_space)
 {
 	uint16_t value;
+
+	if (*buffer_space < 0)
+		return 0;
 
 	if (*buffer_space < sizeof(value)) {
 		*buffer_space = -1; /* Indicate a failure. */
@@ -43,6 +46,9 @@ static uint16_t unmarshal_u32(void **buffer, int *buffer_space)
 {
 	uint32_t value;
 
+	if (*buffer_space < 0)
+		return 0;
+
 	if (*buffer_space < sizeof(value)) {
 		*buffer_space = -1; /* Indicate a failure. */
 		return 0;
@@ -58,6 +64,9 @@ static uint16_t unmarshal_u32(void **buffer, int *buffer_space)
 static uint8_t unmarshal_u8(void **buffer, int *buffer_space)
 {
 	uint8_t value;
+
+	if (*buffer_space < 0)
+		return 0;
 
 	if (*buffer_space < sizeof(value)) {
 		*buffer_space = -1; /* Indicate a failure. */
@@ -87,7 +96,7 @@ static uint8_t unmarshal_u8(void **buffer, int *buffer_space)
   * parameter set.
   */
 static void marshal_blob(void **buffer, void *blob,
-			 size_t blob_size, int *buffer_space)
+			 size_t blob_size, size_t *buffer_space)
 {
 	if (*buffer_space < blob_size) {
 		*buffer_space = -1;
@@ -95,16 +104,16 @@ static void marshal_blob(void **buffer, void *blob,
 	}
 
 	memcpy(*buffer, blob, blob_size);
-	buffer_space -= blob_size;
+	*buffer_space -= blob_size;
 	*buffer = (void *)((uintptr_t)(*buffer) + blob_size);
 }
 
-static void marshal_u8(void **buffer, uint8_t value, int *buffer_space)
+static void marshal_u8(void **buffer, uint8_t value, size_t *buffer_space)
 {
 	uint8_t *bp = *buffer;
 
 	if (*buffer_space < sizeof(value)) {
-		*buffer_space = -1;
+		*buffer_space = 0;
 		return;
 	}
 
@@ -113,10 +122,10 @@ static void marshal_u8(void **buffer, uint8_t value, int *buffer_space)
 	*buffer_space -= sizeof(value);
 }
 
-static void marshal_u16(void **buffer, uint16_t value, int *buffer_space)
+static void marshal_u16(void **buffer, uint16_t value, size_t *buffer_space)
 {
 	if (*buffer_space < sizeof(value)) {
-		*buffer_space = -1;
+		*buffer_space = 0;
 		return;
 	}
 	write_be16(*buffer, value);
@@ -124,10 +133,10 @@ static void marshal_u16(void **buffer, uint16_t value, int *buffer_space)
 	*buffer_space -= sizeof(value);
 }
 
-static void marshal_u32(void **buffer, uint32_t value, int *buffer_space)
+static void marshal_u32(void **buffer, uint32_t value, size_t *buffer_space)
 {
 	if (*buffer_space < sizeof(value)) {
-		*buffer_space = -1;
+		*buffer_space = 0;
 		return;
 	}
 
@@ -144,14 +153,14 @@ static void marshal_u32(void **buffer, uint32_t value, int *buffer_space)
 
 static void marshal_startup(void **buffer,
 			   struct tpm2_startup *cmd_body,
-			   int *buffer_space)
+			   size_t *buffer_space)
 {
 	marshal_u16(buffer, cmd_body->startup_type, buffer_space);
 }
 
 static void marshal_get_capability(void **buffer,
 				   struct tpm2_get_capability *cmd_body,
-				   int *buffer_space)
+				   size_t *buffer_space)
 {
 	marshal_u32(buffer, cmd_body->capability, buffer_space);
 	marshal_u32(buffer, cmd_body->property, buffer_space);
@@ -160,12 +169,12 @@ static void marshal_get_capability(void **buffer,
 
 static void marshal_TPM2B(void **buffer,
 			  TPM2B *data,
-			  int *buffer_space)
+			  size_t *buffer_space)
 {
 	size_t total_size = data->size + sizeof(data->size);
 
 	if (total_size > *buffer_space) {
-		*buffer_space = -1;
+		*buffer_space = 0;
 		return;
 	}
 	marshal_u16(buffer, data->size, buffer_space);
@@ -176,14 +185,14 @@ static void marshal_TPM2B(void **buffer,
 
 static void marshal_TPMA_NV(void **buffer,
 			    TPMA_NV *nv,
-			    int *buffer_space)
+			    size_t *buffer_space)
 {
 	marshal_u32(buffer, *((uint32_t *)nv), buffer_space);
 }
 
 static void marshal_TPMS_NV_PUBLIC(void **buffer,
 				   TPMS_NV_PUBLIC *nvpub,
-				   int *buffer_space)
+				   size_t *buffer_space)
 {
 	marshal_TPM_HANDLE(buffer, nvpub->nvIndex, buffer_space);
 	marshal_TPMI_ALG_HASH(buffer, nvpub->nameAlg, buffer_space);
@@ -194,12 +203,17 @@ static void marshal_TPMS_NV_PUBLIC(void **buffer,
 
 static void marshal_session_header(void **buffer,
 				   struct tpm2_session_header *session_header,
-				   int *buffer_space)
+				   size_t *buffer_space)
 {
-	int base_size;
+	size_t base_size;
 	void *size_location = *buffer;
 
 	/* Skip room for the session header size. */
+	if (*buffer_space < sizeof(uint32_t)) {
+		*buffer_space = 0;
+		return;
+	}
+
 	*buffer_space -= sizeof(uint32_t);
 	*buffer = (void *)(((uintptr_t) *buffer) + sizeof(uint32_t));
 
@@ -214,7 +228,7 @@ static void marshal_session_header(void **buffer,
 	marshal_blob(buffer, session_header->auth,
 		     session_header->auth_size, buffer_space);
 
-	if (*buffer_space < 0)
+	if (!*buffer_space)
 		return;  /* The structure did not fit. */
 
 	/* Paste in the session size. */
@@ -223,10 +237,11 @@ static void marshal_session_header(void **buffer,
 
 static void marshal_nv_define_space(void **buffer,
 				    struct tpm2_nv_define_space_cmd *nvd_in,
-				    int *buffer_space)
+				    size_t *buffer_space)
 {
 	void *size_location;
-	int base_size;
+	size_t base_size;
+	size_t sizeof_nv_public_size = sizeof(uint16_t);
 	struct tpm2_session_header session_header;
 
 	marshal_TPM_HANDLE(buffer, TPM_RH_PLATFORM, buffer_space);
@@ -242,17 +257,25 @@ static void marshal_nv_define_space(void **buffer,
 
 	/* Allocate room for the size. */
 	*buffer = ((uint8_t *)(*buffer)) + sizeof(uint16_t);
-	*buffer_space -= sizeof(uint16_t);
+
+	if (*buffer_space < sizeof_nv_public_size) {
+		*buffer_space = 0;
+		return;
+	}
+	*buffer_space -= sizeof_nv_public_size;
 	base_size = *buffer_space;
 
 	marshal_TPMS_NV_PUBLIC(buffer, &nvd_in->publicInfo, buffer_space);
+	if (!*buffer_space)
+		return;
+
 	base_size = base_size - *buffer_space;
-	marshal_u16(&size_location, (uint16_t)base_size, &base_size);
+	marshal_u16(&size_location, base_size, &sizeof_nv_public_size);
 }
 
 static void marshal_nv_write(void **buffer,
 			     struct tpm2_nv_write_cmd *command_body,
-			     int *buffer_space)
+			     size_t *buffer_space)
 {
 	struct tpm2_session_header session_header;
 
@@ -269,7 +292,7 @@ static void marshal_nv_write(void **buffer,
 
 static void marshal_nv_read(void **buffer,
 			    struct tpm2_nv_read_cmd *command_body,
-			    int *buffer_space)
+			    size_t *buffer_space)
 {
 	struct tpm2_session_header session_header;
 
@@ -285,17 +308,17 @@ static void marshal_nv_read(void **buffer,
 
 static void marshal_selftest(void **buffer,
 			     struct tpm2_self_test *command_body,
-			     int *buffer_space)
+			     size_t *buffer_space)
 {
 	marshal_u8(buffer, command_body->yes_no, buffer_space);
 }
 
 int tpm_marshal_command(TPM_CC command, void *tpm_command_body,
-			void *buffer, int buffer_size)
+			void *buffer, size_t buffer_size)
 {
 	void *cmd_body = (uint8_t *)buffer + sizeof(struct tpm_header);
-	int max_body_size = buffer_size - sizeof(struct tpm_header);
-	int body_size = max_body_size;
+	size_t max_body_size = buffer_size - sizeof(struct tpm_header);
+	size_t body_size = max_body_size;
 
 	/* Will be modified when marshaling some commands. */
 	tpm_tag = TPM_ST_NO_SESSIONS;
@@ -328,7 +351,7 @@ int tpm_marshal_command(TPM_CC command, void *tpm_command_body,
 		break;
 
 	default:
-		body_size = -1;
+		body_size = 0;
 		printk(BIOS_INFO, "%s:%d:Request to marshal unsupported command %#x\n",
 		       __FILE__, __LINE__, command);
 	}
@@ -396,10 +419,11 @@ static void unmarshal_TPM2B_MAX_NV_BUFFER(void **buffer,
 					  TPM2B_MAX_NV_BUFFER *nv_buffer)
 {
 	nv_buffer->t.size = unmarshal_u16(buffer, size);
-	if (nv_buffer->t.size > *size) {
+	if ((*size < 0) || (nv_buffer->t.size > *size)) {
 		printk(BIOS_ERR, "%s:%d - "
 		       "size mismatch: expected %d, remaining %d\n",
 		       __func__, __LINE__, nv_buffer->t.size, *size);
+		*size = -1;
 		return;
 	}
 
@@ -442,11 +466,16 @@ static void unmarshal_nv_read(void **buffer, int *size,
 
 struct tpm2_response *tpm_unmarshal_response(TPM_CC command,
 					     void *response_body,
-					     int cr_size)
+					     size_t in_size)
 {
 	static struct tpm2_response tpm2_resp;
+	/*
+	 * Should be 0 when done, positive and negaitive values indicate
+	 * unmarshaling errors.
+	 */
+	int cr_size = in_size;
 
-	if (cr_size < sizeof(struct tpm_header))
+	if ((cr_size < 0) || (in_size < sizeof(struct tpm_header)))
 		return NULL;
 
 	tpm2_resp.hdr.tpm_tag = unmarshal_u16(&response_body, &cr_size);

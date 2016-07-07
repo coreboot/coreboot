@@ -19,12 +19,9 @@
 #include <delay.h>
 #include <gpio.h>
 
-int gpio_base2_value(gpio_t gpio[], int num_gpio)
+static int _gpio_base2_value(gpio_t gpio[], int num_gpio)
 {
 	int i, result = 0;
-
-	for (i = 0; i < num_gpio; i++)
-		gpio_input(gpio[i]);
 
 	/* Wait until signals become stable */
 	udelay(10);
@@ -33,6 +30,36 @@ int gpio_base2_value(gpio_t gpio[], int num_gpio)
 		result |= gpio_get(gpio[i]) << i;
 
 	return result;
+}
+
+int gpio_base2_value(gpio_t gpio[], int num_gpio)
+{
+	int i;
+
+	for (i = 0; i < num_gpio; i++)
+		gpio_input(gpio[i]);
+
+	return _gpio_base2_value(gpio, num_gpio);
+}
+
+int gpio_pulldown_base2_value(gpio_t gpio[], int num_gpio)
+{
+	int i;
+
+	for (i = 0; i < num_gpio; i++)
+		gpio_input_pulldown(gpio[i]);
+
+	return _gpio_base2_value(gpio, num_gpio);
+}
+
+int gpio_pullup_base2_value(gpio_t gpio[], int num_gpio)
+{
+	int i;
+
+	for (i = 0; i < num_gpio; i++)
+		gpio_input_pullup(gpio[i]);
+
+	return _gpio_base2_value(gpio, num_gpio);
 }
 
 int _gpio_base3_value(gpio_t gpio[], int num_gpio, int binary_first)

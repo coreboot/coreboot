@@ -14,6 +14,7 @@
  */
 
 #include <arch/acpi.h>
+#include <boardid.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <nhlt.h>
@@ -24,7 +25,21 @@
 
 static void mainboard_init(void *chip_info)
 {
+	int boardid;
+
+	boardid = board_id();
+	printk(BIOS_INFO, "Board ID: %d\n", boardid);
+
 	gpio_configure_pads(gpio_table, ARRAY_SIZE(gpio_table));
+
+	/* Apply proto board settings if board matches. */
+	if (boardid == 0)
+		gpio_configure_pads(proto_diff_table,
+					ARRAY_SIZE(proto_diff_table));
+	else
+		gpio_configure_pads(nonproto_diff_table,
+					ARRAY_SIZE(nonproto_diff_table));
+
 	mainboard_ec_init();
 }
 

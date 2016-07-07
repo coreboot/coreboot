@@ -211,3 +211,35 @@ void meminit_lpddr4_enable_channel(struct FSP_M_CONFIG *cfg, int logical_chan,
 		break;
 	}
 }
+
+void meminit_lpddr4_by_sku(struct FSP_M_CONFIG *cfg,
+				const struct lpddr4_cfg *lpcfg, size_t sku_id)
+{
+	const struct lpddr4_sku *sku;
+
+	if (sku_id >= lpcfg->num_skus) {
+		printk(BIOS_ERR, "Too few LPDDR4 SKUs: 0x%zx/0x%zx\n",
+			sku_id, lpcfg->num_skus);
+		return;
+	}
+
+	printk(BIOS_INFO, "LPDDR4 SKU id = 0x%zx\n", sku_id);
+
+	sku = &lpcfg->skus[sku_id];
+
+	meminit_lpddr4(cfg, sku->speed);
+
+	if (sku->ch0_density) {
+		printk(BIOS_INFO, "LPDDR4 Ch0 density = %d\n",
+			sku->ch0_density);
+		meminit_lpddr4_enable_channel(cfg, LP4_LCH0, sku->ch0_density,
+						lpcfg->swizzle_config);
+	}
+
+	if (sku->ch1_density) {
+		printk(BIOS_INFO, "LPDDR4 Ch1 density = %d\n",
+			sku->ch1_density);
+		meminit_lpddr4_enable_channel(cfg, LP4_LCH1, sku->ch1_density,
+						lpcfg->swizzle_config);
+	}
+}

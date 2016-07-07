@@ -16,6 +16,7 @@
 #ifndef _SOC_APOLLOLAKE_MEMINIT_H_
 #define _SOC_APOLLOLAKE_MEMINIT_H_
 
+#include <stddef.h>
 #include <stdint.h>
 
 /*
@@ -93,5 +94,24 @@ void meminit_lpddr4(struct FSP_M_CONFIG *cfg, int speed);
 void meminit_lpddr4_enable_channel(struct FSP_M_CONFIG *cfg, int logical_chan,
 					int device_density,
 					const struct lpddr4_swizzle_cfg *scfg);
+
+struct lpddr4_sku {
+	int speed;
+	int ch0_density;
+	int ch1_density;
+};
+
+struct lpddr4_cfg {
+	const struct lpddr4_sku *skus;
+	size_t num_skus;
+	const struct lpddr4_swizzle_cfg *swizzle_config;
+};
+
+/*
+ * Initialize LPDDR4 settings by the provided lpddr4_cfg information and sku id.
+ * The sku id is an index into the sku array within the lpddr4_cfg struct.
+ */
+void meminit_lpddr4_by_sku(struct FSP_M_CONFIG *cfg,
+				const struct lpddr4_cfg *lpcfg, size_t sku_id);
 
 #endif /* _SOC_APOLLOLAKE_MEMINIT_H_ */

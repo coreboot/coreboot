@@ -357,18 +357,22 @@ int tpm_marshal_command(TPM_CC command, void *tpm_command_body,
 	}
 
 	if (body_size > 0) {
+		size_t marshaled_size;
+		size_t header_room = sizeof(struct tpm_header);
 
 		/* See how much room was taken by marshaling. */
-		body_size = max_body_size - body_size;
+		marshaled_size = max_body_size - body_size;
 
-		body_size += sizeof(struct tpm_header);
+		/* Total size includes the header size. */
+		marshaled_size += sizeof(struct tpm_header);
 
-		marshal_u16(&buffer, tpm_tag, &max_body_size);
-		marshal_u32(&buffer, body_size, &max_body_size);
-		marshal_u32(&buffer, command, &max_body_size);
+		marshal_u16(&buffer, tpm_tag, &header_room);
+		marshal_u32(&buffer, marshaled_size, &header_room);
+		marshal_u32(&buffer, command, &header_room);
+		return marshaled_size;
 	}
 
-	return body_size;
+	return -1;
 }
 
 static void unmarshal_get_capability(void **buffer, int *size,

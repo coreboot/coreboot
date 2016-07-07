@@ -235,6 +235,28 @@ static void marshal_session_header(void **buffer,
 	marshal_u32(&size_location, base_size - *buffer_space, &base_size);
 }
 
+/*
+ * Common session header can include one or two handles and an empty
+ * session_header structure.
+ */
+static void marshal_common_session_header(void **buffer,
+					  const uint32_t *handles,
+					  size_t handle_count,
+					  size_t *buffer_space)
+{
+	int i;
+	struct tpm2_session_header session_header;
+
+	tpm_tag = TPM_ST_SESSIONS;
+
+	for (i = 0; i < handle_count; i++)
+		marshal_TPM_HANDLE(buffer, handles[i], buffer_space);
+
+	memset(&session_header, 0, sizeof(session_header));
+	session_header.session_handle = TPM_RS_PW;
+	marshal_session_header(buffer, &session_header, buffer_space);
+}
+
 static void marshal_nv_define_space(void **buffer,
 				    struct tpm2_nv_define_space_cmd *nvd_in,
 				    size_t *buffer_space)
@@ -242,14 +264,10 @@ static void marshal_nv_define_space(void **buffer,
 	void *size_location;
 	size_t base_size;
 	size_t sizeof_nv_public_size = sizeof(uint16_t);
-	struct tpm2_session_header session_header;
+	const uint32_t handle[] = { TPM_RH_PLATFORM };
 
-	marshal_TPM_HANDLE(buffer, TPM_RH_PLATFORM, buffer_space);
-	memset(&session_header, 0, sizeof(session_header));
-	session_header.session_handle = TPM_RS_PW;
-	marshal_session_header(buffer, &session_header, buffer_space);
-	tpm_tag = TPM_ST_SESSIONS;
-
+	marshal_common_session_header(buffer, handle,
+				      ARRAY_SIZE(handle), buffer_space);
 	marshal_TPM2B(buffer, &nvd_in->auth.b, buffer_space);
 
 	/* This is where the TPMS_NV_PUBLIC size will be stored. */
@@ -277,15 +295,10 @@ static void marshal_nv_write(void **buffer,
 			     struct tpm2_nv_write_cmd *command_body,
 			     size_t *buffer_space)
 {
-	struct tpm2_session_header session_header;
+	uint32_t handles[] = { TPM_RH_PLATFORM, command_body->nvIndex };
 
-	marshal_TPM_HANDLE(buffer, TPM_RH_PLATFORM, buffer_space);
-	marshal_TPM_HANDLE(buffer, command_body->nvIndex, buffer_space);
-	memset(&session_header, 0, sizeof(session_header));
-	session_header.session_handle = TPM_RS_PW;
-	marshal_session_header(buffer, &session_header, buffer_space);
-	tpm_tag = TPM_ST_SESSIONS;
-
+	marshal_common_session_header(buffer, handles,
+				      ARRAY_SIZE(handles), buffer_space);
 	marshal_TPM2B(buffer, &command_body->data.b, buffer_space);
 	marshal_u16(buffer, command_body->offset, buffer_space);
 }
@@ -294,14 +307,10 @@ static void marshal_nv_read(void **buffer,
 			    struct tpm2_nv_read_cmd *command_body,
 			    size_t *buffer_space)
 {
-	struct tpm2_session_header session_header;
+	uint32_t handles[] = { TPM_RH_PLATFORM, command_body->nvIndex };
 
-	marshal_TPM_HANDLE(buffer, TPM_RH_PLATFORM, buffer_space);
-	marshal_TPM_HANDLE(buffer, command_body->nvIndex, buffer_space);
-	memset(&session_header, 0, sizeof(session_header));
-	session_header.session_handle = TPM_RS_PW;
-	marshal_session_header(buffer, &session_header, buffer_space);
-	tpm_tag = TPM_ST_SESSIONS;
+	marshal_common_session_header(buffer, handles,
+				      ARRAY_SIZE(handles), buffer_space);
 	marshal_u16(buffer, command_body->size, buffer_space);
 	marshal_u16(buffer, command_body->offset, buffer_space);
 }

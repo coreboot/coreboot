@@ -55,14 +55,7 @@ uintptr_t mcall_query_memory(uintptr_t id, memory_block_info *p)
 
 uintptr_t mcall_send_ipi(uintptr_t recipient)
 {
-	//if (recipient >= num_harts)
-	//return -1;
-
-	if (atomic_swap(&OTHER_HLS(recipient)->ipi_pending, 1) == 0) {
-		mb();
-		write_csr(send_ipi, recipient);
-	}
-
+	die("mcall_send_ipi is currently not implemented");
 	return 0;
 }
 
@@ -79,50 +72,26 @@ uintptr_t mcall_clear_ipi(void)
 
 uintptr_t mcall_shutdown(void)
 {
-	while (1) write_csr(mtohost, 1);
+	die("mcall_shutdown is currently not implemented");
 	return 0;
 }
 
 uintptr_t mcall_set_timer(unsigned long long when)
 {
-	write_csr(mtimecmp, when);
-	clear_csr(mip, MIP_STIP);
-	set_csr(mie, MIP_MTIP);
+	die("mcall_set_timer is currently not implemented");
 	return 0;
 }
 
 uintptr_t mcall_dev_req(sbi_device_message *m)
 {
-	if ((m->dev > 0xFFU) | (m->cmd > 0xFFU) | (m->data > 0x0000FFFFFFFFFFFFU)) return -EINVAL;
-
-	while (swap_csr(mtohost, TOHOST_CMD(m->dev, m->cmd, m->data)) != 0);
-
-	m->sbi_private_data = (uintptr_t)HLS()->device_request_queue_head;
-	HLS()->device_request_queue_head = m;
-	HLS()->device_request_queue_size++;
-
+	die("mcall_dev_req is currently not implemented");
 	return 0;
 }
 
 uintptr_t mcall_dev_resp(void)
 {
-	htif_interrupt(0, 0);
-
-	sbi_device_message* m = HLS()->device_response_queue_head;
-	if (m) {
-		//printm("resp %p\n", m);
-		sbi_device_message* next = (void*)atomic_read(&m->sbi_private_data);
-		HLS()->device_response_queue_head = next;
-		if (!next) {
-			HLS()->device_response_queue_tail = 0;
-
-			// only clear SSIP if no other events are pending
-			clear_csr(mip, MIP_SSIP);
-			mb();
-			if (HLS()->ipi_pending) set_csr(mip, MIP_SSIP);
-		}
-	}
-	return (uintptr_t)m;
+	die("mcall_dev_resp is currently not implemented");
+	return 0;
 }
 
 uintptr_t mcall_hart_id(void)
@@ -136,74 +105,9 @@ void hls_init(uint32_t hart_id)
 	HLS()->hart_id = hart_id;
 }
 
-uintptr_t htif_interrupt(uintptr_t mcause, uintptr_t* regs) {
-	uintptr_t fromhost = swap_csr(mfromhost, 0);
-	if (!fromhost)
-	return 0;
-
-	uintptr_t dev = FROMHOST_DEV(fromhost);
-	uintptr_t cmd = FROMHOST_CMD(fromhost);
-	uintptr_t data = FROMHOST_DATA(fromhost);
-
-	sbi_device_message* m = HLS()->device_request_queue_head;
-	sbi_device_message* prev = 0x0;
-	unsigned long i, n;
-	for (i = 0, n = HLS()->device_request_queue_size; i < n; i++) {
-		/*
-		if (!supervisor_paddr_valid(m, sizeof(*m))
-		&& EXTRACT_FIELD(read_csr(mstatus), MSTATUS_PRV1) != PRV_M)
-		panic("htif: page fault");
-		*/
-
-		sbi_device_message* next = (void*)m->sbi_private_data;
-		if (m->dev == dev && m->cmd == cmd) {
-			m->data = data;
-
-			// dequeue from request queue
-			if (prev)
-			prev->sbi_private_data = (uintptr_t)next;
-			else
-			HLS()->device_request_queue_head = next;
-			HLS()->device_request_queue_size = n-1;
-			m->sbi_private_data = 0;
-
-			// enqueue to response queue
-			if (HLS()->device_response_queue_tail)
-			{
-				HLS()->device_response_queue_tail->sbi_private_data = (uintptr_t)m;
-			}
-			else
-			{
-				HLS()->device_response_queue_head = m;
-			}
-			HLS()->device_response_queue_tail = m;
-
-			// signal software interrupt
-			set_csr(mip, MIP_SSIP);
-			return 0;
-		}
-
-		prev = m;
-		m = (void*)atomic_read(&m->sbi_private_data);
-	}
-	//HLT();
-	return 0;
-	//panic("htif: no record");
-}
-
 uintptr_t mcall_console_putchar(uint8_t ch)
 {
-	while (swap_csr(mtohost, TOHOST_CMD(1, 1, ch)) != 0);
-	while (1) {
-		uintptr_t fromhost = read_csr(mfromhost);
-		if (FROMHOST_DEV(fromhost) != 1 || FROMHOST_CMD(fromhost) != 1) {
-		if (fromhost)
-		htif_interrupt(0, 0);
-		continue;
-	}
-	write_csr(mfromhost, 0);
-	break;
-	}
+	do_putchar(ch);
 	return 0;
 }
 

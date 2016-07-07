@@ -243,8 +243,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI(GPIO_98, UP_20K, DEEP),	 /* FST_SPI_CS1_B -- unused */
 	PAD_CFG_NF(GPIO_99, NATIVE, DEEP, NF1),	 /* FST_SPI_MOSI_IO0 */
 	PAD_CFG_NF(GPIO_100, NATIVE, DEEP, NF1), /* FST_SPI_MISO_IO1 */
-	PAD_CFG_GPI(GPIO_101, UP_20K, DEEP),	 /* FST_IO2 -- unused */
-	PAD_CFG_GPI(GPIO_102, UP_20K, DEEP),	 /* FST_IO3 -- unused */
+	PAD_CFG_GPI(GPIO_101, UP_20K, DEEP),	 /* FST_IO2 -- MEM_CONFIG0 */
+	PAD_CFG_GPI(GPIO_102, UP_20K, DEEP),	 /* FST_IO3 -- MEM_CONFIG1 */
 	PAD_CFG_NF(GPIO_103, NATIVE, DEEP, NF1), /* FST_SPI_CLK */
 
 	/* SIO_SPI_0 - Used for FP */
@@ -312,7 +312,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI(GPIO_37, UP_20K, DEEP),	 /* unused */
 
 	/* LPSS_UART[0:2] */
-	PAD_CFG_GPI(GPIO_38, UP_20K, DEEP),	 /* LPSS_UART0_RXD - unused */
+	PAD_CFG_GPI(GPIO_38, UP_20K, DEEP),	 /* LPSS_UART0_RXD - MEM_CONFIG2*/
 	/* Next 2 are straps. */
 	PAD_CFG_GPI(GPIO_39, DN_20K, DEEP),	 /* LPSS_UART0_TXD - unused */
 	PAD_CFG_GPI(GPIO_40, DN_20K, DEEP),	 /* LPSS_UART0_RTS - unused */
@@ -320,7 +320,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPIO_42, NATIVE, DEEP, NF1),	 /* LPSS_UART1_RXD */
 	PAD_CFG_NF(GPIO_43, NATIVE, DEEP, NF1),	 /* LPSS_UART1_TXD */
 	PAD_CFG_NF(GPIO_44, NATIVE, DEEP, NF1),	 /* LPSS_UART1_RTS */
-	PAD_CFG_NF(GPIO_45, NATIVE, DEEP, NF1),	 /* LPSS_UART1_CTS */
+	PAD_CFG_GPI(GPIO_45, UP_20K, DEEP),	 /* LPSS_UART1_CTS - MEM_CONFIG3 */
 	PAD_CFG_NF(GPIO_46, NATIVE, DEEP, NF1),	 /* LPSS_UART2_RXD */
 	PAD_CFG_NF(GPIO_47, NATIVE, DEEP, NF1),	 /* LPSS_UART2_TXD */
 	PAD_CFG_GPI(GPIO_48, UP_20K, DEEP),	 /* LPSS_UART2_RTS - unused */
@@ -345,6 +345,16 @@ static const struct pad_config gpio_table[] = {
 static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_GPI(GPIO_75, UP_20K, DEEP),	 /* I2S1_BCLK -- PCH_WP */
 };
+
+/*
+ * The proto boards didn't have memory SKU pins, but the same ones can be
+ * utilized as post proto boards because the pins used were never connected
+ * or no peripheral utilized the signals on proto boards.
+ */
+#define MEM_CONFIG3 GPIO_45
+#define MEM_CONFIG2 GPIO_38
+#define MEM_CONFIG1 GPIO_102
+#define MEM_CONFIG0 GPIO_101
 
 #endif /* __ACPI__ */
 #endif /* MAINBOARD_GPIO_H */

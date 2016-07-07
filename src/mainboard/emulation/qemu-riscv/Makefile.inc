@@ -15,11 +15,14 @@
 bootblock-y += bootblock.c
 bootblock-y += uart.c
 bootblock-y += qemu_util.c
+bootblock-y += rom_media.c
 romstage-y += romstage.c
 romstage-y += qemu_util.c
 romstage-y += uart.c
+romstage-y += rom_media.c
 ramstage-y += uart.c
 ramstage-y += qemu_util.c
+ramstage-y += rom_media.c
 
 bootblock-y += memlayout.ld
 romstage-y += memlayout.ld

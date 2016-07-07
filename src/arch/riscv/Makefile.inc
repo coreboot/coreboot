@@ -33,7 +33,6 @@ bootblock-y += trap_util.S
 bootblock-y += trap_handler.c
 bootblock-y += virtual_memory.c
 bootblock-y += boot.c
-bootblock-y += rom_media.c
 bootblock-y += misc.c
 bootblock-y += \
 	$(top)/src/lib/memchr.c \
@@ -60,7 +59,6 @@ ifeq ($(CONFIG_ARCH_ROMSTAGE_RISCV),y)
 
 romstage-y += boot.c
 romstage-y += stages.c
-romstage-y += rom_media.c
 romstage-y += misc.c
 romstage-y += \
 	$(top)/src/lib/memchr.c \
@@ -90,7 +88,6 @@ ifeq ($(CONFIG_ARCH_RAMSTAGE_RISCV),y)
 ramstage-y =
 ramstage-y += trap_handler.c
 ramstage-y += virtual_memory.c
-ramstage-y += rom_media.c
 ramstage-y += stages.c
 ramstage-y += misc.c
 ramstage-y += boot.c

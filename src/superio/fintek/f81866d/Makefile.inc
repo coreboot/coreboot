@@ -16,5 +16,5 @@
 ## GNU General Public License for more details.
 ##
 
-ramstage-$(CONFIG_SUPERIO_FINTEK_F81866D) += f81866d_hwm.c
+ramstage-$(CONFIG_SUPERIO_FINTEK_F81866D) += f81866d_hwm.c f81866d_uart.c
 ramstage-$(CONFIG_SUPERIO_FINTEK_F81866D) += superio.c

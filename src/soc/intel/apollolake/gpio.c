@@ -71,13 +71,13 @@ void gpio_configure_pads(const struct pad_config *cfg, size_t num_pads)
 
 void gpio_input_pulldown(gpio_t gpio)
 {
-	struct pad_config cfg = PAD_CFG_GPI(gpio, DN_5K, DEEP);
+	struct pad_config cfg = PAD_CFG_GPI(gpio, DN_20K, DEEP);
 	gpio_configure_pad(&cfg);
 }
 
 void gpio_input_pullup(gpio_t gpio)
 {
-	struct pad_config cfg = PAD_CFG_GPI(gpio, UP_5K, DEEP);
+	struct pad_config cfg = PAD_CFG_GPI(gpio, UP_20K, DEEP);
 	gpio_configure_pad(&cfg);
 }
 

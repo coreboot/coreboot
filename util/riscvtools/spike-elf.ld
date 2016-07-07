@@ -8,4 +8,8 @@ SECTIONS
 	.data : {
 		*(.data)
 	}
+
+	tohost = .;
+	. = . + 8;
+	fromhost = .;
 }

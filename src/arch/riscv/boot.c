@@ -24,11 +24,9 @@ void arch_prog_run(struct prog *prog)
 
 	if (ENV_RAMSTAGE && prog_type(prog) == PROG_PAYLOAD) {
 		initVirtualMemory();
-		write_csr(mepc, doit);
-		asm volatile("eret");
-	} else {
-		doit(prog_entry_arg(prog));
 	}
+
+	doit(prog_entry_arg(prog));
 }
 
 int arch_supports_bounce_buffer(void)

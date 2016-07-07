@@ -142,3 +142,13 @@ scope (\_SB) {
 		}
 	}
 }
+
+Scope(\_GPE)
+{
+	/* Dummy method for the Tier 1 GPIO SCI enable bit. When kernel reads
+	 * _L0F in scope GPE it sets bit for gpio_tier1_sci_en in acpi enable
+	 * register at 0x430. For APL acpi enable register DW0 i.e., ACPI
+	 * GPE0a_EN at 0x430 is reserved.
+	 */
+	Method(_L0F, 0) {}
+}

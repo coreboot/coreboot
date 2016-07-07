@@ -33,7 +33,7 @@
 /*
  * Route each PIRQ[A-H] to a PIC IRQ[0-15]
  * Reserved: 0, 1, 2, 8, 13
- * ACPI/SCI: 9
+ * ACPI/SCI: 10
  */
 #define PIRQ_PIC_ROUTES \
 	PIRQ_PIC(A,  5), \

@@ -32,6 +32,7 @@
 #include <hwilib.h>
 #include <i210.h>
 #include <soc/pci_devs.h>
+#include <soc/irq.h>
 
 #define MAX_PATH_DEPTH		12
 #define MAX_NUM_MAPPINGS	10
@@ -89,6 +90,18 @@
 static void mainboard_enable(device_t dev)
 {
 
+}
+
+static void mainboard_init(void *chip_info)
+{
+	uint8_t actl = 0;
+	device_t dev = dev_find_slot(0, PCI_DEVFN(LPC_DEV, LPC_FUNC));
+
+	/* Route SCI to IRQ 10 to free IRQ 9 slot. */
+	actl = pci_read_config8(dev, ACPI_CNTL_OFFSET);
+	actl &= ~SCIS_MASK;
+	actl |= SCIS_IRQ10;
+	pci_write_config8(dev, ACPI_CNTL_OFFSET, actl);
 }
 
 static void mainboard_final(void *chip_info)
@@ -183,5 +196,6 @@ enum cb_err mainboard_get_mac_address(struct device *dev, uint8_t mac[6])
 
 struct chip_operations mainboard_ops = {
 	.enable_dev = mainboard_enable,
+	.init = mainboard_init,
 	.final = mainboard_final
 };

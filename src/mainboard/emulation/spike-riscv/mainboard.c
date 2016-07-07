@@ -19,13 +19,21 @@
 
 static void mainboard_enable(device_t dev)
 {
+	/*
+	 * Size of the emulated system RAM. On hardware, this would be external
+	 * DDR memory.
+	 *
+	 * TODO: Get this size from the hardware-supplied configuration string.
+	 */
+	const size_t ram_size = 1*GiB;
 
 	if (!dev) {
 		printk(BIOS_EMERG, "No dev0; die\n");
 		while (1);
 	}
 
-	ram_resource(dev, 0, 2048, 32768);
+	ram_resource(dev, 0, 0x80000000/KiB, ram_size/KiB);
+
 	cbmem_recovery(0);
 }
 

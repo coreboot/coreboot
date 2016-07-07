@@ -40,6 +40,22 @@ static void f81866d_init(struct device *dev)
 		// Fixing temp sensor read out and init Fan control
 		f81866d_hwm_init(dev);
 		break;
+	case F81866D_SP1:
+		// Enable Uart1 and IRQ share register
+		f81866d_uart_init(dev);
+		break;
+	case F81866D_SP2:
+		// Enable Uart2 and IRQ share register
+		f81866d_uart_init(dev);
+		break;
+	case F81866D_SP3:
+		// Enable Uart3 and IRQ share register
+		f81866d_uart_init(dev);
+		break;
+	case F81866D_SP4:
+		// Enable Uart4 and IRQ share register
+		f81866d_uart_init(dev);
+		break;
 	}
 }
 

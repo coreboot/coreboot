@@ -318,22 +318,86 @@ static void phy_io_config(u32 channel,
 			  const struct rk3399_sdram_params *sdram_params)
 {
 	u32 *denali_phy = rk3399_ddr_publ[channel]->denali_phy;
-	u32 vref_mode, vref_value;
+	u32 vref_mode_dq, vref_value_dq, vref_mode_ac, vref_value_ac;
 	u32 mode_sel = 0;
 	u32 reg_value;
+	u32 drv_value, odt_value;
 
 	/* vref setting */
-	if (sdram_params->dramtype == LPDDR4)
-		vref_mode = 0x6;
-	else if (sdram_params->dramtype == LPDDR3)
-		vref_mode = 0x2;
-	else if (sdram_params->dramtype == DDR3)
-		vref_mode = 0x1;
+	if (sdram_params->dramtype == LPDDR4) {
+		/* LPDDR4 */
+		vref_mode_dq = 0x6;
+		vref_value_dq = 0x1f;
+		vref_mode_ac = 0x6;
+		vref_value_ac = 0x1f;
+	} else if (sdram_params->dramtype == LPDDR3) {
+		if (sdram_params->odt == 1) {
+			vref_mode_dq = 0x5;  /* LPDDR3 ODT */
+			drv_value = (read32(&denali_phy[6]) >> 12) & 0xf;
+			odt_value = (read32(&denali_phy[6]) >> 4) & 0xf;
+			if (drv_value == PHY_DRV_ODT_48) {
+				switch (odt_value) {
+				case PHY_DRV_ODT_240:
+					vref_value_dq = 0x16;
+					break;
+				case PHY_DRV_ODT_120:
+					vref_value_dq = 0x26;
+					break;
+				case PHY_DRV_ODT_60:
+					vref_value_dq = 0x36;
+					break;
+				default:
+					die("Halting: Invalid ODT value.\n");
+				}
+			} else if (drv_value == PHY_DRV_ODT_40) {
+				switch (odt_value) {
+				case PHY_DRV_ODT_240:
+					vref_value_dq = 0x19;
+					break;
+				case PHY_DRV_ODT_120:
+					vref_value_dq = 0x23;
+					break;
+				case PHY_DRV_ODT_60:
+					vref_value_dq = 0x31;
+					break;
+				default:
+					die("Halting: Invalid ODT value.\n");
+				}
+			} else if (drv_value == PHY_DRV_ODT_34_3) {
+				switch (odt_value) {
+				case PHY_DRV_ODT_240:
+					vref_value_dq = 0x17;
+					break;
+				case PHY_DRV_ODT_120:
+					vref_value_dq = 0x20;
+					break;
+				case PHY_DRV_ODT_60:
+					vref_value_dq = 0x2e;
+					break;
+				default:
+					die("Halting: Invalid ODT value.\n");
+				}
+			} else {
+				die("Halting: Invalid DRV value.\n");
+			}
+		} else {
+			vref_mode_dq = 0x2;  /* LPDDR3 */
+			vref_value_dq = 0x1f;
+		}
+		vref_mode_ac = 0x2;
+		vref_value_ac = 0x1f;
+	} else if (sdram_params->dramtype == DDR3) {
+		/* DDR3L */
+		vref_mode_dq = 0x1;
+		vref_value_dq = 0x1f;
+		vref_mode_ac = 0x1;
+		vref_value_ac = 0x1f;
+	}
 	else
 		die("Halting: Unknown DRAM type.\n");
-	vref_value = 0x1f;
 
-	reg_value = (vref_mode << 9) | (0x1 << 8) | vref_value;
+	reg_value = (vref_mode_dq << 9) | (0x1 << 8) | vref_value_dq;
+
 	/* PHY_913 PHY_PAD_VREF_CTRL_DQ_0 12bits offset_8 */
 	clrsetbits_le32(&denali_phy[913], 0xfff << 8, reg_value << 8);
 	/* PHY_914 PHY_PAD_VREF_CTRL_DQ_1 12bits offset_0 */
@@ -342,6 +406,9 @@ static void phy_io_config(u32 channel,
 	clrsetbits_le32(&denali_phy[914], 0xfff << 16, reg_value << 16);
 	/* PHY_915 PHY_PAD_VREF_CTRL_DQ_3 12bits offset_0 */
 	clrsetbits_le32(&denali_phy[915], 0xfff, reg_value);
+
+	reg_value = (vref_mode_ac << 9) | (0x1 << 8) | vref_value_ac;
+
 	/* PHY_915 PHY_PAD_VREF_CTRL_AC 12bits offset_16 */
 	clrsetbits_le32(&denali_phy[915], 0xfff << 16, reg_value << 16);
 

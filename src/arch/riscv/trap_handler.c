@@ -118,7 +118,7 @@ void trap_handler(trapframe *tf) {
 			break;
 		case 4:
 			printk(BIOS_DEBUG, "Trap: Load address misaligned\n");
-			//handleMisalignedLoad(tf);
+			handle_misaligned_load(tf);
 			break;
 		case 5:
 			printk(BIOS_DEBUG, "Trap: Load access fault\n");
@@ -161,7 +161,7 @@ void trap_handler(trapframe *tf) {
 	while(1);
 }
 
-void handleMisalignedLoad(trapframe *tf) {
+void handle_misaligned_load(trapframe *tf) {
 	printk(BIOS_DEBUG, "Trapframe ptr: %p\n", tf);
 	printk(BIOS_DEBUG, "Stored sp: %p\n", (void*) tf->gpr[2]);
 	insn_t faultingInstruction = 0;

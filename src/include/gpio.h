@@ -56,8 +56,13 @@ uint16_t gpio_acpi_pin(gpio_t gpio);
  *
  * gpio[]: pin positions to read. gpio[0] is less significant than gpio[1].
  * num_gpio: number of pins to read.
+ *
+ * There are also pulldown and pullup variants which default each gpio to
+ * be configured with an internal pulldown and pullup, respectively.
  */
 int gpio_base2_value(gpio_t gpio[], int num_gpio);
+int gpio_pulldown_base2_value(gpio_t gpio[], int num_gpio);
+int gpio_pullup_base2_value(gpio_t gpio[], int num_gpio);
 
 /*
  * Read the value presented by the set of GPIOs, when each pin is interpreted

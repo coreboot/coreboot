@@ -534,10 +534,12 @@ config HAVE_HARD_RESET
 
 config HAVE_ROMSTAGE_CONSOLE_SPINLOCK
 	bool
+	depends on EARLY_CBMEM_INIT
 	default n
 
 config HAVE_ROMSTAGE_NVRAM_CBFS_SPINLOCK
 	bool
+	depends on EARLY_CBMEM_INIT
 	default n
 	help
 	  This should be enabled on certain plaforms, such as the AMD
@@ -546,6 +548,7 @@ config HAVE_ROMSTAGE_NVRAM_CBFS_SPINLOCK
 
 config HAVE_ROMSTAGE_MICROCODE_CBFS_SPINLOCK
 	bool
+	depends on EARLY_CBMEM_INIT
 	default n
 
 config HAVE_MONOTONIC_TIMER

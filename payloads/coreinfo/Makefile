@@ -53,10 +53,10 @@ HAVE_LIBPAYLOAD := $(wildcard $(LIBPAYLOAD_OBJ)/lib/libpayload.a)
 LIBPAYLOAD_CONFIG ?= configs/defconfig-tinycurses
 OBJCOPY ?= objcopy
 
-INCLUDES = -I$(coreinfo_obj) -include $(LIBPAYLOAD_OBJ)/include/kconfig.h
+INCLUDES = -I$(coreinfo_obj) -include $(LIBPAYLOAD_OBJ)/include/kconfig.h -I$(src)/../../src/commonlib/include
 OBJECTS = cpuinfo_module.o cpuid.S.o pci_module.o coreboot_module.o \
 	  nvram_module.o bootlog_module.o ramdump_module.o \
-	  multiboot_module.o cbfs_module.o coreinfo.o
+	  multiboot_module.o cbfs_module.o timestamps_module.o coreinfo.o
 OBJS    = $(patsubst %,$(coreinfo_obj)/%,$(OBJECTS))
 TARGET  = $(coreinfo_obj)/coreinfo.elf
 

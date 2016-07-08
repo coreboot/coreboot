@@ -94,13 +94,6 @@ static void prepare_ramstage_region(int s3resume)
 		memset_((void*)0, 0, CONFIG_RAMTOP - backup_top);
 	}
 
-#if IS_ENABLED(CONFIG_HAVE_ROMSTAGE_CONSOLE_SPINLOCK)
-	initialize_romstage_console_lock();
-#endif
-#if IS_ENABLED(CONFIG_HAVE_ROMSTAGE_NVRAM_CBFS_SPINLOCK)
-	initialize_romstage_nvram_cbfs_lock();
-#endif
-
 	print_car_debug(" Done\n");
 }
 

@@ -41,6 +41,7 @@ static void init_dvs_outputs(void)
 {
 	int duty_ns;
 	uint32_t i;
+	uint32_t id;
 
 	write32(&rk3399_grf->iomux_pwm_0, IOMUX_PWM_0);		/* GPU */
 	write32(&rk3399_grf->iomux_pwm_1, IOMUX_PWM_1);		/* Big */
@@ -76,10 +77,15 @@ static void init_dvs_outputs(void)
 	 *   period = 3337, volt = 1.0: 2383
 	 *   period = 3337, volt = 0.9: 2860
 	 */
-	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_KEVIN) && (board_id() <= 2))
-		duty_ns = 1906; /* 1.1v */
-	else
-		duty_ns = 2860; /* 0.9v */
+	duty_ns = 2860; /* 0.9v */
+
+	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_KEVIN)) {
+		id = board_id();
+		if (id <= 2)
+			duty_ns = 1906; /* 1.1v */
+		else if (id == 3)
+			duty_ns = 2621; /* 0.95v */
+	}
 
 	for (i = 0; i < 4; i++)
 		pwm_init(i, 3337, duty_ns);

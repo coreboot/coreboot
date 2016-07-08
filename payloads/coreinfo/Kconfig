@@ -104,4 +104,10 @@ config MODULE_CBFS
 	help
 	  This option will increase the ELF file size by ca. 1440 bytes.
 
+config MODULE_TIMESTAMPS
+	bool "Enable the coreboot timestamps module"
+	default y
+	help
+	  This option will increase the ELF file size by ca. 4200 bytes.
+
 endmenu

@@ -141,6 +141,55 @@ static void enable_dev(device_t dev)
 	}
 }
 
+/*
+ * If the PCIe root port at function 0 is disabled,
+ * the PCIe root ports might be coalesced after FSP silicon init.
+ * The below function will swap the devfn of the first enabled device
+ * in devicetree and function 0 resides a pci device
+ * so that it won't confuse coreboot.
+ */
+static void pcie_update_device_tree(unsigned int devfn0, int num_funcs)
+{
+	device_t func0;
+	unsigned int devfn;
+	int i;
+	unsigned int inc = PCI_DEVFN(0, 1);
+
+	func0 = dev_find_slot(0, devfn0);
+	if (func0 == NULL)
+		return;
+
+	/* No more functions if function 0 is disabled. */
+	if (pci_read_config32(func0, PCI_VENDOR_ID) == 0xffffffff)
+		return;
+
+	devfn = devfn0 + inc;
+
+	/*
+	 * Increase funtion by 1.
+	 * Then find first enabled device to replace func0
+	 * as that port was move to func0.
+	 */
+	for (i = 1; i < num_funcs; i++, devfn += inc) {
+		device_t dev = dev_find_slot(0, devfn);
+		if (dev == NULL)
+			continue;
+
+		if (!dev->enabled)
+			continue;
+		/* Found the first enabled device in given dev number */
+		func0->path.pci.devfn = dev->path.pci.devfn;
+		dev->path.pci.devfn = devfn0;
+		break;
+	}
+}
+
+static void pcie_override_devicetree_after_silicon_init(void)
+{
+	pcie_update_device_tree(PCIEA0_DEVFN, 4);
+	pcie_update_device_tree(PCIEB0_DEVFN, 2);
+}
+
 static void soc_init(void *data)
 {
 	struct range_entry range;
@@ -161,6 +210,9 @@ static void soc_init(void *data)
 
 	/* Restore GPIO IRQ polarities back to previous settings. */
 	itss_restore_irq_polarities(GPIO_IRQ_START, GPIO_IRQ_END);
+
+	/* override 'enabled' setting in device tree if needed */
+	pcie_override_devicetree_after_silicon_init();
 
 	/*
 	 * Keep the P2SB device visible so it and the other devices are
@@ -194,23 +246,29 @@ static void disable_dev(struct device *dev, struct FSP_S_CONFIG *silconfig) {
 	case SATA_DEVFN:
 		silconfig->EnableSata = 0;
 		break;
-	case PCIEA0_DEVFN:
-		silconfig->PcieRootPortEn[0] = 0;
-		break;
-	case PCIEA1_DEVFN:
-		silconfig->PcieRootPortEn[1] = 0;
-		break;
-	case PCIEA2_DEVFN:
-		silconfig->PcieRootPortEn[2] = 0;
-		break;
-	case PCIEA3_DEVFN:
-		silconfig->PcieRootPortEn[3] = 0;
-		break;
 	case PCIEB0_DEVFN:
-		silconfig->PcieRootPortEn[4] = 0;
+		silconfig->PcieRootPortEn[0] = 0;
+		silconfig->PcieRpHotPlug[0] = 0;
 		break;
 	case PCIEB1_DEVFN:
+		silconfig->PcieRootPortEn[1] = 0;
+		silconfig->PcieRpHotPlug[1] = 0;
+		break;
+	case PCIEA0_DEVFN:
+		silconfig->PcieRootPortEn[2] = 0;
+		silconfig->PcieRpHotPlug[2] = 0;
+		break;
+	case PCIEA1_DEVFN:
+		silconfig->PcieRootPortEn[3] = 0;
+		silconfig->PcieRpHotPlug[3] = 0;
+		break;
+	case PCIEA2_DEVFN:
+		silconfig->PcieRootPortEn[4] = 0;
+		silconfig->PcieRpHotPlug[4] = 0;
+		break;
+	case PCIEA3_DEVFN:
 		silconfig->PcieRootPortEn[5] = 0;
+		silconfig->PcieRpHotPlug[5] = 0;
 		break;
 	case XHCI_DEVFN:
 		silconfig->Usb30Mode = 0;

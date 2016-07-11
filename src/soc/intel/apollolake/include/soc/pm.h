@@ -119,6 +119,11 @@
 #define GPE0_STS(x)		(0x20 + (x * 4))
 #define GPE0_EN(x)		(0x30 + (x * 4))
 #define   PME_B0_EN		(1 << 13)
+/*
+ * Enables the setting of the GPIO_TIER1_SCI_STS bit to generate a wake event
+ * and/or an SCI or SMI#.
+ */
+#define GPIO_TIER_1_SCI		(1 << 15)
 
 /* Memory mapped IO registers behind PMC_BASE_ADDRESS */
 #define PRSTS			0x1000

@@ -296,6 +296,7 @@ static int build_self_segment_list(
 				+ segment.offset;
 			new->s_dstaddr = segment.load_addr;
 			new->s_memsz = segment.mem_len;
+			new->compression = CBFS_COMPRESS_NONE;
 			break;
 
 		case PAYLOAD_SEGMENT_ENTRY:
@@ -332,15 +333,8 @@ static int load_self_segments(
 	struct prog *payload)
 {
 	struct segment *ptr;
-	struct segment *last_non_empty;
 	const unsigned long one_meg = (1UL << 20);
 	unsigned long bounce_high = lb_end;
-
-	/* Determine last non-empty loaded segment. */
-	last_non_empty = NULL;
-	for(ptr = head->next; ptr != head; ptr = ptr->next)
-		if (ptr->s_filesz != 0)
-			last_non_empty = ptr;
 
 	for(ptr = head->next; ptr != head; ptr = ptr->next) {
 		if (bootmem_region_targets_usable_ram(ptr->s_dstaddr,
@@ -384,7 +378,8 @@ static int load_self_segments(
 	}
 
 	for(ptr = head->next; ptr != head; ptr = ptr->next) {
-		unsigned char *dest, *src;
+		unsigned char *dest, *src, *middle, *end;
+		size_t len, memsz;
 		printk(BIOS_DEBUG, "Loading Segment: addr: 0x%016lx memsz: 0x%016lx filesz: 0x%016lx\n",
 			ptr->s_dstaddr, ptr->s_memsz, ptr->s_filesz);
 
@@ -401,82 +396,81 @@ static int load_self_segments(
 		/* Compute the boundaries of the segment */
 		dest = (unsigned char *)(ptr->s_dstaddr);
 		src = (unsigned char *)(ptr->s_srcaddr);
+		len = ptr->s_filesz;
+		memsz = ptr->s_memsz;
+		end = dest + memsz;
 
 		/* Copy data from the initial buffer */
-		if (ptr->s_filesz) {
-			unsigned char *middle, *end;
-			size_t len = ptr->s_filesz;
-			size_t memsz = ptr->s_memsz;
-			switch(ptr->compression) {
-				case CBFS_COMPRESS_LZMA: {
-					printk(BIOS_DEBUG, "using LZMA\n");
-					timestamp_add_now(TS_START_ULZMA);
-					len = ulzman(src, len, dest, memsz);
-					timestamp_add_now(TS_END_ULZMA);
-					if (!len) /* Decompression Error. */
-						return 0;
-					break;
-				}
-				case CBFS_COMPRESS_LZ4: {
-					printk(BIOS_DEBUG, "using LZ4\n");
-					timestamp_add_now(TS_START_ULZ4F);
-					len = ulz4fn(src, len, dest, memsz);
-					timestamp_add_now(TS_END_ULZ4F);
-					if (!len) /* Decompression Error. */
-						return 0;
-					break;
-				}
-				case CBFS_COMPRESS_NONE: {
-					printk(BIOS_DEBUG, "it's not compressed!\n");
-					memcpy(dest, src, len);
-					break;
-				}
-				default:
-					printk(BIOS_INFO,  "CBFS:  Unknown compression type %d\n", ptr->compression);
-					return -1;
+		switch(ptr->compression) {
+			case CBFS_COMPRESS_LZMA: {
+				printk(BIOS_DEBUG, "using LZMA\n");
+				timestamp_add_now(TS_START_ULZMA);
+				len = ulzman(src, len, dest, memsz);
+				timestamp_add_now(TS_END_ULZMA);
+				if (!len) /* Decompression Error. */
+					return 0;
+				break;
 			}
-			end = dest + memsz;
-			middle = dest + len;
-			printk(BIOS_SPEW, "[ 0x%08lx, %08lx, 0x%08lx) <- %08lx\n",
-				(unsigned long)dest,
-				(unsigned long)middle,
-				(unsigned long)end,
-				(unsigned long)src);
-
-			/* Zero the extra bytes between middle & end */
-			if (middle < end) {
-				printk(BIOS_DEBUG, "Clearing Segment: addr: 0x%016lx memsz: 0x%016lx\n",
-					(unsigned long)middle, (unsigned long)(end - middle));
-
-				/* Zero the extra bytes */
-				memset(middle, 0, end - middle);
+			case CBFS_COMPRESS_LZ4: {
+				printk(BIOS_DEBUG, "using LZ4\n");
+				timestamp_add_now(TS_START_ULZ4F);
+				len = ulz4fn(src, len, dest, memsz);
+				timestamp_add_now(TS_END_ULZ4F);
+				if (!len) /* Decompression Error. */
+					return 0;
+				break;
 			}
-			/* Copy the data that's outside the area that shadows ramstage */
-			printk(BIOS_DEBUG, "dest %p, end %p, bouncebuffer %lx\n", dest, end, bounce_buffer);
-			if ((unsigned long)end > bounce_buffer) {
-				if ((unsigned long)dest < bounce_buffer) {
-					unsigned char *from = dest;
-					unsigned char *to = (unsigned char*)(lb_start-(bounce_buffer-(unsigned long)dest));
-					unsigned long amount = bounce_buffer-(unsigned long)dest;
-					printk(BIOS_DEBUG, "move prefix around: from %p, to %p, amount: %lx\n", from, to, amount);
-					memcpy(to, from, amount);
-				}
-				if ((unsigned long)end > bounce_buffer + (lb_end - lb_start)) {
-					unsigned long from = bounce_buffer + (lb_end - lb_start);
-					unsigned long to = lb_end;
-					unsigned long amount = (unsigned long)end - from;
-					printk(BIOS_DEBUG, "move suffix around: from %lx, to %lx, amount: %lx\n", from, to, amount);
-					memcpy((char*)to, (char*)from, amount);
-				}
+			case CBFS_COMPRESS_NONE: {
+				printk(BIOS_DEBUG, "it's not compressed!\n");
+				memcpy(dest, src, len);
+				break;
 			}
-
-			/*
-			 * Each architecture can perform additonal operations
-			 * on the loaded segment
-			 */
-			prog_segment_loaded((uintptr_t)dest, ptr->s_memsz,
-					last_non_empty == ptr ? SEG_FINAL : 0);
+			default:
+				printk(BIOS_INFO,  "CBFS:  Unknown compression type %d\n", ptr->compression);
+				return -1;
 		}
+		/* Calculate middle after any changes to len. */
+		middle = dest + len;
+		printk(BIOS_SPEW, "[ 0x%08lx, %08lx, 0x%08lx) <- %08lx\n",
+			(unsigned long)dest,
+			(unsigned long)middle,
+			(unsigned long)end,
+			(unsigned long)src);
+
+		/* Zero the extra bytes between middle & end */
+		if (middle < end) {
+			printk(BIOS_DEBUG, "Clearing Segment: addr: 0x%016lx memsz: 0x%016lx\n",
+				(unsigned long)middle, (unsigned long)(end - middle));
+
+			/* Zero the extra bytes */
+			memset(middle, 0, end - middle);
+		}
+
+		/* Copy the data that's outside the area that shadows ramstage */
+		printk(BIOS_DEBUG, "dest %p, end %p, bouncebuffer %lx\n", dest, end, bounce_buffer);
+		if ((unsigned long)end > bounce_buffer) {
+			if ((unsigned long)dest < bounce_buffer) {
+				unsigned char *from = dest;
+				unsigned char *to = (unsigned char*)(lb_start-(bounce_buffer-(unsigned long)dest));
+				unsigned long amount = bounce_buffer-(unsigned long)dest;
+				printk(BIOS_DEBUG, "move prefix around: from %p, to %p, amount: %lx\n", from, to, amount);
+				memcpy(to, from, amount);
+			}
+			if ((unsigned long)end > bounce_buffer + (lb_end - lb_start)) {
+				unsigned long from = bounce_buffer + (lb_end - lb_start);
+				unsigned long to = lb_end;
+				unsigned long amount = (unsigned long)end - from;
+				printk(BIOS_DEBUG, "move suffix around: from %lx, to %lx, amount: %lx\n", from, to, amount);
+				memcpy((char*)to, (char*)from, amount);
+			}
+		}
+
+		/*
+		 * Each architecture can perform additonal operations
+		 * on the loaded segment
+		 */
+		prog_segment_loaded((uintptr_t)dest, ptr->s_memsz,
+				ptr->next == head ? SEG_FINAL : 0);
 	}
 
 	return 1;

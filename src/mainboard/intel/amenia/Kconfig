@@ -50,4 +50,7 @@ config INCLUDE_NHLT_BLOBS
 	select NHLT_DA7219
 	select NHLT_MAX98357
 
+config DRIVERS_GENERIC_MAX98357A
+	default y
+
 endif # BOARD_INTEL_AMENIA

@@ -176,7 +176,7 @@ static const struct pad_config gpio_table[] = {
 	/* I2S1 */
 	PAD_NC(GPIO_74, DN_20K), /* I2S1_MCLK */
 	PAD_CFG_GPI(GPIO_75, UP_20K, DEEP), /* SPI_WP_STAT */
-	PAD_NC(GPIO_76, DN_20K), /* I2S1_WS_SYNC */
+	PAD_CFG_GPO(GPIO_76, 0, DEEP),	/* I2S1_WS_SYNC -- SPK_PA_EN */
 	PAD_NC(GPIO_77, DN_20K), /* I2S1_SDI */
 	PAD_NC(GPIO_78, DN_20K), /* I2S1_SDO */
 	/* I2S4 or DMIC */

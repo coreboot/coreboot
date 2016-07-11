@@ -42,6 +42,22 @@ struct segment {
 	int compression;
 };
 
+static void segment_insert_before(struct segment *seg, struct segment *new)
+{
+	new->next = seg;
+	new->prev = seg->prev;
+	seg->prev->next = new;
+	seg->prev = new;
+}
+
+static void segment_insert_after(struct segment *seg, struct segment *new)
+{
+	new->next = seg->next;
+	new->prev = seg;
+	seg->next->prev = new;
+	seg->next = new;
+}
+
 /* The problem:
  * Static executables all want to share the same addresses
  * in memory because only a few addresses are reliably present on
@@ -148,10 +164,7 @@ static int relocate_segment(unsigned long buffer, struct segment *seg)
 			}
 
 			/* Order by stream offset */
-			new->next = seg;
-			new->prev = seg->prev;
-			seg->prev->next = new;
-			seg->prev = new;
+			segment_insert_before(seg, new);
 
 			/* compute the new value of start */
 			start = seg->s_dstaddr;
@@ -183,10 +196,7 @@ static int relocate_segment(unsigned long buffer, struct segment *seg)
 				new->s_filesz = 0;
 			}
 			/* Order by stream offset */
-			new->next = seg->next;
-			new->prev = seg;
-			seg->next->prev = new;
-			seg->next = new;
+			segment_insert_after(seg, new);
 
 			printk(BIOS_SPEW, "   late: [0x%016lx, 0x%016lx, 0x%016lx)\n",
 				new->s_dstaddr,
@@ -311,10 +321,7 @@ static int build_self_segment_list(
 
 		/* We have found another CODE, DATA or BSS segment */
 		/* Insert new segment at the end of the list */
-		new->next = head;
-		new->prev = head->prev;
-		head->prev->next = new;
-		head->prev = new;
+		segment_insert_before(head, new);
 	}
 
 	return 1;

@@ -120,6 +120,24 @@ static void reg_gpio_write(uint32_t reg_address, uint32_t value)
 	*get_gpio_address(reg_address) = value;
 }
 
+uint32_t reg_host_bridge_unit_read(uint32_t reg_address)
+{
+	/* Read the host bridge register */
+	mea_write(reg_address);
+	mcr_write(QUARK_OPCODE_READ, QUARK_NC_HOST_BRIDGE_SB_PORT_ID,
+		reg_address);
+	return mdr_read();
+}
+
+static void reg_host_bridge_unit_write(uint32_t reg_address, uint32_t value)
+{
+	/* Write the host bridge register */
+	mea_write(reg_address);
+	mdr_write(value);
+	mcr_write(QUARK_OPCODE_WRITE, QUARK_NC_HOST_BRIDGE_SB_PORT_ID,
+		reg_address);
+}
+
 uint32_t reg_legacy_gpio_read(uint32_t reg_address)
 {
 	/* Read the legacy GPIO register */
@@ -225,6 +243,11 @@ static uint64_t reg_read(struct reg_script_context *ctx)
 		value = reg_gpio_read(step->reg);
 		break;
 
+	case HOST_BRIDGE:
+		ctx->display_prefix = "Host Bridge";
+		value = reg_host_bridge_unit_read(step->reg);
+		break;
+
 	case LEG_GPIO_REGS:
 		ctx->display_prefix = "Legacy GPIO";
 		value = reg_legacy_gpio_read(step->reg);
@@ -272,6 +295,11 @@ static void reg_write(struct reg_script_context *ctx)
 	case GPIO_REGS:
 		ctx->display_prefix = "GPIO";
 		reg_gpio_write(step->reg, (uint32_t)step->value);
+		break;
+
+	case HOST_BRIDGE:
+		ctx->display_prefix = "Host Bridge";
+		reg_host_bridge_unit_write(step->reg, (uint32_t)step->value);
 		break;
 
 	case LEG_GPIO_REGS:

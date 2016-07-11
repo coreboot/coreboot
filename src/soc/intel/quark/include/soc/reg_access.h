@@ -36,6 +36,7 @@ enum {
 	PCIE_AFE_REGS,
 	PCIE_RESET,
 	GPE0_REGS,
+	HOST_BRIDGE,
 };
 
 enum {
@@ -88,6 +89,27 @@ enum {
 	REG_GPIO_ACCESS(POLL, reg_, mask_, value_, timeout_)
 #define REG_GPIO_XOR(reg_, value_) \
 	REG_GPIO_RXW(reg_, 0xffffffff, value_)
+
+/* Host bridge register access macros */
+#define REG_HOST_BRIDGE_ACCESS(cmd_, reg_, mask_, value_, timeout_) \
+	SOC_ACCESS(cmd_, reg_, REG_SCRIPT_SIZE_32, mask_, value_, timeout_, \
+		HOST_BRIDGE)
+#define REG_HOST_BRIDGE_READ(reg_) \
+	REG_HOST_BRIDGE_ACCESS(READ, reg_, 0, 0, 0)
+#define REG_HOST_BRIDGE_WRITE(reg_, value_) \
+	REG_HOST_BRIDGE_ACCESS(WRITE, reg_, 0, value_, 0)
+#define REG_HOST_BRIDGE_AND(reg_, value_) \
+	REG_HOST_BRIDGE_RMW(reg_, value_, 0)
+#define REG_HOST_BRIDGE_RMW(reg_, mask_, value_) \
+	REG_HOST_BRIDGE_ACCESS(RMW, reg_, mask_, value_, 0)
+#define REG_HOST_BRIDGE_RXW(reg_, mask_, value_) \
+	REG_HOST_BRIDGE_ACCESS(RXW, reg_, mask_, value_, 0)
+#define REG_HOST_BRIDGE_OR(reg_, value_) \
+	REG_HOST_BRIDGE_RMW(reg_, 0xffffffff, value_)
+#define REG_HOST_BRIDGE_POLL(reg_, mask_, value_, timeout_) \
+	REG_HOST_BRIDGE_ACCESS(POLL, reg_, mask_, value_, timeout_)
+#define REG_HOST_BRIDGE_XOR(reg_, value_) \
+	REG_HOST_BRIDGE_RXW(reg_, 0xffffffff, value_)
 
 /* Legacy GPIO register access macros */
 #define REG_LEG_GPIO_ACCESS(cmd_, reg_, mask_, value_, timeout_) \
@@ -208,6 +230,7 @@ void mcr_write(uint8_t opcode, uint8_t port, uint32_t reg_address);
 uint32_t mdr_read(void);
 void mdr_write(uint32_t value);
 void mea_write(uint32_t reg_address);
+uint32_t reg_host_bridge_unit_read(uint32_t reg_address);
 uint32_t reg_legacy_gpio_read(uint32_t reg_address);
 void reg_legacy_gpio_write(uint32_t reg_address, uint32_t value);
 uint32_t reg_rmu_temp_read(uint32_t reg_address);

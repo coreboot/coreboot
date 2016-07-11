@@ -508,9 +508,6 @@ void *selfload(struct prog *payload)
 	/* Update the payload's area with the bounce buffer information. */
 	prog_set_area(payload, (void *)(uintptr_t)bounce_buffer, bounce_size);
 
-	/* Update the payload's area with the bounce buffer information. */
-	prog_set_area(payload, (void *)(uintptr_t)bounce_buffer, bounce_size);
-
 	return (void *)entry;
 
 out:

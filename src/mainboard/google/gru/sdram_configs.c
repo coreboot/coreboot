@@ -23,27 +23,44 @@
 
 static struct rk3399_sdram_params sdram_configs[] = {
 #include "sdram_inf/sdram-lpddr3-hynix-4GB-200.inc"
-/* THIS IS FOR KEVIN ONLY! crosbug.com/p/54144 */
-#include "sdram_inf/kevin-sdram-lpddr3-hynix-4GB.inc"
+
+/* 666MHz, enable odt 120o */
 #include "sdram_inf/sdram-lpddr3-hynix-4GB-666.inc"
+
+/* 800MHz, enable odt 120o */
 #include "sdram_inf/sdram-lpddr3-hynix-4GB-800.inc"
-/* #include "sdram_inf/sdram-lpddr3-hynix-4GB-928.inc" */
+
+/* 666MHz, disable odt */
+#include "sdram_inf/sdram-lpddr3-hynix-4GB-666-no-odt.inc"
+
+/* 800MHz, disable odt */
+#include "sdram_inf/sdram-lpddr3-hynix-4GB-800-no-odt.inc"
 };
 
 enum dram_speeds {
 	dram_200MHz = 0,
-	dram_300MHz = 1,
-	dram_666MHz = 2,
-	dram_800MHz = 3,
-/*	dram_928MHz = 4, */
+	dram_666MHz = 1,
+	dram_800MHz = 2,
+	dram_666MHz_NO_ODT = 3,
+	dram_800MHz_NO_ODT = 4,
 };
 
 static enum dram_speeds get_sdram_index(void)
 {
-	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_KEVIN))
-		return dram_300MHz;
+	uint32_t id;
+
+	id = board_id();
+
+	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_KEVIN)) {
+		if (id < 3)
+			return dram_200MHz;
+		else if (id == 3)
+			return dram_666MHz_NO_ODT;
+		else
+			return  dram_800MHz;
+	}
 	else if (IS_ENABLED(CONFIG_BOARD_GOOGLE_GRU))
-		return dram_800MHz;
+		return dram_800MHz_NO_ODT;
 	else
 		return dram_200MHz;
 }

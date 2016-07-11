@@ -40,11 +40,12 @@ chip soc/intel/apollolake
 		device pci 0e.0 on end	# - Audio
 		device pci 11.0 on end	# - ISH
 		device pci 12.0 on end	# - SATA
-		device pci 13.0 on end	# - PCIe-A 0
-		device pci 13.2 on end	# - Onboard Lan
-		device pci 13.3 on end	# - PCIe-A 3
-		device pci 14.0 on end	# - PCIe-B 0
-		device pci 14.1 on end	# - Onboard M2 Slot(Wifi/BT)
+		device pci 13.0 off end	# - PCIe-A 0
+		device pci 13.1 off end	# - PCIe-A 1
+		device pci 13.2 off end	# - PCIe-A 2 - Onboard Lan
+		device pci 13.3 off end	# - PCIe-A 3
+		device pci 14.0 on end	# - PCIe-B 0 - wifi
+		device pci 14.1 off end	# - PCIe-B 1 - Onboard M2 Slot(Wifi/BT)
 		device pci 15.0 on end	# - XHCI
 		device pci 15.1 off end	# - XDCI
 		device pci 16.0 on end	# - I2C 0

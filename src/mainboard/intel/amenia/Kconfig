@@ -53,4 +53,7 @@ config INCLUDE_NHLT_BLOBS
 config DRIVERS_GENERIC_MAX98357A
 	default y
 
+config DRIVERS_I2C_DA7219
+	default y
+
 endif # BOARD_INTEL_AMENIA

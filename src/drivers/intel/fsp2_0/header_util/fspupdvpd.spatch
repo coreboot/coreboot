@@ -38,6 +38,17 @@ i;
 @@
 coccinelle.i = t.rstrip('_t')
 
+@ convert_FSP_UPD_HEADER @
+typedef FSP_UPD_HEADER;
+@@
+- FSP_UPD_HEADER
++ struct FSP_UPD_HEADER
+
+@ convert_FSPM_ARCH_UPD @
+typedef FSPM_ARCH_UPD;
+@@
+- FSPM_ARCH_UPD
++ struct FSPM_ARCH_UPD
 
 @ convert_named_struct_decls @
 type named_struct.t;

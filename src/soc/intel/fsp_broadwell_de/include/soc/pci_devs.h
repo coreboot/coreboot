@@ -38,6 +38,11 @@
 #define AHCI_DEVID              0x8C02
 #define SATA_DEV_FUNC PCI_DEVFN(SATA_DEV, SATA_FUNC)
 
+#define SMBUS_DEV                31
+#define SMBUS_FUNC               3
+#define SMBUS_DEVID              0x8C22
+#define SMBUS_DEV_FUNC PCI_DEVFN(SMBUS_DEV, SMBUS_FUNC)
+
 #define SATA2_DEV               31
 #define SATA2_FUNC              5
 #define SATA2_DEV_FUNC PCI_DEVFN(SATA2_DEV, SATA2_FUNC)

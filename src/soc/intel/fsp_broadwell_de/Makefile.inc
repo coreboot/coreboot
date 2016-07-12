@@ -21,6 +21,8 @@ ramstage-y += southcluster.c
 romstage-y += reset.c
 ramstage-y += reset.c
 ramstage-y += acpi.c
+ramstage-y += smbus_common.c
+ramstage-y += smbus.c
 
 ifeq ($(CONFIG_INTEGRATED_UART),y)
 romstage-y += uart.c

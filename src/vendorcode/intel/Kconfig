@@ -23,3 +23,6 @@ config FSP_VENDORCODE_HEADER_PATH
 
 config UEFI_2_4_BINDING
 	def_bool n
+
+config UDK_2015_BINDING
+	def_bool n

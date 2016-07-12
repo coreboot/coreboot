@@ -26,6 +26,9 @@
  */
 #define EC_SCI_GPI	GPE0_DW1_11
 
+/* GPIO_22 is the EC_SOC_WAKE and is used to wake up from S3 on LID open */
+#define GPE_EC_WAKE	GPE0_DW1_22
+
 #define MAINBOARD_EC_SCI_EVENTS \
 	(EC_HOST_EVENT_MASK(EC_HOST_EVENT_LID_CLOSED)        |\
 	 EC_HOST_EVENT_MASK(EC_HOST_EVENT_LID_OPEN)          |\

@@ -75,6 +75,7 @@
 #define  PAD_CFG0_RESET_PLTRST		(2 << 30)
 #define  PAD_CFG0_RESET_RSMRST		(3 << 30)
 
+#define PAD_CFG1_IRQ_MASK		(0xff << 0)
 #define PAD_CFG1_PULL_MASK		(0xf << 10)
 #define  PAD_CFG1_PULL_NONE		(0x0 << 10)
 #define  PAD_CFG1_PULL_DN_5K		(0x2 << 10)

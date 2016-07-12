@@ -19,6 +19,7 @@
 #include <gpio.h>
 #include <soc/gpio.h>
 #include <soc/iosf.h>
+#include <soc/itss.h>
 #include <soc/pm.h>
 
 /* This list must be in order, from highest pad numbers, to lowest pad numbers*/
@@ -53,12 +54,43 @@ static const struct pad_community *gpio_get_community(uint16_t pad)
 	return map;
 }
 
+static void gpio_configure_itss(const struct pad_config *cfg,
+				uint16_t port, uint16_t pad_cfg_offset)
+{
+	int irq;
+
+	/* Set up ITSS polarity if pad is routed to APIC.
+	 *
+	 * The ITSS takes only active high interrupt signals. Therefore,
+	 * if the pad configuration indicates an inversion assume the
+	 * intent is for the ITSS polarity. Before forwarding on the
+	 * request to the APIC there's an inversion setting for how the
+	 * signal is forwarded to the APIC. Honor the inversion setting
+	 * in the GPIO pad configuration so that a hardware active low
+	 * signal looks that way to the APIC (double inversion).
+	 */
+	if (!(cfg->config0 & PAD_CFG0_ROUTE_IOAPIC))
+		return;
+
+	irq = iosf_read(port, pad_cfg_offset + sizeof(uint32_t));
+	irq &= PAD_CFG1_IRQ_MASK;
+	if (!irq) {
+		printk(BIOS_ERR, "GPIO %u doesn't support APIC routing,\n",
+			cfg->pad);
+		return;
+	}
+
+	itss_set_irq_polarity(irq, !!(cfg->config0 & PAD_CFG0_RX_POL_INVERT));
+}
+
 void gpio_configure_pad(const struct pad_config *cfg)
 {
 	const struct pad_community *comm = gpio_get_community(cfg->pad);
 	uint16_t config_offset = PAD_CFG_OFFSET(cfg->pad - comm->first_pad);
 	iosf_write(comm->port, config_offset, cfg->config0);
 	iosf_write(comm->port, config_offset + sizeof(uint32_t), cfg->config1);
+
+	gpio_configure_itss(cfg, comm->port, config_offset);
 }
 
 void gpio_configure_pads(const struct pad_config *cfg, size_t num_pads)

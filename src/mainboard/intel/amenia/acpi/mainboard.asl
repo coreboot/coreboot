@@ -15,6 +15,7 @@
  * GNU General Public License for more details.
  */
 #include <on_board.h>
+#include "../ec.h"
 
 Scope (\_SB)
 {
@@ -25,6 +26,7 @@ Scope (\_SB)
 		{
 			Return (\_SB.PCI0.LPCB.EC0.LIDS)
 		}
+		Name (_PRW, Package () { GPE_EC_WAKE, 0x3 })
 	}
 
 	Device (PWRB)

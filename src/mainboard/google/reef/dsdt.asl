@@ -45,4 +45,9 @@ DefinitionBlock(
 
 	/* Mainboard Specific devices */
 	#include "acpi/mainboard.asl"
+
+	Scope (\_SB) {
+		/* Dynamic Platform Thermal Framework */
+		#include "acpi/dptf.asl"
+	}
 }

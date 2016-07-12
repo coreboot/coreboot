@@ -27,6 +27,8 @@
 #include <soc/iomap.h>
 #include <soc/pm.h>
 #include <soc/nvs.h>
+#include <soc/pci_devs.h>
+#include "chip.h"
 
 #define CSTATE_RES(address_space, width, offset, address)		\
 	{								\
@@ -146,6 +148,15 @@ unsigned long southbridge_write_acpi_tables(device_t device,
 
 static void acpi_create_gnvs(struct global_nvs_t *gnvs)
 {
+	struct soc_intel_apollolake_config *cfg;
+	struct device *dev = NB_DEV_ROOT;
+
+	if (!dev || !dev->chip_info) {
+		printk(BIOS_ERR, "BUG! Could not find SOC devicetree config\n");
+		return;
+	}
+	cfg = dev->chip_info;
+
 	if (IS_ENABLED(CONFIG_CONSOLE_CBMEM))
 		gnvs->cbmc = (uintptr_t)cbmem_find(CBMEM_ID_CONSOLE);
 
@@ -154,6 +165,9 @@ static void acpi_create_gnvs(struct global_nvs_t *gnvs)
 		chromeos_init_vboot(&gnvs->chromeos);
 		gnvs->chromeos.vbt2 = ACTIVE_ECFW_RO;
 	}
+
+	/* Enable DPTF based on mainboard configuration */
+	gnvs->dpte = cfg->dptf_enable;
 }
 
 void southbridge_inject_dsdt(device_t device)

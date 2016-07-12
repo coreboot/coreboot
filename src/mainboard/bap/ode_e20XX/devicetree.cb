@@ -87,9 +87,13 @@ chip northbridge/amd/agesa/family16kb/root_complex
 							io 0x60 = 0x2f8
 							irq 0x70 = 3
 						end
-						device pnp 4e.12 off			# COM3
+						device pnp 4e.12 on			# COM3
+							io 0x60 = 0x3e8
+							irq 0x70 = 4
 						end
-						device pnp 4e.13 off			# COM4
+						device pnp 4e.13 on			# COM4
+							io 0x60 = 0x2e8
+							irq 0x70 = 3
 						end
 						device pnp 4e.14 off			# COM5
 						end

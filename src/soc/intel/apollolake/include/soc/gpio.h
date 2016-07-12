@@ -67,17 +67,40 @@ typedef uint32_t gpio_t;
 		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_CFG0_TX_DISABLE | \
 		PAD_IRQ_CFG(IOAPIC, trig, inv), PAD_PULL(pull))
 
+/*
+ * The following APIC macros assume the APIC will handle the filtering
+ * on its own end. One just needs to pass an active high message into the
+ * ITSS.
+ */
+#define PAD_CFG_GPI_APIC_LOW(pad, pull, rst) \
+	PAD_CFG_GPI_APIC(pad, pull, rst, LEVEL, INVERT)
+
+#define PAD_CFG_GPI_APIC_HIGH(pad, pull, rst) \
+	PAD_CFG_GPI_APIC(pad, pull, rst, LEVEL, NONE)
+
 /* General purpose input, routed to SMI */
 #define PAD_CFG_GPI_SMI(pad, pull, rst, trig, inv) \
 	_PAD_CFG_STRUCT(pad,		\
 		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_CFG0_TX_DISABLE | \
 		PAD_IRQ_CFG(SMI, trig, inv), PAD_PULL(pull))
 
+#define PAD_CFG_GPI_SMI_LOW(pad, pull, rst, trig) \
+	PAD_CFG_GPI_SMI(pad, pull, rst, trig, INVERT)
+
+#define PAD_CFG_GPI_SMI_HIGH(pad, pull, rst, trig) \
+	PAD_CFG_GPI_SMI(pad, pull, rst, trig, NONE)
+
 /* General purpose input, routed to SCI */
 #define PAD_CFG_GPI_SCI(pad, pull, rst, trig, inv) \
 	_PAD_CFG_STRUCT(pad,		\
 		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_CFG0_TX_DISABLE | \
 		PAD_IRQ_CFG(SCI, trig, inv), PAD_PULL(pull))
+
+#define PAD_CFG_GPI_SCI_LOW(pad, pull, rst, trig) \
+	PAD_CFG_GPI_SCI(pad, pull, rst, trig, INVERT)
+
+#define PAD_CFG_GPI_SCI_HIGH(pad, pull, rst, trig) \
+	PAD_CFG_GPI_SCI(pad, pull, rst, trig, NONE)
 
 /* General purpose input, routed to NMI */
 #define PAD_CFG_GPI_NMI(pad, pull, rst, trig, inv) \

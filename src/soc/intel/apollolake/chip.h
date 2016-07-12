@@ -102,6 +102,9 @@ struct soc_intel_apollolake_config {
 
 	/* Configure LPSS S0ix Enable */
 	uint8_t lpss_s0ix_enable;
+
+	/* Enable DPTF support */
+	int dptf_enable;
 };
 
 #endif	/* _SOC_APOLLOLAKE_CHIP_H_ */

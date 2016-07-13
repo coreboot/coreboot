@@ -29,6 +29,7 @@
 #include <soc/iomap.h>
 #include <soc/cpu.h>
 #include <soc/intel/common/vbt.h>
+#include <soc/itss.h>
 #include <soc/nvs.h>
 #include <soc/pci_devs.h>
 #include <spi-generic.h>
@@ -149,10 +150,17 @@ static void soc_init(void *data)
 	if (locate_vbt(&vbt_rdev) != CB_ERR)
 		vbt = rdev_mmap_full(&vbt_rdev);
 
+	/* Snapshot the current GPIO IRQ polarities. FSP is setting a
+	 * default policy that doesn't honor boards' requirements. */
+	itss_snapshot_irq_polarities(GPIO_IRQ_START, GPIO_IRQ_END);
+
 	/* TODO: tigten this resource range */
 	/* TODO: fix for S3 resume, as this would corrupt OS memory */
 	range_entry_init(&range, 0x200000, 4ULL*GiB, 0);
 	fsp_silicon_init(&range);
+
+	/* Restore GPIO IRQ polarities back to previous settings. */
+	itss_restore_irq_polarities(GPIO_IRQ_START, GPIO_IRQ_END);
 
 	/*
 	 * Keep the P2SB device visible so it and the other devices are

@@ -402,32 +402,11 @@ static void systemagent_init(struct device *dev)
 	set_power_limits(28);
 }
 
-static void systemagent_enable(device_t dev)
-{
-#if CONFIG_HAVE_ACPI_RESUME
-	struct romstage_handoff *handoff;
-
-	handoff = cbmem_find(CBMEM_ID_ROMSTAGE_INFO);
-
-	if (handoff == NULL) {
-		printk(BIOS_DEBUG, "Unknown boot method, assuming normal.\n");
-		acpi_slp_type = 0;
-	} else if (handoff->s3_resume) {
-		printk(BIOS_DEBUG, "S3 Resume.\n");
-		acpi_slp_type = 3;
-	} else {
-		printk(BIOS_DEBUG, "Normal boot.\n");
-		acpi_slp_type = 0;
-	}
-#endif
-}
-
 static struct device_operations systemagent_ops = {
 	.read_resources   = &systemagent_read_resources,
 	.set_resources    = &pci_dev_set_resources,
 	.enable_resources = &pci_dev_enable_resources,
 	.init             = &systemagent_init,
-	.enable           = &systemagent_enable,
 	.ops_pci          = &soc_pci_ops,
 };
 

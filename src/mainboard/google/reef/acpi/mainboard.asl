@@ -25,6 +25,7 @@ Scope (\_SB)
 		{
 			Return (\_SB.PCI0.LPCB.EC0.LIDS)
 		}
+		Name (_PRW, Package () { GPE_EC_WAKE, 0x3 })
 	}
 
 	Device (PWRB)

@@ -26,7 +26,6 @@
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <fsp/util.h>
-#include <romstage_handoff.h>
 #include <soc/gpio.h>
 #include <soc/lpc.h>
 #include <soc/msr.h>
@@ -131,13 +130,6 @@ static void fill_in_pattrs(void)
 	attrs->bclk_khz = cpu_bus_freq_khz();
 }
 
-static inline void set_acpi_sleep_type(int val)
-{
-#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
-	acpi_slp_type = val;
-#endif
-}
-
 /* Save wake source information for calculating ACPI _SWS values */
 int soc_fill_acpi_wake(uint32_t *pm1, uint32_t **gpe0)
 {
@@ -155,19 +147,10 @@ int soc_fill_acpi_wake(uint32_t *pm1, uint32_t **gpe0)
 static void s3_resume_prepare(void)
 {
 	global_nvs_t *gnvs;
-	struct romstage_handoff *romstage_handoff;
 
 	gnvs = cbmem_add(CBMEM_ID_ACPI_GNVS, sizeof(global_nvs_t));
-
-	romstage_handoff = cbmem_find(CBMEM_ID_ROMSTAGE_INFO);
-	if (romstage_handoff == NULL || romstage_handoff->s3_resume == 0) {
-		if (gnvs != NULL)
-			memset(gnvs, 0, sizeof(global_nvs_t));
-		set_acpi_sleep_type(0);
-		return;
-	}
-
-	set_acpi_sleep_type(3);
+	if (!acpi_is_wakeup_s3() && gnvs)
+		memset(gnvs, 0, sizeof(global_nvs_t));
 }
 
 static void set_board_id(void)

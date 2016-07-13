@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/acpi.h>
 #include <arch/io.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
@@ -58,13 +59,13 @@ void mainboard_smi_sleep(u8 slp_typ)
 {
 	/* Disable USB charging if required */
 	switch (slp_typ) {
-	case 3:
+	case ACPI_S3:
 		it8772f_gpio_led(IT8772F_GPIO_DEV, 1 /* set */, 0x01 /* select */,
 			0x01 /* polarity */, 0x01 /* 1=pullup */,
 			0x01 /* output */, 0x00, /* 0=Alternate function */
 			SIO_GPIO_BLINK_GPIO10, IT8772F_GPIO_BLINK_FREQUENCY_1_HZ);
 		break;
-	case 5:
+	case ACPI_S5:
 		it8772f_gpio_led(IT8772F_GPIO_DEV, 1 /* set */, 0x01 /* select */,
 			0x00 /* polarity: non-inverting */, 0x00 /* 0=pulldown */,
 			0x01 /* output */, 0x01 /* 1=Simple IO function */,

@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/acpi.h>
 #include <arch/io.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
@@ -61,13 +62,13 @@ void mainboard_smi_sleep(u8 slp_typ)
 {
 	/* Disable USB charging if required */
 	switch (slp_typ) {
-	case 3:
+	case ACPI_S3:
 		set_power_led(SIO_GPIO_BLINK_GPIO10, LED_BLINK);
 
 		/* Enable DCP mode */
 		set_gpio(GPIO_USB_CTL_1, 0);
 		break;
-	case 5:
+	case ACPI_S5:
 		set_power_led(SIO_GPIO_BLINK_GPIO10, LED_OFF);
 		break;
 	}

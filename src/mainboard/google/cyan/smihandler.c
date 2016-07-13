@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/acpi.h>
 #include <arch/io.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
@@ -103,7 +104,7 @@ void mainboard_smi_sleep(uint8_t slp_typ)
 
 	/* Disable USB charging if required */
 	switch (slp_typ) {
-	case 3:
+	case ACPI_S3:
 #if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC)
 		if (smm_get_gnvs()->s3u0 == 0)
 			google_chromeec_set_usb_charge_mode(
@@ -118,7 +119,7 @@ void mainboard_smi_sleep(uint8_t slp_typ)
 		/* Enable wake pin in GPE block. */
 		enable_gpe(WAKE_GPIO_EN);
 		break;
-	case 5:
+	case ACPI_S5:
 #if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC)
 		if (smm_get_gnvs()->s5u0 == 0)
 			google_chromeec_set_usb_charge_mode(
@@ -154,7 +155,7 @@ void mainboard_smi_sleep(uint8_t slp_typ)
 
         if (smm_get_gnvs()->bdid == BOARD_PRE_EVT) {
                 /* Set LPC lines to low power in S3/S5. */
-                if ((slp_typ == SLEEP_STATE_S3) || (slp_typ == SLEEP_STATE_S5))
+                if ((slp_typ == ACPI_S3) || (slp_typ == ACPI_S5))
                         lpc_set_low_power();
         }
 

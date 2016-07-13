@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/acpi.h>
 #include <arch/io.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
@@ -28,9 +29,9 @@ void mainboard_smi_sleep(u8 slp_typ)
 	u8 reg8;
 
 	switch (slp_typ) {
-	case SLP_TYP_S3:
-	case SLP_TYP_S4:
-	case SLP_TYP_S5:
+	case ACPI_S3:
+	case ACPI_S4:
+	case ACPI_S5:
 		break;
 	}
 }

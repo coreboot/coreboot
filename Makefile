@@ -137,7 +137,7 @@ real-all: config
 
 else
 
-include $(HAVE_DOTCONFIG)
+include $(DOTCONFIG)
 
 -include .xcompile
 

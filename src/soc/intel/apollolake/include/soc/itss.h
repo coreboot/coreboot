@@ -16,7 +16,14 @@
 #ifndef _SOC_APOLLOLAKE_ITSS_H_
 #define _SOC_APOLLOLAKE_ITSS_H_
 
+#define GPIO_IRQ_START 50
+#define GPIO_IRQ_END 119
+
 /* Set the interrupt polarity for provided IRQ to the APIC. */
 void itss_set_irq_polarity(int irq, int active_low);
+
+/* Snapshot and restore IRQ polarity settings for the inclusive range. */
+void itss_snapshot_irq_polarities(int start, int end);
+void itss_restore_irq_polarities(int start, int end);
 
 #endif /* _SOC_APOLLOLAKE_ITSS_H_ */

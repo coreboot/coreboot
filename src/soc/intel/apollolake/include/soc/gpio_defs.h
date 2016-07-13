@@ -86,6 +86,32 @@
 #define  PAD_CFG1_PULL_UP_20K		(0xc << 10)
 #define  PAD_CFG1_PULL_UP_667		(0xd << 10)
 #define  PAD_CFG1_PULL_NATIVE		(0xf << 10)
+/* Tx enabled driving last value driven, Rx enabled */
+#define PAD_CFG1_IOSSTATE_TxLASTRxE	(0x0 << 0)
+/* Tx enabled driving 0, Rx disabled and Rx driving 0 back to its controller
+ * internally */
+#define PAD_CFG1_IOSSTATE_Tx0RxDCRx0	(0x1 << 0)
+/* Tx enabled driving 0, Rx disabled and Rx driving 1 back to its controller
+ * internally */
+#define PAD_CFG1_IOSSTATE_Tx0RXDCRx1	(0x2 << 0)
+/* Tx enabled driving 1, Rx disabled and Rx driving 0 back to its controller
+ * internally */
+#define PAD_CFG1_IOSSTATE_Tx1RXDCRx0	(0x3 << 0)
+/* Tx enabled driving 1, Rx disabled and Rx driving 1 back to its controller
+ * internally */
+#define PAD_CFG1_IOSSTATE_Tx1RxDCRx1	(0x4 << 0)
+/* Tx enabled driving 0, Rx enabled */
+#define PAD_CFG1_IOSSTATE_Tx0RxE	(0x5 << 0)
+/* Tx enabled driving 1, Rx enabled */
+#define PAD_CFG1_IOSSTATE_Tx1RxE	(0x6 << 0)
+/* Hi-Z, Rx driving 0 back to its controller internally */
+#define PAD_CFG1_IOSSTATE_HIZCRx0	(0x7 << 0)
+/* Hi-Z, Rx driving 1 back to its controller internally */
+#define PAD_CFG1_IOSSTATE_HIZCRx1	(0x8 << 0)
+#define PAD_CFG1_IOSSTATE_TxDRxE	(0x9 << 0) /* Tx disabled, Rx enabled */
+#define PAD_CFG1_IOSSTATE_IGNORE	(0xf << 0) /* Ignore Iostandby */
+#define PAD_CFG1_IOSSTATE_MASK		0xf /* mask to extract Iostandby bits */
+#define PAD_CFG1_IOSSTATE_SHIFT	14 /* set Iostandby bits [17:14] */
 
 #define PAD_CFG_BASE			0x500
 #define PAD_CFG_OFFSET(pad)		(PAD_CFG_BASE + ((pad) * 8))

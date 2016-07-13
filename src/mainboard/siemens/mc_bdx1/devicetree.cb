@@ -9,7 +9,20 @@ chip soc/intel/fsp_broadwell_de
 		device pci 1d.0 on end # EHCI Controller
 		device pci 1f.0 on end # LPC Bridge
 		device pci 1f.2 on end # SATA Controller
-		device pci 1f.3 on end # SMBus Controller
+		device pci 1f.3 on
+			# Enable external RTC chip
+			chip drivers/i2c/pcf8523
+				register "cap_sel" = "CAP_SEL_7_PF"
+				register "power_mode" = "PM_BAT_SW_OFF_LOW_DETECT_OFF"
+				register "cof_selection" = "COF_OFF"
+				register "set_user_date" = "1"
+				register "user_year" = "04"
+				register "user_month" = "07"
+				register "user_day" = "01"
+				register "user_weekday" = "0"
+				device i2c 0x68 on end # RTC PCF8523
+			end
+		end # SMBus Controller
 		device pci 1f.5 on end # SATA Controller
 	end
 end

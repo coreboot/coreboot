@@ -25,4 +25,8 @@
  */
 void __attribute__((noreturn)) halt(void);
 #endif /* __ROMCC__ */
+
+/* Power off the system. */
+void poweroff(void);
+
 #endif /* __HALT_H__ */

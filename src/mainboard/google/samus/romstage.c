@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/acpi.h>
 #include <cbfs.h>
 #include <console/console.h>
 #include <string.h>
@@ -35,7 +36,7 @@ void mainboard_romstage_entry(struct romstage_params *rp)
 
 	post_code(0x31);
 
-	if (rp->power_state->prev_sleep_state != SLEEP_STATE_S3)
+	if (rp->power_state->prev_sleep_state != ACPI_S3)
 		google_chromeec_kbbacklight(100);
 
 	printk(BIOS_INFO, "MLB: board version %s\n", samus_board_version());

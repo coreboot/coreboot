@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/acpi.h>
 #include <cpu/x86/smm.h>
 #include <ec/google/chromeec/ec.h>
 #include <soc/pm.h>
@@ -25,12 +26,12 @@ void mainboard_smi_sleep(u8 slp_typ)
 		return;
 
 	switch (slp_typ) {
-	case 3:
+	case ACPI_S3:
 		/* Enable wake events */
 		google_chromeec_set_wake_mask(MAINBOARD_EC_S3_WAKE_EVENTS);
 		enable_gpe(GPIO_TIER_1_SCI);
 		break;
-	case 5:
+	case ACPI_S5:
 		/* Enable wake events */
 		google_chromeec_set_wake_mask(MAINBOARD_EC_S5_WAKE_EVENTS);
 		break;

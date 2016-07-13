@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/acpi.h>
 #include <arch/io.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
@@ -56,9 +57,9 @@ void mainboard_smi_sleep(u8 slp_typ)
 {
 	/* Disable USB charging if required */
 	switch (slp_typ) {
-	case 3:
+	case ACPI_S3:
 		break;
-	case 5:
+	case ACPI_S5:
 		break;
 	}
 }

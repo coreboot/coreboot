@@ -615,7 +615,16 @@ void acpi_prepare_resume_backup(void);
 void mainboard_suspend_resume(void);
 void *acpi_find_wakeup_vector(void);
 
-/* Returns 0 = S0, 1 = S1 ... */
+enum {
+	ACPI_S0,
+	ACPI_S1,
+	ACPI_S2,
+	ACPI_S3,
+	ACPI_S4,
+	ACPI_S5,
+};
+
+/* Returns ACPI_Sx values. */
 int acpi_get_sleep_type(void);
 
 static inline int acpi_s3_resume_allowed(void)
@@ -629,7 +638,7 @@ extern int acpi_slp_type;
 #ifdef __PRE_RAM__
 static inline int acpi_is_wakeup_s3(void)
 {
-	return (acpi_get_sleep_type() == 3);
+	return (acpi_get_sleep_type() == ACPI_S3);
 }
 #else
 int acpi_is_wakeup(void);
@@ -639,7 +648,7 @@ int acpi_is_wakeup_s4(void);
 void acpi_prepare_for_resume(void);
 
 #else
-#define acpi_slp_type 0
+#define acpi_slp_type ACPI_S0
 static inline int acpi_is_wakeup(void) { return 0; }
 static inline int acpi_is_wakeup_s3(void) { return 0; }
 static inline int acpi_is_wakeup_s4(void) { return 0; }

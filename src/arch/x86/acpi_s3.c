@@ -36,13 +36,13 @@ int acpi_get_sleep_type(void)
 
 	if (handoff == NULL) {
 		printk(BIOS_DEBUG, "Unknown boot method, assuming normal.\n");
-		return 0;
+		return ACPI_S0;
 	} else if (handoff->s3_resume) {
 		printk(BIOS_DEBUG, "S3 Resume.\n");
-		return 3;
+		return ACPI_S3;
 	} else {
 		printk(BIOS_DEBUG, "Normal boot.\n");
-		return 0;
+		return ACPI_S0;
 	}
 }
 #endif
@@ -57,25 +57,25 @@ int acpi_is_wakeup(void)
 {
 	acpi_handoff_wakeup();
 	/* Both resume from S2 and resume from S3 restart at CPU reset */
-	return (acpi_slp_type == 3 || acpi_slp_type == 2);
+	return (acpi_slp_type == ACPI_S3 || acpi_slp_type == ACPI_S2);
 }
 
 int acpi_is_wakeup_s3(void)
 {
 	acpi_handoff_wakeup();
-	return (acpi_slp_type == 3);
+	return (acpi_slp_type == ACPI_S3);
 }
 
 int acpi_is_wakeup_s4(void)
 {
 	acpi_handoff_wakeup();
-	return (acpi_slp_type == 4);
+	return (acpi_slp_type == ACPI_S4);
 }
 
 void acpi_fail_wakeup(void)
 {
-	if (acpi_slp_type == 3 || acpi_slp_type == 2)
-		acpi_slp_type = 0;
+	if (acpi_slp_type == ACPI_S3 || acpi_slp_type == ACPI_S2)
+		acpi_slp_type = ACPI_S0;
 }
 #endif /* ENV_RAMSTAGE */
 

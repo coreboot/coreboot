@@ -85,10 +85,19 @@ static void gpio_configure_itss(const struct pad_config *cfg,
 
 void gpio_configure_pad(const struct pad_config *cfg)
 {
+	uint32_t dw1;
 	const struct pad_community *comm = gpio_get_community(cfg->pad);
 	uint16_t config_offset = PAD_CFG_OFFSET(cfg->pad - comm->first_pad);
+
+	/* Iostandby bits are tentatively stored in [3:0] bits (RO) of config1.
+	 * dw1 is used to extract the bits of Iostandby.
+	 * This is done to preserve config1 size as unit16 in gpio.h.
+	 */
+	dw1 = cfg->config1 & ~PAD_CFG1_IOSSTATE_MASK;
+	dw1 |= (cfg->config1 & PAD_CFG1_IOSSTATE_MASK) << PAD_CFG1_IOSSTATE_SHIFT;
+
 	iosf_write(comm->port, config_offset, cfg->config0);
-	iosf_write(comm->port, config_offset + sizeof(uint32_t), cfg->config1);
+	iosf_write(comm->port, config_offset + sizeof(uint32_t), dw1);
 
 	gpio_configure_itss(cfg, comm->port, config_offset);
 }

@@ -28,6 +28,7 @@ typedef uint32_t gpio_t;
 #define PAD_FUNC(value)		PAD_CFG0_MODE_##value
 #define PAD_RESET(value)	PAD_CFG0_RESET_##value
 #define PAD_PULL(value)		PAD_CFG1_PULL_##value
+#define PAD_IOSSTATE(value)	PAD_CFG1_IOSSTATE_##value
 #define PAD_IRQ_CFG(route, trig, inv) \
 				(PAD_CFG0_ROUTE_##route | \
 				PAD_CFG0_TRIG_##trig | \
@@ -42,19 +43,25 @@ typedef uint32_t gpio_t;
 
 /* Native function configuration */
 #define PAD_CFG_NF(pad, pull, rst, func) \
-	_PAD_CFG_STRUCT(pad, PAD_RESET(rst) | PAD_FUNC(func), PAD_PULL(pull))
+	_PAD_CFG_STRUCT(pad, PAD_RESET(rst) | PAD_FUNC(func), PAD_PULL(pull) | \
+		PAD_IOSSTATE(TxLASTRxE))
+
+/* Native function configuration for standby state */
+#define PAD_CFG_NF_IOSSTATE(pad, pull, rst, func, iosstate) \
+	_PAD_CFG_STRUCT(pad, PAD_RESET(rst) | PAD_FUNC(func), PAD_PULL(pull) | \
+		PAD_IOSSTATE(iosstate))
 
 /* General purpose output, no pullup/down. */
 #define PAD_CFG_GPO(pad, val, rst)	\
 	_PAD_CFG_STRUCT(pad,		\
 		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_CFG0_RX_DISABLE | !!val, \
-		PAD_PULL(NONE))
+		PAD_PULL(NONE) | PAD_IOSSTATE(TxLASTRxE))
 
 /* General purpose input */
 #define PAD_CFG_GPI(pad, pull, rst) \
 	_PAD_CFG_STRUCT(pad,		\
 		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_CFG0_TX_DISABLE, \
-		PAD_PULL(pull))
+		PAD_PULL(pull) | PAD_IOSSTATE(TxLASTRxE))
 
 /* No Connect configuration for unused pad.
  * NC should be GPI with Term as PU20K, PD20K, NONE depending upon default Term
@@ -65,7 +72,8 @@ typedef uint32_t gpio_t;
 #define PAD_CFG_GPI_APIC(pad, pull, rst, trig, inv) \
 	_PAD_CFG_STRUCT(pad,		\
 		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_CFG0_TX_DISABLE | \
-		PAD_IRQ_CFG(IOAPIC, trig, inv), PAD_PULL(pull))
+		PAD_IRQ_CFG(IOAPIC, trig, inv), PAD_PULL(pull) | \
+		PAD_IOSSTATE(TxLASTRxE))
 
 /*
  * The following APIC macros assume the APIC will handle the filtering
@@ -82,7 +90,8 @@ typedef uint32_t gpio_t;
 #define PAD_CFG_GPI_SMI(pad, pull, rst, trig, inv) \
 	_PAD_CFG_STRUCT(pad,		\
 		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_CFG0_TX_DISABLE | \
-		PAD_IRQ_CFG(SMI, trig, inv), PAD_PULL(pull))
+		PAD_IRQ_CFG(SMI, trig, inv), PAD_PULL(pull) | \
+		PAD_IOSSTATE(TxLASTRxE))
 
 #define PAD_CFG_GPI_SMI_LOW(pad, pull, rst, trig) \
 	PAD_CFG_GPI_SMI(pad, pull, rst, trig, INVERT)
@@ -94,7 +103,8 @@ typedef uint32_t gpio_t;
 #define PAD_CFG_GPI_SCI(pad, pull, rst, trig, inv) \
 	_PAD_CFG_STRUCT(pad,		\
 		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_CFG0_TX_DISABLE | \
-		PAD_IRQ_CFG(SCI, trig, inv), PAD_PULL(pull))
+		PAD_IRQ_CFG(SCI, trig, inv), PAD_PULL(pull) | \
+		PAD_IOSSTATE(TxLASTRxE))
 
 #define PAD_CFG_GPI_SCI_LOW(pad, pull, rst, trig) \
 	PAD_CFG_GPI_SCI(pad, pull, rst, trig, INVERT)
@@ -106,7 +116,8 @@ typedef uint32_t gpio_t;
 #define PAD_CFG_GPI_NMI(pad, pull, rst, trig, inv) \
 	_PAD_CFG_STRUCT(pad,		\
 		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_CFG0_TX_DISABLE | \
-		PAD_IRQ_CFG(NMI, trig, inv), PAD_PULL(pull))
+		PAD_IRQ_CFG(NMI, trig, inv), PAD_PULL(pull) | \
+		PAD_IOSSTATE(TxLASTRxE))
 
 struct pad_config {
 	uint32_t config0;

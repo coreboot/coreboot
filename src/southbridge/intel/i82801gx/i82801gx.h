@@ -15,6 +15,9 @@
 
 #ifndef SOUTHBRIDGE_INTEL_I82801GX_I82801GX_H
 #define SOUTHBRIDGE_INTEL_I82801GX_I82801GX_H
+
+#include <arch/acpi.h>
+
 /*
  * It does not matter where we put the SMBus I/O base, as long as we
  * keep it consistent and don't interfere with other devices.  Stage2
@@ -319,8 +322,6 @@ int southbridge_detect_s3_resume(void);
 #define   GBL_EN	(1 << 5)
 #define   TMROF_EN	(1 << 0)
 #define PM1_CNT		0x04
-#define   SLP_EN	(1 << 13)
-#define   SLP_TYP	(7 << 10)
 #define   GBL_RLS	(1 << 2)
 #define   BM_RLD	(1 << 1)
 #define   SCI_EN	(1 << 0)

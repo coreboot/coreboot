@@ -16,5 +16,5 @@
 void *cbmem_top(void)
 {
 	// TODO: find out how RISCV stores this.
-        return (void *)0x1fff000;
+        return (void *)((uintptr_t)3*GiB);
 }

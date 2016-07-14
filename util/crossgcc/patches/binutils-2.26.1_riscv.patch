@@ -1,6 +1,6 @@
-diff -urN empty/bfd/cpu-riscv.c binutils-2.26/bfd/cpu-riscv.c
+diff -urN empty/bfd/cpu-riscv.c binutils-2.26.1/bfd/cpu-riscv.c
 --- empty/bfd/cpu-riscv.c	1970-01-01 08:00:00.000000000 +0800
-+++ binutils-2.26/bfd/cpu-riscv.c	2016-04-03 10:33:12.058793036 +0800
++++ binutils-2.26.1/bfd/cpu-riscv.c	2016-04-03 10:33:12.058793036 +0800
 @@ -0,0 +1,76 @@
 +/* BFD backend for RISC-V
 +   Copyright 2011-2015 Free Software Foundation, Inc.
@@ -78,9 +78,9 @@ diff -urN empty/bfd/cpu-riscv.c binutils-2.26/bfd/cpu-riscv.c
 +
 +const bfd_arch_info_type bfd_riscv_arch =
 +  N (64, 64, 0, "riscv", TRUE, &arch_info_struct[0]);
-diff -urN empty/bfd/elfnn-riscv.c binutils-2.26/bfd/elfnn-riscv.c
+diff -urN empty/bfd/elfnn-riscv.c binutils-2.26.1/bfd/elfnn-riscv.c
 --- empty/bfd/elfnn-riscv.c	1970-01-01 08:00:00.000000000 +0800
-+++ binutils-2.26/bfd/elfnn-riscv.c	2016-04-03 10:33:12.062126369 +0800
++++ binutils-2.26.1/bfd/elfnn-riscv.c	2016-04-03 10:33:12.062126369 +0800
 @@ -0,0 +1,3022 @@
 +/* RISC-V-specific support for NN-bit ELF.
 +   Copyright 2011-2015 Free Software Foundation, Inc.
@@ -3104,9 +3104,9 @@ diff -urN empty/bfd/elfnn-riscv.c binutils-2.26/bfd/elfnn-riscv.c
 +#define elf_backend_default_execstack	0
 +
 +#include "elfNN-target.h"
-diff -urN empty/bfd/elfxx-riscv.c binutils-2.26/bfd/elfxx-riscv.c
+diff -urN empty/bfd/elfxx-riscv.c binutils-2.26.1/bfd/elfxx-riscv.c
 --- empty/bfd/elfxx-riscv.c	1970-01-01 08:00:00.000000000 +0800
-+++ binutils-2.26/bfd/elfxx-riscv.c	2016-04-03 10:33:12.062126369 +0800
++++ binutils-2.26.1/bfd/elfxx-riscv.c	2016-04-03 10:33:12.062126369 +0800
 @@ -0,0 +1,814 @@
 +/* RISC-V-specific support for ELF.
 +   Copyright 2011-2015 Free Software Foundation, Inc.
@@ -3922,9 +3922,9 @@ diff -urN empty/bfd/elfxx-riscv.c binutils-2.26/bfd/elfxx-riscv.c
 +    }
 +  return &howto_table[r_type];
 +}
-diff -urN empty/bfd/elfxx-riscv.h binutils-2.26/bfd/elfxx-riscv.h
+diff -urN empty/bfd/elfxx-riscv.h binutils-2.26.1/bfd/elfxx-riscv.h
 --- empty/bfd/elfxx-riscv.h	1970-01-01 08:00:00.000000000 +0800
-+++ binutils-2.26/bfd/elfxx-riscv.h	2016-04-03 10:12:57.122276559 +0800
++++ binutils-2.26.1/bfd/elfxx-riscv.h	2016-04-03 10:12:57.122276559 +0800
 @@ -0,0 +1,33 @@
 +/* RISC-V ELF specific backend routines.
 +   Copyright 2011-2015 Free Software Foundation, Inc.
@@ -3959,9 +3959,9 @@ diff -urN empty/bfd/elfxx-riscv.h binutils-2.26/bfd/elfxx-riscv.h
 +
 +extern reloc_howto_type *
 +riscv_elf_rtype_to_howto (unsigned int r_type);
-diff -urN empty/gas/config/tc-riscv.c binutils-2.26/gas/config/tc-riscv.c
+diff -urN empty/gas/config/tc-riscv.c binutils-2.26.1/gas/config/tc-riscv.c
 --- empty/gas/config/tc-riscv.c	1970-01-01 08:00:00.000000000 +0800
-+++ binutils-2.26/gas/config/tc-riscv.c	2016-04-09 10:50:33.576657106 +0800
++++ binutils-2.26.1/gas/config/tc-riscv.c	2016-04-09 10:50:33.576657106 +0800
 @@ -0,0 +1,2434 @@
 +/* tc-riscv.c -- RISC-V assembler
 +   Copyright 2011-2015 Free Software Foundation, Inc.
@@ -6397,9 +6397,9 @@ diff -urN empty/gas/config/tc-riscv.c binutils-2.26/gas/config/tc-riscv.c
 +
 +  pop_insert (riscv_pseudo_table);
 +}
-diff -urN empty/gas/config/tc-riscv.h binutils-2.26/gas/config/tc-riscv.h
+diff -urN empty/gas/config/tc-riscv.h binutils-2.26.1/gas/config/tc-riscv.h
 --- empty/gas/config/tc-riscv.h	1970-01-01 08:00:00.000000000 +0800
-+++ binutils-2.26/gas/config/tc-riscv.h	2016-04-03 10:33:12.065459702 +0800
++++ binutils-2.26.1/gas/config/tc-riscv.h	2016-04-03 10:33:12.065459702 +0800
 @@ -0,0 +1,102 @@
 +/* tc-riscv.h -- header file for tc-riscv.c.
 +   Copyright 2011-2015 Free Software Foundation, Inc.
@@ -6503,9 +6503,9 @@ diff -urN empty/gas/config/tc-riscv.h binutils-2.26/gas/config/tc-riscv.h
 +extern void riscv_elf_final_processing (void);
 +
 +#endif /* TC_RISCV */
-diff -urN empty/include/elf/riscv.h binutils-2.26/include/elf/riscv.h
+diff -urN empty/include/elf/riscv.h binutils-2.26.1/include/elf/riscv.h
 --- empty/include/elf/riscv.h	1970-01-01 08:00:00.000000000 +0800
-+++ binutils-2.26/include/elf/riscv.h	2016-04-03 10:33:12.065459702 +0800
++++ binutils-2.26.1/include/elf/riscv.h	2016-04-03 10:33:12.065459702 +0800
 @@ -0,0 +1,92 @@
 +/* RISC-V ELF support for BFD.
 +   Copyright 2011-2015 Free Software Foundation, Inc.
@@ -6599,9 +6599,9 @@ diff -urN empty/include/elf/riscv.h binutils-2.26/include/elf/riscv.h
 +#define EF_RISCV_SOFT_FLOAT 0x0002
 +
 +#endif /* _ELF_RISCV_H */
-diff -urN empty/include/opcode/riscv.h binutils-2.26/include/opcode/riscv.h
+diff -urN empty/include/opcode/riscv.h binutils-2.26.1/include/opcode/riscv.h
 --- empty/include/opcode/riscv.h	1970-01-01 08:00:00.000000000 +0800
-+++ binutils-2.26/include/opcode/riscv.h	2016-04-03 10:33:12.065459702 +0800
++++ binutils-2.26.1/include/opcode/riscv.h	2016-04-03 10:33:12.065459702 +0800
 @@ -0,0 +1,344 @@
 +/* riscv.h.  RISC-V opcode list for GDB, the GNU debugger.
 +   Copyright 2011
@@ -6947,9 +6947,9 @@ diff -urN empty/include/opcode/riscv.h binutils-2.26/include/opcode/riscv.h
 +#define NUMOPCODES bfd_riscv_num_opcodes
 +
 +#endif /* _RISCV_H_ */
-diff -urN empty/include/opcode/riscv-opc.h binutils-2.26/include/opcode/riscv-opc.h
+diff -urN empty/include/opcode/riscv-opc.h binutils-2.26.1/include/opcode/riscv-opc.h
 --- empty/include/opcode/riscv-opc.h	1970-01-01 08:00:00.000000000 +0800
-+++ binutils-2.26/include/opcode/riscv-opc.h	2016-04-03 10:33:12.065459702 +0800
++++ binutils-2.26.1/include/opcode/riscv-opc.h	2016-04-03 10:33:12.065459702 +0800
 @@ -0,0 +1,931 @@
 +/* Automatically generated by parse-opcodes */
 +#ifndef RISCV_ENCODING_H
@@ -7882,9 +7882,9 @@ diff -urN empty/include/opcode/riscv-opc.h binutils-2.26/include/opcode/riscv-op
 +DECLARE_CAUSE("hypervisor_ecall", CAUSE_HYPERVISOR_ECALL)
 +DECLARE_CAUSE("machine_ecall", CAUSE_MACHINE_ECALL)
 +#endif
-diff -urN empty/ld/emulparams/elf32lriscv-defs.sh binutils-2.26/ld/emulparams/elf32lriscv-defs.sh
+diff -urN empty/ld/emulparams/elf32lriscv-defs.sh binutils-2.26.1/ld/emulparams/elf32lriscv-defs.sh
 --- empty/ld/emulparams/elf32lriscv-defs.sh	1970-01-01 08:00:00.000000000 +0800
-+++ binutils-2.26/ld/emulparams/elf32lriscv-defs.sh	2016-04-03 10:33:12.065459702 +0800
++++ binutils-2.26.1/ld/emulparams/elf32lriscv-defs.sh	2016-04-03 10:33:12.065459702 +0800
 @@ -0,0 +1,48 @@
 +# This is an ELF platform.
 +SCRIPT_NAME=elf
@@ -7934,26 +7934,26 @@ diff -urN empty/ld/emulparams/elf32lriscv-defs.sh binutils-2.26/ld/emulparams/el
 +INITIAL_READONLY_SECTIONS="${RELOCATING+${CREATE_SHLIB-${INITIAL_READONLY_SECTIONS}}}"
 +
 +SDATA_START_SYMBOLS="${CREATE_PIE+${SDATA_START_SYMBOLS}}"
-diff -urN empty/ld/emulparams/elf32lriscv.sh binutils-2.26/ld/emulparams/elf32lriscv.sh
+diff -urN empty/ld/emulparams/elf32lriscv.sh binutils-2.26.1/ld/emulparams/elf32lriscv.sh
 --- empty/ld/emulparams/elf32lriscv.sh	1970-01-01 08:00:00.000000000 +0800
-+++ binutils-2.26/ld/emulparams/elf32lriscv.sh	2016-04-02 14:07:12.469104719 +0800
++++ binutils-2.26.1/ld/emulparams/elf32lriscv.sh	2016-04-02 14:07:12.469104719 +0800
 @@ -0,0 +1,2 @@
 +. ${srcdir}/emulparams/elf32lriscv-defs.sh
 +OUTPUT_FORMAT="elf32-littleriscv"
-diff -urN empty/ld/emulparams/elf64lriscv-defs.sh binutils-2.26/ld/emulparams/elf64lriscv-defs.sh
+diff -urN empty/ld/emulparams/elf64lriscv-defs.sh binutils-2.26.1/ld/emulparams/elf64lriscv-defs.sh
 --- empty/ld/emulparams/elf64lriscv-defs.sh	1970-01-01 08:00:00.000000000 +0800
-+++ binutils-2.26/ld/emulparams/elf64lriscv-defs.sh	2016-04-02 14:07:12.469104719 +0800
++++ binutils-2.26.1/ld/emulparams/elf64lriscv-defs.sh	2016-04-02 14:07:12.469104719 +0800
 @@ -0,0 +1 @@
 +. ${srcdir}/emulparams/elf32lriscv-defs.sh
-diff -urN empty/ld/emulparams/elf64lriscv.sh binutils-2.26/ld/emulparams/elf64lriscv.sh
+diff -urN empty/ld/emulparams/elf64lriscv.sh binutils-2.26.1/ld/emulparams/elf64lriscv.sh
 --- empty/ld/emulparams/elf64lriscv.sh	1970-01-01 08:00:00.000000000 +0800
-+++ binutils-2.26/ld/emulparams/elf64lriscv.sh	2016-04-02 14:07:12.469104719 +0800
++++ binutils-2.26.1/ld/emulparams/elf64lriscv.sh	2016-04-02 14:07:12.469104719 +0800
 @@ -0,0 +1,2 @@
 +. ${srcdir}/emulparams/elf64lriscv-defs.sh
 +OUTPUT_FORMAT="elf64-littleriscv"
-diff -urN empty/ld/emultempl/riscvelf.em binutils-2.26/ld/emultempl/riscvelf.em
+diff -urN empty/ld/emultempl/riscvelf.em binutils-2.26.1/ld/emultempl/riscvelf.em
 --- empty/ld/emultempl/riscvelf.em	1970-01-01 08:00:00.000000000 +0800
-+++ binutils-2.26/ld/emultempl/riscvelf.em	2016-04-03 10:33:12.065459702 +0800
++++ binutils-2.26.1/ld/emultempl/riscvelf.em	2016-04-03 10:33:12.065459702 +0800
 @@ -0,0 +1,68 @@
 +# This shell script emits a C file. -*- C -*-
 +#   Copyright 2004, 2006, 2007, 2008 Free Software Foundation, Inc.
@@ -8023,9 +8023,9 @@ diff -urN empty/ld/emultempl/riscvelf.em binutils-2.26/ld/emultempl/riscvelf.em
 +
 +LDEMUL_BEFORE_ALLOCATION=riscv_elf_before_allocation
 +LDEMUL_AFTER_ALLOCATION=gld${EMULATION_NAME}_after_allocation
-diff -urN empty/opcodes/riscv-dis.c binutils-2.26/opcodes/riscv-dis.c
+diff -urN empty/opcodes/riscv-dis.c binutils-2.26.1/opcodes/riscv-dis.c
 --- empty/opcodes/riscv-dis.c	1970-01-01 08:00:00.000000000 +0800
-+++ binutils-2.26/opcodes/riscv-dis.c	2016-04-03 10:33:12.065459702 +0800
++++ binutils-2.26.1/opcodes/riscv-dis.c	2016-04-03 10:33:12.065459702 +0800
 @@ -0,0 +1,521 @@
 +/* RISC-V disassembler
 +   Copyright 2011-2015 Free Software Foundation, Inc.
@@ -8548,9 +8548,9 @@ diff -urN empty/opcodes/riscv-dis.c binutils-2.26/opcodes/riscv-dis.c
 +
 +  fprintf (stream, _("\n"));
 +}
-diff -urN empty/opcodes/riscv-opc.c binutils-2.26/opcodes/riscv-opc.c
+diff -urN empty/opcodes/riscv-opc.c binutils-2.26.1/opcodes/riscv-opc.c
 --- empty/opcodes/riscv-opc.c	1970-01-01 08:00:00.000000000 +0800
-+++ binutils-2.26/opcodes/riscv-opc.c	2016-04-16 11:38:25.314563423 +0800
++++ binutils-2.26.1/opcodes/riscv-opc.c	2016-04-16 11:38:25.314563423 +0800
 @@ -0,0 +1,647 @@
 +/* RISC-V opcode list
 +   Copyright 2011-2015 Free Software Foundation, Inc.
@@ -9200,7 +9200,7 @@ diff -urN empty/opcodes/riscv-opc.c binutils-2.26/opcodes/riscv-opc.c
 +int bfd_riscv_num_opcodes = RISCV_NUM_OPCODES;
 +#undef RISCV_NUM_OPCODES
 --- original-binutils/bfd/archures.c
-+++ binutils-2.26/bfd/archures.c
++++ binutils-2.26.1/bfd/archures.c
 @@ -612,6 +612,7 @@ extern const bfd_arch_info_type bfd_pj_a
  extern const bfd_arch_info_type bfd_plugin_arch;
  extern const bfd_arch_info_type bfd_powerpc_archs[];
@@ -9218,7 +9218,7 @@ diff -urN empty/opcodes/riscv-opc.c binutils-2.26/opcodes/riscv-opc.c
      &bfd_rl78_arch,
      &bfd_rx_arch,
 --- original-binutils/bfd/bfd-in2.h
-+++ binutils-2.26/bfd/bfd-in2.h
++++ binutils-2.26.1/bfd/bfd-in2.h
 @@ -2073,6 +2073,9 @@ enum bfd_architecture
  #define bfd_mach_ppc_e6500     5007
  #define bfd_mach_ppc_titan     83
@@ -9277,7 +9277,7 @@ diff -urN empty/opcodes/riscv-opc.c binutils-2.26/opcodes/riscv-opc.c
  the dynamic object into the runtime process image.  */
    BFD_RELOC_MICROBLAZE_COPY,
 --- original-binutils/bfd/config.bfd
-+++ binutils-2.26/bfd/config.bfd
++++ binutils-2.26.1/bfd/config.bfd
 @@ -120,6 +120,7 @@ or1k*|or1knd*)	 targ_archs=bfd_or1k_arch
  pdp11*)		 targ_archs=bfd_pdp11_arch ;;
  pj*)		 targ_archs="bfd_pj_arch bfd_i386_arch";;
@@ -9306,7 +9306,7 @@ diff -urN empty/opcodes/riscv-opc.c binutils-2.26/opcodes/riscv-opc.c
      targ_defvec=rx_elf32_le_vec
      targ_selvecs="rx_elf32_be_vec rx_elf32_le_vec rx_elf32_be_ns_vec"
 --- original-binutils/bfd/configure
-+++ binutils-2.26/bfd/configure
++++ binutils-2.26.1/bfd/configure
 @@ -15472,6 +15472,8 @@ do
      powerpc_pei_vec)		 tb="$tb pei-ppc.lo peigen.lo $coff" ;;
      powerpc_pei_le_vec)		 tb="$tb pei-ppc.lo peigen.lo $coff" ;;
@@ -9317,7 +9317,7 @@ diff -urN empty/opcodes/riscv-opc.c binutils-2.26/opcodes/riscv-opc.c
      rs6000_xcoff64_vec)		 tb="$tb coff64-rs6000.lo aix5ppc-core.lo $xcoff"; target_size=64 ;;
      rs6000_xcoff64_aix_vec)	 tb="$tb coff64-rs6000.lo aix5ppc-core.lo $xcoff"; target_size=64 ;;
 --- original-binutils/bfd/configure.ac
-+++ binutils-2.26/bfd/configure.ac
++++ binutils-2.26.1/bfd/configure.ac
 @@ -918,6 +918,8 @@ do
      powerpc_pei_vec)		 tb="$tb pei-ppc.lo peigen.lo $coff" ;;
      powerpc_pei_le_vec)		 tb="$tb pei-ppc.lo peigen.lo $coff" ;;
@@ -9328,7 +9328,7 @@ diff -urN empty/opcodes/riscv-opc.c binutils-2.26/opcodes/riscv-opc.c
      rs6000_xcoff64_vec)		 tb="$tb coff64-rs6000.lo aix5ppc-core.lo $xcoff"; target_size=64 ;;
      rs6000_xcoff64_aix_vec)	 tb="$tb coff64-rs6000.lo aix5ppc-core.lo $xcoff"; target_size=64 ;;
 --- original-binutils/bfd/elf-bfd.h
-+++ binutils-2.26/bfd/elf-bfd.h
++++ binutils-2.26.1/bfd/elf-bfd.h
 @@ -475,6 +475,7 @@ enum elf_target_id
    XGATE_ELF_DATA,
    TILEGX_ELF_DATA,
@@ -9338,7 +9338,7 @@ diff -urN empty/opcodes/riscv-opc.c binutils-2.26/opcodes/riscv-opc.c
  };
  
 --- original-binutils/bfd/Makefile.am
-+++ binutils-2.26/bfd/Makefile.am
++++ binutils-2.26.1/bfd/Makefile.am
 @@ -949,6 +949,18 @@ elf64-ia64.c : elfnn-ia64.c
  	$(SED) -e s/NN/64/g < $(srcdir)/elfnn-ia64.c > elf64-ia64.new
  	mv -f elf64-ia64.new elf64-ia64.c
@@ -9359,7 +9359,7 @@ diff -urN empty/opcodes/riscv-opc.c binutils-2.26/opcodes/riscv-opc.c
  	rm -f peigen.c
  	$(SED) -e s/XX/pe/g < $(srcdir)/peXXigen.c > peigen.new
 --- original-binutils/bfd/Makefile.in
-+++ binutils-2.26/bfd/Makefile.in
++++ binutils-2.26.1/bfd/Makefile.in
 @@ -450,6 +450,7 @@ ALL_MACHINES = \
  	cpu-pj.lo \
  	cpu-plugin.lo \
@@ -9396,7 +9396,7 @@ diff -urN empty/opcodes/riscv-opc.c binutils-2.26/opcodes/riscv-opc.c
  	rm -f peigen.c
  	$(SED) -e s/XX/pe/g < $(srcdir)/peXXigen.c > peigen.new
 --- original-binutils/bfd/targets.c
-+++ binutils-2.26/bfd/targets.c
++++ binutils-2.26.1/bfd/targets.c
 @@ -793,6 +793,8 @@ extern const bfd_target powerpc_pe_le_ve
  extern const bfd_target powerpc_pei_vec;
  extern const bfd_target powerpc_pei_le_vec;
@@ -9407,7 +9407,7 @@ diff -urN empty/opcodes/riscv-opc.c binutils-2.26/opcodes/riscv-opc.c
  extern const bfd_target rs6000_xcoff64_vec;
  extern const bfd_target rs6000_xcoff64_aix_vec;
 --- original-binutils/binutils/readelf.c
-+++ binutils-2.26/binutils/readelf.c
++++ binutils-2.26.1/binutils/readelf.c
 @@ -124,6 +124,7 @@
  #include "elf/metag.h"
  #include "elf/microblaze.h"
@@ -9484,7 +9484,7 @@ diff -urN empty/opcodes/riscv-opc.c binutils-2.26/opcodes/riscv-opc.c
      case EM_ARC_COMPACT: /* R_ARC_NONE.  */
      case EM_ARC_COMPACT2: /* R_ARC_NONE.  */
 --- original-binutils/gas/configure
-+++ binutils-2.26/gas/configure
++++ binutils-2.26.1/gas/configure
 @@ -12418,7 +12418,7 @@ $as_echo "#define NDS32_DEFAULT_AUDIO_EX
  $as_echo "$enable_audio_ext" >&6; }
  	;;
@@ -9495,7 +9495,7 @@ diff -urN empty/opcodes/riscv-opc.c binutils-2.26/opcodes/riscv-opc.c
  
  cat >>confdefs.h <<_ACEOF
 --- original-binutils/gas/configure.ac
-+++ binutils-2.26/gas/configure.ac
++++ binutils-2.26.1/gas/configure.ac
 @@ -466,7 +466,7 @@ changequote([,])dnl
  	AC_MSG_RESULT($enable_audio_ext)
  	;;
@@ -9506,7 +9506,7 @@ diff -urN empty/opcodes/riscv-opc.c binutils-2.26/opcodes/riscv-opc.c
  	  AC_DEFINE_UNQUOTED(DEFAULT_ARCH, "${arch}", [Default architecture.])
  	fi
 --- original-binutils/gas/configure.tgt
-+++ binutils-2.26/gas/configure.tgt
++++ binutils-2.26.1/gas/configure.tgt
 @@ -87,6 +87,8 @@ case ${cpu} in
    pj*)			cpu_type=pj endian=big ;;
    powerpc*le*)		cpu_type=ppc endian=little ;;
@@ -9535,7 +9535,7 @@ diff -urN empty/opcodes/riscv-opc.c binutils-2.26/opcodes/riscv-opc.c
      ;;
  esac
 --- original-binutils/gas/Makefile.am
-+++ binutils-2.26/gas/Makefile.am
++++ binutils-2.26.1/gas/Makefile.am
 @@ -177,6 +177,7 @@ TARGET_CPU_CFILES = \
  	config/tc-pdp11.c \
  	config/tc-pj.c \
@@ -9553,7 +9553,7 @@ diff -urN empty/opcodes/riscv-opc.c binutils-2.26/opcodes/riscv-opc.c
  	config/tc-rx.h \
  	config/tc-s390.h \
 --- original-binutils/gas/Makefile.in
-+++ binutils-2.26/gas/Makefile.in
++++ binutils-2.26.1/gas/Makefile.in
 @@ -448,6 +448,7 @@ TARGET_CPU_CFILES = \
  	config/tc-pdp11.c \
  	config/tc-pj.c \
@@ -9600,7 +9600,7 @@ diff -urN empty/opcodes/riscv-opc.c binutils-2.26/opcodes/riscv-opc.c
  @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT tc-rl78.o -MD -MP -MF $(DEPDIR)/tc-rl78.Tpo -c -o tc-rl78.o `test -f 'config/tc-rl78.c' || echo '$(srcdir)/'`config/tc-rl78.c
  @am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/tc-rl78.Tpo $(DEPDIR)/tc-rl78.Po
 --- original-binutils/include/dis-asm.h
-+++ binutils-2.26/include/dis-asm.h
++++ binutils-2.26.1/include/dis-asm.h
 @@ -263,6 +263,7 @@ extern int print_insn_little_arm	(bfd_vm
  extern int print_insn_little_mips	(bfd_vma, disassemble_info *);
  extern int print_insn_little_nios2	(bfd_vma, disassemble_info *);
@@ -9618,7 +9618,7 @@ diff -urN empty/opcodes/riscv-opc.c binutils-2.26/opcodes/riscv-opc.c
  extern void parse_arm_disassembler_option (char *);
  extern void print_s390_disassembler_options (FILE *);
 --- original-binutils/include/elf/common.h
-+++ binutils-2.26/include/elf/common.h
++++ binutils-2.26.1/include/elf/common.h
 @@ -306,6 +306,7 @@
  #define EM_VISIUM	221	/* Controls and Data Services VISIUMcore processor */
  #define EM_FT32         222     /* FTDI Chip FT32 high performance 32-bit RISC architecture */
@@ -9628,7 +9628,7 @@ diff -urN empty/opcodes/riscv-opc.c binutils-2.26/opcodes/riscv-opc.c
  /* If it is necessary to assign new unofficial EM_* values, please pick large
     random numbers (0x8523, 0xa7f2, etc.) to minimize the chances of collision
 --- original-binutils/ld/configure.tgt
-+++ binutils-2.26/ld/configure.tgt
++++ binutils-2.26.1/ld/configure.tgt
 @@ -638,6 +638,12 @@ powerpc-*-aix*)		targ_emul=aixppc ;;
  powerpc-*-beos*)	targ_emul=aixppc ;;
  powerpc-*-windiss*)	targ_emul=elf32ppcwindiss ;;
@@ -9643,7 +9643,7 @@ diff -urN empty/opcodes/riscv-opc.c binutils-2.26/opcodes/riscv-opc.c
  rs6000-*-aix*)		targ_emul=aixrs6
  			;;
 --- original-binutils/ld/Makefile.am
-+++ binutils-2.26/ld/Makefile.am
++++ binutils-2.26.1/ld/Makefile.am
 @@ -267,6 +267,7 @@ ALL_EMULATION_SOURCES = \
  	eelf32ppcsim.c \
  	eelf32ppcvxworks.c \
@@ -9686,7 +9686,7 @@ diff -urN empty/opcodes/riscv-opc.c binutils-2.26/opcodes/riscv-opc.c
    $(srcdir)/emulparams/elf64btsmip.sh $(srcdir)/emulparams/elf64bmip-defs.sh \
    $(srcdir)/emulparams/elf32bmipn32-defs.sh $(ELF_DEPS) \
 --- original-binutils/ld/Makefile.in
-+++ binutils-2.26/ld/Makefile.in
++++ binutils-2.26.1/ld/Makefile.in
 @@ -577,6 +577,7 @@ ALL_EMULATION_SOURCES = \
  	eelf32lppclinux.c \
  	eelf32lppcnto.c \
@@ -9745,7 +9745,7 @@ diff -urN empty/opcodes/riscv-opc.c binutils-2.26/opcodes/riscv-opc.c
    $(srcdir)/emulparams/elf64btsmip.sh $(srcdir)/emulparams/elf64bmip-defs.sh \
    $(srcdir)/emulparams/elf32bmipn32-defs.sh $(ELF_DEPS) \
 --- original-binutils/opcodes/configure
-+++ binutils-2.26/opcodes/configure
++++ binutils-2.26.1/opcodes/configure
 @@ -12603,6 +12603,7 @@ if test x${all_targets} = xfalse ; then
  	bfd_powerpc_arch)	ta="$ta ppc-dis.lo ppc-opc.lo" ;;
  	bfd_powerpc_64_arch)	ta="$ta ppc-dis.lo ppc-opc.lo" ;;
@@ -9755,7 +9755,7 @@ diff -urN empty/opcodes/riscv-opc.c binutils-2.26/opcodes/riscv-opc.c
  	bfd_rs6000_arch)	ta="$ta ppc-dis.lo ppc-opc.lo" ;;
  	bfd_rl78_arch)		ta="$ta rl78-dis.lo rl78-decode.lo";;
 --- original-binutils/opcodes/disassemble.c
-+++ binutils-2.26/opcodes/disassemble.c
++++ binutils-2.26.1/opcodes/disassemble.c
 @@ -376,6 +376,11 @@ disassembler (abfd)
  	disassemble = print_insn_little_powerpc;
        break;

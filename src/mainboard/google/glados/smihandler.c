@@ -19,7 +19,7 @@
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <elog.h>
-#include <ec/google/chromeec/ec.h>
+#include <ec/google/chromeec/smm.h>
 #include <gpio.h>
 #include <soc/iomap.h>
 #include <soc/nvs.h>
@@ -48,60 +48,10 @@ int mainboard_io_trap_handler(int smif)
 	return 1;
 }
 
-static u8 mainboard_smi_ec(void)
-{
-	u8 cmd = 0;
-#if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC)
-	u32 pm1_cnt;
-	cmd = google_chromeec_get_event();
-
-	/* Log this event */
-	if (IS_ENABLED(CONFIG_ELOG_GSMI) && cmd)
-		elog_add_event_byte(ELOG_TYPE_EC_EVENT, cmd);
-
-	switch (cmd) {
-	case EC_HOST_EVENT_LID_CLOSED:
-		printk(BIOS_DEBUG, "LID CLOSED, SHUTDOWN\n");
-
-		/* Go to S5 */
-		pm1_cnt = inl(ACPI_BASE_ADDRESS + PM1_CNT);
-		pm1_cnt |= (0xf << 10);
-		outl(pm1_cnt, ACPI_BASE_ADDRESS + PM1_CNT);
-		break;
-	}
-#endif
-	return cmd;
-}
-
 void mainboard_smi_gpi_handler(const struct gpi_status *sts)
 {
-	if (gpi_status_get(sts, EC_SMI_GPI)) {
-		/* Process all pending events */
-		while (mainboard_smi_ec() != 0)
-			;
-	}
-}
-
-static void google_ec_smi_sleep(u8 slp_typ)
-{
-	switch (slp_typ) {
-	case ACPI_S3:
-		/* Enable wake events */
-		google_chromeec_set_wake_mask(MAINBOARD_EC_S3_WAKE_EVENTS);
-		break;
-	case ACPI_S5:
-		/* Enable wake events */
-		google_chromeec_set_wake_mask(MAINBOARD_EC_S5_WAKE_EVENTS);
-		break;
-	}
-
-	/* Disable SCI and SMI events */
-	google_chromeec_set_smi_mask(0);
-	google_chromeec_set_sci_mask(0);
-
-	/* Clear pending events that may trigger immediate wake */
-	while (google_chromeec_get_event() != 0)
-		;
+	if (gpi_status_get(sts, EC_SMI_GPI))
+		chromeec_smi_process_events();
 }
 
 static void mainboard_gpio_smi_sleep(u8 slp_typ)
@@ -124,30 +74,16 @@ static void mainboard_gpio_smi_sleep(u8 slp_typ)
 void mainboard_smi_sleep(u8 slp_typ)
 {
 	if (IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC))
-		google_ec_smi_sleep(slp_typ);
+		chromeec_smi_sleep(slp_typ, MAINBOARD_EC_S3_WAKE_EVENTS,
+					MAINBOARD_EC_S5_WAKE_EVENTS);
 
 	mainboard_gpio_smi_sleep(slp_typ);
 }
 
 int mainboard_smi_apmc(u8 apmc)
 {
-#if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC)
-	switch (apmc) {
-	case APM_CNT_ACPI_ENABLE:
-		google_chromeec_set_smi_mask(0);
-		/* Clear all pending events */
-		while (google_chromeec_get_event() != 0)
-			;
-		google_chromeec_set_sci_mask(MAINBOARD_EC_SCI_EVENTS);
-		break;
-	case APM_CNT_ACPI_DISABLE:
-		google_chromeec_set_sci_mask(0);
-		/* Clear all pending events */
-		while (google_chromeec_get_event() != 0)
-			;
-		google_chromeec_set_smi_mask(MAINBOARD_EC_SMI_EVENTS);
-		break;
-	}
-#endif
+	if (IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC))
+		chromeec_smi_apmc(apmc, MAINBOARD_EC_SCI_EVENTS,
+					MAINBOARD_EC_SMI_EVENTS);
 	return 0;
 }

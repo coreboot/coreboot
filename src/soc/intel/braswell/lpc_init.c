@@ -114,8 +114,8 @@ void lpc_init(void)
 	pm1_cnt = inl(ACPI_BASE_ADDRESS + PM1_CNT);
 
 	if (pm1_sts & WAK_STS)
-		slp_type = (pm1_cnt & SLP_TYP) >> SLP_TYP_SHIFT;
+		slp_type = acpi_sleep_from_pm1(pm1_cnt);
 
-	if ((slp_type == SLP_TYP_S3) || (slp_type == SLP_TYP_S5))
+	if ((slp_type == ACPI_S3) || (slp_type == ACPI_S5))
 		lpc_gpio_config(RESUME_CYCLE);
 }

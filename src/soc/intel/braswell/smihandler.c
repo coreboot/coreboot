@@ -146,15 +146,15 @@ static void southbridge_smi_sleep(void)
 	/* Figure out SLP_TYP */
 	reg32 = inl(pmbase + PM1_CNT);
 	printk(BIOS_SPEW, "SMI#: SLP = 0x%08x\n", reg32);
-	slp_typ = (reg32 >> 10) & 7;
+	slp_typ = acpi_sleep_from_pm1(reg32);
 
 	/* Do any mainboard sleep handling */
-	mainboard_smi_sleep(slp_typ-2);
+	mainboard_smi_sleep(slp_typ);
 
 #if IS_ENABLED(CONFIG_ELOG_GSMI)
 	/* Log S3, S4, and S5 entry */
-	if (slp_typ >= 5)
-		elog_add_event_byte(ELOG_TYPE_ACPI_ENTER, slp_typ-2);
+	if (slp_typ >= ACPI_S3)
+		elog_add_event_byte(ELOG_TYPE_ACPI_ENTER, slp_typ);
 #endif
       /* Clear pending GPE events */
 	clear_gpe_status();
@@ -162,22 +162,22 @@ static void southbridge_smi_sleep(void)
 	/* Next, do the deed. */
 
 	switch (slp_typ) {
-	case SLP_TYP_S0:
+	case ACPI_S0:
 		printk(BIOS_DEBUG, "SMI#: Entering S0 (On)\n");
 		break;
-	case SLP_TYP_S1:
+	case ACPI_S1:
 		printk(BIOS_DEBUG, "SMI#: Entering S1 (Assert STPCLK#)\n");
 		break;
-	case SLP_TYP_S3:
+	case ACPI_S3:
 		printk(BIOS_DEBUG, "SMI#: Entering S3 (Suspend-To-RAM)\n");
 
 		/* Invalidate the cache before going to S3 */
 		wbinvd();
 		break;
-	case SLP_TYP_S4:
+	case ACPI_S4:
 		printk(BIOS_DEBUG, "SMI#: Entering S4 (Suspend-To-Disk)\n");
 		break;
-	case SLP_TYP_S5:
+	case ACPI_S5:
 		printk(BIOS_DEBUG, "SMI#: Entering S5 (Soft Power off)\n");
 
 		/* Disable all GPE */
@@ -195,7 +195,7 @@ static void southbridge_smi_sleep(void)
 		read32((void *)(0xfed88000 + 0x0200)));
 
 	/* Tri-state specific GPIOS to avoid leakage during S3/S5 */
-	if ((slp_typ == SLP_TYP_S3) || (slp_typ == SLP_TYP_S5))
+	if ((slp_typ == ACPI_S3) || (slp_typ == ACPI_S5))
 		tristate_gpios(PAD_CONTROL_REG0_TRISTATE);
 
 	/*
@@ -206,7 +206,7 @@ static void southbridge_smi_sleep(void)
 	enable_pm1_control(SLP_EN);
 
 	/* Make sure to stop executing code here for S3/S4/S5 */
-	if (slp_typ > 1)
+	if (slp_typ >= ACPI_S3)
 		hlt();
 
 	/*

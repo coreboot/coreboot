@@ -31,7 +31,22 @@
 #define HIGH_MEMORY_SAVE	0
 #endif
 
-#ifndef __ASSEMBLER__
+#if IS_ENABLED(CONFIG_ACPI_INTEL_HARDWARE_SLEEP_VALUES)
+/*
+ * The type and enable fields are common in ACPI, but the
+ * values themselves are hardware implementation idefiend.
+ */
+#define SLP_EN		(1 << 13)
+#define SLP_TYP_SHIFT	10
+#define SLP_TYP		(7 << SLP_TYP_SHIFT)
+#define  SLP_TYP_S0	0
+#define  SLP_TYP_S1	1
+#define  SLP_TYP_S3	5
+#define  SLP_TYP_S4	6
+#define  SLP_TYP_S5	7
+#endif
+
+#if !defined(__ASSEMBLER__) && !defined(__ACPI__) && !defined(__ROMCC__)
 #include <stdint.h>
 #include <rules.h>
 #include <commonlib/helpers.h>
@@ -624,6 +639,21 @@ enum {
 	ACPI_S5,
 };
 
+#if IS_ENABLED(CONFIG_ACPI_INTEL_HARDWARE_SLEEP_VALUES)
+/* Given the provided PM1 control register return the ACPI sleep type. */
+static inline int acpi_sleep_from_pm1(uint32_t pm1_cnt)
+{
+	switch (((pm1_cnt) & SLP_TYP) >> SLP_TYP_SHIFT) {
+	case SLP_TYP_S0: return ACPI_S0;
+	case SLP_TYP_S1: return ACPI_S1;
+	case SLP_TYP_S3: return ACPI_S3;
+	case SLP_TYP_S4: return ACPI_S4;
+	case SLP_TYP_S5: return ACPI_S5;
+	}
+	return -1;
+}
+#endif
+
 /* Returns ACPI_Sx values. */
 int acpi_get_sleep_type(void);
 
@@ -660,6 +690,6 @@ static inline uintptr_t acpi_align_current(uintptr_t current)
 	return ALIGN(current, 16);
 }
 
-#endif  /* __ASSEMBLER__ */
+#endif  // !defined(__ASSEMBLER__) && !defined(__ACPI__) && !defined(__ROMC__)
 
 #endif  /* __ASM_ACPI_H */

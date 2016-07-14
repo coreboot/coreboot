@@ -71,8 +71,8 @@ void usb_ehci_sleep_prepare(device_t dev, u8 slp_typ)
 	pci_cmd = pci_read_config32(dev, PCI_COMMAND);
 
 	switch (slp_typ) {
-	case SLP_TYP_S4:
-	case SLP_TYP_S5:
+	case ACPI_S4:
+	case ACPI_S5:
 		/* Check if controller is in D3 power state */
 		pwr_state = pci_read_config16(dev, EHCI_PWR_CTL_STS);
 		if ((pwr_state & PWR_CTL_SET_MASK) == PWR_CTL_SET_D3) {

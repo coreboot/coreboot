@@ -18,6 +18,8 @@
 #ifndef SOUTHBRIDGE_INTEL_I89XX_PCH_H
 #define SOUTHBRIDGE_INTEL_I89XX_PCH_H
 
+#include <arch/acpi.h>
+
 /* PCH types */
 #define PCH_TYPE_CC	0x23 /* CaveCreek */
 
@@ -357,13 +359,6 @@ static const struct dev_irq_regs irq_regs[NUM_IR_DEVS] = {
 #define   GBL_EN	(1 << 5)
 #define   TMROF_EN	(1 << 0)
 #define PM1_CNT		0x04
-#define   SLP_EN	(1 << 13)
-#define   SLP_TYP	(7 << 10)
-#define    SLP_TYP_S0	0
-#define    SLP_TYP_S1	1
-#define    SLP_TYP_S3	5
-#define    SLP_TYP_S4	6
-#define    SLP_TYP_S5	7
 #define   GBL_RLS	(1 << 2)
 #define   BM_RLD	(1 << 1)
 #define   SCI_EN	(1 << 0)

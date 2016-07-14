@@ -17,6 +17,7 @@
 #ifndef _BAYTRAIL_PMC_H_
 #define _BAYTRAIL_PMC_H_
 
+#include <arch/acpi.h>
 
 #define IOCOM1		0x3f8
 
@@ -148,14 +149,6 @@
 #define   GBL_EN	(1 << 5)
 #define   TMROF_EN	(1 << 0)
 #define PM1_CNT			0x04
-#define   SLP_EN	(1 << 13)
-#define   SLP_TYP_SHIFT	10
-#define   SLP_TYP	(7 << SLP_TYP_SHIFT)
-#define    SLP_TYP_S0	0
-#define    SLP_TYP_S1	1
-#define    SLP_TYP_S3	5
-#define    SLP_TYP_S4	6
-#define    SLP_TYP_S5	7
 #define   GBL_RLS	(1 << 2)
 #define   BM_RLD	(1 << 1)
 #define   SCI_EN	(1 << 0)

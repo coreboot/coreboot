@@ -7,9 +7,6 @@ chip soc/intel/apollolake
 	register "pcie_rp0_clkreq_pin" = "3"    # wifi/bt
 	register "pcie_rp2_clkreq_pin" = "0"    # SSD
 
-	# Integrated Sensor Hub
-	register "integrated_sensor_hub_enable" = "0"
-
 	# EMMC TX DATA Delay 1#
 	# 0x1A[14:8] stands for 26*125 = 3250 pSec delay for HS400
 	# 0x1A[6:0] stands for 26*125 = 3250 pSec delay for SDR104/HS200
@@ -43,7 +40,7 @@ chip soc/intel/apollolake
 				device generic 0 on end
 			end
 		end
-		device pci 11.0 on end	# - ISH
+		device pci 11.0 off end	# - ISH
 		device pci 12.0 on end	# - SATA
 		device pci 13.0 off end	# - PCIe-A 0
 		device pci 13.1 off end	# - PCIe-A 1

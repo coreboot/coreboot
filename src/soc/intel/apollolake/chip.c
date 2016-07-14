@@ -396,8 +396,6 @@ void platform_fsp_silicon_init_params_cb(struct FSPS_UPD *silupd)
 	if (cfg->emmc_rx_cmd_data_cntl2 != 0)
 		silconfig->EmmcRxCmdDataCntl2 = cfg->emmc_rx_cmd_data_cntl2;
 
-	silconfig->IshEnable = cfg->integrated_sensor_hub_enable;
-
 	silconfig->LPSS_S0ixEnable = cfg->lpss_s0ix_enable;
 
 	/* Disable setting of EISS bit in FSP. */

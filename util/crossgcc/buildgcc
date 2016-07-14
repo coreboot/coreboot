@@ -18,8 +18,8 @@
 
 cd $(dirname $0)
 
-CROSSGCC_DATE="June 7th, 2016"
-CROSSGCC_VERSION="1.40"
+CROSSGCC_DATE="July 14th, 2016"
+CROSSGCC_VERSION="1.41"
 CROSSGCC_COMMIT=$( git describe )
 
 # default settings

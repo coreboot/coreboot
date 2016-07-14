@@ -14,6 +14,7 @@
  */
 
 #include <stddef.h>
+#include <arch/acpi.h>
 #include <arch/io.h>
 #include <bootmode.h>
 #include <cbfs.h>
@@ -127,7 +128,7 @@ void raminit(struct mrc_params *mp, int prev_sleep_state)
 	} else if (!mrc_cache_get_current(&cache)) {
 		mp->saved_data_size = cache->size;
 		mp->saved_data = &cache->data[0];
-	} else if (prev_sleep_state == 3) {
+	} else if (prev_sleep_state == ACPI_S3) {
 		/* If waking from S3 and no cache then. */
 		printk(BIOS_DEBUG, "No MRC cache found in S3 resume path.\n");
 		post_code(POST_RESUME_FAILURE);
@@ -135,7 +136,7 @@ void raminit(struct mrc_params *mp, int prev_sleep_state)
 	} else {
 		printk(BIOS_DEBUG, "No MRC cache found.\n");
 #if CONFIG_EC_GOOGLE_CHROMEEC
-		if (prev_sleep_state == 0) {
+		if (prev_sleep_state == ACPI_S0) {
 			/* Ensure EC is running RO firmware. */
 			google_chromeec_check_ec_image(EC_IMAGE_RO);
 		}
@@ -162,7 +163,7 @@ void raminit(struct mrc_params *mp, int prev_sleep_state)
 
 	print_dram_info();
 
-	if (prev_sleep_state != 3) {
+	if (prev_sleep_state != ACPI_S3) {
 		cbmem_initialize_empty();
 	} else if (cbmem_initialize()) {
 	#if CONFIG_HAVE_ACPI_RESUME

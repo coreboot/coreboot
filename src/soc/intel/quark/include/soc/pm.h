@@ -18,11 +18,7 @@
 #define _SOC_PM_H_
 
 #include <stdint.h>
-
-/* Generic sleep state types */
-#define SLEEP_STATE_S0		0
-#define SLEEP_STATE_S3		3
-#define SLEEP_STATE_S5		5
+#include <arch/acpi.h>
 
 struct chipset_power_state {
 	uint32_t prev_sleep_state;

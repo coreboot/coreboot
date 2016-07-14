@@ -136,7 +136,7 @@ asmlinkage void car_stage_entry(void)
 	fsp_find_reserved_memory(&fsp_mem, hob_list_ptr);
 
 	/* initialize cbmem by adding FSP reserved memory first thing */
-	if (prev_sleep_state != SLEEP_STATE_S3) {
+	if (prev_sleep_state != ACPI_S3) {
 		cbmem_initialize_empty_id_size(CBMEM_ID_FSP_RESERVED_MEMORY,
 			range_entry_size(&fsp_mem));
 	} else if (cbmem_initialize_id_size(CBMEM_ID_FSP_RESERVED_MEMORY,
@@ -158,7 +158,7 @@ asmlinkage void car_stage_entry(void)
 
 	/* Save MRC Data to CBMEM */
 	if (IS_ENABLED(CONFIG_CACHE_MRC_SETTINGS) &&
-	    (prev_sleep_state != SLEEP_STATE_S3))
+	    (prev_sleep_state != ACPI_S3))
 	{
 		mrc_data = fsp_find_nv_storage_data(&mrc_data_size);
 		if (mrc_data && mrc_cache_stash_data(mrc_data, mrc_data_size) < 0)
@@ -168,7 +168,7 @@ asmlinkage void car_stage_entry(void)
 	/* Create romstage handof information */
 	handoff = romstage_handoff_find_or_add();
 	if (handoff != NULL)
-		handoff->s3_resume = (prev_sleep_state == SLEEP_STATE_S3);
+		handoff->s3_resume = (prev_sleep_state == ACPI_S3);
 	else
 		printk(BIOS_DEBUG, "Romstage handoff structure not added!\n");
 
@@ -233,7 +233,7 @@ void platform_fsp_memory_init_params_cb(struct FSPM_UPD *mupd)
 			/* MRC cache found */
 			arch_upd->NvsBufferPtr = (void *)mrc_cache->data;
 			arch_upd->BootMode =
-				prev_sleep_state == SLEEP_STATE_S3 ?
+				prev_sleep_state == ACPI_S3 ?
 				FSP_BOOT_ON_S3_RESUME:
 				FSP_BOOT_ASSUMING_NO_CONFIGURATION_CHANGES;
 			printk(BIOS_DEBUG, "MRC cache found, size %x bootmode:%d\n",

@@ -67,7 +67,7 @@ static void log_wake_events(const struct chipset_power_state *ps)
 
 	if (ps->pm1_sts & WAK_STS)
 		elog_add_event_byte(ELOG_TYPE_ACPI_WAKE,
-				    acpi_slp_type == 3 ? 3 : 5);
+				    acpi_is_wakeup_s3() ? ACPI_S3 : ACPI_S5);
 
 	if (ps->pm1_sts & PWRBTN_STS)
 		elog_add_event_wake(ELOG_WAKE_SOURCE_PWRBTN, 0);

@@ -101,7 +101,7 @@ static void pch_pmc_read_resources(device_t dev)
 
 static void pch_set_acpi_mode(void)
 {
-	if (IS_ENABLED(CONFIG_HAVE_SMI_HANDLER) && acpi_slp_type != 3) {
+	if (IS_ENABLED(CONFIG_HAVE_SMI_HANDLER) && !acpi_is_wakeup_s3()) {
 		printk(BIOS_DEBUG, "Disabling ACPI via APMC:\n");
 		outb(APM_CNT_ACPI_DISABLE, APM_CNT);
 		printk(BIOS_DEBUG, "done.\n");

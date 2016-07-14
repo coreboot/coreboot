@@ -54,17 +54,16 @@ ROMSTAGE_CBMEM_INIT_HOOK(migrate_power_state)
 static uint32_t prev_sleep_state(struct chipset_power_state *ps)
 {
 	/* Default to S0. */
-	uint32_t prev_sleep_state = SLEEP_STATE_S0;
+	uint32_t prev_sleep_state = ACPI_S0;
 
 	if (ps->pm1_sts & WAK_STS) {
-		switch ((ps->pm1_cnt & SLP_TYP) >> SLP_TYP_SHIFT) {
-#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
-		case SLP_TYP_S3:
-			prev_sleep_state = SLEEP_STATE_S3;
+		switch (acpi_sleep_from_pm1(ps->pm1_cnt)) {
+		case ACPI_S3:
+			if (IS_ENABLED(CONFIG_HAVE_ACPI_RESUME))
+				prev_sleep_state = ACPI_S3;
 			break;
-#endif
-		case SLP_TYP_S5:
-			prev_sleep_state = SLEEP_STATE_S5;
+		case ACPI_S5:
+			prev_sleep_state = ACPI_S5;
 			break;
 		}
 		/* Clear SLP_TYP. */
@@ -76,7 +75,7 @@ static uint32_t prev_sleep_state(struct chipset_power_state *ps)
 		 * from a true G3 state.
 		 */
 		if (ps->gen_pmcon_b & (PWR_FLR | SUS_PWR_FLR))
-			prev_sleep_state = SLEEP_STATE_S5;
+			prev_sleep_state = ACPI_S5;
 	}
 
 	/*
@@ -84,7 +83,7 @@ static uint32_t prev_sleep_state(struct chipset_power_state *ps)
 	 * need to check both deep sleep well and normal suspend well.
 	 * Otherwise just check deep sleep well.
 	 */
-	if (prev_sleep_state == SLEEP_STATE_S3) {
+	if (prev_sleep_state == ACPI_S3) {
 		/* PWR_FLR represents deep sleep power well loss. */
 		uint32_t mask = PWR_FLR;
 
@@ -93,7 +92,7 @@ static uint32_t prev_sleep_state(struct chipset_power_state *ps)
 			mask |= SUS_PWR_FLR;
 
 		if (ps->gen_pmcon_b & mask)
-			prev_sleep_state = SLEEP_STATE_S5;
+			prev_sleep_state = ACPI_S5;
 	}
 
 	return prev_sleep_state;
@@ -163,8 +162,7 @@ struct chipset_power_state *fill_power_state(void)
 
 int vboot_platform_is_resuming(void)
 {
-	int typ = (inl(ACPI_BASE_ADDRESS + PM1_CNT) & SLP_TYP) >> SLP_TYP_SHIFT;
-	return typ == SLP_TYP_S3;
+	return acpi_sleep_from_pm1(inl(ACPI_BASE_ADDRESS + PM1_CNT)) == ACPI_S3;
 }
 
 /*

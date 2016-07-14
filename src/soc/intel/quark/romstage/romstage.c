@@ -117,7 +117,7 @@ struct chipset_power_state *fill_power_state(void)
 {
 	struct chipset_power_state *ps = car_get_var_ptr(&power_state);
 
-	ps->prev_sleep_state = 0;
+	ps->prev_sleep_state = ACPI_S0;
 	printk(BIOS_DEBUG, "prev_sleep_state %d\n", ps->prev_sleep_state);
 	return ps;
 }
@@ -147,7 +147,7 @@ void soc_memory_init_params(struct romstage_params *params,
 	hexdump((void *)0x000ffff0, 0x10);
 
 	/* Clear SMI and wake events */
-	if (ps->prev_sleep_state != 3) {
+	if (ps->prev_sleep_state != ACPI_S3) {
 		printk(BIOS_SPEW, "Clearing SMI interrupts and wake events\n");
 		reg_script_run_on_dev(LPC_BDF, clear_smi_and_wake_events);
 	}

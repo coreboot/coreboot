@@ -184,17 +184,16 @@ static struct chipset_power_state *fill_power_state(void)
 static int chipset_prev_sleep_state(struct chipset_power_state *ps)
 {
 	/* Default to S0. */
-	int prev_sleep_state = 0;
+	int prev_sleep_state = ACPI_S0;
 
 	if (ps->pm1_sts & WAK_STS) {
-		switch ((ps->pm1_cnt & SLP_TYP) >> SLP_TYP_SHIFT) {
-	#if CONFIG_HAVE_ACPI_RESUME
-		case SLP_TYP_S3:
-			prev_sleep_state = 3;
+		switch (acpi_sleep_from_pm1(ps->pm1_cnt)) {
+		case ACPI_S3:
+			if (IS_ENABLED(CONFIG_HAVE_ACPI_RESUME))
+				prev_sleep_state = ACPI_S3;
 			break;
-	#endif
-		case SLP_TYP_S5:
-			prev_sleep_state = 5;
+		case ACPI_S5:
+			prev_sleep_state = ACPI_S5;
 			break;
 		}
 		/* Clear SLP_TYP. */
@@ -202,7 +201,7 @@ static int chipset_prev_sleep_state(struct chipset_power_state *ps)
 	}
 
 	if (ps->gen_pmcon1 & (PWR_FLR | SUS_PWR_FLR)) {
-		prev_sleep_state = 5;
+		prev_sleep_state = ACPI_S5;
 	}
 
 	return prev_sleep_state;
@@ -223,7 +222,7 @@ void romstage_common(struct romstage_params *params)
 	printk(BIOS_DEBUG, "prev_sleep_state = S%d\n", prev_sleep_state);
 
 #if CONFIG_ELOG_BOOT_COUNT
-	if (prev_sleep_state != 3)
+	if (prev_sleep_state != ACPI_S3)
 		boot_count_increment();
 #endif
 
@@ -235,12 +234,12 @@ void romstage_common(struct romstage_params *params)
 
 	handoff = romstage_handoff_find_or_add();
 	if (handoff != NULL)
-		handoff->s3_resume = (prev_sleep_state == 3);
+		handoff->s3_resume = (prev_sleep_state == ACPI_S3);
 	else
 		printk(BIOS_DEBUG, "Romstage handoff structure not added!\n");
 
 	if (IS_ENABLED(CONFIG_LPC_TPM)) {
-		init_tpm(prev_sleep_state == 3);
+		init_tpm(prev_sleep_state == ACPI_S3);
 	}
 }
 

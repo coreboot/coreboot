@@ -27,6 +27,8 @@
 #ifndef I82801DX_H
 #define I82801DX_H
 
+#include <arch/acpi.h>
+
 #if !defined(__ASSEMBLER__)
 #if !defined(__PRE_RAM__)
 #include "chip.h"
@@ -147,8 +149,6 @@ int smbus_read_byte(unsigned device, unsigned address);
 #define   GBL_EN	(1 << 5)
 #define   TMROF_EN	(1 << 0)
 #define PM1_CNT		0x04
-#define   SLP_EN	(1 << 13)
-#define   SLP_TYP	(7 << 10)
 #define   GBL_RLS	(1 << 2)
 #define   BM_RLD	(1 << 1)
 #define   SCI_EN	(1 << 0)

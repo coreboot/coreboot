@@ -326,21 +326,21 @@ static void southbridge_smi_sleep(unsigned int node, smm_state_save_area_t *stat
 	/* Figure out SLP_TYP */
 	reg32 = inl(pmbase + PM1_CNT);
 	printk(BIOS_SPEW, "SMI#: SLP = 0x%08x\n", reg32);
-	slp_typ = (reg32 >> 10) & 7;
+	slp_typ = acpi_sleep_from_pm1(reg32);
 
 	/* Next, do the deed.
 	 */
 
 	switch (slp_typ) {
-	case 0: printk(BIOS_DEBUG, "SMI#: Entering S0 (On)\n"); break;
-	case 1: printk(BIOS_DEBUG, "SMI#: Entering S1 (Assert STPCLK#)\n"); break;
-	case 5:
+	case ACPI_S0: printk(BIOS_DEBUG, "SMI#: Entering S0 (On)\n"); break;
+	case ACPI_S1: printk(BIOS_DEBUG, "SMI#: Entering S1 (Assert STPCLK#)\n"); break;
+	case ACPI_S3:
 		printk(BIOS_DEBUG, "SMI#: Entering S3 (Suspend-To-RAM)\n");
 		/* Invalidate the cache before going to S3 */
 		wbinvd();
 		break;
-	case 6: printk(BIOS_DEBUG, "SMI#: Entering S4 (Suspend-To-Disk)\n"); break;
-	case 7:
+	case ACPI_S4: printk(BIOS_DEBUG, "SMI#: Entering S4 (Suspend-To-Disk)\n"); break;
+	case ACPI_S5:
 		printk(BIOS_DEBUG, "SMI#: Entering S5 (Soft Power off)\n");
 
 		outl(0, pmbase + GPE0_EN);
@@ -367,7 +367,7 @@ static void southbridge_smi_sleep(unsigned int node, smm_state_save_area_t *stat
 	 * will never be unlocked because the next outl will switch off the CPU.
 	 * This might open a small race between the smi_release_lock() and the outl()
 	 * for other SMI handlers. Not sure if this could cause trouble. */
-	 if (slp_typ == 5)
+	 if (slp_typ == ACPI_S3)
 		smi_release_lock();
 #endif
 
@@ -378,7 +378,7 @@ static void southbridge_smi_sleep(unsigned int node, smm_state_save_area_t *stat
 	outl(reg32 | SLP_EN, pmbase + PM1_CNT);
 
 	/* Make sure to stop executing code here for S3/S4/S5 */
-	if (slp_typ > 1)
+	if (slp_typ >= ACPI_S3)
 		halt();
 	/* In most sleep states, the code flow of this function ends at
 	 * the line above. However, if we entered sleep state S1 and wake

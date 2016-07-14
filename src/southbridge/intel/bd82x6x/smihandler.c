@@ -361,8 +361,8 @@ static void xhci_sleep(u8 slp_typ)
 	u16 reg16;
 
 	switch (slp_typ) {
-	case SLP_TYP_S3:
-	case SLP_TYP_S4:
+	case ACPI_S3:
+	case ACPI_S4:
 		reg16 = pci_read_config16(PCH_XHCI_DEV, 0x74);
 		reg16 &= ~0x03UL;
 		pci_write_config32(PCH_XHCI_DEV, 0x74, reg16);
@@ -392,7 +392,7 @@ static void xhci_sleep(u8 slp_typ)
 		pci_write_config16(PCH_XHCI_DEV, 0x74, reg16);
 		break;
 
-	case SLP_TYP_S5:
+	case ACPI_S5:
 		reg16 = pci_read_config16(PCH_XHCI_DEV, 0x74);
 		reg16 |= ((1 << 8) | 0x03);
 		pci_write_config16(PCH_XHCI_DEV, 0x74, reg16);
@@ -424,27 +424,27 @@ static void southbridge_smi_sleep(void)
 	/* Figure out SLP_TYP */
 	reg32 = inl(pmbase + PM1_CNT);
 	printk(BIOS_SPEW, "SMI#: SLP = 0x%08x\n", reg32);
-	slp_typ = (reg32 >> 10) & 7;
+	slp_typ = acpi_sleep_from_pm1(reg32);
 
 	if (smm_get_gnvs()->xhci)
 		xhci_sleep(slp_typ);
 
 	/* Do any mainboard sleep handling */
-	mainboard_smi_sleep(slp_typ-2);
+	mainboard_smi_sleep(slp_typ);
 
 #if CONFIG_ELOG_GSMI
 	/* Log S3, S4, and S5 entry */
-	if (slp_typ >= 5)
-		elog_add_event_byte(ELOG_TYPE_ACPI_ENTER, slp_typ-2);
+	if (slp_typ >= ACPI_S3)
+		elog_add_event_byte(ELOG_TYPE_ACPI_ENTER, slp_typ);
 #endif
 
 	/* Next, do the deed.
 	 */
 
 	switch (slp_typ) {
-	case 0: printk(BIOS_DEBUG, "SMI#: Entering S0 (On)\n"); break;
-	case 1: printk(BIOS_DEBUG, "SMI#: Entering S1 (Assert STPCLK#)\n"); break;
-	case 5:
+	case ACPI_S0: printk(BIOS_DEBUG, "SMI#: Entering S0 (On)\n"); break;
+	case ACPI_S1: printk(BIOS_DEBUG, "SMI#: Entering S1 (Assert STPCLK#)\n"); break;
+	case ACPI_S3:
 		printk(BIOS_DEBUG, "SMI#: Entering S3 (Suspend-To-RAM)\n");
 
 		/* Gate memory reset */
@@ -453,8 +453,8 @@ static void southbridge_smi_sleep(void)
 		/* Invalidate the cache before going to S3 */
 		wbinvd();
 		break;
-	case 6: printk(BIOS_DEBUG, "SMI#: Entering S4 (Suspend-To-Disk)\n"); break;
-	case 7:
+	case ACPI_S4: printk(BIOS_DEBUG, "SMI#: Entering S4 (Suspend-To-Disk)\n"); break;
+	case ACPI_S5:
 		printk(BIOS_DEBUG, "SMI#: Entering S5 (Soft Power off)\n");
 
 		outl(0, pmbase + GPE0_EN);
@@ -483,7 +483,7 @@ static void southbridge_smi_sleep(void)
 	outl(reg32 | SLP_EN, pmbase + PM1_CNT);
 
 	/* Make sure to stop executing code here for S3/S4/S5 */
-	if (slp_typ > 1)
+	if (slp_typ >= ACPI_S3)
 		halt();
 
 	/* In most sleep states, the code flow of this function ends at

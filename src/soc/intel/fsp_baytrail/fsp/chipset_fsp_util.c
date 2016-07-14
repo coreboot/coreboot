@@ -304,7 +304,7 @@ void chipset_fsp_early_init(FSP_INIT_PARAMS *pFspInitParams,
 	pFspInitParams->NvsBufferPtr = find_and_set_fastboot_cache();
 #endif
 
-	if (prev_sleep_state == 3) {
+	if (prev_sleep_state == ACPI_S3) {
 		/* S3 resume */
 		if ( pFspInitParams->NvsBufferPtr == NULL) {
 			/* If waking from S3 and no cache then. */

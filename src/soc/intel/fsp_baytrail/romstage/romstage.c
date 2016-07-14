@@ -44,7 +44,7 @@
 uint32_t chipset_prev_sleep_state(uint32_t clear)
 {
 	/* Default to S0. */
-	uint32_t prev_sleep_state = 0;
+	uint32_t prev_sleep_state = ACPI_S0;
 	uint32_t pm1_sts;
 	uint32_t pm1_cnt;
 	uint32_t gen_pmcon1;
@@ -58,18 +58,17 @@ uint32_t chipset_prev_sleep_state(uint32_t clear)
 		pm1_sts, pm1_cnt, gen_pmcon1);
 
 	if (pm1_sts & WAK_STS) {
-		switch ((pm1_cnt & SLP_TYP) >> SLP_TYP_SHIFT) {
-	#if CONFIG_HAVE_ACPI_RESUME
-		case SLP_TYP_S3:
-			prev_sleep_state = 3;
+		switch (acpi_sleep_from_pm1(pm1_cnt)) {
+		case ACPI_S3:
+			if (IS_ENABLED(CONFIG_HAVE_ACPI_RESUME))
+				prev_sleep_state = ACPI_S3;
 			break;
-	#endif
-		case SLP_TYP_S4:
-			prev_sleep_state = 4;
+		case ACPI_S4:
+			prev_sleep_state = ACPI_S4;
 			break;
 
-		case SLP_TYP_S5:
-			prev_sleep_state = 5;
+		case ACPI_S5:
+			prev_sleep_state = ACPI_S5;
 			break;
 		}
 		/* If set Clear SLP_TYP. */
@@ -79,7 +78,7 @@ uint32_t chipset_prev_sleep_state(uint32_t clear)
 	}
 
 	if (gen_pmcon1 & (PWR_FLR | SUS_PWR_FLR)) {
-		prev_sleep_state = 5;
+		prev_sleep_state = ACPI_S5;
 	}
 
 	return prev_sleep_state;
@@ -246,12 +245,12 @@ void romstage_main_continue(EFI_STATUS status, void *hob_list_ptr)
 	post_code(0x4c);
 
 	/* if S3 resume skip ram check */
-	if (prev_sleep_state != 3) {
+	if (prev_sleep_state != ACPI_S3) {
 		quick_ram_check();
 		post_code(0x4d);
 	}
 
-	cbmem_was_initted = !cbmem_recovery(prev_sleep_state == 3);
+	cbmem_was_initted = !cbmem_recovery(prev_sleep_state == ACPI_S3);
 
 	/* Save the HOB pointer in CBMEM to be used in ramstage*/
 	cbmem_hob_ptr = cbmem_add (CBMEM_ID_HOB_POINTER, sizeof(*hob_list_ptr));
@@ -260,7 +259,7 @@ void romstage_main_continue(EFI_STATUS status, void *hob_list_ptr)
 
 	handoff = romstage_handoff_find_or_add();
 	if (handoff != NULL)
-		handoff->s3_resume = (prev_sleep_state == 3);
+		handoff->s3_resume = (prev_sleep_state == ACPI_S3);
 	else
 		printk(BIOS_DEBUG, "Romstage handoff structure not added!\n");
 

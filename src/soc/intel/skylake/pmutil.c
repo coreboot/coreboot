@@ -24,6 +24,7 @@
 #include <device/pci.h>
 #include <device/pci_def.h>
 #include <console/console.h>
+#include <halt.h>
 #include <stdlib.h>
 #include <soc/gpio.h>
 #include <soc/iomap.h>
@@ -429,4 +430,10 @@ uint16_t pmc_tco_regs(void)
 	reg16 &= ~0x1f;
 
 	return reg16;
+}
+
+void poweroff(void)
+{
+	enable_pm1_control(SLP_EN | (SLP_TYP_S5 << SLP_TYP_SHIFT));
+	halt();
 }

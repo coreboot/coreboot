@@ -13,9 +13,14 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/io.h>
+#include <gpio.h>
 #include <reset.h>
+
+#include "board.h"
 
 void hard_reset(void)
 {
+	gpio_output(GPIO_RESET, 1);
+	while (1)
+		;
 }

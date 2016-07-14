@@ -29,6 +29,8 @@ bootblock-y += mmu_operations.c
 bootblock-y += timer.c
 
 verstage-y += ../common/cbmem.c
+verstage-y += ../common/gpio.c
+verstage-y += gpio.c
 verstage-y += sdram.c
 verstage-y += ../common/spi.c
 verstage-$(CONFIG_DRIVERS_UART) += ../common/uart.c

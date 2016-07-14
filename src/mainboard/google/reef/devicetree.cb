@@ -6,11 +6,6 @@ chip soc/intel/apollolake
 
 	register "pcie_rp4_clkreq_pin" = "0"    # wifi/bt
 
-	# TODO(furquan): Remove this once global reset issue is fixed in later
-	# steppings.
-	# Integrated Sensor Hub
-	register "integrated_sensor_hub_enable" = "1"
-
 	# EMMC TX DATA Delay 1#
 	# 0x0C[14:8] stands for 12*125 = 1500 pSec delay for HS400
 	# 0x11[6:0] stands for 17*125 =  2125 pSec delay for SDR104/HS200
@@ -61,7 +56,7 @@ chip soc/intel/apollolake
 				device generic 0 on end
 			end
 		end
-		device pci 11.0 on  end	# - ISH
+		device pci 11.0 off end	# - ISH
 		device pci 12.0 off end	# - SATA
 		device pci 13.0 off end	# - Root Port 2 - PCIe-A 0
 		device pci 13.1 off end	# - Root Port 3 - PCIe-A 1

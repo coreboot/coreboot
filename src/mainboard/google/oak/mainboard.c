@@ -66,6 +66,16 @@ static void configure_ext_buck(void)
 	}
 }
 
+static void configure_touchscreen(void)
+{
+	/* Pull low reset gpio for 500us and then pull high */
+	if (board_id() + CONFIG_BOARD_ID_ADJUSTMENT >= 7) {
+		gpio_output(PAD_PCM_SYNC, 0);
+		udelay(500);
+		gpio_output(PAD_PCM_SYNC, 1);
+	}
+}
+
 static void configure_audio(void)
 {
 	mtcmos_audio_power_on();
@@ -252,6 +262,7 @@ static void mainboard_init(device_t dev)
 	configure_usb();
 	configure_usb_hub();
 	configure_ext_buck();
+	configure_touchscreen();
 
 	elog_init();
 	elog_add_watchdog_reset();

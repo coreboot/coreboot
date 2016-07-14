@@ -162,7 +162,7 @@ void usb_xhci_sleep_prepare(device_t dev, u8 slp_typ)
 	u32 reg32;
 	u8 *mem_base = usb_xhci_mem_base(dev);
 
-	if (!mem_base || slp_typ < 3)
+	if (!mem_base || slp_typ < ACPI_S3)
 		return;
 
 	if (pch_is_lp()) {

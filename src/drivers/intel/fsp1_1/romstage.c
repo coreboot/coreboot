@@ -15,6 +15,7 @@
  */
 
 #include <stddef.h>
+#include <arch/acpi.h>
 #include <arch/io.h>
 #include <arch/cbfs.h>
 #include <arch/early_variables.h>
@@ -109,7 +110,7 @@ void romstage_common(struct romstage_params *params)
 	pei_data->boot_mode = params->power_state->prev_sleep_state;
 
 #if IS_ENABLED(CONFIG_ELOG_BOOT_COUNT)
-	if (params->power_state->prev_sleep_state != SLEEP_STATE_S3)
+	if (params->power_state->prev_sleep_state != ACPI_S3)
 		boot_count_increment();
 #endif
 
@@ -131,7 +132,7 @@ void romstage_common(struct romstage_params *params)
 			/* MRC cache found */
 			params->pei_data->saved_data_size = cache->size;
 			params->pei_data->saved_data = &cache->data[0];
-		} else if (params->pei_data->boot_mode == SLEEP_STATE_S3) {
+		} else if (params->pei_data->boot_mode == ACPI_S3) {
 			/* Waking from S3 and no cache. */
 			printk(BIOS_DEBUG,
 			       "No MRC cache found in S3 resume path.\n");
@@ -151,7 +152,7 @@ void romstage_common(struct romstage_params *params)
 	if (IS_ENABLED(CONFIG_CACHE_MRC_SETTINGS)) {
 		printk(BIOS_DEBUG, "MRC data at %p %d bytes\n",
 			pei_data->data_to_save, pei_data->data_to_save_size);
-		if ((params->pei_data->boot_mode != SLEEP_STATE_S3)
+		if ((params->pei_data->boot_mode != ACPI_S3)
 			&& (params->pei_data->data_to_save_size != 0)
 			&& (params->pei_data->data_to_save != NULL))
 				mrc_cache_stash_data_with_version(
@@ -167,7 +168,7 @@ void romstage_common(struct romstage_params *params)
 	handoff = romstage_handoff_find_or_add();
 	if (handoff != NULL)
 		handoff->s3_resume = (params->power_state->prev_sleep_state ==
-				      SLEEP_STATE_S3);
+				      ACPI_S3);
 	else {
 		printk(BIOS_DEBUG, "Romstage handoff structure not added!\n");
 		hard_reset();
@@ -181,7 +182,7 @@ void romstage_common(struct romstage_params *params)
 	    !IS_ENABLED(CONFIG_RESUME_PATH_SAME_AS_BOOT) &&
 	    !IS_ENABLED(CONFIG_VBOOT_STARTS_IN_BOOTBLOCK))
 		init_tpm(params->power_state->prev_sleep_state ==
-			 SLEEP_STATE_S3);
+			 ACPI_S3);
 }
 
 void after_cache_as_ram_stage(void)
@@ -204,7 +205,7 @@ __attribute__((weak)) void mainboard_check_ec_image(
 	struct pei_data *pei_data;
 
 	pei_data = params->pei_data;
-	if (params->pei_data->boot_mode == SLEEP_STATE_S0) {
+	if (params->pei_data->boot_mode == ACPI_S0) {
 		/* Ensure EC is running RO firmware. */
 		google_chromeec_check_ec_image(EC_IMAGE_RO);
 	}

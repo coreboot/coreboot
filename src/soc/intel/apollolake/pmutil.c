@@ -307,17 +307,16 @@ void clear_pmc_status(void)
 int chipset_prev_sleep_state(struct chipset_power_state *ps)
 {
 	/* Default to S0. */
-	int prev_sleep_state = SLEEP_STATE_S0;
+	int prev_sleep_state = ACPI_S0;
 
 	if (ps->pm1_sts & WAK_STS) {
-		switch ((ps->pm1_cnt & SLP_TYP) >> SLP_TYP_SHIFT) {
-#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
-		case SLP_TYP_S3:
-			prev_sleep_state = SLEEP_STATE_S3;
+		switch (acpi_sleep_from_pm1(ps->pm1_cnt)) {
+		case ACPI_S3:
+			if (IS_ENABLED(CONFIG_HAVE_ACPI_RESUME))
+				prev_sleep_state = ACPI_S3;
 			break;
-#endif
-		case SLP_TYP_S5:
-			prev_sleep_state = SLEEP_STATE_S5;
+		case ACPI_S5:
+			prev_sleep_state = ACPI_S5;
 			break;
 		}
 
@@ -365,13 +364,10 @@ int fill_power_state(struct chipset_power_state *ps)
 
 int vboot_platform_is_resuming(void)
 {
-	int typ;
-
 	if (!(inw(ACPI_PMIO_BASE + PM1_STS) & WAK_STS))
 		return 0;
 
-	typ = (inl(ACPI_PMIO_BASE + PM1_CNT) & SLP_TYP) >> SLP_TYP_SHIFT;
-	return typ == SLP_TYP_S3;
+	return acpi_sleep_from_pm1(inl(ACPI_PMIO_BASE + PM1_CNT)) == ACPI_S3;
 }
 
 /*

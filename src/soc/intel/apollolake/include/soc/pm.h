@@ -19,6 +19,7 @@
 #define _SOC_APOLLOLAKE_PM_H_
 
 #include <stdint.h>
+#include <arch/acpi.h>
 
 /* ACPI_BASE_ADDRESS */
 
@@ -35,13 +36,6 @@
 #define   TMROF_EN      	(1 << 0)
 
 #define PM1_CNT			0x04
-#define   SLP_EN		(1 << 13)
-#define   SLP_TYP_SHIFT		10
-#define   SLP_TYP		(7 << SLP_TYP_SHIFT)
-#define    SLP_TYP_S0		0
-#define    SLP_TYP_S3		5
-#define    SLP_TYP_S4		6
-#define    SLP_TYP_S5		7
 #define   SCI_EN		(1 << 0)
 
 #define PM1_TMR			0x08
@@ -150,11 +144,6 @@
 #define  PMC_GPE_N_31_0		6
 #define  PMC_GPE_N_63_32	7
 #define  PMC_GPE_W_31_0		9
-
-/* Generic sleep state types */
-#define SLEEP_STATE_S0		0
-#define SLEEP_STATE_S3		3
-#define SLEEP_STATE_S5		5
 
 /* Track power state from reset to log events. */
 struct chipset_power_state {

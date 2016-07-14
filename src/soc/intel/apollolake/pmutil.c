@@ -21,6 +21,7 @@
 #include <console/console.h>
 #include <rules.h>
 #include <device/pci_def.h>
+#include <halt.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
@@ -412,4 +413,10 @@ void vboot_platform_prepare_reboot(void)
 {
 	const uint16_t port = ACPI_PMIO_BASE + PM1_CNT;
 	outl((inl(port) & ~(SLP_TYP)) | (SLP_TYP_S5 << SLP_TYP_SHIFT), port);
+}
+
+void poweroff(void)
+{
+	enable_pm1_control(SLP_EN | (SLP_TYP_S5 << SLP_TYP_SHIFT));
+	halt();
 }

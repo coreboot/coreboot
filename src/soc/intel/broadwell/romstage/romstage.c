@@ -98,7 +98,7 @@ void romstage_common(struct romstage_params *params)
 	params->pei_data->boot_mode = params->power_state->prev_sleep_state;
 
 #if CONFIG_ELOG_BOOT_COUNT
-	if (params->power_state->prev_sleep_state != SLEEP_STATE_S3)
+	if (params->power_state->prev_sleep_state != ACPI_S3)
 		boot_count_increment();
 #endif
 
@@ -117,12 +117,12 @@ void romstage_common(struct romstage_params *params)
 	handoff = romstage_handoff_find_or_add();
 	if (handoff != NULL)
 		handoff->s3_resume = (params->power_state->prev_sleep_state ==
-				      SLEEP_STATE_S3);
+				      ACPI_S3);
 	else
 		printk(BIOS_DEBUG, "Romstage handoff structure not added!\n");
 
 #if CONFIG_LPC_TPM
-	init_tpm(params->power_state->prev_sleep_state == SLEEP_STATE_S3);
+	init_tpm(params->power_state->prev_sleep_state == ACPI_S3);
 #endif
 }
 

@@ -16,6 +16,8 @@
 #ifndef _BROADWELL_PM_H_
 #define _BROADWELL_PM_H_
 
+#include <arch/acpi.h>
+
 /* ACPI_BASE_ADDRESS / PMBASE */
 
 #define PM1_STS			0x00
@@ -34,14 +36,6 @@
 #define  GBL_EN			(1 << 5)
 #define  TMROF_EN		(1 << 0)
 #define PM1_CNT			0x04
-#define  SLP_EN			(1 << 13)
-#define  SLP_TYP		(7 << 10)
-#define   SLP_TYP_SHIFT         10
-#define   SLP_TYP_S0		0
-#define   SLP_TYP_S1		1
-#define   SLP_TYP_S3		5
-#define   SLP_TYP_S4		6
-#define   SLP_TYP_S5		7
 #define  GBL_RLS		(1 << 2)
 #define  BM_RLD			(1 << 1)
 #define  SCI_EN			(1 << 0)
@@ -112,10 +106,6 @@
 #define MAINBOARD_POWER_OFF	0
 #define MAINBOARD_POWER_ON	1
 #define MAINBOARD_POWER_KEEP	2
-
-#define SLEEP_STATE_S0		0
-#define SLEEP_STATE_S3		3
-#define SLEEP_STATE_S5		5
 
 struct chipset_power_state {
 	uint16_t pm1_sts;

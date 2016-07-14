@@ -92,7 +92,7 @@ static void pch_log_power_and_resets(struct chipset_power_state *ps)
 		elog_add_event(ELOG_TYPE_PWROK_FAIL);
 
 	/* TCO Timeout */
-	if (ps->prev_sleep_state != 3 &&
+	if (ps->prev_sleep_state != ACPI_S3 &&
 	    ps->tco2_sts & TCO2_STS_SECOND_TO)
 		elog_add_event(ELOG_TYPE_TCO_RESET);
 
@@ -113,7 +113,7 @@ static void pch_log_power_and_resets(struct chipset_power_state *ps)
 		elog_add_event(ELOG_TYPE_SYSTEM_RESET);
 
 	/* ACPI Wake Event */
-	if (ps->prev_sleep_state != SLEEP_STATE_S0)
+	if (ps->prev_sleep_state != ACPI_S0)
 		elog_add_event_byte(ELOG_TYPE_ACPI_WAKE, ps->prev_sleep_state);
 }
 

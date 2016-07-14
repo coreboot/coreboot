@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/acpi.h>
 #include <cbmem.h>
 #include <console/console.h>
 #include <fsp/memmap.h>
@@ -80,7 +81,7 @@ void raminit(struct romstage_params *params)
 	/* Zero fill RT Buffer data and start populating fields. */
 	memset(&fsp_rt_common_buffer, 0, sizeof(fsp_rt_common_buffer));
 	pei_ptr = params->pei_data;
-	if (pei_ptr->boot_mode == SLEEP_STATE_S3) {
+	if (pei_ptr->boot_mode == ACPI_S3) {
 		fsp_rt_common_buffer.BootMode = BOOT_ON_S3_RESUME;
 	} else if (pei_ptr->saved_data != NULL) {
 		fsp_rt_common_buffer.BootMode =
@@ -156,7 +157,7 @@ void raminit(struct romstage_params *params)
 
 	/* Migrate CAR data */
 	printk(BIOS_DEBUG, "0x%p: cbmem_top\n", cbmem_top());
-	if (pei_ptr->boot_mode != SLEEP_STATE_S3) {
+	if (pei_ptr->boot_mode != ACPI_S3) {
 		cbmem_initialize_empty_id_size(CBMEM_ID_FSP_RESERVED_MEMORY,
 			fsp_reserved_bytes);
 	} else if (cbmem_initialize_id_size(CBMEM_ID_FSP_RESERVED_MEMORY,

@@ -55,7 +55,7 @@ void raminit(struct pei_data *pei_data)
 		/* MRC cache found */
 		pei_data->saved_data_size = cache->size;
 		pei_data->saved_data = &cache->data[0];
-	} else if (pei_data->boot_mode == SLEEP_STATE_S3) {
+	} else if (pei_data->boot_mode == ACPI_S3) {
 		/* Waking from S3 and no cache. */
 		printk(BIOS_DEBUG, "No MRC cache found in S3 resume path.\n");
 		post_code(POST_RESUME_FAILURE);
@@ -63,7 +63,7 @@ void raminit(struct pei_data *pei_data)
 	} else {
 		printk(BIOS_DEBUG, "No MRC cache found.\n");
 #if CONFIG_EC_GOOGLE_CHROMEEC
-		if (pei_data->boot_mode == SLEEP_STATE_S0) {
+		if (pei_data->boot_mode == ACPI_S0) {
 			/* Ensure EC is running RO firmware. */
 			google_chromeec_check_ec_image(EC_IMAGE_RO);
 		}
@@ -104,7 +104,7 @@ void raminit(struct pei_data *pei_data)
 	/* Basic memory sanity test */
 	quick_ram_check();
 
-	if (pei_data->boot_mode != SLEEP_STATE_S3) {
+	if (pei_data->boot_mode != ACPI_S3) {
 		cbmem_initialize_empty();
 	} else if (cbmem_initialize()) {
 #if CONFIG_HAVE_ACPI_RESUME

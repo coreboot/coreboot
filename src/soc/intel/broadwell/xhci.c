@@ -18,6 +18,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <arch/acpi.h>
 #include <arch/io.h>
 #include <soc/ramstage.h>
 #include <soc/xhci.h>
@@ -146,7 +147,7 @@ void usb_xhci_sleep_prepare(device_t dev, u8 slp_typ)
 	u8 *mem_base = usb_xhci_mem_base(dev);
 	u8 is_broadwell = !!(cpu_family_model() == BROADWELL_FAMILY_ULT);
 
-	if (!mem_base || slp_typ < 3)
+	if (!mem_base || slp_typ < ACPI_S3)
 		return;
 
 	/* Set D0 state */

@@ -1,0 +1,32 @@
+diff -Naur binutils-2.26.1/gas/config/tc-aarch64.c binutils-2.26.1/gas/config/tc-aarch64.c
+--- binutils-2.26.1/gas/config/tc-aarch64.c	2016-01-25 01:51:06.000000000 -0700
++++ binutils-2.26.1/gas/config/tc-aarch64.c	2016-07-14 10:05:37.667935255 -0600
+@@ -1857,12 +1857,7 @@
+       return;
+     }
+
+-  /* Sections are assumed to start aligned. In executable section, there is no
+-     MAP_DATA symbol pending. So we only align the address during
+-     MAP_DATA --> MAP_INSN transition.
+-     For other sections, this is not guaranteed.  */
+-  enum mstate mapstate = seg_info (now_seg)->tc_segment_info_data.mapstate;
+-  if (!need_pass_2 && subseg_text_p (now_seg) && mapstate == MAP_DATA)
++  if (!need_pass_2)
+     frag_align_code (2, 0);
+
+ #ifdef OBJ_ELF
+@@ -6040,14 +6035,6 @@
+
+   init_operand_error_report ();
+
+-  /* Sections are assumed to start aligned. In executable section, there is no
+-     MAP_DATA symbol pending. So we only align the address during
+-     MAP_DATA --> MAP_INSN transition.
+-     For other sections, this is not guaranteed.  */
+-  enum mstate mapstate = seg_info (now_seg)->tc_segment_info_data.mapstate;
+-  if (!need_pass_2 && subseg_text_p (now_seg) && mapstate == MAP_DATA)
+-    frag_align_code (2, 0);
+-
+   saved_cond = inst.cond;
+   reset_aarch64_instruction (&inst);
+   inst.cond = saved_cond;

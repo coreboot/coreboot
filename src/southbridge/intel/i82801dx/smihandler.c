@@ -286,21 +286,21 @@ static void southbridge_smi_sleep(unsigned int node, smm_state_save_area_t *stat
 	/* Figure out SLP_TYP */
 	reg32 = inl(pmbase + PM1_CNT);
 	printk(BIOS_SPEW, "SMI#: SLP = 0x%08x\n", reg32);
-	slp_typ = (reg32 >> 10) & 7;
+	slp_typ = acpi_sleep_from_pm1(reg32);
 
 	/* Next, do the deed.
 	 */
 
 	switch (slp_typ) {
-	case 0: printk(BIOS_DEBUG, "SMI#: Entering S0 (On)\n"); break;
-	case 1: printk(BIOS_DEBUG, "SMI#: Entering S1 (Assert STPCLK#)\n"); break;
-	case 5:
+	case ACPI_S0: printk(BIOS_DEBUG, "SMI#: Entering S0 (On)\n"); break;
+	case ACPI_S1: printk(BIOS_DEBUG, "SMI#: Entering S1 (Assert STPCLK#)\n"); break;
+	case ACPI_S3:
 		printk(BIOS_DEBUG, "SMI#: Entering S3 (Suspend-To-RAM)\n");
 		/* Invalidate the cache before going to S3 */
 		wbinvd();
 		break;
-	case 6: printk(BIOS_DEBUG, "SMI#: Entering S4 (Suspend-To-Disk)\n"); break;
-	case 7:
+	case ACPI_S4: printk(BIOS_DEBUG, "SMI#: Entering S4 (Suspend-To-Disk)\n"); break;
+	case ACPI_S5:
 		printk(BIOS_DEBUG, "SMI#: Entering S5 (Soft Power off)\n");
 
 		outl(0, pmbase + GPE0_EN);

@@ -25,8 +25,17 @@
 #define RST_CPU			(1 << 2)
 #define SYS_RST			(1 << 1)
 
+#ifdef __ROMCC__
+#define WEAK
+#else
+#define WEAK __attribute__((weak))
+#endif
+
+void WEAK reset_prepare(void) { /* do nothing */ }
+
 void hard_reset(void)
 {
+	reset_prepare();
 	/* S0->S5->S0 trip. */
 	outb(RST_CPU | SYS_RST | FULL_RST, RST_CNT);
 	while (1)
@@ -35,6 +44,7 @@ void hard_reset(void)
 
 void soft_reset(void)
 {
+	reset_prepare();
 	/* PMC_PLTRST# asserted. */
 	outb(RST_CPU | SYS_RST, RST_CNT);
 	while (1)
@@ -43,6 +53,7 @@ void soft_reset(void)
 
 void cpu_reset(void)
 {
+	reset_prepare();
 	/* Sends INIT# to CPU */
 	outb(RST_CPU, RST_CNT);
 	while (1)

@@ -134,11 +134,9 @@ typedef struct {
 #define IPQ_GMAC_NMACS		4
 
 enum gale_board_id {
-	BOARD_ID_PROTO_0 = 0,
-	BOARD_ID_PROTO_0_2 = 1,
-	BOARD_ID_WHIRLWIND = 2,
-	BOARD_ID_WHIRLWIND_SP5 = 3,
-	BOARD_ID_PROTO_0_2_NAND = 26,
+	BOARD_ID_GALE_EVT = 0,
+	BOARD_ID_GALE_EVT2 = 1,
+	BOARD_ID_GALE_EVT3 = 2,
 };
 
 /* Board specific parameters */

@@ -206,7 +206,6 @@ static void pineview_setup_bars(void)
 	pci_write_config8(D0F0, PAM5, 0x33);
 	pci_write_config8(D0F0, PAM6, 0x33);
 
-	pci_write_config32(D0F0, SKPAD, SKPAD_NORMAL_BOOT_MAGIC);
 	printk(BIOS_DEBUG, " done.\n");
 }
 

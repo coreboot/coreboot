@@ -21,7 +21,8 @@
 
 static void *tpm_process_command(TPM_CC command, void *command_body)
 {
-	size_t out_size, in_size;
+	ssize_t out_size;
+	size_t in_size;
 	/* Command/response buffer. */
 	static uint8_t cr_buffer[TPM_BUFFER_SIZE];
 

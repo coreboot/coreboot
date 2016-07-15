@@ -25,13 +25,36 @@
 #include <timer.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
-#define DEV_SW 41
+#define DEV_SW  41
 #define DEV_POL ACTIVE_LOW
-#define REC_SW 7
 #define REC_POL ACTIVE_LOW
-#define WP_SW  6
-#define WP_POL ACTIVE_LOW
+#define WP_POL  ACTIVE_LOW
 
+static int get_rec_sw_gpio_pin(void)
+{
+	uint8_t board_rev = board_id();
+	switch (board_rev) {
+	case BOARD_ID_GALE_EVT:
+	case BOARD_ID_GALE_EVT2:
+		return 7;
+	case BOARD_ID_GALE_EVT3:
+	default:
+		return 57;
+	}
+}
+
+static int get_wp_status_gpio_pin(void)
+{
+	uint8_t board_rev = board_id();
+	switch (board_rev) {
+	case BOARD_ID_GALE_EVT:
+	case BOARD_ID_GALE_EVT2:
+		return 6;
+	case BOARD_ID_GALE_EVT3:
+	default:
+		return 53;
+	}
+}
 static int read_gpio(gpio_t gpio_num)
 {
 	gpio_tlmm_config_set(gpio_num, GPIO_FUNC_DISABLE,
@@ -43,9 +66,11 @@ static int read_gpio(gpio_t gpio_num)
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
 	struct lb_gpio chromeos_gpios[] = {
-		{DEV_SW, ACTIVE_LOW, read_gpio(DEV_SW), "developer"},
-		{REC_SW, ACTIVE_LOW, read_gpio(REC_SW), "recovery"},
-		{WP_SW, ACTIVE_LOW, read_gpio(WP_SW), "write protect"},
+		{DEV_SW, DEV_POL, read_gpio(DEV_SW), "developer"},
+		{get_rec_sw_gpio_pin(), REC_POL,
+			read_gpio(get_rec_sw_gpio_pin()), "recovery"},
+		{get_wp_status_gpio_pin(), WP_POL,
+			read_gpio(get_wp_status_gpio_pin()), "write protect"},
 		{-1, ACTIVE_LOW, 1, "power"},
 		{-1, ACTIVE_LOW, 0, "lid"},
 	};
@@ -88,12 +113,14 @@ static enum switch_state get_switch_state(void)
 {
 	struct stopwatch sw;
 	int sampled_value;
+	uint8_t rec_sw;
 	static enum switch_state saved_state = not_probed;
 
 	if (saved_state != not_probed)
 		return saved_state;
 
-	sampled_value = read_gpio(REC_SW) ^ !REC_POL;
+	rec_sw = get_rec_sw_gpio_pin();
+	sampled_value = read_gpio(rec_sw) ^ !REC_POL;
 
 	if (!sampled_value) {
 		saved_state = no_req;
@@ -107,7 +134,7 @@ static enum switch_state get_switch_state(void)
 	stopwatch_init_msecs_expire(&sw, WIPEOUT_MODE_DELAY_MS);
 
 	do {
-		sampled_value = read_gpio(REC_SW) ^ !REC_POL;
+		sampled_value = read_gpio(rec_sw) ^ !REC_POL;
 		if (!sampled_value)
 			break;
 	} while (!stopwatch_expired(&sw));
@@ -117,7 +144,7 @@ static enum switch_state get_switch_state(void)
 		printk(BIOS_INFO, "wipeout requested, checking recovery\n");
 		stopwatch_init_msecs_expire(&sw, RECOVERY_MODE_EXTRA_DELAY_MS);
 		do {
-			sampled_value = read_gpio(REC_SW) ^ !REC_POL;
+			sampled_value = read_gpio(rec_sw) ^ !REC_POL;
 			if (!sampled_value)
 				break;
 		} while (!stopwatch_expired(&sw));
@@ -149,5 +176,5 @@ int get_wipeout_mode_switch(void)
 
 int get_write_protect_state(void)
 {
-	return read_gpio(WP_SW) ^ !WP_POL;
+	return read_gpio(get_wp_status_gpio_pin()) ^ !WP_POL;
 }

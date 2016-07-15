@@ -27,6 +27,7 @@ verstage-y += reset.c
 verstage-y += verstage.c
 
 romstage-y += romstage.c
+romstage-y += boardid.c
 romstage-y += cdp.c
 romstage-y += chromeos.c
 romstage-y += mmu.c

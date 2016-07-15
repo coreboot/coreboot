@@ -20,6 +20,7 @@
 #include <soc/i2c.h>
 #include <soc/gpio.h>
 #include <soc/dsi.h>
+#include <timer.h>
 
 static int mtk_dsi_phy_clk_setting(u32 format, u32 lanes,
 				   const struct edid *edid)
@@ -297,4 +298,22 @@ int mtk_dsi_init(u32 mode_flags, u32 format, u32 lanes,
 	mtk_dsi_start();
 
 	return 0;
+}
+
+void mtk_dsi_pin_drv_ctrl(void)
+{
+	struct stopwatch sw;
+
+	setbits_le32(&lvds_tx1->vopll_ctl3, RG_DA_LVDSTX_PWR_ON);
+
+	stopwatch_init_usecs_expire(&sw, 1000);
+
+	do {
+		if (stopwatch_expired(&sw)) {
+			printk(BIOS_ERR, "enable lvdstx_power fail!!!\n");
+			return;
+		}
+	} while ((read32(&lvds_tx1->vopll_ctl3) & RG_AD_LVDSTX_PWR_ACK) == 0);
+
+	clrbits_le32(&lvds_tx1->vopll_ctl3, RG_DA_LVDS_ISO_EN);
 }

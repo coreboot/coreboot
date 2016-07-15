@@ -252,6 +252,10 @@ static void mainboard_init(device_t dev)
 	gpio_input(PAD_EINT1); /* SD_DET */
 
 	configure_audio();
+
+	/* fix dsi lp mode is half voltage attenuation */
+	mtk_dsi_pin_drv_ctrl();
+
 	if (display_init_required()) {
 		configure_backlight();
 		configure_display();

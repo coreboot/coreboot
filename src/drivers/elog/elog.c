@@ -22,6 +22,8 @@
 #include <pc80/mc146818rtc.h>
 #endif
 #include <bcd.h>
+#include <boot_device.h>
+#include <commonlib/region.h>
 #include <fmap.h>
 #include <rtc.h>
 #include <smbios.h>
@@ -411,16 +413,16 @@ static int elog_shrink(void)
 /*
  * Convert a flash offset into a memory mapped flash address
  */
-static inline u8 *elog_flash_offset_to_address(u32 offset)
+static inline u8 *elog_flash_offset_to_address(void)
 {
-	u32 rom_size;
+	/* Only support memory-mapped SPI devices. */
+	if (!IS_ENABLED(CONFIG_SPI_FLASH_MEMORY_MAPPED))
+		return NULL;
 
 	if (!elog_spi)
 		return NULL;
 
-	rom_size = get_rom_size();
-
-	return (u8 *)((u32)~0UL - rom_size + 1 + offset);
+	return rdev_mmap(boot_device_ro(), flash_base, total_size);
 }
 
 /*
@@ -453,7 +455,7 @@ int elog_smbios_write_type15(unsigned long *current, int handle)
 #if CONFIG_ELOG_CBMEM
 	t->address = (u32)cbmem;
 #else
-	t->address = (u32)elog_flash_offset_to_address(flash_base);
+	t->address = (u32)elog_flash_offset_to_address();
 #endif
 	t->header_format = ELOG_HEADER_TYPE_OEM;
 	t->log_type_descriptors = 0;

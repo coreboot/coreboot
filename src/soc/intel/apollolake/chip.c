@@ -194,8 +194,7 @@ static void soc_init(void *data)
 	struct global_nvs_t *gnvs;
 
 	/* Save VBT info and mapping */
-	if (locate_vbt(&vbt_rdev) != CB_ERR)
-		vbt = rdev_mmap_full(&vbt_rdev);
+	vbt = vbt_get(&vbt_rdev);
 
 	/* Snapshot the current GPIO IRQ polarities. FSP is setting a
 	 * default policy that doesn't honor boards' requirements. */

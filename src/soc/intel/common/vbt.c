@@ -15,6 +15,8 @@
 
 #include <cbfs.h>
 #include <console/console.h>
+#include <arch/acpi.h>
+#include <bootmode.h>
 
 #include "vbt.h"
 
@@ -39,4 +41,22 @@ enum cb_err locate_vbt(struct region_device *rdev)
 	}
 
 	return CB_SUCCESS;
+}
+
+void *vbt_get(struct region_device *rdev)
+{
+	void *vbt_data;
+
+	/* Normal mode and S3 resume path PEIM GFX init is not needed.
+	 * Passing NULL as VBT will not make PEIM GFX to execute. */
+	if (acpi_is_wakeup_s3())
+		return NULL;
+	if (!display_init_required())
+		return NULL;
+	if (locate_vbt(rdev) != CB_ERR) {
+		vbt_data = rdev_mmap_full(rdev);
+		return vbt_data;
+	} else {
+		return NULL;
+	}
 }

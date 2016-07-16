@@ -213,8 +213,6 @@ void platform_fsp_memory_init_params_cb(struct FSPM_UPD *mupd)
 
 	/* Do NOT let FSP do any GPIO pad configuration */
 	mupd->FspmConfig.PreMemGpioTablePtr = (uintptr_t) NULL;
-	/* Reserve enough memory under TOLUD to save CBMEM header */
-	mupd->FspmArchUpd.BootLoaderTolumSize = cbmem_overhead_size();
 	/*
 	 * FSPM_UPD passed here is populated with default values provided by
 	 * the blob itself. We let FSPM use top of CAR region of the size it

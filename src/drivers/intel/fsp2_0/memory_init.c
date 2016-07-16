@@ -13,6 +13,7 @@
 
 #include <arch/io.h>
 #include <arch/cpu.h>
+#include <cbmem.h>
 #include <console/console.h>
 #include <fsp/api.h>
 #include <fsp/util.h>
@@ -41,6 +42,9 @@ static enum fsp_status do_fsp_memory_init(void **hob_list_ptr,
 
 	/* Copy the default values from the UPD area */
 	memcpy(&fspm_upd, upd, sizeof(fspm_upd));
+
+	/* Reserve enough memory under TOLUD to save CBMEM header */
+	fspm_upd.FspmArchUpd.BootLoaderTolumSize = cbmem_overhead_size();
 
 	/* Give SoC and mainboard a chance to update the UPD */
 	platform_fsp_memory_init_params_cb(&fspm_upd);

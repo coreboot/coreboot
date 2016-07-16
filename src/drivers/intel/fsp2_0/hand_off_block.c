@@ -184,16 +184,16 @@ struct hob_resource *hob_header_to_resource(const struct hob_header *hob)
 
 void fsp_save_hob_list(void *hob_list_ptr)
 {
-	void **cbmem_loc;
-	cbmem_loc = cbmem_add(CBMEM_ID_FSP_RUNTIME, sizeof(*hob_list_ptr));
-	*cbmem_loc = hob_list_ptr;
+	uint32_t *cbmem_loc;
+	cbmem_loc = cbmem_add(CBMEM_ID_FSP_RUNTIME, sizeof(*cbmem_loc));
+	*cbmem_loc = (uintptr_t)hob_list_ptr;
 }
 
 const void *fsp_get_hob_list(void)
 {
-	void **list_loc = cbmem_find(CBMEM_ID_FSP_RUNTIME);
+	uint32_t *list_loc = cbmem_find(CBMEM_ID_FSP_RUNTIME);
 
-	return (list_loc) ? (*list_loc) : NULL;
+	return (list_loc) ? (void *)(uintptr_t)(*list_loc) : NULL;
 }
 
 static const

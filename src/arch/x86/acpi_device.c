@@ -498,10 +498,10 @@ static void acpi_dp_write_value(const struct acpi_dp *prop)
 		acpigen_write_integer(prop->integer);
 		break;
 	case ACPI_DP_TYPE_STRING:
+	case ACPI_DP_TYPE_CHILD:
 		acpigen_write_string(prop->string);
 		break;
 	case ACPI_DP_TYPE_REFERENCE:
-	case ACPI_DP_TYPE_CHILD:
 		acpigen_emit_namestring(prop->string);
 		break;
 	case ACPI_DP_TYPE_ARRAY:

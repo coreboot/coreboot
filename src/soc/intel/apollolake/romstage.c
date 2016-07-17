@@ -43,8 +43,6 @@
 #include <string.h>
 #include <timestamp.h>
 
-#define FIT_POINTER				(0x100000000ULL - 0x40)
-
 static struct chipset_power_state power_state CAR_GLOBAL;
 
 /* High Performance Event Timer Configuration */

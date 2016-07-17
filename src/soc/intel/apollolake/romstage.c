@@ -30,9 +30,6 @@
 #include <device/resource.h>
 #include <fsp/api.h>
 #include <fsp/util.h>
-#include <reset.h>
-#include <romstage_handoff.h>
-#include <soc/intel/common/mrc_cache.h>
 #include <soc/iomap.h>
 #include <soc/northbridge.h>
 #include <soc/pci_devs.h>
@@ -104,14 +101,10 @@ ROMSTAGE_CBMEM_INIT_HOOK(migrate_power_state);
 
 asmlinkage void car_stage_entry(void)
 {
-	void *hob_list_ptr;
-	const void *mrc_data;
-	struct range_entry fsp_mem, reg_car;
+	struct range_entry reg_car;
 	struct postcar_frame pcf;
-	size_t  mrc_data_size;
 	uintptr_t top_of_ram;
-	int prev_sleep_state;
-	struct romstage_handoff *handoff;
+	bool s3wake;
 	struct chipset_power_state *ps = car_get_var_ptr(&power_state);
 
 	timestamp_add_now(TS_START_ROMSTAGE);
@@ -121,54 +114,15 @@ asmlinkage void car_stage_entry(void)
 
 	console_init();
 
-	prev_sleep_state = fill_power_state(ps);
+	s3wake = fill_power_state(ps) == ACPI_S3;
 
 	/* Make sure the blob does not override our data in CAR */
 	range_entry_init(&reg_car, (uintptr_t)_car_relocatable_data_end,
 			(uintptr_t)_car_region_end, 0);
 
-	if (fsp_memory_init(&hob_list_ptr, &reg_car) != FSP_SUCCESS) {
+	if (fsp_memory_init(&reg_car, s3wake) != FSP_SUCCESS) {
 		die("FSP memory init failed. Giving up.");
 	}
-
-	fsp_find_reserved_memory(&fsp_mem, hob_list_ptr);
-
-	/* initialize cbmem by adding FSP reserved memory first thing */
-	if (prev_sleep_state != ACPI_S3) {
-		cbmem_initialize_empty_id_size(CBMEM_ID_FSP_RESERVED_MEMORY,
-			range_entry_size(&fsp_mem));
-	} else if (cbmem_initialize_id_size(CBMEM_ID_FSP_RESERVED_MEMORY,
-				range_entry_size(&fsp_mem))) {
-		if (IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)) {
-			printk(BIOS_DEBUG, "Failed to recover CBMEM in S3 resume.\n");
-			/* Failed S3 resume, reset to come up cleanly */
-			hard_reset();
-		}
-	}
-
-	/* make sure FSP memory is reserved in cbmem */
-	if (range_entry_base(&fsp_mem) !=
-		(uintptr_t)cbmem_find(CBMEM_ID_FSP_RESERVED_MEMORY))
-		die("Failed to accommodate FSP reserved memory request");
-
-	/* Now that CBMEM is up, save the list so ramstage can use it */
-	fsp_save_hob_list(hob_list_ptr);
-
-	/* Save MRC Data to CBMEM */
-	if (IS_ENABLED(CONFIG_CACHE_MRC_SETTINGS) &&
-	    (prev_sleep_state != ACPI_S3))
-	{
-		mrc_data = fsp_find_nv_storage_data(&mrc_data_size);
-		if (mrc_data && mrc_cache_stash_data(mrc_data, mrc_data_size) < 0)
-			printk(BIOS_ERR, "Failed to stash MRC data\n");
-	}
-
-	/* Create romstage handof information */
-	handoff = romstage_handoff_find_or_add();
-	if (handoff != NULL)
-		handoff->s3_resume = (prev_sleep_state == ACPI_S3);
-	else
-		printk(BIOS_DEBUG, "Romstage handoff structure not added!\n");
 
 	if (postcar_frame_init(&pcf, 1*KiB))
 		die("Unable to initialize postcar frame.\n");
@@ -203,40 +157,11 @@ static void fill_console_params(struct FSPM_UPD *mupd)
 
 void platform_fsp_memory_init_params_cb(struct FSPM_UPD *mupd)
 {
-	const struct mrc_saved_data *mrc_cache;
-	struct FSPM_ARCH_UPD *arch_upd = &mupd->FspmArchUpd;
-	struct chipset_power_state *ps = car_get_var_ptr(&power_state);
-	int prev_sleep_state = chipset_prev_sleep_state(ps);
-
 	fill_console_params(mupd);
 	mainboard_memory_init_params(mupd);
 
 	/* Do NOT let FSP do any GPIO pad configuration */
 	mupd->FspmConfig.PreMemGpioTablePtr = (uintptr_t) NULL;
-	/*
-	 * FSPM_UPD passed here is populated with default values provided by
-	 * the blob itself. We let FSPM use top of CAR region of the size it
-	 * requests.
-	 * TODO: add checks to avoid overlap/conflict of CAR usage.
-	 */
-	mupd->FspmArchUpd.StackBase = _car_region_end -
-					mupd->FspmArchUpd.StackSize;
-
-	arch_upd->BootMode = FSP_BOOT_WITH_FULL_CONFIGURATION;
-
-	if (IS_ENABLED(CONFIG_CACHE_MRC_SETTINGS)) {
-		if (!mrc_cache_get_current_with_version(&mrc_cache, 0)) {
-			/* MRC cache found */
-			arch_upd->NvsBufferPtr = (void *)mrc_cache->data;
-			arch_upd->BootMode =
-				prev_sleep_state == ACPI_S3 ?
-				FSP_BOOT_ON_S3_RESUME:
-				FSP_BOOT_ASSUMING_NO_CONFIGURATION_CHANGES;
-			printk(BIOS_DEBUG, "MRC cache found, size %x bootmode:%d\n",
-						mrc_cache->size, arch_upd->BootMode);
-		} else
-			printk(BIOS_DEBUG, "MRC cache was not found\n");
-	}
 
 	/*
 	 * Tell CSE we do not need to use Ring Buffer Protocol (RBP) to fetch

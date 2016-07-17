@@ -111,10 +111,10 @@ static void sdram_read_spds(struct sysinfo *s)
 			s->dimms[i].chip_capacity = s->dimms[i].banks;
 			s->dimms[i].rows = s->dimms[i].spd_data[3];// - 12;
 			s->dimms[i].cols = s->dimms[i].spd_data[4];// - 9;
-			s->dimms[i].cas_latencies = 0x78;
+			s->dimms[i].cas_latencies = 0x70; // 6,5,4 CL
 			s->dimms[i].cas_latencies &= s->dimms[i].spd_data[18];
 			if (s->dimms[i].cas_latencies == 0)
-				s->dimms[i].cas_latencies = 7;
+				s->dimms[i].cas_latencies = 0x70;
 			s->dimms[i].tAAmin = s->dimms[i].spd_data[26];
 			s->dimms[i].tCKmin = s->dimms[i].spd_data[25];
 			s->dimms[i].width = (s->dimms[i].spd_data[13] >> 3) - 1;
@@ -337,10 +337,10 @@ static void sdram_detect_ram_speed(struct sysinfo *s)
 		// Choose max memory frequency for MCH as previously detected
 		freq = (s->max_ddr2_mhz == 800) ? MEM_CLOCK_800MHz : MEM_CLOCK_667MHz;
 
-		// Detect a common CAS latency
-		commoncas = 0xff;
+		// Detect a common CAS latency (Choose from 6,5,4 CL)
+		commoncas = 0x70;
 		FOR_EACH_POPULATED_DIMM(s->dimms, i) {
-			commoncas &= s->dimms[i].spd_data[18];
+			commoncas &= s->dimms[i].cas_latencies;
 		}
 		if (commoncas == 0) {
 			die("No common CAS among dimms\n");

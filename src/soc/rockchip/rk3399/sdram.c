@@ -312,7 +312,7 @@ static void phy_io_config(u32 channel,
 {
 	u32 *denali_phy = rk3399_ddr_publ[channel]->denali_phy;
 	u32 vref_mode, vref_value;
-	u32 mode_sel;
+	u32 mode_sel = 0;
 	u32 speed;
 	u32 reg_value;
 
@@ -323,6 +323,8 @@ static void phy_io_config(u32 channel,
 		vref_mode = 0x2;
 	else if (sdram_params->dramtype == DDR3)
 		vref_mode = 0x1;
+	else
+		die("Halting: Unknown DRAM type.\n");
 	vref_value = 0x1f;
 
 	reg_value = (vref_mode << 9) | (0x1 << 8) | vref_value;
@@ -367,6 +369,8 @@ static void phy_io_config(u32 channel,
 		speed = 0x1;
 	else if (sdram_params->ddr_freq < 1200 * MHz)
 		speed = 0x2;
+	else
+		die("Halting: Unknown DRAM speed.\n");
 
 	/* PHY_924 PHY_PAD_FDBK_DRIVE */
 	clrsetbits_le32(&denali_phy[924], 0x3 << 21, mode_sel << 21);

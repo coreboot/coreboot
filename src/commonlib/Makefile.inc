@@ -12,6 +12,7 @@ smm-y += region.c
 postcar-y += region.c
 
 ramstage-$(CONFIG_PLATFORM_USES_FSP1_1) += fsp_relocate.c
+ramstage-$(CONFIG_PLATFORM_USES_FSP2_0) += fsp_relocate.c
 
 bootblock-y += cbfs.c
 verstage-y += cbfs.c

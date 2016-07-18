@@ -12,9 +12,12 @@
 
 #include <arch/cpu.h>
 #include <cbfs.h>
+#include <cbmem.h>
+#include <commonlib/fsp.h>
 #include <console/console.h>
 #include <fsp/api.h>
 #include <fsp/util.h>
+#include <program_loading.h>
 #include <string.h>
 #include <timestamp.h>
 
@@ -53,11 +56,47 @@ static enum fsp_status do_silicon_init(struct fsp_header *hdr)
 	return status;
 }
 
-enum fsp_status fsp_silicon_init(struct range_entry *range)
+enum fsp_status fsp_silicon_init(void)
 {
-	/* Load FSP-S and save FSP header. We will need it for Notify */
-	if (fsp_load_binary(&fsps_hdr, CONFIG_FSP_S_CBFS, range) != CB_SUCCESS)
+	struct fsp_header *hdr = &fsps_hdr;
+	struct cbfsf file_desc;
+	struct region_device rdev;
+	const char *name = CONFIG_FSP_S_CBFS;
+	void *dest;
+	size_t size;
+
+	if (cbfs_boot_locate(&file_desc, name, NULL)) {
+		printk(BIOS_ERR, "Could not locate %s in CBFS\n", name);
+		return FSP_NOT_FOUND;
+	}
+
+	cbfs_file_data(&rdev, &file_desc);
+
+	/* Load and relocate into CBMEM. */
+	size = region_device_sz(&rdev);
+	dest = cbmem_add(CBMEM_ID_REFCODE, size);
+
+	if (dest == NULL) {
+		printk(BIOS_ERR, "Could not add FSPS to CBMEM.\n");
+		return FSP_NOT_FOUND;
+	}
+
+	if (rdev_readat(&rdev, dest, 0, size) < 0)
 		return FSP_NOT_FOUND;
 
-	return do_silicon_init(&fsps_hdr);
+	if (fsp_component_relocate((uintptr_t)dest, dest, size) < 0) {
+		printk(BIOS_ERR, "Unable to relocate FSPS.\n");
+		return FSP_NOT_FOUND;
+	}
+
+	/* Create new region device in memory after relocation. */
+	rdev_chain(&rdev, &addrspace_32bit.rdev, (uintptr_t)dest, size);
+
+	if (fsp_validate_component(hdr, &rdev) != CB_SUCCESS)
+		return FSP_NOT_FOUND;
+
+	/* Signal that FSP component has been loaded. */
+	prog_segment_loaded(hdr->image_base, hdr->image_size, SEG_FINAL);
+
+	return do_silicon_init(hdr);
 }

@@ -14,7 +14,6 @@
 #define _FSP2_0_API_H_
 
 #include <stddef.h>
-#include <memrange.h>
 #include <fsp/info_header.h>
 #include <soc/fsp/FspmUpd.h>
 #include <soc/fsp/FspsUpd.h>
@@ -59,7 +58,7 @@ enum fsp_notify_phase {
 
 /* Main FSP stages */
 enum fsp_status fsp_memory_init(bool s3wake);
-enum fsp_status fsp_silicon_init(struct range_entry *r);
+enum fsp_status fsp_silicon_init(void);
 enum fsp_status fsp_notify(enum fsp_notify_phase phase);
 
 /* Callbacks for updating stage-specific parameters */
@@ -87,7 +86,6 @@ void platform_fsp_silicon_init_params_cb(struct FSPS_UPD *supd);
  *
  *
  * ### fsp_silicon_init():
- *     - r: memory range that the binary is allowed to be loaded into
  *
  * This function is responsible for loading and executing the silicon
  * initialization code from the FSP-S binary. It expects this binary to reside

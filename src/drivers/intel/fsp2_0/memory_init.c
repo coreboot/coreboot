@@ -14,6 +14,7 @@
 #include <arch/io.h>
 #include <arch/cpu.h>
 #include <arch/symbols.h>
+#include <bootmode.h>
 #include <cbfs.h>
 #include <cbmem.h>
 #include <console/console.h>
@@ -106,6 +107,12 @@ static void fsp_fill_mrc_cache(struct FSPM_ARCH_UPD *arch_upd, bool s3wake,
 
 	if (!IS_ENABLED(CONFIG_CACHE_MRC_SETTINGS))
 		return;
+
+	/* Don't use saved training data when recovery mode is enabled. */
+	if (recovery_mode_enabled()) {
+		printk(BIOS_DEBUG, "Recovery mode. Not using MRC cache.\n");
+		return;
+	}
 
 	if (mrc_cache_get_current_with_version(&mrc_cache, fsp_version)) {
 		printk(BIOS_DEBUG, "MRC cache was not found\n");

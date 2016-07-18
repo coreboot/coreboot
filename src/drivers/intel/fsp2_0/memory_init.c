@@ -14,15 +14,18 @@
 #include <arch/io.h>
 #include <arch/cpu.h>
 #include <arch/symbols.h>
+#include <cbfs.h>
 #include <cbmem.h>
 #include <console/console.h>
 #include <fsp/api.h>
 #include <fsp/util.h>
 #include <memrange.h>
+#include <program_loading.h>
 #include <reset.h>
 #include <romstage_handoff.h>
 #include <soc/intel/common/mrc_cache.h>
 #include <string.h>
+#include <symbols.h>
 #include <timestamp.h>
 
 typedef asmlinkage enum fsp_status (*fsp_memory_init_fn)
@@ -153,12 +156,93 @@ static enum fsp_status do_fsp_memory_init(struct fsp_header *hdr, bool s3wake)
 	return do_fsp_post_memory_init(hob_list_ptr, s3wake);
 }
 
-enum fsp_status fsp_memory_init(struct range_entry *range, bool s3wake)
+/* Load the binary into the memory specified by the info header. */
+static enum cb_err load_fspm_mem(struct fsp_header *hdr,
+					const struct region_device *rdev)
+{
+	struct memranges ranges;
+	struct range_entry freeranges[2];
+	const struct range_entry *r;
+	uintptr_t fspm_begin;
+	uintptr_t fspm_end;
+
+	if (fsp_validate_component(hdr, rdev) != CB_SUCCESS)
+		return CB_ERR;
+
+	fspm_begin = hdr->image_base;
+	fspm_end = fspm_begin + hdr->image_size;
+
+	/* Build up memory map of romstage address space including CAR. */
+	memranges_init_empty(&ranges, &freeranges[0], ARRAY_SIZE(freeranges));
+	memranges_insert(&ranges, (uintptr_t)_car_region_start,
+		_car_relocatable_data_end - _car_region_start, 0);
+	memranges_insert(&ranges, (uintptr_t)_program, _program_size, 0);
+	memranges_each_entry(r, &ranges) {
+		if (fspm_end <= range_entry_base(r))
+			continue;
+		if (fspm_begin >= range_entry_end(r))
+			continue;
+		printk(BIOS_ERR, "FSPM overlaps currently running program.\n");
+		return CB_ERR;
+	}
+
+	/* Load binary into memory at provided address. */
+	if (rdev_readat(rdev, (void *)fspm_begin, 0, fspm_end - fspm_begin) < 0)
+		return CB_ERR;
+
+	return CB_SUCCESS;
+}
+
+/* Handle the case when FSPM is running XIP. */
+static enum cb_err load_fspm_xip(struct fsp_header *hdr,
+					const struct region_device *rdev)
+{
+	void *base;
+
+	if (fsp_validate_component(hdr, rdev) != CB_SUCCESS)
+		return CB_ERR;
+
+	base = rdev_mmap_full(rdev);
+	if ((uintptr_t)base != hdr->image_base) {
+		printk(BIOS_ERR, "FSPM XIP base does not match: %p vs %p\n",
+			(void *)(uintptr_t)hdr->image_base, base);
+		return CB_ERR;
+	}
+
+	/*
+	 * Since the component is XIP it's already in the address space. Thus,
+	 * there's no need to rdev_munmap().
+	 */
+	return CB_SUCCESS;
+}
+
+enum fsp_status fsp_memory_init(bool s3wake)
 {
 	struct fsp_header hdr;
+	enum cb_err status;
+	struct cbfsf file_desc;
+	struct region_device file_data;
+	const char *name = CONFIG_FSP_M_CBFS;
 
-	if (fsp_load_binary(&hdr, CONFIG_FSP_M_CBFS, range) != CB_SUCCESS)
+	if (cbfs_boot_locate(&file_desc, name, NULL)) {
+		printk(BIOS_ERR, "Could not locate %s in CBFS\n", name);
 		return FSP_NOT_FOUND;
+	}
+
+	cbfs_file_data(&file_data, &file_desc);
+
+	if (IS_ENABLED(CONFIG_NO_XIP_EARLY_STAGES))
+		status = load_fspm_mem(&hdr, &file_data);
+	else
+		status = load_fspm_xip(&hdr, &file_data);
+
+	if (status != CB_SUCCESS) {
+		printk(BIOS_ERR, "Loading FSPM failed.\n");
+		return FSP_NOT_FOUND;
+	}
+
+	/* Signal that FSP component has been loaded. */
+	prog_segment_loaded(hdr.image_base, hdr.image_size, SEG_FINAL);
 
 	return do_fsp_memory_init(&hdr, s3wake);
 }

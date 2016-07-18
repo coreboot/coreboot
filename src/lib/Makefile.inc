@@ -76,6 +76,7 @@ romstage-y += cbfs.c
 romstage-$(CONFIG_COMMON_CBFS_SPI_WRAPPER) += cbfs_spi.c
 romstage-$(CONFIG_COMPRESS_RAMSTAGE) += lzma.c lzmadecode.c
 romstage-y += libgcc.c
+romstage-y += memrange.c
 romstage-$(CONFIG_PRIMITIVE_MEMTEST) += primitive_memtest.c
 ramstage-$(CONFIG_PRIMITIVE_MEMTEST) += primitive_memtest.c
 romstage-$(CONFIG_CACHE_AS_RAM) += ramtest.c

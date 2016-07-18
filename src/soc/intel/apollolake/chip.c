@@ -25,7 +25,6 @@
 #include <device/pci.h>
 #include <fsp/api.h>
 #include <fsp/util.h>
-#include <memrange.h>
 #include <soc/iomap.h>
 #include <soc/cpu.h>
 #include <soc/intel/common/vbt.h>
@@ -192,7 +191,6 @@ static void pcie_override_devicetree_after_silicon_init(void)
 
 static void soc_init(void *data)
 {
-	struct range_entry range;
 	struct global_nvs_t *gnvs;
 
 	/* Save VBT info and mapping */
@@ -203,10 +201,7 @@ static void soc_init(void *data)
 	 * default policy that doesn't honor boards' requirements. */
 	itss_snapshot_irq_polarities(GPIO_IRQ_START, GPIO_IRQ_END);
 
-	/* TODO: tigten this resource range */
-	/* TODO: fix for S3 resume, as this would corrupt OS memory */
-	range_entry_init(&range, 0x200000, 4ULL*GiB, 0);
-	fsp_silicon_init(&range);
+	fsp_silicon_init();
 
 	/* Restore GPIO IRQ polarities back to previous settings. */
 	itss_restore_irq_polarities(GPIO_IRQ_START, GPIO_IRQ_END);

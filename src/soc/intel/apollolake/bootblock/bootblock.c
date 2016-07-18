@@ -98,7 +98,10 @@ static void cache_bios_region(void)
 		return;
 
 	/* Only the IFD BIOS region is memory mapped (at top of 4G) */
-	rom_size =  get_bios_size();
+	rom_size = get_bios_size();
+
+	if (!rom_size)
+		return;
 
 	/* Round to power of two */
 	alignment = 1 << (log2_ceil(rom_size));

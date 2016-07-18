@@ -31,11 +31,35 @@
 typedef asmlinkage enum fsp_status (*fsp_memory_init_fn)
 				   (void *raminit_upd, void **hob_list);
 
-static enum fsp_status do_fsp_post_memory_init(void *hob_list_ptr, bool s3wake)
+static void save_memory_training_data(bool s3wake, uint32_t fsp_version)
 {
-	struct range_entry fsp_mem;
 	size_t  mrc_data_size;
 	const void *mrc_data;
+
+	if (!IS_ENABLED(CONFIG_CACHE_MRC_SETTINGS) || s3wake)
+		return;
+
+	mrc_data = fsp_find_nv_storage_data(&mrc_data_size);
+	if (!mrc_data) {
+		printk(BIOS_ERR, "Couldn't find memory training data HOB.\n");
+		return;
+	}
+
+	/*
+	 * Save MRC Data to CBMEM. By always saving the data this forces
+	 * a retrain after a trip through Chrome OS recovery path. The
+	 * code which saves the data to flash doesn't write if the latest
+	 * training data matches this one.
+	 */
+	if (mrc_cache_stash_data_with_version(mrc_data, mrc_data_size,
+						fsp_version) < 0)
+			printk(BIOS_ERR, "Failed to stash MRC data\n");
+}
+
+static enum fsp_status do_fsp_post_memory_init(void *hob_list_ptr, bool s3wake,
+						uint32_t fsp_version)
+{
+	struct range_entry fsp_mem;
 	struct romstage_handoff *handoff;
 
 	fsp_find_reserved_memory(&fsp_mem, hob_list_ptr);
@@ -61,12 +85,7 @@ static enum fsp_status do_fsp_post_memory_init(void *hob_list_ptr, bool s3wake)
 	/* Now that CBMEM is up, save the list so ramstage can use it */
 	fsp_save_hob_list(hob_list_ptr);
 
-	/* Save MRC Data to CBMEM */
-	if (IS_ENABLED(CONFIG_CACHE_MRC_SETTINGS) && !s3wake) {
-		mrc_data = fsp_find_nv_storage_data(&mrc_data_size);
-		if (mrc_data && mrc_cache_stash_data(mrc_data, mrc_data_size) < 0)
-			printk(BIOS_ERR, "Failed to stash MRC data\n");
-	}
+	save_memory_training_data(s3wake, fsp_version);
 
 	/* Create romstage handof information */
 	handoff = romstage_handoff_find_or_add();
@@ -78,11 +97,33 @@ static enum fsp_status do_fsp_post_memory_init(void *hob_list_ptr, bool s3wake)
 	return FSP_SUCCESS;
 }
 
-static void fsp_fill_common_arch_params(struct FSPM_ARCH_UPD *arch_upd,
-					bool s3wake)
+static void fsp_fill_mrc_cache(struct FSPM_ARCH_UPD *arch_upd, bool s3wake,
+				uint32_t fsp_version)
 {
 	const struct mrc_saved_data *mrc_cache;
 
+	arch_upd->NvsBufferPtr = NULL;
+
+	if (!IS_ENABLED(CONFIG_CACHE_MRC_SETTINGS))
+		return;
+
+	if (mrc_cache_get_current_with_version(&mrc_cache, fsp_version)) {
+		printk(BIOS_DEBUG, "MRC cache was not found\n");
+		return;
+	}
+
+	/* MRC cache found */
+	arch_upd->NvsBufferPtr = (void *)mrc_cache->data;
+	arch_upd->BootMode = s3wake ?
+		FSP_BOOT_ON_S3_RESUME:
+		FSP_BOOT_ASSUMING_NO_CONFIGURATION_CHANGES;
+	printk(BIOS_DEBUG, "MRC cache found, size %x bootmode:%d\n",
+				mrc_cache->size, arch_upd->BootMode);
+}
+
+static void fsp_fill_common_arch_params(struct FSPM_ARCH_UPD *arch_upd,
+					bool s3wake, uint32_t fsp_version)
+{
 	/*
 	 * FSPM_UPD passed here is populated with default values provided by
 	 * the blob itself. We let FSPM use top of CAR region of the size it
@@ -93,18 +134,7 @@ static void fsp_fill_common_arch_params(struct FSPM_ARCH_UPD *arch_upd,
 
 	arch_upd->BootMode = FSP_BOOT_WITH_FULL_CONFIGURATION;
 
-	if (IS_ENABLED(CONFIG_CACHE_MRC_SETTINGS)) {
-		if (!mrc_cache_get_current_with_version(&mrc_cache, 0)) {
-			/* MRC cache found */
-			arch_upd->NvsBufferPtr = (void *)mrc_cache->data;
-			arch_upd->BootMode = s3wake ?
-				FSP_BOOT_ON_S3_RESUME:
-				FSP_BOOT_ASSUMING_NO_CONFIGURATION_CHANGES;
-			printk(BIOS_DEBUG, "MRC cache found, size %x bootmode:%d\n",
-						mrc_cache->size, arch_upd->BootMode);
-		} else
-			printk(BIOS_DEBUG, "MRC cache was not found\n");
-	}
+	fsp_fill_mrc_cache(arch_upd, s3wake, fsp_version);
 }
 
 static enum fsp_status do_fsp_memory_init(struct fsp_header *hdr, bool s3wake)
@@ -130,7 +160,8 @@ static enum fsp_status do_fsp_memory_init(struct fsp_header *hdr, bool s3wake)
 	fspm_upd.FspmArchUpd.BootLoaderTolumSize = cbmem_overhead_size();
 
 	/* Fill common settings on behalf of chipset. */
-	fsp_fill_common_arch_params(&fspm_upd.FspmArchUpd, s3wake);
+	fsp_fill_common_arch_params(&fspm_upd.FspmArchUpd, s3wake,
+					hdr->fsp_revision);
 
 	/* Give SoC and mainboard a chance to update the UPD */
 	platform_fsp_memory_init_params_cb(&fspm_upd);
@@ -153,7 +184,7 @@ static enum fsp_status do_fsp_memory_init(struct fsp_header *hdr, bool s3wake)
 	if (status != FSP_SUCCESS)
 		return status;
 
-	return do_fsp_post_memory_init(hob_list_ptr, s3wake);
+	return do_fsp_post_memory_init(hob_list_ptr, s3wake, hdr->fsp_revision);
 }
 
 /* Load the binary into the memory specified by the info header. */

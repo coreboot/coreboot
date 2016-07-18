@@ -104,6 +104,38 @@ void fsp_print_header_info(const struct fsp_header *hdr)
 
 }
 
+enum cb_err fsp_validate_component(struct fsp_header *hdr,
+					const struct region_device *rdev)
+{
+	void *membase;
+
+	/* Map just enough of the file to be able to parse the header. */
+	membase = rdev_mmap(rdev, FSP_HDR_OFFSET, FSP_HDR_LEN);
+
+	if (membase == NULL) {
+		printk(BIOS_ERR, "Could not mmap() FSP header.\n");
+		return CB_ERR;
+	}
+
+	if (fsp_identify(hdr, membase) != CB_SUCCESS) {
+		rdev_munmap(rdev, membase);
+		printk(BIOS_ERR, "No valid FSP header\n");
+		return CB_ERR;
+	}
+
+	rdev_munmap(rdev, membase);
+
+	fsp_print_header_info(hdr);
+
+	/* Check if size specified in the header matches the cbfs file size */
+	if (region_device_sz(rdev) < hdr->image_size) {
+		printk(BIOS_ERR, "Component size bigger than cbfs file.\n");
+		return CB_ERR;
+	}
+
+	return CB_SUCCESS;
+}
+
 /* TODO: this won't work for SoC's that need to XIP certain modules. */
 enum cb_err fsp_load_binary(struct fsp_header *hdr,
 			    const char *name,
@@ -111,7 +143,6 @@ enum cb_err fsp_load_binary(struct fsp_header *hdr,
 {
 	struct cbfsf file_desc;
 	struct region_device file_data;
-	void *membase;
 
 	if (cbfs_boot_locate(&file_desc, name, NULL)) {
 		printk(BIOS_ERR, "Could not locate %s in CBFS\n", name);
@@ -120,31 +151,10 @@ enum cb_err fsp_load_binary(struct fsp_header *hdr,
 
 	cbfs_file_data(&file_data, &file_desc);
 
-	/* Map just enough of the file to be able to parse the header. */
-	membase = rdev_mmap(&file_data, FSP_HDR_OFFSET, FSP_HDR_LEN);
-
-	if (membase == NULL) {
-		printk(BIOS_ERR, "Could not mmap() '%s' FSP header.\n", name);
+	if (fsp_validate_component(hdr, &file_data) != CB_SUCCESS)
 		return CB_ERR;
-	}
 
-	if (fsp_identify(hdr, membase) != CB_SUCCESS) {
-		rdev_munmap(&file_data, membase);
-		printk(BIOS_ERR, "%s did not have a valid FSP header\n", name);
-		return CB_ERR;
-	}
-
-	rdev_munmap(&file_data, membase);
-
-	fsp_print_header_info(hdr);
-
-	/* Check if size specified in the header matches the cbfs file size */
-	if (region_device_sz(&file_data) < hdr->image_size) {
-		printk(BIOS_ERR, "%s size bigger than cbfs file.\n", name);
-		return CB_ERR;
-	}
-
-	/* Check if the binary load address is within expected range */
+	/* Check if the component load address is within expected range */
 	/* TODO: this doesn't check the current running program footprint. */
 	if (range_entry_base(range) > hdr->image_base ||
 	    range_entry_end(range) <= hdr->image_base + hdr->image_size) {

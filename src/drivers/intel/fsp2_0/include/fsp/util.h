@@ -14,6 +14,7 @@
 #define _FSP2_0_UTIL_H_
 
 #include <boot/coreboot_tables.h>
+#include <commonlib/region.h>
 #include <fsp/api.h>
 #include <fsp/info_header.h>
 #include <memrange.h>
@@ -33,6 +34,10 @@ enum cb_err fsp_fill_lb_framebuffer(struct lb_framebuffer *framebuffer);
  */
 void fsp_find_reserved_memory(struct range_entry *re, const void *hob_list);
 void fsp_print_memory_resource_hobs(const void *hob_list);
+
+/* Fill in header and validate sanity of component within region device. */
+enum cb_err fsp_validate_component(struct fsp_header *hdr,
+					const struct region_device *rdev);
 
 /* Load an FSP binary into CBFS, and fill the associated fsp_header struct */
 enum cb_err fsp_load_binary(struct fsp_header *hdr, const char *name,

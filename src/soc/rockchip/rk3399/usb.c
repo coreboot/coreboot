@@ -67,7 +67,7 @@ static void setup_dwc3(struct rockchip_usb_drd_dwc3 *dwc3_reg)
 			DWC3_GCTL_PRTCAPDIR(DWC3_GCTL_PRTCAP_HOST));
 	/*
 	 * Configure USB phy interface of DWC3 core.
-	 * For rockchip rk3399 SOC DWC3 core:
+	 * For Rockchip rk3399 SOC DWC3 core:
 	 * 1. Clear U2_FREECLK_EXITS.
 	 * 2. Select UTMI+ PHY with 16-bit interface.
 	 * 3. Set USBTRDTIM to the corresponding value

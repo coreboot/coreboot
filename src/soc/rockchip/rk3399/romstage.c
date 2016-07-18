@@ -49,7 +49,7 @@ static void init_dvs_outputs(void)
 	write32(&rk3399_pmugrf->iomux_pwm_3a, IOMUX_PWM_3_A);	/* Centerlog */
 
 	/*
-	 * Setup voltages for all DVS rails.
+	 * Set up voltages for all DVS rails.
 	 *
 	 * LITTLE CPU: At the speed we're running at right now and on the
 	 * early silicon, .9V is sane.  If/when we run faster, let's bump this.

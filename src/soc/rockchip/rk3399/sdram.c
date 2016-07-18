@@ -361,11 +361,11 @@ static void phy_io_config(u32 channel,
 	/* PHY_939 PHY_PAD_CS_DRIVE */
 	clrsetbits_le32(&denali_phy[939], 0x7 << 14, mode_sel << 14);
 
-	if (sdram_params->ddr_freq < 400*MHz)
+	if (sdram_params->ddr_freq < 400 * MHz)
 		speed = 0x0;
-	else if (sdram_params->ddr_freq < 800*MHz)
+	else if (sdram_params->ddr_freq < 800 * MHz)
 		speed = 0x1;
-	else if (sdram_params->ddr_freq < 1200*MHz)
+	else if (sdram_params->ddr_freq < 1200 * MHz)
 		speed = 0x2;
 
 	/* PHY_924 PHY_PAD_FDBK_DRIVE */
@@ -398,7 +398,7 @@ static void pctl_cfg(u32 channel,
 	u32 pwrup_srefresh_exit;
 
 	/*
-	 * workaround controller bug:
+	 * work around controller bug:
 	 * Do not program DRAM_CLASS until NO_PHY_IND_TRAIN_INT is programmed
 	 */
 	copy_to_reg(&denali_ctl[1], &params_ctl[1],
@@ -506,7 +506,7 @@ static void select_per_cs_training_index(u32 channel, u32 rank)
  * "0x200-PHY_CLK_WRDQS_SLAVE_DELAY < 0x20 or
  * 0x200-PHY_CLK_WRDQS_SLAVE > 0x1E0",
  * enable PHY_WRLVL_EARLY_FORCE_ZERO for this slice, and trigger write
- * leveling again. Else no additional write leveling is required
+ * leveling again. Else no additional write leveling is required.
  */
 static void check_write_leveling_value(u32 channel,
 				       const struct rk3399_sdram_params

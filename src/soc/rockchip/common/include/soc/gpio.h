@@ -79,7 +79,7 @@ enum {
 	PULLDOWN
 };
 
-/* The gpio pull bias setting may different from SoC */
+/* The gpio pull bias setting may be different between SoCs */
 u32 gpio_get_pull_val(gpio_t gpio, u32 pull);
 
 #endif

@@ -57,7 +57,7 @@ void rk_display_init(device_t dev, uintptr_t lcdbase,
 	case VOP_MODE_AUTO_DETECT:
 		/* try EDP first, then HDMI */
 	case VOP_MODE_EDP:
-		printk(BIOS_DEBUG, "Attempting to setup EDP display.\n");
+		printk(BIOS_DEBUG, "Attempting to set up EDP display.\n");
 		rkclk_configure_vop_aclk(conf->vop_id, 192 * MHz);
 
 		/* select edp signal from vop0(big) or vop1(little) */
@@ -65,8 +65,8 @@ void rk_display_init(device_t dev, uintptr_t lcdbase,
 					    RK_CLRBITS(1 << 5);
 		write32(&rk3399_grf->soc_con20, val);
 
-		/* select edp clk from SoC interal 24M crystal, otherwise,
-		 * it will source from edp's 24M clock(that depends on
+		/* select edp clk from SoC internal 24M crystal, otherwise,
+		 * it will source from edp's 24M clock (that depends on
 		 * edp vendor, could be unstable)
 		 */
 		write32(&rk3399_grf->soc_con25, RK_SETBITS(1 << 11));
@@ -85,7 +85,7 @@ void rk_display_init(device_t dev, uintptr_t lcdbase,
 		printk(BIOS_WARNING, "HDMI display is NOT supported yet.\n");
 		return;
 	default:
-		printk(BIOS_WARNING, "Cannot read any edid info, aborting.\n");
+		printk(BIOS_WARNING, "Cannot read any EDID info, aborting.\n");
 		return;
 	}
 
@@ -111,7 +111,7 @@ void rk_display_init(device_t dev, uintptr_t lcdbase,
 	case VOP_MODE_EDP:
 	default:
 		if (rk_edp_enable()) {
-			printk(BIOS_WARNING, "edp enable err\n");
+			printk(BIOS_WARNING, "edp enable error\n");
 			return;
 		}
 		mainboard_power_on_backlight();

@@ -61,8 +61,8 @@
 #define RK_PWM_BASE		0xff420000
 #define EDP_BASE		0xff970000
 
-#define VOP_BIG_BASE		0xff900000 /* corresponsed to vop_id 0 */
-#define VOP_LIT_BASE		0xff8f0000 /* corresponsed to vop_id 1 */
+#define VOP_BIG_BASE		0xff900000 /* corresponds to vop_id 0 */
+#define VOP_LIT_BASE		0xff8f0000 /* corresponds to vop_id 1 */
 
 
 #define DDRC0_BASE_ADDR		0xffa80000

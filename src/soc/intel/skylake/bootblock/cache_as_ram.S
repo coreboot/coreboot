@@ -1,8 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2013-2014 Sage Electronic Engineering, LLC.
- * Copyright (C) 2016 Intel Corp.
+ * Copyright (C) 2015-2016 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,56 +14,62 @@
  *
  */
 
-#include <cpu/x86/mtrr.h>
 #include <cpu/x86/cache.h>
+#include <cpu/x86/cr.h>
+#include <cpu/x86/mtrr.h>
 #include <cpu/x86/post_code.h>
+#include <rules.h>
 
-/*
- * MTRR definitions
- */
-.equ		IA32_MTRR_CAP,			0x00fe
+#define IA32_PQR_ASSOC 0x0c8f
+#define IA32_L3_MASK_1 0x0c91
+#define IA32_L3_MASK_2 0x0c92
+#define CACHE_INIT_VALUE 0
+#define MSR_EVICT_CTL 0x2e0
 
-.equ		NO_EVICT_MODE,			0x02e0
+.global bootblock_pre_c_entry
+bootblock_pre_c_entry:
 
-.equ		IA32_PQR_ASSOC,			0x0c8f
-.equ		IA32_L3_MASK_1,			0x0c91
-.equ		IA32_L3_MASK_2,			0x0c92
-.equ		CACHE_INIT_VALUE,		0
+	post_code(0x20)
 
-/*
- * See BWG - chapter "Determining Cacheable Code Region Base Addresses and Ranges".
- *
- */
-
-	movl	%edi, %ebp		/* Put BIST value in a safe place */
 	/*
-	 * Ensure that all variable-range MTRR valid flags are clear and
-	 * IA32_MTRR_DEF_TYPE MSR E flag is clear.  Note: This is the default state
-	 * after hardware reset.
-	 *
-	 * Initialize all fixed-range and variable-range MTRR register fields to 0.
+	 * Use the MTRR default type MSR as a proxy for detecting INIT#.
+	 * Reset the system if any known bits are set in that MSR. That is
+	 * an indication of the CPU not being properly reset.
 	 */
-	mov	$(MtrrByteCountFixed), %ebx		/* EBX = size of  Fixed MTRRs */
+check_for_clean_reset:
+	mov	$MTRR_DEF_TYPE_MSR, %ecx
+	rdmsr
+	and	$(MTRR_DEF_TYPE_EN | MTRR_DEF_TYPE_FIX_EN), %eax
+	cmp	$0, %eax
+	jz	no_reset
+	/* perform soft reset */
+	movw	$0xcf9, %dx
+	movb	$0x06, %al
+	outb	%al, %dx
 
-	xorl	%eax, %eax			/* Clear the low dword to write */
-	xorl	%edx, %edx			/* Clear the high dword to write */
-	xorl	%ecx, %ecx
-	/* Clearing Fixed Range MTRRs */
-clear_mtrr_fixed:
-	addl	$(-2), %ebx			/* need to check it */
-	movw	(MtrrInitTable)(%ebx), %cx	/* cx <- address of mtrr to zero */
-	wrmsr
-	jnz	clear_mtrr_fixed			/* loop through the whole table */
-
+no_reset:
 	post_code(0x21)
 
-	/* Clearing Variable Range MTRRs */
-	movl	$MTRR_CAP_MSR, %ecx
+	/* Clear/disable fixed MTRRs */
+	mov	$fixed_mtrr_list_size, %ebx
+	xor	%eax, %eax
+	xor	%edx, %edx
+clear_fixed_mtrr:
+	add	$-2, %ebx
+	movzwl	fixed_mtrr_list(%ebx), %ecx
+	wrmsr
+	jnz	clear_fixed_mtrr
+
+	post_code(0x22)
+
+	/* Figure put how many MTRRs we have, and clear them out */
+	mov	$MTRR_CAP_MSR, %ecx
 	rdmsr
-	movzx	%al, %ebx
-	clr	%eax
-	clr	%edx
-	movl	$MTRR_PHYS_BASE(0), %ecx
+	movzb	%al, %ebx		/* Number of variable MTRRs */
+	mov	$MTRR_PHYS_BASE(0), %ecx
+	xor	%eax, %eax
+	xor	%edx, %edx
+
 clear_var_mtrr:
 	wrmsr
 	inc	%ecx
@@ -73,16 +78,14 @@ clear_var_mtrr:
 	dec	%ebx
 	jnz	clear_var_mtrr
 
-	post_code(0x22)
+	post_code(0x23)
 
-	/*
-	 * Configure the default memory type to un-cacheable (UC) in the
-	 * IA32_MTRR_DEF_TYPE MSR.
-	 */
-
-	movl	$MTRR_DEF_TYPE_MSR, %ecx	/* Load the MTRR default type index */
+	/* Configure default memory type to uncacheable (UC) */
+	mov	$MTRR_DEF_TYPE_MSR, %ecx
 	rdmsr
-	andl	$0xFFFFF300, %eax		/* Clear the enable bits and def type UC. */
+	/* Clear enable bits and set default type to UC. */
+	and	$~(MTRR_DEF_TYPE_MASK | MTRR_DEF_TYPE_EN | \
+		 MTRR_DEF_TYPE_FIX_EN), %eax
 	wrmsr
 
 	/* Configure MTRR_PHYS_MASK_HIGH for proper addressing above 4GB
@@ -102,72 +105,54 @@ clear_var_mtrr:
 	bts	%eax, %esi
 	dec	%esi			/* esi <- MTRR_PHYS_MASK_HIGH */
 
-	/*
-	 *   Configure the DataStack region as write-back (WB) cacheable memory type
-	 *   using the variable range MTRRs.
-	 *
-	 *
-	 * Set the base address of the DataStack cache range
-	 */
-
-	movl	$CONFIG_DCACHE_RAM_BASE, %eax
-	orl	$MTRR_TYPE_WRBACK, %eax	/* Load the write-back cache value */
-	xorl	%edx, %edx			/* clear upper dword */
-	movl	$MTRR_PHYS_BASE(0), %ecx	/* Load the MTRR index */
-	wrmsr					/* the value in MTRR_PHYS_BASE_0 */
-
-	/*
-	 * Set the mask for the DataStack cache range
-	 * Compute MTRR mask value:  Mask = NOT (Size - 1)
-	 */
-	movl	$CONFIG_DCACHE_RAM_SIZE_TOTAL, %eax
-	dec	%eax
-	not	%eax
-	orl	$MTRR_PHYS_MASK_VALID, %eax	/* turn on the Valid flag */
-	movl	%esi, %edx			/* edx <- MTRR_PHYS_MASK_HIGH */
-	inc	%ecx
-	wrmsr					/* the value in MTRR_PHYS_MASK_0 */
-
-	post_code(0x23)
-
-	/*
-	 * Enable the MTRRs by setting the IA32_MTRR_DEF_TYPE MSR E flag.
-	 */
-	movl	$MTRR_DEF_TYPE_MSR, %ecx               /* Load the MTRR default type index */
-	rdmsr
-	orl	$MTRR_DEF_TYPE_EN, %eax             /* Enable variable range MTRRs */
-	wrmsr
-
 	post_code(0x24)
 
-	/*
-	 *   Enable the logical processor's (BSP) cache: execute INVD and set
-	 *   CR0.CD = 0, CR0.NW = 0.
-	 */
-	movl	%cr0, %eax
-	and	$(~(CR0_CD + CR0_NW)), %eax
-	invd
-	movl	%eax, %cr0
-
-	/*
-	 *   Enable No-Eviction Mode Setup State by setting
-	 *   NO_EVICT_MODE  MSR 2E0h bit [0] = '1'.
-	 */
-	movl	$NO_EVICT_MODE, %ecx
-	rdmsr
-	orl	$0x01, %eax
+	/* Configure CAR region as write-back (WB) */
+	mov	$MTRR_PHYS_BASE(0), %ecx
+	mov	$CONFIG_DCACHE_RAM_BASE, %eax
+	or	$MTRR_TYPE_WRBACK, %eax
+	xor	%edx,%edx
 	wrmsr
+
+	/* Configure the MTRR mask for the size region */
+	mov	$MTRR_PHYS_MASK(0), %ecx
+	mov	$CONFIG_DCACHE_RAM_SIZE_TOTAL, %eax	/* size mask */
+	dec	%eax
+	not	%eax
+	or	$MTRR_PHYS_MASK_VALID, %eax
+	wrmsr
+
+	post_code(0x25)
+
+	/* Enable variable MTRRs */
+	mov	$MTRR_DEF_TYPE_MSR, %ecx
+	rdmsr
+	or	$MTRR_DEF_TYPE_EN, %eax
+	wrmsr
+
+	/* Enable caching */
+	mov	%cr0, %eax
+	and	$~(CR0_CD | CR0_NW), %eax
+	invd
+	mov	%eax, %cr0
+
+	/* Disable cache eviction (setup stage) */
+	mov	$MSR_EVICT_CTL, %ecx
+	rdmsr
+	or	$0x1, %eax
+	wrmsr
+	post_code(0x26)
 
 	/* Create n-way set associativity of cache */
 	xorl	%edi, %edi
-Find_LLC_subleaf:
+find_llc_subleaf:
 	movl	%edi, %ecx
 	movl	$0x04, %eax
 	cpuid
 	inc	%edi
 	and	$0xe0, %al	/* EAX[7:5] = Cache Level */
 	cmp	$0x60, %al	/* Check to see if it is LLC */
-	jnz	Find_LLC_subleaf
+	jnz	find_llc_subleaf
 
 	/*
 	 * Set MSR 0xC91 IA32_L3_MASK_! = 0xE/0xFE/0xFFE/0xFFFE
@@ -251,12 +236,12 @@ Find_LLC_subleaf:
 	 * NO_EVICT_MODE MSR 2E0h bit [1] = '1'.
 	 */
 
-	movl	$NO_EVICT_MODE, %ecx
+	movl	$MSR_EVICT_CTL, %ecx
 	rdmsr
 	orl	$0x02, %eax
 	wrmsr
 
-	post_code(0x25)
+	post_code(0x27)
 	/*
 	 *   Configure the BIOS code region as write-protected (WP) cacheable
 	 *   memory type using a single variable range MTRR.
@@ -267,19 +252,11 @@ Find_LLC_subleaf:
 	movl	$(0xFFFFFFFF - CONFIG_ROM_SIZE + 1), %edi	/* Code region base */
 	movl	$CONFIG_ROM_SIZE, %eax				/* Code region size */
 	cmpl	$0, %edi
-	jz	InvalidParameter
+	jz	.halt_forever
 	cmpl	$0, %eax
-	jz	InvalidParameter
-	jmp	CheckPass
+	jz	.halt_forever
 
-InvalidParameter:
-	movl	$0x80000002, %eax	/* RETURN_INVALID_PARAMETER */
-	jmp	.Lhlt
-
-CheckPass:
-
-	post_code(0x26)
-
+	post_code(0x28)
 	/*
 	 * Program base register
 	 */
@@ -304,31 +281,40 @@ CheckPass:
 	movl	%esi, %edx	/* edx <- MTRR_PHYS_MASK_HIGH */
 	wrmsr
 
-	post_code(0x27)
+car_init_done:
 
-	/*
-	 * edi:  BIST value
-	 * mm0:  low 32-bits of TSC value
-	 * mm1:  high 32-bits of TSC value
-	 */
-	movl	%ebp, %edi		/* Restore BIST value */
+	post_code(0x29)
 
-	.section	.rodata
+	/* Setup bootblock stack */
+	mov	$_car_stack_end, %esp
 
-MtrrInitTable:
-	.word      MTRR_DEF_TYPE_MSR
-	.word      MTRR_FIX_64K_00000
-	.word      MTRR_FIX_16K_80000
-	.word      MTRR_FIX_16K_A0000
-	.word      MTRR_FIX_4K_C0000
-	.word      MTRR_FIX_4K_C8000
-	.word      MTRR_FIX_4K_D0000
-	.word      MTRR_FIX_4K_D8000
-	.word      MTRR_FIX_4K_E0000
-	.word      MTRR_FIX_4K_E8000
-	.word      MTRR_FIX_4K_F0000
-	.word      MTRR_FIX_4K_F8000
+	/*push TSC value to stack*/
+	movd	%mm2, %eax
+	pushl	%eax	/* tsc[63:32] */
+	movd	%mm1, %eax
+	pushl	%eax 	/* tsc[31:0] */
 
-.equ MtrrByteCountFixed,  (.-MtrrInitTable)
+before_carstage:
+	post_code(0x2A)
 
-	.previous
+	call	bootblock_c_entry
+	/* Never reached */
+
+.halt_forever:
+	post_code(POST_DEAD_CODE)
+	hlt
+	jmp	.halt_forever
+
+fixed_mtrr_list:
+	.word	MTRR_FIX_64K_00000
+	.word	MTRR_FIX_16K_80000
+	.word	MTRR_FIX_16K_A0000
+	.word	MTRR_FIX_4K_C0000
+	.word	MTRR_FIX_4K_C8000
+	.word	MTRR_FIX_4K_D0000
+	.word	MTRR_FIX_4K_D8000
+	.word	MTRR_FIX_4K_E0000
+	.word	MTRR_FIX_4K_E8000
+	.word	MTRR_FIX_4K_F0000
+	.word	MTRR_FIX_4K_F8000
+fixed_mtrr_list_size = . - fixed_mtrr_list

@@ -9,6 +9,9 @@ subdirs-y += ../../../cpu/x86/mtrr
 subdirs-y += ../../../cpu/x86/smm
 subdirs-y += ../../../cpu/x86/tsc
 
+bootblock-y += bootblock/bootblock.c
+bootblock-y += bootblock/cache_as_ram.S
+
 verstage-y += gpio.c
 verstage-y += memmap.c
 verstage-y += monotonic_timer.c

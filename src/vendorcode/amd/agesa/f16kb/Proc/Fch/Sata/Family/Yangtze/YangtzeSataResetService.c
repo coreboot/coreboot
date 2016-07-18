@@ -78,7 +78,6 @@ FchInitResetSataProgram (
   if ( LocalCfgPtr->SataSetMaxGen2 ) {
     FchSataMode |= 0x04;
   }
-  FchSataMode |= 0x04;
 
   RwPci (((SATA_BUS_DEV_FUN << 16) + 0x0A0), AccessWidth8, (UINT32)~(BIT2 + BIT3 + BIT4 + BIT5 + BIT6), 0, StdHeader);
   FchSataClkMode = LocalCfgPtr->SataClkMode;

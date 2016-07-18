@@ -29,11 +29,6 @@ void walk_page_table(void) {
 	printk(BIOS_DEBUG, "root_page_table: %p\n", t);
 }
 
-void enter_supervisor(void) {
-	// enter supervisor mode
-	asm volatile("la t0, 1f; csrw mepc, t0; eret; 1:" ::: "t0");
-}
-
 void flush_tlb(void)
 {
 	asm volatile("sfence.vm");

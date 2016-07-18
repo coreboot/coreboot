@@ -57,7 +57,6 @@
 typedef uintptr_t pte_t;
 extern pte_t* root_page_table;
 
-void enter_supervisor(void);
 void initVirtualMemory(void);
 
 size_t pte_ppn(pte_t pte);

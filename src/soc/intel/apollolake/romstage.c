@@ -101,7 +101,6 @@ ROMSTAGE_CBMEM_INIT_HOOK(migrate_power_state);
 
 asmlinkage void car_stage_entry(void)
 {
-	struct range_entry reg_car;
 	struct postcar_frame pcf;
 	uintptr_t top_of_ram;
 	bool s3wake;
@@ -116,11 +115,7 @@ asmlinkage void car_stage_entry(void)
 
 	s3wake = fill_power_state(ps) == ACPI_S3;
 
-	/* Make sure the blob does not override our data in CAR */
-	range_entry_init(&reg_car, (uintptr_t)_car_relocatable_data_end,
-			(uintptr_t)_car_region_end, 0);
-
-	if (fsp_memory_init(&reg_car, s3wake) != FSP_SUCCESS) {
+	if (fsp_memory_init(s3wake) != FSP_SUCCESS) {
 		die("FSP memory init failed. Giving up.");
 	}
 

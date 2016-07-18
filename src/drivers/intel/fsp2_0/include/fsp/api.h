@@ -58,7 +58,7 @@ enum fsp_notify_phase {
 
 
 /* Main FSP stages */
-enum fsp_status fsp_memory_init(struct range_entry *r, bool s3wake);
+enum fsp_status fsp_memory_init(bool s3wake);
 enum fsp_status fsp_silicon_init(struct range_entry *r);
 enum fsp_status fsp_notify(enum fsp_notify_phase phase);
 
@@ -74,14 +74,13 @@ void platform_fsp_silicon_init_params_cb(struct FSPS_UPD *supd);
  * points and map 1:1 to the FSP entry points of the same name.
  *
  * ### fsp_memory_init():
- *     - r: memory range that the binary is allowed to be loaded into
  *     - s3wake: boolean indicating if the system is waking from resume
  *
  * This function is responsible for loading and executing the memory
  * initialization code from the FSP-M binary. It expects this binary to reside
  * in cbfs as FSP_M_FILE.
  *
- * The function takes two parameters, which are described above, but does not
+ * The function takes one parameter, which is described above, but does not
  * take in memory parameters as an argument. The memory parameters can be filled
  * in with platform_fsp_memory_init_params_cb(). This is a callback symbol
  * that fsp_memory_init() will call. The platform must provide this symbol.

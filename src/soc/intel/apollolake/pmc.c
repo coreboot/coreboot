@@ -137,6 +137,9 @@ static void pmc_init(struct device *dev)
 	/* Set up GPE configuration */
 	pmc_gpe_init();
 	pch_set_acpi_mode();
+
+	/* Log power state */
+	pch_log_state();
 }
 
 static const struct device_operations device_ops = {

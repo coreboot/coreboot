@@ -313,7 +313,6 @@ static void phy_io_config(u32 channel,
 	u32 *denali_phy = rk3399_ddr_publ[channel]->denali_phy;
 	u32 vref_mode, vref_value;
 	u32 mode_sel = 0;
-	u32 speed;
 	u32 reg_value;
 
 	/* vref setting */
@@ -362,15 +361,6 @@ static void phy_io_config(u32 channel,
 	clrsetbits_le32(&denali_phy[937], 0x7 << 14, mode_sel << 14);
 	/* PHY_939 PHY_PAD_CS_DRIVE */
 	clrsetbits_le32(&denali_phy[939], 0x7 << 14, mode_sel << 14);
-
-	if (sdram_params->ddr_freq < 400 * MHz)
-		speed = 0x0;
-	else if (sdram_params->ddr_freq < 800 * MHz)
-		speed = 0x1;
-	else if (sdram_params->ddr_freq < 1200 * MHz)
-		speed = 0x2;
-	else
-		die("Halting: Unknown DRAM speed.\n");
 
 	/* PHY_924 PHY_PAD_FDBK_DRIVE */
 	clrsetbits_le32(&denali_phy[924], 0x3 << 21, mode_sel << 21);

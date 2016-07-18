@@ -128,28 +128,61 @@ static void fsp_fill_mrc_cache(struct FSPM_ARCH_UPD *arch_upd, bool s3wake,
 				mrc_cache->size, arch_upd->BootMode);
 }
 
-static void fsp_fill_common_arch_params(struct FSPM_ARCH_UPD *arch_upd,
-					bool s3wake, uint32_t fsp_version)
+static enum cb_err check_region_overlap(const struct memranges *ranges,
+					const char *description,
+					uintptr_t begin, uintptr_t end)
 {
+	const struct range_entry *r;
+
+	memranges_each_entry(r, ranges) {
+		if (end <= range_entry_base(r))
+			continue;
+		if (begin >= range_entry_end(r))
+			continue;
+		printk(BIOS_ERR, "'%s' overlaps currently running program: "
+			"[%p, %p)\n", description, (void *)begin, (void *)end);
+		return CB_ERR;
+	}
+
+	return CB_SUCCESS;
+}
+
+static enum cb_err fsp_fill_common_arch_params(struct FSPM_ARCH_UPD *arch_upd,
+					bool s3wake, uint32_t fsp_version,
+					const struct memranges *memmap)
+{
+	uintptr_t stack_begin;
+	uintptr_t stack_end;
+
 	/*
 	 * FSPM_UPD passed here is populated with default values provided by
 	 * the blob itself. We let FSPM use top of CAR region of the size it
 	 * requests.
-	 * TODO: add checks to avoid overlap/conflict of CAR usage.
 	 */
-	arch_upd->StackBase = _car_region_end - arch_upd->StackSize;
+	stack_end = (uintptr_t)_car_region_end;
+	stack_begin = stack_end - arch_upd->StackSize;
+
+	if (check_region_overlap(memmap, "FSPM stack", stack_begin,
+				stack_end) != CB_SUCCESS)
+		return CB_ERR;
+
+	arch_upd->StackBase = (void *)stack_begin;
 
 	arch_upd->BootMode = FSP_BOOT_WITH_FULL_CONFIGURATION;
 
 	fsp_fill_mrc_cache(arch_upd, s3wake, fsp_version);
+
+	return CB_SUCCESS;
 }
 
-static enum fsp_status do_fsp_memory_init(struct fsp_header *hdr, bool s3wake)
+static enum fsp_status do_fsp_memory_init(struct fsp_header *hdr, bool s3wake,
+					const struct memranges *memmap)
 {
 	enum fsp_status status;
 	fsp_memory_init_fn fsp_raminit;
 	struct FSPM_UPD fspm_upd, *upd;
 	void *hob_list_ptr;
+	struct FSPM_ARCH_UPD *arch_upd;
 
 	post_code(0x34);
 
@@ -163,12 +196,15 @@ static enum fsp_status do_fsp_memory_init(struct fsp_header *hdr, bool s3wake)
 	/* Copy the default values from the UPD area */
 	memcpy(&fspm_upd, upd, sizeof(fspm_upd));
 
+	arch_upd = &fspm_upd.FspmArchUpd;
+
 	/* Reserve enough memory under TOLUD to save CBMEM header */
-	fspm_upd.FspmArchUpd.BootLoaderTolumSize = cbmem_overhead_size();
+	arch_upd->BootLoaderTolumSize = cbmem_overhead_size();
 
 	/* Fill common settings on behalf of chipset. */
-	fsp_fill_common_arch_params(&fspm_upd.FspmArchUpd, s3wake,
-					hdr->fsp_revision);
+	if (fsp_fill_common_arch_params(arch_upd, s3wake, hdr->fsp_revision,
+					memmap) != CB_SUCCESS)
+		return FSP_NOT_FOUND;
 
 	/* Give SoC and mainboard a chance to update the UPD */
 	platform_fsp_memory_init_params_cb(&fspm_upd);
@@ -196,11 +232,9 @@ static enum fsp_status do_fsp_memory_init(struct fsp_header *hdr, bool s3wake)
 
 /* Load the binary into the memory specified by the info header. */
 static enum cb_err load_fspm_mem(struct fsp_header *hdr,
-					const struct region_device *rdev)
+					const struct region_device *rdev,
+					const struct memranges *memmap)
 {
-	struct memranges ranges;
-	struct range_entry freeranges[2];
-	const struct range_entry *r;
 	uintptr_t fspm_begin;
 	uintptr_t fspm_end;
 
@@ -210,19 +244,9 @@ static enum cb_err load_fspm_mem(struct fsp_header *hdr,
 	fspm_begin = hdr->image_base;
 	fspm_end = fspm_begin + hdr->image_size;
 
-	/* Build up memory map of romstage address space including CAR. */
-	memranges_init_empty(&ranges, &freeranges[0], ARRAY_SIZE(freeranges));
-	memranges_insert(&ranges, (uintptr_t)_car_region_start,
-		_car_relocatable_data_end - _car_region_start, 0);
-	memranges_insert(&ranges, (uintptr_t)_program, _program_size, 0);
-	memranges_each_entry(r, &ranges) {
-		if (fspm_end <= range_entry_base(r))
-			continue;
-		if (fspm_begin >= range_entry_end(r))
-			continue;
-		printk(BIOS_ERR, "FSPM overlaps currently running program.\n");
+	if (check_region_overlap(memmap, "FSPM", fspm_begin, fspm_end) !=
+		CB_SUCCESS)
 		return CB_ERR;
-	}
 
 	/* Load binary into memory at provided address. */
 	if (rdev_readat(rdev, (void *)fspm_begin, 0, fspm_end - fspm_begin) < 0)
@@ -261,6 +285,8 @@ enum fsp_status fsp_memory_init(bool s3wake)
 	struct cbfsf file_desc;
 	struct region_device file_data;
 	const char *name = CONFIG_FSP_M_CBFS;
+	struct memranges memmap;
+	struct range_entry freeranges[2];
 
 	if (cbfs_boot_locate(&file_desc, name, NULL)) {
 		printk(BIOS_ERR, "Could not locate %s in CBFS\n", name);
@@ -269,8 +295,14 @@ enum fsp_status fsp_memory_init(bool s3wake)
 
 	cbfs_file_data(&file_data, &file_desc);
 
+	/* Build up memory map of romstage address space including CAR. */
+	memranges_init_empty(&memmap, &freeranges[0], ARRAY_SIZE(freeranges));
+	memranges_insert(&memmap, (uintptr_t)_car_region_start,
+		_car_relocatable_data_end - _car_region_start, 0);
+	memranges_insert(&memmap, (uintptr_t)_program, _program_size, 0);
+
 	if (IS_ENABLED(CONFIG_NO_XIP_EARLY_STAGES))
-		status = load_fspm_mem(&hdr, &file_data);
+		status = load_fspm_mem(&hdr, &file_data, &memmap);
 	else
 		status = load_fspm_xip(&hdr, &file_data);
 
@@ -282,5 +314,5 @@ enum fsp_status fsp_memory_init(bool s3wake)
 	/* Signal that FSP component has been loaded. */
 	prog_segment_loaded(hdr.image_base, hdr.image_size, SEG_FINAL);
 
-	return do_fsp_memory_init(&hdr, s3wake);
+	return do_fsp_memory_init(&hdr, s3wake, &memmap);
 }

@@ -23,7 +23,7 @@
 
 static struct rk3399_sdram_params sdram_configs[] = {
 #include "sdram_inf/sdram-lpddr3-hynix-4GB-200.inc"
-  /* THIS IS FOR KEVIN ONLY! crosbug.com/p/54144 */
+/* THIS IS FOR KEVIN ONLY! crosbug.com/p/54144 */
 #include "sdram_inf/kevin-sdram-lpddr3-hynix-4GB.inc"
 #include "sdram_inf/sdram-lpddr3-hynix-4GB-666.inc"
 #include "sdram_inf/sdram-lpddr3-hynix-4GB-800.inc"

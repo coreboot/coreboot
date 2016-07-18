@@ -33,8 +33,6 @@
 
 #include "board.h"
 
-#include "board.h"
-
 static void configure_emmc(void)
 {
 	/* Host controller does not support programmable clock generator.

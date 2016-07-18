@@ -251,6 +251,7 @@ static uint64_t reg_read(struct reg_script_context *ctx)
 	case LEG_GPIO_REGS:
 		ctx->display_prefix = "Legacy GPIO";
 		value = reg_legacy_gpio_read(step->reg);
+		break;
 
 	case PCIE_AFE_REGS:
 		ctx->display_prefix = "PCIe AFE";

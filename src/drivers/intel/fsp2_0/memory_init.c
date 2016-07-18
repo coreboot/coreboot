@@ -223,7 +223,9 @@ static enum fsp_status do_fsp_memory_init(struct fsp_header *hdr, bool s3wake,
 
 	printk(BIOS_DEBUG, "FspMemoryInit returned 0x%08x\n", status);
 
-	/* TODO: Is this the only thing that can happen? */
+	/* Handle any resets requested by FSPM. */
+	fsp_handle_reset(status);
+
 	if (status != FSP_SUCCESS)
 		return status;
 

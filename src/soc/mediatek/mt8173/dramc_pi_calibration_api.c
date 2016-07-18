@@ -308,7 +308,7 @@ static u8 dqs_gw_fine_tune_calib(u32 channel, u8 fine_val)
 	s8 delta[7] = {-48, -32, -16, 0, 16, 32, 48};
 	int matches = 0, sum = 0;
 
-	/*fine tune range from 0 to 127*/
+	/* fine tune range from 0 to 127 */
 	fine_val = min(max(fine_val, 0 - delta[0]), 127 - delta[6]);
 
 	/* test gw fine tune */
@@ -322,7 +322,7 @@ static u8 dqs_gw_fine_tune_calib(u32 channel, u8 fine_val)
 	}
 
 	if (matches == 0) {
-		die("[GW] ERROR, No found fine tune\n");
+		die("[GW] ERROR, Fine-Tuning failed.\n");
 	}
 
 	opt_fine_val = fine_val + (sum / matches);
@@ -733,7 +733,7 @@ u8 rx_datlat_cal(u32 channel, u8 rank,
 
 	if (err[0]) {
 		/* dle test error */
-		printk(BIOS_ERR, "[DLE] CH:%d calibration ERROR CMP_ERR =%xh, \n",
+		printk(BIOS_ERR, "[DLE] CH:%d calibration ERROR CMP_ERR =%xh,\n",
 			channel, err[0]);
 	} else {
 		/* judge dle test result */

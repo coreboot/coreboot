@@ -539,7 +539,7 @@ void dramc_init(u32 channel, const struct mt8173_sdram_params *sdram_params)
 	write32(&ch[channel].ao_regs->conf1,
 		sdram_params->ac_timing.conf1);
 
-	/* bit 17,18 would bypass some dummy path*/
+	/* bit 17,18 would bypass some dummy path */
 	write32(&ch[channel].ddrphy_regs->dqsgctl, 0x1 << 31 |
 						   0x1 << 30 |
 						   0x1 << 17 |

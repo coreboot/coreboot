@@ -16,8 +16,6 @@
 #include <console/console.h>
 #include <fsp/util.h>
 #include <lib.h>
-#include <memrange.h>
-#include <program_loading.h>
 #include <reset.h>
 #include <string.h>
 
@@ -132,42 +130,6 @@ enum cb_err fsp_validate_component(struct fsp_header *hdr,
 		printk(BIOS_ERR, "Component size bigger than cbfs file.\n");
 		return CB_ERR;
 	}
-
-	return CB_SUCCESS;
-}
-
-/* TODO: this won't work for SoC's that need to XIP certain modules. */
-enum cb_err fsp_load_binary(struct fsp_header *hdr,
-			    const char *name,
-			    struct range_entry *range)
-{
-	struct cbfsf file_desc;
-	struct region_device file_data;
-
-	if (cbfs_boot_locate(&file_desc, name, NULL)) {
-		printk(BIOS_ERR, "Could not locate %s in CBFS\n", name);
-		return CB_ERR;
-	}
-
-	cbfs_file_data(&file_data, &file_desc);
-
-	if (fsp_validate_component(hdr, &file_data) != CB_SUCCESS)
-		return CB_ERR;
-
-	/* Check if the component load address is within expected range */
-	/* TODO: this doesn't check the current running program footprint. */
-	if (range_entry_base(range) > hdr->image_base ||
-	    range_entry_end(range) <= hdr->image_base + hdr->image_size) {
-		printk(BIOS_ERR, "%s is outside of allowed range\n", name);
-		return CB_ERR;
-	}
-
-	/* Load binary into memory. */
-	if (rdev_readat(&file_data, (void *)hdr->image_base, 0, hdr->image_size) < 0)
-		return CB_ERR;
-
-	/* Signal that FSP component has been loaded. */
-	prog_segment_loaded(hdr->image_base, hdr->image_size, SEG_FINAL);
 
 	return CB_SUCCESS;
 }

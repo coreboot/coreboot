@@ -39,9 +39,6 @@ void fsp_print_memory_resource_hobs(const void *hob_list);
 enum cb_err fsp_validate_component(struct fsp_header *hdr,
 					const struct region_device *rdev);
 
-/* Load an FSP binary into CBFS, and fill the associated fsp_header struct */
-enum cb_err fsp_load_binary(struct fsp_header *hdr, const char *name,
-			    struct range_entry *r);
 /* Load a vbt.bin file for graphics. Returns 0 if a valid VBT is not found. */
 uintptr_t fsp_load_vbt(void);
 

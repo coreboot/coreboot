@@ -134,8 +134,19 @@ enum cb_err fsp_validate_component(struct fsp_header *hdr,
 	return CB_SUCCESS;
 }
 
+static bool fsp_reset_requested(enum fsp_status status)
+{
+	return (status >= FSP_STATUS_RESET_REQUIRED_COLD &&
+		status <= FSP_STATUS_RESET_REQUIRED_8);
+}
+
 void fsp_handle_reset(enum fsp_status status)
 {
+	if (!fsp_reset_requested(status))
+		return;
+
+	printk(BIOS_DEBUG, "FSP: handling reset type %x\n", status);
+
 	switch(status) {
 	case FSP_STATUS_RESET_REQUIRED_COLD:
 		hard_reset();
@@ -143,16 +154,15 @@ void fsp_handle_reset(enum fsp_status status)
 	case FSP_STATUS_RESET_REQUIRED_WARM:
 		soft_reset();
 		break;
-	case FSP_STATUS_RESET_REQUIRED_GLOBAL_RESET:
-		global_reset();
+	case FSP_STATUS_RESET_REQUIRED_3:
+	case FSP_STATUS_RESET_REQUIRED_4:
+	case FSP_STATUS_RESET_REQUIRED_5:
+	case FSP_STATUS_RESET_REQUIRED_6:
+	case FSP_STATUS_RESET_REQUIRED_7:
+	case FSP_STATUS_RESET_REQUIRED_8:
+		chipset_handle_reset(status);
 		break;
 	default:
 		break;
 	}
-}
-
-bool fsp_reset_requested(enum fsp_status status)
-{
-	return (status >= FSP_STATUS_RESET_REQUIRED_COLD &&
-		status <= FSP_STATUS_RESET_REQUIRED_GLOBAL_RESET);
 }

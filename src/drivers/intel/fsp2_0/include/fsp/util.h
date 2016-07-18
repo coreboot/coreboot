@@ -42,9 +42,15 @@ enum cb_err fsp_validate_component(struct fsp_header *hdr,
 /* Load a vbt.bin file for graphics. Returns 0 if a valid VBT is not found. */
 uintptr_t fsp_load_vbt(void);
 
-/* Trivial handling of reset exit statuses */
+/*
+ * Handle FSP reboot request status. Chipset/soc is expected to provide
+ * chipset_handle_reset() that deals with reset type codes specific to given
+ * SoC. If the requested status is not a reboot status or unhandled, this
+ * function does nothing.
+ */
 void fsp_handle_reset(enum fsp_status status);
-/* Returns true if the non-success status is a reset request */
-bool fsp_reset_requested(enum fsp_status status);
+
+/* SoC/chipset must provide this to handle platform-specific reset codes */
+void chipset_handle_reset(enum fsp_status status);
 
 #endif /* _FSP2_0_UTIL_H_ */

@@ -124,9 +124,11 @@ trap_entry:
 supervisor_call_return:
   csrr a0, mscratch
   restore_regs
-  eret # go back into supervisor call
+  # go back into supervisor call
+  .word 0x30200073 # mret
   .global machine_call_return
 machine_call_return:
     csrr a0, mscratch
     restore_regs
-    eret # go back into machine call
+    # go back into machine call
+    .word 0x30200073 # mret

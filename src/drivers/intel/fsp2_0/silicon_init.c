@@ -53,6 +53,10 @@ static enum fsp_status do_silicon_init(struct fsp_header *hdr)
 	post_code(POST_FSP_SILICON_INIT);
 
 	printk(BIOS_DEBUG, "FspSiliconInit returned 0x%08x\n", status);
+
+	/* Handle any resets requested by FSPS. */
+	fsp_handle_reset(status);
+
 	return status;
 }
 

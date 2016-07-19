@@ -112,7 +112,10 @@ static const struct lpddr4_cfg lp4cfg = {
 void mainboard_memory_init_params(struct FSPM_UPD *memupd)
 {
 	int mem_sku;
-	gpio_t pads[] = { MEM_CONFIG3, MEM_CONFIG2, MEM_CONFIG1, MEM_CONFIG0 };
+	gpio_t pads[] = {
+		[3] = MEM_CONFIG3, [2] = MEM_CONFIG2,
+		[1] = MEM_CONFIG1, [0] = MEM_CONFIG0,
+	};
 
 	/*
 	 * Read memory SKU id with internal pullups enabled to handle

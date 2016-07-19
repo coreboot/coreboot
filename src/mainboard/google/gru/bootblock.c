@@ -45,16 +45,16 @@ void bootblock_mainboard_early_init(void)
 	gpio_output(GPIO(0, B, 2), 1);  /* PP1500_EN */
 	gpio_output(GPIO(0, B, 4), 1);  /* PP3000_EN */
 
-	if (IS_ENABLED(CONFIG_DRIVERS_UART)) {
-		_Static_assert(CONFIG_CONSOLE_SERIAL_UART_ADDRESS == UART2_BASE,
-			       "CONSOLE_SERIAL_UART should be UART2");
+#if IS_ENABLED(CONFIG_DRIVERS_UART)
+	_Static_assert(CONFIG_CONSOLE_SERIAL_UART_ADDRESS == UART2_BASE,
+		       "CONSOLE_SERIAL_UART should be UART2");
 
-		/* iomux: select gpio4c[4:3] as uart2 dbg port */
-		write32(&rk3399_grf->iomux_uart2c, IOMUX_UART2C);
+	/* iomux: select gpio4c[4:3] as uart2 dbg port */
+	write32(&rk3399_grf->iomux_uart2c, IOMUX_UART2C);
 
-		/* grf soc_con7[11:10] use for uart2 select */
-		write32(&rk3399_grf->soc_con7, UART2C_SEL);
-	}
+	/* grf soc_con7[11:10] use for uart2 select */
+	write32(&rk3399_grf->soc_con7, UART2C_SEL);
+#endif
 }
 
 void bootblock_mainboard_init(void)

@@ -47,23 +47,28 @@ clear_mtrrs:
 	dec	%edi
 	jnz	clear_mtrrs
 
+	post_code(0x22)
 	/* Configure the default memory type to uncacheable. */
 	movl	$MTRR_DEF_TYPE_MSR, %ecx
 	rdmsr
 	andl	$(~0x00000cff), %eax
 	wrmsr
 
+	post_code(0x23)
 	/* Set Cache-as-RAM base address. */
 	movl	$(MTRR_PHYS_BASE(0)), %ecx
 	movl	$(CACHE_AS_RAM_BASE | MTRR_TYPE_WRBACK), %eax
 	xorl	%edx, %edx
 	wrmsr
 
+	post_code(0x24)
 	/* Set Cache-as-RAM mask. */
 	movl	$(MTRR_PHYS_MASK(0)), %ecx
 	movl	$(~(CACHE_AS_RAM_SIZE - 1) | MTRR_PHYS_MASK_VALID), %eax
 	movl	$CPU_PHYSMASK_HI, %edx
 	wrmsr
+
+	post_code(0x25)
 
 	/* Enable MTRR. */
 	movl	$MTRR_DEF_TYPE_MSR, %ecx
@@ -91,6 +96,7 @@ clear_mtrrs:
 	xorl	%eax, %eax
 	rep	stosl
 
+	post_code(0x26)
 	/* Enable Cache-as-RAM mode by disabling cache. */
 	movl	%cr0, %eax
 	orl	$CR0_CacheDisable, %eax
@@ -113,6 +119,7 @@ clear_mtrrs:
 	movl	$(~(CONFIG_XIP_ROM_SIZE - 1) | MTRR_PHYS_MASK_VALID), %eax
 	wrmsr
 
+	post_code(0x28)
 	/* Enable cache. */
 	movl	%cr0, %eax
 	andl	$(~(CR0_CacheDisable | CR0_NoWriteThrough)), %eax
@@ -127,8 +134,8 @@ clear_mtrrs:
 	movl	%esp, %ebp
 	pushl	%eax
 
-	post_code(0x23)
-
+before_romstage:
+	post_code(0x29)
 	/* Call romstage.c main function. */
 	call	romstage_main
 
@@ -136,8 +143,6 @@ clear_mtrrs:
 	 * after cache-as-ram is torn down.
 	 */
 	movl	%eax, %ebx
-
-	post_code(0x2f)
 
 	post_code(0x30)
 
@@ -154,7 +159,7 @@ clear_mtrrs:
 	andl	$(~MTRR_DEF_TYPE_EN), %eax
 	wrmsr
 
-	post_code(0x31)
+	post_code(0x32)
 
 	invd
 

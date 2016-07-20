@@ -150,8 +150,6 @@ clear_var_mtrrs:
 	movl	$(~(CONFIG_XIP_ROM_SIZE - 1) | MTRR_PHYS_MASK_VALID), %eax
 	wrmsr
 
-	post_code(0x27)
-
 	post_code(0x28)
 	/* Enable cache. */
 	movl	%cr0, %eax
@@ -177,8 +175,6 @@ before_romstage:
 	 */
 	movl	%eax, %ebx
 
-	post_code(0x2f)
-
 	post_code(0x30)
 
 	/* Disable cache. */
@@ -194,7 +190,7 @@ before_romstage:
 	andl	$(~MTRR_DEF_TYPE_EN), %eax
 	wrmsr
 
-	post_code(0x31)
+	post_code(0x32)
 
 	/* Disable the no eviction run state */
 	movl    $NoEvictMod_MSR, %ecx

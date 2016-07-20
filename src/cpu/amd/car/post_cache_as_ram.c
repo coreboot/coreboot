@@ -89,9 +89,6 @@ static void prepare_ramstage_region(int s3resume)
 		if (resume_backup_memory)
 			memcpy_(resume_backup_memory, (void *) CONFIG_RAMBASE,
 				HIGH_MEMORY_SAVE - backup_top);
-		memset_((void*) CONFIG_RAMBASE, 0, HIGH_MEMORY_SAVE - backup_top);
-	} else {
-		memset_((void*)0, 0, CONFIG_RAMTOP - backup_top);
 	}
 
 	print_car_debug(" Done\n");

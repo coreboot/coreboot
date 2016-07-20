@@ -27,7 +27,7 @@
 car_stage_entry:
 
 	/* Enter the C code */
-	call	car_state_c_entry
+	call	car_stage_c_entry
 
 #if !ENV_VERSTAGE
 #include "src/drivers/intel/fsp1_1/after_raminit.S"

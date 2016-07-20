@@ -201,7 +201,8 @@ static void soc_init(void *data)
 	 * default policy that doesn't honor boards' requirements. */
 	itss_snapshot_irq_polarities(GPIO_IRQ_START, GPIO_IRQ_END);
 
-	fsp_silicon_init();
+	if (fsp_silicon_init() != FSP_SUCCESS)
+		die("FSP silicon init failed. Giving up.");
 
 	/* Restore GPIO IRQ polarities back to previous settings. */
 	itss_restore_irq_polarities(GPIO_IRQ_START, GPIO_IRQ_END);

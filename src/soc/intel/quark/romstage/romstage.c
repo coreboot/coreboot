@@ -66,7 +66,7 @@ static const struct reg_script hsuart_init[] = {
 	REG_SCRIPT_END
 };
 
-asmlinkage void *car_state_c_entry(void)
+asmlinkage void *car_stage_c_entry(void)
 {
 	post_code(0x20);
 	if (IS_ENABLED(CONFIG_PLATFORM_USES_FSP1_1)) {

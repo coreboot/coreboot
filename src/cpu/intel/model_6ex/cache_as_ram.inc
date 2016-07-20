@@ -83,7 +83,7 @@ clear_mtrrs:
 	invd
 	movl	%eax, %cr0
 
-	/* Clear the cache memory reagion. */
+	/* Clear the cache memory region. This will also fill up the cache. */
 	movl	$CACHE_AS_RAM_BASE, %esi
 	movl	%esi, %edi
 	movl	$(CACHE_AS_RAM_SIZE >> 2), %ecx

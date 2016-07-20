@@ -93,7 +93,7 @@ clear_mtrrs:
 	wrmsr
 
 	/* Enable cache (CR0.CD = 0, CR0.NW = 0). */
-        movl	%cr0, %eax
+	movl	%cr0, %eax
 	andl	$(~(CR0_CacheDisable | CR0_NoWriteThrough)), %eax
 	invd
 	movl	%eax, %cr0
@@ -105,7 +105,7 @@ clear_mtrrs:
 	andl    $~2, %eax
 	wrmsr
 
-       /* Clear the cache memory region. This will also fill up the cache */
+	/* Clear the cache memory region. This will also fill up the cache. */
 	movl	$CACHE_AS_RAM_BASE, %esi
 	movl	%esi, %edi
 	movl	$(CACHE_AS_RAM_SIZE >> 2), %ecx
@@ -132,8 +132,8 @@ clear_mtrrs:
 	 * IMPORTANT: The following calculation _must_ be done at runtime. See
 	 * http://www.coreboot.org/pipermail/coreboot/2010-October/060855.html
 	 */
-	movl    $copy_and_run, %eax
-	andl    $(~(CONFIG_XIP_ROM_SIZE - 1)), %eax
+	movl	$copy_and_run, %eax
+	andl	$(~(CONFIG_XIP_ROM_SIZE - 1)), %eax
 	orl	$MTRR_TYPE_WRPROT, %eax
 	wrmsr
 

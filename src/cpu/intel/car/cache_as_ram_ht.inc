@@ -288,7 +288,7 @@ no_msr_11e:
 	invd
 	movl	%eax, %cr0
 
-	/* Clear the cache memory reagion. */
+	/* Clear the cache memory region. This will also fill up the cache. */
 	cld
 	xorl	%eax, %eax
 	movl	$CACHE_AS_RAM_BASE, %edi

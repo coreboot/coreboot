@@ -19,7 +19,7 @@
 #include <cpu/x86/mtrr.h>
 #include <soc/intel/common/util.h>
 #include <soc/pci_devs.h>
-#include <soc/romstage.h>
+#include <soc/reg_access.h>
 
 asmlinkage void *soc_set_mtrrs(void *top_of_stack)
 {

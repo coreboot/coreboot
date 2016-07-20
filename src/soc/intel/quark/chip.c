@@ -117,10 +117,7 @@ static void chip_init(void *chip_info)
 			| TS_LOCK_AUX_TRIP_PT_REGS_ENABLE));
 
 	/* Perform silicon specific init. */
-	if (IS_ENABLED(CONFIG_RELOCATE_FSP_INTO_DRAM))
-		intel_silicon_init();
-	else
-		fsp_run_silicon_init(find_fsp(CONFIG_FSP_ESRAM_LOC), 0);
+	fsp_silicon_init();
 }
 
 static void pci_domain_set_resources(device_t dev)
@@ -150,12 +147,3 @@ struct chip_operations soc_intel_quark_ops = {
 	.init		= &chip_init,
 	.enable_dev	= chip_enable_dev,
 };
-
-void soc_silicon_init_params(SILICON_INIT_UPD *upd)
-{
-}
-
-void soc_display_silicon_init_params(const SILICON_INIT_UPD *old,
-	SILICON_INIT_UPD *new)
-{
-}

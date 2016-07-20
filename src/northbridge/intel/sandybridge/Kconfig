@@ -69,18 +69,35 @@ config MRC_CACHE_SIZE
 	depends on !CHROMEOS
 	default 0x10000
 
+config BOOTBLOCK_NORTHBRIDGE_INIT
+	string
+	default "northbridge/intel/sandybridge/bootblock.c"
+
+if USE_NATIVE_RAMINIT
+
 config DCACHE_RAM_BASE
 	hex
-	default 0xff7e0000 if !USE_NATIVE_RAMINIT
-	default 0xfefe0000 if USE_NATIVE_RAMINIT
+	default 0xfefe0000
 
 config DCACHE_RAM_SIZE
 	hex
 	default 0x20000
 
-config BOOTBLOCK_NORTHBRIDGE_INIT
-	string
-	default "northbridge/intel/sandybridge/bootblock.c"
+config DCACHE_RAM_MRC_VAR_SIZE
+	hex
+	default 0x0
+
+endif # USE_NATIVE_RAMINIT
+
+if !USE_NATIVE_RAMINIT
+
+config DCACHE_RAM_BASE
+	hex
+	default 0xff7e0000
+
+config DCACHE_RAM_SIZE
+	hex
+	default 0x1c000
 
 config DCACHE_RAM_MRC_VAR_SIZE
 	hex
@@ -88,7 +105,6 @@ config DCACHE_RAM_MRC_VAR_SIZE
 
 config MRC_FILE
 	string "Intel System Agent path and filename"
-	depends on !USE_NATIVE_RAMINIT
 	default "3rdparty/blobs/northbridge/intel/sandybridge/systemagent-r6.bin"
 	help
 	  The path and filename of the file to use as System Agent
@@ -96,6 +112,8 @@ config MRC_FILE
 
 config MMCONF_BASE_ADDRESS
 	hex
-	default 0xf0000000 if !USE_NATIVE_RAMINIT
+	default 0xf0000000
+
+endif # !USE_NATIVE_RAMINIT
 
 endif

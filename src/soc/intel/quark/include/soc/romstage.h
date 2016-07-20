@@ -26,6 +26,8 @@
 #include <soc/reg_access.h>
 
 asmlinkage void *car_stage_c_entry(void);
+void clear_smi_and_wake_events(void);
+void disable_rom_shadow(void);
 void report_platform_info(void);
 int set_base_address_and_enable_uart(u8 bus, u8 dev, u8 func, u32 mmio_base);
 void pcie_init(void);

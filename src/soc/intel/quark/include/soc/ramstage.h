@@ -23,5 +23,6 @@
 #include <soc/QuarkNcSocId.h>
 
 void mainboard_gpio_i2c_init(device_t dev);
+void fsp_silicon_init(void);
 
 #endif /* _SOC_RAMSTAGE_H_ */

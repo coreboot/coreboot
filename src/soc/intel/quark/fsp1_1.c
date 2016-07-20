@@ -1,8 +1,8 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2014 Google Inc.
- * Copyright (C) 2015-2016 Intel Corporation.
+ * Copyright (C) 2013 Google Inc.
+ * Copyright (C) 2015-2016 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,18 +13,23 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
+#include <console/console.h>
+#include <fsp/util.h>
+#include <soc/ramstage.h>
 
-#ifndef _SOC_PM_H_
-#define _SOC_PM_H_
+void fsp_silicon_init(void)
+{
+	if (IS_ENABLED(CONFIG_RELOCATE_FSP_INTO_DRAM))
+		intel_silicon_init();
+	else
+		fsp_run_silicon_init(find_fsp(CONFIG_FSP_ESRAM_LOC), 0);
+}
 
-#include <stdint.h>
-#include <arch/acpi.h>
+void soc_silicon_init_params(SILICON_INIT_UPD *upd)
+{
+}
 
-struct chipset_power_state {
-	uint32_t prev_sleep_state;
-} __attribute__ ((packed));
-
-struct chipset_power_state *get_power_state(void);
-struct chipset_power_state *fill_power_state(void);
-
-#endif
+void soc_display_silicon_init_params(const SILICON_INIT_UPD *old,
+	SILICON_INIT_UPD *new)
+{
+}

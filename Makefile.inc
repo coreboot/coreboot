@@ -774,8 +774,13 @@ ifneq ($(CONFIG_SEABIOS_PS2_TIMEOUT),0)
 endif
 endif
 ifeq ($(CONFIG_CPU_INTEL_FIRMWARE_INTERFACE_TABLE),y)
+ifeq ($(CONFIG_CPU_MICROCODE_CBFS_EXTERNAL_HEADER),y)
+	@printf "    UPDATE-FIT\n"
+	$(CBFSTOOL) $@.tmp update-fit -n cpu_microcode_blob.bin -x $(CONFIG_CPU_INTEL_NUM_FIT_ENTRIES)
+endif
+
 ifeq ($(CONFIG_CPU_MICROCODE_CBFS_GENERATE),y)
-	@printf "    UPDATE-FIT \n"
+	@printf "    UPDATE-FIT\n"
 	$(CBFSTOOL) $@.tmp update-fit -n cpu_microcode_blob.bin -x $(CONFIG_CPU_INTEL_NUM_FIT_ENTRIES)
 endif
 endif

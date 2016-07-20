@@ -588,8 +588,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	pci_write_config16(PCI_DEV(0, 0x14, 0), 0x56, 0x0bb0);
 	pci_write_config16(PCI_DEV(0, 0x14, 0), 0x5a, 0x0ff0);
 
-	timestamp_add_now(TS_END_ROMSTAGE);
-
 	post_cache_as_ram();	// BSP switch stack to ram, copy then execute LB.
 	post_code(0x43);	// Should never see this post code.
 }

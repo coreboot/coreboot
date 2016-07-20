@@ -96,7 +96,6 @@ clear_mtrrs:
 	orl	$CR0_CacheDisable, %eax
 	movl	%eax, %cr0
 
-#if CONFIG_XIP_ROM_SIZE
 	/* Enable cache for our code in Flash because we do XIP here */
 	movl	$MTRR_PHYS_BASE(1), %ecx
 	xorl	%edx, %edx
@@ -113,7 +112,6 @@ clear_mtrrs:
 	movl	$CPU_PHYSMASK_HI, %edx
 	movl	$(~(CONFIG_XIP_ROM_SIZE - 1) | MTRR_PHYS_MASK_VALID), %eax
 	wrmsr
-#endif /* CONFIG_XIP_ROM_SIZE */
 
 	/* Enable cache. */
 	movl	%cr0, %eax

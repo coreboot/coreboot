@@ -225,8 +225,6 @@ clear_fixed_var_mtrr_out:
 	simplemask CacheSize, 0
 	wrmsr
 
-#if CONFIG_XIP_ROM_SIZE
-
 	/*
 	 * Enable write base caching so we can do execute in place (XIP)
 	 * on the flash ROM.
@@ -246,7 +244,6 @@ clear_fixed_var_mtrr_out:
 	movl	$0x0000000f, %edx
 	movl	$(~(CONFIG_XIP_ROM_SIZE - 1) | MTRR_PHYS_MASK_VALID), %eax
 	wrmsr
-#endif /* CONFIG_XIP_ROM_SIZE */
 
 	/* Enable cache. */
 	movl	%cr0, %eax

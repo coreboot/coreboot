@@ -156,7 +156,6 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(PMU_SLP_S3_B, NONE, DEEP, NF1), /* PMU_SLP_S3_N */
 	PAD_CFG_NF(PMU_SLP_S4_B, NONE, DEEP, NF1), /* PMU_SLP_S4_N */
 	PAD_CFG_NF(PMU_SUSCLK, NONE, DEEP, NF1), /* PMU_SUSCLK */
-	PAD_CFG_GPO(PMU_WAKE_B, 0, DEEP),	 /* EMMC_PWR_EN_N */
 	PAD_CFG_NF(SUS_STAT_B, NONE, DEEP, NF1), /* SUS_STAT_N */
 	PAD_CFG_NF(SUSPWRDNACK, NONE, DEEP, NF1), /* SUSPWRDNACK */
 
@@ -357,6 +356,7 @@ static const struct pad_config proto_diff_table[] = {
 	PAD_CFG_GPI(GPIO_3, UP_20K, DEEP),	 /* unused */
 	PAD_CFG_GPI(GPIO_15, UP_20K, DEEP),	 /* unused */
 	PAD_CFG_NF(GPIO_44, NATIVE, DEEP, NF1),	 /* LPSS_UART1_RTS */
+	PAD_CFG_GPO(PMU_WAKE_B, 0, DEEP),	 /* EN_PP3300_EMMC_ODL */
 };
 
 /* Wake peripheral signals post proto. */
@@ -364,6 +364,7 @@ static const struct pad_config nonproto_diff_table[] = {
 	PAD_CFG_GPI_SCI_LOW(GPIO_3, UP_20K, DEEP, LEVEL),	 /* FP_INT_L */
 	PAD_CFG_GPI_SCI_LOW(GPIO_15, NONE, DEEP, EDGE_SINGLE),	 /* TRACKPAD_INT_1V8_ODL */
 	PAD_CFG_GPO(GPIO_44, 1, DEEP),	 /* GPS_RST_ODL */
+	PAD_CFG_GPO(PMU_WAKE_B, 1, DEEP),	 /* EN_PP3300_EMMC */
 };
 
 #endif /* __ACPI__ */

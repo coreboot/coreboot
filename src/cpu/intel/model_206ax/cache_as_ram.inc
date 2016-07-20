@@ -20,7 +20,11 @@
 #include <arch/acpi.h>
 #include "northbridge/intel/sandybridge/sandybridge.h"
 
-#define CACHE_AS_RAM_SIZE CONFIG_DCACHE_RAM_SIZE
+/* The full cache-as-ram size includes the cache-as-ram portion from coreboot
+ * and the space used by the reference code. These 2 values combined should
+ * be a power of 2 because the MTRR setup assumes that. */
+#define CACHE_AS_RAM_SIZE \
+	(CONFIG_DCACHE_RAM_SIZE + CONFIG_DCACHE_RAM_MRC_VAR_SIZE)
 #define CACHE_AS_RAM_BASE CONFIG_DCACHE_RAM_BASE
 
 /* Cache 4GB - MRC_SIZE_KB for MRC */
@@ -159,9 +163,8 @@ clear_mtrrs:
 	andl	$(~(CR0_CacheDisable | CR0_NoWriteThrough)), %eax
 	movl	%eax, %cr0
 
-	/* Set up the stack pointer below MRC variable space. */
-	movl	$(CACHE_AS_RAM_SIZE + CACHE_AS_RAM_BASE - \
-		  CONFIG_DCACHE_RAM_MRC_VAR_SIZE - 4), %eax
+	/* Setup the stack. */
+	movl	$(CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE), %eax
 	movl	%eax, %esp
 
 	/* Restore the BIST result. */

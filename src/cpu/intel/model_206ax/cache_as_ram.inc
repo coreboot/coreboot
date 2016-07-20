@@ -179,8 +179,6 @@ before_romstage:
 	 */
 	movl	%eax, %ebx
 
-	post_code(0x2f)
-
 	post_code(0x30)
 
 	/* Disable cache. */
@@ -196,7 +194,7 @@ before_romstage:
 	andl	$(~MTRR_DEF_TYPE_EN), %eax
 	wrmsr
 
-	post_code(0x31)
+	post_code(0x32)
 
 	/* Disable the no eviction run state */
 	movl    $NoEvictMod_MSR, %ecx

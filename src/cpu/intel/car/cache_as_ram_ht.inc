@@ -237,13 +237,13 @@ sipi_complete:
 	movl	$(~(CACHE_AS_RAM_SIZE - 1) | MTRR_PHYS_MASK_VALID), %eax
 	wrmsr
 
+	post_code(0x2b)
+
 	/* Enable MTRR. */
 	movl	$MTRR_DEF_TYPE_MSR, %ecx
 	rdmsr
 	orl	$MTRR_DEF_TYPE_EN, %eax
 	wrmsr
-
-	post_code(0x2b)
 
 	/* Enable L2 cache Write-Back (WBINVD and FLUSH#).
 	 *
@@ -295,12 +295,11 @@ no_msr_11e:
 	movl	$(CACHE_AS_RAM_SIZE >> 2), %ecx
 	rep	stosl
 
+	post_code(0x2d)
 	/* Enable Cache-as-RAM mode by disabling cache. */
 	movl	%cr0, %eax
 	orl	$CR0_CacheDisable, %eax
 	movl	%eax, %cr0
-
-	post_code(0x2d)
 
 	/* Enable cache for our code in Flash because we do XIP here */
 	movl	$MTRR_PHYS_BASE(1), %ecx
@@ -319,12 +318,11 @@ no_msr_11e:
 	movl	$(~(CONFIG_XIP_ROM_SIZE - 1) | MTRR_PHYS_MASK_VALID), %eax
 	wrmsr
 
+	post_code(0x2e)
 	/* Enable cache. */
 	movl	%cr0, %eax
 	andl	$(~(CR0_CacheDisable | CR0_NoWriteThrough)), %eax
 	movl	%eax, %cr0
-
-	post_code(0x2e)
 
 	/* Set up the stack pointer. */
 	movl	$(CACHE_AS_RAM_BASE + CACHE_AS_RAM_SIZE - 4), %esp
@@ -334,8 +332,8 @@ no_msr_11e:
 	movl	%esp, %ebp
 	pushl	%eax
 
+before_romstage:
 	post_code(0x2f)
-
 	/* Call romstage.c main function. */
 	call	romstage_main
 
@@ -351,7 +349,7 @@ no_msr_11e:
 	orl	$CR0_CacheDisable, %eax
 	movl	%eax, %cr0
 
-	post_code(0x34)
+	post_code(0x31)
 
 	/* Disable MTRR. */
 	movl	$MTRR_DEF_TYPE_MSR, %ecx
@@ -359,18 +357,18 @@ no_msr_11e:
 	andl	$(~MTRR_DEF_TYPE_EN), %eax
 	wrmsr
 
-	post_code(0x35)
+	post_code(0x32)
 
 	invd
 
-	post_code(0x36)
+	post_code(0x33)
 
 	/* Enable cache. */
 	movl	%cr0, %eax
 	andl	$~(CR0_CacheDisable | CR0_NoWriteThrough), %eax
 	movl	%eax, %cr0
 
-	post_code(0x37)
+	post_code(0x36)
 
 	/* Disable cache. */
 	movl	%cr0, %eax

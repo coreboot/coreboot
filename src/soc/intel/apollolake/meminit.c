@@ -104,12 +104,14 @@ void meminit_lpddr4(struct FSP_M_CONFIG *cfg, int speed)
 	set_lpddr4_defaults(cfg);
 }
 
-static void enable_logical_chan0(struct FSP_M_CONFIG *cfg, int device_density,
+static void enable_logical_chan0(struct FSP_M_CONFIG *cfg,
+					int device_density, int dual_rank,
 					const struct lpddr4_swizzle_cfg *scfg)
 {
 	const struct lpddr4_chan_swizzle_cfg *chan;
 	/* Number of bytes to copy per DQS. */
 	const size_t sz = DQ_BITS_PER_DQS;
+	int rank_mask;
 
 	/*
 	 * Logical channel 0 is comprised of physical channel 0 and 1.
@@ -118,9 +120,10 @@ static void enable_logical_chan0(struct FSP_M_CONFIG *cfg, int device_density,
 	 */
 	cfg->Ch0_DramDensity = device_density;
 	cfg->Ch1_DramDensity = device_density;
-	/* Enable rank 0 on both channels. */
-	cfg->Ch0_RankEnable = 1;
-	cfg->Ch1_RankEnable = 1;
+	/* Enable ranks on both channels depending on dual rank option. */
+	rank_mask = dual_rank ? 0x3 : 0x1;
+	cfg->Ch0_RankEnable = rank_mask;
+	cfg->Ch1_RankEnable = rank_mask;
 
 	/*
 	 * CH0_DQB byte lanes in the bit swizzle configuration field are
@@ -146,12 +149,14 @@ static void enable_logical_chan0(struct FSP_M_CONFIG *cfg, int device_density,
 	memcpy(&cfg->Ch1_Bit_swizzling[24], &chan->dqs[LP4_DQS3], sz);
 }
 
-static void enable_logical_chan1(struct FSP_M_CONFIG *cfg, int device_density,
+static void enable_logical_chan1(struct FSP_M_CONFIG *cfg,
+					int device_density, int dual_rank,
 					const struct lpddr4_swizzle_cfg *scfg)
 {
 	const struct lpddr4_chan_swizzle_cfg *chan;
 	/* Number of bytes to copy per DQS. */
 	const size_t sz = DQ_BITS_PER_DQS;
+	int rank_mask;
 
 	/*
 	 * Logical channel 1 is comprised of physical channel 2 and 3.
@@ -160,9 +165,10 @@ static void enable_logical_chan1(struct FSP_M_CONFIG *cfg, int device_density,
 	 */
 	cfg->Ch2_DramDensity = device_density;
 	cfg->Ch3_DramDensity = device_density;
-	/* Enable rank 0 on both channels. */
-	cfg->Ch2_RankEnable = 1;
-	cfg->Ch3_RankEnable = 1;
+	/* Enable ranks on both channels depending on dual rank option. */
+	rank_mask = dual_rank ? 0x3 : 0x1;
+	cfg->Ch2_RankEnable = rank_mask;
+	cfg->Ch3_RankEnable = rank_mask;
 
 	/*
 	 * CH1_DQB byte lanes in the bit swizzle configuration field are
@@ -189,7 +195,7 @@ static void enable_logical_chan1(struct FSP_M_CONFIG *cfg, int device_density,
 }
 
 void meminit_lpddr4_enable_channel(struct FSP_M_CONFIG *cfg, int logical_chan,
-					int device_density,
+					int device_density, int dual_rank,
 					const struct lpddr4_swizzle_cfg *scfg)
 {
 	if (device_density < LP4_8Gb_DENSITY ||
@@ -201,10 +207,10 @@ void meminit_lpddr4_enable_channel(struct FSP_M_CONFIG *cfg, int logical_chan,
 
 	switch (logical_chan) {
 	case LP4_LCH0:
-		enable_logical_chan0(cfg, device_density, scfg);
+		enable_logical_chan0(cfg, device_density, dual_rank, scfg);
 		break;
 	case LP4_LCH1:
-		enable_logical_chan1(cfg, device_density, scfg);
+		enable_logical_chan1(cfg, device_density, dual_rank, scfg);
 		break;
 	default:
 		printk(BIOS_ERR, "Invalid logical channel: %d\n", logical_chan);
@@ -233,6 +239,7 @@ void meminit_lpddr4_by_sku(struct FSP_M_CONFIG *cfg,
 		printk(BIOS_INFO, "LPDDR4 Ch0 density = %d\n",
 			sku->ch0_density);
 		meminit_lpddr4_enable_channel(cfg, LP4_LCH0, sku->ch0_density,
+						sku->ch0_dual_rank,
 						lpcfg->swizzle_config);
 	}
 
@@ -240,6 +247,7 @@ void meminit_lpddr4_by_sku(struct FSP_M_CONFIG *cfg,
 		printk(BIOS_INFO, "LPDDR4 Ch1 density = %d\n",
 			sku->ch1_density);
 		meminit_lpddr4_enable_channel(cfg, LP4_LCH1, sku->ch1_density,
+						sku->ch1_dual_rank,
 						lpcfg->swizzle_config);
 	}
 }

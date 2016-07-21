@@ -209,14 +209,6 @@ before_romstage:
 	andl    $~1, %eax
 	wrmsr
 
-	/* Clear MTRR that was used to cache MRC */
-	xorl	%eax, %eax
-	xorl	%edx, %edx
-	movl	$MTRR_PHYS_BASE(2), %ecx
-	wrmsr
-	movl	$MTRR_PHYS_MASK(2), %ecx
-	wrmsr
-
 	post_code(0x33)
 
 	/* Enable cache. */

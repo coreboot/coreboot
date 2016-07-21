@@ -110,8 +110,14 @@ static const struct device_operations igd_ops = {
 	.enable           = DEVICE_NOOP
 };
 
+static const unsigned short pci_device_ids[] = {
+	PCI_DEVICE_ID_APOLLOLAKE_IGD_HD_505,
+	PCI_DEVICE_ID_APOLLOLAKE_IGD_HD_500,
+	0,
+};
+
 static const struct pci_driver integrated_graphics_driver __pci_driver = {
 	.ops	= &igd_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= PCI_DEVICE_ID_APOLLOLAKE_IGD,
+	.devices= pci_device_ids,
 };

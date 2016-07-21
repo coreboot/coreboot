@@ -1,6 +1,8 @@
 ifeq ($(CONFIG_EC_GOOGLE_CHROMEEC),y)
 
+bootblock-y += ec.c
 bootblock-$(CONFIG_EC_GOOGLE_CHROMEEC_LPC) += ec_lpc.c
+bootblock-$(CONFIG_EC_GOOGLE_CHROMEEC_MEC) += ec_mec.c
 ramstage-y += ec.c crosec_proto.c vstore.c
 ramstage-$(CONFIG_EC_GOOGLE_CHROMEEC_I2C) += ec_i2c.c
 ramstage-$(CONFIG_EC_GOOGLE_CHROMEEC_LPC) += ec_lpc.c

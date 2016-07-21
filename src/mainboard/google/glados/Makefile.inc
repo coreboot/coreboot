@@ -15,10 +15,12 @@
 
 subdirs-y += spd
 
+bootblock-y += bootblock_mainboard.c
+
 romstage-y += boardid.c
-romstage-y += car.c
 romstage-y += pei_data.c
 
+bootblock-$(CONFIG_CHROMEOS) += chromeos.c
 verstage-$(CONFIG_CHROMEOS) += chromeos.c
 romstage-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-$(CONFIG_CHROMEOS) += chromeos.c
@@ -31,5 +33,3 @@ ramstage-y += pei_data.c
 ramstage-y += ramstage.c
 
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
-
-verstage-y += car.c

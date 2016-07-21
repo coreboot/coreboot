@@ -1,4 +1,4 @@
- 
+
 You need to be ROOT or use SUDO to execute MSRTOOL.
 
 Note that you need /dev/cpu/*/msr available to run msrtool in Linux.
@@ -6,8 +6,8 @@ Note that you need /dev/cpu/*/msr available to run msrtool in Linux.
 
 syntax: msrtool [-hvqrkl] [-c cpu] [-m system] [-t target ...]
          [-i addr=hi[:]lo] | [-s file] | [-d [:]file] | addr...
-  -h     show this help text                                                                                                                  
-  -v     be verbose                                                                                                                           
+  -h     show this help text
+  -v     be verbose
   -q     be quiet (overrides -v)
   -r     include [Reserved] values
   -k     list all known systems and targets

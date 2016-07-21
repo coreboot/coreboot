@@ -34,6 +34,13 @@ config DISPLAY_FSP_CALLS_AND_STATUS
 	  Display the FSP call entry point and parameters prior to calling FSP
 	  and display the status upon return from FSP.
 
+config DISPLAY_UPD_DATA
+	bool "Display UPD data"
+	default n
+	help
+	  Display the user specified product data prior to memory
+	  initialization.
+
 config FSP_S_CBFS
 	string "Name of FSP-S in CBFS"
 	default "fsps.bin"

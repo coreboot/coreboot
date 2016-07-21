@@ -25,6 +25,10 @@ void fsp_debug_before_memory_init(fsp_memory_init_fn memory_init,
 	if (IS_ENABLED(CONFIG_DISPLAY_MTRRS))
 		soc_display_mtrrs();
 
+	/* Display the UPD values */
+	if (IS_ENABLED(CONFIG_DISPLAY_UPD_DATA))
+		fspm_display_upd_values(fspm_old_upd, fspm_new_upd);
+
 	/* Display the call entry point and paramters */
 	if (!IS_ENABLED(CONFIG_DISPLAY_FSP_CALLS_AND_STATUS))
 		return;
@@ -55,6 +59,10 @@ void fsp_debug_before_silicon_init(fsp_silicon_init_fn silicon_init,
 	/* Display the MTRRs */
 	if (IS_ENABLED(CONFIG_DISPLAY_MTRRS))
 		soc_display_mtrrs();
+
+	/* Display the UPD values */
+	if (IS_ENABLED(CONFIG_DISPLAY_UPD_DATA))
+		soc_display_fsps_upd_params(fsps_old_upd, fsps_new_upd);
 
 	/* Display the call to FSP SiliconInit */
 	if (!IS_ENABLED(CONFIG_DISPLAY_FSP_CALLS_AND_STATUS))

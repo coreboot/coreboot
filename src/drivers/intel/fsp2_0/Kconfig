@@ -32,4 +32,10 @@ config FSP_S_FILE
 	help
 	  The path and filename of the Intel FSP-S binary for this platform.
 
+config FSP_M_XIP
+	bool "Is FSP-M XIP"
+	default n
+	help
+	  Select this value when FSP-M is execute-in-place.
+
 endif

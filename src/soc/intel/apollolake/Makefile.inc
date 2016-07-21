@@ -70,6 +70,7 @@ ramstage-y += pmc.c
 ramstage-y += reset.c
 ramstage-y += smi.c
 ramstage-y += spi.c
+ramstage-y += xhci.c
 
 postcar-y += exit_car.S
 postcar-y += memmap.c

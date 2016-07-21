@@ -71,11 +71,17 @@ static const struct lpddr4_swizzle_cfg board_swizzle = {
 #define PROTO_SKU 15
 
 static const struct lpddr4_sku skus[] = {
-	/* K4F6E304HB-MGCJ - both logical channels */
+	/*
+	 * K4F6E304HB-MGCJ - both logical channels While the parts
+	 * are listed at 16Gb there are 2 ranks per channel so indicate
+	 * the deneisty as 8Gb per rank.
+	 */
 	[0] = {
 		.speed = LP4_SPEED_2400,
-		.ch0_density = LP4_16Gb_DENSITY,
-		.ch1_density = LP4_16Gb_DENSITY,
+		.ch0_density = LP4_8Gb_DENSITY,
+		.ch1_density = LP4_8Gb_DENSITY,
+		.ch0_dual_rank = 1,
+		.ch1_dual_rank = 1,
 	},
 	/* K4F8E304HB-MGCJ - both logical channels  */
 	[1] = {
@@ -83,13 +89,19 @@ static const struct lpddr4_sku skus[] = {
 		.ch0_density = LP4_8Gb_DENSITY,
 		.ch1_density = LP4_8Gb_DENSITY,
 	},
-	/* MT53B512M32D2NP-062WT:C - both logical channels */
+	/*
+	 * MT53B512M32D2NP-062WT:C - both logical channels. While the parts
+	 * are listed at 16Gb there are 2 ranks per channel so indicate
+	 * the deneisty as 8Gb per rank.
+	 */
 	[2] = {
 		.speed = LP4_SPEED_2400,
-		.ch0_density = LP4_16Gb_DENSITY,
-		.ch1_density = LP4_16Gb_DENSITY,
-	/* MT53B256M32D1NP-062 WT:C - both logical channels */
+		.ch0_density = LP4_8Gb_DENSITY,
+		.ch1_density = LP4_8Gb_DENSITY,
+		.ch0_dual_rank = 1,
+		.ch1_dual_rank = 1,
 	},
+	/* MT53B256M32D1NP-062 WT:C - both logical channels */
 	[3] = {
 		.speed = LP4_SPEED_2400,
 		.ch0_density = LP4_8Gb_DENSITY,

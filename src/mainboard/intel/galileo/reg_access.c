@@ -15,6 +15,7 @@
 
 #define __SIMPLE_DEVICE__
 
+#include <assert.h>
 #include <arch/io.h>
 #include <console/console.h>
 #include <device/i2c.h>
@@ -45,7 +46,7 @@ static uint64_t reg_read(struct reg_script_context *ctx)
 	case GEN2_I2C_LED_PWM:
 		if (ctx->display_features)
 			printk(BIOS_INFO, "I2C chip 0x%02x: ", step->id);
-		ret_code = i2c_readb(0, step->id, (UINT8)step->reg, &value);
+		ret_code = i2c_readb(0, step->id, (uint8_t)step->reg, &value);
 		ASSERT(ret_code == 2);
 		break;
 	}
@@ -76,8 +77,8 @@ static void reg_write(struct reg_script_context *ctx)
 	case RMU_TEMP_REGS:
 		if (ctx->display_features)
 			printk(BIOS_INFO, "I2C chip 0x%02x: ", step->id);
-		value = (UINT8)step->value;
-		ret_code = i2c_writeb(0, step->id, (UINT8)step->reg, value);
+		value = (uint8_t)step->value;
+		ret_code = i2c_writeb(0, step->id, (uint8_t)step->reg, value);
 		ASSERT(ret_code == 2);
 		break;
 	}

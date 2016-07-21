@@ -310,7 +310,7 @@ no_msr_11e:
 	 */
 	movl	$copy_and_run, %eax
 	andl	$(~(CONFIG_XIP_ROM_SIZE - 1)), %eax
-	orl	$MTRR_TYPE_WRBACK, %eax
+	orl	$MTRR_TYPE_WRPROT, %eax
 	wrmsr
 
 	movl	$MTRR_PHYS_MASK(1), %ecx

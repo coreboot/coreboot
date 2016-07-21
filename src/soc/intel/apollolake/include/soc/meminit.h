@@ -92,13 +92,13 @@ void meminit_lpddr4(struct FSP_M_CONFIG *cfg, int speed);
  * to the memory reference code.
  */
 void meminit_lpddr4_enable_channel(struct FSP_M_CONFIG *cfg, int logical_chan,
-					int device_density, int dual_rank,
+					int rank_density, int dual_rank,
 					const struct lpddr4_swizzle_cfg *scfg);
 
 struct lpddr4_sku {
 	int speed;
-	int ch0_density;
-	int ch1_density;
+	int ch0_rank_density;
+	int ch1_rank_density;
 	int ch0_dual_rank;
 	int ch1_dual_rank;
 };

@@ -15,6 +15,7 @@
 
 #define __SIMPLE_DEVICE__
 
+#include <assert.h>
 #include <cpu/x86/mtrr.h>
 #include <console/console.h>
 #include <soc/pci_devs.h>

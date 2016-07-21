@@ -26,7 +26,7 @@ size_t mmap_region_granularity(void)
 
 void *cbmem_top(void)
 {
-	UINT32 top_of_memory;
+	uint32_t top_of_memory;
 
 	/* Determine the TSEG base */
 	top_of_memory = reg_host_bridge_unit_read(QNC_MSG_FSBIC_REG_HSMMC);

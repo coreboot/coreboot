@@ -505,15 +505,15 @@ static void calc_var_mtrrs_with_hole(struct var_mtrr_state *var_state,
 	a1 = range_entry_base_mtrr_addr(r);
 	a2 = range_entry_end_mtrr_addr(r);
 
-	/* The end address is under 1MiB. The fixed MTRRs take
+	/* The end address is within the first 1MiB. The fixed MTRRs take
 	 * precedence over the variable ones. Therefore this range
 	 * can be ignored. */
-	if (a2 < RANGE_1MB)
+	if (a2 <= RANGE_1MB)
 		return;
 
 	/* Again, the fixed MTRRs take precedence so the beginning
-	 * of the range can be set to 0 if it starts below 1MiB. */
-	if (a1 < RANGE_1MB)
+	 * of the range can be set to 0 if it starts at or below 1MiB. */
+	if (a1 <= RANGE_1MB)
 		a1 = 0;
 
 	/* If the range starts above 4GiB the processing is done. */
@@ -585,15 +585,15 @@ static void calc_var_mtrrs_without_hole(struct var_mtrr_state *var_state,
 	a1 = range_entry_base_mtrr_addr(r);
 	c2 = range_entry_end_mtrr_addr(r);
 
-	/* The end address is under 1MiB. The fixed MTRRs take
+	/* The end address is within the first 1MiB. The fixed MTRRs take
 	 * precedence over the variable ones. Therefore this range
 	 * can be ignored. */
-	if (c2 < RANGE_1MB)
+	if (c2 <= RANGE_1MB)
 		return;
 
 	/* Again, the fixed MTRRs take precedence so the beginning
-	 * of the range can be set to 0 if it starts below 1MiB. */
-	if (a1 < RANGE_1MB)
+	 * of the range can be set to 0 if it starts at or below 1MiB. */
+	if (a1 <= RANGE_1MB)
 		a1 = 0;
 
 	/* If the range starts above 4GiB the processing is done. */

@@ -25,4 +25,5 @@ postcar-y += die.c
 
 bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += vtxprintf.c printk.c
 bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += init.c console.c
+bootblock-y += post.c
 bootblock-y += die.c

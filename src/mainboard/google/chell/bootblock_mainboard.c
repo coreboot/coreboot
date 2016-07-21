@@ -13,20 +13,20 @@
  * GNU General Public License for more details.
  */
 
+#include <bootblock_common.h>
 #include <ec/google/chromeec/ec.h>
-#include <fsp/car.h>
 #include <soc/gpio.h>
 #include "gpio.h"
 
 static void early_config_gpio(void)
 {
 	/* This is a hack for FSP because it does things in MemoryInit()
-	 * which it shouldn't be. We have to prepare certain gpios here
+	 * which it shouldn't do. We have to prepare certain gpios here
 	 * because of the brokenness in FSP. */
 	gpio_configure_pads(early_gpio_table, ARRAY_SIZE(early_gpio_table));
 }
 
-void car_mainboard_post_console_init(void)
+void bootblock_mainboard_init(void)
 {
 	/* Ensure the EC and PD are in the right mode for recovery */
 	google_chromeec_early_init();

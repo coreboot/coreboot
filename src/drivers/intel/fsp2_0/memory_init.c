@@ -303,7 +303,7 @@ enum fsp_status fsp_memory_init(bool s3wake)
 		_car_relocatable_data_end - _car_region_start, 0);
 	memranges_insert(&memmap, (uintptr_t)_program, _program_size, 0);
 
-	if (IS_ENABLED(CONFIG_NO_XIP_EARLY_STAGES))
+	if (!IS_ENABLED(CONFIG_FSP_M_XIP))
 		status = load_fspm_mem(&hdr, &file_data, &memmap);
 	else
 		status = load_fspm_xip(&hdr, &file_data);

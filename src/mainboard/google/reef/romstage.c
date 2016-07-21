@@ -78,16 +78,16 @@ static const struct lpddr4_sku skus[] = {
 	 */
 	[0] = {
 		.speed = LP4_SPEED_2400,
-		.ch0_density = LP4_8Gb_DENSITY,
-		.ch1_density = LP4_8Gb_DENSITY,
+		.ch0_rank_density = LP4_8Gb_DENSITY,
+		.ch1_rank_density = LP4_8Gb_DENSITY,
 		.ch0_dual_rank = 1,
 		.ch1_dual_rank = 1,
 	},
 	/* K4F8E304HB-MGCJ - both logical channels  */
 	[1] = {
 		.speed = LP4_SPEED_2400,
-		.ch0_density = LP4_8Gb_DENSITY,
-		.ch1_density = LP4_8Gb_DENSITY,
+		.ch0_rank_density = LP4_8Gb_DENSITY,
+		.ch1_rank_density = LP4_8Gb_DENSITY,
 	},
 	/*
 	 * MT53B512M32D2NP-062WT:C - both logical channels. While the parts
@@ -96,22 +96,22 @@ static const struct lpddr4_sku skus[] = {
 	 */
 	[2] = {
 		.speed = LP4_SPEED_2400,
-		.ch0_density = LP4_8Gb_DENSITY,
-		.ch1_density = LP4_8Gb_DENSITY,
+		.ch0_rank_density = LP4_8Gb_DENSITY,
+		.ch1_rank_density = LP4_8Gb_DENSITY,
 		.ch0_dual_rank = 1,
 		.ch1_dual_rank = 1,
 	},
 	/* MT53B256M32D1NP-062 WT:C - both logical channels */
 	[3] = {
 		.speed = LP4_SPEED_2400,
-		.ch0_density = LP4_8Gb_DENSITY,
-		.ch1_density = LP4_8Gb_DENSITY,
+		.ch0_rank_density = LP4_8Gb_DENSITY,
+		.ch1_rank_density = LP4_8Gb_DENSITY,
 	},
 	/* K4F8E304HB-MGCH - both logical channels */
 	[PROTO_SKU] = {
 		.speed = LP4_SPEED_2400,
-		.ch0_density = LP4_8Gb_DENSITY,
-		.ch1_density = LP4_8Gb_DENSITY,
+		.ch0_rank_density = LP4_8Gb_DENSITY,
+		.ch1_rank_density = LP4_8Gb_DENSITY,
 	},
 };
 

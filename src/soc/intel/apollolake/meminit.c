@@ -105,7 +105,7 @@ void meminit_lpddr4(struct FSP_M_CONFIG *cfg, int speed)
 }
 
 static void enable_logical_chan0(struct FSP_M_CONFIG *cfg,
-					int device_density, int dual_rank,
+					int rank_density, int dual_rank,
 					const struct lpddr4_swizzle_cfg *scfg)
 {
 	const struct lpddr4_chan_swizzle_cfg *chan;
@@ -118,8 +118,8 @@ static void enable_logical_chan0(struct FSP_M_CONFIG *cfg,
 	 * Physical channel 0 is comprised of the CH0_DQB signals.
 	 * Physical channel 1 is comprised of the CH0_DQA signals.
 	 */
-	cfg->Ch0_DramDensity = device_density;
-	cfg->Ch1_DramDensity = device_density;
+	cfg->Ch0_DramDensity = rank_density;
+	cfg->Ch1_DramDensity = rank_density;
 	/* Enable ranks on both channels depending on dual rank option. */
 	rank_mask = dual_rank ? 0x3 : 0x1;
 	cfg->Ch0_RankEnable = rank_mask;
@@ -150,7 +150,7 @@ static void enable_logical_chan0(struct FSP_M_CONFIG *cfg,
 }
 
 static void enable_logical_chan1(struct FSP_M_CONFIG *cfg,
-					int device_density, int dual_rank,
+					int rank_density, int dual_rank,
 					const struct lpddr4_swizzle_cfg *scfg)
 {
 	const struct lpddr4_chan_swizzle_cfg *chan;
@@ -163,8 +163,8 @@ static void enable_logical_chan1(struct FSP_M_CONFIG *cfg,
 	 * Physical channel 2 is comprised of the CH1_DQB signals.
 	 * Physical channel 3 is comprised of the CH1_DQA signals.
 	 */
-	cfg->Ch2_DramDensity = device_density;
-	cfg->Ch3_DramDensity = device_density;
+	cfg->Ch2_DramDensity = rank_density;
+	cfg->Ch3_DramDensity = rank_density;
 	/* Enable ranks on both channels depending on dual rank option. */
 	rank_mask = dual_rank ? 0x3 : 0x1;
 	cfg->Ch2_RankEnable = rank_mask;
@@ -195,22 +195,21 @@ static void enable_logical_chan1(struct FSP_M_CONFIG *cfg,
 }
 
 void meminit_lpddr4_enable_channel(struct FSP_M_CONFIG *cfg, int logical_chan,
-					int device_density, int dual_rank,
+					int rank_density, int dual_rank,
 					const struct lpddr4_swizzle_cfg *scfg)
 {
-	if (device_density < LP4_8Gb_DENSITY ||
-		device_density > LP4_16Gb_DENSITY) {
-		printk(BIOS_ERR, "Invalid LPDDR4 density: %d\n",
-			device_density);
+	if (rank_density < LP4_8Gb_DENSITY ||
+		rank_density > LP4_16Gb_DENSITY) {
+		printk(BIOS_ERR, "Invalid LPDDR4 density: %d\n", rank_density);
 		return;
 	}
 
 	switch (logical_chan) {
 	case LP4_LCH0:
-		enable_logical_chan0(cfg, device_density, dual_rank, scfg);
+		enable_logical_chan0(cfg, rank_density, dual_rank, scfg);
 		break;
 	case LP4_LCH1:
-		enable_logical_chan1(cfg, device_density, dual_rank, scfg);
+		enable_logical_chan1(cfg, rank_density, dual_rank, scfg);
 		break;
 	default:
 		printk(BIOS_ERR, "Invalid logical channel: %d\n", logical_chan);
@@ -235,18 +234,20 @@ void meminit_lpddr4_by_sku(struct FSP_M_CONFIG *cfg,
 
 	meminit_lpddr4(cfg, sku->speed);
 
-	if (sku->ch0_density) {
+	if (sku->ch0_rank_density) {
 		printk(BIOS_INFO, "LPDDR4 Ch0 density = %d\n",
-			sku->ch0_density);
-		meminit_lpddr4_enable_channel(cfg, LP4_LCH0, sku->ch0_density,
+			sku->ch0_rank_density);
+		meminit_lpddr4_enable_channel(cfg, LP4_LCH0,
+						sku->ch0_rank_density,
 						sku->ch0_dual_rank,
 						lpcfg->swizzle_config);
 	}
 
-	if (sku->ch1_density) {
+	if (sku->ch1_rank_density) {
 		printk(BIOS_INFO, "LPDDR4 Ch1 density = %d\n",
-			sku->ch1_density);
-		meminit_lpddr4_enable_channel(cfg, LP4_LCH1, sku->ch1_density,
+			sku->ch1_rank_density);
+		meminit_lpddr4_enable_channel(cfg, LP4_LCH1,
+						sku->ch1_rank_density,
 						sku->ch1_dual_rank,
 						lpcfg->swizzle_config);
 	}

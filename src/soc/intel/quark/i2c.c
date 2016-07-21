@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <assert.h>
 #include <console/console.h>
 #include <delay.h>
 #include <device/device.h>
@@ -166,7 +167,7 @@ int platform_i2c_transfer(unsigned bus, struct i2c_seg *segments, int count)
 	/* Finish reading the data bytes */
 	while (read_length > 0) {
 		status = regs->ic_status;
-		*buffer++ = (UINT8)regs->ic_data_cmd;
+		*buffer++ = (uint8_t)regs->ic_data_cmd;
 		read_length--;
 		bytes_transferred++;
 		status = regs->ic_status;

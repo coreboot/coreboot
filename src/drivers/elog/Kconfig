@@ -26,21 +26,6 @@ config ELOG_DEBUG
 	bool "Enable debug output for event logging"
 	default n
 
-config ELOG_FLASH_BASE
-	hex "Event log offset into flash"
-	default 0
-	help
-	  Offset into the flash chip for the ELOG block.
-	  This should be allocated in the FMAP.
-
-config ELOG_AREA_SIZE
-	hex "Size of Event Log area in flash"
-	default 0x1000
-	help
-	  This should be a multiple of flash block size.
-
-	  Default is 4K.
-
 config ELOG_CBMEM
 	bool "Store a copy of ELOG in CBMEM"
 	default n

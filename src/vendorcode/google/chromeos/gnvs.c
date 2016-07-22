@@ -24,7 +24,7 @@
 #include "chromeos.h"
 #include "gnvs.h"
 #if CONFIG_VBOOT_VERIFY_FIRMWARE
-#include "vboot_handoff.h"
+#include "vboot_common.h"
 #include <vboot_struct.h>
 #endif
 

@@ -23,7 +23,6 @@ int __attribute__((weak)) clear_recovery_mode_switch(void)
 	return 0;
 }
 
-#ifdef __ROMSTAGE__
 void __attribute__((weak)) save_chromeos_gpios(void)
 {
 	// Can be implemented by a mainboard
@@ -34,4 +33,3 @@ int __attribute__((weak)) get_sw_write_protect_state(void)
 	// Can be implemented by a platform / mainboard
 	return 0;
 }
-#endif

@@ -26,72 +26,70 @@
 
 #include "chromeos.h"
 #include "vboot_common.h"
-#include "vboot_handoff.h"
 
 int vboot_named_region_device(const char *name, struct region_device *rdev)
 {
 	return fmap_locate_area_as_rdev(name, rdev);
 }
 
-int vboot_region_device(const struct region *reg, struct region_device *rdev)
-{
-	return boot_device_ro_subregion(reg, rdev);
-}
-
+/* ========================== VBOOT HANDOFF APIs =========================== */
 int vboot_get_handoff_info(void **addr, uint32_t *size)
 {
-	struct vboot_handoff *vboot_handoff;
-
-	/* No flags are available in a separate verstage or bootblock because
-	 * cbmem only comes online when dram does. */
-	if ((ENV_VERSTAGE && IS_ENABLED(CONFIG_VBOOT_STARTS_IN_BOOTBLOCK)) ||
-		ENV_BOOTBLOCK)
+	/*
+	 * vboot_handoff is present only after cbmem comes online. If we are in
+	 * pre-ram stage, then bail out early.
+	 */
+	if (ENV_BOOTBLOCK ||
+	    (ENV_VERSTAGE && IS_ENABLED(CONFIG_VBOOT_STARTS_IN_BOOTBLOCK)))
 		return -1;
 
+	struct vboot_handoff *vboot_handoff;
 	vboot_handoff = cbmem_find(CBMEM_ID_VBOOT_HANDOFF);
 
 	if (vboot_handoff == NULL)
 		return -1;
 
 	*addr = vboot_handoff;
-	*size = sizeof(*vboot_handoff);
+
+	if (size)
+		*size = sizeof(*vboot_handoff);
 	return 0;
 }
 
-static int vboot_handoff_flag(uint32_t flag)
+static int vboot_get_handoff_flag(uint32_t flag)
 {
 	struct vboot_handoff *vbho;
-	uint32_t size;
 
-	if (vboot_get_handoff_info((void **)&vbho, &size))
+	/*
+	 * If vboot_handoff cannot be found, return default value of flag as 0.
+	 */
+	if (vboot_get_handoff_info((void **)&vbho, NULL))
 		return 0;
 
 	return !!(vbho->init_params.out_flags & flag);
 }
 
-int vboot_skip_display_init(void)
+int vboot_handoff_skip_display_init(void)
 {
-	return !vboot_handoff_flag(VB_INIT_OUT_ENABLE_DISPLAY);
+	return !vboot_get_handoff_flag(VB_INIT_OUT_ENABLE_DISPLAY);
 }
 
-int vboot_enable_developer(void)
+int vboot_handoff_check_developer_flag(void)
 {
-	return vboot_handoff_flag(VB_INIT_OUT_ENABLE_DEVELOPER);
+	return vboot_get_handoff_flag(VB_INIT_OUT_ENABLE_DEVELOPER);
 }
 
-int vboot_enable_recovery(void)
+int vboot_handoff_check_recovery_flag(void)
 {
-	return vboot_handoff_flag(VB_INIT_OUT_ENABLE_RECOVERY);
+	return vboot_get_handoff_flag(VB_INIT_OUT_ENABLE_RECOVERY);
 }
 
-int vboot_recovery_reason(void)
+int vboot_handoff_get_recovery_reason(void)
 {
 	struct vboot_handoff *vbho;
 	VbSharedDataHeader *sd;
 
-	vbho = cbmem_find(CBMEM_ID_VBOOT_HANDOFF);
-
-	if (vbho == NULL)
+	if (vboot_get_handoff_info((void **)&vbho, NULL))
 		return 0;
 
 	sd = (VbSharedDataHeader *)vbho->shared_data;
@@ -99,6 +97,7 @@ int vboot_recovery_reason(void)
 	return sd->recovery_reason;
 }
 
+/* ============================ VBOOT REBOOT ============================== */
 void __attribute__((weak)) vboot_platform_prepare_reboot(void)
 {
 }

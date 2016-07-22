@@ -16,9 +16,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select TPM_ON_FAST_SPI
 
 config CHROMEOS
-	bool
-	default y
-	select VIRTUAL_DEV_SWITCH
+	select LID_SWITCH
 
 config CHROMEOS
 	select EC_SOFTWARE_SYNC

@@ -25,6 +25,12 @@
 /* Locate vboot area by name. Returns 0 on success and -1 on error. */
 int vboot_named_region_device(const char *name, struct region_device *rdev);
 
+/*
+ * Function to check if there is a request to enter recovery mode. Returns
+ * reason code if request to enter recovery mode is present, otherwise 0.
+ */
+int vboot_check_recovery_request(void);
+
 /* ========================== VBOOT HANDOFF APIs =========================== */
 /*
  * The vboot_handoff structure contains the data to be consumed by downstream

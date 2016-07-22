@@ -35,10 +35,6 @@
 #include "elog_internal.h"
 
 
-#if !IS_ENABLED(CONFIG_CHROMEOS) && CONFIG_ELOG_FLASH_BASE == 0
-#error "CONFIG_ELOG_FLASH_BASE is invalid"
-#endif
-
 #if CONFIG_ELOG_DEBUG
 #define elog_debug(STR...) printk(BIOS_DEBUG, STR)
 #else
@@ -493,24 +489,19 @@ int elog_clear(void)
 
 static void elog_find_flash(void)
 {
+	struct region r;
+
 	elog_debug("elog_find_flash()\n");
 
-	if (IS_ENABLED(CONFIG_CHROMEOS)) {
-		/* Find the ELOG base and size in FMAP */
-		struct region r;
-
-		if (fmap_locate_area("RW_ELOG", &r) < 0) {
-			printk(BIOS_WARNING,
-				"ELOG: Unable to find RW_ELOG in FMAP\n");
-			flash_base = total_size = 0;
-		} else {
-			flash_base = region_offset(&r);
-			total_size = MIN(region_sz(&r), CONFIG_ELOG_AREA_SIZE);
-		}
+	/* Find the ELOG base and size in FMAP */
+	if (fmap_locate_area("RW_ELOG", &r) < 0) {
+		printk(BIOS_WARNING, "ELOG: Unable to find RW_ELOG in FMAP\n");
+		flash_base = total_size = 0;
 	} else {
-		flash_base = CONFIG_ELOG_FLASH_BASE;
-		total_size = CONFIG_ELOG_AREA_SIZE;
+		flash_base = region_offset(&r);
+		total_size = region_sz(&r);
 	}
+
 	log_size = total_size - sizeof(struct elog_header);
 	full_threshold = log_size - ELOG_MIN_AVAILABLE_ENTRIES * MAX_EVENT_SIZE;
 	shrink_size = MIN(total_size * ELOG_SHRINK_PERCENTAGE / 100,

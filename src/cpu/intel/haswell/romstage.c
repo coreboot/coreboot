@@ -69,7 +69,7 @@ static inline u32 *stack_push(u32 *stack, u32 value)
  * cache-as-ram is torn down as well as the MTRR settings to use. */
 static void *setup_romstage_stack_after_car(void)
 {
-	unsigned long top_of_stack;
+	uintptr_t top_of_stack;
 	int num_mtrrs;
 	u32 *slot;
 	u32 mtrr_mask_upper;
@@ -82,7 +82,7 @@ static void *setup_romstage_stack_after_car(void)
 
 	/* The upper bits of the MTRR mask need to set according to the number
 	 * of physical address bits. */
-	mtrr_mask_upper = (1 << ((cpuid_eax(0x80000008) & 0xff) - 32)) - 1;
+	mtrr_mask_upper = (1 << (cpu_phys_address_size() - 32)) - 1;
 
 	/* The order for each MTRR is value then base with upper 32-bits of
 	 * each value coming before the lower 32-bits. The reasoning for

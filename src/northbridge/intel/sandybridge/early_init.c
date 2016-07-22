@@ -234,7 +234,6 @@ void northbridge_romstage_finalize(int s3resume)
 	 */
 
 	if (s3resume) {
-		acpi_prepare_for_resume();
 
 		/* Magic for S3 resume */
 		pci_write_config32(PCI_DEV(0, 0x00, 0), SKPAD, 0xcafed00d);

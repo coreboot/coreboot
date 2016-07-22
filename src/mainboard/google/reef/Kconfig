@@ -33,6 +33,9 @@ config DRIVERS_I2C_DA7219
 config DRIVERS_I2C_GENERIC
 	default y
 
+config DRIVERS_PS2_KEYBOARD
+	default y
+
 config MAINBOARD_DIR
 	string
 	default google/reef

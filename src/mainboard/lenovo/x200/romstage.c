@@ -162,7 +162,6 @@ void mainboard_romstage_entry(unsigned long bist)
 	 * this is not a resume. In that case we just create the cbmem toc.
 	 */
 	if (s3resume && cbmem_initted) {
-		acpi_prepare_for_resume();
 
 		/* Magic for S3 resume */
 		pci_write_config32(PCI_DEV(0, 0, 0), D0F0_SKPD, SKPAD_ACPI_S3_MAGIC);

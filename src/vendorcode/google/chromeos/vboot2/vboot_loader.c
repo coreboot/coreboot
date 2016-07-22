@@ -91,6 +91,7 @@ static void vboot_prepare(void)
 	if (verification_should_run()) {
 		verstage_main();
 		car_set_var(vboot_executed, 1);
+		vb2_save_recovery_reason_vbnv();
 	} else if (verstage_should_load()) {
 		struct cbfsf file;
 		struct prog verstage =

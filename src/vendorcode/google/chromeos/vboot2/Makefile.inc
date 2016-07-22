@@ -28,6 +28,12 @@ romstage-y += ../vboot_common.c
 ramstage-y += ../vboot_common.c
 postcar-y += ../vboot_common.c
 
+bootblock-y += recovery.c
+romstage-y += recovery.c
+ramstage-y += recovery.c
+verstage-y += recovery.c
+postcar-y += recovery.c
+
 bootblock-y += common.c
 libverstage-y += vboot_logic.c
 verstage-y += common.c

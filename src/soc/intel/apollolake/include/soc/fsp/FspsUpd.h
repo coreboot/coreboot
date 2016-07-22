@@ -71,7 +71,7 @@ struct FSP_S_CONFIG {
 
 /** Offset 0x0025 - Memory region allocation for Processor Trace
   Memory region allocation for Processor Trace, allowed range is from 4K (0x0) to
-  128MB (0xF); 0xFF: Disable. 0xFF:Disable(Default)
+  128MB (0xF); <b>0xFF: Disable. 0xFF:Disable(Default)
 **/
   uint8_t                       ProcTraceMemSize;
 
@@ -440,7 +440,7 @@ struct FSP_S_CONFIG {
   uint8_t                       Pme;
 
 /** Offset 0x0091 - HD-Audio I/O Buffer Ownership
-  Set HD-Audio I/O Buffer Ownership. 0:Disable(Default), 1:Enable.
+  Set HD-Audio I/O Buffer Ownership. 0:HD-Audio link owns all the I/O buffers(Default)
   0:HD-Audio link owns all the I/O buffers, 1:HD-Audio link owns 4 I/O buffers and
   I2S port owns 4 I/O buffers, 3:I2S port owns all the I/O buffers
 **/
@@ -788,7 +788,7 @@ struct FSP_S_CONFIG {
 
 /** Offset 0x00E4 - Enable PCIE Clock Gating
   Enable/disable PCIE Clock Gating. 0:Enable, 1:Disable(Default).
-  $EN_DIS
+  0:Enable, 1:Disable
 **/
   uint8_t                       PcieClockGatingDisabled;
 
@@ -1334,13 +1334,13 @@ struct FSP_S_CONFIG {
 
 /** Offset 0x02D2 - Skip Multi-Processor Initialization
   When this is skipped, boot loader must initialize processors before SilicionInit
-  API. 0: Initialize(Default), 1: Skip
+  API. 0: Initialize(Default), <b>1: Skip
   $EN_DIS
 **/
   uint8_t                       SkipMpInit;
 
 /** Offset 0x02D3 - DCI Auto Detect
-  Enable/disable DCI AUTO mode.
+  Enable/disable DCI AUTO mode. Enabled(Default).
   $EN_DIS
 **/
   uint8_t                       DciAutoDetect;
@@ -1467,11 +1467,9 @@ struct FSP_S_CONFIG {
 **/
   uint8_t                       PcieRpSelectableDeemphasis[6];
 
-/** Offset 0x0326 - Os Selection Mode
-  Select OS mode. 0:Windows(default), 1:Android, 2:Win7
-  0:Windows, 1:Android, 2:Win7
+/** Offset 0x0326
 **/
-  uint8_t                       OsSelection;
+  uint8_t                       UnusedUpdSpace4;
 
 /** Offset 0x0327 - Monitor Mwait Enable
   Enable/Disable Monitor Mwait. For Windows* OS, this should be Enabled. For Linux

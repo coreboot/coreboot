@@ -571,9 +571,86 @@ struct FSP_M_CONFIG {
 **/
   uint8_t                       SkipCseRbp;
 
-/** Offset 0x0136
+/** Offset 0x0136 - Npk Enable
+  Enable/Disable Npk. 0:Disable, 1:Enable, 2:Debugger, 3:Auto(Default).
+  0:Disable, 1:Enable, 2:Debugger, 3:Auto
 **/
-  uint8_t                       ReservedFspmUpd[26];
+  uint8_t                       NpkEn;
+
+/** Offset 0x0137 - FW Trace Enable
+  Enable/Disable FW Trace. 0:Disable, 1:Enable(Default).
+  $EN_DIS
+**/
+  uint8_t                       FwTraceEn;
+
+/** Offset 0x0138 - FW Trace Destination
+  FW Trace Destination. 1-NPK_TRACE_TO_MEMORY, 2-NPK_TRACE_TO_DCI, 3-NPK_TRACE_TO_BSSB,
+  4-NPK_TRACE_TO_PTI(Default).
+**/
+  uint8_t                       FwTraceDestination;
+
+/** Offset 0x0139 - NPK Recovery Dump
+  Enable/Disable NPK Recovery Dump. 0:Disable(Default), 1:Enable.
+  $EN_DIS
+**/
+  uint8_t                       RecoverDump;
+
+/** Offset 0x013A - Memory Region 0 Buffer Size
+  Memory Region 0 Buffer Size. 0-0MB(Default), 1-1MB, 2-8MB, 3-64MB, 4-128MB, 5-256MB,
+  6-512MB, 7-1GB.
+**/
+  uint32_t                      Msc0Size;
+
+/** Offset 0x013E - Memory Region 0 Buffer WrapAround
+  Memory Region 0 Buffer WrapAround. 0-n0-warp, 1-warp(Default).
+**/
+  uint8_t                       Msc0Wrap;
+
+/** Offset 0x013F - Memory Region 1 Buffer Size
+  Memory Region 1 Buffer Size, 0-0MB(Default), 1-1MB, 2-8MB, 3-64MB, 4-128MB, 5-256MB,
+  6-512MB, 7-1GB.
+**/
+  uint32_t                      Msc1Size;
+
+/** Offset 0x0143 - Memory Region 1 Buffer WrapAround
+  Memory Region 1 Buffer WrapAround. 0-n0-warp, 1-warp(Default).
+**/
+  uint8_t                       Msc1Wrap;
+
+/** Offset 0x0144 - PTI Mode
+  PTI Mode. 0-0ff, 1-x4(Default), 2-x8, 3-x12, 4-x16.
+**/
+  uint8_t                       PtiMode;
+
+/** Offset 0x0145 - PTI Training
+  PTI Training. 0-off(Default), 1-6=1-6.
+**/
+  uint8_t                       PtiTraining;
+
+/** Offset 0x0146 - PTI Speed
+  PTI Speed. 0-full, 1-half, 2-quarter(Default).
+**/
+  uint8_t                       PtiSpeed;
+
+/** Offset 0x0147 - Punit Message Level
+  Punit Message Output Verbosity Level. 0, 1(Default), 2-4=2-4.
+**/
+  uint8_t                       PunitMlvl;
+
+/** Offset 0x0148 - PMC Message Level
+  PMC Message Output Verbosity Level. 0, 1(Default), 2-4=2-4.
+**/
+  uint8_t                       PmcMlvl;
+
+/** Offset 0x0149 - SW Trace Enable
+  Enable/Disable SW Trace. 0:Disable(Default), 1:Enable.
+  $EN_DIS
+**/
+  uint8_t                       SwTraceEn;
+
+/** Offset 0x014A
+**/
+  uint8_t                       ReservedFspmUpd[6];
 } __attribute__((packed));
 
 /** Fsp M Test Configuration

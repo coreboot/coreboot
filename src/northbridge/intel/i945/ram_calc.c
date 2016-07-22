@@ -54,9 +54,14 @@ static uintptr_t smm_region_start(void)
 	return tom;
 }
 
+/* Depending of UMA and TSEG configuration, TSEG might start at any
+ * 1 MiB aligment. As this may cause very greedy MTRR setup, push
+ * CBMEM top downwards to 4 MiB boundary.
+ */
 void *cbmem_top(void)
 {
-	return (void *) smm_region_start();
+	uintptr_t top_of_ram = ALIGN_DOWN(smm_region_start(), 4*MiB);
+	return (void *) top_of_ram;
 }
 
 /** Decodes used Graphics Mode Select (GMS) to kilobytes. */

@@ -89,10 +89,15 @@ u8 decode_pciebar(u32 *const base, u32 *const len)
 	return 1;
 }
 
+/* Depending of UMA and TSEG configuration, TSEG might start at any
+ * 1 MiB aligment. As this may cause very greedy MTRR setup, push
+ * CBMEM top downwards to 4 MiB boundary.
+ */
 void *cbmem_top(void)
 {
-	u32 ramtop = pci_read_config32(PCI_DEV(0,0,0), D0F0_TSEG);
-	return (void*)(ramtop);
+	uintptr_t top_of_ram = pci_read_config32(PCI_DEV(0,0,0), D0F0_TSEG);
+	top_of_ram = ALIGN_DOWN(top_of_ram, 4*MiB);
+	return (void *) top_of_ram;
 }
 
 void *setup_stack_and_mtrrs(void)

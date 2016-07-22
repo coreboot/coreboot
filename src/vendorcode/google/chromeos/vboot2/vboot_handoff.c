@@ -29,7 +29,6 @@
 #include <vb2_api.h>
 #include <vboot_struct.h>
 #include "../chromeos.h"
-#include "../vboot_handoff.h"
 #include "misc.h"
 
 /**

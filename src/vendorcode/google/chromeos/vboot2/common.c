@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <assert.h>
 #include <cbfs.h>
 #include <cbmem.h>
 #include <console/console.h>
@@ -21,7 +22,7 @@
 #include <vb2_api.h>
 #include "../chromeos.h"
 #include "../symbols.h"
-#include "../vboot_handoff.h"
+#include "../vboot_common.h"
 #include "misc.h"
 
 struct selected_region {
@@ -134,19 +135,20 @@ int vb2_get_selected_region(struct region *region)
 void vb2_set_selected_region(const struct region *region)
 {
 	struct selected_region *reg = vb2_selected_region();
+
+	assert(reg != NULL);
+
 	reg->offset = region_offset(region);
 	reg->size = region_sz(region);
 }
 
-int vboot_is_slot_selected(void)
+int vb2_is_slot_selected(void)
 {
 	const struct selected_region *reg = vb2_selected_region();
-	return reg->size > 0;
-}
 
-int vboot_is_readonly_path(void)
-{
-	return !vboot_is_slot_selected();
+	assert(reg != NULL);
+
+	return reg->size > 0;
 }
 
 void vb2_store_selected_region(void)
@@ -159,6 +161,8 @@ void vb2_store_selected_region(void)
 	wd = vboot_get_working_data();
 
 	sel_reg = cbmem_add(CBMEM_ID_VBOOT_SEL_REG, sizeof(*sel_reg));
+
+	assert(sel_reg != NULL);
 
 	sel_reg->offset = wd->selected_region.offset;
 	sel_reg->size = wd->selected_region.size;

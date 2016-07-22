@@ -21,7 +21,7 @@
 #include <rules.h>
 #include <string.h>
 #include "misc.h"
-#include "../vboot_handoff.h"
+#include "../vboot_common.h"
 #include "../symbols.h"
 
 /* The stage loading code is compiled and entered from multiple stages. The
@@ -61,7 +61,7 @@ static int verstage_should_load(void)
 
 static int vboot_executed CAR_GLOBAL;
 
-static int vboot_logic_executed(void)
+int vb2_logic_executed(void)
 {
 	/* If this stage is supposed to run the vboot logic ensure it has been
 	 * executed. */
@@ -139,7 +139,7 @@ static int vboot_locate(struct cbfs_props *props)
 	struct region selected_region;
 
 	/* Don't honor vboot results until the vboot logic has run. */
-	if (!vboot_logic_executed())
+	if (!vb2_logic_executed())
 		return -1;
 
 	if (vb2_get_selected_region(&selected_region))

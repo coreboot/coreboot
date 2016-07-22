@@ -23,7 +23,7 @@ int developer_mode_enabled(void)
 	if (get_developer_mode_switch())
 		return 1;
 #if CONFIG_VBOOT_VERIFY_FIRMWARE
-	if (vboot_enable_developer())
+	if (vboot_handoff_check_developer_flag())
 		return 1;
 #endif
 	return 0;
@@ -36,7 +36,7 @@ int developer_mode_enabled(void)
  *
  * If shared recovery reason is set:
  * - before VbInit then get_recovery_mode_from_vbnv() is true
- * - after VbInit then vboot_enable_recovery() is true
+ * - after VbInit then vboot_handoff_check_recovery_flag() is true
  *
  * Otherwise the mainboard handler for get_recovery_mode_switch()
  * will detect recovery mode initiated by the EC.
@@ -50,7 +50,7 @@ int recovery_mode_enabled(void)
 		return 1;
 #endif
 #if CONFIG_VBOOT_VERIFY_FIRMWARE
-	if (vboot_enable_recovery())
+	if (vboot_handoff_check_recovery_flag())
 		return 1;
 #endif
 	return 0;
@@ -75,9 +75,9 @@ void gfx_set_init_done(int done)
 
 int display_init_required(void)
 {
-	/* For Chrome OS always honor vboot_skip_display_init(). */
+	/* For Chrome OS always honor vboot_handoff_skip_display_init(). */
 	if (IS_ENABLED(CONFIG_CHROMEOS))
-		return !vboot_skip_display_init();
+		return !vboot_handoff_skip_display_init();
 
 	/* By default always initialize display. */
 	return 1;

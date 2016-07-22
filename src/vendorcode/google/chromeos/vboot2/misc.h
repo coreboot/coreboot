@@ -29,8 +29,8 @@ struct vb2_shared_data *vb2_get_shared_data(void);
 /* Returns 0 on success. < 0 on failure. */
 int vb2_get_selected_region(struct region *region);
 void vb2_set_selected_region(const struct region *region);
-int vboot_is_slot_selected(void);
-int vboot_is_readonly_path(void);
+int vb2_is_slot_selected(void);
+int vb2_logic_executed(void);
 
 /* Store the selected region in cbmem for later use. */
 void vb2_store_selected_region(void);

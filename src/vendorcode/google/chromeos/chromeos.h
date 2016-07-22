@@ -24,9 +24,7 @@
 #include "vboot_common.h"
 #include "vboot2/misc.h"
 
-#if ENV_ROMSTAGE
 void save_chromeos_gpios(void);
-#endif
 
 #if CONFIG_CHROMEOS
 /* functions implemented in elog.c */

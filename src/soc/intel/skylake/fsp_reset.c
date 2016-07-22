@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 #include <bootstate.h>
-#include <vendorcode/google/chromeos/vboot_handoff.h>
+#include <vendorcode/google/chromeos/vboot_common.h>
 
 static int is_recovery; /* flag to identify recovery mode */
 
@@ -35,8 +35,10 @@ static void set_recovery_request(void *unused)
 	* Set recovery flag during Recovery Mode Silicon Init
 	* & store recovery request into VBNV
 	*/
-	if (is_recovery)
-		set_recovery_mode_into_vbnv(vboot_recovery_reason());
+	if (is_recovery) {
+		int reason = vboot_handoff_get_recovery_reason();
+		set_recovery_mode_into_vbnv(reason);
+	}
 
 }
 

@@ -35,4 +35,6 @@ int vb2_logic_executed(void);
 /* Store the selected region in cbmem for later use. */
 void vb2_store_selected_region(void);
 
+void vb2_save_recovery_reason_vbnv(void);
+
 #endif /* __CHROMEOS_VBOOT2_MISC_H__ */

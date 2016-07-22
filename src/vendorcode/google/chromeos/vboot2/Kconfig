@@ -78,3 +78,12 @@ config VBOOT_DYNAMIC_WORK_BUFFER
 	  ram to allocate the vboot work buffer. That means vboot verification
 	  is after memory init and requires main memory to back the work
 	  buffer.
+
+config VBOOT_SAVE_RECOVERY_REASON_ON_REBOOT
+	bool
+	default n
+	depends on VBOOT_VERIFY_FIRMWARE
+	help
+	  This option ensures that the recovery request is not lost because of
+	  reboots caused after vboot verification is run. e.g. reboots caused by
+	  FSP components on Intel platforms.

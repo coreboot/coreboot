@@ -14,6 +14,7 @@
  */
 
 #include <assert.h>
+#include <bootstate.h>
 #include <rules.h>
 #include <string.h>
 #include <vb2_api.h>
@@ -31,6 +32,39 @@ static int vb2_get_recovery_reason_shared_data(void)
 	assert(sd);
 	return sd->recovery_reason;
 }
+
+void vb2_save_recovery_reason_vbnv(void)
+{
+	if (!IS_ENABLED(CONFIG_VBOOT_SAVE_RECOVERY_REASON_ON_REBOOT))
+		return;
+
+	int reason =  vb2_get_recovery_reason_shared_data();
+	if (!reason)
+		return;
+
+	set_recovery_mode_into_vbnv(reason);
+}
+
+static void vb2_clear_recovery_reason_vbnv(void *unused)
+{
+	if (!IS_ENABLED(CONFIG_VBOOT_SAVE_RECOVERY_REASON_ON_REBOOT))
+		return;
+
+	set_recovery_mode_into_vbnv(0);
+}
+
+/*
+ * Recovery reason stored in VBNV needs to be cleared before the state of VBNV
+ * is backed-up anywhere or jumping to the payload (whichever occurs
+ * first). Currently, vbnv_cmos.c backs up VBNV on POST_DEVICE. Thus, we need to
+ * make sure that the stored recovery reason is cleared off before that
+ * happens.
+ * IMPORTANT: Any reboot occurring after BS_DEV_INIT state will cause loss of
+ * recovery reason on reboot. Until now, we have seen reboots occuring on x86
+ * only in FSP stages which run before BS_DEV_INIT.
+ */
+BOOT_STATE_INIT_ENTRY(BS_DEV_INIT, BS_ON_EXIT,
+		      vb2_clear_recovery_reason_vbnv, NULL);
 
 /*
  * Returns 0 for the stages where we know that cbmem does not come online.

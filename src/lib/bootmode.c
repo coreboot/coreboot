@@ -29,31 +29,9 @@ int developer_mode_enabled(void)
 	return 0;
 }
 
-/*
- * This is called in multiple places and has to detect
- * recovery mode triggered from the EC and via shared
- * recovery reason set with crossystem.
- *
- * If shared recovery reason is set:
- * - before VbInit then get_recovery_mode_from_vbnv() is true
- * - after VbInit then vboot_handoff_check_recovery_flag() is true
- *
- * Otherwise the mainboard handler for get_recovery_mode_switch()
- * will detect recovery mode initiated by the EC.
- */
 int recovery_mode_enabled(void)
 {
-	if (get_recovery_mode_switch())
-		return 1;
-#if CONFIG_CHROMEOS
-	if (get_recovery_mode_from_vbnv())
-		return 1;
-#endif
-#if CONFIG_VBOOT_VERIFY_FIRMWARE
-	if (vboot_handoff_check_recovery_flag())
-		return 1;
-#endif
-	return 0;
+	return !!vboot_check_recovery_request();
 }
 #endif /* CONFIG_BOOTMODE_STRAPS */
 

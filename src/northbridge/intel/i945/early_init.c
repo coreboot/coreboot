@@ -905,7 +905,6 @@ static void i945_prepare_resume(int s3resume)
 	 * this is not a resume. In that case we just create the cbmem toc.
 	 */
 	if (s3resume && cbmem_was_initted) {
-		acpi_prepare_for_resume();
 
 		/* Magic for S3 resume */
 		pci_write_config32(PCI_DEV(0, 0x00, 0), SKPAD,

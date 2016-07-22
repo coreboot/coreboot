@@ -24,6 +24,7 @@ config NORTHBRIDGE_SPECIFIC_OPTIONS # dummy
 	select VGA
 	select INTEL_EDID
 	select INTEL_GMA_ACPI
+	select RELOCATABLE_RAMSTAGE
 
 config CBFS_SIZE
 	hex

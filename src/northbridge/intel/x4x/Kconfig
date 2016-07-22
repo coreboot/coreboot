@@ -24,7 +24,7 @@ config NORTHBRIDGE_SPECIFIC_OPTIONS # dummy
 	select HAVE_DEBUG_RAM_SETUP
 	select VGA
 	select INTEL_GMA_ACPI
-	select EARLY_CBMEM_INIT
+	select RELOCATABLE_RAMSTAGE
 
 config CBFS_SIZE
 	hex

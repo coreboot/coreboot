@@ -174,10 +174,9 @@ before_romstage:
 	post_code(0x29)
 	/* Call romstage.c main function. */
 	call	romstage_main
-
 	/* Save return value from romstage_main. It contains the stack to use
-	 * after cache-as-ram is torn down.
-	 */
+	 * after cache-as-ram is torn down. It also contains the information
+	 * for setting up MTRRs. */
 	movl	%eax, %esp
 
 	post_code(0x30)
@@ -210,14 +209,6 @@ before_romstage:
 	andl    $~1, %eax
 	wrmsr
 
-	/* Clear MTRR that was used to cache MRC */
-	xorl	%eax, %eax
-	xorl	%edx, %edx
-	movl	$MTRR_PHYS_BASE(2), %ecx
-	wrmsr
-	movl	$MTRR_PHYS_MASK(2), %ecx
-	wrmsr
-
 	post_code(0x33)
 
 	/* Enable cache. */
@@ -234,32 +225,31 @@ before_romstage:
 
 	post_code(0x38)
 
-	/* Enable Write Back and Speculative Reads for the first MB
-	 * and ramstage.
-	 */
+	/* Get number of MTRRs. */
+	popl	%ebx
 	movl	$MTRR_PHYS_BASE(0), %ecx
-	movl	$(0x00000000 | MTRR_TYPE_WRBACK), %eax
-	xorl	%edx, %edx
-	wrmsr
-	movl	$MTRR_PHYS_MASK(0), %ecx
-	movl	$(~(CACHE_TMP_RAMTOP - 1) | MTRR_PHYS_MASK_VALID), %eax
-	movl	$CPU_PHYSMASK_HI, %edx	// 36bit address space
-	wrmsr
+1:
+	testl	%ebx, %ebx
+	jz	1f
 
-#if CACHE_ROM_SIZE
-	/* Enable Caching and speculative Reads for the
-	 * complete ROM now that we actually have RAM.
-	 */
-	movl	$MTRR_PHYS_BASE(1), %ecx
-	movl	$(CACHE_ROM_BASE | MTRR_TYPE_WRPROT), %eax
-	xorl	%edx, %edx
+	/* Low 32 bits of MTRR base. */
+	popl	%eax
+	/* Upper 32 bits of MTRR base. */
+	popl	%edx
+	/* Write MTRR base. */
 	wrmsr
-	movl	$MTRR_PHYS_MASK(1), %ecx
-	movl	$(~(CACHE_ROM_SIZE - 1) | MTRR_PHYS_MASK_VALID), %eax
-	movl	$CPU_PHYSMASK_HI, %edx
+	inc	%ecx
+	/* Low 32 bits of MTRR mask. */
+	popl	%eax
+	/* Upper 32 bits of MTRR mask. */
+	popl	%edx
+	/* Write MTRR mask. */
 	wrmsr
-#endif
+	inc	%ecx
 
+	dec	%ebx
+	jmp	1b
+1:
 	post_code(0x39)
 
 	/* And enable cache again after setting MTRRs. */

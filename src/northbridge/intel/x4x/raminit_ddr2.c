@@ -293,11 +293,10 @@ static void launch_ddr2(struct sysinfo *s)
 
 	if (s->selected_timings.CAS == 5) {
 		launch2 = 0x00220201;
-	} else if ((s->selected_timings.mem_clk == MEM_CLOCK_800MHz) &&
-		   (s->selected_timings.CAS == 6)) {
+	} else if (s->selected_timings.CAS == 6) {
 		launch2 = 0x00230302;
 	} else {
-		die("Unsupported CAS & Frequency combination detected\n");
+		die("Unsupported CAS\n");
 	}
 
 	FOR_EACH_POPULATED_CHANNEL(s->dimms, i) {

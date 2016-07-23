@@ -111,10 +111,9 @@ static void sdram_read_spds(struct sysinfo *s)
 			s->dimms[i].chip_capacity = s->dimms[i].banks;
 			s->dimms[i].rows = s->dimms[i].spd_data[3];// - 12;
 			s->dimms[i].cols = s->dimms[i].spd_data[4];// - 9;
-			s->dimms[i].cas_latencies = 0x70; // 6,5,4 CL
-			s->dimms[i].cas_latencies &= s->dimms[i].spd_data[18];
+			s->dimms[i].cas_latencies = s->dimms[i].spd_data[18];
 			if (s->dimms[i].cas_latencies == 0)
-				s->dimms[i].cas_latencies = 0x70;
+				s->dimms[i].cas_latencies = 0x60; // 6,5 CL
 			s->dimms[i].tAAmin = s->dimms[i].spd_data[26];
 			s->dimms[i].tCKmin = s->dimms[i].spd_data[25];
 			s->dimms[i].width = (s->dimms[i].spd_data[13] >> 3) - 1;
@@ -248,13 +247,6 @@ static void sdram_read_spds(struct sysinfo *s)
 	}
 }
 
-static u8 lsbpos(u8 val) //Forward
-{
-	u8 i;
-	for (i = 0; (i < 8) && ((val & (1 << i)) == 0); i++);
-	return i;
-}
-
 static u8 msbpos(u8 val) //Reverse
 {
 	u8 i;
@@ -264,8 +256,6 @@ static u8 msbpos(u8 val) //Reverse
 
 static void mchinfo_ddr2(struct sysinfo *s)
 {
-	u8 capablefreq, maxfreq;
-
 	const u32 eax = cpuid_ext(0x04, 0).eax;
 	s->cores = ((eax >> 26) & 0x3f) + 1;
 	printk(BIOS_WARNING, "%d CPU cores\n", s->cores);
@@ -284,19 +274,7 @@ static void mchinfo_ddr2(struct sysinfo *s)
 		printk(BIOS_WARNING, "AMT enabled\n");
 	}
 
-	maxfreq = MEM_CLOCK_800MHz;
-	capablefreq = (u8)((pci_read_config16(PCI_DEV(0, 0, 0), 0xea) >> 4) & 0x3f);
-	capablefreq &= 0x7;
-	if (capablefreq)
-		maxfreq = capablefreq + 1;
-
-	if (maxfreq > MEM_CLOCK_800MHz)
-		maxfreq = MEM_CLOCK_800MHz;
-
-	if (maxfreq < MEM_CLOCK_667MHz)
-		maxfreq = MEM_CLOCK_667MHz;
-
-	s->max_ddr2_mhz = (maxfreq == MEM_CLOCK_800MHz) ? 800 : 667;
+	s->max_ddr2_mhz = 800; // All chipsets in x4x support up to 800MHz DDR2
 	printk(BIOS_WARNING, "Capable of DDR2 of %d MHz or lower\n", s->max_ddr2_mhz);
 
 	if (!(capid & (1<<(48-32)))) {
@@ -308,11 +286,14 @@ static void sdram_detect_ram_speed(struct sysinfo *s)
 {
 	u8 i;
 	u8 commoncas = 0;
-	u8 cas;
-	u8 lowcas;
-	u8 highcas;
+	u8 currcas;
+	u8 currfreq;
 	u8 maxfreq;
 	u8 freq = 0;
+
+	// spdidx,cycletime @CAS				 5	   6
+	u8 idx800[7][2] = {{0,0}, {0,0}, {0,0}, {0,0}, {0,0}, {23,0x30}, {9,0x25}};
+	int found = 0;
 
 	// Find max FSB speed
 	switch (MCHBAR32(0xc00) & 0x7) {
@@ -334,11 +315,13 @@ static void sdram_detect_ram_speed(struct sysinfo *s)
 	// Max RAM speed
 	if (s->spd_type == DDR2) {
 
-		// Choose max memory frequency for MCH as previously detected
-		freq = (s->max_ddr2_mhz == 800) ? MEM_CLOCK_800MHz : MEM_CLOCK_667MHz;
+		// FIXME: Limit memory speed to 667MHz if FSB is 1333MHz
+		maxfreq = (s->max_fsb == FSB_CLOCK_1333MHz)
+			? MEM_CLOCK_667MHz : MEM_CLOCK_800MHz;
 
-		// Detect a common CAS latency (Choose from 6,5,4 CL)
-		commoncas = 0x70;
+		// Choose common CAS latency from {6,5}, 4 does not work
+		commoncas = 0x60;
+
 		FOR_EACH_POPULATED_DIMM(s->dimms, i) {
 			commoncas &= s->dimms[i].cas_latencies;
 		}
@@ -346,74 +329,41 @@ static void sdram_detect_ram_speed(struct sysinfo *s)
 			die("No common CAS among dimms\n");
 		}
 
-		// Start with fastest common CAS
-		cas = 0;
-		highcas = msbpos(commoncas);
-		lowcas = lsbpos(commoncas);
-
-		while (cas == 0 && highcas >= lowcas) {
-			FOR_EACH_POPULATED_DIMM(s->dimms, i) {
-				switch (freq) {
-				case MEM_CLOCK_800MHz:
-					if ((s->dimms[i].spd_data[9] > 0x25) ||
-					    (s->dimms[i].spd_data[10] > 0x40)) {
-						// CAS too fast, lower it
-						highcas--;
-						break;
-					} else {
-						cas = highcas;
-					}
-					break;
-				case MEM_CLOCK_667MHz:
-				default:
-					if ((s->dimms[i].spd_data[9] > 0x30) ||
-					    (s->dimms[i].spd_data[10] > 0x45)) {
-						// CAS too fast, lower it
-						highcas--;
-						break;
-					} else {
-						cas = highcas;
-					}
-					break;
-				}
-			}
-		}
-		if (highcas < lowcas) {
-			// Timings not supported by MCH, lower the frequency
-			freq--;
-			cas = 0;
-			highcas = msbpos(commoncas);
-			lowcas = lsbpos(commoncas);
-			while (cas == 0 && highcas >= lowcas) {
+		// Working from fastest to slowest,
+		// fast->slow 5@800 6@800 5@667
+		found = 0;
+		for (currcas = 5; currcas <= msbpos(commoncas); currcas++) {
+			currfreq = maxfreq;
+			if (currfreq == MEM_CLOCK_800MHz) {
+				found = 1;
 				FOR_EACH_POPULATED_DIMM(s->dimms, i) {
-					switch (freq) {
-					case MEM_CLOCK_800MHz:
-						if ((s->dimms[i].spd_data[23] > 0x25) ||
-						    (s->dimms[i].spd_data[24] > 0x40)) {
-							// CAS too fast, lower it
-							highcas--;
-							break;
-						} else {
-							cas = highcas;
-						}
-						break;
-					case MEM_CLOCK_667MHz:
-					default:
-						if ((s->dimms[i].spd_data[23] > 0x30) ||
-						    (s->dimms[i].spd_data[24] > 0x45)) {
-							// CAS too fast, lower it
-							highcas--;
-							break;
-						} else {
-							cas = highcas;
-						}
-						break;
+					if (s->dimms[i].spd_data[idx800[currcas][0]] > idx800[currcas][1]) {
+						// this is too fast
+						found = 0;
 					}
+				}
+				if (found)
+					break;
+			}
+		}
+
+		if (!found) {
+			currcas = 5;
+			currfreq = MEM_CLOCK_667MHz;
+			found = 1;
+			FOR_EACH_POPULATED_DIMM(s->dimms, i) {
+				if (s->dimms[i].spd_data[9] > 0x30) {
+					// this is too fast
+					found = 0;
 				}
 			}
 		}
-		s->selected_timings.mem_clk = freq;
-		s->selected_timings.CAS = cas;
+
+		if (!found)
+			die("No valid CAS/frequencies detected\n");
+
+		s->selected_timings.mem_clk = currfreq;
+		s->selected_timings.CAS = currcas;
 
 	} else { // DDR3
 		// Limit frequency for MCH

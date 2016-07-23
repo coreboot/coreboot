@@ -3,6 +3,9 @@ ifeq ($(CONFIG_SOC_INTEL_COMMON),y)
 verstage-$(CONFIG_SOC_INTEL_COMMON_LPSS_I2C) += lpss_i2c.c
 verstage-$(CONFIG_SOC_INTEL_COMMON_RESET) += reset.c
 
+bootblock-$(CONFIG_SOC_INTEL_COMMON_RESET) += reset.c
+bootblock-$(CONFIG_SOC_INTEL_COMMON_LPSS_I2C) += lpss_i2c.c
+
 romstage-$(CONFIG_CACHE_MRC_SETTINGS) += mrc_cache.c
 romstage-$(CONFIG_SOC_INTEL_COMMON_LPSS_I2C) += lpss_i2c.c
 romstage-$(CONFIG_SOC_INTEL_COMMON_RESET) += reset.c

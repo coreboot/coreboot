@@ -49,24 +49,6 @@ void soc_pre_ram_init(struct romstage_params *params)
 	soc_fill_pei_data(params->pei_data);
 }
 
-/* SOC initialization before the console is enabled. */
-void car_soc_pre_console_init(void)
-{
-	/* System Agent Early Initialization */
-	systemagent_early_init();
-
-	if (IS_ENABLED(CONFIG_UART_DEBUG))
-		pch_uart_init();
-}
-
-void car_soc_post_console_init(void)
-{
-	report_platform_info();
-	set_max_freq();
-	pch_early_init();
-	i2c_early_init();
-}
-
 int get_sw_write_protect_state(void)
 {
 	u8 status;

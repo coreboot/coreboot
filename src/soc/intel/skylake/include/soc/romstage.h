@@ -22,7 +22,6 @@
 void i2c_early_init(void);
 void systemagent_early_init(void);
 void pch_early_init(void);
-void pch_uart_init(void);
 void intel_early_me_status(void);
 void report_platform_info(void);
 void set_max_freq(void);

@@ -61,21 +61,9 @@ config CHROMEOS
 	select VBOOT_VBNV_CMOS_BACKUP_TO_FLASH
 	select VIRTUAL_DEV_SWITCH
 
-config BOOTBLOCK_CPU_INIT
-	string
-	default "soc/intel/skylake/bootblock/cpu.c"
-
-config BOOTBLOCK_NORTHBRIDGE_INIT
-	string
-	default "soc/intel/skylake/bootblock/systemagent.c"
-
 config BOOTBLOCK_RESETS
 	string
 	default "soc/intel/common/reset.c"
-
-config BOOTBLOCK_SOUTHBRIDGE_INIT
-	string
-	default "soc/intel/skylake/bootblock/pch.c"
 
 config CBFS_SIZE
 	hex
@@ -170,9 +158,11 @@ config VGA_BIOS_ID
 config UART_DEBUG
 	bool "Enable UART debug port."
 	default n
+	select BOOTBLOCK_CONSOLE
 	select CONSOLE_SERIAL
 	select DRIVERS_UART
 	select DRIVERS_UART_8250MEM_32
+	select NO_UART_ON_SUPERIO
 
 config CHIPSET_BOOTBLOCK_INCLUDE
 	string

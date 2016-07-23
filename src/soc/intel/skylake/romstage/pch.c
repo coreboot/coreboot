@@ -57,8 +57,7 @@ static void pch_enable_lpc(void)
 	pcr_write16(PID_DMI, R_PCH_PCR_DMI_LPCIOD, lpc_en);
 
 	/* IO Decode Enable */
-	lpc_en = CNF1_LPC_EN | CNF2_LPC_EN | GAMEL_LPC_EN | GAMEH_LPC_EN |
-		COMA_LPC_EN | KBC_LPC_EN | MC_LPC_EN;
+	lpc_en = COMA_LPC_EN | KBC_LPC_EN | MC_LPC_EN;
 	pci_write_config16(PCH_DEV_LPC, LPC_EN, lpc_en);
 	pcr_write16(PID_DMI, R_PCH_PCR_DMI_LPCIOE, lpc_en);
 

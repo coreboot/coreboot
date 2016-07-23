@@ -11,14 +11,18 @@ subdirs-y += ../../../cpu/x86/tsc
 
 bootblock-y += bootblock/bootblock.c
 bootblock-y += bootblock/cache_as_ram.S
+bootblock-y += bootblock/cpu.c
+bootblock-y += bootblock/pch.c
+bootblock-y += bootblock/systemagent.c
+bootblock-$(CONFIG_UART_DEBUG) += bootblock/uart.c
+bootblock-y += gpio.c
+bootblock-y += monotonic_timer.c
+bootblock-y += pch.c
+bootblock-y += pcr.c
+bootblock-y += pmutil.c
+bootblock-y += tsc_freq.c
+bootblock-$(CONFIG_UART_DEBUG) += uart_debug.c
 
-verstage-y += gpio.c
-verstage-y += memmap.c
-verstage-y += monotonic_timer.c
-verstage-y += pch.c
-verstage-y += pmutil.c
-verstage-y += pcr.c
-verstage-y += tsc_freq.c
 verstage-$(CONFIG_UART_DEBUG) += uart_debug.c
 
 romstage-y += flash_controller.c

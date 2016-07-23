@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2015 Google Inc.
  * Copyright (C) 2015 Intel Corporation
+ * Copyright (C) 2016 Intel Corporation
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,9 +19,9 @@
 #include <console/uart.h>
 #include <device/pci_def.h>
 #include <stdint.h>
+#include <soc/bootblock.h>
 #include <soc/pci_devs.h>
 #include <soc/pcr.h>
-#include <soc/romstage.h>
 #include <soc/serialio.h>
 #include <gpio.h>
 
@@ -53,7 +54,7 @@ void pch_uart_init(void)
 	/*
 	 * Set M and N divisor inputs and enable clock.
 	 * Main reference frequency to UART is:
-	 *  120MHz * M / N = 120MHz * 48 / 3125 = 1843200Hz
+	 * 120MHz * M / N = 120MHz * 48 / 3125 = 1843200Hz
 	 */
 	tmp = read32(base + SIO_REG_PPR_CLOCK);
 	tmp |= SIO_REG_PPR_CLOCK_EN | SIO_REG_PPR_CLOCK_UPDATE |

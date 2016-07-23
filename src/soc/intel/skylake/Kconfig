@@ -13,6 +13,7 @@ config CPU_SPECIFIC_OPTIONS
 	select ARCH_ROMSTAGE_X86_32
 	select ARCH_VERSTAGE_X86_32
 	select ACPI_NHLT
+	select BOOTBLOCK_CONSOLE
 	select CACHE_MRC_SETTINGS
 	select CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM if RELOCATABLE_RAMSTAGE
 	select C_ENVIRONMENT_BOOTBLOCK
@@ -61,21 +62,9 @@ config CHROMEOS
 	select VBOOT_VBNV_CMOS_BACKUP_TO_FLASH
 	select VIRTUAL_DEV_SWITCH
 
-config BOOTBLOCK_CPU_INIT
-	string
-	default "soc/intel/skylake/bootblock/cpu.c"
-
-config BOOTBLOCK_NORTHBRIDGE_INIT
-	string
-	default "soc/intel/skylake/bootblock/systemagent.c"
-
 config BOOTBLOCK_RESETS
 	string
 	default "soc/intel/common/reset.c"
-
-config BOOTBLOCK_SOUTHBRIDGE_INIT
-	string
-	default "soc/intel/skylake/bootblock/pch.c"
 
 config CBFS_SIZE
 	hex

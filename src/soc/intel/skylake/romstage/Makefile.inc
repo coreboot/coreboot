@@ -1,13 +1,10 @@
-verstage-y += cpu.c
-verstage-y += i2c.c
-verstage-y += pch.c
+bootblock-y += cpu.c
+bootblock-y += i2c.c
+bootblock-y += pch.c
+bootblock-y += report_platform.c
+bootblock-y += smbus.c
+
 verstage-y += power_state.c
-verstage-y += report_platform.c
-verstage-y += romstage.c
-verstage-y += smbus.c
-verstage-y += spi.c
-verstage-y += systemagent.c
-verstage-y += uart.c
 
 romstage-y += cpu.c
 romstage-y += i2c.c
@@ -18,4 +15,3 @@ romstage-y += romstage.c
 romstage-y += smbus.c
 romstage-y += spi.c
 romstage-y += systemagent.c
-romstage-y += uart.c

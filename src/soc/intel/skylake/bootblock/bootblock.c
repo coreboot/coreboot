@@ -14,9 +14,34 @@
  */
 
 #include <bootblock_common.h>
+#include <soc/bootblock.h>
+#include <soc/romstage.h>
 
 void asmlinkage bootblock_c_entry(uint64_t base_timestamp)
 {
 	/* Call lib/bootblock.c main */
 	bootblock_main_with_timestamp(base_timestamp);
+}
+
+void bootblock_soc_early_init(void)
+{
+	bootblock_systemagent_early_init();
+	bootblock_pch_early_init();
+	bootblock_cpu_init();
+
+	if (IS_ENABLED(CONFIG_BOOTBLOCK_CONSOLE))
+		pch_uart_init();
+}
+
+/*
+ * Perform early chipset initialization before fsp memory init
+ * example: pirq->irq programming, enabling smbus, pmcbase, abase,
+ * 			get platform info, i2c programming
+ */
+void bootblock_soc_init(void)
+{
+	report_platform_info();
+	set_max_freq();
+	pch_early_init();
+	i2c_early_init();
 }

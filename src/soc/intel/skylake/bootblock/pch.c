@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2014 Google Inc.
  * Copyright (C) 2015 Intel Corporation.
+ * Copyright (C) 2016 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,9 +15,11 @@
  * GNU General Public License for more details.
  */
 #include <arch/io.h>
+#include <soc/bootblock.h>
 #include <soc/iomap.h>
 #include <soc/lpc.h>
 #include <soc/pci_devs.h>
+#include <soc/pcr.h>
 #include <soc/spi.h>
 
 /*
@@ -51,8 +54,21 @@ static void enable_spibar(void)
 	pci_write_config8(dev, PCI_COMMAND, pcireg);
 }
 
-static void bootblock_southbridge_init(void)
+static void enable_p2sbbar(void)
+{
+	device_t dev = PCH_DEV_P2SB;
+
+	/* Enable PCR Base address in PCH */
+	pci_write_config32(dev, PCI_BASE_ADDRESS_0, PCH_PCR_BASE_ADDRESS);
+
+	/* Enable P2SB MSE */
+	pci_write_config8(dev, PCI_COMMAND,
+			  PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
+}
+
+void bootblock_pch_early_init(void)
 {
 	enable_spibar();
 	enable_spi_prefetch();
+	enable_p2sbbar();
 }

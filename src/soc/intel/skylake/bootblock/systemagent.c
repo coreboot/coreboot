@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2014 Google Inc.
  * Copyright (C) 2015 Intel Corporation.
+ * Copyright (C) 2016 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,10 +16,11 @@
  */
 
 #include <arch/io.h>
+#include <soc/bootblock.h>
 #include <soc/pci_devs.h>
 #include <soc/systemagent.h>
 
-static void bootblock_northbridge_init(void)
+void bootblock_systemagent_early_init(void)
 {
 	uint32_t reg;
 

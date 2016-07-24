@@ -56,13 +56,6 @@ config SOC_INTEL_COMMON_LPSS_I2C_CLOCK_MHZ
 	  No default is set here as this is an SOC-specific value and must
 	  be provided by the SOC when it selects this driver.
 
-config SOC_SETS_MTRRS
-	bool
-	default n
-	help
-	  The SoC needs uses different access methods for reading and writing
-	  the MTRRs.  Use SoC specific routines to handle the MTRR access.
-
 config MMA
 	bool "enable MMA (Memory Margin Analysis) support"
 	default n

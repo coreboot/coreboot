@@ -87,7 +87,7 @@
 	 *   +0: Number of variable MTRRs to clear
 	 */
 
-#if IS_ENABLED(CONFIG_SOC_SETS_MTRRS)
+#if IS_ENABLED(CONFIG_SOC_SETS_MSRS)
 	push	%esp
 	call	soc_set_mtrrs
 
@@ -136,7 +136,7 @@
 	dec	%ebx
 	jmp	2b
 2:
-#endif /* CONFIG_SOC_SETS_MTRRS */
+#endif /* CONFIG_SOC_SETS_MSRS */
 
 	post_code(0x39)
 
@@ -147,7 +147,7 @@
 
 	post_code(0x3a)
 
-#if IS_ENABLED(CONFIG_SOC_SETS_MTRRS)
+#if IS_ENABLED(CONFIG_SOC_SETS_MSRS)
 	call	soc_enable_mtrrs
 #else
 	/* Enable MTRR. */
@@ -155,7 +155,7 @@
 	rdmsr
 	orl	$MTRR_DEF_TYPE_EN, %eax
 	wrmsr
-#endif /* CONFIG_SOC_SETS_MTRRS */
+#endif /* CONFIG_SOC_SETS_MSRS */
 
 	post_code(0x3b)
 

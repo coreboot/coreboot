@@ -8,3 +8,5 @@ ramstage-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-$(CONFIG_CHROMEOS) += chromeos_ramstage.c
 
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
+
+verstage-$(CONFIG_CHROMEOS) += chromeos.c

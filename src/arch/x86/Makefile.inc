@@ -95,6 +95,7 @@ endef
 ifeq ($(CONFIG_ARCH_BOOTBLOCK_X86_32)$(CONFIG_ARCH_BOOTBLOCK_X86_64),y)
 
 bootblock-y += boot.c
+bootblock-y += cpu_common.c
 bootblock-y += memcpy.c
 bootblock-y += memset.c
 bootblock-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
@@ -279,6 +280,7 @@ postcar-generic-ccopts += -D__POSTCAR__
 
 postcar-y += boot.c
 postcar-y += cbfs_and_run.c
+postcar-y += cpu_common.c
 postcar-y += exit_car.S
 postcar-y += memcpy.c
 postcar-y += memmove.c

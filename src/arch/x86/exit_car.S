@@ -54,6 +54,14 @@ _start:
 	 *   0x00: Number of variable MTRRs to clear
 	 */
 
+#if IS_ENABLED(CONFIG_SOC_SETS_MSRS)
+	push	%esp
+	call	soc_set_mtrrs
+
+	/* eax: new top_of_stack with setup_stack_and_mtrrs data removed */
+	movl	%eax, %esp
+	call	soc_enable_mtrrs
+#else /* CONFIG_SOC_SETS_MSRS */
 	/* Clear variable MTRRs. */
 	pop	%ebx	/* Number to clear */
 	test	%ebx, %ebx
@@ -98,6 +106,7 @@ _start:
 	and	$(~(MTRR_DEF_TYPE_MASK)), %eax
 	or	$(MTRR_DEF_TYPE_EN), %eax
 	wrmsr
+#endif /* CONFIG_SOC_SETS_MSRS */
 
 	/* Load and run ramstage. */
 	call	copy_and_run

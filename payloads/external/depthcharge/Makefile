@@ -8,7 +8,8 @@ project_config_file=$(project_dir)/.config
 output_dir=$(project_dir)/build
 libpayload_dir=$(abspath $(CURDIR)/../../libpayload)
 libpayload_install_dir=$(output_dir)/lp_$(BOARD)
-vboot_dir=$(abspath $(CURDIR)/../../../3rdparty/vboot)
+
+VBOOT_SOURCE ?= $(abspath $(CURDIR)/../../../3rdparty/vboot)
 
 TAG-$(DEPTHCHARGE_MASTER)=origin/master
 TAG-$(DEPTHCHARGE_STABLE)=$(STABLE_COMMIT_ID)
@@ -55,12 +56,12 @@ config: $(libpayload_install_dir) checkout
 		git describe --tags --long --dirty 2>/dev/null || \
 		echo "unknown") ; \
 	cd $(project_dir) && $(MAKE) BOARD=$(BOARD) LIBPAYLOAD_DIR=$(libpayload_install_dir)/libpayload \
-		VB_SOURCE=$(vboot_dir) defconfig
+		VB_SOURCE=$(VBOOT_SOURCE) defconfig
 
 build: config
 	echo "    MAKE       $(project_name) $(TAG-y)"
 	cd $(project_dir) && $(MAKE) BOARD=$(BOARD) LIBPAYLOAD_DIR=$(libpayload_install_dir)/libpayload \
-		VB_SOURCE=$(vboot_dir) PATH="$(abspath ../../../build/util/cbfstool):$$PATH" depthcharge_unified
+		VB_SOURCE=$(VBOOT_SOURCE) PATH="$(abspath ../../../build/util/cbfstool):$$PATH" depthcharge_unified
 
 clean:
 	test -d $(output_dir) && rm -rf $(output_dir) || exit 0

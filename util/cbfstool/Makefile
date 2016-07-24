@@ -6,6 +6,8 @@ CONFIG_FMD_GENPARSER ?= n
 HOSTCC ?= $(CC)
 OBJCOPY ?= objcopy
 
+VBOOT_SOURCE ?= $(top)/3rdparty/vboot
+
 .PHONY: all
 all: cbfstool fmaptool rmodtool ifwitool
 

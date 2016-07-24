@@ -57,6 +57,13 @@ static void save_memory_training_data(bool s3wake, uint32_t fsp_version)
 			printk(BIOS_ERR, "Failed to stash MRC data\n");
 }
 
+/*
+ * On every trip to recovery, newly generated MRC data is stored with this
+ * version since it is not expected to be a legit version. This ensures that on
+ * next normal boot, memory re-training occurs and new MRC data is stored.
+ */
+#define MRC_DEAD_VERSION		(0xdeaddead)
+
 static enum fsp_status do_fsp_post_memory_init(void *hob_list_ptr, bool s3wake,
 						uint32_t fsp_version)
 {
@@ -85,6 +92,9 @@ static enum fsp_status do_fsp_post_memory_init(void *hob_list_ptr, bool s3wake,
 
 	/* Now that CBMEM is up, save the list so ramstage can use it */
 	fsp_save_hob_list(hob_list_ptr);
+
+	if (recovery_mode_enabled())
+		fsp_version = MRC_DEAD_VERSION;
 
 	save_memory_training_data(s3wake, fsp_version);
 

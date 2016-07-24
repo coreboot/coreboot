@@ -95,6 +95,22 @@ void init_vm(uintptr_t virtMemStart, uintptr_t physMemStart, uintptr_t pageTable
 }
 
 void initVirtualMemory(void) {
+	uintptr_t ms;
+
+	ms = read_csr(mstatus);
+	ms = INSERT_FIELD(ms, MSTATUS_VM, VM_CHOICE);
+	write_csr(mstatus, ms);
+	ms = read_csr(mstatus);
+
+	if (EXTRACT_FIELD(ms, MSTATUS_VM) != VM_CHOICE) {
+		printk(BIOS_DEBUG, "We don't have virtual memory...\n");
+		return;
+	} else {
+		printk(BIOS_DEBUG, "-----------------------------\n");
+		printk(BIOS_DEBUG, "Virtual memory status enabled\n");
+		printk(BIOS_DEBUG, "-----------------------------\n");
+	}
+
 	printk(BIOS_DEBUG, "Initializing virtual memory...\n");
 	uintptr_t physicalStart = 0x1000000; // TODO: Figure out how to grab this from cbfs
 	uintptr_t virtualStart = 0xffffffff81000000;
@@ -114,19 +130,9 @@ void mstatus_init(void)
 	ms = INSERT_FIELD(ms, MSTATUS_PRV1, PRV_S);
 	ms = INSERT_FIELD(ms, MSTATUS_PRV2, PRV_U);
 	ms = INSERT_FIELD(ms, MSTATUS_IE2, 1);
-	ms = INSERT_FIELD(ms, MSTATUS_VM, VM_CHOICE);
 	ms = INSERT_FIELD(ms, MSTATUS_FS, 3);
 	ms = INSERT_FIELD(ms, MSTATUS_XS, 3);
 	write_csr(mstatus, ms);
-	ms = read_csr(mstatus);
-
-	if (EXTRACT_FIELD(ms, MSTATUS_VM) != VM_CHOICE) {
-		printk(BIOS_DEBUG, "we don't have virtual memory...\n");
-	} else {
-		printk(BIOS_DEBUG, "-----------------------------\n");
-		printk(BIOS_DEBUG, "virtual memory status enabled\n");
-		printk(BIOS_DEBUG, "-----------------------------\n");
-	}
 
 	clear_csr(mip, MIP_MSIP);
 	set_csr(mie, MIP_MSIP);

@@ -153,3 +153,10 @@ config BOOT_MEDIA_SPI_BUS
 	depends on SPI_FLASH
 	help
 	 Most x86 systems which boot from SPI flash boot using bus 0.
+
+config SOC_SETS_MSRS
+	bool
+	default n
+	help
+	  The SoC requires different access methods for reading and writing
+	  the MSRs.  Use SoC specific routines to handle the MSR access.

@@ -15,6 +15,7 @@
 
 #define __SIMPLE_DEVICE__
 
+#include <cpu/x86/mtrr.h>
 #include <console/console.h>
 #include <soc/pci_devs.h>
 #include <soc/ramstage.h>
@@ -71,6 +72,33 @@ static uint16_t get_legacy_gpio_address(uint32_t reg_address)
 	return (uint16_t)(gpio_base_address + reg_address);
 }
 
+static uint32_t mtrr_index_to_host_bridge_register_offset(unsigned long index)
+{
+	uint32_t offset;
+
+	/* Convert from MTRR index to host brigde offset (Datasheet 12.7.2) */
+	if (index == MTRR_CAP_MSR)
+		offset = QUARK_NC_HOST_BRIDGE_IA32_MTRR_CAP;
+	else if (index == MTRR_DEF_TYPE_MSR)
+		offset = QUARK_NC_HOST_BRIDGE_IA32_MTRR_DEF_TYPE;
+	else if (index == MTRR_FIX_64K_00000)
+		offset = QUARK_NC_HOST_BRIDGE_MTRR_FIX64K_00000;
+	else if ((index >= MTRR_FIX_16K_80000) && (index <= MTRR_FIX_16K_A0000))
+		offset = ((index - MTRR_FIX_16K_80000) << 1)
+			+ QUARK_NC_HOST_BRIDGE_MTRR_FIX16K_80000;
+	else if ((index >= MTRR_FIX_4K_C0000) && (index <= MTRR_FIX_4K_F8000))
+		offset = ((index - MTRR_FIX_4K_C0000) << 1)
+			+ QUARK_NC_HOST_BRIDGE_IA32_MTRR_PHYSBASE0;
+	else if ((index >= MTRR_PHYS_BASE(0)) && (index <= MTRR_PHYS_MASK(7)))
+		offset = (index - MTRR_PHYS_BASE(0))
+			+ QUARK_NC_HOST_BRIDGE_IA32_MTRR_PHYSBASE0;
+	else {
+		printk(BIOS_DEBUG, "index: 0x%08lx\n", index);
+		die("Invalid MTRR index specified!\n");
+	}
+	return offset;
+}
+
 void mcr_write(uint8_t opcode, uint8_t port, uint32_t reg_address)
 {
 	pci_write_config32(MC_BDF, QNC_ACCESS_PORT_MCR,
@@ -94,6 +122,22 @@ void mea_write(uint32_t reg_address)
 {
 	pci_write_config32(MC_BDF, QNC_ACCESS_PORT_MEA, reg_address
 		& QNC_MEA_MASK);
+}
+
+uint32_t port_reg_read(uint8_t port, uint32_t offset)
+{
+	/* Read the port register */
+	mea_write(offset);
+	mcr_write(QUARK_OPCODE_READ, port, offset);
+	return mdr_read();
+}
+
+void port_reg_write(uint8_t port, uint32_t offset, uint32_t value)
+{
+	/* Write the port register */
+	mea_write(offset);
+	mdr_write(value);
+	mcr_write(QUARK_OPCODE_WRITE, port, offset);
 }
 
 static uint32_t reg_gpe0_read(uint32_t reg_address)
@@ -345,6 +389,50 @@ static void reg_write(struct reg_script_context *ctx)
 		ctx->display_prefix = "USB PHY";
 		reg_usb_write(step->reg, (uint32_t)step->value);
 		break;
+	}
+}
+
+msr_t soc_msr_read(unsigned index)
+{
+	uint32_t offset;
+	union {
+		uint64_t u64;
+		msr_t msr;
+	} value;
+
+	/* Read the low 32-bits of the register */
+	offset = mtrr_index_to_host_bridge_register_offset(index);
+	value.u64 = port_reg_read(QUARK_NC_HOST_BRIDGE_SB_PORT_ID, offset);
+
+	/* For 64-bit registers, read the upper 32-bits */
+	if ((offset >=  QUARK_NC_HOST_BRIDGE_MTRR_FIX64K_00000)
+		&& (offset <= QUARK_NC_HOST_BRIDGE_MTRR_FIX4K_F8000)) {
+		offset += 1;
+		value.u64 |= port_reg_read(QUARK_NC_HOST_BRIDGE_SB_PORT_ID,
+					   offset);
+	}
+	return value.msr;
+}
+
+void soc_msr_write(unsigned index, msr_t msr)
+{
+	uint32_t offset;
+	union {
+		uint32_t u32[2];
+		msr_t msr;
+	} value;
+
+	/* Write the low 32-bits of the register */
+	value.msr = msr;
+	offset = mtrr_index_to_host_bridge_register_offset(index);
+	port_reg_write(QUARK_NC_HOST_BRIDGE_SB_PORT_ID, offset, value.u32[0]);
+
+	/* For 64-bit registers, write the upper 32-bits */
+	if ((offset >=  QUARK_NC_HOST_BRIDGE_MTRR_FIX64K_00000)
+		&& (offset <= QUARK_NC_HOST_BRIDGE_MTRR_FIX4K_F8000)) {
+		offset += 1;
+		port_reg_write(QUARK_NC_HOST_BRIDGE_SB_PORT_ID, offset,
+				value.u32[1]);
 	}
 }
 

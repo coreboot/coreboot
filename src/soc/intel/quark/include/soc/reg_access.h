@@ -19,6 +19,7 @@
 #define __SIMPLE_DEVICE__
 
 #include <arch/io.h>
+#include <cpu/x86/msr.h>
 #include <delay.h>
 #include <fsp/util.h>
 #include <reg_script.h>
@@ -230,6 +231,8 @@ void mcr_write(uint8_t opcode, uint8_t port, uint32_t reg_address);
 uint32_t mdr_read(void);
 void mdr_write(uint32_t value);
 void mea_write(uint32_t reg_address);
+uint32_t port_reg_read(uint8_t port, uint32_t offset);
+void port_reg_write(uint8_t port, uint32_t offset, uint32_t value);
 uint32_t reg_host_bridge_unit_read(uint32_t reg_address);
 uint32_t reg_legacy_gpio_read(uint32_t reg_address);
 void reg_legacy_gpio_write(uint32_t reg_address, uint32_t value);

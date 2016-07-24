@@ -124,4 +124,17 @@ int get_free_var_mtrr(void);
 
 #define CACHE_ROM_BASE	(((1<<20) - (CACHE_ROM_SIZE>>12))<<12)
 
+#if (IS_ENABLED(CONFIG_SOC_SETS_MSRS) && !defined(__ASSEMBLER__) \
+	&& !defined(__ROMCC__))
+#include <cpu/x86/msr.h>
+#include <arch/cpu.h>
+
+/*
+ * Set the MTRRs using the data on the stack from setup_stack_and_mtrrs.
+ * Return a new top_of_stack value which removes the setup_stack_and_mtrrs data.
+ */
+asmlinkage void *soc_set_mtrrs(void *top_of_stack);
+asmlinkage void soc_enable_mtrrs(void);
+#endif /* CONFIG_SOC_SETS_MSRS ... */
+
 #endif /* CPU_X86_MTRR_H */

@@ -61,7 +61,7 @@ payload_revision-file := $(PAYLOAD_VERSION)
 payload_revision-type := raw
 
 SEABIOS_CC_OFFSET=$(if $(filter %ccache,$(HOSTCC)),2,1)
-payloads/external/SeaBIOS/seabios/out/bios.bin.elf seabios: $(top)/$(DOTCONFIG)
+payloads/external/SeaBIOS/seabios/out/bios.bin.elf seabios: $(DOTCONFIG)
 	$(MAKE) -C payloads/external/SeaBIOS \
 			HOSTCC="$(HOSTCC)" \
 			CC=$(word $(SEABIOS_CC_OFFSET),$(CC_x86_32)) \
@@ -92,7 +92,7 @@ bootorder-file := $(strip $(CONFIG_SEABIOS_BOOTORDER_FILE))
 bootorder-type := raw
 endif
 
-payloads/external/depthcharge/depthcharge/build/depthcharge.elf depthcharge: $(top)/$(DOTCONFIG) $(CBFSTOOL)
+payloads/external/depthcharge/depthcharge/build/depthcharge.elf depthcharge: $(DOTCONFIG) $(CBFSTOOL)
 	$(MAKE) -C payloads/external/depthcharge \
 		BOARD=$(call ws_to_under,$(call strip_quotes,$(call tolower,$(CONFIG_MAINBOARD_PART_NUMBER)))) \
 		MFLAGS= MAKEFLAGS=
@@ -119,7 +119,7 @@ grub2:
 
 payloads/external/GRUB2/grub2/build/default_payload.elf: grub2
 
-payloads/external/U-Boot/u-boot/u-boot-dtb.bin u-boot: $(top)/$(DOTCONFIG)
+payloads/external/U-Boot/u-boot/u-boot-dtb.bin u-boot: $(DOTCONFIG)
 	$(MAKE) -C payloads/external/U-Boot \
 			CONFIG_UBOOT_MASTER=$(CONFIG_UBOOT_MASTER) \
 			CONFIG_UBOOT_STABLE=$(CONFIG_UBOOT_STABLE)
@@ -141,7 +141,7 @@ cbfs-files-$(CONFIG_TINT_SECONDARY_PAYLOAD) += img/tint
 img/tint-file := payloads/external/tint/tint/tint.elf
 img/tint-type := payload
 
-payloads/external/Memtest86Plus/memtest86plus/memtest: $(top)/$(DOTCONFIG)
+payloads/external/Memtest86Plus/memtest86plus/memtest: $(DOTCONFIG)
 	$(MAKE) -C payloads/external/Memtest86Plus all \
 		CC="$(CC_x86_32)" \
 		LD="$(LD_x86_32)" \
@@ -169,7 +169,7 @@ cbfs-files-$(CONFIG_PXE_ROM)$(CONFIG_BUILD_IPXE) += pci$(CONFIG_PXE_ROM_ID).rom
 pci$(CONFIG_PXE_ROM_ID).rom-file := $(PXE_ROM_FILE)
 pci$(CONFIG_PXE_ROM_ID).rom-type := raw
 
-payloads/external/iPXE/ipxe/ipxe.rom ipxe: $(top)/$(DOTCONFIG)
+payloads/external/iPXE/ipxe/ipxe.rom ipxe: $(DOTCONFIG)
 	$(MAKE) -C payloads/external/iPXE all \
 	CROSS_COMPILE="$(CROSS_COMPILE_$(ARCH-ramstage-y))" \
 	PXE_ROM_PCI_ID=$(PXE_ROM_PCI_ID) \

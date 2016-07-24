@@ -65,7 +65,7 @@ TOPLEVEL := .
 CONFIG_SHELL := sh
 KBUILD_DEFCONFIG := configs/defconfig
 UNAME_RELEASE := $(shell uname -r)
-DOTCONFIG ?= .config
+DOTCONFIG ?= $(top)/.config
 KCONFIG_CONFIG = $(DOTCONFIG)
 export KCONFIG_CONFIG
 HAVE_DOTCONFIG := $(wildcard $(DOTCONFIG))

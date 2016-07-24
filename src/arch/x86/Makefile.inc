@@ -287,6 +287,8 @@ postcar-y += memlayout.ld
 postcar-$(CONFIG_X86_TOP4G_BOOTMEDIA_MAP) += mmap_boot.c
 postcar-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 
+LDFLAGS_postcar += -Map $(objcbfs)/postcar.map
+
 $(objcbfs)/postcar.debug: $$(postcar-objs)
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
 	$(LD_postcar) $(LDFLAGS_postcar) -o $@ -L$(obj) $(COMPILER_RT_FLAGS_postcar) --whole-archive --start-group $(filter-out %.ld,$^) --no-whole-archive $(COMPILER_RT_postcar) --end-group -T $(call src-to-obj,postcar,src/arch/x86/memlayout.ld)

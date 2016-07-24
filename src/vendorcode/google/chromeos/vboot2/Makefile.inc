@@ -70,7 +70,7 @@ $(VB2_LIB): $(obj)/config.h
 	$(Q)FIRMWARE_ARCH=$(VB_FIRMWARE_ARCH) \
 	CC="$(CC_verstage)" \
 	CFLAGS="$(VBOOT_CFLAGS)" VBOOT2="y" \
-	$(MAKE) -C $(VB_SOURCE) \
+	$(MAKE) -C $(VBOOT_SOURCE) \
 		BUILD=$(abspath $(dir $(VB2_LIB))) \
 		V=$(V) \
 		fwlib20

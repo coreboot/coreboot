@@ -28,6 +28,9 @@ endif
 ################################################################################
 ifeq ($(CONFIG_ARCH_BOOTBLOCK_RISCV),y)
 
+bootblock-y += id.S
+$(call src-to-obj,bootblock,$(dir)/id.S): $(obj)/build.h
+
 bootblock-y = bootblock.S stages.c
 bootblock-y += trap_util.S
 bootblock-y += trap_handler.c

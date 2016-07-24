@@ -2,7 +2,7 @@ top ?= $(abspath ../..)
 objutil ?= $(top)/util
 
 HOSTCC ?= $(CC)
-VB_SOURCE ?= $(top)/3rdparty/vboot
+VBOOT_SOURCE ?= $(top)/3rdparty/vboot
 
 .PHONY: all
 all: $(objutil)/futility/futility

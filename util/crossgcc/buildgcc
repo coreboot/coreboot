@@ -442,8 +442,8 @@ have_hostcflags_from_gmp() {
 set_hostcflags_from_gmp() {
 	# Now set CFLAGS to match GMP CFLAGS but strip out -pedantic
 	# as GCC 4.6.x fails if it's there.
-	export HOSTCFLAGS=$(grep __GMP_CFLAGS $DESTDIR$TARGETDIR/include/gmp.h |cut -d\" -f2 |\
-	    sed s,-pedantic,,)
+	export HOSTCFLAGS="$(grep __GMP_CFLAGS $DESTDIR$TARGETDIR/include/gmp.h |cut -d\" -f2 |\
+	    sed s,-pedantic,,)"
 }
 
 build_GMP() {

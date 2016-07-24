@@ -72,8 +72,8 @@ TOOLCPPFLAGS += -I$(top)/util/cbfstool
 TOOLCPPFLAGS += -I$(objutil)/cbfstool
 TOOLCPPFLAGS += -I$(top)/src/commonlib/include
 TOOLCPPFLAGS += -DNEED_VB2_SHA_LIBRARY
-TOOLCPPFLAGS += -I$(top)/3rdparty/vboot/firmware/include
-TOOLCPPFLAGS += -I$(top)/3rdparty/vboot/firmware/2lib/include
+TOOLCPPFLAGS += -I$(VBOOT_SOURCE)/firmware/include
+TOOLCPPFLAGS += -I$(VBOOT_SOURCE)/firmware/2lib/include
 # UEFI header file support. It's not pretty, but that's what we currently
 # have right now.
 TOOLCPPFLAGS += -I$(top)/src
@@ -112,7 +112,7 @@ $(objutil)/cbfstool/%.o: $(top)/util/cbfstool/lzma/C/%.c
 	printf "    HOSTCC     $(subst $(objutil)/,,$(@))\n"
 	$(HOSTCC) $(TOOLCPPFLAGS) $(TOOLCFLAGS) $(HOSTCFLAGS) -c -o $@ $<
 
-$(objutil)/cbfstool/%.o: $(top)/3rdparty/vboot/firmware/2lib/%.c
+$(objutil)/cbfstool/%.o: $(VBOOT_SOURCE)/firmware/2lib/%.c
 	printf "    HOSTCC     $(subst $(objutil)/,,$(@))\n"
 	$(HOSTCC) $(TOOLCPPFLAGS) $(TOOLCFLAGS) $(HOSTCFLAGS) -c -o $@ $<
 

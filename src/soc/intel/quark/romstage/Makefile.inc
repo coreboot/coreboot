@@ -16,7 +16,10 @@
 romstage-y += car.c
 romstage-y += car_stage_entry.S
 romstage-$(CONFIG_PLATFORM_USES_FSP1_1) += fsp1_1.c
+romstage-$(CONFIG_PLATFORM_USES_FSP2_0) += fsp2_0.c
 romstage-y += mtrr.c
 romstage-y += pcie.c
 romstage-y += report_platform.c
 romstage-y += romstage.c
+
+postcar-y += mtrr.c

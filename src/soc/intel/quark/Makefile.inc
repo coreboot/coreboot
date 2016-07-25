@@ -35,18 +35,21 @@ ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
 ramstage-y += chip.c
 ramstage-y += ehci.c
 ramstage-$(CONFIG_PLATFORM_USES_FSP1_1) += fsp1_1.c
+ramstage-$(CONFIG_PLATFORM_USES_FSP2_0) += fsp2_0.c
 ramstage-y += gpio_i2c.c
 ramstage-y += i2c.c
 ramstage-y += lpc.c
 ramstage-y += memmap.c
 ramstage-y += northcluster.c
 ramstage-y += reg_access.c
+ramstage-$(CONFIG_PLATFORM_USES_FSP2_0) += reset.c
 ramstage-y += tsc_freq.c
 ramstage-$(CONFIG_ENABLE_BUILTIN_HSUART1) += uart_common.c
 ramstage-$(CONFIG_ENABLE_BUILTIN_HSUART1) += uart.c
 
 CPPFLAGS_common += -I$(src)/soc/intel/quark
 CPPFLAGS_common += -I$(src)/soc/intel/quark/include
+CPPFLAGS_common += -I$(src)/soc/intel/quark/include/soc/fsp
 
 # Chipset microcode path
 CPPFLAGS_common += -I3rdparty/blobs/soc/intel/quark

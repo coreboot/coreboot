@@ -19,9 +19,11 @@
 #include <console/console.h>
 #include <cbfs.h>
 #include "../chip.h"
+#include <fsp/memmap.h>
 #include <fsp/util.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
+#include <soc/QuarkNcSocId.h>
 #include <soc/romstage.h>
 #include <string.h>
 
@@ -63,6 +65,12 @@ struct chipset_power_state *fill_power_state(void)
 	ps->prev_sleep_state = 0;
 	printk(BIOS_SPEW, "prev_sleep_state %d\n", ps->prev_sleep_state);
 	return ps;
+}
+
+size_t mmap_region_granularity(void)
+{
+	/* Align to 8 MiB by default */
+	return 8 << 20;
 }
 
 /* Initialize the UPD parameters for MemoryInit */

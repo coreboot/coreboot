@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#if IS_ENABLED(CONFIG_PLATFORM_USES_FSP1_1)
 #include <fsp/romstage.h>
 
 /* All FSP specific code goes in this block */
@@ -22,3 +23,4 @@ void mainboard_romstage_entry(struct romstage_params *rp)
 	/* Call back into chipset code with platform values updated. */
 	romstage_common(rp);
 }
+#endif /* IS_ENABLED(CONFIG_PLATFORM_USES_FSP1_1) */

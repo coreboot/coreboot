@@ -556,9 +556,9 @@ void rkclk_configure_ddr(unsigned int hz)
 		dpll_cfg = (struct pll_div)
 		{.refdiv = 1, .fbdiv = 100, .postdiv1 = 3, .postdiv2 = 1};
 		break;
-	case 928*MHz:
+	case 933*MHz:
 		dpll_cfg = (struct pll_div)
-		{.refdiv = 1, .fbdiv = 116, .postdiv1 = 3, .postdiv2 = 1};
+		{.refdiv = 3, .fbdiv = 350, .postdiv1 = 3, .postdiv2 = 1};
 		break;
 	default:
 		die("Unsupported SDRAM frequency, add to clock.c!");

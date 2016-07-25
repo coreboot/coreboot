@@ -15,10 +15,12 @@
 
 ifeq ($(CONFIG_PLATFORM_USES_FSP2_0),y)
 
+romstage-y += debug.c
 romstage-y += hand_off_block.c
 romstage-y += util.c
 romstage-y += memory_init.c
 
+ramstage-y += debug.c
 ramstage-y += graphics.c
 ramstage-y += hand_off_block.c
 ramstage-y += notify.c

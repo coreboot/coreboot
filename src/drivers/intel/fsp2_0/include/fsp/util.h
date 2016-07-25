@@ -15,9 +15,19 @@
 
 #include <boot/coreboot_tables.h>
 #include <commonlib/region.h>
+#include <arch/cpu.h>
 #include <fsp/api.h>
 #include <fsp/info_header.h>
 #include <memrange.h>
+
+struct hob_header {
+	uint16_t type;
+	uint16_t length;
+} __attribute__((packed));
+
+struct fsp_notify_params {
+	enum fsp_notify_phase phase;
+};
 
 /*
  * Hand-off-block handling functions that depend on CBMEM, and thus can only
@@ -52,5 +62,13 @@ void fsp_handle_reset(enum fsp_status status);
 
 /* SoC/chipset must provide this to handle platform-specific reset codes */
 void chipset_handle_reset(enum fsp_status status);
+
+typedef asmlinkage enum fsp_status (*fsp_memory_init_fn)
+				   (void *raminit_upd, void **hob_list);
+typedef asmlinkage enum fsp_status (*fsp_silicon_init_fn)
+				   (void *silicon_upd);
+typedef asmlinkage enum fsp_status (*fsp_notify_fn)
+				   (struct fsp_notify_params *);
+#include <fsp/debug.h>
 
 #endif /* _FSP2_0_UTIL_H_ */

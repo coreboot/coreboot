@@ -29,9 +29,6 @@
 #include <timestamp.h>
 #include <vboot/vboot_common.h>
 
-typedef asmlinkage enum fsp_status (*fsp_memory_init_fn)
-				   (void *raminit_upd, void **hob_list);
-
 static void save_memory_training_data(bool s3wake, uint32_t fsp_version)
 {
 	size_t  mrc_data_size;
@@ -221,9 +218,8 @@ static enum fsp_status do_fsp_memory_init(struct fsp_header *hdr, bool s3wake,
 
 	/* Call FspMemoryInit */
 	fsp_raminit = (void *)(hdr->image_base + hdr->memory_init_entry_offset);
-	printk(BIOS_DEBUG, "Calling FspMemoryInit: 0x%p\n", fsp_raminit);
-	printk(BIOS_SPEW, "\t%p: raminit_upd\n", &fspm_upd);
-	printk(BIOS_SPEW, "\t%p: hob_list ptr\n", &hob_list_ptr);
+	fsp_debug_before_memory_init(fsp_raminit, upd, &fspm_upd,
+		&hob_list_ptr);
 
 	post_code(POST_FSP_MEMORY_INIT);
 	timestamp_add_now(TS_FSP_MEMORY_INIT_START);
@@ -231,7 +227,7 @@ static enum fsp_status do_fsp_memory_init(struct fsp_header *hdr, bool s3wake,
 	post_code(POST_FSP_MEMORY_INIT);
 	timestamp_add_now(TS_FSP_MEMORY_INIT_END);
 
-	printk(BIOS_DEBUG, "FspMemoryInit returned 0x%08x\n", status);
+	fsp_debug_after_memory_init(status, hob_list_ptr);
 
 	/* Handle any resets requested by FSPM. */
 	fsp_handle_reset(status);

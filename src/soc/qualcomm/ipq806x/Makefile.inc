@@ -49,6 +49,10 @@ ramstage-y += timer.c
 ramstage-y += uart.c  # Want the UART always ready for the kernels' earlyprintk
 ramstage-y += usb.c
 ramstage-y += tz_wrapper.S
+ramstage-y += gsbi.c
+ramstage-y += i2c.c
+ramstage-y += qup.c
+ramstage-y += spi.c
 
 ifeq ($(CONFIG_USE_BLOBS),y)
 

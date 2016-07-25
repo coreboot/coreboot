@@ -40,7 +40,7 @@ int init_igd_opregion(igd_opregion_t *opregion)
 	memset(opregion, 0, sizeof(igd_opregion_t));
 
 	memcpy(&opregion->header.signature, IGD_OPREGION_SIGNATURE,
-					sizeof(IGD_OPREGION_SIGNATURE));
+					sizeof(opregion->header.signature));
 	memcpy(opregion->header.vbios_version, vbt->coreblock_biosbuild,
 					ARRAY_SIZE(vbt->coreblock_biosbuild));
 	memcpy(opregion->vbt.gvd1, vbt, MIN(vbt->hdr_vbt_size,

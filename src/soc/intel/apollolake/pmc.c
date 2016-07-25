@@ -19,6 +19,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <console/console.h>
+#include <cpu/x86/smm.h>
 #include <soc/iomap.h>
 #include <soc/pci_ids.h>
 #include <soc/gpio.h>
@@ -122,10 +123,20 @@ static void pmc_gpe_init(void)
 	fixup_power_state();
 }
 
+static void pch_set_acpi_mode(void)
+{
+	if (IS_ENABLED(CONFIG_HAVE_SMI_HANDLER) && !acpi_is_wakeup_s3()) {
+		printk(BIOS_DEBUG, "Disabling ACPI via APMC:");
+		outb(APM_CNT_ACPI_DISABLE, APM_CNT);
+		printk(BIOS_DEBUG, "Done.\n");
+	}
+}
+
 static void pmc_init(struct device *dev)
 {
 	/* Set up GPE configuration */
 	pmc_gpe_init();
+	pch_set_acpi_mode();
 }
 
 static const struct device_operations device_ops = {

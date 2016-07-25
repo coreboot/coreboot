@@ -52,7 +52,7 @@ void southbridge_smm_enable_smi(void)
 	disable_gpe(PME_B0_EN);
 
 	/* Enable SMI generation */
-	enable_smi(APMC_EN | SLP_SMI_EN | GBL_SMI_EN | EOS);
+	enable_smi(APMC_EN | SLP_SMI_EN | GBL_SMI_EN | EOS | GPIO_EN);
 }
 
 void southbridge_clear_smi_status(void)

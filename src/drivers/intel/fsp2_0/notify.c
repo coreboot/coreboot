@@ -17,13 +17,6 @@
 #include <string.h>
 #include <timestamp.h>
 
-struct fsp_notify_params {
-	enum fsp_notify_phase phase;
-};
-
-typedef asmlinkage enum fsp_status (*fsp_notify_fn)
-				   (struct fsp_notify_params *);
-
 enum fsp_status fsp_notify(enum fsp_notify_phase phase)
 {
 	enum fsp_status ret;
@@ -35,8 +28,7 @@ enum fsp_status fsp_notify(enum fsp_notify_phase phase)
 
 	fspnotify = (void*) (fsps_hdr.image_base +
 			    fsps_hdr.notify_phase_entry_offset);
-
-	printk(BIOS_DEBUG, "FspNotify %x\n", (uint32_t) phase);
+	fsp_before_debug_notify(fspnotify, &notify_params);
 
 	if (phase == AFTER_PCI_ENUM) {
 		timestamp_add_now(TS_FSP_BEFORE_ENUMERATE);
@@ -55,6 +47,7 @@ enum fsp_status fsp_notify(enum fsp_notify_phase phase)
 		timestamp_add_now(TS_FSP_AFTER_FINALIZE);
 		post_code(POST_FSP_NOTIFY_BEFORE_FINALIZE);
 	}
+	fsp_debug_after_notify(ret);
 
 	return ret;
 }

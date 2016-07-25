@@ -21,11 +21,6 @@
 
 #define HOB_HEADER_LEN		8
 
-struct hob_header {
-	uint16_t type;
-	uint16_t length;
-} __attribute__((packed));
-
 struct hob_resource {
 	uint8_t owner_guid[16];
 	uint32_t type;

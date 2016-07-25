@@ -23,9 +23,6 @@
 
 struct fsp_header fsps_hdr;
 
-typedef asmlinkage enum fsp_status (*fsp_silicon_init_fn)
-				   (void *silicon_upd);
-
 static enum fsp_status do_silicon_init(struct fsp_header *hdr)
 {
 	struct FSPS_UPD upd, *supd;
@@ -44,15 +41,18 @@ static enum fsp_status do_silicon_init(struct fsp_header *hdr)
 	/* Give SoC/mainboard a chance to populate entries */
 	platform_fsp_silicon_init_params_cb(&upd);
 
-	timestamp_add_now(TS_FSP_SILICON_INIT_START);
-	post_code(POST_FSP_SILICON_INIT);
+	/* Call SiliconInit */
 	silicon_init = (void *) (hdr->image_base +
 				 hdr->silicon_init_entry_offset);
+	fsp_debug_before_silicon_init(silicon_init, supd, &upd);
+
+	timestamp_add_now(TS_FSP_SILICON_INIT_START);
+	post_code(POST_FSP_SILICON_INIT);
 	status = silicon_init(&upd);
 	timestamp_add_now(TS_FSP_SILICON_INIT_END);
 	post_code(POST_FSP_SILICON_INIT);
 
-	printk(BIOS_DEBUG, "FspSiliconInit returned 0x%08x\n", status);
+	fsp_debug_after_silicon_init(status);
 
 	/* Handle any resets requested by FSPS. */
 	fsp_handle_reset(status);

@@ -27,6 +27,13 @@ config ADD_FSP_BINARIES
 	  Add the FSP-M and FSP-S binaries to CBFS. Currently coreboot does not
 	  use the FSP-T binary and it is not added.
 
+config DISPLAY_FSP_CALLS_AND_STATUS
+	bool "Display the FSP calls and status"
+	default n
+	help
+	  Display the FSP call entry point and parameters prior to calling FSP
+	  and display the status upon return from FSP.
+
 config FSP_S_CBFS
 	string "Name of FSP-S in CBFS"
 	default "fsps.bin"

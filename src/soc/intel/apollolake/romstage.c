@@ -114,11 +114,7 @@ asmlinkage void car_stage_entry(void)
 	console_init();
 
 	s3wake = fill_power_state(ps) == ACPI_S3;
-
-	if (fsp_memory_init(s3wake) != FSP_SUCCESS) {
-		die("FSP memory init failed. Giving up.");
-	}
-
+	fsp_memory_init(s3wake);
 	if (postcar_frame_init(&pcf, 1*KiB))
 		die("Unable to initialize postcar frame.\n");
 

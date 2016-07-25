@@ -17,14 +17,14 @@
 #include <string.h>
 #include <timestamp.h>
 
-enum fsp_status fsp_notify(enum fsp_notify_phase phase)
+void fsp_notify(enum fsp_notify_phase phase)
 {
 	enum fsp_status ret;
 	fsp_notify_fn fspnotify;
 	struct fsp_notify_params notify_params = { .phase = phase };
 
-	if (!fsps_hdr.silicon_init_entry_offset)
-		return FSP_NOT_FOUND;
+	if (!fsps_hdr.notify_phase_entry_offset)
+		die("Notify_phase_entry_offset is zero!\n");
 
 	fspnotify = (void*) (fsps_hdr.image_base +
 			    fsps_hdr.notify_phase_entry_offset);
@@ -49,5 +49,10 @@ enum fsp_status fsp_notify(enum fsp_notify_phase phase)
 	}
 	fsp_debug_after_notify(ret);
 
-	return ret;
+	/* Handle any errors returned by FspNotify */
+	fsp_handle_reset(ret);
+	if (ret != FSP_SUCCESS) {
+		printk(BIOS_SPEW, "FspNotify returned 0x%08x\n", ret);
+		die("FspNotify returned an error!\n");
+	}
 }

@@ -39,8 +39,7 @@ void stout_ec_init(void)
 	/*
 	 *  Important: get_recovery_mode_switch() must be called in EC init.
 	 */
-	if (IS_ENABLED(CONFIG_BOOTMODE_STRAPS))
-		get_recovery_mode_switch();
+	get_recovery_mode_switch();
 
 	/* Unmute */
 	ec_kbc_write_cmd(EC_KBD_CMD_UNMUTE);

@@ -14,7 +14,6 @@
 #include <arch/io.h>
 #include <arch/cpu.h>
 #include <arch/symbols.h>
-#include <bootmode.h>
 #include <cbfs.h>
 #include <cbmem.h>
 #include <console/console.h>
@@ -28,6 +27,7 @@
 #include <string.h>
 #include <symbols.h>
 #include <timestamp.h>
+#include <vboot/vboot_common.h>
 
 typedef asmlinkage enum fsp_status (*fsp_memory_init_fn)
 				   (void *raminit_upd, void **hob_list);
@@ -93,7 +93,7 @@ static enum fsp_status do_fsp_post_memory_init(void *hob_list_ptr, bool s3wake,
 	/* Now that CBMEM is up, save the list so ramstage can use it */
 	fsp_save_hob_list(hob_list_ptr);
 
-	if (recovery_mode_enabled())
+	if (vboot_recovery_mode_enabled())
 		fsp_version = MRC_DEAD_VERSION;
 
 	save_memory_training_data(s3wake, fsp_version);
@@ -119,7 +119,7 @@ static void fsp_fill_mrc_cache(struct FSPM_ARCH_UPD *arch_upd, bool s3wake,
 		return;
 
 	/* Don't use saved training data when recovery mode is enabled. */
-	if (recovery_mode_enabled()) {
+	if (vboot_recovery_mode_enabled()) {
 		printk(BIOS_DEBUG, "Recovery mode. Not using MRC cache.\n");
 		return;
 	}

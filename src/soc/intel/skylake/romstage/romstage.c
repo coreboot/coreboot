@@ -100,7 +100,7 @@ void soc_memory_init_params(struct romstage_params *params,
 	upd->IedSize = CONFIG_IED_REGION_SIZE;
 	upd->ProbelessTrace = config->ProbelessTrace;
 	upd->EnableTraceHub = config->EnableTraceHub;
-	if (recovery_mode_enabled())
+	if (vboot_recovery_mode_enabled())
 		upd->SaGv = 0; /* Disable SaGv in recovery mode. */
 	else
 		upd->SaGv = config->SaGv;

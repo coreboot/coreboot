@@ -24,7 +24,7 @@
 #include <soc/intel/common/mma.h>
 #include <string.h>
 #include <timestamp.h>
-#include <bootmode.h>
+#include <vboot/vboot_common.h>
 
 void raminit(struct romstage_params *params)
 {
@@ -288,7 +288,7 @@ void raminit(struct romstage_params *params)
 	if (mrc_hob == NULL)
 		printk(BIOS_DEBUG,
 			"Memory Configuration Data Hob not present\n");
-	else if (!recovery_mode_enabled()) {
+	else if (!vboot_recovery_mode_enabled()) {
 		/* Do not save MRC data in recovery path */
 		pei_ptr->data_to_save = GET_GUID_HOB_DATA(mrc_hob);
 		pei_ptr->data_to_save_size = ALIGN(

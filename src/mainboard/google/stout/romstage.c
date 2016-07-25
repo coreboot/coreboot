@@ -119,8 +119,7 @@ void rcba_config(void)
 static void early_ec_init(void)
 {
 	u8 ec_status = ec_read(EC_STATUS_REG);
-	int rec_mode = IS_ENABLED(CONFIG_BOOTMODE_STRAPS) &&
-		get_recovery_mode_switch();
+	int rec_mode = get_recovery_mode_switch();
 
 	if (((ec_status & 0x3) == EC_IN_RO_MODE) ||
 	    ((ec_status & 0x3) == EC_IN_RECOVERY_MODE)) {

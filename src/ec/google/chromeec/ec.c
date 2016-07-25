@@ -16,7 +16,6 @@
 #include <stdint.h>
 #include <string.h>
 #include <console/console.h>
-#include <bootmode.h>
 #include <arch/io.h>
 #include <delay.h>
 #include <halt.h>
@@ -24,6 +23,7 @@
 #include <elog.h>
 #include <rtc.h>
 #include <stdlib.h>
+#include <vboot/vboot_common.h>
 
 #include "chip.h"
 #include "ec.h"
@@ -198,18 +198,18 @@ void google_chromeec_check_ec_image(int expected_type)
 	}
 }
 
-/* Check for recovery mode and ensure EC is in RO */
+/* Check for recovery mode and ensure PD/EC is in RO */
 void google_chromeec_early_init(void)
 {
-	if (IS_ENABLED(CONFIG_CHROMEOS)) {
-		/* Check USB PD chip state first */
-		if (IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC_PD))
-			google_chromeec_early_pd_init();
+	if (!IS_ENABLED(CONFIG_CHROMEOS) || !vboot_recovery_mode_enabled())
+		return;
 
-		/* If in recovery ensure EC is running RO firmware. */
-		if (recovery_mode_enabled())
-			google_chromeec_check_ec_image(EC_IMAGE_RO);
-	}
+	/* Check USB PD chip state first */
+	if (IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC_PD))
+		google_chromeec_check_pd_image(EC_IMAGE_RO);
+
+	/* If in recovery ensure EC is running RO firmware. */
+	google_chromeec_check_ec_image(EC_IMAGE_RO);
 }
 
 void google_chromeec_check_pd_image(int expected_type)
@@ -239,15 +239,6 @@ void google_chromeec_check_pd_image(int expected_type)
 		printk(BIOS_DEBUG, "Rebooting PD to RO mode\n");
 		google_chromeec_command(&cec_cmd);
 		udelay(1000);
-	}
-}
-
-/* Check for recovery mode and ensure PD is in RO */
-void google_chromeec_early_pd_init(void)
-{
-	/* If in recovery ensure PD is running RO firmware. */
-	if (recovery_mode_enabled()) {
-		google_chromeec_check_pd_image(EC_IMAGE_RO);
 	}
 }
 #endif
@@ -521,7 +512,7 @@ void google_chromeec_init(void)
 	}
 
 	if (cec_cmd.cmd_code ||
-	    (recovery_mode_enabled() &&
+	    (vboot_recovery_mode_enabled() &&
 	     (cec_resp.current_image != EC_IMAGE_RO))) {
 		struct ec_params_reboot_ec reboot_ec;
 		/* Reboot the EC and make it come back in RO mode */

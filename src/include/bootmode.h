@@ -26,18 +26,9 @@ int clear_recovery_mode_switch(void);
 int get_wipeout_mode_switch(void);
 int get_lid_switch(void);
 
-
 /* Return 1 if display initialization is required. 0 if not. */
 int display_init_required(void);
 int gfx_get_init_done(void);
 void gfx_set_init_done(int done);
-
-#if CONFIG_BOOTMODE_STRAPS
-int developer_mode_enabled(void);
-int recovery_mode_enabled(void);
-#else
-static inline int recovery_mode_enabled(void) { return 0; }
-static inline int developer_mode_enabled(void) { return 0; }
-#endif
 
 #endif /* __BOOTMODE_H__ */

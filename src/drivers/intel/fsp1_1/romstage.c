@@ -122,7 +122,7 @@ void romstage_common(struct romstage_params *params)
 	params->pei_data->saved_data_size = 0;
 	params->pei_data->saved_data = NULL;
 	if (!params->pei_data->disable_saved_data) {
-		if (recovery_mode_enabled()) {
+		if (vboot_recovery_mode_enabled()) {
 			/* Recovery mode does not use MRC cache */
 			printk(BIOS_DEBUG,
 			       "Recovery mode: not using MRC cache.\n");

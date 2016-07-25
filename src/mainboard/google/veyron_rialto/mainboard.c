@@ -34,6 +34,7 @@
 #include <symbols.h>
 #include <vbe.h>
 #include <vendorcode/google/chromeos/chromeos.h>
+#include <vboot/vboot_common.h>
 
 #include "board.h"
 
@@ -90,7 +91,7 @@ static void mainboard_init(device_t dev)
 
 	/* If recovery mode is detected, reduce frequency and voltage to reduce
 	 * heat in case machine is left unattended. chrome-os-partner:41201. */
-	if (recovery_mode_enabled())  {
+	if (vboot_recovery_mode_enabled())  {
 		printk(BIOS_DEBUG, "Reducing APLL freq for recovery mode.\n");
 		rkclk_configure_cpu(APLL_600_MHZ);
 		rk808_configure_buck(1, 900);

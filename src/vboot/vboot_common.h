@@ -101,4 +101,8 @@ void verstage_main(void);
 void verstage(void);
 void verstage_mainboard_init(void);
 
+/* Check boot modes */
+int vboot_developer_mode_enabled(void);
+int vboot_recovery_mode_enabled(void);
+
 #endif /* __VBOOT_VBOOT_COMMON_H__ */

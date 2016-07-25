@@ -25,10 +25,10 @@
 
 void elog_add_boot_reason(void)
 {
-	if (developer_mode_enabled()) {
+	if (vboot_developer_mode_enabled()) {
 		elog_add_event(ELOG_TYPE_CROS_DEVELOPER_MODE);
 		printk(BIOS_DEBUG, "%s: Logged dev mode boot\n", __func__);
-	} else if (recovery_mode_enabled()) {
+	} else if (vboot_recovery_mode_enabled()) {
 		u8 reason = 0;
 #if CONFIG_VBOOT
 		struct vboot_handoff *vbho = cbmem_find(CBMEM_ID_VBOOT_HANDOFF);

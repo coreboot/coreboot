@@ -18,6 +18,7 @@
 #include <device/pci_def.h>
 #include <program_loading.h>
 #include <soc/iomap.h>
+#include <soc/intel/common/util.h>
 #include <soc/pci_devs.h>
 #include <soc/reg_access.h>
 
@@ -47,8 +48,38 @@ static const struct reg_script hsuart_init[] = {
 	REG_SCRIPT_END
 };
 
+static const struct reg_script mtrr_init[] = {
+	/* Use write-through caching, for FSP 2.0 the cache will be invalidated
+	 * postchar (arch/x86/exit_car.S).
+	 */
+
+	/* Enable the cache */
+	REG_CPU_CR_AND(0, ~(CR0_CD | CR0_NW)),
+
+	/* Cache the SPI flash */
+	REG_MSR_WRITE(MTRR_PHYS_BASE(0), (uint32_t)((-CONFIG_ROM_SIZE)
+		| MTRR_TYPE_WRTHROUGH)),
+	REG_MSR_WRITE(MTRR_PHYS_MASK(0), (uint32_t)((-CONFIG_ROM_SIZE)
+		| MTRR_PHYS_MASK_VALID)),
+
+	/* Cache ESRAM */
+	REG_MSR_WRITE(MTRR_PHYS_BASE(1), (uint32_t)(0x80000000
+		| MTRR_TYPE_WRTHROUGH)),
+	REG_MSR_WRITE(MTRR_PHYS_MASK(1), (uint32_t)((~0x7ffff)
+		| MTRR_PHYS_MASK_VALID)),
+
+	/* Enable the variable MTRRs */
+	REG_MSR_WRITE(MTRR_DEF_TYPE_MSR, MTRR_DEF_TYPE_EN
+		| MTRR_TYPE_UNCACHEABLE),
+
+	REG_SCRIPT_END
+};
+
 void bootblock_soc_early_init(void)
 {
+	/* Initialize the MTRRs */
+	reg_script_run(mtrr_init);
+
 	/* Initialize the controllers */
 	reg_script_run_on_dev(I2CGPIO_BDF, i2c_gpio_controller_init);
 	reg_script_run_on_dev(LPC_BDF, legacy_gpio_init);
@@ -58,6 +89,12 @@ void bootblock_soc_early_init(void)
 		reg_script_run_on_dev(HSUART0_BDF, hsuart_init);
 	if (IS_ENABLED(CONFIG_ENABLE_BUILTIN_HSUART1))
 		reg_script_run_on_dev(HSUART1_BDF, hsuart_init);
+}
+
+void bootblock_soc_init(void)
+{
+	/* Display the MTRRs */
+	soc_display_mtrrs();
 }
 
 void platform_prog_run(struct prog *prog)

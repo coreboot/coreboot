@@ -20,6 +20,7 @@
 
 #include <arch/io.h>
 #include <cpu/x86/msr.h>
+#include <cpu/x86/mtrr.h>
 #include <delay.h>
 #include <fsp/util.h>
 #include <reg_script.h>

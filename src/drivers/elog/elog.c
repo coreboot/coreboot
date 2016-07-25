@@ -499,7 +499,8 @@ static void elog_find_flash(void)
 		flash_base = total_size = 0;
 	} else {
 		flash_base = region_offset(&r);
-		total_size = region_sz(&r);
+		/* Keep 4KiB max size until large malloc()s have been fixed. */
+		total_size = MIN(4*KiB, region_sz(&r));
 	}
 
 	log_size = total_size - sizeof(struct elog_header);

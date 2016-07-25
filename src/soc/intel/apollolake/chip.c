@@ -394,6 +394,9 @@ void platform_fsp_silicon_init_params_cb(struct FSPS_UPD *silupd)
 
 	silconfig->LPSS_S0ixEnable = cfg->lpss_s0ix_enable;
 
+	/* Disable monitor mwait since it is broken due to a hardware bug without a fix */
+	silconfig->MonitorMwaitEnable = 0;
+
 	/* Disable setting of EISS bit in FSP. */
 	silconfig->SpiEiss = 0;
 }

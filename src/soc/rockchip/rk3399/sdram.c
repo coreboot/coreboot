@@ -346,6 +346,8 @@ static void phy_io_config(u32 channel,
 				case PHY_DRV_ODT_60:
 					vref_value_dq = 0x36;
 					break;
+				default:
+					die("Halting: Invalid ODT value.\n");
 				}
 			} else if (drv_value == PHY_DRV_ODT_40) {
 				switch (odt_value) {
@@ -358,6 +360,8 @@ static void phy_io_config(u32 channel,
 				case PHY_DRV_ODT_60:
 					vref_value_dq = 0x31;
 					break;
+				default:
+					die("Halting: Invalid ODT value.\n");
 				}
 			} else if (drv_value == PHY_DRV_ODT_34_3) {
 				switch (odt_value) {
@@ -370,7 +374,11 @@ static void phy_io_config(u32 channel,
 				case PHY_DRV_ODT_60:
 					vref_value_dq = 0x2e;
 					break;
+				default:
+					die("Halting: Invalid ODT value.\n");
 				}
+			} else {
+				die("Halting: Invalid DRV value.\n");
 			}
 		} else {
 			vref_mode_dq = 0x2;  /* LPDDR3 */

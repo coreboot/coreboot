@@ -458,6 +458,7 @@ $(obj)/mainboard/$(MAINBOARDDIR)/static.c: $(src)/mainboard/$(MAINBOARDDIR)/devi
 ramstage-y+=$(obj)/mainboard/$(MAINBOARDDIR)/static.c
 romstage-y+=$(obj)/mainboard/$(MAINBOARDDIR)/static.c
 verstage-y+=$(obj)/mainboard/$(MAINBOARDDIR)/static.c
+bootblock-y+=$(obj)/mainboard/$(MAINBOARDDIR)/static.c
 
 $(objgenerated)/libverstage.a: $$(libverstage-objs)
 	rm -f $@

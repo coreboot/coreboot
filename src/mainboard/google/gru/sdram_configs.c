@@ -35,6 +35,9 @@ static struct rk3399_sdram_params sdram_configs[] = {
 
 /* 800MHz, disable odt */
 #include "sdram_inf/sdram-lpddr3-hynix-4GB-800-no-odt.inc"
+
+/* 933MHz, enable odt 120o */
+#include "sdram_inf/sdram-lpddr3-hynix-4GB-933.inc"
 };
 
 enum dram_speeds {
@@ -43,6 +46,7 @@ enum dram_speeds {
 	dram_800MHz = 2,
 	dram_666MHz_NO_ODT = 3,
 	dram_800MHz_NO_ODT = 4,
+	dram_933MHz = 5,
 };
 
 static enum dram_speeds get_sdram_index(void)
@@ -59,8 +63,10 @@ static enum dram_speeds get_sdram_index(void)
 			return dram_200MHz;
 		case 3:
 			return dram_666MHz_NO_ODT;
-		default:
+		case 4:
 			return dram_800MHz;
+		default:
+			return dram_933MHz;
 		}
 
 	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_GRU))

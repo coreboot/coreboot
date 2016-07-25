@@ -32,7 +32,6 @@ struct soc_nvidia_tegra124_config {
 	u32 framebuffer_bits_per_pixel;
 	u32 color_depth;
 	u32 panel_bits_per_pixel;
-	int cache_policy;
 	/* there are two. It's not unimaginable that we might someday
 	 * have two of these structs in a single mainboard.
 	 */

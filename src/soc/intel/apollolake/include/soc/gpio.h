@@ -63,6 +63,14 @@ typedef uint32_t gpio_t;
 		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_CFG0_TX_DISABLE, \
 		PAD_PULL(pull) | PAD_IOSSTATE(TxLASTRxE))
 
+/* General purpose input. The following macro sets the
+ * Host Software Pad Ownership to GPIO Driver mode.
+ */
+#define PAD_CFG_GPI_GPIO_DRIVER(pad, pull, rst) \
+	_PAD_CFG_STRUCT(pad,		\
+		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_CFG0_TX_DISABLE, \
+		PAD_PULL(pull) | PAD_CFG1_GPIO_DRIVER | PAD_IOSSTATE(TxLASTRxE))
+
 /* No Connect configuration for unused pad.
  * NC should be GPI with Term as PU20K, PD20K, NONE depending upon default Term
  */

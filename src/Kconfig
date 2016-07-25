@@ -209,6 +209,12 @@ config NO_XIP_EARLY_STAGES
 config EARLY_CBMEM_INIT
 	def_bool !LATE_CBMEM_INIT
 
+config EARLY_CBMEM_LIST
+	bool
+	default n
+	help
+	  Enable display of CBMEM during romstage and postcar.
+
 config COLLECT_TIMESTAMPS
 	bool "Create a table of timestamps collected during boot"
 	default n

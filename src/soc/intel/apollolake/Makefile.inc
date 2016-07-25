@@ -40,6 +40,7 @@ romstage-y += spi.c
 
 smm-y += mmap_boot.c
 smm-y += pmutil.c
+smm-y += gpio.c
 smm-y += smihandler.c
 smm-y += spi.c
 smm-y += tsc_freq.c

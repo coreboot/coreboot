@@ -70,6 +70,7 @@
 #define   USB_EN		(1 << SMI_XHCI) /* Legacy USB2 SMI logic */
 #define   PERIODIC_EN		(1 << SMI_PERIODIC) /* SMI on PERIODIC_STS in SMI_STS */
 #define   TCO_EN		(1 << SMI_TCO) /* Enable TCO Logic (BIOSWE et al) */
+#define   GPIO_EN		(1 << SMI_GPIO) /* Enable GPIO SMI */
 #define   BIOS_RLS		(1 << SMI_BIOS_RLS) /* asserts SCI on bit set */
 #define   SWSMI_TMR_EN		(1 << SMI_SWSMI_TMR) /* start software smi timer on bit set */
 #define   APMC_EN		(1 << SMI_APMC) /* Writes to APM_CNT cause SMI# */

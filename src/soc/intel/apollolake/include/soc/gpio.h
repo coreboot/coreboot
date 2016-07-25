@@ -25,6 +25,25 @@
 
 typedef uint32_t gpio_t;
 
+/*
+ * Structure to represent GPI status for GPE and SMI. Use helper
+ * functions for interrogating particular GPIs. Here the number of
+ * array elements is total number of groups that can be present in all
+ * the communities.
+ */
+struct gpi_status {
+	uint32_t grp[NUM_GPI_STATUS_REGS];
+};
+
+/*
+ * Clear GPI SMI status and fill in the structure representing enabled
+ * and set status.
+ */
+void gpi_clear_get_smi_status(struct gpi_status *sts);
+
+/* Return 1 if gpio is set in the gpi_status struct. Otherwise 0. */
+int gpi_status_get(const struct gpi_status *sts, gpio_t gpi);
+
 #define PAD_FUNC(value)		PAD_CFG0_MODE_##value
 #define PAD_RESET(value)	PAD_CFG0_RESET_##value
 #define PAD_PULL(value)		PAD_CFG1_PULL_##value

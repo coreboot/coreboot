@@ -26,19 +26,34 @@
 static const struct pad_community {
 	uint16_t first_pad;
 	uint8_t port;
+	uint8_t num_gpi_regs;
+	uint8_t gpi_offset;
+	const char *grp_name;
 } gpio_communities[] = {
 	{
 		.port = GPIO_SOUTHWEST,
 		.first_pad = SW_OFFSET,
+		.num_gpi_regs = NUM_SW_GPI_REGS,
+		.gpi_offset = 0,
+		.grp_name = "GPIO_GPE_SW",
 	}, {
 		.port = GPIO_WEST,
 		.first_pad = W_OFFSET,
+		.num_gpi_regs = NUM_W_GPI_REGS,
+		.gpi_offset = NUM_SW_GPI_REGS,
+		.grp_name = "GPIO_GPE_W",
 	}, {
 		.port = GPIO_NORTHWEST,
 		.first_pad = NW_OFFSET,
+		.num_gpi_regs = NUM_NW_GPI_REGS,
+		.gpi_offset = NUM_W_GPI_REGS + NUM_SW_GPI_REGS,
+		.grp_name = "GPIO_GPE_NW",
 	}, {
 		.port = GPIO_NORTH,
 		.first_pad = N_OFFSET,
+		.num_gpi_regs = NUM_N_GPI_REGS,
+		.gpi_offset = NUM_NW_GPI_REGS+ NUM_W_GPI_REGS + NUM_SW_GPI_REGS,
+		.grp_name = "GPIO_GPE_N",
 	}
 };
 
@@ -104,6 +119,30 @@ static void gpio_configure_owner(const struct pad_config *cfg,
 	iosf_write(port, hostsw_reg, val);
 }
 
+static void gpi_enable_smi(const struct pad_config *cfg, uint16_t port, int pin)
+{
+	uint32_t value;
+	uint16_t sts_reg;
+	uint16_t en_reg;
+	int group;
+
+	if (((cfg->config0) & PAD_CFG0_ROUTE_SMI) != PAD_CFG0_ROUTE_SMI)
+		return;
+
+	group = pin / GPIO_MAX_NUM_PER_GROUP;
+
+	sts_reg = GPI_SMI_STS_OFFSET(group);
+	value = iosf_read(port, sts_reg);
+	/* Write back 1 to reset the sts bits */
+	iosf_write(port, sts_reg, value);
+
+	/* Set enable bits */
+	en_reg = GPI_SMI_EN_OFFSET(group);
+	value = iosf_read(port, en_reg );
+	value |= 1 << (pin % GPIO_MAX_NUM_PER_GROUP);
+	iosf_write(port, en_reg , value);
+}
+
 void gpio_configure_pad(const struct pad_config *cfg)
 {
 	uint32_t dw1;
@@ -123,6 +162,7 @@ void gpio_configure_pad(const struct pad_config *cfg)
 	gpio_configure_itss(cfg, comm->port, config_offset);
 	gpio_configure_owner(cfg, comm->port, cfg->pad - comm->first_pad);
 
+	gpi_enable_smi(cfg, comm->port, cfg->pad - comm->first_pad);
 }
 
 void gpio_configure_pads(const struct pad_config *cfg, size_t num_pads)
@@ -214,6 +254,80 @@ uint16_t gpio_acpi_pin(gpio_t gpio_num)
 	}
 
 	return gpio_num;
+}
+
+static void print_gpi_status(const struct gpi_status *sts)
+{
+	int i;
+	int group;
+	int index = 0;
+	int bit_set;
+	int num_groups;
+	int abs_bit;
+	const struct pad_community *comm;
+
+	for (i = 0; i < ARRAY_SIZE(gpio_communities); i++) {
+		comm = &gpio_communities[i];
+		num_groups = comm->num_gpi_regs;
+		index = comm->gpi_offset;
+		for (group = 0; group < num_groups; group++, index++) {
+			for (bit_set = 31; bit_set >= 0; bit_set--) {
+				if (!(sts->grp[index] & (1 << bit_set)))
+					continue;
+
+				abs_bit = bit_set;
+				abs_bit += group * GPIO_MAX_NUM_PER_GROUP;
+				printk(BIOS_DEBUG, "%s %d \n",comm->grp_name,
+								abs_bit);
+			}
+		}
+	}
+}
+
+void gpi_clear_get_smi_status(struct gpi_status *sts)
+{
+	int i;
+	int group;
+	int index = 0;
+	uint32_t sts_value;
+	uint32_t en_value;
+	int num_groups;
+	const struct pad_community *comm;
+
+	for (i = 0; i < ARRAY_SIZE(gpio_communities); i++) {
+		comm = &gpio_communities[i];
+		num_groups = comm->num_gpi_regs;
+		index = comm->gpi_offset;
+		for (group = 0; group < num_groups; group++, index++) {
+			sts_value = iosf_read(gpio_communities[i].port,
+					GPI_SMI_STS_OFFSET(group));
+			en_value = iosf_read(gpio_communities[i].port,
+					GPI_SMI_EN_OFFSET(group));
+			sts->grp[index] = sts_value & en_value;
+			/* Clear the set status bits. */
+			iosf_write(gpio_communities[i].port,
+				GPI_SMI_STS_OFFSET(group), sts->grp[index]);
+		}
+	}
+
+	if (IS_ENABLED(CONFIG_DEBUG_SMI))
+		print_gpi_status(sts);
+
+}
+
+int gpi_status_get(const struct gpi_status *sts, gpio_t gpi)
+{
+	uint8_t sts_index;
+	const struct pad_community *comm = gpio_get_community(gpi);
+
+	/* Check if valid gpi */
+	if (comm == NULL)
+		return 0;
+
+	sts_index = comm->gpi_offset + (gpi - (comm->first_pad) /
+					GPIO_MAX_NUM_PER_GROUP);
+
+	return !!(sts->grp[sts_index] & (1 << (gpi % GPIO_MAX_NUM_PER_GROUP)));
 }
 
 /* Helper function to map PMC register groups to tier1 sci groups */

@@ -17,11 +17,9 @@
 #include <console/console.h>
 #include <elog.h>
 #include <vendorcode/google/chromeos/chromeos.h>
-#if CONFIG_VBOOT
 #include <vboot/vbnv.h>
 #include <vboot/vboot_common.h>
 #include <vboot_struct.h>
-#endif
 
 void elog_add_boot_reason(void)
 {
@@ -29,18 +27,7 @@ void elog_add_boot_reason(void)
 		elog_add_event(ELOG_TYPE_CROS_DEVELOPER_MODE);
 		printk(BIOS_DEBUG, "%s: Logged dev mode boot\n", __func__);
 	} else if (vboot_recovery_mode_enabled()) {
-		u8 reason = 0;
-#if CONFIG_VBOOT
-		struct vboot_handoff *vbho = cbmem_find(CBMEM_ID_VBOOT_HANDOFF);
-
-		reason = get_recovery_mode_from_vbnv();
-		if (vbho && !reason) {
-			VbSharedDataHeader *sd = (VbSharedDataHeader *)
-				vbho->shared_data;
-			reason = sd->recovery_reason;
-		}
-#endif
-
+		u8 reason = vboot_check_recovery_request();
 		elog_add_event_byte(ELOG_TYPE_CROS_RECOVERY_MODE,
 			reason ? reason : ELOG_CROS_RECOVERY_MODE_BUTTON);
 		printk(BIOS_DEBUG, "%s: Logged recovery mode boot, "

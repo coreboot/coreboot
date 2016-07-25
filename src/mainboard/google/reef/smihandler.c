@@ -18,7 +18,14 @@
 #include <cpu/x86/smm.h>
 #include <ec/google/chromeec/smm.h>
 #include <soc/pm.h>
+#include <soc/smm.h>
 #include "ec.h"
+
+void mainboard_smi_gpi_handler(const struct gpi_status *sts)
+{
+	if (gpi_status_get(sts, EC_SMI_GPI))
+		chromeec_smi_process_events();
+}
 
 void mainboard_smi_sleep(u8 slp_typ)
 {

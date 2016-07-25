@@ -24,6 +24,9 @@
  */
 #define EC_SCI_GPI	GPE0_DW1_11
 
+/* EC SMI */
+#define EC_SMI_GPI	GPIO_49
+
 /*
  * On lidopen/lidclose GPIO_22 from North Community gets toggled and
  * is used in _PRW to wake up device from sleep. GPIO_22 maps to

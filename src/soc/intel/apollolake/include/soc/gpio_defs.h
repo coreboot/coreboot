@@ -45,6 +45,12 @@
 #define MISCCFG_GPE0_DW2_SHIFT 16
 #define MISCCFG_GPE0_DW2_MASK (0xf << MISCCFG_GPE0_DW2_SHIFT)
 
+/* Host Software Pad Ownership Register.
+ * The pins in the community are divided into 3 groups :
+ * GPIO 0 ~ 31, GPIO 32 ~ 63, GPIO 64 ~ 95
+ */
+#define HOSTSW_OWN_REG_BASE		0x80
+
 #define PAD_CFG0_TX_STATE		(1 << 0)
 #define PAD_CFG0_RX_STATE		(1 << 1)
 #define PAD_CFG0_TX_DISABLE		(1 << 8)
@@ -75,6 +81,11 @@
 #define  PAD_CFG0_RESET_PLTRST		(2 << 30)
 #define  PAD_CFG0_RESET_RSMRST		(3 << 30)
 
+/* Use the fourth bit in IntSel field to indicate gpio
+ * ownership. This field is RO and hence not used during
+ * gpio configuration.
+ */
+#define PAD_CFG1_GPIO_DRIVER		(0x1 << 4)
 #define PAD_CFG1_IRQ_MASK		(0xff << 0)
 #define PAD_CFG1_PULL_MASK		(0xf << 10)
 #define  PAD_CFG1_PULL_NONE		(0x0 << 10)

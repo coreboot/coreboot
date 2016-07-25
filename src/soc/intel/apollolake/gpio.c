@@ -83,6 +83,27 @@ static void gpio_configure_itss(const struct pad_config *cfg,
 	itss_set_irq_polarity(irq, !!(cfg->config0 & PAD_CFG0_RX_POL_INVERT));
 }
 
+static void gpio_configure_owner(const struct pad_config *cfg,
+				 uint16_t port, int pin)
+{
+	uint32_t val;
+	uint16_t hostsw_reg;
+
+	/* The 4th bit in pad_config 1 (RO) is used to indicate if the pad
+	 * needs GPIO driver ownership.
+	 */
+	if (!(cfg->config1 & PAD_CFG1_GPIO_DRIVER))
+		return;
+
+	/* Based on the gpio pin number configure the corresponding bit in
+	 * HOSTSW_OWN register. Value of 0x1 indicates GPIO Driver onwership.
+	 */
+	hostsw_reg = HOSTSW_OWN_REG_BASE + ((pin / 32) * sizeof(uint32_t));
+	val = iosf_read(port, hostsw_reg);
+	val |= 1 << (pin % 32);
+	iosf_write(port, hostsw_reg, val);
+}
+
 void gpio_configure_pad(const struct pad_config *cfg)
 {
 	uint32_t dw1;
@@ -100,6 +121,8 @@ void gpio_configure_pad(const struct pad_config *cfg)
 	iosf_write(comm->port, config_offset + sizeof(uint32_t), dw1);
 
 	gpio_configure_itss(cfg, comm->port, config_offset);
+	gpio_configure_owner(cfg, comm->port, cfg->pad - comm->first_pad);
+
 }
 
 void gpio_configure_pads(const struct pad_config *cfg, size_t num_pads)

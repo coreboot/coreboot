@@ -15,15 +15,16 @@
 
 #include <types.h>
 #include <ec/google/chromeec/ec.h>
-#include "vbnv.h"
-#include "vbnv_layout.h"
+#include <vboot/vbnv.h>
+#include <vboot/vbnv_layout.h>
 
 void read_vbnv_ec(uint8_t *vbnv_copy)
 {
-	google_chromeec_vbnv_context(1, vbnv_copy, VBNV_BLOCK_SIZE);
+	google_chromeec_vbnv_context(1, vbnv_copy, VBOOT_VBNV_BLOCK_SIZE);
 }
 
 void save_vbnv_ec(const uint8_t *vbnv_copy)
 {
-	google_chromeec_vbnv_context(0, (uint8_t *)vbnv_copy, VBNV_BLOCK_SIZE);
+	google_chromeec_vbnv_context(0, (uint8_t *)vbnv_copy,
+				     VBOOT_VBNV_BLOCK_SIZE);
 }

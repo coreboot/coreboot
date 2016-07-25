@@ -28,7 +28,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select MAINBOARD_DO_NATIVE_VGA_INIT
 
 config CHROMEOS
-	select CHROMEOS_VBNV_EC
+	select VBOOT_VBNV_EC
 
 config MAINBOARD_DIR
 	string

@@ -35,10 +35,8 @@
 #include <cpu/x86/smm.h>
 #include <soc/pcr.h>
 #include <soc/ramstage.h>
-#if IS_ENABLED(CONFIG_CHROMEOS)
-#include <vendorcode/google/chromeos/chromeos.h>
-#include <vendorcode/google/chromeos/vbnv_layout.h>
-#endif
+#include <vboot/vbnv.h>
+#include <vboot/vbnv_layout.h>
 
 static const struct reg_script pch_pmc_misc_init_script[] = {
 	/* SLP_S4=4s, SLP_S3=50ms, disable SLP_X stretching after SUS loss. */
@@ -108,14 +106,14 @@ static void pch_set_acpi_mode(void)
 	}
 }
 
-#if IS_ENABLED(CONFIG_CHROMEOS_VBNV_CMOS)
+#if IS_ENABLED(CONFIG_VBOOT_VBNV_CMOS)
 /*
  * Preserve Vboot NV data when clearing CMOS as it will
  * have been re-initialized already by Vboot firmware init.
  */
 static void pch_cmos_init_preserve(int reset)
 {
-	uint8_t vbnv[VBNV_BLOCK_SIZE];
+	uint8_t vbnv[VBOOT_VBNV_BLOCK_SIZE];
 	if (reset)
 		read_vbnv(vbnv);
 
@@ -143,7 +141,7 @@ static void pch_rtc_init(void)
 	/* Ensure the date is set including century byte. */
 	cmos_check_update_date();
 
-#if IS_ENABLED(CONFIG_CHROMEOS_VBNV_CMOS)
+#if IS_ENABLED(CONFIG_VBOOT_VBNV_CMOS)
 	pch_cmos_init_preserve(rtc_failed);
 #else
 	cmos_init(rtc_failed);

@@ -22,7 +22,7 @@ int developer_mode_enabled(void)
 {
 	if (get_developer_mode_switch())
 		return 1;
-#if CONFIG_VBOOT_VERIFY_FIRMWARE
+#if CONFIG_VBOOT
 	if (vboot_handoff_check_developer_flag())
 		return 1;
 #endif

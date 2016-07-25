@@ -22,10 +22,10 @@ verstage-$(CONFIG_EC_GOOGLE_CHROMEEC_LPC) += ec_lpc.c
 verstage-$(CONFIG_EC_GOOGLE_CHROMEEC_MEC) += ec_mec.c
 verstage-$(CONFIG_EC_GOOGLE_CHROMEEC_SPI) += ec_spi.c
 
-ramstage-$(CONFIG_VBOOT_VERIFY_FIRMWARE) += vboot_storage.c
-smm-$(CONFIG_VBOOT_VERIFY_FIRMWARE) += vboot_storage.c
-romstage-$(CONFIG_VBOOT_VERIFY_FIRMWARE) += vboot_storage.c
-verstage-$(CONFIG_VBOOT_VERIFY_FIRMWARE) += vboot_storage.c
+ramstage-$(CONFIG_VBOOT) += vboot_storage.c
+smm-$(CONFIG_VBOOT) += vboot_storage.c
+romstage-$(CONFIG_VBOOT) += vboot_storage.c
+verstage-$(CONFIG_VBOOT) += vboot_storage.c
 
 ifneq ($(CONFIG_EC_EXTERNAL_FIRMWARE),y)
 # These are Chrome EC firmware images that a payload (such as depthcharge) can

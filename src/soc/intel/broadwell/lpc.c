@@ -44,11 +44,8 @@
 #include <arch/acpi.h>
 #include <arch/acpigen.h>
 #include <cpu/cpu.h>
-
-#if IS_ENABLED(CONFIG_CHROMEOS)
-#include <vendorcode/google/chromeos/chromeos.h>
-#include <vendorcode/google/chromeos/vbnv_layout.h>
-#endif
+#include <vboot/vbnv.h>
+#include <vboot/vbnv_layout.h>
 
 static void pch_enable_ioapic(struct device *dev)
 {
@@ -175,14 +172,14 @@ static void pch_power_options(device_t dev)
 	enable_alt_smi(config->alt_gp_smi_en);
 }
 
-#if IS_ENABLED(CONFIG_CHROMEOS) && IS_ENABLED(CONFIG_CHROMEOS_VBNV_CMOS)
+#if IS_ENABLED(CONFIG_CHROMEOS) && IS_ENABLED(CONFIG_VBOOT_VBNV_CMOS)
 /*
  * Preserve Vboot NV data when clearing CMOS as it will
  * have been re-initialized already by Vboot firmware init.
  */
 static void pch_cmos_init_preserve(int reset)
 {
-	uint8_t vbnv[VBNV_BLOCK_SIZE];
+	uint8_t vbnv[VBOOT_VBNV_BLOCK_SIZE];
 
 	if (reset)
 		read_vbnv(vbnv);
@@ -207,7 +204,7 @@ static void pch_rtc_init(struct device *dev)
 		printk(BIOS_DEBUG, "rtc_failed = 0x%x\n", rtc_failed);
 	}
 
-#if IS_ENABLED(CONFIG_CHROMEOS) && IS_ENABLED(CONFIG_CHROMEOS_VBNV_CMOS)
+#if IS_ENABLED(CONFIG_CHROMEOS) && IS_ENABLED(CONFIG_VBOOT_VBNV_CMOS)
 	pch_cmos_init_preserve(rtc_failed);
 #else
 	cmos_init(rtc_failed);

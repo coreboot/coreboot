@@ -27,7 +27,7 @@
 #include <soc/pm.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <vendorcode/google/chromeos/vboot_common.h>
+#include <vboot/vboot_common.h>
 
 static uintptr_t read_pmc_mmio_bar(void)
 {

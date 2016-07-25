@@ -16,12 +16,11 @@
 #include <arch/early_variables.h>
 #include <string.h>
 #include <types.h>
-#include "chromeos.h"
-#include "vbnv.h"
-#include "vbnv_layout.h"
+#include <vboot/vbnv.h>
+#include <vboot/vbnv_layout.h>
 
 static int vbnv_initialized CAR_GLOBAL;
-static uint8_t vbnv[VBNV_BLOCK_SIZE] CAR_GLOBAL;
+static uint8_t vbnv[VBOOT_VBNV_BLOCK_SIZE] CAR_GLOBAL;
 
 /* Wrappers for accessing the variables marked as CAR_GLOBAL. */
 static inline int is_vbnv_initialized(void)
@@ -61,7 +60,7 @@ static uint8_t crc8_vbnv(const uint8_t *data, int len)
 
 static void reset_vbnv(uint8_t *vbnv_copy)
 {
-	memset(vbnv_copy, 0, VBNV_BLOCK_SIZE);
+	memset(vbnv_copy, 0, VBOOT_VBNV_BLOCK_SIZE);
 }
 
 /* Read VBNV data into cache. */
@@ -86,11 +85,11 @@ int verify_vbnv(uint8_t *vbnv_copy)
  */
 void read_vbnv(uint8_t *vbnv_copy)
 {
-	if (IS_ENABLED(CONFIG_CHROMEOS_VBNV_CMOS))
+	if (IS_ENABLED(CONFIG_VBOOT_VBNV_CMOS))
 		read_vbnv_cmos(vbnv_copy);
-	else if (IS_ENABLED(CONFIG_CHROMEOS_VBNV_EC))
+	else if (IS_ENABLED(CONFIG_VBOOT_VBNV_EC))
 		read_vbnv_ec(vbnv_copy);
-	else if (IS_ENABLED(CONFIG_CHROMEOS_VBNV_FLASH))
+	else if (IS_ENABLED(CONFIG_VBOOT_VBNV_FLASH))
 		read_vbnv_flash(vbnv_copy);
 
 	/* Check data for consistency */
@@ -104,11 +103,11 @@ void read_vbnv(uint8_t *vbnv_copy)
  */
 void save_vbnv(const uint8_t *vbnv_copy)
 {
-	if (IS_ENABLED(CONFIG_CHROMEOS_VBNV_CMOS))
+	if (IS_ENABLED(CONFIG_VBOOT_VBNV_CMOS))
 		save_vbnv_cmos(vbnv_copy);
-	else if (IS_ENABLED(CONFIG_CHROMEOS_VBNV_EC))
+	else if (IS_ENABLED(CONFIG_VBOOT_VBNV_EC))
 		save_vbnv_ec(vbnv_copy);
-	else if (IS_ENABLED(CONFIG_CHROMEOS_VBNV_FLASH))
+	else if (IS_ENABLED(CONFIG_VBOOT_VBNV_FLASH))
 		save_vbnv_flash(vbnv_copy);
 
 	/* Clear initialized flag to force cached data to be updated */
@@ -118,7 +117,7 @@ void save_vbnv(const uint8_t *vbnv_copy)
 /* Save a recovery reason into VBNV. */
 void set_recovery_mode_into_vbnv(int recovery_reason)
 {
-	uint8_t vbnv_copy[VBNV_BLOCK_SIZE];
+	uint8_t vbnv_copy[VBOOT_VBNV_BLOCK_SIZE];
 
 	read_vbnv(vbnv_copy);
 

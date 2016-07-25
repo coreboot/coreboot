@@ -21,9 +21,9 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select INTEL_INT15
 
 config CHROMEOS
-	select CHROMEOS_VBNV_CMOS
-	select LID_SWITCH
 	select EC_SOFTWARE_SYNC
+	select LID_SWITCH
+	select VBOOT_VBNV_CMOS
 	select VIRTUAL_DEV_SWITCH
 
 config MAINBOARD_DIR

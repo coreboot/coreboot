@@ -83,7 +83,7 @@ static void __attribute__((noinline)) romstage(void)
 	cbmem_initialize_empty();
 
 	/* This was already called from verstage in vboot context. */
-	if (!IS_ENABLED(CONFIG_VBOOT_VERIFY_FIRMWARE))
+	if (!IS_ENABLED(CONFIG_VBOOT))
 		early_mainboard_init();
 
 	run_ramstage();

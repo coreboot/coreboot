@@ -15,14 +15,15 @@
 
 #include <arch/early_variables.h>
 #include <assert.h>
+#include <commonlib/region.h>
 #include <console/console.h>
 #include <spi_flash.h>
 #include <string.h>
 #include <vb2_api.h>
 #include <vboot_nvstorage.h>
-#include "chromeos.h"
-#include "vbnv.h"
-#include "vbnv_layout.h"
+#include <vboot/vboot_common.h>
+#include <vboot/vbnv.h>
+#include <vboot/vbnv_layout.h>
 
 #define BLOB_SIZE VB2_NVDATA_SIZE
 

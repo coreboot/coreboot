@@ -26,7 +26,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select DRIVER_PARADE_PS8625
 
 config CHROMEOS
-	select CHROMEOS_VBNV_EC
+	select VBOOT_VBNV_EC
 
 config MAINBOARD_DIR
 	string

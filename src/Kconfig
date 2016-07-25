@@ -453,6 +453,7 @@ source "src/ec/*/*/Kconfig"
 source "src/drivers/intel/fsp1_0/Kconfig"
 
 source "src/southbridge/intel/common/firmware/Kconfig"
+source "src/vboot/Kconfig"
 source "src/vendorcode/*/Kconfig"
 
 source "src/arch/*/Kconfig"

@@ -17,7 +17,7 @@
 #include <arch/hlt.h>
 #include <console/console.h>
 #include <program_loading.h>
-#include "../vboot_common.h"
+#include <vboot/vboot_common.h>
 
 void __attribute__((weak)) verstage_mainboard_init(void)
 {

@@ -20,9 +20,9 @@
 #include <rmodule.h>
 #include <rules.h>
 #include <string.h>
-#include "misc.h"
-#include "../vboot_common.h"
-#include "../symbols.h"
+#include <vboot/misc.h>
+#include <vboot/symbols.h>
+#include <vboot/vboot_common.h>
 
 /* The stage loading code is compiled and entered from multiple stages. The
  * helper functions below attempt to provide more clarity on when certain

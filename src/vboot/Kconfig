@@ -12,26 +12,59 @@
 ## GNU General Public License for more details.
 ##
 
+config VBOOT_VBNV_OFFSET
+	hex
+	default 0x26
+	depends on PC80_SYSTEM
+	help
+	  CMOS offset for VbNv data. This value must match cmos.layout
+	  in the mainboard directory, minus 14 bytes for the RTC.
+
+config VBOOT_VBNV_CMOS
+	bool "Vboot non-volatile storage in CMOS."
+	default n
+	help
+	  VBNV is stored in CMOS
+
+config VBOOT_VBNV_CMOS_BACKUP_TO_FLASH
+	bool "Back up Vboot non-volatile storage from CMOS to flash."
+	default n
+	depends on VBOOT_VBNV_CMOS
+	help
+	  Vboot non-volatile storage data will be backed up from CMOS to flash
+	  and restored from flash if the CMOS is invalid due to power loss.
+
+config VBOOT_VBNV_EC
+	bool "Vboot non-volatile storage in EC."
+	default n
+	help
+	  VBNV is stored in EC
+
+config VBOOT_VBNV_FLASH
+	def_bool n
+	help
+	  VBNV is stored in flash storage
+
 config VBOOT_STARTS_IN_BOOTBLOCK
 	bool "Vboot starts verifying in bootblock"
 	default n
-	depends on VBOOT_VERIFY_FIRMWARE
+	depends on VBOOT
 	help
 	  Firmware verification happens during or at the end of bootblock.
 
 config VBOOT_STARTS_IN_ROMSTAGE
 	bool "Vboot starts verifying in romstage"
 	default n
-	depends on VBOOT_VERIFY_FIRMWARE && !VBOOT_STARTS_IN_BOOTBLOCK
+	depends on VBOOT && !VBOOT_STARTS_IN_BOOTBLOCK
 	help
 	  Firmware verification happens during or at the end of romstage.
 
-config VBOOT2_MOCK_SECDATA
+config VBOOT_MOCK_SECDATA
 	bool "Mock secdata for firmware verification"
 	default n
-	depends on VBOOT_VERIFY_FIRMWARE
+	depends on VBOOT
 	help
-	  Enabling VBOOT2_MOCK_SECDATA will mock secdata for the firmware
+	  Enabling VBOOT_MOCK_SECDATA will mock secdata for the firmware
 	  verification to avoid access to a secdata storage (typically TPM).
 	  All operations for a secdata storage will be successful. This option
 	  can be used during development when a TPM is not present or broken.
@@ -40,7 +73,7 @@ config VBOOT2_MOCK_SECDATA
 config VBOOT_DISABLE_DEV_ON_RECOVERY
 	bool "Disable dev mode on recovery requests"
 	default n
-	depends on VBOOT_VERIFY_FIRMWARE
+	depends on VBOOT
 	help
 	  When this option is enabled, the Chrome OS device leaves the
 	  developer mode as soon as recovery request is detected. This is
@@ -49,7 +82,7 @@ config VBOOT_DISABLE_DEV_ON_RECOVERY
 config SEPARATE_VERSTAGE
 	bool "Vboot verification is built into a separate stage"
 	default n
-	depends on VBOOT_VERIFY_FIRMWARE
+	depends on VBOOT
 
 config RETURN_FROM_VERSTAGE
 	bool "The separate verification stage returns to its caller"
@@ -72,7 +105,7 @@ config VBOOT_DYNAMIC_WORK_BUFFER
 	bool "Vboot's work buffer is dynamically allocated."
 	default y if ARCH_ROMSTAGE_X86_32 && !SEPARATE_VERSTAGE
 	default n
-	depends on VBOOT_VERIFY_FIRMWARE
+	depends on VBOOT
 	help
 	  This option is used when there isn't enough pre-main memory
 	  ram to allocate the vboot work buffer. That means vboot verification
@@ -82,8 +115,29 @@ config VBOOT_DYNAMIC_WORK_BUFFER
 config VBOOT_SAVE_RECOVERY_REASON_ON_REBOOT
 	bool
 	default n
-	depends on VBOOT_VERIFY_FIRMWARE
+	depends on VBOOT
 	help
 	  This option ensures that the recovery request is not lost because of
 	  reboots caused after vboot verification is run. e.g. reboots caused by
 	  FSP components on Intel platforms.
+
+config VBOOT_OPROM_MATTERS
+	bool "Video option ROM matters (= can skip display init)"
+	default n
+	depends on VBOOT
+	help
+	  Set this option to indicate to vboot that this platform will skip its
+	  display initialization on a normal (non-recovery, non-developer) boot.
+	  Vboot calls this "oprom matters" because on x86 devices this
+	  traditionally meant that the video option ROM will not be loaded, but
+	  it works functionally the same for other platforms that can skip their
+	  native display initialization code instead.
+
+config VBOOT
+	bool "Verify firmware with vboot."
+	default n
+	depends on HAVE_HARD_RESET
+	help
+	  Enabling VBOOT will use vboot to verify the components of the firmware
+	  (stages, payload, etc).
+

@@ -15,6 +15,7 @@
 
 #include <arch/stages.h>
 #include <assert.h>
+#include <bootmode.h>
 #include <stdint.h>
 #include <stddef.h>
 #include <string.h>
@@ -28,8 +29,8 @@
 #define NEED_VB20_INTERNALS  /* TODO: remove me! */
 #include <vb2_api.h>
 #include <vboot_struct.h>
-#include "../chromeos.h"
-#include "misc.h"
+#include <vboot/vbnv.h>
+#include <vboot/misc.h>
 
 /**
  * Sets vboot_handoff based on the information in vb2_shared_data
@@ -91,7 +92,7 @@ static void fill_vboot_handoff(struct vboot_handoff *vboot_handoff,
 		 * Inform vboot if the display was enabled by dev/rec
 		 * mode or was requested by vboot kernel phase.
 		 */
-		if (*oflags & VB_INIT_OUT_ENABLE_DISPLAY ||
+		if ((*oflags & VB_INIT_OUT_ENABLE_DISPLAY) ||
 		    vboot_wants_oprom()) {
 			vb_sd->flags |= VBSD_OPROM_LOADED;
 			*oflags |= VB_INIT_OUT_ENABLE_DISPLAY;

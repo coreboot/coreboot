@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright 2014 Google Inc.
+ * Copyright 2016 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,11 +13,16 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __CHROMEOS_SYMBOLS_H
-#define __CHROMEOS_SYMBOLS_H
+#ifndef __VBOOT_SYMBOLS_H__
+#define __VBOOT_SYMBOLS_H__
 
-extern u8 _watchdog_tombstone[];
-extern u8 _ewatchdog_tombstone[];
-#define _watchdog_tombstone_size (_ewatchdog_tombstone - _watchdog_tombstone)
+extern u8 _vboot2_work[];
+extern u8 _evboot2_work[];
+#define _vboot2_work_size (_evboot2_work - _vboot2_work)
 
-#endif /* __CHROMEOS_SYMBOLS_H */
+/* Careful: _e<stage> and _<stage>_size only defined for the current stage! */
+extern u8 _verstage[];
+extern u8 _everstage[];
+#define _verstage_size (_everstage - _verstage)
+
+#endif /* __VBOOT_SYMBOLS_H__ */

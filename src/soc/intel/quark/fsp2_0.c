@@ -19,3 +19,7 @@
 void platform_fsp_silicon_init_params_cb(struct FSPS_UPD *silupd)
 {
 }
+
+asmlinkage void chipset_teardown_car(void)
+{
+}

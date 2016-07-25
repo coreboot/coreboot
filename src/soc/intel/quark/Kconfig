@@ -135,6 +135,13 @@ config DCACHE_RAM_SIZE
 	default 0x8000 if PLATFORM_USES_FSP1_1
 	default 0x40000
 
+config DISPLAY_ESRAM_LAYOUT
+	bool "Display ESRAM layout"
+	default n
+	depends on PLATFORM_USES_FSP2_0
+	help
+	  Select this option to display coreboot's use of ESRAM.
+
 #####
 # Flash layout
 #     Specify the size of the coreboot file system in the read-only
@@ -196,8 +203,8 @@ config FSP_LOC
 
 config FSP_ESRAM_LOC
 	hex
-	default 0x80000000
-	depends on PLATFORM_USES_FSP1_1
+	default 0x80000000 if PLATFORM_USES_FSP1_1
+	default 0x80040000
 	help
 	  The location in ESRAM where a copy of the FSP binary is placed.
 
@@ -207,6 +214,16 @@ config RELOCATE_FSP_INTO_DRAM
 	depends on PLATFORM_USES_FSP1_1
 	help
 	  Relocate the FSP binary into DRAM before the call to SiliconInit.
+
+config FSP_M_FILE
+	string
+	depends on PLATFORM_USES_FSP2_0
+	default "3rdparty/blobs/soc/intel/quark/FSP_M.fd"
+
+config FSP_S_FILE
+	string
+	depends on PLATFORM_USES_FSP2_0
+	default "3rdparty/blobs/soc/intel/quark/FSP_S.fd"
 
 #####
 # RMU binary

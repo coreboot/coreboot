@@ -25,6 +25,10 @@ struct chipset_power_state {
 } __attribute__ ((packed));
 
 struct chipset_power_state *get_power_state(void);
+#if IS_ENABLED(CONFIG_PLATFORM_USES_FSP1_1)
 struct chipset_power_state *fill_power_state(void);
-
+#else
+int fill_power_state(void);
 #endif
+
+#endif /* _SOC_PM_H_ */

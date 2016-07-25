@@ -30,7 +30,7 @@
 #include <soc/ramstage.h>
 #include <soc/systemagent.h>
 #include <soc/intel/broadwell/chip.h>
-#include <vendorcode/google/chromeos/chromeos.h>
+#include <vboot/vbnv.h>
 
 #define GT_RETRY 		1000
 #define GT_CDCLK_337		0

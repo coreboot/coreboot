@@ -32,6 +32,7 @@
 #include <cbmem.h>
 #include <bootmem.h>
 #include <spi_flash.h>
+#include <vboot/vbnv_layout.h>
 #if CONFIG_USE_OPTION_TABLE
 #include <option_table.h>
 #endif
@@ -41,7 +42,6 @@
 #endif
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <vendorcode/google/chromeos/gnvs.h>
-#include <vendorcode/google/chromeos/vbnv_layout.h>
 #endif
 #if CONFIG_ARCH_X86
 #include <cpu/x86/mtrr.h>
@@ -221,12 +221,12 @@ static void lb_vbnv(struct lb_header *header)
 	vbnv = (struct lb_range *)lb_new_record(header);
 	vbnv->tag = LB_TAG_VBNV;
 	vbnv->size = sizeof(*vbnv);
-	vbnv->range_start = CONFIG_VBNV_OFFSET + 14;
-	vbnv->range_size = VBNV_BLOCK_SIZE;
+	vbnv->range_start = CONFIG_VBOOT_VBNV_OFFSET + 14;
+	vbnv->range_size = VBOOT_VBNV_BLOCK_SIZE;
 #endif
 }
 
-#if CONFIG_VBOOT_VERIFY_FIRMWARE
+#if CONFIG_VBOOT
 static void lb_vboot_handoff(struct lb_header *header)
 {
 	void *addr;
@@ -244,7 +244,7 @@ static void lb_vboot_handoff(struct lb_header *header)
 }
 #else
 static inline void lb_vboot_handoff(struct lb_header *header) {}
-#endif /* CONFIG_VBOOT_VERIFY_FIRMWARE */
+#endif /* CONFIG_VBOOT */
 #endif /* CONFIG_CHROMEOS */
 
 static void lb_board_id(struct lb_header *header)

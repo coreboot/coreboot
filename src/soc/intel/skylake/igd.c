@@ -16,6 +16,7 @@
 
 #include <arch/acpi.h>
 #include <arch/io.h>
+#include <bootmode.h>
 #include <chip.h>
 #include <console/console.h>
 #include <delay.h>
@@ -31,7 +32,7 @@
 #include <soc/systemagent.h>
 #include <stdlib.h>
 #include <string.h>
-#include <vendorcode/google/chromeos/chromeos.h>
+#include <vboot/vbnv.h>
 
 u32 map_oprom_vendev(u32 vendev)
 {

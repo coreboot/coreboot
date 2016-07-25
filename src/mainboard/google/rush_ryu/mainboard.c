@@ -35,8 +35,8 @@
 #include <vendorcode/google/chromeos/cros_vpd.h>
 #if IS_ENABLED(CONFIG_CHROMEOS)
 #include <vboot_struct.h>
-#include <vendorcode/google/chromeos/vboot2/misc.h>
-#include <vendorcode/google/chromeos/vboot_common.h>
+#include <vboot/misc.h>
+#include <vboot/vboot_common.h>
 #endif
 
 #include "gpio.h"

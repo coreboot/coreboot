@@ -15,8 +15,8 @@
 
 ifeq ($(CONFIG_SOC_MARVELL_BG4CD),y)
 
-bootblock-$(CONFIG_VBOOT_VERIFY_FIRMWARE) += bootblock_asm.S
-bootblock-$(CONFIG_VBOOT_VERIFY_FIRMWARE) += bootblock.c
+bootblock-$(CONFIG_VBOOT) += bootblock_asm.S
+bootblock-$(CONFIG_VBOOT) += bootblock.c
 
 bootblock-y += cbmem.c
 bootblock-y += i2c.c

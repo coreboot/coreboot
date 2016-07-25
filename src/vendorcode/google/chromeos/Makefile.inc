@@ -18,31 +18,6 @@ verstage-y += chromeos.c
 romstage-y += chromeos.c
 ramstage-y += chromeos.c
 
-bootblock-y += vbnv.c
-verstage-y += vbnv.c
-romstage-y += vbnv.c
-ramstage-y += vbnv.c
-
-bootblock-$(CONFIG_CHROMEOS_VBNV_CMOS) += vbnv_cmos.c
-verstage-$(CONFIG_CHROMEOS_VBNV_CMOS) += vbnv_cmos.c
-romstage-$(CONFIG_CHROMEOS_VBNV_CMOS) += vbnv_cmos.c
-ramstage-$(CONFIG_CHROMEOS_VBNV_CMOS) += vbnv_cmos.c
-
-bootblock-$(CONFIG_CHROMEOS_VBNV_CMOS_BACKUP_TO_FLASH) += vbnv_flash.c
-verstage-$(CONFIG_CHROMEOS_VBNV_CMOS_BACKUP_TO_FLASH) += vbnv_flash.c
-romstage-$(CONFIG_CHROMEOS_VBNV_CMOS_BACKUP_TO_FLASH) += vbnv_flash.c
-ramstage-$(CONFIG_CHROMEOS_VBNV_CMOS_BACKUP_TO_FLASH) += vbnv_flash.c
-
-bootblock-$(CONFIG_CHROMEOS_VBNV_EC) += vbnv_ec.c
-verstage-$(CONFIG_CHROMEOS_VBNV_EC) += vbnv_ec.c
-romstage-$(CONFIG_CHROMEOS_VBNV_EC) += vbnv_ec.c
-ramstage-$(CONFIG_CHROMEOS_VBNV_EC) += vbnv_ec.c
-
-bootblock-$(CONFIG_CHROMEOS_VBNV_FLASH) += vbnv_flash.c
-verstage-$(CONFIG_CHROMEOS_VBNV_FLASH) += vbnv_flash.c
-romstage-$(CONFIG_CHROMEOS_VBNV_FLASH) += vbnv_flash.c
-ramstage-$(CONFIG_CHROMEOS_VBNV_FLASH) += vbnv_flash.c
-
 ramstage-$(CONFIG_ELOG) += elog.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += gnvs.c
 ramstage-$(CONFIG_CHROMEOS_RAMOOPS) += ramoops.c
@@ -59,8 +34,6 @@ CFLAGS_common += -DMOCK_TPM=1
 else
 CFLAGS_common += -DMOCK_TPM=0
 endif
-
-subdirs-$(CONFIG_VBOOT_VERIFY_FIRMWARE) += vboot2
 
 CONFIG_GBB_HWID := $(call strip_quotes,$(CONFIG_GBB_HWID))
 CONFIG_GBB_BMPFV_FILE := $(call strip_quotes,$(CONFIG_GBB_BMPFV_FILE))

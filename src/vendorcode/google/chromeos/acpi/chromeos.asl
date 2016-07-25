@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-#include <vendorcode/google/chromeos/vbnv_layout.h>
+#include <vboot/vbnv_layout.h>
 
 Device (CRHW)
 {
@@ -71,8 +71,8 @@ Device (CRHW)
 		Name(VNBV, Package() {
 			// See src/vendorcode/google/chromeos/Kconfig
 			// for the definition of these:
-			CONFIG_VBNV_OFFSET,
-			VBNV_BLOCK_SIZE
+			CONFIG_VBOOT_VBNV_OFFSET,
+			VBOOT_VBNV_BLOCK_SIZE
 		})
 		Return(VNBV)
 	}

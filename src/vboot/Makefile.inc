@@ -16,17 +16,42 @@
 libverstage-generic-ccopts += -D__PRE_RAM__ -D__VERSTAGE__
 verstage-generic-ccopts += -D__PRE_RAM__ -D__VERSTAGE__
 
+bootblock-y += vbnv.c
+verstage-y += vbnv.c
+romstage-y += vbnv.c
+ramstage-y += vbnv.c
+
+bootblock-$(CONFIG_VBOOT_VBNV_CMOS) += vbnv_cmos.c
+verstage-$(CONFIG_VBOOT_VBNV_CMOS) += vbnv_cmos.c
+romstage-$(CONFIG_VBOOT_VBNV_CMOS) += vbnv_cmos.c
+ramstage-$(CONFIG_VBOOT_VBNV_CMOS) += vbnv_cmos.c
+
+bootblock-$(CONFIG_VBOOT_VBNV_CMOS_BACKUP_TO_FLASH) += vbnv_flash.c
+verstage-$(CONFIG_VBOOT_VBNV_CMOS_BACKUP_TO_FLASH) += vbnv_flash.c
+romstage-$(CONFIG_VBOOT_VBNV_CMOS_BACKUP_TO_FLASH) += vbnv_flash.c
+ramstage-$(CONFIG_VBOOT_VBNV_CMOS_BACKUP_TO_FLASH) += vbnv_flash.c
+
+bootblock-$(CONFIG_VBOOT_VBNV_EC) += vbnv_ec.c
+verstage-$(CONFIG_VBOOT_VBNV_EC) += vbnv_ec.c
+romstage-$(CONFIG_VBOOT_VBNV_EC) += vbnv_ec.c
+ramstage-$(CONFIG_VBOOT_VBNV_EC) += vbnv_ec.c
+
+bootblock-$(CONFIG_VBOOT_VBNV_FLASH) += vbnv_flash.c
+verstage-$(CONFIG_VBOOT_VBNV_FLASH) += vbnv_flash.c
+romstage-$(CONFIG_VBOOT_VBNV_FLASH) += vbnv_flash.c
+ramstage-$(CONFIG_VBOOT_VBNV_FLASH) += vbnv_flash.c
+
 bootblock-y += vboot_loader.c
 romstage-y += vboot_loader.c
 ramstage-y += vboot_loader.c
 verstage-y += vboot_loader.c
 postcar-y += vboot_loader.c
 
-bootblock-y += ../vboot_common.c
-verstage-y += ../vboot_common.c
-romstage-y += ../vboot_common.c
-ramstage-y += ../vboot_common.c
-postcar-y += ../vboot_common.c
+bootblock-y += vboot_common.c
+verstage-y += vboot_common.c
+romstage-y += vboot_common.c
+ramstage-y += vboot_common.c
+postcar-y += vboot_common.c
 
 bootblock-y += recovery.c
 romstage-y += recovery.c
@@ -38,10 +63,10 @@ bootblock-y += common.c
 libverstage-y += vboot_logic.c
 verstage-y += common.c
 verstage-y += verstage.c
-ifeq (${CONFIG_VBOOT2_MOCK_SECDATA},y)
+ifeq (${CONFIG_VBOOT_MOCK_SECDATA},y)
 libverstage-y += secdata_mock.c
 else
-libverstage-y += antirollback.c
+libverstage-y += secdata_tpm.c
 endif
 romstage-y += vboot_handoff.c common.c
 

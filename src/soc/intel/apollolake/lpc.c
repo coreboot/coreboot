@@ -25,7 +25,7 @@
 #include <soc/lpc.h>
 #include <soc/pci_ids.h>
 #include <soc/pm.h>
-#include <vendorcode/google/chromeos/chromeos.h>
+#include <vboot/vbnv.h>
 
 #include "chip.h"
 
@@ -60,7 +60,7 @@ static void rtc_init(void)
 	rtc_fail = !!(ps->gen_pmcon1 & RPS);
 	/* Ensure the date is set including century byte. */
 	cmos_check_update_date();
-	if (IS_ENABLED(CONFIG_CHROMEOS_VBNV_CMOS))
+	if (IS_ENABLED(CONFIG_VBOOT_VBNV_CMOS))
 		init_vbnv_cmos(rtc_fail);
 	else
 		cmos_init(rtc_fail);

@@ -13,10 +13,10 @@
  * GNU General Public License for more details.
  */
 
-#ifndef VBNV_LAYOUT_H
-#define VBNV_LAYOUT_H
+#ifndef __VBOOT_VBNV_LAYOUT_H__
+#define __VBOOT_VBNV_LAYOUT_H__
 
-#define VBNV_BLOCK_SIZE 16	/* Size of NV storage block in bytes */
+#define VBOOT_VBNV_BLOCK_SIZE 16	/* Size of NV storage block in bytes */
 
 /* Constants for NV storage.  We use this rather than structs and
  * bitfields so the data format is consistent across platforms and
@@ -44,4 +44,4 @@
 #define KERNEL_FIELD_OFFSET         11
 #define CRC_OFFSET                  15
 
-#endif /* VBNV_LAYOUT_H */
+#endif /* __VBOOT_VBNV_LAYOUT_H__ */

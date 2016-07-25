@@ -12,15 +12,13 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
-#ifndef VBOOT_COMMON_H
-#define VBOOT_COMMON_H
+#ifndef __VBOOT_VBOOT_COMMON_H__
+#define __VBOOT_VBOOT_COMMON_H__
 
 #include <commonlib/region.h>
 #include <stdint.h>
 #include <vboot_api.h>
 #include <vboot_struct.h>
-
-#include "chromeos.h"
 
 /* Locate vboot area by name. Returns 0 on success and -1 on error. */
 int vboot_named_region_device(const char *name, struct region_device *rdev);
@@ -103,4 +101,4 @@ void verstage_main(void);
 void verstage(void);
 void verstage_mainboard_init(void);
 
-#endif /* VBOOT_COMMON_H */
+#endif /* __VBOOT_VBOOT_COMMON_H__ */

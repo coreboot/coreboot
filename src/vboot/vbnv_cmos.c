@@ -17,17 +17,17 @@
 #include <console/console.h>
 #include <types.h>
 #include <pc80/mc146818rtc.h>
-#include "vbnv.h"
-#include "vbnv_layout.h"
+#include <vboot/vbnv.h>
+#include <vboot/vbnv_layout.h>
 
 void read_vbnv_cmos(uint8_t *vbnv_copy)
 {
 	int i;
 
-	for (i = 0; i < VBNV_BLOCK_SIZE; i++)
-		vbnv_copy[i] = cmos_read(CONFIG_VBNV_OFFSET + 14 + i);
+	for (i = 0; i < VBOOT_VBNV_BLOCK_SIZE; i++)
+		vbnv_copy[i] = cmos_read(CONFIG_VBOOT_VBNV_OFFSET + 14 + i);
 
-	if (IS_ENABLED(CONFIG_CHROMEOS_VBNV_CMOS_BACKUP_TO_FLASH)) {
+	if (IS_ENABLED(CONFIG_VBOOT_VBNV_CMOS_BACKUP_TO_FLASH)) {
 		if (verify_vbnv(vbnv_copy))
 			return;
 
@@ -47,13 +47,13 @@ void save_vbnv_cmos(const uint8_t *vbnv_copy)
 {
 	int i;
 
-	for (i = 0; i < VBNV_BLOCK_SIZE; i++)
-		cmos_write(vbnv_copy[i], CONFIG_VBNV_OFFSET + 14 + i);
+	for (i = 0; i < VBOOT_VBNV_BLOCK_SIZE; i++)
+		cmos_write(vbnv_copy[i], CONFIG_VBOOT_VBNV_OFFSET + 14 + i);
 }
 
 void init_vbnv_cmos(int rtc_fail)
 {
-	uint8_t vbnv[VBNV_BLOCK_SIZE];
+	uint8_t vbnv[VBOOT_VBNV_BLOCK_SIZE];
 
 	if (rtc_fail)
 		read_vbnv_cmos(vbnv);
@@ -64,10 +64,10 @@ void init_vbnv_cmos(int rtc_fail)
 		save_vbnv_cmos(vbnv);
 }
 
-#if IS_ENABLED(CONFIG_CHROMEOS_VBNV_CMOS_BACKUP_TO_FLASH)
+#if IS_ENABLED(CONFIG_VBOOT_VBNV_CMOS_BACKUP_TO_FLASH)
 static void back_up_vbnv_cmos(void *unused)
 {
-	uint8_t vbnv_cmos[VBNV_BLOCK_SIZE];
+	uint8_t vbnv_cmos[VBOOT_VBNV_BLOCK_SIZE];
 
 	/* Read current VBNV from CMOS. */
 	read_vbnv_cmos(vbnv_cmos);

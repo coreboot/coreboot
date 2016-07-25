@@ -14,13 +14,14 @@
  */
 
 #include <assert.h>
+#include <bootmode.h>
 #include <bootstate.h>
 #include <rules.h>
 #include <string.h>
 #include <vb2_api.h>
-
-#include "misc.h"
-#include "../vboot_common.h"
+#include <vboot/misc.h>
+#include <vboot/vbnv.h>
+#include <vboot/vboot_common.h>
 
 static int vb2_get_recovery_reason_shared_data(void)
 {
@@ -88,9 +89,6 @@ static int cbmem_possibly_online(void)
  */
 static int vboot_possibly_executed(void)
 {
-	if (!IS_ENABLED(CONFIG_VBOOT_VERIFY_FIRMWARE))
-		return 0;
-
 	if (IS_ENABLED(CONFIG_VBOOT_STARTS_IN_BOOTBLOCK)) {
 		if (ENV_BOOTBLOCK && IS_ENABLED(CONFIG_SEPARATE_VERSTAGE))
 			return 0;

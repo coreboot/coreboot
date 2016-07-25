@@ -13,8 +13,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __CHROMEOS_VBNV_H__
-#define __CHROMEOS_VBNV_H__
+#ifndef __VBOOT_VBNV_H__
+#define __VBOOT_VBNV_H__
 
 #include <types.h>
 
@@ -39,4 +39,4 @@ void save_vbnv_flash(const uint8_t *vbnv_copy);
 void read_vbnv_ec(uint8_t *vbnv_copy);
 void save_vbnv_ec(const uint8_t *vbnv_copy);
 
-#endif
+#endif /* __VBOOT_VBNV_H__ */

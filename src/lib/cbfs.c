@@ -269,7 +269,7 @@ const struct cbfs_locator __attribute__((weak)) cbfs_master_header_locator = {
 extern const struct cbfs_locator vboot_locator;
 
 static const struct cbfs_locator *locators[] = {
-#if CONFIG_VBOOT_VERIFY_FIRMWARE
+#if CONFIG_VBOOT
 	&vboot_locator,
 #endif
 	&cbfs_master_header_locator,

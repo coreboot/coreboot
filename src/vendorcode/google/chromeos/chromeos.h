@@ -20,9 +20,8 @@
 #include <stdint.h>
 #include <bootmode.h>
 #include <rules.h>
-#include "vbnv.h"
-#include "vboot_common.h"
-#include "vboot2/misc.h"
+#include <vboot/misc.h>
+#include <vboot/vboot_common.h>
 
 void save_chromeos_gpios(void);
 

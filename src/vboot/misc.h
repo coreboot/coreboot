@@ -13,10 +13,10 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __CHROMEOS_VBOOT2_MISC_H__
-#define __CHROMEOS_VBOOT2_MISC_H__
+#ifndef __VBOOT_MISC_H__
+#define __VBOOT_MISC_H__
 
-#include "../vboot_common.h"
+#include <vboot/vboot_common.h>
 
 struct vb2_context;
 struct vb2_shared_data;
@@ -37,4 +37,4 @@ void vb2_store_selected_region(void);
 
 void vb2_save_recovery_reason_vbnv(void);
 
-#endif /* __CHROMEOS_VBOOT2_MISC_H__ */
+#endif /* __VBOOT_MISC_H__ */

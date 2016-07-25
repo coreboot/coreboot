@@ -17,8 +17,9 @@
 #include <console/console.h>
 #include <elog.h>
 #include <vendorcode/google/chromeos/chromeos.h>
-#if CONFIG_VBOOT_VERIFY_FIRMWARE
-#include "vboot_common.h"
+#if CONFIG_VBOOT
+#include <vboot/vbnv.h>
+#include <vboot/vboot_common.h>
 #include <vboot_struct.h>
 #endif
 
@@ -29,7 +30,7 @@ void elog_add_boot_reason(void)
 		printk(BIOS_DEBUG, "%s: Logged dev mode boot\n", __func__);
 	} else if (recovery_mode_enabled()) {
 		u8 reason = 0;
-#if CONFIG_VBOOT_VERIFY_FIRMWARE
+#if CONFIG_VBOOT
 		struct vboot_handoff *vbho = cbmem_find(CBMEM_ID_VBOOT_HANDOFF);
 
 		reason = get_recovery_mode_from_vbnv();

@@ -28,7 +28,7 @@ config CHROMEOS
 	select BOOTMODE_STRAPS
 	select ELOG if SPI_FLASH
 	select COLLECT_TIMESTAMPS
-	select VBOOT_VERIFY_FIRMWARE
+	select VBOOT
 	select MULTIPLE_CBFS_INSTANCES
 	help
 	  Enable ChromeOS specific features like the GPIO sub table in
@@ -36,39 +36,6 @@ config CHROMEOS
 	  board will most likely break your build.
 
 if CHROMEOS
-
-config VBNV_OFFSET
-	hex
-	default 0x26
-	depends on PC80_SYSTEM
-	help
-	  CMOS offset for VbNv data. This value must match cmos.layout
-	  in the mainboard directory, minus 14 bytes for the RTC.
-
-config CHROMEOS_VBNV_CMOS
-	bool "Vboot non-volatile storage in CMOS."
-	default n
-	help
-	  VBNV is stored in CMOS
-
-config CHROMEOS_VBNV_CMOS_BACKUP_TO_FLASH
-	bool "Back up Vboot non-volatile storage from CMOS to flash."
-	default n
-	depends on CHROMEOS_VBNV_CMOS
-	help
-	  Vboot non-volatile storage data will be backed up from CMOS to flash
-	  and restored from flash if the CMOS is invalid due to power loss.
-
-config CHROMEOS_VBNV_EC
-	bool "Vboot non-volatile storage in EC."
-	default n
-	help
-	  VBNV is stored in EC
-
-config CHROMEOS_VBNV_FLASH
-	def_bool n
-	help
-	  VBNV is stored in flash storage
 
 config CHROMEOS_RAMOOPS
 	bool "Reserve space for Chrome OS ramoops"
@@ -97,7 +64,7 @@ config CHROMEOS_RAMOOPS_RAM_SIZE
 config EC_SOFTWARE_SYNC
 	bool "Enable EC software sync"
 	default n
-	depends on VBOOT_VERIFY_FIRMWARE
+	depends on VBOOT
 	help
 	  EC software sync is a mechanism where the AP helps the EC verify its
 	  firmware similar to how vboot verifies the main system firmware. This
@@ -111,32 +78,12 @@ config VBOOT_EC_SLOW_UPDATE
 	  Whether the EC (or PD) is slow to update and needs to display a
 	  screen that informs the user the update is happening.
 
-config VBOOT_OPROM_MATTERS
-	bool "Video option ROM matters (= can skip display init)"
-	default n
-	depends on VBOOT_VERIFY_FIRMWARE
-	help
-	  Set this option to indicate to vboot that this platform will skip its
-	  display initialization on a normal (non-recovery, non-developer) boot.
-	  Vboot calls this "oprom matters" because on x86 devices this
-	  traditionally meant that the video option ROM will not be loaded, but
-	  it works functionally the same for other platforms that can skip their
-	  native display initialization code instead.
-
 config VIRTUAL_DEV_SWITCH
 	bool "Virtual developer switch support"
 	default n
-	depends on VBOOT_VERIFY_FIRMWARE
+	depends on VBOOT
 	help
 	  Whether this platform has a virtual developer switch.
-
-config VBOOT_VERIFY_FIRMWARE
-	bool "Verify firmware with vboot."
-	default n
-	depends on HAVE_HARD_RESET
-	help
-	  Enabling VBOOT_VERIFY_FIRMWARE will use vboot to verify the components
-	  of the firmware (stages, payload, etc).
 
 config NO_TPM_RESUME
 	bool
@@ -171,8 +118,6 @@ config HAVE_REGULATORY_DOMAIN
 	default n
 	help
 	 This option is needed to add ACPI regulatory domain methods
-
-source src/vendorcode/google/chromeos/vboot2/Kconfig
 
 menu "GBB configuration"
 

@@ -30,7 +30,7 @@
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/romstage.h>
-#include <vendorcode/google/chromeos/vboot_common.h>
+#include <vboot/vboot_common.h>
 
 static struct chipset_power_state power_state CAR_GLOBAL;
 

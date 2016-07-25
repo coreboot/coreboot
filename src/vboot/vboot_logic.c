@@ -16,15 +16,15 @@
 #include <antirollback.h>
 #include <arch/exception.h>
 #include <assert.h>
+#include <bootmode.h>
 #include <console/console.h>
 #include <console/vtxprintf.h>
 #include <delay.h>
 #include <string.h>
 #include <timestamp.h>
 #include <vb2_api.h>
-
-#include "../chromeos.h"
-#include "misc.h"
+#include <vboot/misc.h>
+#include <vboot/vbnv.h>
 
 /* The max hash size to expect is for SHA512. */
 #define VBOOT_MAX_HASH_SIZE VB2_SHA512_DIGEST_SIZE

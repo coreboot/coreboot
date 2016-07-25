@@ -23,9 +23,7 @@
 #include <rules.h>
 #include <stddef.h>
 #include <string.h>
-
-#include "chromeos.h"
-#include "vboot_common.h"
+#include <vboot/vboot_common.h>
 
 int vboot_named_region_device(const char *name, struct region_device *rdev)
 {

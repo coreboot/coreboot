@@ -20,8 +20,9 @@ ifeq ($(CONFIG_AZALIA_PLUGIN_SUPPORT),y)
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/hda_verb.c
 endif
 
-verstage-y += device_romstage.c
-romstage-y += device_romstage.c
+bootblock-y += device_simple.c
+verstage-y += device_simple.c
+romstage-y += device_simple.c
 romstage-$(CONFIG_PCI) += pci_early.c
 
 subdirs-y += oprom dram

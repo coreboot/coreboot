@@ -26,6 +26,7 @@
  */
 
 #include <spike_util.h>
+#include <arch/barrier.h>
 #include <arch/errno.h>
 #include <atomic.h>
 #include <string.h>

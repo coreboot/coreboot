@@ -104,9 +104,9 @@ size_t cbfs_load_and_decompress(const struct region_device *rdev, size_t offset,
 	case CBFS_COMPRESS_LZMA:
 		if (ENV_BOOTBLOCK || ENV_VERSTAGE)
 			return 0;
-		if (ENV_ROMSTAGE && !IS_ENABLED(CONFIG_COMPRESS_RAMSTAGE))
+		if ((ENV_ROMSTAGE || ENV_POSTCAR)
+			&& !IS_ENABLED(CONFIG_COMPRESS_RAMSTAGE))
 			return 0;
-
 		void *map = rdev_mmap(rdev, offset, in_size);
 		if (map == NULL)
 			return 0;

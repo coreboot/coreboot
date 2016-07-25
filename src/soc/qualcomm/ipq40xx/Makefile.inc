@@ -51,6 +51,11 @@ ramstage-y += uart.c  # Want the UART always ready for the kernels' earlyprintk
 ramstage-y += usb.c
 ramstage-y += tz_wrapper.S
 
+ramstage-y += blsp.c
+ramstage-y += i2c.c
+ramstage-y += qup.c
+ramstage-y += spi.c
+
 ifeq ($(CONFIG_USE_BLOBS),y)
 
 $(objcbfs)/bootblock.bin: $(call strip_quotes,$(CONFIG_SBL_ELF)) \

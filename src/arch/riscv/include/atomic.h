@@ -36,7 +36,6 @@
 typedef struct { int lock; } spinlock_t;
 #define SPINLOCK_INIT {0}
 
-#define mb() __sync_synchronize()
 #define atomic_set(ptr, val) (*(volatile typeof(*(ptr)) *)(ptr) = val)
 #define atomic_read(ptr) (*(volatile typeof(*(ptr)) *)(ptr))
 

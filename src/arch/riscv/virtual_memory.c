@@ -14,11 +14,12 @@
  * GNU General Public License for more details.
  */
 
-#include <vm.h>
+#include <arch/barrier.h>
 #include <arch/encoding.h>
 #include <atomic.h>
-#include <stdint.h>
 #include <console/console.h>
+#include <stdint.h>
+#include <vm.h>
 
 pte_t* root_page_table;
 

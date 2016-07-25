@@ -25,11 +25,12 @@
  * MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
  */
 
-#include <spike_util.h>
+#include <arch/barrier.h>
 #include <arch/errno.h>
 #include <atomic.h>
-#include <string.h>
 #include <console/console.h>
+#include <spike_util.h>
+#include <string.h>
 
 uintptr_t translate_address(uintptr_t vAddr) {
 	// TODO: implement the page table translation algorithm

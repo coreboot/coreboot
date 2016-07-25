@@ -200,8 +200,7 @@ static void soc_init(void *data)
 	 * default policy that doesn't honor boards' requirements. */
 	itss_snapshot_irq_polarities(GPIO_IRQ_START, GPIO_IRQ_END);
 
-	if (fsp_silicon_init() != FSP_SUCCESS)
-		die("FSP silicon init failed. Giving up.");
+	fsp_silicon_init();
 
 	/* Restore GPIO IRQ polarities back to previous settings. */
 	itss_restore_irq_polarities(GPIO_IRQ_START, GPIO_IRQ_END);
@@ -411,12 +410,9 @@ static void fsp_notify_dummy(void *arg)
 {
 
 	enum fsp_notify_phase ph = (enum fsp_notify_phase) arg;
-	enum fsp_status ret;
 
-	if ((ret = fsp_notify(ph)) != FSP_SUCCESS) {
-		printk(BIOS_CRIT, "FspNotify failed, ret = %x!\n", ret);
-		fsp_handle_reset(ret);
-	}
+	fsp_notify(ph);
+
 	/* Call END_OF_FIRMWARE Notify after READY_TO_BOOT Notify */
 	if (ph == READY_TO_BOOT) {
 		fsp_notify_dummy((void *)END_OF_FIRMWARE);

@@ -23,7 +23,7 @@
 
 struct fsp_header fsps_hdr;
 
-static enum fsp_status do_silicon_init(struct fsp_header *hdr)
+static void do_silicon_init(struct fsp_header *hdr)
 {
 	struct FSPS_UPD upd, *supd;
 	fsp_silicon_init_fn silicon_init;
@@ -32,8 +32,7 @@ static enum fsp_status do_silicon_init(struct fsp_header *hdr)
 	supd = (struct FSPS_UPD *) (hdr->cfg_region_offset + hdr->image_base);
 
 	if (supd->FspUpdHeader.Signature != FSPS_UPD_SIGNATURE) {
-		printk(BIOS_ERR, "Invalid FSPS signature\n");
-		return FSP_INCOMPATIBLE_VERSION;
+		die("Invalid FSPS signature\n");
 	}
 
 	memcpy(&upd, supd, sizeof(upd));
@@ -54,13 +53,15 @@ static enum fsp_status do_silicon_init(struct fsp_header *hdr)
 
 	fsp_debug_after_silicon_init(status);
 
-	/* Handle any resets requested by FSPS. */
+	/* Handle any errors returned by FspSiliconInit */
 	fsp_handle_reset(status);
-
-	return status;
+	if (status != FSP_SUCCESS) {
+		printk(BIOS_SPEW, "FspSiliconInit returned 0x%08x\n", status);
+		die("FspSiliconINit returned an error!\n");
+	}
 }
 
-enum fsp_status fsp_silicon_init(void)
+void fsp_silicon_init(void)
 {
 	struct fsp_header *hdr = &fsps_hdr;
 	struct cbfsf file_desc;
@@ -71,7 +72,7 @@ enum fsp_status fsp_silicon_init(void)
 
 	if (cbfs_boot_locate(&file_desc, name, NULL)) {
 		printk(BIOS_ERR, "Could not locate %s in CBFS\n", name);
-		return FSP_NOT_FOUND;
+		die("FSPS not available!\n");
 	}
 
 	cbfs_file_data(&rdev, &file_desc);
@@ -81,26 +82,24 @@ enum fsp_status fsp_silicon_init(void)
 	dest = cbmem_add(CBMEM_ID_REFCODE, size);
 
 	if (dest == NULL) {
-		printk(BIOS_ERR, "Could not add FSPS to CBMEM.\n");
-		return FSP_NOT_FOUND;
+		die("Could not add FSPS to CBMEM!\n");
 	}
 
 	if (rdev_readat(&rdev, dest, 0, size) < 0)
-		return FSP_NOT_FOUND;
+		die("Failed to read FSPS!\n");
 
 	if (fsp_component_relocate((uintptr_t)dest, dest, size) < 0) {
-		printk(BIOS_ERR, "Unable to relocate FSPS.\n");
-		return FSP_NOT_FOUND;
+		die("Unable to relocate FSPS!\n");
 	}
 
 	/* Create new region device in memory after relocation. */
 	rdev_chain(&rdev, &addrspace_32bit.rdev, (uintptr_t)dest, size);
 
 	if (fsp_validate_component(hdr, &rdev) != CB_SUCCESS)
-		return FSP_NOT_FOUND;
+		die("Invalid FSPS header!\n");
 
 	/* Signal that FSP component has been loaded. */
 	prog_segment_loaded(hdr->image_base, hdr->image_size, SEG_FINAL);
 
-	return do_silicon_init(hdr);
+	do_silicon_init(hdr);
 }

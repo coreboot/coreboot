@@ -62,8 +62,7 @@ static void save_memory_training_data(bool s3wake, uint32_t fsp_version)
  */
 #define MRC_DEAD_VERSION		(0xdeaddead)
 
-static enum fsp_status do_fsp_post_memory_init(bool s3wake,
-	uint32_t fsp_version)
+static void do_fsp_post_memory_init(bool s3wake, uint32_t fsp_version)
 {
 	struct range_entry fsp_mem;
 	struct romstage_handoff *handoff;
@@ -88,7 +87,7 @@ static enum fsp_status do_fsp_post_memory_init(bool s3wake,
 	/* make sure FSP memory is reserved in cbmem */
 	if (range_entry_base(&fsp_mem) !=
 		(uintptr_t)cbmem_find(CBMEM_ID_FSP_RESERVED_MEMORY))
-		die("Failed to accommodate FSP reserved memory request");
+		die("Failed to accommodate FSP reserved memory request!\n");
 
 	/* Now that CBMEM is up, save the list so ramstage can use it */
 	if (vboot_recovery_mode_enabled())
@@ -102,8 +101,6 @@ static enum fsp_status do_fsp_post_memory_init(bool s3wake,
 		handoff->s3_resume = s3wake;
 	else
 		printk(BIOS_DEBUG, "Romstage handoff structure not added!\n");
-
-	return FSP_SUCCESS;
 }
 
 static void fsp_fill_mrc_cache(struct FSPM_ARCH_UPD *arch_upd, bool s3wake,
@@ -183,7 +180,7 @@ static enum cb_err fsp_fill_common_arch_params(struct FSPM_ARCH_UPD *arch_upd,
 	return CB_SUCCESS;
 }
 
-static enum fsp_status do_fsp_memory_init(struct fsp_header *hdr, bool s3wake,
+static void do_fsp_memory_init(struct fsp_header *hdr, bool s3wake,
 					const struct memranges *memmap)
 {
 	enum fsp_status status;
@@ -196,8 +193,7 @@ static enum fsp_status do_fsp_memory_init(struct fsp_header *hdr, bool s3wake,
 	upd = (struct FSPM_UPD *)(hdr->cfg_region_offset + hdr->image_base);
 
 	if (upd->FspUpdHeader.Signature != FSPM_UPD_SIGNATURE) {
-		printk(BIOS_ERR, "Invalid FSPM signature\n");
-		return FSP_INCOMPATIBLE_VERSION;
+		die("Invalid FSPM signature!\n");
 	}
 
 	/* Copy the default values from the UPD area */
@@ -211,7 +207,7 @@ static enum fsp_status do_fsp_memory_init(struct fsp_header *hdr, bool s3wake,
 	/* Fill common settings on behalf of chipset. */
 	if (fsp_fill_common_arch_params(arch_upd, s3wake, hdr->fsp_revision,
 					memmap) != CB_SUCCESS)
-		return FSP_NOT_FOUND;
+		die("FSPM_ARCH_UPD not found!\n");
 
 	/* Give SoC and mainboard a chance to update the UPD */
 	platform_fsp_memory_init_params_cb(&fspm_upd);
@@ -228,13 +224,14 @@ static enum fsp_status do_fsp_memory_init(struct fsp_header *hdr, bool s3wake,
 
 	fsp_debug_after_memory_init(status);
 
-	/* Handle any resets requested by FSPM. */
+	/* Handle any errors returned by FspMemoryInit */
 	fsp_handle_reset(status);
+	if (status != FSP_SUCCESS) {
+		printk(BIOS_DEBUG, "FspMemoryInit returned 0x%08x\n", status);
+		die("FspMemoryInit returned an error!\n");
+	}
 
-	if (status != FSP_SUCCESS)
-		return status;
-
-	return do_fsp_post_memory_init(s3wake, hdr->fsp_revision);
+	do_fsp_post_memory_init(s3wake, hdr->fsp_revision);
 }
 
 /* Load the binary into the memory specified by the info header. */
@@ -285,7 +282,7 @@ static enum cb_err load_fspm_xip(struct fsp_header *hdr,
 	return CB_SUCCESS;
 }
 
-enum fsp_status fsp_memory_init(bool s3wake)
+void fsp_memory_init(bool s3wake)
 {
 	struct fsp_header hdr;
 	enum cb_err status;
@@ -300,7 +297,7 @@ enum fsp_status fsp_memory_init(bool s3wake)
 
 	if (cbfs_boot_locate(&file_desc, name, NULL)) {
 		printk(BIOS_ERR, "Could not locate %s in CBFS\n", name);
-		return FSP_NOT_FOUND;
+		die("FSPM not available!\n");
 	}
 
 	cbfs_file_data(&file_data, &file_desc);
@@ -317,12 +314,11 @@ enum fsp_status fsp_memory_init(bool s3wake)
 		status = load_fspm_xip(&hdr, &file_data);
 
 	if (status != CB_SUCCESS) {
-		printk(BIOS_ERR, "Loading FSPM failed.\n");
-		return FSP_NOT_FOUND;
+		die("Loading FSPM failed!\n");
 	}
 
 	/* Signal that FSP component has been loaded. */
 	prog_segment_loaded(hdr.image_base, hdr.image_size, SEG_FINAL);
 
-	return do_fsp_memory_init(&hdr, s3wake, &memmap);
+	do_fsp_memory_init(&hdr, s3wake, &memmap);
 }

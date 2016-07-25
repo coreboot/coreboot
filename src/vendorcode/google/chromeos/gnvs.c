@@ -53,10 +53,10 @@ void chromeos_init_vboot(chromeos_acpi_t *chromeos)
 #endif
 
 #if CONFIG_ELOG
-	if (developer_mode_enabled() ||
-	    (vboot_wants_oprom() && !recovery_mode_enabled()))
+	if (vboot_developer_mode_enabled() ||
+	    (vboot_wants_oprom() && !vboot_recovery_mode_enabled()))
 		elog_add_event(ELOG_TYPE_CROS_DEVELOPER_MODE);
-	if (recovery_mode_enabled()) {
+	if (vboot_recovery_mode_enabled()) {
 		int reason = get_recovery_mode_from_vbnv();
 #if CONFIG_VBOOT
 		if (vboot_handoff && !reason) {

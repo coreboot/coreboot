@@ -17,24 +17,6 @@
 #include <bootmode.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
-#if CONFIG_BOOTMODE_STRAPS
-int developer_mode_enabled(void)
-{
-	if (get_developer_mode_switch())
-		return 1;
-#if CONFIG_VBOOT
-	if (vboot_handoff_check_developer_flag())
-		return 1;
-#endif
-	return 0;
-}
-
-int recovery_mode_enabled(void)
-{
-	return !!vboot_check_recovery_request();
-}
-#endif /* CONFIG_BOOTMODE_STRAPS */
-
 #if ENV_RAMSTAGE
 static int gfx_init_done = -1;
 

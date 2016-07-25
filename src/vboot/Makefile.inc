@@ -13,6 +13,14 @@
 ## GNU General Public License for more details.
 ##
 
+bootblock-y += bootmode.c
+romstage-y += bootmode.c
+ramstage-y += bootmode.c
+verstage-y += bootmode.c
+postcar-y += bootmode.c
+
+ifeq ($(CONFIG_VBOOT),y)
+
 libverstage-generic-ccopts += -D__PRE_RAM__ -D__VERSTAGE__
 verstage-generic-ccopts += -D__PRE_RAM__ -D__VERSTAGE__
 
@@ -52,12 +60,6 @@ verstage-y += vboot_common.c
 romstage-y += vboot_common.c
 ramstage-y += vboot_common.c
 postcar-y += vboot_common.c
-
-bootblock-y += recovery.c
-romstage-y += recovery.c
-ramstage-y += recovery.c
-verstage-y += recovery.c
-postcar-y += recovery.c
 
 bootblock-y += common.c
 libverstage-y += vboot_logic.c
@@ -141,3 +143,5 @@ regions-for-file = $(subst $(spc),$(comma),$(sort \
 		font.bin \
 		vbgfx.bin \
 		,$(1)),COREBOOT,COREBOOT FW_MAIN_A FW_MAIN_B)))
+
+endif # CONFIG_VBOOT

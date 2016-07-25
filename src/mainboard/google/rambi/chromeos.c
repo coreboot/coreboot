@@ -14,11 +14,12 @@
  */
 
 #include <string.h>
-#include <bootmode.h>
 #include <arch/io.h>
+#include <bootmode.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <soc/gpio.h>
+#include <vboot/vboot_common.h>
 
 #if CONFIG_EC_GOOGLE_CHROMEEC
 #include "ec.h"
@@ -35,7 +36,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 {
 	struct lb_gpio chromeos_gpios[] = {
 		{-1, ACTIVE_HIGH, get_write_protect_state(), "write protect"},
-		{-1, ACTIVE_HIGH, recovery_mode_enabled(), "recovery"},
+		{-1, ACTIVE_HIGH, vboot_recovery_mode_enabled(), "recovery"},
 		{-1, ACTIVE_HIGH, get_developer_mode_switch(), "developer"},
 		{-1, ACTIVE_HIGH, get_lid_switch(), "lid"},
 		{-1, ACTIVE_HIGH, 0, "power"},

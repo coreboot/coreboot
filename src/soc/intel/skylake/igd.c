@@ -91,8 +91,7 @@ static void igd_init(struct device *dev)
 	/* Wait for any configured pre-graphics delay */
 	if (!acpi_is_wakeup_s3()) {
 #if IS_ENABLED(CONFIG_CHROMEOS)
-		if (developer_mode_enabled() || recovery_mode_enabled() ||
-		    vboot_wants_oprom())
+		if (display_init_required() || vboot_wants_oprom())
 			mdelay(CONFIG_PRE_GRAPHICS_DELAY);
 #else
 		mdelay(CONFIG_PRE_GRAPHICS_DELAY);

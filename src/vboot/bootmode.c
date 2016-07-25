@@ -89,6 +89,9 @@ static int cbmem_possibly_online(void)
  */
 static int vboot_possibly_executed(void)
 {
+	if (!IS_ENABLED(CONFIG_VBOOT))
+		return 0;
+
 	if (IS_ENABLED(CONFIG_VBOOT_STARTS_IN_BOOTBLOCK)) {
 		if (ENV_BOOTBLOCK && IS_ENABLED(CONFIG_SEPARATE_VERSTAGE))
 			return 0;
@@ -147,6 +150,28 @@ int vboot_check_recovery_request(void)
 	if (vboot_possibly_executed() && vb2_logic_executed() &&
 	    !vb2_is_slot_selected())
 		return vb2_get_recovery_reason_shared_data();
+
+	return 0;
+}
+
+int vboot_recovery_mode_enabled(void)
+{
+	if (!IS_ENABLED(CONFIG_VBOOT))
+		return 0;
+
+	return !!vboot_check_recovery_request();
+}
+
+int vboot_developer_mode_enabled(void)
+{
+	if (!IS_ENABLED(CONFIG_VBOOT))
+		return 0;
+
+	if (get_developer_mode_switch())
+		return 1;
+
+	if (cbmem_possibly_online() && vboot_handoff_check_developer_flag())
+		return 1;
 
 	return 0;
 }

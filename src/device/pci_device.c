@@ -669,8 +669,7 @@ static int should_run_oprom(struct device *dev)
 	/* Don't run VGA option ROMs, unless we have to print
 	 * something on the screen before the kernel is loaded.
 	 */
-	should_run = !IS_ENABLED(CONFIG_BOOTMODE_STRAPS) ||
-		developer_mode_enabled() || recovery_mode_enabled();
+	should_run = display_init_required();
 
 #if CONFIG_CHROMEOS
 	if (!should_run)

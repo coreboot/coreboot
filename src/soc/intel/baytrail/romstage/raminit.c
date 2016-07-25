@@ -16,7 +16,6 @@
 #include <stddef.h>
 #include <arch/acpi.h>
 #include <arch/io.h>
-#include <bootmode.h>
 #include <cbfs.h>
 #include <cbmem.h>
 #include <console/console.h>
@@ -31,6 +30,7 @@
 #include <soc/romstage.h>
 #include <ec/google/chromeec/ec.h>
 #include <ec/google/chromeec/ec_commands.h>
+#include <vboot/vboot_common.h>
 
 static void reset_system(void)
 {
@@ -123,7 +123,7 @@ void raminit(struct mrc_params *mp, int prev_sleep_state)
 	if (!mp->io_hole_mb)
 		mp->io_hole_mb = 2048;
 
-	if (recovery_mode_enabled()) {
+	if (vboot_recovery_mode_enabled()) {
 		printk(BIOS_DEBUG, "Recovery mode: not using MRC cache.\n");
 	} else if (!mrc_cache_get_current(&cache)) {
 		mp->saved_data_size = cache->size;

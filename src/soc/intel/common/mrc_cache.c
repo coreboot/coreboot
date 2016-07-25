@@ -19,6 +19,8 @@
 #include <cbmem.h>
 #include <fmap.h>
 #include <ip_checksum.h>
+#include <vboot/vboot_common.h>
+
 #include "mrc_cache.h"
 #include "nvm.h"
 

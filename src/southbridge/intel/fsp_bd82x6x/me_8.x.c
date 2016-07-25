@@ -709,7 +709,7 @@ static void intel_me_init(device_t dev)
 		/*
 		 * Unlock ME in recovery mode.
 		 */
-		if (recovery_mode_enabled()) {
+		if (vboot_recovery_mode_enabled()) {
 			/* Unlock ME flash region */
 			mkhi_hmrfpo_enable();
 

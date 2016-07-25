@@ -28,5 +28,6 @@ void mainboard_gpio_i2c_init(device_t dev);
 #if IS_ENABLED(CONFIG_PLATFORM_USES_FSP1_1)
 void fsp_silicon_init(void);
 #endif
+asmlinkage void chipset_teardown_car(void);
 
 #endif /* _SOC_RAMSTAGE_H_ */

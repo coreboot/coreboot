@@ -65,33 +65,4 @@ typedef struct { int lock; } spinlock_t;
   res; })
 #endif
 
-static inline void spinlock_lock(spinlock_t* lock)
-{
-  do
-  {
-    while (atomic_read(&lock->lock))
-      ;
-  } while (atomic_swap(&lock->lock, -1));
-  mb();
-}
-
-static inline void spinlock_unlock(spinlock_t* lock)
-{
-  mb();
-  atomic_set(&lock->lock,0);
-}
-
-static inline long spinlock_lock_irqsave(spinlock_t* lock)
-{
-  long flags = disable_irqsave();
-  spinlock_lock(lock);
-  return flags;
-}
-
-static inline void spinlock_unlock_irqrestore(spinlock_t* lock, long flags)
-{
-  spinlock_unlock(lock);
-  enable_irqrestore(flags);
-}
-
 #endif

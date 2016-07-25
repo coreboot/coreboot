@@ -39,6 +39,7 @@ ramstage-y += chromeos.c
 ramstage-y += mainboard.c
 ramstage-y += mmu.c
 ramstage-y += reset.c
+ramstage-y += blsp.c
 
 bootblock-y += memlayout.ld
 romstage-y += memlayout.ld

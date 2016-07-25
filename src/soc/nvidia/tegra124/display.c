@@ -263,7 +263,7 @@ void display_startup(device_t dev)
 	config->framebuffer_base = framebuffer_base_mb * MiB;
 
 	mmu_config_range(framebuffer_base_mb, framebuffer_size_mb,
-		config->cache_policy);
+		DCACHE_WRITETHROUGH);
 
 	printk(BIOS_SPEW, "LCD frame buffer at %dMiB to %dMiB\n", framebuffer_base_mb,
 		   framebuffer_base_mb + framebuffer_size_mb);

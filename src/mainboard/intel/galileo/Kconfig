@@ -49,5 +49,12 @@ config USE_FSP1_1
 	bool
 	default n
 	select PLATFORM_USES_FSP1_1
+#	select ADD_FSP_RAW_BIN
+
+config USE_FSP2_0
+	bool
+	default n
+	select PLATFORM_USES_FSP2_0
+	select POSTCAR_STAGE
 
 endif # BOARD_INTEL_QUARK

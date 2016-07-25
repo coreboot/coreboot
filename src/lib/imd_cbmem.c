@@ -279,7 +279,8 @@ void cbmem_add_bootmem(void)
 	bootmem_add_range(base, size, LB_MEM_TABLE);
 }
 
-#if ENV_RAMSTAGE
+#if ENV_RAMSTAGE || (IS_ENABLED(CONFIG_EARLY_CBMEM_LIST) \
+	&& (ENV_POSTCAR || ENV_ROMSTAGE))
 /*
  * -fdata-sections doesn't work so well on read only strings. They all
  * get put in the same section even though those strings may never be
@@ -288,8 +289,11 @@ void cbmem_add_bootmem(void)
 void cbmem_list(void)
 {
 	static const struct imd_lookup lookup[] = { CBMEM_ID_TO_NAME_TABLE };
+	struct imd *imd;
+	struct imd imd_backing;
 
-	imd_print_entries(cbmem_get_imd(), lookup, ARRAY_SIZE(lookup));
+	imd = imd_init_backing_with_recover(&imd_backing);
+	imd_print_entries(imd, lookup, ARRAY_SIZE(lookup));
 }
 #endif
 

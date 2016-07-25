@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2015-2016 Intel Corporation.
+ * Copyright (C) 2016 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -12,22 +12,10 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
+#include <console/console.h>
+#include <fsp/util.h>
+#include <soc/ramstage.h>
 
-#include <cbmem.h>
-#include <soc/reg_access.h>
-
-void *cbmem_top(void)
+void platform_fsp_silicon_init_params_cb(struct FSPS_UPD *silupd)
 {
-	uint32_t top_of_memory;
-
-	/* Determine the TSEG base */
-	top_of_memory = reg_host_bridge_unit_read(QNC_MSG_FSBIC_REG_HSMMC);
-	top_of_memory &= SMM_START_MASK;
-	top_of_memory <<= 16;
-
-	/* Reserve 64 KiB for RMU firmware */
-	top_of_memory -= 0x10000;
-
-	/* Return the top of memory */
-	return (void *)top_of_memory;
 }

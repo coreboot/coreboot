@@ -127,11 +127,13 @@ config ENABLE_DEBUG_LED_TEMPRAMINIT
 
 config DCACHE_RAM_BASE
 	hex
-	default 0x80070000
+	default 0x80070000 if PLATFORM_USES_FSP1_1
+	default 0x80000000
 
 config DCACHE_RAM_SIZE
 	hex
-	default 0x00008000
+	default 0x8000 if PLATFORM_USES_FSP1_1
+	default 0x40000
 
 #####
 # Flash layout

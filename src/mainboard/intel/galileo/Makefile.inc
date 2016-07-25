@@ -23,5 +23,8 @@ bootblock-y += reg_access.c
 romstage-y += gpio.c
 romstage-y += reg_access.c
 
+postcar-y += gpio.c
+postcar-y += reg_access.c
+
 ramstage-y += gpio.c
 ramstage-y += reg_access.c

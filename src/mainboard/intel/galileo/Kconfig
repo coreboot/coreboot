@@ -54,7 +54,7 @@ config USE_FSP1_1
 config USE_FSP2_0
 	bool
 	default n
+	select BOOTBLOCK_CONSOLE
 	select PLATFORM_USES_FSP2_0
-	select POSTCAR_STAGE
 
 endif # BOARD_INTEL_QUARK

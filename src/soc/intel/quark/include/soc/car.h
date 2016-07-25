@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2015-2016 Intel Corporation.
+ * Copyright 2016 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,21 +13,17 @@
  * GNU General Public License for more details.
  */
 
-#include <cbmem.h>
-#include <soc/reg_access.h>
+#ifndef _SOC_CAR_H_
+#define _SOC_CAR_H_
 
-void *cbmem_top(void)
-{
-	uint32_t top_of_memory;
+#include <fsp/util.h>
 
-	/* Determine the TSEG base */
-	top_of_memory = reg_host_bridge_unit_read(QNC_MSG_FSBIC_REG_HSMMC);
-	top_of_memory &= SMM_START_MASK;
-	top_of_memory <<= 16;
+/* Mainboard and SoC initialization prior to console. */
+void car_mainboard_pre_console_init(void);
+void car_soc_pre_console_init(void);
 
-	/* Reserve 64 KiB for RMU firmware */
-	top_of_memory -= 0x10000;
+/* Mainboard and SoC initialization post console initialization. */
+void car_mainboard_post_console_init(void);
+void car_soc_post_console_init(void);
 
-	/* Return the top of memory */
-	return (void *)top_of_memory;
-}
+#endif /* _SOC_CAR_H_ */

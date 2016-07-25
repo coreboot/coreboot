@@ -15,7 +15,7 @@
 
 #include <arch/io.h>
 #include <console/console.h>
-#include <fsp/romstage.h>
+#include <soc/car.h>
 #include <soc/ramstage.h>
 #include "reg_access.h"
 #include "gen1.h"
@@ -37,7 +37,8 @@ void car_mainboard_pre_console_init(void)
 		if (IS_ENABLED(CONFIG_GALILEO_GEN2))
 			script = gen2_hsuart0;
 		else
-			script = (reg_legacy_gpio_read (R_QNC_GPIO_RGLVL_RESUME_WELL)
+			script = (reg_legacy_gpio_read(
+				R_QNC_GPIO_RGLVL_RESUME_WELL)
 				& GALILEO_DETERMINE_IOEXP_SLA_RESUMEWELL_GPIO)
 				? gen1_hsuart0_0x20 : gen1_hsuart0_0x21;
 		reg_script_run(script);

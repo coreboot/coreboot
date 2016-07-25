@@ -29,8 +29,10 @@ car_stage_entry:
 	/* Enter the C code */
 	call	car_stage_c_entry
 
+#if IS_ENABLED(CONFIG_PLATFORM_USES_FSP1_1)
 #if !ENV_VERSTAGE
 #include "src/drivers/intel/fsp1_1/after_raminit.S"
+#endif
 #endif
 
 	/* The code should never reach this point */

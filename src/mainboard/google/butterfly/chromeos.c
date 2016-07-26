@@ -23,6 +23,7 @@
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/common/gpio.h>
 #include <ec/quanta/ene_kb3940q/ec.h>
+#include <vendorcode/google/chromeos/chromeos.h>
 #include "ec.h"
 
 #define WP_GPIO		6
@@ -135,4 +136,15 @@ int get_recovery_mode_switch(void)
 #endif
 
 	return ec_rec_mode;
+}
+
+static const struct cros_gpio cros_gpios[] = {
+	CROS_GPIO_REC_AH(CROS_GPIO_VIRTUAL, CROS_GPIO_DEVICE_NAME),
+	CROS_GPIO_DEV_AH(CROS_GPIO_VIRTUAL, CROS_GPIO_DEVICE_NAME),
+	CROS_GPIO_WP_AL(WP_GPIO, CROS_GPIO_DEVICE_NAME),
+};
+
+void mainboard_chromeos_acpi_generate(void)
+{
+	chromeos_acpi_gpio_generate(cros_gpios, ARRAY_SIZE(cros_gpios));
 }

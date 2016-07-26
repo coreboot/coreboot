@@ -15,6 +15,11 @@
 
 #include <vboot/vbnv_layout.h>
 
+#if IS_ENABLED(CONFIG_CHROMEOS)
+
+/* GPIO package generated at run time. */
+External (OIPG)
+
 Device (CRHW)
 {
 	Name(_HID, EISAID("GGL0001"))
@@ -107,3 +112,4 @@ Device (CRHW)
 }
 
 #include "ramoops.asl"
+#endif

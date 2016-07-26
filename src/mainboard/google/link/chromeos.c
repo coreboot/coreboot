@@ -22,6 +22,7 @@
 #include <southbridge/intel/common/gpio.h>
 #include "ec.h"
 #include <ec/google/chromeec/ec.h>
+#include <vendorcode/google/chromeos/chromeos.h>
 
 #ifndef __PRE_RAM__
 #include <boot/coreboot_tables.h>
@@ -106,4 +107,14 @@ int get_recovery_mode_switch(void)
 
 	return !!(ec_events &
 		  EC_HOST_EVENT_MASK(EC_HOST_EVENT_KEYBOARD_RECOVERY));
+}
+
+static const struct cros_gpio cros_gpios[] = {
+	CROS_GPIO_REC_AL(9, CROS_GPIO_DEVICE_NAME),
+	CROS_GPIO_WP_AH(57, CROS_GPIO_DEVICE_NAME),
+};
+
+void mainboard_chromeos_acpi_generate(void)
+{
+	chromeos_acpi_gpio_generate(cros_gpios, ARRAY_SIZE(cros_gpios));
 }

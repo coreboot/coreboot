@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <soc/nhlt.h>
+#include <vendorcode/google/chromeos/chromeos.h>
 #include "ec.h"
 #include "gpio.h"
 
@@ -99,6 +100,7 @@ static void mainboard_enable(device_t dev)
 {
 	dev->ops->init = mainboard_init;
 	dev->ops->write_acpi_tables = mainboard_write_acpi_tables;
+	dev->ops->acpi_inject_dsdt_generator = chromeos_dsdt_generator;
 }
 
 struct chip_operations mainboard_ops = {

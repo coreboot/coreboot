@@ -123,3 +123,13 @@ int get_write_protect_state(void)
 	return (read32((void *)(COMMUNITY_GPEAST_BASE + WP_STATUS_PAD_CFG0))
 		& PAD_VAL_HIGH);
 }
+
+static const struct cros_gpio cros_gpios[] = {
+	CROS_GPIO_REC_AL(CROS_GPIO_VIRTUAL, CROS_GPIO_DEVICE_NAME),
+	CROS_GPIO_WP_AH(0x10013, CROS_GPIO_DEVICE_NAME),
+};
+
+void mainboard_chromeos_acpi_generate(void)
+{
+	chromeos_acpi_gpio_generate(cros_gpios, ARRAY_SIZE(cros_gpios));
+}

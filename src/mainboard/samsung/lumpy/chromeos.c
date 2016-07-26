@@ -21,6 +21,7 @@
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/common/gpio.h>
+#include <vendorcode/google/chromeos/chromeos.h>
 
 #define GPIO_SPI_WP	24
 #define GPIO_REC_MODE	42
@@ -134,4 +135,15 @@ void init_bootmode_straps(void)
 
 	pci_write_config32(PCI_DEV(0, 0x1f, 2), SATA_SP, flags);
 #endif
+}
+
+static const struct cros_gpio cros_gpios[] = {
+	CROS_GPIO_REC_AL(GPIO_REC_MODE, CROS_GPIO_DEVICE_NAME),
+	CROS_GPIO_DEV_AH(GPIO_DEV_MODE, CROS_GPIO_DEVICE_NAME),
+	CROS_GPIO_WP_AH(GPIO_SPI_WP, CROS_GPIO_DEVICE_NAME),
+};
+
+void mainboard_chromeos_acpi_generate(void)
+{
+	chromeos_acpi_gpio_generate(cros_gpios, ARRAY_SIZE(cros_gpios));
 }

@@ -28,6 +28,7 @@
 #include <arch/io.h>
 #include <arch/interrupt.h>
 #include <boot/coreboot_tables.h>
+#include <vendorcode/google/chromeos/chromeos.h>
 #include "board_version.h"
 #include "ec.h"
 
@@ -51,6 +52,7 @@ static void mainboard_init(device_t dev)
 static void mainboard_enable(device_t dev)
 {
 	dev->ops->init = mainboard_init;
+	dev->ops->acpi_inject_dsdt_generator = chromeos_dsdt_generator;
 	install_intel_vga_int15_handler(GMA_INT15_ACTIVE_LFP_EDP, GMA_INT15_PANEL_FIT_CENTERING, GMA_INT15_BOOT_DISPLAY_DEFAULT, 0);
 }
 

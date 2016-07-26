@@ -19,6 +19,8 @@
 
 #include <soc/gpio_defs.h>
 
+#define CROS_GPIO_DEVICE_NAME	"INT344B:00"
+
 #ifndef __ACPI__
 #include <stdint.h>
 #include <stddef.h>

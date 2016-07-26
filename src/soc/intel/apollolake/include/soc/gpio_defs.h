@@ -362,6 +362,12 @@
 #define PAD_W(pad)			(pad - W_OFFSET)
 #define PAD_SW(pad)			(pad - SW_OFFSET)
 
+/* Linux names of the GPIO devices. */
+#define GPIO_COMM_N_NAME		"INT3452:00"
+#define GPIO_COMM_NW_NAME		"INT3452:01"
+#define GPIO_COMM_W_NAME		"INT3452:02"
+#define GPIO_COMM_SW_NAME		"INT3452:03"
+
 /* Default configurations */
 #define PAD_CFG0_DEFAULT_FUNC(x)	(PAD_CFG0_RESET_DEEP | PAD_CFG0_MODE_FUNC(x))
 #define PAD_CFG0_DEFAULT_NATIVE		PAD_CFG0_DEFAULT_FUNC(1)

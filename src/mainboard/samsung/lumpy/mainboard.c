@@ -31,6 +31,7 @@
 #include "onboard.h"
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <smbios.h>
+#include <vendorcode/google/chromeos/chromeos.h>
 
 void mainboard_suspend_resume(void)
 {
@@ -98,6 +99,7 @@ static void mainboard_enable(device_t dev)
 {
 	dev->ops->init = mainboard_init;
 	dev->ops->get_smbios_data = lumpy_onboard_smbios_data;
+	dev->ops->acpi_inject_dsdt_generator = chromeos_dsdt_generator;
 	install_intel_vga_int15_handler(GMA_INT15_ACTIVE_LFP_INT_LVDS, GMA_INT15_PANEL_FIT_DEFAULT, GMA_INT15_BOOT_DISPLAY_DEFAULT, 0);
 }
 

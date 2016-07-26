@@ -19,6 +19,7 @@
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <soc/gpio.h>
 #include "ec.h"
+#include "gpio.h"
 
 #define GPIO_PCH_WP GPIO_75
 #define GPIO_EC_IN_RW GPIO_41
@@ -68,4 +69,14 @@ int get_write_protect_state(void)
 {
 	/* Read PCH_WP GPIO. */
 	return gpio_get(GPIO_PCH_WP);
+}
+
+static const struct cros_gpio cros_gpios[] = {
+	CROS_GPIO_REC_AL(CROS_GPIO_VIRTUAL, GPIO_COMM_NW_NAME),
+	CROS_GPIO_WP_AH(PAD_NW(GPIO_PCH_WP), GPIO_COMM_NW_NAME),
+};
+
+void mainboard_chromeos_acpi_generate(void)
+{
+	chromeos_acpi_gpio_generate(cros_gpios, ARRAY_SIZE(cros_gpios));
 }

@@ -9,6 +9,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select EC_GOOGLE_CHROMEEC_LPC
 	select EC_GOOGLE_CHROMEEC_MEC
 	select EC_GOOGLE_CHROMEEC_PD
+	select EC_EXTERNAL_FIRMWARE
 	select EXCLUDE_NATIVE_SD_INTERFACE
 	select HAVE_ACPI_RESUME
 	select HAVE_ACPI_TABLES
@@ -65,14 +66,6 @@ config INCLUDE_NHLT_BLOBS
 	select NHLT_DMIC_2CH
 	select NHLT_MAX98357
 	select NHLT_NAU88L25
-
-config EC_GOOGLE_CHROMEEC_BOARDNAME
-	string
-	default "lars"
-
-config EC_GOOGLE_CHROMEEC_PD_BOARDNAME
-	string
-	default "lars_pd"
 
 config GBB_HWID
 	string

@@ -211,6 +211,8 @@ static AGESA_STATUS Fch_Oem_config(UINT32 Func, UINTN FchData, VOID *ConfigPtr)
 		FchParams_env->Usb.Xhci1Enable = FALSE;
 
 		/* sata configuration */
+		/* disable GEN2 limitation */
+		FchParams_env->Sata.SataMode.SataSetMaxGen2 = FALSE;
 	}
 	printk(BIOS_DEBUG, "Done\n");
 

@@ -203,6 +203,18 @@ endif # CONFIG_ARCH_VERSTAGE_X86_32 / CONFIG_ARCH_VERSTAGE_X86_64
 
 ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32)$(CONFIG_ARCH_ROMSTAGE_X86_64),y)
 
+romstage-$(CONFIG_HAVE_ACPI_RESUME) += acpi_s3.c
+romstage-y += boot.c
+romstage-y += cbmem.c
+romstage-y += cbfs_and_run.c
+romstage-$(CONFIG_ARCH_RAMSTAGE_X86_32) += cpu_common.c
+romstage-y += memcpy.c
+romstage-y += memmove.c
+romstage-y += memset.c
+romstage-$(CONFIG_X86_TOP4G_BOOTMEDIA_MAP) += mmap_boot.c
+romstage-$(CONFIG_POSTCAR_STAGE) += postcar_loader.c
+romstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
+
 ifneq ($(CONFIG_ROMCC),y)
 
 romstage-srcs += $(src)/mainboard/$(MAINBOARDDIR)/romstage.c
@@ -355,24 +367,6 @@ endif
 
 endif # CONFIG_ARCH_RAMSTAGE_X86_32 / CONFIG_ARCH_RAMSTAGE_X86_64
 
-
-ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32)$(CONFIG_ARCH_ROMSTAGE_X86_64),y)
-
-romstage-$(CONFIG_POSTCAR_STAGE) += postcar_loader.c
-romstage-y += cbmem.c
-romstage-y += boot.c
-romstage-$(CONFIG_HAVE_ACPI_RESUME) += acpi_s3.c
-
-romstage-y += cbfs_and_run.c
-romstage-$(CONFIG_ARCH_RAMSTAGE_X86_32) += cpu_common.c
-romstage-y += memset.c
-romstage-y += memcpy.c
-romstage-y += memmove.c
-romstage-$(CONFIG_X86_TOP4G_BOOTMEDIA_MAP) += mmap_boot.c
-
-romstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
-
-endif # CONFIG_ARCH_ROMSTAGE_X86_32 / CONFIG_ARCH_ROMSTAGE_X86_64
 
 ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32)$(CONFIG_ARCH_RAMSTAGE_X86_64),y)
 

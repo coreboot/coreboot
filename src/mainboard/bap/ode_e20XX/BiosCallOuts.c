@@ -24,13 +24,15 @@
 #include "imc.h"
 #endif
 #include <stdlib.h>
+#include <spd_cache.h>
 
 static AGESA_STATUS Fch_Oem_config(UINT32 Func, UINTN FchData, VOID *ConfigPtr);
+static AGESA_STATUS board_ReadSpd_from_cbfs(UINT32 Func, UINTN Data, VOID *ConfigPtr);
 
 const BIOS_CALLOUT_STRUCT BiosCallouts[] =
 {
 	{AGESA_DO_RESET,                 agesa_Reset },
-	{AGESA_READ_SPD,                 agesa_ReadSpd_from_cbfs },
+	{AGESA_READ_SPD,                 board_ReadSpd_from_cbfs },
 	{AGESA_READ_SPD_RECOVERY,        agesa_NoopUnsupported },
 	{AGESA_RUNFUNC_ONAP,             agesa_RunFuncOnAp },
 	{AGESA_GET_IDS_INIT_DATA,        agesa_EmptyIdsInitData },
@@ -213,4 +215,32 @@ static AGESA_STATUS Fch_Oem_config(UINT32 Func, UINTN FchData, VOID *ConfigPtr)
 	printk(BIOS_DEBUG, "Done\n");
 
 	return AGESA_SUCCESS;
+}
+
+static AGESA_STATUS board_ReadSpd_from_cbfs(UINT32 Func, UINTN Data, VOID *ConfigPtr)
+{
+	AGESA_STATUS Status = AGESA_UNSUPPORTED;
+#ifdef __PRE_RAM__
+	AGESA_READ_SPD_PARAMS *info = ConfigPtr;
+	u8 index;
+
+	if (IS_ENABLED(CONFIG_BAP_E20_DDR3_1066))
+		index = 1;
+	else	/* CONFIG_BAP_E20_DDR3_800 */
+		index = 0;
+
+	if (info->MemChannelId > 0)
+		return AGESA_UNSUPPORTED;
+	if (info->SocketId != 0)
+		return AGESA_UNSUPPORTED;
+	if (info->DimmId != 0)
+		return AGESA_UNSUPPORTED;
+
+	/* Read index 0, first SPD_SIZE bytes of spd.bin file. */
+	if (read_spd_from_cbfs((u8 *)info->Buffer, index) < 0)
+		die("No SPD data\n");
+
+	Status = AGESA_SUCCESS;
+#endif
+	return Status;
 }

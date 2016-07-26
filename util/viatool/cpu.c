@@ -452,7 +452,7 @@ int print_intel_core_msrs(void)
 		/* 0x6: Not available in model 2. */
 		{ 0x0017, "IA32_PLATFORM_ID" },
 		{ 0x002a, "MSR_EBC_HARD_POWERON" },
-		{ 0x002b, "MSR_EBC_SOFT_POWRON" },
+		{ 0x002b, "MSR_EBC_SOFT_POWERON" },
 		/* 0x2c: Not available in model 2. */
 // WRITE ONLY	{ 0x0079, "IA32_BIOS_UPDT_TRIG" },
 		{ 0x019c, "IA32_THERM_STATUS" },
@@ -655,7 +655,7 @@ int print_intel_core_msrs(void)
 		{ 0x0006, "IA32_MONITOR_FILTER_LINE_SIZE" },
 		{ 0x0017, "IA32_PLATFORM_ID" },
 		{ 0x002a, "MSR_EBC_HARD_POWERON" },
-		{ 0x002b, "MSR_EBC_SOFT_POWRON" },
+		{ 0x002b, "MSR_EBC_SOFT_POWERON" },
 		{ 0x002c, "MSR_EBC_FREQUENCY_ID" },
 // WRITE ONLY	{ 0x0079, "IA32_BIOS_UPDT_TRIG" },
 		{ 0x019c, "IA32_THERM_STATUS" },

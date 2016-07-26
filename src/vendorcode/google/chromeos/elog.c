@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <bootstate.h>
 #include <cbmem.h>
 #include <console/console.h>
 #include <elog.h>
@@ -21,19 +22,26 @@
 #include <vboot/vboot_common.h>
 #include <vboot_struct.h>
 
-void elog_add_boot_reason(void)
+static void elog_add_boot_reason(void *unused)
 {
-	if (vboot_developer_mode_enabled()) {
+	int rec = vboot_recovery_mode_enabled();
+	int dev = vboot_developer_mode_enabled();
+
+	if (!rec && !dev)
+		return;
+
+	if (rec) {
+		u8 reason = vboot_check_recovery_request();
+		elog_add_event_byte(ELOG_TYPE_CROS_RECOVERY_MODE, reason);
+		printk(BIOS_DEBUG, "%s: Logged recovery mode boot%s, "
+		       "reason: 0x%02x\n", __func__,
+		       dev ? " (Dev-switch on)" : "", reason);
+	}
+
+	if (dev) {
 		elog_add_event(ELOG_TYPE_CROS_DEVELOPER_MODE);
 		printk(BIOS_DEBUG, "%s: Logged dev mode boot\n", __func__);
-	} else if (vboot_recovery_mode_enabled()) {
-		u8 reason = vboot_check_recovery_request();
-		elog_add_event_byte(ELOG_TYPE_CROS_RECOVERY_MODE,
-			reason ? reason : ELOG_CROS_RECOVERY_MODE_BUTTON);
-		printk(BIOS_DEBUG, "%s: Logged recovery mode boot, "
-				"reason: 0x%02x\n", __func__, reason);
-	} else {
-		printk(BIOS_DEBUG, "%s: Normal mode boot, nothing "
-					"interesting to log\n", __func__);
 	}
 }
+
+BOOT_STATE_INIT_ENTRY(BS_POST_DEVICE, BS_ON_ENTRY, elog_add_boot_reason, NULL);

@@ -240,10 +240,6 @@ static void mainboard_init(device_t dev)
 	setup_kernel_info();
 	clock_init_arm_generic_timer();
 	setup_ec_spi();
-#if CONFIG_ELOG
-	elog_init();
-	elog_add_boot_reason();
-#endif
 }
 
 static void mainboard_enable(device_t dev)

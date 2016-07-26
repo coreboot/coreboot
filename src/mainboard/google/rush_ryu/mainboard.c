@@ -269,9 +269,6 @@ static void mainboard_init(device_t dev)
 	/* Temp hack for P1 board: Enable speaker amp (powerup, etc.) */
 	enable_ad4567_spkr_amp();
 
-	elog_init();
-	elog_add_boot_reason();
-
 	fix_ec_sw_sync();
 
 	/* configure panel gpio pads */

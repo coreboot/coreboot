@@ -267,10 +267,6 @@ static void mainboard_init(device_t dev)
 	configure_usb_hub();
 	configure_ext_buck();
 	configure_touchscreen();
-
-	elog_init();
-	elog_add_watchdog_reset();
-	elog_add_boot_reason();
 }
 
 static void mainboard_enable(device_t dev)

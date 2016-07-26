@@ -36,6 +36,7 @@
 #include <smbios.h>
 #include <device/pci.h>
 #include <ec/google/chromeec/ec.h>
+#include <vendorcode/google/chromeos/chromeos.h>
 
 /* placeholder for evenual link post. Not sure what we'll
  * do but it will look nice
@@ -199,6 +200,7 @@ static void mainboard_enable(device_t dev)
 {
 	dev->ops->init = mainboard_init;
 	dev->ops->get_smbios_data = link_onboard_smbios_data;
+	dev->ops->acpi_inject_dsdt_generator = chromeos_dsdt_generator;
 #if CONFIG_VGA_ROM_RUN
 	/* Install custom int15 handler for VGA OPROM */
 	mainboard_interrupt_handlers(0x15, &int15_handler);

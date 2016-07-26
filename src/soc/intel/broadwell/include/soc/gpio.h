@@ -18,6 +18,9 @@
 
 #include <stdint.h>
 
+#define CROS_GPIO_DEVICE_NAME		"PCH-LP"
+#define CROS_GPIO_ACPI_DEVICE_NAME	"INT3437:00"
+
 /* PCH-LP GPIOBASE Registers */
 #define GPIO_OWNER(set)		(0x00 + ((set) * 4))
 #define GPIO_PIRQ_APIC_EN	0x10

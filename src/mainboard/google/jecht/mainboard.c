@@ -30,6 +30,7 @@
 #include <arch/io.h>
 #include <arch/interrupt.h>
 #include <boot/coreboot_tables.h>
+#include <vendorcode/google/chromeos/chromeos.h>
 #include "onboard.h"
 
 void mainboard_suspend_resume(void)
@@ -135,6 +136,7 @@ static void mainboard_init(device_t dev)
 static void mainboard_enable(device_t dev)
 {
 	dev->ops->init = mainboard_init;
+	dev->ops->acpi_inject_dsdt_generator = chromeos_dsdt_generator;
 #if CONFIG_VGA_ROM_RUN
 	/* Install custom int15 handler for VGA OPROM */
 	mainboard_interrupt_handlers(0x15, &int15_handler);

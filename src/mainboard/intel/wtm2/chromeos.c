@@ -19,6 +19,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <soc/gpio.h>
+#include <vendorcode/google/chromeos/chromeos.h>
 
 /* Compile-time settings for developer and recovery mode. */
 #define DEV_MODE_SETTING 1
@@ -54,4 +55,15 @@ int get_recovery_mode_switch(void)
 int get_write_protect_state(void)
 {
 	return 0;
+}
+
+static const struct cros_gpio cros_gpios[] = {
+	CROS_GPIO_REC_AL(CROS_GPIO_VIRTUAL, CROS_GPIO_DEVICE_NAME),
+	CROS_GPIO_DEV_AL(CROS_GPIO_VIRTUAL, CROS_GPIO_DEVICE_NAME),
+	CROS_GPIO_WP_AL(CROS_GPIO_VIRTUAL, CROS_GPIO_DEVICE_NAME),
+};
+
+void mainboard_chromeos_acpi_generate(void)
+{
+	chromeos_acpi_gpio_generate(cros_gpios, ARRAY_SIZE(cros_gpios));
 }

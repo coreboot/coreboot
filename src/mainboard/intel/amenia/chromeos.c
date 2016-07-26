@@ -18,6 +18,7 @@
 #include "ec.h"
 
 #include <ec/google/chromeec/ec.h>
+#include <soc/gpio_defs.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
 int get_lid_switch(void)
@@ -47,4 +48,14 @@ int get_recovery_mode_switch(void)
 int get_write_protect_state(void)
 {
 	return 0;
+}
+
+static const struct cros_gpio cros_gpios[] = {
+	CROS_GPIO_REC_AL(CROS_GPIO_VIRTUAL, GPIO_COMM_NW_NAME),
+	CROS_GPIO_WP_AH(PAD_NW(GPIO_75), GPIO_COMM_NW_NAME),
+};
+
+void mainboard_chromeos_acpi_generate(void)
+{
+	chromeos_acpi_gpio_generate(cros_gpios, ARRAY_SIZE(cros_gpios));
 }

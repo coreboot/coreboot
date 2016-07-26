@@ -19,6 +19,8 @@
 
 #include <arch/acpi.h>
 
+#define CROS_GPIO_DEVICE_NAME	"LynxPoint"
+
 /*
  * Lynx Point PCH PCI Devices:
  *

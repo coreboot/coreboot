@@ -20,6 +20,7 @@
 #include <device/pci.h>
 #include <southbridge/intel/lynxpoint/pch.h>
 #include <southbridge/intel/common/gpio.h>
+#include <vendorcode/google/chromeos/chromeos.h>
 
 #ifndef __PRE_RAM__
 #include <boot/coreboot_tables.h>
@@ -101,4 +102,15 @@ int get_recovery_mode_switch(void)
 int get_write_protect_state(void)
 {
 	return 0;
+}
+
+static const struct cros_gpio cros_gpios[] = {
+	CROS_GPIO_REC_AH(69, CROS_GPIO_DEVICE_NAME),
+	CROS_GPIO_DEV_AL(48, CROS_GPIO_DEVICE_NAME),
+	CROS_GPIO_WP_AL(22, CROS_GPIO_DEVICE_NAME),
+};
+
+void mainboard_chromeos_acpi_generate(void)
+{
+	chromeos_acpi_gpio_generate(cros_gpios, ARRAY_SIZE(cros_gpios));
 }

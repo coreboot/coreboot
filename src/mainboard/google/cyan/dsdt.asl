@@ -53,7 +53,6 @@ DefinitionBlock(
 			#include <soc/intel/common/acpi/wifi.asl>
 		}
 	}
-	#include "acpi/chromeos.asl"
 	#include <vendorcode/google/chromeos/acpi/chromeos.asl>
 
 	/* Chipset specific sleep states */

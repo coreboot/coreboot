@@ -22,6 +22,8 @@
 #include <soc/gpio_defs.h>
 #include <soc/iomap.h>
 
+#define CROS_GPIO_DEVICE_NAME "Braswell"
+
 #define COMMUNITY_SIZE	0x20000
 
 #define COMMUNITY_GPSOUTHWEST_BASE	\

@@ -22,6 +22,7 @@
 
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/common/gpio.h>
+#include <vendorcode/google/chromeos/chromeos.h>
 #include "ec.h"
 #include <ec/quanta/it8518/ec.h>
 
@@ -132,4 +133,15 @@ int get_recovery_mode_switch(void)
 	}
 	return ec_in_rec_mode;
 #endif
+}
+
+static const struct cros_gpio cros_gpios[] = {
+	CROS_GPIO_REC_AH(CROS_GPIO_VIRTUAL, CROS_GPIO_DEVICE_NAME),
+	CROS_GPIO_REC_AH(CROS_GPIO_VIRTUAL, CROS_GPIO_DEVICE_NAME),
+	CROS_GPIO_WP_AL(7, CROS_GPIO_DEVICE_NAME),
+};
+
+void mainboard_chromeos_acpi_generate(void)
+{
+	chromeos_acpi_gpio_generate(cros_gpios, ARRAY_SIZE(cros_gpios));
 }

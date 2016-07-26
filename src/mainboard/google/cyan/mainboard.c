@@ -18,6 +18,7 @@
 #include <bootstate.h>
 #include <device/device.h>
 #include <soc/gpio.h>
+#include <vendorcode/google/chromeos/chromeos.h>
 #include "ec.h"
 
 static void mainboard_init(device_t dev)
@@ -32,6 +33,7 @@ static void mainboard_init(device_t dev)
 static void mainboard_enable(device_t dev)
 {
 	dev->ops->init = mainboard_init;
+	dev->ops->acpi_inject_dsdt_generator = chromeos_dsdt_generator;
 }
 
 

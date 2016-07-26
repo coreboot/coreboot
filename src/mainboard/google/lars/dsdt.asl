@@ -45,7 +45,6 @@ DefinitionBlock(
 	}
 
 	// Chrome OS specific
-	#include "acpi/chromeos.asl"
 	#include <vendorcode/google/chromeos/acpi/chromeos.asl>
 
 	// Chipset specific sleep states

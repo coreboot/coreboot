@@ -14,24 +14,37 @@
  */
 
 #include <arch/io.h>
+#include <assert.h>
+#include <bootstate.h>
 #include <console/console.h>
 #include <elog.h>
 #include <reset.h>
+#include <symbols.h>
 
 #include "chromeos.h"
 #include "symbols.h"
 
 #define WATCHDOG_TOMBSTONE_MAGIC	0x9d2f41a7
 
-void elog_add_watchdog_reset(void)
+DECLARE_OPTIONAL_REGION(watchdog_tombstone);
+
+static void elog_handle_watchdog_tombstone(void *unused)
 {
+	if (!_watchdog_tombstone_size)
+		return;
+
 	if (read32(_watchdog_tombstone) == WATCHDOG_TOMBSTONE_MAGIC)
 		elog_add_event(ELOG_TYPE_ASYNC_HW_TIMER_EXPIRED);
+
 	write32(_watchdog_tombstone, 0);
 }
 
+BOOT_STATE_INIT_ENTRY(BS_POST_DEVICE, BS_ON_ENTRY,
+		      elog_handle_watchdog_tombstone, NULL);
+
 void mark_watchdog_tombstone(void)
 {
+	assert(_watchdog_tombstone_size);
 	write32(_watchdog_tombstone, WATCHDOG_TOMBSTONE_MAGIC);
 }
 

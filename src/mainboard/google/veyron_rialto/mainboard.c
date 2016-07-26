@@ -85,10 +85,6 @@ static void mainboard_init(device_t dev)
 	configure_3g();
 	/* No video. */
 
-	elog_init();
-	elog_add_watchdog_reset();
-	elog_add_boot_reason();
-
 	/* If recovery mode is detected, reduce frequency and voltage to reduce
 	 * heat in case machine is left unattended. chrome-os-partner:41201. */
 	if (vboot_recovery_mode_enabled())  {

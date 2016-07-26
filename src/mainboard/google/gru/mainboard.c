@@ -189,9 +189,6 @@ static void mainboard_init(device_t dev)
 	register_reset_to_bl31();
 	register_poweroff_to_bl31();
 	setup_rtc();
-
-	elog_init();
-	elog_add_boot_reason();
 }
 
 static void enable_backlight_booster(void)

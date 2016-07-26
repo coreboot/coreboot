@@ -269,7 +269,7 @@ unpack_and_patch() {
 		for patch in patches/${dir}_*.patch; do
 			test -r $patch || continue
 			printf "   o $(basename $patch)\n"
-			$PATCH -s -N -p0 < $(echo $patch) || {
+			(cd ${dir} && $PATCH -s -N -p1 <../${patch}) || {
 				printf "\n${RED}Failed $patch.${NC}\n"
 				exit 1
 			}

@@ -62,4 +62,22 @@ config HUDSON_LEGACY_FREE
 	bool
 	default y
 
+choice
+	prompt "Select DDR3 clock"
+	default BAP_E20_DDR3_1066
+	help
+	  Select your preferred DDR3 clock setting.
+
+	  Note: This option changes the total power consumption.
+
+	  If unsure, use DDR3-1066.
+
+config BAP_E20_DDR3_800
+	bool "Select DDR3-800"
+
+config BAP_E20_DDR3_1066
+	bool "Select DDR3-1066"
+
+endchoice
+
 endif # BOARD_ODE_E20XX

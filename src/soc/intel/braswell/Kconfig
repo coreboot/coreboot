@@ -75,9 +75,9 @@ config SMM_RESERVED_SIZE
 # Cache As RAM region layout:
 #
 # +-------------+ DCACHE_RAM_BASE + DCACHE_RAM_SIZE
-# |  Stack      |\
-# |    |        | * DCACHE_RAM_ROMSTAGE_STACK_SIZE
-# |    v        |/
+# |  Stack      |
+# |    |        |
+# |    v        |
 # +-------------+
 # |    ^        |
 # |    |        |
@@ -96,13 +96,6 @@ config DCACHE_RAM_SIZE
 	  The size of the cache-as-ram region required during bootblock
 	  and/or romstage. Note DCACHE_RAM_SIZE and DCACHE_RAM_MRC_VAR_SIZE
 	  must add up to a power of 2.
-
-config DCACHE_RAM_ROMSTAGE_STACK_SIZE
-	hex
-	default 0x800
-	help
-	  The amount of anticipated stack usage from the data cache
-	  during pre-ram ROM stage execution.
 
 config RESET_ON_INVALID_RAMSTAGE_CACHE
 	bool "Reset the system on S3 wake when ramstage cache invalid."

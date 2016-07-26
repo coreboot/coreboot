@@ -306,6 +306,50 @@ $(CONFIG_CBFS_PREFIX)/postcar-compression := none
 
 ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32)$(CONFIG_ARCH_RAMSTAGE_X86_64),y)
 
+ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
+ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpigen.c
+ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi_device.c
+ramstage-$(CONFIG_HAVE_ACPI_RESUME) += acpi_s3.c
+ramstage-y += boot.c
+ramstage-y += c_start.S
+ramstage-y += cbmem.c
+ramstage-y += cpu.c
+ramstage-y += cpu_common.c
+ramstage-y += ebda.c
+ramstage-y += exception.c
+ramstage-y += gdt.c
+ramstage-$(CONFIG_IOAPIC) += ioapic.c
+ramstage-y += memcpy.c
+ramstage-y += memlayout.ld
+ramstage-y += memmove.c
+ramstage-y += memset.c
+ramstage-$(CONFIG_X86_TOP4G_BOOTMEDIA_MAP) += mmap_boot.c
+ramstage-$(CONFIG_GENERATE_MP_TABLE) += mpspec.c
+ramstage-y += pci_ops_conf1.c
+ramstage-$(CONFIG_MMCONF_SUPPORT) += pci_ops_mmconf.c
+ramstage-$(CONFIG_GENERATE_PIRQ_TABLE) += pirq_routing.c
+ramstage-$(CONFIG_GENERATE_SMBIOS_TABLES) += smbios.c
+ramstage-y += tables.c
+ramstage-$(CONFIG_COOP_MULTITASKING) += thread.c
+ramstage-$(CONFIG_COOP_MULTITASKING) += thread_switch.S
+ramstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
+ramstage-$(CONFIG_HAVE_ACPI_RESUME) += wakeup.S
+
+smm-y += memcpy.c
+smm-y += memmove.c
+smm-y += memset.c
+smm-$(CONFIG_X86_TOP4G_BOOTMEDIA_MAP) += mmap_boot.c
+
+ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32),y)
+rmodules_x86_32-y += memcpy.c
+rmodules_x86_32-y += memmove.c
+rmodules_x86_32-y += memset.c
+else
+rmodules_x86_64-y += memcpy.c
+rmodules_x86_64-y += memmove.c
+rmodules_x86_64-y += memset.c
+endif
+
 ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32),y)
 target-objcopy=-O elf32-i386 -B i386
 endif
@@ -351,8 +395,6 @@ $(objcbfs)/ramstage.elf: $(objcbfs)/ramstage.debug.rmod
 
 endif
 
-ramstage-y += memlayout.ld
-
 $(objcbfs)/ramstage.debug: $(objgenerated)/ramstage.o $(call src-to-obj,ramstage,src/arch/x86/memlayout.ld)
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 	$(LD_ramstage) $(CPPFLAGS) $(LDFLAGS_ramstage) -o $@ -L$(obj) $< -T $(call src-to-obj,ramstage,src/arch/x86/memlayout.ld)
@@ -363,55 +405,6 @@ ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32),y)
 	$(LD_ramstage) -m elf_i386 -r -o $@ $(COMPILER_RT_FLAGS_ramstage) --whole-archive --start-group $(filter-out %.ld,$(ramstage-objs)) $(ramstage-libs) --no-whole-archive $(COMPILER_RT_ramstage) --end-group
 else
 	$(LD_ramstage) -m elf_x86_64 -r -o $@ $(COMPILER_RT_FLAGS_ramstage) --whole-archive --start-group $(filter-out %.ld,$(ramstage-objs)) $(ramstage-libs) --no-whole-archive $(COMPILER_RT_ramstage) --end-group
-endif
-
-endif # CONFIG_ARCH_RAMSTAGE_X86_32 / CONFIG_ARCH_RAMSTAGE_X86_64
-
-
-ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32)$(CONFIG_ARCH_RAMSTAGE_X86_64),y)
-
-ramstage-y += boot.c
-ramstage-y += gdt.c
-ramstage-y += tables.c
-ramstage-y += cbmem.c
-ramstage-$(CONFIG_GENERATE_MP_TABLE) += mpspec.c
-ramstage-$(CONFIG_GENERATE_PIRQ_TABLE) += pirq_routing.c
-ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
-ramstage-$(CONFIG_GENERATE_SMBIOS_TABLES) += smbios.c
-ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpigen.c
-ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi_device.c
-ramstage-$(CONFIG_HAVE_ACPI_RESUME) += acpi_s3.c
-ramstage-$(CONFIG_HAVE_ACPI_RESUME) += wakeup.S
-
-ramstage-y += c_start.S
-ramstage-y += cpu.c
-ramstage-y += cpu_common.c
-ramstage-y += pci_ops_conf1.c
-ramstage-$(CONFIG_MMCONF_SUPPORT) += pci_ops_mmconf.c
-ramstage-y += exception.c
-ramstage-$(CONFIG_IOAPIC) += ioapic.c
-ramstage-y += memset.c
-ramstage-y += memcpy.c
-ramstage-y += memmove.c
-ramstage-y += ebda.c
-ramstage-$(CONFIG_X86_TOP4G_BOOTMEDIA_MAP) += mmap_boot.c
-ramstage-$(CONFIG_COOP_MULTITASKING) += thread.c
-ramstage-$(CONFIG_COOP_MULTITASKING) += thread_switch.S
-ramstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
-
-smm-y += memset.c
-smm-y += memcpy.c
-smm-y += memmove.c
-smm-$(CONFIG_X86_TOP4G_BOOTMEDIA_MAP) += mmap_boot.c
-
-ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32),y)
-rmodules_x86_32-y += memset.c
-rmodules_x86_32-y += memcpy.c
-rmodules_x86_32-y += memmove.c
-else
-rmodules_x86_64-y += memset.c
-rmodules_x86_64-y += memcpy.c
-rmodules_x86_64-y += memmove.c
 endif
 
 endif # CONFIG_ARCH_RAMSTAGE_X86_32 / CONFIG_ARCH_RAMSTAGE_X86_64

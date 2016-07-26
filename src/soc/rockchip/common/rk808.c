@@ -199,5 +199,7 @@ int rtc_get(struct rtc_time *time)
 	ret |= rk808_read(RTC_YEAR, &value);
 	time->year = bcd2bin(value);
 
+	time->wday = -1; /* unknown */
+
 	return ret;
 }

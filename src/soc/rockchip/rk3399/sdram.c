@@ -424,7 +424,7 @@ static void phy_io_config(u32 channel,
 	/* PHY_926 PHY_PAD_DATA_DRIVE */
 	clrsetbits_le32(&denali_phy[926], 0x7 << 6, mode_sel << 6);
 	/* PHY_927 PHY_PAD_DQS_DRIVE */
-	clrsetbits_le32(&denali_phy[926], 0x7 << 6, mode_sel << 6);
+	clrsetbits_le32(&denali_phy[927], 0x7 << 6, mode_sel << 6);
 	/* PHY_928 PHY_PAD_ADDR_DRIVE */
 	clrsetbits_le32(&denali_phy[928], 0x7 << 14, mode_sel << 14);
 	/* PHY_929 PHY_PAD_CLK_DRIVE */
@@ -441,7 +441,7 @@ static void phy_io_config(u32 channel,
 	/* PHY_926 PHY_PAD_DATA_DRIVE */
 	clrsetbits_le32(&denali_phy[926], 0x3 << 9, mode_sel << 9);
 	/* PHY_927 PHY_PAD_DQS_DRIVE */
-	clrsetbits_le32(&denali_phy[926], 0x3 << 9, mode_sel << 9);
+	clrsetbits_le32(&denali_phy[927], 0x3 << 9, mode_sel << 9);
 	/* PHY_928 PHY_PAD_ADDR_DRIVE */
 	clrsetbits_le32(&denali_phy[928], 0x3 << 17, mode_sel << 17);
 	/* PHY_929 PHY_PAD_CLK_DRIVE */
@@ -720,7 +720,7 @@ static int data_training(u32 channel,
 				 */
 				obs_0 = read32(&denali_phy[532]);
 				obs_1 = read32(&denali_phy[660]);
-				obs_2 = read32(&denali_phy[789]);
+				obs_2 = read32(&denali_phy[788]);
 				if (((obs_0 >> 30) & 0x3) ||
 				    ((obs_1 >> 30) & 0x3) ||
 				    ((obs_2 >> 30) & 0x3))

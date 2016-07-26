@@ -9,6 +9,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select EC_GOOGLE_CHROMEEC_LPC
 	select EC_GOOGLE_CHROMEEC_MEC
 	select EC_GOOGLE_CHROMEEC_PD
+	select EC_EXTERNAL_FIRMWARE
 	select HAVE_ACPI_RESUME
 	select HAVE_ACPI_TABLES
 	select HAVE_OPTION_TABLE
@@ -66,14 +67,6 @@ config INCLUDE_NHLT_BLOBS
 	select NHLT_MAX98357
 	select NHLT_NAU88L25
 	select NHLT_SSM4567
-
-config EC_GOOGLE_CHROMEEC_BOARDNAME
-	string
-	default "kunimitsu"
-
-config EC_GOOGLE_CHROMEEC_PD_BOARDNAME
-	string
-	default "kunimitsu_pd"
 
 config GBB_HWID
 	string

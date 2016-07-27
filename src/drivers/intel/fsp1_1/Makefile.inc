@@ -20,6 +20,9 @@ verstage-y += car.c
 verstage-y += fsp_util.c
 verstage-y += verstage.c
 
+bootblock-y += bootblock.c
+bootblock-y += fsp_util.c
+
 romstage-y += car.c
 romstage-y += fsp_util.c
 romstage-y += hob.c

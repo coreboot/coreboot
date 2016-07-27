@@ -135,6 +135,13 @@ static int __mrc_cache_get_current(const struct mrc_data_region *region,
 		slot++;
 	}
 
+	/*
+	 * Update pointer to the most recently saved MRC data before returning
+	 * any error. This ensures that the caller can use next available slot
+	 * if required.
+	 */
+	*cache = verified_cache;
+
 	if (verified_cache == NULL)
 		return -1;
 
@@ -144,7 +151,6 @@ static int __mrc_cache_get_current(const struct mrc_data_region *region,
 		return -1;
 	}
 
-	*cache = verified_cache;
 	printk(BIOS_DEBUG, "MRC cache slot %d @ %p\n", slot-1, verified_cache);
 
 	return 0;

@@ -7,6 +7,7 @@
  * Copyright (C) 2004 SUSE LINUX AG
  * Copyright (C) 2005-2009 coresystems GmbH
  * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
+ * Copyright (C) 2016 Siemens AG
  *
  * ACPI FADT, FACS, and DSDT table support added by
  * Nick Barker <nick.barker9@btinternet.com>, and those portions
@@ -433,10 +434,29 @@ unsigned long acpi_create_dmar_drhd(unsigned long current, u8 flags,
 	return drhd->length;
 }
 
+unsigned long acpi_create_dmar_atsr(unsigned long current, u8 flags,
+	u16 segment)
+{
+	dmar_atsr_entry_t *atsr = (dmar_atsr_entry_t *)current;
+	memset(atsr, 0, sizeof(*atsr));
+	atsr->type = DMAR_ATSR;
+	atsr->length = sizeof(*atsr); /* will be fixed up later */
+	atsr->flags = flags;
+	atsr->segment = segment;
+
+	return atsr->length;
+}
+
 void acpi_dmar_drhd_fixup(unsigned long base, unsigned long current)
 {
 	dmar_entry_t *drhd = (dmar_entry_t *)base;
 	drhd->length = current - base;
+}
+
+void acpi_dmar_atsr_fixup(unsigned long base, unsigned long current)
+{
+	dmar_atsr_entry_t *atsr = (dmar_atsr_entry_t *)base;
+	atsr->length = current - base;
 }
 
 static unsigned long acpi_create_dmar_drhd_ds(unsigned long current,

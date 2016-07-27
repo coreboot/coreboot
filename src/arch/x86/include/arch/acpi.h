@@ -620,6 +620,8 @@ unsigned long acpi_create_dmar_atsr(unsigned long current, u8 flags,
 				    u16 segment);
 void acpi_dmar_drhd_fixup(unsigned long base, unsigned long current);
 void acpi_dmar_atsr_fixup(unsigned long base, unsigned long current);
+unsigned long acpi_create_dmar_drhd_ds_pci_br(unsigned long current,
+					   u8 bus, u8 dev, u8 fn);
 unsigned long acpi_create_dmar_drhd_ds_pci(unsigned long current,
 					   u8 bus, u8 dev, u8 fn);
 unsigned long acpi_create_dmar_drhd_ds_ioapic(unsigned long current,

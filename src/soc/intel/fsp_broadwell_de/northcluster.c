@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2013 Google Inc.
  * Copyright (C) 2015-2016 Intel Corp.
+ * Copyright (C) 2016 Siemens AG
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +25,7 @@
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
 #include <soc/ramstage.h>
+#include <soc/acpi.h>
 
 static const int legacy_hole_base_k = 0xa0000 / 1024;
 static const int legacy_hole_size_k = 384;
@@ -133,14 +135,15 @@ static void nc_enable(device_t dev)
 }
 
 static struct device_operations nc_ops = {
-	.read_resources   = nc_read_resources,
+	.read_resources           = nc_read_resources,
 	.acpi_fill_ssdt_generator = generate_cpu_entries,
-	.set_resources    = pci_dev_set_resources,
-	.enable_resources = pci_dev_enable_resources,
-	.init             = NULL,
-	.enable           = &nc_enable,
-	.scan_bus         = 0,
-	.ops_pci          = &soc_pci_ops,
+	.write_acpi_tables        = northcluster_write_acpi_tables,
+	.set_resources            = pci_dev_set_resources,
+	.enable_resources         = pci_dev_enable_resources,
+	.init                     = NULL,
+	.enable                   = &nc_enable,
+	.scan_bus                 = 0,
+	.ops_pci                  = &soc_pci_ops,
 };
 
 static const struct pci_driver nc_driver __pci_driver = {

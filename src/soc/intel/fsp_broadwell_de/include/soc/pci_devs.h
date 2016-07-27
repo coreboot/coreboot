@@ -27,6 +27,11 @@
 #define SOC_DEVID_ES2           0x6F00
 #define SOC_DEV_FUNC PCI_DEVFN(SOC_DEV, SOC_FUNC)
 
+#define VTD_DEV                 5
+#define VTD_FUNC                0
+#define VTD_DEVID               0x6f28
+#define VTD_DEV_FUNC PCI_DEVFN(VTD_DEV, VTD_FUNC)
+
 #define LPC_DEV                 31
 #define LPC_FUNC                0
 #define LPC_DEVID               0x8C42

@@ -106,24 +106,6 @@ static void pch_set_acpi_mode(void)
 	}
 }
 
-#if IS_ENABLED(CONFIG_VBOOT_VBNV_CMOS)
-/*
- * Preserve Vboot NV data when clearing CMOS as it will
- * have been re-initialized already by Vboot firmware init.
- */
-static void pch_cmos_init_preserve(int reset)
-{
-	uint8_t vbnv[VBOOT_VBNV_BLOCK_SIZE];
-	if (reset)
-		read_vbnv(vbnv);
-
-	cmos_init(reset);
-
-	if (reset)
-		save_vbnv(vbnv);
-}
-#endif
-
 static void pch_rtc_init(void)
 {
 	u8 reg8;
@@ -141,11 +123,10 @@ static void pch_rtc_init(void)
 	/* Ensure the date is set including century byte. */
 	cmos_check_update_date();
 
-#if IS_ENABLED(CONFIG_VBOOT_VBNV_CMOS)
-	pch_cmos_init_preserve(rtc_failed);
-#else
-	cmos_init(rtc_failed);
-#endif
+	if (IS_ENABLED(CONFIG_VBOOT_VBNV_CMOS))
+		init_vbnv_cmos(rtc_failed);
+	else
+		cmos_init(rtc_failed);
 }
 
 static void pmc_gpe_init(config_t *config)

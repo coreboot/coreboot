@@ -1,0 +1,129 @@
+##
+## This file is part of the coreboot project.
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+
+config TIMER_RDTSC
+	bool
+	default y
+	depends on ARCH_X86
+
+choice
+	prompt "Timer driver"
+	default TIMER_NONE
+	depends on !ARCH_X86
+
+config TIMER_NONE
+	bool "None"
+	help
+	  The timer driver is provided by the payload itself.
+
+config TIMER_MCT
+	bool "Exynos MCT"
+
+config TIMER_TEGRA_1US
+	bool "Tegra 1us"
+
+config TIMER_IPQ806X
+	bool "Timer for ipq806x platforms"
+
+config TIMER_ARMADA38X
+        bool "Timer for armada38x platforms"
+	help
+	  This is the timer driver for marvell armada38x
+	  platforms.
+
+config TIMER_IPQ40XX
+	bool "Timer for ipq40xx platforms"
+	help
+	  This is the timer driver for QCA IPQ40xx based
+	  platforms.
+
+config TIMER_RK
+	bool "Timer for Rockchip"
+
+config TIMER_BG4CD
+	bool "Marvell BG4CD"
+
+config TIMER_CYGNUS
+	bool "Timer for Cygnus"
+
+config TIMER_IMG_PISTACHIO
+	bool "Timer for IMG Pistachio"
+
+config TIMER_MTK
+	bool "Timer for MediaTek MT8173"
+
+endchoice
+
+config TIMER_MCT_HZ
+	int "Exynos MCT frequency"
+	depends on TIMER_MCT
+	default 24000000
+
+config TIMER_MCT_ADDRESS
+	hex "Exynos MCT base address"
+	depends on TIMER_MCT
+	default 0x101c0000
+
+config TIMER_RK_ADDRESS
+	hex "Rockchip timer base address"
+	depends on TIMER_RK
+	default 0xff810020
+
+config TIMER_TEGRA_1US_ADDRESS
+	hex "Tegra u1s timer base address"
+	depends on TIMER_TEGRA_1US
+	default 0x60005010
+
+config IPQ806X_TIMER_FREQ
+	int "Hardware timer frequency"
+	default 32000
+	depends on TIMER_IPQ806X
+	help
+	  IPQ hardware presently provides a single timer running at 32KHz, a
+	  finer granulariry timer is available but is not yet enabled.
+
+config IPQ806X_TIMER_REG
+	hex "Timer register address"
+	default 0x0200A008
+	depends on TIMER_IPQ806X
+	help
+	  Address of the register to read a free running timer value.
+
+config ARMADA38X_TIMER_FREQ
+        int "Hardware timer frequency"
+        depends on TIMER_ARMADA38X
+        default 25000000
+
+config ARMADA38X_TIMER_REG
+        hex "Timer register address"
+        default 0xF1020314
+        depends on TIMER_ARMADA38X
+
+config IPROC_PERIPH_GLB_TIM_REG_BASE
+	hex "Cygnus timer base address"
+	depends on TIMER_CYGNUS
+	default 0x19020200
+
+config TIMER_MTK_HZ
+	int "MediaTek GPT frequency"
+	depends on TIMER_MTK
+	default 13000000
+	help
+	  Clock frequency of MediaTek General Purpose Timer.
+
+config TIMER_MTK_ADDRESS
+	hex "MTK GPT register address"
+	depends on TIMER_MTK
+	default 0x10008048
+	help
+	  Address of GPT4's counter register to read the FREERUN-mode timer value.
+

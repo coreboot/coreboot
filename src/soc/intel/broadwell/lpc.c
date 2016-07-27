@@ -172,25 +172,6 @@ static void pch_power_options(device_t dev)
 	enable_alt_smi(config->alt_gp_smi_en);
 }
 
-#if IS_ENABLED(CONFIG_CHROMEOS) && IS_ENABLED(CONFIG_VBOOT_VBNV_CMOS)
-/*
- * Preserve Vboot NV data when clearing CMOS as it will
- * have been re-initialized already by Vboot firmware init.
- */
-static void pch_cmos_init_preserve(int reset)
-{
-	uint8_t vbnv[VBOOT_VBNV_BLOCK_SIZE];
-
-	if (reset)
-		read_vbnv(vbnv);
-
-	cmos_init(reset);
-
-	if (reset)
-		save_vbnv(vbnv);
-}
-#endif
-
 static void pch_rtc_init(struct device *dev)
 {
 	u8 reg8;
@@ -204,11 +185,10 @@ static void pch_rtc_init(struct device *dev)
 		printk(BIOS_DEBUG, "rtc_failed = 0x%x\n", rtc_failed);
 	}
 
-#if IS_ENABLED(CONFIG_CHROMEOS) && IS_ENABLED(CONFIG_VBOOT_VBNV_CMOS)
-	pch_cmos_init_preserve(rtc_failed);
-#else
-	cmos_init(rtc_failed);
-#endif
+	if (IS_ENABLED(CONFIG_VBOOT_VBNV_CMOS))
+		init_vbnv_cmos(rtc_failed);
+	else
+		cmos_init(rtc_failed);
 }
 
 static const struct reg_script pch_misc_init_script[] = {

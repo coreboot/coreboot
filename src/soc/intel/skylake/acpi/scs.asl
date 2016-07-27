@@ -88,6 +88,14 @@ Device (SDXC)
 
 	Method (_PS0, 0, Serialized)
 	{
+		/* Disable 20K pull-down on CLK, CMD and DAT lines */
+		^^PCRA (PID_GPIOCOM3, 0x4c4, 0xFFFFEFFF)
+		^^PCRA (PID_GPIOCOM3, 0x4cc, 0xFFFFEFFF)
+		^^PCRA (PID_GPIOCOM3, 0x4d4, 0xFFFFEFFF)
+		^^PCRA (PID_GPIOCOM3, 0x4dc, 0xFFFFEFFF)
+		^^PCRA (PID_GPIOCOM3, 0x4e4, 0xFFFFEFFF)
+		^^PCRA (PID_GPIOCOM3, 0x4f4, 0xFFFFEFFF)
+
 		/* Disable Power Gate */
 		Store (0, ^PGEN)
 
@@ -113,6 +121,14 @@ Device (SDXC)
 		Store (3, Local0)
 		Store (Local0, ^D0D3)
 		Store (^D0D3, Local0)
+
+		/* Enable 20K pull-down on CLK, CMD and DAT lines */
+		^^PCRO (PID_GPIOCOM3, 0x4c4, 0x00001000)
+		^^PCRO (PID_GPIOCOM3, 0x4cc, 0x00001000)
+		^^PCRO (PID_GPIOCOM3, 0x4d4, 0x00001000)
+		^^PCRO (PID_GPIOCOM3, 0x4dc, 0x00001000)
+		^^PCRO (PID_GPIOCOM3, 0x4e4, 0x00001000)
+		^^PCRO (PID_GPIOCOM3, 0x4f4, 0x00001000)
 	}
 
 	Device (CARD)

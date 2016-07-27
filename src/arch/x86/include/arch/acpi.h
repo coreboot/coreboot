@@ -5,6 +5,7 @@
  * Copyright (C) 2004 Nick Barker
  * Copyright (C) 2008-2009 coresystems GmbH
  * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
+ * Copyright (C) 2016 Siemens AG
  * (Written by Stefan Reinauer <stepan@coresystems.de>)
  *
  * This program is free software; you can redistribute it and/or modify
@@ -284,6 +285,14 @@ typedef struct dmar_entry {
 	u16 segment;
 	u64 bar;
 } __attribute__ ((packed)) dmar_entry_t;
+
+typedef struct dmar_atsr_entry {
+	u16 type;
+	u16 length;
+	u8 flags;
+	u8 reserved;
+	u16 segment;
+} __attribute__ ((packed)) dmar_atsr_entry_t;
 
 /* DMAR (DMA Remapping Reporting Structure) */
 typedef struct acpi_dmar {
@@ -607,7 +616,10 @@ void acpi_create_dmar(acpi_dmar_t *dmar, enum dmar_flags flags,
 		      unsigned long (*acpi_fill_dmar) (unsigned long));
 unsigned long acpi_create_dmar_drhd(unsigned long current, u8 flags,
 				    u16 segment, u32 bar);
+unsigned long acpi_create_dmar_atsr(unsigned long current, u8 flags,
+				    u16 segment);
 void acpi_dmar_drhd_fixup(unsigned long base, unsigned long current);
+void acpi_dmar_atsr_fixup(unsigned long base, unsigned long current);
 unsigned long acpi_create_dmar_drhd_ds_pci(unsigned long current,
 					   u8 bus, u8 dev, u8 fn);
 unsigned long acpi_create_dmar_drhd_ds_ioapic(unsigned long current,

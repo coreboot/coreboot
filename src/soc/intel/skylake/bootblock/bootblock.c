@@ -14,6 +14,7 @@
  */
 
 #include <bootblock_common.h>
+#include <fsp/bootblock.h>
 #include <soc/bootblock.h>
 #include <soc/romstage.h>
 
@@ -33,13 +34,15 @@ void bootblock_soc_early_init(void)
 		pch_uart_init();
 }
 
-/*
- * Perform early chipset initialization before fsp memory init
- * example: pirq->irq programming, enabling smbus, pmcbase, abase,
- * 			get platform info, i2c programming
- */
 void bootblock_soc_init(void)
 {
+	/* locate and call FspTempRamInit */
+	bootblock_fsp_temp_ram_init();
+	/*
+	 * Perform early chipset initialization before fsp memory init
+	 * example: pirq->irq programming, enabling smbus, pmcbase, abase,
+	 * 			get platform info, i2c programming
+	 */
 	report_platform_info();
 	set_max_freq();
 	pch_early_init();

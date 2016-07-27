@@ -1,0 +1,59 @@
+##
+## This file is part of the coreboot project.
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+
+config STORAGE
+	bool "Support for storage devices"
+	default y if !CHROMEOS
+	help
+	  Select this option if you want support for storage devices (like
+	  hard drives, memory sticks or optical drives).
+
+config STORAGE_64BIT_LBA
+	bool "Use 64-bit integers to address sectors"
+	depends on STORAGE
+	default n
+	help
+	  If this is selected, sectors will be addressed by an 64-bit integer.
+	  Select this to support LBA-48 for ATA drives.
+
+config STORAGE_ATA
+	bool "Support ATA drives (i.e. hard drives)"
+	depends on STORAGE
+	default y
+	help
+	  Select this option if you want support for ATA storage devices
+	  (i.e. hard drives).
+
+config STORAGE_ATAPI
+	bool "Support ATAPI drives (i.e. optical drives)"
+	depends on STORAGE
+	default y
+	select STORAGE_ATA
+	help
+	  Select this option if you want support for ATAPI storage devices
+	  (i.e. optical drives like CD or DVD drives).
+
+config STORAGE_AHCI
+	bool "Support for AHCI host controllers"
+	depends on STORAGE && (STORAGE_ATA || STORAGE_ATAPI) && PCI
+	default y
+	help
+	  Select this option if you want support for SATA controllers in
+	  AHCI mode.
+
+config STORAGE_AHCI_ONLY_TESTED
+	bool "Only enable tested controllers"
+	depends on STORAGE_AHCI
+	default y
+	help
+	  If this option is selected only AHCI controllers which are known
+	  to work will be used.

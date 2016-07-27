@@ -1,0 +1,128 @@
+##
+## This file is part of the coreboot project.
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+
+config USB
+	bool "USB Support"
+	default y
+
+config USB_UHCI
+	bool "Support for USB UHCI controllers"
+	depends on USB && ARCH_X86
+	default y if !CHROMEOS
+	help
+	  Select this option if you are going to use USB 1.1 on an Intel based
+	  system.
+
+config USB_OHCI
+	bool "Support for USB OHCI controllers"
+	depends on USB
+	default y if !CHROMEOS
+	help
+	  Select this option if you are going to use USB 1.1 on a non-Intel based
+	  system.
+
+config USB_EHCI
+	bool "Support for USB EHCI controllers"
+	depends on USB
+	default y if !CHROMEOS
+	help
+	  Select this option if you want to use USB 2.0
+
+config USB_XHCI
+	bool "Support for USB xHCI controllers"
+	depends on USB
+	default y if !CHROMEOS
+	help
+	  Select this option if you want to use USB 3.0
+
+config USB_XHCI_MTK_QUIRK
+	bool "Support for USB xHCI controllers on MTK SoC"
+	depends on USB_XHCI
+	help
+	  Select this option if you want to use USB 3.0 on MTK platform.
+
+config USB_DWC2
+	bool "Support for USB DesignWare HCD controllers"
+	depends on USB
+	help
+	  Select this option if you want to use DesignWare USB 2.0 host controller
+
+config USB_HID
+	bool "Support for USB keyboards"
+	depends on USB
+	default y
+	help
+	  Select this option if you want to use devices complying to the
+	  USB HID (Human Interface Device) standard. Such devices are for
+	  example keyboards and mice. Currently only keyboards are supported.
+	  Say Y here unless you know exactly what you are doing.
+
+config USB_HUB
+	bool "Support for USB hubs"
+	depends on USB
+	default y
+	help
+	  Select this option if you want to compile in support for USB hubs.
+	  Say Y here unless you know exactly what you are doing.
+
+config USB_EHCI_HOSTPC_ROOT_HUB_TT
+	bool "Support for USB EHCI ROOT HUB that has TT"
+	depends on USB_EHCI
+	default n
+	help
+	  Select this option if USB EHCI root hub supports TT (Transaction
+	  Translator).
+	  To support this TT feature we read port-speed from non-standard
+	  register HOSTPC (offset 84h of Operational Register base).
+
+config USB_MSC
+	bool "Support for USB storage"
+	depends on USB
+	default y
+	help
+	  Select this option if you want to compile in support for USB mass
+	  storage devices (USB memory sticks, hard drives, CDROM/DVD drives)
+	  Say Y here unless you know exactly what you are doing.
+
+config USB_GEN_HUB
+	bool
+	default n if (!USB_HUB && !USB_XHCI)
+	default y if (USB_HUB || USB_XHCI)
+config USB_PCI
+	bool "Auto-scan PCI bus for USB host controllers"
+	depends on USB
+	default y if ARCH_X86
+	default n
+
+config UDC
+	bool "USB device mode support"
+	default n
+	help
+	  Select this option to add support for running as
+	  a USB device.
+
+config UDC_CI
+	bool "ChipIdea driver for USB device mode"
+	depends on UDC
+	default n
+	help
+	  Select this option to add the driver for ChipIdea
+	  USB device controller.
+
+config UDC_DWC2
+	bool "Designware driver for USB device mode"
+	depends on UDC
+	default n
+	help
+	  Select this option to add the driver for Designware
+	  USB device controller.

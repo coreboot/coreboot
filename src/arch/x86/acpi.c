@@ -477,6 +477,13 @@ static unsigned long acpi_create_dmar_drhd_ds(unsigned long current,
 	return ds->length;
 }
 
+unsigned long acpi_create_dmar_drhd_ds_pci_br(unsigned long current, u8 bus,
+	u8 dev, u8 fn)
+{
+	return acpi_create_dmar_drhd_ds(current,
+			SCOPE_PCI_SUB, 0, bus, dev, fn);
+}
+
 unsigned long acpi_create_dmar_drhd_ds_pci(unsigned long current, u8 bus,
 	u8 dev, u8 fn)
 {

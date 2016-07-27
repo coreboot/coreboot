@@ -1,5 +1,5 @@
-Board name: DB-FT3b (Olive Hill+)
-Board URL: http://wwwd.amd.com/amd/devsite.nsf/platforms/DB-FT3.htm
+Board name: ODE_e21xx
+Board URL: http://www.unibap.com/advanced-heterogeneous-computing-modules/
 Category: eval
 ROM protocol: SPI
 ROM socketed: n

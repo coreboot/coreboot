@@ -69,6 +69,8 @@ DefinitionBlock (
 
 		/* Describe PCI INT[A-H] for the Southbridge */
 		#include <southbridge/amd/pi/hudson/acpi/pci_int.asl>
+		/* Add UART support for Windows */
+		#include "acpi/superio.asl"
 
 	} /* End \_SB scope */
 

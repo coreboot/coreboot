@@ -26,6 +26,8 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select HAVE_ACPI_TABLES
 	select BOARD_ROMSIZE_KB_8192
 	select GFXUMA
+	select SUPERIO_FINTEK_F81866D
+	select SPD_CACHE
 
 config MAINBOARD_DIR
 	string
@@ -50,5 +52,26 @@ config ONBOARD_VGA_IS_PRIMARY
 config HUDSON_LEGACY_FREE
 	bool
 	default y
+
+choice
+	prompt "Select DDR3 clock"
+	default BAP_E21_DDR3_1333
+	help
+	  Select your preferenced DDR3 clock setting.
+
+	  Note: This option changes the total power consumption.
+
+	  If unsure, use DDR3-1333.
+
+config BAP_E21_DDR3_800
+	bool "Select DDR3-800"
+
+config BAP_E21_DDR3_1066
+	bool "Select DDR3-1066"
+
+config BAP_E21_DDR3_1333
+	bool "Select DDR3-1333"
+
+endchoice
 
 endif # BOARD_ODE_E21XX

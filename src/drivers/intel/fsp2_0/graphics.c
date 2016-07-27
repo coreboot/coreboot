@@ -20,7 +20,7 @@ enum pixel_format {
 	pixel_bitmask = 2,		/* defined by <rgb>_mask values */
 };
 
-static const uint8_t uuid_graphics_info[16] = {
+const uint8_t fsp_graphics_info_guid[16] = {
 	0xce, 0x2c, 0xf6, 0x39, 0x25, 0x68, 0x69, 0x46,
 	0xbb, 0x56, 0x54, 0x1a, 0xba, 0x75, 0x3a, 0x07
 };
@@ -60,7 +60,7 @@ enum cb_err fsp_fill_lb_framebuffer(struct lb_framebuffer *framebuffer)
 	const struct hob_graphics_info *ginfo;
 	const struct fsp_framebuffer *fbinfo;
 
-	ginfo = fsp_find_extension_hob_by_uuid(uuid_graphics_info, &size);
+	ginfo = fsp_find_extension_hob_by_guid(fsp_graphics_info_guid, &size);
 
 	if (!ginfo) {
 		printk(BIOS_ALERT, "Graphics hand-off block not found\n");

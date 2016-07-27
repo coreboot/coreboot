@@ -19,7 +19,7 @@
  */
 void fsp_debug_before_memory_init(fsp_memory_init_fn memory_init,
 	const struct FSPM_UPD *fspm_old_upd,
-	const struct FSPM_UPD *fspm_new_upd, void **hob_list_ptr)
+	const struct FSPM_UPD *fspm_new_upd)
 {
 	/* Display the MTRRs */
 	if (IS_ENABLED(CONFIG_DISPLAY_MTRRS))
@@ -34,14 +34,17 @@ void fsp_debug_before_memory_init(fsp_memory_init_fn memory_init,
 		return;
 	printk(BIOS_DEBUG, "Calling FspMemoryInit: 0x%p\n", memory_init);
 	printk(BIOS_SPEW, "\t0x%p: raminit_upd\n", fspm_new_upd);
-	printk(BIOS_SPEW, "\t0x%p: &hob_list_ptr\n", hob_list_ptr);
+	printk(BIOS_SPEW, "\t0x%p: &hob_list_ptr\n", fsp_get_hob_list_ptr());
 }
 
-void fsp_debug_after_memory_init(enum fsp_status status,
-	const struct hob_header *hob_list_ptr)
+void fsp_debug_after_memory_init(enum fsp_status status)
 {
 	if (IS_ENABLED(CONFIG_DISPLAY_FSP_CALLS_AND_STATUS))
 		printk(BIOS_DEBUG, "FspMemoryInit returned 0x%08x\n", status);
+
+	/* Display the HOBs */
+	if (IS_ENABLED(CONFIG_DISPLAY_HOBS))
+		fsp_display_hobs();
 
 	/* Display the MTRRs */
 	if (IS_ENABLED(CONFIG_DISPLAY_MTRRS))
@@ -76,6 +79,10 @@ void fsp_debug_after_silicon_init(enum fsp_status status)
 	if (IS_ENABLED(CONFIG_DISPLAY_FSP_CALLS_AND_STATUS))
 		printk(BIOS_SPEW, "FspSiliconInit returned 0x%08x\n", status);
 
+	/* Display the HOBs */
+	if (IS_ENABLED(CONFIG_DISPLAY_HOBS))
+		fsp_display_hobs();
+
 	/* Display the MTRRs */
 	if (IS_ENABLED(CONFIG_DISPLAY_MTRRS))
 		soc_display_mtrrs();
@@ -101,6 +108,10 @@ void fsp_debug_after_notify(enum fsp_status status)
 {
 	if (IS_ENABLED(CONFIG_DISPLAY_FSP_CALLS_AND_STATUS))
 		printk(BIOS_SPEW, "FspNotify returned 0x%08x\n", status);
+
+	/* Display the HOBs */
+	if (IS_ENABLED(CONFIG_DISPLAY_HOBS))
+		fsp_display_hobs();
 
 	/* Display the MTRRs */
 	if (IS_ENABLED(CONFIG_DISPLAY_MTRRS))

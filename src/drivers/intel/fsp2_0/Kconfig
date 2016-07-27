@@ -34,6 +34,12 @@ config DISPLAY_FSP_CALLS_AND_STATUS
 	  Display the FSP call entry point and parameters prior to calling FSP
 	  and display the status upon return from FSP.
 
+config DISPLAY_HOBS
+	bool "Display the hand-off-blocks"
+	default n
+	help
+	  Display the FSP HOBs which are provided for coreboot.
+
 config DISPLAY_UPD_DATA
 	bool "Display UPD data"
 	default n

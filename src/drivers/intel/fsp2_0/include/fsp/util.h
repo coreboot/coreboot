@@ -29,21 +29,43 @@ struct fsp_notify_params {
 	enum fsp_notify_phase phase;
 };
 
-/*
- * Hand-off-block handling functions that depend on CBMEM, and thus can only
- * be used after cbmem_initialize().
- */
-void fsp_save_hob_list(void *hob_list_ptr);
+struct hob_resource {
+	uint8_t owner_guid[16];
+	uint32_t type;
+	uint32_t attribute_type;
+	uint64_t addr;
+	uint64_t length;
+} __attribute__((packed));
+
+enum hob_type {
+	HOB_TYPE_HANDOFF			= 0x0001,
+	HOB_TYPE_MEMORY_ALLOCATION		= 0x0002,
+	HOB_TYPE_RESOURCE_DESCRIPTOR		= 0x0003,
+	HOB_TYPE_GUID_EXTENSION			= 0x0004,
+	HOB_TYPE_FV				= 0x0005,
+	HOB_TYPE_CPU				= 0x0006,
+	HOB_TYPE_MEMORY_POOL			= 0x0007,
+	HOB_TYPE_FV2				= 0x0009,
+	HOB_TYPE_LOAD_PEIM_UNUSED		= 0x000A,
+	HOB_TYPE_UCAPSULE			= 0x000B,
+	HOB_TYPE_UNUSED				= 0xFFFE,
+	HOB_TYPE_END_OF_HOB_LIST		= 0xFFFF,
+};
+
+extern const uint8_t fsp_graphics_info_guid[16];
+extern const uint8_t fsp_nv_storage_guid[16];
+extern const uint8_t fsp_reserved_memory_guid[16];
+
 const void *fsp_get_hob_list(void);
-const void *fsp_find_extension_hob_by_uuid(const uint8_t *uuid, size_t *size);
+void *fsp_get_hob_list_ptr(void);
+const void *fsp_find_extension_hob_by_guid(const uint8_t *guid, size_t *size);
 const void *fsp_find_nv_storage_data(size_t *size);
 enum cb_err fsp_fill_lb_framebuffer(struct lb_framebuffer *framebuffer);
-/*
- * Hand-off-block utilities which do not depend on CBMEM, but need to be passed
- * the HOB list explicitly.
- */
-void fsp_find_reserved_memory(struct range_entry *re, const void *hob_list);
-void fsp_print_memory_resource_hobs(const void *hob_list);
+void fsp_find_reserved_memory(struct range_entry *re);
+const struct hob_resource *fsp_hob_header_to_resource(
+	const struct hob_header *hob);
+const struct hob_header *fsp_next_hob(const struct hob_header *parent);
+bool fsp_guid_compare(const uint8_t guid1[16], const uint8_t guid2[16]);
 
 /* Fill in header and validate sanity of component within region device. */
 enum cb_err fsp_validate_component(struct fsp_header *hdr,
@@ -65,10 +87,8 @@ void chipset_handle_reset(enum fsp_status status);
 
 typedef asmlinkage enum fsp_status (*fsp_memory_init_fn)
 				   (void *raminit_upd, void **hob_list);
-typedef asmlinkage enum fsp_status (*fsp_silicon_init_fn)
-				   (void *silicon_upd);
-typedef asmlinkage enum fsp_status (*fsp_notify_fn)
-				   (struct fsp_notify_params *);
+typedef asmlinkage enum fsp_status (*fsp_silicon_init_fn)(void *silicon_upd);
+typedef asmlinkage enum fsp_status (*fsp_notify_fn)(struct fsp_notify_params *);
 #include <fsp/debug.h>
 
 #endif /* _FSP2_0_UTIL_H_ */

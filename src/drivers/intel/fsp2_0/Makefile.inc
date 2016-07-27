@@ -17,6 +17,7 @@ ifeq ($(CONFIG_PLATFORM_USES_FSP2_0),y)
 
 romstage-y += debug.c
 romstage-y += hand_off_block.c
+romstage-$(CONFIG_DISPLAY_HOBS) += hob_display.c
 romstage-$(CONFIG_DISPLAY_UPD_DATA) += upd_display.c
 romstage-y += util.c
 romstage-y += memory_init.c
@@ -24,6 +25,7 @@ romstage-y += memory_init.c
 ramstage-y += debug.c
 ramstage-y += graphics.c
 ramstage-y += hand_off_block.c
+ramstage-$(CONFIG_DISPLAY_HOBS) += hob_display.c
 ramstage-y += notify.c
 ramstage-y += silicon_init.c
 ramstage-$(CONFIG_DISPLAY_UPD_DATA) += upd_display.c

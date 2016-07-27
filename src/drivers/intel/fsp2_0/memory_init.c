@@ -62,13 +62,13 @@ static void save_memory_training_data(bool s3wake, uint32_t fsp_version)
  */
 #define MRC_DEAD_VERSION		(0xdeaddead)
 
-static enum fsp_status do_fsp_post_memory_init(void *hob_list_ptr, bool s3wake,
-						uint32_t fsp_version)
+static enum fsp_status do_fsp_post_memory_init(bool s3wake,
+	uint32_t fsp_version)
 {
 	struct range_entry fsp_mem;
 	struct romstage_handoff *handoff;
 
-	fsp_find_reserved_memory(&fsp_mem, hob_list_ptr);
+	fsp_find_reserved_memory(&fsp_mem);
 
 	/* initialize cbmem by adding FSP reserved memory first thing */
 	if (!s3wake) {
@@ -77,7 +77,8 @@ static enum fsp_status do_fsp_post_memory_init(void *hob_list_ptr, bool s3wake,
 	} else if (cbmem_initialize_id_size(CBMEM_ID_FSP_RESERVED_MEMORY,
 				range_entry_size(&fsp_mem))) {
 		if (IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)) {
-			printk(BIOS_DEBUG, "Failed to recover CBMEM in S3 resume.\n");
+			printk(BIOS_DEBUG,
+				"Failed to recover CBMEM in S3 resume.\n");
 			/* Failed S3 resume, reset to come up cleanly */
 			hard_reset();
 		}
@@ -89,8 +90,6 @@ static enum fsp_status do_fsp_post_memory_init(void *hob_list_ptr, bool s3wake,
 		die("Failed to accommodate FSP reserved memory request");
 
 	/* Now that CBMEM is up, save the list so ramstage can use it */
-	fsp_save_hob_list(hob_list_ptr);
-
 	if (vboot_recovery_mode_enabled())
 		fsp_version = MRC_DEAD_VERSION;
 
@@ -189,7 +188,6 @@ static enum fsp_status do_fsp_memory_init(struct fsp_header *hdr, bool s3wake,
 	enum fsp_status status;
 	fsp_memory_init_fn fsp_raminit;
 	struct FSPM_UPD fspm_upd, *upd;
-	void *hob_list_ptr;
 	struct FSPM_ARCH_UPD *arch_upd;
 
 	post_code(0x34);
@@ -219,16 +217,15 @@ static enum fsp_status do_fsp_memory_init(struct fsp_header *hdr, bool s3wake,
 
 	/* Call FspMemoryInit */
 	fsp_raminit = (void *)(hdr->image_base + hdr->memory_init_entry_offset);
-	fsp_debug_before_memory_init(fsp_raminit, upd, &fspm_upd,
-		&hob_list_ptr);
+	fsp_debug_before_memory_init(fsp_raminit, upd, &fspm_upd);
 
 	post_code(POST_FSP_MEMORY_INIT);
 	timestamp_add_now(TS_FSP_MEMORY_INIT_START);
-	status = fsp_raminit(&fspm_upd, &hob_list_ptr);
+	status = fsp_raminit(&fspm_upd, fsp_get_hob_list_ptr());
 	post_code(POST_FSP_MEMORY_INIT);
 	timestamp_add_now(TS_FSP_MEMORY_INIT_END);
 
-	fsp_debug_after_memory_init(status, hob_list_ptr);
+	fsp_debug_after_memory_init(status);
 
 	/* Handle any resets requested by FSPM. */
 	fsp_handle_reset(status);
@@ -236,7 +233,7 @@ static enum fsp_status do_fsp_memory_init(struct fsp_header *hdr, bool s3wake,
 	if (status != FSP_SUCCESS)
 		return status;
 
-	return do_fsp_post_memory_init(hob_list_ptr, s3wake, hdr->fsp_revision);
+	return do_fsp_post_memory_init(s3wake, hdr->fsp_revision);
 }
 
 /* Load the binary into the memory specified by the info header. */

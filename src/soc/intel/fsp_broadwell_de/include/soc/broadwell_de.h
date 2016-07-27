@@ -17,4 +17,7 @@
 #ifndef _SOC_BROADWELL_DE_H_
 #define _SOC_BROADWELL_DE_H_
 
+#define VTBAR_OFFSET		0x180
+#define VTBAR_MASK		0xffffe000
+
 #endif /* _SOC_BROADWELL_DE_H_ */

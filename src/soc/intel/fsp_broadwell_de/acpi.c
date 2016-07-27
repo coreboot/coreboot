@@ -4,6 +4,7 @@
  * Copyright (C) 2007-2009 coresystems GmbH
  * Copyright (C) 2013 Google Inc.
  * Copyright (C) 2015-2016 Intel Corp.
+ * Copyright (C) 2016 Siemens AG
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,6 +36,7 @@
 #include <soc/msr.h>
 #include <soc/pattrs.h>
 #include <soc/pci_devs.h>
+#include <soc/broadwell_de.h>
 #include <chip.h>
 
 uint16_t get_pmbase(void)
@@ -310,6 +312,103 @@ void acpi_fill_in_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 	fadt->x_gpe1_blk.addrh           = 0x00;
 
 	header->checksum = acpi_checksum((void *) fadt, sizeof(acpi_fadt_t));
+}
+
+static unsigned long acpi_fill_dmar(unsigned long current)
+{
+	uint32_t vtbar, tmp = current;
+	struct device *dev = dev_find_slot(0, VTD_DEV_FUNC);
+	uint16_t bdf, hpet_bdf[8];
+	uint8_t i, j;
+
+	if (!dev)
+		return current;
+
+	vtbar = pci_read_config32(dev, VTBAR_OFFSET) & VTBAR_MASK;
+	if (!vtbar)
+		return current;
+
+	current += acpi_create_dmar_drhd(current,
+			DRHD_INCLUDE_PCI_ALL, 0, vtbar);
+	/* The IIO I/O APIC is fixed on PCI 00:05.4 on Broadwell-DE */
+	current += acpi_create_dmar_drhd_ds_ioapic(current,
+			9, 0, 5, 4);
+	/* Get the PCI BDF for the PCH I/O APIC */
+	dev = dev_find_slot(0, LPC_DEV_FUNC);
+	bdf = pci_read_config16(dev, 0x6c);
+	current += acpi_create_dmar_drhd_ds_ioapic(current,
+			8, (bdf >> 8), PCI_SLOT(bdf), PCI_FUNC(bdf));
+
+	/*
+	 * Check if there are different PCI paths for the 8 HPET timers
+	 * and add every different PCI path as a separate HPET entry.
+	 * Although the DMAR specification talks about HPET block for this
+	 * entry, it is possible to assign a unique PCI BDF to every single
+	 * timer within a HPET block which will result in different source
+	 * IDs reported by a generated MSI.
+	 * In default configuration every single timer will have the same
+	 * PCI BDF which will result in a single HPET entry in DMAR table.
+	 * I have checked several different systems and all of them had one
+	 * single entry for HPET in DMAR.
+	 */
+	memset(hpet_bdf, 0, sizeof(hpet_bdf));
+	/* Get all unique HPET paths. */
+	for (i = 0; i < ARRAY_SIZE(hpet_bdf); i++) {
+		bdf = pci_read_config16(dev, 0x70 + (i * 2));
+		for (j = 0; j < i; j++) {
+			if (hpet_bdf[j] == bdf)
+				break;
+		}
+		if (j == i)
+			hpet_bdf[i] = bdf;
+	}
+	/* Create one HPET entry in DMAR for every unique HPET PCI path. */
+	for (i = 0; i < ARRAY_SIZE(hpet_bdf); i++) {
+		if (hpet_bdf[i])
+			current += acpi_create_dmar_drhd_ds_msi_hpet(current,
+				0, (hpet_bdf[i] >> 8), PCI_SLOT(hpet_bdf[i]),
+				PCI_FUNC(hpet_bdf[i]));
+	}
+	acpi_dmar_drhd_fixup(tmp, current);
+
+	/* Create root port ATSR capability */
+	tmp = current;
+	current += acpi_create_dmar_atsr(current, 0, 0);
+	/* Add one entry to ATSR for each PCI root port */
+	dev = all_devices;
+	do {
+		dev = dev_find_class(PCI_CLASS_BRIDGE_PCI << 8, dev);
+		if (dev && dev->bus->secondary == 0 &&
+		    PCI_SLOT(dev->path.pci.devfn) <= 3)
+			current += acpi_create_dmar_drhd_ds_pci_br(current,
+					dev->bus->secondary,
+					PCI_SLOT(dev->path.pci.devfn),
+					PCI_FUNC(dev->path.pci.devfn));
+	} while (dev);
+	acpi_dmar_atsr_fixup(tmp, current);
+
+	return current;
+}
+
+unsigned long northcluster_write_acpi_tables(struct device *const dev,
+					     unsigned long current,
+					     struct acpi_rsdp *const rsdp)
+{
+	acpi_dmar_t *const dmar = (acpi_dmar_t *)current;
+	device_t vtdev = dev_find_slot(0, PCI_DEVFN(5, 0));
+
+	/* Create DMAR table only if virtualization is enabled */
+	if (!(pci_read_config32(vtdev, 0x180) & 0x01))
+		return current;
+
+	printk(BIOS_DEBUG, "ACPI:    * DMAR\n");
+	acpi_create_dmar(dmar, DMAR_INTR_REMAP, acpi_fill_dmar);
+	current += dmar->header.length;
+	current = acpi_align_current(current);
+	acpi_add_table(rsdp, dmar);
+	current = acpi_align_current(current);
+
+	return current;
 }
 
 static int calculate_power(int tdp, int p1_ratio, int ratio)

@@ -53,6 +53,7 @@ site-local
 *.elf
 *.o
 *.out
+*.pyc
 *.swp
 
 # Development friendly files

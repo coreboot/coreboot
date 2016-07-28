@@ -88,7 +88,7 @@ static void copy_secondary_start_to_lowest_1M(void)
 		memcpy(lowmem_backup, lowmem_backup_ptr, lowmem_backup_size);
 	}
 
-	/* copy the _secondary_start to the ram below 1M*/
+	/* copy the _secondary_start to the RAM below 1M*/
 	memcpy((unsigned char *)AP_SIPI_VECTOR, (unsigned char *)_secondary_start, code_size);
 
 	printk(BIOS_DEBUG, "start_eip=0x%08lx, code_size=0x%08lx\n",

@@ -145,7 +145,7 @@ clear_mtrrs:
 	wrmsr
 
 	post_code(0x27)
-	/* Enable caching for ram init code to run faster */
+	/* Enable caching for RAM init code to run faster */
 	movl	$MTRR_PHYS_BASE(2), %ecx
 	movl	$(CACHE_MRC_BASE | MTRR_TYPE_WRPROT), %eax
 	xorl	%edx, %edx

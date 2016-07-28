@@ -17,6 +17,7 @@ ifeq ($(CONFIG_SOC_ROCKCHIP_RK3399),y)
 
 IDBTOOL = util/rockchip/make_idb.py
 
+bootblock-y += ../common/i2c.c
 bootblock-y += ../common/spi.c
 ifeq ($(CONFIG_BOOTBLOCK_CONSOLE),y)
 bootblock-$(CONFIG_DRIVERS_UART) += ../common/uart.c
@@ -32,6 +33,7 @@ verstage-y += ../common/cbmem.c
 verstage-y += ../common/gpio.c
 verstage-y += gpio.c
 verstage-y += sdram.c
+verstage-y += ../common/i2c.c
 verstage-y += ../common/spi.c
 verstage-$(CONFIG_DRIVERS_UART) += ../common/uart.c
 verstage-y += clock.c

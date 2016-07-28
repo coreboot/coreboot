@@ -18,6 +18,7 @@
 #include <bootblock_common.h>
 #include <soc/grf.h>
 #include <gpio.h>
+#include <soc/i2c.h>
 #include <soc/spi.h>
 #include <console/console.h>
 
@@ -68,9 +69,16 @@ void bootblock_mainboard_init(void)
 	write32(&rk3399_grf->iomux_spi5, IOMUX_SPI5);
 	rockchip_spi_init(CONFIG_EC_GOOGLE_CHROMEEC_SPI_BUS, 3093750);
 
-	/* Set pinmux and configure TPM SPI, which is not very fast. */
-	write32(&rk3399_grf->iomux_spi0, IOMUX_SPI0);
-	rockchip_spi_init(CONFIG_DRIVER_TPM_SPI_BUS, 1500*KHz);
+	if (IS_ENABLED(CONFIG_GRU_HAS_TPM2)) {
+		/* Set pinmux and configure TPM SPI, which is not very fast. */
+		write32(&rk3399_grf->iomux_spi0, IOMUX_SPI0);
+		rockchip_spi_init(CONFIG_DRIVER_TPM_SPI_BUS, 1500*KHz);
+	} else {
+		/* Set pinmux and configure TPM I2C */
+		write32(&rk3399_pmugrf->iomux_i2c0_scl, IOMUX_I2C0_SCL);
+		write32(&rk3399_pmugrf->iomux_i2c0_sda, IOMUX_I2C0_SDA);
+		i2c_init(0, 400*KHz);
+	}
 
 	setup_chromeos_gpios();
 }

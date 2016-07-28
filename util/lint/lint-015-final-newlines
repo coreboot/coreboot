@@ -1,0 +1,52 @@
+#!/bin/sh
+# This file is part of the coreboot project.
+#
+# Copyright (C) 2016 Google Inc.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# DESCR: Check that files end with a single newline
+
+LC_ALL=C export LC_ALL
+
+EXCLUDED_DIRS='src/vendorcode/\|util/romcc/\|cbfstool/lzma/\|cbfstool/lz4/\|Documentation/\|build/\|3rdparty/\|\.git/\|coreboot-builds/\|util/nvidia/cbootimage/'
+EXCLUDED_FILES='\.jpg$\|\.cksum$\|\.bin$\|\.hex$\|\.ico$\|\.o$\|\.bz2$\|\.xz$\|^.tmpconfig\|\.pyc$\|_shipped$\|sha256$'
+
+# Use git ls-files if the code is in a git repo, otherwise use find.
+if [ -n "$(command -v git)" ] && [ -d .git ]; then
+	FIND_FILES="git ls-files"
+else
+	FIND_FILES="find . "
+fi
+
+test_for_final_newline() {
+	while read filename; do
+		# Only check non-executable regular files
+		if [ -f "$filename" ] && [ ! -x "$filename" ]; then
+
+			# Verify that there is a newline at the end
+			# $() strips trailing newlines
+			if [ -n "$(tail -c 1 "$filename")" ]; then
+				echo "$filename has no final newline."
+
+			# Verify that the file ends with only a single newline
+			# and that the file isn't empty
+			elif [ -z "$(tail -c 2 "$filename")" ] && \
+			     [ -n "$(head -n 5 "$filename")" ]; then
+				echo "$filename has multiple final newlines."
+			fi
+		fi
+	done
+}
+
+${FIND_FILES} | sed 's|^\./||' | sort | \
+	grep -v "$EXCLUDED_DIRS" | \
+	grep -v "$EXCLUDED_FILES" | \
+	test_for_final_newline

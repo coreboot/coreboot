@@ -46,6 +46,7 @@ static const struct lpc_mmio_range {
 };
 
 static const struct pad_config lpc_gpios[] = {
+	PAD_CFG_NF(LPC_ILB_SERIRQ, UP_20K, DEEP, NF1),
 	PAD_CFG_NF(LPC_AD0, NATIVE, DEEP, NF1),
 	PAD_CFG_NF(LPC_AD1, NATIVE, DEEP, NF1),
 	PAD_CFG_NF(LPC_AD2, NATIVE, DEEP, NF1),

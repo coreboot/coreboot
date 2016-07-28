@@ -177,7 +177,7 @@ static void model_6fx_init(struct device *cpu)
 	/* Setup Page Attribute Tables (PAT) */
 	// TODO set up PAT
 
-	/* Enable the local cpu apics */
+	/* Enable the local CPU apics */
 	setup_lapic();
 
 	/* Enable virtualization */
@@ -192,7 +192,7 @@ static void model_6fx_init(struct device *cpu)
 	/* PIC thermal sensor control */
 	configure_pic_thermal_sensors();
 
-	/* Start up my cpu siblings */
+	/* Start up my CPU siblings */
 	intel_sibling_init(cpu);
 }
 

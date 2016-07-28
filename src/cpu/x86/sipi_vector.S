@@ -93,7 +93,7 @@ _start:
 	mov	idt_ptr, %ebx
 	lidt	(%ebx)
 
-	/* Obtain cpu number. */
+	/* Obtain CPU number. */
 	movl	ap_count, %eax
 1:
 	movl	%eax, %ecx
@@ -107,7 +107,7 @@ _start:
 	movl	stack_top, %edx
 	subl	%eax, %edx
 	mov	%edx, %esp
-	/* Save cpu number. */
+	/* Save CPU number. */
 	mov	%ecx, %esi
 
 	/* Determine if one should check microcode versions. */

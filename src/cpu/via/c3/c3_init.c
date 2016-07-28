@@ -27,7 +27,7 @@ static void c3_init(struct device *dev)
 	x86_setup_mtrrs();
 	x86_mtrr_check();
 
-	/* Enable the local cpu apics */
+	/* Enable the local CPU apics */
 	setup_lapic();
 };
 

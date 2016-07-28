@@ -200,7 +200,7 @@ static void c7_init(struct device *dev)
 	x86_setup_mtrrs();
 	x86_mtrr_check();
 
-	/* Enable the local cpu apics */
+	/* Enable the local CPU apics */
 	setup_lapic();
 };
 
@@ -209,7 +209,7 @@ static struct device_operations cpu_dev_ops = {
 };
 
 /* Look in arch/x86/lib/cpu.c:cpu_initialize. If there is no CPU with an exact
- * ID, the cpu mask (stepping) is masked out and the check is repeated. This
+ * ID, the CPU mask (stepping) is masked out and the check is repeated. This
  * allows us to keep the table significantly smaller.
  */
 

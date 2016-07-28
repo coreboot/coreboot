@@ -24,8 +24,8 @@ DDR3
 CPU/DRAM/PCI            B6 B7 BB BC BD BF
 200/200/33              30 03 0F 02 8F 07
 300/300/33              48 03 0F 02 1F 07
-300/300/33              48 03 0F 3A DF 07          ; write leveling disable, cpu bypass disable
-300/300/33              48 03 0F 22 3F 07          ; cpu bypass disable
+300/300/33              48 03 0F 3A DF 07          ; write leveling disable, CPU bypass disable
+300/300/33              48 03 0F 22 3F 07          ; CPU bypass disable
 300/300/100             48 03 23 02 7F 07
 400/200/33              60 43 0F 02 3F 07          ; without 200MHz timing, so set 300MHz timing
 400/200/100             60 43 23 02 4F 07

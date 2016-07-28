@@ -40,7 +40,7 @@ static void geode_lx_init(device_t dev)
 	/* Turn on caching if we haven't already */
 	x86_enable_cache();
 
-	/* Enable the local cpu apics */
+	/* Enable the local CPU apics */
 	//setup_lapic();
 
 	// do VSA late init

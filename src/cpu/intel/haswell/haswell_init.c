@@ -720,7 +720,7 @@ static void haswell_init(struct device *cpu)
 	/* Clear out pending MCEs */
 	configure_mca();
 
-	/* Enable the local cpu apics */
+	/* Enable the local CPU apics */
 	enable_lapic_tpr();
 	setup_lapic();
 

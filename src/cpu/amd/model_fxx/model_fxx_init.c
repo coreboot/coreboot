@@ -249,15 +249,15 @@ static void init_ecc_memory(unsigned node_id)
 
 	f1_dev = dev_find_slot(0, PCI_DEVFN(0x18 + node_id, 1));
 	if (!f1_dev) {
-		die("Cannot find cpu function 1\n");
+		die("Cannot find CPU function 1\n");
 	}
 	f2_dev = dev_find_slot(0, PCI_DEVFN(0x18 + node_id, 2));
 	if (!f2_dev) {
-		die("Cannot find cpu function 2\n");
+		die("Cannot find CPU function 2\n");
 	}
 	f3_dev = dev_find_slot(0, PCI_DEVFN(0x18 + node_id, 3));
 	if (!f3_dev) {
-		die("Cannot find cpu function 3\n");
+		die("Cannot find CPU function 3\n");
 	}
 
 	/* See if we scrubbing should be enabled */
@@ -508,7 +508,7 @@ static void model_fxx_init(device_t dev)
 	/* Set the processor name string */
 	init_processor_name();
 
-	/* Enable the local cpu apics */
+	/* Enable the local CPU apics */
 	setup_lapic();
 
 #if CONFIG_LOGICAL_CPUS

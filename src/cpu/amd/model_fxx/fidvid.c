@@ -401,7 +401,7 @@ static void init_fidvid_ap(unsigned bsp_apicid, unsigned apicid)
 		    0)
 			continue;
 		if (((readback >> 24) & 0xff) == apicid)
-			break;	/* it is this cpu turn */
+			break;	/* it is this CPU turn */
 	}
 
 	if (loop > 0) {

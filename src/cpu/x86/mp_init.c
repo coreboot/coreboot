@@ -375,7 +375,7 @@ static int allocate_cpu_devices(struct bus *cpu_bus, struct mp_params *p)
 		struct device *new;
 		int apic_id;
 
-		/* Build the cpu device path */
+		/* Build the CPU device path */
 		cpu_path.type = DEVICE_PATH_APIC;
 
 		/* Assuming linear APIC space allocation. */
@@ -385,10 +385,10 @@ static int allocate_cpu_devices(struct bus *cpu_bus, struct mp_params *p)
 		}
 		cpu_path.apic.apic_id = apic_id;
 
-		/* Allocate the new cpu device structure */
+		/* Allocate the new CPU device structure */
 		new = alloc_find_dev(cpu_bus, &cpu_path);
 		if (new == NULL) {
-			printk(BIOS_CRIT, "Could not allocate cpu device\n");
+			printk(BIOS_CRIT, "Could not allocate CPU device\n");
 			max_cpus--;
 		}
 		cpus[i].dev = new;
@@ -577,7 +577,7 @@ static void init_bsp(struct bus *cpu_bus)
  *
  * The MP initialization has the following properties:
  * 1. APs are brought up in parallel.
- * 2. The ordering of coreboot cpu number and APIC ids is not deterministic.
+ * 2. The ordering of coreboot CPU number and APIC ids is not deterministic.
  *    Therefore, one cannot rely on this property or the order of devices in
  *    the device tree unless the chipset or mainboard know the APIC ids
  *    a priori.
@@ -641,7 +641,7 @@ static void mp_initialize_cpu(void)
 	cpu_initialize(info->index);
 }
 
-/* Returns apic id for coreboot cpu number or < 0 on failure. */
+/* Returns apic id for coreboot CPU number or < 0 on failure. */
 static int mp_get_apic_id(int cpu_slot)
 {
 	if (cpu_slot >= CONFIG_MAX_CPUS || cpu_slot < 0)
@@ -843,7 +843,7 @@ static struct mp_flight_record mp_steps[] = {
 	MP_FR_BLOCK_APS(NULL, load_smm_handlers),
 	/* Perform SMM relocation. */
 	MP_FR_NOBLOCK_APS(trigger_smm_relocation, trigger_smm_relocation),
-	/* Initialize each cpu through the driver framework. */
+	/* Initialize each CPU through the driver framework. */
 	MP_FR_BLOCK_APS(mp_initialize_cpu, mp_initialize_cpu),
 	/* Wait for APs to finish everything else then let them park. */
 	MP_FR_BLOCK_APS(NULL, NULL),

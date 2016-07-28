@@ -322,7 +322,7 @@ static void model_1067x_init(struct device *cpu)
 	x86_setup_mtrrs();
 	x86_mtrr_check();
 
-	/* Enable the local cpu apics */
+	/* Enable the local CPU apics */
 	setup_lapic();
 
 	/* Initialize the APIC timer */
@@ -347,7 +347,7 @@ static void model_1067x_init(struct device *cpu)
 	/* PIC thermal sensor control */
 	configure_pic_thermal_sensors(tm2, quad);
 
-	/* Start up my cpu siblings */
+	/* Start up my CPU siblings */
 	intel_sibling_init(cpu);
 }
 

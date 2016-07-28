@@ -57,7 +57,7 @@ static void model_10_init(device_t dev)
 
 	enable_cache();
 
-	/* Enable the local cpu apics */
+	/* Enable the local CPU apics */
 	setup_lapic();
 
 	/* Set the processor name string */

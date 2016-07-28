@@ -59,6 +59,7 @@ static void write_pirq_info(struct irq_info *pirq_info, u8 bus, u8 devfn,
 	pirq_info->slot = slot;
 	pirq_info->rfu = rfu;
 }
+
 extern u8 bus_isa;
 extern u8 bus_sr5650[14];
 extern u8 bus_sp5100[2];
@@ -107,8 +108,9 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 	slot_num = 0;
 
 	/* pci bridge */
-	write_pirq_info(pirq_info, bus_sp5100[0], ((sbdn_sp5100 + 0x14) << 3) | 4,
-			LNKA, IRQBM, LNKB, IRQBM, LNKC, IRQBM, LNKD, IRQBM, 0, 0);
+	write_pirq_info(pirq_info, bus_sp5100[0],
+			((sbdn_sp5100 + 0x14) << 3) | 4, LNKA, IRQBM, LNKB,
+			IRQBM, LNKC, IRQBM, LNKD, IRQBM, 0, 0);
 	pirq_info++;
 	slot_num++;
 

@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-
 #include <console/console.h>
 #include <device/pci.h>
 #include <string.h>
@@ -58,6 +57,7 @@ static void write_pirq_info(struct irq_info *pirq_info, u8 bus, u8 devfn,
 	pirq_info->slot = slot;
 	pirq_info->rfu = rfu;
 }
+
 extern u8 bus_rs690[8];
 extern u8 bus_sb600[2];
 extern unsigned long sbdn_sb600;
@@ -103,12 +103,16 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 	slot_num = 0;
 
 	/* pci bridge */
-	write_pirq_info(pirq_info, bus_sb600[0], ((sbdn_sb600 + 0x14) << 3) | 4, 0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 1,	0);
+	write_pirq_info(pirq_info, bus_sb600[0], ((sbdn_sb600 + 0x14) << 3) | 4,
+			0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 1,
+			0);
 	pirq_info++;
 	slot_num++;
 
 	/* ide */
-	write_pirq_info(pirq_info, bus_sb600[0], ((sbdn_sb600 + 0x14) << 3) | 1, 0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 1,	0);
+	write_pirq_info(pirq_info, bus_sb600[0], ((sbdn_sb600 + 0x14) << 3) | 1,
+			0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 1,
+			0);
 	pirq_info++;
 	slot_num++;
 

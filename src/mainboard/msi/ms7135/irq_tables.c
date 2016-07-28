@@ -33,7 +33,6 @@
 
 extern unsigned char bus_ck804[6];
 
-
 /**
  * Add one line to IRQ table.
  */
@@ -204,50 +203,49 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 
 	/* Bus, device, slots IRQs for {A,B,C,D}. */
 
-	irq[0] = 10; /* SMBus */ /* test me */
+	irq[0] = 10;		/* SMBus *//* test me */
 	pci_assign_irqs(bus_ck804[0], 1, irq);
 
-	irq[0] = 10; /* USB */
+	irq[0] = 10;		/* USB */
 	irq[1] = 10;
 	pci_assign_irqs(bus_ck804[0], 2, irq);
 
-	irq[0] = 10; /* AC97 */
+	irq[0] = 10;		/* AC97 */
 	irq[1] = 0;
 	pci_assign_irqs(bus_ck804[0], 4, irq);
 
-	irq[0] = 11; /* SATA */
+	irq[0] = 11;		/* SATA */
 	pci_assign_irqs(bus_ck804[0], 7, irq);
 
-	irq[0] = 5; /* SATA */
+	irq[0] = 5;		/* SATA */
 	pci_assign_irqs(bus_ck804[0], 8, irq);
 
-	irq[0] = 10; /* Ethernet */
+	irq[0] = 10;		/* Ethernet */
 	pci_assign_irqs(bus_ck804[0], 10, irq);
-
 
 	/* physical slots */
 
-	irq[0] = 5; /* PCI E1 - x1 */
+	irq[0] = 5;		/* PCI E1 - x1 */
 	pci_assign_irqs(bus_ck804[2], 0, irq);
 
-	irq[0] = 11; /* PCI E2 - x16 */
+	irq[0] = 11;		/* PCI E2 - x16 */
 	pci_assign_irqs(bus_ck804[3], 0, irq);
 
 	/* AGP-on-PCI "AGR" ignored */
 
-	irq[0] = 10; /* PCI1 */
+	irq[0] = 10;		/* PCI1 */
 	irq[1] = 11;
 	irq[2] = 5;
 	irq[3] = 0;
 	pci_assign_irqs(bus_ck804[1], 7, irq);
 
-	irq[0] = 11; /* PCI2 */
+	irq[0] = 11;		/* PCI2 */
 	irq[1] = 10;
 	irq[2] = 5;
 	irq[3] = 0;
 	pci_assign_irqs(bus_ck804[1], 8, irq);
 
-	irq[0] = 5; /* PCI3 */
+	irq[0] = 5;		/* PCI3 */
 	irq[1] = 10;
 	irq[2] = 11;
 	irq[3] = 0;

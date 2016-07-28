@@ -11,9 +11,4 @@
 # GNU General Public License for more details.
 #
 
-# really?
-ifeq ($(CONFIG_GENERATE_SMBIOS_TABLES),y)
-
-ramstage-$(CONFIG_PCIEXP_PLUGIN_SUPPORT) += wifi.c
-
-endif
+ramstage-$(CONFIG_DRIVERS_INTEL_WIFI) += wifi.c

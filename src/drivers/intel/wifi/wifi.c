@@ -25,6 +25,7 @@
 #include <wrdd.h>
 #include "chip.h"
 
+#if IS_ENABLED(CONFIG_GENERATE_SMBIOS_TABLES)
 static int smbios_write_wifi(struct device *dev, int *handle,
 			     unsigned long *current)
 {
@@ -55,6 +56,7 @@ static int smbios_write_wifi(struct device *dev, int *handle,
 	*handle += 1;
 	return len;
 }
+#endif
 
 #if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
 static void intel_wifi_fill_ssdt(struct device *dev)
@@ -125,7 +127,9 @@ struct device_operations device_ops = {
 	.set_resources            = pci_dev_set_resources,
 	.enable_resources         = pci_dev_enable_resources,
 	.init                     = pci_dev_init,
+#if IS_ENABLED(CONFIG_GENERATE_SMBIOS_TABLES)
 	.get_smbios_data          = smbios_write_wifi,
+#endif
 	.ops_pci                  = &pci_ops,
 #if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
 	.acpi_name                = &intel_wifi_acpi_name,

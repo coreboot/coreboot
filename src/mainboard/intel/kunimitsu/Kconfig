@@ -31,9 +31,6 @@ config DRIVERS_I2C_GENERIC
 config DRIVERS_I2C_NAU8825
 	default y
 
-config DRIVERS_INTEL_WIFI
-	default y
-
 config IRQ_SLOT_COUNT
 	int
 	default 18

@@ -1,3 +1,2 @@
 config BOARD_GOOGLE_REEF
 	bool "Reef"
-

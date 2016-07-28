@@ -296,4 +296,3 @@ CONST AP_MTRR_SETTINGS ROMDATA OntarioApMtrrSettingsList[] =
 
 // Instantiate all solution relevant data.
 #include "PlatformInstall.h"
-

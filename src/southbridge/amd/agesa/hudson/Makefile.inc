@@ -68,4 +68,3 @@ cbfs-files-y += apu/amdfw
 apu/amdfw-file := $(obj)/amdfw.rom
 apu/amdfw-position := $(HUDSON_FWM_POSITION)
 apu/amdfw-type := raw
-

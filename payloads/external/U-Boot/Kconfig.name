@@ -8,4 +8,3 @@ config PAYLOAD_UBOOT
 	  See http://coreboot.org/Payloads and U-Boot's documentation
 	  at http://git.denx.de/?p=u-boot.git;a=blob;f=doc/README.x86
 	  for more information.
-

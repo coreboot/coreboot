@@ -343,4 +343,3 @@ GPIO_CONTROL   parmer_gpio[] = {
 #define DFLT_VRM_SLEW_RATE              (5000)
 
 #include "PlatformInstall.h"
-

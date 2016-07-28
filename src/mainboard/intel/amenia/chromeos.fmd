@@ -34,4 +34,3 @@ FLASH 8M {
     }
     DEVICE_EXTENSION@7M 1M
 }
-

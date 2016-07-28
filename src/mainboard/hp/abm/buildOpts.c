@@ -356,4 +356,3 @@ GPIO_CONTROL   hp_abm_gpio[] = {
 #define DFLT_VRM_SLEW_RATE              (5000)
 
 #include "PlatformInstall.h"
-

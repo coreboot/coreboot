@@ -190,4 +190,3 @@ void mainboard_romstage_entry(unsigned long bist)
 #endif
 	printk(BIOS_SPEW, "exit main()\n");
 }
-

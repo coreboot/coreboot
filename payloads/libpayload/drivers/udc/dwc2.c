@@ -959,4 +959,3 @@ struct usbdev_ctrl *dwc2_udc_init(device_descriptor_t *dd)
 
 	return ctrl;
 }
-

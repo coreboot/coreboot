@@ -22,4 +22,3 @@ void *cbmem_top(void)
 	void *ptr = (void *) ((1ULL << 32) - 1048576);
 	return ptr;
 }
-

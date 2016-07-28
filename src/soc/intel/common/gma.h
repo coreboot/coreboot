@@ -174,4 +174,3 @@ typedef struct {
 } __attribute__((packed)) optionrom_vbt_t;
 
 #endif /* _COMMON_GMA_H_ */
-

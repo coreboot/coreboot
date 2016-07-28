@@ -58,4 +58,3 @@ void init_timer(void)
 	/* Set operation mode to FREERUN mode and enable GTP4 */
 	write32(&mt8173_gpt->gpt4_con, GPT_CON_EN | GPT_MODE_FREERUN);
 }
-

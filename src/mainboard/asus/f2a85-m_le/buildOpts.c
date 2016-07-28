@@ -345,4 +345,3 @@ GPIO_CONTROL   f2a85_m_gpio[] = {
 
 /* Moving this include up will break AGESA. */
 #include <vendorcode/amd/agesa/f15tn/Include/PlatformInstall.h>
-

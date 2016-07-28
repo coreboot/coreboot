@@ -140,4 +140,3 @@ config VBOOT
 	help
 	  Enabling VBOOT will use vboot to verify the components of the firmware
 	  (stages, payload, etc).
-

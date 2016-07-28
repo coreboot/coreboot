@@ -55,4 +55,3 @@ void timer_monotonic_get(struct mono_time *mt)
 	total_ticks = (((total_ticks + overflow) >> 32) << 32) + current_ticks;
 	mono_time_set_usecs(mt, total_ticks / MHZ_NUM);
 }
-

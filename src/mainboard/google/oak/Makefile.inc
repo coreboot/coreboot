@@ -30,4 +30,3 @@ ramstage-y += mainboard.c
 ramstage-y += chromeos.c
 ramstage-y += memlayout.ld
 ramstage-y += boardid.c
-

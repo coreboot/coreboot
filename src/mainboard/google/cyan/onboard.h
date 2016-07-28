@@ -81,4 +81,3 @@
 
 #define DPTF_CPU_PASSIVE	88
 #define DPTF_CPU_CRITICAL	90
-

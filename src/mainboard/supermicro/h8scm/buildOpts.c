@@ -339,4 +339,3 @@ CONST AP_MTRR_SETTINGS ROMDATA h8scm_ap_mtrr_list[] =
  */
 
 #include "SanMarinoInstall.h"
-

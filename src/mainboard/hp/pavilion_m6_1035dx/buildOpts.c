@@ -389,4 +389,3 @@ SCI_MAP_CONTROL m6_1035dx_sci_map[] = {
 
 /* AGESA nonsense: this header depends on the definitions above */
 #include <vendorcode/amd/agesa/f15tn/Include/PlatformInstall.h>
-

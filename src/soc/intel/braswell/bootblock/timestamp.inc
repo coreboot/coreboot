@@ -31,4 +31,3 @@ stash_timestamp:
 
 	/* Restore the BIST value to %eax */
 	movl	%ebp, %eax
-

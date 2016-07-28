@@ -219,4 +219,3 @@ uint64_t get_initial_timestamp(void)
 {
 	return (uint64_t) pci_read_config32(PCI_DEV(0, 0x1f, 2), 0xd0) << 4;
 }
-

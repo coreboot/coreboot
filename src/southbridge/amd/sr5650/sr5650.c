@@ -564,7 +564,7 @@ void sr5650_nb_pci_table(device_t nb_dev)
 	printk(BIOS_DEBUG, "NB_PCI_REG04 = %x.\n", temp16);
 	temp32 = pci_read_config32(nb_dev, 0x84);
 	printk(BIOS_DEBUG, "NB_PCI_REG84 = %x.\n", temp32);
-	//Reg4Ch[1]=1 (APIC_ENABLE) force cpu request with address 0xFECx_xxxx to south-bridge
+	//Reg4Ch[1]=1 (APIC_ENABLE) force CPU request with address 0xFECx_xxxx to south-bridge
 	//Reg4Ch[6]=1 (BMMsgEn) enable BM_Set message generation
 	pci_write_config8(nb_dev, 0x4c, 0x42);
 	temp8 = pci_read_config8(nb_dev, 0x4e);
@@ -605,7 +605,7 @@ void sr5650_nb_pci_table(device_t nb_dev)
 *	0:06.0  P2P	: bit 6 of nbmiscind 0x0c : 0 - enable, default	   + 32 * 2
 *	0:07.0  P2P	: bit 7 of nbmiscind 0x0c : 0 - enable, default	   + 32 * 2
 *	0:08.0  NB2SB	: bit 6 of nbmiscind 0x00 : 0 - disable, default   + 32 * 1
-* case 0 will be called twice, one is by cpu in hypertransport.c line458,
+* case 0 will be called twice, one is by CPU in hypertransport.c line458,
 * the other is by sr5650.
 ***********************************************/
 void sr5650_enable(device_t dev)

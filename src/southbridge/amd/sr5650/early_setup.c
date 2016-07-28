@@ -343,7 +343,7 @@ static void sr5650_por_pcicfg_init(device_t nb_dev)
 	set_nbcfg_enable_bits(nb_dev, 0x20, ~0, 0x0);
 	set_nbcfg_enable_bits(nb_dev, 0x84, ~0, 0x03000010);
 
-	/* Reg4Ch[1]=1 (APIC_ENABLE) force cpu request with address 0xFECx_xxxx to south-bridge
+	/* Reg4Ch[1]=1 (APIC_ENABLE) force CPU request with address 0xFECx_xxxx to south-bridge
 	 * Reg4Ch[6]=1 (BMMsgEn) enable BM_Set message generation
 	 * BMMsgEn */
 	set_nbcfg_enable_bits(nb_dev, 0x4C, (u8)(~0x00), 0x52042);

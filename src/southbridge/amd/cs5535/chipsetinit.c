@@ -310,7 +310,7 @@ chipsetinit(void)
 	outl	(GPIOL_2_SET, GPIOL_IN_AUX1_SELECT);
 
 	/*  Allow IO read and writes during a ATA DMA operation. */
-	/*   This could be done in the HD rom but do it here for easier debugging. */
+	/*   This could be done in the HD ROM but do it here for easier debugging. */
 
 	msrnum = ATA_SB_GLD_MSR_ERR;
 	msr = rdmsr(msrnum);

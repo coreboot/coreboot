@@ -419,7 +419,7 @@ static void rs780_por_pcicfg_init(device_t nb_dev)
 	/* Power Management Register Enable */
 	set_nbcfg_enable_bits_8(nb_dev, 0x84, (u8)(~0xFF), 0x80);
 
-	/* Reg4Ch[1]=1 (APIC_ENABLE) force cpu request with address 0xFECx_xxxx to south-bridge
+	/* Reg4Ch[1]=1 (APIC_ENABLE) force CPU request with address 0xFECx_xxxx to south-bridge
 	 * Reg4Ch[6]=1 (BMMsgEn) enable BM_Set message generation
 	 * BMMsgEn */
 	set_nbcfg_enable_bits_8(nb_dev, 0x4C, (u8)(~0x00), 0x42 | 1);

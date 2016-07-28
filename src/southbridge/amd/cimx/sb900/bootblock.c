@@ -44,7 +44,7 @@ static void sb900_enable_rom(void)
   dword |= (1<<0) | (1<<1) | (1<<4) | (1<<6) | (1<<21) ;
   pci_io_write_config32(dev, 0x48, dword);
 
-  /* Enable 4MB rom access at 0xFFE00000 - 0xFFFFFFFF */
+  /* Enable 4MB ROM access at 0xFFE00000 - 0xFFFFFFFF */
   /* Set the 4MB enable bits */
   word = pci_io_read_config16(dev, 0x6c);
   word = 0xFFC0;
@@ -53,6 +53,6 @@ static void sb900_enable_rom(void)
 
 static void bootblock_southbridge_init(void)
 {
-  /* Setup the rom access for 2M */
+  /* Setup the ROM access for 2M */
   sb900_enable_rom();
 }

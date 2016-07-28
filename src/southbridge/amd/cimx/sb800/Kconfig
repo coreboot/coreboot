@@ -214,7 +214,7 @@ config SB800_IMC_FAN_CONTROL
 	depends on SB800_IMC_FWM
 	help
 	  Set up the SB800 to use the IMC based Fan controller.  This requires
-	  the IMC rom from AMD.  Configure the registers in devicetree.cb.
+	  the IMC ROM from AMD.  Configure the registers in devicetree.cb.
 
 endchoice
 

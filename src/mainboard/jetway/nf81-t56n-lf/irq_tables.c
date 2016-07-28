@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-
 #include <arch/pirq_routing.h>
 #include <console/console.h>
 #include <cpu/amd/amdfam14.h>
@@ -21,11 +20,10 @@
 #include <string.h>
 #include <stdint.h>
 
-
 static void write_pirq_info(struct irq_info *pirq_info, u8 bus, u8 devfn,
-			u8 link0, u16 bitmap0, u8 link1, u16 bitmap1,
-			u8 link2, u16 bitmap2, u8 link3, u16 bitmap3,
-			u8 slot, u8 rfu)
+			    u8 link0, u16 bitmap0, u8 link1, u16 bitmap1,
+			    u8 link2, u16 bitmap2, u8 link3, u16 bitmap3,
+			    u8 slot, u8 rfu)
 {
 	pirq_info->bus = bus;
 	pirq_info->devfn = devfn;

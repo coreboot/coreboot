@@ -7,9 +7,11 @@
 #include <cpu/amd/amdk8_sysconf.h>
 #include "mb_sysconf.h"
 
-static void write_pirq_info(struct irq_info *pirq_info, uint8_t bus, uint8_t devfn, uint8_t link0, uint16_t bitmap0,
-		uint8_t link1, uint16_t bitmap1, uint8_t link2, uint16_t bitmap2,uint8_t link3, uint16_t bitmap3,
-		uint8_t slot, uint8_t rfu)
+static void write_pirq_info(struct irq_info *pirq_info, uint8_t bus,
+			    uint8_t devfn, uint8_t link0, uint16_t bitmap0,
+			    uint8_t link1, uint16_t bitmap1, uint8_t link2,
+			    uint16_t bitmap2, uint8_t link3, uint16_t bitmap3,
+			    uint8_t slot, uint8_t rfu)
 {
 	pirq_info->bus = bus;
 	pirq_info->devfn = devfn;
@@ -33,10 +35,10 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 	uint8_t *v;
 	struct mb_sysconf_t *m = sysconf.mb;
 
-	uint8_t sum=0;
+	uint8_t sum = 0;
 	int i;
 
-	get_bus_conf(); // it will find out all bus num and apic that share with mptable.c and mptable.c and acpi_tables.c
+	get_bus_conf();		// it will find out all bus num and apic that share with mptable.c and mptable.c and acpi_tables.c
 
 	/* Align the table to be 16 byte aligned. */
 	addr += 15;
@@ -46,13 +48,13 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 	printk(BIOS_INFO, "Writing IRQ routing tables to 0x%lx...", addr);
 
 	pirq = (void *)(addr);
-	v = (uint8_t *)(addr);
+	v = (uint8_t *) (addr);
 
 	pirq->signature = PIRQ_SIGNATURE;
-	pirq->version  = PIRQ_VERSION;
+	pirq->version = PIRQ_VERSION;
 
 	pirq->rtr_bus = m->bus_8111_0;
-	pirq->rtr_devfn = ((sysconf.sbdn+1)<<3)|0;
+	pirq->rtr_devfn = ((sysconf.sbdn + 1) << 3) | 0;
 
 	pirq->exclusive_irqs = 0;
 
@@ -63,16 +65,20 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 
 	memset(pirq->rfu, 0, sizeof(pirq->rfu));
 
-	pirq_info = (void *) ( &pirq->checksum + 1);
+	pirq_info = (void *)(&pirq->checksum + 1);
 	slot_num = 0;
 //pci bridge
-	write_pirq_info(pirq_info, m->bus_8111_0, ((sysconf.sbdn+1)<<3)|0, 0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0, 0);
-	pirq_info++; slot_num++;
+	write_pirq_info(pirq_info, m->bus_8111_0, ((sysconf.sbdn + 1) << 3) | 0,
+			0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0,
+			0);
+	pirq_info++;
+	slot_num++;
 //pcix bridge
-//	write_pirq_info(pirq_info, m->bus_8131_0, (m->sbdn3<<3)|0, 0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0, 0);
-//	pirq_info++; slot_num++;
+//      write_pirq_info(pirq_info, m->bus_8131_0, (m->sbdn3<<3)|0, 0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0, 0);
+//      pirq_info++; slot_num++;
 
-	pirq_info++; slot_num++;
+	pirq_info++;
+	slot_num++;
 
 	pirq->size = 32 + 16 * slot_num;
 
@@ -87,6 +93,6 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 
 	printk(BIOS_INFO, "done.\n");
 
-	return	(unsigned long) pirq_info;
+	return (unsigned long)pirq_info;
 
 }

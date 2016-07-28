@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-
 #include <console/console.h>
 #include <device/pci.h>
 #include <string.h>
@@ -23,26 +22,24 @@
 
 #include "mb_sysconf.h"
 
-static void write_pirq_info(struct irq_info *pirq_info, u8 bus, u8 devfn, u8 link0, u16 bitmap0,
-		u8 link1, u16 bitmap1, u8 link2, u16 bitmap2,u8 link3, u16 bitmap3,
-		u8 slot, u8 rfu)
+static void write_pirq_info(struct irq_info *pirq_info, u8 bus, u8 devfn,
+			    u8 link0, u16 bitmap0, u8 link1, u16 bitmap1,
+			    u8 link2, u16 bitmap2, u8 link3, u16 bitmap3,
+			    u8 slot, u8 rfu)
 {
 	pirq_info->bus = bus;
 	pirq_info->devfn = devfn;
-		pirq_info->irq[0].link = link0;
-		pirq_info->irq[0].bitmap = bitmap0;
-		pirq_info->irq[1].link = link1;
-		pirq_info->irq[1].bitmap = bitmap1;
-		pirq_info->irq[2].link = link2;
-		pirq_info->irq[2].bitmap = bitmap2;
-		pirq_info->irq[3].link = link3;
-		pirq_info->irq[3].bitmap = bitmap3;
+	pirq_info->irq[0].link = link0;
+	pirq_info->irq[0].bitmap = bitmap0;
+	pirq_info->irq[1].link = link1;
+	pirq_info->irq[1].bitmap = bitmap1;
+	pirq_info->irq[2].link = link2;
+	pirq_info->irq[2].bitmap = bitmap2;
+	pirq_info->irq[3].link = link3;
+	pirq_info->irq[3].bitmap = bitmap3;
 	pirq_info->slot = slot;
 	pirq_info->rfu = rfu;
 }
-
-
-
 
 unsigned long write_pirq_routing_table(unsigned long addr)
 {
@@ -52,12 +49,12 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 	u32 slot_num;
 	u8 *v;
 
-	u8 sum=0;
+	u8 sum = 0;
 	int i;
 
 	struct mb_sysconf_t *m;
 
-	get_bus_conf(); // it will find out all bus num and apic that share with mptable.c and mptable.c and acpi_tables.c
+	get_bus_conf();		// it will find out all bus num and apic that share with mptable.c and mptable.c and acpi_tables.c
 
 	m = sysconf.mb;
 
@@ -69,13 +66,13 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 	printk(BIOS_INFO, "Writing IRQ routing tables to 0x%lx...", addr);
 
 	pirq = (void *)(addr);
-	v = (u8 *)(addr);
+	v = (u8 *) (addr);
 
 	pirq->signature = PIRQ_SIGNATURE;
-	pirq->version  = PIRQ_VERSION;
+	pirq->version = PIRQ_VERSION;
 
 	pirq->rtr_bus = m->bus_8111_0;
-	pirq->rtr_devfn = ((sysconf.sbdn+1)<<3)|0;
+	pirq->rtr_devfn = ((sysconf.sbdn + 1) << 3) | 0;
 
 	pirq->exclusive_irqs = 0;
 
@@ -86,38 +83,47 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 
 	memset(pirq->rfu, 0, sizeof(pirq->rfu));
 
-	pirq_info = (void *) ( &pirq->checksum + 1);
+	pirq_info = (void *)(&pirq->checksum + 1);
 	slot_num = 0;
 
-
 	//pci bridge
-	write_pirq_info(pirq_info, m->bus_8111_0, ((sysconf.sbdn+1)<<3)|0, 0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0, 0);
-	pirq_info++; slot_num++;
-
+	write_pirq_info(pirq_info, m->bus_8111_0, ((sysconf.sbdn + 1) << 3) | 0,
+			0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0,
+			0);
+	pirq_info++;
+	slot_num++;
 
 	//pcix bridge
-//	write_pirq_info(pirq_info, m->bus_8132_0, (sbdn3<<3)|0, 0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0, 0);
-//	pirq_info++; slot_num++;
+//      write_pirq_info(pirq_info, m->bus_8132_0, (sbdn3<<3)|0, 0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0, 0);
+//      pirq_info++; slot_num++;
 
-	int j=0;
+	int j = 0;
 
-	for(i=1; i< sysconf.hc_possible_num; i++) {
-		if(!(sysconf.pci1234[i] & 0x1) ) continue;
+	for (i = 1; i < sysconf.hc_possible_num; i++) {
+		if (!(sysconf.pci1234[i] & 0x1))
+			continue;
 		u32 busn = (sysconf.pci1234[i] >> 12) & 0xff;
 		u32 devn = sysconf.hcdn[i] & 0xff;
 
-		write_pirq_info(pirq_info, busn, (devn<<3)|0, 0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0, 0);
-			pirq_info++; slot_num++;
+		write_pirq_info(pirq_info, busn, (devn << 3) | 0, 0x1, 0xdef8,
+				0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0, 0);
+		pirq_info++;
+		slot_num++;
 		j++;
 
 	}
 
 #if CONFIG_CBB
-	write_pirq_info(pirq_info, CONFIG_CBB, (0<<3)|0, 0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0, 0);
-	pirq_info++; slot_num++;
-	if(sysconf.nodes>32) {
-		write_pirq_info(pirq_info, CONFIG_CBB-1, (0<<3)|0, 0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0, 0);
-		pirq_info++; slot_num++;
+	write_pirq_info(pirq_info, CONFIG_CBB, (0 << 3) | 0, 0x1, 0xdef8, 0x2,
+			0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0, 0);
+	pirq_info++;
+	slot_num++;
+	if (sysconf.nodes > 32) {
+		write_pirq_info(pirq_info, CONFIG_CBB - 1, (0 << 3) | 0, 0x1,
+				0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8,
+				0, 0);
+		pirq_info++;
+		slot_num++;
 	}
 #endif
 
@@ -135,6 +141,6 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 
 	printk(BIOS_INFO, "done.\n");
 
-	return	(unsigned long) pirq_info;
+	return (unsigned long)pirq_info;
 
 }

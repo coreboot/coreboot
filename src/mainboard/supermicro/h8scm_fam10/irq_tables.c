@@ -21,8 +21,6 @@
 
 #include <cpu/amd/amdfam10_sysconf.h>
 
-
-
 static void write_pirq_info(struct irq_info *pirq_info, u8 bus, u8 devfn,
 			    u8 link0, u16 bitmap0, u8 link1, u16 bitmap1,
 			    u8 link2, u16 bitmap2, u8 link3, u16 bitmap3,
@@ -41,6 +39,7 @@ static void write_pirq_info(struct irq_info *pirq_info, u8 bus, u8 devfn,
 	pirq_info->slot = slot;
 	pirq_info->rfu = rfu;
 }
+
 extern u8 bus_isa;
 extern u8 bus_rs780[8];
 extern u8 bus_sp5100[2];
@@ -87,9 +86,9 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 	slot_num = 0;
 
 	/* pci bridge */
-	write_pirq_info(pirq_info, bus_sp5100[0], ((sbdn_sp5100 + 0x14) << 3) | 4,
-			0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0,
-			0);
+	write_pirq_info(pirq_info, bus_sp5100[0],
+			((sbdn_sp5100 + 0x14) << 3) | 4, 0x1, 0xdef8, 0x2,
+			0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0, 0);
 	pirq_info++;
 	slot_num++;
 

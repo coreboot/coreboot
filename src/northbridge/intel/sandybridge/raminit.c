@@ -1121,7 +1121,7 @@ static void dram_memorymap(ramctr_timing * ctrl, int me_uma_size)
 	gfxstolenbase -= tsegbasedelta;
 	toludbase -= tsegbasedelta;
 
-	// Test if it is possible to reclaim a hole in the ram addressing
+	// Test if it is possible to reclaim a hole in the RAM addressing
 	if (tom - me_uma_size > toludbase) {
 		// Reclaim is possible
 		reclaim = 1;
@@ -4080,7 +4080,7 @@ static int try_init_dram_ddr3(ramctr_timing *ctrl, int fast_boot,
 	/* Set scheduler parameters */
 	MCHBAR32(0x4c20) = 0x10100005;
 
-	/* Set cpu specific register */
+	/* Set CPU specific register */
 	set_4f8c();
 
 	/* Clear IO reset bit */

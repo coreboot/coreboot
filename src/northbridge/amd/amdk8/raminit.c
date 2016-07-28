@@ -859,7 +859,7 @@ static void set_top_mem(unsigned tom_k, unsigned hole_startk)
 	}
 
 	/* Leave a 64M hole between TOP_MEM and TOP_MEM2
-	 * so I can see my rom chip and other I/O devices.
+	 * so I can see my ROM chip and other I/O devices.
 	 */
 	if (tom_k >= 0x003f0000) {
 #if CONFIG_HW_MEM_HOLE_SIZEK != 0
@@ -1243,7 +1243,7 @@ static long spd_enable_2channels(const struct mem_controller *ctrl, long dimm_ma
 		((dimm_mask >> DIMM_SOCKETS) & ((1 << DIMM_SOCKETS) - 1))) {
 		goto single_channel;
 	}
-	/* If the cpu is not capable of doing dual channels don't do dual channels */
+	/* If the CPU is not capable of doing dual channels don't do dual channels */
 	nbcap = pci_read_config32(ctrl->f3, NORTHBRIDGE_CAP);
 	if (!(nbcap & NBCAP_128Bit)) {
 		goto single_channel;
@@ -2476,7 +2476,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 
 	//FIXME add enable node interleaving here -- yhlu
 	/*needed?
-		1. check how many nodes we have , if not all has ram installed get out
+		1. check how many nodes we have , if not all has RAM installed get out
 		2. check cs_base lo is 0, node 0 f2 0x40,,,,, if any one is not using lo is CS_BASE, get out
 		3. check if other node is the same as node 0 about f2 0x40,,,,, otherwise get out
 		4. if all ready enable node_interleaving in f1 0x40..... of every node

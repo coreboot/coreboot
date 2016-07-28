@@ -168,7 +168,7 @@ void SetUMARam(void)
 	Tmp = VIACONFIG_VGA_PCI_14;
 	pci_write_config32(vga_dev, 0x14, Tmp);
 
-	//enable direct cpu frame buffer access
+	//enable direct CPU frame buffer access
 	i = pci_read_config8(PCI_DEV(0, 0, 3), 0xa1);
 	i = (i & 0xf0) | (VIACONFIG_VGA_PCI_10 >> 28);
 	pci_write_config8(PCI_DEV(0, 0, 3), 0xa1, i);

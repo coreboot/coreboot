@@ -64,6 +64,6 @@ void gm45_early_reset(void/*const timings_t *const timings*/)
 
 	/* Perform system reset through CF9 interface. */
 	outb(0x02, 0xcf9); /* Set system reset bit. */
-	outb(0x06, 0xcf9); /* Set cpu reset bit, too. */
+	outb(0x06, 0xcf9); /* Set CPU reset bit, too. */
 	halt();
 }

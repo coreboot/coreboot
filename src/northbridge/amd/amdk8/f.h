@@ -535,7 +535,7 @@ static inline void wait_all_core0_mem_trained(struct sys_info *sysinfo)
 	unsigned needs_reset = 0;
 
 
-	if(sysinfo->nodes == 1) return; // in case only one cpu installed
+	if(sysinfo->nodes == 1) return; // in case only one CPU installed
 
 	for(i=1; i<sysinfo->nodes; i++) {
 		/* Skip everything if I don't have any memory on this controller */

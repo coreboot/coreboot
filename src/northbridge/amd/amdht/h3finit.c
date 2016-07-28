@@ -917,7 +917,7 @@ static void lookupComputeAndLoadRoutingTables(sMainData *pDat)
  *
  *  Description:
  *	 Find the total number of cores and update the number of nodes and cores in all cpus.
- *	 Limit cpu config access to installed cpus.
+ *	 Limit CPU config access to installed cpus.
  *
  *  Parameters:
  *	@param[in] sMainData* pDat = our global state, number of nodes discovered.
@@ -1357,12 +1357,12 @@ static void regangLinks(sMainData *pDat)
 		pDat->PortList[i+1].SelRegang = FALSE;
 
 		if ( (pDat->PortList[i].Type != PORTLIST_TYPE_CPU) || (pDat->PortList[i+1].Type != PORTLIST_TYPE_CPU))
-			continue;   /*  Only process cpu to cpu links */
+			continue;   /*  Only process CPU to CPU links */
 
 		for (j = i+2; j < pDat->TotalLinks*2; j += 2)
 		{
 			if ( (pDat->PortList[j].Type != PORTLIST_TYPE_CPU) || (pDat->PortList[j+1].Type != PORTLIST_TYPE_CPU) )
-				continue;   /*  Only process cpu to cpu links */
+				continue;   /*  Only process CPU to CPU links */
 
 			if (pDat->PortList[i].NodeID != pDat->PortList[j].NodeID)
 				continue;   /*  Links must be from the same source */

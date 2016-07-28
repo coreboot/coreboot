@@ -87,7 +87,7 @@ static void pci_domain_set_resources(device_t dev)
 			 */
 			tolmk = tomk;
 		}
-		/* Write the ram configuration registers,
+		/* Write the RAM configuration registers,
 		 * preserving the reserved bits.
 		 */
 

@@ -603,7 +603,7 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 {
 	long dimm_mask;
 
-	/* Test if we can read the spd and if ram is ddr or ddr2 */
+	/* Test if we can read the spd and if RAM is ddr or ddr2 */
 	dimm_mask = spd_detect_dimms(ctrl);
 	if (!(dimm_mask & ((1 << DIMM_SOCKETS) - 1))) {
 		printk(BIOS_ERR, "No memory for this cpu\n");

@@ -85,7 +85,7 @@ static __attribute__((noinline)) void do_ram_command(u32 command)
 
 static void ram_read32(u32 offset)
 {
-	PRINTK_DEBUG("   ram read: %08x\n", offset);
+	PRINTK_DEBUG("   RAM read: %08x\n", offset);
 
 	read32((void *)offset);
 }
@@ -1453,7 +1453,7 @@ static struct dimm_size sdram_get_dimm_size(struct sys_info *sysinfo, u16 dimmno
  val_err:
 	die("Bad SPD value\n");
  hw_err:
-	/* If a hardware error occurs the spd rom probably does not exist.
+	/* If a hardware error occurs the spd ROM probably does not exist.
 	 * In this case report that there is no memory
 	 */
 	sz.side1 = 0;

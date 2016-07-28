@@ -13,7 +13,7 @@ Most Kconfig files set variables, which can be set as part of the Kconfig dialog
 
 For variables set by the user, see src/console/Kconfig.
 
-For variables not set by the user, see src/mainboard/amd/serengeti\_cheetah/Kconfig. Users should never set such variables as the cache as ram base. These are highly mainboard dependent.
+For variables not set by the user, see src/mainboard/amd/serengeti\_cheetah/Kconfig. Users should never set such variables as the cache as RAM base. These are highly mainboard dependent.
 
 Kconfig files use the source command to include subdirectories. In most cases, save for limited cases described below, subdirectories have Kconfig files. They are always sourced unconditionally.
 
@@ -28,8 +28,8 @@ We define the common rules for which variation to use below.
 \subsection{object file specification}
 There are several different types of objects specified in the tree. They are:
 \begin{description}
-\item[obj]objects for the ram part of the code
-\item[driver]drivers for the ram part. Drivers are not represented in the device tree but do have a driver struct attached in the driver section.
+\item[obj]objects for the RAM part of the code
+\item[driver]drivers for the RAM part. Drivers are not represented in the device tree but do have a driver struct attached in the driver section.
 \item[initobj]seperately-compiled code for the ROM section of coreboot
 \end{description}
 These items are specified via the -y syntax as well. Conditional object inclusion is done via the -\$(CONFIG\_VARIABLE) syntax.

@@ -44,7 +44,7 @@ static void enable_rom(void)
 	dword |= (1 << 0) | (1 << 1) | (1 << 4) | (1 << 6) | (1 << 21);
 	pci_io_write_config32(dev, 0x48, dword);
 
-	/* Enable rom access */
+	/* Enable ROM access */
 	word = pci_io_read_config16(dev, 0x6c);
 	word = 0x10000 - (CONFIG_COREBOOT_ROMSIZE_KB >> 6);
 	pci_io_write_config16(dev, 0x6c, word);
@@ -107,7 +107,7 @@ static void enable_clocks(void)
 
 static void bootblock_southbridge_init(void)
 {
-	/* Setup the rom access for 2M */
+	/* Setup the ROM access for 2M */
 	enable_rom();
 	enable_prefetch();
 	enable_spi_fast_mode();

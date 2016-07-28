@@ -83,7 +83,7 @@ static void sm_init(device_t dev)
 	printk(BIOS_INFO, "sm_init().\n");
 
 	/* Don't rename APIC ID */
-	/* TODO: We should call setup_ioapic() here. But kernel hangs if cpu is K8.
+	/* TODO: We should call setup_ioapic() here. But kernel hangs if CPU is K8.
 	 * We need to check out why and change back. */
 	clear_ioapic(VIO_APIC_VADDR);
 	//setup_ioapic(IO_APIC_ADDR, 0);

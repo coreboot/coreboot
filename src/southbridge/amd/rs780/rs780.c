@@ -262,7 +262,7 @@ static void rs780_nb_gfx_dev_table(device_t nb_dev, device_t dev)
 *	0:06.0  P2P	: bit 6 of nbmiscind 0x0c : 0 - enable, default	   + 32 * 2
 *	0:07.0  P2P	: bit 7 of nbmiscind 0x0c : 0 - enable, default	   + 32 * 2
 *	0:08.0  NB2SB	: bit 6 of nbmiscind 0x00 : 0 - disable, default   + 32 * 1
-* case 0 will be called twice, one is by cpu in hypertransport.c line458,
+* case 0 will be called twice, one is by CPU in hypertransport.c line458,
 * the other is by rs780.
 ***********************************************/
 void rs780_enable(device_t dev)

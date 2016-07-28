@@ -59,7 +59,7 @@ static void lpc_init(device_t dev)
 				   interrupt and visit LPC. */
 	pci_write_config8(dev, 0x78, byte);
 
-	/* bit0: Enable prefetch a cacheline (64 bytes) when Host reads code from SPI rom */
+	/* bit0: Enable prefetch a cacheline (64 bytes) when Host reads code from SPI ROM */
 	/* bit3: Fix SPI_CS# timing issue when running at 66M. TODO:A12. */
 	byte = pci_read_config8(dev, 0xBB);
 	byte |= 1 << 0 | 1 << 3;

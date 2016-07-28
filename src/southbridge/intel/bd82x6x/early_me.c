@@ -156,7 +156,7 @@ int intel_early_me_init_done(u8 status)
 	printk(BIOS_NOTICE, "ME:  Current PM event: 0x%x\n", (me_fws2 & 0xf000000) >> 24);
 	printk(BIOS_NOTICE, "ME:  Progress code   : 0x%x\n", (me_fws2 & 0xf0000000) >> 28);
 
-	// Poll cpu replaced for 50ms
+	// Poll CPU replaced for 50ms
 	millisec = 0;
 	while ((((me_fws2 & 0x100) >> 8) == 0) && millisec < 50) {
 		udelay(1000);

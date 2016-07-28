@@ -166,7 +166,7 @@ void post_cache_as_ram(void)
 
 void cache_as_ram_new_stack (void)
 {
-	print_car_debug("Disabling cache as ram now\n");
+	print_car_debug("Disabling cache as RAM now\n");
 	disable_cache_as_ram_bsp();
 
 	disable_cache();

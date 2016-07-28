@@ -20,7 +20,7 @@
 void stage_cache_external_region(void **base, size_t *size)
 {
 	/* The ramstage cache lives in the TSEG region at RESERVED_SMM_OFFSET.
-	 * The top of ram is defined to be the TSEG base address. */
+	 * The top of RAM is defined to be the TSEG base address. */
 	*size = RESERVED_SMM_SIZE;
 	*base = (void *)((uint32_t)cbmem_top() + RESERVED_SMM_OFFSET);
 }

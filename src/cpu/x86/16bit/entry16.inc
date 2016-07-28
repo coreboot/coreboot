@@ -95,7 +95,7 @@ _start16bit:
 	 *
 	 * Also load an IDT with NULL limit to prevent the 16bit IDT being used
 	 * in protected mode before c_start.S sets up a 32bit IDT when entering
-	 * ram stage. In practise: CPU will shutdown on any exception.
+	 * RAM stage. In practise: CPU will shutdown on any exception.
 	 * See IA32 manual Vol 3A 19.26 Interrupts.
 	 */
 

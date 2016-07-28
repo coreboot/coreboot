@@ -113,8 +113,8 @@ static void *setup_romstage_stack_after_car(void)
 	num_mtrrs++;
 
 	top_of_ram = (uint32_t)cbmem_top();
-	/* Cache 8MiB below the top of ram. On haswell systems the top of
-	 * ram under 4GiB is the start of the TSEG region. It is required to
+	/* Cache 8MiB below the top of RAM. On haswell systems the top of
+	 * RAM under 4GiB is the start of the TSEG region. It is required to
 	 * be 8MiB aligned. Set this area as cacheable so it can be used later
 	 * for ramstage before setting up the entire RAM as cacheable. */
 	slot = stack_push(slot, mtrr_mask_upper); /* upper mask */
@@ -123,7 +123,7 @@ static void *setup_romstage_stack_after_car(void)
 	slot = stack_push(slot, (top_of_ram - (8 << 20)) | MTRR_TYPE_WRBACK);
 	num_mtrrs++;
 
-	/* Cache 8MiB at the top of ram. Top of ram on haswell systems
+	/* Cache 8MiB at the top of RAM. Top of RAM on haswell systems
 	 * is where the TSEG region resides. However, it is not restricted
 	 * to SMM mode until SMM has been relocated. By setting the region
 	 * to cacheable it provides faster access when relocating the SMM

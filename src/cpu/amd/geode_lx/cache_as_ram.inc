@@ -198,7 +198,7 @@ done_cache_as_ram_main:
 	pop    %esi
 	pop    %edi
 
-	/* Clear the cache out to ram */
+	/* Clear the cache out to RAM */
 	wbinvd
 	/* re-enable the cache */
 	movl    %cr0, %eax

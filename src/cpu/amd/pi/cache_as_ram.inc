@@ -81,7 +81,7 @@ cache_as_ram_setup:
   movl    $0xc00000e3, 0x18(%edi)
   movl    %eax, 0x1c(%edi)
 
-  # load rom based identity mapped page tables
+  # load ROM based identity mapped page tables
   mov     %ecx, %eax
   mov     %eax, %cr3
 

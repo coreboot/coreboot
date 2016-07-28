@@ -1,0 +1,6 @@
+config DRIVERS_INTEL_WIFI
+	bool "Support Intel PCI-e WiFi adapters"
+	default y if PCIEXP_PLUGIN_SUPPORT
+	help
+	   When enabled, add identifiers in ACPI and SMBIOS tables to
+	   make OS drivers work with certain Intel PCI-e WiFi chipsets.

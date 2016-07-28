@@ -143,7 +143,7 @@ __realmode_call:
 	mov	%ax, %ds
 	lidt	__realmode_idt
 
-	/* initialize registers for option rom lcall */
+	/* initialize registers for option ROM lcall */
 	movl	__registers +  0, %eax
 	movl	__registers +  4, %ebx
 	movl	__registers +  8, %ecx

@@ -134,7 +134,7 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 
 			for (i = 0; i < 8; i++)
 				pci_write_config8(dev, reg[i], irq[i]);
-		}		// endif
+		}
 
 		printk(BIOS_DEBUG, "Setting Onboard SiS Southbridge\n");
 

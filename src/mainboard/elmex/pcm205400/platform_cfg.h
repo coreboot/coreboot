@@ -208,8 +208,7 @@
  */
 #define GEC_CONFIG			0
 
-static const CODECENTRY persimmon_codec_alc269[] =
-{
+static const CODECENTRY persimmon_codec_alc269[] = {
 	/* NID, PinConfig */
 	{0x12, 0x411111F0},
 	{0x14, 0x99130110},
@@ -225,17 +224,16 @@ static const CODECENTRY persimmon_codec_alc269[] =
 	{0xff, 0xffffffff} /* end of table */
 };
 
-static const CODECTBLLIST codec_tablelist[] =
-{
-	{0x010ec0269, (CODECENTRY*)&persimmon_codec_alc269[0]},
-	{0x0FFFFFFFFUL, (CODECENTRY*)0x0FFFFFFFFUL}
+static const CODECTBLLIST codec_tablelist[] = {
+	{0x010ec0269, (CODECENTRY *)&persimmon_codec_alc269[0]},
+	{0x0FFFFFFFFUL, (CODECENTRY *)0x0FFFFFFFFUL}
 };
 
 /**
  * @def AZALIA_OEM_VERB_TABLE
  *  Mainboard specific codec verb table list
  */
-#define AZALIA_OEM_VERB_TABLE		(&codec_tablelist[0])
+//#define AZALIA_OEM_VERB_TABLE		(&codec_tablelist[0])
 
 /* set up an ACPI preferred power management profile */
 /*  from acpi.h

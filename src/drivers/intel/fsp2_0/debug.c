@@ -25,8 +25,8 @@ asmlinkage size_t fsp_write_line(uint8_t *buffer, size_t number_of_bytes)
  *-----------
  */
 void fsp_debug_before_memory_init(fsp_memory_init_fn memory_init,
-	const struct FSPM_UPD *fspm_old_upd,
-	const struct FSPM_UPD *fspm_new_upd)
+	const FSPM_UPD *fspm_old_upd,
+	const FSPM_UPD *fspm_new_upd)
 {
 	/* Display the MTRRs */
 	if (IS_ENABLED(CONFIG_DISPLAY_MTRRS))
@@ -44,7 +44,7 @@ void fsp_debug_before_memory_init(fsp_memory_init_fn memory_init,
 	printk(BIOS_SPEW, "\t0x%p: &hob_list_ptr\n", fsp_get_hob_list_ptr());
 }
 
-void fsp_debug_after_memory_init(enum fsp_status status)
+void fsp_debug_after_memory_init(uint32_t status)
 {
 	if (IS_ENABLED(CONFIG_DISPLAY_FSP_CALLS_AND_STATUS))
 		printk(BIOS_SPEW, "FspMemoryInit returned 0x%08x\n", status);
@@ -72,8 +72,8 @@ void fsp_debug_after_memory_init(enum fsp_status status)
  *-----------
  */
 void fsp_debug_before_silicon_init(fsp_silicon_init_fn silicon_init,
-	const struct FSPS_UPD *fsps_old_upd,
-	const struct FSPS_UPD *fsps_new_upd)
+	const FSPS_UPD *fsps_old_upd,
+	const FSPS_UPD *fsps_new_upd)
 {
 	/* Display the MTRRs */
 	if (IS_ENABLED(CONFIG_DISPLAY_MTRRS))
@@ -90,7 +90,7 @@ void fsp_debug_before_silicon_init(fsp_silicon_init_fn silicon_init,
 	printk(BIOS_SPEW, "\t0x%p: upd\n", fsps_new_upd);
 }
 
-void fsp_debug_after_silicon_init(enum fsp_status status)
+void fsp_debug_after_silicon_init(uint32_t status)
 {
 	if (IS_ENABLED(CONFIG_DISPLAY_FSP_CALLS_AND_STATUS))
 		printk(BIOS_SPEW, "FspSiliconInit returned 0x%08x\n", status);
@@ -120,7 +120,7 @@ void fsp_before_debug_notify(fsp_notify_fn notify,
 	printk(BIOS_SPEW, "\t0x%p: notify_params\n", notify_params);
 }
 
-void fsp_debug_after_notify(enum fsp_status status)
+void fsp_debug_after_notify(uint32_t status)
 {
 	if (IS_ENABLED(CONFIG_DISPLAY_FSP_CALLS_AND_STATUS))
 		printk(BIOS_SPEW, "FspNotify returned 0x%08x\n", status);

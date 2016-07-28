@@ -231,7 +231,7 @@ static void soc_final(void *data)
 	global_reset_lock();
 }
 
-static void disable_dev(struct device *dev, struct FSP_S_CONFIG *silconfig) {
+static void disable_dev(struct device *dev, FSP_S_CONFIG *silconfig) {
 
 	switch (dev->path.pci.devfn) {
 	case ISH_DEVFN:
@@ -335,7 +335,7 @@ static void disable_dev(struct device *dev, struct FSP_S_CONFIG *silconfig) {
 	}
 }
 
-static void parse_devicetree(struct FSP_S_CONFIG *silconfig)
+static void parse_devicetree(FSP_S_CONFIG *silconfig)
 {
 	struct device *dev = NB_DEV_ROOT;
 
@@ -350,9 +350,9 @@ static void parse_devicetree(struct FSP_S_CONFIG *silconfig)
 	}
 }
 
-void platform_fsp_silicon_init_params_cb(struct FSPS_UPD *silupd)
+void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 {
-        struct FSP_S_CONFIG *silconfig = &silupd->FspsConfig;
+        FSP_S_CONFIG *silconfig = &silupd->FspsConfig;
 	static struct soc_intel_apollolake_config *cfg;
 
 	/* Load VBT before devicetree-specific config. */

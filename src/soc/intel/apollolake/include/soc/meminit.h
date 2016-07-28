@@ -18,6 +18,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <fsp/soc_binding.h>
 
 /*
  * LPDDR4 helper routines for configuring the memory UPD for LPDDR4 operation.
@@ -77,13 +78,11 @@ struct lpddr4_swizzle_cfg {
 	struct lpddr4_chan_swizzle_cfg phys[LP4_NUM_PHYS_CHANNELS];
 };
 
-struct FSP_M_CONFIG;
-
 /*
  * Initialize default LPDDR4 settings with provided speed. No logical channels
  * are enabled. Subsequent calls to logical channel enabling are required.
  */
-void meminit_lpddr4(struct FSP_M_CONFIG *cfg, int speed);
+void meminit_lpddr4(FSP_M_CONFIG *cfg, int speed);
 
 /*
  * Enable logical channel providing the full lpddr4_swizzle_config to
@@ -91,7 +90,7 @@ void meminit_lpddr4(struct FSP_M_CONFIG *cfg, int speed);
  * memory width per logical channel -- i.e. 2 physical channels are configured
  * to the memory reference code.
  */
-void meminit_lpddr4_enable_channel(struct FSP_M_CONFIG *cfg, int logical_chan,
+void meminit_lpddr4_enable_channel(FSP_M_CONFIG *cfg, int logical_chan,
 					int rank_density, int dual_rank,
 					const struct lpddr4_swizzle_cfg *scfg);
 
@@ -115,7 +114,7 @@ struct lpddr4_cfg {
  * Initialize LPDDR4 settings by the provided lpddr4_cfg information and sku id.
  * The sku id is an index into the sku array within the lpddr4_cfg struct.
  */
-void meminit_lpddr4_by_sku(struct FSP_M_CONFIG *cfg,
+void meminit_lpddr4_by_sku(FSP_M_CONFIG *cfg,
 				const struct lpddr4_cfg *lpcfg, size_t sku_id);
 void save_lpddr4_dimm_info(const struct lpddr4_cfg *lpcfg, size_t mem_sku);
 

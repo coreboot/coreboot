@@ -162,7 +162,7 @@ static int get_mem_sku(void)
 	return gpio_pullup_base2_value(pads, ARRAY_SIZE(pads));
 }
 
-void mainboard_memory_init_params(struct FSPM_UPD *memupd)
+void mainboard_memory_init_params(FSPM_UPD *memupd)
 {
 	int mem_sku = get_mem_sku();
 

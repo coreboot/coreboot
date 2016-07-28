@@ -59,7 +59,7 @@ void reset_prepare(void)
 	printk(BIOS_SPEW, "CSE took %lu ms\n", stopwatch_duration_msecs(&sw));
 }
 
-void chipset_handle_reset(enum fsp_status status)
+void chipset_handle_reset(uint32_t status)
 {
 	switch(status) {
 	case FSP_STATUS_RESET_REQUIRED_5: /* Global Reset */

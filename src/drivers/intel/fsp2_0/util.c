@@ -92,13 +92,13 @@ enum cb_err fsp_validate_component(struct fsp_header *hdr,
 	return CB_SUCCESS;
 }
 
-static bool fsp_reset_requested(enum fsp_status status)
+static bool fsp_reset_requested(uint32_t status)
 {
 	return (status >= FSP_STATUS_RESET_REQUIRED_COLD &&
 		status <= FSP_STATUS_RESET_REQUIRED_8);
 }
 
-void fsp_handle_reset(enum fsp_status status)
+void fsp_handle_reset(uint32_t status)
 {
 	if (!fsp_reset_requested(status))
 		return;

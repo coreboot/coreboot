@@ -19,10 +19,10 @@
 #include <smbios.h>
 #include <soc/meminit.h>
 #include <stddef.h> /* required for FspmUpd.h */
-#include <soc/fsp/FspmUpd.h>
+#include <fsp/soc_binding.h>
 #include <string.h>
 
-static void set_lpddr4_defaults(struct FSP_M_CONFIG *cfg)
+static void set_lpddr4_defaults(FSP_M_CONFIG *cfg)
 {
 	/* Enable memory down BGA since it's the only LPDDR4 packaging. */
 	cfg->Package = 1;
@@ -80,7 +80,7 @@ static void set_lpddr4_defaults(struct FSP_M_CONFIG *cfg)
 	cfg->Ch3_OdtConfig = 0;
 }
 
-void meminit_lpddr4(struct FSP_M_CONFIG *cfg, int speed)
+void meminit_lpddr4(FSP_M_CONFIG *cfg, int speed)
 {
 	uint8_t profile;
 
@@ -107,7 +107,7 @@ void meminit_lpddr4(struct FSP_M_CONFIG *cfg, int speed)
 	set_lpddr4_defaults(cfg);
 }
 
-static void enable_logical_chan0(struct FSP_M_CONFIG *cfg,
+static void enable_logical_chan0(FSP_M_CONFIG *cfg,
 					int rank_density, int dual_rank,
 					const struct lpddr4_swizzle_cfg *scfg)
 {
@@ -152,7 +152,7 @@ static void enable_logical_chan0(struct FSP_M_CONFIG *cfg,
 	memcpy(&cfg->Ch1_Bit_swizzling[24], &chan->dqs[LP4_DQS3], sz);
 }
 
-static void enable_logical_chan1(struct FSP_M_CONFIG *cfg,
+static void enable_logical_chan1(FSP_M_CONFIG *cfg,
 					int rank_density, int dual_rank,
 					const struct lpddr4_swizzle_cfg *scfg)
 {
@@ -197,7 +197,7 @@ static void enable_logical_chan1(struct FSP_M_CONFIG *cfg,
 	memcpy(&cfg->Ch3_Bit_swizzling[24], &chan->dqs[LP4_DQS3], sz);
 }
 
-void meminit_lpddr4_enable_channel(struct FSP_M_CONFIG *cfg, int logical_chan,
+void meminit_lpddr4_enable_channel(FSP_M_CONFIG *cfg, int logical_chan,
 					int rank_density, int dual_rank,
 					const struct lpddr4_swizzle_cfg *scfg)
 {
@@ -220,7 +220,7 @@ void meminit_lpddr4_enable_channel(struct FSP_M_CONFIG *cfg, int logical_chan,
 	}
 }
 
-void meminit_lpddr4_by_sku(struct FSP_M_CONFIG *cfg,
+void meminit_lpddr4_by_sku(FSP_M_CONFIG *cfg,
 				const struct lpddr4_cfg *lpcfg, size_t sku_id)
 {
 	const struct lpddr4_sku *sku;
@@ -262,11 +262,11 @@ void save_lpddr4_dimm_info(const struct lpddr4_cfg *lp4cfg, size_t mem_sku)
 {
 	int channel, dimm, dimm_max, index;
 	size_t hob_size;
-	const struct DIMM_INFO *src_dimm;
+	const DIMM_INFO *src_dimm;
 	struct dimm_info *dest_dimm;
 	struct memory_info *mem_info;
-	const struct CHANNEL_INFO *channel_info;
-	const struct FSP_SMBIOS_MEMORY_INFO *memory_info_hob;
+	const CHANNEL_INFO *channel_info;
+	const FSP_SMBIOS_MEMORY_INFO *memory_info_hob;
 
 	if (mem_sku >= lp4cfg->num_skus) {
 		printk(BIOS_ERR, "Too few LPDDR4 SKUs: 0x%zx/0x%zx\n",

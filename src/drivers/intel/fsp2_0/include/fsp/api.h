@@ -14,33 +14,9 @@
 #define _FSP2_0_API_H_
 
 #include <stddef.h>
-#include <fsp/info_header.h>
-#include <soc/fsp/FspmUpd.h>
-#include <soc/fsp/FspsUpd.h>
+#include <fsp/soc_binding.h>
 
-enum fsp_status {
-	FSP_SUCCESS = 0x00000000,
-	FSP_STATUS_RESET_REQUIRED_COLD = 0x40000001,
-	FSP_STATUS_RESET_REQUIRED_WARM = 0x40000002,
-	FSP_STATUS_RESET_REQUIRED_3 = 0x40000003,
-	FSP_STATUS_RESET_REQUIRED_4 = 0x40000004,
-	FSP_STATUS_RESET_REQUIRED_5 = 0x40000005,
-	FSP_STATUS_RESET_REQUIRED_6 = 0x40000006,
-	FSP_STATUS_RESET_REQUIRED_7 = 0x40000007,
-	FSP_STATUS_RESET_REQUIRED_8 = 0x40000008,
-	FSP_INVALID_PARAMETER = 0x80000002,
-	FSP_UNSUPPORTED = 0x80000003,
-	FSP_NOT_READY = 0x80000006,
-	FSP_DEVICE_ERROR = 0x80000007,
-	FSP_OUT_OF_RESOURCES = 0x80000009,
-	FSP_VOLUME_CORRUPTED = 0x8000000a,
-	FSP_NOT_FOUND = 0x8000000a,
-	FSP_TIMEOUT = 0x80000012,
-	FSP_ABORTED = 0x80000015,
-	FSP_INCOMPATIBLE_VERSION = 0x80000010,
-	FSP_SECURITY_VIOLATION = 0x8000001a,
-	FSP_CRC_ERROR = 0x8000001b,
-};
+#define FSP_SUCCESS	EFI_SUCCESS
 
 enum fsp_boot_mode {
 	FSP_BOOT_WITH_FULL_CONFIGURATION = 0x00,
@@ -64,8 +40,8 @@ void fsp_memory_init(bool s3wake);
 void fsp_silicon_init(void);
 
 /* Callbacks for updating stage-specific parameters */
-void platform_fsp_memory_init_params_cb(struct FSPM_UPD *mupd);
-void platform_fsp_silicon_init_params_cb(struct FSPS_UPD *supd);
+void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd);
+void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd);
 
 /* Callback after processing FSP notify */
 void platform_fsp_notify_status(enum fsp_notify_phase phase);

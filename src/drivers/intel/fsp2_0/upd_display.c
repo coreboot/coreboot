@@ -51,15 +51,15 @@ static void fspm_display_arch_params(const struct FSPM_ARCH_UPD *old,
 
 /* Display the UPD parameters for MemoryInit */
 __attribute__((weak)) void soc_display_fspm_upd_params(
-	const struct FSPM_UPD *fspm_old_upd,
-	const struct FSPM_UPD *fspm_new_upd)
+	const FSPM_UPD *fspm_old_upd,
+	const FSPM_UPD *fspm_new_upd)
 {
 	printk(BIOS_SPEW, "UPD values for MemoryInit:\n");
 	hexdump(fspm_new_upd, sizeof(*fspm_new_upd));
 }
 
-void fspm_display_upd_values(const struct FSPM_UPD *old,
-	const struct FSPM_UPD *new)
+void fspm_display_upd_values(const FSPM_UPD *old,
+	const FSPM_UPD *new)
 {
 	/* Display the UPD data */
 	fspm_display_arch_params(&old->FspmArchUpd, &new->FspmArchUpd);
@@ -68,8 +68,8 @@ void fspm_display_upd_values(const struct FSPM_UPD *old,
 
 /* Display the UPD parameters for SiliconInit */
 __attribute__((weak)) void soc_display_fsps_upd_params(
-	const struct FSPS_UPD *fsps_old_upd,
-	const struct FSPS_UPD *fsps_new_upd)
+	const FSPS_UPD *fsps_old_upd,
+	const FSPS_UPD *fsps_new_upd)
 {
 	printk(BIOS_SPEW, "UPD values for SiliconInit:\n");
 	hexdump(fsps_new_upd, sizeof(*fsps_new_upd));

@@ -133,7 +133,7 @@ asmlinkage void car_stage_entry(void)
 	run_postcar_phase(&pcf);
 }
 
-static void fill_console_params(struct FSPM_UPD *mupd)
+static void fill_console_params(FSPM_UPD *mupd)
 {
 	if (IS_ENABLED(CONFIG_CONSOLE_SERIAL)) {
 		mupd->FspmConfig.SerialDebugPortDevice = CONFIG_UART_FOR_CONSOLE;
@@ -148,7 +148,7 @@ static void fill_console_params(struct FSPM_UPD *mupd)
 	}
 }
 
-void platform_fsp_memory_init_params_cb(struct FSPM_UPD *mupd)
+void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd)
 {
 	fill_console_params(mupd);
 	mainboard_memory_init_params(mupd);
@@ -167,7 +167,7 @@ void platform_fsp_memory_init_params_cb(struct FSPM_UPD *mupd)
 }
 
 __attribute__ ((weak))
-void mainboard_memory_init_params(struct FSPM_UPD *mupd)
+void mainboard_memory_init_params(FSPM_UPD *mupd)
 {
 	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
 }

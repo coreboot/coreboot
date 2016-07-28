@@ -13,7 +13,6 @@
 #include <arch/cpu.h>
 #include <bootstate.h>
 #include <console/console.h>
-#include <fsp/api.h>
 #include <fsp/util.h>
 #include <soc/intel/common/util.h>
 #include <string.h>
@@ -21,7 +20,7 @@
 
 static void fsp_notify(enum fsp_notify_phase phase)
 {
-	enum fsp_status ret;
+	uint32_t ret;
 	fsp_notify_fn fspnotify;
 	struct fsp_notify_params notify_params = { .phase = phase };
 

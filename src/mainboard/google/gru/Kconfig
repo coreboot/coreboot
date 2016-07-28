@@ -18,6 +18,13 @@ config BOARD_GOOGLE_GRU_COMMON  # Umbrella option to be selected by variant boar
 
 if BOARD_GOOGLE_GRU_COMMON
 
+# Most Grus have TPM2 but later Kevins don't... decide this in one place for
+# convenience. Explicitly override it when building for earlier Kevins.
+config GRU_HAS_TPM2
+	bool "Build for a board revision with a SPI TPM 2.0"
+	default n if BOARD_GOOGLE_KEVIN
+	default y
+
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
 	select BOARD_ID_AUTO
@@ -30,7 +37,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select MAINBOARD_DO_NATIVE_VGA_INIT
 	select MAINBOARD_HAS_CHROMEOS
 	select MAINBOARD_HAS_NATIVE_VGA_INIT
-	select MAINBOARD_HAS_TPM2
+	select MAINBOARD_HAS_TPM2 if GRU_HAS_TPM2
 	select RAM_CODE_SUPPORT
 	select RTC
 	select SOC_ROCKCHIP_RK3399
@@ -40,7 +47,7 @@ config BOARD_SPECIFIC_OPTIONS
 
 config CHROMEOS
 	select EC_SOFTWARE_SYNC
-	select SPI_TPM
+	select SPI_TPM if GRU_HAS_TPM2
 	select VBOOT_VBNV_FLASH
 	select VIRTUAL_DEV_SWITCH
 
@@ -63,6 +70,14 @@ config EC_GOOGLE_CHROMEEC_SPI_BUS
 config BOOT_MEDIA_SPI_BUS
 	int
 	default 1
+
+config DRIVER_TPM_I2C_BUS
+	hex
+	default 0
+
+config DRIVER_TPM_I2C_ADDR
+	hex
+	default 0x20
 
 config CONSOLE_SERIAL_UART_ADDRESS
 	hex

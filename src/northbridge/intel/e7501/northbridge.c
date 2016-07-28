@@ -69,7 +69,7 @@ static void pci_domain_set_resources(device_t dev)
 			/* Find the limit of the remap window */
 			remaplimitk = (remapbasek + (4*1024*1024 - tolmk) - (1 << 16));
 		}
-		/* Write the ram configuration registers,
+		/* Write the RAM configuration registers,
 		 * preserving the reserved bits.
 		 */
 		tolm_r = pci_read_config16(mc_dev, 0xc4);

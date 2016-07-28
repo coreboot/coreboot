@@ -481,7 +481,7 @@ static int ht_setup_chain(device_t udev, unsigned upos)
 #endif
 
 	/* Assumption the HT chain that is bus 0 has the HT I/O Hub on it.
-	 * On most boards this just happens.  If a cpu has multiple
+	 * On most boards this just happens.  If a CPU has multiple
 	 * non Coherent links the appropriate bus registers for the
 	 * links needs to be programed to point at bus 0.
 	 */
@@ -631,7 +631,7 @@ static int ht_setup_chains(uint8_t ht_c_num)
 #endif
 {
 	/* Assumption the HT chain that is bus 0 has the HT I/O Hub on it.
-	 * On most boards this just happens.  If a cpu has multiple
+	 * On most boards this just happens.  If a CPU has multiple
 	 * non Coherent links the appropriate bus registers for the
 	 * links needs to be programed to point at bus 0.
 	 */

@@ -113,7 +113,7 @@ static inline void print_linkn (const char *strval, uint8_t byteval)
 static void disable_probes(void)
 {
 	/* disable read/write/fill probes for uniprocessor setup
-	 * they don't make sense if only one cpu is available
+	 * they don't make sense if only one CPU is available
 	 */
 
 	/* Hypetransport Transaction Control Register
@@ -1597,7 +1597,7 @@ static void coherent_ht_finalize(unsigned nodes)
 	}
 #endif
 
-	/* set up cpu count and node count and enable Limit
+	/* set up CPU count and node count and enable Limit
 	 * Config Space Range for all available CPUs.
 	 * Also clear non coherent hypertransport bus range
 	 * registers on Hammer A0 revision.
@@ -1622,7 +1622,7 @@ static void coherent_ht_finalize(unsigned nodes)
 #endif
 		pci_write_config32(dev, 0x60, val);
 
-		/* Only respond to real cpu pci configuration cycles
+		/* Only respond to real CPU pci configuration cycles
 		 * and optimize the HT settings
 		 */
 		val=pci_read_config32(dev, HT_TRANSACTION_CONTROL);

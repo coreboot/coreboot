@@ -203,7 +203,7 @@ static void cx700_set_lpc_registers(struct device *dev)
 	enables |= 1 << 3;
 	pci_write_config8(dev, 0x4d, enables);
 
-	/* Set bit 3 of 0x4f to match award (use INIT# as cpu reset) */
+	/* Set bit 3 of 0x4f to match award (use INIT# as CPU reset) */
 	enables = pci_read_config8(dev, 0x4f);
 	enables |= 0x08;
 	pci_write_config8(dev, 0x4f, enables);
@@ -220,7 +220,7 @@ static void cx700_set_lpc_registers(struct device *dev)
 	// Power management setup
 	setup_pm(dev);
 
-	/* set up isa bus -- i/o recovery time, rom write enable, extend-ale */
+	/* set up isa bus -- i/o recovery time, ROM write enable, extend-ale */
 	pci_write_config8(dev, 0x40, 0x54);
 
 	/* Enable HPET timer */

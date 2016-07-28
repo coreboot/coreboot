@@ -70,7 +70,7 @@ static const struct pci_driver memctrl_driver __pci_driver = {
 static void pci_domain_set_resources(device_t dev)
 {
 	/*
-	 * the order is important to find the correct ram size.
+	 * the order is important to find the correct RAM size.
 	 */
 	u8 ramregs[] = { 0x43, 0x42, 0x41, 0x40 };
 	device_t mc_dev;

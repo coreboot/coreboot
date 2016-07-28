@@ -259,7 +259,7 @@ static void vx900_set_resources(device_t dev)
 	tolmk = MIN(full_tolmk, tomk);
 	tolmk -= fbufk;
 	ram_resource(dev, idx++, 0, 640);
-	printk(BIOS_SPEW, "System ram left:            %dMB\n", tolmk >> 10);
+	printk(BIOS_SPEW, "System RAM left:            %dMB\n", tolmk >> 10);
 	/* FIXME: how can we avoid leaving this hole?
 	 * Leave a hole for VGA, 0xa0000 - 0xc0000  ?? */
 	/* TODO: VGA Memory hole can be disabled in SNMIC. Upper 64k of ROM seem

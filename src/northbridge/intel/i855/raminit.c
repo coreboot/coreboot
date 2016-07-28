@@ -878,7 +878,7 @@ static void spd_update(u8 reg, u32 new_value)
 #endif
 }
 
-/* if ram still doesn't work do this function */
+/* if RAM still doesn't work do this function */
 static void spd_set_undocumented_registers(void)
 {
 	spd_update(0x74, 0x00000001);

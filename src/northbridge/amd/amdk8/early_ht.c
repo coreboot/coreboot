@@ -8,7 +8,7 @@ static void enumerate_ht_chain(void)
 /* CONFIG_HT_CHAIN_UNITID_BASE could be 0 (only one ht device in the ht chain), if so, don't need to go through the chain  */
 
 	/* Assumption the HT chain that is bus 0 has the HT I/O Hub on it.
-	 * On most boards this just happens.  If a cpu has multiple
+	 * On most boards this just happens.  If a CPU has multiple
 	 * non Coherent links the appropriate bus registers for the
 	 * links needs to be programed to point at bus 0.
 	 */

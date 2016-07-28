@@ -269,7 +269,7 @@ static void vx800_sb_init(struct device *dev)
 	enables |= 0x41;	//
 	pci_write_config8(dev, 0x58, enables);
 
-	/* Set bit 3 of 0x4f to match award (use INIT# as cpu reset) */
+	/* Set bit 3 of 0x4f to match award (use INIT# as CPU reset) */
 	enables = pci_read_config8(dev, 0x4f);
 	enables |= 0x08;
 	pci_write_config8(dev, 0x4f, enables);
@@ -283,7 +283,7 @@ static void vx800_sb_init(struct device *dev)
 	// Power management setup
 	setup_pm(dev);
 
-	/* set up isa bus -- i/o recovery time, rom write enable, extend-ale */
+	/* set up isa bus -- i/o recovery time, ROM write enable, extend-ale */
 	pci_write_config8(dev, 0x40, 0x54);
 
 	// Start the rtc
@@ -329,14 +329,14 @@ static void southbridge_init(struct device *dev)
 	S3_usb_wakeup(dev);
 	S3_lid_wakeup(dev);
 
-/*	enable acpi cpu c3 state. (c2 state need not do anything.)
+/*	enable acpi CPU c3 state. (c2 state need not do anything.)
 	#1
 		fadt->pm2_cnt_blk = 0x22;//to support cpu-c3
 		fadt->p_lvl2_lat = 0x50; //this is the coreboot source
 		fadt->p_lvl3_lat = 0x320;//
 		fadt->pm2_cnt_len = 1;//to support cpu-c3
 	#2
-		ssdt? ->every cpu has a P_BLK address. set it to 0x10 (so that "Read Processor Level3 register(PMIORx15<7:0>) to enter C3 state"---VIA vx800 P SPEC )
+		ssdt? ->every CPU has a P_BLK address. set it to 0x10 (so that "Read Processor Level3 register(PMIORx15<7:0>) to enter C3 state"---VIA vx800 P SPEC )
        #3    write 0x17 in to PMIO=VX800_ACPI_IO_BASE + 0x26, following the describtion in the P-spec.
 	       1  enable SLP# asserts in C3 state  PMIORx26<1> =1
 		2    enable CPUSTP# asserts in C3 state;  PMIORx26<2> =1

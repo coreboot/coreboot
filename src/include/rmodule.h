@@ -40,7 +40,7 @@ int rmodule_load_alignment(const struct rmodule *m);
 /* rmodule_calc_region() calculates the region size, offset to place an
  * rmodule in memory, and load address offset based off of a region allocator
  * with an alignment of region_alignment. This function helps place an rmodule
- * in the same location in ram it will run from. The offset to place the
+ * in the same location in RAM it will run from. The offset to place the
  * rmodule into the region allocated of size region_size is returned. The
  * load_offset is the address to load and relocate the rmodule.
  * region_alignment must be a power of 2. */

@@ -91,7 +91,7 @@ int get_free_var_mtrr(void);
 					(x>>6)|(x>>7)|(x>>8)|((1<<18)-1))
 #define _ALIGN_UP_POW2(x)	((x + _POW2_MASK(x)) & ~_POW2_MASK(x))
 
-/* At the end of romstage, low ram 0..CACHE_TM_RAMTOP may be set
+/* At the end of romstage, low RAM 0..CACHE_TM_RAMTOP may be set
  * as write-back cacheable to speed up ramstage decompression.
  * Note MTRR boundaries, must be power of two.
  */

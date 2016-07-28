@@ -16,18 +16,18 @@
 
 /* FSP debug API */
 void fsp_debug_before_memory_init(fsp_memory_init_fn memory_init,
-	const struct FSPM_UPD *fspm_old_upd,
-	const struct FSPM_UPD *fspm_new_upd);
-void fsp_debug_after_memory_init(enum fsp_status status);
+	const FSPM_UPD *fspm_old_upd,
+	const FSPM_UPD *fspm_new_upd);
+void fsp_debug_after_memory_init(uint32_t status);
 void fsp_debug_before_silicon_init(fsp_silicon_init_fn silicon_init,
-	const struct FSPS_UPD *fsps_old_upd,
-	const struct FSPS_UPD *fsps_new_upd);
-void fsp_debug_after_silicon_init(enum fsp_status status);
+	const FSPS_UPD *fsps_old_upd,
+	const FSPS_UPD *fsps_new_upd);
+void fsp_debug_after_silicon_init(uint32_t status);
 void fsp_before_debug_notify(fsp_notify_fn notify,
 	const struct fsp_notify_params *notify_params);
-void fsp_debug_after_notify(enum fsp_status status);
-void fspm_display_upd_values(const struct FSPM_UPD *old,
-	const struct FSPM_UPD *new);
+void fsp_debug_after_notify(uint32_t status);
+void fspm_display_upd_values(const FSPM_UPD *old,
+	const FSPM_UPD *new);
 void fsp_display_hobs(void);
 void fsp_verify_memory_init_hobs(void);
 void fsp_print_header_info(const struct fsp_header *hdr);
@@ -35,10 +35,10 @@ void fsp_print_header_info(const struct fsp_header *hdr);
 /* Callbacks for displaying UPD parameters - place in a separate file
  * that is conditionally build with CONFIG_DISPLAY_UPD_DATA.
  */
-void soc_display_fspm_upd_params(const struct FSPM_UPD *fspm_old_upd,
-	const struct FSPM_UPD *fspm_new_upd);
-void soc_display_fsps_upd_params(const struct FSPS_UPD *fsps_old_upd,
-	const struct FSPS_UPD *fsps_new_upd);
+void soc_display_fspm_upd_params(const FSPM_UPD *fspm_old_upd,
+	const FSPM_UPD *fspm_new_upd);
+void soc_display_fsps_upd_params(const FSPS_UPD *fsps_old_upd,
+	const FSPS_UPD *fsps_new_upd);
 
 /* Callbacks for displaying HOBs - place in a separate file that is
  * conditionally build with CONFIG_DISPLAY_HOBS.

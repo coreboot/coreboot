@@ -25,11 +25,11 @@ struct fsp_header fsps_hdr;
 
 static void do_silicon_init(struct fsp_header *hdr)
 {
-	struct FSPS_UPD upd, *supd;
+	FSPS_UPD upd, *supd;
 	fsp_silicon_init_fn silicon_init;
-	enum fsp_status status;
+	uint32_t status;
 
-	supd = (struct FSPS_UPD *) (hdr->cfg_region_offset + hdr->image_base);
+	supd = (FSPS_UPD *) (hdr->cfg_region_offset + hdr->image_base);
 
 	if (supd->FspUpdHeader.Signature != FSPS_UPD_SIGNATURE) {
 		die("Invalid FSPS signature\n");

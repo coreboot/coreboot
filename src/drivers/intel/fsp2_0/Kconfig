@@ -15,7 +15,7 @@
 
 config PLATFORM_USES_FSP2_0
 	bool
-	select UEFI_2_4_BINDING
+	select UDK_2015_BINDING
 	help
 	  Include FSP 2.0 wrappers and functionality
 

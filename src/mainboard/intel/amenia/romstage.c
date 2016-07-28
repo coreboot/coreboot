@@ -17,7 +17,7 @@
 
 #include <soc/romstage.h>
 #include <string.h>
-#include <soc/fsp/FspmUpd.h>
+#include <fsp/soc_binding.h>
 
 /* Channel 0 PHY to DUnit DQ mapping */
 static const uint8_t swizzling_ch0_amenia[] = {
@@ -43,7 +43,7 @@ static const uint8_t swizzling_ch3_amenia[] = {
 	17, 23, 19, 16, 21, 22, 20, 18, 31, 29, 26, 25, 28, 27, 24, 30,
 };
 
-static void amenia_fill_memory_params(struct FSP_M_CONFIG *cfg)
+static void amenia_fill_memory_params(FSP_M_CONFIG *cfg)
 {
 	cfg->Profile = 11;			/* 0xB:LPDDR4_2400_24_22_22 */
 	cfg->DIMM0SPDAddress = 0;
@@ -87,9 +87,9 @@ static void amenia_fill_memory_params(struct FSP_M_CONFIG *cfg)
 	       sizeof(swizzling_ch3_amenia));
 }
 
-void mainboard_memory_init_params(struct FSPM_UPD *memupd)
+void mainboard_memory_init_params(FSPM_UPD *memupd)
 {
-	struct FSP_M_CONFIG *cfg = &memupd->FspmConfig;
+	FSP_M_CONFIG *cfg = &memupd->FspmConfig;
 
 	cfg->Package = 1;			/* 0x1:BGA */
 	cfg->MemoryDown = 1;

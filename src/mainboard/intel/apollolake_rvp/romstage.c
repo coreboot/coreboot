@@ -18,7 +18,7 @@
 #include <soc/romstage.h>
 #include <string.h>
 #include <fsp/api.h>
-#include <soc/fsp/FspmUpd.h>
+#include <fsp/soc_binding.h>
 
 static const uint8_t swizzling_rvp1[] = {
 	 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15,
@@ -45,7 +45,7 @@ static const uint8_t swizzling3_rvp2[] = {
 	15,  9, 11, 14, 12,  8, 13, 10, 26, 29, 24, 31, 25, 30, 27, 28,
 };
 
-static void rvp1_fill_memory_params(struct FSPM_UPD *mupd)
+static void rvp1_fill_memory_params(FSPM_UPD *mupd)
 {
 	mupd->FspmConfig.Profile = 33;
 	mupd->FspmConfig.DIMM0SPDAddress = 0xa0;
@@ -72,7 +72,7 @@ static void rvp1_fill_memory_params(struct FSPM_UPD *mupd)
 	memcpy(mupd->FspmConfig.Ch3_Bit_swizzling, swizzling_rvp1, sizeof(swizzling_rvp1));
 }
 
-static void rvp2_fill_memory_params(struct FSPM_UPD *mupd)
+static void rvp2_fill_memory_params(FSPM_UPD *mupd)
 {
 	mupd->FspmConfig.Profile = 5;
 	mupd->FspmConfig.DIMM0SPDAddress = 0;
@@ -103,7 +103,7 @@ static void rvp2_fill_memory_params(struct FSPM_UPD *mupd)
 	       sizeof(swizzling3_rvp2));
 }
 
-void mainboard_memory_init_params(struct FSPM_UPD *mupd)
+void mainboard_memory_init_params(FSPM_UPD *mupd)
 {
 	mupd->FspmConfig.Package = 0;
 	mupd->FspmConfig.MemoryDown = 1;

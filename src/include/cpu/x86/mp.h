@@ -59,9 +59,9 @@ struct mp_ops {
 	void (*get_microcode_info)(const void **microcode, int *parallel);
 	/*
 	 * Optionally provide a function which adjusts the APIC id
-	 * map to cpu number. By default the cpu number and APIC id
-	 * are 1:1. To change the APIC id for a given cpu return the
-	 * new APIC id. It's called for each cpu as indicated by
+	 * map to CPU number. By default the CPU number and APIC id
+	 * are 1:1. To change the APIC id for a given CPU return the
+	 * new APIC id. It's called for each CPU as indicated by
 	 * get_cpu_count().
 	 */
 	int (*adjust_cpu_apic_entry)(int cpu, int cur_apic_id);
@@ -78,7 +78,7 @@ struct mp_ops {
 	void (*adjust_smm_params)(struct smm_loader_params *slp, int is_perm);
 	/*
 	 * Optionally provide a callback prior to the APs starting SMM
-	 * relocation or cpu driver initialization. However, note that
+	 * relocation or CPU driver initialization. However, note that
 	 * this callback is called after SMM handlers have been loaded.
 	 */
 	void (*pre_mp_smm_init)(void);
@@ -88,11 +88,11 @@ struct mp_ops {
 	 */
 	void (*per_cpu_smm_trigger)(void);
 	/*
-	 * This function is called while each cpu is in the SMM relocation
+	 * This function is called while each CPU is in the SMM relocation
 	 * handler. Its primary purpose is to adjust the SMBASE for the
 	 * permanent handler. The parameters passed are the current cpu
 	 * running the relocation handler, current SMBASE of relocation handler,
-	 * and the pre-calculated staggered cpu SMBASE address of the permanent
+	 * and the pre-calculated staggered CPU SMBASE address of the permanent
 	 * SMM handler.
 	 */
 	void (*relocation_handler)(int cpu, uintptr_t curr_smbase,

@@ -82,14 +82,14 @@
 #define POST_ENTRY_C_START			0x13
 
 /**
- * \brief Pre call to ram stage main()
+ * \brief Pre call to RAM stage main()
  *
- * POSTed right before ram stage main() is called from c_start.S
+ * POSTed right before RAM stage main() is called from c_start.S
  */
 #define POST_PRE_HARDWAREMAIN			0x79
 
 /**
- * \brief Entry into coreboot in ram stage main()
+ * \brief Entry into coreboot in RAM stage main()
  *
  * This is the first call in hardwaremain.c. If this code is POSTed, then
  * ramstage has successfully loaded and started executing.

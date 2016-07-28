@@ -23,7 +23,7 @@
  * Perform CBFS operations on the boot device. *
  ***********************************************/
 
-/* Return mapping of option rom found in boot device. NULL on error. */
+/* Return mapping of option ROM found in boot device. NULL on error. */
 void *cbfs_boot_map_optionrom(uint16_t vendor, uint16_t device);
 /* Load stage by name into memory. Returns entry address on success. NULL on
  * failure. */

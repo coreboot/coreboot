@@ -26,7 +26,7 @@ void gic_enable(void);
 /* Return a pointer to the base of the GIC distributor mmio region. */
 void *gicd_base(void);
 
-/* Return a pointer to the base of the GIC cpu mmio region. */
+/* Return a pointer to the base of the GIC CPU mmio region. */
 void *gicc_base(void);
 
 #else /* CONFIG_GIC */

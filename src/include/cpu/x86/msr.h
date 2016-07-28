@@ -48,7 +48,7 @@ static inline __attribute__((always_inline)) void wrmsr(unsigned index,
 
 /* The following functions require the always_inline due to AMD
  * function STOP_CAR_AND_CPU that disables cache as
- * ram, the cache as ram stack can no longer be used. Called
+ * RAM, the cache as RAM stack can no longer be used. Called
  * functions must be inlined to avoid stack usage. Also, the
  * compiler must keep local variables register based and not
  * allocated them from the stack. With gcc 4.5.0, some functions

@@ -100,4 +100,3 @@ typedef intptr_t INTN;
 #define EFIAPI
 
 #endif
-

@@ -39,4 +39,3 @@ Device (WIFI)
 	}
 
 }
-

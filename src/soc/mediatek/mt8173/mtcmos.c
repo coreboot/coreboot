@@ -69,4 +69,3 @@ void mtcmos_display_power_on(void)
 	while (read32(&mt8173_spm->dis_pwr_con) & DIS_SRAM_ACK)
 		continue;
 }
-

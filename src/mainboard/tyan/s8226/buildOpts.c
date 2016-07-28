@@ -435,4 +435,3 @@ CONST AP_MTRR_SETTINGS ROMDATA s8226_ap_mtrr_list[] =
 */
 
 #include "SanMarinoInstall.h"
-

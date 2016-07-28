@@ -33,4 +33,3 @@
 uint16_t wifi_regulatory_domain(void);
 
 #endif /* _WRDD_H_ */
-

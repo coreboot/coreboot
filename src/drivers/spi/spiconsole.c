@@ -64,4 +64,3 @@ void spiconsole_tx_byte(unsigned char c) {
 
 	return;
 }
-

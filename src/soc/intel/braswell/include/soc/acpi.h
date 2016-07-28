@@ -34,4 +34,3 @@ unsigned long southcluster_write_acpi_tables(device_t device,
 	unsigned long current, struct acpi_rsdp *rsdp);
 
 #endif /* _SOC_ACPI_H_ */
-

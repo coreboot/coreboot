@@ -136,4 +136,3 @@ endif # SPI_FLASH
 
 config HAVE_SPI_CONSOLE_SUPPORT
 	def_bool n
-

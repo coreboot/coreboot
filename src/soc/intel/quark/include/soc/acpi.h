@@ -23,4 +23,3 @@
 void acpi_fill_in_fadt(acpi_fadt_t *fadt);
 
 #endif /* _SOC_ACPI_H_ */
-

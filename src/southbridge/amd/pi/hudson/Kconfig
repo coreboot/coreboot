@@ -242,5 +242,3 @@ config HUDSON_UART
 	  controller 0 registers range from FEDC_6000h
 	  to FEDC_6FFFh. UART controller 1 registers
 	  range from FEDC_8000h to FEDC_8FFFh.
-
-

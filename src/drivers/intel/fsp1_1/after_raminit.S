@@ -168,4 +168,3 @@ __main:
 	post_code(POST_PREPARE_RAMSTAGE)
 	cld			/* Clear direction flag. */
 	call	after_cache_as_ram
-

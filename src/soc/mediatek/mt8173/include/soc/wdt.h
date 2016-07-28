@@ -51,4 +51,3 @@ enum {
 int mtk_wdt_init(void);
 
 #endif /* SOC_MEDIATEK_MT8173_WDT_H */
-

@@ -28,4 +28,3 @@ uint8_t board_id(void)
 #endif
 	return id;
 }
-

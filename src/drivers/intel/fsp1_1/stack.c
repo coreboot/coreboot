@@ -158,4 +158,3 @@ void *setup_stack_and_mtrrs(void)
 	slot = stack_push32(slot, max_mtrrs);
 	return slot;
 }
-

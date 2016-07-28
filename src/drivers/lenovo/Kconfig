@@ -39,4 +39,3 @@ config HYBRID_GRAPHICS_GPIO_NUM
 	help
 	  Set a default GPIO that sets the panel LVDS signal routing to
 	  integrated or discrete GPU.
-

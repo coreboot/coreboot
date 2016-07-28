@@ -299,4 +299,3 @@ const AP_MTRR_SETTINGS ROMDATA OntarioApMtrrSettingsList[] =
 /* AGESA nonsense: this header depends on the definitions above */
 /* Instantiate all solution relevant data. */
 #include <vendorcode/amd/agesa/f14/Include/PlatformInstall.h>
-

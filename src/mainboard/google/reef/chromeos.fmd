@@ -50,4 +50,3 @@ FLASH 16M {
 	# Device ext --> 0xf7f000 to 0xfff000
 	UNUSED_HOLE@0xfff000 0x1000
 }
-

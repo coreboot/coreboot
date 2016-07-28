@@ -44,4 +44,3 @@ distclean: clean
 .PHONY: all clean distclean
 
 -include .dependencies
-

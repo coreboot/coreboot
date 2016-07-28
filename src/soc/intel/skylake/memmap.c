@@ -204,4 +204,3 @@ void *cbmem_top(void)
 	 */
 	return (void *)top_of_32bit_ram();
 }
-

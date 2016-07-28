@@ -1,3 +1,2 @@
 config BOARD_GOOGLE_FOSTER
 	bool "Foster"
-

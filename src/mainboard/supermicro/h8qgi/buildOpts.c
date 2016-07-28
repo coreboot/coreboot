@@ -435,4 +435,3 @@ CONST AP_MTRR_SETTINGS ROMDATA h8qgi_ap_mtrr_list[] =
 */
 
 #include "MaranelloInstall.h"
-

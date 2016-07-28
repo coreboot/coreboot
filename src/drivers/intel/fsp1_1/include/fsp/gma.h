@@ -175,4 +175,3 @@ typedef struct {
 #define VBT_SIGNATURE 0x54425624
 
 #endif /* _GMA_H_ */
-

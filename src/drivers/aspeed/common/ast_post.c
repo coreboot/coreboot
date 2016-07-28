@@ -1721,4 +1721,3 @@ static void ast_init_dram_2300(struct drm_device *dev)
 	if (timeout >= COREBOOT_AST_FAILOVER_TIMEOUT)
 		dev_err(dev->pdev, "Timeout while waiting for register\n");
 }
-

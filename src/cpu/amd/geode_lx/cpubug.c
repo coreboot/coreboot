@@ -75,7 +75,7 @@ static void disablememoryreadorder(void)
 	wrmsr(MC_CF8F_DATA, msr);
 }
 
-/* For cpu version C3. Should be the only released version */
+/* For CPU version C3. Should be the only released version */
 void cpubug(void)
 {
 	pcideadlock();

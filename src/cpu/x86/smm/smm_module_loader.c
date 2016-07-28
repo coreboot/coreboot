@@ -48,7 +48,7 @@ extern unsigned char _binary_smmstub_start[];
 /* This is the SMM handler that the stub calls. It is encoded as an rmodule. */
 extern unsigned char _binary_smm_start[];
 
-/* Per cpu minimum stack size. */
+/* Per CPU minimum stack size. */
 #define SMM_MINIMUM_STACK_SIZE 32
 
 /*
@@ -75,7 +75,7 @@ static void smm_place_jmp_instructions(void *entry_start, int stride, int num,
 	struct smm_entry_ins entry = { .jmp_rel = 0xe9 };
 
 	/* Each entry point has an IP value of 0x8000. The SMBASE for each
-	 * cpu is different so the effective address of the entry instruction
+	 * CPU is different so the effective address of the entry instruction
 	 * is different. Therefore, the relative displacement for each entry
 	 * instruction needs to be updated to reflect the current effective
 	 * IP. Additionally, the IP result from the jmp instruction is
@@ -126,7 +126,7 @@ static void *smm_stub_place_stacks(char *base, int size,
 }
 
 /* Place the staggered entry points for each CPU. The entry points are
- * staggered by the per cpu SMM save state size extending down from
+ * staggered by the per CPU SMM save state size extending down from
  * SMM_ENTRY_OFFSET. */
 static void smm_stub_place_staggered_entry_points(char *base,
 	const struct smm_loader_params *params, const struct rmodule *smm_stub)
@@ -260,7 +260,7 @@ static int smm_module_setup_stub(void *smbase, struct smm_loader_params *params)
 	stub_params->runtime.smbase = (u32)smbase;
 	stub_params->runtime.save_state_size = params->per_cpu_save_state_size;
 
-	/* Initialize the APIC id to cpu number table to be 1:1 */
+	/* Initialize the APIC id to CPU number table to be 1:1 */
 	for (i = 0; i < params->num_concurrent_stacks; i++)
 		stub_params->runtime.apic_id_to_cpu[i] = i;
 

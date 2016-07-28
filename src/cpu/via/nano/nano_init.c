@@ -180,7 +180,7 @@ static void nano_init(struct device *dev)
 	/* Set up Memory Type Range Registers */
 	x86_setup_mtrrs();
 	x86_mtrr_check();
-	/* Enable the local cpu apics */
+	/* Enable the local CPU apics */
 	setup_lapic();
 }
 

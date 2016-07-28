@@ -157,7 +157,7 @@ static u32 wait_cpu_state(u32 apicid, u32 state)
 			continue;
 		if ((readback & 0xff) == state) {
 			timeout = 0;
-			break;	//target cpu is in stage started
+			break;	//target CPU is in stage started
 		}
 	}
 	if (timeout) {
@@ -303,7 +303,7 @@ static u32 init_cpus(u32 cpu_init_detectedx)
 //            start_other_core(id.nodeid); // start second core in first cpu, only allowed for nb_cfg_54 is not set
 	}
 	//here don't need to wait
-	lapic_write(LAPIC_MSG_REG, (apicid << 24) | 0x33);	// mark the cpu is started
+	lapic_write(LAPIC_MSG_REG, (apicid << 24) | 0x33);	// mark the CPU is started
 
 	if (apicid != bsp_apicid) {
 		u32 timeout = 1;

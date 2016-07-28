@@ -21,7 +21,7 @@
 #include <assert.h>
 
 #if CONFIG_PARALLEL_CPU_INIT
-#error Intel hyper-threading requires serialized cpu init
+#error Intel hyper-threading requires serialized CPU init
 #endif
 
 static int first_time = 1;
@@ -84,16 +84,16 @@ void intel_sibling_init(struct device *cpu)
 		return;
 	}
 
-	/* I am the primary cpu start up my siblings */
+	/* I am the primary CPU start up my siblings */
 	for(i = 1; i < siblings; i++) {
 		struct device_path cpu_path;
 		struct device *new;
-		/* Build the cpu device path */
+		/* Build the CPU device path */
 		cpu_path.type = DEVICE_PATH_APIC;
 		cpu_path.apic.apic_id = cpu->path.apic.apic_id + i;
 
 
-		/* Allocate new cpu device structure iff sibling CPU
+		/* Allocate new CPU device structure iff sibling CPU
 		 * was not in static device tree.
 		 */
 		new = alloc_find_dev(cpu->bus, &cpu_path);

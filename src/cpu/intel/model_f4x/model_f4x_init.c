@@ -36,10 +36,10 @@ static void model_f4x_init(struct device *cpu)
 		intel_update_microcode_from_cbfs();
 	}
 
-	/* Enable the local cpu apics */
+	/* Enable the local CPU apics */
 	setup_lapic();
 
-	/* Start up my cpu siblings */
+	/* Start up my CPU siblings */
 	intel_sibling_init(cpu);
 };
 

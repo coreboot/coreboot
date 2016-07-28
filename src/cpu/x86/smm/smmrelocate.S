@@ -89,7 +89,7 @@
  * 0xa0000-0xa0400 and the stub plus stack would need to go
  * at 0xa8000-0xa8100 (example for core 0). That is not enough.
  *
- * This means we're basically limited to 16 cpu cores before
+ * This means we're basically limited to 16 CPU cores before
  * we need to move the SMM handler to TSEG.
  *
  * Note: Some versions of Pentium M need their SMBASE aligned to 32k.
@@ -167,7 +167,7 @@ smm_relocate:
 	outb %al, %dx
 	movb $'-', %al
 	outb %al, %dx
-	/* calculate ascii of cpu number. More than 9 cores? -> FIXME */
+	/* calculate ascii of CPU number. More than 9 cores? -> FIXME */
 	movb %cl, %al
 	addb $'0', %al
 	outb %al, %dx

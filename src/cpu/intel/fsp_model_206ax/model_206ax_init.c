@@ -334,7 +334,7 @@ static void intel_cores_init(struct device *cpu)
 		struct device_path cpu_path;
 		struct device *new;
 
-		/* Build the cpu device path */
+		/* Build the CPU device path */
 		cpu_path.type = DEVICE_PATH_APIC;
 		cpu_path.apic.apic_id =
 			cpu->path.apic.apic_id + i;
@@ -343,7 +343,7 @@ static void intel_cores_init(struct device *cpu)
 		if (threads_per_core == 1)
 			cpu_path.apic.apic_id <<= 1;
 
-		/* Allocate the new cpu device structure */
+		/* Allocate the new CPU device structure */
 		new = alloc_dev(cpu->bus, &cpu_path);
 		if (!new)
 			continue;
@@ -353,7 +353,7 @@ static void intel_cores_init(struct device *cpu)
 		       new->path.apic.apic_id);
 
 #if CONFIG_SMP && CONFIG_MAX_CPUS > 1
-		/* Start the new cpu */
+		/* Start the new CPU */
 		if (!start_cpu(new)) {
 			/* Record the error in cpu? */
 			printk(BIOS_ERR, "CPU %u would not start!\n",
@@ -386,7 +386,7 @@ static void model_206ax_init(struct device *cpu)
 	/* Setup Page Attribute Tables (PAT) */
 	// TODO set up PAT
 
-	/* Enable the local cpu apics */
+	/* Enable the local CPU apics */
 	enable_lapic_tpr();
 	setup_lapic();
 

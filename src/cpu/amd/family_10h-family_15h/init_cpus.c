@@ -257,7 +257,7 @@ uint32_t wait_cpu_state(uint32_t apicid, uint32_t state, uint32_t state2)
 			continue;
 		if ((readback & 0x3f) == state || (readback & 0x3f) == state2 || (readback & 0x3f) == F10_APSTATE_RESET) {
 			timeout = 0;
-			break;	//target cpu is in stage started
+			break;	//target CPU is in stage started
 		}
 	}
 	if (timeout) {

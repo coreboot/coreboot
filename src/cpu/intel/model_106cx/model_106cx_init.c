@@ -124,7 +124,7 @@ static void model_106cx_init(struct device *cpu)
 	x86_setup_mtrrs();
 	x86_mtrr_check();
 
-	/* Enable the local cpu apics */
+	/* Enable the local CPU apics */
 	setup_lapic();
 
 	/* Enable virtualization */
@@ -138,7 +138,7 @@ static void model_106cx_init(struct device *cpu)
 
 	/* TODO: PIC thermal sensor control */
 
-	/* Start up my cpu siblings */
+	/* Start up my CPU siblings */
 	intel_sibling_init(cpu);
 }
 

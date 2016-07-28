@@ -54,7 +54,7 @@ _start16bit:
 	 * If we are hyperthreaded or we have multiple cores it is bad,
 	 * for SMP startup.  On Opterons it causes a 5 second delay.
 	 * Invalidating the cache was pure paranoia in any event.
-	 * If you cpu needs it you can write a cpu dependent version of
+	 * If you CPU needs it you can write a CPU dependent version of
 	 * entry16.inc.
 	 */
 

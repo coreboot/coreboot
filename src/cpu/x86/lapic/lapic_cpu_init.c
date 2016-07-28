@@ -242,10 +242,10 @@ static int lapic_start_cpu(unsigned long apicid)
 static atomic_t active_cpus = ATOMIC_INIT(1);
 
 /* start_cpu_lock covers last_cpu_index and secondary_stack.
- * Only starting one cpu at a time let's me remove the logic
+ * Only starting one CPU at a time let's me remove the logic
  * for select the stack from assembly language.
  *
- * In addition communicating by variables to the cpu I
+ * In addition communicating by variables to the CPU I
  * am starting allows me to verify it has started before
  * start_cpu returns.
  */
@@ -301,12 +301,12 @@ int start_cpu(struct device *cpu)
 	cpu->enabled = 0;
 	cpu->initialized = 0;
 
-	/* Start the cpu */
+	/* Start the CPU */
 	result = lapic_start_cpu(apicid);
 
 	if (result) {
 		result = 0;
-		/* Wait 1s or until the new cpu calls in */
+		/* Wait 1s or until the new CPU calls in */
 		for(count = 0; count < 100000 ; count++) {
 			if (secondary_stack == 0) {
 				result = 1;
@@ -542,23 +542,23 @@ void initialize_cpus(struct bus *cpu_bus)
 	struct device_path cpu_path;
 	struct cpu_info *info;
 
-	/* Find the info struct for this cpu */
+	/* Find the info struct for this CPU */
 	info = cpu_info();
 
 #if NEED_LAPIC == 1
 	/* Ensure the local apic is enabled */
 	enable_lapic();
 
-	/* Get the device path of the boot cpu */
+	/* Get the device path of the boot CPU */
 	cpu_path.type           = DEVICE_PATH_APIC;
 	cpu_path.apic.apic_id = lapicid();
 #else
-	/* Get the device path of the boot cpu */
+	/* Get the device path of the boot CPU */
 	cpu_path.type           = DEVICE_PATH_CPU;
 	cpu_path.cpu.id       = 0;
 #endif
 
-	/* Find the device structure for the boot cpu */
+	/* Find the device structure for the boot CPU */
 	info->cpu = alloc_find_dev(cpu_bus, &cpu_path);
 
 #if CONFIG_SMP && CONFIG_MAX_CPUS > 1

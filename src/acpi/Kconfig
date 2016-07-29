@@ -3,7 +3,7 @@ config ACPI_SATA_GENERATOR
 	bool
 	default n
 	help
-	  Use acpi sata port generator.
+	  Use ACPI SATA port generator.
 
 config ACPI_INTEL_HARDWARE_SLEEP_VALUES
 	def_bool n

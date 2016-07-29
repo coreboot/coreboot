@@ -99,7 +99,7 @@ static void root_port_config_update_gbe_port(void)
 static void pcie_iosf_port_grant_count(device_t dev)
 {
 	u8 update_val;
-	u32 rpcd = (pci_read_config32(dev, 0xfc) > 14) & 0x3;
+	u32 rpcd = (pci_read_config32(dev, 0xfc) >> 14) & 0x3;
 
 	switch (rpcd) {
 	case 1:

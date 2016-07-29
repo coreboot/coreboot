@@ -1,4 +1,4 @@
-﻿/*
+/*
  * This file is part of the coreboot project.
  *
  * Copyright 2015 Google Inc.

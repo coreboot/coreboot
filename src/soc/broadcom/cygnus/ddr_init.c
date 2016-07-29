@@ -97,8 +97,8 @@ void PRE_SRX(void)
 	readvalue = reg32_read ((volatile uint32_t *)DDR_PHY_BYTE_LANE_1_IDLE_PAD_CONTROL);
 	reg32_write ((volatile uint32_t *)DDR_PHY_BYTE_LANE_1_IDLE_PAD_CONTROL, ( readvalue & ~(1 << DDR_PHY_BYTE_LANE_1_IDLE_PAD_CONTROL__IDDQ)));
 
-	// Turn on PHY_CONTROL AUTO_OEB ¨C not required
-	// Enable byte lane AUTO_DQ_RXENB_MODE: bits 18 and 19 of the byte lane IDLE_PAD_CONTROL ¨C already set 180114c8: 000f000a
+	// Turn on PHY_CONTROL AUTO_OEB C not required
+	// Enable byte lane AUTO_DQ_RXENB_MODE: bits 18 and 19 of the byte lane IDLE_PAD_CONTROL C already set 180114c8: 000f000a
 
 	printk(BIOS_INFO, "\n....PLL power up.\n");
 	reg32_write((volatile uint32_t *)DDR_PHY_CONTROL_REGS_PLL_CONFIG, (reg32_read((volatile uint32_t *)DDR_PHY_CONTROL_REGS_PLL_CONFIG) & ~(1<<DDR_PHY_CONTROL_REGS_PLL_CONFIG__PWRDN)));

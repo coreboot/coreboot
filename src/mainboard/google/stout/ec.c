@@ -48,10 +48,10 @@ void stout_ec_init(void)
 	 * Set USB Power off in S3 (enabled in S3 path if requested in gnvs)
 	 * Bit0 of 0x0D/Bit0 of 0x26
 	 * 0/0 All USB port off
-	 * 1/0 USB on, all USB port didn’t support wake up
+	 * 1/0 USB on, all USB port didn't support wake up
 	 * 0/1 USB on, yellow port support wake up charge, but may not support
 	 *             charge smart phone.
-	 * 1/1 USB on, yellow port in AUTO mode and didn’t support wake up system.
+	 * 1/1 USB on, yellow port in AUTO mode and didn't support wake up system.
 	 */
 	ec_write(EC_PERIPH_CNTL_3, ec_read(EC_PERIPH_CNTL_3) & 0xE);
 	ec_write(EC_USB_S3_EN, ec_read(EC_USB_S3_EN) & 0xE);

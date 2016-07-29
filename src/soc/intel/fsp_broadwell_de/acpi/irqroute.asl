@@ -19,9 +19,9 @@ Method(_PRT)
 {
 	/*
 	 * PICM comes from _PIC, which returns the following:
-	 * 0 – PIC mode
-	 * 1 – APIC mode
-	 * 2 – SAPIC mode
+	 * 0 - PIC mode
+	 * 1 - APIC mode
+	 * 2 - SAPIC mode
 	 */
 	If (PICM) {
 		Return (Package() {

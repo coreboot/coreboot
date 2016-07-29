@@ -85,8 +85,8 @@ static void ich7_enable_lpc(void)
 	// Macbook21: 0x0010 == 00000000 00010000
 	// Bit 9:8    LPT Decode Range. This field determines which range to
 	//            decode for the LPT Port.
-	//            00 = 378h ­ 37Fh and 778h ­ 77Fh
-	//            10 = 3BCh ­ 3BEh and 7BCh ­ 7BEh
+	//            00 = 378h - 37Fh and 778h - 77Fh
+	//            10 = 3BCh - 3BEh and 7BCh - 7BEh
 	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x80, 0x0010);
 
 	// LPC_EN--LPC I/F Enables Register

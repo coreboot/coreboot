@@ -14,9 +14,9 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * Setup helpers for Two Wire Interface (TWI) (I²C) Allwinner CPUs
+ * Setup helpers for Two Wire Interface (TWI) (I2C) Allwinner CPUs
  *
- * Only functionality for I²C master is provided.
+ * Only functionality for I2C master is provided.
  * Largely based on the uboot-sunxi code.
  */
 
@@ -63,7 +63,7 @@ void a1x_twi_init(u8 bus, u32 speed_hz)
 
 	configure_clock(twi, speed_hz);
 
-	/* Enable the I²C bus */
+	/* Enable the I2C bus */
 	write32(&twi->ctl, TWI_CTL_BUS_EN);
 	/* Issue soft reset */
 	write32(&twi->reset, 1);

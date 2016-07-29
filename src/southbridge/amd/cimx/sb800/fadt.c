@@ -71,7 +71,7 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 
 	fadt->model = 0;		/* reserved, should be 0 ACPI 3.0 */
 	fadt->preferred_pm_profile = FADT_PM_PROFILE;
-	fadt->sci_int = 9;		/* HUDSON 1 - IRQ 09 – ACPI SCI */
+	fadt->sci_int = 9;		/* HUDSON 1 - IRQ 09 - ACPI SCI */
 	fadt->smi_cmd = 0;		/* disable system management mode */
 	fadt->acpi_enable = 0;	/* unused if SMI_CMD = 0 */
 	fadt->acpi_disable = 0;	/* unused if SMI_CMD = 0 */

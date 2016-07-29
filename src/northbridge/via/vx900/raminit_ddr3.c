@@ -186,14 +186,14 @@ static pci_reg8 mcu_drv_ctrl_config[] = {
 	{0xd4, 0x80},		/* Set internal ODT to dynamically turn on or off */
 	{0xd6, 0x20},		/* Enable strong driving for MA and DRAM commands */
 	{0xd0, 0x88},		/* (ODT) Strength ?has effect? */
-	{0xe0, 0x88},		/* DRAM Driving – Group DQS (MDQS) */
+	{0xe0, 0x88},		/* DRAM Driving - Group DQS (MDQS) */
 	{0xe1, 0x00},		/* Disable offset mode for driving strength control */
-	{0xe2, 0x88},		/* DRAM Driving – Group DQ (MD, MDQM) */
-	{0xe4, 0xcc},		/* DRAM Driving – Group CSA (MCS, MCKE, MODT) */
-	{0xe8, 0x88},		/* DRAM Driving – Group MA (MA, MBA, MSRAS, MSCAS, MSWE) */
-	{0xe6, 0xff},		/* DRAM Driving – Group DCLK0 (DCLK[2:0] for DIMM0) */
-	{0xe7, 0xff},		/* DRAM Driving – Group DCLK1 (DCLK[5:3] for DIMM1) */
-	{0xe4, 0xcc},		/* DRAM Driving – Group CSA (MCS, MCKE, MODT) */
+	{0xe2, 0x88},		/* DRAM Driving - Group DQ (MD, MDQM) */
+	{0xe4, 0xcc},		/* DRAM Driving - Group CSA (MCS, MCKE, MODT) */
+	{0xe8, 0x88},		/* DRAM Driving - Group MA (MA, MBA, MSRAS, MSCAS, MSWE) */
+	{0xe6, 0xff},		/* DRAM Driving - Group DCLK0 (DCLK[2:0] for DIMM0) */
+	{0xe7, 0xff},		/* DRAM Driving - Group DCLK1 (DCLK[5:3] for DIMM1) */
+	{0xe4, 0xcc},		/* DRAM Driving - Group CSA (MCS, MCKE, MODT) */
 	{0x91, 0x08},		/* MCLKO Output Phase Delay - I */
 	{0x92, 0x08},		/* MCLKO Output Phase Delay - II */
 	{0x93, 0x16},		/* CS/CKE Output Phase Delay */
@@ -807,8 +807,8 @@ static void vx900_dram_ddr3_do_sw_mrs(u8 ma_swap, enum ddr3_mr1_rtt_nom rtt_nom,
 	/* Step 08 - Set Fun3_RX6B[2:0] to 011b (MSR Enable). */
 	pci_mod_config8(MCU, 0x6b, 0x07, 0x03);	/* MSR Enable */
 
-	/* Step 09 – Issue MR2 cycle. Read a double word from the address
-	 * depended on DRAM’s Rtt_WR and CWL settings. */
+	/* Step 09 - Issue MR2 cycle. Read a double word from the address
+	 * depended on DRAM's Rtt_WR and CWL settings. */
 	mrs = ddr3_get_mr2(rtt_wr, srt, asr, cwl);
 	if (ma_swap)
 		mrs = ddr3_mrs_mirror_pins(mrs);
@@ -816,7 +816,7 @@ static void vx900_dram_ddr3_do_sw_mrs(u8 ma_swap, enum ddr3_mr1_rtt_nom rtt_nom,
 	printram("MR2: %.5x\n", mrs);
 	udelay(1000);
 
-	/* Step 10 – Issue MR3 cycle. Read a double word from the address 60000h
+	/* Step 10 - Issue MR3 cycle. Read a double word from the address 60000h
 	 * to set DRAM to normal operation mode. */
 	mrs = ddr3_get_mr3(0);
 	if (ma_swap)
@@ -825,8 +825,8 @@ static void vx900_dram_ddr3_do_sw_mrs(u8 ma_swap, enum ddr3_mr1_rtt_nom rtt_nom,
 	printram("MR3: %.5x\n", mrs);
 	udelay(1000);
 
-	/* Step 11 –Issue MR1 cycle. Read a double word from the address
-	 * depended on DRAM’s output driver impedance and Rtt_Nom settings.
+	/* Step 11 -Issue MR1 cycle. Read a double word from the address
+	 * depended on DRAM's output driver impedance and Rtt_Nom settings.
 	 * The DLL enable field, TDQS field, write leveling enable field,
 	 * additive latency field and Qoff field should be set to 0. */
 	mrs = ddr3_get_mr1(DDR3_MR1_QOFF_ENABLE, DDR3_MR1_TQDS_DISABLE, rtt_nom,
@@ -839,7 +839,7 @@ static void vx900_dram_ddr3_do_sw_mrs(u8 ma_swap, enum ddr3_mr1_rtt_nom rtt_nom,
 	udelay(1000);
 
 	/* Step 12 - Issue MR0 cycle. Read a double word from the address
-	 * depended on DRAM’s burst length, CAS latency and write recovery time
+	 * depended on DRAM's burst length, CAS latency and write recovery time
 	 * settings.
 	 * The read burst type field should be set to interleave.
 	 * The mode field should be set to normal mode.
@@ -942,13 +942,13 @@ static void vx900_dram_ddr3_dimm_init(const ramctr_timing * ctrl,
 		vx900_map_pr_vr(i, 3);
 	}
 
-	/* Step 16 – Set Fun3_Rx6B[2:0] to 000b (Normal SDRAM Mode). */
+	/* Step 16 - Set Fun3_Rx6B[2:0] to 000b (Normal SDRAM Mode). */
 	pci_mod_config8(MCU, 0x6b, 0x07, 0x00);
 
 	/* Set BA[0/1/2] to [A13/14/15] */
 	vx900_dram_set_ma_pin_map(VX900_CALIB_MA_MAP);
 
-	/* Step 17 – Set Fun3_Rx69[0] to 1b (Enable Multiple Page Mode). */
+	/* Step 17 - Set Fun3_Rx69[0] to 1b (Enable Multiple Page Mode). */
 	pci_mod_config8(MCU, 0x69, 0x00, (1 << 0));
 
 	printram("DIMM initialization sequence complete\n");

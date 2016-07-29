@@ -62,7 +62,7 @@ static struct {
 	/* 6-series PCI ids from
 	 * Intel® 6 Series Chipset and
 	 * Intel® C200 Series Chipset
-	 * Specification Update – NDA
+	 * Specification Update - NDA
 	 * October 2013
 	 * CDI / IBP#: 440377
 	 */

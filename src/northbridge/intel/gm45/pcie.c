@@ -289,7 +289,7 @@ static void setup_aspm(const stepping_t stepping, const int peg_enabled)
 	 * Maybe we just have to advertise ASPM through LCAP[11:10]
 	 * (LCAP[17:15] == 010b is the default, will be locked, as it's R/WO),
 	 * set 0x208[31:24,23:22] to zero, 0x224[24:21] = 1 and let the
-	 * generic ASPM code do the rest? – Nico
+	 * generic ASPM code do the rest? - Nico
 	 */
 	/* TODO: Prepare PEG for ASPM. */
 }

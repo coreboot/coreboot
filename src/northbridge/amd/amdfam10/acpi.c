@@ -129,7 +129,7 @@ static unsigned long acpi_fill_srat(unsigned long current)
 
 static unsigned long acpi_fill_slit(unsigned long current)
 {
-	/* Implement SLIT algorithm in BKDG Rev. 3.62 § 2.3.6.1
+	/* Implement SLIT algorithm in BKDG Rev. 3.62 Section 2.3.6.1
 	 * Fill the first 8 bytes with the node number,
 	 * then fill the next num*num byte with the distance,
 	 * Distance entries vary with topology; the local node

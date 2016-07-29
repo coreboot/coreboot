@@ -339,7 +339,7 @@ int test_l2_address_alias(u32 address1, u32 address2,
 
 /* Calculates the L2 cache size.
  *
- * Reference: Intel(R) 64 and IA-32 Architectures Software Developer�s Manual
+ * Reference: Intel(R) 64 and IA-32 Architectures Software Developer's Manual
  *            Volume 3B: System Programming Guide, Part 2, Intel pub. 253669, pg. B-172.
  *
  */

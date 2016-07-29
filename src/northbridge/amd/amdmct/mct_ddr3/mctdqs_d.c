@@ -1541,7 +1541,7 @@ static uint8_t TrainDQSRdWrPos_D_Fam15(struct MCTStatStruc *pMCTstat,
 						printk(BIOS_DEBUG, "+");
 					} else {
 						if (read_iter < 16)
-							printk(BIOS_DEBUG, "°");
+							printk(BIOS_DEBUG, ":");
 						else
 							printk(BIOS_DEBUG, ".");
 					}

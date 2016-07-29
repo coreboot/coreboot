@@ -13,7 +13,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * Definitions Two Wire Interface (TWI) (I²C) Allwinner CPUs
+ * Definitions Two Wire Interface (TWI) (I2C) Allwinner CPUs
  */
 
 #ifndef CPU_ALLWINNER_A10_TWI_H

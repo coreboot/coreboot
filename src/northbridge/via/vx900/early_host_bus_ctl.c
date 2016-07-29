@@ -20,9 +20,9 @@ static void vx900_cpu_bus_preram_setup(void)
 {
 	/* Faster CPU to DRAM Cycle */
 	pci_mod_config8(HOST_BUS, 0x50, 0x0f, 0x08);
-	/* CPU Interface Control – Basic Options */
+	/* CPU Interface Control - Basic Options */
 	pci_mod_config8(HOST_BUS, 0x51, 0, 0x6c);
-	/*CPU Interface Control – Advanced Options */
+	/*CPU Interface Control - Advanced Options */
 	pci_write_config8(HOST_BUS, 0x52, 0xc7);
 	/* Enable 8QW burst and 4QW request merging [4] and [2]
 	 * and special mode for read cycles bit[3] */

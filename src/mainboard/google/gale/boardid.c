@@ -30,7 +30,8 @@ static uint8_t get_board_id(void)
 	uint8_t bid;
 	gpio_t hw_rev_gpios[] = {[2] = 66, [1] = 65, [0] = 64};	/* 64 is LSB */
 
-	bid = gpio_base3_value(hw_rev_gpios, ARRAY_SIZE(hw_rev_gpios));
+	bid = gpio_binary_first_base3_value(hw_rev_gpios,
+		ARRAY_SIZE(hw_rev_gpios));
 	printk(BIOS_INFO, "Board ID %d\n", bid);
 
 	return bid;

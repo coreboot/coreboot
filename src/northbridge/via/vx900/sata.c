@@ -199,7 +199,7 @@ static void vx900_sata_init(device_t dev)
 	/* Resend COMRESET When Recovering SATA Gen2 Device Error */
 	pci_mod_config8(dev, 0x62, 1 << 1, 1 << 7);
 
-	/* Fix "PMP Device Can’t Detect HDD Normally" (VIA Porting Guide)
+	/* Fix "PMP Device Can't Detect HDD Normally" (VIA Porting Guide)
 	 * SATA device detection will not work unless we clear these bits.
 	 * Without doing this, SeaBIOS (and potentially other payloads) will
 	 * timeout when detecting SATA devices */
@@ -211,8 +211,8 @@ static void vx900_sata_init(device_t dev)
 	 * reset and check the BSY bit of one port only, and the BSY bit of
 	 * other port would be 1, then it does another software reset
 	 * immediately and causes the system hang.
-	 * This is because the first software reset doesn’t finish, and the
-	 * state machine of the host controller conflicts, it can’t finish the
+	 * This is because the first software reset doesn't finish, and the
+	 * state machine of the host controller conflicts, it can't finish the
 	 * second one anymore. The BSY bit of slave port would be always 1 after
 	 * the second software reset issues. BIOS should set the following
 	 * bit to avoid this issue. */

@@ -16,7 +16,7 @@
  */
 
 /*
- * Standard Manufacturer’s Identification Code
+ * Standard Manufacturer's Identification Code
  * JEP106AS (Revision of JEP106AR, October 2015)
  * MAY 2016
  * http://www.jedec.org/standards-documents/results/JEP106AS

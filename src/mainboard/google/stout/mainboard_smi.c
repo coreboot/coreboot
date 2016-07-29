@@ -58,10 +58,10 @@ void mainboard_smi_sleep(u8 slp_typ)
 	 * Tell the EC to Enable USB power for S3 if requested.
 	 * Bit0 of 0x0D/Bit0 of 0x26
 	 * 0/0 All USB port off
-	 * 1/0 USB on, all USB port didn’t support wake up
+	 * 1/0 USB on, all USB port didn't support wake up
 	 * 0/1 USB on, yellow port support wake up charge, but may not support
 	 *             charge smart phone.
-	 * 1/1 USB on, yellow port in AUTO mode and didn’t support wake up system.
+	 * 1/1 USB on, yellow port in AUTO mode and didn't support wake up system.
 	 */
 	if (smm_get_gnvs()->s3u0 != 0 || smm_get_gnvs()->s3u1 != 0) {
 		ec_write(EC_PERIPH_CNTL_3, ec_read(EC_PERIPH_CNTL_3) | 0x00);

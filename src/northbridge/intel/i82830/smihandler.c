@@ -166,11 +166,11 @@ static void mbi_call(u8 subf, banner_id_t *banner_id)
 	}
 	case 0x0002:
 		printk(BIOS_DEBUG, "|- MBI_Attach\n");
-		printk(BIOS_DEBUG, "|  |- Not Implemented!\n");
+		printk(BIOS_DEBUG, "|  |- Not Implemented!\n");
 		break;
 	case 0x0003:
 		printk(BIOS_DEBUG, "|- MBI_Detach\n");
-		printk(BIOS_DEBUG, "|  |- Not Implemented!\n");
+		printk(BIOS_DEBUG, "|  |- Not Implemented!\n");
 		break;
 	case 0x0201: {
 		obj_header_t *obj_header = (obj_header_t *)banner_id;

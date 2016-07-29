@@ -40,7 +40,7 @@
 #define LCD_PANEL_ID_04 0x04	/* 1680x1050, 24 bits, 2 channels */
 #define LCD_PANEL_ID_05 0x05	/* 1920x1200, 24 bits, 2 channels */
 #define LCD_PANEL_ID_06 0x06	/* 1920x1080, 24 bits, 2 channels */
-//Callback Sub-Function 05h – Select Boot-up TV Standard
+//Callback Sub-Function 05h - Select Boot-up TV Standard
 #define TV_MODE_00	0x00	/* NTSC */
 #define TV_MODE_01	0x01	/* PAL */
 #define TV_MODE_02	0x02	/* PALM */

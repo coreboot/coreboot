@@ -1007,10 +1007,10 @@ static inline void __attribute__((always_inline))
 		unsigned int a1, a2;
 		asm volatile("movd %%xmm2, %%eax;" : "=a" (a1) ::);
 		asm volatile("movd %%xmm3, %%eax;" : "=a" (a2) ::);
-		printk(BIOS_DEBUG, "return EIP @ %x = %x\n", a1, a2);
+		printk(BIOS_DEBUG, "return EIP @ %x = %x\n", a1, a2);
 		asm volatile("movd %%xmm0, %%eax;" : "=a" (a1) ::);
 		asm volatile("movd %%xmm1, %%eax;" : "=a" (a2) ::);
-		printk(BIOS_DEBUG, "return EIP @ %x = %x\n", a1, a2);
+		printk(BIOS_DEBUG, "return EIP @ %x = %x\n", a1, a2);
 #endif
 	}
 

@@ -49,8 +49,8 @@
  * AC power plug-out  C8h
  * Modem Ring In  CAh
  * PME signal active  CEh
- * Acer Hotkey Function – Make event D5h
- * Acer Hotkey Function – Break event D6h
+ * Acer Hotkey Function - Make event D5h
+ * Acer Hotkey Function - Break event D6h
  */
 
 #ifndef __ACPI__

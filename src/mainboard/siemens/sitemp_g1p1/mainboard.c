@@ -49,7 +49,7 @@
 #define PANEL_TABLE_ID8 	8 // 1280x1024_108MHz
 #define PANEL_TABLE_ID9 	9 // 1366x768_86MHz_chimei_V32B1L01
 
-// Callback Sub-Function 05h – Select Boot-up TV Standard
+// Callback Sub-Function 05h - Select Boot-up TV Standard
 #define TV_MODE_00	0x00	/* NTSC */
 #define TV_MODE_01	0x01	/* PAL */
 #define TV_MODE_02	0x02	/* PALM */

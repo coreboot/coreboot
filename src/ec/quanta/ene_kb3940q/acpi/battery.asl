@@ -67,7 +67,7 @@ Device (BATX)
 		Store (Zero, BFWK)
 	}
 
-	// Device insertion/removal control method that returns a device’s status.
+	// Device insertion/removal control method that returns a device's status.
 	// Power resource object that evaluates to the current on or off state of
 	// the Power Resource.
 	Method (_STA, 0, Serialized)

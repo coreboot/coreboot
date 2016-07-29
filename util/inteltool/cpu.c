@@ -1003,7 +1003,7 @@ int print_intel_core_msrs(void)
 
 /*
  * The following two tables are the Silvermont registers listed in Table 35-6
- * Intel® 64 and IA-32 Architectures Software Developer’s Manual
+ * Intel® 64 and IA-32 Architectures Software Developer's Manual
  * September 2014
  * Vol. 3C 35-59
  */

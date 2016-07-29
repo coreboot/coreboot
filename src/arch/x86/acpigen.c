@@ -222,9 +222,9 @@ void acpigen_write_string(const char *string)
 
 /*
  * The naming conventions for ACPI namespace names are a bit tricky as
- * each element has to be 4 chars wide (»All names are a fixed 32 bits.«)
- * and »By convention, when an ASL compiler pads a name shorter than 4
- * characters, it is done so with trailing underscores (‘_’).«.
+ * each element has to be 4 chars wide ("All names are a fixed 32 bits.")
+ * and "By convention, when an ASL compiler pads a name shorter than 4
+ * characters, it is done so with trailing underscores ('_')".
  *
  * Check sections 5.3, 18.2.2 and 18.4 of ACPI spec 3.0 for details.
  */

@@ -187,7 +187,7 @@ static const struct VIA_PCI_REG_INIT_TABLE mNbStage1InitTbl[] = {
 	/* VT3409 no PCI-E */
 	{ 0x00, 0xFF, NB_APIC_REG(0x61), 0xFF, 0x0E },	// Set Exxxxxxx as pcie mmio config range
 	{ 0x00, 0xFF, NB_APIC_REG(0x60), 0xF4, 0x0B },	// Support extended cfg address of pcie
-	// { 0x00, 0xFF, NB_APIC_REG(0x42), 0xF9, 0x02 }, // APIC Interrupt((BT_INTR)) Control
+	// { 0x00, 0xFF, NB_APIC_REG(0x42), 0xF9, 0x02 }, // APIC Interrupt((BT_INTR)) Control
 	// Set ROMSIP value by software
 
 	/*

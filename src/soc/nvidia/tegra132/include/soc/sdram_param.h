@@ -794,9 +794,9 @@ struct sdram_params {
 	/* Set if bit 6 select is greater than bit 7 select; uses aremc.
 	   spec packet SWIZZLE_BIT6_GT_BIT7 */
 	uint32_t SwizzleRankByteEncode;
-	/* Specifies enable and offset for patched boot rom write */
+	/* Specifies enable and offset for patched boot ROM write */
 	uint32_t BootRomPatchControl;
-	/* Specifies data for patched boot rom write */
+	/* Specifies data for patched boot ROM write */
 	uint32_t BootRomPatchData;
 	/* Specifies the value for MC_MTS_CARVEOUT_BOM */
 	uint32_t McMtsCarveoutBom;

@@ -85,7 +85,7 @@ acpi_cstate_t *soc_get_cstate_map(int *num_entries);
 acpi_tstate_t *soc_get_tss_table(int *num_entries);
 
 /*
- * soc_get_acpi_base_address returns the acpi base address for the SOC
+ * soc_get_acpi_base_address returns the ACPI base address for the SOC
  */
 uint16_t soc_get_acpi_base_address(void);
 

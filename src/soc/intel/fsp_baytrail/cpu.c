@@ -94,7 +94,7 @@ static void pre_mp_init(void)
 {
 	x86_mtrr_check();
 
-	/* Enable the local cpu apics */
+	/* Enable the local CPU apics */
 	setup_lapic();
 }
 

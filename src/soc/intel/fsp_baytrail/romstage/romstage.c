@@ -244,7 +244,7 @@ void romstage_main_continue(EFI_STATUS status, void *hob_list_ptr)
 	late_mainboard_romstage_entry();
 	post_code(0x4c);
 
-	/* if S3 resume skip ram check */
+	/* if S3 resume skip RAM check */
 	if (prev_sleep_state != ACPI_S3) {
 		quick_ram_check();
 		post_code(0x4d);

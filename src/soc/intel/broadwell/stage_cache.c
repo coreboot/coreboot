@@ -21,7 +21,7 @@
 void stage_cache_external_region(void **base, size_t *size)
 {
 	/* The ramstage cache lives in the TSEG region.
-	 * The top of ram is defined to be the TSEG base address. */
+	 * The top of RAM is defined to be the TSEG base address. */
 	u32 offset = smm_region_size();
 	offset -= CONFIG_IED_REGION_SIZE;
 	offset -= CONFIG_SMM_RESERVED_SIZE;

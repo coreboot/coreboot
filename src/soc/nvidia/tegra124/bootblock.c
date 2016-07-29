@@ -34,7 +34,7 @@ static void run_next_stage(void *entry)
 
 	power_enable_and_ungate_cpu();
 
-	/* Repair ram on cluster0 and cluster1 after CPU is powered on. */
+	/* Repair RAM on cluster0 and cluster1 after CPU is powered on. */
 	ram_repair();
 
 	clock_cpu0_remove_reset();

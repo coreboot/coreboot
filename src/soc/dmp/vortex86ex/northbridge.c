@@ -89,7 +89,7 @@ static void pci_domain_set_resources(device_t dev)
 		ss = pci_read_config16(mc_dev, 0x6c);
 		ss = ((ss >> 8) & 0xf);
 		tomk = (2 * 1024) << ss;
-		printk(BIOS_DEBUG, "I would set ram size to %ld Mbytes\n", (tomk >> 10));
+		printk(BIOS_DEBUG, "I would set RAM size to %ld Mbytes\n", (tomk >> 10));
 		/* Compute the top of Low memory */
 		tolmk = pci_tolm >> 10;
 		if (tolmk >= tomk)

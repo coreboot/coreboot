@@ -1024,7 +1024,7 @@ void lp0_resume(void)
 	 * 1 : MAX77621
 	 */
 	if (read32(pmc_scratch201_ptr) & PMIC_77621)
-		/* Set cpu rail 0.85V */
+		/* Set CPU rail 0.85V */
 		i2c_send(MAX77621_I2C_ADDR, MAX77621_VOUT_DATA);
 	else
 		/* Enable GPIO5 on MAX77620 PMIC */

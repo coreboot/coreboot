@@ -259,7 +259,7 @@ static struct lb_cbmem_ref parse_cbmem_ref(struct lb_cbmem_ref *cbmem_ref)
 
 static int parse_cbtable(u64 address, size_t table_size, uint8_t abort_on_failure)
 {
-	int i, found, ret = 0;
+	int i, found = 0, ret = 0;
 	void *buf;
 
 	debug("Looking for coreboot table at %" PRIx64 " %zd bytes.\n",

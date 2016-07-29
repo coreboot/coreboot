@@ -578,7 +578,7 @@ static void sis_init_stage1(void)
 	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_SIS, PCI_DEVICE_ID_SIS_SIS761), 0);	//Disable Internal GUI enable bit
 	temp8 = pci_read_config8(dev, 0x4C);
 	GUI_En = temp8 & 0x10;
-	pci_write_config8(dev, 0x4C, temp8 & (!0x10));
+	pci_write_config8(dev, 0x4C, temp8 & (~0x10));
 
 	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_SIS, PCI_DEVICE_ID_SIS_SIS761_PCIE), 0);
 	i=0;

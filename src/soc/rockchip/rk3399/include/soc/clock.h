@@ -97,7 +97,7 @@ static struct rk3399_cru_reg * const cru_ptr = (void *)CRU_BASE;
 #define PWM_CLOCK_HZ    PMU_PCLK_HZ
 
 enum apll_frequencies {
-	APLL_1600_MHZ,
+	APLL_1512_MHZ,
 	APLL_600_MHZ,
 };
 

@@ -18,6 +18,8 @@ subdirs-y += sdram_params/
 bootblock-y += bootblock.c
 bootblock-y += chromeos.c
 bootblock-y += memlayout.ld
+bootblock-y += pwm_regulator.c
+bootblock-y += boardid.c
 
 verstage-y += chromeos.c
 verstage-y += memlayout.ld
@@ -26,6 +28,7 @@ verstage-y += reset.c
 romstage-y += boardid.c
 romstage-y += chromeos.c
 romstage-y += memlayout.ld
+romstage-y += pwm_regulator.c
 romstage-y += romstage.c
 romstage-y += sdram_configs.c
 

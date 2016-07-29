@@ -761,7 +761,10 @@ static int list_cmos_entry(const cmos_entry_t * e, int show_name)
 		break;
 
 	case CMOS_OP_RESERVED:
-		BUG();
+		fprintf(stderr,
+			"%s: Cannot access reserved CMOS area (for %s).\n",
+			prog_name, e->name);
+		return 1;
 
 	case CMOS_AREA_OUT_OF_RANGE:
 		fprintf(stderr,

@@ -32,7 +32,7 @@ static int i2c_early_init_bus(unsigned bus)
 	const struct lpss_i2c_speed_config *sptr;
 	enum i2c_speed speed;
 	pci_devfn_t dev;
-	unsigned devfn;
+	int devfn;
 	uintptr_t base;
 	uint32_t value;
 	void *reg;

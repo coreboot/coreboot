@@ -23,10 +23,12 @@ ifeq ($(CONFIG_BOOTBLOCK_CONSOLE),y)
 bootblock-$(CONFIG_DRIVERS_UART) += ../common/uart.c
 endif
 bootblock-y += ../common/gpio.c
+bootblock-y += ../common/pwm.c
 bootblock-y += bootblock.c
 bootblock-y += clock.c
 bootblock-y += gpio.c
 bootblock-y += mmu_operations.c
+bootblock-y += saradc.c
 bootblock-y += timer.c
 
 verstage-y += ../common/cbmem.c

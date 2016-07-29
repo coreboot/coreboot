@@ -47,11 +47,11 @@ static const struct pll_div gpll_init_cfg = PLL_DIVISORS(GPLL_HZ, 2, 2, 1);
 static const struct pll_div cpll_init_cfg = PLL_DIVISORS(CPLL_HZ, 1, 2, 2);
 static const struct pll_div ppll_init_cfg = PLL_DIVISORS(PPLL_HZ, 2, 2, 1);
 
-static const struct pll_div apll_1600_cfg = PLL_DIVISORS(1600*MHz, 3, 1, 1);
-static const struct pll_div apll_600_cfg = PLL_DIVISORS(600*MHz, 1, 2, 1);
+static const struct pll_div apll_1512_cfg = PLL_DIVISORS(1512*MHz, 1, 1, 1);
+static const struct pll_div apll_600_cfg = PLL_DIVISORS(600*MHz, 1, 3, 1);
 
 static const struct pll_div *apll_cfgs[] = {
-	[APLL_1600_MHZ] = &apll_1600_cfg,
+	[APLL_1512_MHZ] = &apll_1512_cfg,
 	[APLL_600_MHZ] = &apll_600_cfg,
 };
 

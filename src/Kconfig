@@ -1189,7 +1189,7 @@ config CBFS_SIZE
 	default ROM_SIZE
 	help
 	  This is the part of the ROM actually managed by CBFS.  Set it to be
-	  equal to the full rom size if that hasn't been overridden by the
+	  equal to the full ROM size if that hasn't been overridden by the
 	  chipset or mainboard.
 
 config CREATE_BOARD_CHECKLIST

@@ -30,7 +30,7 @@
 #include <stdlib.h>
 #include <arch/cpu.h>
 
-/* Return the cpu struct which is at the high memory address of the stack.
+/* Return the CPU struct which is at the high memory address of the stack.
  */
 struct cpu_info *cpu_info(void)
 {

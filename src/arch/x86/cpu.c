@@ -96,7 +96,7 @@ static int deep_magic_nexgen_probe(void)
 }
 #endif
 
-/* List of cpu vendor strings along with their normalized
+/* List of CPU vendor strings along with their normalized
  * id values.
  */
 static struct {
@@ -132,7 +132,7 @@ static const char *x86_vendor_name[] = {
 static const char *cpu_vendor_name(int vendor)
 {
 	const char *name;
-	name = "<invalid cpu vendor>";
+	name = "<invalid CPU vendor>";
 	if ((vendor < (ARRAY_SIZE(x86_vendor_name))) &&
 		(x86_vendor_name[vendor] != 0))
 	{
@@ -246,7 +246,7 @@ void cpu_initialize(unsigned int index)
 
 	cpu = info->cpu;
 	if (!cpu) {
-		die("CPU: missing cpu device structure");
+		die("CPU: missing CPU device structure");
 	}
 
 	if (cpu->initialized)
@@ -254,7 +254,7 @@ void cpu_initialize(unsigned int index)
 
 	post_log_path(cpu);
 
-	/* Find what type of cpu we are dealing with */
+	/* Find what type of CPU we are dealing with */
 	identify_cpu(cpu);
 	printk(BIOS_DEBUG, "CPU: vendor %s device %x\n",
 		cpu_vendor_name(cpu->vendor), cpu->device);
@@ -273,11 +273,11 @@ void cpu_initialize(unsigned int index)
 		set_cpu_ops(cpu);
 		cpu->device += c.x86_mask;
 		if(!cpu->ops) die("Unknown cpu");
-		printk(BIOS_DEBUG, "Using generic cpu ops (good)\n");
+		printk(BIOS_DEBUG, "Using generic CPU ops (good)\n");
 	}
 
 
-	/* Initialize the cpu */
+	/* Initialize the CPU */
 	if (cpu->ops && cpu->ops->init) {
 		cpu->enabled = 1;
 		cpu->initialized = 1;

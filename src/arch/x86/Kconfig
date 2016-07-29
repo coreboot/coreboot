@@ -190,7 +190,7 @@ config VERSTAGE_ADDR
 	default 0x2000000
 
 # Use the post CAR infrastructure for tearing down cache-as-ram
-# from a program loaded in ram and subsequently loading ramstage.
+# from a program loaded in RAM and subsequently loading ramstage.
 config POSTCAR_STAGE
 	def_bool n
 

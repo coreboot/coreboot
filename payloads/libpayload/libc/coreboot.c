@@ -291,7 +291,6 @@ int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 			forward = phys_to_virt((void *)(unsigned long)
 					       ((struct cb_forward *)rec)->forward);
 			return cb_parse_header(forward, len, info);
-			continue;
 		case CB_TAG_MEMORY:
 			cb_parse_memory(ptr, info);
 			break;

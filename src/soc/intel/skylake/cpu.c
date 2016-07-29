@@ -352,7 +352,7 @@ static void cpu_core_init(device_t cpu)
 	/* Clear out pending MCEs */
 	configure_mca();
 
-	/* Enable the local cpu apics */
+	/* Enable the local CPU apics */
 	enable_lapic_tpr();
 	setup_lapic();
 
@@ -487,7 +487,7 @@ int soc_skip_ucode_update(u32 current_patch_id, u32 new_patch_id)
 	 * 0x08b with the Patch revision id one less than the id in the
 	 * microcode binary. The PRMRR support is indicated in the MSR
 	 * MTRRCAP[12]. Check for this feature and avoid reloading the
-	 * same microcode during cpu initialization.
+	 * same microcode during CPU initialization.
 	 */
 	msr = rdmsr(MTRR_CAP_MSR);
 	return (msr.lo & PRMRR_SUPPORTED) && (current_patch_id == new_patch_id - 1);

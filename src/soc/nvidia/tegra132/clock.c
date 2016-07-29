@@ -508,7 +508,7 @@ void clock_cpu0_config(void)
 		/* wait and try again */
 		if (timeout >= CLK_SWITCH_TIMEOUT_US) {
 			printk(BIOS_ERR, "%s: PLLX programming timeout. "
-				"Switching cpu clock has falied.\n",
+				"Switching CPU clock has falied.\n",
 				__func__);
 			break;
 		}

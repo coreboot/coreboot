@@ -122,11 +122,11 @@ void reg_script_write_iosf(struct reg_script_context *ctx);
 /* BMBOUND has a 128MiB granularity. Highest address is 0xf8000000. */
 #define BUNIT_BMBOUND		0x25
 /*
- * BMBOUND_HI describes the available ram above 4GiB. It has a
+ * BMBOUND_HI describes the available RAM above 4GiB. It has a
  * 256MiB granularity. Physical address bits 35:28 are compared with 31:24
  * bits in the BMBOUND_HI register. Also note that since BMBOUND has 128MiB
  * granularity care needs to be taken with the e820 map to account for a hole
- * in the ram.
+ * in the RAM.
  */
 #define BUNIT_BMBOUND_HI	0x26
 #define BUNIT_MMCONF_REG	0x27

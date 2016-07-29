@@ -645,7 +645,7 @@ void lp0_resume(void)
 
 	power_on_main_cpu();
 
-	// Perform ram repair after cpu is powered on.
+	// Perform RAM repair after CPU is powered on.
 	ram_repair();
 
 	clear_cpu_resets();

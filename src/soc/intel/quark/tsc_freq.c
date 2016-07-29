@@ -20,7 +20,7 @@
 
 static unsigned long bus_freq_khz(void)
 {
-	/* cpu freq = 400 MHz */
+	/* CPU freq = 400 MHz */
 	return 400 * 1000;
 }
 

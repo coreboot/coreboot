@@ -22,8 +22,8 @@
 void bootblock_soc_init(void)
 {
 	/*
-	 * not only for speed but for preventing the cpu from crashing.
-	 * the cpu is not happy when cache is cleaned without mmu turned on.
+	 * not only for speed but for preventing the CPU from crashing.
+	 * the CPU is not happy when cache is cleaned without mmu turned on.
 	 */
 	mmu_init();
 	mmu_config_range(0, 4096, DCACHE_OFF);

@@ -200,7 +200,7 @@ static void low_power_start(void)
 	if (reg_val != RST_FLAG_VAL) {
 		write32(VECTOR_LOW_POWER_FLAG, 0x0);
 		jump_bx(CORE_RESET_INIT_ADDRESS);
-		/* restart cpu execution and never returns. */
+		/* restart CPU execution and never returns. */
 	}
 
 	/* Workaround for iROM EVT1.  A7 core execution may flow into incorrect
@@ -276,7 +276,7 @@ static void configure_secondary_cores(void)
 	 * WFI state (in bootblock). The power_down_core will be more helpful
 	 * when we want to use SMP inside firmware. */
 
-	/* Clear boot reg (hotplug address) in cpu states */
+	/* Clear boot reg (hotplug address) in CPU states */
 	write32((void *)&exynos_cpu_states->hotplug_address, 0);
 
 	/* set low_power flag and address */

@@ -33,7 +33,7 @@
 .arm
 ENTRY(stage_entry)
 	/*
-	 * Set the cpu to System mode with IRQ and FIQ disabled. Prefetch/Data
+	 * Set the CPU to System mode with IRQ and FIQ disabled. Prefetch/Data
 	 * aborts may happen early and crash before the abort handlers are
 	 * installed, but at least the problem will show up near the code that
 	 * causes it.

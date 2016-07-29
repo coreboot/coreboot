@@ -109,7 +109,7 @@ config DCACHE_RAM_ROMSTAGE_STACK_SIZE
 	default 0x2000
 	help
 	  The amount of anticipated stack usage from the data cache
-	  during pre-ram rom stage execution.
+	  during pre-ram ROM stage execution.
 
 config HAVE_MRC
 	bool "Add a Memory Reference Code binary"

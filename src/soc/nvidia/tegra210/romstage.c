@@ -79,7 +79,7 @@ void romstage(void)
 	cbmem_initialize_empty();
 
 	ccplex_cpu_prepare();
-	printk(BIOS_INFO, "T210 romstage: cpu prepare done\n");
+	printk(BIOS_INFO, "T210 romstage: CPU prepare done\n");
 
 	romstage_mainboard_init();
 

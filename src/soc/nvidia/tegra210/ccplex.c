@@ -72,7 +72,7 @@ static void request_ram_repair(void)
 
 	stopwatch_init(&sw);
 
-	/* Perform ram repair */
+	/* Perform RAM repair */
 	reg = read32(&flow->ram_repair);
 	reg |= req;
 	write32(&flow->ram_repair, reg);

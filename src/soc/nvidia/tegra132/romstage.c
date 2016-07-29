@@ -72,7 +72,7 @@ void romstage(void)
 	cbmem_initialize_empty();
 
 	ccplex_cpu_prepare();
-	printk(BIOS_INFO, "T132 romstage: cpu prepare done\n");
+	printk(BIOS_INFO, "T132 romstage: CPU prepare done\n");
 
 	ccplex_load_mts();
 	printk(BIOS_INFO, "T132 romstage: MTS loading done\n");

@@ -51,18 +51,25 @@ static enum dram_speeds get_sdram_index(void)
 
 	id = board_id();
 
-	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_KEVIN)) {
-		if (id < 3)
+	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_KEVIN))
+		switch (id) {
+		case 0:
+		case 1:
+		case 2:
 			return dram_200MHz;
-		else if (id == 3)
+		case 3:
 			return dram_666MHz_NO_ODT;
-		else
-			return  dram_800MHz;
-	}
-	else if (IS_ENABLED(CONFIG_BOARD_GOOGLE_GRU))
-		return dram_800MHz_NO_ODT;
-	else
-		return dram_200MHz;
+		default:
+			return dram_800MHz;
+		}
+
+	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_GRU))
+		switch (id) {
+		case 0:
+			return dram_800MHz_NO_ODT;
+		default:
+			return dram_800MHz;
+		}
 }
 
 const struct rk3399_sdram_params *get_sdram_config()

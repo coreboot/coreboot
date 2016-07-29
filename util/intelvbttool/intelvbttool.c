@@ -515,13 +515,20 @@ int main(int argc, char **argv)
 {
 	const void *ptr;
 	int fd;
+	off_t offset;
 	if (argc == 2) {
 		fd = open(argv[1], O_RDONLY);
-		ptr = mmap(0, 65536, PROT_READ, MAP_SHARED, fd, 0);
+		offset = 0;
 	} else {
 		fd = open("/dev/mem", O_RDONLY);
-		ptr = mmap(0, 65536, PROT_READ, MAP_SHARED, fd, 0xc0000);
+		offset = 0xc0000;
 	}
+	if (fd < 0) {
+		fprintf(stderr, "open failed: %s\n", strerror(errno));
+		return 1;
+	}
+
+	ptr = mmap(0, 65536, PROT_READ, MAP_SHARED, fd, offset);
 	if (ptr == MAP_FAILED) {
 		fprintf(stderr, "mmap failed: %s\n", strerror(errno));
 		return 1;

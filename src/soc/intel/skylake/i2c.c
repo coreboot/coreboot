@@ -24,7 +24,7 @@
 
 uintptr_t lpss_i2c_base_address(unsigned bus)
 {
-	unsigned devfn;
+	int devfn;
 	struct device *dev;
 	struct resource *res;
 

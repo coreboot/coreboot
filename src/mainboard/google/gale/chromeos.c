@@ -33,10 +33,12 @@
 static int get_rec_sw_gpio_pin(void)
 {
 	uint8_t board_rev = board_id();
+
 	switch (board_rev) {
 	case BOARD_ID_GALE_PROTO:
 	case BOARD_ID_GALE_EVT:
-	case BOARD_ID_GALE_EVT2:
+	case BOARD_ID_GALE_EVT2_0:
+	case BOARD_ID_GALE_EVT2_1:
 		return 7;
 	case BOARD_ID_GALE_EVT3:
 	default:
@@ -50,7 +52,8 @@ static int get_wp_status_gpio_pin(void)
 	switch (board_rev) {
 	case BOARD_ID_GALE_PROTO:
 	case BOARD_ID_GALE_EVT:
-	case BOARD_ID_GALE_EVT2:
+	case BOARD_ID_GALE_EVT2_0:
+	case BOARD_ID_GALE_EVT2_1:
 		return 6;
 	case BOARD_ID_GALE_EVT3:
 	default:

@@ -77,7 +77,7 @@ _start:
 	/* Push the thread pointer. */
 	push	$0
 #endif
-	/* Push the cpu index and struct cpu */
+	/* Push the CPU index and struct CPU */
 	push	$0
 	push	$0
 
@@ -331,12 +331,12 @@ gdtaddr:
 	 * which is defined in entry32.inc
 	 *
 	 * When the machine is initially started, we use a very simple
-	 * gdt from rom (that in entry32.inc) which only contains those
+	 * gdt from ROM (that in entry32.inc) which only contains those
 	 * entries we need for protected mode.
 	 *
 	 * When we're executing code from RAM, we want to do more complex
-	 * stuff, like initializing PCI option roms in real mode, or doing
-	 * a resume from a suspend to ram.
+	 * stuff, like initializing PCI option ROMs in real mode, or doing
+	 * a resume from a suspend to RAM.
 	 */
 gdt:
 	/* selgdt 0, unused */

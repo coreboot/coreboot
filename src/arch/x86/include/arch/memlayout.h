@@ -19,7 +19,7 @@
 #include <rules.h>
 
 #if ENV_BOOTBLOCK || ENV_ROMSTAGE || ENV_VERSTAGE
-/* No .data or .bss sections. Cache as ram is handled separately. */
+/* No .data or .bss sections. Cache as RAM is handled separately. */
 #define ARCH_STAGE_HAS_DATA_SECTION 0
 #define ARCH_STAGE_HAS_BSS_SECTION 0
 #endif

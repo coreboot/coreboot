@@ -18,7 +18,7 @@
 #define __ARCH_SYMBOLS_H
 
 /*
- * The _car_region_[start|end] covers the entirety of the cache as ram
+ * The _car_region_[start|end] covers the entirety of the cache as RAM
  * region. All other symbols with the _car prefix a subsets of this
  * larger region.
  */

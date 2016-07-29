@@ -420,7 +420,7 @@ void x86_exception(struct eregs *info)
 			out_buffer[2] = hexchars[signo & 0xf];
 			out_buffer[3] = '\0';
 			break;
-		case 'g': /* return the value of the cpu registers */
+		case 'g': /* return the value of the CPU registers */
 			copy_to_hex(out_buffer, &gdb_stub_registers, sizeof(gdb_stub_registers));
 			break;
 		case 'G': /* set the value of the CPU registers - return OK */

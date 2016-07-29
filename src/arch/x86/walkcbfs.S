@@ -47,7 +47,7 @@ walkcbfs_asm:
 	mov CBFS_HEADER_ROMSIZE(%eax), %ecx
 	bswap %ecx
 	mov $0, %ebx
-	sub %ecx, %ebx	/* rom base address in ebx */
+	sub %ecx, %ebx	/* ROM base address in ebx */
 	mov CBFS_HEADER_OFFSET(%eax), %ecx
 	bswap %ecx
 	add %ecx, %ebx	/* address where we start looking for LARCHIVEs */

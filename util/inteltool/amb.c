@@ -439,6 +439,7 @@ int print_ambs(struct pci_dev *dev, struct pci_access *pacc)
 
 		max_channel = pci_read_byte(dev16, 0x56)/max_branch;
 		max_amb = pci_read_byte(dev16, 0x57);
+		pci_free_dev(dev16);
 		break;
 
 	default:

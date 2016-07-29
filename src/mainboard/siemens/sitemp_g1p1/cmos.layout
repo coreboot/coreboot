@@ -132,7 +132,7 @@ enumerations
 # CPU/Chassis FAN Control: polarity
 13  0   Active_high
 13  1   Active_low
-# Temperature °C
+# Temperature Â°C
 14  0   30
 14  1   35
 14  2   40

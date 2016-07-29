@@ -362,16 +362,16 @@ static const char * adt7475_detect( void ) {
 const struct fan_control cpu_fan_control_defaults = {
 	.enable = 0, // disable by default
 	.polarity = 0, // high by default
-	.t_min = 3, // default = 45캜
-	.t_max = 7, // 65캜
+	.t_min = 3, // default = 45째C
+	.t_max = 7, // 65째C
 	.pwm_min = 1, // default dutycycle = 30%
 	.pwm_max = 13, // 90%
 };
 const struct fan_control case_fan_control_defaults = {
 	.enable = 0, // disable by default
 	.polarity = 0, // high by default
-	.t_min = 2, // default = 40캜
-	.t_max = 8, // 70캜
+	.t_min = 2, // default = 40째C
+	.t_max = 8, // 70째C
 	.pwm_min = 0, // default dutycycle = 25%
 	.pwm_max = 13, // 90%
 };

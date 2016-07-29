@@ -27,7 +27,7 @@
 
 uintptr_t lpss_i2c_base_address(unsigned bus)
 {
-	unsigned devfn;
+	int devfn;
 	pci_devfn_t dev;
 
 	/* Find device+function for this controller */
@@ -49,7 +49,7 @@ static void i2c_early_init_bus(unsigned bus)
 	const struct lpss_i2c_speed_config *sptr;
 	enum i2c_speed speed;
 	pci_devfn_t dev;
-	unsigned devfn;
+	int devfn;
 	uintptr_t base;
 	uint32_t value;
 	void *reg;

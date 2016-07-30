@@ -32,7 +32,7 @@ struct selected_region {
 /*
  * this is placed at the start of the vboot work buffer. selected_region is used
  * for the verstage to return the location of the selected slot. buffer is used
- * by the vboot2 core. Keep the struct cpu architecture agnostic as it crosses
+ * by the vboot2 core. Keep the struct CPU architecture agnostic as it crosses
  * stage boundaries.
  */
 struct vb2_working_data {

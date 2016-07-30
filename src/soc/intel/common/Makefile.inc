@@ -1,5 +1,7 @@
 ifeq ($(CONFIG_SOC_INTEL_COMMON),y)
 
+bootblock-y += util.c
+
 verstage-$(CONFIG_SOC_INTEL_COMMON_LPSS_I2C) += lpss_i2c.c
 verstage-$(CONFIG_SOC_INTEL_COMMON_RESET) += reset.c
 
@@ -11,6 +13,8 @@ romstage-$(CONFIG_SOC_INTEL_COMMON_LPSS_I2C) += lpss_i2c.c
 romstage-$(CONFIG_SOC_INTEL_COMMON_RESET) += reset.c
 romstage-y += util.c
 romstage-$(CONFIG_MMA) += mma.c
+
+postcar-y += util.c
 
 ramstage-y += hda_verb.c
 ramstage-$(CONFIG_CACHE_MRC_SETTINGS) += mrc_cache.c

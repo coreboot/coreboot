@@ -53,7 +53,7 @@ vga_fb_init(void)
 	vga_gr_write(0x07, 0x00);
 	vga_gr_write(0x08, 0xFF);
 
-	/* o/e enable: ram enable */
+	/* o/e enable: RAM enable */
 	vga_misc_mask(0x22, 0x22);
 }
 

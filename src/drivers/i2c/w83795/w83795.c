@@ -361,7 +361,7 @@ static void w83795_hwm_init(struct device *dev)
 	info = cpu_info();
 	cpu = info->cpu;
 	if (!cpu)
-		die("CPU: missing cpu device structure");
+		die("CPU: missing CPU device structure");
 
 	if (cpu->vendor == X86_VENDOR_AMD)
 		w83795_init(dev, THERMAL_CRUISE_MODE, DTS_SRC_AMD_SBTSI);

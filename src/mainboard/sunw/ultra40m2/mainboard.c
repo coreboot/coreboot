@@ -52,8 +52,10 @@ static void emc6d103_init(void)
 	};
 
 	struct device * const dev = dev_find_slot_on_smbus(2, 0x2d);
-	if (dev == NULL)
+	if (dev == NULL) {
 		printk(BIOS_WARNING, "EMC6D103 not found\n");
+		return;
+	}
 
 	printk(BIOS_SPEW, "%s EMC6D103 id: %x %x\n", __func__, smbus_read_byte(dev, 0x3e), smbus_read_byte(dev, 0x3f));
 

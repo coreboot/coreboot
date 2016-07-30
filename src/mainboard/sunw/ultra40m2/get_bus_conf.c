@@ -79,7 +79,7 @@ static unsigned get_hcid(unsigned i)
 
 	// we may need more way to find out hcid: subsystem id? GPIO read ?
 
-	// we need use id for 1. bus num, 2. mptable, 3. acpi table
+	// we need use id for 1. bus num, 2. mptable, 3. ACPI table
 
 	return id;
 }

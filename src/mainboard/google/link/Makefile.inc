@@ -31,7 +31,7 @@ SPD_SOURCES += micron_4Gb_1600_1.35v_x16
 
 SPD_DEPS := $(foreach f, $(SPD_SOURCES), src/mainboard/$(MAINBOARDDIR)/$(f).spd.hex)
 
-# Include spd rom data
+# Include spd ROM data
 $(SPD_BIN): $(SPD_DEPS)
 	for f in $+; \
 	  do for c in $$(cat $$f | grep -v ^#); \

@@ -235,7 +235,7 @@ void m3885_configure_multikey(void)
 	u8 reg8;
 	u8 kstate5_flags, offs, maxvars;
 
-	/* ram bank 0 */
+	/* RAM bank 0 */
 	kstate5_flags = m3885_get_variable(0x0c);
 	m3885_set_variable(0x0c, kstate5_flags & ~(7 << 4));
 
@@ -245,7 +245,7 @@ void m3885_configure_multikey(void)
 	}
 
 
-	/* ram bank 2 */
+	/* RAM bank 2 */
 	m3885_set_variable(0x0c, (kstate5_flags & (~(7 << 4))) | (2 << 4));
 
 	/* Get the number of variables */
@@ -254,7 +254,7 @@ void m3885_configure_multikey(void)
 	if (maxvars >= 35) {
 		offs = m3885_get_variable(0x23);
 		if ((offs > 0xc0) || (offs < 0x80)) {
-			printk(BIOS_DEBUG, "M388x does not have a valid ram offset (0x%x)\n", offs);
+			printk(BIOS_DEBUG, "M388x does not have a valid RAM offset (0x%x)\n", offs);
 		} else {
 			printk(BIOS_DEBUG, "Writing Fn-Table to M388x RAM offset 0x%x\n", offs);
 			for (i=0; i < ARRAY_SIZE(function_ram); i++) {

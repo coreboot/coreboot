@@ -1,4 +1,4 @@
-At this time, For acpi support We got
+At this time, For ACPI support We got
 1. support AMK K8 SRAT --- dynamically (coreboot run-time)  (src/northbridge/amd/amdk8/amdk8_acpi.c)
 2. support MADT ---- dynamically (coreboot run-time)  (src/northbridge/amd/amdk8/amdk8_acpi.c , src/mainboard/amd/serengeti_cheetah/acpi_tables.c)
 3. support DSDT ---- dynamically (Compile time, coreboot run-time, ACPI run-time) (src/mainboard/amd/serengeti_cheetah/{acpi/*, get_bus_conf.c}, src/northbridge/amd/amdk8/get_sblk_pci1234.c)

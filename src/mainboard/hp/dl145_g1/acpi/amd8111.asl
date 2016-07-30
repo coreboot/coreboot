@@ -597,7 +597,7 @@ Device (IDE0) {
 	}
 }
 Device (PMF) {
-	// acpi smbus   it should be 0x00040003 if 8131 present
+	// ACPI smbus   it should be 0x00040003 if 8131 present
 	Method (_ADR, 0, NotSerialized)
 	{
 		Return (DADD(\_SB.PCI0.SBDN, 0x00010003))

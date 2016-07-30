@@ -19,12 +19,12 @@
 
 static acpi_cstate_t cst_entries[] = {
 	{
-		/* acpi C1 / cpu C1 */
+		/* ACPI C1 / CPU C1 */
 		1, 0x01, 1000,
 		{ ACPI_ADDRESS_SPACE_FIXED, 1, 2, { 1 }, 0, 0 }
 	},
 	{
-		/* acpi C2 / cpu C2 */
+		/* ACPI C2 / CPU C2 */
 		2, 0x01,  500,
 		{ ACPI_ADDRESS_SPACE_FIXED, 1, 2, { 1 }, 0x10, 0 }
 	},

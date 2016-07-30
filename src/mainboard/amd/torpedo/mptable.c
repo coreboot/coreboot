@@ -77,7 +77,7 @@ static void *smp_write_config_table(void *v)
   mptable_init(mc, LOCAL_APIC_ADDR);
   memcpy(mc->mpc_oem, "AMD     ", 8);
 
-  /*Inagua used dure core cpu with one die */
+  /*Inagua used dure core CPU with one die */
   boot_apic_id = lapicid();
   apic_version = lapic_read(LAPIC_LVR) & 0xff;
   result = cpuid(1);

@@ -72,7 +72,7 @@ static void cpu_pci_domain_read_resources(struct device *dev)
 		fw_cfg_load_file("etc/e820", list);
 		for (i = 0; i < size/sizeof(*list); i++) {
 			switch (list[i].type) {
-			case 1: /* ram */
+			case 1: /* RAM */
 				printk(BIOS_DEBUG, "QEMU: e820/ram: 0x%08llx +0x%08llx\n",
 				       list[i].address, list[i].length);
 				if (list[i].address == 0) {
@@ -135,7 +135,7 @@ static void cpu_pci_domain_read_resources(struct device *dev)
 		 * Reserve the region between top-of-ram and the
 		 * mmconf xbar (ar 0xb0000000), so coreboot doesn't
 		 * place pci bars there.  The region isn't declared as
-		 * pci io window in the acpi tables (\_SB.PCI0._CRS).
+		 * pci io window in the ACPI tables (\_SB.PCI0._CRS).
 		 */
 		res = new_resource(dev, idx++);
 		res->base = tomk * 1024;

@@ -20,7 +20,7 @@ ramstage-y += chromeos.c
 
 SPD_BIN = $(obj)/spd.bin
 
-# Include spd rom data
+# Include spd ROM data
 $(SPD_BIN):
 	xxd -rg1 $(src)/mainboard/samsung/lumpy/spd.hex >| $@
 

@@ -54,10 +54,10 @@
 #define POWER_DOWN_BY_CHANNEL		0	///< Channel power down mode
 #define POWER_DOWN_BY_CHIP_SELECT	1	///< Chip select power down mode
 
-/*  Select the cpu family.  */
+/*  Select the CPU family.  */
 
 
-/*  Select the cpu socket type.  */
+/*  Select the CPU socket type.  */
 #define INSTALL_G34_SOCKET_SUPPORT  TRUE
 #define INSTALL_C32_SOCKET_SUPPORT  FALSE
 #define INSTALL_S1G3_SOCKET_SUPPORT FALSE

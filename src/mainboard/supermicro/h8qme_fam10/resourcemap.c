@@ -268,7 +268,7 @@ static void setup_mb_resource_map(void)
 		 *	   This field defines the highest bus number in configuration region i
 		 */
 		// WARD CHANGED
-		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0xE0), 0x0000FC88, 0x3f000203, /* link 2 of cpu 0 --> Nvidia MCP55 Pro */
+		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0xE0), 0x0000FC88, 0x3f000203, /* link 2 of CPU 0 --> Nvidia MCP55 Pro */
 		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0xE4), 0x0000FC88, 0x00000000,
 		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0xE8), 0x0000FC88, 0x00000000,
 		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0xEC), 0x0000FC88, 0x00000000,

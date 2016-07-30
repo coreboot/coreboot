@@ -27,7 +27,7 @@
 #include "SbPlatform.h"
 
 /*extern*/ u16 pm_base = 0x800;
-/* pm_base should be set in sb acpi */
+/* pm_base should be set in sb ACPI */
 /* pm_base should be got from bar2 of sb900. Here I compact ACPI
  * registers into 32 bytes limit.
  * */

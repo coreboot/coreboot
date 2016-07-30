@@ -224,5 +224,5 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	dump_pci_device_index_wait(PCI_DEV(0, 0x19, 2), 0x98);
 #endif
 
-        post_cache_as_ram(); // bsp swtich stack to ram and copy sysinfo ram now
+        post_cache_as_ram(); // bsp swtich stack to RAM and copy sysinfo RAM now
 }

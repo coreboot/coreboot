@@ -25,7 +25,7 @@
 #include "southbridge/amd/sb600/sb600.h"
 
 /*extern*/ u16 pm_base = 0x800;
-/* pm_base should be set in sb acpi */
+/* pm_base should be set in sb ACPI */
 /* pm_base should be got from bar2 of rs690. Here I compact ACPI
  * registers into 32 bytes limit.
  * */

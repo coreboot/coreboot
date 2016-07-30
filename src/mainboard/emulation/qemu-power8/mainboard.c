@@ -26,7 +26,7 @@ static void mainboard_enable(device_t dev)
 			;
 	}
 
-	// Where does ram live?
+	// Where does RAM live?
 	ram_resource(dev, 0, 2048, 32768);
 	cbmem_recovery(0);
 }

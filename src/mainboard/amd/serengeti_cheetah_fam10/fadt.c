@@ -24,7 +24,7 @@
 #include <console/console.h>
 #include <arch/acpi.h>
 
-extern u32 pm_base; /* pm_base should be set in sb acpi */
+extern u32 pm_base; /* pm_base should be set in sb ACPI */
 
 void acpi_create_fadt(acpi_fadt_t *fadt,acpi_facs_t *facs,void *dsdt){
 

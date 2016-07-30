@@ -39,7 +39,7 @@ SPD_SOURCES  = HYNIX-H5TQ2G83CFR HYNIX-H5TQ4G83MFR
 
 SPD_DEPS := $(foreach f, $(SPD_SOURCES), src/mainboard/$(MAINBOARDDIR)/$(f).spd.hex)
 
-# Include spd rom data
+# Include spd ROM data
 $(SPD_BIN): $(SPD_DEPS)
 	for f in $+; \
 	  do for c in $$(cat $$f | grep -v ^#); \

@@ -42,7 +42,7 @@ SPD_SOURCES += empty                    # 0b1111
 
 SPD_DEPS := $(foreach f, $(SPD_SOURCES), src/mainboard/$(MAINBOARDDIR)/spd/$(f).spd.xxd)
 
-# Include spd rom data
+# Include spd ROM data
 $(SPD_BIN): $(SPD_DEPS)
 	for f in $+; \
 	  do xxd -rg1 $$f; \

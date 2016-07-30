@@ -172,7 +172,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "LXBIOS", "LXB-DSDT", 1)
 			Notify (\_SB.PWRB, 0x02)
 		}
 	}
-	OperationRegion (KSB0, SystemIO, 0x72, 0x02) // CMOS ram (?)
+	OperationRegion (KSB0, SystemIO, 0x72, 0x02) // CMOS RAM (?)
 	Field (KSB0, ByteAcc, NoLock, Preserve) {
 		KSBI,   8, // Index
 		KSBD,   8  // Data

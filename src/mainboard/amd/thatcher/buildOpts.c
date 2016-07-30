@@ -30,13 +30,13 @@
 #include "Filecode.h"
 #define FILECODE PLATFORM_SPECIFIC_OPTIONS_FILECODE
 
-/*  Select the cpu family.  */
+/*  Select the CPU family.  */
 #define INSTALL_FAMILY_10_SUPPORT FALSE
 #define INSTALL_FAMILY_12_SUPPORT FALSE
 #define INSTALL_FAMILY_14_SUPPORT FALSE
 #define INSTALL_FAMILY_15_MODEL_1x_SUPPORT TRUE
 
-/*  Select the cpu socket type.  */
+/*  Select the CPU socket type.  */
 #define INSTALL_G34_SOCKET_SUPPORT  FALSE
 #define INSTALL_C32_SOCKET_SUPPORT  FALSE
 #define INSTALL_S1G3_SOCKET_SUPPORT FALSE

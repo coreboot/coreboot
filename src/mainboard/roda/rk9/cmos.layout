@@ -74,7 +74,7 @@ entries
 
 #1004        20       r       0        unused
 
-# ram initialization internal data
+# RAM initialization internal data
 1024        128       r       0        read_training_results
 
 # -----------------------------------------------------------------

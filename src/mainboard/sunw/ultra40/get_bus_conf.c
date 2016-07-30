@@ -188,7 +188,7 @@ void get_bus_conf(void)
 
 	/* CK804b */
 
-	if (pci1234[2] & 0xf) {	//if the second cpu is installed
+	if (pci1234[2] & 0xf) {	//if the second CPU is installed
 		bus_ck804b_0 = (pci1234[2] >> 16) & 0xff;
 #if 0
 		dev = dev_find_slot(bus_ck804b_0, PCI_DEVFN(sbdnb + 0x09, 0));

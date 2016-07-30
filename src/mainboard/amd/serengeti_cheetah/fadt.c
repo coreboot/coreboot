@@ -21,7 +21,7 @@
 #include <console/console.h>
 #include <arch/acpi.h>
 
-extern unsigned pm_base; /* pm_base should be set in sb acpi */
+extern unsigned pm_base; /* pm_base should be set in sb ACPI */
 
 void acpi_create_fadt(acpi_fadt_t *fadt,acpi_facs_t *facs,void *dsdt){
 

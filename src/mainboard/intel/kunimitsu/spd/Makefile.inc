@@ -38,7 +38,7 @@ SPD_SOURCES += empty                                    # 0b1111
 
 SPD_DEPS := $(foreach f, $(SPD_SOURCES), src/mainboard/$(MAINBOARDDIR)/spd/$(f).spd.hex)
 
-# Include spd rom data
+# Include spd ROM data
 $(SPD_BIN): $(SPD_DEPS)
 	for f in $+; \
 	  do for c in $$(cat $$f | grep -v ^#); \

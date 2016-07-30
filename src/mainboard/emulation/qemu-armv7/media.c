@@ -14,7 +14,7 @@
  */
 #include <boot_device.h>
 
-/* Maps directly to NOR flash up to rom size. */
+/* Maps directly to NOR flash up to ROM size. */
 static const struct mem_region_device boot_dev =
 	MEM_REGION_DEV_RO_INIT((void *)0x0, CONFIG_ROM_SIZE);
 

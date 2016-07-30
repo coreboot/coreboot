@@ -118,21 +118,21 @@ int fw_cfg_max_cpus(void)
 /* ---------------------------------------------------------------------- */
 
 /*
- * Starting with release 1.7 qemu provides acpi tables via fw_cfg.
+ * Starting with release 1.7 qemu provides ACPI tables via fw_cfg.
  * Main advantage is that new (virtual) hardware which needs acpi
  * support JustWorks[tm] without having to patch & update the firmware
  * (seabios, coreboot, ...) accordingly.
  *
  * Qemu provides a etc/table-loader file with instructions for the
  * firmware:
- *   - A "load" instruction to fetch acpi data from fw_cfg.
+ *   - A "load" instruction to fetch ACPI data from fw_cfg.
  *   - A "pointer" instruction to patch a pointer.  This is needed to
  *     get table-to-table references right, it is basically a
- *     primitive dynamic linker for acpi tables.
- *   - A "checksum" instruction to generate acpi table checksums.
+ *     primitive dynamic linker for ACPI tables.
+ *   - A "checksum" instruction to generate ACPI table checksums.
  *
  * If a etc/table-loader file is found we'll go try loading the acpi
- * tables from fw_cfg, otherwise we'll fallback to the acpi tables
+ * tables from fw_cfg, otherwise we'll fallback to the ACPI tables
  * compiled in.
  */
 
@@ -211,7 +211,7 @@ unsigned long fw_cfg_acpi_tables(unsigned long start)
 	if (rc < 0)
 		return 0;
 
-	printk(BIOS_DEBUG, "QEMU: found acpi tables in fw_cfg.\n");
+	printk(BIOS_DEBUG, "QEMU: found ACPI tables in fw_cfg.\n");
 
 	max = rc / sizeof(*s);
 	s = malloc(rc);
@@ -259,7 +259,7 @@ unsigned long fw_cfg_acpi_tables(unsigned long start)
 
 			default:
 				/*
-				 * Should not happen.  acpi knows 1 and 2 byte ptrs
+				 * Should not happen.  ACPI knows 1 and 2 byte ptrs
 				 * too, but we are operating with 32bit offsets which
 				 * would simply not fit in there ...
 				 */
@@ -293,13 +293,13 @@ unsigned long fw_cfg_acpi_tables(unsigned long start)
 		};
 	}
 
-	printk(BIOS_DEBUG, "QEMU: loaded acpi tables from fw_cfg.\n");
+	printk(BIOS_DEBUG, "QEMU: loaded ACPI tables from fw_cfg.\n");
 	free(s);
 	free(addrs);
 	return ALIGN(current, 16);
 
 err:
-	printk(BIOS_DEBUG, "QEMU: loading acpi tables from fw_cfg failed.\n");
+	printk(BIOS_DEBUG, "QEMU: loading ACPI tables from fw_cfg failed.\n");
 	free(s);
 	free(addrs);
 	return 0;

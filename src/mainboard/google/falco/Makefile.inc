@@ -36,7 +36,7 @@ SPD_SOURCES += Samsung_M471B5674QH0   # 2GB / CH0 only  (RAM_ID=111)
 
 SPD_DEPS := $(foreach f, $(SPD_SOURCES), src/mainboard/$(MAINBOARDDIR)/$(f).spd.hex)
 
-# Include spd rom data
+# Include spd ROM data
 $(SPD_BIN): $(SPD_DEPS)
 	for f in $+; \
 	  do for c in $$(cat $$f | grep -v ^#); \

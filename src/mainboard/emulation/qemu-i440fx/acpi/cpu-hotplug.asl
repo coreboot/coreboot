@@ -43,7 +43,7 @@ Scope(\_SB) {
         PRS, 256
     }
     Method(PRSC, 0) {
-        // Local5 = active cpu bitmap
+        // Local5 = active CPU bitmap
         Store(PRS, Local5)
         // Local2 = last read byte from bitmap
         Store(Zero, Local2)
@@ -56,7 +56,7 @@ Scope(\_SB) {
                 // Shift down previously read bitmap byte
                 ShiftRight(Local2, 1, Local2)
             } Else {
-                // Read next byte from cpu bitmap
+                // Read next byte from CPU bitmap
                 Store(DerefOf(Index(Local5, ShiftRight(Local0, 3))), Local2)
             }
             // Local3 = active state for this cpu

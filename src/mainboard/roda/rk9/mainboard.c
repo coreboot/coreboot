@@ -24,7 +24,7 @@
 
 static void ec_setup(void)
 {
-	/* Thermal limits?  Values are from ectool's ram dump. */
+	/* Thermal limits?  Values are from ectool's RAM dump. */
 	ec_write(0xd1, 0x57); /* CPUH */
 	ec_write(0xd2, 0xc9); /* CPUL */
 	ec_write(0xd4, 0x64); /* SYSH */

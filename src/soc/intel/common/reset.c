@@ -33,6 +33,7 @@
 
 void WEAK reset_prepare(void) { /* do nothing */ }
 
+#if IS_ENABLED(CONFIG_HAVE_HARD_RESET)
 void hard_reset(void)
 {
 	reset_prepare();
@@ -41,6 +42,7 @@ void hard_reset(void)
 	while (1)
 		hlt();
 }
+#endif
 
 void soft_reset(void)
 {

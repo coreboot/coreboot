@@ -740,7 +740,7 @@ static void detect_hw_variant( device_t dev )
 		}
 		// restore changes made for device 2
 		dev2->bus->secondary = secondary;
-		dev2->bus->secondary = subordinate;
+		dev2->bus->subordinate = subordinate;
 		pci_write_config32(dev2, PCI_PRIMARY_BUS, pci_primary_bus);
 	}
 		break;

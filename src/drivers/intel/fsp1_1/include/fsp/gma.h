@@ -52,7 +52,7 @@ typedef struct {
 
 #define SBIOS_VERSION_SIZE 32
 
-/* mailbox 1: public acpi methods */
+/* mailbox 1: public ACPI methods */
 typedef struct {
 	u32	drdy;
 	u32	csts;

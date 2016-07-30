@@ -51,7 +51,7 @@ asmlinkage void *romstage_main(FSP_INFO_HEADER *fih)
 
 	timestamp_add_now(TS_START_ROMSTAGE);
 
-	/* Load microcode before ram init */
+	/* Load microcode before RAM init */
 	if (IS_ENABLED(CONFIG_SUPPORT_CPU_UCODE_IN_CBFS))
 		intel_update_microcode_from_cbfs();
 

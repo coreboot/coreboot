@@ -69,7 +69,7 @@ asmlinkage void *cache_as_ram_main(struct cache_as_ram_params *car_params)
 
 	set_fih_car(car_params->fih);
 
-	/* Return new stack value in ram back to assembly stub. */
+	/* Return new stack value in RAM back to assembly stub. */
 	return cache_as_ram_stage_main(car_params->fih);
 }
 
@@ -93,7 +93,7 @@ asmlinkage void *romstage_after_verstage(void)
 
 	set_fih_car(fih);
 
-	/* Return new stack value in ram back to assembly stub. */
+	/* Return new stack value in RAM back to assembly stub. */
 	return cache_as_ram_stage_main(fih);
 }
 

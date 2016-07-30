@@ -108,6 +108,11 @@ _start:
 	wrmsr
 #endif /* CONFIG_SOC_SETS_MSRS */
 
+	/* Display the MTRRs */
+#if IS_ENABLED(CONFIG_POSTCAR_CONSOLE)
+	call	soc_display_mtrrs
+#endif /* CONFIG_POSTCAR_CONSOLE */
+
 	/* Load and run ramstage. */
 	call	copy_and_run
 	/* Should never return. */

@@ -43,7 +43,7 @@ static inline int thread_can_yield(const struct thread *t)
 	return (t != NULL && t->can_yield);
 }
 
-/* Assumes current cpu info can switch. */
+/* Assumes current CPU info can switch. */
 static inline struct thread *cpu_info_to_thread(const struct cpu_info *ci)
 {
 	return ci->thread;

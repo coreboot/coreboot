@@ -41,7 +41,7 @@ static void copy_console_buffer(struct cbmem_console *old_cons_p,
 #ifdef __PRE_RAM__
 /*
  * While running from ROM, before DRAM is initialized, some area in cache as
- * ram space is used for the console buffer storage. The size and location of
+ * RAM space is used for the console buffer storage. The size and location of
  * the area are defined by the linker script with _(e)preram_cbmem_console.
  */
 

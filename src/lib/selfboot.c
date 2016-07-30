@@ -248,7 +248,7 @@ static int build_self_segment_list(
 
 	for (current_segment = first_segment;; ++current_segment) {
 		printk(BIOS_DEBUG,
-			"Loading segment from rom address 0x%p\n",
+			"Loading segment from ROM address 0x%p\n",
 			current_segment);
 
 		cbfs_decode_payload_segment(&segment, current_segment);

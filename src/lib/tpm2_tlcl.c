@@ -301,7 +301,7 @@ uint32_t tlcl_define_space(uint32_t space_index, size_t space_size)
 	nvds_cmd.publicInfo.nvIndex = HR_NV_INDEX + space_index;
 	nvds_cmd.publicInfo.nameAlg = TPM_ALG_SHA256;
 
-	/* Attributes common for all NV ram spaces used by firmware. */
+	/* Attributes common for all NVRAM spaces used by firmware. */
 	nvds_cmd.publicInfo.attributes.TPMA_NV_PPWRITE = 1;
 	nvds_cmd.publicInfo.attributes.TPMA_NV_AUTHREAD = 1;
 	nvds_cmd.publicInfo.attributes.TPMA_NV_PPREAD = 1;

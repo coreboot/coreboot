@@ -91,7 +91,7 @@ config RETURN_FROM_VERSTAGE
 	help
 	  If this is set, the verstage returns back to the calling stage instead
 	  of exiting to the succeeding stage so that the verstage space can be
-	  reused by the succeeding stage. This is useful if a ram space is too
+	  reused by the succeeding stage. This is useful if a RAM space is too
 	  small to fit both the verstage and the succeeding stage.
 
 config CHIPSET_PROVIDES_VERSTAGE_MAIN_SYMBOL
@@ -108,7 +108,7 @@ config VBOOT_DYNAMIC_WORK_BUFFER
 	depends on VBOOT
 	help
 	  This option is used when there isn't enough pre-main memory
-	  ram to allocate the vboot work buffer. That means vboot verification
+	  RAM to allocate the vboot work buffer. That means vboot verification
 	  is after memory init and requires main memory to back the work
 	  buffer.
 

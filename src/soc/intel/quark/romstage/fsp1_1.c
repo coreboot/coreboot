@@ -120,7 +120,8 @@ void soc_memory_init_params(struct romstage_params *params,
 	upd->RankMask = config->RankMask;
 	upd->RmuBaseAddress = (uintptr_t)rmu_file;
 	upd->RmuLength = rmu_file_len;
-	upd->SerialPortBaseAddress = UART_BASE_ADDRESS;
+	upd->SerialPortBaseAddress = console_log_level(BIOS_SPEW)
+		? UART_BASE_ADDRESS : 0;
 	upd->SmmTsegSize = IS_ENABLED(CONFIG_HAVE_SMI_HANDLER) ?
 		config->SmmTsegSize : 0;
 	upd->SocRdOdtVal = config->SocRdOdtVal;

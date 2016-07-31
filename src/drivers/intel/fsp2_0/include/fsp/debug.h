@@ -30,6 +30,7 @@ void fspm_display_upd_values(const struct FSPM_UPD *old,
 	const struct FSPM_UPD *new);
 void fsp_display_hobs(void);
 void fsp_verify_memory_init_hobs(void);
+void fsp_print_header_info(const struct fsp_header *hdr);
 
 /* Callbacks for displaying UPD parameters - place in a separate file
  * that is conditionally build with CONFIG_DISPLAY_UPD_DATA.

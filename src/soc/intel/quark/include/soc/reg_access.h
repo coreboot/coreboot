@@ -19,6 +19,7 @@
 #define __SIMPLE_DEVICE__
 
 #include <arch/io.h>
+#include <cpu/x86/cr.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <delay.h>
@@ -39,6 +40,7 @@ enum {
 	PCIE_RESET,
 	GPE0_REGS,
 	HOST_BRIDGE,
+	CPU_CR,
 };
 
 enum {
@@ -49,6 +51,27 @@ enum {
 #define SOC_ACCESS(cmd_, reg_, size_, mask_, value_, timeout_, reg_set_)   \
 	_REG_SCRIPT_ENCODE_RAW(REG_SCRIPT_COMMAND_##cmd_, SOC_TYPE,        \
 			       size_, reg_, mask_, value_, timeout_, reg_set_)
+
+/* CPU CRx register access macros */
+#define REG_CPU_CR_ACCESS(cmd_, reg_, mask_, value_, timeout_) \
+	SOC_ACCESS(cmd_, reg_, REG_SCRIPT_SIZE_32, mask_, value_, timeout_, \
+		CPU_CR)
+#define REG_CPU_CR_READ(reg_) \
+	REG_CPU_CR_ACCESS(READ, reg_, 0, 0, 0)
+#define REG_CPU_CR_WRITE(reg_, value_) \
+	REG_CPU_CR_ACCESS(WRITE, reg_, 0, value_, 0)
+#define REG_CPU_CR_AND(reg_, value_) \
+	REG_CPU_CR_RMW(reg_, value_, 0)
+#define REG_CPU_CR_RMW(reg_, mask_, value_) \
+	REG_CPU_CR_ACCESS(RMW, reg_, mask_, value_, 0)
+#define REG_CPU_CR_RXW(reg_, mask_, value_) \
+	REG_CPU_CR_ACCESS(RXW, reg_, mask_, value_, 0)
+#define REG_CPU_CR_OR(reg_, value_) \
+	REG_CPU_CR_RMW(reg_, 0xffffffff, value_)
+#define REG_CPU_CR_POLL(reg_, mask_, value_, timeout_) \
+	REG_CPU_CR_ACCESS(POLL, reg_, mask_, value_, timeout_)
+#define REG_CPU_CR_XOR(reg_, value_) \
+	REG_CPU_CR_RXW(reg_, 0xffffffff, value_)
 
 /* GPE0 controller register access macros */
 #define REG_GPE0_ACCESS(cmd_, reg_, mask_, value_, timeout_) \

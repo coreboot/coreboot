@@ -17,6 +17,7 @@
 #include <cbfs.h>
 #include <cbmem.h>
 #include <console/console.h>
+#include <elog.h>
 #include <fsp/api.h>
 #include <fsp/util.h>
 #include <memrange.h>
@@ -295,6 +296,9 @@ enum fsp_status fsp_memory_init(bool s3wake)
 	const char *name = CONFIG_FSP_M_CBFS;
 	struct memranges memmap;
 	struct range_entry freeranges[2];
+
+	if (IS_ENABLED(CONFIG_ELOG_BOOT_COUNT) && !s3wake)
+		boot_count_increment();
 
 	if (cbfs_boot_locate(&file_desc, name, NULL)) {
 		printk(BIOS_ERR, "Could not locate %s in CBFS\n", name);

@@ -68,13 +68,13 @@ enum cb_err fsp_validate_component(struct fsp_header *hdr,
 	membase = rdev_mmap(rdev, FSP_HDR_OFFSET, FSP_HDR_LEN);
 
 	if (membase == NULL) {
-		printk(BIOS_ERR, "Could not mmap() FSP header.\n");
+		printk(BIOS_CRIT, "Could not mmap() FSP header.\n");
 		return CB_ERR;
 	}
 
 	if (fsp_identify(hdr, membase) != CB_SUCCESS) {
 		rdev_munmap(rdev, membase);
-		printk(BIOS_ERR, "No valid FSP header\n");
+		printk(BIOS_CRIT, "No valid FSP header\n");
 		return CB_ERR;
 	}
 
@@ -85,7 +85,7 @@ enum cb_err fsp_validate_component(struct fsp_header *hdr,
 
 	/* Check if size specified in the header matches the cbfs file size */
 	if (region_device_sz(rdev) < hdr->image_size) {
-		printk(BIOS_ERR, "Component size bigger than cbfs file.\n");
+		printk(BIOS_CRIT, "Component size bigger than cbfs file.\n");
 		return CB_ERR;
 	}
 
@@ -103,7 +103,7 @@ void fsp_handle_reset(enum fsp_status status)
 	if (!fsp_reset_requested(status))
 		return;
 
-	printk(BIOS_DEBUG, "FSP: handling reset type %x\n", status);
+	printk(BIOS_SPEW, "FSP: handling reset type %x\n", status);
 
 	switch(status) {
 	case FSP_STATUS_RESET_REQUIRED_COLD:

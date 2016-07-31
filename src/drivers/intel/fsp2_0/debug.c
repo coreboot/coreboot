@@ -32,7 +32,7 @@ void fsp_debug_before_memory_init(fsp_memory_init_fn memory_init,
 	/* Display the call entry point and paramters */
 	if (!IS_ENABLED(CONFIG_DISPLAY_FSP_CALLS_AND_STATUS))
 		return;
-	printk(BIOS_DEBUG, "Calling FspMemoryInit: 0x%p\n", memory_init);
+	printk(BIOS_SPEW, "Calling FspMemoryInit: 0x%p\n", memory_init);
 	printk(BIOS_SPEW, "\t0x%p: raminit_upd\n", fspm_new_upd);
 	printk(BIOS_SPEW, "\t0x%p: &hob_list_ptr\n", fsp_get_hob_list_ptr());
 }
@@ -40,7 +40,7 @@ void fsp_debug_before_memory_init(fsp_memory_init_fn memory_init,
 void fsp_debug_after_memory_init(enum fsp_status status)
 {
 	if (IS_ENABLED(CONFIG_DISPLAY_FSP_CALLS_AND_STATUS))
-		printk(BIOS_DEBUG, "FspMemoryInit returned 0x%08x\n", status);
+		printk(BIOS_SPEW, "FspMemoryInit returned 0x%08x\n", status);
 
 	/* Verify that the HOB list pointer was set */
 	if (fsp_get_hob_list() == NULL)

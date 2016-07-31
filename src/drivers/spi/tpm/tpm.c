@@ -359,8 +359,14 @@ int tpm2_init(struct spi_slave *spi_if)
 	/* Let's report device FW version if available. */
 	if (tpm_info.vendor_id == 0x1ae0) {
 		int chunk_count = 0;
-		uint32_t chunk = 0;
-		char vstr[sizeof(chunk) + 1];	/* room for 4 chars + zero */
+		size_t chunk_size;
+		/*
+		 * let's read 50 bytes at a time; leave room for the trailing
+		 * zero.
+		 */
+		char vstr[51];
+
+		chunk_size = sizeof(vstr) - 1;
 
 		printk(BIOS_INFO, "Firmware version: ");
 
@@ -368,21 +374,20 @@ int tpm2_init(struct spi_slave *spi_if)
 		 * Does not really matter what's written, this just makes sure
 		 * the version is reported from the beginning.
 		 */
-		tpm2_write_reg(TPM_FW_VER, &chunk, sizeof(chunk));
+		tpm2_write_reg(TPM_FW_VER, &chunk_size, 1);
 
-		/* Print it out in 4 byte chunks. */
-		vstr[sizeof(vstr) - 1] = 0;
+		/* Print it out in sizeof(vstr) - 1 byte chunks. */
+		vstr[chunk_size] = 0;
 		do {
-			tpm2_read_reg(TPM_FW_VER, vstr, sizeof(chunk));
+			tpm2_read_reg(TPM_FW_VER, vstr, chunk_size);
 			printk(BIOS_INFO, "%s", vstr);
 
 			/*
-			 * While string is not over, and no more than 200
+			 * While string is not over, and is no longer than 300
 			 * characters.
-			 * This is likely result in one extra printk()
-			 * invocation with an empty string, not a big deal.
 			 */
-		} while (vstr[0] && (chunk_count++ < (200 / sizeof(chunk))));
+		} while (vstr[chunk_size - 1] &&
+			 (chunk_count++ < (300 / chunk_size)));
 
 		printk(BIOS_INFO, "\n");
 	}

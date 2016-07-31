@@ -18,6 +18,7 @@
 
 #include <stdint.h>
 #include <rules.h>
+#include <arch/cpu.h>
 #include <console/post_codes.h>
 #include <commonlib/loglevel.h>
 
@@ -51,7 +52,7 @@ void __attribute__ ((noreturn)) die(const char *msg);
 	(ENV_SMM && CONFIG_DEBUG_SMI))
 
 #if __CONSOLE_ENABLE__
-void console_init(void);
+asmlinkage void console_init(void);
 int console_log_level(int msg_level);
 int do_printk(int msg_level, const char *fmt, ...) __attribute__((format(printf, 2, 3)));
 void do_putchar(unsigned char byte);

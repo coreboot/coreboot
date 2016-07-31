@@ -22,6 +22,7 @@
 #include <soc/iomap.h>
 #include <soc/cpu.h>
 #include <soc/gpio.h>
+#include <soc/iosf.h>
 #include <soc/mmap_boot.h>
 #include <soc/northbridge.h>
 #include <soc/pci_devs.h>
@@ -56,6 +57,13 @@ static void enable_pm_timer(void)
 	wrmsr(MSR_EMULATE_PM_TMR, msr);
 }
 
+static void enable_cmos_upper_bank(void)
+{
+	uint32_t reg = iosf_read(IOSF_RTC_PORT_ID, RTC_CONFIG);
+	reg |= RTC_CONFIG_UCMOS_ENABLE;
+	iosf_write(IOSF_RTC_PORT_ID, RTC_CONFIG, reg);
+}
+
 void asmlinkage bootblock_c_entry(uint64_t base_timestamp)
 {
 	device_t dev = NB_DEV_ROOT;
@@ -81,6 +89,8 @@ void asmlinkage bootblock_c_entry(uint64_t base_timestamp)
 	pci_write_config16(dev, PCI_BASE_ADDRESS_4, ACPI_PMIO_BASE);
 	pci_write_config16(dev, PCI_COMMAND,
 				PCI_COMMAND_IO | PCI_COMMAND_MASTER);
+
+	enable_cmos_upper_bank();
 
 	/* Call lib/bootblock.c main */
 	bootblock_main_with_timestamp(base_timestamp);

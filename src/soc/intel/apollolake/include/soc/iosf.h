@@ -20,6 +20,10 @@
 
 #include <arch/io.h>
 
+#define IOSF_RTC_PORT_ID		0xD1
+#define  RTC_CONFIG			0x3400
+#define   RTC_CONFIG_UCMOS_ENABLE	(1 << 2)
+
 inline static void iosf_write(uint16_t port, uint16_t reg, uint32_t val)
 {
 	uintptr_t base = CONFIG_IOSF_BASE_ADDRESS | (port << 16) | (reg & ~3);

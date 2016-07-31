@@ -30,7 +30,7 @@ int console_log_level(int msg_level)
 	return (console_loglevel >= msg_level);
 }
 
-void console_init(void)
+asmlinkage void console_init(void)
 {
 #if !defined(__PRE_RAM__)
 	console_loglevel = CONFIG_DEFAULT_CONSOLE_LOGLEVEL;

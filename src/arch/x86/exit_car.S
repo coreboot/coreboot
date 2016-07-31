@@ -26,6 +26,11 @@ stack_top:
 .text
 .global _start
 _start:
+#if IS_ENABLED(CONFIG_POSTCAR_CONSOLE)
+	/* Enable the console */
+	call	console_init
+#endif /* CONFIG_POSTCAR_CONSOLE */
+
 	/* chipset_teardown_car() is expected to disable cache-as-ram. */
 	call	chipset_teardown_car
 

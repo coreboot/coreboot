@@ -77,7 +77,7 @@ static void do_fsp_post_memory_init(bool s3wake, uint32_t fsp_version)
 	} else if (cbmem_initialize_id_size(CBMEM_ID_FSP_RESERVED_MEMORY,
 				range_entry_size(&fsp_mem))) {
 		if (IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)) {
-			printk(BIOS_DEBUG,
+			printk(BIOS_ERR,
 				"Failed to recover CBMEM in S3 resume.\n");
 			/* Failed S3 resume, reset to come up cleanly */
 			hard_reset();
@@ -100,7 +100,7 @@ static void do_fsp_post_memory_init(bool s3wake, uint32_t fsp_version)
 	if (handoff != NULL)
 		handoff->s3_resume = s3wake;
 	else
-		printk(BIOS_DEBUG, "Romstage handoff structure not added!\n");
+		printk(BIOS_SPEW, "Romstage handoff structure not added!\n");
 }
 
 static void fsp_fill_mrc_cache(struct FSPM_ARCH_UPD *arch_upd, bool s3wake,
@@ -115,12 +115,12 @@ static void fsp_fill_mrc_cache(struct FSPM_ARCH_UPD *arch_upd, bool s3wake,
 
 	/* Don't use saved training data when recovery mode is enabled. */
 	if (vboot_recovery_mode_enabled()) {
-		printk(BIOS_DEBUG, "Recovery mode. Not using MRC cache.\n");
+		printk(BIOS_SPEW, "Recovery mode. Not using MRC cache.\n");
 		return;
 	}
 
 	if (mrc_cache_get_current_with_version(&mrc_cache, fsp_version)) {
-		printk(BIOS_DEBUG, "MRC cache was not found\n");
+		printk(BIOS_SPEW, "MRC cache was not found\n");
 		return;
 	}
 
@@ -129,7 +129,7 @@ static void fsp_fill_mrc_cache(struct FSPM_ARCH_UPD *arch_upd, bool s3wake,
 	arch_upd->BootMode = s3wake ?
 		FSP_BOOT_ON_S3_RESUME:
 		FSP_BOOT_ASSUMING_NO_CONFIGURATION_CHANGES;
-	printk(BIOS_DEBUG, "MRC cache found, size %x bootmode:%d\n",
+	printk(BIOS_SPEW, "MRC cache found, size %x bootmode:%d\n",
 				mrc_cache->size, arch_upd->BootMode);
 }
 
@@ -144,7 +144,7 @@ static enum cb_err check_region_overlap(const struct memranges *ranges,
 			continue;
 		if (begin >= range_entry_end(r))
 			continue;
-		printk(BIOS_ERR, "'%s' overlaps currently running program: "
+		printk(BIOS_CRIT, "'%s' overlaps currently running program: "
 			"[%p, %p)\n", description, (void *)begin, (void *)end);
 		return CB_ERR;
 	}
@@ -227,7 +227,7 @@ static void do_fsp_memory_init(struct fsp_header *hdr, bool s3wake,
 	/* Handle any errors returned by FspMemoryInit */
 	fsp_handle_reset(status);
 	if (status != FSP_SUCCESS) {
-		printk(BIOS_DEBUG, "FspMemoryInit returned 0x%08x\n", status);
+		printk(BIOS_CRIT, "FspMemoryInit returned 0x%08x\n", status);
 		die("FspMemoryInit returned an error!\n");
 	}
 
@@ -270,7 +270,7 @@ static enum cb_err load_fspm_xip(struct fsp_header *hdr,
 
 	base = rdev_mmap_full(rdev);
 	if ((uintptr_t)base != hdr->image_base) {
-		printk(BIOS_ERR, "FSPM XIP base does not match: %p vs %p\n",
+		printk(BIOS_CRIT, "FSPM XIP base does not match: %p vs %p\n",
 			(void *)(uintptr_t)hdr->image_base, base);
 		return CB_ERR;
 	}
@@ -296,7 +296,7 @@ void fsp_memory_init(bool s3wake)
 		boot_count_increment();
 
 	if (cbfs_boot_locate(&file_desc, name, NULL)) {
-		printk(BIOS_ERR, "Could not locate %s in CBFS\n", name);
+		printk(BIOS_CRIT, "Could not locate %s in CBFS\n", name);
 		die("FSPM not available!\n");
 	}
 

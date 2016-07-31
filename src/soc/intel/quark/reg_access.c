@@ -141,6 +141,34 @@ void port_reg_write(uint8_t port, uint32_t offset, uint32_t value)
 	mcr_write(QUARK_OPCODE_WRITE, port, offset);
 }
 
+static CRx_TYPE reg_cpu_cr_read(uint32_t reg_address)
+{
+	/* Read the CPU CRx register */
+	switch(reg_address) {
+	case 0:
+		return read_cr0();
+
+	case 4:
+		return read_cr4();
+	}
+	die("ERROR - Unsupported CPU register!\n");
+}
+
+static void reg_cpu_cr_write(uint32_t reg_address, CRx_TYPE value)
+{
+	/* Write the CPU CRx register */
+	switch(reg_address) {
+	default:
+		die("ERROR - Unsupported CPU register!\n");
+
+	case 0:
+		write_cr0(value);
+
+	case 4:
+		write_cr4(value);
+	}
+}
+
 static uint32_t reg_gpe0_read(uint32_t reg_address)
 {
 	/* Read the GPE0 register */
@@ -278,6 +306,11 @@ static uint64_t reg_read(struct reg_script_context *ctx)
 		ctx->display_features = REG_SCRIPT_DISPLAY_NOTHING;
 		return 0;
 
+	case CPU_CR:
+		ctx->display_prefix = "CPU CR";
+		value = reg_cpu_cr_read(step->reg);
+		break;
+
 	case GPE0_REGS:
 		ctx->display_prefix = "GPE0";
 		value = reg_gpe0_read(step->reg);
@@ -332,6 +365,11 @@ static void reg_write(struct reg_script_context *ctx)
 			step->id);
 		ctx->display_features = REG_SCRIPT_DISPLAY_NOTHING;
 		return;
+
+	case CPU_CR:
+		ctx->display_prefix = "CPU CR";
+		reg_cpu_cr_write(step->reg, step->value);
+		break;
 
 	case GPE0_REGS:
 		ctx->display_prefix = "GPE0";

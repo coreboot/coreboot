@@ -18,7 +18,6 @@
 #include <arch/early_variables.h>
 #include <console/console.h>
 #include <fsp/util.h>
-#include <lib.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/romstage.h>
@@ -53,7 +52,6 @@ void disable_rom_shadow(void)
 	/* Determine if the shadow ROM is enabled */
 	data = port_reg_read(QUARK_NC_HOST_BRIDGE_SB_PORT_ID,
 				QNC_MSG_FSBIC_REG_HMISC);
-	printk(BIOS_DEBUG, "0x%08x: HMISC\n", data);
 	if ((data & (ESEG_RD_DRAM | FSEG_RD_DRAM))
 		!= (ESEG_RD_DRAM | FSEG_RD_DRAM)) {
 
@@ -62,7 +60,4 @@ void disable_rom_shadow(void)
 		port_reg_write(QUARK_NC_HOST_BRIDGE_SB_PORT_ID,
 			QNC_MSG_FSBIC_REG_HMISC, data);
 	}
-
-	/* Display the DRAM data */
-	hexdump((void *)0x000ffff0, 0x10);
 }

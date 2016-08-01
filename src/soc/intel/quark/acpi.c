@@ -97,9 +97,9 @@ void acpi_fill_in_fadt(acpi_fadt_t *fadt)
 	fadt->x_gpe0_blk.addrh = 0;
 
 	/* Display the base registers */
-	printk(BIOS_DEBUG, "FADT:\n");
-	printk(BIOS_DEBUG, "  0x%08x: GPE0_BASE\n", gpe0_base);
-	printk(BIOS_DEBUG, "  0x%08x: PMBASE\n", pmbase);
-	printk(BIOS_DEBUG, "  0x%08x: RESET\n", fadt->reset_reg.addrl);
+	printk(BIOS_SPEW, "FADT:\n");
+	printk(BIOS_SPEW, "  0x%08x: GPE0_BASE\n", gpe0_base);
+	printk(BIOS_SPEW, "  0x%08x: PMBASE\n", pmbase);
+	printk(BIOS_SPEW, "  0x%08x: RESET\n", fadt->reset_reg.addrl);
 
 }

@@ -94,7 +94,7 @@ static uint32_t mtrr_index_to_host_bridge_register_offset(unsigned long index)
 		offset = (index - MTRR_PHYS_BASE(0))
 			+ QUARK_NC_HOST_BRIDGE_IA32_MTRR_PHYSBASE0;
 	else {
-		printk(BIOS_DEBUG, "index: 0x%08lx\n", index);
+		printk(BIOS_SPEW, "index: 0x%08lx\n", index);
 		die("Invalid MTRR index specified!\n");
 	}
 	return offset;

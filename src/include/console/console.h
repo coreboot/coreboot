@@ -23,13 +23,6 @@
 #include <commonlib/loglevel.h>
 
 #ifndef __ROMCC__
-struct console_driver {
-	void (*init)(int);
-	void (*tx_byte)(int, unsigned char byte);
-	void (*tx_flush)(int);
-	unsigned char (*rx_byte)(int);
-	int (*tst_byte)(void);
-};
 
 void post_code(u8 value);
 #if CONFIG_CMOS_POST_EXTRA

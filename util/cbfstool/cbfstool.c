@@ -1296,8 +1296,14 @@ int main(int argc, char **argv)
 
 			c = getopt_long(argc, argv, commands[i].optstring,
 						long_options, &option_index);
-			if (c == -1)
+			if (c == -1) {
+				if (optind < argc) {
+					ERROR("%s: excessive argument -- '%s'"
+						"\n", argv[0], argv[optind]);
+					return 1;
+				}
 				break;
+			}
 
 			/* filter out illegal long options */
 			if (strchr(commands[i].optstring, c) == NULL) {

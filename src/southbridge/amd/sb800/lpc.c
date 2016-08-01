@@ -21,6 +21,8 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <pc80/mc146818rtc.h>
+#include <pc80/i8254.h>
+#include <pc80/i8259.h>
 #include <pc80/isa-dma.h>
 #include <arch/io.h>
 #include <arch/acpi.h>
@@ -66,6 +68,9 @@ static void lpc_init(device_t dev)
 	pci_write_config8(dev, 0xBB, byte);
 
 	cmos_check_update_date();
+
+	setup_i8259(); /* Initialize i8259 pic */
+	setup_i8254(); /* Initialize i8254 timers */
 }
 
 static void sb800_lpc_read_resources(device_t dev)

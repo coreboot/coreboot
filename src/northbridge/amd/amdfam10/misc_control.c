@@ -67,7 +67,7 @@ static void mcf3_read_resources(device_t dev)
 	if (gart) {
 		/* Add a Gart apeture resource */
 		resource = new_resource(dev, 0x94);
-		resource->size = gart?CONFIG_AGP_APERTURE_SIZE:1;
+		resource->size = CONFIG_AGP_APERTURE_SIZE;
 		resource->align = log2(resource->size);
 		resource->gran  = log2(resource->size);
 		resource->limit = 0xffffffff; /* 4G */

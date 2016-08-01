@@ -129,7 +129,7 @@ int-lt=$(if $(filter 1,$(words $1)),$(strip $1),$(shell expr $(call _toint,$(wor
 int-gt=$(if $(filter 1,$(words $1)),$(strip $1),$(shell expr $(call _toint,$(word 1,$1)) \> $(call _toint,$(word 2,$1))))
 int-eq=$(if $(filter 1,$(words $1)),$(strip $1),$(shell expr $(call _toint,$(word 1,$1)) = $(call _toint,$(word 2,$1))))
 int-align=$(shell A=$(call _toint,$1) B=$(call _toint,$2); expr $$A + \( \( $$B - \( $$A % $$B \) \) % $$B \) )
-file-size=$(shell cat $1 | wc -c)
+file-size=$(strip $(shell cat $1 | wc -c))
 tolower=$(shell echo '$1' | tr '[:upper:]' '[:lower:]')
 toupper=$(shell echo '$1' | tr '[:lower:]' '[:upper:]')
 ws_to_under=$(shell echo '$1' | tr ' \t' '_')

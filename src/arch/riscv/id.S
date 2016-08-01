@@ -18,11 +18,11 @@
 	.globl __id_start
 __id_start:
 ver:
-	.asciz "1" //COREBOOT_VERSION
+	.asciz COREBOOT_VERSION
 vendor:
-	.asciz "ucb" //CONFIG_MAINBOARD_VENDOR
+	.asciz CONFIG_MAINBOARD_VENDOR
 part:
-	.asciz "1" //CONFIG_MAINBOARD_PART_NUMBER
+	.asciz CONFIG_MAINBOARD_PART_NUMBER
 .long __id_end + CONFIG_ID_SECTION_OFFSET - ver  /* Reverse offset to the vendor id */
 .long __id_end + CONFIG_ID_SECTION_OFFSET - vendor  /* Reverse offset to the vendor id */
 .long __id_end + CONFIG_ID_SECTION_OFFSET - part    /* Reverse offset to the part number */

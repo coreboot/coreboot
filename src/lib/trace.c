@@ -19,7 +19,7 @@
 
 int volatile trace_dis = 0;
 
-void __cyg_profile_func_enter( void *func, void *callsite)
+void __cyg_profile_func_enter(void *func, void *callsite)
 {
 
 	if (trace_dis)
@@ -30,6 +30,6 @@ void __cyg_profile_func_enter( void *func, void *callsite)
 	ENABLE_TRACE
 }
 
-void __cyg_profile_func_exit( void *func, void *callsite )
+void __cyg_profile_func_exit(void *func, void *callsite)
 {
 }

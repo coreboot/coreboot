@@ -160,7 +160,7 @@ static void w83795_init(struct device *dev, w83795_fan_mode_t mode, u8 dts_src)
 	val = w83795_read(dev, W83795_REG_CONFIG);
 	if ((val & W83795_REG_CONFIG_CONFIG48) == 0)
 		printk(BIOS_INFO, "Found 64 pin W83795G Nuvoton H/W Monitor\n");
-	else if ((val & W83795_REG_CONFIG_CONFIG48) == 1)
+	else
 		printk(BIOS_INFO, "Found 48 pin W83795ADG Nuvoton H/W Monitor\n");
 
 	/* Reset */

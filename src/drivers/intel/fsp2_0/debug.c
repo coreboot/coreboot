@@ -42,9 +42,15 @@ void fsp_debug_after_memory_init(enum fsp_status status)
 	if (IS_ENABLED(CONFIG_DISPLAY_FSP_CALLS_AND_STATUS))
 		printk(BIOS_DEBUG, "FspMemoryInit returned 0x%08x\n", status);
 
-	/* Display the HOBs */
+	/* Verify that the HOB list pointer was set */
+	if (fsp_get_hob_list() == NULL)
+		die("ERROR - HOB list pointer was not returned!\n");
+
+	/* Display and verify the HOBs */
 	if (IS_ENABLED(CONFIG_DISPLAY_HOBS))
 		fsp_display_hobs();
+	if (IS_ENABLED(CONFIG_VERIFY_HOBS))
+		fsp_verify_memory_init_hobs();
 
 	/* Display the MTRRs */
 	if (IS_ENABLED(CONFIG_DISPLAY_MTRRS))

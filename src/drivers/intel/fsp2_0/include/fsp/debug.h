@@ -29,6 +29,7 @@ void fsp_debug_after_notify(enum fsp_status status);
 void fspm_display_upd_values(const struct FSPM_UPD *old,
 	const struct FSPM_UPD *new);
 void fsp_display_hobs(void);
+void fsp_verify_memory_init_hobs(void);
 
 /* Callbacks for displaying UPD parameters - place in a separate file
  * that is conditionally build with CONFIG_DISPLAY_UPD_DATA.
@@ -54,5 +55,6 @@ void fsp_print_resource_descriptor(const void *base);
 const char *fsp_get_hob_type_name(const struct hob_header *hob);
 const char *fsp_get_guid_name(const uint8_t *guid);
 void fsp_print_guid_extension_hob(const struct hob_header *hob);
+int fsp_find_bootloader_tolum(struct range_entry *re);
 
 #endif /* _FSP2_0_DEBUG_H_ */

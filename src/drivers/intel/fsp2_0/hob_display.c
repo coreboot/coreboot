@@ -47,11 +47,6 @@ static const uint8_t bootloader_temp_memory_guid[16] = {
 	0x89, 0x85, 0xb9, 0xd4, 0xf3, 0xb3, 0xf6, 0x4e
 };
 
-static const uint8_t bootloader_tolum_guid[16] = {
-	0x56, 0x4f, 0xff, 0x73, 0x8e, 0xaa, 0x51, 0x44,
-	0xb3, 0x16, 0x36, 0x35, 0x36, 0x67, 0xad, 0x44,
-};
-
 static const uint8_t empty_guid[16] = {
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
@@ -78,7 +73,7 @@ struct guid_name_map {
 
 static const struct guid_name_map  guid_names[] = {
 	{ bootloader_temp_memory_guid,	"FSP_BOOTLOADER_TEMP_MEMORY_HOB_GUID" },
-	{ bootloader_tolum_guid,	"BOOTLOADER_TOLUM" },
+	{ fsp_bootloader_tolum_guid,	"BOOTLOADER_TOLUM" },
 	{ empty_guid,			"No GUID specified" },
 	{ fsp_info_header_guid,		"FSP_INFO_HEADER_GUID" },
 	{ fsp_reserved_memory_guid,	"FSP_RESERVED_MEMORY" },
@@ -87,21 +82,6 @@ static const struct guid_name_map  guid_names[] = {
 	{ smbios_memory_info_guid,	"FSP_SMBIOS_MEMORY_INFO_GUID" },
 	{ tseg_guid,			"TSEG" },
 };
-
-void fsp_print_guid(const void *base)
-{
-	uint32_t big;
-	uint16_t mid[2];
-
-	const uint8_t *id = base;
-	big = read32(id + 0);
-	mid[0] = read16(id + 4);
-	mid[1] = read16(id + 6);
-
-	printk(BIOS_SPEW, "%08x-%04x-%04x-%02x%02x%02x%02x%02x%02x%02x%02x",
-	       big, mid[0], mid[1],
-	       id[8], id[9], id[10], id[11], id[12], id[13], id[14], id[15]);
-}
 
 static const char *resource_name(enum resource_type type)
 {

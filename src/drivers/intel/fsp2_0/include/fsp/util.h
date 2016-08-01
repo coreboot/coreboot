@@ -52,6 +52,7 @@ enum hob_type {
 	HOB_TYPE_END_OF_HOB_LIST		= 0xFFFF,
 };
 
+extern const uint8_t fsp_bootloader_tolum_guid[16];
 extern const uint8_t fsp_graphics_info_guid[16];
 extern const uint8_t fsp_nv_storage_guid[16];
 extern const uint8_t fsp_reserved_memory_guid[16];
@@ -61,7 +62,8 @@ void *fsp_get_hob_list_ptr(void);
 const void *fsp_find_extension_hob_by_guid(const uint8_t *guid, size_t *size);
 const void *fsp_find_nv_storage_data(size_t *size);
 enum cb_err fsp_fill_lb_framebuffer(struct lb_framebuffer *framebuffer);
-void fsp_find_reserved_memory(struct range_entry *re);
+int fsp_find_range_hob(struct range_entry *re, const uint8_t guid[16]);
+int fsp_find_reserved_memory(struct range_entry *re);
 const struct hob_resource *fsp_hob_header_to_resource(
 	const struct hob_header *hob);
 const struct hob_header *fsp_next_hob(const struct hob_header *parent);

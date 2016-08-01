@@ -34,6 +34,11 @@ enum resource_type {
 };
 
 /* GUIDs in little-endian, so they can be used with memcmp() */
+const uint8_t fsp_bootloader_tolum_guid[16] = {
+	0x56, 0x4f, 0xff, 0x73, 0x8e, 0xaa, 0x51, 0x44,
+	0xb3, 0x16, 0x36, 0x35, 0x36, 0x67, 0xad, 0x44,
+};
+
 const uint8_t fsp_reserved_memory_guid[16] = {
 	0x59, 0x97, 0xa7, 0x69, 0x73, 0x13, 0x67, 0x43,
 	0xa6, 0xc4, 0xc7, 0xf5, 0x9e, 0xfd, 0x98, 0x6e,
@@ -146,20 +151,43 @@ struct hob_resource *find_resource_hob_by_guid(const struct hob_header *hob,
 	return NULL;
 }
 
-void fsp_find_reserved_memory(struct range_entry *re)
+void fsp_print_guid(const void *base)
+{
+	uint32_t big;
+	uint16_t mid[2];
+
+	const uint8_t *id = base;
+	big = read32(id + 0);
+	mid[0] = read16(id + 4);
+	mid[1] = read16(id + 6);
+
+	printk(BIOS_SPEW, "%08x-%04x-%04x-%02x%02x%02x%02x%02x%02x%02x%02x",
+	       big, mid[0], mid[1],
+	       id[8], id[9], id[10], id[11], id[12], id[13], id[14], id[15]);
+}
+
+int fsp_find_range_hob(struct range_entry *re, const uint8_t guid[16])
 {
 	const struct hob_resource *fsp_mem;
 	const void *hob_list = fsp_get_hob_list();
 
 	range_entry_init(re, 0, 0, 0);
 
-	fsp_mem = find_resource_hob_by_guid(hob_list, fsp_reserved_memory_guid);
+	fsp_mem = find_resource_hob_by_guid(hob_list, guid);
 
 	if (!fsp_mem) {
-		return;
+		fsp_print_guid(guid);
+		printk(BIOS_SPEW, " not found!\n");
+		return -1;
 	}
 
 	range_entry_init(re, fsp_mem->addr, fsp_mem->addr + fsp_mem->length, 0);
+	return 0;
+}
+
+int fsp_find_reserved_memory(struct range_entry *re)
+{
+	return fsp_find_range_hob(re, fsp_reserved_memory_guid);
 }
 
 const void *fsp_find_extension_hob_by_guid(const uint8_t *guid, size_t *size)

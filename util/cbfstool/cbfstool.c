@@ -1350,24 +1350,51 @@ int main(int argc, char **argv)
 				param.source_region = optarg;
 				break;
 			case 'b':
-				param.baseaddress = strtoul(optarg, NULL, 0);
+				param.baseaddress = strtoul(optarg, &suffix, 0);
+				if (!*optarg || (suffix && *suffix)) {
+					ERROR("Invalid base address '%s'.\n",
+						optarg);
+					return 1;
+				}
 				// baseaddress may be zero on non-x86, so we
 				// need an explicit "baseaddress_assigned".
 				param.baseaddress_assigned = 1;
 				break;
 			case 'l':
-				param.loadaddress = strtoul(optarg, NULL, 0);
+				param.loadaddress = strtoul(optarg, &suffix, 0);
+				if (!*optarg || (suffix && *suffix)) {
+					ERROR("Invalid load address '%s'.\n",
+						optarg);
+					return 1;
+				}
 				break;
 			case 'e':
-				param.entrypoint = strtoul(optarg, NULL, 0);
+				param.entrypoint = strtoul(optarg, &suffix, 0);
+				if (!*optarg || (suffix && *suffix)) {
+					ERROR("Invalid entry point '%s'.\n",
+						optarg);
+					return 1;
+				}
 				break;
 			case 's':
 				param.size = strtoul(optarg, &suffix, 0);
-				if (tolower((int)suffix[0])=='k') {
-					param.size *= 1024;
+				if (!*optarg) {
+					ERROR("Empty size specified.\n");
+					return 1;
 				}
-				if (tolower((int)suffix[0])=='m') {
+				switch (tolower((int)suffix[0])) {
+				case 'k':
+					param.size *= 1024;
+					break;
+				case 'm':
 					param.size *= 1024 * 1024;
+					break;
+				case '\0':
+					break;
+				default:
+					ERROR("Invalid suffix for size '%s'.\n",
+						optarg);
+					return 1;
 				}
 				break;
 			case 'B':
@@ -1375,24 +1402,49 @@ int main(int argc, char **argv)
 				break;
 			case 'H':
 				param.headeroffset = strtoul(
-						optarg, NULL, 0);
+						optarg, &suffix, 0);
+				if (!*optarg || (suffix && *suffix)) {
+					ERROR("Invalid header offset '%s'.\n",
+						optarg);
+					return 1;
+				}
 				param.headeroffset_assigned = 1;
 				break;
 			case 'a':
-				param.alignment = strtoul(optarg, NULL, 0);
+				param.alignment = strtoul(optarg, &suffix, 0);
+				if (!*optarg || (suffix && *suffix)) {
+					ERROR("Invalid alignment '%s'.\n",
+						optarg);
+					return 1;
+				}
 				break;
 			case 'P':
-				param.pagesize = strtoul(optarg, NULL, 0);
+				param.pagesize = strtoul(optarg, &suffix, 0);
+				if (!*optarg || (suffix && *suffix)) {
+					ERROR("Invalid page size '%s'.\n",
+						optarg);
+					return 1;
+				}
 				break;
 			case 'o':
-				param.cbfsoffset = strtoul(optarg, NULL, 0);
+				param.cbfsoffset = strtoul(optarg, &suffix, 0);
+				if (!*optarg || (suffix && *suffix)) {
+					ERROR("Invalid cbfs offset '%s'.\n",
+						optarg);
+					return 1;
+				}
 				param.cbfsoffset_assigned = 1;
 				break;
 			case 'f':
 				param.filename = optarg;
 				break;
 			case 'i':
-				param.u64val = strtoull(optarg, NULL, 0);
+				param.u64val = strtoull(optarg, &suffix, 0);
+				if (!*optarg || (suffix && *suffix)) {
+					ERROR("Invalid int parameter '%s'.\n",
+						optarg);
+					return 1;
+				}
 				break;
 			case 'u':
 				param.fill_partial_upward = true;
@@ -1404,7 +1456,13 @@ int main(int argc, char **argv)
 				param.show_immutable = true;
 				break;
 			case 'x':
-				param.fit_empty_entries = strtol(optarg, NULL, 0);
+				param.fit_empty_entries = strtol(
+						optarg, &suffix, 0);
+				if (!*optarg || (suffix && *suffix)) {
+					ERROR("Invalid number of fit entries "
+						"'%s'.\n", optarg);
+					return 1;
+				}
 				break;
 			case 'v':
 				verbose++;

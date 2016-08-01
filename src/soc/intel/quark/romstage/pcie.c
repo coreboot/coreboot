@@ -100,10 +100,7 @@ static const struct reg_script pcie_bus_init_script[] = {
 void pcie_init(void)
 {
 	/* Initialize the PCIe bridges */
-	printk(BIOS_DEBUG, "Initializing PCIe controllers\n");
 	reg_script_run(pcie_init_script);
-	printk(BIOS_DEBUG, "Initializing PCIe bus 0\n");
 	reg_script_run_on_dev(PCIE_PORT0_BDF, pcie_bus_init_script);
-	printk(BIOS_DEBUG, "Initializing PCIe bus 1\n");
 	reg_script_run_on_dev(PCIE_PORT1_BDF, pcie_bus_init_script);
 }

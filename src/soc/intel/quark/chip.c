@@ -134,10 +134,8 @@ static struct device_operations pci_domain_ops = {
 
 static void chip_enable_dev(device_t dev)
 {
-	const char *type_name = dev_path_name(dev->path.type);
 
 	/* Set the operations if it is a special bus type */
-	printk(BIOS_DEBUG, "type: %s\n", type_name);
 	if (dev->path.type == DEVICE_PATH_DOMAIN)
 		dev->ops = &pci_domain_ops;
 }

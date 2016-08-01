@@ -406,27 +406,12 @@ struct chip_operations soc_intel_apollolake_ops = {
 	.final = &soc_final
 };
 
-static void fsp_notify_dummy(void *arg)
+void platform_fsp_notify_status(enum fsp_notify_phase phase)
 {
-
-	enum fsp_notify_phase ph = (enum fsp_notify_phase) arg;
-
-	fsp_notify(ph);
-
-	/* Call END_OF_FIRMWARE Notify after READY_TO_BOOT Notify */
-	if (ph == READY_TO_BOOT) {
-		fsp_notify_dummy((void *)END_OF_FIRMWARE);
-		/* Hide the P2SB device to align with previous behavior. */
+	/* Hide the P2SB device to align with previous behavior. */
+	if (phase == END_OF_FIRMWARE)
 		p2sb_hide();
-	}
 }
-
-BOOT_STATE_INIT_ENTRY(BS_DEV_RESOURCES, BS_ON_EXIT, fsp_notify_dummy,
-						(void *) AFTER_PCI_ENUM);
-BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_LOAD, BS_ON_EXIT, fsp_notify_dummy,
-						(void *) READY_TO_BOOT);
-BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY, fsp_notify_dummy,
-						(void *) READY_TO_BOOT);
 
 /*
  * spi_init() needs to run unconditionally on every boot (including resume) to

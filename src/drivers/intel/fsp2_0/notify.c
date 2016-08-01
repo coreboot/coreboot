@@ -11,13 +11,15 @@
  */
 
 #include <arch/cpu.h>
+#include <bootstate.h>
 #include <console/console.h>
 #include <fsp/api.h>
 #include <fsp/util.h>
+#include <soc/intel/common/util.h>
 #include <string.h>
 #include <timestamp.h>
 
-void fsp_notify(enum fsp_notify_phase phase)
+static void fsp_notify(enum fsp_notify_phase phase)
 {
 	enum fsp_status ret;
 	fsp_notify_fn fspnotify;
@@ -55,4 +57,32 @@ void fsp_notify(enum fsp_notify_phase phase)
 		printk(BIOS_SPEW, "FspNotify returned 0x%08x\n", ret);
 		die("FspNotify returned an error!\n");
 	}
+
+	/* Allow the platform to run something after FspNotify */
+	platform_fsp_notify_status(phase);
+}
+
+static void fsp_notify_dummy(void *arg)
+{
+	enum fsp_notify_phase phase = (uint32_t)arg;
+
+	/* Display the MTRRs */
+	if (IS_ENABLED(CONFIG_DISPLAY_MTRRS))
+		soc_display_mtrrs();
+
+	fsp_notify(phase);
+	if (phase == READY_TO_BOOT)
+		fsp_notify(END_OF_FIRMWARE);
+}
+
+BOOT_STATE_INIT_ENTRY(BS_DEV_RESOURCES, BS_ON_EXIT, fsp_notify_dummy,
+						(void *) AFTER_PCI_ENUM);
+BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_LOAD, BS_ON_EXIT, fsp_notify_dummy,
+						(void *) READY_TO_BOOT);
+BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY, fsp_notify_dummy,
+						(void *) READY_TO_BOOT);
+
+__attribute__((weak)) void platform_fsp_notify_status(
+	enum fsp_notify_phase phase)
+{
 }

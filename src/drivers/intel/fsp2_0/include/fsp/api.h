@@ -62,11 +62,13 @@ enum fsp_notify_phase {
 /* Main FSP stages */
 void fsp_memory_init(bool s3wake);
 void fsp_silicon_init(void);
-void fsp_notify(enum fsp_notify_phase phase);
 
 /* Callbacks for updating stage-specific parameters */
 void platform_fsp_memory_init_params_cb(struct FSPM_UPD *mupd);
 void platform_fsp_silicon_init_params_cb(struct FSPS_UPD *supd);
+
+/* Callback after processing FSP notify */
+void platform_fsp_notify_status(enum fsp_notify_phase phase);
 
 /*
  * # DOCUMENTATION:

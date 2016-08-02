@@ -49,7 +49,7 @@ DECLARE_OPTIONAL_REGION(timestamp);
 /* The cache location will sit in BSS when in ramstage. */
 #define TIMESTAMP_CACHE_IN_BSS ENV_RAMSTAGE
 
-#define HAS_CBMEM (ENV_ROMSTAGE || ENV_RAMSTAGE)
+#define HAS_CBMEM (ENV_ROMSTAGE || ENV_RAMSTAGE || ENV_POSTCAR)
 
 /* Storage of cache entries during ramstage prior to cbmem coming online. */
 static struct timestamp_cache timestamp_cache;

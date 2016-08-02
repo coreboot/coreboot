@@ -98,11 +98,13 @@ ifeq ($(CONFIG_CREATE_BOARD_CHECKLIST),y)
 #
 %.expected: %.symbol_table
 	cp $(CONFIG_CHECKLIST_DATA_FILE_LOCATION)/$(basename $(*F))_complete.dat $@.tmp
+	cat $(CONFIG_CHECKLIST_DATA_FILE_LOCATION)/$(basename $(*F))_optional.dat >> $@.tmp
 	# If no separate verstage, combine verstage and romstage routines into a single list
 	if [ "$(*F)" = "romstage" ]; then \
 	  if [ ! -e $(*D)/verstage.elf ]; then \
 	    if [ ! -e $(*D)/postcar.elf ]; then \
 	      cat $(CONFIG_CHECKLIST_DATA_FILE_LOCATION)/verstage_complete.dat >> $@.tmp; \
+	      cat $(CONFIG_CHECKLIST_DATA_FILE_LOCATION)/verstage_optional.dat >> $@.tmp; \
 	    fi; \
 	  fi; \
 	fi

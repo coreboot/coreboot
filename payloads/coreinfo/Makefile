@@ -26,6 +26,7 @@ export KCONFIG_AUTOCONFIG := $(coreinfo_obj)/auto.conf
 export KCONFIG_DEPENDENCIES := $(coreinfo_obj)/auto.conf.cmd
 export KCONFIG_SPLITCONFIG := $(coreinfo_obj)/config
 export KCONFIG_TRISTATE := $(coreinfo_obj)/tristate.conf
+export KCONFIG_CONFIG := $(CURDIR)/.config
 export KCONFIG_NEGATIVES := 1
 export Kconfig := Kconfig
 

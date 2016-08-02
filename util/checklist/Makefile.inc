@@ -14,6 +14,41 @@
 #
 
 ###########################################################################
+# Instructions
+###########################################################################
+#
+# Create new control files for checklist:
+#
+#     1. Remove any selection for CREATE_BOARD_CHECKLIST
+#     2. Remove any selection for MAKE_CHECKLIST_PUBLIC
+#     3. make
+#     4. nm build/cbfs/fallback/<stage>.debug > <stage>_symbols.txt
+#     6. sed 's/^...........//' <stage>_symbols.txt > <stage>_complete.dat
+#     7. grep -F " W " <stage>_symbols.txt | sed 's/^...........//' \
+#             > <stage>_optional.dat
+#     8. Edit <stage>_complete.dat to remove any symbols that are not
+#        desired in the report
+#     9. Edit <stage>_optional.dat to remove any symbols that are
+#        required to be implemented
+#
+# Create a board checklist:
+#
+#     1. select CREATE_BOARD_CHECKLIST
+#     2. Optionally: select MAKE_CHECKLIST_PUBLIC
+#     3. Specify CONFIG_CHECKLIST_DATA_FILE_LOCATION
+#     4. make
+#
+# Build Errors:
+#     * No checklist built - verify CREATE_BOARD_CHECKLIST is selected in
+#           board Kconfig file.  Do a make clean
+#     * <stage>_complete.dat not found - verify that
+#           CONFIG_CHECKLIST_DATA_FILE_LOCATION points to the directory
+#           containing the checklist data files.  Build the checklist
+#           data files if necessary.
+#     * Segmentation fault - most likely caused by $(NM_$(class)) not being
+#           set.
+#
+###########################################################################
 # Build the board implementation checklist
 ###########################################################################
 

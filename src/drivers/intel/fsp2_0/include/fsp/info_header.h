@@ -42,7 +42,6 @@ struct fsp_header {
 };
 
 enum cb_err fsp_identify(struct fsp_header *hdr, const void *fsp_blob);
-void fsp_print_upd_info(const struct fsp_header *hdr, void *cfg_blob);
 
 #if ENV_RAMSTAGE
 /*

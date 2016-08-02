@@ -84,8 +84,6 @@ void pch_enable_dev(device_t dev)
 		reg32 &= ~(PCI_COMMAND_MASTER |
 			   PCI_COMMAND_MEMORY | PCI_COMMAND_IO);
 		pci_write_config32(dev, PCI_COMMAND, reg32);
-
-		/* Disable this device if possible */
 	} else {
 		/* Enable SERR */
 		reg32 = pci_read_config32(dev, PCI_COMMAND);

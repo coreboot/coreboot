@@ -20,7 +20,7 @@
 #include <stdint.h>
 #include <elog.h>
 #include <soc/pm.h>
-#include <soc/pmc.h>
+#include <soc/smbus.h>
 
 static void pch_log_gpio_gpe(u32 gpe0_sts, u32 gpe0_en, int start)
 {

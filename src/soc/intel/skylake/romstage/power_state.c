@@ -27,6 +27,7 @@
 #include <string.h>
 #include <soc/iomap.h>
 #include <soc/pmc.h>
+#include <soc/smbus.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/romstage.h>

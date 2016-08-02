@@ -33,34 +33,31 @@ verstage-$(CONFIG_EC_GOOGLE_CHROMEEC_SWITCHES) += switches.c
 romstage-$(CONFIG_EC_GOOGLE_CHROMEEC_SWITCHES) += switches.c
 ramstage-$(CONFIG_EC_GOOGLE_CHROMEEC_SWITCHES) += switches.c
 
-ifneq ($(CONFIG_EC_EXTERNAL_FIRMWARE),y)
+CHROMEEC_SOURCE ?= $(top)/3rdparty/chromeec
+
 # These are Chrome EC firmware images that a payload (such as depthcharge) can
 # use to update the EC. ecrw is the main embedded controller's firmware,
 # pdrw is for a USB PD controller.
-CONFIG_EC_GOOGLE_CHROMEEC_BOARDNAME := $(call strip_quotes,$(CONFIG_EC_GOOGLE_CHROMEEC_BOARDNAME))
-CONFIG_EC_GOOGLE_CHROMEEC_PD_BOARDNAME := $(call strip_quotes,$(CONFIG_EC_GOOGLE_CHROMEEC_PD_BOARDNAME))
 
-cbfs-files-$(if $(CONFIG_EC_GOOGLE_CHROMEEC_BOARDNAME),y) += ecrw
+ifneq ($(CONFIG_EC_GOOGLE_CHROMEEC_FIRMWARE_NONE),y)
+
+cbfs-files-y += ecrw
 ecrw-file := $(obj)/mainboard/$(MAINBOARDDIR)/ecrw
 ecrw-name := ecrw
 ecrw-type := raw
 ecrw-compression := $(CBFS_COMPRESS_FLAG)
-cbfs-files-$(if $(CONFIG_EC_GOOGLE_CHROMEEC_BOARDNAME),y) += ecrw.hash
+cbfs-files-y += ecrw.hash
 ecrw.hash-file := $(obj)/mainboard/$(MAINBOARDDIR)/ecrw.hash
 ecrw.hash-name := ecrw.hash
 ecrw.hash-type := raw
 
-cbfs-files-$(if $(CONFIG_EC_GOOGLE_CHROMEEC_PD_BOARDNAME),y) += pdrw
-pdrw-file := $(obj)/mainboard/$(MAINBOARDDIR)/pdrw
-pdrw-name := pdrw
-pdrw-type := raw
-pdrw-compression := $(CBFS_COMPRESS_FLAG)
-cbfs-files-$(if $(CONFIG_EC_GOOGLE_CHROMEEC_PD_BOARDNAME),y) += pdrw.hash
-pdrw.hash-file := $(obj)/mainboard/$(MAINBOARDDIR)/pdrw.hash
-pdrw.hash-name := pdrw.hash
-pdrw.hash-type := raw
+ifeq ($(CONFIG_EC_GOOGLE_CHROMEEC_FIRMWARE_EXTERNAL),y)
+CONFIG_EC_GOOGLE_CHROMEEC_FIRMWARE_FILE := $(call strip_quotes,$(CONFIG_EC_GOOGLE_CHROMEEC_FIRMWARE_FILE))
 
-CHROMEEC_SOURCE ?= $(top)/3rdparty/chromeec
+$(obj)/mainboard/$(MAINBOARDDIR)/ecrw: $(CONFIG_EC_GOOGLE_CHROMEEC_FIRMWARE_FILE)
+	cp $(CONFIG_EC_GOOGLE_CHROMEEC_FIRMWARE_FILE) $@
+else
+CONFIG_EC_GOOGLE_CHROMEEC_BOARDNAME := $(call strip_quotes,$(CONFIG_EC_GOOGLE_CHROMEEC_BOARDNAME))
 
 $(obj)/mainboard/$(MAINBOARDDIR)/ecrw:
 	$(MAKE) -C $(CHROMEEC_SOURCE) $(if $(CONFIG_CCACHE),,CCACHE=) \
@@ -70,6 +67,34 @@ $(obj)/mainboard/$(MAINBOARDDIR)/ecrw:
 		BOARD=$(CONFIG_EC_GOOGLE_CHROMEEC_BOARDNAME) \
 		rw
 	cp $(obj)/external/chromeec/$(CONFIG_EC_GOOGLE_CHROMEEC_BOARDNAME)/RW/ec.RW.flat $@
+endif
+
+$(obj)/mainboard/$(MAINBOARDDIR)/ecrw.hash: $(obj)/mainboard/$(MAINBOARDDIR)/ecrw
+	openssl dgst -sha256 -binary $< > $@
+
+endif
+
+ifeq ($(EC_GOOGLE_CHROMEEC_PD),y)
+
+ifneq ($(CONFIG_EC_GOOGLE_CHROMEEC_PD_FIRMWARE_NONE),y)
+
+cbfs-files-y += pdrw
+pdrw-file := $(obj)/mainboard/$(MAINBOARDDIR)/pdrw
+pdrw-name := pdrw
+pdrw-type := raw
+pdrw-compression := $(CBFS_COMPRESS_FLAG)
+cbfs-files-y += pdrw.hash
+pdrw.hash-file := $(obj)/mainboard/$(MAINBOARDDIR)/pdrw.hash
+pdrw.hash-name := pdrw.hash
+pdrw.hash-type := raw
+
+ifeq ($(CONFIG_EC_GOOGLE_CHROMEEC_PD_FIRMWARE_EXTERNAL),y)
+CONFIG_EC_GOOGLE_CHROMEEC_PD_FIRMWARE_FILE := $(call strip_quotes,$(CONFIG_EC_GOOGLE_CHROMEEC_PD_FIRMWARE_FILE))
+
+$(obj)/mainboard/$(MAINBOARDDIR)/pdrw: $(CONFIG_EC_GOOGLE_CHROMEEC_PD_FIRMWARE_FILE)
+	cp $(CONFIG_EC_GOOGLE_CHROMEEC_PD_FIRMWARE_FILE) $@
+else
+CONFIG_EC_GOOGLE_CHROMEEC_PD_BOARDNAME := $(call strip_quotes,$(CONFIG_EC_GOOGLE_CHROMEEC_PD_BOARDNAME))
 
 $(obj)/mainboard/$(MAINBOARDDIR)/pdrw:
 	$(MAKE) -C $(CHROMEEC_SOURCE) $(if $(CONFIG_CCACHE),,CCACHE=) \
@@ -79,11 +104,13 @@ $(obj)/mainboard/$(MAINBOARDDIR)/pdrw:
 		BOARD=$(CONFIG_EC_GOOGLE_CHROMEEC_PD_BOARDNAME) \
 		rw
 	cp $(obj)/external/chromeec/$(CONFIG_EC_GOOGLE_CHROMEEC_PD_BOARDNAME)/RW/ec.RW.flat $@
+endif
 
-$(obj)/mainboard/$(MAINBOARDDIR)/%.hash: $(obj)/mainboard/$(MAINBOARDDIR)/%
+$(obj)/mainboard/$(MAINBOARDDIR)/pdrw.hash: $(obj)/mainboard/$(MAINBOARDDIR)/pdrw
 	openssl dgst -sha256 -binary $< > $@
 
-.PHONY: $(obj)/mainboard/$(MAINBOARDDIR)/ecrw $(obj)/mainboard/$(MAINBOARDDIR)/pdrw
+endif
+
 endif
 
 endif

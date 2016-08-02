@@ -19,6 +19,14 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "pcm205400"
 
+config VGA_BIOS_ID
+	string
+	default "1002,9806" # FUSION_G_T56N
+
+endif # BOARD_ELMEX_PCM205400
+
+if BOARD_ELMEX_PCM205400 || BOARD_ELMEX_PCM205401
+
 config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
 	select CPU_AMD_AGESA_FAMILY14
@@ -61,12 +69,8 @@ config VGA_BIOS
 	bool
 	default n
 
-config VGA_BIOS_ID
-	string
-	default "1002,9806" # FUSION_G_T56N
-
 config SB800_AHCI_ROM
 	bool
 	default n
 
-endif # BOARD_ELMEX_PCM205400
+endif # BOARD_ELMEX_PCM205400 | BOARD_ELMEX_PCM205401

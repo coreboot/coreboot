@@ -56,7 +56,7 @@ else
 CONFIG_EC_GOOGLE_CHROMEEC_BOARDNAME := $(call strip_quotes,$(CONFIG_EC_GOOGLE_CHROMEEC_BOARDNAME))
 
 $(obj)/mainboard/$(MAINBOARDDIR)/ecrw:
-	$(MAKE) -C $(CHROMEEC_SOURCE) \
+	$(MAKE) -C $(CHROMEEC_SOURCE) $(if $(CONFIG_CCACHE),,CCACHE=) \
 		out=$(abspath $(obj)/external/chromeec/$(CONFIG_EC_GOOGLE_CHROMEEC_BOARDNAME)) \
 		CROSS_COMPILE=$(subst -cpp,-,$(CPP_arm)) \
 		HOST_CROSS_COMPILE= \
@@ -93,7 +93,7 @@ else
 CONFIG_EC_GOOGLE_CHROMEEC_PD_BOARDNAME := $(call strip_quotes,$(CONFIG_EC_GOOGLE_CHROMEEC_PD_BOARDNAME))
 
 $(obj)/mainboard/$(MAINBOARDDIR)/pdrw:
-	$(MAKE) -C $(CHROMEEC_SOURCE) \
+	$(MAKE) -C $(CHROMEEC_SOURCE) $(if $(CONFIG_CCACHE),,CCACHE=) \
 		out=$(abspath $(obj)/external/chromeec/$(CONFIG_EC_GOOGLE_CHROMEEC_PD_BOARDNAME)) \
 		CROSS_COMPILE=$(subst -cpp,-,$(CPP_arm)) \
 		HOST_CROSS_COMPILE= \

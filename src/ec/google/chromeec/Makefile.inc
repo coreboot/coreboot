@@ -59,7 +59,7 @@ pdrw.hash-type := raw
 CHROMEEC_SOURCE ?= $(top)/3rdparty/chromeec
 
 $(obj)/mainboard/$(MAINBOARDDIR)/ecrw:
-	$(MAKE) -C $(CHROMEEC_SOURCE) \
+	$(MAKE) -C $(CHROMEEC_SOURCE) $(if $(CONFIG_CCACHE),,CCACHE=) \
 		out=$(abspath $(obj)/external/chromeec/$(CONFIG_EC_GOOGLE_CHROMEEC_BOARDNAME)) \
 		CROSS_COMPILE=$(subst -cpp,-,$(CPP_arm)) \
 		HOST_CROSS_COMPILE= \
@@ -68,7 +68,7 @@ $(obj)/mainboard/$(MAINBOARDDIR)/ecrw:
 	cp $(obj)/external/chromeec/$(CONFIG_EC_GOOGLE_CHROMEEC_BOARDNAME)/RW/ec.RW.flat $@
 
 $(obj)/mainboard/$(MAINBOARDDIR)/pdrw:
-	$(MAKE) -C $(CHROMEEC_SOURCE) \
+	$(MAKE) -C $(CHROMEEC_SOURCE) $(if $(CONFIG_CCACHE),,CCACHE=) \
 		out=$(abspath $(obj)/external/chromeec/$(CONFIG_EC_GOOGLE_CHROMEEC_PD_BOARDNAME)) \
 		CROSS_COMPILE=$(subst -cpp,-,$(CPP_arm)) \
 		HOST_CROSS_COMPILE= \

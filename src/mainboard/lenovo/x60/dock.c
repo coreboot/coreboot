@@ -255,7 +255,7 @@ void dock_disconnect(void)
 
 int dock_present(void)
 {
-	return !((inb(DEFAULT_GPIOBASE + 0x0c) >> 13) & 1);
+	return !((inw(DEFAULT_GPIOBASE + 0x0c) >> 13) & 1);
 }
 
 int dock_ultrabay_device_present(void)

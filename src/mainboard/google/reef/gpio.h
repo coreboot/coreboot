@@ -152,7 +152,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(PMU_PLTRST_B, NONE, DEEP, NF1), /* PMU_PLTRST_N */
 	PAD_CFG_NF(PMU_PWRBTN_B, UP_20K, DEEP, NF1), /* PMU_PWRBTN_N */
 	PAD_CFG_NF(PMU_RESETBUTTON_B, NONE, DEEP, NF1), /* PMU_RSTBTN_N */
-	PAD_CFG_NF(PMU_SLP_S0_B, NONE, DEEP, NF1), /* PMU_SLP_S0_N */
+	PAD_CFG_NF_IOSSTATE(PMU_SLP_S0_B, NONE, DEEP, NF1, IGNORE), /* PMU_SLP_S0_N */
 	PAD_CFG_NF(PMU_SLP_S3_B, NONE, DEEP, NF1), /* PMU_SLP_S3_N */
 	PAD_CFG_NF(PMU_SLP_S4_B, NONE, DEEP, NF1), /* PMU_SLP_S4_N */
 	PAD_CFG_NF(PMU_SUSCLK, NONE, DEEP, NF1), /* PMU_SUSCLK */
@@ -200,7 +200,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI(PMC_SPI_CLK, UP_20K, DEEP),
 
 	/* PMIC Signals Unused signals related to an old PMIC interface */
-	PAD_CFG_GPI(PMIC_RESET_B, NONE, DEEP),	 /* unused external pull */
+	PAD_CFG_NF_IOSSTATE(PMIC_RESET_B, NATIVE, DEEP, NF1, IGNORE), /* PMIC_RESET_B */
 	PAD_CFG_GPI(GPIO_213, NONE, DEEP),	 /* unused external pull */
 	PAD_CFG_GPI(GPIO_214, UP_20K, DEEP),	 /* unused */
 	PAD_CFG_GPI(GPIO_215, UP_20K, DEEP),	 /* unused */

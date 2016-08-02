@@ -28,7 +28,7 @@
 #include <soc/pci_devs.h>
 #include <soc/pcr.h>
 #include <soc/pm.h>
-#include <soc/pmc.h>
+#include <soc/smbus.h>
 #include <soc/spi.h>
 #include <soc/systemagent.h>
 #include <device/pci.h>

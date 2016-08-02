@@ -482,7 +482,6 @@
 	/* GPIOTXSTATE - Drive value onto pad */
 #define  GPIOTXSTATE_SHIFT	0
 #define  GPIOTXSTATE_MASK	0x1
-#define PAD_CFG_DW_OFFSET	0x400
 	/* TERM - termination control */
 #define  PAD_TERM_SHIFT		10
 #define  PAD_TERM_MASK		0xf

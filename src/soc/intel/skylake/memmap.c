@@ -17,7 +17,6 @@
 #include <arch/io.h>
 #include <cbmem.h>
 #include <chip.h>
-#include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <soc/msr.h>

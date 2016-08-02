@@ -111,7 +111,8 @@ set_stage_toolchain= \
 # @2: compiler set to be used
 # e.g.: smm special class uses i386 as compiler set
 define create_class_compiler
-$(if $(2),,$(error building $(1) without the required toolchain))
+$(if $(2),,$(warning *** The toolchain architecture for $(1) is unknown.) \
+	$(error Check your .config file for CONFIG_ARCH_$(1)_* settings))
 CC_$(1) := $(CC_$(2))
 LD_$(1) := $(LD_$(2))
 NM_$(1) := $(NM_$(2))

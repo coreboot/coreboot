@@ -469,7 +469,7 @@ int elog_clear(void)
 		return -1;
 
 	/* Log the clear event */
-	elog_add_event_word(ELOG_TYPE_LOG_CLEAR, total_size);
+	elog_add_event_word(ELOG_TYPE_LOG_CLEAR, log_size);
 
 	return 0;
 }
@@ -576,7 +576,7 @@ int elog_init(void)
 
 	/* Log a clear event if necessary */
 	if (event_count == 0)
-		elog_add_event_word(ELOG_TYPE_LOG_CLEAR, total_size);
+		elog_add_event_word(ELOG_TYPE_LOG_CLEAR, log_size);
 
 #if !defined(__SMM__)
 	/* Log boot count event except in S3 resume */

@@ -26,6 +26,8 @@
 #define PCH_SPT_LP_U_BASE		0x9d43
 #define PCH_SPT_LP_U_PREMIUM		0x9d48
 #define PCH_SPT_LP_Y_PREMIUM		0x9d46
+#define PCH_KBL_LP_U_PREMIUM		0x9d58
+#define PCH_KBL_LP_Y_PREMIUM		0x9d56
 
 u8 pch_revision(void);
 u16 pch_type(void);

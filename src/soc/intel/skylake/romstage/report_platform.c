@@ -32,6 +32,8 @@ static struct {
 } cpu_table[] = {
 	{ CPUID_SKYLAKE_C0,	"Skylake C0" },
 	{ CPUID_SKYLAKE_D0,	"Skylake D0" },
+	{ CPUID_KABYLAKE_G0,	"Kabylake G0" },
+	{ CPUID_KABYLAKE_H0,	"Kabylake H0" },
 };
 
 static struct {
@@ -41,6 +43,8 @@ static struct {
 	{ MCH_SKYLAKE_ID_U,	"Skylake-U" },
 	{ MCH_SKYLAKE_ID_Y,	"Skylake-Y" },
 	{ MCH_SKYLAKE_ID_ULX,	"Skylake-ULX" },
+	{ MCH_KABYLAKE_ID_U,	"Kabylake-U" },
+	{ MCH_KABYLAKE_ID_Y,	"Kabylake-Y" },
 };
 
 static struct {
@@ -51,6 +55,8 @@ static struct {
 	{ PCH_SPT_LP_U_BASE,	"Skylake-U Base" },
 	{ PCH_SPT_LP_U_PREMIUM,	"Skylake-U Premium" },
 	{ PCH_SPT_LP_Y_PREMIUM,	"Skylake-Y Premium" },
+	{ PCH_KBL_LP_U_PREMIUM, "Kabylake-U Premium" },
+	{ PCH_KBL_LP_Y_PREMIUM, "Kabylake-Y Premium" },
 };
 
 static struct {

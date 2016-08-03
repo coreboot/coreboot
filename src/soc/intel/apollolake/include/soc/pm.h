@@ -25,6 +25,7 @@
 
 #define PM1_STS			0x00
 #define   WAK_STS		(1 << 15)
+#define   RTC_STS		(1 << 10)
 #define   PWRBTN_STS		(1 << 8)
 
 #define PM1_EN			0x02
@@ -162,6 +163,8 @@ struct chipset_power_state {
 
 int fill_power_state(struct chipset_power_state *ps);
 int chipset_prev_sleep_state(struct chipset_power_state *ps);
+/* Rewrite the gpe0 registers in cbmem to proper values as per routing table */
+void fixup_power_state(void);
 
 /* Power Management Utility Functions. */
 uint32_t clear_smi_status(void);

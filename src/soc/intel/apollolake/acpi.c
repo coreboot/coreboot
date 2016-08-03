@@ -168,6 +168,41 @@ static void acpi_create_gnvs(struct global_nvs_t *gnvs)
 
 	/* Enable DPTF based on mainboard configuration */
 	gnvs->dpte = cfg->dptf_enable;
+
+	/* Set unknown wake source */
+	gnvs->pm1i = ~0ULL;
+}
+
+/* Save wake source information for calculating ACPI _SWS values */
+int soc_fill_acpi_wake(uint32_t *pm1, uint32_t **gpe0)
+{
+	struct chipset_power_state *ps;
+	static uint32_t gpe0_sts[GPE0_REG_MAX];
+	uint32_t pm1_en;
+	int i;
+
+	ps = cbmem_find(CBMEM_ID_POWER_STATE);
+	if (ps == NULL)
+		return -1;
+
+	/*
+	 * PM1_EN to check the basic wake events which can happen through
+	 * powerbtn or any other wake source like lidopen, key board press etc.
+	 * WAK_STS bit is set when the system is in one of the sleep states
+	 * (via the SLP_EN bit) and an enabled wake event occurs. Upon setting
+	 * this bit, the PMC will transition the system to the ON state and
+	 * can only be set by hardware and can only be cleared by writing a one
+	 * to this bit position.
+	 */
+	pm1_en = ps->pm1_en | WAK_STS | RTC_EN | PWRBTN_EN;
+	*pm1 = ps->pm1_sts & pm1_en;
+
+	/* Mask off GPE0 status bits that are not enabled */
+	*gpe0 = &gpe0_sts[0];
+	for (i = 0; i < GPE0_REG_MAX; i++)
+		gpe0_sts[i] = ps->gpe0_sts[i] & ps->gpe0_en[i];
+
+	return GPE0_REG_MAX;
 }
 
 void southbridge_inject_dsdt(device_t device)

@@ -19,6 +19,7 @@
 
 #include <arch/io.h>
 #include <console/console.h>
+#include <cbmem.h>
 #include <rules.h>
 #include <device/pci_def.h>
 #include <halt.h>
@@ -325,6 +326,30 @@ int chipset_prev_sleep_state(struct chipset_power_state *ps)
 		outl(ps->pm1_cnt & ~(SLP_TYP), ACPI_PMIO_BASE + PM1_CNT);
 	}
 	return prev_sleep_state;
+}
+
+/*
+ * This function re-writes the gpe0 register values in power state
+ * cbmem variable. After system wakes from sleep state internal PMC logic
+ * writes default values in GPE_CFG register which gives a wrong offset to
+ * calculate the wake reason. So we need to set it again to the routing
+ * table as per the devicetree.
+ */
+void fixup_power_state(void)
+{
+	int i;
+	struct chipset_power_state *ps;
+
+	ps = cbmem_find(CBMEM_ID_POWER_STATE);
+	if (ps == NULL)
+		return;
+
+	for (i = 0; i < GPE0_REG_MAX; i++) {
+		ps->gpe0_sts[i] = inl(ACPI_PMIO_BASE + GPE0_STS(i));
+		ps->gpe0_en[i] = inl(ACPI_PMIO_BASE + GPE0_EN(i));
+		printk(BIOS_DEBUG, "gpe0_sts[%d]: %08x gpe0_en[%d]: %08x\n",
+					i, ps->gpe0_sts[i], i, ps->gpe0_en[i]);
+	}
 }
 
 /* returns prev_sleep_state */

@@ -117,6 +117,9 @@ static void pmc_gpe_init(void)
 
 	/* Set the routes in the GPIO communities as well. */
 	gpio_route_gpe(dw1, dw2, dw3);
+
+	/* Reset the power state in cbmem as routing */
+	fixup_power_state();
 }
 
 static void pmc_init(struct device *dev)

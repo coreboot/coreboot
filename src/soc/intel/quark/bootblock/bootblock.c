@@ -75,6 +75,11 @@ static const struct reg_script mtrr_init[] = {
 	REG_SCRIPT_END
 };
 
+void asmlinkage bootblock_c_entry(uint64_t base_timestamp)
+{
+	bootblock_main_with_timestamp(base_timestamp);
+}
+
 void bootblock_soc_early_init(void)
 {
 	/* Initialize the MTRRs */

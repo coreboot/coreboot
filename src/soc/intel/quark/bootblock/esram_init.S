@@ -534,6 +534,6 @@ before_carstage:
 	push	%ebp
 
 	/* We can call into C functions now */
-	call bootblock_main_with_timestamp
+	call bootblock_c_entry
 
 	/* Never reached */

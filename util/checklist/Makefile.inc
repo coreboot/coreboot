@@ -225,10 +225,11 @@ endif
 ifeq ($(CONFIG_SEPARATE_VERSTAGE),y)
 html_table_files += $(objcbfs)/verstage.html
 endif
+html_table_files += $(objcbfs)/romstage.html
 ifeq ($(CONFIG_POSTCAR_STAGE),y)
 html_table_files += $(objcbfs)/postcar.html
 endif
-html_table_files += $(objcbfs)/romstage.html $(objcbfs)/ramstage.html
+html_table_files += $(objcbfs)/ramstage.html
 
 #
 # Create a list with each file on a separate line

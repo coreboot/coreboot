@@ -48,7 +48,7 @@ Device (I2C4)
 
 Device (I2C5)
 {
-	Name (_ADR, 0x00190002)
+	Name (_ADR, 0x00190001)
 	Name (_DDN, "Serial IO I2C Controller 5")
 }
 

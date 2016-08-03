@@ -59,8 +59,8 @@ ifeq ($(CONFIG_CREATE_BOARD_CHECKLIST),y)
 # Extract the symbol table from the image
 #
 %.symbol_table: %.elf %.debug
-	$(NM_$(class)) $< > $@
-	$(NM_$(class)) $(*D)/$(*F).debug >> $@
+	$(NM_$(class)) $(*D)/$(*F).debug > $@
+	$(NM_$(class)) $< >> $@
 
 #
 # All symbols in the image

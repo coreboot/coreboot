@@ -59,15 +59,19 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI(GPIO_171, UP_20K, DEEP),	 /* SDIO_CMD */
 
 	/* SDCARD */
-	PAD_CFG_NF(GPIO_172, UP_20K, DEEP, NF1), /* SDCARD_CLK */
+	/* Pull down clock by 20K */
+	PAD_CFG_NF(GPIO_172, DN_20K, DEEP, NF1), /* SDCARD_CLK */
 	PAD_CFG_NF(GPIO_173, UP_20K, DEEP, NF1), /* SDCARD_D0 */
 	PAD_CFG_NF(GPIO_174, UP_20K, DEEP, NF1), /* SDCARD_D1 */
 	PAD_CFG_NF(GPIO_175, UP_20K, DEEP, NF1), /* SDCARD_D2 */
 	PAD_CFG_NF(GPIO_176, UP_20K, DEEP, NF1), /* SDCARD_D3 */
-	PAD_CFG_NF(GPIO_177, NATIVE, DEEP, NF1), /* SDCARD_CD_N */
+	/* Card detect is active LOW. Pull up by 20K */
+	PAD_CFG_NF(GPIO_177, UP_20K, DEEP, NF1), /* SDCARD_CD_N */
 	PAD_CFG_NF(GPIO_178, UP_20K, DEEP, NF1), /* SDCARD_CMD */
-	PAD_CFG_NF(GPIO_179, NATIVE, DEEP, NF1), /* SDCARD_CLK_FB */
-	PAD_CFG_NF(GPIO_186, NATIVE, DEEP, NF1), /* SDCARD_LVL_WP */
+	/* CLK feedback, internal signal, needs 20K pull down */
+	PAD_CFG_NF(GPIO_179, DN_20K, DEEP, NF1), /* SDCARD_CLK_FB */
+	/* No h/w write proect for uSD cards, pull down by 20K */
+	PAD_CFG_NF(GPIO_186, DN_20K, DEEP, NF1), /* SDCARD_LVL_WP */
 	/* EN_SD_SOCKET_PWR_L for SD slot power control. Default on. */
 	PAD_CFG_GPO(GPIO_183, 0, DEEP),		 /* SDIO_PWR_DOWN_N */
 

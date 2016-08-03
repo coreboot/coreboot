@@ -1408,7 +1408,7 @@ IdsErrorStop (
 
 	while(1) {
 		offset %= sizeof(struct POST) / 2;
-		WriteIo32(80, *((UINT32*)(&post+offset)));
+		WriteIo16(80, *((UINT16 *)&post)+offset);
 		++offset;
 		for (j=0; j<250; ++j) {
 			ReadIo8(80);

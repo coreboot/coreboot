@@ -317,6 +317,8 @@ static const unsigned short pci_device_ids[] = {
 	PCH_SPT_LP_U_BASE,
 	PCH_SPT_LP_U_PREMIUM,
 	PCH_SPT_LP_Y_PREMIUM,
+	PCH_KBL_LP_U_PREMIUM,
+	PCH_KBL_LP_Y_PREMIUM,
 	0
 };
 

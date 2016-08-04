@@ -52,8 +52,8 @@ ssize_t rdev_readat(const struct region_device *rd, void *b, size_t offset,
  * Returns < 0 on error otherwise returns size of data wrote at provided
  * offset from the buffer passed.
  */
-ssize_t rdev_writeat(const struct region_device *rd, void *b, size_t offset,
-			size_t size);
+ssize_t rdev_writeat(const struct region_device *rd, const void *b,
+			size_t offset, size_t size);
 
 /*
  * Returns < 0 on error otherwise returns size of data erased.
@@ -81,7 +81,7 @@ struct region_device_ops {
 	void *(*mmap)(const struct region_device *, size_t, size_t);
 	int (*munmap)(const struct region_device *, void *);
 	ssize_t (*readat)(const struct region_device *, void *, size_t, size_t);
-	ssize_t (*writeat)(const struct region_device *, void *, size_t,
+	ssize_t (*writeat)(const struct region_device *, const void *, size_t,
 		size_t);
 	ssize_t (*eraseat)(const struct region_device *, size_t, size_t);
 };

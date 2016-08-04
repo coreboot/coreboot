@@ -103,8 +103,8 @@ ssize_t rdev_readat(const struct region_device *rd, void *b, size_t offset,
 	return rdev->ops->readat(rdev, b, req.offset, req.size);
 }
 
-ssize_t rdev_writeat(const struct region_device *rd, void *b, size_t offset,
-			size_t size)
+ssize_t rdev_writeat(const struct region_device *rd, const void *b,
+			size_t offset, size_t size)
 {
 	const struct region_device *rdev;
 	struct region req = {
@@ -257,7 +257,7 @@ static ssize_t mdev_readat(const struct region_device *rd, void *b,
 	return size;
 }
 
-static ssize_t mdev_writeat(const struct region_device *rd, void *b,
+static ssize_t mdev_writeat(const struct region_device *rd, const void *b,
 				size_t offset, size_t size)
 {
 	const struct mem_region_device *mdev;
@@ -380,7 +380,7 @@ static ssize_t xlate_readat(const struct region_device *rd, void *b,
 	return rdev_readat(xldev->access_dev, b, offset, size);
 }
 
-static ssize_t xlate_writeat(const struct region_device *rd, void *b,
+static ssize_t xlate_writeat(const struct region_device *rd, const void *b,
 				size_t offset, size_t size)
 {
 	struct region req = {

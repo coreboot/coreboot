@@ -32,11 +32,10 @@
 #define DWC3_GCTL_CLK_PIPE			(1)
 #define DWC3_GCTL_CLK_PIPEHALF			(2)
 #define DWC3_GCTL_CLK_MASK			(3)
-#define DWC3_GCTL_PRTCAP(n)			(((n) & (3 << 12)) >> 12)
-#define DWC3_GCTL_PRTCAPDIR(n)			((n) << 12)
-#define DWC3_GCTL_PRTCAP_HOST			1
-#define DWC3_GCTL_PRTCAP_DEVICE			2
-#define DWC3_GCTL_PRTCAP_OTG			3
+#define DWC3_GCTL_PRTCAP_MASK			(3 << 12)
+#define DWC3_GCTL_PRTCAP_HOST			(1 << 12)
+#define DWC3_GCTL_PRTCAP_DEVICE			(2 << 12)
+#define DWC3_GCTL_PRTCAP_OTG			(3 << 12)
 #define DWC3_GCTL_CORESOFTRESET			(1 << 11)
 #define DWC3_GCTL_SCALEDOWN(n)			((n) << 4)
 #define DWC3_GCTL_SCALEDOWN_MASK		DWC3_GCTL_SCALEDOWN(3)
@@ -63,7 +62,7 @@
 #define DWC3_GUSB3PIPECTL_PHYSOFTRST		(1 << 31)
 #define DWC3_GUSB3PIPECTL_SUSPHY		(1 << 17)
 
-struct rockchip_usb_drd_dwc3 {
+struct rockchip_usb_dwc3 {
 	uint32_t sbuscfg0;
 	uint32_t sbuscfg1;
 	uint32_t txthrcfg;
@@ -107,15 +106,22 @@ struct rockchip_usb_drd_dwc3 {
 	uint8_t reserved6[60];
 };
 
-static struct rockchip_usb_drd_dwc3 * const rockchip_usb_drd0_dwc3 =
-		(void *)USB_DRD0_DWC3_BASE;
-static struct rockchip_usb_drd_dwc3 * const rockchip_usb_drd1_dwc3 =
-		(void *)USB_DRD1_DWC3_BASE;
+static struct rockchip_usb_dwc3 * const rockchip_usb_otg0_dwc3 =
+		(void *)USB_OTG0_DWC3_BASE;
+static struct rockchip_usb_dwc3 * const rockchip_usb_otg1_dwc3 =
+		(void *)USB_OTG1_DWC3_BASE;
 
-/* Call reset _ before setup_ */
-void reset_usb_drd0_dwc3(void);
-void reset_usb_drd1_dwc3(void);
-void setup_usb_drd0_dwc3(void);
-void setup_usb_drd1_dwc3(void);
+/* TODO: define struct overlay if we ever need more registers from this */
+#define TCPHY_ISOLATION_CTRL_OFFSET	0x3207c
+#define TCPHY_ISOLATION_CTRL_EN		(1 << 15)
+#define TCPHY_ISOLATION_CTRL_CMN_EN	(1 << 14)
+#define TCPHY_ISOLATION_CTRL_MODE_SEL	(1 << 12)
+#define TCPHY_ISOLATION_CTRL_LN_EN(ln)	(1 << (ln))
+
+/* Call reset_ before setup_ */
+void reset_usb_otg0(void);
+void reset_usb_otg1(void);
+void setup_usb_otg0(void);
+void setup_usb_otg1(void);
 
 #endif /* __SOC_ROCKCHIP_RK3399_USB_H_ */

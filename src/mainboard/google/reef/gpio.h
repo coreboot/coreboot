@@ -53,7 +53,8 @@ static const struct pad_config gpio_table[] = {
 	/* SDIO -- unused. */
 	PAD_CFG_GPI(GPIO_166, UP_20K, DEEP),	 /* SDIO_CLK */
 	PAD_CFG_GPI(GPIO_167, UP_20K, DEEP),	 /* SDIO_D0 */
-	PAD_CFG_GPI(GPIO_168, UP_20K, DEEP),	 /* SDIO_D1 */
+	/* Configure SDIO to enable power gating */
+	PAD_CFG_NF(GPIO_168, UP_20K, DEEP, NF1),	/* SDIO_D1 */
 	PAD_CFG_GPI(GPIO_169, UP_20K, DEEP),	 /* SDIO_D2 */
 	PAD_CFG_GPI(GPIO_170, UP_20K, DEEP),	 /* SDIO_D3 */
 	PAD_CFG_GPI(GPIO_171, UP_20K, DEEP),	 /* SDIO_CMD */

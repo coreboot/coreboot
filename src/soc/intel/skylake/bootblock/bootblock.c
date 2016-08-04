@@ -14,7 +14,6 @@
  */
 
 #include <bootblock_common.h>
-#include <fsp/bootblock.h>
 #include <soc/bootblock.h>
 #include <soc/romstage.h>
 
@@ -36,12 +35,14 @@ void bootblock_soc_early_init(void)
 
 void bootblock_soc_init(void)
 {
-	/* locate and call FspTempRamInit */
-	bootblock_fsp_temp_ram_init();
+	/* FSP 2.0 does not provide FSP-T/TempRamInit init support yet */
+	if (IS_ENABLED(CONFIG_PLATFORM_USES_FSP1_1))
+		bootblock_fsp_temp_ram_init();
+
 	/*
 	 * Perform early chipset initialization before fsp memory init
-	 * example: pirq->irq programming, enabling smbus, pmcbase, abase,
-	 * 			get platform info, i2c programming
+	 * example: pirq->irq programming, enabling smbus, set pmcbase
+	 * and abase, i2c programming and print platform info
 	 */
 	report_platform_info();
 	set_max_freq();

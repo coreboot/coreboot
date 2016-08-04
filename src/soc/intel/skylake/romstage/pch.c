@@ -79,31 +79,6 @@ static void pch_enable_lpc(void)
 	pcr_write32(PID_DMI, R_PCH_PCR_DMI_LPCLGIR4, config->gen4_dec);
 }
 
-static void pch_device_init(void)
-{
-	device_t dev;
-	u32 reg32;
-	u16 tcobase;
-	u16 tcocnt;
-
-	dev = PCH_DEV_PMC;
-
-	/* Enable ACPI and PMC mmio regs in PMC Config */
-	reg32 = pci_read_config32(dev, ACTL);
-	reg32 |= ACPI_EN | PWRM_EN;
-	pci_write_config32(dev, ACTL, reg32);
-
-	/* TCO timer halt */
-	tcobase = smbus_tco_regs();
-	tcocnt = inw(tcobase + TCO1_CNT);
-	tcocnt |= TCO_TMR_HLT;
-	outw(tcocnt, tcobase + TCO1_CNT);
-
-	/* Enable upper 128 bytes of CMOS */
-	pcr_andthenor32(PID_RTC, R_PCH_PCR_RTC_CONF, (u32)~0,
-			B_PCH_PCR_RTC_CONF_UCMOS_EN);
-}
-
 static void pch_interrupt_init(void)
 {
 	u8 index = 0;
@@ -120,13 +95,127 @@ static void pch_interrupt_init(void)
 	}
 }
 
+static void soc_config_acpibase(void)
+{
+	uint32_t reg32;
+
+	/* Disable ABASE in PMC Device first before changing Base Address*/
+	reg32 = pci_read_config32(PCH_DEV_PMC, ACTL);
+	pci_write_config32(PCH_DEV_PMC, ACTL, reg32 & ~ACPI_EN);
+
+	/* Program ACPI Base */
+	pci_write_config32(PCH_DEV_PMC, ABASE, ACPI_BASE_ADDRESS);
+
+	/* Enable ACPI in PMC */
+	pci_write_config32(PCH_DEV_PMC, ACTL, reg32 | ACPI_EN);
+
+	/*
+	 * Program "ACPI Base Address" PCR[DMI] + 27B4h[23:18, 15:2, 0]
+	 * to [0x3F, PMC PCI Offset 40h bit[15:2], 1]
+	 */
+	reg32 = ((0x3f << 18) | ACPI_BASE_ADDRESS | 1);
+	pcr_write32(PID_DMI, R_PCH_PCR_DMI_ACPIBA, reg32);
+	pcr_write32(PID_DMI, R_PCH_PCR_DMI_ACPIBDID, 0x23A0);
+}
+
+static void soc_config_pwrmbase(void)
+{
+	uint32_t reg32;
+
+	/* Disable PWRMBASE in PMC Device first before changing Base address */
+	reg32 = pci_read_config32(PCH_DEV_PMC, ACTL);
+	pci_write_config32(PCH_DEV_PMC, ACTL, reg32 & ~PWRM_EN);
+
+	/* Program PWRM Base */
+	pci_write_config32(PCH_DEV_PMC, PWRMBASE, PCH_PWRM_BASE_ADDRESS);
+
+	/* Enable PWRM in PMC */
+	pci_write_config32(PCH_DEV_PMC, ACTL, reg32 | PWRM_EN);
+
+	/*
+	 * Program "PM Base Address Memory Range Base" PCR[DMI] + 27ACh[15:0]
+	 * to the same value programmed in PMC PCI Offset 48h bit[31:16],
+	 * this has an implication of making sure the PWRMBASE to be
+	 * 64KB aligned.
+	 *
+	 * Program "PM Base Address Memory Range Limit" PCR[DMI] + 27ACh[31:16]
+	 * to the value programmed in PMC PCI Offset 48h bit[31:16], this has an
+	 * implication of making sure the memory allocated to PWRMBASE to be 64KB
+	 * in size.
+	 */
+	pcr_write32(PID_DMI, R_PCH_PCR_DMI_PMBASEA,
+		((PCH_PWRM_BASE_ADDRESS & 0xFFFF0000) |
+		 (PCH_PWRM_BASE_ADDRESS >> 16)));
+	pcr_write32(PID_DMI, R_PCH_PCR_DMI_PMBASEC, 0x800023A0);
+}
+
+static void soc_config_tco(void)
+{
+	uint32_t reg32 = 0;
+	uint16_t tcobase;
+	uint16_t tcocnt;
+
+	/* Disable TCO in SMBUS Device first before changing Base Address */
+	reg32 = pci_read_config32(PCH_DEV_SMBUS, TCOCTL);
+	reg32 &= ~SMBUS_TCO_EN;
+	pci_write_config32(PCH_DEV_SMBUS, TCOCTL, reg32);
+
+	/* Program TCO Base */
+	pci_write_config32(PCH_DEV_SMBUS, TCOBASE, TCO_BASE_ADDDRESS);
+
+	/* Enable TCO in SMBUS */
+	pci_write_config32(PCH_DEV_SMBUS, TCOCTL, reg32 | SMBUS_TCO_EN);
+
+	/*
+	 * Program "TCO Base Address" PCR[DMI] + 2778h[15:5, 1]
+	 * to [SMBUS PCI offset 50h[15:5], 1].
+	 */
+	pcr_write32(PID_DMI, R_PCH_PCR_DMI_TCOBASE,
+		   (TCO_BASE_ADDDRESS | (1 << 1)));
+
+	/* Program TCO timer halt */
+	tcobase = pci_read_config16(PCH_DEV_SMBUS, TCOBASE);
+	tcobase &= ~0x1f;
+	tcocnt = inw(tcobase + TCO1_CNT);
+	tcocnt |= TCO_TMR_HLT;
+	outw(tcocnt, tcobase + TCO1_CNT);
+}
+
+static void soc_config_rtc(void)
+{
+	/* Enable upper 128 bytes of CMOS */
+	pcr_andthenor32(PID_RTC, R_PCH_PCR_RTC_CONF, ~0,
+			B_PCH_PCR_RTC_CONF_UCMOS_EN);
+}
+
 void pch_early_init(void)
 {
-	pch_device_init();
+	/*
+	 * Enabling ABASE for accessing PM1_STS, PM1_EN, PM1_CNT,
+	 * GPE0_STS, GPE0_EN registers.
+	 */
+	soc_config_acpibase();
 
+	/*
+	 * Enabling PWRM Base for accessing
+	 * Global Reset Cause Register.
+	 */
+	soc_config_pwrmbase();
+
+	/* Programming TCO_BASE_ADDRESS and TCO Timer Halt */
+	soc_config_tco();
+
+	/*
+	 * Interrupt Configuration Register Programming
+	 * PIRQx to IRQ Programming
+	 */
 	pch_interrupt_init();
 
+	/* Program generic IO Decode Range */
 	pch_enable_lpc();
 
+	/* Program SMBUS_BASE_ADDRESS and Enable it */
 	enable_smbus();
+
+	soc_config_rtc();
 }

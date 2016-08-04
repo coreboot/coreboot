@@ -18,6 +18,7 @@
 #include <soc/bootblock.h>
 #include <soc/iomap.h>
 #include <soc/lpc.h>
+#include <soc/p2sb.h>
 #include <soc/pci_devs.h>
 #include <soc/pcr.h>
 #include <soc/spi.h>
@@ -64,6 +65,14 @@ static void enable_p2sbbar(void)
 	/* Enable P2SB MSE */
 	pci_write_config8(dev, PCI_COMMAND,
 			  PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
+
+	/*
+	 * Enable decoding for HPET memory address range.
+	 * HPTC_OFFSET(0x60) bit 7, when set the P2SB will decode
+	 * the High Performance Timer memory address range
+	 * selected by bits 1:0
+	 */
+	pci_write_config8(dev, HPTC_OFFSET, HPTC_ADDR_ENABLE_BIT);
 }
 
 void bootblock_pch_early_init(void)

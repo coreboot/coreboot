@@ -352,9 +352,6 @@ static int elog_shrink(void)
 
 	elog_debug("elog_shrink()\n");
 
-	if (next_event_offset < shrink_size)
-		return 0;
-
 	while (1) {
 		/* Next event has exceeded constraints */
 		if (offset > shrink_size)

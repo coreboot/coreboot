@@ -59,15 +59,6 @@ Device (EMMC)
 		Store (Local0, ^D0D3)
 		Store (^D0D3, Local0)
 	}
-
-	Device (CARD)
-	{
-		Name (_ADR, 0x00000008)
-		Method (_RMV, 0, NotSerialized)
-		{
-			Return (0)
-		}
-	}
 }
 
 #if !IS_ENABLED(CONFIG_EXCLUDE_NATIVE_SD_INTERFACE)
@@ -129,15 +120,6 @@ Device (SDXC)
 		^^PCRO (PID_GPIOCOM3, 0x4dc, 0x00001000)
 		^^PCRO (PID_GPIOCOM3, 0x4e4, 0x00001000)
 		^^PCRO (PID_GPIOCOM3, 0x4f4, 0x00001000)
-	}
-
-	Device (CARD)
-	{
-		Name (_ADR, 0x00000008)
-		Method (_RMV, 0, NotSerialized)
-		{
-			Return (1)
-		}
 	}
 }
 #endif

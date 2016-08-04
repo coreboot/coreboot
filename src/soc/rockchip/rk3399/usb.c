@@ -14,57 +14,58 @@
  */
 
 #include <arch/io.h>
+#include <assert.h>
 #include <console/console.h>
 #include <delay.h>
 #include <soc/usb.h>
 
-static void reset_dwc3(struct rockchip_usb_drd_dwc3 *dwc3_reg)
+/* SuperSpeed over Type-C is hard. We don't care about speed in firmware: just
+ * gate off the SuperSpeed lines to have an unimpaired USB 2.0 connection. */
+static void isolate_tcphy(uintptr_t base)
 {
-	/* Before Resetting PHY, put Core in Reset */
-	setbits_le32(&dwc3_reg->ctl, DWC3_GCTL_CORESOFTRESET);
-	/* Assert USB3 PHY reset */
-	setbits_le32(&dwc3_reg->usb3pipectl, DWC3_GUSB3PIPECTL_PHYSOFTRST);
-	/* Assert USB2 PHY reset */
-	setbits_le32(&dwc3_reg->usb2phycfg, DWC3_GUSB2PHYCFG_PHYSOFTRST);
+	write32((void *)(base + TCPHY_ISOLATION_CTRL_OFFSET),
+		TCPHY_ISOLATION_CTRL_EN |
+		TCPHY_ISOLATION_CTRL_CMN_EN |
+		TCPHY_ISOLATION_CTRL_MODE_SEL |
+		TCPHY_ISOLATION_CTRL_LN_EN(7) |
+		TCPHY_ISOLATION_CTRL_LN_EN(6) |
+		TCPHY_ISOLATION_CTRL_LN_EN(5) |
+		TCPHY_ISOLATION_CTRL_LN_EN(4) |
+		TCPHY_ISOLATION_CTRL_LN_EN(3) |
+		TCPHY_ISOLATION_CTRL_LN_EN(2) |
+		TCPHY_ISOLATION_CTRL_LN_EN(1) |
+		TCPHY_ISOLATION_CTRL_LN_EN(0));
 }
 
-static void setup_dwc3(struct rockchip_usb_drd_dwc3 *dwc3_reg)
+static void reset_dwc3(struct rockchip_usb_dwc3 *dwc3)
 {
-	u32 reg;
-	u32 revision;
-	u32 dwc3_hwparams1;
+	/* Before Resetting PHY, put Core in Reset */
+	setbits_le32(&dwc3->ctl, DWC3_GCTL_CORESOFTRESET);
+	/* Assert USB3 PHY reset */
+	setbits_le32(&dwc3->usb3pipectl, DWC3_GUSB3PIPECTL_PHYSOFTRST);
+	/* Assert USB2 PHY reset */
+	setbits_le32(&dwc3->usb2phycfg, DWC3_GUSB2PHYCFG_PHYSOFTRST);
+}
 
-	/* Clear USB3 PHY reset */
-	clrbits_le32(&dwc3_reg->usb3pipectl, DWC3_GUSB3PIPECTL_PHYSOFTRST);
-	/* Clear USB2 PHY reset */
-	clrbits_le32(&dwc3_reg->usb2phycfg, DWC3_GUSB2PHYCFG_PHYSOFTRST);
-	/* After PHYs are stable we can take Core out of reset state */
-	clrbits_le32(&dwc3_reg->ctl, DWC3_GCTL_CORESOFTRESET);
+static void setup_dwc3(struct rockchip_usb_dwc3 *dwc3)
+{
+	u32 usb2phycfg = read32(&dwc3->usb2phycfg);
+	u32 ctl = read32(&dwc3->ctl);
 
-	revision = read32(&dwc3_reg->snpsid);
-	/* This should read as U3 followed by revision number */
-	if ((revision & DWC3_GSNPSID_MASK) != 0x55330000) {
-		printk(BIOS_ERR, "ERROR: not a DesignWare USB3 DRD Core\n");
-		return;
-	}
+	/* Ensure reset_dwc3() has been called before this. */
+	assert(ctl & DWC3_GCTL_CORESOFTRESET);
 
-	dwc3_hwparams1 = read32(&dwc3_reg->hwparams1);
+	/* Clear USB3 PHY reset (oddly enough, this is really necessary). */
+	clrbits_le32(&dwc3->usb3pipectl, DWC3_GUSB3PIPECTL_PHYSOFTRST);
 
-	reg = read32(&dwc3_reg->ctl);
-	reg &= ~DWC3_GCTL_SCALEDOWN_MASK;
-	reg &= ~DWC3_GCTL_DISSCRAMBLE;
-	if (DWC3_GHWPARAMS1_EN_PWROPT(dwc3_hwparams1) ==
-	    DWC3_GHWPARAMS1_EN_PWROPT_CLK)
-		reg &= ~DWC3_GCTL_DSBLCLKGTNG;
-	else
-		printk(BIOS_DEBUG, "No power optimization available\n");
-
-	write32(&dwc3_reg->ctl, reg);
+	/* Clear USB2 PHY and core reset. */
+	usb2phycfg &= ~DWC3_GUSB2PHYCFG_PHYSOFTRST;
+	ctl &= ~DWC3_GCTL_CORESOFTRESET;
 
 	/* We are hard-coding DWC3 core to Host Mode */
-	clrsetbits_le32(&dwc3_reg->ctl,
-			DWC3_GCTL_PRTCAPDIR(DWC3_GCTL_PRTCAP_OTG),
-			DWC3_GCTL_PRTCAPDIR(DWC3_GCTL_PRTCAP_HOST));
+	ctl &= ~DWC3_GCTL_PRTCAP_MASK;
+	ctl |= DWC3_GCTL_PRTCAP_HOST;
+
 	/*
 	 * Configure USB phy interface of DWC3 core.
 	 * For Rockchip rk3399 SOC DWC3 core:
@@ -73,35 +74,38 @@ static void setup_dwc3(struct rockchip_usb_drd_dwc3 *dwc3_reg)
 	 * 3. Set USBTRDTIM to the corresponding value
 	 * according to the UTMI+ PHY interface.
 	 */
-	reg = read32(&dwc3_reg->usb2phycfg);
-	reg &= ~(DWC3_GUSB2PHYCFG_U2_FREECLK_EXISTS |
-		DWC3_GUSB2PHYCFG_USB2TRDTIM_MASK |
-		DWC3_GUSB2PHYCFG_PHYIF_MASK);
-	reg |= DWC3_GUSB2PHYCFG_PHYIF(1) |
-	       DWC3_GUSB2PHYCFG_USBTRDTIM(USBTRDTIM_UTMI_16_BIT);
-	write32(&dwc3_reg->usb2phycfg, reg);
+	usb2phycfg &= ~(DWC3_GUSB2PHYCFG_U2_FREECLK_EXISTS |
+			DWC3_GUSB2PHYCFG_USB2TRDTIM_MASK |
+			DWC3_GUSB2PHYCFG_PHYIF_MASK);
+	usb2phycfg |= DWC3_GUSB2PHYCFG_PHYIF(1) |
+		      DWC3_GUSB2PHYCFG_USBTRDTIM(USBTRDTIM_UTMI_16_BIT);
+
+	write32(&dwc3->usb2phycfg, usb2phycfg);
+	write32(&dwc3->ctl, ctl);
 }
 
-void reset_usb_drd0_dwc3(void)
+void reset_usb_otg0(void)
 {
-	printk(BIOS_DEBUG, "Starting DWC3 reset for USB DRD0\n");
-	reset_dwc3(rockchip_usb_drd0_dwc3);
+	printk(BIOS_DEBUG, "Starting DWC3 reset for USB OTG0\n");
+	reset_dwc3(rockchip_usb_otg0_dwc3);
 }
 
-void reset_usb_drd1_dwc3(void)
+void reset_usb_otg1(void)
 {
-	printk(BIOS_DEBUG, "Starting DWC3 reset for USB DRD1\n");
-	reset_dwc3(rockchip_usb_drd1_dwc3);
+	printk(BIOS_DEBUG, "Starting DWC3 reset for USB OTG1\n");
+	reset_dwc3(rockchip_usb_otg1_dwc3);
 }
 
-void setup_usb_drd0_dwc3(void)
+void setup_usb_otg0(void)
 {
-	setup_dwc3(rockchip_usb_drd0_dwc3);
-	printk(BIOS_DEBUG, "DWC3 setup for USB DRD0 finished\n");
+	isolate_tcphy(USB_OTG0_TCPHY_BASE);
+	setup_dwc3(rockchip_usb_otg0_dwc3);
+	printk(BIOS_DEBUG, "DWC3 setup for USB OTG0 finished\n");
 }
 
-void setup_usb_drd1_dwc3(void)
+void setup_usb_otg1(void)
 {
-	setup_dwc3(rockchip_usb_drd1_dwc3);
-	printk(BIOS_DEBUG, "DWC3 setup for USB DRD1 finished\n");
+	isolate_tcphy(USB_OTG1_TCPHY_BASE);
+	setup_dwc3(rockchip_usb_otg1_dwc3);
+	printk(BIOS_DEBUG, "DWC3 setup for USB OTG1 finished\n");
 }

@@ -164,8 +164,8 @@ static void configure_display(void)
 
 static void setup_usb(void)
 {
-	setup_usb_drd0_dwc3();
-	setup_usb_drd1_dwc3();
+	setup_usb_otg0();
+	setup_usb_otg1();
 }
 
 static void setup_rtc(void)

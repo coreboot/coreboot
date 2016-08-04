@@ -340,11 +340,6 @@ Device (PDRC)
 
 		/* HPET address decode range */
 		Memory32Fixed (ReadWrite, HPET_BASE_ADDRESS, 0x400)
-
-		/* Debug Base Address
-		 * Base Address for ACPI debug output memory buffer
-		 */
-		Memory32Fixed (ReadWrite, 0, 0, DBAD)
 	})
 
 	Method (_CRS, 0, Serialized)

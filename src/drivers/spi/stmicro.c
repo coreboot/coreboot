@@ -52,6 +52,7 @@
 #define STM_ID_N25Q256		0xba19
 #define STM_ID_N25Q064		0xbb17
 #define STM_ID_N25Q128		0xbb18
+#define STM_ID_N25Q128A		0xba18
 
 struct stmicro_spi_flash_params {
 	u16 device_id;
@@ -154,6 +155,14 @@ static const struct stmicro_spi_flash_params stmicro_spi_flash_table[] = {
 		.pages_per_sector = 16,
 		.nr_sectors = 4096,
 		.name = "N25Q128",
+	},
+	{
+		.device_id = STM_ID_N25Q128A,
+		.op_erase = CMD_M25PXX_SSE,
+		.page_size = 256,
+		.pages_per_sector = 16,
+		.nr_sectors = 4096,
+		.name = "N25Q128A",
 	},
 	{
 		.device_id = STM_ID_N25Q256,

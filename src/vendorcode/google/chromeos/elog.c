@@ -14,13 +14,9 @@
  */
 
 #include <bootstate.h>
-#include <cbmem.h>
 #include <console/console.h>
 #include <elog.h>
-#include <vendorcode/google/chromeos/chromeos.h>
-#include <vboot/vbnv.h>
 #include <vboot/vboot_common.h>
-#include <vboot_struct.h>
 
 static void elog_add_boot_reason(void *unused)
 {

@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2016 Intel Corporation
+ * Copyright (C) 2016 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,22 +13,16 @@
  * GNU General Public License for more details.
  */
 
-#ifndef _SOC_SKYLAKE_BOOTBLOCK_H_
-#define _SOC_SKYLAKE_BOOTBLOCK_H_
+#ifndef _SOC_P2SB_H_
+#define _SOC_P2SB_H_
 
-#if IS_ENABLED(CONFIG_PLATFORM_USES_FSP1_1)
-#include <fsp/bootblock.h>
-#else
-inline void bootblock_fsp_temp_ram_init(void) {}
-#endif
+#define HPTC_OFFSET		0x60
+#define HPTC_ADDR_ENABLE_BIT	(1 << 7)
 
-/* Bootblock pre console init programing */
-void bootblock_cpu_init(void);
-void bootblock_pch_early_init(void);
-void bootblock_systemagent_early_init(void);
+#define PCH_P2SB_EPMASK0		0xB0
+#define PCH_P2SB_EPMASK(mask_number)	PCH_P2SB_EPMASK0 + (mask_number * 4)
 
-void pch_uart_init(void);
-/* Bootblock post console init programing */
-void pch_enable_lpc(void);
+#define PCH_P2SB_E0		0xE0
+#define PCH_PWRM_ACPI_TMR_CTL		0xFC
 
-#endif
+#endif /* _SOC_P2SB_H_ */

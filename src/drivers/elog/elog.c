@@ -66,19 +66,6 @@ static enum {
 	ELOG_BROKEN,
 } elog_initialized = ELOG_UNINITIALIZED;
 
-static inline u32 get_rom_size(void)
-{
-	u32 rom_size;
-
-	/* Assume the used space of the ROM image starts from 0. The
-	 * physical size of the device may not be completely used. */
-	rom_size = elog_spi->size;
-	if (rom_size > CONFIG_ROM_SIZE)
-		rom_size = CONFIG_ROM_SIZE;
-
-	return rom_size;
-}
-
 /*
  * Pointer to an event log header in the event data area
  */

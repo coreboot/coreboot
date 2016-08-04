@@ -22,10 +22,16 @@
 
 #include "board.h"
 
+int get_write_protect_state(void)
+{
+	return gpio_get(GPIO_WP);
+}
+
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
 	struct lb_gpio chromeos_gpios[] = {
-		{GPIO_WP.raw, ACTIVE_LOW, gpio_get(GPIO_WP), "write protect"},
+		{GPIO_WP.raw, ACTIVE_HIGH, get_write_protect_state(),
+		 "write protect"},
 		{-1, ACTIVE_HIGH, get_recovery_mode_switch(), "recovery"},
 		{GPIO_BACKLIGHT.raw, ACTIVE_HIGH, -1, "backlight"},
 		{GPIO_EC_IN_RW.raw, ACTIVE_HIGH, -1, "EC in RW"},
@@ -50,14 +56,9 @@ int get_recovery_mode_switch(void)
 		  EC_HOST_EVENT_MASK(EC_HOST_EVENT_KEYBOARD_RECOVERY));
 }
 
-int get_write_protect_state(void)
-{
-	return !gpio_get(GPIO_WP);
-}
-
 void setup_chromeos_gpios(void)
 {
-	gpio_input(GPIO_WP);
+	gpio_input_pullup(GPIO_WP);
 	gpio_input_pullup(GPIO_EC_IN_RW);
 	gpio_input_pullup(GPIO_EC_IRQ);
 }

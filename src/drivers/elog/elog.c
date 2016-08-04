@@ -45,16 +45,15 @@
  * Static variables for ELOG state
  */
 static u16 total_size;
-static u16 log_size; /* excluding header */
 static u32 flash_base;
-static u16 full_threshold; /* from end of header */
-static u16 shrink_size; /* from end of header */
+static u16 full_threshold;
+static u16 shrink_size;
 
 static elog_area_state area_state;
 static elog_header_state header_state;
 static elog_event_buffer_state event_buffer_state;
 
-static u16 next_event_offset; /* from end of header */
+static u16 next_event_offset;
 static u16 event_count;
 
 static struct spi_flash *elog_spi;
@@ -72,16 +71,22 @@ static inline struct region_device *mirror_dev_get(void)
 	return &mirror_dev.rdev;
 }
 
+static size_t elog_events_start(void)
+{
+	/* Events are added directly after the header. */
+	return sizeof(struct elog_header);
+}
+
+static size_t elog_events_total_space(void)
+{
+	return total_size - elog_events_start();
+}
+
 /*
  * Pointer to an event log header in the event data area
  */
 static struct event_header *elog_get_event_buffer(size_t offset, size_t size)
 {
-	/*
-	 * Events are appended relative to the end of the header. Update
-	 * offset to include the header size.
-	 */
-	offset += sizeof(struct elog_header);
 	return rdev_mmap(mirror_dev_get(), offset, size);
 }
 
@@ -137,17 +142,6 @@ static int elog_is_buffer_clear(size_t offset)
 	}
 	rdev_munmap(rdev, buffer);
 	return ret;
-}
-
-static int elog_event_buffer_is_clear(size_t offset)
-{
-	/*
-	 * Events are appended relative to the end of the header. Update
-	 * offset to include the header size.
-	 */
-	offset += sizeof(struct elog_header);
-
-	return elog_is_buffer_clear(offset);
 }
 
 /*
@@ -268,16 +262,6 @@ static void elog_flash_write(size_t offset, size_t size)
 	rdev_munmap(rdev, address);
 }
 
-static void elog_append_event(size_t offset, size_t event_size)
-{
-	/*
-	 * Events are appended relative to the end of the header. Update
-	 * offset to include the header size.
-	 */
-	offset += sizeof(struct elog_header);
-	elog_flash_write(offset, event_size);
-}
-
 /*
  * Erase the first block specified in the address.
  * Only handles flash area within a single flash block.
@@ -300,7 +284,7 @@ static void elog_flash_erase(void)
 static void elog_update_event_buffer_state(void)
 {
 	u32 count = 0;
-	u32 offset = 0;
+	size_t offset = elog_events_start();
 
 	elog_debug("elog_update_event_buffer_state()\n");
 
@@ -310,10 +294,9 @@ static void elog_update_event_buffer_state(void)
 		const size_t type_offset = offsetof(struct event_header, type);
 		size_t len;
 		const size_t size = sizeof(type);
-		size_t abs_offset = offset + sizeof(struct elog_header);
 
 		if (rdev_readat(mirror_dev_get(), &type,
-				abs_offset + type_offset, size) < 0) {
+				offset + type_offset, size) < 0) {
 			event_buffer_state = ELOG_EVENT_BUFFER_CORRUPTED;
 			break;
 		}
@@ -323,7 +306,7 @@ static void elog_update_event_buffer_state(void)
 			break;
 
 		/* Validate the event */
-		len = elog_is_event_valid(abs_offset);
+		len = elog_is_event_valid(offset);
 
 		if (!len) {
 			event_buffer_state = ELOG_EVENT_BUFFER_CORRUPTED;
@@ -336,7 +319,7 @@ static void elog_update_event_buffer_state(void)
 	}
 
 	/* Ensure the remaining buffer is empty */
-	if (!elog_event_buffer_is_clear(offset))
+	if (!elog_is_buffer_clear(offset))
 		event_buffer_state = ELOG_EVENT_BUFFER_CORRUPTED;
 
 	/* Update ELOG state */
@@ -359,7 +342,7 @@ static void elog_scan_flash(void)
 	elog_spi->read(elog_spi, flash_base, total_size, mirror_buffer);
 	rdev_munmap(rdev, mirror_buffer);
 
-	next_event_offset = 0;
+	next_event_offset = elog_events_start();
 	event_count = 0;
 
 	/* Check if the area is empty or not */
@@ -412,14 +395,9 @@ static void elog_move_events_to_front(size_t offset, size_t size)
 {
 	void *src;
 	void *dest;
-	size_t start_offset = sizeof(struct elog_header);
+	size_t start_offset = elog_events_start();
 	const struct region_device *rdev = mirror_dev_get();
 
-	/*
-	 * Events are appended relative to the end of the header. Update
-	 * offset to include the header size.
-	 */
-	offset += start_offset;
 	src = rdev_mmap(rdev, offset, size);
 	dest = rdev_mmap(rdev, start_offset, size);
 
@@ -454,7 +432,7 @@ static void elog_move_events_to_front(size_t offset, size_t size)
 static int elog_shrink(void)
 {
 	const struct region_device *rdev = mirror_dev_get();
-	u16 offset = 0;
+	size_t offset = elog_events_start();
 
 	elog_debug("elog_shrink()\n");
 
@@ -464,21 +442,19 @@ static int elog_shrink(void)
 		const size_t size = sizeof(uint8_t);
 		uint8_t type;
 		uint8_t len;
-		size_t abs_offset = offset + sizeof(struct elog_header);
 
 		/* Next event has exceeded constraints */
 		if (offset > shrink_size)
 			break;
 
-		if (rdev_readat(rdev, &type, abs_offset + type_offset,
-				size) < 0)
+		if (rdev_readat(rdev, &type, offset + type_offset, size) < 0)
 			break;
 
 		/* Reached the end of the area */
 		if (type == ELOG_TYPE_EOL)
 			break;
 
-		if (rdev_readat(rdev, &len, abs_offset + len_offset, size) < 0)
+		if (rdev_readat(rdev, &len, offset + len_offset, size) < 0)
 			break;
 
 		offset += len;
@@ -497,7 +473,7 @@ static int elog_shrink(void)
 	}
 
 	/* Add clear event */
-	elog_add_event_word(ELOG_TYPE_LOG_CLEAR, offset);
+	elog_add_event_word(ELOG_TYPE_LOG_CLEAR, offset - elog_events_start());
 
 	return 0;
 }
@@ -581,7 +557,7 @@ int elog_clear(void)
 		return -1;
 
 	/* Log the clear event */
-	elog_add_event_word(ELOG_TYPE_LOG_CLEAR, log_size);
+	elog_add_event_word(ELOG_TYPE_LOG_CLEAR, elog_events_total_space());
 
 	return 0;
 }
@@ -589,6 +565,7 @@ int elog_clear(void)
 static void elog_find_flash(void)
 {
 	struct region r;
+	size_t reserved_space = ELOG_MIN_AVAILABLE_ENTRIES * MAX_EVENT_SIZE;
 
 	elog_debug("elog_find_flash()\n");
 
@@ -602,8 +579,7 @@ static void elog_find_flash(void)
 		total_size = MIN(4*KiB, region_sz(&r));
 	}
 
-	log_size = total_size - sizeof(struct elog_header);
-	full_threshold = log_size - ELOG_MIN_AVAILABLE_ENTRIES * MAX_EVENT_SIZE;
+	full_threshold = total_size - reserved_space;
 	shrink_size = MIN(total_size * ELOG_SHRINK_PERCENTAGE / 100,
 								full_threshold);
 }
@@ -642,7 +618,7 @@ int elog_init(void)
 	} else if (total_size < sizeof(struct elog_header) + MAX_EVENT_SIZE) {
 		printk(BIOS_ERR, "ELOG: Region too small to hold any events\n");
 		return -1;
-	} else if (log_size - shrink_size >= full_threshold) {
+	} else if (total_size - shrink_size >= full_threshold) {
 		printk(BIOS_ERR,
 			"ELOG: SHRINK_PERCENTAGE set too small for MIN_AVAILABLE_ENTRIES\n");
 		return -1;
@@ -691,7 +667,8 @@ int elog_init(void)
 
 	/* Log a clear event if necessary */
 	if (event_count == 0)
-		elog_add_event_word(ELOG_TYPE_LOG_CLEAR, log_size);
+		elog_add_event_word(ELOG_TYPE_LOG_CLEAR,
+					elog_events_total_space());
 
 #if !defined(__SMM__)
 	/* Log boot count event except in S3 resume */
@@ -793,7 +770,7 @@ void elog_add_event_raw(u8 event_type, void *data, u8 data_size)
 	/* Update the ELOG state */
 	event_count++;
 
-	elog_append_event(next_event_offset, event_size);
+	elog_flash_write(next_event_offset, event_size);
 
 	next_event_offset += event_size;
 

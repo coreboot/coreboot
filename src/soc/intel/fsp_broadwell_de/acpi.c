@@ -567,15 +567,5 @@ unsigned long acpi_madt_irq_overrides(unsigned long current)
 	current += acpi_create_madt_irqoverride(irqovr, 0, sci_irq, sci_irq,
 	                                        sci_flags);
 
-	irqovr = (void *)current;
-	current += acpi_create_madt_irqoverride(irqovr, 0, 3, 3,
-	                                       (MP_IRQ_TRIGGER_LEVEL
-	                                       |MP_IRQ_POLARITY_LOW));
-
-	irqovr = (void *)current;
-	current += acpi_create_madt_irqoverride(irqovr, 0, 4, 4,
-	                                       (MP_IRQ_TRIGGER_LEVEL
-	                                       |MP_IRQ_POLARITY_LOW));
-
 	return current;
 }

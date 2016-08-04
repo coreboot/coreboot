@@ -344,6 +344,9 @@ static const struct pad_config gpio_table[] = {
 /* GPIOs needed prior to ramstage. */
 static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_GPI(GPIO_75, UP_20K, DEEP),	 /* I2S1_BCLK -- PCH_WP */
+	/* I2C2 - TPM  */
+	PAD_CFG_NF(GPIO_128, UP_2K, DEEP, NF1), /* LPSS_I2C2_SDA */
+	PAD_CFG_NF(GPIO_129, UP_2K, DEEP, NF1), /* LPSS_I2C2_SCL */
 };
 
 /*

@@ -226,21 +226,16 @@ static void elog_flash_write(void *address, u32 size)
  * Erase the first block specified in the address.
  * Only handles flash area within a single flash block.
  */
-static void elog_flash_erase(void *address, u32 size)
+static void elog_flash_erase(void)
 {
-	u32 offset;
-
-	if (!address || !size || !elog_spi)
+	if (!elog_spi)
 		return;
 
-	offset = flash_base;
-	offset += (u8 *)address - (u8*)elog_area;
-
-	elog_debug("elog_flash_erase(address=0x%p offset=0x%08x size=%u)\n",
-		   address, offset, size);
+	elog_debug("elog_flash_erase(offset=0x%08x size=%u)\n",
+		   flash_base, total_size);
 
 	/* Erase the sectors in this region */
-	elog_spi->erase(elog_spi, offset, size);
+	elog_spi->erase(elog_spi, flash_base, total_size);
 }
 
 /*
@@ -371,7 +366,7 @@ static int elog_shrink(void)
 	memmove(&elog_area->data[0], &elog_area->data[offset], new_size);
 	memset(&elog_area->data[new_size], ELOG_TYPE_EOL, log_size - new_size);
 
-	elog_flash_erase(elog_area, total_size);
+	elog_flash_erase();
 	elog_flash_write(elog_area, total_size);
 	elog_scan_flash();
 
@@ -459,7 +454,7 @@ int elog_clear(void)
 		return -1;
 
 	/* Erase flash area */
-	elog_flash_erase(elog_area, total_size);
+	elog_flash_erase();
 	elog_prepare_empty();
 
 	if (!elog_is_area_valid())
@@ -546,7 +541,7 @@ int elog_init(void)
 		/* If the header is invalid or the events are corrupted,
 		 * no events can be salvaged so erase the entire area. */
 		printk(BIOS_ERR, "ELOG: flash area invalid\n");
-		elog_flash_erase(elog_area, total_size);
+		elog_flash_erase();
 		elog_prepare_empty();
 	}
 

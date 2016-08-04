@@ -98,20 +98,33 @@ static u8 elog_checksum_event(struct event_header *event)
 }
 
 /*
- * Check if a raw buffer is filled with ELOG_TYPE_EOL byte
+ * Check if mirrored buffer is filled with ELOG_TYPE_EOL byte from the
+ * provided offset to the end of the mirrored buffer.
  */
-static int elog_is_buffer_clear(void *base, u32 size)
+static int elog_is_buffer_clear(size_t offset)
 {
-	u8 *current = base;
+	size_t size = total_size - offset;
+	u8 *current = offset + (u8 *)elog_area;
 	u8 *end = current + size;
 
-	elog_debug("elog_is_buffer_clear(base=0x%p size=%u)\n", base, size);
+	elog_debug("elog_is_buffer_clear(offset=%zu size=%zu)\n", offset, size);
 
 	for (; current != end; current++) {
 		if (*current != ELOG_TYPE_EOL)
 			return 0;
 	}
 	return 1;
+}
+
+static int elog_event_buffer_is_clear(size_t offset)
+{
+	/*
+	 * Events are appended relative to the end of the header. Update
+	 * offset to include the header size.
+	 */
+	offset += sizeof(struct elog_header);
+
+	return elog_is_buffer_clear(offset);
 }
 
 /*
@@ -288,7 +301,7 @@ static void elog_update_event_buffer_state(void)
 	}
 
 	/* Ensure the remaining buffer is empty */
-	if (!elog_is_buffer_clear(&elog_area->data[offset], log_size - offset))
+	if (!elog_event_buffer_is_clear(offset))
 		event_buffer_state = ELOG_EVENT_BUFFER_CORRUPTED;
 
 	/* Update ELOG state */
@@ -311,7 +324,7 @@ static void elog_scan_flash(void)
 	event_count = 0;
 
 	/* Check if the area is empty or not */
-	if (elog_is_buffer_clear(elog_area, total_size)) {
+	if (elog_is_buffer_clear(0)) {
 		area_state = ELOG_AREA_EMPTY;
 		return;
 	}

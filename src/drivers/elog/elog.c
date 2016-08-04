@@ -44,7 +44,6 @@
 /*
  * Static variables for ELOG state
  */
-static struct elog_area *elog_area;
 static u16 total_size;
 static u16 log_size; /* excluding header */
 static u32 flash_base;
@@ -59,6 +58,8 @@ static u16 next_event_offset; /* from end of header */
 static u16 event_count;
 
 static struct spi_flash *elog_spi;
+/* Device that mirrors the eventlog in memory. */
+static struct mem_region_device mirror_dev;
 
 static enum {
 	ELOG_UNINITIALIZED = 0,
@@ -66,13 +67,27 @@ static enum {
 	ELOG_BROKEN,
 } elog_initialized = ELOG_UNINITIALIZED;
 
+static inline struct region_device *mirror_dev_get(void)
+{
+	return &mirror_dev.rdev;
+}
+
 /*
  * Pointer to an event log header in the event data area
  */
-static inline struct event_header*
-elog_get_event_base(u32 offset)
+static struct event_header *elog_get_event_buffer(size_t offset, size_t size)
 {
-	return (struct event_header *)&elog_area->data[offset];
+	/*
+	 * Events are appended relative to the end of the header. Update
+	 * offset to include the header size.
+	 */
+	offset += sizeof(struct elog_header);
+	return rdev_mmap(mirror_dev_get(), offset, size);
+}
+
+static void elog_put_event_buffer(struct event_header *event)
+{
+	rdev_munmap(mirror_dev_get(), event);
 }
 
 /*
@@ -103,17 +118,25 @@ static u8 elog_checksum_event(struct event_header *event)
  */
 static int elog_is_buffer_clear(size_t offset)
 {
-	size_t size = total_size - offset;
-	u8 *current = offset + (u8 *)elog_area;
-	u8 *end = current + size;
+	size_t i;
+	const struct region_device *rdev = mirror_dev_get();
+	size_t size = region_device_sz(rdev) - offset;
+	uint8_t *buffer = rdev_mmap(rdev, offset, size);
+	int ret = 1;
 
 	elog_debug("elog_is_buffer_clear(offset=%zu size=%zu)\n", offset, size);
 
-	for (; current != end; current++) {
-		if (*current != ELOG_TYPE_EOL)
-			return 0;
+	if (buffer == NULL)
+		return 0;
+
+	for (i = 0; i < size; i++) {
+		if (buffer[i] != ELOG_TYPE_EOL) {
+			ret = 0;
+			break;
+		}
 	}
-	return 1;
+	rdev_munmap(rdev, buffer);
+	return ret;
 }
 
 static int elog_event_buffer_is_clear(size_t offset)
@@ -144,12 +167,21 @@ static int elog_is_area_valid(void)
 }
 
 /*
- * Verify the contents of an ELOG Header structure
+ * Verify if the mirrored elog structure is valid.
  * Returns 1 if the header is valid, 0 otherwise
  */
-static int elog_is_header_valid(struct elog_header *header)
+static int elog_is_header_valid(void)
 {
+	struct elog_header *header;
+
 	elog_debug("elog_is_header_valid()\n");
+
+	header = rdev_mmap(mirror_dev_get(), 0, sizeof(*header));
+
+	if (header == NULL) {
+		printk(BIOS_ERR, "ELOG: could not map header.\n");
+		return 0;
+	}
 
 	if (header->magic != ELOG_SIGNATURE) {
 		printk(BIOS_ERR, "ELOG: header magic 0x%X != 0x%X\n",
@@ -172,45 +204,38 @@ static int elog_is_header_valid(struct elog_header *header)
 /*
  * Validate the event header and data.
  */
-static int elog_is_event_valid(u32 offset)
+static size_t elog_is_event_valid(size_t offset)
 {
+	uint8_t checksum;
 	struct event_header *event;
+	uint8_t len;
+	const size_t len_offset = offsetof(struct event_header, length);
+	const size_t size = sizeof(len);
 
-	event = elog_get_event_base(offset);
-	if (!event)
-		return 0;
-
-	/* Validate event length */
-	if ((offsetof(struct event_header, type) +
-	     sizeof(event->type) - 1 + offset) >= log_size)
-		return 0;
-
-	/* End of event marker has been found */
-	if (event->type == ELOG_TYPE_EOL)
-		return 0;
-
-	/* Check if event fits in area */
-	if ((offsetof(struct event_header, length) +
-	     sizeof(event->length) - 1 + offset) >= log_size)
-		return 0;
-
-	/*
-	 * If the current event length + the current offset exceeds
-	 * the area size then the event area is corrupt.
-	 */
-	if ((event->length + offset) >= log_size)
+	/* Read and validate length. */
+	if (rdev_readat(mirror_dev_get(), &len, offset + len_offset, size) < 0)
 		return 0;
 
 	/* Event length must be at least header size + checksum */
-	if (event->length < (sizeof(*event) + 1))
+	if (len < (sizeof(*event) + sizeof(checksum)))
+		return 0;
+
+	if (len > MAX_EVENT_SIZE)
+		return 0;
+
+	event = elog_get_event_buffer(offset, len);
+	if (!event)
 		return 0;
 
 	/* If event checksum is invalid the area is corrupt */
-	if (elog_checksum_event(event) != 0)
+	checksum = elog_checksum_event(event);
+	elog_put_event_buffer(event);
+
+	if (checksum != 0)
 		return 0;
 
 	/* Event is valid */
-	return 1;
+	return len;
 }
 
 /*
@@ -221,11 +246,12 @@ static int elog_is_event_valid(u32 offset)
 static void elog_flash_write(size_t offset, size_t size)
 {
 	void *address;
+	const struct region_device *rdev = mirror_dev_get();
 
 	if (!size || !elog_spi)
 		return;
 
-	address = offset + (u8 *)elog_area;
+	address = rdev_mmap(rdev, offset, size);
 
 	/* Ensure offset is absolute. */
 	offset += flash_base;
@@ -233,8 +259,13 @@ static void elog_flash_write(size_t offset, size_t size)
 	elog_debug("elog_flash_write(address=0x%p offset=0x%08x size=%u)\n",
 		   address, offset, size);
 
+	if (address == NULL)
+		return;
+
 	/* Write the data to flash */
 	elog_spi->write(elog_spi, offset, size, address);
+
+	rdev_munmap(rdev, address);
 }
 
 static void elog_append_event(size_t offset, size_t event_size)
@@ -270,34 +301,38 @@ static void elog_update_event_buffer_state(void)
 {
 	u32 count = 0;
 	u32 offset = 0;
-	struct event_header *event;
 
 	elog_debug("elog_update_event_buffer_state()\n");
 
 	/* Go through each event and validate it */
 	while (1) {
-		event = elog_get_event_base(offset);
+		uint8_t type;
+		const size_t type_offset = offsetof(struct event_header, type);
+		size_t len;
+		const size_t size = sizeof(type);
+		size_t abs_offset = offset + sizeof(struct elog_header);
 
-		/* Do not de-reference anything past the area length */
-		if ((offsetof(struct event_header, type) +
-		     sizeof(event->type) - 1 + offset) >= log_size) {
+		if (rdev_readat(mirror_dev_get(), &type,
+				abs_offset + type_offset, size) < 0) {
 			event_buffer_state = ELOG_EVENT_BUFFER_CORRUPTED;
 			break;
 		}
 
 		/* The end of the event marker has been found */
-		if (event->type == ELOG_TYPE_EOL)
+		if (type == ELOG_TYPE_EOL)
 			break;
 
 		/* Validate the event */
-		if (!elog_is_event_valid(offset)) {
+		len = elog_is_event_valid(abs_offset);
+
+		if (!len) {
 			event_buffer_state = ELOG_EVENT_BUFFER_CORRUPTED;
 			break;
 		}
 
 		/* Move to the next event */
 		count++;
-		offset += event->length;
+		offset += len;
 	}
 
 	/* Ensure the remaining buffer is empty */
@@ -312,13 +347,17 @@ static void elog_update_event_buffer_state(void)
 static void elog_scan_flash(void)
 {
 	elog_debug("elog_scan_flash()\n");
+	void *mirror_buffer;
+	const struct region_device *rdev = mirror_dev_get();
 
 	area_state = ELOG_AREA_UNDEFINED;
 	header_state = ELOG_HEADER_INVALID;
 	event_buffer_state = ELOG_EVENT_BUFFER_OK;
 
 	/* Fill memory buffer by reading from SPI */
-	elog_spi->read(elog_spi, flash_base, total_size, elog_area);
+	mirror_buffer = rdev_mmap_full(rdev);
+	elog_spi->read(elog_spi, flash_base, total_size, mirror_buffer);
+	rdev_munmap(rdev, mirror_buffer);
 
 	next_event_offset = 0;
 	event_count = 0;
@@ -332,7 +371,7 @@ static void elog_scan_flash(void)
 	area_state = ELOG_AREA_HAS_CONTENT;
 
 	/* Validate the header */
-	if (!elog_is_header_valid(&elog_area->header)) {
+	if (!elog_is_header_valid()) {
 		header_state = ELOG_HEADER_INVALID;
 		return;
 	}
@@ -341,22 +380,71 @@ static void elog_scan_flash(void)
 	elog_update_event_buffer_state();
 }
 
+static size_t elog_write_header_in_mirror(void)
+{
+	static const struct elog_header header = {
+		.magic = ELOG_SIGNATURE,
+		.version = ELOG_VERSION,
+		.header_size = sizeof(struct elog_header),
+		.reserved = {
+			[0] = ELOG_TYPE_EOL,
+			[1] = ELOG_TYPE_EOL,
+		},
+	};
+
+	rdev_writeat(mirror_dev_get(), &header, 0, sizeof(header));
+	return sizeof(header);
+}
+
 static void elog_prepare_empty(void)
 {
-	struct elog_header *header;
 
 	elog_debug("elog_prepare_empty()\n");
 
 	/* Write out the header */
-	header = &elog_area->header;
-	header->magic = ELOG_SIGNATURE;
-	header->version = ELOG_VERSION;
-	header->header_size = sizeof(struct elog_header);
-	header->reserved[0] = ELOG_TYPE_EOL;
-	header->reserved[1] = ELOG_TYPE_EOL;
-	elog_flash_write(0, header->header_size);
+	size_t size = elog_write_header_in_mirror();
+	elog_flash_write(0, size);
 
 	elog_scan_flash();
+}
+
+static void elog_move_events_to_front(size_t offset, size_t size)
+{
+	void *src;
+	void *dest;
+	size_t start_offset = sizeof(struct elog_header);
+	const struct region_device *rdev = mirror_dev_get();
+
+	/*
+	 * Events are appended relative to the end of the header. Update
+	 * offset to include the header size.
+	 */
+	offset += start_offset;
+	src = rdev_mmap(rdev, offset, size);
+	dest = rdev_mmap(rdev, start_offset, size);
+
+	if (src == NULL || dest == NULL) {
+		printk(BIOS_ERR, "ELOG: failure moving events!\n");
+		rdev_munmap(rdev, dest);
+		rdev_munmap(rdev, src);
+		return;
+	}
+
+	/* Move the events to the front. */
+	memmove(dest, src, size);
+	rdev_munmap(rdev, dest);
+	rdev_munmap(rdev, src);
+
+	/* Mark EOL for previously used buffer until the end. */
+	offset = start_offset + size;
+	size = region_device_sz(rdev) - offset;
+	dest = rdev_mmap(rdev, offset, size);
+	if (dest == NULL) {
+		printk(BIOS_ERR, "ELOG: failure filling EOL!\n");
+		return;
+	}
+	memset(dest, ELOG_TYPE_EOL, size);
+	rdev_munmap(rdev, dest);
 }
 
 /*
@@ -365,31 +453,38 @@ static void elog_prepare_empty(void)
  */
 static int elog_shrink(void)
 {
-	struct event_header *event;
-	u16 discard_count = 0;
+	const struct region_device *rdev = mirror_dev_get();
 	u16 offset = 0;
-	u16 new_size = 0;
 
 	elog_debug("elog_shrink()\n");
 
 	while (1) {
+		const size_t type_offset = offsetof(struct event_header, type);
+		const size_t len_offset = offsetof(struct event_header, length);
+		const size_t size = sizeof(uint8_t);
+		uint8_t type;
+		uint8_t len;
+		size_t abs_offset = offset + sizeof(struct elog_header);
+
 		/* Next event has exceeded constraints */
 		if (offset > shrink_size)
 			break;
 
-		event = elog_get_event_base(offset);
-
-		/* Reached the end of the area */
-		if (!event || event->type == ELOG_TYPE_EOL)
+		if (rdev_readat(rdev, &type, abs_offset + type_offset,
+				size) < 0)
 			break;
 
-		offset += event->length;
-		discard_count++;
+		/* Reached the end of the area */
+		if (type == ELOG_TYPE_EOL)
+			break;
+
+		if (rdev_readat(rdev, &len, abs_offset + len_offset, size) < 0)
+			break;
+
+		offset += len;
 	}
 
-	new_size = next_event_offset - offset;
-	memmove(&elog_area->data[0], &elog_area->data[offset], new_size);
-	memset(&elog_area->data[new_size], ELOG_TYPE_EOL, log_size - new_size);
+	elog_move_events_to_front(offset, next_event_offset - offset);
 
 	elog_flash_erase();
 	elog_flash_write(0, total_size);
@@ -439,7 +534,7 @@ int elog_smbios_write_type15(unsigned long *current, int handle)
 	void *cbmem = cbmem_add(CBMEM_ID_ELOG, total_size);
 	if (!cbmem)
 		return 0;
-	memcpy(cbmem, elog_area, total_size);
+	rdev_readat(mirror_dev_get(), cbmem, 0, total_size);
 #endif
 
 	memset(t, 0, len);
@@ -518,6 +613,8 @@ static void elog_find_flash(void)
  */
 int elog_init(void)
 {
+	void *mirror_buffer;
+
 	switch (elog_initialized) {
 	case ELOG_UNINITIALIZED:
 		break;
@@ -551,11 +648,12 @@ int elog_init(void)
 		return -1;
 	}
 
-	elog_area = malloc(total_size);
-	if (!elog_area) {
+	mirror_buffer = malloc(total_size);
+	if (!mirror_buffer) {
 		printk(BIOS_ERR, "ELOG: Unable to allocate backing store\n");
 		return -1;
 	}
+	mem_region_device_rw_init(&mirror_dev, mirror_buffer, total_size);
 
 	/* Load the log from flash */
 	elog_scan_flash();
@@ -579,7 +677,7 @@ int elog_init(void)
 	}
 
 	printk(BIOS_INFO, "ELOG: FLASH @0x%p [SPI 0x%08x]\n",
-	       elog_area, flash_base);
+	       mirror_buffer, flash_base);
 
 	printk(BIOS_INFO, "ELOG: area is %d bytes, full threshold %d,"
 	       " shrink size %d\n", total_size, full_threshold, shrink_size);
@@ -672,14 +770,14 @@ void elog_add_event_raw(u8 event_type, void *data, u8 data_size)
 	}
 
 	/* Make sure event data can fit */
-	if ((next_event_offset + event_size) >= log_size) {
+	event = elog_get_event_buffer(next_event_offset, event_size);
+	if (event == NULL) {
 		printk(BIOS_ERR, "ELOG: Event(%X) does not fit\n",
 		       event_type);
 		return;
 	}
 
 	/* Fill out event data */
-	event = elog_get_event_base(next_event_offset);
 	event->type = event_type;
 	event->length = event_size;
 	elog_fill_timestamp(event);
@@ -690,6 +788,7 @@ void elog_add_event_raw(u8 event_type, void *data, u8 data_size)
 	/* Zero the checksum byte and then compute checksum */
 	elog_update_checksum(event, 0);
 	elog_update_checksum(event, -(elog_checksum_event(event)));
+	elog_put_event_buffer(event);
 
 	/* Update the ELOG state */
 	event_count++;

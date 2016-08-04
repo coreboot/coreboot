@@ -61,9 +61,4 @@ typedef enum elog_event_buffer_state {
 	ELOG_EVENT_BUFFER_CORRUPTED,
 } elog_event_buffer_state;
 
-struct elog_area {
-	struct elog_header header;
-	u8 data[0];
-} __attribute__((packed));
-
 #endif /* ELOG_INTERNAL_H_ */

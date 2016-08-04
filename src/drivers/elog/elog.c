@@ -201,25 +201,37 @@ static int elog_is_event_valid(u32 offset)
 }
 
 /*
- * Write 'size' bytes of data pointed to by 'address' in the flash backing
- * store into flash. This will not erase the flash and it assumes the flash
- * area has been erased appropriately.
+ * Write 'size' bytes of data from provided 'offset' in the mirrored elog to
+ * the flash backing store. This will not erase the flash and it assumes the
+ * flash area has been erased appropriately.
  */
-static void elog_flash_write(void *address, u32 size)
+static void elog_flash_write(size_t offset, size_t size)
 {
-	u32 offset;
+	void *address;
 
-	if (!address || !size || !elog_spi)
+	if (!size || !elog_spi)
 		return;
 
-	offset = flash_base;
-	offset += (u8 *)address - (u8 *)elog_area;
+	address = offset + (u8 *)elog_area;
+
+	/* Ensure offset is absolute. */
+	offset += flash_base;
 
 	elog_debug("elog_flash_write(address=0x%p offset=0x%08x size=%u)\n",
 		   address, offset, size);
 
 	/* Write the data to flash */
 	elog_spi->write(elog_spi, offset, size, address);
+}
+
+static void elog_append_event(size_t offset, size_t event_size)
+{
+	/*
+	 * Events are appended relative to the end of the header. Update
+	 * offset to include the header size.
+	 */
+	offset += sizeof(struct elog_header);
+	elog_flash_write(offset, event_size);
 }
 
 /*
@@ -329,7 +341,7 @@ static void elog_prepare_empty(void)
 	header->header_size = sizeof(struct elog_header);
 	header->reserved[0] = ELOG_TYPE_EOL;
 	header->reserved[1] = ELOG_TYPE_EOL;
-	elog_flash_write(elog_area, header->header_size);
+	elog_flash_write(0, header->header_size);
 
 	elog_scan_flash();
 }
@@ -367,7 +379,7 @@ static int elog_shrink(void)
 	memset(&elog_area->data[new_size], ELOG_TYPE_EOL, log_size - new_size);
 
 	elog_flash_erase();
-	elog_flash_write(elog_area, total_size);
+	elog_flash_write(0, total_size);
 	elog_scan_flash();
 
 	/* Ensure the area was successfully erased */
@@ -669,7 +681,7 @@ void elog_add_event_raw(u8 event_type, void *data, u8 data_size)
 	/* Update the ELOG state */
 	event_count++;
 
-	elog_flash_write((void *)event, event_size);
+	elog_append_event(next_event_offset, event_size);
 
 	next_event_offset += event_size;
 

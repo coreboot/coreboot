@@ -441,8 +441,7 @@ static int mmu_is_range_free(uint64_t r_base,
 		uint64_t start = r[i].base;
 		uint64_t end = start + r[i].size;
 
-		if (((r_base >= start) && (r_base <= end)) ||
-		    ((r_end >= start) && (r_end <= end)))
+		if ((start < r_end) && (end > r_base))
 			return 0;
 	}
 

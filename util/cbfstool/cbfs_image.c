@@ -1049,7 +1049,6 @@ static int cbfs_payload_make_elf(struct buffer *buff, uint32_t arch)
 	struct cbfs_payload_segment *segs;
 	struct elf_writer *ew;
 	struct buffer elf_out;
-	size_t empty_sz;
 	int segments = 0;
 
 	if (arch == CBFS_ARCHITECTURE_UNKNOWN) {
@@ -1115,6 +1114,7 @@ static int cbfs_payload_make_elf(struct buffer *buff, uint32_t arch)
 
 	for (int i = 0; i < segments; i++) {
 		struct buffer tbuff;
+		size_t empty_sz = 0;
 
 		memset(&shdr, 0, sizeof(shdr));
 		char *name = NULL;

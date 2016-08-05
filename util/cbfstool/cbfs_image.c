@@ -1046,14 +1046,15 @@ static int cbfs_payload_make_elf(struct buffer *buff, uint32_t arch)
 {
 	Elf64_Ehdr ehdr;
 	Elf64_Shdr shdr;
-	struct cbfs_payload_segment *segs;
+	struct cbfs_payload_segment *segs = NULL;
 	struct elf_writer *ew;
 	struct buffer elf_out;
 	int segments = 0;
+	int retval = -1;
 
 	if (arch == CBFS_ARCHITECTURE_UNKNOWN) {
 		ERROR("You need to specify -m ARCH.\n");
-		return -1;
+		goto out;
 	}
 
 	/* Count the number of segments inside buffer */
@@ -1083,7 +1084,7 @@ static int cbfs_payload_make_elf(struct buffer *buff, uint32_t arch)
 		} else {
 			ERROR("Unknown payload segment type: %x\n",
 					payload_type);
-			return -1;
+			goto out;
 		}
 	}
 
@@ -1092,24 +1093,23 @@ static int cbfs_payload_make_elf(struct buffer *buff, uint32_t arch)
 	/* Decode xdr segments */
 	for (int i = 0; i < segments; i++) {
 		struct cbfs_payload_segment *serialized_seg = buffer_get(buff);
-
 		xdr_get_seg(&segs[i], &serialized_seg[i]);
 	}
 
 	if (cbfs_payload_decompress(segs, buff, segments)) {
 		ERROR("Failed to decompress payload.\n");
-		return -1;
+		goto out;
 	}
 
 	if (init_elf_from_arch(&ehdr, arch))
-		return -1;
+		goto out;
 
 	ehdr.e_entry = segs[segments-1].load_addr;
 
 	ew = elf_writer_init(&ehdr);
 	if (ew == NULL) {
 		ERROR("Unable to init ELF writer.\n");
-		return -1;
+		goto out;
 	}
 
 	for (int i = 0; i < segments; i++) {
@@ -1158,8 +1158,7 @@ static int cbfs_payload_make_elf(struct buffer *buff, uint32_t arch)
 
 		if (elf_writer_add_section(ew, &shdr, &tbuff, name)) {
 			ERROR("Unable to add ELF section: %s\n", name);
-			elf_writer_destroy(ew);
-			return -1;
+			goto out;
 		}
 
 		if (empty_sz != 0) {
@@ -1174,26 +1173,25 @@ static int cbfs_payload_make_elf(struct buffer *buff, uint32_t arch)
 			name = strdup(".empty");
 			if (elf_writer_add_section(ew, &shdr, &b, name)) {
 				ERROR("Unable to add ELF section: %s\n", name);
-				elf_writer_destroy(ew);
-				return -1;
+				goto out;
 			}
 		}
-
 	}
 
 	if (elf_writer_serialize(ew, &elf_out)) {
 		ERROR("Unable to create ELF file from stage.\n");
-		elf_writer_destroy(ew);
-		return -1;
+		goto out;
 	}
 
 	/* Flip buffer with the created ELF one. */
 	buffer_delete(buff);
 	*buff = elf_out;
+	retval = 0;
 
+out:
+	free(segs);
 	elf_writer_destroy(ew);
-
-	return 0;
+	return retval;
 }
 
 int cbfs_export_entry(struct cbfs_image *image, const char *entry_name,

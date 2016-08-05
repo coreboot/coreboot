@@ -3,8 +3,7 @@ if BOARD_INTEL_AMENIA
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
 	select SOC_INTEL_APOLLOLAKE
-	select BOARD_ROMSIZE_KB_8192
-	select MAINBOARD_HAS_CHROMEOS
+	select BOARD_ROMSIZE_KB_16384
 	select EC_GOOGLE_CHROMEEC
 	select EC_GOOGLE_CHROMEEC_LPC
 	select EC_GOOGLE_CHROMEEC_PD
@@ -33,10 +32,6 @@ config MAINBOARD_VENDOR
 config FMAP_FILE
 	string
 	default "amenia"
-
-config PREBUILT_SPI_IMAGE
-	string
-	default "amenia.bin.orig.a0"
 
 config MAX_CPUS
 	int

@@ -50,10 +50,6 @@ static u32 flash_base;
 static u16 full_threshold;
 static u16 shrink_size;
 
-static elog_area_state area_state;
-static elog_header_state header_state;
-static elog_event_buffer_state event_buffer_state;
-
 /*
  * The non-volatile storage chases the mirrored copy. When nv_last_write
  * is less than the mirrored last write the non-volatile storage needs
@@ -221,22 +217,6 @@ static int elog_is_buffer_clear(size_t offset)
 }
 
 /*
- * Check that the ELOG area has been initialized and is valid.
- */
-static int elog_is_area_valid(void)
-{
-	elog_debug("elog_is_area_valid()\n");
-
-	if (area_state != ELOG_AREA_HAS_CONTENT)
-		return 0;
-	if (header_state != ELOG_HEADER_VALID)
-		return 0;
-	if (event_buffer_state != ELOG_EVENT_BUFFER_OK)
-		return 0;
-	return 1;
-}
-
-/*
  * Verify if the mirrored elog structure is valid.
  * Returns 1 if the header is valid, 0 otherwise
  */
@@ -357,7 +337,7 @@ static void elog_flash_erase(void)
 /*
  * Scan the event area and validate each entry and update the ELOG state.
  */
-static void elog_update_event_buffer_state(void)
+static int elog_update_event_buffer_state(void)
 {
 	size_t offset = elog_events_start();
 
@@ -372,8 +352,7 @@ static void elog_update_event_buffer_state(void)
 
 		if (rdev_readat(mirror_dev_get(), &type,
 				offset + type_offset, size) < 0) {
-			event_buffer_state = ELOG_EVENT_BUFFER_CORRUPTED;
-			break;
+			return -1;
 		}
 
 		/* The end of the event marker has been found */
@@ -383,10 +362,8 @@ static void elog_update_event_buffer_state(void)
 		/* Validate the event */
 		len = elog_is_event_valid(offset);
 
-		if (!len) {
-			event_buffer_state = ELOG_EVENT_BUFFER_CORRUPTED;
-			break;
-		}
+		if (!len)
+			return -1;
 
 		/* Move to the next event */
 		elog_tandem_increment_last_write(len);
@@ -395,18 +372,16 @@ static void elog_update_event_buffer_state(void)
 
 	/* Ensure the remaining buffer is empty */
 	if (!elog_is_buffer_clear(offset))
-		event_buffer_state = ELOG_EVENT_BUFFER_CORRUPTED;
+		return -1;
+
+	return 0;
 }
 
-static void elog_scan_flash(void)
+static int elog_scan_flash(void)
 {
 	elog_debug("elog_scan_flash()\n");
 	void *mirror_buffer;
 	const struct region_device *rdev = mirror_dev_get();
-
-	area_state = ELOG_AREA_UNDEFINED;
-	header_state = ELOG_HEADER_INVALID;
-	event_buffer_state = ELOG_EVENT_BUFFER_OK;
 
 	/* Fill memory buffer by reading from SPI */
 	mirror_buffer = rdev_mmap_full(rdev);
@@ -417,24 +392,17 @@ static void elog_scan_flash(void)
 	elog_tandem_reset_last_write();
 
 	/* Check if the area is empty or not */
-	if (elog_is_buffer_clear(0)) {
-		area_state = ELOG_AREA_EMPTY;
-		return;
-	}
-
-	area_state = ELOG_AREA_HAS_CONTENT;
+	if (elog_is_buffer_clear(0))
+		return -1;
 
 	/* Indicate that header possibly written. */
 	elog_tandem_increment_last_write(elog_events_start());
 
 	/* Validate the header */
-	if (!elog_is_header_valid()) {
-		header_state = ELOG_HEADER_INVALID;
-		return;
-	}
+	if (!elog_is_header_valid())
+		return -1;
 
-	header_state = ELOG_HEADER_VALID;
-	elog_update_event_buffer_state();
+	return elog_update_event_buffer_state();
 }
 
 static void elog_write_header_in_mirror(void)
@@ -568,7 +536,7 @@ static int elog_prepare_empty(void)
 	elog_debug("elog_prepare_empty()\n");
 	elog_shrink_by_size(elog_events_total_space());
 
-	if (!elog_is_area_valid())
+	if (elog_initialized != ELOG_INITIALIZED)
 		return -1;
 
 	return 0;
@@ -706,10 +674,8 @@ static int elog_sync_to_nv(void)
 	if (!erase_needed)
 		return 0;
 
-	elog_scan_flash();
-
 	/* Mark broken if the scan failed after a sync. */
-	if (!elog_is_area_valid()) {
+	if (elog_scan_flash() < 0) {
 		printk(BIOS_ERR, "ELOG: Sync back from NV storage failed.\n");
 		elog_initialized = ELOG_BROKEN;
 		return -1;
@@ -765,17 +731,14 @@ int elog_init(void)
 	}
 	mem_region_device_rw_init(&mirror_dev, mirror_buffer, total_size);
 
-	/* Load the log from flash */
-	elog_scan_flash();
-
 	/*
 	 * Mark as initialized to allow elog_init() to be called and deemed
 	 * successful in the prepare/shrink path which adds events.
 	 */
 	elog_initialized = ELOG_INITIALIZED;
 
-	/* Prepare the flash if necessary */
-	if (!elog_is_area_valid()) {
+	/* Load the log from flash and prepare the flash if necessary. */
+	if (elog_scan_flash() < 0) {
 		printk(BIOS_ERR, "ELOG: flash area invalid\n");
 		if (elog_prepare_empty() < 0) {
 			printk(BIOS_ERR, "ELOG: Unable to prepare flash\n");

@@ -45,20 +45,4 @@ struct event_header {
 /* SMBIOS Type 15 related constants */
 #define ELOG_HEADER_TYPE_OEM		0x88
 
-typedef enum elog_area_state {
-	ELOG_AREA_UNDEFINED,		/* Initial boot strap state */
-	ELOG_AREA_EMPTY,		/* Entire area is empty */
-	ELOG_AREA_HAS_CONTENT,		/* Area has some content */
-} elog_area_state;
-
-typedef enum elog_header_state {
-	ELOG_HEADER_INVALID,
-	ELOG_HEADER_VALID,
-} elog_header_state;
-
-typedef enum elog_event_buffer_state {
-	ELOG_EVENT_BUFFER_OK,
-	ELOG_EVENT_BUFFER_CORRUPTED,
-} elog_event_buffer_state;
-
 #endif /* ELOG_INTERNAL_H_ */

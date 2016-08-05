@@ -808,10 +808,14 @@ struct elf_writer *elf_writer_init(const Elf64_Ehdr *ehdr)
 /*
  * Clean up any internal state represented by ew. Aftewards the elf_writer
  * is invalid.
+ * It is safe to call elf_writer_destroy with ew as NULL. It returns without
+ * performing any action.
  */
 void elf_writer_destroy(struct elf_writer *ew)
 {
 	int i;
+	if (ew == NULL)
+		return;
 	if (ew->phdrs != NULL)
 		free(ew->phdrs);
 	free(ew->strtab.buffer);

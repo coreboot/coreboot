@@ -889,6 +889,7 @@ static int cbfs_payload_decompress(struct cbfs_payload_segment *segments,
 					&decomp_size)) {
 			ERROR("Couldn't decompress payload segment %u\n", i);
 			buffer_delete(&new_buffer);
+			buffer_delete(&tbuff);
 			return -1;
 		}
 

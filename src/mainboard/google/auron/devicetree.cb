@@ -1,5 +1,8 @@
 chip soc/intel/broadwell
 
+	# IGD Displays
+	register "gfx" = "GMA_STATIC_DISPLAYS(0)"
+
 	# Enable eDP Hotplug with 6ms pulse
 	register "gpu_dp_d_hotplug" = "0x06"
 

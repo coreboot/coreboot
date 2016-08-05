@@ -622,7 +622,7 @@ int elog_clear(void)
 	return elog_prepare_empty();
 }
 
-static void elog_find_flash(void)
+static int elog_find_flash(void)
 {
 	struct region r;
 	size_t reserved_space = ELOG_MIN_AVAILABLE_ENTRIES * MAX_EVENT_SIZE;
@@ -632,16 +632,28 @@ static void elog_find_flash(void)
 	/* Find the ELOG base and size in FMAP */
 	if (fmap_locate_area("RW_ELOG", &r) < 0) {
 		printk(BIOS_WARNING, "ELOG: Unable to find RW_ELOG in FMAP\n");
-		flash_base = total_size = 0;
-	} else {
-		flash_base = region_offset(&r);
-		/* Keep 4KiB max size until large malloc()s have been fixed. */
-		total_size = MIN(4*KiB, region_sz(&r));
+		return -1;
 	}
 
+	if (region_sz(&r) < 4*KiB) {
+		printk(BIOS_WARNING, "ELOG: Needs a minium size of 4KiB: %zu\n",
+			region_sz(&r));
+		return -1;
+	}
+
+	flash_base = region_offset(&r);
+	/* Keep 4KiB max size until large malloc()s have been fixed. */
+	total_size = MIN(4*KiB, region_sz(&r));
+
 	full_threshold = total_size - reserved_space;
-	shrink_size = MIN(total_size * ELOG_SHRINK_PERCENTAGE / 100,
-								full_threshold);
+	shrink_size = total_size * ELOG_SHRINK_PERCENTAGE / 100;
+
+	if (reserved_space > shrink_size) {
+		printk(BIOS_ERR, "ELOG: SHRINK_PERCENTAGE too small\n");
+		return -1;
+	}
+
+	return 0;
 }
 
 static int elog_sync_to_nv(void)
@@ -711,18 +723,8 @@ int elog_init(void)
 	}
 
 	/* Set up the backing store */
-	elog_find_flash();
-	if (flash_base == 0) {
-		printk(BIOS_ERR, "ELOG: Invalid flash base\n");
+	if (elog_find_flash() < 0)
 		return -1;
-	} else if (total_size < sizeof(struct elog_header) + MAX_EVENT_SIZE) {
-		printk(BIOS_ERR, "ELOG: Region too small to hold any events\n");
-		return -1;
-	} else if (total_size - shrink_size >= full_threshold) {
-		printk(BIOS_ERR,
-			"ELOG: SHRINK_PERCENTAGE set too small for MIN_AVAILABLE_ENTRIES\n");
-		return -1;
-	}
 
 	mirror_buffer = malloc(total_size);
 	if (!mirror_buffer) {

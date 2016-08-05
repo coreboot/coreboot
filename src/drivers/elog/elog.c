@@ -41,6 +41,7 @@
 #define elog_debug(STR...)
 #endif
 
+#define NV_NEEDS_ERASE (~(size_t)0)
 /*
  * Static variables for ELOG state
  */
@@ -53,8 +54,13 @@ static elog_area_state area_state;
 static elog_header_state header_state;
 static elog_event_buffer_state event_buffer_state;
 
-static u16 next_event_offset;
-static u16 event_count;
+/*
+ * The non-volatile storage chases the mirrored copy. When nv_last_write
+ * is less than the mirrored last write the non-volatile storage needs
+ * to be updated.
+ */
+static size_t mirror_last_write;
+static size_t nv_last_write;
 
 static struct spi_flash *elog_spi;
 /* Device that mirrors the eventlog in memory. */
@@ -82,17 +88,87 @@ static size_t elog_events_total_space(void)
 	return total_size - elog_events_start();
 }
 
-/*
- * Pointer to an event log header in the event data area
- */
 static struct event_header *elog_get_event_buffer(size_t offset, size_t size)
 {
 	return rdev_mmap(mirror_dev_get(), offset, size);
 }
 
+static struct event_header *elog_get_next_event_buffer(size_t size)
+{
+	return elog_get_event_buffer(mirror_last_write, size);
+}
+
 static void elog_put_event_buffer(struct event_header *event)
 {
 	rdev_munmap(mirror_dev_get(), event);
+}
+
+static size_t elog_mirror_reset_last_write(void)
+{
+	/* Return previous write value. */
+	size_t prev = mirror_last_write;
+	mirror_last_write = 0;
+	return prev;
+}
+
+static void elog_mirror_increment_last_write(size_t size)
+{
+	mirror_last_write += size;
+}
+
+static void elog_nv_reset_last_write(void)
+{
+	nv_last_write = 0;
+}
+
+static void elog_nv_increment_last_write(size_t size)
+{
+	nv_last_write += size;
+}
+
+static void elog_nv_needs_possible_erase(void)
+{
+	/* If last write is 0 it means it is already erased. */
+	if (nv_last_write != 0)
+		nv_last_write = NV_NEEDS_ERASE;
+}
+
+static bool elog_should_shrink(void)
+{
+	return mirror_last_write >= full_threshold;
+}
+
+static bool elog_nv_needs_erase(void)
+{
+	return nv_last_write == NV_NEEDS_ERASE;
+}
+
+static bool elog_nv_needs_update(void)
+{
+	return nv_last_write != mirror_last_write;
+}
+
+static size_t elog_nv_region_to_update(size_t *offset)
+{
+	*offset = nv_last_write;
+	return mirror_last_write - nv_last_write;
+}
+
+/*
+ * When parsing state from the NV one needs to adjust both the NV and mirror
+ * write state. Therefore, provide helper functions which adjust both
+ * at the same time.
+ */
+static void elog_tandem_reset_last_write(void)
+{
+	elog_mirror_reset_last_write();
+	elog_nv_reset_last_write();
+}
+
+static void elog_tandem_increment_last_write(size_t size)
+{
+	elog_mirror_increment_last_write(size);
+	elog_nv_increment_last_write(size);
 }
 
 /*
@@ -283,7 +359,6 @@ static void elog_flash_erase(void)
  */
 static void elog_update_event_buffer_state(void)
 {
-	u32 count = 0;
 	size_t offset = elog_events_start();
 
 	elog_debug("elog_update_event_buffer_state()\n");
@@ -314,17 +389,13 @@ static void elog_update_event_buffer_state(void)
 		}
 
 		/* Move to the next event */
-		count++;
+		elog_tandem_increment_last_write(len);
 		offset += len;
 	}
 
 	/* Ensure the remaining buffer is empty */
 	if (!elog_is_buffer_clear(offset))
 		event_buffer_state = ELOG_EVENT_BUFFER_CORRUPTED;
-
-	/* Update ELOG state */
-	event_count = count;
-	next_event_offset = offset;
 }
 
 static void elog_scan_flash(void)
@@ -342,8 +413,8 @@ static void elog_scan_flash(void)
 	elog_spi->read(elog_spi, flash_base, total_size, mirror_buffer);
 	rdev_munmap(rdev, mirror_buffer);
 
-	next_event_offset = elog_events_start();
-	event_count = 0;
+	/* No writes have been done yet. */
+	elog_tandem_reset_last_write();
 
 	/* Check if the area is empty or not */
 	if (elog_is_buffer_clear(0)) {
@@ -352,6 +423,9 @@ static void elog_scan_flash(void)
 	}
 
 	area_state = ELOG_AREA_HAS_CONTENT;
+
+	/* Indicate that header possibly written. */
+	elog_tandem_increment_last_write(elog_events_start());
 
 	/* Validate the header */
 	if (!elog_is_header_valid()) {
@@ -363,7 +437,7 @@ static void elog_scan_flash(void)
 	elog_update_event_buffer_state();
 }
 
-static size_t elog_write_header_in_mirror(void)
+static void elog_write_header_in_mirror(void)
 {
 	static const struct elog_header header = {
 		.magic = ELOG_SIGNATURE,
@@ -376,19 +450,7 @@ static size_t elog_write_header_in_mirror(void)
 	};
 
 	rdev_writeat(mirror_dev_get(), &header, 0, sizeof(header));
-	return sizeof(header);
-}
-
-static void elog_prepare_empty(void)
-{
-
-	elog_debug("elog_prepare_empty()\n");
-
-	/* Write out the header */
-	size_t size = elog_write_header_in_mirror();
-	elog_flash_write(0, size);
-
-	elog_scan_flash();
+	elog_mirror_increment_last_write(elog_events_start());
 }
 
 static void elog_move_events_to_front(size_t offset, size_t size)
@@ -425,16 +487,12 @@ static void elog_move_events_to_front(size_t offset, size_t size)
 	rdev_munmap(rdev, dest);
 }
 
-/*
- * Shrink the log, deleting old entries and moving the
- * remaining ones to the front of the log.
- */
-static int elog_shrink(void)
+/* Perform the shrink and move events returning the size of bytes shrunk. */
+static size_t elog_do_shrink(size_t requested_size, size_t last_write)
 {
 	const struct region_device *rdev = mirror_dev_get();
 	size_t offset = elog_events_start();
-
-	elog_debug("elog_shrink()\n");
+	size_t remaining_size;
 
 	while (1) {
 		const size_t type_offset = offsetof(struct event_header, type);
@@ -444,7 +502,7 @@ static int elog_shrink(void)
 		uint8_t len;
 
 		/* Next event has exceeded constraints */
-		if (offset > shrink_size)
+		if (offset > requested_size)
 			break;
 
 		if (rdev_readat(rdev, &type, offset + type_offset, size) < 0)
@@ -460,22 +518,66 @@ static int elog_shrink(void)
 		offset += len;
 	}
 
-	elog_move_events_to_front(offset, next_event_offset - offset);
+	/*
+	 * Move the events and update the last write. The last write before
+	 * shrinking was captured prior to resetting the counter to determine
+	 * actual size we're keeping.
+	 */
+	remaining_size = last_write - offset;
+	elog_move_events_to_front(offset, remaining_size);
+	elog_mirror_increment_last_write(remaining_size);
 
-	elog_flash_erase();
-	elog_flash_write(0, total_size);
-	elog_scan_flash();
+	/* Return the amount of data removed. */
+	return offset - elog_events_start();
+}
 
-	/* Ensure the area was successfully erased */
-	if (next_event_offset >= full_threshold) {
-		printk(BIOS_ERR, "ELOG: Flash area was not erased!\n");
-		return -1;
-	}
+/*
+ * Shrink the log, deleting old entries and moving the
+ * remaining ones to the front of the log.
+ */
+static void elog_shrink_by_size(size_t requested_size)
+{
+	size_t shrunk_size;
+	size_t captured_last_write;
+	size_t total_event_space = elog_events_total_space();
+
+	elog_debug("%s()\n", __func__);
+
+	/* Indicate possible erase required. */
+	elog_nv_needs_possible_erase();
+
+	/* Capture the last write to determine data size in buffer to shrink. */
+	captured_last_write = elog_mirror_reset_last_write();
+
+	/* Prepare new header. */
+	elog_write_header_in_mirror();
+
+	/* Determine if any actual shrinking is required. */
+	if (requested_size >= total_event_space)
+		shrunk_size = total_event_space;
+	else
+		shrunk_size = elog_do_shrink(requested_size,
+						captured_last_write);
 
 	/* Add clear event */
-	elog_add_event_word(ELOG_TYPE_LOG_CLEAR, offset - elog_events_start());
+	elog_add_event_word(ELOG_TYPE_LOG_CLEAR, shrunk_size);
+}
+
+static int elog_prepare_empty(void)
+{
+	elog_debug("elog_prepare_empty()\n");
+	elog_shrink_by_size(elog_events_total_space());
+
+	if (!elog_is_area_valid())
+		return -1;
 
 	return 0;
+}
+
+static void elog_shrink(void)
+{
+	if (elog_should_shrink())
+		elog_shrink_by_size(shrink_size);
 }
 
 #ifndef __SMM__
@@ -549,17 +651,7 @@ int elog_clear(void)
 	if (elog_init() < 0)
 		return -1;
 
-	/* Erase flash area */
-	elog_flash_erase();
-	elog_prepare_empty();
-
-	if (!elog_is_area_valid())
-		return -1;
-
-	/* Log the clear event */
-	elog_add_event_word(ELOG_TYPE_LOG_CLEAR, elog_events_total_space());
-
-	return 0;
+	return elog_prepare_empty();
 }
 
 static void elog_find_flash(void)
@@ -582,6 +674,48 @@ static void elog_find_flash(void)
 	full_threshold = total_size - reserved_space;
 	shrink_size = MIN(total_size * ELOG_SHRINK_PERCENTAGE / 100,
 								full_threshold);
+}
+
+static int elog_sync_to_nv(void)
+{
+	size_t offset;
+	size_t size;
+	bool erase_needed;
+
+	/* Determine if any updates are required. */
+	if (!elog_nv_needs_update())
+		return 0;
+
+	erase_needed = elog_nv_needs_erase();
+
+	/* Erase if necessary. */
+	if (erase_needed) {
+		elog_flash_erase();
+		elog_nv_reset_last_write();
+	}
+
+	size = elog_nv_region_to_update(&offset);
+
+	elog_flash_write(offset, size);
+	elog_nv_increment_last_write(size);
+
+	/*
+	 * If erase wasn't performed then don't rescan. Assume the appended
+	 * write was successful.
+	 */
+	if (!erase_needed)
+		return 0;
+
+	elog_scan_flash();
+
+	/* Mark broken if the scan failed after a sync. */
+	if (!elog_is_area_valid()) {
+		printk(BIOS_ERR, "ELOG: Sync back from NV storage failed.\n");
+		elog_initialized = ELOG_BROKEN;
+		return -1;
+	}
+
+	return 0;
 }
 
 /*
@@ -634,22 +768,19 @@ int elog_init(void)
 	/* Load the log from flash */
 	elog_scan_flash();
 
+	/*
+	 * Mark as initialized to allow elog_init() to be called and deemed
+	 * successful in the prepare/shrink path which adds events.
+	 */
+	elog_initialized = ELOG_INITIALIZED;
+
 	/* Prepare the flash if necessary */
-	if (header_state == ELOG_HEADER_INVALID ||
-		event_buffer_state == ELOG_EVENT_BUFFER_CORRUPTED) {
-		/* If the header is invalid or the events are corrupted,
-		 * no events can be salvaged so erase the entire area. */
-		printk(BIOS_ERR, "ELOG: flash area invalid\n");
-		elog_flash_erase();
-		elog_prepare_empty();
-	}
-
-	if (area_state == ELOG_AREA_EMPTY)
-		elog_prepare_empty();
-
 	if (!elog_is_area_valid()) {
-		printk(BIOS_ERR, "ELOG: Unable to prepare flash\n");
-		return -1;
+		printk(BIOS_ERR, "ELOG: flash area invalid\n");
+		if (elog_prepare_empty() < 0) {
+			printk(BIOS_ERR, "ELOG: Unable to prepare flash\n");
+			return -1;
+		}
 	}
 
 	printk(BIOS_INFO, "ELOG: FLASH @0x%p [SPI 0x%08x]\n",
@@ -657,18 +788,6 @@ int elog_init(void)
 
 	printk(BIOS_INFO, "ELOG: area is %d bytes, full threshold %d,"
 	       " shrink size %d\n", total_size, full_threshold, shrink_size);
-
-	elog_initialized = ELOG_INITIALIZED;
-
-	/* Shrink the log if we are getting too full */
-	if (next_event_offset >= full_threshold)
-		if (elog_shrink() < 0)
-			return -1;
-
-	/* Log a clear event if necessary */
-	if (event_count == 0)
-		elog_add_event_word(ELOG_TYPE_LOG_CLEAR,
-					elog_events_total_space());
 
 #if !defined(__SMM__)
 	/* Log boot count event except in S3 resume */
@@ -688,8 +807,6 @@ int elog_init(void)
 		cmos_post_log();
 #endif
 #endif
-
-	elog_initialized = ELOG_INITIALIZED;
 
 	return 0;
 }
@@ -747,7 +864,7 @@ void elog_add_event_raw(u8 event_type, void *data, u8 data_size)
 	}
 
 	/* Make sure event data can fit */
-	event = elog_get_event_buffer(next_event_offset, event_size);
+	event = elog_get_next_event_buffer(event_size);
 	if (event == NULL) {
 		printk(BIOS_ERR, "ELOG: Event(%X) does not fit\n",
 		       event_type);
@@ -767,19 +884,16 @@ void elog_add_event_raw(u8 event_type, void *data, u8 data_size)
 	elog_update_checksum(event, -(elog_checksum_event(event)));
 	elog_put_event_buffer(event);
 
-	/* Update the ELOG state */
-	event_count++;
-
-	elog_flash_write(next_event_offset, event_size);
-
-	next_event_offset += event_size;
+	elog_mirror_increment_last_write(event_size);
 
 	printk(BIOS_INFO, "ELOG: Event(%X) added with size %d\n",
 	       event_type, event_size);
 
 	/* Shrink the log if we are getting too full */
-	if (next_event_offset >= full_threshold)
-		elog_shrink();
+	elog_shrink();
+
+	/* Ensure the updates hit the non-volatile storage. */
+	elog_sync_to_nv();
 }
 
 void elog_add_event(u8 event_type)

@@ -163,9 +163,11 @@ static void reg_cpu_cr_write(uint32_t reg_address, CRx_TYPE value)
 
 	case 0:
 		write_cr0(value);
+		break;
 
 	case 4:
 		write_cr4(value);
+		break;
 	}
 }
 

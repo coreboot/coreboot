@@ -27,14 +27,6 @@ struct header headers;
 static int devcount = 0;
 
 typedef enum {
-	STATIC_MODE,
-	BOOTBLOCK_MODE,
-	KCONFIG_MODE
-} scan_t;
-
-static scan_t scan_mode = STATIC_MODE;
-
-typedef enum {
 	UNSLASH,
 	SPLIT_1ST,
 	TO_LOWER,
@@ -174,15 +166,10 @@ struct device *new_chip(struct device *parent, struct device *bus, char *path) {
 		}
 	}
 
-	if (scan_mode == STATIC_MODE)
-		sprintf(chip_h, "src/%s/chip.h", path);
-	else if (scan_mode == BOOTBLOCK_MODE)
-		sprintf(chip_h, "src/%s/bootblock.c", path);
+	sprintf(chip_h, "src/%s/chip.h", path);
 
-	if ((scan_mode == STATIC_MODE) || (scan_mode == BOOTBLOCK_MODE)) {
-		if ((stat(chip_h, &st) == -1) && (errno == ENOENT))
+	if ((stat(chip_h, &st) == -1) && (errno == ENOENT))
 			new_chip->chiph_exists = 0;
-	}
 
 	if (parent->latestchild) {
 		parent->latestchild->next_sibling = new_chip;
@@ -551,55 +538,24 @@ static void inherit_subsystem_ids(FILE *file, struct device *dev)
 
 static void usage(void)
 {
-	printf("usage: sconfig vendor/mainboard devicetree_file output_file [-{s|b|k}]\n");
-	printf("\t-s file\tcreate ramstage static device map\n");
-	printf("\t-b file\tcreate bootblock init_mainboard()\n");
-	printf("\t-k file\tcreate Kconfig devicetree section\n");
-	printf("Defaults to \"-s static.c\" if no {s|b|k} specified.\n");
+	printf("usage: sconfig vendor/mainboard devicetree_file output_file\n");
 	exit (1);
 }
 
 enum {
 	MAINBOARD_ARG = 1,
 	DEVICEFILE_ARG,
-	OUTPUTFILE_ARG,
-	OUTPUTTYPE_ARG
-};
+	OUTPUTFILE_ARG};
 
-#define MIN_ARGS		4
-#define MAX_ARGS		5
+#define ARG_COUNT		4
 
 int main(int argc, char** argv) {
-	if (argc != MIN_ARGS && argc != MAX_ARGS)
+	if (argc != ARG_COUNT)
 		usage();
 
 	char *mainboard = argv[MAINBOARD_ARG];
 	char *devtree = argv[DEVICEFILE_ARG];
 	char *outputc = argv[OUTPUTFILE_ARG];
-
-	if (argc == MIN_ARGS) {
-		scan_mode = STATIC_MODE;
-	} else if (argc == MAX_ARGS) {
-		if ((argv[OUTPUTTYPE_ARG][0] != '-') ||
-			(argv[OUTPUTTYPE_ARG][2] == 0)) {
-			usage();
-		}
-
-		switch (argv[OUTPUTTYPE_ARG][1]) {
-		case 's':
-			scan_mode = STATIC_MODE;
-			break;
-		case 'b':
-			scan_mode = BOOTBLOCK_MODE;
-			break;
-		case 'k':
-			scan_mode = KCONFIG_MODE;
-			break;
-		default:
-			usage();
-			break;
-		}
-	}
 
 	headers.next = 0;
 #ifdef MAINBOARDS_HAVE_CHIP_H
@@ -639,77 +595,34 @@ int main(int argc, char** argv) {
 	}
 
 	struct header *h;
-	if (scan_mode == STATIC_MODE) {
-
-		fprintf(autogen, "#include <device/device.h>\n");
-		fprintf(autogen, "#include <device/pci.h>\n");
-		h = &headers;
-		while (h->next) {
-			h = h->next;
-			if (h->chiph_exists)
-				fprintf(autogen, "#include \"%s/chip.h\"\n", h->name);
-		}
-		fprintf(autogen, "\n#ifndef __PRE_RAM__\n");
-		fprintf(autogen, "__attribute__((weak)) struct chip_operations mainboard_ops = {};\n");
-		h = &headers;
-		while (h->next) {
-			h = h->next;
-			char *name_underscore = translate_name(h->name, UNSLASH);
-			fprintf(autogen, "__attribute__((weak)) struct chip_operations %s_ops = {};\n", name_underscore);
-			free(name_underscore);
-		}
-		fprintf(autogen, "#endif\n");
-
-		walk_device_tree(autogen, &root, inherit_subsystem_ids, NULL);
-		fprintf(autogen, "\n/* pass 0 */\n");
-		walk_device_tree(autogen, &root, pass0, NULL);
-		fprintf(autogen, "\n/* pass 1 */\n"
-			    "ROMSTAGE_CONST struct device * ROMSTAGE_CONST last_dev = &%s;\n", lastdev->name);
-#ifdef MAINBOARDS_HAVE_CHIP_H
-		fprintf(autogen, "static ROMSTAGE_CONST struct mainboard_config ROMSTAGE_CONST mainboard_info_0;\n");
-#endif
-		walk_device_tree(autogen, &root, pass1, NULL);
-
-	} else if (scan_mode == BOOTBLOCK_MODE) {
-		h = &headers;
-		while (h->next) {
-			h = h->next;
-			fprintf(autogen, "#include \"%s/bootblock.c\"\n", h->name);
-		}
-
-		fprintf(autogen, "\n#if CONFIG_HAS_MAINBOARD_BOOTBLOCK\n");
-		fprintf(autogen, "#include \"mainboard/%s/bootblock.c\"\n", mainboard);
-		fprintf(autogen, "#else\n");
-		fprintf(autogen, "static unsigned long init_mainboard(int bsp_cpu)\n{\n");
-		fprintf(autogen, "\tif (! bsp_cpu) return 0;\n");
-		h = &headers;
-		while (h->next) {
-			h = h->next;
-			char * buf = translate_name(h->name, UNSLASH);
-			if (buf) {
-				fprintf(autogen, "\tinit_%s();\n", buf);
-				free(buf);
-			}
-		}
-
-		fprintf(autogen, "\treturn 0;\n}\n");
-		fprintf(autogen, "#endif\n");
-
-	} else if (scan_mode == KCONFIG_MODE) {
-		fprintf(autogen, "\nconfig MAINBOARD_DIR\n\tstring\n");
-		fprintf(autogen, "\tdefault %s\n", mainboard);
-
-		fprintf(autogen, "\nconfig MAINBOARD_DEVTREE\n\tdef_bool y\n");
-		h = &headers;
-		while (h->next) {
-			h = h->next;
-			char * buf = translate_name(h->name, TO_UPPER);
-			if (buf) {
-				fprintf(autogen, "\tselect %s\n", buf);
-				free(buf);
-			}
-		}
+	fprintf(autogen, "#include <device/device.h>\n");
+	fprintf(autogen, "#include <device/pci.h>\n");
+	h = &headers;
+	while (h->next) {
+		h = h->next;
+		if (h->chiph_exists)
+			fprintf(autogen, "#include \"%s/chip.h\"\n", h->name);
 	}
+	fprintf(autogen, "\n#ifndef __PRE_RAM__\n");
+	fprintf(autogen, "__attribute__((weak)) struct chip_operations mainboard_ops = {};\n");
+	h = &headers;
+	while (h->next) {
+		h = h->next;
+		char *name_underscore = translate_name(h->name, UNSLASH);
+		fprintf(autogen, "__attribute__((weak)) struct chip_operations %s_ops = {};\n", name_underscore);
+		free(name_underscore);
+	}
+	fprintf(autogen, "#endif\n");
+
+	walk_device_tree(autogen, &root, inherit_subsystem_ids, NULL);
+	fprintf(autogen, "\n/* pass 0 */\n");
+	walk_device_tree(autogen, &root, pass0, NULL);
+	fprintf(autogen, "\n/* pass 1 */\n"
+			"ROMSTAGE_CONST struct device * ROMSTAGE_CONST last_dev = &%s;\n", lastdev->name);
+#ifdef MAINBOARDS_HAVE_CHIP_H
+	fprintf(autogen, "static ROMSTAGE_CONST struct mainboard_config ROMSTAGE_CONST mainboard_info_0;\n");
+#endif
+	walk_device_tree(autogen, &root, pass1, NULL);
 
 	fclose(autogen);
 

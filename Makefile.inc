@@ -451,15 +451,18 @@ $(obj)/config.h: $(objutil)/kconfig/conf
 #######################################################################
 # needed objects that every mainboard uses
 # Creation of these is architecture and mainboard independent
-$(obj)/mainboard/$(MAINBOARDDIR)/static.c: $(src)/mainboard/$(MAINBOARDDIR)/$(call strip_quotes, $(CONFIG_DEVICETREE)) $(objutil)/sconfig/sconfig
-	@printf "    SCONFIG    $(subst $(src)/,,$(<))\n"
-	mkdir -p $(obj)/mainboard/$(MAINBOARDDIR)
-	$(objutil)/sconfig/sconfig $(MAINBOARDDIR) $(obj)/mainboard/$(MAINBOARDDIR) $(call strip_quotes, $(CONFIG_DEVICETREE))
+DEVICETREE_FILE := $(src)/mainboard/$(MAINBOARDDIR)/$(call strip_quotes, $(CONFIG_DEVICETREE))
+DEVICETREE_STATIC_C := $(obj)/mainboard/$(MAINBOARDDIR)/static.c
 
-ramstage-y+=$(obj)/mainboard/$(MAINBOARDDIR)/static.c
-romstage-y+=$(obj)/mainboard/$(MAINBOARDDIR)/static.c
-verstage-y+=$(obj)/mainboard/$(MAINBOARDDIR)/static.c
-bootblock-y+=$(obj)/mainboard/$(MAINBOARDDIR)/static.c
+$(DEVICETREE_STATIC_C): $(DEVICETREE_FILE) $(objutil)/sconfig/sconfig
+	@printf "    SCONFIG    $(subst $(src)/,,$(<))\n"
+	mkdir -p $(dir $(DEVICETREE_STATIC_C))
+	$(objutil)/sconfig/sconfig $(MAINBOARDDIR) $(DEVICETREE_FILE) $(DEVICETREE_STATIC_C)
+
+ramstage-y+=$(DEVICETREE_STATIC_C)
+romstage-y+=$(DEVICETREE_STATIC_C)
+verstage-y+=$(DEVICETREE_STATIC_C)
+bootblock-y+=$(DEVICETREE_STATIC_C)
 
 $(objgenerated)/libverstage.a: $$(libverstage-objs)
 	rm -f $@

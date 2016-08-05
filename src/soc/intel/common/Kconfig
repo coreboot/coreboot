@@ -41,6 +41,12 @@ config SOC_INTEL_COMMON_ACPI_WAKE_SOURCE
 	bool
 	default n
 
+config ACPI_CONSOLE
+	bool
+	default n
+	help
+	  Provide a mechanism for serial console based ACPI debug.
+
 config SOC_INTEL_COMMON_LPSS_I2C
 	bool
 	default n

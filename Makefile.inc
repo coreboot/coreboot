@@ -729,12 +729,6 @@ ifeq ($(CONFIG_ARCH_X86),y)
 		-t bootblock \
 		-b -$(call file-size,$(objcbfs)/bootblock.bin) $(cbfs-autogen-attributes)
 else # ifeq ($(CONFIG_ARCH_X86),y)
-	# don't add bootblock to cbfs yet, it's just a waste of space
-	true $(CBFSTOOL) $@.tmp add \
-		-f $(objcbfs)/bootblock.bin \
-		-n bootblock \
-		-t bootblock \
-		-b 0
 	$(CBFSTOOL) $@.tmp write -u \
 		-r BOOTBLOCK \
 		-f $(objcbfs)/bootblock.bin

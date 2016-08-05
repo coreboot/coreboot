@@ -847,7 +847,8 @@ static int cbfs_payload_decompress(struct cbfs_payload_segment *segments,
 	for (int i = 0; i < num_seg; i++)
 		new_buff_sz += segments[i].mem_len;
 
-	buffer_create(&new_buffer, new_buff_sz, "decompressed_buff");
+	if (buffer_create(&new_buffer, new_buff_sz, "decompressed_buff"))
+		return -1;
 
 	in_ptr = buffer_get(buff) + new_offset;
 	out_ptr = buffer_get(&new_buffer) + new_offset;
@@ -878,7 +879,10 @@ static int cbfs_payload_decompress(struct cbfs_payload_segment *segments,
 			continue;
 		}
 
-		buffer_create(&tbuff, segments[i].mem_len, "segment");
+		if (buffer_create(&tbuff, segments[i].mem_len, "segment")) {
+			buffer_delete(&new_buffer);
+			return -1;
+		}
 
 		if (decompress(in_ptr, segments[i].len, buffer_get(&tbuff),
 					(int) buffer_size(&tbuff),

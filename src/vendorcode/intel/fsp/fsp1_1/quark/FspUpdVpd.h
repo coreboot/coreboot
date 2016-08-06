@@ -88,7 +88,7 @@ typedef struct {
   UINT32                      RmuLength;
 /** Offset 0x0030
 **/
-  UINT32                      SerialPortBaseAddress;
+  UINT32                      Reserved_30;
 /** Offset 0x0034
 **/
   UINT32                      tRAS;
@@ -175,17 +175,26 @@ typedef struct {
   UINT32                      MrcDataLength;
 /** Offset 0x0068
 **/
-  UINT8                       ReservedMemoryInitUpd[8];
+  UINT32                      SerialPortPollForChar;
+/** Offset 0x006C
+**/
+  UINT32                      SerialPortReadChar;
+/** Offset 0x0070
+**/
+  UINT32                      SerialPortWriteChar;
+/** Offset 0x0074
+**/
+  UINT8                       ReservedMemoryInitUpd[12];
 } MEMORY_INIT_UPD;
 
 typedef struct {
-/** Offset 0x0070
+/** Offset 0x0080
 **/
   UINT64                      Signature;
-/** Offset 0x0078
+/** Offset 0x0088
 **/
   UINT64                      Revision;
-/** Offset 0x0080
+/** Offset 0x0090
 **/
   UINT16                      PcdRegionTerminator;
 } SILICON_INIT_UPD;
@@ -210,7 +219,7 @@ typedef struct _UPD_DATA_REGION {
 /** Offset 0x0018
 **/
   MEMORY_INIT_UPD             MemoryInitUpd;
-/** Offset 0x0070
+/** Offset 0x0080
 **/
   SILICON_INIT_UPD            SiliconInitUpd;
 } UPD_DATA_REGION;

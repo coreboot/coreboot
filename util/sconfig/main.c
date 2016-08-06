@@ -40,11 +40,7 @@ static struct device mainboard = {
 	.id = 0,
 	.chip = &mainboard,
 	.type = chip,
-#ifdef MAINBOARDS_HAVE_CHIP_H
-	.chiph_exists = 1,
-#else
 	.chiph_exists = 0,
-#endif
 	.children = &root
 };
 
@@ -538,34 +534,24 @@ static void inherit_subsystem_ids(FILE *file, struct device *dev)
 
 static void usage(void)
 {
-	printf("usage: sconfig vendor/mainboard devicetree_file output_file\n");
+	printf("usage: sconfig devicetree_file output_file\n");
 	exit (1);
 }
 
 enum {
-	MAINBOARD_ARG = 1,
-	DEVICEFILE_ARG,
+	DEVICEFILE_ARG = 1,
 	OUTPUTFILE_ARG};
 
-#define ARG_COUNT		4
+#define ARG_COUNT		3
 
 int main(int argc, char** argv) {
 	if (argc != ARG_COUNT)
 		usage();
 
-	char *mainboard = argv[MAINBOARD_ARG];
 	char *devtree = argv[DEVICEFILE_ARG];
 	char *outputc = argv[OUTPUTFILE_ARG];
 
 	headers.next = 0;
-#ifdef MAINBOARDS_HAVE_CHIP_H
-	if (scan_mode == STATIC_MODE) {
-		headers.next = malloc(sizeof(struct header));
-		headers.next->name = malloc(strlen(mainboard)+12);
-		headers.next->next = 0;
-		sprintf(headers.next->name, "mainboard/%s", mainboard);
-	}
-#endif
 
 	FILE *filec = fopen(devtree, "r");
 	if (!filec) {
@@ -619,9 +605,6 @@ int main(int argc, char** argv) {
 	walk_device_tree(autogen, &root, pass0, NULL);
 	fprintf(autogen, "\n/* pass 1 */\n"
 			"ROMSTAGE_CONST struct device * ROMSTAGE_CONST last_dev = &%s;\n", lastdev->name);
-#ifdef MAINBOARDS_HAVE_CHIP_H
-	fprintf(autogen, "static ROMSTAGE_CONST struct mainboard_config ROMSTAGE_CONST mainboard_info_0;\n");
-#endif
 	walk_device_tree(autogen, &root, pass1, NULL);
 
 	fclose(autogen);

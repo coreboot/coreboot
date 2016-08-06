@@ -91,11 +91,14 @@ void fold_in(struct device *parent);
 void postprocess_devtree(void);
 struct device *new_chip(struct device *parent, struct device *bus, char *path);
 void add_header(struct device *dev);
-struct device *new_device(struct device *parent, struct device *busdev, const int bus, const char *devnum, int enabled);
+struct device *new_device(struct device *parent, struct device *busdev,
+			  const int bus, const char *devnum, int enabled);
 void alias_siblings(struct device *d);
 void add_resource(struct device *dev, int type, int index, int base);
 void add_register(struct device *dev, char *name, char *val);
-void add_pci_subsystem_ids(struct device *dev, int vendor, int device, int inherit);
-void add_ioapic_info(struct device *dev, int apicid, const char *_srcpin, int irqpin);
+void add_pci_subsystem_ids(struct device *dev, int vendor, int device,
+			   int inherit);
+void add_ioapic_info(struct device *dev, int apicid, const char *_srcpin,
+		     int irqpin);
 
 void yyrestart(FILE *input_file);

@@ -10,6 +10,7 @@
  */
 
 #include <lzma.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include "lzmadecode.c"
@@ -25,7 +26,7 @@ unsigned long ulzman(const unsigned char *src, unsigned long srcn,
 	int res;
 	CLzmaDecoderState state;
 	SizeT mallocneeds;
-	unsigned char scratchpad[15980];
+	unsigned char *scratchpad;
 
 	memcpy(properties, src, LZMA_PROPERTIES_SIZE);
 	memcpy(&outSize, src + LZMA_PROPERTIES_SIZE, sizeof(outSize));
@@ -37,13 +38,16 @@ unsigned long ulzman(const unsigned char *src, unsigned long srcn,
 		return 0;
 	}
 	mallocneeds = (LzmaGetNumProbs(&state.Properties) * sizeof(CProb));
-	if (mallocneeds > 15980) {
-		printf("lzma: Decoder scratchpad too small!\n");
+	scratchpad = malloc(mallocneeds);
+	if (!scratchpad) {
+		printf("lzma: Cannot allocate %u bytes for scratchpad!\n",
+		       mallocneeds);
 		return 0;
 	}
 	state.Probs = (CProb *)scratchpad;
 	res = LzmaDecode(&state, src + data_offset, srcn - data_offset,
 			 &inProcessed, dst, outSize, &outProcessed);
+	free(scratchpad);
 	if (res != 0) {
 		printf("lzma: Decoding error = %d\n", res);
 		return 0;

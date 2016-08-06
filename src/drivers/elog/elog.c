@@ -503,7 +503,7 @@ static size_t elog_do_shrink(size_t requested_size, size_t last_write)
  * Shrink the log, deleting old entries and moving the
  * remaining ones to the front of the log.
  */
-static void elog_shrink_by_size(size_t requested_size)
+static int elog_shrink_by_size(size_t requested_size)
 {
 	size_t shrunk_size;
 	size_t captured_last_write;
@@ -528,24 +528,20 @@ static void elog_shrink_by_size(size_t requested_size)
 						captured_last_write);
 
 	/* Add clear event */
-	elog_add_event_word(ELOG_TYPE_LOG_CLEAR, shrunk_size);
+	return elog_add_event_word(ELOG_TYPE_LOG_CLEAR, shrunk_size);
 }
 
 static int elog_prepare_empty(void)
 {
 	elog_debug("elog_prepare_empty()\n");
-	elog_shrink_by_size(elog_events_total_space());
-
-	if (elog_initialized != ELOG_INITIALIZED)
-		return -1;
-
-	return 0;
+	return elog_shrink_by_size(elog_events_total_space());
 }
 
-static void elog_shrink(void)
+static int elog_shrink(void)
 {
 	if (elog_should_shrink())
-		elog_shrink_by_size(shrink_size);
+		return elog_shrink_by_size(shrink_size);
+	return 0;
 }
 
 /*
@@ -808,7 +804,7 @@ static void elog_fill_timestamp(struct event_header *event)
 /*
  * Add an event to the log
  */
-void elog_add_event_raw(u8 event_type, void *data, u8 data_size)
+int elog_add_event_raw(u8 event_type, void *data, u8 data_size)
 {
 	struct event_header *event;
 	u8 event_size;
@@ -817,14 +813,14 @@ void elog_add_event_raw(u8 event_type, void *data, u8 data_size)
 
 	/* Make sure ELOG structures are initialized */
 	if (elog_init() < 0)
-		return;
+		return -1;
 
 	/* Header + Data + Checksum */
 	event_size = sizeof(*event) + data_size + 1;
 	if (event_size > MAX_EVENT_SIZE) {
 		printk(BIOS_ERR, "ELOG: Event(%X) data size too "
 		       "big (%d)\n", event_type, event_size);
-		return;
+		return -1;
 	}
 
 	/* Make sure event data can fit */
@@ -832,7 +828,7 @@ void elog_add_event_raw(u8 event_type, void *data, u8 data_size)
 	if (event == NULL) {
 		printk(BIOS_ERR, "ELOG: Event(%X) does not fit\n",
 		       event_type);
-		return;
+		return -1;
 	}
 
 	/* Fill out event data */
@@ -854,37 +850,38 @@ void elog_add_event_raw(u8 event_type, void *data, u8 data_size)
 	       event_type, event_size);
 
 	/* Shrink the log if we are getting too full */
-	elog_shrink();
+	if (elog_shrink() < 0)
+		return -1;
 
 	/* Ensure the updates hit the non-volatile storage. */
-	elog_sync_to_nv();
+	return elog_sync_to_nv();
 }
 
-void elog_add_event(u8 event_type)
+int elog_add_event(u8 event_type)
 {
-	elog_add_event_raw(event_type, NULL, 0);
+	return elog_add_event_raw(event_type, NULL, 0);
 }
 
-void elog_add_event_byte(u8 event_type, u8 data)
+int elog_add_event_byte(u8 event_type, u8 data)
 {
-	elog_add_event_raw(event_type, &data, sizeof(data));
+	return elog_add_event_raw(event_type, &data, sizeof(data));
 }
 
-void elog_add_event_word(u8 event_type, u16 data)
+int elog_add_event_word(u8 event_type, u16 data)
 {
-	elog_add_event_raw(event_type, &data, sizeof(data));
+	return elog_add_event_raw(event_type, &data, sizeof(data));
 }
 
-void elog_add_event_dword(u8 event_type, u32 data)
+int elog_add_event_dword(u8 event_type, u32 data)
 {
-	elog_add_event_raw(event_type, &data, sizeof(data));
+	return elog_add_event_raw(event_type, &data, sizeof(data));
 }
 
-void elog_add_event_wake(u8 source, u32 instance)
+int elog_add_event_wake(u8 source, u32 instance)
 {
 	struct elog_event_data_wake wake = {
 		.source = source,
 		.instance = instance
 	};
-	elog_add_event_raw(ELOG_TYPE_WAKE_SOURCE, &wake, sizeof(wake));
+	return elog_add_event_raw(ELOG_TYPE_WAKE_SOURCE, &wake, sizeof(wake));
 }

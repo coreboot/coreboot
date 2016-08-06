@@ -37,6 +37,7 @@ config SOUTH_BRIDGE_OPTIONS # dummy
 	select ACPI_SATA_GENERATOR
 	select HAVE_INTEL_FIRMWARE
 	select SOUTHBRIDGE_INTEL_COMMON_GPIO
+	select RTC
 
 config EHCI_BAR
 	hex

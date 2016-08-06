@@ -146,23 +146,24 @@ struct elog_event_data_me_extended {
 /* Eventlog backing storage must be initialized before calling elog_init(). */
 extern int elog_init(void);
 extern int elog_clear(void);
-extern void elog_add_event_raw(u8 event_type, void *data, u8 data_size);
-extern void elog_add_event(u8 event_type);
-extern void elog_add_event_byte(u8 event_type, u8 data);
-extern void elog_add_event_word(u8 event_type, u16 data);
-extern void elog_add_event_dword(u8 event_type, u32 data);
-extern void elog_add_event_wake(u8 source, u32 instance);
+/* Event addition functions return < 0 on failure and 0 on success. */
+extern int elog_add_event_raw(u8 event_type, void *data, u8 data_size);
+extern int elog_add_event(u8 event_type);
+extern int elog_add_event_byte(u8 event_type, u8 data);
+extern int elog_add_event_word(u8 event_type, u16 data);
+extern int elog_add_event_dword(u8 event_type, u32 data);
+extern int elog_add_event_wake(u8 source, u32 instance);
 extern int elog_smbios_write_type15(unsigned long *current, int handle);
 #else
 /* Stubs to help avoid littering sources with #if CONFIG_ELOG */
 static inline int elog_init(void) { return -1; }
 static inline int elog_clear(void) { return -1; }
-static inline void elog_add_event_raw(void) { return; }
-static inline void elog_add_event(u8 event_type) { return; }
-static inline void elog_add_event_byte(u8 event_type, u8 data) { return; }
-static inline void elog_add_event_word(u8 event_type, u16 data) { return; }
-static inline void elog_add_event_dword(u8 event_type, u32 data) { return; }
-static inline void elog_add_event_wake(u8 source, u32 instance) { return; }
+static inline int elog_add_event_raw(void) { return 0; }
+static inline int elog_add_event(u8 event_type) { return 0; }
+static inline int elog_add_event_byte(u8 event_type, u8 data) { return 0; }
+static inline int elog_add_event_word(u8 event_type, u16 data) { return 0; }
+static inline int elog_add_event_dword(u8 event_type, u32 data) { return 0; }
+static inline int elog_add_event_wake(u8 source, u32 instance) { return 0; }
 static inline int elog_smbios_write_type15(unsigned long *current,
 						int handle) {
 	return 0;

@@ -74,16 +74,6 @@ _entry:
 1:
 	lw	$gp, 0($ra)
 
-	/* Clear .bss: start_bss = _edata, end_bss = _end */
-	la	$t0, _edata
-	sw	$zero, ($t0)
-	la	$t1, _end - 4
-clear_bss:
-	addiu	$t0, 4
-	sw	$zero, ($t0)
-	bne	$t0, $t1, clear_bss
-	nop
-
 	/* Save off the location of the coreboot tables */
 	la	$at, cb_header_ptr
 	sw	$a0, 0x00($at)

@@ -221,7 +221,7 @@ static void southbridge_smi_gsmi(const struct
 	reg_ebx = save_state_ops->get_reg(io_smi, RBX);
 
 	/* drivers/elog/gsmi.c */
-	ret = gsmi_exec(sub_command, (u32 *)(uintptr_t)reg_ebx);
+	ret = gsmi_exec(sub_command, &reg_ebx);
 	save_state_ops->set_reg(io_smi, RAX, ret);
 }
 

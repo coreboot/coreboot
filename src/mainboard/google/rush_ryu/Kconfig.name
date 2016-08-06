@@ -1,2 +1,0 @@
-config BOARD_GOOGLE_RUSH_RYU
-	bool "Rush Ryu"

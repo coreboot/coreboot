@@ -548,9 +548,6 @@ static void elog_shrink(void)
 		elog_shrink_by_size(shrink_size);
 }
 
-#ifndef __SMM__
-#if IS_ENABLED(CONFIG_ARCH_X86)
-
 /*
  * Convert a flash offset into a memory mapped flash address
  */
@@ -574,14 +571,22 @@ int elog_smbios_write_type15(unsigned long *current, int handle)
 {
 	struct smbios_type15 *t = (struct smbios_type15 *)*current;
 	int len = sizeof(struct smbios_type15);
+	uintptr_t log_address;
 
-#if CONFIG_ELOG_CBMEM
-	/* Save event log buffer into CBMEM for the OS to read */
-	void *cbmem = cbmem_add(CBMEM_ID_ELOG, total_size);
-	if (!cbmem)
+	if (IS_ENABLED(CONFIG_ELOG_CBMEM)) {
+		/* Save event log buffer into CBMEM for the OS to read */
+		void *cbmem = cbmem_add(CBMEM_ID_ELOG, total_size);
+		if (cbmem)
+			rdev_readat(mirror_dev_get(), cbmem, 0, total_size);
+		log_address = (uintptr_t)cbmem;
+	} else {
+		log_address = (uintptr_t)elog_flash_offset_to_address();
+	}
+
+	if (!log_address) {
+		printk(BIOS_WARNING, "SMBIOS type 15 log address invalid.\n");
 		return 0;
-	rdev_readat(mirror_dev_get(), cbmem, 0, total_size);
-#endif
+	}
 
 	memset(t, 0, len);
 	t->type = SMBIOS_EVENT_LOG;
@@ -593,11 +598,7 @@ int elog_smbios_write_type15(unsigned long *current, int handle)
 	t->access_method = SMBIOS_EVENTLOG_ACCESS_METHOD_MMIO32;
 	t->log_status = SMBIOS_EVENTLOG_STATUS_VALID;
 	t->change_token = 0;
-#if CONFIG_ELOG_CBMEM
-	t->address = (u32)cbmem;
-#else
-	t->address = (u32)elog_flash_offset_to_address();
-#endif
+	t->address = log_address;
 	t->header_format = ELOG_HEADER_TYPE_OEM;
 	t->log_type_descriptors = 0;
 	t->log_type_descriptor_length = 2;
@@ -605,8 +606,6 @@ int elog_smbios_write_type15(unsigned long *current, int handle)
 	*current += len;
 	return len;
 }
-#endif
-#endif
 
 /*
  * Clear the entire event log

@@ -53,7 +53,7 @@ struct FSP_M_CONFIG {
 /** Offset 0x0048 - SerialPortBaseAddress
   Debug serial port base address set by BIOS. Zero disables debug serial output.
 **/
-  uint32_t                      SerialPortBaseAddress;
+  uint32_t                      Reserved_48;
 
 /** Offset 0x004C - tRAS
   ACT to PRE command period in picoseconds.
@@ -199,6 +199,18 @@ struct FSP_M_CONFIG {
   uint32_t                      MrcDataLength;
 
 /** Offset 0x0080
+**/
+  uint32_t                      SerialPortPollForChar;
+
+/** Offset 0x0084
+**/
+  uint32_t                      SerialPortReadChar;
+
+/** Offset 0x0088
+**/
+  uint32_t                      SerialPortWriteChar;
+
+/** Offset 0x008C
 **/
   uint16_t                      UpdTerminator;
 } __attribute__((packed));

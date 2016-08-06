@@ -20,7 +20,6 @@
 #include "../chip.h"
 #include <cpu/x86/cache.h>
 #include <fsp/util.h>
-#include <soc/iomap.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/romstage.h>
@@ -161,8 +160,8 @@ void platform_fsp_memory_init_params_cb(struct FSPM_UPD *fspm_upd)
 	upd->RankMask = config->RankMask;
 	upd->RmuBaseAddress = (uintptr_t)rmu_file;
 	upd->RmuLength = rmu_file_len;
-	upd->SerialPortBaseAddress = console_log_level(BIOS_SPEW)
-		? UART_BASE_ADDRESS : 0;
+	upd->SerialPortWriteChar = console_log_level(BIOS_SPEW)
+		? (uintptr_t)fsp_write_line : 0;
 	upd->SmmTsegSize = IS_ENABLED(CONFIG_HAVE_SMI_HANDLER) ?
 		config->SmmTsegSize : 0;
 	upd->SocRdOdtVal = config->SocRdOdtVal;

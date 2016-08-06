@@ -21,7 +21,6 @@
 #include "../chip.h"
 #include <fsp/memmap.h>
 #include <fsp/util.h>
-#include <soc/iomap.h>
 #include <soc/pci_devs.h>
 #include <soc/QuarkNcSocId.h>
 #include <soc/romstage.h>
@@ -120,8 +119,8 @@ void soc_memory_init_params(struct romstage_params *params,
 	upd->RankMask = config->RankMask;
 	upd->RmuBaseAddress = (uintptr_t)rmu_file;
 	upd->RmuLength = rmu_file_len;
-	upd->SerialPortBaseAddress = console_log_level(BIOS_SPEW)
-		? UART_BASE_ADDRESS : 0;
+	upd->SerialPortWriteChar = console_log_level(BIOS_SPEW)
+		? (uintptr_t)fsp_write_line : 0;
 	upd->SmmTsegSize = IS_ENABLED(CONFIG_HAVE_SMI_HANDLER) ?
 		config->SmmTsegSize : 0;
 	upd->SocRdOdtVal = config->SocRdOdtVal;
@@ -176,9 +175,15 @@ void soc_display_memory_init_params(const MEMORY_INIT_UPD *old,
 		old->RmuBaseAddress, new->RmuBaseAddress);
 	fsp_display_upd_value("RmuLength", sizeof(old->RmuLength),
 		old->RmuLength, new->RmuLength);
-	fsp_display_upd_value("SerialPortBaseAddress",
-		sizeof(old->SerialPortBaseAddress),
-		old->SerialPortBaseAddress, new->SerialPortBaseAddress);
+	fsp_display_upd_value("SerialPortPollForChar",
+		sizeof(old->SerialPortPollForChar),
+		old->SerialPortPollForChar, new->SerialPortPollForChar);
+	fsp_display_upd_value("SerialPortReadChar",
+		sizeof(old->SerialPortReadChar),
+		old->SerialPortReadChar, new->SerialPortReadChar);
+	fsp_display_upd_value("SerialPortWriteChar",
+		sizeof(old->SerialPortWriteChar),
+		old->SerialPortWriteChar, new->SerialPortWriteChar);
 	fsp_display_upd_value("SmmTsegSize", sizeof(old->SmmTsegSize),
 		old->SmmTsegSize, new->SmmTsegSize);
 	fsp_display_upd_value("SocRdOdtVal", sizeof(old->SocRdOdtVal),

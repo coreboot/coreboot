@@ -19,6 +19,7 @@ GIT:=$(shell [ -e "$(top)/.git" ] && command -v git)
 # normalize Kconfig variables in a central place
 CONFIG_CBFS_PREFIX:=$(call strip_quotes,$(CONFIG_CBFS_PREFIX))
 CONFIG_FMDFILE:=$(call strip_quotes,$(CONFIG_FMDFILE))
+CONFIG_DEVICETREE:=$(call strip_quotes, $(CONFIG_DEVICETREE))
 
 #######################################################################
 # misleadingly named, this is the coreboot version
@@ -451,7 +452,7 @@ $(obj)/config.h: $(objutil)/kconfig/conf
 #######################################################################
 # needed objects that every mainboard uses
 # Creation of these is architecture and mainboard independent
-DEVICETREE_FILE := $(src)/mainboard/$(MAINBOARDDIR)/$(call strip_quotes, $(CONFIG_DEVICETREE))
+DEVICETREE_FILE := $(src)/mainboard/$(MAINBOARDDIR)/$(CONFIG_DEVICETREE)
 DEVICETREE_STATIC_C := $(obj)/mainboard/$(MAINBOARDDIR)/static.c
 
 $(DEVICETREE_STATIC_C): $(DEVICETREE_FILE) $(objutil)/sconfig/sconfig

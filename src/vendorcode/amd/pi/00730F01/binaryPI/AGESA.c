@@ -436,13 +436,7 @@ WaitForEcLDN9MailboxCmdAck (
   IN AMD_CONFIG_PARAMS  *StdHeader
   )
 {
-	MODULE_ENTRY Dispatcher = NULL;
-	const AMD_MODULE_HEADER* module = agesawrapper_locate_module(ModuleIdentifier);
 	StdHeader->Func = 0;
-	return;
-	if (!module) return;
-	Dispatcher = module->ModuleDispatcher;
-	Dispatcher(StdHeader);
 }
 
 /**
@@ -457,13 +451,7 @@ ImcSleep (
   IN  VOID     *FchDataPtr
   )
 {
-	MODULE_ENTRY Dispatcher = NULL;
-	const AMD_MODULE_HEADER* module = agesawrapper_locate_module(ModuleIdentifier);
 	((FCH_DATA_BLOCK*)FchDataPtr)->StdHeader->Func = 0;
-	return;
-	if (!module) return;
-	Dispatcher = module->ModuleDispatcher;
-	Dispatcher(FchDataPtr);
 }
 
 /**
@@ -478,13 +466,7 @@ SoftwareDisableImc (
   IN  VOID     *FchDataPtr
   )
 {
-	MODULE_ENTRY Dispatcher = NULL;
-	const AMD_MODULE_HEADER* module = agesawrapper_locate_module(ModuleIdentifier);
 	((FCH_DATA_BLOCK*)FchDataPtr)->StdHeader->Func = 0;
-	return;
-	if (!module) return;
-	Dispatcher = module->ModuleDispatcher;
-	Dispatcher(FchDataPtr);
 }
 
 /**
@@ -499,13 +481,7 @@ ImcEnableSurebootTimer (
   IN  VOID     *FchDataPtr
   )
 {
-	MODULE_ENTRY Dispatcher = NULL;
-	const AMD_MODULE_HEADER* module = agesawrapper_locate_module(ModuleIdentifier);
 	((FCH_DATA_BLOCK*)FchDataPtr)->StdHeader->Func = 0;
-	return;
-	if (!module) return;
-	Dispatcher = module->ModuleDispatcher;
-	Dispatcher(FchDataPtr);
 }
 
 /**
@@ -520,13 +496,7 @@ ImcDisableSurebootTimer (
   IN  VOID     *FchDataPtr
   )
 {
-	MODULE_ENTRY Dispatcher = NULL;
-	const AMD_MODULE_HEADER* module = agesawrapper_locate_module(ModuleIdentifier);
 	((FCH_DATA_BLOCK*)FchDataPtr)->StdHeader->Func = 0;
-	return;
-	if (!module) return;
-	Dispatcher = module->ModuleDispatcher;
-	Dispatcher(FchDataPtr);
 }
 
 /**
@@ -541,13 +511,7 @@ ImcWakeup (
   IN  VOID     *FchDataPtr
   )
 {
-	MODULE_ENTRY Dispatcher = NULL;
-	const AMD_MODULE_HEADER* module = agesawrapper_locate_module(ModuleIdentifier);
 	((FCH_DATA_BLOCK*)FchDataPtr)->StdHeader->Func = 0;
-	return;
-	if (!module) return;
-	Dispatcher = module->ModuleDispatcher;
-	Dispatcher(FchDataPtr);
 }
 
 /**
@@ -562,13 +526,7 @@ ImcIdle (
   IN  VOID     *FchDataPtr
   )
 {
-	MODULE_ENTRY Dispatcher = NULL;
-	const AMD_MODULE_HEADER* module = agesawrapper_locate_module(ModuleIdentifier);
 	((FCH_DATA_BLOCK*)FchDataPtr)->StdHeader->Func = 0;
-	return;
-	if (!module) return;
-	Dispatcher = module->ModuleDispatcher;
-	Dispatcher(FchDataPtr);
 }
 
 // TODO This has to be removed

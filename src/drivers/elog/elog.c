@@ -16,6 +16,7 @@
 #if CONFIG_HAVE_ACPI_RESUME == 1
 #include <arch/acpi.h>
 #endif
+#include <bootstate.h>
 #include <cbmem.h>
 #include <console/console.h>
 #if CONFIG_ARCH_X86
@@ -885,3 +886,7 @@ int elog_add_event_wake(u8 source, u32 instance)
 	};
 	return elog_add_event_raw(ELOG_TYPE_WAKE_SOURCE, &wake, sizeof(wake));
 }
+
+/* Make sure elog_init() runs at least once to log System Boot event. */
+static void elog_bs_init(void *unused) { elog_init(); }
+BOOT_STATE_INIT_ENTRY(BS_POST_DEVICE, BS_ON_ENTRY, elog_bs_init, NULL);

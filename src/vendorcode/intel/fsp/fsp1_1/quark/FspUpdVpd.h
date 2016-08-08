@@ -36,9 +36,6 @@ are permitted provided that the following conditions are met:
 #pragma pack(1)
 
 
-/** TODO - Port to fit Quark SoC.
-**/
-
 #define MAX_CHANNELS_NUM       1
 #define MAX_DIMMS_NUM          1
 

@@ -99,4 +99,13 @@ VOID * EFIAPI get_first_hob(UINT16 type);
 VOID * EFIAPI get_next_guid_hob(CONST EFI_GUID * guid, CONST VOID *hob_start);
 VOID * EFIAPI get_first_guid_hob(CONST EFI_GUID * guid);
 
+/*
+ * Writes number_of_bytes data bytes from buffer to the console.
+ * The number of bytes actually written to the console is returned.
+ *
+ * If number_of_bytes is zero, don't output any data but instead wait until
+ * the console has output all data, then return 0.
+ */
+size_t EFIAPI fsp_write_line(uint8_t *buffer, size_t number_of_bytes);
+
 #endif	/* FSP1_1_UTIL_H */

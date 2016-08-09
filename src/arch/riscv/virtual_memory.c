@@ -74,7 +74,9 @@ void init_vm(uintptr_t virtMemStart, uintptr_t physMemStart, uintptr_t pageTable
 		root_pt[(1<<RISCV_PGLEVEL_BITS)-num_middle_pts+i] = ptd_create(((uintptr_t)middle_pt >> RISCV_PGSHIFT) + i);
 
 	// fill the middle page table
-	for (uintptr_t vaddr = virtMemStart, paddr = physMemStart; paddr < memorySize; vaddr += SUPERPAGE_SIZE, paddr += SUPERPAGE_SIZE) {
+	for (uintptr_t vaddr = virtMemStart, paddr = physMemStart;
+			paddr < physMemStart + memorySize;
+			vaddr += SUPERPAGE_SIZE, paddr += SUPERPAGE_SIZE) {
 		int l2_shift = RISCV_PGLEVEL_BITS + RISCV_PGSHIFT;
 		size_t l2_idx = (virtMemStart >> l2_shift) & ((1 << RISCV_PGLEVEL_BITS)-1);
 		l2_idx += ((vaddr - virtMemStart) >> l2_shift);
@@ -95,7 +97,8 @@ void init_vm(uintptr_t virtMemStart, uintptr_t physMemStart, uintptr_t pageTable
 
 	mb();
 	root_page_table = root_pt;
-	write_csr(sptbr, root_pt);
+	uintptr_t ptbr = ((uintptr_t) root_pt) >> RISCV_PGSHIFT;
+	write_csr(sptbr, ptbr);
 }
 
 void initVirtualMemory(void) {

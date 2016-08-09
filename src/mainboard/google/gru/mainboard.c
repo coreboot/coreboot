@@ -18,10 +18,7 @@
 #include <delay.h>
 #include <device/device.h>
 #include <device/i2c.h>
-#include <ec/google/chromeec/ec.h>
-#include <elog.h>
 #include <gpio.h>
-#include <rtc.h>
 #include <soc/bl31_plat_params.h>
 #include <soc/clock.h>
 #include <soc/display.h>
@@ -168,17 +165,6 @@ static void setup_usb(void)
 	setup_usb_otg1();
 }
 
-static void setup_rtc(void)
-{
-	struct rtc_time time;
-	int ret;
-
-	/* Show the current time to see that the EC RTC is working */
-	google_chromeec_init();
-	ret = rtc_get(&time);
-	rtc_display(&time);
-}
-
 static void mainboard_init(device_t dev)
 {
 	configure_sdmmc();
@@ -188,7 +174,6 @@ static void mainboard_init(device_t dev)
 	setup_usb();
 	register_reset_to_bl31();
 	register_poweroff_to_bl31();
-	setup_rtc();
 }
 
 static void enable_backlight_booster(void)

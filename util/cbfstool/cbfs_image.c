@@ -1052,7 +1052,7 @@ static int cbfs_payload_make_elf(struct buffer *buff, uint32_t arch)
 	Elf64_Ehdr ehdr;
 	Elf64_Shdr shdr;
 	struct cbfs_payload_segment *segs = NULL;
-	struct elf_writer *ew;
+	struct elf_writer *ew = NULL;
 	struct buffer elf_out;
 	int segments = 0;
 	int retval = -1;

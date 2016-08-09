@@ -26,6 +26,7 @@
 #include <boot_device.h>
 #include <commonlib/region.h>
 #include <fmap.h>
+#include <lib.h>
 #include <rtc.h>
 #include <smbios.h>
 #include <spi-generic.h>
@@ -36,7 +37,7 @@
 #include "elog_internal.h"
 
 
-#if CONFIG_ELOG_DEBUG
+#if IS_ENABLED(CONFIG_ELOG_DEBUG)
 #define elog_debug(STR...) printk(BIOS_DEBUG, STR)
 #else
 #define elog_debug(STR...)
@@ -92,6 +93,7 @@ static struct event_header *elog_get_event_buffer(size_t offset, size_t size)
 
 static struct event_header *elog_get_next_event_buffer(size_t size)
 {
+	elog_debug("ELOG: new event at offset 0x%zx\n", mirror_last_write);
 	return elog_get_event_buffer(mirror_last_write, size);
 }
 
@@ -166,6 +168,28 @@ static void elog_tandem_increment_last_write(size_t size)
 {
 	elog_mirror_increment_last_write(size);
 	elog_nv_increment_last_write(size);
+}
+
+static void elog_debug_dump_buffer(const char *msg)
+{
+	struct region_device *rdev;
+	void *buffer;
+
+	if (!IS_ENABLED(CONFIG_ELOG_DEBUG))
+		return;
+
+	elog_debug(msg);
+
+	rdev = mirror_dev_get();
+
+	buffer = rdev_mmap_full(rdev);
+
+	if (buffer == NULL)
+		return;
+
+	hexdump(buffer, total_size);
+
+	rdev_munmap(rdev, buffer);
 }
 
 /*
@@ -363,8 +387,11 @@ static int elog_update_event_buffer_state(void)
 		/* Validate the event */
 		len = elog_is_event_valid(offset);
 
-		if (!len)
+		if (!len) {
+			printk(BIOS_ERR, "ELOG: Invalid event @ offset 0x%zx\n",
+				offset);
 			return -1;
+		}
 
 		/* Move to the next event */
 		elog_tandem_increment_last_write(len);
@@ -372,8 +399,11 @@ static int elog_update_event_buffer_state(void)
 	}
 
 	/* Ensure the remaining buffer is empty */
-	if (!elog_is_buffer_clear(offset))
+	if (!elog_is_buffer_clear(offset)) {
+		printk(BIOS_ERR, "ELOG: buffer not cleared from 0x%zx\n",
+			offset);
 		return -1;
+	}
 
 	return 0;
 }
@@ -393,15 +423,19 @@ static int elog_scan_flash(void)
 	elog_tandem_reset_last_write();
 
 	/* Check if the area is empty or not */
-	if (elog_is_buffer_clear(0))
+	if (elog_is_buffer_clear(0)) {
+		printk(BIOS_ERR, "ELOG: NV Buffer Cleared.\n");
 		return -1;
+	}
 
 	/* Indicate that header possibly written. */
 	elog_tandem_increment_last_write(elog_events_start());
 
 	/* Validate the header */
-	if (!elog_is_header_valid())
+	if (!elog_is_header_valid()) {
+		printk(BIOS_ERR, "ELOG: NV Buffer Invalid.\n");
 		return -1;
+	}
 
 	return elog_update_event_buffer_state();
 }
@@ -493,6 +527,8 @@ static size_t elog_do_shrink(size_t requested_size, size_t last_write)
 	 * actual size we're keeping.
 	 */
 	remaining_size = last_write - offset;
+	elog_debug("ELOG: shrinking offset: 0x%zx remaining_size: 0x%zx\n",
+		offset, remaining_size);
 	elog_move_events_to_front(offset, remaining_size);
 	elog_mirror_increment_last_write(remaining_size);
 
@@ -682,9 +718,12 @@ static int elog_sync_to_nv(void)
 	if (!erase_needed)
 		return 0;
 
+	elog_debug_dump_buffer("ELOG: in-memory mirror:\n");
+
 	/* Mark broken if the scan failed after a sync. */
 	if (elog_scan_flash() < 0) {
 		printk(BIOS_ERR, "ELOG: Sync back from NV storage failed.\n");
+		elog_debug_dump_buffer("ELOG: Buffer from NV:\n");
 		elog_initialized = ELOG_BROKEN;
 		return -1;
 	}
@@ -736,12 +775,9 @@ int elog_init(void)
 	elog_initialized = ELOG_INITIALIZED;
 
 	/* Load the log from flash and prepare the flash if necessary. */
-	if (elog_scan_flash() < 0) {
-		printk(BIOS_ERR, "ELOG: flash area invalid\n");
-		if (elog_prepare_empty() < 0) {
-			printk(BIOS_ERR, "ELOG: Unable to prepare flash\n");
-			return -1;
-		}
+	if (elog_scan_flash() < 0 && elog_prepare_empty() < 0) {
+		printk(BIOS_ERR, "ELOG: Unable to prepare flash\n");
+		return -1;
 	}
 
 	printk(BIOS_INFO, "ELOG: FLASH @0x%p [SPI 0x%08x]\n",

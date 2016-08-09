@@ -52,4 +52,8 @@ config DRIVERS_GENERIC_MAX98357A
 config DRIVERS_I2C_DA7219
 	default y
 
+config UART_FOR_CONSOLE
+	int
+	default 2
+
 endif # BOARD_INTEL_AMENIA

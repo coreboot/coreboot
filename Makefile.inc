@@ -647,18 +647,40 @@ endef
 # newline
 
 # cbfs-add-cmd
-# $(call cbfs-add-cmd,file in extract_nth format,non-empty if file removal requested)
+# $(call cbfs-add-cmd,
+#          file in extract_nth format,
+#          region name,
+#          non-empty if file removal requested)
 define cbfs-add-cmd
 	printf "    CBFS       $(call extract_nth,2,$(1))\n"
-	$(if $(2),-$(CBFSTOOL) $@.tmp remove -n $(call extract_nth,2,$(file)) 2>/dev/null)
-	$(eval _tmp-cbfs-add-cmd-regions=$(call regions-for-file,$(call extract_nth,2,$(1)))) \
-	$(foreach region,$(subst $(comma),$(spc),$(_tmp-cbfs-add-cmd-regions)), \
-		$(call cbfs-add-cmd-for-region,$(1),$(region)))
+	$(if $(3),-$(CBFSTOOL) $@.tmp remove -n $(call extract_nth,2,$(file)) 2>/dev/null)
+	$(call cbfs-add-cmd-for-region,$(1),$(2))
 endef
 
 cbfs-files=$(cbfs-files-fixed) $(cbfs-files-aligned) $(cbfs-files-regular)
+
+# list of files to add (using their file system names, not CBFS names),
+# for dependencies etc.
 prebuilt-files = $(foreach file,$(cbfs-files), $(call extract_nth,1,$(file)))
-prebuild-files = $(foreach file,$(cbfs-files), $(call cbfs-add-cmd,$(file),$(CONFIG_UPDATE_IMAGE)))
+
+# $(all-regions)
+# returns full list of fmap regions that we add files to
+all-regions = $(sort $(subst $(comma),$(spc), \
+	$(foreach file,$(cbfs-files), \
+		$(call regions-for-file,$(call extract_nth,2,$(file))))))
+
+# $(call all-files-in-region,region name)
+# returns elements in $(cbfs-files) that end up in that region, in the order
+# they appear in $(cbfs-files)
+all-files-in-region = $(foreach file,$(cbfs-files), \
+	$(if $(filter $(1), \
+		$(subst $(comma),$(spc),$(call regions-for-file,$(call extract_nth,2,$(file))))), \
+		$(file)))
+
+# command list to add files to CBFS
+prebuild-files = $(foreach region,$(all-regions), \
+	$(foreach file,$(call all-files-in-region,$(region)), \
+		$(call cbfs-add-cmd,$(file),$(region),$(CONFIG_UPDATE_IMAGE))))
 
 ifeq ($(CONFIG_FMDFILE),)
 # For a description of the flash layout described by these variables, check

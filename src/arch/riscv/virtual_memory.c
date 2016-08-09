@@ -42,15 +42,18 @@ size_t pte_ppn(pte_t pte)
 
 pte_t ptd_create(uintptr_t ppn)
 {
-	return (ppn << PTE_PPN_SHIFT) | PTE_V | PTE_TYPE_TABLE;
+	return (ppn << PTE_PPN_SHIFT) | PTE_V;
 }
 
 pte_t pte_create(uintptr_t ppn, int prot, int user)
 {
-	pte_t pte = (ppn << PTE_PPN_SHIFT) | PTE_V;
-	if (prot & PROT_WRITE) pte |= PTE_TYPE_URW_SRW;
-	if (prot & PROT_EXEC) pte |= PTE_TYPE_URX_SRX;
-	if (!user) pte |= PTE_TYPE_SR;
+	pte_t pte = (ppn << PTE_PPN_SHIFT) | PTE_R | PTE_V;
+	if (prot & PROT_WRITE)
+		pte |= PTE_W;
+	if (prot & PROT_EXEC)
+		pte |= PTE_X;
+	if (user)
+		pte |= PTE_U;
 	return pte;
 }
 
@@ -127,10 +130,6 @@ void mstatus_init(void)
 	// supervisor support is required
 
 	uintptr_t ms = 0;
-	ms = INSERT_FIELD(ms, MSTATUS_PRV, PRV_M);
-	ms = INSERT_FIELD(ms, MSTATUS_PRV1, PRV_S);
-	ms = INSERT_FIELD(ms, MSTATUS_PRV2, PRV_U);
-	ms = INSERT_FIELD(ms, MSTATUS_IE2, 1);
 	ms = INSERT_FIELD(ms, MSTATUS_FS, 3);
 	ms = INSERT_FIELD(ms, MSTATUS_XS, 3);
 	write_csr(mstatus, ms);

@@ -62,6 +62,19 @@ void console_tx_flush(void)
 	__usb_tx_flush();
 }
 
+void console_write_line(uint8_t *buffer, size_t number_of_bytes)
+{
+	/* Finish displaying all of the console data if requested */
+	if (number_of_bytes == 0) {
+		console_tx_flush();
+		return;
+	}
+
+	/* Output the console data */
+	while (number_of_bytes--)
+		console_tx_byte(*buffer++);
+}
+
 
 #if CONFIG_GDB_STUB && (ENV_ROMSTAGE || ENV_RAMSTAGE)
 void gdb_hw_init(void)

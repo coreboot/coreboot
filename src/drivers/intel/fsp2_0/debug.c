@@ -10,8 +10,15 @@
  */
 
 #include <console/console.h>
+#include <console/streams.h>
 #include <fsp/util.h>
 #include <soc/intel/common/util.h>
+
+asmlinkage size_t fsp_write_line(uint8_t *buffer, size_t number_of_bytes)
+{
+	console_write_line(buffer, number_of_bytes);
+	return number_of_bytes;
+}
 
 /*-----------
  * MemoryInit

@@ -30,8 +30,8 @@
 
 #include <arch/encoding.h>
 
-#define disable_irqsave() clear_csr(sstatus, SSTATUS_IE)
-#define enable_irqrestore(flags) set_csr(sstatus, (flags) & SSTATUS_IE)
+#define disable_irqsave() clear_csr(mstatus, MSTATUS_MIE)
+#define enable_irqrestore(flags) set_csr(mstatus, (flags) & MSTATUS_MIE)
 
 typedef struct { int lock; } spinlock_t;
 #define SPINLOCK_INIT {0}

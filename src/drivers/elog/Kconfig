@@ -14,9 +14,9 @@
 ##
 
 config ELOG
-	depends on SPI_FLASH
 	bool "Support for flash based event log"
 	default n
+	depends on BOOT_DEVICE_SUPPORTS_WRITES
 	help
 	  Enable support for flash based event logging.
 
@@ -39,7 +39,7 @@ config ELOG_CBMEM
 endif
 
 config ELOG_GSMI
-	depends on ELOG && SPI_FLASH_SMM && SMM_TSEG
+	depends on ELOG && SMM_TSEG
 	bool "SMI interface to write and clear event log"
 	default n
 	help

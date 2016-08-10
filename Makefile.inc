@@ -670,6 +670,26 @@ all-files-in-region = $(foreach file,$(cbfs-files), \
 		$(subst $(comma),$(spc),$(call regions-for-file,$(call extract_nth,2,$(file))))), \
 		$(file)))
 
+# $(call update-file-for-region,file string from $(cbfs-files),region name)
+# Update position and alignment according to overrides for region
+# Doesn't check for invalid configurations (eg. resetting neither or both
+# position and align)
+# Returns the updated file string
+update-file-for-region = \
+	$(subst $(spc),*,$(call extract_nth,1,$(1))|$(call extract_nth,2,$(1))|$(call extract_nth,3,$(1))|$(call extract_nth,4,$(1))|$($(call extract_nth,2,$(1))-$(2)-position)|$($(call extract_nth,2,$(1))-$(2)-align)|$(call extract_nth,7,$(1)))
+
+# $(call placed-files-in-region,region name)
+# like all-files-in-region, but updates the files to contain region overrides
+# to position or alignment.
+placed-files-in-region = $(foreach file,$(call all-files-in-region,$(1)), \
+	$(if $($(call extract_nth,2,$(file))-$(1)-position), \
+		$(if $($(call extract_nth,2,$(file))-$(1)-align), \
+			$(error It is not allowed to specify both alignment and position for $(call extract_nth,2,$(file))-$(1))) \
+		$(call update-file-for-region,$(file),$(1)), \
+		$(if $($(call extract_nth,2,$(file))-$(1)-align), \
+			$(call update-file-for-region,$(file),$(1)), \
+			$(file))))
+
 # $(call sort-files,subset of $(cbfs-files))
 # reorders the files in the given set to list files at fixed positions first,
 # followed by aligned files and finally those with no constraints.
@@ -688,7 +708,7 @@ sort-files = \
 # command list to add files to CBFS
 prebuild-files = $(foreach region,$(all-regions), \
 	$(foreach file, \
-		$(call sort-files,$(call all-files-in-region,$(region))), \
+		$(call sort-files,$(call placed-files-in-region,$(region))), \
 		$(call cbfs-add-cmd,$(file),$(region),$(CONFIG_UPDATE_IMAGE))))
 
 ifeq ($(CONFIG_FMDFILE),)

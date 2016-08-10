@@ -830,7 +830,7 @@ endif
 endif
 	mv $@.tmp $@
 	@printf "    CBFSPRINT  $(subst $(obj)/,,$(@))\n\n"
-	$(CBFSTOOL) $@ print
+	$(CBFSTOOL) $@ print -r $(subst $(spc),$(comma),$(all-regions))
 ifeq ($(CONFIG_IASL_WARNINGS_ARE_ERRORS),)
 	@printf "\n***** WARNING: IASL warnings as errors is disabled!  *****\n"
 	@printf "*****          Please fix the ASL for this platform. *****\n\n"

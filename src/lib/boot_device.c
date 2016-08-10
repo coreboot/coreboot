@@ -20,18 +20,30 @@ void __attribute__((weak)) boot_device_init(void)
 	/* Provide weak do-nothing init. */
 }
 
+static int boot_device_subregion(const struct region *sub,
+				struct region_device *subrd,
+				const struct region_device *parent)
+{
+	if (parent == NULL)
+		return -1;
+
+	return rdev_chain(subrd, parent, region_offset(sub), region_sz(sub));
+}
+
 int boot_device_ro_subregion(const struct region *sub,
 				struct region_device *subrd)
 {
-	const struct region_device *boot_dev;
-
 	/* Ensure boot device has been initialized at least once. */
 	boot_device_init();
 
-	boot_dev = boot_device_ro();
+	return boot_device_subregion(sub, subrd, boot_device_ro());
+}
 
-	if (boot_dev == NULL)
-		return -1;
+int boot_device_rw_subregion(const struct region *sub,
+				struct region_device *subrd)
+{
+	/* Ensure boot device has been initialized at least once. */
+	boot_device_init();
 
-	return rdev_chain(subrd, boot_dev, region_offset(sub), region_sz(sub));
+	return boot_device_subregion(sub, subrd, boot_device_rw());
 }

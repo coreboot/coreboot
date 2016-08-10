@@ -57,7 +57,7 @@ cbfs-files-y += fsp.bin
 fsp.bin-file := $(call strip_quotes,$(CONFIG_FSP_FILE))
 fsp.bin-type := fsp
 fsp.bin-options := --xip
-fsp.bin-COREBOOT-cbfstool-opts := -b $(CONFIG_FSP_LOC)
+fsp.bin-COREBOOT-position := $(CONFIG_FSP_LOC)
 endif
 
 endif

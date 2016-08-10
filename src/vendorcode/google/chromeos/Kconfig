@@ -21,7 +21,7 @@ menu "ChromeOS"
 config CHROMEOS
 	bool "Build for ChromeOS"
 	default n
-	select ELOG if SPI_FLASH
+	select ELOG if BOOT_DEVICE_SUPPORTS_WRITES
 	select COLLECT_TIMESTAMPS
 	select VBOOT
 	help

@@ -29,8 +29,6 @@
 #include <lib.h>
 #include <rtc.h>
 #include <smbios.h>
-#include <spi-generic.h>
-#include <spi_flash.h>
 #include <stdint.h>
 #include <string.h>
 #include <elog.h>
@@ -47,8 +45,6 @@
 /*
  * Static variables for ELOG state
  */
-static u16 total_size;
-static u32 flash_base;
 static u16 full_threshold;
 static u16 shrink_size;
 
@@ -60,7 +56,7 @@ static u16 shrink_size;
 static size_t mirror_last_write;
 static size_t nv_last_write;
 
-static struct spi_flash *elog_spi;
+static struct region_device nv_dev;
 /* Device that mirrors the eventlog in memory. */
 static struct mem_region_device mirror_dev;
 
@@ -83,7 +79,7 @@ static size_t elog_events_start(void)
 
 static size_t elog_events_total_space(void)
 {
-	return total_size - elog_events_start();
+	return region_device_sz(&nv_dev) - elog_events_start();
 }
 
 static struct event_header *elog_get_event_buffer(size_t offset, size_t size)
@@ -187,7 +183,7 @@ static void elog_debug_dump_buffer(const char *msg)
 	if (buffer == NULL)
 		return;
 
-	hexdump(buffer, total_size);
+	hexdump(buffer, region_device_sz(rdev));
 
 	rdev_munmap(rdev, buffer);
 }
@@ -318,27 +314,26 @@ static size_t elog_is_event_valid(size_t offset)
  * the flash backing store. This will not erase the flash and it assumes the
  * flash area has been erased appropriately.
  */
-static void elog_flash_write(size_t offset, size_t size)
+static void elog_nv_write(size_t offset, size_t size)
 {
 	void *address;
 	const struct region_device *rdev = mirror_dev_get();
 
-	if (!size || !elog_spi)
+	if (!size)
 		return;
 
 	address = rdev_mmap(rdev, offset, size);
 
-	/* Ensure offset is absolute. */
-	offset += flash_base;
-
-	elog_debug("elog_flash_write(address=0x%p offset=0x%08x size=%u)\n",
+	elog_debug("%s(address=0x%p offset=0x%08x size=%u)\n", __func__,
 		   address, offset, size);
 
 	if (address == NULL)
 		return;
 
 	/* Write the data to flash */
-	elog_spi->write(elog_spi, offset, size, address);
+	if (rdev_writeat(&nv_dev, address, offset, size) != size)
+		printk(BIOS_ERR, "ELOG: NV Write failed at 0x%zx, size 0x%zx\n",
+			offset, size);
 
 	rdev_munmap(rdev, address);
 }
@@ -347,16 +342,14 @@ static void elog_flash_write(size_t offset, size_t size)
  * Erase the first block specified in the address.
  * Only handles flash area within a single flash block.
  */
-static void elog_flash_erase(void)
+static void elog_nv_erase(void)
 {
-	if (!elog_spi)
-		return;
-
-	elog_debug("elog_flash_erase(offset=0x%08x size=%u)\n",
-		   flash_base, total_size);
+	size_t size = region_device_sz(&nv_dev);
+	elog_debug("%s()\n", __func__);
 
 	/* Erase the sectors in this region */
-	elog_spi->erase(elog_spi, flash_base, total_size);
+	if (rdev_eraseat(&nv_dev, 0, size) != size)
+		printk(BIOS_ERR, "ELOG: erase failure.\n");
 }
 
 /*
@@ -413,10 +406,15 @@ static int elog_scan_flash(void)
 	elog_debug("elog_scan_flash()\n");
 	void *mirror_buffer;
 	const struct region_device *rdev = mirror_dev_get();
+	size_t size = region_device_sz(&nv_dev);
 
 	/* Fill memory buffer by reading from SPI */
 	mirror_buffer = rdev_mmap_full(rdev);
-	elog_spi->read(elog_spi, flash_base, total_size, mirror_buffer);
+	if (rdev_readat(&nv_dev, mirror_buffer, 0, size) != size) {
+		rdev_munmap(rdev, mirror_buffer);
+		printk(BIOS_ERR, "ELOG: NV read failure.\n");
+		return -1;
+	}
 	rdev_munmap(rdev, mirror_buffer);
 
 	/* No writes have been done yet. */
@@ -590,10 +588,12 @@ static inline u8 *elog_flash_offset_to_address(void)
 	if (!IS_ENABLED(CONFIG_BOOT_DEVICE_MEMORY_MAPPED))
 		return NULL;
 
-	if (!elog_spi)
+	if (!region_device_sz(&nv_dev))
 		return NULL;
 
-	return rdev_mmap(boot_device_ro(), flash_base, total_size);
+	/* Get a view into the read-only boot device. */
+	return rdev_mmap(boot_device_ro(), region_device_offset(&nv_dev),
+			region_device_sz(&nv_dev));
 }
 
 /*
@@ -605,12 +605,13 @@ int elog_smbios_write_type15(unsigned long *current, int handle)
 	struct smbios_type15 *t = (struct smbios_type15 *)*current;
 	int len = sizeof(struct smbios_type15);
 	uintptr_t log_address;
+	size_t elog_size = region_device_sz(&nv_dev);
 
 	if (IS_ENABLED(CONFIG_ELOG_CBMEM)) {
 		/* Save event log buffer into CBMEM for the OS to read */
-		void *cbmem = cbmem_add(CBMEM_ID_ELOG, total_size);
+		void *cbmem = cbmem_add(CBMEM_ID_ELOG, elog_size);
 		if (cbmem)
-			rdev_readat(mirror_dev_get(), cbmem, 0, total_size);
+			rdev_readat(mirror_dev_get(), cbmem, 0, elog_size);
 		log_address = (uintptr_t)cbmem;
 	} else {
 		log_address = (uintptr_t)elog_flash_offset_to_address();
@@ -625,7 +626,7 @@ int elog_smbios_write_type15(unsigned long *current, int handle)
 	t->type = SMBIOS_EVENT_LOG;
 	t->length = len - 2;
 	t->handle = handle;
-	t->area_length = total_size - 1;
+	t->area_length = elog_size - 1;
 	t->header_offset = 0;
 	t->data_offset = sizeof(struct elog_header);
 	t->access_method = SMBIOS_EVENTLOG_ACCESS_METHOD_MMIO32;
@@ -656,26 +657,30 @@ int elog_clear(void)
 
 static int elog_find_flash(void)
 {
-	struct region r;
+	size_t total_size;
 	size_t reserved_space = ELOG_MIN_AVAILABLE_ENTRIES * MAX_EVENT_SIZE;
+	struct region_device *rdev = &nv_dev;
 
-	elog_debug("elog_find_flash()\n");
+	elog_debug("%s()\n", __func__);
 
 	/* Find the ELOG base and size in FMAP */
-	if (fmap_locate_area("RW_ELOG", &r) < 0) {
+	if (fmap_locate_area_as_rdev_rw("RW_ELOG", rdev) < 0) {
 		printk(BIOS_WARNING, "ELOG: Unable to find RW_ELOG in FMAP\n");
 		return -1;
 	}
 
-	if (region_sz(&r) < 4*KiB) {
+	if (region_device_sz(rdev) < 4*KiB) {
 		printk(BIOS_WARNING, "ELOG: Needs a minium size of 4KiB: %zu\n",
-			region_sz(&r));
+			region_device_sz(rdev));
 		return -1;
 	}
 
-	flash_base = region_offset(&r);
+	printk(BIOS_INFO, "ELOG: NV offset 0x%zx size 0x%zx\n",
+		region_device_offset(rdev), region_device_sz(rdev));
+
 	/* Keep 4KiB max size until large malloc()s have been fixed. */
-	total_size = MIN(4*KiB, region_sz(&r));
+	total_size = MIN(4*KiB, region_device_sz(rdev));
+	rdev_chain(rdev, rdev, 0, total_size);
 
 	full_threshold = total_size - reserved_space;
 	shrink_size = total_size * ELOG_SHRINK_PERCENTAGE / 100;
@@ -702,13 +707,13 @@ static int elog_sync_to_nv(void)
 
 	/* Erase if necessary. */
 	if (erase_needed) {
-		elog_flash_erase();
+		elog_nv_erase();
 		elog_nv_reset_last_write();
 	}
 
 	size = elog_nv_region_to_update(&offset);
 
-	elog_flash_write(offset, size);
+	elog_nv_write(offset, size);
 	elog_nv_increment_last_write(size);
 
 	/*
@@ -737,6 +742,7 @@ static int elog_sync_to_nv(void)
 int elog_init(void)
 {
 	void *mirror_buffer;
+	size_t elog_size;
 
 	switch (elog_initialized) {
 	case ELOG_UNINITIALIZED:
@@ -750,23 +756,17 @@ int elog_init(void)
 
 	elog_debug("elog_init()\n");
 
-	/* Probe SPI chip. SPI controller must already be initialized. */
-	elog_spi = spi_flash_probe(CONFIG_BOOT_DEVICE_SPI_FLASH_BUS, 0);
-	if (!elog_spi) {
-		printk(BIOS_ERR, "ELOG: Unable to find SPI flash\n");
-		return -1;
-	}
-
 	/* Set up the backing store */
 	if (elog_find_flash() < 0)
 		return -1;
 
-	mirror_buffer = malloc(total_size);
+	elog_size = region_device_sz(&nv_dev);
+	mirror_buffer = malloc(elog_size);
 	if (!mirror_buffer) {
 		printk(BIOS_ERR, "ELOG: Unable to allocate backing store\n");
 		return -1;
 	}
-	mem_region_device_rw_init(&mirror_dev, mirror_buffer, total_size);
+	mem_region_device_rw_init(&mirror_dev, mirror_buffer, elog_size);
 
 	/*
 	 * Mark as initialized to allow elog_init() to be called and deemed
@@ -780,11 +780,9 @@ int elog_init(void)
 		return -1;
 	}
 
-	printk(BIOS_INFO, "ELOG: FLASH @0x%p [SPI 0x%08x]\n",
-	       mirror_buffer, flash_base);
-
-	printk(BIOS_INFO, "ELOG: area is %d bytes, full threshold %d,"
-	       " shrink size %d\n", total_size, full_threshold, shrink_size);
+	printk(BIOS_INFO, "ELOG: area is %zu bytes, full threshold %d,"
+	       " shrink size %d\n", region_device_sz(&nv_dev),
+		full_threshold, shrink_size);
 
 #if !defined(__SMM__)
 	/* Log boot count event except in S3 resume */

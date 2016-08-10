@@ -298,17 +298,12 @@ cbfs-files-handler= \
 				$(info ERROR: It is not allowed to specify both alignment and position for $($(2)-file)) \
 				$(eval FAILBUILD:=1) \
 			)) \
-		$(eval _cbfs-bucket:=regular ) \
-		$(if $(strip $($(2)-position)), \
-			$(eval _cbfs-bucket:=fixed)) \
-		$(if $(strip $($(2)-align)), \
-			$(eval _cbfs-bucket:=aligned)) \
 		$(if $(tmp-cbfs-method), \
 			$(eval tmp-old-cbfs-file:=$(tmp-cbfs-file)) \
 			$(eval tmp-cbfs-file:=$(shell mkdir -p $(obj)/mainboard/$(MAINBOARDDIR); mktemp $(obj)/mainboard/$(MAINBOARDDIR)/cbfs-file.XXXXXX).out) \
 			$(call cbfs-files-processor-$(tmp-cbfs-method),$(tmp-old-cbfs-file),$(tmp-cbfs-file))) \
 		$(if $(tmp-cbfs-file), \
-			$(eval cbfs-files-$(_cbfs-bucket) += $(subst $(spc),*,$(tmp-cbfs-file)|$(2)|$($(2)-type)|$($(2)-compression)|$(strip $($(2)-position))|$($(2)-align)|$($(2)-options)))) \
+			$(eval cbfs-files += $(subst $(spc),*,$(tmp-cbfs-file)|$(2)|$($(2)-type)|$($(2)-compression)|$(strip $($(2)-position))|$($(2)-align)|$($(2)-options)))) \
 		$(eval $(2)-name:=) \
 		$(eval $(2)-type:=) \
 		$(eval $(2)-compression:=) \
@@ -656,8 +651,6 @@ define cbfs-add-cmd
 	$(if $(3),-$(CBFSTOOL) $@.tmp remove -n $(call extract_nth,2,$(file)) 2>/dev/null)
 	$(call cbfs-add-cmd-for-region,$(1),$(2))
 endef
-
-cbfs-files=$(cbfs-files-fixed) $(cbfs-files-aligned) $(cbfs-files-regular)
 
 # list of files to add (using their file system names, not CBFS names),
 # for dependencies etc.

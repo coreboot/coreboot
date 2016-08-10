@@ -74,6 +74,9 @@ void *rdev_mmap(const struct region_device *rd, size_t offset, size_t size)
 
 	rdev = rdev_root(rd);
 
+	if (rdev->ops->mmap == NULL)
+		return NULL;
+
 	return rdev->ops->mmap(rdev, req.offset, req.size);
 }
 
@@ -82,6 +85,9 @@ int rdev_munmap(const struct region_device *rd, void *mapping)
 	const struct region_device *rdev;
 
 	rdev = rdev_root(rd);
+
+	if (rdev->ops->munmap == NULL)
+		return -1;
 
 	return rdev->ops->munmap(rdev, mapping);
 }

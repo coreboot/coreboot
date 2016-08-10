@@ -18,14 +18,30 @@
 
 #include <commonlib/region.h>
 
+/*
+ * Please note that the read-only boot device may not be coherent with
+ * the read-write boot device. Thus, mixing mmap() and writeat() is
+ * most likely not to work so don't rely on such semantics.
+ */
+
 /* Return the region_device for the read-only boot device. */
 const struct region_device *boot_device_ro(void);
+
+/* Return the region_device for the read-write boot device. */
+const struct region_device *boot_device_rw(void);
 
 /*
  * Create a sub-region of the read-only boot device.
  * Returns 0 on success, < 0 on error.
  */
 int boot_device_ro_subregion(const struct region *sub,
+				struct region_device *subrd);
+
+/*
+ * Create a sub-region of the read-write boot device.
+ * Returns 0 on success, < 0 on error.
+ */
+int boot_device_rw_subregion(const struct region *sub,
 				struct region_device *subrd);
 
 /*

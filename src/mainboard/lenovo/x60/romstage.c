@@ -244,6 +244,11 @@ void mainboard_romstage_entry(unsigned long bist)
 	/* Set up the console */
 	console_init();
 
+	if (dock_present())
+		printk(BIOS_DEBUG, "Dock is present\n");
+	else
+		printk(BIOS_DEBUG, "Dock is not present\n");
+
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
 

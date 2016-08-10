@@ -397,6 +397,9 @@ void platform_fsp_silicon_init_params_cb(struct FSPS_UPD *silupd)
 
 	/* Disable setting of EISS bit in FSP. */
 	silconfig->SpiEiss = 0;
+
+	/* Disable FSP from locking access to the RTC NVRAM */
+	silconfig->RtcLock = 0;
 }
 
 struct chip_operations soc_intel_apollolake_ops = {

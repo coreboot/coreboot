@@ -677,9 +677,25 @@ all-files-in-region = $(foreach file,$(cbfs-files), \
 		$(subst $(comma),$(spc),$(call regions-for-file,$(call extract_nth,2,$(file))))), \
 		$(file)))
 
+# $(call sort-files,subset of $(cbfs-files))
+# reorders the files in the given set to list files at fixed positions first,
+# followed by aligned files and finally those with no constraints.
+sort-files = \
+	$(eval _tmp_fixed:=) \
+	$(eval _tmp_aligned:=) \
+	$(eval _tmp_regular:=) \
+	$(foreach file,$(1), \
+		$(if $(call extract_nth,5,$(file)),\
+			$(eval _tmp_fixed += $(file)), \
+		$(if $(call extract_nth,6,$(file)), \
+			$(eval _tmp_aligned += $(file)), \
+			$(eval _tmp_regular += $(file))))) \
+	$(_tmp_fixed) $(_tmp_aligned) $(_tmp_regular)
+
 # command list to add files to CBFS
 prebuild-files = $(foreach region,$(all-regions), \
-	$(foreach file,$(call all-files-in-region,$(region)), \
+	$(foreach file, \
+		$(call sort-files,$(call all-files-in-region,$(region))), \
 		$(call cbfs-add-cmd,$(file),$(region),$(CONFIG_UPDATE_IMAGE))))
 
 ifeq ($(CONFIG_FMDFILE),)

@@ -227,4 +227,8 @@ config NHLT_DA7219
 	help
 	  Include DSP firmware settings for headset codec.
 
+config SPI_FLASH_INCLUDE_ALL_DRIVERS
+	bool
+	default n
+
 endif

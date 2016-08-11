@@ -751,7 +751,7 @@ int elog_init(void)
 	elog_debug("elog_init()\n");
 
 	/* Probe SPI chip. SPI controller must already be initialized. */
-	elog_spi = spi_flash_probe(CONFIG_BOOT_MEDIA_SPI_BUS, 0);
+	elog_spi = spi_flash_probe(CONFIG_BOOT_DEVICE_SPI_FLASH_BUS, 0);
 	if (!elog_spi) {
 		printk(BIOS_ERR, "ELOG: Unable to find SPI flash\n");
 		return -1;

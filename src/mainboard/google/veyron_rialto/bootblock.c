@@ -68,7 +68,7 @@ void bootblock_mainboard_init(void)
 	/* spi2 for firmware ROM */
 	write32(&rk3288_grf->iomux_spi2csclk, IOMUX_SPI2_CSCLK);
 	write32(&rk3288_grf->iomux_spi2txrx, IOMUX_SPI2_TXRX);
-	rockchip_spi_init(CONFIG_BOOT_MEDIA_SPI_BUS, 24750*KHz);
+	rockchip_spi_init(CONFIG_BOOT_DEVICE_SPI_FLASH_BUS, 24750*KHz);
 
 	setup_chromeos_gpios();
 }

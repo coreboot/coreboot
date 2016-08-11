@@ -60,7 +60,7 @@ config FOSTER_BCT_CFG_EMMC
 
 endchoice
 
-config BOOT_MEDIA_SPI_BUS
+config BOOT_DEVICE_SPI_FLASH_BUS
 	int "SPI bus with boot media ROM"
 	range 1 7
 	depends on FOSTER_BCT_CFG_SPI

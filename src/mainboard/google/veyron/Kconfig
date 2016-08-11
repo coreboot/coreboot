@@ -60,7 +60,7 @@ config EC_GOOGLE_CHROMEEC_SPI_WAKEUP_DELAY_US
 	int
 	default 100
 
-config BOOT_MEDIA_SPI_BUS
+config BOOT_DEVICE_SPI_FLASH_BUS
 	int
 	default 2
 

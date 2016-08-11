@@ -41,7 +41,7 @@ config MAINBOARD_VENDOR
 	string
 	default "Google"
 
-config BOOT_MEDIA_SPI_BUS
+config BOOT_DEVICE_SPI_FLASH_BUS
 	int
 	default 2
 

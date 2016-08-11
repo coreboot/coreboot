@@ -60,7 +60,7 @@ config DRIVER_TPM_I2C_ADDR
 	hex
 	default 0x20
 
-config BOOT_MEDIA_SPI_BUS
+config BOOT_DEVICE_SPI_FLASH_BUS
 	int
 	default 9
 

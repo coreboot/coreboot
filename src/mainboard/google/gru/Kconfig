@@ -67,7 +67,7 @@ config EC_GOOGLE_CHROMEEC_SPI_BUS
 	hex
 	default 5
 
-config BOOT_MEDIA_SPI_BUS
+config BOOT_DEVICE_SPI_FLASH_BUS
 	int
 	default 1
 

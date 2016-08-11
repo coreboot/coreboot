@@ -14,10 +14,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select SYSTEM_TYPE_LAPTOP
 	select TPM_ON_FAST_SPI
 
-config BOOT_MEDIA_SPI_BUS
-	int
-	default 0
-
 config CHROMEOS
 	select LID_SWITCH
 

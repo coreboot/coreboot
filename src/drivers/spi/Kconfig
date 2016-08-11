@@ -23,6 +23,13 @@ config SPI_FLASH
 
 if SPI_FLASH
 
+# Keep at 0 because lots of boards assume this default.
+config BOOT_DEVICE_SPI_FLASH_BUS
+	int
+	default 0
+	help
+	  Which SPI bus the boot device is connected to.
+
 config SPI_FLASH_INCLUDE_ALL_DRIVERS
 	bool
 	default n if COMMON_CBFS_SPI_WRAPPER

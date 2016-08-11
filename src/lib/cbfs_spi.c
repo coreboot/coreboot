@@ -59,7 +59,7 @@ ROMSTAGE_CBMEM_INIT_HOOK(switch_to_postram_cache);
 
 void boot_device_init(void)
 {
-	int bus = CONFIG_BOOT_MEDIA_SPI_BUS;
+	int bus = CONFIG_BOOT_DEVICE_SPI_FLASH_BUS;
 	int cs = 0;
 
 	if (spi_flash_info != NULL)

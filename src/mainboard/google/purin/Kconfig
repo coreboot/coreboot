@@ -43,10 +43,6 @@ config MAINBOARD_VENDOR
 	string
 	default "Google"
 
-config BOOT_MEDIA_SPI_BUS
-	int
-	default 0
-
 config DRAM_SIZE_MB
 	int
 	default 256

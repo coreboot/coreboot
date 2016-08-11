@@ -52,7 +52,7 @@ config CONSOLE_SERIAL_UART_ADDRESS
 	depends on DRIVERS_UART
 	default 0xB8101500
 
-config BOOT_MEDIA_SPI_BUS
+config BOOT_DEVICE_SPI_FLASH_BUS
 	int
 	default 1
 

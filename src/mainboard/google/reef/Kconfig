@@ -12,10 +12,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select MAINBOARD_HAS_LPC_TPM
 	select SYSTEM_TYPE_LAPTOP
 
-config BOOT_MEDIA_SPI_BUS
-	int
-	default 0
-
 config CHROMEOS
 	select LID_SWITCH
 

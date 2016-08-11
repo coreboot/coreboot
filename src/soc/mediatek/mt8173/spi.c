@@ -170,7 +170,7 @@ struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs)
 		assert(read32(&eslave->regs->spi_cfg0_reg) != 0);
 		spi_sw_reset(eslave->regs);
 		return &eslave->slave;
-	case CONFIG_BOOT_MEDIA_SPI_BUS:
+	case CONFIG_BOOT_DEVICE_SPI_FLASH_BUS:
 		slave.bus = bus;
 		slave.cs = cs;
 		slave.force_programmer_specific = 1;

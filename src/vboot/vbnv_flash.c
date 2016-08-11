@@ -136,7 +136,8 @@ static int vbnv_flash_probe(void)
 	struct vbnv_flash_ctx *ctx = car_get_var_ptr(&vbnv_flash);
 
 	if (!ctx->flash) {
-		ctx->flash = spi_flash_probe(CONFIG_BOOT_MEDIA_SPI_BUS, 0);
+		ctx->flash =
+			spi_flash_probe(CONFIG_BOOT_DEVICE_SPI_FLASH_BUS, 0);
 		if (!ctx->flash) {
 			printk(BIOS_ERR, "failed to probe spi flash\n");
 			return 1;

@@ -71,14 +71,6 @@ config BOOT_MEDIA_SPI_BUS
 	help
 	  Which SPI bus the boot media is connected to.
 
-config BOOT_MEDIA_SPI_CHIP_SELECT
-	int "Chip select for SPI boot media"
-	range 0 3
-	depends on NYAN_BIG_BCT_CFG_SPI
-	default 0
-	help
-	  Which chip select to use for boot media.
-
 config EC_GOOGLE_CHROMEEC_SPI_BUS
 	hex
 	default 1

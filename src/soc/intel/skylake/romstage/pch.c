@@ -94,7 +94,7 @@ static void pch_device_init(void)
 	pci_write_config32(dev, ACTL, reg32);
 
 	/* TCO timer halt */
-	tcobase = pmc_tco_regs();
+	tcobase = smbus_tco_regs();
 	tcocnt = inw(tcobase + TCO1_CNT);
 	tcocnt |= TCO_TMR_HLT;
 	outw(tcocnt, tcobase + TCO1_CNT);

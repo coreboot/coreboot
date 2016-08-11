@@ -106,7 +106,7 @@ static void pch_finalize_script(void)
 	write32(spibar + SPIBAR_HSFS, hsfs);
 
 	/*TCO Lock down */
-	tcobase = pmc_tco_regs();
+	tcobase = smbus_tco_regs();
 	tcocnt = inw(tcobase + TCO1_CNT);
 	tcocnt |= TCO_LOCK;
 	outw(tcocnt, tcobase + TCO1_CNT);

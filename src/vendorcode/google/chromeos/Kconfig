@@ -28,7 +28,6 @@ config CHROMEOS
 	select ELOG if SPI_FLASH
 	select COLLECT_TIMESTAMPS
 	select VBOOT
-	select MULTIPLE_CBFS_INSTANCES
 	help
 	  Enable ChromeOS specific features like the GPIO sub table in
 	  the coreboot table. NOTE: Enabling this option on an unsupported

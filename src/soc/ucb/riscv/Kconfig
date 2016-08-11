@@ -4,6 +4,7 @@ config SOC_UCB_RISCV
 	select ARCH_VERSTAGE_RISCV
 	select ARCH_ROMSTAGE_RISCV
 	select ARCH_RAMSTAGE_RISCV
+	select BOOTBLOCK_CONSOLE
 	bool
 	default n
 

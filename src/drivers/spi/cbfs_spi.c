@@ -34,10 +34,29 @@ static ssize_t spi_readat(const struct region_device *rd, void *b,
 	return size;
 }
 
+static ssize_t spi_writeat(const struct region_device *rd, const void *b,
+				size_t offset, size_t size)
+{
+	if (spi_flash_info->write(spi_flash_info, offset, size, b))
+		return -1;
+	return size;
+}
+
+static ssize_t spi_eraseat(const struct region_device *rd,
+				size_t offset, size_t size)
+{
+	if (spi_flash_info->erase(spi_flash_info, offset, size))
+		return -1;
+	return size;
+}
+
+/* Provide all operations on the same device. */
 static const struct region_device_ops spi_ops = {
 	.mmap = mmap_helper_rdev_mmap,
 	.munmap = mmap_helper_rdev_munmap,
 	.readat = spi_readat,
+	.writeat = spi_writeat,
+	.eraseat = spi_eraseat,
 };
 
 static struct mmap_helper_region_device mdev =
@@ -77,4 +96,10 @@ const struct region_device *boot_device_ro(void)
 		return NULL;
 
 	return &mdev.rdev;
+}
+
+/* The read-only and read-write implementations are symmetric. */
+const struct region_device *boot_device_rw(void)
+{
+	return boot_device_ro();
 }

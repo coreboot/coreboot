@@ -20,10 +20,10 @@
 #include <device/pci_ids.h>
 #include <device/pci_def.h>
 #include <reg_script.h>
+#include <soc/bootblock.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
 #include <soc/smbus.h>
-#include <soc/romstage.h>
 
 static const struct reg_script smbus_init_script[] = {
 	/* Set SMBUS I/O base address */
@@ -45,7 +45,3 @@ void enable_smbus(void)
 	reg_script_run_on_dev(PCH_DEV_SMBUS, smbus_init_script);
 }
 
-int smbus_read_byte(unsigned device, unsigned address)
-{
-	return do_smbus_read_byte(SMBUS_BASE_ADDRESS, device, address);
-}

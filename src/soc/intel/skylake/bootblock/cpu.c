@@ -17,9 +17,11 @@
 #include <stdint.h>
 #include <delay.h>
 #include <arch/io.h>
+#include <console/console.h>
 #include <cpu/intel/microcode/microcode.c>
 #include <reset.h>
 #include <soc/bootblock.h>
+#include <soc/cpu.h>
 #include <soc/iomap.h>
 #include <soc/msr.h>
 #include <soc/pci_devs.h>
@@ -104,4 +106,28 @@ void bootblock_cpu_init(void)
 	/* Set flex ratio and reset if needed */
 	set_flex_ratio_to_tdp_nominal();
 	intel_update_microcode_from_cbfs();
+}
+
+void set_max_freq(void)
+{
+	msr_t msr, perf_ctl, platform_info;
+
+	/* Check for configurable TDP option */
+	platform_info = rdmsr(MSR_PLATFORM_INFO);
+
+	if ((platform_info.hi >> 1) & 3) {
+		/* Set to nominal TDP ratio */
+		msr = rdmsr(MSR_CONFIG_TDP_NOMINAL);
+		perf_ctl.lo = (msr.lo & 0xff) << 8;
+	} else {
+		/* Platform Info bits 15:8 give max ratio */
+		msr = rdmsr(MSR_PLATFORM_INFO);
+		perf_ctl.lo = msr.lo & 0xff00;
+	}
+
+	perf_ctl.hi = 0;
+	wrmsr(IA32_PERF_CTL, perf_ctl);
+
+	printk(BIOS_DEBUG, "CPU: frequency set to %d MHz\n",
+		((perf_ctl.lo >> 8) & 0xff) * CPU_BCLK);
 }

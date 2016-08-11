@@ -19,10 +19,10 @@
 #include <console/console.h>
 #include <cpu/x86/msr.h>
 #include <device/pci.h>
+#include <soc/bootblock.h>
 #include <soc/cpu.h>
 #include <soc/pch.h>
 #include <soc/pci_devs.h>
-#include <soc/romstage.h>
 #include <soc/systemagent.h>
 #include <string.h>
 

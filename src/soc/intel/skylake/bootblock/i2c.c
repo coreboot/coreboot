@@ -21,7 +21,7 @@
 #include <soc/intel/common/lpss_i2c.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
-#include <soc/romstage.h>
+#include <soc/bootblock.h>
 #include <soc/serialio.h>
 #include "chip.h"
 

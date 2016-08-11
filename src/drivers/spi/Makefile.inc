@@ -7,9 +7,11 @@ ramstage-y += spiconsole.c
 smm-$(CONFIG_DEBUG_SMI) += spiconsole.c
 endif
 
-ifeq ($(CONFIG_COMMON_CBFS_SPI_WRAPPER),y)
 bootblock-$(CONFIG_COMMON_CBFS_SPI_WRAPPER) += cbfs_spi.c
-bootblock-y += spi_flash.c
+bootblock-$(CONFIG_SPI_FLASH) += spi_flash.c
+bootblock-$(CONFIG_SPI_FLASH_ADESTO) += adesto.c
+bootblock-$(CONFIG_SPI_FLASH_AMIC) += amic.c
+bootblock-$(CONFIG_SPI_FLASH_ATMEL) += atmel.c
 bootblock-$(CONFIG_SPI_FLASH_EON) += eon.c
 bootblock-$(CONFIG_SPI_FLASH_GIGADEVICE) += gigadevice.c
 bootblock-$(CONFIG_SPI_FLASH_MACRONIX) += macronix.c
@@ -21,6 +23,9 @@ bootblock-$(CONFIG_SPI_FRAM_RAMTRON) += ramtron.c
 
 romstage-$(CONFIG_COMMON_CBFS_SPI_WRAPPER) += cbfs_spi.c
 romstage-$(CONFIG_SPI_FLASH) += spi_flash.c
+romstage-$(CONFIG_SPI_FLASH_ADESTO) += adesto.c
+romstage-$(CONFIG_SPI_FLASH_AMIC) += amic.c
+romstage-$(CONFIG_SPI_FLASH_ATMEL) += atmel.c
 romstage-$(CONFIG_SPI_FLASH_EON) += eon.c
 romstage-$(CONFIG_SPI_FLASH_GIGADEVICE) += gigadevice.c
 romstage-$(CONFIG_SPI_FLASH_MACRONIX) += macronix.c
@@ -32,6 +37,9 @@ romstage-$(CONFIG_SPI_FRAM_RAMTRON) += ramtron.c
 
 verstage-$(CONFIG_COMMON_CBFS_SPI_WRAPPER) += cbfs_spi.c
 verstage-$(CONFIG_SPI_FLASH) += spi_flash.c
+verstage-$(CONFIG_SPI_FLASH_ADESTO) += adesto.c
+verstage-$(CONFIG_SPI_FLASH_AMIC) += amic.c
+verstage-$(CONFIG_SPI_FLASH_ATMEL) += atmel.c
 verstage-$(CONFIG_SPI_FLASH_EON) += eon.c
 verstage-$(CONFIG_SPI_FLASH_GIGADEVICE) += gigadevice.c
 verstage-$(CONFIG_SPI_FLASH_MACRONIX) += macronix.c
@@ -41,12 +49,8 @@ verstage-$(CONFIG_SPI_FLASH_STMICRO) += stmicro.c
 verstage-$(CONFIG_SPI_FLASH_WINBOND) += winbond.c
 verstage-$(CONFIG_SPI_FRAM_RAMTRON) += ramtron.c
 
-endif
-
 ramstage-$(CONFIG_COMMON_CBFS_SPI_WRAPPER) += cbfs_spi.c
 ramstage-$(CONFIG_SPI_FLASH) += spi_flash.c
-
-# drivers
 ramstage-$(CONFIG_SPI_FLASH_ADESTO) += adesto.c
 ramstage-$(CONFIG_SPI_FLASH_AMIC) += amic.c
 ramstage-$(CONFIG_SPI_FLASH_ATMEL) += atmel.c

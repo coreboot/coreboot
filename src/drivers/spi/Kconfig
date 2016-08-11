@@ -39,6 +39,23 @@ config BOOT_DEVICE_SPI_FLASH_BUS
 	help
 	  Which SPI bus the boot device is connected to.
 
+config BOOT_DEVICE_SPI_FLASH_RW_NOMMAP
+	bool
+	default y if !COMMON_CBFS_SPI_WRAPPER
+	default n
+	depends on BOOT_DEVICE_SPI_FLASH
+	help
+	  Provide common implementation of the RW boot device that
+	  doesn't provide mmap() operations.
+
+config BOOT_DEVICE_SPI_FLASH_RW_NOMMAP_EARLY
+	bool
+	default n
+	depends on BOOT_DEVICE_SPI_FLASH_RW_NOMMAP
+	help
+	  Include the common implementation in all stages, including the
+	  early ones.
+
 config SPI_FLASH_INCLUDE_ALL_DRIVERS
 	bool
 	default n if COMMON_CBFS_SPI_WRAPPER

@@ -13,6 +13,7 @@
  */
 
 /* This file is derived from the flashrom project. */
+#include <arch/early_variables.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
@@ -341,15 +342,17 @@ int pch_hwseq_read_status(struct spi_flash *flash, u8 *reg)
 	return 0;
 }
 
+static struct spi_slave boot_spi CAR_GLOBAL;
+static struct spi_flash boot_flash CAR_GLOBAL;
+
 static struct spi_flash *spi_flash_hwseq_probe(struct spi_slave *spi)
 {
 	struct spi_flash *flash;
 
-	flash = malloc(sizeof(*flash));
-	if (!flash) {
-		printk(BIOS_WARNING, "SF: Failed to allocate memory\n");
-		return NULL;
-	}
+	flash = car_get_var_ptr(&boot_flash);
+
+	/* Ensure writes can take place to the flash. */
+	spi_init();
 
 	flash->spi = spi;
 	flash->name = "Opaque HW-sequencing";
@@ -369,14 +372,11 @@ static struct spi_flash *spi_flash_hwseq_probe(struct spi_slave *spi)
 
 struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs)
 {
-	struct spi_slave *slave = malloc(sizeof(*slave));
-
-	if (!slave) {
-		printk(BIOS_DEBUG, "PCH SPI: Bad allocation\n");
+	/* This is special hardware. We expect bus 0 and CS line 0 here. */
+	if ((bus != 0) || (cs != 0))
 		return NULL;
-	}
 
-	memset(slave, 0, sizeof(*slave));
+	struct spi_slave *slave = car_get_var_ptr(&boot_spi);
 
 	slave->bus = bus;
 	slave->cs = cs;

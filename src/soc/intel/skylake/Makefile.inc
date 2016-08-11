@@ -17,6 +17,7 @@ bootblock-y += bootblock/pch.c
 bootblock-y += bootblock/report_platform.c
 bootblock-y += bootblock/smbus.c
 bootblock-y += bootblock/systemagent.c
+bootblock-y += flash_controller.c
 bootblock-$(CONFIG_UART_DEBUG) += bootblock/uart.c
 bootblock-$(CONFIG_UART_DEBUG) += uart_debug.c
 bootblock-y += gpio.c
@@ -26,6 +27,8 @@ bootblock-y += pcr.c
 bootblock-y += pmutil.c
 bootblock-y += tsc_freq.c
 
+verstage-y += flash_controller.c
+verstage-y += pch.c
 verstage-$(CONFIG_UART_DEBUG) += uart_debug.c
 
 romstage-y += flash_controller.c

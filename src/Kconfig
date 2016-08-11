@@ -471,6 +471,18 @@ endmenu
 
 source "src/acpi/Kconfig"
 
+# This option is for the current boards/chipsets where SPI flash
+# is not the boot device. Currently nearly all boards/chipsets assume
+# SPI flash is the boot device.
+config BOOT_DEVICE_NOT_SPI_FLASH
+	bool
+	default n
+
+config BOOT_DEVICE_SPI_FLASH
+	bool
+	default y if !BOOT_DEVICE_NOT_SPI_FLASH
+	default n
+
 config RTC
 	bool
 	default n

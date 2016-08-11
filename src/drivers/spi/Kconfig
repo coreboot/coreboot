@@ -15,6 +15,7 @@
 
 config SPI_FLASH
 	bool
+	default y if BOOT_DEVICE_SPI_FLASH
 	default n
 	help
 	  Select this option if your chipset driver needs to store certain

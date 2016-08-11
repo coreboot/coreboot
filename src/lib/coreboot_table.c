@@ -419,6 +419,14 @@ static void lb_record_version_timestamp(struct lb_header *header)
 
 void __attribute__((weak)) lb_board(struct lb_header *header) { /* NOOP */ }
 
+/*
+ * It's possible that the system is using a SPI flash as the boot device,
+ * however it is not probing for devices to fill in specifics. In that
+ * case don't provide any information as the correct information is
+ * not known.
+ */
+void __attribute__((weak)) lb_spi_flash(struct lb_header *header) { /* NOOP */ }
+
 static struct lb_forward *lb_forward(struct lb_header *header, struct lb_header *next_header)
 {
 	struct lb_record *rec;
@@ -532,10 +540,9 @@ static uintptr_t write_coreboot_table(uintptr_t rom_table_end)
 	/* Add RAM config if available */
 	lb_ram_code(head);
 
-#if IS_ENABLED(CONFIG_SPI_FLASH)
 	/* Add SPI flash description if available */
-	lb_spi_flash(head);
-#endif
+	if (IS_ENABLED(CONFIG_BOOT_DEVICE_SPI_FLASH))
+		lb_spi_flash(head);
 
 	add_cbmem_pointers(head);
 

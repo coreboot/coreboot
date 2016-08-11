@@ -11,6 +11,7 @@
 #include <cbfs.h>
 #include <cpu/x86/smm.h>
 #include <delay.h>
+#include <rules.h>
 #include <stdlib.h>
 #include <string.h>
 #include <spi-generic.h>
@@ -372,7 +373,13 @@ flash_detected:
 	printk(BIOS_INFO, "SF: Detected %s with sector size 0x%x, total 0x%x\n",
 			flash->name, flash->sector_size, flash->size);
 
-	spi_flash_dev = flash;
+	/*
+	 * Only set the global spi_flash_dev if this is the boot
+	 * device's bus and it's previously unset while in ramstage.
+	 */
+	if (ENV_RAMSTAGE && IS_ENABLED(CONFIG_BOOT_DEVICE_SPI_FLASH) &&
+		CONFIG_BOOT_DEVICE_SPI_FLASH_BUS == bus && !spi_flash_dev)
+		spi_flash_dev = flash;
 
 	return flash;
 
@@ -381,13 +388,12 @@ err_read_id:
 	return NULL;
 }
 
-/* Only the RAM stage will build in the lb_new_record symbol
- * so only define this function if we are after that stage */
-#ifdef __RAMSTAGE__
-
 void lb_spi_flash(struct lb_header *header)
 {
 	struct lb_spi_flash *flash;
+
+	if (!IS_ENABLED(CONFIG_BOOT_DEVICE_SPI_FLASH))
+		return;
 
 	flash = (struct lb_spi_flash *)lb_new_record(header);
 
@@ -410,5 +416,3 @@ void lb_spi_flash(struct lb_header *header)
 		flash->erase_cmd = CMD_BLOCK_ERASE;
 	}
 }
-
-#endif

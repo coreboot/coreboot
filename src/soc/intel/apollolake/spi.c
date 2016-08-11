@@ -17,6 +17,7 @@
 
 #define __SIMPLE_DEVICE__
 
+#include <arch/early_variables.h>
 #include <arch/io.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -315,6 +316,9 @@ static int nuclear_spi_status(struct spi_flash *flash, uint8_t *reg)
 	return E_NOT_IMPLEMENTED;
 }
 
+static struct spi_slave boot_spi CAR_GLOBAL;
+static struct spi_flash boot_flash CAR_GLOBAL;
+
 /*
  * We can't use FDOC and FDOD to read FLCOMP, as previous platforms did.
  * For details see:
@@ -328,11 +332,7 @@ static struct spi_flash *nuclear_flash_probe(struct spi_slave *spi)
 	struct spi_flash *flash;
 	uint32_t flash_bits;
 
-	flash = malloc(sizeof(*flash));
-	if (!flash) {
-		printk(BIOS_ERR, "%s(): Could not allocate memory\n", __func__);
-		return NULL;
-	}
+	flash = car_get_var_ptr(&boot_flash);
 
 	/*
 	 * bytes = (bits + 1) / 8;
@@ -371,14 +371,7 @@ struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs)
 	if ((bus != 0) || (cs != 0))
 		return NULL;
 
-	struct spi_slave *slave = malloc(sizeof(*slave));
-
-	if (!slave) {
-		printk(BIOS_ERR, "%s(): Could not allocate memory\n", __func__);
-		return NULL;
-	}
-
-	memset(slave, 0, sizeof(*slave));
+	struct spi_slave *slave = car_get_var_ptr(&boot_spi);
 
 	slave->bus = bus;
 	slave->cs = cs;

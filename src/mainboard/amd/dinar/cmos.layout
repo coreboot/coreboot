@@ -18,7 +18,7 @@ entries
 
 0          384       r       0        reserved_memory
 384          1       e       4        boot_option
-388          4       r       0        reboot_bits
+388          4       h       0        reboot_counter
 392          3       e       5        baud_rate
 395          1       e       1        hw_scrubber
 396          1       e       1        interleave_chip_selects

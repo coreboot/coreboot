@@ -586,8 +586,8 @@ static int elog_shrink(void)
  */
 static inline u8 *elog_flash_offset_to_address(void)
 {
-	/* Only support memory-mapped SPI devices. */
-	if (!IS_ENABLED(CONFIG_SPI_FLASH_MEMORY_MAPPED))
+	/* Only support memory-mapped devices. */
+	if (!IS_ENABLED(CONFIG_BOOT_DEVICE_MEMORY_MAPPED))
 		return NULL;
 
 	if (!elog_spi)

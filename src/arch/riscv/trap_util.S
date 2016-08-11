@@ -116,7 +116,17 @@ supervisor_trap_entry:
     .global  trap_entry
 trap_entry:
   csrw mscratch, sp
-  1:addi sp,sp,-320
+
+  # SMP isn't supported yet, to avoid overwriting the same stack with different
+  # harts that handle traps at the same time.
+  csrr sp, mhartid
+.Lsmp_hang:
+  bnez sp, .Lsmp_hang
+
+  # TODO: Use the old stack pointer (plus an offset) for exceptions in machine
+  # mode, to avoid overwriting stack data.
+  li sp, 0x8000fff0
+
   save_tf
   move  a0,sp
   jal trap_handler

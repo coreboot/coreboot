@@ -160,7 +160,8 @@ void platform_fsp_memory_init_params_cb(struct FSPM_UPD *mupd)
 	 * state machine transition to next boot state, so that it can function
 	 * as designed.
 	 */
-	mupd->FspmConfig.SkipCseRbp = IS_ENABLED(CONFIG_SPI_FLASH_MEMORY_MAPPED);
+	mupd->FspmConfig.SkipCseRbp =
+		IS_ENABLED(CONFIG_BOOT_DEVICE_MEMORY_MAPPED);
 }
 
 __attribute__ ((weak))

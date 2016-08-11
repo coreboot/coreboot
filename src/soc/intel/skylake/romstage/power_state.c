@@ -131,7 +131,7 @@ struct chipset_power_state *fill_power_state(void)
 	uint8_t *pmc;
 	struct chipset_power_state *ps = car_get_var_ptr(&power_state);
 
-	tcobase = pmc_tco_regs();
+	tcobase = smbus_tco_regs();
 
 	ps->pm1_sts = inw(ACPI_BASE_ADDRESS + PM1_STS);
 	ps->pm1_en = inw(ACPI_BASE_ADDRESS + PM1_EN);

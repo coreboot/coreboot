@@ -218,7 +218,7 @@ static u32 reset_tco_status(void)
 	u16 tco2_sts;
 	u16 tcobase;
 
-	tcobase = pmc_tco_regs();
+	tcobase = smbus_tco_regs();
 
 	/* TCO Status 2 register*/
 	tco2_sts = inw(tcobase + TCO2_STS);
@@ -421,7 +421,7 @@ uint8_t *pmc_mmio_regs(void)
 	return (void *)(uintptr_t)reg32;
 }
 
-uint16_t pmc_tco_regs(void)
+uint16_t smbus_tco_regs(void)
 {
 	uint16_t reg16;
 

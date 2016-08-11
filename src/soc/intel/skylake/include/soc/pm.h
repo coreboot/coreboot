@@ -181,7 +181,7 @@ int acpi_sci_irq(void);
 /* Get base address PMC memory mapped registers. */
 uint8_t *pmc_mmio_regs(void);
 /* Get base address of TCO I/O registers. */
-uint16_t pmc_tco_regs(void);
+uint16_t smbus_tco_regs(void);
 
 static inline int deep_s3_enabled(void)
 {

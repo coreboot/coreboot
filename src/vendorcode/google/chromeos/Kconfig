@@ -47,7 +47,7 @@ config CHROMEOS_RAMOOPS_DYNAMIC
 
 config CHROMEOS_RAMOOPS_NON_ACPI
 	bool "Allocate RAM oops buffer in cbmem passed through cb tables to payload"
-	default n
+	default y if !HAVE_ACPI_TABLES
 	depends on CHROMEOS_RAMOOPS && !HAVE_ACPI_TABLES
 
 config CHROMEOS_RAMOOPS_RAM_START

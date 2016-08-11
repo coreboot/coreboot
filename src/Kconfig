@@ -483,6 +483,13 @@ config BOOT_DEVICE_SPI_FLASH
 	default y if !BOOT_DEVICE_NOT_SPI_FLASH
 	default n
 
+config BOOT_DEVICE_MEMORY_MAPPED
+	bool
+	default y if ARCH_X86 && BOOT_DEVICE_SPI_FLASH
+	default n
+	help
+	  Inform system if SPI is memory-mapped or not.
+
 config RTC
 	bool
 	default n

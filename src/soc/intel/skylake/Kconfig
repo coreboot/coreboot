@@ -209,4 +209,8 @@ config SKIP_FSP_CAR
 	help
 	  Skip Cache as RAM setup in FSP.
 
+config SPI_FLASH_INCLUDE_ALL_DRIVERS
+	bool
+	default n
+
 endif

@@ -79,12 +79,24 @@ static void init_dvs_outputs(void)
 	 */
 	duty_ns = 2860; /* 0.9v */
 
+	/* TODO: Clean all this up, implement proper pwm_regulator driver. */
 	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_KEVIN)) {
 		id = board_id();
 		if (id <= 2)
 			duty_ns = 1906; /* 1.1v */
 		else if (id == 3)
 			duty_ns = 2621; /* 0.95v */
+		else if (id >= 6) {
+			/* GPU: 3337 * (12043 - 9000) / (12043 - 7984) = 2501 */
+			pwm_init(0, 3337, 2501);
+			/* BIG: 3337 * (12837 - 9000) / (12837 - 7985) = 2638 */
+			pwm_init(1, 3337, 2638);
+			/* LIT: 3337 * (12807 - 9000) / (12807 - 8009) = 2647 */
+			pwm_init(2, 3337, 2647);
+			/* CTR: 3337 * (10507 - 9500) / (10507 - 7996) = 1338 */
+			pwm_init(3, 3337, 1338);
+			return;
+		}
 	}
 
 	for (i = 0; i < 4; i++)

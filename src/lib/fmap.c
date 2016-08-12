@@ -80,6 +80,16 @@ int fmap_locate_area_as_rdev(const char *name, struct region_device *area)
 	return boot_device_ro_subregion(&ar, area);
 }
 
+int fmap_locate_area_as_rdev_rw(const char *name, struct region_device *area)
+{
+	struct region ar;
+
+	if (fmap_locate_area(name, &ar))
+		return -1;
+
+	return boot_device_rw_subregion(&ar, area);
+}
+
 int fmap_locate_area(const char *name, struct region *ar)
 {
 	struct region_device fmrd;

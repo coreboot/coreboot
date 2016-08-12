@@ -27,6 +27,10 @@ int find_fmap_directory(struct region_device *fmrd);
  * 0 on success, < 0 on error. */
 int fmap_locate_area_as_rdev(const char *name, struct region_device *area);
 
+/* Just like fmap_locate_area_as_rdev(), however the region device is
+ * created from the RW boot device. */
+int fmap_locate_area_as_rdev_rw(const char *name, struct region_device *area);
+
 /* Locate the named area in the fmap and fill in a region with the
  * offset and size of that area within the boot media. Return 0 on success,
  * < 0 on error. */

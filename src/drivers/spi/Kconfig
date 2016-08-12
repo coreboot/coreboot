@@ -18,12 +18,13 @@ config COMMON_CBFS_SPI_WRAPPER
 	default n
 	depends on !ARCH_X86
 	depends on BOOT_DEVICE_SPI_FLASH
+	select BOOT_DEVICE_SUPPORTS_WRITES
 	help
 	 Use common wrapper to interface CBFS to SPI bootrom.
 
 config SPI_FLASH
 	bool
-	default y if BOOT_DEVICE_SPI_FLASH
+	default y if BOOT_DEVICE_SPI_FLASH && BOOT_DEVICE_SUPPORTS_WRITES
 	default n
 	help
 	  Select this option if your chipset driver needs to store certain

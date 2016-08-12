@@ -29,7 +29,7 @@ config VBOOT_VBNV_CMOS
 config VBOOT_VBNV_CMOS_BACKUP_TO_FLASH
 	bool "Back up Vboot non-volatile storage from CMOS to flash."
 	default n
-	depends on VBOOT_VBNV_CMOS
+	depends on VBOOT_VBNV_CMOS && BOOT_DEVICE_SUPPORTS_WRITES
 	help
 	  Vboot non-volatile storage data will be backed up from CMOS to flash
 	  and restored from flash if the CMOS is invalid due to power loss.
@@ -42,6 +42,7 @@ config VBOOT_VBNV_EC
 
 config VBOOT_VBNV_FLASH
 	def_bool n
+	depends on BOOT_DEVICE_SUPPORTS_WRITES
 	help
 	  VBNV is stored in flash storage
 

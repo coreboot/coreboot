@@ -17,7 +17,6 @@
 #include <assert.h>
 #include <commonlib/region.h>
 #include <console/console.h>
-#include <spi_flash.h>
 #include <string.h>
 #include <vb2_api.h>
 #include <vboot_nvstorage.h>
@@ -31,17 +30,14 @@ struct vbnv_flash_ctx {
 	/* VBNV flash is initialized */
 	int initialized;
 
-	/* Offset of the current nvdata in SPI flash */
+	/* Offset of the current nvdata in flash */
 	int blob_offset;
 
-	/* Offset of the topmost nvdata blob in SPI flash */
+	/* Offset of the topmost nvdata blob in flash */
 	int top_offset;
 
-	/* SPI flash handler used when saving data */
-	struct spi_flash *flash;
-
-	/* FMAP descriptor of the NVRAM area */
-	struct region_device region;
+	/* Region to store and retrieve the VBNV contents. */
+	struct region_device vbnv_dev;
 
 	/* Cache of the current nvdata */
 	uint8_t cache[BLOB_SIZE];
@@ -66,13 +62,14 @@ static inline int can_overwrite(uint8_t current, uint8_t new)
 static int init_vbnv(void)
 {
 	struct vbnv_flash_ctx *ctx = car_get_var_ptr(&vbnv_flash);
+	struct region_device *rdev = &ctx->vbnv_dev;
 	uint8_t buf[BLOB_SIZE];
 	uint8_t empty_blob[BLOB_SIZE];
 	int offset;
 	int i;
 
-	if (vboot_named_region_device("RW_NVRAM", &ctx->region) ||
-	    region_device_sz(&ctx->region) < BLOB_SIZE) {
+	if (vboot_named_region_device_rw("RW_NVRAM", rdev) ||
+	    region_device_sz(rdev) < BLOB_SIZE) {
 		printk(BIOS_ERR, "%s: failed to locate NVRAM\n", __func__);
 		return 1;
 	}
@@ -82,7 +79,7 @@ static int init_vbnv(void)
 		empty_blob[i] = erase_value();
 
 	offset = 0;
-	ctx->top_offset = region_device_sz(&ctx->region) - BLOB_SIZE;
+	ctx->top_offset = region_device_sz(rdev) - BLOB_SIZE;
 
 	/*
 	 * after the loop, offset is supposed to point the blob right before
@@ -91,7 +88,7 @@ static int init_vbnv(void)
 	 * used.
 	 */
 	for (i = 0; i <= ctx->top_offset; i += BLOB_SIZE) {
-		if (rdev_readat(&ctx->region, buf, i, BLOB_SIZE) < 0) {
+		if (rdev_readat(rdev, buf, i, BLOB_SIZE) < 0) {
 			printk(BIOS_ERR, "failed to read nvdata\n");
 			return 1;
 		}
@@ -101,7 +98,7 @@ static int init_vbnv(void)
 	}
 
 	/* reread the nvdata and write it to the cache */
-	if (rdev_readat(&ctx->region, ctx->cache, offset, BLOB_SIZE) < 0) {
+	if (rdev_readat(rdev, ctx->cache, offset, BLOB_SIZE) < 0) {
 		printk(BIOS_ERR, "failed to read nvdata\n");
 		return 1;
 	}
@@ -112,61 +109,12 @@ static int init_vbnv(void)
 	return 0;
 }
 
-static void vbnv_is_erasable(void)
-{
-	/*
-	 * We check whether the region is aligned or not in advance to ensure
-	 * we can erase the region when it's all used up.
-	 *
-	 * The region offset & size are determined by fmap.dts yet the check can
-	 * be confidently done only by the spi flash driver. We use the same
-	 * check as the one used by spi_flash_cmd_erase, which happens to be
-	 * common to all the spi flash parts we support.
-	 *
-	 * TODO: Check by calling can_erase implemented by each spi flash driver
-	 */
-	struct vbnv_flash_ctx *ctx = car_get_var_ptr(&vbnv_flash);
-
-	assert(!(region_device_offset(&ctx->region) % ctx->flash->sector_size));
-	assert(!(region_device_sz(&ctx->region) % ctx->flash->sector_size));
-}
-
-static int vbnv_flash_probe(void)
-{
-	struct vbnv_flash_ctx *ctx = car_get_var_ptr(&vbnv_flash);
-
-	if (!ctx->flash) {
-		ctx->flash =
-			spi_flash_probe(CONFIG_BOOT_DEVICE_SPI_FLASH_BUS, 0);
-		if (!ctx->flash) {
-			printk(BIOS_ERR, "failed to probe spi flash\n");
-			return 1;
-		}
-		/*
-		 * Called here instead of init_vbnv to reduce impact on boot
-		 * speed.
-		 */
-		vbnv_is_erasable();
-	}
-
-	/*
-	 * Handle the case where spi_flash_probe returns a CAR_GLOBAL
-	 * in early execution on x86 but then later is moved to RAM.
-	 */
-	ctx->flash = car_get_var_ptr(ctx->flash);
-
-	return 0;
-}
-
 static int erase_nvram(void)
 {
 	struct vbnv_flash_ctx *ctx = car_get_var_ptr(&vbnv_flash);
+	const struct region_device *rdev = &ctx->vbnv_dev;
 
-	if (vbnv_flash_probe())
-		return 1;
-
-	if (ctx->flash->erase(ctx->flash, region_device_offset(&ctx->region),
-			      region_device_sz(&ctx->region))) {
+	if (rdev_eraseat(rdev, 0, region_device_sz(rdev)) < 0) {
 		printk(BIOS_ERR, "failed to erase nvram\n");
 		return 1;
 	}
@@ -191,6 +139,7 @@ void save_vbnv_flash(const uint8_t *vbnv_copy)
 	struct vbnv_flash_ctx *ctx = car_get_var_ptr(&vbnv_flash);
 	int new_offset;
 	int i;
+	const struct region_device *rdev = &ctx->vbnv_dev;
 
 	if (!ctx->initialized)
 		if (init_vbnv())
@@ -216,10 +165,7 @@ void save_vbnv_flash(const uint8_t *vbnv_copy)
 		}
 	}
 
-	if (!vbnv_flash_probe() &&
-	    !ctx->flash->write(ctx->flash,
-			       region_device_offset(&ctx->region) + new_offset,
-			       BLOB_SIZE, vbnv_copy)) {
+	if (rdev_writeat(rdev, vbnv_copy, new_offset, BLOB_SIZE) < 0) {
 		/* write was successful. safely move pointer forward */
 		ctx->blob_offset = new_offset;
 		memcpy(ctx->cache, vbnv_copy, BLOB_SIZE);

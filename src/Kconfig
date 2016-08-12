@@ -482,6 +482,13 @@ config BOOT_DEVICE_MEMORY_MAPPED
 	help
 	  Inform system if SPI is memory-mapped or not.
 
+config BOOT_DEVICE_SUPPORTS_WRITES
+	bool
+	default n
+	help
+	  Indicate that the platform has writable boot device
+	  support.
+
 config RTC
 	bool
 	default n

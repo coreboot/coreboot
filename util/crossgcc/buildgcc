@@ -18,8 +18,8 @@
 
 cd $(dirname $0)
 
-CROSSGCC_DATE="July 14th, 2016"
-CROSSGCC_VERSION="1.41"
+CROSSGCC_DATE="August 11th, 2016"
+CROSSGCC_VERSION="1.42"
 CROSSGCC_COMMIT=$( git describe )
 
 # default settings
@@ -46,7 +46,7 @@ PYTHON_VERSION=3.5.1
 EXPAT_VERSION=2.1.1
 # CLANG version number
 CLANG_VERSION=3.8.0
-MAKE_VERSION=4.1
+MAKE_VERSION=4.2.1
 
 # GCC toolchain archive locations
 # These are sanitized by the jenkins toolchain test builder, so if

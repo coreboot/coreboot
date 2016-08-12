@@ -1,5 +1,5 @@
 Category: desktop
-Board URL:
+Board URL: http://www.gigabyte.com/products/product-page.aspx?pid=4151#ov
 ROM package: SOIC-8
 ROM protocol: SPI
 ROM socketed: n

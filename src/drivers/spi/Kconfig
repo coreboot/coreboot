@@ -13,6 +13,14 @@
 ## GNU General Public License for more details.
 ##
 
+config COMMON_CBFS_SPI_WRAPPER
+	bool
+	default n
+	depends on !ARCH_X86
+	depends on BOOT_DEVICE_SPI_FLASH
+	help
+	 Use common wrapper to interface CBFS to SPI bootrom.
+
 config SPI_FLASH
 	bool
 	default y if BOOT_DEVICE_SPI_FLASH

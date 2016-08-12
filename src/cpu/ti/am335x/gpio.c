@@ -22,7 +22,7 @@ static struct am335x_gpio_regs *gpio_regs_and_bit(unsigned gpio, uint32_t *bit)
 {
 	unsigned bank = gpio / AM335X_GPIO_BITS_PER_BANK;
 
-	if (bank > ARRAY_SIZE(am335x_gpio_banks)) {
+	if (bank >= ARRAY_SIZE(am335x_gpio_banks)) {
 		printk(BIOS_ERR, "Bad gpio index %d.\n", gpio);
 		return NULL;
 	}

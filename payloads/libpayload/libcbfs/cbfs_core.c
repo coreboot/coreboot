@@ -148,6 +148,7 @@ struct cbfs_handle *cbfs_get_handle(struct cbfs_media *media, const char *name)
 
 	if (get_cbfs_range(&offset, &cbfs_end, media)) {
 		ERROR("Failed to find cbfs range\n");
+		free(handle);
 		return NULL;
 	}
 
@@ -155,6 +156,7 @@ struct cbfs_handle *cbfs_get_handle(struct cbfs_media *media, const char *name)
 		media = &handle->media;
 		if (init_default_cbfs_media(media) != 0) {
 			ERROR("Failed to initialize default media.\n");
+			free(handle);
 			return NULL;
 		}
 	} else {
@@ -215,6 +217,7 @@ struct cbfs_handle *cbfs_get_handle(struct cbfs_media *media, const char *name)
 	}
 	media->close(media);
 	LOG("WARNING: '%s' not found.\n", name);
+	free(handle);
 	return NULL;
 }
 

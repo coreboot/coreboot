@@ -30,6 +30,11 @@ int vboot_named_region_device(const char *name, struct region_device *rdev)
 	return fmap_locate_area_as_rdev(name, rdev);
 }
 
+int vboot_named_region_device_rw(const char *name, struct region_device *rdev)
+{
+	return fmap_locate_area_as_rdev(name, rdev);
+}
+
 /* ========================== VBOOT HANDOFF APIs =========================== */
 int vboot_get_handoff_info(void **addr, uint32_t *size)
 {

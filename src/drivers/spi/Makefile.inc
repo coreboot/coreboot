@@ -8,6 +8,7 @@ smm-$(CONFIG_DEBUG_SMI) += spiconsole.c
 endif
 
 ifeq ($(CONFIG_COMMON_CBFS_SPI_WRAPPER),y)
+bootblock-$(CONFIG_COMMON_CBFS_SPI_WRAPPER) += cbfs_spi.c
 bootblock-y += spi_flash.c
 bootblock-$(CONFIG_SPI_FLASH_EON) += eon.c
 bootblock-$(CONFIG_SPI_FLASH_GIGADEVICE) += gigadevice.c
@@ -18,6 +19,7 @@ bootblock-$(CONFIG_SPI_FLASH_STMICRO) += stmicro.c
 bootblock-$(CONFIG_SPI_FLASH_WINBOND) += winbond.c
 bootblock-$(CONFIG_SPI_FRAM_RAMTRON) += ramtron.c
 
+romstage-$(CONFIG_COMMON_CBFS_SPI_WRAPPER) += cbfs_spi.c
 romstage-$(CONFIG_SPI_FLASH) += spi_flash.c
 romstage-$(CONFIG_SPI_FLASH_EON) += eon.c
 romstage-$(CONFIG_SPI_FLASH_GIGADEVICE) += gigadevice.c
@@ -28,6 +30,7 @@ romstage-$(CONFIG_SPI_FLASH_STMICRO) += stmicro.c
 romstage-$(CONFIG_SPI_FLASH_WINBOND) += winbond.c
 romstage-$(CONFIG_SPI_FRAM_RAMTRON) += ramtron.c
 
+verstage-$(CONFIG_COMMON_CBFS_SPI_WRAPPER) += cbfs_spi.c
 verstage-$(CONFIG_SPI_FLASH) += spi_flash.c
 verstage-$(CONFIG_SPI_FLASH_EON) += eon.c
 verstage-$(CONFIG_SPI_FLASH_GIGADEVICE) += gigadevice.c
@@ -40,6 +43,7 @@ verstage-$(CONFIG_SPI_FRAM_RAMTRON) += ramtron.c
 
 endif
 
+ramstage-$(CONFIG_COMMON_CBFS_SPI_WRAPPER) += cbfs_spi.c
 ramstage-$(CONFIG_SPI_FLASH) += spi_flash.c
 
 # drivers

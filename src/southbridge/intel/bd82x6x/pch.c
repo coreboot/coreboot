@@ -26,11 +26,10 @@
 #endif
 #include "pch.h"
 
-static int pch_revision_id = -1;
-static int pch_type = -1;
 
 int pch_silicon_revision(void)
 {
+	static int pch_revision_id = -1;
 	device_t dev;
 
 #ifdef __SMM__
@@ -46,6 +45,7 @@ int pch_silicon_revision(void)
 
 int pch_silicon_type(void)
 {
+	static int pch_type = -1;
 	device_t dev;
 
 #ifdef __SMM__

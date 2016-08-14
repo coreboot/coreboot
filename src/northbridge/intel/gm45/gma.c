@@ -47,60 +47,6 @@ void gtt_write(u32 reg, u32 data)
 	write32(res2mmio(gtt_res, reg, 0), data);
 }
 
-static void power_port(u8 *mmio)
-{
-	read32(mmio + 0x00061100); // = 0x00000000
-	write32(mmio + 0x00061100, 0x00000000);
-	write32(mmio + 0x00061100, 0x00010000);
-	read32(mmio + 0x00061100); // = 0x00010000
-	read32(mmio + 0x00061100); // = 0x00010000
-	read32(mmio + 0x00061100); // = 0x00000000
-	write32(mmio + 0x00061100, 0x00000000);
-	read32(mmio + 0x00061100); // = 0x00000000
-	read32(mmio + 0x00064200); // = 0x0000001c
-	write32(mmio + 0x00064210, 0x8004003e);
-	write32(mmio + 0x00064214, 0x80060002);
-	write32(mmio + 0x00064218, 0x01000000);
-	read32(mmio + 0x00064210); // = 0x5144003e
-	write32(mmio + 0x00064210, 0x5344003e);
-	read32(mmio + 0x00064210); // = 0x0144003e
-	write32(mmio + 0x00064210, 0x8074003e);
-	read32(mmio + 0x00064210); // = 0x5144003e
-	read32(mmio + 0x00064210); // = 0x5144003e
-	write32(mmio + 0x00064210, 0x5344003e);
-	read32(mmio + 0x00064210); // = 0x0144003e
-	write32(mmio + 0x00064210, 0x8074003e);
-	read32(mmio + 0x00064210); // = 0x5144003e
-	read32(mmio + 0x00064210); // = 0x5144003e
-	write32(mmio + 0x00064210, 0x5344003e);
-	read32(mmio + 0x00064210); // = 0x0144003e
-	write32(mmio + 0x00064210, 0x8074003e);
-	read32(mmio + 0x00064210); // = 0x5144003e
-	read32(mmio + 0x00064210); // = 0x5144003e
-	write32(mmio + 0x00064210, 0x5344003e);
-	write32(mmio + 0x00064f00, 0x0100030c);
-	write32(mmio + 0x00064f04, 0x00b8230c);
-	write32(mmio + 0x00064f08, 0x06f8930c);
-	write32(mmio + 0x00064f0c, 0x09f8e38e);
-	write32(mmio + 0x00064f10, 0x00b8030c);
-	write32(mmio + 0x00064f14, 0x0b78830c);
-	write32(mmio + 0x00064f18, 0x0ff8d3cf);
-	write32(mmio + 0x00064f1c, 0x01e8030c);
-	write32(mmio + 0x00064f20, 0x0ff863cf);
-	write32(mmio + 0x00064f24, 0x0ff803cf);
-	write32(mmio + 0x000c4030, 0x00001000);
-	read32(mmio + 0x00044000); // = 0x00000000
-	write32(mmio + 0x00044030, 0x00001000);
-	read32(mmio + 0x00061150); // = 0x0000001c
-	write32(mmio + 0x00061150, 0x0000089c);
-	write32(mmio + 0x000fcc00, 0x01986f00);
-	write32(mmio + 0x000fcc0c, 0x01986f00);
-	write32(mmio + 0x000fcc18, 0x01986f00);
-	write32(mmio + 0x000fcc24, 0x01986f00);
-	read32(mmio + 0x00044000); // = 0x00000000
-	read32(mmio + LVDS); // = 0x40000002
-}
-
 static void intel_gma_init(const struct northbridge_intel_gm45_config *info,
 			   u8 *mmio, u32 physbase, u16 piobase, u32 lfb)
 {
@@ -149,8 +95,6 @@ static void intel_gma_init(const struct northbridge_intel_gm45_config *info,
 
 	for (i = 0; i <= 0x18; i++)
 		vga_cr_write(i, cr[i]);
-
-	power_port(mmio);
 
 	intel_gmbus_read_edid(mmio + GMBUS0, 3, 0x50, edid_data, 128);
 	decode_edid(edid_data,
@@ -277,28 +221,32 @@ static void intel_gma_init(const struct northbridge_intel_gm45_config *info,
 		(hpolarity << 20) | (vpolarity << 21)
 		| (mode->lvds_dual_channel ? LVDS_CLOCK_B_POWERUP_ALL
 		   | LVDS_CLOCK_BOTH_POWERUP_ALL : 0)
-		| LVDS_BORDER_ENABLE | LVDS_CLOCK_A_POWERUP_ALL);
+		| LVDS_ENABLE_DITHER
+		| LVDS_CLOCK_A_POWERUP_ALL
+		| LVDS_PIPE(0));
 	mdelay(1);
 	write32(mmio + PP_CONTROL, PANEL_UNLOCK_REGS
 		| (read32(mmio + PP_CONTROL) & ~PANEL_UNLOCK_MASK));
 	write32(mmio + FP0(0),
 		((pixel_n - 2) << 16)
-		| ((pixel_m1 - 2) << 8) | pixel_m2);
+		| ((pixel_m1 - 2) << 8) | (pixel_m2 - 2));
 	write32(mmio + DPLL(0),
 		DPLL_VCO_ENABLE | DPLLB_MODE_LVDS
+		| DPLL_VGA_MODE_DIS
 		| (mode->lvds_dual_channel ? DPLLB_LVDS_P2_CLOCK_DIV_7
 		   : DPLLB_LVDS_P2_CLOCK_DIV_14)
 		| (0x10000 << (pixel_p1 - 1))
 		| ((info->gfx.use_spread_spectrum_clock ? 3 : 0) << 13)
-		| (0x1 << (pixel_p1 - 1)));
+		| (6 << PLL_LOAD_PULSE_PHASE_SHIFT));
 	mdelay(1);
 	write32(mmio + DPLL(0),
 		DPLL_VCO_ENABLE | DPLLB_MODE_LVDS
+		| DPLL_VGA_MODE_DIS
 		| (mode->lvds_dual_channel ? DPLLB_LVDS_P2_CLOCK_DIV_7
 		   : DPLLB_LVDS_P2_CLOCK_DIV_14)
 		| (0x10000 << (pixel_p1 - 1))
 		| ((info->gfx.use_spread_spectrum_clock ? 3 : 0) << 13)
-		| (0x1 << (pixel_p1 - 1)));
+		| (6 << PLL_LOAD_PULSE_PHASE_SHIFT));
 	/* Re-lock the registers.  */
 	write32(mmio + PP_CONTROL,
 		(read32(mmio + PP_CONTROL) & ~PANEL_UNLOCK_MASK));
@@ -307,7 +255,9 @@ static void intel_gma_init(const struct northbridge_intel_gm45_config *info,
 		(hpolarity << 20) | (vpolarity << 21)
 		| (mode->lvds_dual_channel ? LVDS_CLOCK_B_POWERUP_ALL
 		   | LVDS_CLOCK_BOTH_POWERUP_ALL : 0)
-		| LVDS_BORDER_ENABLE | LVDS_CLOCK_A_POWERUP_ALL);
+		| LVDS_CLOCK_A_POWERUP_ALL
+		| LVDS_ENABLE_DITHER
+		| LVDS_PIPE(0));
 
 	write32(mmio + HTOTAL(0),
 		((hactive + right_border + hblank - 1) << 16)
@@ -324,7 +274,7 @@ static void intel_gma_init(const struct northbridge_intel_gm45_config *info,
 	write32(mmio + VBLANK(0), ((vactive + bottom_border + vblank - 1) << 16)
 		| (vactive + bottom_border - 1));
 	write32(mmio + VSYNC(0),
-		(vactive + bottom_border + vfront_porch + vsync - 1)
+		((vactive + bottom_border + vfront_porch + vsync - 1) << 16)
 		| (vactive + bottom_border + vfront_porch - 1));
 
 	write32(mmio + PIPECONF(0), PIPECONF_DISABLE);
@@ -335,7 +285,7 @@ static void intel_gma_init(const struct northbridge_intel_gm45_config *info,
 			| (vactive - 1));
 		write32(mmio + PF_CTL(0), 0);
 		write32(mmio + PF_WIN_SZ(0), 0);
-		write32(mmio + PFIT_CONTROL, 0x20000000);
+		write32(mmio + PFIT_CONTROL, 0);
 	} else {
 		write32(mmio + PIPESRC(0), (639 << 16) | 399);
 		write32(mmio + PF_CTL(0), PF_ENABLE | PF_FILTER_MED_3x3);
@@ -362,7 +312,7 @@ static void intel_gma_init(const struct northbridge_intel_gm45_config *info,
 	write32(mmio + PIPECONF(0), PIPECONF_ENABLE | PIPECONF_BPP_6 | PIPECONF_DITHER_EN);
 
 	if (IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)) {
-		write32(mmio + VGACNTRL, 0xc4008e | VGA_DISP_DISABLE);
+		write32(mmio + VGACNTRL, VGA_DISP_DISABLE);
 		write32(mmio + DSPCNTR(0), DISPLAY_PLANE_ENABLE
 			| DISPPLANE_BGRX888);
 		mdelay(1);
@@ -370,37 +320,13 @@ static void intel_gma_init(const struct northbridge_intel_gm45_config *info,
 		write32(mmio + VGACNTRL, 0xc4008e);
 	}
 
-	write32(mmio + TRANS_HTOTAL(0),
-		((hactive + right_border + hblank - 1) << 16)
-		| (hactive - 1));
-	write32(mmio + TRANS_HBLANK(0),
-		((hactive + right_border + hblank - 1) << 16)
-		| (hactive + right_border - 1));
-	write32(mmio + TRANS_HSYNC(0),
-		((hactive + right_border + hfront_porch + hsync - 1) << 16)
-		| (hactive + right_border + hfront_porch - 1));
-
-	write32(mmio + TRANS_VTOTAL(0),
-		((vactive + bottom_border + vblank - 1) << 16)
-		| (vactive - 1));
-	write32(mmio + TRANS_VBLANK(0),
-		((vactive + bottom_border + vblank - 1) << 16)
-		| (vactive + bottom_border - 1));
-	write32(mmio + TRANS_VSYNC(0),
-		(vactive + bottom_border + vfront_porch + vsync - 1)
-		| (vactive + bottom_border + vfront_porch - 1));
-
-	write32(mmio + 0x00060100, 0xb01c4000);
-	write32(mmio + 0x000f000c, 0xb01a2050);
-	mdelay(1);
-	write32(mmio + TRANSCONF(0), TRANS_ENABLE | TRANS_6BPC
-		);
-	write32(mmio + LVDS,
-		LVDS_PORT_ENABLE
+	write32(mmio + LVDS, LVDS_PORT_ENABLE
 		| (hpolarity << 20) | (vpolarity << 21)
 		| (mode->lvds_dual_channel ? LVDS_CLOCK_B_POWERUP_ALL
 		   | LVDS_CLOCK_BOTH_POWERUP_ALL : 0)
-		| LVDS_BORDER_ENABLE | LVDS_CLOCK_A_POWERUP_ALL);
+		| LVDS_CLOCK_A_POWERUP_ALL
+		| LVDS_ENABLE_DITHER
+		| LVDS_PIPE(0));
 
 	write32(mmio + PP_CONTROL, PANEL_POWER_ON | PANEL_POWER_RESET);
 

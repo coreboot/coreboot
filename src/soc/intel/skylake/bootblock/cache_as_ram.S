@@ -116,7 +116,7 @@ clear_var_mtrr:
 
 	/* Configure the MTRR mask for the size region */
 	mov	$MTRR_PHYS_MASK(0), %ecx
-	mov	$CONFIG_DCACHE_RAM_SIZE_TOTAL, %eax	/* size mask */
+	mov	$CONFIG_DCACHE_RAM_SIZE, %eax	/* size mask */
 	dec	%eax
 	not	%eax
 	or	$MTRR_PHYS_MASK_VALID, %eax
@@ -216,7 +216,7 @@ find_llc_subleaf:
 	wrmsr
 
 	movl	$CONFIG_DCACHE_RAM_BASE, %edi
-	movl	$CONFIG_DCACHE_RAM_SIZE_TOTAL, %ecx
+	movl	$CONFIG_DCACHE_RAM_SIZE, %ecx
 	shr	$0x02, %ecx
 	movl	$CACHE_INIT_VALUE, %eax
 	cld

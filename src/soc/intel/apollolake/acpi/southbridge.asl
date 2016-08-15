@@ -31,5 +31,8 @@
 /* LPC */
 #include "lpc.asl"
 
+/* eMMC */
+#include "scs.asl"
+
 /* PCI _OSC */
 #include <soc/intel/common/acpi/pci_osc.asl>

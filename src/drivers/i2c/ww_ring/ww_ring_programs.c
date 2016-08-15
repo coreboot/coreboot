@@ -46,36 +46,36 @@
  * Solid LED display, the arguments of the set_pwm commands set intensity and
  * color of the display:
 
-row_red:   dw 0000000001001001b
-row_green: dw 0000000010010010b
-row_blue:  dw 0000000100100100b
+row_red:   dw 0000000000000001b
+row_green: dw 0000000000000010b
+row_blue:  dw 0000000000000100b
 
 .segment program1
 	mux_map_addr row_red
-	set_pwm 1
+	set_pwm 0
 	end
 
 .segment program2
 	mux_map_addr row_green
-	set_pwm 1
+	set_pwm 0
 	end
 
 .segment program3
 	mux_map_addr row_blue
-	set_pwm 1
+	set_pwm 0
 	end
 */
 
 /* RGB set to 000000, resulting in all LEDs off. */
 static const uint8_t solid_000000_text[] = {
-	0x00, 0x49, 0x00, 0x92, 0x01, 0x24, 0x9F, 0x80,
+	0x00, 0x01, 0x00, 0x02, 0x00, 0x04, 0x9F, 0x80,
 	0x40,    0, 0xC0, 0x00, 0x9F, 0x81, 0x40,    0,
 	0xC0, 0x00, 0x9F, 0x82, 0x40,    0, 0xC0, 0x00
 };
 
 /* Rgb set to 128, resulting in a brightish white color. */
 static const uint8_t solid_808080_text[] = {
-	0x00, 0x49, 0x00, 0x92, 0x01, 0x24, 0x9F, 0x80,
+	0x00, 0x01, 0x00, 0x02, 0x00, 0x04, 0x9F, 0x80,
 	0x40,  128, 0xC0, 0x00, 0x9F, 0x81, 0x40,  128,
 	0xC0, 0x00, 0x9F, 0x82, 0x40,  128, 0xC0, 0x00
 };
@@ -100,19 +100,9 @@ static const TiLp55231Program solid_000000_program = {
  * The three internal engines seem to be competing for resources and get out
  * of sync in seconds if left running asynchronously.
  *
- * When there are two separate controllers, with three engine each, they all
- * run away from each other in no time, resulting in some completely chaotic
- * LED behavior.
- *
  * When solid patterns are deployed with instanteneous color intensity
  * changes, all three LEDs can be controlled by one engine in sequential
  * accesses. But the controllers still neeed to be synchronized.
- *
- * The first controller is loaded and started first, but it sits waiting for
- * the trigger from the second controller to actually start the cycle. Once
- * both controllers start running, the first controller is the master, sending
- * sych triggers to the second one each time the LED is supposed to be turned
- * on or off.
  *
  * The maximum timer duration of lp55231 is .48 seconds. To achieve longer
  * blinking intervals the loops delays are deployed. Only the first controller
@@ -126,29 +116,26 @@ static const TiLp55231Program solid_000000_program = {
  */
 /*
  * blink_solid1.src
-row_red:   dw 0000000001001001b
-row_green: dw 0000000010010010b
-row_blue:  dw 0000000100100100b
+row_red:   dw 0000000000000001b
+row_green: dw 0000000000000010b
+row_blue:  dw 0000000000000100b
 
 .segment program1
 	ld ra, 2   # LED on duration
-	ld rb, 10  # LED off duration
+	ld rb, 2   # LED off duration
 	mux_map_addr row_red
-	trigger w{e}
 loop:
-	trigger s{e}
-	ld rc, 98	; red intensity
+	ld rc, 180	; red intensity
 	set_pwm rc
 	mux_map_addr row_green
-	ld rc, 0	; green intensity
+	ld rc, 80	; green intensity
 	set_pwm rc
 	mux_map_addr row_blue
-	ld rc, 234	; blue intensity
+	ld rc, 0	; blue intensity
 	set_pwm rc
 wait1:
 	wait 0.1
 	branch ra, wait1
-	trigger s{e}
 	set_pwm 0
 	mux_map_addr row_green
 	set_pwm 0
@@ -158,203 +145,82 @@ wait2:
 	wait 0.1
 	branch rb, wait2
 	branch 0, loop
-
 .segment program2
 	 end
-
-.segment program3
-	 end*/
-/*
- * blink_solid2.src
-
-row_red:   dw 0000000001001001b
-row_green: dw 0000000010010010b
-row_blue:  dw 0000000100100100b
-
-.segment program1
-	ld ra, 98
-	ld rb, 0
-	ld rc, 234
-	trigger s{e}
-	mux_map_addr row_red
-loop:
-	trigger w{e}
-	set_pwm ra	; red intensity
-	mux_map_addr row_green
-	set_pwm rb	; green intensity
-	mux_map_addr row_blue
-	set_pwm rc	; blue intensity
-wait1:
-	wait 0.1
-	branch 1, wait1
-	trigger w{e}
-	set_pwm 0
-	mux_map_addr row_green
-	set_pwm 0
-	mux_map_addr row_red
-	set_pwm 0
-wait2:
-	wait 0.1
-	branch 1, wait2
-	branch 0, loop
-
-.segment program2
-	 end
-
 .segment program3
 	 end
 */
 static const uint8_t blink_wipeout1_text[] = {
-	0x00,  0x49,  0x00,  0x92,  0x01,  0x24,  0x90,  0x02,
-	0x94,  0x02,  0x9f,  0x80,  0xf0,  0x00,  0xe0,  0x40,
-	0x98,   255,  0x84,  0x62,  0x9f,  0x81,  0x98,   80,
-	0x84,  0x62,  0x9f,  0x82,  0x98,     0,  0x84,  0x62,
-	0x4c,  0x00,  0x86,  0x34,  0xe0,  0x40,  0x40,  0x00,
-	0x9f,  0x81,  0x40,  0x00,  0x9f,  0x80,  0x40,  0x00,
-	0x4c,  0x00,  0x86,  0x55,  0xa0,  0x04,  0xc0,  0x00,
-	0xc0,  0x00,  0x00,
-};
-
-static const uint8_t blink_wipeout2_text[] = {
-	0x00,  0x49,  0x00,  0x92,  0x01,  0x24,  0x90,   255,
-	0x94,    80,  0x98,     0,  0xe0,  0x40,  0x9f,  0x80,
-	0xf0,  0x00,  0x84,  0x60,  0x9f,  0x81,  0x84,  0x61,
-	0x9f,  0x82,  0x84,  0x62,  0x4c,  0x00,  0xa0,  0x8b,
-	0xf0,  0x00,  0x40,  0x00,  0x9f,  0x81,  0x40,  0x00,
-	0x9f,  0x80,  0x40,  0x00,  0x4c,  0x00,  0xa0,  0x93,
-	0xa0,  0x05,  0xc0,  0x00,  0xc0,  0x00,  0x00,
+	0x00,  0x01,  0x00,  0x02,  0x00,  0x04,  0x90,  0x02,
+	0x94,  0x02,  0x9f,  0x80,  0x98,   180,  0x84,  0x62,
+	0x9f,  0x81,  0x98,    80,  0x84,  0x62,  0x9f,  0x82,
+	0x98,     0,  0x84,  0x62,  0x4c,  0x00,  0x86,  0x2c,
+	0x40,  0x00,  0x9f,  0x81,  0x40,  0x00,  0x9f,  0x80,
+	0x40,  0x00,  0x4c,  0x00,  0x86,  0x49,  0xa0,  0x03,
+	0xc0,  0x00,  0xc0,  0x00,  0x00,
 };
 
 static const TiLp55231Program blink_wipeout1_program = {
 	blink_wipeout1_text,
 	sizeof(blink_wipeout1_text),
 	0,
-	{ 3,  27,  28,  }
-};
-static const TiLp55231Program blink_wipeout2_program = {
-	blink_wipeout2_text,
-	sizeof(blink_wipeout2_text),
-	0,
-	{ 3,  26,  26,  }
+	{ 3,  24,  25,  }
 };
 
 static const uint8_t blink_recovery1_text[] = {
-	0x00,  0x49,  0x00,  0x92,  0x01,  0x24,  0x90,  0x02,
-	0x94,  0x02,  0x9f,  0x80,  0xf0,  0x00,  0xe0,  0x40,
-	0x98,   255,  0x84,  0x62,  0x9f,  0x81,  0x98,    24,
-	0x84,  0x62,  0x9f,  0x82,  0x98,     0,  0x84,  0x62,
-	0x4c,  0x00,  0x86,  0x34,  0xe0,  0x40,  0x40,  0x00,
-	0x9f,  0x81,  0x40,  0x00,  0x9f,  0x80,  0x40,  0x00,
-	0x4c,  0x00,  0x86,  0x55,  0xa0,  0x04,  0xc0,  0x00,
-	0xc0,  0x00,  0x00,
+	0x00,  0x01,  0x00,  0x02,  0x00,  0x04,  0x90,  0x02,
+	0x94,  0x02,  0x9f,  0x80,  0x98,   255,  0x84,  0x62,
+	0x9f,  0x81,  0x98,    50,  0x84,  0x62,  0x9f,  0x82,
+	0x98,     0,  0x84,  0x62,  0x4c,  0x00,  0x86,  0x2c,
+	0x40,  0x00,  0x9f,  0x81,  0x40,  0x00,  0x9f,  0x80,
+	0x40,  0x00,  0x4c,  0x00,  0x86,  0x49,  0xa0,  0x03,
+	0xc0,  0x00,  0xc0,  0x00,  0x00,
 };
 static const TiLp55231Program blink_recovery1_program = {
 	blink_recovery1_text,
 	sizeof(blink_recovery1_text),
 	0,
-	{ 3,  27,  28,  }
-};
-static const uint8_t blink_recovery2_text[] = {
-	0x00,  0x49,  0x00,  0x92,  0x01,  0x24,  0x90,   255,
-	0x94,    24,  0x98,     0,  0xe0,  0x40,  0x9f,  0x80,
-	0xf0,  0x00,  0x84,  0x60,  0x9f,  0x81,  0x84,  0x61,
-	0x9f,  0x82,  0x84,  0x62,  0x4c,  0x00,  0xa0,  0x8b,
-	0xf0,  0x00,  0x40,  0x00,  0x9f,  0x81,  0x40,  0x00,
-	0x9f,  0x80,  0x40,  0x00,  0x4c,  0x00,  0xa0,  0x93,
-	0xa0,  0x05,  0xc0,  0x00,  0xc0,  0x00,  0x00,
-};
-static const TiLp55231Program blink_recovery2_program = {
-	blink_recovery2_text,
-	sizeof(blink_recovery2_text),
-	0,
-	{ 3,  26,  26,  }
+	{ 3,  24,  25,  }
 };
 
 /*
  * fade_in1.src
  *
- row_red:   dw 0000000001001001b
- row_green: dw 0000000010010010b
- row_blue:  dw 0000000100100100b
+ row_red:   dw 0000000000000001b
+ row_green: dw 0000000000000010b
+ row_blue:  dw 0000000000000100b
 
  .segment program1
 	mux_map_addr row_red
-	set_pwm 0h
-	trigger w{e}
+	set_pwm 1h
 	trigger s{2|3}
 	end
-
  .segment program2
 	mux_map_addr row_green
 	set_pwm 0h
-
 	trigger w{1}
-	ramp 2, 87
+	ramp 2, 50
 	end
-
 .segment program3
 	mux_map_addr row_blue
 	set_pwm 0h
  loop3: trigger w{1}
-	ramp 2, 155
-	end
-*/
-/*
- * fade_in2.src
- *
- row_red:   dw 0000000001001001b
- row_green: dw 0000000010010010b
- row_blue:  dw 0000000100100100b
-
- .segment program1
-	mux_map_addr row_red
-	set_pwm 0h
-	trigger s{e}
-	trigger s{2|3}
-	end
-
- .segment program2
-	mux_map_addr row_green
-	set_pwm 0h
-
-	trigger w{1}
-	ramp 2, 87
-	end
-
-.segment program3
-	mux_map_addr row_blue
-	set_pwm 0h
- loop3: trigger w{1}
-	ramp 2, 155
+	ramp 2, 255
 	end
 */
 
 static const uint8_t fade_in1_text[] = {
-	0x00,  0x49,  0x00,  0x92,  0x01,  0x24,  0x9f,  0x80,
-	0x40,  0x00,  0xf0,  0x00,  0xe0,  0x0c,  0xc0,  0x00,
-	0x9f,  0x81,  0x40,  0x00,  0xe0,  0x80,  0x42,  0x57,
-	0xc0,  0x00,  0x9f,  0x82,  0x40,  0x00,  0xe0,  0x80,
-	0x34,  0x9b,  0xc0,  0x00,  0x00,
+	0x00,  0x01,  0x00,  0x02,  0x00,  0x04,  0x9f,  0x80,
+	0x40,  0x01,  0xe0,  0x0c,  0xc0,  0x00,  0x9f,  0x81,
+	0x40,  0x00,  0xe0,  0x80,  0x46,  0x32,  0xc0,  0x00,
+	0x9f,  0x82,  0x40,  0x00,  0xe0,  0x80,  0x20,  0xff,
+	0xc0,  0x00,  0x00,
 };
 static const TiLp55231Program fade_in1_program = {
 	fade_in1_text,
 	sizeof(fade_in1_text),
 	0,
-	{ 3,  8,  13,  }
-};
-
-static const uint8_t fade_in2_text[] = {
-	0x00,  0x49,  0x00,  0x92,  0x01,  0x24,  0x9f,  0x80,
-	0x40,  0x00,  0xe0,  0x40,  0xe0,  0x0c,  0xc0,  0x00,
-	0x9f,  0x81,  0x40,  0x00,  0xe0,  0x80,  0x42,  0x57,
-	0xc0,  0x00,  0x9f,  0x82,  0x40,  0x00,  0xe0,  0x80,
-	0x34,  0x9b,  0xc0,  0x00,  0x00,
-};
-static const TiLp55231Program fade_in2_program = {
-	fade_in2_text,
-	sizeof(fade_in2_text),
-	0,
-	{ 3,  8,  13,  }
+	{ 3,  7,  12,  }
 };
 
 const WwRingStateProg wwr_state_programs[] = {
@@ -362,12 +228,10 @@ const WwRingStateProg wwr_state_programs[] = {
 	 * for test purposes the blank screen program is set to blinking, will
 	 * be changed soon.
 	 */
-	{WWR_ALL_OFF, {&solid_000000_program, &solid_000000_program} },
-	{WWR_RECOVERY_PUSHED, {&solid_808080_program, &solid_808080_program} },
-	{WWR_WIPEOUT_REQUEST, {&blink_wipeout1_program,
-			       &blink_wipeout2_program} },
-	{WWR_RECOVERY_REQUEST, {&blink_recovery1_program,
-				&blink_recovery2_program} },
-	{WWR_NORMAL_BOOT, {&fade_in1_program, &fade_in2_program} },
+	{WWR_ALL_OFF, {&solid_000000_program} },
+	{WWR_RECOVERY_PUSHED, {&solid_808080_program} },
+	{WWR_WIPEOUT_REQUEST, {&blink_wipeout1_program} },
+	{WWR_RECOVERY_REQUEST, {&blink_recovery1_program} },
+	{WWR_NORMAL_BOOT, {&fade_in1_program} },
 	{}, /* Empty record to mark the end of the table. */
 };

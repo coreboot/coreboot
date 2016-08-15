@@ -214,7 +214,7 @@ void set_cpu_topology(device_t cpu, unsigned node, unsigned package, unsigned co
 /* Debug functions */
 void print_resource_tree(struct device * root, int debug_level,
 			 const char *msg);
-void show_devs_tree(struct device *dev, int debug_level, int depth, int linknum);
+void show_devs_tree(struct device *dev, int debug_level, int depth);
 void show_devs_subtree(struct device *root, int debug_level, const char *msg);
 void show_all_devs(int debug_level, const char *msg);
 void show_all_devs_tree(int debug_level, const char *msg);

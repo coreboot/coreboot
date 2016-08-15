@@ -45,6 +45,9 @@
 /* SOC initialization before RAM is enabled */
 void soc_pre_ram_init(struct romstage_params *params)
 {
+	/* Program MCHBAR and DMIBAR */
+	systemagent_early_init();
+
 	/* Prepare to initialize memory */
 	soc_fill_pei_data(params->pei_data);
 }

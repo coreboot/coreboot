@@ -101,7 +101,7 @@ int platform_i2c_transfer(unsigned bus, struct i2c_seg *segments, int count)
 		length = segments->len;
 		ASSERT (buffer != NULL);
 		ASSERT (length >= 1);
-		ASSERT (segments->chip = chip);
+		ASSERT (segments->chip == chip);
 
 		if (segments->read) {
 			/* Place read commands into the FIFO */

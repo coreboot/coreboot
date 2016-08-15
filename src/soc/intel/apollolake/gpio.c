@@ -361,6 +361,7 @@ void gpio_route_gpe(uint8_t gpe0b, uint8_t gpe0c, uint8_t gpe0d)
 	uint32_t misccfg_mask;
 	uint32_t misccfg_value;
 	uint32_t value;
+	int ret;
 
 	/* Get the group here for community specific MISCCFG register.
 	 * If any of these returns -1 then there is some error in devicetree
@@ -368,15 +369,20 @@ void gpio_route_gpe(uint8_t gpe0b, uint8_t gpe0c, uint8_t gpe0d)
 	 * PMC group defines. So we return from here and MISCFG is set to
 	 * default.
 	 */
-	gpe0b = pmc_gpe_route_to_gpio(gpe0b);
-	if(gpe0b == -1)
+	ret = pmc_gpe_route_to_gpio(gpe0b);
+	if (ret == -1)
 		return;
-	gpe0c = pmc_gpe_route_to_gpio(gpe0c);
-	if(gpe0c == -1)
+	gpe0b = ret;
+
+	ret = pmc_gpe_route_to_gpio(gpe0c);
+	if (ret == -1)
 		return;
-	gpe0d = pmc_gpe_route_to_gpio(gpe0d);
-	if(gpe0d == -1)
+	gpe0c = ret;
+
+	ret = pmc_gpe_route_to_gpio(gpe0d);
+	if (ret == -1)
 		return;
+	gpe0d = ret;
 
 	misccfg_value = gpe0b << MISCCFG_GPE0_DW0_SHIFT;
 	misccfg_value |= gpe0c << MISCCFG_GPE0_DW1_SHIFT;

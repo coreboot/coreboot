@@ -36,7 +36,7 @@
 #define LP55231_NUM_OF_ENGINES 3
 
 /* Number of lp55321 controllers on the ring */
-#define WW_RING_NUM_LED_CONTROLLERS 2
+#define WW_RING_NUM_LED_CONTROLLERS 1
 
 /*
  * Structure to describe an lp55231 program: pointer to the text of the

@@ -60,7 +60,7 @@ static inline void printk(int LEVEL, const char *fmt, ...) {}
 static inline void do_putchar(unsigned char byte) {}
 #endif
 
-#if CONFIG_CHROMEOS
+#if IS_ENABLED(CONFIG_VBOOT)
 /* FIXME: Collision of varargs with AMD headers without guard. */
 #include <console/vtxprintf.h>
 #if __CONSOLE_ENABLE__

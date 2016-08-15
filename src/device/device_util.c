@@ -813,7 +813,7 @@ void print_resource_tree(struct device *root, int debug_level, const char *msg)
 	resource_tree(root, debug_level, 0);
 }
 
-void show_devs_tree(struct device *dev, int debug_level, int depth, int linknum)
+void show_devs_tree(struct device *dev, int debug_level, int depth)
 {
 	char depth_str[20];
 	int i;
@@ -830,7 +830,7 @@ void show_devs_tree(struct device *dev, int debug_level, int depth, int linknum)
 	for (link = dev->link_list; link; link = link->next) {
 		for (sibling = link->children; sibling;
 		     sibling = sibling->sibling)
-			show_devs_tree(sibling, debug_level, depth + 1, i);
+			show_devs_tree(sibling, debug_level, depth + 1);
 	}
 }
 
@@ -839,7 +839,7 @@ void show_all_devs_tree(int debug_level, const char *msg)
 	/* Bail if not printing to screen. */
 	if (!do_printk(debug_level, "Show all devs in tree form... %s\n", msg))
 		return;
-	show_devs_tree(all_devices, debug_level, 0, -1);
+	show_devs_tree(all_devices, debug_level, 0);
 }
 
 void show_devs_subtree(struct device *root, int debug_level, const char *msg)
@@ -849,7 +849,7 @@ void show_devs_subtree(struct device *root, int debug_level, const char *msg)
 		       dev_path(root), msg))
 		return;
 	do_printk(debug_level, "%s\n", msg);
-	show_devs_tree(root, debug_level, 0, -1);
+	show_devs_tree(root, debug_level, 0);
 }
 
 void show_all_devs(int debug_level, const char *msg)

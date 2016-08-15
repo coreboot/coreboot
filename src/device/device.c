@@ -989,7 +989,7 @@ void dev_enumerate(void)
 
 	show_all_devs(BIOS_SPEW, "Before device enumeration.");
 	printk(BIOS_SPEW, "Compare with tree...\n");
-	show_devs_tree(root, BIOS_SPEW, 0, 0);
+	show_devs_tree(root, BIOS_SPEW, 0);
 
 	if (root->chip_ops && root->chip_ops->enable_dev)
 		root->chip_ops->enable_dev(root);

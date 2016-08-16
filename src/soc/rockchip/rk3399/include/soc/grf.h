@@ -73,7 +73,7 @@ struct rk3399_grf_regs {
 	u32 reserved11[3];
 	u32 usbphy0_ctrl[26];
 	u32 reserved12[6];
-	u32 usbphy1[26];
+	u32 usbphy1_ctrl[26];
 	u32 reserved13[0x72f];
 	u32 soc_con9;
 	u32 reserved14[0x0a];

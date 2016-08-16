@@ -158,6 +158,15 @@ static void configure_display(void)
 
 static void setup_usb(void)
 {
+	/* A few magic PHY tuning values that improve eye diagram amplitude
+	 * and make it extra sure we get reliable communication in firmware. */
+	/* Set max ODT compensation voltage and current tuning reference. */
+	write32(&rk3399_grf->usbphy0_ctrl[3], 0x0fff02e3);
+	write32(&rk3399_grf->usbphy1_ctrl[3], 0x0fff02e3);
+	/* Set max pre-emphasis level, only on Kevin PHY0. */
+	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_KEVIN))
+		write32(&rk3399_grf->usbphy0_ctrl[12], 0xffff00a7);
+
 	setup_usb_otg0();
 	setup_usb_otg1();
 }

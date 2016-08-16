@@ -7,10 +7,30 @@ chip soc/intel/apollolake
 	register "pcie_rp0_clkreq_pin" = "3"    # wifi/bt
 	register "pcie_rp2_clkreq_pin" = "0"    # SSD
 
-	# EMMC TX DATA Delay 1#
+	# eMMC TX DATA Delay 1#
 	# 0x1A[14:8] stands for 26*125 = 3250 pSec delay for HS400
 	# 0x1A[6:0] stands for 26*125 = 3250 pSec delay for SDR104/HS200
 	register "emmc_tx_data_cntl1" = "0x1A1A" # HS400 required
+
+	# eMMC TX DATA Delay 2#
+	# 0x1C[30:24] stands for 28*125 = 3500 pSec delay for SDR50
+	# 0x1C[22:16] stands for 28*125 = 3500 pSec delay for DDR50
+	# 0x1C[14:8] stands for 28*125 = 3500 pSec delay for SDR25/HS50
+	# 0x00[6:0] stands for 0 delay for SDR12/Compatibility mode
+	register "emmc_tx_data_cntl2" = "0x1c1c1c00"
+
+	# eMMC RX CMD/DATA Delay 1#
+	# 0x1C[30:24] stands for 28*125 = 3500 pSec delay for SDR50
+	# 0x1C[22:16] stands for 28*125 = 3500 pSec delay for DDR50
+	# 0x1C[14:8] stands for 28*125 = 3500 pSec delay for SDR25/HS50
+	# 0x00[6:0] stands for 0 delay for SDR12/Compatibility
+	register "emmc_rx_cmd_data_cntl1" = "0x1c1c1c00"
+
+	# eMMC RX CMD/DATA Delay 2#
+	# 0x01[17:16] stands for Rx Clock before Output Buffer
+	# 0x00[14:8] stands for 0 delay for Auto Tuning Mode
+	# 0x1C[6:0] stands for 28*125 =  3500 pSec delay for SDR104/HS200
+	register "emmc_rx_cmd_data_cntl2" = "0x1001c"
 
 	# LPSS S0ix Enable
 	register "lpss_s0ix_enable" = "1"

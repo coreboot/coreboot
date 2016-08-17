@@ -350,6 +350,12 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_NF(GPIO_129, UP_2K, DEEP, NF1), /* LPSS_I2C2_SCL */
 };
 
+/* GPIO settings before entering sleep. */
+static const struct pad_config sleep_gpio_table[] = {
+	PAD_CFG_GPO(GPIO_150, 0, DEEP),		/* NFC_RESET_ODL */
+	PAD_CFG_GPI_APIC_LOW(GPIO_20, NONE, DEEP),	/* NFC_INT_L */
+};
+
 /*
  * The proto boards didn't have memory SKU pins, but the same ones can be
  * utilized as post proto boards because the pins used were never connected

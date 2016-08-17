@@ -72,6 +72,10 @@ static const struct pad_community *gpio_get_community(uint16_t pad)
 static void gpio_configure_itss(const struct pad_config *cfg,
 				uint16_t port, uint16_t pad_cfg_offset)
 {
+	/* No ITSS configuration in SMM. */
+	if (ENV_SMM)
+		return;
+
 	int irq;
 
 	/* Set up ITSS polarity if pad is routed to APIC.

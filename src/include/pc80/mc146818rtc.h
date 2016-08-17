@@ -101,7 +101,6 @@
 #define PC_CKS_RANGE_END	45
 #define PC_CKS_LOC		46
 
-#ifndef UTIL_BUILD_OPTION_TABLE
 static inline unsigned char cmos_read(unsigned char addr)
 {
 	int offs = 0;
@@ -168,7 +167,6 @@ static inline void cmos_write32(u8 offset, u32 value)
 	for (i = 0; i < sizeof(value); ++i)
 		cmos_write((value >> (i << 3)) & 0xff, offset + i);
 }
-#endif
 
 #if !defined(__ROMCC__)
 void cmos_init(bool invalid);

@@ -19,7 +19,9 @@
 #include <ec/google/chromeec/smm.h>
 #include <soc/pm.h>
 #include <soc/smm.h>
+#include <soc/gpio.h>
 #include "ec.h"
+#include "gpio.h"
 
 void mainboard_smi_gpi_handler(const struct gpi_status *sts)
 {
@@ -29,6 +31,8 @@ void mainboard_smi_gpi_handler(const struct gpi_status *sts)
 
 void mainboard_smi_sleep(u8 slp_typ)
 {
+	gpio_configure_pads(sleep_gpio_table, ARRAY_SIZE(sleep_gpio_table));
+
 	if (slp_typ == ACPI_S3)
 		enable_gpe(GPIO_TIER_1_SCI);
 

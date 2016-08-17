@@ -60,16 +60,22 @@ int ps8640_init(uint8_t bus, uint8_t chip)
 	u8 set_vdo_done;
 	struct stopwatch sw;
 
-	stopwatch_init_msecs_expire(&sw, 350);
+	mdelay(200);
+	stopwatch_init_msecs_expire(&sw, 200);
 
-	do {
+	while (true) {
 		i2c_readb(bus, chip + 2, PAGE2_GPIO_H, &set_vdo_done);
+		if ((set_vdo_done & PS_GPIO9) == PS_GPIO9)
+			break;
 		if (stopwatch_expired(&sw)) {
 			printk(BIOS_INFO, "Failed to init ps8640.\n");
 			return -1;
 		}
-	} while ((set_vdo_done & PS_GPIO9) != PS_GPIO9);
 
+		mdelay(20);
+	}
+
+	mdelay(50);
 	i2c_writeb(bus, chip + 3, PAGE3_SET_ADD, VDO_CTL_ADD);
 	i2c_writeb(bus, chip + 3, PAGE3_SET_VAL, VDO_DIS);
 	i2c_writeb(bus, chip + 3, PAGE3_SET_ADD, VDO_CTL_ADD);

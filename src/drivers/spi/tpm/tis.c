@@ -62,7 +62,7 @@ int tis_init(void)
 
 	if (tpm2_init(spi_setup_slave(CONFIG_DRIVER_TPM_SPI_BUS,
 				      CONFIG_DRIVER_TPM_SPI_CHIP))) {
-		printk(BIOS_ERR, "Failed to initialize TPM SPI intierface\n");
+		printk(BIOS_ERR, "Failed to initialize TPM SPI interface\n");
 		return -1;
 	}
 

@@ -125,7 +125,7 @@ DMIC_2CH_48KHZ_16B = dmic-2ch-48khz-16b.bin
 MAX98357_RENDER = max98357-render-2ch-48khz-24b.bin
 DA7219_RENDER_CAPTURE = dialog-2ch-48khz-24b.bin
 
-cbfs-files-$(CONFIG_NHLT_DMIC_2CH) += $(DMIC_2CH_48KHZ_16B)
+cbfs-files-$(CONFIG_NHLT_DMIC_2CH_16B) += $(DMIC_2CH_48KHZ_16B)
 $(DMIC_2CH_48KHZ_16B)-file := $(NHLT_BLOB_PATH)/$(DMIC_2CH_48KHZ_16B)
 $(DMIC_2CH_48KHZ_16B)-type := raw
 

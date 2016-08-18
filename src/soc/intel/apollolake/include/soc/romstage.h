@@ -22,5 +22,6 @@
 #include <fsp/api.h>
 
 void mainboard_memory_init_params(struct FSPM_UPD *mupd);
+void mainboard_save_dimm_info(void);
 
 #endif /* _SOC_APOLLOLAKE_ROMSTAGE_H_ */

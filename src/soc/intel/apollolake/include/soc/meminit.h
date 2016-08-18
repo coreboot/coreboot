@@ -101,6 +101,7 @@ struct lpddr4_sku {
 	int ch1_rank_density;
 	int ch0_dual_rank;
 	int ch1_dual_rank;
+	const char *part_num;
 };
 
 struct lpddr4_cfg {
@@ -115,5 +116,6 @@ struct lpddr4_cfg {
  */
 void meminit_lpddr4_by_sku(struct FSP_M_CONFIG *cfg,
 				const struct lpddr4_cfg *lpcfg, size_t sku_id);
+void save_lpddr4_dimm_info(const struct lpddr4_cfg *lpcfg, size_t mem_sku);
 
 #endif /* _SOC_APOLLOLAKE_MEMINIT_H_ */

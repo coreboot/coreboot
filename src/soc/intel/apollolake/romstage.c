@@ -118,6 +118,8 @@ asmlinkage void car_stage_entry(void)
 	if (postcar_frame_init(&pcf, 1*KiB))
 		die("Unable to initialize postcar frame.\n");
 
+	mainboard_save_dimm_info();
+
 	/*
 	 * We need to make sure ramstage will be run cached. At this point exact
 	 * location of ramstage in cbmem is not known. Instruct postcar to cache
@@ -166,6 +168,12 @@ void platform_fsp_memory_init_params_cb(struct FSPM_UPD *mupd)
 
 __attribute__ ((weak))
 void mainboard_memory_init_params(struct FSPM_UPD *mupd)
+{
+	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
+}
+
+__attribute__ ((weak))
+void mainboard_save_dimm_info(void)
 {
 	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
 }

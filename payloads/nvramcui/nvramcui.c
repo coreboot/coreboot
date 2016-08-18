@@ -56,44 +56,42 @@ void render_form(FORM *form)
 	wrefresh(w);
 }
 
-int main()
+/* determine number of options, and maximum option name length */
+static int count_cmos_options(struct cb_cmos_entries *option, int *numopts,
+		int *maxlength)
 {
-	int ch, done;
+	int n_opts = 0;
+	int max_l = 0;
 
-	/* coreboot data structures */
-	lib_get_sysinfo();
-
-	struct cb_cmos_option_table *opttbl = get_system_option_table();
-
-	if (opttbl == NULL) {
-		printf("Could not find coreboot option table\n");
-		halt();
-	}
-
-	/* prep CMOS layout into libcurses data structures */
-
-	/* determine number of options, and maximum option name length */
-	int numopts = 0;
-	int maxlength = 0;
-	struct cb_cmos_entries *option = first_cmos_entry(opttbl);
 	while (option) {
 		if ((option->config != 'r') &&
 		    (strcmp("check_sum", (char *)option->name) != 0)) {
-			maxlength = max(maxlength, strlen((char *)option->name));
-			numopts++;
+			max_l = max(max_l, strlen((char *)option->name));
+			n_opts++;
 		}
+
 		option = next_cmos_entry(option);
 	}
-	if (numopts == 0) {
-		printf("NO CMOS OPTIONS FOUND. EXITING!!!");
-		return 1;
-	}
-	FIELD **fields = malloc(sizeof(FIELD *) * (2 * numopts + 1));
-	int i;
 
-	/* walk over options, fetch details */
-	option = first_cmos_entry(opttbl);
-	for (i = 0; i < numopts; i++) {
+	if (n_opts == 0) {
+		printf("NO CMOS OPTIONS FOUND. EXITING!!!");
+		return -1;
+	}
+
+	*numopts = n_opts;
+	*maxlength = max_l;
+
+	return 0;
+
+}
+
+/* walk over options, fetch details */
+static void cmos_walk_options(struct cb_cmos_option_table *opttbl,
+		FIELD **fields, int numopts, int maxlength)
+{
+	struct cb_cmos_entries *option = first_cmos_entry(opttbl);
+
+	for (int i = 0; i < numopts; i++) {
 		while ((option->config == 'r') ||
 		       (strcmp("check_sum", (char *)option->name) == 0)) {
 			option = next_cmos_entry(option);
@@ -168,7 +166,35 @@ int main()
 
 		option = next_cmos_entry(option);
 	}
+
 	fields[2 * numopts] = NULL;
+}
+
+int main(void)
+{
+	int ch, done;
+
+	/* coreboot data structures */
+	lib_get_sysinfo();
+
+	struct cb_cmos_option_table *opttbl = get_system_option_table();
+
+	if (opttbl == NULL && cmos_default == NULL) {
+		printf("Could not find coreboot option table/cmos.default.\n");
+		halt();
+	}
+
+	/* prep CMOS layout into libcurses data structures */
+
+	struct cb_cmos_entries *option = first_cmos_entry(opttbl);
+	int numopts = 0;
+	int maxlength = 0;
+
+	count_cmos_options(option, &numopts, &maxlength);
+
+	FIELD **fields = malloc(sizeof(FIELD *) * (2 * numopts + 1));
+
+	cmos_walk_options(opttbl, fields, numopts, maxlength);
 
 	/* display initialization */
 	initscr();
@@ -242,7 +268,7 @@ int main()
 
 	endwin();
 
-	for (i = 0; i < numopts; i++) {
+	for (int i = 0; i < numopts; i++) {
 		char *name = field_buffer(fields[2 * i], 0);
 		char *value = field_buffer(fields[2 * i + 1], 0);
 		char *ptr;

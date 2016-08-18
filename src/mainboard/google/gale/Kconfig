@@ -49,6 +49,11 @@ config MAINBOARD_PART_NUMBER
 	default "DK01" if BOARD_VARIANT_DK01
 	default "Gale"
 
+config GBB_HWID
+	string
+	depends on CHROMEOS
+	default "Gale TEST 1"
+
 config DRAM_SIZE_MB
 	int
 	default 512 if BOARD_VARIANT_DK01

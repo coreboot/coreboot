@@ -36,6 +36,11 @@ config MAINBOARD_FAMILY
 	string
 	default "Google_Reef"
 
+config GBB_HWID
+	string
+	depends on CHROMEOS
+	default "REEF TEST 3240"
+
 config MAX_CPUS
 	int
 	default 8

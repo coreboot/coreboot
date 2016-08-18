@@ -56,14 +56,7 @@ uintptr_t mcall_query_memory(uintptr_t id, memory_block_info *p)
 
 uintptr_t mcall_send_ipi(uintptr_t recipient)
 {
-	//if (recipient >= num_harts)
-	//return -1;
-
-	if (atomic_swap(&OTHER_HLS(recipient)->ipi_pending, 1) == 0) {
-		mb();
-		write_csr(send_ipi, recipient);
-	}
-
+	die("mcall_send_ipi is currently not implemented");
 	return 0;
 }
 

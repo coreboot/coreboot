@@ -61,6 +61,7 @@ const void *fsp_get_hob_list(void);
 void *fsp_get_hob_list_ptr(void);
 const void *fsp_find_extension_hob_by_guid(const uint8_t *guid, size_t *size);
 const void *fsp_find_nv_storage_data(size_t *size);
+const void *fsp_find_smbios_memory_info(size_t *size);
 enum cb_err fsp_fill_lb_framebuffer(struct lb_framebuffer *framebuffer);
 int fsp_find_range_hob(struct range_entry *re, const uint8_t guid[16]);
 int fsp_find_reserved_memory(struct range_entry *re);

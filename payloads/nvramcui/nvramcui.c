@@ -179,8 +179,8 @@ int main(void)
 
 	struct cb_cmos_option_table *opttbl = get_system_option_table();
 
-	if (opttbl == NULL && cmos_default == NULL) {
-		printf("Could not find coreboot option table/cmos.default.\n");
+	if (opttbl == NULL) {
+		printf("Could not find coreboot option table.\n");
 		halt();
 	}
 

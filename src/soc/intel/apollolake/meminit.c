@@ -12,8 +12,11 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
-
+#include <cbmem.h>
 #include <console/console.h>
+#include <fsp/util.h>
+#include <memory_info.h>
+#include <smbios.h>
 #include <soc/meminit.h>
 #include <stddef.h> /* required for FspmUpd.h */
 #include <soc/fsp/FspmUpd.h>
@@ -252,3 +255,86 @@ void meminit_lpddr4_by_sku(struct FSP_M_CONFIG *cfg,
 						lpcfg->swizzle_config);
 	}
 }
+
+void save_lpddr4_dimm_info(const struct lpddr4_cfg *lp4cfg, size_t mem_sku)
+{
+	int channel, dimm, dimm_max, index;
+	size_t hob_size;
+	const struct DIMM_INFO *src_dimm;
+	struct dimm_info *dest_dimm;
+	struct memory_info *mem_info;
+	const struct CHANNEL_INFO *channel_info;
+	const struct FSP_SMBIOS_MEMORY_INFO *memory_info_hob;
+
+	if (mem_sku >= lp4cfg->num_skus) {
+		printk(BIOS_ERR, "Too few LPDDR4 SKUs: 0x%zx/0x%zx\n",
+				mem_sku, lp4cfg->num_skus);
+		return;
+	}
+
+	memory_info_hob = fsp_find_smbios_memory_info(&hob_size);
+
+	/*
+	 * Allocate CBMEM area for DIMM information used to populate SMBIOS
+	 * table 17
+	 */
+	mem_info = cbmem_add(CBMEM_ID_MEMINFO, sizeof(*mem_info));
+	if (mem_info == NULL) {
+		printk(BIOS_ERR, "CBMEM entry for DIMM info missing\n");
+		return;
+	}
+	memset(mem_info, 0, sizeof(*mem_info));
+
+	/* Describe the first N DIMMs in the system */
+	index = 0;
+	dimm_max = ARRAY_SIZE(mem_info->dimm);
+	for (channel = 0; channel < memory_info_hob->ChannelCount; channel++) {
+		if (index >= dimm_max)
+			break;
+		channel_info = &memory_info_hob->ChannelInfo[channel];
+		for (dimm = 0; dimm < channel_info->DimmCount; dimm++) {
+			if (index >= dimm_max)
+				break;
+			src_dimm = &channel_info->DimmInfo[dimm];
+			dest_dimm = &mem_info->dimm[index];
+
+			if (!src_dimm->SizeInMb)
+				continue;
+
+			/* Populate the DIMM information */
+			dest_dimm->dimm_size = src_dimm->SizeInMb;
+			dest_dimm->ddr_type = memory_info_hob->MemoryType;
+			dest_dimm->ddr_frequency =
+					memory_info_hob->MemoryFrequencyInMHz;
+			dest_dimm->channel_num = channel_info->ChannelId;
+			dest_dimm->dimm_num = src_dimm->DimmId;
+			strncpy((char *)dest_dimm->module_part_number,
+					lp4cfg->skus[mem_sku].part_num,
+					sizeof(dest_dimm->module_part_number));
+
+			switch (memory_info_hob->DataWidth) {
+			case 8:
+				dest_dimm->bus_width = MEMORY_BUS_WIDTH_8;
+				break;
+			case 16:
+				dest_dimm->bus_width = MEMORY_BUS_WIDTH_16;
+				break;
+			case 32:
+				dest_dimm->bus_width = MEMORY_BUS_WIDTH_32;
+				break;
+			case 64:
+				dest_dimm->bus_width = MEMORY_BUS_WIDTH_64;
+				break;
+			case 128:
+				dest_dimm->bus_width = MEMORY_BUS_WIDTH_128;
+				break;
+			default:
+				printk(BIOS_ERR, "Incorrect DIMM Data Width");
+			}
+			index++;
+		}
+	}
+	mem_info->dimm_cnt = index;
+	printk(BIOS_DEBUG, "%d DIMMs found\n", mem_info->dimm_cnt);
+}
+

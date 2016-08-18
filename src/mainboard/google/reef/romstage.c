@@ -82,12 +82,14 @@ static const struct lpddr4_sku skus[] = {
 		.ch1_rank_density = LP4_8Gb_DENSITY,
 		.ch0_dual_rank = 1,
 		.ch1_dual_rank = 1,
+		.part_num = "K4F6E304HB-MGCJ",
 	},
 	/* K4F8E304HB-MGCJ - both logical channels  */
 	[1] = {
 		.speed = LP4_SPEED_2400,
 		.ch0_rank_density = LP4_8Gb_DENSITY,
 		.ch1_rank_density = LP4_8Gb_DENSITY,
+		.part_num = "K4F8E304HB-MGCJ",
 	},
 	/*
 	 * MT53B512M32D2NP-062WT:C - both logical channels. While the parts
@@ -100,18 +102,21 @@ static const struct lpddr4_sku skus[] = {
 		.ch1_rank_density = LP4_8Gb_DENSITY,
 		.ch0_dual_rank = 1,
 		.ch1_dual_rank = 1,
+		.part_num = "MT53B512M32D2NP",
 	},
 	/* MT53B256M32D1NP-062 WT:C - both logical channels */
 	[3] = {
 		.speed = LP4_SPEED_2400,
 		.ch0_rank_density = LP4_8Gb_DENSITY,
 		.ch1_rank_density = LP4_8Gb_DENSITY,
+		.part_num = "MT53B256M32D1NP",
 	},
 	/* K4F8E304HB-MGCH - both logical channels */
 	[PROTO_SKU] = {
 		.speed = LP4_SPEED_2400,
 		.ch0_rank_density = LP4_8Gb_DENSITY,
 		.ch1_rank_density = LP4_8Gb_DENSITY,
+		.part_num = "K4F8E304HB-MGCH",
 	},
 };
 
@@ -121,9 +126,8 @@ static const struct lpddr4_cfg lp4cfg = {
 	.swizzle_config = &board_swizzle,
 };
 
-void mainboard_memory_init_params(struct FSPM_UPD *memupd)
+static int get_mem_sku(void)
 {
-	int mem_sku;
 	gpio_t pads[] = {
 		[3] = MEM_CONFIG3, [2] = MEM_CONFIG2,
 		[1] = MEM_CONFIG1, [0] = MEM_CONFIG0,
@@ -133,7 +137,19 @@ void mainboard_memory_init_params(struct FSPM_UPD *memupd)
 	 * Read memory SKU id with internal pullups enabled to handle
 	 * proto boards with no SKU id pins.
 	 */
-	mem_sku = gpio_pullup_base2_value(pads, ARRAY_SIZE(pads));
+	return gpio_pullup_base2_value(pads, ARRAY_SIZE(pads));
+}
+
+void mainboard_memory_init_params(struct FSPM_UPD *memupd)
+{
+	int mem_sku = get_mem_sku();
 
 	meminit_lpddr4_by_sku(&memupd->FspmConfig, &lp4cfg, mem_sku);
+}
+
+void mainboard_save_dimm_info(void)
+{
+	int mem_sku = get_mem_sku();
+
+	save_lpddr4_dimm_info(&lp4cfg, mem_sku);
 }

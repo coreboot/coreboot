@@ -36,6 +36,11 @@ config MAINBOARD_VENDOR
 	string
 	default "Intel"
 
+config GBB_HWID
+	string
+	depends on CHROMEOS
+	default "AMENIA TEST"
+
 config FMAP_FILE
 	string
 	default "amenia"

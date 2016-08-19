@@ -214,6 +214,9 @@ chip northbridge/amd/amdfam10/root_complex	# Root complex
 							device pnp 2e.d off end		# VID_BUSSEL
 							device pnp 2e.f off end		# GPIO_PP_OD
 						end
+						chip drivers/pc80/tpm
+							device pnp 4e.0 on end		# TPM module
+						end
 					end
 					device pci 14.4 on			# Bridge
 						device pci 1.0 on end		# VGA

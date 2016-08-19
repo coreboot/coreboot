@@ -56,6 +56,23 @@ int cbfs_for_each_file(const struct region_device *cbfs,
 			const struct cbfsf *prev, struct cbfsf *fh);
 
 /*
+ * Return the offset for each CBFS attribute in a CBFS file metadata region.
+ * The metadata must already be fully mapped by the caller. Will return the
+ * offset (relative to the start of the metadata) or 0 when there are no
+ * further attributes. Should be called with 0 to begin, then always with
+ * the previously returned value until it returns 0.
+ */
+size_t cbfs_for_each_attr(void *metadata, size_t metadata_size,
+			  size_t last_offset);
+
+/*
+ * Find out the decompression algorithm and decompressed size of a non-stage
+ * CBFS file (by parsing its metadata attributes), and return them with
+ * out-parameters. Returns 0 on success and < 0 on error.
+ */
+int cbfsf_decompression_info(struct cbfsf *fh, uint32_t *algo, size_t *size);
+
+/*
  * Perform the vb2 hash over the CBFS region skipping empty file contents.
  * Caller is responsible for providing the hash algorithm as well as storage
  * for the final digest. Return 0 on success or non-zero on error.

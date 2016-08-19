@@ -133,8 +133,55 @@ struct cbfs_file {
 	char magic[8];
 	uint32_t len;
 	uint32_t type;
-	uint32_t checksum;
+	uint32_t attributes_offset;
 	uint32_t offset;
+} __attribute__((packed));
+
+/* The common fields of extended cbfs file attributes.
+   Attributes are expected to start with tag/len, then append their
+   specific fields. */
+struct cbfs_file_attribute {
+	uint32_t tag;
+	/* len covers the whole structure, incl. tag and len */
+	uint32_t len;
+	uint8_t data[0];
+} __attribute__((packed));
+
+/* Depending on how the header was initialized, it may be backed with 0x00 or
+ * 0xff. Support both. */
+#define CBFS_FILE_ATTR_TAG_UNUSED 0
+#define CBFS_FILE_ATTR_TAG_UNUSED2 0xffffffff
+#define CBFS_FILE_ATTR_TAG_COMPRESSION 0x42435a4c
+#define CBFS_FILE_ATTR_TAG_HASH 0x68736148
+#define CBFS_FILE_ATTR_TAG_POSITION 0x42435350  /* PSCB */
+#define CBFS_FILE_ATTR_TAG_ALIGNMENT 0x42434c41 /* ALCB */
+
+struct cbfs_file_attr_compression {
+	uint32_t tag;
+	uint32_t len;
+	/* whole file compression format. 0 if no compression. */
+	uint32_t compression;
+	uint32_t decompressed_size;
+} __attribute__((packed));
+
+struct cbfs_file_attr_hash {
+	uint32_t tag;
+	uint32_t len;
+	uint32_t hash_type;
+	/* hash_data is len - sizeof(struct) bytes */
+	uint8_t  hash_data[];
+} __attribute__((packed));
+
+struct cbfs_file_attr_position {
+	uint32_t tag;
+	uint32_t len;
+	uint32_t position;
+} __attribute__((packed));
+
+struct cbfs_file_attr_align {
+	uint32_t tag;
+	uint32_t len;
+	uint32_t alignment;
 } __attribute__((packed));
 
 /*

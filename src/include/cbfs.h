@@ -34,6 +34,10 @@ int cbfs_boot_locate(struct cbfsf *fh, const char *name, uint32_t *type);
  * leaking mappings are a no-op. Returns NULL on error, else returns
  * the mapping and sets the size of the file. */
 void *cbfs_boot_map_with_leak(const char *name, uint32_t type, size_t *size);
+/* Load a struct file from CBFS into a buffer. Returns amount of loaded
+ * bytes on success or 0 on error. File will get decompressed as necessary.
+ * Same decompression requirements as cbfs_load_and_decompress(). */
+size_t cbfs_boot_load_struct(const char *name, void *buf, size_t buf_size);
 
 /* Load |in_size| bytes from |rdev| at |offset| to the |buffer_size| bytes
  * large |buffer|, decompressing it according to |compression| in the process.

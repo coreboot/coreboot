@@ -25,6 +25,7 @@
 #include <device/pci_def.h>
 #include <console/console.h>
 #include <halt.h>
+#include <rules.h>
 #include <stdlib.h>
 #include <soc/gpio.h>
 #include <soc/iomap.h>
@@ -435,5 +436,12 @@ uint16_t smbus_tco_regs(void)
 void poweroff(void)
 {
 	enable_pm1_control(SLP_EN | (SLP_TYP_S5 << SLP_TYP_SHIFT));
-	halt();
+
+	/*
+	 * Setting SLP_TYP_S5 in PM1 triggers SLP_SMI, which is handled by SMM
+	 * to transition to S5 state. If halt is called in SMM, then it prevents
+	 * the SMI handler from being triggered and system never enters S5.
+	 */
+	if (!ENV_SMM)
+		halt();
 }

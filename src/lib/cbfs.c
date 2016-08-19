@@ -79,6 +79,8 @@ size_t cbfs_load_and_decompress(const struct region_device *rdev, size_t offset,
 
 	switch (compression) {
 	case CBFS_COMPRESS_NONE:
+		if (buffer_size < in_size)
+			return 0;
 		if (rdev_readat(rdev, buffer, offset, in_size) != in_size)
 			return 0;
 		return in_size;
@@ -164,6 +166,25 @@ void *cbfs_boot_load_stage_by_name(const char *name)
 		return NULL;
 
 	return prog_entry(&stage);
+}
+
+size_t cbfs_boot_load_struct(const char *name, void *buf, size_t buf_size)
+{
+	struct cbfsf fh;
+	uint32_t compression_algo;
+	size_t decompressed_size;
+	uint32_t type = CBFS_TYPE_STRUCT;
+
+	if (cbfs_boot_locate(&fh, name, &type) < 0)
+		return 0;
+
+	if (cbfsf_decompression_info(&fh, &compression_algo,
+				     &decompressed_size) < 0
+				     || decompressed_size > buf_size)
+		return 0;
+
+	return cbfs_load_and_decompress(&fh.data, 0, region_device_sz(&fh.data),
+					buf, buf_size, compression_algo);
 }
 
 int cbfs_prog_stage_load(struct prog *pstage)

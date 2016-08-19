@@ -328,7 +328,7 @@ int gpi_status_get(const struct gpi_status *sts, gpio_t gpi)
 	if (comm == NULL)
 		return 0;
 
-	sts_index = comm->gpi_offset + (gpi - (comm->first_pad) /
+	sts_index = comm->gpi_offset + ((gpi - comm->first_pad) /
 					GPIO_MAX_NUM_PER_GROUP);
 
 	return !!(sts->grp[sts_index] & (1 << (gpi % GPIO_MAX_NUM_PER_GROUP)));

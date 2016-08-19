@@ -13,6 +13,8 @@
 ## GNU General Public License for more details.
 ##
 
+subdirs-y += sdram_params/
+
 bootblock-y += bootblock.c
 bootblock-y += chromeos.c
 bootblock-y += memlayout.ld

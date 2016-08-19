@@ -20,6 +20,7 @@ Device (SBUS)
 {
 	Name (_ADR, 0x001f0003)
 
+#ifdef ENABLE_SMBUS_METHODS
 	OperationRegion (SMBP, PCI_Config, 0x00, 0x100)
 	Field(SMBP, DWordAcc, NoLock, Preserve)
 	{
@@ -53,7 +54,6 @@ Device (SBUS)
 		NDLH,	8,	// Notify Data High Byte
 	}
 
-#ifdef ENABLE_SMBUS_METHODS
 	// Kill all SMBus communication
 	Method (KILL, 0, Serialized)
 	{

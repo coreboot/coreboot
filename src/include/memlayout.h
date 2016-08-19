@@ -75,7 +75,8 @@
 #define DRAM_START(addr) SYMBOL(dram, addr)
 
 #define TIMESTAMP(addr, size) \
-	REGION(timestamp, addr, size, 8)
+	REGION(timestamp, addr, size, 8) \
+	_ = ASSERT(size >= 212, "Timestamp region must fit timestamp_cache!");
 
 #define PRERAM_CBMEM_CONSOLE(addr, size) \
 	REGION(preram_cbmem_console, addr, size, 4)

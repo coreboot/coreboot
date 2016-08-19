@@ -48,7 +48,9 @@
 #define  ME_HFS_POWER_SOURCE_AC 1
 #define  ME_HFS_POWER_SOURCE_DC 2
 
-struct me_hfs {
+union me_hfs {
+	u32 data;
+	struct {
 	u32 working_state: 4;
 	u32 mfg_mode: 1;
 	u32 fpt_bad: 1;
@@ -66,7 +68,8 @@ struct me_hfs {
 	u32 current_power_source: 2;
 	u32 d3_support_valid: 1;
 	u32 d0i3_support_valid: 1;
-} __attribute__ ((packed));
+	} __attribute__ ((packed)) fields;
+};
 
 #define PCI_ME_HFSTS2		0x48
 /* Infrastructure Progress Values */
@@ -145,7 +148,9 @@ struct me_hfs {
 #define  ME_HFS2_PMEVENT_CM3_CM3PG 0xe
 #define  ME_HFS2_PMEVENT_CM0PG_CM0 0xf
 
-struct me_hfs2 {
+union me_hfs2 {
+	u32 data;
+	struct {
 	u32 reserved1: 3;
 	u32 invoke_mebx: 1;
 	u32 cpu_replaced_sts: 1;
@@ -161,13 +166,16 @@ struct me_hfs2 {
 	u32 current_state: 8;
 	u32 current_pmevent: 4;
 	u32 progress_code: 4;
-} __attribute__ ((packed));
+	} __attribute__ ((packed)) fields;
+};
 
 #define PCI_ME_HFSTS3			0x60
 #define  ME_HFS3_FW_SKU_CONSUMER	0x2
 #define  ME_HFS3_FW_SKU_CORPORATE	0x3
 
-struct me_hfs3 {
+union me_hfs3 {
+	u32 data;
+	struct {
 	u32 reserved1: 4;
 	u32 fw_sku: 3;
 	u32 encrypt_key_check: 1;
@@ -175,8 +183,80 @@ struct me_hfs3 {
 	u32 reserved2: 21;
 	u32 encrypt_key_override: 1;
 	u32 power_down_mitigation: 1;
-} __attribute__ ((packed));
+	} __attribute__ ((packed)) fields;
+};
+
+/*
+ * Management Engine MMIO registers
+ */
+#define MMIO_ME_CB_WW	0x00
+#define MMIO_HOST_CSR	0x04
+
+union host_csr {
+	u32 data;
+	struct {
+	u32 int_en: 1;
+	u32 int_sts: 1;
+	u32 int_gen: 1;
+	u32 host_ready: 1;
+	u32 host_reset: 1;
+	u32 rsv: 3;
+	u32 host_read_offset: 8;
+	u32 host_write_offset: 8;
+	u32 me_cir_depth: 8;
+	} __attribute__ ((packed)) fields;
+};
+
+#define MMIO_ME_CB_RW	0x08
+#define MMIO_ME_CSR	0x0C
+
+union me_csr {
+	u32 data;
+	struct {
+	u32 int_en: 1;
+	u32 int_sts: 1;
+	u32 int_gen: 1;
+	u32 host_ready: 1;
+	u32 host_reset: 1;
+	u32 rsv: 3;
+	u32 me_read_offset: 8;
+	u32 me_write_offset: 8;
+	u32 me_cir_buff: 8;
+	} __attribute__ ((packed)) fields;
+};
+
+#define MMIO_ME_D0I3	0x800
+
+/* Reset Request  */
+#define MKHI_GLOBAL_RESET	0x0b
+
+#define GR_ORIGIN_BIOS_MEM_INIT	0x01
+#define GR_ORIGIN_BIOS_POST	0x02
+#define GR_ORIGIN_MEBX	0x03
+
+#define GLOBAL_RST_TYPE	0x01
+
+#define BIOS_HOST_ADD	0x00
+#define HECI_MKHI_ADD	0x07
+
+#define MAX_HECI_MESSAGE 5
+#define HECI_TIMEOUT 15000000 /* 15sec */
+#define HECI_SEND_TIMEOUT 5000000 /* 5sec */
+#define HECI_READ_TIMEOUT 5000000 /* 5sec */
+#define HECI_DELAY 1000 /* 1ms */
+
+union mei_header {
+	u32 data;
+	struct {
+	u32 client_address: 8;
+	u32 host_address: 8;
+	u32 length: 9;
+	u32 reserved: 6;
+	u32 is_complete: 1;
+	} __attribute__ ((packed)) fields;
+};
 
 void intel_me_status(void);
+int send_global_reset(void);
 
 #endif

@@ -56,7 +56,7 @@ Scope (_GPE)
 	// SMBus (Reserved!)
 	Method (_L07, 0)
 	{
-		Store (0x20, \_SB.PCI0.SBUS.HSTS)
+		// Store (0x20, \_SB.PCI0.SBUS.HSTS)
 	}
 
 	// COM1/COM2 (RI)

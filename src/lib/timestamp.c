@@ -27,6 +27,7 @@
 
 #define MAX_TIMESTAMPS 84
 
+/* When changing this number, adjust TIMESTAMP() size ASSERT() in memlayout.h */
 #define MAX_BSS_TIMESTAMP_CACHE 16
 
 struct __attribute__((__packed__)) timestamp_cache {

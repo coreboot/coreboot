@@ -67,9 +67,8 @@ void cbmem_initialize_empty_id_size(u32 id, u64 size);
 /* Return the top address for dynamic cbmem. The address returned needs to
  * be consistent across romstage and ramstage, and it is required to be
  * below 4GiB.
- * Board or chipset should return NULL if any interface that might rely on cbmem
- * (e.g. cbfs, vboot) is used before the cbmem backing store has been
- * initialized. */
+ * x86 boards or chipsets must return NULL before the cbmem backing store has
+ * been initialized. */
 void *cbmem_top(void);
 
 /* Add a cbmem entry of a given size and id. These return NULL on failure. The

@@ -4,6 +4,7 @@
  * found in the LICENSE file.
  */
 
+#include <arch/early_variables.h>
 #include <console/console.h>
 #include <endian.h>
 #include <lib/tpm2_tlcl_structures.h>
@@ -24,10 +25,12 @@ static void *tpm_process_command(TPM_CC command, void *command_body)
 	ssize_t out_size;
 	size_t in_size;
 	/* Command/response buffer. */
-	static uint8_t cr_buffer[TPM_BUFFER_SIZE];
+	static uint8_t cr_buffer[TPM_BUFFER_SIZE] CAR_GLOBAL;
+
+	uint8_t *cr_buffer_ptr = car_get_var_ptr(cr_buffer);
 
 	out_size = tpm_marshal_command(command, command_body,
-				       cr_buffer, sizeof(cr_buffer));
+				       cr_buffer_ptr, sizeof(cr_buffer));
 	if (out_size < 0) {
 		printk(BIOS_ERR, "command %#x, cr size %zd\n",
 		       command, out_size);
@@ -35,13 +38,13 @@ static void *tpm_process_command(TPM_CC command, void *command_body)
 	}
 
 	in_size = sizeof(cr_buffer);
-	if (tis_sendrecv(cr_buffer, out_size,
-			 cr_buffer, &in_size)) {
+	if (tis_sendrecv(cr_buffer_ptr, out_size,
+			 cr_buffer_ptr, &in_size)) {
 		printk(BIOS_ERR, "tpm transaction failed\n");
 		return NULL;
 	}
 
-	return tpm_unmarshal_response(command, cr_buffer, in_size);
+	return tpm_unmarshal_response(command, cr_buffer_ptr, in_size);
 }
 
 

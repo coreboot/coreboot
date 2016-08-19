@@ -4,6 +4,7 @@
  * found in the LICENSE file.
  */
 
+#include <arch/early_variables.h>
 #include <commonlib/endian.h>
 #include <console/console.h>
 #include <stdlib.h>
@@ -11,7 +12,7 @@
 
 #include "tpm2_marshaling.h"
 
-static uint16_t tpm_tag;  /* Depends on the command type. */
+static uint16_t tpm_tag CAR_GLOBAL;  /* Depends on the command type. */
 
 /*
  * Each unmarshaling function receives a pointer to the buffer pointer and a
@@ -268,7 +269,7 @@ static void marshal_common_session_header(void **buffer,
 	int i;
 	struct tpm2_session_header session_header;
 
-	tpm_tag = TPM_ST_SESSIONS;
+	car_set_var(tpm_tag, TPM_ST_SESSIONS);
 
 	for (i = 0; i < handle_count; i++)
 		marshal_TPM_HANDLE(buffer, handles[i], buffer_space);
@@ -380,7 +381,7 @@ int tpm_marshal_command(TPM_CC command, void *tpm_command_body,
 	size_t body_size = max_body_size;
 
 	/* Will be modified when marshaling some commands. */
-	tpm_tag = TPM_ST_NO_SESSIONS;
+	car_set_var(tpm_tag, TPM_ST_NO_SESSIONS);
 
 	switch (command) {
 	case TPM2_Startup:
@@ -437,7 +438,9 @@ int tpm_marshal_command(TPM_CC command, void *tpm_command_body,
 		/* Total size includes the header size. */
 		marshaled_size += sizeof(struct tpm_header);
 
-		marshal_u16(&buffer, tpm_tag, &header_room);
+		uint16_t tpm_tag_value = car_get_var(tpm_tag);
+
+		marshal_u16(&buffer, tpm_tag_value, &header_room);
 		marshal_u32(&buffer, marshaled_size, &header_room);
 		marshal_u32(&buffer, command, &header_room);
 		return marshaled_size;

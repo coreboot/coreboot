@@ -108,6 +108,54 @@ int cbfs_for_each_file(const struct region_device *cbfs,
 	return -1;
 }
 
+size_t cbfs_for_each_attr(void *metadata, size_t metadata_size,
+			  size_t last_offset)
+{
+	struct cbfs_file_attribute *attr;
+
+	if (!last_offset) {
+		struct cbfs_file *file = metadata;
+		size_t start_offset = read_be32(&file->attributes_offset);
+		if (start_offset <= sizeof(struct cbfs_file) ||
+		    start_offset + sizeof(*attr) > metadata_size)
+			return 0;
+		return start_offset;
+	}
+
+	attr = metadata + last_offset;
+	size_t next_offset = last_offset + read_be32(&attr->len);
+
+	if (next_offset + sizeof(*attr) > metadata_size)
+		return 0;
+	return next_offset;
+}
+
+int cbfsf_decompression_info(struct cbfsf *fh, uint32_t *algo, size_t *size)
+{
+	size_t metadata_size = region_device_sz(&fh->metadata);
+	void *metadata = rdev_mmap_full(&fh->metadata);
+	size_t offs = 0;
+
+	if (!metadata)
+		return -1;
+
+	while ((offs = cbfs_for_each_attr(metadata, metadata_size, offs))) {
+		struct cbfs_file_attr_compression *attr = metadata + offs;
+		if (read_be32(&attr->tag) != CBFS_FILE_ATTR_TAG_COMPRESSION)
+			continue;
+
+		*algo = read_be32(&attr->compression);
+		*size = read_be32(&attr->decompressed_size);
+		rdev_munmap(&fh->metadata, metadata);
+		return 0;
+	}
+
+	*algo = CBFS_COMPRESS_NONE;
+	*size = region_device_sz(&fh->data);
+	rdev_munmap(&fh->metadata, metadata);
+	return 0;
+}
+
 static int cbfsf_file_type(struct cbfsf *fh, uint32_t *ftype)
 {
 	const size_t sz = sizeof(*ftype);

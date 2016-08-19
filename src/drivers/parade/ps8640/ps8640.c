@@ -76,6 +76,16 @@ int ps8640_init(uint8_t bus, uint8_t chip)
 	}
 
 	mdelay(50);
+
+	/**
+	 * The Manufacturer Command Set (MCS) is a device dependent interface
+	 * intended for factory programming of the display module default
+	 * parameters. Once the display module is configured, the MCS shall be
+	 * disabled by the manufacturer. Once disabled, all MCS commands are
+	 * ignored by the display interface.
+	 */
+	i2c_write_field(bus, chip + 2, PAGE2_MCS_EN, 0x0, MCS_EN_MASK,
+			MCS_EN_SHIFT);
 	i2c_writeb(bus, chip + 3, PAGE3_SET_ADD, VDO_CTL_ADD);
 	i2c_writeb(bus, chip + 3, PAGE3_SET_VAL, VDO_DIS);
 	i2c_writeb(bus, chip + 3, PAGE3_SET_ADD, VDO_CTL_ADD);

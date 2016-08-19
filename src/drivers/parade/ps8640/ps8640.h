@@ -26,6 +26,9 @@ enum {
 	PS_GPIO9         = BIT(1),
 	I2C_BYPASS_EN    = BIT(7),
 
+	PAGE2_MCS_EN     = 0xf3,
+	MCS_EN_SHIFT     = 0,
+	MCS_EN_MASK      = 0x1,
 	PAGE3_SET_ADD    = 0xfe,
 	PAGE3_SET_VAL    = 0xff,
 	VDO_CTL_ADD      = 0x13,

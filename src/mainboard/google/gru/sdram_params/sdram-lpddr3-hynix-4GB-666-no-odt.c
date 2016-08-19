@@ -11,7 +11,9 @@
  * GNU General Public License for more details.
  */
 
-{
+#include <soc/sdram.h>
+
+struct rk3399_sdram_params params = {
 	{
 		{
 			.rank = 0x2,
@@ -1560,4 +1562,4 @@
 			0x00000000	/* DENALI_PHY_958_DATA */
 		}
 	},
-},
+};

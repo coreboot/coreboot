@@ -15,30 +15,23 @@
 
 #include <arch/io.h>
 #include <boardid.h>
+#include <cbfs.h>
 #include <console/console.h>
 #include <gpio.h>
 #include <soc/sdram.h>
 #include <string.h>
 #include <types.h>
 
-static struct rk3399_sdram_params sdram_configs[] = {
-#include "sdram_inf/sdram-lpddr3-hynix-4GB-200.inc"
-
-/* 666MHz, enable odt 120o */
-#include "sdram_inf/sdram-lpddr3-hynix-4GB-666.inc"
-
-/* 800MHz, enable odt 120o */
-#include "sdram_inf/sdram-lpddr3-hynix-4GB-800.inc"
-
-/* 666MHz, disable odt */
-#include "sdram_inf/sdram-lpddr3-hynix-4GB-666-no-odt.inc"
-
-/* 800MHz, disable odt */
-#include "sdram_inf/sdram-lpddr3-hynix-4GB-800-no-odt.inc"
-
-/* 933MHz, enable odt 120o */
-#include "sdram_inf/sdram-lpddr3-hynix-4GB-933.inc"
+static const char *sdram_configs[] = {
+	"sdram-lpddr3-hynix-4GB-200",
+	"sdram-lpddr3-hynix-4GB-666",
+	"sdram-lpddr3-hynix-4GB-800",
+	"sdram-lpddr3-hynix-4GB-666-no-odt",
+	"sdram-lpddr3-hynix-4GB-800-no-odt",
+	"sdram-lpddr3-hynix-4GB-933",
 };
+
+static struct rk3399_sdram_params params;
 
 enum dram_speeds {
 	dram_200MHz = 0,
@@ -80,11 +73,8 @@ static enum dram_speeds get_sdram_index(void)
 
 const struct rk3399_sdram_params *get_sdram_config()
 {
-
-	enum dram_speeds speed = get_sdram_index();
-
-	printk(BIOS_INFO, "Using SDRAM configuration for %d MHz\n",
-	       sdram_configs[speed].ddr_freq / (1000 * 1000));
-
-	return &sdram_configs[speed];
+	if (cbfs_boot_load_struct(sdram_configs[get_sdram_index()],
+				  &params, sizeof(params)) != sizeof(params))
+		die("Cannot load SDRAM parameter file!");
+	return &params;
 }

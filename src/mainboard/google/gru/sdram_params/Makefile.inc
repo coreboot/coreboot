@@ -13,24 +13,18 @@
 ## GNU General Public License for more details.
 ##
 
-subdirs-y += sdram_params/
+sdram-params :=
 
-bootblock-y += bootblock.c
-bootblock-y += chromeos.c
-bootblock-y += memlayout.ld
+sdram-params += sdram-lpddr3-hynix-4GB-200
+sdram-params += sdram-lpddr3-hynix-4GB-666
+sdram-params += sdram-lpddr3-hynix-4GB-666-no-odt
+sdram-params += sdram-lpddr3-hynix-4GB-800
+sdram-params += sdram-lpddr3-hynix-4GB-800-no-odt
+sdram-params += sdram-lpddr3-hynix-4GB-933
 
-verstage-y += chromeos.c
-verstage-y += memlayout.ld
-verstage-y += reset.c
-
-romstage-y += boardid.c
-romstage-y += chromeos.c
-romstage-y += memlayout.ld
-romstage-y += sdram_configs.c
-
-ramstage-y += boardid.c
-ramstage-y += chromeos.c
-ramstage-y += mainboard.c
-ramstage-y += memlayout.ld
-ramstage-y += reset.c
-ramstage-y += sdram_configs.c  # Needed for ram_code()
+$(foreach params,$(sdram-params), \
+	$(eval cbfs-files-y += $(params)) \
+	$(eval $(params)-file := $(params).c:struct) \
+	$(eval $(params)-type := struct) \
+	$(eval $(params)-compression := $(CBFS_COMPRESS_FLAG)) \
+)

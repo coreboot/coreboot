@@ -16,7 +16,7 @@
 #ifndef __SOC_ROCKCHIP_RK3399_SDRAM_H__
 #define __SOC_ROCKCHIP_RK3399_SDRAM_H__
 
-#include <stddef.h>
+#include <types.h>
 
 enum {
 	DDR3 = 3,
@@ -183,8 +183,6 @@ struct rk3399_sdram_params {
 void sdram_init(const struct rk3399_sdram_params *sdram_params);
 u32 sdram_get_ram_code(void);
 const struct rk3399_sdram_params *get_sdram_config(void);
-const struct rk3399_sdram_params
-		*get_default_sdram_config(unsigned char dramtype);
 size_t sdram_size_mb(void);
 
 #endif

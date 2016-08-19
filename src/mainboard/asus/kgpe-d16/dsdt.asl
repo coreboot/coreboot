@@ -564,6 +564,8 @@ DefinitionBlock (
 
 				#include "../../../superio/winbond/w83667hg-a/ps2_controller.asl"
 
+				#include <drivers/pc80/tpm/acpi/tpm.asl>
+
 				/* UART 1 */
 				Device (URT1)
 				{

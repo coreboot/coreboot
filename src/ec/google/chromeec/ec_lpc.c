@@ -96,7 +96,7 @@ static inline u8 write_byte(u8 val, u16 port)
 	return byte;
 }
 
-static int google_chromeec_wait_ready(u16 port)
+static int google_chromeec_status_check(u16 port, u8 mask, u8 cond)
 {
 	u8 ec_status = read_byte(port);
 	u32 time_count = 0;
@@ -108,14 +108,20 @@ static int google_chromeec_wait_ready(u16 port)
 	 */
 #define MAX_EC_TIMEOUT_US 1000000
 
-	while (ec_status &
-	       (EC_LPC_CMDR_PENDING | EC_LPC_CMDR_BUSY)) {
+	while ((ec_status & mask) != cond) {
 		udelay(1);
 		if (time_count++ == MAX_EC_TIMEOUT_US)
 			return -1;
 		ec_status = read_byte(port);
 	}
 	return 0;
+}
+
+static int google_chromeec_wait_ready(u16 port)
+{
+	return google_chromeec_status_check(port,
+					    EC_LPC_CMDR_PENDING |
+					    EC_LPC_CMDR_BUSY, 0);
 }
 
 #if CONFIG_EC_GOOGLE_CHROMEEC_ACPI_MEMMAP
@@ -481,6 +487,12 @@ struct chip_operations ec_google_chromeec_ops = {
 
 #endif /* __SMM__ */
 
+static int google_chromeec_data_ready(u16 port)
+{
+	return google_chromeec_status_check(port, EC_LPC_CMDR_DATA,
+					    EC_LPC_CMDR_DATA);
+}
+
 u8 google_chromeec_get_event(void)
 {
 	if (google_chromeec_wait_ready(EC_LPC_ADDR_ACPI_CMD)) {
@@ -493,6 +505,11 @@ u8 google_chromeec_get_event(void)
 
 	if (google_chromeec_wait_ready(EC_LPC_ADDR_ACPI_CMD)) {
 		printk(BIOS_ERR, "Timeout waiting for EC QUERY_EVENT!\n");
+		return 0;
+	}
+
+	if (google_chromeec_data_ready(EC_LPC_ADDR_ACPI_CMD)) {
+		printk(BIOS_ERR, "Timeout waiting for data ready!\n");
 		return 0;
 	}
 

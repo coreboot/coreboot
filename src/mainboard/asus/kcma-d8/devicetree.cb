@@ -49,7 +49,7 @@ chip northbridge/amd/amdfam10/root_complex	# Root complex
 					device pci 13.0 on end			# USB
 					device pci 13.1 on end			# USB
 					device pci 13.2 on end			# USB
-	 				device pci 14.0 on			# SM
+					device pci 14.0 on			# SM
 						chip drivers/generic/generic	# DIMM n-0-0-0
 							device i2c 50 on end
 						end
@@ -173,7 +173,7 @@ chip northbridge/amd/amdfam10/root_complex	# Root complex
 						chip superio/winbond/w83667hg-a	# Super I/O
 							device pnp 2e.0 off end		# FDC; Not available on the KCMA-D8
 							device pnp 2e.1 off end		# LPT1; Not available on the KCMA-D8
-							device pnp 2e.2 on 		# COM1
+							device pnp 2e.2 on		# COM1
 								io 0x60 = 0x3f8
 								irq 0x70 = 4
 							end

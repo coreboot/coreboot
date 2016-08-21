@@ -657,7 +657,7 @@ void acpigen_write_TSD_package(u32 domain, u32 numprocs, PSD_coord coordtype)
 void acpigen_write_mem32fixed(int readwrite, u32 base, u32 size)
 {
 	/*
-	 * acpi 4.0 section 6.4.3.4: 32-Bit Fixed Memory Range Descriptor
+	 * ACPI 4.0 section 6.4.3.4: 32-Bit Fixed Memory Range Descriptor
 	 * Byte 0:
 	 *   Bit7  : 1 => big item
 	 *   Bit6-0: 0000110 (0x6) => 32-bit fixed memory
@@ -688,7 +688,7 @@ void acpigen_write_register(acpi_addr_t *addr)
 void acpigen_write_irq(u16 mask)
 {
 	/*
-	 * acpi 3.0b section 6.4.2.1: IRQ Descriptor
+	 * ACPI 3.0b section 6.4.2.1: IRQ Descriptor
 	 * Byte 0:
 	 *   Bit7  : 0 => small item
 	 *   Bit6-3: 0100 (0x4) => IRQ port descriptor
@@ -702,7 +702,7 @@ void acpigen_write_irq(u16 mask)
 void acpigen_write_io16(u16 min, u16 max, u8 align, u8 len, u8 decode16)
 {
 	/*
-	 * acpi 4.0 section 6.4.2.6: I/O Port Descriptor
+	 * ACPI 4.0 section 6.4.2.6: I/O Port Descriptor
 	 * Byte 0:
 	 *   Bit7  : 0 => small item
 	 *   Bit6-3: 1000 (0x8) => I/O port descriptor

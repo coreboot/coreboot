@@ -1138,9 +1138,9 @@ Return the offset given by "mod" addressing.
 
 unsigned decode_rmXX_address(int mod, int rm)
 {
-  if(mod == 0)
+  if (mod == 0)
     return decode_rm00_address(rm);
-  if(mod == 1)
+  if (mod == 1)
     return decode_rm01_address(rm);
   return decode_rm10_address(rm);
 }

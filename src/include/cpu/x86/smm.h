@@ -528,7 +528,7 @@ void *smm_get_save_state(int cpu);
  * - per_cpu_stack_size - stack size per CPU for smm modules.
  * - num_concurrent_stacks - number of concurrent cpus in handler needing stack
  *                           optional for setting up relocation handler.
- * - per_cpu_save_state_size - the smm save state size per cpu
+ * - per_cpu_save_state_size - the SMM save state size per cpu
  * - num_concurrent_save_states - number of concurrent cpus needing save state
  *                                space
  * - handler - optional handler to call. Only used during SMM relocation setup.
@@ -537,8 +537,8 @@ void *smm_get_save_state(int cpu);
  *                 the address of the module's parameters (if present).
  * - runtime - this field is a result only. The SMM runtime location is filled
  *             into this field so the code doing the loading can manipulate the
- *             runtime's assumptions. e.g. updating the apic id to CPU map to
- *             handle sparse apic id space.
+ *             runtime's assumptions. e.g. updating the APIC id to CPU map to
+ *             handle sparse APIC id space.
  */
 struct smm_loader_params {
 	void *stack_top;

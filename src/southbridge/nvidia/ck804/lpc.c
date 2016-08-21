@@ -111,7 +111,7 @@ static void lpc_init(device_t dev)
 	lpc_common_init(dev);
 
 	pm_base = pci_read_config32(dev, 0x60) & 0xff00;
-	printk(BIOS_INFO, "%s: pm_base = %x \n", __func__, pm_base);
+	printk(BIOS_INFO, "%s: pm_base = %x\n", __func__, pm_base);
 
 	/* Power after power fail */
 	on = CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL;

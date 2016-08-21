@@ -120,7 +120,7 @@ printk(BIOS_DEBUG, "IDE_INIT:---------->\n");
 	if (conf->ide1_enable) {
 		/* Enable secondary ide interface */
 		word |= (1<<0);
-		printk(BIOS_DEBUG, "IDE1 \t");
+		printk(BIOS_DEBUG, "IDE1\t");
 	}
 	if (conf->ide0_enable) {
 		/* Enable primary ide interface */

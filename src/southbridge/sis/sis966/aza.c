@@ -100,7 +100,7 @@ static int codec_detect(u8 *base)
 
       do{
 	  	dword = read32(base + 0x08)&0x1;
-		if(idx++>1000) { printk(BIOS_DEBUG, "controller reset fail !!! \n"); break;}
+		if(idx++>1000) { printk(BIOS_DEBUG, "controller reset fail !!!\n"); break;}
 	   } while (dword !=1);
 
        dword=send_verb(base,0x000F0000); // get codec VendorId and DeviceId

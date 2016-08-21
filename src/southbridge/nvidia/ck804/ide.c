@@ -36,7 +36,7 @@ static void ide_init(struct device *dev)
 	if (conf->ide1_enable) {
 		/* Enable secondary IDE interface. */
 		word |= (1 << 0);
-		printk(BIOS_DEBUG, "IDE1 \t");
+		printk(BIOS_DEBUG, "IDE1\t");
 	}
 	if (conf->ide0_enable) {
 		/* Enable primary IDE interface. */

@@ -39,16 +39,16 @@ static void sata_init(struct device *dev)
 		if (conf->sata1_enable) {
 			/* Enable secondary SATA interface */
 			dword |= (1<<0);
-			printk(BIOS_DEBUG, "SATA S \t");
+			printk(BIOS_DEBUG, "SATA S\t");
 		}
 		if (conf->sata0_enable) {
 			/* Enable primary SATA interface */
 			dword |= (1<<1);
-			printk(BIOS_DEBUG, "SATA P \n");
+			printk(BIOS_DEBUG, "SATA P\n");
 		}
 	} else {
 		dword |= (1<<1) | (1<<0);
-		printk(BIOS_DEBUG, "SATA P and S \n");
+		printk(BIOS_DEBUG, "SATA P and S\n");
 	}
 
 

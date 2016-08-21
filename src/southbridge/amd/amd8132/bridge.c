@@ -386,7 +386,7 @@ static void amd8132_ioapic_init(device_t dev)
         }
 
 
-        if( (chip_rev == 0x11) ||(chip_rev == 0x12) ) {
+        if ( (chip_rev == 0x11) ||(chip_rev == 0x12) ) {
                 //for b1 b2
                 /* Errata #73 */
                 dword = pci_read_config32(dev, 0x80);

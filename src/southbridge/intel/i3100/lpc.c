@@ -200,13 +200,13 @@ static void i3100_pirq_init(device_t dev)
 	/* Get the chip configuration */
 	config = dev->chip_info;
 
-	if(config->pirq_a_d)
+	if (config->pirq_a_d)
 		pci_write_config32(dev, 0x60, config->pirq_a_d);
 
-	if(config->pirq_e_h)
+	if (config->pirq_e_h)
 		pci_write_config32(dev, 0x68, config->pirq_e_h);
 
-        for(irq_dev = all_devices; irq_dev; irq_dev = irq_dev->next) {
+        for (irq_dev = all_devices; irq_dev; irq_dev = irq_dev->next) {
                 u8 int_pin=0, int_line=0;
 
                 if (!irq_dev->enabled || irq_dev->path.type != DEVICE_PATH_PCI)

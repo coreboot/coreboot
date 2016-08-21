@@ -47,13 +47,13 @@ static void bcm5785_enable_wdt_port_cf9(void)
 
         dword_old = pci_read_config32(dev, 0x4c);
         dword = dword_old | (1<<4); //enable Timer Func
-        if(dword != dword_old ) {
+        if (dword != dword_old ) {
                 pci_write_config32(dev, 0x4c, dword);
         }
 
         dword_old = pci_read_config32(dev, 0x6c);
         dword = dword_old | (1<<9); //unhide Timer Func in pci space
-        if(dword != dword_old ) {
+        if (dword != dword_old ) {
                 pci_write_config32(dev, 0x6c, dword);
         }
 
@@ -149,7 +149,7 @@ static void bcm5785_enable_msg(void)
         // bit 1: enable upsteam messages
         // bit 0: enable shutdowm message to init generation
         dword = dword_old | (1<<5) | (1<<3) | (1<<2) | (1<<1) | (1<<0); // bit 1 and bit 4 must be set, otherwise interrupt msg will not be delivered to the processor
-        if(dword != dword_old ) {
+        if (dword != dword_old ) {
                 pci_write_config32(dev, 0x6c, dword);
         }
 }

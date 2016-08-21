@@ -150,8 +150,8 @@ for (i=0;i<10;i++){
         printk(BIOS_DEBUG, "****** SATA PCI config ******");
         printk(BIOS_DEBUG, "\n    03020100  07060504  0B0A0908  0F0E0D0C");
 
-        for(i=0;i<0xff;i+=4){
-                if((i%16)==0)
+        for (i=0;i<0xff;i+=4){
+                if ((i%16)==0)
                         printk(BIOS_DEBUG, "\n%02x: ", i);
                 printk(BIOS_DEBUG, "%08x  ", pci_read_config32(dev,i));
         }

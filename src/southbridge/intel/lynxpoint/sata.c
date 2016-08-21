@@ -91,7 +91,7 @@ static void sata_init(struct device *dev)
 		/* SATA Initialization register */
 		pci_write_config32(dev, 0x94,
 			   ((config->sata_port_map ^ 0x3f) << 24) | 0x183);
-	} else if(config->sata_ahci) {
+	} else if (config->sata_ahci) {
 		u32 *abar;
 
 		printk(BIOS_DEBUG, "SATA: Controller in AHCI mode.\n");

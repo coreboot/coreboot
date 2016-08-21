@@ -105,7 +105,7 @@ static int codec_detect(u8 *base)
 
        dword=send_verb(base,0x000F0000); // get codec VendorId and DeviceId
 
-       if(dword==0) {
+       if (dword==0) {
 	   	printk(BIOS_DEBUG, "No codec!\n");
 		return 0;
        }
@@ -184,7 +184,7 @@ static u32 verb_data[] = {
 
 static unsigned find_verb(u32 viddid, u32 **verb)
 {
-        if((viddid == 0x10ec0883) || (viddid == 0x10ec0882) || (viddid == 0x10ec0880)) return 0;
+        if ((viddid == 0x10ec0883) || (viddid == 0x10ec0882) || (viddid == 0x10ec0880)) return 0;
 	*verb =  (u32 *)verb_data;
 	return sizeof(verb_data)/sizeof(u32);
 }
@@ -268,8 +268,8 @@ static void aza_init(struct device *dev)
         printk(BIOS_DEBUG, "****** Azalia PCI config ******");
         printk(BIOS_DEBUG, "\n    03020100  07060504  0B0A0908  0F0E0D0C");
 
-        for(i=0;i<0xff;i+=4){
-                if((i%16)==0){
+        for (i=0;i<0xff;i+=4){
+                if ((i%16)==0){
                         printk(BIOS_DEBUG, "\n%02x: ", i);
                 }
                 printk(BIOS_DEBUG, "%08x  ", pci_read_config32(dev,i));

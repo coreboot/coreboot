@@ -644,7 +644,7 @@ static void HTMemMapInit_D(struct MCTStatStruc *pMCTstat,
 		devx = pDCTstat->dev_map;
 
 		if (pDCTstat->NodePresent) {
-			printk(BIOS_DEBUG, " Copy dram map from Node 0 to Node %02x \n", Node);
+			printk(BIOS_DEBUG, " Copy dram map from Node 0 to Node %02x\n", Node);
 			reg = 0x40;		/*Dram Base 0*/
 			do {
 				val = Get_NB32(dev, reg);
@@ -892,7 +892,7 @@ static void StartupDCT_D(struct MCTStatStruc *pMCTstat,
 		byte = mctGet_NVbits(NV_DQSTrainCTL);
 		if (byte == 1) {
 			/* Enable DQSRcvEn training mode */
-			print_t("\t\t\tStartupDCT_D: DqsRcvEnTrain set \n");
+			print_t("\t\t\tStartupDCT_D: DqsRcvEnTrain set\n");
 			reg = 0x78 + reg_off;
 			val = Get_NB32(dev, reg);
 			/* Setting this bit forces a 1T window with hard left
@@ -903,7 +903,7 @@ static void StartupDCT_D(struct MCTStatStruc *pMCTstat,
 			Set_NB32(dev, reg, val);
 		}
 		mctHookBeforeDramInit();	/* generalized Hook */
-		print_t("\t\t\tStartupDCT_D: DramInit \n");
+		print_t("\t\t\tStartupDCT_D: DramInit\n");
 		mct_DramInit(pMCTstat, pDCTstat, dct);
 		AfterDramInit_D(pDCTstat, dct);
 		mctHookAfterDramInit();		/* generalized Hook*/

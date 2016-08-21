@@ -1235,7 +1235,7 @@ static void sdram_program_dll_timings(struct sys_info *sysinfo)
 	u32 chan0dll = 0, chan1dll = 0;
 	int i;
 
-	printk(BIOS_DEBUG, "Programming DLL Timings... \n");
+	printk(BIOS_DEBUG, "Programming DLL Timings...\n");
 
 	MCHBAR16(DQSMT) &= ~( (3 << 12) | (1 << 10) | ( 0xf << 0) );
 	MCHBAR16(DQSMT) |= (1 << 13) | (0xc << 0);
@@ -1287,7 +1287,7 @@ static void sdram_initialize_system_memory_io(struct sys_info *sysinfo)
 	u8 reg8;
 	u32 reg32;
 
-	printk(BIOS_DEBUG, "Initializing System Memory IO... \n");
+	printk(BIOS_DEBUG, "Initializing System Memory IO...\n");
 	/* Enable Data Half Clock Pushout */
 	reg8 = MCHBAR8(C0HCTC);
 	reg8 &= ~0x1f;
@@ -1329,7 +1329,7 @@ static void sdram_enable_system_memory_io(struct sys_info *sysinfo)
 {
 	u32 reg32;
 
-	printk(BIOS_DEBUG, "Enabling System Memory IO... \n");
+	printk(BIOS_DEBUG, "Enabling System Memory IO...\n");
 
 	reg32 = MCHBAR32(RCVENMT);
 	reg32 &= ~(0x3f << 6);
@@ -1561,7 +1561,7 @@ static int sdram_set_row_attributes(struct sys_info *sysinfo)
 	int i, value;
 	u16 dra0=0, dra1=0, dra = 0;
 
-	printk(BIOS_DEBUG, "Setting row attributes... \n");
+	printk(BIOS_DEBUG, "Setting row attributes...\n");
 	for(i=0; i < 2 * DIMM_SOCKETS; i++) {
 		u16 device;
 		u8 columnsrows;
@@ -2763,7 +2763,7 @@ static void sdram_on_die_termination(struct sys_info *sysinfo)
 
 	if ( !(sysinfo->dimm[0] != SYSINFO_DIMM_NOT_POPULATED &&
 			sysinfo->dimm[1] != SYSINFO_DIMM_NOT_POPULATED) ) {
-		printk(BIOS_DEBUG, "one dimm per channel config.. \n");
+		printk(BIOS_DEBUG, "one dimm per channel config..\n");
 
 		reg32 = MCHBAR32(C0ODT);
 		reg32 &= ~(7 << 28);

@@ -28,7 +28,7 @@
 #endif
 #define DEFAULT_EPBAR		0xfed19000	/* 4 KB */
 
-#include "../../../southbridge/intel/i82801gx/i82801gx.h"
+#include <southbridge/intel/i82801gx/i82801gx.h>
 
 /* Everything below this line is ignored in the DSDT */
 #ifndef __ACPI__

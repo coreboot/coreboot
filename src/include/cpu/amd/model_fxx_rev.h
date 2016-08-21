@@ -73,7 +73,7 @@ static inline int is_e0_later_in_bsp(int nodeid)
 	if (IS_ENABLED(CONFIG_K8_REV_F_SUPPORT))
 		return 1;
 
-        if(nodeid==0) { // we don't need to do that for node 0 in core0/node0
+        if (nodeid==0) { // we don't need to do that for node 0 in core0/node0
                 return !is_cpu_pre_e0();
         }
         // d0 will be treated as e0 with this methods, but the d0 nb_cfg_54 always 0
@@ -85,7 +85,7 @@ static inline int is_e0_later_in_bsp(int nodeid)
         pci_write_config32(dev, 0x80, val);
         val = pci_read_config32(dev, 0x80);
         e0_later = !!(val & (1<<3));
-        if(e0_later) { // pre_e0 bit 3 always be 0 and can not be changed
+        if (e0_later) { // pre_e0 bit 3 always be 0 and can not be changed
                 pci_write_config32(dev, 0x80, val_old); // restore it
         }
 

@@ -505,7 +505,7 @@ vbe_get_info(void)
 	DEBUG_PRINTF_VBE("DDC: edid_tranfer_time: %d\n",
 			 ddc_info.edid_transfer_time);
 	DEBUG_PRINTF_VBE("DDC: ddc_level: %x\n", ddc_info.ddc_level);
-	DEBUG_PRINTF_VBE("DDC: EDID: \n");
+	DEBUG_PRINTF_VBE("DDC: EDID:\n");
 	CHECK_DBG(DEBUG_VBE) {
 		dump(ddc_info.edid_block_zero,
 		     sizeof(ddc_info.edid_block_zero));

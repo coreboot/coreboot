@@ -215,7 +215,7 @@ Default PIO byte read function. Doesn't perform real inb.
 static u8 X86API p_inb(X86EMU_pioAddr addr)
 {
 	DB(if (DEBUG_IO_TRACE())
-		printf("inb %#04x \n", addr);)
+		printf("inb %#04x\n", addr);)
 	return inb(addr);
 }
 
@@ -230,7 +230,7 @@ Default PIO word read function. Doesn't perform real inw.
 static u16 X86API p_inw(X86EMU_pioAddr addr)
 {
 	DB(if (DEBUG_IO_TRACE())
-		printf("inw %#04x \n", addr);)
+		printf("inw %#04x\n", addr);)
 	return inw(addr);
 }
 
@@ -245,7 +245,7 @@ Default PIO long read function. Doesn't perform real inl.
 static u32 X86API p_inl(X86EMU_pioAddr addr)
 {
 	DB(if (DEBUG_IO_TRACE())
-		printf("inl %#04x \n", addr);)
+		printf("inl %#04x\n", addr);)
 	return inl(addr);
 }
 
@@ -259,7 +259,7 @@ Default PIO byte write function. Doesn't perform real outb.
 static void X86API p_outb(X86EMU_pioAddr addr, u8 val)
 {
 	DB(if (DEBUG_IO_TRACE())
-		printf("outb %#02x -> %#04x \n", val, addr);)
+		printf("outb %#02x -> %#04x\n", val, addr);)
 	outb(val, addr);
 	return;
 }
@@ -274,7 +274,7 @@ Default PIO word write function. Doesn't perform real outw.
 static void X86API p_outw(X86EMU_pioAddr addr, u16 val)
 {
 	DB(if (DEBUG_IO_TRACE())
-		printf("outw %#04x -> %#04x \n", val, addr);)
+		printf("outw %#04x -> %#04x\n", val, addr);)
 	outw(val, addr);
 	return;
 }
@@ -289,7 +289,7 @@ Default PIO ;ong write function. Doesn't perform real outl.
 static void X86API p_outl(X86EMU_pioAddr addr, u32 val)
 {
 	DB(if (DEBUG_IO_TRACE())
-	       printf("outl %#08x -> %#04x \n", val, addr);)
+	       printf("outl %#08x -> %#04x\n", val, addr);)
 
 	outl(val, addr);
 	return;

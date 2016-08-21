@@ -400,7 +400,7 @@ void x86emu_dump_xregs (void)
     printf("\tEAX=%08x  ", M.x86.R_EAX );
     printf("EBX=%08x  ", M.x86.R_EBX );
     printf("ECX=%08x  ", M.x86.R_ECX );
-    printf("EDX=%08x  \n", M.x86.R_EDX );
+    printf("EDX=%08x\n", M.x86.R_EDX );
     printf("\tESP=%08x  ", M.x86.R_ESP );
     printf("EBP=%08x  ", M.x86.R_EBP );
     printf("ESI=%08x  ", M.x86.R_ESI );

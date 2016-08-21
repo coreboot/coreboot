@@ -2295,7 +2295,7 @@ Implements the IN string instruction and side effects.
 
 static void single_in(int size)
 {
-    if(size == 1)
+    if (size == 1)
         store_data_byte_abs(M.x86.R_ES, M.x86.R_DI,(*sys_inb)(M.x86.R_DX));
     else if (size == 2)
         store_data_word_abs(M.x86.R_ES, M.x86.R_DI,(*sys_inw)(M.x86.R_DX));
@@ -2337,7 +2337,7 @@ Implements the OUT string instruction and side effects.
 
 static void single_out(int size)
 {
-     if(size == 1)
+     if (size == 1)
        (*sys_outb)(M.x86.R_DX,fetch_data_byte_abs(M.x86.R_ES, M.x86.R_SI));
      else if (size == 2)
        (*sys_outw)(M.x86.R_DX,fetch_data_word_abs(M.x86.R_ES, M.x86.R_SI));

@@ -1507,7 +1507,7 @@ static void x86emuOp2_bsf(u8 X86EMU_UNUSED(op2))
             TRACE_AND_STEP();
             srcval = fetch_data_long(srcoffset);
             CONDITIONAL_SET_FLAG(srcval == 0, F_ZF);
-            for(*dstreg = 0; *dstreg < 32; (*dstreg)++)
+            for (*dstreg = 0; *dstreg < 32; (*dstreg)++)
                 if ((srcval >> *dstreg) & 1) break;
         } else {
             u16 srcval, *dstreg;
@@ -1516,7 +1516,7 @@ static void x86emuOp2_bsf(u8 X86EMU_UNUSED(op2))
             TRACE_AND_STEP();
             srcval = fetch_data_word(srcoffset);
             CONDITIONAL_SET_FLAG(srcval == 0, F_ZF);
-            for(*dstreg = 0; *dstreg < 16; (*dstreg)++)
+            for (*dstreg = 0; *dstreg < 16; (*dstreg)++)
                 if ((srcval >> *dstreg) & 1) break;
         }
     } else {             /* register to register */
@@ -1528,7 +1528,7 @@ static void x86emuOp2_bsf(u8 X86EMU_UNUSED(op2))
             dstreg = DECODE_RM_LONG_REGISTER(rh);
             TRACE_AND_STEP();
             CONDITIONAL_SET_FLAG(srcval == 0, F_ZF);
-            for(*dstreg = 0; *dstreg < 32; (*dstreg)++)
+            for (*dstreg = 0; *dstreg < 32; (*dstreg)++)
                 if ((srcval >> *dstreg) & 1) break;
         } else {
             u16 srcval, *dstreg;
@@ -1538,7 +1538,7 @@ static void x86emuOp2_bsf(u8 X86EMU_UNUSED(op2))
             dstreg = DECODE_RM_WORD_REGISTER(rh);
             TRACE_AND_STEP();
             CONDITIONAL_SET_FLAG(srcval == 0, F_ZF);
-            for(*dstreg = 0; *dstreg < 16; (*dstreg)++)
+            for (*dstreg = 0; *dstreg < 16; (*dstreg)++)
                 if ((srcval >> *dstreg) & 1) break;
         }
     }
@@ -1568,7 +1568,7 @@ static void x86emuOp2_bsr(u8 X86EMU_UNUSED(op2))
             TRACE_AND_STEP();
             srcval = fetch_data_long(srcoffset);
             CONDITIONAL_SET_FLAG(srcval == 0, F_ZF);
-            for(*dstreg = 31; *dstreg > 0; (*dstreg)--)
+            for (*dstreg = 31; *dstreg > 0; (*dstreg)--)
                 if ((srcval >> *dstreg) & 1) break;
         } else {
             u16 srcval, *dstreg;
@@ -1577,7 +1577,7 @@ static void x86emuOp2_bsr(u8 X86EMU_UNUSED(op2))
             TRACE_AND_STEP();
             srcval = fetch_data_word(srcoffset);
             CONDITIONAL_SET_FLAG(srcval == 0, F_ZF);
-            for(*dstreg = 15; *dstreg > 0; (*dstreg)--)
+            for (*dstreg = 15; *dstreg > 0; (*dstreg)--)
                 if ((srcval >> *dstreg) & 1) break;
         }
     } else {             /* register to register */
@@ -1589,7 +1589,7 @@ static void x86emuOp2_bsr(u8 X86EMU_UNUSED(op2))
             dstreg = DECODE_RM_LONG_REGISTER(rh);
             TRACE_AND_STEP();
             CONDITIONAL_SET_FLAG(srcval == 0, F_ZF);
-            for(*dstreg = 31; *dstreg > 0; (*dstreg)--)
+            for (*dstreg = 31; *dstreg > 0; (*dstreg)--)
                 if ((srcval >> *dstreg) & 1) break;
         } else {
             u16 srcval, *dstreg;
@@ -1599,7 +1599,7 @@ static void x86emuOp2_bsr(u8 X86EMU_UNUSED(op2))
             dstreg = DECODE_RM_WORD_REGISTER(rh);
             TRACE_AND_STEP();
             CONDITIONAL_SET_FLAG(srcval == 0, F_ZF);
-            for(*dstreg = 15; *dstreg > 0; (*dstreg)--)
+            for (*dstreg = 15; *dstreg > 0; (*dstreg)--)
                 if ((srcval >> *dstreg) & 1) break;
         }
     }

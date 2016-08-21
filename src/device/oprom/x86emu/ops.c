@@ -211,7 +211,7 @@ static void x86emuOp_genop_byte_RM_R(u8 op1)
     DECODE_PRINTF(x86emu_GenOpName[op1]);
     DECODE_PRINTF("\t");
     FETCH_DECODE_MODRM(mod, rh, rl);
-    if(mod<3)
+    if (mod<3)
         { destoffset = decode_rmXX_address(mod,rl);
         DECODE_PRINTF(",");
         destval = fetch_data_byte(destoffset);
@@ -251,7 +251,7 @@ static void x86emuOp_genop_word_RM_R(u8 op1)
     DECODE_PRINTF("\t");
     FETCH_DECODE_MODRM(mod, rh, rl);
 
-    if(mod<3) {
+    if (mod<3) {
         destoffset = decode_rmXX_address(mod,rl);
         if (M.x86.mode & SYSMODE_PREFIX_DATA) {
             u32 destval;

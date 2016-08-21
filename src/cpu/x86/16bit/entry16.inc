@@ -79,7 +79,7 @@ _start16bit:
 	 *
 	 * The criteria for relocation have been relaxed to their
 	 * utmost, so that we can use the same code for both
-	 * our initial entry point and startup of the second cpu.
+	 * our initial entry point and startup of the second CPU.
 	 * The code assumes when executing at _start16bit that:
 	 * (((cs & 0xfff) == 0) and (ip == _start16bit & 0xffff))
 	 * or

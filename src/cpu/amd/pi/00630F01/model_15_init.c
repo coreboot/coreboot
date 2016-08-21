@@ -79,7 +79,7 @@ static void model_15_init(device_t dev)
 	}
 
 
-	/* Enable the local CPU apics */
+	/* Enable the local CPU APICs */
 	setup_lapic();
 
 #if CONFIG_LOGICAL_CPUS

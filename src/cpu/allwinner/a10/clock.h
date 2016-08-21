@@ -212,7 +212,7 @@ struct a10_ccm {
 	u8 res3[0xc];
 	u32 pll_lock_dbg;	/* 0x4c pll lock time debug */
 	u32 osc24m_cfg;		/* 0x50 osc24m control */
-	u32 cpu_ahb_apb0_cfg;	/* 0x54 cpu,ahb and apb0 divide ratio */
+	u32 cpu_ahb_apb0_cfg;	/* 0x54 CPU, ahb and apb0 divide ratio */
 	u32 apb1_clk_div_cfg;	/* 0x58 apb1 clock dividor */
 	u32 axi_gate;		/* 0x5c axi module clock gating */
 	u32 ahb_gate0;		/* 0x60 ahb module clock gating 0 */

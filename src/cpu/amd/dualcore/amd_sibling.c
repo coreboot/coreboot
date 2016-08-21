@@ -82,7 +82,7 @@ unsigned get_apicid_base(unsigned ioapic_num)
 
 	siblings = get_max_siblings(nodes);
 
-	if(bsp_apic_id > 0) { // io apic could start from 0
+	if (bsp_apic_id > 0) { // IOAPIC could start from 0
 		return 0;
 	} else if(pci_read_config32(dev, 0x68) & ( (1<<17) | (1<<18)) )  { // enabled ext id but bsp = 0
 		return 1;
@@ -108,8 +108,8 @@ unsigned get_apicid_base(unsigned ioapic_num)
 
 	if((!disable_siblings) && (siblings>0) ) {
 		/* for 8 way dual core, we will used up apicid 16:16, actually 16 is not allowed by current kernel
-		and the kernel will try to get one that is small than 16 to make io apic work.
-		I don't know when the kernel can support 256 apic id. (APIC_EXT_ID is enabled) */
+		and the kernel will try to get one that is small than 16 to make IOAPIC work.
+		I don't know when the kernel can support 256 APIC id. (APIC_EXT_ID is enabled) */
 
 	        //4:10 for two way  8:12 for four way 16:16 for eight way
 		//Use CONFIG_MAX_PHYSICAL_CPUS instead of nodes for better consistency?
@@ -122,7 +122,7 @@ unsigned get_apicid_base(unsigned ioapic_num)
 
 	if((apicid_base+ioapic_num-1)>0xf) {
 		// We need to enable APIC EXT ID
-		printk(BIOS_INFO, "if the IO APIC device doesn't support 256 apic id, \n you need to set CONFIG_ENABLE_APIC_EXT_ID in romstage.c so you can spare 16 id for ioapic\n");
+		printk(BIOS_INFO, "if the IOAPIC device doesn't support 256 APIC id, \n you need to set CONFIG_ENABLE_APIC_EXT_ID in romstage.c so you can spare 16 id for IOAPIC\n");
 		enable_apic_ext_id(nodes);
 	}
 

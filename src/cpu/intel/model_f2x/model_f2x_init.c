@@ -36,7 +36,7 @@ static void model_f2x_init(struct device *cpu)
 		intel_update_microcode_from_cbfs();
 	}
 
-	/* Enable the local CPU apics */
+	/* Enable the local CPU APICs */
 	setup_lapic();
 
 	/* Start up my CPU siblings */

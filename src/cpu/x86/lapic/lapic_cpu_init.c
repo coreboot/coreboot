@@ -165,7 +165,7 @@ static int lapic_start_cpu(unsigned long apicid)
 		send_status = lapic_read(LAPIC_ICR) & LAPIC_ICR_BUSY;
 	} while (send_status && (timeout++ < 1000));
 	if (timeout >= 1000) {
-		printk(BIOS_ERR, "CPU %ld: Second apic write timed out. "
+		printk(BIOS_ERR, "CPU %ld: Second APIC write timed out. "
 			"Disabling\n", apicid);
 		// too bad.
 		return 0;
@@ -546,7 +546,7 @@ void initialize_cpus(struct bus *cpu_bus)
 	info = cpu_info();
 
 #if NEED_LAPIC == 1
-	/* Ensure the local apic is enabled */
+	/* Ensure the local APIC is enabled */
 	enable_lapic();
 
 	/* Get the device path of the boot CPU */

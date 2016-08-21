@@ -81,7 +81,7 @@ struct mp_params {
 	int num_cpus; /* Total cpus include BSP */
 	int parallel_microcode_load;
 	const void *microcode_pointer;
-	/* adjust_apic_id() is called for every potential apic id in the
+	/* adjust_apic_id() is called for every potential APIC id in the
 	 * system up from 0 to CONFIG_MAX_CPUS. Return adjusted apic_id. */
 	int (*adjust_apic_id)(int index, int apic_id);
 	/* Flight plan  for APs and BSP. */
@@ -134,7 +134,7 @@ struct cpu_map {
 	int apic_id;
 };
 
-/* Keep track of apic and device structure for each cpu. */
+/* Keep track of APIC and device structure for each CPU. */
 static struct cpu_map cpus[CONFIG_MAX_CPUS];
 
 static inline void barrier_wait(atomic_t *b)
@@ -192,7 +192,7 @@ static void asmlinkage ap_init(unsigned int cpu)
 	struct cpu_info *info;
 	int apic_id;
 
-	/* Ensure the local apic is enabled */
+	/* Ensure the local APIC is enabled */
 	enable_lapic();
 
 	info = cpu_info();
@@ -546,14 +546,14 @@ static void init_bsp(struct bus *cpu_bus)
 	fill_processor_name(processor_name);
 	printk(BIOS_INFO, "CPU: %s.\n", processor_name);
 
-	/* Ensure the local apic is enabled */
+	/* Ensure the local APIC is enabled */
 	enable_lapic();
 
-	/* Set the device path of the boot cpu. */
+	/* Set the device path of the boot CPU. */
 	cpu_path.type = DEVICE_PATH_APIC;
 	cpu_path.apic.apic_id = lapicid();
 
-	/* Find the device structure for the boot cpu. */
+	/* Find the device structure for the boot CPU. */
 	info = cpu_info();
 	info->cpu = alloc_find_dev(cpu_bus, &cpu_path);
 
@@ -641,7 +641,7 @@ static void mp_initialize_cpu(void)
 	cpu_initialize(info->index);
 }
 
-/* Returns apic id for coreboot CPU number or < 0 on failure. */
+/* Returns APIC id for coreboot CPU number or < 0 on failure. */
 static int mp_get_apic_id(int cpu_slot)
 {
 	if (cpu_slot >= CONFIG_MAX_CPUS || cpu_slot < 0)

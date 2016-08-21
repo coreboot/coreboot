@@ -125,7 +125,7 @@ smm_relocate:
 	shr  $24, %ecx
 
 	/* calculate offset by multiplying the
-	 * apic ID by 1024 (0x400)
+	 * APIC ID by 1024 (0x400)
 	 */
 	movl %ecx, %edx
 	shl $10, %edx

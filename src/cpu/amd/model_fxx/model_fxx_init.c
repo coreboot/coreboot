@@ -508,7 +508,7 @@ static void model_fxx_init(device_t dev)
 	/* Set the processor name string */
 	init_processor_name();
 
-	/* Enable the local CPU apics */
+	/* Enable the local CPU APICs */
 	setup_lapic();
 
 #if CONFIG_LOGICAL_CPUS

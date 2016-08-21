@@ -110,7 +110,7 @@ static void speedstep_get_limits(sst_params_t *const params)
  * @brief Generate full p-states table from processor parameters
  *
  * This is generic code and should work at least for Merom and Penryn
- * processors. It is used to generate acpi tables and configure EMTTM.
+ * processors. It is used to generate ACPI tables and configure EMTTM.
  */
 void speedstep_gen_pstates(sst_table_t *const table)
 {

@@ -177,7 +177,7 @@ static void model_6fx_init(struct device *cpu)
 	/* Setup Page Attribute Tables (PAT) */
 	// TODO set up PAT
 
-	/* Enable the local CPU apics */
+	/* Enable the local CPU APICs */
 	setup_lapic();
 
 	/* Enable virtualization */

@@ -36,7 +36,7 @@ static void model_65x_init(struct device *dev)
 	x86_setup_mtrrs();
 	x86_mtrr_check();
 
-	/* Enable the local CPU apics */
+	/* Enable the local CPU APICs */
 	setup_lapic();
 };
 

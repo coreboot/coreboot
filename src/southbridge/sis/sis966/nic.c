@@ -221,7 +221,7 @@ static int phy_detect(u8 *base,u16 *PhyAddr) //BOOL PHY_Detect()
 
 	if(!bFoundPhy)
 	{
-	    printk(BIOS_DEBUG, "PHY not found !!!! \n");
+	    printk(BIOS_DEBUG, "PHY not found !!!!\n");
 	}
 
        *PhyAddr=PhyAddress;
@@ -283,7 +283,7 @@ static void nic_init(struct device *dev)
 
           //	if that is valid we will use that
 
-			printk(BIOS_DEBUG, "EEPROM contents %lx \n",ReadEEprom( dev,  base,  0LL));
+			printk(BIOS_DEBUG, "EEPROM contents %lx\n",ReadEEprom( dev,  base,  0LL));
 			for(i=0;i<3;i++) {
 				//status = smbus_read_byte(dev_eeprom, i);
 				ulValue=ReadEEprom( dev,  base,  i+3L);
@@ -294,7 +294,7 @@ static void nic_init(struct device *dev)
 			}
         }else{
                  // read MAC address from firmware
-		 printk(BIOS_DEBUG, "EEPROM invalid!!\nReg 0x38h=%.8lx \n",ulValue);
+		 printk(BIOS_DEBUG, "EEPROM invalid!!\nReg 0x38h=%.8lx\n",ulValue);
 		 MacAddr[0]=read16((u16 *)0xffffffc0); // mac address store at here
 		 MacAddr[1]=read16((u16 *)0xffffffc2);
 		 MacAddr[2]=read16((u16 *)0xffffffc4);

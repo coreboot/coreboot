@@ -197,7 +197,7 @@ static CIM_STATUS GetCreativeMMIO(MMIORANGE *pMMIO)
 		{
 			tempdev = dev_find_slot(Bus, Dev << 3);
 			Value = pci_read_config32(tempdev, 0);
-			printk(BIOS_DEBUG, "Dev ID %x \n", Value);
+			printk(BIOS_DEBUG, "Dev ID %x\n", Value);
 			if((Value & 0xffff) == 0x1102)
 			{//Creative
 				//Found Creative SB
@@ -228,7 +228,7 @@ static CIM_STATUS GetCreativeMMIO(MMIORANGE *pMMIO)
 						}
 					}
 				}
-				printk(BIOS_DEBUG, " MMIOStart %x MMIOLimit %x \n", MMIOStart, MMIOLimit);
+				printk(BIOS_DEBUG, " MMIOStart %x MMIOLimit %x\n", MMIOStart, MMIOLimit);
 				if (MMIOStart < MMIOLimit)
 				{
 					Status = SetMMIO(MMIOStart>>8, MMIOLimit>>8, 0x80, pMMIO);
@@ -570,44 +570,44 @@ static void internal_gfx_pci_dev_init(struct device *dev)
 	poweron_ddi_lanes(nb_dev);
 
 	printk(BIOS_DEBUG,"vgainfo:\n"
-			"  ulBootUpEngineClock:%lu \n"
-			"  ulBootUpUMAClock:%lu \n"
-			"  ulBootUpSidePortClock:%lu \n"
-			"  ulMinSidePortClock:%lu \n"
-			"  ulSystemConfig:%lu \n"
-			"  ulBootUpReqDisplayVector:%lu \n"
-			"  ulOtherDisplayMisc:%lu \n"
-			"  ulDDISlot1Config:%lu \n"
-			"  ulDDISlot2Config:%lu \n"
+			"  ulBootUpEngineClock:%lu\n"
+			"  ulBootUpUMAClock:%lu\n"
+			"  ulBootUpSidePortClock:%lu\n"
+			"  ulMinSidePortClock:%lu\n"
+			"  ulSystemConfig:%lu\n"
+			"  ulBootUpReqDisplayVector:%lu\n"
+			"  ulOtherDisplayMisc:%lu\n"
+			"  ulDDISlot1Config:%lu\n"
+			"  ulDDISlot2Config:%lu\n"
 
-			"  ucMemoryType:%u \n"
-			"  ucUMAChannelNumber:%u \n"
-			"  ucDockingPinBit:%u \n"
-			"  ucDockingPinPolarity:%u \n"
+			"  ucMemoryType:%u\n"
+			"  ucUMAChannelNumber:%u\n"
+			"  ucDockingPinBit:%u\n"
+			"  ucDockingPinPolarity:%u\n"
 
-			"  ulDockingPinCFGInfo:%lu \n"
-			"  ulCPUCapInfo: %lu \n"
+			"  ulDockingPinCFGInfo:%lu\n"
+			"  ulCPUCapInfo: %lu\n"
 
-			"  usNumberOfCyclesInPeriod:%hu \n"
-			"  usMaxNBVoltage:%hu \n"
-			"  usMinNBVoltage:%hu \n"
-			"  usBootUpNBVoltage:%hu \n"
+			"  usNumberOfCyclesInPeriod:%hu\n"
+			"  usMaxNBVoltage:%hu\n"
+			"  usMinNBVoltage:%hu\n"
+			"  usBootUpNBVoltage:%hu\n"
 
-			"  ulHTLinkFreq:%lu \n"
+			"  ulHTLinkFreq:%lu\n"
 
-			"  usMinHTLinkWidth:%hu \n"
-			"  usMaxHTLinkWidth:%hu \n"
-			"  usUMASyncStartDelay:%hu \n"
-			"  usUMADataReturnTime:%hu \n"
-			"  usLinkStatusZeroTime:%hu \n"
+			"  usMinHTLinkWidth:%hu\n"
+			"  usMaxHTLinkWidth:%hu\n"
+			"  usUMASyncStartDelay:%hu\n"
+			"  usUMADataReturnTime:%hu\n"
+			"  usLinkStatusZeroTime:%hu\n"
 
-			"  ulHighVoltageHTLinkFreq:%lu \n"
-			"  ulLowVoltageHTLinkFreq:%lu \n"
+			"  ulHighVoltageHTLinkFreq:%lu\n"
+			"  ulLowVoltageHTLinkFreq:%lu\n"
 
-			"  usMaxUpStreamHTLinkWidth:%hu \n"
-			"  usMaxDownStreamHTLinkWidth:%hu \n"
-			"  usMinUpStreamHTLinkWidth:%hu \n"
-			"  usMinDownStreamHTLinkWidth:%hu \n",
+			"  usMaxUpStreamHTLinkWidth:%hu\n"
+			"  usMaxDownStreamHTLinkWidth:%hu\n"
+			"  usMinUpStreamHTLinkWidth:%hu\n"
+			"  usMinDownStreamHTLinkWidth:%hu\n",
 
 			(unsigned long)vgainfo.ulBootUpEngineClock,
 			(unsigned long)vgainfo.ulBootUpUMAClock,

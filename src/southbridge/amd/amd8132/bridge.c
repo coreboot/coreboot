@@ -151,7 +151,7 @@ static void amd8132_scan_bus(struct bus *bus,
 	info.sstatus = pci_read_config16(bus->dev, pos + PCI_X_SEC_STATUS);
 
 	/* Print the PCI-X bus speed */
-	printk(BIOS_DEBUG, "PCI: %02x: %s sstatus=%04x rev=%02x \n", bus->secondary, pcix_speed(info.sstatus), info.sstatus, info.rev);
+	printk(BIOS_DEBUG, "PCI: %02x: %s sstatus=%04x rev=%02x\n", bus->secondary, pcix_speed(info.sstatus), info.sstatus, info.rev);
 
 
 	/* Examine the bus and find out how loaded it is */

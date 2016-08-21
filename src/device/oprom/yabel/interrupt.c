@@ -386,7 +386,7 @@ handleInt1a(void)
 #endif
 		} else {
 			DEBUG_PRINTF_INTR
-			    ("%s(): function %x: invalid device/vendor/device index! (%04x/%04x/%02x expected: %04x/%04x/00) \n",
+			    ("%s(): function %x: invalid device/vendor/device index! (%04x/%04x/%02x expected: %04x/%04x/00)\n",
 			     __func__, M.x86.R_AX, M.x86.R_CX, M.x86.R_DX,
 			     M.x86.R_SI, bios_device.pci_device_id,
 			     bios_device.pci_vendor_id);

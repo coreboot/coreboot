@@ -55,7 +55,7 @@ void arch_prepare_thread(struct thread *t,
 	 * hunting for (e.g.) misaligned stacks or other such
 	 * weirdness. The -1 is because we already pushed lr.
 	 */
-	for(i = 0; i < sizeof(struct pushed_regs)/sizeof(u32)-1; i++)
+	for (i = 0; i < sizeof(struct pushed_regs)/sizeof(u32)-1; i++)
 		stack = push_stack(stack, poison++);
 
 	t->stack_current = stack;

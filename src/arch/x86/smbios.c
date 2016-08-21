@@ -60,7 +60,7 @@ int smbios_add_string(char *start, const char *str)
 	if (*str == '\0')
 		return 0;
 
-	for(;;) {
+	for (;;) {
 		if (!*p) {
 			strcpy(p, str);
 			p += strlen(str);
@@ -419,7 +419,7 @@ static int smbios_write_type3(unsigned long *current, int handle)
 	t->bootup_state = SMBIOS_STATE_SAFE;
 	t->power_supply_state = SMBIOS_STATE_SAFE;
 	t->thermal_state = SMBIOS_STATE_SAFE;
-	if(IS_ENABLED(CONFIG_SYSTEM_TYPE_LAPTOP)) {
+	if (IS_ENABLED(CONFIG_SYSTEM_TYPE_LAPTOP)) {
 		t->_type = SMBIOS_ENCLOSURE_NOTEBOOK;
 	} else {
 		t->_type = SMBIOS_ENCLOSURE_DESKTOP;
@@ -476,7 +476,7 @@ static int smbios_write_type11(unsigned long *current, int *handle)
 	t->handle = *handle;
 	t->length = len = sizeof *t - 2;
 
-	for(dev = all_devices; dev; dev = dev->next) {
+	for (dev = all_devices; dev; dev = dev->next) {
 		if (dev->ops && dev->ops->get_smbios_strings)
 			dev->ops->get_smbios_strings(dev, t);
 	}
@@ -572,7 +572,7 @@ static int smbios_walk_device_tree(struct device *tree, int *handle, unsigned lo
 	struct device *dev;
 	int len = 0;
 
-	for(dev = tree; dev; dev = dev->next) {
+	for (dev = tree; dev; dev = dev->next) {
 		printk(BIOS_INFO, "%s (%s)\n", dev_path(dev), dev_name(dev));
 
 		if (dev->ops && dev->ops->get_smbios_data)

@@ -63,7 +63,7 @@ static unsigned char smp_compute_checksum(void *v, int len)
 	int i;
 	bytes = v;
 	checksum = 0;
-	for(i = 0; i < len; i++) {
+	for (i = 0; i < len; i++) {
 		checksum -= bytes[i];
 	}
 	return checksum;
@@ -170,8 +170,8 @@ void smp_write_processors(struct mp_config_table *mc)
 	cpu_features = result.eax;
 	cpu_feature_flags = result.edx;
 	/* order the output of the cpus to fix a bug in kernel 2.6.11 */
-	for(order_id = 0;order_id <256; order_id++) {
-		for(cpu = all_devices; cpu; cpu = cpu->next) {
+	for (order_id = 0;order_id <256; order_id++) {
+		for (cpu = all_devices; cpu; cpu = cpu->next) {
 			unsigned long cpu_flag;
 			if ((cpu->path.type != DEVICE_PATH_APIC) ||
 				(cpu->bus->dev->path.type != DEVICE_PATH_CPU_CLUSTER))
@@ -185,7 +185,7 @@ void smp_write_processors(struct mp_config_table *mc)
 			if (boot_apic_id == cpu->path.apic.apic_id)
 				cpu_flag = MPC_CPU_ENABLED | MPC_CPU_BOOTPROCESSOR;
 
-			if(cpu->path.apic.apic_id == order_id) {
+			if (cpu->path.apic.apic_id == order_id) {
 				smp_write_processor(mc,
 					cpu->path.apic.apic_id, apic_version,
 					cpu_flag, cpu_features, cpu_feature_flags
@@ -504,7 +504,7 @@ unsigned long __attribute__((weak)) write_smp_table(unsigned long addr)
 
 	mptable_write_buses(mc, NULL, &isa_bus);
 
-	for(dev = all_devices; dev; dev = dev->next) {
+	for (dev = all_devices; dev; dev = dev->next) {
 		if (dev->path.type != DEVICE_PATH_IOAPIC)
 			continue;
 
@@ -530,7 +530,7 @@ unsigned long __attribute__((weak)) write_smp_table(unsigned long addr)
 		mptable_add_isa_interrupts(mc, isa_bus, isaioapic, 0);
 	}
 
-	for(dev = all_devices; dev; dev = dev->next) {
+	for (dev = all_devices; dev; dev = dev->next) {
 
 		if (dev->path.type != DEVICE_PATH_PCI || !dev->enabled)
 			continue;

@@ -267,7 +267,7 @@ void pci_or_config32(pci_devfn_t dev, unsigned where, uint32_t value)
 #define PCI_DEV_INVALID (0xffffffffU)
 static inline pci_devfn_t pci_io_locate_device(unsigned pci_id, pci_devfn_t dev)
 {
-	for(; dev <= PCI_DEV(255, 31, 7); dev += PCI_DEV(0,0,1)) {
+	for (; dev <= PCI_DEV(255, 31, 7); dev += PCI_DEV(0,0,1)) {
 		unsigned int id;
 		id = pci_io_read_config32(dev, 0);
 		if (id == pci_id) {
@@ -279,7 +279,7 @@ static inline pci_devfn_t pci_io_locate_device(unsigned pci_id, pci_devfn_t dev)
 
 static inline pci_devfn_t pci_locate_device(unsigned pci_id, pci_devfn_t dev)
 {
-	for(; dev <= PCI_DEV(255, 31, 7); dev += PCI_DEV(0,0,1)) {
+	for (; dev <= PCI_DEV(255, 31, 7); dev += PCI_DEV(0,0,1)) {
 		unsigned int id;
 		id = pci_read_config32(dev, 0);
 		if (id == pci_id) {
@@ -296,7 +296,7 @@ static inline pci_devfn_t pci_locate_device_on_bus(unsigned pci_id, unsigned bus
 	dev = PCI_DEV(bus, 0, 0);
 	last = PCI_DEV(bus, 31, 7);
 
-	for(; dev <=last; dev += PCI_DEV(0,0,1)) {
+	for (; dev <=last; dev += PCI_DEV(0,0,1)) {
 		unsigned int id;
 		id = pci_read_config32(dev, 0);
 		if (id == pci_id) {

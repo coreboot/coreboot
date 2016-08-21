@@ -82,8 +82,8 @@ static void killme_debug_4g_remap_reg(u32 reg32)
 	u64 remapend = (reg32 >> 14) & 0x3ff;
 	remapstart <<= 26;
 	remapend <<= 26;
-	printk(BIOS_DEBUG, "Remapstart %lld(MB) \n", remapstart >> 20);
-	printk(BIOS_DEBUG, "Remapend   %lld(MB) \n", remapend >> 20);
+	printk(BIOS_DEBUG, "Remapstart %lld(MB)\n", remapstart >> 20);
+	printk(BIOS_DEBUG, "Remapend   %lld(MB)\n", remapend >> 20);
 }
 
 /**

@@ -511,7 +511,7 @@ static void TrainDQSPos_D(struct MCTStatStruc *pMCTstat,
 			}
 
 			MutualCSPassW[DQSDelay] &= tmp;
-			print_debug_dqs("\t\t\t\t\tTrainDQSPos: 146 \tMutualCSPassW ", MutualCSPassW[DQSDelay], 5);
+			print_debug_dqs("\t\t\t\t\tTrainDQSPos: 146\tMutualCSPassW ", MutualCSPassW[DQSDelay], 5);
 
 			SetTargetWTIO_D(TestAddr);
 			FlushDQSTestPattern_D(pDCTstat, TestAddr << 8);

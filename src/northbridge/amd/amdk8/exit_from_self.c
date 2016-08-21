@@ -116,7 +116,7 @@ void exit_from_self(int controllers, const struct mem_controller *ctrl,
 				     "orb %1, %%al\n\t"
 				     "not %1\n\t"
 				     ".align 64\n\t"
-				     "outl  %%eax, (%%dx) \n\t"
+				     "outl  %%eax, (%%dx)\n\t"
 				     "andb %1, %%al\n\t"
 				     "outl %%eax, (%%dx)\n\t"
 				     "popl %0\n\t"::"a"(pcidev),

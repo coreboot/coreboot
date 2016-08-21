@@ -82,7 +82,7 @@ static void model_14_init(device_t dev)
 		wrmsr(MCI_STATUS + (i * 4), msr);
 	}
 
-	/* Enable the local CPU apics */
+	/* Enable the local CPU APICs */
 	setup_lapic();
 
 #if IS_ENABLED(CONFIG_LOGICAL_CPUS)

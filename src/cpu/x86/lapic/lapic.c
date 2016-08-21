@@ -17,9 +17,9 @@ void setup_lapic(void)
 	/* Only Pentium Pro and later have those MSR stuff */
 	msr_t msr;
 
-	printk(BIOS_INFO, "Setting up local apic...");
+	printk(BIOS_INFO, "Setting up local APIC...");
 
-	/* Enable the local apic */
+	/* Enable the local APIC */
 	msr = rdmsr(LAPIC_BASE_MSR);
 	msr.lo |= LAPIC_BASE_MSR_ENABLE;
 	msr.lo &= ~LAPIC_BASE_MSR_ADDR_MASK;
@@ -32,7 +32,7 @@ void setup_lapic(void)
 	lapic_write_around(LAPIC_TASKPRI,
 		lapic_read_around(LAPIC_TASKPRI) & ~LAPIC_TPRI_MASK);
 
-	/* Put the local apic in virtual wire mode */
+	/* Put the local APIC in virtual wire mode */
 	lapic_write_around(LAPIC_SPIV,
 		(lapic_read_around(LAPIC_SPIV) & ~(LAPIC_VECTOR_MASK))
 		| LAPIC_SPIV_ENABLE);
@@ -61,7 +61,7 @@ void setup_lapic(void)
 	/* Only Pentium Pro and later have those MSR stuff */
 	msr_t msr;
 
-	printk(BIOS_INFO, "Disabling local apic...");
+	printk(BIOS_INFO, "Disabling local APIC...");
 
 	msr = rdmsr(LAPIC_BASE_MSR);
 	msr.lo &= ~LAPIC_BASE_MSR_ENABLE;

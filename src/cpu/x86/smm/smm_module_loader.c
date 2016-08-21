@@ -41,7 +41,7 @@ struct smm_stub_params {
 
 /*
  * The stub is the entry point that sets up protected mode and stacks for each
- * cpu. It then calls into the SMM handler module. It is encoded as an rmodule.
+ * CPU. It then calls into the SMM handler module. It is encoded as an rmodule.
  */
 extern unsigned char _binary_smmstub_start[];
 

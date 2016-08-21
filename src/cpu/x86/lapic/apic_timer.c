@@ -83,7 +83,7 @@ static inline u32 get_timer_fsb(void)
 
 void init_timer(void)
 {
-	/* Set the apic timer to no interrupts and periodic mode */
+	/* Set the APIC timer to no interrupts and periodic mode */
 	lapic_write(LAPIC_LVTT, (LAPIC_LVT_TIMER_PERIODIC | LAPIC_LVT_MASKED));
 
 	/* Set the divider to 1, no divider */

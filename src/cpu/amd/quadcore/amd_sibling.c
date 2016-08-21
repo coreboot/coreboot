@@ -82,7 +82,7 @@ u32 get_apicid_base(u32 ioapic_num)
 
 	siblings = get_max_siblings(sysconf.nodes);
 
-	if(sysconf.bsp_apicid > 0) { // io apic could start from 0
+	if(sysconf.bsp_apicid > 0) { // IOAPIC could start from 0
 		return 0;
 	} else if (sysconf.enabled_apic_ext_id)	{ // enabled ext id but bsp = 0
 		return 1;
@@ -96,8 +96,8 @@ u32 get_apicid_base(u32 ioapic_num)
 	if((!disable_siblings) && (siblings>0) ) {
 		/* for 8 way dual core, we will used up apicid 16:16, actually
 		   16 is not allowed by current kernel and the kernel will try
-		   to get one that is small than 16 to make io apic work. I don't
-		   know when the kernel can support 256 apic id.
+		   to get one that is small than 16 to make IOAPIC work. I don't
+		   know when the kernel can support 256 APIC id.
 		   (APIC_EXT_ID is enabled) */
 
 		//4:10 for two way  8:12 for four way 16:16 for eight way
@@ -110,7 +110,7 @@ u32 get_apicid_base(u32 ioapic_num)
 
 	if((apicid_base+ioapic_num-1)>0xf) {
 		// We need to enable APIC EXT ID
-		printk(BIOS_SPEW, "if the IO APIC device doesn't support 256 apic id, \n you need to set CONFIG_ENABLE_APIC_EXT_ID in MB Option.lb so you can spare 16 id for ioapic\n");
+		printk(BIOS_SPEW, "if the IOAPIC device doesn't support 256 APIC id, \n you need to set CONFIG_ENABLE_APIC_EXT_ID in MB Option.lb so you can spare 16 id for IOAPIC\n");
 		enable_apic_ext_id(sysconf.nodes);
 	}
 

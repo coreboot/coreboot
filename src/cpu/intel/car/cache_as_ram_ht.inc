@@ -87,7 +87,7 @@ addrsize_no_MSR:
 	movl	$0x0f, %edx
 
 	/* Preload high word of address mask (in %edx) for Variable
-	 * MTRRs 0 and 1 and enable local apic at default base.
+	 * MTRRs 0 and 1 and enable local APIC at default base.
 	 */
 addrsize_set_high:
 	xorl	%eax, %eax

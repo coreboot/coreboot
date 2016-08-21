@@ -419,7 +419,7 @@ static u32 init_cpus(u32 cpu_init_detectedx, struct sys_info *sysinfo)
 	if (initial_apicid != 0)	// other than bsp
 #endif
 	{
-		/* use initial apic id to lift it */
+		/* use initial APIC id to lift it */
 		u32 dword = lapic_read(LAPIC_ID);
 		dword &= ~(0xff << 24);
 		dword |=

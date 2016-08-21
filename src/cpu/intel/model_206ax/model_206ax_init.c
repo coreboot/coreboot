@@ -572,7 +572,7 @@ static void model_206ax_init(struct device *cpu)
 	/* Setup Page Attribute Tables (PAT) */
 	// TODO set up PAT
 
-	/* Enable the local CPU apics */
+	/* Enable the local CPU APICs */
 	enable_lapic_tpr();
 	setup_lapic();
 

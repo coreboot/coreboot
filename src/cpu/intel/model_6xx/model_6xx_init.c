@@ -31,7 +31,7 @@ static void model_6xx_init(struct device *dev)
 	/* Update the microcode */
 	intel_update_microcode_from_cbfs();
 
-	/* Enable the local CPU apics */
+	/* Enable the local CPU APICs */
 	setup_lapic();
 };
 

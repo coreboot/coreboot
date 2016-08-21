@@ -54,7 +54,7 @@ static void for_each_ap(u32 bsp_apicid, u32 core_range, process_ap_t process_ap,
 		j = ((pci_read_config32(PCI_DEV(0, 0x18 + i, 3), 0xe8) >> 12) &
 		     3);
 		if (nb_cfg_54) {
-			if (j == 0) {	// if it is single core, we need to increase siblings for apic calculation
+			if (j == 0) {	// if it is single core, we need to increase siblings for APIC calculation
 #if !CONFIG_K8_REV_F_SUPPORT
 				e0_later_single_core = is_e0_later_in_bsp(i);	// single core
 #else
@@ -266,7 +266,7 @@ static u32 init_cpus(u32 cpu_init_detectedx)
 	if (initial_apicid != 0)	// other than bsp
 #endif
 	{
-		/* use initial apic id to lift it */
+		/* use initial APIC id to lift it */
 		u32 dword = lapic_read(LAPIC_ID);
 		dword &= ~(0xff << 24);
 		dword |=
@@ -300,7 +300,7 @@ static u32 init_cpus(u32 cpu_init_detectedx)
 
 	if (id.coreid == 0) {
 		distinguish_cpu_resets(id.nodeid);
-//            start_other_core(id.nodeid); // start second core in first cpu, only allowed for nb_cfg_54 is not set
+//            start_other_core(id.nodeid); // start second core in first CPU, only allowed for nb_cfg_54 is not set
 	}
 	//here don't need to wait
 	lapic_write(LAPIC_MSG_REG, (apicid << 24) | 0x33);	// mark the CPU is started

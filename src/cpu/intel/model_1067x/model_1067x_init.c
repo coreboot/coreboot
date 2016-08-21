@@ -32,7 +32,7 @@
 
 static void init_timer(void)
 {
-	/* Set the apic timer to no interrupts and periodic mode */
+	/* Set the APIC timer to no interrupts and periodic mode */
 	lapic_write(LAPIC_LVTT, (1 << 17)|(1<< 16)|(0 << 12)|(0 << 0));
 
 	/* Set the divider to 1, no divider */
@@ -322,7 +322,7 @@ static void model_1067x_init(struct device *cpu)
 	x86_setup_mtrrs();
 	x86_mtrr_check();
 
-	/* Enable the local CPU apics */
+	/* Enable the local CPU APICs */
 	setup_lapic();
 
 	/* Initialize the APIC timer */

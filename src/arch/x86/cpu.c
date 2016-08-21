@@ -196,7 +196,7 @@ static void identify_cpu(struct device *cpu)
 		}
 	}
 	cpu->vendor = X86_VENDOR_UNKNOWN;
-	for(i = 0; i < ARRAY_SIZE(x86_vendors); i++) {
+	for (i = 0; i < ARRAY_SIZE(x86_vendors); i++) {
 		if (memcmp(vendor_name, x86_vendors[i].name, 12) == 0) {
 			cpu->vendor = x86_vendors[i].vendor;
 			break;
@@ -267,12 +267,12 @@ void cpu_initialize(unsigned int index)
 	/* Lookup the cpu's operations */
 	set_cpu_ops(cpu);
 
-	if(!cpu->ops) {
+	if (!cpu->ops) {
 		/* mask out the stepping and try again */
 		cpu->device -= c.x86_mask;
 		set_cpu_ops(cpu);
 		cpu->device += c.x86_mask;
-		if(!cpu->ops) die("Unknown cpu");
+		if (!cpu->ops) die("Unknown cpu");
 		printk(BIOS_DEBUG, "Using generic CPU ops (good)\n");
 	}
 

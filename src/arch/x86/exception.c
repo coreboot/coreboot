@@ -513,9 +513,9 @@ void x86_exception(struct eregs *info)
 	 * evident from the looking at the dump */
 	code = (u8*)((uintptr_t)code & ~0x7);
 	int i;
-	for(i = 0; i < MDUMP_SIZE; i++)
+	for (i = 0; i < MDUMP_SIZE; i++)
 	{
-		if( (i & 0x07) == 0 )
+		if ( (i & 0x07) == 0 )
 			printk(BIOS_EMERG, "\n%p:\t", code + i);
 		printk(BIOS_EMERG, "%.2x ", code[i]);
 	}

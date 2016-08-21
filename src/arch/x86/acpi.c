@@ -814,7 +814,7 @@ void acpi_create_fadt(acpi_fadt_t *fadt,acpi_facs_t *facs, void *dsdt)
 	fadt->x_dsdt_l = (unsigned long)dsdt;
 	fadt->x_dsdt_h = 0;
 
-	if(IS_ENABLED(CONFIG_SYSTEM_TYPE_LAPTOP)) {
+	if (IS_ENABLED(CONFIG_SYSTEM_TYPE_LAPTOP)) {
 		fadt->preferred_pm_profile = PM_MOBILE;
 	} else {
 		fadt->preferred_pm_profile = PM_DESKTOP;

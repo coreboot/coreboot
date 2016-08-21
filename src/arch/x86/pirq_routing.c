@@ -110,14 +110,14 @@ static u8 pirq_get_next_free_irq(u8* pirq, u16 bitmap)
 		/* And assume we have not yet routed it */
 		int already_routed = 0;
 		/* Have we already routed it ? */
-		for(link = 0; link < CONFIG_MAX_PIRQ_LINKS; link++) {
+		for (link = 0; link < CONFIG_MAX_PIRQ_LINKS; link++) {
 			if (pirq[link] == irq) {
 				already_routed = 1;
 				break;
 			}
 		}
 		/* If it's not yet routed, use it */
-		if(!already_routed)
+		if (!already_routed)
 			break;
 		/* But if it was already routed, try the next one */
 		continue;
@@ -179,7 +179,7 @@ static void pirq_route_irqs(unsigned long addr)
 			pirq_tbl->slots[i].devfn >> 3, irq_slot);
 	}
 
-	for(i = 0; i < CONFIG_MAX_PIRQ_LINKS; i++)
+	for (i = 0; i < CONFIG_MAX_PIRQ_LINKS; i++)
 		printk(BIOS_DEBUG, "PIRQ%c: %d\n", i + 'A',  pirq[i]);
 
 	pirq_assign_irqs(pirq);

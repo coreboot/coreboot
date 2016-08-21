@@ -46,10 +46,10 @@ void bcm5785_enable(device_t dev)
 	else { // same bus
 		unsigned devfn;
 		devfn = (dev->path.pci.devfn) & ~7;
-		if( dev->vendor == PCI_VENDOR_ID_SERVERWORKS ) {
-			if(dev->device == 0x0036) //PCI-X Bridge
+		if (dev->vendor == PCI_VENDOR_ID_SERVERWORKS ) {
+			if (dev->device == 0x0036) //PCI-X Bridge
 			{ devfn += (1<<3); }
-			else if(dev->device == 0x0223) // USB
+			else if (dev->device == 0x0223) // USB
 			{ devfn -= (1<<3); }
 		}
 		sb_pci_main_dev = dev_find_slot(dev->bus->secondary, devfn);

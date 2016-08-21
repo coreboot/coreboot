@@ -73,7 +73,7 @@ static void readApcMacAddr(void)
     outl((inl(0xcfc) & 0xfffffffd),0xcfc ); // enable IO78/79h for APC Index/Data
 
     printk(BIOS_DEBUG, "MAC addr in APC = ");
-    for(i = 0x9 ; i <=0xe ; i++)
+    for (i = 0x9 ; i <=0xe ; i++)
     {
         printk(BIOS_DEBUG, "%2.2x",readApcByte(i));
     }
@@ -98,7 +98,7 @@ static void set_apc(struct device *dev)
     outl(0x80001048,0xcf8);
     outl((inl(0xcfc) & 0xfffffffd),0xcfc ); // enable IO78/79h for APC Index/Data
 
-    for(i = 0 ; i <3; i++)
+    for (i = 0 ; i <3; i++)
     {
        addr=0x9+2*i;
        writeApcByte(addr,(u8)(MacAddr[i]&0xFF));
@@ -142,11 +142,11 @@ static  unsigned long ReadEEprom( struct device *dev,  u8 *base,  u32 Reg)
 
     mdelay(10);
 
-    for(i=0 ; i <= LoopNum; i++)
+    for (i=0 ; i <= LoopNum; i++)
     {
 	ulValue=read32(base + 0x3c);
 
-        if(!(ulValue & 0x0080)) //BIT_7
+        if (!(ulValue & 0x0080)) //BIT_7
             break;
 
         mdelay(100);
@@ -154,7 +154,7 @@ static  unsigned long ReadEEprom( struct device *dev,  u8 *base,  u32 Reg)
 
     mdelay(50);
 
-    if(i==LoopNum)   data=0x10000;
+    if (i==LoopNum)   data=0x10000;
     else{
 	ulValue=read32(base + 0x3c);
     	data = ((ulValue & 0xffff0000) >> 16);
@@ -205,13 +205,13 @@ static int phy_detect(u8 *base,u16 *PhyAddr) //BOOL PHY_Detect()
 
 
         // Scan all PHY address(0 ~ 31) to find a valid PHY
-        for(PhyAddress = 0; PhyAddress < 32; PhyAddress++)
+        for (PhyAddress = 0; PhyAddress < 32; PhyAddress++)
         {
 		usData=phy_read(base,PhyAddress,StatusReg);  // Status register is a PHY's register(offset 01h)
 
            // Found a valid PHY
 
-           if((usData != 0x0) && (usData != 0xffff))
+           if ((usData != 0x0) && (usData != 0xffff))
            {
                bFoundPhy = TRUE;
                break;
@@ -219,7 +219,7 @@ static int phy_detect(u8 *base,u16 *PhyAddr) //BOOL PHY_Detect()
         }
 
 
-	if(!bFoundPhy)
+	if (!bFoundPhy)
 	{
 	    printk(BIOS_DEBUG, "PHY not found !!!!\n");
 	}
@@ -260,7 +260,7 @@ static void nic_init(struct device *dev)
 
 	res = find_resource(dev, 0x10);
 
-	if(!res)
+	if (!res)
 	{
 		printk(BIOS_DEBUG, "NIC Cannot find resource..\n");
 		return;
@@ -268,7 +268,7 @@ static void nic_init(struct device *dev)
 	base = res2mmio(res, 0, 0);
         printk(BIOS_DEBUG, "NIC base address %p\n",base);
 
-	if(!(val=phy_detect(base,&PhyAddr)))
+	if (!(val=phy_detect(base,&PhyAddr)))
 	{
 	       printk(BIOS_DEBUG, "PHY detect fail !!!!\n");
 		return;
@@ -276,7 +276,7 @@ static void nic_init(struct device *dev)
 
         ulValue=read32(base + 0x38L);   //  check EEPROM existing
 
-        if((ulValue & 0x0002))
+        if ((ulValue & 0x0002))
         {
 
           //	read MAC address from EEPROM at first
@@ -311,8 +311,8 @@ static void nic_init(struct device *dev)
         printk(BIOS_DEBUG, "****** NIC PCI config ******");
         printk(BIOS_DEBUG, "\n    03020100  07060504  0B0A0908  0F0E0D0C");
 
-        for(i=0;i<0xff;i+=4){
-                if((i%16)==0)
+        for (i=0;i<0xff;i+=4){
+                if ((i%16)==0)
                         printk(BIOS_DEBUG, "\n%02x: ", i);
                 printk(BIOS_DEBUG, "%08x  ", pci_read_config32(dev,i));
         }

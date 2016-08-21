@@ -118,7 +118,7 @@ static void sata_init(struct device *dev)
 
 		/* Restrict ports - 0 and 2 only available */
 		ports &= 0x5;
-	} else if(config->sata_ahci) {
+	} else if (config->sata_ahci) {
 		printk(BIOS_DEBUG, "SATA controller in AHCI mode.\n");
 		/* Allow both Legacy and Native mode */
 		pci_write_config8(dev, 0x09, 0x8f);

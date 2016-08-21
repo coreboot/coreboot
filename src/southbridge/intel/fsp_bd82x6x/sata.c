@@ -52,7 +52,7 @@ static void sata_init(struct device *dev)
 		reg16 = pci_read_config16(dev, PCI_COMMAND);
 		reg16 &= ~PCI_COMMAND_MEMORY;
 		pci_write_config16(dev, PCI_COMMAND, reg16);
-	} else if(config->sata_ahci) {
+	} else if (config->sata_ahci) {
 		u32 *abar;
 
 		printk(BIOS_DEBUG, "SATA: Controller in AHCI mode.\n");

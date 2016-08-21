@@ -139,7 +139,7 @@ static void lpc_init(device_t dev)
         } else {
                 byte |= ( 1 << 7); // Can not mask NMI from PCI-E and NMI_NOW
         }
-        if( byte != byte_old) {
+        if ( byte != byte_old) {
                 outb(byte, 0x70);
         }
 

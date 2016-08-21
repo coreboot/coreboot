@@ -72,7 +72,7 @@ static void usb2_init(struct device *dev)
 	//-------------- enable USB2.0 (SiS7002) ----------------------
 
 	i = 0;
-        while(SiS_SiS7002_init[i][0] != 0)
+        while (SiS_SiS7002_init[i][0] != 0)
         {
                 temp8 = pci_read_config8(dev, SiS_SiS7002_init[i][0]);
                 temp8 &= SiS_SiS7002_init[i][1];
@@ -82,7 +82,7 @@ static void usb2_init(struct device *dev)
         };
 
         res = find_resource(dev, 0x10);
-        if(!res)
+        if (!res)
                 return;
 
         base = res2mmio(res, 0, 0);
@@ -94,8 +94,8 @@ static void usb2_init(struct device *dev)
         printk(BIOS_DEBUG, "****** USB 2.0 PCI config ******");
         printk(BIOS_DEBUG, "\n    03020100  07060504  0B0A0908  0F0E0D0C");
 
-        for(i=0;i<0xff;i+=4){
-                if((i%16)==0)
+        for (i=0;i<0xff;i+=4){
+                if ((i%16)==0)
                         printk(BIOS_DEBUG, "\n%02x: ", i);
                 printk(BIOS_DEBUG, "%08x  ", pci_read_config32(dev,i));
         }

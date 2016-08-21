@@ -259,7 +259,7 @@ int selectcard(void)
 {
 	int i;
 
-	printk(BIOS_DEBUG, "%s", "\r\nCase 9....... \n\r");
+	printk(BIOS_DEBUG, "%s", "\r\nCase 9.......\r\n");
 	// send the length byte and command code through RFID interface
 
 	transaction1(RFID_ADDR);

@@ -74,7 +74,7 @@ ENDPROC(cpu_get_exception_stack)
  * any rmodules.
  */
 ENTRY(arm64_c_environment)
-	/* Set the exception stack for the cpu. */
+	/* Set the exception stack for the CPU. */
 	bl	cpu_get_exception_stack
 	msr	SPSel, #1
 	isb
@@ -84,7 +84,7 @@ ENTRY(arm64_c_environment)
 	msr	SPSel, #0
 	isb
 
-	/* Set the non-exception stack for the cpu. */
+	/* Set the non-exception stack for the CPU. */
 	bl	cpu_get_stack
 	mov	sp, x0
 

@@ -6,7 +6,7 @@
 #include <halt.h>
 #include <smp/node.h>
 
-/* See if I need to initialize the local apic */
+/* See if I need to initialize the local APIC */
 #if CONFIG_SMP || CONFIG_IOAPIC
 #  define NEED_LAPIC 1
 #else

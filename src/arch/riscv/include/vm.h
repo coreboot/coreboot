@@ -63,7 +63,7 @@ size_t pte_ppn(pte_t pte);
 pte_t ptd_create(uintptr_t ppn);
 pte_t pte_create(uintptr_t ppn, int prot, int user);
 
-void walk_page_table(void);
+void print_page_table(void);
 
 void init_vm(uintptr_t virtMemStart, uintptr_t physMemStart, uintptr_t pageTableStart);
 void mstatus_init(void); // need to setup mstatus so we know we have virtual memory

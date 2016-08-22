@@ -218,4 +218,8 @@ void mstatus_init(void)
 			| (1 << CAUSE_FAULT_STORE)
 			| (1 << CAUSE_USER_ECALL)
 	);
+
+	/* Enable all user/supervisor-mode counters */
+	write_csr(mscounteren, 0b111);
+	write_csr(mucounteren, 0b111);
 }

@@ -78,6 +78,9 @@ void boot_device_init(void)
 	if (car_get_var(sfg) != NULL)
 		return;
 
+	/* Ensure any necessary setup is performed by the drivers. */
+	spi_init();
+
 	car_set_var(sfg, spi_flash_probe(bus, cs));
 }
 

@@ -25,12 +25,13 @@
  * MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
  */
 
-#include <spike_util.h>
 #include <arch/barrier.h>
 #include <arch/errno.h>
 #include <atomic.h>
-#include <string.h>
 #include <console/console.h>
+#include <spike_util.h>
+#include <string.h>
+#include <vm.h>
 
 uintptr_t translate_address(uintptr_t vAddr) {
 	// TODO: implement the page table translation algorithm
@@ -41,13 +42,13 @@ uintptr_t translate_address(uintptr_t vAddr) {
 	return translationResult;
 }
 
-uintptr_t mcall_query_memory(uintptr_t id, memory_block_info *p)
+uintptr_t mcall_query_memory(uintptr_t id, memory_block_info *info)
 {
-	uintptr_t physicalAddr = translate_address((uintptr_t) p);
-	memory_block_info *info = (memory_block_info*) physicalAddr;
 	if (id == 0) {
-		info->base = 0x1000000; // hard coded for now, but we can put these values somewhere later
-		info->size = 0x7F000000 - info->base;
+		mprv_write_ulong(&info->base, 2U*GiB);
+
+		/* TODO: Return the correct value */
+		mprv_write_ulong(&info->size, 1*GiB);
 		return 0;
 	}
 
@@ -79,7 +80,7 @@ uintptr_t mcall_shutdown(void)
 
 uintptr_t mcall_set_timer(unsigned long long when)
 {
-	die("mcall_set_timer is currently not implemented");
+	printk(BIOS_DEBUG, "mcall_set_timer is currently not implemented, ignoring\n");
 	return 0;
 }
 
@@ -93,11 +94,6 @@ uintptr_t mcall_dev_resp(void)
 {
 	die("mcall_dev_resp is currently not implemented");
 	return 0;
-}
-
-uintptr_t mcall_hart_id(void)
-{
-	return HLS()->hart_id;
 }
 
 void hls_init(uint32_t hart_id)

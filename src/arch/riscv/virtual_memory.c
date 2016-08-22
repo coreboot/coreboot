@@ -16,6 +16,7 @@
 
 #include <arch/barrier.h>
 #include <arch/encoding.h>
+#include <arch/sbi.h>
 #include <atomic.h>
 #include <console/console.h>
 #include <stdint.h>
@@ -151,7 +152,7 @@ void init_vm(uintptr_t virtMemStart, uintptr_t physMemStart, uintptr_t pageTable
 
 	// map SBI at top of vaddr space
 	uintptr_t num_sbi_pages = 1; // only need to map a single page for sbi interface
-	uintptr_t sbiStartAddress = 0x2000; // the start of the sbi mapping
+	uintptr_t sbiStartAddress = (uintptr_t) &sbi_page;
 	uintptr_t sbiAddr = sbiStartAddress;
 	for (uintptr_t i = 0; i < num_sbi_pages; i++) {
 		uintptr_t idx = (1 << RISCV_PGLEVEL_BITS) - num_sbi_pages + i;

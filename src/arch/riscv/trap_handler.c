@@ -15,63 +15,56 @@
  */
 
 #include <arch/exception.h>
+#include <arch/sbi.h>
 #include <console/console.h>
 #include <spike_util.h>
 #include <string.h>
 #include <vm.h>
 
-#define HART_ID 0
-#define CONSOLE_PUT 1
-#define SEND_DEVICE_REQUEST 2
-#define RECEIVE_DEVICE_RESPONSE 3
-#define SEND_IPI 4
-#define CLEAR_IPI 5
-#define SHUTDOWN 6
-#define SET_TIMER 7
-#define QUERY_MEMORY 8
-
-int loopBreak2 = 1;
-
 void handle_supervisor_call(trapframe *tf) {
-	uintptr_t call = tf->gpr[17];
-	uintptr_t arg0 = tf->gpr[10];
-	uintptr_t arg1 = tf->gpr[11];
+	uintptr_t call = tf->gpr[17]; /* a7 */
+	uintptr_t arg0 = tf->gpr[10]; /* a0 */
+	uintptr_t arg1 = tf->gpr[11]; /* a1 */
 	uintptr_t returnValue;
 	switch(call) {
-		case HART_ID:
+		case SBI_ECALL_HART_ID:
 			printk(BIOS_DEBUG, "Getting hart id...\n");
-			returnValue = mcall_hart_id();
+			returnValue = read_csr(mhartid);
 			break;
-		case CONSOLE_PUT:
+		case SBI_ECALL_NUM_HARTS:
+			/* TODO: parse the hardware-supplied config string and
+			   return the correct value */
+			returnValue = 1;
+		case SBI_ECALL_CONSOLE_PUT:
 			returnValue = mcall_console_putchar(arg0);
 			break;
-		case SEND_DEVICE_REQUEST:
+		case SBI_ECALL_SEND_DEVICE_REQUEST:
 			printk(BIOS_DEBUG, "Sending device request...\n");
 			returnValue = mcall_dev_req((sbi_device_message*) arg0);
 			break;
-		case RECEIVE_DEVICE_RESPONSE:
+		case SBI_ECALL_RECEIVE_DEVICE_RESPONSE:
 			printk(BIOS_DEBUG, "Getting device response...\n");
 			returnValue = mcall_dev_resp();
 			break;
-		case SEND_IPI:
+		case SBI_ECALL_SEND_IPI:
 			printk(BIOS_DEBUG, "Sending IPI...\n");
 			returnValue = mcall_send_ipi(arg0);
 			break;
-		case CLEAR_IPI:
+		case SBI_ECALL_CLEAR_IPI:
 			printk(BIOS_DEBUG, "Clearing IPI...\n");
 			returnValue = mcall_clear_ipi();
 			break;
-		case SHUTDOWN:
+		case SBI_ECALL_SHUTDOWN:
 			printk(BIOS_DEBUG, "Shutting down...\n");
 			returnValue = mcall_shutdown();
 			break;
-		case SET_TIMER:
+		case SBI_ECALL_SET_TIMER:
 			printk(BIOS_DEBUG,
 			       "Setting timer to %p (current time is %p)...\n",
 			       (void *)arg0, (void *)rdtime());
 			returnValue = mcall_set_timer(arg0);
 			break;
-		case QUERY_MEMORY:
+		case SBI_ECALL_QUERY_MEMORY:
 			printk(BIOS_DEBUG, "Querying memory, CPU #%lld...\n", arg0);
 			returnValue = mcall_query_memory(arg0, (memory_block_info*) arg1);
 			break;

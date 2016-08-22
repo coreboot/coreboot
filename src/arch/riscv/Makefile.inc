@@ -95,6 +95,7 @@ ramstage-y += stages.c
 ramstage-y += misc.c
 ramstage-y += boot.c
 ramstage-y += tables.c
+ramstage-y += sbi.S
 ramstage-y += \
 	$(top)/src/lib/memchr.c \
 	$(top)/src/lib/memcmp.c \

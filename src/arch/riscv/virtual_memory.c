@@ -208,4 +208,14 @@ void mstatus_init(void)
 
 	clear_csr(mip, MIP_MSIP);
 	set_csr(mie, MIP_MSIP);
+
+	/* Configure which exception causes are delegated to supervisor mode */
+	set_csr(medeleg,  (1 << CAUSE_MISALIGNED_FETCH)
+			| (1 << CAUSE_FAULT_FETCH)
+			| (1 << CAUSE_ILLEGAL_INSTRUCTION)
+			| (1 << CAUSE_BREAKPOINT)
+			| (1 << CAUSE_FAULT_LOAD)
+			| (1 << CAUSE_FAULT_STORE)
+			| (1 << CAUSE_USER_ECALL)
+	);
 }

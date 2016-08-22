@@ -186,9 +186,9 @@ void initVirtualMemory(void) {
 	}
 
 	printk(BIOS_DEBUG, "Initializing virtual memory...\n");
-	uintptr_t physicalStart = 0x1000000; // TODO: Figure out how to grab this from cbfs
-	uintptr_t virtualStart = 0xffffffff81000000;
-	uintptr_t pageTableStart = 0x1400000;
+	uintptr_t physicalStart = 0x90000000; // TODO: Figure out how to grab this from cbfs
+	uintptr_t virtualStart = 0xffffffff80000000;
+	uintptr_t pageTableStart = 0x91400000;
 	init_vm(virtualStart, physicalStart, pageTableStart);
 	mb();
 

@@ -6,30 +6,34 @@ chip soc/intel/apollolake
 
 	register "pcie_rp4_clkreq_pin" = "0"    # wifi/bt
 
-	# EMMC TX DATA Delay 1#
-	# 0x0C[14:8] stands for 12*125 = 1500 pSec delay for HS400
-	# 0x11[6:0] stands for 17*125 =  2125 pSec delay for SDR104/HS200
-	register "emmc_tx_data_cntl1" = "0x0C11" # HS400 required
+	# EMMC TX DATA Delay 1
+	# Refer to EDS-Vol2-22.3.
+	# [14:8] steps of delay for HS400, each 125ps.
+	# [6:0] steps of delay for SDR104/HS200, each 125ps.
+	register "emmc_tx_data_cntl1" = "0x0C16"
 
-	# EMMC TX DATA Delay 2#
-	# 0x00[30:24] stands for 0*125 = no delay for SDR50
-	# 0x2B[22:16] stands for 43*125 = 5375 pSec delay for DDR50
-	# 0x29[14:8] stands for 41*125 = 5125 pSec delay for SDR25/HS50
-	# 0x29[6:0] stands for 41*125 = 5125 pSec delay for SDR12
-	register "emmc_tx_data_cntl2" = "0x002B2929"
+	# EMMC TX DATA Delay 2
+	# Refer to EDS-Vol2-22.3.
+	# [30:24] steps of delay for SDR50, each 125ps.
+	# [22:16] steps of delay for DDR50, each 125ps.
+	# [14:8] steps of delay for SDR25/HS50, each 125ps.
+	# [6:0] steps of delay for SDR12, each 125ps.
+	register "emmc_tx_data_cntl2" = "0x28162828"
 
-	# EMMC RX CMD/DATA Delay 1#
-	# 0x00[30:24] stands for 0*125 = no delay for SDR50
-	# 0x12[22:16] stands for 18*125 = 2250 pSec delay for DDR50
-	# 0x57[14:8] stands for 87*125 = 10875 pSec delay for SDR25/HS50
-	# 0x3B[6:0] stands for 59*125= 7375 pSec delay for SDR12
-	register "emmc_rx_cmd_data_cntl1" = "0x0012573B"
+	# EMMC RX CMD/DATA Delay 1
+	# Refer to EDS-Vol2-22.3.
+	# [30:24] steps of delay for SDR50, each 125ps.
+	# [22:16] steps of delay for DDR50, each 125ps.
+	# [14:8] steps of delay for SDR25/HS50, each 125ps.
+	# [6:0] steps of delay for SDR12, each 125ps.
+	register "emmc_rx_cmd_data_cntl1" = "0x00181717"
 
-	# EMMC RX CMD/DATA Delay 2#
-	# 0x01[17:16] stands for Rx Clock before Output Buffer
-	# 0x00[14:8] stands for 0 delay for Auto Tuning Mode
-	# 0x1C[6:0] stands for 28*125 =  3500 pSec delay for HS200
-	register "emmc_rx_cmd_data_cntl2" = "0x1001C"
+	# EMMC RX CMD/DATA Delay 2
+	# Refer to EDS-Vol2-22.3.
+	# [17:16] stands for Rx Clock before Output Buffer
+	# [14:8] steps of delay for Auto Tuning Mode, each 125ps.
+	# [6:0] steps of delay for HS200, each 125ps.
+	register "emmc_rx_cmd_data_cntl2" = "0x10008"
 
 	# Enable DPTF
 	register "dptf_enable" = "1"

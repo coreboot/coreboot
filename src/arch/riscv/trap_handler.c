@@ -14,10 +14,11 @@
  * GNU General Public License for more details.
  */
 
-#include <console/console.h>
 #include <arch/exception.h>
+#include <console/console.h>
 #include <spike_util.h>
 #include <string.h>
+#include <vm.h>
 
 #define HART_ID 0
 #define CONSOLE_PUT 1
@@ -171,14 +172,16 @@ void trap_handler(trapframe *tf) {
 	die("Can't recover from trap. Halting.\n");
 }
 
+static uint32_t fetch_instruction(uintptr_t vaddr) {
+	printk(BIOS_SPEW, "fetching instruction at 0x%016zx\n", (size_t)vaddr);
+	return mprv_read_u32((uint32_t *) vaddr);
+}
+
 void handle_misaligned_load(trapframe *tf) {
 	printk(BIOS_DEBUG, "Trapframe ptr: %p\n", tf);
 	printk(BIOS_DEBUG, "Stored sp: %p\n", (void*) tf->gpr[2]);
-	insn_t faultingInstruction = 0;
 	uintptr_t faultingInstructionAddr = tf->epc;
-	asm("move t0, %0" : /* No outputs */ : "r"(faultingInstructionAddr));
-	asm("lw t0, 0(t0)");
-	asm("move %0, t0" : "=r"(faultingInstruction));
+	insn_t faultingInstruction = fetch_instruction(faultingInstructionAddr);
 	printk(BIOS_DEBUG, "Faulting instruction: 0x%x\n", faultingInstruction);
 	insn_t widthMask = 0x7000;
 	insn_t memWidth = (faultingInstruction & widthMask) >> 12;
@@ -188,7 +191,12 @@ void handle_misaligned_load(trapframe *tf) {
 	if (memWidth == 3) {
 		// load double, handle the issue
 		void* badAddress = (void*) tf->badvaddr;
-		memcpy(&(tf->gpr[destRegister]), badAddress, 8);
+		uint64_t value = 0;
+		for (int i = 0; i < 8; i++) {
+			value <<= 8;
+			value += mprv_read_u8(badAddress+i);
+		}
+		tf->gpr[destRegister] = value;
 	} else {
 		// panic, this should not have happened
 		printk(BIOS_DEBUG, "Code should not reach this path, misaligned on a non-64 bit store/load\n");
@@ -203,11 +211,8 @@ void handle_misaligned_load(trapframe *tf) {
 void handle_misaligned_store(trapframe *tf) {
 	printk(BIOS_DEBUG, "Trapframe ptr: %p\n", tf);
 	printk(BIOS_DEBUG, "Stored sp: %p\n", (void*) tf->gpr[2]);
-	insn_t faultingInstruction = 0;
 	uintptr_t faultingInstructionAddr = tf->epc;
-	asm("move t0, %0" : /* No outputs */ : "r"(faultingInstructionAddr));
-	asm("lw t0, 0(t0)");
-	asm("move %0, t0" : "=r"(faultingInstruction));
+	insn_t faultingInstruction = fetch_instruction(faultingInstructionAddr);
 	printk(BIOS_DEBUG, "Faulting instruction: 0x%x\n", faultingInstruction);
 	insn_t widthMask = 0x7000;
 	insn_t memWidth = (faultingInstruction & widthMask) >> 12;
@@ -217,8 +222,11 @@ void handle_misaligned_store(trapframe *tf) {
 	if (memWidth == 3) {
 		// store double, handle the issue
 		void* badAddress = (void*) tf->badvaddr;
-		long valueToStore = tf->gpr[srcRegister];
-		memcpy(badAddress, &valueToStore, 8);
+		uint64_t value = tf->gpr[srcRegister];
+		for (int i = 0; i < 8; i++) {
+			mprv_write_u8(badAddress+i, value);
+			value >>= 8;
+		}
 	} else {
 		// panic, this should not have happened
 		printk(BIOS_DEBUG, "Code should not reach this path, misaligned on a non-64 bit store/load\n");

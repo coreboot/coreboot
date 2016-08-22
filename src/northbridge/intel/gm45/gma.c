@@ -47,7 +47,7 @@ void gtt_write(u32 reg, u32 data)
 	write32(res2mmio(gtt_res, reg, 0), data);
 }
 
-static void intel_gma_init(const struct northbridge_intel_gm45_config *info,
+static void gma_init_lvds(const struct northbridge_intel_gm45_config *info,
 			   u8 *mmio, u32 physbase, u16 piobase, u32 lfb)
 {
 
@@ -101,7 +101,7 @@ static void intel_gma_init(const struct northbridge_intel_gm45_config *info,
 		    sizeof(edid_data), &edid);
 	mode = &edid.mode;
 
-	/* Disable screen memory to prevent garbage from appearing.  */
+	/* Disable screen memory to prevent garbage from appearing. */
 	vga_sr_write(1, vga_sr_read(1) | 0x20);
 
 	hactive = edid.x_resolution;
@@ -344,6 +344,152 @@ static void intel_gma_init(const struct northbridge_intel_gm45_config *info,
 	}
 }
 
+static void gma_init_vga(const struct northbridge_intel_gm45_config *info,
+			   u8 *mmio)
+{
+
+	int i;
+	u32 hactive, vactive;
+
+	vga_gr_write(0x18, 0);
+
+	write32(mmio + VGA0, 0x31108);
+	write32(mmio + VGA1, 0x31406);
+
+	write32(mmio + ADPA, ADPA_DAC_ENABLE
+			| ADPA_PIPE_A_SELECT
+			| ADPA_CRT_HOTPLUG_MONITOR_COLOR
+			| ADPA_CRT_HOTPLUG_ENABLE
+			| ADPA_USE_VGA_HVPOLARITY
+			| ADPA_VSYNC_CNTL_ENABLE
+			| ADPA_HSYNC_CNTL_ENABLE
+			| ADPA_DPMS_ON
+			);
+
+	write32(mmio + 0x7041c, 0x0);
+	write32(mmio + DPLL_MD(0), 0x3);
+	write32(mmio + DPLL_MD(1), 0x3);
+
+	vga_misc_write(0x67);
+
+	const u8 cr[] = { 0x5f, 0x4f, 0x50, 0x82, 0x55, 0x81, 0xbf, 0x1f,
+		    0x00, 0x4f, 0x0d, 0x0e, 0x00, 0x00, 0x00, 0x00,
+		    0x9c, 0x8e, 0x8f, 0x28, 0x1f, 0x96, 0xb9, 0xa3,
+		    0xff
+	};
+	vga_cr_write(0x11, 0);
+
+	for (i = 0; i <= 0x18; i++)
+		vga_cr_write(i, cr[i]);
+
+	/* Disable screen memory to prevent garbage from appearing.  */
+	vga_sr_write(1, vga_sr_read(1) | 0x20);
+
+	hactive = 640;
+	vactive = 400;
+
+	mdelay(1);
+	write32(mmio + FP0(0), 0x31108);
+	write32(mmio + DPLL(0),
+		DPLL_VCO_ENABLE | DPLLB_MODE_DAC_SERIAL
+		| DPLL_DAC_SERIAL_P2_CLOCK_DIV_10
+		| 0x10601
+		);
+	mdelay(1);
+	write32(mmio + DPLL(0),
+		DPLL_VCO_ENABLE | DPLLB_MODE_DAC_SERIAL
+		| DPLL_DAC_SERIAL_P2_CLOCK_DIV_10
+		| 0x10601
+		);
+
+	write32(mmio + ADPA, ADPA_DAC_ENABLE
+			| ADPA_PIPE_A_SELECT
+			| ADPA_CRT_HOTPLUG_MONITOR_COLOR
+			| ADPA_CRT_HOTPLUG_ENABLE
+			| ADPA_USE_VGA_HVPOLARITY
+			| ADPA_VSYNC_CNTL_ENABLE
+			| ADPA_HSYNC_CNTL_ENABLE
+			| ADPA_DPMS_ON
+			);
+
+	write32(mmio + HTOTAL(0),
+		((hactive - 1) << 16)
+		| (hactive - 1));
+	write32(mmio + HBLANK(0),
+		((hactive - 1) << 16)
+		| (hactive - 1));
+	write32(mmio + HSYNC(0),
+		((hactive - 1) << 16)
+		| (hactive - 1));
+
+	write32(mmio + VTOTAL(0), ((vactive - 1) << 16)
+		| (vactive - 1));
+	write32(mmio + VBLANK(0), ((vactive - 1) << 16)
+		| (vactive - 1));
+	write32(mmio + VSYNC(0),
+		((vactive - 1) << 16)
+		| (vactive - 1));
+
+	write32(mmio + PIPECONF(0), PIPECONF_DISABLE);
+
+	write32(mmio + PF_WIN_POS(0), 0);
+
+	write32(mmio + PIPESRC(0), (639 << 16) | 399);
+	write32(mmio + PF_CTL(0), PF_ENABLE | PF_FILTER_MED_3x3);
+	write32(mmio + PF_WIN_SZ(0), vactive | (hactive << 16));
+	write32(mmio + PFIT_CONTROL, 0xa0000000);
+
+	mdelay(1);
+
+	write32(mmio + 0x000f000c, 0x00002040);
+	mdelay(1);
+	write32(mmio + 0x000f000c, 0x00002050);
+	write32(mmio + 0x00060100, 0x00044000);
+	mdelay(1);
+	write32(mmio + PIPECONF(0), PIPECONF_ENABLE
+			| PIPECONF_BPP_6 | PIPECONF_DITHER_EN);
+
+	write32(mmio + VGACNTRL, 0x0);
+	write32(mmio + DSPCNTR(0), DISPLAY_PLANE_ENABLE | DISPPLANE_BGRX888);
+	mdelay(1);
+
+	write32(mmio + ADPA, ADPA_DAC_ENABLE
+			| ADPA_PIPE_A_SELECT
+			| ADPA_CRT_HOTPLUG_MONITOR_COLOR
+			| ADPA_CRT_HOTPLUG_ENABLE
+			| ADPA_USE_VGA_HVPOLARITY
+			| ADPA_VSYNC_CNTL_ENABLE
+			| ADPA_HSYNC_CNTL_ENABLE
+			| ADPA_DPMS_ON
+			);
+
+	vga_textmode_init();
+
+	/* Enable screen memory.  */
+	vga_sr_write(1, vga_sr_read(1) & ~0x20);
+
+	/* Clear interrupts. */
+	write32(mmio + DEIIR, 0xffffffff);
+	write32(mmio + SDEIIR, 0xffffffff);
+}
+
+/* compare the header of the vga edid header */
+/* if vga is not connected it should not have a correct header */
+static u8 vga_connected(u8 *mmio)
+{
+	u8 vga_edid[128];
+	u8 header[8] = {0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x00};
+	intel_gmbus_read_edid(mmio + GMBUS0, 2, 0x50, vga_edid, 128);
+	for (int i = 0; i < 8; i++) {
+		if (vga_edid[i] != header[i]) {
+			printk(BIOS_DEBUG, "VGA not connected. Using LVDS display\n");
+			return 0;
+		}
+	}
+	printk(BIOS_SPEW, "VGA display connected\n");
+	return 1;
+}
+
 static void gma_pm_init_post_vbios(struct device *const dev)
 {
 	const struct northbridge_intel_gm45_config *const conf = dev->chip_info;
@@ -419,8 +565,11 @@ static void gma_func0_init(struct device *dev)
 			printk(BIOS_SPEW,
 			       "Initializing VGA without OPROM. MMIO 0x%llx\n",
 			       gtt_res->base);
-			intel_gma_init(conf, res2mmio(gtt_res, 0, 0), physbase,
-				       pio_res->base, lfb_res->base);
+			if (vga_connected(res2mmio(gtt_res, 0, 0)))
+				gma_init_vga(conf, res2mmio(gtt_res, 0, 0));
+			else
+				gma_init_lvds(conf, res2mmio(gtt_res, 0, 0),
+					physbase, pio_res->base, lfb_res->base);
 		}
 
 		/* Linux relies on VBT for panel info.  */

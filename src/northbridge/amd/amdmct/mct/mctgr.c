@@ -31,13 +31,13 @@ u32 mct_AdjustMemClkDis_GR(struct DCTStatStruc *pDCTstat, u32 dct,
 	DramTimingLo = val;
 	/* Dram Timing Low (owns Clock Enable bits) */
 	NewDramTimingLo = Get_NB32(dev, 0x88 + reg_off);
-	if(mctGet_NVbits(NV_AllMemClks)==0) {
+	if (mctGet_NVbits(NV_AllMemClks)==0) {
 		/*Special Jedec SPD diagnostic bit - "enable all clocks"*/
-		if(!(pDCTstat->Status & (1<<SB_DiagClks))) {
-			for(i=0; i<MAX_DIMMS_SUPPORTED; i++) {
+		if (!(pDCTstat->Status & (1<<SB_DiagClks))) {
+			for (i=0; i<MAX_DIMMS_SUPPORTED; i++) {
 				val = Tab_GRCLKDis[i];
-				if(val<8) {
-					if(!(pDCTstat->DIMMValidDCT[dct] & (1<<val))) {
+				if (val<8) {
+					if (!(pDCTstat->DIMMValidDCT[dct] & (1<<val))) {
 						/* disable memclk */
 						NewDramTimingLo |= (1<<(i+1));
 					}
@@ -61,7 +61,7 @@ u32 mct_AdjustDramConfigLo_GR(struct DCTStatStruc *pDCTstat, u32 dct, u32 val)
 			; mov	cx,PA_NBMISC+44h	;MCA NB Configuration
 			; call Get_NB32n_D
 			; bt eax,22				;EccEn
-			; .if(CARRY?)
+			; .if (CARRY?)
 				; btr eax,BurstLength32
 			; .endif
 */
@@ -72,7 +72,7 @@ u32 mct_AdjustDramConfigLo_GR(struct DCTStatStruc *pDCTstat, u32 dct, u32 val)
 void mct_AdjustMemHoist_GR(struct DCTStatStruc *pDCTstat, u32 base, u32 HoleSize)
 {
 	u32 val;
-	if(base >= pDCTstat->DCTHoleBase) {
+	if (base >= pDCTstat->DCTHoleBase) {
 		u32 dev = pDCTstat->dev_dct;
 		base += HoleSize;
 		base >>= 27 - 8;

@@ -34,7 +34,7 @@ static uint8_t ht_lookup_capability(device_t dev, uint16_t val)
 	if (pos > PCI_CAP_LIST_NEXT) {
 		pos = pci_read_config8(dev, pos);
 	}
-	while(pos != 0) { /* loop through the linked list */
+	while (pos != 0) { /* loop through the linked list */
 		uint8_t cap;
 		cap = pci_read_config8(dev, pos + PCI_CAP_LIST_ID);
 		if (cap == PCI_CAP_ID_HT) {
@@ -69,13 +69,13 @@ static void ht_collapse_previous_enumeration(uint8_t bus, unsigned offset_unitid
 
 	//actually, only for one HT device HT chain, and unitid is 0
 #if !CONFIG_HT_CHAIN_UNITID_BASE
-	if(offset_unitid) {
+	if (offset_unitid) {
 		return;
 	}
 #endif
 
 	/* Check if is already collapsed */
-	if((!offset_unitid) || (offset_unitid && (!((CONFIG_HT_CHAIN_END_UNITID_BASE == 0) && (CONFIG_HT_CHAIN_END_UNITID_BASE <CONFIG_HT_CHAIN_UNITID_BASE))))) {
+	if ((!offset_unitid) || (offset_unitid && (!((CONFIG_HT_CHAIN_END_UNITID_BASE == 0) && (CONFIG_HT_CHAIN_END_UNITID_BASE <CONFIG_HT_CHAIN_UNITID_BASE))))) {
 		uint32_t id;
 		dev = PCI_DEV(bus, 0, 0);
 		id = pci_read_config32(dev, PCI_VENDOR_ID);
@@ -88,7 +88,7 @@ static void ht_collapse_previous_enumeration(uint8_t bus, unsigned offset_unitid
 	/* Spin through the devices and collapse any previous
 	 * hypertransport enumeration.
 	 */
-	for(dev = PCI_DEV(bus, 1, 0); dev <= PCI_DEV(bus, 0x1f, 0x7); dev += PCI_DEV(0, 1, 0)) {
+	for (dev = PCI_DEV(bus, 1, 0); dev <= PCI_DEV(bus, 0x1f, 0x7); dev += PCI_DEV(0, 1, 0)) {
 		uint32_t id;
 		uint8_t pos;
 		uint16_t flags;
@@ -167,7 +167,7 @@ static uint8_t ht_read_width_cap(device_t dev, uint8_t pos)
 
 	/* netlogic micro cap doesn't support 16 bit yet */
 	if (id == (0x184e | (0x0001 << 16))) {
-		if((width_cap & 0x77) == 0x11) {
+		if ((width_cap & 0x77) == 0x11) {
 			width_cap &= 0x88;
 		}
 	}
@@ -346,7 +346,7 @@ static int ht_setup_chainx(device_t udev, uint8_t upos, uint8_t bus, unsigned of
 					break;
 				}
 			}
-		} while((ctrl & (1 << 5)) == 0);
+		} while ((ctrl & (1 << 5)) == 0);
 
 		device_t dev = PCI_DEV(bus, 0, 0);
 		last_unitid = next_unitid;
@@ -371,9 +371,9 @@ static int ht_setup_chainx(device_t udev, uint8_t upos, uint8_t bus, unsigned of
 
 
 #if CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20
-		if(offset_unitid) {
-			if(next_unitid>= (bus ? 0x20:0x18) ) {
-				if(!end_used) {
+		if (offset_unitid) {
+			if (next_unitid>= (bus ? 0x20:0x18) ) {
+				if (!end_used) {
 					next_unitid = CONFIG_HT_CHAIN_END_UNITID_BASE;
 					end_used = 1;
 				} else {
@@ -436,7 +436,7 @@ out:
 end_of_chain: ;
 
 #if CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20
-	if(offset_unitid && (ht_dev_num>1) && (real_last_unitid != CONFIG_HT_CHAIN_END_UNITID_BASE) && !end_used ) {
+	if (offset_unitid && (ht_dev_num>1) && (real_last_unitid != CONFIG_HT_CHAIN_END_UNITID_BASE) && !end_used ) {
 		uint16_t flags;
 		flags = pci_read_config16(PCI_DEV(bus,real_last_unitid,0), real_last_pos + PCI_CAP_FLAGS);
 		flags &= ~0x1f;
@@ -446,14 +446,14 @@ end_of_chain: ;
 		#if CONFIG_RAMINIT_SYSINFO
 		// Here need to change the dev in the array
 		int i;
-		for(i=0;i<sysinfo->link_pair_num;i++)
+		for (i=0;i<sysinfo->link_pair_num;i++)
 		{
 			struct link_pair_st *link_pair = &sysinfo->link_pair[i];
-			if(link_pair->udev == PCI_DEV(bus, real_last_unitid, 0)) {
+			if (link_pair->udev == PCI_DEV(bus, real_last_unitid, 0)) {
 				link_pair->udev = PCI_DEV(bus, CONFIG_HT_CHAIN_END_UNITID_BASE, 0);
 				continue;
 			}
-			if(link_pair->dev == PCI_DEV(bus, real_last_unitid, 0)) {
+			if (link_pair->dev == PCI_DEV(bus, real_last_unitid, 0)) {
 				link_pair->dev = PCI_DEV(bus, CONFIG_HT_CHAIN_END_UNITID_BASE, 0);
 			}
 		}
@@ -605,13 +605,13 @@ static int set_ht_link_buffer_counts_chain(uint8_t ht_c_num, unsigned vendorid, 
 		unsigned devn;
 
 		reg = pci_read_config32(PCI_DEV(0,0x18,1), 0xe0 + i * 4);
-		if((reg & 3) != 3) continue; // not enabled
+		if ((reg & 3) != 3) continue; // not enabled
 
 		nodeid = ((reg & 0xf0)>>4); // nodeid
 		linkn = ((reg & 0xf00)>>8); // link n
 		busn = (reg & 0xff0000)>>16; //busn
 
-		for(devn = 0; devn < 0x20; devn++) {
+		for (devn = 0; devn < 0x20; devn++) {
 			reg = pci_read_config32( PCI_DEV(busn, devn, 0), PCI_VENDOR_ID); //1?
 			if ( (reg & 0xffff) == vendorid ) {
 				reset_needed |= set_ht_link_buffer_count(nodeid, linkn, 0x07,val);
@@ -731,7 +731,7 @@ static int ht_setup_chains_x(void)
 #endif
 
 	/* clean others */
-	for(ht_c_num=1;ht_c_num<4; ht_c_num++) {
+	for (ht_c_num=1;ht_c_num<4; ht_c_num++) {
 		pci_write_config32(PCI_DEV(0, 0x18, 1), 0xe0 + ht_c_num * 4, 0);
 
 #if CONFIG_K8_ALLOCATE_IO_RANGE
@@ -741,11 +741,11 @@ static int ht_setup_chains_x(void)
 #endif
 	}
 
-	for(nodeid=0; nodeid<nodes; nodeid++) {
+	for (nodeid=0; nodeid<nodes; nodeid++) {
 		device_t dev;
 		uint8_t linkn;
 		dev = PCI_DEV(0, 0x18+nodeid,0);
-		for(linkn = 0; linkn<3; linkn++) {
+		for (linkn = 0; linkn<3; linkn++) {
 			unsigned regpos;
 			regpos = 0x98 + 0x20 * linkn;
 			reg = pci_read_config32(dev, regpos);
@@ -753,15 +753,15 @@ static int ht_setup_chains_x(void)
 			print_linkn_in("NC node|link=", ((nodeid & 0xf)<<4)|(linkn & 0xf));
 			tempreg = 3 | (nodeid <<4) | (linkn<<8);
 			/*compare (temp & 0xffff), with (PCI(0, 0x18, 1) 0xe0 to 0xec & 0xfffff) */
-			for(ht_c_num=0;ht_c_num<4; ht_c_num++) {
+			for (ht_c_num=0;ht_c_num<4; ht_c_num++) {
 				reg = pci_read_config32(PCI_DEV(0, 0x18, 1), 0xe0 + ht_c_num * 4);
-				if(((reg & 0xffff) == (tempreg & 0xffff)) || ((reg & 0xffff) == 0x0000)) {  /*we got it*/
+				if (((reg & 0xffff) == (tempreg & 0xffff)) || ((reg & 0xffff) == 0x0000)) {  /*we got it*/
 					break;
 				}
 			}
-			if(ht_c_num == 4) break; /*used up only 4 non conherent allowed*/
+			if (ht_c_num == 4) break; /*used up only 4 non conherent allowed*/
 			/*update to 0xe0...*/
-			if((reg & 0xf) == 3) continue; /*SbLink so don't touch it */
+			if ((reg & 0xf) == 3) continue; /*SbLink so don't touch it */
 			print_linkn_in("\tbusn=", next_busn);
 			tempreg |= (next_busn<<16)|((next_busn+0x3f)<<24);
 			pci_write_config32(PCI_DEV(0, 0x18, 1), 0xe0 + ht_c_num * 4, tempreg);
@@ -780,11 +780,11 @@ static int ht_setup_chains_x(void)
 	}
 	/*update 0xe0, 0xe4, 0xe8, 0xec from PCI_DEV(0, 0x18,1) to PCI_DEV(0, 0x19,1) to PCI_DEV(0, 0x1f,1);*/
 
-	for(nodeid = 1; nodeid<nodes; nodeid++) {
+	for (nodeid = 1; nodeid<nodes; nodeid++) {
 		int i;
 		device_t dev;
 		dev = PCI_DEV(0, 0x18+nodeid,1);
-		for(i = 0; i< 4; i++) {
+		for (i = 0; i< 4; i++) {
 			unsigned regpos;
 			regpos = 0xe0 + i * 4;
 			reg = pci_read_config32(PCI_DEV(0, 0x18, 1), regpos);
@@ -793,13 +793,13 @@ static int ht_setup_chains_x(void)
 
 #if CONFIG_K8_ALLOCATE_IO_RANGE
 		/* io range allocation */
-		for(i = 0; i< 4; i++) {
+		for (i = 0; i< 4; i++) {
 			unsigned regpos;
 			regpos = 0xc4 + i * 8;
 			reg = pci_read_config32(PCI_DEV(0, 0x18, 1), regpos);
 			pci_write_config32(dev, regpos, reg);
 		}
-		for(i = 0; i< 4; i++) {
+		for (i = 0; i< 4; i++) {
 			unsigned regpos;
 			regpos = 0xc0 + i * 8;
 			reg = pci_read_config32(PCI_DEV(0, 0x18, 1), regpos);
@@ -810,9 +810,9 @@ static int ht_setup_chains_x(void)
 
 	/* recount ht_c_num*/
 	uint8_t i=0;
-	for(ht_c_num=0;ht_c_num<4; ht_c_num++) {
+	for (ht_c_num=0;ht_c_num<4; ht_c_num++) {
 		reg = pci_read_config32(PCI_DEV(0, 0x18, 1), 0xe0 + ht_c_num * 4);
-		if(((reg & 0xf) != 0x0)) {
+		if (((reg & 0xf) != 0x0)) {
 			i++;
 		}
 	}
@@ -838,7 +838,7 @@ static int optimize_link_incoherent_ht(struct sys_info *sysinfo)
 
 	printk(BIOS_SPEW, "entering optimize_link_incoherent_ht\n");
 	printk(BIOS_SPEW, "sysinfo->link_pair_num=0x%x\n", link_pair_num);
-	for(i=0; i< link_pair_num; i++) {
+	for (i=0; i< link_pair_num; i++) {
 		struct link_pair_st *link_pair= &sysinfo->link_pair[i];
 		reset_needed |= ht_optimize_link(link_pair->udev, link_pair->upos, link_pair->uoffs, link_pair->dev, link_pair->pos, link_pair->offs);
 		printk(BIOS_SPEW, "after ht_optimize_link for link pair %d, reset_needed=0x%x\n", i, reset_needed);

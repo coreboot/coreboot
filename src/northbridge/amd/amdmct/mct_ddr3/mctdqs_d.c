@@ -476,7 +476,7 @@ static void TrainDQSRdWrPos_D_Fam10(struct MCTStatStruc *pMCTstat,
 		for (; Receiver < 8; Receiver++) {
 			if ((Receiver & 0x1) == 0) {
 				/* Even rank of DIMM */
-				if(mct_RcvrRankEnabled_D(pMCTstat, pDCTstat, Channel, Receiver+1))
+				if (mct_RcvrRankEnabled_D(pMCTstat, pDCTstat, Channel, Receiver+1))
 					dual_rank = 1;
 				else
 					dual_rank = 0;
@@ -1296,7 +1296,7 @@ static uint8_t TrainDQSRdWrPos_D_Fam15(struct MCTStatStruc *pMCTstat,
 		dimm = (Receiver >> 1);
 		if ((Receiver & 0x1) == 0) {
 			/* Even rank of DIMM */
-			if(mct_RcvrRankEnabled_D(pMCTstat, pDCTstat, dct, Receiver+1))
+			if (mct_RcvrRankEnabled_D(pMCTstat, pDCTstat, dct, Receiver+1))
 				dual_rank = 1;
 			else
 				dual_rank = 0;
@@ -2379,7 +2379,7 @@ u32 mct_GetMCTSysAddr_D(struct MCTStatStruc *pMCTstat,
 	/* New stuff */
 	val += ((1 << 21) >> 8);	/* Add 2MB offset to avoid compat area */
 	if (val >= MCT_TRNG_KEEPOUT_START) {
-		while(val < MCT_TRNG_KEEPOUT_END)
+		while (val < MCT_TRNG_KEEPOUT_END)
 			val += (1 << (15-8));	/* add 32K */
 	}
 

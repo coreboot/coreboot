@@ -146,7 +146,7 @@ static void f1_write_config32(unsigned reg, u32 value)
 	int i;
 	if (fx_devs == 0)
 		get_fx_devs();
-	for(i = 0; i < fx_devs; i++) {
+	for (i = 0; i < fx_devs; i++) {
 		device_t dev;
 		dev = __f1_dev[i];
 		if (dev && dev->enabled) {
@@ -335,7 +335,7 @@ static void read_resources(device_t dev)
 	 * It is not honored by the coreboot resource allocator if it is in
 	 * the CPU_CLUSTER.
 	 */
-	if(IS_ENABLED(CONFIG_MMCONF_SUPPORT))
+	if (IS_ENABLED(CONFIG_MMCONF_SUPPORT))
 		enable_mmconf_resource(dev);
 }
 
@@ -403,7 +403,7 @@ static void create_vga_resource(device_t dev, unsigned nodeid)
 				printk(BIOS_DEBUG, "VGA: vga_pri bus num = %d bus range [%d,%d]\n", vga_pri->bus->secondary,
 					link->secondary,link->subordinate);
 				/* We need to make sure the vga_pri is under the link */
-				if((vga_pri->bus->secondary >= link->secondary ) &&
+				if ((vga_pri->bus->secondary >= link->secondary ) &&
 					(vga_pri->bus->secondary <= link->subordinate ))
 					break;
 			}
@@ -849,7 +849,7 @@ static void domain_set_resources(device_t dev)
 	else
 		set_top_of_ram(ramtop);
 
-	for(link = dev->link_list; link; link = link->next) {
+	for (link = dev->link_list; link; link = link->next) {
 		if (link->children) {
 			assign_resources(link);
 		}
@@ -1030,7 +1030,7 @@ static void cpu_bus_scan(device_t dev)
 			 * ensure all of the cpu's pci devices are found.
 			 */
 			int fn;
-			for(fn = 0; fn <= 5; fn++) { //FBDIMM?
+			for (fn = 0; fn <= 5; fn++) { //FBDIMM?
 				cdb_dev = pci_probe_dev(NULL, pbus,
 							PCI_DEVFN(devn, fn));
 			}

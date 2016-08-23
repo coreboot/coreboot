@@ -492,7 +492,7 @@ static void vErratum372(struct DCTStatStruc *pDCTstat)
 static void vErratum414(struct DCTStatStruc *pDCTstat)
 {
      int dct=0;
-    for(; dct < 2 ; dct++)
+    for (; dct < 2 ; dct++)
     {
         int dRAMConfigHi = Get_NB32(pDCTstat->dev_dct,0x94 + (0x100 * dct));
 		int powerDown =  dRAMConfigHi & (1 << PowerDownEn );

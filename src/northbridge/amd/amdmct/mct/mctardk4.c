@@ -33,7 +33,7 @@ void mctGet_PS_Cfg_D(struct MCTStatStruc *pMCTstat,
 //	print_tx("1 CH_ODC_CTL: ", pDCTstat->CH_ODC_CTL[dct]);
 //	print_tx("1 CH_ADDR_TMG: ", pDCTstat->CH_ADDR_TMG[dct]);
 
-	if(pDCTstat->MAdimms[dct] == 1)
+	if (pDCTstat->MAdimms[dct] == 1)
 		pDCTstat->CH_ODC_CTL[dct] |= 0x20000000;	/* 75ohms */
 	else
 		pDCTstat->CH_ODC_CTL[dct] |= 0x10000000;	/* 150ohms */
@@ -107,9 +107,9 @@ static void Get_ChannelPS_Cfg0_D( u8 MAAdimms, u8 Speed, u8 MAAload,
 	*CMDmode = 1;
 
 	// FIXME: add Ax support
-	if(MAAdimms == 0) {
+	if (MAAdimms == 0) {
 		*ODC_CTL = 0x00111222;
-		if(Speed == 3)
+		if (Speed == 3)
 			*AddrTmgCTL = 0x00202220;
 		else if (Speed == 2)
 			*AddrTmgCTL = 0x002F2F00;
@@ -121,21 +121,21 @@ static void Get_ChannelPS_Cfg0_D( u8 MAAdimms, u8 Speed, u8 MAAload,
 			*AddrTmgCTL = 0x002F2020;
 		else
 			*AddrTmgCTL = 0x002F2F2F;
-	} else if(MAAdimms == 1) {
-		if(Speed == 4) {
+	} else if (MAAdimms == 1) {
+		if (Speed == 4) {
 			*CMDmode = 2;
 			*AddrTmgCTL = 0x00202520;
 			*ODC_CTL = 0x00113222;
-		} else if(Speed == 5) {
+		} else if (Speed == 5) {
 			*CMDmode = 2;
 			*AddrTmgCTL = 0x002F2020;
 			*ODC_CTL = 0x00113222;
 		} else {
 			*CMDmode = 1;
 			*ODC_CTL = 0x00111222;
-			if(Speed == 3) {
+			if (Speed == 3) {
 				*AddrTmgCTL = 0x00202220;
-			} else if(Speed == 2) {
+			} else if (Speed == 2) {
 				if (MAAload == 4)
 					*AddrTmgCTL = 0x002B2F00;
 				else if (MAAload == 16)
@@ -144,9 +144,9 @@ static void Get_ChannelPS_Cfg0_D( u8 MAAdimms, u8 Speed, u8 MAAload,
 					*AddrTmgCTL = 0x002F2F00;
 				else
 					*AddrTmgCTL = 0x002F2F00;
-			} else if(Speed == 1) {
+			} else if (Speed == 1) {
 				*AddrTmgCTL = 0x002F2F00;
-			} else if(Speed == 5) {
+			} else if (Speed == 5) {
 				*AddrTmgCTL = 0x002F2020;
 			} else {
 				*AddrTmgCTL = 0x002F2F2F;
@@ -156,8 +156,8 @@ static void Get_ChannelPS_Cfg0_D( u8 MAAdimms, u8 Speed, u8 MAAload,
 		*CMDmode = 2;
 		p = Table_ATC_ODC_D_Bx;
 	do {
-		if(Speed == *p) {
-			if(MAAload <= *(p+1)) {
+		if (Speed == *p) {
+			if (MAAload <= *(p+1)) {
 				*AddrTmgCTL = stream_to_int(p+2);
 				*ODC_CTL = stream_to_int(p+6);
 				break;

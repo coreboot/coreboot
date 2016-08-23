@@ -65,12 +65,12 @@ static void Get_ChannelPS_Cfg0_D(u8 MAAdimms, u8 Speed, u8 MAAload,
 	if (MAAdimms == 1) {
 		*ODC_CTL = 0x00113222;
 		*CMDmode = 1;
-	} else /* if(MAAdimms == 0) */ {
-		if(Speed == 4) {
+	} else /* if (MAAdimms == 0) */ {
+		if (Speed == 4) {
 			*CMDmode = 1;
-		} else if(Speed == 5) {
+		} else if (Speed == 5) {
 			*CMDmode = 1;
-		} else if(Speed == 6) {
+		} else if (Speed == 6) {
 			*CMDmode = 2;
 		} else {
 			*CMDmode = 2;

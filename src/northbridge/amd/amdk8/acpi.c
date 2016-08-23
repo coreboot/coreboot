@@ -36,7 +36,7 @@ unsigned long acpi_create_madt_lapic_nmis(unsigned long current, u16 flags, u8 l
 	device_t cpu;
 	int cpu_index = 0;
 
-	for(cpu = all_devices; cpu; cpu = cpu->next) {
+	for (cpu = all_devices; cpu; cpu = cpu->next) {
 		if ((cpu->path.type != DEVICE_PATH_APIC) ||
 		    (cpu->bus->dev->path.type != DEVICE_PATH_CPU_CLUSTER)) {
 			continue;
@@ -55,7 +55,7 @@ unsigned long acpi_create_srat_lapics(unsigned long current)
 	device_t cpu;
 	int cpu_index = 0;
 
-	for(cpu = all_devices; cpu; cpu = cpu->next) {
+	for (cpu = all_devices; cpu; cpu = cpu->next) {
 		if ((cpu->path.type != DEVICE_PATH_APIC) ||
 		    (cpu->bus->dev->path.type != DEVICE_PATH_CPU_CLUSTER)) {
 			continue;
@@ -99,9 +99,9 @@ static void set_srat_mem(void *gp, struct device *dev, struct resource *res)
 	 * next range is from 1M---
 	 * So will cut off before 1M in the mem range
 	 */
-	if((basek+sizek)<1024) return;
+	if ((basek+sizek)<1024) return;
 
-	if(basek<1024) {
+	if (basek<1024) {
 		sizek -= 1024 - basek;
 		basek = 1024;
 	}
@@ -158,30 +158,30 @@ static unsigned long acpi_fill_slit(unsigned long current)
 	p += 8;
 
 #if 0
-	for(i=0;i<sysconf.hc_possible_num;i++) {
-		if((sysconf.pci1234[i]&1) !=1 ) continue;
+	for (i=0;i<sysconf.hc_possible_num;i++) {
+		if ((sysconf.pci1234[i]&1) !=1 ) continue;
 		outer_node[(sysconf.pci1234[i] >> 4) & 0xf] = 1; // mark the outer node
 	}
 #endif
 
-	for(i=0;i<nodes;i++) {
-		for(j=0;j<nodes; j++) {
-			if(i==j) {
+	for (i=0;i<nodes;i++) {
+		for (j=0;j<nodes; j++) {
+			if (i==j) {
 				p[i*nodes+j] = 10;
 			} else {
 #if 0
 				int k;
 				u8 latency_factor = 0;
 				int k_start, k_end;
-				if(i<j) {
+				if (i<j) {
 					k_start = i;
 					k_end = j;
 				} else {
 					k_start = j;
 					k_end = i;
 				}
-				for(k=k_start;k<=k_end; k++) {
-					if(outer_node[k]) {
+				for (k=k_start;k<=k_end; k++) {
+					if (outer_node[k]) {
 						latency_factor = 1;
 						break;
 					}
@@ -238,10 +238,10 @@ static void k8acpi_write_HT(void) {
 	acpigen_write_name("HCLK");
 	acpigen_write_package(HC_POSSIBLE_NUM);
 
-	for(i=0;i<sysconf.hc_possible_num;i++) {
+	for (i=0;i<sysconf.hc_possible_num;i++) {
 		acpigen_write_dword(sysconf.pci1234[i]);
 	}
-	for(i=sysconf.hc_possible_num; i<HC_POSSIBLE_NUM; i++) { // in case we set array size to other than 8
+	for (i=sysconf.hc_possible_num; i<HC_POSSIBLE_NUM; i++) { // in case we set array size to other than 8
 		acpigen_write_dword(0x0);
 	}
 
@@ -250,10 +250,10 @@ static void k8acpi_write_HT(void) {
 	acpigen_write_name("HCDN");
 	acpigen_write_package(HC_POSSIBLE_NUM);
 
-	for(i=0;i<sysconf.hc_possible_num;i++) {
+	for (i=0;i<sysconf.hc_possible_num;i++) {
 		acpigen_write_dword(sysconf.hcdn[i]);
 	}
-	for(i=sysconf.hc_possible_num; i<HC_POSSIBLE_NUM; i++) { // in case we set array size to other than 8
+	for (i=sysconf.hc_possible_num; i<HC_POSSIBLE_NUM; i++) { // in case we set array size to other than 8
 		acpigen_write_dword(0x20202020);
 	}
 	acpigen_pop_len();
@@ -268,7 +268,7 @@ static void k8acpi_write_pci_data(int dlen, const char *name, int offset) {
 
 	acpigen_write_name(name);
 	acpigen_write_package(dlen);
-	for(i=0; i<dlen; i++) {
+	for (i=0; i<dlen; i++) {
 		dword = pci_read_config32(dev, offset+i*4);
 		acpigen_write_dword(dword);
 	}

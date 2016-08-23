@@ -1382,12 +1382,12 @@ void setWLByteDelay(struct DCTStatStruc *pDCTstat, uint8_t dct, u8 ByteLane, u8 
 			 *      - Program seed gross delay as 2 (gross is 4 or 6) or 1 (gross is 5).
 			 *      - Keep original seed gross delay for later reference.
 			 */
-			if(grossDelayValue >= 3)
+			if (grossDelayValue >= 3)
 				grossDelayValue = (grossDelayValue&1)? 1 : 2;
 			fineDelayValue = pDCTData->WLFineDelay[index+ByteLane];
 			if (ByteLane < 4)
 				ValueLow |= ((grossDelayValue << 5) | fineDelayValue) << 8*ByteLane;
-			else if(ByteLane < 8)
+			else if (ByteLane < 8)
 				ValueHigh |= ((grossDelayValue << 5) | fineDelayValue) << 8*(ByteLane-4);
 			else
 				EccValue = ((grossDelayValue << 5) | fineDelayValue);
@@ -1505,7 +1505,7 @@ void getWLByteDelay(struct DCTStatStruc *pDCTstat, uint8_t dct, u8 ByteLane, u8 
 	if (pDCTData->WLGrossDelay[index+ByteLane] >= 3)
 	{
 		gross += pDCTData->WLGrossDelay[index+ByteLane];
-		if(pDCTData->WLGrossDelay[index+ByteLane] & 1)
+		if (pDCTData->WLGrossDelay[index+ByteLane] & 1)
 			gross -= 1;
 		else
 			gross -= 2;

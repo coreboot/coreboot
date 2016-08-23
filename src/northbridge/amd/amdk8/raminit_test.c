@@ -96,7 +96,7 @@ static void pci_write_config32(device_t dev, unsigned where, uint32_t value)
 #define PCI_DEV_INVALID (0xffffffffU)
 static device_t pci_locate_device(unsigned pci_id, device_t dev)
 {
-	for(; dev <= PCI_DEV(255, 31, 7); dev += PCI_DEV(0,0,1)) {
+	for (; dev <= PCI_DEV(255, 31, 7); dev += PCI_DEV(0,0,1)) {
 		unsigned int id;
 		id = pci_read_config32(dev, 0);
 		if (id == pci_id) {
@@ -131,7 +131,7 @@ unsigned long log2(unsigned long x)
 		write(STDERR_FILENO, errmsg, sizeof(errmsg) - 1);
 		hlt();
 	}
-	for(; i > x; i >>= 1, pow--)
+	for (; i > x; i >>= 1, pow--)
 		;
 
 	return pow;
@@ -410,7 +410,7 @@ done:
 static void test2(void)
 {
 	int i;
-	for(i = 0; i < 0x48; i++) {
+	for (i = 0; i < 0x48; i++) {
 		do_test2(i);
 	}
 

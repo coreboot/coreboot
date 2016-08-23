@@ -54,7 +54,7 @@ Scope (\_SB)
 	Method (GHCE, 1, NotSerialized) // check if the HC enabled
 	{
 		Store (DerefOf (Index (\_SB.PCI0.HCLK, Arg0)), Local1)
-		if(LEqual ( And(Local1, 0x01), 0x01)) { Return (0x0F) }
+		if (LEqual ( And(Local1, 0x01), 0x01)) { Return (0x0F) }
 		Else { Return (0x00) }
 	}
 

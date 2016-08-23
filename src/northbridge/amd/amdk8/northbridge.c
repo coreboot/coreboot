@@ -47,7 +47,7 @@ static unsigned fx_devs=0;
 static void get_fx_devs(void)
 {
 	int i;
-	for(i = 0; i < MAX_FX_DEVS; i++) {
+	for (i = 0; i < MAX_FX_DEVS; i++) {
 		__f0_dev[i] = dev_find_slot(0, PCI_DEVFN(0x18 + i, 0));
 		__f1_dev[i] = dev_find_slot(0, PCI_DEVFN(0x18 + i, 1));
 		if (__f0_dev[i] != NULL && __f1_dev[i] != NULL)
@@ -70,7 +70,7 @@ static void f1_write_config32(unsigned reg, u32 value)
 	int i;
 	if (fx_devs == 0)
 		get_fx_devs();
-	for(i = 0; i < fx_devs; i++) {
+	for (i = 0; i < fx_devs; i++) {
 		device_t dev;
 		dev = __f1_dev[i];
 		if (dev && dev->enabled) {
@@ -144,7 +144,7 @@ static void amdk8_scan_chain(struct bus *link)
 		 * register in function 1.
 		 */
 		free_reg = 0;
-		for(config_reg = 0xe0; config_reg <= 0xec; config_reg += 4) {
+		for (config_reg = 0xe0; config_reg <= 0xec; config_reg += 4) {
 			u32 config;
 			config = f1_read_config32(config_reg);
 			if (!free_reg && ((config & 3) == 0)) {
@@ -265,12 +265,12 @@ static int reg_useable(unsigned reg, device_t goal_dev, unsigned goal_nodeid,
 	unsigned nodeid, link = 0;
 	int result;
 	res = 0;
-	for(nodeid = 0; !res && (nodeid < fx_devs); nodeid++) {
+	for (nodeid = 0; !res && (nodeid < fx_devs); nodeid++) {
 		device_t dev;
 		dev = __f0_dev[nodeid];
 		if (!dev)
 			continue;
-		for(link = 0; !res && (link < 3); link++) {
+		for (link = 0; !res && (link < 3); link++) {
 			res = probe_resource(dev, IOINDEX(0x100 + reg, link));
 		}
 	}
@@ -293,7 +293,7 @@ static unsigned amdk8_find_reg(device_t dev, unsigned nodeid, unsigned link,
 	unsigned free_reg, reg;
 	resource = 0;
 	free_reg = 0;
-	for(reg = min; reg <= max; reg += 0x8) {
+	for (reg = min; reg <= max; reg += 0x8) {
 		int result;
 		result = reg_useable(reg, dev, nodeid, link);
 		if (result == 1) {
@@ -370,7 +370,7 @@ static void amdk8_read_resources(device_t dev)
 	unsigned nodeid;
 	struct bus *link;
 	nodeid = amdk8_nodeid(dev);
-	for(link = dev->link_list; link; link = link->next) {
+	for (link = dev->link_list; link; link = link->next) {
 		if (link->children) {
 			amdk8_link_read_bases(dev, nodeid, link->link_num);
 		}
@@ -489,7 +489,7 @@ static void amdk8_create_vga_resource(device_t dev, unsigned nodeid)
 			printk(BIOS_DEBUG, "VGA: vga_pri bus num = %d link bus range [%d,%d]\n", vga_pri->bus->secondary,
 				link->secondary,link->subordinate);
 			/* We need to make sure the vga_pri is under the link */
-			if((vga_pri->bus->secondary >= link->secondary ) &&
+			if ((vga_pri->bus->secondary >= link->secondary ) &&
 				(vga_pri->bus->secondary <= link->subordinate )
 			)
 #endif
@@ -505,7 +505,7 @@ static void amdk8_create_vga_resource(device_t dev, unsigned nodeid)
 
 	/* allocate a temp resource for the legacy VGA buffer */
 	resource = new_resource(dev, IOINDEX(4, link->link_num));
-	if(!resource){
+	if (!resource){
 		printk(BIOS_DEBUG, "VGA: %s out of resources.\n", dev_path(dev));
 		return;
 	}
@@ -526,7 +526,7 @@ static void amdk8_set_resources(device_t dev)
 	nodeid = amdk8_nodeid(dev);
 
 	/* Set each resource we have found */
-	for(res = dev->resource_list; res; res = res->next) {
+	for (res = dev->resource_list; res; res = res->next) {
 		struct resource *old = NULL;
 		unsigned index;
 
@@ -554,7 +554,7 @@ static void amdk8_set_resources(device_t dev)
 
 	compact_resources(dev);
 
-	for(bus = dev->link_list; bus; bus = bus->next) {
+	for (bus = dev->link_list; bus; bus = bus->next) {
 		if (bus->children) {
 			assign_resources(bus);
 		}
@@ -609,7 +609,7 @@ static void amdk8_domain_read_resources(device_t dev)
 
 	/* Find the already assigned resource pairs */
 	get_fx_devs();
-	for(reg = 0x80; reg <= 0xd8; reg+= 0x08) {
+	for (reg = 0x80; reg <= 0xd8; reg+= 0x08) {
 		u32 base, limit;
 		base  = f1_read_config32(reg);
 		limit = f1_read_config32(reg + 0x04);
@@ -685,7 +685,7 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 			}
 
 			hole = pci_read_config32(__f1_dev[i], 0xf0);
-			if(hole & 1) { // we find the hole
+			if (hole & 1) { // we find the hole
 				mem_hole.hole_startk = (hole & (0xff<<24)) >> 10;
 				mem_hole.node_id = i; // record the node No with hole
 				break; // only one hole
@@ -695,9 +695,9 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 		/* We need to double check if there is special set on base reg and limit reg
 		 * are not continuous instead of hole, it will find out its hole_startk.
 		 */
-		if(mem_hole.node_id==-1) {
+		if (mem_hole.node_id==-1) {
 			u32 limitk_pri = 0;
-			for(i=0; i<8; i++) {
+			for (i=0; i<8; i++) {
 				u32 base, limit;
 				unsigned base_k, limit_k;
 				base  = f1_read_config32(0x40 + (i << 3));
@@ -706,7 +706,7 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 				}
 
 				base_k = (base & 0xffff0000) >> 2;
-				if(limitk_pri != base_k) { // we find the hole
+				if (limitk_pri != base_k) { // we find the hole
 					mem_hole.hole_startk = limitk_pri;
 					mem_hole.node_id = i;
 					break; //only one hole
@@ -738,7 +738,7 @@ static void disable_hoist_memory(unsigned long hole_startk, int node_id)
 
 	hole_sizek = (4*1024*1024) - hole_startk;
 
-	for(i=7;i>node_id;i--) {
+	for (i=7;i>node_id;i--) {
 
 		base  = f1_read_config32(0x40 + (i << 3));
 		if ((base & ((1<<1)|(1<<0))) != ((1<<1)|(1<<0))) {
@@ -756,7 +756,7 @@ static void disable_hoist_memory(unsigned long hole_startk, int node_id)
 		return;
 	}
 	hoist = pci_read_config32(dev, 0xf0);
-	if(hoist & 1) {
+	if (hoist & 1) {
 		pci_write_config32(dev, 0xf0, 0);
 	} else {
 		base = pci_read_config32(dev, 0x40 + (node_id << 3));
@@ -775,7 +775,7 @@ static u32 hoist_memory(unsigned long hole_startk, int node_id)
 
 	carry_over = (4*1024*1024) - hole_startk;
 
-	for(i=7;i>node_id;i--) {
+	for (i=7;i>node_id;i--) {
 
 		base  = f1_read_config32(0x40 + (i << 3));
 		if ((base & ((1<<1)|(1<<0))) != ((1<<1)|(1<<0))) {
@@ -790,7 +790,7 @@ static u32 hoist_memory(unsigned long hole_startk, int node_id)
 	dev = __f1_dev[node_id];
 	base  = pci_read_config32(dev, 0x40 + (node_id << 3));
 	basek  = (base & 0xffff0000) >> 2;
-	if(basek == hole_startk) {
+	if (basek == hole_startk) {
 		//don't need set memhole here, because hole off set will be 0, overflow
 		//so need to change base reg instead, new basek will be 4*1024*1024
 		base &= 0x0000ffff;
@@ -904,8 +904,8 @@ static void amdk8_domain_set_resources(device_t dev)
 
 		//mmio_basek = 3*1024*1024; // for debug to meet boundary
 
-		if(reset_memhole) {
-			if(mem_hole.node_id!=-1) { // We need to select CONFIG_HW_MEM_HOLE_SIZEK for raminit, it can not make hole_startk to some basek too....!
+		if (reset_memhole) {
+			if (mem_hole.node_id!=-1) { // We need to select CONFIG_HW_MEM_HOLE_SIZEK for raminit, it can not make hole_startk to some basek too....!
 			       // We need to reset our Mem Hole, because We want more big HOLE than we already set
 			       //Before that We need to disable mem hole at first, becase memhole could already be set on i+1 instead
 				disable_hoist_memory(mem_hole.hole_startk, mem_hole.node_id);
@@ -923,7 +923,7 @@ static void amdk8_domain_set_resources(device_t dev)
 				}
 
 				basek = (base & 0xffff0000) >> 2;
-				if(mmio_basek == basek) {
+				if (mmio_basek == basek) {
 					mmio_basek -= (basek - basek_pri)>>1; // increase mem hole size to make sure it is on middle of pri node
 					break;
 				}
@@ -939,7 +939,7 @@ static void amdk8_domain_set_resources(device_t dev)
 #endif
 
 	idx = 0x10;
-	for(i = 0; i < fx_devs; i++) {
+	for (i = 0; i < fx_devs; i++) {
 		u32 base, limit;
 		u32 basek, limitk, sizek;
 		base  = f1_read_config32(0x40 + (i << 3));
@@ -974,7 +974,7 @@ static void amdk8_domain_set_resources(device_t dev)
 			if (basek <= mmio_basek) {
 				unsigned pre_sizek;
 				pre_sizek = mmio_basek - basek;
-				if(pre_sizek>0) {
+				if (pre_sizek>0) {
 					ram_resource(dev, (idx | i), basek, pre_sizek);
 					idx += 0x10;
 					sizek -= pre_sizek;
@@ -982,9 +982,9 @@ static void amdk8_domain_set_resources(device_t dev)
 						ramtop = mmio_basek * 1024;
 				}
 				#if CONFIG_HW_MEM_HOLE_SIZEK != 0
-				if(reset_memhole)
+				if (reset_memhole)
 					#if !CONFIG_K8_REV_F_SUPPORT
-					if(!is_cpu_pre_e0() )
+					if (!is_cpu_pre_e0() )
 					#endif
 		       				 sizek += hoist_memory(mmio_basek,i);
 				#endif
@@ -1025,7 +1025,7 @@ static void amdk8_domain_scan_bus(device_t dev)
 	struct bus *link = dev->link_list;
 
 	/* Unmap all of the HT chains */
-	for(reg = 0xe0; reg <= 0xec; reg += 4) {
+	for (reg = 0xe0; reg <= 0xec; reg += 4) {
 		f1_write_config32(reg, 0);
 	}
 
@@ -1037,7 +1037,7 @@ static void amdk8_domain_scan_bus(device_t dev)
 	 * Including enabling relaxed ordering if it is safe.
 	 */
 	get_fx_devs();
-	for(i = 0; i < fx_devs; i++) {
+	for (i = 0; i < fx_devs; i++) {
 		device_t f0_dev;
 		f0_dev = __f0_dev[i];
 		if (f0_dev && f0_dev->enabled) {
@@ -1158,7 +1158,7 @@ static void cpu_bus_scan(device_t dev)
 	if (pci_read_config32(dev_mc, 0x68) & (HTTC_APIC_EXT_ID|HTTC_APIC_EXT_BRD_CST))
 	{
 		sysconf.enabled_apic_ext_id = 1;
-		if(bsp_apicid == 0) {
+		if (bsp_apicid == 0) {
 			/* bsp apic id is not changed */
 			sysconf.apicid_offset = CONFIG_APIC_ID_OFFSET;
 		} else
@@ -1174,7 +1174,7 @@ static void cpu_bus_scan(device_t dev)
 	/* Always use the devicetree node with lapic_id 0 for BSP. */
 	remap_bsp_lapic(cpu_bus);
 
-	for(i = 0; i < sysconf.nodes; i++) {
+	for (i = 0; i < sysconf.nodes; i++) {
 		device_t cpu_dev;
 
 		/* Find the cpu's pci device */
@@ -1185,7 +1185,7 @@ static void cpu_bus_scan(device_t dev)
 			 */
 			int local_j;
 			device_t dev_f0;
-			for(local_j = 0; local_j <= 3; local_j++) {
+			for (local_j = 0; local_j <= 3; local_j++) {
 				cpu_dev = pci_probe_dev(NULL, dev_mc->bus,
 					PCI_DEVFN(0x18 + i, local_j));
 			}
@@ -1193,7 +1193,7 @@ static void cpu_bus_scan(device_t dev)
 			 * otherwise the device under it will not be scanned
 			 */
 			dev_f0 = dev_find_slot(0, PCI_DEVFN(0x18+i,0));
-			if(dev_f0) {
+			if (dev_f0) {
 				add_more_links(dev_f0, 3);
 			}
 		}
@@ -1205,12 +1205,12 @@ static void cpu_bus_scan(device_t dev)
 			j = (j >> 12) & 3; // dev is func 3
 			printk(BIOS_DEBUG, "  %s siblings=%d\n", dev_path(cpu_dev), j);
 
-			if(nb_cfg_54) {
+			if (nb_cfg_54) {
 				// For e0 single core if nb_cfg_54 is set, apicid will be 0, 2, 4....
 				//  ----> you can mixed single core e0 and dual core e0 at any sequence
 				// That is the typical case
 
-				if(j == 0 ){
+				if (j == 0 ){
 				       #if !CONFIG_K8_REV_F_SUPPORT
 		 		       	e0_later_single_core = is_e0_later_in_bsp(i);  // single core
 				       #else
@@ -1219,13 +1219,13 @@ static void cpu_bus_scan(device_t dev)
 				} else {
 				       e0_later_single_core = 0;
 	       			}
-				if(e0_later_single_core) {
+				if (e0_later_single_core) {
 					printk(BIOS_DEBUG, "\tFound Rev E or Rev F later single core\n");
 
 					j=1;
 				}
 
-				if(siblings > j ) {
+				if (siblings > j ) {
 				}
 				else {
 					siblings = j;
@@ -1236,7 +1236,7 @@ static void cpu_bus_scan(device_t dev)
 		}
 
 		u32 jj;
-		if(e0_later_single_core || disable_siblings) {
+		if (e0_later_single_core || disable_siblings) {
 			jj = 0;
 		} else
 		{
@@ -1245,7 +1245,7 @@ static void cpu_bus_scan(device_t dev)
 
 		for (j = 0; j <=jj; j++ ) {
 			u32 apic_id = i * (nb_cfg_54?(siblings+1):1) + j * (nb_cfg_54?1:8);
-			if(sysconf.enabled_apic_ext_id) {
+			if (sysconf.enabled_apic_ext_id) {
 				if (apic_id != 0 || sysconf.lift_bsp_apicid) {
 					apic_id += sysconf.apicid_offset;
 				}

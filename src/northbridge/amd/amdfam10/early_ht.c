@@ -79,7 +79,7 @@ static void enumerate_ht_chain(void)
 		{
 			pos = pci_io_read_config8(PCI_DEV(0,0,0), PCI_CAPABILITY_LIST);
 		}
-		while(pos != 0) {
+		while (pos != 0) {
 			u8 cap;
 			cap = pci_io_read_config8(PCI_DEV(0,0,0), pos + PCI_CAP_LIST_ID);
 			if (cap == PCI_CAP_ID_HT) {
@@ -96,8 +96,8 @@ static void enumerate_ht_chain(void)
 					device_t devx;
 
 #if CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20
-					if(next_unitid>=0x18) {
-						if(!end_used) {
+					if (next_unitid>=0x18) {
+						if (!end_used) {
 							next_unitid = CONFIG_HT_CHAIN_END_UNITID_BASE;
 							end_used = 1;
 						} else {
@@ -147,18 +147,18 @@ static void enumerate_ht_chain(void)
 								break;
 							}
 						}
-					} while((ctrl & (1 << 5)) == 0);
+					} while ((ctrl & (1 << 5)) == 0);
 
 					break;
 				}
 			}
 			pos = pci_io_read_config8(PCI_DEV(0, 0, 0), pos + PCI_CAP_LIST_NEXT);
 		}
-	} while(last_unitid != next_unitid);
+	} while (last_unitid != next_unitid);
 
 out:	;
 #if CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20
-	if((ht_dev_num>1) && (real_last_unitid != CONFIG_HT_CHAIN_END_UNITID_BASE) && !end_used) {
+	if ((ht_dev_num>1) && (real_last_unitid != CONFIG_HT_CHAIN_END_UNITID_BASE) && !end_used) {
 		u16 flags;
 		flags = pci_io_read_config16(PCI_DEV(0,real_last_unitid,0), real_last_pos + PCI_CAP_FLAGS);
 		flags &= ~0x1f;

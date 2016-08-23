@@ -227,7 +227,7 @@ static void northbridge_set_resources(struct device *dev)
 
 	struct bus *bus;
 
-	for(bus = dev->link_list; bus; bus = bus->next) {
+	for (bus = dev->link_list; bus; bus = bus->next) {
 		if (bus->children) {
 			printk(BIOS_DEBUG, "my_dev_set_resources: assign_resources %d\n",
 			     bus->secondary);

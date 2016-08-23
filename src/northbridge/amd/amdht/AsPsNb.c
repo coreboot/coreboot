@@ -43,38 +43,38 @@ u8 getMinNbCOF(void)
 	numOfNode = getNumOfNodeNb();
 
 	/* go through each node for the minimum NbCOF (in multiple of CLKIN/2) */
-	for(i=0; i < numOfNode; i++)
+	for (i=0; i < numOfNode; i++)
 	{
 		/* stub function for APIC ID virtualization for large MP system later */
 		deviceId = translateNodeIdToDeviceIdNb(i);
 
 		/* read all P-state spec registers for NbDid=1 */
-		for(j=0; j < 5; j++)
+		for (j=0; j < 5; j++)
 		{
 			AmdPCIRead(MAKE_SBDFO(0,0,deviceId,FN_4,PS_SPEC_REG+(j*PCI_REG_LEN)), &dtemp); /*F4x1E0 + j*4 */
 			/* get NbDid */
-			if(dtemp & NB_DID_MASK)
+			if (dtemp & NB_DID_MASK)
 				nbDid = 1;
 		}
 		/* if F3x1FC[NbCofVidUpdate]=0, NbFid =  default value */
 		AmdPCIRead(MAKE_SBDFO(0,0,deviceId,FN_3,PRCT_INFO), &dtemp); /*F3x1FC*/
-		if(!(dtemp & NB_CV_UPDATE)) /* F3x1FC[NbCofVidUpdated]=0, use default VID */
+		if (!(dtemp & NB_CV_UPDATE)) /* F3x1FC[NbCofVidUpdated]=0, use default VID */
 		{
 			AmdPCIRead(MAKE_SBDFO(0,0,deviceId,FN_3,CPTC0), &dtemp); /*F3xD4*/
 			nextNbFid = (u8) (dtemp & BIT_MASK_5);
-			if(nbDid)
+			if (nbDid)
 				nextNbFid = (u8) (nextNbFid >> 1);
 		}
 		else
 		{
 			/* check PVI/SPI */
 			AmdPCIRead(MAKE_SBDFO(0,0,deviceId,FN_3,PW_CTL_MISC), &dtemp); /*F3xA0*/
-			if(dtemp & PVI_MODE) /* PVI */
+			if (dtemp & PVI_MODE) /* PVI */
 			{
 				AmdPCIRead(MAKE_SBDFO(0,0,deviceId,FN_3,PRCT_INFO), &dtemp); /*F3x1FC*/
 				nextNbFid = (u8) (dtemp >> UNI_NB_FID_BIT);
 				nextNbFid &= BIT_MASK_5;
-				/* if(nbDid)
+				/* if (nbDid)
 					nextNbFid = nextNbFid  >> 1; */
 			}
 			else /* SVI */
@@ -82,18 +82,18 @@ u8 getMinNbCOF(void)
 				AmdPCIRead(MAKE_SBDFO(0,0,deviceId,FN_3,PRCT_INFO), &dtemp); /*F3x1FC*/
 				nextNbFid = (u8) ((dtemp >> UNI_NB_FID_BIT) & BIT_MASK_5);
 				nextNbFid = (u8) (nextNbFid + ((dtemp >> SPLT_NB_FID_OFFSET) & BIT_MASK_3));
-				/* if(nbDid)
+				/* if (nbDid)
 					nextNbFid = nextNbFid >> 1; */
 			}
 		}
-		if( i == 0)
+		if ( i == 0)
 			nbFid = nextNbFid;
-		else if( nbFid > nextNbFid )
+		else if ( nbFid > nextNbFid )
 		nbFid = nextNbFid;
 	}
 
 	/* add the base and convert to 100MHz divide by 2 if DID=1 */
-	if(nbDid)
+	if (nbDid)
 		nbFid = (u8) (nbFid + 4);
 	else
 		nbFid = (u8) ((nbFid + 4) << 1);

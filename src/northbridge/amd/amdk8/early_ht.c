@@ -47,7 +47,7 @@ static void enumerate_ht_chain(void)
 		{
 			pos = pci_read_config8(dev, PCI_CAPABILITY_LIST);
 		}
-		while(pos != 0) {
+		while (pos != 0) {
 			uint8_t cap;
 			cap = pci_read_config8(dev, pos + PCI_CAP_LIST_ID);
 			if (cap == PCI_CAP_ID_HT) {
@@ -64,8 +64,8 @@ static void enumerate_ht_chain(void)
 					device_t devx;
 
 #if CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20
-					if(next_unitid>=0x18) { // don't get mask out by k8, at this time BSP, RT is not enabled, it will response from 0x18,0--0x1f.
-						if(!end_used) {
+					if (next_unitid>=0x18) { // don't get mask out by k8, at this time BSP, RT is not enabled, it will response from 0x18,0--0x1f.
+						if (!end_used) {
 							next_unitid = CONFIG_HT_CHAIN_END_UNITID_BASE;
 							end_used = 1;
 						} else {
@@ -114,20 +114,20 @@ static void enumerate_ht_chain(void)
 								break;
 							}
 						}
-					} while((ctrl & (1 << 5)) == 0);
+					} while ((ctrl & (1 << 5)) == 0);
 
 					break;
 				}
 			}
 			pos = pci_read_config8(dev, pos + PCI_CAP_LIST_NEXT);
 		}
-	} while(last_unitid != next_unitid);
+	} while (last_unitid != next_unitid);
 
 out:
 	;
 
 #if CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20
-	if((ht_dev_num>1) && (real_last_unitid != CONFIG_HT_CHAIN_END_UNITID_BASE) && !end_used) {
+	if ((ht_dev_num>1) && (real_last_unitid != CONFIG_HT_CHAIN_END_UNITID_BASE) && !end_used) {
 		uint16_t flags;
 		dev = PCI_DEV(0,real_last_unitid, 0);
 		flags = pci_read_config16(dev, real_last_pos + PCI_CAP_FLAGS);

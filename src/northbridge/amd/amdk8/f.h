@@ -535,25 +535,25 @@ static inline void wait_all_core0_mem_trained(struct sys_info *sysinfo)
 	unsigned needs_reset = 0;
 
 
-	if(sysinfo->nodes == 1) return; // in case only one CPU installed
+	if (sysinfo->nodes == 1) return; // in case only one CPU installed
 
-	for(i=1; i<sysinfo->nodes; i++) {
+	for (i=1; i<sysinfo->nodes; i++) {
 		/* Skip everything if I don't have any memory on this controller */
-		if(sysinfo->mem_trained[i]==0x00) continue;
+		if (sysinfo->mem_trained[i]==0x00) continue;
 
 		mask |= (1<<i);
 
 	}
 
 	i = 1;
-	while(1) {
-		if(mask & (1<<i)) {
-			if((sysinfo->mem_trained[i])!=0x80) {
+	while (1) {
+		if (mask & (1<<i)) {
+			if ((sysinfo->mem_trained[i])!=0x80) {
 				mask &= ~(1<<i);
 			}
 		}
 
-		if(!mask) break;
+		if (!mask) break;
 
 #if 0
 		/* cpu_relax */
@@ -564,7 +564,7 @@ static inline void wait_all_core0_mem_trained(struct sys_info *sysinfo)
 		i%=sysinfo->nodes;
 	}
 
-	for(i=0; i<sysinfo->nodes; i++) {
+	for (i=0; i<sysinfo->nodes; i++) {
 		printk(BIOS_DEBUG, "mem_trained[%02x]=%02x\n", i, sysinfo->mem_trained[i]);
 		switch(sysinfo->mem_trained[i]) {
 		case 0: //don't need train
@@ -577,7 +577,7 @@ static inline void wait_all_core0_mem_trained(struct sys_info *sysinfo)
 			break;
 		}
 	}
-	if(needs_reset) {
+	if (needs_reset) {
 		printk(BIOS_DEBUG, "mem trained failed\n");
 #ifdef __PRE_RAM__
 		soft_reset();

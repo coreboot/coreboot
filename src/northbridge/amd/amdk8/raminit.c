@@ -2445,7 +2445,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 			if ((loops & 1023) == 0) {
 				printk(BIOS_DEBUG, ".");
 			}
-		} while(((dcl & whatWait) != 0) && (loops < TIMEOUT_LOOPS));
+		} while (((dcl & whatWait) != 0) && (loops < TIMEOUT_LOOPS));
 		if (loops >= TIMEOUT_LOOPS) {
 			printk(BIOS_DEBUG, " failed\n");
 			continue;
@@ -2460,7 +2460,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 #endif
 			do {
 				dcl = pci_read_config32(ctrl[i].f2, DRAM_CONFIG_LOW);
-			} while(((dcl & DCL_MemClrStatus) == 0) || ((dcl & DCL_DramEnable) == 0) ||
+			} while (((dcl & DCL_MemClrStatus) == 0) || ((dcl & DCL_DramEnable) == 0) ||
 					((dcl & DCL_SRS)));
 		}
 

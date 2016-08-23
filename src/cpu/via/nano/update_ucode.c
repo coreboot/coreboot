@@ -51,10 +51,10 @@ static void nano_print_ucode_info(const nano_ucode_header *ucode)
 static ucode_validity nano_ucode_is_valid(const nano_ucode_header *ucode)
 {
 	/* We must have a valid signature */
-	if(ucode->signature != NANO_UCODE_SIGNATURE)
+	if (ucode->signature != NANO_UCODE_SIGNATURE)
 		return NANO_UCODE_SIGNATURE_ERROR;
 	/* The size of the head must be exactly 12 double words */
-	if( (ucode->total_size - ucode->payload_size) != NANO_UCODE_HEADER_SIZE)
+	if ( (ucode->total_size - ucode->payload_size) != NANO_UCODE_HEADER_SIZE)
 		return NANO_UCODE_WRONG_SIZE;
 
 	/* How about a checksum ? Checksum must be 0
@@ -62,10 +62,10 @@ static ucode_validity nano_ucode_is_valid(const nano_ucode_header *ucode)
 	int i;
 	u32 check = 0;
 	u32 *raw = (void*) ucode;
-	for(i = 0 ; i < ((ucode->total_size) >> 2); i++) {
+	for (i = 0 ; i < ((ucode->total_size) >> 2); i++) {
 		check += raw[i];
 	}
-	if(check != 0)
+	if (check != 0)
 		return NANO_UCODE_CHECKSUM_FAIL;
 	/* Made it here huh? Then it looks valid to us.
 	 * If there's anything else wrong, the CPU will reject the update */
@@ -110,7 +110,7 @@ unsigned int nano_update_ucode(void)
 	ucode_data = cbfs_boot_map_with_leak("cpu_microcode_blob.bin",
 					     CBFS_TYPE_MICROCODE, &ucode_len);
 	/* Oops, did you forget to include the microcode ? */
-	if(ucode_data == NULL) {
+	if (ucode_data == NULL) {
 		printk(BIOS_ALERT, "WARNING: No microcode file found in CBFS. "
 				   "Aborting microcode updates\n");
 		return 0;
@@ -119,11 +119,11 @@ unsigned int nano_update_ucode(void)
 	/* We might do a lot of loops searching for the microcode updates, but
 	 * keep in mind, nano_ucode_is_valid searches for the signature before
 	 * doing anything else. */
-	for( i = 0; i < (ucode_len >> 2); /* don't increment i here */ )
+	for ( i = 0; i < (ucode_len >> 2); /* don't increment i here */ )
 	{
 		ucode_update_status stat;
 		const nano_ucode_header * ucode = (void *)(&ucode_data[i]);
-		if(nano_ucode_is_valid(ucode) != NANO_UCODE_VALID) {
+		if (nano_ucode_is_valid(ucode) != NANO_UCODE_VALID) {
 			i++;
 			continue;
 		}
@@ -132,14 +132,14 @@ unsigned int nano_update_ucode(void)
 		 * microcode */
 		i += (ucode->total_size >> 2);
 		/* Is the microcode compatible with our CPU? */
-		if(ucode->applicable_fms != fms) continue;
+		if (ucode->applicable_fms != fms) continue;
 		/* For our most curious users */
 		nano_print_ucode_info(ucode);
 		/* The meat of the pie */
 		stat = nano_apply_ucode(ucode);
 		/* The user might want to know how the update went */
 		nano_print_ucode_status(stat);
-		if(stat == UCODE_UPDATE_SUCCESS) n_updates++;
+		if (stat == UCODE_UPDATE_SUCCESS) n_updates++;
 	}
 
 	return n_updates;

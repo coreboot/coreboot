@@ -284,7 +284,7 @@ int start_cpu(struct device *cpu)
 	printk(BIOS_SPEW, "CPU%d: stack_base %p, stack_end %p\n", index,
 		(void *)stack_base, (void *)stack_end);
 	/* poison the stack */
-	for(stack = (void *)stack_base, i = 0; i < CONFIG_STACK_SIZE; i++)
+	for (stack = (void *)stack_base, i = 0; i < CONFIG_STACK_SIZE; i++)
 		stack[i/sizeof(*stack)] = 0xDEADBEEF;
 	stacks[index] = stack;
 	/* Record the index and which CPU structure we are using */
@@ -307,7 +307,7 @@ int start_cpu(struct device *cpu)
 	if (result) {
 		result = 0;
 		/* Wait 1s or until the new CPU calls in */
-		for(count = 0; count < 100000 ; count++) {
+		for (count = 0; count < 100000 ; count++) {
 			if (secondary_stack == 0) {
 				result = 1;
 				break;
@@ -436,7 +436,7 @@ static void start_other_cpus(struct bus *cpu_bus, struct device *bsp_cpu)
 	struct device *cpu;
 	/* Loop through the cpus once getting them started */
 
-	for(cpu = cpu_bus->children; cpu ; cpu = cpu->sibling) {
+	for (cpu = cpu_bus->children; cpu ; cpu = cpu->sibling) {
 		if (cpu->path.type != DEVICE_PATH_APIC) {
 			continue;
 		}
@@ -471,7 +471,7 @@ static void smm_other_cpus(struct bus *cpu_bus, device_t bsp_cpu)
 
 	/* Loop through the cpus once to let them run through SMM relocator */
 
-	for(cpu = cpu_bus->children; cpu ; cpu = cpu->sibling) {
+	for (cpu = cpu_bus->children; cpu ; cpu = cpu->sibling) {
 		if (cpu->path.type != DEVICE_PATH_APIC) {
 			continue;
 		}
@@ -507,7 +507,7 @@ static void wait_other_cpus_stop(struct bus *cpu_bus)
 	/* Now loop until the other cpus have finished initializing */
 	old_active_count = 1;
 	active_count = atomic_read(&active_cpus);
-	while(active_count > 1) {
+	while (active_count > 1) {
 		if (active_count != old_active_count) {
 			printk(BIOS_INFO, "Waiting for %d CPUS to stop\n",
 				active_count - 1);
@@ -517,7 +517,7 @@ static void wait_other_cpus_stop(struct bus *cpu_bus)
 		active_count = atomic_read(&active_cpus);
 		loopcount++;
 	}
-	for(cpu = cpu_bus->children; cpu; cpu = cpu->sibling) {
+	for (cpu = cpu_bus->children; cpu; cpu = cpu->sibling) {
 		if (cpu->path.type != DEVICE_PATH_APIC) {
 			continue;
 		}
@@ -531,7 +531,7 @@ static void wait_other_cpus_stop(struct bus *cpu_bus)
 	}
 	printk(BIOS_DEBUG, "All AP CPUs stopped (%ld loops)\n", loopcount);
 	checkstack(_estack, 0);
-	for(i = 1; i <= last_cpu_index; i++)
+	for (i = 1; i <= last_cpu_index; i++)
 		checkstack((void *)stacks[i] + CONFIG_STACK_SIZE, i);
 }
 

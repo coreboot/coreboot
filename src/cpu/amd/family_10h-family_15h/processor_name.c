@@ -331,7 +331,7 @@ int init_processor_name(void)
 		processor_name_string = unknown2;
 
 		/* String 2 */
-		for(i = 0; str2[i].value; i++) {
+		for (i = 0; str2[i].value; i++) {
 			if ((str2[i].Pg == Pg) &&
 			((str2[i].NC == NC) || !str2_checkNC) &&
 			(str2[i].String == String2)) {

@@ -23,7 +23,7 @@
 #include <smp/spinlock.h>
 
 #define UCODE_DEBUG(fmt, args...)	\
-	do { printk(BIOS_DEBUG, "[microcode] "fmt, ##args); } while(0)
+	do { printk(BIOS_DEBUG, "[microcode] "fmt, ##args); } while (0)
 
 #define UCODE_MAGIC			0x00414d44
 #define UCODE_EQUIV_CPU_TABLE_TYPE	0x00000000

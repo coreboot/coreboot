@@ -175,7 +175,7 @@ const void *intel_microcode_find(void)
 		}
 
 		/* Checkpoint 1: The microcode update falls within CBFS */
-		if(update_size > microcode_len) {
+		if (update_size > microcode_len) {
 #if !defined(__ROMCC__)
 			printk(BIOS_WARNING, "Microcode header corrupted!\n");
 #endif

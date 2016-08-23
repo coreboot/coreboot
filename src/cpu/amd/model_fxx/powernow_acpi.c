@@ -775,7 +775,7 @@ static void pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 
 	/* See if the CPUID(0x80000007) returned EDX[2:1]==11b */
 	cpuid1 = cpuid(0x80000007);
-	if((cpuid1.edx & 0x6)!=0x6) {
+	if ((cpuid1.edx & 0x6)!=0x6) {
 		printk(BIOS_INFO, "Processor not capable of performing P-state transitions\n");
 		return;
 	}
@@ -845,7 +845,7 @@ static void pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 	Pstate_vid[0] = Max_vid;
 	Pstate_power[0] = data->pwr * 100;
 
-	for(Pstate_num = 1;
+	for (Pstate_num = 1;
 	    (Pstate_num <= MAXP) && (data->pstates[Pstate_num - 1].freqMhz != 0);
 	    Pstate_num++) {
 		Pstate_fid[Pstate_num] = freq_to_fid(data->pstates[Pstate_num - 1].freqMhz) & 0x3f;
@@ -862,7 +862,7 @@ static void pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 
 	/* Loop over all CPU's */
 	for (dev = 0x18; dev < 0x1c; dev++) {
-		if(dev_find_slot(0, PCI_DEVFN(dev, 0)) == NULL)
+		if (dev_find_slot(0, PCI_DEVFN(dev, 0)) == NULL)
 			continue;
 
 		for (i = 0; i < (cmp_cap + 1); i++) {

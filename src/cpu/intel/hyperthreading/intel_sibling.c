@@ -85,7 +85,7 @@ void intel_sibling_init(struct device *cpu)
 	}
 
 	/* I am the primary CPU start up my siblings */
-	for(i = 1; i < siblings; i++) {
+	for (i = 1; i < siblings; i++) {
 		struct device_path cpu_path;
 		struct device *new;
 		/* Build the CPU device path */

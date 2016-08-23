@@ -355,5 +355,5 @@ void cpubug(void)
 	bug784();
 	bug118253();
 	disablememoryreadorder();
-	printk(BIOS_DEBUG, "Done cpubug fixes \n");
+	printk(BIOS_DEBUG, "Done cpubug fixes\n");
 }

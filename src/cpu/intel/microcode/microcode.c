@@ -65,7 +65,7 @@ static inline u32 read_microcode_rev(void)
 		"movl $0x01, %%eax\n\t"
 		"cpuid\n\t"
 		"movl $0x08b, %%ecx\n\t"
-		"rdmsr \n\t"
+		"rdmsr\n\t"
 		: /* outputs */
 		"=a" (msr.lo), "=d" (msr.hi)
 		: /* inputs */

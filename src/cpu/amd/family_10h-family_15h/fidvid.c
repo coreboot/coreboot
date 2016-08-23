@@ -134,7 +134,7 @@ static void enable_fid_change(u8 fid)
 		dword |= (u32) fid & 0x1F;
 		dword |= 1 << 5;	// enable
 		pci_write_config32(dev, 0xd4, dword);
-		printk(BIOS_DEBUG, "FID Change Node:%02x, F3xD4: %08x \n", i,
+		printk(BIOS_DEBUG, "FID Change Node:%02x, F3xD4: %08x\n", i,
 		       dword);
 	}
 }
@@ -758,7 +758,7 @@ static void fixPsNbVidBeforeWR(u32 newNbVid, u32 coreid, u32 dev, u8 pviMode)
          * PstatMaxVal is going to be 0 on cold reset anyway ?
 	 */
         if (!(pci_read_config32(dev, 0xdc) & (~PS_MAX_VAL_MASK))) {
-  	   printk(BIOS_ERR,"F3xDC[PstateMaxVal] is zero. Northbridge voltage setting will fail. fixPsNbVidBeforeWR in fidvid.c needs fixing. See AMD # 31116 rev 3.48 BKDG 2.4.2.9.1 \n");
+  	   printk(BIOS_ERR,"F3xDC[PstateMaxVal] is zero. Northbridge voltage setting will fail. fixPsNbVidBeforeWR in fidvid.c needs fixing. See AMD # 31116 rev 3.48 BKDG 2.4.2.9.1\n");
 	};
 
 	msr.lo &= ~0xFE000000;	// clear nbvid

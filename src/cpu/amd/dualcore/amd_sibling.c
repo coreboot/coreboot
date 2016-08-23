@@ -122,7 +122,7 @@ unsigned get_apicid_base(unsigned ioapic_num)
 
 	if((apicid_base+ioapic_num-1)>0xf) {
 		// We need to enable APIC EXT ID
-		printk(BIOS_INFO, "if the IOAPIC device doesn't support 256 APIC id, \n you need to set CONFIG_ENABLE_APIC_EXT_ID in romstage.c so you can spare 16 id for IOAPIC\n");
+		printk(BIOS_INFO, "if the IOAPIC device doesn't support 256 APIC id,\n you need to set CONFIG_ENABLE_APIC_EXT_ID in romstage.c so you can spare 16 id for IOAPIC\n");
 		enable_apic_ext_id(nodes);
 	}
 

@@ -46,7 +46,7 @@ static void pci_domain_set_resources(device_t dev)
 	printk(BIOS_DEBUG, "PCI mem marker = %x\n", pci_tolm);
 #endif
 	/* FIXME Me temporary hack */
-	if(pci_tolm > 0xe0000000)
+	if (pci_tolm > 0xe0000000)
 		pci_tolm = 0xe0000000;
 	/* Ensure pci_tolm is 128M aligned */
 	pci_tolm &= 0xf8000000;

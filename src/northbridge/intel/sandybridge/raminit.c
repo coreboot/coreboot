@@ -278,7 +278,7 @@ static void fill_smbios17(ramctr_timing *ctrl)
 
 	memset(mem_info, 0, sizeof(*mem_info));
 
-	FOR_ALL_CHANNELS for(slot = 0; slot < NUM_SLOTS; slot++) {
+	FOR_ALL_CHANNELS for (slot = 0; slot < NUM_SLOTS; slot++) {
 		dimm = &mem_info->dimm[mem_info->dimm_cnt];
 		if (info->dimm[channel][slot].size_mb) {
 			dimm->ddr_type = MEMORY_TYPE_DDR3;

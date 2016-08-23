@@ -521,7 +521,7 @@ static void sdram_detect_ram_speed(struct sysinfo *s)
 	}
 	if (highcas < lowcas) {
 		// Timings not supported by MCH, lower the frequency
-		if(freq == MEM_CLOCK_800MHz) {
+		if (freq == MEM_CLOCK_800MHz) {
 			freq--;
 			PRINTK_DEBUG("Run DDR clock speed reduced due to timings\n");
 		} else {

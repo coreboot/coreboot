@@ -447,7 +447,7 @@ static void sdram_enable(void)
 
 	/* 8 CBR refreshes (Auto Refresh) */
 	PRINTK_DEBUG(" 8 CBR refreshes\n");
-	for(i = 0; i < 8; i++) {
+	for (i = 0; i < 8; i++) {
 		do_ram_command(RAM_COMMAND_CBR, 0);
 		delay();
 		delay();

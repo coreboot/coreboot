@@ -10,13 +10,13 @@ void dump_spd_registers(void)
 {
 	int i;
 	printk(BIOS_DEBUG, "\n");
-	for(i = 0; i < DIMM_SOCKETS; i++) {
+	for (i = 0; i < DIMM_SOCKETS; i++) {
 		unsigned device;
 		device = DIMM0 + i;
 		if (device) {
 			int j;
 			printk(BIOS_DEBUG, "DIMM %d: %02x", i, device);
-			for(j = 0; j < 256; j++) {
+			for (j = 0; j < 256; j++) {
 				int status;
 				unsigned char byte;
 				if ((j & 0xf) == 0) {

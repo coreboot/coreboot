@@ -24,7 +24,7 @@
 void print_pci_devices(void)
 {
 	device_t dev;
-	for(dev = PCI_DEV(0, 0, 0);
+	for (dev = PCI_DEV(0, 0, 0);
 		dev <= PCI_DEV(0, 0x1f, 0x7);
 		dev += PCI_DEV(0,0,1)) {
 		uint32_t id;
@@ -46,7 +46,7 @@ void dump_pci_device(unsigned dev)
 
 	printk(BIOS_DEBUG, "PCI: %02x:%02x.%02x\n", (dev >> 20) & 0xff, (dev >> 15) & 0x1f, (dev >> 12) & 7);
 
-	for(i = 0; i <= 255; i++) {
+	for (i = 0; i <= 255; i++) {
 		unsigned char val;
 		if ((i & 0x0f) == 0) {
 			printk(BIOS_DEBUG, "%02x:", i);
@@ -62,7 +62,7 @@ void dump_pci_device(unsigned dev)
 void dump_pci_devices(void)
 {
 	device_t dev;
-	for(dev = PCI_DEV(0, 0, 0);
+	for (dev = PCI_DEV(0, 0, 0);
 		dev <= PCI_DEV(0, 0x1f, 0x7);
 		dev += PCI_DEV(0,0,1)) {
 		uint32_t id;
@@ -80,12 +80,12 @@ void dump_spd_registers(void)
 {
         unsigned device;
         device = DIMM0;
-        while(device <= DIMM3) {
+        while (device <= DIMM3) {
                 int status = 0;
                 int i;
         	printk(BIOS_DEBUG, "\ndimm %02x", device);
 
-                for(i = 0; (i < 256) ; i++) {
+                for (i = 0; (i < 256) ; i++) {
                         if ((i % 16) == 0) {
 				printk(BIOS_DEBUG, "\n%02x: ", i);
                         }
@@ -105,8 +105,8 @@ void dump_mem(unsigned start, unsigned end)
 {
         unsigned i;
 	printk(BIOS_DEBUG, "dump_mem:");
-        for(i=start;i<end;i++) {
-		if((i & 0xf)==0) {
+        for (i=start;i<end;i++) {
+		if ((i & 0xf)==0) {
 			printk(BIOS_DEBUG, "\n%08x:", i);
 		}
 		printk(BIOS_DEBUG, " %02x", (unsigned char)*((unsigned char *)i));

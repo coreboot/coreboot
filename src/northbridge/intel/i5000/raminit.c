@@ -36,7 +36,7 @@ static int i5000_for_each_channel(struct i5000_fbd_branch *branch,
 	struct i5000_fbd_channel *c;
 	int ret;
 
-	for(c = branch->channel; c < branch->channel + I5000_MAX_CHANNEL; c++)
+	for (c = branch->channel; c < branch->channel + I5000_MAX_CHANNEL; c++)
 		if (c->used && (ret = cb(c)))
 			return ret;
 	return 0;
@@ -48,7 +48,7 @@ static int i5000_for_each_branch(struct i5000_fbd_setup *setup,
 	struct i5000_fbd_branch *b;
 	int ret;
 
-	for(b = setup->branch; b < setup->branch + I5000_MAX_BRANCH; b++)
+	for (b = setup->branch; b < setup->branch + I5000_MAX_BRANCH; b++)
 		if (b->used && (ret = cb(b)))
 			return ret;
 	return 0;
@@ -60,7 +60,7 @@ static int i5000_for_each_dimm(struct i5000_fbd_setup *setup,
 	struct i5000_fbdimm *d;
 	int ret, i;
 
-	for(i = 0; i < I5000_MAX_DIMMS; i++) {
+	for (i = 0; i < I5000_MAX_DIMMS; i++) {
 		d = setup->dimms[i];
 		if ((ret = cb(d))) {
 			return ret;
@@ -75,7 +75,7 @@ static int i5000_for_each_dimm_present(struct i5000_fbd_setup *setup,
 	struct i5000_fbdimm *d;
 	int ret, i;
 
-	for(i = 0; i < I5000_MAX_DIMMS; i++) {
+	for (i = 0; i < I5000_MAX_DIMMS; i++) {
 		d = setup->dimms[i];
 		if (d->present && (ret = cb(d)))
 			return ret;
@@ -91,12 +91,12 @@ static int spd_read_byte(struct i5000_fbdimm *d, u8 addr, int count, u8 *out)
 	int cmdreg = d->channel->num ? I5000_SPDCMD1 : I5000_SPDCMD0;
 	int stsreg = d->channel->num ? I5000_SPD1 : I5000_SPD0;
 
-	while(count-- > 0) {
+	while (count-- > 0) {
 		pci_write_config32(dev, cmdreg, 0xa8000000 |	\
 				   (d->num & 0x03) << 24 | addr++ << 16);
 
 		int timeout = 1000;
-		while((status = pci_read_config16(dev, stsreg)) & I5000_SPD_BUSY && timeout--)
+		while ((status = pci_read_config16(dev, stsreg)) & I5000_SPD_BUSY && timeout--)
 			udelay(10);
 
 		if (status & I5000_SPD_SBE || !timeout)
@@ -345,7 +345,7 @@ static int i5000_amb_smbus_write(struct i5000_fbdimm *d,  int byte1, int byte2)
 	pci_write_config32(dev, cmdreg, 0xb8000000 | ((d->num & 0x03) << 24) |
 			   (byte1 << 16) | (byte2 << 8) | 1);
 
-	while(((status = pci_read_config16(dev, stsreg)) & I5000_SPD_BUSY) && timeout--)
+	while (((status = pci_read_config16(dev, stsreg)) & I5000_SPD_BUSY) && timeout--)
 		udelay(10);
 
 	if (status & I5000_SPD_WOD && timeout)
@@ -353,7 +353,7 @@ static int i5000_amb_smbus_write(struct i5000_fbdimm *d,  int byte1, int byte2)
 
 	printk(BIOS_ERR, "SMBus write failed: %d/%d/%d, byte1 %02x, byte2 %02x status %04x\n",
 	       d->branch->num, d->channel->num, d->num, byte1, byte2, status);
-	for(;;);
+	for (;;);
 	return -1;
 }
 
@@ -368,7 +368,7 @@ static int i5000_amb_smbus_read(struct i5000_fbdimm *d, int byte1, u8 *out)
 	pci_write_config32(dev, cmdreg, 0xb8000000 | ((d->num & 0x03) << 24) |
 			   (byte1 << 16));
 
-	while(((status = pci_read_config16(dev, stsreg)) & I5000_SPD_BUSY) && timeout--)
+	while (((status = pci_read_config16(dev, stsreg)) & I5000_SPD_BUSY) && timeout--)
 		udelay(10);
 
 	if ((status & I5000_SPD_RDO) && timeout)
@@ -494,7 +494,7 @@ static int ddr_command(struct i5000_fbdimm *d, int rank, u32 addr, u32 command)
 	i5000_amb_write_config32(d, 4, AMB_DCALCSR, command);
 
 	udelay(1000);
-	while((status = (i5000_amb_read_config32(d, 4, AMB_DCALCSR)))
+	while ((status = (i5000_amb_read_config32(d, 4, AMB_DCALCSR)))
 	      & (1 << 31));
 
 	if (status & (1 << 30)) {
@@ -512,10 +512,10 @@ static int i5000_ddr_calibration(struct i5000_fbdimm *d)
 
 	i5000_amb_write_config32(d, 3, AMB_MBADDR, 0);
 	i5000_amb_write_config32(d, 3, AMB_MBCSR, 0x80100050);
-	while((status = i5000_amb_read_config32(d, 3, AMB_MBCSR)) & (1 << 31));
+	while ((status = i5000_amb_read_config32(d, 3, AMB_MBCSR)) & (1 << 31));
 
 	i5000_amb_write_config32(d, 3, AMB_MBCSR, 0x80200050);
-	while((status = i5000_amb_read_config32(d, 3, AMB_MBCSR)) & (1 << 31));
+	while ((status = i5000_amb_read_config32(d, 3, AMB_MBCSR)) & (1 << 31));
 
 	if (ddr_command(d, d->ranks == 2 ? 3 : 1, 0, AMB_DCALCSR_OPCODE_RECV_ENABLE_CAL) ||
 	    ddr_command(d, d->ranks == 2 ? 3 : 1, 0, AMB_DCALCSR_OPCODE_DQS_DELAY_CAL))
@@ -530,7 +530,7 @@ static int i5000_ddr_init(struct i5000_fbdimm *d)
 	u32 val;
 	u8 odt;
 
-	for(rank = 0; rank < d->ranks; rank++) {
+	for (rank = 0; rank < d->ranks; rank++) {
 		printk(BIOS_DEBUG, "%s: %d/%d/%d rank %d\n", __func__,
 		       d->branch->num, d->channel->num, d->num, rank);
 
@@ -666,7 +666,7 @@ static void i5000_fbd_next_state(struct i5000_fbd_branch *b, int state)
 
 	printk(BIOS_DEBUG, "waiting for new state...");
 
-	while(pci_read_config8(dev, I5000_FBDST) != state && timeout--)
+	while (pci_read_config8(dev, I5000_FBDST) != state && timeout--)
 		udelay(10);
 
 	if (timeout) {
@@ -685,7 +685,7 @@ static int i5000_wait_pattern_recognized(struct i5000_fbd_channel *c)
 				c->num ? I5000_FBDISTS1 : I5000_FBDISTS0);
 
 	printk(BIOS_DEBUG, "      waiting for pattern recognition...");
-	while(pci_read_config16(dev, 0) != 0x1fff && --i > 0)
+	while (pci_read_config16(dev, 0) != 0x1fff && --i > 0)
 		udelay(5000);
 
 	printk(BIOS_DEBUG, i ?  "done\n" : "failed\n");
@@ -723,7 +723,7 @@ static int i5000_set_ambpresent(struct i5000_fbd_channel *c)
 	device_t branchdev = c->branch->branchdev;
 	u16 ambpresent = 0x8000;
 
-	for(i = 0; i < I5000_MAX_DIMM_PER_CHANNEL; i++) {
+	for (i = 0; i < I5000_MAX_DIMM_PER_CHANNEL; i++) {
 		if (c->dimm[i].present)
 			ambpresent |= (1 << i);
 	}
@@ -772,7 +772,7 @@ static int i5000_drive_test_patterns(struct i5000_fbd_channel *c, int highest_am
 	if (i5000_drive_pattern(c, I5000_FBDICMD_TS2 | highest_amb, 1))
 		return -1;
 
-	for(i = 0; i < highest_amb; i++) {
+	for (i = 0; i < highest_amb; i++) {
 		if ((i5000_drive_pattern(c, I5000_FBDICMD_TS2_NOMERGE | i, 1)))
 			return -1;
 	}
@@ -807,7 +807,7 @@ static int i5000_train_channel_idle(struct i5000_fbd_channel *c)
 	pci_write_config8(c->branch->branchdev,
 			       c->num ? I5000_FBDSBTXCFG1 : I5000_FBDSBTXCFG0, 0x05);
 
-	for(i = 0; i < 4; i++) {
+	for (i = 0; i < 4; i++) {
 		if (c->dimm[i].present)
 			i5000_amb_smbus_write_config32(c->dimm + i, 1, AMB_FBDSBCFGNXT, i ? (fbdsbcfg | 0x1000) : fbdsbcfg);
 	}
@@ -1040,7 +1040,7 @@ static int i5000_do_amb_membist_status(struct i5000_fbdimm *d, int rank)
 	int cnt = 1000;
 	u32 res;
 
-	while((res = i5000_amb_read_config32(d, 3, AMB_MBCSR)) & (1 << 31) && cnt--)
+	while ((res = i5000_amb_read_config32(d, 3, AMB_MBCSR)) & (1 << 31) && cnt--)
 		udelay(1000);
 
 	if (cnt && !(res & (1 << 30)))
@@ -1153,7 +1153,7 @@ static int get_dmir(u8 *rankmap, int *_set, int limit)
 {
 	int i, dmir = 0, set = 0;
 
-	for(i = 7; set < limit && i >= 0; i--) {
+	for (i = 7; set < limit && i >= 0; i--) {
 		if (!(*rankmap & (1 << i)))
 			continue;
 
@@ -1194,7 +1194,7 @@ static int i5000_setup_dmir(struct i5000_fbd_branch *b)
 	if (!b->used)
 		return 0;
 
-	for(i = 0; i < I5000_MAX_DIMM_PER_CHANNEL; i++) {
+	for (i = 0; i < I5000_MAX_DIMM_PER_CHANNEL; i++) {
 		rankmap >>= 2;
 		d = b->channel[0].dimm + i;
 
@@ -1219,7 +1219,7 @@ static int i5000_setup_dmir(struct i5000_fbd_branch *b)
 	if (!b->setup->single_channel)
 		ranksize <<= 1;
 
-	while(ranks) {
+	while (ranks) {
 
 		if (ranks >= 4)
 			dmirval = get_dmir(&rankmap, &set, 4);
@@ -1240,7 +1240,7 @@ static int i5000_setup_dmir(struct i5000_fbd_branch *b)
 		dmir += 4;
 	}
 
-	for(; dmir <= I5000_DMIR4; dmir += 4) {
+	for (; dmir <= I5000_DMIR4; dmir += 4) {
 		printk(BIOS_DEBUG, "DMIR%d: %08x\n", (dmir - I5000_DMIR0) >> 2,
 		       dmirval);
 		pci_write_config32(dev, dmir, dmirval);
@@ -1366,19 +1366,19 @@ static void i5000_init_setup(struct i5000_fbd_setup *setup)
 	   support it, it will decrease this setting in spd_read */
 	setup->ddr_speed = DDR_667MHZ;
 
-	for(branch = 0; branch < I5000_MAX_BRANCH; branch++) {
+	for (branch = 0; branch < I5000_MAX_BRANCH; branch++) {
 		b = setup->branch + branch;
 		b->branchdev = PCI_ADDR(0, branch ? 22 : 21, 0, 0);
 		b->setup = setup;
 		b->num = branch;
 
-		for(channel = 0; channel < I5000_MAX_CHANNEL; channel++) {
+		for (channel = 0; channel < I5000_MAX_CHANNEL; channel++) {
 			c = b->channel + channel;
 			c->branch = b;
 			c->setup = setup;
 			c->num = channel;
 
-			for(dimm = 0; dimm < I5000_MAX_DIMM_PER_CHANNEL; dimm++) {
+			for (dimm = 0; dimm < I5000_MAX_DIMM_PER_CHANNEL; dimm++) {
 				d = c->dimm + dimm;
 				setup->dimms[i++] = d;
 				d->channel = c;

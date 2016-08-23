@@ -149,7 +149,7 @@ set_translation_table(int start, int end, u64 base, int inc)
 {
 	int i;
 
-	for(i = start; i < end; i++){
+	for (i = start; i < end; i++){
 		u64 physical_address = base + i*inc;
 		/* swizzle the 32:39 bits to 4:11 */
 		u32 word = physical_address | ((physical_address >> 28) & 0xff0) | 1;

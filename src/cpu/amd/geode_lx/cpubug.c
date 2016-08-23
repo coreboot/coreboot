@@ -80,5 +80,5 @@ void cpubug(void)
 {
 	pcideadlock();
 	disablememoryreadorder();
-	printk(BIOS_DEBUG, "Done cpubug fixes \n");
+	printk(BIOS_DEBUG, "Done cpubug fixes\n");
 }

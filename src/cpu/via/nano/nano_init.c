@@ -145,7 +145,7 @@ static void nano_init(struct device *dev)
 	/* We didn't test this on the Nano 1000/2000 series, so warn the user */
 	if(c.x86_mask < MODEL_NANO_3000_B0) {
 		printk(BIOS_EMERG, "WARNING: This CPU has not been tested. "
-				   "Please report any issues encountered. \n");
+				   "Please report any issues encountered.\n");
 	}
 	switch (c.x86_mask) {
 	case MODEL_NANO:

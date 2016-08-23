@@ -165,7 +165,7 @@ void save_vbnv_flash(const uint8_t *vbnv_copy)
 		}
 	}
 
-	if (rdev_writeat(rdev, vbnv_copy, new_offset, BLOB_SIZE) < 0) {
+	if (rdev_writeat(rdev, vbnv_copy, new_offset, BLOB_SIZE) == BLOB_SIZE) {
 		/* write was successful. safely move pointer forward */
 		ctx->blob_offset = new_offset;
 		memcpy(ctx->cache, vbnv_copy, BLOB_SIZE);

@@ -258,8 +258,15 @@ static size_t ffs_file_size(const EFI_FFS_FILE_HEADER *ffsfh)
 {
 	size_t size;
 
-	if (IS_FFS_FILE2(ffsfh))
-		size = read_le32(&FFS_FILE2_SIZE(ffsfh));
+	if (IS_FFS_FILE2(ffsfh)) {
+		/*
+		 * this cast is needed with UEFI 2.6 headers in order
+		 * to read the UINT32 value that FFS_FILE2_SIZE converts
+		 * the return into
+		 */
+		uint32_t file2_size = FFS_FILE2_SIZE(ffsfh);
+		size = read_le32(&file2_size);
+	}
 	else {
 		size = read_le8(&ffsfh->Size[0]) << 0;
 		size |= read_le8(&ffsfh->Size[1]) << 8;

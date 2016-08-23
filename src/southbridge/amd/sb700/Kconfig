@@ -25,6 +25,16 @@ config SOUTHBRIDGE_SPECIFIC_OPTIONS # dummy
 	select HAVE_HARD_RESET
 	select SMBUS_HAS_AUX_CHANNELS
 
+config SOUTHBRIDGE_AMD_SB700_33MHZ_SPI
+	bool "Enable high speed SPI clock"
+	default n
+	help
+	  When set, the SPI clock will run at 33MHz instead
+	  of the compatibility mode 16.5MHz.  Note that not
+	  all ROMs are capable of 33MHz operation, so you
+	  will need to verify this option is appropriate for
+	  the ROM you are using.
+
 # Set for southbridge SP5100 which also uses SB700 driver
 config SOUTHBRIDGE_AMD_SUBTYPE_SP5100
 	bool

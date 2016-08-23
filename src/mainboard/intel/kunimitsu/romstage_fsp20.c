@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2014 Intel Corporation
+ * Copyright (C) 2016 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,12 +13,9 @@
  * GNU General Public License for more details.
  */
 
-#include <soc/ramstage.h>
-#include "gpio.h"
+#include <soc/romstage.h>
 
-void mainboard_silicon_init_params(FSP_SIL_UPD *params)
+void mainboard_memory_init_params(struct FSPM_UPD *mupd)
 {
-	/* Configure pads prior to SiliconInit() in case there's any
-	 * dependencies during hardware initialization. */
-	gpio_configure_pads(gpio_table, ARRAY_SIZE(gpio_table));
+	/* TODO: Read and copy SPD and fill up Rcomp and DQ param */
 }

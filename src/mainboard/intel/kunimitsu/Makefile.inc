@@ -34,3 +34,7 @@ ramstage-y += pei_data.c
 ramstage-y += ramstage.c
 
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
+
+ifeq ($(CONFIG_PLATFORM_USES_FSP2_0),y)
+romstage-srcs := $(subst $(MAINBOARDDIR)/romstage.c,$(MAINBOARDDIR)/romstage_fsp20.c,$(romstage-srcs))
+endif

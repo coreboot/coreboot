@@ -43,6 +43,49 @@ static void configure_emmc(void)
 	rkclk_configure_emmc();
 }
 
+static void register_gpio_suspend(void)
+{
+	/*
+	 * These three GPIO params are used to shut down the 1.5V, 1.8V and
+	 * 3.3V power rails, which need to be shut down ordered by voltage,
+	 * with highest voltage first.
+	 * Since register_bl31() appends to the front of the list, we need to
+	 * register them backwards, with 1.5V coming first.
+	 */
+	static struct bl31_gpio_param param_p15_en = {
+		.h = {
+			.type = PARAM_SUSPEND_GPIO,
+		},
+		.gpio = {
+			.polarity = BL31_GPIO_LEVEL_LOW,
+		},
+	};
+	param_p15_en.gpio.index = GET_GPIO_NUM(GPIO_P15V_EN);
+	register_bl31_param(&param_p15_en.h);
+
+	static struct bl31_gpio_param param_p18_audio_en = {
+		.h = {
+			.type = PARAM_SUSPEND_GPIO,
+		},
+		.gpio = {
+			.polarity = BL31_GPIO_LEVEL_LOW,
+		},
+	};
+	param_p18_audio_en.gpio.index = GET_GPIO_NUM(GPIO_P18V_AUDIO_PWREN);
+	register_bl31_param(&param_p18_audio_en.h);
+
+	static struct bl31_gpio_param param_p30_en = {
+		.h = {
+			.type = PARAM_SUSPEND_GPIO,
+		},
+		.gpio = {
+			.polarity = BL31_GPIO_LEVEL_LOW,
+		},
+	};
+	param_p30_en.gpio.index = GET_GPIO_NUM(GPIO_P30V_EN);
+	register_bl31_param(&param_p30_en.h);
+}
+
 static void register_reset_to_bl31(void)
 {
 	static struct bl31_gpio_param param_reset = {
@@ -184,6 +227,7 @@ static void mainboard_init(device_t dev)
 	setup_usb();
 	register_reset_to_bl31();
 	register_poweroff_to_bl31();
+	register_gpio_suspend();
 }
 
 static void enable_backlight_booster(void)

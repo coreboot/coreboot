@@ -88,7 +88,7 @@ void amd_setup_mtrrs(void)
 		 (((cpu_id>>20 )&0xf) > 0) || // ExtendedFamily > 0
 		((((cpu_id>>8 )&0xf) == 0xf) && // Family == 0F
 		 (((cpu_id>>16)&0xf) >= 0x4));  // Rev>=F deduced from rev tables
-	if(has_tom2wb)
+	if (has_tom2wb)
 		printk(BIOS_DEBUG, "CPU is Fam 0Fh rev.F or later. We can use TOM2WB for any memory above 4GB\n");
 
 	/* Enable the access to AMD RdDram and WrDram extension bits */
@@ -109,7 +109,7 @@ void amd_setup_mtrrs(void)
 	sys_cfg.lo &= ~(SYSCFG_MSR_TOM2En | SYSCFG_MSR_TOM2WB);
 	if (bsp_topmem2() > (uint64_t)1<<32) {
 		sys_cfg.lo |= SYSCFG_MSR_TOM2En;
-		if(has_tom2wb)
+		if (has_tom2wb)
 			sys_cfg.lo |= SYSCFG_MSR_TOM2WB;
 	}
 
@@ -117,7 +117,7 @@ void amd_setup_mtrrs(void)
 	 * undefined side effects.
 	 */
 	msr.lo = msr.hi = 0;
-	for(i = IORR_FIRST; i <= IORR_LAST; i++) {
+	for (i = IORR_FIRST; i <= IORR_LAST; i++) {
 		wrmsr(i, msr);
 	}
 

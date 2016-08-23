@@ -116,7 +116,7 @@ void udelay(u32 usecs)
 	start = lapic_read(LAPIC_TMCCT);
 	do {
 		value = lapic_read(LAPIC_TMCCT);
-	} while((start - value) < ticks);
+	} while ((start - value) < ticks);
 }
 
 #if CONFIG_LAPIC_MONOTONIC_TIMER && !defined(__PRE_RAM__)

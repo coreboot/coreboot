@@ -116,7 +116,7 @@ void udelay(unsigned us)
 	clocks = us;
 	clocks *= get_clocks_per_usec();
 	current = rdtscll();
-	while((current - start) < clocks) {
+	while ((current - start) < clocks) {
 		cpu_relax();
 		current = rdtscll();
 	}

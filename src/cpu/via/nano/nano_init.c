@@ -74,7 +74,7 @@ static void nano_set_max_fid_vid(void)
 	printk(BIOS_INFO, "Voltage ID    : %dx (min %dx; max %dx)\n",
 	       cur_vid, min_vid, max_vid);
 
-	if( (cur_fid != max_fid) || (cur_vid != max_vid) ) {
+	if ( (cur_fid != max_fid) || (cur_vid != max_vid) ) {
 		/* Set highest frequency and VID */
 		msr.lo = msr.hi;
 		msr.hi = 0;
@@ -121,7 +121,7 @@ static void nano_power(void)
 	wrmsr(MSR_IA32_MISC_ENABLE, msr);
 
 	u8 stepping = ( cpuid_eax(0x1) ) &0xf;
-	if(stepping >= MODEL_NANO_3000_B0) {
+	if (stepping >= MODEL_NANO_3000_B0) {
 		/* Hello Nano 3000. The Terminator needs a CPU upgrade */
 		/* Enable C1e, C2e, C3e, and C4e states */
 		msr = rdmsr(MSR_IA32_MISC_ENABLE);
@@ -143,7 +143,7 @@ static void nano_init(struct device *dev)
 	get_fms(&c, dev->device);
 
 	/* We didn't test this on the Nano 1000/2000 series, so warn the user */
-	if(c.x86_mask < MODEL_NANO_3000_B0) {
+	if (c.x86_mask < MODEL_NANO_3000_B0) {
 		printk(BIOS_EMERG, "WARNING: This CPU has not been tested. "
 				   "Please report any issues encountered.\n");
 	}
@@ -166,7 +166,7 @@ static void nano_init(struct device *dev)
 	 * CBFS, we'll just get back with 0 updates. User choice FTW. */
 	unsigned int n_updates = nano_update_ucode();
 
-	if(n_updates != 0){
+	if (n_updates != 0){
 		nano_power();
 	} else {
 		/* Changing the frequency or voltage without first updating the

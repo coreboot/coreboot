@@ -37,11 +37,11 @@ static int get_max_siblings(int nodes)
 	int siblings=0;
 
 	//get max siblings from all the nodes
-	for(nodeid=0; nodeid<nodes; nodeid++){
+	for (nodeid=0; nodeid<nodes; nodeid++){
 		int j;
 		dev = dev_find_slot(0, PCI_DEVFN(0x18+nodeid, 3));
 		j = (pci_read_config32(dev, 0xe8) >> 12) & 3;
-		if(siblings < j) {
+		if (siblings < j) {
 			siblings = j;
 		}
 	}
@@ -55,7 +55,7 @@ static void enable_apic_ext_id(int nodes)
         int nodeid;
 
         //enable APIC_EXIT_ID all the nodes
-        for(nodeid=0; nodeid<nodes; nodeid++){
+        for (nodeid=0; nodeid<nodes; nodeid++){
                 uint32_t val;
                 dev = dev_find_slot(0, PCI_DEVFN(0x18+nodeid, 0));
                 val = pci_read_config32(dev, 0x68);
@@ -84,7 +84,7 @@ unsigned get_apicid_base(unsigned ioapic_num)
 
 	if (bsp_apic_id > 0) { // IOAPIC could start from 0
 		return 0;
-	} else if(pci_read_config32(dev, 0x68) & ( (1<<17) | (1<<18)) )  { // enabled ext id but bsp = 0
+	} else if (pci_read_config32(dev, 0x68) & ( (1<<17) | (1<<18)) )  { // enabled ext id but bsp = 0
 		return 1;
 	}
 
@@ -92,11 +92,11 @@ unsigned get_apicid_base(unsigned ioapic_num)
 
 #if 0
 	//it is for all e0 single core and nc_cfg_54 low is set, but in the romstage.c stage we do not set that bit for it.
-	if(nb_cfg_54 && (!disable_siblings) && (siblings == 0)) {
+	if (nb_cfg_54 && (!disable_siblings) && (siblings == 0)) {
 		//we need to check if e0 single core is there
 		int i;
-		for(i=0; i<nodes; i++) {
-			if(is_e0_later_in_bsp(i)) {
+		for (i=0; i<nodes; i++) {
+			if (is_e0_later_in_bsp(i)) {
 				siblings = 1;
 				break;
 			}
@@ -106,7 +106,7 @@ unsigned get_apicid_base(unsigned ioapic_num)
 
 	//Construct apicid_base
 
-	if((!disable_siblings) && (siblings>0) ) {
+	if ((!disable_siblings) && (siblings>0) ) {
 		/* for 8 way dual core, we will used up apicid 16:16, actually 16 is not allowed by current kernel
 		and the kernel will try to get one that is small than 16 to make IOAPIC work.
 		I don't know when the kernel can support 256 APIC id. (APIC_EXT_ID is enabled) */
@@ -120,7 +120,7 @@ unsigned get_apicid_base(unsigned ioapic_num)
 		apicid_base = nodes;
 	}
 
-	if((apicid_base+ioapic_num-1)>0xf) {
+	if ((apicid_base+ioapic_num-1)>0xf) {
 		// We need to enable APIC EXT ID
 		printk(BIOS_INFO, "if the IOAPIC device doesn't support 256 APIC id,\n you need to set CONFIG_ENABLE_APIC_EXT_ID in romstage.c so you can spare 16 id for IOAPIC\n");
 		enable_apic_ext_id(nodes);

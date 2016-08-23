@@ -75,7 +75,7 @@ struct node_core_id get_node_core_id(u32 nb_cfg_54)
 	 * The apicid format varies based on processor revision
 	 */
 	apicid = (cpuid_ebx(1) >> 24) & 0xff;
-	if( nb_cfg_54) {
+	if ( nb_cfg_54) {
 		if (fam15h && dual_node) {
 			id.coreid = apicid & 0x1f;
 			id.nodeid = (apicid & 0x60) >> 5;

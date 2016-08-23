@@ -34,6 +34,7 @@
 #include <spi-generic.h>
 #include <soc/pm.h>
 #include <soc/p2sb.h>
+#include <soc/northbridge.h>
 
 #include "chip.h"
 
@@ -189,6 +190,24 @@ static void pcie_override_devicetree_after_silicon_init(void)
 	pcie_update_device_tree(PCIEB0_DEVFN, 2);
 }
 
+static void rapl_update(void)
+{
+	uint32_t *rapl_reg;
+	uint32_t val;
+	const uint32_t power_mw = 15000;
+
+	rapl_reg = (void*)(uintptr_t) (MCH_BASE_ADDR + MCHBAR_RAPL_PPL);
+
+	/* Due to an incorrect value set for the power limit PL1 as 6W in RAPL
+	 * MMIO register from FSP code, the system is not able to leverage full
+	 * TDP capacity. This RAPL MMIO register is a physically separate
+	 * instance from RAPL MSR register. Punit algorithm controls to the
+	 * minimum power limit PL1 mentioned in the RAPL MMIO and MSR registers.
+	 * Here, setting RAPL PL1 in Bits[14:0] to 15W in RAPL MMIO register. */
+	val = (power_mw << (rdmsr(MSR_PKG_POWER_SKU_UNIT).lo & 0xf)) / 1000;
+	write32(rapl_reg, (read32(rapl_reg) & ~0x7fff) | val);
+}
+
 static void soc_init(void *data)
 {
 	struct global_nvs_t *gnvs;
@@ -218,6 +237,9 @@ static void soc_init(void *data)
 
 	/* Allocate ACPI NVS in CBMEM */
 	gnvs = cbmem_add(CBMEM_ID_ACPI_GNVS, sizeof(*gnvs));
+
+	/* Update RAPL package power limit */
+	rapl_update();
 }
 
 static void soc_final(void *data)

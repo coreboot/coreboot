@@ -38,6 +38,7 @@ void apollolake_init_cpus(struct device *dev);
 #define   PREFETCH_L1_DISABLE	(1 << 0)
 #define   PREFETCH_L2_DISABLE	(1 << 2)
 
+#define MSR_PKG_POWER_SKU_UNIT	0x606
 
 #define MSR_L2_QOS_MASK(reg)		(0xd10 + reg)
 #define MSR_IA32_PQR_ASSOC		0xc8f

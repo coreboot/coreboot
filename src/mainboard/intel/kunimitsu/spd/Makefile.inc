@@ -14,7 +14,7 @@
 ## GNU General Public License for more details.
 ##
 
-romstage-y += spd.c
+romstage-$(CONFIG_PLATFORM_USES_FSP1_1) += spd.c
 
 SPD_BIN = $(obj)/spd.bin
 

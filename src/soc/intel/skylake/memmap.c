@@ -21,7 +21,6 @@
 #include <device/pci.h>
 #include <soc/msr.h>
 #include <soc/pci_devs.h>
-#include <soc/romstage.h>
 #include <soc/smm.h>
 #include <soc/systemagent.h>
 #include <stdlib.h>

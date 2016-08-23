@@ -24,7 +24,6 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <drivers/intel/gma/i915_reg.h>
-#include <fsp/gop.h>
 #include <soc/acpi.h>
 #include <soc/cpu.h>
 #include <soc/pm.h>
@@ -117,34 +116,9 @@ static void igd_init(struct device *dev)
 }
 
 /* Initialize IGD OpRegion, called from ACPI code */
-static int init_igd_opregion(igd_opregion_t *opregion)
+static int update_igd_opregion(igd_opregion_t *opregion)
 {
-	const optionrom_vbt_t *vbt;
-	uint32_t vbt_len;
 	u16 reg16;
-
-	memset(opregion, 0, sizeof(igd_opregion_t));
-
-	/* Read VBT table from flash */
-	vbt = fsp_get_vbt(&vbt_len);
-	if (!vbt)
-		die("vbt data not found");
-
-	memcpy(&opregion->header.signature, IGD_OPREGION_SIGNATURE,
-		sizeof(IGD_OPREGION_SIGNATURE) - 1);
-	memcpy(opregion->header.vbios_version, vbt->coreblock_biosbuild, sizeof(u32));
-	memcpy(opregion->vbt.gvd1, vbt, vbt->hdr_vbt_size <
-		sizeof(opregion->vbt.gvd1) ? vbt->hdr_vbt_size :
-		sizeof(opregion->vbt.gvd1));
-
-	/* Size, in KB, of the entire OpRegion structure (including header)*/
-	opregion->header.size = sizeof(igd_opregion_t) / KiB;
-	opregion->header.version = IGD_OPREGION_VERSION;
-
-	/* We just assume we're mobile for now */
-	opregion->header.mailboxes = MAILBOXES_MOBILE;
-
-	/* TODO Initialize Mailbox 1 */
 
 	/* Initialize Mailbox 3 */
 	opregion->mailbox3.bclp = IGD_BACKLIGHT_BRIGHTNESS;
@@ -189,6 +163,7 @@ static unsigned long write_acpi_igd_opregion(device_t device,
 	printk(BIOS_DEBUG, "ACPI: * IGD OpRegion\n");
 	opregion = (igd_opregion_t *)current;
 	init_igd_opregion(opregion);
+	update_igd_opregion(opregion);
 	current += sizeof(igd_opregion_t);
 	current = acpi_align_current(current);
 

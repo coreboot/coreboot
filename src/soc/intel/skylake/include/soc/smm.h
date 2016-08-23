@@ -20,7 +20,6 @@
 #include <stdint.h>
 #include <cpu/x86/msr.h>
 #include <fsp/memmap.h>
-#include <fsp/romstage.h>
 #include <soc/gpio.h>
 
 struct ied_header {

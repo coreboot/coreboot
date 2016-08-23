@@ -14,6 +14,8 @@
  *
  */
 
+#include <fsp/api.h>
+#include <soc/ramstage.h>
 #include <soc/vr_config.h>
 
 /* Default values for domain configuration. PSI3 and PSI4 are disabled. */
@@ -80,9 +82,10 @@ static const struct vr_config default_configs[NUM_VR_DOMAINS] = {
 	},
 };
 
-void fill_vr_domain_config(SILICON_INIT_UPD *params, int domain,
-				const struct vr_config *chip_cfg)
+void fill_vr_domain_config(void *params,
+		int domain, const struct vr_config *chip_cfg)
 {
+	FSP_SIL_UPD *vr_params = (FSP_SIL_UPD *)params;
 	const struct vr_config *cfg;
 
 	if (domain < 0 || domain >= NUM_VR_DOMAINS)
@@ -94,14 +97,14 @@ void fill_vr_domain_config(SILICON_INIT_UPD *params, int domain,
 	else
 		cfg = &default_configs[domain];
 
-	params->VrConfigEnable[domain] = cfg->vr_config_enable;
-	params->Psi1Threshold[domain] = cfg->psi1threshold;
-	params->Psi2Threshold[domain] = cfg->psi2threshold;
-	params->Psi3Threshold[domain] = cfg->psi3threshold;
-	params->Psi3Enable[domain] = cfg->psi3enable;
-	params->Psi4Enable[domain] = cfg->psi4enable;
-	params->ImonSlope[domain] = cfg->imon_slope;
-	params->ImonOffset[domain] = cfg->imon_offset;
-	params->IccMax[domain] = cfg->icc_max;
-	params->VrVoltageLimit[domain] = cfg->voltage_limit;
+	vr_params->VrConfigEnable[domain] = cfg->vr_config_enable;
+	vr_params->Psi1Threshold[domain] = cfg->psi1threshold;
+	vr_params->Psi2Threshold[domain] = cfg->psi2threshold;
+	vr_params->Psi3Threshold[domain] = cfg->psi3threshold;
+	vr_params->Psi3Enable[domain] = cfg->psi3enable;
+	vr_params->Psi4Enable[domain] = cfg->psi4enable;
+	vr_params->ImonSlope[domain] = cfg->imon_slope;
+	vr_params->ImonOffset[domain] = cfg->imon_offset;
+	vr_params->IccMax[domain] = cfg->icc_max;
+	vr_params->VrVoltageLimit[domain] = cfg->voltage_limit;
 }

@@ -70,7 +70,7 @@ static const struct region_device_ops spi_ops = {
 static const struct region_device spi_rw =
 	REGION_DEV_INIT(&spi_ops, 0, CONFIG_ROM_SIZE);
 
-void boot_device_init(void)
+static void boot_device_rw_init(void)
 {
 	const int bus = CONFIG_BOOT_DEVICE_SPI_FLASH_BUS;
 	const int cs = 0;
@@ -86,6 +86,9 @@ void boot_device_init(void)
 
 const struct region_device *boot_device_rw(void)
 {
+	/* Probe for the SPI flash device if not already done. */
+	boot_device_rw_init();
+
 	if (car_get_var(sfg) == NULL)
 		return NULL;
 

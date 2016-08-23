@@ -90,7 +90,7 @@ void set_bios_reset(void)
 
 	nodes = ((pci_read_config32(PCI_DEV(CONFIG_CBB, CONFIG_CDB, 0), 0x60) >> 4) & 7) + 1;
 
-	for(i = 0; i < nodes; i++) {
+	for (i = 0; i < nodes; i++) {
 		dev = NODE_PCI(i,0);
 		htic = pci_read_config32(dev, HT_INIT_CONTROL);
 		htic &= ~HTIC_BIOSR_Detect;
@@ -110,7 +110,7 @@ static u8 node_link_to_bus(u8 node, u8 link) // node are 6 bit, and link three b
 	// put node and link in correct bit
 	val = ((node & 0x0f)<<4) | ((node & 0x30)<< (12-4)) | ((link & 0x07)<<8) ;
 
-	for(reg = 0xE0; reg < 0xF0; reg += 0x04) {
+	for (reg = 0xE0; reg < 0xF0; reg += 0x04) {
 		u32 config_map;
 		config_map = pci_io_read_config32(PCI_DEV(CONFIG_CBB, CONFIG_CDB, 1), reg);
 		if ((config_map & 3) != 3) {

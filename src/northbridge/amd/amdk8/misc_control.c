@@ -81,7 +81,7 @@ static void set_agp_aperture(device_t dev)
 
 		/* Update the other northbridges */
 		pdev = 0;
-		while((pdev = dev_find_device(PCI_VENDOR_ID_AMD, 0x1103, pdev))) {
+		while ((pdev = dev_find_device(PCI_VENDOR_ID_AMD, 0x1103, pdev))) {
 			/* Store the GART size but don't enable it */
 			pci_write_config32(pdev, 0x90, gart_acr);
 
@@ -160,7 +160,7 @@ static void misc_control_init(struct device *dev)
 			needs_reset = 1; /* Needed? */
 		}
 	}
-	else if(is_cpu_pre_d0()) {
+	else if (is_cpu_pre_d0()) {
 		struct device *f2_dev;
 		uint32_t dcl;
 		f2_dev = dev_find_slot(0, dev->path.pci.devfn - 3 + 2);
@@ -174,7 +174,7 @@ static void misc_control_init(struct device *dev)
 			cmd_ref = 0x000D0701; /* Unbuffered */
 		}
 		cmd = pci_read_config32(dev, 0xd4);
-		if(cmd != cmd_ref) {
+		if (cmd != cmd_ref) {
 			pci_write_config32(dev, 0xd4, cmd_ref );
 			needs_reset = 1; /* Needed? */
 		}
@@ -185,7 +185,7 @@ static void misc_control_init(struct device *dev)
 	if (f0_dev) {
 		int link;
 		cmd_ref = cmd = pci_read_config32(dev, 0xdc);
-		for(link = 0; link < 3; link++) {
+		for (link = 0; link < 3; link++) {
 			uint32_t link_type;
 			unsigned reg;
 			/* This works on an Athlon64 because unimplemented links return 0 */

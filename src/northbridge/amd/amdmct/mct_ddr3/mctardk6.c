@@ -59,7 +59,7 @@ static void Get_ChannelPS_Cfg0_D( u8 MAAdimms, u8 Speed, u8 MAAload,
 	*CMDmode = 1;
 
 	if (mctGet_NVbits(NV_MAX_DIMMS) == 4) {
-		if(Speed == 4) {
+		if (Speed == 4) {
 			*AddrTmgCTL = 0x00000000;
 		} else if (Speed == 5) {
 			*AddrTmgCTL = 0x003C3C3C;
@@ -77,7 +77,7 @@ static void Get_ChannelPS_Cfg0_D( u8 MAAdimms, u8 Speed, u8 MAAload,
 				*AddrTmgCTL = 0x00353935;
 		}
 	} else {
-		if(Speed == 4) {
+		if (Speed == 4) {
 			*AddrTmgCTL = 0x00000000;
 			if (MAAdimms == 3)
 				*AddrTmgCTL = 0x00380038;

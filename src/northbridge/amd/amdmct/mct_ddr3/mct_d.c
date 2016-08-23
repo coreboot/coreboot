@@ -4313,7 +4313,7 @@ static void ClearDCT_D(struct MCTStatStruc *pMCTstat,
 		reg_end = 0xA4;
 	}
 
-	while(reg < reg_end) {
+	while (reg < reg_end) {
 		if ((reg & 0xFF) == 0x84) {
 			if (is_fam15h()) {
 				val = Get_NB32_DCT(dev, dct, reg);
@@ -5252,7 +5252,7 @@ static u8 AutoConfig_D(struct MCTStatStruc *pMCTstat,
 
 			dword = 0;
 			byte = 0xFF;
-			while(dword < MAX_CS_SUPPORTED) {
+			while (dword < MAX_CS_SUPPORTED) {
 				if (pDCTstat->CSPresent & (1<<dword)){
 					/* re-enable clocks for the enabled CS */
 					val = p[dword];
@@ -8130,7 +8130,7 @@ static void mct_ResetDLL_D(struct MCTStatStruc *pMCTstat,
 
 	addr = HWCR;
 	_RDMSR(addr, &lo, &hi);
-	if(lo & (1<<17)) {		/* save the old value */
+	if (lo & (1<<17)) {		/* save the old value */
 		wrap32dis = 1;
 	}
 	lo |= (1<<17);			/* HWCR.wrap32dis */
@@ -8158,7 +8158,7 @@ static void mct_ResetDLL_D(struct MCTStatStruc *pMCTstat,
 		}
 	}
 
-	if(!wrap32dis) {
+	if (!wrap32dis) {
 		addr = HWCR;
 		_RDMSR(addr, &lo, &hi);
 		lo &= ~(1<<17);		/* restore HWCR.wrap32dis */

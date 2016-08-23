@@ -64,7 +64,7 @@ void InterleaveBanks_D(struct MCTStatStruc *pMCTstat,
 			val = Get_NB32(dev, reg);
 			val >>= (ChipSel>>1)<<2;
 			val &= 0x0f;
-			if(EnChipSels == 1)
+			if (EnChipSels == 1)
 				BankEncd = val;
 			else
 				/*If number of Rows/Columns not equal, skip */
@@ -79,13 +79,13 @@ void InterleaveBanks_D(struct MCTStatStruc *pMCTstat,
 	}
 
 	if (DoIntlv) {
-		if(!_CsIntCap) {
+		if (!_CsIntCap) {
 			pDCTstat->ErrStatus |= 1<<SB_BkIntDis;
 			DoIntlv = 0;
 		}
 	}
 
-	if(DoIntlv) {
+	if (DoIntlv) {
 		val = Tab_int_D[BankEncd];
 		if (pDCTstat->Status & (1<<SB_128bitmode))
 			val++;
@@ -113,7 +113,7 @@ void InterleaveBanks_D(struct MCTStatStruc *pMCTstat,
 				val |= val_hi;
 				Set_NB32(dev, reg, val);
 
-				if(ChipSel & 1)
+				if (ChipSel & 1)
 					continue;
 
 				reg = 0x60 + ((ChipSel>>1)<<2) + reg_off; /*Dram CS Mask 0 */

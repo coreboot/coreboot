@@ -24,7 +24,7 @@ u32 procOdtWorkaround(struct DCTStatStruc *pDCTstat, u32 dct, u32 val)
 	tmp = pDCTstat->LogicalCPUID;
 	if ((tmp == AMD_DR_A0A) || (tmp == AMD_DR_A1B) || (tmp == AMD_DR_A2)) {
 		val &= 0x0FFFFFFF;
-		if(pDCTstat->MAdimms[dct] > 1)
+		if (pDCTstat->MAdimms[dct] > 1)
 			val |= 0x10000000;
 	}
 
@@ -42,7 +42,7 @@ u32 OtherTiming_A_D(struct DCTStatStruc *pDCTstat, u32 val)
 	uint64_t tmp;
 	tmp = pDCTstat->LogicalCPUID;
 	if ((tmp == AMD_DR_A0A) || (tmp == AMD_DR_A1B) || (tmp == AMD_DR_A2)) {
-		if(!(val & (3<<12) ))
+		if (!(val & (3<<12) ))
 			val |= 1<<12;
 	}
 	return val;
@@ -59,13 +59,13 @@ void mct_ForceAutoPrecharge_D(struct DCTStatStruc *pDCTstat, u32 dct)
 
 	tmp = pDCTstat->LogicalCPUID;
 	if ((tmp == AMD_DR_A0A) || (tmp == AMD_DR_A1B) || (tmp == AMD_DR_A2)) {
-		if(CheckNBCOFAutoPrechg(pDCTstat, dct)) {
+		if (CheckNBCOFAutoPrechg(pDCTstat, dct)) {
 			dev = pDCTstat->dev_dct;
 			reg_off = 0x100 * dct;
 			reg = 0x90 + reg_off;	/* Dram Configuration Lo */
 			val = Get_NB32(dev, reg);
 			val |= 1<<ForceAutoPchg;
-			if(!pDCTstat->GangedMode)
+			if (!pDCTstat->GangedMode)
 				val |= 1<<BurstLength32;
 			Set_NB32(dev, reg, val);
 
@@ -99,11 +99,11 @@ void mct_EndDQSTraining_D(struct MCTStatStruc *pMCTstat,
 	u32 val;
 	u32 Node;
 
-	for(Node = 0; Node < MAX_NODES_SUPPORTED; Node++) {
+	for (Node = 0; Node < MAX_NODES_SUPPORTED; Node++) {
 		struct DCTStatStruc *pDCTstat;
 		pDCTstat = pDCTstatA + Node;
 
-		if(!pDCTstat->NodePresent) break;
+		if (!pDCTstat->NodePresent) break;
 
 		tmp = pDCTstat->LogicalCPUID;
 		if ((tmp == AMD_DR_A0A) || (tmp == AMD_DR_A1B) || (tmp == AMD_DR_A2)) {
@@ -149,15 +149,15 @@ void mct_BeforeDQSTrain_Samp_D(struct MCTStatStruc *pMCTstat,
 		dev = pDCTstat->dev_dct;
 		index = 0;
 
-		for(Channel = 0; Channel<2; Channel++) {
+		for (Channel = 0; Channel<2; Channel++) {
 			index_reg = 0x98 + 0x100 * Channel;
 			val = Get_NB32_index_wait(dev, index_reg, 0x0d004007);
 			val |= 0x3ff;
 			Set_NB32_index_wait(dev, index_reg, 0x0d0f4f07, val);
 		}
 
-		for(Channel = 0; Channel<2; Channel++) {
-			if(pDCTstat->GangedMode && Channel)
+		for (Channel = 0; Channel<2; Channel++) {
+			if (pDCTstat->GangedMode && Channel)
 				break;
 			reg_off = 0x100 * Channel;
 			reg = 0x78 + reg_off;
@@ -167,11 +167,11 @@ void mct_BeforeDQSTrain_Samp_D(struct MCTStatStruc *pMCTstat,
 			Set_NB32(dev, reg, val);
 		}
 
-		for(Channel = 0; Channel<2; Channel++) {
+		for (Channel = 0; Channel<2; Channel++) {
 			reg_off = 0x100 * Channel;
 			val = 0;
 			index_reg = 0x98 + reg_off;
-			for( index = 0x30; index < (0x45 + 1); index++) {
+			for ( index = 0x30; index < (0x45 + 1); index++) {
 				Set_NB32_index_wait(dev, index_reg, index, val);
 			}
 		}
@@ -265,7 +265,7 @@ u32 CheckNBCOFAutoPrechg(struct DCTStatStruc *pDCTstat, u32 dct)
 	print_tx("NB COF:", valy >> NbDid);
 
 	val = valy/valx;
-	if((val==3) && (valy%valx))  /* 3 < NClk/MemClk < 4 */
+	if ((val==3) && (valy%valx))  /* 3 < NClk/MemClk < 4 */
 		ret = 1;
 
 	return ret;
@@ -286,8 +286,8 @@ void mct_BeforeDramInit_D(struct DCTStatStruc *pDCTstat, u32 dct)
 	if ((tmp == AMD_DR_A0A) || (tmp == AMD_DR_A1B) || (tmp == AMD_DR_A2)) {
 		Speed = pDCTstat->Speed;
 		/* MemClkFreq = 333MHz or 533MHz */
-		if((Speed == 3) || (Speed == 2)) {
-			if(pDCTstat->GangedMode) {
+		if ((Speed == 3) || (Speed == 2)) {
+			if (pDCTstat->GangedMode) {
 				ch_start = 0;
 				ch_end = 2;
 			} else {
@@ -296,7 +296,7 @@ void mct_BeforeDramInit_D(struct DCTStatStruc *pDCTstat, u32 dct)
 			}
 			dev = pDCTstat->dev_dct;
 			index = 0x0D00E001;
-			for(ch=ch_start; ch<ch_end; ch++) {
+			for (ch=ch_start; ch<ch_end; ch++) {
 				index_reg = 0x98 + 0x100 * ch;
 				val = Get_NB32_index(dev, index_reg, 0x0D00E001);
 				val &= ~(0xf0);
@@ -332,7 +332,7 @@ static u8 mct_checkFenceHoleAdjust_D(struct MCTStatStruc *pMCTstat,
 	if ((tmp == AMD_DR_A0A) || (tmp == AMD_DR_A1B) || (tmp == AMD_DR_A2)) {
 		if (pDCTstat->Direction == DQS_WRITEDIR) {
 			if ((pDCTstat->Speed == 2) || (pDCTstat->Speed == 3)) {
-				if(DQSDelay == 13) {
+				if (DQSDelay == 13) {
 					if (*result == 0xFF) {
 						for (ByteLane = 0; ByteLane < 8; ByteLane++) {
 							pDCTstat->DQSDelay = 13;

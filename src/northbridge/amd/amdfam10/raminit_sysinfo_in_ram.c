@@ -35,12 +35,12 @@ static u32 get_htic_bit(u8 i, u8 bit)
 
 static void wait_till_sysinfo_in_ram(void)
 {
-	while(1) {
+	while (1) {
 		/* give the NB a break, many CPUs spinning on one bit makes a
 		 * lot of traffic and time is not too important to APs.
 		 */
 		udelay(1000);
-		if(get_htic_bit(0, 9)) return;
+		if (get_htic_bit(0, 9)) return;
 	}
 }
 #endif
@@ -56,7 +56,7 @@ static void fill_mem_ctrl(u32 controllers, struct mem_controller *ctrl_a, const 
 	int j;
 	int index = 0;
 	struct mem_controller *ctrl;
-	for(i=0;i<controllers; i++) {
+	for (i=0;i<controllers; i++) {
 		ctrl = &ctrl_a[i];
 		ctrl->node_id = i;
 		ctrl->f0 = NODE_PCI(i, 0);
@@ -66,11 +66,11 @@ static void fill_mem_ctrl(u32 controllers, struct mem_controller *ctrl_a, const 
 		ctrl->f4 = NODE_PCI(i, 4);
 		ctrl->f5 = NODE_PCI(i, 5);
 
-		if(spd_addr == (void *)0) continue;
+		if (spd_addr == (void *)0) continue;
 
 		ctrl->spd_switch_addr = spd_addr[index++];
 
-		for(j=0; j < 8; j++) {
+		for (j=0; j < 8; j++) {
 			ctrl->spd_addr[j] = spd_addr[index++];
 
 		}

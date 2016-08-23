@@ -23,7 +23,7 @@ u8 mct_checkNumberOfDqsRcvEn_Pass(u8 pass)
 u32 SetupDqsPattern_PassA(u8 Pass)
 {
 	u32 ret;
-	if(Pass == FirstPass)
+	if (Pass == FirstPass)
 		ret = (u32) TestPattern1_D;
 	else
 		ret = (u32) TestPattern2_D;
@@ -34,7 +34,7 @@ u32 SetupDqsPattern_PassA(u8 Pass)
 u32 SetupDqsPattern_PassB(u8 Pass)
 {
 	u32 ret;
-	if(Pass == FirstPass)
+	if (Pass == FirstPass)
 		ret = (u32) TestPattern0_D;
 	else
 		ret = (u32) TestPattern2_D;
@@ -61,7 +61,7 @@ u8 mct_Get_Start_RcvrEnDly_Pass(struct DCTStatStruc *pDCTstat,
 		for ( i=0;i<bn; i++) {
 			val  = p[i];
 
-			if(val > max) {
+			if (val > max) {
 				max = val;
 			}
 		}
@@ -91,7 +91,7 @@ u16 mct_Average_RcvrEnDly_Pass(struct DCTStatStruc *pDCTstat,
 		/* FIXME: which byte? */
 		p_1 = pDCTstat->B_RCVRDLY_1;
 		/* p_1 = pDCTstat->CH_D_B_RCVRDLY_1[Channel][Receiver>>1]; */
-		for(i=0; i<bn; i++) {
+		for (i=0; i<bn; i++) {
 			val = p[i];
 			/* left edge */
 			if (val != (RcvrEnDlyLimit - 1)) {
@@ -111,7 +111,7 @@ u16 mct_Average_RcvrEnDly_Pass(struct DCTStatStruc *pDCTstat,
 			pDCTstat->DimmTrainFail &= ~(1<<(Receiver + Channel));
 		}
 	} else {
-		for(i=0; i < bn; i++) {
+		for (i=0; i < bn; i++) {
 			val = p[i];
 			/* Add 1/2 Memlock delay */
 			/* val += Pass1MemClkDly; */

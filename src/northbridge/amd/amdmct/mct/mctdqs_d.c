@@ -1118,7 +1118,7 @@ u32 mct_GetMCTSysAddr_D(struct MCTStatStruc *pMCTstat,
 	/* New stuff */
 	val += ((1 << 21) >> 8);	/* Add 2MB offset to avoid compat area */
 	if (val >= MCT_TRNG_KEEPOUT_START) {
-		while(val < MCT_TRNG_KEEPOUT_END)
+		while (val < MCT_TRNG_KEEPOUT_END)
 			val += (1 << (15-8));	/* add 32K */
 	}
 

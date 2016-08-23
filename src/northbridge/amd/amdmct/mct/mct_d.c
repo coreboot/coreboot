@@ -925,7 +925,7 @@ static void ClearDCT_D(struct MCTStatStruc *pMCTstat,
 		reg_end = 0xA4 + 0x100 * dct;
 	}
 
-	while(reg < reg_end) {
+	while (reg < reg_end) {
 		Set_NB32(dev, reg, val);
 		reg += 4;
 	}
@@ -1694,7 +1694,7 @@ static u8 AutoConfig_D(struct MCTStatStruc *pMCTstat,
 				p = Tab_S1CLKDis;
 
 			dword = 0;
-			while(dword < MAX_DIMMS_SUPPORTED) {
+			while (dword < MAX_DIMMS_SUPPORTED) {
 				val = p[dword];
 				print_tx("DramTimingLo: val=", val);
 				if (!(pDCTstat->DIMMValid & (1<<val)))
@@ -3518,7 +3518,7 @@ static void InitPhyCompensation(struct MCTStatStruc *pMCTstat,
 
 static void WaitRoutine_D(u32 time)
 {
-	while(time) {
+	while (time) {
 		_EXECFENCE;
 		time--;
 	}
@@ -3877,7 +3877,7 @@ static void mct_ResetDLL_D(struct MCTStatStruc *pMCTstat,
 
 	addr = HWCR;
 	_RDMSR(addr, &lo, &hi);
-	if(lo & (1<<17)) {		/* save the old value */
+	if (lo & (1<<17)) {		/* save the old value */
 		wrap32dis = 1;
 	}
 	lo |= (1<<17);			/* HWCR.wrap32dis */
@@ -3906,7 +3906,7 @@ static void mct_ResetDLL_D(struct MCTStatStruc *pMCTstat,
 			}
 		}
 	}
-	if(!wrap32dis) {
+	if (!wrap32dis) {
 		addr = HWCR;
 		_RDMSR(addr, &lo, &hi);
 		lo &= ~(1<<17);		/* restore HWCR.wrap32dis */

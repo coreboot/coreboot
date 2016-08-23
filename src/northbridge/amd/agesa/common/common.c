@@ -68,7 +68,7 @@ AGESA_STATUS common_ReadCbfsSpd (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 		u16 i;
 		printk(BIOS_SPEW, "\nDisplay the SPD");
 		for (i = 0; i < spd_file_length; i++) {
-			if((i % 16) == 0x00)
+			if ((i % 16) == 0x00)
 				printk(BIOS_SPEW, "\n%02x:  ",i);
 			printk(BIOS_SPEW, "%02x ", info->Buffer[i]);
 		}

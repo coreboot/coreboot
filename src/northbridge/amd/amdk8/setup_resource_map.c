@@ -8,7 +8,7 @@ void setup_resource_map_offset(const unsigned int *register_values, int max, uns
 #if RES_DEBUG
 	printk(BIOS_DEBUG, "setting up resource map offset....\n");
 #endif
-	for(i = 0; i < max; i += 3) {
+	for (i = 0; i < max; i += 3) {
 		device_t dev;
 		unsigned where;
 		unsigned long reg = 0;
@@ -46,7 +46,7 @@ static void setup_resource_map_x_offset(const unsigned int *register_values, int
 #if RES_DEBUG
 	printk(BIOS_DEBUG, "setting up resource map ex offset....\n");
 #endif
-	for(i = 0; i < max; i += 4) {
+	for (i = 0; i < max; i += 4) {
 #if RES_DEBUG
 		printk(BIOS_DEBUG, "%04x: %02x %08x <- & %08x | %08x\n",
 			i>>2, register_values[i],
@@ -128,7 +128,7 @@ static void setup_io_resource_map(const unsigned int *register_values, int max)
 {
 	int i;
 
-	for(i = 0; i < max; i += 3) {
+	for (i = 0; i < max; i += 3) {
 		unsigned where;
 		unsigned long reg;
 
@@ -163,7 +163,7 @@ static void setup_mem_resource_map(const unsigned int *register_values, int max)
 {
 	int i;
 
-	for(i = 0; i < max; i += 3) {
+	for (i = 0; i < max; i += 3) {
 		unsigned where;
 		unsigned long reg;
 #if 0

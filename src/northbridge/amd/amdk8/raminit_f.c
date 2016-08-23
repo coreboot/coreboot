@@ -1647,7 +1647,7 @@ static uint8_t get_exact_divisor(int i, uint8_t divisor)
 	/* Check for FID control support */
 	struct cpuid_result cpuid1;
 	cpuid1 = cpuid(0x80000007);
-	if( cpuid1.edx & 0x02 ) {
+	if ( cpuid1.edx & 0x02 ) {
 		/* Use current FID */
 		unsigned fid_cur;
 		msr = rdmsr(0xc0010042);
@@ -3118,7 +3118,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl,
 			if ((loops & 1023) == 0) {
 				printk(BIOS_DEBUG, ".");
 			}
-		} while(((dcl & DCL_InitDram) != 0) && (loops < TIMEOUT_LOOPS));
+		} while (((dcl & DCL_InitDram) != 0) && (loops < TIMEOUT_LOOPS));
 		if (loops >= TIMEOUT_LOOPS) {
 			printk(BIOS_DEBUG, " failed\n");
 			continue;
@@ -3127,7 +3127,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl,
 		/* Wait until it is safe to touch memory */
 		do {
 			dcm = pci_read_config32(ctrl[i].f2, DRAM_CTRL_MISC);
-		} while(((dcm & DCM_MemClrStatus) == 0) /* || ((dcm & DCM_DramEnabled) == 0)*/ );
+		} while (((dcm & DCM_MemClrStatus) == 0) /* || ((dcm & DCM_DramEnabled) == 0)*/ );
 
 #if K8_REV_F_SUPPORT_F0_F1_WORKAROUND == 1
 		if (cpu_f0_f1[i]) {

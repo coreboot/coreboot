@@ -44,13 +44,13 @@
 		#define ASSERT CIMX_ASSERT
 	#endif
 	#ifdef CIMX_TRACE_SUPPORT
-		#define CIMX_ASSERT(x)  if(!(x)) {\
+		#define CIMX_ASSERT(x)  if (!(x)) {\
 			LibAmdTraceDebug (CIMX_TRACE_ALL, (CHAR8 *)"ASSERT !!! "__FILE__" - line %d\n", __LINE__); \
 			/*__asm {jmp $}; */\
 		}
 	//#define IDS_HDT_CONSOLE(s, args...) do_printk(BIOS_DEBUG, s, ##args)
 	#else
-		#define CIMX_ASSERT(x) if(!(x)) {\
+		#define CIMX_ASSERT(x) if (!(x)) {\
 			/*__asm {jmp $}; */\
 		}
 	#endif

@@ -22,7 +22,7 @@ static void setup_resource_map(const u32 *register_values, u32 max)
 	u32 i;
 //	printk(BIOS_DEBUG, "setting up resource map....");
 
-	for(i = 0; i < max; i += 3) {
+	for (i = 0; i < max; i += 3) {
 		device_t dev;
 		u32 where;
 		u32 reg;
@@ -42,7 +42,7 @@ void setup_resource_map_offset(const u32 *register_values, u32 max, u32 offset_p
 {
 	u32 i;
 //	printk(BIOS_DEBUG, "setting up resource map offset....");
-	for(i = 0; i < max; i += 3) {
+	for (i = 0; i < max; i += 3) {
 		device_t dev;
 		u32 where;
 		unsigned long reg;
@@ -68,7 +68,7 @@ void setup_resource_map_x_offset(const u32 *register_values, u32 max, u32 offset
 	if (IS_ENABLED(RES_DEBUG))
 		printk(BIOS_DEBUG, "setting up resource map ex offset....\n");
 
-	for(i = 0; i < max; i += 4) {
+	for (i = 0; i < max; i += 4) {
 		if (IS_ENABLED(RES_DEBUG))
 			printk(BIOS_DEBUG, "%04x: %02x %08x <- & %08x | %08x\n",
 				i/4, register_values[i],
@@ -140,7 +140,7 @@ void setup_resource_map_x(const u32 *register_values, u32 max)
 	if (IS_ENABLED(RES_DEBUG))
 		printk(BIOS_DEBUG, "setting up resource map ex offset....\n");
 
-	for(i = 0; i < max; i += 4) {
+	for (i = 0; i < max; i += 4) {
 		if (IS_ENABLED(RES_DEBUG))
 			printk(BIOS_DEBUG, "%04x: %02x %08x <- & %08x | %08x\n",
 				i/4, register_values[i],register_values[i+1], register_values[i+2], register_values[i+3]);
@@ -194,7 +194,7 @@ static void setup_iob_resource_map(const u32 *register_values, u32 max)
 {
 	u32 i;
 
-	for(i = 0; i < max; i += 3) {
+	for (i = 0; i < max; i += 3) {
 		u32 where;
 		u32 reg;
 
@@ -210,7 +210,7 @@ static void setup_io_resource_map(const u32 *register_values, u32 max)
 {
 	u32 i;
 
-	for(i = 0; i < max; i += 3) {
+	for (i = 0; i < max; i += 3) {
 		u32 where;
 		u32 reg;
 

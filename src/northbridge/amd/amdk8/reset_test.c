@@ -57,7 +57,7 @@ static unsigned node_link_to_bus(unsigned node, unsigned link)
 {
 	u8 reg;
 
-	for(reg = 0xE0; reg < 0xF0; reg += 0x04) {
+	for (reg = 0xE0; reg < 0xF0; reg += 0x04) {
 		u32 config_map;
 		config_map = pci_read_config32(PCI_DEV(0, 0x18, 1), reg);
 		if ((config_map & 3) != 3) {

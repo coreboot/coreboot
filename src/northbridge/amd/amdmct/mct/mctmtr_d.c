@@ -44,15 +44,15 @@ void CPUMemTyping_D(struct MCTStatStruc *pMCTstat,
 	 */
 
 	val = mctGet_NVbits(NV_BottomIO);
-	if(val == 0)
+	if (val == 0)
 		val++;
 
 	Bottom32bIO = val << (24-8);
 
 	val = pMCTstat->SysLimit + 1;
-	if(val <= _4GB_RJ8) {
+	if (val <= _4GB_RJ8) {
 		Bottom40bIO = 0;
-		if(Bottom32bIO >= val)
+		if (Bottom32bIO >= val)
 			Bottom32bIO = val;
 	} else {
 		Bottom40bIO = val;
@@ -90,7 +90,7 @@ void CPUMemTyping_D(struct MCTStatStruc *pMCTstat,
 				/* Base */
 				/* Limit */
 				/* MtrrAddr */
-	if(addr == -1)		/* ran out of MTRRs?*/
+	if (addr == -1)		/* ran out of MTRRs?*/
 		pMCTstat->GStatus |= 1<<GSB_MTRRshort;
 
 	pMCTstat->Sub4GCacheTop = Cache32bTOP<<8;
@@ -104,7 +104,7 @@ void CPUMemTyping_D(struct MCTStatStruc *pMCTstat,
 	_WRMSR(addr, lo, hi);
 	print_tx("\t CPUMemTyping: Bottom32bIO:", Bottom32bIO);
 	print_tx("\t CPUMemTyping: Bottom40bIO:", Bottom40bIO);
-	if(Bottom40bIO) {
+	if (Bottom40bIO) {
 		hi = Bottom40bIO >> 24;
 		lo = Bottom40bIO << 8;
 		if (mctSetNodeBoundary_D())
@@ -114,7 +114,7 @@ void CPUMemTyping_D(struct MCTStatStruc *pMCTstat,
 	}
 	addr = 0xC0010010;		/* SYS_CFG */
 	_RDMSR(addr, &lo, &hi);
-	if(Bottom40bIO) {
+	if (Bottom40bIO) {
 		lo |= (1<<21);		/* MtrrTom2En=1 */
 		lo |= (1<<22);		/* Tom2ForceMemTypeWB */
 	} else {
@@ -163,7 +163,7 @@ static void SetMTRRrange_D(u32 Base, u32 *pLimit, u32 *pMtrrAddr, u16 MtrrType)
 	val = curBase = Base;
 	curLimit = *pLimit;
 	addr = *pMtrrAddr;
-	while((addr >= 0x200) && (addr < 0x20C) && (val < *pLimit)) {
+	while ((addr >= 0x200) && (addr < 0x20C) && (val < *pLimit)) {
 		/* start with "ascending" code path */
 		/* alignment (largest block size)*/
 		valx = 1 << bsf(curBase);
@@ -171,7 +171,7 @@ static void SetMTRRrange_D(u32 Base, u32 *pLimit, u32 *pMtrrAddr, u16 MtrrType)
 
 		/* largest legal limit, given current non-zero range Base*/
 		valx += curBase;
-		if((curBase == 0) || (*pLimit < valx)) {
+		if ((curBase == 0) || (*pLimit < valx)) {
 			/* flop direction to "descending" code path*/
 			valx = 1<<bsr(*pLimit - curBase);
 			curSize = valx;
@@ -194,7 +194,7 @@ static void SetMTRRrange_D(u32 Base, u32 *pLimit, u32 *pMtrrAddr, u16 MtrrType)
 		curBase = val;			/* next Base = current Limit (loop exit)*/
 		addr++;				/* next MTRR pair addr */
 	}
-	if(val < *pLimit) {
+	if (val < *pLimit) {
 		*pLimit = val;
 		addr = -1;
 	}
@@ -238,7 +238,7 @@ void UMAMemTyping_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat
 		addr = 0x200;
 		lo = 0;
 		hi = lo;
-		while( addr < 0x20C) {
+		while ( addr < 0x20C) {
 			_WRMSR(addr, lo, hi);		/* prog. MTRR with current region Mask */
 			addr++;						/* next MTRR pair addr */
 		}
@@ -248,7 +248,7 @@ void UMAMemTyping_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat
 		 *======================================================================*/
 		print_tx("\t UMAMemTyping_D: Cache32bTOP:", Cache32bTOP);
 		SetMTRRrangeWB_D(0, &Cache32bTOP, &addr);
-		if(addr == -1)		/* ran out of MTRRs?*/
+		if (addr == -1)		/* ran out of MTRRs?*/
 			pMCTstat->GStatus |= 1<<GSB_MTRRshort;
 	}
 }

@@ -31,7 +31,7 @@ void mctGet_PS_Cfg_D(struct MCTStatStruc *pMCTstat,
 				&(pDCTstat->CH_ADDR_TMG[dct]), &(pDCTstat->CH_ODC_CTL[dct]));
 
 
-	if(pDCTstat->MAdimms[dct] == 1)
+	if (pDCTstat->MAdimms[dct] == 1)
 		pDCTstat->CH_ODC_CTL[dct] |= 0x20000000;	/* 75ohms */
 	else
 		pDCTstat->CH_ODC_CTL[dct] |= 0x10000000;	/* 150ohms */
@@ -176,7 +176,7 @@ static void Get_ChannelPS_Cfg0_D(u8 MAAdimms, u8 Speed, u8 MAAload,
 	*AddrTmgCTL = 0;
 	*ODC_CTL = 0;
 
-	if(mctGet_NVbits(NV_MAX_DIMMS) == 8) {
+	if (mctGet_NVbits(NV_MAX_DIMMS) == 8) {
 		/* 8 DIMM Table */
 		p = Table_ATC_ODC_8D_D;
 		//FIXME Add Ax support
@@ -188,8 +188,8 @@ static void Get_ChannelPS_Cfg0_D(u8 MAAdimms, u8 Speed, u8 MAAload,
 
 	while (*p != 0xFF) {
 		if ((MAAdimms == *(p+10)) || (*(p+10 ) == 0xFE)) {
-			if((*p == Speed) || (*p == 0xFE)) {
-				if(MAAload <= *(p+1)) {
+			if ((*p == Speed) || (*p == 0xFE)) {
+				if (MAAload <= *(p+1)) {
 					*AddrTmgCTL = stream_to_int((u8*)(p+2));
 					*ODC_CTL = stream_to_int((u8*)(p+6));
 					break;

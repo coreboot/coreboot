@@ -644,7 +644,7 @@ void mctGet_DIMMAddr(struct DCTStatStruc *pDCTstat, u32 node)
 	struct sys_info *sysinfo = &sysinfo_car;
 	struct mem_controller *ctrl = &( sysinfo->ctrl[node] );
 
-	for(j=0;j<DIMM_SOCKETS;j++) {
+	for (j=0;j<DIMM_SOCKETS;j++) {
 		pDCTstat->DIMMAddr[j*2] = ctrl->spd_addr[j] & 0xff;
 		pDCTstat->DIMMAddr[j*2+1] = ctrl->spd_addr[DIMM_SOCKETS + j] & 0xff;
 	}

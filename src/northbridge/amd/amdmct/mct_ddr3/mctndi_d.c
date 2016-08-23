@@ -62,7 +62,7 @@ void InterleaveNodes_D(struct MCTStatStruc *pMCTstat,
 			_SWHole = 0;
 		}
 
-		if(!_SWHole) {
+		if (!_SWHole) {
 			Base = Get_NB32(dev0, reg0);
 			if (Base & 1) {
 				NodesWmem++;
@@ -81,7 +81,7 @@ void InterleaveNodes_D(struct MCTStatStruc *pMCTstat,
 				 * are the same on all nodes */
 
 				DctSelBase = Get_NB32(pDCTstat->dev_dct, 0x114);
-				if(DctSelBase) {
+				if (DctSelBase) {
 					DctSelBase <<= 8;
 					if ( pDCTstat->Status & (1 << SB_HWHole)) {
 						if (DctSelBase >= 0x1000000) {
@@ -145,7 +145,7 @@ void InterleaveNodes_D(struct MCTStatStruc *pMCTstat,
 		Base = ((Nodes - 1) << 8) | 3;
 		reg0 = 0x40;
 		Node = 0;
-		while(Node < Nodes) {
+		while (Node < Nodes) {
 			Set_NB32(dev0, reg0, Base);
 			MemSize = MemSize0;
 			MemSize--;
@@ -159,7 +159,7 @@ void InterleaveNodes_D(struct MCTStatStruc *pMCTstat,
 
 		/*  set base/limit to F1x120/124 per Node */
 		Node = 0;
-		while(Node < Nodes) {
+		while (Node < Nodes) {
 			pDCTstat = pDCTstatA + Node;
 			pDCTstat->NodeSysBase = 0;
 			MemSize = MemSize0;
@@ -180,7 +180,7 @@ void InterleaveNodes_D(struct MCTStatStruc *pMCTstat,
 				HoleBase = pMCTstat->HoleBase;
 				if (Dct0MemSize >= HoleBase) {
 					val = HWHoleSz;
-					if( Node == 0) {
+					if ( Node == 0) {
 						val += Dct0MemSize;
 					}
 				} else {

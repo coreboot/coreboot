@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2014 Google Inc.
- * Copyright (C) 2015 Intel Corporation.
+ * Copyright (C) 2016 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,18 +14,17 @@
  * GNU General Public License for more details.
  */
 
-#ifndef _SOC_RAMSTAGE_H_
-#define _SOC_RAMSTAGE_H_
-
 #include <chip.h>
-#include <device/device.h>
-#include <fsp/ramstage.h>
+#include <bootstate.h>
+#include <device/pci.h>
+#include <fsp/api.h>
 
-void pch_enable_dev(device_t dev);
-void soc_init_pre_device(void *chip_info);
-void soc_init_cpus(device_t dev);
-const char *soc_acpi_name(struct device *dev);
+/* UPD parameters to be initialized before SiliconInit */
+void platform_fsp_silicon_init_params_cb(struct FSPS_UPD *supd)
+{
+}
 
-extern struct pci_operations soc_pci_ops;
+struct pci_operations soc_pci_ops = {
+	/* TODO: Add set subsystem id function */
+};
 
-#endif

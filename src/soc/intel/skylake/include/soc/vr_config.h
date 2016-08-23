@@ -19,7 +19,11 @@
 #ifndef _SOC_VR_CONFIG_H_
 #define _SOC_VR_CONFIG_H_
 
+#if IS_ENABLED(CONFIG_PLATFORM_USES_FSP1_1)
 #include <fsp/soc_binding.h>
+#else
+#include <fsp/api.h>
+#endif
 
 struct vr_config {
 
@@ -74,7 +78,6 @@ enum vr_domain{
 	NUM_VR_DOMAINS
 };
 
-void fill_vr_domain_config(SILICON_INIT_UPD *params, int domain,
-				const struct vr_config *cfg);
-
+void fill_vr_domain_config(void *params,
+			int domain, const struct vr_config *cfg);
 #endif

@@ -40,12 +40,14 @@ romstage-y += pch.c
 romstage-y += pcr.c
 romstage-y += pei_data.c
 romstage-y += pmutil.c
+romstage-$(CONFIG_PLATFORM_USES_FSP2_0) += reset.c
 romstage-y += smbus_common.c
 romstage-y += tsc_freq.c
 romstage-$(CONFIG_UART_DEBUG) += uart_debug.c
 
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
-ramstage-y += chip.c
+ramstage-$(CONFIG_PLATFORM_USES_FSP1_1) += chip.c
+ramstage-$(CONFIG_PLATFORM_USES_FSP2_0) += chip_fsp20.c
 ramstage-y += cpu.c
 ramstage-y += cpu_info.c
 ramstage-y += dsp.c
@@ -59,12 +61,14 @@ ramstage-y += lpc.c
 ramstage-y += me_status.c
 ramstage-y += memmap.c
 ramstage-y += monotonic_timer.c
+ramstage-$(CONFIG_PLATFORM_USES_FSP1_1) += opregion.c
 ramstage-y += pch.c
 ramstage-y += pcie.c
 ramstage-y += pcr.c
 ramstage-y += pei_data.c
 ramstage-y += pmc.c
 ramstage-y += pmutil.c
+ramstage-$(CONFIG_PLATFORM_USES_FSP2_0) += reset.c
 ramstage-y += ramstage.c
 ramstage-y += sd.c
 ramstage-y += smbus.c
@@ -93,7 +97,14 @@ smm-$(CONFIG_UART_DEBUG) += uart_debug.c
 
 CPPFLAGS_common += -I$(src)/soc/intel/skylake
 CPPFLAGS_common += -I$(src)/soc/intel/skylake/include
+
+ifeq ($(CONFIG_PLATFORM_USES_FSP1_1),y)
+CPPFLAGS_common += -I$(src)/soc/intel/skylake/include/fsp11
 CPPFLAGS_common += -I$(src)/vendorcode/intel/fsp/fsp1_1/skylake
+else
+CPPFLAGS_common += -I$(src)/soc/intel/skylake/include/fsp20
+CPPFLAGS_common += -I$(src)/vendorcode/intel/fsp/fsp2_0/skykabylake
+endif
 
 # Currently used for microcode path.
 CPPFLAGS_common += -I3rdparty/blobs/mainboard/$(MAINBOARD_DIR)

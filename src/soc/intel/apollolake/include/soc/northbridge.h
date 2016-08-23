@@ -34,5 +34,7 @@
 #define MCH_IMR_PITCH		0x20
 #define MCH_NUM_IMRS		20
 
+/* RAPL Package Power Limit register under MCHBAR. */
+#define MCHBAR_RAPL_PPL		0x70A8
 
 #endif /* _SOC_APOLLOLAKE_NORTHBRIDGE_H_ */

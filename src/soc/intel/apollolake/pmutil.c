@@ -246,6 +246,16 @@ void disable_all_gpe(void)
 	disable_gpe(~0);
 }
 
+/* Clear the gpio gpe0 status bits in ACPI registers */
+void clear_gpi_gpe_sts(void)
+{
+	int i;
+
+	for (i = 1; i < GPE0_REG_MAX; i++) {
+		uint32_t gpe_sts = inl(ACPI_PMIO_BASE + GPE0_STS(i));
+		outl(gpe_sts, ACPI_PMIO_BASE + GPE0_STS(i));
+	}
+}
 
 static uint32_t reset_gpe_status(void)
 {

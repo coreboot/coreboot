@@ -136,7 +136,7 @@ static void write_protect_vgabios(void)
 		pci_write_config8(dev, 0x80, 0xff);
 	/*vx855 no th 0x61 reg */
 	/*dev = dev_find_device(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_VX855_VLINK, 0);
-	   //if(dev)
+	   //if (dev)
 	   //   pci_write_config8(dev, 0x61, 0xff); */
 }
 #endif

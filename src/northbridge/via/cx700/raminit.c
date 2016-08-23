@@ -79,10 +79,10 @@
 	do{											\
 		val = 0;									\
 		tmp = 0;									\
-		for(i = 0; i < 2; i++)	{							\
-			if(pci_read_config8(PCI_DEV(0, 0, 4), (SCRATCH_REG_BASE + (i << 1)))) {	\
+		for (i = 0; i < 2; i++)	{							\
+			if (pci_read_config8(PCI_DEV(0, 0, 4), (SCRATCH_REG_BASE + (i << 1)))) {	\
 				tmp = get_spd_data(ctrl, i, reg);				\
-				if(tmp > val)							\
+				if (tmp > val)							\
 					val = tmp;						\
 			}									\
 		}										\

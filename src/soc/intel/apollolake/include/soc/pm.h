@@ -173,6 +173,7 @@ uint16_t clear_pm1_status(void);
 uint32_t clear_tco_status(void);
 uint32_t clear_gpe_status(void);
 void clear_pmc_status(void);
+void clear_gpi_gpe_sts(void);
 uint32_t get_smi_en(void);
 void enable_smi(uint32_t mask);
 void disable_smi(uint32_t mask);

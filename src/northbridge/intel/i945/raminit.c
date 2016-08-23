@@ -469,7 +469,7 @@ static u8 sdram_possible_cas_latencies(struct sys_info * sysinfo)
 						  SPD_ACCEPTABLE_CAS_LATENCIES);
 	}
 
-	if(!cas_mask) {
+	if (!cas_mask) {
 		die("No DDR-II modules with accepted CAS latencies found.\n");
 	}
 
@@ -632,7 +632,7 @@ static void sdram_detect_smallest_tRAS(struct sys_info * sysinfo)
 			tRAS_cycles++;
 		}
 	}
-	if(tRAS_cycles > 0x18) {
+	if (tRAS_cycles > 0x18) {
 		die("DDR-II Module does not support this frequency (tRAS error)\n");
 	}
 
@@ -673,7 +673,7 @@ static void sdram_detect_smallest_tRP(struct sys_info * sysinfo)
 		}
 	}
 
-	if(tRP_cycles > 6) {
+	if (tRP_cycles > 6) {
 		die("DDR-II Module does not support this frequency (tRP error)\n");
 	}
 
@@ -713,7 +713,7 @@ static void sdram_detect_smallest_tRCD(struct sys_info * sysinfo)
 			tRCD_cycles++;
 		}
 	}
-	if(tRCD_cycles > 6) {
+	if (tRCD_cycles > 6) {
 		die("DDR-II Module does not support this frequency (tRCD error)\n");
 	}
 
@@ -753,7 +753,7 @@ static void sdram_detect_smallest_tWR(struct sys_info * sysinfo)
 			tWR_cycles++;
 		}
 	}
-	if(tWR_cycles > 5) {
+	if (tWR_cycles > 5) {
 		die("DDR-II Module does not support this frequency (tWR error)\n");
 	}
 
@@ -1466,7 +1466,7 @@ static void sdram_detect_dimm_size(struct sys_info * sysinfo)
 {
 	int i;
 
-	for(i = 0; i < 2 * DIMM_SOCKETS; i++) {
+	for (i = 0; i < 2 * DIMM_SOCKETS; i++) {
 		struct dimm_size sz;
 
 		sysinfo->banksize[i * 2] = 0;
@@ -1508,7 +1508,7 @@ static int sdram_program_row_boundaries(struct sys_info *sysinfo)
 	printk(BIOS_DEBUG, "Setting RAM size...\n");
 
 	cum0 = 0;
-	for(i = 0; i < 2 * DIMM_SOCKETS; i++) {
+	for (i = 0; i < 2 * DIMM_SOCKETS; i++) {
 		cum0 += sysinfo->banksize[i];
 		MCHBAR8(C0DRB0+i) = cum0;
 	}
@@ -1527,7 +1527,7 @@ static int sdram_program_row_boundaries(struct sys_info *sysinfo)
 		cum1 = 0;
 #endif
 
-	for(i = 0; i < 2 * DIMM_SOCKETS; i++) {
+	for (i = 0; i < 2 * DIMM_SOCKETS; i++) {
 		cum1 += sysinfo->banksize[i + 4];
 		MCHBAR8(C1DRB0+i) = cum1;
 	}
@@ -1562,7 +1562,7 @@ static int sdram_set_row_attributes(struct sys_info *sysinfo)
 	u16 dra0=0, dra1=0, dra = 0;
 
 	printk(BIOS_DEBUG, "Setting row attributes...\n");
-	for(i=0; i < 2 * DIMM_SOCKETS; i++) {
+	for (i=0; i < 2 * DIMM_SOCKETS; i++) {
 		u16 device;
 		u8 columnsrows;
 
@@ -1908,7 +1908,7 @@ static void sdram_set_channel_mode(struct sys_info *sysinfo)
 	reg32 = MCHBAR32(DCC);
 	reg32 &= ~(7 << 0);
 
-	if(sysinfo->interleaved) {
+	if (sysinfo->interleaved) {
 		/* Dual Channel Interleaved */
 		printk(BIOS_DEBUG, "Dual Channel Interleaved.\n");
 		reg32 |= (1 << 1);

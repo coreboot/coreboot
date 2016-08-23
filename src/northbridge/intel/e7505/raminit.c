@@ -1710,7 +1710,7 @@ static void sdram_enable(const struct mem_controller *ctrl)
 	/* And for good luck 6 more CBRs */
 	RAM_DEBUG_MESSAGE("Ram Enable 8\n");
 	int i;
-	for(i=0; i<8; i++)
+	for (i=0; i<8; i++)
 		do_ram_command(RAM_COMMAND_CBR, 0);
 
 	/* 9 mode register set */

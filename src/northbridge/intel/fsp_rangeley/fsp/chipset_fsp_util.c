@@ -63,38 +63,38 @@ static void ConfigureDefaultUpdData(UPD_DATA_REGION *UpdData)
 	config = dev->chip_info;
 
 	/* Set SPD addresses */
-	if(config->SpdBaseAddress_0_0) {
+	if (config->SpdBaseAddress_0_0) {
 		UpdData->PcdSpdBaseAddress_0_0 = config->SpdBaseAddress_0_0;
 	}
-	if(config->SpdBaseAddress_0_1) {
+	if (config->SpdBaseAddress_0_1) {
 		UpdData->PcdSpdBaseAddress_0_1 = config->SpdBaseAddress_0_1;
 	}
-	if(config->SpdBaseAddress_1_0) {
+	if (config->SpdBaseAddress_1_0) {
 		UpdData->PcdSpdBaseAddress_1_0 = config->SpdBaseAddress_1_0;
 	}
-	if(config->SpdBaseAddress_1_1) {
+	if (config->SpdBaseAddress_1_1) {
 		UpdData->PcdSpdBaseAddress_1_1 = config->SpdBaseAddress_1_1;
 	}
-	if(config->EccSupport) {
+	if (config->EccSupport) {
 		UpdData->PcdEccSupport = config->EccSupport;
 	}
-	if(config->PrintDebugMessages) {
+	if (config->PrintDebugMessages) {
 		UpdData->PcdPrintDebugMessages = config->PrintDebugMessages;
 	}
-	if(config->Bifurcation) {
+	if (config->Bifurcation) {
 		UpdData->PcdBifurcation = config->Bifurcation;
 	}
-	if(config->MemoryDown) {
+	if (config->MemoryDown) {
 		UpdData->PcdMemoryDown = config->MemoryDown;
 	}
 
 	UpdData->PcdMrcInitTsegSize = CONFIG_SMM_TSEG_SIZE >> 20;
 
-	if(config->MrcRmtCpgcExpLoopCntValue) {
+	if (config->MrcRmtCpgcExpLoopCntValue) {
 		UpdData->PcdMrcRmtCpgcExpLoopCntValue =
 				config->MrcRmtCpgcExpLoopCntValue;
 	}
-	if(config->MrcRmtCpgcNumBursts) {
+	if (config->MrcRmtCpgcNumBursts) {
 		UpdData->PcdMrcRmtCpgcNumBursts = config->MrcRmtCpgcNumBursts;
 	}
 #if IS_ENABLED(CONFIG_ENABLE_FSP_FAST_BOOT)

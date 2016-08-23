@@ -35,7 +35,7 @@ static void pcie_init(struct device *dev)
 	/* Get the chip configuration */
 	config = dev->chip_info;
 
-	if(config->intrline) {
+	if (config->intrline) {
 		pci_write_config32(dev, 0x3c, config->intrline);
 	}
 

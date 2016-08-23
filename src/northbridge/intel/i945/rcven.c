@@ -273,7 +273,7 @@ static int find_strobes_edge(int channel_offset, u8 * mediumcoarse, u8 * fine,
 /**
  * Here we use a trick. The RCVEN channel 0 registers are all at an
  * offset of 0x80 to the channel 0 registers. We don't want to waste
- * a lot of if()s so let's just pass 0 or 0x80 for the channel offset.
+ * a lot of if ()s so let's just pass 0 or 0x80 for the channel offset.
  */
 
 static int receive_enable_autoconfig(int channel_offset,

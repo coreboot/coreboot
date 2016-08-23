@@ -12,7 +12,7 @@ static void print_debug_pci_dev(unsigned dev)
 static inline void print_pci_devices(void)
 {
 	device_t dev;
-	for(dev = PCI_DEV(0, 0, 0);
+	for (dev = PCI_DEV(0, 0, 0);
 		dev <= PCI_DEV(0xff, 0x1f, 0x7);
 		dev += PCI_DEV(0,0,1)) {
 		uint32_t id;
@@ -32,7 +32,7 @@ static void dump_pci_device(unsigned dev)
 	int i;
 	print_debug_pci_dev(dev);
 
-	for(i = 0; i < 256; i++) {
+	for (i = 0; i < 256; i++) {
 		unsigned char val;
 		if ((i & 0x0f) == 0)
                         printk(BIOS_DEBUG, "\n%02x:",i);
@@ -45,7 +45,7 @@ static void dump_pci_device(unsigned dev)
 static inline void dump_pci_devices(void)
 {
 	device_t dev;
-	for(dev = PCI_DEV(0, 0, 0);
+	for (dev = PCI_DEV(0, 0, 0);
 		dev <= PCI_DEV(0xff, 0x1f, 0x7);
 		dev += PCI_DEV(0,0,1)) {
 		uint32_t id;
@@ -62,7 +62,7 @@ static inline void dump_pci_devices(void)
 static inline void dump_pci_devices_on_bus(unsigned busn)
 {
         device_t dev;
-        for(dev = PCI_DEV(busn, 0, 0);
+        for (dev = PCI_DEV(busn, 0, 0);
                 dev <= PCI_DEV(busn, 0x1f, 0x7);
                 dev += PCI_DEV(0,0,1)) {
                 uint32_t id;
@@ -80,13 +80,13 @@ static inline void dump_spd_registers(const struct mem_controller *ctrl)
 {
 	int i;
 	printk(BIOS_DEBUG, "\n");
-	for(i = 0; i < 4; i++) {
+	for (i = 0; i < 4; i++) {
 		unsigned device;
 		device = ctrl->channel0[i];
 		if (device) {
 			int j;
 			printk(BIOS_DEBUG, "dimm: %02x.0: %02x", i, device);
-			for(j = 0; j < 128; j++) {
+			for (j = 0; j < 128; j++) {
 				int status;
 				unsigned char byte;
 				if ((j & 0xf) == 0)
@@ -104,7 +104,7 @@ static inline void dump_spd_registers(const struct mem_controller *ctrl)
 		if (device) {
 			int j;
                         printk(BIOS_DEBUG, "dimm: %02x.1: %02x", i, device);
-			for(j = 0; j < 128; j++) {
+			for (j = 0; j < 128; j++) {
 				int status;
 				unsigned char byte;
 				if ((j & 0xf) == 0)
@@ -124,11 +124,11 @@ static inline void dump_smbus_registers(void)
 {
 	unsigned device;
         printk(BIOS_DEBUG, "\n");
-        for(device = 1; device < 0x80; device++) {
+        for (device = 1; device < 0x80; device++) {
                 int j;
-		if( smbus_read_byte(device, 0) < 0 ) continue;
+		if ( smbus_read_byte(device, 0) < 0 ) continue;
 		printk(BIOS_DEBUG, "smbus: %02x", device);
-                for(j = 0; j < 256; j++) {
+                for (j = 0; j < 256; j++) {
                 	int status;
                         unsigned char byte;
                         status = smbus_read_byte(device, j);
@@ -149,7 +149,7 @@ static inline void dump_io_resources(unsigned port)
 
 	int i;
 	printk(BIOS_DEBUG, "%04x:\n", port);
-        for(i=0;i<256;i++) {
+        for (i=0;i<256;i++) {
                 uint8_t val;
                 if ((i & 0x0f) == 0)
 			printk(BIOS_DEBUG, "%02x:", i);
@@ -166,8 +166,8 @@ static inline void dump_mem(unsigned start, unsigned end)
 {
         unsigned i;
 	printk(BIOS_DEBUG, "dump_mem:");
-        for(i=start;i<end;i++) {
-		if((i & 0xf)==0)
+        for (i=start;i<end;i++) {
+		if ((i & 0xf)==0)
 			printk(BIOS_DEBUG, "\n%08x:", i);
 		printk(BIOS_DEBUG, " %02x", (unsigned char)*((unsigned char *)i));
         }

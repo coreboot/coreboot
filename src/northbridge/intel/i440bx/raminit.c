@@ -697,12 +697,12 @@ static struct dimm_size spd_get_dimm_size(unsigned int device)
 	/* It is possible to partially use larger then supported
 	 * modules by setting them to a supported size.
 	 */
-	if(sz.side1 > 128) {
+	if (sz.side1 > 128) {
 		PRINT_DEBUG("Side1 was %dMB but only 128MB will be used.\n",
 			sz.side1);
 		sz.side1 = 128;
 
-		if(sz.side2 > 128) {
+		if (sz.side2 > 128) {
 			PRINT_DEBUG("Side2 was %dMB but only 128MB will be used.\n",
 				sz.side2);
 			sz.side2 = 128;

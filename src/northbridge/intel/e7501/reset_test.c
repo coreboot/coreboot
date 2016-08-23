@@ -10,7 +10,7 @@ static int bios_reset_detected(void) {
 
 	dword = pci_read_config32(PCI_DEV(0, 0, 0), MCH_DRC);
 
-	if( (dword & DRC_DONE) != 0 ) {
+	if ( (dword & DRC_DONE) != 0 ) {
 		return 1;
 	}
 

@@ -20,6 +20,7 @@
 #include <cpu/cpu.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/mp.h>
+#include <cpu/intel/microcode.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <device/device.h>
@@ -41,7 +42,6 @@ static const struct cpu_driver driver __cpu_driver = {
 	.ops      = &cpu_dev_ops,
 	.id_table = cpu_table,
 };
-
 
 /*
  * MP and SMM loading initialization.
@@ -86,6 +86,12 @@ static int get_cpu_count(void)
 	       num_phys_cores, num_virt_cores);
 
 	return num_virt_cores;
+}
+
+static void get_microcode_info(const void **microcode, int *parallel)
+{
+	*microcode = intel_microcode_find();
+	*parallel = 1;
 }
 
 static void get_smm_info(uintptr_t *perm_smbase, size_t *perm_smsize,
@@ -135,6 +141,7 @@ static const struct mp_ops mp_ops = {
 	.pre_mp_init = pre_mp_init,
 	.get_cpu_count = get_cpu_count,
 	.get_smm_info = get_smm_info,
+	.get_microcode_info = get_microcode_info,
 	.pre_mp_smm_init = southbridge_smm_clear_state,
 	.relocation_handler = relocation_handler,
 	.post_mp_init = southbridge_smm_enable_smi,

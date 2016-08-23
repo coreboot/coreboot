@@ -176,7 +176,9 @@ void southbridge_smi_sleep(const struct smm_save_state_ops *save_state_ops)
 		printk(BIOS_DEBUG, "SMI#: ERROR: SLP_TYP reserved\n");
 		break;
 	}
-	/* Clear pending wake status bit to avoid immediate wake */
+
+	/* Clear the gpio gpe0 status bits in ACPI registers */
+	clear_gpi_gpe_sts();
 
 	/* Tri-state specific GPIOS to avoid leakage during S3/S5 */
 

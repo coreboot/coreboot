@@ -15,6 +15,7 @@
  * GNU General Public License for more details.
  */
 #include <soc/gpio_defs.h>
+#include "gpiolib.asl"
 
 scope (\_SB) {
 
@@ -139,6 +140,38 @@ scope (\_SB) {
 		Method (_STA, 0x0, NotSerialized)
 		{
 			Return(0xf)
+		}
+	}
+
+	Scope(\_SB.PCI0) {
+		/* PERST Assertion
+		 * Note: PERST is Active High
+		 */
+		Method (PRAS, 0x1, Serialized)
+		{
+			/*
+			 * Assert PERST
+			 * local1 - to toggle Tx pin of Dw0
+			 * local2 - Address of PERST
+			 */
+			Store (Arg0, Local2)
+			Store (\_SB.GPC0 (Local2), Local1)
+			Or (Local1, PAD_CFG0_TX_STATE, Local1)
+			\_SB.SPC0 (Local2, Local1)
+		}
+
+		/* PERST DE-Assertion */
+		Method (PRDA, 0x1, Serialized)
+		{
+			/*
+			 * De-assert PERST
+			 * local1 - to toggle Tx pin of Dw0
+			 * local2 - Address of PERST
+			 */
+			Store (Arg0, Local2)
+			Store (\_SB.GPC0 (Local2), Local1)
+			And (Local1, Not (PAD_CFG0_TX_STATE), Local1)
+			\_SB.SPC0 (Local2, Local1)
 		}
 	}
 }

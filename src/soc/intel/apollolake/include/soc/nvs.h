@@ -38,7 +38,8 @@ typedef struct global_nvs_t {
 	uint64_t	gpei; /* 0x11 - 0x18 - GPE Wake Source */
 	uint64_t	nhla; /* 0x19 - 0x20 - NHLT Address */
 	uint32_t	nhll; /* 0x21 - 0x24 - NHLT Length */
-	uint8_t		unused[219];
+	uint32_t	prt0; /* 0x25 - 0x28 - PERST_0 Address */
+	uint8_t		unused[215];
 
 	/* ChromeOS specific (0x100 - 0xfff) */
 	chromeos_acpi_t chromeos;

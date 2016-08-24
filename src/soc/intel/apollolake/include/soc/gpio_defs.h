@@ -414,6 +414,9 @@
 #define LPC_CLKRUNB			243
 #define LPC_FRAMEB			244
 
+/* PERST_0 not defined */
+#define GPIO_PRT0_UDEF			0xFF
+
 #define TOTAL_PADS			245
 #define N_OFFSET			GPIO_0
 #define NW_OFFSET			GPIO_187

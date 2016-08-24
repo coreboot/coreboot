@@ -29,6 +29,7 @@
 #include <soc/nvs.h>
 #include <soc/pci_devs.h>
 #include <string.h>
+#include <soc/gpio.h>
 #include "chip.h"
 
 #define CSTATE_RES(address_space, width, offset, address)		\
@@ -175,6 +176,10 @@ static void acpi_create_gnvs(struct global_nvs_t *gnvs)
 
 	/* Enable DPTF based on mainboard configuration */
 	gnvs->dpte = cfg->dptf_enable;
+
+	/* Assign address of PERST_0 if GPIO is defined in devicetree */
+	if (cfg->prt0_gpio != GPIO_PRT0_UDEF)
+		gnvs->prt0 = (uintptr_t)gpio_dwx_address(cfg->prt0_gpio);
 }
 
 /* Save wake source information for calculating ACPI _SWS values */

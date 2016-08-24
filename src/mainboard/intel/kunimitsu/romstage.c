@@ -25,16 +25,7 @@
 
 void mainboard_romstage_entry(struct romstage_params *params)
 {
-	/* PCH_MEM_CFG[3:0] */
-	gpio_t spd_gpios[] = {
-		GPIO_MEM_CONFIG_0,
-		GPIO_MEM_CONFIG_1,
-		GPIO_MEM_CONFIG_2,
-		GPIO_MEM_CONFIG_3,
-	};
-
-	params->pei_data->mem_cfg_id = gpio_base2_value(spd_gpios,
-							ARRAY_SIZE(spd_gpios));
+	params->pei_data->mem_cfg_id = get_spd_index();
 	/* Fill out PEI DATA */
 	mainboard_fill_pei_data(params->pei_data);
 	mainboard_fill_spd_data(params->pei_data);

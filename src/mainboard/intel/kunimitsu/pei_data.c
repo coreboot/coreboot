@@ -19,47 +19,12 @@
 #include <soc/pei_data.h>
 #include <soc/pei_wrapper.h>
 #include "boardid.h"
-
-/* PCH_MEM_CFG[3:0] */
-#define MAX_MEMORY_CONFIG	0x10
-#define RCOMP_TARGET_PARAMS	0x5
-#define K4E6E304EE_MEM_ID	0x3
+#include "spd/spd.h"
 
 void mainboard_fill_pei_data(struct pei_data *pei_data)
 {
-	/* DQ byte map */
-	const u8 dq_map[2][12] = {
-		  { 0x0F, 0xF0, 0x00, 0xF0, 0x0F, 0xF0 ,
-		    0x0F, 0x00, 0xFF, 0x00, 0xFF, 0x00 },
-		  { 0x0F, 0xF0, 0x00, 0xF0, 0x0F, 0xF0 ,
-		    0x0F, 0x00, 0xFF, 0x00, 0xFF, 0x00 } };
-	/* DQS CPU<>DRAM map */
-	const u8 dqs_map[2][8] = {
-		{ 0, 1, 3, 2, 6, 5, 4, 7 },
-		{ 2, 3, 0, 1, 6, 7, 4, 5 } };
-
-	/* Rcomp resistor */
-	const u16 RcompResistor[3] = { 200, 81, 162 };
-
-	/* Rcomp target */
-	static const u16 RcompTarget[RCOMP_TARGET_PARAMS] = {
-		100, 40, 40, 23, 40 };
-
-	/*Strengthen the Rcomp Target Ctrl for 8GB K4E6E304EE -EGCF*/
-	static const u16 StrengthendRcompTarget[RCOMP_TARGET_PARAMS] = {
-		100, 40, 40, 21, 40 };
-
-
-	memcpy(pei_data->dq_map, dq_map, sizeof(dq_map));
-	memcpy(pei_data->dqs_map, dqs_map, sizeof(dqs_map));
-	memcpy(pei_data->RcompResistor, RcompResistor,
-		 sizeof(RcompResistor));
-	if (pei_data->mem_cfg_id == K4E6E304EE_MEM_ID) {
-		memcpy(pei_data->RcompTarget, StrengthendRcompTarget,
-			sizeof(StrengthendRcompTarget));
-	} else {
-		memcpy(pei_data->RcompTarget, RcompTarget,
-		 sizeof(RcompTarget));
-	}
-
+	mainboard_fill_dq_map_data(&pei_data->dq_map);
+	mainboard_fill_dqs_map_data(&pei_data->dqs_map);
+	mainboard_fill_rcomp_res_data(&pei_data->RcompResistor);
+	mainboard_fill_rcomp_strength_data(&pei_data->RcompTarget);
 }

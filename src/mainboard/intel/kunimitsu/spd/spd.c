@@ -77,39 +77,13 @@ static void mainboard_print_spd_info(uint8_t spd[])
 /* Copy SPD data for on-board memory */
 void mainboard_fill_spd_data(struct pei_data *pei_data)
 {
-	char *spd_file;
-	size_t spd_file_len;
-	int spd_index, spd_span;
+	uintptr_t spd_data;
+	spd_data = mainboard_get_spd_data();
 
+	memcpy(pei_data->spd_data[0][0], (void *)spd_data, SPD_LEN);
 
-	spd_index = pei_data->mem_cfg_id;
-	printk(BIOS_INFO, "SPD index %d\n", spd_index);
-
-	/* Load SPD data from CBFS */
-	spd_file = cbfs_boot_map_with_leak("spd.bin", CBFS_TYPE_SPD,
-		&spd_file_len);
-	if (!spd_file)
-		die("SPD data not found.");
-
-	/* make sure we have at least one SPD in the file. */
-	if (spd_file_len < SPD_LEN)
-		die("Missing SPD data.");
-
-	/* Make sure we did not overrun the buffer */
-	if (spd_file_len < ((spd_index + 1) * SPD_LEN)) {
-		printk(BIOS_ERR, "SPD index override to 0 - old hardware?\n");
-		spd_index = 0;
-	}
-
-	/* Assume same memory in both channels */
-	spd_span = spd_index * SPD_LEN;
-	memcpy(pei_data->spd_data[0][0], spd_file + spd_span, SPD_LEN);
-
-	if (spd_index != HYNIX_SINGLE_CHAN && spd_index != SAMSUNG_SINGLE_CHAN
-		&& spd_index != MIC_SINGLE_CHAN) {
-		memcpy(pei_data->spd_data[1][0], spd_file + spd_span, SPD_LEN);
-		printk(BIOS_INFO, "Dual channel SPD detected writing second channel\n");
-	}
+	if (mainboard_has_dual_channel_mem())
+		memcpy(pei_data->spd_data[1][0], (void *)spd_data, SPD_LEN);
 
 	/* Make sure a valid SPD was found */
 	if (pei_data->spd_data[0][0][0] == 0)

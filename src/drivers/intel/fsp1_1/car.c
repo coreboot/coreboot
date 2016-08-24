@@ -15,7 +15,6 @@
 
 #include <arch/early_variables.h>
 #include <console/console.h>
-#include <ec/google/chromeec/ec.h>
 #include <fsp/car.h>
 #include <fsp/util.h>
 #include <program_loading.h>
@@ -61,11 +60,6 @@ asmlinkage void *cache_as_ram_main(struct cache_as_ram_params *car_params)
 
 	car_soc_post_console_init();
 	car_mainboard_post_console_init();
-
-	/* Ensure the EC is in the right mode for recovery */
-	if (IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC) &&
-	    !IS_ENABLED(CONFIG_SEPARATE_VERSTAGE))
-		google_chromeec_early_init();
 
 	set_fih_car(car_params->fih);
 

@@ -243,11 +243,5 @@ void soc_after_ram_init(struct romstage_params *params)
 	/* Set the DISB as soon as possible after DRAM
 	 * init and MRC cache is saved.
 	 */
-	u32 disb_val = 0;
-	device_t dev = PCH_DEV_PMC;
-	disb_val = pci_read_config32(dev, GEN_PMCON_A);
-	disb_val |= DISB;
-	/* Preserve bits which get cleared up if written 1 */
-	disb_val &= ~(GBL_RST_STS | MS4V);
-	pci_write_config32(dev, GEN_PMCON_A, disb_val);
+	pmc_set_disb();
 }

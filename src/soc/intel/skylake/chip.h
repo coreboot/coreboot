@@ -359,6 +359,10 @@ struct soc_intel_skylake_config {
 	 * 011b - VR specific command sent for both MPS IMPV8 & PS4 exit issue
 	*/
 	u8 SendVrMbxCmd;
+
+	/* Enable/Disable VMX feature */
+	u8 VmxEnable;
+
 	/* Statically clock gate 8254 PIT. */
 	u8 clock_gate_8254;
 

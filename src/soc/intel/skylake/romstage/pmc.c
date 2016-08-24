@@ -13,20 +13,18 @@
  * GNU General Public License for more details.
  */
 
-#include <console/console.h>
-#include <fsp/util.h>
-#include <reset.h>
+#include <soc/pci_devs.h>
+#include <soc/pm.h>
 
-void chipset_handle_reset(uint32_t status)
+void pmc_set_disb(void)
 {
-	switch(status) {
-	case FSP_STATUS_RESET_REQUIRED_3: /* Global Reset */
-		printk(BIOS_DEBUG, "GLOBAL RESET!!\n");
-		hard_reset();
-		break;
-	default:
-		printk(BIOS_ERR, "unhandled reset type %x\n", status);
-		die("unknown reset type");
-		break;
-	}
+	/* Set the DISB after DRAM init */
+	u32 disb_val = 0;
+	pci_devfn_t dev = PCH_DEV_PMC;
+	disb_val = pci_read_config32(dev, GEN_PMCON_A);
+	disb_val |= DISB;
+
+	/* Don't clear bits that are write-1-to-clear */
+	disb_val &= ~(GBL_RST_STS | MS4V);
+	pci_write_config32(dev, GEN_PMCON_A, disb_val);
 }

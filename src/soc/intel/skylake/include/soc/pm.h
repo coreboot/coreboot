@@ -183,6 +183,9 @@ uint8_t *pmc_mmio_regs(void);
 /* Get base address of TCO I/O registers. */
 uint16_t smbus_tco_regs(void);
 
+/* Set the DISB after DRAM init */
+void pmc_set_disb(void);
+
 static inline int deep_s3_enabled(void)
 {
 	uint32_t deep_s3_pol;

@@ -17,6 +17,9 @@
 
 #include <soc/gpe.h>
 
+/* PCIE device */
+#include "pcie.asl"
+
 /* LPSS device */
 #include "lpss.asl"
 

@@ -14,7 +14,6 @@
  */
 
 #include <bootblock_common.h>
-#include <ec/google/chromeec/ec.h>
 #include <soc/gpio.h>
 #include "gpio.h"
 
@@ -28,8 +27,5 @@ static void early_config_gpio(void)
 
 void bootblock_mainboard_init(void)
 {
-	/* Ensure the EC and PD are in the right mode for recovery */
-	google_chromeec_early_init();
-
 	early_config_gpio();
 }

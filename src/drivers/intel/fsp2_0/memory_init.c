@@ -17,7 +17,6 @@
 #include <cbfs.h>
 #include <cbmem.h>
 #include <console/console.h>
-#include <ec/google/chromeec/ec.h>
 #include <elog.h>
 #include <fsp/api.h>
 #include <fsp/util.h>
@@ -295,14 +294,6 @@ void fsp_memory_init(bool s3wake)
 
 	if (IS_ENABLED(CONFIG_ELOG_BOOT_COUNT) && !s3wake)
 		boot_count_increment();
-
-	/*
-	 * Before doing any memory init/training, ensure that the EC is in the
-	 * right mode. This saves an additional memory training when in recovery
-	 * mode.
-	 */
-	if (IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC))
-		google_chromeec_early_init();
 
 	if (cbfs_boot_locate(&file_desc, name, NULL)) {
 		printk(BIOS_CRIT, "Could not locate %s in CBFS\n", name);

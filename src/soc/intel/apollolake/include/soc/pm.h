@@ -151,6 +151,12 @@
 #define  RPS			(1 << 2)
 #define GEN_PMCON2		0x1024
 #define GEN_PMCON3		0x1028
+#       define SLP_S3_ASSERT_WIDTH_SHIFT	10
+#       define SLP_S3_ASSERT_MASK	(0x3 << SLP_S3_ASSERT_WIDTH_SHIFT)
+#       define SLP_S3_ASSERT_60_USEC	0x0
+#       define SLP_S3_ASSERT_1_MSEC	0x1
+#       define SLP_S3_ASSERT_50_MSEC	0x2
+#       define SLP_S3_ASSERT_2_SEC	0x3
 #define ETR			0x1048
 #       define CF9_LOCK         (1 << 31)
 #       define CF9_GLB_RST      (1 << 20)

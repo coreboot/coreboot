@@ -45,7 +45,7 @@ chip northbridge/intel/i945
 			register "gpi13_routing" = "1"
 			register "gpe0_en" = "0x20000601"
 
-                        register "ide_legacy_combined" = "0x1"
+                        register "ide_legacy_combined" = "0x0"
                         register "ide_enable_primary" = "0x1"
                         register "ide_enable_secondary" = "0x0"
                         register "sata_ahci" = "0x0"

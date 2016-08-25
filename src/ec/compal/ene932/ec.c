@@ -30,7 +30,7 @@
 static int kbc_input_buffer_empty(void)
 {
 	u32 timeout;
-	for(timeout = KBC_TIMEOUT_IN_MS; timeout && (inb(KBD_STATUS) & KBD_IBF);
+	for (timeout = KBC_TIMEOUT_IN_MS; timeout && (inb(KBD_STATUS) & KBD_IBF);
 	    timeout--) {
 		mdelay(1);
 	}
@@ -46,7 +46,7 @@ static int kbc_input_buffer_empty(void)
 static int kbc_output_buffer_full(void)
 {
 	u32 timeout;
-	for(timeout = KBC_TIMEOUT_IN_MS; timeout && ((inb(KBD_STATUS)
+	for (timeout = KBC_TIMEOUT_IN_MS; timeout && ((inb(KBD_STATUS)
 	    & KBD_OBF) == 0); timeout--) {
 		mdelay(1);
 	}
@@ -60,7 +60,7 @@ static int kbc_output_buffer_full(void)
 int kbc_cleanup_buffers(void)
 {
 	u32 timeout;
-	for(timeout = KBC_TIMEOUT_IN_MS; timeout && (inb(KBD_STATUS)
+	for (timeout = KBC_TIMEOUT_IN_MS; timeout && (inb(KBD_STATUS)
 	    & (KBD_OBF | KBD_IBF)); timeout--) {
 		mdelay(1);
 		inb(KBD_DATA);

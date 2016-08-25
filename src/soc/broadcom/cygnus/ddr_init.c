@@ -1349,7 +1349,7 @@ void ddr_init2(void)
 
 	if(pwrctli0==3)
 	{
-		printk(BIOS_INFO, "\n PRE_SRX call \n");
+		printk(BIOS_INFO, "\n PRE_SRX call\n");
 		PRE_SRX();
 	}
 #else
@@ -1613,7 +1613,7 @@ void ddr_init2(void)
 		reg32_write((unsigned int *)DDR_DENALI_CTL_56, 0x0a050505);
 
 		__udelay(200);
-		printk(BIOS_INFO, "\nDDR self refresh exit \n");
+		printk(BIOS_INFO, "\nDDR self refresh exit\n");
 
 		// Assert DFI request from PHY to mask any interaction with MEMC
 		reg32_write((unsigned int *)DDR_PHY_CONTROL_REGS_DFI_CNTRL, 0xe0);

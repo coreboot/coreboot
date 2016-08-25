@@ -106,6 +106,9 @@ struct soc_intel_apollolake_config {
 
 	/* Enable DPTF support */
 	int dptf_enable;
+
+	/* SLP S3 minimum assertion width. */
+	int slp_s3_assertion_width_usecs;
 };
 
 #endif	/* _SOC_APOLLOLAKE_CHIP_H_ */

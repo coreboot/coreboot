@@ -103,6 +103,7 @@ static const struct lpddr4_sku skus[] = {
 		.ch0_dual_rank = 1,
 		.ch1_dual_rank = 1,
 		.part_num = "MT53B512M32D2NP",
+		.disable_periodic_retraining = 1,
 	},
 	/* MT53B256M32D1NP-062 WT:C - both logical channels */
 	[3] = {
@@ -110,6 +111,7 @@ static const struct lpddr4_sku skus[] = {
 		.ch0_rank_density = LP4_8Gb_DENSITY,
 		.ch1_rank_density = LP4_8Gb_DENSITY,
 		.part_num = "MT53B256M32D1NP",
+		.disable_periodic_retraining = 1,
 	},
 	/* K4F8E304HB-MGCH - both logical channels */
 	[PROTO_SKU] = {

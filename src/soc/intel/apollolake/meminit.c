@@ -254,6 +254,8 @@ void meminit_lpddr4_by_sku(struct FSP_M_CONFIG *cfg,
 						sku->ch1_dual_rank,
 						lpcfg->swizzle_config);
 	}
+
+	cfg->PeriodicRetrainingDisable = sku->disable_periodic_retraining;
 }
 
 void save_lpddr4_dimm_info(const struct lpddr4_cfg *lp4cfg, size_t mem_sku)

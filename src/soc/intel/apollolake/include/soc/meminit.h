@@ -102,6 +102,7 @@ struct lpddr4_sku {
 	int ch0_dual_rank;
 	int ch1_dual_rank;
 	const char *part_num;
+	bool disable_periodic_retraining;
 };
 
 struct lpddr4_cfg {

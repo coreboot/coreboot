@@ -89,7 +89,7 @@ static void do_calib(const struct mt8173_sdram_params *sdram_params)
 	transfer_to_reg_control();
 
 	/* do dram calibration for channel A and B */
-	for(channel = 0; channel < CHANNEL_NUM; channel++) {
+	for (channel = 0; channel < CHANNEL_NUM; channel++) {
 		ca_training(channel, sdram_params);
 		write_leveling(channel, sdram_params);
 

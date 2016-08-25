@@ -505,7 +505,7 @@ static void southbridge_smi_monitor(void)
 	printk(BIOS_DEBUG, "  trapped io address = 0x%x\n",
 	       trap_cycle & 0xfffc);
 	for (i=0; i < 4; i++)
-		if(IOTRAP(i)) printk(BIOS_DEBUG, "  TRAP = %d\n", i);
+		if (IOTRAP(i)) printk(BIOS_DEBUG, "  TRAP = %d\n", i);
 	printk(BIOS_DEBUG, "  AHBE = %x\n", (trap_cycle >> 16) & 0xf);
 	printk(BIOS_DEBUG, "  MASK = 0x%08x\n", mask);
 	printk(BIOS_DEBUG, "  read/write: %s\n",

@@ -197,7 +197,7 @@ static void check_device_present(device_t dev)
 			reg_script_run_on_dev(dev, no_dev_behind_port);
 			dev->enabled = 0;
 		}
-	} else if(!dev->enabled) {
+	} else if (!dev->enabled) {
 		/* Port is disabled, but device present. Disable link. */
 		pci_write_config32(dev, LCTL,
 			pci_read_config32(dev, LCTL) | LD);

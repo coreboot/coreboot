@@ -109,7 +109,7 @@ static void gpio_config_pad(gpio_t gpio_num, const struct soc_gpio_map *cfg)
 	int max_gpio_cnt = GP_SOUTHWEST_COUNT + GP_NORTH_COUNT + GP_EAST_COUNT
 			+ GP_SOUTHEAST_COUNT;
 
-	if(gpio_num > max_gpio_cnt)
+	if (gpio_num > max_gpio_cnt)
 		return;
 	/* Get GPIO Community based on GPIO_NUMBER */
 	comm = gpio_get_community_num(gpio_num, &pad_num);
@@ -149,7 +149,7 @@ int gpio_get(gpio_t gpio_num)
 	int max_gpio_cnt = GP_SOUTHWEST_COUNT + GP_NORTH_COUNT + GP_EAST_COUNT
 				+ GP_SOUTHEAST_COUNT;
 
-	if(gpio_num > max_gpio_cnt)
+	if (gpio_num > max_gpio_cnt)
 		return -1;
 
 	/* Get GPIO Community based on GPIO_NUMBER */

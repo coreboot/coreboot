@@ -105,7 +105,7 @@ static void pch_pirq_init(device_t dev)
 	pci_write_config8(dev, PIRQG_ROUT, config->pirqg_routing);
 	pci_write_config8(dev, PIRQH_ROUT, config->pirqh_routing);
 
-	for(irq_dev = all_devices; irq_dev; irq_dev = irq_dev->next) {
+	for (irq_dev = all_devices; irq_dev; irq_dev = irq_dev->next) {
 		u8 int_pin=0, int_line=0;
 
 		if (!irq_dev->enabled || irq_dev->path.type != DEVICE_PATH_PCI)

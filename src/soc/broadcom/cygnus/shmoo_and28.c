@@ -153,7 +153,7 @@ _run_bist(int unit, int phy_ndx, and28_shmoo_container_t *scPtr, and28_shmoo_err
         case SHMOO_AND28_RD_EN:
             SOC_IF_ERROR_RETURN(soc_ydc_ddr_bist_run(unit, phy_ndx, &be));
 
-            if(shmoo_dram_info_ptr->interface_bitwidth == 16)
+            if (shmoo_dram_info_ptr->interface_bitwidth == 16)
             {
                 (*seaPtr)[0] = (((be.bist_err_occur) >> 16) | (be.bist_err_occur)) & 0xFFFF;
             }
@@ -165,7 +165,7 @@ _run_bist(int unit, int phy_ndx, and28_shmoo_container_t *scPtr, and28_shmoo_err
         case SHMOO_AND28_RD_EXTENDED:
             SOC_IF_ERROR_RETURN(soc_ydc_ddr_bist_run(unit, phy_ndx, &be));
 
-            if(shmoo_dram_info_ptr->interface_bitwidth == 16)
+            if (shmoo_dram_info_ptr->interface_bitwidth == 16)
             {
                 (*seaPtr)[0] = (((be.bist_err_occur) >> 16) | (be.bist_err_occur)) & 0xFFFF;
             }
@@ -177,7 +177,7 @@ _run_bist(int unit, int phy_ndx, and28_shmoo_container_t *scPtr, and28_shmoo_err
         case SHMOO_AND28_WR_EXTENDED:
             SOC_IF_ERROR_RETURN(soc_ydc_ddr_bist_run(unit, phy_ndx, &be));
 
-            if(shmoo_dram_info_ptr->interface_bitwidth == 16)
+            if (shmoo_dram_info_ptr->interface_bitwidth == 16)
             {
                 (*seaPtr)[0] = (((be.bist_err_occur) >> 16) | (be.bist_err_occur)) & 0xFFFF;
             }
@@ -189,7 +189,7 @@ _run_bist(int unit, int phy_ndx, and28_shmoo_container_t *scPtr, and28_shmoo_err
         case SHMOO_AND28_ADDR_EXTENDED:
             SOC_IF_ERROR_RETURN(soc_ydc_ddr_bist_run(unit, phy_ndx, &be));
 
-            if(shmoo_dram_info_ptr->interface_bitwidth == 16)
+            if (shmoo_dram_info_ptr->interface_bitwidth == 16)
             {
                 (*seaPtr)[0] = (((be.bist_err_occur) >> 16) | (be.bist_err_occur)) & 0xFFFF;
             }
@@ -201,7 +201,7 @@ _run_bist(int unit, int phy_ndx, and28_shmoo_container_t *scPtr, and28_shmoo_err
         case SHMOO_AND28_CTRL_EXTENDED:
             SOC_IF_ERROR_RETURN(soc_ydc_ddr_bist_run(unit, phy_ndx, &be));
 
-            if(shmoo_dram_info_ptr->interface_bitwidth == 16)
+            if (shmoo_dram_info_ptr->interface_bitwidth == 16)
             {
                 (*seaPtr)[0] = (((be.bist_err_occur) >> 16) | (be.bist_err_occur)) & 0xFFFF;
             }
@@ -242,7 +242,7 @@ _shmoo_and28_rd_en(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
 
     _initialize_bist(unit, phy_ndx, -1, scPtr);
 
-    for(y = yCapMin; y < yCapMax; y++)
+    for (y = yCapMin; y < yCapMax; y++)
     {
         data = 0;
         DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_0, VDL_CONTROL_RD_DQ0P, FORCE, 1);
@@ -292,8 +292,8 @@ _shmoo_and28_rd_en(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
             DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_VDL_CONTROL_RD_EDCN, data);
         #endif
 
-        #if(SHMOO_AND28_PHY_BITWIDTH_IS_32)
-        if(shmoo_dram_info_ptr->interface_bitwidth == 32)
+        #if (SHMOO_AND28_PHY_BITWIDTH_IS_32)
+        if (shmoo_dram_info_ptr->interface_bitwidth == 32)
         {
             DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_2_VDL_CONTROL_RD_DQ0P, data);
             DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_2_VDL_CONTROL_RD_DQ0N, data);
@@ -342,7 +342,7 @@ _shmoo_and28_rd_en(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
         }
         #endif
 
-        for(x = 0; x < (*scPtr).sizeX; x++)
+        for (x = 0; x < (*scPtr).sizeX; x++)
         {
             data = 0;
             DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_0, VDL_CONTROL_RD_EN_CS0, FORCE, 1);
@@ -353,8 +353,8 @@ _shmoo_and28_rd_en(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
             DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_0_VDL_CONTROL_RD_EN_CS1, data);
             DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_VDL_CONTROL_RD_EN_CS1, data);
 
-            #if(SHMOO_AND28_PHY_BITWIDTH_IS_32)
-            if(shmoo_dram_info_ptr->interface_bitwidth == 32)
+            #if (SHMOO_AND28_PHY_BITWIDTH_IS_32)
+            if (shmoo_dram_info_ptr->interface_bitwidth == 32)
             {
                 DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_2_VDL_CONTROL_RD_EN_CS0, data);
                 DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_3_VDL_CONTROL_RD_EN_CS0, data);
@@ -368,8 +368,8 @@ _shmoo_and28_rd_en(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
             DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_0_READ_FIFO_CLEAR, data);
             DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_READ_FIFO_CLEAR, data);
 
-            #if(SHMOO_AND28_PHY_BITWIDTH_IS_32)
-            if(shmoo_dram_info_ptr->interface_bitwidth == 32)
+            #if (SHMOO_AND28_PHY_BITWIDTH_IS_32)
+            if (shmoo_dram_info_ptr->interface_bitwidth == 32)
             {
                 DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_2_READ_FIFO_CLEAR, data);
                 DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_3_READ_FIFO_CLEAR, data);
@@ -404,7 +404,7 @@ _shmoo_and28_wr_extended(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
 
     _initialize_bist(unit, phy_ndx, -1, scPtr);
 
-    for(x = 0; x < (*scPtr).sizeX; x++)
+    for (x = 0; x < (*scPtr).sizeX; x++)
     {
         data = 0;
         DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_0, VDL_CONTROL_WR_DQ0, FORCE, 1);
@@ -435,8 +435,8 @@ _shmoo_and28_wr_extended(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
             DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_VDL_CONTROL_WR_EDC, data);
         #endif
 
-        #if(SHMOO_AND28_PHY_BITWIDTH_IS_32)
-        if(shmoo_dram_info_ptr->interface_bitwidth == 32)
+        #if (SHMOO_AND28_PHY_BITWIDTH_IS_32)
+        if (shmoo_dram_info_ptr->interface_bitwidth == 32)
         {
             DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_2_VDL_CONTROL_WR_DQ0, data);
             DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_2_VDL_CONTROL_WR_DQ1, data);
@@ -470,8 +470,8 @@ _shmoo_and28_wr_extended(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
         DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_0_READ_FIFO_CLEAR, data);
         DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_READ_FIFO_CLEAR, data);
 
-        #if(SHMOO_AND28_PHY_BITWIDTH_IS_32)
-        if(shmoo_dram_info_ptr->interface_bitwidth == 32)
+        #if (SHMOO_AND28_PHY_BITWIDTH_IS_32)
+        if (shmoo_dram_info_ptr->interface_bitwidth == 32)
         {
             DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_2_READ_FIFO_CLEAR, data);
             DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_3_READ_FIFO_CLEAR, data);
@@ -499,7 +499,7 @@ _shmoo_and28_rd_extended(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
     uint32 data, temp;
     uint32 rd_dqs_pos0, rd_dqs_pos1, rd_en_pos0, rd_en_pos1, rd_dqs_delta0, rd_dqs_delta1;
     uint32 rd_dq_fail_count0, rd_dq_fail_count1;
-    #if(SHMOO_AND28_PHY_BITWIDTH_IS_32)
+    #if (SHMOO_AND28_PHY_BITWIDTH_IS_32)
         uint32 rd_dqs_pos2, rd_dqs_pos3, rd_en_pos2, rd_en_pos3, rd_dqs_delta2, rd_dqs_delta3;
         uint32 rd_dq_fail_count2, rd_dq_fail_count3;
     #endif
@@ -522,8 +522,8 @@ _shmoo_and28_rd_extended(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
     DDR_PHY_REG_READ(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_VDL_CONTROL_RD_DQSP, &data);
     rd_dqs_pos1 = DDR_PHY_GET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_1, VDL_CONTROL_RD_DQSP, VDL_STEP);
 
-    #if(SHMOO_AND28_PHY_BITWIDTH_IS_32)
-    if(shmoo_dram_info_ptr->interface_bitwidth == 32)
+    #if (SHMOO_AND28_PHY_BITWIDTH_IS_32)
+    if (shmoo_dram_info_ptr->interface_bitwidth == 32)
     {
         DDR_PHY_REG_READ(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_2_VDL_CONTROL_RD_DQSP, &data);
         rd_dqs_pos2 = DDR_PHY_GET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_2, VDL_CONTROL_RD_DQSP, VDL_STEP);
@@ -539,8 +539,8 @@ _shmoo_and28_rd_extended(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
     DDR_PHY_REG_READ(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_VDL_CONTROL_RD_EN_CS0, &data);
     rd_en_pos1 = DDR_PHY_GET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_1, VDL_CONTROL_RD_EN_CS0, VDL_STEP);
 
-    #if(SHMOO_AND28_PHY_BITWIDTH_IS_32)
-    if(shmoo_dram_info_ptr->interface_bitwidth == 32)
+    #if (SHMOO_AND28_PHY_BITWIDTH_IS_32)
+    if (shmoo_dram_info_ptr->interface_bitwidth == 32)
     {
         DDR_PHY_REG_READ(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_2_VDL_CONTROL_RD_EN_CS0, &data);
         rd_en_pos2 = DDR_PHY_GET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_2, VDL_CONTROL_RD_EN_CS0, VDL_STEP);
@@ -562,8 +562,8 @@ _shmoo_and28_rd_extended(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
     DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_VDL_CONTROL_RD_DQSP, data);
     DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_VDL_CONTROL_RD_DQSN, data);
 
-    #if(SHMOO_AND28_PHY_BITWIDTH_IS_32)
-    if(shmoo_dram_info_ptr->interface_bitwidth == 32)
+    #if (SHMOO_AND28_PHY_BITWIDTH_IS_32)
+    if (shmoo_dram_info_ptr->interface_bitwidth == 32)
     {
         DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_2_VDL_CONTROL_RD_DQSP, data);
         DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_2_VDL_CONTROL_RD_DQSN, data);
@@ -575,8 +575,8 @@ _shmoo_and28_rd_extended(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
     rd_dqs_delta0 = x - rd_dqs_pos0;
     rd_dqs_delta1 = x - rd_dqs_pos1;
 
-    #if(SHMOO_AND28_PHY_BITWIDTH_IS_32)
-    if(shmoo_dram_info_ptr->interface_bitwidth == 32)
+    #if (SHMOO_AND28_PHY_BITWIDTH_IS_32)
+    if (shmoo_dram_info_ptr->interface_bitwidth == 32)
     {
         rd_dqs_delta2 = x - rd_dqs_pos2;
         rd_dqs_delta3 = x - rd_dqs_pos3;
@@ -586,11 +586,11 @@ _shmoo_and28_rd_extended(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
     temp = rd_en_pos0 + rd_dqs_delta0;
     data = 0;
     DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_0, VDL_CONTROL_RD_EN_CS0, FORCE, 1);
-    if(temp & 0x80000000)
+    if (temp & 0x80000000)
     {
         DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_0, VDL_CONTROL_RD_EN_CS0, VDL_STEP, 0);
     }
-    else if(temp >= SHMOO_AND28_MAX_VDL_LENGTH)
+    else if (temp >= SHMOO_AND28_MAX_VDL_LENGTH)
     {
         DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_0, VDL_CONTROL_RD_EN_CS0, VDL_STEP, SHMOO_AND28_MAX_VDL_LENGTH - 1);
     }
@@ -604,11 +604,11 @@ _shmoo_and28_rd_extended(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
     temp = rd_en_pos1 + rd_dqs_delta1;
     data = 0;
     DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_1, VDL_CONTROL_RD_EN_CS0, FORCE, 1);
-    if(temp & 0x80000000)
+    if (temp & 0x80000000)
     {
         DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_1, VDL_CONTROL_RD_EN_CS0, VDL_STEP, 0);
     }
-    else if(temp >= SHMOO_AND28_MAX_VDL_LENGTH)
+    else if (temp >= SHMOO_AND28_MAX_VDL_LENGTH)
     {
         DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_1, VDL_CONTROL_RD_EN_CS0, VDL_STEP, SHMOO_AND28_MAX_VDL_LENGTH - 1);
     }
@@ -619,17 +619,17 @@ _shmoo_and28_rd_extended(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
     DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_VDL_CONTROL_RD_EN_CS0, data);
     DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_VDL_CONTROL_RD_EN_CS1, data);
 
-    #if(SHMOO_AND28_PHY_BITWIDTH_IS_32)
-    if(shmoo_dram_info_ptr->interface_bitwidth == 32)
+    #if (SHMOO_AND28_PHY_BITWIDTH_IS_32)
+    if (shmoo_dram_info_ptr->interface_bitwidth == 32)
     {
         temp = rd_en_pos2 + rd_dqs_delta2;
         data = 0;
         DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_2, VDL_CONTROL_RD_EN_CS0, FORCE, 1);
-        if(temp & 0x80000000)
+        if (temp & 0x80000000)
         {
             DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_2, VDL_CONTROL_RD_EN_CS0, VDL_STEP, 0);
         }
-        else if(temp >= SHMOO_AND28_MAX_VDL_LENGTH)
+        else if (temp >= SHMOO_AND28_MAX_VDL_LENGTH)
         {
             DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_2, VDL_CONTROL_RD_EN_CS0, VDL_STEP, SHMOO_AND28_MAX_VDL_LENGTH - 1);
         }
@@ -643,11 +643,11 @@ _shmoo_and28_rd_extended(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
         temp = rd_en_pos3 + rd_dqs_delta3;
         data = 0;
         DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_3, VDL_CONTROL_RD_EN_CS0, FORCE, 1);
-        if(temp & 0x80000000)
+        if (temp & 0x80000000)
         {
             DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_3, VDL_CONTROL_RD_EN_CS0, VDL_STEP, 0);
         }
-        else if(temp >= SHMOO_AND28_MAX_VDL_LENGTH)
+        else if (temp >= SHMOO_AND28_MAX_VDL_LENGTH)
         {
             DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_3, VDL_CONTROL_RD_EN_CS0, VDL_STEP, SHMOO_AND28_MAX_VDL_LENGTH - 1);
         }
@@ -662,20 +662,20 @@ _shmoo_and28_rd_extended(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
 
     rd_dq_fail_count0 = 0;
     rd_dq_fail_count1 = 0;
-    #if(SHMOO_AND28_PHY_BITWIDTH_IS_32)
-    if(shmoo_dram_info_ptr->interface_bitwidth == 32)
+    #if (SHMOO_AND28_PHY_BITWIDTH_IS_32)
+    if (shmoo_dram_info_ptr->interface_bitwidth == 32)
     {
         rd_dq_fail_count2 = 0;
         rd_dq_fail_count3 = 0;
     }
     #endif
 
-    for(x = 0; x < (*scPtr).sizeX; x++)
+    for (x = 0; x < (*scPtr).sizeX; x++)
     {
         data = 0;
         DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_0, VDL_CONTROL_RD_DQ0P, FORCE, 1);
         DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_0, VDL_CONTROL_RD_DQ0P, VDL_STEP, x);
-        if(rd_dq_fail_count0 <= SHMOO_AND28_RD_DQ_FAIL_CAP)
+        if (rd_dq_fail_count0 <= SHMOO_AND28_RD_DQ_FAIL_CAP)
         {
             DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_0_VDL_CONTROL_RD_DQ0P, data);
             DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_0_VDL_CONTROL_RD_DQ0N, data);
@@ -700,7 +700,7 @@ _shmoo_and28_rd_extended(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
                 DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_0_VDL_CONTROL_RD_EDCN, data);
             #endif
         }
-        if(rd_dq_fail_count1 <= SHMOO_AND28_RD_DQ_FAIL_CAP)
+        if (rd_dq_fail_count1 <= SHMOO_AND28_RD_DQ_FAIL_CAP)
         {
             DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_VDL_CONTROL_RD_DQ0P, data);
             DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_VDL_CONTROL_RD_DQ0N, data);
@@ -726,10 +726,10 @@ _shmoo_and28_rd_extended(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
             #endif
         }
 
-        #if(SHMOO_AND28_PHY_BITWIDTH_IS_32)
-        if(shmoo_dram_info_ptr->interface_bitwidth == 32)
+        #if (SHMOO_AND28_PHY_BITWIDTH_IS_32)
+        if (shmoo_dram_info_ptr->interface_bitwidth == 32)
         {
-            if(rd_dq_fail_count2 <= SHMOO_AND28_RD_DQ_FAIL_CAP)
+            if (rd_dq_fail_count2 <= SHMOO_AND28_RD_DQ_FAIL_CAP)
             {
                 DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_2_VDL_CONTROL_RD_DQ0P, data);
                 DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_2_VDL_CONTROL_RD_DQ0N, data);
@@ -754,7 +754,7 @@ _shmoo_and28_rd_extended(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
                     DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_2_VDL_CONTROL_RD_EDCN, data);
                 #endif
             }
-            if(rd_dq_fail_count3 <= SHMOO_AND28_RD_DQ_FAIL_CAP)
+            if (rd_dq_fail_count3 <= SHMOO_AND28_RD_DQ_FAIL_CAP)
             {
                 DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_3_VDL_CONTROL_RD_DQ0P, data);
                 DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_3_VDL_CONTROL_RD_DQ0N, data);
@@ -787,8 +787,8 @@ _shmoo_and28_rd_extended(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
         DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_0_READ_FIFO_CLEAR, data);
         DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_READ_FIFO_CLEAR, data);
 
-        #if(SHMOO_AND28_PHY_BITWIDTH_IS_32)
-        if(shmoo_dram_info_ptr->interface_bitwidth == 32)
+        #if (SHMOO_AND28_PHY_BITWIDTH_IS_32)
+        if (shmoo_dram_info_ptr->interface_bitwidth == 32)
         {
             DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_2_READ_FIFO_CLEAR, data);
             DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_3_READ_FIFO_CLEAR, data);
@@ -799,35 +799,35 @@ _shmoo_and28_rd_extended(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
 
         _run_bist(unit, phy_ndx, scPtr, &sea);
 
-        if((sea[0] & 0x000000FF) == 0x000000FF)
+        if ((sea[0] & 0x000000FF) == 0x000000FF)
         {
             rd_dq_fail_count0++;
         }
-        if((sea[0] & 0x0000FF00) == 0x0000FF00)
+        if ((sea[0] & 0x0000FF00) == 0x0000FF00)
         {
             rd_dq_fail_count1++;
         }
 
-        #if(SHMOO_AND28_PHY_BITWIDTH_IS_32)
-        if(shmoo_dram_info_ptr->interface_bitwidth == 32)
+        #if (SHMOO_AND28_PHY_BITWIDTH_IS_32)
+        if (shmoo_dram_info_ptr->interface_bitwidth == 32)
         {
-            if((sea[0] & 0x00FF0000) == 0x00FF0000)
+            if ((sea[0] & 0x00FF0000) == 0x00FF0000)
             {
                 rd_dq_fail_count2++;
             }
-            if((sea[0] & 0xFF000000) == 0xFF000000)
+            if ((sea[0] & 0xFF000000) == 0xFF000000)
             {
                 rd_dq_fail_count3++;
             }
         }
         #endif
 
-        if((rd_dq_fail_count0 > SHMOO_AND28_RD_DQ_FAIL_CAP) && (rd_dq_fail_count1 > SHMOO_AND28_RD_DQ_FAIL_CAP))
+        if ((rd_dq_fail_count0 > SHMOO_AND28_RD_DQ_FAIL_CAP) && (rd_dq_fail_count1 > SHMOO_AND28_RD_DQ_FAIL_CAP))
         {
-            #if(SHMOO_AND28_PHY_BITWIDTH_IS_32)
-            if(shmoo_dram_info_ptr->interface_bitwidth == 32)
+            #if (SHMOO_AND28_PHY_BITWIDTH_IS_32)
+            if (shmoo_dram_info_ptr->interface_bitwidth == 32)
             {
-                if((rd_dq_fail_count2 > SHMOO_AND28_RD_DQ_FAIL_CAP) && (rd_dq_fail_count3 > SHMOO_AND28_RD_DQ_FAIL_CAP))
+                if ((rd_dq_fail_count2 > SHMOO_AND28_RD_DQ_FAIL_CAP) && (rd_dq_fail_count3 > SHMOO_AND28_RD_DQ_FAIL_CAP))
                 {
                     break;
                 }
@@ -842,14 +842,14 @@ _shmoo_and28_rd_extended(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
         }
     }
 
-    for(y = yCapMin; y < yCapMax; y++)
+    for (y = yCapMin; y < yCapMax; y++)
     {
         DDR_PHY_REG_READ(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_CONTROL_REGS_VREF_DAC_CONTROL, &data);
         DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_CONTROL_REGS, VREF_DAC_CONTROL, DAC0, y);
         DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_CONTROL_REGS, VREF_DAC_CONTROL, DAC1, y);
         DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_CONTROL_REGS_VREF_DAC_CONTROL, data);
 
-        for(x = 0; x < (*scPtr).sizeX; x++)
+        for (x = 0; x < (*scPtr).sizeX; x++)
         {
             data = 0;
             DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_0, VDL_CONTROL_RD_DQSP, FORCE, 1);
@@ -860,8 +860,8 @@ _shmoo_and28_rd_extended(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
             DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_VDL_CONTROL_RD_DQSP, data);
             DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_VDL_CONTROL_RD_DQSN, data);
 
-            #if(SHMOO_AND28_PHY_BITWIDTH_IS_32)
-            if(shmoo_dram_info_ptr->interface_bitwidth == 32)
+            #if (SHMOO_AND28_PHY_BITWIDTH_IS_32)
+            if (shmoo_dram_info_ptr->interface_bitwidth == 32)
             {
                 DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_2_VDL_CONTROL_RD_DQSP, data);
                 DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_2_VDL_CONTROL_RD_DQSN, data);
@@ -873,8 +873,8 @@ _shmoo_and28_rd_extended(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
             rd_dqs_delta0 = x - rd_dqs_pos0;
             rd_dqs_delta1 = x - rd_dqs_pos1;
 
-            #if(SHMOO_AND28_PHY_BITWIDTH_IS_32)
-            if(shmoo_dram_info_ptr->interface_bitwidth == 32)
+            #if (SHMOO_AND28_PHY_BITWIDTH_IS_32)
+            if (shmoo_dram_info_ptr->interface_bitwidth == 32)
             {
                 rd_dqs_delta2 = x - rd_dqs_pos2;
                 rd_dqs_delta3 = x - rd_dqs_pos3;
@@ -884,11 +884,11 @@ _shmoo_and28_rd_extended(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
             temp = rd_en_pos0 + rd_dqs_delta0;
             data = 0;
             DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_0, VDL_CONTROL_RD_EN_CS0, FORCE, 1);
-            if(temp & 0x80000000)
+            if (temp & 0x80000000)
             {
                 DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_0, VDL_CONTROL_RD_EN_CS0, VDL_STEP, 0);
             }
-            else if(temp >= SHMOO_AND28_MAX_VDL_LENGTH)
+            else if (temp >= SHMOO_AND28_MAX_VDL_LENGTH)
             {
                 DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_0, VDL_CONTROL_RD_EN_CS0, VDL_STEP, SHMOO_AND28_MAX_VDL_LENGTH - 1);
             }
@@ -902,11 +902,11 @@ _shmoo_and28_rd_extended(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
             temp = rd_en_pos1 + rd_dqs_delta1;
             data = 0;
             DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_1, VDL_CONTROL_RD_EN_CS0, FORCE, 1);
-            if(temp & 0x80000000)
+            if (temp & 0x80000000)
             {
                 DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_1, VDL_CONTROL_RD_EN_CS0, VDL_STEP, 0);
             }
-            else if(temp >= SHMOO_AND28_MAX_VDL_LENGTH)
+            else if (temp >= SHMOO_AND28_MAX_VDL_LENGTH)
             {
                 DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_1, VDL_CONTROL_RD_EN_CS0, VDL_STEP, SHMOO_AND28_MAX_VDL_LENGTH - 1);
             }
@@ -917,17 +917,17 @@ _shmoo_and28_rd_extended(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
             DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_VDL_CONTROL_RD_EN_CS0, data);
             DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_VDL_CONTROL_RD_EN_CS1, data);
 
-            #if(SHMOO_AND28_PHY_BITWIDTH_IS_32)
-            if(shmoo_dram_info_ptr->interface_bitwidth == 32)
+            #if (SHMOO_AND28_PHY_BITWIDTH_IS_32)
+            if (shmoo_dram_info_ptr->interface_bitwidth == 32)
             {
                 temp = rd_en_pos2 + rd_dqs_delta2;
                 data = 0;
                 DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_2, VDL_CONTROL_RD_EN_CS0, FORCE, 1);
-                if(temp & 0x80000000)
+                if (temp & 0x80000000)
                 {
                     DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_2, VDL_CONTROL_RD_EN_CS0, VDL_STEP, 0);
                 }
-                else if(temp >= SHMOO_AND28_MAX_VDL_LENGTH)
+                else if (temp >= SHMOO_AND28_MAX_VDL_LENGTH)
                 {
                     DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_2, VDL_CONTROL_RD_EN_CS0, VDL_STEP, SHMOO_AND28_MAX_VDL_LENGTH - 1);
                 }
@@ -941,11 +941,11 @@ _shmoo_and28_rd_extended(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
                 temp = rd_en_pos3 + rd_dqs_delta3;
                 data = 0;
                 DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_3, VDL_CONTROL_RD_EN_CS0, FORCE, 1);
-                if(temp & 0x80000000)
+                if (temp & 0x80000000)
                 {
                     DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_3, VDL_CONTROL_RD_EN_CS0, VDL_STEP, 0);
                 }
-                else if(temp >= SHMOO_AND28_MAX_VDL_LENGTH)
+                else if (temp >= SHMOO_AND28_MAX_VDL_LENGTH)
                 {
                     DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_3, VDL_CONTROL_RD_EN_CS0, VDL_STEP, SHMOO_AND28_MAX_VDL_LENGTH - 1);
                 }
@@ -963,8 +963,8 @@ _shmoo_and28_rd_extended(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
             DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_0_READ_FIFO_CLEAR, data);
             DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_READ_FIFO_CLEAR, data);
 
-            #if(SHMOO_AND28_PHY_BITWIDTH_IS_32)
-            if(shmoo_dram_info_ptr->interface_bitwidth == 32)
+            #if (SHMOO_AND28_PHY_BITWIDTH_IS_32)
+            if (shmoo_dram_info_ptr->interface_bitwidth == 32)
             {
                 DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_2_READ_FIFO_CLEAR, data);
                 DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_3_READ_FIFO_CLEAR, data);
@@ -999,7 +999,7 @@ _shmoo_and28_addr_extended(int unit, int phy_ndx, and28_shmoo_container_t *scPtr
 
     _initialize_bist(unit, phy_ndx, -1, scPtr);
 
-    for(x = 0; x < (*scPtr).sizeX; x++)
+    for (x = 0; x < (*scPtr).sizeX; x++)
     {
         data = 0;
         DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_CONTROL_REGS, VDL_CONTROL_AD00, FORCE, 1);
@@ -1021,8 +1021,8 @@ _shmoo_and28_addr_extended(int unit, int phy_ndx, and28_shmoo_container_t *scPtr
         DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_0_READ_FIFO_CLEAR, data);
         DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_READ_FIFO_CLEAR, data);
 
-        #if(SHMOO_AND28_PHY_BITWIDTH_IS_32)
-        if(shmoo_dram_info_ptr->interface_bitwidth == 32)
+        #if (SHMOO_AND28_PHY_BITWIDTH_IS_32)
+        if (shmoo_dram_info_ptr->interface_bitwidth == 32)
         {
             DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_2_READ_FIFO_CLEAR, data);
             DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_3_READ_FIFO_CLEAR, data);
@@ -1054,7 +1054,7 @@ _shmoo_and28_ctrl_extended(int unit, int phy_ndx, and28_shmoo_container_t *scPtr
 
     _initialize_bist(unit, phy_ndx, -1, scPtr);
 
-    for(x = 0; x < (*scPtr).sizeX; x++)
+    for (x = 0; x < (*scPtr).sizeX; x++)
     {
         data = 0;
         DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_CONTROL_REGS, VDL_CONTROL_AD00, FORCE, 1);
@@ -1087,8 +1087,8 @@ _shmoo_and28_ctrl_extended(int unit, int phy_ndx, and28_shmoo_container_t *scPtr
         DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_0_READ_FIFO_CLEAR, data);
         DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_READ_FIFO_CLEAR, data);
 
-        #if(SHMOO_AND28_PHY_BITWIDTH_IS_32)
-        if(shmoo_dram_info_ptr->interface_bitwidth == 32)
+        #if (SHMOO_AND28_PHY_BITWIDTH_IS_32)
+        if (shmoo_dram_info_ptr->interface_bitwidth == 32)
         {
             DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_2_READ_FIFO_CLEAR, data);
             DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_3_READ_FIFO_CLEAR, data);
@@ -1118,7 +1118,7 @@ _shmoo_and28_do(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
         case SHMOO_AND28_ADDR_EXTENDED:
             return _shmoo_and28_addr_extended(unit, phy_ndx, scPtr);
         case SHMOO_AND28_CTRL_EXTENDED:
-            if(!SHMOO_AND28_QUICK_SHMOO_CTRL_EXTENDED)
+            if (!SHMOO_AND28_QUICK_SHMOO_CTRL_EXTENDED)
             {
                 return _shmoo_and28_ctrl_extended(unit, phy_ndx, scPtr);
             }
@@ -1187,15 +1187,15 @@ _calib_2D(int unit, int phy_ndx, and28_shmoo_container_t *scPtr, uint32 calibMod
             return SOC_E_FAIL;
     }
 
-    for(i = 0; i < iter; i++)
+    for (i = 0; i < iter; i++)
     {
         (*scPtr).resultData[i] = 0;
         maxPassLengthArray[i] = 0;
     }
 
-    for(y = yCapMin; y < yCapMax; y++)
+    for (y = yCapMin; y < yCapMax; y++)
     {
-        for(i = 0; i < iter; i++)
+        for (i = 0; i < iter; i++)
         {
             passStart = -1;
             failStart = -1;
@@ -1205,20 +1205,20 @@ _calib_2D(int unit, int phy_ndx, and28_shmoo_container_t *scPtr, uint32 calibMod
             maxPassStart = -2;
             maxPassLength = -2;
             maxMidPointX = -2;
-            for(x = calibStart; x < sizeX; x++)
+            for (x = calibStart; x < sizeX; x++)
             {
-                if(((*scPtr).result2D[xStart + x] >> (i << shiftAmount)) & dataMask)
+                if (((*scPtr).result2D[xStart + x] >> (i << shiftAmount)) & dataMask)
                 {   /* FAIL */
-                    if(failStart < 0) {
+                    if (failStart < 0) {
                         failStart = x;
-                        if(maxPassLength < passLength)
+                        if (maxPassLength < passLength)
                         {
                             maxPassStart = passStart;
                             maxPassLength = passLength;
                         }
                         passStart = -1;
                         passLength = -1;
-                        if((failStartSeen < 0) && (maxPassLength > 0))
+                        if ((failStartSeen < 0) && (maxPassLength > 0))
                         {
                             failStartSeen = x;
                         }
@@ -1226,12 +1226,12 @@ _calib_2D(int unit, int phy_ndx, and28_shmoo_container_t *scPtr, uint32 calibMod
                 }
                 else
                 {   /* PASS */
-                    if(passStart < 0)
+                    if (passStart < 0)
                     {
                         passStart = x;
                         passLength = 1;
                         failStart = -1;
-                        if((passStartSeen < 0) && (passLength < x))
+                        if ((passStartSeen < 0) && (passLength < x))
                         {
                             passStartSeen = x;
                         }
@@ -1241,9 +1241,9 @@ _calib_2D(int unit, int phy_ndx, and28_shmoo_container_t *scPtr, uint32 calibMod
                         passLength++;
                     }
 
-                    if(x == sizeX - 1)
+                    if (x == sizeX - 1)
                     {
-                        if(maxPassLength < passLength)
+                        if (maxPassLength < passLength)
                         {
                             maxPassStart = passStart;
                             maxPassLength = passLength;
@@ -1255,7 +1255,7 @@ _calib_2D(int unit, int phy_ndx, and28_shmoo_container_t *scPtr, uint32 calibMod
             switch (calibPos) {
                 case SHMOO_AND28_CALIB_FAIL_START:
                 case SHMOO_AND28_CALIB_RISING_EDGE:
-                    if(failStartSeen > 0)
+                    if (failStartSeen > 0)
                     {
                         maxMidPointX = failStartSeen;
                         (*scPtr).resultData[i] = (y << 16) | (maxMidPointX & 0xFFFF);
@@ -1263,14 +1263,14 @@ _calib_2D(int unit, int phy_ndx, and28_shmoo_container_t *scPtr, uint32 calibMod
                     break;
                 case SHMOO_AND28_CALIB_PASS_START:
                 case SHMOO_AND28_CALIB_FALLING_EDGE:
-                    if(passStartSeen > 0)
+                    if (passStartSeen > 0)
                     {
                         maxMidPointX = passStartSeen;
                         (*scPtr).resultData[i] = (y << 16) | (maxMidPointX & 0xFFFF);
                     }
                     break;
                 case SHMOO_AND28_CALIB_CENTER_PASS:
-                    if((maxPassLength > 0) && (maxPassLengthArray[i] < maxPassLength))
+                    if ((maxPassLength > 0) && (maxPassLengthArray[i] < maxPassLength))
                     {
                         maxMidPointX = (maxPassStart + maxPassStart + maxPassLength) >> 1;
                         (*scPtr).resultData[i] = (y << 16) | (maxMidPointX & 0xFFFF);
@@ -1308,7 +1308,7 @@ _shmoo_and28_calib_2D(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
         case SHMOO_AND28_ADDR_EXTENDED:
             return _calib_2D(unit, phy_ndx, scPtr, SHMOO_AND28_WORD, SHMOO_AND28_CALIB_CENTER_PASS);
         case SHMOO_AND28_CTRL_EXTENDED:
-            if(!SHMOO_AND28_QUICK_SHMOO_CTRL_EXTENDED)
+            if (!SHMOO_AND28_QUICK_SHMOO_CTRL_EXTENDED)
             {
                 return _calib_2D(unit, phy_ndx, scPtr, SHMOO_AND28_WORD, SHMOO_AND28_CALIB_CENTER_PASS);
             }
@@ -1328,7 +1328,7 @@ _shmoo_and28_set_new_step(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
     uint32 val, yVal;
     uint32 data, temp;
     uint32 rd_dqs_pos0, rd_dqs_pos1, rd_en_pos0, rd_en_pos1, rd_dqs_delta0, rd_dqs_delta1;
-    #if(SHMOO_AND28_PHY_BITWIDTH_IS_32)
+    #if (SHMOO_AND28_PHY_BITWIDTH_IS_32)
         uint32 rd_dqs_pos2, rd_dqs_pos3, rd_en_pos2, rd_en_pos3, rd_dqs_delta2, rd_dqs_delta3;
     #endif
 
@@ -1357,8 +1357,8 @@ _shmoo_and28_set_new_step(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
                     DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_VDL_CONTROL_RD_EN_CS0, data);
                     DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_VDL_CONTROL_RD_EN_CS1, data);
 
-                    #if(SHMOO_AND28_PHY_BITWIDTH_IS_32)
-                    if(shmoo_dram_info_ptr->interface_bitwidth == 32)
+                    #if (SHMOO_AND28_PHY_BITWIDTH_IS_32)
+                    if (shmoo_dram_info_ptr->interface_bitwidth == 32)
                     {
                         data = 0;
                         DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_2, VDL_CONTROL_RD_EN_CS0, FORCE, 1);
@@ -1388,8 +1388,8 @@ _shmoo_and28_set_new_step(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
                     DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_VDL_CONTROL_RD_EN_CS0, data);
                     DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_VDL_CONTROL_RD_EN_CS1, data);
 
-                    #if(SHMOO_AND28_PHY_BITWIDTH_IS_32)
-                    if(shmoo_dram_info_ptr->interface_bitwidth == 32)
+                    #if (SHMOO_AND28_PHY_BITWIDTH_IS_32)
+                    if (shmoo_dram_info_ptr->interface_bitwidth == 32)
                     {
                         data = 0;
                         DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_2, VDL_CONTROL_RD_EN_CS0, FORCE, 1);
@@ -1414,8 +1414,8 @@ _shmoo_and28_set_new_step(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
                     DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_VDL_CONTROL_RD_EN_CS0, data);
                     DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_VDL_CONTROL_RD_EN_CS1, data);
 
-                    #if(SHMOO_AND28_PHY_BITWIDTH_IS_32)
-                    if(shmoo_dram_info_ptr->interface_bitwidth == 32)
+                    #if (SHMOO_AND28_PHY_BITWIDTH_IS_32)
+                    if (shmoo_dram_info_ptr->interface_bitwidth == 32)
                     {
                         DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_2_VDL_CONTROL_RD_EN_CS0, data);
                         DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_2_VDL_CONTROL_RD_EN_CS1, data);
@@ -1438,8 +1438,8 @@ _shmoo_and28_set_new_step(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
             DDR_PHY_REG_READ(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_VDL_CONTROL_RD_DQSP, &data);
             rd_dqs_pos1 = DDR_PHY_GET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_1, VDL_CONTROL_RD_DQSP, VDL_STEP);
 
-            #if(SHMOO_AND28_PHY_BITWIDTH_IS_32)
-            if(shmoo_dram_info_ptr->interface_bitwidth == 32)
+            #if (SHMOO_AND28_PHY_BITWIDTH_IS_32)
+            if (shmoo_dram_info_ptr->interface_bitwidth == 32)
             {
                 DDR_PHY_REG_READ(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_2_VDL_CONTROL_RD_DQSP, &data);
                 rd_dqs_pos2 = DDR_PHY_GET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_2, VDL_CONTROL_RD_DQSP, VDL_STEP);
@@ -1455,8 +1455,8 @@ _shmoo_and28_set_new_step(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
             DDR_PHY_REG_READ(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_VDL_CONTROL_RD_EN_CS0, &data);
             rd_en_pos1 = DDR_PHY_GET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_1, VDL_CONTROL_RD_EN_CS0, VDL_STEP);
 
-            #if(SHMOO_AND28_PHY_BITWIDTH_IS_32)
-            if(shmoo_dram_info_ptr->interface_bitwidth == 32)
+            #if (SHMOO_AND28_PHY_BITWIDTH_IS_32)
+            if (shmoo_dram_info_ptr->interface_bitwidth == 32)
             {
                 DDR_PHY_REG_READ(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_2_VDL_CONTROL_RD_EN_CS0, &data);
                 rd_en_pos2 = DDR_PHY_GET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_2, VDL_CONTROL_RD_EN_CS0, VDL_STEP);
@@ -1484,11 +1484,11 @@ _shmoo_and28_set_new_step(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
                     temp = rd_en_pos0 + rd_dqs_delta0;
                     data = 0;
                     DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_0, VDL_CONTROL_RD_EN_CS0, FORCE, 1);
-                    if(temp & 0x80000000)
+                    if (temp & 0x80000000)
                     {
                         DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_0, VDL_CONTROL_RD_EN_CS0, VDL_STEP, 0);
                     }
-                    else if(temp >= SHMOO_AND28_MAX_VDL_LENGTH)
+                    else if (temp >= SHMOO_AND28_MAX_VDL_LENGTH)
                     {
                         DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_0, VDL_CONTROL_RD_EN_CS0, VDL_STEP, SHMOO_AND28_MAX_VDL_LENGTH - 1);
                     }
@@ -1511,11 +1511,11 @@ _shmoo_and28_set_new_step(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
                     temp = rd_en_pos1 + rd_dqs_delta1;
                     data = 0;
                     DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_1, VDL_CONTROL_RD_EN_CS0, FORCE, 1);
-                    if(temp & 0x80000000)
+                    if (temp & 0x80000000)
                     {
                         DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_1, VDL_CONTROL_RD_EN_CS0, VDL_STEP, 0);
                     }
-                    else if(temp >= SHMOO_AND28_MAX_VDL_LENGTH)
+                    else if (temp >= SHMOO_AND28_MAX_VDL_LENGTH)
                     {
                         DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_1, VDL_CONTROL_RD_EN_CS0, VDL_STEP, SHMOO_AND28_MAX_VDL_LENGTH - 1);
                     }
@@ -1526,8 +1526,8 @@ _shmoo_and28_set_new_step(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
                     DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_VDL_CONTROL_RD_EN_CS0, data);
                     DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_VDL_CONTROL_RD_EN_CS1, data);
 
-                    #if(SHMOO_AND28_PHY_BITWIDTH_IS_32)
-                    if(shmoo_dram_info_ptr->interface_bitwidth == 32)
+                    #if (SHMOO_AND28_PHY_BITWIDTH_IS_32)
+                    if (shmoo_dram_info_ptr->interface_bitwidth == 32)
                     {
                         val = (*scPtr).resultData[2] & 0xFFFF;
                         rd_dqs_delta2 = val - rd_dqs_pos2;
@@ -1541,11 +1541,11 @@ _shmoo_and28_set_new_step(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
                         temp = rd_en_pos2 + rd_dqs_delta2;
                         data = 0;
                         DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_2, VDL_CONTROL_RD_EN_CS0, FORCE, 1);
-                        if(temp & 0x80000000)
+                        if (temp & 0x80000000)
                         {
                             DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_2, VDL_CONTROL_RD_EN_CS0, VDL_STEP, 0);
                         }
-                        else if(temp >= SHMOO_AND28_MAX_VDL_LENGTH)
+                        else if (temp >= SHMOO_AND28_MAX_VDL_LENGTH)
                         {
                             DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_2, VDL_CONTROL_RD_EN_CS0, VDL_STEP, SHMOO_AND28_MAX_VDL_LENGTH - 1);
                         }
@@ -1568,11 +1568,11 @@ _shmoo_and28_set_new_step(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
                         temp = rd_en_pos3 + rd_dqs_delta3;
                         data = 0;
                         DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_3, VDL_CONTROL_RD_EN_CS0, FORCE, 1);
-                        if(temp & 0x80000000)
+                        if (temp & 0x80000000)
                         {
                             DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_3, VDL_CONTROL_RD_EN_CS0, VDL_STEP, 0);
                         }
-                        else if(temp >= SHMOO_AND28_MAX_VDL_LENGTH)
+                        else if (temp >= SHMOO_AND28_MAX_VDL_LENGTH)
                         {
                             DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_3, VDL_CONTROL_RD_EN_CS0, VDL_STEP, SHMOO_AND28_MAX_VDL_LENGTH - 1);
                         }
@@ -1585,8 +1585,8 @@ _shmoo_and28_set_new_step(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
                     }
                     #endif
 
-                    #if(SHMOO_AND28_PHY_BITWIDTH_IS_32)
-                    if(shmoo_dram_info_ptr->interface_bitwidth == 32)
+                    #if (SHMOO_AND28_PHY_BITWIDTH_IS_32)
+                    if (shmoo_dram_info_ptr->interface_bitwidth == 32)
                     {
                         yVal = ((((*scPtr).resultData[0] >> 16) & 0xFFFF) + (((*scPtr).resultData[1] >> 16) & 0xFFFF)
                                 + (((*scPtr).resultData[2] >> 16) & 0xFFFF) + (((*scPtr).resultData[3] >> 16) & 0xFFFF)) >> 2;
@@ -1621,11 +1621,11 @@ _shmoo_and28_set_new_step(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
                     temp = rd_en_pos0 + rd_dqs_delta0;
                     data = 0;
                     DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_0, VDL_CONTROL_RD_EN_CS0, FORCE, 1);
-                    if(temp & 0x80000000)
+                    if (temp & 0x80000000)
                     {
                         DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_0, VDL_CONTROL_RD_EN_CS0, VDL_STEP, 0);
                     }
-                    else if(temp >= SHMOO_AND28_MAX_VDL_LENGTH)
+                    else if (temp >= SHMOO_AND28_MAX_VDL_LENGTH)
                     {
                         DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_0, VDL_CONTROL_RD_EN_CS0, VDL_STEP, SHMOO_AND28_MAX_VDL_LENGTH - 1);
                     }
@@ -1639,11 +1639,11 @@ _shmoo_and28_set_new_step(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
                     temp = rd_en_pos1 + rd_dqs_delta1;
                     data = 0;
                     DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_1, VDL_CONTROL_RD_EN_CS0, FORCE, 1);
-                    if(temp & 0x80000000)
+                    if (temp & 0x80000000)
                     {
                         DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_1, VDL_CONTROL_RD_EN_CS0, VDL_STEP, 0);
                     }
-                    else if(temp >= SHMOO_AND28_MAX_VDL_LENGTH)
+                    else if (temp >= SHMOO_AND28_MAX_VDL_LENGTH)
                     {
                         DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_1, VDL_CONTROL_RD_EN_CS0, VDL_STEP, SHMOO_AND28_MAX_VDL_LENGTH - 1);
                     }
@@ -1654,8 +1654,8 @@ _shmoo_and28_set_new_step(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
                     DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_VDL_CONTROL_RD_EN_CS0, data);
                     DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_VDL_CONTROL_RD_EN_CS1, data);
 
-                    #if(SHMOO_AND28_PHY_BITWIDTH_IS_32)
-                    if(shmoo_dram_info_ptr->interface_bitwidth == 32)
+                    #if (SHMOO_AND28_PHY_BITWIDTH_IS_32)
+                    if (shmoo_dram_info_ptr->interface_bitwidth == 32)
                     {
                         val = (*scPtr).resultData[1] & 0xFFFF;
                         rd_dqs_delta2 = val - rd_dqs_pos2;
@@ -1672,11 +1672,11 @@ _shmoo_and28_set_new_step(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
                         temp = rd_en_pos2 + rd_dqs_delta2;
                         data = 0;
                         DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_2, VDL_CONTROL_RD_EN_CS0, FORCE, 1);
-                        if(temp & 0x80000000)
+                        if (temp & 0x80000000)
                         {
                             DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_2, VDL_CONTROL_RD_EN_CS0, VDL_STEP, 0);
                         }
-                        else if(temp >= SHMOO_AND28_MAX_VDL_LENGTH)
+                        else if (temp >= SHMOO_AND28_MAX_VDL_LENGTH)
                         {
                             DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_2, VDL_CONTROL_RD_EN_CS0, VDL_STEP, SHMOO_AND28_MAX_VDL_LENGTH - 1);
                         }
@@ -1690,11 +1690,11 @@ _shmoo_and28_set_new_step(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
                         temp = rd_en_pos3 + rd_dqs_delta3;
                         data = 0;
                         DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_3, VDL_CONTROL_RD_EN_CS0, FORCE, 1);
-                        if(temp & 0x80000000)
+                        if (temp & 0x80000000)
                         {
                             DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_3, VDL_CONTROL_RD_EN_CS0, VDL_STEP, 0);
                         }
-                        else if(temp >= SHMOO_AND28_MAX_VDL_LENGTH)
+                        else if (temp >= SHMOO_AND28_MAX_VDL_LENGTH)
                         {
                             DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_3, VDL_CONTROL_RD_EN_CS0, VDL_STEP, SHMOO_AND28_MAX_VDL_LENGTH - 1);
                         }
@@ -1707,8 +1707,8 @@ _shmoo_and28_set_new_step(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
                     }
                     #endif
 
-                    #if(SHMOO_AND28_PHY_BITWIDTH_IS_32)
-                    if(shmoo_dram_info_ptr->interface_bitwidth == 32)
+                    #if (SHMOO_AND28_PHY_BITWIDTH_IS_32)
+                    if (shmoo_dram_info_ptr->interface_bitwidth == 32)
                     {
                         yVal = ((((*scPtr).resultData[0] >> 16) & 0xFFFF) + (((*scPtr).resultData[1] >> 16) & 0xFFFF)) >> 1;
                     }
@@ -1742,11 +1742,11 @@ _shmoo_and28_set_new_step(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
                     temp = rd_en_pos0 + rd_dqs_delta0;
                     data = 0;
                     DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_0, VDL_CONTROL_RD_EN_CS0, FORCE, 1);
-                    if(temp & 0x80000000)
+                    if (temp & 0x80000000)
                     {
                         DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_0, VDL_CONTROL_RD_EN_CS0, VDL_STEP, 0);
                     }
-                    else if(temp >= SHMOO_AND28_MAX_VDL_LENGTH)
+                    else if (temp >= SHMOO_AND28_MAX_VDL_LENGTH)
                     {
                         DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_0, VDL_CONTROL_RD_EN_CS0, VDL_STEP, SHMOO_AND28_MAX_VDL_LENGTH - 1);
                     }
@@ -1760,11 +1760,11 @@ _shmoo_and28_set_new_step(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
                     temp = rd_en_pos1 + rd_dqs_delta1;
                     data = 0;
                     DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_1, VDL_CONTROL_RD_EN_CS0, FORCE, 1);
-                    if(temp & 0x80000000)
+                    if (temp & 0x80000000)
                     {
                         DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_1, VDL_CONTROL_RD_EN_CS0, VDL_STEP, 0);
                     }
-                    else if(temp >= SHMOO_AND28_MAX_VDL_LENGTH)
+                    else if (temp >= SHMOO_AND28_MAX_VDL_LENGTH)
                     {
                         DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_1, VDL_CONTROL_RD_EN_CS0, VDL_STEP, SHMOO_AND28_MAX_VDL_LENGTH - 1);
                     }
@@ -1775,8 +1775,8 @@ _shmoo_and28_set_new_step(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
                     DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_VDL_CONTROL_RD_EN_CS0, data);
                     DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_VDL_CONTROL_RD_EN_CS1, data);
 
-                    #if(SHMOO_AND28_PHY_BITWIDTH_IS_32)
-                    if(shmoo_dram_info_ptr->interface_bitwidth == 32)
+                    #if (SHMOO_AND28_PHY_BITWIDTH_IS_32)
+                    if (shmoo_dram_info_ptr->interface_bitwidth == 32)
                     {
                         rd_dqs_delta2 = val - rd_dqs_pos2;
                         rd_dqs_delta3 = val - rd_dqs_pos3;
@@ -1789,11 +1789,11 @@ _shmoo_and28_set_new_step(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
                         temp = rd_en_pos2 + rd_dqs_delta2;
                         data = 0;
                         DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_2, VDL_CONTROL_RD_EN_CS0, FORCE, 1);
-                        if(temp & 0x80000000)
+                        if (temp & 0x80000000)
                         {
                             DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_2, VDL_CONTROL_RD_EN_CS0, VDL_STEP, 0);
                         }
-                        else if(temp >= SHMOO_AND28_MAX_VDL_LENGTH)
+                        else if (temp >= SHMOO_AND28_MAX_VDL_LENGTH)
                         {
                             DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_2, VDL_CONTROL_RD_EN_CS0, VDL_STEP, SHMOO_AND28_MAX_VDL_LENGTH - 1);
                         }
@@ -1807,11 +1807,11 @@ _shmoo_and28_set_new_step(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
                         temp = rd_en_pos3 + rd_dqs_delta3;
                         data = 0;
                         DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_3, VDL_CONTROL_RD_EN_CS0, FORCE, 1);
-                        if(temp & 0x80000000)
+                        if (temp & 0x80000000)
                         {
                             DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_3, VDL_CONTROL_RD_EN_CS0, VDL_STEP, 0);
                         }
-                        else if(temp >= SHMOO_AND28_MAX_VDL_LENGTH)
+                        else if (temp >= SHMOO_AND28_MAX_VDL_LENGTH)
                         {
                             DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_3, VDL_CONTROL_RD_EN_CS0, VDL_STEP, SHMOO_AND28_MAX_VDL_LENGTH - 1);
                         }
@@ -1878,8 +1878,8 @@ _shmoo_and28_set_new_step(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
                         DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_VDL_CONTROL_WR_EDC, data);
                     #endif
 
-                    #if(SHMOO_AND28_PHY_BITWIDTH_IS_32)
-                    if(shmoo_dram_info_ptr->interface_bitwidth == 32)
+                    #if (SHMOO_AND28_PHY_BITWIDTH_IS_32)
+                    if (shmoo_dram_info_ptr->interface_bitwidth == 32)
                     {
                         data = 0;
                         DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_2, VDL_CONTROL_WR_DQ0, FORCE, 1);
@@ -1949,8 +1949,8 @@ _shmoo_and28_set_new_step(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
                         DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_VDL_CONTROL_WR_EDC, data);
                     #endif
 
-                    #if(SHMOO_AND28_PHY_BITWIDTH_IS_32)
-                    if(shmoo_dram_info_ptr->interface_bitwidth == 32)
+                    #if (SHMOO_AND28_PHY_BITWIDTH_IS_32)
+                    if (shmoo_dram_info_ptr->interface_bitwidth == 32)
                     {
                         data = 0;
                         DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_2, VDL_CONTROL_WR_DQ0, FORCE, 1);
@@ -2015,8 +2015,8 @@ _shmoo_and28_set_new_step(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
                         DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_VDL_CONTROL_WR_EDC, data);
                     #endif
 
-                    #if(SHMOO_AND28_PHY_BITWIDTH_IS_32)
-                    if(shmoo_dram_info_ptr->interface_bitwidth == 32)
+                    #if (SHMOO_AND28_PHY_BITWIDTH_IS_32)
+                    if (shmoo_dram_info_ptr->interface_bitwidth == 32)
                     {
                         DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_2_VDL_CONTROL_WR_DQ0, data);
                         DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_2_VDL_CONTROL_WR_DQ1, data);
@@ -2087,7 +2087,7 @@ _shmoo_and28_set_new_step(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
             }
             break;
         case SHMOO_AND28_CTRL_EXTENDED:
-            if(SHMOO_AND28_QUICK_SHMOO_CTRL_EXTENDED)
+            if (SHMOO_AND28_QUICK_SHMOO_CTRL_EXTENDED)
             {
                 DDR_PHY_REG_READ(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_CONTROL_REGS_VDL_CONTROL_AD00, &data);
                 DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_CONTROL_REGS, VDL_CONTROL_AD00, FORCE, 1);
@@ -2172,8 +2172,8 @@ _shmoo_and28_set_new_step(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
     DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_0_READ_FIFO_CLEAR, data);
     DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_READ_FIFO_CLEAR, data);
 
-    #if(SHMOO_AND28_PHY_BITWIDTH_IS_32)
-    if(shmoo_dram_info_ptr->interface_bitwidth == 32)
+    #if (SHMOO_AND28_PHY_BITWIDTH_IS_32)
+    if (shmoo_dram_info_ptr->interface_bitwidth == 32)
     {
         DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_2_READ_FIFO_CLEAR, data);
         DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_3_READ_FIFO_CLEAR, data);
@@ -2380,13 +2380,13 @@ _plot(int unit, int phy_ndx, and28_shmoo_container_t *scPtr, uint32 plotMode)
             return SOC_E_FAIL;
     }
 /*
-    if(engageUIshift)
+    if (engageUIshift)
     { */
         ui = 0;
 
-        for(x = 0; x < sizeX; x++)
+        for (x = 0; x < sizeX; x++)
         {
-            if((ui < SHMOO_AND28_MAX_VISIBLE_UI_COUNT) && (x > (*scPtr).endUI[ui]))
+            if ((ui < SHMOO_AND28_MAX_VISIBLE_UI_COUNT) && (x > (*scPtr).endUI[ui]))
             {
                 str0[x] = ' ';
                 str1[x] = ' ';
@@ -2403,7 +2403,7 @@ _plot(int unit, int phy_ndx, and28_shmoo_container_t *scPtr, uint32 plotMode)
 /*    }
     else
     {
-        for(x = 0; x < sizeX; x++)
+        for (x = 0; x < sizeX; x++)
         {
             str0[x] = '0' + (x / 100);
             str1[x] = '0' + ((x % 100) / 10);
@@ -2415,13 +2415,13 @@ _plot(int unit, int phy_ndx, and28_shmoo_container_t *scPtr, uint32 plotMode)
     str1[x] = 0;
     str2[x] = 0;
 
-    for(i = 0; i < iter; i++)
+    for (i = 0; i < iter; i++)
     {
         xStart = 0;
         maxMidPointX = (*scPtr).resultData[i >> calibShiftAmount] & 0xFFFF;
         maxMidPointY = ((*scPtr).resultData[i >> calibShiftAmount] >> 16) & 0xFFFF;
 
-        if((sizeY > 1) || (i == 0))
+        if ((sizeY > 1) || (i == 0))
         {
             printf("***** Interface.......: %3d\n", phy_ndx);
             printf(" **** VDL step size...: %3u.%03u ps\n", (step1000 / 1000), (step1000 % 1000));
@@ -2450,7 +2450,7 @@ _plot(int unit, int phy_ndx, and28_shmoo_container_t *scPtr, uint32 plotMode)
                     return SOC_E_FAIL;
             }
 
-            if(engageUIshift)
+            if (engageUIshift)
             {
                 printf("  *** UI shift........: On\n");
             }
@@ -2460,7 +2460,7 @@ _plot(int unit, int phy_ndx, and28_shmoo_container_t *scPtr, uint32 plotMode)
             }
         }
 
-        if(sizeY > 1)
+        if (sizeY > 1)
         {
             switch(calibMode)
             {
@@ -2510,26 +2510,26 @@ _plot(int unit, int phy_ndx, and28_shmoo_container_t *scPtr, uint32 plotMode)
             printf("      %s\n", str1);
             printf("      %s\n", str2);
 
-            for(y = yCapMin; y < yCapMax; y++)
+            for (y = yCapMin; y < yCapMax; y++)
             {
                 printf("  %03u ", y << yJump);
 
-                for(x = 0; x < calibStart; x++)
+                for (x = 0; x < calibStart; x++)
                 {
                     printf("%s", outOfSearch);
                 }
 
-                for(x = calibStart; x < sizeX; x++)
+                for (x = calibStart; x < sizeX; x++)
                 {
-                    if(((*scPtr).result2D[xStart + x] >> (i << shiftAmount)) & dataMask)
+                    if (((*scPtr).result2D[xStart + x] >> (i << shiftAmount)) & dataMask)
                     {   /* FAIL - RISING EDGE */
-                        if(x != maxMidPointX)
+                        if (x != maxMidPointX)
                         {   /* REGULAR FAIL */
                             printf("%s", fail_high);
                         }
                         else
                         {   /* FAIL - RISING EDGE */
-                            if((calibPos == SHMOO_AND28_CALIB_RISING_EDGE) || (calibPos == SHMOO_AND28_CALIB_FAIL_START))
+                            if ((calibPos == SHMOO_AND28_CALIB_RISING_EDGE) || (calibPos == SHMOO_AND28_CALIB_FAIL_START))
                             {   /* RISING EDGE */
                                 printf("X");
                             }
@@ -2541,13 +2541,13 @@ _plot(int unit, int phy_ndx, and28_shmoo_container_t *scPtr, uint32 plotMode)
                     }
                     else
                     {   /* PASS - MIDPOINT - FALLING EDGE */
-                        if(x != maxMidPointX)
+                        if (x != maxMidPointX)
                         {   /* REGULAR PASS */
                             printf("%s", pass_low);
                         }
                         else
                         {   /* POTENTIAL MIDPOINT - FALLING EDGE */
-                            if(y == maxMidPointY)
+                            if (y == maxMidPointY)
                             {   /* MID POINT - FALLING EDGE */
                                 printf("X");
                             }
@@ -2565,7 +2565,7 @@ _plot(int unit, int phy_ndx, and28_shmoo_container_t *scPtr, uint32 plotMode)
         }
         else
         {
-            if(i == 0)
+            if (i == 0)
             {
                 switch(calibMode)
                 {
@@ -2611,22 +2611,22 @@ _plot(int unit, int phy_ndx, and28_shmoo_container_t *scPtr, uint32 plotMode)
 
             printf("  %03u ", i);
 
-            for(x = 0; x < calibStart; x++)
+            for (x = 0; x < calibStart; x++)
             {
                 printf("%s", outOfSearch);
             }
 
-            for(x = calibStart; x < sizeX; x++)
+            for (x = calibStart; x < sizeX; x++)
             {
-                if(((*scPtr).result2D[x] >> (i << shiftAmount)) & dataMask)
+                if (((*scPtr).result2D[x] >> (i << shiftAmount)) & dataMask)
                 {   /* FAIL - RISING EDGE */
-                    if(x != maxMidPointX)
+                    if (x != maxMidPointX)
                     {   /* REGULAR FAIL */
                         printf("%s", fail_high);
                     }
                     else
                     {   /* FAIL - RISING EDGE */
-                        if((calibPos == SHMOO_AND28_CALIB_RISING_EDGE) || (calibPos == SHMOO_AND28_CALIB_FAIL_START))
+                        if ((calibPos == SHMOO_AND28_CALIB_RISING_EDGE) || (calibPos == SHMOO_AND28_CALIB_FAIL_START))
                         {   /* RISING EDGE */
                             printf("X");
                         }
@@ -2638,7 +2638,7 @@ _plot(int unit, int phy_ndx, and28_shmoo_container_t *scPtr, uint32 plotMode)
                 }
                 else
                 {   /* PASS - MIDPOINT - FALLING EDGE */
-                    if(x != maxMidPointX)
+                    if (x != maxMidPointX)
                     {   /* REGULAR PASS */
                         printf("%s", pass_low);
                     }
@@ -2669,7 +2669,7 @@ _shmoo_and28_plot(int unit, int phy_ndx, and28_shmoo_container_t *scPtr)
         case SHMOO_AND28_ADDR_EXTENDED:
             return _plot(unit, phy_ndx, scPtr, SHMOO_AND28_WORD);
         case SHMOO_AND28_CTRL_EXTENDED:
-            if(!SHMOO_AND28_QUICK_SHMOO_CTRL_EXTENDED)
+            if (!SHMOO_AND28_QUICK_SHMOO_CTRL_EXTENDED)
             {
                 return _plot(unit, phy_ndx, scPtr, SHMOO_AND28_WORD);
             }
@@ -2700,7 +2700,7 @@ _and28_calculate_step_size(int unit, int phy_ndx, and28_step_size_t *ssPtr)
     uint32 data;
     uint32 timeout;
 
-    if(shmoo_dram_info_ptr->sim_system_mode)
+    if (shmoo_dram_info_ptr->sim_system_mode)
     {
         (*ssPtr).step1000 = 8000;
         (*ssPtr).size1000UI = 78125;
@@ -2723,7 +2723,7 @@ _and28_calculate_step_size(int unit, int phy_ndx, and28_step_size_t *ssPtr)
     {
         DDR_PHY_REG_READ(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_CONTROL_REGS_VDL_CALIB_STATUS1, &data);
 
-        if(DDR_PHY_GET_FIELD(data, DDR34_CORE_PHY_CONTROL_REGS, VDL_CALIB_STATUS1, CALIB_IDLE))
+        if (DDR_PHY_GET_FIELD(data, DDR34_CORE_PHY_CONTROL_REGS, VDL_CALIB_STATUS1, CALIB_IDLE))
         {
         /*    printf("     VDL calibration complete.\n"); */
             break;
@@ -2738,9 +2738,9 @@ _and28_calculate_step_size(int unit, int phy_ndx, and28_step_size_t *ssPtr)
         timeout--;
         sal_usleep(SHMOO_AND28_SHORT_SLEEP);
     }
-    while(TRUE);
+    while (TRUE);
 
-    if(DDR_PHY_GET_FIELD(data, DDR34_CORE_PHY_CONTROL_REGS, VDL_CALIB_STATUS1, CALIB_LOCK_4B) == 0)
+    if (DDR_PHY_GET_FIELD(data, DDR34_CORE_PHY_CONTROL_REGS, VDL_CALIB_STATUS1, CALIB_LOCK_4B) == 0)
     {
         printf("     VDL calibration failed!!! (No lock)\n");
         return SOC_E_FAIL;
@@ -2785,21 +2785,21 @@ _and28_zq_calibration(int unit, int phy_ndx)
     DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_CONTROL_REGS_ZQ_CAL, data);
     sal_usleep(SHMOO_AND28_SHORT_SLEEP);
 
-    for(i = 0; i < SHMOO_AND28_MAX_ZQ_CAL_RANGE; i++)
+    for (i = 0; i < SHMOO_AND28_MAX_ZQ_CAL_RANGE; i++)
     {
         DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_CONTROL_REGS, ZQ_CAL, ZQ_DRIVE_P, i);
         DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_CONTROL_REGS_ZQ_CAL, data);
         sal_usleep(SHMOO_AND28_SHORT_SLEEP);
 
         DDR_PHY_REG_READ(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_CONTROL_REGS_ZQ_CAL, &data);
-        if(DDR_PHY_GET_FIELD(data, DDR34_CORE_PHY_CONTROL_REGS, ZQ_CAL, ZQ_PCOMP_STATUS))
+        if (DDR_PHY_GET_FIELD(data, DDR34_CORE_PHY_CONTROL_REGS, ZQ_CAL, ZQ_PCOMP_STATUS))
         {
             p_drive = i;
             break;
         }
     }
 
-    if(i == SHMOO_AND28_MAX_ZQ_CAL_RANGE)
+    if (i == SHMOO_AND28_MAX_ZQ_CAL_RANGE)
     {
         printf("     WARNING: ZQ calibration error (P) - Manual IO programming required for correct operation\n");
         /* return SOC_E_FAIL; */
@@ -2820,21 +2820,21 @@ _and28_zq_calibration(int unit, int phy_ndx)
     DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_CONTROL_REGS_ZQ_CAL, data);
     sal_usleep(SHMOO_AND28_SHORT_SLEEP);
 
-    for(i = 0; i < SHMOO_AND28_MAX_ZQ_CAL_RANGE; i++)
+    for (i = 0; i < SHMOO_AND28_MAX_ZQ_CAL_RANGE; i++)
     {
         DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_CONTROL_REGS, ZQ_CAL, ZQ_DRIVE_N, i);
         DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_CONTROL_REGS_ZQ_CAL, data);
         sal_usleep(SHMOO_AND28_SHORT_SLEEP);
 
         DDR_PHY_REG_READ(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_CONTROL_REGS_ZQ_CAL, &data);
-        if(DDR_PHY_GET_FIELD(data, DDR34_CORE_PHY_CONTROL_REGS, ZQ_CAL, ZQ_NCOMP_STATUS))
+        if (DDR_PHY_GET_FIELD(data, DDR34_CORE_PHY_CONTROL_REGS, ZQ_CAL, ZQ_NCOMP_STATUS))
         {
             n_drive = i;
             break;
         }
     }
 
-    if(i == SHMOO_AND28_MAX_ZQ_CAL_RANGE)
+    if (i == SHMOO_AND28_MAX_ZQ_CAL_RANGE)
     {
         printf("     WARNING: ZQ calibration error (N) - Manual IO programming required for correct operation\n");
         /* return SOC_E_FAIL; */
@@ -2879,8 +2879,8 @@ _and28_zq_calibration(int unit, int phy_ndx)
     DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_0_DRIVE_PAD_CTL, data);
     DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_DRIVE_PAD_CTL, data);
 
-    #if(SHMOO_AND28_PHY_BITWIDTH_IS_32)
-    if(shmoo_dram_info_ptr->interface_bitwidth == 32)
+    #if (SHMOO_AND28_PHY_BITWIDTH_IS_32)
+    if (shmoo_dram_info_ptr->interface_bitwidth == 32)
     {
         DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_2_DRIVE_PAD_CTL, data);
         DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_3_DRIVE_PAD_CTL, data);
@@ -2899,8 +2899,8 @@ _and28_zq_calibration(int unit, int phy_ndx)
         DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_DQSP_DRIVE_PAD_CTL, data);
         DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_DQSN_DRIVE_PAD_CTL, data);
 
-        #if(SHMOO_AND28_PHY_BITWIDTH_IS_32)
-        if(shmoo_dram_info_ptr->interface_bitwidth == 32)
+        #if (SHMOO_AND28_PHY_BITWIDTH_IS_32)
+        if (shmoo_dram_info_ptr->interface_bitwidth == 32)
         {
             DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_2_DQSP_DRIVE_PAD_CTL, data);
             DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_2_DQSN_DRIVE_PAD_CTL, data);
@@ -2918,8 +2918,8 @@ _and28_zq_calibration(int unit, int phy_ndx)
         DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_0_ALERT_DRIVE_PAD_CTL, data);
         DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_ALERT_DRIVE_PAD_CTL, data);
 
-        #if(SHMOO_AND28_PHY_BITWIDTH_IS_32)
-        if(shmoo_dram_info_ptr->interface_bitwidth == 32)
+        #if (SHMOO_AND28_PHY_BITWIDTH_IS_32)
+        if (shmoo_dram_info_ptr->interface_bitwidth == 32)
         {
             DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_2_ALERT_DRIVE_PAD_CTL, data);
             DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_3_ALERT_DRIVE_PAD_CTL, data);
@@ -2938,8 +2938,8 @@ _and28_zq_calibration(int unit, int phy_ndx)
     DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_0_RD_EN_DRIVE_PAD_CTL, data);
     DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_RD_EN_DRIVE_PAD_CTL, data);
 
-    #if(SHMOO_AND28_PHY_BITWIDTH_IS_32)
-    if(shmoo_dram_info_ptr->interface_bitwidth == 32)
+    #if (SHMOO_AND28_PHY_BITWIDTH_IS_32)
+    if (shmoo_dram_info_ptr->interface_bitwidth == 32)
     {
         DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_2_RD_EN_DRIVE_PAD_CTL, data);
         DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_3_RD_EN_DRIVE_PAD_CTL, data);
@@ -2979,7 +2979,7 @@ _shmoo_and28_entry(int unit, int phy_ndx, and28_shmoo_container_t *scPtr, uint32
             sal_usleep(SHMOO_AND28_SHORT_SLEEP);
 
     /*A08*/ printf("R08. ZQ calibration\n");
-    /*R08*/ if(shmoo_dram_info_ptr->sim_system_mode)
+    /*R08*/ if (shmoo_dram_info_ptr->sim_system_mode)
             {
                 printf("     Skipped for emulation\n");
 
@@ -2994,7 +2994,7 @@ _shmoo_and28_entry(int unit, int phy_ndx, and28_shmoo_container_t *scPtr, uint32
             (*scPtr).step1000 = ss.step1000;
             (*scPtr).size1000UI = ss.size1000UI;
             temp = (ss.size1000UI * 3) / 1000;      /* 300% */
-            if(temp > SHMOO_AND28_MAX_VDL_LENGTH)
+            if (temp > SHMOO_AND28_MAX_VDL_LENGTH)
             {
                 (*scPtr).sizeX = SHMOO_AND28_MAX_VDL_LENGTH;
             }
@@ -3006,7 +3006,7 @@ _shmoo_and28_entry(int unit, int phy_ndx, and28_shmoo_container_t *scPtr, uint32
             temp = (ss.size1000UI * 125) / 100000;      /* 125% */
             (*scPtr).yJump = 2;
             temp = temp >> (*scPtr).yJump;
-            if(temp > SHMOO_AND28_MAX_VREF_RANGE)
+            if (temp > SHMOO_AND28_MAX_VREF_RANGE)
             {
                 (*scPtr).sizeY = SHMOO_AND28_MAX_VREF_RANGE;
             }
@@ -3015,7 +3015,7 @@ _shmoo_and28_entry(int unit, int phy_ndx, and28_shmoo_container_t *scPtr, uint32
                 (*scPtr).sizeY = temp;
             }
 
-            for(i = 0; i < SHMOO_AND28_MAX_VISIBLE_UI_COUNT; i++)
+            for (i = 0; i < SHMOO_AND28_MAX_VISIBLE_UI_COUNT; i++)
             {
                 (*scPtr).endUI[i] = ((i + 1) * (ss.size1000UI)) / 1000;
             }
@@ -3026,8 +3026,8 @@ _shmoo_and28_entry(int unit, int phy_ndx, and28_shmoo_container_t *scPtr, uint32
             DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_0_READ_CONTROL, data);
             DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_READ_CONTROL, data);
 
-            #if(SHMOO_AND28_PHY_BITWIDTH_IS_32)
-            if(shmoo_dram_info_ptr->interface_bitwidth == 32)
+            #if (SHMOO_AND28_PHY_BITWIDTH_IS_32)
+            if (shmoo_dram_info_ptr->interface_bitwidth == 32)
             {
                 DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_2_READ_CONTROL, data);
                 DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_3_READ_CONTROL, data);
@@ -3041,8 +3041,8 @@ _shmoo_and28_entry(int unit, int phy_ndx, and28_shmoo_container_t *scPtr, uint32
             DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_0_RD_EN_DLY_CYC, data);
             DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_RD_EN_DLY_CYC, data);
 
-            #if(SHMOO_AND28_PHY_BITWIDTH_IS_32)
-            if(shmoo_dram_info_ptr->interface_bitwidth == 32)
+            #if (SHMOO_AND28_PHY_BITWIDTH_IS_32)
+            if (shmoo_dram_info_ptr->interface_bitwidth == 32)
             {
                 DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_2_RD_EN_DLY_CYC, data);
                 DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_3_RD_EN_DLY_CYC, data);
@@ -3055,8 +3055,8 @@ _shmoo_and28_entry(int unit, int phy_ndx, and28_shmoo_container_t *scPtr, uint32
             DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_0_VDL_CONTROL_RD_EN_CS0, data);
             DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_VDL_CONTROL_RD_EN_CS0, data);
 
-            #if(SHMOO_AND28_PHY_BITWIDTH_IS_32)
-            if(shmoo_dram_info_ptr->interface_bitwidth == 32)
+            #if (SHMOO_AND28_PHY_BITWIDTH_IS_32)
+            if (shmoo_dram_info_ptr->interface_bitwidth == 32)
             {
                 DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_2_VDL_CONTROL_RD_EN_CS0, data);
                 DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_3_VDL_CONTROL_RD_EN_CS0, data);
@@ -3069,8 +3069,8 @@ _shmoo_and28_entry(int unit, int phy_ndx, and28_shmoo_container_t *scPtr, uint32
             DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_0_VDL_CONTROL_RD_EN_CS1, data);
             DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_VDL_CONTROL_RD_EN_CS1, data);
 
-            #if(SHMOO_AND28_PHY_BITWIDTH_IS_32)
-            if(shmoo_dram_info_ptr->interface_bitwidth == 32)
+            #if (SHMOO_AND28_PHY_BITWIDTH_IS_32)
+            if (shmoo_dram_info_ptr->interface_bitwidth == 32)
             {
                 DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_2_VDL_CONTROL_RD_EN_CS1, data);
                 DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_3_VDL_CONTROL_RD_EN_CS1, data);
@@ -3125,8 +3125,8 @@ _shmoo_and28_entry(int unit, int phy_ndx, and28_shmoo_container_t *scPtr, uint32
                 DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_VDL_CONTROL_RD_EDCN, data);
             #endif
 
-            #if(SHMOO_AND28_PHY_BITWIDTH_IS_32)
-            if(shmoo_dram_info_ptr->interface_bitwidth == 32)
+            #if (SHMOO_AND28_PHY_BITWIDTH_IS_32)
+            if (shmoo_dram_info_ptr->interface_bitwidth == 32)
             {
                 DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_2_VDL_CONTROL_RD_DQ0P, data);
                 DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_2_VDL_CONTROL_RD_DQ0N, data);
@@ -3178,7 +3178,7 @@ _shmoo_and28_entry(int unit, int phy_ndx, and28_shmoo_container_t *scPtr, uint32
             data = 0;
             DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_0, VDL_CONTROL_RD_DQSP, FORCE, 1);
             temp = (((*scPtr).size1000UI * 3) / 4000) + SHMOO_AND28_RD_DQS_VDL_OFFSET;       /* 75% + Offset */
-            if(temp > SHMOO_AND28_MAX_VDL_LENGTH)
+            if (temp > SHMOO_AND28_MAX_VDL_LENGTH)
             {
                 DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_0, VDL_CONTROL_RD_DQSP, VDL_STEP, SHMOO_AND28_MAX_VDL_LENGTH - 1);
             }
@@ -3191,8 +3191,8 @@ _shmoo_and28_entry(int unit, int phy_ndx, and28_shmoo_container_t *scPtr, uint32
             DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_VDL_CONTROL_RD_DQSP, data);
             DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_VDL_CONTROL_RD_DQSN, data);
 
-            #if(SHMOO_AND28_PHY_BITWIDTH_IS_32)
-            if(shmoo_dram_info_ptr->interface_bitwidth == 32)
+            #if (SHMOO_AND28_PHY_BITWIDTH_IS_32)
+            if (shmoo_dram_info_ptr->interface_bitwidth == 32)
             {
                 DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_2_VDL_CONTROL_RD_DQSP, data);
                 DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_2_VDL_CONTROL_RD_DQSN, data);
@@ -3207,8 +3207,8 @@ _shmoo_and28_entry(int unit, int phy_ndx, and28_shmoo_container_t *scPtr, uint32
             DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_0_WR_CHAN_DLY_CYC, data);
             DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_WR_CHAN_DLY_CYC, data);
 
-            #if(SHMOO_AND28_PHY_BITWIDTH_IS_32)
-            if(shmoo_dram_info_ptr->interface_bitwidth == 32)
+            #if (SHMOO_AND28_PHY_BITWIDTH_IS_32)
+            if (shmoo_dram_info_ptr->interface_bitwidth == 32)
             {
                 DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_2_WR_CHAN_DLY_CYC, data);
                 DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_3_WR_CHAN_DLY_CYC, data);
@@ -3218,7 +3218,7 @@ _shmoo_and28_entry(int unit, int phy_ndx, and28_shmoo_container_t *scPtr, uint32
             data = 0;
             DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_0, VDL_CONTROL_WR_DQ0, FORCE, 1);
             temp = (*scPtr).size1000UI / 2000;
-            if(temp > SHMOO_AND28_MAX_VDL_LENGTH)
+            if (temp > SHMOO_AND28_MAX_VDL_LENGTH)
             {
                 DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_0, VDL_CONTROL_WR_DQ0, VDL_STEP, SHMOO_AND28_MAX_VDL_LENGTH - 1);
             }
@@ -3251,8 +3251,8 @@ _shmoo_and28_entry(int unit, int phy_ndx, and28_shmoo_container_t *scPtr, uint32
                 DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_VDL_CONTROL_WR_EDC, data);
             #endif
 
-            #if(SHMOO_AND28_PHY_BITWIDTH_IS_32)
-            if(shmoo_dram_info_ptr->interface_bitwidth == 32)
+            #if (SHMOO_AND28_PHY_BITWIDTH_IS_32)
+            if (shmoo_dram_info_ptr->interface_bitwidth == 32)
             {
                 DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_2_VDL_CONTROL_WR_DQ0, data);
                 DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_2_VDL_CONTROL_WR_DQ1, data);
@@ -3288,7 +3288,7 @@ _shmoo_and28_entry(int unit, int phy_ndx, and28_shmoo_container_t *scPtr, uint32
             (*scPtr).step1000 = ss.step1000;
             (*scPtr).size1000UI = ss.size1000UI;
             temp = (ss.size1000UI * 125) / 100000;      /* 125% */
-            if(temp > SHMOO_AND28_MAX_VDL_LENGTH)
+            if (temp > SHMOO_AND28_MAX_VDL_LENGTH)
             {
                 (*scPtr).sizeX = SHMOO_AND28_MAX_VDL_LENGTH;
             }
@@ -3297,7 +3297,7 @@ _shmoo_and28_entry(int unit, int phy_ndx, and28_shmoo_container_t *scPtr, uint32
                 (*scPtr).sizeX = temp;
             }
 
-            for(i = 0; i < SHMOO_AND28_MAX_VISIBLE_UI_COUNT; i++)
+            for (i = 0; i < SHMOO_AND28_MAX_VISIBLE_UI_COUNT; i++)
             {
                 (*scPtr).endUI[i] = ((i + 1) * (ss.size1000UI)) / 1000;
             }
@@ -3307,7 +3307,7 @@ _shmoo_and28_entry(int unit, int phy_ndx, and28_shmoo_container_t *scPtr, uint32
             (*scPtr).step1000 = ss.step1000;
             (*scPtr).size1000UI = ss.size1000UI;
             temp = (ss.size1000UI * 125) / 100000;      /* 125% */
-            if(temp > SHMOO_AND28_MAX_VDL_LENGTH)
+            if (temp > SHMOO_AND28_MAX_VDL_LENGTH)
             {
                 (*scPtr).sizeX = SHMOO_AND28_MAX_VDL_LENGTH;
             }
@@ -3316,7 +3316,7 @@ _shmoo_and28_entry(int unit, int phy_ndx, and28_shmoo_container_t *scPtr, uint32
                 (*scPtr).sizeX = temp;
             }
 
-            for(i = 0; i < SHMOO_AND28_MAX_VISIBLE_UI_COUNT; i++)
+            for (i = 0; i < SHMOO_AND28_MAX_VISIBLE_UI_COUNT; i++)
             {
                 (*scPtr).endUI[i] = ((i + 1) * (ss.size1000UI)) / 1000;
             }
@@ -3326,7 +3326,7 @@ _shmoo_and28_entry(int unit, int phy_ndx, and28_shmoo_container_t *scPtr, uint32
             (*scPtr).step1000 = ss.step1000;
             (*scPtr).size1000UI = ss.size1000UI;
             temp = (ss.size1000UI * 25) / 10000;      /* 250% */
-            if(temp > SHMOO_AND28_MAX_VDL_LENGTH)
+            if (temp > SHMOO_AND28_MAX_VDL_LENGTH)
             {
                 (*scPtr).sizeX = SHMOO_AND28_MAX_VDL_LENGTH;
             }
@@ -3335,7 +3335,7 @@ _shmoo_and28_entry(int unit, int phy_ndx, and28_shmoo_container_t *scPtr, uint32
                 (*scPtr).sizeX = temp;
             }
 
-            for(i = 0; i < SHMOO_AND28_MAX_VISIBLE_UI_COUNT; i++)
+            for (i = 0; i < SHMOO_AND28_MAX_VISIBLE_UI_COUNT; i++)
             {
                 (*scPtr).endUI[i] = ((i + 1) * (ss.size1000UI)) / 1000;
             }
@@ -3345,7 +3345,7 @@ _shmoo_and28_entry(int unit, int phy_ndx, and28_shmoo_container_t *scPtr, uint32
             (*scPtr).step1000 = ss.step1000;
             (*scPtr).size1000UI = ss.size1000UI;
             temp = (ss.size1000UI * 25) / 10000;      /* 250% */
-            if(temp > SHMOO_AND28_MAX_VDL_LENGTH)
+            if (temp > SHMOO_AND28_MAX_VDL_LENGTH)
             {
                 (*scPtr).sizeX = SHMOO_AND28_MAX_VDL_LENGTH;
             }
@@ -3354,7 +3354,7 @@ _shmoo_and28_entry(int unit, int phy_ndx, and28_shmoo_container_t *scPtr, uint32
                 (*scPtr).sizeX = temp;
             }
 
-            for(i = 0; i < SHMOO_AND28_MAX_VISIBLE_UI_COUNT; i++)
+            for (i = 0; i < SHMOO_AND28_MAX_VISIBLE_UI_COUNT; i++)
             {
                 (*scPtr).endUI[i] = ((i + 1) * (ss.size1000UI)) / 1000;
             }
@@ -3630,8 +3630,8 @@ _shmoo_and28_save(int unit, int phy_ndx, and28_shmoo_config_param_t *config_para
     DDR_PHY_REG_READ(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_READ_CONTROL, &data);
     (*config_param).rd_control[1] = (uint8) data;
 
-    #if(SHMOO_AND28_PHY_BITWIDTH_IS_32)
-    if(shmoo_dram_info_ptr->interface_bitwidth == 32)
+    #if (SHMOO_AND28_PHY_BITWIDTH_IS_32)
+    if (shmoo_dram_info_ptr->interface_bitwidth == 32)
     {
         #if (defined(PHY_AND28_E0) || defined(PHY_AND28_E2))
             DDR_PHY_REG_READ(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_2_VDL_CONTROL_WR_DQS_P, &data);
@@ -4044,8 +4044,8 @@ _shmoo_and28_restore(int unit, int phy_ndx, and28_shmoo_config_param_t *config_p
     data = SET_RD_CONTROL((uint32) (*config_param).rd_control[1]);
     DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_READ_CONTROL, data);
 
-    #if(SHMOO_AND28_PHY_BITWIDTH_IS_32)
-    if(shmoo_dram_info_ptr->interface_bitwidth == 32)
+    #if (SHMOO_AND28_PHY_BITWIDTH_IS_32)
+    if (shmoo_dram_info_ptr->interface_bitwidth == 32)
     {
         data = SET_WR_VDL_FORCE((uint32) (*config_param).wr_vdl_dqsp[2]);
         #if (defined(PHY_AND28_E0) || defined(PHY_AND28_E2))
@@ -4224,8 +4224,8 @@ _shmoo_and28_restore(int unit, int phy_ndx, and28_shmoo_config_param_t *config_p
     DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_0_READ_FIFO_CLEAR, data);
     DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_READ_FIFO_CLEAR, data);
 
-    #if(SHMOO_AND28_PHY_BITWIDTH_IS_32)
-    if(shmoo_dram_info_ptr->interface_bitwidth == 32)
+    #if (SHMOO_AND28_PHY_BITWIDTH_IS_32)
+    if (shmoo_dram_info_ptr->interface_bitwidth == 32)
     {
         DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_2_READ_FIFO_CLEAR, data);
         DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_3_READ_FIFO_CLEAR, data);
@@ -4270,16 +4270,16 @@ soc_and28_shmoo_ctl(int unit, int phy_ndx, int shmoo_type, int stat, int plot, i
     dramType = shmoo_dram_info_ptr->dram_type;
     ctlType = shmoo_dram_info_ptr->ctl_type;
 
-    if(!stat)
+    if (!stat)
     {
         scPtr = &shmoo_container;
-        if(scPtr == NULL)
+        if (scPtr == NULL)
         {
             return SOC_E_MEMORY;
         }
         sal_memset(scPtr, 0, sizeof(and28_shmoo_container_t));
 
-        if(phy_ndx != SHMOO_AND28_INTERFACE_RSVP)
+        if (phy_ndx != SHMOO_AND28_INTERFACE_RSVP)
         {
             ndx = phy_ndx;
             ndxEnd = phy_ndx + 1;
@@ -4290,13 +4290,13 @@ soc_and28_shmoo_ctl(int unit, int phy_ndx, int shmoo_type, int stat, int plot, i
             ndxEnd = SHMOO_AND28_MAX_INTERFACES;
         }
 
-        for(; ndx < ndxEnd; ndx++)
+        for (; ndx < ndxEnd; ndx++)
         {
-            if(!_shmoo_and28_check_dram(ndx)) {
+            if (!_shmoo_and28_check_dram(ndx)) {
                 continue;
             }
 
-            if(action == SHMOO_AND28_ACTION_RESTORE)
+            if (action == SHMOO_AND28_ACTION_RESTORE)
             {
                 switch(ctlType)
                 {
@@ -4306,7 +4306,7 @@ soc_and28_shmoo_ctl(int unit, int phy_ndx, int shmoo_type, int stat, int plot, i
                         _shmoo_and28_restore(unit, phy_ndx, config_param);
                         break;
                     default:
-                        if(scPtr != NULL)
+                        if (scPtr != NULL)
                         {
                         /*    sal_free(scPtr); */
                             scPtr = NULL;
@@ -4316,7 +4316,7 @@ soc_and28_shmoo_ctl(int unit, int phy_ndx, int shmoo_type, int stat, int plot, i
                         return SOC_E_FAIL;
                 }
             }
-            else if((action == SHMOO_AND28_ACTION_RUN) || (action == SHMOO_AND28_ACTION_RUN_AND_SAVE))
+            else if ((action == SHMOO_AND28_ACTION_RUN) || (action == SHMOO_AND28_ACTION_RUN_AND_SAVE))
             {
                 switch(ctlType)
                 {
@@ -4345,7 +4345,7 @@ soc_and28_shmoo_ctl(int unit, int phy_ndx, int shmoo_type, int stat, int plot, i
                         (*scPtr).dramType = dramType;
                         (*scPtr).ctlType = ctlType;
 
-                        if(shmoo_type != SHMOO_AND28_SHMOO_RSVP)
+                        if (shmoo_type != SHMOO_AND28_SHMOO_RSVP)
                         {
                             (*scPtr).shmooType = shmoo_type;
                             _shmoo_and28_entry(unit, ndx, scPtr, SHMOO_AND28_SINGLE);
@@ -4353,7 +4353,7 @@ soc_and28_shmoo_ctl(int unit, int phy_ndx, int shmoo_type, int stat, int plot, i
                             _shmoo_and28_calib_2D(unit, ndx, scPtr);
                             _shmoo_and28_set_new_step(unit, ndx, scPtr);
 #ifdef PLOT_SUPPORT
-                            if(plot)
+                            if (plot)
                             {
                                 _shmoo_and28_plot(unit, ndx, scPtr);
                             }
@@ -4362,7 +4362,7 @@ soc_and28_shmoo_ctl(int unit, int phy_ndx, int shmoo_type, int stat, int plot, i
                         }
                         else
                         {
-                            for(i = 0; i < seqCount; i++)
+                            for (i = 0; i < seqCount; i++)
                             {
                                 (*scPtr).shmooType = seqPtr[i];
                                 _shmoo_and28_entry(unit, ndx, scPtr, SHMOO_AND28_SEQUENTIAL);
@@ -4370,7 +4370,7 @@ soc_and28_shmoo_ctl(int unit, int phy_ndx, int shmoo_type, int stat, int plot, i
                                 _shmoo_and28_calib_2D(unit, ndx, scPtr);
                                 _shmoo_and28_set_new_step(unit, ndx, scPtr);
 #ifdef PLOT_SUPPORT
-                                if(plot)
+                                if (plot)
                                 {
                                     _shmoo_and28_plot(unit, ndx, scPtr);
                                 }
@@ -4381,7 +4381,7 @@ soc_and28_shmoo_ctl(int unit, int phy_ndx, int shmoo_type, int stat, int plot, i
 
                         break;
                     default:
-                        if(scPtr != NULL)
+                        if (scPtr != NULL)
                         {
                         /*    sal_free(scPtr); */
                             scPtr = NULL;
@@ -4392,13 +4392,13 @@ soc_and28_shmoo_ctl(int unit, int phy_ndx, int shmoo_type, int stat, int plot, i
                 }
             }
 
-            if((action == SHMOO_AND28_ACTION_RUN_AND_SAVE) || (action == SHMOO_AND28_ACTION_SAVE))
+            if ((action == SHMOO_AND28_ACTION_RUN_AND_SAVE) || (action == SHMOO_AND28_ACTION_SAVE))
             {
                 _shmoo_and28_save(unit, phy_ndx, config_param);
             }
         }
 
-        if(scPtr != NULL)
+        if (scPtr != NULL)
         {
         /*    sal_free(scPtr); */
             scPtr = NULL;
@@ -4428,7 +4428,7 @@ int
 soc_and28_shmoo_dram_info_set(int unit, and28_shmoo_dram_info_t *sdi)
 {
 
-#if(!SHMOO_AND28_PHY_CONSTANT_CONFIG)
+#if (!SHMOO_AND28_PHY_CONSTANT_CONFIG)
     shmoo_dram_info_ptr = &shmoo_dram_info;
     shmoo_dram_info_ptr->ctl_type = (*sdi).ctl_type;
     shmoo_dram_info_ptr->dram_type = (*sdi).dram_type;
@@ -4458,7 +4458,7 @@ _soc_and28_shmoo_phy_cfg_pll(int unit, int phy_ndx)
     uint32 pll_dividers;
     uint32 pll_frac_divider;
 
-    if(shmoo_dram_info_ptr->ref_clk_mhz != 50)
+    if (shmoo_dram_info_ptr->ref_clk_mhz != 50)
     {
         printf("     Unsupported reference flock frequency: %4d MHz\n", shmoo_dram_info_ptr->ref_clk_mhz);
         return SOC_E_FAIL;
@@ -4499,7 +4499,7 @@ _soc_and28_shmoo_phy_cfg_pll(int unit, int phy_ndx)
     printf("     Fref.............: %4d MHz\n", shmoo_dram_info_ptr->ref_clk_mhz);
     printf("     Data rate........: %4d Mbps\n", shmoo_dram_info_ptr->data_rate_mbps);
 
-    if(phy_ndx != SHMOO_AND28_INTERFACE_RSVP)
+    if (phy_ndx != SHMOO_AND28_INTERFACE_RSVP)
     {
         ndx = phy_ndx;
         ndxEnd = phy_ndx + 1;
@@ -4510,9 +4510,9 @@ _soc_and28_shmoo_phy_cfg_pll(int unit, int phy_ndx)
         ndxEnd = SHMOO_AND28_MAX_INTERFACES;
     }
 
-    for(; ndx < ndxEnd; ndx++)
+    for (; ndx < ndxEnd; ndx++)
     {
-        if(!_shmoo_and28_check_dram(ndx))
+        if (!_shmoo_and28_check_dram(ndx))
         {
             continue;
         }
@@ -4531,7 +4531,7 @@ _soc_and28_shmoo_phy_cfg_pll(int unit, int phy_ndx)
         {
             DDR_PHY_REG_READ(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_CONTROL_REGS_PLL_STATUS, &data);
 
-            if(DDR_PHY_GET_FIELD(data, DDR34_CORE_PHY_CONTROL_REGS, PLL_STATUS, LOCK))
+            if (DDR_PHY_GET_FIELD(data, DDR34_CORE_PHY_CONTROL_REGS, PLL_STATUS, LOCK))
             {
                 printf("     PLL locked.\n");
                 break;
@@ -4546,7 +4546,7 @@ _soc_and28_shmoo_phy_cfg_pll(int unit, int phy_ndx)
             timeout--;
             sal_usleep(SHMOO_AND28_SHORT_SLEEP);
         }
-        while(TRUE);
+        while (TRUE);
 
         DDR_PHY_REG_READ(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_CONTROL_REGS_PLL_CONFIG, &data);
         DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_CONTROL_REGS, PLL_CONFIG, RESET_POST_DIV, 0);
@@ -4570,7 +4570,7 @@ soc_and28_shmoo_phy_init(int unit, int phy_ndx)
     uint32 size1000UI, sizeUI;
     and28_step_size_t ss;
 
-    if(phy_ndx != SHMOO_AND28_INTERFACE_RSVP)
+    if (phy_ndx != SHMOO_AND28_INTERFACE_RSVP)
     {
         ndx = phy_ndx;
         ndxEnd = phy_ndx + 1;
@@ -4581,9 +4581,9 @@ soc_and28_shmoo_phy_init(int unit, int phy_ndx)
         ndxEnd = SHMOO_AND28_MAX_INTERFACES;
     }
 
-    for(; ndx < ndxEnd; ndx++)
+    for (; ndx < ndxEnd; ndx++)
     {
-        if(!_shmoo_and28_check_dram(ndx))
+        if (!_shmoo_and28_check_dram(ndx))
         {
             continue;
         }
@@ -4605,7 +4605,7 @@ soc_and28_shmoo_phy_init(int unit, int phy_ndx)
         sal_usleep(SHMOO_AND28_SHORT_SLEEP);
 
 /*A02*/ printf("A02. Configure timing parameters\n");
-        if(SHMOO_AND28_PHY_BITWIDTH_IS_32)
+        if (SHMOO_AND28_PHY_BITWIDTH_IS_32)
         {
             switch(shmoo_dram_info_ptr->data_rate_mbps)
             {
@@ -4742,7 +4742,7 @@ soc_and28_shmoo_phy_init(int unit, int phy_ndx)
 /*A06*/ printf("A06. Configure ADDR/CTRL VDLs\n");
         data = 0;
         DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_CONTROL_REGS, VDL_CONTROL_AD00, FORCE, 1);
-        if(sizeUI > SHMOO_AND28_MAX_VDL_LENGTH)
+        if (sizeUI > SHMOO_AND28_MAX_VDL_LENGTH)
         {
             DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_CONTROL_REGS, VDL_CONTROL_AD00, VDL_STEP, SHMOO_AND28_MAX_VDL_LENGTH - 1);
         }
@@ -4790,7 +4790,7 @@ soc_and28_shmoo_phy_init(int unit, int phy_ndx)
         DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_CONTROL_REGS_VIRTUAL_VTT_CONTROL, data);
 
 /*A08*/ printf("A08. ZQ calibration\n");
-/*R08*/ if(shmoo_dram_info_ptr->sim_system_mode)
+/*R08*/ if (shmoo_dram_info_ptr->sim_system_mode)
         {
             printf("     Skipped for emulation\n");
 
@@ -4830,8 +4830,8 @@ soc_and28_shmoo_phy_init(int unit, int phy_ndx)
         DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_0, ODT_CONTROL, ODT_PRE_LENGTH, 4);
         DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_0_ODT_CONTROL, data);
         DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_ODT_CONTROL, data);
-        #if(SHMOO_AND28_PHY_BITWIDTH_IS_32)
-        if(shmoo_dram_info_ptr->interface_bitwidth == 32)
+        #if (SHMOO_AND28_PHY_BITWIDTH_IS_32)
+        if (shmoo_dram_info_ptr->interface_bitwidth == 32)
         {
             DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_2_ODT_CONTROL, data);
             DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_3_ODT_CONTROL, data);
@@ -4848,8 +4848,8 @@ soc_and28_shmoo_phy_init(int unit, int phy_ndx)
         DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_0, WR_PREAMBLE_MODE, DQS_PREAM_BITS, 2);
         DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_0_WR_PREAMBLE_MODE, data);
         DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_WR_PREAMBLE_MODE, data);
-        #if(SHMOO_AND28_PHY_BITWIDTH_IS_32)
-        if(shmoo_dram_info_ptr->interface_bitwidth == 32)
+        #if (SHMOO_AND28_PHY_BITWIDTH_IS_32)
+        if (shmoo_dram_info_ptr->interface_bitwidth == 32)
         {
             DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_2_WR_PREAMBLE_MODE, data);
             DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_3_WR_PREAMBLE_MODE, data);
@@ -4863,8 +4863,8 @@ soc_and28_shmoo_phy_init(int unit, int phy_ndx)
         DDR_PHY_SET_FIELD(data, DDR34_CORE_PHY_BYTE_LANE_0, IDLE_PAD_CONTROL, AUTO_DQ_IDDQ_MODE, 3);
         DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_0_IDLE_PAD_CONTROL, data);
         DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_1_IDLE_PAD_CONTROL, data);
-        #if(SHMOO_AND28_PHY_BITWIDTH_IS_32)
-        if(shmoo_dram_info_ptr->interface_bitwidth == 32)
+        #if (SHMOO_AND28_PHY_BITWIDTH_IS_32)
+        if (shmoo_dram_info_ptr->interface_bitwidth == 32)
         {
             DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_2_IDLE_PAD_CONTROL, data);
             DDR_PHY_REG_WRITE(unit, SHMOO_AND28_PHY_REG_BASE, 0, DDR34_CORE_PHY_BYTE_LANE_3_IDLE_PAD_CONTROL, data);

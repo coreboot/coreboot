@@ -891,7 +891,7 @@ static int tegra_dp_link_config(struct tegra_dc_dp_data *dp,
 	}
 
 	/* Set power state if it is not in normal level */
-	if(tegra_dc_dp_dpcd_read(dp, NV_DPCD_SET_POWER, &dpcd_data))
+	if (tegra_dc_dp_dpcd_read(dp, NV_DPCD_SET_POWER, &dpcd_data))
 		return DP_LT_FAILED;
 
 	if (dpcd_data == NV_DPCD_SET_POWER_VAL_D3_PWRDWN) {
@@ -910,7 +910,7 @@ static int tegra_dp_link_config(struct tegra_dc_dp_data *dp,
 
 	/* Enable ASSR if possible */
 	if (link_cfg->alt_scramber_reset_cap)
-		if(tegra_dc_dp_set_assr(dp, 1))
+		if (tegra_dc_dp_set_assr(dp, 1))
 			return DP_LT_FAILED;
 
 	if (tegra_dp_set_link_bandwidth(dp, link_cfg->link_bw)) {

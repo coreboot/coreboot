@@ -18,6 +18,7 @@ bootblock-y += chromeos.c
 bootblock-y += memlayout.ld
 bootblock-y += pwm_regulator.c
 bootblock-y += boardid.c
+bootblock-y += reset.c
 
 verstage-y += chromeos.c
 verstage-y += memlayout.ld

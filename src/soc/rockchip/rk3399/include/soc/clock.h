@@ -112,6 +112,7 @@ void rkclk_configure_spi(unsigned int bus, unsigned int hz);
 void rkclk_configure_tsadc(unsigned int hz);
 void rkclk_configure_vop_aclk(u32 vop_id, u32 aclk_hz);
 void rkclk_ddr_reset(u32 ch, u32 ctl, u32 phy);
+int rkclk_was_watchdog_reset(void);
 uint32_t rkclk_i2c_clock_for_bus(unsigned bus);
 
 #endif	/* __SOC_ROCKCHIP_RK3399_CLOCK_H__ */

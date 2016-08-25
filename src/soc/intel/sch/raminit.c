@@ -212,7 +212,7 @@ static void do_jedec_init(struct sys_info *sysinfo)
 		if (rank == 0)
 			program_dll_config(sysinfo);
 
-		printk(BIOS_DEBUG, "Setting up RAM \n");
+		printk(BIOS_DEBUG, "Setting up RAM\n");
 
 		/*
 		 * Wait 200us

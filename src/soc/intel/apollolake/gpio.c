@@ -281,7 +281,7 @@ static void print_gpi_status(const struct gpi_status *sts)
 
 				abs_bit = bit_set;
 				abs_bit += group * GPIO_MAX_NUM_PER_GROUP;
-				printk(BIOS_DEBUG, "%s %d \n",comm->grp_name,
+				printk(BIOS_DEBUG, "%s %d\n",comm->grp_name,
 								abs_bit);
 			}
 		}

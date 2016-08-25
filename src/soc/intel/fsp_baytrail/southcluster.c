@@ -272,7 +272,7 @@ static void sc_pirq_init(device_t dev)
 
 	/* Set up the PIRQ PIC routing based on static config. */
 	printk(BIOS_SPEW, "Start writing IRQ assignments\n"
-			"PIRQ\tA \tB \tC \tD \tE \tF \tG \tH\n"
+			"PIRQ\tA\tB\tC\tD\tE\tF\tG\tH\n"
 			"IRQ ");
 	for (i = 0; i < NUM_PIRQS; i++) {
 		write8(pr_base + i, ir->pic[i]);

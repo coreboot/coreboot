@@ -127,7 +127,7 @@ s32 pwrap_wacs2(u32 write, u16 adr, u16 wdata, u16 *rdata, u32 init_check)
 		/* Prevent someone to used pwrap before pwrap init */
 		if (((reg_rdata >> RDATA_INIT_DONE_SHIFT) &
 		    RDATA_INIT_DONE_MASK) != WACS_INIT_DONE) {
-			pwrap_err("initialization isn't finished \n");
+			pwrap_err("initialization isn't finished\n");
 			return E_PWR_NOT_INIT_DONE;
 		}
 	}

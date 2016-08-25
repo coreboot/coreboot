@@ -52,7 +52,7 @@ void console_tx_hex32(unsigned int value)
 void console_tx_string(const char *str)
 {
 	unsigned char ch;
-	while((ch = *str++) != '\0') {
+	while ((ch = *str++) != '\0') {
 		if (ch == '\n')
 			console_tx_byte('\r');
 		console_tx_byte(ch);

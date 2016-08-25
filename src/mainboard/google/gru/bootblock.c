@@ -24,6 +24,7 @@
 #include <soc/i2c.h>
 #include <soc/pwm.h>
 #include <soc/spi.h>
+#include <vendorcode/google/chromeos/chromeos.h>
 
 #include "board.h"
 #include "pwm_regulator.h"
@@ -74,6 +75,9 @@ static void speed_up_boot_cpu(void)
 void bootblock_mainboard_init(void)
 {
 	speed_up_boot_cpu();
+
+	if (rkclk_was_watchdog_reset())
+		reboot_from_watchdog();
 
 	/* Set pinmux and configure spi flashrom. */
 	write32(&rk3399_pmugrf->spi1_rxd, IOMUX_SPI1_RX);

@@ -834,3 +834,9 @@ void rkclk_configure_emmc(void)
 			      CLK_EMMC_PLL_SEL_GPLL << CLK_EMMC_PLL_SHIFT |
 			      (src_clk_div - 1) << CLK_EMMC_DIV_CON_SHIFT));
 }
+
+int rkclk_was_watchdog_reset(void)
+{
+	/* Bits 5 and 4 are "second" and "first" global watchdog reset. */
+	return read32(&cru_ptr->glb_rst_st) & 0x30;
+}

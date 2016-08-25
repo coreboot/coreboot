@@ -62,7 +62,7 @@ static int uart8250_mem_can_tx_byte(void *base)
 static void uart8250_mem_tx_byte(void *base, unsigned char data)
 {
 	unsigned long int i = SINGLE_CHAR_TIMEOUT;
-	while(i-- && !uart8250_mem_can_tx_byte(base))
+	while (i-- && !uart8250_mem_can_tx_byte(base))
 		udelay(1);
 	uart8250_write(base, UART8250_TBR, data);
 }
@@ -70,7 +70,7 @@ static void uart8250_mem_tx_byte(void *base, unsigned char data)
 static void uart8250_mem_tx_flush(void *base)
 {
 	unsigned long int i = FIFO_TIMEOUT;
-	while(i-- && !(uart8250_read(base, UART8250_LSR) & UART8250_LSR_TEMT))
+	while (i-- && !(uart8250_read(base, UART8250_LSR) & UART8250_LSR_TEMT))
 		udelay(1);
 }
 
@@ -82,7 +82,7 @@ static int uart8250_mem_can_rx_byte(void *base)
 static unsigned char uart8250_mem_rx_byte(void *base)
 {
 	unsigned long int i = SINGLE_CHAR_TIMEOUT;
-	while(i-- && !uart8250_mem_can_rx_byte(base))
+	while (i-- && !uart8250_mem_can_rx_byte(base))
 		udelay(1);
 	if (i)
 		return uart8250_read(base, UART8250_RBR);

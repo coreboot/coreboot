@@ -528,7 +528,7 @@ static void ati_ragexl_init(struct device *dev)
 
 
 	res = dev->resource_list;
-	if(res->flags & IORESOURCE_IO) {
+	if (res->flags & IORESOURCE_IO) {
 		res = res->next;
 	}
 
@@ -542,7 +542,7 @@ static void ati_ragexl_init(struct device *dev)
 	/* Fix this to look for the correct index. */
 	//if (dev->resource_list && dev->resource_list->next)
         res = dev->resource_list->next->next;
-        if(res->flags & IORESOURCE_MEM) {
+        if (res->flags & IORESOURCE_MEM) {
 		info->ati_regbase = res2mmio(res, 0x400, 0); //using auxiliary register
         }
 

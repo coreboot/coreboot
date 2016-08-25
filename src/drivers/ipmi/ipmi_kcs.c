@@ -55,7 +55,7 @@ static int wait_ibf_timeout(int port)
 		if (!(ipmi_kcs_status(port) & IPMI_KCS_IBF))
 			return 0;
 		udelay(100);
-	} while(timeout--);
+	} while (timeout--);
 	printk(BIOS_ERR, "wait_ibf timeout!\n");
 	return timeout;
 }
@@ -67,7 +67,7 @@ static int wait_obf_timeout(int port)
 		if ((ipmi_kcs_status(port) & IPMI_KCS_OBF))
 			return 0;
 		udelay(100);
-	} while(timeout--);
+	} while (timeout--);
 
 	printk(BIOS_ERR, "wait_obf timeout!\n");
 	return timeout;
@@ -160,7 +160,7 @@ static int ipmi_kcs_send_message(int port, int netfn, int lun, int cmd,
 		return ret;
 	}
 
-	while(len-- > 1) {
+	while (len-- > 1) {
 		if ((ret = ipmi_kcs_send_data_byte(port, *msg++))) {
 			printk(BIOS_ERR, "IPMI BYTE WRITE failed\n");
 			return ret;
@@ -189,7 +189,7 @@ static int ipmi_kcs_read_message(int port, unsigned char *msg, int len)
 	if (wait_ibf_timeout(port))
 		return 1;
 
-	for(;;) {
+	for (;;) {
 		status = ipmi_kcs_status(port);
 
 		if (IPMI_KCS_STATE(status) == IPMI_KCS_STATE_IDLE)

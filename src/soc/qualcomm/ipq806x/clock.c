@@ -14,7 +14,7 @@ void uart_pll_vote_clk_enable(unsigned int clk_dummy)
 	setbits_le32(BB_PLL_ENA_SC0_REG, BIT(8));
 
 	if (!clk_dummy)
-		while((read32(PLL_LOCK_DET_STATUS_REG) & BIT(8)) == 0);
+		while ((read32(PLL_LOCK_DET_STATUS_REG) & BIT(8)) == 0);
 }
 
 /**

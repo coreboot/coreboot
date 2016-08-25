@@ -170,7 +170,7 @@ static void sata_enable(device_t dev)
 	reg16 = pci_read_config16(dev, 0x90);
 	reg16 &= ~0x03e0;
 	reg16 |= (config->sata_port_map ^ 0x3) << 8;
-	if(config->sata_ahci)
+	if (config->sata_ahci)
 		reg16 |= 0x60;
 	pci_write_config16(dev, 0x90, reg16);
 

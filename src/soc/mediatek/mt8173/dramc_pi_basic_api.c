@@ -99,7 +99,7 @@ static void mem_pll_pre_init(u32 channel)
 	setbits_le32(&ch[channel].ddrphy_regs->mempll_divider, 0x1 << 24 |
 							       0x1 << 7);
 
-	if(channel == CHANNEL_A) {
+	if (channel == CHANNEL_A) {
 		/* select memory clock sync for channel A (internal source) */
 		clrbits_le32(&ch[channel].ddrphy_regs->mempll_divider, 0x1 << 3);
 	}
@@ -292,7 +292,7 @@ static void mem_pll_phase_cali(u32 channel)
 
 		/* 7. delay line overflow break */
 		for (i = 0; i < 3; i++) {
-			if(mempll[i].delay >= 32) {
+			if (mempll[i].delay >= 32) {
 				die("MEMPLL calibration fail\n");
 			}
 		}
@@ -704,7 +704,7 @@ void dramc_runtime_config(u32 channel,
 	/* if frequency >1600, tCKE should >7 clk */
 	setbits_le32(&ch[channel].ao_regs->dummy, 0x1 << 4);
 
-	if(sdram_params->dram_freq * 2 < 1600 * MHz)
+	if (sdram_params->dram_freq * 2 < 1600 * MHz)
 		die("set tCKE error in runtime config");
 
 	/* DDRPHY C/A and DQ M_CK clock gating enable */

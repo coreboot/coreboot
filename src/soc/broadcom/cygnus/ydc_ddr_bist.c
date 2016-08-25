@@ -61,11 +61,11 @@ soc_ydc_ddr_bist_config_set(int unit, int phy_ndx, ydc_ddr_bist_info_t *bist_inf
     YDC_DDR_BIST_SET_FIELD(data, YDC_DDR_BIST, CONFIGURATIONS, IND_WR_RD_ADDR_MODE, 1);
     WRITE_YDC_DDR_BIST_CONFIGURATIONSr(0, YDC_DDR_BIST_REG_BASE, data);
 
-    if(!((*bist_info).prbs_mode))
+    if (!((*bist_info).prbs_mode))
     {
-        if((*bist_info).mpr_mode)
+        if ((*bist_info).mpr_mode)
         {
-            if(YDC_DDR_BIST_PHY_BITWITDH_IS_32)
+            if (YDC_DDR_BIST_PHY_BITWITDH_IS_32)
             {
                 WRITE_YDC_DDR_BIST_PATTERN_WORD_0r(0, YDC_DDR_BIST_REG_BASE, 0xFFFFFFFF);
                 WRITE_YDC_DDR_BIST_PATTERN_WORD_1r(0, YDC_DDR_BIST_REG_BASE, 0x00000000);
@@ -128,11 +128,11 @@ soc_ydc_ddr_bist_run(int unit, int phy_ndx, ydc_ddr_bist_err_cnt_t *error_count)
 
     poll_count = 0;
 
-    while(TRUE)
+    while (TRUE)
     {
         READ_YDC_DDR_BIST_STATUSESr(0, YDC_DDR_BIST_REG_BASE, &data);
 
-        if(YDC_DDR_BIST_GET_FIELD(data, YDC_DDR_BIST, STATUSES, BIST_FINISHED))
+        if (YDC_DDR_BIST_GET_FIELD(data, YDC_DDR_BIST, STATUSES, BIST_FINISHED))
         {
             READ_YDC_DDR_BIST_CONFIGURATIONSr(0, YDC_DDR_BIST_REG_BASE, &data);
             YDC_DDR_BIST_SET_FIELD(data, YDC_DDR_BIST, CONFIGURATIONS, BIST_EN, 0);
@@ -140,7 +140,7 @@ soc_ydc_ddr_bist_run(int unit, int phy_ndx, ydc_ddr_bist_err_cnt_t *error_count)
             break;
         }
 
-        if(poll_count > YDC_DDR_BIST_POLL_COUNT_LIMIT)
+        if (poll_count > YDC_DDR_BIST_POLL_COUNT_LIMIT)
         {
             READ_YDC_DDR_BIST_CONFIGURATIONSr(0, YDC_DDR_BIST_REG_BASE, &data);
             YDC_DDR_BIST_SET_FIELD(data, YDC_DDR_BIST, CONFIGURATIONS, BIST_EN, 0);

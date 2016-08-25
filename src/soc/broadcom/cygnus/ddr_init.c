@@ -315,7 +315,7 @@ int cygnus_phy_powerup(void)
 
 	data = reg32_read((volatile uint32_t *)CRMU_DDR_PHY_AON_CTRL);
 
-	if(reg32_read((volatile uint32_t *)CRMU_IHOST_POR_WAKEUP_FLAG)==0)
+	if (reg32_read((volatile uint32_t *)CRMU_IHOST_POR_WAKEUP_FLAG)==0)
 	{
 		/* Step 1: POWRON */
 		data = reg32_read((volatile uint32_t *)CRMU_DDR_PHY_AON_CTRL);
@@ -328,7 +328,7 @@ int cygnus_phy_powerup(void)
 		data |= 0x10;// assert power OK
 		reg32_write((volatile uint32_t *)CRMU_DDR_PHY_AON_CTRL, data);
 
-		while(count--)
+		while (count--)
 			__udelay(2);
 
 	}
@@ -350,10 +350,10 @@ int cygnus_phy_powerup(void)
 	reg32_write((volatile uint32_t *)CRMU_DDR_PHY_AON_CTRL, data);
 
 	count = 20;
-	while(count--)
+	while (count--)
 		__udelay(2);
 
-	if(reg32_read((volatile uint32_t *)CRMU_IHOST_POR_WAKEUP_FLAG)==0)
+	if (reg32_read((volatile uint32_t *)CRMU_IHOST_POR_WAKEUP_FLAG)==0)
 	{
 		/* Step 5: release reset */
 		data |= 0x20;// de-assert reset
@@ -363,7 +363,7 @@ int cygnus_phy_powerup(void)
 	{
 		printk(BIOS_INFO, "DeepSleep wakeup: ddr phy init bypassed 2\n");
 	}
-	while((reg32_read((volatile uint32_t *)DDR_S1_IDM_IO_STATUS) & 0x08) != 0x08) {
+	while ((reg32_read((volatile uint32_t *)DDR_S1_IDM_IO_STATUS) & 0x08) != 0x08) {
 		//poll DDR_S1_IDM_IO_STATUS__o_phy_pwrup_rsb
 	}
 
@@ -381,14 +381,14 @@ void dump_phy_regs(void)
 {
 	int i;
 	printk(BIOS_DEBUG, "\n PHY register dump: Control registers\n");
-	for(i = 0; i <= 0x94; i+=4)
+	for (i = 0; i <= 0x94; i+=4)
 	{
 		printk(BIOS_DEBUG, "0x%03x,\t0x%08x,\n", i,
 			*(volatile uint32_t *)(DDR_PHY_CONTROL_REGS_REVISION + i));
 	}
 
 	printk(BIOS_DEBUG, "\n PHY register dump: Wordlane0 registers\n");
-	for(i = 0; i <= 0xc5; i+=4)
+	for (i = 0; i <= 0xc5; i+=4)
 	{
 		printk(BIOS_DEBUG, "0x%03x,\t0x%08x,\n", i,
 			*(volatile uint32_t *)(DDR_PHY_BYTE_LANE_0_VDL_CONTROL_WR_DQS_P + i));
@@ -402,7 +402,7 @@ void ddr_init_regs(unsigned int * tblptr)
 	unsigned int offset = *tblptr;
 	unsigned int *addr = (unsigned int *)DDR_DENALI_CTL_00;
 
-	while(offset != 0xffffffff) {
+	while (offset != 0xffffffff) {
 		++tblptr;
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
 		addr[offset] = *tblptr;
@@ -420,7 +420,7 @@ void ddr_phy_ctl_regs_ovrd(unsigned int * tblptr)
 	unsigned int *addr = (unsigned int *)DDR_PHY_CONTROL_REGS_REVISION;
 	unsigned int val;
 
-	while(offset != 0xffffffff) {
+	while (offset != 0xffffffff) {
 		++tblptr;
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
 		addr[offset/4] = *tblptr;
@@ -459,7 +459,7 @@ int ReWriteModeRegisters( void )
 			break;
 		}
 		--j;
-	} while( j );
+	} while ( j );
 
 	if ( j == 0 && (reg32_read( (volatile uint32_t *)DDR_DENALI_CTL_89) & (1 << 18) ) == 0 ) {
 		printk(BIOS_ERR, "Error: DRAM mode registers write failed\n");
@@ -512,7 +512,7 @@ static int simple_memory_test(void *start, uint32_t len)
 	paddr = (volatile uint32_t *)start;
 	rand_c_value = RAND_C_INIT;
 	rand_t_value = RAND_T_INIT;
-	for(i=0; i<len; i++, paddr++) {
+	for (i=0; i<len; i++, paddr++) {
 		rand_c_value *= RAND_MAGIC_3;
 		rand_t_value ^= rand_t_value >> 15;
 		rand_t_value ^= rand_t_value << 17;
@@ -523,7 +523,7 @@ static int simple_memory_test(void *start, uint32_t len)
 	paddr = (volatile uint32_t *)start;
 	rand_c_value = RAND_C_INIT;
 	rand_t_value = RAND_T_INIT;
-	for(i=0; i<len; i++, paddr++) {
+	for (i=0; i<len; i++, paddr++) {
 		rand_c_value *= RAND_MAGIC_3;
 		rand_t_value ^= rand_t_value >> 15;
 		rand_t_value ^= rand_t_value << 17;
@@ -726,7 +726,7 @@ static int write_shmoo_to_flash(void *buf, int length)
 	/* Check if erasing is required */
 	flptr = (volatile uint32_t *)(IPROC_QSPI_MEM_BASE + offset / 4 * 4);
 	j = (length - 1) / 4 + 1;
-	for(i=0; i<j; i++, flptr++) {
+	for (i=0; i<j; i++, flptr++) {
 		if (*flptr != 0xFFFFFFFF) {
 		erase = 1;
 		break;
@@ -785,7 +785,7 @@ static int write_shmoo_to_flash(void *buf, int length)
 	flptr = (volatile uint32_t *)(IPROC_NOR_MEM_BASE + offset / 4 * 4);
 	shmoo_start = flptr;
 	j = (length - 1) / 4 + 1;
-	for(i=0; i<j; i++, flptr++) {
+	for (i=0; i<j; i++, flptr++) {
 		if (*flptr != 0xFFFFFFFF) {
 			erase = 1;
 			break;
@@ -902,7 +902,7 @@ static volatile uint32_t *validate_flash_shmoo_values(struct shmoo_signature *ps
 		return NULL;
 	}
 	chksum = 0;
-	for(i=0; i<length * 2; i++, ptr++) {
+	for (i=0; i<length * 2; i++, ptr++) {
 		chksum += *ptr;
 	}
 	if (chksum != checksum) {
@@ -937,13 +937,13 @@ static int try_restore_shmoo(void)
         unsigned long start;
         printk(BIOS_INFO, "Press Ctrl-C to run Shmoo ..... ");
         start = get_timer(0);
-        while(get_timer(start) <= CONFIG_SHMOO_REUSE_DELAY_MSECS) {
+        while (get_timer(start) <= CONFIG_SHMOO_REUSE_DELAY_MSECS) {
             if (tstc()) {
                 c = getc();
                 if (c == 0x03) {
                     printk(BIOS_INFO, "Pressed.\n");
                     printk(BIOS_INFO, "Do you want to run the Shmoo? [y/N] ");
-                    for(;;) {
+                    for (;;) {
                         c = getc();
                         if (c == 'y' || c == 'Y') {
                             printk(BIOS_INFO, "Y\n");
@@ -972,10 +972,10 @@ static int try_restore_shmoo(void)
     /* Restore values from flash */
     printk(BIOS_INFO, "Restoring Shmoo parameters from flash ..... ");
     flptr += 5;
-    for(i=0; i<pairs; i++) {
+    for (i=0; i<pairs; i++) {
         reg = (uint32_t *)(*flptr++);
         val = (uint32_t *)(*flptr++);
-	if( (((uint32_t)reg >= DDR_PHY_WORD_LANE_0_VDL_OVRIDE_BYTE_RD_EN) && ((uint32_t)reg <= (DDR_PHY_WORD_LANE_0_VDL_OVRIDE_BYTE_RD_EN + 0x114)))
+	if ( (((uint32_t)reg >= DDR_PHY_WORD_LANE_0_VDL_OVRIDE_BYTE_RD_EN) && ((uint32_t)reg <= (DDR_PHY_WORD_LANE_0_VDL_OVRIDE_BYTE_RD_EN + 0x114)))
 #if (CONFIG_CYGNUS_SHMOO_REUSE_DDR_32BIT || defined(CONFIG_NS_PLUS))
 		|| (((uint32_t)reg >= DDR_PHY_WORD_LANE_1_VDL_OVRIDE_BYTE_RD_EN) && ((uint32_t)reg <= (DDR_PHY_WORD_LANE_1_VDL_OVRIDE_BYTE_RD_EN + 0x114)))
 #endif
@@ -1026,7 +1026,7 @@ void iproc_save_shmoo_values(void)
     if (flptr != NULL) {
         /* Check if the flash data are the same as current DDR PHY values */
         flptr += 5;
-	for(i=0; i<pairs; i++) {
+	for (i=0; i<pairs; i++) {
 	    reg = *flptr++;
 	    val = *flptr++;
             if (val != reg32_read(reg)) {
@@ -1060,7 +1060,7 @@ void iproc_save_shmoo_values(void)
 
     /* Copy registers and values to buffer */
     chksum = 0;
-    for(i=0; i<sizeof(ddr_phy_ctl_regs) / sizeof(ddr_phy_ctl_regs[0]); i++) {
+    for (i=0; i<sizeof(ddr_phy_ctl_regs) / sizeof(ddr_phy_ctl_regs[0]); i++) {
         reg = (uint32_t)DDR_PHY_CONTROL_REGS_REVISION + ddr_phy_ctl_regs[i];
         *ptr++ = reg;
         chksum += reg;
@@ -1069,7 +1069,7 @@ void iproc_save_shmoo_values(void)
         *ptr++ = val;
         chksum += val;
     }
-    for(i=0; i<sizeof(ddr_phy_wl_regs) / sizeof(ddr_phy_wl_regs[0]); i++) {
+    for (i=0; i<sizeof(ddr_phy_wl_regs) / sizeof(ddr_phy_wl_regs[0]); i++) {
         reg = (uint32_t)DDR_PHY_WORD_LANE_0_VDL_OVRIDE_BYTE_RD_EN + ddr_phy_wl_regs[i];
         *ptr++ = reg;
         chksum += reg;
@@ -1080,7 +1080,7 @@ void iproc_save_shmoo_values(void)
     }
 #if (CONFIG_CYGNUS_SHMOO_REUSE_DDR_32BIT || defined(CONFIG_NS_PLUS))
 	if (is_ddr_32bit()) {
-	    for(i=0; i<sizeof(ddr_phy_wl_regs) / sizeof(ddr_phy_wl_regs[0]); i++) {
+	    for (i=0; i<sizeof(ddr_phy_wl_regs) / sizeof(ddr_phy_wl_regs[0]); i++) {
 	        reg = (uint32_t)DDR_PHY_WORD_LANE_1_VDL_OVRIDE_BYTE_RD_EN + ddr_phy_wl_regs[i];
 	        *ptr++ = reg;
 	        chksum += reg;
@@ -1092,7 +1092,7 @@ void iproc_save_shmoo_values(void)
 	}
 #endif /* (CONFIG_CYGNUS_SHMOO_REUSE_DDR_32BIT || defined(CONFIG_NS_PLUS)) */
 #ifdef CONFIG_IPROC_DDR_ECC
-    for(i=0; i<sizeof(ddr_phy_eccl_regs) / sizeof(ddr_phy_eccl_regs[0]); i++) {
+    for (i=0; i<sizeof(ddr_phy_eccl_regs) / sizeof(ddr_phy_eccl_regs[0]); i++) {
         reg = (uint32_t)DDR_DENALI_CTL_00 + ddr_phy_eccl_regs[i];
         *ptr++ = reg;
         chksum += reg;
@@ -1128,7 +1128,7 @@ static int clear_ddr(uint32_t offset, uint32_t size)
 
     reg32_write((uint32_t *)DDR_BistConfig,reg32_read((uint32_t *)DDR_BistConfig) & ~0x1);
 
-    for( i = 0; i < 1000; i++);
+    for ( i = 0; i < 1000; i++);
 
 #if !defined(CONFIG_IPROC_P7)
 	reg32_write((volatile uint32_t *)DDR_DENALI_CTL_213, 0x00FFFFFF);
@@ -1163,21 +1163,21 @@ static int clear_ddr(uint32_t offset, uint32_t size)
 	reg32_set_bits((volatile uint32_t *)DDR_BistConfigurations, 1 << DDR_BistConfigurations__BistEn);
 
 	start = get_timer(0);
-	while(get_timer(start) <= 10000) {
-		if(reg32_read((volatile uint32_t *)DDR_BistStatuses) & (1 << DDR_BistStatuses__BistFinished))
+	while (get_timer(start) <= 10000) {
+		if (reg32_read((volatile uint32_t *)DDR_BistStatuses) & (1 << DDR_BistStatuses__BistFinished))
 			break;
 	}
 	/* Clear BIST_EN bit */
 	reg32_clear_bits((volatile uint32_t *)DDR_BistConfigurations, 1 << DDR_BistConfigurations__BistEn);
 
-	if((get_timer(start) <= 10000)  &&
+	if ((get_timer(start) <= 10000)  &&
 	   (!reg32_read((volatile uint32_t *)DDR_BistErrorOccurred)))
 	{
 		printk(BIOS_INFO, "clear_ddr: OK\n");
 		return(0);
 	}
 	printk(BIOS_INFO, "clear_ddr: Failed: 0x%lx\n", get_timer(start));
-	if(reg32_read((volatile uint32_t *)DDR_BistErrorOccurred))
+	if (reg32_read((volatile uint32_t *)DDR_BistErrorOccurred))
 		printk(BIOS_ERR, "clear_ddr: Error occurred\n");
 	return(1);
 }
@@ -1198,14 +1198,14 @@ static int simple_ddr_crc32_check(void)
 
 	printk(BIOS_INFO, "Checking simple DDR CRC, word start 0x%p, len 0x%08x...\n", buf, len);
 
-	for(offset=0; offset<len; offset++)
+	for (offset=0; offset<len; offset++)
 	{
 		crc ^= *buf++;
 	}
 
 	crc_mcu = reg32_read((volatile uint32_t *)0x03012A00);
 
-	if(crc != crc_mcu)
+	if (crc != crc_mcu)
 	{
 		printk(BIOS_ERR, "DDR CRC NOT match, old=0x%08x, new=0x%08x!\n", crc_mcu, crc);
 		return -1;
@@ -1230,11 +1230,11 @@ void ddr_init2(void)
 	uint32_t pwrctli0 = reg32_read((volatile uint32_t *)IHOST_SCU_POWER_STATUS)  & 0x3;
 	skip_shmoo = reg32_read((volatile uint32_t *)CRMU_IHOST_POR_WAKEUP_FLAG) & 0x1;
 
-	if(pwrctli0==2)
+	if (pwrctli0==2)
 	{
 		goto wakeup;
 	}
-	else if(pwrctli0==3)
+	else if (pwrctli0==3)
 	{
 		skip_shmoo = 1;
 		reg32_write((volatile uint32_t *)IHOST_GTIM_GLOB_CTRL, reg32_read((volatile uint32_t *)IHOST_GTIM_GLOB_CTRL)| 0x1);
@@ -1260,7 +1260,7 @@ void ddr_init2(void)
 	sku_id = (reg32_read((volatile uint32_t *)ROM_S0_IDM_IO_STATUS) >> 2) & 0x03;
 #endif
 	/* See if it is KATANA2, KATANA2 doesn't have right chip ID in ChipcommonA_ChipID */
-	if(((sku_id & 0xfff0) == 0xa450) || ((sku_id & 0xfff0) == 0xb450) || sku_id == 0xb248) {
+	if (((sku_id & 0xfff0) == 0xa450) || ((sku_id & 0xfff0) == 0xb450) || sku_id == 0xb248) {
 		dev_id = 56450; /* KATANA2 */
 	}
 
@@ -1290,7 +1290,7 @@ void ddr_init2(void)
 	printk(BIOS_INFO, "MEMC 0 DDR speed = %dMHz\n", ddr_clk);
 
 	status = change_ddr_clock(ddr_clk);
-	if(status) {
+	if (status) {
 		printk(BIOS_INFO, "CRU LCPLL configuratioin failed\n");
 		goto done;
 	}
@@ -1326,12 +1326,12 @@ void ddr_init2(void)
 	reg32_write((volatile uint32_t *)CRU_ddrphy_pwr_ctrl, val);
 
 	/* Wait for PHY power up */
-	for(i=0; i < 0x19000; i++) {
+	for (i=0; i < 0x19000; i++) {
 		val = reg32_read((volatile uint32_t *)DDR_S1_IDM_IO_STATUS);
-		if((val & (1 << DDR_S1_IDM_IO_STATUS__o_phy_pwrup_rsb)))
+		if ((val & (1 << DDR_S1_IDM_IO_STATUS__o_phy_pwrup_rsb)))
 			break;
 	}
-	if(i == 0x19000) {
+	if (i == 0x19000) {
 		printk(BIOS_ERR, "DDR PHY not power up\n");
 		goto done;
 	}
@@ -1347,7 +1347,7 @@ void ddr_init2(void)
 	/* Set the ddr_ck to 400 MHz, 2x memc clock */
 	reg32_write_masked((volatile uint32_t *)DDR_S1_IDM_IO_CONTROL_DIRECT, 0xfff << 16, /*ddr_clk*/ 0x190 << 16);
 
-	if(pwrctli0==3)
+	if (pwrctli0==3)
 	{
 		printk(BIOS_INFO, "\n PRE_SRX call\n");
 		PRE_SRX();
@@ -1369,13 +1369,13 @@ void ddr_init2(void)
 	}
 
 	/* Wait for PHY ready */
-	for(i=0; i < 0x19000; i++) {
+	for (i=0; i < 0x19000; i++) {
 		val = reg32_read((volatile uint32_t *)DDR_S1_IDM_IO_STATUS);
-		if((val & (1 << DDR_S1_IDM_IO_STATUS__o_phy_ready)))
+		if ((val & (1 << DDR_S1_IDM_IO_STATUS__o_phy_ready)))
 			break; /* DDR PHY is up */
 	}
 
-	if(i == 0x19000) {
+	if (i == 0x19000) {
 		printk(BIOS_ERR, "DDR PLL not locked\n");
 		goto done;
 	}
@@ -1385,21 +1385,21 @@ void ddr_init2(void)
 #endif /* defined(CONFIG_IPROC_P7) */
 
 	/* Wait for DDR PHY up */
-	for(i=0; i < 0x19000; i++) {
+	for (i=0; i < 0x19000; i++) {
 		val = reg32_read((volatile uint32_t *)DDR_PHY_CONTROL_REGS_REVISION);
-		if( val != 0) {
+		if ( val != 0) {
             printk(BIOS_INFO, "PHY revision version: 0x%08x\n", val);
 			break; /* DDR PHY is up */
         }
 	}
 
-	if(i == 0x19000) {
+	if (i == 0x19000) {
 		printk(BIOS_ERR, "DDR PHY is not up\n");
 		return;
 	}
 
 #if IS_ENABLED(CONFIG_SOC_BROADCOM_CYGNUS)
-	if(!skip_shmoo)
+	if (!skip_shmoo)
 	{
 		printk(BIOS_INFO, "ddr_init2: Calling soc_and28_shmoo_dram_info_set\n");
 		/* Cygnus clock speed:
@@ -1434,10 +1434,10 @@ void ddr_init2(void)
 #endif
 
 #if IS_ENABLED(CONFIG_SOC_BROADCOM_CYGNUS)
-	if(!skip_shmoo)
+	if (!skip_shmoo)
 	{
 		printk(BIOS_INFO, "ddr_init2: Calling soc_and28_shmoo_phy_init\n");
-		if(soc_and28_shmoo_phy_init(unit, 0) != SOC_E_NONE) {
+		if (soc_and28_shmoo_phy_init(unit, 0) != SOC_E_NONE) {
 
 			printk(BIOS_ERR, "DDR PHY initialization failed\n");
 			goto done;
@@ -1458,7 +1458,7 @@ void ddr_init2(void)
 	ddr_init_regs(ddr_init_tab);
 
     ddr_type = 1;
-	if(ddr_type) {
+	if (ddr_type) {
 		/* DDR3 */
 		switch(ddr_clk) {
 #ifdef CONFIG_DDR333
@@ -1515,9 +1515,9 @@ void ddr_init2(void)
 	reg32_set_bits((volatile uint32_t *)DDR_DENALI_CTL_00, 0x01);
 
 #if IS_ENABLED(CONFIG_SOC_BROADCOM_CYGNUS)
-	if(!skip_shmoo)
+	if (!skip_shmoo)
 	{
-		while(!(reg32_read((volatile uint32_t *)DDR_DENALI_CTL_175) & 0x100));
+		while (!(reg32_read((volatile uint32_t *)DDR_DENALI_CTL_175) & 0x100));
 		printk(BIOS_INFO, "ddr_init2: MemC initialization complete\n");
 
 		reg32_set_bits((unsigned int *)DDR_DENALI_CTL_177, 0x00100);
@@ -1607,7 +1607,7 @@ void ddr_init2(void)
 
 #if IS_ENABLED(CONFIG_SOC_BROADCOM_CYGNUS)
 	/* SRX */
-	if(skip_shmoo)
+	if (skip_shmoo)
 	{
 		// Enter Self refresh (dummy) , to keep Denali happy
 		reg32_write((unsigned int *)DDR_DENALI_CTL_56, 0x0a050505);
@@ -1629,19 +1629,19 @@ void ddr_init2(void)
 
 //	iproc_dump_ddr_regs();
 
-	if(pwrctli0==0)
+	if (pwrctli0==0)
 		goto done;
 
 wakeup:
 	printk(BIOS_INFO, "Wakeup from %s\n", pwrctli0==2 ? "SLEEP":"DEEPSLEEP");
 
-	if(pwrctli0==3)
+	if (pwrctli0==3)
 	{
 		__udelay(10000);
-		if(simple_ddr_crc32_check()<0)
+		if (simple_ddr_crc32_check()<0)
 		{
 			printk(BIOS_INFO, "Die...\n");
-			while(1);
+			while (1);
 		}
 	}
 

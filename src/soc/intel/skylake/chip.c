@@ -464,17 +464,17 @@ void soc_silicon_init_params(SILICON_INIT_UPD *params)
 	}
 	memcpy(params->PxRcConfig, irq_config, PCH_MAX_IRQ_CONFIG);
 	/* GPIO IRQ Route  The valid values is 14 or 15*/
-	if(config->GpioIrqSelect == 0)
+	if (config->GpioIrqSelect == 0)
 		params->GpioIrqRoute = GPIO_IRQ14;
 	else
 		params->GpioIrqRoute = config->GpioIrqSelect;
 	/* SCI IRQ Select  The valid values is 9, 10, 11 and 20 21, 22, 23*/
-	if(config->SciIrqSelect == 0)
+	if (config->SciIrqSelect == 0)
 		params->SciIrqSelect = SCI_IRQ9;
 	else
 		params->SciIrqSelect = config->SciIrqSelect;
 	/* TCO IRQ Select  The valid values is 9, 10, 11, 20 21, 22, 23*/
-	if(config->TcoIrqSelect == 0)
+	if (config->TcoIrqSelect == 0)
 		params->TcoIrqSelect = TCO_IRQ9;
 	else
 		params->TcoIrqSelect = config->TcoIrqSelect;

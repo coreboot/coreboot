@@ -45,7 +45,7 @@ int early_spi_read_wpsr(u8 *sr)
 	SPI16(SSFC) = DATA_CYCLE | SPI_CYCLE_GO;
 
 	/* Wait for error / complete status */
-	while(timeout--) {
+	while (timeout--) {
 		u16 status = SPI16(SSFS);
 		if (status & FLASH_CYCLE_ERROR) {
 			printk(BIOS_ERR, "SPI rdsr failed\n");

@@ -303,7 +303,7 @@ static void find_fsp_hob_update_mrc(void *unused)
 		print_hob_type_structure(0x000, FspHobListPtr);
 
 	#if IS_ENABLED(CONFIG_ENABLE_MRC_CACHE)
-		if(save_mrc_data(FspHobListPtr))
+		if (save_mrc_data(FspHobListPtr))
 			update_mrc_cache(NULL);
 		else
 			printk(BIOS_DEBUG,"Not updating MRC data in flash.\n");

@@ -153,7 +153,7 @@ unsigned long compute_ip_checksum_from_sram(unsigned short offset, unsigned shor
 	 * compute an ip style checksum.
 	 */
 	sum = 0;
-	for(i = 0; i < length; i++) {
+	for (i = 0; i < length; i++) {
 		unsigned long v;
 		v = eth_pio_read_byte((TX_START << 8)+i+offset, eth_nic_base);
 		if (i & 1) {

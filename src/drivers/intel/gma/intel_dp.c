@@ -642,7 +642,7 @@ static void ironlake_wait_panel_status(struct intel_dp *intel_dp,
 	       (unsigned long)gtt_read(PCH_PP_STATUS),
 	       (unsigned long)gtt_read(PCH_PP_CONTROL));
 
-	for(i = 0, status = gtt_read(PCH_PP_STATUS); ((status & mask) != value) && (i < 5000);
+	for (i = 0, status = gtt_read(PCH_PP_STATUS); ((status & mask) != value) && (i < 5000);
 	    status = gtt_read(PCH_PP_STATUS)){
 		udelay(10);
 	}
@@ -972,7 +972,7 @@ intel_dp_get_link_status(struct intel_dp *intel_dp,
 					     DP_LINK_STATUS_SIZE);
 
 	printk(BIOS_SPEW, "%s:", __func__);
-	for(i = 0; i < /* !!sizeof(link_status) == 4*/
+	for (i = 0; i < /* !!sizeof(link_status) == 4*/
 		    DP_LINK_STATUS_SIZE; i++)
 		printk(BIOS_SPEW, " %02x", link_status[i]);
 	printk(BIOS_SPEW, "\n");
@@ -1308,7 +1308,7 @@ intel_dp_set_link_train(struct intel_dp *intel_dp,
 			temp |= DP_TP_CTL_LINK_TRAIN_IDLE;
 			gtt_write(DP_TP_CTL(port), temp);
 
-			for(i = 0; i < 10; i++){
+			for (i = 0; i < 10; i++){
 				u32 status;
 				status = gtt_read(DP_TP_STATUS(port));
 				if (status & DP_TP_STATUS_IDLE_DONE)

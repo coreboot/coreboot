@@ -39,8 +39,8 @@ static int dbgp_enabled(void);
 # define dprintk(LEVEL, args...) \
 	do { if (!dbgp_enabled()) printk(LEVEL, ##args); } while (0)
 #else
-# define dbgp_print_data(x)	do {} while(0)
-# define dprintk(LEVEL, args...)   do {} while(0)
+# define dbgp_print_data(x)	do {} while (0)
+# define dprintk(LEVEL, args...)   do {} while (0)
 #endif
 
 #define DBGP_LEN_UPDATE(x, len) (((x) & ~0x0f) | ((len) & 0x0f))
@@ -460,8 +460,8 @@ try_next_port:
                 dprintk(BIOS_INFO, "PORTSC #%d: %08x\n", i, portsc);
         }
 
-	if(port_map_tried && (new_debug_port != debug_port)) {
-		if(--playtimes) {
+	if (port_map_tried && (new_debug_port != debug_port)) {
+		if (--playtimes) {
 			ehci_debug_select_port(debug_port);
 			goto try_next_time;
 		}
@@ -495,7 +495,7 @@ try_next_port:
 		cmd = read32(&ehci_regs->command);
 	} while ((cmd & CMD_RESET) && (--loop > 0));
 
-	if(!loop) {
+	if (!loop) {
 		dprintk(BIOS_INFO, "Could not reset EHCI controller.\n");
 		// on some systems it works without succeeding here.
 		// return -2;
@@ -525,7 +525,7 @@ try_next_port:
 		status = read32(&ehci_regs->status);
 	} while ((status & STS_HALT) && (--loop > 0));
 
-	if(!loop) {
+	if (!loop) {
 		dprintk(BIOS_INFO, "EHCI could not be started.\n");
 		return -3;
 	}

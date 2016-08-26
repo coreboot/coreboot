@@ -84,6 +84,17 @@ void postcar_frame_add_mtrr(struct postcar_frame *pcf,
 	pcf->num_var_mttrs++;
 }
 
+void *postcar_commit_mtrrs(struct postcar_frame *pcf)
+{
+	/*
+	 * Place the number of used variable MTRRs on stack then max number
+	 * of variable MTRRs supported in the system.
+	 */
+	stack_push(pcf, pcf->num_var_mttrs);
+	stack_push(pcf, pcf->max_var_mttrs);
+	return (void *) pcf->stack;
+}
+
 void run_postcar_phase(struct postcar_frame *pcf)
 {
 	struct prog prog =
@@ -93,12 +104,7 @@ void run_postcar_phase(struct postcar_frame *pcf)
 		.prog = &prog,
 	};
 
-	/*
-	 * Place the number of used variable MTRRs on stack then max number
-	 * of variable MTRRs supported in the system.
-	 */
-	stack_push(pcf, pcf->num_var_mttrs);
-	stack_push(pcf, pcf->max_var_mttrs);
+	postcar_commit_mtrrs(pcf);
 
 	if (prog_locate(&prog))
 		die("Failed to locate after CAR program.\n");

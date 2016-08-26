@@ -213,7 +213,7 @@ romstage-y += memcpy.c
 romstage-y += memmove.c
 romstage-y += memset.c
 romstage-$(CONFIG_X86_TOP4G_BOOTMEDIA_MAP) += mmap_boot.c
-romstage-$(CONFIG_POSTCAR_STAGE) += postcar_loader.c
+romstage-y += postcar_loader.c
 romstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 
 ifneq ($(CONFIG_ROMCC),y)

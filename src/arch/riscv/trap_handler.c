@@ -35,6 +35,7 @@ void handle_supervisor_call(trapframe *tf) {
 			/* TODO: parse the hardware-supplied config string and
 			   return the correct value */
 			returnValue = 1;
+			break;
 		case SBI_ECALL_CONSOLE_PUT:
 			returnValue = mcall_console_putchar(arg0);
 			break;

@@ -72,7 +72,8 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 
 static unsigned long acpi_fill_dmar(unsigned long current)
 {
-	int me_active = (dev_find_slot(0, PCI_DEVFN(3, 0)) != NULL);
+	int me_active = (dev_find_slot(0, PCI_DEVFN(3, 0)) != NULL) &&
+		(pci_read_config8(dev_find_slot(0, PCI_DEVFN(3, 0)), PCI_CLASS_REVISION) != 0xff);
 	int stepping = pci_read_config8(dev_find_slot(0, PCI_DEVFN(0, 0)), PCI_CLASS_REVISION);
 
 	unsigned long tmp = current;

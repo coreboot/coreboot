@@ -40,6 +40,8 @@ void init_iommu()
 	}
 	if (me_active) {
 		MCHBAR32(0x10) = IOMMU_BASE3 | 1; /* ME  @ 0:3.0-3 */
+	} else {
+		MCHBAR32(0x10) = 0; /* disable IOMMU for ME */
 	}
 	MCHBAR32(0x20) = IOMMU_BASE4 | 1; /* all other DMA sources */
 

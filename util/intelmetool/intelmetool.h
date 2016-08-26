@@ -22,7 +22,7 @@
 #define ME_PRESENT_CAN_DISABLE 4
 #define ME_PRESENT_CANNOT_DISABLE 5
 
-#define INTELMETOOL_VERSION "1.0"
+#define INTELMETOOL_VERSION "1.1"
 
 #define GPLV2COPYRIGHT \
 "This program is free software: you can redistribute it and/or modify\n" \
@@ -57,7 +57,17 @@
 #define CWHT  "\x1B[37m"
 #define RESET "\033[0m"
 
+#define CPU_ID_SIZE 13
+#define FD2 0x3428
+#define ME_COMMAND_DELAY 10000
+#define ME_MESSAGE_LEN 256
+
 extern int debug;
+static inline void print_cap(const char *name, int state)
+{
+	printf("ME Capability: %-30s : %s\n",
+	       name, state ? CRED "ON" RESET : CGRN "OFF" RESET);
+}
 
 #define PCI_VENDOR_ID_INTEL 0x8086
 
@@ -295,3 +305,13 @@ extern int debug;
 	((x) ==  PCI_DEVICE_ID_INTEL_SUNRISE_H1) || \
 	((x) ==  PCI_DEVICE_ID_INTEL_SUNRISE_H2) || \
 	((x) ==  PCI_DEVICE_ID_INTEL_SUNRISE_LP))
+
+#define BOOTGUARD_DISABLED 0x400000000
+#define BOOTGUARD_ENABLED_VERIFIED_MODE 0x100000000
+#define BOOTGUARD_ENABLED_MEASUREMENT_MODE 0x200000000
+#define BOOTGUARD_ENABLED_COMBI_MODE 0x300000000
+#define BOOTGUARD_CAPABILITY(x) ( \
+		((x) == BOOTGUARD_DISABLED) || \
+		((x) == BOOTGUARD_ENABLED_VERIFIED_MODE) || \
+		((x) == BOOTGUARD_ENABLED_MEASUREMENT_MODE) || \
+		((x) == BOOTGUARD_ENABLED_COMBI_MODE))

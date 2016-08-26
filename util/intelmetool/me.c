@@ -22,9 +22,9 @@
 #include <assert.h>
 #include <unistd.h>
 
+#include "intelmetool.h"
 #include "me.h"
 #include "mmap.h"
-#include "intelmetool.h"
 
 #define read32(addr, off) ( *((uint32_t *) (addr + off)) )
 #define write32(addr, off, val) ( *((uint32_t *) (addr + off)) = val)
@@ -378,7 +378,7 @@ static int mkhi_end_of_post(void)
 */
 
 /* Get ME firmware version */
-int mkhi_get_fw_version(void)
+int mkhi_get_fw_version(int *major, int *minor)
 {
 	uint32_t data = 0;
 	struct me_fw_version version = {0};
@@ -420,13 +420,11 @@ int mkhi_get_fw_version(void)
 	printf("ME: Firmware Version %u.%u (code)\n\n"
 	       version.code_major, version.code_minor);
 #endif
+	if (major)
+		*major = version.code_major;
+	if (minor)
+		*minor = version.code_minor;
 	return 0;
-}
-
-static inline void print_cap(const char *name, int state)
-{
-	printf("ME Capability: %-30s : %s\n",
-	       name, state ? CRED "ON" RESET : CGRN "OFF" RESET);
 }
 
 /* Get ME Firmware Capabilities */

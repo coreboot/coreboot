@@ -20,7 +20,7 @@ PREFIX  ?= /usr/local
 CFLAGS  ?= -O0 -g -Wall -W -Wno-unused-parameter -Wno-sign-compare -Wno-unused-function
 LDFLAGS += -lpci -lz
 
-OBJS = intelmetool.o me.o me_status.o mmap.o rcba.o
+OBJS = intelmetool.o me.o me_status.o mmap.o rcba.o msr.o
 
 OS_ARCH	= $(shell uname)
 ifeq ($(OS_ARCH), Darwin)

@@ -16,23 +16,25 @@
 #include <stdlib.h>
 #include <getopt.h>
 #include <unistd.h>
+#include <string.h>
+#include <cpuid.h>
 
 #ifdef __NetBSD__
 #include <machine/sysarch.h>
 #endif
 
+#include "intelmetool.h"
 #include "me.h"
 #include "mmap.h"
-#include "intelmetool.h"
+#include "msr.h"
 #include "rcba.h"
-
-#define FD2 0x3428
-#define ME_COMMAND_DELAY 10000
 
 extern int fd_mem;
 int debug = 0;
 
 static uint32_t fd2 = 0;
+static int ME_major_ver = 0;
+static int ME_minor_ver = 0;
 
 static void dumpmem(uint8_t *phys, uint32_t size)
 {
@@ -60,6 +62,17 @@ static void dumpmemfile(uint8_t *phys, uint32_t size)
 		fprintf(fp, "%c", *((uint8_t *) (phys + i)));
 	}
 	fclose(fp);
+}
+
+static int isCPUGenuineIntel(void)
+{
+	regs_t regs;
+	unsigned int level = 0;
+	unsigned int eax = 0;
+
+	__get_cpuid(level, &eax, &regs.ebx, &regs.ecx, &regs.edx);
+
+	return !strncmp((char *)&regs, "GenuineIntel", CPU_ID_SIZE-1);
 }
 
 /* You need >4GB total ram, in kernel cmdline, use 'mem=1000m'
@@ -278,7 +291,7 @@ static void dump_me_info(void)
 	usleep(ME_COMMAND_DELAY);
 	mei_reset();
 	usleep(ME_COMMAND_DELAY);
-	mkhi_get_fw_version();
+	mkhi_get_fw_version(&ME_major_ver, &ME_minor_ver);
 	usleep(ME_COMMAND_DELAY);
 	mei_reset();
 	usleep(ME_COMMAND_DELAY);
@@ -288,21 +301,98 @@ static void dump_me_info(void)
 	rehide_me();
 }
 
+static void dump_bootguard_info(void)
+{
+	struct pci_dev *dev;
+	char namebuf[1024];
+	const char *name;
+	uint64_t bootguard = 0;
+
+	if (msr_bootguard(&bootguard, debug) < 0)
+		return;
+
+	if (pci_platform_scan())
+		exit(1);
+
+	if (activate_me())
+		exit(1);
+
+	dev = pci_me_interface_scan(&name, namebuf, sizeof(namebuf));
+	if (!dev) {
+		printf("Can't access ME PCI device\n");
+		return;
+	}
+
+	if (debug) {
+		printf("BootGuard MSR Output: 0x%" PRIx64 "\n", bootguard);
+		bootguard &= ~0xff;
+	}
+
+	if (ME_major_ver < 9 ||
+	    (ME_major_ver == 9 && ME_minor_ver < 5) ||
+	    !BOOTGUARD_CAPABILITY(bootguard)) {
+		print_cap("BootGuard                                 ", 0);
+		printf(CGRN "\nYour system isn't bootguard ready. You can "
+		       "flash other firmware!\n" RESET);
+		rehide_me();
+		return;
+	}
+
+	print_cap("BootGuard                                 ", 1);
+	if (pci_read_long(dev, 0x40) & 0x10)
+		printf(CYEL "Your southbridge configuration is insecure!! "
+		       "BootGuard keys can be overwritten or wiped, or you are "
+		       "in developer mode.\n"
+		       RESET);
+
+	switch (bootguard) {
+	case BOOTGUARD_DISABLED:
+		printf("ME Capability: %-43s: " CGRN "%s\n" RESET,
+		       "BootGuard Mode", "Disabled");
+		printf(CGRN "\nYour system is bootguard ready but your vendor "
+		       "disabled it. You can flash other firmware!\n" RESET);
+		break;
+	case BOOTGUARD_ENABLED_COMBI_MODE:
+		printf("ME Capability: %-43s: " CGRN "%s\n" RESET,
+		       "BootGuard Mode", "Verified & Measured Boot");
+		printf(CRED "\nVerified boot is enabled. You can't flash other "
+		       "firmware. !\n" RESET);
+		break;
+	case BOOTGUARD_ENABLED_MEASUREMENT_MODE:
+		printf("ME Capability: %-43s: " CGRN "%s\n" RESET,
+		       "BootGuard Mode", "Measured Boot");
+		printf(CGRN "\nYour system is bootguard ready but only running "
+		       "the measured boot mode. You can flash other firmware!\n"
+		       RESET);
+		break;
+	case BOOTGUARD_ENABLED_VERIFIED_MODE:
+		printf("ME Capability: %-43s: " CGRN "%s\n" RESET,
+		       "BootGuard Mode", "Verified Boot");
+		printf(CRED "\nVerified boot is enabled! You can't flash other "
+		       "firmware.\n" RESET);
+		break;
+	}
+	rehide_me();
+}
+
 static void print_version(void)
 {
 	printf("intelmetool v%s -- ", INTELMETOOL_VERSION);
-	printf("Copyright (C) 2015 Damien Zammit\n\n");
+	printf("Copyright (C) 2015 Damien Zammit\n");
+	printf("Copyright (C) 2017 Philipp Deppenwiese\n");
+	printf("Copyright (C) 2017 Patrick Rudolph\n\n");
 	printf(GPLV2COPYRIGHT);
 }
 
 static void print_usage(const char *name)
 {
-	printf("usage: %s [-vh?sd]\n", name);
+	printf("usage: %s [-vh?smdb]\n", name);
 	printf("\n"
-	       "   -v | --version:         print the version\n"
-	       "   -h | --help:            print this help\n\n"
-	       "   -s | --show:            dump all me information on console\n"
-	       "   -d | --debug:           enable debug output\n"
+	       "   -v | --version:       print the version\n"
+	       "   -h | --help:          print this help\n\n"
+	       "   -d | --debug:         enable debug output\n"
+	       "   -m | --me             dump all me information on console\n"
+	       "   -b | --bootguard      dump bootguard state of the platform\n"
 	       "\n");
 	exit(1);
 }
@@ -315,20 +405,26 @@ int main(int argc, char *argv[])
 	static struct option long_options[] = {
 		{"version", 0, 0, 'v'},
 		{"help", 0, 0, 'h'},
-		{"show", 0, 0, 's'},
+		{"me", 0, 0, 'm'},
+		{"bootguard", 0, 0, 'b'},
 		{"debug", 0, 0, 'd'},
 		{0, 0, 0, 0}
 	};
 
-	while ((opt = getopt_long(argc, argv, "vh?sd",
-				long_options, &option_index)) != EOF) {
+	while ((opt = getopt_long(argc, argv, "vh?smdb",
+				  long_options, &option_index)) != EOF) {
 		switch (opt) {
 		case 'v':
 			print_version();
 			exit(0);
 			break;
-		case 's':
+		case 's': /* Legacy fallthrough */
+		case 'm':
 			cmd_exec = 1;
+			break;
+		case 'b':
+			cmd_exec = 2;
+			break;
 			break;
 		case 'd':
 			debug = 1;
@@ -341,6 +437,9 @@ int main(int argc, char *argv[])
 			break;
 		}
 	}
+
+	if (!cmd_exec)
+		print_usage(argv[0]);
 
 	#if defined(__FreeBSD__)
 		if (open("/dev/io", O_RDWR) < 0) {
@@ -367,16 +466,17 @@ int main(int argc, char *argv[])
 			perror("Can not open /dev/mem");
 			exit(1);
 		}
+
+		if (!isCPUGenuineIntel()) {
+			perror("Error CPU is not from Intel.");
+			exit(1);
+		}
 	#endif
 
-	switch(cmd_exec) {
-	case 1:
+	if (cmd_exec & 3)
 		dump_me_info();
-		break;
-	default:
-		print_usage(argv[0]);
-		break;
-	}
+	if (cmd_exec & 2)
+		dump_bootguard_info();
 
 	return 0;
 }

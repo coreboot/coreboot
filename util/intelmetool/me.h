@@ -400,7 +400,7 @@ void mkhi_thermal(void);
 uint32_t intel_mei_setup(struct pci_dev *dev);
 void intel_mei_unmap(void);
 int mkhi_get_fwcaps(void);
-int mkhi_get_fw_version(void);
+int mkhi_get_fw_version(int *major, int *minor);
 int mkhi_debug_me_memory(void *addr);
 void mei_reset(void);
 int intel_me_extend_valid(struct pci_dev *dev);

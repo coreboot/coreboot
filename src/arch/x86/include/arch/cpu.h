@@ -274,6 +274,12 @@ void postcar_frame_add_mtrr(struct postcar_frame *pcf,
 				uintptr_t addr, size_t size, int type);
 
 /*
+ * Push used MTRR and Max MTRRs on to the stack
+ * and return pointer to stack top.
+ */
+void *postcar_commit_mtrrs(struct postcar_frame *pcf);
+
+/*
  * Load and run a program that takes control of execution that
  * tears down CAR and loads ramstage. The postcar_frame object
  * indicates how to set up the frame. If caching is enabled at

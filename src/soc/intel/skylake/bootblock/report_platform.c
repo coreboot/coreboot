@@ -66,6 +66,9 @@ static struct {
 	{ IGD_SKYLAKE_GT1_SULTM, "Skylake ULT GT1"},
 	{ IGD_SKYLAKE_GT2_SULXM, "Skylake ULX GT2" },
 	{ IGD_SKYLAKE_GT2_SULTM, "Skylake ULT GT2" },
+	{ IGD_KABYLAKE_GT1_SULTM, "Kabylake ULT GT1"},
+	{ IGD_KABYLAKE_GT2_SULXM, "Kabylake ULX GT2" },
+	{ IGD_KABYLAKE_GT2_SULTM, "Kabylake ULT GT2" },
 };
 
 static void report_cpu_info(void)

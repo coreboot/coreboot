@@ -65,6 +65,7 @@ static int init_vbnv(void)
 	struct region_device *rdev = &ctx->vbnv_dev;
 	uint8_t buf[BLOB_SIZE];
 	uint8_t empty_blob[BLOB_SIZE];
+	int used_below, empty_above;
 	int offset;
 	int i;
 
@@ -78,24 +79,29 @@ static int init_vbnv(void)
 	for (i = 0; i < BLOB_SIZE; i++)
 		empty_blob[i] = erase_value();
 
-	offset = 0;
 	ctx->top_offset = region_device_sz(rdev) - BLOB_SIZE;
 
-	/*
-	 * after the loop, offset is supposed to point the blob right before
-	 * the first empty blob, the last blob in the nvram if there is no
-	 * empty blob, or the base of the region if the nvram has never been
-	 * used.
-	 */
-	for (i = 0; i <= ctx->top_offset; i += BLOB_SIZE) {
-		if (rdev_readat(rdev, buf, i, BLOB_SIZE) < 0) {
+	/* Binary search for the border between used and empty */
+	used_below = 0;
+	empty_above = region_device_sz(rdev) / BLOB_SIZE;
+
+	while (used_below + 1 < empty_above) {
+		int guess = (used_below + empty_above) / 2;
+		if (rdev_readat(rdev, buf, guess * BLOB_SIZE, BLOB_SIZE) < 0) {
 			printk(BIOS_ERR, "failed to read nvdata\n");
 			return 1;
 		}
 		if (!memcmp(buf, empty_blob, BLOB_SIZE))
-			break;
-		offset = i;
+			empty_above = guess;
+		else
+			used_below = guess;
 	}
+
+	/*
+	 * Offset points to the last non-empty blob.  Or if all blobs are empty
+	 * (nvram is totally erased), point to the first blob.
+	 */
+	offset = used_below * BLOB_SIZE;
 
 	/* reread the nvdata and write it to the cache */
 	if (rdev_readat(rdev, ctx->cache, offset, BLOB_SIZE) < 0) {

@@ -7,6 +7,11 @@ chip soc/intel/apollolake
 	register "pcie_rp0_clkreq_pin" = "3"    # wifi/bt
 	register "pcie_rp2_clkreq_pin" = "0"    # SSD
 
+	# GPIO for PERST_0
+	# If PERST_0 is defined assign the GPIO
+	# If PERST_0 is not defined assign GPIO_PRT0_UDEF
+	register "prt0_gpio" = "GPIO_122"
+
 	# eMMC TX DATA Delay 1#
 	# 0x1A[14:8] stands for 26*125 = 3250 pSec delay for HS400
 	# 0x1A[6:0] stands for 26*125 = 3250 pSec delay for SDR104/HS200

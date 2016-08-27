@@ -58,17 +58,20 @@ void arm_tf_run_bl31(u64 payload_entry, u64 payload_arg0, u64 payload_spsr)
 	SET_PARAM_HEAD(&bl31_params, PARAM_BL31, VERSION_1, 0);
 
 	if (IS_ENABLED(CONFIG_ARM64_USE_SECURE_OS)) {
-		struct prog bl32 = PROG_INIT(PROG_BL32, CONFIG_CBFS_PREFIX"/secure_os");
+		struct prog bl32 = PROG_INIT(PROG_BL32,
+					     CONFIG_CBFS_PREFIX"/secure_os");
 
 		if (prog_locate(&bl32))
-			die("BL31 not found");
+			die("BL32 not found");
 
 		if (cbfs_prog_stage_load(&bl32))
-			die("BL31 load failed");
+			die("BL32 load failed");
 
-		SET_PARAM_HEAD(&bl32_ep_info, PARAM_EP, VERSION_1, PARAM_EP_SECURE);
+		SET_PARAM_HEAD(&bl32_ep_info, PARAM_EP, VERSION_1,
+			       PARAM_EP_SECURE);
 		bl32_ep_info.pc = (uintptr_t)prog_entry(&bl32);
-		bl32_ep_info.spsr = SPSR_EXCEPTION_MASK | get_eret_el(EL1, SPSR_USE_L);
+		bl32_ep_info.spsr = SPSR_EXCEPTION_MASK |
+				get_eret_el(EL1, SPSR_USE_L);
 		bl31_params.bl32_ep_info = &bl32_ep_info;
 	}
 

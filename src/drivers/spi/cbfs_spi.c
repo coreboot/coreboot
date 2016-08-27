@@ -23,14 +23,44 @@
 #include <spi_flash.h>
 #include <symbols.h>
 #include <cbmem.h>
+#include <timer.h>
 
 static struct spi_flash *spi_flash_info;
+
+/*
+ * Set this to 1 to debug SPI speed, 0 to disable it
+ * The format is:
+ *
+ * read SPI 62854 7db7: 10416 us, 3089 KB/s, 24.712 Mbps
+ *
+ * The important number is the last one. It should roughly match your SPI
+ * clock. If it doesn't, your driver might need a little tuning.
+ */
+#define SPI_SPEED_DEBUG		0
 
 static ssize_t spi_readat(const struct region_device *rd, void *b,
 				size_t offset, size_t size)
 {
+	struct stopwatch sw;
+	bool show = SPI_SPEED_DEBUG && size >= 4 * KiB;
+
+	if (show)
+		stopwatch_init(&sw);
 	if (spi_flash_info->read(spi_flash_info, offset, size, b))
 		return -1;
+	if (show) {
+		long usecs;
+
+		usecs = stopwatch_duration_usecs(&sw);
+		u64 speed;	/* KiB/s */
+		int bps;	/* Bits per second */
+
+		speed = (u64)size * 1000 / usecs;
+		bps = speed * 8;
+
+		printk(BIOS_DEBUG, "read SPI %#zx %#zx: %ld us, %lld KB/s, %d.%03d Mbps\n",
+		       offset, size, usecs, speed, bps / 1000, bps % 1000);
+	}
 	return size;
 }
 

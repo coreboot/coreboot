@@ -88,7 +88,8 @@ static void get_bounce_buffer(unsigned long req_size)
 	/* When the ramstage is relocatable there is no need for a bounce
 	 * buffer. All payloads should not overlap the ramstage.
 	 */
-	if (IS_ENABLED(CONFIG_RELOCATABLE_RAMSTAGE)) {
+	if (IS_ENABLED(CONFIG_RELOCATABLE_RAMSTAGE) ||
+	    !arch_supports_bounce_buffer()) {
 		bounce_buffer = ~0UL;
 		bounce_size = 0;
 		return;
@@ -357,15 +358,16 @@ static int payload_targets_usable_ram(struct segment *head)
 	return 1;
 }
 
-static int load_self_segments(
-	struct segment *head,
-	struct prog *payload)
+static int load_self_segments(struct segment *head, struct prog *payload,
+			      bool check_regions)
 {
 	struct segment *ptr;
 	unsigned long bounce_high = lb_end;
 
-	if (!payload_targets_usable_ram(head))
-		return 0;
+	if (check_regions) {
+		if (!payload_targets_usable_ram(head))
+			return 0;
+	}
 
 	for(ptr = head->next; ptr != head; ptr = ptr->next) {
 		/*
@@ -373,8 +375,10 @@ static int load_self_segments(
 		 * allocated so that there aren't conflicts with the actual
 		 * payload.
 		 */
-		bootmem_add_range(ptr->s_dstaddr, ptr->s_memsz,
-					LB_MEM_UNUSABLE);
+		if (check_regions) {
+			bootmem_add_range(ptr->s_dstaddr, ptr->s_memsz,
+					  LB_MEM_UNUSABLE);
+		}
 
 		if (!overlaps_coreboot(ptr))
 			continue;
@@ -486,7 +490,7 @@ static int load_self_segments(
 	return 1;
 }
 
-void *selfload(struct prog *payload)
+void *selfload(struct prog *payload, bool check_regions)
 {
 	uintptr_t entry = 0;
 	struct segment head;
@@ -502,7 +506,7 @@ void *selfload(struct prog *payload)
 		goto out;
 
 	/* Load the segments */
-	if (!load_self_segments(&head, payload))
+	if (!load_self_segments(&head, payload, check_regions))
 		goto out;
 
 	printk(BIOS_SPEW, "Loaded segments\n");

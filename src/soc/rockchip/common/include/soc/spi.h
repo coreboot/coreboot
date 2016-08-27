@@ -165,6 +165,13 @@ check_member(rockchip_spi, rxdr, 0x800);
 #define SPI_OMOD_SLAVE	0x01
 
 /* --------Bit fields in CTRLR0--------end */
+
+/* TXFLR bits */
+#define TXFLR_LEVEL_MASK	0x3f
+
+/* RXFLR bits */
+#define RXFLR_LEVEL_MASK	0x3f
+
 /* Bit fields in SR, 7 bits */
 #define SR_MASK	0x7f
 #define SR_BUSY	(1 << 0)

@@ -235,11 +235,18 @@ static int do_xfer(struct rockchip_spi *regs, const void *dout,
 			xferred = 1;
 		}
 
+		/*
+		 * Try to read as many bytes as are available in one go.
+		 * Reading the status registers probably requires
+		 * sychronizing with the SPI clock which is pretty slow.
+		 */
 		if (*bytes_in && !(sr & SR_RF_EMPT)) {
-			*in_buf = read32(&regs->rxdr) & 0xff;
-			in_buf++;
-			*bytes_in -= 1;
-			xferred = 1;
+			int todo = read32(&regs->rxflr) & RXFLR_LEVEL_MASK;
+
+			*bytes_in -= todo;
+			xferred = todo;
+			while (todo-- > 0)
+				*in_buf++ = read32(&regs->rxdr) & 0xff;
 		}
 
 		min_xfer -= xferred;

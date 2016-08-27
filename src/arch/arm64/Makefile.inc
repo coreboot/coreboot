@@ -178,7 +178,7 @@ $(BL31): $(obj)/build.h
 
 BL31_CBFS := $(CONFIG_CBFS_PREFIX)/bl31
 $(BL31_CBFS)-file := $(BL31)
-$(BL31_CBFS)-type := stage
+$(BL31_CBFS)-type := payload
 $(BL31_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
 cbfs-files-y += $(BL31_CBFS)
 

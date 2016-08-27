@@ -50,10 +50,9 @@ void arm_tf_run_bl31(u64 payload_entry, u64 payload_arg0, u64 payload_spsr)
 	if (prog_locate(&bl31))
 		die("BL31 not found");
 
-	if (cbfs_prog_stage_load(&bl31))
+	bl31_entry = selfload(&bl31, false);
+	if (!bl31_entry)
 		die("BL31 load failed");
-
-	bl31_entry = prog_entry(&bl31);
 
 	SET_PARAM_HEAD(&bl31_params, PARAM_BL31, VERSION_1, 0);
 

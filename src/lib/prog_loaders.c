@@ -161,7 +161,7 @@ void payload_load(void)
 	mirror_payload(payload);
 
 	/* Pass cbtables to payload if architecture desires it. */
-	prog_set_entry(payload, selfload(payload),
+	prog_set_entry(payload, selfload(payload, true),
 			cbmem_find(CBMEM_ID_CBTABLE));
 
 out:

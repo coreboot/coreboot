@@ -223,7 +223,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPIO_119, DN_20K), /* GP_SSP_2_FS0 */
 	PAD_NC(GPIO_120, DN_20K), /* GP_SSP_2_FS1 */
 	PAD_NC(GPIO_121, DN_20K), /* GP_SSP_2_FS2 */
-	PAD_NC(GPIO_122, DN_20K), /* GP_SSP_2_RXD */
+	PAD_CFG_GPO(GPIO_122, 0, DEEP), /* WIFI PERST_0 */
 	PAD_NC(GPIO_123, DN_20K), /* GP_SSP_2_TXD */
 	/** end of North West Community */
 	/** North Community */

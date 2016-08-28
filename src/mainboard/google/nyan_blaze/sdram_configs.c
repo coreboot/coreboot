@@ -19,18 +19,18 @@
 #include "sdram_configs.h"
 
 static struct sdram_params sdram_configs[] = {
-#include "bct/sdram-hynix-2GB-792.inc"				/* ram_code = 0000 */
+#include "bct/sdram-hynix-2GB-792.inc"			/* ram_code = 0000 */
 #include "bct/sdram-micron-2GB-792.inc"			/* ram_code = 0001 */
-#include "bct/sdram-samsung-2GB-792.inc"			/* ram_code = 0010 */
-#include "bct/sdram-hynix-2GB-204.inc"				/* ram_code = 0011 */
-#include "bct/sdram-micron-2GB-792.inc"				/* ram_code = 0100 */
-#include "bct/sdram-hynix-C-2GB-792.inc"				/* ram_code = 0101 */
+#include "bct/sdram-samsung-2GB-792.inc"		/* ram_code = 0010 */
+#include "bct/sdram-hynix-2GB-204.inc"			/* ram_code = 0011 */
+#include "bct/sdram-micron-2GB-792.inc"			/* ram_code = 0100 */
+#include "bct/sdram-hynix-C-2GB-792.inc"		/* ram_code = 0101 */
 #include "bct/sdram-unused.inc"				/* ram_code = 0110 */
 #include "bct/sdram-unused.inc"				/* ram_code = 0111 */
-#include "bct/sdram-hynix-4GB-792.inc"				/* ram_code = 1000 */
-#include "bct/sdram-micron-4GB-792.inc"				/* ram_code = 1001 */
-#include "bct/sdram-samsung-4GB-792.inc"			/* ram_code = 1010 */
-#include "bct/sdram-hynix-2GB-204.inc"				/* ram_code = 1011 */
+#include "bct/sdram-hynix-4GB-792.inc"			/* ram_code = 1000 */
+#include "bct/sdram-micron-4GB-792.inc"			/* ram_code = 1001 */
+#include "bct/sdram-samsung-4GB-792.inc"		/* ram_code = 1010 */
+#include "bct/sdram-hynix-2GB-204.inc"			/* ram_code = 1011 */
 #include "bct/sdram-unused.inc"				/* ram_code = 1100 */
 #include "bct/sdram-unused.inc"				/* ram_code = 1101 */
 #include "bct/sdram-unused.inc"				/* ram_code = 1110 */

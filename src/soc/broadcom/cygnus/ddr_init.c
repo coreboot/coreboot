@@ -317,14 +317,14 @@ int cygnus_phy_powerup(void)
 
 	if (reg32_read((volatile uint32_t *)CRMU_IHOST_POR_WAKEUP_FLAG)==0)
 	{
-		/* Step 1: POWRON */
+		/* Step 1: POWER ON */
 		data = reg32_read((volatile uint32_t *)CRMU_DDR_PHY_AON_CTRL);
 		data |= 0x8;// assert power ON
 		reg32_write((volatile uint32_t *)CRMU_DDR_PHY_AON_CTRL, data);
 
 		__udelay(2);
 
-		/* Step 2: POWROK */
+		/* Step 2: POWER OK */
 		data |= 0x10;// assert power OK
 		reg32_write((volatile uint32_t *)CRMU_DDR_PHY_AON_CTRL, data);
 

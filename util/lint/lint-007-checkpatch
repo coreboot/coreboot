@@ -12,12 +12,31 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
-# DESCR: Checkpatch on all .c and .h files in the tree
+# DESCR: Checkpatch on .c, .h, & Kconfig files in the tree
 
 LC_ALL=C export LC_ALL
-util/lint/checkpatch.pl --show-types --file $( git ls-files \*.[ch] | \
-	grep -v ^payloads/libpayload/util/kconfig | \
-	grep -v ^payloads/libpayload/curses/PDCurses-3.4 | \
-	grep -v ^payloads/coreinfo/util/kconfig | \
-	grep -v ^util/kconfig \
-	)
+
+# GNU BRE syntax list of files to examine
+INCLUDED_FILES='.*\.[ch]\|Kconfig.*$'
+
+EXCLUDED_DIRS="^payloads/libpayload/util/kconfig\|\
+^payloads/libpayload/curses/PDCurses\|\
+^util/kconfig\|\
+^src/vendorcode"
+
+# Space separated list of directories to test
+if [ "$1" = "" ]; then
+	INCLUDED_DIRS="src util"
+else
+	INCLUDED_DIRS="$1"
+fi
+
+# We want word splitting here, so disable the shellcheck warnings
+# shellcheck disable=SC2046,SC2086
+FILELIST=$( git ls-files $INCLUDED_DIRS | \
+		grep $INCLUDED_FILES | \
+		grep -v $EXCLUDED_DIRS )
+
+for FILE in $FILELIST; do
+	util/lint/checkpatch.pl --show-types --file --quiet "$FILE"
+done

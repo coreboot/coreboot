@@ -126,4 +126,3 @@ config TIMER_MTK_ADDRESS
 	default 0x10008048
 	help
 	  Address of GPT4's counter register to read the FREERUN-mode timer value.
-

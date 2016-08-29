@@ -126,4 +126,3 @@ config UDC_DWC2
 	help
 	  Select this option to add the driver for Designware
 	  USB device controller.
-

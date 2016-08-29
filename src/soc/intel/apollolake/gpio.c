@@ -177,6 +177,16 @@ void gpio_configure_pads(const struct pad_config *cfg, size_t num_pads)
 		gpio_configure_pad(cfg + i);
 }
 
+void * gpio_dwx_address(const uint16_t pad)
+{
+	/* Calculate Address of DW0 register for given GPIO
+	 * pad - GPIO number
+	 * returns - address of GPIO
+	 */
+	const struct pad_community *comm = gpio_get_community(pad);
+	return iosf_address(comm->port, PAD_CFG_OFFSET(pad - comm->first_pad));
+}
+
 void gpio_input_pulldown(gpio_t gpio)
 {
 	struct pad_config cfg = PAD_CFG_GPI(gpio, DN_20K, DEEP);

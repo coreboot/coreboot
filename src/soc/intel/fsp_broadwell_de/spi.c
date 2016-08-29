@@ -1,6 +1,7 @@
 /*
  * Copyright (c) 2013 Google Inc.
  * Copyright (C) 2015-2016 Intel Corp.
+ * Copyright (C) 2016 Siemens AG
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -158,63 +159,62 @@ enum {
 	SPI_OPCODE_TYPE_WRITE_WITH_ADDRESS =	3
 };
 
-#if IS_ENABLED(CONFIG_DEBUG_SPI_FLASH)
-
 static u8 readb_(const void *addr)
 {
 	u8 v = read8(addr);
-	printk(BIOS_DEBUG, "read %2.2x from %4.4x\n",
-	       v, ((unsigned) addr & 0xffff) - 0xf020);
+	if (IS_ENABLED(CONFIG_DEBUG_SPI_FLASH)) {
+		printk(BIOS_DEBUG, "SPI: read %2.2x from %4.4x\n",
+			v, ((unsigned) addr & 0xffff) - 0xf020);
+	}
 	return v;
 }
 
 static u16 readw_(const void *addr)
 {
 	u16 v = read16(addr);
-	printk(BIOS_DEBUG, "read %4.4x from %4.4x\n",
-	       v, ((unsigned) addr & 0xffff) - 0xf020);
+	if (IS_ENABLED(CONFIG_DEBUG_SPI_FLASH)) {
+		printk(BIOS_DEBUG, "SPI: read %4.4x from %4.4x\n",
+			v, ((unsigned) addr & 0xffff) - 0xf020);
+	}
 	return v;
 }
 
 static u32 readl_(const void *addr)
 {
 	u32 v = read32(addr);
-	printk(BIOS_DEBUG, "read %8.8x from %4.4x\n",
-	       v, ((unsigned) addr & 0xffff) - 0xf020);
+	if (IS_ENABLED(CONFIG_DEBUG_SPI_FLASH)) {
+		printk(BIOS_DEBUG, "SPI: read %8.8x from %4.4x\n",
+			v, ((unsigned) addr & 0xffff) - 0xf020);
+	}
 	return v;
 }
 
-static void writeb_(u8 b, const void *addr)
+static void writeb_(u8 b, void *addr)
 {
 	write8(addr, b);
-	printk(BIOS_DEBUG, "wrote %2.2x to %4.4x\n",
-	       b, ((unsigned) addr & 0xffff) - 0xf020);
+	if (IS_ENABLED(CONFIG_DEBUG_SPI_FLASH)) {
+		printk(BIOS_DEBUG, "SPI: wrote %2.2x to %4.4x\n",
+			b, ((unsigned) addr & 0xffff) - 0xf020);
+	}
 }
 
-static void writew_(u16 b, const void *addr)
+static void writew_(u16 b, void *addr)
 {
 	write16(addr, b);
-	printk(BIOS_DEBUG, "wrote %4.4x to %4.4x\n",
-	       b, ((unsigned) addr & 0xffff) - 0xf020);
+	if (IS_ENABLED(CONFIG_DEBUG_SPI_FLASH)) {
+		printk(BIOS_DEBUG, "SPI: wrote %4.4x to %4.4x\n",
+			b, ((unsigned) addr & 0xffff) - 0xf020);
+	}
 }
 
-static void writel_(u32 b, const void *addr)
+static void writel_(u32 b, void *addr)
 {
 	write32(addr, b);
-	printk(BIOS_DEBUG, "wrote %8.8x to %4.4x\n",
-	       b, ((unsigned) addr & 0xffff) - 0xf020);
+	if (IS_ENABLED(CONFIG_DEBUG_SPI_FLASH)) {
+		printk(BIOS_DEBUG, "SPI: wrote %8.8x to %4.4x\n",
+			b, ((unsigned) addr & 0xffff) - 0xf020);
+	}
 }
-
-#else /* CONFIG_DEBUG_SPI_FLASH ^^^ enabled  vvv NOT enabled */
-
-#define readb_(a) read8(a)
-#define readw_(a) read16(a)
-#define readl_(a) read32(a)
-#define writeb_(val, addr) write8(addr, val)
-#define writew_(val, addr) write16(addr, val)
-#define writel_(val, addr) write32(addr, val)
-
-#endif  /* CONFIG_DEBUG_SPI_FLASH ^^^ NOT enabled */
 
 static void write_reg(const void *value, void *dest, uint32_t size)
 {

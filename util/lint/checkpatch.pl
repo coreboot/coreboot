@@ -1495,7 +1495,13 @@ sub raw_line {
 		$cnt--;
 	}
 
-	return $line;
+	# coreboot: This probably shouldn't happen, but it does.
+	# Return a defined value so we don't get an error.
+	if (defined $line) {
+		return $line;
+	} else {
+		return "";
+	}
 }
 
 sub cat_vet {

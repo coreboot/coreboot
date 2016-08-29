@@ -69,7 +69,7 @@ static void speed_up_boot_cpu(void)
 
 	udelay(200);
 
-	rkclk_configure_cpu(APLL_1512_MHZ, false);
+	rkclk_configure_cpu(APLL_1512_MHZ, CPU_CLUSTER_LITTLE);
 }
 
 void bootblock_mainboard_init(void)

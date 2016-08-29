@@ -494,26 +494,31 @@ void rkclk_init(void)
 						HCLK_PERILP1_PLL_SEL_SHIFT));
 }
 
-void rkclk_configure_cpu(enum apll_frequencies apll_freq, bool is_big)
+void rkclk_configure_cpu(enum apll_frequencies freq, enum cpu_cluster cluster)
 {
-	u32 aclkm_div;
-	u32 pclk_dbg_div;
-	u32 atclk_div;
-	u32 apll_l_hz;
-	int con_base = is_big ? 2 : 0;
-	int parent = is_big ? CLK_CORE_PLL_SEL_ABPLL : CLK_CORE_PLL_SEL_ALPLL;
-	u32 *pll_con = is_big ? &cru_ptr->apll_b_con[0] :
-				&cru_ptr->apll_l_con[0];
+	u32 aclkm_div, atclk_div, pclk_dbg_div, apll_hz;
+	int con_base, parent;
+	u32 *pll_con;
 
-	apll_l_hz = apll_cfgs[apll_freq]->freq;
+	switch (cluster) {
+	case CPU_CLUSTER_LITTLE:
+		con_base = 0;
+		parent = CLK_CORE_PLL_SEL_ALPLL;
+		pll_con = &cru_ptr->apll_l_con[0];
+		break;
+	case CPU_CLUSTER_BIG:
+		con_base = 2;
+		parent = CLK_CORE_PLL_SEL_ABPLL;
+		pll_con = &cru_ptr->apll_b_con[0];
+		break;
+	}
 
-	rkclk_set_pll(pll_con, apll_cfgs[apll_freq]);
+	apll_hz = apll_cfgs[freq]->freq;
+	rkclk_set_pll(pll_con, apll_cfgs[freq]);
 
-	aclkm_div = div_round_up(apll_l_hz, ACLKM_CORE_HZ) - 1;
-
-	pclk_dbg_div = div_round_up(apll_l_hz, PCLK_DBG_HZ) - 1;
-
-	atclk_div = div_round_up(apll_l_hz, ATCLK_CORE_HZ) - 1;
+	aclkm_div = div_round_up(apll_hz, ACLKM_CORE_HZ) - 1;
+	pclk_dbg_div = div_round_up(apll_hz, PCLK_DBG_HZ) - 1;
+	atclk_div = div_round_up(apll_hz, ATCLK_CORE_HZ) - 1;
 
 	write32(&cru_ptr->clksel_con[con_base],
 		RK_CLRSETBITS(ACLKM_CORE_DIV_CON_MASK <<

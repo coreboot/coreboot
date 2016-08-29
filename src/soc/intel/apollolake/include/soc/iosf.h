@@ -24,16 +24,19 @@
 #define  RTC_CONFIG			0x3400
 #define   RTC_CONFIG_UCMOS_ENABLE	(1 << 2)
 
+static inline void * iosf_address(uint16_t port, uint16_t reg)
+{
+	uintptr_t addr = (CONFIG_IOSF_BASE_ADDRESS | (port << 16) | (reg & ~3));
+	return (void *)addr;
+}
+
 inline static void iosf_write(uint16_t port, uint16_t reg, uint32_t val)
 {
-	uintptr_t base = CONFIG_IOSF_BASE_ADDRESS | (port << 16) | (reg & ~3);
-	write32((void *)base, val);
+	write32(iosf_address(port, reg), val);
 }
 
 inline static uint32_t iosf_read(uint16_t port, uint16_t reg)
 {
-	uintptr_t base = CONFIG_IOSF_BASE_ADDRESS | (port << 16) | (reg & ~3);
-	return read32((void *)base);
+	return read32(iosf_address(port, reg));
 }
-
 #endif /* _SOC_APOLLOLAKE_IOSF_H_ */

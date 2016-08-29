@@ -44,4 +44,3 @@ void enable_smbus(void)
 {
 	reg_script_run_on_dev(PCH_DEV_SMBUS, smbus_init_script);
 }
-

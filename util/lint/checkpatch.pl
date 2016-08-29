@@ -5340,7 +5340,8 @@ sub process {
 		}
 
 # Check that the storage class is at the beginning of a declaration
-		if ($line =~ /\b$Storage\b/ && $line !~ /^.\s*$Storage\b/) {
+# coreboot: skip complaint about our '#define asmlinkage' lines
+		if ($line =~ /\b$Storage\b/ && $line !~ /^.\s*$Storage\b/ && $line !~ /^.\s*#\s*define\s+$Storage\b/) {
 			WARN("STORAGE_CLASS",
 			     "storage class should be at the beginning of the declaration\n" . $herecurr)
 		}

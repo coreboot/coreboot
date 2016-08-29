@@ -101,9 +101,14 @@ enum apll_frequencies {
 	APLL_600_MHZ,
 };
 
+enum cpu_cluster {
+	CPU_CLUSTER_LITTLE,
+	CPU_CLUSTER_BIG,
+};
+
 void rkclk_init(void);
 int rkclk_configure_vop_dclk(u32 vop_id, u32 dclk_hz);
-void rkclk_configure_cpu(enum apll_frequencies apll_freq, bool is_big);
+void rkclk_configure_cpu(enum apll_frequencies freq, enum cpu_cluster cluster);
 void rkclk_configure_ddr(unsigned int hz);
 void rkclk_configure_emmc(void);
 void rkclk_configure_i2s(unsigned int hz);

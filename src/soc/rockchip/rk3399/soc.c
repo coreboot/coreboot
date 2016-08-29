@@ -18,6 +18,7 @@
 #include <cpu/cpu.h>
 #include <device/device.h>
 #include <soc/addressmap.h>
+#include <soc/clock.h>
 #include <soc/display.h>
 #include <stddef.h>
 #include <stdlib.h>
@@ -42,6 +43,9 @@ static void soc_init(device_t dev)
 				_framebuffer_size);
 	else
 		printk(BIOS_INFO, "Display initialization disabled.\n");
+
+	/* We don't need big CPUs, but bring them up as a courtesy to Linux. */
+	rkclk_configure_cpu(APLL_600_MHZ, CPU_CLUSTER_BIG);
 }
 
 static struct device_operations soc_ops = {

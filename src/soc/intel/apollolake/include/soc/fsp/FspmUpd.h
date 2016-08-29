@@ -595,27 +595,27 @@ struct FSP_M_CONFIG {
 **/
   uint8_t                       RecoverDump;
 
-/** Offset 0x013A - Memory Region 0 Buffer Size
+/** Offset 0x013A - Memory Region 0 Buffer WrapAround
+  Memory Region 0 Buffer WrapAround. 0-n0-wrap, 1-warp(Default).
+**/
+  uint8_t                       Msc0Wrap;
+
+/** Offset 0x013B - Memory Region 1 Buffer WrapAround
+  Memory Region 1 Buffer WrapAround. 0-n0-warp, 1-warp(Default).
+**/
+  uint8_t                       Msc1Wrap;
+
+/** Offset 0x013C - Memory Region 0 Buffer Size
   Memory Region 0 Buffer Size. 0-0MB(Default), 1-1MB, 2-8MB, 3-64MB, 4-128MB, 5-256MB,
   6-512MB, 7-1GB.
 **/
   uint32_t                      Msc0Size;
 
-/** Offset 0x013E - Memory Region 0 Buffer WrapAround
-  Memory Region 0 Buffer WrapAround. 0-n0-warp, 1-warp(Default).
-**/
-  uint8_t                       Msc0Wrap;
-
-/** Offset 0x013F - Memory Region 1 Buffer Size
+/** Offset 0x0140 - Memory Region 1 Buffer Size
   Memory Region 1 Buffer Size, 0-0MB(Default), 1-1MB, 2-8MB, 3-64MB, 4-128MB, 5-256MB,
   6-512MB, 7-1GB.
 **/
   uint32_t                      Msc1Size;
-
-/** Offset 0x0143 - Memory Region 1 Buffer WrapAround
-  Memory Region 1 Buffer WrapAround. 0-n0-warp, 1-warp(Default).
-**/
-  uint8_t                       Msc1Wrap;
 
 /** Offset 0x0144 - PTI Mode
   PTI Mode. 0-0ff, 1-x4(Default), 2-x8, 3-x12, 4-x16.
@@ -648,9 +648,15 @@ struct FSP_M_CONFIG {
 **/
   uint8_t                       SwTraceEn;
 
-/** Offset 0x014A
+/** Offset 0x014A - Periodic Retraining Disable
+  Option to disable LPDDR4 Periodic Retraining. 0x00:Disable(Default), 0x01:Enable.
+  $EN_DIS
 **/
-  uint8_t                       ReservedFspmUpd[6];
+  uint8_t                       PeriodicRetrainingDisable;
+
+/** Offset 0x014B
+**/
+  uint8_t                       ReservedFspmUpd[5];
 } __attribute__((packed));
 
 /** Fsp M Test Configuration

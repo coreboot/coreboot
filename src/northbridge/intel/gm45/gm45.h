@@ -434,7 +434,7 @@ u32 decode_igd_gtt_size(u32 gsm);
 
 void init_iommu(void);
 
-#if ENV_RAMSTAGE
+#if ENV_RAMSTAGE && !defined(__SIMPLE_DEVICE__)
 #include <device/device.h>
 
 struct acpi_rsdp;

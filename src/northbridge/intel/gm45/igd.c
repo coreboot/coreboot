@@ -30,9 +30,9 @@
 /* The PEG settings have to be set before ASPM is setup on DMI. */
 static void enable_igd(const sysinfo_t *const sysinfo, const int no_peg)
 {
-	const device_t mch_dev	= PCI_DEV(0, 0, 0);
-	const device_t peg_dev	= PCI_DEV(0, 1, 0);
-	const device_t igd_dev	= PCI_DEV(0, 2, 0);
+	const pci_devfn_t mch_dev = PCI_DEV(0, 0, 0);
+	const pci_devfn_t peg_dev = PCI_DEV(0, 1, 0);
+	const pci_devfn_t igd_dev = PCI_DEV(0, 2, 0);
 
 	u16 reg16;
 	u32 reg32;
@@ -110,7 +110,7 @@ static void enable_igd(const sysinfo_t *const sysinfo, const int no_peg)
 
 static void disable_igd(const sysinfo_t *const sysinfo)
 {
-	const device_t mch_dev	= PCI_DEV(0, 0, 0);
+	const pci_devfn_t mch_dev = PCI_DEV(0, 0, 0);
 
 	printk(BIOS_DEBUG, "Disabling IGD.\n");
 
@@ -131,7 +131,7 @@ static void disable_igd(const sysinfo_t *const sysinfo)
 
 void init_igd(const sysinfo_t *const sysinfo)
 {
-	const device_t mch_dev	= PCI_DEV(0, 0, 0);
+	const pci_devfn_t mch_dev = PCI_DEV(0, 0, 0);
 
 	const u8 capid = pci_read_config8(mch_dev, D0F0_CAPID0 + 4);
 	if (!sysinfo->enable_igd || (capid & (1 << (33 - 32))))
@@ -142,7 +142,7 @@ void init_igd(const sysinfo_t *const sysinfo)
 
 void igd_compute_ggc(sysinfo_t *const sysinfo)
 {
-	const device_t mch_dev	= PCI_DEV(0, 0, 0);
+	const pci_devfn_t mch_dev = PCI_DEV(0, 0, 0);
 
 	const u32 capid = pci_read_config32(mch_dev, D0F0_CAPID0 + 4);
 	if (!sysinfo->enable_igd || (capid & (1 << (33 - 32))))

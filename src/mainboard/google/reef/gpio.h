@@ -112,9 +112,11 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPIO_132, UP_2K, DEEP, NF1), /* LPSS_I2C4_SDA */
 	PAD_CFG_NF(GPIO_133, UP_2K, DEEP, NF1), /* LPSS_I2C4_SCL */
 
-	/* I2C5-7 -- unused. */
-	PAD_CFG_GPI(GPIO_134, UP_20K, DEEP),	 /* LPSS_I2C5_SDA */
-	PAD_CFG_GPI(GPIO_135, UP_20K, DEEP),	 /* LPSS_I2C5_SCL */
+	/* I2C5 -- pen with external pulls  */
+	PAD_CFG_NF(GPIO_134, NONE, DEEP, NF1), /* LPSS_I2C5_SDA */
+	PAD_CFG_NF(GPIO_135, NONE, DEEP, NF1), /* LPSS_I2C5_SCL */
+
+	/* I2C6-7 -- unused. */
 	PAD_CFG_GPI(GPIO_136, UP_20K, DEEP),	 /* LPSS_I2C6_SDA */
 	PAD_CFG_GPI(GPIO_137, UP_20K, DEEP),	 /* LPSS_I2C6_SCL */
 	PAD_CFG_GPI(GPIO_138, UP_20K, DEEP),	 /* LPSS_I2C7_SDA */
@@ -289,7 +291,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI(GPIO_10, UP_20K, DEEP),	 /* unused */
 	PAD_CFG_GPI_SCI_LOW(GPIO_11, NONE, DEEP, EDGE_SINGLE), /* EC SCI  */
 	PAD_CFG_GPI(GPIO_12, UP_20K, DEEP),	 /* unused */
-	PAD_CFG_GPI(GPIO_13, UP_20K, DEEP),	 /* unused */
+	PAD_CFG_GPI_APIC_LOW(GPIO_13, UP_20K, DEEP), /* PEN_INT_ODL */
 	PAD_CFG_GPI_APIC_HIGH(GPIO_14, DN_20K, DEEP), /* FP_INT */
 	PAD_CFG_GPI(GPIO_16, UP_20K, DEEP),	 /* unused */
 	PAD_CFG_GPI(GPIO_17, UP_20K, DEEP),	 /* unused */
@@ -299,7 +301,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI_APIC_LOW(GPIO_21, NONE, DEEP), /* Touch IRQ */
 	PAD_CFG_GPI_SCI_LOW(GPIO_22, NONE, DEEP, LEVEL), /* EC wake */
 	PAD_CFG_GPI(GPIO_23, UP_20K, DEEP),	 /* unused */
-	PAD_CFG_GPI(GPIO_24, UP_20K, DEEP),	 /* unused */
+	PAD_CFG_GPI(GPIO_24, UP_20K, DEEP),	 /* PEN_PDCT_ODL */
 	PAD_CFG_GPI(GPIO_25, UP_20K, DEEP),	 /* unused */
 	PAD_CFG_GPI(GPIO_26, UP_20K, DEEP),	 /* unused */
 	PAD_CFG_GPI(GPIO_27, UP_20K, DEEP),	 /* unused */
@@ -310,7 +312,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPIO_32, NONE, DEEP, NF5),	 /* SUS_CLK2 */
 	PAD_CFG_GPI_APIC_LOW(GPIO_33, NONE, DEEP), /* PMIC IRQ */
 	PAD_CFG_GPI(GPIO_34, UP_20K, DEEP),	 /* unused */
-	PAD_CFG_GPI(GPIO_35, UP_20K, DEEP),	 /* unused */
+	PAD_CFG_GPO(GPIO_35, 0, DEEP),		 /* PEN_RESET - active high */
 	PAD_CFG_GPO(GPIO_36, 0, DEEP),		 /* touch reset */
 	PAD_CFG_GPI(GPIO_37, UP_20K, DEEP),	 /* unused */
 

@@ -112,8 +112,8 @@ static void init_pcie(const int peg_enabled,
 	u8 tmp8;
 	u16 tmp16;
 	u32 tmp;
-	const device_t mch = PCI_DEV(0, 0, 0);
-	const device_t pciex = PCI_DEV(0, 1, 0);
+	const pci_devfn_t mch = PCI_DEV(0, 0, 0);
+	const pci_devfn_t pciex = PCI_DEV(0, 1, 0);
 
 	printk(BIOS_DEBUG, "PEG x%d %s, SDVO %s\n", peg_x16?16:1,
 		peg_enabled?"enabled":"disabled",
@@ -162,7 +162,7 @@ static void init_pcie(const int peg_enabled,
 static void setup_aspm(const stepping_t stepping, const int peg_enabled)
 {
 	u32 tmp32;
-	const device_t pciex = PCI_DEV(0, 1, 0);
+	const pci_devfn_t pciex = PCI_DEV(0, 1, 0);
 
 	/* Prerequisites for ASPM: */
 	if (peg_enabled) {
@@ -327,7 +327,7 @@ static void setup_rcrb(const int peg_enabled)
 
 void gm45_late_init(const stepping_t stepping)
 {
-	const device_t mch = PCI_DEV(0, 0, 0);
+	const pci_devfn_t mch = PCI_DEV(0, 0, 0);
 	const int peg_enabled = (pci_read_config8(mch, D0F0_DEVEN) >> 1) & 1;
 	const int sdvo_enabled = (MCHBAR16(0x40) >> 8) & 1;
 	const int peg_x16 = (peg_enabled && !sdvo_enabled);

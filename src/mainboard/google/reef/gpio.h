@@ -290,7 +290,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI_SCI_LOW(GPIO_11, NONE, DEEP, EDGE_SINGLE), /* EC SCI  */
 	PAD_CFG_GPI(GPIO_12, UP_20K, DEEP),	 /* unused */
 	PAD_CFG_GPI(GPIO_13, UP_20K, DEEP),	 /* unused */
-	PAD_CFG_GPI_APIC_LOW(GPIO_14, UP_20K, DEEP), /* FP IRQ */
+	PAD_CFG_GPI_APIC_HIGH(GPIO_14, DN_20K, DEEP), /* FP_INT */
 	PAD_CFG_GPI(GPIO_16, UP_20K, DEEP),	 /* unused */
 	PAD_CFG_GPI(GPIO_17, UP_20K, DEEP),	 /* unused */
 	PAD_CFG_GPI_APIC_LOW(GPIO_18, NONE, DEEP), /* Trackpad IRQ */
@@ -378,7 +378,7 @@ static const struct pad_config proto_diff_table[] = {
 
 /* Wake peripheral signals post proto. */
 static const struct pad_config nonproto_diff_table[] = {
-	PAD_CFG_GPI_SCI_LOW(GPIO_3, UP_20K, DEEP, LEVEL),	 /* FP_INT_L */
+	PAD_CFG_GPI_SCI_HIGH(GPIO_3, DN_20K, DEEP, LEVEL),	 /* FP_INT */
 	PAD_CFG_GPI_SCI_LOW(GPIO_15, NONE, DEEP, EDGE_SINGLE),	 /* TRACKPAD_INT_1V8_ODL */
 	PAD_CFG_GPO(GPIO_44, 1, DEEP),	 /* GPS_RST_ODL */
 	PAD_CFG_GPO(PMU_WAKE_B, 1, DEEP),	 /* EN_PP3300_EMMC */

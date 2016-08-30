@@ -1,7 +1,6 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2014 Google Inc.
  * Copyright (C) 2016 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,13 +17,212 @@
 #include <bootstate.h>
 #include <device/pci.h>
 #include <fsp/api.h>
+#include <arch/acpi.h>
+#include <chip.h>
+#include <bootstate.h>
+#include <console/console.h>
+#include <device/device.h>
+#include <device/pci.h>
+#include <fsp/api.h>
+#include <fsp/util.h>
+#include <soc/acpi.h>
+#include <soc/interrupt.h>
+#include <soc/irq.h>
+#include <soc/pci_devs.h>
+#include <soc/ramstage.h>
+#include <string.h>
+
+void soc_init_pre_device(void *chip_info)
+{
+	/* Perform silicon specific init. */
+	fsp_silicon_init();
+}
+
+static void pci_domain_set_resources(device_t dev)
+{
+	assign_resources(dev->link_list);
+}
+
+static struct device_operations pci_domain_ops = {
+	.read_resources   = &pci_domain_read_resources,
+	.set_resources    = &pci_domain_set_resources,
+	.scan_bus         = &pci_domain_scan_bus,
+	.ops_pci_bus      = &pci_bus_default_ops,
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+	.acpi_name        = &soc_acpi_name,
+#endif
+};
+
+static struct device_operations cpu_bus_ops = {
+	.read_resources   = DEVICE_NOOP,
+	.set_resources    = DEVICE_NOOP,
+	.enable_resources = DEVICE_NOOP,
+	.init             = &soc_init_cpus,
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+	.acpi_fill_ssdt_generator = generate_cpu_entries,
+#endif
+};
+
+static void soc_enable(device_t dev)
+{
+	/* Set the operations if it is a special bus type */
+	if (dev->path.type == DEVICE_PATH_DOMAIN) {
+		dev->ops = &pci_domain_ops;
+	} else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER) {
+		dev->ops = &cpu_bus_ops;
+	} else if (dev->path.type == DEVICE_PATH_PCI) {
+		/* Handle PCH device enable */
+		if (PCI_SLOT(dev->path.pci.devfn) > SA_DEV_SLOT_IGD &&
+		    (dev->ops == NULL || dev->ops->enable == NULL)) {
+			pch_enable_dev(dev);
+		}
+	}
+}
+
+struct chip_operations soc_intel_skylake_ops = {
+	CHIP_NAME("Intel 6th Gen")
+	.enable_dev	= &soc_enable,
+	.init		= &soc_init_pre_device,
+};
 
 /* UPD parameters to be initialized before SiliconInit */
-void platform_fsp_silicon_init_params_cb(struct FSPS_UPD *supd)
+void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 {
+	FSP_S_CONFIG *params = &supd->FspsConfig;
+	FSP_S_TEST_CONFIG *tconfig = &supd->FspsTestConfig;
+	static struct soc_intel_skylake_config *config;
+	uintptr_t vbt_data = 0;
+
+	int i;
+
+	int is_s3_wakeup = acpi_is_wakeup_s3();
+
+	struct device *dev = SA_DEV_ROOT;
+	if (!dev || !dev->chip_info) {
+		printk(BIOS_ERR, "BUG! Could not find SOC devicetree config\n");
+		return;
+	}
+	config = dev->chip_info;
+
+	mainboard_silicon_init_params(params);
+
+	/* Load VBT */
+	if (!is_s3_wakeup)
+		vbt_data = fsp_load_vbt();
+
+	params->GraphicsConfigPtr = (u32) vbt_data;
+
+	for (i = 0; i < ARRAY_SIZE(config->usb2_ports); i++) {
+		params->PortUsb20Enable[i] =
+				config->usb2_ports[i].enable;
+		params->Usb2AfePetxiset[i] =
+				config->usb2_ports[i].pre_emp_bias;
+		params->Usb2AfeTxiset[i] =
+				config->usb2_ports[i].tx_bias;
+		params->Usb2AfePredeemp[i] =
+				config->usb2_ports[i].tx_emp_enable;
+		params->Usb2AfePehalfbit[i] =
+				config->usb2_ports[i].pre_emp_bit;
+	}
+
+	for (i = 0; i < ARRAY_SIZE(config->usb3_ports); i++) {
+		params->PortUsb30Enable[i] = config->usb3_ports[i].enable;
+		if (config->usb3_ports[i].tx_de_emp) {
+			params->Usb3HsioTxDeEmphEnable[i] = 1;
+			params->Usb3HsioTxDeEmph[i] =
+				config->usb3_ports[i].tx_de_emp;
+		}
+		if (config->usb3_ports[i].tx_downscale_amp) {
+			params->Usb3HsioTxDownscaleAmpEnable[i] = 1;
+			params->Usb3HsioTxDownscaleAmp[i] =
+				config->usb3_ports[i].tx_downscale_amp;
+		}
+	}
+
+	memcpy(params->SataPortsEnable, config->SataPortsEnable,
+	       sizeof(params->SataPortsEnable));
+	memcpy(params->SataPortsDevSlp, config->SataPortsDevSlp,
+	       sizeof(params->SataPortsDevSlp));
+	memcpy(params->PcieRpClkReqSupport, config->PcieRpClkReqSupport,
+	       sizeof(params->PcieRpClkReqSupport));
+	memcpy(params->PcieRpClkReqNumber, config->PcieRpClkReqNumber,
+	       sizeof(params->PcieRpClkReqNumber));
+
+	memcpy(params->SerialIoDevMode, config->SerialIoDevMode,
+	       sizeof(params->SerialIoDevMode));
+
+	params->PchCio2Enable = config->Cio2Enable;
+	params->Heci3Enabled = config->Heci3Enabled;
+
+	params->LogoPtr = config->LogoPtr;
+	params->LogoSize = config->LogoSize;
+
+	params->CpuConfig.Bits.VmxEnable = config->VmxEnable;
+
+	params->PchPmWoWlanEnable = config->PchPmWoWlanEnable;
+	params->PchPmWoWlanDeepSxEnable = config->PchPmWoWlanDeepSxEnable;
+	params->PchPmLanWakeFromDeepSx = config->WakeConfigPcieWakeFromDeepSx;
+
+	params->PchLanEnable = config->EnableLan;
+	params->PchCio2Enable = config->Cio2Enable;
+	params->SataSalpSupport = config->SataSalpSupport;
+	params->SsicPortEnable = config->SsicPortEnable;
+	params->ScsEmmcEnabled = config->ScsEmmcEnabled;
+	params->ScsEmmcHs400Enabled = config->ScsEmmcHs400Enabled;
+	params->ScsSdCardEnabled = config->ScsSdCardEnabled;
+	params->PchIshEnable = config->IshEnable;
+	params->PchHdaEnable = config->EnableAzalia;
+	params->PchHdaIoBufferOwnership = config->IoBufferOwnership;
+	params->PchHdaDspEnable = config->DspEnable;
+	params->XdciEnable = config->XdciEnable;
+	params->Device4Enable = config->Device4Enable;
+	params->SataEnable = config->EnableSata;
+	params->SataMode = config->SataMode;
+	tconfig->PchLockDownGlobalSmi = config->LockDownConfigGlobalSmi;
+	tconfig->PchLockDownBiosInterface = config->LockDownConfigBiosInterface;
+	tconfig->PchLockDownRtcLock = config->LockDownConfigRtcLock;
+	params->PchLockDownBiosLock = config->LockDownConfigBiosLock;
+	params->PchLockDownSpiEiss = config->LockDownConfigSpiEiss;
+	params->PchSubSystemVendorId = config->PchConfigSubSystemVendorId;
+	params->PchSubSystemId = config->PchConfigSubSystemId;
+	params->PchPmWolEnableOverride = config->WakeConfigWolEnableOverride;
+	params->PchPmPcieWakeFromDeepSx = config->WakeConfigPcieWakeFromDeepSx;
+	params->PchPmDeepSxPol = config->PmConfigDeepSxPol;
+	params->PchPmSlpS3MinAssert = config->PmConfigSlpS3MinAssert;
+	params->PchPmSlpS4MinAssert = config->PmConfigSlpS4MinAssert;
+	params->PchPmSlpSusMinAssert = config->PmConfigSlpSusMinAssert;
+	params->PchPmSlpAMinAssert = config->PmConfigSlpAMinAssert;
+	params->PchPmLpcClockRun = config->PmConfigPciClockRun;
+	params->PchPmSlpStrchSusUp = config->PmConfigSlpStrchSusUp;
+	params->PchPmPwrBtnOverridePeriod =
+				config->PmConfigPwrBtnOverridePeriod;
+	params->PchPmPwrCycDur = config->PmConfigPwrCycDur;
+	params->PchSirqEnable = config->SerialIrqConfigSirqEnable;
+	params->PchSirqMode = config->SerialIrqConfigSirqMode;
+
+	params->CpuConfig.Bits.SkipMpInit = config->FspSkipMpInit;
+
+	for (i = 0; i < ARRAY_SIZE(config->i2c); i++)
+		params->SerialIoI2cVoltage[i] = config->i2c[i].voltage;
+
+	for (i = 0; i < ARRAY_SIZE(config->domain_vr_config); i++)
+		fill_vr_domain_config(params, i, &config->domain_vr_config[i]);
+
+	/* Show SPI controller if enabled in devicetree.cb */
+	dev = dev_find_slot(0, PCH_DEVFN_SPI);
+	params->ShowSpiController = dev->enabled;
+
+	params->SendVrMbxCmd = config->SendVrMbxCmd;
+
+	soc_irq_settings(params);
 }
 
 struct pci_operations soc_pci_ops = {
-	/* TODO: Add set subsystem id function */
+	.set_subsystem = &pci_dev_set_subsystem
 };
 
+/* Mainboard GPIO Configuration */
+__attribute__((weak)) void mainboard_silicon_init_params(FSP_S_CONFIG *params)
+{
+	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
+}

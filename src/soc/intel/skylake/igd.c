@@ -24,6 +24,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <drivers/intel/gma/i915_reg.h>
+#include <fsp/util.h>
 #include <soc/acpi.h>
 #include <soc/cpu.h>
 #include <soc/pm.h>
@@ -32,6 +33,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <vboot/vbnv.h>
+
+uintptr_t fsp_soc_get_igd_bar(void)
+{
+	return find_resource(SA_DEV_IGD, PCI_BASE_ADDRESS_2)->base;
+}
 
 u32 map_oprom_vendev(u32 vendev)
 {
@@ -79,7 +85,7 @@ static void igd_init(struct device *dev)
 		gtt_write(DDI_BUF_CTL_A, ddi_buf_ctl);
 	}
 
-	if (IS_ENABLED(CONFIG_GOP_SUPPORT))
+	if (IS_ENABLED(CONFIG_ADD_VBT_DATA_FILE))
 		return;
 
 	/* IGD needs to be Bus Master */
@@ -153,7 +159,7 @@ static unsigned long write_acpi_igd_opregion(device_t device,
 	igd_opregion_t *opregion;
 
 	/* If GOP is not used, exit here */
-	if (!IS_ENABLED(CONFIG_GOP_SUPPORT))
+	if (!IS_ENABLED(CONFIG_ADD_VBT_DATA_FILE))
 		return current;
 
 	/* If IGD is disabled, exit here */

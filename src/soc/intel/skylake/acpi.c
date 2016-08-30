@@ -38,6 +38,7 @@
 #include <soc/msr.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
+#include <soc/ramstage.h>
 #include <string.h>
 #include <types.h>
 #include <vendorcode/google/chromeos/gnvs.h>
@@ -606,4 +607,65 @@ int soc_fill_acpi_wake(uint32_t *pm1, uint32_t **gpe0)
 
 __attribute__((weak)) void acpi_mainboard_gnvs(global_nvs_t *gnvs)
 {
+}
+
+const char *soc_acpi_name(struct device *dev)
+{
+	if (dev->path.type == DEVICE_PATH_DOMAIN)
+		return "PCI0";
+
+	if (dev->path.type != DEVICE_PATH_PCI)
+		return NULL;
+
+	switch (dev->path.pci.devfn) {
+	case SA_DEVFN_ROOT:	return "MCHC";
+	case SA_DEVFN_IGD:	return "GFX0";
+	case PCH_DEVFN_ISH:	return "ISHB";
+	case PCH_DEVFN_XHCI:	return "XHCI";
+	case PCH_DEVFN_USBOTG:	return "XDCI";
+	case PCH_DEVFN_THERMAL:	return "THRM";
+	case PCH_DEVFN_CIO:	return "ICIO";
+	case PCH_DEVFN_I2C0:	return "I2C0";
+	case PCH_DEVFN_I2C1:	return "I2C1";
+	case PCH_DEVFN_I2C2:	return "I2C2";
+	case PCH_DEVFN_I2C3:	return "I2C3";
+	case PCH_DEVFN_ME:	return "MEI1";
+	case PCH_DEVFN_ME_2:	return "MEI2";
+	case PCH_DEVFN_ME_IDER:	return "MEID";
+	case PCH_DEVFN_ME_KT:	return "MEKT";
+	case PCH_DEVFN_ME_3:	return "MEI3";
+	case PCH_DEVFN_SATA:	return "SATA";
+	case PCH_DEVFN_UART2:	return "UAR2";
+	case PCH_DEVFN_I2C4:	return "I2C4";
+	case PCH_DEVFN_I2C5:	return "I2C5";
+	case PCH_DEVFN_PCIE1:	return "RP01";
+	case PCH_DEVFN_PCIE2:	return "RP02";
+	case PCH_DEVFN_PCIE3:	return "RP03";
+	case PCH_DEVFN_PCIE4:	return "RP04";
+	case PCH_DEVFN_PCIE5:	return "RP05";
+	case PCH_DEVFN_PCIE6:	return "RP06";
+	case PCH_DEVFN_PCIE7:	return "RP07";
+	case PCH_DEVFN_PCIE8:	return "RP08";
+	case PCH_DEVFN_PCIE9:	return "RP09";
+	case PCH_DEVFN_PCIE10:	return "RP10";
+	case PCH_DEVFN_PCIE11:	return "RP11";
+	case PCH_DEVFN_PCIE12:	return "RP12";
+	case PCH_DEVFN_UART0:	return "UAR0";
+	case PCH_DEVFN_UART1:	return "UAR1";
+	case PCH_DEVFN_GSPI0:	return "SPI0";
+	case PCH_DEVFN_GSPI1:	return "SPI1";
+	case PCH_DEVFN_EMMC:	return "EMMC";
+	case PCH_DEVFN_SDIO:	return "SDIO";
+	case PCH_DEVFN_SDCARD:	return "SDXC";
+	case PCH_DEVFN_LPC:	return "LPCB";
+	case PCH_DEVFN_P2SB:	return "P2SB";
+	case PCH_DEVFN_PMC:	return "PMC_";
+	case PCH_DEVFN_HDA:	return "HDAS";
+	case PCH_DEVFN_SMBUS:	return "SBUS";
+	case PCH_DEVFN_SPI:	return "FSPI";
+	case PCH_DEVFN_GBE:	return "IGBE";
+	case PCH_DEVFN_TRACEHUB:return "THUB";
+	}
+
+	return NULL;
 }

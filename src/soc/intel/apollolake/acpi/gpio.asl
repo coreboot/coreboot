@@ -38,7 +38,7 @@ scope (\_SB) {
 		Method (_CRS, 0x0, NotSerialized)
 		{
 			CreateDwordField (^RBUF, ^RMEM._BAS, RBAS)
-			ShiftLeft (GPIO_NORTH, 16, Local0)
+			ShiftLeft (GPIO_N, 16, Local0)
 			Or (CONFIG_IOSF_BASE_ADDRESS, Local0, RBAS)
 			Return (^RBUF)
 		}
@@ -69,7 +69,7 @@ scope (\_SB) {
 		Method (_CRS, 0x0, NotSerialized)
 		{
 			CreateDwordField (^RBUF, ^RMEM._BAS, RBAS)
-			ShiftLeft (GPIO_NORTHWEST, 16, Local0)
+			ShiftLeft (GPIO_NW, 16, Local0)
 			Or (CONFIG_IOSF_BASE_ADDRESS, Local0, RBAS)
 			Return (^RBUF)
 		}
@@ -100,7 +100,7 @@ scope (\_SB) {
 		Method (_CRS, 0x0, NotSerialized)
 		{
 			CreateDwordField (^RBUF, ^RMEM._BAS, RBAS)
-			ShiftLeft (GPIO_WEST, 16, Local0)
+			ShiftLeft (GPIO_W, 16, Local0)
 			Or (CONFIG_IOSF_BASE_ADDRESS, Local0, RBAS)
 			Return (^RBUF)
 		}
@@ -131,7 +131,7 @@ scope (\_SB) {
 		Method (_CRS, 0x0, NotSerialized)
 		{
 			CreateDwordField (^RBUF, ^RMEM._BAS, RBAS)
-			ShiftLeft (GPIO_SOUTHWEST, 16, Local0)
+			ShiftLeft (GPIO_SW, 16, Local0)
 			Or (CONFIG_IOSF_BASE_ADDRESS, Local0, RBAS)
 			Return (^RBUF)
 		}

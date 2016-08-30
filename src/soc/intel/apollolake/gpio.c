@@ -31,25 +31,25 @@ static const struct pad_community {
 	const char *grp_name;
 } gpio_communities[] = {
 	{
-		.port = GPIO_SOUTHWEST,
+		.port = GPIO_SW,
 		.first_pad = SW_OFFSET,
 		.num_gpi_regs = NUM_SW_GPI_REGS,
 		.gpi_offset = 0,
 		.grp_name = "GPIO_GPE_SW",
 	}, {
-		.port = GPIO_WEST,
+		.port = GPIO_W,
 		.first_pad = W_OFFSET,
 		.num_gpi_regs = NUM_W_GPI_REGS,
 		.gpi_offset = NUM_SW_GPI_REGS,
 		.grp_name = "GPIO_GPE_W",
 	}, {
-		.port = GPIO_NORTHWEST,
+		.port = GPIO_NW,
 		.first_pad = NW_OFFSET,
 		.num_gpi_regs = NUM_NW_GPI_REGS,
 		.gpi_offset = NUM_W_GPI_REGS + NUM_SW_GPI_REGS,
 		.grp_name = "GPIO_GPE_NW",
 	}, {
-		.port = GPIO_NORTH,
+		.port = GPIO_N,
 		.first_pad = N_OFFSET,
 		.num_gpi_regs = NUM_N_GPI_REGS,
 		.gpi_offset = NUM_NW_GPI_REGS+ NUM_W_GPI_REGS + NUM_SW_GPI_REGS,
@@ -229,13 +229,13 @@ const char *gpio_acpi_path(gpio_t gpio_num)
 	const struct pad_community *comm = gpio_get_community(gpio_num);
 
 	switch (comm->port) {
-	case GPIO_NORTH:
+	case GPIO_N:
 		return "\\_SB.GPO0";
-	case GPIO_NORTHWEST:
+	case GPIO_NW:
 		return "\\_SB.GPO1";
-	case GPIO_WEST:
+	case GPIO_W:
 		return "\\_SB.GPO2";
-	case GPIO_SOUTHWEST:
+	case GPIO_SW:
 		return "\\_SB.GPO3";
 	}
 
@@ -247,13 +247,13 @@ uint16_t gpio_acpi_pin(gpio_t gpio_num)
 	const struct pad_community *comm = gpio_get_community(gpio_num);
 
 	switch (comm->port) {
-	case GPIO_NORTH:
+	case GPIO_N:
 		return PAD_N(gpio_num);
-	case GPIO_NORTHWEST:
+	case GPIO_NW:
 		return PAD_NW(gpio_num);
-	case GPIO_WEST:
+	case GPIO_W:
 		return PAD_W(gpio_num);
-	case GPIO_SOUTHWEST:
+	case GPIO_SW:
 		return PAD_SW(gpio_num);
 	}
 

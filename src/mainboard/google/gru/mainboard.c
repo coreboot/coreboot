@@ -43,6 +43,23 @@ static void configure_emmc(void)
 	rkclk_configure_emmc();
 }
 
+static void register_apio_suspend(void)
+{
+	static struct bl31_apio_param param_apio = {
+		.h = {
+			.type = PARAM_SUSPEND_APIO,
+		},
+		.apio = {
+			.apio1 = 1,
+			.apio2 = 1,
+			.apio3 = 1,
+			.apio4 = 1,
+			.apio5 = 1,
+		},
+	};
+	register_bl31_param(&param_apio.h);
+}
+
 static void register_gpio_suspend(void)
 {
 	/*
@@ -227,6 +244,7 @@ static void mainboard_init(device_t dev)
 	register_reset_to_bl31();
 	register_poweroff_to_bl31();
 	register_gpio_suspend();
+	register_apio_suspend();
 }
 
 static void enable_backlight_booster(void)

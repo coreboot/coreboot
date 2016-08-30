@@ -67,11 +67,12 @@ JENKINS_PAYLOAD?=none
 TEST_PAYLOAD?=$(JENKINS_PAYLOAD)
 CPUS?=4
 
-lint lint-stable:
+lint lint-stable lint-extended:
 	util/lint/lint $@
 
 what-jenkins-does:
 	util/lint/lint lint-stable --junit
+	util/lint/lint lint-extended --junit
 	util/abuild/abuild -B -J $(if $(JENKINS_NOCCACHE),,-y) -c $(CPUS) -z -p $(JENKINS_PAYLOAD) -x -X $(top)/abuild-chromeos.xml
 	util/abuild/abuild -B -J $(if $(JENKINS_NOCCACHE),,-y) -c $(CPUS) -z -p $(JENKINS_PAYLOAD)
 	(cd payloads/libpayload; unset COREBOOT_BUILD_DIR; $(MAKE) $(if $(JENKINS_NOCCACHE),,CONFIG_LP_CCACHE=y) V=$(V) Q=$(Q) junit.xml)
@@ -84,7 +85,7 @@ test-basic: test-lint test-tools test-abuild test-payloads test-cleanup
 
 test-lint:
 	util/lint/lint lint-stable
-	util/lint/lint-015-final-newlines
+	util/lint/lint lint-extended
 
 test-abuild:
 	rm -rf coreboot-builds-chromeos coreboot-builds

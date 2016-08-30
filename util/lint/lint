@@ -14,7 +14,7 @@
 #set -x # uncomment for debug
 
 usage () {
-	printf "Usage: %s <lint|lint-stable> [--junit]\n" "$0"
+	printf "Usage: %s <lint|lint-stable|lint-extended> [--junit]\n" "$0"
 }
 
 #write to the junit xml file if --junit was specified
@@ -25,17 +25,20 @@ junit_write () {
 }
 
 #verify the first command line parameter
-if [ -z "$1" ] || [ "$1" != "lint" ] && [ "$1" != "lint-stable" ]; then
+if [ -z "$1" ] || [ "$1" != "lint" ] && [ "$1" != "lint-stable" ]  && \
+		[ "$1" != "lint-extended" ]; then
 	usage
 	exit 1
 fi
 
 LINTLOG=$(mktemp .tmpconfig.lintXXXXX);
 XMLFILE="$(dirname "$0")/junit.xml"
+if [ "$1" = "lint-extended" ]; then
+	XMLFILE="$(dirname "$0")/extended-junit.xml"
+fi
 FAILED=0;
 
 #check optional second command line parameter.
-#TODO: Add real command line handling if anything more is added
 if [ "$2" = "--junit" ]; then
 	JUNIT=1
 	echo '<?xml version="1.0" encoding="utf-8"?>' > "$XMLFILE"

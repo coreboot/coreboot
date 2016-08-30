@@ -166,3 +166,18 @@ config CPU_MICROCODE_HEADER_FILES
 	help
 	  A list of one or more microcode header files with path from the
 	  coreboot directory.  These should be separated by spaces.
+
+config CPU_UCODE_BINARIES
+	string "Microcode binary path and filename"
+	depends on CPU_MICROCODE_CBFS_GENERATE
+	default ""
+	help
+	  Some platforms have microcode in the blobs directory, and these can
+	  be hardcoded in the makefiles.  For platforms with microcode
+	  binaries that aren't in the makefile, set this option to pull
+	  in the microcode.
+
+	  This should contain the full path of the file for one or more
+	  microcode binary files to include, separated by spaces.
+
+	  If unsure, leave this blank.

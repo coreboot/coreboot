@@ -163,6 +163,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(PMU_SLP_S3_B, NONE, DEEP, NF1), /* PMU_SLP_S3_N */
 	PAD_CFG_NF(PMU_SLP_S4_B, NONE, DEEP, NF1), /* PMU_SLP_S4_N */
 	PAD_CFG_NF(PMU_SUSCLK, NONE, DEEP, NF1), /* PMU_SUSCLK */
+	PAD_CFG_GPO(PMU_WAKE_B, 1, DEEP),	 /* EN_PP3300_EMMC */
 	PAD_CFG_NF(SUS_STAT_B, NONE, DEEP, NF1), /* SUS_STAT_N */
 	PAD_CFG_NF(SUSPWRDNACK, NONE, DEEP, NF1), /* SUSPWRDNACK */
 
@@ -281,6 +282,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI(GPIO_0, UP_20K, DEEP),
 	PAD_CFG_GPI(GPIO_1, UP_20K, DEEP),
 	PAD_CFG_GPI(GPIO_2, UP_20K, DEEP),
+	PAD_CFG_GPI_SCI_HIGH(GPIO_3, DN_20K, DEEP, LEVEL),	 /* FP_INT */
 	PAD_CFG_GPI(GPIO_4, UP_20K, DEEP),
 	PAD_CFG_GPI(GPIO_5, UP_20K, DEEP),
 	PAD_CFG_GPI(GPIO_6, UP_20K, DEEP),
@@ -293,6 +295,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI(GPIO_12, UP_20K, DEEP),	 /* unused */
 	PAD_CFG_GPI_APIC_LOW(GPIO_13, UP_20K, DEEP), /* PEN_INT_ODL */
 	PAD_CFG_GPI_APIC_HIGH(GPIO_14, DN_20K, DEEP), /* FP_INT */
+	PAD_CFG_GPI_SCI_LOW(GPIO_15, NONE, DEEP, EDGE_SINGLE),	 /* TRACKPAD_INT_1V8_ODL */
 	PAD_CFG_GPI(GPIO_16, UP_20K, DEEP),	 /* unused */
 	PAD_CFG_GPI(GPIO_17, UP_20K, DEEP),	 /* unused */
 	PAD_CFG_GPI_APIC_LOW(GPIO_18, NONE, DEEP), /* Trackpad IRQ */
@@ -324,6 +327,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI(GPIO_41, NONE, DEEP),	 /* LPSS_UART0_CTS - EC_IN_RW */
 	PAD_CFG_NF(GPIO_42, NATIVE, DEEP, NF1),	 /* LPSS_UART1_RXD */
 	PAD_CFG_NF(GPIO_43, NATIVE, DEEP, NF1),	 /* LPSS_UART1_TXD */
+	PAD_CFG_GPO(GPIO_44, 1, DEEP),	 /* GPS_RST_ODL */
 	PAD_CFG_GPI(GPIO_45, UP_20K, DEEP),	 /* LPSS_UART1_CTS - MEM_CONFIG3 */
 	PAD_CFG_NF(GPIO_46, NATIVE, DEEP, NF1),	 /* LPSS_UART2_RXD */
 	PAD_CFG_NF(GPIO_47, NATIVE, DEEP, NF1),	 /* LPSS_UART2_TXD */
@@ -370,21 +374,6 @@ static const struct pad_config sleep_gpio_table[] = {
 #define MEM_CONFIG2 GPIO_38
 #define MEM_CONFIG1 GPIO_102
 #define MEM_CONFIG0 GPIO_101
-
-static const struct pad_config proto_diff_table[] = {
-	PAD_CFG_GPI(GPIO_3, UP_20K, DEEP),	 /* unused */
-	PAD_CFG_GPI(GPIO_15, UP_20K, DEEP),	 /* unused */
-	PAD_CFG_NF(GPIO_44, NATIVE, DEEP, NF1),	 /* LPSS_UART1_RTS */
-	PAD_CFG_GPO(PMU_WAKE_B, 0, DEEP),	 /* EN_PP3300_EMMC_ODL */
-};
-
-/* Wake peripheral signals post proto. */
-static const struct pad_config nonproto_diff_table[] = {
-	PAD_CFG_GPI_SCI_HIGH(GPIO_3, DN_20K, DEEP, LEVEL),	 /* FP_INT */
-	PAD_CFG_GPI_SCI_LOW(GPIO_15, NONE, DEEP, EDGE_SINGLE),	 /* TRACKPAD_INT_1V8_ODL */
-	PAD_CFG_GPO(GPIO_44, 1, DEEP),	 /* GPS_RST_ODL */
-	PAD_CFG_GPO(PMU_WAKE_B, 1, DEEP),	 /* EN_PP3300_EMMC */
-};
 
 #endif /* __ACPI__ */
 #endif /* MAINBOARD_GPIO_H */

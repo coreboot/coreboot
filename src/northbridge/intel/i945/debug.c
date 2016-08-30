@@ -23,7 +23,7 @@
 
 void print_pci_devices(void)
 {
-	device_t dev;
+	pci_devfn_t dev;
 	for (dev = PCI_DEV(0, 0, 0);
 		dev <= PCI_DEV(0, 0x1f, 0x7);
 		dev += PCI_DEV(0,0,1)) {
@@ -61,7 +61,7 @@ void dump_pci_device(unsigned dev)
 
 void dump_pci_devices(void)
 {
-	device_t dev;
+	pci_devfn_t dev;
 	for (dev = PCI_DEV(0, 0, 0);
 		dev <= PCI_DEV(0, 0x1f, 0x7);
 		dev += PCI_DEV(0,0,1)) {

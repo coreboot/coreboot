@@ -113,6 +113,26 @@ static const struct lpddr4_sku skus[] = {
 		.part_num = "MT53B256M32D1NP",
 		.disable_periodic_retraining = 1,
 	},
+	/*
+	 * H9HCNNNBPUMLHR-NLE - both logical channels. While the parts
+	 * are listed at 16Gb there are 2 ranks per channel so indicate the
+	 * density as 8Gb per rank.
+	 */
+	[4] = {
+		.speed = LP4_SPEED_2400,
+		.ch0_rank_density = LP4_8Gb_DENSITY,
+		.ch1_rank_density = LP4_8Gb_DENSITY,
+		.ch0_dual_rank = 1,
+		.ch1_dual_rank = 1,
+		.part_num = "H9HCNNNBPUMLHR",
+	},
+	/* H9HCNNN8KUMLHR-NLE - both logical channels */
+	[5] = {
+		.speed = LP4_SPEED_2400,
+		.ch0_rank_density = LP4_8Gb_DENSITY,
+		.ch1_rank_density = LP4_8Gb_DENSITY,
+		.part_num = "H9HCNNN8KUMLHR",
+	},
 	/* K4F8E304HB-MGCH - both logical channels */
 	[PROTO_SKU] = {
 		.speed = LP4_SPEED_2400,

@@ -19,19 +19,18 @@
 
 #include <chip.h>
 #include <device/device.h>
-
 #include <fsp/api.h>
 #include <fsp/util.h>
 #include <soc/intel/common/opregion.h>
 
-#define FSP_SIL_UPD struct FSP_S_CONFIG
-#define FSP_MEM_UPD struct FSP_M_CONFIG
+#define FSP_SIL_UPD FSP_S_CONFIG
+#define FSP_MEM_UPD FSP_M_CONFIG
 
-void intel_silicon_init(void);
-void mainboard_silicon_init_params(struct FSP_S_CONFIG *params);
+void mainboard_silicon_init_params(FSP_S_CONFIG *params);
 void pch_enable_dev(device_t dev);
 void soc_init_pre_device(void *chip_info);
 void soc_init_cpus(device_t dev);
+void soc_irq_settings(FSP_SIL_UPD *params);
 const char *soc_acpi_name(struct device *dev);
 
 extern struct pci_operations soc_pci_ops;

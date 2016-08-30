@@ -273,6 +273,19 @@ struct soc_intel_skylake_config {
 	u16 PchConfigSubSystemVendorId;
 	/* Subsystem ID of the PCH devices*/
 	u16 PchConfigSubSystemId;
+
+	/*
+	 * Determine if WLAN wake from Sx, corresponds to the
+	 * HOST_WLAN_PP_EN bit in the PWRM_CFG3 register.
+	 */
+	u8 PchPmWoWlanEnable;
+
+	/*
+	 * Determine if WLAN wake from DeepSx, corresponds to
+	 * the DSX_WLAN_PP_EN bit in the PWRM_CFG3 register.
+	 */
+	u8 PchPmWoWlanDeepSxEnable;
+
 	/*
 	 * Corresponds to the "WOL Enable Override" bit in the General PM
 	 * Configuration B (GEN_PMCON_B) register

@@ -43,7 +43,9 @@
 #if !defined(__ASSEMBLER__)
 #if !defined(__PRE_RAM__)
 #include "chip.h"
-extern void i82801gx_enable(device_t dev);
+#if !defined(__SIMPLE_DEVICE__)
+void i82801gx_enable(device_t dev);
+#endif
 void gpi_route_interrupt(u8 gpi, u8 mode);
 #else
 void enable_smbus(void);

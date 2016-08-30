@@ -108,13 +108,13 @@ static inline const struct pci_operations *ops_pci(device_t dev)
 
 #endif /* ! __SIMPLE_DEVICE__ */
 
-#ifdef __PRE_RAM__
+#ifdef __SIMPLE_DEVICE__
 unsigned pci_find_next_capability(pci_devfn_t dev, unsigned cap, unsigned last);
 unsigned pci_find_capability(pci_devfn_t dev, unsigned cap);
-#else /* !__PRE_RAM__ */
+#else /* !__SIMPLE_DEVICE__ */
 unsigned pci_find_next_capability(device_t dev, unsigned cap, unsigned last);
 unsigned pci_find_capability(device_t dev, unsigned cap);
-#endif /* __PRE_RAM__ */
+#endif /* __SIMPLE_DEVICE__ */
 
 void pci_early_bridge_init(void);
 int pci_early_device_probe(u8 bus, u8 dev, u32 mmio_base);

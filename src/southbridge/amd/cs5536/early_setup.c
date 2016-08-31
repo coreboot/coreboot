@@ -42,7 +42,7 @@ static void cs5536_setup_idsel(void)
 	outl(0x1 << (CS5536_DEV_NUM + 10), 0);
 }
 
-static void cs5536_usb_swapsif (void)
+static void cs5536_usb_swapsif(void)
 {
 	msr_t msr;
 
@@ -260,7 +260,7 @@ static void cs5536_early_setup(void)
 	//printk(BIOS_DEBUG, "Setup idsel\n");
 	cs5536_setup_idsel();
 	//printk(BIOS_DEBUG, "Setup iobase\n");
-	cs5536_usb_swapsif ();
+	cs5536_usb_swapsif();
 	cs5536_setup_iobase();
 	//printk(BIOS_DEBUG, "Setup gpio\n");
 	cs5536_setup_gpio();

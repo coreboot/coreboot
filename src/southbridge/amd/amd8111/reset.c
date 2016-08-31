@@ -12,26 +12,26 @@
 
 static void pci_write_config8(pci_devfn_t dev, unsigned where, unsigned char value)
 {
-        unsigned addr;
-        addr = (dev>>4) | where;
-        outl(0x80000000 | (addr & ~3), 0xCF8);
-        outb(value, 0xCFC + (addr & 3));
+	unsigned addr;
+	addr = (dev>>4) | where;
+	outl(0x80000000 | (addr & ~3), 0xCF8);
+	outb(value, 0xCFC + (addr & 3));
 }
 
 static void pci_write_config32(pci_devfn_t dev, unsigned where, unsigned value)
 {
 	unsigned addr;
-        addr = (dev>>4) | where;
-        outl(0x80000000 | (addr & ~3), 0xCF8);
-        outl(value, 0xCFC);
+	addr = (dev>>4) | where;
+	outl(0x80000000 | (addr & ~3), 0xCF8);
+	outl(value, 0xCFC);
 }
 
 static unsigned pci_read_config32(pci_devfn_t dev, unsigned where)
 {
 	unsigned addr;
-        addr = (dev>>4) | where;
-        outl(0x80000000 | (addr & ~3), 0xCF8);
-        return inl(0xCFC);
+	addr = (dev>>4) | where;
+	outl(0x80000000 | (addr & ~3), 0xCF8);
+	return inl(0xCFC);
 }
 
 #define PCI_DEV_INVALID (0xffffffffU)
@@ -40,7 +40,7 @@ static pci_devfn_t pci_locate_device_on_bus(unsigned pci_id, unsigned bus)
 	pci_devfn_t dev, last;
 	dev = PCI_DEV(bus, 0, 0);
 	last = PCI_DEV(bus, 31, 7);
-	for(; dev <= last; dev += PCI_DEV(0,0,1)) {
+	for (; dev <= last; dev += PCI_DEV(0,0,1)) {
 		unsigned int id;
 		id = pci_read_config32(dev, 0);
 		if (id == pci_id) {

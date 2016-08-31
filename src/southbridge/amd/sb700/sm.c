@@ -213,7 +213,7 @@ static void sm_init(device_t dev)
 	}
 
 	/*rpr v2.13  2.22 SMBUS PCI Config */
- 	byte = pci_read_config8(dev, 0xE1);
+	byte = pci_read_config8(dev, 0xE1);
 	if ((REV_SB700_A11 == rev) || REV_SB700_A12 == rev) {
 		byte |= 1 << 0;
 	}
@@ -222,7 +222,7 @@ static void sm_init(device_t dev)
 	 */
 	//byte |= 1 << 2 | 1 << 3 | 1 << 4;
 	byte |= 1 << 3 | 1 << 4;
- 	pci_write_config8(dev, 0xE1, byte);
+	pci_write_config8(dev, 0xE1, byte);
 
 	/* 2.5 Enabling Non-Posted Memory Write */
        	axindxc_reg(0x10, 1 << 9, 1 << 9);
@@ -278,7 +278,7 @@ static void sm_init(device_t dev)
 		u16 word;
 
 		/* rpr v2.13 4.18 Enabling Posted Pass Non-Posted Downstream */
-        	axindxc_reg(0x02, 1 << 9, 1 << 9);
+		axindxc_reg(0x02, 1 << 9, 1 << 9);
 		abcfg_reg(0x9C, 0x00007CC0, 0x00007CC0);
 		abcfg_reg(0x1009C, 0x00000030, 0x00000030);
 		abcfg_reg(0x10090, 0x00001E00, 0x00001E00);
@@ -287,19 +287,19 @@ static void sm_init(device_t dev)
 		abcfg_reg(0x58, 0x0000F800, 0x0000E800);
 
 		/* rpr v2.13 4.20 64 bit Non-Posted Memory Write Support */
-        	axindxc_reg(0x02, 1 << 10, 1 << 10);
+		axindxc_reg(0x02, 1 << 10, 1 << 10);
 
 		/* rpr v2.13 2.38 Unconditional Shutdown */
- 		byte = pci_read_config8(dev, 0x43);
+		byte = pci_read_config8(dev, 0x43);
 		byte &= ~(1 << 3);
- 		pci_write_config8(dev, 0x43, byte);
+		pci_write_config8(dev, 0x43, byte);
 
 		word = pci_read_config16(dev, 0x38);
 		word |= 1 << 12;
- 		pci_write_config16(dev, 0x38, word);
+		pci_write_config16(dev, 0x38, word);
 
 		byte |= 1 << 3;
- 		pci_write_config8(dev, 0x43, byte);
+		pci_write_config8(dev, 0x43, byte);
 
 		/* Enable southbridge MMIO decode */
 		dword = pci_read_config32(dev, SB_MMIO_CFG_REG);
@@ -308,12 +308,12 @@ static void sm_init(device_t dev)
 		dword |= 0x1;
 		pci_write_config32(dev, SB_MMIO_CFG_REG, dword);
 	}
- 	byte = pci_read_config8(dev, 0xAE);
- 	if (IS_ENABLED(CONFIG_ENABLE_APIC_EXT_ID))
- 		byte |= 1 << 4;
+	byte = pci_read_config8(dev, 0xAE);
+	if (IS_ENABLED(CONFIG_ENABLE_APIC_EXT_ID))
+	byte |= 1 << 4;
 	byte |= 1 << 5;	/* ACPI_DISABLE_TIMER_IRQ_ENHANCEMENT_FOR_8254_TIMER */
 	byte |= 1 << 6;	/* Enable arbiter between APIC and PIC interrupts */
- 	pci_write_config8(dev, 0xAE, byte);
+	pci_write_config8(dev, 0xAE, byte);
 
 	/* 4.11:Programming Cycle Delay for AB and BIF Clock Gating */
 	/* 4.12: Enabling AB and BIF Clock Gating */

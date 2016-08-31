@@ -94,7 +94,7 @@ static int hda_wait_for_ready(u8 *base)
 
 	int timeout = 50;
 
-	while(timeout--) {
+	while (timeout--) {
 		u32 reg32 = read32(base +  HDA_ICII_REG);
 		if (!(reg32 & HDA_ICII_BUSY))
 			return 0;
@@ -122,7 +122,7 @@ static int hda_wait_for_valid(u8 *base)
 	 * same duration */
 
 	int timeout = 50;
-	while(timeout--) {
+	while (timeout--) {
 		reg32 = read32(base + HDA_ICII_REG);
 		if ((reg32 & (HDA_ICII_VALID | HDA_ICII_BUSY)) ==
 			HDA_ICII_VALID)

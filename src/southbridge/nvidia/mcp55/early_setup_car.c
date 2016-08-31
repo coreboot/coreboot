@@ -381,7 +381,7 @@ static int mcp55_early_setup_x(void)
 			device_t dev;
 			dev = PCI_DEV(busnx, devnx, 0);
 			id = pci_read_config32(dev, PCI_VENDOR_ID);
-			if(id == 0x036910de) {
+			if (id == 0x036910de) {
 				busn[mcp55_num] = busnx;
 				devn[mcp55_num] = devnx;
 

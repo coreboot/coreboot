@@ -30,22 +30,22 @@
  */
 static void alink_ax_indx(u32 space, u32 axindc, u32 mask, u32 val)
 {
-        u32 tmp;
+	u32 tmp;
 
-        /* read axindc to tmp */
-        outl(space << 30 | space << 3 | 0x30, AB_INDX);
-        outl(axindc, AB_DATA);
-        outl(space << 30 | space << 3 | 0x34, AB_INDX);
-        tmp = inl(AB_DATA);
+	/* read axindc to tmp */
+	outl(space << 30 | space << 3 | 0x30, AB_INDX);
+	outl(axindc, AB_DATA);
+	outl(space << 30 | space << 3 | 0x34, AB_INDX);
+	tmp = inl(AB_DATA);
 
-        tmp &= ~mask;
-        tmp |= val;
+	tmp &= ~mask;
+	tmp |= val;
 
-        /* write tmp */
-        outl(space << 30 | space << 3 | 0x30, AB_INDX);
-        outl(axindc, AB_DATA);
-        outl(space << 30 | space << 3 | 0x34, AB_INDX);
-        outl(tmp, AB_DATA);
+	/* write tmp */
+	outl(space << 30 | space << 3 | 0x30, AB_INDX);
+	outl(axindc, AB_DATA);
+	outl(space << 30 | space << 3 | 0x34, AB_INDX);
+	outl(tmp, AB_DATA);
 }
 
 
@@ -327,7 +327,7 @@ void fam10_optimization(void)
 	/* rpr Table 5-11, 5-12 */
 }
 #else
-#define fam10_optimization() do{}while(0)
+#define fam10_optimization() do {} while (0)
 #endif	/* CONFIG_NORTHBRIDGE_AMD_AMDFAM10 || CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY10 */
 
 /*****************************************

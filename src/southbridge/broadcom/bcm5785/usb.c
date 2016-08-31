@@ -23,7 +23,7 @@
 
 static void usb_init(struct device *dev)
 {
-        uint32_t dword;
+	uint32_t dword;
 
 	dword = pci_read_config32(dev, 0x04);
 	dword |= (1<<2)|(1<<1)|(1<<0);
@@ -35,12 +35,12 @@ static void usb_init(struct device *dev)
 
 static void lpci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 {
-        pci_write_config32(dev, 0x40,
-                ((device & 0xffff) << 16) | (vendor & 0xffff));
+	pci_write_config32(dev, 0x40,
+		((device & 0xffff) << 16) | (vendor & 0xffff));
 }
 
 static struct pci_operations lops_pci = {
-        .set_subsystem = lpci_set_subsystem,
+	.set_subsystem = lpci_set_subsystem,
 };
 
 static struct device_operations usb_ops  = {

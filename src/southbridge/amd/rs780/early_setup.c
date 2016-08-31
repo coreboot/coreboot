@@ -335,7 +335,7 @@ static void k8_optimization(void)
 	wrmsr(0xC001001F, msr);
 }
 #else
-#define k8_optimization() do{}while(0)
+#define k8_optimization() do {} while (0)
 #endif	/* !CONFIG_NORTHBRIDGE_AMD_AMDFAM10 */
 
 #if CONFIG_NORTHBRIDGE_AMD_AMDFAM10
@@ -400,7 +400,7 @@ static void fam10_optimization(void)
 	}
 }
 #else
-#define fam10_optimization() do{}while(0)
+#define fam10_optimization() do {} while (0)
 #endif	/* CONFIG_NORTHBRIDGE_AMD_AMDFAM10 */
 
 /*****************************************

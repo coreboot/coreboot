@@ -127,12 +127,10 @@ static u32 SetMMIO(u32 Base, u32 Limit, u8 Attribute, MMIORANGE *pMMIO)
 {
 	int i;
 	MMIORANGE * TempRange;
-	for(i=0; i<8; i++)
-	{
-		if(pMMIO[i].Attribute != Attribute && Base >= pMMIO[i].Base && Limit <= pMMIO[i].Limit)
-		{
+	for (i=0; i<8; i++) {
+		if (pMMIO[i].Attribute != Attribute && Base >= pMMIO[i].Base && Limit <= pMMIO[i].Limit) {
 			TempRange = AllocMMIO(pMMIO);
-			if(TempRange == 0) return 0x80000000;
+			if (TempRange == 0) return 0x80000000;
 			TempRange->Base = Limit;
 			TempRange->Limit = pMMIO[i].Limit;
 			TempRange->Attribute = pMMIO[i].Attribute;
@@ -140,7 +138,7 @@ static u32 SetMMIO(u32 Base, u32 Limit, u8 Attribute, MMIORANGE *pMMIO)
 		}
 	}
 	TempRange = AllocMMIO(pMMIO);
-	if(TempRange == 0) return 0x80000000;
+	if (TempRange == 0) return 0x80000000;
 	TempRange->Base = Base;
 	TempRange->Limit = Limit;
 	TempRange->Attribute = Attribute;
@@ -150,32 +148,25 @@ static u32 SetMMIO(u32 Base, u32 Limit, u8 Attribute, MMIORANGE *pMMIO)
 static u8 FinalizeMMIO(MMIORANGE *pMMIO)
 {
 	int i, j, n = 0;
-	for(i=0; i<8; i++)
-	{
-		if (pMMIO[i].Base == pMMIO[i].Limit)
-		{
+	for (i=0; i<8; i++) {
+		if (pMMIO[i].Base == pMMIO[i].Limit) {
 			FreeMMIO(&pMMIO[i]);
 			continue;
 		}
-		for(j=0; j<i; j++)
-		{
-			if (i!=j && pMMIO[i].Attribute == pMMIO[j].Attribute)
-			{
-				if (pMMIO[i].Base == pMMIO[j].Limit)
-				{
+		for (j=0; j<i; j++) {
+			if (i!=j && pMMIO[i].Attribute == pMMIO[j].Attribute) {
+				if (pMMIO[i].Base == pMMIO[j].Limit) {
 					pMMIO[j].Limit = pMMIO[i].Limit;
 					 FreeMMIO(&pMMIO[i]);
 				}
-				if (pMMIO[i].Limit == pMMIO[j].Base)
-				{
+				if (pMMIO[i].Limit == pMMIO[j].Base) {
 					pMMIO[j].Base = pMMIO[i].Base;
 				   FreeMMIO(&pMMIO[i]);
 				}
 			}
 		}
 	}
-	for (i=0; i<8; i++)
-	{
+	for (i=0; i<8; i++) {
 		if (pMMIO[i].Limit != 0) n++;
 	}
 	return n;
@@ -191,29 +182,23 @@ static CIM_STATUS GetCreativeMMIO(MMIORANGE *pMMIO)
 	Value = pci_read_config32(dev0x14, 0x18);
 	BusStart = (Value >> 8) & 0xFF;
 	BusEnd = (Value >> 16) & 0xFF;
-	for(Bus = BusStart; Bus <= BusEnd; Bus++)
-	{
-		for(Dev = 0; Dev <= 0x1f; Dev++)
-		{
+	for (Bus = BusStart; Bus <= BusEnd; Bus++) {
+		for (Dev = 0; Dev <= 0x1f; Dev++) {
 			tempdev = dev_find_slot(Bus, Dev << 3);
 			Value = pci_read_config32(tempdev, 0);
 			printk(BIOS_DEBUG, "Dev ID %x\n", Value);
-			if((Value & 0xffff) == 0x1102)
-			{//Creative
+			if ((Value & 0xffff) == 0x1102) {//Creative
 				//Found Creative SB
 			 	u32	MMIOStart = 0xffffffff;
 				u32 MMIOLimit = 0;
-				for(Reg = 0x10; Reg < 0x20; Reg+=4)
-				{
+				for (Reg = 0x10; Reg < 0x20; Reg+=4) {
 					u32	BaseA, LimitA;
 					BaseA = pci_read_config32(tempdev, Reg);
 					Value = BaseA;
-					if(!(Value & 0x01))
-					{
+					if (!(Value & 0x01)) {
 						Value = Value & 0xffffff00;
-						if(Value !=  0)
-						{
-							if(MMIOStart > Value)
+						if (Value !=  0) {
+							if (MMIOStart > Value)
 								MMIOStart = Value;
 							LimitA = 0xffffffff;
 							//WritePCI(PciAddress,AccWidthUint32,&LimitA);
@@ -232,16 +217,14 @@ static CIM_STATUS GetCreativeMMIO(MMIORANGE *pMMIO)
 				if (MMIOStart < MMIOLimit)
 				{
 					Status = SetMMIO(MMIOStart>>8, MMIOLimit>>8, 0x80, pMMIO);
-					if(Status == CIM_ERROR) return Status;
+					if (Status == CIM_ERROR) return Status;
 				}
 			}
 		}
 	}
-	if(Status == CIM_SUCCESS)
-	{
+	if (Status == CIM_SUCCESS) {
 		//Lets optimize MMIO
-		if(FinalizeMMIO(pMMIO) > 4)
-		{
+		if (FinalizeMMIO(pMMIO) > 4) {
 			Status = CIM_ERROR;
 		}
 	}
@@ -256,23 +239,18 @@ static void ProgramMMIO(MMIORANGE *pMMIO, u8 LinkID, u8 Attribute)
 
 	k8_f1 = dev_find_slot(0, PCI_DEVFN(0x18, 1));
 
-	for(i = 0; i < 8; i++)
-	{
+	for (i = 0; i < 8; i++) {
 		int k = 0, MmioReg;
 		u32 Base = 0;
 		u32 Limit = 0;
-		for(j = 0; j < 8; j++)
-		{
-			if (Base < pMMIO[j].Base)
-			{
+		for (j = 0; j < 8; j++) {
+			if (Base < pMMIO[j].Base) {
 				Base = pMMIO[j].Base;
 				k = j;
 			}
 		}
-		if(pMMIO[k].Limit != 0)
-		{
-			if(Attribute & MMIO_ATTRIB_NP_ONLY && pMMIO[k].Attribute == 0 )
-			{
+		if (pMMIO[k].Limit != 0) {
+			if (Attribute & MMIO_ATTRIB_NP_ONLY && pMMIO[k].Attribute == 0 ) {
 				Base = 0;
 			}
 			else
@@ -366,8 +344,7 @@ static void internal_gfx_pci_dev_init(struct device *dev)
 
 	/* Clear vgainfo. */
 	bpointer = (unsigned char *) &vgainfo;
-	for(i=0; i<sizeof(ATOM_INTEGRATED_SYSTEM_INFO_V2); i++)
-	{
+	for (i=0; i<sizeof(ATOM_INTEGRATED_SYSTEM_INFO_V2); i++) {
 		*bpointer = 0;
 		bpointer++;
 	}
@@ -651,8 +628,7 @@ static void internal_gfx_pci_dev_init(struct device *dev)
 
 	/* Transfer the Table to VBIOS. */
 	pointer = (u32 *)&vgainfo;
-	for(i=0; i<sizeof(ATOM_INTEGRATED_SYSTEM_INFO_V2); i+=4)
-	{
+	for (i=0; i<sizeof(ATOM_INTEGRATED_SYSTEM_INFO_V2); i+=4) {
 #if CONFIG_GFXUMA
 		*GpuF0MMReg = 0x80000000 + uma_memory_size - 512 + i;
 #else
@@ -686,14 +662,12 @@ static void internal_gfx_pci_dev_init(struct device *dev)
 
 	/* clear MMIO and CreativeMMIO. */
 	bpointer = (unsigned char *)MMIO;
-	for(i=0; i<sizeof(MMIO); i++)
-	{
+	for (i=0; i<sizeof(MMIO); i++) {
 		*bpointer = 0;
 		bpointer++;
 	}
 	bpointer = (unsigned char *)CreativeMMIO;
-	for(i=0; i<sizeof(CreativeMMIO); i++)
-	{
+	for (i=0; i<sizeof(CreativeMMIO); i++) {
 		*bpointer = 0;
 		bpointer++;
 	}
@@ -708,20 +682,18 @@ static void internal_gfx_pci_dev_init(struct device *dev)
 	temp = pci_read_config32(dev0x14, 0x20);
 	Base32 = (temp & 0x0fff0) << 8;
 	Limit32 = ((temp & 0x0fff00000) + 0x100000) >> 8;
-	if(Base32 < Limit32)
-	{
+	if (Base32 < Limit32) {
 		Status = GetCreativeMMIO(&CreativeMMIO[0]);
-		if(Status != CIM_ERROR)
+		if (Status != CIM_ERROR)
 			SetMMIO(Base32, Limit32, 0x0, &MMIO[0]);
 	}
 	/* Set MMIO for prefetchable P2P. */
-	if(Status != CIM_ERROR)
-	{
+	if (Status != CIM_ERROR) {
 		temp = pci_read_config32(dev0x14, 0x24);
 
 		Base32 = (temp & 0x0fff0) <<8;
 		Limit32 = ((temp & 0x0fff00000) + 0x100000) >> 8;
-		if(Base32 < Limit32)
+		if (Base32 < Limit32)
 			SetMMIO(Base32, Limit32, 0x0, &MMIO[0]);
 	}
 
@@ -835,8 +807,7 @@ static void rs780_internal_gfx_enable(device_t dev)
 	device_t k8_f1 = dev_find_slot(0, PCI_DEVFN(0x18, 1));
 	device_t k8_f2 = dev_find_slot(0, PCI_DEVFN(0x18, 2));
 	device_t k8_f4 = dev_find_slot(0, PCI_DEVFN(0x18, 4));
-	for (i = 0; i < 12; i++)
-	{
+	for (i = 0; i < 12; i++) {
 		l_dword = pci_read_config32(k8_f2, 0x40 + i * 4);
 		nbmc_write_index(nb_dev, 0x30 + i, l_dword);
 	}
@@ -848,10 +819,8 @@ static void rs780_internal_gfx_enable(device_t dev)
 	set_nbmc_enable_bits(nb_dev, 0x3c, 0, !!(l_dword & (1<< 8))<<17);
 	l_dword = pci_read_config32(k8_f2, 0x90);
 	set_nbmc_enable_bits(nb_dev, 0x3c, 0, !!(l_dword & (1<<10))<<18);
-   if (is_family10h())
-   {
-	   for (i = 0; i < 12; i++)
-	   {
+   if (is_family10h()) {
+	   for (i = 0; i < 12; i++) {
 		   l_dword = pci_read_config32(k8_f2, 0x140 + i * 4);
 		   nbmc_write_index(nb_dev, 0x3d + i, l_dword);
 	   }
@@ -974,13 +943,11 @@ static void rs780_internal_gfx_enable(device_t dev)
 	/* set_nbmc_enable_bits(nb_dev, 0xac, ~(0xfffffff0), 0x0b); */
 
 	/* Init PM timing. */
-	for(i=0; i<4; i++)
-	{
+	for (i=0; i<4; i++) {
 		l_dword = nbmc_read_index(nb_dev, 0xa0+i);
 		nbmc_write_index(nb_dev, 0xc8+i, l_dword);
 	}
-	for(i=0; i<4; i++)
-	{
+	for (i=0; i<4; i++) {
 		l_dword = nbmc_read_index(nb_dev, 0xa8+i);
 		nbmc_write_index(nb_dev, 0xcc+i, l_dword);
 	}
@@ -1538,7 +1505,7 @@ void rs780_gfx_init(device_t nb_dev, device_t dev, u32 port)
 		printk(BIOS_DEBUG, "rs780_gfx_init step1.\n");
 
 		printk(BIOS_DEBUG, "device = %x\n", dev->path.pci.devfn >> 3);
-		if((dev->path.pci.devfn >> 3) == 2) {
+		if ((dev->path.pci.devfn >> 3) == 2) {
 			single_port_configuration(nb_dev, dev);
 		} else {
 			set_nbmisc_enable_bits(nb_dev, 0xc, 0, 0x2 << 2); /* hide the GFX bridge. */
@@ -1565,7 +1532,7 @@ void rs780_gfx_init(device_t nb_dev, device_t dev, u32 port)
 		break;
 
 	case 2:
-		if(is_dev3_present()){
+		if (is_dev3_present()) {
 			/* step 1, lane reversal (only need if CMOS option is enabled) */
 			if (cfg->gfx_lane_reversal) {
 				set_nbmisc_enable_bits(nb_dev, 0x36, 1 << 31, 1 << 31);
@@ -1583,7 +1550,7 @@ void rs780_gfx_init(device_t nb_dev, device_t dev, u32 port)
 			printk(BIOS_DEBUG, "device = %x\n", dev->path.pci.devfn >> 3);
 			dual_port_configuration(nb_dev, dev);
 
-		}else{
+		} else {
 			if (cfg->gfx_lane_reversal) {
 				set_nbmisc_enable_bits(nb_dev, 0x36, 1 << 31, 1 << 31);
 				set_nbmisc_enable_bits(nb_dev, 0x33, 1 << 2, 1 << 2);
@@ -1591,9 +1558,9 @@ void rs780_gfx_init(device_t nb_dev, device_t dev, u32 port)
 			}
 			printk(BIOS_DEBUG, "rs780_gfx_init step1.\n");
 
-			if((dev->path.pci.devfn >> 3) == 2)
+			if ((dev->path.pci.devfn >> 3) == 2)
 				single_port_configuration(nb_dev, dev);
-			else{
+			else {
 				set_nbmisc_enable_bits(nb_dev, 0xc, 0, 0x2 << 2); /* hide the GFX bridge. */
 				printk(BIOS_DEBUG, "If dev3.., single port. Do nothing.\n");
 			    }

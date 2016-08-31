@@ -152,7 +152,7 @@ static void acpi_init(struct device *dev)
 	/* Throttle the CPU speed down for testing */
 	on = SLOW_CPU_OFF;
 	get_option(&on, "slow_cpu");
-	if(on) {
+	if (on) {
 		pm10_bar = (pci_read_config16(dev, 0x58)&0xff00);
 		outl(((on<<1)+0x10)  ,(pm10_bar + 0x10));
 		inl(pm10_bar + 0x10);

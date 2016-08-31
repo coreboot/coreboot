@@ -62,7 +62,7 @@ void    TraceCode ( UINT32 Level, UINT32 Code);
 	#if CONFIG_REDIRECT_SBCIMX_TRACE_TO_SERIAL
 		#define TRACE(Arguments) printk Arguments
 	#else
-		#define TRACE(Arguments) do {} while(0)
+		#define TRACE(Arguments) do {} while (0)
 	#endif
 	#define TRACECODE(Arguments)
 #endif

@@ -70,7 +70,7 @@ void sis966_enable(device_t dev)
 	conf = dev->chip_info;
 	int i;
 
-	if(dev->device==0x0000) {
+	if (dev->device==0x0000) {
 		reg = pci_read_config32(dev, PCI_VENDOR_ID);
 		deviceid = (reg >> 16) & 0xffff;
 		vendorid = reg & 0xffff;
@@ -92,9 +92,9 @@ void sis966_enable(device_t dev)
 		case PCI_DEVICE_ID_SIS_SIS966_NIC:
 			devfn -= (7<<3);
 			index = 10;
-			for(i=0;i<2;i++) {
+			for (i=0;i<2;i++) {
 				lpc_dev = find_lpc_dev(dev, devfn - (i<<3));
-				if(!lpc_dev) continue;
+				if (!lpc_dev) continue;
 				index -= i;
 				devfn -= (i<<3);
 				break;
@@ -112,7 +112,7 @@ void sis966_enable(device_t dev)
 			devfn -= (4<<3);
 			index = 22;
 			i = (dev->path.pci.devfn) & 7;
-			if(i>0) {
+			if (i>0) {
 				index -= (i+3);
 			}
 			break;
@@ -124,14 +124,14 @@ void sis966_enable(device_t dev)
 			index = 0;
 	}
 
-	if(!lpc_dev)
+	if (!lpc_dev)
 		lpc_dev = find_lpc_dev(dev, devfn);
 
 	if ( !lpc_dev )	return;
 
-	if(index2!=0) {
+	if (index2!=0) {
 		sm_dev = dev_find_slot(dev->bus->secondary, devfn + 1);
-		if(!sm_dev) return;
+		if (!sm_dev) return;
 
 		if ( sm_dev ) {
 			reg_old = reg =  pci_read_config32(sm_dev, 0xe4);
@@ -165,9 +165,9 @@ void sis966_enable(device_t dev)
 
 	}
 
-	if( index == 16) {
+	if ( index == 16) {
 		sm_dev = dev_find_slot(dev->bus->secondary, devfn + 1);
-		if(!sm_dev) return;
+		if (!sm_dev) return;
 
 		final_reg = pci_read_config32(sm_dev, 0xe8);
 		final_reg &= ~0x0057cf00;
@@ -184,9 +184,9 @@ void sis966_enable(device_t dev)
 		 */
 	}
 
-	if(index == 9 ) { //NIC1 is the final, We need update final reg to 0xe8
+	if (index == 9 ) { //NIC1 is the final, We need update final reg to 0xe8
 		sm_dev = dev_find_slot(dev->bus->secondary, devfn + 1);
-		if(!sm_dev) return;
+		if (!sm_dev) return;
 		reg_old = pci_read_config32(sm_dev, 0xe8);
 		if (final_reg != reg_old) {
 			pci_write_config32(sm_dev, 0xe8, final_reg);

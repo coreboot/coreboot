@@ -19,8 +19,7 @@ static void amd8131_walk_children(struct bus *bus,
 	void (*visit)(device_t dev, void *ptr), void *ptr)
 {
 	device_t child;
-	for(child = bus->children; child; child = child->sibling)
-	{
+	for (child = bus->children; child; child = child->sibling) {
 		if (child->path.type != DEVICE_PATH_PCI) {
 			continue;
 		}
@@ -72,7 +71,7 @@ static void amd8131_pcix_tune_dev(device_t dev, void *ptr)
 	sibs = info->master_devices - 1;
 	/* Count how many sibling functions this device has */
 	sib_funcs = 0;
-	for(sib = dev->bus->children; sib; sib = sib->sibling) {
+	for (sib = dev->bus->children; sib; sib = sib->sibling) {
 		if (sib == dev) {
 			continue;
 		}
@@ -258,7 +257,7 @@ static void amd8131_scan_bus(struct bus *bus,
 	/* Don't allow the 8131 or any of it's parent busses to
 	 * implement relaxed ordering.  Errata #58
 	 */
-	for(pbus = bus; !pbus->disable_relaxed_ordering; pbus = pbus->dev->bus) {
+	for (pbus = bus; !pbus->disable_relaxed_ordering; pbus = pbus->dev->bus) {
 		printk(BIOS_SPEW, "%s disabling relaxed ordering\n",
 			bus_path(pbus));
 		pbus->disable_relaxed_ordering = 1;
@@ -280,57 +279,57 @@ static void amd8131_pcix_init(device_t dev)
 
 	/* Enable memory write and invalidate ??? */
 	byte = pci_read_config8(dev, 0x04);
-        byte |= 0x10;
-        pci_write_config8(dev, 0x04, byte);
+	byte |= 0x10;
+	pci_write_config8(dev, 0x04, byte);
 
 	/* Set drive strength */
 	word = pci_read_config16(dev, 0xe0);
-        word = 0x0404;
-        pci_write_config16(dev, 0xe0, word);
+	word = 0x0404;
+	pci_write_config16(dev, 0xe0, word);
 	word = pci_read_config16(dev, 0xe4);
-        word = 0x0404;
-        pci_write_config16(dev, 0xe4, word);
+	word = 0x0404;
+	pci_write_config16(dev, 0xe4, word);
 
 	/* Set impedance */
 	word = pci_read_config16(dev, 0xe8);
-        word = 0x0404;
-        pci_write_config16(dev, 0xe8, word);
+	word = 0x0404;
+	pci_write_config16(dev, 0xe8, word);
 
 	/* Set discard unrequested prefetch data */
 	/* Errata #51 */
 	word = pci_read_config16(dev, 0x4c);
-        word |= 1;
-        pci_write_config16(dev, 0x4c, word);
+	word |= 1;
+	pci_write_config16(dev, 0x4c, word);
 
 	/* Set split transaction limits */
 	word = pci_read_config16(dev, 0xa8);
-        pci_write_config16(dev, 0xaa, word);
+	pci_write_config16(dev, 0xaa, word);
 	word = pci_read_config16(dev, 0xac);
-        pci_write_config16(dev, 0xae, word);
+	pci_write_config16(dev, 0xae, word);
 
 	/* Set up error reporting, enable all */
 	/* system error enable */
 	dword = pci_read_config32(dev, 0x04);
-        dword |= (1<<8);
-        pci_write_config32(dev, 0x04, dword);
+	dword |= (1<<8);
+	pci_write_config32(dev, 0x04, dword);
 
 	/* system and error parity enable */
 	dword = pci_read_config32(dev, 0x3c);
-        dword |= (3<<16);
-        pci_write_config32(dev, 0x3c, dword);
+	dword |= (3<<16);
+	pci_write_config32(dev, 0x3c, dword);
 
 	/* NMI enable */
 	nmi_option = NMI_OFF;
 	get_option(&nmi_option, "nmi");
-	if(nmi_option) {
+	if (nmi_option) {
 		dword = pci_read_config32(dev, 0x44);
-        	dword |= (1<<0);
-        	pci_write_config32(dev, 0x44, dword);
+		dword |= (1<<0);
+		pci_write_config32(dev, 0x44, dword);
 	}
 
 	/* Set up CRC flood enable */
 	dword = pci_read_config32(dev, 0xc0);
-	if(dword) {  /* do device A only */
+	if (dword) {  /* do device A only */
 		dword = pci_read_config32(dev, 0xc4);
 		dword |= (1<<1);
 		pci_write_config32(dev, 0xc4, dword);
@@ -377,22 +376,22 @@ static void bridge_set_resources(struct device *dev)
 
 static struct device_operations pcix_ops  = {
 #if BRIDGE_40_BIT_SUPPORT
-        .read_resources   = bridge_read_resources,
-        .set_resources    = bridge_set_resources,
+	.read_resources   = bridge_read_resources,
+	.set_resources    = bridge_set_resources,
 #else
-        .read_resources   = pci_bus_read_resources,
-        .set_resources    = pci_dev_set_resources,
+	.read_resources   = pci_bus_read_resources,
+	.set_resources    = pci_dev_set_resources,
 #endif
 	.enable_resources = pci_bus_enable_resources,
-        .init             = amd8131_pcix_init,
-        .scan_bus         = amd8131_scan_bridge,
+	.init             = amd8131_pcix_init,
+	.scan_bus         = amd8131_scan_bridge,
 	.reset_bus        = pci_bus_reset,
 };
 
 static const struct pci_driver pcix_driver __pci_driver = {
-        .ops    = &pcix_ops,
-        .vendor = PCI_VENDOR_ID_AMD,
-        .device = 0x7450,
+	.ops    = &pcix_ops,
+	.vendor = PCI_VENDOR_ID_AMD,
+	.device = 0x7450,
 };
 
 

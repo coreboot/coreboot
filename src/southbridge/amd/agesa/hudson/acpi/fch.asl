@@ -183,9 +183,9 @@ Method(_INI, 0) {
 
 Method(OSFL, 0){
 
-	if(LNotEqual(OSVR, Ones)) {Return(OSVR)}	/* OS version was already detected */
+	if (LNotEqual(OSVR, Ones)) {Return(OSVR)}	/* OS version was already detected */
 
-	if(CondRefOf(\_OSI))
+	if (CondRefOf(\_OSI))
 	{
 		Store(1, OSVR)					/* Assume some form of XP */
 		if (\_OSI("Windows 2006"))		/* Vista */

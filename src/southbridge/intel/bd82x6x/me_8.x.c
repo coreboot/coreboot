@@ -703,7 +703,7 @@ static void intel_me_init(device_t dev)
 		if (intel_mei_setup(dev) < 0)
 			break;
 
-		if(intel_me_read_mbp(&mbp_data))
+		if (intel_me_read_mbp(&mbp_data))
 			break;
 
 #if CONFIG_CHROMEOS && 0 /* DISABLED */
@@ -893,7 +893,7 @@ static int intel_me_read_mbp(me_bios_payload *mbp_data)
 		default:
 			printk(BIOS_ERR, "ME: unknown mbp item id 0x%x! Skipping\n",
 			       mbp_item_id);
-			while(copy_size--)
+			while (copy_size--)
 				read_cb();
 			continue;
 		}
@@ -904,7 +904,7 @@ static int intel_me_read_mbp(me_bios_payload *mbp_data)
 			       buffer_room, copy_size, mbp_item_id);
 			return -1;
 		}
-		while(copy_size--)
+		while (copy_size--)
 			*copy_addr++ = read_cb();
 	}
 
@@ -914,7 +914,7 @@ static int intel_me_read_mbp(me_bios_payload *mbp_data)
 
 	{
 		int cntr = 0;
-		while(host.interrupt_generate) {
+		while (host.interrupt_generate) {
 			read_host_csr(&host);
 			cntr++;
 		}

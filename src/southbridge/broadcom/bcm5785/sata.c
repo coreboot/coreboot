@@ -28,41 +28,41 @@ static void sata_init(struct device *dev)
 	uint8_t byte;
 
 	u8 *mmio;
-        struct resource *res;
-        u8 *mmio_base;
+	struct resource *res;
+	u8 *mmio_base;
 	int i;
 
-	if(!(dev->path.pci.devfn & 7)) { // only set it in Func0
+	if (!(dev->path.pci.devfn & 7)) { // only set it in Func0
 		byte = pci_read_config8(dev, 0x78);
 		byte |= (1<<7);
-        	pci_write_config8(dev, 0x78, byte);
+		pci_write_config8(dev, 0x78, byte);
 
 	        res = find_resource(dev, 0x24);
-                mmio_base = res2mmio(res, 0, 3);
+		mmio_base = res2mmio(res, 0, 3);
 
 		write32(mmio_base + 0x10f0, 0x40000001);
 		write32(mmio_base + 0x8c, 0x00ff2007);
-                mdelay( 10 );
+		mdelay( 10 );
 		write32(mmio_base + 0x8c, 0x78592009);
-                mdelay( 10 );
+		mdelay( 10 );
 		write32(mmio_base + 0x8c, 0x00082004);
-                mdelay( 10 );
+		mdelay( 10 );
 		write32(mmio_base + 0x8c, 0x00002004);
-                mdelay( 10 );
+		mdelay( 10 );
 
 		//init PHY
 
 		printk(BIOS_DEBUG, "init PHY...\n");
-		for(i=0; i<4; i++) {
+		for (i=0; i<4; i++) {
 			mmio = (u8 *)(uintptr_t)(res->base + 0x100 * i);
 			byte = read8(mmio + 0x40);
 			printk(BIOS_DEBUG, "port %d PHY status = %02x\n", i, byte);
-			if(byte & 0x4) {// bit 2 is set
+			if (byte & 0x4) {// bit 2 is set
 				byte = read8(mmio+0x48);
 				write8(mmio + 0x48, byte | 1);
 				write8(mmio + 0x48, byte & (~1));
-	                        byte = read8(mmio + 0x40);
-	                        printk(BIOS_DEBUG, "after reset port %d PHY status = %02x\n", i, byte);
+				byte = read8(mmio + 0x40);
+				printk(BIOS_DEBUG, "after reset port %d PHY status = %02x\n", i, byte);
 			}
 		}
 	}
@@ -70,12 +70,12 @@ static void sata_init(struct device *dev)
 
 static void lpci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 {
-        pci_write_config32(dev, 0x40,
-                ((device & 0xffff) << 16) | (vendor & 0xffff));
+	pci_write_config32(dev, 0x40,
+		((device & 0xffff) << 16) | (vendor & 0xffff));
 }
 
 static struct pci_operations lops_pci = {
-        .set_subsystem = lpci_set_subsystem,
+	.set_subsystem = lpci_set_subsystem,
 };
 
 static struct device_operations sata_ops  = {

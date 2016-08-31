@@ -51,39 +51,39 @@ uint8_t	SiS_SiS7001_init[16][3]={
 
 static void usb_init(struct device *dev)
 {
-        printk(BIOS_DEBUG, "USB 1.1 INIT:---------->\n");
+	printk(BIOS_DEBUG, "USB 1.1 INIT:---------->\n");
 
 //-------------- enable USB1.1 (SiS7001) -------------------------
 {
-        uint8_t  temp8;
-        int i=0;
+	uint8_t  temp8;
+	int i=0;
 
-	 while(SiS_SiS7001_init[i][0] != 0)
-	 {				temp8 = pci_read_config8(dev, SiS_SiS7001_init[i][0]);
-					temp8 &= SiS_SiS7001_init[i][1];
-					temp8 |= SiS_SiS7001_init[i][2];
-					pci_write_config8(dev, SiS_SiS7001_init[i][0], temp8);
-					i++;
-	 };
+	while (SiS_SiS7001_init[i][0] != 0) {
+		temp8 = pci_read_config8(dev, SiS_SiS7001_init[i][0]);
+		temp8 &= SiS_SiS7001_init[i][1];
+		temp8 |= SiS_SiS7001_init[i][2];
+		pci_write_config8(dev, SiS_SiS7001_init[i][0], temp8);
+		i++;
+	};
 }
 //-----------------------------------------------------------
 
 #if DEBUG_USB
 {
-        int i;
+	int i;
 
-        printk(BIOS_DEBUG, "****** USB 1.1 PCI config ******");
-        printk(BIOS_DEBUG, "\n    03020100  07060504  0B0A0908  0F0E0D0C");
+	printk(BIOS_DEBUG, "****** USB 1.1 PCI config ******");
+	printk(BIOS_DEBUG, "\n    03020100  07060504  0B0A0908  0F0E0D0C");
 
-        for (i=0;i<0xff;i+=4){
-                if ((i%16)==0)
-                        printk(BIOS_DEBUG, "\n%02x: ", i);
-                printk(BIOS_DEBUG, "%08x  ", pci_read_config32(dev,i));
-        }
-        printk(BIOS_DEBUG, "\n");
+	for (i=0;i<0xff;i+=4) {
+		if ((i%16)==0)
+			printk(BIOS_DEBUG, "\n%02x: ", i);
+		printk(BIOS_DEBUG, "%08x  ", pci_read_config32(dev,i));
+	}
+	printk(BIOS_DEBUG, "\n");
 }
 #endif
-        printk(BIOS_DEBUG, "USB 1.1 INIT:<----------\n");
+	printk(BIOS_DEBUG, "USB 1.1 INIT:<----------\n");
 }
 
 static void lpci_set_subsystem(device_t dev, unsigned vendor, unsigned device)

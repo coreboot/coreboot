@@ -151,21 +151,21 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 }
 
 static struct device_operations lpc_ops = {
-        .read_resources = lpc_read_resources,
-        .set_resources = lpc_set_resources,
-        .enable_resources = pci_dev_enable_resources,
+	.read_resources = lpc_read_resources,
+	.set_resources = lpc_set_resources,
+	.enable_resources = pci_dev_enable_resources,
 #if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
 	.write_acpi_tables = acpi_write_hpet,
 #endif
-        .init = lpc_init,
-        .scan_bus = scan_lpc_bus,
-        .ops_pci = &lops_pci,
+	.init = lpc_init,
+	.scan_bus = scan_lpc_bus,
+	.ops_pci = &lops_pci,
 };
 
 static const struct pci_driver lpc_driver __pci_driver = {
-        .ops = &lpc_ops,
-        .vendor = PCI_VENDOR_ID_ATI,
-        .device = PCI_DEVICE_ID_ATI_SB800_LPC,
+	.ops = &lpc_ops,
+	.vendor = PCI_VENDOR_ID_ATI,
+	.device = PCI_DEVICE_ID_ATI_SB800_LPC,
 };
 
 static struct device_operations sata_ops = {
@@ -226,34 +226,34 @@ static const struct pci_driver usb_ohci4_driver __pci_driver = {
 
 
 static struct device_operations azalia_ops = {
-        .read_resources = pci_dev_read_resources,
-        .set_resources = pci_dev_set_resources,
-        .enable_resources = pci_dev_enable_resources,
-        .init = 0,
-        .scan_bus = 0,
-        .ops_pci = &lops_pci,
+	.read_resources = pci_dev_read_resources,
+	.set_resources = pci_dev_set_resources,
+	.enable_resources = pci_dev_enable_resources,
+	.init = 0,
+	.scan_bus = 0,
+	.ops_pci = &lops_pci,
 };
 
 static const struct pci_driver azalia_driver __pci_driver = {
-        .ops = &azalia_ops,
-        .vendor = PCI_VENDOR_ID_ATI,
-        .device = PCI_DEVICE_ID_ATI_SB800_HDA,
+	.ops = &azalia_ops,
+	.vendor = PCI_VENDOR_ID_ATI,
+	.device = PCI_DEVICE_ID_ATI_SB800_HDA,
 };
 
 
 static struct device_operations gec_ops = {
-        .read_resources = pci_dev_read_resources,
-        .set_resources = pci_dev_set_resources,
-        .enable_resources = pci_dev_enable_resources,
-        .init = 0,
-        .scan_bus = 0,
-        .ops_pci = &lops_pci,
+	.read_resources = pci_dev_read_resources,
+	.set_resources = pci_dev_set_resources,
+	.enable_resources = pci_dev_enable_resources,
+	.init = 0,
+	.scan_bus = 0,
+	.ops_pci = &lops_pci,
 };
 
 static const struct pci_driver gec_driver __pci_driver = {
-        .ops = &gec_ops,
-        .vendor = PCI_VENDOR_ID_ATI,
-        .device = PCI_DEVICE_ID_ATI_SB800_GEC,
+	.ops = &gec_ops,
+	.vendor = PCI_VENDOR_ID_ATI,
+	.device = PCI_DEVICE_ID_ATI_SB800_GEC,
 };
 
 /**

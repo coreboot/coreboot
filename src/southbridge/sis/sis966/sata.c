@@ -109,22 +109,19 @@ static void sata_init(struct device *dev)
 {
 	struct southbridge_sis_sis966_config *conf;
 
-
-
 	conf = dev->chip_info;
-        printk(BIOS_DEBUG, "SATA_INIT:---------->\n");
+	printk(BIOS_DEBUG, "SATA_INIT:---------->\n");
 
 //-------------- enable IDE (SiS1183) -------------------------
 {
-        uint8_t  temp8;
-        int i=0;
-	while(SiS_SiS1183_init[i][0] != 0)
-	{
-                temp8 = pci_read_config8(dev, SiS_SiS1183_init[i][0]);
-                temp8 &= SiS_SiS1183_init[i][1];
-                temp8 |= SiS_SiS1183_init[i][2];
-                pci_write_config8(dev, SiS_SiS1183_init[i][0], temp8);
-                i++;
+	uint8_t  temp8;
+	int i=0;
+	while (SiS_SiS1183_init[i][0] != 0) {
+		temp8 = pci_read_config8(dev, SiS_SiS1183_init[i][0]);
+		temp8 &= SiS_SiS1183_init[i][1];
+		temp8 |= SiS_SiS1183_init[i][2];
+		pci_write_config8(dev, SiS_SiS1183_init[i][0], temp8);
+		i++;
 	};
 }
 //-----------------------------------------------------------
@@ -133,33 +130,33 @@ static void sata_init(struct device *dev)
 uint32_t i,j;
 uint32_t temp32;
 
-for (i=0;i<10;i++){
-   temp32=0;
-   temp32= pci_read_config32(dev, 0xC0);
-   for ( j=0;j<0xFFFF;j++);
-   printk(BIOS_DEBUG, "status= %x\n",temp32);
-   if (((temp32&0xF) == 0x3) || ((temp32&0xF) == 0x0)) break;
+for (i=0;i<10;i++) {
+	temp32=0;
+	temp32= pci_read_config32(dev, 0xC0);
+	for ( j=0;j<0xFFFF;j++);
+		printk(BIOS_DEBUG, "status= %x\n",temp32);
+		if (((temp32&0xF) == 0x3) || ((temp32&0xF) == 0x0)) break;
 }
 
 }
 
 #if DEBUG_SATA
 {
-        int i;
+	int i;
 
-        printk(BIOS_DEBUG, "****** SATA PCI config ******");
-        printk(BIOS_DEBUG, "\n    03020100  07060504  0B0A0908  0F0E0D0C");
+	printk(BIOS_DEBUG, "****** SATA PCI config ******");
+	printk(BIOS_DEBUG, "\n    03020100  07060504  0B0A0908  0F0E0D0C");
 
-        for (i=0;i<0xff;i+=4){
-                if ((i%16)==0)
-                        printk(BIOS_DEBUG, "\n%02x: ", i);
-                printk(BIOS_DEBUG, "%08x  ", pci_read_config32(dev,i));
-        }
-        printk(BIOS_DEBUG, "\n");
+	for (i=0;i<0xff;i+=4) {
+		if ((i%16)==0)
+			printk(BIOS_DEBUG, "\n%02x: ", i);
+		printk(BIOS_DEBUG, "%08x  ", pci_read_config32(dev,i));
+	}
+	printk(BIOS_DEBUG, "\n");
 }
 #endif
 
-        printk(BIOS_DEBUG, "SATA_INIT:<----------\n");
+	printk(BIOS_DEBUG, "SATA_INIT:<----------\n");
 
 }
 

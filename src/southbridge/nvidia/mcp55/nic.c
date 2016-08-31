@@ -127,26 +127,26 @@ static void nic_init(struct device *dev)
 		struct device *dev_eeprom;
 		dev_eeprom = dev_find_slot_on_smbus(conf->mac_eeprom_smbus, conf->mac_eeprom_addr);
 
-		if(dev_eeprom) {
+		if (dev_eeprom) {
 		//	if that is valid we will use that
 			unsigned char dat[6];
 			int status;
 			int i;
-			for(i=0;i<6;i++) {
+			for (i=0;i<6;i++) {
 				status = smbus_read_byte(dev_eeprom, i);
-				if(status < 0) break;
+				if (status < 0) break;
 				dat[i] = status & 0xff;
 			}
-			if(status >= 0) {
+			if (status >= 0) {
 				mac_l = 0;
-				for(i=3;i>=0;i--) {
+				for (i=3;i>=0;i--) {
 					mac_l <<= 8;
 					mac_l += dat[i];
 				}
-				if(mac_l != 0xffffffff) {
+				if (mac_l != 0xffffffff) {
 					mac_l += nic_index;
 					mac_h = 0;
-					for(i=5;i>=4;i--) {
+					for (i=5;i>=4;i--) {
 						mac_h <<= 8;
 						mac_h += dat[i];
 					}
@@ -156,7 +156,7 @@ static void nic_init(struct device *dev)
 		}
 	}
 //	if that is invalid we will read that from romstrap
-	if(!eeprom_valid) {
+	if (!eeprom_valid) {
 		u32 *mac_pos;
 		mac_pos = (u32 *)0xffffffd0; // refer to romstrap.inc and romstrap.ld
 		mac_l = read32(mac_pos) + nic_index; // overflow?

@@ -64,7 +64,7 @@ void setup_soc_gpios(const struct soc_gpio_map *gpio)
 	/* CFIO Core Well Set 1 */
 	if ((gpio->core.cfio_init != NULL) || (gpio->core.cfio_entrynum != 0)) {
 		write32(cfiobase + (0x0700 / sizeof(u32)), (u32)0x01001002);
-		for(cfio_cnt = 0; cfio_cnt < gpio->core.cfio_entrynum; cfio_cnt++) {
+		for (cfio_cnt = 0; cfio_cnt < gpio->core.cfio_entrynum; cfio_cnt++) {
 			if (!((u32)gpio->core.cfio_init[cfio_cnt].pad_conf_0))
 				continue;
 			write32(cfiobase + ((CFIO_PAD_CONF0 + (16*cfio_cnt))/sizeof(u32)), (u32)gpio->core.cfio_init[cfio_cnt].pad_conf_0);
@@ -78,7 +78,7 @@ void setup_soc_gpios(const struct soc_gpio_map *gpio)
 	/* CFIO SUS Well Set 1 */
 	if ((gpio->sus.cfio_init != NULL) || (gpio->sus.cfio_entrynum != 0)) {
 		write32(cfiobase + (0x1700 / sizeof(u32)), (u32)0x01001002);
-		for(cfio_cnt = 0; cfio_cnt < gpio->sus.cfio_entrynum; cfio_cnt++) {
+		for (cfio_cnt = 0; cfio_cnt < gpio->sus.cfio_entrynum; cfio_cnt++) {
 			if (!((u32)gpio->sus.cfio_init[cfio_cnt].pad_conf_0))
 				continue;
 			write32(cfiobase + ((CFIO_PAD_CONF0 + 0x1000 + (16*cfio_cnt))/sizeof(u32)), (u32)gpio->sus.cfio_init[cfio_cnt].pad_conf_0);

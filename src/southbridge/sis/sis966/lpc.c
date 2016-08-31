@@ -112,7 +112,7 @@ static void lpc_init(device_t dev)
 	/* Throttle the CPU speed down for testing */
 	on = SLOW_CPU_OFF;
 	get_option(&on, "slow_cpu");
-	if(on) {
+	if (on) {
 		uint16_t pm10_bar;
 		uint32_t dword;
 		pm10_bar = (pci_read_config16(dev, 0x60)&0xff00);
@@ -123,33 +123,33 @@ static void lpc_init(device_t dev)
 				(on*12)+(on>>1),(on&1)*5);
 	}
 
-        /* Enable Error reporting */
-        /* Set up sync flood detected */
-        byte = pci_read_config8(dev, 0x47);
-        byte |= (1 << 1);
-        pci_write_config8(dev, 0x47, byte);
+	/* Enable Error reporting */
+	/* Set up sync flood detected */
+	byte = pci_read_config8(dev, 0x47);
+	byte |= (1 << 1);
+	pci_write_config8(dev, 0x47, byte);
 
-        /* Set up NMI on errors */
-        byte = inb(0x70); // RTC70
-        byte_old = byte;
-        nmi_option = NMI_OFF;
-        get_option(&nmi_option, "nmi");
-        if (nmi_option) {
-                byte &= ~(1 << 7); /* set NMI */
-        } else {
-                byte |= ( 1 << 7); // Can not mask NMI from PCI-E and NMI_NOW
-        }
-        if ( byte != byte_old) {
-                outb(byte, 0x70);
-        }
+	/* Set up NMI on errors */
+	byte = inb(0x70); // RTC70
+	byte_old = byte;
+	nmi_option = NMI_OFF;
+	get_option(&nmi_option, "nmi");
+	if (nmi_option) {
+		byte &= ~(1 << 7); /* set NMI */
+	} else {
+		byte |= ( 1 << 7); // Can not mask NMI from PCI-E and NMI_NOW
+	}
+	if ( byte != byte_old) {
+		outb(byte, 0x70);
+	}
 
-        /* Initialize the real time clock */
-        cmos_init(0);
+	/* Initialize the real time clock */
+	cmos_init(0);
 
-        /* Initialize isa dma */
-        isa_dma_init();
+	/* Initialize isa dma */
+	isa_dma_init();
 
-        printk(BIOS_DEBUG, "LPC_INIT <--------\n");
+	printk(BIOS_DEBUG, "LPC_INIT <--------\n");
 }
 
 static void sis966_lpc_read_resources(device_t dev)
@@ -195,11 +195,11 @@ static void sis966_lpc_enable_childrens_resources(device_t dev)
 	for (link = dev->link_list; link; link = link->next) {
 		device_t child;
 		for (child = link->children; child; child = child->sibling) {
-			if(child->enabled && (child->path.type == DEVICE_PATH_PNP)) {
+			if (child->enabled && (child->path.type == DEVICE_PATH_PNP)) {
 				struct resource *res;
-				for(res = child->resource_list; res; res = res->next) {
+				for (res = child->resource_list; res; res = res->next) {
 					unsigned long base, end; // don't need long long
-					if(!(res->flags & IORESOURCE_IO)) continue;
+					if (!(res->flags & IORESOURCE_IO)) continue;
 					base = res->base;
 					end = resource_end(res);
 					printk(BIOS_DEBUG, "sis966 lpc decode:%s, base=0x%08lx, end=0x%08lx\n",dev_path(child),base, end);
@@ -217,8 +217,8 @@ static void sis966_lpc_enable_childrens_resources(device_t dev)
 					case 0x300:  // Midi 0
 						reg |= (1<<12);	break;
 					}
-					if( (base == 0x290) || (base >= 0x400)) {
-						if(var_num>=4) continue; // only 4 var ; compact them ?
+					if ( (base == 0x290) || (base >= 0x400)) {
+						if (var_num>=4) continue; // only 4 var ; compact them ?
 						reg |= (1<<(28+var_num));
 						reg_var[var_num++] = (base & 0xffff)|((end & 0xffff)<<16);
 					}
@@ -227,7 +227,7 @@ static void sis966_lpc_enable_childrens_resources(device_t dev)
 		}
 	}
 	pci_write_config32(dev, 0xa0, reg);
-	for(i=0;i<var_num;i++) {
+	for (i=0;i<var_num;i++) {
 		pci_write_config32(dev, 0xa8 + i*4, reg_var[i]);
 	}
 

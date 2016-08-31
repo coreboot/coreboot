@@ -233,37 +233,37 @@ void southbridge_smi_set_eos(void)
 
 static void busmaster_disable_on_bus(int bus)
 {
-        int slot, func;
-        unsigned int val;
-        unsigned char hdr;
+	int slot, func;
+	unsigned int val;
+	unsigned char hdr;
 
-        for (slot = 0; slot < 0x20; slot++) {
-                for (func = 0; func < 8; func++) {
-                        u32 reg32;
-                        device_t dev = PCI_DEV(bus, slot, func);
+	for (slot = 0; slot < 0x20; slot++) {
+		for (func = 0; func < 8; func++) {
+			u32 reg32;
+			device_t dev = PCI_DEV(bus, slot, func);
 
-                        val = pci_read_config32(dev, PCI_VENDOR_ID);
+			val = pci_read_config32(dev, PCI_VENDOR_ID);
 
-                        if (val == 0xffffffff || val == 0x00000000 ||
-                            val == 0x0000ffff || val == 0xffff0000)
-                                continue;
+			if (val == 0xffffffff || val == 0x00000000 ||
+			    val == 0x0000ffff || val == 0xffff0000)
+				continue;
 
-                        /* Disable Bus Mastering for this one device */
-                        reg32 = pci_read_config32(dev, PCI_COMMAND);
-                        reg32 &= ~PCI_COMMAND_MASTER;
-                        pci_write_config32(dev, PCI_COMMAND, reg32);
+			/* Disable Bus Mastering for this one device */
+			reg32 = pci_read_config32(dev, PCI_COMMAND);
+			reg32 &= ~PCI_COMMAND_MASTER;
+			pci_write_config32(dev, PCI_COMMAND, reg32);
 
-                        /* If this is a bridge, then follow it. */
-                        hdr = pci_read_config8(dev, PCI_HEADER_TYPE);
-                        hdr &= 0x7f;
-                        if (hdr == PCI_HEADER_TYPE_BRIDGE ||
-                            hdr == PCI_HEADER_TYPE_CARDBUS) {
-                                unsigned int buses;
-                                buses = pci_read_config32(dev, PCI_PRIMARY_BUS);
-                                busmaster_disable_on_bus((buses >> 8) & 0xff);
-                        }
-                }
-        }
+			/* If this is a bridge, then follow it. */
+			hdr = pci_read_config8(dev, PCI_HEADER_TYPE);
+			hdr &= 0x7f;
+			if (hdr == PCI_HEADER_TYPE_BRIDGE ||
+			    hdr == PCI_HEADER_TYPE_CARDBUS) {
+				unsigned int buses;
+				buses = pci_read_config32(dev, PCI_PRIMARY_BUS);
+				busmaster_disable_on_bus((buses >> 8) & 0xff);
+			}
+		}
+	}
 }
 
 
@@ -636,7 +636,7 @@ void southbridge_smi_handler(unsigned int node, smm_state_save_area_t *state_sav
 		}
 	}
 
-	if(dump) {
+	if (dump) {
 		dump_smi_status(smi_sts);
 	}
 

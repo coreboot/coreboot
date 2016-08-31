@@ -81,7 +81,7 @@ static int smbus_write_block(unsigned device, unsigned length, unsigned cmd,
 	/* setup transaction */
 	/* Obtain ownership */
 	outb(inb(SMBUS_IO_BASE + SMBHSTSTAT), SMBUS_IO_BASE + SMBHSTSTAT);
-	for(stat=0;(stat&0x40)==0;) {
+	for (stat=0;(stat&0x40)==0;) {
 	stat = inb(SMBUS_IO_BASE + SMBHSTSTAT);
 	}
 	/* clear the done bit */
@@ -105,7 +105,7 @@ static int smbus_write_block(unsigned device, unsigned length, unsigned cmd,
 	outb((inb(SMBUS_IO_BASE + SMBHSTCTL) & 0xE3) | (0x5 << 2) | 0x40,
 			SMBUS_IO_BASE + SMBHSTCTL);
 
-	for(i=0;i<length;i++) {
+	for (i=0;i<length;i++) {
 
 		/* poll for transaction completion */
 		if (smbus_wait_until_blk_done(SMBUS_IO_BASE) < 0) {
@@ -113,7 +113,7 @@ static int smbus_write_block(unsigned device, unsigned length, unsigned cmd,
 		}
 
 		/* load the next byte */
-		if(i>3)
+		if (i>3)
 			byte=(data2>>(i%4))&0x0ff;
 		else
 			byte=(data1>>(i))&0x0ff;

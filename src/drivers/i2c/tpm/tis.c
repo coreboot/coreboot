@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/early_variables.h>
 #include <stdint.h>
 #include <string.h>
 #include <assert.h>
@@ -26,7 +27,7 @@
 #include <console/console.h>
 
 /* global structure for tpm chip data */
-struct tpm_chip g_chip;
+static struct tpm_chip g_chip CAR_GLOBAL;
 
 #define TPM_CMD_COUNT_BYTE 2
 #define TPM_CMD_ORDINAL_BYTE 6
@@ -34,18 +35,18 @@ struct tpm_chip g_chip;
 
 int tis_open(void)
 {
+	struct tpm_chip *chip = car_get_var_ptr(&g_chip);
 	int rc;
 
-	if (g_chip.is_open) {
+	if (chip->is_open) {
 		printk(BIOS_DEBUG, "tis_open() called twice.\n");
 		return -1;
 	}
 
-	rc = tpm_vendor_init(CONFIG_DRIVER_TPM_I2C_BUS,
-				CONFIG_DRIVER_TPM_I2C_ADDR);
-
+	rc = tpm_vendor_init(chip, CONFIG_DRIVER_TPM_I2C_BUS,
+			     CONFIG_DRIVER_TPM_I2C_ADDR);
 	if (rc < 0)
-		g_chip.is_open = 0;
+		chip->is_open = 0;
 
 	if (rc) {
 		return -1;
@@ -56,9 +57,11 @@ int tis_open(void)
 
 int tis_close(void)
 {
-	if (g_chip.is_open) {
-		tpm_vendor_cleanup(&g_chip);
-		g_chip.is_open = 0;
+	struct tpm_chip *chip = car_get_var_ptr(&g_chip);
+
+	if (chip->is_open) {
+		tpm_vendor_cleanup(chip);
+		chip->is_open = 0;
 	}
 
 	return 0;
@@ -104,8 +107,7 @@ static ssize_t tpm_transmit(const uint8_t *buf, size_t bufsiz)
 {
 	int rc;
 	uint32_t count, ordinal;
-
-	struct tpm_chip *chip = &g_chip;
+	struct tpm_chip *chip = car_get_var_ptr(&g_chip);
 
 	memcpy(&count, buf + TPM_CMD_COUNT_BYTE, sizeof(count));
 	count = be32_to_cpu(count);

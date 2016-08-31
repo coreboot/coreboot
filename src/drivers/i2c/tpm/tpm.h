@@ -47,9 +47,9 @@ enum tpm_timeout {
 struct tpm_chip;
 
 struct tpm_vendor_specific {
-	const uint8_t req_complete_mask;
-	const uint8_t req_complete_val;
-	const uint8_t req_canceled;
+	uint8_t req_complete_mask;
+	uint8_t req_complete_val;
+	uint8_t req_canceled;
 	int irq;
 	int (*recv)(struct tpm_chip *, uint8_t *, size_t);
 	int (*send)(struct tpm_chip *, uint8_t *, size_t);
@@ -121,7 +121,7 @@ struct tpm_cmd_t {
 
 /* ---------- Interface for TPM vendor ------------ */
 
-int tpm_vendor_init(unsigned bus, uint32_t dev_addr);
+int tpm_vendor_init(struct tpm_chip *chip, unsigned bus, uint32_t dev_addr);
 
 void tpm_vendor_cleanup(struct tpm_chip *chip);
 

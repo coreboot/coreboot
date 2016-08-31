@@ -23,13 +23,13 @@
 
 static void bcm5785_ide_read_resources(device_t dev)
 {
-        /* Get the normal pci resources of this device */
-        pci_dev_read_resources(dev);
+	/* Get the normal pci resources of this device */
+	pci_dev_read_resources(dev);
 
-        /* BAR */
-        pci_get_resource(dev, 0x64);
+	/* BAR */
+	pci_get_resource(dev, 0x64);
 
-        compact_resources(dev);
+	compact_resources(dev);
 }
 
 static void ide_init(struct device *dev)
@@ -38,12 +38,12 @@ static void ide_init(struct device *dev)
 
 static void lpci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 {
-        pci_write_config32(dev, 0x40,
-                ((device & 0xffff) << 16) | (vendor & 0xffff));
+	pci_write_config32(dev, 0x40,
+		((device & 0xffff) << 16) | (vendor & 0xffff));
 }
 
 static struct pci_operations lops_pci = {
-        .set_subsystem = lpci_set_subsystem,
+	.set_subsystem = lpci_set_subsystem,
 };
 
 static struct device_operations ide_ops  = {

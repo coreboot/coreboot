@@ -42,7 +42,7 @@ static void sata_init(struct device *dev)
 	/* Enable SATA devices */
 	printk(BIOS_INFO, "SATA init (%s mode)\n", ahci ? "AHCI" : "Legacy");
 
-	if(ahci) {
+	if (ahci) {
 	  /* AHCI mode */
 	  pci_write_config8(dev, SATA_MAP, (1 << 6) | (0 << 0));
 

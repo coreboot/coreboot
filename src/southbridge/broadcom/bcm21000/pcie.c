@@ -43,7 +43,7 @@ static void pcie_init(struct device *dev)
 }
 
 static struct pci_operations lops_pci = {
-        .set_subsystem = 0,
+	.set_subsystem = 0,
 };
 
 static struct device_operations pcie_ops  = {

@@ -23,16 +23,16 @@ static void p64h2_pcix_init(device_t dev)
 
 }
 static struct device_operations pcix_ops  = {
-        .read_resources   = pci_bus_read_resources,
-        .set_resources    = pci_dev_set_resources,
-        .enable_resources = pci_bus_enable_resources,
-        .init             = p64h2_pcix_init,
-        .scan_bus         = pci_scan_bridge,
+	.read_resources   = pci_bus_read_resources,
+	.set_resources    = pci_dev_set_resources,
+	.enable_resources = pci_bus_enable_resources,
+	.init             = p64h2_pcix_init,
+	.scan_bus         = pci_scan_bridge,
 	.reset_bus        = pci_bus_reset,
 };
 
 static const struct pci_driver pcix_driver __pci_driver = {
-        .ops    = &pcix_ops,
-        .vendor = PCI_VENDOR_ID_INTEL,
-        .device = PCI_DEVICE_ID_INTEL_82870_1F0,
+	.ops    = &pcix_ops,
+	.vendor = PCI_VENDOR_ID_INTEL,
+	.device = PCI_DEVICE_ID_INTEL_82870_1F0,
 };

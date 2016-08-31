@@ -27,7 +27,7 @@ static void enable_smbus(void)
 	pci_write_config8(dev, 0x40, 1);
 	pci_write_config8(dev, 0x4, 1);
 	/* SMBALERT_DIS */
-        outb(4, SMBUS_IO_BASE + SMBSLVCMD);
+	outb(4, SMBUS_IO_BASE + SMBSLVCMD);
 
 	/* Disable interrupt generation */
 	outb(0, SMBUS_IO_BASE + SMBHSTCTL);

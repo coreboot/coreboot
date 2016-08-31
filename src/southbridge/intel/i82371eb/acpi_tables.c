@@ -28,7 +28,7 @@ static int determine_total_number_of_cores(void)
 {
 	device_t cpu;
 	int count = 0;
-	for(cpu = all_devices; cpu; cpu = cpu->next) {
+	for (cpu = all_devices; cpu; cpu = cpu->next) {
 		if ((cpu->path.type != DEVICE_PATH_APIC) ||
 			(cpu->bus->dev->path.type != DEVICE_PATH_CPU_CLUSTER)) {
 			continue;

@@ -35,7 +35,7 @@ static void sata_init(struct device *dev)
 	dword = pci_read_config32(dev, 0x50);
 	/* Ensure prefetch is disabled */
 	dword &= ~((1 << 15) | (1 << 13));
-	if(conf) {
+	if (conf) {
 		if (conf->sata1_enable) {
 			/* Enable secondary SATA interface */
 			dword |= (1<<0);

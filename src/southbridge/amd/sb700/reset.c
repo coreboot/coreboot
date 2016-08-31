@@ -36,7 +36,7 @@ static void set_bios_reset(void)
 	int i;
 
 	nodes = ((pci_read_config32(PCI_DEV(CONFIG_CBB, CONFIG_CDB, 0), 0x60) >> 4) & 7) + 1;
-	for(i = 0; i < nodes; i++) {
+	for (i = 0; i < nodes; i++) {
 		dev = NODE_PCI(i, 0);
 		htic = pci_read_config32(dev, HT_INIT_CONTROL);
 		htic &= ~HTIC_BIOSR_Detect;

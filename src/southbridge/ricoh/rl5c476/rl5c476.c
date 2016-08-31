@@ -166,7 +166,7 @@ static void rl5c476_read_resources(device_t dev)
 	 /* For CF socket we need an extra memory window for
 	  * the control structure of the CF itself
 	  */
-	if( enable_cf_boot && (PCI_FUNC(dev->path.pci.devfn) == 1)){
+	if ( enable_cf_boot && (PCI_FUNC(dev->path.pci.devfn) == 1)){
 		/* fake index as it isn't in PCI config space */
 		resource = new_resource(dev, 1);
 		resource->flags |= IORESOURCE_MEM;
@@ -181,9 +181,9 @@ static void rl5c476_set_resources(device_t dev)
 {
 	struct resource *resource;
 	printk(BIOS_DEBUG, "%s In set resources\n",dev_path(dev));
-	if( enable_cf_boot && (PCI_FUNC(dev->path.pci.devfn) == 1)){
+	if ( enable_cf_boot && (PCI_FUNC(dev->path.pci.devfn) == 1)){
 		resource = find_resource(dev,1);
-		if( !(resource->flags & IORESOURCE_STORED) ){
+		if ( !(resource->flags & IORESOURCE_STORED) ){
 			resource->flags |= IORESOURCE_STORED ;
 			printk(BIOS_DEBUG, "%s 1 ==> %llx\n", dev_path(dev), resource->base);
 			cf_base = resource->base;

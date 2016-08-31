@@ -66,7 +66,7 @@ static void agp3dev_enable(device_t dev)
 }
 
 static struct pci_operations pci_ops_pci_dev = {
-        .set_subsystem    = pci_dev_set_subsystem,
+	.set_subsystem    = pci_dev_set_subsystem,
 };
 
 static struct device_operations agp3dev_ops = {

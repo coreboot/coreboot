@@ -35,12 +35,12 @@ static int smbus_wait_until_ready(unsigned smbus_io_base)
 			break;
 		}
 #if 0
-		if(loops == (SMBUS_TIMEOUT / 2)) {
+		if (loops == (SMBUS_TIMEOUT / 2)) {
 			outw(inw(smbus_io_base + SMBHST_STATUS),
 				smbus_io_base + SMBHST_STATUS);
 		}
 #endif
-	} while(--loops);
+	} while (--loops);
 	return loops?0:SMBUS_WAIT_UNTIL_READY_TIMEOUT;
 }
 
@@ -62,7 +62,7 @@ static int smbus_wait_until_done(unsigned smbus_io_base)
 		if (val & 0xfe) {
 			break;
 		}
-	} while(--loops);
+	} while (--loops);
 	return loops?0:SMBUS_WAIT_UNTIL_DONE_TIMEOUT;
 }
 

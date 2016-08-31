@@ -101,7 +101,7 @@ typedef struct _ATOM_INTEGRATED_SYSTEM_INFO_V2
 	ULONG                      ulDockingPinCFGInfo;
 	ULONG                      ulCPUCapInfo;
 	USHORT                     usNumberOfCyclesInPeriod; //usNumberOfCyclesInPeriod[15] = 0 - invert waveform
-                                                       //                               1 - non inverted waveform
+	                                                     //                               1 - non inverted waveform
 	USHORT                     usMaxNBVoltage;
 	USHORT                     usMinNBVoltage;
 	USHORT                     usBootUpNBVoltage;

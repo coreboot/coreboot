@@ -45,7 +45,7 @@ static void sb_init(device_t dev)
 	} else {
 		byte |= ( 1 << 7); // Can not mask NMI from PCI-E and NMI_NOW
 	}
-	if( byte != byte_old) {
+	if ( byte != byte_old) {
 		outb(byte, 0x70);
 	}
 
@@ -63,101 +63,101 @@ static void bcm5785_sb_read_resources(device_t dev)
 
 	compact_resources(dev);
 
-        /* Add an extra subtractive resource for both memory and I/O */
-        res = new_resource(dev, IOINDEX_SUBTRACTIVE(0, 0));
-        res->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
+	/* Add an extra subtractive resource for both memory and I/O */
+	res = new_resource(dev, IOINDEX_SUBTRACTIVE(0, 0));
+	res->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
 
-        res = new_resource(dev, IOINDEX_SUBTRACTIVE(1, 0));
-        res->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
+	res = new_resource(dev, IOINDEX_SUBTRACTIVE(1, 0));
+	res->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
 
 }
 
 static int lsmbus_recv_byte(device_t dev)
 {
-        unsigned device;
-        struct resource *res;
+	unsigned device;
+	struct resource *res;
 	struct bus *pbus;
 
-        device = dev->path.i2c.device;
+	device = dev->path.i2c.device;
 	pbus = get_pbus_smbus(dev);
 
-        res = find_resource(pbus->dev, 0x90);
+	res = find_resource(pbus->dev, 0x90);
 
-        return do_smbus_recv_byte(res->base, device);
+	return do_smbus_recv_byte(res->base, device);
 }
 
 static int lsmbus_send_byte(device_t dev, uint8_t val)
 {
-        unsigned device;
-        struct resource *res;
-        struct bus *pbus;
+	unsigned device;
+	struct resource *res;
+	struct bus *pbus;
 
-        device = dev->path.i2c.device;
-        pbus = get_pbus_smbus(dev);
+	device = dev->path.i2c.device;
+	pbus = get_pbus_smbus(dev);
 
-        res = find_resource(pbus->dev, 0x90);
+	res = find_resource(pbus->dev, 0x90);
 
-        return do_smbus_send_byte(res->base, device, val);
+	return do_smbus_send_byte(res->base, device, val);
 }
 
 static int lsmbus_read_byte(device_t dev, uint8_t address)
 {
-        unsigned device;
-        struct resource *res;
-        struct bus *pbus;
+	unsigned device;
+	struct resource *res;
+	struct bus *pbus;
 
-        device = dev->path.i2c.device;
-        pbus = get_pbus_smbus(dev);
+	device = dev->path.i2c.device;
+	pbus = get_pbus_smbus(dev);
 
-        res = find_resource(pbus->dev, 0x90);
+	res = find_resource(pbus->dev, 0x90);
 
-        return do_smbus_read_byte(res->base, device, address);
+	return do_smbus_read_byte(res->base, device, address);
 }
 
 static int lsmbus_write_byte(device_t dev, uint8_t address, uint8_t val)
 {
-        unsigned device;
-        struct resource *res;
-        struct bus *pbus;
+	unsigned device;
+	struct resource *res;
+	struct bus *pbus;
 
-        device = dev->path.i2c.device;
-        pbus = get_pbus_smbus(dev);
+	device = dev->path.i2c.device;
+	pbus = get_pbus_smbus(dev);
 
-        res = find_resource(pbus->dev, 0x90);
+	res = find_resource(pbus->dev, 0x90);
 
-        return do_smbus_write_byte(res->base, device, address, val);
+	return do_smbus_write_byte(res->base, device, address, val);
 }
 
 static struct smbus_bus_operations lops_smbus_bus = {
-        .recv_byte  = lsmbus_recv_byte,
-        .send_byte  = lsmbus_send_byte,
-        .read_byte  = lsmbus_read_byte,
-        .write_byte = lsmbus_write_byte,
+	.recv_byte  = lsmbus_recv_byte,
+	.send_byte  = lsmbus_send_byte,
+	.read_byte  = lsmbus_read_byte,
+	.write_byte = lsmbus_write_byte,
 };
 
 static void lpci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 {
-        pci_write_config32(dev, 0x2c,
-                ((device & 0xffff) << 16) | (vendor & 0xffff));
+	pci_write_config32(dev, 0x2c,
+		((device & 0xffff) << 16) | (vendor & 0xffff));
 }
 
 static struct pci_operations lops_pci = {
-        .set_subsystem = lpci_set_subsystem,
+	.set_subsystem = lpci_set_subsystem,
 };
 
 static struct device_operations sb_ops = {
-        .read_resources   = bcm5785_sb_read_resources,
-        .set_resources    = pci_dev_set_resources,
-        .enable_resources = pci_dev_enable_resources,
-        .init             = sb_init,
-        .scan_bus         = scan_smbus,
+	.read_resources   = bcm5785_sb_read_resources,
+	.set_resources    = pci_dev_set_resources,
+	.enable_resources = pci_dev_enable_resources,
+	.init             = sb_init,
+	.scan_bus         = scan_smbus,
 //        .enable           = bcm5785_enable,
-        .ops_pci          = &lops_pci,
-        .ops_smbus_bus    = &lops_smbus_bus,
+	.ops_pci          = &lops_pci,
+	.ops_smbus_bus    = &lops_smbus_bus,
 };
 
 static const struct pci_driver sb_driver __pci_driver = {
-        .ops    = &sb_ops,
-        .vendor = PCI_VENDOR_ID_SERVERWORKS,
-        .device = PCI_DEVICE_ID_SERVERWORKS_BCM5785_SB_PCI_MAIN,
+	.ops    = &sb_ops,
+	.vendor = PCI_VENDOR_ID_SERVERWORKS,
+	.device = PCI_DEVICE_ID_SERVERWORKS_BCM5785_SB_PCI_MAIN,
 };

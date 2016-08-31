@@ -485,7 +485,7 @@ static int mkhi_get_fwcaps(mbp_mefwcaps *cap)
 			      &cap_msg, sizeof(cap_msg)) < 0) {
 		printk(BIOS_ERR, "ME: GET FWCAPS message failed\n");
 		return -1;
-        }
+	}
 	*cap = cap_msg.caps_sku;
 	return 0;
 }
@@ -650,7 +650,7 @@ static int me_icc_set_clock_enables(u32 mask)
 	if (mei_sendrecv_icc(&icc, &clk, sizeof(clk), NULL, 0) < 0) {
 		printk(BIOS_ERR, "ME: ICC SET CLOCK ENABLES message failed\n");
 		return -1;
-        } else {
+	} else {
 		printk(BIOS_INFO, "ME: ICC SET CLOCK ENABLES 0x%08x\n", mask);
 	}
 

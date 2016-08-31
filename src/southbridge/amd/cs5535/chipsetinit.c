@@ -328,7 +328,7 @@ chipsetinit(void)
 	i = 0;
 
 	csi = &SB_MASTER_CONF_TABLE[i];
-	for(; csi->msrnum; csi++){
+	for (; csi->msrnum; csi++){
 		msr.lo = csi->msr.lo;
 		msr.hi = csi->msr.hi;
 		wrmsr(csi->msrnum, msr); // MSR - see table above
@@ -347,7 +347,7 @@ chipsetinit(void)
 	{
 		csi = CS5535_CLOCK_GATING_TABLE;
 
-		for(; csi->msrnum; csi++){
+		for (; csi->msrnum; csi++){
 			msr.lo = csi->msr.lo;
 			msr.hi = csi->msr.hi;
 			wrmsr(csi->msrnum, msr);	// MSR - see table above

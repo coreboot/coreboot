@@ -245,7 +245,7 @@ void southbridge_smi_handler(unsigned int node, smm_state_save_area_t *state_sav
 		}
 	}
 
-	if(dump) {
+	if (dump) {
 		dump_smi_status(smi_sts);
 	}
 

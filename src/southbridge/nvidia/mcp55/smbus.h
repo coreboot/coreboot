@@ -48,7 +48,7 @@ static int smbus_wait_until_done(unsigned smbus_io_base)
 		if ( (val & 0xff) != 0) {
 			return 0;
 		}
-	} while(--loops);
+	} while (--loops);
 	return -3;
 }
 static int do_smbus_recv_byte(unsigned smbus_io_base, unsigned device)

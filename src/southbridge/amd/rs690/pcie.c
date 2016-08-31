@@ -84,7 +84,7 @@ static void PciePowerOffGppPorts(device_t nb_dev, device_t dev, u32 port)
 			   PCIE_GFX_COMPLIANCE))) {
 	}
 
-        if (!cfg->gfx_tmds){
+	if (!cfg->gfx_tmds){
 		/* step 3 Power Down Control for Southbridge */
 		reg = nbpcie_p_read_index(dev, 0xa2);
 

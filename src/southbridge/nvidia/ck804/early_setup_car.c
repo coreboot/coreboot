@@ -377,6 +377,6 @@ void soft_reset(void)
 
 void enable_fid_change_on_sb(unsigned sbbusn, unsigned sbdn)
 {
-        /* The default value for CK804 is good. */
-        /* Set VFSMAF (VID/FID System Management Action Field) to 2. */
+	/* The default value for CK804 is good. */
+	/* Set VFSMAF (VID/FID System Management Action Field) to 2. */
 }

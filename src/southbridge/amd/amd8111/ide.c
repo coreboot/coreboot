@@ -33,8 +33,8 @@ static void ide_init(struct device *dev)
 	pci_write_config16(dev, 0x40, word);
 
 
-        byte = 0x20 ; // Latency: 64-->32
-        pci_write_config8(dev, 0xd, byte);
+	byte = 0x20 ; // Latency: 64-->32
+	pci_write_config8(dev, 0xd, byte);
 
 	word = 0x0f;
 	pci_write_config16(dev, 0x42, word);

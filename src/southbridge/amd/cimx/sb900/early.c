@@ -60,7 +60,7 @@ void sb_poweron_init(void)
 	outb(0xEA, 0xCD6);
 	data = inb(0xCD7);
 	data &= !BIT0;
-	if(!CONFIG_PCIB_ENABLE) {
+	if (!CONFIG_PCIB_ENABLE) {
 		data |= BIT0;
 	}
 	outb(data, 0xCD7);

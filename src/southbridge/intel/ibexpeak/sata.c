@@ -126,7 +126,7 @@ static void sata_init(struct device *dev)
 		reg32 &= ~0x00000005;
 		write32(abar + 0x28, reg32);
 	} else {
-                /* IDE */
+		/* IDE */
 		printk(BIOS_DEBUG, "SATA: Controller in plain mode.\n");
 
 		/* No AHCI: clear AHCI base */

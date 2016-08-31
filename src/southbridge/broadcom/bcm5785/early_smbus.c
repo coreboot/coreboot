@@ -38,20 +38,20 @@ static void enable_smbus(void)
 
 static inline int smbus_recv_byte(unsigned device)
 {
-        return do_smbus_recv_byte(SMBUS_IO_BASE, device);
+	return do_smbus_recv_byte(SMBUS_IO_BASE, device);
 }
 
 static inline int smbus_send_byte(unsigned device, unsigned char val)
 {
-        return do_smbus_send_byte(SMBUS_IO_BASE, device, val);
+	return do_smbus_send_byte(SMBUS_IO_BASE, device, val);
 }
 
 static inline int smbus_read_byte(unsigned device, unsigned address)
 {
-        return do_smbus_read_byte(SMBUS_IO_BASE, device, address);
+	return do_smbus_read_byte(SMBUS_IO_BASE, device, address);
 }
 
 static inline int smbus_write_byte(unsigned device, unsigned address, unsigned char val)
 {
-        return do_smbus_write_byte(SMBUS_IO_BASE, device, address, val);
+	return do_smbus_write_byte(SMBUS_IO_BASE, device, address, val);
 }

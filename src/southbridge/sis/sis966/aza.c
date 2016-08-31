@@ -56,7 +56,7 @@ static int set_bits(void *port, u32 mask, u32 val)
 		udelay(100);
 	} while ((dword != val) && --count);
 
-	if(!count) return -1;
+	if (!count) return -1;
 
 	udelay(500);
 	return 0;
@@ -98,9 +98,9 @@ static int codec_detect(u8 *base)
 
 	set_bits(base + 0x08, 1, 1);
 
-      do{
+      do {
 	  	dword = read32(base + 0x08)&0x1;
-		if(idx++>1000) { printk(BIOS_DEBUG, "controller reset fail !!!\n"); break;}
+		if (idx++>1000) { printk(BIOS_DEBUG, "controller reset fail !!!\n"); break;}
 	   } while (dword !=1);
 
        dword=send_verb(base,0x000F0000); // get codec VendorId and DeviceId
@@ -184,7 +184,7 @@ static u32 verb_data[] = {
 
 static unsigned find_verb(u32 viddid, u32 **verb)
 {
-        if ((viddid == 0x10ec0883) || (viddid == 0x10ec0882) || (viddid == 0x10ec0880)) return 0;
+	if ((viddid == 0x10ec0883) || (viddid == 0x10ec0882) || (viddid == 0x10ec0880)) return 0;
 	*verb =  (u32 *)verb_data;
 	return sizeof(verb_data)/sizeof(u32);
 }
@@ -215,14 +215,14 @@ static void codec_init(u8 *base, int addr)
 	printk(BIOS_DEBUG, "codec viddid: %08x\n", dword);
 	verb_size = find_verb(dword, &verb);
 
-	if(!verb_size) {
+	if (!verb_size) {
 		printk(BIOS_DEBUG, "No verb!\n");
 		return;
 	}
 
 	printk(BIOS_DEBUG, "verb_size: %d\n", verb_size);
 	/* 3 */
-	for(i=0; i<verb_size; i++) {
+	for (i=0; i<verb_size; i++) {
 		send_verb(base,verb[i]);
 	}
 	printk(BIOS_DEBUG, "verb loaded!\n");
@@ -236,50 +236,50 @@ static void codecs_init(u8 *base, u32 codec_mask)
 
 static void aza_init(struct device *dev)
 {
-        u8 *base;
-        struct resource *res;
-        u32 codec_mask;
+	u8 *base;
+	struct resource *res;
+	u32 codec_mask;
 
-        printk(BIOS_DEBUG, "AZALIA_INIT:---------->\n");
+	printk(BIOS_DEBUG, "AZALIA_INIT:---------->\n");
 
 //-------------- enable AZA (SiS7502) -------------------------
 {
-        u8  temp8;
-        int i=0;
-        while(SiS_SiS7502_init[i][0] != 0)
-        {
-                temp8 = pci_read_config8(dev, SiS_SiS7502_init[i][0]);
-                temp8 &= SiS_SiS7502_init[i][1];
-                temp8 |= SiS_SiS7502_init[i][2];
-                pci_write_config8(dev, SiS_SiS7502_init[i][0], temp8);
-                i++;
-        };
+	u8  temp8;
+	int i=0;
+	while (SiS_SiS7502_init[i][0] != 0)
+	{
+		temp8 = pci_read_config8(dev, SiS_SiS7502_init[i][0]);
+		temp8 &= SiS_SiS7502_init[i][1];
+		temp8 |= SiS_SiS7502_init[i][2];
+		pci_write_config8(dev, SiS_SiS7502_init[i][0], temp8);
+		i++;
+	};
 }
 //-----------------------------------------------------------
 
 
-        // put audio to D0 state
-        pci_write_config8(dev, 0x54,0x00);
+	// put audio to D0 state
+	pci_write_config8(dev, 0x54,0x00);
 
 #if DEBUG_AZA
 {
-        int i;
+	int i;
 
-        printk(BIOS_DEBUG, "****** Azalia PCI config ******");
-        printk(BIOS_DEBUG, "\n    03020100  07060504  0B0A0908  0F0E0D0C");
+	printk(BIOS_DEBUG, "****** Azalia PCI config ******");
+	printk(BIOS_DEBUG, "\n    03020100  07060504  0B0A0908  0F0E0D0C");
 
-        for (i=0;i<0xff;i+=4){
-                if ((i%16)==0){
-                        printk(BIOS_DEBUG, "\n%02x: ", i);
-                }
-                printk(BIOS_DEBUG, "%08x  ", pci_read_config32(dev,i));
-        }
-        printk(BIOS_DEBUG, "\n");
+	for (i=0;i<0xff;i+=4){
+		if ((i%16)==0){
+			printk(BIOS_DEBUG, "\n%02x: ", i);
+		}
+		printk(BIOS_DEBUG, "%08x  ", pci_read_config32(dev,i));
+	}
+	printk(BIOS_DEBUG, "\n");
 }
 #endif
 
 	res = find_resource(dev, 0x10);
-	if(!res)
+	if (!res)
 		return;
 
 	base = res2mmio(res, 0, 0);
@@ -287,12 +287,12 @@ static void aza_init(struct device *dev)
 
 	codec_mask = codec_detect(base);
 
-	if(codec_mask) {
+	if (codec_mask) {
 		printk(BIOS_DEBUG, "codec_mask = %02x\n", codec_mask);
 		codecs_init(base, codec_mask);
 	}
 
-        printk(BIOS_DEBUG, "AZALIA_INIT:<----------\n");
+	printk(BIOS_DEBUG, "AZALIA_INIT:<----------\n");
 }
 
 static void lpci_set_subsystem(device_t dev, unsigned vendor, unsigned device)

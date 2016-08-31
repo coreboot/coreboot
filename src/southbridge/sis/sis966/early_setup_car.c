@@ -29,7 +29,7 @@ void sis966_early_pcie_setup(unsigned busnx, unsigned devnx, unsigned anactrl_io
 	dword |= 0x3f0; // disable it at first
 	pci_write_config32(dev, 0xe4, dword);
 
-	for(i=0; i<3; i++) {
+	for (i=0; i<3; i++) {
 		tgio_ctrl = inl(anactrl_io_base + 0xcc);
 		tgio_ctrl &= ~(3<<9);
 		tgio_ctrl |= (i<<9);

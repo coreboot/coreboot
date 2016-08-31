@@ -206,19 +206,19 @@ static void i3100_pirq_init(device_t dev)
 	if (config->pirq_e_h)
 		pci_write_config32(dev, 0x68, config->pirq_e_h);
 
-        for (irq_dev = all_devices; irq_dev; irq_dev = irq_dev->next) {
-                u8 int_pin=0, int_line=0;
+	for (irq_dev = all_devices; irq_dev; irq_dev = irq_dev->next) {
+		u8 int_pin=0, int_line=0;
 
-                if (!irq_dev->enabled || irq_dev->path.type != DEVICE_PATH_PCI)
-                        continue;
+		if (!irq_dev->enabled || irq_dev->path.type != DEVICE_PATH_PCI)
+			continue;
 
-                int_pin = pci_read_config8(irq_dev, PCI_INTERRUPT_PIN);
-                switch (int_pin) {
-                case 1: /* INTA# */
+		int_pin = pci_read_config8(irq_dev, PCI_INTERRUPT_PIN);
+		switch (int_pin) {
+		case 1: /* INTA# */
 			int_line = config->pirq_a_d & 0xff;
 			break;
 
-                case 2: /* INTB# */
+		case 2: /* INTB# */
 			int_line = (config->pirq_a_d >> 8) & 0xff;
 			break;
 
@@ -226,17 +226,17 @@ static void i3100_pirq_init(device_t dev)
 			int_line = (config->pirq_a_d >> 16) & 0xff;
 			break;
 
-                case 4: /* INTD# */
+		case 4: /* INTD# */
 			int_line = (config->pirq_a_d >> 24) & 0xff;
 			break;
-                }
+		}
 
-                if (!int_line)
-                        continue;
+		if (!int_line)
+			continue;
 
 		printk(BIOS_DEBUG, "%s: irq pin %d, irq line %d\n", dev_path(irq_dev), int_pin, int_line);
-                pci_write_config8(irq_dev, PCI_INTERRUPT_LINE, int_line);
-        }
+		pci_write_config8(irq_dev, PCI_INTERRUPT_LINE, int_line);
+	}
 
 
 }

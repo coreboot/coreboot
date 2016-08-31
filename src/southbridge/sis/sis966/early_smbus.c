@@ -37,7 +37,7 @@ int smbus_wait_until_ready(unsigned smbus_io_base)
 			return 0;
 		}
 		outb(val,smbus_io_base + SMBHSTSTAT);
-	} while(--loops);
+	} while (--loops);
 	return -2;
 }
 
@@ -53,7 +53,7 @@ int smbus_wait_until_done(unsigned smbus_io_base)
 		if ( (val & 0xff) != 0x02) {
 			return 0;
 		}
-	} while(--loops);
+	} while (--loops);
 	return -3;
 }
 
@@ -135,11 +135,10 @@ static inline int do_smbus_read_byte(unsigned smbus_io_base, unsigned device, un
 	smbus_delay();
 
 	int i, j;
-	for(i = 0;i < 0x1000; i++)
-	{
-		if (inb(smbus_io_base + 0x00) != 0x08)
-		{	smbus_delay();
-			for(j=0;j<0xFFFF;j++);
+	for (i = 0;i < 0x1000; i++) {
+		if (inb(smbus_io_base + 0x00) != 0x08) {
+			smbus_delay();
+			for (j=0;j<0xFFFF;j++);
 		}
 	}
 
@@ -502,12 +501,13 @@ static const uint8_t	SiS_SiS1183_init[44][3]={
 };
 
 /*       In => Share Memory size
-                            => 00h :    0MBytes
-                            => 02h :   32MBytes
-                            => 03h :   64MBytes
-                            => 04h :  128MBytes
-                            => Others:  Reserved
-*/
+ *                           => 00h :    0MBytes
+ *                           => 02h :   32MBytes
+ *                           => 03h :   64MBytes
+ *                           => 03h :   64MBytes
+ *                           => 04h :  128MBytes
+ *                           => Others:  Reserved
+ */
 static void Init_Share_Memory(uint8_t ShareSize)
 {
     device_t dev;
@@ -517,62 +517,62 @@ static void Init_Share_Memory(uint8_t ShareSize)
 }
 
 /* In:     => Aperture size
-               => 00h :   32MBytes
-               => 01h :   64MBytes
-               => 02h :  128MBytes
-               => 03h :  256MBytes
-               => 04h :  512MBytes
-               => Others:  Reserved
-*/
+ *              => 00h :   32MBytes
+ *              => 01h :   64MBytes
+ *              => 02h :  128MBytes
+ *              => 03h :  256MBytes
+ *              => 04h :  512MBytes
+ *              => Others:  Reserved
+ */
 static void Init_Aper_Size(uint8_t AperSize)
 {
-        device_t dev;
-        uint16_t SiSAperSizeTable[]={0x0F38, 0x0F30, 0x0F20, 0x0F00, 0x0E00};
+	device_t dev;
+	uint16_t SiSAperSizeTable[]={0x0F38, 0x0F30, 0x0F20, 0x0F00, 0x0E00};
 
-        dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_AMD, 0x1103), 0);
-        pci_write_config8(dev, 0x90, AperSize << 1);
+	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_AMD, 0x1103), 0);
+	pci_write_config8(dev, 0x90, AperSize << 1);
 
-        dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_SIS, PCI_DEVICE_ID_SIS_SIS761), 0);
-        pci_write_config16(dev, 0xB4, SiSAperSizeTable[AperSize]);
+	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_SIS, PCI_DEVICE_ID_SIS_SIS761), 0);
+	pci_write_config16(dev, 0xB4, SiSAperSizeTable[AperSize]);
 }
 
 static void sis_init_stage1(void)
 {
-        device_t dev;
-        uint8_t temp8;
-        int	i;
-        uint8_t	GUI_En;
+	device_t dev;
+	uint8_t temp8;
+	int	i;
+	uint8_t	GUI_En;
 
 // SiS_Chipset_Initialization
 // ========================== NB =============================
 	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_SIS, PCI_DEVICE_ID_SIS_SIS761), 0);
 	i=0;
-	while(SiS_NB_init[i][0] != 0)
-	{				temp8 = pci_read_config8(dev, SiS_NB_init[i][0]);
-					temp8 &= SiS_NB_init[i][1];
-					temp8 |= SiS_NB_init[i][2];
-					pci_write_config8(dev, SiS_NB_init[i][0], temp8);
-					i++;
+	while (SiS_NB_init[i][0] != 0) {
+		temp8 = pci_read_config8(dev, SiS_NB_init[i][0]);
+		temp8 &= SiS_NB_init[i][1];
+		temp8 |= SiS_NB_init[i][2];
+		pci_write_config8(dev, SiS_NB_init[i][0], temp8);
+		i++;
 	};
 
 // ========================== LPC =============================
 	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_SIS, PCI_DEVICE_ID_SIS_SIS966_LPC), 0);
 	i=0;
-	while(SiS_LPC_init[i][0] != 0)
-	{				temp8 = pci_read_config8(dev, SiS_LPC_init[i][0]);
-					temp8 &= SiS_LPC_init[i][1];
-					temp8 |= SiS_LPC_init[i][2];
-					pci_write_config8(dev, SiS_LPC_init[i][0], temp8);
-					i++;
+	while (SiS_LPC_init[i][0] != 0) {
+		temp8 = pci_read_config8(dev, SiS_LPC_init[i][0]);
+		temp8 &= SiS_LPC_init[i][1];
+		temp8 |= SiS_LPC_init[i][2];
+		pci_write_config8(dev, SiS_LPC_init[i][0], temp8);
+		i++;
 	};
 // ========================== ACPI =============================
 	i=0;
-	while(SiS_ACPI_init[i][0] != 0)
-	{				temp8 = inb(0x800 + SiS_ACPI_init[i][0]);
-					temp8 &= SiS_ACPI_init[i][1];
-					temp8 |= SiS_ACPI_init[i][2];
-					outb(temp8, 0x800 + SiS_ACPI_init[i][0]);
-					i++;
+	while (SiS_ACPI_init[i][0] != 0) {
+		temp8 = inb(0x800 + SiS_ACPI_init[i][0]);
+		temp8 &= SiS_ACPI_init[i][1];
+		temp8 |= SiS_ACPI_init[i][2];
+		outb(temp8, 0x800 + SiS_ACPI_init[i][0]);
+		i++;
 	};
 // ========================== NBPCIE =============================
 	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_SIS, PCI_DEVICE_ID_SIS_SIS761), 0);	//Disable Internal GUI enable bit
@@ -582,12 +582,12 @@ static void sis_init_stage1(void)
 
 	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_SIS, PCI_DEVICE_ID_SIS_SIS761_PCIE), 0);
 	i=0;
-	while(SiS_NBPCIE_init[i][0] != 0)
-	{				temp8 = pci_read_config8(dev, SiS_NBPCIE_init[i][0]);
-					temp8 &= SiS_NBPCIE_init[i][1];
-					temp8 |= SiS_NBPCIE_init[i][2];
-					pci_write_config8(dev, SiS_NBPCIE_init[i][0], temp8);
-					i++;
+	while (SiS_NBPCIE_init[i][0] != 0) {
+		temp8 = pci_read_config8(dev, SiS_NBPCIE_init[i][0]);
+		temp8 &= SiS_NBPCIE_init[i][1];
+		temp8 |= SiS_NBPCIE_init[i][2];
+		pci_write_config8(dev, SiS_NBPCIE_init[i][0], temp8);
+		i++;
 	};
 	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_SIS, PCI_DEVICE_ID_SIS_SIS761), 0);	//Restore Internal GUI enable bit
 	temp8 = pci_read_config8(dev, 0x4C);
@@ -608,20 +608,19 @@ static void sis_init_stage2(void)
 
 
 // ========================== NB_AGP =============================
-        dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_SIS, PCI_DEVICE_ID_SIS_SIS761), 0);   //Enable Internal GUI enable bit
-        pci_write_config8(dev, 0x4C, pci_read_config8(dev, 0x4C) | 0x10);
+	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_SIS, PCI_DEVICE_ID_SIS_SIS761), 0);   //Enable Internal GUI enable bit
+	pci_write_config8(dev, 0x4C, pci_read_config8(dev, 0x4C) | 0x10);
 
-        dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_SIS, PCI_DEVICE_ID_SIS_AGP), 0);
-        i=0;
+	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_SIS, PCI_DEVICE_ID_SIS_AGP), 0);
+	i=0;
 
-        while(SiS_NBAGP_init[i][0] != 0)
-        {
-                temp8 = pci_read_config8(dev, SiS_NBAGP_init[i][0]);
-                temp8 &= SiS_NBAGP_init[i][1];
-                temp8 |= SiS_NBAGP_init[i][2];
-                pci_write_config8(dev, SiS_NBAGP_init[i][0], temp8);
-                i++;
-        };
+	while (SiS_NBAGP_init[i][0] != 0) {
+		temp8 = pci_read_config8(dev, SiS_NBAGP_init[i][0]);
+		temp8 &= SiS_NBAGP_init[i][1];
+		temp8 |= SiS_NBAGP_init[i][2];
+		pci_write_config8(dev, SiS_NBAGP_init[i][0], temp8);
+		i++;
+	};
 
 /**
   *   Share Memory size
@@ -640,38 +639,38 @@ static void sis_init_stage2(void)
   *             => Others:  Reserved
   */
 
-        Init_Share_Memory(0x02);  //0x02 : 32M
-        Init_Aper_Size(0x01);   //0x1 : 64M
+	Init_Share_Memory(0x02);  //0x02 : 32M
+	Init_Aper_Size(0x01);   //0x1 : 64M
 
 // ========================== NB =============================
 
-        printk(BIOS_DEBUG, "Init NorthBridge sis761 -------->\n");
-        dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_SIS, PCI_DEVICE_ID_SIS_SIS761), 0);
-        msr = rdmsr(0xC001001A);
+	printk(BIOS_DEBUG, "Init NorthBridge sis761 -------->\n");
+	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_SIS, PCI_DEVICE_ID_SIS_SIS761), 0);
+	msr = rdmsr(0xC001001A);
 	 printk(BIOS_DEBUG, "Memory Top Bound %x\n",msr.lo );
 
-        temp16=(pci_read_config8(dev, 0x4C) & 0xE0) >> 5;
-        temp16=0x0001<<(temp16-1);
-        temp16<<=8;
+	temp16=(pci_read_config8(dev, 0x4C) & 0xE0) >> 5;
+	temp16=0x0001<<(temp16-1);
+	temp16<<=8;
 
-        printk(BIOS_DEBUG, "Integrated VGA Shared memory size=%dM bytes\n", temp16 >> 4);
-        pci_write_config16(dev, 0x8E, (msr.lo >> 16) -temp16*1);
-        pci_write_config8(dev, 0x7F, 0x08);									// ACPI Base
-        outb(inb(0x856) | 0x40, 0x856);										// Auto-Reset Function
+	printk(BIOS_DEBUG, "Integrated VGA Shared memory size=%dM bytes\n", temp16 >> 4);
+	pci_write_config16(dev, 0x8E, (msr.lo >> 16) -temp16*1);
+	pci_write_config8(dev, 0x7F, 0x08);									// ACPI Base
+	outb(inb(0x856) | 0x40, 0x856);										// Auto-Reset Function
 
 // ========================== ACPI =============================
 	i=0;
 	printk(BIOS_DEBUG, "Init ACPI -------->\n");
-	do
-	{				temp8 = inb(0x800 + SiS_ACPI_2_init[i][0]);
-					temp8 &= SiS_ACPI_2_init[i][1];
-					temp8 |= SiS_ACPI_2_init[i][2];
-					outb(temp8, 0x800 + SiS_ACPI_2_init[i][0]);
-					i++;
-	}while(SiS_ACPI_2_init[i][0] != 0);
+	do {
+		temp8 = inb(0x800 + SiS_ACPI_2_init[i][0]);
+		temp8 &= SiS_ACPI_2_init[i][1];
+		temp8 |= SiS_ACPI_2_init[i][2];
+		outb(temp8, 0x800 + SiS_ACPI_2_init[i][0]);
+		i++;
+	} while (SiS_ACPI_2_init[i][0] != 0);
 
 // ========================== Misc =============================
-       printk(BIOS_DEBUG, "Init Misc -------->\n");
+	printk(BIOS_DEBUG, "Init Misc -------->\n");
 	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_SIS, PCI_DEVICE_ID_SIS_SIS966_LPC), 0);
 
 	/* R77h Internal PCI Device Enable 1 (Power On Value = 0h)

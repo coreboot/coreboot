@@ -182,7 +182,7 @@ static void sata_init(struct device *dev)
 		printk(BIOS_SPEW, "SATA port %i status = %x\n", i, byte);
 		byte &= 0xF;
 
-		if( byte == 0x1 ) {
+		if ( byte == 0x1 ) {
 			/* If the drive status is 0x1 then we see it but we aren't talking to it. */
 			/* Try to do something about it. */
 			printk(BIOS_SPEW, "SATA device detected but not talking. Trying lower speed.\n");

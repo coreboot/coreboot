@@ -137,7 +137,7 @@ static void enable_fid_change_on_sb(u32 sbbusn, u32 sbdn)
 	pmio_write(0x8b, 0x01);
 	pmio_write(0x8a, 0x90);
 
-	if(get_sb600_revision() > 0x13)
+	if (get_sb600_revision() > 0x13)
 		pmio_write(0x88, 0x10);
 	else
 		pmio_write(0x88, 0x06);

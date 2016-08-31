@@ -52,12 +52,12 @@ static void ht_dev_set_resources(device_t dev)
 		printk(BIOS_DEBUG,"%s: %s[0x1C] base = %0llx limit = %0llx\n", __func__, dev_path(dev), rbase, rend);
 		k8_f1 = dev_find_slot(0,PCI_DEVFN(0x18,1));
 		// find a not assigned resource
-		for( reg = 0xb8; reg >= 0x80; reg -= 8 ) {
+		for ( reg = 0xb8; reg >= 0x80; reg -= 8 ) {
 			base = pci_read_config32(k8_f1,reg);
 			limit = pci_read_config32(k8_f1,reg+4);
-			if( !(base & 3) ) break; // found a not assigned resource
+			if ( !(base & 3) ) break; // found a not assigned resource
 		}
-		if( !(base & 3) ) {
+		if ( !(base & 3) ) {
 			u32 sblk;
 			device_t k8_f0 = dev_find_slot(0, PCI_DEVFN(0x18, 0));
 			/* Remember this resource has been stored. */
@@ -90,7 +90,7 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 	device_t dev = dev_find_slot(0,PCI_DEVFN(0,0));
 	// we report mmconf base
 	res = probe_resource(dev, 0x1C);
-	if( res )
+	if ( res )
 		mmconf_base = res->base;
 
 	current += acpi_create_mcfg_mmconfig((acpi_mcfg_mmconfig_t *)current, mmconf_base, 0x0, 0x0, 0x1f); // Fix me: should i reserve 255 busses ?

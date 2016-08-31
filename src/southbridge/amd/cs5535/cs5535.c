@@ -56,9 +56,9 @@ static void dump_south(struct device *dev)
 {
 	int i, j;
 
-	for(i=0; i<256; i+=16) {
+	for (i=0; i<256; i+=16) {
 		printk(BIOS_DEBUG, "0x%02x: ", i);
-		for(j=0; j<16; j++)
+		for (j=0; j<16; j++)
 			printk(BIOS_DEBUG, "%02x ", pci_read_config8(dev, i+j));
 		printk(BIOS_DEBUG, "\n");
 	}
@@ -103,9 +103,9 @@ static const struct pci_driver cs5535_pci_driver __pci_driver = {
 };
 
 struct chip_operations southbridge_amd_cs5535_ops = {
-        CHIP_NAME("AMD Geode CS5535 Southbridge")
-            /* This is only called when this device is listed in the
-             * static device tree.
-             */
-            .enable_dev = southbridge_enable,
+	CHIP_NAME("AMD Geode CS5535 Southbridge")
+	    /* This is only called when this device is listed in the
+	     * static device tree.
+	     */
+	    .enable_dev = southbridge_enable,
 };

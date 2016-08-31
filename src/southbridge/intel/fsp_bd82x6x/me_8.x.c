@@ -385,11 +385,10 @@ static int mkhi_get_fwcaps(mefwcaps_sku *cap)
 	};
 
 	/* Send request and wait for response */
-	if (mei_sendrecv(&mei, &mkhi, &rule_id, &cap_msg, sizeof(cap_msg))
-	    < 0) {
+	if (mei_sendrecv(&mei, &mkhi, &rule_id, &cap_msg, sizeof(cap_msg)) < 0) {
 		printk(BIOS_ERR, "ME: GET FWCAPS message failed\n");
 		return -1;
-        }
+	}
 	*cap = cap_msg.caps_sku;
 	return 0;
 }
@@ -413,7 +412,7 @@ static void me_print_fwcaps(mbp_fw_caps *caps_section)
 	print_cap("IntelR Capability Licensing Service (CLS)", cap->intel_cls);
 	print_cap("IntelR Power Sharing Technology (MPC)", cap->intel_mpc);
 	print_cap("ICC Over Clocking", cap->icc_over_clocking);
-        print_cap("Protected Audio Video Path (PAVP)", cap->pavp);
+	print_cap("Protected Audio Video Path (PAVP)", cap->pavp);
 	print_cap("IPV6", cap->ipv6);
 	print_cap("KVM Remote Control (KVM)", cap->kvm);
 	print_cap("Outbreak Containment Heuristic (OCH)", cap->och);
@@ -702,7 +701,7 @@ static void intel_me_init(device_t dev)
 		if (intel_mei_setup(dev) < 0)
 			break;
 
-		if(intel_me_read_mbp(&mbp_data))
+		if (intel_me_read_mbp(&mbp_data))
 			break;
 
 #if CONFIG_CHROMEOS && 0 /* DISABLED */
@@ -901,7 +900,7 @@ static int intel_me_read_mbp(me_bios_payload *mbp_data)
 			       buffer_room, copy_size, mbp_item_id);
 			return -1;
 		}
-		while(copy_size--)
+		while (copy_size--)
 			*copy_addr++ = read_cb();
 	}
 
@@ -911,7 +910,7 @@ static int intel_me_read_mbp(me_bios_payload *mbp_data)
 
 	{
 		int cntr = 0;
-		while(host.interrupt_generate) {
+		while (host.interrupt_generate) {
 			read_host_csr(&host);
 			cntr++;
 		}

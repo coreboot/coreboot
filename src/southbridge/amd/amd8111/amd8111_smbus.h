@@ -26,11 +26,11 @@ static int smbus_wait_until_ready(unsigned smbus_io_base)
 		if ((val & 0x800) == 0) {
 			break;
 		}
-		if(loops == (SMBUS_TIMEOUT / 2)) {
+		if (loops == (SMBUS_TIMEOUT / 2)) {
 			outw(inw(smbus_io_base + SMBGSTATUS),
 				smbus_io_base + SMBGSTATUS);
 		}
-	} while(--loops);
+	} while (--loops);
 	return loops?0:SMBUS_WAIT_UNTIL_READY_TIMEOUT;
 }
 
@@ -46,7 +46,7 @@ static int smbus_wait_until_done(unsigned smbus_io_base)
 		if (((val & 0x8) == 0) | ((val & 0x0037) != 0)) {
 			break;
 		}
-	} while(--loops);
+	} while (--loops);
 	return loops?0:SMBUS_WAIT_UNTIL_DONE_TIMEOUT;
 }
 
@@ -267,11 +267,11 @@ static int do_smbus_block_read(unsigned smbus_io_base, unsigned device, unsigned
 	}
 
 	/* read data block */
-	for(i=0; i<msglen && i<bytes; i++) {
+	for (i=0; i<msglen && i<bytes; i++) {
 		buf[i] = inw(smbus_io_base + SMBHSTFIFO) & 0xff;
 	}
 	/* empty fifo */
-	while(bytes++<msglen) {
+	while (bytes++<msglen) {
 		inw(smbus_io_base + SMBHSTFIFO);
 	}
 
@@ -305,7 +305,7 @@ static int do_smbus_block_write(unsigned smbus_io_base, unsigned device, unsigne
 	outw(bytes, smbus_io_base + SMBHSTDAT);
 
 	/* set the data block */
-	for(i=0; i<bytes; i++) {
+	for (i=0; i<bytes; i++) {
 		outw(buf[i], smbus_io_base + SMBHSTFIFO);
 	}
 

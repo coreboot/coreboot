@@ -171,7 +171,7 @@ static int do_smbus_block_write(unsigned smbus_base, unsigned device,
 	outb((inb(smbus_base + SMBHSTCTL) | 0x40),
 	     smbus_base + SMBHSTCTL);
 
-	while(!(inb(smbus_base + SMBHSTSTAT) & 1));
+	while (!(inb(smbus_base + SMBHSTSTAT) & 1));
 	/* Poll for transaction completion */
 	do {
 		status = inb(smbus_base + SMBHSTSTAT);
@@ -184,7 +184,7 @@ static int do_smbus_block_write(unsigned smbus_base, unsigned device,
 			outb(*buf++, smbus_base + SMBBLKDAT);
 			outb(status, smbus_base + SMBHSTSTAT);
 		}
-	} while(status & 0x01);
+	} while (status & 0x01);
 
 	return 0;
 }
@@ -214,7 +214,7 @@ static int do_smbus_block_read(unsigned smbus_base, unsigned device,
 	outb((inb(smbus_base + SMBHSTCTL) | 0x40),
 	     smbus_base + SMBHSTCTL);
 
-	while(!(inb(smbus_base + SMBHSTSTAT) & 1));
+	while (!(inb(smbus_base + SMBHSTSTAT) & 1));
 	/* Poll for transaction completion */
 	do {
 		status = inb(smbus_base + SMBHSTSTAT);
@@ -234,7 +234,7 @@ static int do_smbus_block_read(unsigned smbus_base, unsigned device,
 					 smbus_base + SMBHSTCTL);
 			}
 		}
-	} while(status & 0x01);
+	} while (status & 0x01);
 
 	return bytes_read;
 }

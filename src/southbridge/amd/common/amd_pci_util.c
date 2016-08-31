@@ -58,7 +58,7 @@ void write_pci_int_table (void)
 {
 	u8 byte;
 
-	if(picr_data_ptr == NULL || intr_data_ptr == NULL){
+	if (picr_data_ptr == NULL || intr_data_ptr == NULL){
 		printk(BIOS_ERR, "Warning: Can't write PCI_INTR 0xC00/0xC01 registers because\n"
 				"'mainboard_picr_data' or 'mainboard_intr_data' tables are NULL\n");
 		return;

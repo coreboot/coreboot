@@ -444,7 +444,7 @@ static int mkhi_get_fwcaps(void)
 	print_cap("IntelR Power Sharing Technology (MPC)",
 		  cap.caps_sku.intel_mpc);
 	print_cap("ICC Over Clocking", cap.caps_sku.icc_over_clocking);
-        print_cap("Protected Audio Video Path (PAVP)", cap.caps_sku.pavp);
+	print_cap("Protected Audio Video Path (PAVP)", cap.caps_sku.pavp);
 	print_cap("IPV6", cap.caps_sku.ipv6);
 	print_cap("KVM Remote Control (KVM)", cap.caps_sku.kvm);
 	print_cap("Outbreak Containment Heuristic (OCH)", cap.caps_sku.och);

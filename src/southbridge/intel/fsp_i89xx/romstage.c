@@ -203,7 +203,7 @@ void romstage_main_continue(EFI_STATUS status, VOID *HobListPtr) {
 
 	cbmem_was_initted = !cbmem_recovery(0);
 
-	if(cbmem_was_initted) {
+	if (cbmem_was_initted) {
 		reset_system();
 	}
 

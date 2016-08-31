@@ -101,15 +101,14 @@ printk(BIOS_DEBUG, "IDE_INIT:---------->\n");
 
 //-------------- enable IDE (SiS5513) -------------------------
 {
-        uint8_t  temp8;
-        int i=0;
-	while(SiS_SiS5513_init[i][0] != 0)
-	{
-                temp8 = pci_read_config8(dev, SiS_SiS5513_init[i][0]);
-                temp8 &= SiS_SiS5513_init[i][1];
-                temp8 |= SiS_SiS5513_init[i][2];
-                pci_write_config8(dev, SiS_SiS5513_init[i][0], temp8);
-                i++;
+	uint8_t  temp8;
+	int i=0;
+	while (SiS_SiS5513_init[i][0] != 0) {
+		temp8 = pci_read_config8(dev, SiS_SiS5513_init[i][0]);
+		temp8 &= SiS_SiS5513_init[i][1];
+		temp8 |= SiS_SiS5513_init[i][2];
+		pci_write_config8(dev, SiS_SiS5513_init[i][0], temp8);
+		i++;
 	};
 }
 //-----------------------------------------------------------
@@ -143,17 +142,17 @@ printk(BIOS_DEBUG, "IDE_INIT:---------->\n");
 
 #if DEBUG_IDE
 {
-        int i;
+	int i;
 
-        printk(BIOS_DEBUG, "****** IDE PCI config ******");
-        printk(BIOS_DEBUG, "\n    03020100  07060504  0B0A0908  0F0E0D0C");
+	printk(BIOS_DEBUG, "****** IDE PCI config ******");
+	printk(BIOS_DEBUG, "\n    03020100  07060504  0B0A0908  0F0E0D0C");
 
-        for (i=0;i<0xff;i+=4){
-                if ((i%16)==0)
-                        printk(BIOS_DEBUG, "\n%02x: ", i);
-                printk(BIOS_DEBUG, "%08x  ", pci_read_config32(dev,i));
-        }
-        printk(BIOS_DEBUG, "\n");
+	for (i=0;i<0xff;i+=4) {
+		if ((i%16)==0)
+			printk(BIOS_DEBUG, "\n%02x: ", i);
+		printk(BIOS_DEBUG, "%08x  ", pci_read_config32(dev,i));
+	}
+	printk(BIOS_DEBUG, "\n");
 }
 #endif
 printk(BIOS_DEBUG, "IDE_INIT:<----------\n");

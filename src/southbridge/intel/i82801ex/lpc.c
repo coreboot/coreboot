@@ -78,8 +78,8 @@ static void i82801ex_pci_dma_cfg(device_t dev)
 #define LPC_EN 0xe6
 static void i82801ex_enable_lpc(device_t dev)
 {
-        /* lpc i/f enable */
-        pci_write_config8(dev, LPC_EN, 0x0d);
+	/* lpc i/f enable */
+	pci_write_config8(dev, LPC_EN, 0x0d);
 }
 
 typedef struct southbridge_intel_i82801ex_config config_t;
@@ -92,7 +92,7 @@ static void set_i82801ex_gpio_use_sel(
 
 	gpio_use_sel  = 0x1A003180;
 	gpio_use_sel2 = 0x00000007;
-	for(i = 0; i < 64; i++) {
+	for (i = 0; i < 64; i++) {
 		int val;
 		switch(config->gpio[i] & ICH5R_GPIO_USE_MASK) {
 		case ICH5R_GPIO_USE_AS_NATIVE: val = 0; break;
@@ -121,7 +121,7 @@ static void set_i82801ex_gpio_direction(
 
 	gpio_io_sel  = 0x0000ffff;
 	gpio_io_sel2 = 0x00000300;
-	for(i = 0; i < 64; i++) {
+	for (i = 0; i < 64; i++) {
 		int val;
 		switch(config->gpio[i] & ICH5R_GPIO_SEL_MASK) {
 		case ICH5R_GPIO_SEL_OUTPUT: val = 0; break;
@@ -152,7 +152,7 @@ static void set_i82801ex_gpio_level(
 	gpio_lvl   = 0x1b3f0000;
 	gpio_blink = 0x00040000;
 	gpio_lvl2  = 0x00030207;
-	for(i = 0; i < 64; i++) {
+	for (i = 0; i < 64; i++) {
 		int val, blink;
 		switch(config->gpio[i] & ICH5R_GPIO_LVL_MASK) {
 		case ICH5R_GPIO_LVL_LOW:   val = 0; blink = 0; break;
@@ -184,7 +184,7 @@ static void set_i82801ex_gpio_inv(
 	int i;
 
 	gpio_inv   = 0x00000000;
-	for(i = 0; i < 32; i++) {
+	for (i = 0; i < 32; i++) {
 		int val;
 		switch(config->gpio[i] & ICH5R_GPIO_INV_MASK) {
 		case ICH5R_GPIO_INV_OFF: val = 0; break;
@@ -205,10 +205,10 @@ static void i82801ex_pirq_init(device_t dev)
 	/* Get the chip configuration */
 	config = dev->chip_info;
 
-	if(config->pirq_a_d) {
+	if (config->pirq_a_d) {
 		pci_write_config32(dev, 0x60, config->pirq_a_d);
 	}
-	if(config->pirq_e_h) {
+	if (config->pirq_e_h) {
 		pci_write_config32(dev, 0x68, config->pirq_e_h);
 	}
 }
@@ -292,7 +292,7 @@ static void lpc_init(struct device *dev)
 	/* Clear SATA to non raid */
 	pci_write_config8(dev, 0xae, 0x00);
 
-        get_option(&pwr_on, "power_on_after_fail");
+	get_option(&pwr_on, "power_on_after_fail");
 	byte = pci_read_config8(dev, 0xa4);
 	byte &= 0xfe;
 	if (!pwr_on) {

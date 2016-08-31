@@ -20,6 +20,10 @@
 
 #define IO_MEM_PORT_DECODE_ENABLE_5	0x48
 #define IO_MEM_PORT_DECODE_ENABLE_6	0x4a
+#define SPI_BASE_ADDRESS		0xa0
+
+#define SPI_CONTROL_1			0xc
+#define TEMPORARY_SPI_BASE_ADDRESS	0xfec10000
 
 /*
  * Enable 4MB (LPC) ROM access at 0xFFC00000 - 0xFFFFFFFF.
@@ -92,7 +96,37 @@ static void sb700_enable_rom(void)
 	pci_io_write_config8(dev, IO_MEM_PORT_DECODE_ENABLE_6, reg8);
 }
 
+static void sb700_configure_rom(void)
+{
+	pci_devfn_t dev;
+	uint32_t dword;
+
+	dev = PCI_DEV(0, 0x14, 3);
+
+	if (IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_SB700_33MHZ_SPI)) {
+		uint32_t prev_spi_cfg;
+		volatile uint32_t *spi_mmio;
+
+		/* Temporarily set up SPI access to change SPI speed */
+		prev_spi_cfg = dword = pci_io_read_config32(dev, SPI_BASE_ADDRESS);
+		dword &= ~(0x7ffffff << 5);		/* SPI_BaseAddr */
+		dword |= TEMPORARY_SPI_BASE_ADDRESS & (0x7ffffff << 5);
+		dword |= (0x1 << 1);			/* SpiRomEnable = 1 */
+		pci_io_write_config32(dev, SPI_BASE_ADDRESS, dword);
+
+		spi_mmio = (void *)(TEMPORARY_SPI_BASE_ADDRESS + SPI_CONTROL_1);
+		dword = *spi_mmio;
+		dword &= ~(0x3 << 12);	/* NormSpeed = 0x1 */
+		dword |= (0x1 << 12);
+		*spi_mmio = dword;
+
+		/* Restore previous SPI access */
+		pci_io_write_config32(dev, SPI_BASE_ADDRESS, prev_spi_cfg);
+	}
+}
+
 static void bootblock_southbridge_init(void)
 {
 	sb700_enable_rom();
+	sb700_configure_rom();
 }

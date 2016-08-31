@@ -93,6 +93,7 @@ verstage-y += reset.c
 verstage-y += spi.c
 
 CPPFLAGS_common += -I$(src)/soc/intel/apollolake/include
+CPPFLAGS_common += -I$(src)/vendorcode/intel/fsp/fsp2_0/apollolake
 
 # Since FSP-M runs in CAR we need to relocate it to a specific address
 $(CONFIG_FSP_M_CBFS)-options := -b $(CONFIG_FSP_M_ADDR)

@@ -22,8 +22,8 @@
  * FSP implementations for different chipsets.
  */
 #include <Base.h>
-#include <soc/fsp/FspmUpd.h>
-#include <soc/fsp/FspsUpd.h>
+#include <FspmUpd.h>
+#include <FspsUpd.h>
 
 #pragma pack(pop)
 

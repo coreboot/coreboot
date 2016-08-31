@@ -30,28 +30,11 @@
 #include <console/console.h>
 #include <southbridge/intel/i82801ix/i82801ix.h>
 #include <northbridge/intel/gm45/gm45.h>
+#include "gpio.h"
 
 #define LPC_DEV PCI_DEV(0, 0x1f, 0)
 #define MCH_DEV PCI_DEV(0, 0, 0)
 
-static void default_southbridge_gpio_setup(void)
-{
-	outl(0x197e23fe, DEFAULT_GPIOBASE + GP_IO_USE_SEL);
-	outl(0xe1a66dfe, DEFAULT_GPIOBASE + GP_IO_SEL);
-	outl(0xe3faef3f, DEFAULT_GPIOBASE + GP_LVL);
-
-	/* Disable blink [31:0]. */
-	outl(0x00000000, DEFAULT_GPIOBASE + GPO_BLINK);
-	/* Set input inversion [31:0]. */
-	outl(0x00000102, DEFAULT_GPIOBASE + GPI_INV);
-
-	/* Enable GPIOs [60:32]. */
-	outl(0x030306f6, DEFAULT_GPIOBASE + GP_IO_USE_SEL2);
-	/* Set input/output mode [60:32] (0 == out, 1 == in). */
-	outl(0x1f55f9f1, DEFAULT_GPIOBASE + GP_IO_SEL2);
-	/* Set gpio levels [60:32].  */
-	outl(0x1dffff53, DEFAULT_GPIOBASE + GP_LVL2);
-}
 
 static void early_lpc_setup(void)
 {
@@ -93,7 +76,7 @@ void mainboard_romstage_entry(unsigned long bist)
 		gm45_early_reset();
 	}
 
-	default_southbridge_gpio_setup();
+	setup_pch_gpios(&x200_gpio_map);
 
 	/* ASPM related setting, set early by original BIOS. */
 	DMIBAR16(0x204) &= ~(3 << 10);

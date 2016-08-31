@@ -42,6 +42,8 @@
 #define MAX_COUNT 3
 
 #define SLEEP_DURATION 60 /* in usec */
+#define SLEEP_DURATION_LONG 210 /* in usec */
+#define SLEEP_DURATION_SAFE 750 /* in usec */
 
 /* max. number of iterations after I2C NAK for 'long' commands
  * we need this especially for sending TPM_READY, since the cleanup after the
@@ -49,8 +51,6 @@
  * how long it will take.
  */
 #define MAX_COUNT_LONG 50
-
-#define SLEEP_DURATION_LONG 210 /* in usec */
 
 /* expected value for DIDVID register */
 #define TPM_TIS_I2C_DID_VID_9635 0x000b15d1L
@@ -72,6 +72,8 @@ static const char * const chip_name[] = {
 struct tpm_inf_dev {
 	int bus;
 	unsigned int addr;
+	unsigned int sleep_short; /* Short sleep duration in usec */
+	unsigned int sleep_long; /* Long sleep duration in usec */
 	uint8_t buf[TPM_BUFSIZE + sizeof(uint8_t)]; // max. buffer size + addr
 	enum i2c_chip_type chip_type;
 };
@@ -109,7 +111,7 @@ static int iic_tpm_read(uint8_t addr, uint8_t *buffer, size_t len)
 			if (rc == 0)
 				break;  /* success, break to skip sleep */
 
-			udelay(SLEEP_DURATION);
+			udelay(tpm_dev->sleep_short);
 		}
 
 		if (rc)
@@ -120,7 +122,7 @@ static int iic_tpm_read(uint8_t addr, uint8_t *buffer, size_t len)
 		 * retrieving the data
 		 */
 		for (count = 0; count < MAX_COUNT; count++) {
-			udelay(SLEEP_DURATION);
+			udelay(tpm_dev->sleep_short);
 			rc = i2c_read_raw(tpm_dev->bus, tpm_dev->addr,
 					  buffer, len);
 			if (rc == 0)
@@ -143,12 +145,12 @@ static int iic_tpm_read(uint8_t addr, uint8_t *buffer, size_t len)
 			     i2c_transfer(tpm_dev->bus, &dseg, 1);
 			if (rc == 0)
 				break;  /* break here to skip sleep */
-			udelay(SLEEP_DURATION);
+			udelay(tpm_dev->sleep_short);
 		}
 	}
 
 	/* take care of 'guard time' */
-	udelay(SLEEP_DURATION);
+	udelay(tpm_dev->sleep_short);
 	if (rc)
 		return -1;
 
@@ -184,7 +186,7 @@ static int iic_tpm_write_generic(uint8_t addr, uint8_t *buffer, size_t len,
 	}
 
 	/* take care of 'guard time' */
-	udelay(SLEEP_DURATION);
+	udelay(tpm_dev->sleep_short);
 	if (rc)
 		return -1;
 
@@ -209,7 +211,8 @@ static int iic_tpm_write_generic(uint8_t addr, uint8_t *buffer, size_t len,
  */
 static int iic_tpm_write(uint8_t addr, uint8_t *buffer, size_t len)
 {
-	return iic_tpm_write_generic(addr, buffer, len, SLEEP_DURATION,
+	struct tpm_inf_dev *tpm_dev = car_get_var_ptr(&g_tpm_dev);
+	return iic_tpm_write_generic(addr, buffer, len, tpm_dev->sleep_short,
 			MAX_COUNT);
 }
 
@@ -219,7 +222,8 @@ static int iic_tpm_write(uint8_t addr, uint8_t *buffer, size_t len)
  * */
 static int iic_tpm_write_long(uint8_t addr, uint8_t *buffer, size_t len)
 {
-	return iic_tpm_write_generic(addr, buffer, len, SLEEP_DURATION_LONG,
+	struct tpm_inf_dev *tpm_dev = car_get_var_ptr(&g_tpm_dev);
+	return iic_tpm_write_generic(addr, buffer, len, tpm_dev->sleep_long,
 			MAX_COUNT_LONG);
 }
 
@@ -494,6 +498,10 @@ int tpm_vendor_init(struct tpm_chip *chip, unsigned bus, uint32_t dev_addr)
 	tpm_dev->bus = bus;
 	tpm_dev->addr = dev_addr;
 
+	/* Use conservative values to read chip id */
+	tpm_dev->sleep_short = SLEEP_DURATION_SAFE;
+	tpm_dev->sleep_long = SLEEP_DURATION_SAFE * 2;
+
 	memset(&chip->vendor, 0, sizeof(struct tpm_vendor_specific));
 	chip->is_open = 1;
 
@@ -523,6 +531,9 @@ int tpm_vendor_init(struct tpm_chip *chip, unsigned bus, uint32_t dev_addr)
 		printk(BIOS_DEBUG, "Vendor ID 0x%08x not recognized.\n", vendor);
 		goto out_err;
 	}
+
+	tpm_dev->sleep_short = SLEEP_DURATION;
+	tpm_dev->sleep_long = SLEEP_DURATION_LONG;
 
 	printk(BIOS_DEBUG, "1.2 TPM (chip type %s device-id 0x%X)\n",
 		 chip_name[tpm_dev->chip_type], vendor >> 16);

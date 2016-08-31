@@ -28,6 +28,7 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/early_variables.h>
 #include <stdint.h>
 #include <string.h>
 #include <types.h>
@@ -36,9 +37,6 @@
 #include <device/i2c.h>
 #include <endian.h>
 #include "tpm.h"
-
-/* Address of the TPM on the I2C bus */
-#define TPM_I2C_ADDR 0x20
 
 /* max. number of iterations after I2C NAK */
 #define MAX_COUNT 3
@@ -78,10 +76,7 @@ struct tpm_inf_dev {
 	enum i2c_chip_type chip_type;
 };
 
-static struct tpm_inf_dev tpm_dev = {
-	.bus = -1,
-	.addr = TPM_I2C_ADDR
-};
+static struct tpm_inf_dev g_tpm_dev CAR_GLOBAL;
 
 /*
  * iic_tpm_read() - read from TPM register
@@ -99,15 +94,18 @@ static struct tpm_inf_dev tpm_dev = {
  */
 static int iic_tpm_read(uint8_t addr, uint8_t *buffer, size_t len)
 {
+	struct tpm_inf_dev *tpm_dev = car_get_var_ptr(&g_tpm_dev);
 	int rc;
 	int count;
 
-	if (tpm_dev.bus < 0)
+	if (tpm_dev->addr == 0)
 		return -1;
-	if ((tpm_dev.chip_type == SLB9635) || (tpm_dev.chip_type == UNKNOWN)) {
+	if ((tpm_dev->chip_type == SLB9635) ||
+	    (tpm_dev->chip_type == UNKNOWN)) {
 		/* slb9635 protocol should work in both cases */
 		for (count = 0; count < MAX_COUNT; count++) {
-			rc = i2c_write_raw(tpm_dev.bus, tpm_dev.addr, &addr, 1);
+			rc = i2c_write_raw(tpm_dev->bus, tpm_dev->addr,
+					   &addr, 1);
 			if (rc == 0)
 				break;  /* success, break to skip sleep */
 
@@ -123,7 +121,7 @@ static int iic_tpm_read(uint8_t addr, uint8_t *buffer, size_t len)
 		 */
 		for (count = 0; count < MAX_COUNT; count++) {
 			udelay(SLEEP_DURATION);
-			rc = i2c_read_raw(tpm_dev.bus, tpm_dev.addr,
+			rc = i2c_read_raw(tpm_dev->bus, tpm_dev->addr,
 					  buffer, len);
 			if (rc == 0)
 				break;  /* success, break to skip sleep */
@@ -136,13 +134,13 @@ static int iic_tpm_read(uint8_t addr, uint8_t *buffer, size_t len)
 		 * retries should usually not be needed, but are kept just to
 		 * be safe on the safe side.
 		 */
-		struct i2c_seg aseg = { .read = 0, .chip = tpm_dev.addr,
+		struct i2c_seg aseg = { .read = 0, .chip = tpm_dev->addr,
 					.buf = &addr, .len = 1 };
-		struct i2c_seg dseg = { .read = 1, .chip = tpm_dev.addr,
+		struct i2c_seg dseg = { .read = 1, .chip = tpm_dev->addr,
 					.buf = buffer, .len = len };
 		for (count = 0; count < MAX_COUNT; count++) {
-			rc = i2c_transfer(tpm_dev.bus, &aseg, 1) ||
-			     i2c_transfer(tpm_dev.bus, &dseg, 1);
+			rc = i2c_transfer(tpm_dev->bus, &aseg, 1) ||
+			     i2c_transfer(tpm_dev->bus, &dseg, 1);
 			if (rc == 0)
 				break;  /* break here to skip sleep */
 			udelay(SLEEP_DURATION);
@@ -161,6 +159,7 @@ static int iic_tpm_write_generic(uint8_t addr, uint8_t *buffer, size_t len,
 				unsigned int sleep_time,
 				uint8_t max_count)
 {
+	struct tpm_inf_dev *tpm_dev = car_get_var_ptr(&g_tpm_dev);
 	int rc = 0;
 	int count;
 
@@ -170,14 +169,14 @@ static int iic_tpm_write_generic(uint8_t addr, uint8_t *buffer, size_t len,
 	}
 
 	/* prepare send buffer */
-	tpm_dev.buf[0] = addr;
-	memcpy(&(tpm_dev.buf[1]), buffer, len);
+	tpm_dev->buf[0] = addr;
+	memcpy(&(tpm_dev->buf[1]), buffer, len);
 
-	if (tpm_dev.bus < 0)
+	if (tpm_dev->addr == 0)
 		return -1;
 	for (count = 0; count < max_count; count++) {
-		rc = i2c_write_raw(tpm_dev.bus, tpm_dev.addr,
-				   tpm_dev.buf, len + 1);
+		rc = i2c_write_raw(tpm_dev->bus, tpm_dev->addr,
+				   tpm_dev->buf, len + 1);
 		if (rc == 0)
 			break;  /* success, break to skip sleep */
 
@@ -480,55 +479,53 @@ out_err:
 	return -1;
 }
 
-static struct tpm_vendor_specific tpm_tis_i2c = {
-	.status = tpm_tis_i2c_status,
-	.recv = tpm_tis_i2c_recv,
-	.send = tpm_tis_i2c_send,
-	.cancel = tpm_tis_i2c_ready,
-	.req_complete_mask = TPM_STS_DATA_AVAIL | TPM_STS_VALID,
-	.req_complete_val = TPM_STS_DATA_AVAIL | TPM_STS_VALID,
-	.req_canceled = TPM_STS_COMMAND_READY,
-};
-
 /* Initialization of I2C TPM */
 
-int tpm_vendor_init(unsigned bus, uint32_t dev_addr)
+int tpm_vendor_init(struct tpm_chip *chip, unsigned bus, uint32_t dev_addr)
 {
+	struct tpm_inf_dev *tpm_dev = car_get_var_ptr(&g_tpm_dev);
 	uint32_t vendor;
-	unsigned int old_addr;
-	struct tpm_chip *chip;
-	extern struct tpm_chip g_chip;
 
-	old_addr = tpm_dev.addr;
-	if (dev_addr != 0)
-		tpm_dev.addr = dev_addr;
-	tpm_dev.bus = bus;
+	if (dev_addr == 0) {
+		printk(BIOS_ERR, "%s: missing device address\n", __func__);
+		return -1;
+	}
 
-	chip = &g_chip;
-	memcpy(&chip->vendor, &tpm_tis_i2c, sizeof(struct tpm_vendor_specific));
+	tpm_dev->bus = bus;
+	tpm_dev->addr = dev_addr;
+
+	memset(&chip->vendor, 0, sizeof(struct tpm_vendor_specific));
 	chip->is_open = 1;
+
+	chip->vendor.status = &tpm_tis_i2c_status;
+	chip->vendor.recv = &tpm_tis_i2c_recv;
+	chip->vendor.send = &tpm_tis_i2c_send;
+	chip->vendor.cancel = &tpm_tis_i2c_ready;
+	chip->vendor.req_complete_mask = TPM_STS_DATA_AVAIL | TPM_STS_VALID;
+	chip->vendor.req_complete_val = TPM_STS_DATA_AVAIL | TPM_STS_VALID;
+	chip->vendor.req_canceled = TPM_STS_COMMAND_READY;
 
 	/* Disable interrupts (not supported) */
 	chip->vendor.irq = 0;
 
 	if (request_locality(chip, 0) != 0)
-		goto out_err;
+		return -1;
 
 	/* Read four bytes from DID_VID register */
 	if (iic_tpm_read(TPM_DID_VID(0), (uint8_t *)&vendor, 4) < 0)
-		goto out_release;
+		goto out_err;
 
 	if (vendor == TPM_TIS_I2C_DID_VID_9645) {
-		tpm_dev.chip_type = SLB9645;
+		tpm_dev->chip_type = SLB9645;
 	} else if (be32_to_cpu(vendor) == TPM_TIS_I2C_DID_VID_9635) {
-		tpm_dev.chip_type = SLB9635;
+		tpm_dev->chip_type = SLB9635;
 	} else {
 		printk(BIOS_DEBUG, "Vendor ID 0x%08x not recognized.\n", vendor);
-		goto out_release;
+		goto out_err;
 	}
 
 	printk(BIOS_DEBUG, "1.2 TPM (chip type %s device-id 0x%X)\n",
-		 chip_name[tpm_dev.chip_type], vendor >> 16);
+		 chip_name[tpm_dev->chip_type], vendor >> 16);
 
 	/*
 	 * A timeout query to TPM can be placed here.
@@ -537,11 +534,8 @@ int tpm_vendor_init(unsigned bus, uint32_t dev_addr)
 
 	return 0;
 
-out_release:
-	release_locality(chip, 0, 1);
-
 out_err:
-	tpm_dev.addr = old_addr;
+	release_locality(chip, 0, 1);
 	return -1;
 }
 

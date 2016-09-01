@@ -546,7 +546,8 @@ struct tpm2_response *tpm_unmarshal_response(TPM_CC command,
 					     void *response_body,
 					     size_t in_size)
 {
-	static struct tpm2_response tpm2_resp;
+	static struct tpm2_response tpm2_static_resp CAR_GLOBAL;
+	struct tpm2_response *tpm2_resp = car_get_var_ptr(&tpm2_static_resp);
 	/*
 	 * Should be 0 when done, positive and negaitive values indicate
 	 * unmarshaling errors.
@@ -556,16 +557,16 @@ struct tpm2_response *tpm_unmarshal_response(TPM_CC command,
 	if ((cr_size < 0) || (in_size < sizeof(struct tpm_header)))
 		return NULL;
 
-	tpm2_resp.hdr.tpm_tag = unmarshal_u16(&response_body, &cr_size);
-	tpm2_resp.hdr.tpm_size = unmarshal_u32(&response_body, &cr_size);
-	tpm2_resp.hdr.tpm_code = unmarshal_TPM_CC(&response_body, &cr_size);
+	tpm2_resp->hdr.tpm_tag = unmarshal_u16(&response_body, &cr_size);
+	tpm2_resp->hdr.tpm_size = unmarshal_u32(&response_body, &cr_size);
+	tpm2_resp->hdr.tpm_code = unmarshal_TPM_CC(&response_body, &cr_size);
 
 	if (!cr_size) {
-		if (tpm2_resp.hdr.tpm_size != sizeof(tpm2_resp.hdr))
+		if (tpm2_resp->hdr.tpm_size != sizeof(tpm2_resp->hdr))
 			printk(BIOS_ERR,
 			       "%s: size mismatch in response to command %#x\n",
 			       __func__, command);
-		return &tpm2_resp;
+		return tpm2_resp;
 	}
 
 	switch (command) {
@@ -574,12 +575,12 @@ struct tpm2_response *tpm_unmarshal_response(TPM_CC command,
 
 	case TPM2_GetCapability:
 		unmarshal_get_capability(&response_body, &cr_size,
-					 &tpm2_resp.gc);
+					 &tpm2_resp->gc);
 		break;
 
 	case TPM2_NV_Read:
 		unmarshal_nv_read(&response_body, &cr_size,
-				  &tpm2_resp.nvr);
+				  &tpm2_resp->nvr);
 		break;
 
 	case TPM2_Clear:
@@ -599,7 +600,7 @@ struct tpm2_response *tpm_unmarshal_response(TPM_CC command,
 			       "Request to unmarshal unexpected command %#x,"
 			       " code %#x",
 			       __func__, __LINE__, command,
-			       tpm2_resp.hdr.tpm_code);
+			       tpm2_resp->hdr.tpm_code);
 
 			for (i = 0; i < cr_size; i++) {
 				if (!(i % 16))
@@ -616,11 +617,11 @@ struct tpm2_response *tpm_unmarshal_response(TPM_CC command,
 		printk(BIOS_INFO,
 		       "%s:%d got %d bytes back in response to %#x,"
 		       " failed to parse (%d)\n",
-		       __func__, __LINE__, tpm2_resp.hdr.tpm_size,
+		       __func__, __LINE__, tpm2_resp->hdr.tpm_size,
 		       command, cr_size);
 		return NULL;
 	}
 
 	/* The entire message have been parsed. */
-	return &tpm2_resp;
+	return tpm2_resp;
 }

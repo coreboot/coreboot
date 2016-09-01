@@ -11,3 +11,8 @@ config DRIVER_TPM_I2C_ADDR
 	hex "I2C TPM chip address"
 	default 2 # FIXME, workaround for Kconfig BS
 	depends on I2C_TPM
+
+config DRIVER_I2C_TPM_ACPI
+	bool "Generate I2C TPM ACPI device"
+	default y if ARCH_X86 && I2C_TPM
+	default n

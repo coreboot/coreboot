@@ -31,12 +31,12 @@
 #define PWM_DESIGN_VOLTAGE_MIN	8000
 #define PWM_DESIGN_VOLTAGE_MAX	15000
 
-/* The min & max design voltages are different after kevin-r6 */
-int kevin_voltage_min_max_r6[][2] = {
-	[PWM_REGULATOR_GPU] = {7910, 12139},
-	[PWM_REGULATOR_BIG] = {7986, 13057},
-	[PWM_REGULATOR_LIT] = {7997, 13002},
-	[PWM_REGULATOR_CENTERLOG] = {7996, 10507}
+/* Later boards (Kevin rev6+, Gru rev2+) use different regulator ranges. */
+int pwm_design_voltage_later[][2] = {
+	[PWM_REGULATOR_GPU] = {7858, 12177},
+	[PWM_REGULATOR_BIG] = {7987, 13022},
+	[PWM_REGULATOR_LIT] = {7991, 13037},
+	[PWM_REGULATOR_CENTERLOG] = {8001, 10497}
 };
 
 void pwm_regulator_configure(enum pwm_regulator pwm, int millivolt)
@@ -61,9 +61,10 @@ void pwm_regulator_configure(enum pwm_regulator pwm, int millivolt)
 
 	voltage_min = PWM_DESIGN_VOLTAGE_MIN;
 	voltage_max = PWM_DESIGN_VOLTAGE_MAX;
-	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_KEVIN) && board_id() >= 6) {
-		voltage_min = kevin_voltage_min_max_r6[pwm][0];
-		voltage_max = kevin_voltage_min_max_r6[pwm][1];
+	if (!(IS_ENABLED(CONFIG_BOARD_GOOGLE_KEVIN) && board_id() < 6) &&
+	    !(IS_ENABLED(CONFIG_BOARD_GOOGLE_GRU) && board_id() < 2)) {
+		voltage_min = pwm_design_voltage_later[pwm][0];
+		voltage_max = pwm_design_voltage_later[pwm][1];
 	}
 
 	assert(voltage <= voltage_max && voltage >= voltage_min);

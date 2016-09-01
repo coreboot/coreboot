@@ -300,6 +300,7 @@ struct smbios_type3 {
 	u8 number_of_power_cords;
 	u8 element_count;
 	u8 element_record_length;
+	u8 sku_number;
 	char eos[2];
 } __attribute__((packed));
 

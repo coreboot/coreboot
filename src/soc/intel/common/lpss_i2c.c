@@ -60,8 +60,8 @@ struct lpss_i2c_regs {
 	uint32_t tx_abort_source;
 } __attribute__((packed));
 
-/* Use a ~2ms timeout for various operations */
-#define LPSS_I2C_TIMEOUT_US		2000
+/* Use a ~4ms timeout for various operations */
+#define LPSS_I2C_TIMEOUT_US		4000
 
 /* High and low times in different speed modes (in ns) */
 enum {

@@ -24,7 +24,7 @@ int snprintf(char * buf, size_t size, const char *fmt, ...);
 static inline size_t strnlen(const char *src, size_t max)
 {
 	size_t i = 0;
-	while((*src++) && (i < max)) {
+	while ((*src++) && (i < max)) {
 		i++;
 	}
 	return i;
@@ -33,7 +33,7 @@ static inline size_t strnlen(const char *src, size_t max)
 static inline size_t strlen(const char *src)
 {
 	size_t i = 0;
-	while(*src++) {
+	while (*src++) {
 		i++;
 	}
 	return i;
@@ -154,15 +154,15 @@ static inline int islower(int c)
 
 static inline int toupper(int c)
 {
-        if (islower(c))
-                c -= 'a'-'A';
-        return c;
+	if (islower(c))
+		c -= 'a'-'A';
+	return c;
 }
 
 static inline int tolower(int c)
 {
-        if (isupper(c))
-                c -= 'A'-'a';
-        return c;
+	if (isupper(c))
+		c -= 'A'-'a';
+	return c;
 }
 #endif /* STRING_H */

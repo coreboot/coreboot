@@ -25,8 +25,8 @@ typedef struct msr_struct
 
 typedef struct msrinit_struct
 {
-        unsigned index;
-        msr_t msr;
+	unsigned index;
+	msr_t msr;
 } msrinit_t;
 
 #if IS_ENABLED(CONFIG_SOC_SETS_MSRS)
@@ -39,8 +39,7 @@ static inline __attribute__((always_inline)) msr_t rdmsr(unsigned index)
 	return soc_msr_read(index);
 }
 
-static inline __attribute__((always_inline)) void wrmsr(unsigned index,
-	msr_t msr)
+static inline __attribute__((always_inline)) void wrmsr(unsigned index, msr_t msr)
 {
 	soc_msr_write(index, msr);
 }
@@ -67,8 +66,7 @@ static inline __attribute__((always_inline)) msr_t rdmsr(unsigned index)
 	return result;
 }
 
-static inline __attribute__((always_inline)) void wrmsr(unsigned index,
-	msr_t msr)
+static inline __attribute__((always_inline)) void wrmsr(unsigned index, msr_t msr)
 {
 	__asm__ __volatile__ (
 		"wrmsr"

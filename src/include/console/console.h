@@ -50,8 +50,8 @@ int console_log_level(int msg_level);
 int do_printk(int msg_level, const char *fmt, ...) __attribute__((format(printf, 2, 3)));
 void do_putchar(unsigned char byte);
 
-#define printk(LEVEL, fmt, args...)	\
-	do { do_printk(LEVEL, fmt, ##args); } while(0)
+#define printk(LEVEL, fmt, args...) \
+	do { do_printk(LEVEL, fmt, ##args); } while (0)
 
 #else
 static inline void console_init(void) {}

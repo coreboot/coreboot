@@ -70,7 +70,7 @@ u8 pm_read8(u8 reg);
 void pm_write16(u8 reg, u16 value);
 u16 pm_read16(u16 reg);
 
-#ifdef __PRE_RAM__
+#ifdef __SIMPLE_DEVICE__
 void hudson_lpc_port80(void);
 void hudson_pci_port80(void);
 void hudson_clk_output_48Mhz(void);

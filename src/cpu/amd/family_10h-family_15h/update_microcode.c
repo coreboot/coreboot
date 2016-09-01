@@ -18,8 +18,8 @@
 #include <cpu/amd/microcode.h>
 
 struct id_mapping {
-        uint32_t orig_id;
-        uint16_t new_id;
+	uint32_t orig_id;
+	uint16_t new_id;
 };
 
 static u16 get_equivalent_processor_rev_id(u32 orig_id) {

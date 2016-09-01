@@ -68,7 +68,7 @@ void io_trap_handler(int smif)
 	/* If a handler function handled a given IO trap, it
 	 * shall return a non-zero value
 	 */
-        printk(BIOS_DEBUG, "SMI function trap 0x%x: ", smif);
+	printk(BIOS_DEBUG, "SMI function trap 0x%x: ", smif);
 
 	if (southbridge_io_trap_handler(smif))
 		return;

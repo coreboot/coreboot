@@ -24,11 +24,11 @@ unsigned long tsc_freq_mhz(void)
 	uint8_t cpudid;
 
 	/* On Family 10h/15h CPUs the TSC increments
-         * at the P0 clock rate.  Read the P0 clock
-         * frequency from the P0 MSR and convert
-         * to MHz.  See also the Family 15h BKDG
-         * Rev. 3.14 page 569.
-         */
+	 * at the P0 clock rate.  Read the P0 clock
+	 * frequency from the P0 MSR and convert
+	 * to MHz.  See also the Family 15h BKDG
+	 * Rev. 3.14 page 569.
+	 */
 	msr = rdmsr(0xc0010064);
 	cpufid = (msr.lo & 0x3f);
 	cpudid = (msr.lo & 0x1c0) >> 6;

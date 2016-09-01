@@ -155,7 +155,7 @@ byte_fffbd = ((pll_checksum & 0x0f) << 4) | 0x0f
 
 	.section ".a9123_crossbar_config", "a", @progbits
 
-        .skip 0x3fdf0 - 0x3fd00, 0xff
+	.skip 0x3fdf0 - 0x3fd00, 0xff
 
 .previous
 

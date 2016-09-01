@@ -5,3 +5,7 @@ config BOARD_GOOGLE_OAK
 config BOARD_GOOGLE_ELM
 	bool "Elm"
 	select BOARD_GOOGLE_OAK_COMMON
+
+config BOARD_GOOGLE_HANA
+	bool "Hana"
+	select BOARD_GOOGLE_OAK_COMMON

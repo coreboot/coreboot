@@ -44,9 +44,9 @@ void cpus_ready_for_init(void)
 {
 #if CONFIG_K8_REV_F_SUPPORT
 #if CONFIG_MEM_TRAIN_SEQ == 1
-        struct sys_info *sysinfox = (struct sys_info *)((CONFIG_RAMTOP) - sizeof(*sysinfox));
-        // wait for ap memory to trained
-        wait_all_core0_mem_trained(sysinfox);
+	struct sys_info *sysinfox = (struct sys_info *)((CONFIG_RAMTOP) - sizeof(*sysinfox));
+	// wait for ap memory to trained
+	wait_all_core0_mem_trained(sysinfox);
 #endif
 #endif
 }

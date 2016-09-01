@@ -15,19 +15,19 @@
 
 	.section ".dmp_reserved", "a", @progbits
 
-        .skip 0x3c000 - 0x3bc00, 0xff
+	.skip 0x3c000 - 0x3bc00, 0xff
 
 .previous
 
 	.section ".dmp_kbd_fw_part2", "a", @progbits
 
-        .skip 0x3d000 - 0x3c000, 0xff
+	.skip 0x3d000 - 0x3c000, 0xff
 
 .previous
 
 	.section ".dmp_mtbf_low_cnt", "a", @progbits
 
-        .skip 0x3e000 - 0x3d000, 0xff
+	.skip 0x3e000 - 0x3d000, 0xff
 
 .previous
 
@@ -39,42 +39,42 @@
 
 	.section ".dmp_spi_flash_disk_driver", "a", @progbits
 
-        .skip 0x3f800 - 0x3f000, 0xff
+	.skip 0x3f800 - 0x3f000, 0xff
 
 .previous
 
 	.section ".dmp_frontdoor", "a", @progbits
 
-        .skip 0x3fd00 - 0x3f800, 0xff
+	.skip 0x3fd00 - 0x3f800, 0xff
 
 .previous
 
 	.section ".dmp_isoinfo", "a", @progbits
 
-        .skip 26 * 16, 0xff
+	.skip 26 * 16, 0xff
 
 .previous
 
 	.section ".dmp_isodata_checksum", "a", @progbits
 
-        .skip 8, 0xff
+	.skip 8, 0xff
 
 .previous
 
 	.section ".dmp_mac", "a", @progbits
 
-        .skip 6, 0xff
+	.skip 6, 0xff
 
 .previous
 
 	.section ".dmp_mtbf_limit", "a", @progbits
 
-        .skip 3, 0xff
+	.skip 3, 0xff
 
 .previous
 
 	.section ".dmp_isodata", "a", @progbits
 
-        .skip 32, 0xff
+	.skip 32, 0xff
 
 .previous

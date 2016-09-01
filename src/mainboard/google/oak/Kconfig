@@ -79,17 +79,20 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "Oak" if BOARD_GOOGLE_OAK
 	default "Elm" if BOARD_GOOGLE_ELM
+	default "Hana" if BOARD_GOOGLE_HANA
 
 config GBB_HWID
 	string
 	depends on CHROMEOS
 	default "OAK TEST 6858" if BOARD_GOOGLE_OAK
 	default "ELM TEST 3839" if BOARD_GOOGLE_ELM
+	default "HANA TEST 5855" if BOARD_GOOGLE_HANA
 
 # All Oak-derivatives count their board IDs as 0 being equivalent to Oak rev6.
 config BOARD_ID_ADJUSTMENT
 	int
 	default 0 if BOARD_GOOGLE_OAK
 	default 7 if BOARD_GOOGLE_ELM
+	default 11 if BOARD_GOOGLE_HANA
 
 endif # BOARD_GOOGLE_OAK

@@ -5,11 +5,14 @@ junit.xml
 abuild*.xml
 .config
 .config.old
+defconfig
 .coreboot-version
 .xcompile
 .ccwrap
 build/
 coreboot-builds/
+payloads/coreinfo/lpbuild/
+payloads/coreinfo/lp.config*
 payloads/external/depthcharge/depthcharge/
 payloads/external/FILO/filo/
 payloads/external/GRUB2/grub2/

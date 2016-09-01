@@ -19,7 +19,7 @@
 
 void i82801ix_early_init(void)
 {
-	const device_t d31f0 = PCI_DEV(0, 0x1f, 0);
+	const pci_devfn_t d31f0 = PCI_DEV(0, 0x1f, 0);
 
 	/* Set up RCBA. */
 	pci_write_config32(d31f0, D31F0_RCBA, (uintptr_t)DEFAULT_RCBA | 1);

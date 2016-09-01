@@ -1,7 +1,6 @@
-if BOARD_GOOGLE_REEF
 
-config BOARD_SPECIFIC_OPTIONS
-	def_bool y
+config BOARD_GOOGLE_BASEBOARD_REEF
+	def_bool n
 	select SOC_INTEL_APOLLOLAKE
 	select BOARD_ROMSIZE_KB_16384
 	select EC_GOOGLE_CHROMEEC
@@ -10,10 +9,15 @@ config BOARD_SPECIFIC_OPTIONS
 	select HAVE_ACPI_TABLES
 	select MAINBOARD_HAS_CHROMEOS
 	select MAINBOARD_HAS_LPC_TPM
+
+if BOARD_GOOGLE_BASEBOARD_REEF
+
+config BASEBOARD_REEF_LAPTOP
+	def_bool n
 	select SYSTEM_TYPE_LAPTOP
 
 config CHROMEOS
-	select LID_SWITCH
+	select LID_SWITCH if BASEBOARD_REEF_LAPTOP
 
 config DRIVERS_I2C_DA7219
 	default y
@@ -30,16 +34,16 @@ config MAINBOARD_DIR
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "Reef"
+	default "Reef" if BOARD_GOOGLE_REEF
 
 config MAINBOARD_FAMILY
 	string
-	default "Google_Reef"
+	default "Google_Reef" if BOARD_GOOGLE_REEF
 
 config GBB_HWID
 	string
 	depends on CHROMEOS
-	default "REEF TEST 3240"
+	default "REEF TEST 3240" if BOARD_GOOGLE_REEF
 
 config MAX_CPUS
 	int

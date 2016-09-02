@@ -38,7 +38,7 @@ static uint16_t read16p (uintptr_t addr)
    which is done at the end of raminit.  */
 void early_thermal_init(void)
 {
-	device_t dev;
+	pci_devfn_t dev;
 	msr_t msr;
 
 	dev = PCI_DEV(0x0, 0x1f, 0x6);

@@ -17,6 +17,7 @@
 #include <assert.h>
 #include <boardid.h>
 #include <console/console.h>
+#include <gpio.h>
 #include <soc/grf.h>
 #include <soc/pwm.h>
 
@@ -68,15 +69,19 @@ void pwm_regulator_configure(enum pwm_regulator pwm, int millivolt)
 
 	switch (pwm) {
 	case PWM_REGULATOR_GPU:
+		gpio_input(GPIO(4, C, 2));	/* PWM0 remove pull-down */
 		write32(&rk3399_grf->iomux_pwm_0, IOMUX_PWM_0);
 		break;
 	case PWM_REGULATOR_BIG:
+		gpio_input(GPIO(4, C, 6));	/* PWM1 remove pull-down */
 		write32(&rk3399_grf->iomux_pwm_1, IOMUX_PWM_1);
 		break;
 	case PWM_REGULATOR_LIT:
+		gpio_input(GPIO(1, C, 3));	/* PWM2 remove pull-down */
 		write32(&rk3399_pmugrf->iomux_pwm_2, IOMUX_PWM_2);
 		break;
 	case PWM_REGULATOR_CENTERLOG:
+		gpio_input(GPIO(0, A, 6));	/* PWM3 remove pull-down */
 		write32(&rk3399_pmugrf->iomux_pwm_3a, IOMUX_PWM_3_A);
 		break;
 	}

@@ -94,19 +94,13 @@ static void configure_sdmmc(void)
 
 	gpio_output(GPIO(2, D, 4), 0);  /* Keep the max voltage */
 
-	/*
-	 * The SD card on this board is connected to port SDMMC0, which is
-	 * multiplexed with GPIO4B pins 0..5.
-	 *
-	 * Disable all pullups on these pins. For pullup configuration
-	 * register layout stacks banks 2 through 4 together, hence [2] means
-	 * group 4, [1] means bank B. This register is described on page 342
-	 * of section 1 of the TRM.
-	 *
-	 * Each GPIO pin's pull config takes two bits, writing zero to the
-	 * field disables pull ups/downs, as described on page 342 of rk3399
-	 * TRM Version 0.3 Part 1.
-	 */
+	gpio_input(GPIO(4, B, 0));	/* SDMMC0_D0 remove pull-up */
+	gpio_input(GPIO(4, B, 1));	/* SDMMC0_D1 remove pull-up */
+	gpio_input(GPIO(4, B, 2));	/* SDMMC0_D2 remove pull-up */
+	gpio_input(GPIO(4, B, 3));	/* SDMMC0_D3 remove pull-up */
+	gpio_input(GPIO(4, B, 4));	/* SDMMC0_CLK remove pull-down */
+	gpio_input(GPIO(4, B, 5));	/* SDMMC0_CMD remove pull-up */
+
 	write32(&rk3399_grf->gpio2_p[2][1], RK_CLRSETBITS(0xfff, 0));
 
 	/*
@@ -132,6 +126,16 @@ static void configure_sdmmc(void)
 
 static void configure_codec(void)
 {
+	gpio_input(GPIO(3, D, 0));	/* I2S0_SCLK remove pull-up */
+	gpio_input(GPIO(3, D, 1));	/* I2S0_RX remove pull-up */
+	gpio_input(GPIO(3, D, 2));	/* I2S0_TX remove pull-up */
+	gpio_input(GPIO(3, D, 3));	/* I2S0_SDI0 remove pull-up */
+	gpio_input(GPIO(3, D, 4));	/* I2S0_SDI1 remove pull-up */
+	/* GPIO3_D5 (I2S0_SDI2SDO2) not connected */
+	gpio_input(GPIO(3, D, 6));	/* I2S0_SDO1 remove pull-up */
+	gpio_input(GPIO(3, D, 7));	/* I2S0_SDO0 remove pull-up */
+	gpio_input(GPIO(4, A, 0));	/* I2S0_MCLK remove pull-up */
+
 	write32(&rk3399_grf->iomux_i2s0, IOMUX_I2S0);
 	write32(&rk3399_grf->iomux_i2sclk, IOMUX_I2SCLK);
 
@@ -206,10 +210,13 @@ static void enable_backlight_booster(void)
 	 */
 	udelay(1000);
 
-	/* Select pinmux for i2c0, which is the display backlight booster. */
+	gpio_input(GPIO(1, B, 7));	/* I2C0_SDA remove pull_up */
+	gpio_input(GPIO(1, C, 0));	/* I2C0_SCL remove pull_up */
+
+	i2c_init(0, 100*KHz);
+
 	write32(&rk3399_pmugrf->iomux_i2c0_sda, IOMUX_I2C0_SDA);
 	write32(&rk3399_pmugrf->iomux_i2c0_scl, IOMUX_I2C0_SCL);
-	i2c_init(0, 100*KHz);
 
 	for (i = 0; i < ARRAY_SIZE(i2c_writes); i++) {
 		i2c_buf[0] = i2c_writes[i].reg;

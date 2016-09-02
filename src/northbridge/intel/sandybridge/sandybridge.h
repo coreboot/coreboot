@@ -234,7 +234,7 @@ void mainboard_config_superio(void);
 int mainboard_should_reset_usb(int s3resume);
 void perform_raminit(int s3resume);
 
-#if ENV_RAMSTAGE
+#if ENV_RAMSTAGE && !defined(__SIMPLE_DEVICE__)
 #include <device/device.h>
 
 struct acpi_rsdp;

@@ -110,7 +110,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	u32 val, t32;
 	u8 byte;
-	device_t dev;
+	pci_devfn_t dev;
 	u32 *addr32;
 
 	/* In Hudson RRG, PMIOxD2[5:4] is "Drive strength control for

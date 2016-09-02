@@ -21,8 +21,8 @@
 #include <soc/gpio.h>
 #include <soc/nhlt.h>
 #include <vendorcode/google/chromeos/chromeos.h>
-#include "ec.h"
-#include "gpio.h"
+#include <variant/ec.h>
+#include <variant/gpio.h>
 
 static void mainboard_init(void *chip_info)
 {

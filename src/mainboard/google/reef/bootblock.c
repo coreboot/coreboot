@@ -16,8 +16,8 @@
 #include <bootblock_common.h>
 #include <soc/lpc.h>
 #include <soc/gpio.h>
-#include "ec.h"
-#include "gpio.h"
+#include <variant/ec.h>
+#include <variant/gpio.h>
 
 void bootblock_mainboard_init(void)
 {

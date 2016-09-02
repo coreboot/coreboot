@@ -14,18 +14,9 @@
  */
 
 #include <baseboard/variants.h>
-#include <bootblock_common.h>
-#include <soc/lpc.h>
-#include <soc/gpio.h>
-#include <variant/ec.h>
+#include <ec/google/chromeec/ec.h>
 
-void bootblock_mainboard_init(void)
+uint8_t __attribute__((weak)) variant_board_id(void)
 {
-	const struct pad_config *pads;
-	size_t num;
-
-	lpc_configure_pads();
-	pads = variant_early_gpio_table(&num);
-	gpio_configure_pads(pads, num);
-	mainboard_ec_init();
+	return google_chromeec_get_board_version();
 }

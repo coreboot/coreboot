@@ -19,7 +19,6 @@
 #include <cpu/amd/lxdef.h>
 
 /* northbridge.c */
-unsigned int lx_scan_root_bus(device_t root, unsigned int max);
 int sizeram(void);
 
 /* northbridgeinit.c */

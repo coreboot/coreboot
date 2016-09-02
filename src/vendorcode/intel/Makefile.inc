@@ -30,7 +30,7 @@ ifeq ($(CONFIG_UEFI_2_4_BINDING),y)
 # a fixed width type.
 CPPFLAGS_common += -I$(src)/vendorcode/intel/edk2/uefi_2.4/MdePkg/Include/Ia32
 CPPFLAGS_common += -I$(src)/vendorcode/intel/edk2/uefi_2.4/MdePkg/Include
-else ifeq ($(CONFIG_UDK_2015_BINDING),y)_
+else ifeq ($(CONFIG_UDK_2015_BINDING),y)
 CPPFLAGS_common += -I$(src)/vendorcode/intel/edk2/UDK2015/MdePkg/Include/Ia32
 CPPFLAGS_common += -I$(src)/vendorcode/intel/edk2/UDK2015/MdePkg/Include
 CPPFLAGS_common += -I$(src)/vendorcode/intel/edk2/UDK2015/IntelFsp2Pkg/Include

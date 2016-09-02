@@ -1108,7 +1108,7 @@ static void cpu_bus_scan(device_t dev)
 			 *
 			 * This is needed because many IO-APIC devices only have 4 bits
 			 * for their APIC id and therefore must reside at 0..15
-                         */
+			 */
 			if ((node_nums * core_max) + ioapic_count >= 0x10) {
 				lapicid_start = (ioapic_count - 1) / core_max;
 				lapicid_start = (lapicid_start + 1) * core_max;

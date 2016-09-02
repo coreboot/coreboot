@@ -40,7 +40,7 @@ static void pci_domain_set_resources(device_t dev)
 	device_t mc_dev;
 	u32 pci_tolm;
 
-        pci_tolm = find_pci_tolm(dev->link_list);
+	pci_tolm = find_pci_tolm(dev->link_list);
 
 #if 1
 	printk(BIOS_DEBUG, "PCI mem marker = %x\n", pci_tolm);
@@ -211,15 +211,15 @@ static const struct pci_driver mc_driver __pci_driver = {
 
 static void cpu_bus_init(device_t dev)
 {
-        initialize_cpus(dev->link_list);
+	initialize_cpus(dev->link_list);
 }
 
 static struct device_operations cpu_bus_ops = {
-        .read_resources   = DEVICE_NOOP,
-        .set_resources    = DEVICE_NOOP,
-        .enable_resources = DEVICE_NOOP,
-        .init             = cpu_bus_init,
-        .scan_bus         = 0,
+	.read_resources   = DEVICE_NOOP,
+	.set_resources    = DEVICE_NOOP,
+	.enable_resources = DEVICE_NOOP,
+	.init             = cpu_bus_init,
+	.scan_bus         = 0,
 };
 
 

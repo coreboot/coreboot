@@ -2398,10 +2398,10 @@ static void precise_ndelay_fam15(struct MCTStatStruc *pMCTstat, uint32_t nanosec
 
 	tsc_msr = rdmsr(0x00000010);
 	start_timestamp = (((uint64_t)tsc_msr.hi) << 32) | tsc_msr.lo;
-        do {
+	do {
 		tsc_msr = rdmsr(0x00000010);
 		current_timestamp = (((uint64_t)tsc_msr.hi) << 32) | tsc_msr.lo;
-        } while ((current_timestamp - start_timestamp) < cycle_count);
+	} while ((current_timestamp - start_timestamp) < cycle_count);
 }
 
 static void precise_memclk_delay_fam15(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, uint8_t dct, uint32_t clocks) {

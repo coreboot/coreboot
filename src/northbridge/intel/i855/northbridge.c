@@ -30,33 +30,33 @@
 
 static void northbridge_init(device_t dev)
 {
-        printk(BIOS_SPEW, "Northbridge init\n");
+	printk(BIOS_SPEW, "Northbridge init\n");
 }
 
 static struct device_operations northbridge_operations = {
-        .read_resources = pci_dev_read_resources,
-        .set_resources = pci_dev_set_resources,
-        .enable_resources = pci_dev_enable_resources,
-        .init = northbridge_init,
-        .enable = 0,
-        .ops_pci = 0,
+	.read_resources = pci_dev_read_resources,
+	.set_resources = pci_dev_set_resources,
+	.enable_resources = pci_dev_enable_resources,
+	.init = northbridge_init,
+	.enable = 0,
+	.ops_pci = 0,
 };
 
 static const struct pci_driver northbridge_driver __pci_driver = {
-        .ops = &northbridge_operations,
-        .vendor = PCI_VENDOR_ID_INTEL,
-        .device = 0x3580,
+	.ops = &northbridge_operations,
+	.vendor = PCI_VENDOR_ID_INTEL,
+	.device = 0x3580,
 };
 
 static void pci_domain_set_resources(device_t dev)
 {
 	device_t mc_dev;
-        uint32_t pci_tolm;
+	uint32_t pci_tolm;
 
-        printk(BIOS_DEBUG, "Entered with dev vid = %x\n", dev->vendor);
+	printk(BIOS_DEBUG, "Entered with dev vid = %x\n", dev->vendor);
 	printk(BIOS_DEBUG, "Entered with dev did = %x\n", dev->device);
 
-        pci_tolm = find_pci_tolm(dev->link_list);
+	pci_tolm = find_pci_tolm(dev->link_list);
 	mc_dev = dev->link_list->children->sibling;
 	printk(BIOS_DEBUG, "MC dev vendor = %x\n", mc_dev->vendor);
 	printk(BIOS_DEBUG, "MC dev device = %x\n", mc_dev->device);
@@ -107,39 +107,39 @@ static void pci_domain_set_resources(device_t dev)
 }
 
 static struct device_operations pci_domain_ops = {
-        .read_resources   = pci_domain_read_resources,
-        .set_resources    = pci_domain_set_resources,
-        .enable_resources = NULL,
-        .init             = NULL,
-        .scan_bus         = pci_domain_scan_bus,
-        .ops_pci_bus      = pci_bus_default_ops,
+	.read_resources   = pci_domain_read_resources,
+	.set_resources    = pci_domain_set_resources,
+	.enable_resources = NULL,
+	.init             = NULL,
+	.scan_bus         = pci_domain_scan_bus,
+	.ops_pci_bus      = pci_bus_default_ops,
 };
 
 static void cpu_bus_init(device_t dev)
 {
-        initialize_cpus(dev->link_list);
+	initialize_cpus(dev->link_list);
 }
 
 static struct device_operations cpu_bus_ops = {
-        .read_resources   = DEVICE_NOOP,
-        .set_resources    = DEVICE_NOOP,
-        .enable_resources = DEVICE_NOOP,
-        .init             = cpu_bus_init,
-        .scan_bus         = 0,
+	.read_resources   = DEVICE_NOOP,
+	.set_resources    = DEVICE_NOOP,
+	.enable_resources = DEVICE_NOOP,
+	.init             = cpu_bus_init,
+	.scan_bus         = 0,
 };
 
 static void enable_dev(struct device *dev)
 {
-        /* Set the operations if it is a special bus type */
-        if (dev->path.type == DEVICE_PATH_DOMAIN) {
-                dev->ops = &pci_domain_ops;
-        }
-        else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER) {
-                dev->ops = &cpu_bus_ops;
-        }
+	/* Set the operations if it is a special bus type */
+	if (dev->path.type == DEVICE_PATH_DOMAIN) {
+		dev->ops = &pci_domain_ops;
+	}
+	else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER) {
+		dev->ops = &cpu_bus_ops;
+	}
 }
 
 struct chip_operations northbridge_intel_i855_ops = {
-        CHIP_NAME("Intel 855 Northbridge")
+	CHIP_NAME("Intel 855 Northbridge")
 	.enable_dev = enable_dev,
 };

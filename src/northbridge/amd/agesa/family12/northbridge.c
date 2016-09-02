@@ -269,47 +269,47 @@ struct hw_mem_hole_info {
 
 static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 {
-        struct hw_mem_hole_info mem_hole;
+	struct hw_mem_hole_info mem_hole;
 
-        mem_hole.hole_startk = CONFIG_HW_MEM_HOLE_SIZEK;
-        mem_hole.node_id = -1;
+	mem_hole.hole_startk = CONFIG_HW_MEM_HOLE_SIZEK;
+	mem_hole.node_id = -1;
 
-        struct dram_base_mask_t d;
-        u32 hole;
-        d = get_dram_base_mask(0);
-        if (d.mask & 1) {
-            hole = pci_read_config32(__f1_dev[0], 0xf0);
-            if (hole & 1) { // we find the hole
-                mem_hole.hole_startk = (hole & (0xff<<24)) >> 10;
-                mem_hole.node_id = 0; // record the node No with hole
-            }
-        }
+	struct dram_base_mask_t d;
+	u32 hole;
+	d = get_dram_base_mask(0);
+	if (d.mask & 1) {
+		hole = pci_read_config32(__f1_dev[0], 0xf0);
+		if (hole & 1) { // we find the hole
+			mem_hole.hole_startk = (hole & (0xff<<24)) >> 10;
+			mem_hole.node_id = 0; // record the node No with hole
+		}
+	}
 
 #if 0
 	/* We need to double check if there is special set on base reg and limit reg
 	 * are not continuous instead of hole, it will find out its hole_startk.
 	 */
-        if (mem_hole.node_id==-1) {
-            resource_t limitk_pri = 0;
-            struct dram_base_mask_t d;
-            resource_t base_k, limit_k;
-            d = get_dram_base_mask(0);
-            if (d.base & 1) {
-                base_k = ((resource_t)(d.base & 0x1fffff00)) <<9;
-                if (base_k <= 4 *1024 * 1024) {
-                    if (limitk_pri != base_k) { // we find the hole
-                        mem_hole.hole_startk = (unsigned)limitk_pri; // must be below 4G
-                        mem_hole.node_id = 0;
-                    }
-                }
+	if (mem_hole.node_id==-1) {
+		resource_t limitk_pri = 0;
+		struct dram_base_mask_t d;
+		resource_t base_k, limit_k;
+		d = get_dram_base_mask(0);
+		if (d.base & 1) {
+			base_k = ((resource_t)(d.base & 0x1fffff00)) <<9;
+			if (base_k <= 4 *1024 * 1024) {
+				if (limitk_pri != base_k) { // we find the hole
+					mem_hole.hole_startk = (unsigned)limitk_pri; // must be below 4G
+					mem_hole.node_id = 0;
+				}
+			}
 
-                limit_k = ((resource_t)((d.mask + 0x00000100) & 0x1fffff00)) << 9;
-                limitk_pri = limit_k;
-            }
-        }
+		limit_k = ((resource_t)((d.mask + 0x00000100) & 0x1fffff00)) << 9;
+		limitk_pri = limit_k;
+		}
+	}
 #endif
 
-        return mem_hole;
+	return mem_hole;
 }
 #endif
 
@@ -471,44 +471,44 @@ static void setup_uma_memory(void)
 
 static void domain_read_resources(device_t dev)
 {
-    unsigned reg;
+	unsigned reg;
 
-    printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
+	printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
 
-    /* Find the already assigned resource pairs */
-    get_fx_devs();
-    for (reg = 0x80; reg <= 0xc0; reg+= 0x08) {
-        u32 base, limit;
-        base  = f1_read_config32(reg);
-        limit = f1_read_config32(reg + 0x04);
-        /* Is this register allocated? */
-        if ((base & 3) != 0) {
-            unsigned nodeid, reg_link;
-            device_t reg_dev;
-            if (reg<0xc0) { // mmio
-                nodeid = (limit & 0xf) + (base&0x30);
-            } else { // io
-                nodeid =  (limit & 0xf) + ((base>>4)&0x30);
-            }
-            reg_link = (limit >> 4) & 7;
-            reg_dev = __f0_dev[nodeid];
-            if (reg_dev) {
-                /* Reserve the resource  */
-                struct resource *res;
-                res = new_resource(reg_dev, IOINDEX(0x1000 + reg, reg_link));
-                if (res) {
-                    res->flags = 1;
-                }
-            }
-        }
-    }
-    /* FIXME: do we need to check extend conf space?
-       I don't believe that much preset value */
+	/* Find the already assigned resource pairs */
+	get_fx_devs();
+	for (reg = 0x80; reg <= 0xc0; reg+= 0x08) {
+		u32 base, limit;
+		base  = f1_read_config32(reg);
+		limit = f1_read_config32(reg + 0x04);
+		/* Is this register allocated? */
+		if ((base & 3) != 0) {
+			unsigned nodeid, reg_link;
+			device_t reg_dev;
+			if (reg<0xc0) { // mmio
+				nodeid = (limit & 0xf) + (base&0x30);
+			} else { // io
+				nodeid =  (limit & 0xf) + ((base>>4)&0x30);
+			}
+			reg_link = (limit >> 4) & 7;
+			reg_dev = __f0_dev[nodeid];
+			if (reg_dev) {
+				/* Reserve the resource  */
+				struct resource *res;
+				res = new_resource(reg_dev, IOINDEX(0x1000 + reg, reg_link));
+				if (res) {
+					res->flags = 1;
+				}
+			}
+		}
+	}
+	/* FIXME: do we need to check extend conf space?
+	I don't believe that much preset value */
 
-    struct resource *resource;
-	/* Initialize the system-wide I/O space constraints. */
+	struct resource *resource;
+		/* Initialize the system-wide I/O space constraints. */
 	resource = new_resource(dev, IOINDEX_SUBTRACTIVE(0, 0));
-    resource->base  = 0x1000;
+	resource->base  = 0x1000;
 	resource->limit = 0xffffUL;
 	resource->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE |
 		     IORESOURCE_ASSIGNED;
@@ -520,40 +520,40 @@ static void domain_read_resources(device_t dev)
 	resource->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE |
 		     IORESOURCE_ASSIGNED;
 
-    printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
+	printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
 }
 
 
 static void domain_set_resources(device_t dev)
 {
-    printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
-    printk(BIOS_DEBUG, "  amsr - incoming dev = %p\n", dev);
+	printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
+	printk(BIOS_DEBUG, "  amsr - incoming dev = %p\n", dev);
 
-    unsigned long mmio_basek;
-    u32 pci_tolm;
-    u64 ramtop = 0;
-    int idx;
-    struct bus *link;
+	unsigned long mmio_basek;
+	u32 pci_tolm;
+	u64 ramtop = 0;
+	int idx;
+	struct bus *link;
 #if CONFIG_HW_MEM_HOLE_SIZEK != 0
-    struct hw_mem_hole_info mem_hole;
-    u32 reset_memhole = 1;
+	struct hw_mem_hole_info mem_hole;
+	u32 reset_memhole = 1;
 #endif
 
-    pci_tolm = 0xffffffffUL;
-    for (link = dev->link_list; link; link = link->next) {
-        pci_tolm = my_find_pci_tolm(link, pci_tolm);
-    }
+	pci_tolm = 0xffffffffUL;
+	for (link = dev->link_list; link; link = link->next) {
+		pci_tolm = my_find_pci_tolm(link, pci_tolm);
+	}
 
-    // FIXME handle interleaved nodes. If you fix this here, please fix
-    // amdk8, too.
-    mmio_basek = pci_tolm >> 10;
-    /* Round mmio_basek to something the processor can support */
-    mmio_basek &= ~((1 << 6) -1);
+	// FIXME handle interleaved nodes. If you fix this here, please fix
+	// amdk8, too.
+	mmio_basek = pci_tolm >> 10;
+	/* Round mmio_basek to something the processor can support */
+	mmio_basek &= ~((1 << 6) -1);
 
-    // FIXME improve mtrr.c so we don't use up all of the mtrrs with a 64M
-    // MMIO hole. If you fix this here, please fix amdk8, too.
-    /* Round the mmio hole to 64M */
-    mmio_basek &= ~((64*1024) - 1);
+	// FIXME improve mtrr.c so we don't use up all of the mtrrs with a 64M
+	// MMIO hole. If you fix this here, please fix amdk8, too.
+	/* Round the mmio hole to 64M */
+	mmio_basek &= ~((64*1024) - 1);
 
 #if CONFIG_HW_MEM_HOLE_SIZEK != 0
 /* if the hw mem hole is already set in raminit stage, here we will compare
@@ -562,77 +562,76 @@ static void domain_set_resources(device_t dev)
  * otherwise We reset the hole to the mmio_basek
  */
 
-    mem_hole = get_hw_mem_hole_info();
+	mem_hole = get_hw_mem_hole_info();
 
-    // Use hole_basek as mmio_basek, and we don't need to reset hole anymore
-    if ((mem_hole.node_id !=  -1) && (mmio_basek > mem_hole.hole_startk)) {
-        mmio_basek = mem_hole.hole_startk;
-        reset_memhole = 0;
-    }
+	// Use hole_basek as mmio_basek, and we don't need to reset hole anymore
+	if ((mem_hole.node_id !=  -1) && (mmio_basek > mem_hole.hole_startk)) {
+		mmio_basek = mem_hole.hole_startk;
+		reset_memhole = 0;
+	}
 #endif
 
-    idx = 0x10;
+	idx = 0x10;
 
-    struct dram_base_mask_t d;
-    resource_t basek, limitk, sizek; // 4 1T
+	struct dram_base_mask_t d;
+	resource_t basek, limitk, sizek; // 4 1T
 
-    d = get_dram_base_mask(0);
+	d = get_dram_base_mask(0);
 
-    if (d.mask & 1) {
-        basek = ((resource_t)(d.base)) << 8;
-        limitk = (resource_t)((d.mask << 8) | 0xFFFFFF);
-printk(BIOS_DEBUG, "adsr: (before) basek = %llx, limitk = %llx.\n",basek,limitk);
+	if (d.mask & 1) {
+		basek = ((resource_t)(d.base)) << 8;
+		limitk = (resource_t)((d.mask << 8) | 0xFFFFFF);
+		printk(BIOS_DEBUG, "adsr: (before) basek = %llx, limitk = %llx.\n",basek,limitk);
 
-        /* Convert these values to multiples of 1K for ease of math. */
-        basek >>= 10;
-        limitk >>= 10;
-        sizek = limitk - basek + 1;
+		/* Convert these values to multiples of 1K for ease of math. */
+		basek >>= 10;
+		limitk >>= 10;
+		sizek = limitk - basek + 1;
 
-printk(BIOS_DEBUG, "adsr: (after) basek = %llx, limitk = %llx, sizek = %llx.\n",basek,limitk,sizek);
+		printk(BIOS_DEBUG, "adsr: (after) basek = %llx, limitk = %llx, sizek = %llx.\n",basek,limitk,sizek);
 
-        /* see if we need a hole from 0xa0000 to 0xbffff */
-        if ((basek < 640) && (sizek > 768)) {
-printk(BIOS_DEBUG, "adsr - 0xa0000 to 0xbffff resource.\n");
-            ram_resource(dev, (idx | 0), basek, 640 - basek);
-            idx += 0x10;
-            basek = 768;
-            sizek = limitk - 768;
-        }
+		/* see if we need a hole from 0xa0000 to 0xbffff */
+		if ((basek < 640) && (sizek > 768)) {
+			printk(BIOS_DEBUG, "adsr - 0xa0000 to 0xbffff resource.\n");
+			ram_resource(dev, (idx | 0), basek, 640 - basek);
+			idx += 0x10;
+			basek = 768;
+			sizek = limitk - 768;
+		}
 
 		printk(BIOS_DEBUG,
 			"adsr: mmio_basek=%08lx, basek=%08llx, limitk=%08llx\n",
 			 mmio_basek, basek, limitk);
 
-        /* split the region to accommodate pci memory space */
-        if ( (basek < 4*1024*1024 ) && (limitk > mmio_basek) ) {
-            if (basek <= mmio_basek) {
-                unsigned pre_sizek;
-                pre_sizek = mmio_basek - basek;
-                if (pre_sizek>0) {
-                    ram_resource(dev, idx, basek, pre_sizek);
-                    idx += 0x10;
-                    sizek -= pre_sizek;
-                    if (!ramtop)
-                            ramtop = mmio_basek * 1024;
-                }
-                basek = mmio_basek;
-            }
-            if ((basek + sizek) <= 4*1024*1024) {
-                sizek = 0;
-            }
-            else {
-                basek = 4*1024*1024;
-                sizek -= (4*1024*1024 - mmio_basek);
-            }
-        }
+		/* split the region to accommodate pci memory space */
+		if ( (basek < 4*1024*1024 ) && (limitk > mmio_basek) ) {
+			if (basek <= mmio_basek) {
+				unsigned pre_sizek;
+				pre_sizek = mmio_basek - basek;
+				if (pre_sizek>0) {
+					ram_resource(dev, idx, basek, pre_sizek);
+					idx += 0x10;
+					sizek -= pre_sizek;
+					if (!ramtop)
+						ramtop = mmio_basek * 1024;
+				}
+				basek = mmio_basek;
+			}
+			if ((basek + sizek) <= 4*1024*1024) {
+				sizek = 0;
+			} else {
+				basek = 4*1024*1024;
+				sizek -= (4*1024*1024 - mmio_basek);
+			}
+		}
 
-        ram_resource(dev, (idx | 0), basek, sizek);
-        idx += 0x10;
-        printk(BIOS_DEBUG, "%d: mmio_basek=%08lx, basek=%08llx, limitk=%08llx\n",
-                 0, mmio_basek, basek, limitk);
-        if (!ramtop)
-                 ramtop = limitk * 1024;
-    }
+		ram_resource(dev, (idx | 0), basek, sizek);
+		idx += 0x10;
+		printk(BIOS_DEBUG, "%d: mmio_basek=%08lx, basek=%08llx, limitk=%08llx\n",
+		   0, mmio_basek, basek, limitk);
+		if (!ramtop)
+			ramtop = limitk * 1024;
+	}
 	printk(BIOS_DEBUG, "  adsr - mmio_basek = %lx.\n", mmio_basek);
 
 #if CONFIG_GFXUMA
@@ -642,13 +641,12 @@ printk(BIOS_DEBUG, "adsr - 0xa0000 to 0xbffff resource.\n");
 	set_top_of_ram(ramtop);
 #endif
 
-    for (link = dev->link_list; link; link = link->next) {
-        if (link->children) {
-            assign_resources(link);
-        }
-    }
-printk(BIOS_DEBUG, "  adsr - leaving this lovely routine.\n");
-    printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
+	for (link = dev->link_list; link; link = link->next) {
+		if (link->children)
+			assign_resources(link);
+	}
+	printk(BIOS_DEBUG, "  adsr - leaving this lovely routine.\n");
+	printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
 }
 
 

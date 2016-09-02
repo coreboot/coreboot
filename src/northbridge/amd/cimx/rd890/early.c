@@ -34,7 +34,7 @@ void sr56x0_rd890_disable_pcie_bridge(void)
 	AMD_NB_CONFIG_BLOCK	*cfg_ptr = &cfg_block;
 	AMD_NB_CONFIG		*nb_cfg  = &(cfg_block.Northbridges[0]);
 
-        nb_cfg->ConfigPtr = &cfg_ptr;
+	nb_cfg->ConfigPtr = &cfg_ptr;
 	nb_dev = MAKE_SBDFO(0, 0x0, 0x0, 0x0, 0x0);
 	val = (1 << 2) | (1 << 3); /*GPP1*/
 	val |= (1 << 4) | (1 << 5) | (1 << 6) | (1 << 7) | (1 << 16) | (1 << 17); /*GPP3a*/

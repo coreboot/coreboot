@@ -41,8 +41,8 @@ extern uint32_t agesawrapper_amdinitmid(void);
 
 typedef struct amdfam10_sysconf_t sys_info_conf_t;
 typedef struct dram_base_mask {
-        u32 base; //[47:27] at [28:8]
-        u32 mask; //[47:27] at [28:8] and enable at bit 0
+	u32 base; //[47:27] at [28:8]
+	u32 mask; //[47:27] at [28:8] and enable at bit 0
 } dram_base_mask_t;
 
 
@@ -162,7 +162,6 @@ static void store_conf_mmio_addr(u32 nodeid, u32 linkn, u32 reg, u32 index,
 static void set_io_addr_reg(device_t dev, u32 nodeid, u32 linkn, u32 reg,
 				u32 io_min, u32 io_max)
 {
-
 	u32 i;
 	u32 tempreg;
 
@@ -189,7 +188,6 @@ static void set_io_addr_reg(device_t dev, u32 nodeid, u32 linkn, u32 reg,
 
 static void set_mmio_addr_reg(u32 nodeid, u32 linkn, u32 reg, u32 index, u32 mmio_min, u32 mmio_max, u32 nodes)
 {
-
 	u32 i;
 	u32 tempreg;
 
@@ -218,9 +216,9 @@ static device_t get_node_pci(u32 nodeid, u32 fn)
 
 static unsigned int read_nb_cfg_54(void)
 {
-        msr_t msr;
-        msr = rdmsr(NB_CFG_MSR);
-        return (( msr.hi >> (54-32)) & 1);
+	msr_t msr;
+	msr = rdmsr(NB_CFG_MSR);
+	return (( msr.hi >> (54-32)) & 1);
 }
 
 static void get_fx_devs(void)

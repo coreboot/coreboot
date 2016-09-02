@@ -116,7 +116,7 @@ static int via_cx700_int15_handler(void)
 		res=1;
 		break;
 
-        default:
+	default:
 		printk(BIOS_DEBUG, "Unknown INT15 function %04x!\n",
 				X86_EAX & 0xffff);
 		break;

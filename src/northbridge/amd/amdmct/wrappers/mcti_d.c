@@ -476,34 +476,31 @@ static void mctHookAfterDramInit(void)
 #if (CONFIG_DIMM_SUPPORT & 0x000F)==0x0005 /* AMD_FAM10_DDR3 */
 static void vErratum372(struct DCTStatStruc *pDCTstat)
 {
-        msr_t msr = rdmsr(NB_CFG_MSR);
+	msr_t msr = rdmsr(NB_CFG_MSR);
 
 	int nbPstate1supported = !(msr.hi & (1 << (NB_GfxNbPstateDis -32)));
 
-        // is this the right way to check for NB pstate 1 or DDR3-1333 ?
-        if (((pDCTstat->PresetmaxFreq==1333)||(nbPstate1supported))
-            &&(!pDCTstat->GangedMode)) {
-           	/* DisableCf8ExtCfg */
-        	msr.hi &= ~(3 << (51 - 32));
-        	wrmsr(NB_CFG_MSR, msr);
-        }
+	// is this the right way to check for NB pstate 1 or DDR3-1333 ?
+	if (((pDCTstat->PresetmaxFreq==1333)||(nbPstate1supported))
+	    &&(!pDCTstat->GangedMode)) {
+		/* DisableCf8ExtCfg */
+		msr.hi &= ~(3 << (51 - 32));
+		wrmsr(NB_CFG_MSR, msr);
+	}
 }
 
 static void vErratum414(struct DCTStatStruc *pDCTstat)
 {
-     int dct=0;
-    for (; dct < 2 ; dct++)
-    {
-        int dRAMConfigHi = Get_NB32(pDCTstat->dev_dct,0x94 + (0x100 * dct));
+	int dct=0;
+	for (; dct < 2 ; dct++) {
+		int dRAMConfigHi = Get_NB32(pDCTstat->dev_dct,0x94 + (0x100 * dct));
 		int powerDown =  dRAMConfigHi & (1 << PowerDownEn );
 		int ddr3 = dRAMConfigHi & (1 << Ddr3Mode );
-        int dRAMMRS = Get_NB32(pDCTstat->dev_dct,0x84 + (0x100 * dct));
+		int dRAMMRS = Get_NB32(pDCTstat->dev_dct,0x84 + (0x100 * dct));
 		int pchgPDModeSel = dRAMMRS & (1 << PchgPDModeSel);
-	if (powerDown && ddr3 && pchgPDModeSel )
-	{
-	  Set_NB32(pDCTstat->dev_dct,0x84 + (0x100 * dct), dRAMMRS & ~(1 << PchgPDModeSel) );
+		if (powerDown && ddr3 && pchgPDModeSel )
+			Set_NB32(pDCTstat->dev_dct,0x84 + (0x100 * dct), dRAMMRS & ~(1 << PchgPDModeSel) );
 	}
-    }
 }
 #endif
 

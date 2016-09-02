@@ -51,7 +51,7 @@ void *gpio_grf_reg(gpio_t gpio)
 	return &rk3288_grf->gpio1_p[(gpio.port - 1)][gpio.bank];
 }
 
-u32 gpio_get_pull_val(gpio_t gpio, u32 pull)
+u32 gpio_get_pull_val(gpio_t gpio, enum gpio_pull pull)
 {
 	/* use the default gpio pull bias setting defined in soc/gpio.h */
 	return pull;

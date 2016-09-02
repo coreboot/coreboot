@@ -21,10 +21,15 @@
 #include <soc/soc.h>
 #include <stdlib.h>
 
-static void __gpio_input(gpio_t gpio, u32 pull)
+static void gpio_set_dir(gpio_t gpio, enum gpio_dir dir)
+{
+	clrsetbits_le32(&gpio_port[gpio.port]->swporta_ddr,
+			1 << gpio.num, dir << gpio.num);
+}
+
+static void gpio_set_pull(gpio_t gpio, enum gpio_pull pull)
 {
 	u32 pull_val = gpio_get_pull_val(gpio, pull);
-	clrbits_le32(&gpio_port[gpio.port]->swporta_ddr, 1 << gpio.num);
 	if (is_pmu_gpio(gpio))
 		clrsetbits_le32(gpio_grf_reg(gpio), 3 << (gpio.idx * 2),
 				pull_val << (gpio.idx * 2));
@@ -35,17 +40,20 @@ static void __gpio_input(gpio_t gpio, u32 pull)
 
 void gpio_input(gpio_t gpio)
 {
-	__gpio_input(gpio, PULLNONE);
+	gpio_set_pull(gpio, GPIO_PULLNONE);
+	gpio_set_dir(gpio, GPIO_INPUT);
 }
 
 void gpio_input_pulldown(gpio_t gpio)
 {
-	__gpio_input(gpio, PULLDOWN);
+	gpio_set_pull(gpio, GPIO_PULLDOWN);
+	gpio_set_dir(gpio, GPIO_INPUT);
 }
 
 void gpio_input_pullup(gpio_t gpio)
 {
-	__gpio_input(gpio, PULLUP);
+	gpio_set_pull(gpio, GPIO_PULLUP);
+	gpio_set_dir(gpio, GPIO_INPUT);
 }
 
 int gpio_get(gpio_t gpio)
@@ -55,7 +63,8 @@ int gpio_get(gpio_t gpio)
 
 void gpio_output(gpio_t gpio, int value)
 {
-	setbits_le32(&gpio_port[gpio.port]->swporta_ddr, 1 << gpio.num);
 	clrsetbits_le32(&gpio_port[gpio.port]->swporta_dr, 1 << gpio.num,
 							   !!value << gpio.num);
+	gpio_set_dir(gpio, GPIO_OUTPUT);
+	gpio_set_pull(gpio, GPIO_PULLNONE);
 }

@@ -73,13 +73,18 @@ int is_pmu_gpio(gpio_t gpio);
 /* Return the io addr of gpio register */
 void *gpio_grf_reg(gpio_t gpio);
 
-enum {
-	PULLNONE = 0,
-	PULLUP,
-	PULLDOWN
+enum gpio_pull {
+	GPIO_PULLNONE = 0,
+	GPIO_PULLUP = 1,
+	GPIO_PULLDOWN = 2,
+};
+
+enum gpio_dir {
+	GPIO_INPUT = 0,
+	GPIO_OUTPUT = 1,
 };
 
 /* The gpio pull bias setting may be different between SoCs */
-u32 gpio_get_pull_val(gpio_t gpio, u32 pull);
+u32 gpio_get_pull_val(gpio_t gpio, enum gpio_pull pull);
 
 #endif

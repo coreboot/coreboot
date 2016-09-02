@@ -56,7 +56,7 @@ enum {
 	PULLUP_1V8 = 3,
 };
 
-u32 gpio_get_pull_val(gpio_t gpio, u32 pull)
+u32 gpio_get_pull_val(gpio_t gpio, enum gpio_pull pull)
 {
 	/* The default pull bias setting defined in soc/gpio.h */
 	u32 pull_val = pull;
@@ -67,13 +67,13 @@ u32 gpio_get_pull_val(gpio_t gpio, u32 pull)
 	if (IS_GPIO_BANK(gpio, 0, A) || IS_GPIO_BANK(gpio, 0, B) ||
 	    IS_GPIO_BANK(gpio, 2, C) || IS_GPIO_BANK(gpio, 2, D)) {
 		switch (pull) {
-		case PULLUP:
+		case GPIO_PULLUP:
 			pull_val = PULLUP_1V8;
 			break;
-		case PULLDOWN:
+		case GPIO_PULLDOWN:
 			pull_val = PULLDOWN_1V8;
 			break;
-		default:
+		case GPIO_PULLNONE:
 			pull_val = PULLNONE_1V8;
 		}
 	}

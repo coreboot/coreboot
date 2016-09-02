@@ -245,6 +245,8 @@ void romstage_common(const struct romstage_params *params)
 	#endif
 	}
 
+	setup_sdram_meminfo(params->pei_data);
+
 	romstage_handoff_init(wake_from_s3);
 
 	post_code(0x3f);

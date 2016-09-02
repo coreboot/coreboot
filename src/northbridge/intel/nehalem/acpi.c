@@ -130,7 +130,7 @@ static int init_opregion_vbt(igd_opregion_t * opregion)
 /* Initialize IGD OpRegion, called from ACPI code */
 int init_igd_opregion(igd_opregion_t * opregion)
 {
-	device_t igd;
+	pci_devfn_t igd;
 	u16 reg16;
 
 	memset((void *)opregion, 0, sizeof(igd_opregion_t));

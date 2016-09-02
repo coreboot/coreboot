@@ -114,6 +114,9 @@ static ssize_t tpm_transmit(const uint8_t *buf, size_t bufsiz)
 	memcpy(&ordinal, buf + TPM_CMD_ORDINAL_BYTE, sizeof(ordinal));
 	ordinal = be32_to_cpu(ordinal);
 
+	if (!chip->vendor.send || !chip->vendor.status || !chip->vendor.cancel)
+		return -1;
+
 	if (count == 0) {
 		printk(BIOS_DEBUG, "tpm_transmit: no data\n");
 		return -1;

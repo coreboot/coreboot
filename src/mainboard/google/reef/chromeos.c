@@ -18,11 +18,7 @@
 #include <gpio.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <soc/gpio.h>
-#include <variant/ec.h>
 #include <variant/gpio.h>
-
-#define GPIO_PCH_WP GPIO_75
-#define GPIO_EC_IN_RW GPIO_41
 
 void fill_lb_gpios(struct lb_gpios *gpios)
 {

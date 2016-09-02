@@ -33,6 +33,19 @@
 #include <spd.h>
 
 /**
+ * Convenience definitions for SPD offsets
+ *
+ * @{
+ */
+#define SPD_DIMM_MOD_ID1	117
+#define SPD_DIMM_MOD_ID2	118
+#define SPD_DIMM_SERIAL_NUM	122
+#define SPD_DIMM_SERIAL_LEN	4
+#define SPD_DIMM_PART_NUM	128
+#define SPD_DIMM_PART_LEN	18
+/** @} */
+
+/**
  * \brief Convenience definitions for TCK values
  *
  * Different values for tCK, representing standard DDR3 frequencies.

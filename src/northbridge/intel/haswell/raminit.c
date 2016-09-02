@@ -21,9 +21,13 @@
 #include <cbfs.h>
 #include <halt.h>
 #include <ip_checksum.h>
+#include <memory_info.h>
 #include <northbridge/intel/common/mrc_cache.h>
 #include <pc80/mc146818rtc.h>
 #include <device/pci_def.h>
+#include <device/dram/ddr3.h>
+#include <smbios.h>
+#include <spd.h>
 #include <vboot/vboot_common.h>
 #include "raminit.h"
 #include "pei_data.h"
@@ -170,4 +174,55 @@ void sdram_initialize(struct pei_data *pei_data)
 		(version >> 8) & 0xff, version & 0xff);
 
 	report_memory_config();
+}
+
+void setup_sdram_meminfo(struct pei_data *pei_data)
+{
+	u32 addr_decoder_common, addr_decode_ch[2];
+	struct memory_info* mem_info;
+	struct dimm_info *dimm;
+	int ddr_frequency;
+	int dimm_size;
+	int ch, d_num;
+	int dimm_cnt = 0;
+
+	mem_info = cbmem_add(CBMEM_ID_MEMINFO, sizeof(struct memory_info));
+	memset(mem_info, 0, sizeof(struct memory_info));
+
+	addr_decoder_common = MCHBAR32(0x5000);
+	addr_decode_ch[0] = MCHBAR32(0x5004);
+	addr_decode_ch[1] = MCHBAR32(0x5008);
+
+	ddr_frequency = (MCHBAR32(0x5e04) * 13333 * 2 + 50) / 100;
+
+	for (ch = 0; ch < ARRAY_SIZE(addr_decode_ch); ch++) {
+		u32 ch_conf = addr_decode_ch[ch];
+		/* DIMMs A/B */
+		for (d_num = 0; d_num < 2; d_num++) {
+			dimm_size = ((ch_conf >> (d_num * 8)) & 0xff) * 256;
+			if (dimm_size) {
+				dimm = &mem_info->dimm[dimm_cnt];
+				dimm->dimm_size = dimm_size;
+				dimm->ddr_type = MEMORY_TYPE_DDR3;
+				dimm->ddr_frequency = ddr_frequency;
+				dimm->rank_per_dimm = 1 + ((ch_conf >> (17 + d_num)) & 1);
+				dimm->channel_num = ch;
+				dimm->dimm_num = d_num;
+				dimm->bank_locator = ch * 2;
+				memcpy(dimm->serial,
+					&pei_data->spd_data[dimm_cnt][SPD_DIMM_SERIAL_NUM],
+					SPD_DIMM_SERIAL_LEN);
+				memcpy(dimm->module_part_number,
+					&pei_data->spd_data[dimm_cnt][SPD_DIMM_PART_NUM],
+					SPD_DIMM_PART_LEN);
+				dimm->mod_id =
+					(pei_data->spd_data[dimm_cnt][SPD_DIMM_MOD_ID2] << 8) |
+					(pei_data->spd_data[dimm_cnt][SPD_DIMM_MOD_ID1] & 0xFF);
+				dimm->mod_type = SPD_SODIMM;
+				dimm->bus_width = 0x3;	/* 64-bit */
+				dimm_cnt++;
+			}
+		}
+	}
+	mem_info->dimm_cnt = dimm_cnt;
 }

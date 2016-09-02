@@ -19,6 +19,8 @@
 #include <soc/gpio.h>
 #include <variant/ec.h>
 
+void mainboard_ec_init(void);
+
 void bootblock_mainboard_init(void)
 {
 	const struct pad_config *pads;

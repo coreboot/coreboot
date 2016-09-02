@@ -107,7 +107,7 @@ CPPFLAGS_common += -I$(src)/vendorcode/intel/fsp/fsp2_0/skykabylake
 endif
 
 # Currently used for microcode path.
-CPPFLAGS_common += -I3rdparty/blobs/mainboard/$(MAINBOARD_DIR)
+CPPFLAGS_common += -I3rdparty/blobs/mainboard/$(MAINBOARDDIR)
 
 ROMCCFLAGS := -mcpu=p4 -fno-simplify-phi -O2
 

@@ -57,7 +57,7 @@ CPPFLAGS_common += -I$(src)/soc/intel/braswell/
 CPPFLAGS_common += -I$(src)/soc/intel/braswell/include
 CPPFLAGS_common += -I$(src)/vendorcode/intel/fsp/fsp1_1/braswell
 
-CPPFLAGS_common += -I3rdparty/blobs/mainboard/$(MAINBOARD_DIR)
+CPPFLAGS_common += -I3rdparty/blobs/mainboard/$(MAINBOARDDIR)
 
 ifneq ($(CONFIG_GOP_SUPPORT),y)
 ifneq ($(CONFIG_VGA_BIOS_FILE),)

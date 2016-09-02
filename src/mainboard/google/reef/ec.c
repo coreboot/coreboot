@@ -20,6 +20,8 @@
 #include <soc/lpc.h>
 #include <variant/ec.h>
 
+void mainboard_ec_init(void);
+
 static void ramstage_ec_init(void)
 {
 	printk(BIOS_ERR, "mainboard: EC init\n");

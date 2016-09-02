@@ -70,8 +70,4 @@
 	 EC_HOST_EVENT_MASK(EC_HOST_EVENT_BATTERY_SHUTDOWN)|\
 	 EC_HOST_EVENT_MASK(EC_HOST_EVENT_PANIC))
 
-#ifndef __ACPI__
-extern void mainboard_ec_init(void);
-#endif
-
 #endif

@@ -25,6 +25,8 @@
 #include <variant/ec.h>
 #include <variant/gpio.h>
 
+void mainboard_ec_init(void);
+
 static void mainboard_init(void *chip_info)
 {
 	int boardid;

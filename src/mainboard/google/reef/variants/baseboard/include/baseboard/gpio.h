@@ -9,12 +9,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
 
-#ifndef MAINBOARD_GPIO_H
-#define MAINBOARD_GPIO_H
+#ifndef BASEBOARD_GPIO_H
+#define BASEBOARD_GPIO_H
 
 #include <soc/gpio.h>
 
@@ -370,4 +370,4 @@ static const struct pad_config sleep_gpio_table[] = {
 #define MEM_CONFIG0 GPIO_101
 
 #endif /* __ACPI__ */
-#endif /* MAINBOARD_GPIO_H */
+#endif /* BASEBOARD_GPIO_H */

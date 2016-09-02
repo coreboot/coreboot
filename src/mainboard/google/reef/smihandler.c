@@ -20,8 +20,8 @@
 #include <soc/pm.h>
 #include <soc/smm.h>
 #include <soc/gpio.h>
-#include "ec.h"
-#include "gpio.h"
+#include <variant/ec.h>
+#include <variant/gpio.h>
 
 void mainboard_smi_gpi_handler(const struct gpi_status *sts)
 {

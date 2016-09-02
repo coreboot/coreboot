@@ -16,7 +16,7 @@
 #include <gpio.h>
 #include <soc/meminit.h>
 #include <soc/romstage.h>
-#include "gpio.h"
+#include <variant/gpio.h>
 
 static const struct lpddr4_swizzle_cfg board_swizzle = {
 	/* CH0_DQA[0:31] SoC pins -> U22 LPDDR4 module pins */

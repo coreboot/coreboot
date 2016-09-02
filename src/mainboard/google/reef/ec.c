@@ -18,7 +18,7 @@
 #include <ec/google/chromeec/ec.h>
 #include <rules.h>
 #include <soc/lpc.h>
-#include "ec.h"
+#include <variant/ec.h>
 
 static void ramstage_ec_init(void)
 {

@@ -13,30 +13,9 @@
  * GNU General Public License for more details.
  */
 
-#include <variant/ec.h>
-#include <variant/gpio.h>
+#ifndef MAINBOARD_EC_H
+#define MAINBOARD_EC_H
 
-Scope (\_SB)
-{
-	Device (LID0)
-	{
-		Name (_HID, EisaId ("PNP0C0D"))
-		Method (_LID, 0)
-		{
-			Return (\_SB.PCI0.LPCB.EC0.LIDS)
-		}
-		Name (_PRW, Package () { GPE_EC_WAKE, 0x3 })
-	}
+#include <baseboard/ec.h>
 
-	Device (PWRB)
-	{
-		Name (_HID, EisaId ("PNP0C0C"))
-	}
-}
-
-Scope (\_SB.PCI0.LPCB)
-{
-	/* Chrome OS Embedded Controller */
-	#include "superio.asl"
-	#include "ec.asl"
-}
+#endif

@@ -13,8 +13,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef MAINBOARD_EC_H
-#define MAINBOARD_EC_H
+#ifndef BASEBOARD_EC_H
+#define BASEBOARD_EC_H
 
 #include <ec/google/chromeec/ec_commands.h>
 

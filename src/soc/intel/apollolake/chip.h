@@ -107,6 +107,13 @@ struct soc_intel_apollolake_config {
 	/* Enable DPTF support */
 	int dptf_enable;
 
+	/* Configure Audio clk gate and power gate
+	 * IOSF-SB port ID 92 offset 0x530 [5] and [3]
+	 */
+	uint8_t hdaudio_clk_gate_enable;
+	uint8_t hdaudio_pwr_gate_enable;
+	uint8_t hdaudio_bios_config_lockdown;
+
 	/* SLP S3 minimum assertion width. */
 	int slp_s3_assertion_width_usecs;
 };

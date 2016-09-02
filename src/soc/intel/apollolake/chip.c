@@ -400,6 +400,13 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 
 	/* Disable FSP from locking access to the RTC NVRAM */
 	silconfig->RtcLock = 0;
+
+	/* Enable Audio clk gate and power gate */
+	silconfig->HDAudioClkGate = cfg->hdaudio_clk_gate_enable;
+	silconfig->HDAudioPwrGate = cfg->hdaudio_pwr_gate_enable;
+	/* Bios config lockdown Audio clk and power gate */
+	silconfig->BiosCfgLockDown = cfg->hdaudio_bios_config_lockdown;
+
 }
 
 struct chip_operations soc_intel_apollolake_ops = {

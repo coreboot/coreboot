@@ -51,22 +51,4 @@
 	(type *)( (char *)__mptr - offsetof(type,member) );})
 #endif
 
-#define DIV_ROUND_UP(x, y)  (((x) + (y) - 1) / (y))
-
-/*
- * Divide positive or negative dividend by positive divisor and round
- * to closest integer. Result is undefined for negative divisors and
- * for negative dividends if the divisor variable type is unsigned.
- */
-#define DIV_ROUND_CLOSEST(x, divisor)(			\
-{							\
-	typeof(x) __x = x;				\
-	typeof(divisor) __d = divisor;			\
-	(((typeof(x))-1) > 0 ||				\
-	 ((typeof(divisor))-1) > 0 || (__x) > 0) ?	\
-		(((__x) + ((__d) / 2)) / (__d)) :	\
-		(((__x) - ((__d) / 2)) / (__d));	\
-}							\
-)
-
 #endif /* __TEGRA_MISC_TYPES_H__ */

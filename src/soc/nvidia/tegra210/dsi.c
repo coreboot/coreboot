@@ -32,6 +32,7 @@
 #include <soc/tegra_dsi.h>
 #include <soc/mipi-phy.h>
 #include "jdi_25x18_display/panel-jdi-lpm102a188a.h"
+#include <commonlib/helpers.h>
 
 struct tegra_mipi_device mipi_device_data[NUM_DSI];
 

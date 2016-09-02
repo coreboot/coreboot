@@ -15,6 +15,7 @@
 
 #include <assert.h>
 #include <arch/io.h>
+#include <commonlib/helpers.h>
 #include <console/console.h>
 #include <soc/addressmap.h>
 #include <soc/id.h>

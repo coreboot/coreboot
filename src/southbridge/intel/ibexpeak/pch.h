@@ -61,7 +61,7 @@ void intel_pch_finalize_smm(void);
 
 #if !defined(__ASSEMBLER__)
 #if !defined(__PRE_RAM__)
-#if !defined(__SMM__)
+#if !defined(__SIMPLE_DEVICE__)
 #include "chip.h"
 void pch_enable(device_t dev);
 #endif

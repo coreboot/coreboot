@@ -22,7 +22,7 @@
 
 static struct rk3288_sdram_params sdram_configs[] = {
 #include "sdram_inf/sdram-lpddr3-K4E8E304EE-1GB.inc"	/* ram_code = 0000 */
-#include "sdram_inf/sdram-unused.inc"			/* ram_code = 0001 */
+#include "sdram_inf/sdram-lpddr3-K4E6E304EB-2GB-1CH.inc"/* ram_code = 0001 */
 #include "sdram_inf/sdram-unused.inc"			/* ram_code = 0010 */
 #include "sdram_inf/sdram-unused.inc"			/* ram_code = 0011 */
 #include "sdram_inf/sdram-unused.inc"			/* ram_code = 0100 */

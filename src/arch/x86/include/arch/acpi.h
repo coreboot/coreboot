@@ -606,7 +606,7 @@ void acpi_create_slit(acpi_slit_t *slit,
 void acpi_create_ivrs(acpi_ivrs_t *ivrs,
 		      unsigned long (*acpi_fill_ivrs)(acpi_ivrs_t* ivrs_struct, unsigned long current));
 
-#if ENV_RAMSTAGE
+#if ENV_RAMSTAGE && !defined(__SIMPLE_DEVICE__)
 void acpi_create_hpet(acpi_hpet_t *hpet);
 unsigned long acpi_write_hpet(device_t device, unsigned long start, acpi_rsdp_t *rsdp);
 

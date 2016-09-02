@@ -95,7 +95,7 @@ static void ich7_enable_lpc(void)
 static void early_superio_config(void)
 {
 	int timeout = 100000;
-	device_t dev = PNP_DEV(0x2e, 3);
+	pnp_devfn_t dev = PNP_DEV(0x2e, 3);
 
 	pnp_write_config(dev, 0x29, 0xa0);
 

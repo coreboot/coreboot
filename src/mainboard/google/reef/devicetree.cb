@@ -38,6 +38,11 @@ chip soc/intel/apollolake
 	# Enable DPTF
 	register "dptf_enable" = "1"
 
+	# Enable Audio Clock and Power gating
+	register "hdaudio_clk_gate_enable" = "1"
+	register "hdaudio_pwr_gate_enable" = "1"
+	register "hdaudio_bios_config_lockdown" = "1"
+
 	# GPE configuration
 	# Note that GPE events called out in ASL code rely on this
 	# route, i.e., if this route changes then the affected GPE

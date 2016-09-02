@@ -13,19 +13,19 @@
  * GNU General Public License for more details.
  */
 
-#include <baseboard/variants.h>
-#include <bootblock_common.h>
-#include <soc/lpc.h>
+#ifndef BASEBOARD_VARIANTS_H
+#define BASEBOARD_VARIANTS_H
+
 #include <soc/gpio.h>
-#include <variant/ec.h>
+#include <stdint.h>
 
-void bootblock_mainboard_init(void)
-{
-	const struct pad_config *pads;
-	size_t num;
+/* Return the board id for the current variant board. */
+uint8_t variant_board_id(void);
 
-	lpc_configure_pads();
-	pads = variant_early_gpio_table(&num);
-	gpio_configure_pads(pads, num);
-	mainboard_ec_init();
-}
+/* The next set of functions return the gpio table and fill in the number of
+ * entries for each table. */
+const struct pad_config *variant_gpio_table(size_t *num);
+const struct pad_config *variant_early_gpio_table(size_t *num);
+const struct pad_config *variant_sleep_gpio_table(size_t *num);
+
+#endif /* BASEBOARD_VARIANTS_H */

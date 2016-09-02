@@ -14,6 +14,7 @@
  */
 
 #include <arch/acpi.h>
+#include <baseboard/variants.h>
 #include <boardid.h>
 #include <console/console.h>
 #include <device/device.h>
@@ -27,11 +28,14 @@
 static void mainboard_init(void *chip_info)
 {
 	int boardid;
+	const struct pad_config *pads;
+	size_t num;
 
 	boardid = board_id();
 	printk(BIOS_INFO, "Board ID: %d\n", boardid);
 
-	gpio_configure_pads(gpio_table, ARRAY_SIZE(gpio_table));
+	pads = variant_gpio_table(&num);
+	gpio_configure_pads(pads, num);
 
 	mainboard_ec_init();
 }

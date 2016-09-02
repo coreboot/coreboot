@@ -76,8 +76,8 @@ chip soc/intel/fsp_baytrail
 		device pci 18.7 on end	# 8086 0F47 -   I2C Port 7 (6)	HSEC
 		device pci 1a.0 on end	# 8086 0F18 - TXE				-
 		device pci 1b.0 off end	# 8086 0F04 - HD Audio			-
-		device pci 1c.0 on end	# 8086 0F48 - PCIe Port 1 (0)	-
-		device pci 1c.1 off end	# 8086 0F4A - PCIe Port 2 (1)	-
+		device pci 1c.0 on end	# 8086 0F48 - PCIe Port 1 (0)	Must remain on
+		device pci 1c.1 on end	# 8086 0F4A - PCIe Port 2 (1)	Onboard GBE (some models)
 		device pci 1c.2 on end	# 8086 0F4C - PCIe Port 3 (2)	Onboard GBE
 		device pci 1c.3 on end	# 8086 0F4E - PCIe Port 4 (3)	HSEC
 		device pci 1d.0 on end	# 8086 0F34 - USB EHCI - Enabling both EHCI and XHCI will default to EHCI if not changed at runtime

@@ -192,7 +192,7 @@ static const struct soc_gpio_map gpssus_gpio_map[] = {
 	GPIO_FUNC0,				/* GPIO_S5[19] - SOC_USB_HOST_OC0 */
 	GPIO_FUNC0,				/* GPIO_S5[20] - SOC_USB_HOST_OC1 */
 	GPIO_FUNC0,				/* GPIO_S5[21] - SOC_SPI_CS1B */
-	GPIO_NC,				/* GPIO_S5[22] - No Connect */
+	GPIO_INPUT_PD,				/* GPIO_S5[22] - NC or LED D2 */
 	GPIO_FUNC(0, PULL_UP, 20K),		/* GPIO_S5[23] - XDP_H_OBSDATA_A0 */
 	GPIO_FUNC(0, PULL_UP, 20K),		/* GPIO_S5[24] - XDP_H_OBSDATA_A1 */
 	GPIO_FUNC(0, PULL_UP, 20K),		/* GPIO_S5[25] - XDP_H_OBSDATA_A2 */

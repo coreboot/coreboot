@@ -6,9 +6,9 @@
 
 #define K8_REV_F_SUPPORT_F0_F1_WORKAROUND 0
 
-        #include "f.h"
+	#include "f.h"
 #else
-        #include "pre_f.h"
+	#include "pre_f.h"
 #endif
 
 #ifdef __PRE_RAM__

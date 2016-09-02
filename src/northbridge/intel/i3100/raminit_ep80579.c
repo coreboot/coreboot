@@ -618,7 +618,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 		write32(BAR+DCALCSR, (0x80000003 | ((cs+1)<<21)));
 		do data32 = read32(BAR+DCALCSR);
 		while (data32 & 0x80000000);
-        }
+	}
 
 	udelay(16);
 	/* No command */

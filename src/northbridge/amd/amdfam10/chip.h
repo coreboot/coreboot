@@ -19,7 +19,7 @@
 #include <stdint.h>
 
 struct northbridge_amd_amdfam10_config {
-        uint64_t maximum_memory_capacity;
+	uint64_t maximum_memory_capacity;
 };
 
 #endif /* _AMD_FAM10_CHIP_H_ */

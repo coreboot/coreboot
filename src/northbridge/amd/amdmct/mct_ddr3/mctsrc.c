@@ -930,7 +930,7 @@ static void dqsTrainRcvrEn_SW_Fam10(struct MCTStatStruc *pMCTstat,
 			 */
 			for (lane = 0; lane < 8; lane++) {
 				if (trained[lane]) {
-                        		pDCTstat->CH_D_B_RCVRDLY[Channel][Receiver >> 1][lane] = current_total_delay[lane];
+					pDCTstat->CH_D_B_RCVRDLY[Channel][Receiver >> 1][lane] = current_total_delay[lane];
 				} else {
 					printk(BIOS_WARNING, "TrainRcvrEn: WARNING: Lane %d of receiver %d on channel %d failed training!\n", lane, Receiver, Channel);
 

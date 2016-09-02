@@ -369,32 +369,32 @@ static void do_ram_command(uint8_t command, uint16_t jedec_mode_bits)
 	PRINTK_DEBUG("  Sending RAM command 0x%08x\n", reg32);
 	pci_write_config32(NORTHBRIDGE_MMC, DRC, reg32);
 
-        // RAM_COMMAND_NORMAL is an exception.
-        // It affects only the memory controller and does not need to be "sent" to the DIMMs.
+	// RAM_COMMAND_NORMAL is an exception.
+	// It affects only the memory controller and does not need to be "sent" to the DIMMs.
 
-        if (command != RAM_COMMAND_NORMAL) {
+	if (command != RAM_COMMAND_NORMAL) {
 
-                // Send the command to all DIMMs by accessing a memory location within each
-                // NOTE: for mode select commands, some of the location address bits
-                // are part of the command
+		// Send the command to all DIMMs by accessing a memory location within each
+		// NOTE: for mode select commands, some of the location address bits
+		// are part of the command
 
-                // Map JEDEC mode bits to i855
-                if (command == RAM_COMMAND_MRS || command == RAM_COMMAND_EMRS) {
+		// Map JEDEC mode bits to i855
+		if (command == RAM_COMMAND_MRS || command == RAM_COMMAND_EMRS) {
 			/* Host address lines [13:3] map to DIMM address lines [11, 9:0] */
 			i855_mode_bits = ((jedec_mode_bits & 0x800) << (13 - 11)) | ((jedec_mode_bits & 0x3ff) << (12 - 9));
-                }
+		}
 
-                for (i = 0; i < (DIMM_SOCKETS * 2); ++i) {
-                        uint8_t dimm_end_32M_multiple = pci_read_config8(NORTHBRIDGE_MMC, DRB + i);
-                        if (dimm_end_32M_multiple > dimm_start_32M_multiple) {
+		for (i = 0; i < (DIMM_SOCKETS * 2); ++i) {
+			uint8_t dimm_end_32M_multiple = pci_read_config8(NORTHBRIDGE_MMC, DRB + i);
+			if (dimm_end_32M_multiple > dimm_start_32M_multiple) {
 
-                                uint32_t dimm_start_address = dimm_start_32M_multiple << 25;
+				uint32_t dimm_start_address = dimm_start_32M_multiple << 25;
 				PRINTK_DEBUG("  Sending RAM command to 0x%08x\n", dimm_start_address + i855_mode_bits);
-                                read32((void *)(dimm_start_address + i855_mode_bits));
+				read32((void *)(dimm_start_address + i855_mode_bits));
 
-                                // Set the start of the next DIMM
-                                dimm_start_32M_multiple = dimm_end_32M_multiple;
-                        }
+				// Set the start of the next DIMM
+				dimm_start_32M_multiple = dimm_end_32M_multiple;
+			}
 		}
 	}
 }

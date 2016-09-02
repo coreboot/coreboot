@@ -114,7 +114,7 @@ static int via_vx800_int15_handler(void)
 		X86_EAX = 0x005f;
 		res = 1;
 		break;
-        default:
+	default:
 		printk(BIOS_DEBUG, "Unknown INT15 function %04x!\n",
 				X86_EAX & 0xffff);
 		X86_EAX = 0;

@@ -64,7 +64,7 @@ static int via_cn700_int15_handler(void)
 	case 0x5f0f:
 		X86_EAX=0x860f;
 		break;
-        default:
+	default:
 		printk(BIOS_DEBUG, "Unknown INT15 function %04x!\n",
 				X86_EAX & 0xffff);
 		break;

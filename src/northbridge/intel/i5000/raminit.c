@@ -599,7 +599,7 @@ static int i5000_ddr_init(struct i5000_fbdimm *d)
 
 		val = (d->setup->t_al << 19) |
 			((odt & 1) << 18) |
-		        ((odt & 2) << 21) | 1;
+			((odt & 2) << 21) | 1;
 
 		printk(BIOS_DEBUG, "EMRS(1): 0x%08x\n", val);
 
@@ -1268,7 +1268,7 @@ static void i5000_setup_interleave(struct i5000_fbd_setup *setup)
 		mir0 = (size0 << 1) | 3;
 		mir1 = (size0 << 1);
 		mir2 = (size0 << 1);
-        } else if (!size0) {
+	} else if (!size0) {
 		mir0 = size1 | 1;
 		mir1 = size1;
 		mir2 = size1;

@@ -104,26 +104,26 @@ static inline void dump_spd_registers(void)
 
 static inline void dump_smbus_registers(void)
 {
-        int i;
-        printk(BIOS_DEBUG, "\n");
-        for (i = 1; i < 0x80; i++) {
-                unsigned device;
-                device = i;
-                int j;
-                printk(BIOS_DEBUG, "smbus: %02x", device);
-                for (j = 0; j < 256; j++) {
-                	int status;
-                        unsigned char byte;
-                        if ((j & 0xf) == 0)
-                	        printk(BIOS_DEBUG, "\n%02x: ", j);
-                        status = smbus_read_byte(device, j);
-                        if (status < 0) {
-                                printk(BIOS_DEBUG, "bad device\n");
-                                break;
-                        }
-                        byte = status & 0xff;
+	int i;
+	printk(BIOS_DEBUG, "\n");
+	for (i = 1; i < 0x80; i++) {
+		unsigned device;
+		device = i;
+		int j;
+		printk(BIOS_DEBUG, "smbus: %02x", device);
+		for (j = 0; j < 256; j++) {
+			int status;
+			unsigned char byte;
+			if ((j & 0xf) == 0)
+				printk(BIOS_DEBUG, "\n%02x: ", j);
+			status = smbus_read_byte(device, j);
+			if (status < 0) {
+				printk(BIOS_DEBUG, "bad device\n");
+				break;
+			}
+			byte = status & 0xff;
 			printk(BIOS_DEBUG, "%02x ", byte);
-                }
-                printk(BIOS_DEBUG, "\n");
+		}
+		printk(BIOS_DEBUG, "\n");
 	}
 }

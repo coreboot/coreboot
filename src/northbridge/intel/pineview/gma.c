@@ -46,31 +46,31 @@
 #define PGETBL_ENABLED	0x1
 
 #define ADPA_HOTPLUG_BITS (ADPA_CRT_HOTPLUG_PERIOD_128   | \
-                           ADPA_CRT_HOTPLUG_WARMUP_10MS  | \
-                           ADPA_CRT_HOTPLUG_MONITOR_COLOR| \
-                           ADPA_CRT_HOTPLUG_SAMPLE_4S    | \
-                           ADPA_CRT_HOTPLUG_VOLTAGE_50   | \
-                           ADPA_CRT_HOTPLUG_VOLREF_325MV | \
-                           ADPA_CRT_HOTPLUG_ENABLE)
+			   ADPA_CRT_HOTPLUG_WARMUP_10MS  | \
+			   ADPA_CRT_HOTPLUG_MONITOR_COLOR| \
+			   ADPA_CRT_HOTPLUG_SAMPLE_4S    | \
+			   ADPA_CRT_HOTPLUG_VOLTAGE_50   | \
+			   ADPA_CRT_HOTPLUG_VOLREF_325MV | \
+			   ADPA_CRT_HOTPLUG_ENABLE)
 
 static struct resource *gtt_res = NULL;
 static struct resource *mmio_res = NULL;
 
 static int gtt_setup(u8 *mmiobase)
 {
-       u32 gttbase;
-       device_t dev = dev_find_slot(0, PCI_DEVFN(0,0));
+	u32 gttbase;
+	device_t dev = dev_find_slot(0, PCI_DEVFN(0,0));
 
-       gttbase = pci_read_config32(dev, BGSM);
-       printk(BIOS_DEBUG, "gttbase = %08x\n", gttbase);
+	gttbase = pci_read_config32(dev, BGSM);
+	printk(BIOS_DEBUG, "gttbase = %08x\n", gttbase);
 
-       write32(mmiobase + PGETBL_CTL, gttbase | PGETBL_512KB);
-       udelay(50);
-       write32(mmiobase + PGETBL_CTL, gttbase | PGETBL_512KB);
+	write32(mmiobase + PGETBL_CTL, gttbase | PGETBL_512KB);
+	udelay(50);
+	write32(mmiobase + PGETBL_CTL, gttbase | PGETBL_512KB);
 
-       write32(mmiobase + GFX_FLSH_CNTL, 0);
+	write32(mmiobase + GFX_FLSH_CNTL, 0);
 
-       return 0;
+	return 0;
 }
 
 static void intel_gma_init(const struct northbridge_intel_pineview_config *info,

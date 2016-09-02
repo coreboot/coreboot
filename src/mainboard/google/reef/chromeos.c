@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <baseboard/variants.h>
 #include <boot/coreboot_tables.h>
 #include <ec/google/chromeec/ec.h>
 #include <gpio.h>
@@ -67,12 +68,11 @@ int get_write_protect_state(void)
 	return gpio_get(GPIO_PCH_WP);
 }
 
-static const struct cros_gpio cros_gpios[] = {
-	CROS_GPIO_REC_AL(CROS_GPIO_VIRTUAL, GPIO_COMM_NW_NAME),
-	CROS_GPIO_WP_AH(PAD_NW(GPIO_PCH_WP), GPIO_COMM_NW_NAME),
-};
-
 void mainboard_chromeos_acpi_generate(void)
 {
-	chromeos_acpi_gpio_generate(cros_gpios, ARRAY_SIZE(cros_gpios));
+	const struct cros_gpio *gpios;
+	size_t num;
+
+	gpios = variant_cros_gpios(&num);
+	chromeos_acpi_gpio_generate(gpios, num);
 }

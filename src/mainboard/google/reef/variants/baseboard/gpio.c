@@ -376,3 +376,14 @@ variant_sleep_gpio_table(size_t *num)
 	*num = ARRAY_SIZE(sleep_gpio_table);
 	return sleep_gpio_table;
 }
+
+static const struct cros_gpio cros_gpios[] = {
+	CROS_GPIO_REC_AL(CROS_GPIO_VIRTUAL, GPIO_COMM_NW_NAME),
+	CROS_GPIO_WP_AH(PAD_NW(GPIO_PCH_WP), GPIO_COMM_NW_NAME),
+};
+
+const struct cros_gpio * __attribute__((weak)) variant_cros_gpios(size_t *num)
+{
+	*num = ARRAY_SIZE(cros_gpios);
+	return cros_gpios;
+}

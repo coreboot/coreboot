@@ -30,11 +30,12 @@
 int pch_silicon_revision(void)
 {
 	static int pch_revision_id = -1;
-	device_t dev;
 
-#ifdef __SMM__
+#ifdef __SIMPLE_DEVICE__
+	pci_devfn_t dev;
 	dev = PCI_DEV(0, 0x1f, 0);
 #else
+	device_t dev;
 	dev = dev_find_slot(0, PCI_DEVFN(0x1f, 0));
 #endif
 
@@ -46,11 +47,12 @@ int pch_silicon_revision(void)
 int pch_silicon_type(void)
 {
 	static int pch_type = -1;
-	device_t dev;
 
-#ifdef __SMM__
+#ifdef __SIMPLE_DEVICE__
+	pci_devfn_t dev;
 	dev = PCI_DEV(0, 0x1f, 0);
 #else
+	device_t dev;
 	dev = dev_find_slot(0, PCI_DEVFN(0x1f, 0));
 #endif
 

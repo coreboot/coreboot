@@ -23,7 +23,7 @@
 
 void x4x_early_init(void)
 {
-	const device_t d0f0 = PCI_DEV(0, 0, 0);
+	const pci_devfn_t d0f0 = PCI_DEV(0, 0, 0);
 
 	/* Setup MCHBAR. */
 	pci_write_config32(d0f0, D0F0_MCHBAR_LO, (uintptr_t)DEFAULT_MCHBAR | 1);

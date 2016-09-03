@@ -30,7 +30,7 @@
 #include <arch/acpi.h>
 
 #if !defined(__ASSEMBLER__)
-#if !defined(__PRE_RAM__)
+#if !defined(__SIMPLE_DEVICE__)
 #include "chip.h"
 extern void i82801dx_enable(device_t dev);
 #else

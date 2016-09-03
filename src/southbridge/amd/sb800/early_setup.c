@@ -73,7 +73,7 @@ static void sb800_acpi_init(void)
 /* RPR 2.28 Get SB ASIC Revision.*/
 static u8 get_sb800_revision(void)
 {
-	device_t dev;
+	pci_devfn_t dev;
 	u8 rev_id;
 	u8 rev = 0;
 
@@ -123,7 +123,7 @@ void sb800_clk_output_48Mhz(void)
 static void sb800_lpc_init(void)
 {
 	u8 reg8;
-	device_t dev;
+	pci_devfn_t dev;
 
 	//dev = pci_locate_device(PCI_ID(0x1002, 0x4385), 0);	/* SMBUS controller */
 	dev = PCI_DEV(0, 0x14, 0);
@@ -166,7 +166,7 @@ static void sb800_lpc_init(void)
 /* what is its usage? */
 static u32 get_sbdn(u32 bus)
 {
-	device_t dev;
+	pci_devfn_t dev;
 
 	/* Find the device. */
 	dev = PCI_DEV(bus, 0x14, 0);//pci_locate_device_on_bus(PCI_ID(0x1002, 0x4385), bus);
@@ -238,7 +238,7 @@ void soft_reset(void)
 void sb800_pci_port80(void)
 {
 	u8 byte;
-	device_t dev;
+	pci_devfn_t dev;
 
 	/* P2P Bridge */
 	dev = PCI_DEV(0, 0x14, 4);//pci_locate_device(PCI_ID(0x1002, 0x4384), 0);
@@ -344,7 +344,7 @@ struct pm_entry const pm_table[] =
 void sb800_lpc_port80(void)
 {
 	u8 byte;
-	device_t dev;
+	pci_devfn_t dev;
 
 	/* Enable LPC controller */
 	byte = pmio_read(0xEC);
@@ -361,7 +361,7 @@ void sb800_lpc_port80(void)
 /* sbDevicesPorInitTable */
 static void sb800_devices_por_init(void)
 {
-	device_t dev;
+	pci_devfn_t dev;
 	u8 byte;
 
 	printk(BIOS_INFO, "sb800_devices_por_init()\n");
@@ -543,7 +543,7 @@ static void sb800_pmio_por_init(void)
 */
 static void sb800_pci_cfg(void)
 {
-	device_t dev;
+	pci_devfn_t dev;
 	u8 byte;
 
 	/* SMBus Device, BDF:0-20-0 */

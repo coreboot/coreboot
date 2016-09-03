@@ -22,7 +22,7 @@
 
 void enable_smbus(void)
 {
-	device_t dev = PCI_DEV(0x0, 0x1f, 0x3);
+	pci_devfn_t dev = PCI_DEV(0x0, 0x1f, 0x3);
 
 	printk(BIOS_DEBUG, "SMBus controller enabled\n");
 	/* set smbus iobase */

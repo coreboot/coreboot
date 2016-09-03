@@ -62,7 +62,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	u32 val;
 	u8 byte;
-	device_t dev;
+	pci_devfn_t dev;
 
 #if IS_ENABLED(CONFIG_POST_DEVICE_PCI_PCIE)
 	hudson_pci_port80();

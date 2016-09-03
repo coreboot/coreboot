@@ -34,9 +34,11 @@ extern void pm_iowrite(u8 reg, u8 value);
 extern u8 pm_ioread(u8 reg);
 extern void pm2_iowrite(u8 reg, u8 value);
 extern u8 pm2_ioread(u8 reg);
-extern void set_sm_enable_bits(device_t sm_dev, u32 reg_pos, u32 mask, u32 val);
 
+#ifndef __SIMPLE_DEVICE__
+extern void set_sm_enable_bits(device_t sm_dev, u32 reg_pos, u32 mask, u32 val);
 void sb600_enable(device_t dev);
+#endif
 
 void sb600_lpc_port80(void);
 void sb600_pci_port80(void);

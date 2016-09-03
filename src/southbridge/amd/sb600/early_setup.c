@@ -36,7 +36,7 @@ static u8 pmio_read(u8 reg)
 /* RPR 2.1: Get SB ASIC Revision. */
 static u8 get_sb600_revision(void)
 {
-	device_t dev;
+	pci_devfn_t dev;
 	dev = pci_locate_device(PCI_ID(0x1002, 0x4385), 0);
 
 	if (dev == PCI_DEV_INVALID) {
@@ -63,7 +63,7 @@ static void sb600_lpc_init(void)
 {
 	u8 reg8;
 	u32 reg32;
-	device_t dev;
+	pci_devfn_t dev;
 
 	dev = pci_locate_device(PCI_ID(0x1002, 0x4385), 0);	/* SMBUS controller */
 	/* NOTE: Set BootTimerDisable, otherwise it would keep rebooting!!
@@ -102,7 +102,7 @@ static void sb600_lpc_init(void)
 /* what is its usage? */
 static u32 get_sbdn(u32 bus)
 {
-	device_t dev;
+	pci_devfn_t dev;
 
 	/* Find the device. */
 	dev = pci_locate_device_on_bus(PCI_ID(0x1002, 0x4385), bus);
@@ -192,7 +192,7 @@ void soft_reset(void)
 void sb600_pci_port80(void)
 {
 	u8 byte;
-	device_t dev;
+	pci_devfn_t dev;
 
 	/* P2P Bridge */
 	dev = pci_locate_device(PCI_ID(0x1002, 0x4384), 0);
@@ -237,7 +237,7 @@ void sb600_pci_port80(void)
 void sb600_lpc_port80(void)
 {
 	u8 byte;
-	device_t dev;
+	pci_devfn_t dev;
 	u32 reg32;
 
 	/* Enable LPC controller */
@@ -256,7 +256,7 @@ void sb600_lpc_port80(void)
 /* sbDevicesPorInitTable */
 static void sb600_devices_por_init(void)
 {
-	device_t dev;
+	pci_devfn_t dev;
 	u8 byte;
 
 	printk(BIOS_INFO, "sb600_devices_por_init()\n");
@@ -516,7 +516,7 @@ static void sb600_pmio_por_init(void)
 */
 static void sb600_pci_cfg(void)
 {
-	device_t dev;
+	pci_devfn_t dev;
 	u8 byte;
 
 	/* SMBus Device, BDF:0-20-0 */

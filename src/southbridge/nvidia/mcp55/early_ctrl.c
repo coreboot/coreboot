@@ -20,7 +20,7 @@
 
 static unsigned get_sbdn(unsigned bus)
 {
-	device_t dev;
+	pci_devfn_t dev;
 
 	/* Find the device. */
 	dev = pci_locate_device_on_bus(PCI_ID(PCI_VENDOR_ID_NVIDIA,

@@ -41,7 +41,7 @@
 
 static void mb_gpio_init(void)
 {
-	device_t dev;
+	pci_devfn_t dev;
 
 	/* Southbridge GPIOs. */
 	dev = PCI_DEV(0x0, 0x1f, 0x0);

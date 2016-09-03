@@ -33,7 +33,7 @@
 #include <arch/cpu.h>
 #include <cpu/x86/msr.h>
 
-static void it8728f_b75md3h_disable_reboot(device_t dev)
+static void it8728f_b75md3h_disable_reboot(pnp_devfn_t dev)
 {
 	/* GPIO SIO settings */
 	ite_reg_write(dev, 0xEF, 0x7E); // magic

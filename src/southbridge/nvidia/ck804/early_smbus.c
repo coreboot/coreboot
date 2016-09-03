@@ -32,7 +32,7 @@
 
 void enable_smbus(void)
 {
-	device_t dev;
+	pci_devfn_t dev;
 
 	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_NVIDIA,
 				PCI_DEVICE_ID_NVIDIA_CK804_SMB), 0);

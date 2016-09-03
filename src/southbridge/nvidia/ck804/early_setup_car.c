@@ -334,7 +334,7 @@ static int ck804_early_setup_x(void)
 
 	for (i = 0; i < 4; i++) {
 		u32 id;
-		device_t dev;
+		pci_devfn_t dev;
 		if (i == 0) /* SB chain */
 			dev = PCI_DEV(i * 0x40, CK804_DEVN_BASE, 0);
 		else

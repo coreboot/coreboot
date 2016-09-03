@@ -20,7 +20,7 @@
 static void bcm5785_enable_lpc(void)
 {
 	uint8_t byte;
-	device_t dev;
+	pci_devfn_t dev;
 
 	dev = pci_locate_device(PCI_ID(0x1166, 0x0234), 0);
 
@@ -39,7 +39,7 @@ static void bcm5785_enable_lpc(void)
 
 static void bcm5785_enable_wdt_port_cf9(void)
 {
-	device_t dev;
+	pci_devfn_t dev;
 	uint32_t dword;
 	uint32_t dword_old;
 
@@ -65,7 +65,7 @@ static void bcm5785_enable_wdt_port_cf9(void)
 
 unsigned get_sbdn(unsigned bus)
 {
-	device_t dev;
+	pci_devfn_t dev;
 
 	/* Find the device.
 	 * There can only be one bcm5785 on a hypertransport chain/bus.
@@ -130,7 +130,7 @@ void soft_reset(void)
 
 static void bcm5785_enable_msg(void)
 {
-	device_t dev;
+	pci_devfn_t dev;
 	uint32_t dword;
 	uint32_t dword_old;
 	uint8_t byte;
@@ -158,7 +158,7 @@ static void bcm5785_early_setup(void)
 {
 	uint8_t byte;
 	uint32_t dword;
-	device_t dev;
+	pci_devfn_t dev;
 
 //F0
 	// enable device on bcm5785 at first

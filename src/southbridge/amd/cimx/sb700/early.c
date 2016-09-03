@@ -30,7 +30,7 @@
  */
 u32 get_sbdn(u32 bus)
 {
-	device_t dev;
+	pci_devfn_t dev;
 
 	printk(BIOS_SPEW, "SB700 - Early.c - %s - Start.\n", __func__);
 	dev = pci_locate_device_on_bus(
@@ -65,7 +65,7 @@ void sb_Poweron_Init(void)
 void sb7xx_51xx_enable_wideio(u8 wio_index, u16 base)
 {
 	/* TODO: Now assume wio_index=0 */
-	device_t dev;
+	pci_devfn_t dev;
 	u8 reg8;
 
 	//dev = pci_locate_device(PCI_ID(0x1002, 0x439d), 0);	/* LPC Controller */
@@ -79,7 +79,7 @@ void sb7xx_51xx_enable_wideio(u8 wio_index, u16 base)
 void sb7xx_51xx_disable_wideio(u8 wio_index)
 {
 	/* TODO: Now assume wio_index=0 */
-	device_t dev;
+	pci_devfn_t dev;
 	u8 reg8;
 
 	//dev = pci_locate_device(PCI_ID(0x1002, 0x439d), 0);	/* LPC Controller */

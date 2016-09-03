@@ -76,8 +76,9 @@ static inline int is_e0_later_in_bsp(int nodeid)
 	if (nodeid == 0) { // we don't need to do that for node 0 in core0/node0
 		return !is_cpu_pre_e0();
 	}
+
 	// d0 will be treated as e0 with this methods, but the d0 nb_cfg_54 always 0
-	device_t dev;
+	pci_devfn_t dev;
 	dev = PCI_DEV(0, 0x18+nodeid,2);
 	val_old = pci_read_config32(dev, 0x80);
 	val = val_old;
@@ -85,6 +86,7 @@ static inline int is_e0_later_in_bsp(int nodeid)
 	pci_write_config32(dev, 0x80, val);
 	val = pci_read_config32(dev, 0x80);
 	e0_later = !!(val & (1<<3));
+
 	if (e0_later) { // pre_e0 bit 3 always be 0 and can not be changed
 		pci_write_config32(dev, 0x80, val_old); // restore it
 	}
@@ -95,7 +97,7 @@ static inline int is_e0_later_in_bsp(int nodeid)
 static inline int is_cpu_f0_in_bsp(int nodeid)
 {
 	uint32_t dword;
-	device_t dev;
+	pci_devfn_t dev;
 	if (!IS_ENABLED(CONFIG_K8_REV_F_SUPPORT))
 		return 0;
 	dev = PCI_DEV(0, 0x18+nodeid, 3);
@@ -106,7 +108,8 @@ static inline int is_cpu_f0_in_bsp(int nodeid)
 static inline int is_cpu_pre_f2_in_bsp(int nodeid)
 {
 	uint32_t dword;
-	device_t dev;
+	pci_devfn_t dev;
+
 	if (!IS_ENABLED(CONFIG_K8_REV_F_SUPPORT))
 		return 1;
 	dev = PCI_DEV(0, 0x18+nodeid, 3);

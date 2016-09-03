@@ -342,7 +342,7 @@ static u32 init_cpus(u32 cpu_init_detectedx)
 static u32 is_core0_started(u32 nodeid)
 {
 	u32 htic;
-	device_t device;
+	pci_devfn_t device;
 	device = PCI_DEV(0, 0x18 + nodeid, 0);
 	htic = pci_read_config32(device, HT_INIT_CONTROL);
 	htic &= HTIC_INIT_Detect;

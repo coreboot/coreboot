@@ -23,7 +23,7 @@
 
 void enable_pm(void)
 {
-	device_t dev;
+	pci_devfn_t dev;
 	u8 reg8;
 	u16 reg16;
 

@@ -486,10 +486,10 @@ struct mem_info { // pernode
 } __attribute__((packed));
 
 struct link_pair_st {
-	device_t udev;
+	pci_devfn_t udev;
 	uint32_t upos;
 	uint32_t uoffs;
-	device_t dev;
+	pci_devfn_t dev;
 	uint32_t pos;
 	uint32_t offs;
 

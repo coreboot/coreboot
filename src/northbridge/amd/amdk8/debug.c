@@ -18,7 +18,7 @@ static void print_debug_pci_dev(unsigned dev)
 
 static inline void print_pci_devices(void)
 {
-	device_t dev;
+	pci_devfn_t dev;
 	for (dev = PCI_DEV(0, 0, 0);
 		dev <= PCI_DEV(0xff, 0x1f, 0x7);
 		dev += PCI_DEV(0,0,1)) {
@@ -58,7 +58,8 @@ static void dump_pci_device(unsigned dev)
 }
 
 #if CONFIG_K8_REV_F_SUPPORT
-static uint32_t pci_read_config32_index_wait(device_t dev, uint32_t index_reg, uint32_t index);
+static uint32_t pci_read_config32_index_wait(pci_devfn_t dev,
+		uint32_t index_reg, uint32_t index);
 static inline void dump_pci_device_index_wait(unsigned dev, uint32_t index_reg)
 {
 	int i;
@@ -82,7 +83,7 @@ static inline void dump_pci_device_index_wait(unsigned dev, uint32_t index_reg)
 
 static inline void dump_pci_devices(void)
 {
-	device_t dev;
+	pci_devfn_t dev;
 	for (dev = PCI_DEV(0, 0, 0);
 		dev <= PCI_DEV(0xff, 0x1f, 0x7);
 		dev += PCI_DEV(0,0,1)) {
@@ -107,7 +108,7 @@ static inline void dump_pci_devices(void)
 
 static inline void dump_pci_devices_on_bus(unsigned busn)
 {
-	device_t dev;
+	pci_devfn_t dev;
 	for (dev = PCI_DEV(busn, 0, 0);
 		dev <= PCI_DEV(busn, 0x1f, 0x7);
 		dev += PCI_DEV(0,0,1)) {

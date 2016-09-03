@@ -65,7 +65,7 @@ void bootblock_mainboard_early_init(void)
 
 static void speed_up_boot_cpu(void)
 {
-	pwm_regulator_configure(PWM_REGULATOR_LIT, 1200);
+	pwm_regulator_configure(PWM_REGULATOR_LIT, 1150);
 
 	udelay(200);
 

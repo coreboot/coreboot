@@ -86,7 +86,7 @@ static int i5000_for_each_dimm_present(struct i5000_fbd_setup *setup,
 static int spd_read_byte(struct i5000_fbdimm *d, u8 addr, int count, u8 *out)
 {
 	u16 status;
-	device_t dev = d->branch->branchdev;
+	pci_devfn_t dev = d->branch->branchdev;
 
 	int cmdreg = d->channel->num ? I5000_SPDCMD1 : I5000_SPDCMD0;
 	int stsreg = d->channel->num ? I5000_SPD1 : I5000_SPD0;
@@ -112,7 +112,7 @@ static int spd_read_byte(struct i5000_fbdimm *d, u8 addr, int count, u8 *out)
 
 static void i5000_clear_fbd_errors(void)
 {
-	device_t dev16_1, dev16_2;
+	pci_devfn_t dev16_1, dev16_2;
 
 	dev16_1 = PCI_ADDR(0, 16, 1, 0);
 	dev16_2 = PCI_ADDR(0, 16, 2, 0);
@@ -141,7 +141,7 @@ static void i5000_clear_fbd_errors(void)
 
 static int i5000_branch_reset(struct i5000_fbd_branch *b)
 {
-	device_t dev = b->branchdev;
+	pci_devfn_t dev = b->branchdev;
 
 	pci_write_config8(dev, I5000_FBDRST, 0x00);
 
@@ -337,7 +337,7 @@ static int i5000_read_spd_data(struct i5000_fbdimm *d)
 static int i5000_amb_smbus_write(struct i5000_fbdimm *d,  int byte1, int byte2)
 {
 	u16 status;
-	device_t dev = PCI_DEV(0, d->branch->num ? 22 : 21, 0);
+	pci_devfn_t dev = PCI_DEV(0, d->branch->num ? 22 : 21, 0);
 	int cmdreg = d->channel->num ? I5000_SPDCMD1 : I5000_SPDCMD0;
 	int stsreg = d->channel->num ? I5000_SPD1 : I5000_SPD0;
 	int timeout = 1000;
@@ -360,7 +360,7 @@ static int i5000_amb_smbus_write(struct i5000_fbdimm *d,  int byte1, int byte2)
 static int i5000_amb_smbus_read(struct i5000_fbdimm *d, int byte1, u8 *out)
 {
 	u16 status;
-	device_t dev = PCI_DEV(0, d->branch->num ? 22 : 21, 0);
+	pci_devfn_t dev = PCI_DEV(0, d->branch->num ? 22 : 21, 0);
 	int cmdreg = d->channel->num ? I5000_SPDCMD1 : I5000_SPDCMD0;
 	int stsreg = d->channel->num ? I5000_SPD1 : I5000_SPD0;
 	int timeout = 1000;
@@ -658,7 +658,7 @@ static int i5000_amb_preinit(struct i5000_fbdimm *d)
 static void i5000_fbd_next_state(struct i5000_fbd_branch *b, int state)
 {
 	int timeout = 10000;
-	device_t dev = b->branchdev;
+	pci_devfn_t dev = b->branchdev;
 
 	printk(BIOS_DEBUG, "  FBD state branch %d: %02x,", b->num, state);
 
@@ -681,7 +681,7 @@ static void i5000_fbd_next_state(struct i5000_fbd_branch *b, int state)
 static int i5000_wait_pattern_recognized(struct i5000_fbd_channel *c)
 {
 	int i = 10;
-	device_t dev = PCI_ADDR(0, c->branch->num ? 22 : 21, 0,
+	pci_devfn_t dev = PCI_ADDR(0, c->branch->num ? 22 : 21, 0,
 				c->num ? I5000_FBDISTS1 : I5000_FBDISTS0);
 
 	printk(BIOS_DEBUG, "      waiting for pattern recognition...");
@@ -703,7 +703,7 @@ static const char *pattern_names[16] = {
 
 static int i5000_drive_pattern(struct i5000_fbd_channel *c, int pattern, int wait)
 {
-	device_t dev = PCI_ADDR(0, c->branch->num ? 22 : 21, 0,
+	pci_devfn_t dev = PCI_ADDR(0, c->branch->num ? 22 : 21, 0,
 				c->num ? I5000_FBDICMD1 : I5000_FBDICMD0);
 
 	printk(BIOS_DEBUG, "    %d/%d  driving pattern %s to AMB%d (%02x)\n",
@@ -720,7 +720,7 @@ static int i5000_drive_pattern(struct i5000_fbd_channel *c, int pattern, int wai
 static int i5000_set_ambpresent(struct i5000_fbd_channel *c)
 {
 	int i;
-	device_t branchdev = c->branch->branchdev;
+	pci_devfn_t branchdev = c->branch->branchdev;
 	u16 ambpresent = 0x8000;
 
 	for (i = 0; i < I5000_MAX_DIMM_PER_CHANNEL; i++) {
@@ -740,7 +740,7 @@ static int i5000_set_ambpresent(struct i5000_fbd_channel *c)
 
 static int i5000_drive_test_patterns(struct i5000_fbd_channel *c, int highest_amb, int mchpad)
 {
-	device_t branchdev = c->branch->branchdev;
+	pci_devfn_t branchdev = c->branch->branchdev;
 	int off = c->num ? 0x100 : 0;
 	u32 portctl;
 	int i, cnt = 1000;
@@ -833,7 +833,7 @@ static int i5000_drive_test_patterns1(struct i5000_fbd_channel *c)
 
 static int i5000_setup_channel(struct i5000_fbd_channel *c)
 {
-	device_t branchdev = c->branch->branchdev;
+	pci_devfn_t branchdev = c->branch->branchdev;
 	int off = c->branch->num ? 0x100 : 0;
 	u32 val;
 
@@ -857,7 +857,7 @@ static int i5000_setup_channel(struct i5000_fbd_channel *c)
 
 static int i5000_link_training0(struct i5000_fbd_branch *b)
 {
-	device_t branchdev = b->branchdev;
+	pci_devfn_t branchdev = b->branchdev;
 
 	pci_write_config8(branchdev, I5000_FBDPLLCTRL, b->used ? 0 : 1);
 
@@ -1186,7 +1186,7 @@ static int get_dmir(u8 *rankmap, int *_set, int limit)
 static int i5000_setup_dmir(struct i5000_fbd_branch *b)
 {
 	struct i5000_fbdimm *d;
-	device_t dev = b->branchdev;
+	pci_devfn_t dev = b->branchdev;
 	u8 rankmap = 0, dmir = 0;
 	u32 dmirval = 0;
 	int i, set, rankoffset = 0, ranksize = 0, ranks = 0;
@@ -1250,7 +1250,7 @@ static int i5000_setup_dmir(struct i5000_fbd_branch *b)
 
 static void i5000_setup_interleave(struct i5000_fbd_setup *setup)
 {
-	device_t dev16 = PCI_ADDR(0, 16, 1, 0);
+	pci_devfn_t dev16 = PCI_ADDR(0, 16, 1, 0);
 	u32 mir0, mir1, mir2, size0, size1, minsize, tmp;
 
 	size0 = i5000_setup_dmir(&setup->branch[1]) >> 12;
@@ -1289,7 +1289,7 @@ static void i5000_setup_interleave(struct i5000_fbd_setup *setup)
 
 static int i5000_dram_timing_init(struct i5000_fbd_setup *setup)
 {
-	device_t dev16 = PCI_ADDR(0, 16, 1, 0);
+	pci_devfn_t dev16 = PCI_ADDR(0, 16, 1, 0);
 	u32 tolm, drta, drtb, mc, mca;
 	int t_wrc, bl2;
 
@@ -1453,7 +1453,7 @@ static void i5000_reserved_register_init(struct i5000_fbd_setup *setup)
 }
 static void i5000_dump_error_registers(void)
 {
-	device_t dev = PCI_ADDR(0, 16, 1, 0);
+	pci_devfn_t dev = PCI_ADDR(0, 16, 1, 0);
 
 	printk(BIOS_ERR, "Dump of FBD error registers:\n"
 	       "FERR_FAT_FBD: 0x%08x NERR_FAT_FBD: 0x%08x\n"
@@ -1536,7 +1536,7 @@ static int i5000_setup_clocking(struct i5000_fbd_setup *setup)
 {
 	int fbd, fsb, ddrfrq, ddrfrqnow;
 	msr_t msr;
-	device_t dev = PCI_ADDR(0, 16, 1, 0);
+	pci_devfn_t dev = PCI_ADDR(0, 16, 1, 0);
 
 	switch(setup->ddr_speed) {
 	case DDR_667MHZ:

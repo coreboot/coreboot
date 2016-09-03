@@ -276,7 +276,7 @@ struct i5000_fbd_channel {
 struct i5000_fbd_branch {
 	struct i5000_fbd_channel channel[I5000_MAX_CHANNEL];
 	struct i5000_fbd_setup *setup;
-	device_t branchdev;
+	pci_devfn_t branchdev;
 	int num;
 	int used;
 	/* memory size in MB on this branch */

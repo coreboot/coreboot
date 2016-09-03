@@ -69,7 +69,7 @@
 
 static  u32 get_nodes(void)
 {
-	device_t dev;
+	pci_devfn_t dev;
 	u32 nodes;
 
 	dev = PCI_DEV(CONFIG_CBB, CONFIG_CDB, 0);

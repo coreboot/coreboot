@@ -56,20 +56,7 @@ static unsigned long mainboard_write_acpi_tables(
 	if (nhlt == NULL)
 		return start_addr;
 
-	/* 2 Channel DMIC array. */
-	if (!nhlt_soc_add_dmic_array(nhlt, 2))
-		printk(BIOS_ERR, "Added 2CH DMIC array.\n");
-
-	/* Dialog for Headset codec.
-	 * Headset codec is bi-directional but uses the same configuration
-	 * settings for render and capture endpoints.
-	 */
-	if (!nhlt_soc_add_da7219(nhlt, AUDIO_LINK_SSP1))
-		printk(BIOS_ERR, "Added Dialog_7219 codec.\n");
-
-	/* MAXIM Smart Amps for left and right speakers. */
-	if (!nhlt_soc_add_max98357(nhlt, AUDIO_LINK_SSP5))
-		printk(BIOS_ERR, "Added Maxim_98357 codec.\n");
+	variant_nhlt_init(nhlt);
 
 	end_addr = nhlt_soc_serialize(nhlt, start_addr);
 

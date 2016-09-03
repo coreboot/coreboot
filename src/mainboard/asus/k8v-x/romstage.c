@@ -82,7 +82,7 @@ void soft_reset(void)
 
 unsigned int get_sbdn(unsigned bus)
 {
-	device_t dev;
+	pci_devfn_t dev;
 
 	dev = pci_locate_device_on_bus(PCI_ID(PCI_VENDOR_ID_VIA,
 					PCI_DEVICE_ID_VIA_VT8237R_LPC), bus);

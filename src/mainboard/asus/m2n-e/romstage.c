@@ -76,7 +76,7 @@ static void sio_setup(void)
 {
 	u8 byte;
 	u32 dword;
-	device_t dev = PCI_DEV(0, MCP55_DEVN_BASE + 1, 0); /* LPC */
+	pci_devfn_t dev = PCI_DEV(0, MCP55_DEVN_BASE + 1, 0); /* LPC */
 
 	/* Subject decoding */
 	byte = pci_read_config8(dev, 0x7b);

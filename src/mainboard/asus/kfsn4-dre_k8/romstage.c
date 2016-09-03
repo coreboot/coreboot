@@ -80,7 +80,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
  */
 unsigned int get_sbdn(unsigned bus)
 {
-	device_t dev;
+	pci_devfn_t dev;
 
 	dev = pci_locate_device_on_bus(PCI_ID(PCI_VENDOR_ID_NVIDIA,
 					PCI_DEVICE_ID_NVIDIA_CK804_PRO), bus);
@@ -131,7 +131,7 @@ static void ck804_control(const unsigned int* values, u32 size, uint8_t bus_unit
 
 	for (i = 0; i < 4; i++) {
 		u32 id;
-		device_t dev;
+		pci_devfn_t dev;
 		if (i == 0) /* SB chain */
 			dev = PCI_DEV(i * 0x40, bus_unit_id, 0);
 		else

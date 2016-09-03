@@ -280,53 +280,53 @@ void mmu_init(void)
 	for (; (pte_t *)_ettb_subtables - table > 0; table += SUBTABLE_PTES)
 		table[0] = ATTR_UNUSED;
 
-        if (CONFIG_ARM_LPAE) {
-                pte_t *const pgd_buff = (pte_t*)(_ttb + 16*KiB);
-                pte_t *pmd = ttb_buff;
-                int i;
+	if (CONFIG_ARM_LPAE) {
+		pte_t *const pgd_buff = (pte_t*)(_ttb + 16*KiB);
+		pte_t *pmd = ttb_buff;
+		int i;
 
-                printk(BIOS_DEBUG, "LPAE Translation tables are @ %p\n",
+		printk(BIOS_DEBUG, "LPAE Translation tables are @ %p\n",
                 		ttb_buff);
-                ASSERT((read_mmfr0() & 0xf) >= 5);
+		ASSERT((read_mmfr0() & 0xf) >= 5);
 
-                /*
-                 * Set MAIR
-                 * See B4.1.104 of ARMv7 Architecture Reference Manual
-                 */
-                write_mair0(
-                        0x00 << (MAIR_INDX_NC*8) | /* Strongly-ordered,
-                         	 	 	    * Non-Cacheable */
-                        0xaa << (MAIR_INDX_WT*8) | /* Write-Thru,
-                         	 	 	    * Read-Allocate */
-                        0xff << (MAIR_INDX_WB*8)   /* Write-Back,
-                         	 	 	    * Read/Write-Allocate */
-                        );
+		/*
+		 * Set MAIR
+		 * See B4.1.104 of ARMv7 Architecture Reference Manual
+		 */
+		write_mair0(
+			0x00 << (MAIR_INDX_NC*8) | /* Strongly-ordered,
+						    * Non-Cacheable */
+			0xaa << (MAIR_INDX_WT*8) | /* Write-Thru,
+						    * Read-Allocate */
+			0xff << (MAIR_INDX_WB*8)   /* Write-Back,
+						    * Read/Write-Allocate */
+		);
 
-                /*
-                 * Set up L1 table
-                 * Once set here, L1 table won't be modified by coreboot.
-                 * See B3.6.1 of ARMv7 Architecture Reference Manual
-                 */
-                for (i = 0; i < 4; i++) {
-                        pgd_buff[i] = ((uint32_t)pmd & NEXTLEVEL_MASK) |
-                                ATTR_NEXTLEVEL;
-                        pmd += BLOCK_SIZE / PAGE_SIZE;
-                }
+		/*
+		 * Set up L1 table
+		 * Once set here, L1 table won't be modified by coreboot.
+		 * See B3.6.1 of ARMv7 Architecture Reference Manual
+		 */
+		for (i = 0; i < 4; i++) {
+			pgd_buff[i] = ((uint32_t)pmd & NEXTLEVEL_MASK) |
+			        ATTR_NEXTLEVEL;
+			pmd += BLOCK_SIZE / PAGE_SIZE;
+		}
 
-                /*
-                 * Set TTBR0
-                 */
-                write_ttbr0((uintptr_t)pgd_buff);
-        } else {
-                printk(BIOS_DEBUG, "Translation table is @ %p\n", ttb_buff);
+		/*
+		 * Set TTBR0
+		 */
+		write_ttbr0((uintptr_t)pgd_buff);
+	} else {
+		printk(BIOS_DEBUG, "Translation table is @ %p\n", ttb_buff);
 
-                /*
-                 * Translation table base 0 address is in bits 31:14-N, where N
-                 * is given by bits 2:0 in TTBCR (which we set to 0). All lower
-                 * bits in this register should be zero for coreboot.
-                 */
-                write_ttbr0((uintptr_t)ttb_buff);
-        }
+		/*
+		 * Translation table base 0 address is in bits 31:14-N, where N
+		 * is given by bits 2:0 in TTBCR (which we set to 0). All lower
+		 * bits in this register should be zero for coreboot.
+		 */
+		write_ttbr0((uintptr_t)ttb_buff);
+	}
 
 	/*
 	 * Set TTBCR

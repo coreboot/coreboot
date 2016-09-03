@@ -37,9 +37,9 @@ struct cpu_info {
 };
 
 struct cpuinfo_riscv {
-        uint8_t    riscv;            /* CPU family */
-        uint8_t    riscv_vendor;     /* CPU vendor */
-        uint8_t    riscv_model;
+	uint8_t    riscv;            /* CPU family */
+	uint8_t    riscv_vendor;     /* CPU vendor */
+	uint8_t    riscv_model;
 };
 
 #endif

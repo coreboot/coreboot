@@ -91,7 +91,7 @@ void it8671f_enable_serial(pnp_devfn_t dev, u16 iobase)
 
 	/*
 	 * Allow all devices to be enabled. Bits: FDC (0), Com1 (1), Com2 (2),
-         * PP (3), Reserved (4), KBCK (5), KBCM (6), Reserved (7).
+	 * PP (3), Reserved (4), KBCK (5), KBCM (6), Reserved (7).
 	 */
 	it8671f_sio_write(0x00, IT8671F_CONFIG_REG_LDE, 0x6f);
 

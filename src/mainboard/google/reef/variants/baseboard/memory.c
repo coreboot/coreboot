@@ -62,14 +62,6 @@ const struct lpddr4_swizzle_cfg baseboard_lpddr4_swizzle = {
 	},
 };
 
-/*
- * Proto boards didn't have a memory SKU id. The configuration pins use
- * an internal weak pullup with stronger pulldowns for the 0 bits. As
- * proto boards didn't use the memory SKU pins the SKU id reads as 4'b1111,
- * i.e. 15.
- */
-#define PROTO_SKU 15
-
 static const struct lpddr4_sku skus[] = {
 	/*
 	 * K4F6E304HB-MGCJ - both logical channels While the parts
@@ -133,13 +125,6 @@ static const struct lpddr4_sku skus[] = {
 		.ch1_rank_density = LP4_8Gb_DENSITY,
 		.part_num = "H9HCNNN8KUMLHR",
 	},
-	/* K4F8E304HB-MGCH - both logical channels */
-	[PROTO_SKU] = {
-		.speed = LP4_SPEED_2400,
-		.ch0_rank_density = LP4_8Gb_DENSITY,
-		.ch1_rank_density = LP4_8Gb_DENSITY,
-		.part_num = "K4F8E304HB-MGCH",
-	},
 };
 
 static const struct lpddr4_cfg lp4cfg = {
@@ -160,9 +145,7 @@ size_t __attribute__((weak)) variant_memory_sku(void)
 		[1] = MEM_CONFIG1, [0] = MEM_CONFIG0,
 	};
 
-	/*
-	 * Read memory SKU id with internal pullups enabled to handle
-	 * proto boards with no SKU id pins.
-	 */
+	/* Need internal pullups enabled as only pulldown stuffing options
+	 * exist. */
 	return gpio_pullup_base2_value(pads, ARRAY_SIZE(pads));
 }

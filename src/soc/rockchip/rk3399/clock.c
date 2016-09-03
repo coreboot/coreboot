@@ -477,9 +477,9 @@ void rkclk_init(void)
 	assert((hclk_div + 1) * PERILP1_HCLK_HZ ==
 	       GPLL_HZ && (hclk_div < 0x1f));
 
-	pclk_div = PERILP1_HCLK_HZ / PERILP1_HCLK_HZ - 1;
-	assert((pclk_div + 1) * PERILP1_HCLK_HZ ==
-	       PERILP1_HCLK_HZ && (hclk_div < 0x7));
+	pclk_div = PERILP1_HCLK_HZ / PERILP1_PCLK_HZ - 1;
+	assert((pclk_div + 1) * PERILP1_PCLK_HZ ==
+	       PERILP1_HCLK_HZ && (pclk_div < 0x7));
 
 	write32(&cru_ptr->clksel_con[25],
 		RK_CLRSETBITS(PCLK_PERILP1_DIV_CON_MASK <<

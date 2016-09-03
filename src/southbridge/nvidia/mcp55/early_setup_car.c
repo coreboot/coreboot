@@ -112,7 +112,7 @@ static void mcp55_early_pcie_setup(unsigned busnx, unsigned devnx,
 {
 	u32 tgio_ctrl, pll_ctrl, dword;
 	int i;
-	device_t dev;
+	pci_devfn_t dev;
 
 	dev = PCI_DEV(busnx, devnx + 1, 1);
 
@@ -378,7 +378,7 @@ static int mcp55_early_setup_x(void)
 		busnx = ht_c_index * HT_CHAIN_BUSN_D;
 		for (devnx = 0; devnx < 0x20; devnx++) {
 			u32 id;
-			device_t dev;
+			pci_devfn_t dev;
 			dev = PCI_DEV(busnx, devnx, 0);
 			id = pci_read_config32(dev, PCI_VENDOR_ID);
 			if (id == 0x036910de) {

@@ -122,7 +122,7 @@ static void enable_fid_change(u8 fid)
 {
 	u32 dword;
 	u32 nodes;
-	device_t dev;
+	pci_devfn_t dev;
 	int i;
 
 	nodes = get_nodes();
@@ -139,7 +139,8 @@ static void enable_fid_change(u8 fid)
 	}
 }
 
-static void applyBoostFIDOffset(device_t dev, uint32_t nodeid) {
+static void applyBoostFIDOffset(pci_devfn_t dev, uint32_t nodeid)
+{
 	// BKDG 2.4.2.8
 	// Fam10h revision E only, but E is apparently not supported yet, therefore untested
 	if ((cpuid_edx(0x80000007) & CPB_MASK)
@@ -164,7 +165,8 @@ static void applyBoostFIDOffset(device_t dev, uint32_t nodeid) {
 	}
 }
 
-static void enableNbPState1( device_t dev ) {
+static void enableNbPState1(pci_devfn_t dev)
+{
 	uint64_t cpuRev =  mctGetLogicalCPUID(0xFF);
 	if (cpuRev & AMD_FAM10_C3) {
 		u32 nbPState = (pci_read_config32(dev, 0x1F0) & NB_PSTATE_MASK);
@@ -184,7 +186,8 @@ static void enableNbPState1( device_t dev ) {
 	}
 }
 
-static u8 setPStateMaxVal(device_t dev) {
+static u8 setPStateMaxVal(pci_devfn_t dev)
+{
 	u8 i, maxpstate=0;
 	for (i = 0; i < NM_PS_REG; i++) {
 		msr_t msr = rdmsr(PS_REG_BASE + i);
@@ -204,7 +207,8 @@ static u8 setPStateMaxVal(device_t dev) {
 	return maxpstate;
 }
 
-static void dualPlaneOnly(  device_t dev ) {
+static void dualPlaneOnly(pci_devfn_t dev)
+{
 	// BKDG 2.4.2.7
 
 	uint64_t cpuRev = mctGetLogicalCPUID(0xFF);
@@ -248,7 +252,8 @@ static int vidTo100uV(u8 vid)
 	return voltage;
 }
 
-static void setVSRamp(device_t dev) {
+static void setVSRamp(pci_devfn_t dev)
+{
 	/* BKDG r31116 2010-04-22  2.4.1.7 step b F3xD8[VSRampTime]
 	 * If this field accepts 8 values between 10 and 500 us why
 	 * does page 324 say "BIOS should set this field to 001b."
@@ -263,7 +268,7 @@ static void setVSRamp(device_t dev) {
 	pci_write_config32(dev, 0xd8, dword);
 }
 
-static void recalculateVsSlamTimeSettingOnCorePre(device_t dev)
+static void recalculateVsSlamTimeSettingOnCorePre(pci_devfn_t dev)
 {
 	u8 pviModeFlag;
 	u8 highVoltageVid, lowVoltageVid, bValue;
@@ -447,7 +452,8 @@ static u32 power_up_down(int node, u8 procPkg) {
 }
 
 static void config_clk_power_ctrl_reg0(uint8_t node, uint64_t cpuRev, uint8_t procPkg) {
-	device_t dev = NODE_PCI(node, 3);
+
+	pci_devfn_t dev = NODE_PCI(node, 3);
 
 	/* Program fields in Clock Power/Control register0 (F3xD4) */
 
@@ -471,7 +477,9 @@ static void config_clk_power_ctrl_reg0(uint8_t node, uint64_t cpuRev, uint8_t pr
 
 }
 
-static void config_power_ctrl_misc_reg(device_t dev, uint64_t cpuRev, uint8_t procPkg) {
+static void config_power_ctrl_misc_reg(pci_devfn_t dev, uint64_t cpuRev,
+		uint8_t procPkg)
+{
 	/* check PVI/SVI */
 	uint32_t dword = pci_read_config32(dev, 0xa0);
 
@@ -504,7 +512,8 @@ static void config_power_ctrl_misc_reg(device_t dev, uint64_t cpuRev, uint8_t pr
 	pci_write_config32(dev, 0xa0, dword);
 }
 
-static void config_nb_syn_ptr_adj(device_t dev, uint64_t cpuRev) {
+static void config_nb_syn_ptr_adj(pci_devfn_t dev, uint64_t cpuRev)
+{
 	/* Note the following settings are additional from the ported
 	 * function setFidVidRegs()
 	 */
@@ -526,7 +535,9 @@ static void config_nb_syn_ptr_adj(device_t dev, uint64_t cpuRev) {
 	pci_write_config32(dev, 0xdc, dword);
 }
 
-static void config_acpi_pwr_state_ctrl_regs(device_t dev, uint64_t cpuRev, uint8_t procPkg) {
+static void config_acpi_pwr_state_ctrl_regs(pci_devfn_t dev, uint64_t cpuRev,
+		uint8_t procPkg)
+{
 	if (is_fam15h()) {
 		/* Family 15h BKDG Rev. 3.14 D18F3x80 recommended settings */
 		pci_write_config32(dev, 0x80, 0xe20be281);
@@ -594,7 +605,7 @@ static void prep_fid_change(void)
 {
 	u32 dword;
 	u32 nodes;
-	device_t dev;
+	pci_devfn_t dev;
 	int i;
 
 	/* This needs to be run before any Pstate changes are requested */
@@ -809,7 +820,7 @@ static u32 needs_NB_COF_VID_update(void)
 
 static u32 init_fidvid_core(u32 nodeid, u32 coreid)
 {
-	device_t dev;
+	pci_devfn_t dev;
 	u32 vid_max;
 	u32 fid_max = 0;
 	u8 nb_cof_vid_update = needs_NB_COF_VID_update();
@@ -973,7 +984,7 @@ static void finalPstateChange(void)
 static void init_fidvid_stage2(u32 apicid, u32 nodeid)
 {
 	msr_t msr;
-	device_t dev;
+	pci_devfn_t dev;
 	u32 reg1fc;
 	u32 dtemp;
 	u32 nbvid;

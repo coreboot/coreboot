@@ -77,7 +77,7 @@ static void sb700_acpi_init(void)
 /* RPR 2.28: Get SB ASIC Revision. */
 static u8 set_sb700_revision(void)
 {
-	device_t dev;
+	pci_devfn_t dev;
 	u8 rev_id, enable_14Mhz, byte;
 	u8 rev = 0;
 
@@ -134,7 +134,7 @@ void sb7xx_51xx_lpc_init(void)
 {
 	u8 reg8;
 	u32 reg32;
-	device_t dev;
+	pci_devfn_t dev;
 
 	dev = pci_locate_device(PCI_ID(0x1002, 0x4385), 0);	/* SMBUS controller */
 	/* NOTE: Set BootTimerDisable, otherwise it would keep rebooting!!
@@ -193,7 +193,7 @@ void sb7xx_51xx_lpc_init(void)
 void sb7xx_51xx_enable_wideio(u8 wio_index, u16 base)
 {
 	/* TODO: Now assume wio_index=0 */
-	device_t dev;
+	pci_devfn_t dev;
 	u8 reg8;
 
 	dev = pci_locate_device(PCI_ID(0x1002, 0x439d), 0);	/* LPC Controller */
@@ -206,7 +206,7 @@ void sb7xx_51xx_enable_wideio(u8 wio_index, u16 base)
 void sb7xx_51xx_disable_wideio(u8 wio_index)
 {
 	/* TODO: Now assume wio_index=0 */
-	device_t dev;
+	pci_devfn_t dev;
 	u8 reg8;
 
 	dev = pci_locate_device(PCI_ID(0x1002, 0x439d), 0);	/* LPC Controller */
@@ -219,7 +219,7 @@ void sb7xx_51xx_disable_wideio(u8 wio_index)
 /* what is its usage? */
 u32 get_sbdn(u32 bus)
 {
-	device_t dev;
+	pci_devfn_t dev;
 
 	/* Find the device. */
 	dev = pci_locate_device_on_bus(PCI_ID(0x1002, 0x4385), bus);
@@ -284,7 +284,7 @@ void enable_fid_change_on_sb(u32 sbbusn, u32 sbdn)
 void sb7xx_51xx_pci_port80(void)
 {
 	u8 byte;
-	device_t dev;
+	pci_devfn_t dev;
 
 	/* P2P Bridge */
 	dev = pci_locate_device(PCI_ID(0x1002, 0x4384), 0);
@@ -329,7 +329,7 @@ void sb7xx_51xx_pci_port80(void)
 void sb7xx_51xx_lpc_port80(void)
 {
 	u8 byte;
-	device_t dev;
+	pci_devfn_t dev;
 	u32 reg32;
 
 	/* Enable LPC controller */
@@ -348,7 +348,7 @@ void sb7xx_51xx_lpc_port80(void)
 /* sbDevicesPorInitTable */
 static void sb700_devices_por_init(void)
 {
-	device_t dev;
+	pci_devfn_t dev;
 	u8 byte;
 	uint32_t dword;
 	uint8_t nvram;
@@ -705,7 +705,7 @@ static void sb700_pmio_por_init(void)
 */
 static void sb700_pci_cfg(void)
 {
-	device_t dev;
+	pci_devfn_t dev;
 	u8 byte;
 	uint8_t acpi_s1_supported = 1;
 

@@ -4,7 +4,7 @@
 /* by yhlu 2005.10 */
 static unsigned get_sbdn(unsigned bus)
 {
-	device_t dev;
+	pci_devfn_t dev;
 
 	/* Find the device.
 	 * There can only be one 8111 on a hypertransport chain/bus.
@@ -19,7 +19,7 @@ static unsigned get_sbdn(unsigned bus)
 
 static void enable_cf9_x(unsigned sbbusn, unsigned sbdn)
 {
-	device_t dev;
+	pci_devfn_t dev;
 	uint8_t byte;
 
 	dev = PCI_DEV(sbbusn, sbdn+1, 3); //ACPI
@@ -48,7 +48,7 @@ void hard_reset(void)
 
 void enable_fid_change_on_sb(unsigned sbbusn, unsigned sbdn)
 {
-	device_t dev;
+	pci_devfn_t dev;
 
 	dev = PCI_DEV(sbbusn, sbdn+1, 3); // ACPI
 
@@ -61,7 +61,7 @@ void enable_fid_change_on_sb(unsigned sbbusn, unsigned sbdn)
 
 static void soft_reset_x(unsigned sbbusn, unsigned sbdn)
 {
-	device_t dev;
+	pci_devfn_t dev;
 
 	dev = PCI_DEV(sbbusn, sbdn+1, 0); //ISA
 

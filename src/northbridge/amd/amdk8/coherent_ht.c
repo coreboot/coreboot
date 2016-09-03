@@ -265,7 +265,7 @@ static int verify_connection(u8 dest)
 	return 1;
 }
 
-static uint16_t read_freq_cap(device_t dev, uint8_t pos)
+static uint16_t read_freq_cap(pci_devfn_t dev, uint8_t pos)
 {
 	/* Handle bugs in valid hypertransport frequency reporting */
 	uint16_t freq_cap;
@@ -293,7 +293,8 @@ static uint16_t read_freq_cap(device_t dev, uint8_t pos)
 	return freq_cap;
 }
 
-static int optimize_connection(device_t node1, uint8_t link1, device_t node2, uint8_t link2)
+static int optimize_connection(pci_devfn_t node1, uint8_t link1,
+		pci_devfn_t node2, uint8_t link2)
 {
 	static const uint8_t link_width_to_pow2[]= { 3, 4, 0, 5, 1, 2, 0, 0 };
 	static const uint8_t pow2_to_link_width[] = { 0x7, 4, 5, 0, 1, 3 };
@@ -1608,7 +1609,7 @@ static void coherent_ht_finalize(unsigned nodes)
 	rev_a0 = is_cpu_rev_a0();
 #endif
 	for (node = 0; node < nodes; node++) {
-		device_t dev;
+		pci_devfn_t dev;
 		uint32_t val;
 		dev = NODE_HT(node);
 
@@ -1652,7 +1653,7 @@ static int apply_cpu_errata_fixes(unsigned nodes)
 	unsigned node;
 	int needs_reset = 0;
 	for (node = 0; node < nodes; node++) {
-		device_t dev;
+		pci_devfn_t dev;
 		uint32_t cmd;
 		dev = NODE_MC(node);
 #if !CONFIG_K8_REV_F_SUPPORT
@@ -1722,7 +1723,7 @@ static int optimize_link_read_pointers(unsigned nodes)
 	unsigned node;
 	int needs_reset = 0;
 	for (node = 0; node < nodes; node++) {
-		device_t f0_dev, f3_dev;
+		pci_devfn_t f0_dev, f3_dev;
 		uint32_t cmd_ref, cmd;
 		int link;
 		f0_dev = NODE_HT(node);

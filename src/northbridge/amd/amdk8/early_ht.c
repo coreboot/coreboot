@@ -13,7 +13,7 @@ static void enumerate_ht_chain(void)
 	 * links needs to be programed to point at bus 0.
 	 */
 	unsigned next_unitid, last_unitid;
-	device_t dev;
+	pci_devfn_t dev;
 #if CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20
 	//let't record the device of last ht device, So we can set the Unitid to CONFIG_HT_CHAIN_END_UNITID_BASE
 	unsigned real_last_unitid = 0;
@@ -61,7 +61,7 @@ static void enumerate_ht_chain(void)
 				if ((flags >> 13) == 0) {
 					unsigned count;
 					unsigned ctrl, ctrl_off;
-					device_t devx;
+					pci_devfn_t devx;
 
 #if CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20
 					if (next_unitid>=0x18) { // don't get mask out by k8, at this time BSP, RT is not enabled, it will response from 0x18,0--0x1f.

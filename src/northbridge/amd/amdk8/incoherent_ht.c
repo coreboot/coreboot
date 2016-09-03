@@ -18,7 +18,7 @@ static inline void print_linkn_in (const char *strval, uint8_t byteval)
 	printk(BIOS_DEBUG, "%s%02x\n", strval, byteval);
 }
 
-static uint8_t ht_lookup_capability(device_t dev, uint16_t val)
+static uint8_t ht_lookup_capability(pci_devfn_t dev, uint16_t val)
 {
 	uint8_t pos;
 	uint8_t hdr_type;
@@ -51,13 +51,13 @@ static uint8_t ht_lookup_capability(device_t dev, uint16_t val)
 	return pos;
 }
 
-static uint8_t ht_lookup_slave_capability(device_t dev)
+static uint8_t ht_lookup_slave_capability(pci_devfn_t dev)
 {
 	return ht_lookup_capability(dev, 0); // Slave/Primary Interface Block Format
 }
 
 #if 0
-static uint8_t ht_lookup_host_capability(device_t dev)
+static uint8_t ht_lookup_host_capability(pci_devfn_t dev)
 {
 	return ht_lookup_capability(dev, 1); // Host/Secondary Interface Block Format
 }
@@ -65,7 +65,7 @@ static uint8_t ht_lookup_host_capability(device_t dev)
 
 static void ht_collapse_previous_enumeration(uint8_t bus, unsigned offset_unitid)
 {
-	device_t dev;
+	pci_devfn_t dev;
 
 	//actually, only for one HT device HT chain, and unitid is 0
 #if !CONFIG_HT_CHAIN_UNITID_BASE
@@ -111,7 +111,7 @@ static void ht_collapse_previous_enumeration(uint8_t bus, unsigned offset_unitid
 	}
 }
 
-static uint16_t ht_read_freq_cap(device_t dev, uint8_t pos)
+static uint16_t ht_read_freq_cap(pci_devfn_t dev, uint8_t pos)
 {
 	/* Handle bugs in valid hypertransport frequency reporting */
 	uint16_t freq_cap;
@@ -157,7 +157,7 @@ static uint16_t ht_read_freq_cap(device_t dev, uint8_t pos)
 	return freq_cap;
 }
 
-static uint8_t ht_read_width_cap(device_t dev, uint8_t pos)
+static uint8_t ht_read_width_cap(pci_devfn_t dev, uint8_t pos)
 {
 	uint8_t width_cap = pci_read_config8(dev, pos);
 
@@ -203,8 +203,8 @@ static uint8_t ht_read_width_cap(device_t dev, uint8_t pos)
 		PCI_HT_CAP_SLAVE_FREQ_CAP1)
 
 static int ht_optimize_link(
-	device_t dev1, uint8_t pos1, unsigned offs1,
-	device_t dev2, uint8_t pos2, unsigned offs2)
+	pci_devfn_t dev1, uint8_t pos1, unsigned offs1,
+	pci_devfn_t dev2, uint8_t pos2, unsigned offs2)
 {
 	static const uint8_t link_width_to_pow2[]= { 3, 4, 0, 5, 1, 2, 0, 0 };
 	static const uint8_t pow2_to_link_width[] = { 0x7, 4, 5, 0, 1, 3 };
@@ -290,9 +290,11 @@ static int ht_optimize_link(
 }
 
 #if CONFIG_RAMINIT_SYSINFO
-static void ht_setup_chainx(device_t udev, uint8_t upos, uint8_t bus, unsigned offset_unitid, struct sys_info *sysinfo)
+static void ht_setup_chainx(pci_devfn_t udev, uint8_t upos, uint8_t bus,
+		unsigned offset_unitid, struct sys_info *sysinfo)
 #else
-static int ht_setup_chainx(device_t udev, uint8_t upos, uint8_t bus, unsigned offset_unitid)
+static int ht_setup_chainx(pci_devfn_t udev, uint8_t upos, uint8_t bus,
+		unsigned offset_unitid)
 #endif
 {
 	//even CONFIG_HT_CHAIN_UNITID_BASE == 0, we still can go through this function, because of end_of_chain check, also We need it to optimize link
@@ -348,7 +350,7 @@ static int ht_setup_chainx(device_t udev, uint8_t upos, uint8_t bus, unsigned of
 			}
 		} while ((ctrl & (1 << 5)) == 0);
 
-		device_t dev = PCI_DEV(bus, 0, 0);
+		pci_devfn_t dev = PCI_DEV(bus, 0, 0);
 		last_unitid = next_unitid;
 
 		id = pci_read_config32(dev, PCI_VENDOR_ID);
@@ -470,9 +472,10 @@ end_of_chain: ;
 
 #if 0
 #if CONFIG_RAMINIT_SYSINFO
-static void ht_setup_chain(device_t udev, unsigned upos, struct sys_info *sysinfo)
+static void ht_setup_chain(pci_devfn_t udev, unsigned upos,
+		struct sys_info *sysinfo)
 #else
-static int ht_setup_chain(device_t udev, unsigned upos)
+static int ht_setup_chain(pci_devfn_t udev, unsigned upos)
 #endif
 {
 	unsigned offset_unitid = 0;
@@ -570,7 +573,7 @@ static int set_ht_link_buffer_count(uint8_t node, uint8_t linkn, uint8_t linkt, 
 	uint32_t dword;
 	uint8_t link_type;
 	unsigned regpos;
-	device_t dev;
+	pci_devfn_t dev;
 
 	/* This works on an Athlon64 because unimplemented links return 0 */
 	regpos = 0x98 + (linkn * 0x20);
@@ -636,7 +639,7 @@ static int ht_setup_chains(uint8_t ht_c_num)
 	 * links needs to be programed to point at bus 0.
 	 */
 	uint8_t upos;
-	device_t udev;
+	pci_devfn_t udev;
 	uint8_t i;
 
 #if !CONFIG_RAMINIT_SYSINFO
@@ -742,7 +745,7 @@ static int ht_setup_chains_x(void)
 	}
 
 	for (nodeid=0; nodeid<nodes; nodeid++) {
-		device_t dev;
+		pci_devfn_t dev;
 		uint8_t linkn;
 		dev = PCI_DEV(0, 0x18+nodeid,0);
 		for (linkn = 0; linkn<3; linkn++) {
@@ -782,7 +785,7 @@ static int ht_setup_chains_x(void)
 
 	for (nodeid = 1; nodeid<nodes; nodeid++) {
 		int i;
-		device_t dev;
+		pci_devfn_t dev;
 		dev = PCI_DEV(0, 0x18+nodeid,1);
 		for (i = 0; i< 4; i++) {
 			unsigned regpos;

@@ -22,7 +22,7 @@ void setup_resource_map(const unsigned int *register_values, int max)
 	int i;
 //	printk(BIOS_DEBUG, "setting up resource map....");
 	for (i = 0; i < max; i += 3) {
-		device_t dev;
+		pci_devfn_t dev;
 		unsigned where;
 		unsigned long reg;
 		dev = register_values[i] & ~0xfff;
@@ -525,7 +525,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	printk(BIOS_SPEW, "setting up CPU%02x northbridge registers\n", ctrl->node_id);
 	max = ARRAY_SIZE(register_values);
 	for (i = 0; i < max; i += 3) {
-		device_t dev;
+		pci_devfn_t dev;
 		unsigned where;
 		unsigned long reg;
 		dev = (register_values[i] & ~0xfff) - PCI_DEV(0, 0x18, 0) + ctrl->f0;
@@ -817,7 +817,7 @@ static void route_dram_accesses(const struct mem_controller *ctrl,
 	unsigned base;
 	unsigned index;
 	unsigned limit_reg, base_reg;
-	device_t device;
+	pci_devfn_t device;
 
 	node_id = ctrl->node_id;
 	index = (node_id << 3);
@@ -2231,7 +2231,7 @@ static uint32_t hoist_memory(int controllers, const struct mem_controller *ctrl,
 {
 	int ii;
 	uint32_t carry_over;
-	device_t dev;
+	pci_devfn_t dev;
 	uint32_t base, limit;
 	uint32_t basek;
 	uint32_t hoist;

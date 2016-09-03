@@ -324,6 +324,8 @@ void sdram_initialize(int boot_path, const u8 *spd_map);
 void raminit_ddr2(struct sysinfo *);
 
 struct acpi_rsdp;
+#ifndef __SIMPLE_DEVICE__
 unsigned long northbridge_write_acpi_tables(device_t device, unsigned long start, struct acpi_rsdp *rsdp);
+#endif /* __SIMPLE_DEVICE__ */
 #endif
 #endif /* __NORTHBRIDGE_INTEL_X4X_H__ */

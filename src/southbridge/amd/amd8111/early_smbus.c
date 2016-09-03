@@ -4,7 +4,7 @@
 
 static void enable_smbus(void)
 {
-	device_t dev;
+	pci_devfn_t dev;
 	uint8_t enable;
 
 	dev = pci_locate_device(PCI_ID(0x1022, 0x746b), 0);

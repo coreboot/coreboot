@@ -3,7 +3,9 @@
 
 #include "chip.h"
 
+#ifndef __SIMPLE_DEVICE__
 void amd8111_enable(device_t dev);
+#endif
 
 #ifdef __PRE_RAM__
 void enable_fid_change_on_sb(unsigned sbbusn, unsigned sbdn);

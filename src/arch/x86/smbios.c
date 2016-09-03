@@ -1031,6 +1031,50 @@ static int smbios_write_type19(unsigned long *current, int *handle, int type16)
 	return len;
 }
 
+static int smbios_write_type20_table(unsigned long *current, int *handle, u32 addr_start,
+		u32 addr_end, int type17_handle, int type19_handle)
+{
+	struct smbios_type20 *t = smbios_carve_table(*current, SMBIOS_MEMORY_DEVICE_MAPPED_ADDRESS,
+						     sizeof(*t), *handle);
+
+	t->memory_device_handle = type17_handle;
+	t->memory_array_mapped_address_handle = type19_handle;
+	t->addr_start = addr_start;
+	t->addr_end = addr_end;
+	t->partition_row_pos = 0xff;
+	t->interleave_pos = 0xff;
+	t->interleave_depth = 0xff;
+
+	const int len = smbios_full_table_len(&t->header, t->eos);
+	*current += len;
+	*handle += 1;
+	return len;
+}
+
+static int smbios_write_type20(unsigned long *current, int *handle,
+		int type17_handle, int type19_handle)
+{
+	u32 start_addr = 0;
+	int totallen = 0;
+	int i;
+
+	struct memory_info *meminfo;
+	meminfo = cbmem_find(CBMEM_ID_MEMINFO);
+	if (meminfo == NULL)
+		return 0;	/* can't find mem info in cbmem */
+
+	printk(BIOS_INFO, "Create SMBIOS type 20\n");
+	for (i = 0; i < meminfo->dimm_cnt && i < ARRAY_SIZE(meminfo->dimm); i++) {
+		struct dimm_info *dimm;
+		dimm = &meminfo->dimm[i];
+		u32 end_addr = start_addr + (dimm->dimm_size << 10) - 1;
+		totallen += smbios_write_type20_table(current, handle, start_addr, end_addr,
+				type17_handle, type19_handle);
+		start_addr = end_addr + 1;
+	}
+	return totallen;
+}
+
 static int smbios_write_type32(unsigned long *current, int handle)
 {
 	struct smbios_type32 *t = smbios_carve_table(*current, SMBIOS_SYSTEM_BOOT_INFORMATION,
@@ -1281,8 +1325,12 @@ unsigned long smbios_write_tables(unsigned long current)
 
 	const int type16 = handle;
 	update_max(len, max_struct_size, smbios_write_type16(&current, &handle));
+	const int type17 = handle;
 	update_max(len, max_struct_size, smbios_write_type17(&current, &handle, type16));
+	const int type19 = handle;
 	update_max(len, max_struct_size, smbios_write_type19(&current, &handle, type16));
+	update_max(len, max_struct_size,
+			smbios_write_type20(&current, &handle, type17, type19));
 	update_max(len, max_struct_size, smbios_write_type32(&current, handle++));
 
 	update_max(len, max_struct_size, smbios_walk_device_tree(all_devices,

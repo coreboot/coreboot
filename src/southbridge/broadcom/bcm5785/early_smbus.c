@@ -20,7 +20,7 @@
 
 static void enable_smbus(void)
 {
-	device_t dev;
+	pci_devfn_t dev;
 	dev = pci_locate_device(PCI_ID(0x1166, 0x0205), 0); // 0x0201?
 
 	if (dev == PCI_DEV_INVALID) {

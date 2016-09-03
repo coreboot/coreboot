@@ -144,9 +144,9 @@ void smbus_write_byte(u8 dimm, u8 offset, u8 data)
 
 #define PSONREADY_TIMEOUT 0x7fffffff
 
-static device_t get_vt8237_lpc(void)
+static pci_devfn_t get_vt8237_lpc(void)
 {
-	device_t dev;
+	pci_devfn_t dev;
 
 	/* Power management controller */
 	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
@@ -169,7 +169,7 @@ static device_t get_vt8237_lpc(void)
  */
 void enable_smbus(void)
 {
-	device_t dev;
+	pci_devfn_t dev;
 	int loops;
 
 	/* Power management controller */
@@ -258,7 +258,7 @@ void smbus_fixup(const struct mem_controller *ctrl)
 
 void vt8237_sb_enable_fid_vid(void)
 {
-	device_t dev, devctl;
+	pci_devfn_t dev, devctl;
 	u16 devid;
 
 	/* Power management controller */
@@ -315,7 +315,7 @@ void vt8237_sb_enable_fid_vid(void)
 
 void enable_rom_decode(void)
 {
-	device_t dev;
+	pci_devfn_t dev;
 
 	/* Power management controller */
 	dev = get_vt8237_lpc();
@@ -328,7 +328,7 @@ void enable_rom_decode(void)
 
 int acpi_get_sleep_type(void)
 {
-	device_t dev;
+	pci_devfn_t dev;
 	u16 tmp;
 
 	printk(BIOS_DEBUG, "IN TEST WAKEUP\n");
@@ -353,7 +353,7 @@ int acpi_get_sleep_type(void)
 #if defined(__GNUC__)
 void vt8237_early_spi_init(void)
 {
-	device_t dev;
+	pci_devfn_t dev;
 	volatile u16 *spireg;
 	u32 tmp;
 
@@ -410,7 +410,7 @@ int vt8237_early_network_init(struct vt8237_network_rom *rom)
 {
 	struct vt8237_network_rom n;
 	int i, loops;
-	device_t dev;
+	pci_devfn_t dev;
 	u32 tmp;
 	u8 status;
 	u16 *rom_write;

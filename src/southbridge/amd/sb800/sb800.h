@@ -42,7 +42,10 @@ void pm_iowrite(u8 reg, u8 value);
 u8 pm_ioread(u8 reg);
 void pm2_iowrite(u8 reg, u8 value);
 u8 pm2_ioread(u8 reg);
+
+#ifndef __SIMPLE_DEVICE__
 void set_sm_enable_bits(device_t sm_dev, u32 reg_pos, u32 mask, u32 val);
+#endif
 
 #define REV_SB800_A11	0x11
 #define REV_SB800_A12	0x12

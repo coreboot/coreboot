@@ -17,6 +17,7 @@
 #define BASEBOARD_VARIANTS_H
 
 #include <soc/gpio.h>
+#include <soc/meminit.h>
 #include <stdint.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
@@ -28,6 +29,13 @@ uint8_t variant_board_id(void);
 const struct pad_config *variant_gpio_table(size_t *num);
 const struct pad_config *variant_early_gpio_table(size_t *num);
 const struct pad_config *variant_sleep_gpio_table(size_t *num);
+
+/* Baseboard default swizzle. Can be reused if swizzle is same. */
+extern const struct lpddr4_swizzle_cfg baseboard_lpddr4_swizzle;
+/* Return LPDDR4 configuration structure. */
+const struct lpddr4_cfg *variant_lpddr4_config(void);
+/* Return memory SKU for the board. */
+size_t variant_memory_sku(void);
 
 /* Return ChromeOS gpio table and fill in number of entries. */
 const struct cros_gpio *variant_cros_gpios(size_t *num);

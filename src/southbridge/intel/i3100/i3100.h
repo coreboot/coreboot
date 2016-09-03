@@ -36,6 +36,8 @@
 #define SATA_MODE_IDE  0x00
 #define SATA_MODE_AHCI 0x01
 
+#ifndef __SIMPLE_DEVICE__
 void i3100_enable(device_t dev);
+#endif
 
 #endif

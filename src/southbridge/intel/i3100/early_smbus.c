@@ -20,7 +20,7 @@
 
 static void enable_smbus(void)
 {
-	device_t dev = PCI_DEV(0x0, 0x1f, 0x3);
+	pci_devfn_t dev = PCI_DEV(0x0, 0x1f, 0x3);
 
 	printk(BIOS_SPEW, "SMBus controller enabled\n");
 	pci_write_config32(dev, 0x20, SMBUS_IO_BASE | 1);

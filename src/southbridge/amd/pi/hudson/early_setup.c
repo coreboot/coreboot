@@ -60,7 +60,7 @@ void configure_hudson_uart(void)
 void hudson_pci_port80(void)
 {
 	u8 byte;
-	device_t dev;
+	pci_devfn_t dev;
 
 	/* P2P Bridge */
 	dev = PCI_DEV(0, 0x14, 4);
@@ -105,7 +105,7 @@ void hudson_pci_port80(void)
 void hudson_lpc_port80(void)
 {
 	u8 byte;
-	device_t dev;
+	pci_devfn_t dev;
 
 	/* Enable LPC controller */
 	outb(0xEC, 0xCD6);
@@ -123,7 +123,7 @@ void hudson_lpc_port80(void)
 
 void hudson_lpc_decode(void)
 {
-	device_t dev;
+	pci_devfn_t dev;
 	u32 tmp = 0;
 
 	/* Enable I/O decode to LPC bus */

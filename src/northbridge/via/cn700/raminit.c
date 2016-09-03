@@ -34,7 +34,7 @@
 #define DUMPNORTH()
 #endif
 
-static void do_ram_command(device_t dev, u8 command)
+static void do_ram_command(pci_devfn_t dev, u8 command)
 {
 	u8 reg;
 
@@ -58,7 +58,7 @@ static void do_ram_command(device_t dev, u8 command)
  *
  * @param dev The northbridge's CPU Host Interface (D0F2).
  */
-static void c7_cpu_setup(device_t dev)
+static void c7_cpu_setup(pci_devfn_t dev)
 {
 	/* Host bus interface registers (D0F2 0x50-0x67) */
 	/* Request phase control */
@@ -376,7 +376,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 
 static void sdram_set_post(const struct mem_controller *ctrl)
 {
-	device_t dev = ctrl->d0f3;
+	pci_devfn_t dev = ctrl->d0f3;
 
 	/* Enable multipage mode. */
 	pci_write_config8(dev, 0x69, 0x03);
@@ -389,7 +389,7 @@ static void sdram_set_post(const struct mem_controller *ctrl)
 	pci_write_config16(dev, 0xa4, 0x0010);
 }
 
-static void sdram_enable(device_t dev, u8 *rank_address)
+static void sdram_enable(pci_devfn_t dev, u8 *rank_address)
 {
 	u8 i;
 

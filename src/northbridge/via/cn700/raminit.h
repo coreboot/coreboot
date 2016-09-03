@@ -20,7 +20,7 @@
 #define DIMM_SOCKETS 1		/* Only one works, for now. */
 
 struct mem_controller {
-	device_t d0f0, d0f2, d0f3, d0f4, d0f7, d1f0;
+	pci_devfn_t d0f0, d0f2, d0f3, d0f4, d0f7, d1f0;
 	u8 channel0[DIMM_SOCKETS];
 };
 

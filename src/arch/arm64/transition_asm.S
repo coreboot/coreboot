@@ -124,8 +124,8 @@ ENDPROC(exc_prologue)
  * x0 = regs structure
  */
 ENTRY(trans_switch)
-	msr	 SPSel, #SPSR_USE_L
-        b        exc_exit
+	msr	SPSel, #SPSR_USE_L
+	b	exc_exit
 ENDPROC(trans_switch)
 
 /*

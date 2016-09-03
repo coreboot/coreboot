@@ -339,8 +339,8 @@ void acpigen_write_scope(const char *name)
 void acpigen_write_processor(u8 cpuindex, u32 pblock_addr, u8 pblock_len)
 {
 /*
-        Processor (\_PR.CPUcpuindex, cpuindex, pblock_addr, pblock_len)
-        {
+	Processor (\_PR.CPUcpuindex, cpuindex, pblock_addr, pblock_len)
+	{
 */
 	char pscope[16];
 	/* processor op */
@@ -359,26 +359,26 @@ void acpigen_write_processor(u8 cpuindex, u32 pblock_addr, u8 pblock_len)
 void acpigen_write_empty_PCT(void)
 {
 /*
-    Name (_PCT, Package (0x02)
-    {
-        ResourceTemplate ()
-        {
-            Register (FFixedHW,
-                0x00,               // Bit Width
-                0x00,               // Bit Offset
-                0x0000000000000000, // Address
-                ,)
-        },
+	Name (_PCT, Package (0x02)
+	{
+		ResourceTemplate ()
+		{
+			Register (FFixedHW,
+				0x00,               // Bit Width
+				0x00,               // Bit Offset
+				0x0000000000000000, // Address
+				,)
+		},
 
-        ResourceTemplate ()
-        {
-            Register (FFixedHW,
-                0x00,               // Bit Width
-                0x00,               // Bit Offset
-                0x0000000000000000, // Address
-                ,)
-        }
-    })
+		ResourceTemplate ()
+		{
+			Register (FFixedHW,
+				0x00,               // Bit Width
+				0x00,               // Bit Offset
+				0x0000000000000000, // Address
+				,)
+		}
+	})
 */
 	static char stream[] = {
 		0x08, 0x5F, 0x50, 0x43, 0x54, 0x12, 0x2C,	/* 00000030    "0._PCT.," */
@@ -395,26 +395,26 @@ void acpigen_write_empty_PCT(void)
 void acpigen_write_empty_PTC(void)
 {
 /*
-    Name (_PTC, Package (0x02)
-    {
-        ResourceTemplate ()
-        {
-            Register (FFixedHW,
-                0x00,               // Bit Width
-                0x00,               // Bit Offset
-                0x0000000000000000, // Address
-                ,)
-        },
+	Name (_PTC, Package (0x02)
+	{
+		ResourceTemplate ()
+		{
+			Register (FFixedHW,
+				0x00,               // Bit Width
+				0x00,               // Bit Offset
+				0x0000000000000000, // Address
+				,)
+		},
 
-        ResourceTemplate ()
-        {
-            Register (FFixedHW,
-                0x00,               // Bit Width
-                0x00,               // Bit Offset
-                0x0000000000000000, // Address
-                ,)
-        }
-    })
+		ResourceTemplate ()
+		{
+			Register (FFixedHW,
+				0x00,               // Bit Width
+				0x00,               // Bit Offset
+				0x0000000000000000, // Address
+				,)
+		}
+	})
 */
 	acpi_addr_t addr = {
 		.space_id   = ACPI_ADDRESS_SPACE_FIXED,
@@ -478,10 +478,10 @@ void acpigen_write_STA(uint8_t status)
 void acpigen_write_PPC(u8 nr)
 {
 /*
-    Method (_PPC, 0, NotSerialized)
-    {
-        Return (nr)
-    }
+	Method (_PPC, 0, NotSerialized)
+	{
+		Return (nr)
+	}
 */
 	acpigen_write_method("_PPC", 0);
 	/* return */
@@ -498,10 +498,10 @@ void acpigen_write_PPC(u8 nr)
 void acpigen_write_PPC_NVS(void)
 {
 /*
-    Method (_PPC, 0, NotSerialized)
-    {
-        Return (PPCM)
-    }
+	Method (_PPC, 0, NotSerialized)
+	{
+		Return (PPCM)
+	}
 */
 	acpigen_write_method("_PPC", 0);
 	/* return */
@@ -514,12 +514,12 @@ void acpigen_write_PPC_NVS(void)
 void acpigen_write_TPC(const char *gnvs_tpc_limit)
 {
 /*
-    // Sample _TPC method
-    Method (_TPC, 0, NotSerialized)
-    {
-        Return (\TLVL)
-    }
- */
+	// Sample _TPC method
+	Method (_TPC, 0, NotSerialized)
+	{
+		Return (\TLVL)
+	}
+*/
 	acpigen_write_method("_TPC", 0);
 	acpigen_emit_byte(0xa4);		/* ReturnOp */
 	acpigen_emit_namestring(gnvs_tpc_limit);
@@ -611,13 +611,13 @@ void acpigen_write_CSD_package(u32 domain, u32 numprocs, CSD_coord coordtype, u3
 void acpigen_write_TSS_package(int entries, acpi_tstate_t *tstate_list)
 {
 /*
-    Sample _TSS package with 100% and 50% duty cycles
-    Name (_TSS, Package (0x02)
-    {
-        Package(){100, 1000, 0, 0x00, 0)
-        Package(){50, 520, 0, 0x18, 0)
-    })
- */
+	Sample _TSS package with 100% and 50% duty cycles
+	Name (_TSS, Package (0x02)
+	{
+		Package(){100, 1000, 0, 0x00, 0)
+		Package(){50, 520, 0, 0x18, 0)
+	})
+*/
 	int i;
 	acpi_tstate_t *tstate = tstate_list;
 

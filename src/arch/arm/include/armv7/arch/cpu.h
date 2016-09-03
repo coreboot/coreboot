@@ -39,9 +39,9 @@ struct cpu_info {
 };
 
 struct cpuinfo_arm {
-        uint8_t    arm;            /* CPU family */
-        uint8_t    arm_vendor;     /* CPU vendor */
-        uint8_t    arm_model;
+	uint8_t    arm;            /* CPU family */
+	uint8_t    arm_vendor;     /* CPU vendor */
+	uint8_t    arm_model;
 };
 
 #endif

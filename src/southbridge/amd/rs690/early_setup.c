@@ -19,49 +19,49 @@
 #define NBMISC_INDEX		0x60
 #define NBMC_INDEX 		0xE8
 
-static u32 nb_read_index(device_t dev, u32 index_reg, u32 index)
+static u32 nb_read_index(pci_devfn_t dev, u32 index_reg, u32 index)
 {
 	pci_write_config32(dev, index_reg, index);
 	return pci_read_config32(dev, index_reg + 0x4);
 }
 
-static void nb_write_index(device_t dev, u32 index_reg, u32 index, u32 data)
+static void nb_write_index(pci_devfn_t dev, u32 index_reg, u32 index, u32 data)
 {
 	pci_write_config32(dev, index_reg, index /* | 0x80 */ );
 	pci_write_config32(dev, index_reg + 0x4, data);
 }
 
-static u32 nbmisc_read_index(device_t nb_dev, u32 index)
+static u32 nbmisc_read_index(pci_devfn_t nb_dev, u32 index)
 {
 	return nb_read_index((nb_dev), NBMISC_INDEX, (index));
 }
 
-static void nbmisc_write_index(device_t nb_dev, u32 index, u32 data)
+static void nbmisc_write_index(pci_devfn_t nb_dev, u32 index, u32 data)
 {
 	nb_write_index((nb_dev), NBMISC_INDEX, ((index) | 0x80), (data));
 }
 
-static u32 htiu_read_index(device_t nb_dev, u32 index)
+static u32 htiu_read_index(pci_devfn_t nb_dev, u32 index)
 {
 	return nb_read_index((nb_dev), NBHTIU_INDEX, (index));
 }
 
-static void htiu_write_index(device_t nb_dev, u32 index, u32 data)
+static void htiu_write_index(pci_devfn_t nb_dev, u32 index, u32 data)
 {
 	nb_write_index((nb_dev), NBHTIU_INDEX, ((index) | 0x100), (data));
 }
 
-static u32 nbmc_read_index(device_t nb_dev, u32 index)
+static u32 nbmc_read_index(pci_devfn_t nb_dev, u32 index)
 {
 	return nb_read_index((nb_dev), NBMC_INDEX, (index));
 }
 
-static void nbmc_write_index(device_t nb_dev, u32 index, u32 data)
+static void nbmc_write_index(pci_devfn_t nb_dev, u32 index, u32 data)
 {
 	nb_write_index((nb_dev), NBMC_INDEX, ((index) | 1 << 9), (data));
 }
 
-static void set_htiu_enable_bits(device_t nb_dev, u32 reg_pos, u32 mask,
+static void set_htiu_enable_bits(pci_devfn_t nb_dev, u32 reg_pos, u32 mask,
 				 u32 val)
 {
 	u32 reg_old, reg;
@@ -73,7 +73,7 @@ static void set_htiu_enable_bits(device_t nb_dev, u32 reg_pos, u32 mask,
 	}
 }
 
-static void set_nbmisc_enable_bits(device_t nb_dev, u32 reg_pos, u32 mask,
+static void set_nbmisc_enable_bits(pci_devfn_t nb_dev, u32 reg_pos, u32 mask,
 				   u32 val)
 {
 	u32 reg_old, reg;
@@ -85,7 +85,7 @@ static void set_nbmisc_enable_bits(device_t nb_dev, u32 reg_pos, u32 mask,
 	}
 }
 
-static void set_nbcfg_enable_bits(device_t nb_dev, u32 reg_pos, u32 mask,
+static void set_nbcfg_enable_bits(pci_devfn_t nb_dev, u32 reg_pos, u32 mask,
 				  u32 val)
 {
 	u32 reg_old, reg;
@@ -97,7 +97,7 @@ static void set_nbcfg_enable_bits(device_t nb_dev, u32 reg_pos, u32 mask,
 	}
 }
 
-static void set_nbcfg_enable_bits_8(device_t nb_dev, u32 reg_pos, u8 mask,
+static void set_nbcfg_enable_bits_8(pci_devfn_t nb_dev, u32 reg_pos, u8 mask,
 				    u8 val)
 {
 	u8 reg_old, reg;
@@ -109,7 +109,7 @@ static void set_nbcfg_enable_bits_8(device_t nb_dev, u32 reg_pos, u8 mask,
 	}
 }
 
-static void set_nbmc_enable_bits(device_t nb_dev, u32 reg_pos, u32 mask,
+static void set_nbmc_enable_bits(pci_devfn_t nb_dev, u32 reg_pos, u32 mask,
 				 u32 val)
 {
 	u32 reg_old, reg;
@@ -148,7 +148,7 @@ static void get_cpu_rev(void)
 		printk(BIOS_INFO, "CPU Rev is K8_10.\n");
 }
 
-static u8 get_nb_rev(device_t nb_dev)
+static u8 get_nb_rev(pci_devfn_t nb_dev)
 {
 	u32 reg;
 	reg = pci_read_config32(nb_dev, 0x00);
@@ -172,7 +172,7 @@ static void rs690_htinit(void)
 	/*
 	 * About HT, it has been done in enumerate_ht_chain().
 	 */
-	device_t k8_f0, rs690_f0;
+	pci_devfn_t k8_f0, rs690_f0;
 	u32 reg;
 	u8 reg8;
 	u8 k8_ht_freq;
@@ -227,7 +227,7 @@ static void rs690_htinit(void)
 *******************************************************/
 static void k8_optimization(void)
 {
-	device_t k8_f0, k8_f2, k8_f3;
+	pci_devfn_t k8_f0, k8_f2, k8_f3;
 	msr_t msr;
 
 	printk(BIOS_INFO, "k8_optimization()\n");
@@ -266,7 +266,7 @@ static void k8_optimization(void)
 /*****************************************
 * Compliant with CIM_33's ATINB_PCICFG_POR_TABLE
 *****************************************/
-static void rs690_por_pcicfg_init(device_t nb_dev)
+static void rs690_por_pcicfg_init(pci_devfn_t nb_dev)
 {
 	/* enable PCI Memory Access */
 	set_nbcfg_enable_bits_8(nb_dev, 0x04, (u8)(~0xFD), 0x02);
@@ -318,7 +318,7 @@ static void rs690_por_pcicfg_init(device_t nb_dev)
 /*****************************************
 * Compliant with CIM_33's ATINB_MCIndex_POR_TABLE
 *****************************************/
-static void rs690_por_mc_index_init(device_t nb_dev)
+static void rs690_por_mc_index_init(pci_devfn_t nb_dev)
 {
 	set_nbmc_enable_bits(nb_dev, 0x7A, ~0xFFFFFF80, 0x0000005F);
 	set_nbmc_enable_bits(nb_dev, 0xD8, ~0x00000000, 0x00600060);
@@ -333,7 +333,7 @@ static void rs690_por_mc_index_init(device_t nb_dev)
 * Compliant with CIM_33's ATINB_MISCIND_POR_TABLE
 * Compliant with CIM_33's MISC_INIT_TBL
 *****************************************/
-static void rs690_por_misc_index_init(device_t nb_dev)
+static void rs690_por_misc_index_init(pci_devfn_t nb_dev)
 {
 	/* NB_MISC_IND_WR_EN + IOC_PCIE_CNTL
 	 * Block non-snoop DMA request if PMArbDis is set.
@@ -386,7 +386,7 @@ static void rs690_por_misc_index_init(device_t nb_dev)
 /*****************************************
 * Compliant with CIM_33's ATINB_HTIUNBIND_POR_TABLE
 *****************************************/
-static void rs690_por_htiu_index_init(device_t nb_dev)
+static void rs690_por_htiu_index_init(pci_devfn_t nb_dev)
 {
 	/* 0xBC:
 	* Enables GSM mode for C1e or C3 with pop-up
@@ -419,7 +419,7 @@ static void rs690_por_htiu_index_init(device_t nb_dev)
 * POR: Power On Reset
 * RPR: Register Programming Requirements
 *****************************************/
-static void rs690_por_init(device_t nb_dev)
+static void rs690_por_init(pci_devfn_t nb_dev)
 {
 	printk(BIOS_INFO, "rs690_por_init\n");
 	/* ATINB_PCICFG_POR_TABLE, initialize the values for rs690 PCI Config registers */
@@ -458,7 +458,7 @@ static void rs690_before_pci_init(void)
 */
 static void rs690_early_setup(void)
 {
-	device_t nb_dev = PCI_DEV(0, 0, 0);
+	pci_devfn_t nb_dev = PCI_DEV(0, 0, 0);
 	printk(BIOS_INFO, "rs690_early_setup()\n");
 
 	/*ATINB_PrepareInit */

@@ -34,7 +34,7 @@ static void print_debug_pci_dev(u32 dev)
 
 static inline void print_pci_devices(void)
 {
-	device_t dev;
+	pci_devfn_t dev;
 	for (dev = PCI_DEV(0, 0, 0);
 		dev <= PCI_DEV(0xff, 0x1f, 0x7);
 		dev += PCI_DEV(0,0,1)) {
@@ -59,7 +59,7 @@ static inline void print_pci_devices(void)
 
 static inline void print_pci_devices_on_bus(u32 busn)
 {
-	device_t dev;
+	pci_devfn_t dev;
 	for (dev = PCI_DEV(busn, 0, 0);
 		dev <= PCI_DEV(busn, 0x1f, 0x7);
 		dev += PCI_DEV(0,0,1)) {
@@ -160,7 +160,7 @@ static inline void dump_pci_device_index(u32 dev, u32 index_reg, u32 type, u32 l
 
 static inline void dump_pci_devices(void)
 {
-	device_t dev;
+	pci_devfn_t dev;
 	for (dev = PCI_DEV(0, 0, 0);
 		dev <= PCI_DEV(0xff, 0x1f, 0x7);
 		dev += PCI_DEV(0,0,1)) {
@@ -185,7 +185,7 @@ static inline void dump_pci_devices(void)
 
 static inline void dump_pci_devices_on_bus(u32 busn)
 {
-	device_t dev;
+	pci_devfn_t dev;
 	for (dev = PCI_DEV(busn, 0, 0);
 		dev <= PCI_DEV(busn, 0x1f, 0x7);
 		dev += PCI_DEV(0,0,1)) {

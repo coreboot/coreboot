@@ -19,7 +19,7 @@
 /* bit [10,8] are dev func, bit[1,0] are dev index */
 
 
-static u32 pci_read_config32_index(device_t dev, u32 index_reg, u32 index)
+static u32 pci_read_config32_index(pci_devfn_t dev, u32 index_reg, u32 index)
 {
 	u32 dword;
 
@@ -29,7 +29,8 @@ static u32 pci_read_config32_index(device_t dev, u32 index_reg, u32 index)
 }
 
 #ifdef UNUSED_CODE
-static void pci_write_config32_index(device_t dev, u32 index_reg, u32 index, u32 data)
+static void pci_write_config32_index(pci_devfn_t dev, u32 index_reg, u32 index,
+		u32 data)
 {
 
 	pci_write_config32(dev, index_reg, index);
@@ -39,7 +40,8 @@ static void pci_write_config32_index(device_t dev, u32 index_reg, u32 index, u32
 }
 #endif
 
-static u32 pci_read_config32_index_wait(device_t dev, u32 index_reg, u32 index)
+static u32 pci_read_config32_index_wait(pci_devfn_t dev, u32 index_reg,
+		u32 index)
 {
 
 	u32 dword;
@@ -54,7 +56,8 @@ static u32 pci_read_config32_index_wait(device_t dev, u32 index_reg, u32 index)
 }
 
 #ifdef UNUSED_CODE
-static void pci_write_config32_index_wait(device_t dev, u32 index_reg, u32 index, u32 data)
+static void pci_write_config32_index_wait(pci_devfn_t dev, u32 index_reg,
+		u32 index, u32 data)
 {
 
 	u32 dword;

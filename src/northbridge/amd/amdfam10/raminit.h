@@ -23,7 +23,7 @@
 #define DIMM_SOCKETS 8
 struct mem_controller {
 	u32 node_id;
-	device_t f0, f1, f2, f3, f4, f5;
+	pci_devfn_t f0, f1, f2, f3, f4, f5;
 	/* channelA, channelB belong to DCT0,
 	 * channelC, channelD belong to DCT1
 	 * Each DCT may support one ganged logical FBDIMM ---> 128 bit
@@ -47,7 +47,7 @@ struct mem_controller {
 #define DIMM_SOCKETS 4
 struct mem_controller {
 	u32 node_id;
-	device_t f0, f1, f2, f3, f4, f5;
+	pci_devfn_t f0, f1, f2, f3, f4, f5;
 	/* channel0 is DCT0 --- channelA
 	 * channel1 is DCT1 --- channelB
 	 * can be ganged, a single dual-channel DCT ---> 128 bit

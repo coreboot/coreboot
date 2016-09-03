@@ -93,7 +93,7 @@ static void enumerate_ht_chain(void)
 				if ((flags >> 13) == 0) {
 					unsigned count;
 					unsigned ctrl, ctrl_off;
-					device_t devx;
+					pci_devfn_t devx;
 
 #if CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20
 					if (next_unitid>=0x18) {

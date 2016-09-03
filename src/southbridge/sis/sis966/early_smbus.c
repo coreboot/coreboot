@@ -510,10 +510,12 @@ static const uint8_t	SiS_SiS1183_init[44][3]={
  */
 static void Init_Share_Memory(uint8_t ShareSize)
 {
-    device_t dev;
+	pci_devfn_t dev;
 
-    dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_SIS, PCI_DEVICE_ID_SIS_SIS761), 0);
-    pci_write_config8(dev, 0x4C, (pci_read_config8(dev, 0x4C) & 0x1F) | (ShareSize << 5));
+	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_SIS,
+				PCI_DEVICE_ID_SIS_SIS761), 0);
+	pci_write_config8(dev, 0x4C, (pci_read_config8(dev, 0x4C) & 0x1F) |
+			(ShareSize << 5));
 }
 
 /* In:     => Aperture size
@@ -526,7 +528,7 @@ static void Init_Share_Memory(uint8_t ShareSize)
  */
 static void Init_Aper_Size(uint8_t AperSize)
 {
-	device_t dev;
+	pci_devfn_t dev;
 	uint16_t SiSAperSizeTable[]={0x0F38, 0x0F30, 0x0F20, 0x0F00, 0x0E00};
 
 	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_AMD, 0x1103), 0);
@@ -538,7 +540,7 @@ static void Init_Aper_Size(uint8_t AperSize)
 
 static void sis_init_stage1(void)
 {
-	device_t dev;
+	pci_devfn_t dev;
 	uint8_t temp8;
 	int	i;
 	uint8_t	GUI_En;
@@ -600,7 +602,7 @@ static void sis_init_stage1(void)
 
 static void sis_init_stage2(void)
 {
-	device_t dev;
+	pci_devfn_t dev;
 	msr_t	msr;
 	int	i;
 	uint8_t temp8;
@@ -711,7 +713,7 @@ static void sis_init_stage2(void)
 
 static void enable_smbus(void)
 {
-	device_t dev;
+	pci_devfn_t dev;
 	uint8_t temp8;
 	printk(BIOS_DEBUG, "enable_smbus -------->\n");
 

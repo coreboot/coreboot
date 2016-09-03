@@ -6,7 +6,7 @@
 #define MAX_DIMM_SOCKETS (MAX_NUM_CHANNELS * MAX_DIMM_SOCKETS_PER_CHANNEL)
 
 struct mem_controller {
-	device_t d0, d0f1;					// PCI bus/device/fcns of E7501 memory controller
+	pci_devfn_t d0, d0f1; // PCI bus/device/fcns of E7501 memory controller
 
 	// SMBus addresses of DIMM slots for each channel,
 	// in order from closest to MCH to furthest away

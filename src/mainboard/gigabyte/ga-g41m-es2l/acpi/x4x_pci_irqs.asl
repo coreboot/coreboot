@@ -20,6 +20,8 @@ Method(_PRT)
 {
 	If (PICM) {
 		Return (Package() {
+			/* PEG */
+			Package() { 0x0001ffff, 0, 0, 16 },
 			/* Internal GFX */
 			Package() { 0x0002ffff, 0, 0, 16 },
 			Package() { 0x0002ffff, 1, 0, 17 },
@@ -46,6 +48,8 @@ Method(_PRT)
 		})
 	} Else {
 		Return (Package() {
+			/* PEG */
+			Package() { 0x0001ffff, 0, \_SB.PCI0.LPCB.LNKA, 0 },
 			/* Internal GFX */
 			Package() { 0x0002ffff, 0, \_SB.PCI0.LPCB.LNKA, 0 },
 			Package() { 0x0002ffff, 1, \_SB.PCI0.LPCB.LNKB, 0 },

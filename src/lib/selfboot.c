@@ -328,23 +328,20 @@ static int build_self_segment_list(
 	return 1;
 }
 
-static int load_self_segments(
-	struct segment *head,
-	struct prog *payload)
+static int payload_targets_usable_ram(struct segment *head)
 {
-	struct segment *ptr;
 	const unsigned long one_meg = (1UL << 20);
-	unsigned long bounce_high = lb_end;
+	struct segment *ptr;
 
-	for(ptr = head->next; ptr != head; ptr = ptr->next) {
+	for (ptr = head->next; ptr != head; ptr = ptr->next) {
 		if (bootmem_region_targets_usable_ram(ptr->s_dstaddr,
-							ptr->s_memsz))
+						      ptr->s_memsz))
 			continue;
 
 		if (ptr->s_dstaddr < one_meg &&
 		    (ptr->s_dstaddr + ptr->s_memsz) <= one_meg) {
 			printk(BIOS_DEBUG,
-				"Payload being loaded below 1MiB "
+				"Payload being loaded at below 1MiB "
 				"without region being marked as RAM usable.\n");
 			continue;
 		}
@@ -356,6 +353,19 @@ static int load_self_segments(
 		bootmem_dump_ranges();
 		return 0;
 	}
+
+	return 1;
+}
+
+static int load_self_segments(
+	struct segment *head,
+	struct prog *payload)
+{
+	struct segment *ptr;
+	unsigned long bounce_high = lb_end;
+
+	if (!payload_targets_usable_ram(head))
+		return 0;
 
 	for(ptr = head->next; ptr != head; ptr = ptr->next) {
 		/*

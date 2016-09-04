@@ -36,7 +36,7 @@
 #define  D3F2EN		(1 << 8)
 #define  D3F3EN		(1 << 9)
 #define  PEG1EN		(1 << 13)
-#define  BOARD_DEVEN	(D0EN | D1EN | IGD0EN | IGD1EN)
+#define  BOARD_DEVEN	(D0EN | D1EN | IGD0EN | IGD1EN | PEG1EN)
 #define D0F0_PCIEXBAR_LO 0x60
 #define D0F0_PCIEXBAR_HI 0x64
 #define D0F0_DMIBAR_LO 0x68

@@ -1633,7 +1633,7 @@ static void mmap_ddr2(struct sysinfo *s)
 	gfxsize = ggc2uma[(ggc & 0xf0) >> 4];
 	gttsize = ggc2gtt[(ggc & 0xf00) >> 8];
 	tsegsize = 1; // 1MB TSEG
-	mmiosize = 0x400; // 1GB MMIO
+	mmiosize = 0x800; // 2GB MMIO
 	tom = s->channel_capacity[0] + s->channel_capacity[1] - ME_UMA_SIZEMB;
 	tolud = MIN(0x1000 - mmiosize, tom);
 

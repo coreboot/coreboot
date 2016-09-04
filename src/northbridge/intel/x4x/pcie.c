@@ -26,147 +26,162 @@
 #include "x4x.h"
 
 #define DEFAULT_RCBA	0xfed1c000
+#define RCBA8(x) *((volatile u8 *)(DEFAULT_RCBA + x))
+#define RCBA16(x) *((volatile u16 *)(DEFAULT_RCBA + x))
+#define RCBA32(x) *((volatile u32 *)(DEFAULT_RCBA + x))
 
 static void init_egress(void)
 {
+	u32 reg32;
+
 	/* VC0: TC0 only */
 	EPBAR8(0x14) = 1;
 	EPBAR8(0x4) = 1;
 
+	switch (MCHBAR32(0xc00) & 0x7) {
+	case 0x0:
+		/* FSB 1066 */
+		EPBAR32(0x2c) = 0x0001a6db;
+		break;
+	case 0x2:
+		/* FSB 800 */
+		EPBAR32(0x2c) = 0x00014514;
+		break;
+	default:
+	case 0x4:
+		/* FSB 1333 */
+		EPBAR32(0x2c) = 0x00022861;
+		break;
+	}
+	EPBAR32(0x28) = 0x0a0a0a0a;
+	EPBAR8(0xc) = (EPBAR8(0xc) & ~0xe) | 2;
+	EPBAR32(0x1c) = (EPBAR32(0x1c) & ~0x7f0000) | 0x0a0000;
+	MCHBAR8(0x3c) = MCHBAR8(0x3c) | 0x7;
+
 	/* VC1: ID1, TC7 */
-	EPBAR32(0x20) = (EPBAR32(0x20) & ~(7 << 24)) | (1 << 24);
-	EPBAR8(0x20) = 1 << 7;
+	reg32 = (EPBAR32(0x20) & ~(7 << 24)) | (1 << 24);
+	reg32 = (reg32 & ~0xfe) | (1 << 7);
+	EPBAR32(0x20) = reg32;
+
+	/* Init VC1 port arbitration table */
+	EPBAR32(0x100) = 0x001000001;
+	EPBAR32(0x104) = 0x000040000;
+	EPBAR32(0x108) = 0x000001000;
+	EPBAR32(0x10c) = 0x000000040;
+	EPBAR32(0x110) = 0x001000001;
+	EPBAR32(0x114) = 0x000040000;
+	EPBAR32(0x118) = 0x000001000;
+	EPBAR32(0x11c) = 0x000000040;
+
+	/* Load table */
+	reg32 = EPBAR32(0x20) | (1 << 16);
+	EPBAR32(0x20) = reg32;
+	asm("nop");
+	EPBAR32(0x20) = reg32;
+
+	/* Wait for table load */
+	while ((EPBAR8(0x26) & (1 << 0)) != 0) ;
 
 	/* VC1: enable */
 	EPBAR32(0x20) |= 1 << 31;
 
-	while ((EPBAR8(0x26) & 2) != 0) ;
+	/* Wait for VC1 */
+	while ((EPBAR8(0x26) & (1 << 1)) != 0) ;
 
-	printk(BIOS_DEBUG, "Done EP loop\n");
+	printk(BIOS_DEBUG, "Done Egress Port\n");
 }
 
 static void init_dmi(void)
 {
+	u32 reg32;
+	u16 reg16;
+
+	/* Assume IGD present */
+
+	/* Clear error status */
+	DMIBAR32(0x1c4) = 0xffffffff;
+	DMIBAR32(0x1d0) = 0xffffffff;
+
 	/* VC0: TC0 only */
 	DMIBAR8(DMIVC0RCTL) = 1;
 	DMIBAR8(0x4) = 1;
 
 	/* VC1: ID1, TC7 */
-	DMIBAR32(DMIVC1RCTL) = (DMIBAR32(DMIVC1RCTL) & ~(7 << 24)) | (1 << 24);
-	DMIBAR8(DMIVC1RCTL) = 1 << 7;
+	reg32 = (DMIBAR32(DMIVC1RCTL) & ~(7 << 24)) | (1 << 24);
+	reg32 = (reg32 & ~0xff) | 1 << 7;
 
 	/* VC1: enable */
-	DMIBAR32(DMIVC1RCTL) |= 1 << 31;
+	reg32 |= 1 << 31;
+	reg32 = (reg32 & ~(0x7 << 17)) | (0x4 << 17);
 
-	// Hangs
-	//while ((DMIBAR8(0x26) & 2) != 0) ;
-	//printk(BIOS_DEBUG, "Done DMI loop\n");
+	DMIBAR32(DMIVC1RCTL) = reg32;
 
-	DMIBAR32(0x0028) = 0x00000001;
-	DMIBAR32(0x002c) = 0x86000000;
-	DMIBAR32(0x0040) = 0x08010005;
-	DMIBAR32(0x0044) = 0x01010202;
-	DMIBAR32(0x0050) = 0x00020001;
-	DMIBAR32(0x0058) = DEFAULT_RCBA;
-	DMIBAR32(0x0060) = 0x00010001;
-	DMIBAR32(0x0068) = DEFAULT_EPBAR;
-	DMIBAR32(0x0080) = 0x00010006;
-	DMIBAR32(0x0084) = 0x00012c41;
-	DMIBAR32(0x0088) = 0x00410000;
-	DMIBAR32(0x00f0) = 0x00012000;
-	DMIBAR32(0x00f4) = 0x33fe0037;
-	DMIBAR32(0x00fc) = 0xf000f004;
+	/* Set up VCs in southbridge RCBA */
+	RCBA8(0x3022) &= ~1;
 
-	DMIBAR32(0x01b0) = 0x00400000;
-	DMIBAR32(0x01b4) = 0x00008000;
-	DMIBAR32(0x01b8) = 0x000018f2;
-	DMIBAR32(0x01bc) = 0x00000018;
-	DMIBAR32(0x01cc) = 0x00060010;
-	DMIBAR32(0x01d4) = 0x00002000;
-	DMIBAR32(0x0200) = 0x00400f26;
-	DMIBAR32(0x0204) = 0x0001313f;
-	DMIBAR32(0x0208) = 0x00007cb0;
-	DMIBAR32(0x0210) = 0x00000101;
-	DMIBAR32(0x0214) = 0x0007000f;
-	DMIBAR32(0x0224) = 0x00030005;
-	DMIBAR32(0x0230) = 0x2800000e;
-	DMIBAR32(0x0234) = 0x4abcb5bc;
-	DMIBAR32(0x0250) = 0x00000007;
+	reg32 = (0x5 << 28) | (1 << 6); /* PCIe x4 */
+	RCBA32(0x2020) = (RCBA32(0x2020) & ~((0xf << 28) | (0x7 << 6))) | reg32;
 
-	DMIBAR32(0x0c00) = 0x0000003c;
-	DMIBAR32(0x0c04) = 0x16000000;
-	DMIBAR32(0x0c0c) = 0x00001fff;
-	DMIBAR32(0x0c10) = 0x0000b100;
-	DMIBAR32(0x0c24) = 0xffff0038;
-	DMIBAR32(0x0c28) = 0x0000000e;
-	DMIBAR32(0x0c2c) = 0x003c0008;
-	DMIBAR32(0x0c30) = 0x02000180;
-	DMIBAR32(0x0c34) = 0x10040071;
-	DMIBAR32(0x0d60) = 0x00000001;
-	DMIBAR32(0x0d6c) = 0x00000300;
-	DMIBAR32(0x0d74) = 0x00000020;
-	DMIBAR32(0x0d78) = 0x00220000;
-	DMIBAR32(0x0d7c) = 0x111f727c;
-	DMIBAR32(0x0d80) = 0x00001409;
-	DMIBAR32(0x0d88) = 0x000f1867;
-	DMIBAR32(0x0d8c) = 0x013000fc;
-	DMIBAR32(0x0da4) = 0x00009757;
-	DMIBAR32(0x0da8) = 0x00000078;
-	DMIBAR32(0x0e00) = 0x000d034e;
-	DMIBAR32(0x0e04) = 0x01880880;
-	DMIBAR32(0x0e08) = 0x01000060;
-	DMIBAR32(0x0e0c) = 0x00000080;
-	DMIBAR32(0x0e10) = 0xbe000000;
-	DMIBAR32(0x0e18) = 0x000000e3;
-	DMIBAR32(0x0e20) = 0x000d034e;
-	DMIBAR32(0x0e24) = 0x01880880;
-	DMIBAR32(0x0e28) = 0x01000060;
-	DMIBAR32(0x0e2c) = 0x00000080;
-	DMIBAR32(0x0e30) = 0xbe000000;
-	DMIBAR32(0x0e38) = 0x000000e3;
-	DMIBAR32(0x0e40) = 0x000d034e;
-	DMIBAR32(0x0e44) = 0x01880880;
-	DMIBAR32(0x0e48) = 0x01000060;
-	DMIBAR32(0x0e4c) = 0x00000080;
-	DMIBAR32(0x0e50) = 0xbe000000;
-	DMIBAR32(0x0e58) = 0x000000e3;
-	DMIBAR32(0x0e60) = 0x000d034e;
-	DMIBAR32(0x0e64) = 0x01880880;
-	DMIBAR32(0x0e68) = 0x01000060;
-	DMIBAR32(0x0e6c) = 0x00000080;
-	DMIBAR32(0x0e70) = 0xbe000000;
-	DMIBAR32(0x0e78) = 0x000000e3;
+	/* Assign VC1 id 1 */
+	RCBA32(0x20) = (RCBA32(0x20) & ~(0x7 << 24)) | (1 << 24);
 
-	DMIBAR32(0x0e14) = 0xce00381b;
-	DMIBAR32(0x0e34) = 0x4000781b;
-	DMIBAR32(0x0e54) = 0x5c00781b;
-	DMIBAR32(0x0e74) = 0x5400381b;
+	/* Map TC7 to VC1 */
+	RCBA8(0x20) &= 1;
+	RCBA8(0x20) |= 1 << 7;
 
-	DMIBAR32(0x0218) = 0x0b6202c1;
-	DMIBAR32(0x021c) = 0x02c202c2;
+	/* Map TC0 to VC0 */
+	RCBA8(0x14) &= 1;
 
-	DMIBAR32(0x0334) = 0x00b904b3;
-	DMIBAR32(0x0338) = 0x004e0000;
+	/* Init DMI VC1 port arbitration table */
+	RCBA32(0x20) &= 0xfff1ffff;
+	RCBA32(0x20) |= 1 << 19;
 
-	DMIBAR32(0x0300) = 0x00a70f4c;
-	DMIBAR32(0x0304) = 0x00a90f54;
-	DMIBAR32(0x0308) = 0x00d103c4;
-	DMIBAR32(0x030c) = 0x003c0e10;
-	DMIBAR32(0x0310) = 0x003d0e11;
-	DMIBAR32(0x0314) = 0x00640000;
-	DMIBAR32(0x0318) = 0x00320c86;
-	DMIBAR32(0x031c) = 0x003a0ca6;
-	DMIBAR32(0x0324) = 0x00040010;
-	DMIBAR32(0x0328) = 0x00040000;
+	RCBA32(0x30) = 0x0000000f;
+	RCBA32(0x34) = 0x000f0000;
+	RCBA32(0x38) = 0;
+	RCBA32(0x3c) = 0x000000f0;
+	RCBA32(0x40) = 0x0f000000;
+	RCBA32(0x44) = 0;
+	RCBA32(0x48) = 0x0000f000;
+	RCBA32(0x4c) = 0;
+	RCBA32(0x50) = 0x0000000f;
+	RCBA32(0x54) = 0x000f0000;
+	RCBA32(0x58) = 0;
+	RCBA32(0x5c) = 0x000000f0;
+	RCBA32(0x60) = 0x0f000000;
+	RCBA32(0x64) = 0;
+	RCBA32(0x68) = 0x0000f000;
+	RCBA32(0x6c) = 0;
 
-	EPBAR32(0x40) = 0x00010005;
-	EPBAR32(0x44) = 0x00010301;
-	EPBAR32(0x50) = 0x01010001;
-	EPBAR32(0x58) = DEFAULT_DMIBAR;
-	EPBAR32(0x60) = 0x02010003;
-	EPBAR32(0x68) = 0x00008000;
-	EPBAR32(0x70) = 0x03000002;
-	EPBAR32(0x78) = 0x00030000;
+	RCBA32(0x20) |= 1 << 16;
+
+	/* Enable VC1 */
+	RCBA32(0x20) |= 1 << 31;
+
+	/* Wait for VC1 */
+	while ((RCBA8(0x26) & (1 << 1)) != 0);
+
+	/* Wait for table load */
+	while ((RCBA8(0x26) & (1 << 0)) != 0);
+
+	/* ASPM on DMI link */
+	RCBA16(0x1a8) &= ~0x3;
+	reg16 = RCBA16(0x1a8);
+	RCBA32(0x2010) = (RCBA32(0x2010) & ~(0x3 << 10)) | (1 << 10);
+	reg32 = RCBA32(0x2010);
+
+	/* Set up VC1 max time */
+	RCBA32(0x1c) = (RCBA32(0x1c) & ~0x7f0000) | 0x120000;
+
+	while ((DMIBAR32(0x26) & (1 << 1)) != 0);
+	printk(BIOS_DEBUG, "Done DMI setup\n");
+
+	/* ASPM on DMI */
+	DMIBAR32(0x200) &= ~(0x3 << 26);
+	DMIBAR16(0x210) = (DMIBAR16(0x210) & ~(0xff7)) | 0x101;
+	DMIBAR32(0x88) &= ~0x3;
+	DMIBAR32(0x88) |= 0x3;
+	reg16 = DMIBAR16(0x88);
 }
 
 void x4x_late_init(void)

@@ -159,60 +159,62 @@ enum {
 	SPI_OPCODE_TYPE_WRITE_WITH_ADDRESS =	3
 };
 
-static u8 readb_(const void *addr)
+#define SPI_OFFSET_MASK		0x3ff
+
+static uint8_t readb_(const void *addr)
 {
-	u8 v = read8(addr);
+	uint8_t v = read8(addr);
 	if (IS_ENABLED(CONFIG_DEBUG_SPI_FLASH)) {
 		printk(BIOS_DEBUG, "SPI: read %2.2x from %4.4x\n",
-			v, ((unsigned) addr & 0xffff) - 0xf020);
+			v, ((uint32_t) addr) & SPI_OFFSET_MASK);
 	}
 	return v;
 }
 
-static u16 readw_(const void *addr)
+static uint16_t readw_(const void *addr)
 {
-	u16 v = read16(addr);
+	uint16_t v = read16(addr);
 	if (IS_ENABLED(CONFIG_DEBUG_SPI_FLASH)) {
 		printk(BIOS_DEBUG, "SPI: read %4.4x from %4.4x\n",
-			v, ((unsigned) addr & 0xffff) - 0xf020);
+			v, ((uint32_t) addr) & SPI_OFFSET_MASK);
 	}
 	return v;
 }
 
-static u32 readl_(const void *addr)
+static uint32_t readl_(const void *addr)
 {
-	u32 v = read32(addr);
+	uint32_t v = read32(addr);
 	if (IS_ENABLED(CONFIG_DEBUG_SPI_FLASH)) {
 		printk(BIOS_DEBUG, "SPI: read %8.8x from %4.4x\n",
-			v, ((unsigned) addr & 0xffff) - 0xf020);
+			v, ((uint32_t) addr) & SPI_OFFSET_MASK);
 	}
 	return v;
 }
 
-static void writeb_(u8 b, void *addr)
+static void writeb_(uint8_t b, void *addr)
 {
 	write8(addr, b);
 	if (IS_ENABLED(CONFIG_DEBUG_SPI_FLASH)) {
 		printk(BIOS_DEBUG, "SPI: wrote %2.2x to %4.4x\n",
-			b, ((unsigned) addr & 0xffff) - 0xf020);
+			b, ((uint32_t) addr) & SPI_OFFSET_MASK);
 	}
 }
 
-static void writew_(u16 b, void *addr)
+static void writew_(uint16_t b, void *addr)
 {
 	write16(addr, b);
 	if (IS_ENABLED(CONFIG_DEBUG_SPI_FLASH)) {
 		printk(BIOS_DEBUG, "SPI: wrote %4.4x to %4.4x\n",
-			b, ((unsigned) addr & 0xffff) - 0xf020);
+			b, ((uint32_t) addr) & SPI_OFFSET_MASK);
 	}
 }
 
-static void writel_(u32 b, void *addr)
+static void writel_(uint32_t b, void *addr)
 {
 	write32(addr, b);
 	if (IS_ENABLED(CONFIG_DEBUG_SPI_FLASH)) {
 		printk(BIOS_DEBUG, "SPI: wrote %8.8x to %4.4x\n",
-			b, ((unsigned) addr & 0xffff) - 0xf020);
+			b, ((uint32_t) addr) & SPI_OFFSET_MASK);
 	}
 }
 
@@ -457,10 +459,10 @@ static int spi_setup_offset(spi_transaction *trans)
  *
  * Return the last read status value on success or -1 on failure.
  */
-static int ich_status_poll(u16 bitmask, int wait_til_set)
+static int ich_status_poll(uint16_t bitmask, int wait_til_set)
 {
 	int timeout = 40000; /* This will result in 400 ms */
-	u16 status = 0;
+	uint16_t status = 0;
 
 	while (timeout--) {
 		status = readw_(cntlr.status);

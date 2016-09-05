@@ -131,10 +131,10 @@ u8 ec_it8518_get_event(void)
 {
 	u8 cmd = 0;
 	u8 status = inb(EC_SC);
-	if (status & SCI_EVT) 	{
+	if (status & SCI_EVT) {
 		ec_write_cmd(QR_EC);
 		cmd = ec_read_ob();
-	} else if ( status & SMI_EVT) {
+	} else if (status & SMI_EVT) {
 		ec_kbc_write_cmd(EC_KBD_SMI_EVENT);
 		cmd = ec_kbc_read_ob();
 	}
@@ -167,7 +167,7 @@ static struct device_operations ops = {
 };
 
 static struct pnp_info pnp_dev_info[] = {
-        { &ops, 0, 0, { 0, 0 }, }
+	{ &ops, 0, 0, { 0, 0 }, }
 };
 
 static void enable_dev(struct device *dev)

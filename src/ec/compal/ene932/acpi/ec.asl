@@ -32,7 +32,7 @@ Device (EC0)
 		Offset(0x00),
 		, 1,            // Reserved                              ; 00h.0
 		LCDS, 1,        // 1= BACKLIGHT ON , 0= BACKLIGHT OFF    ; 00h.1
-			, 6,        // Reserved                              ; 00h.2 ~ 00h.6
+		, 6,            // Reserved                              ; 00h.2 ~ 00h.6
 		HTBN, 8,        // HOTKEY_BUTTON_NUMBER                  ; 01h For ABO Hot Key Function
 		HTBT, 8,        // HOTKEY_BUTTON_TYPE                    ; 02h For ABO Hot Key Function
 		LMEN, 1,        // Launch Manager enable .(1=Enable )    ; 03h.0, Lauanch manage
@@ -212,9 +212,9 @@ Device (EC0)
 		                // 101 : CPT
 		, 1,            // Reserved                             ; C0h.7
 		BST0, 8,        // Battery Status                       ; C1h
-                        // Bit0 : Discharging
-                        // Bit1 : Charging
-                        // Bit2 : Discharg and Critical Low
+		                // Bit0 : Discharging
+		                // Bit1 : Charging
+		                // Bit2 : Discharg and Critical Low
 		                // Bit3-7 : Reserved
 		BRC0, 16,       // Batt Remaining Capacity              ; C2h, C3h
 		BSN0, 16,       // Batt Serial Number                   ; C4h, C5h

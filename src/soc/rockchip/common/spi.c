@@ -32,7 +32,7 @@ struct rockchip_spi_slave {
 };
 
 #define SPI_TIMEOUT_US	1000
-#define SPI_SRCCLK_HZ   (99*MHz)
+#define SPI_SRCCLK_HZ   (198*MHz)
 #define SPI_FIFO_DEPTH	32
 
 static struct rockchip_spi_slave rockchip_spi_slaves[] = {
@@ -152,9 +152,6 @@ void rockchip_spi_init(unsigned int bus, unsigned int speed_hz)
 	/* Byte and Halfword Transform */
 	ctrlr0 |= (SPI_APB_8BIT << SPI_HALF_WORLD_TX_OFFSET);
 
-	/* Rxd Sample Delay */
-	ctrlr0 |= (0 << SPI_RXDSD_OFFSET);
-
 	/* Frame Format */
 	ctrlr0 |= (SPI_FRF_SPI << SPI_FRF_OFFSET);
 
@@ -163,6 +160,19 @@ void rockchip_spi_init(unsigned int bus, unsigned int speed_hz)
 	/* fifo depth */
 	write32(&regs->txftlr, SPI_FIFO_DEPTH / 2 - 1);
 	write32(&regs->rxftlr, SPI_FIFO_DEPTH / 2 - 1);
+}
+
+void rockchip_spi_set_sample_delay(unsigned int bus, unsigned int delay_ns)
+{
+	assert(bus >= 0 && bus < ARRAY_SIZE(rockchip_spi_slaves));
+	struct rockchip_spi *regs = rockchip_spi_slaves[bus].regs;
+	unsigned int rsd;
+
+	/* Rxd Sample Delay */
+	rsd = DIV_ROUND_CLOSEST(delay_ns * (SPI_SRCCLK_HZ >> 8), 1*GHz >> 8);
+	assert(rsd >= 0 && rsd <= 3);
+	clrsetbits_le32(&regs->ctrlr0, SPI_RXDSD_MASK << SPI_RXDSD_OFFSET,
+			rsd << SPI_RXDSD_OFFSET);
 }
 
 int spi_claim_bus(struct spi_slave *slave)

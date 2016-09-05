@@ -149,9 +149,6 @@ void rockchip_spi_init(unsigned int bus, unsigned int speed_hz)
 	/* First Bit Mode */
 	ctrlr0 |= (SPI_FBM_MSB << SPI_FBM_OFFSET);
 
-	/* Byte and Halfword Transform */
-	ctrlr0 |= (SPI_APB_8BIT << SPI_HALF_WORLD_TX_OFFSET);
-
 	/* Frame Format */
 	ctrlr0 |= (SPI_FRF_SPI << SPI_FRF_OFFSET);
 
@@ -220,7 +217,7 @@ static void set_transfer_mode(struct rockchip_spi *regs,
 }
 
 /* returns 0 to indicate success, <0 otherwise */
-static int do_xfer(struct rockchip_spi *regs, const void *dout,
+static int do_xfer(struct rockchip_spi *regs, bool use_16bit, const void *dout,
 		   unsigned int *bytes_out, void *din, unsigned int *bytes_in)
 {
 	uint8_t *in_buf = din;
@@ -251,12 +248,23 @@ static int do_xfer(struct rockchip_spi *regs, const void *dout,
 		 * sychronizing with the SPI clock which is pretty slow.
 		 */
 		if (*bytes_in && !(sr & SR_RF_EMPT)) {
-			int todo = read32(&regs->rxflr) & RXFLR_LEVEL_MASK;
+			int fifo = read32(&regs->rxflr) & RXFLR_LEVEL_MASK;
+			int val;
 
-			*bytes_in -= todo;
-			xferred = todo;
-			while (todo-- > 0)
-				*in_buf++ = read32(&regs->rxdr) & 0xff;
+			if (use_16bit)
+				xferred = fifo * 2;
+			else
+				xferred = fifo;
+			*bytes_in -= xferred;
+			while (fifo-- > 0) {
+				val = read32(&regs->rxdr);
+				if (use_16bit) {
+					*in_buf++ = val & 0xff;
+					*in_buf++ = (val >> 8) & 0xff;
+				} else {
+					*in_buf++ = val & 0xff;
+				}
+			}
 		}
 
 		min_xfer -= xferred;
@@ -290,11 +298,30 @@ int spi_xfer(struct spi_slave *slave, const void *dout,
 	 * seems to work fine.
 	 */
 	while (bytes_out || bytes_in) {
-		unsigned int in_now = MIN(bytes_in, 0xffff);
-		unsigned int out_now = MIN(bytes_out, 0xffff);
+		unsigned int in_now = MIN(bytes_in, 0xfffe);
+		unsigned int out_now = MIN(bytes_out, 0xfffe);
 		unsigned int in_rem, out_rem;
+		unsigned int mask;
+		bool use_16bit;
 
 		rockchip_spi_enable_chip(regs, 0);
+
+		/*
+		 * Use 16-bit transfers for higher-speed reads. If we are
+		 * transferring an odd number of bytes, try to make it even.
+		 */
+		use_16bit = false;
+		if (bytes_out == 0) {
+			if ((in_now & 1) && in_now > 1)
+				in_now--;
+			if (!(in_now & 1))
+				use_16bit = true;
+		}
+		mask = SPI_APB_8BIT << SPI_HALF_WORLD_TX_OFFSET;
+		if (use_16bit)
+			clrbits_le32(&regs->ctrlr0, mask);
+		else
+			setbits_le32(&regs->ctrlr0, mask);
 
 		/* Enable/disable transmitter and receiver as needed to
 		 * avoid sending or reading spurious bits. */
@@ -307,7 +334,7 @@ int spi_xfer(struct spi_slave *slave, const void *dout,
 
 		in_rem = in_now;
 		out_rem = out_now;
-		ret = do_xfer(regs, dout, &out_rem, din, &in_rem);
+		ret = do_xfer(regs, use_16bit, dout, &out_rem, din, &in_rem);
 		if (ret < 0)
 			break;
 

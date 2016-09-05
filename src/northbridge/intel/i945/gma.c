@@ -77,7 +77,7 @@ static int gtt_setup(void *mmiobase)
 	return 0;
 }
 
-static int intel_gma_init(struct northbridge_intel_i945_config *conf,
+static int intel_gma_init_lvds(struct northbridge_intel_i945_config *conf,
 			  unsigned int pphysbase, unsigned int piobase,
 			  void *pmmio, unsigned int pgfx)
 {
@@ -383,6 +383,194 @@ static int intel_gma_init(struct northbridge_intel_i945_config *conf,
 #endif
 	return 0;
 }
+
+static int intel_gma_init_vga(struct northbridge_intel_i945_config *conf,
+			  unsigned int pphysbase, unsigned int piobase,
+			  void *pmmio, unsigned int pgfx)
+{
+	int i;
+	u32 hactive, vactive;
+	u16 reg16;
+	u32 uma_size;
+
+	printk(BIOS_SPEW, "pmmio %x addrport %x physbase %x\n",
+		(u32)pmmio, piobase, pphysbase);
+
+	gtt_setup(pmmio);
+
+	/* Disable VGA.  */
+	write32(pmmio + VGACNTRL, VGA_DISP_DISABLE);
+
+	/* Disable pipes.  */
+	write32(pmmio + PIPECONF(0), 0);
+	write32(pmmio + PIPECONF(1), 0);
+
+	write32(pmmio + INSTPM, 0x800);
+
+	vga_gr_write(0x18, 0);
+
+	write32(pmmio + VGA0, 0x200074);
+	write32(pmmio + VGA1, 0x200074);
+
+	write32(pmmio + DSPFW3, 0x7f3f00c1 & ~PINEVIEW_SELF_REFRESH_EN);
+	write32(pmmio + DSPCLK_GATE_D, 0);
+	write32(pmmio + FW_BLC, 0x03060106);
+	write32(pmmio + FW_BLC2, 0x00000306);
+
+	write32(pmmio + ADPA, ADPA_DAC_ENABLE
+			| ADPA_PIPE_A_SELECT
+			| ADPA_USE_VGA_HVPOLARITY
+			| ADPA_VSYNC_CNTL_ENABLE
+			| ADPA_HSYNC_CNTL_ENABLE
+			| ADPA_DPMS_ON
+			);
+
+	write32(pmmio + 0x7041c, 0x0);
+
+	write32(pmmio + DPLL_MD(0), 0x3);
+	write32(pmmio + DPLL_MD(1), 0x3);
+	write32(pmmio + DSPCNTR(1), 0x1000000);
+	write32(pmmio + PIPESRC(1), 0x027f01df);
+
+	vga_misc_write(0x67);
+	const u8 cr[] = { 0x5f, 0x4f, 0x50, 0x82, 0x55, 0x81, 0xbf, 0x1f,
+		    0x00, 0x4f, 0x0d, 0x0e, 0x00, 0x00, 0x00, 0x00,
+		    0x9c, 0x8e, 0x8f, 0x28, 0x1f, 0x96, 0xb9, 0xa3,
+		    0xff
+	};
+	vga_cr_write(0x11, 0);
+
+	for (i = 0; i <= 0x18; i++)
+		vga_cr_write(i, cr[i]);
+
+	// Disable screen memory to prevent garbage from appearing.
+	vga_sr_write(1, vga_sr_read(1) | 0x20);
+	hactive = 640;
+	vactive = 400;
+
+	mdelay(1);
+	write32(pmmio + DPLL(0),
+		DPLL_VCO_ENABLE | DPLLB_MODE_DAC_SERIAL
+		| DPLL_VGA_MODE_DIS
+		| DPLL_DAC_SERIAL_P2_CLOCK_DIV_10
+		| 0x400601
+		);
+	mdelay(1);
+	write32(pmmio + DPLL(0),
+		DPLL_VCO_ENABLE | DPLLB_MODE_DAC_SERIAL
+		| DPLL_VGA_MODE_DIS
+		| DPLL_DAC_SERIAL_P2_CLOCK_DIV_10
+		| 0x400601
+		);
+
+	write32(pmmio + ADPA, ADPA_DAC_ENABLE
+			| ADPA_PIPE_A_SELECT
+			| ADPA_USE_VGA_HVPOLARITY
+			| ADPA_VSYNC_CNTL_ENABLE
+			| ADPA_HSYNC_CNTL_ENABLE
+			| ADPA_DPMS_ON
+			);
+
+	write32(pmmio + HTOTAL(0),
+		((hactive - 1) << 16)
+		| (hactive - 1));
+	write32(pmmio + HBLANK(0),
+		((hactive - 1) << 16)
+		| (hactive - 1));
+	write32(pmmio + HSYNC(0),
+		((hactive - 1) << 16)
+		| (hactive - 1));
+
+	write32(pmmio + VTOTAL(0), ((vactive - 1) << 16)
+		| (vactive - 1));
+	write32(pmmio + VBLANK(0), ((vactive - 1) << 16)
+		| (vactive - 1));
+	write32(pmmio + VSYNC(0),
+		((vactive - 1) << 16)
+		| (vactive - 1));
+
+	write32(pmmio + PF_WIN_POS(0), 0);
+
+	write32(pmmio + PIPESRC(0), (639 << 16) | 399);
+	write32(pmmio + PF_CTL(0),PF_ENABLE | PF_FILTER_MED_3x3);
+	write32(pmmio + PF_WIN_SZ(0), vactive | (hactive << 16));
+	write32(pmmio + PFIT_CONTROL, 0x0);
+
+	mdelay(1);
+
+	write32(pmmio + FDI_RX_CTL(0), 0x00002040);
+	mdelay(1);
+	write32(pmmio + FDI_RX_CTL(0), 0x80002050);
+	write32(pmmio + FDI_TX_CTL(0), 0x00044000);
+	mdelay(1);
+	write32(pmmio + FDI_TX_CTL(0), 0x80044000);
+	write32(pmmio + PIPECONF(0), PIPECONF_ENABLE | PIPECONF_BPP_6 | PIPECONF_DITHER_EN);
+
+	write32(pmmio + VGACNTRL, 0x0);
+	write32(pmmio + DSPCNTR(0), DISPLAY_PLANE_ENABLE | DISPPLANE_BGRX888);
+	mdelay(1);
+
+	write32(pmmio + ADPA, ADPA_DAC_ENABLE
+			| ADPA_PIPE_A_SELECT
+			| ADPA_USE_VGA_HVPOLARITY
+			| ADPA_VSYNC_CNTL_ENABLE
+			| ADPA_HSYNC_CNTL_ENABLE
+			| ADPA_DPMS_ON
+			);
+
+	write32(pmmio + DSPFW3, 0x7f3f00c1);
+	write32(pmmio + MI_MODE, 0x200 | VS_TIMER_DISPATCH);
+	write32(pmmio + CACHE_MODE_0, (0x6820 | (1 << 9)) & ~(1 << 5));
+	write32(pmmio + CACHE_MODE_1, 0x380 & ~(1 << 9));
+
+	/* Set up GTT.  */
+
+	reg16 = pci_read_config16(dev_find_slot(0, PCI_DEVFN(0, 0)), GGC);
+	uma_size = 0;
+	if (!(reg16 & 2)) {
+		uma_size = decode_igd_memory_size((reg16 >> 4) & 7);
+		printk(BIOS_DEBUG, "%dM UMA\n", uma_size >> 10);
+	}
+
+	for (i = 0; i < (uma_size - 256) / 4; i++)
+	{
+		outl((i << 2) | 1, piobase);
+		outl(pphysbase + (i << 12) + 1, piobase + 4);
+	}
+
+	/* Clear interrupts. */
+	write32(pmmio + DEIIR, 0xffffffff);
+	write32(pmmio + SDEIIR, 0xffffffff);
+	write32(pmmio + IIR, 0xffffffff);
+	write32(pmmio + IMR, 0xffffffff);
+	write32(pmmio + EIR, 0xffffffff);
+
+	vga_textmode_init();
+
+	/* Enable screen memory.  */
+	vga_sr_write(1, vga_sr_read(1) & ~0x20);
+
+	return 0;
+
+}
+
+/* compare the header of the vga edid header */
+/* if vga is not connected it should have a correct header */
+static int vga_connected(u8 *pmmio) {
+	u8 vga_edid[128];
+	u8 header[8] = {0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x00};
+	intel_gmbus_read_edid(pmmio + GMBUS0, 2, 0x50, vga_edid, 128);
+	intel_gmbus_stop(pmmio + GMBUS0);
+	for (int i = 0; i < 8; i++) {
+		if (vga_edid[i] != header[i]) {
+			printk(BIOS_DEBUG, "VGA not connected. Using LVDS display\n");
+			return 0;
+		}
+	}
+	printk(BIOS_SPEW, "VGA display connected\n");
+	return 1;
+}
+
 #endif
 
 static void gma_func0_init(struct device *dev)
@@ -424,7 +612,11 @@ static void gma_func0_init(struct device *dev)
 	);
 
 	int err;
-	err = intel_gma_init(conf, pci_read_config32(dev, 0x5c) & ~0xf,
+	if (vga_connected(mmiobase))
+		err = intel_gma_init_vga(conf, pci_read_config32(dev, 0x5c) & ~0xf,
+					iobase, mmiobase, graphics_base);
+	else
+		err = intel_gma_init_lvds(conf, pci_read_config32(dev, 0x5c) & ~0xf,
 			     iobase, mmiobase, graphics_base);
 	if (err == 0)
 		gfx_set_init_done(1);

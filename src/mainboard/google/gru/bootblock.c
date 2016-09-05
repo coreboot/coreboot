@@ -82,7 +82,8 @@ void bootblock_mainboard_init(void)
 	/* Set pinmux and configure spi flashrom. */
 	write32(&rk3399_pmugrf->spi1_rxd, IOMUX_SPI1_RX);
 	write32(&rk3399_pmugrf->spi1_csclktx, IOMUX_SPI1_CSCLKTX);
-	rockchip_spi_init(CONFIG_BOOT_DEVICE_SPI_FLASH_BUS, 24750*KHz);
+	rockchip_spi_init(CONFIG_BOOT_DEVICE_SPI_FLASH_BUS, 33000*KHz);
+	rockchip_spi_set_sample_delay(CONFIG_BOOT_DEVICE_SPI_FLASH_BUS, 5);
 
 	/* Set pinmux and configure EC SPI. */
 	write32(&rk3399_grf->iomux_spi5, IOMUX_SPI5);

@@ -199,4 +199,7 @@ check_member(rockchip_spi, rxdr, 0x800);
 
 void rockchip_spi_init(unsigned int bus, unsigned int speed_hz);
 
+/* Set the receive sample delay in nanoseconds */
+void rockchip_spi_set_sample_delay(unsigned int bus, unsigned int delay_ns);
+
 #endif  /* ! __COREBOOT_SRC_SOC_ROCKCHIP_COMMON_INCLUDE_SOC_SPI_H */

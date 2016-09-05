@@ -448,7 +448,7 @@ Device (EC0)
 #endif
 
 #ifdef EC_ENABLE_KEYBOARD_BACKLIGHT
-       #include "keyboard_backlight.asl"
+	#include "keyboard_backlight.asl"
 #endif
 
 #ifdef EC_ENABLE_PD_MCU_DEVICE

@@ -27,13 +27,13 @@ Device(EC)
 	Field (ERAM, ByteAcc, NoLock, Preserve)
 	{
 		Offset (0x02),
-				DKR1, 1,        /* Dock register 1 */
+				DKR1, 1,	/* Dock register 1 */
 		Offset (0x05),
 				HSPA, 1,
 		Offset (0x0C),
 				LEDS, 8,	/* LED state */
 		Offset (0x1a),
-				DKR2, 1,        /* Dock register 2 */
+				DKR2, 1,	/* Dock register 2 */
 		Offset (0x2a),
 				EVNT, 8,	/* write will trigger EC event */
 		Offset (0x3a),
@@ -56,7 +56,7 @@ Device(EC)
 				PAGE, 8,	/* Information Page Selector */
 		Offset (0xfe),
 				    , 4,
-				DKR3, 1        /* Dock register 3 */
+				DKR3, 1		/* Dock register 3 */
 	}
 
 	Method (_CRS, 0)
@@ -140,226 +140,226 @@ Device(EC)
 		Store(0x50, EVNT)
 	}
 
-       Method(_Q2A, 0, NotSerialized)
-       {
-	       Notify(^LID, 0x80)
-       }
+	Method(_Q2A, 0, NotSerialized)
+	{
+		Notify(^LID, 0x80)
+	}
 
-       Method(_Q2B, 0, NotSerialized)
-       {
-	       Notify(^LID, 0x80)
-       }
+	Method(_Q2B, 0, NotSerialized)
+	{
+		Notify(^LID, 0x80)
+	}
 
 
-       /* IBM proprietary buttons.  */
+	/* IBM proprietary buttons.  */
 
-       Method (_Q10, 0, NotSerialized)
-       {
-	    ^HKEY.RHK (0x01)
-       }
+	Method (_Q10, 0, NotSerialized)
+	{
+		^HKEY.RHK (0x01)
+	}
 
-       Method (_Q11, 0, NotSerialized)
-       {
-	    ^HKEY.RHK (0x02)
-       }
+	Method (_Q11, 0, NotSerialized)
+	{
+		^HKEY.RHK (0x02)
+	}
 
-       Method (_Q12, 0, NotSerialized)
-       {
-	    ^HKEY.RHK (0x03)
-       }
+	Method (_Q12, 0, NotSerialized)
+	{
+		^HKEY.RHK (0x03)
+	}
 
-       Method (_Q64, 0, NotSerialized)
-       {
-	    ^HKEY.RHK (0x05)
-       }
+	Method (_Q64, 0, NotSerialized)
+	{
+		^HKEY.RHK (0x05)
+	}
 
-       Method (_Q65, 0, NotSerialized)
-       {
-	    ^HKEY.RHK (0x06)
-       }
+	Method (_Q65, 0, NotSerialized)
+	{
+		^HKEY.RHK (0x06)
+	}
 
-       Method (_Q17, 0, NotSerialized)
-       {
-	    ^HKEY.RHK (0x08)
-       }
+	Method (_Q17, 0, NotSerialized)
+	{
+		^HKEY.RHK (0x08)
+	}
 
-       Method (_Q66, 0, NotSerialized)
-       {
-	    ^HKEY.RHK (0x0A)
-       }
+	Method (_Q66, 0, NotSerialized)
+	{
+		^HKEY.RHK (0x0A)
+	}
 
-       Method (_Q6A, 0, NotSerialized)
-       {
-	    ^HKEY.RHK (0x1B)
-       }
+	Method (_Q6A, 0, NotSerialized)
+	{
+		^HKEY.RHK (0x1B)
+	}
 
-       Method (_Q1A, 0, NotSerialized)
-       {
-	    ^HKEY.RHK (0x0B)
-       }
+	Method (_Q1A, 0, NotSerialized)
+	{
+		^HKEY.RHK (0x0B)
+	}
 
-       Method (_Q1B, 0, NotSerialized)
-       {
-	    ^HKEY.RHK (0x0C)
-       }
+	Method (_Q1B, 0, NotSerialized)
+	{
+		^HKEY.RHK (0x0C)
+	}
 
-       Method (_Q62, 0, NotSerialized)
-       {
-	    ^HKEY.RHK (0x0D)
-       }
+	Method (_Q62, 0, NotSerialized)
+	{
+		^HKEY.RHK (0x0D)
+	}
 
-       Method (_Q60, 0, NotSerialized)
-       {
-	    ^HKEY.RHK (0x0E)
-       }
+	Method (_Q60, 0, NotSerialized)
+	{
+		^HKEY.RHK (0x0E)
+	}
 
-       Method (_Q61, 0, NotSerialized)
-       {
-	    ^HKEY.RHK (0x0F)
-       }
+	Method (_Q61, 0, NotSerialized)
+	{
+		^HKEY.RHK (0x0F)
+	}
 
-       Method (_Q1F, 0, NotSerialized)
-       {
-	    ^HKEY.RHK (0x12)
-       }
+	Method (_Q1F, 0, NotSerialized)
+	{
+		^HKEY.RHK (0x12)
+	}
 
-       Method (_Q67, 0, NotSerialized)
-       {
-	    ^HKEY.RHK (0x13)
-       }
+	Method (_Q67, 0, NotSerialized)
+	{
+		^HKEY.RHK (0x13)
+	}
 
-       Method (_Q63, 0, NotSerialized)
-       {
-	    ^HKEY.RHK (0x14)
-       }
+	Method (_Q63, 0, NotSerialized)
+	{
+		^HKEY.RHK (0x14)
+	}
 
-       Method (_Q19, 0, NotSerialized)
-       {
-	    ^HKEY.RHK (0x18)
-       }
+	Method (_Q19, 0, NotSerialized)
+	{
+		^HKEY.RHK (0x18)
+	}
 
-       Method (_Q1C, 0, NotSerialized)
-       {
-	    ^HKEY.RHK (0x19)
-       }
+	Method (_Q1C, 0, NotSerialized)
+	{
+		^HKEY.RHK (0x19)
+	}
 
-       Method (_Q1D, 0, NotSerialized)
-       {
-	    ^HKEY.RHK (0x1A)
-       }
+	Method (_Q1D, 0, NotSerialized)
+	{
+		^HKEY.RHK (0x1A)
+	}
 
-       Method (_Q5C, 0, NotSerialized)
-       {
-	    ^HKEY.RTAB (0xB)
-       }
+	Method (_Q5C, 0, NotSerialized)
+	{
+		^HKEY.RTAB (0xB)
+	}
 
-       Method (_Q5D, 0, NotSerialized)
-       {
-	    ^HKEY.RTAB (0xC)
-       }
+	Method (_Q5D, 0, NotSerialized)
+	{
+		^HKEY.RTAB (0xC)
+	}
 
-       Method (_Q5E, 0, NotSerialized)
-       {
-	    ^HKEY.RTAB (0x9)
-       }
+	Method (_Q5E, 0, NotSerialized)
+	{
+		^HKEY.RTAB (0x9)
+	}
 
-       Method (_Q5F, 0, NotSerialized)
-       {
-	    ^HKEY.RTAB (0xA)
-       }
+	Method (_Q5F, 0, NotSerialized)
+	{
+		^HKEY.RTAB (0xA)
+	}
 
-       Device (HKEY)
-       {
-	       Name (_HID, EisaId ("IBM0068"))
-	       Name (BTN, 0)
-	       Name (BTAB, 0)
-	       /* MASK */
-	       Name (DHKN, 0x080C)
-	       /* Effective Mask */
-	       Name (EMSK, 0)
-	       /* Effective Mask for tablet */
-	       Name (ETAB, 0)
-	       /* Device enabled. */
-	       Name (EN, 0)
-	       Method (_STA, 0, NotSerialized)
-	       {
-		    Return (0x0F)
-	       }
-	       /* Retrieve event. */
-	       Method (MHKP, 0, NotSerialized)
-	       {
-		    Store (BTN, Local0)
-		    If (LNotEqual (Local0, Zero)) {
-		       Store (Zero, BTN)
-		       Add (Local0, 0x1000, Local0)
-		       Return (Local0)
-		    }
-		    Store (BTAB, Local0)
-		    If (LNotEqual (Local0, Zero)) {
-		       Store (Zero, BTAB)
-		       Add (Local0, 0x5000, Local0)
-		       Return (Local0)
-		    }
-		    Return (Zero)
-	       }
-	       /* Report event  */
-	       Method (RHK, 1, NotSerialized) {
-		      ShiftLeft (One, Subtract (Arg0, 1), Local0)
-		      If (And (EMSK, Local0)) {
-			 Store (Arg0, BTN)
-			 Notify (HKEY, 0x80)
-		      }
-	       }
-	       /* Report tablet  */
-	       Method (RTAB, 1, NotSerialized) {
-		      ShiftLeft (One, Subtract (Arg0, 1), Local0)
-		      If (And (ETAB, Local0)) {
-			 Store (Arg0, BTAB)
-			 Notify (HKEY, 0x80)
-		      }
-	       }
-	       /* Enable/disable all events.  */
-	       Method (MHKC, 1, NotSerialized) {
-			 If (Arg0) {
+	Device (HKEY)
+	{
+		Name (_HID, EisaId ("IBM0068"))
+		Name (BTN, 0)
+		Name (BTAB, 0)
+		/* MASK */
+		Name (DHKN, 0x080C)
+		/* Effective Mask */
+		Name (EMSK, 0)
+		/* Effective Mask for tablet */
+		Name (ETAB, 0)
+		/* Device enabled. */
+		Name (EN, 0)
+		Method (_STA, 0, NotSerialized)
+		{
+			Return (0x0F)
+		}
+		/* Retrieve event. */
+		Method (MHKP, 0, NotSerialized)
+		{
+			Store (BTN, Local0)
+			If (LNotEqual (Local0, Zero)) {
+				Store (Zero, BTN)
+				Add (Local0, 0x1000, Local0)
+				Return (Local0)
+			}
+			Store (BTAB, Local0)
+			If (LNotEqual (Local0, Zero)) {
+				Store (Zero, BTAB)
+				Add (Local0, 0x5000, Local0)
+				Return (Local0)
+			}
+			Return (Zero)
+		}
+		/* Report event  */
+		Method (RHK, 1, NotSerialized) {
+			ShiftLeft (One, Subtract (Arg0, 1), Local0)
+			If (And (EMSK, Local0)) {
+				Store (Arg0, BTN)
+				Notify (HKEY, 0x80)
+			}
+		}
+		/* Report tablet  */
+		Method (RTAB, 1, NotSerialized) {
+			ShiftLeft (One, Subtract (Arg0, 1), Local0)
+			If (And (ETAB, Local0)) {
+				Store (Arg0, BTAB)
+				Notify (HKEY, 0x80)
+			}
+		}
+		/* Enable/disable all events.  */
+		Method (MHKC, 1, NotSerialized) {
+			If (Arg0) {
 				Store (DHKN, EMSK)
 				Store (Ones, ETAB)
-			 }
-			 Else
-			 {
+			}
+			Else
+			{
 				Store (Zero, EMSK)
 				Store (Zero, ETAB)
-			 }
-			 Store (Arg0, EN)
-	       }
-	       /* Enable/disable event.  */
-	       Method (MHKM, 2, NotSerialized) {
-		    If (LLessEqual (Arg0, 0x20)) {
+			}
+			Store (Arg0, EN)
+		}
+		/* Enable/disable event.  */
+		Method (MHKM, 2, NotSerialized) {
+			If (LLessEqual (Arg0, 0x20)) {
 				ShiftLeft (One, Subtract (Arg0, 1), Local0)
 				If (Arg1)
 				{
-				    Or (DHKN, Local0, DHKN)
+					Or (DHKN, Local0, DHKN)
 				}
 				Else
 				{
-				    And (DHKN, Not (Local0), DHKN)
+					And (DHKN, Not (Local0), DHKN)
 				}
 				If (EN)
 				{
-				     Store (DHKN, EMSK)
+					Store (DHKN, EMSK)
 				}
-		    }
-	       }
-	       /* Mask hotkey all. */
-	       Method (MHKA, 0, NotSerialized)
-	       {
-		    Return (0x07FFFFFF)
-	       }
-	       /* Version */
-	       Method (MHKV, 0, NotSerialized)
-	       {
-		    Return (0x0100)
-	       }
-       }
+			}
+		}
+		/* Mask hotkey all. */
+		Method (MHKA, 0, NotSerialized)
+		{
+			Return (0x07FFFFFF)
+		}
+		/* Version */
+		Method (MHKV, 0, NotSerialized)
+		{
+			Return (0x0100)
+		}
+	}
 
 #include "ac.asl"
 #include "battery.asl"

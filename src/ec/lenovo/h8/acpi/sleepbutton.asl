@@ -25,7 +25,7 @@ Field(ERAM, ByteAcc, NoLock, Preserve)
 
 Device(SLPB)
 {
-        Name (_HID, EisaId ("PNP0C0E"))
+	Name (_HID, EisaId ("PNP0C0E"))
 	Method(_PRW, 0, NotSerialized)
 	{
 		Return (Package() { 0x18, 0x03 })

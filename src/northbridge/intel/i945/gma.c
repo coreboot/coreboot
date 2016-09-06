@@ -557,18 +557,20 @@ static int intel_gma_init_vga(struct northbridge_intel_i945_config *conf,
 
 /* compare the header of the vga edid header */
 /* if vga is not connected it should have a correct header */
-static int vga_connected(u8 *pmmio) {
+static int probe_edid(u8 *pmmio, u8 slave)
+{
 	u8 vga_edid[128];
 	u8 header[8] = {0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x00};
-	intel_gmbus_read_edid(pmmio + GMBUS0, 2, 0x50, vga_edid, 128);
+	intel_gmbus_read_edid(pmmio + GMBUS0, slave, 0x50, vga_edid, 128);
 	intel_gmbus_stop(pmmio + GMBUS0);
 	for (int i = 0; i < 8; i++) {
 		if (vga_edid[i] != header[i]) {
-			printk(BIOS_DEBUG, "VGA not connected. Using LVDS display\n");
+			printk(BIOS_DEBUG, "No display connected on slave %d\n",
+				slave);
 			return 0;
 		}
 	}
-	printk(BIOS_SPEW, "VGA display connected\n");
+	printk(BIOS_SPEW, "Found a display on slave %d\n", slave);
 	return 1;
 }
 
@@ -613,7 +615,9 @@ static void gma_func0_init(struct device *dev)
 	);
 
 	int err;
-	if (vga_connected(mmiobase))
+	/* probe if VGA is connected and alway run */
+	/* VGA init if no LVDS is connected */
+	if (!probe_edid(mmiobase, 3) || probe_edid(mmiobase, 2))
 		err = intel_gma_init_vga(conf, pci_read_config32(dev, 0x5c) & ~0xf,
 					iobase, mmiobase, graphics_base);
 	else

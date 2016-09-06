@@ -44,21 +44,6 @@ void pwm_regulator_configure(enum pwm_regulator pwm, int millivolt)
 	int duty_ns, voltage_max, voltage_min;
 	int voltage = millivolt * 10; /* for higer calculation accuracy */
 
-	switch (pwm) {
-	case PWM_REGULATOR_GPU:
-		write32(&rk3399_grf->iomux_pwm_0, IOMUX_PWM_0);
-		break;
-	case PWM_REGULATOR_BIG:
-		write32(&rk3399_grf->iomux_pwm_1, IOMUX_PWM_1);
-		break;
-	case PWM_REGULATOR_LIT:
-		write32(&rk3399_pmugrf->iomux_pwm_2, IOMUX_PWM_2);
-		break;
-	case PWM_REGULATOR_CENTERLOG:
-		write32(&rk3399_pmugrf->iomux_pwm_3a, IOMUX_PWM_3_A);
-		break;
-	}
-
 	voltage_min = PWM_DESIGN_VOLTAGE_MIN;
 	voltage_max = PWM_DESIGN_VOLTAGE_MAX;
 	if (!(IS_ENABLED(CONFIG_BOARD_GOOGLE_KEVIN) && board_id() < 6) &&
@@ -80,4 +65,19 @@ void pwm_regulator_configure(enum pwm_regulator pwm, int millivolt)
 			     / (voltage_max - voltage_min);
 
 	pwm_init(pwm, PWM_PERIOD, duty_ns);
+
+	switch (pwm) {
+	case PWM_REGULATOR_GPU:
+		write32(&rk3399_grf->iomux_pwm_0, IOMUX_PWM_0);
+		break;
+	case PWM_REGULATOR_BIG:
+		write32(&rk3399_grf->iomux_pwm_1, IOMUX_PWM_1);
+		break;
+	case PWM_REGULATOR_LIT:
+		write32(&rk3399_pmugrf->iomux_pwm_2, IOMUX_PWM_2);
+		break;
+	case PWM_REGULATOR_CENTERLOG:
+		write32(&rk3399_pmugrf->iomux_pwm_3a, IOMUX_PWM_3_A);
+		break;
+	}
 }

@@ -272,14 +272,14 @@ void rkclk_init(void)
 	 * set up dependent divisors for PCLK/HCLK and ACLK clocks.
 	 */
 	aclk_div = GPLL_HZ / PD_BUS_ACLK_HZ - 1;
-	assert((aclk_div + 1) * PD_BUS_ACLK_HZ == GPLL_HZ && aclk_div < 0x1f);
+	assert((aclk_div + 1) * PD_BUS_ACLK_HZ == GPLL_HZ && aclk_div <= 0x1f);
 	hclk_div = PD_BUS_ACLK_HZ / PD_BUS_HCLK_HZ - 1;
 	assert((hclk_div + 1) * PD_BUS_HCLK_HZ ==
-		PD_BUS_ACLK_HZ && (hclk_div < 0x4) && (hclk_div != 0x2));
+		PD_BUS_ACLK_HZ && (hclk_div <= 0x3) && (hclk_div != 0x2));
 
 	pclk_div = PD_BUS_ACLK_HZ / PD_BUS_PCLK_HZ - 1;
 	assert((pclk_div + 1) * PD_BUS_PCLK_HZ ==
-		PD_BUS_ACLK_HZ && pclk_div < 0x7);
+		PD_BUS_ACLK_HZ && pclk_div <= 0x7);
 
 	write32(&cru_ptr->cru_clksel_con[1], RK_SETBITS(PD_BUS_SEL_GPLL) |
 		RK_CLRSETBITS(PD_BUS_PCLK_DIV_MSK,
@@ -295,15 +295,15 @@ void rkclk_init(void)
 	 * set up dependent divisors for PCLK/HCLK and ACLK clocks.
 	 */
 	aclk_div = GPLL_HZ / PERI_ACLK_HZ - 1;
-	assert((aclk_div + 1) * PERI_ACLK_HZ == GPLL_HZ && aclk_div < 0x1f);
+	assert((aclk_div + 1) * PERI_ACLK_HZ == GPLL_HZ && aclk_div <= 0x1f);
 
 	hclk_div = log2(PERI_ACLK_HZ / PERI_HCLK_HZ);
 	assert((1 << hclk_div) * PERI_HCLK_HZ ==
-		PERI_ACLK_HZ && (hclk_div < 0x4));
+		PERI_ACLK_HZ && (hclk_div <= 0x2));
 
 	pclk_div = log2(PERI_ACLK_HZ / PERI_PCLK_HZ);
 	assert((1 << pclk_div) * PERI_PCLK_HZ ==
-		PERI_ACLK_HZ && (pclk_div < 0x4));
+		PERI_ACLK_HZ && (pclk_div <= 0x3));
 
 	write32(&cru_ptr->cru_clksel_con[10], RK_SETBITS(PERI_SEL_GPLL) |
 		RK_CLRSETBITS(PERI_PCLK_DIV_MSK,
@@ -429,7 +429,7 @@ void rkclk_configure_spi(unsigned int bus, unsigned int hz)
 {
 	int src_clk_div = GPLL_HZ / hz;
 
-	assert((src_clk_div - 1 < 127) && (src_clk_div * hz == GPLL_HZ));
+	assert((src_clk_div - 1 <= 127) && (src_clk_div * hz == GPLL_HZ));
 
 	switch (bus) {	/*select gpll as spi src clk, and set div*/
 	case 0:
@@ -487,7 +487,7 @@ void rkclk_configure_crypto(unsigned int hz)
 {
 	u32 div = PD_BUS_ACLK_HZ / hz;
 
-	assert((div - 1 < 4) && (div * hz == PD_BUS_ACLK_HZ));
+	assert((div - 1 <= 3) && (div * hz == PD_BUS_ACLK_HZ));
 	assert(hz <= 150*MHz);	/* Suggested max in TRM. */
 	write32(&cru_ptr->cru_clksel_con[26],
 		RK_CLRSETBITS(0x3 << 6, (div - 1) << 6));
@@ -499,7 +499,7 @@ void rkclk_configure_tsadc(unsigned int hz)
 	u32 src_clk = 32 * KHz; /* tsadc source clock is 32KHz*/
 
 	div = src_clk / hz;
-	assert((div - 1 < 64) && (div * hz == 32 * KHz));
+	assert((div - 1 <= 63) && (div * hz == 32 * KHz));
 	write32(&cru_ptr->cru_clksel_con[2],
 		RK_CLRSETBITS(0x3f << 0, (div - 1) << 0));
 }
@@ -604,7 +604,7 @@ void rkclk_configure_vop_aclk(u32 vop_id, u32 aclk_hz)
 
 	/* vop aclk source clk: cpll */
 	div = CPLL_HZ / aclk_hz;
-	assert((div - 1 < 64) && (div * aclk_hz == CPLL_HZ));
+	assert((div - 1 <= 63) && (div * aclk_hz == CPLL_HZ));
 
 	switch (vop_id) {
 	case 0:

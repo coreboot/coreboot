@@ -860,7 +860,7 @@ static unsigned long acpi_fill_ivrs(acpi_ivrs_t* ivrs, unsigned long current)
 	ivrs->ivhd.pci_segment_group = 0x0;
 	ivrs->ivhd.iommu_info = 0x0;
 	ivrs->ivhd.iommu_info |= (0x14 << 8);
-	ivrs->ivhd.efr = 0x0;
+	ivrs->ivhd.iommu_feature_info = 0x0;
 
 	/* Describe HPET */
 	p = (uint8_t *)current;

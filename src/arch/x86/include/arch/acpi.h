@@ -225,7 +225,7 @@ typedef struct acpi_madt {
 typedef struct acpi_ivrs_info {
 } __attribute__ ((packed)) acpi_ivrs_info_t;
 
-/* IVRS IVHD (I/O Virtualization Hardware Definition Block) */
+/* IVRS IVHD (I/O Virtualization Hardware Definition Block) Type 10h */
 typedef struct acpi_ivrs_ivhd {
 	uint8_t type;
 	uint8_t flags;
@@ -236,11 +236,11 @@ typedef struct acpi_ivrs_ivhd {
 	uint32_t iommu_base_high;
 	uint16_t pci_segment_group;
 	uint16_t iommu_info;
-	uint32_t efr;
+	uint32_t iommu_feature_info;
 	uint8_t entry[0];
 } __attribute__ ((packed)) acpi_ivrs_ivhd_t;
 
-/* IVRS (I/O Virtualization Reporting Structure) */
+/* IVRS (I/O Virtualization Reporting Structure) Type 10h */
 typedef struct acpi_ivrs {
 	struct acpi_table_header header;
 	uint32_t iv_info;

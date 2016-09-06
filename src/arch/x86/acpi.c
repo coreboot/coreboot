@@ -39,6 +39,7 @@
 #include <console/console.h>
 #include <string.h>
 #include <arch/acpi.h>
+#include <arch/acpi_ivrs.h>
 #include <arch/acpigen.h>
 #include <device/pci.h>
 #include <cbmem.h>
@@ -603,7 +604,7 @@ void acpi_create_ivrs(acpi_ivrs_t *ivrs,
 	memcpy(header->asl_compiler_id, ASLC, 4);
 
 	header->length = sizeof(acpi_ivrs_t);
-	header->revision = 1; /* ACPI 1.0: N/A, ACPI 2.0/3.0/4.0: 1 */
+	header->revision = IVRS_FORMAT_FIXED;
 
 	current = acpi_fill_ivrs(ivrs, current);
 

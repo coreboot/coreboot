@@ -44,6 +44,10 @@ config VARIANT_DIR
 	string
 	default "reef" if BOARD_GOOGLE_REEF
 
+config DEVICETREE
+	string
+	default "variants/baseboard/devicetree.cb"
+
 config MAINBOARD_PART_NUMBER
 	string
 	default "Reef" if BOARD_GOOGLE_REEF

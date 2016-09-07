@@ -20,7 +20,9 @@
 **/
 #ifndef _CPU_CONFIG_FSP_DATA_H_
 #define _CPU_CONFIG_FSP_DATA_H_
-union CPU_CONFIG_FSP_DATA {
+
+#pragma pack (push,1)
+typedef union {
   struct {
     /**
       Enable or Disable Advanced Encryption Standard (AES) feature.
@@ -28,7 +30,7 @@ union CPU_CONFIG_FSP_DATA {
       -    0: Disable
       - <b>1: Enable</b>
     **/
-    uint32_t AesEnable           : 1;
+    UINT32 AesEnable           : 1;
     /**
     Processor Early Power On Configuration FCLK setting.
      - <b>0: 800 MHz (ULT/ULX)</b>.
@@ -36,33 +38,34 @@ union CPU_CONFIG_FSP_DATA {
      - 2: 400 MHz.
      - 3: Reserved.
     **/
-    uint32_t FClkFrequency       : 2;
-    uint32_t EnableRsr           : 1;                 ///< Enable or Disable RSR feature; 0: Disable; <b>1: Enable </b>
+    UINT32 FClkFrequency       : 2;
+    UINT32 EnableRsr           : 1;                 ///< Enable or Disable RSR feature; 0: Disable; <b>1: Enable </b>
     /**
     Policies to obtain CPU temperature.
      - <b>0: ACPI thermal management uses EC reported temperature values</b>.
      - 1: ACPI thermal management uses DTS SMM mechanism to obtain CPU temperature values.
      - 2: ACPI Thermal Management uses EC reported temperature values and DTS SMM is used to handle Out of Spec condition.
     **/
-    uint32_t EnableDts           : 2;
-    uint32_t SmmbaseSwSmiNumber  : 8;                 ///< Software SMI number for handler to save CPU information in SMRAM.
+    UINT32 EnableDts           : 2;
+    UINT32 SmmbaseSwSmiNumber  : 8;                 ///< Software SMI number for handler to save CPU information in SMRAM.
     /**
       Enable or Disable Virtual Machine Extensions (VMX) feature.
       -    0: Disable
       - <b>1: Enable</b>
     **/
-    uint32_t VmxEnable           : 1;
+    UINT32 VmxEnable           : 1;
     /**
       Enable or Disable Trusted Execution Technology (TXT) feature.
       -    0: Disable
       - <b>1: Enable</b>
     **/
-    uint32_t TxtEnable           : 1;
-    uint32_t SkipMpInit          : 1;                 ///< For Fsp only, Silicon Initialization will skip MP Initialization (including BSP) if enabled. For non-FSP, this should always be 0.
-    uint32_t RsvdBits            : 15;                ///< Reserved for future use
-    uint64_t MicrocodePatchAddress;     ///< Pointer to microcode patch that is suitable for this processor.
+    UINT32 TxtEnable           : 1;
+    UINT32 SkipMpInit          : 1;                 ///< For Fsp only, Silicon Initialization will skip MP Initialization (including BSP) if enabled. For non-FSP, this should always be 0.
+    UINT32 RsvdBits            : 15;                ///< Reserved for future use
+    EFI_PHYSICAL_ADDRESS MicrocodePatchAddress;     ///< Pointer to microcode patch that is suitable for this processor.
   } Bits;
-  uint32_t Uint32[3];
-};
+  UINT32 Uint32[3];
+} CPU_CONFIG_FSP_DATA;
+#pragma pack (pop)
 
 #endif // _CPU_CONFIG_FSP_DATA_H_

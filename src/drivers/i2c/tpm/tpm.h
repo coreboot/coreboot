@@ -121,6 +121,8 @@ struct tpm_cmd_t {
 
 /* ---------- Interface for TPM vendor ------------ */
 
+int tpm_vendor_probe(unsigned bus, uint32_t addr);
+
 int tpm_vendor_init(struct tpm_chip *chip, unsigned bus, uint32_t dev_addr);
 
 void tpm_vendor_cleanup(struct tpm_chip *chip);

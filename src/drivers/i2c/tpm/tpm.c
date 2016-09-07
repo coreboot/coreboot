@@ -46,6 +46,7 @@
 #define SLEEP_DURATION 60 /* in usec */
 #define SLEEP_DURATION_LONG 210 /* in usec */
 #define SLEEP_DURATION_SAFE 750 /* in usec */
+#define SLEEP_DURATION_PROBE_MS 1000 /* in msec */
 
 /* max. number of iterations after I2C NAK for 'long' commands
  * we need this especially for sending TPM_READY, since the cleanup after the
@@ -694,6 +695,47 @@ out:
 }
 
 /* Initialization of I2C TPM */
+
+int tpm_vendor_probe(unsigned bus, uint32_t addr)
+{
+	struct tpm_inf_dev *tpm_dev = car_get_var_ptr(&g_tpm_dev);
+	struct stopwatch sw;
+	uint8_t buf = 0;
+	int ret;
+	long sw_run_duration = SLEEP_DURATION_PROBE_MS;
+
+	tpm_dev->chip_type = UNKNOWN;
+	tpm_dev->bus = bus;
+	tpm_dev->addr = addr;
+	tpm_dev->sleep_short = SLEEP_DURATION_SAFE;
+	tpm_dev->sleep_long = SLEEP_DURATION_SAFE * 2;
+
+	/*
+	 * Probe TPM. Check if the TPM_ACCESS register's ValidSts bit is set(1)
+	 * If the bit remains clear(0) then claim that init has failed.
+	 */
+	stopwatch_init_msecs_expire(&sw, sw_run_duration);
+	do {
+		ret = iic_tpm_read(TPM_ACCESS(0), &buf, 1);
+		if (!ret && (buf & TPM_STS_VALID)) {
+			sw_run_duration = stopwatch_duration_msecs(&sw);
+			break;
+		}
+	} while (!stopwatch_expired(&sw));
+
+	printk(BIOS_INFO,
+	       "%s: ValidSts bit %s(%d) in TPM_ACCESS register after %ld ms\n",
+	       __func__, (buf & TPM_STS_VALID) ? "set" : "clear",
+	       (buf & TPM_STS_VALID) >> 7, sw_run_duration);
+
+	/*
+	 * Claim failure if the ValidSts (bit 7) is clear.
+	 */
+	if (!(buf & TPM_STS_VALID))
+		return -1;
+
+	return 0;
+}
 
 int tpm_vendor_init(struct tpm_chip *chip, unsigned bus, uint32_t dev_addr)
 {

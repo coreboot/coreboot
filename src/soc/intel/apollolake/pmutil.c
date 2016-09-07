@@ -34,8 +34,7 @@
 
 static uintptr_t read_pmc_mmio_bar(void)
 {
-	uint32_t bar = pci_read_config32(PMC_DEV, PCI_BASE_ADDRESS_0);
-	return bar & ~PCI_BASE_ADDRESS_MEM_ATTR_MASK;
+	return PMC_BAR0;
 }
 
 uintptr_t get_pmc_mmio_bar(void)

@@ -39,6 +39,11 @@ static void read_resources(device_t dev)
 	struct resource *res;
 	pci_dev_read_resources(dev);
 
+	res = new_resource(dev, PCI_BASE_ADDRESS_0);
+	res->base = PMC_BAR0;
+	res->size = PMC_BAR0_SIZE;
+	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+
 	res = new_resource(dev, PCI_BASE_ADDRESS_4);
 	res->base = ACPI_PMIO_BASE;
 	res->size = ACPI_PMIO_SIZE;
@@ -57,6 +62,12 @@ static void set_resources(device_t dev)
 	struct resource *res;
 
 	pci_dev_set_resources(dev);
+
+	res = find_resource(dev, PCI_BASE_ADDRESS_0);
+	pci_write_config32(dev, res->index, res->base);
+	dev->command |= PCI_COMMAND_MEMORY;
+	res->flags |= IORESOURCE_STORED;
+	report_resource_stored(dev, res, " PMC BAR");
 
 	res = find_resource(dev, PCI_BASE_ADDRESS_4);
 	pci_write_config32(dev, res->index, res->base);

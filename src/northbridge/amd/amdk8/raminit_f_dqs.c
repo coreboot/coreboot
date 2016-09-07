@@ -16,6 +16,7 @@
 
 #include <arch/stages.h>
 #include <cpu/x86/cr.h>
+#include <cpu/x86/mtrr.h>
 
 //0: mean no debug info
 #define DQS_TRAIN_DEBUG 0
@@ -1638,31 +1639,6 @@ static void set_var_mtrr_dqs(
 		wrmsr (MTRR_PHYS_BASE(reg), base);
 		wrmsr (MTRR_PHYS_MASK(reg), mask);
 	}
-}
-
-
-/* fms: find most significant bit set, stolen from Linux Kernel Source. */
-static inline unsigned int fms(unsigned int x)
-{
-	int r;
-
-	__asm__("bsrl %1,%0\n\t"
-		"jnz 1f\n\t"
-		"movl $0,%0\n"
-		"1:" : "=r" (r) : "g" (x));
-	return r;
-}
-
-/* fls: find least significant bit set */
-static inline unsigned int fls(unsigned int x)
-{
-	int r;
-
-	__asm__("bsfl %1,%0\n\t"
-		"jnz 1f\n\t"
-		"movl $32,%0\n"
-		"1:" : "=r" (r) : "g" (x));
-	return r;
 }
 
 static unsigned int range_to_mtrr(unsigned int reg,

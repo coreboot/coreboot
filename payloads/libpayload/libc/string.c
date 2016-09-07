@@ -609,11 +609,15 @@ char* strtok_r(char *str, const char *delim, char **ptr)
 	/* skip over prefix delimiters */
 	char *start = str + strspn(str, delim);
 
+	if (start[0] == '\0')
+		return NULL;
+
 	/* find first delimiter character */
 	char *end = start + strcspn(start, delim);
-	end[0] = '\0';
+	*ptr = end;
+	if (end[0] != '\0')
+		*(*ptr)++ = '\0';
 
-	*ptr = end+1;
 	return start;
 }
 

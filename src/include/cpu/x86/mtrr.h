@@ -84,6 +84,33 @@ void set_var_mtrr(unsigned reg, unsigned base, unsigned size, unsigned type);
 int get_free_var_mtrr(void);
 #endif
 
+#if !defined(__ASSEMBLER__) && !defined(__ROMCC__)
+
+/* fms: find most significant bit set, stolen from Linux Kernel Source. */
+static inline unsigned int fms(unsigned int x)
+{
+	int r;
+
+	__asm__("bsrl %1,%0\n\t"
+	        "jnz 1f\n\t"
+	        "movl $0,%0\n"
+	        "1:" : "=r" (r) : "g" (x));
+	return r;
+}
+
+/* fls: find least significant bit set */
+static inline unsigned int fls(unsigned int x)
+{
+	int r;
+
+	__asm__("bsfl %1,%0\n\t"
+	        "jnz 1f\n\t"
+	        "movl $32,%0\n"
+	        "1:" : "=r" (r) : "g" (x));
+	return r;
+}
+#endif
+
 /* Align up to next power of 2, suitable for ROMCC and assembler too.
  * Range of result 256kB to 128MB is good enough here.
  */

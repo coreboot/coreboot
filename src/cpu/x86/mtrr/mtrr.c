@@ -92,30 +92,6 @@ static void enable_var_mtrr(unsigned char deftype)
 	wrmsr(MTRR_DEF_TYPE_MSR, msr);
 }
 
-/* fms: find most significant bit set, stolen from Linux Kernel Source. */
-static inline unsigned int fms(unsigned int x)
-{
-	int r;
-
-	__asm__("bsrl %1,%0\n\t"
-	        "jnz 1f\n\t"
-	        "movl $0,%0\n"
-	        "1:" : "=r" (r) : "g" (x));
-	return r;
-}
-
-/* fls: find least significant bit set */
-static inline unsigned int fls(unsigned int x)
-{
-	int r;
-
-	__asm__("bsfl %1,%0\n\t"
-	        "jnz 1f\n\t"
-	        "movl $32,%0\n"
-	        "1:" : "=r" (r) : "g" (x));
-	return r;
-}
-
 #define MTRR_VERBOSE_LEVEL BIOS_NEVER
 
 /* MTRRs are at a 4KiB granularity. Therefore all address calculations can

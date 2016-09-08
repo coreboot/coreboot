@@ -1,0 +1,3 @@
+Category: laptop
+ROM protocol: parallel flash
+Flashrom support: y

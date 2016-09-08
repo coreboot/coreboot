@@ -34,6 +34,7 @@ bootblock-y += reset.c
 bootblock-y += timer.c
 bootblock-y += sdram.c
 bootblock-y += uart.c
+bootblock-y += wdt.c
 
 ramstage-y += cbmem.c
 ramstage-y += media.c
@@ -44,6 +45,7 @@ ramstage-y += soc.c
 ramstage-y += timer.c
 ramstage-y += sdram.c
 ramstage-y += uart.c
+ramstage-y += wdt.c
 
 romstage-y += cbmem.c
 romstage-y += clock.c
@@ -56,6 +58,7 @@ romstage-y += romstage.c
 romstage-y += sdram.c
 romstage-y += timer.c
 romstage-y += uart.c
+romstage-y += wdt.c
 
 CPPFLAGS_common += -Isrc/soc/marvell/mvmap2315/include/
 

@@ -25,6 +25,10 @@
 #define PIRQ_RCR2		0x68
 #define LPC_IO_DEC		0x80
 #define LPC_EN			0x82
+#define LPC_GEN1_DEC		0x84
+#define LPC_GEN2_DEC		0x88
+#define LPC_GEN3_DEC		0x8c
+#define LPC_GEN4_DEC		0x90
 #define GEN_PMCON_1		0xA0
 #define GEN_PMCON_2		0xA2
 #define GEN_PMCON_3		0xA4

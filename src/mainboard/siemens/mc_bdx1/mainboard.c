@@ -33,6 +33,7 @@
 #include <i210.h>
 #include <soc/pci_devs.h>
 #include <soc/irq.h>
+#include <soc/lpc.h>
 
 #define MAX_PATH_DEPTH		12
 #define MAX_NUM_MAPPINGS	10
@@ -102,6 +103,10 @@ static void mainboard_init(void *chip_info)
 	actl &= ~SCIS_MASK;
 	actl |= SCIS_IRQ10;
 	pci_write_config8(dev, ACPI_CNTL_OFFSET, actl);
+
+	/* Enable additional I/O decoding ranges on LPC for COM 3 and COM 4 */
+	pci_write_config32(dev, LPC_GEN1_DEC, 0x1C02E9);
+	pci_write_config32(dev, LPC_GEN2_DEC, 0x1C03E9);
 }
 
 static void mainboard_final(void *chip_info)

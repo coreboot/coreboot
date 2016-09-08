@@ -17,10 +17,12 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#include <arch/io.h>
 #include <arch/exception.h>
 #include <cbmem.h>
 #include <console/console.h>
 #include <program_loading.h>
+#include <soc/addressmap.h>
 #include <soc/clock.h>
 #include <soc/mmu_operations.h>
 
@@ -31,6 +33,11 @@ void main(void)
 	exception_init();
 
 	clock_init();
+
+	write32((void *)MVMAP2315_BOOTBLOCK_CB1, 0x4);
+
+	while (read32((void *)MVMAP2315_BOOTBLOCK_CB2) != 0x4)
+		;
 
 	mvmap2315_mmu_init();
 

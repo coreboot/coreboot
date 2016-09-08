@@ -20,6 +20,7 @@ bootblock-y += clock.c
 bootblock-y += fiq.S
 bootblock-y += gic.c
 bootblock-y += gpio.c
+bootblock-y += flash.c
 bootblock-y += media.c
 bootblock-y += pinmux.c
 bootblock-y += reset.c

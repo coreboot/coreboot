@@ -16,11 +16,14 @@
 ifeq ($(CONFIG_SOC_MARVELL_MVMAP2315),y)
 
 bootblock-y += bootblock.c
+bootblock-y += bdb.c
 bootblock-y += clock.c
+bootblock-y += digest.c
 bootblock-y += fiq.S
 bootblock-y += gic.c
 bootblock-y += gpio.c
 bootblock-y += flash.c
+bootblock-y += load_validate.c
 bootblock-y += media.c
 bootblock-y += pinmux.c
 bootblock-y += reset.c

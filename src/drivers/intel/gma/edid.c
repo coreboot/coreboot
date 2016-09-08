@@ -56,7 +56,7 @@ static void intel_gmbus_stop_bus(u8 * mmio, u8 bus)
 	write32(GMBUS1_ADDR, GMBUS_SW_RDY | GMBUS_CYCLE_STOP | GMBUS_SLAVE_WRITE
 		| (AT24_ADDR << 1) );
 	wait_rdy(mmio);
-	write32(GMBUS0_ADDR, GMBUS_SW_RDY | GMBUS_CYCLE_STOP);
+	write32(GMBUS1_ADDR, GMBUS_SW_RDY | GMBUS_CYCLE_STOP);
 	write32(GMBUS2_ADDR, GMBUS_INUSE);
 }
 
@@ -101,7 +101,7 @@ void intel_gmbus_read_edid(u8 *mmio, u8 bus, u8 slave, u8 *edid, u32 edid_size)
 		| GMBUS_SLAVE_WRITE | GMBUS_CYCLE_WAIT | GMBUS_CYCLE_STOP
 		| (128 << GMBUS_BYTE_COUNT_SHIFT) | (slave << 1) );
 	wait_rdy(mmio);
-	write32(GMBUS0_ADDR, GMBUS_SW_RDY | GMBUS_CYCLE_STOP );
+	write32(GMBUS1_ADDR, GMBUS_SW_RDY | GMBUS_CYCLE_STOP );
 	write32(GMBUS2_ADDR, GMBUS_INUSE);
 
 	printk (BIOS_SPEW, "EDID:\n");

@@ -23,6 +23,7 @@
 #include <timestamp.h>
 #include <console/uart.h>
 #include <soc/addressmap.h>
+#include <soc/apmu.h>
 #include <soc/bdb.h>
 #include <soc/gic.h>
 #include <soc/load_validate.h>
@@ -50,6 +51,8 @@ void bootblock_soc_init(void)
 
 	printk(BIOS_DEBUG, "loading and validating APMU firmware.\n");
 	load_and_validate(&bdb_info, APMU_FIRMWARE);
+
+	apmu_start();
 
 	printk(BIOS_DEBUG, "loading and validating MCU firmware.\n");
 	load_and_validate(&bdb_info, MCU_FIRMWARE);

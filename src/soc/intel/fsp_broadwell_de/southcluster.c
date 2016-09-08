@@ -215,7 +215,7 @@ static void sc_init(struct device *dev)
 		PCI_COMMAND_MASTER | PCI_COMMAND_SPECIAL);
 
 	/* Program Serial IRQ register. */
-	pci_write_config16(dev, 0x64, 0xd0);
+	pci_write_config8(dev, 0x64, 0xd0);
 
 	sc_pirq_init(dev);
 	write_pci_config_irqs();

@@ -22,6 +22,7 @@
 #include <console/console.h>
 #include <timestamp.h>
 #include <console/uart.h>
+#include <soc/a2bus.h>
 #include <soc/addressmap.h>
 #include <soc/apmu.h>
 #include <soc/bdb.h>
@@ -77,6 +78,9 @@ void bootblock_soc_init(void)
 		full_boot();
 		break;
 	}
+
+	printk(BIOS_DEBUG, "initializing the A2 bus.\n");
+	init_a2bus_config();
 
 	printk(BIOS_DEBUG, "Powering up the AP core0.\n");
 	ap_start((void *)MVMAP2315_ROMSTAGE_BASE);

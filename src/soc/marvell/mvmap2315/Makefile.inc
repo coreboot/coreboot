@@ -15,6 +15,7 @@
 
 ifeq ($(CONFIG_SOC_MARVELL_MVMAP2315),y)
 
+bootblock-y += a2bus.c
 bootblock-y += apmu.c
 bootblock-y += bootblock.c
 bootblock-y += bdb.c

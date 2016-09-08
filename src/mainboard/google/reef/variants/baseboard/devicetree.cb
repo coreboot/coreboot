@@ -4,7 +4,14 @@ chip soc/intel/apollolake
 		device lapic 0 on end
 	end
 
-	register "pcie_rp4_clkreq_pin" = "0"    # wifi/bt
+	register "pcie_rp0_clkreq_pin" = "0"    # wifi/bt
+	# Disable unused clkreq of PCIe root ports
+	register "pcie_rp1_clkreq_pin" = "CLKREQ_DISABLED"
+	register "pcie_rp2_clkreq_pin" = "CLKREQ_DISABLED"
+	register "pcie_rp3_clkreq_pin" = "CLKREQ_DISABLED"
+	register "pcie_rp4_clkreq_pin" = "CLKREQ_DISABLED"
+	register "pcie_rp5_clkreq_pin" = "CLKREQ_DISABLED"
+
 
 	# EMMC TX DATA Delay 1
 	# Refer to EDS-Vol2-22.3.

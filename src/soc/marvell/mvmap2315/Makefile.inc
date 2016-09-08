@@ -27,6 +27,7 @@ bootblock-y += gpio.c
 bootblock-y += flash.c
 bootblock-y += load_validate.c
 bootblock-y += media.c
+bootblock-y += nvm.c
 bootblock-y += pinmux.c
 bootblock-y += pmic.c
 bootblock-y += reset.c

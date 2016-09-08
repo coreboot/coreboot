@@ -14,6 +14,7 @@
 #define _FSP2_0_API_H_
 
 #include <stddef.h>
+#include <stdint.h>
 #include <fsp/soc_binding.h>
 
 #define FSP_SUCCESS	EFI_SUCCESS

@@ -9,6 +9,13 @@ USERNAME=${3}
 GPG_KEY_ID=${4}
 
 set -e
+
+# set local + tz to be reproducible
+LC_ALL=C
+LANG=C
+TZ=UTC
+export LC_ALL LANG TZ
+
 if [ -z "${VERSION_NAME}" ] || [ "${VERSION_NAME}" = "--help" ]; then
 	echo "usage: $0 <version> [commit id] [gpg key id] [username]"
 	echo "tags a new coreboot version and creates a tar archive"
@@ -32,8 +39,8 @@ fi
 printf "${VERSION_NAME}-$(git log --pretty=%H|head -1)\n" > .coreboot-version
 tstamp=$(git log --pretty=format:%ci -1)
 cd ..
-tar --mtime="$tstamp" --owner=coreboot:1000 --group=coreboot:1000 --exclude-vcs --exclude=coreboot-${VERSION_NAME}/3rdparty/blobs -cvf - coreboot-${VERSION_NAME} |xz -9 > coreboot-${VERSION_NAME}.tar.xz
-tar --mtime="$tstamp" --owner=coreboot:1000 --group=coreboot:1000 --exclude-vcs -cvf - coreboot-${VERSION_NAME}/3rdparty/blobs |xz -9 > coreboot-blobs-${VERSION_NAME}.tar.xz
+tar --sort=name --mtime="$tstamp" --owner=coreboot:1000 --group=coreboot:1000 --exclude-vcs --exclude=coreboot-${VERSION_NAME}/3rdparty/blobs -cvf - coreboot-${VERSION_NAME} |xz -9 > coreboot-${VERSION_NAME}.tar.xz
+tar --sort=name --mtime="$tstamp" --owner=coreboot:1000 --group=coreboot:1000 --exclude-vcs -cvf - coreboot-${VERSION_NAME}/3rdparty/blobs |xz -9 > coreboot-blobs-${VERSION_NAME}.tar.xz
 if [ -n "${GPG_KEY_ID}" ]; then
 	gpg2 --armor --local-user ${GPG_KEY_ID} --output coreboot-${VERSION_NAME}.tar.xz.sig --detach-sig coreboot-${VERSION_NAME}.tar.xz
 	gpg2 --armor --local-user ${GPG_KEY_ID} --output coreboot-blobs-${VERSION_NAME}.tar.xz.sig --detach-sig coreboot-blobs-${VERSION_NAME}.tar.xz

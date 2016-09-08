@@ -56,10 +56,8 @@ static enum dram_speeds get_sdram_index(void)
 			return dram_200MHz;
 		case 3:
 			return dram_666MHz_NO_ODT;
-		case 4:
-			return dram_800MHz;
 		default:
-			return dram_933MHz;
+			return dram_800MHz;
 		}
 
 	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_GRU))

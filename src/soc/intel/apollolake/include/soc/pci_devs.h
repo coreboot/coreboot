@@ -34,6 +34,9 @@
 #define NB_DEVFN			_PCI_DEVFN(0, 0)
 #define NB_DEV_ROOT			_PCI_DEV(0x0, 0)
 
+#define IGD_DEV				_PCI_DEV(0x2, 0)
+#define IGD_DEVFN			_PCI_DEVFN(0x2, 0)
+
 #define P2SB_DEV			_PCI_DEV(0xd, 0)
 #define P2SB_DEVFN			_PCI_DEVFN(0xd, 0)
 

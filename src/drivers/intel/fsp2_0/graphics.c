@@ -103,3 +103,38 @@ uintptr_t fsp_load_vbt(void)
 
 	return (uintptr_t)vbt;
 }
+
+void lb_framebuffer(struct lb_header *header)
+{
+	enum cb_err ret;
+	struct lb_framebuffer *framebuffer;
+	uintptr_t framebuffer_bar;
+
+	/* Pci enumeration happens after silicon init.
+	 * After enumeration graphic framebuffer base may be relocated.
+	 * Get framebuffer base from soc.
+	 */
+	framebuffer_bar = fsp_soc_get_igd_bar();
+
+	if (!framebuffer_bar) {
+		printk(BIOS_ALERT, "Framebuffer BAR invalid\n");
+		return;
+	}
+
+	framebuffer = (void *)lb_new_record(header);
+	ret = fsp_fill_lb_framebuffer(framebuffer);
+	if (ret != CB_SUCCESS) {
+		printk(BIOS_ALERT, "FSP did not return a valid framebuffer\n");
+		return;
+	}
+
+	/* Resource allocator can move the BAR around after FSP configures it */
+	framebuffer->physical_address = framebuffer_bar;
+	printk(BIOS_DEBUG, "Graphics framebuffer located at 0x%llx\n",
+		framebuffer->physical_address);
+}
+
+__attribute__((weak)) uintptr_t fsp_soc_get_igd_bar(void)
+{
+	return 0;
+}

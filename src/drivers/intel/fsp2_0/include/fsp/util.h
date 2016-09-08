@@ -77,6 +77,9 @@ enum cb_err fsp_validate_component(struct fsp_header *hdr,
 /* Load a vbt.bin file for graphics. Returns 0 if a valid VBT is not found. */
 uintptr_t fsp_load_vbt(void);
 
+/* Get igd framebuffer bar from SoC */
+uintptr_t fsp_soc_get_igd_bar(void);
+
 /*
  * Handle FSP reboot request status. Chipset/soc is expected to provide
  * chipset_handle_reset() that deals with reset type codes specific to given

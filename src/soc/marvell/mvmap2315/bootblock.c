@@ -28,6 +28,7 @@
 #include <soc/bdb.h>
 #include <soc/gic.h>
 #include <soc/load_validate.h>
+#include <soc/mcu.h>
 #include <soc/pmic.h>
 #include <soc/uart.h>
 
@@ -64,6 +65,13 @@ void bootblock_soc_init(void)
 		boot_path = get_boot_path();
 	} else {
 		printk(BIOS_DEBUG, "Low power restart. Skip MCU code load.\n");
+
+		sned_hash_msg(GET_HASH);
+		receive_hash_msg_respond();
+
+		printk(BIOS_DEBUG,
+		       "MCU hash validation not currently implemented\n");
+
 		boot_path = get_boot_path();
 	}
 

@@ -16,6 +16,7 @@
 
 #include <console/console.h>
 #include <arch/io.h>
+#include <arch/acpi_ivrs.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
@@ -715,100 +716,91 @@ void sr5650_enable(device_t dev)
 	}
 }
 
-static void add_ivrs_device_entries(struct device *parent, struct device *dev, int depth, int linknum, int8_t *root_level, unsigned long *current, uint16_t *length)
+static void add_ivrs_device_entries(struct device *parent, struct device *dev,
+		int depth, int linknum, int8_t *root_level,
+		unsigned long *current, uint16_t *length)
 {
-	uint8_t *p;
+	uint8_t *p = (uint8_t *) *current;
+
 	struct device *sibling;
 	struct bus *link;
 
 	if (!root_level) {
 		root_level = malloc(sizeof(int8_t));
+		if (root_level == NULL)
+			die("Error: Could not allocate a byte!\n");
 		*root_level = -1;
 	}
 
-	if (dev->path.type == DEVICE_PATH_PCI) {
-		if ((dev->bus->secondary == 0x0) && (dev->path.pci.devfn == 0x0))
-			*root_level = depth;
+	if ((dev->path.type == DEVICE_PATH_PCI) &&
+		(dev->bus->secondary == 0x0) && (dev->path.pci.devfn == 0x0))
+		*root_level = depth;
 
-		if (*root_level != -1) {
-			if (depth >= *root_level) {
-				if (dev->enabled) {
-					if (depth == *root_level) {
-						if (dev->path.pci.devfn < (0x1 << 3)) {
-							/* SR5690 control device */
-						} else if ((dev->path.pci.devfn >= (0x1 << 3)) && (dev->path.pci.devfn < (0xe << 3))) {
-							/* SR5690 PCIe bridge device */
-						} else {
-							if (dev->path.pci.devfn == (0x14 << 3)) {
-								/* SMBUS controller */
-								p = (uint8_t *) *current;
-								p[0] = 0x2;			/* Entry type */
-								p[1] = dev->path.pci.devfn;	/* Device */
-								p[2] = dev->bus->secondary;	/* Bus */
-								p[3] = 0x97;			/* Data */
-								p[4] = 0x0;			/* Padding */
-								p[5] = 0x0;			/* Padding */
-								p[6] = 0x0;			/* Padding */
-								p[7] = 0x0;			/* Padding */
-								*length += 8;
-								*current += 8;
-							} else {
-								/* Other southbridge device */
-								p = (uint8_t *) *current;
-								p[0] = 0x2;			/* Entry type */
-								p[1] = dev->path.pci.devfn;	/* Device */
-								p[2] = dev->bus->secondary;	/* Bus */
-								p[3] = 0x0;			/* Data */
-								p[4] = 0x0;			/* Padding */
-								p[5] = 0x0;			/* Padding */
-								p[6] = 0x0;			/* Padding */
-								p[7] = 0x0;			/* Padding */
-								*length += 8;
-								*current += 8;
-							}
-						}
-					} else {
-						if ((dev->hdr_type & 0x7f) == PCI_HEADER_TYPE_NORMAL) {
-							/* Device behind bridge */
-							if (pci_find_capability(dev, PCI_CAP_ID_PCIE)) {
-								/* Device is PCIe */
-								p = (uint8_t *) *current;
-								p[0] = 0x2;			/* Entry type */
-								p[1] = dev->path.pci.devfn;	/* Device */
-								p[2] = dev->bus->secondary;	/* Bus */
-								p[3] = 0x0;			/* Data */
-								p[4] = 0x0;			/* Padding */
-								p[5] = 0x0;			/* Padding */
-								p[6] = 0x0;			/* Padding */
-								p[7] = 0x0;			/* Padding */
-								*length += 8;
-								*current += 8;
-							} else {
-								/* Device is legacy PCI or PCI-X */
-								p = (uint8_t *) *current;
-								p[0] = 0x42;			/* Entry type */
-								p[1] = dev->path.pci.devfn;	/* Device */
-								p[2] = dev->bus->secondary;	/* Bus */
-								p[3] = 0x0;			/* Data */
-								p[4] = 0x0;			/* Reserved */
-								p[5] = parent->path.pci.devfn;	/* Device */
-								p[6] = parent->bus->secondary;	/* Bus */
-								p[7] = 0x0;			/* Reserved */
-								*length += 8;
-								*current += 8;
-							}
-						}
-					}
-				}
+	if ((dev->path.type == DEVICE_PATH_PCI) && (*root_level != -1) &&
+		(depth >= *root_level) && (dev->enabled)) {
+
+		*p = 0;
+		if (depth == *root_level) {
+			if (dev->path.pci.devfn < (0x1 << 3)) {
+				/* SR5690 control device */
+			} else if ((dev->path.pci.devfn >= (0x1 << 3)) &&
+					(dev->path.pci.devfn < (0xe << 3))) {
+				/* SR5690 PCIe bridge device */
+			} else if (dev->path.pci.devfn == (0x14 << 3)) {
+				/* SMBUS controller */
+				p[0] = IVHD_DEV_4_BYTE_SELECT;	/* Entry type */
+				p[1] = dev->path.pci.devfn;	/* Device */
+				p[2] = dev->bus->secondary;	/* Bus */
+				p[3] =  IVHD_DTE_LINT_1_PASS |	/* Data */
+					IVHD_DTE_SYS_MGT_NO_TRANS |
+					IVHD_DTE_NMI_PASS |
+					IVHD_DTE_EXT_INT_PASS |
+					IVHD_DTE_INIT_PASS;
+			} else {
+				/* Other southbridge device */
+				p[0] = IVHD_DEV_4_BYTE_SELECT;	/* Entry type */
+				p[1] = dev->path.pci.devfn;	/* Device */
+				p[2] = dev->bus->secondary;	/* Bus */
+				p[3] = 0x0;			/* Data */
 			}
+		} else if ((dev->hdr_type & 0x7f) == PCI_HEADER_TYPE_NORMAL) {
+			/* Device behind bridge */
+			if (pci_find_capability(dev, PCI_CAP_ID_PCIE)) {
+				/* Device is PCIe */
+				p[0] = IVHD_DEV_4_BYTE_SELECT;	/* Entry type */
+				p[1] = dev->path.pci.devfn;	/* Device */
+				p[2] = dev->bus->secondary;	/* Bus */
+				p[3] = 0x0;			/* Data */
+			} else {
+				/* Device is legacy PCI or PCI-X */
+				p[0] = IVHD_DEV_8_BYTE_ALIAS_SELECT; /* Entry */
+				p[1] = dev->path.pci.devfn;	/* Device */
+				p[2] = dev->bus->secondary;	/* Bus */
+				p[3] = 0x0;			/* Data */
+				p[4] = 0x0;			/* Reserved */
+				p[5] = parent->path.pci.devfn;	/* Device */
+				p[6] = parent->bus->secondary;	/* Bus */
+				p[7] = 0x0;			/* Reserved */
+			}
+		}
+
+		if (*p == IVHD_DEV_4_BYTE_SELECT) {
+			*length += 4;
+			*current += 4;
+		} else if (*p == IVHD_DEV_8_BYTE_ALIAS_SELECT) {
+			*length += 8;
+			*current += 8;
 		}
 	}
 
 	for (link = dev->link_list; link; link = link->next)
-		for (sibling = link->children; sibling; sibling = sibling->sibling)
-			add_ivrs_device_entries(dev, sibling, depth + 1, depth, root_level, current, length);
+		for (sibling = link->children; sibling;
+			sibling = sibling->sibling)
+			add_ivrs_device_entries(dev, sibling, depth + 1,
+				depth, root_level, current, length);
 
-	free(root_level);
+	if (depth == 0)
+		free(root_level);
 }
 
 unsigned long acpi_fill_mcfg(unsigned long current)

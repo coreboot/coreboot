@@ -19,6 +19,7 @@ bootblock-y += bootblock.c
 bootblock-y += clock.c
 bootblock-y += fiq.S
 bootblock-y += gic.c
+bootblock-y += gpio.c
 bootblock-y += media.c
 bootblock-y += pinmux.c
 bootblock-y += reset.c
@@ -28,6 +29,7 @@ bootblock-y += uart.c
 
 ramstage-y += cbmem.c
 ramstage-y += media.c
+ramstage-y += gpio.c
 ramstage-y += ramstage_entry.S
 ramstage-y += reset.c
 ramstage-y += soc.c
@@ -37,6 +39,7 @@ ramstage-y += uart.c
 
 romstage-y += cbmem.c
 romstage-y += clock.c
+romstage-y += gpio.c
 romstage-y += media.c
 romstage-y += mmu_operations.c
 romstage-y += reset.c

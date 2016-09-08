@@ -22,6 +22,7 @@
 #include <console/console.h>
 #include <soc/apmu.h>
 #include <soc/clock.h>
+#include <soc/mcu.h>
 #include <soc/pmic.h>
 
 static void syspwr_init(void)
@@ -121,5 +122,11 @@ void mcu_start(void)
 
 u32 get_boot_path(void)
 {
-	return FULL_BOOT;
+	struct mcu_pwr_status_msg *msg;
+
+	mcu_irq();
+
+	msg = receive_mcu_msg();
+
+	return msg->status;
 }

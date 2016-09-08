@@ -27,6 +27,7 @@
 #include <soc/bdb.h>
 #include <soc/gic.h>
 #include <soc/load_validate.h>
+#include <soc/pmic.h>
 #include <soc/uart.h>
 
 void bootblock_soc_early_init(void)
@@ -43,6 +44,7 @@ void bootblock_soc_early_init(void)
 void bootblock_soc_init(void)
 {
 	struct bdb_pointer bdb_info;
+	u32 boot_path;
 
 	write32((void *)MVMAP2315_BOOTBLOCK_CB1, 0);
 	write32((void *)MVMAP2315_BOOTBLOCK_CB2, 0);
@@ -54,8 +56,30 @@ void bootblock_soc_init(void)
 
 	apmu_start();
 
-	printk(BIOS_DEBUG, "loading and validating MCU firmware.\n");
-	load_and_validate(&bdb_info, MCU_FIRMWARE);
+	if (!(read32((void *)MVMAP2315_LOWPWR_REG) & MVMAP2315_LOWPWR_FLAG)) {
+		printk(BIOS_DEBUG, "loading and validating MCU firmware.\n");
+		load_and_validate(&bdb_info, MCU_FIRMWARE);
+		mcu_start();
+		boot_path = get_boot_path();
+	} else {
+		printk(BIOS_DEBUG, "Low power restart. Skip MCU code load.\n");
+		boot_path = get_boot_path();
+	}
+
+	switch (boot_path) {
+	case NO_BOOT:
+		no_boot();
+		break;
+	case CHARGING_SCREEN:
+		charging_screen();
+		break;
+	case FULL_BOOT:
+		full_boot();
+		break;
+	}
+
+	printk(BIOS_DEBUG, "Powering up the AP core0.\n");
+	ap_start((void *)MVMAP2315_ROMSTAGE_BASE);
 
 	/* initializing UART1 to free UART0 to be used by romstage */
 	uart_num = 1;

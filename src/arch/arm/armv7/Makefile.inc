@@ -16,10 +16,12 @@
 ###############################################################################
 
 armv7_flags = -mthumb -I$(src)/arch/arm/include/armv7/ -D__COREBOOT_ARM_ARCH__=7
-armv7-a_flags = -march=armv7-a $(armv7_flags)
-armv7-m_flags = -march=armv7-m $(armv7_flags)
+armv7-a_flags = -march=armv7-a $(armv7_flags) -D__COREBOOT_ARM_V7_A__
+armv7-m_flags = -march=armv7-m $(armv7_flags) -D__COREBOOT_ARM_V7_M__
+armv7-r_flags = -march=armv7-r $(armv7_flags) -D__COREBOOT_ARM_V7_R__
 
 armv7_asm_flags = -Wa,-mthumb -Wa,-mimplicit-it=always -Wa,-mno-warn-deprecated
+armv7-r_asm_flags = $(armv7-r_flags) $(armv7_asm_flags)
 
 ###############################################################################
 # bootblock
@@ -46,8 +48,21 @@ bootblock-S-ccopts += $(armv7_asm_flags)
 ifneq ($(CONFIG_BOOTBLOCK_CUSTOM),y)
 bootblock-y += bootblock_m.S
 endif
-bootblock-y += exception_m.c
+bootblock-y += exception_mr.c
 bootblock-y += cache_m.c
+
+else ifeq ($(CONFIG_ARCH_BOOTBLOCK_ARMV7_R),y)
+bootblock-generic-ccopts += $(armv7-r_flags)
+bootblock-S-ccopts += $(armv7-r_asm_flags)
+
+ifneq ($(CONFIG_BOOTBLOCK_CUSTOM),y)
+bootblock-y += bootblock.S
+endif
+
+bootblock-y += cache.c
+bootblock-y += cpu.S
+bootblock-y += exception_mr.c
+bootblock-y += mmu.c
 
 endif # CONFIG_ARCH_BOOTBLOCK_ARMV7
 
@@ -73,6 +88,17 @@ libverstage-S-ccopts += $(armv7_asm_flags)
 verstage-generic-ccopts += $(armv7-m_flags)
 verstage-S-ccopts += $(armv7_asm_flags)
 
+else ifeq ($(CONFIG_ARCH_VERSTAGE_ARMV7_R),y)
+libverstage-generic-ccopts += $(armv7-r_flags)
+libverstage-S-ccopts += $(armv7-r_asm_flags)
+verstage-generic-ccopts += $(armv7-r_flags)
+verstage-S-ccopts += $(armv7-r_asm_flags)
+
+verstage-y += cache.c
+verstage-y += cpu.S
+verstage-y += exception_mr.c
+verstage-y += mmu.c
+
 endif # CONFIG_ARCH_VERSTAGE_ARMV7_M
 
 ################################################################################
@@ -90,6 +116,18 @@ romstage-S-ccopts += $(armv7_asm_flags)
 
 rmodules_arm-generic-ccopts += $(armv7-a_flags)
 rmodules_arm-S-ccopts += $(armv7_asm_flags)
+
+else ifeq ($(CONFIG_ARCH_ROMSTAGE_ARMV7_R),y)
+romstage-y += cache.c
+romstage-y += cpu.S
+romstage-y += exception_mr.c
+romstage-y += mmu.c
+
+romstage-generic-ccopts += $(armv7-r_flags)
+romstage-S-ccopts += $(armv7-r_asm_flags)
+
+rmodules_arm-generic-ccopts += $(armv7-r_flags)
+rmodules_arm-S-ccopts += $(armv7-r_asm_flags)
 
 endif # CONFIG_ARCH_ROMSTAGE_ARMV7
 
@@ -111,4 +149,19 @@ ramstage-S-ccopts += $(armv7_asm_flags)
 # All rmodule code is armv7 if ramstage is armv7.
 rmodules_arm-generic-ccopts += $(armv7-a_flags)
 rmodules_arm-S-ccopts += $(armv7_asm_flags)
+
+else ifeq ($(CONFIG_ARCH_RAMSTAGE_ARMV7_R),y)
+
+ramstage-y += cache.c
+ramstage-y += cpu.S
+ramstage-y += exception_mr.c
+ramstage-y += mmu.c
+
+ramstage-generic-ccopts += $(armv7-r_flags)
+ramstage-S-ccopts += $(armv7-r_asm_flags)
+
+# All rmodule code is armv7 if ramstage is armv7.
+rmodules_arm-generic-ccopts += $(armv7-r_flags)
+rmodules_arm-S-ccopts += $(armv7-r_asm_flags)
+
 endif # CONFIG_ARCH_RAMSTAGE_ARMV7

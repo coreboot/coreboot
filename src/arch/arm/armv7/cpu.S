@@ -31,6 +31,7 @@
  */
 
 #include <arch/asm.h>
+#include <rules.h>
 
 /*
  * Dcache invalidations by set/way work by passing a [way:sbz:set:sbz:level:0]
@@ -126,6 +127,7 @@ ENTRY(arm_init_caches)
 	/* Flush and invalidate dcache in ascending order */
 	bl	dcache_invalidate_all
 
+#if ENV_ARMV7_A
 	/* Deactivate MMU (0), Alignment Check (1) and DCache (2) */
 	and	r4, # ~(1 << 0) & ~(1 << 1) & ~(1 << 2)
 	mcr	p15, 0, r4, c1, c0, 0
@@ -133,6 +135,16 @@ ENTRY(arm_init_caches)
 	/* Invalidate icache and TLB for good measure */
 	mcr	p15, 0, r0, c7, c5, 0
 	mcr	p15, 0, r0, c8, c7, 0
+#endif
+
+#if ENV_ARMV7_R
+	/* Deactivate Alignment Check (1) and DCache (2) */
+	and	r4, # ~(1 << 1) & ~(1 << 2)
+	mcr	p15, 0, r4, c1, c0, 0
+
+	/* Invalidate icache for good measure */
+	mcr	p15, 0, r0, c7, c5, 0
+#endif
 	dsb
 	isb
 

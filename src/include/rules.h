@@ -131,6 +131,19 @@
 #elif __COREBOOT_ARM_ARCH__ == 7
 #define ENV_ARMV4 0
 #define ENV_ARMV7 1
+#if defined(__COREBOOT_ARM_V7_A__)
+#define ENV_ARMV7_A 1
+#define ENV_ARMV7_M 0
+#define ENV_ARMV7_R 0
+#elif defined(__COREBOOT_ARM_V7_M__)
+#define ENV_ARMV7_A 0
+#define ENV_ARMV7_M 1
+#define ENV_ARMV7_R 0
+#elif defined(__COREBOOT_ARM_V7_R__)
+#define ENV_ARMV7_A 0
+#define ENV_ARMV7_M 0
+#define ENV_ARMV7_R 1
+#endif
 #else
 #define ENV_ARMV4 0
 #define ENV_ARMV7 0

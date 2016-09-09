@@ -25,6 +25,9 @@
 #include <soc/addressmap.h>
 #include <soc/clock.h>
 #include <soc/mmu_operations.h>
+#include <soc/sdram.h>
+
+extern struct mvmap2315_sdram_params ddr_params;
 
 void main(void)
 {
@@ -33,6 +36,8 @@ void main(void)
 	exception_init();
 
 	clock_init();
+
+	sdram_init(&ddr_params);
 
 	write32((void *)MVMAP2315_BOOTBLOCK_CB1, 0x4);
 

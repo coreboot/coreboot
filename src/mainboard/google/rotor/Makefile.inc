@@ -25,4 +25,5 @@ ramstage-$(CONFIG_CHROMEOS) += chromeos.c
 
 romstage-y += memlayout.ld
 romstage-y += reset.c
+romstage-y += dram_params.c
 romstage-$(CONFIG_CHROMEOS) += chromeos.c

@@ -174,6 +174,19 @@ scope (\_SB) {
 			\_SB.SPC0 (Local2, Local1)
 		}
 	}
+
+	/*
+	 * Sleep button device ASL code. We are using this device to
+	 * add the _PRW method for a dummy wake event to kernel so that
+	 * before going to sleep kernel does not clear bit 15 in ACPI
+	 * gpe0a enable register which is actually the GPIO_TIER1_SCI_EN bit.
+	 */
+	Device (SLP)
+	{
+		Name (_HID, EisaId ("PNP0C0E"))
+
+		Name (_PRW, Package() { GPE0A_GPIO_TIER1_SCI_STS, 0x3 })
+	}
 }
 
 Scope(\_GPE)

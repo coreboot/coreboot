@@ -54,6 +54,19 @@ void apollolake_init_cpus(struct device *dev);
  */
 #define MB_POWER_LIMIT1_TIME_DEFAULT	0x6e
 
+/* Set MSR_PMG_CST_CONFIG_CONTROL[3:0] for Package C-State limit */
+#define PKG_C_STATE_LIMIT_C2_MASK	0x2
+/* Set MSR_PMG_CST_CONFIG_CONTROL[7:4] for Core C-State limit*/
+#define CORE_C_STATE_LIMIT_C10_MASK	0x70
+/* Set MSR_PMG_CST_CONFIG_CONTROL[10] to IO redirect to MWAIT */
+#define IO_MWAIT_REDIRECT_MASK	0x400
+/* Set MSR_PMG_CST_CONFIG_CONTROL[15] to lock CST_CFG [0-15] bits */
+#define CST_CFG_LOCK_MASK	0x8000
+
+#define MSR_PMG_CST_CONFIG_CONTROL	0xe2
+#define MSR_PMG_IO_CAPTURE_BASE	0xe4
+#define MSR_POWER_CTL	0x1fc
+
 #define MSR_L2_QOS_MASK(reg)		(0xd10 + reg)
 #define MSR_IA32_PQR_ASSOC		0xc8f
 /* MSR bits 33:32 encode slot number 0-3 */

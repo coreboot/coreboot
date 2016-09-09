@@ -22,9 +22,6 @@
 
 void mainboard_smi_sleep(u8 slp_typ)
 {
-	if (slp_typ == ACPI_S3)
-		enable_gpe(GPIO_TIER_1_SCI);
-
 	if (IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC))
 		chromeec_smi_sleep(slp_typ, MAINBOARD_EC_S3_WAKE_EVENTS,
 					MAINBOARD_EC_S5_WAKE_EVENTS);

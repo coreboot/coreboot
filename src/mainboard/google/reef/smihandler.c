@@ -38,9 +38,6 @@ void mainboard_smi_sleep(u8 slp_typ)
 	pads = variant_sleep_gpio_table(&num);
 	gpio_configure_pads(pads, num);
 
-	if (slp_typ == ACPI_S3)
-		enable_gpe(GPIO_TIER_1_SCI);
-
 	if (IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC))
 		chromeec_smi_sleep(slp_typ, MAINBOARD_EC_S3_WAKE_EVENTS,
 					MAINBOARD_EC_S5_WAKE_EVENTS);

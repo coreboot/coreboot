@@ -429,9 +429,10 @@ $(ROMCC_BIN): $(top)/util/romcc/romcc.c
 	$(HOSTCC) -g $(STACK) -Wall -o $@ $<
 
 IFDTOOL:=$(objutil)/ifdtool/ifdtool
-$(IFDTOOL): $(top)/util/ifdtool/ifdtool.c
-	@printf "    HOSTCC     $(subst $(obj)/,,$(@))\n"
-	$(HOSTCC) $(HOSTCFLAGS) -o $@ $<
+$(IFDTOOL):
+	@printf "    Compile IFDTOOL\n"
+	$(MAKE) -C $(top)/util/ifdtool
+	cp -a $(top)/util/ifdtool/ifdtool $@
 
 IFDFAKE:=$(objutil)/ifdfake/ifdfake
 $(IFDFAKE): $(top)/util/ifdfake/ifdfake.c

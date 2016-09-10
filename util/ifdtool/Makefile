@@ -30,17 +30,16 @@ $(PROGRAM): $(OBJS)
 
 clean:
 	rm -f $(PROGRAM) *.o *~
-
 distclean: clean
-	rm -f .dependencies
 
 dep:
 	@$(CC) $(CFLAGS) -MM *.c > .dependencies
+
+%.o: %.c
+	$(CC) $(CFLAGS) -c -o $@ $<
 
 install: $(PROGRAM)
 	mkdir -p $(DESTDIR)$(PREFIX)/bin
 	$(INSTALL) $(PROGRAM) $(DESTDIR)$(PREFIX)/bin
 
 .PHONY: all clean distclean dep
-
--include .dependencies

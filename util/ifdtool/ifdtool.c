@@ -1412,7 +1412,7 @@ int main(int argc, char *argv[])
 	if (mode_em100)
 		set_em100_mode(filename, image, size);
 
-	if(mode_locked)
+	if (mode_locked)
 		lock_descriptor(filename, image, size);
 
 	if (mode_unlocked)

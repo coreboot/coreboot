@@ -575,6 +575,8 @@ gitconfig:
 	fi
 	[ -d 3rdparty/blobs ] && cd 3rdparty/blobs && git config remote.origin.push HEAD:refs/for/master
 	git config remote.origin.push HEAD:refs/for/master
+	git config alias.sup '!git submodule update --remote --rebase && git submodule update --init --checkout'
+	git config alias.sup-destroy '!git submodule deinit --force "$$(git rev-parse --show-toplevel)"; git submodule init && git submodule update --checkout'
 	(git config --global user.name >/dev/null && git config --global user.email >/dev/null) || (printf 'Please configure your name and email in git:\n\n git config --global user.name "Your Name Comes Here"\n git config --global user.email your.email@example.com\n'; exit 1)
 
 include util/crossgcc/Makefile.inc

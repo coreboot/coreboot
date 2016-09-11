@@ -886,7 +886,7 @@ static void print_version(void)
     "GNU General Public License for more details.\n\n");
 }
 
-static void print_usage(const char *name)
+static void print_usage(const char *name, int exit_code)
 {
 	printf("usage: %s [-cCltTxVvh?]\n", name);
 	printf("\n"
@@ -901,7 +901,7 @@ static void print_usage(const char *name)
 	     "   -v | --version:                   print the version\n"
 	     "   -h | --help:                      print this help\n"
 	     "\n");
-	exit(1);
+	exit(exit_code);
 }
 
 #ifdef __arm__
@@ -1086,10 +1086,11 @@ int main(int argc, char** argv)
 			exit(0);
 			break;
 		case 'h':
+			print_usage(argv[0], 0);
+			break;
 		case '?':
 		default:
-			print_usage(argv[0]);
-			exit(0);
+			print_usage(argv[0], 1);
 			break;
 		}
 	}

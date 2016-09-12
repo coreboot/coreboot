@@ -22,6 +22,10 @@
 /* LPC Interface Bridge PCI Configuration Registers */
 #define REVID			0x08
 #define PIRQ_RCR1		0x60
+#define SIRQ_CNTL		0x64
+#define   SIRQ_EN		0x80
+#define   SIRQ_MODE_QUIET	0x00
+#define   SIRQ_MODE_CONT	0x40
 #define PIRQ_RCR2		0x68
 #define LPC_IO_DEC		0x80
 #define LPC_EN			0x82

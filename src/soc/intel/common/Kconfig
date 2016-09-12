@@ -62,6 +62,14 @@ config SOC_INTEL_COMMON_LPSS_I2C_CLOCK_MHZ
 	  No default is set here as this is an SOC-specific value and must
 	  be provided by the SOC when it selects this driver.
 
+config SOC_INTEL_COMMON_LPSS_I2C_DEBUG
+	bool "Enable debug output for LPSS I2C transactions"
+	default n
+	depends on SOC_INTEL_COMMON_LPSS_I2C
+	help
+	  Enable debug output for I2C transactions.  This can be useful
+	  when debugging I2C drivers.
+
 config MMA
 	bool "enable MMA (Memory Margin Analysis) support"
 	default n

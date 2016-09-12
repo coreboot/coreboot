@@ -58,6 +58,19 @@ struct lpss_i2c_regs {
 	uint32_t rx_level;
 	uint32_t sda_hold;
 	uint32_t tx_abort_source;
+	uint32_t slv_data_nak_only;
+	uint32_t dma_cr;
+	uint32_t dma_tdlr;
+	uint32_t dma_rdlr;
+	uint32_t sda_setup;
+	uint32_t ack_general_call;
+	uint32_t enable_status;
+	uint32_t fs_spklen;
+	uint32_t hs_spklen;
+	uint32_t clr_restart_det;
+	uint32_t comp_param1;
+	uint32_t comp_version;
+	uint32_t comp_type;
 } __attribute__((packed));
 
 /* Use a ~4ms timeout for various operations */
@@ -153,7 +166,7 @@ static int lpss_i2c_disable(struct lpss_i2c_regs *regs)
 
 		/* Wait for enable bit to clear */
 		stopwatch_init_usecs_expire(&sw, LPSS_I2C_TIMEOUT_US);
-		while (read32(&regs->enable) & ENABLE_CONTROLLER)
+		while (read32(&regs->enable_status) & ENABLE_CONTROLLER)
 			if (stopwatch_expired(&sw))
 				return -1;
 	}
@@ -232,6 +245,7 @@ int platform_i2c_transfer(unsigned bus, struct i2c_seg *segments, int count)
 	struct stopwatch sw;
 	struct lpss_i2c_regs *regs;
 	size_t byte;
+	int ret = -1;
 
 	if (count <= 0 || !segments)
 		return -1;
@@ -242,14 +256,11 @@ int platform_i2c_transfer(unsigned bus, struct i2c_seg *segments, int count)
 		return -1;
 	}
 
-	if (!(read32(&regs->enable) & ENABLE_CONTROLLER)) {
-		printk(BIOS_ERR, "I2C bus %u not initialized\n", bus);
-		return -1;
-	}
+	lpss_i2c_enable(regs);
 
 	if (lpss_i2c_wait_for_bus_idle(regs)) {
 		printk(BIOS_ERR, "I2C timeout waiting for bus %u idle\n", bus);
-		return -1;
+		goto out;
 	}
 
 	/* Process each segment */
@@ -269,7 +280,7 @@ int platform_i2c_transfer(unsigned bus, struct i2c_seg *segments, int count)
 				printk(BIOS_ERR, "I2C %s failed: bus %u "
 				       "addr 0x%02x\n", segments->read ?
 				       "read" : "write", bus, segments->chip);
-				return -1;
+				goto out;
 			}
 		}
 		segments++;
@@ -280,7 +291,7 @@ int platform_i2c_transfer(unsigned bus, struct i2c_seg *segments, int count)
 	while (!(read32(&regs->raw_intr_stat) & INTR_STAT_STOP_DET)) {
 		if (stopwatch_expired(&sw)) {
 			printk(BIOS_ERR, "I2C stop bit not received\n");
-			return -1;
+			goto out;
 		}
 	}
 
@@ -290,7 +301,7 @@ int platform_i2c_transfer(unsigned bus, struct i2c_seg *segments, int count)
 	/* Wait for the bus to go idle */
 	if (lpss_i2c_wait_for_bus_idle(regs)) {
 		printk(BIOS_ERR, "I2C timeout waiting for bus %u idle\n", bus);
-		return -1;
+		goto out;
 	}
 
 	/* Flush the RX FIFO in case it is not empty */
@@ -298,12 +309,17 @@ int platform_i2c_transfer(unsigned bus, struct i2c_seg *segments, int count)
 	while (read32(&regs->status) & STATUS_RX_FIFO_NOT_EMPTY) {
 		if (stopwatch_expired(&sw)) {
 			printk(BIOS_ERR, "I2C timeout flushing RX FIFO\n");
-			return -1;
+			goto out;
 		}
 		read32(&regs->cmd_data);
 	}
 
-	return 0;
+	ret = 0;
+
+out:
+	read32(&regs->clear_intr);
+	lpss_i2c_disable(regs);
+	return ret;
 }
 
 /*
@@ -518,8 +534,6 @@ int lpss_i2c_init(unsigned bus, enum i2c_speed speed)
 
 	/* Enable stop detection interrupt */
 	write32(&regs->intr_mask, INTR_STAT_STOP_DET);
-
-	lpss_i2c_enable(regs);
 
 	printk(BIOS_INFO, "LPSS I2C bus %u at 0x%p (%u KHz)\n",
 	       bus, regs, (speed ? : I2C_SPEED_FAST) / KHz);

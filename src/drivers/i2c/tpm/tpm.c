@@ -539,7 +539,7 @@ static int cr50_wait_burst_status(struct tpm_chip *chip, uint8_t mask,
 	uint8_t buf[4];
 	struct stopwatch sw;
 
-	stopwatch_init_usecs_expire(&sw, 10 * SLEEP_DURATION_SAFE);
+	stopwatch_init_msecs_expire(&sw, 2000);
 
 	while (!stopwatch_expired(&sw)) {
 		if (iic_tpm_read(TPM_STS(chip->vendor.locality),
@@ -628,7 +628,6 @@ static int cr50_tis_i2c_recv(struct tpm_chip *chip, uint8_t *buf,
 	ret = current;
 
 out:
-	cr50_tis_i2c_ready(chip);
 	return ret;
 }
 
@@ -637,17 +636,23 @@ static int cr50_tis_i2c_send(struct tpm_chip *chip, uint8_t *buf, size_t len)
 	int status;
 	size_t burstcnt, limit, sent = 0;
 	uint8_t tpm_go[4] = { TPM_STS_GO };
+	struct stopwatch sw;
 
 	if (len > TPM_BUFSIZE)
 		return -1;
 
+	stopwatch_init_msecs_expire(&sw, 2000);
+
 	/* Wait until TPM is ready for a command */
-	status = cr50_tis_i2c_status(chip);
-	if (!(status & TPM_STS_COMMAND_READY)) {
+	while (!(cr50_tis_i2c_status(chip) & TPM_STS_COMMAND_READY)) {
+		if (stopwatch_expired(&sw)) {
+			printk(BIOS_ERR, "%s: Command ready timeout\n",
+			       __func__);
+			return -1;
+		}
+
 		cr50_tis_i2c_ready(chip);
-		if (cr50_wait_burst_status(chip, TPM_STS_COMMAND_READY,
-					   &burstcnt, &status) < 0)
-			goto out;
+		udelay(SLEEP_DURATION_SAFE);
 	}
 
 	while (len > 0) {
@@ -690,7 +695,9 @@ static int cr50_tis_i2c_send(struct tpm_chip *chip, uint8_t *buf, size_t len)
 	return sent;
 
 out:
-	cr50_tis_i2c_ready(chip);
+	/* Abort current transaction if still pending */
+	if (cr50_tis_i2c_status(chip) & TPM_STS_COMMAND_READY)
+		cr50_tis_i2c_ready(chip);
 	return -1;
 }
 
@@ -721,6 +728,7 @@ int tpm_vendor_probe(unsigned bus, uint32_t addr)
 			sw_run_duration = stopwatch_duration_msecs(&sw);
 			break;
 		}
+		udelay(SLEEP_DURATION_SAFE);
 	} while (!stopwatch_expired(&sw));
 
 	printk(BIOS_INFO,
@@ -747,6 +755,7 @@ int tpm_vendor_init(struct tpm_chip *chip, unsigned bus, uint32_t dev_addr)
 		return -1;
 	}
 
+	tpm_dev->chip_type = UNKNOWN;
 	tpm_dev->bus = bus;
 	tpm_dev->addr = dev_addr;
 

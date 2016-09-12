@@ -81,6 +81,13 @@ config CPU_MICROCODE_HEADER_FILES
 	string
 	default "../intel/cpu/broadwell_de/microcode/M1050663_07000001.h ../intel/cpu/broadwell_de/microcode/M1050662_0000000A.h ../intel/cpu/broadwell_de/microcode/MFF50661_F1000008.h"
 
+config SERIRQ_CONTINUOUS_MODE
+	bool
+	default n
+	help
+	  If you set this option to y, the serial IRQ machine will be
+	  operated in continuous mode.
+
 ## Broadwell-DE Specific FSP Kconfig
 source src/soc/intel/fsp_broadwell_de/fsp/Kconfig
 

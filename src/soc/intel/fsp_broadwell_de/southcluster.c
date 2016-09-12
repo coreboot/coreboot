@@ -215,7 +215,14 @@ static void sc_init(struct device *dev)
 		PCI_COMMAND_MASTER | PCI_COMMAND_SPECIAL);
 
 	/* Program Serial IRQ register. */
-	pci_write_config8(dev, 0x64, 0xd0);
+	pci_write_config8(dev, SIRQ_CNTL, SIRQ_EN | SIRQ_MODE_CONT);
+	if (!IS_ENABLED(CONFIG_SERIRQ_CONTINUOUS_MODE)) {
+		/* If SERIRQ have to operate in quiet mode, it should have been
+		   run in continuous mode for at least one frame first. Use I/O
+		   access to achieve the delay of at least one LPC cycle. */
+		outb(inb(0x80), 0x80);
+		pci_write_config8(dev, SIRQ_CNTL, SIRQ_EN | SIRQ_MODE_QUIET);
+	}
 
 	sc_pirq_init(dev);
 	write_pci_config_irqs();

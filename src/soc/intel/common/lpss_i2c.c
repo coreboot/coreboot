@@ -265,6 +265,11 @@ int platform_i2c_transfer(unsigned bus, struct i2c_seg *segments, int count)
 
 	/* Process each segment */
 	while (count--) {
+		if (CONFIG_SOC_INTEL_COMMON_LPSS_I2C_DEBUG)
+			printk(BIOS_DEBUG, "i2c %u:%02x %s %d bytes : ",
+			       bus, segments->chip, segments->read ? "R" : "W",
+			       segments->len);
+
 		/* Set target slave address */
 		write32(&regs->target_addr, segments->chip);
 
@@ -283,6 +288,14 @@ int platform_i2c_transfer(unsigned bus, struct i2c_seg *segments, int count)
 				goto out;
 			}
 		}
+
+		if (CONFIG_SOC_INTEL_COMMON_LPSS_I2C_DEBUG) {
+			int j;
+			for (j = 0; j < segments->len; j++)
+				printk(BIOS_DEBUG, "%02x ", segments->buf[j]);
+			printk(BIOS_DEBUG, "\n");
+		}
+
 		segments++;
 	}
 

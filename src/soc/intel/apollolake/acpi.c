@@ -28,6 +28,7 @@
 #include <soc/pm.h>
 #include <soc/nvs.h>
 #include <soc/pci_devs.h>
+#include <string.h>
 #include "chip.h"
 
 #define CSTATE_RES(address_space, width, offset, address)		\
@@ -151,11 +152,8 @@ static void acpi_create_gnvs(struct global_nvs_t *gnvs)
 	struct soc_intel_apollolake_config *cfg;
 	struct device *dev = NB_DEV_ROOT;
 
-	if (!dev || !dev->chip_info) {
-		printk(BIOS_ERR, "BUG! Could not find SOC devicetree config\n");
-		return;
-	}
-	cfg = dev->chip_info;
+	/* Clear out GNVS. */
+	memset(gnvs, 0, sizeof(*gnvs));
 
 	if (IS_ENABLED(CONFIG_CONSOLE_CBMEM))
 		gnvs->cbmc = (uintptr_t)cbmem_find(CBMEM_ID_CONSOLE);
@@ -166,11 +164,17 @@ static void acpi_create_gnvs(struct global_nvs_t *gnvs)
 		gnvs->chromeos.vbt2 = ACTIVE_ECFW_RO;
 	}
 
-	/* Enable DPTF based on mainboard configuration */
-	gnvs->dpte = cfg->dptf_enable;
-
 	/* Set unknown wake source */
 	gnvs->pm1i = ~0ULL;
+
+	if (!dev || !dev->chip_info) {
+		printk(BIOS_ERR, "BUG! Could not find SOC devicetree config\n");
+		return;
+	}
+	cfg = dev->chip_info;
+
+	/* Enable DPTF based on mainboard configuration */
+	gnvs->dpte = cfg->dptf_enable;
 }
 
 /* Save wake source information for calculating ACPI _SWS values */

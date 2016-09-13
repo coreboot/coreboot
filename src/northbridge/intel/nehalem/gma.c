@@ -261,7 +261,7 @@ u32 map_oprom_vendev(u32 vendev)
 {
 	u32 new_vendev = vendev;
 
-	/* none curently.  */
+	/* none curently. */
 
 	return new_vendev;
 }
@@ -675,7 +675,7 @@ static void intel_gma_init(const struct northbridge_intel_nehalem_config *info,
 	write32(mmio + 0x00042004, 0x02000000);
 	write32(mmio + 0x000fd034, 0x8421ffe0);
 
-	/* Setup GTT.  */
+	/* Setup GTT. */
 	for (i = 0; i < 0x2000; i++)
 	{
 		outl((i << 2) | 1, piobase);
@@ -702,7 +702,7 @@ static void intel_gma_init(const struct northbridge_intel_nehalem_config *info,
 		    sizeof(edid_data), &edid);
 	mode = &edid.mode;
 
-	/* Disable screen memory to prevent garbage from appearing.  */
+	/* Disable screen memory to prevent garbage from appearing. */
 	vga_sr_write(1, vga_sr_read(1) | 0x20);
 
 	hactive = edid.x_resolution;
@@ -748,17 +748,17 @@ static void intel_gma_init(const struct northbridge_intel_nehalem_config *info,
 		write32(mmio + LGC_PALETTE(0) + 4 * i, i * 0x010101);
 #endif
 
-	/* Find suitable divisors.  */
+	/* Find suitable divisors. */
 	for (candp1 = 1; candp1 <= 8; candp1++) {
 		for (candn = 5; candn <= 10; candn++) {
 			u32 cur_frequency;
-			u32 m; /* 77 - 131.  */
-			u32 denom; /* 35 - 560.  */
+			u32 m; /* 77 - 131. */
+			u32 denom; /* 35 - 560. */
 			u32 current_delta;
 
 			denom = candn * candp1 * 7;
 			/* Doesnt overflow for up to
-			   5000000 kHz = 5 GHz.  */
+			   5000000 kHz = 5 GHz. */
 			m = (target_frequency * denom + 60000) / 120000;
 
 			if (m < 77 || m > 131)
@@ -973,7 +973,7 @@ static void intel_gma_init(const struct northbridge_intel_nehalem_config *info,
 
 	write32(mmio + PCH_PP_CONTROL, PANEL_POWER_ON | PANEL_POWER_RESET);
 
-	/* Enable screen memory.  */
+	/* Enable screen memory. */
 	vga_sr_write(1, vga_sr_read(1) & ~0x20);
 
 	/* Clear interrupts. */
@@ -1027,7 +1027,7 @@ static void gma_func0_init(struct device *dev)
 			       pio_res->base, lfb_res->base);
 	}
 
-	/* Linux relies on VBT for panel info.  */
+	/* Linux relies on VBT for panel info. */
 	generate_fake_intel_oprom(&conf->gfx, dev, "$VBT IRONLAKE-MOBILE");
 #endif
 
@@ -1061,10 +1061,8 @@ static void gma_read_resources(struct device *dev)
 		return;
 	}
 	res->flags |= IORESOURCE_RESERVE | IORESOURCE_FIXED | IORESOURCE_ASSIGNED;
-	pci_write_config32(dev, PCI_BASE_ADDRESS_2,
-			   0xd0000001);
-	pci_write_config32(dev, PCI_BASE_ADDRESS_2 + 4,
-			   0);
+	pci_write_config32(dev, PCI_BASE_ADDRESS_2, 0xd0000001);
+	pci_write_config32(dev, PCI_BASE_ADDRESS_2 + 4, 0);
 	res->base = (resource_t) 0xd0000000;
 	res->size = (resource_t) 0x10000000;
 }
@@ -1105,8 +1103,8 @@ static struct device_operations gma_func0_ops = {
 	.ops_pci = &gma_pci_ops,
 };
 
-static const unsigned short pci_device_ids[] =
-    { 0x0046, 0x0102, 0x0106, 0x010a, 0x0112,
+static const unsigned short pci_device_ids[] = {
+	0x0046, 0x0102, 0x0106, 0x010a, 0x0112,
 	0x0116, 0x0122, 0x0126, 0x0156,
 	0x0166,
 	0

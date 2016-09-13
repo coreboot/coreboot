@@ -67,7 +67,7 @@ static void fill_mem_cs_sysinfo(unsigned nodeid, const struct mem_controller *ct
 	sysinfo->hole_reg[nodeid] = pci_read_config32(ctrl->f1, 0xf0);
 
 }
-static unsigned Get_MCTSysAddr(const struct mem_controller *ctrl,  unsigned cs_idx, struct sys_info *sysinfo)
+static unsigned Get_MCTSysAddr(const struct mem_controller *ctrl, unsigned cs_idx, struct sys_info *sysinfo)
 {
 	uint32_t dword;
 	uint32_t mem_base;
@@ -286,7 +286,7 @@ static unsigned CompareTestPatternQW0(unsigned channel, unsigned addr, unsigned 
 		print_debug_dqs_pair("\t\t\t\t\t\tQW0.hi : addr_lo = ", addr_lo, " value = ", value, 4);
 
 		if (value == value_test){
-			result =  DQS_PASS;
+			result = DQS_PASS;
 		}
 	}
 
@@ -332,7 +332,7 @@ static void SetTargetWTIO(unsigned addr)
 	wrmsr(0xc0010016, msr); //IORR0 BASE
 
 	msr.hi = 0xff;
-	msr.lo = 0xfc000800;  // 64MB Mask
+	msr.lo = 0xfc000800; // 64MB Mask
 	wrmsr(0xc0010017, msr); // IORR0 Mask
 }
 
@@ -647,10 +647,10 @@ static unsigned TrainRcvrEn(const struct mem_controller *ctrl, unsigned Pass, st
 
 				if (RcvrEnDly & 1) {
 					/* Odd steps get another pattern such that even
-					   and odd steps alternate.
-					   The pointers to the patterns will be swapped
-					   at the end of the loop so they are correspond
-					*/
+					 * and odd steps alternate.
+					 * The pointers to the patterns will be swapped
+					 * at the end of the loop so they are correspond
+					 */
 					PatternA = 1;
 					PatternB = 0;
 				}
@@ -670,14 +670,14 @@ static unsigned TrainRcvrEn(const struct mem_controller *ctrl, unsigned Pass, st
 				}
 
 				/* Program the MaxAsyncLat filed with the
-				   current DQS receiver enable setting plus 6ns
-				*/
+				 * current DQS receiver enable setting plus 6ns
+				 */
 				/* Program MaxAsyncLat to correspond with current delay */
 				SetMaxAL_RcvrDly(ctrl, RcvrEnDly);
 
 				CurrTest = DQS_FAIL;
 
-				Read1LTestPattern(TestAddr0);  //Cache Fill
+				Read1LTestPattern(TestAddr0); //Cache Fill
 				/* ROM vs cache compare */
 				Test0 = CompareTestPatternQW0(channel, TestAddr0, PatternA, TestPattern0, TestPattern1, TestPattern2, Pass, is_Width128);
 				proc_IOCLFLUSH(TestAddr0);
@@ -901,7 +901,7 @@ static unsigned MiddleDQS(unsigned min_d, unsigned max_d)
 	return ( min_d + (size_d>>1));
 }
 
-static  inline void save_dqs_delay(unsigned channel, unsigned bytelane, unsigned direction, uint8_t *dqs_delay_a, uint8_t dqs_delay)
+static inline void save_dqs_delay(unsigned channel, unsigned bytelane, unsigned direction, uint8_t *dqs_delay_a, uint8_t dqs_delay)
 {
 	dqs_delay_a[channel * 2*9 + direction * 9 + bytelane] = dqs_delay;
 }
@@ -915,24 +915,24 @@ static void ReadL18TestPattern(unsigned addr_lo)
 {
 	//set fs and use fs prefix to access the mem
 	__asm__ volatile (
-		"movl %%fs:-128(%%esi), %%eax\n\t"  //TestAddr cache line
-		"movl %%fs:-64(%%esi), %%eax\n\t"   //+1
-		"movl %%fs:(%%esi), %%eax\n\t"	//+2
-		"movl %%fs:64(%%esi), %%eax\n\t"   //+3
+		"movl %%fs:-128(%%esi), %%eax\n\t"	//TestAddr cache line
+		"movl %%fs:-64(%%esi), %%eax\n\t"	//+1
+		"movl %%fs:(%%esi), %%eax\n\t"		//+2
+		"movl %%fs:64(%%esi), %%eax\n\t"	//+3
 
 		"movl %%fs:-128(%%edi), %%eax\n\t"	//+4
 		"movl %%fs:-64(%%edi), %%eax\n\t"	//+5
-		"movl %%fs:(%%edi), %%eax\n\t"	//+6
+		"movl %%fs:(%%edi), %%eax\n\t"		//+6
 		"movl %%fs:64(%%edi), %%eax\n\t"	//+7
 
-		"movl %%fs:-128(%%ebx), %%eax\n\t"  //+8
+		"movl %%fs:-128(%%ebx), %%eax\n\t"	//+8
 		"movl %%fs:-64(%%ebx), %%eax\n\t"	//+9
-		"movl %%fs:(%%ebx), %%eax\n\t"	//+10
+		"movl %%fs:(%%ebx), %%eax\n\t"		//+10
 		"movl %%fs:64(%%ebx), %%eax\n\t"	//+11
 
 		"movl %%fs:-128(%%ecx), %%eax\n\t"	//+12
 		"movl %%fs:-64(%%ecx), %%eax\n\t"	//+13
-		"movl %%fs:(%%ecx), %%eax\n\t"	//+14
+		"movl %%fs:(%%ecx), %%eax\n\t"		//+14
 		"movl %%fs:64(%%ecx), %%eax\n\t"	//+15
 
 		"movl %%fs:-128(%%edx), %%eax\n\t"	//+16
@@ -949,17 +949,17 @@ static void ReadL9TestPattern(unsigned addr_lo)
 	//set fs and use fs prefix to access the mem
 	__asm__ volatile (
 
-		"movl %%fs:-128(%%ecx), %%eax\n\t"  //TestAddr cache line
-		"movl %%fs:-64(%%ecx), %%eax\n\t"   //+1
-		"movl %%fs:(%%ecx), %%eax\n\t"      //+2
-		"movl %%fs:64(%%ecx), %%eax\n\t"   //+3
+		"movl %%fs:-128(%%ecx), %%eax\n\t"	//TestAddr cache line
+		"movl %%fs:-64(%%ecx), %%eax\n\t"	//+1
+		"movl %%fs:(%%ecx), %%eax\n\t"		//+2
+		"movl %%fs:64(%%ecx), %%eax\n\t"	//+3
 
-		"movl %%fs:-128(%%edx), %%eax\n\t"  //+4
-		"movl %%fs:-64(%%edx), %%eax\n\t"   //+5
-		"movl %%fs:(%%edx), %%eax\n\t"      //+6
-		"movl %%fs:64(%%edx), %%eax\n\t"   //+7
+		"movl %%fs:-128(%%edx), %%eax\n\t"	//+4
+		"movl %%fs:-64(%%edx), %%eax\n\t"	//+5
+		"movl %%fs:(%%edx), %%eax\n\t"		//+6
+		"movl %%fs:64(%%edx), %%eax\n\t"	//+7
 
-		"movl %%fs:-128(%%ebx), %%eax\n\t"      //+8
+		"movl %%fs:-128(%%ebx), %%eax\n\t"	//+8
 
 		:: "a"(0), "b" (addr_lo+128+8*64), "c"(addr_lo+128), "d"(addr_lo+128+4*64)
 	);
@@ -992,13 +992,13 @@ static void FlushDQSTestPattern_L9(unsigned addr_lo)
 
 		"clflush %%fs:-128(%%ebx)\n\t"
 
-		::  "b" (addr_lo+128+8*64), "c"(addr_lo+128), "a"(addr_lo+128+4*64)
+		:: "b" (addr_lo+128+8*64), "c"(addr_lo+128), "a"(addr_lo+128+4*64)
 	);
 
 }
 static __attribute__((noinline)) void FlushDQSTestPattern_L18(unsigned addr_lo)
 {
-       __asm__ volatile (
+	__asm__ volatile (
 		"clflush %%fs:-128(%%eax)\n\t"
 		"clflush %%fs:-64(%%eax)\n\t"
 		"clflush %%fs:(%%eax)\n\t"
@@ -1124,7 +1124,7 @@ static unsigned TrainDQSPos(const struct mem_controller *ctrl, unsigned channel,
 		print_debug_dqs("\t\t\t\tTrainDQSPos: 11 ChipSel ", ChipSel, 4);
 		//FIXME: process 64MUXedMode
 		if (!ChipSelPresent(ctrl, ChipSel, sysinfo)) continue;
-		BanksPresent  = 1;
+		BanksPresent = 1;
 
 		TestAddr = Get_MCTSysAddr(ctrl, ChipSel, sysinfo);
 
@@ -1286,12 +1286,12 @@ static unsigned TrainDQSRdWrPos(const struct mem_controller *ctrl, struct sys_in
 					0xFeFeFeFe,0xFeFeFeFe,0xFeFeFeFe,0xFeFeFeFe, // QW5,CHA-B, DQ0-ODD
 					0xFeFeFeFe,0xFeFeFeFe,0xFeFeFeFe,0xFeFeFeFe, // QW6,CHA-B, DQ0-ODD
 					0x01010101,0x01010101,0x01010101,0x01010101, // QW7,CHA-B, DQ0-ODD
-				    	0x02020202,0x02020202,0x02020202,0x02020202, // QW0,CHA-B, DQ1-ODD
-				    	0x02020202,0x02020202,0x02020202,0x02020202, // QW1,CHA-B, DQ1-ODD
+					0x02020202,0x02020202,0x02020202,0x02020202, // QW0,CHA-B, DQ1-ODD
+					0x02020202,0x02020202,0x02020202,0x02020202, // QW1,CHA-B, DQ1-ODD
 					0xFdFdFdFd,0xFdFdFdFd,0xFdFdFdFd,0xFdFdFdFd, // QW2,CHA-B, DQ1-ODD
 					0xFdFdFdFd,0xFdFdFdFd,0xFdFdFdFd,0xFdFdFdFd, // QW3,CHA-B, DQ1-ODD
-				    	0xFdFdFdFd,0xFdFdFdFd,0xFdFdFdFd,0xFdFdFdFd, // QW4,CHA-B, DQ1-ODD
-				    	0x02020202,0x02020202,0x02020202,0x02020202, // QW5,CHA-B, DQ1-ODD
+					0xFdFdFdFd,0xFdFdFdFd,0xFdFdFdFd,0xFdFdFdFd, // QW4,CHA-B, DQ1-ODD
+					0x02020202,0x02020202,0x02020202,0x02020202, // QW5,CHA-B, DQ1-ODD
 					0x02020202,0x02020202,0x02020202,0x02020202, // QW6,CHA-B, DQ1-ODD
 					0x02020202,0x02020202,0x02020202,0x02020202, // QW7,CHA-B, DQ1-ODD
 					0x04040404,0x04040404,0x04040404,0x04040404, // QW0,CHA-B, DQ2-ODD
@@ -1375,7 +1375,7 @@ static unsigned TrainDQSRdWrPos(const struct mem_controller *ctrl, struct sys_in
 		pattern = 1;
 		for (i=0;i<16*18;i++) {
 			*((uint32_t *)(buf_a + i*4)) = TestPatternJD1b[i];
-       		 }
+		}
 	}
 	else {
 		pattern = 0;
@@ -1500,7 +1500,7 @@ static void SetEccDQSRdWrPos(const struct mem_controller *ctrl, struct sys_info 
 			Direction = direction[i];
 			lane0 = 4; lane1 = 5; ratio = 0;
 			dqs_delay = CalcEccDQSPos(channel, lane0, lane1, ratio, Direction, dqs_delay_a);
-			print_debug_dqs_pair("\t\tSetEccDQSRdWrPos: channel ", channel, Direction==DQS_READDIR? " R dqs_delay":" W dqs_delay",  dqs_delay, 2);
+			print_debug_dqs_pair("\t\tSetEccDQSRdWrPos: channel ", channel, Direction==DQS_READDIR? " R dqs_delay":" W dqs_delay", dqs_delay, 2);
 			SetDQSDelayCSR(ctrl, channel, ByteLane, Direction, dqs_delay);
 			save_dqs_delay(channel, ByteLane, Direction, dqs_delay_a, dqs_delay);
 		}
@@ -1612,7 +1612,7 @@ static void set_var_mtrr_dqs(
 	address_mask_high = ((1u << (address_bits - 32u)) - 1u);
 
 	base.hi = basek >> 22;
-	base.lo  = basek << 10;
+	base.lo = basek << 10;
 
 	if (sizek < 4*1024*1024) {
 		mask.hi = address_mask_high;
@@ -1878,7 +1878,7 @@ static void dqs_timing(int controllers, const struct mem_controller *ctrl, tsc_t
 static void dqs_timing(int controllers, const struct mem_controller *ctrl, struct sys_info *sysinfo)
 #endif
 {
-	int  i;
+	int i;
 
 	tsc_t tsc[5];
 
@@ -1905,7 +1905,7 @@ static void dqs_timing(int controllers, const struct mem_controller *ctrl, struc
 
 		printk(BIOS_DEBUG, "DQS Training:RcvrEn:Pass1: %02x\n", i);
 		if (train_DqsRcvrEn(ctrl+i, 1, sysinfo)) goto out;
-       		printk(BIOS_DEBUG, " done\n");
+		printk(BIOS_DEBUG, " done\n");
 	}
 
 	tsc[1] = rdtsc();
@@ -1949,7 +1949,7 @@ out:
 
 
 	for (i=0;i<5;i++) {
-		print_debug_dqs_tsc_x("DQS Training:tsc", i,  tsc[i].hi, tsc[i].lo);
+		print_debug_dqs_tsc_x("DQS Training:tsc", i, tsc[i].hi, tsc[i].lo);
 	}
 
 
@@ -1982,7 +1982,7 @@ static void dqs_timing(int i, const struct mem_controller *ctrl, struct sys_info
 
 		printk(BIOS_DEBUG, "set DQS timing:RcvrEn:Pass1: %02x\n", i);
 	}
-	if (train_DqsRcvrEn(ctrl, 1,  sysinfo)) {
+	if (train_DqsRcvrEn(ctrl, 1, sysinfo)) {
 		sysinfo->mem_trained[i]=0x81; //
 		goto out;
 	}
@@ -2004,7 +2004,7 @@ static void dqs_timing(int i, const struct mem_controller *ctrl, struct sys_info
 
 		printk(BIOS_DEBUG, "set DQS timing:RcvrEn:Pass2: %02x\n", i);
 	}
-	if (train_DqsRcvrEn(ctrl, 2,  sysinfo)){
+	if (train_DqsRcvrEn(ctrl, 2, sysinfo)){
 		sysinfo->mem_trained[i]=0x83; //
 		goto out;
 	}
@@ -2022,7 +2022,7 @@ out:
 
 	if (v) {
 		for (ii=0;ii<4;ii++) {
-		      print_debug_dqs_tsc_x("Total DQS Training : tsc ", ii,  tsc[ii].hi, tsc[ii].lo);
+			print_debug_dqs_tsc_x("Total DQS Training : tsc ", ii, tsc[ii].hi, tsc[ii].lo);
 		}
 	}
 

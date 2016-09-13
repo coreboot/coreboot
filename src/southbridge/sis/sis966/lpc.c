@@ -75,12 +75,12 @@ static void lpc_slave_init(device_t dev)
 
 static void lpc_usb_legacy_init(device_t dev)
 {
-    uint16_t acpi_base;
+	uint16_t acpi_base;
 
-    acpi_base = (pci_read_config8(dev,0x75) << 8);
+	acpi_base = (pci_read_config8(dev,0x75) << 8);
 
-    outb(inb(acpi_base + 0xbb) |0x80, acpi_base + 0xbb);
-    outb(inb(acpi_base + 0xba) |0x80, acpi_base + 0xba);
+	outb(inb(acpi_base + 0xbb) |0x80, acpi_base + 0xbb);
+	outb(inb(acpi_base + 0xba) |0x80, acpi_base + 0xba);
 }
 
 static void lpc_init(device_t dev)
@@ -116,7 +116,7 @@ static void lpc_init(device_t dev)
 		uint16_t pm10_bar;
 		uint32_t dword;
 		pm10_bar = (pci_read_config16(dev, 0x60)&0xff00);
-		outl(((on<<1)+0x10)  ,(pm10_bar + 0x10));
+		outl(((on<<1)+0x10) ,(pm10_bar + 0x10));
 		dword = inl(pm10_bar + 0x10);
 		on = 8-on;
 		printk(BIOS_DEBUG, "Throttling CPU %2d.%1.1d percent.\n",
@@ -207,14 +207,14 @@ static void sis966_lpc_enable_childrens_resources(device_t dev)
 					case 0x3f8: // COM1
 						reg |= (1<<0);	break;
 					case 0x2f8: // COM2
-						reg |= (1<<1);  break;
+						reg |= (1<<1);	break;
 					case 0x378: // Parallel 1
-						reg |= (1<<24); break;
+						reg |= (1<<24);	break;
 					case 0x3f0: // FD0
-						reg |= (1<<20); break;
-					case 0x220:  // Audio 0
+						reg |= (1<<20);	break;
+					case 0x220: // Audio 0
 						reg |= (1<<8);	break;
-					case 0x300:  // Midi 0
+					case 0x300: // Midi 0
 						reg |= (1<<12);	break;
 					}
 					if ( (base == 0x290) || (base >= 0x400)) {
@@ -250,7 +250,7 @@ static struct pci_operations lops_pci = {
 	.set_subsystem	= lpci_set_subsystem,
 };
 
-static struct device_operations lpc_ops  = {
+static struct device_operations lpc_ops = {
 	.read_resources	= sis966_lpc_read_resources,
 	.set_resources	= pci_dev_set_resources,
 	.enable_resources	= sis966_lpc_enable_resources,
@@ -267,7 +267,7 @@ static const struct pci_driver lpc_driver __pci_driver = {
 };
 
 #ifdef SLAVE_INIT // No device?
-static struct device_operations lpc_slave_ops  = {
+static struct device_operations lpc_slave_ops = {
 	.read_resources	= sis966_lpc_read_resources,
 	.set_resources	= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,

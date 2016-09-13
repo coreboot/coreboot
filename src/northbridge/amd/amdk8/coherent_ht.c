@@ -155,7 +155,7 @@ static void enable_apic_ext_id(u8 node)
 #if CONFIG_ENABLE_APIC_EXT_ID
 #warning "FIXME Is the right place to enable apic ext id here?"
 
-      u32 val;
+	u32 val;
 
 	val = pci_read_config32(NODE_HT(node), 0x68);
 	val |= (HTTC_APIC_EXT_SPUR | HTTC_APIC_EXT_ID | HTTC_APIC_EXT_BRD_CST);
@@ -242,8 +242,8 @@ static void rename_temp_node(u8 node)
 	printk(BIOS_SPEW, "Renaming current temporary node to %d", node);
 
 	val=pci_read_config32(NODE_HT(7), 0x60);
-	val &= (~7);  /* clear low bits. */
-	val |= node;  /* new node        */
+	val &= (~7); /* clear low bits. */
+	val |= node; /* new node        */
 	pci_write_config32(NODE_HT(7), 0x60, val);
 
 	printk(BIOS_SPEW, " done.\n");
@@ -275,9 +275,9 @@ static uint16_t read_freq_cap(pci_devfn_t dev, uint8_t pos)
 	freq_cap &= ~(1 << HT_FREQ_VENDOR); /* Ignore Vendor HT frequencies */
 
 #if CONFIG_K8_HT_FREQ_1G_SUPPORT
-    #if !CONFIG_K8_REV_F_SUPPORT
-	if (!is_cpu_pre_e0())
-    #endif
+	#if !CONFIG_K8_REV_F_SUPPORT
+		if (!is_cpu_pre_e0())
+	#endif
 	{
 		return freq_cap;
 	}
@@ -378,9 +378,9 @@ static uint8_t get_linkn_first(uint8_t byte)
 #if TRY_HIGH_FIRST == 1
 static uint8_t get_linkn_last(uint8_t byte)
 {
-	if (byte & 0x02) { byte &= 0x0f; byte |= 0x00;  }
-	if (byte & 0x04) { byte &= 0x0f; byte |= 0x10;  }
-	if (byte & 0x08) { byte &= 0x0f; byte |= 0x20;  }
+	if (byte & 0x02) { byte &= 0x0f; byte |= 0x00; }
+	if (byte & 0x04) { byte &= 0x0f; byte |= 0x10; }
+	if (byte & 0x08) { byte &= 0x0f; byte |= 0x20; }
 	return byte>>4;
 }
 #endif
@@ -424,7 +424,7 @@ static void setup_row_direct_x(u8 temp, u8 source, u8 dest, u8 linkn)
 	if (((source &1)!=(dest &1))
 #if CROSS_BAR_47_56
 		&& ( (source<4)||(source>5) ) //(6,7) (7,6) should still be here
-					       //(6,5) (7,4) should be here
+					      //(6,5) (7,4) should be here
 #endif
 	){
 		val |= (1<<16);
@@ -553,7 +553,7 @@ static void setup_row_indirect_x(u8 temp, u8 source, u8 dest, u8 gateway, u8 dif
 #endif
 
 	if (diff && (val_s!=(val&0xff)) ) { /* use another connect as response*/
-		val_s -= val &  0xff;
+		val_s -= val & 0xff;
 #if (CONFIG_MAX_PHYSICAL_CPUS > 4) || CONFIG_MAX_PHYSICAL_CPUS_4_BUT_MORE_INSTALLED
 		uint8_t byte;
 		/* Some node have two links left
@@ -568,13 +568,13 @@ static void setup_row_indirect_x(u8 temp, u8 source, u8 dest, u8 gateway, u8 dif
 #if CROSS_BAR_47_56
 				#if 0
 				if (source==7) {
-					val_s-=link_connection(temp, 6);  // for 7,2 via 5
+					val_s-=link_connection(temp, 6); // for 7,2 via 5
 				} else if (source==6){
-					val_s-=link_connection(temp, 7);  // for 6,3 via 4
+					val_s-=link_connection(temp, 7); // for 6,3 via 4
 				} else
 				#endif
 				if (source < gateway) { // for 5, 4 via 7
-				  	val_s-=link_connection(temp, source-2);
+					val_s-=link_connection(temp, source-2);
 				} else
 #endif
 					val_s-=link_connection(temp, source+2); /* -up*/
@@ -740,9 +740,9 @@ static unsigned setup_smp2(void)
 	}
 #endif
 
-	setup_remote_node(1);  /* Setup the regs on the remote node */
-	rename_temp_node(1);    /* Rename Node 7 to Node 1  */
-	enable_routing(1);      /* Enable routing on Node 1 */
+	setup_remote_node(1); /* Setup the regs on the remote node */
+	rename_temp_node(1);  /* Rename Node 7 to Node 1  */
+	enable_routing(1);    /* Enable routing on Node 1 */
 #if 0
 	/*don't need and it is done by clear_dead_links */
 	clear_temp_row(0);
@@ -774,7 +774,7 @@ static unsigned setup_smp4(void)
 
 	byte &= 3; /* bit [3,2] is count-1*/
 	print_linkn("(0,2) link=", byte);
-	setup_row_direct(0, 2, byte);  /*(0,2) direct link done*/
+	setup_row_direct(0, 2, byte); /*(0,2) direct link done*/
 
 	/* We found 3 nodes so far. Now setup a temporary
 	* connection from node 0 to node 3 via node 1
@@ -785,7 +785,7 @@ static unsigned setup_smp4(void)
 	byte = ((val>>16) & 0xfe) - link_connection(1,0);
 	byte = get_linkn_first(byte);
 	print_linkn("(1,3) link=", byte);
-	setup_row_direct(1,3,byte);  /* (1, 3) direct link done*/
+	setup_row_direct(1,3,byte); /* (1, 3) direct link done*/
 
 	/* We found 4 nodes so far. Now setup all nodes for 4p */
 	// We need to make sure 0,2 and 1,3 link is set already
@@ -810,11 +810,11 @@ static unsigned setup_smp4(void)
 	print_linkn("(2,0) link=", byte);
 
 	setup_row_local(7,2);
-	setup_remote_row_direct(2, 0, byte);  /* node 2 to node 0 direct link done */
+	setup_remote_row_direct(2, 0, byte); /* node 2 to node 0 direct link done */
 	setup_remote_node(2);  /* Setup the regs on the remote node */
 
-	rename_temp_node(2);    /* Rename Node 7 to Node 2  */
-	enable_routing(2);      /* Enable routing on Node 2 */
+	rename_temp_node(2);   /* Rename Node 7 to Node 2  */
+	enable_routing(2);     /* Enable routing on Node 2 */
 
 	setup_temp_row(0,1);
 	setup_temp_row(1,3);
@@ -866,7 +866,7 @@ static unsigned setup_smp4(void)
 	byte = ((val>>16) & 0xfe) - link_connection(7,2) - link_connection(7,1);
 	byte = get_linkn_last_count(byte);
 	if ((byte>>2)==1) { /* We should have three coherent links on node 3 for 6p and above*/
-		byte &= 3; /*bit [3,2] is count-2*/
+		byte &= 3;  /*bit [3,2] is count-2*/
 		print_linkn("(3,5) link=", byte);
 		setup_remote_row_direct(3, 5, byte);
 	}
@@ -876,7 +876,7 @@ static unsigned setup_smp4(void)
 	byte = get_linkn_last_count(byte);
 
 	if ((byte>>2)==1) { /* We should have three coherent link on node 2 for 6p and above*/
-		byte &= 3; /* bit [3,2] is count-2*/
+		byte &= 3;  /* bit [3,2] is count-2*/
 		print_linkn("(2,4) link=", byte);
 		setup_row_direct(2, 4, byte);
 	}
@@ -896,7 +896,7 @@ static unsigned setup_smp4(void)
 
 /* ready to enable RT for Node 3 */
 	rename_temp_node(3);
-	enable_routing(3);      /* enable routing on node 3 (temp.) */
+	enable_routing(3);  /* enable routing on node 3 (temp.) */
 
 	// beside 2, 0 is set, We need to make sure 2, 4 link is set already in case has three link in 2
 #if !CROSS_BAR_47_56
@@ -933,7 +933,7 @@ static unsigned setup_smp6(void)
 
 	nodes=6;
 
-	/* Setup and check temporary connection from Node 0 to Node 4  through 2*/
+	/* Setup and check temporary connection from Node 0 to Node 4 through 2*/
 	val = get_row(2,2);
 	byte = ((val>>16) & 0xfe) - link_connection(2,3) - link_connection(2,0);
 	byte = get_linkn_last_count(byte);
@@ -943,7 +943,7 @@ static unsigned setup_smp6(void)
 		return nodes;
 	}
 
-	/* Setup and check temporary connection from Node 0 to Node 5  through 1, 3*/
+	/* Setup and check temporary connection from Node 0 to Node 5 through 1, 3*/
 	/* set link from 3 to 5 before enable it*/
 	val = get_row(3,3);
 	byte = ((val>>16) & 0xfe) - link_connection(3,2) - link_connection(3,1);
@@ -1074,7 +1074,7 @@ static unsigned setup_smp6(void)
 #endif
 
 	//We need to set 5,0 here only, We need to set up 5, 7 to make 5,0
-	/* Set indirect connection to 0, to 3  for indirect we will use clockwise routing */
+	/* Set indirect connection to 0, to 3 for indirect we will use clockwise routing */
 	static const u8 conn6_3[] = {
 #if !CROSS_BAR_47_56
 		5, 0,
@@ -1087,7 +1087,7 @@ static unsigned setup_smp6(void)
 
 /* ready to enable RT for 5 */
 	rename_temp_node(5);
-	enable_routing(5);      /* enable routing on node 5 (temp.) */
+	enable_routing(5); /* enable routing on node 5 (temp.) */
 
 	static const u8 conn6_4[] = {
 #if !CROSS_BAR_47_56
@@ -1157,7 +1157,7 @@ static unsigned setup_smp8(void)
 	}
 #if TRY_HIGH_FIRST == 1
 	byte = ((val>>16) & 0xfe) - link_connection(4,2);
-	byte = get_linkn_first(byte);  /*Min link to 6*/
+	byte = get_linkn_first(byte); /*Min link to 6*/
 #else
 	byte &= 3; /* bit [3,2] is count-1 or 2*/
 #endif
@@ -1166,7 +1166,7 @@ static unsigned setup_smp8(void)
 #endif
 
 #if !CROSS_BAR_47_56
-	/* Setup and check temporary connection from Node 0 to Node 7  through 1, 3, 5*/
+	/* Setup and check temporary connection from Node 0 to Node 7 through 1, 3, 5*/
 	val = get_row(5,5);
 	byte = ((val>>16) & 0xfe) - link_connection(5,4) - link_connection(5,3);
 	byte = get_linkn_last_count(byte);
@@ -1213,8 +1213,8 @@ static unsigned setup_smp8(void)
 
 	setup_row_local(7,6);
 	setup_remote_row_direct(6, 4, byte);
-	setup_remote_node(6);  /* Setup the regs on the remote node */
-	/* Set indirect connection to 0, to 3   */
+	setup_remote_node(6); /* Setup the regs on the remote node */
+	/* Set indirect connection to 0, to 3 */
 #warning "FIXME we need to find out the correct gateway for 8p"
 	static const u8 conn8_2[] = {
 #if !CROSS_BAR_47_56
@@ -1229,7 +1229,7 @@ static unsigned setup_smp8(void)
 #if CROSS_BAR_47_56
 	//init 5, 6 here
 	/* here init 5, 6 */
-	/* Setup and check temporary connection from Node 0 to Node 5  through 1, 3, 5*/
+	/* Setup and check temporary connection from Node 0 to Node 5 through 1, 3, 5*/
 	val = get_row(5,5);
 	byte = ((val>>16) & 0xfe) - link_connection(5,3);
 #if TRY_HIGH_FIRST == 1
@@ -1251,24 +1251,24 @@ static unsigned setup_smp8(void)
 	val = get_row(7,6); // to chect it if it is node6 before renaming
 	if ( (val>>16) == 1) { // it is real node 7 so swap it
 		/* We need to recompute link to 6 */
-       		val = get_row(5,5);
-	       	byte = ((val>>16) & 0xfe) - link_connection(5,3);
+		val = get_row(5,5);
+		byte = ((val>>16) & 0xfe) - link_connection(5,3);
 #if TRY_HIGH_FIRST == 1
 		byte = get_linkn_first(byte);
 #else
-       		byte = get_linkn_last(byte);
+		byte = get_linkn_last(byte);
 #endif
-	       	print_linkn("\t-->(5,6) link=", byte);
+		print_linkn("\t-->(5,6) link=", byte);
 		setup_row_direct(5, 6, byte);
 #if 0
-	       	setup_temp_row(0,1); /* temp. link between nodes 0 and 1 */
+		setup_temp_row(0,1); /* temp. link between nodes 0 and 1 */
 		for (byte=0; byte<4; byte+=2) {
-       			setup_temp_row(byte+1,byte+3);
-	       	}
+			setup_temp_row(byte+1,byte+3);
+		}
 #endif
 		setup_temp_row(5,6);
 
-       		verify_connection(7);
+		verify_connection(7);
 	}
 	val = pci_read_config32(NODE_HT(7), 0x6c);
 	byte = (val>>2) & 0x3; /* get default link on 7 to 5*/
@@ -1315,11 +1315,11 @@ static unsigned setup_smp8(void)
 	setup_remote_row_direct(7, 4, byte);
 	/* till now 4-7, 7-4 done. */
 #endif
-	setup_remote_node(7);  /* Setup the regs on the remote node */
+	setup_remote_node(7); /* Setup the regs on the remote node */
 
 #if CROSS_BAR_47_56
 	/* here init 5, 7 */
-	/* Setup and check temporary connection from Node 0 to Node 5  through 1, 3, 5*/
+	/* Setup and check temporary connection from Node 0 to Node 5 through 1, 3, 5*/
 	val = get_row(5,5);
 	byte = ((val>>16) & 0xfe) - link_connection(5,3) - link_connection(5,6);
 	byte = get_linkn_first(byte);
@@ -1362,10 +1362,10 @@ static unsigned setup_smp8(void)
 	print_linkn("(7,6) link=", byte);
 	setup_row_direct(7,6, byte);
 
-	/* Set indirect connection to 0, to 3  for indirect we will use clockwise routing */
+	/* Set indirect connection to 0, to 3 for indirect we will use clockwise routing */
 	static const u8 conn8_3[] = {
 #if !CROSS_BAR_47_56
-		0, 7,  /* restore it*/
+		0, 7, /* restore it*/
 		1, 7,
 		2, 7,
 		3, 7,
@@ -1468,7 +1468,7 @@ static unsigned setup_smp8(void)
 
 
 /* ready to enable RT for Node 7 */
-	enable_routing(7);      /* enable routing on node 7 (temp.) */
+	enable_routing(7); /* enable routing on node 7 (temp.) */
 
 	return nodes;
 }
@@ -1517,7 +1517,7 @@ static unsigned verify_mp_capabilities(unsigned nodes)
 
 	switch(mask) {
 #if CONFIG_MAX_PHYSICAL_CPUS > 2
-	case 0x02: /* MPCap    */
+	case 0x02: /* MPCap */
 		if (nodes > 2) {
 			printk(BIOS_ERR, "Going back to DP\n");
 			return 2;
@@ -1798,15 +1798,15 @@ static int optimize_link_coherent_ht(void)
 
 #if CONFIG_MAX_PHYSICAL_CPUS > 6
 	if (nodes>6) {
-	       static const uint8_t opt_conn8[] ={
-		       4, 6,
+		static const uint8_t opt_conn8[] ={
+			4, 6,
 	#if CROSS_BAR_47_56
-		       4, 7,
-		       5, 6,
+			4, 7,
+			5, 6,
 	#endif
-		       5, 7,
-		       6, 7,
-	       };
+			5, 7,
+			6, 7,
+		};
 		needs_reset |= optimize_connection_group(opt_conn8, ARRAY_SIZE(opt_conn8));
 	}
 #endif

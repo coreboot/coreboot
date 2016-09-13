@@ -65,54 +65,54 @@ static int set_bits(void *port, u32 mask, u32 val)
 
 static u32 send_verb(u8 *base, u32 verb)
 {
-     u32 dword;
+	u32 dword;
 
-     dword = read32(base + 0x68);
-     dword=dword|(unsigned long)0x0002;
-     write32(base + 0x68, dword);
-     do {
-	     dword = read32(base + 0x68);
-     }  while ((dword & 1)!=0);
-     write32(base + 0x60, verb);
-     udelay(500);
-     dword = read32(base + 0x68);
-     dword =(dword |0x1);
-     write32(base + 0x68, dword);
-     do {
-	 	udelay(100);
+	dword = read32(base + 0x68);
+	dword = dword|(unsigned long)0x0002;
+	write32(base + 0x68, dword);
+	do {
 		dword = read32(base + 0x68);
-     } while ((dword & 3) != 2);
+	} while ((dword & 1) != 0);
+	write32(base + 0x60, verb);
+	udelay(500);
+	dword = read32(base + 0x68);
+	dword = (dword |0x1);
+	write32(base + 0x68, dword);
+	do {
+		udelay(100);
+		dword = read32(base + 0x68);
+	} while ((dword & 3) != 2);
 
-     dword = read32(base + 0x64);
-     return dword;
+	dword = read32(base + 0x64);
+	return dword;
 }
 
 
 static int codec_detect(u8 *base)
 {
 	u32 dword;
-	int idx=0;
+	int idx = 0;
 
 	/* 1 */ // controller reset
 	printk(BIOS_DEBUG, "controller reset\n");
 
 	set_bits(base + 0x08, 1, 1);
 
-      do {
-	  	dword = read32(base + 0x08)&0x1;
+	do {
+		dword = read32(base + 0x08)&0x1;
 		if (idx++>1000) { printk(BIOS_DEBUG, "controller reset fail !!!\n"); break;}
-	   } while (dword !=1);
+	} while (dword !=1);
 
-       dword=send_verb(base,0x000F0000); // get codec VendorId and DeviceId
+	dword=send_verb(base,0x000F0000); // get codec VendorId and DeviceId
 
-       if (dword==0) {
-	   	printk(BIOS_DEBUG, "No codec!\n");
+	if (dword == 0) {
+		printk(BIOS_DEBUG, "No codec!\n");
 		return 0;
-       }
+	}
 
 	 printk(BIOS_DEBUG, "Codec ID = %x\n", dword);
 
-       dword=0x1;
+	dword = 0x1;
 	return dword;
 
 }
@@ -185,7 +185,7 @@ static u32 verb_data[] = {
 static unsigned find_verb(u32 viddid, u32 **verb)
 {
 	if ((viddid == 0x10ec0883) || (viddid == 0x10ec0882) || (viddid == 0x10ec0880)) return 0;
-	*verb =  (u32 *)verb_data;
+	*verb = (u32 *)verb_data;
 	return sizeof(verb_data)/sizeof(u32);
 }
 
@@ -202,12 +202,12 @@ static void codec_init(u8 *base, int addr)
 		dword = read32(base + 0x68);
 	} while (dword & 1);
 
-	dword = (addr<<28) | 0x000f0000;
+	dword = (addr << 28) | 0x000f0000;
 	write32(base + 0x60, dword);
 
 	do {
 		dword = read32(base + 0x68);
-	} while ((dword & 3)!=2);
+	} while ((dword & 3) != 2);
 
 	dword = read32(base + 0x64);
 
@@ -244,7 +244,7 @@ static void aza_init(struct device *dev)
 
 //-------------- enable AZA (SiS7502) -------------------------
 {
-	u8  temp8;
+	u8 temp8;
 	int i=0;
 	while (SiS_SiS7502_init[i][0] != 0)
 	{
@@ -268,7 +268,7 @@ static void aza_init(struct device *dev)
 	printk(BIOS_DEBUG, "****** Azalia PCI config ******");
 	printk(BIOS_DEBUG, "\n    03020100  07060504  0B0A0908  0F0E0D0C");
 
-	for (i=0;i<0xff;i+=4){
+	for (i=0; i<0xff; i+=4){
 		if ((i%16)==0){
 			printk(BIOS_DEBUG, "\n%02x: ", i);
 		}
@@ -305,7 +305,7 @@ static struct pci_operations lops_pci = {
 	.set_subsystem	= lpci_set_subsystem,
 };
 
-static struct device_operations aza_audio_ops  = {
+static struct device_operations aza_audio_ops = {
 	.read_resources	= pci_dev_read_resources,
 	.set_resources	= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,

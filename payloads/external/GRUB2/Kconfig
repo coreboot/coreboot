@@ -9,7 +9,23 @@ config GRUB2_MASTER
 	help
 	  Newest GRUB2 version
 
+config GRUB2_REVISION
+	bool "git revision"
+	help
+	  Select this option if you have a specific commit or branch
+	  that you want to use as the revision from which to
+	  build GRUB2.
+
+	  You will be able to specify the name of a branch or a commit id
+	  later.
 endchoice
+
+config GRUB2_REVISION_ID
+	string "Insert a commit's SHA-1 or a branch name"
+	depends on GRUB2_REVISION
+	default "origin/master"
+	help
+	   The commit's SHA-1 or branch name of the revision to use.
 
 config GRUB2_EXTRA_MODULES
 	string "Extra modules to include in GRUB image"

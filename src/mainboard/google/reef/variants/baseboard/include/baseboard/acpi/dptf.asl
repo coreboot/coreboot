@@ -87,8 +87,3 @@ Name (MPPC, Package ()
 		1000	/* StepSize */
 	}
 })
-
-/* Include soc specific DPTF changes */
-#include <soc/intel/apollolake/acpi/dptf.asl>
-/* Include common dptf ASL files */
-#include <soc/intel/common/acpi/dptf/dptf.asl>

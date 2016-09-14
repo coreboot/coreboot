@@ -13,6 +13,9 @@
  * GNU General Public License for more details.
  */
 
+#include <variant/ec.h>
+#include <variant/gpio.h>
+
 DefinitionBlock(
 	"dsdt.aml",
 	"DSDT",
@@ -43,11 +46,42 @@ DefinitionBlock(
 	/* Chipset specific sleep states */
 	#include <soc/intel/apollolake/acpi/sleepstates.asl>
 
-	/* Mainboard Specific devices */
-	#include "acpi/mainboard.asl"
+	/* LID and Power button. */
+	Scope (\_SB)
+	{
+		Device (LID0)
+		{
+			Name (_HID, EisaId ("PNP0C0D"))
+			Method (_LID, 0)
+			{
+				Return (\_SB.PCI0.LPCB.EC0.LIDS)
+			}
+			Name (_PRW, Package () { GPE_EC_WAKE, 0x3 })
+		}
 
-	Scope (\_SB) {
-		/* Dynamic Platform Thermal Framework */
-		#include "acpi/dptf.asl"
+		Device (PWRB)
+		{
+			Name (_HID, EisaId ("PNP0C0C"))
+		}
+	}
+
+	/* Chrome OS Embedded Controller */
+	Scope (\_SB.PCI0.LPCB)
+	{
+		/* ACPI code for EC SuperIO functions */
+		#include <ec/google/chromeec/acpi/superio.asl>
+		/* ACPI code for EC functions */
+		#include <ec/google/chromeec/acpi/ec.asl>
+	}
+
+	/* Dynamic Platform Thermal Framework */
+	Scope (\_SB)
+	{
+		/* Per board variant specific definitions. */
+		#include <variant/acpi/dptf.asl>
+		/* Include soc specific DPTF changes */
+		#include <soc/intel/apollolake/acpi/dptf.asl>
+		/* Include common dptf ASL files */
+		#include <soc/intel/common/acpi/dptf/dptf.asl>
 	}
 }

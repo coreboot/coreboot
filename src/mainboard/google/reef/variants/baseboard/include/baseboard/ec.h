@@ -54,4 +54,18 @@
 	 EC_HOST_EVENT_MASK(EC_HOST_EVENT_BATTERY_SHUTDOWN)|\
 	 EC_HOST_EVENT_MASK(EC_HOST_EVENT_PANIC))
 
+/*
+ * ACPI related definitions for ASL code.
+ */
+
+/* Enable EC backed ALS device in ACPI */
+#define EC_ENABLE_ALS_DEVICE
+
+/* Enable EC backed PD MCU device in ACPI */
+#define EC_ENABLE_PD_MCU_DEVICE
+
+#define SIO_EC_MEMMAP_ENABLE     /* EC Memory Map Resources */
+#define SIO_EC_HOST_ENABLE       /* EC Host Interface Resources */
+#define SIO_EC_ENABLE_PS2K       /* Enable PS/2 Keyboard */
+
 #endif

@@ -44,13 +44,6 @@ CPPFLAGS_common += -Isrc/drivers/intel/fsp1_1/include
 
 cpu_incs-$(CONFIG_USE_GENERIC_FSP_CAR_INC) += $(src)/drivers/intel/fsp1_1/cache_as_ram.inc
 
-
-# Add the GOP Video BIOS Table to the cbfs image
-cbfs-files-$(CONFIG_GOP_SUPPORT) += vbt.bin
-vbt.bin-file := $(call strip_quotes,$(CONFIG_VBT_FILE))
-vbt.bin-type := optionrom
-
-
 # Add the FSP binary to the cbfs image
 ifeq ($(CONFIG_HAVE_FSP_BIN),y)
 cbfs-files-y += fsp.bin

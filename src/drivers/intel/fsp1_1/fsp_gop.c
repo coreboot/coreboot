@@ -29,8 +29,7 @@ const optionrom_vbt_t *fsp_get_vbt(uint32_t *vbt_len)
 	} vbt;
 
 	/* Locate the vbt file in cbfs */
-	vbt.data = cbfs_boot_map_with_leak("vbt.bin", CBFS_TYPE_OPTIONROM,
-						&vbt_size);
+	vbt.data = cbfs_boot_map_with_leak("vbt.bin", CBFS_TYPE_RAW, &vbt_size);
 	if (!vbt.data) {
 		printk(BIOS_INFO,
 			"FSP_INFO: VBT data file (vbt.bin) not found in CBFS");

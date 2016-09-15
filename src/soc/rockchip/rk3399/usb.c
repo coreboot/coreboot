@@ -17,6 +17,9 @@
 #include <assert.h>
 #include <console/console.h>
 #include <delay.h>
+#include <soc/clock.h>
+#include <soc/grf.h>
+#include <soc/soc.h>
 #include <soc/usb.h>
 
 /* SuperSpeed over Type-C is hard. We don't care about speed in firmware: just
@@ -86,12 +89,24 @@ static void setup_dwc3(struct rockchip_usb_dwc3 *dwc3)
 
 void reset_usb_otg0(void)
 {
+	/* Keep whole USB OTG0 controller in reset, then
+	 * configure controller to work in USB 2.0 only mode. */
+	write32(&cru_ptr->softrst_con[18], RK_SETBITS(1 << 5));
+	write32(&rk3399_grf->usb3otg0_con1, RK_CLRSETBITS(0xf << 12, 1 << 0));
+	write32(&cru_ptr->softrst_con[18], RK_CLRBITS(1 << 5));
+
 	printk(BIOS_DEBUG, "Starting DWC3 reset for USB OTG0\n");
 	reset_dwc3(rockchip_usb_otg0_dwc3);
 }
 
 void reset_usb_otg1(void)
 {
+	/* Keep whole USB OTG1 controller in reset, then
+	 * configure controller to work in USB 2.0 only mode. */
+	write32(&cru_ptr->softrst_con[18], RK_SETBITS(1 << 6));
+	write32(&rk3399_grf->usb3otg1_con1, RK_CLRSETBITS(0xf << 12, 1 << 0));
+	write32(&cru_ptr->softrst_con[18], RK_CLRBITS(1 << 6));
+
 	printk(BIOS_DEBUG, "Starting DWC3 reset for USB OTG1\n");
 	reset_dwc3(rockchip_usb_otg1_dwc3);
 }

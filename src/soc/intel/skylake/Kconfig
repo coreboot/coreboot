@@ -185,6 +185,12 @@ config UART_DEBUG
 	select DRIVERS_UART_8250MEM_32
 	select NO_UART_ON_SUPERIO
 
+config SKYLAKE_SOC_PCH_H
+	bool
+	default n
+	help
+	  Choose this option if you have a PCH-H chipset.
+
 config CHIPSET_BOOTBLOCK_INCLUDE
 	string
 	default "soc/intel/skylake/bootblock/timestamp.inc"

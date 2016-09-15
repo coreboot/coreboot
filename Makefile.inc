@@ -238,11 +238,7 @@ cbfs-files-$(if $(2),$(2),y) += $(CONFIG_CBFS_PREFIX)/$(1).aml
 $(obj)/$(1).aml: $(src)/mainboard/$(MAINBOARDDIR)/$(1).asl $(obj)/config.h
 	@printf "    IASL       $$(subst $(top)/,,$$(@))\n"
 	$(CC_ramstage) -x assembler-with-cpp -E -MMD -MT $$(@) $$(CPPFLAGS_ramstage) -D__ACPI__ -P -include $(src)/include/kconfig.h -I$(obj) -I$(src) -I$(src)/include -I$(src)/arch/$(ARCHDIR-$(ARCH-ramstage-y))/include -I$(src)/mainboard/$(MAINBOARDDIR) $$< -o $$@
-ifeq ($(CONFIG_IASL_WARNINGS_ARE_ERRORS),y)
 	cd $$(dir $$@); $(IASL) -we -p $$(notdir $$@) $$(notdir $$@)
-else
-	cd $$(dir $$@); $(IASL) -p $$(notdir $$@) $$(notdir $$@)
-endif
 	if [ -z "$$$$($(IASL) -d $$@ 2>&1 | grep 'ACPI Warning')" ]; then echo "    IASL       $$@ disassembled correctly."; true; else echo "Error: Could not correctly disassemble $$@"; $(IASL) -d $$@; false; fi
 endef
 
@@ -895,10 +891,6 @@ endif
 	mv $@.tmp $@
 	@printf "    CBFSPRINT  $(subst $(obj)/,,$(@))\n\n"
 	$(CBFSTOOL) $@ print -r $(subst $(spc),$(comma),$(all-regions))
-ifeq ($(CONFIG_IASL_WARNINGS_ARE_ERRORS),)
-	@printf "\n***** WARNING: IASL warnings as errors is disabled!  *****\n"
-	@printf "*****          Please fix the ASL for this platform. *****\n\n"
-endif
 
 cbfs-files-y += $(CONFIG_CBFS_PREFIX)/romstage
 $(CONFIG_CBFS_PREFIX)/romstage-file := $(objcbfs)/romstage.elf

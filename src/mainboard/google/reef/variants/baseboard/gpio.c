@@ -24,7 +24,7 @@
  */
 static const struct pad_config gpio_table[] = {
 	/* PCIE_WAKE[0:3]_N */
-	PAD_CFG_NF(GPIO_205, UP_20K, DEEP, NF1), /* WLAN */
+	PAD_CFG_GPI_SCI_LOW(GPIO_205, UP_20K, DEEP, EDGE_SINGLE), /* WLAN */
 	PAD_CFG_GPI(GPIO_206, UP_20K, DEEP),	 /* Unused */
 	PAD_CFG_GPI(GPIO_207, UP_20K, DEEP),	 /* Unused */
 	PAD_CFG_GPI(GPIO_208, UP_20K, DEEP),	 /* Unused */

@@ -41,6 +41,7 @@ static struct rk3399_ddr_publ_regs * const rk3399_ddr_publ[2] = {
 	(void *)DDRC0_PHY_BASE_ADDR, (void *)DDRC1_PHY_BASE_ADDR };
 static struct rk3399_msch_regs * const rk3399_msch[2] = {
 	(void *)SERVER_MSCH0_BASE_ADDR, (void *)SERVER_MSCH1_BASE_ADDR };
+static struct rk3399_ddr_cic_regs *const rk3399_ddr_cic = (void *)CIC_BASE_ADDR;
 
 /*
  * sys_reg bitfield struct
@@ -729,6 +730,7 @@ static int data_training(u32 channel,
 			/* clear interrupt,PI_175 PI_INT_ACK:WR:0:17 */
 			write32((&denali_pi[175]), 0x00003f7c);
 		}
+		clrbits_le32(&denali_pi[100], 0x3 << 8);
 	}
 
 	/* write leveling(LPDDR4,LPDDR3,DDR3 support) */
@@ -775,6 +777,7 @@ static int data_training(u32 channel,
 			/* clear interrupt,PI_175 PI_INT_ACK:WR:0:17 */
 			write32((&denali_pi[175]), 0x00003f7c);
 		}
+		clrbits_le32(&denali_pi[60], 0x3 << 8);
 	}
 
 	/* read gate training(LPDDR4,LPDDR3,DDR3 support) */
@@ -821,6 +824,7 @@ static int data_training(u32 channel,
 			/* clear interrupt,PI_175 PI_INT_ACK:WR:0:17 */
 			write32((&denali_pi[175]), 0x00003f7c);
 		}
+		clrbits_le32(&denali_pi[80], 0x3 << 24);
 	}
 
 	/* read leveling(LPDDR4,LPDDR3,DDR3 support) */
@@ -853,6 +857,7 @@ static int data_training(u32 channel,
 			/* clear interrupt,PI_175 PI_INT_ACK:WR:0:17 */
 			write32((&denali_pi[175]), 0x00003f7c);
 		}
+		clrbits_le32(&denali_pi[80], 0x3 << 16);
 	}
 
 	/* wdq leveling(LPDDR4 support) */
@@ -884,6 +889,7 @@ static int data_training(u32 channel,
 			/* clear interrupt,PI_175 PI_INT_ACK:WR:0:17 */
 			write32((&denali_pi[175]), 0x00003f7c);
 		}
+		clrbits_le32(&denali_pi[124], 0x3 << 16);
 	}
 
 	/* PHY_927 PHY_PAD_DQS_DRIVE  RPULL offset_22 */
@@ -975,6 +981,30 @@ static void dram_all_config(const struct rk3399_sdram_params *sdram_params)
 	clrsetbits_le32(&cru_ptr->glb_rst_con, 0x3, 0x3);
 }
 
+static void switch_to_phy_index1(const struct rk3399_sdram_params *sdram_params)
+{
+	u32 channel;
+	u32 *denali_phy;
+	u32 ch_count = sdram_params->num_channels;
+
+	write32(&rk3399_ddr_cic->cic_ctrl0,
+		RK_CLRSETBITS(0x03 << 4 | 1 << 2 | 1,
+			      1 << 4 | 1 << 2 | 1));
+	while (!(read32(&rk3399_ddr_cic->cic_status0) & (1 << 2)))
+		;
+
+	write32(&rk3399_ddr_cic->cic_ctrl0, RK_CLRSETBITS(1 << 1, 1 << 1));
+	while (!(read32(&rk3399_ddr_cic->cic_status0) & (1 << 0)))
+		;
+
+	for (channel = 0; channel < ch_count; channel++) {
+		denali_phy = rk3399_ddr_publ[channel]->denali_phy;
+		clrsetbits_le32(&denali_phy[896], (0x3 << 8) | 1, 1 << 8);
+		if (data_training(channel, sdram_params, PI_FULL_TARINING))
+			printk(BIOS_DEBUG, "training failed\n");
+	}
+}
+
 void sdram_init(const struct rk3399_sdram_params *sdram_params)
 {
 	unsigned char dramtype = sdram_params->dramtype;
@@ -1020,6 +1050,8 @@ void sdram_init(const struct rk3399_sdram_params *sdram_params)
 			      sdram_params->ch[channel].ddrconfig);
 	}
 	dram_all_config(sdram_params);
+	switch_to_phy_index1(sdram_params);
+
 	printk(BIOS_INFO, "Finish SDRAM initialization...\n");
 }
 

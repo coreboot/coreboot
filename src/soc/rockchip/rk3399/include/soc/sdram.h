@@ -127,6 +127,18 @@ struct rk3399_msch_timings {
 	u32 agingx0;
 };
 
+struct rk3399_ddr_cic_regs {
+	u32 cic_ctrl0;
+	u32 cic_ctrl1;
+	u32 cic_idle_th;
+	u32 cic_cg_wait_th;
+	u32 cic_status0;
+	u32 cic_status1;
+	u32 cic_ctrl2;
+	u32 cic_ctrl3;
+	u32 cic_ctrl4;
+};
+
 /* DENALI_CTL_00 */
 #define START		(1)
 

@@ -98,6 +98,7 @@ config FSP_USES_UPD
 config GOP_SUPPORT
 	bool "Enable GOP support"
 	default n
+	select ADD_VBT_DATA_FILE
 
 config USE_GENERIC_FSP_CAR_INC
 	bool
@@ -105,11 +106,6 @@ config USE_GENERIC_FSP_CAR_INC
 	help
 	  The chipset can select this to use a generic cache_as_ram.inc file
 	  that should be good for all FSP based platforms.
-
-config VBT_FILE
-	string "GOP Video BIOS table binary path"
-	depends on GOP_SUPPORT
-	default "3rdparty/blobs/mainboard/$(MAINBOARDDIR)/vbt.bin"
 
 config CHECKLIST_DATA_FILE_LOCATION
 	string

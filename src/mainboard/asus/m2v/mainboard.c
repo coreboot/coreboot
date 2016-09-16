@@ -38,9 +38,9 @@ u32 vt8237_ide_80pin_detect(struct device *dev)
 
 	gpio_in = inl(acpi_io_base + 0x48);
 	/* bit 9 for primary port, clear if unconnected or 80-pin cable */
-	res  = gpio_in & (1<<9) ? 0 : VT8237R_IDE0_80PIN_CABLE;
+	res  = gpio_in & (1 << 9) ? 0 : VT8237R_IDE0_80PIN_CABLE;
 	/* bit 4 for secondary port, clear if unconnected or 80-pin cable */
-	res |= gpio_in & (1<<4) ? 0 : VT8237R_IDE1_80PIN_CABLE;
+	res |= gpio_in & (1 << 4) ? 0 : VT8237R_IDE1_80PIN_CABLE;
 
 	printk(BIOS_INFO, "Cable on %s PATA port: %d pin\n", "primary",
 		res & VT8237R_IDE0_80PIN_CABLE ? 80 : 40);

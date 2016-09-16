@@ -154,10 +154,10 @@ static void m2v_it8712f_gpio_init(void)
 	 * pcirst5# -> maybe n/c (untested)
 	 *
 	 * For software control of PCIRST[1-5]#:
-	 * 0x2a=0x17 (deselect pcirst# hardwiring, enable 0x25 control)
-	 * 0x25=0x17 (select gpio function)
-	 * 0xc0=0x17, 0xc8=0x17 gpio port 1 select & output enable
-	 * 0xc4=0xc1, 0xcc=0xc1 gpio port 5 select & output enable
+	 * 0x2a = 0x17 (deselect pcirst# hardwiring, enable 0x25 control)
+	 * 0x25 = 0x17 (select gpio function)
+	 * 0xc0 = 0x17, 0xc8 = 0x17 gpio port 1 select & output enable
+	 * 0xc4 = 0xc1, 0xcc = 0xc1 gpio port 5 select & output enable
 	 */
 	giv = gpio_init_data;
 	while (giv->addr) {

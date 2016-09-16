@@ -341,8 +341,8 @@
 #define GPIO_228_SELECT     FUNCTION0+NonGpio   // SMBUS, DATA
 #define GPIO_229_SELECT     FUNCTION0+NonGpio   // DP1_HPD
 
-#define TYPE_GPI  (1<<5)
-#define TYPE_GPO  (0<<5)
+#define TYPE_GPI  (1 << 5)
+#define TYPE_GPO  (0 << 5)
 
 #define GPIO_00_TYPE        TYPE_GPO
 #define GPIO_01_TYPE        TYPE_GPO
@@ -578,8 +578,8 @@
 #define GPIO_228_TYPE       TYPE_GPO
 #define GPIO_229_TYPE       TYPE_GPO
 
-#define GPO_LOW   (0<<6)
-#define GPO_HI    (1<<6)
+#define GPO_LOW   (0 << 6)
+#define GPO_HI    (1 << 6)
 
 #define GPO_00_LEVEL        GPO_HI
 #define GPO_01_LEVEL        GPO_HI
@@ -812,8 +812,8 @@
 #define GPO_228_LEVEL       GPO_LOW
 #define GPO_229_LEVEL       GPO_LOW
 
-#define GPIO_NONSTICKY   (0<<2)
-#define GPIO_STICKY      (1<<2)
+#define GPIO_NONSTICKY   (0 << 2)
+#define GPIO_STICKY      (1 << 2)
 
 #define GPIO_00_STICKY      GPIO_NONSTICKY
 #define GPIO_01_STICKY      GPIO_NONSTICKY
@@ -1046,8 +1046,8 @@
 #define GPIO_228_STICKY     GPIO_NONSTICKY
 #define GPIO_229_STICKY     GPIO_NONSTICKY
 
-#define PULLUP_ENABLE      (0<<3)
-#define PULLUP_DISABLE     (1<<3)
+#define PULLUP_ENABLE      (0 << 3)
+#define PULLUP_DISABLE     (1 << 3)
 
 #define GPIO_00_PULLUP      PULLUP_DISABLE
 #define GPIO_01_PULLUP      PULLUP_DISABLE
@@ -1282,8 +1282,8 @@
 #define GPIO_228_PULLUP     PULLUP_DISABLE
 #define GPIO_229_PULLUP     PULLUP_DISABLE
 
-#define PULLDOWN_ENABLE       (1<<4)
-#define PULLDOWN_DISABLE      (0<<4)
+#define PULLDOWN_ENABLE       (1 << 4)
+#define PULLDOWN_DISABLE      (0 << 4)
 
 #define GPIO_00_PULLDOWN    PULLDOWN_DISABLE
 #define GPIO_01_PULLDOWN    PULLDOWN_DISABLE
@@ -1750,7 +1750,7 @@
 
 typedef enum _GPIO_COUNT
 {
-    GPIO_00=0,
+    GPIO_00 = 0,
     GPIO_01,
     GPIO_02,
     GPIO_03,
@@ -2227,7 +2227,7 @@ const GPIO_SETTINGS gpio_table[]=
 
 typedef enum _GEVENT_COUNT
 {
-    GEVENT_00=0x60,
+    GEVENT_00 = 0x60,
     GEVENT_01,
     GEVENT_02,
     GEVENT_03,

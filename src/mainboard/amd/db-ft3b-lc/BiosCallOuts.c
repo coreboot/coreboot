@@ -292,10 +292,10 @@ static AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr)
 		/* Azalia Controller OEM Codec Table Pointer */
 		FchParams->Azalia.AzaliaPinCfg = TRUE;
 		FchParams->Azalia.AzaliaConfig = (const AZALIA_PIN){
-			.AzaliaSdin0 = (CONFIG_AZ_PIN>>0) & 0x03,
-			.AzaliaSdin1 = (CONFIG_AZ_PIN>>2) & 0x03,
-			.AzaliaSdin2 = (CONFIG_AZ_PIN>>4) & 0x03,
-			.AzaliaSdin3 = (CONFIG_AZ_PIN>>6) & 0x03
+			.AzaliaSdin0 = (CONFIG_AZ_PIN >> 0) & 0x03,
+			.AzaliaSdin1 = (CONFIG_AZ_PIN >> 2) & 0x03,
+			.AzaliaSdin2 = (CONFIG_AZ_PIN >> 4) & 0x03,
+			.AzaliaSdin3 = (CONFIG_AZ_PIN >> 6) & 0x03
 		};
 		FchParams->Azalia.AzaliaOemCodecTablePtr = CodecTableList;
 		/* Azalia Controller Front Panel OEM Table Pointer */

@@ -51,8 +51,8 @@
 static void memreset_setup(void)
 {
 	//GPIO on amd8111 to enable MEMRST ????
-	outb((1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 16);	// REVC_MEMRST_EN=1
-	outb((1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 17);
+	outb((1 << 2)|(1 << 0), SMBUS_IO_BASE + 0xc0 + 16);	// REVC_MEMRST_EN = 1
+	outb((1 << 2)|(0 << 0), SMBUS_IO_BASE + 0xc0 + 17);
 }
 
 static void activate_spd_rom(const struct mem_controller *ctrl)
@@ -63,11 +63,11 @@ static void activate_spd_rom(const struct mem_controller *ctrl)
 
 	printk(BIOS_DEBUG, "switch i2c to : %02x for node %02x\n", device, ctrl->node_id);
 
-	/* the very first write always get COL_STS=1 and ABRT_STS=1, so try another time*/
-	i=2;
+	/* the very first write always get COL_STS = 1 and ABRT_STS = 1, so try another time*/
+	i = 2;
 	do {
 		ret = smbus_write_byte(SMBUS_HUB, 0x01, (1<<(device & 0x7)));
-	} while ((ret!=0) && (i-->0));
+	} while ((ret != 0) && (i-->0));
 	smbus_write_byte(SMBUS_HUB, 0x03, 0);
 }
 
@@ -277,7 +277,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	post_code(0x3A);
 
 	/* show final fid and vid */
-	msr=rdmsr(0xc0010071);
+	msr = rdmsr(0xc0010071);
 	printk(BIOS_DEBUG, "End FIDVIDMSR 0xc0010071 0x%08x 0x%08x\n", msr.hi, msr.lo);
  #endif
 

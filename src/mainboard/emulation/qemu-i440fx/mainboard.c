@@ -33,7 +33,7 @@ static void qemu_nb_init(device_t dev)
 	uint8_t v = pci_read_config8(dev, 0x59);
 	v |= 0x30;
 	pci_write_config8(dev, 0x59, v);
-	for (i=0; i<6; i++)
+	for (i = 0; i < 6; i++)
 	pci_write_config8(dev, 0x5a + i, 0x33);
 
 	/* This sneaked in here, because Qemu does not

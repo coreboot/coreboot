@@ -22,7 +22,7 @@
 #include <device/pci_ids.h>
 
 /* Free irqs are 3, 5, 10 and 11 */
-#define IRQBM ((1<<3)|(1<<5)|(1<<10)|(1<<11))
+#define IRQBM ((1 << 3)|(1 << 5)|(1 << 10)|(1 << 11))
 
 #define LNKA 1
 #define LNKB 2
@@ -44,7 +44,7 @@ static const struct irq_routing_table intel_irq_routing_table = {
 	PIRQ_VERSION,   /* u16 version   */
 	32+16*CONFIG_IRQ_SLOT_COUNT,        /* there can be total CONFIG_IRQ_SLOT_COUNT devices on the bus */
 	0,           /* Where the interrupt router lies (bus) */
-	(0x11<<3)|0, /* Where the interrupt router lies (dev) */
+	(0x11 << 3)|0, /* Where the interrupt router lies (dev) */
 	0,           /* IRQs devoted exclusively to PCI usage */
 	PCI_VENDOR_ID_VIA,         /* Compatible Vendor (VIA) */
 	PCI_DEVICE_ID_VIA_82C596,  /* Compatible Device (82C596) */

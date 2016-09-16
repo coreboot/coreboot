@@ -38,8 +38,8 @@
 static void memreset_setup(void)
 {
 	//GPIO on amd8111 to enable MEMRST ????
-        outb((1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 16);  //REVC_MEMRST_EN=1
-        outb((1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 17);
+        outb((1 << 2)|(1 << 0), SMBUS_IO_BASE + 0xc0 + 16);  //REVC_MEMRST_EN = 1
+        outb((1 << 2)|(0 << 0), SMBUS_IO_BASE + 0xc0 + 17);
 }
 
 static void memreset(int controllers, const struct mem_controller *ctrl) { }
@@ -49,11 +49,11 @@ static inline void activate_spd_rom(const struct mem_controller *ctrl)
 #define SMBUS_HUB 0x18
         int ret,i;
         unsigned device=(ctrl->channel0[0])>>8;
-        /* the very first write always get COL_STS=1 and ABRT_STS=1, so try another time*/
-        i=2;
+        /* the very first write always get COL_STS = 1 and ABRT_STS = 1, so try another time*/
+        i = 2;
         do {
                 ret = smbus_write_byte(SMBUS_HUB, 0x01, device);
-        } while ((ret!=0) && (i-->0));
+        } while ((ret != 0) && (i-->0));
 
         smbus_write_byte(SMBUS_HUB, 0x03, 0);
 }
@@ -74,10 +74,10 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "cpu/amd/model_fxx/init_cpus.c"
 #include "cpu/amd/model_fxx/fidvid.c"
 
-#define RC0 ((1<<0)<<8)
-#define RC1 ((1<<1)<<8)
-#define RC2 ((1<<2)<<8)
-#define RC3 ((1<<3)<<8)
+#define RC0 ((1 << 0)<<8)
+#define RC1 ((1 << 1)<<8)
+#define RC2 ((1 << 2)<<8)
+#define RC3 ((1 << 3)<<8)
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
@@ -161,7 +161,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
         {
 		/* Read FIDVID_STATUS */
                 msr_t msr;
-                msr=rdmsr(0xc0010042);
+                msr = rdmsr(0xc0010042);
                 printk(BIOS_DEBUG, "begin msr fid, vid %08x%08x\n", msr.hi, msr.lo);
         }
 
@@ -172,7 +172,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
         // show final fid and vid
         {
                 msr_t msr;
-                msr=rdmsr(0xc0010042);
+                msr = rdmsr(0xc0010042);
                 printk(BIOS_DEBUG, "end   msr fid, vid %08x%08x\n", msr.hi, msr.lo);
         }
 
@@ -200,7 +200,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 #if 0
 	int i;
-	for(i=0;i<4;i++) {
+	for(i = 0; i < 4; i++) {
 		activate_spd_rom(&cpu[i]);
 		dump_smbus_registers();
 	}

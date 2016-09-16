@@ -130,6 +130,11 @@ asmlinkage void car_stage_entry(void)
 	assert(ALIGN_DOWN(top_of_ram, 16*MiB) == top_of_ram);
 	postcar_frame_add_mtrr(&pcf, top_of_ram - 16*MiB, 16*MiB, MTRR_TYPE_WRBACK);
 
+	/* Cache the memory-mapped boot media. */
+	if (IS_ENABLED(CONFIG_BOOT_DEVICE_MEMORY_MAPPED))
+		postcar_frame_add_mtrr(&pcf, -CONFIG_ROM_SIZE, CONFIG_ROM_SIZE,
+					MTRR_TYPE_WRPROT);
+
 	run_postcar_phase(&pcf);
 }
 

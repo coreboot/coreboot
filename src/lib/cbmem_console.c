@@ -228,7 +228,7 @@ static void cbmemc_reinit(int is_recovery)
 
 	/* No appending when no preram console available and adding for
 	 * the first time. */
-	if (!ENV_RAMSTAGE && _preram_cbmem_console_size == 0)
+	if (!ENV_RAMSTAGE && !ENV_POSTCAR && _preram_cbmem_console_size == 0)
 		flags = CBMEMC_RESET;
 
 	/* Need to reset the newly added cbmem console in romstage. */
@@ -247,6 +247,7 @@ static void cbmemc_reinit(int is_recovery)
 }
 ROMSTAGE_CBMEM_INIT_HOOK(cbmemc_reinit)
 RAMSTAGE_CBMEM_INIT_HOOK(cbmemc_reinit)
+POSTCAR_CBMEM_INIT_HOOK(cbmemc_reinit)
 
 #if IS_ENABLED(CONFIG_CONSOLE_CBMEM_DUMP_TO_UART)
 void cbmem_dump_console(void)

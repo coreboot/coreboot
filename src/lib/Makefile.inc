@@ -142,6 +142,7 @@ ramstage-y += imd_cbmem.c
 ramstage-y += imd.c
 
 postcar-y += cbmem_common.c
+postcar-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
 postcar-y += imd_cbmem.c
 postcar-y += imd.c
 

@@ -114,8 +114,8 @@ struct mp_ops {
  * 3. get_smm_info()
  * 4. get_microcode_info()
  * 5. adjust_cpu_apic_entry() for each number of get_cpu_count()
- * 6. adjust_smm_params(is_perm=0)
- * 7. adjust_smm_params(is_perm=1)
+ * 6. adjust_smm_params(is_perm = 0)
+ * 7. adjust_smm_params(is_perm = 1)
  * 8. pre_mp_smm_init()
  * 9. per_cpu_smm_trigger() in parallel for all cpus which calls
  *    relocation_handler() in SMM.

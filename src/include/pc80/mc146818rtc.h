@@ -40,7 +40,7 @@
    /* 2 values for divider stage reset, others for "testing purposes only" */
 #  define RTC_DIV_RESET1	0x60
 #  define RTC_DIV_RESET2	0x70
-  /* Periodic intr. / Square wave rate select. 0=none, 1=32.8kHz,... 15=2Hz */
+  /* Periodic intr. / Square wave rate select. 0 = none, 1 = 32.8kHz,... 15 = 2Hz */
 # define RTC_RATE_SELECT 	0x0F
 #  define RTC_RATE_NONE		0x00
 #  define RTC_RATE_32786HZ	0x01

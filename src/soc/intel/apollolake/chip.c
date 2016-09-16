@@ -102,6 +102,9 @@ static const char *soc_acpi_name(struct device *dev)
 		return "EMMC";
 	case SDIO_DEVFN:
 		return "SDIO";
+	/* PCIe */
+	case PCIEB0_DEVFN:
+		return "RP01";
 	}
 
 	return NULL;

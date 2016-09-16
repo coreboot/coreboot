@@ -54,7 +54,7 @@
 				 SDRAM device, it could be 0x4, 0x8, so address
 				 lines for that would be 2, and 3 */
 
-/* Number of Ranks bit [2:0], Package (bit4, 1=stack, 0=planr), Height bit[7:5] */
+/* Number of Ranks bit [2:0], Package (bit4, 1 = stack, 0 = planr), Height bit[7:5] */
 #define SPD_MOD_ATTRIB_RANK	5
 	#define SPD_MOD_ATTRIB_RANK_NUM_SHIFT	0
 	#define SPD_MOD_ATTRIB_RANK_NUM_MASK	0x07

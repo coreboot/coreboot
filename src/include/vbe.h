@@ -16,7 +16,7 @@
 #include <boot/coreboot_tables.h>
 // these structs are for input from and output to OF
 typedef struct {
-	u8 display_type;	// 0=NONE, 1= analog, 2=digital
+	u8 display_type;	// 0 = NONE, 1 = analog, 2 = digital
 	u16 screen_width;
 	u16 screen_height;
 	u16 screen_linebytes;	// bytes per line in framebuffer, may be more than screen_width

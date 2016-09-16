@@ -18,8 +18,8 @@ romstage-y += init.c console.c
 romstage-y += post.c
 romstage-y += die.c
 
-postcar-y += vtxprintf.c printk.c
-postcar-y += init.c console.c
+postcar-$(CONFIG_POSTCAR_CONSOLE) += vtxprintf.c printk.c
+postcar-$(CONFIG_POSTCAR_CONSOLE) += init.c console.c
 postcar-y += post.c
 postcar-y += die.c
 

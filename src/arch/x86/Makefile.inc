@@ -287,6 +287,7 @@ postcar-y += memmove.c
 postcar-y += memset.c
 postcar-y += memlayout.ld
 postcar-$(CONFIG_X86_TOP4G_BOOTMEDIA_MAP) += mmap_boot.c
+postcar-y += postcar.c
 postcar-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 
 LDFLAGS_postcar += -Map $(objcbfs)/postcar.map

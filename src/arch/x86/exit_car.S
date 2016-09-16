@@ -26,11 +26,6 @@ stack_top:
 .text
 .global _start
 _start:
-#if IS_ENABLED(CONFIG_POSTCAR_CONSOLE)
-	/* Enable the console */
-	call	console_init
-#endif /* CONFIG_POSTCAR_CONSOLE */
-
 	/* chipset_teardown_car() is expected to disable cache-as-ram. */
 	call	chipset_teardown_car
 
@@ -113,13 +108,8 @@ _start:
 	wrmsr
 #endif /* CONFIG_SOC_SETS_MSRS */
 
-	/* Display the MTRRs */
-#if IS_ENABLED(CONFIG_POSTCAR_CONSOLE)
-	call	soc_display_mtrrs
-#endif /* CONFIG_POSTCAR_CONSOLE */
-
-	/* Load and run ramstage. */
-	call	copy_and_run
+	/* Call into main for postcar. */
+	call main
 	/* Should never return. */
 1:
 	jmp	1b

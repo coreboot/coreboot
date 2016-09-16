@@ -82,11 +82,11 @@ void f71869ad_hwm_init(struct device *dev)
 	pnp_write_index(port, HWM_FAN1_TEMP_MAP_SEL, conf->hwm_fan1_temp_map_sel);
 	/* set FAN_PROG_SEL = 1 */
 	pnp_write_index(port, HWM_FAN_FAULT_TIME_REG, 0x8a);
-	/* FAN1_BASE_TEMP (Tb) set when FAN_PROG_SEL=1, p.64-65 */
+	/* FAN1_BASE_TEMP (Tb) set when FAN_PROG_SEL = 1, p.64-65 */
 	pnp_write_index(port, HWM_FAN_TYPE_SEL_REG, conf->hwm_fan_type_sel_reg);
 	/* set TFAN1_ADJ_SEL (Ta) p.67 to use CR7Ah p.61 */
 	pnp_write_index(port, HWM_FAN_MODE_SEL_REG, conf->hwm_fan_mode_sel_reg);
-	/* TFAN1_ADJ_{UP,DOWN}_RATE (Ct=1/4 up & down) in 0x95 when FAN_PROG_SEL =
+	/* TFAN1_ADJ_{UP,DOWN}_RATE (Ct = 1/4 up & down) in 0x95 when FAN_PROG_SEL =
 		1, p.88 */
 	pnp_write_index(port, HWM_FAN1_TEMP_ADJ_RATE_REG, conf->hwm_fan1_temp_adj_rate_reg);
 	/* set FAN_PROG_SEL = 0 */

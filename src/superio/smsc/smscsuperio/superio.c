@@ -236,8 +236,8 @@ static void enable_dev(struct device *dev)
 
 		/* TODO: Error handling? */
 
-		printk(BIOS_INFO, "Found SMSC Super I/O (ID=0x%02x, "
-		       "rev=0x%02x)\n", superio_id, superio_rev);
+		printk(BIOS_INFO, "Found SMSC Super I/O (ID = 0x%02x, "
+		       "rev = 0x%02x)\n", superio_id, superio_rev);
 		first_time = 0;
 
 		if (superio_id == LPC47M172) {

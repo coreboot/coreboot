@@ -36,19 +36,19 @@ void f71869ad_multifunc_init(struct device *dev)
 	pnp_write_config(dev, MULTI_FUNC_SEL_REG1,
 			conf->multi_function_register_1);
 
-	/* multi-func select reg2 (CLK_TUNE_EN=0) */
+	/* multi-func select reg2 (CLK_TUNE_EN = 0) */
 	pnp_write_config(dev, MULTI_FUNC_SEL_REG2,
 			conf->multi_function_register_2);
 
-	/* multi-func select reg3 (CLK_TUNE_EN=0) */
+	/* multi-func select reg3 (CLK_TUNE_EN = 0) */
 	pnp_write_config(dev, MULTI_FUNC_SEL_REG3,
 			conf->multi_function_register_3);
 
-	/* multi-func select reg4 (CLK_TUNE_EN=0) */
+	/* multi-func select reg4 (CLK_TUNE_EN = 0) */
 	pnp_write_config(dev, MULTI_FUNC_SEL_REG4,
 			conf->multi_function_register_4);
 
-	/* multi-func select reg5 (CLK_TUNE_EN=0) */
+	/* multi-func select reg5 (CLK_TUNE_EN = 0) */
 	pnp_write_config(dev, MULTI_FUNC_SEL_REG5,
 			conf->multi_function_register_5);
 

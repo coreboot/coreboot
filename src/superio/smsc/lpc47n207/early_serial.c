@@ -57,7 +57,7 @@ void try_enabling_LPC47N207_uart(void)
 
 		/* enable CONFIG mode */
 		outb(CONFIG_ENABLE, lpc_port);
-		reg_value=inb(lpc_port);
+		reg_value = inb(lpc_port);
 		if (reg_value != CONFIG_ENABLE) {
 			continue; /* There is no LPC device at this address */
 		}
@@ -68,12 +68,12 @@ void try_enabling_LPC47N207_uart(void)
 			 * match.
 			 */
 			outb(0x12, lpc_port);
-			reg_value=inb(lpc_port + 1);
+			reg_value = inb(lpc_port + 1);
 			if (reg_value != (lpc_port & 0xff))
 			    break;
 
 			outb(0x13, lpc_port);
-			reg_value=inb(lpc_port + 1);
+			reg_value = inb(lpc_port + 1);
 			if (reg_value != (lpc_port >> 8))
 				break;
 

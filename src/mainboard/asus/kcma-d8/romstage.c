@@ -256,7 +256,7 @@ static void execute_memory_test(void)
 	uint32_t readback;
 	uint32_t start = 0x300000;
 	printk(BIOS_DEBUG, "Writing test pattern 1 to memory...\n");
-	for (i=0; i < 0x1000000; i = i + 8) {
+	for (i = 0; i < 0x1000000; i = i + 8) {
 		dataptr = (void *)(start + i);
 		*dataptr = 0x55555555;
 		dataptr = (void *)(start + i + 4);
@@ -264,7 +264,7 @@ static void execute_memory_test(void)
 	}
 	printk(BIOS_DEBUG, "Done!\n");
 	printk(BIOS_DEBUG, "Testing memory...\n");
-	for (i=0; i < 0x1000000; i = i + 8) {
+	for (i = 0; i < 0x1000000; i = i + 8) {
 		dataptr = (void *)(start + i);
 		readback = *dataptr;
 		if (readback != 0x55555555)
@@ -281,7 +281,7 @@ static void execute_memory_test(void)
 	x = 0xaaaaaaaa;
 	y = 0x12345678;
 	z = 0x87654321;
-	for (i=0; i < 0x1000000; i = i + 4) {
+	for (i = 0; i < 0x1000000; i = i + 4) {
 		/* Use Xorshift as a PRNG to stress test the bus */
 		v = x;
 		v ^= v << 11;
@@ -301,7 +301,7 @@ static void execute_memory_test(void)
 	x = 0xaaaaaaaa;
 	y = 0x12345678;
 	z = 0x87654321;
-	for (i=0; i < 0x1000000; i = i + 4) {
+	for (i = 0; i < 0x1000000; i = i + 4) {
 		/* Use Xorshift as a PRNG to stress test the bus */
 		v = x;
 		v ^= v << 11;
@@ -499,7 +499,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		post_code(0x3A);
 
 		/* show final fid and vid */
-		msr=rdmsr(0xc0010071);
+		msr = rdmsr(0xc0010071);
 		printk(BIOS_DEBUG, "End FIDVIDMSR 0xc0010071 0x%08x 0x%08x\n", msr.hi, msr.lo);
 	}
 

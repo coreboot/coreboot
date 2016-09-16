@@ -94,7 +94,7 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 	slot_num++;
 
 	//pcix bridge
-//      write_pirq_info(pirq_info, m->bus_8132_0, (sbdn3<<3)|0, 0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0, 0);
+//      write_pirq_info(pirq_info, m->bus_8132_0, (sbdn3 << 3)|0, 0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0, 0);
 //      pirq_info++; slot_num++;
 
 	int j = 0;

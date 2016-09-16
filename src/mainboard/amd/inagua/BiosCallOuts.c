@@ -57,7 +57,7 @@ static AGESA_STATUS board_BeforeDramInit (UINT32 Func, UINTN Data, VOID *ConfigP
 	/* Get SB MMIO Base (AcpiMmioAddr) */
 	WriteIo8 (0xCD6, 0x27);
 	Data8   = ReadIo8(0xCD7);
-	Data16  = Data8<<8;
+	Data16  = Data8 << 8;
 	WriteIo8 (0xCD6, 0x26);
 	Data8   = ReadIo8(0xCD7);
 	Data16  |= Data8;
@@ -138,10 +138,10 @@ static AGESA_STATUS board_GnbPcieSlotReset (UINT32 Func, UINTN Data, VOID *Confi
 	// Get SB800 MMIO Base (AcpiMmioAddr)
 	WriteIo8(0xCD6, 0x27);
 	Data8 = ReadIo8(0xCD7);
-	Data16=Data8<<8;
+	Data16 = Data8 << 8;
 	WriteIo8(0xCD6, 0x26);
 	Data8 = ReadIo8(0xCD7);
-	Data16|=Data8;
+	Data16 |= Data8;
 	AcpiMmioAddr = (UINT32)Data16 << 16;
 	Status = AGESA_UNSUPPORTED;
 	GpioMmioAddr = AcpiMmioAddr + GPIO_BASE;

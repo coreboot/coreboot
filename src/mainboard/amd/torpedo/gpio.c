@@ -177,7 +177,7 @@ gpioEarlyInit(
 		RWMEM (IoMuxMmioAddr + SB_GPIO_REG28, AccWidthUint8, 00, 0x1);      // GPIO
 		RWMEM (GpioMmioAddr + SB_GPIO_REG28, AccWidthUint8, 0x03, BIT5);    // GPI
 
-		// set BIT3=1 (PULLUP disable), BIT4=0 (PULLDOWN Disable), BIT6=0 (Output LOW)
+		// set BIT3 = 1 (PULLUP disable), BIT4 = 0 (PULLDOWN Disable), BIT6 = 0 (Output LOW)
 		RWMEM (GpioMmioAddr + SB_GPIO_REG55, AccWidthUint8, 0x23, BIT3);
 		RWMEM (GpioMmioAddr + SB_GPIO_REG09, AccWidthUint8, 0x23, BIT3);
 		RWMEM (GpioMmioAddr + SB_GPIO_REG10, AccWidthUint8, 0x23, BIT3);
@@ -355,7 +355,7 @@ gpioEarlyInit(
 		}
 //		else
 //		{ // 0 - AUTO
-//			// set BIT3=1 (PULLUP disable), BIT4=0 (PULLDOWN Disable)
+//			// set BIT3 = 1 (PULLUP disable), BIT4 = 0 (PULLDOWN Disable)
 //			RWMEM (GpioMmioAddr + SB_GPIO_REG197, AccWidthUint8, 0x23, BIT3);
 //			RWMEM (GpioMmioAddr + SB_GPIO_REG25, AccWidthUint8, 0x23, BIT3);
 //		}
@@ -375,7 +375,7 @@ gpioEarlyInit(
 		}
 //		else
 //		{ // 0 - AUTO
-//			// set BIT3=1 (PULLUP disable), BIT4=0 (PULLDOWN Disable), BIT6=1 (output HIGH)
+//			// set BIT3 = 1 (PULLUP disable), BIT4 = 0 (PULLDOWN Disable), BIT6 = 1 (output HIGH)
 //			RWMEM (GpioMmioAddr + SB_GPIO_REG27, AccWidthUint8, 0x03, BIT6);
 //			RWMEM (GpioMmioAddr + SB_GPIO_REG27, AccWidthUint8, 0x63, BIT3);
 //

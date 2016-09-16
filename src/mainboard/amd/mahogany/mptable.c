@@ -70,7 +70,7 @@ static void *smp_write_config_table(void *v)
 			dword = pci_read_config32(dev, 0xac);
 			dword &= ~(7 << 26);
 			dword |= 6 << 26;	/* 0: INTA, ...., 7: INTH */
-			/* dword |= 1<<22; PIC and APIC co exists */
+			/* dword |= 1 << 22; PIC and APIC co exists */
 			pci_write_config32(dev, 0xac, dword);
 
 			/*

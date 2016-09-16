@@ -16,7 +16,7 @@
 #  http://www.arm.com/products/tools/development-boards/versatile-express
 
 # To execute, do:
-# export QEMU_AUDIO_DRV=none
+# export QEMU_AUDIO_DRV = none
 # qemu-system-arm -M vexpress-a9 -m 1024M -nographic -bios build/coreboot.rom
 
 if BOARD_EMULATION_QEMU_ARMV7

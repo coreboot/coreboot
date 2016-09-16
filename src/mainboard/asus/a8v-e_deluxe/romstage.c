@@ -126,8 +126,8 @@ static void sio_init(void)
 	pnp_write_config(GPIO_DEV, 0x30, 0x09);	/* Enable GPIO 2 & GPIO 5. */
 	pnp_write_config(GPIO_DEV, 0xe2, 0x00);	/* No inversion */
 	pnp_write_config(GPIO_DEV, 0xe5, 0x00);	/* No inversion */
-	pnp_write_config(GPIO_DEV, 0xe3, 0x03);	/* 0000 0011, 0=output 1=input */
-	pnp_write_config(GPIO_DEV, 0xe0, 0xde);	/* 1101 1110, 0=output 1=input */
+	pnp_write_config(GPIO_DEV, 0xe3, 0x03);	/* 0000 0011, 0 = output 1 = input */
+	pnp_write_config(GPIO_DEV, 0xe0, 0xde);	/* 1101 1110, 0 = output 1 = input */
 	pnp_write_config(GPIO_DEV, 0xe1, 0x01);	/* Set output val. */
 	pnp_write_config(GPIO_DEV, 0xe4, 0xb4);	/* Set output val (1011 0100). */
 	pnp_exit_ext_func_mode(GPIO_DEV);

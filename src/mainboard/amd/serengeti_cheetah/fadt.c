@@ -37,13 +37,13 @@ void acpi_create_fadt(acpi_fadt_t *fadt,acpi_facs_t *facs,void *dsdt){
 	memcpy(header->oem_id,OEM_ID,6);
 	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
 	memcpy(header->asl_compiler_id,ASLC,4);
-	header->asl_compiler_revision=0;
+	header->asl_compiler_revision = 0;
 
 	fadt->firmware_ctrl=(u32)facs;
 	fadt->dsdt= (u32)dsdt;
-	// 3=Workstation,4=Enterprise Server, 7=Performance Server
-	fadt->preferred_pm_profile=0x03;
-	fadt->sci_int=9;
+	// 3 = Workstation, 4 = Enterprise Server, 7 = Performance Server
+	fadt->preferred_pm_profile = 0x03;
+	fadt->sci_int = 9;
 	// disable system management mode by setting to 0:
 	fadt->smi_cmd = 0;//pm_base+0x2f;
 	fadt->acpi_enable = 0xf0;

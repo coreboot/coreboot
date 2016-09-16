@@ -66,7 +66,7 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	else
 		fadt->dsdt = (uintptr_t)dsdt;
 
-	/* 3=Workstation,4=Enterprise Server, 7=Performance Server */
+	/* 3 = Workstation, 4 = Enterprise Server, 7 = Performance Server */
 	fadt->preferred_pm_profile = 0x03;
 	fadt->sci_int = 9;
 	/* disable system management mode by setting to 0: */

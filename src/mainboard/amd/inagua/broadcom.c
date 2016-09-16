@@ -73,7 +73,7 @@ void broadcom_init(void);
  * programmed with register 0x5A4 of the MAC. AMD renamed them to "GBE_STAT" and
  * won't say anything about their purpose. Appearently hardware designers are
  * expected to blindly copy the Inagua reference schematic: GBE_STAT2:
- * 0=activity; GBE_STAT[1:0]: 11=no link, 10=10Mbit, 01=100Mbit, 00=1Gbit.
+ * 0 = activity; GBE_STAT[1:0]: 11 = no link, 10 = 10Mbit, 01 = 100Mbit, 00 = 1Gbit.
  *
  * For package processing the 5785 also features a MIPS-based RISC CPU, booting
  * from an internal ROM. The firmware loads config data and supplements (e.g. to
@@ -119,7 +119,7 @@ static struct selfboot_patch {		//Watch out: all values are *BIG-ENDIAN*!
 		u16 basic_config;	//?, see below
 		u8 checksum;		//byte sum of header == 0
 		u8 unknown2;		//?, patch rejected if changed
-		u16 patch_version;	//10-8: major; 7-0: minor; 15-11: variant (1=a, 2=b, ...)
+		u16 patch_version;	//10-8: major; 7-0: minor; 15-11: variant (1 = a, 2 = b, ...)
 	} header;
 
 	struct {	/* Init code */
@@ -197,8 +197,8 @@ static struct selfboot_patch {		//Watch out: all values are *BIG-ENDIAN*!
 	/* Bitfield enabling general features/codepaths in the firmware or
 	 * selecting support for one of several supported PHYs?
 	 * Bits not listed had no appearent effect:
-	 * 14-11: any bit 1=firmware execution seemed delayed
-	 * 10: 0=firmware execution seemed delayed
+	 * 14-11: any bit 1 = firmware execution seemed delayed
+	 * 10: 0 = firmware execution seemed delayed
 	 * 9,2,0: select PHY type, affects these registers, probably more
 	 *  9 2 0 | reg 0x05A4  PHY reg 31  PHY 23,24,28        Notes
 	 * -------+----------------------------------------------------------
@@ -221,7 +221,7 @@ static struct selfboot_patch {		//Watch out: all values are *BIG-ENDIAN*!
 	 * never seen used. Generally, lower values appear to be run earlier.
 	 * An "ifconfig up" with Linux' "tg3" driver causes the tags 0x50, 60,
 	 * 68, 20, 70, 80 to be interpreted in this order.
-	 * All tests were performed with .basic_config=0x0604.
+	 * All tests were performed with .basic_config = 0x0604.
 	 */
 	.init.hunk1_when = 0x10,	//only once at RISC CPU reset?
 	/* Instructions are obviously a specialized bytecode interpreted by the
@@ -250,7 +250,7 @@ static struct selfboot_patch {		//Watch out: all values are *BIG-ENDIAN*!
 		be(0x082B8105),					//CFR-AF: PHY0B: KSZ9021 select PHY105
 		be(0x082C3333),					//CFR-AF: PHY0C: KSZ9021 RX data skew (empirical)
 #endif
-		be(0xC1F005A0), be(0xFEFFEFFF), be(0x01001000),	//v1.05 : 5A0.24,12=1: auto-clock-switch
+		be(0xC1F005A0), be(0xFEFFEFFF), be(0x01001000),	//v1.05 : 5A0.24,12 = 1: auto-clock-switch
 		be(0x06100D34), be(0x00000000),			//v1.03 : MemD34: clear config vars
 		be(0x06100D38), be(0x00000000),			//v1.03 :    -  |
 		be(0x06100D3C), be(0x00000000),			//v1.03 : MemD3F|
@@ -287,7 +287,7 @@ static struct selfboot_patch {		//Watch out: all values are *BIG-ENDIAN*!
 		be(0x08380000),					//CFR-AF: PHY18|
 		be(0x083C0000),					//CFR-AF: PHY1C|
 #endif
-		be(0xCB0005A4), be(0xF7F0000C),			//v1.01 : if 5A4.0==1 -->skip next 12 bytes
+		be(0xCB0005A4), be(0xF7F0000C),			//v1.01 : if 5A4.0 == 1 -->skip next 12 bytes
 #if !CONFIG_BOARD_LIPPERT_FRONTRUNNER_AF
 		be(0xC61005A4), be(0x3210C500),			//v1.01 : 5A4: PHY LED mode
 #else
@@ -304,9 +304,9 @@ static struct selfboot_patch {		//Watch out: all values are *BIG-ENDIAN*!
 		be(0x083CB001),					//v1.10 : PHY1C: IDDQ B50610 PHY
 #endif
 		be(0xF7F30116),					//        IDDQ PHY
-		be(0xC40005A0),					//v1.09 : 5A0.0=0: Port Mode = MII
-		be(0xC4180400),					//v1.09 : 400.3=0|
-		be(0xC3100400),					//v1.09 : 400.2=1|
+		be(0xC40005A0),					//v1.09 : 5A0.0 = 0: Port Mode = MII
+		be(0xC4180400),					//v1.09 : 400.3 = 0|
+		be(0xC3100400),					//v1.09 : 400.2 = 1|
 	}, //-->PWRDN_LENGTH!
 
 };
@@ -326,10 +326,10 @@ void broadcom_init(void)
 	printk(BIOS_DEBUG, "Upload GbE 'NV'RAM contents @ 0x%08lx\n", (unsigned long)gec_shadow);
 
 	/* Halt RISC CPU before uploading the firmware patch */
-	for (i=10000; i > 0; i--) {
+	for (i = 10000; i > 0; i--) {
 		gec_base[0x5004/4] = 0xFFFFFFFF; //clear CPU state
-		gec_base[0x5000/4] |= (1<<10);   //issue RISC halt
-		if (gec_base[0x5000/4] | (1<<10))
+		gec_base[0x5000/4] |= (1 << 10);   //issue RISC halt
+		if (gec_base[0x5000/4] | (1 << 10))
 			break;
 		udelay(10);
 	}

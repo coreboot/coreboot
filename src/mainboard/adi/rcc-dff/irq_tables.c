@@ -33,7 +33,7 @@ const struct irq_routing_table intel_irq_routing_table = {
 	PIRQ_VERSION,    /* u16 version   */
 	32+16*CONFIG_IRQ_SLOT_COUNT,	 /* There can be total 18 devices on the bus */
 	0x00,		 /* Where the interrupt router lies (bus) */
-	(0x1f<<3)|0x0,   /* Where the interrupt router lies (dev) */
+	(0x1f << 3)|0x0,   /* Where the interrupt router lies (dev) */
 	0,		 /* IRQs devoted exclusively to PCI usage */
 	0x8086,		 /* Vendor */
 	0x0F1C,		 /* Device */
@@ -41,19 +41,19 @@ const struct irq_routing_table intel_irq_routing_table = {
 	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, /* u8 rfu[11] */
 	0x86,		 /* u8 checksum. */
 	{
-		/* bus,     dev|fn,   {link, bitmap}, {link, bitmap}, {link, bitmap}, {link, bitmap},  slot, rfu */
-		{0x00,(0x01<<3)|0x0, {{PIRQA, PCI_IRQS}, {PIRQB, PCI_IRQS}, {PIRQC, PCI_IRQS}, {PIRQD, PCI_IRQS}}, 0x0, 0x0}, // PCIE Port 1: INTA-PIRQA, INTB-PIRQB, INTC-PIRQC, INTD-PIRQD
-		{0x00,(0x02<<3)|0x0, {{PIRQA, PCI_IRQS}, {PIRQB, PCI_IRQS}, {PIRQC, PCI_IRQS}, {PIRQD, PCI_IRQS}}, 0x0, 0x0}, // PCIE Port 2: INTA-PIRQA, INTB-PIRQB, INTC-PIRQC, INTD-PIRQD
-		{0x00,(0x03<<3)|0x0, {{PIRQE, PCI_IRQS}, {PIRQF, PCI_IRQS}, {PIRQG, PCI_IRQS}, {PIRQH, PCI_IRQS}}, 0x0, 0x0}, // PCIE Port 3: INTA-PIRQE, INTB-PIRQF, INTC-PIRQG, INTD-PIRQH
-		{0x00,(0x04<<3)|0x0, {{PIRQE, PCI_IRQS}, {PIRQF, PCI_IRQS}, {PIRQG, PCI_IRQS}, {PIRQH, PCI_IRQS}}, 0x0, 0x0}, // PCIE Port 4: INTA-PIRQE, INTB-PIRQF, INTC-PIRQG, INTD-PIRQH
-		{0x00,(0x0b<<3)|0x0, {{PIRQA, PCI_IRQS}, {0x00, 0x0000}, {0x00, 0x0000}, {0x00, 0x00000}}, 0x0, 0x0}, // IQAT INTA-PIRQA
-		{0x00,(0x0f<<3)|0x0, {{PIRQA, PCI_IRQS}, {0x00, 0x0000}, {0x00, 0x0000}, {0x00, 0x00000}}, 0x0, 0x0}, // RCEC INTA-PIRQA
-		{0x00,(0x13<<3)|0x0, {{PIRQA, PCI_IRQS}, {0x00, 0x0000}, {0x00, 0x0000}, {0x00, 0x00000}}, 0x0, 0x0}, // SMBUS #1 INTA-PIRQA
-		{0x00,(0x14<<3)|0x0, {{PIRQE, PCI_IRQS}, {PIRQF, PCI_IRQS}, {PIRQG, PCI_IRQS}, {PIRQH, PCI_IRQS}}, 0x0, 0x0}, // GbE, INTA-PIRQE, INTB-PIRQF, INTC-PIRQG, INTD-PIRQH
-		{0x00,(0x16<<3)|0x0, {{PIRQH, PCI_IRQS}, {0x00, 0x0000}, {0x00, 0x0000}, {0x00, 0x00000}}, 0x0, 0x0}, // EHCI INTA-PIRQH
-		{0x00,(0x17<<3)|0x0, {{PIRQD, PCI_IRQS}, {0x00, 0x0000}, {0x00, 0x0000}, {0x00, 0x00000}}, 0x0, 0x0}, // SATA2 INTA-PIRQD
-		{0x00,(0x18<<3)|0x0, {{PIRQD, PCI_IRQS}, {0x00, 0x0000}, {0x00, 0x0000}, {0x00, 0x00000}}, 0x0, 0x0}, // SATA3 INTA-PIRQD
-		{0x00,(0x1f<<3)|0x0, {{0x00, 0x0000}, {PIRQC, PCI_IRQS}, {0x00, 0x0000}, {0x00, 0x00000}}, 0x0, 0x0}, // LPC/SMBUS #0 INTB - PIRQC
+		/* bus,       dev|fn,   {link, bitmap}, {link, bitmap}, {link, bitmap}, {link, bitmap},  slot, rfu */
+		{0x00,(0x01 << 3)|0x0, {{PIRQA, PCI_IRQS}, {PIRQB, PCI_IRQS}, {PIRQC, PCI_IRQS}, {PIRQD, PCI_IRQS}}, 0x0, 0x0}, // PCIE Port 1: INTA-PIRQA, INTB-PIRQB, INTC-PIRQC, INTD-PIRQD
+		{0x00,(0x02 << 3)|0x0, {{PIRQA, PCI_IRQS}, {PIRQB, PCI_IRQS}, {PIRQC, PCI_IRQS}, {PIRQD, PCI_IRQS}}, 0x0, 0x0}, // PCIE Port 2: INTA-PIRQA, INTB-PIRQB, INTC-PIRQC, INTD-PIRQD
+		{0x00,(0x03 << 3)|0x0, {{PIRQE, PCI_IRQS}, {PIRQF, PCI_IRQS}, {PIRQG, PCI_IRQS}, {PIRQH, PCI_IRQS}}, 0x0, 0x0}, // PCIE Port 3: INTA-PIRQE, INTB-PIRQF, INTC-PIRQG, INTD-PIRQH
+		{0x00,(0x04 << 3)|0x0, {{PIRQE, PCI_IRQS}, {PIRQF, PCI_IRQS}, {PIRQG, PCI_IRQS}, {PIRQH, PCI_IRQS}}, 0x0, 0x0}, // PCIE Port 4: INTA-PIRQE, INTB-PIRQF, INTC-PIRQG, INTD-PIRQH
+		{0x00,(0x0b << 3)|0x0, {{PIRQA, PCI_IRQS}, {0x00, 0x0000}, {0x00, 0x0000}, {0x00, 0x00000}}, 0x0, 0x0}, // IQAT INTA-PIRQA
+		{0x00,(0x0f << 3)|0x0, {{PIRQA, PCI_IRQS}, {0x00, 0x0000}, {0x00, 0x0000}, {0x00, 0x00000}}, 0x0, 0x0}, // RCEC INTA-PIRQA
+		{0x00,(0x13 << 3)|0x0, {{PIRQA, PCI_IRQS}, {0x00, 0x0000}, {0x00, 0x0000}, {0x00, 0x00000}}, 0x0, 0x0}, // SMBUS #1 INTA-PIRQA
+		{0x00,(0x14 << 3)|0x0, {{PIRQE, PCI_IRQS}, {PIRQF, PCI_IRQS}, {PIRQG, PCI_IRQS}, {PIRQH, PCI_IRQS}}, 0x0, 0x0}, // GbE, INTA-PIRQE, INTB-PIRQF, INTC-PIRQG, INTD-PIRQH
+		{0x00,(0x16 << 3)|0x0, {{PIRQH, PCI_IRQS}, {0x00, 0x0000}, {0x00, 0x0000}, {0x00, 0x00000}}, 0x0, 0x0}, // EHCI INTA-PIRQH
+		{0x00,(0x17 << 3)|0x0, {{PIRQD, PCI_IRQS}, {0x00, 0x0000}, {0x00, 0x0000}, {0x00, 0x00000}}, 0x0, 0x0}, // SATA2 INTA-PIRQD
+		{0x00,(0x18 << 3)|0x0, {{PIRQD, PCI_IRQS}, {0x00, 0x0000}, {0x00, 0x0000}, {0x00, 0x00000}}, 0x0, 0x0}, // SATA3 INTA-PIRQD
+		{0x00,(0x1f << 3)|0x0, {{0x00, 0x0000}, {PIRQC, PCI_IRQS}, {0x00, 0x0000}, {0x00, 0x00000}}, 0x0, 0x0}, // LPC/SMBUS #0 INTB - PIRQC
 	}
 };
 

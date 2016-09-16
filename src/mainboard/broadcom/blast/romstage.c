@@ -46,8 +46,8 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "cpu/amd/model_fxx/init_cpus.c"
 #include "northbridge/amd/amdk8/early_ht.c"
 
-#define RC0 (6<<8)
-#define RC1 (7<<8)
+#define RC0 (6 << 8)
+#define RC1 (7 << 8)
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {

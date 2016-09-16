@@ -36,7 +36,7 @@ int spd_read_byte(unsigned int device, unsigned int address)
 	int i;
 
 	if (device == DIMM0) {
-		for (i=0; i < (ARRAY_SIZE(spd_table)); i++) {
+		for (i = 0; i < (ARRAY_SIZE(spd_table)); i++) {
 			if (spd_table[i].address == address) {
 				return spd_table[i].data;
 			}

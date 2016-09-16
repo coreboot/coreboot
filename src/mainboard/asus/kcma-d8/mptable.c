@@ -93,7 +93,7 @@ static void *smp_write_config_table(void *v)
 			/* Hide IDE */
 			dword &= ~(0x00080000);
 
-			/* dword_ptr |= 1<<22; PIC and APIC co exists */
+			/* dword_ptr |= 1 << 22; PIC and APIC co exists */
 			pci_write_config32(dev, 0xac, dword);
 
 			/*

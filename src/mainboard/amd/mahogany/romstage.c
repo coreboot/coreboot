@@ -110,7 +110,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	cpuid1 = cpuid(0x80000007);
 	if ((cpuid1.edx & 0x6) == 0x6) {
 		/* Read FIDVID_STATUS */
-		msr=rdmsr(0xc0010042);
+		msr = rdmsr(0xc0010042);
 		printk(BIOS_DEBUG, "begin msr fid, vid: hi=0x%x, lo=0x%x\n", msr.hi, msr.lo);
 
 		enable_fid_change();
@@ -118,7 +118,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		init_fidvid_bsp(bsp_apicid);
 
 		/* show final fid and vid */
-		msr=rdmsr(0xc0010042);
+		msr = rdmsr(0xc0010042);
 		printk(BIOS_DEBUG, "end msr fid, vid: hi=0x%x, lo=0x%x\n", msr.hi, msr.lo);
 	} else {
 		printk(BIOS_DEBUG, "Changing FIDVID not supported\n");

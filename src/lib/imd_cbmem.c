@@ -38,7 +38,8 @@
  * burden on board or chipset code to tell us by returning NULL from cbmem_top()
  * before that point.
  */
-#define CAN_USE_GLOBALS (!IS_ENABLED(CONFIG_ARCH_X86) || ENV_RAMSTAGE)
+#define CAN_USE_GLOBALS \
+	(!IS_ENABLED(CONFIG_ARCH_X86) || ENV_RAMSTAGE || ENV_POSTCAR)
 
 static inline struct imd *cbmem_get_imd(void)
 {

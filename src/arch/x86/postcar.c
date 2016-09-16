@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <cbmem.h>
 #include <console/console.h>
 #include <main_decl.h>
 #include <program_loading.h>
@@ -21,6 +22,9 @@
 void main(void)
 {
 	console_init();
+
+	/* Recover cbmem so infrastruture using it is functional. */
+	cbmem_initialize();
 
 	/* Display the MTRRs */
 	if (IS_ENABLED(CONFIG_DISPLAY_MTRRS))

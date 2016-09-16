@@ -85,7 +85,7 @@ uintptr_t mainboard_get_spd_data(void)
 	/* Load SPD data from CBFS */
 	spd_file = cbfs_boot_map_with_leak("spd.bin", CBFS_TYPE_SPD,
 		&spd_file_len);
-	if (!(*spd_file))
+	if (!spd_file)
 		die("SPD data not found.");
 
 	/* make sure we have at least one SPD in the file. */

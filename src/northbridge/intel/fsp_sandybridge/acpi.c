@@ -41,7 +41,7 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 	if (!dev)
 		return current;
 
-	pciexbar_reg=pci_read_config32(dev, PCIEXBAR);
+	pciexbar_reg = pci_read_config32(dev, PCIEXBAR);
 
 	// MMCFG not supported or not enabled.
 	if (!(pciexbar_reg & (1 << 0)))

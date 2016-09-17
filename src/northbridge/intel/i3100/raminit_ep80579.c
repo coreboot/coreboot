@@ -240,7 +240,7 @@ static int spd_set_row_attributes(const struct mem_controller *ctrl,
 		/* set device type (registered) */
 		dra |= (1 << 14);
 
-		/* set number of ranks (0=single, 1=dual) */
+		/* set number of ranks (0 = single, 1 = dual) */
 		value = spd_read_byte(ctrl->channel0[i], SPD_NUM_DIMM_BANKS);
 		dra |= ((value & 0x1) << 17);
 

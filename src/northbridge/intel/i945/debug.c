@@ -105,7 +105,7 @@ void dump_mem(unsigned start, unsigned end)
 {
 	unsigned i;
 	printk(BIOS_DEBUG, "dump_mem:");
-	for (i=start;i<end;i++) {
+	for (i = start; i < end; i++) {
 		if ((i & 0xf)==0) {
 			printk(BIOS_DEBUG, "\n%08x:", i);
 		}

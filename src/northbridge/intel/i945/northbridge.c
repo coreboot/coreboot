@@ -224,15 +224,15 @@ static void northbridge_init(struct device *dev)
 	switch (pci_read_config32(dev, SKPAD)) {
 	case SKPAD_NORMAL_BOOT_MAGIC:
 		printk(BIOS_DEBUG, "Normal boot.\n");
-		acpi_slp_type=0;
+		acpi_slp_type = 0;
 		break;
 	case SKPAD_ACPI_S3_MAGIC:
 		printk(BIOS_DEBUG, "S3 Resume.\n");
-		acpi_slp_type=3;
+		acpi_slp_type = 3;
 		break;
 	default:
 		printk(BIOS_DEBUG, "Unknown boot method, assuming normal.\n");
-		acpi_slp_type=0;
+		acpi_slp_type = 0;
 		break;
 	}
 }

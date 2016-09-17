@@ -1710,7 +1710,7 @@ static void sdram_enable(const struct mem_controller *ctrl)
 	/* And for good luck 6 more CBRs */
 	RAM_DEBUG_MESSAGE("Ram Enable 8\n");
 	int i;
-	for (i=0; i<8; i++)
+	for (i = 0; i < 8; i++)
 		do_ram_command(RAM_COMMAND_CBR, 0);
 
 	/* 9 mode register set */
@@ -1823,7 +1823,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	/* Disable legacy MMIO (0xC0000-0xEFFFF is DRAM) */
 	int i;
 	pci_write_config8(MCHDEV, PAM_0, 0x30);
-	for (i=1; i<=6; i++)
+	for (i = 1; i <= 6; i++)
 		pci_write_config8(MCHDEV, PAM_0 + i, 0x33);
 
 	/* Conservatively say each row has 64MB of ram, we will fix this up later

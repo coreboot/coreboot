@@ -98,7 +98,7 @@ static const struct gt_reg haswell_gt_lock[] = {
 
 u32 map_oprom_vendev(u32 vendev)
 {
-	u32 new_vendev=vendev;
+	u32 new_vendev = vendev;
 
 	switch (vendev) {
 	case 0x80860402:		/* GT1 Desktop */
@@ -116,7 +116,7 @@ u32 map_oprom_vendev(u32 vendev)
 	case 0x8086042a:		/* GT3 Server */
 	case 0x80860a26:		/* GT3 ULT */
 
-		new_vendev=0x80860406;	/* GT1 Mobile */
+		new_vendev = 0x80860406;	/* GT1 Mobile */
 		break;
 	}
 

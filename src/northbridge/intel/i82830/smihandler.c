@@ -159,9 +159,9 @@ static void mbi_call(u8 subf, banner_id_t *banner_id)
 		printk(BIOS_DEBUG, "|- MBI_QueryInterface\n");
 		version = (version_t *)banner_id;
 		version->banner.retsts = MSH_OK;
-		version->versionmajor=1;
-		version->versionminor=3;
-		version->smicombuffersize=0x1000;
+		version->versionmajor = 1;
+		version->versionminor = 3;
+		version->smicombuffersize = 0x1000;
 		break;
 	}
 	case 0x0002:
@@ -178,10 +178,10 @@ static void mbi_call(u8 subf, banner_id_t *banner_id)
 		printk(BIOS_DEBUG, "|- MBI_GetObjectHeader\n");
 		printk(BIOS_DEBUG, "|  |- objnum = %d\n", obj_header->objnum);
 
-		int i, count=0;
+		int i, count = 0;
 		obj_header->banner.retsts = MSH_IF_NOT_FOUND;
 
-		for (i=0; i<mbi_len;) {
+		for (i = 0; i < mbi_len;) {
 			int len;
 
 			if (!(mbi[i] == 0xf0 && mbi [i+1] == 0xf6)) {
@@ -207,7 +207,7 @@ static void mbi_call(u8 subf, banner_id_t *banner_id)
 				obj_header->banner.retsts = MSH_OK;
 				printk(BIOS_DEBUG, "|     |- MBI module '");
 				int j;
-				for (j=0; j < mbi_header->name_len && mbi_header->name[j]; j++)
+				for (j = 0; j < mbi_header->name_len && mbi_header->name[j]; j++)
 					printk(BIOS_DEBUG, "%c",  mbi_header->name[j]);
 				printk(BIOS_DEBUG, "' found.\n");
 #ifdef DEBUG_SMI_I82830
@@ -235,10 +235,10 @@ static void mbi_call(u8 subf, banner_id_t *banner_id)
 		printk(BIOS_DEBUG, "|  |- buflen = %x\n", getobj->buflen);
 		printk(BIOS_DEBUG, "|  |- buffer = %x\n", getobj->buffer);
 
-		int i, count=0;
+		int i, count = 0;
 		getobj->banner.retsts = MSH_IF_NOT_FOUND;
 
-		for (i=0; i< mbi_len;) {
+		for (i = 0; i< mbi_len;) {
 			int headerlen, objectlen;
 
 			if (!(mbi[i] == 0xf0 && mbi [i+1] == 0xf6)) {

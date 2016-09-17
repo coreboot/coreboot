@@ -96,7 +96,7 @@ void sdram_dump_mchbar_registers(void)
 	int i;
 	printk(BIOS_DEBUG, "Dumping MCHBAR Registers\n");
 
-	for (i=0; i<0xfff; i+=4) {
+	for (i = 0; i < 0xfff; i+=4) {
 		if (MCHBAR32(i) == 0)
 			continue;
 		printk(BIOS_DEBUG, "0x%04x: 0x%08x\n", i, MCHBAR32(i));
@@ -359,7 +359,7 @@ static void sdram_get_dram_configuration(struct sys_info *sysinfo)
 	 *
 	 */
 
-	for (i=0; i<(2 * DIMM_SOCKETS); i++) {
+	for (i = 0; i<(2 * DIMM_SOCKETS); i++) {
 		int device = get_dimm_spd_address(sysinfo, i);
 		u8 reg8;
 
@@ -443,7 +443,7 @@ static void sdram_verify_package_type(struct sys_info * sysinfo)
 
 	/* Assume no stacked DIMMs are available until we find one */
 	sysinfo->package = 0;
-	for (i=0; i<2*DIMM_SOCKETS; i++) {
+	for (i = 0; i < 2*DIMM_SOCKETS; i++) {
 		if (sysinfo->dimm[i] == SYSINFO_DIMM_NOT_POPULATED)
 			continue;
 
@@ -463,7 +463,7 @@ static u8 sdram_possible_cas_latencies(struct sys_info * sysinfo)
 		   SPD_CAS_LATENCY_DDR2_4 |
 		   SPD_CAS_LATENCY_DDR2_5;
 
-	for (i=0; i<2*DIMM_SOCKETS; i++) {
+	for (i = 0; i < 2*DIMM_SOCKETS; i++) {
 		if (sysinfo->dimm[i] != SYSINFO_DIMM_NOT_POPULATED)
 			cas_mask &= spd_read_byte(get_dimm_spd_address(sysinfo, i),
 						  SPD_ACCEPTABLE_CAS_LATENCIES);
@@ -519,7 +519,7 @@ static void sdram_detect_cas_latency_and_ram_speed(struct sys_info * sysinfo, u8
 		int freq_cas_mask = cas_mask;
 
 		PRINTK_DEBUG("Probing Speed %d\n", j);
-		for (i=0; i<2*DIMM_SOCKETS; i++) {
+		for (i = 0; i < 2*DIMM_SOCKETS; i++) {
 			int device = get_dimm_spd_address(sysinfo, i);
 			int current_cas_mask;
 
@@ -616,7 +616,7 @@ static void sdram_detect_smallest_tRAS(struct sys_info * sysinfo)
 	tRAS_cycles = 4; /* 4 clocks minimum */
 	tRAS_time = tRAS_cycles * freq_multiplier;
 
-	for (i=0; i<2*DIMM_SOCKETS; i++) {
+	for (i = 0; i < 2*DIMM_SOCKETS; i++) {
 		u8 reg8;
 
 		if (sysinfo->dimm[i] == SYSINFO_DIMM_NOT_POPULATED)
@@ -656,7 +656,7 @@ static void sdram_detect_smallest_tRP(struct sys_info * sysinfo)
 	tRP_cycles = 2; /* 2 clocks minimum */
 	tRP_time = tRP_cycles * freq_multiplier;
 
-	for (i=0; i<2*DIMM_SOCKETS; i++) {
+	for (i = 0; i < 2*DIMM_SOCKETS; i++) {
 		u8 reg8;
 
 		if (sysinfo->dimm[i] == SYSINFO_DIMM_NOT_POPULATED)
@@ -697,7 +697,7 @@ static void sdram_detect_smallest_tRCD(struct sys_info * sysinfo)
 	tRCD_cycles = 2; /* 2 clocks minimum */
 	tRCD_time = tRCD_cycles * freq_multiplier;
 
-	for (i=0; i<2*DIMM_SOCKETS; i++) {
+	for (i = 0; i < 2*DIMM_SOCKETS; i++) {
 		u8 reg8;
 
 		if (sysinfo->dimm[i] == SYSINFO_DIMM_NOT_POPULATED)
@@ -737,7 +737,7 @@ static void sdram_detect_smallest_tWR(struct sys_info * sysinfo)
 	tWR_cycles = 2; /* 2 clocks minimum */
 	tWR_time = tWR_cycles * freq_multiplier;
 
-	for (i=0; i<2*DIMM_SOCKETS; i++) {
+	for (i = 0; i < 2*DIMM_SOCKETS; i++) {
 		u8 reg8;
 
 		if (sysinfo->dimm[i] == SYSINFO_DIMM_NOT_POPULATED)
@@ -772,7 +772,7 @@ static void sdram_detect_smallest_tRFC(struct sys_info * sysinfo)
 		25, 35, 43 	/* DDR2-667 */
 	};
 
-	for (i=0; i<2*DIMM_SOCKETS; i++) {
+	for (i = 0; i < 2*DIMM_SOCKETS; i++) {
 		u8 reg8;
 
 		if (sysinfo->dimm[i] == SYSINFO_DIMM_NOT_POPULATED)
@@ -818,7 +818,7 @@ static void sdram_detect_smallest_refresh(struct sys_info * sysinfo)
 
 	sysinfo->refresh = 0;
 
-	for (i=0; i<2*DIMM_SOCKETS; i++) {
+	for (i = 0; i < 2*DIMM_SOCKETS; i++) {
 		int refresh;
 
 		if (sysinfo->dimm[i] == SYSINFO_DIMM_NOT_POPULATED)
@@ -849,7 +849,7 @@ static void sdram_verify_burst_length(struct sys_info * sysinfo)
 {
 	int i;
 
-	for (i=0; i<2*DIMM_SOCKETS; i++) {
+	for (i = 0; i < 2*DIMM_SOCKETS; i++) {
 		if (sysinfo->dimm[i] == SYSINFO_DIMM_NOT_POPULATED)
 			continue;
 
@@ -861,7 +861,7 @@ static void sdram_verify_burst_length(struct sys_info * sysinfo)
 
 static void sdram_program_dram_width(struct sys_info * sysinfo)
 {
-	u16 c0dramw=0, c1dramw=0;
+	u16 c0dramw = 0, c1dramw = 0;
 	int idx;
 
 	if (sysinfo->dual_channel)
@@ -899,7 +899,7 @@ static void sdram_write_slew_rates(u32 offset, const u32 *slew_rate_table)
 {
 	int i;
 
-	for (i=0; i<16; i++)
+	for (i = 0; i < 16; i++)
 		MCHBAR32(offset+(i*4)) = slew_rate_table[i];
 }
 
@@ -1242,12 +1242,12 @@ static void sdram_program_dll_timings(struct sys_info *sysinfo)
 
 	/* We drive both channels with the same speed */
 	switch (sysinfo->memory_frequency) {
-	case 400: chan0dll = 0x26262626; chan1dll=0x26262626; break; /* 400MHz */
-	case 533: chan0dll = 0x22222222; chan1dll=0x22222222; break; /* 533MHz */
-	case 667: chan0dll = 0x11111111; chan1dll=0x11111111; break; /* 667MHz */
+	case 400: chan0dll = 0x26262626; chan1dll = 0x26262626; break; /* 400MHz */
+	case 533: chan0dll = 0x22222222; chan1dll = 0x22222222; break; /* 533MHz */
+	case 667: chan0dll = 0x11111111; chan1dll = 0x11111111; break; /* 667MHz */
 	}
 
-	for (i=0; i < 4; i++) {
+	for (i = 0; i < 4; i++) {
 		MCHBAR32(C0R0B00DQST + (i * 0x10) + 0) = chan0dll;
 		MCHBAR32(C0R0B00DQST + (i * 0x10) + 4) = chan0dll;
 		MCHBAR32(C1R0B00DQST + (i * 0x10) + 0) = chan1dll;
@@ -1559,10 +1559,10 @@ static int sdram_program_row_boundaries(struct sys_info *sysinfo)
 static int sdram_set_row_attributes(struct sys_info *sysinfo)
 {
 	int i, value;
-	u16 dra0=0, dra1=0, dra = 0;
+	u16 dra0 = 0, dra1 = 0, dra = 0;
 
 	printk(BIOS_DEBUG, "Setting row attributes...\n");
-	for (i=0; i < 2 * DIMM_SOCKETS; i++) {
+	for (i = 0; i < 2 * DIMM_SOCKETS; i++) {
 		u16 device;
 		u8 columnsrows;
 
@@ -1616,7 +1616,7 @@ static void sdram_set_bank_architecture(struct sys_info *sysinfo)
 	MCHBAR16(C0BNKARC) &= 0xff00;
 
 	off32 = C0BNKARC;
-	for (i=0; i < 2 * DIMM_SOCKETS; i++) {
+	for (i = 0; i < 2 * DIMM_SOCKETS; i++) {
 		/* Switch to second channel */
 		if (i == DIMM_SOCKETS)
 			off32 = C1BNKARC;
@@ -1662,7 +1662,7 @@ static void sdram_program_cke_tristate(struct sys_info *sysinfo)
 
 	reg32 = MCHBAR32(C0DRC1);
 
-	for (i=0; i < 4; i++) {
+	for (i = 0; i < 4; i++) {
 		if (sysinfo->banksize[i] == 0) {
 			reg32 |= (1 << (16 + i));
 		}
@@ -1676,7 +1676,7 @@ static void sdram_program_cke_tristate(struct sys_info *sysinfo)
 	/* Do we have to do this if we're in Single Channel Mode?  */
 	reg32 = MCHBAR32(C1DRC1);
 
-	for (i=4; i < 8; i++) {
+	for (i = 4; i < 8; i++) {
 		if (sysinfo->banksize[i] == 0) {
 			reg32 |= (1 << (12 + i));
 		}
@@ -1695,7 +1695,7 @@ static void sdram_program_odt_tristate(struct sys_info *sysinfo)
 
 	reg32 = MCHBAR32(C0DRC2);
 
-	for (i=0; i < 4; i++) {
+	for (i = 0; i < 4; i++) {
 		if (sysinfo->banksize[i] == 0) {
 			reg32 |= (1 << (24 + i));
 		}
@@ -1704,7 +1704,7 @@ static void sdram_program_odt_tristate(struct sys_info *sysinfo)
 
 	reg32 = MCHBAR32(C1DRC2);
 
-	for (i=4; i < 8; i++) {
+	for (i = 4; i < 8; i++) {
 		if (sysinfo->banksize[i] == 0) {
 			reg32 |= (1 << (20 + i));
 		}
@@ -1832,7 +1832,7 @@ static void sdram_set_timing_and_control(struct sys_info *sysinfo)
 	/* Determine page size */
 	reg32 = 0;
 	page_size = 1; /* Default: 1k pagesize */
-	for (i=0; i< 2*DIMM_SOCKETS; i++) {
+	for (i = 0; i< 2*DIMM_SOCKETS; i++) {
 		if (sysinfo->dimm[i] == SYSINFO_DIMM_X16DS ||
 				sysinfo->dimm[i] == SYSINFO_DIMM_X16SS)
 			page_size = 2; /* 2k pagesize */
@@ -1932,7 +1932,7 @@ static void sdram_set_channel_mode(struct sys_info *sysinfo)
 
 	MCHBAR32(DCC) = reg32;
 
-	PRINTK_DEBUG("DCC=0x%08x\n", MCHBAR32(DCC));
+	PRINTK_DEBUG("DCC = 0x%08x\n", MCHBAR32(DCC));
 }
 
 static void sdram_program_pll_settings(struct sys_info *sysinfo)
@@ -1980,7 +1980,7 @@ static void sdram_program_graphics_frequency(struct sys_info *sysinfo)
 	voltage = VOLTAGE_1_05;
 	if (MCHBAR32(DFT_STRAP1) & (1 << 20))
 		voltage = VOLTAGE_1_50;
-	printk(BIOS_DEBUG, "Voltage: %s ", (voltage==VOLTAGE_1_05)?"1.05V":"1.5V");
+	printk(BIOS_DEBUG, "Voltage: %s ", (voltage == VOLTAGE_1_05)?"1.05V":"1.5V");
 
 	/* Gate graphics hardware for frequency change */
 	reg8 = pci_read_config16(PCI_DEV(0,2,0), GCFC + 1);
@@ -2006,7 +2006,7 @@ static void sdram_program_graphics_frequency(struct sys_info *sysinfo)
 	if (freq != CRCLK_400MHz) {
 		/* What chipset are we? Force 166MHz for GMS */
 		reg8 = (pci_read_config8(PCI_DEV(0, 0x00,0), 0xe7) & 0x70) >> 4;
-		if (reg8==2)
+		if (reg8 == 2)
 			freq = CRCLK_166MHz;
 	}
 
@@ -2043,9 +2043,9 @@ static void sdram_program_graphics_frequency(struct sys_info *sysinfo)
 	}
 
 	if (second_vco) {
-		sysinfo->clkcfg_bit7=1;
+		sysinfo->clkcfg_bit7 = 1;
 	} else {
-		sysinfo->clkcfg_bit7=0;
+		sysinfo->clkcfg_bit7 = 0;
 	}
 
 	/* Graphics Core Render Clock */
@@ -2089,7 +2089,7 @@ static void sdram_program_memory_frequency(struct sys_info *sysinfo)
 
 	clkcfg = MCHBAR32(CLKCFG);
 
-	printk(BIOS_DEBUG, "CLKCFG=0x%08x, ", clkcfg);
+	printk(BIOS_DEBUG, "CLKCFG = 0x%08x, ", clkcfg);
 
 	clkcfg &= ~( (1 << 12) | (1 << 7) | ( 7 << 4) );
 
@@ -2153,7 +2153,7 @@ cache_code:
 	goto vco_update;
 out:
 
-	printk(BIOS_DEBUG, "CLKCFG=0x%08x, ", MCHBAR32(CLKCFG));
+	printk(BIOS_DEBUG, "CLKCFG = 0x%08x, ", MCHBAR32(CLKCFG));
 	printk(BIOS_DEBUG, "ok\n");
 }
 
@@ -2504,7 +2504,7 @@ static void sdram_power_management(struct sys_info *sysinfo)
 
 	MCHBAR32(UPMC3) = 0x000f06ff;
 
-	for (i=0; i<5; i++) {
+	for (i = 0; i < 5; i++) {
 		MCHBAR32(UPMC3) &= ~(1 << 16);
 		MCHBAR32(UPMC3) |= (1 << 16);
 	}
@@ -2685,7 +2685,7 @@ static void sdram_save_receive_enable(void)
 	 * so we grab bytes 128 - 131 to save the receive enable values
 	 */
 
-	for (i=0; i<4; i++)
+	for (i = 0; i < 4; i++)
 		cmos_write(values[i], 128 + i);
 }
 
@@ -2695,7 +2695,7 @@ static void sdram_recover_receive_enable(void)
 	u32 reg32;
 	u8 values[4];
 
-	for (i=0; i<4; i++)
+	for (i = 0; i < 4; i++)
 		values[i] = cmos_read(128 + i);
 
 	MCHBAR8(C0WL0REOST) = values[0];

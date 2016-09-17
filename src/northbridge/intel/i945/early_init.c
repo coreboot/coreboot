@@ -752,7 +752,7 @@ static void i945_setup_pci_express_x16(void)
 		};
 
 		int i;
-		for (i=0; i<ARRAY_SIZE(reglist); i++) {
+		for (i = 0; i < ARRAY_SIZE(reglist); i++) {
 			reg32 = pci_read_config32(PCI_DEV(0, 0x01, 0), reglist[i]);
 			reg32 &= 0x0fffffff;
 			reg32 |= (2 << 28);

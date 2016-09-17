@@ -121,7 +121,7 @@ static int intel_gma_init(struct northbridge_intel_i945_config *conf,
 
 	for (i = 0; i < 2; i++)
 		for (j = 0; j < 0x100; j++)
-			/* R=j, G=j, B=j.  */
+			/* R = j, G = j, B = j.  */
 			write32(pmmio + PALETTE(i) + 4 * j, 0x10101 * j);
 
 	write32(pmmio + PCH_PP_CONTROL, PANEL_UNLOCK_REGS
@@ -423,7 +423,7 @@ static void gma_func0_init(struct device *dev)
 	mmiobase = (void *)(uintptr_t)dev->resource_list[0].base;
 	graphics_base = dev->resource_list[2].base;
 
-	printk(BIOS_SPEW, "GMADR=0x%08x GTTADR=0x%08x\n",
+	printk(BIOS_SPEW, "GMADR = 0x%08x GTTADR = 0x%08x\n",
 		pci_read_config32(dev, GMADR),
 		pci_read_config32(dev, GTTADR)
 	);

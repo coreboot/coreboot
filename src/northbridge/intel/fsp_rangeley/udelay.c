@@ -19,7 +19,7 @@
 #include <cpu/x86/msr.h>
 
 /**
- * Intel Rangeley CPUs always run the TSC at BCLK=100MHz
+ * Intel Rangeley CPUs always run the TSC at BCLK = 100MHz
  */
 
 /* Simple 32- to 64-bit multiplication. Uses 16-bit words to avoid overflow.

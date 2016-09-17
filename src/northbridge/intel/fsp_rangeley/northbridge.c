@@ -86,7 +86,6 @@ static int add_fixed_resources(struct device *dev, int index)
 	struct resource *resource;
 	u32 pcie_config_base, pcie_config_size;
 
-
 	if (get_pcie_bar(&pcie_config_base, &pcie_config_size)) {
 		printk(BIOS_DEBUG, "Adding PCIe config bar base=0x%08x "
 		       "size=0x%x\n", pcie_config_base, pcie_config_size);

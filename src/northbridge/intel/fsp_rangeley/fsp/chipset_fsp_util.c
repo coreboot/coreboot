@@ -170,7 +170,7 @@ void chipset_fsp_early_init(FSP_INIT_PARAMS *pFspInitParams,
 void ChipsetFspReturnPoint(EFI_STATUS Status,
 		VOID *HobListPtr)
 {
-	*(void **)CBMEM_FSP_HOB_PTR=HobListPtr;
+	*(void **)CBMEM_FSP_HOB_PTR = HobListPtr;
 
 	if (Status == 0xFFFFFFFF) {
 		soft_reset();

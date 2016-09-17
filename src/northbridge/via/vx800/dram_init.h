@@ -75,7 +75,7 @@
 #define SPD_SDRAM_COL_ADDR           4	/*Number of column addresses on this assembly */
 #define SPD_SDRAM_DIMM_RANKS         5	/*Number of RANKS on this assembly */
 #define SPD_SDRAM_MOD_DATA_WIDTH     6	/*Data width of this assembly */
-#define SPD_SDRAM_TCLK_X             9	/*Cycle time at Maximum supported CAS latency (CL=X) */
+#define SPD_SDRAM_TCLK_X             9	/*Cycle time at Maximum supported CAS latency (CL = X) */
 #define SPD_SDRAM_TAC_X              10	/*Access time for highest CL */
 #define SPD_SDRAM_CONFIG_TYPE        11	/*Non-parity , Parity or ECC */
 #define SPD_SDRAM_REFRESH            12	/*Refresh rate/type */

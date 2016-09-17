@@ -196,13 +196,13 @@ void CalcCLAndFreq(DRAM_SYS_ATTR * DramAttr)
 	}
 
 	/* cycle time value
-	   0x25-->2.5ns Freq=400  DDR800
-	   0x30-->3.0ns Freq=333  DDR667
-	   0x3D-->3.75ns Freq=266 DDR533
-	   0x50-->5.0ns Freq=200  DDR400
-	   0x60-->6.0ns Freq=166  DDR333
-	   0x75-->7.5ns Freq=133  DDR266
-	   0xA0-->10.0ns Freq=100 DDR200
+	   0x25-->2.5ns Freq = 400  DDR800
+	   0x30-->3.0ns Freq = 333  DDR667
+	   0x3D-->3.75ns Freq = 266 DDR533
+	   0x50-->5.0ns Freq = 200  DDR400
+	   0x60-->6.0ns Freq = 166  DDR333
+	   0x75-->7.5ns Freq = 133  DDR266
+	   0xA0-->10.0ns Freq = 100 DDR200
 	 */
 	if (CycTime <= 0x25) {
 		DramAttr->DramFreq = DIMMFREQ_800;

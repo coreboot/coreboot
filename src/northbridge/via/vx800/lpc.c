@@ -87,7 +87,7 @@ static void pci_routing_fixup(struct device *dev)
 
 	/* Standard usb components */
 	printk(BIOS_INFO, "setting usb1-2\n");
-//      pci_assign_irqs(0, 0x10, pin_to_irq(usbPins));
+//	pci_assign_irqs(0, 0x10, pin_to_irq(usbPins));
 
 	/* sound hardware */
 	printk(BIOS_INFO, "setting hdac audio\n");
@@ -108,8 +108,8 @@ static void setup_pm(device_t dev)
 	/* set ACPI irq to 9 */
 	pci_write_config8(dev, 0x82, 0x49);
 
-	/* Primary interupt channel, define wake events 0=IRQ0 15=IRQ15 1=en. */
-//      pci_write_config16(dev, 0x84, 0x30f2);
+	/* Primary interupt channel, define wake events 0 = IRQ0 15 = IRQ15 1 = en. */
+//	pci_write_config16(dev, 0x84, 0x30f2);
 	pci_write_config16(dev, 0x84, 0x609a);	// 0x609a??
 
 	/* SMI output level to low, 7.5us throttle clock */
@@ -234,7 +234,7 @@ static void vx800_sb_init(struct device *dev)
 	pci_write_config8(dev, 0x6C, enables);
 
 	// Map 4MB of FLASH into the address space
-//      pci_write_config8(dev, 0x41, 0x7f);
+//	pci_write_config8(dev, 0x41, 0x7f);
 
 	// Set bit 6 of 0x40, because Award does it (IO recovery time)
 	// IMPORTANT FIX - EISA 0x4d0 decoding must be on so that PCI
@@ -337,13 +337,13 @@ static void southbridge_init(struct device *dev)
 		fadt->pm2_cnt_len = 1;//to support cpu-c3
 	#2
 		ssdt? ->every CPU has a P_BLK address. set it to 0x10 (so that "Read Processor Level3 register(PMIORx15<7:0>) to enter C3 state"---VIA vx800 P SPEC )
-       #3    write 0x17 in to PMIO=VX800_ACPI_IO_BASE + 0x26, following the describtion in the P-spec.
-	       1  enable SLP# asserts in C3 state  PMIORx26<1> =1
-		2    enable CPUSTP# asserts in C3 state;  PMIORx26<2> =1
-		3  CLKRUN# is always asserted  PMIORx26<3> =0
-		4    Disable PCISTP# When CLKRUN# is asserted
+	#3    write 0x17 in to PMIO = VX800_ACPI_IO_BASE + 0x26, following the describtion in the P-spec.
+		1  enable SLP# asserts in C3 state  PMIORx26<1> = 1
+		2  enable CPUSTP# asserts in C3 state;  PMIORx26<2> = 1
+		3  CLKRUN# is always asserted  PMIORx26<3> = 0
+		4  Disable PCISTP# When CLKRUN# is asserted
 		1: PCISTP# will not assert When CLKRUN# is asserted
-		PMIORx26<4> =1
+		PMIORx26<4> = 1
 		5  This bit controls whether the CPU voltage is lowered when in C3/S1 state.
 		VRDSLP will be active in either this bit set in C3 or LVL4 register read
 		PMIORx26<0> =0

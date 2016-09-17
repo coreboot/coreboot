@@ -134,7 +134,7 @@ Device (MCHC)
 	}
 
 	/*
-	 * Search CPU0 _PSS looking for control=arg0 and then
+	 * Search CPU0 _PSS looking for control = arg0 and then
 	 * return previous P-state entry number for new _PPC
 	 *
 	 * Format of _PSS:

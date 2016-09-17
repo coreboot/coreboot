@@ -31,7 +31,7 @@
 
 u32 map_oprom_vendev(u32 vendev)
 {
-	u32 new_vendev=vendev;
+	u32 new_vendev = vendev;
 
 	switch (vendev) {
 	case 0x80860102:		/* GT1 Desktop */
@@ -41,7 +41,7 @@ u32 map_oprom_vendev(u32 vendev)
 	case 0x80860122:		/* GT2 Desktop >=1.3GHz */
 	case 0x80860126:		/* GT2 Mobile >=1.3GHz */
 	case 0x80860166:                /* IVB */
-		new_vendev=0x80860106;	/* GT1 Mobile */
+		new_vendev = 0x80860106;	/* GT1 Mobile */
 		break;
 	}
 

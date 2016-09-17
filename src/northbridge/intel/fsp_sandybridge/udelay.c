@@ -19,7 +19,7 @@
 #include <cpu/x86/msr.h>
 
 /**
- * Intel SandyBridge/IvyBridge CPUs always run the TSC at BCLK=100MHz
+ * Intel SandyBridge/IvyBridge CPUs always run the TSC at BCLK = 100MHz
  */
 
 void udelay(u32 us)

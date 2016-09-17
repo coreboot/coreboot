@@ -209,7 +209,7 @@ static u32 spd_detect_dimms(const struct mem_controller *ctrl)
 		u16 device;
 		device = ctrl->channel0[i];
 		if (device) {
-			byte = spd_read_byte(device, 2);  /* Type */
+			byte = spd_read_byte(device, 2); /* Type */
 			if (byte == 8) {
 				dimm_mask |= (1 << i);
 			}
@@ -235,7 +235,7 @@ static int spd_set_row_attributes(const struct mem_controller *ctrl,
 	int cnt;
 
 	dra = 0;
-	for (cnt=0; cnt < 4; cnt++) {
+	for (cnt = 0; cnt < 4; cnt++) {
 		if (!(dimm_mask & (1 << cnt))) {
 			continue;
 		}
@@ -293,7 +293,7 @@ static int spd_set_drt_attributes(const struct mem_controller *ctrl,
 	u32 drt;
 	int cnt;
 	int first_dimm;
-	int cas_latency=0;
+	int cas_latency = 0;
 	int latency;
 	u32 index = 0;
 	u32 index2 = 0;
@@ -302,7 +302,7 @@ static int spd_set_drt_attributes(const struct mem_controller *ctrl,
 
 	/* 0x78 DRT */
 	drt = pci_read_config32(ctrl->f0, DRT);
-	drt &= 3;  /* save bits 1:0 */
+	drt &= 3; /* save bits 1:0 */
 
 	for (first_dimm = 0; first_dimm < 4; first_dimm++) {
 		if (dimm_mask & (1 << first_dimm))
@@ -311,9 +311,9 @@ static int spd_set_drt_attributes(const struct mem_controller *ctrl,
 
 	drt |= (1<<6); /* back to back write turn around */
 
-	drt |= (3<<18);  /* Trasmax */
+	drt |= (3<<18); /* Trasmax */
 
-	for (cnt=0; cnt < 4; cnt++) {
+	for (cnt = 0; cnt < 4; cnt++) {
 		if (!(dimm_mask & (1 << cnt))) {
 			continue;
 		}
@@ -330,7 +330,7 @@ static int spd_set_drt_attributes(const struct mem_controller *ctrl,
 			value = spd_read_byte(ctrl->channel0[cnt],
 					latency_indicies[index]);
 
-			if (value <= cycle_time[drc&3]) {
+			if (value <= cycle_time[drc & 3]) {
 				if ( latency > cas_latency) {
 					cas_latency = latency;
 				}
@@ -339,59 +339,59 @@ static int spd_set_drt_attributes(const struct mem_controller *ctrl,
 		}
 	}
 	index = (cas_latency-2);
-	if ((index)==0) cas_latency = 20;
-	else if ((index)==1) cas_latency = 25;
+	if ((index) == 0) cas_latency = 20;
+	else if ((index) == 1) cas_latency = 25;
 	else cas_latency = 30;
 
-	for (cnt=0;cnt<4;cnt++) {
+	for (cnt = 0; cnt < 4; cnt++) {
 		if (!(dimm_mask & (1 << cnt))) {
 			continue;
 		}
 		reg = spd_read_byte(ctrl->channel0[cnt], 27)&0x0ff;
-		if (((index>>8)&0x0ff)<reg) {
+		if (((index>>8) & 0x0ff) < reg) {
 			index &= ~(0x0ff << 8);
 			index |= (reg << 8);
 		}
 		reg = spd_read_byte(ctrl->channel0[cnt], 28)&0x0ff;
-		if (((index>>16)&0x0ff)<reg) {
+		if (((index>>16) & 0x0ff) < reg) {
 			index &= ~(0x0ff << 16);
 			index |= (reg<<16);
 		}
 		reg = spd_read_byte(ctrl->channel0[cnt], 29)&0x0ff;
-		if (((index2>>0)&0x0ff)<reg) {
+		if (((index2>>0) & 0x0ff) < reg) {
 			index2 &= ~(0x0ff << 0);
 			index2 |= (reg<<0);
 		}
 		reg = spd_read_byte(ctrl->channel0[cnt], 41)&0x0ff;
-		if (((index2>>8)&0x0ff)<reg) {
+		if (((index2>>8) & 0x0ff) < reg) {
 			index2 &= ~(0x0ff << 8);
 			index2 |= (reg<<8);
 		}
 		reg = spd_read_byte(ctrl->channel0[cnt], 42)&0x0ff;
-		if (((index2>>16)&0x0ff)<reg) {
+		if (((index2>>16) & 0x0ff) < reg) {
 			index2 &= ~(0x0ff << 16);
 			index2 |= (reg<<16);
 		}
 	}
 
 	/* get dimm speed */
-	value = cycle_time[drc&3];
-	if (value <= 0x50) {  /* 200 MHz */
-		if ((index&7) > 2) {
-			drt |= (2<<2);  /* CAS latency 4 */
+	value = cycle_time[drc & 3];
+	if (value <= 0x50) { /* 200 MHz */
+		if ((index & 7) > 2) {
+			drt |= (2<<2); /* CAS latency 4 */
 			cas_latency = 40;
 		} else {
-			drt |= (1<<2);  /* CAS latency 3 */
+			drt |= (1<<2); /* CAS latency 3 */
 			cas_latency = 30;
 		}
-		if ((index&0x0ff00)<=0x03c00) {
-			drt |= (1<<8);  /* Trp RAS Precharg */
+		if ((index & 0x0ff00) <= 0x03c00) {
+			drt |= (1<<8); /* Trp RAS Precharg */
 		} else {
-			drt |= (2<<8);  /* Trp RAS Precharg */
+			drt |= (2<<8); /* Trp RAS Precharg */
 		}
 
 		/* Trcd RAS to CAS delay */
-		if ((index2&0x0ff)<=0x03c) {
+		if ((index2 & 0x0ff) <= 0x03c) {
 			drt |= (0<<10);
 		} else {
 			drt |= (1<<10);
@@ -401,30 +401,30 @@ static int spd_set_drt_attributes(const struct mem_controller *ctrl,
 		drt |= (1<<12);
 
 		/* Trc TRS min */
-		if ((index2&0x0ff00)<=0x03700)
+		if ((index2 & 0x0ff00) <= 0x03700)
 			drt |= (0<<14);
-		else if ((index2&0xff00)<=0x03c00)
+		else if ((index2 & 0xff00) <= 0x03c00)
 			drt |= (1<<14);
 		else
 			drt |= (2<<14); /* spd 41 */
 
-		drt |= (2<<16);  /* Twr not defined for DDR docs say use 2 */
+		drt |= (2<<16); /* Twr not defined for DDR docs say use 2 */
 
 		/* Trrd Row Delay */
-		if ((index&0x0ff0000)<=0x0140000) {
+		if ((index & 0x0ff0000) <= 0x0140000) {
 			drt |= (0<<20);
-		} else if ((index&0x0ff0000)<=0x0280000) {
+		} else if ((index & 0x0ff0000) <= 0x0280000) {
 			drt |= (1<<20);
-		} else if ((index&0x0ff0000)<=0x03c0000) {
+		} else if ((index & 0x0ff0000) <= 0x03c0000) {
 			drt |= (2<<20);
 		} else {
 			drt |= (3<<20);
 		}
 
 		/* Trfc Auto refresh cycle time */
-		if ((index2&0x0ff0000)<=0x04b0000) {
+		if ((index2 & 0x0ff0000) <= 0x04b0000) {
 			drt |= (0<<22);
-		} else if ((index2&0x0ff0000)<=0x0690000) {
+		} else if ((index2 & 0x0ff0000) <= 0x0690000) {
 			drt |= (1<<22);
 		} else {
 			drt |= (2<<22);
@@ -435,15 +435,15 @@ static int spd_set_drt_attributes(const struct mem_controller *ctrl,
 	else if (value <= 0x60) { /* 167 MHz */
 		/* according to new documentation CAS latency is 00
 		 * for bits 3:2 for all 167 MHz
-		drt |= ((index&3)<<2); */  /* set CAS latency */
-		if ((index&0x0ff00)<=0x03000) {
-			drt |= (1<<8);  /* Trp RAS Precharg */
+		drt |= ((index & 3)<<2); */ /* set CAS latency */
+		if ((index & 0x0ff00) <= 0x03000) {
+			drt |= (1<<8); /* Trp RAS Precharg */
 		} else {
-			drt |= (2<<8);  /* Trp RAS Precharg */
+			drt |= (2<<8); /* Trp RAS Precharg */
 		}
 
 		/* Trcd RAS to CAS delay */
-		if ((index2&0x0ff)<=0x030) {
+		if ((index2 & 0x0ff) <= 0x030) {
 			drt |= (0<<10);
 		} else {
 			drt |= (1<<10);
@@ -455,21 +455,21 @@ static int spd_set_drt_attributes(const struct mem_controller *ctrl,
 		/* Trc TRS min */
 		drt |= (2<<14); /* spd 41, but only one choice */
 
-		drt |= (2<<16);  /* Twr not defined for DDR docs say 2 */
+		drt |= (2<<16); /* Twr not defined for DDR docs say 2 */
 
 		/* Trrd Row Delay */
-		if ((index&0x0ff0000)<=0x0180000) {
+		if ((index & 0x0ff0000) <= 0x0180000) {
 			drt |= (0<<20);
-		} else if ((index&0x0ff0000)<=0x0300000) {
+		} else if ((index & 0x0ff0000) <= 0x0300000) {
 			drt |= (1<<20);
 		} else {
 			drt |= (2<<20);
 		}
 
 		/* Trfc Auto refresh cycle time */
-		if ((index2&0x0ff0000)<=0x0480000) {
+		if ((index2 & 0x0ff0000) <= 0x0480000) {
 			drt |= (0<<22);
-		} else if ((index2&0x0ff0000)<=0x0780000) {
+		} else if ((index2 & 0x0ff0000) <= 0x0780000) {
 			drt |= (2<<22);
 		} else {
 			drt |= (2<<22);
@@ -478,15 +478,15 @@ static int spd_set_drt_attributes(const struct mem_controller *ctrl,
 		drt |= (0x099<<24);
 	}
 	else if (value <= 0x75) { /* 133 MHz */
-		drt |= ((index&3)<<2);  /* set CAS latency */
-		if ((index&0x0ff00)<=0x03c00) {
-			drt |= (1<<8);  /* Trp RAS Precharg */
+		drt |= ((index & 3)<<2); /* set CAS latency */
+		if ((index & 0x0ff00) <= 0x03c00) {
+			drt |= (1<<8); /* Trp RAS Precharg */
 		} else {
-			drt |= (2<<8);  /* Trp RAS Precharg */
+			drt |= (2<<8); /* Trp RAS Precharg */
 		}
 
 		/* Trcd RAS to CAS delay */
-		if ((index2&0x0ff)<=0x03c) {
+		if ((index2 & 0x0ff) <= 0x03c) {
 			drt |= (0<<10);
 		} else {
 			drt |= (1<<10);
@@ -498,28 +498,28 @@ static int spd_set_drt_attributes(const struct mem_controller *ctrl,
 		/* Trc TRS min */
 		drt |= (2<<14); /* spd 41, but only one choice */
 
-		drt |= (1<<16);  /* Twr not defined for DDR docs say 1 */
+		drt |= (1<<16); /* Twr not defined for DDR docs say 1 */
 
 		/* Trrd Row Delay */
-		if ((index&0x0ff0000)<=0x01e0000) {
+		if ((index & 0x0ff0000) <= 0x01e0000) {
 			drt |= (0<<20);
-		} else if ((index&0x0ff0000)<=0x03c0000) {
+		} else if ((index & 0x0ff0000) <= 0x03c0000) {
 			drt |= (1<<20);
 		} else {
 			drt |= (2<<20);
 		}
 
 		/* Trfc Auto refresh cycle time */
-		if ((index2&0x0ff0000)<=0x04b0000) {
+		if ((index2 & 0x0ff0000) <= 0x04b0000) {
 			drt |= (0<<22);
-		} else if ((index2&0x0ff0000)<=0x0780000) {
+		} else if ((index2 & 0x0ff0000) <= 0x0780000) {
 			drt |= (2<<22);
 		} else {
 			drt |= (2<<22);
 		}
 
 		/* Based on CAS latency */
-		if (index&7)
+		if (index & 7)
 			drt |= (0x099<<24);
 		else
 			drt |= (0x055<<24);
@@ -549,20 +549,20 @@ static int spd_set_dram_controller_mode(const struct mem_controller *ctrl,
 
 	/* 0x7c DRC */
 	drc = pci_read_config32(ctrl->f0, DRC);
-	for (cnt=0; cnt < 4; cnt++) {
+	for (cnt = 0; cnt < 4; cnt++) {
 		if (!(dimm_mask & (1 << cnt))) {
 			continue;
 		}
-		value = spd_read_byte(ctrl->channel0[cnt], 11);	/* ECC */
+		value = spd_read_byte(ctrl->channel0[cnt], 11); /* ECC */
 		if (value != 2) die("ERROR - Non ECC memory dimm\n");
 
-		value = spd_read_byte(ctrl->channel0[cnt], 12);	/*refresh rate*/
-		value &= 0x0f;    /* clip self refresh bit */
+		value = spd_read_byte(ctrl->channel0[cnt], 12); /*refresh rate*/
+		value &= 0x0f; /* clip self refresh bit */
 		if (value > 5) goto hw_err;
 		if (rate > spd_rates[value])
 			rate = spd_rates[value];
 
-		value = spd_read_byte(ctrl->channel0[cnt], 9);	/* cycle time */
+		value = spd_read_byte(ctrl->channel0[cnt], 9); /* cycle time */
 		if (value > 0x75) goto hw_err;
 	}
 	drc |= (1 << 20); /* enable ECC */
@@ -570,7 +570,7 @@ static int spd_set_dram_controller_mode(const struct mem_controller *ctrl,
 		if (drc_rates[cnt] == rate)
 			break;
 	if (cnt < 5) {
-		drc &= ~(7 << 8);  /* clear the rate bits */
+		drc &= ~(7 << 8); /* clear the rate bits */
 		drc |= (cnt << 8);
 	}
 
@@ -616,8 +616,8 @@ static void do_delay(void)
 {
 	int i;
 	u8 b;
-	for (i=0;i<16;i++)
-		b=inb(0x80);
+	for (i = 0; i < 16; i++)
+		b = inb(0x80);
 }
 
 #define TIMEOUT_LOOPS 300000
@@ -635,9 +635,9 @@ static void set_on_dimm_termination_enable(const struct mem_controller *ctrl)
 
 	/* Set up northbridge values */
 	/* ODT enable */
-  	pci_write_config32(ctrl->f0, SDRC, 0x30000000);
+	pci_write_config32(ctrl->f0, SDRC, 0x30000000);
 	/* Figure out which slots are Empty, Single, or Double sided */
-	for (i=0,t4=0,c2=0;i<8;i+=2) {
+	for (i = 0,t4 = 0,c2 = 0; i < 8; i+=2) {
 		c1 = pci_read_config8(ctrl->f0, DRB+i);
 		if (c1 == c2) continue;
 		c2 = pci_read_config8(ctrl->f0, DRB+1+i);
@@ -646,52 +646,52 @@ static void set_on_dimm_termination_enable(const struct mem_controller *ctrl)
 		else
 			t4 |= (2 << (i*4));
 	}
-	for (i=0;i<1;i++) {
-	    if ((t4&0x0f) == 1) {
-		if ( ((t4>>8)&0x0f) == 0 ) {
-			data32 = 0x00000010; /* EEES */
+	for (i = 0; i < 1; i++) {
+		if ((t4 & 0x0f) == 1) {
+			if ( ((t4>>8)&0x0f) == 0 ) {
+				data32 = 0x00000010; /* EEES */
+				break;
+			}
+			if ( ((t4>>16)&0x0f) == 0 ) {
+				data32 = 0x00003132; /* EESS */
+				break;
+			}
+			if ( ((t4>>24)&0x0f) == 0 ) {
+				data32 = 0x00335566; /* ESSS */
+				break;
+			}
+			data32 = 0x77bbddee; /* SSSS */
 			break;
 		}
-		if ( ((t4>>16)&0x0f) == 0 ) {
-			data32 = 0x00003132; /* EESS */
+		if ((t4 & 0x0f) == 2) {
+			if ( ((t4>>8)&0x0f) == 0 ) {
+				data32 = 0x00003132; /* EEED */
+				break;
+			}
+			if ( ((t4>>8)&0x0f) == 2 ) {
+				data32 = 0xb373ecdc; /* EEDD */
+				break;
+			}
+			if ( ((t4>>16)&0x0f) == 0 ) {
+				data32 = 0x00b3a898; /* EESD */
+				break;
+			}
+			data32 = 0x777becdc; /* ESSD */
 			break;
 		}
-		if ( ((t4>>24)&0x0f)  == 0 ) {
-			data32 = 0x00335566; /* ESSS */
-			break;
-		}
-		data32 = 0x77bbddee; /* SSSS */
-		break;
-	    }
-	    if ((t4&0x0f) == 2) {
-		if ( ((t4>>8)&0x0f) == 0 ) {
-			data32 = 0x00003132; /* EEED */
-			break;
-		}
-		if ( ((t4>>8)&0x0f) == 2 ) {
-			data32 = 0xb373ecdc; /* EEDD */
-			break;
-		}
-		if ( ((t4>>16)&0x0f) == 0 ) {
-			data32 = 0x00b3a898; /* EESD */
-			break;
-		}
-		data32 = 0x777becdc; /* ESSD */
-		break;
-	    }
-	    die("Error - First dimm slot empty\n");
+		die("Error - First dimm slot empty\n");
 	}
 
 	printk(BIOS_DEBUG, "ODT Value = %08x\n", data32);
 
-  	pci_write_config32(ctrl->f0, DDR2ODTC, data32);
+	pci_write_config32(ctrl->f0, DDR2ODTC, data32);
 
-	for (dimm=0;dimm<8;dimm+=2) {
+	for (dimm = 0;dimm < 8;dimm+=2) {
 
 		write32(MCBAR+DCALADDR, 0x0b840001);
 		write32(MCBAR+DCALCSR, 0x81000003 | (dimm << 20));
 
-		for (i=0;i<1001;i++) {
+		for (i = 0; i < 1001; i++) {
 			data32 = read32(MCBAR+DCALCSR);
 			if (!(data32 & (1<<31)))
 				break;
@@ -702,8 +702,8 @@ static void set_receive_enable(const struct mem_controller *ctrl)
 {
 	u32 i;
 	u32 cnt;
-	u32 recena=0;
-	u32 recenb=0;
+	u32 recena = 0;
+	u32 recenb = 0;
 
 	{
 	u32 dimm;
@@ -717,18 +717,18 @@ static void set_receive_enable(const struct mem_controller *ctrl)
 	u32 work32h;
 	u32 data32r;
 	int32_t recen;
-	for (dimm=0;dimm<8;dimm+=1) {
+	for (dimm = 0;dimm < 8;dimm+=1) {
 
-		if (!(dimm&1)) {
+		if (!(dimm & 1)) {
 			write32(MCBAR+DCALDATA+(17*4), 0x04020000);
 			write32(MCBAR+DCALCSR, 0x81800004 | (dimm << 20));
 
-			for (i=0;i<1001;i++) {
+			for (i = 0; i < 1001; i++) {
 				data32 = read32(MCBAR+DCALCSR);
 				if (!(data32 & (1<<31)))
 					break;
 			}
-			if (i>=1000)
+			if (i >= 1000)
 				continue;
 
 			dcal_data32_0 = read32(MCBAR+DCALDATA + 0);
@@ -749,9 +749,9 @@ static void set_receive_enable(const struct mem_controller *ctrl)
 		/* Calculate the timing value */
 		{
 		u32 bit;
-		for (i=0,edge=0,bit=63,cnt=31,data32r=0,
-			work32l=dcal_data32_1,work32h=dcal_data32_3;
-				(i<4) && bit; i++) {
+		for (i = 0,edge = 0,bit = 63,cnt = 31,data32r = 0,
+			work32l = dcal_data32_1,work32h = dcal_data32_3;
+				(i < 4) && bit; i++) {
 			for (;;bit--,cnt--) {
 				if (work32l & (1<<cnt))
 					break;
@@ -806,11 +806,11 @@ static void set_receive_enable(const struct mem_controller *ctrl)
 		recen = data32r;
 		recen += 3;
 		recen = recen>>2;
-		for (cnt=5;cnt<24;) {
-			for (;;cnt++)
+		for (cnt = 5; cnt < 24;) {
+			for (;; cnt++)
 				if (!(work32l & (1<<cnt)))
 					break;
-			for (;;cnt++) {
+			for (;; cnt++) {
 				if (work32l & (1<<cnt))
 					break;
 			}
@@ -835,14 +835,14 @@ static void set_receive_enable(const struct mem_controller *ctrl)
 		cnt--;
 		cnt /= 8;
 		cnt--;
-		if (recen&1)
+		if (recen & 1)
 			recen+=2;
 		recen >>= 1;
 		recen += (cnt*8);
-		recen+=2;      /* this is not in the spec, but matches
+		recen+=2;     /* this is not in the spec, but matches
 				 the factory output, and has less failure */
 		recen <<= (dimm/2) * 8;
-		if (!(dimm&1)) {
+		if (!(dimm & 1)) {
 			recena |= recen;
 		}
 		else {
@@ -851,7 +851,7 @@ static void set_receive_enable(const struct mem_controller *ctrl)
 	}
 	}
 	/* Check for Eratta problem */
-	for (i=cnt=0;i<32;i+=8) {
+	for (i = cnt = 0; i < 32; i+=8) {
 		if (((recena>>i)&0x0f)>7) {
 			cnt+= 0x101;
 		}
@@ -861,10 +861,10 @@ static void set_receive_enable(const struct mem_controller *ctrl)
 			}
 		}
 	}
-	if (cnt&0x0f00) {
-		cnt = (cnt&0x0f) - (cnt>>16);
-		if (cnt>1) {
-			for (i=0;i<32;i+=8) {
+	if (cnt & 0x0f00) {
+		cnt = (cnt & 0x0f) - (cnt>>16);
+		if (cnt > 1) {
+			for (i = 0; i < 32; i+=8) {
 				if (((recena>>i)&0x0f)>7) {
 					recena &= ~(0x0f<<i);
 					recena |= (7<<i);
@@ -872,7 +872,7 @@ static void set_receive_enable(const struct mem_controller *ctrl)
 			}
 		}
 		else {
-			for (i=0;i<32;i+=8) {
+			for (i = 0; i < 32; i+=8) {
 				if (((recena>>i)&0x0f)<8) {
 					recena &= ~(0x0f<<i);
 					recena |= (8<<i);
@@ -880,7 +880,7 @@ static void set_receive_enable(const struct mem_controller *ctrl)
 			}
 		}
 	}
-	for (i=cnt=0;i<32;i+=8) {
+	for (i = cnt = 0; i < 32; i+=8) {
 		if (((recenb>>i)&0x0f)>7) {
 			cnt+= 0x101;
 		}
@@ -891,9 +891,9 @@ static void set_receive_enable(const struct mem_controller *ctrl)
 		}
 	}
 	if (cnt & 0x0f00) {
-		cnt = (cnt&0x0f) - (cnt>>16);
-		if (cnt>1) {
-			for (i=0;i<32;i+=8) {
+		cnt = (cnt & 0x0f) - (cnt>>16);
+		if (cnt > 1) {
+			for (i = 0; i < 32; i+=8) {
 				if (((recenb>>i)&0x0f)>7) {
 					recenb &= ~(0x0f<<i);
 					recenb |= (7<<i);
@@ -901,7 +901,7 @@ static void set_receive_enable(const struct mem_controller *ctrl)
 			}
 		}
 		else {
-			for (i=0;i<32;i+=8) {
+			for (i = 0; i < 32; i+=8) {
 				if (((recenb>>8)&0x0f)<8) {
 					recenb &= ~(0x0f<<i);
 					recenb |= (8<<i);
@@ -981,26 +981,26 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	if ( drc == 0) {
 		die("Error calculating DRC\n");
 	}
-	data32 = drc & ~(3 << 20);  /* clear ECC mode */
-	data32 = data32 & ~(7 << 8);  /* clear refresh rates */
-	data32 = data32 | (1 << 5);  /* temp turn off ODT */
-  	/* Set gearing, then dram controller mode */
-  	/* drc bits 3:2 = FSB speed */
-  	for (iptr = gearing[(drc>>2)&3].clkgr,cnt=0;cnt<4;cnt++) {
-  		pci_write_config32(ctrl->f0, 0xa0+(cnt*4), iptr[cnt]);
+	data32 = drc & ~(3 << 20); /* clear ECC mode */
+	data32 = data32 & ~(7 << 8); /* clear refresh rates */
+	data32 = data32 | (1 << 5); /* temp turn off ODT */
+	/* Set gearing, then dram controller mode */
+	/* drc bits 3:2 = FSB speed */
+	for (iptr = gearing[(drc>>2)&3].clkgr,cnt = 0; cnt < 4; cnt++) {
+		pci_write_config32(ctrl->f0, 0xa0+(cnt*4), iptr[cnt]);
 	}
 	/* 0x7c DRC */
-  	pci_write_config32(ctrl->f0, DRC, data32);
+	pci_write_config32(ctrl->f0, DRC, data32);
 
 		/* turn the clocks on */
 	/* 0x8c CKDIS */
-  	pci_write_config16(ctrl->f0, CKDIS, 0x0000);
+	pci_write_config16(ctrl->f0, CKDIS, 0x0000);
 
 		/* 0x9a DDRCSR Take subsystem out of idle */
-  	data16 = pci_read_config16(ctrl->f0, DDRCSR);
+	data16 = pci_read_config16(ctrl->f0, DDRCSR);
 	data16 &= ~(7 << 12);
 	data16 |= (1 << 12);
-  	pci_write_config16(ctrl->f0, DDRCSR, data16);
+	pci_write_config16(ctrl->f0, DDRCSR, data16);
 
 		/* program row size DRB */
 	spd_set_ram_size(ctrl, mask);
@@ -1011,7 +1011,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 		/* program DRT timing values */
 	cas_latency = spd_set_drt_attributes(ctrl, mask, drc);
 
-	for (i=0;i<8;i+=2) { /* loop through each dimm to test */
+	for (i = 0; i < 8; i+=2) { /* loop through each dimm to test */
 		printk(BIOS_DEBUG, "DIMM %08x\n", i);
 		/* Apply NOP */
 		do_delay();
@@ -1026,7 +1026,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	/* Apply NOP */
 	do_delay();
 
-	for (cs=0;cs<8;cs+=2) {
+	for (cs = 0; cs < 8; cs+=2) {
 		write32(MCBAR + DCALCSR, (0x81000000 | (cs<<20)));
 		do data32 = read32(MCBAR+DCALCSR);
 		while (data32 & 0x80000000);
@@ -1034,7 +1034,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 
 	/* Precharg all banks */
 	do_delay();
-	for (cs=0;cs<8;cs+=2) {
+	for (cs = 0; cs < 8; cs+=2) {
 		write32(MCBAR+DCALADDR, 0x04000000);
 		write32(MCBAR+DCALCSR, (0x81000002 | (cs<<20)));
 		do data32 = read32(MCBAR+DCALCSR);
@@ -1043,7 +1043,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 
 	/* EMRS dll's enabled */
 	do_delay();
-	for (cs=0;cs<8;cs+=2) {
+	for (cs = 0; cs < 8; cs+=2) {
 		/* fixme hard code AL additive latency */
 		write32(MCBAR+DCALADDR, 0x0b940001);
 		write32(MCBAR+DCALCSR, (0x81000003 | (cs<<20)));
@@ -1056,7 +1056,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 		mode_reg = 0x053a0000;
 	else
 		mode_reg = 0x054a0000;
-	for (cs=0;cs<8;cs+=2) {
+	for (cs = 0; cs < 8; cs+=2) {
 		write32(MCBAR+DCALADDR, mode_reg);
 		write32(MCBAR+DCALCSR, (0x81000003 | (cs<<20)));
 		do data32 = read32(MCBAR+DCALCSR);
@@ -1067,7 +1067,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	do_delay();
 	do_delay();
 	do_delay();
-	for (cs=0;cs<8;cs+=2) {
+	for (cs = 0; cs < 8; cs+=2) {
 		write32(MCBAR+DCALADDR, 0x04000000);
 		write32(MCBAR+DCALCSR, (0x81000002 | (cs<<20)));
 		do data32 = read32(MCBAR+DCALCSR);
@@ -1076,55 +1076,55 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 
 	/* Do 2 refreshes */
 	do_delay();
-	for (cs=0;cs<8;cs+=2) {
+	for (cs = 0; cs < 8; cs+=2) {
 		write32(MCBAR+DCALCSR, (0x81000001 | (cs<<20)));
 		do data32 = read32(MCBAR+DCALCSR);
 		while (data32 & 0x80000000);
 	}
 	do_delay();
-	for (cs=0;cs<8;cs+=2) {
+	for (cs = 0; cs < 8; cs+=2) {
 		write32(MCBAR+DCALCSR, (0x81000001 | (cs<<20)));
 		do data32 = read32(MCBAR+DCALCSR);
 		while (data32 & 0x80000000);
 	}
 	do_delay();
 	/* for good luck do 6 more */
-	for (cs=0;cs<8;cs+=2) {
+	for (cs = 0; cs < 8; cs+=2) {
 		write32(MCBAR+DCALCSR, (0x81000001 | (cs<<20)));
 	}
 	do_delay();
-	for (cs=0;cs<8;cs+=2) {
+	for (cs = 0; cs < 8; cs+=2) {
 		write32(MCBAR+DCALCSR, (0x81000001 | (cs<<20)));
 	}
 	do_delay();
-	for (cs=0;cs<8;cs+=2) {
+	for (cs = 0; cs < 8; cs+=2) {
 		write32(MCBAR+DCALCSR, (0x81000001 | (cs<<20)));
 	}
 	do_delay();
-	for (cs=0;cs<8;cs+=2) {
+	for (cs = 0; cs < 8; cs+=2) {
 		write32(MCBAR+DCALCSR, (0x81000001 | (cs<<20)));
 	}
 	do_delay();
-	for (cs=0;cs<8;cs+=2) {
+	for (cs = 0; cs < 8; cs+=2) {
 		write32(MCBAR+DCALCSR, (0x81000001 | (cs<<20)));
 	}
 	do_delay();
-	for (cs=0;cs<8;cs+=2) {
+	for (cs = 0; cs < 8; cs+=2) {
 		write32(MCBAR+DCALCSR, (0x81000001 | (cs<<20)));
 	}
 	do_delay();
 	/* MRS reset dll's normal */
 	do_delay();
-	for (cs=0;cs<8;cs+=2) {
+	for (cs = 0; cs < 8; cs+=2) {
 		write32(MCBAR+DCALADDR, (mode_reg & ~(1<<24)));
 		write32(MCBAR+DCALCSR, (0x81000003 | (cs<<20)));
 		do data32 = read32(MCBAR+DCALCSR);
 		while (data32 & 0x80000000);
 	}
 
-	/* Do only if DDR2  EMRS dll's enabled */
+	/* Do only if DDR2 EMRS dll's enabled */
 	do_delay();
-	for (cs=0;cs<8;cs+=2) {
+	for (cs = 0; cs < 8; cs+=2) {
 		write32(MCBAR+DCALADDR, (0x0b940001));
 		write32(MCBAR+DCALCSR, (0x81000003 | (cs<<20)));
 		do data32 = read32(MCBAR+DCALCSR);
@@ -1150,17 +1150,17 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 
 	/* Enable refresh */
 	/* 0x7c DRC */
-	data32 = drc & ~(3 << 20);  /* clear ECC mode */
+	data32 = drc & ~(3 << 20); /* clear ECC mode */
 	pci_write_config32(ctrl->f0, DRC, data32);
 	write32(MCBAR+DCALCSR, 0x0008000f);
 
 	/* clear memory and init ECC */
 	printk(BIOS_DEBUG, "Clearing memory\n");
-	for (i=0;i<64;i+=4) {
+	for (i = 0; i < 64; i+=4) {
 		write32(MCBAR+DCALDATA+i, 0x00000000);
 	}
 
-	for (cs=0;cs<8;cs+=2) {
+	for (cs = 0; cs < 8; cs+=2) {
 		write32(MCBAR+DCALCSR, (0x810831d8 | (cs<<20)));
 		do data32 = read32(MCBAR+DCALCSR);
 		while (data32 & 0x80000000);
@@ -1182,7 +1182,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	/* Set initialization complete */
 	/* 0x7c DRC */
 	drc |= (1 << 29);
-	data32 = drc & ~(3 << 20);  /* clear ECC mode */
+	data32 = drc & ~(3 << 20); /* clear ECC mode */
 	pci_write_config32(ctrl->f0, DRC, data32);
 
 	/* Set the ecc mode */

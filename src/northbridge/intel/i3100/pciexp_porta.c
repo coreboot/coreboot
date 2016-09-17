@@ -54,7 +54,7 @@ static void pcie_scan_bridge(struct device *dev)
 			pci_write_config16(dev, 0x74, (ctl | (1<<5)));
 			val = pci_read_config16(dev, 0x76);
 			printk(BIOS_DEBUG, "pcie porta reset 0x76: %02x\n", val);
-			flag=1;
+			flag = 1;
 			hard_reset();
 		}
 	} while	(val & (3<<10));

@@ -148,7 +148,7 @@ static inline void dump_io_resources(unsigned port)
 {
 	int i;
 	printk(BIOS_DEBUG, "%04x:\n", port);
-	for (i=0;i<256;i++) {
+	for (i = 0; i < 256; i++) {
 		uint8_t val;
 		if ((i & 0x0f) == 0)
 			printk(BIOS_DEBUG, "%02x:", i);
@@ -165,7 +165,7 @@ static inline void dump_mem(unsigned start, unsigned end)
 {
 	unsigned i;
 	printk(BIOS_DEBUG, "dump_mem:");
-	for (i=start;i<end;i++) {
+	for (i = start; i < end; i++) {
 		if ((i & 0xf)==0)
 			printk(BIOS_DEBUG, "\n%08x:", i);
 		printk(BIOS_DEBUG, " %02x", (unsigned char)*((unsigned char *)i));

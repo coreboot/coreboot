@@ -141,7 +141,7 @@ void SetUMARam(void)
 	pci_write_config8(vga_dev, 0xb2, ByteVal);
 
 	//set M1 size
-	//ByteVal=pci_read_config8(MEMCTRL, 0xa3);
+	//ByteVal = pci_read_config8(MEMCTRL, 0xa3);
 	//ByteVal = 0x02;
 	//pci_write_config8(MEMCTRL, 0xa3, ByteVal);
 
@@ -216,7 +216,7 @@ void SetUMARam(void)
 	ByteVal = inb(0x03CC);
 	ByteVal |= 0x03;
 	outb(ByteVal, 0x03C2);
-	//  ByteVal=inb(0x03C2);
+	//  ByteVal = inb(0x03C2);
 	//   ByteVal |= 0x01;
 	//   outb(ByteVal,0x03C2);
 
@@ -318,7 +318,7 @@ void SetUMARam(void)
 	outb(0x22, 0x03c5);
 
 	//start : For enable snapshot mode control
-	// program 3C5 for SNAPSHOT Mode control, set RxF3h=1Ah
+	// program 3C5 for SNAPSHOT Mode control, set RxF3h = 1Ah
 	outb(0xf3, 0x03c4);
 	ByteVal = inb(0x03c5);
 	ByteVal = (ByteVal & 0xE5) | 0x1A;
@@ -393,7 +393,7 @@ void SetUMARam(void)
 		0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
 	};
 
-	//for (i=0;i<0xc0;i++)
+	//for (i = 0;i < 0xc0;i++)
 	for (i = 0; i < 0x40; i++)
 	{
 		outb(table3c0space[i], 0x03c0 + i);

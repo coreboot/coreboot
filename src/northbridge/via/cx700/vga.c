@@ -42,7 +42,7 @@
 
 static int via_cx700_int15_handler(void)
 {
-	int res=0;
+	int res = 0;
 	u8 mem_speed;
 
 #define MEMORY_SPEED_66MHZ	(0 << 4)
@@ -83,7 +83,7 @@ static int via_cx700_int15_handler(void)
 		X86_ECX = 0x00000000; // 0 -> default
 		// TV Layout - default
 		X86_EDX = (X86_EDX & 0xffffff00) | 0;
-		res=1;
+		res = 1;
 		break;
 
 	case 0x5f0b:	/* Get Expansion Setting */
@@ -91,12 +91,12 @@ static int via_cx700_int15_handler(void)
 
 		X86_ECX = X86_ECX & 0xffffff00; // non-expansion
 		// regs->ecx = regs->ecx & 0xffffff00 | 1; // expansion
-		res=1;
+		res = 1;
 		break;
 
 	case 0x5f0f:	/* VGA Post Completion */
 		X86_EAX = (X86_EAX & 0xffff0000 ) | 0x5f;
-		res=1;
+		res = 1;
 		break;
 
 	case 0x5f18:
@@ -113,7 +113,7 @@ static int via_cx700_int15_handler(void)
 
 		X86_EBX |= memory_mapping[mem_speed];
 
-		res=1;
+		res = 1;
 		break;
 
 	default:

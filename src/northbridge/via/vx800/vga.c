@@ -48,13 +48,13 @@
 
 static int via_vx800_int15_handler(void)
 {
-	int res=0;
+	int res = 0;
 	printk(BIOS_DEBUG, "via_vx800_int15_handler\n");
 	switch(X86_EAX & 0xffff) {
 	case 0x5f19:
-		X86_EAX=0x5f;
-		X86_ECX=0x03;
-		res=1;
+		X86_EAX = 0x5f;
+		X86_ECX = 0x03;
+		res = 1;
 		break;
 	case 0x5f18:
 	{
@@ -104,11 +104,11 @@ static int via_vx800_int15_handler(void)
 		res = 1;
 		break;
 	case 0x5f02:
-		X86_EAX=0x5f;
-		X86_EBX= (X86_EBX & 0xffff0000) | 2;
-		X86_ECX= (X86_ECX & 0xffff0000) | 0x401;  // PAL + crt only
-		X86_EDX= (X86_EDX & 0xffff0000) | 0;  // TV Layout - default
-		res=1;
+		X86_EAX = 0x5f;
+		X86_EBX = (X86_EBX & 0xffff0000) | 2;
+		X86_ECX = (X86_ECX & 0xffff0000) | 0x401;  // PAL + crt only
+		X86_EDX = (X86_EDX & 0xffff0000) | 0;  // TV Layout - default
+		res = 1;
 		break;
 	case 0x5f0f:
 		X86_EAX = 0x005f;

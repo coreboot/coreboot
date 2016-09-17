@@ -42,14 +42,14 @@
 //    a.RDRPH(MD        input internal timing control)
 //    b.CAS Latency
 //    RDELAYMD(1bit) = bit0 of (CL + RDRPH)
-//    for example: RDRPH=10b, CL3 -> F3_Rx56[5:4]=11b, 10b + 11b        = 101b, RDELAYMD=1 (bit0)
-//                RDRPH=00b, CL2.5 -> F3_Rx56[5:4]=10b, 00b + 10b = 010b, RDELAYMD=0 (bit0)
+//    for example: RDRPH = 10b, CL3 -> F3_Rx56[5:4]=11b, 10b + 11b        = 101b, RDELAYMD = 1 (bit0)
+//                RDRPH = 00b, CL2.5 -> F3_Rx56[5:4]=10b, 00b + 10b = 010b, RDELAYMD = 0 (bit0)
 // 2. CPU Frequency
 // 3. DRAM Frequency
 //
 // According to above conditions, we create different tables:
-// 1. RDELAYMD=0        : for integer CAS latency(ex. CL=3)
-// 2. RDELAYMD=1        : for non-integer CAS latency(ex. CL=2.5)
+// 1. RDELAYMD = 0        : for integer CAS latency(ex. CL = 3)
+// 2. RDELAYMD = 1        : for non-integer CAS latency(ex. CL = 2.5)
 // 3. Normal performance
 // 4. Top performance :
 //                     Using phase0 to a case has better performance.
@@ -439,7 +439,7 @@ void DRAMDRDYSetting(DRAM_SYS_ATTR * DramAttr)
 	Data |= 0x08;
 	pci_write_config8(PCI_DEV(0, 0, 2), 0x54, Data);
 
-	//Data=pci_read_config8(PCI_DEV(0,0,2), 0x55);
+	//Data = pci_read_config8(PCI_DEV(0,0,2), 0x55);
 	//Data = Data & (~0x20);
 	//pci_write_config8(PCI_DEV(0,0,2), 0x55, Data);
 
@@ -538,17 +538,17 @@ void DRAMDRDYSetting(DRAM_SYS_ATTR * DramAttr)
 
 /*This routine process the ability for North Bridge side burst functionality
 There are 3 variances that are valid:
-	1. DIMM	BL=8, chipset BL=8
-	2. DIMM	BL=4, chipset BL=4
-	3. DIMM	BL=4, chipset BL=8 (only happened on Dual channel)
+	1. DIMM	BL = 8, chipset BL = 8
+	2. DIMM	BL = 4, chipset BL = 4
+	3. DIMM	BL = 4, chipset BL = 8 (only happened on Dual channel)
      Device 0 function 2 HOST:REG54[4] must be 1 when 128-bit mode.
 Since DIMM will be initialized	in each	rank individually,
-	1.If all DIMM BL=4, DIMM will initialize BL=4 first,
+	1.If all DIMM BL = 4, DIMM will initialize BL = 4 first,
 	  then check dual_channel flag to enable VIA_NB2HOST_REG54[4].
-	2.If all DIMM BL=8, DIMM will initialize BL=8 first,
-	  then check dual_channel flag for re-initialize DIMM BL=4.
+	2.If all DIMM BL = 8, DIMM will initialize BL = 8 first,
+	  then check dual_channel flag for re-initialize DIMM BL = 4.
 	  also VIA_NB2HOST_REG54[4] need	to be enabled.
-Chipset_BL8==>chipset side can	set burst length=8
+Chipset_BL8==>chipset side can	set burst length = 8
 two register need to set
  1. Device 0 function 2 HOST:REG54[4]
  2. Device 0 function 3 DRAM:REG6C[3]
@@ -557,7 +557,7 @@ void DRAMBurstLength(DRAM_SYS_ATTR * DramAttr)
 {
 	u8 Data, BL;
 	u8 Sockets;
-	/*SPD byte16 bit3,2 describes the burst length supported. bit3=1 support BL=8 bit2=1 support BL=4 */
+	/*SPD byte16 bit3,2 describes the burst length supported. bit3 = 1 support BL = 8 bit2 = 1 support BL = 4 */
 	BL = 0x0c;
 	for (Sockets = 0; Sockets < 2; Sockets++) {
 		if (DramAttr->DimmInfo[Sockets].bPresence) {
@@ -568,9 +568,9 @@ void DRAMBurstLength(DRAM_SYS_ATTR * DramAttr)
 		}
 	}
 
-	/*D0F3Rx6c bit3 CHA SDRAM effective burst length, for 64bit mode ranks =0 BL=4 ; =1 BL=8 */
+	/*D0F3Rx6c bit3 CHA SDRAM effective burst length, for 64bit mode ranks =0 BL = 4 ; =1 BL = 8 */
 
-	if (BL & 0x08)		/*All Assembly support BL=8 */
+	if (BL & 0x08)		/*All Assembly support BL = 8 */
 		BL = 0x8;	/*set bit3 */
 	else
 		BL = 0x00;	/*clear bit3 */
@@ -582,7 +582,7 @@ void DRAMBurstLength(DRAM_SYS_ATTR * DramAttr)
 	if (DramAttr->RankNumChB > 0) {
 		BL = DramAttr->DimmInfo[2].SPDDataBuf[SPD_SDRAM_BURSTLENGTH];
 		//Rx6c[1], CHB burst length
-		if (BL & 0x08)	/*CHB support BL=8 */
+		if (BL & 0x08)	/*CHB support BL = 8 */
 			BL = 0x2;	/*set bit1 */
 		else
 			BL = 0x00;	/*clear bit1 */

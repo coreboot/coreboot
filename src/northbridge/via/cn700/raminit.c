@@ -258,9 +258,9 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 {
 	u8 reg;
 
-	/* Set WR=5 */
+	/* Set WR = 5 */
 	pci_write_config8(ctrl->d0f3, 0x61, 0xe0);
-	/* Set CAS=4 */
+	/* Set CAS = 4 */
 	pci_write_config8(ctrl->d0f3, 0x62, 0xfa);
 	/* DRAM timing-3 */
 	pci_write_config8(ctrl->d0f3, 0x63, 0xca);
@@ -283,7 +283,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	pci_write_config8(ctrl->d0f3, 0x52, 0x33);
 	pci_write_config8(ctrl->d0f3, 0x53, 0x3f);
 
-	/* Set to DDR2 SDRAM, BL=8 (0xc8, 0xc0 for bl=4) */
+	/* Set to DDR2 SDRAM, BL = 8 (0xc8, 0xc0 for bl = 4) */
 	pci_write_config8(ctrl->d0f3, 0x6c, 0xc8);
 
 	/* DRAM Bus Turn-Around Setting */
@@ -426,7 +426,7 @@ static void sdram_enable(device_t dev, u8 *rank_address)
 
 	/* 6. Mode register set. */
 	PRINT_DEBUG_MEM("RAM Enable 6: Mode register set\n");
-	/* Safe value for now, BL=8, WR=5, CAS=4 */
+	/* Safe value for now, BL = 8, WR = 5, CAS = 4 */
 	/*
 	 * (E)MRS values are from the BPG. No direct explanation is given, but
 	 * they should somehow conform to the JEDEC DDR2 SDRAM Specification

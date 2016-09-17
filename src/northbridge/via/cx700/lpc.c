@@ -87,7 +87,7 @@ static void setup_pm(device_t dev)
 	/* set ACPI irq to 9 */
 	pci_write_config8(dev, 0x82, 0x49);
 
-	/* Primary interupt channel, define wake events 0=IRQ0 15=IRQ15 1=en. */
+	/* Primary interupt channel, define wake events 0 = IRQ0 15 = IRQ15 1 = en. */
 	pci_write_config16(dev, 0x84, 0x609a);
 
 	/* SMI output level to low, 7.5us throttle clock */

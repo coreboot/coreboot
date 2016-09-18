@@ -98,7 +98,7 @@ static int wait_for_ready(void *base)
 	int timeout = 50;
 
 	while (timeout--) {
-		u32 dword=read32(base +  HDA_ICII_REG);
+		u32 dword = read32(base +  HDA_ICII_REG);
 		if (!(dword & HDA_ICII_BUSY))
 			return 0;
 		udelay(1);

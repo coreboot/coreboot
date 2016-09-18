@@ -56,9 +56,9 @@ static void dump_south(struct device *dev)
 {
 	int i, j;
 
-	for (i=0; i<256; i+=16) {
+	for (i = 0; i < 256; i+=16) {
 		printk(BIOS_DEBUG, "0x%02x: ", i);
-		for (j=0; j<16; j++)
+		for (j = 0; j < 16; j++)
 			printk(BIOS_DEBUG, "%02x ", pci_read_config8(dev, i+j));
 		printk(BIOS_DEBUG, "\n");
 	}

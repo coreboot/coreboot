@@ -27,7 +27,7 @@
 
 pci_devfn_t pci_ehci_dbg_dev(unsigned int hcd_idx)
 {
-	if (hcd_idx==2)
+	if (hcd_idx == 2)
 		return PCI_DEV(0, 0x13, 2);
 	else
 		return PCI_DEV(0, 0x12, 2);

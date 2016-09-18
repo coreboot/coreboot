@@ -110,7 +110,7 @@ MMIORANGE MMIO[8], CreativeMMIO[8];
 static MMIORANGE* AllocMMIO(MMIORANGE* pMMIO)
 {
 	int i;
-	for (i=0; i<8; i++) {
+	for (i = 0; i < 8; i++) {
 		if (pMMIO[i].Limit == 0)
 				return &pMMIO[i];
 	}
@@ -127,7 +127,7 @@ static u32 SetMMIO(u32 Base, u32 Limit, u8 Attribute, MMIORANGE *pMMIO)
 {
 	int i;
 	MMIORANGE * TempRange;
-	for (i=0; i<8; i++) {
+	for (i = 0; i < 8; i++) {
 		if (pMMIO[i].Attribute != Attribute && Base >= pMMIO[i].Base && Limit <= pMMIO[i].Limit) {
 			TempRange = AllocMMIO(pMMIO);
 			if (TempRange == 0) return 0x80000000;
@@ -148,12 +148,12 @@ static u32 SetMMIO(u32 Base, u32 Limit, u8 Attribute, MMIORANGE *pMMIO)
 static u8 FinalizeMMIO(MMIORANGE *pMMIO)
 {
 	int i, j, n = 0;
-	for (i=0; i<8; i++) {
+	for (i = 0; i < 8; i++) {
 		if (pMMIO[i].Base == pMMIO[i].Limit) {
 			FreeMMIO(&pMMIO[i]);
 			continue;
 		}
-		for (j=0; j<i; j++) {
+		for (j = 0; j < i; j++) {
 			if (i!=j && pMMIO[i].Attribute == pMMIO[j].Attribute) {
 				if (pMMIO[i].Base == pMMIO[j].Limit) {
 					pMMIO[j].Limit = pMMIO[i].Limit;
@@ -166,7 +166,7 @@ static u8 FinalizeMMIO(MMIORANGE *pMMIO)
 			}
 		}
 	}
-	for (i=0; i<8; i++) {
+	for (i = 0; i < 8; i++) {
 		if (pMMIO[i].Limit != 0) n++;
 	}
 	return n;
@@ -344,7 +344,7 @@ static void internal_gfx_pci_dev_init(struct device *dev)
 
 	/* Clear vgainfo. */
 	bpointer = (unsigned char *) &vgainfo;
-	for (i=0; i<sizeof(ATOM_INTEGRATED_SYSTEM_INFO_V2); i++) {
+	for (i = 0; i < sizeof(ATOM_INTEGRATED_SYSTEM_INFO_V2); i++) {
 		*bpointer = 0;
 		bpointer++;
 	}
@@ -448,7 +448,7 @@ static void internal_gfx_pci_dev_init(struct device *dev)
 	// Side port support is incomplete, do not use it
 	// These parameters must match the motherboard
 	vgainfo.ulBootUpSidePortClock = 667*100;
-	vgainfo.ucMemoryType = 3;  // 3=ddr3 sp mem, 2=ddr2 sp mem
+	vgainfo.ucMemoryType = 3;  // 3 = ddr3 sp mem, 2 = ddr2 sp mem
 	vgainfo.ulMinSidePortClock = 333*100;
 #endif
 
@@ -628,7 +628,7 @@ static void internal_gfx_pci_dev_init(struct device *dev)
 
 	/* Transfer the Table to VBIOS. */
 	pointer = (u32 *)&vgainfo;
-	for (i=0; i<sizeof(ATOM_INTEGRATED_SYSTEM_INFO_V2); i+=4) {
+	for (i = 0; i < sizeof(ATOM_INTEGRATED_SYSTEM_INFO_V2); i+=4) {
 #if CONFIG_GFXUMA
 		*GpuF0MMReg = 0x80000000 + uma_memory_size - 512 + i;
 #else
@@ -662,12 +662,12 @@ static void internal_gfx_pci_dev_init(struct device *dev)
 
 	/* clear MMIO and CreativeMMIO. */
 	bpointer = (unsigned char *)MMIO;
-	for (i=0; i<sizeof(MMIO); i++) {
+	for (i = 0; i < sizeof(MMIO); i++) {
 		*bpointer = 0;
 		bpointer++;
 	}
 	bpointer = (unsigned char *)CreativeMMIO;
-	for (i=0; i<sizeof(CreativeMMIO); i++) {
+	for (i = 0; i < sizeof(CreativeMMIO); i++) {
 		*bpointer = 0;
 		bpointer++;
 	}
@@ -943,11 +943,11 @@ static void rs780_internal_gfx_enable(device_t dev)
 	/* set_nbmc_enable_bits(nb_dev, 0xac, ~(0xfffffff0), 0x0b); */
 
 	/* Init PM timing. */
-	for (i=0; i<4; i++) {
+	for (i = 0; i < 4; i++) {
 		l_dword = nbmc_read_index(nb_dev, 0xa0+i);
 		nbmc_write_index(nb_dev, 0xc8+i, l_dword);
 	}
-	for (i=0; i<4; i++) {
+	for (i = 0; i < 4; i++) {
 		l_dword = nbmc_read_index(nb_dev, 0xa8+i);
 		nbmc_write_index(nb_dev, 0xcc+i, l_dword);
 	}

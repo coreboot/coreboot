@@ -525,7 +525,7 @@ static void sb800_pmio_por_init(void)
 	byte |= 1 << 0;
 	pmio_write(0xB2, byte);
 
-	for (i=0; i<sizeof(pm_table)/sizeof(struct pm_entry); i++) {
+	for (i = 0; i < sizeof(pm_table)/sizeof(struct pm_entry); i++) {
 		byte = pmio_read(pm_table[i].port);
 		byte &= pm_table[i].mask;
 		byte |= pm_table[i].bit;
@@ -637,7 +637,7 @@ int s3_save_nvram_early(u32 dword, int size, int  nvram_pos)
 	int i;
 	printk(BIOS_DEBUG, "Writing %x of size %d to nvram pos: %d\n", dword, size, nvram_pos);
 
-	for (i = 0; i<size; i++) {
+	for (i = 0; i < size; i++) {
 		outb(nvram_pos, BIOSRAM_INDEX);
 		outb((dword >>(8 * i)) & 0xff , BIOSRAM_DATA);
 		nvram_pos++;
@@ -650,7 +650,7 @@ int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos)
 {
 	u32 data = *old_dword;
 	int i;
-	for (i = 0; i<size; i++) {
+	for (i = 0; i < size; i++) {
 		outb(nvram_pos, BIOSRAM_INDEX);
 		data &= ~(0xff << (i * 8));
 		data |= inb(BIOSRAM_DATA) << (i *8);
@@ -676,7 +676,7 @@ unsigned long get_top_of_ram(void)
 	int xnvram_pos = 0xfc, xi;
 	if (acpi_get_sleep_type() != 3)
 		return 0;
-	for (xi = 0; xi<4; xi++) {
+	for (xi = 0; xi < 4; xi++) {
 		outb(xnvram_pos, BIOSRAM_INDEX);
 		xdata &= ~(0xff << (xi * 8));
 		xdata |= inb(BIOSRAM_DATA) << (xi *8);

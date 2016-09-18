@@ -41,7 +41,7 @@ static device_t __f0_dev[FX_DEVS];
 static device_t __f1_dev[FX_DEVS];
 static device_t __f2_dev[FX_DEVS];
 static device_t __f4_dev[FX_DEVS];
-static unsigned fx_devs=0;
+static unsigned fx_devs = 0;
 
 static device_t get_node_pci(u32 nodeid, u32 fn)
 {
@@ -136,10 +136,10 @@ static int reg_useable(unsigned reg, device_t goal_dev, unsigned goal_nodeid,
 	result = 2;
 	if (res) {
 		result = 0;
-		if (    (goal_link == (link - 1)) &&
-			 (goal_nodeid == (nodeid - 1)) &&
-			 (res->flags <= 1)) {
-				result = 1;
+		if ((goal_link == (link - 1)) &&
+		    (goal_nodeid == (nodeid - 1)) &&
+		    (res->flags <= 1)) {
+			result = 1;
 		}
 	}
 	printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
@@ -397,10 +397,10 @@ printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
 			printk(BIOS_DEBUG, "VGA: vga_pri bus num = %d bus range [%d,%d]\n", vga_pri->bus->secondary,
 					link->secondary,link->subordinate);
 			/* We need to make sure the vga_pri is under the link */
-			if ((vga_pri->bus->secondary >= link->secondary ) &&
-				(vga_pri->bus->secondary <= link->subordinate ))
+			if ((vga_pri->bus->secondary >= link->secondary) &&
+			    (vga_pri->bus->secondary <= link->subordinate))
 #endif
-					break; // XXX this break looks questionable
+				break; // XXX this break looks questionable
 		}
 	}
 
@@ -485,7 +485,7 @@ static void domain_read_resources(device_t dev)
 		if ((base & 3) != 0) {
 			unsigned nodeid, reg_link;
 			device_t reg_dev;
-			if (reg<0xc0) { // mmio
+			if (reg < 0xc0) { // mmio
 				nodeid = (limit & 0xf) + (base&0x30);
 			} else { // io
 				nodeid =  (limit & 0xf) + ((base>>4)&0x30);
@@ -604,11 +604,11 @@ static void domain_set_resources(device_t dev)
 			 mmio_basek, basek, limitk);
 
 		/* split the region to accommodate pci memory space */
-		if ( (basek < 4*1024*1024 ) && (limitk > mmio_basek) ) {
+		if ((basek < 4*1024*1024) && (limitk > mmio_basek)) {
 			if (basek <= mmio_basek) {
 				unsigned pre_sizek;
 				pre_sizek = mmio_basek - basek;
-				if (pre_sizek>0) {
+				if (pre_sizek > 0) {
 					ram_resource(dev, idx, basek, pre_sizek);
 					idx += 0x10;
 					sizek -= pre_sizek;

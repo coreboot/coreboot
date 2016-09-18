@@ -100,7 +100,7 @@ static u32 get_io_addr_index(u32 nodeid, u32 linkn)
 {
 	u32 index;
 
-	for (index=0; index<256; index++) {
+	for (index = 0; index < 256; index++) {
 		if ((sysconf.conf_io_addrx[index+4] == 0)) {
 			sysconf.conf_io_addr[index+4] =  (nodeid & 0x3f)  ;
 			sysconf.conf_io_addrx[index+4] = 1 | ((linkn & 0x7)<<4);
@@ -116,7 +116,7 @@ static u32 get_mmio_addr_index(u32 nodeid, u32 linkn)
 {
 	u32 index;
 
-	for (index=0; index<64; index++) {
+	for (index = 0; index < 64; index++) {
 		if (sysconf.conf_mmio_addrx[index+8] == 0) {
 			sysconf.conf_mmio_addr[index+8] = (nodeid & 0x3f) ;
 			sysconf.conf_mmio_addrx[index+8] = 1 | ((linkn & 0x7)<<4);
@@ -167,10 +167,10 @@ static void set_io_addr_reg(device_t dev, u32 nodeid, u32 linkn, u32 reg,
 
 	/* io range allocation */
 	tempreg = (nodeid&0xf) | ((nodeid & 0x30)<<(8-4)) | (linkn<<4) |  ((io_max&0xf0)<<(12-4)); //limit
-	for (i=0; i<sysconf.nodes; i++)
+	for (i = 0; i < sysconf.nodes; i++)
 		pci_write_config32(__f1_dev[i], reg+4, tempreg);
 
-	tempreg = 3 /*| ( 3<<4)*/ | ((io_min&0xf0)<<(12-4));	      //base :ISA and VGA ?
+	tempreg = 3 /*| (3<<4)*/ | ((io_min&0xf0)<<(12-4));	      //base :ISA and VGA ?
 #if 0
 	// FIXME: can we use VGA reg instead?
 	if (dev->link[link].bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
@@ -182,7 +182,7 @@ static void set_io_addr_reg(device_t dev, u32 nodeid, u32 linkn, u32 reg,
 		tempreg |= PCI_IO_BASE_NO_ISA;
 	}
 #endif
-	for (i=0; i<sysconf.nodes; i++)
+	for (i = 0; i < sysconf.nodes; i++)
 		pci_write_config32(__f1_dev[i], reg, tempreg);
 }
 
@@ -193,10 +193,10 @@ static void set_mmio_addr_reg(u32 nodeid, u32 linkn, u32 reg, u32 index, u32 mmi
 
 	/* io range allocation */
 	tempreg = (nodeid&0xf) | (linkn<<4) |	 (mmio_max&0xffffff00); //limit
-	for (i=0; i<nodes; i++)
+	for (i = 0; i < nodes; i++)
 		pci_write_config32(__f1_dev[i], reg+4, tempreg);
 	tempreg = 3 | (nodeid & 0x30) | (mmio_min&0xffffff00);
-	for (i=0; i<sysconf.nodes; i++)
+	for (i = 0; i < sysconf.nodes; i++)
 		pci_write_config32(__f1_dev[i], reg, tempreg);
 }
 
@@ -218,7 +218,7 @@ static unsigned int read_nb_cfg_54(void)
 {
 	msr_t msr;
 	msr = rdmsr(NB_CFG_MSR);
-	return (( msr.hi >> (54-32)) & 1);
+	return ((msr.hi >> (54-32)) & 1);
 }
 
 static void get_fx_devs(void)
@@ -505,9 +505,8 @@ static void amdfam10_create_vga_resource(device_t dev, unsigned nodeid)
 			printk(BIOS_DEBUG, "VGA: vga_pri bus num = %d bus range [%d,%d]\n", vga_pri->bus->secondary,
 					link->secondary,link->subordinate);
 			/* We need to make sure the vga_pri is under the link */
-			if ((vga_pri->bus->secondary >= link->secondary ) &&
-					(vga_pri->bus->secondary <= link->subordinate )
-			  )
+			if ((vga_pri->bus->secondary >= link->secondary) &&
+			     (vga_pri->bus->secondary <= link->subordinate))
 #endif
 				break;
 		}
@@ -609,7 +608,7 @@ static void amdfam10_domain_read_resources(device_t dev)
 		if ((base & 3) != 0) {
 			unsigned nodeid, reg_link;
 			device_t reg_dev;
-			if (reg<0xc0) { // mmio
+			if (reg < 0xc0) { // mmio
 				nodeid = (limit & 0xf) + (base&0x30);
 			} else { // io
 				nodeid =  (limit & 0xf) + ((base>>4)&0x30);
@@ -685,7 +684,7 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 	 */
 	if (mem_hole.node_id == -1) {
 		resource_t limitk_pri = 0;
-		for (i=0; i<sysconf.nodes; i++) {
+		for (i = 0; i < sysconf.nodes; i++) {
 			dram_base_mask_t d;
 			resource_t base_k, limit_k;
 			d = get_dram_base_mask(i);
@@ -775,11 +774,11 @@ static void amdfam10_domain_set_resources(device_t dev)
 		//printk(BIOS_DEBUG, "node %d : mmio_basek=%08lx, basek=%08llx, limitk=%08llx\n", i, mmio_basek, basek, limitk);
 
 		/* split the region to accommodate pci memory space */
-		if ((basek < 4*1024*1024 ) && (limitk > mmio_basek)) {
+		if ((basek < 4*1024*1024) && (limitk > mmio_basek)) {
 			if (basek <= mmio_basek) {
 				unsigned pre_sizek;
 				pre_sizek = mmio_basek - basek;
-				if (pre_sizek>0) {
+				if (pre_sizek > 0) {
 					ram_resource(dev, (idx | i), basek, pre_sizek);
 					idx += 0x10;
 					sizek -= pre_sizek;
@@ -877,7 +876,7 @@ static void sysconf_init(device_t dev) // first node
 
 	unsigned ht_c_index;
 
-	for (ht_c_index=0; ht_c_index<32; ht_c_index++) {
+	for (ht_c_index = 0; ht_c_index < 32; ht_c_index++) {
 		sysconf.ht_c_conf_bus[ht_c_index] = 0;
 	}
 
@@ -1004,7 +1003,7 @@ static void cpu_bus_scan(device_t dev)
 	nodes = sysconf.nodes;
 
 #if CONFIG_CBB && (NODE_NUMS > 32)
-	if (nodes>32) { // need to put node 32 to node 63 to bus 0xfe
+	if (nodes > 32) { // need to put node 32 to node 63 to bus 0xfe
 		if (pci_domain->link_list && !pci_domain->link_list->next) {
 			struct bus *new_link = new_link(pci_domain);
 			pci_domain->link_list->next = new_link;
@@ -1027,7 +1026,7 @@ static void cpu_bus_scan(device_t dev)
 		devn = CONFIG_CDB+i;
 		pbus = dev_mc->bus;
 #if CONFIG_CBB && (NODE_NUMS > 32)
-		if (i>=32) {
+		if (i >= 32) {
 			busn--;
 			devn-=32;
 			pbus = pci_domain->link_list->next);
@@ -1072,7 +1071,7 @@ static void cpu_bus_scan(device_t dev)
 			jj = cores_found;
 		}
 
-		for (j = 0; j <=jj; j++ ) {
+		for (j = 0; j <=jj; j++) {
 			extern CONST OPTIONS_CONFIG_TOPOLOGY ROMDATA TopologyConfiguration;
 			u32 modules = TopologyConfiguration.PlatformNumberOfModules;
 			u32 lapicid_start = 0;

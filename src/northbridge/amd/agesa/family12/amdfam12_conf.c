@@ -54,12 +54,12 @@ static void set_ht_c_io_addr_reg(u32 nodeid, u32 linkn, u32 ht_c_index,
 
 	/* io range allocation */
 	tempreg = (nodeid&0xf) | ((nodeid & 0x30)<<(8-4)) | (linkn<<4) |  ((io_max&0xf0)<<(12-4)); //limit
-	for (i=0; i<nodes; i++) {
+	for (i = 0; i < nodes; i++) {
 		dev = NODE_PCI(i, 1);
 		pci_write_config32(dev, 0xC4 + ht_c_index * 8, tempreg);
 	}
-	tempreg = 3 /*| ( 3<<4)*/ | ((io_min&0xf0)<<(12-4));	     //base :ISA and VGA ?
-	for (i=0; i<nodes; i++){
+	tempreg = 3 /*| (3<<4)*/ | ((io_min&0xf0)<<(12-4));	     //base :ISA and VGA ?
+	for (i = 0; i < nodes; i++) {
 		dev = NODE_PCI(i, 1);
 		pci_write_config32(dev, 0xC0 + ht_c_index * 8, tempreg);
 	}
@@ -73,7 +73,7 @@ static void clear_ht_c_io_addr_reg(u32 nodeid, u32 linkn, u32 ht_c_index,
 	device_t dev;
 
 	 /* io range allocation */
-	for (i=0; i<nodes; i++) {
+	for (i = 0; i < nodes; i++) {
 		dev = NODE_PCI(i, 1);
 		pci_write_config32(dev, 0xC4 + ht_c_index * 8, 0);
 		pci_write_config32(dev, 0xC0 + ht_c_index * 8, 0);
@@ -87,7 +87,7 @@ static u32 get_io_addr_index(u32 nodeid, u32 linkn)
 #if 0
 	u32 index;
 
-	for (index=0; index<256; index++) {
+	for (index = 0; index < 256; index++) {
 		if (sysconf.conf_io_addrx[index+4] == 0) {
 			sysconf.conf_io_addr[index+4] =  (nodeid & 0x3f)  ;
 			sysconf.conf_io_addrx[index+4] = 1 | ((linkn & 0x7)<<4);
@@ -103,7 +103,7 @@ static u32 get_mmio_addr_index(u32 nodeid, u32 linkn)
 #if 0
 	u32 index;
 
-	for (index=0; index<64; index++) {
+	for (index = 0; index < 64; index++) {
 		if (sysconf.conf_mmio_addrx[index+8] == 0) {
 			sysconf.conf_mmio_addr[index+8] = (nodeid & 0x3f) ;
 			sysconf.conf_mmio_addrx[index+8] = 1 | ((linkn & 0x7)<<4);
@@ -124,7 +124,7 @@ static void set_io_addr_reg(device_t dev, u32 nodeid, u32 linkn, u32 reg,
 	tempreg = (nodeid&0xf) | ((nodeid & 0x30)<<(8-4)) | (linkn<<4) |  ((io_max&0xf0)<<(12-4)); //limit
 	pci_write_config32(__f1_dev[0], reg+4, tempreg);
 
-	tempreg = 3 /*| ( 3<<4)*/ | ((io_min&0xf0)<<(12-4));	      //base :ISA and VGA ?
+	tempreg = 3 /*| (3<<4)*/ | ((io_min&0xf0)<<(12-4));	      //base :ISA and VGA ?
 #if 0
 	// FIXME: can we use VGA reg instead?
 	if (dev->link[link].bridge_ctrl & PCI_BRIDGE_CTL_VGA) {

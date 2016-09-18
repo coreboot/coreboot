@@ -23,7 +23,7 @@
 #include <AGESA.h>
 
 typedef enum {
-	S3DataTypeNonVolatile=0,	///< NonVolatile Data Type
+	S3DataTypeNonVolatile = 0,	///< NonVolatile Data Type
 	S3DataTypeMTRR			///< MTRR storage
 } S3_DATA_TYPE;
 

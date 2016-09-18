@@ -54,7 +54,7 @@ AGESA_STATUS common_ReadCbfsSpd (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 	memcpy((char*)info->Buffer, spd_file, spd_file_length);
 
 	u16 crc = spd_ddr3_calc_crc(info->Buffer, spd_file_length);
-	if (crc == 0){
+	if (crc == 0) {
 		printk(BIOS_EMERG, "Error: Unable to calculate CRC on SPD\n");
 		return AGESA_UNSUPPORTED;
 	}

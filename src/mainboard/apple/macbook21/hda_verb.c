@@ -19,6 +19,7 @@
 const u32 cim_verb_data[] = {
 	/* coreboot specific header */
 	0x83847680,	/* Codec Vendor / Device ID: SigmaTel STAC9221 A1 */
+#if CONFIG_BOARD_APPLE_MACBOOK11 || CONFIG_BOARD_APPLE_MACBOOK21
 	0x106b2200,	/* Subsystem ID  */
 	0x0000000B,	/* Number of 4 dword sets */
 
@@ -54,6 +55,43 @@ const u32 cim_verb_data[] = {
 
 	/* NID 0x1B.  */
 	AZALIA_PIN_CFG(0x0, 0x1B, 0x400000FB),
+#else /* CONFIG_BOARD_APPLE_IMAC52 */
+	0x106b0f00,	/* Subsystem ID  */
+	0x0000000b,	/* Number of 4 dword sets */
+
+	/* NID 0x01: Subsystem ID.  */
+	AZALIA_SUBVENDOR(0x0, 0x106b0f00),
+
+	/* NID 0x0A.  */
+	AZALIA_PIN_CFG(0x0, 0x0a, 0x012be032),
+
+	/* NID 0x0B.  */
+	AZALIA_PIN_CFG(0x0, 0x0b, 0x90afe111),
+
+	/* NID 0x0C.  */
+	AZALIA_PIN_CFG(0x0, 0x0c, 0x9017e131),
+
+	/* NID 0x0D.  */
+	AZALIA_PIN_CFG(0x0, 0x0d, 0x4080e10f),
+
+	/* NID 0x0E.  */
+	AZALIA_PIN_CFG(0x0, 0x0e, 0x40f0e00f),
+
+	/* NID 0x0F  */
+	AZALIA_PIN_CFG(0x0, 0x0f, 0x018be021),
+
+	/* NID 0x10  */
+	AZALIA_PIN_CFG(0x0, 0x10, 0x114bf033),
+
+	/* NID 0x11  */
+	AZALIA_PIN_CFG(0x0, 0x11, 0x11cbc022),
+
+	/* NID 0x15  */
+	AZALIA_PIN_CFG(0x0, 0x15, 0x4080e10f),
+
+	/* NID 0x1B.  */
+	AZALIA_PIN_CFG(0x0, 0x1b, 0x4080e10f),
+#endif
 
 };
 

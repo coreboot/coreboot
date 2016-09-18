@@ -62,7 +62,7 @@ void setup_ich7_gpios(void)
 	 * 39: PLANARID3
 	 * 48: FWH_TBL#
 	 */
-
+#if (CONFIG_BOARD_APPLE_MACBOOK11 || CONFIG_BOARD_APPLE_MACBOOK21)
 	outl(0x1f40f7e2, DEFAULT_GPIOBASE + 0x00);	/* GPIO_USE_SEL */
 	outl(0xfea8af83, DEFAULT_GPIOBASE + 0x04);	/* GP_IO_SEL */
 	outl(0xfcc06bdf, DEFAULT_GPIOBASE + 0x0c);	/* GP_LVL */
@@ -73,6 +73,18 @@ void setup_ich7_gpios(void)
 	outl(0x000100c0, DEFAULT_GPIOBASE + 0x30);	/* GPIO_USE_SEL2 */
 	outl(0x00000030, DEFAULT_GPIOBASE + 0x34);	/* GP_IO_SEL2 */
 	outl(0x000100c0, DEFAULT_GPIOBASE + 0x38);	/* GP_LVL2 */
+#else /* CONFIG_BOARD_APPLE_IMAC52 */
+	outl(0x1f40f7c2, DEFAULT_GPIOBASE + 0x00);	/* GPIO_USE_SEL */
+	outl(0xfea8af83, DEFAULT_GPIOBASE + 0x04);	/* GP_IO_SEL */
+	outl(0xfcc06bff, DEFAULT_GPIOBASE + 0x0c);	/* GP_LVL */
+	/* Output Control Registers */
+	outl(0x00000000, DEFAULT_GPIOBASE + 0x18);	/* GPO_BLINK */
+	/* Input Control Registers */
+	outl(0x00000082, DEFAULT_GPIOBASE + 0x2c);	/* GPI_INV */
+	outl(0x000100c8, DEFAULT_GPIOBASE + 0x30);	/* GPIO_USE_SEL2 */
+	outl(0x00000030, DEFAULT_GPIOBASE + 0x34);	/* GP_IO_SEL2 */
+	outl(0x000100c0, DEFAULT_GPIOBASE + 0x38);	/* GP_LVL2 */
+#endif
 }
 
 static void ich7_enable_lpc(void)

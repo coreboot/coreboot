@@ -806,8 +806,8 @@ void rkclk_configure_tsadc(unsigned int hz)
 void rkclk_configure_emmc(void)
 {
 	int src_clk_div;
-	int aclk_emmc = 198*MHz;
-	int clk_emmc = 198*MHz;
+	int aclk_emmc = 148500*KHz;
+	int clk_emmc = 148500*KHz;
 
 	/* Select aclk_emmc source from GPLL */
 	src_clk_div = GPLL_HZ / aclk_emmc;

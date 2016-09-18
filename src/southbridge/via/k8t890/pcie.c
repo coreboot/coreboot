@@ -60,7 +60,7 @@ static void pcie_common_init(struct device *dev)
 
 	/* Wait up to 100ms for link to come up */
 	up = 0;
-	for (i=0; i<1000; i++) {
+	for (i = 0; i < 1000; i++) {
 		if (pci_read_config16(dev, 0x52) & (1<<13)) {
 			up = 1;
 			break;

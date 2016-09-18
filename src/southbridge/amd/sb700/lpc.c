@@ -93,7 +93,7 @@ void backup_top_of_ram(uint64_t ramtop)
 {
 	u32 dword = (u32) ramtop;
 	int nvram_pos = 0xfc, i;
-	for (i = 0; i<4; i++) {
+	for (i = 0; i < 4; i++) {
 		outb(nvram_pos, BIOSRAM_INDEX);
 		outb((dword >>(8 * i)) & 0xff , BIOSRAM_DATA);
 		nvram_pos++;

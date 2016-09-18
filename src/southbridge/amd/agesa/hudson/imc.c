@@ -66,12 +66,12 @@ void enable_imc_thermal_zone(void)
 	regs[0] = 0;
 	regs[1] = 0;
 	FunNum = Fun_80;
-	for (i=0; i<=1; i++)
+	for (i = 0; i <= 1; i++)
 		WriteECmsg(MSG_REG0 + i, AccessWidth8, &regs[i], &StdHeader);
 	WriteECmsg(MSG_SYS_TO_IMC, AccessWidth8, &FunNum, &StdHeader);     // function number
 	WaitForEcLDN9MailboxCmdAck(&StdHeader);
 
-	for (i=2; i<=9; i++)
+	for (i = 2; i <= 9; i++)
 		ReadECmsg(MSG_REG0 + i, AccessWidth8, &regs[i], &StdHeader);
 
 	/* enable thermal zone 0 */
@@ -79,7 +79,7 @@ void enable_imc_thermal_zone(void)
 	regs[0] = 0;
 	regs[1] = 0;
 	FunNum = Fun_81;
-	for (i=0; i<=9; i++)
+	for (i = 0; i <= 9; i++)
 		WriteECmsg(MSG_REG0 + i, AccessWidth8, &regs[i], &StdHeader);
 	WriteECmsg(MSG_SYS_TO_IMC, AccessWidth8, &FunNum, &StdHeader);     // function number
 	WaitForEcLDN9MailboxCmdAck(&StdHeader);

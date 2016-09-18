@@ -19,7 +19,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 
-#if (CONFIG_PIRQ_ROUTE==1 && CONFIG_GENERATE_PIRQ_TABLE==1)
+#if (CONFIG_PIRQ_ROUTE == 1 && CONFIG_GENERATE_PIRQ_TABLE == 1)
 void pirq_assign_irqs(const unsigned char pIntAtoD[4])
 {
 	device_t pdev;

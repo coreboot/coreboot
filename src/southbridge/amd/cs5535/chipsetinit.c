@@ -22,11 +22,11 @@ struct msrinit {
 
 /*  Master Configuration Register for Bus Masters. */
 static struct msrinit SB_MASTER_CONF_TABLE[] = {
-	{ USB1_SB_GLD_MSR_CONF,	{.hi=0,.lo=0x00008f000} },	/*  NOTE: Must be 1st entry in table */
-	{ USB2_SB_GLD_MSR_CONF,	{.hi=0,.lo=0x00008f000} },
-	{ ATA_SB_GLD_MSR_CONF,	{.hi=0,.lo=0x00048f000} },
-	{ AC97_SB_GLD_MSR_CONF,	{.hi=0,.lo=0x00008f000} },
-	{ MDD_SB_GLD_MSR_CONF,	{.hi=0,.lo=0x00000f000} },
+	{ USB1_SB_GLD_MSR_CONF,	{.hi = 0,.lo = 0x00008f000} },	/*  NOTE: Must be 1st entry in table */
+	{ USB2_SB_GLD_MSR_CONF,	{.hi = 0,.lo = 0x00008f000} },
+	{ ATA_SB_GLD_MSR_CONF,	{.hi = 0,.lo = 0x00048f000} },
+	{ AC97_SB_GLD_MSR_CONF,	{.hi = 0,.lo = 0x00008f000} },
+	{ MDD_SB_GLD_MSR_CONF,	{.hi = 0,.lo = 0x00000f000} },
 /* GLPCI_SB_GLD_MSR_CONF,	0x0FFFFFFFF*/
 /* GLCP_SB_GLD_MSR_CONF,	0x0FFFFFFFF*/
 /* GLIU_SB_GLD_MSR_CONF,	0x0*/
@@ -35,15 +35,15 @@ static struct msrinit SB_MASTER_CONF_TABLE[] = {
 
 /*  5535_A3 Clock Gating*/
 static struct msrinit CS5535_CLOCK_GATING_TABLE[] = {
-	{ USB1_SB_GLD_MSR_PM,	{.hi=0, .lo=0x000000005} },
-	{ USB2_SB_GLD_MSR_PM,	{.hi=0, .lo=0x000000005} },
-	{ GLIU_SB_GLD_MSR_PM,	{.hi=0, .lo=0x000000004} },
-	{ GLPCI_SB_GLD_MSR_PM,	{.hi=0, .lo=0x000000005} },
-	{ GLCP_SB_GLD_MSR_PM,	{.hi=0, .lo=0x000000004} },
-	{ MDD_SB_GLD_MSR_PM,	{.hi=0, .lo=0x050554111} },
-	{ ATA_SB_GLD_MSR_PM,	{.hi=0, .lo=0x000000005} },
-	{ AC97_SB_GLD_MSR_PM,	{.hi=0, .lo=0x000000005} },
-	{ 0,			{.hi=0, .lo=0x000000000} }
+	{ USB1_SB_GLD_MSR_PM,	{.hi = 0, .lo = 0x000000005} },
+	{ USB2_SB_GLD_MSR_PM,	{.hi = 0, .lo = 0x000000005} },
+	{ GLIU_SB_GLD_MSR_PM,	{.hi = 0, .lo = 0x000000004} },
+	{ GLPCI_SB_GLD_MSR_PM,	{.hi = 0, .lo = 0x000000005} },
+	{ GLCP_SB_GLD_MSR_PM,	{.hi = 0, .lo = 0x000000004} },
+	{ MDD_SB_GLD_MSR_PM,	{.hi = 0, .lo = 0x050554111} },
+	{ ATA_SB_GLD_MSR_PM,	{.hi = 0, .lo = 0x000000005} },
+	{ AC97_SB_GLD_MSR_PM,	{.hi = 0, .lo = 0x000000005} },
+	{ 0,			{.hi = 0, .lo = 0x000000000} }
 };
 
 #ifdef UNUSED_CODE

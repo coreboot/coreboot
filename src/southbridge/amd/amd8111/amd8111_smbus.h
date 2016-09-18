@@ -267,7 +267,7 @@ static int do_smbus_block_read(unsigned smbus_io_base, unsigned device, unsigned
 	}
 
 	/* read data block */
-	for (i=0; i<msglen && i<bytes; i++) {
+	for (i = 0; i < msglen && i < bytes; i++) {
 		buf[i] = inw(smbus_io_base + SMBHSTFIFO) & 0xff;
 	}
 	/* empty fifo */
@@ -305,7 +305,7 @@ static int do_smbus_block_write(unsigned smbus_io_base, unsigned device, unsigne
 	outw(bytes, smbus_io_base + SMBHSTDAT);
 
 	/* set the data block */
-	for (i=0; i<bytes; i++) {
+	for (i = 0; i < bytes; i++) {
 		outw(buf[i], smbus_io_base + SMBHSTFIFO);
 	}
 

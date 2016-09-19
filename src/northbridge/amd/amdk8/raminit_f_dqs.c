@@ -58,10 +58,10 @@ static void fill_mem_cs_sysinfo(unsigned nodeid, const struct mem_controller *ct
 {
 
 	int i;
-	sysinfo->mem_base[nodeid] = pci_read_config32(ctrl->f1, 0x40 + (nodeid<<3));
+	sysinfo->mem_base[nodeid] = pci_read_config32(ctrl->f1, 0x40 + (nodeid << 3));
 
-	for (i=0;i<8; i++) {
-		sysinfo->cs_base[nodeid*8+i] = pci_read_config32(ctrl->f2, 0x40 + (i<<2));
+	for (i = 0; i < 8; i++) {
+		sysinfo->cs_base[nodeid*8+i] = pci_read_config32(ctrl->f2, 0x40 + (i << 2));
 	}
 
 	sysinfo->hole_reg[nodeid] = pci_read_config32(ctrl->f1, 0xf0);
@@ -90,9 +90,9 @@ static unsigned Get_MCTSysAddr(const struct mem_controller *ctrl, unsigned cs_id
 	hole_reg = sysinfo->hole_reg[nodeid];
 	if (hole_reg & 1) {
 		unsigned hole_startk;
-		hole_startk = (hole_reg & (0xff<<24)) >> 10;
-		if ( (dword >= (hole_startk<<2)) && (dword < ((4*1024*1024)<<2))) {
-			dword += ((4*1024*1024 - hole_startk)<<2);
+		hole_startk = (hole_reg & (0xff << 24)) >> 10;
+		if ((dword >= (hole_startk << 2)) && (dword < ((4*1024*1024) << 2))) {
+			dword += ((4*1024*1024 - hole_startk) << 2);
 		}
 	}
 #endif
@@ -197,12 +197,12 @@ static void WriteLNTestPattern(unsigned addr_lo, uint8_t *buf_a, unsigned line_n
 static void Write1LTestPattern(unsigned addr, unsigned p, uint8_t *buf_a, uint8_t *buf_b)
 {
 	uint8_t *buf;
-	if (p==1) { buf = buf_b; }
+	if (p == 1) { buf = buf_b; }
 	else { buf = buf_a; }
 
-	set_FSBASE (addr>>24);
+	set_FSBASE (addr >> 24);
 
-	WriteLNTestPattern(addr<<8, buf, 1);
+	WriteLNTestPattern(addr << 8, buf, 1);
 }
 
 static void Read1LTestPattern(unsigned addr)
@@ -214,7 +214,7 @@ static void Read1LTestPattern(unsigned addr)
 	/* 1st move causes read fill (to exclusive or shared)*/
 	__asm__ volatile (
 		"movl %%fs:(%1), %0\n\t"
-		:"=b"(value): "a" (addr<<8)
+		:"=b"(value): "a" (addr << 8)
 	);
 
 }
@@ -243,7 +243,7 @@ static unsigned CompareTestPatternQW0(unsigned channel, unsigned addr, unsigned 
 	unsigned result = DQS_FAIL;
 
 	if (Pass == DQS_FIRST_PASS) {
-		if (pattern==1) {
+		if (pattern == 1) {
 			test_buf = (uint32_t *)TestPattern1;
 		}
 		else {
@@ -254,9 +254,9 @@ static unsigned CompareTestPatternQW0(unsigned channel, unsigned addr, unsigned 
 		test_buf = (uint32_t *)TestPattern2;
 	}
 
-	set_FSBASE(addr>>24);
+	set_FSBASE(addr >> 24);
 
-	addr_lo = addr<<8;
+	addr_lo = addr << 8;
 
 	if (is_Width128 && (channel == 1)) {
 		addr_lo += 8; //second channel
@@ -285,13 +285,13 @@ static unsigned CompareTestPatternQW0(unsigned channel, unsigned addr, unsigned 
 		print_debug_dqs_pair("\t\t\t\t\t\tQW0.hi : test_buf= ", (unsigned)test_buf, " value = ", value_test, 4);
 		print_debug_dqs_pair("\t\t\t\t\t\tQW0.hi : addr_lo = ", addr_lo, " value = ", value, 4);
 
-		if (value == value_test){
+		if (value == value_test) {
 			result = DQS_PASS;
 		}
 	}
 
 	if (Pass == DQS_SECOND_PASS) { // second pass need to be inverted
-		if (result==DQS_PASS) {
+		if (result == DQS_PASS) {
 			result = DQS_FAIL;
 		}
 		else {
@@ -314,7 +314,7 @@ static void SetMaxAL_RcvrDly(const struct mem_controller *ctrl, unsigned dly)
 
 
 	reg = pci_read_config32(ctrl->f2, DRAM_CONFIG_HIGH);
-	reg &= ~(DCH_MaxAsyncLat_MASK <<DCH_MaxAsyncLat_SHIFT);
+	reg &= ~(DCH_MaxAsyncLat_MASK << DCH_MaxAsyncLat_SHIFT);
 	reg |= ((dly - DCH_MaxAsyncLat_BASE) << DCH_MaxAsyncLat_SHIFT);
 	pci_write_config32(ctrl->f2, DRAM_CONFIG_HIGH, reg);
 
@@ -327,8 +327,8 @@ static void SetMaxAL_RcvrDly(const struct mem_controller *ctrl, unsigned dly)
 static void SetTargetWTIO(unsigned addr)
 {
 	msr_t msr;
-	msr.hi = addr>>24;
-	msr.lo = addr<<8;
+	msr.hi = addr >> 24;
+	msr.lo = addr << 8;
 	wrmsr(0xc0010016, msr); //IORR0 BASE
 
 	msr.hi = 0xff;
@@ -354,7 +354,7 @@ static void proc_CLFLUSH(unsigned addr)
 	__asm__ volatile (
 			/* clflush fs:[eax] */
 		"clflush %%fs:(%0)\n\t"
-		::"a" (addr<<8)
+		::"a" (addr << 8)
 	);
 
 }
@@ -409,7 +409,7 @@ static uint16_t get_exact_T1000(unsigned i)
 	/* Check for FID control support */
 	struct cpuid_result cpuid1;
 	cpuid1 = cpuid(0x80000007);
-	if ( cpuid1.edx & 0x02 ) {
+	if (cpuid1.edx & 0x02) {
 		/* Use current FID */
 		unsigned fid_cur;
 		msr = rdmsr(0xc0010042);
@@ -425,7 +425,7 @@ static uint16_t get_exact_T1000(unsigned i)
 		index = fid_start>>25;
 	}
 
-	if (index>12) return T1000_a[i];
+	if (index > 12) return T1000_a[i];
 
 	return TT_a[index * 4+i];
 
@@ -437,14 +437,14 @@ static void InitDQSPos4RcvrEn(const struct mem_controller *ctrl)
 	uint32_t dword;
 
 	dword = 0x00000000;
-	for (i=1; i<=3; i++) {
+	for (i = 1; i <= 3; i++) {
 		/* Program the DQS Write Timing Control Registers (Function 2:Offset 0x9c, index 0x01-0x03, 0x21-0x23) to 0x00 for all bytes */
 		pci_write_config32_index_wait(ctrl->f2, 0x98, i, dword);
 		pci_write_config32_index_wait(ctrl->f2, 0x98, i+0x20, dword);
 	}
 
 	dword = 0x2f2f2f2f;
-	for (i=5; i<=7; i++) {
+	for (i = 5; i <= 7; i++) {
 		/* Program the DQS Write Timing Control Registers (Function 2:Offset 0x9c, index 0x05-0x07, 0x25-0x27) to 0x2f for all bytes */
 		pci_write_config32_index_wait(ctrl->f2, 0x98, i, dword);
 		pci_write_config32_index_wait(ctrl->f2, 0x98, i+0x20, dword);
@@ -554,14 +554,14 @@ static unsigned TrainRcvrEn(const struct mem_controller *ctrl, unsigned Pass, st
 	// SetupRcvrPattern
 	buf_a = (uint8_t *)(((uint32_t)(&pattern_buf_x[0]) + 0x10) & (0xfffffff0));
 	buf_b = buf_a + 128; //??
-	if (Pass==DQS_FIRST_PASS) {
-		for (i=0;i<16;i++) {
+	if (Pass == DQS_FIRST_PASS) {
+		for (i = 0; i < 16; i++) {
 			*((uint32_t *)(buf_a + i*4)) = TestPattern0[i];
 			*((uint32_t *)(buf_b + i*4)) = TestPattern1[i];
 		}
 	}
 	else {
-		for (i=0;i<16;i++) {
+		for (i = 0; i < 16; i++) {
 			*((uint32_t *)(buf_a + i*4)) = TestPattern2[i];
 			*((uint32_t *)(buf_b + i*4)) = TestPattern2[i];
 		}
@@ -581,13 +581,13 @@ static unsigned TrainRcvrEn(const struct mem_controller *ctrl, unsigned Pass, st
 		channel = 1;
 	}
 
-	for ( ; (channel < 2) && (!Errors); channel++)
+	for (; (channel < 2) && (!Errors); channel++)
 	{
 		print_debug_dqs("\tTrainRcvEn51: channel ",channel, 1);
 
 		/* for each rank */
 		/* there are four receiver pairs, loosely associated with CS */
-		for ( receiver = 0; (receiver < 8) && (!Errors); receiver+=2)
+		for (receiver = 0; (receiver < 8) && (!Errors); receiver+=2)
 		{
 
 			unsigned index=(receiver>>1) * 3 + 0x10;
@@ -642,7 +642,7 @@ static unsigned TrainRcvrEn(const struct mem_controller *ctrl, unsigned Pass, st
 				RcvrEnDly = dqs_rcvr_dly_a[channel * 8 + receiver];
 			}
 
-			while ( RcvrEnDly < 0xaf) { // Sweep Delay value here
+			while (RcvrEnDly < 0xaf) { // Sweep Delay value here
 				print_debug_dqs("\t\t\tTrainRcvEn541: RcvrEnDly ", RcvrEnDly, 3);
 
 				if (RcvrEnDly & 1) {
@@ -841,7 +841,7 @@ static unsigned TrainRcvrEn(const struct mem_controller *ctrl, unsigned Pass, st
 	printk(BIOS_DEBUG, " CTLRMaxDelay=%02x\n", CTLRMaxDelay);
 #endif
 
-	return (CTLRMaxDelay==0xae)?1:0;
+	return (CTLRMaxDelay == 0xae)?1:0;
 
 }
 
@@ -859,14 +859,14 @@ static void SetDQSDelayCSR(const struct mem_controller *ctrl, unsigned channel, 
 
 	index = (bytelane>>2) + 1 + channel * 0x20 + (direction << 2);
 	shift = bytelane;
-	while (shift>3) {
+	while (shift > 3) {
 		shift-=4;
 	}
 	shift <<= 3; // 8 bit
 
 	dword = pci_read_config32_index_wait(ctrl->f2, 0x98, index);
-	dword &= ~(0x3f<<shift);
-	dword |= (dqs_delay<<shift);
+	dword &= ~(0x3f << shift);
+	dword |= (dqs_delay << shift);
 	pci_write_config32_index_wait(ctrl->f2, 0x98, index, dword);
 
 }
@@ -879,13 +879,13 @@ static void SetDQSDelayAllCSR(const struct mem_controller *ctrl, unsigned channe
 
 	dword = 0;
 	dqs_delay &= 0xff;
-	for (i=0;i<4;i++) {
-		dword |= dqs_delay<<(i*8);
+	for (i = 0; i < 4; i++) {
+		dword |= dqs_delay << (i*8);
 	}
 
 	index = 1 + channel * 0x20 + direction * 4;
 
-	for (i=0; i<2; i++) {
+	for (i = 0; i < 2; i++) {
 		pci_write_config32_index_wait(ctrl->f2, 0x98, index + i, dword);
 	}
 
@@ -898,7 +898,7 @@ static unsigned MiddleDQS(unsigned min_d, unsigned max_d)
 	if (size_d & 1) { //need round up
 		min_d++;
 	}
-	return ( min_d + (size_d>>1));
+	return (min_d + (size_d>>1));
 }
 
 static inline void save_dqs_delay(unsigned channel, unsigned bytelane, unsigned direction, uint8_t *dqs_delay_a, uint8_t dqs_delay)
@@ -1026,10 +1026,10 @@ static __attribute__((noinline)) void FlushDQSTestPattern_L18(unsigned addr_lo)
 	);
 }
 
-static void FlushDQSTestPattern(unsigned addr_lo, unsigned pattern )
+static void FlushDQSTestPattern(unsigned addr_lo, unsigned pattern)
 {
 
-	if (pattern == 0){
+	if (pattern == 0) {
 		FlushDQSTestPattern_L9(addr_lo);
 	}
 	else {
@@ -1056,7 +1056,7 @@ static unsigned CompareDQSTestPattern(unsigned channel, unsigned addr_lo, unsign
 	}
 
 	bytelane = 0;
-	for (i=0;i<9*64/4;i++) {
+	for (i = 0; i < 9*64/4; i++) {
 		__asm__ volatile (
 			"movl %%fs:(%1), %0\n\t"
 			:"=b"(value): "a" (addr_lo)
@@ -1066,9 +1066,9 @@ static unsigned CompareDQSTestPattern(unsigned channel, unsigned addr_lo, unsign
 		print_debug_dqs_pair("\t\t\t\t\t\ttest_buf= ", (unsigned)test_buf, " value = ", value_test, 7);
 		print_debug_dqs_pair("\t\t\t\t\t\ttaddr_lo = ",addr_lo, " value = ", value, 7);
 
-		for (j=0;j<4*8;j+=8) {
+		for (j = 0; j < 4*8; j+=8) {
 			if (((value>>j)&0xff) != ((value_test>>j)& 0xff)) {
-				bitmap &= ~(1<<bytelane);
+				bitmap &= ~(1 << bytelane);
 			}
 
 			bytelane++;
@@ -1116,7 +1116,7 @@ static unsigned TrainDQSPos(const struct mem_controller *ctrl, unsigned channel,
 
 	printk(BIOS_DEBUG, "TrainDQSPos: MutualCSPassW[48] :%p\n", MutualCSPassW);
 
-	for (DQSDelay=0; DQSDelay<48; DQSDelay++) {
+	for (DQSDelay = 0; DQSDelay < 48; DQSDelay++) {
 		MutualCSPassW[DQSDelay] = 0xff; // Bitmapped status per delay setting, 0xff=All positions passing (1= PASS)
 	}
 
@@ -1135,25 +1135,25 @@ static unsigned TrainDQSPos(const struct mem_controller *ctrl, unsigned channel,
 
 		if (Direction == DQS_READDIR) {
 			print_debug_dqs("\t\t\t\tTrainDQSPos: 13 for read so write at first", 0, 4);
-			WriteDQSTestPattern(TestAddr<<8, Pattern, buf_a);
+			WriteDQSTestPattern(TestAddr << 8, Pattern, buf_a);
 		}
 
-		for (DQSDelay = 0; DQSDelay < 48; DQSDelay++ ){
+		for (DQSDelay = 0; DQSDelay < 48; DQSDelay++) {
 			print_debug_dqs("\t\t\t\t\tTrainDQSPos: 141 DQSDelay ", DQSDelay, 5);
 			if (MutualCSPassW[DQSDelay] == 0) continue; //skip current delay value if other chipselects have failed all 8 bytelanes
 			SetDQSDelayAllCSR(ctrl, channel, Direction, DQSDelay);
 			print_debug_dqs("\t\t\t\t\tTrainDQSPos: 142 MutualCSPassW ", MutualCSPassW[DQSDelay], 5);
 			if (Direction == DQS_WRITEDIR) {
 				print_debug_dqs("\t\t\t\t\tTrainDQSPos: 143 for write", 0, 5);
-				WriteDQSTestPattern(TestAddr<<8, Pattern, buf_a);
+				WriteDQSTestPattern(TestAddr << 8, Pattern, buf_a);
 			}
 			print_debug_dqs("\t\t\t\t\tTrainDQSPos: 144 Pattern ", Pattern, 5);
-			ReadDQSTestPattern(TestAddr<<8, Pattern);
+			ReadDQSTestPattern(TestAddr << 8, Pattern);
 			print_debug_dqs("\t\t\t\t\tTrainDQSPos: 145 MutualCSPassW ", MutualCSPassW[DQSDelay], 5);
-			MutualCSPassW[DQSDelay] &= CompareDQSTestPattern(channel, TestAddr<<8, Pattern, buf_a); //0: fail, 1=pass
+			MutualCSPassW[DQSDelay] &= CompareDQSTestPattern(channel, TestAddr << 8, Pattern, buf_a); //0: fail, 1=pass
 			print_debug_dqs("\t\t\t\t\tTrainDQSPos: 146 MutualCSPassW ", MutualCSPassW[DQSDelay], 5);
 			SetTargetWTIO(TestAddr);
-			FlushDQSTestPattern(TestAddr<<8, Pattern);
+			FlushDQSTestPattern(TestAddr << 8, Pattern);
 			ResetTargetWTIO();
 		}
 	}
@@ -1166,8 +1166,8 @@ static unsigned TrainDQSPos(const struct mem_controller *ctrl, unsigned channel,
 		RnkDlySeqPassMax = 0;
 		RnkDlyFilterMax = 0;
 		RnkDlyFilterMin = 0;
-		for (DQSDelay=0; DQSDelay<48; DQSDelay++) {
-			if (MutualCSPassW[DQSDelay] & (1<<ByteLane)) {
+		for (DQSDelay = 0; DQSDelay < 48; DQSDelay++) {
+			if (MutualCSPassW[DQSDelay] & (1 << ByteLane)) {
 
 				print_debug_dqs("\t\t\t\t\tTrainDQSPos: 321 DQSDelay ", DQSDelay, 5);
 				print_debug_dqs("\t\t\t\t\tTrainDQSPos: 322 MutualCSPassW ", MutualCSPassW[DQSDelay], 5);
@@ -1176,7 +1176,7 @@ static unsigned TrainDQSPos(const struct mem_controller *ctrl, unsigned channel,
 				if (LastTest == DQS_FAIL) {
 					RnkDlySeqPassMin = DQSDelay; //start sequential run
 				}
-				if ((RnkDlySeqPassMax - RnkDlySeqPassMin)>(RnkDlyFilterMax-RnkDlyFilterMin)){
+				if ((RnkDlySeqPassMax - RnkDlySeqPassMin)>(RnkDlyFilterMax-RnkDlyFilterMin)) {
 					RnkDlyFilterMin = RnkDlySeqPassMin;
 					RnkDlyFilterMax = RnkDlySeqPassMax;
 				}
@@ -1194,7 +1194,7 @@ static unsigned TrainDQSPos(const struct mem_controller *ctrl, unsigned channel,
 		else {
 			print_debug_dqs("\t\t\t\tTrainDQSPos: 34 RnkDlyFilterMax ", RnkDlyFilterMax, 4);
 			print_debug_dqs("\t\t\t\tTrainDQSPos: 34 RnkDlyFilterMin ", RnkDlyFilterMin, 4);
-			if ((RnkDlyFilterMax - RnkDlyFilterMin)< MIN_DQS_WNDW){
+			if ((RnkDlyFilterMax - RnkDlyFilterMin)< MIN_DQS_WNDW) {
 				Errors |= SB_SMALLDQS;
 			}
 			else {
@@ -1371,15 +1371,15 @@ static unsigned TrainDQSRdWrPos(const struct mem_controller *ctrl, struct sys_in
 	//SetupDqsPattern
 	buf_a = (uint8_t *)(((uint32_t)(&pattern_buf_x[0]) + 0x10) & (~0xf));
 
-	if (is_Width128){
+	if (is_Width128) {
 		pattern = 1;
-		for (i=0;i<16*18;i++) {
+		for (i = 0; i < 16*18; i++) {
 			*((uint32_t *)(buf_a + i*4)) = TestPatternJD1b[i];
 		}
 	}
 	else {
 		pattern = 0;
-		for (i=0; i<16*9;i++) {
+		for (i = 0; i < 16*9; i++) {
 			*((uint32_t *)(buf_a + i*4)) = TestPatternJD1a[i];
 		}
 
@@ -1397,7 +1397,7 @@ static unsigned TrainDQSRdWrPos(const struct mem_controller *ctrl, struct sys_in
 		channel = 1;
 	}
 
-	while ( (channel<2) && (!Errors)) {
+	while ((channel < 2) && (!Errors)) {
 		print_debug_dqs("\tTrainDQSRdWrPos: 1 channel ",channel, 1);
 		for (DQSWrDelay = 0; DQSWrDelay < 48; DQSWrDelay++) {
 			unsigned err;
@@ -1417,7 +1417,7 @@ static unsigned TrainDQSRdWrPos(const struct mem_controller *ctrl, struct sys_in
 
 		}
 		channel++;
-		if (!is_Width128){
+		if (!is_Width128) {
 			//FIXME: 64MuxMode??
 			channel++; // skip channel if 64-bit mode
 		}
@@ -1458,7 +1458,7 @@ static unsigned CalcEccDQSPos(unsigned channel,unsigned ByteLane0, unsigned Byte
 	DQSDelay0 = get_dqs_delay(channel, ByteLane0, Direction, dqs_delay_a);
 	DQSDelay1 = get_dqs_delay(channel, ByteLane1, Direction, dqs_delay_a);
 
-	if (DQSDelay0>DQSDelay1) {
+	if (DQSDelay0 > DQSDelay1) {
 		DQSDelay = DQSDelay0 - DQSDelay1;
 		InterFactor = 0xff - InterFactor;
 	}
@@ -1470,7 +1470,7 @@ static unsigned CalcEccDQSPos(unsigned channel,unsigned ByteLane0, unsigned Byte
 
 	DQSDelay >>= 8; // /255
 
-	if (DQSDelay0>DQSDelay1) {
+	if (DQSDelay0 > DQSDelay1) {
 		DQSDelay += DQSDelay1;
 	}
 	else {
@@ -1496,11 +1496,11 @@ static void SetEccDQSRdWrPos(const struct mem_controller *ctrl, struct sys_info 
 	ByteLane = 8;
 
 	for (channel = 0; channel < 2; channel++) {
-		for (i=0;i<2;i++) {
+		for (i = 0; i < 2; i++) {
 			Direction = direction[i];
 			lane0 = 4; lane1 = 5; ratio = 0;
 			dqs_delay = CalcEccDQSPos(channel, lane0, lane1, ratio, Direction, dqs_delay_a);
-			print_debug_dqs_pair("\t\tSetEccDQSRdWrPos: channel ", channel, Direction==DQS_READDIR? " R dqs_delay":" W dqs_delay", dqs_delay, 2);
+			print_debug_dqs_pair("\t\tSetEccDQSRdWrPos: channel ", channel, Direction == DQS_READDIR? " R dqs_delay":" W dqs_delay", dqs_delay, 2);
 			SetDQSDelayCSR(ctrl, channel, ByteLane, Direction, dqs_delay);
 			save_dqs_delay(channel, ByteLane, Direction, dqs_delay_a, dqs_delay);
 		}
@@ -1546,7 +1546,7 @@ static void f0_svm_workaround(int controllers, const struct mem_controller *ctrl
 			continue;
 
 		/* Skip everything if I don't have any memory on this controller */
-		if (sysinfo->meminfo[i].dimm_mask==0x00) continue;
+		if (sysinfo->meminfo[i].dimm_mask == 0x00) continue;
 
 		uint32_t dword;
 
@@ -1568,7 +1568,7 @@ static void f0_svm_workaround(int controllers, const struct mem_controller *ctrl
 		print_debug_dqs_tsc("begin: tsc1", i, tsc1[i].hi, tsc1[i].lo, 2);
 
 		dword = tsc1[i].lo + tsc0[i].lo;
-		if ((dword<tsc1[i].lo) || (dword<tsc0[i].lo)) {
+		if ((dword < tsc1[i].lo) || (dword < tsc0[i].lo)) {
 			tsc1[i].hi++;
 		}
 		tsc1[i].lo = dword;
@@ -1583,7 +1583,7 @@ static void f0_svm_workaround(int controllers, const struct mem_controller *ctrl
 			continue;
 
 		/* Skip everything if I don't have any memory on this controller */
-		if (sysinfo->meminfo[i].dimm_mask==0x00) continue;
+		if (sysinfo->meminfo[i].dimm_mask == 0x00) continue;
 
 		if (!cpu_f0_f1[i]) continue;
 
@@ -1591,7 +1591,7 @@ static void f0_svm_workaround(int controllers, const struct mem_controller *ctrl
 
 		do {
 			tsc = rdtsc();
-		} while ((tsc1[i].hi>tsc.hi) || ((tsc1[i].hi==tsc.hi) && (tsc1[i].lo>tsc.lo)));
+		} while ((tsc1[i].hi > tsc.hi) || ((tsc1[i].hi == tsc.hi) && (tsc1[i].lo > tsc.lo)));
 
 		print_debug_dqs_tsc("end  : tsc ", i, tsc.hi, tsc.lo, 2);
 	}
@@ -1661,8 +1661,8 @@ static unsigned int range_to_mtrr(unsigned int reg,
 #if CONFIG_MEM_TRAIN_SEQ != 1
 		printk(BIOS_DEBUG, "Setting variable MTRR %d, base: %4ldMB, range: %4ldMB, type %s\n",
 			reg, range_startk >>10, sizek >> 10,
-			(type==MTRR_TYPE_UNCACHEABLE)?"UC":
-			    ((type==MTRR_TYPE_WRBACK)?"WB":"Other")
+			(type == MTRR_TYPE_UNCACHEABLE)?"UC":
+			    ((type == MTRR_TYPE_WRBACK)?"WB":"Other")
 			);
 #endif
 		set_var_mtrr_dqs(reg++, range_startk, sizek, type, address_bits);
@@ -1737,7 +1737,7 @@ static void clear_mtrr_dqs(unsigned tom2_k)
 	wrmsr(0x258, msr);
 
 	//[1M, TOM)
-	for (i=0x204;i<0x210;i++) {
+	for (i = 0x204; i < 0x210; i++) {
 		wrmsr(i, msr);
 	}
 
@@ -1755,8 +1755,8 @@ static void set_htic_bit(unsigned i, unsigned val, unsigned bit)
 {
 	uint32_t dword;
 	dword = pci_read_config32(PCI_DEV(0, 0x18+i, 0), HT_INIT_CONTROL);
-	dword &= ~(1<<bit);
-	dword |= ((val & 1) <<bit);
+	dword &= ~(1 << bit);
+	dword |= ((val & 1) << bit);
 	pci_write_config32(PCI_DEV(0, 0x18+i, 0), HT_INIT_CONTROL, dword);
 }
 
@@ -1764,7 +1764,7 @@ static unsigned get_htic_bit(unsigned i, unsigned bit)
 {
 	uint32_t dword;
 	dword = pci_read_config32(PCI_DEV(0, 0x18+i, 0), HT_INIT_CONTROL);
-	dword &= (1<<bit);
+	dword &= (1 << bit);
 	return dword;
 }
 
@@ -1865,7 +1865,7 @@ static void dqs_restore_MC_NVRAM(unsigned int dev)
 	pos = dqs_load_MC_NVRAM_ch(dev, 1, pos);
 	/* load the maxasync lat here */
 	pos = s3_load_nvram_early(4, &reg, pos);
-	reg &= (DCH_MaxAsyncLat_MASK <<DCH_MaxAsyncLat_SHIFT);
+	reg &= (DCH_MaxAsyncLat_MASK << DCH_MaxAsyncLat_SHIFT);
 	reg |= pci_read_config32(dev, DRAM_CONFIG_HIGH);
 	pci_write_config32(dev, DRAM_CONFIG_HIGH, reg);
 }
@@ -1890,7 +1890,7 @@ static void dqs_timing(int controllers, const struct mem_controller *ctrl, struc
 			continue;
 
 		/* Skip everything if I don't have any memory on this controller */
-		if (sysinfo->meminfo[i].dimm_mask==0x00) continue;
+		if (sysinfo->meminfo[i].dimm_mask == 0x00) continue;
 
 		fill_mem_cs_sysinfo(i, ctrl+i, sysinfo);
 	}
@@ -1901,7 +1901,7 @@ static void dqs_timing(int controllers, const struct mem_controller *ctrl, struc
 			continue;
 
 		/* Skip everything if I don't have any memory on this controller */
-		if (sysinfo->meminfo[i].dimm_mask==0x00) continue;
+		if (sysinfo->meminfo[i].dimm_mask == 0x00) continue;
 
 		printk(BIOS_DEBUG, "DQS Training:RcvrEn:Pass1: %02x\n", i);
 		if (train_DqsRcvrEn(ctrl+i, 1, sysinfo)) goto out;
@@ -1919,7 +1919,7 @@ static void dqs_timing(int controllers, const struct mem_controller *ctrl, struc
 			continue;
 
 		/* Skip everything if I don't have any memory on this controller */
-		if (sysinfo->meminfo[i].dimm_mask==0x00) continue;
+		if (sysinfo->meminfo[i].dimm_mask == 0x00) continue;
 
 		printk(BIOS_DEBUG, "DQS Training:DQSPos: %02x\n", i);
 		if (train_DqsPos(ctrl+i, sysinfo)) goto out;
@@ -1932,7 +1932,7 @@ static void dqs_timing(int controllers, const struct mem_controller *ctrl, struc
 			continue;
 
 		/* Skip everything if I don't have any memory on this controller */
-		if (sysinfo->meminfo[i].dimm_mask==0x00) continue;
+		if (sysinfo->meminfo[i].dimm_mask == 0x00) continue;
 
 		printk(BIOS_DEBUG, "DQS Training:RcvrEn:Pass2: %02x\n", i);
 		if (train_DqsRcvrEn(ctrl+i, 2, sysinfo)) goto out;
@@ -1948,7 +1948,7 @@ out:
 	clear_mtrr_dqs(sysinfo->tom2_k);
 
 
-	for (i=0;i<5;i++) {
+	for (i = 0; i < 5; i++) {
 		print_debug_dqs_tsc_x("DQS Training:tsc", i, tsc[i].hi, tsc[i].lo);
 	}
 
@@ -2004,7 +2004,7 @@ static void dqs_timing(int i, const struct mem_controller *ctrl, struct sys_info
 
 		printk(BIOS_DEBUG, "set DQS timing:RcvrEn:Pass2: %02x\n", i);
 	}
-	if (train_DqsRcvrEn(ctrl, 2, sysinfo)){
+	if (train_DqsRcvrEn(ctrl, 2, sysinfo)) {
 		sysinfo->mem_trained[i]=0x83; //
 		goto out;
 	}
@@ -2021,7 +2021,7 @@ out:
 #endif
 
 	if (v) {
-		for (ii=0;ii<4;ii++) {
+		for (ii = 0; ii < 4; ii++) {
 			print_debug_dqs_tsc_x("Total DQS Training : tsc ", ii, tsc[ii].hi, tsc[ii].lo);
 		}
 	}

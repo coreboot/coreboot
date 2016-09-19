@@ -645,7 +645,7 @@ static struct dimm_size spd_get_dimm_size(unsigned device)
 	value = spd_read_byte(device, 5);	/* number of physical banks */
 	if (value < 0) goto hw_err;
 	if (value == 1) goto out;
-	if ((value != 2) && (value != 4 )) {
+	if ((value != 2) && (value != 4)) {
 		goto val_err;
 	}
 #if CONFIG_QRANK_DIMM_SUPPORT
@@ -760,7 +760,7 @@ static void set_dimm_map(const struct mem_controller *ctrl, struct dimm_size sz,
 	map &= ~(0xf << (index * 4));
 #if CONFIG_QRANK_DIMM_SUPPORT
 	if (sz.rank == 4) {
-		map &= ~(0xf << ( (index + 2) * 4));
+		map &= ~(0xf << ((index + 2) * 4));
 	}
 #endif
 
@@ -771,7 +771,7 @@ static void set_dimm_map(const struct mem_controller *ctrl, struct dimm_size sz,
 			map |= (sz.side1 - (25 + 3)) << (index *4);
 #if CONFIG_QRANK_DIMM_SUPPORT
 			if (sz.rank == 4) {
-	 			map |= (sz.side1 - (25 + 3)) << ( (index + 2) * 4);
+				map |= (sz.side1 - (25 + 3)) << ((index + 2) * 4);
 			}
 #endif
 		}
@@ -779,7 +779,7 @@ static void set_dimm_map(const struct mem_controller *ctrl, struct dimm_size sz,
 			map |= cs_map_aa[(sz.rows - 12) * 5 + (sz.col - 8) ] << (index*4);
 #if CONFIG_QRANK_DIMM_SUPPORT
 			if (sz.rank == 4) {
-				map |=  cs_map_aa[(sz.rows - 12) * 5 + (sz.col - 8) ] << ( (index + 2) * 4);
+				map |=  cs_map_aa[(sz.rows - 12) * 5 + (sz.col - 8) ] << ((index + 2) * 4);
 			}
 #endif
 		}
@@ -824,7 +824,7 @@ static void route_dram_accesses(const struct mem_controller *ctrl,
 	limit = (limit_k << 2);
 	limit &= 0xffff0000;
 	limit -= 0x00010000;
-	limit |= ( 0 << 8) | (node_id << 0);
+	limit |= (0 << 8) | (node_id << 0);
 	base = (base_k << 2);
 	base &= 0xffff0000;
 	base |= (0 << 8) | (1<<1) | (1<<0);
@@ -940,8 +940,8 @@ static unsigned long interleave_chip_selects(const struct mem_controller *ctrl)
 		}
 
 		value = pci_read_config32(ctrl->f2, DRAM_BANK_ADDR_MAP);
-		cs_mode =( value >> ((index>>1)*4)) & 0xf;
-		if (cs_mode == 0 ) continue;
+		cs_mode =(value >> ((index>>1)*4)) & 0xf;
+		if (cs_mode == 0) continue;
 		if (common_cs_mode == 0) {
 			common_cs_mode = cs_mode;
 		}
@@ -960,7 +960,7 @@ static unsigned long interleave_chip_selects(const struct mem_controller *ctrl)
 	}
 
 	/* Find the bits of csbase that we need to interleave on */
-	if (is_cpu_pre_d0()){
+	if (is_cpu_pre_d0()) {
 		csbase_inc = 1 << csbase_low_shift[common_cs_mode];
 		if (is_dual_channel(ctrl)) {
 		/* Also we run out of address mask bits if we try and interleave 8 4GB dimms */
@@ -974,8 +974,8 @@ static unsigned long interleave_chip_selects(const struct mem_controller *ctrl)
 	else {
 		csbase_inc = 1 << csbase_low_d0_shift[common_cs_mode];
 		if (is_dual_channel(ctrl)) {
-			if ( (bits==3) && (common_cs_mode > 8)) {
-//				printk(BIOS_DEBUG, "8 cs_mode>8 chip selects cannot be interleaved\n");
+			if ((bits == 3) && (common_cs_mode > 8)) {
+//				printk(BIOS_DEBUG, "8 cs_mode > 8 chip selects cannot be interleaved\n");
 				return 0;
 			}
 			csbase_inc <<=1;
@@ -1223,7 +1223,7 @@ static long spd_enable_2channels(const struct mem_controller *ctrl, long dimm_ma
 		5,	/* *Physical Banks */
 		6,	/* *Module Data Width low */
 		7,	/* *Module Data Width high */
-		9,	/* *Cycle time at highest CAS Latency CL=X */
+		9,	/* *Cycle time at highest CAS Latency CL = X */
 		11,	/* *SDRAM Type */
 		13,	/* *SDRAM Width */
 		17,	/* *Logical Banks */
@@ -1390,7 +1390,7 @@ static int spd_dimm_loading_socket(const struct mem_controller *ctrl, long dimm_
 
 /*
 	Following table comes directly from BKDG (unbuffered DIMM support)
-	[Y][X] Y = ch0_0, ch1_0, ch0_1, ch1_1 1=present 0=empty
+	[Y][X] Y = ch0_0, ch1_0, ch0_1, ch1_1 1 = present 0 = empty
 	  X uses same layout but 1 means double rank 0 is single rank/empty
 
 	Following tables come from BKDG the ch{0_0,1_0,0_1,1_1} maps to
@@ -1674,7 +1674,7 @@ static struct spd_set_memclk_result spd_set_memclk(const struct mem_controller *
 #if 0
 	/* Improves DQS centering by correcting for case when core speed multiplier and MEMCLK speed result in odd clock divisor, by selecting the next lowest memory speed, required only at DDR400 and higher speeds with certain DIMM loadings ---- cheating???*/
 	if (!is_cpu_pre_e0()) {
-		if (min_cycle_time==0x50) {
+		if (min_cycle_time == 0x50) {
 			value |= 1<<31;
 		}
 	}
@@ -1927,7 +1927,7 @@ static int update_dimm_x4(const struct mem_controller *ctrl, const struct mem_pa
 
 	dimm = 1<<(DCL_x4DIMM_SHIFT+i);
 #if CONFIG_QRANK_DIMM_SUPPORT
-	if (rank==4) {
+	if (rank == 4) {
 		dimm |= 1<<(DCL_x4DIMM_SHIFT+i+2);
 	}
 #endif
@@ -2239,7 +2239,7 @@ static uint32_t hoist_memory(int controllers, const struct mem_controller *ctrl,
 
 	carry_over = (4*1024*1024) - hole_startk;
 
-	for (ii=controllers - 1;ii>i;ii--) {
+	for (ii = controllers - 1; ii > i; ii--) {
 		base  = pci_read_config32(ctrl[0].f1, 0x40 + (ii << 3));
 		if ((base & ((1<<1)|(1<<0))) != ((1<<1)|(1<<0))) {
 			continue;
@@ -2294,7 +2294,7 @@ static void set_hw_mem_hole(int controllers, const struct mem_controller *ctrl)
 	 * we need to decrease it.
 	 */
 	uint32_t basek_pri;
-	for (i=0; i<controllers; i++) {
+	for (i = 0; i < controllers; i++) {
 			uint32_t base;
 			unsigned base_k;
 			base  = pci_read_config32(ctrl[0].f1, 0x40 + (i << 3));
@@ -2315,7 +2315,7 @@ static void set_hw_mem_hole(int controllers, const struct mem_controller *ctrl)
 	printk(BIOS_SPEW, "Handling memory hole at 0x%08x (adjusted)\n", hole_startk);
 #endif
 	/* Find node number that needs the memory hole configured */
-	for (i=0; i<controllers; i++) {
+	for (i = 0; i < controllers; i++) {
 			uint32_t base, limit;
 			unsigned base_k, limit_k;
 			base  = pci_read_config32(ctrl[0].f1, 0x40 + (i << 3));
@@ -2480,7 +2480,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 		2. check cs_base lo is 0, node 0 f2 0x40,,,,, if any one is not using lo is CS_BASE, get out
 		3. check if other node is the same as node 0 about f2 0x40,,,,, otherwise get out
 		4. if all ready enable node_interleaving in f1 0x40..... of every node
-		5. for node interleaving we need to set mem hole to every node ( need recalcute hole offset in f0 for every node)
+		5. for node interleaving we need to set mem hole to every node (need recalcute hole offset in f0 for every node)
 	*/
 
 }
@@ -2495,7 +2495,7 @@ void fill_mem_ctrl(int controllers, struct mem_controller *ctrl_a,
 	int i;
 	int j;
 	struct mem_controller *ctrl;
-	for (i=0;i<controllers; i++) {
+	for (i = 0; i < controllers; i++) {
 		ctrl = &ctrl_a[i];
 		ctrl->node_id = i;
 		ctrl->f0 = PCI_DEV(0, 0x18+i, 0);
@@ -2505,7 +2505,7 @@ void fill_mem_ctrl(int controllers, struct mem_controller *ctrl_a,
 
 		if (spd_addr == (void *)0) continue;
 
-		for (j=0;j<DIMM_SOCKETS;j++) {
+		for (j = 0; j < DIMM_SOCKETS; j++) {
 			ctrl->channel0[j] = spd_addr[(i*2+0)*DIMM_SOCKETS + j];
 			ctrl->channel1[j] = spd_addr[(i*2+1)*DIMM_SOCKETS + j];
 		}

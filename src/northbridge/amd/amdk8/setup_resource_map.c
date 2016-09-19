@@ -50,9 +50,9 @@ static void setup_resource_map_x_offset(const unsigned int *register_values, int
 #if RES_DEBUG
 		printk(BIOS_DEBUG, "%04x: %02x %08x <- & %08x | %08x\n",
 			i>>2, register_values[i],
-			register_values[i+1] + ( (register_values[i]==RES_PCI_IO) ? offset_pci_dev : 0),
+			register_values[i+1] + ((register_values[i]==RES_PCI_IO) ? offset_pci_dev : 0),
 			register_values[i+2],
-			register_values[i+3] + ( ( (register_values[i] & RES_PORT_IO_32) == RES_PORT_IO_32) ? offset_io_base : 0)
+			register_values[i+3] + (((register_values[i] & RES_PORT_IO_32) == RES_PORT_IO_32) ? offset_io_base : 0)
 			);
 #endif
 		switch (register_values[i]) {
@@ -103,7 +103,7 @@ static void setup_resource_map_x_offset(const unsigned int *register_values, int
 			reg = read32(where);
 			reg &= register_values[i+2];
 			reg |= register_values[i+3];
-			write32( where, reg);
+			write32(where, reg);
 			}
 			break;
 #endif
@@ -174,7 +174,7 @@ static void setup_mem_resource_map(const unsigned int *register_values, int max)
 		reg = read32(where);
 		reg &= register_values[i+1];
 		reg |= register_values[i+2];
-		write32( where, reg);
+		write32(where, reg);
 #if 0
 		reg = read32(where);
 		prink(BIOS_DEBUG, " RB %08x\n", reg);

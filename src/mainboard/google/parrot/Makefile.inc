@@ -15,6 +15,6 @@
 
 ramstage-y += ec.c
 
-romstage-y += chromeos.c
-ramstage-y += chromeos.c
+romstage-$(CONFIG_CHROMEOS) += chromeos.c
+ramstage-$(CONFIG_CHROMEOS) += chromeos.c
 romstage-y += gpio.c

@@ -17,6 +17,7 @@
 
 #define __SIMPLE_DEVICE__
 
+#include <arch/acpi.h>
 #include <arch/io.h>
 #include <console/console.h>
 #include <cbmem.h>
@@ -299,6 +300,26 @@ static uint32_t print_gpe_sts(uint32_t gpe_sts)
 uint32_t clear_gpe_status(void)
 {
 	return print_gpe_sts(reset_gpe_status());
+}
+
+/* Read and clear GPE status (defined in arch/acpi.h) */
+int acpi_get_gpe(int gpe)
+{
+	int bank;
+	uint32_t mask, sts;
+
+	if (gpe < 0 || gpe > GPE0_DW3_31)
+		return -1;
+
+	bank = gpe / 32;
+	mask = 1 << (gpe % 32);
+
+	sts = inl(ACPI_PMIO_BASE + GPE0_STS(bank));
+	if (sts & mask) {
+		outl(mask, ACPI_PMIO_BASE + GPE0_STS(bank));
+		return 1;
+	}
+	return 0;
 }
 
 void clear_pmc_status(void)

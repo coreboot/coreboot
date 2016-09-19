@@ -352,11 +352,11 @@ static void enableRoutingTables(u8 node, cNorthBridge *nb)
  *	@param[in]   link      = the link on that Node to examine
  *	@param[in]   *nb       = this northbridge
  *	@return            true - The link has the following status
- *				  linkCon=1,	       Link is connected
- *				  InitComplete=1,      Link initialization is complete
- *				  NC=0,		       Link is coherent
- *				  UniP-cLDT=0,	       Link is not Uniprocessor cLDT
- *				  LinkConPend=0	       Link connection is not pending
+ *				  linkCon = 1,		Link is connected
+ *				  InitComplete = 1,	Link initialization is complete
+ *				  NC = 0,		Link is coherent
+ *				  UniP-cLDT = 0,	Link is not Uniprocessor cLDT
+ *				  LinkConPend = 0	Link connection is not pending
  *				  false- The link has some other status
  *
  *****************************************************************************/
@@ -375,7 +375,7 @@ static BOOL verifyLinkIsCoherent(u8 node, u8 link, cNorthBridge *nb)
 	/*  FN0_98/A4/C4 = LDT Type Register */
 	AmdPCIRead(linkBase + HTHOST_LINK_TYPE_REG, &linkType);
 
-	/*  Verify LinkCon=1, InitComplete=1, NC=0, UniP-cLDT=0, LinkConPend=0 */
+	/*  Verify LinkCon = 1, InitComplete = 1, NC = 0, UniP-cLDT = 0, LinkConPend = 0 */
 	return (linkType & HTHOST_TYPE_MASK) ==  HTHOST_TYPE_COHERENT;
 #else
 	return 0;
@@ -612,7 +612,7 @@ static u8 fam10GetNumCoresOnNode(u8 node, cNorthBridge *nb)
 					CPU_NB_FUNC_03,
 					REG_NB_DOWNCORE_3X190),
 					3, 0, &leveling);
-	for (i=0; i<cores; i++)
+	for (i = 0; i < cores; i++)
 	{
 		if (leveling & ((u32) 1 << i))
 		{
@@ -662,7 +662,7 @@ static u8 fam15GetNumCoresOnNode(u8 node, cNorthBridge *nb)
 					CPU_NB_FUNC_03,
 					REG_NB_DOWNCORE_3X190),
 					31, 0, &leveling);
-	for (i=0; i<cores; i++)
+	for (i = 0; i < cores; i++)
 	{
 		if (leveling & ((u32) 1 << i))
 		{
@@ -1122,11 +1122,11 @@ static u8 readSbLink(cNorthBridge *nb)
  *	@param[in]  link   = the Link on that node to examine
  *	@param[in] *nb = this northbridge
  *	@return   = true - The link has the following status
- *					LinkCon=1,     Link is connected
- *					InitComplete=1,Link initilization is complete
- *					NC=1,          Link is coherent
- *					UniP-cLDT=0,   Link is not Uniprocessor cLDT
- *					LinkConPend=0  Link connection is not pending
+ *					LinkCon = 1,     Link is connected
+ *					InitComplete = 1,Link initilization is complete
+ *					NC = 1,          Link is coherent
+ *					UniP-cLDT = 0,   Link is not Uniprocessor cLDT
+ *					LinkConPend = 0  Link connection is not pending
  *					false- The link has some other status
  *
  * ---------------------------------------------------------------------------------------
@@ -1143,7 +1143,7 @@ static BOOL verifyLinkIsNonCoherent(u8 node, u8 link, cNorthBridge *nb)
 	/* FN0_98/A4/C4 = LDT Type Register */
 	AmdPCIRead(linkBase + HTHOST_LINK_TYPE_REG, &linkType);
 
-	/* Verify linkCon=1, InitComplete=1, NC=0, UniP-cLDT=0, LinkConPend=0 */
+	/* Verify linkCon = 1, InitComplete = 1, NC = 0, UniP-cLDT = 0, LinkConPend = 0 */
 	return (linkType & HTHOST_TYPE_MASK) ==  HTHOST_TYPE_NONCOHERENT;
 }
 
@@ -1922,7 +1922,7 @@ static void ht3WriteTrafficDistribution(u32 links01, u32 links10, cNorthBridge *
 			CPU_HTNB_FUNC_00,
 			REG_HT_TRAFFIC_DIST_0X164),
 			23, 16, &links01);
-	/* DstNode = 1, cHTPrbDistEn=1, cHTRspDistEn=1, cHTReqDistEn=1 */
+	/* DstNode = 1, cHTPrbDistEn = 1, cHTRspDistEn = 1, cHTReqDistEn = 1 */
 	temp = 0x0107;
 	AmdPCIWriteBits(MAKE_SBDFO(makePCISegmentFromNode(0),
 			makePCIBusFromNode(0),
@@ -1939,7 +1939,7 @@ static void ht3WriteTrafficDistribution(u32 links01, u32 links10, cNorthBridge *
 			CPU_HTNB_FUNC_00,
 			REG_HT_TRAFFIC_DIST_0X164),
 			23, 16, &links10);
-	/* DstNode = 0, cHTPrbDistEn=1, cHTRspDistEn=1, cHTReqDistEn=1 */
+	/* DstNode = 0, cHTPrbDistEn = 1, cHTRspDistEn = 1, cHTReqDistEn = 1 */
 	temp = 0x0007;
 	AmdPCIWriteBits(MAKE_SBDFO(makePCISegmentFromNode(1),
 			makePCIBusFromNode(1),
@@ -2088,13 +2088,13 @@ static void fam0fBufferOptimizations(u8 node, sMainData *pDat, cNorthBridge *nb)
 				makePCIDeviceFromNode(node),
 				CPU_NB_FUNC_03,
 				REG_NB_FIFOPTR_3XDC);
-	for (i=0; i < nb->maxLinks; i++)
+	for (i = 0; i < nb->maxLinks; i++)
 	{
 		temp = 0;
 		if (nb->verifyLinkIsCoherent(node, i, nb))
 		{
 			temp = 0x26;
-			ASSERT(i<3);
+			ASSERT(i < 3);
 			AmdPCIWriteBits(currentPtr, 8*i + 5, 8*i, &temp);
 		}
 		else
@@ -2102,7 +2102,7 @@ static void fam0fBufferOptimizations(u8 node, sMainData *pDat, cNorthBridge *nb)
 			if (nb->verifyLinkIsNonCoherent(node, i, nb))
 			{
 				temp = 0x25;
-				ASSERT(i<3);
+				ASSERT(i < 3);
 				AmdPCIWriteBits(currentPtr, 8*i + 5, 8*i, &temp);
 			}
 		}
@@ -2142,7 +2142,7 @@ static void fam0fBufferOptimizations(u8 node, sMainData *pDat, cNorthBridge *nb)
 			 * Errata 153 applies to JH-1, JH-2 and older.  It is fixed in JH-3
 			 * (and, one assumes, from there on).
 			 */
-			for (i=0; i < (pDat->NodesDiscovered +1); i++)
+			for (i = 0; i < (pDat->NodesDiscovered +1); i++)
 			{
 				AmdPCIReadBits(MAKE_SBDFO(makePCISegmentFromNode(i),
 						makePCIBusFromNode(i),
@@ -2158,7 +2158,7 @@ static void fam0fBufferOptimizations(u8 node, sMainData *pDat, cNorthBridge *nb)
 			}
 		}
 
-		for (i=0; i < CPU_ADDR_NUM_CONFIG_MAPS; i++)
+		for (i = 0; i < CPU_ADDR_NUM_CONFIG_MAPS; i++)
 		{
 			isOuter = FALSE;
 			/* Check for outer node by scanning the config maps on node 0 for one
@@ -2179,7 +2179,7 @@ static void fam0fBufferOptimizations(u8 node, sMainData *pDat, cNorthBridge *nb)
 				if (node == (u8)temp)
 				{
 					/* This is an outer node.	Tune it appropriately. */
-					for (j=0; j < nb->maxLinks; j++)
+					for (j = 0; j < nb->maxLinks; j++)
 					{
 						if (isErrata153)
 						{
@@ -2218,7 +2218,7 @@ static void fam0fBufferOptimizations(u8 node, sMainData *pDat, cNorthBridge *nb)
 			if (isErrata153)
 			{
 				/* Tuning for inner node coherent links */
-				for (j=0; j < nb->maxLinks; j++)
+				for (j = 0; j < nb->maxLinks; j++)
 				{
 					if (nb->verifyLinkIsCoherent(node, j, nb))
 					{

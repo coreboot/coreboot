@@ -100,10 +100,10 @@ static void set_mmio_addr_reg(u32 nodeid, u32 linkn, u32 reg, u32 index, u32 mmi
 	u32 tempreg;
 	/* io range allocation */
 	tempreg = (nodeid&0xf) | (linkn<<4) |	 (mmio_max&0xffffff00); //limit
-	for (i=0; i<nodes; i++)
+	for (i = 0; i < nodes; i++)
 		pci_write_config32(__f1_dev[i], reg+4, tempreg);
 	tempreg = 3 | (nodeid & 0x30) | (mmio_min&0xffffff00);
-	for (i=0; i<node_nums; i++)
+	for (i = 0; i < node_nums; i++)
 		pci_write_config32(__f1_dev[i], reg, tempreg);
 }
 
@@ -134,7 +134,7 @@ static void get_fx_devs(void)
 	if (__f1_dev[0] == NULL || __f0_dev[0] == NULL || fx_devs == 0) {
 		die("Cannot find 0:0x18.[0|1]\n");
 	}
-	printk(BIOS_DEBUG, "fx_devs=0x%x\n", fx_devs);
+	printk(BIOS_DEBUG, "fx_devs = 0x%x\n", fx_devs);
 }
 
 static u32 f1_read_config32(unsigned reg)
@@ -396,9 +396,8 @@ static void create_vga_resource(device_t dev, unsigned nodeid)
 			printk(BIOS_DEBUG, "VGA: vga_pri bus num = %d bus range [%d,%d]\n", vga_pri->bus->secondary,
 					link->secondary,link->subordinate);
 			/* We need to make sure the vga_pri is under the link */
-			if ((vga_pri->bus->secondary >= link->secondary ) &&
-					(vga_pri->bus->secondary <= link->subordinate )
-			  )
+			if ((vga_pri->bus->secondary >= link->secondary) &&
+			    (vga_pri->bus->secondary <= link->subordinate))
 #endif
 				break;
 		}
@@ -817,11 +816,11 @@ static void domain_set_resources(device_t dev)
 		}
 
 		/* split the region to accommodate pci memory space */
-		if ((basek < 4*1024*1024 ) && (limitk > mmio_basek)) {
+		if ((basek < 4*1024*1024) && (limitk > mmio_basek)) {
 			if (basek <= mmio_basek) {
 				unsigned pre_sizek;
 				pre_sizek = mmio_basek - basek;
-				if (pre_sizek>0) {
+				if (pre_sizek > 0) {
 					ram_resource(dev, (idx | i), basek, pre_sizek);
 					idx += 0x10;
 					sizek -= pre_sizek;
@@ -1059,10 +1058,10 @@ static void cpu_bus_scan(device_t dev)
 			siblings = 0;
 		}
 		int enable_node = cdb_dev && cdb_dev->enabled;
-		printk(BIOS_SPEW, "%s family%xh, core_max=0x%x, core_nums=0x%x, siblings=0x%x\n",
+		printk(BIOS_SPEW, "%s family%xh, core_max = 0x%x, core_nums = 0x%x, siblings = 0x%x\n",
 				dev_path(cdb_dev), 0x0f + family, core_max, core_nums, siblings);
 
-		for (j = 0; j <= siblings; j++ ) {
+		for (j = 0; j <= siblings; j++) {
 			u32 lapicid_start = 0;
 
 			/*
@@ -1081,10 +1080,10 @@ static void cpu_bus_scan(device_t dev)
 			if ((node_nums * core_max) + ioapic_count >= 0x10) {
 				lapicid_start = (ioapic_count - 1) / core_max;
 				lapicid_start = (lapicid_start + 1) * core_max;
-				printk(BIOS_SPEW, "lpaicid_start=0x%x ", lapicid_start);
+				printk(BIOS_SPEW, "lpaicid_start = 0x%x ", lapicid_start);
 			}
 			u32 apic_id = (lapicid_start * (i/modules + 1)) + ((i % modules) ? (j + (siblings + 1)) : j);
-			printk(BIOS_SPEW, "node 0x%x core 0x%x apicid=0x%x\n",
+			printk(BIOS_SPEW, "node 0x%x core 0x%x apicid = 0x%x\n",
 					i, j, apic_id);
 
 			device_t cpu = add_cpu_device(cpu_bus, apic_id, enable_node);

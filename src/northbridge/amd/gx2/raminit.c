@@ -97,7 +97,7 @@ static void auto_size_dimm(unsigned int dimm)
 	dimm_size <<= (dimm_setting >> CF07_UPPER_D0_MB_SHIFT) & 1;	/* shift to multiply by # DIMM banks */
 	printk(BIOS_DEBUG, "BEFORT CTZ\n");
 	dimm_size = __builtin_ctz(dimm_size);
-	printk(BIOS_DEBUG, "TEST DIMM SIZE>7\n");
+	printk(BIOS_DEBUG, "TEST DIMM SIZE > 7\n");
 	if (dimm_size > 7) {	/* 7 is 512MB only support 512MB per DIMM */
 		printk(BIOS_EMERG, "Only support up to 512MB per DIMM\n");
 		post_code(ERROR_DENSITY_DIMM);
@@ -130,7 +130,7 @@ static void auto_size_dimm(unsigned int dimm)
  * Remember that pa[2:0] are zeroed out since it's a 64-bit data bus (8 bytes),
  * so lower 3 address bits are dont_cares. So from the table above,
  * it's easier to see what the old code is doing: if for example,
- * #col_addr_bits=7(06h), it adds 3 to get 10, then does 2^10=1K.
+ * #col_addr_bits = 7(06h), it adds 3 to get 10, then does 2^10 = 1K.
  */
 
 	spd_byte = NumColAddr[spd_read_byte(dimm, SPD_NUM_COLUMNS) & 0xF];
@@ -142,10 +142,10 @@ static void auto_size_dimm(unsigned int dimm)
 	}
 	printk(BIOS_DEBUG, ">11address test\n");
 	spd_byte -= 7;
-	if (spd_byte > 4) {	/* if the value is above 4 it means >11 col address lines */
-		spd_byte = 7;	/* which means >16k so set to disabled */
+	if (spd_byte > 4) {	/* if the value is above 4 it means > 11 col address lines */
+		spd_byte = 7;	/* which means > 16k so set to disabled */
 	}
-	dimm_setting |= spd_byte << CF07_UPPER_D0_PSZ_SHIFT;	/* 0=1k,1=2k,2=4k,etc */
+	dimm_setting |= spd_byte << CF07_UPPER_D0_PSZ_SHIFT;	/* 0 = 1k, 1 = 2k, 2 = 4k, etc */
 
 	printk(BIOS_DEBUG, "RDMSR CF07\n");
 	msr = rdmsr(MC_CF07_DATA);
@@ -230,7 +230,7 @@ const uint8_t CASDDR[] = { 5, 5, 2, 6, 0 };	/* 1(1.5), 1.5, 2, 2.5, 0 */
 static u8 getcasmap(u32 dimm, u16 glspeed)
 {
 	u16 dimm_speed;
-	u8 spd_byte, casmap, casmap_shift=0;
+	u8 spd_byte, casmap, casmap_shift = 0;
 
 	/**************************	 DIMM0	**********************************/
 	casmap = spd_read_byte(dimm, SPD_ACCEPTABLE_CAS_LATENCIES);

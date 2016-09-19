@@ -120,7 +120,7 @@ void CALLCONV Amdmemcpy(void *pDst, const void *pSrc, u32 length)
 	ASSERT(pDst != NULL);
 	ASSERT(pSrc != NULL);
 
-	while (length--){
+	while (length--) {
 	//	*(((u8*)pDst)++) = *(((u8*)pSrc)++);
 		*((u8*)pDst) = *((u8*)pSrc);
 		pDst++;
@@ -134,7 +134,7 @@ void CALLCONV Amdmemset(void *pBuf, u8 val, u32 length)
 	ASSERT(length <= 32768);
 	ASSERT(pBuf != NULL);
 
-	while (length--){
+	while (length--) {
 		//*(((u8*)pBuf)++) = val;
 		*(((u8*)pBuf)) = val;
 		pBuf++;

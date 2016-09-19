@@ -35,24 +35,24 @@ struct gliutable
 };
 
 struct gliutable gliu0table[] = {
-	{.desc_name=GLIU0_P2D_BM_0,	.desc_type= BM,.hi= MSR_MC + 0x0,.lo= 0x0FFF80},		/* 0-7FFFF to MC */
-	{.desc_name=GLIU0_P2D_BM_1,	.desc_type= BM,.hi= MSR_MC + 0x0,.lo=(0x80 << 20) + 0x0FFFE0},	/* 80000-9ffff to Mc */
-	{.desc_name=GLIU0_P2D_SC_0,	.desc_type= SC_SHADOW,.hi= MSR_MC + 0x0,.lo= 0x03},		/* C0000-Fffff split to MC and PCI (sub decode) A0000-Bffff handled by SoftVideo */
-	{.desc_name=GLIU0_P2D_R_0,	.desc_type= R_SYSMEM,.hi= MSR_MC,.lo= 0x0},			/* Catch and fix dynamicly. */
-	{.desc_name=GLIU0_P2D_BMO_0,	.desc_type= BMO_SMM,.hi= MSR_MC,.lo= 0x0},			/* Catch and fix dynamicly. */
-	{.desc_name=GLIU0_GLD_MSR_COH,	.desc_type= OTHER,.hi= 0x0,.lo= GL0_CPU},
-	{.desc_name=GL_END,		.desc_type= GL_END,.hi= 0x0,.lo= 0x0},
+	{.desc_name = GLIU0_P2D_BM_0,	.desc_type= BM,.hi= MSR_MC + 0x0,.lo= 0x0FFF80},		/* 0-7FFFF to MC */
+	{.desc_name = GLIU0_P2D_BM_1,	.desc_type= BM,.hi= MSR_MC + 0x0,.lo=(0x80 << 20) + 0x0FFFE0},	/* 80000-9ffff to Mc */
+	{.desc_name = GLIU0_P2D_SC_0,	.desc_type= SC_SHADOW,.hi= MSR_MC + 0x0,.lo= 0x03},		/* C0000-Fffff split to MC and PCI (sub decode) A0000-Bffff handled by SoftVideo */
+	{.desc_name = GLIU0_P2D_R_0,	.desc_type= R_SYSMEM,.hi= MSR_MC,.lo= 0x0},			/* Catch and fix dynamicly. */
+	{.desc_name = GLIU0_P2D_BMO_0,	.desc_type= BMO_SMM,.hi= MSR_MC,.lo= 0x0},			/* Catch and fix dynamicly. */
+	{.desc_name = GLIU0_GLD_MSR_COH,	.desc_type= OTHER,.hi= 0x0,.lo= GL0_CPU},
+	{.desc_name = GL_END,		.desc_type= GL_END,.hi= 0x0,.lo= 0x0},
 };
 
 struct gliutable gliu1table[] = {
-	{.desc_name=GLIU1_P2D_BM_0,	.desc_type= BM,.hi= MSR_GL0 + 0x0,.lo= 0x0FFF80},		/* 0-7FFFF to MC */
-	{.desc_name=GLIU1_P2D_BM_1,	.desc_type= BM,.hi= MSR_GL0 + 0x0,.lo= (0x80 << 20) + 0x0FFFE0},/* 80000-9ffff to Mc */
-	{.desc_name=GLIU1_P2D_SC_0,	.desc_type= SC_SHADOW,.hi= MSR_GL0 + 0x0,.lo= 0x03},		/* C0000-Fffff split to MC and PCI (sub decode) */
-	{.desc_name=GLIU1_P2D_R_0,	.desc_type= R_SYSMEM,.hi= MSR_GL0,.lo= 0x0},			/* Catch and fix dynamicly. */
-	{.desc_name=GLIU1_P2D_BM_3,	.desc_type= BM_SMM,.hi= MSR_GL0,.lo= 0x0},			/* Catch and fix dynamicly. */
-	{.desc_name=GLIU1_GLD_MSR_COH,	.desc_type= OTHER,.hi= 0x0,.lo= GL1_GLIU0},
-	{.desc_name=GLIU1_IOD_SC_0,	.desc_type= SCIO,.hi= (GL1_GLCP << 29) + 0x0,.lo= 0x033000F0},	/* FooGlue FPU 0xF0 */
-	{.desc_name=GL_END,		.desc_type= GL_END,.hi= 0x0,.lo= 0x0},
+	{.desc_name = GLIU1_P2D_BM_0,	.desc_type= BM,.hi= MSR_GL0 + 0x0,.lo= 0x0FFF80},		/* 0-7FFFF to MC */
+	{.desc_name = GLIU1_P2D_BM_1,	.desc_type= BM,.hi= MSR_GL0 + 0x0,.lo= (0x80 << 20) + 0x0FFFE0},/* 80000-9ffff to Mc */
+	{.desc_name = GLIU1_P2D_SC_0,	.desc_type= SC_SHADOW,.hi= MSR_GL0 + 0x0,.lo= 0x03},		/* C0000-Fffff split to MC and PCI (sub decode) */
+	{.desc_name = GLIU1_P2D_R_0,	.desc_type= R_SYSMEM,.hi= MSR_GL0,.lo= 0x0},			/* Catch and fix dynamicly. */
+	{.desc_name = GLIU1_P2D_BM_3,	.desc_type= BM_SMM,.hi= MSR_GL0,.lo= 0x0},			/* Catch and fix dynamicly. */
+	{.desc_name = GLIU1_GLD_MSR_COH,	.desc_type= OTHER,.hi= 0x0,.lo= GL1_GLIU0},
+	{.desc_name = GLIU1_IOD_SC_0,	.desc_type= SCIO,.hi= (GL1_GLCP << 29) + 0x0,.lo= 0x033000F0},	/* FooGlue FPU 0xF0 */
+	{.desc_name = GL_END,		.desc_type= GL_END,.hi= 0x0,.lo= 0x0},
 };
 
 struct gliutable *gliutables[] = { gliu0table, gliu1table, 0 };
@@ -64,51 +64,51 @@ struct msrinit
 };
 
 struct msrinit ClockGatingDefault[] = {
-	{GLIU0_GLD_MSR_PM,	{.hi=0x00,.lo=0x0005}},
+	{GLIU0_GLD_MSR_PM,	{.hi = 0x00,.lo = 0x0005}},
 	/* MC must stay off in SDR mode. It is turned on in CPUBug??? lotus #77.142 */
-	{MC_GLD_MSR_PM,		{.hi=0x00,.lo=0x0000}},
-	{GLIU1_GLD_MSR_PM,	{.hi=0x00,.lo=0x0005}},
-	{VG_GLD_MSR_PM,		{.hi=0x00,.lo=0x0000}},	/* lotus #77.163 */
-	{GP_GLD_MSR_PM,		{.hi=0x00,.lo=0x0001}},
-	{DF_GLD_MSR_PM,		{.hi=0x00,.lo=0x0155}},
-	{GLCP_GLD_MSR_PM,	{.hi=0x00,.lo=0x0015}},
-	{GLPCI_GLD_MSR_PM,	{.hi=0x00,.lo=0x0015}},
-	{FG_GLD_MSR_PM,		{.hi=0x00,.lo=0x0000}},	/* Always on */
+	{MC_GLD_MSR_PM,		{.hi = 0x00,.lo = 0x0000}},
+	{GLIU1_GLD_MSR_PM,	{.hi = 0x00,.lo = 0x0005}},
+	{VG_GLD_MSR_PM,		{.hi = 0x00,.lo = 0x0000}},	/* lotus #77.163 */
+	{GP_GLD_MSR_PM,		{.hi = 0x00,.lo = 0x0001}},
+	{DF_GLD_MSR_PM,		{.hi = 0x00,.lo = 0x0155}},
+	{GLCP_GLD_MSR_PM,	{.hi = 0x00,.lo = 0x0015}},
+	{GLPCI_GLD_MSR_PM,	{.hi = 0x00,.lo = 0x0015}},
+	{FG_GLD_MSR_PM,		{.hi = 0x00,.lo = 0x0000}},	/* Always on */
 	{0xffffffff, 				{0xffffffff, 0xffffffff}},
 };
 
 /* All On */
 struct msrinit ClockGatingAllOn[] = {
-	{GLIU0_GLD_MSR_PM,	{.hi=0x00,.lo=0x0FFFFFFFF}},
-	{MC_GLD_MSR_PM,		{.hi=0x00,.lo=0x0FFFFFFFF}},
-	{GLIU1_GLD_MSR_PM,	{.hi=0x00,.lo=0x0FFFFFFFF}},
-	{VG_GLD_MSR_PM,		{.hi=0x00, .lo=0x00}},
-	{GP_GLD_MSR_PM,		{.hi=0x00,.lo=0x000000001}},
-	{DF_GLD_MSR_PM,		{.hi=0x00,.lo=0x0FFFFFFFF}},
-	{GLCP_GLD_MSR_PM,	{.hi=0x00,.lo=0x0FFFFFFFF}},
-	{GLPCI_GLD_MSR_PM,	{.hi=0x00,.lo=0x0FFFFFFFF}},
-	{FG_GLD_MSR_PM,		{.hi=0x00,.lo=0x0000}},
+	{GLIU0_GLD_MSR_PM,	{.hi = 0x00,.lo = 0x0FFFFFFFF}},
+	{MC_GLD_MSR_PM,		{.hi = 0x00,.lo = 0x0FFFFFFFF}},
+	{GLIU1_GLD_MSR_PM,	{.hi = 0x00,.lo = 0x0FFFFFFFF}},
+	{VG_GLD_MSR_PM,		{.hi = 0x00, .lo = 0x00}},
+	{GP_GLD_MSR_PM,		{.hi = 0x00,.lo = 0x000000001}},
+	{DF_GLD_MSR_PM,		{.hi = 0x00,.lo = 0x0FFFFFFFF}},
+	{GLCP_GLD_MSR_PM,	{.hi = 0x00,.lo = 0x0FFFFFFFF}},
+	{GLPCI_GLD_MSR_PM,	{.hi = 0x00,.lo = 0x0FFFFFFFF}},
+	{FG_GLD_MSR_PM,		{.hi = 0x00,.lo = 0x0000}},
  	{0xffffffff, 				{0xffffffff, 0xffffffff}},
 };
 
 /* Performance */
 struct msrinit ClockGatingPerformance[] = {
-	{VG_GLD_MSR_PM,		{.hi=0x00,.lo=0x0000}},	/* lotus #77.163 */
-	{GP_GLD_MSR_PM,		{.hi=0x00,.lo=0x0001}},
-	{DF_GLD_MSR_PM,		{.hi=0x00,.lo=0x0155}},
-	{GLCP_GLD_MSR_PM,	{.hi=0x00,.lo=0x0015}},
+	{VG_GLD_MSR_PM,		{.hi = 0x00,.lo = 0x0000}},	/* lotus #77.163 */
+	{GP_GLD_MSR_PM,		{.hi = 0x00,.lo = 0x0001}},
+	{DF_GLD_MSR_PM,		{.hi = 0x00,.lo = 0x0155}},
+	{GLCP_GLD_MSR_PM,	{.hi = 0x00,.lo = 0x0015}},
 	{0xffffffff, 				{0xffffffff, 0xffffffff}},
 };
 
 /* SET GeodeLink PRIORITY */
 struct msrinit GeodeLinkPriorityTable[] = {
-	{CPU_GLD_MSR_CONFIG,		{.hi=0x00,.lo=0x0220}},		/* CPU Priority. */
-	{DF_GLD_MSR_MASTER_CONF,	{.hi=0x00,.lo=0x0000}},		/* DF Priority. */
-	{VG_GLD_MSR_CONFIG,		{.hi=0x00,.lo=0x0720}},		/* VG Primary and Secondary Priority. */
-	{GP_GLD_MSR_CONFIG,		{.hi=0x00,.lo=0x0010}},		/* Graphics Priority. */
-	{GLPCI_GLD_MSR_CONFIG,		{.hi=0x00,.lo=0x0027}},		/* GLPCI Priority + PID */
-	{GLCP_GLD_MSR_CONF,		{.hi=0x00,.lo=0x0001}},		/* GLCP Priority + PID */
-	{FG_GLD_MSR_CONFIG,		{.hi=0x00,.lo=0x0622}},		/* FG PID */
+	{CPU_GLD_MSR_CONFIG,		{.hi = 0x00,.lo = 0x0220}},		/* CPU Priority. */
+	{DF_GLD_MSR_MASTER_CONF,	{.hi = 0x00,.lo = 0x0000}},		/* DF Priority. */
+	{VG_GLD_MSR_CONFIG,		{.hi = 0x00,.lo = 0x0720}},		/* VG Primary and Secondary Priority. */
+	{GP_GLD_MSR_CONFIG,		{.hi = 0x00,.lo = 0x0010}},		/* Graphics Priority. */
+	{GLPCI_GLD_MSR_CONFIG,		{.hi = 0x00,.lo = 0x0027}},		/* GLPCI Priority + PID */
+	{GLCP_GLD_MSR_CONF,		{.hi = 0x00,.lo = 0x0001}},		/* GLCP Priority + PID */
+	{FG_GLD_MSR_CONFIG,		{.hi = 0x00,.lo = 0x0622}},		/* FG PID */
 	{0x0FFFFFFFF, 			{0x0FFFFFFFF, 0x0FFFFFFFF}},	/* END */
 };
 
@@ -422,7 +422,7 @@ static uint64_t getShadow(void)
 	msr_t msr = { 0, 0 };
 
 	msr = rdmsr(GLIU0_P2D_SC_0);
-	return ( ( (uint64_t) msr.hi ) << 32 ) | msr.lo;
+	return (((uint64_t) msr.hi) << 32) | msr.lo;
 }
 
 /* Set the cache RConf registers for the memory hole.

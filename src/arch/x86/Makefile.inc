@@ -25,7 +25,7 @@ ifeq ($(CONFIG_HAVE_OPTION_TABLE),y)
 
 cbfs-files-y += cmos_layout.bin
 cmos_layout.bin-file = $(obj)/cmos_layout.bin
-cmos_layout.bin-type = 0x01aa
+cmos_layout.bin-type = cmos_layout
 
 $(obj)/cmos_layout.bin: $(NVRAMTOOL) $(top)/src/mainboard/$(MAINBOARDDIR)/cmos.layout
 	@printf "    OPTION     $(subst $(obj)/,,$(@))\n"

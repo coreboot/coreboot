@@ -1093,3 +1093,8 @@ void acpi_save_gnvs(u32 gnvs_address)
 	if (gnvs)
 		*gnvs = gnvs_address;
 }
+
+__attribute__ ((weak)) int acpi_get_gpe(int gpe)
+{
+	return -1; /* implemented by SOC */
+}

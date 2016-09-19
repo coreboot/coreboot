@@ -677,6 +677,9 @@ static inline int acpi_sleep_from_pm1(uint32_t pm1_cnt)
 /* Returns ACPI_Sx values. */
 int acpi_get_sleep_type(void);
 
+/* Read and clear GPE status */
+int acpi_get_gpe(int gpe);
+
 static inline int acpi_s3_resume_allowed(void)
 {
 	return IS_ENABLED(CONFIG_HAVE_ACPI_RESUME);

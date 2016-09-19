@@ -59,7 +59,7 @@ static void enable_onboard_nic(void)
 	byte |= ( 1 << 7);
 	pci_write_config8(sm_dev, 0x9a, byte);
 
-	byte=pm_ioread(0x59);
+	byte = pm_ioread(0x59);
 	byte &= ~( 1<< 5);
 	pm_iowrite(0x59,byte);
 

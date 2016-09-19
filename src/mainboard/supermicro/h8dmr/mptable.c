@@ -92,25 +92,25 @@ static void *smp_write_config_table(void *v)
         smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_mcp55[0], ((sbdn+8)<<2)|0, apicid_mcp55, 0x16); // 22
         smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_mcp55[0], ((sbdn+9)<<2)|0, apicid_mcp55, 0x15); // 21
 
-	for(j=7; j>=2; j--) {
+	for(j = 7; j >= 2; j--) {
 		if(!bus_mcp55[j]) continue;
-	        for(i=0;i<4;i++) {
-        	        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_mcp55[j], (0x00<<2)|i, apicid_mcp55, 0x10 + (2+j+i+4-sbdn%4)%4);
+	        for(i = 0; i < 4; i++) {
+        	        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_mcp55[j], (0x00 << 2)|i, apicid_mcp55, 0x10 + (2+j+i+4-sbdn%4)%4);
         	}
 	}
 
-        for(i=0;i<4;i++) {
-                smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_mcp55[1], (0x04<<2)|i, apicid_mcp55, 0x10 + (0+i)%4);
+        for(i = 0; i < 4; i++) {
+                smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_mcp55[1], (0x04 << 2)|i, apicid_mcp55, 0x10 + (0+i)%4);
         }
 
 
 	if(bus_pcix[0]) {
-		for(i=0;i<2;i++) {
-			smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_pcix[2], (4<<2)|i, apicid_mcp55, 0x10 + (0+i+4-sbdn%4)%4); //16, 17
+		for(i = 0; i < 2; i++) {
+			smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_pcix[2], (4 << 2)|i, apicid_mcp55, 0x10 + (0+i+4-sbdn%4)%4); //16, 17
 		}
 
-		for(i=0;i<4;i++) {
-			smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_pcix[1], (4<<2)|i, apicid_mcp55, 0x10 + (2+i+4-sbdn%4)%4); // 18, 19, 16, 17
+		for(i = 0; i < 4; i++) {
+			smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_pcix[1], (4 << 2)|i, apicid_mcp55, 0x10 + (2+i+4-sbdn%4)%4); // 18, 19, 16, 17
 		}
 	}
 

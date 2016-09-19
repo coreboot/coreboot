@@ -657,7 +657,7 @@ static void update_subsystemid( device_t dev )
 		dev->subsystem_device = 0x4077; // U1P0 = 0x4077
 	}
 	printk(BIOS_INFO, "%s [%x/%x]\n", dev_name(dev), dev->subsystem_vendor, dev->subsystem_device );
-	for( i=0; slot[i].bus < 255; i++) {
+	for( i = 0; slot[i].bus < 255; i++) {
 		device_t d;
 		d = dev_find_slot(slot[i].bus,slot[i].devfn);
 		if( d ) {

@@ -71,7 +71,7 @@ static void sio_setup(void)
 	uint8_t byte;
 
 	enable_smbus();
-	// smbusx_write_byte(1, (0x58>>1), 0, 0x80); /* select bank0 */
+	// smbusx_write_byte(1, (0x58 >> 1), 0, 0x80); /* select bank0 */
 	/* set FAN ctrl to DC mode */
 	smbusx_write_byte(1, (0x58 >> 1), 0xb1, 0xff);
 

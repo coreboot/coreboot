@@ -35,7 +35,7 @@ static void backlight_enable(void)
 	/* P56 is Brightness Up, and it needs a Pulse instead of a
 	 * Level
 	 */
-	for (i=0; i < 28; i++) {
+	for (i = 0; i < 28; i++) {
 		//m3885_gpio(M3885_GPIO_PULSE|M3885_GPIO_SET|M3885_GPIO_P56);
 		m3885_gpio(M3885_GPIO_PULSE|M3885_GPIO_TOGGLE|M3885_GPIO_P56);
 	}
@@ -49,10 +49,10 @@ static void dump_runtime_registers(void)
 	int i;
 
 	printk(BIOS_DEBUG, "SuperIO runtime register block:\n");
-	for (i=0; i<0x10; i++)
+	for (i = 0; i < 0x10; i++)
 		printk(BIOS_DEBUG, "%02x ", i);
 	printk(BIOS_DEBUG, "\n");
-	for (i=0; i<0x10; i++)
+	for (i = 0; i < 0x10; i++)
 		printk(BIOS_DEBUG, "%02x ", inb(0x600 +i));
 	printk(BIOS_DEBUG, "\n");
 }

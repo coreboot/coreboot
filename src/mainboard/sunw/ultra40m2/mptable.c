@@ -58,8 +58,8 @@ static void *smp_write_config_table(void *v)
 
 		/* Initialize interrupt mapping*/
 			dword = pci_read_config32(dev, 0x74);
-			dword &= ~(1<<15);
-			dword |= 1<<2;
+			dword &= ~(1 << 15);
+			dword |= 1 << 2;
 			pci_write_config32(dev, 0x74, dword);
 
 			dword = 0x43c6c643;

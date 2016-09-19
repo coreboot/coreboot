@@ -68,7 +68,7 @@ static void ich7_enable_lpc(void)
 {
 	int lpt_en = 0;
 	if (read_option(lpt, 0) != 0) {
-	       lpt_en = 1<<2; // enable LPT
+	       lpt_en = 1 << 2; // enable LPT
 	}
 	// Enable Serial IRQ
 	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0x64, 0xd0);
@@ -113,7 +113,7 @@ static void early_superio_config(void)
 {
 	device_t dev;
 
-	dev=PNP_DEV(0x2e, 0x00);
+	dev = PNP_DEV(0x2e, 0x00);
 
 	pnp_enter_ext_func_mode(dev);
 	pnp_write_register(dev, 0x01, 0x94); // Extended Parport modes

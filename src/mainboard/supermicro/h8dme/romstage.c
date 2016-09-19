@@ -77,7 +77,7 @@ static void sio_setup(void)
 	uint8_t byte;
 
 	enable_smbus();
-//      smbusx_write_byte(1, (0x58>>1), 0, 0x80); /* select bank0 */
+//      smbusx_write_byte(1, (0x58 >> 1), 0, 0x80); /* select bank0 */
 	smbusx_write_byte(1, (0x58 >> 1), 0xb1, 0xff);	/* set FAN ctrl to DC mode */
 
 	byte = pci_read_config8(PCI_DEV(0, MCP55_DEVN_BASE + 1, 0), 0x7b);
@@ -94,8 +94,8 @@ static void sio_setup(void)
 }
 
 /* We have no idea where the SMBUS switch is. This doesn't do anything ATM. */
-#define RC0 (2<<8)
-#define RC1 (1<<8)
+#define RC0 (2 << 8)
+#define RC1 (1 << 8)
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {

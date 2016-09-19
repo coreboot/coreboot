@@ -46,7 +46,7 @@ static void enable_mainboard_devices(void)
 	if (dev == PCI_DEV_INVALID)
 		die("Southbridge not found!!!\n");
 
-	/* bit=0 means enable function (per CX700 datasheet)
+	/* bit = 0 means enable function (per CX700 datasheet)
 	 *   5 16.1 USB 2
 	 *   4 16.0 USB 1
 	 *   3 15.0 SATA and PATA
@@ -55,7 +55,7 @@ static void enable_mainboard_devices(void)
 	 */
 	pci_write_config8(dev, 0x50, 0x80);
 
-	/* bit=1 means enable internal function (per CX700 datasheet)
+	/* bit = 1 means enable internal function (per CX700 datasheet)
 	 *   3 Internal RTC
 	 *   2 Internal PS2 Mouse
 	 *   1 Internal KBC Configuration

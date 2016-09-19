@@ -57,7 +57,7 @@ static void sio_setup(void)
 	/* LPC Positive Decode 0 */
 	dword = pci_read_config32(PCI_DEV(0, CK804_DEVN_BASE+1 , 0), 0xa0);
 	/* Serial 0, Serial 1 */
-	dword |= (1<<0) | (1<<1);
+	dword |= (1 << 0) | (1 << 1);
 	pci_write_config32(PCI_DEV(0, CK804_DEVN_BASE+1 , 0), 0xa0, dword);
 
 }

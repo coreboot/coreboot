@@ -76,7 +76,7 @@ static int smc_send_config(unsigned char config_data)
 #include "cpu/amd/geode_lx/syspreinit.c"
 #include "cpu/amd/geode_lx/msrinit.c"
 
-static const u16 sio_init_table[] = { // hi=data, lo=index
+static const u16 sio_init_table[] = { // hi = data, lo = index
 	0x042C,		// disable ATXPG; VIN6 enabled, FAN4/5 disabled, VIN7,VIN3 enabled
 	0x1423,		// don't delay PoWeROK1/2
 	0x9072,		// watchdog triggers PWROK, counts seconds
@@ -84,7 +84,7 @@ static const u16 sio_init_table[] = { // hi=data, lo=index
 	0x0073, 0x0074,	// disarm watchdog by changing 56 s timeout to 0
 #endif
 	0xBF25, 0x172A, 0xF326,	// select GPIO function for most pins
-	0xBF27, 0xFF28, 0x2D29,	// (GP36=FAN_CTL3 (PWM), GP23,22,16,15=SPI, GP13=PWROK1)
+	0xBF27, 0xFF28, 0x2D29,	// (GP36 = FAN_CTL3 (PWM), GP23,22,16,15 = SPI, GP13 = PWROK1)
 	0x66B8, 0x0CB9,	// enable pullups on SPI, RS485_EN
 	0x07C0,		// enable Simple-I/O for GP12-10= RS485_EN2,1, WD_ACTIVE
 	0x06C8,		// config GP12,11 as output, GP10 as input

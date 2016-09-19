@@ -116,7 +116,7 @@ static int smc_send_config(unsigned char config_data)
 #include "cpu/amd/geode_lx/syspreinit.c"
 #include "cpu/amd/geode_lx/msrinit.c"
 
-static const u16 sio_init_table[] = { // hi=data, lo=index
+static const u16 sio_init_table[] = { // hi = data, lo = index
 	0x072C,		// VIN6 enabled, FAN4/5 disabled, VIN7,VIN3 internal
 	0x1423,		// don't delay PoWeROK1/2
 	0x9072,		// watchdog triggers PWROK, counts seconds
@@ -124,12 +124,12 @@ static const u16 sio_init_table[] = { // hi=data, lo=index
 	0x0073, 0x0074,	// disarm watchdog by changing 56 s timeout to 0
 #endif
 	0xBF25, 0x172A, 0xF326,	// select GPIO function for most pins
-	0xFF27, 0xDF28, 0x2729,	// (GP45=SUSB, GP23,22,16,15=SPI, GP13=PWROK1)
+	0xFF27, 0xDF28, 0x2729,	// (GP45 = SUSB, GP23,22,16,15 = SPI, GP13 = PWROK1)
 	0x66B8, 0x0CB9,	// enable pullups on SPI, RS485_EN
 	0x07C0,		// enable Simple-I/O for GP12-10= RS485_EN2,1, LIVE_LED
 	0x07C8,		// config GP12-10 as output
 	0x2DF5,		// map Hw Monitor Thermal Output to GP55
-	0x08F8,		// map GP LED Blinking 1 to GP10=LIVE_LED (deactivate Simple I/O to use)
+	0x08F8,		// map GP LED Blinking 1 to GP10 = LIVE_LED (deactivate Simple I/O to use)
 };
 
 /* Early mainboard specific GPIO setup. */

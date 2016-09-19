@@ -21,7 +21,7 @@ chip northbridge/amd/lx
 			register "com2_enable"				= "0"
 			register "com2_address"				= "0x2E8"
 			register "com2_irq"				= "6"
-			register "unwanted_vpci[0]"			= "0x80007B00" # Audio: 1<<31 + Device 0x0F<<11 + Function 3<<8
+			register "unwanted_vpci[0]"			= "0x80007B00" # Audio: 1 << 31 + Device 0x0F << 11 + Function 3 << 8
 			register "unwanted_vpci[1]"			= "0" # End of list has a zero
 			device pci 8.0 on end		# Slot4
 			device pci 9.0 on end		# Slot3

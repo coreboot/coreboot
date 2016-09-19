@@ -77,19 +77,19 @@ static void sio_setup(void)
 	uint32_t dword;
 	uint8_t byte;
 	enable_smbus();
-//	smbusx_write_byte(1, (0x58>>1), 0, 0x80); /* select bank0 */
-	smbusx_write_byte(1, (0x58>>1), 0xb1, 0xff); /* set FAN ctrl to DC mode */
+//	smbusx_write_byte(1, (0x58 >> 1), 0, 0x80); /* select bank0 */
+	smbusx_write_byte(1, (0x58 >> 1), 0xb1, 0xff); /* set FAN ctrl to DC mode */
 
 	byte = pci_read_config8(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0x7b);
 	byte |= 0x20;
 	pci_write_config8(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0x7b, byte);
 
 	dword = pci_read_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa0);
-	dword |= (1<<0);
+	dword |= (1 << 0);
 	pci_write_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa0, dword);
 
 	dword = pci_read_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa4);
-	dword |= (1<<16);
+	dword |= (1 << 16);
 	pci_write_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa4, dword);
 }
 
@@ -260,7 +260,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	post_code(0x3A);
 
 	/* show final fid and vid */
-	msr=rdmsr(0xc0010071);
+	msr = rdmsr(0xc0010071);
 	printk(BIOS_DEBUG, "End FIDVIDMSR 0xc0010071 0x%08x 0x%08x\n", msr.hi, msr.lo);
 #endif
 

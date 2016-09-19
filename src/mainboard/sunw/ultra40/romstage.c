@@ -33,9 +33,9 @@ static void sio_gpio_setup(void)
         unsigned value;
 
         /*Enable onboard scsi*/
-        lpc47b397_gpio_offset_out(SUPERIO_GPIO_IO_BASE, 0x2c, (1<<7)|(0<<2)|(0<<1)|(0<<0)); // GP21, offset 0x2c, DISABLE_SCSI_L
+        lpc47b397_gpio_offset_out(SUPERIO_GPIO_IO_BASE, 0x2c, (1 << 7)|(0 << 2)|(0 << 1)|(0 << 0)); // GP21, offset 0x2c, DISABLE_SCSI_L
         value = lpc47b397_gpio_offset_in(SUPERIO_GPIO_IO_BASE, 0x4c);
-        lpc47b397_gpio_offset_out(SUPERIO_GPIO_IO_BASE, 0x4c, (value|(1<<1)));
+        lpc47b397_gpio_offset_out(SUPERIO_GPIO_IO_BASE, 0x4c, (value|(1 << 1)));
 }
 #endif
 
@@ -55,12 +55,12 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 //set GPIO to input mode
 #define CK804_MB_SETUP \
-                RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+ 5, ~(0xff),((0<<4)|(0<<2)|(0<<0)),/* M9,GPIO6, PCIXB2_PRSNT1_L*/  \
-                RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+15, ~(0xff),((0<<4)|(0<<2)|(0<<0)),/* M8,GPIO16, PCIXB2_PRSNT2_L*/ \
-                RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+44, ~(0xff),((0<<4)|(0<<2)|(0<<0)),/* P5,GPIO45, PCIXA_PRSNT1_L*/  \
-                RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+ 7, ~(0xff),((0<<4)|(0<<2)|(0<<0)),/* M5,GPIO8, PCIXA_PRSNT2_L*/   \
-                RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+16, ~(0xff),((0<<4)|(0<<2)|(0<<0)),/* K4,GPIO17, PCIXB_PRSNT1_L*/  \
-                RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+45, ~(0xff),((0<<4)|(0<<2)|(0<<0)),/* P7,GPIO46, PCIXB_PRSNT2_L*/
+                RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+ 5, ~(0xff),((0 << 4)|(0 << 2)|(0 << 0)),/* M9,GPIO6, PCIXB2_PRSNT1_L*/  \
+                RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+15, ~(0xff),((0 << 4)|(0 << 2)|(0 << 0)),/* M8,GPIO16, PCIXB2_PRSNT2_L*/ \
+                RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+44, ~(0xff),((0 << 4)|(0 << 2)|(0 << 0)),/* P5,GPIO45, PCIXA_PRSNT1_L*/  \
+                RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+ 7, ~(0xff),((0 << 4)|(0 << 2)|(0 << 0)),/* M5,GPIO8, PCIXA_PRSNT2_L*/   \
+                RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+16, ~(0xff),((0 << 4)|(0 << 2)|(0 << 0)),/* K4,GPIO17, PCIXB_PRSNT1_L*/  \
+                RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+45, ~(0xff),((0 << 4)|(0 << 2)|(0 << 0)),/* P7,GPIO46, PCIXB_PRSNT2_L*/
 
 #include "southbridge/nvidia/ck804/early_setup_car.c"
 #include "cpu/amd/model_fxx/init_cpus.c"
@@ -79,7 +79,7 @@ static void sio_setup(void)
         pci_write_config8(PCI_DEV(0, CK804_DEVN_BASE+1 , 0), 0x7b, byte);
 
         dword = pci_read_config32(PCI_DEV(0, CK804_DEVN_BASE+1 , 0), 0xa0);
-        dword |= (1<<29)|(1<<0);
+        dword |= (1 << 29)|(1 << 0);
         pci_write_config32(PCI_DEV(0, CK804_DEVN_BASE+1 , 0), 0xa0, dword);
 
         lpc47b397_enable_serial(SUPERIO_GPIO_DEV, SUPERIO_GPIO_IO_BASE);

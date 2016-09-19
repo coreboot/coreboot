@@ -240,7 +240,7 @@ void m3885_configure_multikey(void)
 	m3885_set_variable(0x0c, kstate5_flags & ~(7 << 4));
 
 	/* Write Matrix to bank 0 */
-	for (i=0; i < ARRAY_SIZE(matrix); i++) {
+	for (i = 0; i < ARRAY_SIZE(matrix); i++) {
 		m3885_set_proc_ram(i + 0x80, matrix[i]);
 	}
 
@@ -257,7 +257,7 @@ void m3885_configure_multikey(void)
 			printk(BIOS_DEBUG, "M388x does not have a valid RAM offset (0x%x)\n", offs);
 		} else {
 			printk(BIOS_DEBUG, "Writing Fn-Table to M388x RAM offset 0x%x\n", offs);
-			for (i=0; i < ARRAY_SIZE(function_ram); i++) {
+			for (i = 0; i < ARRAY_SIZE(function_ram); i++) {
 				m3885_set_proc_ram(i + offs, function_ram[i]);
 			}
 		}
@@ -269,7 +269,7 @@ void m3885_configure_multikey(void)
 	m3885_set_variable(0x0c, kstate5_flags);
 	maxvars = m3885_get_variable(0x00);
 	printk(BIOS_DEBUG, "M388x has %d variables in original bank.\n", maxvars);
-	for (i=0; i<ARRAY_SIZE(variables); i+=3) {
+	for (i = 0; i < ARRAY_SIZE(variables); i+=3) {
 		if(variables[i + 0] > maxvars)
 			continue;
 		reg8 = m3885_get_variable(variables[i + 0]);

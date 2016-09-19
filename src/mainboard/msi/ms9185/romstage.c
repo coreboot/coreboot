@@ -72,8 +72,8 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "cpu/amd/model_fxx/fidvid.c"
 #include "northbridge/amd/amdk8/early_ht.c"
 
-#define RC0 (0x10<<8)
-#define RC1 (0x01<<8)
+#define RC0 (0x10 << 8)
+#define RC1 (0x01 << 8)
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
@@ -148,7 +148,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 #if CONFIG_SET_FIDVID
         {
                 msr_t msr;
-                msr=rdmsr(0xc0010042);
+                msr = rdmsr(0xc0010042);
                 printk(BIOS_DEBUG, "begin msr fid, vid %08x%08x\n", msr.hi, msr.lo);
         }
         enable_fid_change();
@@ -157,7 +157,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
         // show final fid and vid
         {
                 msr_t msr;
-                msr=rdmsr(0xc0010042);
+                msr = rdmsr(0xc0010042);
                 printk(BIOS_DEBUG, "end   msr fid, vid %08x%08x\n", msr.hi, msr.lo);
         }
 #endif
@@ -181,7 +181,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 #if 0
        int i;
-       for(i=0;i<2;i++) {
+       for(i = 0; i < 2; i++) {
                activate_spd_rom(sysinfo->ctrl+i);
                dump_smbus_registers();
        }

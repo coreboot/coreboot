@@ -74,8 +74,8 @@
 #define AMD_FAM10_REV_D		(AMD_HY_D0 | AMD_HY_D1)
 #define	AMD_DA_Cx       	(AMD_DA_C2 | AMD_DA_C3)
 #define	AMD_FAM10_C3		(AMD_RB_C3 | AMD_DA_C3)
-#define	AMD_DRBH_Cx		(AMD_DR_Cx | AMD_HY_D0 )
-#define	AMD_DRBA23_RBC2		(AMD_DR_BA | AMD_DR_B2 | AMD_DR_B3 | AMD_RB_C2 )
+#define	AMD_DRBH_Cx		(AMD_DR_Cx | AMD_HY_D0)
+#define	AMD_DRBA23_RBC2		(AMD_DR_BA | AMD_DR_B2 | AMD_DR_B3 | AMD_RB_C2)
 #define	AMD_DR_DAC2_OR_C3	(AMD_DA_C2 | AMD_DA_C3 | AMD_RB_C3)
 #define	AMD_FAM15_ALL		(AMD_OR_B2 | AMD_OR_C0)
 

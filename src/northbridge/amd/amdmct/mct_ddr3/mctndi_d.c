@@ -68,7 +68,7 @@ void InterleaveNodes_D(struct MCTStatStruc *pMCTstat,
 				NodesWmem++;
 				Base &= 0xFFFF0000;	/* Base[39:8] */
 
-				if (pDCTstat->Status & (1 << SB_HWHole )) {
+				if (pDCTstat->Status & (1 << SB_HWHole)) {
 
 					/* to get true amount of dram,
 					 * subtract out memory hole if HW dram remapping */
@@ -83,7 +83,7 @@ void InterleaveNodes_D(struct MCTStatStruc *pMCTstat,
 				DctSelBase = Get_NB32(pDCTstat->dev_dct, 0x114);
 				if (DctSelBase) {
 					DctSelBase <<= 8;
-					if ( pDCTstat->Status & (1 << SB_HWHole)) {
+					if (pDCTstat->Status & (1 << SB_HWHole)) {
 						if (DctSelBase >= 0x1000000) {
 							DctSelBase -= HWHoleSz;
 						}
@@ -100,7 +100,7 @@ void InterleaveNodes_D(struct MCTStatStruc *pMCTstat,
 				MemSize &= 0xFFFF0000;
 				MemSize += 0x00010000;
 				MemSize -= Base;
-				if ( pDCTstat->Status & (1 << SB_HWHole)) {
+				if (pDCTstat->Status & (1 << SB_HWHole)) {
 					MemSize -= HWHoleSz;
 				}
 				if (Node == 0) {
@@ -139,7 +139,7 @@ void InterleaveNodes_D(struct MCTStatStruc *pMCTstat,
 	if (DoIntlv) {
 		MCTMemClr_D(pMCTstat, pDCTstatA);
 		/* Program Interleaving enabled on Node 0 map only.*/
-		MemSize0 <<= bsf(Nodes);	/* MemSize=MemSize*2 (or 4, or 8) */
+		MemSize0 <<= bsf(Nodes);	/* MemSize = MemSize*2 (or 4, or 8) */
 		Dct0MemSize <<= bsf(Nodes);
 		MemSize0 += HWHoleSz;
 		Base = ((Nodes - 1) << 8) | 3;
@@ -180,7 +180,7 @@ void InterleaveNodes_D(struct MCTStatStruc *pMCTstat,
 				HoleBase = pMCTstat->HoleBase;
 				if (Dct0MemSize >= HoleBase) {
 					val = HWHoleSz;
-					if ( Node == 0) {
+					if (Node == 0) {
 						val += Dct0MemSize;
 					}
 				} else {

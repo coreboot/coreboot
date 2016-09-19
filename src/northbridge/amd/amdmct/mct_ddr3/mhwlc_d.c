@@ -140,15 +140,15 @@ uint8_t AgesaHwWlPhase1(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCT
 			 */
 			if (dct)
 			{
-				Addl_Data_Offset=0x198;
-				Addl_Data_Port=0x19C;
+				Addl_Data_Offset = 0x198;
+				Addl_Data_Port = 0x19C;
 			}
 			else
 			{
-				Addl_Data_Offset=0x98;
-				Addl_Data_Port=0x9C;
+				Addl_Data_Offset = 0x98;
+				Addl_Data_Port = 0x9C;
 			}
-			Addr=0x0D00000C;
+			Addr = 0x0D00000C;
 			AmdMemPCIWriteBits(MAKE_SBDFO(0,0,24+(pDCTData->NodeId),FUN_DCT,Addl_Data_Offset), 31, 0, &Addr);
 			while ((get_Bits(pDCTData,FUN_DCT,pDCTData->NodeId, FUN_DCT, Addl_Data_Offset,
 					DctAccessDone, DctAccessDone)) == 0);
@@ -157,7 +157,7 @@ uint8_t AgesaHwWlPhase1(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCT
 			Value = bitTestReset(Value, 4); /* for x8 only */
 			Value = bitTestReset(Value, 5); /* for hardware WL training */
 			AmdMemPCIWriteBits(MAKE_SBDFO(0,0,24+(pDCTData->NodeId),FUN_DCT,Addl_Data_Port), 31, 0, &Value);
-			Addr=0x4D030F0C;
+			Addr = 0x4D030F0C;
 			AmdMemPCIWriteBits(MAKE_SBDFO(0,0,24+(pDCTData->NodeId),FUN_DCT,Addl_Data_Offset), 31, 0, &Addr);
 			while ((get_Bits(pDCTData,FUN_DCT,pDCTData->NodeId, FUN_DCT, Addl_Data_Offset,
 					DctAccessDone, DctAccessDone)) == 0);
@@ -397,8 +397,8 @@ u32 swapAddrBits_wl(struct DCTStatStruc *pDCTstat, uint8_t dct, uint32_t MRSValu
 			tempW &= 0x0A8;
 			tempW1 &= 0x0150;
 			MRSValue &= 0xFE07;
-			MRSValue |= (tempW<<1);
-			MRSValue |= (tempW1>>1);
+			MRSValue |= (tempW << 1);
+			MRSValue |= (tempW1 >> 1);
 		}
 	}
 	return MRSValue;
@@ -438,8 +438,8 @@ u32 swapBankBits(struct DCTStatStruc *pDCTstat, uint8_t dct, u32 MRSValue)
 			tempW &= 0x01;
 			tempW1 &= 0x02;
 			MRSValue = 0;
-			MRSValue |= (tempW<<1);
-			MRSValue |= (tempW1>>1);
+			MRSValue |= (tempW << 1);
+			MRSValue |= (tempW1 >> 1);
 		}
 	}
 	return MRSValue;
@@ -453,22 +453,22 @@ static uint16_t unbuffered_dimm_nominal_termination_emrs(uint8_t number_of_dimms
 
 	if (number_of_dimms == 1) {
 		if (MaxDimmsInstallable < 3) {
-			term = 0x04;	/* Rtt_Nom=RZQ/4=60 Ohm */
+			term = 0x04;	/* Rtt_Nom = RZQ/4 = 60 Ohm */
 		} else {
 			if (rank_count == 1) {
-				term = 0x04;	/* Rtt_Nom=RZQ/4=60 Ohm */
+				term = 0x04;	/* Rtt_Nom = RZQ/4 = 60 Ohm */
 			} else {
 				if (rank == 0)
-					term = 0x04;	/* Rtt_Nom=RZQ/4=60 Ohm */
+					term = 0x04;	/* Rtt_Nom = RZQ/4 = 60 Ohm */
 				else
-					term = 0x00;	/* Rtt_Nom=OFF */
+					term = 0x00;	/* Rtt_Nom = OFF */
 			}
 		}
 	} else {
 		if (frequency_index < 5)
-			term = 0x0044;	/* Rtt_Nom=RZQ/6=40 Ohm */
+			term = 0x0044;	/* Rtt_Nom = RZQ/6 = 40 Ohm */
 		else
-			term = 0x0204;	/* Rtt_Nom=RZQ/8=30 Ohm */
+			term = 0x0204;	/* Rtt_Nom = RZQ/8 = 30 Ohm */
 	}
 
 	return term;
@@ -482,15 +482,15 @@ static uint16_t unbuffered_dimm_dynamic_termination_emrs(uint8_t number_of_dimms
 
 	if (number_of_dimms == 1) {
 		if (MaxDimmsInstallable < 3) {
-			term = 0x00;	/* Rtt_WR=off */
+			term = 0x00;	/* Rtt_WR = off */
 		} else {
 			if (rank_count == 1)
-				term = 0x00;	/* Rtt_WR=off */
+				term = 0x00;	/* Rtt_WR = off */
 			else
-				term = 0x200;	/* Rtt_WR=RZQ/4=60 Ohm */
+				term = 0x200;	/* Rtt_WR = RZQ/4 = 60 Ohm */
 		}
 	} else {
-		term = 0x400;	/* Rtt_WR=RZQ/2=120 Ohm */
+		term = 0x400;	/* Rtt_WR = RZQ/2 = 120 Ohm */
 	}
 
 	return term;
@@ -558,7 +558,7 @@ void prepareDimms(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat,
 			tempW = mct_MR1(pMCTstat, pDCTstat, dct, dimm*2+rank) & 0xffff;
 			tempW &= ~(0x0244);
 		} else {
-			/* Set TDQS=1b for x8 DIMM, TDQS=0b for x4 DIMM, when mixed x8 & x4 */
+			/* Set TDQS = 1b for x8 DIMM, TDQS = 0b for x4 DIMM, when mixed x8 & x4 */
 			tempW2 = get_Bits(pDCTData, dct, pDCTData->NodeId,
 					FUN_DCT, DRAM_CONFIG_HIGH, RDqsEn, RDqsEn);
 			if (tempW2)
@@ -618,7 +618,7 @@ void prepareDimms(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat,
 		}
 
 		/* Apply Rtt_Nom to the MRS control word */
-		tempW=tempW|tempW1;
+		tempW = tempW|tempW1;
 
 		/* All ranks of the target DIMM are set to write levelization mode. */
 		if (wl)
@@ -702,8 +702,8 @@ void prepareDimms(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat,
 			{tempW = bitTestSet(tempW, 7);}
 			if (bitTest(tempW1,18))
 			{tempW = bitTestSet(tempW, 6);}
-			/* tempW=tempW|(((tempW1>>20)&0x7)<<3); */
-			tempW=tempW|((tempW1&0x00700000)>>17);
+			/* tempW = tempW|(((tempW1 >> 20) & 0x7 )<< 3); */
+			tempW = tempW|((tempW1&0x00700000) >> 17);
 			/* workaround for DR-B0 */
 			if ((pDCTData->LogicalCPUID & AMD_DR_Bx) && (pDCTData->Status[DCT_STATUS_REGISTERED]))
 				tempW+=0x8;
@@ -720,7 +720,7 @@ void prepareDimms(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat,
 		}
 
 		/* Apply Rtt_WR to the MRS control word */
-		tempW=tempW|tempW1;
+		tempW = tempW|tempW1;
 		tempW = swapAddrBits_wl(pDCTstat, dct, tempW);
 		if (is_fam15h())
 			set_Bits(pDCTData, dct, pDCTData->NodeId, FUN_DCT,
@@ -779,14 +779,14 @@ void prepareDimms(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat,
 					/* Program F2x[1, 0]7C[MrsAddress[15:0]] to the required
 					 * DDR3-defined function for write levelization.
 					 */
-					tempW = 0;/* DLL_DIS = 0, DIC = 0, AL = 0, TDQS = 0, Level=0, Qoff=0 */
+					tempW = 0;/* DLL_DIS = 0, DIC = 0, AL = 0, TDQS = 0, Level = 0, Qoff = 0 */
 
 					/* Retrieve normal settings of the MRS control word and clear Rtt_Nom */
 					if (is_fam15h()) {
 						tempW = mct_MR1(pMCTstat, pDCTstat, dct, currDimm*2+rank) & 0xffff;
 						tempW &= ~(0x0244);
 					} else {
-						/* Set TDQS=1b for x8 DIMM, TDQS=0b for x4 DIMM, when mixed x8 & x4 */
+						/* Set TDQS = 1b for x8 DIMM, TDQS = 0b for x4 DIMM, when mixed x8 & x4 */
 						tempW2 = get_Bits(pDCTData, dct, pDCTData->NodeId,
 								FUN_DCT, DRAM_CONFIG_HIGH, RDqsEn, RDqsEn);
 						if (tempW2)
@@ -811,7 +811,7 @@ void prepareDimms(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat,
 					}
 
 					/* Apply Rtt_Nom to the MRS control word */
-					tempW=tempW|tempW1;
+					tempW = tempW|tempW1;
 
 					/* Program MrsAddress[5,1]=output driver impedance control (DIC) */
 					if (is_fam15h()) {
@@ -877,8 +877,8 @@ void prepareDimms(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat,
 						{tempW = bitTestSet(tempW, 7);}
 						if (bitTest(tempW1,18))
 						{tempW = bitTestSet(tempW, 6);}
-						/* tempW=tempW|(((tempW1>>20)&0x7)<<3); */
-						tempW=tempW|((tempW1&0x00700000)>>17);
+						/* tempW = tempW|(((tempW1 >> 20) & 0x7) << 3); */
+						tempW = tempW|((tempW1&0x00700000) >> 17);
 						/* workaround for DR-B0 */
 						if ((pDCTData->LogicalCPUID & AMD_DR_Bx) && (pDCTData->Status[DCT_STATUS_REGISTERED]))
 							tempW+=0x8;
@@ -895,7 +895,7 @@ void prepareDimms(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat,
 					}
 
 					/* Apply Rtt_WR to the MRS control word */
-					tempW=tempW|tempW1;
+					tempW = tempW|tempW1;
 					tempW = swapAddrBits_wl(pDCTstat, dct, tempW);
 					if (is_fam15h())
 						set_Bits(pDCTData, dct, pDCTData->NodeId, FUN_DCT,
@@ -939,7 +939,7 @@ void programODT(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, ui
 	sMCTStruct *pMCTData = pDCTstat->C_MCTPtr;
 	sDCTStruct *pDCTData = pDCTstat->C_DCTPtr[dct];
 
-	u8 WrLvOdt1=0;
+	u8 WrLvOdt1 = 0;
 
 	if (is_fam15h()) {
 		/* On Family15h processors, the value for the specific CS being targetted
@@ -954,7 +954,7 @@ void programODT(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, ui
 		cs = (dimm * 2) + rank;
 
 		/* Fetch preprogammed ODT pattern from configuration registers */
-		dword = Get_NB32_DCT(pDCTstat->dev_dct, dct, ((cs>3)?0x23c:0x238));
+		dword = Get_NB32_DCT(pDCTstat->dev_dct, dct, ((cs > 3)?0x23c:0x238));
 		if ((cs == 7) || (cs == 3))
 			WrLvOdt1 = ((dword >> 24) & 0xf);
 		else if ((cs == 6) || (cs == 2))
@@ -1045,25 +1045,25 @@ void procConfig(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, ui
 	}
 	else
 	{
-		/* Program WrLvOdtEn=1 through set bit 12 of D3CSODT reg offset 0 for Rev.B */
+		/* Program WrLvOdtEn = 1 through set bit 12 of D3CSODT reg offset 0 for Rev.B */
 		if (dct)
 		{
-			Addl_Data_Offset=0x198;
-			Addl_Data_Port=0x19C;
+			Addl_Data_Offset = 0x198;
+			Addl_Data_Port = 0x19C;
 		}
 		else
 		{
-			Addl_Data_Offset=0x98;
-			Addl_Data_Port=0x9C;
+			Addl_Data_Offset = 0x98;
+			Addl_Data_Port = 0x9C;
 		}
-		Addr=0x0D008000;
+		Addr = 0x0D008000;
 		AmdMemPCIWriteBits(MAKE_SBDFO(0,0,24+(pDCTData->NodeId),FUN_DCT,Addl_Data_Offset), 31, 0, &Addr);
 		while ((get_Bits(pDCTData,FUN_DCT,pDCTData->NodeId, FUN_DCT, Addl_Data_Offset,
 				DctAccessDone, DctAccessDone)) == 0);
 		AmdMemPCIReadBits(MAKE_SBDFO(0,0,24+(pDCTData->NodeId),FUN_DCT,Addl_Data_Port), 31, 0, &Value);
 		Value = bitTestSet(Value, 12);
 		AmdMemPCIWriteBits(MAKE_SBDFO(0,0,24+(pDCTData->NodeId),FUN_DCT,Addl_Data_Port), 31, 0, &Value);
-		Addr=0x4D088F00;
+		Addr = 0x4D088F00;
 		AmdMemPCIWriteBits(MAKE_SBDFO(0,0,24+(pDCTData->NodeId),FUN_DCT,Addl_Data_Offset), 31, 0, &Addr);
 		while ((get_Bits(pDCTData,FUN_DCT,pDCTData->NodeId, FUN_DCT, Addl_Data_Offset,
 				DctAccessDone, DctAccessDone)) == 0);
@@ -1371,7 +1371,7 @@ void setWLByteDelay(struct DCTStatStruc *pDCTstat, uint8_t dct, u8 ByteLane, u8 
 		while (ByteLane < lane_count)
 		{
 			/* This subtract 0xC workaround might be temporary. */
-			if ((pDCTData->WLPass==2) && (pDCTData->RegMan1Present & (1<<(dimm*2+dct)))) {
+			if ((pDCTData->WLPass == 2) && (pDCTData->RegMan1Present & (1 << (dimm*2+dct)))) {
 				tempW = (pDCTData->WLGrossDelay[index+ByteLane] << 5) | pDCTData->WLFineDelay[index+ByteLane];
 				tempW -= 0xC;
 				pDCTData->WLGrossDelay[index+ByteLane] = (u8)(tempW >> 5);

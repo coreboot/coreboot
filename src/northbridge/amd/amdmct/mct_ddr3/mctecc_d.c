@@ -36,7 +36,7 @@ static u8 isDramECCEn_D(struct DCTStatStruc *pDCTstat);
  *
  * Conditions for setting background scrubber.
  *  1. node is present
- *  2. node has dram functioning (WE=RE=1)
+ *  2. node has dram functioning (WE = RE = 1)
  *  3. all eccdimms (or bit 17 of offset 90,fn 2)
  *  4. no chip-select gap exists
  *
@@ -152,10 +152,10 @@ u8 ECCInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)
 			val = Get_NB32(dev, reg);
 
 			/* WE/RE is checked */
-			if ((val & 3)==3) {	/* Node has dram populated */
+			if ((val & 3) == 3) {	/* Node has dram populated */
 				/* Negate 'all nodes/dimms ECC' flag if non ecc
 				   memory populated */
-				if ( pDCTstat->Status & (1<<SB_ECCDIMMs)) {
+				if (pDCTstat->Status & (1 << SB_ECCDIMMs)) {
 					LDramECC = isDramECCEn_D(pDCTstat);
 					if (pDCTstat->ErrCode != SC_RunningOK) {
 						pDCTstat->Status &=  ~(1 << SB_ECCDIMMs);
@@ -195,9 +195,9 @@ u8 ECCInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)
 	}
 
 	if (AllECC)
-		pMCTstat->GStatus |= 1<<GSB_ECCDIMMs;
+		pMCTstat->GStatus |= 1 << GSB_ECCDIMMs;
 	else
-		pMCTstat->GStatus &= ~(1<<GSB_ECCDIMMs);
+		pMCTstat->GStatus &= ~(1 << GSB_ECCDIMMs);
 
 	/* Program the Dram BKScrub CTL to the proper (user selected) value.*/
 	/* Reset MC4_STS. */
@@ -206,11 +206,11 @@ u8 ECCInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)
 		pDCTstat = pDCTstatA + Node;
 		LDramECC = 0;
 		if (NodePresent_D(Node)) {	/* If Node is present */
-			reg = 0x40+(Node<<3);	/* Dram Base Node 0 + index */
+			reg = 0x40+(Node << 3);	/* Dram Base Node 0 + index */
 			val = Get_NB32(pDCTstat->dev_map, reg);
 			curBase = val & 0xffff0000;
 			/*WE/RE is checked because memory config may have been */
-			if ((val & 3)==3) {	/* Node has dram populated */
+			if ((val & 3) == 3) {	/* Node has dram populated */
 				if (isDramECCEn_D(pDCTstat)) {	/* if ECC is enabled on this dram */
 					dev = pDCTstat->dev_nbmisc;
 					val = curBase << 8;
@@ -322,16 +322,16 @@ static void setSyncOnUnEccEn_D(struct MCTStatStruc *pMCTstat,
 		struct DCTStatStruc *pDCTstat;
 		pDCTstat = pDCTstatA + Node;
 		if (NodePresent_D(Node)) {	/* If Node is present*/
-			reg = 0x40+(Node<<3);	/* Dram Base Node 0 + index*/
+			reg = 0x40+(Node << 3);	/* Dram Base Node 0 + index*/
 			val = Get_NB32(pDCTstat->dev_map, reg);
 			/*WE/RE is checked because memory config may have been*/
-			if ((val & 3)==3) {	/* Node has dram populated*/
-				if ( isDramECCEn_D(pDCTstat)) {
+			if ((val & 3) == 3) {	/* Node has dram populated*/
+				if (isDramECCEn_D(pDCTstat)) {
 					/*if ECC is enabled on this dram*/
 					dev = pDCTstat->dev_nbmisc;
 					reg = 0x44;	/* MCA NB Configuration*/
 					val = Get_NB32(dev, reg);
-					val |= (1<<SyncOnUcEccEn);
+					val |= (1 << SyncOnUcEccEn);
 					Set_NB32(dev, reg, val);
 				}
 			}	/* Node has Dram*/
@@ -353,11 +353,11 @@ static u8 isDramECCEn_D(struct DCTStatStruc *pDCTstat)
 	} else {
 		ch_end = 2;
 	}
-	for (i=0; i<ch_end; i++) {
-		if (pDCTstat->DIMMValidDCT[i] > 0){
+	for (i = 0; i < ch_end; i++) {
+		if (pDCTstat->DIMMValidDCT[i] > 0) {
 			reg = 0x90;		/* Dram Config Low */
 			val = Get_NB32_DCT(dev, i, reg);
-			if (val & (1<<DimmEcEn)) {
+			if (val & (1 << DimmEcEn)) {
 				/* set local flag 'dram ecc capable' */
 				isDimmECCEn = 1;
 				break;

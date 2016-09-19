@@ -50,7 +50,7 @@ void mctGet_PS_Cfg_D(struct MCTStatStruc *pMCTstat,
  *    : ODC_CTL    - Output Driver Compensation Control Register Value
  *    : CMDmode    - CMD mode
  */
-static void Get_ChannelPS_Cfg0_D( u8 MAAdimms, u8 Speed, u8 MAAload,
+static void Get_ChannelPS_Cfg0_D(u8 MAAdimms, u8 Speed, u8 MAAload,
 				u8 DATAAload, u32 *AddrTmgCTL, u32 *ODC_CTL,
 				u8 *CMDmode)
 {

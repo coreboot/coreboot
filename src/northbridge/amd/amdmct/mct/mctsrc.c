@@ -86,7 +86,7 @@ static void SetupRcvrPattern(struct MCTStatStruc *pMCTstat,
 	p_A = (u32 *)SetupDqsPattern_1PassB(pass);
 	p_B = (u32 *)SetupDqsPattern_1PassA(pass);
 
-	for (i=0;i<16;i++) {
+	for (i = 0; i < 16; i++) {
 		buf_a[i] = p_A[i];
 		buf_b[i] = p_B[i];
 	}
@@ -161,7 +161,7 @@ static void dqsTrainRcvrEn_SW(struct MCTStatStruc *pMCTstat,
 	print_t("TrainRcvrEn: 1\n");
 
 	cr4 = read_cr4();
-	if (cr4 & ( 1 << 9)) {	/* save the old value */
+	if (cr4 & (1 << 9)) {	/* save the old value */
 		_SSE2 = 1;
 	}
 	cr4 |= (1 << 9);	/* OSFXSR enable SSE2 */
@@ -261,7 +261,7 @@ static void dqsTrainRcvrEn_SW(struct MCTStatStruc *pMCTstat,
 			if (Pass == FirstPass) {
 				pDCTstat->DqsRcvEn_Pass = 0;
 			} else {
-				pDCTstat->DqsRcvEn_Pass=0xFF;
+				pDCTstat->DqsRcvEn_Pass = 0xFF;
 			}
 			pDCTstat->DqsRcvEn_Saved = 0;
 
@@ -446,7 +446,7 @@ static void dqsTrainRcvrEn_SW(struct MCTStatStruc *pMCTstat,
 		lo &= ~(1<<17);		/* restore HWCR.wrap32dis */
 		_WRMSR(msr, lo, hi);
 	}
-	if (!_SSE2){
+	if (!_SSE2) {
 		cr4 = read_cr4();
 		cr4 &= ~(1<<9); 	/* restore cr4.OSFXSR */
 		write_cr4(cr4);
@@ -456,7 +456,7 @@ static void dqsTrainRcvrEn_SW(struct MCTStatStruc *pMCTstat,
 	{
 		u8 Channel;
 		printk(BIOS_DEBUG, "TrainRcvrEn: CH_MaxRdLat:\n");
-		for (Channel = 0; Channel<2; Channel++) {
+		for (Channel = 0; Channel < 2; Channel++) {
 			printk(BIOS_DEBUG, "Channel: %02x: %02x\n", Channel, pDCTstat->CH_MaxRdLat[Channel]);
 		}
 	}
@@ -472,10 +472,10 @@ static void dqsTrainRcvrEn_SW(struct MCTStatStruc *pMCTstat,
 		printk(BIOS_DEBUG, "TrainRcvrEn: CH_D_B_RCVRDLY:\n");
 		for (Channel = 0; Channel < 2; Channel++) {
 			printk(BIOS_DEBUG, "Channel: %02x\n", Channel);
-			for (Receiver = 0; Receiver<8; Receiver+=2) {
+			for (Receiver = 0; Receiver < 8; Receiver+=2) {
 				printk(BIOS_DEBUG, "\t\tReceiver: %02x: ", Receiver);
 				p = pDCTstat->CH_D_B_RCVRDLY[Channel][Receiver>>1];
-				for (i=0;i<8; i++) {
+				for (i = 0; i < 8; i++) {
 					val  = p[i];
 					printk(BIOS_DEBUG, "%02x ", val);
 				}
@@ -494,7 +494,7 @@ static void dqsTrainRcvrEn_SW(struct MCTStatStruc *pMCTstat,
 
 u8 mct_InitReceiver_D(struct DCTStatStruc *pDCTstat, u8 dct)
 {
-	if (pDCTstat->DIMMValidDCT[dct] == 0 ) {
+	if (pDCTstat->DIMMValidDCT[dct] == 0) {
 		return 8;
 	} else {
 		return 0;
@@ -526,7 +526,7 @@ static void mct_DisableDQSRcvEn_D(struct DCTStatStruc *pDCTstat)
 		ch_end = 2;
 	}
 
-	for (ch=0; ch<ch_end; ch++) {
+	for (ch = 0; ch < ch_end; ch++) {
 		reg = 0x78 + 0x100 * ch;
 		val = Get_NB32(dev, reg);
 		val &= ~(1 << DqsRcvEnTrain);
@@ -562,14 +562,14 @@ void mct_SetRcvrEnDly_D(struct DCTStatStruc *pDCTstat, u8 RcvrEnDly,
 	/* DimmOffset not needed for CH_D_B_RCVRDLY array */
 
 
-	for (i=0; i < 8; i++) {
+	for (i = 0; i < 8; i++) {
 		if (FinalValue) {
 			/*calculate dimm offset */
 			p = pDCTstat->CH_D_B_RCVRDLY[Channel][Receiver >> 1];
 			RcvrEnDly = p[i];
 		}
 
-		/* if flag=0, set DqsRcvEn value to reg. */
+		/* if flag = 0, set DqsRcvEn value to reg. */
 		/* get the register index from table */
 		index = Table_DQSRcvEn_Offset[i >> 1];
 		index += Addl_Index;	/* DIMMx DqsRcvEn byte0 */
@@ -661,7 +661,7 @@ static void mct_SetMaxLatency_D(struct DCTStatStruc *pDCTstat, u8 Channel, u8 DQ
 	valx = (val + 3) << 2;
 
 	val = Get_NB32(pDCTstat->dev_nbmisc, 0xD4);
-	SubTotal *= ((val & 0x1f) + 4 ) * 3;
+	SubTotal *= ((val & 0x1f) + 4) * 3;
 
 	SubTotal /= valx;
 	if (SubTotal % valx) {	/* round up */
@@ -723,7 +723,7 @@ static u8 mct_SavePassRcvEnDly_D(struct DCTStatStruc *pDCTstat,
 			mask_Saved &= mask_Pass;
 			p = pDCTstat->CH_D_B_RCVRDLY[Channel][receiver>>1];
 		}
-		for (i=0; i < 8; i++) {
+		for (i = 0; i < 8; i++) {
 			/* cmp per byte lane */
 			if (mask_Pass & (1 << i)) {
 				if (!(mask_Saved & (1 << i))) {
@@ -757,7 +757,7 @@ static u8 mct_CompareTestPatternQW0_D(struct MCTStatStruc *pMCTstat,
 
 
 	if (Pass == FirstPass) {
-		if (pattern==1) {
+		if (pattern == 1) {
 			test_buf = (u8 *)TestPattern1_D;
 		} else {
 			test_buf = (u8 *)TestPattern0_D;
@@ -769,13 +769,13 @@ static u8 mct_CompareTestPatternQW0_D(struct MCTStatStruc *pMCTstat,
 	SetUpperFSbase(addr);
 	addr <<= 8;
 
-	if ((pDCTstat->Status & (1<<SB_128bitmode)) && channel ) {
+	if ((pDCTstat->Status & (1<<SB_128bitmode)) && channel) {
 		addr += 8;	/* second channel */
 		test_buf += 8;
 	}
 
 	print_debug_dqs_pair("\t\t\t\t\t\t  test_buf = ", (u32)test_buf, "  |  addr_lo = ", addr,  4);
-	for (i=0; i<8; i++) {
+	for (i = 0; i < 8; i++) {
 		value = read32_fs(addr);
 		print_debug_dqs_pair("\t\t\t\t\t\t\t\t ", test_buf[i], "  |  ", value, 4);
 
@@ -790,7 +790,7 @@ static u8 mct_CompareTestPatternQW0_D(struct MCTStatStruc *pMCTstat,
 
 	if (Pass == FirstPass) {
 		/* if first pass, at least one byte lane pass
-		 * ,then DQS_PASS=1 and will set to related reg.
+		 * ,then DQS_PASS = 1 and will set to related reg.
 		 */
 		if (pDCTstat->DqsRcvEn_Pass != 0) {
 			result = DQS_PASS;
@@ -800,7 +800,7 @@ static u8 mct_CompareTestPatternQW0_D(struct MCTStatStruc *pMCTstat,
 
 	} else {
 		/* if second pass, at least one byte lane fail
-		 * ,then DQS_FAIL=1 and will set to related reg.
+		 * ,then DQS_FAIL = 1 and will set to related reg.
 		 */
 		if (pDCTstat->DqsRcvEn_Pass != 0xFF) {
 			result = DQS_FAIL;
@@ -843,7 +843,7 @@ static void mct_InitDQSPos4RcvrEn_D(struct MCTStatStruc *pMCTstat,
 	 * Read Position is 1/2 Memclock Delay
 	 */
 	u8 i;
-	for (i=0;i<2; i++){
+	for (i = 0; i < 2; i++) {
 		InitDQSPos4RcvrEn_D(pMCTstat, pDCTstat, i);
 	}
 }
@@ -867,8 +867,8 @@ static void InitDQSPos4RcvrEn_D(struct MCTStatStruc *pMCTstat,
 
 	// FIXME: add Cx support
 	dword = 0x00000000;
-	for (i=1; i<=3; i++) {
-		for (j=0; j<dn; j++)
+	for (i = 1; i <= 3; i++) {
+		for (j = 0; j < dn; j++)
 			/* DIMM0 Write Data Timing Low */
 			/* DIMM0 Write ECC Timing */
 			Set_NB32_index_wait(dev, index_reg, i + 0x100 * j, dword);
@@ -876,14 +876,14 @@ static void InitDQSPos4RcvrEn_D(struct MCTStatStruc *pMCTstat,
 
 	/* errata #180 */
 	dword = 0x2f2f2f2f;
-	for (i=5; i<=6; i++) {
-		for (j=0; j<dn; j++)
+	for (i = 5; i <= 6; i++) {
+		for (j = 0; j < dn; j++)
 			/* DIMM0 Read DQS Timing Control Low */
 			Set_NB32_index_wait(dev, index_reg, i + 0x100 * j, dword);
 	}
 
 	dword = 0x0000002f;
-	for (j=0; j<dn; j++)
+	for (j = 0; j < dn; j++)
 		/* DIMM0 Read DQS ECC Timing Control */
 		Set_NB32_index_wait(dev, index_reg, 7 + 0x100 * j, dword);
 }
@@ -969,7 +969,7 @@ void mctSetEccDQSRcvrEn_D(struct MCTStatStruc *pMCTstat,
 		if (!pDCTstat->NodePresent)
 			break;
 		if (pDCTstat->DCTSysLimit) {
-			for (i=0; i<2; i++)
+			for (i = 0; i < 2; i++)
 				CalcEccDQSRcvrEn_D(pMCTstat, pDCTstat, i);
 		}
 	}
@@ -1081,5 +1081,5 @@ void mct_Wait(u32 cycles)
 	saved = lo;
 	do {
 		_RDMSR(msr, &lo, &hi);
-	} while (lo - saved < cycles );
+	} while (lo - saved < cycles);
 }

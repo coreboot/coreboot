@@ -34,11 +34,11 @@ void CPUMemTyping_D(struct MCTStatStruc *pMCTstat,
 
 	/* Set temporary top of memory from Node structure data.
 	 * Adjust temp top of memory down to accommodate 32-bit IO space.
-	 * Bottom40bIO=top of memory, right justified 8 bits
+	 * Bottom40bIO = top of memory, right justified 8 bits
 	 * 	(defines dram versus IO space type)
-	 * Bottom32bIO=sub 4GB top of memory, right justified 8 bits
+	 * Bottom32bIO = sub 4GB top of memory, right justified 8 bits
 	 * 	(defines dram versus IO space type)
-	 * Cache32bTOP=sub 4GB top of WB cacheable memory,
+	 * Cache32bTOP = sub 4GB top of WB cacheable memory,
 	 * 	right justified 8 bits
 	 */
 
@@ -82,8 +82,8 @@ void CPUMemTyping_D(struct MCTStatStruc *pMCTstat,
 		 */
 	addr = 0x204;	/* MTRR phys base 2*/
 			/* use TOP_MEM as limit*/
-			/* Limit=TOP_MEM|TOM2*/
-			/* Base=0*/
+			/* Limit = TOP_MEM|TOM2*/
+			/* Base = 0*/
 	printk(BIOS_DEBUG, "\t CPUMemTyping: Cache32bTOP:%x\n", Cache32bTOP);
 	SetMTRRrangeWB_D(0, &Cache32bTOP, &addr);
 				/* Base */
@@ -112,10 +112,10 @@ void CPUMemTyping_D(struct MCTStatStruc *pMCTstat,
 	addr = 0xC0010010;		/* SYS_CFG */
 	_RDMSR(addr, &lo, &hi);
 	if (Bottom40bIO) {
-		lo |= (1<<21);		/* MtrrTom2En=1 */
+		lo |= (1<<21);		/* MtrrTom2En = 1 */
 		lo |= (1<<22);		/* Tom2ForceMemTypeWB */
 	} else {
-		lo &= ~(1<<21);		/* MtrrTom2En=0 */
+		lo &= ~(1<<21);		/* MtrrTom2En = 0 */
 		lo &= ~(1<<22);		/* Tom2ForceMemTypeWB */
 	}
 	_WRMSR(addr, lo, hi);
@@ -146,7 +146,7 @@ static void SetMTRRrange_D(u32 Base, u32 *pLimit, u32 *pMtrrAddr, u16 MtrrType)
 	 * next set bit in a forward or backward sequence of bits (as a function
 	 * of the Limit). We start with the ascending path, to ensure that
 	 * regions are naturally aligned, then we switch to the descending path
-	 * to maximize MTRR usage efficiency. Base=0 is a special case where we
+	 * to maximize MTRR usage efficiency. Base = 0 is a special case where we
 	 * start with the descending path. Correct Mask for region is
 	 * 2comp(Size-1)-1, which is 2comp(Limit-Base-1)-1
 	 */
@@ -172,17 +172,17 @@ static void SetMTRRrange_D(u32 Base, u32 *pLimit, u32 *pMtrrAddr, u16 MtrrType)
 			curSize = valx;
 			valx += curBase;
 		}
-		curLimit = valx;		/*eax=curBase, edx=curLimit*/
+		curLimit = valx;		/*eax = curBase, edx = curLimit*/
 		valx = val>>24;
 		val <<= 8;
 
 		/* now program the MTRR */
 		val |= MtrrType;		/* set cache type (UC or WB)*/
 		_WRMSR(addr, val, valx);	/* prog. MTRR with current region Base*/
-		val = ((~(curSize - 1))+1) - 1;	/* Size-1*/ /*Mask=2comp(Size-1)-1*/
+		val = ((~(curSize - 1))+1) - 1;	/* Size-1*/ /*Mask = 2comp(Size-1)-1*/
 		valx = (val >> 24) | (0xff00);	/* GH have 48 bits addr */
 		val <<= 8;
-		val |= ( 1 << 11);			/* set MTRR valid*/
+		val |= (1 << 11);			/* set MTRR valid*/
 		addr++;
 		_WRMSR(addr, val, valx);	/* prog. MTRR with current region Mask*/
 		val = curLimit;
@@ -213,9 +213,9 @@ void UMAMemTyping_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat
 	/*======================================================================
 	 * Adjust temp top of memory down to accommodate UMA memory start
 	 *======================================================================*/
-	/* Bottom32bIO=sub 4GB top of memory, right justified 8 bits
+	/* Bottom32bIO = sub 4GB top of memory, right justified 8 bits
 	 * (defines dram versus IO space type)
-	 * Cache32bTOP=sub 4GB top of WB cacheable memory, right justified 8 bits */
+	 * Cache32bTOP = sub 4GB top of WB cacheable memory, right justified 8 bits */
 
 	Bottom32bIO = pMCTstat->Sub4GCacheTop >> 8;
 
@@ -234,7 +234,7 @@ void UMAMemTyping_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat
 		addr = 0x200;
 		lo = 0;
 		hi = lo;
-		while ( addr < 0x20C) {
+		while (addr < 0x20C) {
 			_WRMSR(addr, lo, hi);		/* prog. MTRR with current region Mask */
 			addr++;						/* next MTRR pair addr */
 		}

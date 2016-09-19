@@ -351,12 +351,12 @@ void copy_mct_data_to_save_variable(struct amd_s3_persistent_data* persistent_da
 			data->f2x11c = pci_read_config32(dev_fn2, 0x11c);
 			data->f2x1b0 = pci_read_config32(dev_fn2, 0x1b0);
 			data->f3x44 = pci_read_config32(dev_fn3, 0x44);
-			for (i=0; i<16; i++) {
+			for (i = 0; i < 16; i++) {
 				data->msr0000020[i] = rdmsr_uint64_t(0x00000200 | i);
 			}
 			data->msr00000250 = rdmsr_uint64_t(0x00000250);
 			data->msr00000258 = rdmsr_uint64_t(0x00000258);
-			for (i=0; i<8; i++)
+			for (i = 0; i < 8; i++)
 				data->msr0000026[i] = rdmsr_uint64_t(0x00000260 | (i + 8));
 			data->msr000002ff = rdmsr_uint64_t(0x000002ff);
 			data->msrc0010010 = rdmsr_uint64_t(0xc0010010);
@@ -393,7 +393,7 @@ void copy_mct_data_to_save_variable(struct amd_s3_persistent_data* persistent_da
 				data->f2x204 = read_config32_dct(dev_fn2, node, channel, 0x204);
 				data->f2x208 = read_config32_dct(dev_fn2, node, channel, 0x208);
 				data->f2x20c = read_config32_dct(dev_fn2, node, channel, 0x20c);
-				for (i=0; i<4; i++)
+				for (i = 0; i < 4; i++)
 					data->f2x210[i] = read_config32_dct_nbpstate(dev_fn2, node, channel, i, 0x210);
 				data->f2x214 = read_config32_dct(dev_fn2, node, channel, 0x214);
 				data->f2x218 = read_config32_dct(dev_fn2, node, channel, 0x218);
@@ -407,7 +407,7 @@ void copy_mct_data_to_save_variable(struct amd_s3_persistent_data* persistent_da
 
 				data->f2x9cx0d0fe003 = read_amd_dct_index_register_dct(dev_fn2, node, channel, 0x98, 0x0d0fe003);
 				data->f2x9cx0d0fe013 = read_amd_dct_index_register_dct(dev_fn2, node, channel, 0x98, 0x0d0fe013);
-				for (i=0; i<9; i++)
+				for (i = 0; i < 9; i++)
 					data->f2x9cx0d0f0_8_0_1f[i] = read_amd_dct_index_register_dct(dev_fn2, node, channel, 0x98, 0x0d0f001f | (i << 8));
 				data->f2x9cx0d0f201f = read_amd_dct_index_register_dct(dev_fn2, node, channel, 0x98, 0x0d0f201f);
 				data->f2x9cx0d0f211f = read_amd_dct_index_register_dct(dev_fn2, node, channel, 0x98, 0x0d0f211f);
@@ -419,11 +419,11 @@ void copy_mct_data_to_save_variable(struct amd_s3_persistent_data* persistent_da
 				data->f2x9cx0d0fc11f = read_amd_dct_index_register_dct(dev_fn2, node, channel, 0x98, 0x0d0fc11f);
 				data->f2x9cx0d0fc21f = read_amd_dct_index_register_dct(dev_fn2, node, channel, 0x98, 0x0d0fc21f);
 				data->f2x9cx0d0f4009 = read_amd_dct_index_register_dct(dev_fn2, node, channel, 0x98, 0x0d0f4009);
-				for (i=0; i<9; i++)
+				for (i = 0; i < 9; i++)
 					data->f2x9cx0d0f0_8_0_02[i] = read_amd_dct_index_register_dct(dev_fn2, node, channel, 0x98, 0x0d0f0002 | (i << 8));
-				for (i=0; i<9; i++)
+				for (i = 0; i < 9; i++)
 					data->f2x9cx0d0f0_8_0_06[i] = read_amd_dct_index_register_dct(dev_fn2, node, channel, 0x98, 0x0d0f0006 | (i << 8));
-				for (i=0; i<9; i++)
+				for (i = 0; i < 9; i++)
 					data->f2x9cx0d0f0_8_0_0a[i] = read_amd_dct_index_register_dct(dev_fn2, node, channel, 0x98, 0x0d0f000a | (i << 8));
 
 				data->f2x9cx0d0f2002 = read_amd_dct_index_register_dct(dev_fn2, node, channel, 0x98, 0x0d0f2002);
@@ -450,7 +450,7 @@ void copy_mct_data_to_save_variable(struct amd_s3_persistent_data* persistent_da
 				data->f2x9cx0d0fc031 = read_amd_dct_index_register_dct(dev_fn2, node, channel, 0x98, 0x0d0fc031);
 				data->f2x9cx0d0fc131 = read_amd_dct_index_register_dct(dev_fn2, node, channel, 0x98, 0x0d0fc131);
 				data->f2x9cx0d0fc231 = read_amd_dct_index_register_dct(dev_fn2, node, channel, 0x98, 0x0d0fc231);
-				for (i=0; i<9; i++)
+				for (i = 0; i < 9; i++)
 					data->f2x9cx0d0f0_0_f_31[i] = read_amd_dct_index_register_dct(dev_fn2, node, channel, 0x98, 0x0d0f0031 | (i << 8));
 
 				data->f2x9cx0d0f8021 = read_amd_dct_index_register_dct(dev_fn2, node, channel, 0x98, 0x0d0f8021);
@@ -463,8 +463,8 @@ void copy_mct_data_to_save_variable(struct amd_s3_persistent_data* persistent_da
 			data->f2x94 = read_config32_dct(dev_fn2, node, channel, 0x94);
 
 			/* Stage 6 */
-			for (i=0; i<9; i++)
-				for (j=0; j<3; j++)
+			for (i = 0; i < 9; i++)
+				for (j = 0; j < 3; j++)
 					data->f2x9cx0d0f0_f_8_0_0_8_4_0[i][j] = read_amd_dct_index_register_dct(dev_fn2, node, channel, 0x98, 0x0d0f0000 | (i << 8) | (j * 4));
 			data->f2x9cx00 = read_amd_dct_index_register_dct(dev_fn2, node, channel, 0x98, 0x00);
 			data->f2x9cx0a = read_amd_dct_index_register_dct(dev_fn2, node, channel, 0x98, 0x0a);
@@ -478,33 +478,33 @@ void copy_mct_data_to_save_variable(struct amd_s3_persistent_data* persistent_da
 			data->f2x9cx0d0fe007 = read_amd_dct_index_register_dct(dev_fn2, node, channel, 0x98, 0x0d0fe007);
 
 			/* Stage 10 */
-			for (i=0; i<12; i++)
+			for (i = 0; i < 12; i++)
 				data->f2x9cx10[i] = read_amd_dct_index_register_dct(dev_fn2, node, channel, 0x98, 0x10 + i);
-			for (i=0; i<12; i++)
+			for (i = 0; i < 12; i++)
 				data->f2x9cx20[i] = read_amd_dct_index_register_dct(dev_fn2, node, channel, 0x98, 0x20 + i);
-			for (i=0; i<4; i++)
-				for (j=0; j<3; j++)
+			for (i = 0; i < 4; i++)
+				for (j = 0; j < 3; j++)
 					data->f2x9cx3_0_0_3_1[i][j] = read_amd_dct_index_register_dct(dev_fn2, node, channel, 0x98, (0x01 + i) + (0x100 * j));
-			for (i=0; i<4; i++)
-				for (j=0; j<3; j++)
+			for (i = 0; i < 4; i++)
+				for (j = 0; j < 3; j++)
 					data->f2x9cx3_0_0_7_5[i][j] = read_amd_dct_index_register_dct(dev_fn2, node, channel, 0x98, (0x05 + i) + (0x100 * j));
 			data->f2x9cx0d = read_amd_dct_index_register_dct(dev_fn2, node, channel, 0x98, 0x0d);
-			for (i=0; i<9; i++)
+			for (i = 0; i < 9; i++)
 				data->f2x9cx0d0f0_f_0_13[i] = read_amd_dct_index_register_dct(dev_fn2, node, channel, 0x98, 0x0d0f0013 | (i << 8));
-			for (i=0; i<9; i++)
+			for (i = 0; i < 9; i++)
 				data->f2x9cx0d0f0_f_0_30[i] = read_amd_dct_index_register_dct(dev_fn2, node, channel, 0x98, 0x0d0f0030 | (i << 8));
-			for (i=0; i<4; i++)
+			for (i = 0; i < 4; i++)
 				data->f2x9cx0d0f2_f_0_30[i] = read_amd_dct_index_register_dct(dev_fn2, node, channel, 0x98, 0x0d0f2030 | (i << 8));
-			for (i=0; i<2; i++)
-				for (j=0; j<3; j++)
+			for (i = 0; i < 2; i++)
+				for (j = 0; j < 3; j++)
 					data->f2x9cx0d0f8_8_4_0[i][j] = read_amd_dct_index_register_dct(dev_fn2, node, channel, 0x98, 0x0d0f0000 | (i << 8) | (j * 4));
 			data->f2x9cx0d0f812f = read_amd_dct_index_register_dct(dev_fn2, node, channel, 0x98, 0x0d0f812f);
 
 			/* Stage 11 */
 			if (IS_ENABLED(CONFIG_DIMM_DDR3)) {
-				for (i=0; i<12; i++)
+				for (i = 0; i < 12; i++)
 					data->f2x9cx30[i] = read_amd_dct_index_register_dct(dev_fn2, node, channel, 0x98, 0x30 + i);
-				for (i=0; i<12; i++)
+				for (i = 0; i < 12; i++)
 					data->f2x9cx40[i] = read_amd_dct_index_register_dct(dev_fn2, node, channel, 0x98, 0x40 + i);
 			}
 
@@ -599,28 +599,28 @@ void restore_mct_data_from_save_variable(struct amd_s3_persistent_data* persiste
 					continue;
 
 				/* Restore training parameters */
-				for (i=0; i<4; i++)
-					for (j=0; j<3; j++)
+				for (i = 0; i < 4; i++)
+					for (j = 0; j < 3; j++)
 						write_amd_dct_index_register_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x98, (0x01 + i) + (0x100 * j), data->f2x9cx3_0_0_3_1[i][j]);
-				for (i=0; i<4; i++)
-					for (j=0; j<3; j++)
+				for (i = 0; i < 4; i++)
+					for (j = 0; j < 3; j++)
 						write_amd_dct_index_register_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x98, (0x05 + i) + (0x100 * j), data->f2x9cx3_0_0_7_5[i][j]);
 
-				for (i=0; i<12; i++)
+				for (i = 0; i < 12; i++)
 					write_amd_dct_index_register_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x98, 0x10 + i, data->f2x9cx10[i]);
-				for (i=0; i<12; i++)
+				for (i = 0; i < 12; i++)
 					write_amd_dct_index_register_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x98, 0x20 + i, data->f2x9cx20[i]);
 
 				if (IS_ENABLED(CONFIG_DIMM_DDR3)) {
-					for (i=0; i<12; i++)
+					for (i = 0; i < 12; i++)
 						write_amd_dct_index_register_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x98, 0x30 + i, data->f2x9cx30[i]);
-					for (i=0; i<12; i++)
+					for (i = 0; i < 12; i++)
 						write_amd_dct_index_register_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x98, 0x40 + i, data->f2x9cx40[i]);
 				}
 
 				/* Restore MaxRdLatency */
 				if (is_fam15h()) {
-					for (i=0; i<4; i++)
+					for (i = 0; i < 4; i++)
 						write_config32_dct_nbpstate(PCI_DEV(0, 0x18 + node, 2), node, channel, i, 0x210, data->f2x210[i]);
 				} else {
 					write_config32_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x78, data->f2x78);
@@ -682,7 +682,7 @@ void restore_mct_data_from_save_variable(struct amd_s3_persistent_data* persiste
 			write_config32_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x11c, data->f2x11c);
 			write_config32_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x1b0, data->f2x1b0);
 			write_config32_dct(PCI_DEV(0, 0x18 + node, 3), node, channel, 0x44, data->f3x44);
-			for (i=0; i<16; i++) {
+			for (i = 0; i < 16; i++) {
 				wrmsr_uint64_t(0x00000200 | i, data->msr0000020[i]);
 			}
 			wrmsr_uint64_t(0x00000250, data->msr00000250);
@@ -692,7 +692,7 @@ void restore_mct_data_from_save_variable(struct amd_s3_persistent_data* persiste
 			 * destroying CAR while still executing from CAR!
 			 * For now, skip restoration...
 			 */
-			// for (i=0; i<8; i++)
+			// for (i = 0; i < 8; i++)
 			// 	wrmsr_uint64_t(0x00000260 | (i + 8), data->msr0000026[i]);
 			wrmsr_uint64_t(0x000002ff, data->msr000002ff);
 			wrmsr_uint64_t(0xc0010010, data->msrc0010010);
@@ -760,7 +760,7 @@ void restore_mct_data_from_save_variable(struct amd_s3_persistent_data* persiste
 				write_config32_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x204, data->f2x204);
 				write_config32_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x208, data->f2x208);
 				write_config32_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x20c, data->f2x20c);
-				for (i=0; i<4; i++)
+				for (i = 0; i < 4; i++)
 					write_config32_dct_nbpstate(PCI_DEV(0, 0x18 + node, 2), node, channel, i, 0x210, data->f2x210[i]);
 				write_config32_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x214, data->f2x214);
 				write_config32_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x218, data->f2x218);
@@ -773,7 +773,7 @@ void restore_mct_data_from_save_variable(struct amd_s3_persistent_data* persiste
 				write_config32_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x240, data->f2x240);
 
 				write_amd_dct_index_register_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x98, 0x0d0fe013, data->f2x9cx0d0fe013);
-				for (i=0; i<9; i++)
+				for (i = 0; i < 9; i++)
 					write_amd_dct_index_register_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x98, 0x0d0f001f | (i << 8), data->f2x9cx0d0f0_8_0_1f[i]);
 				write_amd_dct_index_register_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x98, 0x0d0f201f, data->f2x9cx0d0f201f);
 				write_amd_dct_index_register_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x98, 0x0d0f211f, data->f2x9cx0d0f211f);
@@ -795,7 +795,7 @@ void restore_mct_data_from_save_variable(struct amd_s3_persistent_data* persiste
 				write_amd_dct_index_register_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x98, 0x0d0fc031, data->f2x9cx0d0fc031);
 				write_amd_dct_index_register_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x98, 0x0d0fc131, data->f2x9cx0d0fc131);
 				write_amd_dct_index_register_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x98, 0x0d0fc231, data->f2x9cx0d0fc231);
-				for (i=0; i<9; i++)
+				for (i = 0; i < 9; i++)
 					write_amd_dct_index_register_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x98, 0x0d0f0031 | (i << 8), data->f2x9cx0d0f0_0_f_31[i]);
 
 				write_amd_dct_index_register_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x98, 0x0d0f8021, data->f2x9cx0d0f8021);
@@ -899,8 +899,8 @@ void restore_mct_data_from_save_variable(struct amd_s3_persistent_data* persiste
 			if (!persistent_data->node[node].node_present)
 				continue;
 
-			for (i=0; i<9; i++)
-				for (j=0; j<3; j++)
+			for (i = 0; i < 9; i++)
+				for (j = 0; j < 3; j++)
 					write_amd_dct_index_register_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x98, 0x0d0f0000 | (i << 8) | (j * 4), data->f2x9cx0d0f0_f_8_0_0_8_4_0[i][j]);
 			write_amd_dct_index_register_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x98, 0x00, data->f2x9cx00);
 			write_amd_dct_index_register_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x98, 0x0a, data->f2x9cx0a);
@@ -920,11 +920,11 @@ void restore_mct_data_from_save_variable(struct amd_s3_persistent_data* persiste
 				dword |= (0x3 << 13);			/* DisAutoComp, DisablePredriverCal = 1 */
 				write_amd_dct_index_register_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x98, 0x0d0fe003, dword);
 
-				for (i=0; i<9; i++)
+				for (i = 0; i < 9; i++)
 					write_amd_dct_index_register_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x98, 0x0d0f0006 | (i << 8), data->f2x9cx0d0f0_8_0_06[i]);
-				for (i=0; i<9; i++)
+				for (i = 0; i < 9; i++)
 					write_amd_dct_index_register_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x98, 0x0d0f000a | (i << 8), data->f2x9cx0d0f0_8_0_0a[i]);
-				for (i=0; i<9; i++)
+				for (i = 0; i < 9; i++)
 					write_amd_dct_index_register_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x98, 0x0d0f0002 | (i << 8), (0x8000 | data->f2x9cx0d0f0_8_0_02[i]));
 
 				write_amd_dct_index_register_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x98, 0x0d0f8006, data->f2x9cx0d0f8006);
@@ -1024,25 +1024,25 @@ void restore_mct_data_from_save_variable(struct amd_s3_persistent_data* persiste
 			if (!persistent_data->node[node].node_present)
 				continue;
 
-			for (i=0; i<12; i++)
+			for (i = 0; i < 12; i++)
 				write_amd_dct_index_register_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x98, 0x10 + i, data->f2x9cx10[i]);
-			for (i=0; i<12; i++)
+			for (i = 0; i < 12; i++)
 				write_amd_dct_index_register_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x98, 0x20 + i, data->f2x9cx20[i]);
-			for (i=0; i<4; i++)
-				for (j=0; j<3; j++)
+			for (i = 0; i < 4; i++)
+				for (j = 0; j < 3; j++)
 					write_amd_dct_index_register_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x98, (0x01 + i) + (0x100 * j), data->f2x9cx3_0_0_3_1[i][j]);
-			for (i=0; i<4; i++)
-				for (j=0; j<3; j++)
+			for (i = 0; i < 4; i++)
+				for (j = 0; j < 3; j++)
 					write_amd_dct_index_register_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x98, (0x05 + i) + (0x100 * j), data->f2x9cx3_0_0_7_5[i][j]);
 			write_amd_dct_index_register_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x98, 0x0d, data->f2x9cx0d);
-			for (i=0; i<9; i++)
+			for (i = 0; i < 9; i++)
 				write_amd_dct_index_register_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x98, 0x0d0f0013 | (i << 8), data->f2x9cx0d0f0_f_0_13[i]);
-			for (i=0; i<9; i++)
+			for (i = 0; i < 9; i++)
 				write_amd_dct_index_register_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x98, 0x0d0f0030 | (i << 8), data->f2x9cx0d0f0_f_0_30[i]);
-			for (i=0; i<4; i++)
+			for (i = 0; i < 4; i++)
 				write_amd_dct_index_register_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x98, 0x0d0f2030 | (i << 8), data->f2x9cx0d0f2_f_0_30[i]);
-			for (i=0; i<2; i++)
-				for (j=0; j<3; j++)
+			for (i = 0; i < 2; i++)
+				for (j = 0; j < 3; j++)
 					write_amd_dct_index_register_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x98, 0x0d0f0000 | (i << 8) | (j * 4), data->f2x9cx0d0f8_8_4_0[i][j]);
 			write_amd_dct_index_register_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x98, 0x0d0f812f, data->f2x9cx0d0f812f);
 		}
@@ -1056,9 +1056,9 @@ void restore_mct_data_from_save_variable(struct amd_s3_persistent_data* persiste
 				if (!persistent_data->node[node].node_present)
 					continue;
 
-				for (i=0; i<12; i++)
+				for (i = 0; i < 12; i++)
 					write_amd_dct_index_register_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x98, 0x30 + i, data->f2x9cx30[i]);
-				for (i=0; i<12; i++)
+				for (i = 0; i < 12; i++)
 					write_amd_dct_index_register_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x98, 0x40 + i, data->f2x9cx40[i]);
 			}
 		}

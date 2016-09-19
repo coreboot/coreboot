@@ -39,7 +39,7 @@ static inline void _RDTSC(u32 *lo, u32 *hi)
 	__asm__ volatile (
 		 "rdtsc"
 		 : "=a" (*lo), "=d"(*hi)
-		 );
+		);
 }
 
 
@@ -61,7 +61,7 @@ static u32 bsr(u32 x)
 	u8 i;
 	u32 ret = 0;
 
-	for (i=31; i>0; i--) {
+	for (i = 31; i > 0; i--) {
 		if (x & (1<<i)) {
 			ret = i;
 			break;
@@ -78,7 +78,7 @@ static u32 bsf(u32 x)
 	u8 i;
 	u32 ret = 32;
 
-	for (i=0; i<32; i++) {
+	for (i = 0; i < 32; i++) {
 		if (x & (1<<i)) {
 			ret = i;
 			break;
@@ -88,9 +88,9 @@ static u32 bsf(u32 x)
 	return ret;
 }
 
-#define _MFENCE asm volatile ( "mfence")
+#define _MFENCE asm volatile ("mfence")
 
-#define _SFENCE asm volatile ( "sfence" )
+#define _SFENCE asm volatile ("sfence")
 
 /* prevent speculative execution of following instructions */
 #define _EXECFENCE asm volatile ("outb %al, $0xed")
@@ -343,7 +343,7 @@ static u32 stream_to_int(u8 const *p)
 
 	val = 0;
 
-	for (i=3; i>=0; i--) {
+	for (i = 3; i >= 0; i--) {
 		val <<= 8;
 		valx = *(p+i);
 		val |= valx;

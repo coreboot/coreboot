@@ -426,7 +426,7 @@ void SetTargetFreq(struct MCTStatStruc *pMCTstat,
 		}
 	}
 
-	/* wait for 500 MCLKs after ExitSelfRef, 500*2.5ns=1250ns */
+	/* wait for 500 MCLKs after ExitSelfRef, 500*2.5ns = 1250ns */
 	mct_Wait(250);
 
 	if (pDCTstat->Status & (1 << SB_Registered)) {
@@ -474,9 +474,9 @@ void Restore_OnDimmMirror(struct MCTStatStruc *pMCTstat,
 {
 	if (pDCTstat->LogicalCPUID & (AMD_DR_Bx /* | AMD_RB_C0 */)) { /* We dont support RB-C0 now */
 		if (pDCTstat->MirrPresU_NumRegR & 0x55)
-			Modify_OnDimmMirror(pDCTstat, 0, 1); /* dct=0, set */
+			Modify_OnDimmMirror(pDCTstat, 0, 1); /* dct = 0, set */
 		if (pDCTstat->MirrPresU_NumRegR & 0xAA)
-			Modify_OnDimmMirror(pDCTstat, 1, 1); /* dct=1, set */
+			Modify_OnDimmMirror(pDCTstat, 1, 1); /* dct = 1, set */
 	}
 }
 void Clear_OnDimmMirror(struct MCTStatStruc *pMCTstat,
@@ -484,8 +484,8 @@ void Clear_OnDimmMirror(struct MCTStatStruc *pMCTstat,
 {
 	if (pDCTstat->LogicalCPUID & (AMD_DR_Bx /* | AMD_RB_C0 */)) { /* We dont support RB-C0 now */
 		if (pDCTstat->MirrPresU_NumRegR & 0x55)
-			Modify_OnDimmMirror(pDCTstat, 0, 0); /* dct=0, clear */
+			Modify_OnDimmMirror(pDCTstat, 0, 0); /* dct = 0, clear */
 		if (pDCTstat->MirrPresU_NumRegR & 0xAA)
-			Modify_OnDimmMirror(pDCTstat, 1, 0); /* dct=1, clear */
+			Modify_OnDimmMirror(pDCTstat, 1, 0); /* dct = 1, clear */
 	}
 }

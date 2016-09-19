@@ -56,7 +56,7 @@ void set_config_map_reg(struct bus *link)
 	tempreg = ((nodeid & 0x30) << (12-4)) | ((nodeid & 0xf) << 4) | 3;
 	tempreg |= (busn_max << 24)|(busn_min << 16)|(linkn << 8);
 
-	for (i=0; i < sysconf.nodes; i++) {
+	for (i = 0; i < sysconf.nodes; i++) {
 		device_t dev = __f1_dev[i];
 		pci_write_config32(dev, 0xe0 + ht_c_index * 4, tempreg);
 	}
@@ -67,7 +67,7 @@ void clear_config_map_reg(struct bus *link)
 	u32 i;
 	u32 ht_c_index = get_ht_c_index(link);
 
-	for (i=0; i < sysconf.nodes; i++) {
+	for (i = 0; i < sysconf.nodes; i++) {
 		device_t dev = __f1_dev[i];
 		pci_write_config32(dev, 0xe0 + ht_c_index * 4, 0);
 	}
@@ -86,13 +86,13 @@ static u32 get_ht_c_index_by_key(u32 key, sys_info_conf_t *sysinfo)
 {
 	u32 ht_c_index = 0;
 
-	for (ht_c_index=0; ht_c_index<32; ht_c_index++) {
+	for (ht_c_index = 0; ht_c_index < 32; ht_c_index++) {
 		if ((sysinfo->ht_c_conf_bus[ht_c_index] & 0xfff) == key) {
 			return ht_c_index;
 		}
 	}
 
-	for (ht_c_index=0; ht_c_index<32; ht_c_index++) {
+	for (ht_c_index = 0; ht_c_index < 32; ht_c_index++) {
 		if (sysinfo->ht_c_conf_bus[ht_c_index] == 0) {
 			 return ht_c_index;
 		}
@@ -127,7 +127,7 @@ u32 get_io_addr_index(u32 nodeid, u32 linkn)
 {
 	u32 index;
 
-	for (index=0; index<256; index++) {
+	for (index = 0; index < 256; index++) {
 		if (sysconf.conf_io_addrx[index+4] == 0) {
 			sysconf.conf_io_addr[index+4] =  (nodeid & 0x3f)  ;
 			sysconf.conf_io_addrx[index+4] = 1 | ((linkn & 0x7)<<4);
@@ -142,7 +142,7 @@ u32 get_mmio_addr_index(u32 nodeid, u32 linkn)
 {
 	u32 index;
 
-	for (index=0; index<64; index++) {
+	for (index = 0; index < 64; index++) {
 		if (sysconf.conf_mmio_addrx[index+8] == 0) {
 			sysconf.conf_mmio_addr[index+8] = (nodeid & 0x3f) ;
 			sysconf.conf_mmio_addrx[index+8] = 1 | ((linkn & 0x7)<<4);
@@ -185,7 +185,7 @@ void store_conf_mmio_addr(u32 nodeid, u32 linkn, u32 reg, u32 index,
 	val = 3 | ((linkn & 0x7)<<4) ; // 8 bits used
 	sysconf.conf_mmio_addrx[index] = val | (mmio_min & 0xffffff00); // base : with enable bit
 
-	if ( sysconf.mmio_addr_num<(index+1))
+	if (sysconf.mmio_addr_num<(index+1))
 		sysconf.mmio_addr_num = index+1;
 }
 
@@ -198,10 +198,10 @@ void set_io_addr_reg(device_t dev, u32 nodeid, u32 linkn, u32 reg,
 
 	/* io range allocation */
 	tempreg = (nodeid&0xf) | ((nodeid & 0x30)<<(8-4)) | (linkn<<4) |  ((io_max&0xf0)<<(12-4)); //limit
-	for (i=0; i<sysconf.nodes; i++)
+	for (i = 0; i < sysconf.nodes; i++)
 		pci_write_config32(__f1_dev[i], reg+4, tempreg);
 
-	tempreg = 3 /*| ( 3<<4)*/ | ((io_min&0xf0)<<(12-4));	      //base :ISA and VGA ?
+	tempreg = 3 /*| (3<<4)*/ | ((io_min&0xf0)<<(12-4));	      //base :ISA and VGA ?
 #if 0
 	// FIXME: can we use VGA reg instead?
 	if (dev->link[link].bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
@@ -213,7 +213,7 @@ void set_io_addr_reg(device_t dev, u32 nodeid, u32 linkn, u32 reg,
 		tempreg |= PCI_IO_BASE_NO_ISA;
 	}
 #endif
-	for (i=0; i<sysconf.nodes; i++)
+	for (i = 0; i < sysconf.nodes; i++)
 		pci_write_config32(__f1_dev[i], reg, tempreg);
 }
 
@@ -224,9 +224,9 @@ void set_mmio_addr_reg(u32 nodeid, u32 linkn, u32 reg, u32 index, u32 mmio_min, 
 
 	/* io range allocation */
 	tempreg = (nodeid&0xf) | (linkn<<4) |	 (mmio_max&0xffffff00); //limit
-	for (i=0; i<nodes; i++)
+	for (i = 0; i < nodes; i++)
 		pci_write_config32(__f1_dev[i], reg+4, tempreg);
 	tempreg = 3 | (nodeid & 0x30) | (mmio_min&0xffffff00);
-	for (i=0; i<sysconf.nodes; i++)
+	for (i = 0; i < sysconf.nodes; i++)
 		pci_write_config32(__f1_dev[i], reg, tempreg);
 }

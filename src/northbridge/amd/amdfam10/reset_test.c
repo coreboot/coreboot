@@ -116,8 +116,8 @@ static u8 node_link_to_bus(u8 node, u8 link) // node are 6 bit, and link three b
 		if ((config_map & 3) != 3) {
 			continue;
 		}
-		if ((config_map & (((63 & 0x0f)<<4) | ((63 & 0x30)<< (12-4)) | ((7 & 0x07)<<8) )
-			) == val )
+		if ((config_map & (((63 & 0x0f)<<4) | ((63 & 0x30)<< (12-4)) | ((7 & 0x07)<<8))
+			) == val)
 		{
 			return (config_map >> 16) & 0xff;
 		}

@@ -56,7 +56,7 @@ static void fill_mem_ctrl(u32 controllers, struct mem_controller *ctrl_a, const 
 	int j;
 	int index = 0;
 	struct mem_controller *ctrl;
-	for (i=0;i<controllers; i++) {
+	for (i = 0; i < controllers; i++) {
 		ctrl = &ctrl_a[i];
 		ctrl->node_id = i;
 		ctrl->f0 = NODE_PCI(i, 0);
@@ -70,7 +70,7 @@ static void fill_mem_ctrl(u32 controllers, struct mem_controller *ctrl_a, const 
 
 		ctrl->spd_switch_addr = spd_addr[index++];
 
-		for (j=0; j < 8; j++) {
+		for (j = 0; j < 8; j++) {
 			ctrl->spd_addr[j] = spd_addr[index++];
 
 		}

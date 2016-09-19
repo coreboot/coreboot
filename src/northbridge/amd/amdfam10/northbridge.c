@@ -65,7 +65,7 @@ static device_t __f0_dev[FX_DEVS];
 device_t __f1_dev[FX_DEVS];
 static device_t __f2_dev[FX_DEVS];
 static device_t __f4_dev[FX_DEVS];
-static unsigned fx_devs=0;
+static unsigned fx_devs = 0;
 
 device_t get_node_pci(u32 nodeid, u32 fn)
 {
@@ -605,9 +605,8 @@ static void amdfam10_create_vga_resource(device_t dev, unsigned nodeid)
 			printk(BIOS_DEBUG, "VGA: vga_pri bus num = %d bus range [%d,%d]\n", vga_pri->bus->secondary,
 				link->secondary,link->subordinate);
 			/* We need to make sure the vga_pri is under the link */
-			if ((vga_pri->bus->secondary >= link->secondary ) &&
-				(vga_pri->bus->secondary <= link->subordinate )
-			)
+			if ((vga_pri->bus->secondary >= link->secondary) &&
+			    (vga_pri->bus->secondary <= link->subordinate))
 #endif
 			break;
 		}
@@ -719,7 +718,7 @@ static void amdfam10_domain_read_resources(device_t dev)
 		if ((base & 3) != 0) {
 			unsigned nodeid, reg_link;
 			device_t reg_dev;
-			if (reg<0xc0) { // mmio
+			if (reg < 0xc0) { // mmio
 				nodeid = (limit & 0xf) + (base&0x30);
 			} else { // io
 				nodeid =  (limit & 0xf) + ((base>>4)&0x30);
@@ -879,7 +878,7 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 		 */
 		if (mem_hole.node_id==-1) {
 			resource_t limitk_pri = 0;
-			for (i=0; i<sysconf.nodes; i++) {
+			for (i = 0; i < sysconf.nodes; i++) {
 				struct dram_base_mask_t d;
 				resource_t base_k, limit_k;
 				d = get_dram_base_mask(i);
@@ -982,11 +981,11 @@ static void amdfam10_domain_set_resources(device_t dev)
 //		printk(BIOS_DEBUG, "node %d : mmio_basek=%08x, basek=%08x, limitk=%08x\n", i, mmio_basek, basek, limitk);
 
 		/* split the region to accommodate pci memory space */
-		if ( (basek < 4*1024*1024 ) && (limitk > mmio_basek) ) {
+		if ((basek < 4*1024*1024) && (limitk > mmio_basek)) {
 			if (basek <= mmio_basek) {
 				unsigned pre_sizek;
 				pre_sizek = mmio_basek - basek;
-				if (pre_sizek>0) {
+				if (pre_sizek > 0) {
 					ram_resource(dev, (idx | i), basek, pre_sizek);
 					idx += 0x10;
 					sizek -= pre_sizek;
@@ -1348,7 +1347,7 @@ static void sysconf_init(device_t dev) // first node
 
 	unsigned ht_c_index;
 
-	for (ht_c_index=0; ht_c_index<32; ht_c_index++) {
+	for (ht_c_index = 0; ht_c_index < 32; ht_c_index++) {
 		sysconf.ht_c_conf_bus[ht_c_index] = 0;
 	}
 
@@ -1369,7 +1368,7 @@ static void sysconf_init(device_t dev) // first node
 	{
 		sysconf.enabled_apic_ext_id = 1;
 	}
-	#if (CONFIG_APIC_ID_OFFSET>0)
+	#if (CONFIG_APIC_ID_OFFSET > 0)
 	if (sysconf.enabled_apic_ext_id) {
 		if (sysconf.bsp_apicid == 0) {
 			/* bsp apic id is not changed */
@@ -1492,7 +1491,7 @@ static void cpu_bus_scan(device_t dev)
 					printk(BIOS_DEBUG, "%s move to ",dev_path(dev_mc));
 					dev_mc->bus->secondary = CONFIG_CBB; // move to 0xff
 					printk(BIOS_DEBUG, "%s\n",dev_path(dev_mc));
-					while (dev_mc){
+					while (dev_mc) {
 						printk(BIOS_DEBUG, "%s move to ",dev_path(dev_mc));
 						dev_mc->path.pci.devfn -= PCI_DEVFN(0x18,0);
 						printk(BIOS_DEBUG, "%s\n",dev_path(dev_mc));
@@ -1516,7 +1515,7 @@ static void cpu_bus_scan(device_t dev)
 	nodes = sysconf.nodes;
 
 #if CONFIG_CBB && (NODE_NUMS > 32)
-	if (nodes>32) { // need to put node 32 to node 63 to bus 0xfe
+	if (nodes > 32) { // need to put node 32 to node 63 to bus 0xfe
 		if (pci_domain->link_list && !pci_domain->link_list->next) {
 			struct bus *new_link = new_link(pci_domain);
 			pci_domain->link_list->next = new_link;
@@ -1556,7 +1555,7 @@ static void cpu_bus_scan(device_t dev)
 		devn = CONFIG_CDB+i;
 		pbus = dev_mc->bus;
 #if CONFIG_CBB && (NODE_NUMS > 32)
-		if (i>=32) {
+		if (i >= 32) {
 			busn--;
 			devn-=32;
 			pbus = pci_domain->link_list->next;
@@ -1637,7 +1636,7 @@ static void cpu_bus_scan(device_t dev)
 			jj = cores_found;
 		}
 
-		for (j = 0; j <=jj; j++ ) {
+		for (j = 0; j <=jj; j++) {
 			u32 apic_id;
 
 			if (dual_node) {
@@ -1664,7 +1663,7 @@ static void cpu_bus_scan(device_t dev)
 				}
 			}
 
-#if CONFIG_ENABLE_APIC_EXT_ID && (CONFIG_APIC_ID_OFFSET>0)
+#if CONFIG_ENABLE_APIC_EXT_ID && (CONFIG_APIC_ID_OFFSET > 0)
 			if (sysconf.enabled_apic_ext_id) {
 				if (apic_id != 0 || sysconf.lift_bsp_apicid) {
 					apic_id += sysconf.apicid_offset;

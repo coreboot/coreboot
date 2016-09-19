@@ -967,8 +967,8 @@ that are corresponding to 0x01, 0x02, 0x03, 0x05, 0x06, 0x07
 #include "nums.h"
 
 #ifdef __PRE_RAM__
-#if NODE_NUMS==64
-	 #define NODE_PCI(x, fn) ((x<32)?(PCI_DEV(CONFIG_CBB,(CONFIG_CDB+x),fn)):(PCI_DEV((CONFIG_CBB-1),(CONFIG_CDB+x-32),fn)))
+#if NODE_NUMS == 64
+	 #define NODE_PCI(x, fn) ((x < 32)?(PCI_DEV(CONFIG_CBB,(CONFIG_CDB+x),fn)):(PCI_DEV((CONFIG_CBB-1),(CONFIG_CDB+x-32),fn)))
 #else
 	 #define NODE_PCI(x, fn) PCI_DEV(CONFIG_CBB,(CONFIG_CDB+x),fn)
 #endif
@@ -977,7 +977,7 @@ that are corresponding to 0x01, 0x02, 0x03, 0x05, 0x06, 0x07
 #include "raminit.h"
 
 #include "../amdmct/wrappers/mcti.h"
-#if (CONFIG_DIMM_SUPPORT & 0x000F)==0x0005 /* AMD_FAM10_DDR3 */
+#if (CONFIG_DIMM_SUPPORT & 0x000F) == 0x0005 /* AMD_FAM10_DDR3 */
   #include "../amdmct/mct_ddr3/mct_d.h"
 #else
   #include "../amdmct/mct/mct_d.h"

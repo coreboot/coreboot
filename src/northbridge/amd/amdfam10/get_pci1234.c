@@ -73,7 +73,7 @@ void get_pci1234(void)
 	//2. so at the same time we need update hsdn with hcdn_reg here
 //	printk(BIOS_DEBUG, "sysconf.ht_c_num = %02d\n", sysconf.ht_c_num);
 
-	for (j=0;j<sysconf.ht_c_num;j++) {
+	for (j = 0; j < sysconf.ht_c_num; j++) {
 		u32 dwordx;
 		dwordx = sysconf.ht_c_conf_bus[j];
 //		printk(BIOS_DEBUG, "sysconf.ht_c_conf_bus[%02d] = %08x\n", j, sysconf.ht_c_conf_bus[j]);
@@ -86,7 +86,7 @@ void get_pci1234(void)
 		if ((dwordx & 1)) {
 			// We need to find out the number of HC
 			// for exact match
-			for (i=1;i<sysconf.hc_possible_num;i++) {
+			for (i = 1; i < sysconf.hc_possible_num; i++) {
 				if ((dwordx & 0x7fc) == (sysconf.pci1234[i] & 0x7fc)) { // same node and same linkn
 					sysconf.pci1234[i] = dwordx;
 					sysconf.hcdn[i] = sysconf.hcdn_reg[j];
@@ -94,7 +94,7 @@ void get_pci1234(void)
 				}
 			}
 			// for 0xffc match or same node
-			for (i=1;i<sysconf.hc_possible_num;i++) {
+			for (i = 1; i < sysconf.hc_possible_num; i++) {
 				if ((dwordx & 0x7fc) == (dwordx & sysconf.pci1234[i] & 0x7fc)) {
 					sysconf.pci1234[i] = dwordx;
 					sysconf.hcdn[i] = sysconf.hcdn_reg[j];
@@ -104,7 +104,7 @@ void get_pci1234(void)
 		}
 	}
 
-	for (i=1;i<sysconf.hc_possible_num;i++) {
+	for (i = 1; i < sysconf.hc_possible_num; i++) {
 		if (!(sysconf.pci1234[i] & 1)) {
 			sysconf.pci1234[i] = 0;
 			sysconf.hcdn[i] = 0x20202020;

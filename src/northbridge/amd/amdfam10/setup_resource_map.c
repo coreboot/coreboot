@@ -72,9 +72,9 @@ void setup_resource_map_x_offset(const u32 *register_values, u32 max, u32 offset
 		if (IS_ENABLED(RES_DEBUG))
 			printk(BIOS_DEBUG, "%04x: %02x %08x <- & %08x | %08x\n",
 				i/4, register_values[i],
-				register_values[i+1] + ( (register_values[i]==RES_PCI_IO) ? offset_pci_dev : 0),
+				register_values[i+1] + ((register_values[i]==RES_PCI_IO) ? offset_pci_dev : 0),
 				register_values[i+2],
-				register_values[i+3] + ( ( (register_values[i] & RES_PORT_IO_32) == RES_PORT_IO_32) ? offset_io_base : 0)
+				register_values[i+3] + (((register_values[i] & RES_PORT_IO_32) == RES_PORT_IO_32) ? offset_io_base : 0)
 				);
 		switch (register_values[i]) {
 		case RES_PCI_IO: //PCI

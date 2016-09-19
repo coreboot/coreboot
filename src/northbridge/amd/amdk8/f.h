@@ -537,9 +537,9 @@ static inline void wait_all_core0_mem_trained(struct sys_info *sysinfo)
 
 	if (sysinfo->nodes == 1) return; // in case only one CPU installed
 
-	for (i=1; i<sysinfo->nodes; i++) {
+	for (i = 1; i < sysinfo->nodes; i++) {
 		/* Skip everything if I don't have any memory on this controller */
-		if (sysinfo->mem_trained[i]==0x00) continue;
+		if (sysinfo->mem_trained[i]== 0x00) continue;
 
 		mask |= (1<<i);
 
@@ -564,7 +564,7 @@ static inline void wait_all_core0_mem_trained(struct sys_info *sysinfo)
 		i%=sysinfo->nodes;
 	}
 
-	for (i=0; i<sysinfo->nodes; i++) {
+	for (i = 0; i < sysinfo->nodes; i++) {
 		printk(BIOS_DEBUG, "mem_trained[%02x]=%02x\n", i, sysinfo->mem_trained[i]);
 		switch(sysinfo->mem_trained[i]) {
 		case 0: //don't need train

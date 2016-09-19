@@ -42,7 +42,7 @@ struct amdk8_sysconf_t sysconf;
 #define MAX_FX_DEVS 8
 static device_t __f0_dev[MAX_FX_DEVS];
 static device_t __f1_dev[MAX_FX_DEVS];
-static unsigned fx_devs=0;
+static unsigned fx_devs = 0;
 
 static void get_fx_devs(void)
 {
@@ -178,7 +178,7 @@ static void amdk8_scan_chain(struct bus *link)
 		config_busses &= 0x000fc88;
 		config_busses |=
 			(3 << 0) |  /* rw enable, no device compare */
-			(( nodeid & 7) << 4) |
+			((nodeid & 7) << 4) |
 			((link->link_num & 3) << 8) |
 			((link->secondary) << 16) |
 			(0xff << 24);
@@ -489,8 +489,8 @@ static void amdk8_create_vga_resource(device_t dev, unsigned nodeid)
 			printk(BIOS_DEBUG, "VGA: vga_pri bus num = %d link bus range [%d,%d]\n", vga_pri->bus->secondary,
 				link->secondary,link->subordinate);
 			/* We need to make sure the vga_pri is under the link */
-			if ((vga_pri->bus->secondary >= link->secondary ) &&
-				(vga_pri->bus->secondary <= link->subordinate )
+			if ((vga_pri->bus->secondary >= link->secondary) &&
+				(vga_pri->bus->secondary <= link->subordinate)
 			)
 #endif
 			break;
@@ -505,7 +505,7 @@ static void amdk8_create_vga_resource(device_t dev, unsigned nodeid)
 
 	/* allocate a temp resource for the legacy VGA buffer */
 	resource = new_resource(dev, IOINDEX(4, link->link_num));
-	if (!resource){
+	if (!resource) {
 		printk(BIOS_DEBUG, "VGA: %s out of resources.\n", dev_path(dev));
 		return;
 	}
@@ -697,7 +697,7 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 		 */
 		if (mem_hole.node_id==-1) {
 			u32 limitk_pri = 0;
-			for (i=0; i<8; i++) {
+			for (i = 0; i < 8; i++) {
 				u32 base, limit;
 				unsigned base_k, limit_k;
 				base  = f1_read_config32(0x40 + (i << 3));
@@ -738,7 +738,7 @@ static void disable_hoist_memory(unsigned long hole_startk, int node_id)
 
 	hole_sizek = (4*1024*1024) - hole_startk;
 
-	for (i=7;i>node_id;i--) {
+	for (i = 7; i > node_id; i--) {
 
 		base  = f1_read_config32(0x40 + (i << 3));
 		if ((base & ((1<<1)|(1<<0))) != ((1<<1)|(1<<0))) {
@@ -775,7 +775,7 @@ static u32 hoist_memory(unsigned long hole_startk, int node_id)
 
 	carry_over = (4*1024*1024) - hole_startk;
 
-	for (i=7;i>node_id;i--) {
+	for (i = 7; i > node_id; i--) {
 
 		base  = f1_read_config32(0x40 + (i << 3));
 		if ((base & ((1<<1)|(1<<0))) != ((1<<1)|(1<<0))) {
@@ -970,11 +970,11 @@ static void amdk8_domain_set_resources(device_t dev)
 #endif
 
 		/* See if I need to split the region to accommodate pci memory space */
-		if ( (basek < 4*1024*1024 ) && (limitk > mmio_basek) ) {
+		if ((basek < 4*1024*1024) && (limitk > mmio_basek)) {
 			if (basek <= mmio_basek) {
 				unsigned pre_sizek;
 				pre_sizek = mmio_basek - basek;
-				if (pre_sizek>0) {
+				if (pre_sizek > 0) {
 					ram_resource(dev, (idx | i), basek, pre_sizek);
 					idx += 0x10;
 					sizek -= pre_sizek;
@@ -984,7 +984,7 @@ static void amdk8_domain_set_resources(device_t dev)
 				#if CONFIG_HW_MEM_HOLE_SIZEK != 0
 				if (reset_memhole)
 					#if !CONFIG_K8_REV_F_SUPPORT
-					if (!is_cpu_pre_e0() )
+					if (!is_cpu_pre_e0())
 					#endif
 		       				 sizek += hoist_memory(mmio_basek,i);
 				#endif
@@ -1210,7 +1210,7 @@ static void cpu_bus_scan(device_t dev)
 				//  ----> you can mixed single core e0 and dual core e0 at any sequence
 				// That is the typical case
 
-				if (j == 0 ){
+				if (j == 0) {
 				       #if !CONFIG_K8_REV_F_SUPPORT
 		 		       	e0_later_single_core = is_e0_later_in_bsp(i);  // single core
 				       #else
@@ -1222,10 +1222,10 @@ static void cpu_bus_scan(device_t dev)
 				if (e0_later_single_core) {
 					printk(BIOS_DEBUG, "\tFound Rev E or Rev F later single core\n");
 
-					j=1;
+					j = 1;
 				}
 
-				if (siblings > j ) {
+				if (siblings > j) {
 				}
 				else {
 					siblings = j;
@@ -1243,7 +1243,7 @@ static void cpu_bus_scan(device_t dev)
 			jj = siblings;
 		}
 
-		for (j = 0; j <=jj; j++ ) {
+		for (j = 0; j <= jj; j++) {
 			u32 apic_id = i * (nb_cfg_54?(siblings+1):1) + j * (nb_cfg_54?1:8);
 			if (sysconf.enabled_apic_ext_id) {
 				if (apic_id != 0 || sysconf.lift_bsp_apicid) {

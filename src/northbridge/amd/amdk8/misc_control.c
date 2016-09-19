@@ -120,7 +120,7 @@ static void misc_control_init(struct device *dev)
 	 */
 	cmd = pci_read_config32(dev, 0x44);
 	cmd |= (1<<6) | (1<<25);
-	pci_write_config32(dev, 0x44, cmd );
+	pci_write_config32(dev, 0x44, cmd);
 #if !CONFIG_K8_REV_F_SUPPORT
 	if (is_cpu_pre_c0()) {
 
@@ -129,11 +129,11 @@ static void misc_control_init(struct device *dev)
 		 */
 		cmd = pci_read_config32(dev, 0x80);
 		cmd &= ~(1<<0);
-		pci_write_config32(dev, 0x80, cmd );
+		pci_write_config32(dev, 0x80, cmd);
 		cmd = pci_read_config32(dev, 0x84);
 		cmd &= ~(1<<24);
 		cmd &= ~(1<<8);
-		pci_write_config32(dev, 0x84, cmd );
+		pci_write_config32(dev, 0x84, cmd);
 
 		/* Errata 66
 		 * Limit the number of downstream posted requests to 1
@@ -142,14 +142,14 @@ static void misc_control_init(struct device *dev)
 		if ((cmd & (3 << 0)) != 2) {
 			cmd &= ~(3<<0);
 			cmd |= (2<<0);
-			pci_write_config32(dev, 0x70, cmd );
+			pci_write_config32(dev, 0x70, cmd);
 			needs_reset = 1;
 		}
 		cmd = pci_read_config32(dev, 0x7c);
 		if ((cmd & (3 << 4)) != 0) {
 			cmd &= ~(3<<4);
 			cmd |= (0<<4);
-			pci_write_config32(dev, 0x7c, cmd );
+			pci_write_config32(dev, 0x7c, cmd);
 			needs_reset = 1;
 		}
 		/* Clock Power/Timing Low */
@@ -175,7 +175,7 @@ static void misc_control_init(struct device *dev)
 		}
 		cmd = pci_read_config32(dev, 0xd4);
 		if (cmd != cmd_ref) {
-			pci_write_config32(dev, 0xd4, cmd_ref );
+			pci_write_config32(dev, 0xd4, cmd_ref);
 			needs_reset = 1; /* Needed? */
 		}
 	}

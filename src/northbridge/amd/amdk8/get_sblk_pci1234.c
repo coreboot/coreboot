@@ -211,7 +211,7 @@ void get_sblk_pci1234(void)
 
 	dev = dev_find_slot(0, PCI_DEVFN(0x18, 1));
 
-	for (j=0;j<4;j++) {
+	for (j = 0; j < 4; j++) {
 		uint32_t dwordx;
 		dwordx = pci_read_config32(dev, 0xe0 + j*4);
 		dwordx &=0xffff0ff1; /* keep bus num, node_id, link_num, enable bits */
@@ -225,7 +225,7 @@ void get_sblk_pci1234(void)
 			/* We need to find out the number of HC
 			 * for exact match
 			 */
-			for (i=1;i<sysconf.hc_possible_num;i++) {
+			for (i = 1; i < sysconf.hc_possible_num; i++) {
 				if ((dwordx & 0xff0) == (sysconf.pci1234[i] & 0xff0)) {
 					sysconf.pci1234[i] = dwordx;
 					sysconf.hcdn[i] = sysconf.hcdn_reg[j];
@@ -234,7 +234,7 @@ void get_sblk_pci1234(void)
 			}
 
 			/* For 0xff0 match or same node */
-			for (i=1;i<sysconf.hc_possible_num;i++) {
+			for (i = 1; i < sysconf.hc_possible_num; i++) {
 				if ((dwordx & 0xff0) == (dwordx & sysconf.pci1234[i] & 0xff0)) {
 					sysconf.pci1234[i] = dwordx;
 					sysconf.hcdn[i] = sysconf.hcdn_reg[j];
@@ -244,7 +244,7 @@ void get_sblk_pci1234(void)
 		}
 	}
 
-	for (i=1;i<sysconf.hc_possible_num;i++) {
+	for (i = 1; i < sysconf.hc_possible_num; i++) {
 		if ((sysconf.pci1234[i] & 1) != 1) {
 			sysconf.pci1234[i] = 0;
 			sysconf.hcdn[i] = 0x20202020;

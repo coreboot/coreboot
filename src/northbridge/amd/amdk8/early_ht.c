@@ -64,7 +64,7 @@ static void enumerate_ht_chain(void)
 					pci_devfn_t devx;
 
 #if CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20
-					if (next_unitid>=0x18) { // don't get mask out by k8, at this time BSP, RT is not enabled, it will response from 0x18,0--0x1f.
+					if (next_unitid >= 0x18) { // don't get mask out by k8, at this time BSP, RT is not enabled, it will response from 0x18,0--0x1f.
 						if (!end_used) {
 							next_unitid = CONFIG_HT_CHAIN_END_UNITID_BASE;
 							end_used = 1;
@@ -127,7 +127,7 @@ out:
 	;
 
 #if CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20
-	if ((ht_dev_num>1) && (real_last_unitid != CONFIG_HT_CHAIN_END_UNITID_BASE) && !end_used) {
+	if ((ht_dev_num > 1) && (real_last_unitid != CONFIG_HT_CHAIN_END_UNITID_BASE) && !end_used) {
 		uint16_t flags;
 		dev = PCI_DEV(0,real_last_unitid, 0);
 		flags = pci_read_config16(dev, real_last_pos + PCI_CAP_FLAGS);

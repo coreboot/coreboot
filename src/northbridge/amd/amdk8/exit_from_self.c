@@ -144,7 +144,7 @@ void exit_from_self(int controllers, const struct mem_controller *ctrl,
 			dcm =
 			    pci_read_config32(ctrl[i].f2, DRAM_CTRL_MISC);
 		} while (((dcm & DCM_MemClrStatus) ==
-			  0) /* || ((dcm & DCM_DramEnabled) == 0) */ );
+			  0) /* || ((dcm & DCM_DramEnabled) == 0) */);
 
 		if (loops >= TIMEOUT_LOOPS) {
 			printk(BIOS_DEBUG, "timeout with with cntrl[%d]\n", i);

@@ -44,9 +44,9 @@ Scope (\_SB)
 
 	Method (DADD, 2, NotSerialized)
 	{
-		Store( Arg1, Local0)
-		Store( Arg0, Local1)
-		Add( ShiftLeft(Local1,16), Local0, Local0)
+		Store(Arg1, Local0)
+		Store(Arg0, Local1)
+		Add(ShiftLeft(Local1,16), Local0, Local0)
 		Return (Local0)
 	}
 
@@ -54,7 +54,7 @@ Scope (\_SB)
 	Method (GHCE, 1, NotSerialized) // check if the HC enabled
 	{
 		Store (DerefOf (Index (\_SB.PCI0.HCLK, Arg0)), Local1)
-		if (LEqual ( And(Local1, 0x01), 0x01)) { Return (0x0F) }
+		if (LEqual (And(Local1, 0x01), 0x01)) { Return (0x0F) }
 		Else { Return (0x00) }
 	}
 
@@ -62,7 +62,7 @@ Scope (\_SB)
 	{
 		Store (0x00, Local0)
 		Store (DerefOf (Index (\_SB.PCI0.HCLK, Arg0)), Local1)
-		Store (ShiftRight( And (Local1, 0xf0), 0x04), Local0)
+		Store (ShiftRight(And (Local1, 0xf0), 0x04), Local0)
 		Return (Local0)
 	}
 
@@ -70,7 +70,7 @@ Scope (\_SB)
 	{
 		Store (0x00, Local0)
 		Store (DerefOf (Index (\_SB.PCI0.HCLK, Arg0)), Local1)
-		Store (ShiftRight( And (Local1, 0xf00), 0x08), Local0)
+		Store (ShiftRight(And (Local1, 0xf00), 0x08), Local0)
 		Return (Local0)
 	}
 
@@ -80,7 +80,7 @@ Scope (\_SB)
 		Store (DerefOf (Index (\_SB.PCI0.HCDN, Arg0)), Local1)
 		Store (Arg1, Local2) // Arg1 could be 3, 2, 1, 0
 		Multiply (Local2, 0x08, Local2) // change to 24, 16, 8, 0
-		Store (And (ShiftRight( Local1, Local2), 0xff), Local0)
+		Store (And (ShiftRight(Local1, Local2), 0xff), Local0)
 		Return (Local0)
 	}
 

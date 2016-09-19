@@ -336,14 +336,14 @@ void mct_DramControlReg_Init_D(struct MCTStatStruc *pMCTstat,
 			printk(BIOS_SPEW, "%s: F2xA8: %08x\n", __func__, val);
 
 			if (is_fam15h()) {
-				for (cw=0; cw <=15; cw ++) {
+				for (cw = 0; cw <=15; cw ++) {
 					val = mct_ControlRC(pMCTstat, pDCTstat, dct, MrsChipSel << rc_word_chip_select_lower_bit(), cw);
 					mct_SendCtrlWrd(pMCTstat, pDCTstat, dct, val);
 					if ((cw == 2) || (cw == 8) || (cw == 10))
 						precise_ndelay_fam15(pMCTstat, 6000);
 				}
 			} else {
-				for (cw=0; cw <=15; cw ++) {
+				for (cw = 0; cw <=15; cw ++) {
 					mct_Wait(1600);
 					val = mct_ControlRC(pMCTstat, pDCTstat, dct, MrsChipSel << rc_word_chip_select_lower_bit(), cw);
 					mct_SendCtrlWrd(pMCTstat, pDCTstat, dct, val);

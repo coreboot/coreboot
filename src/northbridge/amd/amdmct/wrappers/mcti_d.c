@@ -347,7 +347,7 @@ static void mctGet_MaxLoadFreq(struct DCTStatStruc *pDCTstat)
 		printk(BIOS_DEBUG, "mctGet_MaxLoadFreq: Channel 2: %d DIMM(s) detected\n", ch2_count);
 	}
 
-#if (CONFIG_DIMM_SUPPORT & 0x000F)==0x0005 /* AMD_FAM10_DDR3 */
+#if (CONFIG_DIMM_SUPPORT & 0x000F) == 0x0005 /* AMD_FAM10_DDR3 */
 	uint8_t dimm;
 
 	for (i = 0; i < MAX_DIMMS_SUPPORTED; i = i + 2) {
@@ -473,7 +473,7 @@ static void mctHookAfterDramInit(void)
 {
 }
 
-#if (CONFIG_DIMM_SUPPORT & 0x000F)==0x0005 /* AMD_FAM10_DDR3 */
+#if (CONFIG_DIMM_SUPPORT & 0x000F) == 0x0005 /* AMD_FAM10_DDR3 */
 static void vErratum372(struct DCTStatStruc *pDCTstat)
 {
 	msr_t msr = rdmsr(NB_CFG_MSR);
@@ -481,8 +481,8 @@ static void vErratum372(struct DCTStatStruc *pDCTstat)
 	int nbPstate1supported = !(msr.hi & (1 << (NB_GfxNbPstateDis -32)));
 
 	// is this the right way to check for NB pstate 1 or DDR3-1333 ?
-	if (((pDCTstat->PresetmaxFreq==1333)||(nbPstate1supported))
-	    &&(!pDCTstat->GangedMode)) {
+	if (((pDCTstat->PresetmaxFreq == 1333)||(nbPstate1supported))
+	    && (!pDCTstat->GangedMode)) {
 		/* DisableCf8ExtCfg */
 		msr.hi &= ~(3 << (51 - 32));
 		wrmsr(NB_CFG_MSR, msr);
@@ -491,15 +491,15 @@ static void vErratum372(struct DCTStatStruc *pDCTstat)
 
 static void vErratum414(struct DCTStatStruc *pDCTstat)
 {
-	int dct=0;
+	int dct = 0;
 	for (; dct < 2 ; dct++) {
 		int dRAMConfigHi = Get_NB32(pDCTstat->dev_dct,0x94 + (0x100 * dct));
-		int powerDown =  dRAMConfigHi & (1 << PowerDownEn );
-		int ddr3 = dRAMConfigHi & (1 << Ddr3Mode );
+		int powerDown =  dRAMConfigHi & (1 << PowerDownEn);
+		int ddr3 = dRAMConfigHi & (1 << Ddr3Mode);
 		int dRAMMRS = Get_NB32(pDCTstat->dev_dct,0x84 + (0x100 * dct));
 		int pchgPDModeSel = dRAMMRS & (1 << PchgPDModeSel);
-		if (powerDown && ddr3 && pchgPDModeSel )
-			Set_NB32(pDCTstat->dev_dct,0x84 + (0x100 * dct), dRAMMRS & ~(1 << PchgPDModeSel) );
+		if (powerDown && ddr3 && pchgPDModeSel)
+			Set_NB32(pDCTstat->dev_dct,0x84 + (0x100 * dct), dRAMMRS & ~(1 << PchgPDModeSel));
 	}
 }
 #endif
@@ -507,7 +507,7 @@ static void vErratum414(struct DCTStatStruc *pDCTstat)
 
 static void mctHookBeforeAnyTraining(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)
 {
-#if (CONFIG_DIMM_SUPPORT & 0x000F)==0x0005 /* AMD_FAM10_DDR3 */
+#if (CONFIG_DIMM_SUPPORT & 0x000F) == 0x0005 /* AMD_FAM10_DDR3 */
   /* FIXME :  as of 25.6.2010 errata 350 and 372 should apply to  ((RB|BL|DA)-C[23])|(HY-D[01])|(PH-E0) but I don't find constants for all of them */
 	if (pDCTstatA->LogicalCPUID & (AMD_DRBH_Cx | AMD_DR_Dx)) {
 		vErratum372(pDCTstatA);
@@ -516,7 +516,7 @@ static void mctHookBeforeAnyTraining(struct MCTStatStruc *pMCTstat, struct DCTSt
 #endif
 }
 
-#if (CONFIG_DIMM_SUPPORT & 0x000F)==0x0005 /* AMD_FAM10_DDR3 */
+#if (CONFIG_DIMM_SUPPORT & 0x000F) == 0x0005 /* AMD_FAM10_DDR3 */
 static u32 mct_AdjustSPDTimings(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA, u32 val)
 {
 	if (pDCTstatA->LogicalCPUID & AMD_DR_Bx) {

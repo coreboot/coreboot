@@ -187,7 +187,7 @@ static void Get_ChannelPS_Cfg0_D(u8 MAAdimms, u8 Speed, u8 MAAload,
 	}
 
 	while (*p != 0xFF) {
-		if ((MAAdimms == *(p+10)) || (*(p+10 ) == 0xFE)) {
+		if ((MAAdimms == *(p+10)) || (*(p+10) == 0xFE)) {
 			if ((*p == Speed) || (*p == 0xFE)) {
 				if (MAAload <= *(p+1)) {
 					*AddrTmgCTL = stream_to_int((u8*)(p+2));

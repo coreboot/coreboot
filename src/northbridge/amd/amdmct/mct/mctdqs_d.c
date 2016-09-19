@@ -221,12 +221,12 @@ static void SetEccDQSRdWrPos_D(struct MCTStatStruc *pMCTstat,
 	u8 channel;
 	u8 direction;
 
-	for (channel = 0; channel < 2; channel++){
+	for (channel = 0; channel < 2; channel++) {
 		for (direction = 0; direction < 2; direction++) {
 			pDCTstat->Channel = channel;	/* Channel A or B */
 			pDCTstat->Direction = direction; /* Read or write */
 			CalcEccDQSPos_D(pMCTstat, pDCTstat, pDCTstat->CH_EccDQSLike[channel], pDCTstat->CH_EccDQSScale[channel], ChipSel);
-			print_debug_dqs_pair("\t\tSetEccDQSRdWrPos: channel ", channel, direction==DQS_READDIR? " R dqs_delay":" W dqs_delay",	pDCTstat->DQSDelay, 2);
+			print_debug_dqs_pair("\t\tSetEccDQSRdWrPos: channel ", channel, direction == DQS_READDIR? " R dqs_delay":" W dqs_delay",	pDCTstat->DQSDelay, 2);
 			pDCTstat->ByteLane = 8;
 			StoreDQSDatStrucVal_D(pMCTstat, pDCTstat, ChipSel);
 			mct_SetDQSDelayCSR_D(pMCTstat, pDCTstat, ChipSel);
@@ -251,7 +251,7 @@ static void CalcEccDQSPos_D(struct MCTStatStruc *pMCTstat,
 	GetDQSDatStrucVal_D(pMCTstat, pDCTstat, ChipSel);
 	DQSDelay1 = pDCTstat->DQSDelay;
 
-	if (DQSDelay0>DQSDelay1) {
+	if (DQSDelay0 > DQSDelay1) {
 		DQSDelay = DQSDelay0 - DQSDelay1;
 	} else {
 		DQSDelay = DQSDelay1 - DQSDelay0;
@@ -263,7 +263,7 @@ static void CalcEccDQSPos_D(struct MCTStatStruc *pMCTstat,
 
 	DQSDelay >>= 8;		// /256
 
-	if (DQSDelay0>DQSDelay1) {
+	if (DQSDelay0 > DQSDelay1) {
 		DQSDelay = DQSDelay1 - DQSDelay;
 	} else {
 		DQSDelay += DQSDelay1;
@@ -320,7 +320,7 @@ static void TrainDQSRdWrPos_D(struct MCTStatStruc *pMCTstat,
 		if (pDCTstat->DIMMValidDCT[Channel] == 0)	/* mct_BeforeTrainDQSRdWrPos_D */
 			continue;
 
-		for ( DQSWrDelay = 0; DQSWrDelay < dqsWrDelay_end; DQSWrDelay++) {
+		for (DQSWrDelay = 0; DQSWrDelay < dqsWrDelay_end; DQSWrDelay++) {
 			pDCTstat->DQSDelay = DQSWrDelay;
 			pDCTstat->Direction = DQS_WRITEDIR;
 			mct_SetDQSDelayAllCSR_D(pMCTstat, pDCTstat, cs_start);
@@ -362,7 +362,7 @@ static void TrainDQSRdWrPos_D(struct MCTStatStruc *pMCTstat,
 				for (Receiver = cs_start; Receiver < (cs_start + 2); Receiver += 2) {
 					printk(BIOS_DEBUG, "\t\tReceiver: %02x: ", Receiver);
 					p = pDCTstat->CH_D_DIR_B_DQS[Channel][Receiver >> 1][Dir];
-					for (i=0;i<8; i++) {
+					for (i = 0; i < 8; i++) {
 						val  = p[i];
 						printk(BIOS_DEBUG, "%02x ", val);
 					}
@@ -383,7 +383,7 @@ static void TrainDQSRdWrPos_D(struct MCTStatStruc *pMCTstat,
 		lo &= ~(1<<17);		/* restore HWCR.wrap32dis */
 		_WRMSR(addr, lo, hi);
 	}
-	if (!_SSE2){
+	if (!_SSE2) {
 		cr4 = read_cr4();
 		cr4 &= ~(1<<9);		/* restore cr4.OSFXSR */
 		write_cr4(cr4);
@@ -411,11 +411,11 @@ static void SetupDqsPattern_D(struct MCTStatStruc *pMCTstat,
 	buf = (u32 *)(((u32)buffer + 0x10) & (0xfffffff0));
 	if (pDCTstat->Status & (1 << SB_128bitmode)) {
 		pDCTstat->Pattern = 1;	/* 18 cache lines, alternating qwords */
-		for (i=0; i<16*18; i++)
+		for (i = 0; i < 16*18; i++)
 			buf[i] = TestPatternJD1b_D[i];
 	} else {
 		pDCTstat->Pattern = 0;	/* 9 cache lines, sequential qwords */
-		for (i=0; i<16*9; i++)
+		for (i = 0; i < 16*9; i++)
 			buf[i] = TestPatternJD1a_D[i];
 	}
 	pDCTstat->PtrPatternBufA = (u32)buf;
@@ -458,10 +458,10 @@ static void TrainDQSPos_D(struct MCTStatStruc *pMCTstat,
 		dqsDelay_end = 32;
 	}
 
-	/* Bitmapped status per delay setting, 0xff=All positions
+	/* Bitmapped status per delay setting, 0xff = All positions
 	 * passing (1= PASS). Set the entire array.
 	 */
-	for (DQSDelay=0; DQSDelay<64; DQSDelay++) {
+	for (DQSDelay = 0; DQSDelay < 64; DQSDelay++) {
 		MutualCSPassW[DQSDelay] = 0xFF;
 	}
 
@@ -481,7 +481,7 @@ static void TrainDQSPos_D(struct MCTStatStruc *pMCTstat,
 		}
 
 		print_debug_dqs("\t\t\t\tTrainDQSPos: 12 TestAddr ", TestAddr, 4);
-		SetUpperFSbase(TestAddr);	/* fs:eax=far ptr to target */
+		SetUpperFSbase(TestAddr);	/* fs:eax = far ptr to target */
 
 		if (pDCTstat->Direction == DQS_READDIR) {
 			print_debug_dqs("\t\t\t\tTrainDQSPos: 13 for read ", 0, 4);
@@ -504,7 +504,7 @@ static void TrainDQSPos_D(struct MCTStatStruc *pMCTstat,
 			print_debug_dqs("\t\t\t\t\tTrainDQSPos: 144 Pattern ", pDCTstat->Pattern, 5);
 			ReadDQSTestPattern_D(pMCTstat, pDCTstat, TestAddr << 8);
 			/* print_debug_dqs("\t\t\t\t\tTrainDQSPos: 145 MutualCSPassW ", MutualCSPassW[DQSDelay], 5); */
-			tmp = CompareDQSTestPattern_D(pMCTstat, pDCTstat, TestAddr << 8); /* 0=fail, 1=pass */
+			tmp = CompareDQSTestPattern_D(pMCTstat, pDCTstat, TestAddr << 8); /* 0 = fail, 1 = pass */
 
 			if (mct_checkFenceHoleAdjust_D(pMCTstat, pDCTstat, DQSDelay, ChipSel, &tmp)) {
 				goto skipLocMiddle;
@@ -538,7 +538,7 @@ static void TrainDQSPos_D(struct MCTStatStruc *pMCTstat,
 					if (LastTest == DQS_FAIL) {
 						RnkDlySeqPassMin = DQSDelay; //start sequential run
 					}
-					if ((RnkDlySeqPassMax - RnkDlySeqPassMin)>(RnkDlyFilterMax-RnkDlyFilterMin)){
+					if ((RnkDlySeqPassMax - RnkDlySeqPassMin)>(RnkDlyFilterMax-RnkDlyFilterMin)) {
 						RnkDlyFilterMin = RnkDlySeqPassMin;
 						RnkDlyFilterMax = RnkDlySeqPassMax;
 					}
@@ -552,7 +552,7 @@ static void TrainDQSPos_D(struct MCTStatStruc *pMCTstat,
 				Errors |= 1 << SB_NODQSPOS; /* no passing window */
 			} else {
 				print_debug_dqs_pair("\t\t\t\tTrainDQSPos: 34 RnkDlyFilter: ", RnkDlyFilterMin, " ",  RnkDlyFilterMax, 4);
-				if (((RnkDlyFilterMax - RnkDlyFilterMin) < MIN_DQS_WNDW)){
+				if (((RnkDlyFilterMax - RnkDlyFilterMin) < MIN_DQS_WNDW)) {
 					Errors |= 1 << SB_SMALLDQS;
 				} else {
 					u8 middle_dqs;
@@ -631,7 +631,7 @@ static u8 MiddleDQS_D(u8 min, u8 max)
 	size = max-min;
 	if (size % 2)
 		size++;		// round up if the size isn't even.
-	return ( min + (size >> 1));
+	return (min + (size >> 1));
 }
 
 
@@ -679,10 +679,10 @@ static u8 ChipSelPresent_D(struct MCTStatStruc *pMCTstat,
 		reg_off = 0;
 	}
 
-	if (ChipSel < MAX_CS_SUPPORTED){
+	if (ChipSel < MAX_CS_SUPPORTED) {
 		reg = 0x40 + (ChipSel << 2) + reg_off;
 		val = Get_NB32(dev, reg);
-		if (val & ( 1 << 0))
+		if (val & (1 << 0))
 			ret = 1;
 	}
 
@@ -775,8 +775,8 @@ static u8 CompareDQSTestPattern_D(struct MCTStatStruc *pMCTstat, struct DCTStatS
 	}
 
 	bytelane = 0;  		/* bytelane counter */
-	bitmap = 0xFF;		/* bytelane test bitmap, 1=pass */
-	for (i=0; i < (9 * 64 / 4); i++) { /* sizeof testpattern. /4 due to next loop */
+	bitmap = 0xFF;		/* bytelane test bitmap, 1 = pass */
+	for (i = 0; i < (9 * 64 / 4); i++) { /* sizeof testpattern. /4 due to next loop */
 		value = read32_fs(addr_lo);
 		value_test = *test_buf;
 
@@ -797,7 +797,7 @@ static u8 CompareDQSTestPattern_D(struct MCTStatStruc *pMCTstat, struct DCTStatS
 		if (!bitmap)
 			break;
 
-		if (bytelane == 0){
+		if (bytelane == 0) {
 			if (pattern == 1) { //dual channel
 				addr_lo += 8; //skip over other channel's data
 				test_buf += 2;
@@ -815,7 +815,7 @@ static void FlushDQSTestPattern_D(struct DCTStatStruc *pDCTstat,
 					u32 addr_lo)
 {
 	/* Flush functions in mct_gcc.h */
-	if (pDCTstat->Pattern == 0){
+	if (pDCTstat->Pattern == 0) {
 		FlushDQSTestPattern_L9(addr_lo);
 	} else {
 		FlushDQSTestPattern_L18(addr_lo);
@@ -1036,7 +1036,7 @@ static void mct_SetDQSDelayAllCSR_D(struct MCTStatStruc *pMCTstat,
 
 
 	for (ChipSel = cs_start; ChipSel < (cs_start + 2); ChipSel++) {
-		if ( mct_RcvrRankEnabled_D(pMCTstat, pDCTstat, pDCTstat->Channel, ChipSel)) {
+		if (mct_RcvrRankEnabled_D(pMCTstat, pDCTstat, pDCTstat->Channel, ChipSel)) {
 			for (ByteLane = 0; ByteLane < 8; ByteLane++) {
 				pDCTstat->ByteLane = ByteLane;
 				mct_SetDQSDelayCSR_D(pMCTstat, pDCTstat, ChipSel);
@@ -1088,9 +1088,9 @@ u32 mct_GetMCTSysAddr_D(struct MCTStatStruc *pMCTstat,
 
 	val &= ~0x0F;
 
-	/* unganged mode DCT0+DCT1, sys addr of DCT1=node
+	/* unganged mode DCT0+DCT1, sys addr of DCT1 = node
 	 * base+DctSelBaseAddr+local ca base*/
-	if ((Channel) && (pDCTstat->GangedMode == 0) && ( pDCTstat->DIMMValidDCT[0] > 0)) {
+	if ((Channel) && (pDCTstat->GangedMode == 0) && (pDCTstat->DIMMValidDCT[0] > 0)) {
 		reg = 0x110;
 		dword = Get_NB32(dev, reg);
 		dword &= 0xfffff800;
@@ -1104,7 +1104,7 @@ u32 mct_GetMCTSysAddr_D(struct MCTStatStruc *pMCTstat,
 			val += dword;
 		}
 	} else {
-		/* sys addr=node base+local cs base */
+		/* sys addr = node base+local cs base */
 		val += pDCTstat->DCTSysBase;
 
 		/* New stuff */

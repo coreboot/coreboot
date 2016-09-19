@@ -36,13 +36,13 @@ u32 OtherTiming_A_D(struct DCTStatStruc *pDCTstat, u32 val)
 {
 	/* Bug#10695:One MEMCLK Bubble Writes Don't Do X4 X8 Switching Correctly
 	 * Solution: BIOS should set DRAM Timing High[Twrwr] > 00b
-	 * ( F2x[1, 0]8C[1:0] > 00b).  Silicon Status: Fixed in Rev B
+	 * (F2x[1, 0]8C[1:0] > 00b).  Silicon Status: Fixed in Rev B
 	 * FIXME: check if this is still required.
 	 */
 	uint64_t tmp;
 	tmp = pDCTstat->LogicalCPUID;
 	if ((tmp == AMD_DR_A0A) || (tmp == AMD_DR_A1B) || (tmp == AMD_DR_A2)) {
-		if (!(val & (3<<12) ))
+		if (!(val & (3<<12)))
 			val |= 1<<12;
 	}
 	return val;
@@ -69,7 +69,7 @@ void mct_ForceAutoPrecharge_D(struct DCTStatStruc *pDCTstat, u32 dct)
 				val |= 1<<BurstLength32;
 			Set_NB32(dev, reg, val);
 
-			reg = 0x88 + reg_off;	/* cx=Dram Timing Lo */
+			reg = 0x88 + reg_off;	/* cx = Dram Timing Lo */
 			val = Get_NB32(dev, reg);
 			val |= 0x000F0000;	/* Trc = 0Fh */
 			Set_NB32(dev, reg, val);
@@ -89,7 +89,7 @@ void mct_EndDQSTraining_D(struct MCTStatStruc *pMCTstat,
 	 * NOTE -- this has been documented with a note at the end of this
 	 * section in the  BKDG (although, admittedly, the note does not really
 	 * stand out).
-	 * Silicon Status: Fixed in Rev B ( confirm)
+	 * Silicon Status: Fixed in Rev B (confirm)
 	 * FIXME: check this.
 	 */
 
@@ -149,14 +149,14 @@ void mct_BeforeDQSTrain_Samp_D(struct MCTStatStruc *pMCTstat,
 		dev = pDCTstat->dev_dct;
 		index = 0;
 
-		for (Channel = 0; Channel<2; Channel++) {
+		for (Channel = 0; Channel < 2; Channel++) {
 			index_reg = 0x98 + 0x100 * Channel;
 			val = Get_NB32_index_wait(dev, index_reg, 0x0d004007);
 			val |= 0x3ff;
 			Set_NB32_index_wait(dev, index_reg, 0x0d0f4f07, val);
 		}
 
-		for (Channel = 0; Channel<2; Channel++) {
+		for (Channel = 0; Channel < 2; Channel++) {
 			if (pDCTstat->GangedMode && Channel)
 				break;
 			reg_off = 0x100 * Channel;
@@ -167,11 +167,11 @@ void mct_BeforeDQSTrain_Samp_D(struct MCTStatStruc *pMCTstat,
 			Set_NB32(dev, reg, val);
 		}
 
-		for (Channel = 0; Channel<2; Channel++) {
+		for (Channel = 0; Channel < 2; Channel++) {
 			reg_off = 0x100 * Channel;
 			val = 0;
 			index_reg = 0x98 + reg_off;
-			for ( index = 0x30; index < (0x45 + 1); index++) {
+			for (index = 0x30; index < (0x45 + 1); index++) {
 				Set_NB32_index_wait(dev, index_reg, index, val);
 			}
 		}
@@ -211,7 +211,7 @@ u32 Modify_D3CMP(struct DCTStatStruc *pDCTstat, u32 dct, u32 value)
 		index = 0x0D004201;
 		val = Get_NB32_index_wait(dev, index_reg, index);
 		value &= ~(1<<27);
-		value |= ((val>>10) & 1) << 27;
+		value |= ((val >> 10) & 1) << 27;
 	}
 	return value;
 }
@@ -254,10 +254,10 @@ u32 CheckNBCOFAutoPrechg(struct DCTStatStruc *pDCTstat, u32 dct)
 	/* 3 * (Fn2xD4[NBFid]+4)/(2^NbDid)/(3+Fn2x94[MemClkFreq]) */
 	msr = 0xC0010071;
 	_RDMSR(msr, &lo, &hi);
-	NbDid = (lo>>22) & 1;
+	NbDid = (lo >> 22) & 1;
 
 	val = Get_NB32(pDCTstat->dev_dct, 0x94 + 0x100 * dct);
-	valx = ((val & 0x07) + 3)<<NbDid;
+	valx = ((val & 0x07) + 3) << NbDid;
 	print_tx("MemClk:", valx >> NbDid);
 
 	val = Get_NB32(pDCTstat->dev_nbmisc, 0xd4);
@@ -265,7 +265,7 @@ u32 CheckNBCOFAutoPrechg(struct DCTStatStruc *pDCTstat, u32 dct)
 	print_tx("NB COF:", valy >> NbDid);
 
 	val = valy/valx;
-	if ((val==3) && (valy%valx))  /* 3 < NClk/MemClk < 4 */
+	if ((val == 3) && (valy % valx))  /* 3 < NClk/MemClk < 4 */
 		ret = 1;
 
 	return ret;
@@ -296,7 +296,7 @@ void mct_BeforeDramInit_D(struct DCTStatStruc *pDCTstat, u32 dct)
 			}
 			dev = pDCTstat->dev_dct;
 			index = 0x0D00E001;
-			for (ch=ch_start; ch<ch_end; ch++) {
+			for (ch = ch_start; ch < ch_end; ch++) {
 				index_reg = 0x98 + 0x100 * ch;
 				val = Get_NB32_index(dev, index_reg, 0x0D00E001);
 				val &= ~(0xf0);

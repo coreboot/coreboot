@@ -45,7 +45,7 @@ void InterleaveBanks_D(struct MCTStatStruc *pMCTstat,
 	while (DoIntlv && (ChipSel < MAX_CS_SUPPORTED)) {
 		reg = 0x40+(ChipSel<<2);	/* Dram CS Base 0 */
 		val = Get_NB32_DCT(dev, dct, reg);
-		if ( val & (1<<CSEnable)) {
+		if (val & (1<<CSEnable)) {
 			EnChipSels++;
 			reg = 0x60+((ChipSel>>1)<<2); /*Dram CS Mask 0 */
 			val = Get_NB32_DCT(dev, dct, reg);

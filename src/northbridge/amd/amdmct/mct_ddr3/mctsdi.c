@@ -912,7 +912,7 @@ static u32 mct_MR1(struct MCTStatStruc *pMCTstat,
 		/* program MrsAddress[11]=TDQS: based on F2x[1,0]94[RDqsEn] */
 		if (Get_NB32_DCT(dev, dct, 0x94) & (1 << RDqsEn)) {
 			u8 bit;
-			/* Set TDQS=1b for x8 DIMM, TDQS=0b for x4 DIMM, when mixed x8 & x4 */
+			/* Set TDQS = 1b for x8 DIMM, TDQS = 0b for x4 DIMM, when mixed x8 & x4 */
 			bit = (ret >> 21) << 1;
 			if ((dct & 1) != 0)
 				bit ++;
@@ -1063,7 +1063,7 @@ static void mct_SendZQCmd(struct DCTStatStruc *pDCTstat, u8 dct)
 	printk(BIOS_DEBUG, "%s: Start\n", __func__);
 
 	/*1.Program MrsAddress[10]=1
-	  2.Set SendZQCmd=1
+	  2.Set SendZQCmd = 1
 	 */
 	dword = Get_NB32_DCT(dev, dct, 0x7C);
 	dword &= ~0xFFFFFF;
@@ -1071,7 +1071,7 @@ static void mct_SendZQCmd(struct DCTStatStruc *pDCTstat, u8 dct)
 	dword |= 1 << SendZQCmd;
 	Set_NB32_DCT(dev, dct, 0x7C, dword);
 
-	/* Wait for SendZQCmd=0 */
+	/* Wait for SendZQCmd = 0 */
 	do {
 		dword = Get_NB32_DCT(dev, dct, 0x7C);
 	} while (dword & (1 << SendZQCmd));

@@ -39,7 +39,7 @@
 static int smb_write_blk(u8 slave, u8 command, u8 length, const u8 *data)
 {
 	__outbyte(SMB0_STATUS, 0x1E);		// clear error status
-	__outbyte(SMB0_ADDRESS, slave & ~1);	// slave addr + direction=out
+	__outbyte(SMB0_ADDRESS, slave & ~1);	// slave addr + direction = out
 	__outbyte(SMB0_HOSTCMD, command);	// or destination offset
 	__outbyte(SMB0_DATA0, length);		// sent before data
 	__inbyte(SMB0_CONTROL);			// reset block data array
@@ -96,7 +96,7 @@ static void init(struct device *dev)
 	 * effect a power cycle and switch to the alternate BIOS chip.
 	 * Should be done as late as possible. */
 	printk(BIOS_INFO, "Sending BIOS alive message\n");
-	const u8 i_am_alive[] = { 0x03 }; //bit2=SEL_DP0: 0=DDI2, 1=LVDS
+	const u8 i_am_alive[] = { 0x03 }; //bit2 = SEL_DP0: 0 = DDI2, 1 = LVDS
 	if ((i = smb_write_blk(0x50, 0x25, sizeof(i_am_alive), i_am_alive)))
 		printk(BIOS_ERR, "smb_write_blk failed: %d\n", i);
 

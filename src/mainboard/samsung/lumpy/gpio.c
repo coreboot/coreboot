@@ -233,9 +233,9 @@ const struct pch_gpio_set2 pch_gpio_set2_level = {
 	.gpio41 = GPIO_LEVEL_LOW,
 	.gpio42 = GPIO_LEVEL_LOW,
 	.gpio43 = GPIO_LEVEL_LOW,
-	.gpio44 = GPIO_LEVEL_HIGH,	/* CTL2=1 for USB0 SDP */
-	.gpio45 = GPIO_LEVEL_LOW,	/* CTL3=0 for USB0 SDP */
-	.gpio46 = GPIO_LEVEL_HIGH,	/* CTL2=1 for USB1 SDP */
+	.gpio44 = GPIO_LEVEL_HIGH,	/* CTL2 = 1 for USB0 SDP */
+	.gpio45 = GPIO_LEVEL_LOW,	/* CTL3 = 0 for USB0 SDP */
+	.gpio46 = GPIO_LEVEL_HIGH,	/* CTL2 = 1 for USB1 SDP */
 	.gpio47 = GPIO_LEVEL_HIGH,	/* Enable USB0 */
 	.gpio48 = GPIO_LEVEL_LOW,	/* Disable Bluetooth */
 	.gpio49 = GPIO_LEVEL_LOW,
@@ -299,7 +299,7 @@ const struct pch_gpio_set3 pch_gpio_set3_level = {
 	.gpio70 = GPIO_LEVEL_HIGH,	/* WLAN out of reset */
 	.gpio71 = GPIO_LEVEL_HIGH,	/* WLAN power on */
 	.gpio72 = GPIO_LEVEL_LOW,
-	.gpio73 = GPIO_LEVEL_LOW,	/* USB1 CTL3=0 for SDP */
+	.gpio73 = GPIO_LEVEL_LOW,	/* USB1 CTL3 = 0 for SDP */
 	.gpio74 = GPIO_LEVEL_LOW,
 	.gpio75 = GPIO_LEVEL_LOW,
 };

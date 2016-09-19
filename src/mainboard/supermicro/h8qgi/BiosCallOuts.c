@@ -53,7 +53,7 @@ static UINT8 select_socket(UINT8 socket_id)
 	gpio56_to_53 = pci_read_config8(sm_dev, PCI_REG_GPIO_56_to_53_CNTRL);
 	value  = gpio56_to_53 & (~GPIO_OUT_BIT_GPIO54_to_53_MASK);
 	value |= socket_id;
-	value &= (~GPIO_OUT_ENABLE_BIT_GPIO54_to_53_MASK); // 0=Output Enabled, 1=Tristate
+	value &= (~GPIO_OUT_ENABLE_BIT_GPIO54_to_53_MASK); // 0 = Output Enabled, 1 = Tristate
 	pci_write_config8(sm_dev, PCI_REG_GPIO_56_to_53_CNTRL, value);
 
 	return gpio56_to_53;

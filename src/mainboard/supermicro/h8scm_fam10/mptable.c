@@ -72,7 +72,7 @@ static void *smp_write_config_table(void *v)
 			dword = (u32 *)((pci_read_config32(dev, 0xac) &
 					 ~(7 << 26)) | (6 << 26));
 
-			/* dword |= 1<<22; PIC and APIC co exists */
+			/* dword |= 1 << 22; PIC and APIC co exists */
 			pci_write_config32(dev, 0xac, (u32)dword);
 
 			/*

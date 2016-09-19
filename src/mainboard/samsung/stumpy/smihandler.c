@@ -36,16 +36,16 @@ void mainboard_smi_sleep(u8 slp_typ)
 	switch (slp_typ) {
 	case ACPI_S3:
 	case ACPI_S4:
-		it8772f_gpio_led(DUMMY_DEV, 4 /* set */, (0x1<<5) /* select */,
-			(0x1<<5) /* polarity */, (0x1<<5) /* 1=pullup */,
-			(0x1<<5) /* output */, 0x00, /* 0=Alternate function */
+		it8772f_gpio_led(DUMMY_DEV, 4 /* set */, (0x1 << 5) /* select */,
+			(0x1 << 5) /* polarity */, (0x1 << 5) /* 1 = pullup */,
+			(0x1 << 5) /* output */, 0x00, /* 0 = Alternate function */
 			SIO_GPIO_BLINK_GPIO45, IT8772F_GPIO_BLINK_FREQUENCY_1_HZ);
 		break;
 
 	case ACPI_S5:
-		it8772f_gpio_led(DUMMY_DEV, 4 /* set */, (0x1<<5) /* select */,
-			0x00 /* polarity: non-inverting */, 0x00 /* 0=pulldown */,
-			(0x1<<5) /* output */, (0x1<<5) /* 1=Simple IO function */,
+		it8772f_gpio_led(DUMMY_DEV, 4 /* set */, (0x1 << 5) /* select */,
+			0x00 /* polarity: non-inverting */, 0x00 /* 0 = pulldown */,
+			(0x1 << 5) /* output */, (0x1 << 5) /* 1 = Simple IO function */,
 			SIO_GPIO_BLINK_GPIO45, IT8772F_GPIO_BLINK_FREQUENCY_1_HZ);
 		break;
 	default:

@@ -31,7 +31,7 @@
 
 /* Init SIO GPIOs. */
 #define SIO_RUNTIME_BASE 0x0E00
-static const u16 sio_init_table[] = { // hi=offset, lo=value
+static const u16 sio_init_table[] = { // hi = offset, lo = value
 	0x4BA0, // GP1x: COM1/2 control   = RS232, no term, max 115200
 	0x2300, // GP10: COM1 termination = push/pull output
 	0x2400, // GP11: COM2 termination = push/pull output
@@ -70,7 +70,7 @@ static const u16 sio_init_table[] = { // hi=offset, lo=value
 static int smb_write_blk(u8 slave, u8 command, u8 length, const u8 *data)
 {
 	__outbyte(SMB0_STATUS, 0x1E);		// clear error status
-	__outbyte(SMB0_ADDRESS, slave & ~1);	// slave addr + direction=out
+	__outbyte(SMB0_ADDRESS, slave & ~1);	// slave addr + direction = out
 	__outbyte(SMB0_HOSTCMD, command);	// or destination offset
 	__outbyte(SMB0_DATA0, length);		// sent before data
 	__inbyte(SMB0_CONTROL);			// reset block data array

@@ -34,7 +34,7 @@
 /* Bit0 enables COM3's transceiver, bit1 disables the RS485 receiver (e.g. for IR). */
 #define SIO_GP2X_CONFIG 0x00
 
-static const u16 ec_init_table[] = { /* hi=data, lo=index */
+static const u16 ec_init_table[] = { /* hi = data, lo = index */
 	0x1900,		/* Enable monitoring */
 	0x3050,		/* VIN4,5 enabled */
 	0x0351,		/* TMPIN1,2 diode mode, TMPIN3 off */

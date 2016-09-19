@@ -139,50 +139,50 @@ static void *smp_write_config_table(void *v)
         smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_0, ((sbdn +0x0a)<<2)|0, apicid_ck804, 0x15); // 21
 
 //Slot 1 PCIE x16
-        for(i=0;i<4;i++) {
-                smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_5, (0x00<<2)|i, apicid_ck804, 0x10 + (2+i+4-sbdn%4)%4);
+        for(i = 0; i < 4; i++) {
+                smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_5, (0x00 << 2)|i, apicid_ck804, 0x10 + (2+i+4-sbdn%4)%4);
         }
 
 //Onboard Firewire
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_1, (0x05<<2)|0, apicid_ck804, 0x13); // 19
+        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_1, (0x05 << 2)|0, apicid_ck804, 0x13); // 19
 
 //Slot 2 PCI 32
-        for(i=0;i<4;i++) {
-                smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_1, (0x04<<2)|i, apicid_ck804, 0x10 + (0+i)%4);
+        for(i = 0; i < 4; i++) {
+                smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_1, (0x04 << 2)|i, apicid_ck804, 0x10 + (0+i)%4);
         }
 
 	if(pci1234[2] & 0xf) {
 //Onboard ck804b NIC
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804b_0, ((sbdnb+0x0a)<<2)|0, apicid_ck804b, 0x15);//24+4+4+21=53
+        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804b_0, ((sbdnb+0x0a)<<2)|0, apicid_ck804b, 0x15);//24+4+4+21 = 53
 
 //Slot 3 PCIE x16
-        for(i=0;i<4;i++) {
-                smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804b_5, (0x00<<2)|i, apicid_ck804b, 0x10 + (2+i+4-sbdnb%4)%4);
+        for(i = 0; i < 4; i++) {
+                smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804b_5, (0x00 << 2)|i, apicid_ck804b, 0x10 + (2+i+4-sbdnb%4)%4);
         }
 	}
 
 //Channel B of 8131
 
 //Slot 4 PCI-X 100/66
-        for(i=0;i<4;i++) {
-                smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8131_2, (4<<2)|i, apicid_8131_2, (0+i)%4);
+        for(i = 0; i < 4; i++) {
+                smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8131_2, (4 << 2)|i, apicid_8131_2, (0+i)%4);
         }
 
 //Slot 5 PCIX 100/66
-        for(i=0;i<4;i++) {
-                smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8131_2, (9<<2)|i, apicid_8131_2, (1+i)%4); // 29
+        for(i = 0; i < 4; i++) {
+                smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8131_2, (9 << 2)|i, apicid_8131_2, (1+i)%4); // 29
         }
 
 //OnBoard LSI SCSI
-        for(i=0;i<2;i++) {
-                smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8131_2, (6<<2)|i, apicid_8131_2, (2+i)%4); //30
+        for(i = 0; i < 2; i++) {
+                smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8131_2, (6 << 2)|i, apicid_8131_2, (2+i)%4); //30
         }
 
 //Channel A of 8131
 
 //Slot 6 PCIX 133/100/66
-        for(i=0;i<4;i++) {
-                smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8131_1, (4<<2)|i, apicid_8131_1, (0+i)%4); //24
+        for(i = 0; i < 4; i++) {
+                smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8131_1, (4 << 2)|i, apicid_8131_1, (0+i)%4); //24
         }
 
 /*Local Ints:	Type	Polarity    Trigger	Bus ID	 IRQ	APIC ID	PIN#*/

@@ -31,7 +31,7 @@
 	#define SIO_GP1X_CONFIG 0x20
 #endif
 
-static const u16 ec_init_table[] = {	/* hi=data, lo=index */
+static const u16 ec_init_table[] = {	/* hi = data, lo = index */
 	0x1900,		/* Enable monitoring */
 	0x0351,		/* TMPIN1,2 diode mode, TMPIN3 off */
 	0x805C,		/* Unlock zero adjust */

@@ -145,7 +145,7 @@ const PCH_AZALIA_VERB_TABLE mAzaliaVerbTable[] = { {
 		0x10EC0262,     /* Vendor ID/Device IDA */
 		0x0000,         /* SubSystem ID */
 		0xFF,           /* Revision IDA */
-		0x01,           /* Front panel support (1=yes, 2=no) */
+		0x01,           /* Front panel support (1 = yes, 2 = no) */
 		0x000B,         /* Number of Rear Jacks = 11 */
 		0x0002          /* Number of Front Jacks = 2 */
 	},

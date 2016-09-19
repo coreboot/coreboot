@@ -47,31 +47,31 @@ static void *smp_write_config_table(void *v)
 
 	/* Internal PCI devices */
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
-			 0, (0x01<<2)|0, 0x01, 0x10); /* DMA controller */
+			 0, (0x01 << 2)|0, 0x01, 0x10); /* DMA controller */
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
-			 0, (0x02<<2)|0, 0x01, 0x10); /* PCIe port A */
+			 0, (0x02 << 2)|0, 0x01, 0x10); /* PCIe port A */
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
-			 0, (0x03<<2)|0, 0x01, 0x10); /* PCIe port A1 */
+			 0, (0x03 << 2)|0, 0x01, 0x10); /* PCIe port A1 */
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
-			 0, (0x1c<<2)|0, 0x01, 0x10); /* PCIe port B0 */
+			 0, (0x1c << 2)|0, 0x01, 0x10); /* PCIe port B0 */
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
-			 0, (0x1c<<2)|1, 0x01, 0x11); /* PCIe port B1 */
+			 0, (0x1c << 2)|1, 0x01, 0x11); /* PCIe port B1 */
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
-			 0, (0x1c<<2)|2, 0x01, 0x12); /* PCIe port B2 */
+			 0, (0x1c << 2)|2, 0x01, 0x12); /* PCIe port B2 */
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
-			 0, (0x1c<<2)|3, 0x01, 0x13); /* PCIe port B3 */
+			 0, (0x1c << 2)|3, 0x01, 0x13); /* PCIe port B3 */
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
-			 0, (0x1d<<2)|0, 0x01, 0x10); /* UHCI0/EHCI */
+			 0, (0x1d << 2)|0, 0x01, 0x10); /* UHCI0/EHCI */
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
-			 0, (0x1d<<2)|1, 0x01, 0x11); /* UHCI1 */
+			 0, (0x1d << 2)|1, 0x01, 0x11); /* UHCI1 */
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
-			 0, (0x1e<<2)|0, 0x01, 0x10); /* Audio */
+			 0, (0x1e << 2)|0, 0x01, 0x10); /* Audio */
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
-			 0, (0x1e<<2)|1, 0x01, 0x11); /* Modem */
+			 0, (0x1e << 2)|1, 0x01, 0x11); /* Modem */
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
-			 0, (0x1f<<2)|1, 0x01, 0x11); /* SATA/SMBus */
+			 0, (0x1f << 2)|1, 0x01, 0x11); /* SATA/SMBus */
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
-			 0, (0x1f<<2)|3, 0x01, 0x13); /* ? */
+			 0, (0x1f << 2)|3, 0x01, 0x13); /* ? */
 
 	/* PCI slot */
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,

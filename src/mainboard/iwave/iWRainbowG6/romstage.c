@@ -219,7 +219,7 @@ void transaction3(unsigned char dev_addr)
 
 	// sch_SMbus_regs ();
 	//check the status register for busy state
-	//temp=inb(SMBusBase+SMBHSTSTS);
+	//temp = inb(SMBusBase+SMBHSTSTS);
 	//printk(BIOS_DEBUG, "SMBus Busy.. status =%x\r\n",temp);
 	//sch_SMbus_regs ();
 	//printk(BIOS_DEBUG, "SMBHSTSTS. =%x\r\n",inb(SMBusBase+SMBHSTSTS));

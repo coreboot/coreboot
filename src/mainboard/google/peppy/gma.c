@@ -91,7 +91,7 @@ static void palette(void)
 	unsigned long color = 0;
 
 	for(i = 0; i < 256; i++, color += 0x010101){
-		gtt_write(_LGC_PALETTE_A + (i<<2),color);
+		gtt_write(_LGC_PALETTE_A + (i << 2),color);
 	}
 }
 

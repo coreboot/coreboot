@@ -80,11 +80,11 @@ static void sio_setup(void)
         pci_write_config8(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0x7b, byte);
 
         dword = pci_read_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa0);
-        dword |= (1<<0);
+        dword |= (1 << 0);
         pci_write_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa0, dword);
 
         dword = pci_read_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa4);
-        dword |= (1<<16);
+        dword |= (1 << 16);
         pci_write_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa4, dword);
 }
 
@@ -163,7 +163,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 #if CONFIG_SET_FIDVID
         {
                 msr_t msr;
-                msr=rdmsr(0xc0010042);
+                msr = rdmsr(0xc0010042);
                 printk(BIOS_DEBUG, "begin msr fid, vid %08x%08x\n", msr.hi, msr.lo);
         }
         enable_fid_change();
@@ -172,7 +172,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
         // show final fid and vid
         {
                 msr_t msr;
-                msr=rdmsr(0xc0010042);
+                msr = rdmsr(0xc0010042);
                 printk(BIOS_DEBUG, "end   msr fid, vid %08x%08x\n", msr.hi, msr.lo);
         }
 #endif

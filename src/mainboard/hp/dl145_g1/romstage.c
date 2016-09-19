@@ -28,12 +28,12 @@ static void memreset_setup(void)
 {
 	if (is_cpu_pre_c0()) {
 		/* Set the memreset low. */
-		outb((1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 16);
+		outb((1 << 2)|(0 << 0), SMBUS_IO_BASE + 0xc0 + 16);
 		/* Ensure the BIOS has control of the memory lines. */
-		outb((1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 17);
+		outb((1 << 2)|(0 << 0), SMBUS_IO_BASE + 0xc0 + 17);
 	} else {
 		/* Ensure the CPU has control of the memory lines. */
-		outb((1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 17);
+		outb((1 << 2)|(1 << 0), SMBUS_IO_BASE + 0xc0 + 17);
 	}
 }
 
@@ -42,7 +42,7 @@ static void memreset(int controllers, const struct mem_controller *ctrl)
 	if (is_cpu_pre_c0()) {
 		udelay(800);
 		/* Set memreset high. */
-		outb((1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 16);
+		outb((1 << 2)|(1 << 0), SMBUS_IO_BASE + 0xc0 + 16);
 		udelay(90);
 	}
 }
@@ -53,11 +53,11 @@ static inline void activate_spd_rom(const struct mem_controller *ctrl)
 {
 	int ret,i;
 	unsigned device=(ctrl->channel0[0])>>8;
-	/* the very first write always get COL_STS=1 and ABRT_STS=1, so try another time*/
-	i=2;
+	/* the very first write always get COL_STS = 1 and ABRT_STS = 1, so try another time*/
+	i = 2;
 	do {
 		ret = smbus_write_byte(SMBUS_HUB, 0x01, device);
-	} while ((ret!=0) && (i-->0));
+	} while ((ret != 0) && (i-->0));
 	smbus_write_byte(SMBUS_HUB, 0x03, 0);
 }
 
@@ -65,11 +65,11 @@ static inline void change_i2c_mux(unsigned device)
 {
 	int ret, i;
 	printk(BIOS_DEBUG, "change_i2c_mux i=%02x\n", device);
-	i=2;
+	i = 2;
 	do {
 		ret = smbus_write_byte(SMBUS_HUB, 0x01, device);
 		printk(BIOS_DEBUG, "change_i2c_mux 1 ret=%08x\n", ret);
-	} while ((ret!=0) && (i-->0));
+	} while ((ret != 0) && (i-->0));
 	ret = smbus_write_byte(SMBUS_HUB, 0x03, 0);
 	printk(BIOS_DEBUG, "change_i2c_mux 2 ret=%08x\n", ret);
 }
@@ -91,8 +91,8 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "cpu/amd/model_fxx/fidvid.c"
 #endif
 
-#define RC0 ((1<<1)<<8)
-#define RC1 ((1<<2)<<8)
+#define RC0 ((1 << 1)<<8)
+#define RC1 ((1 << 2)<<8)
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
@@ -142,7 +142,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		{
 		/* Read FIDVID_STATUS */
 			msr_t msr;
-			msr=rdmsr(0xc0010042);
+			msr = rdmsr(0xc0010042);
 			printk(BIOS_DEBUG, "begin msr fid, vid %08x%08x\n", msr.hi, msr.lo);
 		}
 
@@ -153,7 +153,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		// show final fid and vid
 		{
 			msr_t msr;
-			msr=rdmsr(0xc0010042);
+			msr = rdmsr(0xc0010042);
 			printk(BIOS_DEBUG, "end msr fid, vid %08x%08x\n", msr.hi, msr.lo);
 		}
 
@@ -173,10 +173,10 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	enable_smbus();
 
 	int i;
-	for(i=0;i<2;i++) {
+	for(i = 0; i < 2; i++) {
 		activate_spd_rom(&sysinfo->ctrl[i]);
 	}
-	for(i=RC0;i<=RC1;i<<=1) {
+	for(i = RC0; i <= RC1; i<<=1) {
 		change_i2c_mux(i);
 	}
 

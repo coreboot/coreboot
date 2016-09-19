@@ -87,14 +87,14 @@ static void early_superio_config_w83627ehg(void)
 	pnp_write_config(dev, 0x2c, 0x03); // GPIO settings?
 	pnp_write_config(dev, 0x2d, 0x20); // GPIO settings?
 
-	dev=PNP_DEV(0x4e, W83627EHG_SP1);
+	dev = PNP_DEV(0x4e, W83627EHG_SP1);
 	pnp_set_logical_device(dev);
 	pnp_set_enable(dev, 0);
 	pnp_set_iobase(dev, PNP_IDX_IO0, 0x3f8);
 	pnp_set_irq(dev, PNP_IDX_IRQ0, 4);
 	pnp_set_enable(dev, 1);
 
-	dev=PNP_DEV(0x4e, W83627EHG_SP2);
+	dev = PNP_DEV(0x4e, W83627EHG_SP2);
 	pnp_set_logical_device(dev);
 	pnp_set_enable(dev, 0);
 	pnp_set_iobase(dev, PNP_IDX_IO0, 0x2f8);
@@ -102,7 +102,7 @@ static void early_superio_config_w83627ehg(void)
 	// pnp_write_config(dev, 0xf1, 4); // IRMODE0
 	pnp_set_enable(dev, 1);
 
-	dev=PNP_DEV(0x4e, W83627EHG_KBC); // Keyboard
+	dev = PNP_DEV(0x4e, W83627EHG_KBC); // Keyboard
 	pnp_set_logical_device(dev);
 	pnp_set_enable(dev, 0);
 	pnp_set_iobase(dev, PNP_IDX_IO0, 0x60);
@@ -110,27 +110,27 @@ static void early_superio_config_w83627ehg(void)
 	//pnp_write_config(dev, 0xf0, 0x82);
 	pnp_set_enable(dev, 1);
 
-	dev=PNP_DEV(0x4e, W83627EHG_GPIO2);
+	dev = PNP_DEV(0x4e, W83627EHG_GPIO2);
 	pnp_set_logical_device(dev);
 	pnp_set_enable(dev, 1); // Just enable it
 
-	dev=PNP_DEV(0x4e, W83627EHG_GPIO3);
+	dev = PNP_DEV(0x4e, W83627EHG_GPIO3);
 	pnp_set_logical_device(dev);
 	pnp_set_enable(dev, 0);
 	pnp_write_config(dev, 0xf0, 0xfb); // GPIO bit 2 is output
 	pnp_write_config(dev, 0xf1, 0x00); // GPIO bit 2 is 0
 	pnp_write_config(dev, 0x30, 0x03); // Enable GPIO3+4. pnp_set_enable is not sufficient
 
-	dev=PNP_DEV(0x4e, W83627EHG_FDC);
+	dev = PNP_DEV(0x4e, W83627EHG_FDC);
 	pnp_set_logical_device(dev);
 	pnp_set_enable(dev, 0);
 
-	dev=PNP_DEV(0x4e, W83627EHG_PP);
+	dev = PNP_DEV(0x4e, W83627EHG_PP);
 	pnp_set_logical_device(dev);
 	pnp_set_enable(dev, 0);
 
 	/* Enable HWM */
-	dev=PNP_DEV(0x4e, W83627EHG_HWM);
+	dev = PNP_DEV(0x4e, W83627EHG_HWM);
 	pnp_set_logical_device(dev);
 	pnp_set_enable(dev, 0);
 	pnp_set_iobase(dev, PNP_IDX_IO0, 0xa00);

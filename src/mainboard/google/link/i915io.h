@@ -18,7 +18,7 @@
 
 /* things that are, strangely, not defined anywhere? */
 #define PCH_PP_UNLOCK 0xabcd0000
-#define WMx_LP_SR_EN (1<<31)
+#define WMx_LP_SR_EN (1 << 31)
 
 /* Google Link-specific defines */
 /* how many 4096-byte pages do we need for the framebuffer?

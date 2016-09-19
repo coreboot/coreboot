@@ -69,7 +69,7 @@ void get_bus_conf(void)
 	int i;
 	struct mb_sysconf_t *m;
 
-	if(get_bus_conf_done==1) return; //do it only once
+	if(get_bus_conf_done == 1) return; //do it only once
 
 	get_bus_conf_done = 1;
 
@@ -80,7 +80,7 @@ void get_bus_conf(void)
 
 	sysconf.hc_possible_num = ARRAY_SIZE(pci1234x);
 
-	for(i=0;i<sysconf.hc_possible_num; i++) {
+	for(i = 0; i < sysconf.hc_possible_num; i++) {
 		sysconf.pci1234[i] = pci1234x[i];
 		sysconf.hcdn[i] = hcdnx[i];
 	}
@@ -124,6 +124,6 @@ void get_bus_conf(void)
 
 /*I/O APICs:	APIC ID	Version	State		Address*/
 	apicid_base = 0x10;
-	for(i=0;i<3;i++)
+	for(i = 0; i < 3; i++)
 		m->apicid_bcm5785[i] = apicid_base+i;
 }

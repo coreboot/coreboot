@@ -332,7 +332,7 @@ $$(obj)/$(1)/b__$(1).o: $$(obj)/$(1)/b__$(1).adb
 	@printf "    CC         $$(subst $$(obj)/,,$$@)\n"
 	$(CC_$(1)) $$(ADAFLAGS_$(1)) -c -o $$@ $$<
 $(1)-objs += $$(obj)/$(1)/b__$(1).o
-$($(1)-alis): %.ali: %.o
+$($(1)-alis): %.ali: %.o ;
 endef
 
 $(eval $(foreach class,$(filter-out libgnat-%,$(classes)), \

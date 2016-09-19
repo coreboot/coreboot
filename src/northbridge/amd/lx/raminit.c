@@ -106,7 +106,7 @@ static void auto_size_dimm(unsigned int dimm)
 	dimm_size <<= (dimm_setting >> CF07_UPPER_D0_MB_SHIFT) & 1;	/* shift to multiply by # DIMM banks */
 	banner("BEFORT CTZ");
 	dimm_size = __builtin_ctz(dimm_size);
-	banner("TEST DIMM SIZE>8");
+	banner("TEST DIMM SIZE > 8");
 	if (dimm_size > 8) {	/* 8 is 1GB only support 1GB per DIMM */
 		printk(BIOS_EMERG, "Only support up to 1 GB per DIMM\n");
 		post_code(ERROR_DENSITY_DIMM);
@@ -131,12 +131,12 @@ static void auto_size_dimm(unsigned int dimm)
 *;pa		   12 11 10 09 08 07 06 05 04 03	(10 col addr bits = 8K page size)
 *;pa	 13 AP 12 11 10 09 08 07 06 05 04 03	(11 col addr bits = 16K page size)
 *;pa  14 13 AP 12 11 10 09 08 07 06 05 04 03	(12 col addr bits = 32K page size)
-*; *AP=autoprecharge bit
+*; *AP = autoprecharge bit
 *
 *;Remember that pa[2:0] are zeroed out since it's a 64-bit data bus (8 bytes),
 *;so lower 3 address bits are dont_cares.So from the table above,
-*;it's easier to see what the old code is doing: if for example,#col_addr_bits=7(06h),
-*;it adds 3 to get 10, then does 2^10=1K.  Get it?*/
+*;it's easier to see what the old code is doing: if for example,#col_addr_bits = 7(06h),
+*;it adds 3 to get 10, then does 2^10 = 1K.  Get it?*/
 
 	spd_byte = NumColAddr[spd_read_byte(dimm, SPD_NUM_COLUMNS) & 0xF];
 	banner("MAXCOLADDR");
@@ -147,10 +147,10 @@ static void auto_size_dimm(unsigned int dimm)
 	}
 	banner(">12address test");
 	spd_byte -= 7;
-	if (spd_byte > 5) {	/* if the value is above 6 it means >12 address lines */
-		spd_byte = 7;	/* which means >32k so set to disabled */
+	if (spd_byte > 5) {	/* if the value is above 6 it means > 12 address lines */
+		spd_byte = 7;	/* which means > 32k so set to disabled */
 	}
-	dimm_setting |= spd_byte << CF07_UPPER_D0_PSZ_SHIFT;	/* 0=1k,1=2k,2=4k,etc */
+	dimm_setting |= spd_byte << CF07_UPPER_D0_PSZ_SHIFT;	/* 0 = 1k, 1 = 2k, 2 = 4k, etc */
 
 	banner("RDMSR CF07");
 	msr = rdmsr(MC_CF07_DATA);
@@ -182,7 +182,7 @@ static void checkDDRMax(void)
 	}
 
 	/* I don't think you need this check.
-	   if (spd_byte0 >= 0xA0 || spd_byte1 >= 0xA0){
+	   if (spd_byte0 >= 0xA0 || spd_byte1 >= 0xA0) {
 	   printk(BIOS_EMERG, "DIMM overclocked. Check GeodeLink Speed\n");
 	   post_code(POST_PLL_MEM_FAIL);
 	   hcf();
@@ -242,7 +242,7 @@ const uint8_t CASDDR[] = { 5, 5, 2, 6, 3, 7, 4, 0 };	/* 1(1.5), 1.5, 2, 2.5, 3, 
 static u8 getcasmap(u32 dimm, u16 glspeed)
 {
 	u16 dimm_speed;
-	u8 spd_byte, casmap, casmap_shift=0;
+	u8 spd_byte, casmap, casmap_shift = 0;
 
 	/**************************	 DIMM0	**********************************/
 	casmap = spd_read_byte(dimm, SPD_ACCEPTABLE_CAS_LATENCIES);
@@ -730,8 +730,8 @@ void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	}
 
 	/* Set PMode0 Sensitivity Counter */
-	msr.lo = 0;		/* pmode 0=0 most aggressive */
-	msr.hi = 0x200;		/* pmode 1=200h */
+	msr.lo = 0;		/* pmode 0 = 0 most aggressive */
+	msr.hi = 0x200;		/* pmode 1 = 200h */
 	wrmsr(MC_CF_PMCTR, msr);
 
 	/* Set PMode1 Up delay enable */

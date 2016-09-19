@@ -671,7 +671,7 @@ static void htDiscoveryFloodFill(sMainData *pDat)
 
 			pDat->TotalLinks++;
 
-			if ( !pDat->sysMatrix[currentNode][token] )
+			if (!pDat->sysMatrix[currentNode][token])
 			{
 				pDat->sysDegree[currentNode]++;
 				pDat->sysDegree[token]++;
@@ -745,8 +745,8 @@ static BOOL isoMorph(u8 i, sMainData *pDat)
 		{
 			for (k = 0; k < nodecnt; k++)
 			{
-				if ( pDat->sysMatrix[j][k] !=
-				   pDat->dbMatrix[pDat->Perm[j]][pDat->Perm[k]] )
+				if (pDat->sysMatrix[j][k] !=
+				   pDat->dbMatrix[pDat->Perm[j]][pDat->Perm[k]])
 					return FALSE;
 			}
 		}
@@ -1356,12 +1356,12 @@ static void regangLinks(sMainData *pDat)
 		pDat->PortList[i].SelRegang = FALSE;
 		pDat->PortList[i+1].SelRegang = FALSE;
 
-		if ( (pDat->PortList[i].Type != PORTLIST_TYPE_CPU) || (pDat->PortList[i+1].Type != PORTLIST_TYPE_CPU))
+		if ((pDat->PortList[i].Type != PORTLIST_TYPE_CPU) || (pDat->PortList[i+1].Type != PORTLIST_TYPE_CPU))
 			continue;   /*  Only process CPU to CPU links */
 
 		for (j = i+2; j < pDat->TotalLinks*2; j += 2)
 		{
-			if ( (pDat->PortList[j].Type != PORTLIST_TYPE_CPU) || (pDat->PortList[j+1].Type != PORTLIST_TYPE_CPU) )
+			if ((pDat->PortList[j].Type != PORTLIST_TYPE_CPU) || (pDat->PortList[j+1].Type != PORTLIST_TYPE_CPU))
 				continue;   /*  Only process CPU to CPU links */
 
 			if (pDat->PortList[i].NodeID != pDat->PortList[j].NodeID)
@@ -1506,7 +1506,7 @@ static void selectOptimalWidthAndFrequency(sMainData *pDat)
 		cbPCBBAUpstreamWidth = 16;
 #endif
 
-		if ( (pDat->PortList[i].Type == PORTLIST_TYPE_CPU) && (pDat->PortList[i+1].Type == PORTLIST_TYPE_CPU))
+		if ((pDat->PortList[i].Type == PORTLIST_TYPE_CPU) && (pDat->PortList[i+1].Type == PORTLIST_TYPE_CPU))
 		{
 			if (pDat->HtBlock->AMD_CB_Cpu2CpuPCBLimits)
 			{
@@ -1639,7 +1639,7 @@ static void hammerSublinkFixup(sMainData *pDat)
 				{
 					if ((loFreq != 7) &&  /* {13, 7} 2400MHz / 1200MHz 2:1 */
 						(loFreq != 4) &&  /* {13, 4} 2400MHz /  600MHz 4:1 */
-						(loFreq != 2) )   /* {13, 2} 2400MHz /  400MHz 6:1 */
+						(loFreq != 2))   /* {13, 2} 2400MHz /  400MHz 6:1 */
 						downgrade = TRUE;
 				}
 				else if (hiFreq == 11)
@@ -1651,19 +1651,19 @@ static void hammerSublinkFixup(sMainData *pDat)
 				{
 					if ((loFreq != 5) &&  /* { 9, 5} 1600MHz /  800MHz 2:1 */
 						(loFreq != 2) &&  /* { 9, 2} 1600MHz /  400MHz 4:1 */
-						(loFreq != 0) )   /* { 9, 0} 1600MHz /  200MHz 8:1 */
+						(loFreq != 0))   /* { 9, 0} 1600MHz /  200MHz 8:1 */
 						downgrade = TRUE;
 				}
 				else if (hiFreq == 7)
 				{
 					if ((loFreq != 4) &&  /* { 7, 4} 1200MHz /  600MHz 2:1 */
-						(loFreq != 0) )   /* { 7, 0} 1200MHz /  200MHz 6:1 */
+						(loFreq != 0))   /* { 7, 0} 1200MHz /  200MHz 6:1 */
 						downgrade = TRUE;
 				}
 				else if (hiFreq == 5)
 				{
 					if ((loFreq != 2) &&  /* { 5, 2}  800MHz /  400MHz 2:1 */
-						(loFreq != 0) )   /* { 5, 0}  800MHz /  200MHz 4:1 */
+						(loFreq != 0))   /* { 5, 0}  800MHz /  200MHz 4:1 */
 						downgrade = TRUE;
 				}
 				else if (hiFreq == 2)
@@ -1807,7 +1807,7 @@ static void tuning(sMainData *pDat)
 	/* For each node, invoke northbridge specific buffer tunings or
 	 * system specific customizations.
 	 */
-	for (i=0; i < pDat->NodesDiscovered + 1; i++)
+	for (i = 0; i < pDat->NodesDiscovered + 1; i++)
 	{
 		if ((pDat->HtBlock->AMD_CB_CustomizeBuffers == NULL)
 		   || !pDat->HtBlock->AMD_CB_CustomizeBuffers(i))

@@ -91,7 +91,7 @@ struct msr_defaults {
 	    /* 180d is left at default, e0000-fffff is non-cached */
 	    /* we will assume 180e, the ssm region configuration, is left at default or set by VSM */
 	    /* we will not set 0x180f, the DMM,yet */
-	    //{0x1810, {.hi=0xee7ff000, .lo=RRCF_LOW(0xee000000, WRITE_COMBINE|CACHE_DISABLE)}},
+	    //{0x1810, {.hi = 0xee7ff000, .lo = RRCF_LOW(0xee000000, WRITE_COMBINE|CACHE_DISABLE)}},
 	    //{0x1811, {.hi = 0xefffb000, .lo = RRCF_LOW_CD(0xefff8000)}},
 	    //{0x1812, {.hi = 0xefff7000, .lo = RRCF_LOW_CD(0xefff4000)}},
 	    //{0x1813, {.hi = 0xefff3000, .lo = RRCF_LOW_CD(0xefff0000)}},

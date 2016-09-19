@@ -35,9 +35,9 @@ AGESA_STATUS AmdMemoryReadSPD (UINT32 unused1, UINT32 unused2, AGESA_READ_SPD_PA
 	if ((dev == 0) || (config == 0))
 		return AGESA_ERROR;
 
-	if (info->SocketId     >= DIMENSION(config->spdAddrLookup      ))
+	if (info->SocketId     >= DIMENSION(config->spdAddrLookup     ))
 		return AGESA_ERROR;
-	if (info->MemChannelId >= DIMENSION(config->spdAddrLookup[0]   ))
+	if (info->MemChannelId >= DIMENSION(config->spdAddrLookup[0]  ))
 		return AGESA_ERROR;
 	if (info->DimmId       >= DIMENSION(config->spdAddrLookup[0][0]))
 		return AGESA_ERROR;

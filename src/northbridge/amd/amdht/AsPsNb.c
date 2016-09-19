@@ -43,13 +43,13 @@ u8 getMinNbCOF(void)
 	numOfNode = getNumOfNodeNb();
 
 	/* go through each node for the minimum NbCOF (in multiple of CLKIN/2) */
-	for (i=0; i < numOfNode; i++)
+	for (i = 0; i < numOfNode; i++)
 	{
 		/* stub function for APIC ID virtualization for large MP system later */
 		deviceId = translateNodeIdToDeviceIdNb(i);
 
-		/* read all P-state spec registers for NbDid=1 */
-		for (j=0; j < 5; j++)
+		/* read all P-state spec registers for NbDid = 1 */
+		for (j = 0; j < 5; j++)
 		{
 			AmdPCIRead(MAKE_SBDFO(0,0,deviceId,FN_4,PS_SPEC_REG+(j*PCI_REG_LEN)), &dtemp); /*F4x1E0 + j*4 */
 			/* get NbDid */
@@ -86,13 +86,13 @@ u8 getMinNbCOF(void)
 					nextNbFid = nextNbFid >> 1; */
 			}
 		}
-		if ( i == 0)
+		if (i == 0)
 			nbFid = nextNbFid;
-		else if ( nbFid > nextNbFid )
+		else if (nbFid > nextNbFid)
 		nbFid = nextNbFid;
 	}
 
-	/* add the base and convert to 100MHz divide by 2 if DID=1 */
+	/* add the base and convert to 100MHz divide by 2 if DID = 1 */
 	if (nbDid)
 		nbFid = (u8) (nbFid + 4);
 	else

@@ -78,7 +78,7 @@ static void rd890_enable(device_t dev)
 			0, (devfn >> 3), (devfn & 0x07), dev->enabled);
 
 	/* we only do this once */
-	if (devfn==0) {
+	if (devfn == 0) {
 		/* CIMX configuration defualt initialize */
 		rd890_cimx_config(&gConfig, &nb_cfg[0], &ht_cfg[0], &pcie_cfg[0]);
 		if (gConfig.StandardHeader.CalloutPtr != NULL) {

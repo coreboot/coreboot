@@ -45,7 +45,6 @@
 
 #define SLEEP_DURATION 60 /* in usec */
 #define SLEEP_DURATION_LONG 210 /* in usec */
-#define SLEEP_DURATION_SAFE 750 /* in usec */
 #define SLEEP_DURATION_PROBE_MS 1000 /* in msec */
 
 /* max. number of iterations after I2C NAK for 'long' commands
@@ -58,19 +57,16 @@
 /* expected value for DIDVID register */
 #define TPM_TIS_I2C_DID_VID_9635 0x000b15d1L
 #define TPM_TIS_I2C_DID_VID_9645 0x001a15d1L
-#define TPM_TIS_I2C_DID_VID_CR50 0x00281ae0L
 
 enum i2c_chip_type {
 	SLB9635,
 	SLB9645,
-	CR50,
 	UNKNOWN,
 };
 
 static const char * const chip_name[] = {
 	[SLB9635] = "slb9635tt",
 	[SLB9645] = "slb9645tt",
-	[CR50] = "cr50",
 	[UNKNOWN] = "unknown/fallback to slb9635",
 };
 
@@ -111,7 +107,6 @@ static int iic_tpm_read(uint8_t addr, uint8_t *buffer, size_t len)
 
 	switch (tpm_dev->chip_type) {
 	case SLB9635:
-	case CR50:
 	case UNKNOWN:
 		/* slb9635 protocol should work in both cases */
 		for (count = 0; count < MAX_COUNT; count++) {
@@ -474,211 +469,6 @@ out_err:
 	return -1;
 }
 
-/*
- * cr50 is a TPM 2.0 capable device that requries special
- * handling for the I2C interface.
- *
- * - Timeouts need to be longer
- * - Must use the older SLB9635 style write+wait+read read protocol
- * - All 4 bytes of status register must be read at once
- * - Burst count max is 63 bytes, and burst count behaves
- *   slightly differently than other I2C TPMs
- * - When reading from FIFO the full burstcnt must be read
- *   instead of just reading header and determining the remainder
- */
-
-/* cr50 max burst count */
-#define CR50_MAX_BURSTCOUNT 63
-
-/* cr50 requires all 4 bytes of status register to be read */
-static uint8_t cr50_tis_i2c_status(struct tpm_chip *chip)
-{
-	uint8_t buf[4];
-	if (iic_tpm_read(TPM_STS(chip->vendor.locality),
-			 buf, sizeof(buf)) < 0) {
-		printk(BIOS_ERR, "%s: Failed to read status\n", __func__);
-		return 0;
-	}
-	return buf[0];
-}
-
-/* cr50 requires all 4 bytes of status register to be written */
-static void cr50_tis_i2c_ready(struct tpm_chip *chip)
-{
-	uint8_t buf[4] = { TPM_STS_COMMAND_READY };
-	iic_tpm_write_long(TPM_STS(chip->vendor.locality), buf, sizeof(buf));
-}
-
-/* cr50 uses bytes 3:2 of status register for burst count and
- * all 4 bytes must be read */
-static int cr50_wait_burst_status(struct tpm_chip *chip, uint8_t mask,
-				  size_t *burst, int *status)
-{
-	uint8_t buf[4];
-	struct stopwatch sw;
-
-	stopwatch_init_msecs_expire(&sw, 2000);
-
-	while (!stopwatch_expired(&sw)) {
-		if (iic_tpm_read(TPM_STS(chip->vendor.locality),
-				 buf, sizeof(buf)) != 0) {
-			printk(BIOS_WARNING, "%s: Read failed\n", __func__);
-			udelay(SLEEP_DURATION_SAFE);
-			continue;
-		}
-
-		*status = buf[0];
-		*burst = read_le16(&buf[1]);
-
-		/* Check if mask matches and burst is valid */
-		if ((*status & mask) == mask &&
-		    *burst > 0 && *burst <= CR50_MAX_BURSTCOUNT)
-			return 0;
-
-		udelay(SLEEP_DURATION_SAFE);
-	}
-
-	printk(BIOS_ERR, "%s: Timeout reading burst and status\n", __func__);
-	return -1;
-}
-
-static int cr50_tis_i2c_recv(struct tpm_chip *chip, uint8_t *buf,
-			     size_t buf_len)
-{
-	size_t burstcnt, current, len, expected;
-	uint8_t addr = TPM_DATA_FIFO(chip->vendor.locality);
-	int status;
-	int ret = -1;
-
-	if (buf_len < TPM_HEADER_SIZE)
-		goto out;
-
-	if (cr50_wait_burst_status(chip, TPM_STS_VALID, &burstcnt, &status) < 0)
-		goto out;
-	if (!(status & TPM_STS_DATA_AVAIL)) {
-		printk(BIOS_ERR, "%s: First chunk not available\n", __func__);
-		goto out;
-	}
-
-	/* Read first chunk of burstcnt bytes */
-	if (iic_tpm_read(addr, buf, burstcnt) != 0) {
-		printk(BIOS_ERR, "%s: Read failed\n", __func__);
-		goto out;
-	}
-
-	/* Determine expected data in the return buffer */
-	expected = read_be32(buf + TPM_RSP_SIZE_BYTE);
-	if (expected > buf_len) {
-		printk(BIOS_ERR, "%s: Too much data: %zu > %zu\n",
-		       __func__, expected, buf_len);
-		goto out;
-	}
-
-	/* Now read the rest of the data */
-	current = burstcnt;
-	while (current < expected) {
-		/* Read updated burst count and check status */
-		if (cr50_wait_burst_status(chip, TPM_STS_VALID,
-					   &burstcnt, &status) < 0)
-			goto out;
-		if (!(status & TPM_STS_DATA_AVAIL)) {
-			printk(BIOS_ERR, "%s: Data not available\n", __func__);
-			goto out;
-		}
-
-		len = min(burstcnt, expected - current);
-		if (iic_tpm_read(addr, buf + current, len) != 0) {
-			printk(BIOS_ERR, "%s: Read failed\n", __func__);
-			goto out;
-		}
-
-		current += len;
-	}
-
-	/* Ensure TPM is done reading data */
-	if (cr50_wait_burst_status(chip, TPM_STS_VALID, &burstcnt, &status) < 0)
-		goto out;
-	if (status & TPM_STS_DATA_AVAIL) {
-		printk(BIOS_ERR, "%s: Data still available\n", __func__);
-		goto out;
-	}
-
-	ret = current;
-
-out:
-	return ret;
-}
-
-static int cr50_tis_i2c_send(struct tpm_chip *chip, uint8_t *buf, size_t len)
-{
-	int status;
-	size_t burstcnt, limit, sent = 0;
-	uint8_t tpm_go[4] = { TPM_STS_GO };
-	struct stopwatch sw;
-
-	if (len > TPM_BUFSIZE)
-		return -1;
-
-	stopwatch_init_msecs_expire(&sw, 2000);
-
-	/* Wait until TPM is ready for a command */
-	while (!(cr50_tis_i2c_status(chip) & TPM_STS_COMMAND_READY)) {
-		if (stopwatch_expired(&sw)) {
-			printk(BIOS_ERR, "%s: Command ready timeout\n",
-			       __func__);
-			return -1;
-		}
-
-		cr50_tis_i2c_ready(chip);
-		udelay(SLEEP_DURATION_SAFE);
-	}
-
-	while (len > 0) {
-		/* Read burst count and check status */
-		if (cr50_wait_burst_status(chip, TPM_STS_VALID,
-					   &burstcnt, &status) < 0)
-			goto out;
-		if (sent > 0 && !(status & TPM_STS_DATA_EXPECT)) {
-			printk(BIOS_ERR, "%s: Data not expected\n", __func__);
-			goto out;
-		}
-
-		/* Use burstcnt - 1 to account for the address byte
-		 * that is inserted by iic_tpm_write() */
-		limit = min(burstcnt - 1, len);
-		if (iic_tpm_write(TPM_DATA_FIFO(chip->vendor.locality),
-				  &buf[sent], limit) != 0) {
-			printk(BIOS_ERR, "%s: Write failed\n", __func__);
-			goto out;
-		}
-
-		sent += limit;
-		len -= limit;
-	}
-
-	/* Ensure TPM is not expecting more data */
-	if (cr50_wait_burst_status(chip, TPM_STS_VALID, &burstcnt, &status) < 0)
-		goto out;
-	if (status & TPM_STS_DATA_EXPECT) {
-		printk(BIOS_ERR, "%s: Data still expected\n", __func__);
-		goto out;
-	}
-
-	/* Start the TPM command */
-	if (iic_tpm_write(TPM_STS(chip->vendor.locality), tpm_go,
-			  sizeof(tpm_go)) < 0) {
-		printk(BIOS_ERR, "%s: Start command failed\n", __func__);
-		goto out;
-	}
-	return sent;
-
-out:
-	/* Abort current transaction if still pending */
-	if (cr50_tis_i2c_status(chip) & TPM_STS_COMMAND_READY)
-		cr50_tis_i2c_ready(chip);
-	return -1;
-}
-
 /* Initialization of I2C TPM */
 
 int tpm_vendor_probe(unsigned bus, uint32_t addr)
@@ -692,8 +482,8 @@ int tpm_vendor_probe(unsigned bus, uint32_t addr)
 	tpm_dev->chip_type = UNKNOWN;
 	tpm_dev->bus = bus;
 	tpm_dev->addr = addr;
-	tpm_dev->sleep_short = SLEEP_DURATION_SAFE;
-	tpm_dev->sleep_long = SLEEP_DURATION_SAFE * 2;
+	tpm_dev->sleep_short = SLEEP_DURATION;
+	tpm_dev->sleep_long = SLEEP_DURATION_LONG;
 
 	/*
 	 * Probe TPM. Check if the TPM_ACCESS register's ValidSts bit is set(1)
@@ -706,7 +496,7 @@ int tpm_vendor_probe(unsigned bus, uint32_t addr)
 			sw_run_duration = stopwatch_duration_msecs(&sw);
 			break;
 		}
-		udelay(SLEEP_DURATION_SAFE);
+		udelay(SLEEP_DURATION);
 	} while (!stopwatch_expired(&sw));
 
 	printk(BIOS_INFO,
@@ -736,10 +526,8 @@ int tpm_vendor_init(struct tpm_chip *chip, unsigned bus, uint32_t dev_addr)
 	tpm_dev->chip_type = UNKNOWN;
 	tpm_dev->bus = bus;
 	tpm_dev->addr = dev_addr;
-
-	/* Use conservative values to read chip id */
-	tpm_dev->sleep_short = SLEEP_DURATION_SAFE;
-	tpm_dev->sleep_long = SLEEP_DURATION_SAFE * 2;
+	tpm_dev->sleep_short = SLEEP_DURATION;
+	tpm_dev->sleep_long = SLEEP_DURATION_LONG;
 
 	memset(&chip->vendor, 0, sizeof(struct tpm_vendor_specific));
 	chip->is_open = 1;
@@ -747,6 +535,10 @@ int tpm_vendor_init(struct tpm_chip *chip, unsigned bus, uint32_t dev_addr)
 	chip->vendor.req_complete_mask = TPM_STS_DATA_AVAIL | TPM_STS_VALID;
 	chip->vendor.req_complete_val = TPM_STS_DATA_AVAIL | TPM_STS_VALID;
 	chip->vendor.req_canceled = TPM_STS_COMMAND_READY;
+	chip->vendor.status = &tpm_tis_i2c_status;
+	chip->vendor.recv = &tpm_tis_i2c_recv;
+	chip->vendor.send = &tpm_tis_i2c_send;
+	chip->vendor.cancel = &tpm_tis_i2c_ready;
 
 	/* Disable interrupts (not supported) */
 	chip->vendor.irq = 0;
@@ -762,25 +554,9 @@ int tpm_vendor_init(struct tpm_chip *chip, unsigned bus, uint32_t dev_addr)
 		tpm_dev->chip_type = SLB9645;
 	} else if (be32_to_cpu(vendor) == TPM_TIS_I2C_DID_VID_9635) {
 		tpm_dev->chip_type = SLB9635;
-	} else if (vendor == TPM_TIS_I2C_DID_VID_CR50) {
-		tpm_dev->chip_type = CR50;
 	} else {
 		printk(BIOS_DEBUG, "Vendor ID 0x%08x not recognized.\n", vendor);
 		goto out_err;
-	}
-
-	if (tpm_dev->chip_type == CR50) {
-		chip->vendor.status = &cr50_tis_i2c_status;
-		chip->vendor.recv = &cr50_tis_i2c_recv;
-		chip->vendor.send = &cr50_tis_i2c_send;
-		chip->vendor.cancel = &cr50_tis_i2c_ready;
-	} else {
-		tpm_dev->sleep_short = SLEEP_DURATION;
-		tpm_dev->sleep_long = SLEEP_DURATION_LONG;
-		chip->vendor.status = &tpm_tis_i2c_status;
-		chip->vendor.recv = &tpm_tis_i2c_recv;
-		chip->vendor.send = &tpm_tis_i2c_send;
-		chip->vendor.cancel = &tpm_tis_i2c_ready;
 	}
 
 	printk(BIOS_DEBUG, "I2C TPM %u:%02x (chip type %s device-id 0x%X)\n",

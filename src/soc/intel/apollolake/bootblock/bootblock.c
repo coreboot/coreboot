@@ -182,4 +182,7 @@ void bootblock_soc_early_init(void)
 	enable_spibar();
 
 	cache_bios_region();
+
+	/* Initialize GPE for use as interrupt status */
+	pmc_gpe_init();
 }

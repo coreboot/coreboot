@@ -65,65 +65,6 @@ static void set_resources(device_t dev)
 	report_resource_stored(dev, res, " ACPI BAR");
 }
 
-static void pmc_gpe_init(void)
-{
-	uint32_t gpio_cfg = 0;
-	uint32_t gpio_cfg_reg;
-	uint8_t dw1, dw2, dw3;
-	const struct soc_intel_apollolake_config *config;
-
-	struct device *dev = NB_DEV_ROOT;
-	if (!dev || !dev->chip_info) {
-		printk(BIOS_ERR, "BUG! Could not find SOC devicetree config\n");
-		return;
-	}
-	config = dev->chip_info;
-
-	uintptr_t pmc_bar = get_pmc_mmio_bar();
-
-	const uint32_t gpio_cfg_mask =
-		(GPE0_DWX_MASK << GPE0_DW1_SHIFT) |
-		(GPE0_DWX_MASK << GPE0_DW2_SHIFT) |
-		(GPE0_DWX_MASK << GPE0_DW3_SHIFT);
-
-	/* Assign to local variable */
-	dw1 = config->gpe0_dw1;
-	dw2 = config->gpe0_dw2;
-	dw3 = config->gpe0_dw3;
-
-	/* Making sure that bad values don't bleed into the other fields */
-	dw1 &= GPE0_DWX_MASK;
-	dw2 &= GPE0_DWX_MASK;
-	dw3 &= GPE0_DWX_MASK;
-
-	/* Route the GPIOs to the GPE0 block. Determine that all values
-	 * are different, and if they aren't use the reset values.
-	 * DW0 is reserved/unused */
-	if (dw1 == dw2 || dw2 == dw3) {
-		printk(BIOS_INFO, "PMC: Using default GPE route.\n");
-		gpio_cfg = read32((void *)pmc_bar + GPIO_GPE_CFG);
-
-		dw1 = (gpio_cfg >> GPE0_DW1_SHIFT) & GPE0_DWX_MASK;
-		dw2 = (gpio_cfg >> GPE0_DW2_SHIFT) & GPE0_DWX_MASK;
-		dw3 = (gpio_cfg >> GPE0_DW3_SHIFT) & GPE0_DWX_MASK;
-	} else {
-		gpio_cfg |= (uint32_t)dw1 << GPE0_DW1_SHIFT;
-		gpio_cfg |= (uint32_t)dw2 << GPE0_DW2_SHIFT;
-		gpio_cfg |= (uint32_t)dw3 << GPE0_DW3_SHIFT;
-	}
-
-	gpio_cfg_reg = read32((void *)pmc_bar + GPIO_GPE_CFG) & ~gpio_cfg_mask;
-	gpio_cfg_reg |= gpio_cfg & gpio_cfg_mask;
-
-	write32((void *)pmc_bar + GPIO_GPE_CFG, gpio_cfg_reg);
-
-	/* Set the routes in the GPIO communities as well. */
-	gpio_route_gpe(dw1, dw2, dw3);
-
-	/* Reset the power state in cbmem as routing */
-	fixup_power_state();
-}
-
 static void pch_set_acpi_mode(void)
 {
 	if (IS_ENABLED(CONFIG_HAVE_SMI_HANDLER) && !acpi_is_wakeup_s3()) {
@@ -192,6 +133,7 @@ static void pmc_init(struct device *dev)
 
 	/* Set up GPE configuration */
 	pmc_gpe_init();
+	fixup_power_state();
 	pch_set_acpi_mode();
 
 	if (cfg != NULL)

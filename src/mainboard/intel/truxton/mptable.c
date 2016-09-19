@@ -75,50 +75,50 @@ static void *smp_write_config_table(void *v)
 
 	/* IMCH/IICH PCI devices */
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
-			 0, (0x01<<2)|0, 0x8, 0x10); /* DMA controller */
+			 0, (0x01 << 2)|0, 0x8, 0x10); /* DMA controller */
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
-			 0, (0x02<<2)|0, 0x8, 0x10); /* PCIe port A bridge */
+			 0, (0x02 << 2)|0, 0x8, 0x10); /* PCIe port A bridge */
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
-			 0, (0x03<<2)|0, 0x8, 0x10); /* PCIe port A1 bridge */
+			 0, (0x03 << 2)|0, 0x8, 0x10); /* PCIe port A1 bridge */
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
-			 0, (0x04<<2)|0, 0x8, 0x10); /* AIOC PCI bridge */
+			 0, (0x04 << 2)|0, 0x8, 0x10); /* AIOC PCI bridge */
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
-			 0, (0x1d<<2)|0, 0x8, 0x10); /* UHCI/EHCI */
+			 0, (0x1d << 2)|0, 0x8, 0x10); /* UHCI/EHCI */
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
-			 0, (0x1f<<2)|1, 0x8, 0x11); /* SATA/SMBus */
+			 0, (0x1f << 2)|1, 0x8, 0x11); /* SATA/SMBus */
 
 	if (bus_pea0) {
 		/* PCIe slot 0 */
 		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-				 bus_pea0, (0<<2)|0, 0x8, 0x10);
+				 bus_pea0, (0 << 2)|0, 0x8, 0x10);
 		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-				 bus_pea0, (0<<2)|1, 0x8, 0x11);
+				 bus_pea0, (0 << 2)|1, 0x8, 0x11);
 		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-				 bus_pea0, (0<<2)|2, 0x8, 0x12);
+				 bus_pea0, (0 << 2)|2, 0x8, 0x12);
 		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-				 bus_pea0, (0<<2)|3, 0x8, 0x13);
+				 bus_pea0, (0 << 2)|3, 0x8, 0x13);
 	}
 
 	if (bus_pea1) {
 		/* PCIe slots 1-4 */
 		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-				 bus_pea1, (0<<2)|0, 0x8, 0x10);
+				 bus_pea1, (0 << 2)|0, 0x8, 0x10);
 		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-				 bus_pea1, (0<<2)|1, 0x8, 0x11);
+				 bus_pea1, (0 << 2)|1, 0x8, 0x11);
 		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-				 bus_pea1, (0<<2)|2, 0x8, 0x12);
+				 bus_pea1, (0 << 2)|2, 0x8, 0x12);
 		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-				 bus_pea1, (0<<2)|3, 0x8, 0x13);
+				 bus_pea1, (0 << 2)|3, 0x8, 0x13);
 	}
 
 	if (bus_aioc) {
 		/* AIOC PCI devices */
 		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-				 bus_aioc, (0<<2)|0, 0x8, 0x10); /* GbE0 */
+				 bus_aioc, (0 << 2)|0, 0x8, 0x10); /* GbE0 */
 		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-				 bus_aioc, (1<<2)|0, 0x8, 0x11); /* GbE1 */
+				 bus_aioc, (1 << 2)|0, 0x8, 0x11); /* GbE1 */
 		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-				 bus_aioc, (2<<2)|0, 0x8, 0x12); /* GbE2 */
+				 bus_aioc, (2 << 2)|0, 0x8, 0x12); /* GbE2 */
 	}
 
 	/* There is no extension information... */

@@ -148,7 +148,7 @@ static void palette(void)
 	unsigned long color = 0;
 
 	for(i = 0; i < 256; i++, color += 0x010101){
-		io_i915_WRITE32(color, _LGC_PALETTE_A + (i<<2));
+		io_i915_WRITE32(color, _LGC_PALETTE_A + (i << 2));
 	}
 }
 
@@ -277,57 +277,57 @@ int i915lightup_sandy(const struct i915_gpu_controller_info *info,
 
 	index = run(0);
 	printk(BIOS_SPEW, "Run returns %d\n", index);
-	auxout[0] = 1<<31 /* dp */|0x1<<28/*R*/|DP_DPCD_REV<<8|0xe;
+	auxout[0] = 1 << 31 /* dp */|0x1 << 28/*R*/|DP_DPCD_REV << 8|0xe;
 	intel_dp_aux_ch(DPA_AUX_CH_CTL, DPA_AUX_CH_DATA1, auxout, 4, auxin, 14);
-	auxout[0] = 0<<31 /* i2c */|1<<30|0x0<<28/*W*/|0x0<<8|0x0;
+	auxout[0] = 0 << 31 /* i2c */|1 << 30|0x0 << 28/*W*/|0x0 << 8|0x0;
 	intel_dp_aux_ch(DPA_AUX_CH_CTL, DPA_AUX_CH_DATA1, auxout, 3, auxin, 0);
 	index = run(index);
 	printk(BIOS_SPEW, "Run returns %d\n", index);
-	auxout[0] = 0<<31 /* i2c */|0<<30|0x0<<28/*W*/|0x0<<8|0x0;
+	auxout[0] = 0 << 31 /* i2c */|0 << 30|0x0 << 28/*W*/|0x0 << 8|0x0;
 	intel_dp_aux_ch(DPA_AUX_CH_CTL, DPA_AUX_CH_DATA1, auxout, 3, auxin, 0);
 	index = run(index);
 	printk(BIOS_SPEW, "Run returns %d\n", index);
-	auxout[0] = 1<<31 /* dp */|0x0<<28/*W*/|DP_SET_POWER<<8|0x0;
+	auxout[0] = 1 << 31 /* dp */|0x0 << 28/*W*/|DP_SET_POWER << 8|0x0;
 	auxout[1] = 0x01000000;
 	/* DP_SET_POWER_D0 | DP_PSR_SINK_INACTIVE */
 	intel_dp_aux_ch(DPA_AUX_CH_CTL, DPA_AUX_CH_DATA1, auxout, 5, auxin, 0);
 	index = run(index);
-	auxout[0] = 1<<31 /* dp */|0x0<<28/*W*/|DP_LINK_BW_SET<<8|0x8;
+	auxout[0] = 1 << 31 /* dp */|0x0 << 28/*W*/|DP_LINK_BW_SET << 8|0x8;
 	auxout[1] = 0x0a840000;
 	/*( DP_LINK_BW_2_7 &0xa)|0x0000840a*/
 	auxout[2] = 0x00000000;
 	auxout[3] = 0x01000000;
 	intel_dp_aux_ch(DPA_AUX_CH_CTL, DPA_AUX_CH_DATA1, auxout, 13, auxin, 0);
 	index = run(index);
-	auxout[0] = 1<<31 /* dp */|0x0<<28/*W*/|DP_TRAINING_PATTERN_SET<<8|0x0;
+	auxout[0] = 1 << 31 /* dp */|0x0 << 28/*W*/|DP_TRAINING_PATTERN_SET << 8|0x0;
 	auxout[1] = 0x21000000;
 	/* DP_TRAINING_PATTERN_1 | DP_LINK_SCRAMBLING_DISABLE |
 	 * 	DP_SYMBOL_ERROR_COUNT_BOTH |0x00000021*/
 	intel_dp_aux_ch(DPA_AUX_CH_CTL, DPA_AUX_CH_DATA1, auxout, 5, auxin, 0);
 	index = run(index);
-	auxout[0] = 1<<31 /* dp */|0x0<<28/*W*/|DP_TRAINING_LANE0_SET<<8|0x3;
+	auxout[0] = 1 << 31 /* dp */|0x0 << 28/*W*/|DP_TRAINING_LANE0_SET << 8|0x3;
 	auxout[1] = 0x00000000;
 	/* DP_TRAIN_VOLTAGE_SWING_400 | DP_TRAIN_PRE_EMPHASIS_0 |0x00000000*/
 	intel_dp_aux_ch(DPA_AUX_CH_CTL, DPA_AUX_CH_DATA1, auxout, 8, auxin, 0);
 	index = run(index);
-	auxout[0] = 1<<31 /* dp */|0x1<<28/*R*/|DP_LANE0_1_STATUS<<8|0x5;
+	auxout[0] = 1 << 31 /* dp */|0x1 << 28/*R*/|DP_LANE0_1_STATUS << 8|0x5;
 	intel_dp_aux_ch(DPA_AUX_CH_CTL, DPA_AUX_CH_DATA1, auxout, 4, auxin, 5);
 	index = run(index);
-	auxout[0] = 1<<31 /* dp */|0x0<<28/*W*/|DP_TRAINING_PATTERN_SET<<8|0x0;
+	auxout[0] = 1 << 31 /* dp */|0x0 << 28/*W*/|DP_TRAINING_PATTERN_SET << 8|0x0;
 	auxout[1] = 0x22000000;
 	/* DP_TRAINING_PATTERN_2 | DP_LINK_SCRAMBLING_DISABLE |
 	 * 	DP_SYMBOL_ERROR_COUNT_BOTH |0x00000022*/
 	intel_dp_aux_ch(DPA_AUX_CH_CTL, DPA_AUX_CH_DATA1, auxout, 5, auxin, 0);
 	index = run(index);
-	auxout[0] = 1<<31 /* dp */|0x0<<28/*W*/|DP_TRAINING_LANE0_SET<<8|0x3;
+	auxout[0] = 1 << 31 /* dp */|0x0 << 28/*W*/|DP_TRAINING_LANE0_SET << 8|0x3;
 	auxout[1] = 0x00000000;
 	/* DP_TRAIN_VOLTAGE_SWING_400 | DP_TRAIN_PRE_EMPHASIS_0 |0x00000000*/
 	intel_dp_aux_ch(DPA_AUX_CH_CTL, DPA_AUX_CH_DATA1, auxout, 8, auxin, 0);
 	index = run(index);
-	auxout[0] = 1<<31 /* dp */|0x1<<28/*R*/|DP_LANE0_1_STATUS<<8|0x5;
+	auxout[0] = 1 << 31 /* dp */|0x1 << 28/*R*/|DP_LANE0_1_STATUS << 8|0x5;
 	intel_dp_aux_ch(DPA_AUX_CH_CTL, DPA_AUX_CH_DATA1, auxout, 4, auxin, 5);
 	index = run(index);
-	auxout[0] = 1<<31 /* dp */|0x0<<28/*W*/|DP_TRAINING_PATTERN_SET<<8|0x0;
+	auxout[0] = 1 << 31 /* dp */|0x0 << 28/*W*/|DP_TRAINING_PATTERN_SET << 8|0x0;
 	auxout[1] = 0x00000000;
 	/* DP_TRAINING_PATTERN_DISABLE | DP_LINK_QUAL_PATTERN_DISABLE |
 	 * 	DP_SYMBOL_ERROR_COUNT_BOTH |0x00000000*/

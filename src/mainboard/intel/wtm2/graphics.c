@@ -23,7 +23,7 @@ void graphics_register_reset(u32 aux_ctl, u32 aux_data, int verbose)
 
 	io_i915_write32(0x80000000,0x45400);
 	io_i915_write32(0x00000000,_CURACNTR);
-	io_i915_write32((/* PIPEA */0x0<<24)|0x00000000,_DSPACNTR);
+	io_i915_write32((/* PIPEA */0x0 << 24)|0x00000000,_DSPACNTR);
 	io_i915_write32(0x00000000,_DSPBCNTR);
 	io_i915_write32(0x80000000,CPU_VGACNTRL);
 	io_i915_write32(0x00000000,_DSPASIZE+0xc);

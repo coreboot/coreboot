@@ -56,7 +56,7 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 
 	fadt->firmware_ctrl = (u32) facs;
 	fadt->dsdt = (u32) dsdt;
-	/* 3=Workstation,4=Enterprise Server, 7=Performance Server */
+	/* 3=Workstation, 4=Enterprise Server, 7=Performance Server */
 	fadt->preferred_pm_profile = 0x03;
 	fadt->sci_int = 9;
 	/* disable system management mode by setting to 0: */
@@ -85,11 +85,11 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	pm_iowrite(0x2C, ACPI_PMA_CNT_BLK & 0xFF);
 	pm_iowrite(0x2D, ACPI_PMA_CNT_BLK >> 8);
 
-	pm_iowrite(0x0E, 1<<3 | 0<<2); /* AcpiDecodeEnable, When set, SB uses
+	pm_iowrite(0x0E, 1 << 3 | 0 << 2); /* AcpiDecodeEnable, When set, SB uses
 					* the contents of the PM registers at
 					* index 20-2B to decode ACPI I/O address.
 					* AcpiSmiEn & SmiCmdEn*/
-	pm_iowrite(0x10, 1<<1 | 1<<3| 1<<5); /* RTC_En_En, TMR_En_En, GBL_EN_EN */
+	pm_iowrite(0x10, 1 << 1 | 1 << 3| 1 << 5); /* RTC_En_En, TMR_En_En, GBL_EN_EN */
 	outl(0x1, ACPI_PM1_CNT_BLK);		  /* set SCI_EN */
 
 	fadt->pm1a_evt_blk = ACPI_PM_EVT_BLK;

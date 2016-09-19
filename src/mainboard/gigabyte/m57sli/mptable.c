@@ -84,9 +84,9 @@ static void *smp_write_config_table(void *v)
 
 	/* The PCIe slots, each on its own bus */
         k = 1;
-        for(i=0; i<4; i++){
-                for(j=7; j>1; j--){
-                        if(k>3) k=0;
+        for(i = 0; i < 4; i++){
+                for(j = 7; j > 1; j--){
+                        if(k > 3) k = 0;
                         PCI_INT(j,0,i, 16+k);
                         k++;
                 }
@@ -97,10 +97,10 @@ static void *smp_write_config_table(void *v)
 	   physical PCI slots are j = 7,8
 	   FireWire is j = 10
 	*/
-        k=2;
-        for(i=0; i<4; i++){
-                for(j=6; j<11; j++){
-                        if(k>3) k=0;
+        k = 2;
+        for(i = 0; i < 4; i++){
+                for(j = 6; j < 11; j++){
+                        if(k > 3) k = 0;
                         PCI_INT(1,j,i, 16+k);
                         k++;
                 }

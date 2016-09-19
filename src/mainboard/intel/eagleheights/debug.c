@@ -61,13 +61,13 @@ static inline void siodump(void)
         unsigned char data;
 
 	 printk(BIOS_DEBUG, "\n*** SERVER I/O REGISTERS ***\n");
-        for (i=0x10; i<=0x2d; i++) {
+        for (i = 0x10; i <= 0x2d; i++) {
                 print_reg((unsigned char)i);
         }
 #if 0
         printk(BIOS_DEBUG, "\n*** XBUS REGISTERS ***\n");
         setup_func(0x0f);
-        for (i=0xf0; i<=0xff; i++) {
+        for (i = 0xf0; i <= 0xff; i++) {
                 print_reg((unsigned char)i);
         }
 
@@ -82,7 +82,7 @@ static inline void siodump(void)
 #endif
         printk(BIOS_DEBUG, "\n***  GPIO REGISTERS ***\n");
         setup_func(0x07);
-        for (i=0xf0; i<=0xf8; i++) {
+        for (i = 0xf0; i <= 0xf8; i++) {
                 print_reg((unsigned char)i);
         }
         printk(BIOS_DEBUG, "\n***  GPIO VALUES ***\n");

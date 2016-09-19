@@ -25,7 +25,7 @@
 
 unsigned long acpi_fill_madt(unsigned long current)
 {
-	unsigned int gsi_base=0x18;
+	unsigned int gsi_base = 0x18;
 
 	struct mb_sysconf_t *m;
 
@@ -68,7 +68,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 		int i;
 		int j = 0;
 
-		for(i=1; i< sysconf.hc_possible_num; i++) {
+		for(i = 1; i< sysconf.hc_possible_num; i++) {
 			unsigned d = 0;
 			if(!(sysconf.pci1234[i] & 0x1) ) continue;
 			// 8131 need to use +4

@@ -79,11 +79,11 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 static void setup_early_ipmi_serial()
 {
 	unsigned char result;
-	char channel_access[]={0x06<<2,0x40,0x04,0x80,0x05};
-	char serialmodem_conf[]={0x0c<<2,0x10,0x04,0x08,0x00,0x0f};
-	char serial_mux1[]={0x0c<<2,0x12,0x04,0x06};
-	char serial_mux2[]={0x0c<<2,0x12,0x04,0x03};
-	char serial_mux3[]={0x0c<<2,0x12,0x04,0x07};
+	char channel_access[]={0x06 << 2,0x40,0x04,0x80,0x05};
+	char serialmodem_conf[]={0x0c << 2,0x10,0x04,0x08,0x00,0x0f};
+	char serial_mux1[]={0x0c << 2,0x12,0x04,0x06};
+	char serial_mux2[]={0x0c << 2,0x12,0x04,0x03};
+	char serial_mux3[]={0x0c << 2,0x12,0x04,0x07};
 
 //	earlydbg(0x0d);
 	//set channel access system only
@@ -91,19 +91,19 @@ static void setup_early_ipmi_serial()
 //	earlydbg(result);
 /*
 	//Set serial/modem config
-	result=ipmi_request(6,serialmodem_conf);
+	result = ipmi_request(6,serialmodem_conf);
 	earlydbg(result);
 
 	//Set serial mux 1
-	result=ipmi_request(4,serial_mux1);
+	result = ipmi_request(4,serial_mux1);
 	earlydbg(result);
 
 	//Set serial mux 2
-	result=ipmi_request(4,serial_mux2);
+	result = ipmi_request(4,serial_mux2);
 	earlydbg(result);
 
 	//Set serial mux 3
-	result=ipmi_request(4,serial_mux3);
+	result = ipmi_request(4,serial_mux3);
 	earlydbg(result);
 */
 //	earlydbg(0x0e);
@@ -170,7 +170,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 #if CONFIG_SET_FIDVID
 	{
 		msr_t msr;
-		msr=rdmsr(0xc0010042);
+		msr = rdmsr(0xc0010042);
 		printk(BIOS_DEBUG, "begin msr fid, vid %08x %08x\n", msr.hi, msr.lo);
 	}
 	enable_fid_change();
@@ -179,7 +179,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	// show final fid and vid
 	{
 		msr_t msr;
-		msr=rdmsr(0xc0010042);
+		msr = rdmsr(0xc0010042);
 		printk(BIOS_DEBUG, "end msr fid, vid %08x %08x\n", msr.hi, msr.lo);
 	}
 #endif

@@ -28,12 +28,12 @@ static void memreset_setup(void)
 {
 	if (is_cpu_pre_c0()) {
 		/* Set the memreset low. */
-		outb((1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 28);
+		outb((1 << 2)|(0 << 0), SMBUS_IO_BASE + 0xc0 + 28);
 		/* Ensure the BIOS has control of the memory lines. */
-		outb((1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 29);
+		outb((1 << 2)|(0 << 0), SMBUS_IO_BASE + 0xc0 + 29);
 	} else {
 		/* Ensure the CPU has control of the memory lines. */
-		outb((1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 29);
+		outb((1 << 2)|(1 << 0), SMBUS_IO_BASE + 0xc0 + 29);
 	}
 }
 
@@ -42,7 +42,7 @@ static void memreset(int controllers, const struct mem_controller *ctrl)
 	if (is_cpu_pre_c0()) {
 		udelay(800);
 		/* Set memreset_high */
-		outb((1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 28);
+		outb((1 << 2)|(1 << 0), SMBUS_IO_BASE + 0xc0 + 28);
 		udelay(90);
 	}
 }
@@ -114,7 +114,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 #if CONFIG_SET_FIDVID
         {
                 msr_t msr;
-	        msr=rdmsr(0xc0010042);
+	        msr = rdmsr(0xc0010042);
                 printk(BIOS_DEBUG, "begin msr fid, vid %08x%08x\n", msr.hi, msr.lo);
         }
 	enable_fid_change();
@@ -123,7 +123,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
         // show final fid and vid
         {
                 msr_t msr;
-               	msr=rdmsr(0xc0010042);
+               	msr = rdmsr(0xc0010042);
                	printk(BIOS_DEBUG, "end   msr fid, vid %08x%08x\n", msr.hi, msr.lo);
         }
 #endif

@@ -75,7 +75,7 @@ static const struct {
 void init_ec(uint16_t base)
 {
 	int i;
-	for (i=0; i<ARRAY_SIZE(sequence); i++) {
+	for (i = 0; i < ARRAY_SIZE(sequence); i++) {
 		write_index(base, sequence[i].index, sequence[i].value);
 	}
 }

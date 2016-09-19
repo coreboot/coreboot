@@ -24,7 +24,7 @@
 
 unsigned long acpi_fill_madt(unsigned long current)
 {
-	unsigned int gsi_base=0x18;
+	unsigned int gsi_base = 0x18;
 
         struct mb_sysconf_t *m;
 
@@ -66,7 +66,7 @@ unsigned long acpi_fill_madt(unsigned long current)
                 int i;
                 int j = 0;
 
-                for(i=1; i< sysconf.hc_possible_num; i++) {
+                for(i = 1; i< sysconf.hc_possible_num; i++) {
 			unsigned d = 0;
                         if(!(sysconf.pci1234[i] & 0x1) ) continue;
                         // 8131 need to use +4
@@ -144,11 +144,11 @@ unsigned long mainboard_write_acpi_tables(device_t device,
 
         //same htio, but different position? We may have to copy, change HCIN, and recalculate the checknum and add_table
 
-        for(i=1;i<sysconf.hc_possible_num;i++) {  // 0: is hc sblink
+        for(i = 1; i < sysconf.hc_possible_num; i++) {  // 0: is hc sblink
 		const char *file_name;
                 if((sysconf.pci1234[i] & 1) != 1 ) continue;
                 uint8_t c;
-                if(i<7) {
+                if(i < 7) {
                         c  = (uint8_t) ('4' + i - 1);
                 }
                 else {

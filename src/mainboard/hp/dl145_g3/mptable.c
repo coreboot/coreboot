@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2001 Eric W.Biederman<ebiderman@lnxi.com>
+ * Copyright (C) 2001 Eric W.Biederman <ebiderman@lnxi.com>
  *
  * Copyright (C) 2006 AMD
  * Written by Yinghai Lu <yinghailu@gmail.com> for AMD.
@@ -57,7 +57,7 @@ static void *smp_write_config_table(void *v)
 		device_t dev = 0;
 		int i;
 		struct resource *res;
-		for(i=0; i<3; i++) {
+		for(i = 0; i < 3; i++) {
 			dev = dev_find_device(0x1166, 0x0235, dev);
 			if (dev) {
 				res = find_resource(dev, PCI_BASE_ADDRESS_0);
@@ -92,7 +92,7 @@ static void *smp_write_config_table(void *v)
 		if(dev) {
 			uint32_t dword;
 			dword = pci_read_config32(dev, 0x64);
-			dword |= (1<<30); // GEVENT14-21 used as PCI IRQ0-7
+			dword |= (1 << 30); // GEVENT14-21 used as PCI IRQ0-7
 			pci_write_config32(dev, 0x64, dword);
 		}
 		// set GEVENT pins to NO OP
@@ -108,7 +108,7 @@ static void *smp_write_config_table(void *v)
 		if (dev) {
 			uint32_t dword;
 			dword = pci_read_config32(dev, 0x64);
-			dword |= (1<<26);
+			dword |= (1 << 26);
 			pci_write_config32(dev, 0x64, dword);
 		}
 	}
@@ -116,32 +116,32 @@ static void *smp_write_config_table(void *v)
 	mptable_add_isa_interrupts(mc, bus_isa, m->apicid_bcm5785[0], 0);
 
 	//SATA
-/* 	printk(BIOS_DEBUG, "MPTABLE_SATA: bus_id:%d irq:%d apic_id:%d pin:%d\n",m->bus_bcm5785_1, (0x0e<<2)|0, m->apicid_bcm5785[0], 0x7); */
-/*	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_bcm5785_1, (0x0e<<2)|0, m->apicid_bcm5785[0], 0x7); */
-	printk(BIOS_DEBUG, "MPTABLE_SATA: bus_id:%d irq:%d apic_id:%d pin:%d\n",m->bus_bcm5785_1, (0x0e<<2)|0, m->apicid_bcm5785[0], 0xb);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_bcm5785_1, (0x0e<<2)|0, m->apicid_bcm5785[0], 0xb);
+/* 	printk(BIOS_DEBUG, "MPTABLE_SATA: bus_id:%d irq:%d apic_id:%d pin:%d\n",m->bus_bcm5785_1, (0x0e << 2)|0, m->apicid_bcm5785[0], 0x7); */
+/*	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_bcm5785_1, (0x0e << 2)|0, m->apicid_bcm5785[0], 0x7); */
+	printk(BIOS_DEBUG, "MPTABLE_SATA: bus_id:%d irq:%d apic_id:%d pin:%d\n",m->bus_bcm5785_1, (0x0e << 2)|0, m->apicid_bcm5785[0], 0xb);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_bcm5785_1, (0x0e << 2)|0, m->apicid_bcm5785[0], 0xb);
 	//USB
 	printk(BIOS_DEBUG, "sysconf.sbdn: %d on bus: %x\n",sysconf.sbdn, m->bus_bcm5785_0);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_bcm5785_0, (0x03<<2)|0, m->apicid_bcm5785[0], 0xa);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_bcm5785_0, (0x03 << 2)|0, m->apicid_bcm5785[0], 0xa);
 
 	//VGA
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_bcm5785_0, (0x4<<2)|0, m->apicid_bcm5785[1], 0x7);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_bcm5785_0, (0x4 << 2)|0, m->apicid_bcm5785[1], 0x7);
 
 	//PCIE
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_bcm5785_0, (0x6<<2)|0, m->apicid_bcm5785[2], 0xe);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_bcm5785_0, (0x7<<2)|0, m->apicid_bcm5785[2], 0xe);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_bcm5785_0, (0x8<<2)|0, m->apicid_bcm5785[2], 0xe);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_bcm5785_0, (0x9<<2)|0, m->apicid_bcm5785[2], 0xe);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_bcm5785_0, (0xa<<2)|0, m->apicid_bcm5785[2], 0xe);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_bcm5785_0, (0x6 << 2)|0, m->apicid_bcm5785[2], 0xe);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_bcm5785_0, (0x7 << 2)|0, m->apicid_bcm5785[2], 0xe);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_bcm5785_0, (0x8 << 2)|0, m->apicid_bcm5785[2], 0xe);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_bcm5785_0, (0x9 << 2)|0, m->apicid_bcm5785[2], 0xe);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_bcm5785_0, (0xa << 2)|0, m->apicid_bcm5785[2], 0xe);
 
 	//IDE
 //     	outb(0x02, 0xc00); outb(0x0e, 0xc01);
 //	printk(BIOS_DEBUG, "MPTABLE_IDE: bus_id:%d irq:%d apic_id:%d pin:%d\n",m->bus_bcm5785_0, ((1+sysconf.sbdn)<<2)|1, m->apicid_bcm5785[0], 0xe);
-//		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  m->bus_bcm5785_0, (0x02<<2)|1, m->apicid_bcm5785[0], 0xe);
+//		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  m->bus_bcm5785_0, (0x02 << 2)|1, m->apicid_bcm5785[0], 0xe);
 
 	//onboard Broadcom GbE
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,8, (4<<2)|0, m->apicid_bcm5785[2], 0x4);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,8, (4<<2)|1, m->apicid_bcm5785[2], 0x4);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,8, (4 << 2)|0, m->apicid_bcm5785[2], 0x4);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,8, (4 << 2)|1, m->apicid_bcm5785[2], 0x4);
 
 
 
@@ -153,7 +153,7 @@ static void *smp_write_config_table(void *v)
 		if(dev) {
 			uint32_t dword;
 			dword = pci_read_config32(dev, 0x6c);
-			dword |= (1<<4); // enable interrupts
+			dword |= (1 << 4); // enable interrupts
 			printk(BIOS_DEBUG, "6ch: %x\n",dword);
 			pci_write_config32(dev, 0x6c, dword);
 		}

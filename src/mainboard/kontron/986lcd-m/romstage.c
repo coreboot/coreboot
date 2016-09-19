@@ -57,7 +57,7 @@ static void ich7_enable_lpc(void)
 {
 	int lpt_en = 0;
 	if (read_option(lpt, 0) != 0) {
-		lpt_en = 1<<2; // enable LPT
+		lpt_en = 1 << 2; // enable LPT
 	}
 	// Enable Serial IRQ
 	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0x64, 0xd0);
@@ -98,7 +98,7 @@ static void early_superio_config_w83627thg(void)
 {
 	device_t dev;
 
-	dev=PNP_DEV(0x2e, W83627THG_SP1);
+	dev = PNP_DEV(0x2e, W83627THG_SP1);
 	pnp_enter_func_mode(dev);
 
 	pnp_write_config(dev, 0x24, 0xc6); // PNPCSV
@@ -106,14 +106,14 @@ static void early_superio_config_w83627thg(void)
 	pnp_write_config(dev, 0x29, 0x43); // GPIO settings
 	pnp_write_config(dev, 0x2a, 0x40); // GPIO settings
 
-	dev=PNP_DEV(0x2e, W83627THG_SP1);
+	dev = PNP_DEV(0x2e, W83627THG_SP1);
 	pnp_set_logical_device(dev);
 	pnp_set_enable(dev, 0);
 	pnp_set_iobase(dev, PNP_IDX_IO0, 0x3f8);
 	pnp_set_irq(dev, PNP_IDX_IRQ0, 4);
 	pnp_set_enable(dev, 1);
 
-	dev=PNP_DEV(0x2e, W83627THG_SP2);
+	dev = PNP_DEV(0x2e, W83627THG_SP2);
 	pnp_set_logical_device(dev);
 	pnp_set_enable(dev, 0);
 	pnp_set_iobase(dev, PNP_IDX_IO0, 0x2f8);
@@ -121,7 +121,7 @@ static void early_superio_config_w83627thg(void)
 	// pnp_write_config(dev, 0xf1, 4); // IRMODE0
 	pnp_set_enable(dev, 1);
 
-	dev=PNP_DEV(0x2e, W83627THG_KBC);
+	dev = PNP_DEV(0x2e, W83627THG_KBC);
 	pnp_set_logical_device(dev);
 	pnp_set_enable(dev, 0);
 	pnp_set_iobase(dev, PNP_IDX_IO0, 0x60);
@@ -129,33 +129,33 @@ static void early_superio_config_w83627thg(void)
 	// pnp_write_config(dev, 0xf0, 0x82);
 	pnp_set_enable(dev, 1);
 
-	dev=PNP_DEV(0x2e, W83627THG_GAME_MIDI_GPIO1);
+	dev = PNP_DEV(0x2e, W83627THG_GAME_MIDI_GPIO1);
 	pnp_set_logical_device(dev);
 	pnp_set_enable(dev, 0);
 	pnp_write_config(dev, 0xf5, 0xff); // invert all GPIOs
 	pnp_set_enable(dev, 1);
 
-	dev=PNP_DEV(0x2e, W83627THG_GPIO2);
+	dev = PNP_DEV(0x2e, W83627THG_GPIO2);
 	pnp_set_logical_device(dev);
 	pnp_set_enable(dev, 1); // Just enable it
 
-	dev=PNP_DEV(0x2e, W83627THG_GPIO3);
+	dev = PNP_DEV(0x2e, W83627THG_GPIO3);
 	pnp_set_logical_device(dev);
 	pnp_set_enable(dev, 0);
 	pnp_write_config(dev, 0xf0, 0xfb); // GPIO bit 2 is output
 	pnp_write_config(dev, 0xf1, 0x00); // GPIO bit 2 is 0
 	pnp_write_config(dev, 0x30, 0x03); // Enable GPIO3+4. pnp_set_enable is not sufficient
 
-	dev=PNP_DEV(0x2e, W83627THG_FDC);
+	dev = PNP_DEV(0x2e, W83627THG_FDC);
 	pnp_set_logical_device(dev);
 	pnp_set_enable(dev, 0);
 
-	dev=PNP_DEV(0x2e, W83627THG_PP);
+	dev = PNP_DEV(0x2e, W83627THG_PP);
 	pnp_set_logical_device(dev);
 	pnp_set_enable(dev, 0);
 
 	/* Enable HWM */
-	dev=PNP_DEV(0x2e, W83627THG_HWM);
+	dev = PNP_DEV(0x2e, W83627THG_HWM);
 	pnp_set_logical_device(dev);
 	pnp_set_enable(dev, 0);
 	pnp_set_iobase(dev, PNP_IDX_IO0, 0xa00);
@@ -163,7 +163,7 @@ static void early_superio_config_w83627thg(void)
 
 	pnp_exit_func_mode(dev);
 
-	dev=PNP_DEV(0x4e, W83627THG_SP1);
+	dev = PNP_DEV(0x4e, W83627THG_SP1);
 	pnp_enter_func_mode(dev);
 
 	pnp_set_logical_device(dev); // Set COM3 to sane non-conflicting values
@@ -172,22 +172,22 @@ static void early_superio_config_w83627thg(void)
 	pnp_set_irq(dev, PNP_IDX_IRQ0, 11);
 	pnp_set_enable(dev, 1);
 
-	dev=PNP_DEV(0x4e, W83627THG_SP2);
+	dev = PNP_DEV(0x4e, W83627THG_SP2);
 	pnp_set_logical_device(dev); // Set COM4 to sane non-conflicting values
 	pnp_set_enable(dev, 0);
 	pnp_set_iobase(dev, PNP_IDX_IO0, 0x2e8);
 	pnp_set_irq(dev, PNP_IDX_IRQ0, 10);
 	pnp_set_enable(dev, 1);
 
-	dev=PNP_DEV(0x4e, W83627THG_FDC);
+	dev = PNP_DEV(0x4e, W83627THG_FDC);
 	pnp_set_logical_device(dev);
 	pnp_set_enable(dev, 0);
 
-	dev=PNP_DEV(0x4e, W83627THG_PP);
+	dev = PNP_DEV(0x4e, W83627THG_PP);
 	pnp_set_logical_device(dev);
 	pnp_set_enable(dev, 0);
 
-	dev=PNP_DEV(0x4e, W83627THG_KBC);
+	dev = PNP_DEV(0x4e, W83627THG_KBC);
 	pnp_set_logical_device(dev);
 	pnp_set_enable(dev, 0);
 	pnp_set_iobase(dev, PNP_IDX_IO0, 0x00);

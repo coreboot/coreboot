@@ -96,7 +96,7 @@ static void enumerate_ht_chain(void)
 					pci_devfn_t devx;
 
 #if CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20
-					if (next_unitid>=0x18) {
+					if (next_unitid >= 0x18) {
 						if (!end_used) {
 							next_unitid = CONFIG_HT_CHAIN_END_UNITID_BASE;
 							end_used = 1;
@@ -158,7 +158,7 @@ static void enumerate_ht_chain(void)
 
 out:	;
 #if CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20
-	if ((ht_dev_num>1) && (real_last_unitid != CONFIG_HT_CHAIN_END_UNITID_BASE) && !end_used) {
+	if ((ht_dev_num > 1) && (real_last_unitid != CONFIG_HT_CHAIN_END_UNITID_BASE) && !end_used) {
 		u16 flags;
 		flags = pci_io_read_config16(PCI_DEV(0,real_last_unitid,0), real_last_pos + PCI_CAP_FLAGS);
 		flags &= ~0x1f;

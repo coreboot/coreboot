@@ -524,7 +524,7 @@ static uint16_t mct_MaxLoadFreq(uint8_t count, uint8_t highest_rank_count, uint8
 	return freq;
 }
 
-#if (CONFIG_DIMM_SUPPORT & 0x000F)==0x0005 /* AMD_FAM10_DDR3 */
+#if (CONFIG_DIMM_SUPPORT & 0x000F) == 0x0005 /* AMD_FAM10_DDR3 */
 #include "amdfam10.h"
 #include "../amdmct/wrappers/mcti.h"
 #include "../amdmct/amddefs.h"
@@ -633,7 +633,7 @@ int mctRead_SPD(u32 smaddr, u32 reg)
 void mctSMBhub_Init(u32 node)
 {
 	struct sys_info *sysinfo = &sysinfo_car;
-	struct mem_controller *ctrl = &( sysinfo->ctrl[node] );
+	struct mem_controller *ctrl = &(sysinfo->ctrl[node]);
 	activate_spd_rom(ctrl);
 }
 
@@ -642,9 +642,9 @@ void mctGet_DIMMAddr(struct DCTStatStruc *pDCTstat, u32 node)
 {
 	int j;
 	struct sys_info *sysinfo = &sysinfo_car;
-	struct mem_controller *ctrl = &( sysinfo->ctrl[node] );
+	struct mem_controller *ctrl = &(sysinfo->ctrl[node]);
 
-	for (j=0;j<DIMM_SOCKETS;j++) {
+	for (j = 0; j < DIMM_SOCKETS; j++) {
 		pDCTstat->DIMMAddr[j*2] = ctrl->spd_addr[j] & 0xff;
 		pDCTstat->DIMMAddr[j*2+1] = ctrl->spd_addr[DIMM_SOCKETS + j] & 0xff;
 	}

@@ -96,7 +96,7 @@ static void set_srat_mem(void *gp, struct device *dev, struct resource *res)
 	 */
 	if ((basek+sizek)<1024) return;
 
-	if (basek<1024) {
+	if (basek < 1024) {
 		sizek -= 1024 - basek;
 		basek = 1024;
 	}
@@ -158,9 +158,9 @@ static unsigned long acpi_fill_slit(unsigned long current)
 	*p = (u8) nodes;
 	p += 8;
 
-	for (i=0;i<nodes;i++) {
-		for (j=0;j<nodes; j++) {
-			if (i==j)
+	for (i = 0; i < nodes; i++) {
+		for (j = 0; j < nodes; j++) {
+			if (i == j)
 				p[i*nodes+j] = 10;
 			else
 				p[i*nodes+j] = 16;
@@ -221,7 +221,7 @@ void northbridge_acpi_write_vars(device_t device)
 
 	acpigen_write_name("BUSN");
 	acpigen_write_package(HC_NUMS);
-	for (i=0; i<HC_NUMS; i++) {
+	for (i = 0; i < HC_NUMS; i++) {
 		acpigen_write_dword(sysconf.ht_c_conf_bus[i]);
 	}
 	// minus the opcode
@@ -231,7 +231,7 @@ void northbridge_acpi_write_vars(device_t device)
 
 	acpigen_write_package(HC_NUMS * 4);
 
-	for (i=0;i<(HC_NUMS*2);i++) { // FIXME: change to more chain
+	for (i = 0; i<(HC_NUMS*2); i++) { // FIXME: change to more chain
 		acpigen_write_dword(sysconf.conf_mmio_addrx[i]); //base
 		acpigen_write_dword(sysconf.conf_mmio_addr[i]); //mask
 	}
@@ -242,7 +242,7 @@ void northbridge_acpi_write_vars(device_t device)
 
 	acpigen_write_package(HC_NUMS * 2);
 
-	for (i=0;i<HC_NUMS;i++) { // FIXME: change to more chain
+	for (i = 0; i < HC_NUMS; i++) { // FIXME: change to more chain
 		acpigen_write_dword(sysconf.conf_io_addrx[i]);
 		acpigen_write_dword(sysconf.conf_io_addr[i]);
 	}
@@ -273,10 +273,10 @@ void northbridge_acpi_write_vars(device_t device)
 
 	acpigen_write_package(HC_POSSIBLE_NUM);
 
-	for (i=0;i<sysconf.hc_possible_num;i++) {
+	for (i = 0; i < sysconf.hc_possible_num; i++) {
 		acpigen_write_dword(sysconf.pci1234[i]);
 	}
-	for (i=sysconf.hc_possible_num; i<HC_POSSIBLE_NUM; i++) { // in case we set array size to other than 8
+	for (i = sysconf.hc_possible_num; i < HC_POSSIBLE_NUM; i++) { // in case we set array size to other than 8
 		acpigen_write_dword(0x00000000);
 	}
 	// minus the opcode
@@ -286,10 +286,10 @@ void northbridge_acpi_write_vars(device_t device)
 
 	acpigen_write_package(HC_POSSIBLE_NUM);
 
-	for (i=0;i<sysconf.hc_possible_num;i++) {
+	for (i = 0; i < sysconf.hc_possible_num; i++) {
 		acpigen_write_dword(sysconf.hcdn[i]);
 	}
-	for (i=sysconf.hc_possible_num; i<HC_POSSIBLE_NUM; i++) { // in case we set array size to other than 8
+	for (i = sysconf.hc_possible_num; i < HC_POSSIBLE_NUM; i++) { // in case we set array size to other than 8
 		acpigen_write_dword(0x20202020);
 	}
 	// minus the opcode
@@ -311,7 +311,7 @@ void northbridge_acpi_write_vars(device_t device)
 
 	acpigen_write_name_byte("CBST", CBST);
 
-	if ((CONFIG_CBB == 0xff) && (sysconf.nodes>32)) {
+	if ((CONFIG_CBB == 0xff) && (sysconf.nodes > 32)) {
 		 CBS2 = 0x0f;
 		 CBB2 = (u8)(CONFIG_CBB-1);
 	} else {

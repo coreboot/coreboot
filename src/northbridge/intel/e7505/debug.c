@@ -78,8 +78,8 @@ void dump_pci_devices_on_bus(unsigned busn)
 		uint32_t id;
 		id = pci_read_config32(dev, PCI_VENDOR_ID);
 		if (((id & 0xffff) == 0x0000) || ((id & 0xffff) == 0xffff) ||
-		        (((id >> 16) & 0xffff) == 0xffff) ||
-		        (((id >> 16) & 0xffff) == 0x0000)) {
+			(((id >> 16) & 0xffff) == 0xffff) ||
+			(((id >> 16) & 0xffff) == 0x0000)) {
 			continue;
 		}
 		dump_pci_device(dev);
@@ -156,7 +156,6 @@ void dump_smbus_registers(void)
 
 void dump_io_resources(unsigned port)
 {
-
 	int i;
 	printk(BIOS_DEBUG, "%04x:\n", port);
 	for (i = 0; i < 256; i++) {

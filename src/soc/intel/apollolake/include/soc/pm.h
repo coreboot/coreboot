@@ -206,7 +206,6 @@ void enable_gpe(uint32_t mask);
 void disable_gpe(uint32_t mask);
 void disable_all_gpe(void);
 uintptr_t get_pmc_mmio_bar(void);
-void pmc_gpe_init(void);
 
 void global_reset_enable(bool enable);
 void global_reset_lock(void);

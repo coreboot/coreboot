@@ -137,13 +137,13 @@ static int cr50_i2c_write(struct tpm_chip *chip,
 
 static int check_locality(struct tpm_chip *chip, int loc)
 {
-	uint8_t mask = TPM_ACCESS_VALID | TPM_ACCESS_ACTIVE_LOCALITY;
 	uint8_t buf;
 
 	if (cr50_i2c_read(chip, TPM_ACCESS(loc), &buf, 1) < 0)
 		return -1;
 
-	if ((buf & mask) == mask) {
+	if ((buf & (TPM_ACCESS_ACTIVE_LOCALITY | TPM_ACCESS_VALID)) ==
+		(TPM_ACCESS_ACTIVE_LOCALITY | TPM_ACCESS_VALID)) {
 		chip->vendor.locality = loc;
 		return loc;
 	}
@@ -151,41 +151,40 @@ static int check_locality(struct tpm_chip *chip, int loc)
 	return -1;
 }
 
-static void release_locality(struct tpm_chip *chip, int force)
+static void release_locality(struct tpm_chip *chip, int loc, int force)
 {
-	uint8_t mask = TPM_ACCESS_VALID | TPM_ACCESS_REQUEST_PENDING;
-	uint8_t addr = TPM_ACCESS(chip->vendor.locality);
 	uint8_t buf;
 
-	if (cr50_i2c_read(chip, addr, &buf, 1) < 0)
+	if (cr50_i2c_read(chip, TPM_ACCESS(loc), &buf, 1) < 0)
 		return;
 
-	if (force || (buf & mask) == mask) {
+	if (force || (buf & (TPM_ACCESS_REQUEST_PENDING | TPM_ACCESS_VALID)) ==
+			(TPM_ACCESS_REQUEST_PENDING | TPM_ACCESS_VALID)) {
 		buf = TPM_ACCESS_ACTIVE_LOCALITY;
-		cr50_i2c_write(chip, addr, &buf, 1);
+		cr50_i2c_write(chip, TPM_ACCESS(loc), &buf, 1);
 	}
-
-	chip->vendor.locality = 0;
 }
 
 static int request_locality(struct tpm_chip *chip, int loc)
 {
 	uint8_t buf = TPM_ACCESS_REQUEST_USE;
-	struct stopwatch sw;
 
 	if (check_locality(chip, loc) >= 0)
-		return loc;
+		return loc; /* we already have the locality */
 
 	if (cr50_i2c_write(chip, TPM_ACCESS(loc), &buf, 1) < 0)
 		return -1;
 
-	stopwatch_init_msecs_expire(&sw, CR50_TIMEOUT_LONG_MS);
-	while (check_locality(chip, loc) < 0) {
-		if (stopwatch_expired(&sw))
-			return -1;
-		mdelay(CR50_TIMEOUT_SHORT_MS);
+	/* wait for burstcount */
+	int timeout = 2 * 1000; /* 2s timeout */
+	while (timeout) {
+		if (check_locality(chip, loc) >= 0)
+			return loc;
+		mdelay(TPM_TIMEOUT);
+		timeout--;
 	}
-	return loc;
+
+	return -1;
 }
 
 /* cr50 requires all 4 bytes of status register to be read */
@@ -459,11 +458,11 @@ int tpm_vendor_init(struct tpm_chip *chip, unsigned bus, uint32_t dev_addr)
 	return 0;
 
 out_err:
-	release_locality(chip, 1);
+	release_locality(chip, 0, 1);
 	return -1;
 }
 
 void tpm_vendor_cleanup(struct tpm_chip *chip)
 {
-	release_locality(chip, 1);
+	release_locality(chip, chip->vendor.locality, 1);
 }

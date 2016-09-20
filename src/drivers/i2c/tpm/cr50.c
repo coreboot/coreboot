@@ -189,7 +189,7 @@ static int request_locality(struct tpm_chip *chip, int loc)
 }
 
 /* cr50 requires all 4 bytes of status register to be read */
-static uint8_t cr50_i2c_tis_status(struct tpm_chip *chip)
+static uint8_t cr50_tis_i2c_status(struct tpm_chip *chip)
 {
 	uint8_t buf[4];
 	if (cr50_i2c_read(chip, TPM_STS(chip->vendor.locality),
@@ -201,7 +201,7 @@ static uint8_t cr50_i2c_tis_status(struct tpm_chip *chip)
 }
 
 /* cr50 requires all 4 bytes of status register to be written */
-static void cr50_i2c_tis_ready(struct tpm_chip *chip)
+static void cr50_tis_i2c_ready(struct tpm_chip *chip)
 {
 	uint8_t buf[4] = { TPM_STS_COMMAND_READY };
 	cr50_i2c_write(chip, TPM_STS(chip->vendor.locality), buf, sizeof(buf));
@@ -210,7 +210,7 @@ static void cr50_i2c_tis_ready(struct tpm_chip *chip)
 
 /* cr50 uses bytes 3:2 of status register for burst count and
  * all 4 bytes must be read */
-static int cr50_i2c_wait_burststs(struct tpm_chip *chip, uint8_t mask,
+static int cr50_wait_burst_status(struct tpm_chip *chip, uint8_t mask,
 				  size_t *burst, int *status)
 {
 	uint8_t buf[4];
@@ -240,26 +240,28 @@ static int cr50_i2c_wait_burststs(struct tpm_chip *chip, uint8_t mask,
 	return -1;
 }
 
-static int cr50_i2c_tis_recv(struct tpm_chip *chip, uint8_t *buf,
+static int cr50_tis_i2c_recv(struct tpm_chip *chip, uint8_t *buf,
 			     size_t buf_len)
 {
 	size_t burstcnt, current, len, expected;
 	uint8_t addr = TPM_DATA_FIFO(chip->vendor.locality);
-	uint8_t mask = TPM_STS_VALID | TPM_STS_DATA_AVAIL;
 	int status;
+	int ret = -1;
 
 	if (buf_len < TPM_HEADER_SIZE)
-		goto out_err;
+		goto out;
 
-	if (cr50_i2c_wait_burststs(chip, mask, &burstcnt, &status) < 0) {
+	if (cr50_wait_burst_status(chip, TPM_STS_VALID, &burstcnt, &status) < 0)
+		goto out;
+	if (!(status & TPM_STS_DATA_AVAIL)) {
 		printk(BIOS_ERR, "%s: First chunk not available\n", __func__);
-		goto out_err;
+		goto out;
 	}
 
 	/* Read first chunk of burstcnt bytes */
 	if (cr50_i2c_read(chip, addr, buf, burstcnt) != 0) {
 		printk(BIOS_ERR, "%s: Read failed\n", __func__);
-		goto out_err;
+		goto out;
 	}
 
 	/* Determine expected data in the return buffer */
@@ -267,43 +269,45 @@ static int cr50_i2c_tis_recv(struct tpm_chip *chip, uint8_t *buf,
 	if (expected > buf_len) {
 		printk(BIOS_ERR, "%s: Too much data: %zu > %zu\n",
 		       __func__, expected, buf_len);
-		goto out_err;
+		goto out;
 	}
 
 	/* Now read the rest of the data */
 	current = burstcnt;
 	while (current < expected) {
 		/* Read updated burst count and check status */
-		if (cr50_i2c_wait_burststs(chip, mask, &burstcnt, &status) < 0)
-			goto out_err;
+		if (cr50_wait_burst_status(chip, TPM_STS_VALID,
+					   &burstcnt, &status) < 0)
+			goto out;
+		if (!(status & TPM_STS_DATA_AVAIL)) {
+			printk(BIOS_ERR, "%s: Data not available\n", __func__);
+			goto out;
+		}
 
 		len = min(burstcnt, expected - current);
 		if (cr50_i2c_read(chip, addr, buf + current, len) != 0) {
 			printk(BIOS_ERR, "%s: Read failed\n", __func__);
-			goto out_err;
+			goto out;
 		}
 
 		current += len;
 	}
 
 	/* Ensure TPM is done reading data */
-	if (cr50_i2c_wait_burststs(chip, TPM_STS_VALID, &burstcnt, &status) < 0)
-		goto out_err;
+	if (cr50_wait_burst_status(chip, TPM_STS_VALID, &burstcnt, &status) < 0)
+		goto out;
 	if (status & TPM_STS_DATA_AVAIL) {
 		printk(BIOS_ERR, "%s: Data still available\n", __func__);
-		goto out_err;
+		goto out;
 	}
 
-	return current;
+	ret = current;
 
-out_err:
-	/* Abort current transaction if still pending */
-	if (cr50_i2c_tis_status(chip) & TPM_STS_COMMAND_READY)
-		cr50_i2c_tis_ready(chip);
-	return -1;
+out:
+	return ret;
 }
 
-static int cr50_i2c_tis_send(struct tpm_chip *chip, uint8_t *buf, size_t len)
+static int cr50_tis_i2c_send(struct tpm_chip *chip, uint8_t *buf, size_t len)
 {
 	int status;
 	size_t burstcnt, limit, sent = 0;
@@ -313,26 +317,25 @@ static int cr50_i2c_tis_send(struct tpm_chip *chip, uint8_t *buf, size_t len)
 	stopwatch_init_msecs_expire(&sw, CR50_TIMEOUT_LONG_MS);
 
 	/* Wait until TPM is ready for a command */
-	while (!(cr50_i2c_tis_status(chip) & TPM_STS_COMMAND_READY)) {
+	while (!(cr50_tis_i2c_status(chip) & TPM_STS_COMMAND_READY)) {
 		if (stopwatch_expired(&sw)) {
 			printk(BIOS_ERR, "%s: Command ready timeout\n",
 			       __func__);
 			return -1;
 		}
 
-		cr50_i2c_tis_ready(chip);
+		cr50_tis_i2c_ready(chip);
 	}
 
 	while (len > 0) {
-		uint8_t mask = TPM_STS_VALID;
-
-		/* Wait for data if this is not the first chunk */
-		if (sent > 0)
-			mask |= TPM_STS_DATA_EXPECT;
-
 		/* Read burst count and check status */
-		if (cr50_i2c_wait_burststs(chip, mask, &burstcnt, &status) < 0)
-			goto out_err;
+		if (cr50_wait_burst_status(chip, TPM_STS_VALID,
+					   &burstcnt, &status) < 0)
+			goto out;
+		if (sent > 0 && !(status & TPM_STS_DATA_EXPECT)) {
+			printk(BIOS_ERR, "%s: Data not expected\n", __func__);
+			goto out;
+		}
 
 		/* Use burstcnt - 1 to account for the address byte
 		 * that is inserted by cr50_i2c_write() */
@@ -340,7 +343,7 @@ static int cr50_i2c_tis_send(struct tpm_chip *chip, uint8_t *buf, size_t len)
 		if (cr50_i2c_write(chip, TPM_DATA_FIFO(chip->vendor.locality),
 				   &buf[sent], limit) != 0) {
 			printk(BIOS_ERR, "%s: Write failed\n", __func__);
-			goto out_err;
+			goto out;
 		}
 
 		sent += limit;
@@ -348,25 +351,25 @@ static int cr50_i2c_tis_send(struct tpm_chip *chip, uint8_t *buf, size_t len)
 	}
 
 	/* Ensure TPM is not expecting more data */
-	if (cr50_i2c_wait_burststs(chip, TPM_STS_VALID, &burstcnt, &status) < 0)
-		goto out_err;
+	if (cr50_wait_burst_status(chip, TPM_STS_VALID, &burstcnt, &status) < 0)
+		goto out;
 	if (status & TPM_STS_DATA_EXPECT) {
 		printk(BIOS_ERR, "%s: Data still expected\n", __func__);
-		goto out_err;
+		goto out;
 	}
 
 	/* Start the TPM command */
 	if (cr50_i2c_write(chip, TPM_STS(chip->vendor.locality), tpm_go,
 			   sizeof(tpm_go)) < 0) {
 		printk(BIOS_ERR, "%s: Start command failed\n", __func__);
-		goto out_err;
+		goto out;
 	}
 	return sent;
 
-out_err:
+out:
 	/* Abort current transaction if still pending */
-	if (cr50_i2c_tis_status(chip) & TPM_STS_COMMAND_READY)
-		cr50_i2c_tis_ready(chip);
+	if (cr50_tis_i2c_status(chip) & TPM_STS_COMMAND_READY)
+		cr50_tis_i2c_ready(chip);
 	return -1;
 }
 
@@ -376,10 +379,10 @@ static void cr50_vendor_init(struct tpm_chip *chip)
 	chip->vendor.req_complete_mask = TPM_STS_DATA_AVAIL | TPM_STS_VALID;
 	chip->vendor.req_complete_val = TPM_STS_DATA_AVAIL | TPM_STS_VALID;
 	chip->vendor.req_canceled = TPM_STS_COMMAND_READY;
-	chip->vendor.status = &cr50_i2c_tis_status;
-	chip->vendor.recv = &cr50_i2c_tis_recv;
-	chip->vendor.send = &cr50_i2c_tis_send;
-	chip->vendor.cancel = &cr50_i2c_tis_ready;
+	chip->vendor.status = &cr50_tis_i2c_status;
+	chip->vendor.recv = &cr50_tis_i2c_recv;
+	chip->vendor.send = &cr50_tis_i2c_send;
+	chip->vendor.cancel = &cr50_tis_i2c_ready;
 }
 
 int tpm_vendor_probe(unsigned bus, uint32_t addr)

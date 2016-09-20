@@ -353,6 +353,7 @@ static const struct pad_config early_gpio_table[] = {
 	/* I2C2 - TPM  */
 	PAD_CFG_NF(GPIO_128, UP_2K, DEEP, NF1), /* LPSS_I2C2_SDA */
 	PAD_CFG_NF(GPIO_129, UP_2K, DEEP, NF1), /* LPSS_I2C2_SCL */
+	PAD_CFG_GPI_APIC_LOW(GPIO_28, NONE, DEEP), /* TPM IRQ */
 	/* WLAN_PE_RST - default to deasserted just in case FSP misbehaves. */
 	PAD_CFG_GPO(GPIO_122, 0, DEEP),		 /* SIO_SPI_2_RXD */
 };

@@ -241,6 +241,8 @@ check_gnat() {
 			printf "requires bootstrapping (-b).${NC}\n\n"
 			HALT_FOR_TOOLS=1
 		fi
+	else
+		please_install gnat
 	fi
 }
 

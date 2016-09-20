@@ -691,14 +691,16 @@ getoptbrand="$(getopt -V | sed -e '1!d' -e 's,^\(......\).*,\1,')"
 if [ "${getoptbrand}" = "getopt" ]; then
 	# Detected GNU getopt that supports long options.
 	args=$(getopt -l version,help,clean,directory:,bootstrap,platform:,languages:,package:,jobs:,destdir:,savetemps,scripting,ccache,supported:,urls,nocolor -o Vhcd:bp:l:P:j:D:tSys:un -- "$@")
+	getopt_ret=$?
 	eval set -- "$args"
 else
 	# Detected non-GNU getopt
 	args=$(getopt Vhcd:bp:l:P:j:D:tSys:un $*)
+	getopt_ret=$?
 	set -- $args
 fi
 
-if [ $? != 0 ]; then
+if [ $getopt_ret != 0 ]; then
 	myhelp
 	exit 1
 fi

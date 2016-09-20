@@ -725,10 +725,15 @@ while true ; do
 		-n|--nocolor)	shift; \
 			unset red RED green GREEN blue BLUE cyan CYAN NC;;
 		--)		shift; break;;
-		-*)		printf "Invalid option\n\n"; myhelp; exit 1;;
 		*)		break;;
 	esac
 done
+
+if [ $# -gt 0 ]; then
+	printf "Excessive arguments: $*\n"
+	myhelp
+	exit 1
+fi
 
 if [ -n "$PRINTSTABLE" ]; then
 	print_stable

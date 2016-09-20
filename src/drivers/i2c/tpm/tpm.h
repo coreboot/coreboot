@@ -36,9 +36,6 @@ enum tpm_timeout {
 /* Size of external transmit buffer (used for stack buffer in tpm_sendrecv) */
 #define TPM_BUFSIZE 1260
 
-/* Number of bytes in the TPM header */
-#define TPM_HEADER_SIZE 10
-
 /* Index of fields in TPM command buffer */
 #define TPM_CMD_SIZE_BYTE 2
 #define TPM_CMD_ORDINAL_BYTE 6
@@ -46,26 +43,6 @@ enum tpm_timeout {
 /* Index of Count field in TPM response buffer */
 #define TPM_RSP_SIZE_BYTE 2
 #define TPM_RSP_RC_BYTE 6
-
-enum tis_access {
-	TPM_ACCESS_VALID = 0x80,
-	TPM_ACCESS_ACTIVE_LOCALITY = 0x20,
-	TPM_ACCESS_REQUEST_PENDING = 0x04,
-	TPM_ACCESS_REQUEST_USE = 0x02,
-};
-
-enum tis_status {
-	TPM_STS_VALID = 0x80,
-	TPM_STS_COMMAND_READY = 0x40,
-	TPM_STS_GO = 0x20,
-	TPM_STS_DATA_AVAIL = 0x10,
-	TPM_STS_DATA_EXPECT = 0x08,
-};
-
-#define	TPM_ACCESS(l)			(0x0000 | ((l) << 4))
-#define	TPM_STS(l)			(0x0001 | ((l) << 4))
-#define	TPM_DATA_FIFO(l)		(0x0005 | ((l) << 4))
-#define	TPM_DID_VID(l)			(0x0006 | ((l) << 4))
 
 struct tpm_chip;
 

@@ -225,6 +225,16 @@ hostcc_version() {
 	printf "%d.%d" "$(hostcc_major)" "$(hostcc_minor)"
 }
 
+check_cc() {
+	if is_package_enabled "GCC"; then
+		if [ "$(hostcc_major)" != "$(buildcc_major)" -a "${BOOTSTRAP}" != "1" ]; then
+			printf "\n${red}warning: Building GCC $(buildcc_version) with a different major "
+			printf "version ($(hostcc_version)).\n"
+			printf "         Bootstrapping (-b) is recommended.${NC}\n\n"
+		fi
+	fi
+}
+
 check_sum() {
 	test -z "$CHECKSUM" || \
 	test "$(cat sum/$1.cksum 2>/dev/null | sed -e 's@.*\([0-9a-f]\{40,\}\).*@\1@')" = \
@@ -836,6 +846,9 @@ searchtool bzip2 "bzip2," > /dev/null
 
 check_for_library "-lz" "zlib (zlib1g-dev or zlib-devel)"
 
+CC=cc
+check_cc
+
 if [ "$HALT_FOR_TOOLS" -ne 0 ]; then
 	exit 1
 fi
@@ -848,7 +861,6 @@ fi
 
 # Set up host compiler and flags needed for various OSes
 
-CC=cc
 if is_package_enabled "GCC"; then
 if [ $UNAME = "Darwin" ]; then
 	#GCC_OPTIONS="$GCC_OPTIONS --enable-threads=posix"

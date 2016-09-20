@@ -41,19 +41,19 @@
 #include <timer.h>
 #include "tpm.h"
 
+#define CR50_MAX_BURSTCOUNT	63
 
 #define SLEEP_DURATION 60 /* in usec */
 #define SLEEP_DURATION_LONG 210 /* in usec */
 #define SLEEP_DURATION_SAFE 750 /* in usec */
 #define SLEEP_DURATION_PROBE_MS 1000 /* in msec */
 
-#define CR50_MAX_BUFSIZE	63
 #define CR50_DID_VID		0x00281ae0L
 
 struct tpm_inf_dev {
 	int bus;
 	unsigned int addr;
-	uint8_t buf[CR50_MAX_BUFSIZE + sizeof(uint8_t)];
+	uint8_t buf[TPM_BUFSIZE + sizeof(uint8_t)];
 };
 
 static struct tpm_inf_dev g_tpm_dev CAR_GLOBAL;
@@ -115,7 +115,7 @@ static int iic_tpm_write(uint8_t addr, uint8_t *buffer, size_t len)
 
 	if (tpm_dev->addr == 0)
 		return -1;
-	if (len > CR50_MAX_BUFSIZE)
+	if (len > TPM_BUFSIZE)
 		return -1;
 
 	/* Prepend the 'register address' to the buffer */
@@ -226,7 +226,7 @@ static int cr50_wait_burst_status(struct tpm_chip *chip, uint8_t mask,
 
 		/* Check if mask matches and burst is valid */
 		if ((*status & mask) == mask &&
-		    *burst > 0 && *burst <= CR50_MAX_BUFSIZE)
+		    *burst > 0 && *burst <= CR50_MAX_BURSTCOUNT)
 			return 0;
 
 		udelay(SLEEP_DURATION_SAFE);
@@ -309,6 +309,9 @@ static int cr50_tis_i2c_send(struct tpm_chip *chip, uint8_t *buf, size_t len)
 	size_t burstcnt, limit, sent = 0;
 	uint8_t tpm_go[4] = { TPM_STS_GO };
 	struct stopwatch sw;
+
+	if (len > TPM_BUFSIZE)
+		return -1;
 
 	stopwatch_init_msecs_expire(&sw, 2000);
 

@@ -26,7 +26,8 @@ CROSSGCC_COMMIT=$( git describe )
 PACKAGE=GCC
 TARGETDIR=$(pwd)/xgcc
 TARGETARCH=i386-elf
-LANGUAGES=c
+DEFAULT_LANGUAGES=c
+LANGUAGES=
 DESTDIR=
 SAVETEMPS=0
 SKIPPYTHON=1
@@ -455,7 +456,7 @@ myhelp()
 	printf "    [-p|--platform <platform>]    target platform to build cross compiler for\n"
 	printf "                                  (defaults to $TARGETARCH)\n"
 	printf "    [-l|--languages <languages>]  comma separated list of target languages\n"
-	printf "                                  (defaults to $LANGUAGES)\n"
+	printf "                                  (defaults to $DEFAULT_LANGUAGES)\n"
 	printf "GDB specific options:\n"
 	printf "    [-p|--platform <platform>]    target platform to build cross compiler for\n"
 	printf "                                  (defaults to $TARGETARCH)\n"
@@ -916,6 +917,16 @@ elif [ $UNAME = "NetBSD" ]; then
 	# same for NetBSD but this one reports an i386
 	if [ "$(uname -m 2>/dev/null)" = "i386" ]; then
 		OPTIONS="ABI=32"
+	fi
+fi
+if [ -z "${LANGUAGES}" ]; then
+	if hostcc_has_gnat1 && \
+		[ "$(hostcc_version)" = "$(buildcc_version)" -o "${BOOTSTRAP}" = "1" ];
+	then
+		printf "\nFound compatible Ada compiler, enabling Ada support by default.\n\n"
+		LANGUAGES="ada,${DEFAULT_LANGUAGES}"
+	else
+		LANGUAGES="${DEFAULT_LANGUAGES}"
 	fi
 fi
 fi # GCC

@@ -225,12 +225,34 @@ hostcc_version() {
 	printf "%d.%d" "$(hostcc_major)" "$(hostcc_minor)"
 }
 
+hostcc_has_gnat1() {
+	[ -x "$(${CC} -print-prog-name=gnat1)" ]
+}
+
+ada_requested() {
+	echo "${LANGUAGES}" | grep -q '\<ada\>'
+}
+
+check_gnat() {
+	if hostcc_has_gnat1; then
+		if [ "$(hostcc_version)" != "$(buildcc_version)" -a "${BOOTSTRAP}" != "1" ]; then
+			printf "\n${RED}ERROR:${red} Building the Ada compiler (gnat $(buildcc_version)) "
+			printf "with a different host compiler\n       version ($(hostcc_version)) "
+			printf "requires bootstrapping (-b).${NC}\n\n"
+			HALT_FOR_TOOLS=1
+		fi
+	fi
+}
+
 check_cc() {
 	if is_package_enabled "GCC"; then
 		if [ "$(hostcc_major)" != "$(buildcc_major)" -a "${BOOTSTRAP}" != "1" ]; then
 			printf "\n${red}warning: Building GCC $(buildcc_version) with a different major "
 			printf "version ($(hostcc_version)).\n"
 			printf "         Bootstrapping (-b) is recommended.${NC}\n\n"
+		fi
+		if ada_requested; then
+			check_gnat
 		fi
 	fi
 }

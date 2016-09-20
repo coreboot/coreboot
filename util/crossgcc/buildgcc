@@ -385,8 +385,8 @@ myhelp()
 	printf "    [-c|--clean]                  remove temporary files before build\n"
 	printf "    [-t|--savetemps]              don't remove temporary files after build\n"
 	printf "    [-y|--ccache]                 Use ccache when building cross compiler\n"
-	printf "       [--nocolor]                don't print color codes in output\n"
-	printf "       [--urls]                   print the urls for all packages\n"
+	printf "    [-n|--nocolor]                don't print color codes in output\n"
+	printf "    [-u|--urls]                   print the urls for all packages\n"
 	printf "    [-j|--jobs <num>]             run <num> jobs in parallel in make\n"
 	printf "    [-s]--supported <tool>        print supported version of a tool\n"
 	printf "    [-d|--directory <target dir>] target directory to install cross compiler to\n"
@@ -690,11 +690,11 @@ getopt - > /dev/null 2>/dev/null || gcc -o getopt getopt.c
 getoptbrand="$(getopt -V | sed -e '1!d' -e 's,^\(......\).*,\1,')"
 if [ "${getoptbrand}" = "getopt" ]; then
 	# Detected GNU getopt that supports long options.
-	args=$(getopt -l version,help,clean,directory:,bootstrap,platform:,languages:,package:,jobs:,destdir:,savetemps,scripting,ccache,supported: Vhcd:bp:l:P:j:D:tSys: -- "$@")
+	args=$(getopt -l version,help,clean,directory:,bootstrap,platform:,languages:,package:,jobs:,destdir:,savetemps,scripting,ccache,supported:,urls,nocolor Vhcd:bp:l:P:j:D:tSys:un -- "$@")
 	eval set "$args"
 else
 	# Detected non-GNU getopt
-	args=$(getopt Vhcd:bp:l:P:j:D:tSys: $*)
+	args=$(getopt Vhcd:bp:l:P:j:D:tSys:un $*)
 	set -- $args
 fi
 
@@ -719,8 +719,8 @@ while true ; do
 		-S|--scripting) shift; SKIPPYTHON=0;;
 		-y|--ccache)	shift; USECCACHE=1;;
 		-s|--supported) shift; PRINTSTABLE="$1"; shift;;
-		   --urls)	shift; printf "%s\n" "$ALL_ARCHIVES"; exit 0;;
-		   --nocolor)	shift; \
+		-u|--urls)	shift; printf "%s\n" "$ALL_ARCHIVES"; exit 0;;
+		-n|--nocolor)	shift; \
 			unset red RED green GREEN blue BLUE cyan CYAN NC;;
 		--)		shift; break;;
 		-*)		printf "Invalid option\n\n"; myhelp; exit 1;;

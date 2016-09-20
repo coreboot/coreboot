@@ -42,9 +42,12 @@
 #include "tpm.h"
 
 
+#define SLEEP_DURATION 60 /* in usec */
+#define SLEEP_DURATION_LONG 210 /* in usec */
+#define SLEEP_DURATION_SAFE 750 /* in usec */
+#define SLEEP_DURATION_PROBE_MS 1000 /* in msec */
+
 #define CR50_MAX_BUFSIZE	63
-#define CR50_TIMEOUT_LONG_MS	2000	/* Long timeout while waiting for TPM */
-#define CR50_TIMEOUT_SHORT_MS	2	/* Short timeout during transactions */
 #define CR50_DID_VID		0x00281ae0L
 
 struct tpm_inf_dev {
@@ -82,7 +85,7 @@ static int iic_tpm_read(uint8_t addr, uint8_t *buffer, size_t len)
 	}
 
 	/* Wait for TPM to be ready with response data */
-	mdelay(CR50_TIMEOUT_SHORT_MS);
+	udelay(SLEEP_DURATION_SAFE);
 
 	/* Read response data from the TPM */
 	if (i2c_read_raw(tpm_dev->bus, tpm_dev->addr, buffer, len)) {
@@ -126,7 +129,7 @@ static int iic_tpm_write(uint8_t addr, uint8_t *buffer, size_t len)
 	}
 
 	/* Wait for TPM to be ready */
-	mdelay(CR50_TIMEOUT_SHORT_MS);
+	udelay(SLEEP_DURATION_SAFE);
 
 	return 0;
 }
@@ -198,7 +201,6 @@ static void cr50_tis_i2c_ready(struct tpm_chip *chip)
 {
 	uint8_t buf[4] = { TPM_STS_COMMAND_READY };
 	iic_tpm_write(TPM_STS(chip->vendor.locality), buf, sizeof(buf));
-	mdelay(CR50_TIMEOUT_SHORT_MS);
 }
 
 /* cr50 uses bytes 3:2 of status register for burst count and
@@ -209,13 +211,13 @@ static int cr50_wait_burst_status(struct tpm_chip *chip, uint8_t mask,
 	uint8_t buf[4];
 	struct stopwatch sw;
 
-	stopwatch_init_msecs_expire(&sw, CR50_TIMEOUT_LONG_MS);
+	stopwatch_init_msecs_expire(&sw, 2000);
 
 	while (!stopwatch_expired(&sw)) {
 		if (iic_tpm_read(TPM_STS(chip->vendor.locality),
 				 buf, sizeof(buf)) != 0) {
 			printk(BIOS_WARNING, "%s: Read failed\n", __func__);
-			mdelay(CR50_TIMEOUT_SHORT_MS);
+			udelay(SLEEP_DURATION_SAFE);
 			continue;
 		}
 
@@ -227,7 +229,7 @@ static int cr50_wait_burst_status(struct tpm_chip *chip, uint8_t mask,
 		    *burst > 0 && *burst <= CR50_MAX_BUFSIZE)
 			return 0;
 
-		mdelay(CR50_TIMEOUT_SHORT_MS);
+		udelay(SLEEP_DURATION_SAFE);
 	}
 
 	printk(BIOS_ERR, "%s: Timeout reading burst and status\n", __func__);
@@ -308,7 +310,7 @@ static int cr50_tis_i2c_send(struct tpm_chip *chip, uint8_t *buf, size_t len)
 	uint8_t tpm_go[4] = { TPM_STS_GO };
 	struct stopwatch sw;
 
-	stopwatch_init_msecs_expire(&sw, CR50_TIMEOUT_LONG_MS);
+	stopwatch_init_msecs_expire(&sw, 2000);
 
 	/* Wait until TPM is ready for a command */
 	while (!(cr50_tis_i2c_status(chip) & TPM_STS_COMMAND_READY)) {
@@ -319,6 +321,7 @@ static int cr50_tis_i2c_send(struct tpm_chip *chip, uint8_t *buf, size_t len)
 		}
 
 		cr50_tis_i2c_ready(chip);
+		udelay(SLEEP_DURATION_SAFE);
 	}
 
 	while (len > 0) {
@@ -385,7 +388,7 @@ int tpm_vendor_probe(unsigned bus, uint32_t addr)
 	struct stopwatch sw;
 	uint8_t buf = 0;
 	int ret;
-	long sw_run_duration = CR50_TIMEOUT_LONG_MS;
+	long sw_run_duration = SLEEP_DURATION_PROBE_MS;
 
 	tpm_dev->bus = bus;
 	tpm_dev->addr = addr;
@@ -398,7 +401,7 @@ int tpm_vendor_probe(unsigned bus, uint32_t addr)
 			sw_run_duration = stopwatch_duration_msecs(&sw);
 			break;
 		}
-		mdelay(CR50_TIMEOUT_SHORT_MS);
+		udelay(SLEEP_DURATION_SAFE);
 	} while (!stopwatch_expired(&sw));
 
 	printk(BIOS_INFO,

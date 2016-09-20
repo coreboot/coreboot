@@ -205,6 +205,26 @@ check_for_library() {
 	rm -rf "${LIBTEST_FILE}.c" "${LIBTEST_FILE}"
 }
 
+buildcc_major() {
+	echo "${GCC_VERSION}" | cut -d. -f1
+}
+
+buildcc_version() {
+	echo "${GCC_VERSION}" | cut -d. -f1-2
+}
+
+hostcc_major() {
+	(echo __GNUC__ | ${CC} -E - 2>/dev/null || echo 0) | tail -1
+}
+
+hostcc_minor() {
+	(echo __GNUC_MINOR__ | ${CC} -E - 2>/dev/null || echo 0) | tail -1
+}
+
+hostcc_version() {
+	printf "%d.%d" "$(hostcc_major)" "$(hostcc_minor)"
+}
+
 check_sum() {
 	test -z "$CHECKSUM" || \
 	test "$(cat sum/$1.cksum 2>/dev/null | sed -e 's@.*\([0-9a-f]\{40,\}\).*@\1@')" = \

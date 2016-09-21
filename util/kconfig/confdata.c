@@ -42,6 +42,16 @@ static void conf_warning(const char *fmt, ...)
 	conf_warnings++;
 }
 
+static void conf_notice(const char *fmt, ...)
+{
+	va_list ap;
+	va_start(ap, fmt);
+	fprintf(stderr, "%s:%d:notice: ", conf_filename, conf_lineno);
+	vfprintf(stderr, fmt, ap);
+	fprintf(stderr, "\n");
+	va_end(ap);
+}
+
 static void conf_default_message_callback(const char *fmt, va_list ap)
 {
 	printf("#\n# ");
@@ -337,7 +347,7 @@ load:
 					sym->type = S_BOOLEAN;
 			}
 			if (sym->flags & def_flags) {
-				conf_warning("override: reassigning to symbol %s", sym->name);
+				conf_notice("override: reassigning to symbol %s", sym->name);
 			}
 			switch (sym->type) {
 			case S_BOOLEAN:
@@ -374,7 +384,7 @@ load:
 					sym->type = S_OTHER;
 			}
 			if (sym->flags & def_flags) {
-				conf_warning("override: reassigning to symbol %s", sym->name);
+				conf_notice("override: reassigning to symbol %s", sym->name);
 			}
 			if (conf_set_sym_val(sym, def, def_flags, p))
 				continue;
@@ -397,7 +407,7 @@ setsym:
 				break;
 			case yes:
 				if (cs->def[def].tri != no)
-					conf_warning("override: %s changes choice state", sym->name);
+					conf_notice("override: %s changes choice state", sym->name);
 				cs->def[def].val = sym;
 				break;
 			}

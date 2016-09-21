@@ -102,7 +102,7 @@ void main(unsigned long bist)
 	outb( 0x87, 0x4E);                            //enter SuperIO configuration mode
 	outb( 0x87, 0x4E);
 
-   	outb(0x20, 0x4e);
+	outb(0x20, 0x4e);
 	temp = inb(0x4f);
 	printk(BIOS_DEBUG, "%02x", temp);
 	if (temp != 0x52){

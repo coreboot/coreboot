@@ -538,7 +538,7 @@ int main(int argc, char **argv)
 		}
 	}
 
-	current = ALIGN(current, 0x100);
+	current = ALIGN(current, 0x1000);
 	current = integrate_firmwares(rom, current, amd_romsig, amd_fw_table);
 
 	if (pspflag == 1) {
@@ -555,7 +555,7 @@ int main(int argc, char **argv)
 		current = ALIGN(current, 0x10000); /* PSP2 dir */
 		psp2dir = rom + current;
 		amd_romsig[5] = current + ROM_BASE_ADDRESS;
-		current += 0x100;	/* Add conservative size of psp2dir. */
+		current += 0x200;	/* Add conservative size of psp2dir. */
 
 #if PSP_COMBO
 		/* TODO: remove the hardcode. */

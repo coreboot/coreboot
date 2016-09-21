@@ -685,15 +685,14 @@ static int data_training(u32 channel,
 	/* ca training(LPDDR4,LPDDR3 support) */
 	if ((training_flag & PI_CA_TRAINING) == PI_CA_TRAINING) {
 		for (i = 0; i < rank; i++) {
+			select_per_cs_training_index(channel, i);
 			/* PI_100 PI_CALVL_EN:RW:8:2 */
 			clrsetbits_le32(&denali_pi[100], 0x3 << 8, 0x2 << 8);
-
 			/* PI_92 PI_CALVL_REQ:WR:16:1,PI_CALVL_CS:RW:24:2 */
 			clrsetbits_le32(&denali_pi[92],
 					(0x1 << 16) | (0x3 << 24),
 					(0x1 << 16) | (i << 24));
 
-			select_per_cs_training_index(channel, i);
 			while (1) {
 				/* PI_174 PI_INT_STATUS:RD:8:18 */
 				tmp = read32(&denali_pi[174]) >> 8;
@@ -726,6 +725,7 @@ static int data_training(u32 channel,
 	/* write leveling(LPDDR4,LPDDR3,DDR3 support) */
 	if ((training_flag & PI_WRITE_LEVELING) == PI_WRITE_LEVELING) {
 		for (i = 0; i < rank; i++) {
+			select_per_cs_training_index(channel, i);
 			/* PI_60 PI_WRLVL_EN:RW:8:2 */
 			clrsetbits_le32(&denali_pi[60], 0x3 << 8, 0x2 << 8);
 			/* PI_59 PI_WRLVL_REQ:WR:8:1,PI_WRLVL_CS:RW:16:2 */
@@ -733,7 +733,6 @@ static int data_training(u32 channel,
 					(0x1 << 8) | (0x3 << 16),
 					(0x1 << 8) | (i << 16));
 
-			select_per_cs_training_index(channel, i);
 			while (1) {
 				/* PI_174 PI_INT_STATUS:RD:8:18 */
 				tmp = read32(&denali_pi[174]) >> 8;
@@ -772,6 +771,7 @@ static int data_training(u32 channel,
 	/* read gate training(LPDDR4,LPDDR3,DDR3 support) */
 	if ((training_flag & PI_READ_GATE_TRAINING) == PI_READ_GATE_TRAINING) {
 		for (i = 0; i < rank; i++) {
+			select_per_cs_training_index(channel, i);
 			/* PI_80 PI_RDLVL_GATE_EN:RW:24:2 */
 			clrsetbits_le32(&denali_pi[80], 0x3 << 24, 0x2 << 24);
 			/*
@@ -782,7 +782,6 @@ static int data_training(u32 channel,
 					(0x1 << 16) | (0x3 << 24),
 					(0x1 << 16) | (i << 24));
 
-			select_per_cs_training_index(channel, i);
 			while (1) {
 				/* PI_174 PI_INT_STATUS:RD:8:18 */
 				tmp = read32(&denali_pi[174]) >> 8;
@@ -818,6 +817,7 @@ static int data_training(u32 channel,
 	/* read leveling(LPDDR4,LPDDR3,DDR3 support) */
 	if ((training_flag & PI_READ_LEVELING) == PI_READ_LEVELING) {
 		for (i = 0; i < rank; i++) {
+			select_per_cs_training_index(channel, i);
 			/* PI_80 PI_RDLVL_EN:RW:16:2 */
 			clrsetbits_le32(&denali_pi[80], 0x3 << 16, 0x2 << 16);
 			/* PI_74 PI_RDLVL_REQ:WR:8:1,PI_RDLVL_CS:RW:24:2 */
@@ -825,7 +825,6 @@ static int data_training(u32 channel,
 					(0x1 << 8) | (0x3 << 24),
 					(0x1 << 8) | (i << 24));
 
-			select_per_cs_training_index(channel, i);
 			while (1) {
 				/* PI_174 PI_INT_STATUS:RD:8:18 */
 				tmp = read32(&denali_pi[174]) >> 8;
@@ -850,6 +849,7 @@ static int data_training(u32 channel,
 	/* wdq leveling(LPDDR4 support) */
 	if ((training_flag & PI_WDQ_LEVELING) == PI_WDQ_LEVELING) {
 		for (i = 0; i < rank; i++) {
+			select_per_cs_training_index(channel, i);
 			/*
 			 * disable PI_WDQLVL_VREF_EN before wdq leveling?
 			 * PI_181 PI_WDQLVL_VREF_EN:RW:8:1
@@ -862,7 +862,6 @@ static int data_training(u32 channel,
 					(0x1 << 8) | (0x3 << 16),
 					(0x1 << 8) | (i << 16));
 
-			select_per_cs_training_index(channel, i);
 			while (1) {
 				/* PI_174 PI_INT_STATUS:RD:8:18 */
 				tmp = read32(&denali_pi[174]) >> 8;

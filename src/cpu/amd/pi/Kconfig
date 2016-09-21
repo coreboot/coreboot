@@ -1,7 +1,7 @@
 #
 # This file is part of the coreboot project.
 #
-# Copyright (C) 2011 - 2012 Advanced Micro Devices, Inc.
+# Copyright (C) 2011 - 2016 Advanced Micro Devices, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,6 +17,7 @@ config CPU_AMD_PI
 	bool
 	default y if CPU_AMD_PI_00630F01
 	default y if CPU_AMD_PI_00730F01
+	default y if CPU_AMD_PI_00670F00
 	default y if CPU_AMD_PI_00660F01
 	default n
 	select ARCH_BOOTBLOCK_X86_32
@@ -69,4 +70,5 @@ endif # CPU_AMD_PI
 
 source src/cpu/amd/pi/00630F01/Kconfig
 source src/cpu/amd/pi/00730F01/Kconfig
+source src/cpu/amd/pi/00670F00/Kconfig
 source src/cpu/amd/pi/00660F01/Kconfig

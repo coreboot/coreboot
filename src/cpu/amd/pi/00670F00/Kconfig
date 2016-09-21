@@ -1,7 +1,7 @@
 #
 # This file is part of the coreboot project.
 #
-# Copyright (C) 2015 Advanced Micro Devices, Inc.
+# Copyright (C) 2015-2016 Advanced Micro Devices, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -13,12 +13,12 @@
 # GNU General Public License for more details.
 #
 
-config CPU_AMD_PI_00660F01
+config CPU_AMD_PI_00670F00
 	bool
 	select PCI_IO_CFG_EXT
 	select X86_AMD_FIXED_MTRRS
 
-if CPU_AMD_PI_00660F01
+if CPU_AMD_PI_00670F00
 
 config CPU_ADDR_BITS
 	int

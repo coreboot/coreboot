@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2015 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015-2016 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,11 +41,11 @@ void PSPProgBar3Msr(void *Buffer)
 	u32 Bar3Addr;
 	u64 Tmp64;
 	/* Get Bar3 Addr */
-	Bar3Addr = PspLibPciReadPspConfig (0x20);
+	Bar3Addr = PspLibPciReadPspConfig(0x20);
 	Tmp64 = Bar3Addr;
 	printk(BIOS_DEBUG, "Bar3=%llx\n", Tmp64);
-	LibAmdMsrWrite (0xC00110A2, &Tmp64, NULL);
-	LibAmdMsrRead (0xC00110A2, &Tmp64, NULL);
+	LibAmdMsrWrite(0xC00110A2, &Tmp64, NULL);
+	LibAmdMsrRead(0xC00110A2, &Tmp64, NULL);
 }
 
 static void model_15_init(device_t dev)
@@ -59,7 +59,7 @@ static void model_15_init(device_t dev)
 	u32 siblings;
 #endif
 
-	disable_cache ();
+	disable_cache();
 	/* Enable access to AMD RdDram and WrDram extension bits */
 	msr = rdmsr(SYSCFG_MSR);
 	msr.lo |= SYSCFG_MSR_MtrrFixDramModEn;
@@ -68,12 +68,12 @@ static void model_15_init(device_t dev)
 
 	// BSP: make a0000-bffff UC, c0000-fffff WB
 	msr.lo = msr.hi = 0;
-	wrmsr (0x259, msr);
+	wrmsr(0x259, msr);
 	msr.lo = msr.hi = 0x1e1e1e1e;
 	wrmsr(0x250, msr);
 	wrmsr(0x258, msr);
 	for (msrno = 0x268; msrno <= 0x26f; msrno++)
-		wrmsr (msrno, msr);
+		wrmsr(msrno, msr);
 
 	msr = rdmsr(SYSCFG_MSR);
 	msr.lo &= ~SYSCFG_MSR_MtrrFixDramModEn;
@@ -89,9 +89,8 @@ static void model_15_init(device_t dev)
 	/* zero the machine check error status registers */
 	msr.lo = 0;
 	msr.hi = 0;
-	for (i = 0; i < 6; i++) {
+	for (i = 0; i < 6; i++)
 		wrmsr(MCI_STATUS + (i * 4), msr);
-	}
 
 
 	/* Enable the local CPU APICs */
@@ -130,8 +129,7 @@ static struct device_operations cpu_dev_ops = {
 };
 
 static struct cpu_device_id cpu_table[] = {
-	{ X86_VENDOR_AMD, 0x660f00 },
-	{ X86_VENDOR_AMD, 0x660f01 },
+	{ X86_VENDOR_AMD, 0x670f00 },
 	{ 0, 0 },
 };
 

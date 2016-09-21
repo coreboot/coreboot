@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2015 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015-2016 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -582,7 +582,7 @@ static struct device_operations northbridge_operations = {
 static const struct pci_driver family15_northbridge __pci_driver = {
 	.ops	= &northbridge_operations,
 	.vendor = PCI_VENDOR_ID_AMD,
-	.device = PCI_DEVICE_ID_AMD_15H_MODEL_006F_NB_HT,
+	.device = PCI_DEVICE_ID_AMD_15H_MODEL_707F_NB_HT,
 };
 
 static void fam15_finalize(void *chip_info)
@@ -600,7 +600,7 @@ static void fam15_finalize(void *chip_info)
 	pci_write_config32(dev, 0x60, value);
 }
 
-struct chip_operations northbridge_amd_pi_00660F01_ops = {
+struct chip_operations northbridge_amd_pi_00670F00_ops = {
 	CHIP_NAME("AMD FAM15 Northbridge")
 	.enable_dev = 0,
 	.final = fam15_finalize,
@@ -1140,8 +1140,8 @@ static void root_complex_enable_dev(struct device *dev)
 	}
 }
 
-struct chip_operations northbridge_amd_pi_00660F01_root_complex_ops = {
-	CHIP_NAME("AMD FAM16 Root Complex")
+struct chip_operations northbridge_amd_pi_00670F00_root_complex_ops = {
+	CHIP_NAME("AMD FAM15 Root Complex")
 	.enable_dev = root_complex_enable_dev,
 };
 
@@ -1152,7 +1152,7 @@ u32 map_oprom_vendev(u32 vendev)
 {
 	u32 new_vendev;
 	new_vendev =
-		((0x10029870 <= vendev) && (vendev <= 0x1002987F)) ? 0x10029870 : vendev;
+		((0x100298E0 <= vendev) && (vendev <= 0x100298EF)) ? 0x100298E0 : vendev;
 
 	if (vendev != new_vendev)
 		printk(BIOS_NOTICE, "Mapping PCI device %8x to %8x\n", vendev, new_vendev);

@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2015 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015 - 2016 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@ AGESA_STATUS AmdMemoryReadSPD (UINT32 unused1, UINT32 unused2, AGESA_READ_SPD_PA
 {
 	int spdAddress;
 	ROMSTAGE_CONST struct device *dev = dev_find_slot(0, PCI_DEVFN(0x18, 2));
-	ROMSTAGE_CONST struct northbridge_amd_pi_00660F01_config *config = dev->chip_info;
+	ROMSTAGE_CONST struct northbridge_amd_pi_00670F00_config *config = dev->chip_info;
 
 	if ((dev == 0) || (config == 0))
 		return AGESA_ERROR;

@@ -1,7 +1,7 @@
 ##
 ## This file is part of the coreboot project.
 ##
-## Copyright (C) 2015 Advanced Micro Devices, Inc.
+## Copyright (C) 2015 - 2016 Advanced Micro Devices, Inc.
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -12,11 +12,11 @@
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ## GNU General Public License for more details.
 ##
-config NORTHBRIDGE_AMD_PI_00660F01
+config NORTHBRIDGE_AMD_PI_00670F00
 	bool
 	select MMCONF_SUPPORT
 
-if NORTHBRIDGE_AMD_PI_00660F01
+if NORTHBRIDGE_AMD_PI_00670F00
 
 config HW_MEM_HOLE_SIZEK
 	hex
@@ -36,13 +36,13 @@ config MMCONF_BUS_NUMBER
 
 config VGA_BIOS_ID
 	string
-	default "1002,9870"
+	default "1002,98e4"
 	help
 	  The default VGA BIOS PCI vendor/device ID should be set to the
 	  result of the map_oprom_vendev() function in northbridge.c.
 
 config VGA_BIOS_FILE
 	string
-	default "3rdparty/blobs/northbridge/amd/00660F01/VBIOS.bin"
+	default "3rdparty/blobs/northbridge/amd/00670F00/VBIOS.bin"
 
 endif

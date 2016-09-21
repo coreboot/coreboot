@@ -1558,8 +1558,8 @@ DefinitionBlock (
 					PEBM
 				)
 #endif
-                                /* memory space for PCI BARs below 4GB */
-                                Memory32Fixed(ReadOnly, 0x00000000, 0x00000000, MMIO)
+				/* memory space for PCI BARs below 4GB */
+				Memory32Fixed(ReadOnly, 0x00000000, 0x00000000, MMIO)
 			}) /* End Name(_SB.PCI0.CRES) */
 
 			Method(_CRS, 0) {
@@ -1603,19 +1603,19 @@ DefinitionBlock (
 				}
 #endif
 				CreateDWordField(CRES, ^MMIO._BAS, MM1B)
-                                CreateDWordField(CRES, ^MMIO._LEN, MM1L)
-                                /*
-                                 * Declare memory between TOM1 and 4GB as available
-                                 * for PCI MMIO.
-                                 * Use ShiftLeft to avoid 64bit constant (for XP).
-                                 * This will work even if the OS does 32bit arithmetic, as
-                                 * 32bit (0x00000000 - TOM1) will wrap and give the same
-                                 * result as 64bit (0x100000000 - TOM1).
-                                 */
-                                Store(TOM1, MM1B)
-                                ShiftLeft(0x10000000, 4, Local0)
-                                Subtract(Local0, TOM1, Local0)
-                                Store(Local0, MM1L)
+				CreateDWordField(CRES, ^MMIO._LEN, MM1L)
+				/*
+				 * Declare memory between TOM1 and 4GB as available
+				 * for PCI MMIO.
+				 * Use ShiftLeft to avoid 64bit constant (for XP).
+				 * This will work even if the OS does 32bit arithmetic, as
+				 * 32bit (0x00000000 - TOM1) will wrap and give the same
+				 * result as 64bit (0x100000000 - TOM1).
+				 */
+				Store(TOM1, MM1B)
+				ShiftLeft(0x10000000, 4, Local0)
+				Subtract(Local0, TOM1, Local0)
+				Store(Local0, MM1L)
 
 				Return(CRES) /* note to change the Name buffer */
 			} /* end of Method(_SB.PCI0._CRS) */
@@ -1647,7 +1647,7 @@ DefinitionBlock (
 
 				/* On older chips, clear PciExpWakeDisEn */
 				/*if (LLessEqual(\SBRI, 0x13)) {
-				*    	Store(0,\PWDE)
+				*	Store(0,\PWDE)
 				* }
 				*/
 			} /* End Method(_SB._INI) */

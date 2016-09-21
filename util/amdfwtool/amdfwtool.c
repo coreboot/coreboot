@@ -300,7 +300,12 @@ uint32_t integrate_psp_firmwares(void *base, uint32_t pos, uint32_t *pspdir, amd
 	return pos;
 }
 
-static const char *optstring  = "x:i:g:p:b:s:r:k:o:n:d:t:u:w:m:h";
+#if PSP2
+static const char *optstring  = "x:i:g:p:b:s:r:k:c:n:d:t:u:w:m:P:B:S:R:K:C:N:D:T:U:W:M:o:h";
+#else
+static const char *optstring  = "x:i:g:p:b:s:r:k:c:n:d:t:u:w:m:o:h";
+#endif
+
 static struct option long_options[] = {
 	{"xhci",         required_argument, 0, 'x' },
 	{"imc",          required_argument, 0, 'i' },

@@ -1,7 +1,7 @@
 #
 # This file is part of the coreboot project.
 #
-# Copyright (C) 2011 - 2012 Advanced Micro Devices, Inc.
+# Copyright (C) 2011 - 2016 Advanced Micro Devices, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,6 +15,7 @@
 
 subdirs-$(CONFIG_CPU_AMD_PI_00630F01) += 00630F01
 subdirs-$(CONFIG_CPU_AMD_PI_00730F01) += 00730F01
+subdirs-$(CONFIG_CPU_AMD_PI_00670F00) += 00670F00
 subdirs-$(CONFIG_CPU_AMD_PI_00660F01) += 00660F01
 
 romstage-y += s3_resume.c

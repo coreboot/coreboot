@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2015 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015-2016 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,6 +15,6 @@
 
 #include <device/device.h>
 
-struct chip_operations cpu_amd_pi_00660F01_ops = {
+struct chip_operations cpu_amd_pi_00670F00_ops = {
 	CHIP_NAME("AMD CPU Family 15h")
 };

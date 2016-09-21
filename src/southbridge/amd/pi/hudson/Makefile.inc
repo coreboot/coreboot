@@ -1,6 +1,6 @@
 #*****************************************************************************
 #
-# Copyright (c) 2012,        Advanced Micro Devices, Inc.
+# Copyright (c) 2012, 2016   Advanced Micro Devices, Inc.
 #               2013 - 2014, Sage Electronic Engineering, LLC
 # All rights reserved.
 #
@@ -81,6 +81,11 @@ FIRMWARE_LOCATE=$(dir $(call strip_quotes, $(CONFIG_AMD_PUBKEY_FILE)))
 FIRMWARE_TYPE=
 endif
 ##
+ifeq ($(CONFIG_CPU_AMD_PI_00670F00), y)
+FIRMWARE_LOCATE=$(dir $(call strip_quotes, $(CONFIG_AMD_PUBKEY_FILE)))
+FIRMWARE_TYPE=ST
+endif
+##
 ifeq ($(CONFIG_CPU_AMD_PI_00660F01), y)
 FIRMWARE_LOCATE=$(dir $(call strip_quotes, $(CONFIG_AMD_PUBKEY_FILE)))
 FIRMWARE_TYPE=CZ
@@ -91,6 +96,8 @@ CONFIG_PUBSIGNEDKEY_FILE=$(top)/$(FIRMWARE_LOCATE)/RtmPubSigned$(FIRMWARE_TYPE).
 ###1
 ifeq ($(CONFIG_CPU_AMD_PI_00730F01), y)
 CONFIG_PSPBTLDR_FILE=$(top)/$(FIRMWARE_LOCATE)/PspBootLoader$(FIRMWARE_TYPE).Bypass.sbin
+else ifeq ($(CONFIG_CPU_AMD_PI_00670F00), y)
+CONFIG_PSPBTLDR_FILE=$(top)/$(FIRMWARE_LOCATE)/PspBootLoader_prod_$(FIRMWARE_TYPE).sbin
 else ifeq ($(CONFIG_CPU_AMD_PI_00660F01), y)
 CONFIG_PSPBTLDR_FILE=$(top)/$(FIRMWARE_LOCATE)/PspBootLoader_prod_$(FIRMWARE_TYPE).sbin
 endif
@@ -98,6 +105,8 @@ endif
 ###3
 ifeq ($(CONFIG_CPU_AMD_PI_00730F01), y)
 CONFIG_PSPRCVR_FILE=$(top)/$(FIRMWARE_LOCATE)/PspRecovery$(FIRMWARE_TYPE).sbin
+else ifeq ($(CONFIG_CPU_AMD_PI_00670F00), y)
+CONFIG_PSPRCVR_FILE=$(top)/$(FIRMWARE_LOCATE)/PspRecoveryBootLoader_prod_$(FIRMWARE_TYPE).sbin
 else ifeq ($(CONFIG_CPU_AMD_PI_00660F01), y)
 CONFIG_PSPRCVR_FILE=$(top)/$(FIRMWARE_LOCATE)/PspRecoveryBootLoader_prod_$(FIRMWARE_TYPE).sbin
 endif
@@ -105,6 +114,8 @@ endif
 ###2
 ifeq ($(CONFIG_CPU_AMD_PI_00730F01), y)
 CONFIG_PSPSCUREOS_FILE=$(top)/$(FIRMWARE_LOCATE)/PspSecureOs$(FIRMWARE_TYPE).sbin
+else ifeq ($(CONFIG_CPU_AMD_PI_00670F00), y)
+CONFIG_PSPSCUREOS_FILE=$(top)/$(FIRMWARE_LOCATE)/PspSecureOs_prod_$(FIRMWARE_TYPE).csbin
 else ifeq ($(CONFIG_CPU_AMD_PI_00660F01), y)
 CONFIG_PSPSCUREOS_FILE=$(top)/$(FIRMWARE_LOCATE)/PspSecureOs_prod_$(FIRMWARE_TYPE).csbin
 endif
@@ -124,6 +135,8 @@ CONFIG_PSPSECUREDEBUG_FILE=$(top)/$(FIRMWARE_LOCATE)/PspSecureDebug$(FIRMWARE_TY
 ###12
 ifeq ($(CONFIG_CPU_AMD_PI_00730F01), y)
 CONFIG_PSPTRUSTLETS_FILE=$(top)/$(FIRMWARE_LOCATE)/trustlets.bin
+else ifeq ($(CONFIG_CPU_AMD_PI_00670F00), y)
+CONFIG_PSPTRUSTLETS_FILE=$(top)/$(FIRMWARE_LOCATE)/PspTrustlets_prod_$(FIRMWARE_TYPE).cbin
 else ifeq ($(CONFIG_CPU_AMD_PI_00660F01), y)
 CONFIG_PSPTRUSTLETS_FILE=$(top)/$(FIRMWARE_LOCATE)/PspTrustlets_prod_$(FIRMWARE_TYPE).cbin
 endif
@@ -131,12 +144,16 @@ endif
 ###13
 ifeq ($(CONFIG_CPU_AMD_PI_00730F01), y)
 CONFIG_TRUSTLETKEY_FILE=$(top)/$(FIRMWARE_LOCATE)/Trustlet.tkn.cert
+else ifeq ($(CONFIG_CPU_AMD_PI_00670F00), y)
+CONFIG_TRUSTLETKEY_FILE=$(top)/$(FIRMWARE_LOCATE)/TrustletKey_prod_$(FIRMWARE_TYPE).sbin
 else ifeq ($(CONFIG_CPU_AMD_PI_00660F01), y)
 CONFIG_TRUSTLETKEY_FILE=$(top)/$(FIRMWARE_LOCATE)/TrustletKey_prod_$(FIRMWARE_TYPE).sbin
 endif
 
 ###18
-ifeq ($(CONFIG_CPU_AMD_PI_00660F01), y)
+ifeq ($(CONFIG_CPU_AMD_PI_00670F00), y)
+CONFIG_SMUFIRMWARE2_FILE=$(top)/$(FIRMWARE_LOCATE)/SmuFirmware2_prod_$(FIRMWARE_TYPE).sbin
+else ifeq ($(CONFIG_CPU_AMD_PI_00660F01), y)
 CONFIG_SMUFIRMWARE2_FILE=$(top)/$(FIRMWARE_LOCATE)/SmuFirmware2_prod_$(FIRMWARE_TYPE).sbin
 endif
 

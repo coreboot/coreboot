@@ -1,7 +1,7 @@
 ##
 ## This file is part of the coreboot project.
 ##
-## Copyright (C) 2010 Advanced Micro Devices, Inc.
+## Copyright (C) 2010-2016 Advanced Micro Devices, Inc.
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -80,7 +80,7 @@ config HUDSON_GEC_FWM
 
 config HUDSON_PSP
 	bool
-	default y if CPU_AMD_PI_00730F01 || CPU_AMD_PI_00660F01
+	default y if CPU_AMD_PI_00730F01 || CPU_AMD_PI_00670F00 || CPU_AMD_PI_00660F01
 
 config HUDSON_XHCI_FWM_FILE
 	string "XHCI firmware path and filename"
@@ -130,6 +130,7 @@ config AMD_PUBKEY_FILE
 	depends on HUDSON_PSP
 	string "AMD public Key"
 	default "3rdparty/blobs/southbridge/amd/avalon/PSP/AmdPubKey.bin" if CPU_AMD_PI_00730F01
+	default "3rdparty/blobs/southbridge/amd/kern/PSP/AmdPubKeyST.bin" if CPU_AMD_PI_00670F00
 	default "3rdparty/blobs/southbridge/amd/kern/PSP/AmdPubKeyCZ.bin" if CPU_AMD_PI_00660F01
 
 config HUDSON_SATA_MODE

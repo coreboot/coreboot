@@ -19,6 +19,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <soc/gpio.h>
+#include <vendorcode/google/chromeos/chromeos.h>
 
 #if CONFIG_EC_GOOGLE_CHROMEEC
 #include "ec.h"
@@ -35,7 +36,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 {
 	struct lb_gpio chromeos_gpios[] = {
 		{-1, ACTIVE_HIGH, get_write_protect_state(), "write protect"},
-		{-1, ACTIVE_HIGH, recovery_mode_enabled(), "recovery"},
+		{-1, ACTIVE_HIGH, vboot_recovery_mode_enabled(), "recovery"},
 		{-1, ACTIVE_HIGH, get_developer_mode_switch(), "developer"},
 		{-1, ACTIVE_HIGH, get_lid_switch(), "lid"},
 		{-1, ACTIVE_HIGH, 0, "power"},
@@ -109,4 +110,14 @@ int get_write_protect_state(void)
 
 	/* WP is enabled when the pin is reading high. */
 	return ssus_get_gpio(WP_STATUS_PAD);
+}
+
+static const struct cros_gpio cros_gpios[] = {
+	CROS_GPIO_REC_AL(CROS_GPIO_VIRTUAL, CROS_GPIO_DEVICE_NAME),
+	CROS_GPIO_WP_AH(0x2006, CROS_GPIO_DEVICE_NAME),
+};
+
+void mainboard_chromeos_acpi_generate(void)
+{
+	chromeos_acpi_gpio_generate(cros_gpios, ARRAY_SIZE(cros_gpios));
 }

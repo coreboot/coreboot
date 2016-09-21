@@ -44,7 +44,6 @@ DefinitionBlock(
 		#include "acpi/dptf.asl"
 	}
 
-	#include "acpi/chromeos.asl"
 	#include <vendorcode/google/chromeos/acpi/chromeos.asl>
 
 	/* Chipset specific sleep states */

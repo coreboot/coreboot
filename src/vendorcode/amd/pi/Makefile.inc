@@ -1,6 +1,6 @@
 #*****************************************************************************
 #
-# Copyright (c) 2012,        Advanced Micro Devices, Inc.
+# Copyright (c) 2012, 2016   Advanced Micro Devices, Inc.
 #               2013 - 2014, Sage Electronic Engineering, LLC
 # All rights reserved.
 #
@@ -28,7 +28,7 @@
 #
 #*****************************************************************************
 
-ifeq ($(CONFIG_CPU_AMD_PI_00630F01)$(CONFIG_CPU_AMD_PI_00730F01)$(CONFIG_CPU_AMD_PI_00660F01),y)
+ifeq ($(CONFIG_CPU_AMD_PI_00630F01)$(CONFIG_CPU_AMD_PI_00730F01)$(CONFIG_CPU_AMD_PI_00670F00)$(CONFIG_CPU_AMD_PI_00660F01),y)
 # AGESA V5 Files
 AGESA_ROOT = $(call strip_quotes,$(CONFIG_AGESA_BINARY_PI_VENDORCODE_PATH))
 
@@ -48,6 +48,10 @@ AGESA_INC += -I$(AGESA_ROOT)/Proc/CPU/Family
 AGESA_INC += -I$(AGESA_ROOT)/Proc/CPU/Feature
 AGESA_INC += -I$(AGESA_ROOT)/Proc/Fch
 AGESA_INC += -I$(AGESA_ROOT)/Proc/Fch/Common
+ifeq ($(CONFIG_CPU_AMD_PI_00670F00),y)
+AGESA_INC += -I$(AGESA_ROOT)/Proc/Fch/Kern
+AGESA_INC += -I$(AGESA_ROOT)/Proc/Psp/PspBaseLib
+endif
 ifeq ($(CONFIG_CPU_AMD_PI_00660F01),y)
 AGESA_INC += -I$(AGESA_ROOT)/Proc/Fch/Kern
 AGESA_INC += -I$(AGESA_ROOT)/Proc/Psp/PspBaseLib
@@ -101,6 +105,11 @@ endef
 
 agesa_raw_files += $(wildcard $(src)/vendorcode/amd/pi/Lib/*.[cS])
 agesa_raw_files += $(wildcard $(AGESA_ROOT)/binaryPI/*.[cS])
+ifeq ($(CONFIG_CPU_AMD_PI_00670F00),y)
+agesa_raw_files += $(wildcard $(AGESA_ROOT)/Proc/Fch/Kern/KernImc/*.[cS])
+agesa_raw_files += $(wildcard $(AGESA_ROOT)/Proc/Fch/Common/*.[cS])
+agesa_raw_files += $(wildcard $(AGESA_ROOT)/Proc/Psp/PspBaseLib/*.[cS])
+endif
 ifeq ($(CONFIG_CPU_AMD_PI_00660F01),y)
 agesa_raw_files += $(wildcard $(AGESA_ROOT)/Proc/Fch/Kern/KernImc/*.[cS])
 agesa_raw_files += $(wildcard $(AGESA_ROOT)/Proc/Fch/Common/*.[cS])

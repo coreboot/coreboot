@@ -61,6 +61,9 @@ config TIMER_IMG_PISTACHIO
 config TIMER_MTK
 	bool "Timer for MediaTek MT8173"
 
+config TIMER_MVMAP2315
+	bool "Timer for Marvell MVMAP2315"
+
 endchoice
 
 config TIMER_MCT_HZ
@@ -107,6 +110,16 @@ config ARMADA38X_TIMER_REG
         hex "Timer register address"
         default 0xF1020314
         depends on TIMER_ARMADA38X
+
+config MVMAP2315_TIMER_FREQ
+	int "Hardware timer frequency"
+	depends on TIMER_MVMAP2315
+	default 1000000
+
+config MVMAP2315_TIMER_REG
+	hex "Timer register address"
+	depends on TIMER_MVMAP2315
+	default 0xE1020004
 
 config IPROC_PERIPH_GLB_TIM_REG_BASE
 	hex "Cygnus timer base address"

@@ -322,6 +322,7 @@ static void phy_io_config(u32 channel,
 	u32 mode_sel = 0;
 	u32 reg_value;
 	u32 drv_value, odt_value;
+	u32 speed;
 
 	/* vref setting */
 	if (sdram_params->dramtype == LPDDR4) {
@@ -436,22 +437,33 @@ static void phy_io_config(u32 channel,
 	/* PHY_939 PHY_PAD_CS_DRIVE */
 	clrsetbits_le32(&denali_phy[939], 0x7 << 14, mode_sel << 14);
 
+
+	/* speed setting */
+	if (sdram_params->ddr_freq < 400*MHz)
+		speed = 0x0;
+	else if (sdram_params->ddr_freq < 800*MHz)
+		speed = 0x1;
+	else if (sdram_params->ddr_freq < 1200*MHz)
+		speed = 0x2;
+	else
+		speed = 0x3;
+
 	/* PHY_924 PHY_PAD_FDBK_DRIVE */
-	clrsetbits_le32(&denali_phy[924], 0x3 << 21, mode_sel << 21);
+	clrsetbits_le32(&denali_phy[924], 0x3 << 21, speed << 21);
 	/* PHY_926 PHY_PAD_DATA_DRIVE */
-	clrsetbits_le32(&denali_phy[926], 0x3 << 9, mode_sel << 9);
+	clrsetbits_le32(&denali_phy[926], 0x3 << 9, speed << 9);
 	/* PHY_927 PHY_PAD_DQS_DRIVE */
-	clrsetbits_le32(&denali_phy[927], 0x3 << 9, mode_sel << 9);
+	clrsetbits_le32(&denali_phy[927], 0x3 << 9, speed << 9);
 	/* PHY_928 PHY_PAD_ADDR_DRIVE */
-	clrsetbits_le32(&denali_phy[928], 0x3 << 17, mode_sel << 17);
+	clrsetbits_le32(&denali_phy[928], 0x3 << 17, speed << 17);
 	/* PHY_929 PHY_PAD_CLK_DRIVE */
-	clrsetbits_le32(&denali_phy[929], 0x3 << 17, mode_sel << 17);
+	clrsetbits_le32(&denali_phy[929], 0x3 << 17, speed << 17);
 	/* PHY_935 PHY_PAD_CKE_DRIVE */
-	clrsetbits_le32(&denali_phy[935], 0x3 << 17, mode_sel << 17);
+	clrsetbits_le32(&denali_phy[935], 0x3 << 17, speed << 17);
 	/* PHY_937 PHY_PAD_RST_DRIVE */
-	clrsetbits_le32(&denali_phy[937], 0x3 << 17, mode_sel << 17);
+	clrsetbits_le32(&denali_phy[937], 0x3 << 17, speed << 17);
 	/* PHY_939 PHY_PAD_CS_DRIVE */
-	clrsetbits_le32(&denali_phy[939], 0x3 << 17, mode_sel << 17);
+	clrsetbits_le32(&denali_phy[939], 0x3 << 17, speed << 17);
 }
 
 static void pctl_cfg(u32 channel,
@@ -477,9 +489,10 @@ static void pctl_cfg(u32 channel,
 	/* rank count need to set for init */
 	set_memory_map(channel, sdram_params);
 
-	write32(&denali_phy[910], 0x6400);
-	write32(&denali_phy[911], 0x01221102);
-	write32(&denali_phy[912], 0x0);
+	write32(&denali_phy[910], sdram_params->phy_regs.denali_phy[910]);
+	write32(&denali_phy[911], sdram_params->phy_regs.denali_phy[911]);
+	write32(&denali_phy[912], sdram_params->phy_regs.denali_phy[912]);
+
 	pwrup_srefresh_exit = read32(&denali_ctl[68]) & PWRUP_SREFRESH_EXIT;
 	clrbits_le32(&denali_ctl[68], PWRUP_SREFRESH_EXIT);
 

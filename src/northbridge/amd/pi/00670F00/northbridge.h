@@ -13,10 +13,10 @@
  * GNU General Public License for more details.
  */
 
-#ifndef NORTHBRIDGE_AMD_AGESA_FAM16H_H
-#define NORTHBRIDGE_AMD_AGESA_FAM16H_H
+#ifndef NORTHBRIDGE_AMD_AGESA_FAM15H_H
+#define NORTHBRIDGE_AMD_AGESA_FAM15H_H
 
 static struct device_operations pci_domain_ops;
 static struct device_operations cpu_bus_ops;
 
-#endif /* NORTHBRIDGE_AMD_AGESA_FAM16H_H */
+#endif /* NORTHBRIDGE_AMD_AGESA_FAM15H_H */

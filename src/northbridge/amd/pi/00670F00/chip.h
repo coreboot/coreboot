@@ -13,10 +13,10 @@
  * GNU General Public License for more details.
  */
 
-#ifndef _PI_FAM15CZ_CHIP_H_
-#define _PI_FAM15CZ_CHIP_H_
+#ifndef _PI_FAM15ST_CHIP_H_
+#define _PI_FAM15ST_CHIP_H_
 
-struct northbridge_amd_pi_00660F01_config
+struct northbridge_amd_pi_00670F00_config
 {
 	u8 spdAddrLookup[2][2][4];
 };

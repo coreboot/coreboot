@@ -23,7 +23,7 @@ DefinitionBlock ("DSDT.AML","DSDT",0x01,"XXXXXX","XXXXXXXX",0x00010001
 */
 Method(UCOC, 0) {
 	Sleep(20)
-    	Store(0x13,CMTI)
+	Store(0x13,CMTI)
 	Store(0,GPSL)
 }
 

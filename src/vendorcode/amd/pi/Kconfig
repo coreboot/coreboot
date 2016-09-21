@@ -1,5 +1,6 @@
 #
 # Copyright (c) 2013 - 2014, Sage Electronic Engineering, LLC
+# Copyright (C) 2016 Advanced Micro Devices, Inc.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -25,12 +26,13 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-if CPU_AMD_PI_00630F01 || CPU_AMD_PI_00730F01 || CPU_AMD_PI_00660F01
+if CPU_AMD_PI_00630F01 || CPU_AMD_PI_00730F01 || CPU_AMD_PI_00670F00 || CPU_AMD_PI_00660F01
 
 config AGESA_BINARY_PI_VENDORCODE_PATH
 	string "AGESA PI directory path"
 	default "src/vendorcode/amd/pi/00630F01" if CPU_AMD_PI_00630F01
 	default "src/vendorcode/amd/pi/00730F01" if CPU_AMD_PI_00730F01
+	default "src/vendorcode/amd/pi/00670F00" if CPU_AMD_PI_00670F00
 	default "src/vendorcode/amd/pi/00660F01" if CPU_AMD_PI_00660F01
 	help
 	  Specify where to find the AGESA header files
@@ -40,6 +42,7 @@ config AGESA_BINARY_PI_FILE
 	string "AGESA PI binary file name"
 	default "3rdparty/blobs/pi/amd/00630F01/FP3/AGESA.bin" if CPU_AMD_PI_00630F01
 	default "3rdparty/blobs/pi/amd/00730F01/FT3b/AGESA.bin" if CPU_AMD_PI_00730F01
+	default "3rdparty/blobs/pi/amd/00670F00/FP4/AGESA.bin" if CPU_AMD_PI_00670F00
 	default "3rdparty/blobs/pi/amd/00660F01/FP4/AGESA.bin" if CPU_AMD_PI_00660F01
 	help
 	  Specify the binary file to use for AMD platform initialization.

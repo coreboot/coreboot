@@ -84,7 +84,7 @@ static void *smp_write_config_table(void *v)
 	 * associated with a specific bus/device/function tuple.
 	 */
 #define PCI_INT(bus, dev, int_sign, pin)				\
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, (bus), (((dev)<<2)|(int_sign)), ioapic_id, (pin))
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, (bus), (((dev)<<2)|(int_sign)), ioapic_id, (pin))
 
 	/* Internal VGA */
 	PCI_INT(0x0, 0x01, 0x0, intr_data_ptr[0x02]);

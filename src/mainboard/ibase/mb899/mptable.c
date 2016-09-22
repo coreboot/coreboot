@@ -23,16 +23,16 @@
 
 static void *smp_write_config_table(void *v)
 {
-        struct mp_config_table *mc;
+	struct mp_config_table *mc;
 	struct device *riser = NULL, *firewire = NULL;
 	int firewire_bus = 0, riser_bus = 0, isa_bus;
 	int ioapic_id;
 
-        mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
+	mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
 
 	mptable_init(mc, LOCAL_APIC_ADDR);
 
-        smp_write_processors(mc);
+	smp_write_processors(mc);
 
 	firewire = dev_find_device(0x104c, 0x8023, 0);
 	if (firewire) {

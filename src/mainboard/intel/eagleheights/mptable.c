@@ -55,7 +55,7 @@
 
 static void *smp_write_config_table(void *v)
 {
-        struct mp_config_table *mc;
+	struct mp_config_table *mc;
 	unsigned char bus_chipset, bus_pci;
 	unsigned char bus_pcie_a, bus_pcie_a1, bus_pcie_b;
 	int bus_isa, i;
@@ -67,15 +67,15 @@ static void *smp_write_config_table(void *v)
 	dev = dev_find_slot(0, PCI_DEVFN(0x1F,0));
 	res = find_resource(dev, RCBA);
 	if (!res) {
-	  return NULL;
+		return NULL;
 	}
 	rcba = res2mmio(res, 0, 0);
 
-        mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
+	mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
 
 	mptable_init(mc, LOCAL_APIC_ADDR);
 
-        smp_write_processors(mc);
+	smp_write_processors(mc);
 
 	/* Get bus numbers */
 	bus_chipset = 0;
@@ -83,34 +83,34 @@ static void *smp_write_config_table(void *v)
 	/* PCI */
 	dev = dev_find_slot(0, PCI_DEVFN(0x1E,0));
 	if (dev) {
-	  bus_pci = pci_read_config8(dev, PCI_SECONDARY_BUS);
+		bus_pci = pci_read_config8(dev, PCI_SECONDARY_BUS);
 	} else {
-	  printk(BIOS_DEBUG, "ERROR - could not find PCI 0:1e.0, using defaults\n");
-	  bus_pci = 6;
+		printk(BIOS_DEBUG, "ERROR - could not find PCI 0:1e.0, using defaults\n");
+		bus_pci = 6;
 	}
 
 	dev = dev_find_slot(0, PCI_DEVFN(2,0));
 	if(dev) {
-	  bus_pcie_a = pci_read_config8(dev, PCI_SECONDARY_BUS);
+		bus_pcie_a = pci_read_config8(dev, PCI_SECONDARY_BUS);
 	} else {
-	  printk(BIOS_DEBUG, "ERROR - could not find PCIe Port A  0:2.0, using defaults\n");
-	  bus_pcie_a = 1;
+		printk(BIOS_DEBUG, "ERROR - could not find PCIe Port A  0:2.0, using defaults\n");
+		bus_pcie_a = 1;
 	}
 
 	dev = dev_find_slot(0, PCI_DEVFN(3,0));
 	if(dev) {
-	  bus_pcie_a1 = pci_read_config8(dev, PCI_SECONDARY_BUS);
+		bus_pcie_a1 = pci_read_config8(dev, PCI_SECONDARY_BUS);
 	} else {
-	  printk(BIOS_DEBUG, "ERROR - could not find PCIe Port B 0:3.0, using defaults\n");
-	  bus_pcie_a1 = 2;
+		printk(BIOS_DEBUG, "ERROR - could not find PCIe Port B 0:3.0, using defaults\n");
+		bus_pcie_a1 = 2;
 	}
 
 	dev = dev_find_slot(0, PCI_DEVFN(0x1C,0));
 	if(dev) {
-	  bus_pcie_b = pci_read_config8(dev, PCI_SECONDARY_BUS);
+		bus_pcie_b = pci_read_config8(dev, PCI_SECONDARY_BUS);
 	} else {
-	  printk(BIOS_DEBUG, "ERROR - could not find PCIe Port B 0:3.0, using defaults\n");
-	  bus_pcie_b = 3;
+		printk(BIOS_DEBUG, "ERROR - could not find PCIe Port B 0:3.0, using defaults\n");
+		bus_pcie_b = 3;
 	}
 
 	mptable_write_buses(mc, NULL, &bus_isa);
@@ -140,45 +140,45 @@ static void *smp_write_config_table(void *v)
 	/* PCIe Port B
 	 */
 	for(i = 0; i < 4; i++) {
-	  pin = (read32(rcba + RCBA_D28IP) >> (i * 4)) & 0x0F;
-	  if(pin > 0) {
-	    pin -= 1;
-	    route = PIRQ_A + ((read16(rcba + RCBA_D28IR) >> (pin * 4)) & 0x07);
-	    smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_chipset, PCI_IRQ(28, pin), IO_APIC0, route);
-	  }
+		pin = (read32(rcba + RCBA_D28IP) >> (i * 4)) & 0x0F;
+		if(pin > 0) {
+			pin -= 1;
+			route = PIRQ_A + ((read16(rcba + RCBA_D28IR) >> (pin * 4)) & 0x07);
+			smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_chipset, PCI_IRQ(28, pin), IO_APIC0, route);
+		}
 	}
 
 	/* USB 1.1 : device 29, function 0, 1
 	 */
 	for(i = 0; i < 2; i++) {
-	  pin = (read32(rcba + RCBA_D29IP) >> (i * 4)) & 0x0F;
-	  if(pin > 0) {
-	    pin -= 1;
-	    route = PIRQ_A + ((read16(rcba + RCBA_D29IR) >> (pin * 4)) & 0x07);
-	    smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_chipset, PCI_IRQ(29, pin), IO_APIC0, route);
-	  }
+		pin = (read32(rcba + RCBA_D29IP) >> (i * 4)) & 0x0F;
+		if(pin > 0) {
+			 pin -= 1;
+			route = PIRQ_A + ((read16(rcba + RCBA_D29IR) >> (pin * 4)) & 0x07);
+			smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_chipset, PCI_IRQ(29, pin), IO_APIC0, route);
+		}
 	}
 
 	/* USB 2.0 : device 29, function 7
 	*/
 	pin = (read32(rcba + RCBA_D29IP) >> (7 * 4)) & 0x0F;
 	if(pin > 0) {
-	  pin -= 1;
-	  route = PIRQ_A + ((read16(rcba + RCBA_D29IR) >> (pin * 4)) & 0x07);
-	  smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_chipset, PCI_IRQ(29, pin), IO_APIC0, route);
+		pin -= 1;
+		route = PIRQ_A + ((read16(rcba + RCBA_D29IR) >> (pin * 4)) & 0x07);
+		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_chipset, PCI_IRQ(29, pin), IO_APIC0, route);
 	}
 
 	/* SATA : device 31 function 2
-	   SMBus : device 31 function 3
-	   Performance counters : device 31 function 4
+	 * SMBus : device 31 function 3
+	 * Performance counters : device 31 function 4
 	 */
 	for(i = 2; i < 5; i++) {
-	  pin = (read32(rcba + RCBA_D31IP) >> (i * 4)) & 0x0F;
-	  if(pin > 0) {
-	    pin -= 1;
-	    route = PIRQ_A + ((read16(rcba + RCBA_D31IR) >> (pin * 4)) & 0x07);
-	    smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_chipset, PCI_IRQ(31, pin), IO_APIC0, route);
-	  }
+		pin = (read32(rcba + RCBA_D31IP) >> (i * 4)) & 0x0F;
+		if(pin > 0) {
+			pin -= 1;
+			route = PIRQ_A + ((read16(rcba + RCBA_D31IR) >> (pin * 4)) & 0x07);
+			smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_chipset, PCI_IRQ(31, pin), IO_APIC0, route);
+		}
 	}
 
 	/* SLOTS */

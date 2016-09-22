@@ -168,6 +168,9 @@ static void acpi_create_gnvs(struct global_nvs_t *gnvs)
 	/* Set unknown wake source */
 	gnvs->pm1i = ~0ULL;
 
+	/* CPU core count */
+	gnvs->pcnt = dev_count_cpu();
+
 	if (!dev || !dev->chip_info) {
 		printk(BIOS_ERR, "BUG! Could not find SOC devicetree config\n");
 		return;

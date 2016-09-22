@@ -1,0 +1,61 @@
+#!/bin/bash
+# $0 from-branch to-branch
+# applies all commits that from-branch has over to-branch,
+# based on a common ancestor and gerrit meta-data
+from=$1
+to=$2
+
+# match string: this is the git commit line that is used to
+# identify commits that were already copied over.
+#
+# Must not contain spaces except for leading and trailing.
+#
+# The first pick was Change-Id, but it was lost too often,
+# so go for Reviewed-on instead. It's also unique because it
+# contains the gerrit instance's host name and the change's number
+# on that system.
+match_string='^    [-A-Za-z]*[Rr]eviewed-on: '
+
+# fetch common ancestor
+common_base=$(git merge-base ${from} ${to} 2>/dev/null)
+
+if [ -z "${common_base}" ]; then
+	echo \"${from}\" or \"${to}\" is not a valid branch name.
+	exit 1
+fi
+
+# collect matches that are present on the target side
+to_matches="$(git log ${common_base}..${to} | \
+	grep "${match_string}" | \
+	cut -d: -f2-)"
+
+# start rebase process, but fail immediately by enforcing an invalid todo
+GIT_SEQUENCE_EDITOR="echo foo >" \
+	git rebase -i --onto ${to} ${from} ${to} 2>/dev/null
+
+# write new rebase todo
+# the appended "commit" line triggers handling of the last log entry
+commit=""
+(git log --reverse ${common_base}..${from} | \
+	grep -E "(^commit [0-9a-f]{40}\$|${match_string})"; \
+	echo "commit") | \
+while read key value; do
+	if [ "${key}" = "commit" ]; then
+		if [ -n "${commit}" ]; then
+			git log -n 1 --pretty="pick %h %s" ${commit}
+		fi
+		commit="${value}"
+	else
+		# if value was already found on the "to" side, skip this
+		# commit
+		if [[ ${to_matches} == *"${value}"* ]]; then
+			commit=""
+		fi
+	fi
+done | GIT_SEQUENCE_EDITOR="cat >" git rebase --edit-todo
+
+# allow user to edit todo
+git rebase --edit-todo
+
+# start processing todo to mimick git rebase -i behavior
+git rebase --continue

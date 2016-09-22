@@ -21,6 +21,7 @@
 #include <cbfs.h>
 #include <cbmem.h>
 #include <console/console.h>
+#include <delay.h>
 #include <program_loading.h>
 #include <romstage_handoff.h>
 #include <soc/addressmap.h>
@@ -37,7 +38,9 @@ static void init_dvs_outputs(void)
 {
 	pwm_regulator_configure(PWM_REGULATOR_GPU, 900);
 	pwm_regulator_configure(PWM_REGULATOR_BIG, 900);
-	pwm_regulator_configure(PWM_REGULATOR_CENTERLOG, 950);
+	pwm_regulator_configure(PWM_REGULATOR_CENTERLOG, 900);
+	/* Allow time for the regulators to settle */
+	udelay(500);
 }
 
 static void prepare_usb(void)

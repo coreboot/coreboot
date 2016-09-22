@@ -29,6 +29,16 @@
 
 #include "board.h"
 
+/*
+ * Wifi's PDN/RST line is pulled down by its (unpowered) voltage rails, but
+ * this reset pin is pulled up by default. Let's drive it low as early as we
+ * can.
+ */
+static void deassert_wifi_power(void)
+{
+	gpio_output(GPIO(1, B, 3), 0);  /* Assert WLAN_MODULE_RST# */
+}
+
 static void configure_emmc(void)
 {
 	/* Host controller does not support programmable clock generator.
@@ -236,6 +246,7 @@ static void setup_usb(void)
 
 static void mainboard_init(device_t dev)
 {
+	deassert_wifi_power();
 	configure_sdmmc();
 	configure_emmc();
 	configure_codec();

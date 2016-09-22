@@ -224,7 +224,7 @@ void acpigen_write_coreboot_hid(enum coreboot_acpi_ids id)
 {
 	char hid[9]; /* CORExxxx */
 
-	snprintf(hid, sizeof(hid), "%.4s%04u", COREBOOT_ACPI_ID, id);
+	snprintf(hid, sizeof(hid), "%.4s%04X", COREBOOT_ACPI_ID, id);
 	acpigen_write_name_string("_HID", hid);
 }
 

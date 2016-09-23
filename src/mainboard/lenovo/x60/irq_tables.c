@@ -30,7 +30,7 @@ static const struct irq_routing_table intel_irq_routing_table = {
 	0xf5,			/* Checksum (has to be set to some value that
 				 * would give 0 after the sum of all bytes
 				 * for this structure (including checksum).
-                                 */
+				 */
 	{
 		/* bus,        dev | fn,   {link, bitmap}, {link, bitmap}, {link, bitmap}, {link, bitmap}, slot, rfu */
 		{0x00, (0x02 << 3) | 0x0, {{0x00, 0xdef8}, {0x61, 0x1cf8}, {0x00, 0xdef8}, {0x00, 0xdef8}}, 0x0, 0x0}, /* VGA       0:02.0 */

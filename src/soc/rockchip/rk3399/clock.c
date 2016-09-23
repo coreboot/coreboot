@@ -411,13 +411,6 @@ void rkclk_init(void)
 	rkclk_set_pll(&cru_ptr->gpll_con[0], &gpll_init_cfg);
 	rkclk_set_pll(&cru_ptr->cpll_con[0], &cpll_init_cfg);
 
-	/*
-	 * coreboot boot from little core, but it seem if apll_b use defalut
-	 * 24MHz it will take a long time to enable big core, and will cause
-	 * a watchdog crash, so we should do apll_b initialization here
-	 */
-	rkclk_configure_cpu(APLL_600_MHZ, true);
-
 	/* configure perihp aclk, hclk, pclk */
 	aclk_div = GPLL_HZ / PERIHP_ACLK_HZ - 1;
 	assert((aclk_div + 1) * PERIHP_ACLK_HZ == GPLL_HZ && aclk_div <= 0x1f);

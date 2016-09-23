@@ -46,20 +46,6 @@ DefinitionBlock(
 	/* Chipset specific sleep states */
 	#include <soc/intel/apollolake/acpi/sleepstates.asl>
 
-	/* LID  */
-	Scope (\_SB)
-	{
-		Device (LID0)
-		{
-			Name (_HID, EisaId ("PNP0C0D"))
-			Method (_LID, 0)
-			{
-				Return (\_SB.PCI0.LPCB.EC0.LIDS)
-			}
-			Name (_PRW, Package () { GPE_EC_WAKE, 0x3 })
-		}
-	}
-
 	/* Chrome OS Embedded Controller */
 	Scope (\_SB.PCI0.LPCB)
 	{

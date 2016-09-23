@@ -46,7 +46,7 @@ DefinitionBlock(
 	/* Chipset specific sleep states */
 	#include <soc/intel/apollolake/acpi/sleepstates.asl>
 
-	/* LID and Power button. */
+	/* LID  */
 	Scope (\_SB)
 	{
 		Device (LID0)
@@ -57,11 +57,6 @@ DefinitionBlock(
 				Return (\_SB.PCI0.LPCB.EC0.LIDS)
 			}
 			Name (_PRW, Package () { GPE_EC_WAKE, 0x3 })
-		}
-
-		Device (PWRB)
-		{
-			Name (_HID, EisaId ("PNP0C0C"))
 		}
 	}
 

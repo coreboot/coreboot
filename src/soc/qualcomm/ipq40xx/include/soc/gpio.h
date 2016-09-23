@@ -48,8 +48,7 @@
 /* GPIO TLMM: Pullup/Pulldown */
 #define GPIO_NO_PULL    0
 #define GPIO_PULL_DOWN  1
-#define GPIO_KEEPER     2
-#define GPIO_PULL_UP    3
+#define GPIO_PULL_UP    2
 
 /* GPIO TLMM: Drive Strength */
 #define GPIO_2MA        0

@@ -1,2 +1,0 @@
-config BOARD_INTEL_AMENIA
-	bool "Amenia"

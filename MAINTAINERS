@@ -246,11 +246,6 @@ M:	Hannah Williams <hannah.williams@intel.com>
 S:	Supported
 F:	/src/mainboard/intel/strago/
 
-INTEL AMENIA MAINBOARD
-M:	Andrey Petrov <andrey.petrov@intel.com>
-S:	Supported
-F:	src/mainboard/intel/amenia/
-
 INTEL BRASWELL SOC
 M:	Hannah Williams <hannah.williams@intel.com>
 S:	Supported

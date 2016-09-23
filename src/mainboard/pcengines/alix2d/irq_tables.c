@@ -50,7 +50,7 @@
  * 00:0f.4 USB Controller [0c03]: Advanced Micro Devices [AMD] CS5536 [Geode companion] OHC [1022:2094] (rev 02)
  * 00:0f.5 USB Controller [0c03]: Advanced Micro Devices [AMD] CS5536 [Geode companion] EHC [1022:2095] (rev 02)
 
-  * The only devices that interrupt are:
+ * The only devices that interrupt are:
  *
  * What         Device  IRQ     PIN     PIN WIRED TO
  * -------------------------------------------------

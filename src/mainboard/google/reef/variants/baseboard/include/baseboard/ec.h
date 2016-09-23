@@ -16,6 +16,7 @@
 #ifndef BASEBOARD_EC_H
 #define BASEBOARD_EC_H
 
+#include <variant/gpio.h>
 #include <ec/google/chromeec/ec_commands.h>
 
 #define MAINBOARD_EC_SCI_EVENTS \
@@ -63,6 +64,10 @@
 
 /* Enable EC backed PD MCU device in ACPI */
 #define EC_ENABLE_PD_MCU_DEVICE
+
+/* Enable LID switch and provide wake pin for EC */
+#define EC_ENABLE_LID_SWITCH
+#define EC_ENABLE_WAKE_PIN GPE_EC_WAKE
 
 #define SIO_EC_MEMMAP_ENABLE     /* EC Memory Map Resources */
 #define SIO_EC_HOST_ENABLE       /* EC Host Interface Resources */

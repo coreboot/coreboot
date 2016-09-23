@@ -68,6 +68,22 @@ Device (EC0)
 		#include "emem.asl"
 	}
 
+#ifdef EC_ENABLE_LID_SWITCH
+	/* LID Switch */
+	Device (LID0)
+	{
+		Name (_HID, EisaId ("PNP0C0D"))
+		Method (_LID, 0)
+		{
+			Return (^^LIDS)
+		}
+
+#ifdef EC_ENABLE_WAKE_PIN
+		Name (_PRW, Package () { EC_ENABLE_WAKE_PIN, 0x5 })
+#endif
+	}
+#endif
+
 	Method (TINS, 1, Serialized)
 	{
 		Switch (ToInteger (Arg0))
@@ -150,7 +166,11 @@ Device (EC0)
 	{
 		Store ("EC: LID CLOSE", Debug)
 		Store (LIDS, \LIDS)
+#ifdef EC_ENABLE_LID_SWITCH
+		Notify (LID0, 0x80)
+#else
 		Notify (\_SB.LID0, 0x80)
+#endif
 	}
 
 	// Lid Open Event
@@ -158,7 +178,11 @@ Device (EC0)
 	{
 		Store ("EC: LID OPEN", Debug)
 		Store (LIDS, \LIDS)
+#ifdef EC_ENABLE_LID_SWITCH
+		Notify (LID0, 0x80)
+#else
 		Notify (\_SB.LID0, 0x80)
+#endif
 	}
 
 	// Power Button

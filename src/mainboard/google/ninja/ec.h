@@ -16,6 +16,7 @@
 #ifndef MAINBOARD_EC_H
 #define MAINBOARD_EC_H
 
+#include <ec/ec.h>
 #include <ec/google/chromeec/ec_commands.h>
 
 /* GPIO_S0_000 is EC_SCI#, but it is bit 24 in GPE_STS */
@@ -54,9 +55,5 @@
 #define MAINBOARD_EC_LOG_EVENTS \
 	(EC_HOST_EVENT_MASK(EC_HOST_EVENT_THERMAL_SHUTDOWN) |\
 	 EC_HOST_EVENT_MASK(EC_HOST_EVENT_BATTERY_SHUTDOWN))
-
-#ifndef __ACPI__
-extern void mainboard_ec_init(void);
-#endif
 
 #endif

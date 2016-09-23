@@ -15,12 +15,11 @@
 
 #include <arch/acpi.h>
 #include <console/console.h>
+#include <ec/ec.h>
 #include <ec/google/chromeec/ec.h>
 #include <rules.h>
 #include <soc/lpc.h>
 #include <variant/ec.h>
-
-void mainboard_ec_init(void);
 
 static void ramstage_ec_init(void)
 {

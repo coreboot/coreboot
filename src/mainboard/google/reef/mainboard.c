@@ -18,14 +18,13 @@
 #include <boardid.h>
 #include <console/console.h>
 #include <device/device.h>
+#include <ec/ec.h>
 #include <nhlt.h>
 #include <soc/gpio.h>
 #include <soc/nhlt.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <variant/ec.h>
 #include <variant/gpio.h>
-
-void mainboard_ec_init(void);
 
 static void mainboard_init(void *chip_info)
 {

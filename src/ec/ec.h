@@ -13,20 +13,12 @@
  * GNU General Public License for more details.
  */
 
-#include <baseboard/variants.h>
-#include <bootblock_common.h>
-#include <ec/ec.h>
-#include <soc/lpc.h>
-#include <soc/gpio.h>
-#include <variant/ec.h>
+#ifndef EC_EC_H
+#define EC_EC_H
 
-void bootblock_mainboard_init(void)
-{
-	const struct pad_config *pads;
-	size_t num;
+#ifndef __ACPI__
+/* Entry point doing any mainboard specific EC initialization. */
+void mainboard_ec_init(void);
+#endif
 
-	lpc_configure_pads();
-	pads = variant_early_gpio_table(&num);
-	gpio_configure_pads(pads, num);
-	mainboard_ec_init();
-}
+#endif

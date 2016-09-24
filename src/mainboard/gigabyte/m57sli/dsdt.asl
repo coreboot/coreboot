@@ -51,7 +51,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "CORE  ", "COREBOOT", 1)
 			External (HCDN)
 
 			Method (_CRS, 0, NotSerialized)
-                        {
+			{
 				Name (BUF0, ResourceTemplate ()
 				{
 					IO (Decode16,

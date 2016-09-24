@@ -37,7 +37,7 @@ DefinitionBlock(
 		Device (PCI0)
 		{
 			#include <acpi/southcluster.asl>
-                        #include <acpi/dptf/cpu.asl>
+			#include <acpi/dptf/cpu.asl>
 		}
 
 		/* Dynamic Platform Thermal Framework */

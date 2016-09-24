@@ -31,13 +31,13 @@
  */
 
 DefinitionBlock (
-        "DSDT.AML",	/* Output filename */
-        "DSDT",		/* Signature */
-        0x02,		/* DSDT Revision, needs to be 2 for 64bit */
-        "ASUS  ",	/* OEMID */
-        "COREBOOT",	/* TABLE ID */
-        0x00000001	/* OEM Revision */
-        )
+		"DSDT.AML",	/* Output filename */
+		"DSDT",		/* Signature */
+		0x02,		/* DSDT Revision, needs to be 2 for 64bit */
+		"ASUS  ",	/* OEMID */
+		"COREBOOT",	/* TABLE ID */
+		0x00000001	/* OEM Revision */
+		)
 {
 	#include "northbridge/amd/amdfam10/amdfam10_util.asl"
 

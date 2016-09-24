@@ -1551,18 +1551,18 @@ DefinitionBlock (
 				CreateDWordField (CRS, \_SB.PCI0.MMIO._BAS, BAS1)
 				CreateDWordField (CRS, \_SB.PCI0.MMIO._LEN, LEN1)
 
-                                /*
-                                 * Declare memory between TOM1 and 4GB as available
-                                 * for PCI MMIO.
-                                 * Use ShiftLeft to avoid 64bit constant (for XP).
-                                 * This will work even if the OS does 32bit arithmetic, as
-                                 * 32bit (0x00000000 - TOM1) will wrap and give the same
-                                 * result as 64bit (0x100000000 - TOM1).
-                                 */
+				/*
+				 * Declare memory between TOM1 and 4GB as available
+				 * for PCI MMIO.
+				 * Use ShiftLeft to avoid 64bit constant (for XP).
+				 * This will work even if the OS does 32bit arithmetic, as
+				 * 32bit (0x00000000 - TOM1) will wrap and give the same
+				 * result as 64bit (0x100000000 - TOM1).
+				 */
 				Store(TOM1, BAS1)
-                                ShiftLeft(0x10000000, 4, Local0)
-                                Subtract(Local0, TOM1, Local0)
-                                Store(Local0, LEN1)
+				ShiftLeft(0x10000000, 4, Local0)
+				Subtract(Local0, TOM1, Local0)
+				Store(Local0, LEN1)
 				//DBGO(TOM1)
 
 				Return (CRS)

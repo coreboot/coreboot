@@ -396,48 +396,48 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "SIEMENS", "SITEMP ", 0x20101005)
 				Return(0x0B)     /* Status is visible */
 			}
 
-            Device (MEMR)
-            {
-                Name (_HID, EisaId ("PNP0C02"))
-                Name (MEM1, ResourceTemplate ()
-                {
-                    Memory32Fixed (ReadWrite,
-                        0x00000000,         // Address Base
-                        0x00000000,         // Address Length
-                        _Y1A)
-                    Memory32Fixed (ReadWrite,
-                        0x00000000,         // Address Base
-                        0x00000000,         // Address Length
-                        _Y1B)
-                })
-                Method (_CRS, 0, NotSerialized)
-                {
-                    CreateDWordField (MEM1, \_SB.PCI0.MEMR._Y1A._BAS, MB01)
-                    CreateDWordField (MEM1, \_SB.PCI0.MEMR._Y1A._LEN, ML01)
-                    CreateDWordField (MEM1, \_SB.PCI0.MEMR._Y1B._BAS, MB02)
-                    CreateDWordField (MEM1, \_SB.PCI0.MEMR._Y1B._LEN, ML02)
-                    If (PCIF)
-                    {
-                        Store (IO_APIC_ADDR, MB01)
-                        Store (LOCAL_APIC_ADDR, MB02)
-                        Store (0x1000, ML01)
-                        Store (0x1000, ML02)
-                    }
+			Device (MEMR)
+			{
+				Name (_HID, EisaId ("PNP0C02"))
+				Name (MEM1, ResourceTemplate ()
+				{
+				Memory32Fixed (ReadWrite,
+			0x00000000,         // Address Base
+			0x00000000,         // Address Length
+			_Y1A)
+				Memory32Fixed (ReadWrite,
+			0x00000000,         // Address Base
+			0x00000000,         // Address Length
+			_Y1B)
+				})
+				Method (_CRS, 0, NotSerialized)
+				{
+				CreateDWordField (MEM1, \_SB.PCI0.MEMR._Y1A._BAS, MB01)
+				CreateDWordField (MEM1, \_SB.PCI0.MEMR._Y1A._LEN, ML01)
+				CreateDWordField (MEM1, \_SB.PCI0.MEMR._Y1B._BAS, MB02)
+				CreateDWordField (MEM1, \_SB.PCI0.MEMR._Y1B._LEN, ML02)
+				If (PCIF)
+				{
+			Store (IO_APIC_ADDR, MB01)
+			Store (LOCAL_APIC_ADDR, MB02)
+			Store (0x1000, ML01)
+			Store (0x1000, ML02)
+				}
 
-                    Return (MEM1)
-                }
-            }
+				Return (MEM1)
+				}
+			}
 
 			Method(_PRT,0) {
 				If(PCIF){ Return(APR0) }   /* APIC mode */
 				Return (PR0)                  /* PIC Mode */
 			} /* end _PRT */
 
-            OperationRegion (BAR1, PCI_Config, 0x14, 0x04)
-            Field (BAR1, ByteAcc, NoLock, Preserve)
-            {
-                Z009,   32
-            }
+			OperationRegion (BAR1, PCI_Config, 0x14, 0x04)
+			Field (BAR1, ByteAcc, NoLock, Preserve)
+			{
+				Z009,   32
+			}
 
 			/* Describe the Northbridge devices */
 			Device(AMRT) {
@@ -451,8 +451,8 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "SIEMENS", "SITEMP ", 0x20101005)
 				Method(_PRT,0) { Return (APR1) }
 
 				Device (VGA)
-                {
-                    Name (_ADR, 0x00050000)
+				{
+				Name (_ADR, 0x00050000)
 					Method (_DOS, 1)
 					{
 						/* Windows 2000 and Windows XP call _DOS to enable/disable
@@ -461,11 +461,11 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "SIEMENS", "SITEMP ", 0x20101005)
 						*/
 						Store (And(Arg0, 7), DSEN)
 					}
-                    Method (_STA, 0, NotSerialized)
-                    {
-                        Return (0x0F)
-                    }
-                }
+				Method (_STA, 0, NotSerialized)
+				{
+			Return (0x0F)
+				}
+				}
 			}  /* end AGPB */
 
 			/* The external GFX bridge */
@@ -610,8 +610,8 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "SIEMENS", "SITEMP ", 0x20101005)
 
 			Device(LPC0)
 			{
-                Name (_ADR, 0x00140003)
-                Mutex (PSMX, 0x00)
+				Name (_ADR, 0x00140003)
+				Mutex (PSMX, 0x00)
 
 				/* PIC IRQ mapping registers, C00h-C01h */
 				OperationRegion(PRQM, SystemIO, 0x00000C00, 0x00000002)
@@ -959,7 +959,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "SIEMENS", "SITEMP ", 0x20101005)
 				Device(TMR) {	/* Timer */
 					Name(_HID,EISAID("PNP0100"))	/* System Timer */
 					Name(_CRS, ResourceTemplate() {
-                        IRQ (Edge, ActiveHigh, Exclusive, ) {0}
+			IRQ (Edge, ActiveHigh, Exclusive, ) {0}
 						IO(Decode16, 0x0040, 0x0040, 1, 4)
 						/* IO(Decode16, 0x0048, 0x0048, 0, 4) */
 					})
@@ -1015,55 +1015,55 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "SIEMENS", "SITEMP ", 0x20101005)
 					Method(_CRS, 0)	{
 						Return(CRS)
 					}
-                }
-
-                Device (KBC0)
-                {
-                    Name (_HID, EisaId ("PNP0303"))
-                    Name (_CRS, ResourceTemplate ()
-                    {
-                        IO (Decode16,
-                            0x0060,             // Range Minimum
-                            0x0060,             // Range Maximum
-                            0x01,               // Alignment
-                            0x01,               // Length
-                            )
-                        IO (Decode16,
-                            0x0064,             // Range Minimum
-                            0x0064,             // Range Maximum
-                            0x01,               // Alignment
-                            0x01,               // Length
-                            )
-                        IRQ (Edge, ActiveHigh, Exclusive, ) {1}
-                    })
 				}
 
-                Device (MSE0)
-                {
-                    Name (_HID, EisaId ("PNP0F13"))
-                    Name (_CRS, ResourceTemplate ()
-                    {
-                        IRQ (Edge, ActiveHigh, Exclusive, ) {12}
-                    })
+				Device (KBC0)
+				{
+				Name (_HID, EisaId ("PNP0303"))
+				Name (_CRS, ResourceTemplate ()
+				{
+			IO (Decode16,
+				0x0060,             // Range Minimum
+				0x0060,             // Range Maximum
+				0x01,               // Alignment
+				0x01,               // Length
+				)
+			IO (Decode16,
+				0x0064,             // Range Minimum
+				0x0064,             // Range Maximum
+				0x01,               // Alignment
+				0x01,               // Length
+				)
+			IRQ (Edge, ActiveHigh, Exclusive, ) {1}
+				})
+				}
+
+				Device (MSE0)
+				{
+				Name (_HID, EisaId ("PNP0F13"))
+				Name (_CRS, ResourceTemplate ()
+				{
+			IRQ (Edge, ActiveHigh, Exclusive, ) {12}
+				})
 				}
 			} /* end LPC0 */
 
 			Device(ACAD) {
 				Name(_ADR, 0x00140005)
 				Name (_PRW, Package (0x02)
-                {
-                    0x0C,
-                    0x04
-                })
+				{
+				0x0C,
+				0x04
+				})
 			} /* end Ac97audio */
 
 			Device(ACMD) {
 				Name(_ADR, 0x00140006)
 				Name (_PRW, Package (0x02)
-                {
-                    0x0C,
-                    0x04
-                })
+				{
+				0x0C,
+				0x04
+				})
 			} /* end Ac97modem */
 
 			/* ITE IT8712F Support */

@@ -90,7 +90,7 @@ DefinitionBlock(
  */
 Scope (\_SB.PCI0.LPCB)
 {
-       #include <drivers/pc80/tpm/acpi/tpm.asl>
+	#include <drivers/pc80/tpm/acpi/tpm.asl>
 }
 
 	/* Chipset specific sleep states */

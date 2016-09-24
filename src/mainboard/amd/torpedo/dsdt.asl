@@ -220,12 +220,12 @@ DefinitionBlock (
 		PEWD,1
 	}
 
-    OperationRegion (GRAM, SystemMemory, 0x0400, 0x0100)
-    Field (GRAM, ByteAcc, Lock, Preserve)
-    {
-        Offset (0x10),
-        FLG0,   8
-    }
+	OperationRegion (GRAM, SystemMemory, 0x0400, 0x0100)
+	Field (GRAM, ByteAcc, Lock, Preserve)
+	{
+		Offset (0x10),
+		FLG0,   8
+	}
 
 	Scope(\_SB) {
 		/* PCIe Configuration Space for 16 busses */
@@ -1113,7 +1113,7 @@ DefinitionBlock (
 			Method(_CRS, 0) {
 				/* DBGO("\\_SB\\PCI0\\_CRS\n") */
 				CreateDWordField(CRES, ^MMIO._BAS, MM1B)
-                CreateDWordField(CRES, ^MMIO._LEN, MM1L)
+				CreateDWordField(CRES, ^MMIO._LEN, MM1L)
 				/*
 				* Declare memory between TOM1 and 4GB as available
 				* for PCI MMIO.

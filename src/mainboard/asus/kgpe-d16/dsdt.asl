@@ -31,13 +31,13 @@
  */
 
 DefinitionBlock (
-        "DSDT.AML",	/* Output filename */
-        "DSDT",		/* Signature */
-        0x03,		/* DSDT Revision, needs to be 2 or higher for 64bit */
-        "ASUS  ",	/* OEMID */
-        "COREBOOT",	/* TABLE ID */
-        0x00000001	/* OEM Revision */
-        )
+		"DSDT.AML",	/* Output filename */
+		"DSDT",		/* Signature */
+		0x03,		/* DSDT Revision, needs to be 2 or higher for 64bit */
+		"ASUS  ",	/* OEMID */
+		"COREBOOT",	/* TABLE ID */
+		0x00000001	/* OEM Revision */
+		)
 {
 	#include "northbridge/amd/amdfam10/amdfam10_util.asl"
 	#include "southbridge/amd/sr5650/acpi/sr5650.asl"
@@ -630,10 +630,10 @@ DefinitionBlock (
 					}
 					Return (0x0)
 				}
-                                Method(_CRS, 0)
-                                {
-                                        Return(CRS)
-                                }
+				Method(_CRS, 0)
+				{
+					Return(CRS)
+				}
 			}
 
 			/* 0:14.4 PCI Bridge */

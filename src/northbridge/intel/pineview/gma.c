@@ -277,8 +277,7 @@ static void gma_func0_init(struct device *dev)
 		}
 
 		/* Linux relies on VBT for panel info.  */
-		generate_fake_intel_oprom(&conf->gfx, dev,
-			"$VBT PINEVIEW       ");
+		generate_fake_intel_oprom(&conf->gfx, dev, "$VBT PINEVIEW");
 	}
 }
 

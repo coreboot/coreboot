@@ -21,13 +21,13 @@
 #define MB_SYSCONF_H
 
 struct mb_sysconf_t {
-       unsigned char bus_bcm5780[7];
-       unsigned char bus_bcm5785_0;
-       unsigned char bus_bcm5785_1;
-       unsigned char bus_bcm5785_1_1;
-       unsigned apicid_bcm5785[3];
+	unsigned char bus_bcm5780[7];
+	unsigned char bus_bcm5785_0;
+	unsigned char bus_bcm5785_1;
+	unsigned char bus_bcm5785_1_1;
+	unsigned apicid_bcm5785[3];
 
-       unsigned sbdn2;
+	unsigned sbdn2;
 };
 
 #endif

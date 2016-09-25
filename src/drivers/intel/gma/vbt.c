@@ -34,7 +34,9 @@ static size_t generate_vbt(const struct i915_gpu_controller_info *conf,
 
 	memset (head, 0, sizeof (*head));
 
-	memcpy (head->signature, idstr, 20);
+	memset(head->signature, ' ', sizeof(head->signature));
+	memcpy(head->signature, idstr, MIN(strlen(idstr),
+						sizeof(head->signature)));
 	head->version = 100;
 	head->header_size = sizeof (*head);
 	head->bdb_offset = sizeof (*head);

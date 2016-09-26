@@ -35,6 +35,7 @@ static void i2c_generic_fill_ssdt(struct device *dev)
 		.speed = config->speed ? : I2C_SPEED_FAST,
 		.resource = scope,
 	};
+	struct acpi_dp *dsd = NULL;
 
 	if (!dev->enabled || !scope)
 		return;
@@ -63,6 +64,12 @@ static void i2c_generic_fill_ssdt(struct device *dev)
 	if (config->wake) {
 		acpigen_write_name_integer("_S0W", 4);
 		acpigen_write_PRW(config->wake, 3);
+	}
+
+	if (config->probed) {
+		dsd = acpi_dp_new_table("_DSD");
+		acpi_dp_add_integer(dsd, "linux,probed", 1);
+		acpi_dp_write(dsd);
 	}
 
 	acpigen_pop_len(); /* Device */

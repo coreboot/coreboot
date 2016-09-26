@@ -10,6 +10,15 @@ struct drivers_i2c_generic_config {
 	unsigned wake;		/* Wake GPE */
 	struct acpi_irq irq;	/* Interrupt */
 
+	/*
+	 * This flag will add a device propery which will indicate
+	 * to the OS that it should probe this device before adding it.
+	 *
+	 * This can be used to declare a device that may not exist on
+	 * the board, for example to support multiple trackpad vendors.
+	 */
+	int probed;
+
 	/* GPIO used to indicate if this device is present */
 	unsigned device_present_gpio;
 	unsigned device_present_gpio_invert;

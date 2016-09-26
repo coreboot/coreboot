@@ -36,7 +36,7 @@
 #include <pc80/vga.h>
 #include <pc80/vga_io.h>
 
-#define BASE_FREQUECY 96000
+#define BASE_FREQUENCY 96000
 
 static struct resource *gtt_res = NULL;
 
@@ -61,13 +61,13 @@ static void gma_init_lvds(const struct northbridge_intel_gm45_config *info,
 	u32 hactive, vactive, right_border, bottom_border;
 	int hpolarity, vpolarity;
 	u32 vsync, hsync, vblank, hblank, hfront_porch, vfront_porch;
-	u32 candp1, candn;
-	u32 best_delta = 0xffffffff;
+	u32 smallest_err = 0xffffffff;
 	u32 target_frequency;
 	u32 pixel_p1 = 1;
 	u32 pixel_n = 1;
 	u32 pixel_m1 = 1;
 	u32 pixel_m2 = 1;
+	u32 pixel_p2;
 	u32 link_frequency = info->gfx.link_frequency_270_mhz ? 270000 : 162000;
 	u32 data_m1;
 	u32 data_n1 = 0x00800000;
@@ -121,8 +121,6 @@ static void gma_init_lvds(const struct northbridge_intel_gm45_config *info,
 	hfront_porch = mode->hso;
 	vfront_porch = mode->vso;
 
-	target_frequency = mode->lvds_dual_channel ? mode->pixel_clock
-		: (2 * mode->pixel_clock);
 	if (IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)) {
 		vga_sr_write(1, 1);
 		vga_sr_write(0x2, 0xf);
@@ -151,40 +149,42 @@ static void gma_init_lvds(const struct northbridge_intel_gm45_config *info,
 		vga_textmode_init();
 	}
 
-	/* Find suitable divisors.  */
-	for (candp1 = 1; candp1 <= 8; candp1++) {
-		for (candn = 5; candn <= 10; candn++) {
-			u32 cur_frequency;
-			u32 m; /* 77 - 131.  */
-			u32 denom; /* 35 - 560.  */
-			u32 current_delta;
+	target_frequency = mode->pixel_clock;
+	/*
+	 * p2 divisor must 7 for dual channel LVDS
+	 * and 14 for single channel LVDS
+	*/
+	pixel_p2 = mode->lvds_dual_channel ? 7 : 14;
 
-			denom = candn * candp1 * 7;
-			/* Doesnt overflow for up to
-			   5000000 kHz = 5 GHz.  */
-			m = (target_frequency * denom + 60000) / 120000;
-
-			if (m < 77 || m > 131)
-				continue;
-
-			cur_frequency = (120000 * m) / denom;
-			if (target_frequency > cur_frequency)
-				current_delta = target_frequency - cur_frequency;
-			else
-				current_delta = cur_frequency - target_frequency;
-
-
-			if (best_delta > current_delta) {
-				best_delta = current_delta;
-				pixel_n = candn;
-				pixel_p1 = candp1;
-				pixel_m2 = ((m + 3) % 5) + 7;
-				pixel_m1 = (m - pixel_m2) / 5;
+	/*
+	 * Find suitable divisors, m1, m2, p1, n.
+	 * refclock * (5 * (m1 + 2) + (m1 + 2)) / (n + 2) / p1 / p2
+	 * should be closest to target frequency as possible
+	 */
+	u32 candn, candm1, candm2, candp1;
+	for (candn = 1; candn <= 3; candn++) {
+		for (candm1 = 23; candm1 >= 17; candm1--) {
+			for (candm2 = 11; candm2 >= 5; candm2--) {
+				for (candp1 = mode->lvds_dual_channel ? 6 : 8;
+				     candp1 >= 2; candp1--) {
+					u32 m = 5 * (candm1 + 2) + (candm2 + 2);
+					u32 p = candp1 * pixel_p2;
+					u32 vco = DIV_ROUND_CLOSEST(BASE_FREQUENCY * m, candn + 2);
+					u32 dot = DIV_ROUND_CLOSEST(vco, p);
+					u32 this_err = ABS(dot - target_frequency);
+					if (this_err < smallest_err) {
+						smallest_err = this_err;
+						pixel_n = candn;
+						pixel_m1 = candm1;
+						pixel_m2 = candm2;
+						pixel_p1 = candp1;
+					}
+				}
 			}
 		}
 	}
 
-	if (best_delta == 0xffffffff) {
+	if (smallest_err == 0xffffffff) {
 		printk (BIOS_ERR, "Couldn't find GFX clock divisors\n");
 		return;
 	}
@@ -218,8 +218,8 @@ static void gma_init_lvds(const struct northbridge_intel_gm45_config *info,
 	printk(BIOS_DEBUG, "Pixel N=%d, M1=%d, M2=%d, P1=%d\n",
 	       pixel_n, pixel_m1, pixel_m2, pixel_p1);
 	printk(BIOS_DEBUG, "Pixel clock %d kHz\n",
-	       120000 * (5 * pixel_m1 + pixel_m2) / pixel_n
-	       / (pixel_p1 * 7));
+		BASE_FREQUENCY * (5 * (pixel_m1 + 2) + (pixel_m2 + 2) /
+			(pixel_n + 2) / (pixel_p1 * pixel_p2)));
 
 	write32(mmio + LVDS,
 		(hpolarity << 20) | (vpolarity << 21)
@@ -232,8 +232,8 @@ static void gma_init_lvds(const struct northbridge_intel_gm45_config *info,
 	write32(mmio + PP_CONTROL, PANEL_UNLOCK_REGS
 		| (read32(mmio + PP_CONTROL) & ~PANEL_UNLOCK_MASK));
 	write32(mmio + FP0(0),
-		((pixel_n - 2) << 16)
-		| ((pixel_m1 - 2) << 8) | (pixel_m2 - 2));
+		(pixel_n << 16)
+		| (pixel_m1 << 8) | (pixel_m2));
 	write32(mmio + DPLL(0),
 		DPLL_VCO_ENABLE | DPLLB_MODE_LVDS
 		| DPLL_VGA_MODE_DIS
@@ -472,7 +472,7 @@ static void gma_init_vga(const struct northbridge_intel_gm45_config *info,
 				for (candp1 = 8; candp1 >= 1; candp1--) {
 					u32 m = 5 * (candm1 + 2) + (candm2 + 2);
 					u32 p = candp1 * 10; /* 10 == p2 */
-					u32 vco = DIV_ROUND_CLOSEST(BASE_FREQUECY * m, candn + 2);
+					u32 vco = DIV_ROUND_CLOSEST(BASE_FREQUENCY * m, candn + 2);
 					u32 dot = DIV_ROUND_CLOSEST(vco, p);
 					u32 this_err = ABS(dot - target_frequency);
 					if (this_err < smallest_err) {
@@ -519,8 +519,8 @@ static void gma_init_vga(const struct northbridge_intel_gm45_config *info,
 	printk(BIOS_SPEW, "Pixel N=%d, M1=%d, M2=%d, P1=%d\n",
 	       pixel_n, pixel_m1, pixel_m2, pixel_p1);
 	printk(BIOS_SPEW, "Pixel clock %d kHz\n",
-		BASE_FREQUECY * (5 * (pixel_m1 + 2) + (pixel_m2 + 2) / (pixel_n + 2)
-		/ (pixel_p1 * 10)));
+		BASE_FREQUENCY * (5 * (pixel_m1 + 2) + (pixel_m2 + 2) /
+			(pixel_n + 2) / (pixel_p1 * 10)));
 
 	mdelay(1);
 	write32(mmio + FP0(0), (pixel_n << 16)

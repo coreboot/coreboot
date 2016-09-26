@@ -135,6 +135,7 @@ chip soc/intel/apollolake
 				register "hid" = ""ELAN0001""
 				register "desc" = ""ELAN Touchscreen""
 				register "irq" = "IRQ_EDGE_LOW(GPIO_21_IRQ)"
+				register "probed" = "1"
 				device i2c 10 on end
 			end
 		end	# - I2C 3
@@ -144,6 +145,7 @@ chip soc/intel/apollolake
 				register "desc" = ""ELAN Touchpad""
 				register "irq" = "IRQ_EDGE_LOW(GPIO_18_IRQ)"
 				register "wake" = "GPE0_DW1_15"
+				register "probed" = "1"
 				device i2c 15 on end
 			end
 		end # - I2C 4

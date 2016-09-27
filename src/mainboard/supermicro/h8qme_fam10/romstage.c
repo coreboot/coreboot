@@ -172,17 +172,17 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	timestamp_init(timestamp_get());
 	timestamp_add_now(TS_START_ROMSTAGE);
 
-        if (!cpu_init_detectedx && boot_cpu()) {
+	if (!cpu_init_detectedx && boot_cpu()) {
 		/* Nothing special needs to be done to find bus 0 */
 		/* Allow the HT devices to be found */
 		set_bsp_node_CHtExtNodeCfgEn();
 		enumerate_ht_chain();
 		sio_setup();
-        }
+	}
 
 	post_code(0x30);
 
-        if (bist == 0)
+	if (bist == 0)
 		bsp_apicid = init_cpus(cpu_init_detectedx, sysinfo);
 
 	post_code(0x32);

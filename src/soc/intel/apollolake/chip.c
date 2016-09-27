@@ -193,22 +193,67 @@ static void pcie_override_devicetree_after_silicon_init(void)
 	pcie_update_device_tree(PCIEB0_DEVFN, 2);
 }
 
-static void rapl_update(void)
+/* Configure package power limits */
+static void set_power_limits(void)
 {
-	uint32_t *rapl_reg;
-	uint32_t val;
-	const uint32_t power_mw = 15000;
+	static struct soc_intel_apollolake_config *cfg;
+	struct device *dev = NB_DEV_ROOT;
+	msr_t rapl_msr_reg, limit;
+	uint32_t power_unit;
+	uint32_t tdp, min_power, max_power;
+	uint32_t *rapl_mmio_reg;
 
-	rapl_reg = (void*)(uintptr_t) (MCH_BASE_ADDR + MCHBAR_RAPL_PPL);
+	if (!dev || !dev->chip_info) {
+		printk(BIOS_ERR, "BUG! Could not find SOC devicetree config\n");
+		return;
+	}
 
-	/* Due to an incorrect value set for the power limit PL1 as 6W in RAPL
-	 * MMIO register from FSP code, the system is not able to leverage full
-	 * TDP capacity. This RAPL MMIO register is a physically separate
-	 * instance from RAPL MSR register. Punit algorithm controls to the
-	 * minimum power limit PL1 mentioned in the RAPL MMIO and MSR registers.
-	 * Here, setting RAPL PL1 in Bits[14:0] to 15W in RAPL MMIO register. */
-	val = (power_mw << (rdmsr(MSR_PKG_POWER_SKU_UNIT).lo & 0xf)) / 1000;
-	write32(rapl_reg, (read32(rapl_reg) & ~0x7fff) | val);
+	cfg = dev->chip_info;
+
+	/* Get units */
+	rapl_msr_reg = rdmsr(MSR_PKG_POWER_SKU_UNIT);
+	power_unit = 1 << (rapl_msr_reg.lo & 0xf);
+
+	/* Get power defaults for this SKU */
+	rapl_msr_reg = rdmsr(MSR_PKG_POWER_SKU);
+	tdp = rapl_msr_reg.lo & PKG_POWER_LIMIT_MASK;
+	min_power = (rapl_msr_reg.lo >> 16) & PKG_POWER_LIMIT_MASK;
+	max_power = rapl_msr_reg.hi & PKG_POWER_LIMIT_MASK;
+
+	if (min_power > 0 && tdp < min_power)
+		tdp = min_power;
+
+	if (max_power > 0 && tdp > max_power)
+		tdp = max_power;
+
+	/* Set PL1 override value */
+	tdp = (cfg->tdp_pl1_override_mw == 0) ?
+		tdp : (cfg->tdp_pl1_override_mw * power_unit) / 1000;
+
+	/* Set long term power limit to TDP */
+	limit.lo = tdp & PKG_POWER_LIMIT_MASK;
+	/* PL2 is invalid for small core */
+	limit.hi = 0x0;
+
+	/* Set PL1 Pkg Power clamp bit */
+	limit.lo |= PKG_POWER_LIMIT_CLAMP;
+
+	limit.lo |= PKG_POWER_LIMIT_EN;
+	limit.lo |= (MB_POWER_LIMIT1_TIME_DEFAULT &
+		PKG_POWER_LIMIT_TIME_MASK) << PKG_POWER_LIMIT_TIME_SHIFT;
+
+	/* Program package power limits in RAPL MSR */
+	wrmsr(MSR_PKG_POWER_LIMIT, limit);
+	printk(BIOS_INFO, "RAPL PL1 %d.%dW\n", tdp / power_unit,
+				100 * (tdp % power_unit) / power_unit);
+
+	/* Get the MMIO address */
+	rapl_mmio_reg = (void *)(uintptr_t) (MCH_BASE_ADDR + MCHBAR_RAPL_PPL);
+	/*
+	 * Disable RAPL MMIO PL1 Power limits because RAPL uses MSR value.
+	 * PL2 (limit.hi) is invalid for small cores
+	 */
+	write32(rapl_mmio_reg, limit.lo & ~(PKG_POWER_LIMIT_EN));
 }
 
 static void soc_init(void *data)
@@ -241,8 +286,8 @@ static void soc_init(void *data)
 	/* Allocate ACPI NVS in CBMEM */
 	gnvs = cbmem_add(CBMEM_ID_ACPI_GNVS, sizeof(*gnvs));
 
-	/* Update RAPL package power limit */
-	rapl_update();
+	/* Set RAPL MSR for Package power limits*/
+	set_power_limits();
 }
 
 static void soc_final(void *data)

@@ -39,6 +39,20 @@ void apollolake_init_cpus(struct device *dev);
 #define   PREFETCH_L2_DISABLE	(1 << 2)
 
 #define MSR_PKG_POWER_SKU_UNIT	0x606
+#define MSR_PKG_POWER_SKU	0x614
+#define MSR_PKG_POWER_LIMIT	0x610
+#define PKG_POWER_LIMIT_MASK		(0x7fff)
+#define PKG_POWER_LIMIT_EN		(1 << 15)
+#define PKG_POWER_LIMIT_CLAMP		(1 << 16)
+#define PKG_POWER_LIMIT_TIME_SHIFT	17
+#define PKG_POWER_LIMIT_TIME_MASK	(0x7f)
+/*
+ * For Mobile, RAPL default PL1 time window value set to 28 seconds.
+ * RAPL time window calculation defined as follows:
+ * Time Window = (float)((1+X/4)*(2*^Y), X Corresponds to [23:22],
+ * Y to [21:17] in MSR 0x610. 28 sec is equal to 0x6e.
+ */
+#define MB_POWER_LIMIT1_TIME_DEFAULT	0x6e
 
 #define MSR_L2_QOS_MASK(reg)		(0xd10 + reg)
 #define MSR_IA32_PQR_ASSOC		0xc8f

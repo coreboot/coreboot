@@ -33,55 +33,55 @@
 #include "speaker.h"
 
 void speaker_init(uint8_t time) {
-   /* SB600 RRG.
-    * Options_0 - RW - 8 bits - [PM_Reg: 60h].
-    * SpkrEn, bit[5]=1b, Setting this bit will configure GPIO2 to be speaker output.
-    */
+	/* SB600 RRG.
+	 * Options_0 - RW - 8 bits - [PM_Reg: 60h].
+	 * SpkrEn, bit[5]=1b, Setting this bit will configure GPIO2 to be speaker output.
+	 */
 #ifdef __PRE_RAM__
-   pmio_write(0x60, (pmio_read(0x60) | (1<<5)));
+	pmio_write(0x60, (pmio_read(0x60) | (1<<5)));
 #else
-   pm_iowrite(0x60, (pm_ioread(0x60) | (1<<5)));
+	pm_iowrite(0x60, (pm_ioread(0x60) | (1<<5)));
 #endif /* __PRE_RAM__ */
 
-   /* SB600 RRG.
-    * Tmr1CntrlWord - RW - 8 bits - [IO_Reg: 43h].
-    * ModeSelect, bit[3:1]=011b, Square wave output.
-    * CmmandSelect, bit[5:4]=11b, Read/write least, and then most significant byte.
-    * CounterSelect, bit[7:6]=10b, Select counter 2.
-    */
-   outb(0xb6, 0x43);
+	/* SB600 RRG.
+	 * Tmr1CntrlWord - RW - 8 bits - [IO_Reg: 43h].
+	 * ModeSelect, bit[3:1]=011b, Square wave output.
+	 * CmmandSelect, bit[5:4]=11b, Read/write least, and then most significant byte.
+	 * CounterSelect, bit[7:6]=10b, Select counter 2.
+	 */
+	outb(0xb6, 0x43);
 
 
-   /* SB600 RRG.
-    * TimerCh2- RW - 8 bits - [IO_Reg: 42h].
-    */
-   outb(time, 0x42);
+	/* SB600 RRG.
+	 * TimerCh2- RW - 8 bits - [IO_Reg: 42h].
+	 */
+	outb(time, 0x42);
 }
 
 void speaker_on_nodelay(void) {
-   /* SB600 RRG.
-    * Nmi_Status - RW - 8 bits - [IO_Reg: 61h].
-    * SpkrEnable, bit[0]=1b, Enable counter 2
-    * SpkrTmrEnable, bit[1]=1b, Speaker timer on
-    */
-   outb(inb(0x61) | 0x03, 0x61);
+	/* SB600 RRG.
+	 * Nmi_Status - RW - 8 bits - [IO_Reg: 61h].
+	 * SpkrEnable, bit[0]=1b, Enable counter 2
+	 * SpkrTmrEnable, bit[1]=1b, Speaker timer on
+	 */
+	outb(inb(0x61) | 0x03, 0x61);
 }
 
 void speaker_on_delay(void) {
-   speaker_on_nodelay();
-   mdelay(100);
+	speaker_on_nodelay();
+	mdelay(100);
 }
 
 void speaker_off_nodelay(void) {
-   /* SB600 RRG.
-    * Nmi_Status - RW - 8 bits - [IO_Reg: 61h].
-    * SpkrEnable, bit[0]=0b, Disable counter 2
-    * SpkrTmrEnable, bit[1]=0b, Speaker timer off
-    */
-   outb(inb(0x61) & ~0x03, 0x61);
+	/* SB600 RRG.
+	 * Nmi_Status - RW - 8 bits - [IO_Reg: 61h].
+	 * SpkrEnable, bit[0]=0b, Disable counter 2
+	 * SpkrTmrEnable, bit[1]=0b, Speaker timer off
+	 */
+	outb(inb(0x61) & ~0x03, 0x61);
 }
 
 void speaker_off_delay(void) {
-   speaker_off_nodelay();
-   mdelay(100);
+	speaker_off_nodelay();
+	mdelay(100);
 }

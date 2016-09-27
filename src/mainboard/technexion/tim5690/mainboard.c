@@ -82,29 +82,29 @@ int do_smbus_write_byte(u32 smbus_io_base, u32 device, u32 address, u8 val);
    LDN the register belongs to, before you can access the register. */
 static void it8712f_sio_write(uint8_t ldn, uint8_t index, uint8_t value)
 {
-        outb(IT8712F_CONFIG_REG_LDN, SIO_BASE);
-        outb(ldn, SIO_DATA);
-        outb(index, SIO_BASE);
-        outb(value, SIO_DATA);
+	outb(IT8712F_CONFIG_REG_LDN, SIO_BASE);
+	outb(ldn, SIO_DATA);
+	outb(index, SIO_BASE);
+	outb(value, SIO_DATA);
 }
 
 static void it8712f_enter_conf(void)
 {
-        /*  Enter the configuration state (MB PnP mode). */
+	/*  Enter the configuration state (MB PnP mode). */
 
-        /* Perform MB PnP setup to put the SIO chip at 0x2e. */
-        /* Base address 0x2e: 0x87 0x01 0x55 0x55. */
-        /* Base address 0x4e: 0x87 0x01 0x55 0xaa. */
-        outb(0x87, IT8712F_CONFIGURATION_PORT);
-        outb(0x01, IT8712F_CONFIGURATION_PORT);
-        outb(0x55, IT8712F_CONFIGURATION_PORT);
-        outb(0x55, IT8712F_CONFIGURATION_PORT);
+	/* Perform MB PnP setup to put the SIO chip at 0x2e. */
+	/* Base address 0x2e: 0x87 0x01 0x55 0x55. */
+	/* Base address 0x4e: 0x87 0x01 0x55 0xaa. */
+	outb(0x87, IT8712F_CONFIGURATION_PORT);
+	outb(0x01, IT8712F_CONFIGURATION_PORT);
+	outb(0x55, IT8712F_CONFIGURATION_PORT);
+	outb(0x55, IT8712F_CONFIGURATION_PORT);
 }
 
 static void it8712f_exit_conf(void)
 {
-        /* Exit the configuration state (MB PnP mode). */
-        it8712f_sio_write(0x00, IT8712F_CONFIG_REG_CC, 0x02);
+	/* Exit the configuration state (MB PnP mode). */
+	it8712f_sio_write(0x00, IT8712F_CONFIG_REG_CC, 0x02);
 }
 
 /* set thermal config
@@ -173,15 +173,15 @@ static void set_thermal_config(void)
 /* Mainboard specific GPIO setup. */
 static void mb_gpio_init(u16 *iobase)
 {
-        /* Init Super I/O GPIOs. */
-        it8712f_enter_conf();
-        outb(IT8712F_CONFIG_REG_LDN, SIO_INDEX);
-        outb(IT8712F_GPIO, SIO_DATA);
-        outb(0x62, SIO_INDEX);
-        outb((*iobase >> 8), SIO_DATA);
-        outb(0x63, SIO_INDEX);
-        outb((*iobase & 0xff), SIO_DATA);
-        it8712f_exit_conf();
+	/* Init Super I/O GPIOs. */
+	it8712f_enter_conf();
+	outb(IT8712F_CONFIG_REG_LDN, SIO_INDEX);
+	outb(IT8712F_GPIO, SIO_DATA);
+	outb(0x62, SIO_INDEX);
+	outb((*iobase >> 8), SIO_DATA);
+	outb(0x63, SIO_INDEX);
+	outb((*iobase & 0xff), SIO_DATA);
+	it8712f_exit_conf();
 }
 
 #if CONFIG_VGA_ROM_RUN

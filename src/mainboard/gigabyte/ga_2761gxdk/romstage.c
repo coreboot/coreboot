@@ -67,12 +67,12 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #define SIS966_PCI_E_X_0 0
 
 #define SIS966_MB_SETUP \
-        RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+37, 0x00, 0x44,/* GPIO38 PCI_REQ3 */ \
-        RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+38, 0x00, 0x44,/* GPIO39 PCI_GNT3 */ \
-        RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+39, 0x00, 0x44,/* GPIO40 PCI_GNT2 */ \
-        RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+40, 0x00, 0x44,/* GPIO41 PCI_REQ2 */ \
-        RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+59, 0x00, 0x60,/* GPIP60 FANCTL0 */ \
-        RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+60, 0x00, 0x60,/* GPIO61 FANCTL1 */
+	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+37, 0x00, 0x44,/* GPIO38 PCI_REQ3 */ \
+	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+38, 0x00, 0x44,/* GPIO39 PCI_GNT3 */ \
+	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+39, 0x00, 0x44,/* GPIO40 PCI_GNT2 */ \
+	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+40, 0x00, 0x44,/* GPIO41 PCI_REQ2 */ \
+	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+59, 0x00, 0x60,/* GPIP60 FANCTL0 */ \
+	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+60, 0x00, 0x60,/* GPIO61 FANCTL1 */
 
 #include <southbridge/sis/sis966/early_setup_ss.h>
 #include "cpu/amd/model_fxx/init_cpus.c"
@@ -81,20 +81,20 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 static void sio_setup(void)
 {
-        uint32_t dword;
-        uint8_t byte;
+	uint32_t dword;
+	uint8_t byte;
 
-        byte = pci_read_config8(PCI_DEV(0, SIS966_DEVN_BASE+1 , 0), 0x7b);
-        byte |= 0x20;
-        pci_write_config8(PCI_DEV(0, SIS966_DEVN_BASE+1 , 0), 0x7b, byte);
+	byte = pci_read_config8(PCI_DEV(0, SIS966_DEVN_BASE+1 , 0), 0x7b);
+	byte |= 0x20;
+	pci_write_config8(PCI_DEV(0, SIS966_DEVN_BASE+1 , 0), 0x7b, byte);
 
-        dword = pci_read_config32(PCI_DEV(0, SIS966_DEVN_BASE+1 , 0), 0xa0);
-        dword |= (1 << 0);
-        pci_write_config32(PCI_DEV(0, SIS966_DEVN_BASE+1 , 0), 0xa0, dword);
+	dword = pci_read_config32(PCI_DEV(0, SIS966_DEVN_BASE+1 , 0), 0xa0);
+	dword |= (1 << 0);
+	pci_write_config32(PCI_DEV(0, SIS966_DEVN_BASE+1 , 0), 0xa0, dword);
 
-        dword = pci_read_config32(PCI_DEV(0, SIS966_DEVN_BASE+1 , 0), 0xa4);
-        dword |= (1 << 16);
-        pci_write_config32(PCI_DEV(0, SIS966_DEVN_BASE+1 , 0), 0xa4, dword);
+	dword = pci_read_config32(PCI_DEV(0, SIS966_DEVN_BASE+1 , 0), 0xa4);
+	dword |= (1 << 16);
+	pci_write_config32(PCI_DEV(0, SIS966_DEVN_BASE+1 , 0), 0xa4, dword);
 }
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
@@ -108,90 +108,90 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		DIMM5, DIMM7, 0, 0,
 	};
 
-        struct sys_info *sysinfo = &sysinfo_car;
-        int needs_reset = 0;
-        unsigned bsp_apicid = 0;
+	struct sys_info *sysinfo = &sysinfo_car;
+	int needs_reset = 0;
+	unsigned bsp_apicid = 0;
 
-        if (!cpu_init_detectedx && boot_cpu()) {
+	if (!cpu_init_detectedx && boot_cpu()) {
 		/* Nothing special needs to be done to find bus 0 */
 		/* Allow the HT devices to be found */
 		enumerate_ht_chain();
 		sio_setup();
-        }
+	}
 
-        if (bist == 0)
+	if (bist == 0)
 		bsp_apicid = init_cpus(cpu_init_detectedx, sysinfo);
 
 	ite_conf_clkin(CLKIN_DEV, ITE_UART_CLK_PREDIVIDE_48);
 	ite_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 
-        setup_mb_resource_map();
+	setup_mb_resource_map();
 
-        console_init();
+	console_init();
 
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
 
 	printk(BIOS_DEBUG, "*sysinfo range: [%p,%p]\n",sysinfo,sysinfo+1);
 
-        printk(BIOS_DEBUG, "bsp_apicid=%02x\n", bsp_apicid);
+	printk(BIOS_DEBUG, "bsp_apicid=%02x\n", bsp_apicid);
 
-        set_sysinfo_in_ram(0); // in BSP so could hold all ap until sysinfo is in ram
-        setup_coherent_ht_domain(); // routing table and start other core0
+	set_sysinfo_in_ram(0); // in BSP so could hold all ap until sysinfo is in ram
+	setup_coherent_ht_domain(); // routing table and start other core0
 
-        wait_all_core0_started();
+	wait_all_core0_started();
 #if CONFIG_LOGICAL_CPUS
-        // It is said that we should start core1 after all core0 launched
-        /* becase optimize_link_coherent_ht is moved out from setup_coherent_ht_domain,
-         * So here need to make sure last core0 is started, esp for two way system,
-         * (there may be apic id conflicts in that case)
-         */
-        start_other_cores();
-        wait_all_other_cores_started(bsp_apicid);
+	// It is said that we should start core1 after all core0 launched
+	/* becase optimize_link_coherent_ht is moved out from setup_coherent_ht_domain,
+	 * So here need to make sure last core0 is started, esp for two way system,
+	 * (there may be apic id conflicts in that case)
+	 */
+	start_other_cores();
+	wait_all_other_cores_started(bsp_apicid);
 #endif
 
-        /* it will set up chains and store link pair for optimization later */
-        ht_setup_chains_x(sysinfo); // it will init sblnk and sbbusn, nodes, sbdn
+	/* it will set up chains and store link pair for optimization later */
+	ht_setup_chains_x(sysinfo); // it will init sblnk and sbbusn, nodes, sbdn
 
 #if CONFIG_SET_FIDVID
-        {
-                msr_t msr;
-                msr = rdmsr(0xc0010042);
-                printk(BIOS_DEBUG, "begin msr fid, vid %08x%08x\n", msr.hi, msr.lo);
-        }
-        enable_fid_change();
-        enable_fid_change_on_sb(sysinfo->sbbusn, sysinfo->sbdn);
-        init_fidvid_bsp(bsp_apicid);
-        // show final fid and vid
-        {
-                msr_t msr;
-                msr = rdmsr(0xc0010042);
-                printk(BIOS_DEBUG, "end   msr fid, vid %08x%08x\n", msr.hi, msr.lo);
-        }
+	{
+		msr_t msr;
+		msr = rdmsr(0xc0010042);
+		printk(BIOS_DEBUG, "begin msr fid, vid %08x%08x\n", msr.hi, msr.lo);
+	}
+	enable_fid_change();
+	enable_fid_change_on_sb(sysinfo->sbbusn, sysinfo->sbdn);
+	init_fidvid_bsp(bsp_apicid);
+	// show final fid and vid
+	{
+		msr_t msr;
+		msr = rdmsr(0xc0010042);
+		printk(BIOS_DEBUG, "end   msr fid, vid %08x%08x\n", msr.hi, msr.lo);
+	}
 #endif
 
-        needs_reset |= optimize_link_coherent_ht();
-        needs_reset |= optimize_link_incoherent_ht(sysinfo);
+	needs_reset |= optimize_link_coherent_ht();
+	needs_reset |= optimize_link_incoherent_ht(sysinfo);
 
-        // fidvid change will issue one LDTSTOP and the HT change will be effective too
-        if (needs_reset) {
-                printk(BIOS_INFO, "ht reset -\n");
-              	soft_reset();
-        }
-        allow_all_aps_stop(bsp_apicid);
+	// fidvid change will issue one LDTSTOP and the HT change will be effective too
+	if (needs_reset) {
+		printk(BIOS_INFO, "ht reset -\n");
+			soft_reset();
+	}
+	allow_all_aps_stop(bsp_apicid);
 
-        //It's the time to set ctrl in sysinfo now;
+	//It's the time to set ctrl in sysinfo now;
 	fill_mem_ctrl(sysinfo->nodes, sysinfo->ctrl, spd_addr);
 
-        sis_init_stage1();
-        enable_smbus();
+	sis_init_stage1();
+	enable_smbus();
 
-        //do we need apci timer, tsc...., only debug need it for better output
-        /* all ap stopped? */
-//        init_timer(); // Need to use TMICT to synchronize FID/VID
+	//do we need apci timer, tsc...., only debug need it for better output
+	/* all ap stopped? */
+//	init_timer(); // Need to use TMICT to synchronize FID/VID
 
-        sdram_initialize(sysinfo->nodes, sysinfo->ctrl, sysinfo);
+	sdram_initialize(sysinfo->nodes, sysinfo->ctrl, sysinfo);
 
-        sis_init_stage2();
-        post_cache_as_ram(); // bsp swtich stack to RAM and copy sysinfo RAM now
+	sis_init_stage2();
+	post_cache_as_ram(); // bsp swtich stack to RAM and copy sysinfo RAM now
 }

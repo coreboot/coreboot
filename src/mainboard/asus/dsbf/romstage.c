@@ -75,13 +75,13 @@ static void setup_gpio(void)
 	pci_write_config32(PCI_DEV(0, 31, 0), 0x48, DEFAULT_GPIOBASE | 1);
 	pci_write_config8(PCI_DEV(0, 31, 0), 0x4c, (1 << 4));
 
-        outl(0x1b0ce7c0, DEFAULT_GPIOBASE + 0x00); /* GPIO_USE_SEL */
-        outl(0xec00ffff, DEFAULT_GPIOBASE + 0x04); /* GP_IO_SEL */
-        outl(0xff350000, DEFAULT_GPIOBASE + 0x0c); /* GP_LVL */
-        outl(0x0000e742, DEFAULT_GPIOBASE + 0x2c); /* GPI_INV */
-        outl(0x00000006, DEFAULT_GPIOBASE + 0x30); /* GPIO_USE_SEL2 */
-        outl(0x00000300, DEFAULT_GPIOBASE + 0x34); /* GP_IO_SEL2 */
-        outl(0x00030301, DEFAULT_GPIOBASE + 0x38); /* GPIO_LVL2 */
+	outl(0x1b0ce7c0, DEFAULT_GPIOBASE + 0x00); /* GPIO_USE_SEL */
+	outl(0xec00ffff, DEFAULT_GPIOBASE + 0x04); /* GP_IO_SEL */
+	outl(0xff350000, DEFAULT_GPIOBASE + 0x0c); /* GP_LVL */
+	outl(0x0000e742, DEFAULT_GPIOBASE + 0x2c); /* GPI_INV */
+	outl(0x00000006, DEFAULT_GPIOBASE + 0x30); /* GPIO_USE_SEL2 */
+	outl(0x00000300, DEFAULT_GPIOBASE + 0x34); /* GP_IO_SEL2 */
+	outl(0x00030301, DEFAULT_GPIOBASE + 0x38); /* GPIO_LVL2 */
 
 }
 
@@ -126,12 +126,12 @@ void mainboard_romstage_entry(unsigned long bist)
 
 	enable_smbus();
 
-        smbus_write_byte(0x6f, 0x00, 0x63);
-        smbus_write_byte(0x6f, 0x01, 0x04);
-        smbus_write_byte(0x6f, 0x02, 0x53);
-        smbus_write_byte(0x6f, 0x03, 0x39);
-        smbus_write_byte(0x6f, 0x08, 0x06);
-        smbus_write_byte(0x6f, 0x09, 0x00);
+	smbus_write_byte(0x6f, 0x00, 0x63);
+	smbus_write_byte(0x6f, 0x01, 0x04);
+	smbus_write_byte(0x6f, 0x02, 0x53);
+	smbus_write_byte(0x6f, 0x03, 0x39);
+	smbus_write_byte(0x6f, 0x08, 0x06);
+	smbus_write_byte(0x6f, 0x09, 0x00);
 
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0xf0, (uintptr_t)DEFAULT_RCBA | 1);
 	i5000_fbdimm_init();

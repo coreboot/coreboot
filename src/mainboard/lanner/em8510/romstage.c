@@ -63,7 +63,7 @@ void mainboard_romstage_entry(unsigned long bist)
 #endif
 
 	if (!bios_reset_detected()) {
-        	enable_smbus();
+		enable_smbus();
 #if 1
 		dump_spd_registers();
 		dump_smbus_registers();

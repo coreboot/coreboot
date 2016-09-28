@@ -104,10 +104,12 @@ uintptr_t uart_platform_base(int idx)
 
 void uart_init(int idx)
 {
-	unsigned int div;
-	div = uart_baudrate_divisor(default_baudrate(), uart_platform_refclk(),
-		uart_input_clock_divider());
-	uart8250_init(uart_platform_base(idx), div);
+	if (!IS_ENABLED(CONFIG_DRIVERS_UART_8250IO_SKIP_INIT)) {
+		unsigned int div;
+		div = uart_baudrate_divisor(default_baudrate(),
+			uart_platform_refclk(), uart_input_clock_divider());
+		uart8250_init(uart_platform_base(idx), div);
+	}
 }
 
 void uart_tx_byte(int idx, unsigned char data)

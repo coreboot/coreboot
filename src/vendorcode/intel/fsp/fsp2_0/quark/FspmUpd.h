@@ -35,45 +35,47 @@ are permitted provided that the following conditions are met:
 
 #include <FspUpd.h>
 
+#pragma pack(push, 1)
+
 
 /** Fsp M Configuration
 **/
-struct FSP_M_CONFIG {
+typedef struct {
 
 /** Offset 0x0040 - RmuBaseAddress
   RMU microcode binary base address in SPI flash'
 **/
-  uint32_t                      RmuBaseAddress;
+  UINT32                      RmuBaseAddress;
 
 /** Offset 0x0044 - RmuLength
   RMU microcode binary length in bytes
 **/
-  uint32_t                      RmuLength;
+  UINT32                      RmuLength;
 
 /** Offset 0x0048 - SerialPortBaseAddress
   Debug serial port base address set by BIOS. Zero disables debug serial output.
 **/
-  uint32_t                      Reserved_48;
+  UINT32                      Reserved_48;
 
 /** Offset 0x004C - tRAS
   ACT to PRE command period in picoseconds.
 **/
-  uint32_t                      tRAS;
+  UINT32                      tRAS;
 
 /** Offset 0x0050 - tWTR
   Delay from start of internal write transaction to internal read command in picoseconds.
 **/
-  uint32_t                      tWTR;
+  UINT32                      tWTR;
 
 /** Offset 0x0054 - tRRD
   ACT to ACT command period (JESD79 specific to page size 1K/2K) in picoseconds.
 **/
-  uint32_t                      tRRD;
+  UINT32                      tRRD;
 
 /** Offset 0x0058 - tFAW
   Four activate window (JESD79 specific to page size 1K/2K) in picoseconds.
 **/
-  uint32_t                      tFAW;
+  UINT32                      tFAW;
 
 /** Offset 0x005C - Flags
   Bitmap of MRC_FLAG_XXX: ECC_EN            BIT0, SCRAMBLE_EN       BIT1, MEMTEST_EN
@@ -81,155 +83,157 @@ struct FSP_M_CONFIG {
   topology, WR_ODT_EN         BIT4  If set ODR signal is asserted to DRAM devices
   on writes.
 **/
-  uint32_t                      Flags;
+  UINT32                      Flags;
 
 /** Offset 0x0060 - DramWidth
   0=x8, 1=x16, others=RESERVED.
 **/
-  uint8_t                       DramWidth;
+  UINT8                       DramWidth;
 
 /** Offset 0x0061 - DramSpeed
   0=DDRFREQ_800, 1=DDRFREQ_1066, others=RESERVED. Only 533MHz SKU support 1066 memory.
 **/
-  uint8_t                       DramSpeed;
+  UINT8                       DramSpeed;
 
 /** Offset 0x0062 - DramType
   0=DDR3, 1=DDR3L, others=RESERVED.
 **/
-  uint8_t                       DramType;
+  UINT8                       DramType;
 
 /** Offset 0x0063 - RankMask
   bit[0] RANK0_EN, bit[1] RANK1_EN, others=RESERVED.
 **/
-  uint8_t                       RankMask;
+  UINT8                       RankMask;
 
 /** Offset 0x0064 - ChanMask
   bit[0] CHAN0_EN, others=RESERVED.
 **/
-  uint8_t                       ChanMask;
+  UINT8                       ChanMask;
 
 /** Offset 0x0065 - ChanWidth
   1=x16, others=RESERVED.
 **/
-  uint8_t                       ChanWidth;
+  UINT8                       ChanWidth;
 
 /** Offset 0x0066 - AddrMode
   0, 1, 2 (mode 2 forced if ecc enabled), others=RESERVED.
 **/
-  uint8_t                       AddrMode;
+  UINT8                       AddrMode;
 
 /** Offset 0x0067 - SrInt
   1=1.95us, 2=3.9us, 3=7.8us, others=RESERVED. REFRESH_RATE.
 **/
-  uint8_t                       SrInt;
+  UINT8                       SrInt;
 
 /** Offset 0x0068 - SrTemp
   0=normal, 1=extended, others=RESERVED.
 **/
-  uint8_t                       SrTemp;
+  UINT8                       SrTemp;
 
 /** Offset 0x0069 - DramRonVal
   0=34ohm, 1=40ohm, others=RESERVED. RON_VALUE Select MRS1.DIC driver impedance control.
 **/
-  uint8_t                       DramRonVal;
+  UINT8                       DramRonVal;
 
 /** Offset 0x006A - DramRttNomVal
   0=40ohm, 1=60ohm, 2=120ohm, others=RESERVED.
 **/
-  uint8_t                       DramRttNomVal;
+  UINT8                       DramRttNomVal;
 
 /** Offset 0x006B - DramRttWrVal
   0=off others=RESERVED.
 **/
-  uint8_t                       DramRttWrVal;
+  UINT8                       DramRttWrVal;
 
 /** Offset 0x006C - SocRdOdtVal
   0=off, 1=60ohm, 2=120ohm, 3=180ohm, others=RESERVED.
 **/
-  uint8_t                       SocRdOdtVal;
+  UINT8                       SocRdOdtVal;
 
 /** Offset 0x006D - SocWrRonVal
   0=27ohm, 1=32ohm, 2=40ohm, others=RESERVED.
 **/
-  uint8_t                       SocWrRonVal;
+  UINT8                       SocWrRonVal;
 
 /** Offset 0x006E - SocWrSlewRate
   0=2.5V/ns, 1=4V/ns, others=RESERVED.
 **/
-  uint8_t                       SocWrSlewRate;
+  UINT8                       SocWrSlewRate;
 
 /** Offset 0x006F - DramDensity
   0=512Mb, 1=1Gb, 2=2Gb, 3=4Gb, others=RESERVED.
 **/
-  uint8_t                       DramDensity;
+  UINT8                       DramDensity;
 
 /** Offset 0x0070 - tCL
   DRAM CAS Latency in clocks
 **/
-  uint8_t                       tCL;
+  UINT8                       tCL;
 
 /** Offset 0x0071 - EccScrubInterval
   ECC scrub interval in miliseconds 1..255 (0 works as feature disable
 **/
-  uint8_t                       EccScrubInterval;
+  UINT8                       EccScrubInterval;
 
 /** Offset 0x0072 - EccScrubBlkSize
   Number of 32B blocks read for ECC scrub 2..16
 **/
-  uint8_t                       EccScrubBlkSize;
+  UINT8                       EccScrubBlkSize;
 
 /** Offset 0x0073 - SmmTsegSize
   Size of the SMM region in 1 MiB chunks
 **/
-  uint8_t                       SmmTsegSize;
+  UINT8                       SmmTsegSize;
 
 /** Offset 0x0074 - FspReservedMemoryLength
   FSP reserved memory length in bytes
 **/
-  uint32_t                      FspReservedMemoryLength;
+  UINT32                      FspReservedMemoryLength;
 
 /** Offset 0x0078 - MrcDataPtr
   Pointer to saved MRC data
 **/
-  uint32_t                      MrcDataPtr;
+  UINT32                      MrcDataPtr;
 
 /** Offset 0x007C - MrcDataLength
   Length of saved MRC data
 **/
-  uint32_t                      MrcDataLength;
+  UINT32                      MrcDataLength;
 
 /** Offset 0x0080
 **/
-  uint32_t                      SerialPortPollForChar;
+  UINT32                      SerialPortPollForChar;
 
 /** Offset 0x0084
 **/
-  uint32_t                      SerialPortReadChar;
+  UINT32                      SerialPortReadChar;
 
 /** Offset 0x0088
 **/
-  uint32_t                      SerialPortWriteChar;
+  UINT32                      SerialPortWriteChar;
 
 /** Offset 0x008C
 **/
-  uint16_t                      UpdTerminator;
-} __attribute__((packed));
+  UINT16                      UpdTerminator;
+} FSP_M_CONFIG;
 
 /** Fsp M UPD Configuration
 **/
-struct FSPM_UPD {
+typedef struct {
 
 /** Offset 0x0000
 **/
-  struct FSP_UPD_HEADER              FspUpdHeader;
+  FSP_UPD_HEADER              FspUpdHeader;
 
 /** Offset 0x0020
 **/
-  struct FSPM_ARCH_UPD               FspmArchUpd;
+  FSPM_ARCH_UPD               FspmArchUpd;
 
 /** Offset 0x0040
 **/
-  struct FSP_M_CONFIG                FspmConfig;
-} __attribute__((packed));
+  FSP_M_CONFIG                FspmConfig;
+} FSPM_UPD;
+
+#pragma pack(pop)
 
 #endif

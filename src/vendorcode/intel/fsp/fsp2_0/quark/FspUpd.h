@@ -30,60 +30,19 @@ are permitted provided that the following conditions are met:
 
 **/
 
-#ifndef __FSPTUPD_H__
-#define __FSPTUPD_H__
+#ifndef __FSPUPD_H__
+#define __FSPUPD_H__
 
-#include <FspUpd.h>
+#include <FspEas.h>
 
+#pragma pack(push, 1)
 
-/** Fsp T Common UPD
-**/
-struct FSPT_COMMON_UPD {
+#define FSPT_UPD_SIGNATURE               0x545F4450554B5251        /* 'QRKUPD_T' */
 
-/** Offset 0x0020
-**/
-  uint8_t                       Revision;
+#define FSPM_UPD_SIGNATURE               0x4D5F4450554B5251        /* 'QRKUPD_M' */
 
-/** Offset 0x0021
-**/
-  uint8_t                       Reserved[3];
+#define FSPS_UPD_SIGNATURE               0x535F4450554B5251        /* 'QRKUPD_S' */
 
-/** Offset 0x0024
-**/
-  uint32_t                      MicrocodeRegionBase;
-
-/** Offset 0x0028
-**/
-  uint32_t                      MicrocodeRegionLength;
-
-/** Offset 0x002C
-**/
-  uint32_t                      CodeRegionBase;
-
-/** Offset 0x0030
-**/
-  uint32_t                      CodeRegionLength;
-
-/** Offset 0x0034
-**/
-  uint8_t                       Reserved1[12];
-} __attribute__((packed));
-
-/** Fsp T UPD Configuration
-**/
-struct FSPT_UPD {
-
-/** Offset 0x0000
-**/
-  struct FSP_UPD_HEADER              FspUpdHeader;
-
-/** Offset 0x0020
-**/
-  struct FSPT_COMMON_UPD             FsptCommonUpd;
-
-/** Offset 0x0040
-**/
-  uint16_t                      UpdTerminator;
-} __attribute__((packed));
+#pragma pack(pop)
 
 #endif

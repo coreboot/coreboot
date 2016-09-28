@@ -35,18 +35,22 @@ are permitted provided that the following conditions are met:
 
 #include <FspUpd.h>
 
+#pragma pack(push, 1)
+
 
 /** Fsp S UPD Configuration
 **/
-struct FSPS_UPD {
+typedef struct {
 
 /** Offset 0x0000
 **/
-  struct FSP_UPD_HEADER              FspUpdHeader;
+  FSP_UPD_HEADER              FspUpdHeader;
 
 /** Offset 0x0020
 **/
-  uint16_t                      UpdTerminator;
-} __attribute__((packed));
+  UINT16                      UpdTerminator;
+} FSPS_UPD;
+
+#pragma pack(pop)
 
 #endif

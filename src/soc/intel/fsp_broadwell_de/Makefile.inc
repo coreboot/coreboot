@@ -24,12 +24,6 @@ ramstage-y += acpi.c
 ramstage-y += smbus_common.c
 ramstage-y += smbus.c
 
-ifeq ($(CONFIG_INTEGRATED_UART),y)
-romstage-y += uart.c
-ramstage-y += uart.c
-smm-$(CONFIG_DEBUG_SMI) += uart.c
-endif
-
 CPPFLAGS_common += -I$(src)/soc/intel/fsp_broadwell_de/include
 CPPFLAGS_common += -I$(src)/soc/intel/fsp_broadwell_de/fsp
 CPPFLAGS_common += -I$(src)/soc/intel/fsp_broadwell_de/

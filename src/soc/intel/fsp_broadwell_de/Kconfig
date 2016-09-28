@@ -61,17 +61,11 @@ config VGA_BIOS
 config INTEGRATED_UART
 	bool "Integrated UART ports"
 	default y
-	select HAVE_UART_SPECIAL
+	select DRIVERS_UART_8250IO
+	select DRIVERS_UART_8250IO_SKIP_INIT
 	select CONSOLE_SERIAL
 	help
 	  Use Broadwell-DE Integrated UART ports @3F8h and 2F8h.
-
-config DRIVERS_UART_8250IO
-	bool "Serial port on SuperIO (Broadwell-DE's UART ports unselected)"
-	depends on !INTEGRATED_UART
-	help
-	  Select to choose SuperIO's serial port for console output.
-	  CANNOT select if intend to use SoC integrated serial ports.
 
 config CONSOLE_CBMEM
 	bool "Send console output to a CBMEM buffer"

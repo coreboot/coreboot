@@ -139,7 +139,13 @@ struct linux_params {
 	u32 alt_mem_k;		/* 0x1e0 */
 	u8 reserved5[4];	/* 0x1e4 */
 	u8 e820_map_nr;		/* 0x1e8 */
-	u8 reserved6[9];	/* 0x1e9 */
+	u8 reserved6[8];	/* 0x1e9 */
+				/* This next variable is to show where
+				 * in this struct the Linux setup_hdr
+				 * is located. It does not get filled in.
+				 * We may someday find it useful to use
+				 * its address. */
+	u8 setup_hdr;           /* 0x1f1  */
 	u16 mount_root_rdonly;	/* 0x1f2 */
 	u8 reserved7[4];	/* 0x1f4 */
 	u16 ramdisk_flags;	/* 0x1f8 */
@@ -170,7 +176,9 @@ struct linux_params {
 	u32 initrd_addr_max;	/* 0x22c */
 	u32 kernel_alignment;	/* 0x230 */
 	u8 relocatable_kernel;	/* 0x234 */
-	u8 reserved13[155];		/* 0x22c */
+	u8 reserved13[0x2b];		/* 0x235 */
+	u32 init_size;          /* 0x260 */
+	u8 reserved14[0x6c];		/* 0x264 */
 	struct e820entry e820_map[E820MAX];	/* 0x2d0 */
 	u8 reserved16[688];	/* 0x550 */
 #define COMMAND_LINE_SIZE 256

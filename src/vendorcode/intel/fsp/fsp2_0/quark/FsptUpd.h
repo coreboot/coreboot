@@ -30,13 +30,64 @@ are permitted provided that the following conditions are met:
 
 **/
 
-#ifndef __FSPEAS_H__
-#define __FSPEAS_H__
+#ifndef __FSPTUPD_H__
+#define __FSPTUPD_H__
 
-#include <fsp/upd.h>
-#include <soc/fsp/FspmUpd.h>
-#include <soc/fsp/FspsUpd.h>
-#include <soc/fsp/FsptUpd.h>
-#include <fsp/api.h>
+#include <FspUpd.h>
 
-#endif /* _FSPEAS_H_ */
+#pragma pack(push, 1)
+
+
+/** Fsp T Common UPD
+**/
+typedef struct {
+
+/** Offset 0x0020
+**/
+  UINT8                       Revision;
+
+/** Offset 0x0021
+**/
+  UINT8                       Reserved[3];
+
+/** Offset 0x0024
+**/
+  UINT32                      MicrocodeRegionBase;
+
+/** Offset 0x0028
+**/
+  UINT32                      MicrocodeRegionLength;
+
+/** Offset 0x002C
+**/
+  UINT32                      CodeRegionBase;
+
+/** Offset 0x0030
+**/
+  UINT32                      CodeRegionLength;
+
+/** Offset 0x0034
+**/
+  UINT8                       Reserved1[12];
+} FSPT_COMMON_UPD;
+
+/** Fsp T UPD Configuration
+**/
+typedef struct {
+
+/** Offset 0x0000
+**/
+  FSP_UPD_HEADER              FspUpdHeader;
+
+/** Offset 0x0020
+**/
+  FSPT_COMMON_UPD             FsptCommonUpd;
+
+/** Offset 0x0040
+**/
+  UINT16                      UpdTerminator;
+} FSPT_UPD;
+
+#pragma pack(pop)
+
+#endif

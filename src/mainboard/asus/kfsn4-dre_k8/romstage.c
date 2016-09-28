@@ -299,11 +299,11 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	printk(BIOS_DEBUG, "ck804_early_setup_x()\n");
 	needs_reset |= ck804_early_setup_x();
 
-        /* FIDVID change will issue one LDTSTOP and the HT change will be effective too */
-        if (needs_reset) {
-                printk(BIOS_INFO, "ht reset -\n");
-                soft_reset();
-        }
+	/* FIDVID change will issue one LDTSTOP and the HT change will be effective too */
+	if (needs_reset) {
+		printk(BIOS_INFO, "ht reset -\n");
+		soft_reset();
+	}
 
 	post_code(0x3b);
 
@@ -323,8 +323,8 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	 * IS_ENABLED(CONFIG_DEBUG_SMBUS) uncomment this block
 	 */
 	if (IS_ENABLED(CONFIG_DEBUG_SMBUS)) {
-	        dump_spd_registers(&cpu[0]);
-        	dump_smbus_registers();
+		dump_spd_registers(&cpu[0]);
+		dump_smbus_registers();
 	}
 #endif
 
@@ -348,8 +348,8 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	/* Initialize GPIO */
 	/* Access SuperIO GPI03 logical device */
 	uint16_t port = GPIO3_DEV >> 8;
-        outb(0x87, port);
-        outb(0x87, port);
+	outb(0x87, port);
+	outb(0x87, port);
 	pnp_set_logical_device(GPIO3_DEV);
 	/* Set GP37 (power LED) to output */
 	pnp_write_config(GPIO3_DEV, 0xf0, 0x7f);

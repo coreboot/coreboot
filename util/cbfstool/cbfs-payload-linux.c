@@ -220,14 +220,19 @@ int parse_bzImage_to_payload(const struct buffer *input,
 
 	if (hdr->setup_sects != 0) {
 		setup_size = (hdr->setup_sects + 1) * 512;
+	} else {
+		WARN("hdr->setup_sects is 0, which could cause boot problems.\n");
 	}
 
 	/* Setup parameter block. Imitate FILO. */
 	struct linux_params params;
 
 	memset(&params, 0, sizeof(struct linux_params));
+
 	params.mount_root_rdonly = hdr->root_flags;
 	params.orig_root_dev = hdr->root_dev;
+	params.init_size = hdr->init_size;
+
 	/* Sensible video defaults. Might be overridden on runtime by coreboot tables. */
 	params.orig_video_mode = 3;
 	params.orig_video_cols = 80;
@@ -262,6 +267,10 @@ int parse_bzImage_to_payload(const struct buffer *input,
 			 * so if possible (relocatable kernel) use that to
 			 * avoid a trampoline copy. */
 			kernel_base = ALIGN(16*1024*1024, params.kernel_alignment);
+			if (hdr->init_size == 0) {
+				ERROR("init_size 0 for relocatable kernel\n");
+				return -1;
+			}
 		}
 	}
 

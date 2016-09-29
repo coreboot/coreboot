@@ -130,14 +130,55 @@ Getting the Quark FSP source:
   <li>Use git to clone <a target="_blank" href="https://review.gerrithub.io/#/admin/projects/LeeLeahy/quarkfsp">QuarkFspPkg</a> into the QuarkFpsPkg directory (.)</li>
 </ol>
 
+<h2>Building QuarkFspPkg</h2>
 <p>
-Building QuarkFspPkg:
+There are two versions of FSP: FSP 1.1 and FSP 2.0.  There are also two
+different implementations of FSP, one using subroutines without SEC and
+PEI core and the original implementation which relies on SEC and PEI core.
+Finally there are two different build x86 types release (r32) and debug (d32).
+</p>
+<p>Note that the subroutine implementations are a <b>work in progress</b>.</p>
+<p>
+Build commands shown building debug FSP:
 </p>
 <ul>
-  <li>Linux: QuarkFspPkg/BuildFsp.sh  -d32</li>
-  <li>Windows: QuarkFspPkg/BuildFsp.bat  -d32</li>
+  <li>Linux:
+    <ul>
+      <li>QuarkFspPkg/BuildFsp1_1.sh  -d32</li>
+      <li>QuarkFspPkg/BuildFsp1_1Pei.sh  -d32</li>
+      <li>QuarkFspPkg/BuildFsp2_0.sh  -d32</li>
+      <li>QuarkFspPkg/BuildFsp2_0Pei.sh  -d32</li>
+    </ul>
+  <li>Windows:
+    <ul>
+      <li>QuarkFspPkg/BuildFsp1_1.bat  -d32</li>
+      <li>Windows: QuarkFspPkg/BuildFsp2_0.bat  -d32</li>
+    </ul>
+  </li>
 </ul>
 
+<h2>Copying FSP files into coreboot Source Tree</h2>
+<p>
+There are some helper scripts to copy the FSP output into the coreboot
+source tree.  The parameters to these scripts are:
+</p>
+<ol>
+  <li>EDK2 tree root</li>
+  <li>coreboot tree root</li>
+  <li>Build type: DEBUG or RELEASE</li>
+</ol>
+<p>
+Script files:
+</p>
+<ul>
+  <li>Linux:
+    <ul>
+      <li>QuarkFspPkg/coreboot_fsp1_1.sh</li>
+      <li>QuarkFspPkg/coreboot_fsp1_1Pei.sh</li>
+      <li>QuarkFspPkg/coreboot_fsp2_0.sh</li>
+      <li>QuarkFspPkg/coreboot_fsp2_0Pei.sh</li>
+    </ul>
+</ul>
 
 
 <hr>

@@ -46,7 +46,7 @@ config GALILEO_GEN2
 
 choice
 	prompt "FSP version"
-	default FSP_VERSION_1_1
+	default FSP_VERSION_2_0
 
 config FSP_VERSION_1_1
 	bool "FSP 1.1"

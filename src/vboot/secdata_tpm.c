@@ -154,6 +154,7 @@ static uint32_t _factory_initialize_tpm(struct vb2_context *ctx)
 uint32_t tpm_clear_and_reenable(void)
 {
 	VBDEBUG("TPM: Clear and re-enable\n");
+	RETURN_ON_FAILURE(tlcl_force_clear());
 	return TPM_SUCCESS;
 }
 

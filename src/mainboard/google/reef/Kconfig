@@ -20,13 +20,16 @@ config BASEBOARD_REEF_LAPTOP
 	select SYSTEM_TYPE_LAPTOP
 
 config DRIVER_TPM_I2C_BUS
-	hex "0x2"
+	hex
+	default 0x2
 
 config DRIVER_TPM_I2C_ADDR
-	hex "0x50"
+	hex
+	default 0x50
 
 config DRIVER_TPM_I2C_IRQ
-	int "60" # GPE0_DW1_28
+	int
+	default 60 # GPE0_DW1_28
 
 config CHROMEOS
 	select LID_SWITCH if BASEBOARD_REEF_LAPTOP

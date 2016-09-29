@@ -37,6 +37,17 @@ struct hob_resource {
 	uint64_t length;
 } __attribute__((packed));
 
+enum resource_type {
+	EFI_RESOURCE_SYSTEM_MEMORY		= 0,
+	EFI_RESOURCE_MEMORY_MAPPED_IO		= 1,
+	EFI_RESOURCE_IO				= 2,
+	EFI_RESOURCE_FIRMWARE_DEVICE		= 3,
+	EFI_RESOURCE_MEMORY_MAPPED_IO_PORT	= 4,
+	EFI_RESOURCE_MEMORY_RESERVED		= 5,
+	EFI_RESOURCE_IO_RESERVED		= 6,
+	EFI_RESOURCE_MAX_MEMORY_TYPE		= 7,
+};
+
 enum hob_type {
 	HOB_TYPE_HANDOFF			= 0x0001,
 	HOB_TYPE_MEMORY_ALLOCATION		= 0x0002,
@@ -53,7 +64,6 @@ enum hob_type {
 };
 
 extern const uint8_t fsp_bootloader_tolum_guid[16];
-extern const uint8_t fsp_graphics_info_guid[16];
 extern const uint8_t fsp_nv_storage_guid[16];
 extern const uint8_t fsp_reserved_memory_guid[16];
 

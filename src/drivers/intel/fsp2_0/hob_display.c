@@ -51,6 +51,11 @@ static const uint8_t empty_guid[16] = {
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
 
+static const uint8_t fsp_graphics_info_guid[16] = {
+	0xce, 0x2c, 0xf6, 0x39, 0x25, 0x68, 0x69, 0x46,
+	0xbb, 0x56, 0x54, 0x1a, 0xba, 0x75, 0x3a, 0x07
+};
+
 static const uint8_t fsp_info_header_guid[16] = {
 	0xbe, 0x40, 0x27, 0x91, 0x84, 0x22, 0x34, 0x47,
 	0xb9, 0x71, 0x84, 0xb0, 0x27, 0x35, 0x3f, 0x0c
@@ -78,7 +83,7 @@ static const struct guid_name_map  guid_names[] = {
 	{ fsp_info_header_guid,		"FSP_INFO_HEADER_GUID" },
 	{ fsp_reserved_memory_guid,	"FSP_RESERVED_MEMORY" },
 	{ fsp_nv_storage_guid,		"FSP_NV_STORAGE" },
-	{ graphics_info_guid,		"GRAPHICS INFO" },
+	{ fsp_graphics_info_guid,	"GRAPHICS INFO" },
 	{ smbios_memory_info_guid,	"FSP_SMBIOS_MEMORY_INFO_GUID" },
 	{ tseg_guid,			"TSEG" },
 };

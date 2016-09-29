@@ -16,7 +16,7 @@
 #include <fsp/util.h>
 #include <soc/ramstage.h>
 
-void platform_fsp_silicon_init_params_cb(struct FSPS_UPD *silupd)
+void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 {
 }
 

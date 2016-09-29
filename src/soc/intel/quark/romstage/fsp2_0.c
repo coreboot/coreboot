@@ -87,14 +87,14 @@ int fill_power_state(void)
 	return ps->prev_sleep_state;
 }
 
-void platform_fsp_memory_init_params_cb(struct FSPM_UPD *fspm_upd)
+void platform_fsp_memory_init_params_cb(FSPM_UPD *fspm_upd)
 {
-	struct FSPM_ARCH_UPD *aupd;
+	FSPM_ARCH_UPD *aupd;
 	const struct device *dev;
 	const struct soc_intel_quark_config *config;
 	char *rmu_file;
 	size_t rmu_file_len;
-	struct FSP_M_CONFIG *upd;
+	FSP_M_CONFIG *upd;
 
 	/* Clear SMI and wake events */
 	clear_smi_and_wake_events();

@@ -22,17 +22,6 @@
 
 #define HOB_HEADER_LEN		8
 
-enum resource_type {
-	EFI_RESOURCE_SYSTEM_MEMORY		= 0,
-	EFI_RESOURCE_MEMORY_MAPPED_IO		= 1,
-	EFI_RESOURCE_IO				= 2,
-	EFI_RESOURCE_FIRMWARE_DEVICE		= 3,
-	EFI_RESOURCE_MEMORY_MAPPED_IO_PORT	= 4,
-	EFI_RESOURCE_MEMORY_RESERVED		= 5,
-	EFI_RESOURCE_IO_RESERVED		= 6,
-	EFI_RESOURCE_MAX_MEMORY_TYPE		= 7,
-};
-
 /* GUIDs in little-endian, so they can be used with memcmp() */
 const uint8_t fsp_bootloader_tolum_guid[16] = {
 	0x56, 0x4f, 0xff, 0x73, 0x8e, 0xaa, 0x51, 0x44,

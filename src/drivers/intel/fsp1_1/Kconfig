@@ -34,13 +34,13 @@ config HAVE_FSP_BIN
 
 config CPU_MICROCODE_CBFS_LEN
 	hex "Microcode update region length in bytes"
-	default 0
+	default 0x0
 	help
 	  The length in bytes of the microcode update region.
 
 config CPU_MICROCODE_CBFS_LOC
 	hex "Microcode update base address in CBFS"
-	default 0
+	default 0x0
 	help
 	  The location (base address) in CBFS that contains the microcode update
 	  binary.

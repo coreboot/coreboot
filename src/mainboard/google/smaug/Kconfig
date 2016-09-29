@@ -85,7 +85,7 @@ config DRIVER_TPM_I2C_ADDR
 
 config EC_GOOGLE_CHROMEEC_I2C_BUS
 	hex
-	default 1
+	default 0x1
 
 config EC_GOOGLE_CHROMEEC_BOARDNAME
 	string

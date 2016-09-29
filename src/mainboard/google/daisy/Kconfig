@@ -49,7 +49,7 @@ config DRAM_SIZE_MB
 
 config EC_GOOGLE_CHROMEEC_I2C_BUS
 	hex
-	default 4
+	default 0x4
 
 config UART_FOR_CONSOLE
 	int

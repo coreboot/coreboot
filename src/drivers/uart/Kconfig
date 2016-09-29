@@ -69,7 +69,7 @@ config UART_USE_REFCLK_AS_INPUT_CLOCK
 
 config UART_PCI_ADDR
 	hex "UART's PCI bus, device, function address"
-	default 0
+	default 0x0
 	help
 	  Specify zero if the UART is connected to another bus type.
 	  For PCI based UARTs, build the value as:

@@ -16,11 +16,11 @@
 #include <console/console.h>
 #include <fsp/util.h>
 
-void soc_display_fspm_upd_params(const struct FSPM_UPD *fspm_old_upd,
-	const struct FSPM_UPD *fspm_new_upd)
+void soc_display_fspm_upd_params(const FSPM_UPD *fspm_old_upd,
+	const FSPM_UPD *fspm_new_upd)
 {
-	const struct FSP_M_CONFIG *new;
-	const struct FSP_M_CONFIG *old;
+	const FSP_M_CONFIG *new;
+	const FSP_M_CONFIG *old;
 
 	old = &fspm_old_upd->FspmConfig;
 	new = &fspm_new_upd->FspmConfig;
@@ -62,9 +62,15 @@ void soc_display_fspm_upd_params(const struct FSPM_UPD *fspm_old_upd,
 		old->RmuBaseAddress, new->RmuBaseAddress);
 	fsp_display_upd_value("RmuLength", sizeof(old->RmuLength),
 		old->RmuLength, new->RmuLength);
-	fsp_display_upd_value("SerialPortBaseAddress",
-		sizeof(old->SerialPortBaseAddress),
-		old->SerialPortBaseAddress, new->SerialPortBaseAddress);
+	fsp_display_upd_value("SerialPortPollForChar",
+		sizeof(old->SerialPortPollForChar),
+		old->SerialPortPollForChar, new->SerialPortPollForChar);
+	fsp_display_upd_value("SerialPortReadChar",
+		sizeof(old->SerialPortReadChar),
+		old->SerialPortReadChar, new->SerialPortReadChar);
+	fsp_display_upd_value("SerialPortWriteChar",
+		sizeof(old->SerialPortWriteChar),
+		old->SerialPortWriteChar, new->SerialPortWriteChar);
 	fsp_display_upd_value("SmmTsegSize", sizeof(old->SmmTsegSize),
 		old->SmmTsegSize, new->SmmTsegSize);
 	fsp_display_upd_value("SocRdOdtVal", sizeof(old->SocRdOdtVal),

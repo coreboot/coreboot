@@ -23,7 +23,7 @@ DefinitionBlock ("DSDT.AML","DSDT",0x01,"XXXXXX","XXXXXXXX",0x00010001
 */
 Method(UCOC, 0) {
 	Sleep(20)
-    	Store(0x13,CMTI)
+	Store(0x13,CMTI)
 	Store(0,GPSL)
 }
 
@@ -121,7 +121,7 @@ If (LLessEqual(UOM6,9)) {
 
 /* USB Port 7 overcurrent uses Gpm 7 */
 If (LLessEqual(UOM7,9)) {
- 	Scope (\_GPE) {
+	Scope (\_GPE) {
 		/* Method (_L1D) { */
 		Method (_L07) {
 			UCOC()

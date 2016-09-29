@@ -61,7 +61,7 @@ config MAINBOARD_PART_NUMBER
 
 config MAINBOARD_FAMILY
 	string
-	default "Google_Reef" if BOARD_GOOGLE_REEF
+	default "Google_Reef"
 
 config GBB_HWID
 	string

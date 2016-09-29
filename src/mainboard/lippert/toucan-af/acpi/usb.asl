@@ -121,7 +121,7 @@ If (LLessEqual(UOM6,9)) {
 
 /* USB Port 7 overcurrent uses Gpm 7 */
 If (LLessEqual(UOM7,9)) {
- 	Scope (\_GPE) {
+	Scope (\_GPE) {
 		/* Method (_L1D) { */
 		Method (_L07) {
 			UCOC()

@@ -46,7 +46,7 @@ cpu_microcode_blob.bin-file ?= $(obj)/cpu_microcode_blob.bin
 cpu_microcode_blob.bin-type := microcode
 
 ifneq ($(CONFIG_CPU_MICROCODE_CBFS_LOC),)
-cpu_microcode_blob.bin-position := $(CONFIG_CPU_MICROCODE_CBFS_LOC)
+cpu_microcode_blob.bin-COREBOOT-position := $(CONFIG_CPU_MICROCODE_CBFS_LOC)
 else
 cpu_microcode_blob.bin-align := 16
 endif

@@ -3,6 +3,7 @@
 ##
 ## Copyright (C) 2009 Ronald G. Minnich
 ## Copyright (C) 2014 Edward O'Callaghan <eocallaghan@alterapraxis.com>
+## Copyright (C) 2016 secunet Security Networks AG
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -18,3 +19,26 @@
 # romstage.
 config SUPERIO_ITE_COMMON_ROMSTAGE
 	bool
+
+# Generic ITE environment controller driver
+config SUPERIO_ITE_ENV_CTRL
+	bool
+
+if SUPERIO_ITE_ENV_CTRL
+
+config SUPERIO_ITE_ENV_CTRL_FAN16_CONFIG
+	bool
+	help
+	  Enable extended, 16-bit wide tacho counters.
+
+config SUPERIO_ITE_ENV_CTRL_8BIT_PWM
+	bool
+	help
+	  PWM duty cycles are set in 8-bit registers (instead of 7 bit).
+
+config SUPERIO_ITE_ENV_CTRL_PWM_FREQ2
+	bool
+	help
+	  The second FAN controller has a separate frequency setting.
+
+endif

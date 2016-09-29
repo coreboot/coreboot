@@ -82,10 +82,10 @@ void pch_enable_lpc(void)
 	pci_write_config16(PCH_LPC_DEV, LPC_EN, KBC_LPC_EN | MC_LPC_EN |
 			CNF1_LPC_EN | CNF2_LPC_EN | COMA_LPC_EN);
 
-        pci_write_config32(PCH_LPC_DEV, LPC_GEN1_DEC, 0x3c0a01);
-        pci_write_config16(PCH_LPC_DEV, LPC_IO_DEC, 0x10);
+	pci_write_config32(PCH_LPC_DEV, LPC_GEN1_DEC, 0x3c0a01);
+	pci_write_config16(PCH_LPC_DEV, LPC_IO_DEC, 0x10);
 
-        pci_write_config32(PCH_LPC_DEV, 0xac, 0x10000);
+	pci_write_config32(PCH_LPC_DEV, 0xac, 0x10000);
 
 	/* Initialize SuperIO */
 	ite_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
@@ -93,27 +93,27 @@ void pch_enable_lpc(void)
 }
 
 const struct southbridge_usb_port mainboard_usb_ports[] = {
-        { 1, 5, 0 },
-        { 1, 5, 0 },
-        { 1, 5, 1 },
-        { 1, 5, 1 },
-        { 1, 5, 2 },
-        { 1, 5, 2 },
-        { 1, 5, 3 },
-        { 1, 5, 3 },
-        { 1, 5, 4 },
-        { 1, 5, 4 },
-        { 1, 5, 6 },
-        { 1, 5, 5 },
-        { 1, 5, 5 },
-        { 1, 5, 6 },
+	{ 1, 5, 0 },
+	{ 1, 5, 0 },
+	{ 1, 5, 1 },
+	{ 1, 5, 1 },
+	{ 1, 5, 2 },
+	{ 1, 5, 2 },
+	{ 1, 5, 3 },
+	{ 1, 5, 3 },
+	{ 1, 5, 4 },
+	{ 1, 5, 4 },
+	{ 1, 5, 6 },
+	{ 1, 5, 5 },
+	{ 1, 5, 5 },
+	{ 1, 5, 6 },
 };
 
 void mainboard_get_spd(spd_raw_data *spd) {
-        read_spd (&spd[0], 0x50);
-        read_spd (&spd[1], 0x51);
-        read_spd (&spd[2], 0x52);
-        read_spd (&spd[3], 0x53);
+	read_spd (&spd[0], 0x50);
+	read_spd (&spd[1], 0x51);
+	read_spd (&spd[2], 0x52);
+	read_spd (&spd[3], 0x53);
 }
 
 void mainboard_early_init(int s3resume) {

@@ -237,9 +237,17 @@ static void setup_usb(void)
 	/* Set max ODT compensation voltage and current tuning reference. */
 	write32(&rk3399_grf->usbphy0_ctrl[3], 0x0fff02e3);
 	write32(&rk3399_grf->usbphy1_ctrl[3], 0x0fff02e3);
-	/* Set max pre-emphasis level, only on Kevin PHY0. */
-	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_KEVIN))
+	/* Set max pre-emphasis level, only on Kevin PHY0 and PHY1,
+	 * and disable the pre-emphasize in eop state to avoid
+	 * mis-trigger the disconnect detection. */
+	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_KEVIN)) {
 		write32(&rk3399_grf->usbphy0_ctrl[12], 0xffff00a7);
+		write32(&rk3399_grf->usbphy1_ctrl[12], 0xffff00a7);
+		write32(&rk3399_grf->usbphy0_ctrl[0], 0x00010000);
+		write32(&rk3399_grf->usbphy1_ctrl[0], 0x00010000);
+		write32(&rk3399_grf->usbphy0_ctrl[13], 0x00010000);
+		write32(&rk3399_grf->usbphy1_ctrl[13], 0x00010000);
+	}
 
 	setup_usb_otg0();
 	setup_usb_otg1();

@@ -1,7 +1,7 @@
 ##
 ## This file is part of the coreboot project.
 ##
-## Copyright (C) 2009 Ronald G. Minnich
+## Copyright (C) 2016 secunet Security Networks AG
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -13,17 +13,9 @@
 ## GNU General Public License for more details.
 ##
 
-## include generic ite pre-ram stage driver
-romstage-$(CONFIG_SUPERIO_ITE_COMMON_ROMSTAGE) += common/early_serial.c
-
-## include generic ite environment controller driver
-ramstage-$(CONFIG_SUPERIO_ITE_ENV_CTRL) += common/env_ctrl.c
-
-subdirs-y += it8671f
-subdirs-y += it8712f
-subdirs-y += it8716f
-subdirs-y += it8718f
-subdirs-y += it8721f
-subdirs-y += it8728f
-subdirs-y += it8772f
-subdirs-y += it8783ef
+config SUPERIO_ITE_IT8783EF
+	bool
+	select SUPERIO_ITE_COMMON_ROMSTAGE
+	select SUPERIO_ITE_ENV_CTRL
+	select SUPERIO_ITE_ENV_CTRL_FAN16_CONFIG
+	select SUPERIO_ITE_ENV_CTRL_PWM_FREQ2

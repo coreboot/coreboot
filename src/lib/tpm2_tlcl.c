@@ -54,10 +54,27 @@ uint32_t tlcl_get_permanent_flags(TPM_PERMANENT_FLAGS *pflags)
 	return TPM_SUCCESS;
 }
 
+static uint32_t tlcl_send_startup(TPM_SU type)
+{
+	struct tpm2_startup startup;
+	struct tpm2_response *response;
+
+	startup.startup_type = type;
+	response = tpm_process_command(TPM2_Startup, &startup);
+
+	if (response && response->hdr.tpm_code &&
+	    (response->hdr.tpm_code != TPM_RC_INITIALIZE)) {
+		printk(BIOS_INFO, "%s: Startup return code is %x\n",
+		       __func__, response->hdr.tpm_code);
+		return TPM_E_IOERROR;
+	}
+	return TPM_SUCCESS;
+
+}
+
 uint32_t tlcl_resume(void)
 {
-	printk(BIOS_INFO, "%s:%s:%d\n", __FILE__, __func__, __LINE__);
-	return TPM_SUCCESS;
+	return tlcl_send_startup(TPM_SU_STATE);
 }
 
 uint32_t tlcl_assert_physical_presence(void)
@@ -245,18 +262,7 @@ uint32_t tlcl_lock_nv_write(uint32_t index)
 
 uint32_t tlcl_startup(void)
 {
-	struct tpm2_startup startup;
-	struct tpm2_response *response;
-
-	startup.startup_type = TPM_SU_CLEAR;
-	response = tpm_process_command(TPM2_Startup, &startup);
-	if (response && response->hdr.tpm_code &&
-	    (response->hdr.tpm_code != TPM_RC_INITIALIZE)) {
-		printk(BIOS_INFO, "startup return code is %x\n",
-		       response->hdr.tpm_code);
-		return TPM_E_IOERROR;
-	}
-	return TPM_SUCCESS;
+	return tlcl_send_startup(TPM_SU_CLEAR);
 }
 
 uint32_t tlcl_write(uint32_t index, const void *data, uint32_t length)

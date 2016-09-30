@@ -81,7 +81,10 @@ Device(IT8516E_EC_DEV) {
 	#undef PNP_ENTER_MAGIC_1ST
 	#undef PNP_ENTER_MAGIC_2ND
 	#undef PNP_ENTER_MAGIC_3RD
+	#undef PNP_ENTER_MAGIC_4TH
 	#undef PNP_EXIT_MAGIC_1ST
+	#undef PNP_EXIT_SPECIAL_REG
+	#undef PNP_EXIT_SPECIAL_VAL
 	#include <superio/acpi/pnp_config.asl>
 
 	Method (_PSC)

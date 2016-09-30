@@ -40,7 +40,7 @@ config MAX_PHYSICAL_CPUS
 
 config HT_CHAIN_UNITID_BASE
 	hex
-	default 0
+	default 0x0
 
 config HT_CHAIN_END_UNITID_BASE
 	hex

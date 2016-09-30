@@ -212,7 +212,7 @@ config VBOOT_KEYBLOCK_VERSION
 
 config VBOOT_KEYBLOCK_PREAMBLE_FLAGS
 	hex "Keyblock preamble flags"
-	default 0
+	default 0x0
 
 endmenu # Keys
 

@@ -39,7 +39,7 @@ config MAINBOARD_PART_NUMBER
 
 config HW_MEM_HOLE_SIZEK
 	hex
-	default 0
+	default 0x0
 
 config MAX_CPUS
 	int

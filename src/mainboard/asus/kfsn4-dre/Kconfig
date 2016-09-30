@@ -43,7 +43,7 @@ config DCACHE_RAM_SIZE
 
 config APIC_ID_OFFSET
 	hex
-	default 0
+	default 0x0
 
 config MAINBOARD_PART_NUMBER
 	string

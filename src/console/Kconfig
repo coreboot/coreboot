@@ -330,7 +330,7 @@ config CMOS_POST
 config CMOS_POST_OFFSET
 	hex "Offset into CMOS to store POST codes"
 	depends on CMOS_POST
-	default 0
+	default 0x0
 	help
 	  If CMOS_POST is enabled then an offset into CMOS must be provided.
 	  If CONFIG_HAVE_OPTION_TABLE is enabled then it will use the value

@@ -157,7 +157,7 @@ void igd_compute_ggc(sysinfo_t *const sysinfo)
 			gfxsize = 4;
 		}
 		/* Handle invalid cmos settings */
-		if (gfxsize > 11)
+		if (gfxsize > 12)
 			gfxsize = 4;
 		sysinfo->ggc = 0x0300 | ((gfxsize + 1) << 4);
 		if (!(capid & (1 << (48 - 32))))

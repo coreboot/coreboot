@@ -50,7 +50,7 @@ config MAINBOARD_VENDOR
 
 config EC_GOOGLE_CHROMEEC_SPI_BUS
 	hex
-	default 0
+	default 0x0
 
 config DRIVER_TPM_I2C_BUS
 	hex

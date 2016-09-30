@@ -39,8 +39,8 @@ config ENABLE_IDE_COMBINED_MODE
 
 config IDE_COMBINED_MODE
 	hex
-	default "0x0" if ENABLE_IDE_COMBINED_MODE
-	default "0x1" if !ENABLE_IDE_COMBINED_MODE
+	default 0x0 if ENABLE_IDE_COMBINED_MODE
+	default 0x1 if !ENABLE_IDE_COMBINED_MODE
 
 choice
 	prompt "SATA Mode"
@@ -70,9 +70,9 @@ endchoice
 config SB800_SATA_MODE
 	hex
 	depends on (SB800_SATA_IDE || SB800_SATA_RAID || SB800_SATA_AHCI)
-	default "0x0" if SB800_SATA_IDE
-	default "0x1" if SB800_SATA_RAID
-	default "0x2" if SB800_SATA_AHCI
+	default 0x0 if SB800_SATA_IDE
+	default 0x1 if SB800_SATA_RAID
+	default 0x2 if SB800_SATA_AHCI
 
 config SB_SUPERIO_HWM
 	bool

@@ -42,7 +42,7 @@ config DRAM_SIZE_MB
 
 config EC_GOOGLE_CHROMEEC_SPI_BUS
 	hex
-	default 2
+	default 0x2
 
 config UART_FOR_CONSOLE
 	int

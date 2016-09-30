@@ -4,7 +4,7 @@ config SPI_TPM
 
 config DRIVER_TPM_SPI_BUS
 	hex "SPI bus TPM chip is connected to"
-	default 0
+	default 0x0
 	depends on SPI_TPM
 
 config DRIVER_TPM_SPI_CHIP

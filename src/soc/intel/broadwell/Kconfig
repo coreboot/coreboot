@@ -167,7 +167,7 @@ config INTEL_PCH_UART_CONSOLE
 
 config INTEL_PCH_UART_CONSOLE_NUMBER
 	hex "Serial IO UART number to use for console"
-	default "0x0"
+	default 0x0
 	depends on INTEL_PCH_UART_CONSOLE
 
 config TTYS0_BASE

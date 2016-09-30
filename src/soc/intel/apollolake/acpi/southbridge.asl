@@ -40,9 +40,6 @@ Scope (\_SB)
 
 #include "xhci.asl"
 
-/* PMC IPC */
-#include "pmc_ipc.asl"
-
 /* LPC */
 #include "lpc.asl"
 

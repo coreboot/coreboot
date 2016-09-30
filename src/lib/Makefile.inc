@@ -159,6 +159,7 @@ ramstage-$(CONFIG_REG_SCRIPT) += reg_script.c
 ifeq ($(CONFIG_CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM),y)
 ramstage-y += ext_stage_cache.c
 romstage-y += ext_stage_cache.c
+postcar-y += ext_stage_cache.c
 else
 ramstage-$(CONFIG_RELOCATABLE_RAMSTAGE) += cbmem_stage_cache.c
 romstage-$(CONFIG_RELOCATABLE_RAMSTAGE) += cbmem_stage_cache.c

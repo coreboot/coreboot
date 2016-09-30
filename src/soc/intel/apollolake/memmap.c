@@ -24,6 +24,7 @@
 #define __SIMPLE_DEVICE__
 
 #include <arch/io.h>
+#include <assert.h>
 #include <cbmem.h>
 #include <device/pci.h>
 #include <soc/northbridge.h>
@@ -51,4 +52,35 @@ void smm_region(void **start, size_t *size)
 {
 	*start = (void *)smm_region_start();
 	*size = smm_region_size();
+}
+
+int smm_subregion(int sub, void **start, size_t *size)
+{
+	uintptr_t sub_base;
+	size_t sub_size;
+	const size_t cache_size = CONFIG_SMM_RESERVED_SIZE;
+
+	sub_base = smm_region_start();
+	sub_size = smm_region_size();
+
+	assert(sub_size > CONFIG_SMM_RESERVED_SIZE);
+
+	switch (sub) {
+	case SMM_SUBREGION_HANDLER:
+		/* Handler starts at the base of TSEG. */
+		sub_size -= cache_size;
+		break;
+	case SMM_SUBREGION_CACHE:
+		/* External cache is in the middle of TSEG. */
+		sub_base += sub_size - cache_size;
+		sub_size = cache_size;
+		break;
+	default:
+		return -1;
+	}
+
+	*start = (void *)sub_base;
+	*size = sub_size;
+
+	return 0;
 }

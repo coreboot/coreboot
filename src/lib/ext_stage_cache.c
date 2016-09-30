@@ -126,3 +126,4 @@ static void stage_cache_setup(int is_recovery)
 
 ROMSTAGE_CBMEM_INIT_HOOK(stage_cache_setup)
 RAMSTAGE_CBMEM_INIT_HOOK(stage_cache_setup)
+POSTCAR_CBMEM_INIT_HOOK(stage_cache_setup)

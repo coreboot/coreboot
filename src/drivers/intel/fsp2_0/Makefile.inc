@@ -37,6 +37,8 @@ ramstage-$(CONFIG_CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM) += stage_cache.c
 ramstage-$(CONFIG_DISPLAY_UPD_DATA) += upd_display.c
 ramstage-y += util.c
 
+postcar-$(CONFIG_CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM) += stage_cache.c
+
 CPPFLAGS_common += -I$(src)/drivers/intel/fsp2_0/include
 
 # Add FSP blobs into cbfs. SoC code may supply  additional options with

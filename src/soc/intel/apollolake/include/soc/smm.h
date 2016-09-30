@@ -20,6 +20,7 @@
 
 #include <stdint.h>
 #include <soc/gpio.h>
+#include <fsp/memmap.h>
 
 /* These helpers are for performing SMM relocation. */
 void southbridge_clear_smi_status(void);
@@ -35,7 +36,4 @@ void southbridge_smm_enable_smi(void);
 /* Mainboard handler for GPI SMIs*/
 void mainboard_smi_gpi_handler(const struct gpi_status *sts);
 
-/* Fills in the arguments for the entire SMM region covered by chipset
- * protections. e.g. TSEG. */
-void smm_region(void **start, size_t *size);
 #endif

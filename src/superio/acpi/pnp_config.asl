@@ -24,8 +24,12 @@
  *			used to enter config mode.
  * PNP_ENTER_MAGIC_3RD	If defined, specifies the third magic byte
  *			used to enter config mode.
+ * PNP_ENTER_MAGIC_4TH	If defined, specifies the fourth magic byte
+ *			used to enter config mode.
  * PNP_EXIT_MAGIC_1ST	If defined, specifies the first magic byte
  *			used to exit config mode.
+ * PNP_EXIT_SPECIAL_REG	If defined, specifies a special register plus
+ * PNP_EXIT_SPECIAL_VAL	a value to be written there to exit config mode.
  */
 
 
@@ -50,6 +54,9 @@ Method (ENTER_CONFIG_MODE, 1)
 	Store (PNP_ENTER_MAGIC_2ND, PNP_ADDR_REG)
 #ifdef PNP_ENTER_MAGIC_3RD
 	Store (PNP_ENTER_MAGIC_3RD, PNP_ADDR_REG)
+#ifdef PNP_ENTER_MAGIC_4TH
+	Store (PNP_ENTER_MAGIC_4TH, PNP_ADDR_REG)
+#endif
 #endif
 #endif
 #endif
@@ -66,6 +73,9 @@ Method (EXIT_CONFIG_MODE)
 {
 #ifdef PNP_EXIT_MAGIC_1ST
 	Store (PNP_EXIT_MAGIC_1ST, PNP_ADDR_REG)
+#endif
+#if defined(PNP_EXIT_SPECIAL_REG) && defined(PNP_EXIT_SPECIAL_VAL)
+	Store (PNP_EXIT_SPECIAL_VAL, PNP_EXIT_SPECIAL_REG)
 #endif
 	Release (CONFIG_MODE_MUTEX)
 }

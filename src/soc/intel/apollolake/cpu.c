@@ -73,6 +73,9 @@ static void pre_mp_init(void)
 {
 	x86_setup_mtrrs_with_detect();
 	x86_mtrr_check();
+
+	/* Make sure BSP is using the microcode from cbfs */
+	intel_update_microcode_from_cbfs();
 }
 
 /* Find CPU topology */

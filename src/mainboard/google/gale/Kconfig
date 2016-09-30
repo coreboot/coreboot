@@ -37,7 +37,7 @@ config CHROMEOS
 	select WIPEOUT_SUPPORTED
 
 config BOARD_VARIANT_DK01
-	bool "pick this to build an image for DK01"
+	bool "Build an image for DK01"
 	default n
 
 config MAINBOARD_DIR

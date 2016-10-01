@@ -239,9 +239,9 @@ const struct southbridge_usb_port mainboard_usb_ports[] = {
 void mainboard_get_spd(spd_raw_data *spd)
 {
 	/* get onboard dimm spd */
-	memcpy(&spd[0], locate_spd(), 256);
+	memcpy(&spd[2], locate_spd(), 256);
 	/* read removable dimm spd */
-	read_spd(&spd[2], 0x50);
+	read_spd(&spd[0], 0x50);
 }
 
 void mainboard_early_init(int s3resume)

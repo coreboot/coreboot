@@ -49,9 +49,9 @@ void set_pcie_dereset(void)
 *************************************************/
 static void mainboard_enable(device_t dev)
 {
-  printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable. dev=0x%p\n", dev);
+	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable. dev=0x%p\n", dev);
 }
 
 struct chip_operations mainboard_ops = {
-  .enable_dev = mainboard_enable,
+	.enable_dev = mainboard_enable,
 };

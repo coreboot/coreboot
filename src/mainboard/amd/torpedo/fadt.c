@@ -52,7 +52,7 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	header->length = 244;
 	header->revision = 1;
 	memcpy(header->oem_id, OEM_ID, 6);
-  memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
+	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
 	memcpy(header->asl_compiler_id, ASLC, 4);
 	header->asl_compiler_revision = 0;
 

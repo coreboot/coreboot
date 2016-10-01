@@ -32,11 +32,11 @@ static INT15_function_extensions __int15_func;
 /* System BIOS int15 function */
 int sbios_INT15_handler(void)
 {
-    int res = -1;
+	int res = -1;
 
-    printk(BIOS_DEBUG, "System BIOS INT 15h\n");
+	printk(BIOS_DEBUG, "System BIOS INT 15h\n");
 
-    switch (X86_EAX & 0xffff) {
+	switch (X86_EAX & 0xffff) {
 #define BOOT_DISPLAY_DEFAULT    0
 #define BOOT_DISPLAY_CRT        (1 << 0)
 #define BOOT_DISPLAY_TV         (1 << 1)
@@ -57,45 +57,45 @@ int sbios_INT15_handler(void)
 		printk(BIOS_DEBUG, "DISPLAY=%x\n", X86_ECX);
 		res = 0;
 		break;
-    case 0x4e08:
-        switch (X86_EBX & 0xff) {
-        case 0x00:
-            X86_EAX &= ~(0xff);
-            X86_EBX = (X86_EBX & ~(0xff)) | __int15_func.regs.func00_LCD_panel_id;
-			printk(BIOS_DEBUG, "DISPLAY = %x\n", X86_EBX & 0xff);
-            res = 0;
-			break;
-		case 0x02:
-			break;
-        case 0x05:
-            X86_EAX &= ~(0xff);
-            X86_EBX = (X86_EBX & ~(0xff)) | __int15_func.regs.func05_TV_standard;
-			printk(BIOS_DEBUG, "TV = %x\n", X86_EBX & 0xff);
-            res = 0;
-			break;
-		case 0x80:
-			X86_EAX &= ~(0xff);
-			X86_EBX &= ~(0xff);
-			printk(BIOS_DEBUG, "Integrated System Information = %x:%x\n", X86_EDX, X86_EDI);
-			vgainfo_addr = (X86_EDX * 16) + X86_EDI;
-			res = 0;
-			break;
-		case 0x89:
-			X86_EAX &= ~(0xff);
-			X86_EBX &= ~(0xff);
-			printk(BIOS_DEBUG, "Get supported display device information\n");
-			res = 0;
-			break;
-		default:
-			break;
-        }
-        break;
+	case 0x4e08:
+		switch (X86_EBX & 0xff) {
+			case 0x00:
+				X86_EAX &= ~(0xff);
+				X86_EBX = (X86_EBX & ~(0xff)) | __int15_func.regs.func00_LCD_panel_id;
+				printk(BIOS_DEBUG, "DISPLAY = %x\n", X86_EBX & 0xff);
+				res = 0;
+				break;
+			case 0x02:
+				break;
+			case 0x05:
+				X86_EAX &= ~(0xff);
+				X86_EBX = (X86_EBX & ~(0xff)) | __int15_func.regs.func05_TV_standard;
+				printk(BIOS_DEBUG, "TV = %x\n", X86_EBX & 0xff);
+				res = 0;
+				break;
+			case 0x80:
+				X86_EAX &= ~(0xff);
+				X86_EBX &= ~(0xff);
+				printk(BIOS_DEBUG, "Integrated System Information = %x:%x\n", X86_EDX, X86_EDI);
+				vgainfo_addr = (X86_EDX * 16) + X86_EDI;
+				res = 0;
+				break;
+			case 0x89:
+				X86_EAX &= ~(0xff);
+				X86_EBX &= ~(0xff);
+				printk(BIOS_DEBUG, "Get supported display device information\n");
+				res = 0;
+				break;
+			default:
+				break;
+		}
+	break;
 	default:
-        printk(BIOS_DEBUG, "Unknown INT15 function %04x!\n", X86_EAX & 0xffff);
+		printk(BIOS_DEBUG, "Unknown INT15 function %04x!\n", X86_EAX & 0xffff);
 		break;
-    }
+	}
 
-    return res;
+	return res;
 }
 
 /* Initialization VBIOS function extensions */

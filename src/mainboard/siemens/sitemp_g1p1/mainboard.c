@@ -335,27 +335,25 @@ static void cable_detect(void)
 
 static const char * adt7475_detect( void ) {
 
-        int vendid, devid, devid2;
-        const char *name = NULL;
+	int vendid, devid, devid2;
+	const char *name = NULL;
 
-        vendid = adt7475_read_byte(REG_VENDID);
-        devid2 = adt7475_read_byte(REG_DEVID2);
-        if (vendid != 0x41 ||           /* Analog Devices */
-            (devid2 & 0xf8) != 0x68) {
-                return name;
-		}
+	vendid = adt7475_read_byte(REG_VENDID);
+	devid2 = adt7475_read_byte(REG_DEVID2);
+	if (vendid != 0x41 || (devid2 & 0xf8) != 0x68) /* Analog Devices */
+		return name;
 
-        devid = adt7475_read_byte(REG_DEVID);
-        if (devid == 0x73)
-                name = "adt7473";
-        else if (devid == 0x75 && adt7475_address == 0x2e)
-                name = "adt7475";
-        else if (devid == 0x76)
-                name = "adt7476";
-        else if ((devid2 & 0xfc) == 0x6c)
-                name = "adt7490";
+	devid = adt7475_read_byte(REG_DEVID);
+	if (devid == 0x73)
+		name = "adt7473";
+	else if (devid == 0x75 && adt7475_address == 0x2e)
+		name = "adt7475";
+	else if (devid == 0x76)
+		name = "adt7476";
+	else if ((devid2 & 0xfc) == 0x6c)
+		name = "adt7490";
 
-        return name;
+	return name;
 }
 
 // thermal control defaults

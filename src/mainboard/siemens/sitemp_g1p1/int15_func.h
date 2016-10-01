@@ -18,14 +18,14 @@
  */
 
 typedef struct {
-        u8 func00_LCD_panel_id;      // Callback Sub-Function 00h - Get LCD Panel ID
-		u8 func02_set_expansion;
-        u8 func05_TV_standard;       // Callback Sub-Function 05h - Select Boot-up TV Standard
-		u16 func80_sysinfo_table;
+	u8 func00_LCD_panel_id;      // Callback Sub-Function 00h - Get LCD Panel ID
+	u8 func02_set_expansion;
+	u8 func05_TV_standard;       // Callback Sub-Function 05h - Select Boot-up TV Standard
+	u16 func80_sysinfo_table;
 }INT15_regs;
 
 typedef struct {
-        INT15_regs        regs;
+	INT15_regs        regs;
 }INT15_function_extensions;
 
 extern void install_INT15_function_extensions(INT15_function_extensions *);

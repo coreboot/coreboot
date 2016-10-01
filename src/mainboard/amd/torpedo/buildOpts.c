@@ -96,17 +96,19 @@
  * version string as appropriate for the release. The trunk copy of this file
  * should also be updated/incremented for the next expected version, + trailing 'X'
  ****************************************************************************/
-                  // This is the delivery package title, "LlanoPI "
-                  // This string MUST be exactly 8 characters long
+			// This is the delivery package title, "LlanoPI "
+			// This string MUST be exactly 8 characters long
 #define AGESA_PACKAGE_STRING  {'L', 'l', 'a', 'n', 'o', 'P', 'I', ' '}
 
-                  // This is the release version number of the AGESA component
-                  // This string MUST be exactly 12 characters long
+			// This is the release version number of the AGESA component
+			// This string MUST be exactly 12 characters long
 #define AGESA_VERSION_STRING  {'V', '1', '.', '1', '.', '0', '.', '0', ' ', ' ', ' ', ' '}
 
-// The following definitions specify the default values for various parameters in which there are
-// no clearly defined defaults to be used in the common file.  The values below are based on product
-// and BKDG content, please consult the AGESA Memory team for consultation.
+/* The following definitions specify the default values for various parameters
+ * in which there are no clearly defined defaults to be used in the common file.
+ * The values below are based on product and BKDG content, please consult the
+ * AGESA Memory team for consultation.
+ */
 #define DFLT_SCRUB_DRAM_RATE            (0)
 #define DFLT_SCRUB_L2_RATE              (0)
 #define DFLT_SCRUB_L3_RATE              (0)
@@ -185,18 +187,18 @@
  */
 CONST AP_MTRR_SETTINGS ROMDATA LlanoApMtrrSettingsList[] =
 {
-  { AMD_AP_MTRR_FIX64k_00000, 0x1E1E1E1E1E1E1E1Eull },
-  { AMD_AP_MTRR_FIX16k_80000, 0x1E1E1E1E1E1E1E1Eull },
-  { AMD_AP_MTRR_FIX16k_A0000, 0x0000000000000000ull },
-  { AMD_AP_MTRR_FIX4k_C0000, 0x0000000000000000ull },
-  { AMD_AP_MTRR_FIX4k_C8000, 0x0000000000000000ull },
-  { AMD_AP_MTRR_FIX4k_D0000, 0x0000000000000000ull },
-  { AMD_AP_MTRR_FIX4k_D8000, 0x0000000000000000ull },
-  { AMD_AP_MTRR_FIX4k_E0000, 0x1818181818181818ull },
-  { AMD_AP_MTRR_FIX4k_E8000, 0x1818181818181818ull },
-  { AMD_AP_MTRR_FIX4k_F0000, 0x1818181818181818ull },
-  { AMD_AP_MTRR_FIX4k_F8000, 0x1818181818181818ull },
-  { CPU_LIST_TERMINAL }
+	{ AMD_AP_MTRR_FIX64k_00000, 0x1E1E1E1E1E1E1E1Eull },
+	{ AMD_AP_MTRR_FIX16k_80000, 0x1E1E1E1E1E1E1E1Eull },
+	{ AMD_AP_MTRR_FIX16k_A0000, 0x0000000000000000ull },
+	{ AMD_AP_MTRR_FIX4k_C0000, 0x0000000000000000ull },
+	{ AMD_AP_MTRR_FIX4k_C8000, 0x0000000000000000ull },
+	{ AMD_AP_MTRR_FIX4k_D0000, 0x0000000000000000ull },
+	{ AMD_AP_MTRR_FIX4k_D8000, 0x0000000000000000ull },
+	{ AMD_AP_MTRR_FIX4k_E0000, 0x1818181818181818ull },
+	{ AMD_AP_MTRR_FIX4k_E8000, 0x1818181818181818ull },
+	{ AMD_AP_MTRR_FIX4k_F0000, 0x1818181818181818ull },
+	{ AMD_AP_MTRR_FIX4k_F8000, 0x1818181818181818ull },
+	{ CPU_LIST_TERMINAL }
 };
 
 #define BLDCFG_AP_MTRR_SETTINGS_LIST &LlanoApMtrrSettingsList

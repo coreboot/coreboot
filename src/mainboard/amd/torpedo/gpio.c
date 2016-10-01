@@ -40,25 +40,21 @@
 #define SB_GPIO_REG27   27
 #endif
 
-void
-gpioEarlyInit(
-  void
-  )
-{
-	u8  Flags;
-	u8	Data8 = 0;
-	u8	StripInfo = 0;
-	u8	BoardType = 1;
-	u8	RegIndex8 = 0;
-	u8	boardRevC = 0x2;
-	u16	Data16 = 0;
-	u32	Index = 0;
-	u32	AcpiMmioAddr = 0;
-	u32	GpioMmioAddr = 0;
-	u32	IoMuxMmioAddr = 0;
-	u32	MiscMmioAddr = 0;
-    u32	SmiMmioAddr = 0;
-    u32	andMask32 = 0;
+void gpioEarlyInit(void) {
+	u8 Flags;
+	u8 Data8 = 0;
+	u8 StripInfo = 0;
+	u8 BoardType = 1;
+	u8 RegIndex8 = 0;
+	u8 boardRevC = 0x2;
+	u16 Data16 = 0;
+	u32 Index = 0;
+	u32 AcpiMmioAddr = 0;
+	u32 GpioMmioAddr = 0;
+	u32 IoMuxMmioAddr = 0;
+	u32 MiscMmioAddr = 0;
+	u32 SmiMmioAddr = 0;
+	u32 andMask32 = 0;
 
 	// Enable HUDSON MMIO Base (AcpiMmioAddr)
 	ReadPMIO (SB_PMIOA_REG24, AccWidthUint8, &Data8);
@@ -92,9 +88,9 @@ gpioEarlyInit(
 				Mmio8_And_Or (IoMuxMmioAddr, Index, 0x00, (gpio_table[Index].select & ~NonGpio));
 			}
 			// Configure GPIO
-            if(!((gpio_table[Index].NonGpioGevent & NonGpio))) {
-                Mmio8_And_Or (GpioMmioAddr, Index, 0xDF, gpio_table[Index].type);
-                Mmio8_And_Or (GpioMmioAddr, Index, 0xA3, gpio_table[Index].value);
+			if(!((gpio_table[Index].NonGpioGevent & NonGpio))) {
+				Mmio8_And_Or (GpioMmioAddr, Index, 0xDF, gpio_table[Index].type);
+				Mmio8_And_Or (GpioMmioAddr, Index, 0xA3, gpio_table[Index].value);
 			}
 			if (Index == GPIO_65) {
 				if ( BoardType == 0 ) {
@@ -109,32 +105,32 @@ gpioEarlyInit(
 			andMask32 = ~(1 << (Index - GEVENT_00));
 
 			//EventEnable: 0-Disable, 1-Enable
-			Mmio32_And_Or     (SmiMmioAddr, SMIREG_EVENT_ENABLE, andMask32, (gevent_table[Index - GEVENT_00].EventEnable << (Index - GEVENT_00)));
+			Mmio32_And_Or(SmiMmioAddr, SMIREG_EVENT_ENABLE, andMask32, (gevent_table[Index - GEVENT_00].EventEnable << (Index - GEVENT_00)));
 
 			//SciTrig: 0-Falling Edge, 1-Rising Edge
-			Mmio32_And_Or     (SmiMmioAddr, SMIREG_SCITRIG, andMask32, (gevent_table[Index - GEVENT_00].SciTrig << (Index - GEVENT_00)));
+			Mmio32_And_Or(SmiMmioAddr, SMIREG_SCITRIG, andMask32, (gevent_table[Index - GEVENT_00].SciTrig << (Index - GEVENT_00)));
 
 			//SciLevl: 0-Edge trigger, 1-Level Trigger
-			Mmio32_And_Or     (SmiMmioAddr, SMIREG_SCILEVEL, andMask32, (gevent_table[Index - GEVENT_00].SciLevl << (Index - GEVENT_00)));
+			Mmio32_And_Or(SmiMmioAddr, SMIREG_SCILEVEL, andMask32, (gevent_table[Index - GEVENT_00].SciLevl << (Index - GEVENT_00)));
 
 			//SmiSciEn: 0-Not send SMI, 1-Send SMI
-			Mmio32_And_Or     (SmiMmioAddr, SMIREG_SMISCIEN, andMask32, (gevent_table[Index - GEVENT_00].SmiSciEn << (Index - GEVENT_00)));
+			Mmio32_And_Or(SmiMmioAddr, SMIREG_SMISCIEN, andMask32, (gevent_table[Index - GEVENT_00].SmiSciEn << (Index - GEVENT_00)));
 
 			//SciS0En: 0-Disable, 1-Enable
-			Mmio32_And_Or     (SmiMmioAddr, SMIREG_SCIS0EN, andMask32, (gevent_table[Index - GEVENT_00].SciS0En << (Index - GEVENT_00)));
+			Mmio32_And_Or(SmiMmioAddr, SMIREG_SCIS0EN, andMask32, (gevent_table[Index - GEVENT_00].SciS0En << (Index - GEVENT_00)));
 
 			//SciMap: 00000b ~ 11111b
-			RegIndex8=(u8)((Index - GEVENT_00) >> 2);
-			Data8=(u8)(((Index - GEVENT_00) & 0x3) * 8);
-			Mmio32_And_Or     (SmiMmioAddr, SMIREG_SCIMAP0+RegIndex8, ~(GEVENT_SCIMASK << Data8), (gevent_table[Index - GEVENT_00].SciMap << Data8));
+			RegIndex8 = (u8)((Index - GEVENT_00) >> 2);
+			Data8 = (u8)(((Index - GEVENT_00) & 0x3) * 8);
+			Mmio32_And_Or(SmiMmioAddr, SMIREG_SCIMAP0+RegIndex8, ~(GEVENT_SCIMASK << Data8), (gevent_table[Index - GEVENT_00].SciMap << Data8));
 
 			//SmiTrig: 0-Active Low, 1-Active High
-			Mmio32_And_Or     (SmiMmioAddr, SMIREG_SMITRIG, ~(gevent_table[Index - GEVENT_00].SmiTrig << (Index - GEVENT_00)), (gevent_table[Index - GEVENT_00].SmiTrig << (Index - GEVENT_00)));
+			Mmio32_And_Or(SmiMmioAddr, SMIREG_SMITRIG, ~(gevent_table[Index - GEVENT_00].SmiTrig << (Index - GEVENT_00)), (gevent_table[Index - GEVENT_00].SmiTrig << (Index - GEVENT_00)));
 
 			//SmiControl: 0-Disable, 1-SMI, 2-NMI, 3-IRQ13
-			RegIndex8=(u8)((Index - GEVENT_00) >> 4);
-			Data8=(u8)(((Index - GEVENT_00) & 0xF) * 2);
-			Mmio32_And_Or     (SmiMmioAddr, SMIREG_SMICONTROL0+RegIndex8, ~(SMICONTROL_MASK << Data8), (gevent_table[Index - GEVENT_00].SmiControl << Data8));
+			RegIndex8 = (u8)((Index - GEVENT_00) >> 4);
+			Data8 = (u8)(((Index - GEVENT_00) & 0xF) * 2);
+			Mmio32_And_Or(SmiMmioAddr, SMIREG_SMICONTROL0+RegIndex8, ~(SMICONTROL_MASK << Data8), (gevent_table[Index - GEVENT_00].SmiControl << Data8));
 		}
 	}
 
@@ -205,7 +201,7 @@ gpioEarlyInit(
 				Flags = 1;
 			}
 		}
-		if (  Flags )
+		if (Flags)
 		{
 			// [GPIO] GPIO44: PE_GPIO0 MXM Reset set to 0 for reset, ENH164467
 			RWMEM (GpioMmioAddr + SB_GPIO_REG44, AccWidthUint8, 0xBF, 0);
@@ -228,7 +224,7 @@ gpioEarlyInit(
 				ReadMEM (GpioMmioAddr + SB_GPIO_REG28, AccWidthUint8, &Data8);
 			}
 			// [GPIO] GPIO44: PE_GPIO0 MXM Reset set to 1 for reset
-		    //	RWMEM (GpioMmioAddr + SB_GPIO_REG44, AccWidthUint8, 0xBF, BIT6);
+			//RWMEM (GpioMmioAddr + SB_GPIO_REG44, AccWidthUint8, 0xBF, BIT6);
 		}
 		else
 		{
@@ -394,11 +390,11 @@ gpioEarlyInit(
 //	if ((Amd_SystemConfiguration.XhciSwitch == 1) || (SystemConfiguration.amdExternalUSBController == 1)) {
 // disable Onboard NEC USB3.0 controller
 		if (!CONFIG_ONBOARD_USB30) {
-		RWMEM (GpioMmioAddr + SB_GPIO_REG200, AccWidthUint8, 0xBF, 0);
-		RWMEM (GpioMmioAddr + SB_GPIO_REG26, AccWidthUint8, 0xBF, 0);
-		RWMEM (GpioMmioAddr + SB_GPIO_REG46, AccWidthUint8, 0xFF, BIT3);   // PULL_UP DISABLE
-		RWMEM (MiscMmioAddr + SB_MISC_REG00+3, AccWidthUint8, 0x0F, 0);    // DISABLE GPP_CLK7
-		RWMEM (GpioMmioAddr + SB_GPIO_REG172, AccWidthUint8, 0xBF, 0);  // FCH_USB3.0PORT_EN# 0:ENABLE; 1:DISABLE
+			RWMEM (GpioMmioAddr + SB_GPIO_REG200, AccWidthUint8, 0xBF, 0);
+			RWMEM (GpioMmioAddr + SB_GPIO_REG26, AccWidthUint8, 0xBF, 0);
+			RWMEM (GpioMmioAddr + SB_GPIO_REG46, AccWidthUint8, 0xFF, BIT3);   // PULL_UP DISABLE
+			RWMEM (MiscMmioAddr + SB_MISC_REG00+3, AccWidthUint8, 0x0F, 0);    // DISABLE GPP_CLK7
+			RWMEM (GpioMmioAddr + SB_GPIO_REG172, AccWidthUint8, 0xBF, 0);  // FCH_USB3.0PORT_EN# 0:ENABLE; 1:DISABLE
 		}
 //	}
 
@@ -407,41 +403,41 @@ gpioEarlyInit(
 //    amdBlueTooth: CMOS, 0 - AUTO, 1 - DISABLE
 //          GPIO07: BT_ON, 0 - OFF, 1 - ON
 //
-if (!CONFIG_ONBOARD_BLUETOOTH) {
-//-	if (SystemConfiguration.amdBlueTooth == 1) {
+	if (!CONFIG_ONBOARD_BLUETOOTH) {
+	//-	if (SystemConfiguration.amdBlueTooth == 1) {
 		RWMEM (GpioMmioAddr + SB_GPIO_REG07, AccWidthUint8, 0xBF, 0);
-//-	}
-}
+	//-	}
+	}
 
 //
 // WebCam control:
 //    amdWebCam: CMOS, 0 - AUTO, 1 - DISABLE
 //       GPIO34: WEBCAM_ON#, 0 - ON, 1 - OFF
 //
-if (!CONFIG_ONBOARD_WEBCAM) {
-//-	if (SystemConfiguration.amdWebCam == 1) {
+	if (!CONFIG_ONBOARD_WEBCAM) {
+	//-	if (SystemConfiguration.amdWebCam == 1) {
 		RWMEM (GpioMmioAddr + SB_GPIO_REG34, AccWidthUint8, 0xBF, BIT6);
-//-	}
-}
+	//-	}
+	}
 
 //
 // Travis enable:
 //    amdTravisCtrl: CMOS, 0 - DISABLE, 1 - ENABLE
 //           GPIO66: TRAVIS_EN#, 0 - ENABLE, 1 - DISABLE
 //
-if (!CONFIG_ONBOARD_TRAVIS) {
-//-	if (SystemConfiguration.amdTravisCtrl == 0) {
+	if (!CONFIG_ONBOARD_TRAVIS) {
+	//-	if (SystemConfiguration.amdTravisCtrl == 0) {
 		RWMEM (GpioMmioAddr + SB_GPIO_REG66, AccWidthUint8, 0xBF, BIT6);
-//-	}
-}
+	//-	}
+	}
 
 //
 // Disable Light Sensor if needed
 //
-if (CONFIG_ONBOARD_LIGHTSENSOR) {
-//-    if (SystemConfiguration.amdLightSensor == 1) {
-        RWMEM (IoMuxMmioAddr + SB_GEVENT_REG12, AccWidthUint8, 0x00, 0x1);
-//-    }
-}
+	if (CONFIG_ONBOARD_LIGHTSENSOR) {
+	//-    if (SystemConfiguration.amdLightSensor == 1) {
+		RWMEM (IoMuxMmioAddr + SB_GEVENT_REG12, AccWidthUint8, 0x00, 0x1);
+	//-    }
+	}
 
 }

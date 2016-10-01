@@ -111,12 +111,41 @@ static struct rockchip_usb_dwc3 * const rockchip_usb_otg0_dwc3 =
 static struct rockchip_usb_dwc3 * const rockchip_usb_otg1_dwc3 =
 		(void *)USB_OTG1_DWC3_BASE;
 
-/* TODO: define struct overlay if we ever need more registers from this */
-#define TCPHY_ISOLATION_CTRL_OFFSET	0x3207c
 #define TCPHY_ISOLATION_CTRL_EN		(1 << 15)
 #define TCPHY_ISOLATION_CTRL_CMN_EN	(1 << 14)
 #define TCPHY_ISOLATION_CTRL_MODE_SEL	(1 << 12)
 #define TCPHY_ISOLATION_CTRL_LN_EN(ln)	(1 << (ln))
+#define TCPHY_CMN_HSCLK_PLL_CONFIG	0x30
+#define TCPHY_CMN_HSCLK_PLL_MASK	0x33
+
+struct rk3399_tcphy {
+	uint8_t _res0[0x780 - 0x0];
+	uint32_t cmn_diag_hsclk_sel;
+	uint8_t _res1[0x10000 - 0x784];
+	struct {
+		uint8_t _res2[0x3c8 - 0x0];
+		uint32_t xcvr_diag_lane_fcm_en_mgn;
+		uint8_t _res3[0x408 - 0x3cc];
+		uint32_t tx_psc_a2;
+		uint8_t _res4[0x488 - 0x40c];
+		uint32_t tx_rcvdet_en_tmr;
+		uint32_t tx_rcvdet_st_tmr;
+		uint8_t _res5[0x784 - 0x490];
+		uint32_t tx_diag_tx_drv;
+		uint8_t _res6[0x800 - 0x788];
+	} lane[4];
+	uint8_t _res7[0x32000 - 0x12000];
+	uint32_t pma_cmn_ctrl1;
+	uint8_t _res8[0x3207c - 0x32004];
+	uint32_t isolation_ctrl;
+};
+check_member(rk3399_tcphy, lane[2].tx_diag_tx_drv, 0x11784);
+check_member(rk3399_tcphy, isolation_ctrl, 0x3207c);
+
+static struct rk3399_tcphy * const rockchip_usb_otg0_phy =
+		(void *)USB_OTG0_TCPHY_BASE;
+static struct rk3399_tcphy * const rockchip_usb_otg1_phy =
+		(void *)USB_OTG1_TCPHY_BASE;
 
 /* Call reset_ before setup_ */
 void reset_usb_otg0(void);

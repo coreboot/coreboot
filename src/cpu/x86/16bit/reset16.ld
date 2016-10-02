@@ -10,7 +10,7 @@ SECTIONS {
 	. = _ROMTOP;
 	.reset . : {
 		*(.reset);
-		. = 15 ;
+		. = 15;
 		BYTE(0x00);
 	}
 }

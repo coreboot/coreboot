@@ -151,7 +151,7 @@ static void applyBoostFIDOffset(pci_devfn_t dev, uint32_t nodeid)
 		u32 cpuFid = msr.lo & PS_CPU_FID_MASK;
 		cpuFid = cpuFid + asymetricBoostThisCore;
 		msr.lo &=   ~PS_CPU_FID_MASK;
-		msr.lo |= cpuFid ;
+		msr.lo |= cpuFid;
 		wrmsr(PS_REG_BASE , msr);
 	} else if (is_fam15h()) {
 		uint32_t dword = pci_read_config32(NODE_PCI(nodeid, 4), 0x15c);
@@ -192,7 +192,7 @@ static u8 setPStateMaxVal(pci_devfn_t dev)
 	for (i = 0; i < NM_PS_REG; i++) {
 		msr_t msr = rdmsr(PS_REG_BASE + i);
 		if (msr.hi & PS_IDD_VALUE_MASK) {
-			msr.hi |= PS_EN_MASK ;
+			msr.hi |= PS_EN_MASK;
 			wrmsr(PS_REG_BASE + i, msr);
 		}
 		if (msr.hi & PS_EN_MASK) {
@@ -387,9 +387,9 @@ static u32 nb_clk_did(uint8_t node, uint64_t cpuRev, uint8_t procPkg) {
 	   package S1g3 from S1g4 */
 	if ((cpuRev & AMD_DA_C2) && (procPkg & AMD_PKGTYPE_S1gX)
 	   && link0isGen3) {
-	  return 5 ; /* divide clk by 128*/
+	  return 5; /* divide clk by 128*/
 	} else {
-	  return 4 ; /* divide clk by 16 */
+	  return 4; /* divide clk by 16 */
 	}
 }
 
@@ -411,7 +411,7 @@ static u32 power_up_down(int node, u8 procPkg) {
 		uint32_t dispRefModeEn = (pci_read_config32(NODE_PCI(node,0),0x68) >> 24) & 1;
 		uint32_t isocEn = 0;
 		int j;
-		for (j=0 ; (j<4) && (!isocEn) ; j++ ) {
+		for (j=0; (j<4) && (!isocEn); j++ ) {
 			u8 offset;
 			if (AMD_CpuFindCapability(node, j, &offset)) {
 				isocEn = (pci_read_config32(NODE_PCI(node,0),offset+4) >>12) & 1;
@@ -422,7 +422,7 @@ static u32 power_up_down(int node, u8 procPkg) {
 			/* Family 15h always uses 100ns for multilink processors */
 			dword |= PW_STP_UP100 | PW_STP_DN100;
 		} else if (dispRefModeEn || isocEn) {
-			dword |= PW_STP_UP50 | PW_STP_DN50 ;
+			dword |= PW_STP_UP50 | PW_STP_DN50;
 		} else {
 			/* get number of cores for PowerStepUp & PowerStepDown in server
 			 * 1 core - 400nS  - 0000b
@@ -487,7 +487,7 @@ static void config_power_ctrl_misc_reg(pci_devfn_t dev, uint64_t cpuRev,
 	/* PllLockTime and PsiVidEn set in ruleset in defaults.h */
 	if (dword & PVI_MODE) {	/* PVI */
 		/* set slamVidMode to 0 for PVI */
-		dword &= VID_SLAM_OFF ;
+		dword &= VID_SLAM_OFF;
 	} else {	/* SVI */
 		/* set slamVidMode to 1 for SVI */
 		dword |= VID_SLAM_ON;
@@ -500,7 +500,7 @@ static void config_power_ctrl_misc_reg(pci_devfn_t dev, uint64_t cpuRev,
 
 
 	if ((procPkg == AMD_PKGTYPE_G34) || (procPkg == AMD_PKGTYPE_C32) ) {
-		dword |= BP_INS_TRI_EN_ON ;
+		dword |= BP_INS_TRI_EN_ON;
 	}
 
 	   /* TODO: look into C1E state and F3xA0[IdleExitEn]*/
@@ -615,7 +615,7 @@ static void prep_fid_change(void)
 	for (i = 0; i < nodes; i++) {
 		printk(BIOS_DEBUG, "Prep FID/VID Node:%02x\n", i);
 		dev = NODE_PCI(i, 3);
-		uint64_t cpuRev = mctGetLogicalCPUID(0xFF) ;
+		uint64_t cpuRev = mctGetLogicalCPUID(0xFF);
 		u8 procPkg =  mctGetProcessorPackageType();
 
 		setVSRamp(dev);
@@ -647,7 +647,7 @@ static void waitCurrentPstate(u32 target_pstate) {
 	msr_t initial_msr = rdmsr(TSC_MSR);
 	msr_t pstate_msr = rdmsr(CUR_PSTATE_MSR);
 	msr_t tsc_msr;
-	u8 timedout ;
+	u8 timedout;
 
 	/* paranoia ? I fear when we run fixPsNbVidBeforeWR we can enter a
 	* P1 that is a copy of P0, therefore has the same NB DID but the
@@ -660,7 +660,7 @@ static void waitCurrentPstate(u32 target_pstate) {
 				WAIT_PSTATE_TIMEOUT*2 : WAIT_PSTATE_TIMEOUT;
 	msr_t timeout;
 
-	timeout.lo = initial_msr.lo + corrected_timeout ;
+	timeout.lo = initial_msr.lo + corrected_timeout;
 	timeout.hi = initial_msr.hi;
 	if ( (((u32)0xffffffff) - initial_msr.lo) < corrected_timeout ) {
 		timeout.hi++;
@@ -672,7 +672,7 @@ static void waitCurrentPstate(u32 target_pstate) {
 		tsc_msr = rdmsr(TSC_MSR);
 		timedout = (tsc_msr.hi > timeout.hi)
 			|| ((tsc_msr.hi == timeout.hi) && (tsc_msr.lo > timeout.lo ));
-	} while ( (pstate_msr.lo != target_pstate) && (! timedout) ) ;
+	} while ( (pstate_msr.lo != target_pstate) && (! timedout) );
 
 	if (pstate_msr.lo != target_pstate) {
 		msr_t limit_msr = rdmsr(0xc0010061);
@@ -681,7 +681,7 @@ static void waitCurrentPstate(u32 target_pstate) {
 
 		do { // should we just go on instead ?
 			pstate_msr = rdmsr(CUR_PSTATE_MSR);
-		} while ( pstate_msr.lo != target_pstate  ) ;
+		} while ( pstate_msr.lo != target_pstate  );
 	}
 }
 
@@ -838,8 +838,8 @@ static u32 init_fidvid_core(u32 nodeid, u32 coreid)
 	reg1fc = pci_read_config32(dev, 0x1FC);
 
 	if (nb_cof_vid_update) {
-		vid_max = (reg1fc &  SINGLE_PLANE_NB_VID_MASK ) >>  SINGLE_PLANE_NB_VID_SHIFT ;
-		fid_max = (reg1fc &  SINGLE_PLANE_NB_FID_MASK ) >>  SINGLE_PLANE_NB_FID_SHIFT ;
+		vid_max = (reg1fc &  SINGLE_PLANE_NB_VID_MASK ) >>  SINGLE_PLANE_NB_VID_SHIFT;
+		fid_max = (reg1fc &  SINGLE_PLANE_NB_FID_MASK ) >>  SINGLE_PLANE_NB_FID_SHIFT;
 
 		if (!pvimode) { /* SVI, dual power plane */
 			vid_max = vid_max - ((reg1fc &  DUAL_PLANE_NB_VID_OFF_MASK ) >>  DUAL_PLANE_NB_VID_SHIFT );

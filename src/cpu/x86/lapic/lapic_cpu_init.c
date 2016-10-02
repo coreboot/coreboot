@@ -307,7 +307,7 @@ int start_cpu(struct device *cpu)
 	if (result) {
 		result = 0;
 		/* Wait 1s or until the new CPU calls in */
-		for (count = 0; count < 100000 ; count++) {
+		for (count = 0; count < 100000; count++) {
 			if (secondary_stack == 0) {
 				result = 1;
 				break;
@@ -436,7 +436,7 @@ static void start_other_cpus(struct bus *cpu_bus, struct device *bsp_cpu)
 	struct device *cpu;
 	/* Loop through the cpus once getting them started */
 
-	for (cpu = cpu_bus->children; cpu ; cpu = cpu->sibling) {
+	for (cpu = cpu_bus->children; cpu; cpu = cpu->sibling) {
 		if (cpu->path.type != DEVICE_PATH_APIC) {
 			continue;
 		}
@@ -471,7 +471,7 @@ static void smm_other_cpus(struct bus *cpu_bus, device_t bsp_cpu)
 
 	/* Loop through the cpus once to let them run through SMM relocator */
 
-	for (cpu = cpu_bus->children; cpu ; cpu = cpu->sibling) {
+	for (cpu = cpu_bus->children; cpu; cpu = cpu->sibling) {
 		if (cpu->path.type != DEVICE_PATH_APIC) {
 			continue;
 		}
@@ -493,7 +493,7 @@ static void smm_other_cpus(struct bus *cpu_bus, device_t bsp_cpu)
 		}
 
 		/* FIXME: endless loop */
-		while (atomic_read(&active_cpus) != pre_count) ;
+		while (atomic_read(&active_cpus) != pre_count);
 	}
 }
 

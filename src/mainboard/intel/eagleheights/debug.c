@@ -150,7 +150,7 @@ static inline void dump_spd_registers(void)
 		int i;
 		printk(BIOS_DEBUG, "\ndimm %02x", device);
 
-		for(i = 0; (i < 256) ; i++) {
+		for(i = 0; (i < 256); i++) {
 			if ((i % 16) == 0)
 				printk(BIOS_DEBUG, "\n%02x: ", i);
 			status = smbus_read_byte(device, i);
@@ -174,7 +174,7 @@ static inline void dump_ipmi_registers(void)
 		int i;
 		printk(BIOS_DEBUG, "\nipmi %02x", device);
 
-		for(i = 0; (i < 8) ; i++) {
+		for(i = 0; (i < 8); i++) {
 			status = smbus_read_byte(device, 2);
 			if (status < 0) {
 				printk(BIOS_DEBUG, "bad device: %d\n", -status);

@@ -76,13 +76,13 @@ static AGESA_STATUS board_GnbPcieSlotReset (UINT32 Func, UINTN Data, VOID *Confi
 		switch (ResetInfo->ResetControl) {
 		case AssertSlotReset:
 			Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG50);
-			Data8 &= ~(UINT8)BIT6 ;
+			Data8 &= ~(UINT8)BIT6;
 			Write64Mem8(GpioMmioAddr+SB_GPIO_REG50, Data8);
 			Status = AGESA_SUCCESS;
 			break;
 		case DeassertSlotReset:
 			Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG50);
-			Data8 |= BIT6 ;
+			Data8 |= BIT6;
 			Write64Mem8 (GpioMmioAddr+SB_GPIO_REG50, Data8);
 			Status = AGESA_SUCCESS;
 			break;

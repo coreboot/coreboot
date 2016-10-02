@@ -672,8 +672,8 @@ void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	/* 2us delay (200 clocks @ 200MHz). We probably really don't need this but.... better safe. */
 	/* Wait 2 PORT61 ticks. between 15us and 30us */
 	/* This would be endless if the timer is stuck. */
-	while ((inb(0x61))) ;	/* find the first edge */
-	while (!(~inb(0x61))) ;
+	while ((inb(0x61)));	/* find the first edge */
+	while (!(~inb(0x61)));
 
 	/* Force Precharge All on the next command, auto-refresh */
 	msrnum = MC_CFCLK_DBUG;

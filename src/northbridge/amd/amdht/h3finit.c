@@ -1541,7 +1541,7 @@ static void selectOptimalWidthAndFrequency(sMainData *pDat)
 		pDat->PortList[i+1].CompositeFrequencyCap = temp;
 
 		ASSERT (temp != 0);
-		for (j = 19; ; j--)
+		for (j = 19;; j--)
 		{
 			if ((j == 16) || (j == 15))
 				continue;
@@ -1691,7 +1691,7 @@ static void hammerSublinkFixup(sMainData *pDat)
 					pDat->PortList[hiIndex].CompositeFrequencyCap = temp;
 					pDat->PortList[hiIndex+1].CompositeFrequencyCap = temp;
 
-					for (k = 19; ; k--)
+					for (k = 19;; k--)
 					{
 						if ((j == 16) || (j == 15))
 							continue;

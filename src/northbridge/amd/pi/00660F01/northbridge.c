@@ -370,7 +370,7 @@ static void set_resource(device_t dev, struct resource *resource, u32 nodeid)
 		set_io_addr_reg(dev, nodeid, link_num, reg, rbase>>8, rend>>8);
 	}
 	else if (resource->flags & IORESOURCE_MEM) {
-		set_mmio_addr_reg(nodeid, link_num, reg, (resource->index >>24), rbase>>8, rend>>8, node_nums) ;// [39:8]
+		set_mmio_addr_reg(nodeid, link_num, reg, (resource->index >>24), rbase>>8, rend>>8, node_nums); // [39:8]
 	}
 	resource->flags |= IORESOURCE_STORED;
 	snprintf(buf, sizeof(buf), " <node %x link %x>",
@@ -802,7 +802,7 @@ static void domain_set_resources(device_t dev)
 		if (!(d.mask & 1))
 			continue;
 		basek = ((resource_t)(d.base & 0x1fffff00)) << 9; // could overflow, we may lost 6 bit here
-		limitk = ((resource_t)(((d.mask & ~1) + 0x000FF) & 0x1fffff00)) << 9 ;
+		limitk = ((resource_t)(((d.mask & ~1) + 0x000FF) & 0x1fffff00)) << 9;
 
 		sizek = limitk - basek;
 

@@ -80,13 +80,13 @@ static void init_egress(void)
 	EPBAR32(0x20) = reg32;
 
 	/* Wait for table load */
-	while ((EPBAR8(0x26) & (1 << 0)) != 0) ;
+	while ((EPBAR8(0x26) & (1 << 0)) != 0);
 
 	/* VC1: enable */
 	EPBAR32(0x20) |= 1 << 31;
 
 	/* Wait for VC1 */
-	while ((EPBAR8(0x26) & (1 << 1)) != 0) ;
+	while ((EPBAR8(0x26) & (1 << 1)) != 0);
 
 	printk(BIOS_DEBUG, "Done Egress Port\n");
 }

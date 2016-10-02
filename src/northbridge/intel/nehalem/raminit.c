@@ -173,12 +173,12 @@ static void read128(u32 addr, u64 * out)
 static void write_1d0(u32 val, u16 addr, int bits, int flag)
 {
 	write_mchbar32(0x1d0, 0);
-	while (read_mchbar32(0x1d0) & 0x800000) ;
+	while (read_mchbar32(0x1d0) & 0x800000);
 	write_mchbar32(0x1d4,
 		       (val & ((1 << bits) - 1)) | (2 << bits) | (flag <<
 								  bits));
 	write_mchbar32(0x1d0, 0x40000000 | addr);
-	while (read_mchbar32(0x1d0) & 0x800000) ;
+	while (read_mchbar32(0x1d0) & 0x800000);
 }
 
 /* OK */
@@ -186,11 +186,11 @@ static u16 read_1d0(u16 addr, int split)
 {
 	u32 val;
 	write_mchbar32(0x1d0, 0);
-	while (read_mchbar32(0x1d0) & 0x800000) ;
+	while (read_mchbar32(0x1d0) & 0x800000);
 	write_mchbar32(0x1d0,
 		       0x80000000 | (((read_mchbar8(0x246) >> 2) & 3) +
 				     0x361 - addr));
-	while (read_mchbar32(0x1d0) & 0x800000) ;
+	while (read_mchbar32(0x1d0) & 0x800000);
 	val = read_mchbar32(0x1d8);
 	write_1d0(0, 0x33d, 0, 0);
 	write_1d0(0, 0x33d, 0, 0);
@@ -289,12 +289,12 @@ read_500(struct raminfo *info, int channel, u16 addr, int split)
 	u32 val;
 	info->last_500_command[channel] = 0x80000000;
 	write_mchbar32(0x500 + (channel << 10), 0);
-	while (read_mchbar32(0x500 + (channel << 10)) & 0x800000) ;
+	while (read_mchbar32(0x500 + (channel << 10)) & 0x800000);
 	write_mchbar32(0x500 + (channel << 10),
 		       0x80000000 |
 		       (((read_mchbar8(0x246 + (channel << 10)) >> 2) &
 			 3) + 0xb88 - addr));
-	while (read_mchbar32(0x500 + (channel << 10)) & 0x800000) ;
+	while (read_mchbar32(0x500 + (channel << 10)) & 0x800000);
 	val = read_mchbar32(0x508 + (channel << 10));
 	return val & ((1 << split) - 1);
 }
@@ -309,12 +309,12 @@ write_500(struct raminfo *info, int channel, u32 val, u16 addr, int bits,
 		write_500(info, channel, 0, 0xb61, 0, 0);
 	}
 	write_mchbar32(0x500 + (channel << 10), 0);
-	while (read_mchbar32(0x500 + (channel << 10)) & 0x800000) ;
+	while (read_mchbar32(0x500 + (channel << 10)) & 0x800000);
 	write_mchbar32(0x504 + (channel << 10),
 		       (val & ((1 << bits) - 1)) | (2 << bits) | (flag <<
 								  bits));
 	write_mchbar32(0x500 + (channel << 10), 0x40000000 | addr);
-	while (read_mchbar32(0x500 + (channel << 10)) & 0x800000) ;
+	while (read_mchbar32(0x500 + (channel << 10)) & 0x800000);
 }
 
 static int rw_test(int rank)
@@ -391,7 +391,7 @@ static u32 get_580(int channel, u8 addr)
 	write_mchbar32(0x580 + (channel << 10), 0x8493c012 | addr);
 	write_mchbar8(0x580 + (channel << 10),
 		      read_mchbar8(0x580 + (channel << 10)) | 1);
-	while (!((ret = read_mchbar32(0x580 + (channel << 10))) & 0x10000)) ;
+	while (!((ret = read_mchbar32(0x580 + (channel << 10))) & 0x10000));
 	write_mchbar8(0x580 + (channel << 10),
 		      read_mchbar8(0x580 + (channel << 10)) & ~1);
 	return ret;
@@ -548,7 +548,7 @@ static void set_334(int zero)
 	}
 
 	write_mchbar32(0x130, read_mchbar32(0x130) | 1);	/* OK */
-	while (read_mchbar8(0x130) & 1) ;	/* OK */
+	while (read_mchbar8(0x130) & 1);	/* OK */
 }
 
 static void rmw_1d0(u16 addr, u32 and, u32 or, int split, int flag)
@@ -1593,7 +1593,7 @@ static void collect_system_info(struct raminfo *info)
 	unsigned channel;
 
 	/* Wait for some bit, maybe TXT clear. */
-	while (!(read8((u8 *)0xfed40000) & (1 << 7))) ;
+	while (!(read8((u8 *)0xfed40000) & (1 << 7)));
 
 	if (!info->heci_bar)
 		gav(info->heci_bar =
@@ -1756,7 +1756,7 @@ static const struct ram_training *get_cached_training(void)
 /* FIXME: add timeout.  */
 static void wait_heci_ready(void)
 {
-	while (!(read32(DEFAULT_HECIBAR + 0xc) & 8)) ;	// = 0x8000000c
+	while (!(read32(DEFAULT_HECIBAR + 0xc) & 8));	// = 0x8000000c
 	write32((DEFAULT_HECIBAR + 0x4),
 		(read32(DEFAULT_HECIBAR + 0x4) & ~0x10) | 0xc);
 }
@@ -1769,7 +1769,7 @@ static void wait_heci_cb_avail(int len)
 		u32 raw;
 	} csr;
 
-	while (!(read32(DEFAULT_HECIBAR + 0xc) & 8)) ;
+	while (!(read32(DEFAULT_HECIBAR + 0xc) & 8));
 
 	do
 		csr.raw = read32(DEFAULT_HECIBAR + 0x4);
@@ -1971,7 +1971,7 @@ static void setup_heci_uma(struct raminfo *info)
 		write32(DEFAULT_RCBA + 0x40, 0x87000080);	// OK
 		write32(DEFAULT_DMIBAR + 0x38, 0x87000080);	// OK
 		while (read16(DEFAULT_RCBA + 0x46) & 2
-		       && read16(DEFAULT_DMIBAR + 0x3e) & 2) ;
+		       && read16(DEFAULT_DMIBAR + 0x3e) & 2);
 	}
 
 	write_mchbar32(0x24, 0x10000 + info->memory_reserved_for_heci_mb);
@@ -4551,7 +4551,7 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 	write_mchbar8(0x5f4, 0x1);	/* OK */
 
 	write_mchbar32(0x130, read_mchbar32(0x130) & 0xfffffffd);	// | 2 when ?
-	while (read_mchbar32(0x130) & 1) ;
+	while (read_mchbar32(0x130) & 1);
 	gav(read_1d0(0x14b, 7));	// = 0x81023100
 	write_1d0(0x30, 0x14b, 7, 1);
 	read_1d0(0xd6, 6);	// = 0xfa008080 // !!!!
@@ -4622,7 +4622,7 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 									[0][0]
 									[0] <<
 									29));
-	while (read_mchbar8(0x130) & 1) ;	// !!!!
+	while (read_mchbar8(0x130) & 1);	// !!!!
 	read_1d0(0xa1, 6);	// = 0x1cf4054 // !!!!
 	read_1d0(0x2f3, 6);	// = 0x10a4054 // !!!!
 	read_1d0(0x21c, 6);	// = 0xafa00c0 // !!!!
@@ -4962,7 +4962,7 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 		udelay(1000);
 #endif
 		u16 ecx;
-		for (ecx = 0xffff; ecx && (read_mchbar16(0x1170) & 0x1000); ecx--) ;	// OK
+		for (ecx = 0xffff; ecx && (read_mchbar16(0x1170) & 0x1000); ecx--);	// OK
 		write_mchbar16(0x1190, read_mchbar16(0x1190) & ~0x4000);	// OK
 	}
 

@@ -325,7 +325,7 @@ static const u32 CHA_MRS_DLL_75[2] = { 0x00020020, 0x00000800 };	// with 75 ohm 
 // { DLL: reset.  A11(MA8)=1 }
 //
 //                      DDR2                    CL = 2    CL = 3    CL = 4    CL = 5     CL = 6(Burst type = interleave)(WR fine tune in code)
-static const u16 CHA_DDR2_MRS_table[5] = { 0x0150, 0x01D0, 0x0250, 0x02D0, 0x350 };	// BL = 4 ;Use 1X-bandwidth MA table to init DRAM
+static const u16 CHA_DDR2_MRS_table[5] = { 0x0150, 0x01D0, 0x0250, 0x02D0, 0x350 };	// BL = 4; Use 1X-bandwidth MA table to init DRAM
 
 //                                                       MA11        MA10(AP)      MA9
 #define CHA_MRS_DDR2_TWR2		(0 << 13) + (0 << 20) + (1 << 12)	// Value = 001000h
@@ -534,7 +534,7 @@ static const  u32 CHB_MRS_DLL_150[2] =	{ 0x00020200 | (1 << 20), 0x00000800 };	/
 // { DLL: reset.  A11(MA8)=1 }
 //
 //                      DDR2 			CL = 2	CL = 3	CL = 4	CL = 5 	(Burst type = interleave)(WR fine tune in code)
-static const  u16 CHB_DDR2_MRS_table[4] ={ 0x0150, 0x01D0, 0x0250, 0x02D0 };	// BL = 4 ;Use 1X-bandwidth MA table to init DRAM
+static const  u16 CHB_DDR2_MRS_table[4] ={ 0x0150, 0x01D0, 0x0250, 0x02D0 };	// BL = 4; Use 1X-bandwidth MA table to init DRAM
 
 //			 				 MA11	     MA10(AP)      MA9
 #define CHB_MRS_DDR2_TWR2		(0 << 13) + (0 << 20) + (1 << 12)	// Value = 001000h

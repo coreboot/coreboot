@@ -1700,7 +1700,7 @@ static u8 AutoConfig_D(struct MCTStatStruc *pMCTstat,
 				if (!(pDCTstat->DIMMValid & (1 << val)))
 					/*disable memclk*/
 					DramTimingLo |= 1 << (dword+24);
-				dword++ ;
+				dword++;
 			}
 		}
 	}
@@ -3629,7 +3629,7 @@ static void mct_ResetDataStruct_D(struct MCTStatStruc *pMCTstat,
 		p = (u8 *) pDCTstat;
 		start = 0;
 		stop = (u32)(&((struct DCTStatStruc *)0)->CH_MaxRdLat[2]);
-		for (i = start; i < stop ; i++) {
+		for (i = start; i < stop; i++) {
 			p[i] = 0;
 		}
 

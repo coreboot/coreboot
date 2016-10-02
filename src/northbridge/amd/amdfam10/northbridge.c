@@ -577,7 +577,7 @@ static void amdfam10_set_resource(device_t dev, struct resource *resource,
 		set_io_addr_reg(dev, nodeid, link_num, reg, rbase>>8, rend>>8);
 		store_conf_io_addr(nodeid, link_num, reg, (resource->index >> 24), rbase>>8, rend>>8);
 	} else if (resource->flags & IORESOURCE_MEM) {
-		set_mmio_addr_reg(nodeid, link_num, reg, (resource->index >>24), rbase>>8, rend>>8, sysconf.nodes) ;// [39:8]
+		set_mmio_addr_reg(nodeid, link_num, reg, (resource->index >>24), rbase>>8, rend>>8, sysconf.nodes); // [39:8]
 		store_conf_mmio_addr(nodeid, link_num, reg, (resource->index >>24), rbase>>8, rend>>8);
 	}
 	resource->flags |= IORESOURCE_STORED;
@@ -966,7 +966,7 @@ static void amdfam10_domain_set_resources(device_t dev)
 
 		if (!(d.mask & 1)) continue;
 		basek = ((resource_t)(d.base & 0x1fffff00)) << 9; // could overflow, we may lost 6 bit here
-		limitk = ((resource_t)((d.mask + 0x00000100) & 0x1fffff00)) << 9 ;
+		limitk = ((resource_t)((d.mask + 0x00000100) & 0x1fffff00)) << 9;
 		sizek = limitk - basek;
 
 		/* see if we need a hole from 0xa0000 to 0xbffff */

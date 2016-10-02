@@ -85,7 +85,7 @@ void dump_spd_registers(void)
 		int i;
 		printk(BIOS_DEBUG, "\ndimm %02x", device);
 
-		for (i = 0; (i < 256) ; i++) {
+		for (i = 0; (i < 256); i++) {
 			if ((i % 16) == 0) {
 				printk(BIOS_DEBUG, "\n%02x: ", i);
 			}

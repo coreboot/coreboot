@@ -41,7 +41,7 @@ static void report_cpu_info(void)
 		strcpy(cpu_string, "Platform info not available");
 	} else {
 		u32 *p = (u32*) cpu_string;
-		for (i = 2; i <= 4 ; i++) {
+		for (i = 2; i <= 4; i++) {
 			cpuidr = cpuid(index + i);
 			*p++ = cpuidr.eax;
 			*p++ = cpuidr.ebx;

@@ -303,8 +303,8 @@ static const u8 Init_Rank_Reg_Table[] = {
 
 static const u16 DDR2_MRS_table[] = {
 /* CL:	2,     3,     4,     5 */
-	0x150, 0x1d0, 0x250, 0x2d0,	/* BL = 4 ;Use 1X-bandwidth MA table to init DRAM */
-	0x158, 0x1d8, 0x258, 0x2d8,	/* BL = 8 ;Use 1X-bandwidth MA table to init DRAM */
+	0x150, 0x1d0, 0x250, 0x2d0,	/* BL = 4; Use 1X-bandwidth MA table to init DRAM */
+	0x158, 0x1d8, 0x258, 0x2d8,	/* BL = 8; Use 1X-bandwidth MA table to init DRAM */
 };
 
 #define	MRS_DDR2_TWR2	((0 << 15) | (0 << 20) | (1 << 12))

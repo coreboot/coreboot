@@ -225,7 +225,7 @@ static void wait_txt_clear(void)
 	if (!(read32((void *)0xfed30010) & 1))
 		return;
 	/* Wait for TXT clear.  */
-	while (!(read8((void *)0xfed40000) & (1 << 7))) ;
+	while (!(read8((void *)0xfed40000) & (1 << 7)));
 }
 
 static void sfence(void)
@@ -1322,7 +1322,7 @@ static void dram_jedecreset(ramctr_timing * ctrl)
 	u32 reg, addr;
 	int channel;
 
-	while (!(MCHBAR32(0x5084) & 0x10000)) ;
+	while (!(MCHBAR32(0x5084) & 0x10000));
 	do {
 		reg = MCHBAR32(0x428c);
 	} while ((reg & 0x14) == 0);
@@ -3997,7 +3997,7 @@ static void restore_timings(ramctr_timing * ctrl)
 
 	u32 reg, addr;
 
-	while (!(MCHBAR32(0x5084) & 0x10000)) ;
+	while (!(MCHBAR32(0x5084) & 0x10000));
 	do {
 		reg = MCHBAR32(0x428c);
 	} while ((reg & 0x14) == 0);

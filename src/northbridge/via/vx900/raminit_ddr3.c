@@ -737,7 +737,7 @@ static void vx900_dram_ddr3_do_hw_mrs(u8 ma_swap, u8 rtt_nom,
 	printram("Hw MRS set is 0x%4x\n", reg16);
 	pci_write_config16(MCU, 0xcc, reg16);
 	/* Wait for MRS commands to be sent */
-	while (pci_read_config8(MCU, 0xcc) & 1) ;
+	while (pci_read_config8(MCU, 0xcc) & 1);
 }
 
 /*
@@ -1114,7 +1114,7 @@ static void vx900_rx_capture_range_calib(u8 pinswap)
 	pci_write_config8(MCU, 0x71, reg8);
 
 	/* Wait for it */
-	while (pci_read_config8(MCU, 0x71) & 0x10) ;
+	while (pci_read_config8(MCU, 0x71) & 0x10);
 	vx900_dram_exit_read_leveling(pinswap);
 }
 
@@ -1146,7 +1146,7 @@ static void vx900_rx_dqs_delay_calib(u8 pinswap)
 	pci_mod_config8(MCU, 0x71, 0x03, 0x02);
 
 	/* Wait for calibration to complete */
-	while (pci_read_config8(MCU, 0x71) & 0x02) ;
+	while (pci_read_config8(MCU, 0x71) & 0x02);
 	vx900_dram_exit_read_leveling(pinswap);
 
 	/* Restore the refresh counter */
@@ -1163,7 +1163,7 @@ static void vx900_tx_dqs_trigger_calib(u8 pattern)
 	/* Trigger calibration */
 	pci_mod_config8(MCU, 0x75, 0, 0x20);
 	/* Wait for calibration */
-	while (pci_read_config8(MCU, 0x75) & 0x20) ;
+	while (pci_read_config8(MCU, 0x75) & 0x20);
 }
 
 /*
@@ -1192,7 +1192,7 @@ static void vx900_tx_dq_delay_calib(void)
 	/* Trigger calibration */
 	pci_mod_config8(MCU, 0x75, 0, 0x02);
 	/* Wait for calibration */
-	while (pci_read_config8(MCU, 0x75) & 0x02) ;
+	while (pci_read_config8(MCU, 0x75) & 0x02);
 }
 
 static void vx900_rxdqs_adjust(delay_range * dly)

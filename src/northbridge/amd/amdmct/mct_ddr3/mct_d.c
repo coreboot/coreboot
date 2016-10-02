@@ -226,7 +226,7 @@ static const u8 Table_DQSRcvEn_Offset[] = {0x00,0x01,0x10,0x11,0x2};
         CS3   M[B,A]_CLK_H/L[5]
 
    Then:
-                        ;    CS0        CS1        CS2        CS3        CS4        CS5        CS6        CS7
+                       ;    CS0        CS1        CS2        CS3        CS4        CS5        CS6        CS7
    MEMCLK_MAPPING  EQU    00010000b, 00000100b, 00001000b, 00100000b, 00000000b, 00000000b, 00000000b, 00000000b
 */
 
@@ -5258,7 +5258,7 @@ static u8 AutoConfig_D(struct MCTStatStruc *pMCTstat,
 					val = p[dword];
 					byte &= ~val;
 				}
-				dword++ ;
+				dword++;
 			}
 			DramTimingLo &= ~(0xff << 24);
 			DramTimingLo |= byte << 24;

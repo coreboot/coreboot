@@ -135,7 +135,7 @@ void CalcCLAndFreq(DRAM_SYS_ATTR * DramAttr)
 	}
 	if (!AllDimmSupportedCL) {	/*if equal 0, no supported CL */
 		PRINT_DEBUG_MEM("SPD Data Error, Can not get CL !!!! \r");
-		for (;;) ;
+		for (;;);
 	}
 
 	/*Get CL Value */
@@ -192,7 +192,7 @@ void CalcCLAndFreq(DRAM_SYS_ATTR * DramAttr)
 
 	if (CycTime <= 0) {
 		//error!
-		for (;;) ;
+		for (;;);
 	}
 
 	/* cycle time value

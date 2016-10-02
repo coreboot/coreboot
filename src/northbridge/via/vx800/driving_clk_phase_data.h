@@ -16,14 +16,14 @@
 #ifndef DRIVINGCLKPHASEDATA_H
 #define DRIVINGCLKPHASEDATA_H
 
-//extern u8 DDR2_DQSA_Driving_Table[4] ;
-//extern u8 DDR2_DQSB_Driving_Table[2] ;
+//extern u8 DDR2_DQSA_Driving_Table[4];
+//extern u8 DDR2_DQSB_Driving_Table[2];
 
-//extern u8 DDR2_DQA_Driving_Table[4] ;
-//extern u8 DDR2_DQB_Driving_Table[2] ;
+//extern u8 DDR2_DQA_Driving_Table[4];
+//extern u8 DDR2_DQB_Driving_Table[2];
 
-//extern u8 DDR2_CSA_Driving_Table_x8[4] ;
-//extern u8 DDR2_CSB_Driving_Table_x8[2] ;
+//extern u8 DDR2_CSA_Driving_Table_x8[4];
+//extern u8 DDR2_CSB_Driving_Table_x8[2];
 //extern u8 DDR2_CSA_Driving_Table_x16[4];
 //extern u8 DDR2_CSB_Driving_Table_x16[2];
 
@@ -31,7 +31,7 @@
 //extern u8 DDR2_MAA_Driving_Table[MA_Table][4];
 //extern u8 DDR2_MAB_Driving_Table[MA_Table][2];
 
-//extern u8 DDR2_DCLKA_Driving_Table[4] ;
+//extern u8 DDR2_DCLKA_Driving_Table[4];
 //extern u8 DDR2_DCLKB_Driving_Table[4];
 
 #define DUTY_CYCLE_FREQ_NUM   6

@@ -77,7 +77,7 @@ static inline unsigned get_sblk(void)
 	u32 reg;
 	/* read PCI_DEV(0,0x18,0) 0x64 bit [8:9] to find out SbLink m */
 	reg = pci_read_config32(PCI_DEV(0, 0x18, 0), 0x64);
-	return ((reg>>8) & 3) ;
+	return ((reg>>8) & 3);
 }
 
 static inline unsigned get_sbbusn(unsigned sblk)

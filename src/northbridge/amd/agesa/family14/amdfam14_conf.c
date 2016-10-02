@@ -89,7 +89,7 @@ static u32 get_io_addr_index(u32 nodeid, u32 linkn)
 
 	for (index = 0; index < 256; index++) {
 		if (sysconf.conf_io_addrx[index+4] == 0) {
-			sysconf.conf_io_addr[index+4] =  (nodeid & 0x3f)  ;
+			sysconf.conf_io_addr[index+4] =  (nodeid & 0x3f);
 			sysconf.conf_io_addrx[index+4] = 1 | ((linkn & 0x7)<<4);
 			return index;
 		 }
@@ -105,7 +105,7 @@ static u32 get_mmio_addr_index(u32 nodeid, u32 linkn)
 
 	for (index = 0; index < 64; index++) {
 		if (sysconf.conf_mmio_addrx[index+8] == 0) {
-			sysconf.conf_mmio_addr[index+8] = (nodeid & 0x3f) ;
+			sysconf.conf_mmio_addr[index+8] = (nodeid & 0x3f);
 			sysconf.conf_mmio_addrx[index+8] = 1 | ((linkn & 0x7)<<4);
 			return index;
 		}

@@ -73,7 +73,7 @@ static void readApcMacAddr(void)
 	outl((inl(0xcfc) & 0xfffffffd),0xcfc ); // enable IO78/79h for APC Index/Data
 
 	printk(BIOS_DEBUG, "MAC addr in APC = ");
-	for (i = 0x9 ; i <=0xe ; i++) {
+	for (i = 0x9; i <=0xe; i++) {
 		printk(BIOS_DEBUG, "%2.2x",readApcByte(i));
 	}
 	printk(BIOS_DEBUG, "\n");
@@ -97,7 +97,7 @@ static void set_apc(struct device *dev)
 	outl(0x80001048,0xcf8);
 	outl((inl(0xcfc) & 0xfffffffd),0xcfc ); // enable IO78/79h for APC Index/Data
 
-	for (i = 0 ; i <3; i++) {
+	for (i = 0; i <3; i++) {
 		addr=0x9+2*i;
 		writeApcByte(addr,(u8)(MacAddr[i]&0xFF));
 		writeApcByte(addr+1L,(u8)((MacAddr[i]>>8)&0xFF));
@@ -139,7 +139,7 @@ static  unsigned long ReadEEprom( struct device *dev,  u8 *base,  u32 Reg)
 
 	mdelay(10);
 
-	for (i=0 ; i <= LoopNum; i++) {
+	for (i=0; i <= LoopNum; i++) {
 		ulValue=read32(base + 0x3c);
 
 		if (!(ulValue & 0x0080)) //BIT_7

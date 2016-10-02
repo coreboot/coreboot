@@ -51,7 +51,7 @@ static unsigned char *pin_to_irq(const unsigned char *pin)
 {
 	static unsigned char Irqs[4];
 	int i;
-	for (i = 0 ; i < 4 ; i++)
+	for (i = 0; i < 4; i++)
 		Irqs[i] = pciIrqs[ pin[i] - 'A' ];
 
 	return Irqs;
@@ -253,7 +253,7 @@ static void setup_pm(device_t dev)
 int acpi_get_sleep_type(void)
 {
 	u16 tmp = inw(VT8237R_ACPI_IO_BASE + 0x04);
-	return ((tmp & (7 << 10)) >> 10) == 1 ? 3 : 0 ;
+	return ((tmp & (7 << 10)) >> 10) == 1 ? 3 : 0;
 }
 
 static void vt8237r_init(struct device *dev)

@@ -302,7 +302,7 @@ static void poweron_ddi_lanes(device_t nb_dev)
 
 	ddi_pads = ~(nbpcie_ind_read_index(nb_dev, 0x65)); /* save original setting */
 	gfx_cfg = nbmisc_read_index(nb_dev, 0x74);
-	for (i = 0; i < 3 ; i++) {
+	for (i = 0; i < 3; i++) {
 		if (gfx_cfg & GFX_CONFIG_DDI) {
 			ddi_pads |= (3 << (i * 2));
 		}

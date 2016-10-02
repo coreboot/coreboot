@@ -102,7 +102,7 @@ if (sb_chip->imc_fan_zone0_enabled) {
 	sb_config.Pecstruct.MSGFun81zone0MSGREG0 = 0x00;
 	sb_config.Pecstruct.MSGFun81zone0MSGREG1 = IMC_ZONE0;
 	message_ptr = &sb_config.Pecstruct.MSGFun81zone0MSGREG2;
-	for (i = 0; i < IMC_FAN_CONFIG_COUNT ; i++ )
+	for (i = 0; i < IMC_FAN_CONFIG_COUNT; i++ )
 		*(message_ptr + i) = sb_chip->imc_zone0_config_vals[i];
 
 	/* EC LDN9 function 83 zone 0 - Temperature Thresholds */
@@ -110,14 +110,14 @@ if (sb_chip->imc_fan_zone0_enabled) {
 	sb_config.Pecstruct.MSGFun83zone0MSGREG1 = IMC_ZONE0;
 	sb_config.Pecstruct.MSGFun83zone0MSGREGB = 0x00;
 	message_ptr = &sb_config.Pecstruct.MSGFun83zone0MSGREG2;
-	for (i = 0; i < IMC_FAN_THRESHOLD_COUNT ; i++ )
+	for (i = 0; i < IMC_FAN_THRESHOLD_COUNT; i++ )
 		*(message_ptr + i) = sb_chip->imc_zone0_thresholds[i];
 
 	/*EC LDN9 function 85 zone 0 - Fan Speeds */
 	sb_config.Pecstruct.MSGFun85zone0MSGREG0 = 0x00;
 	sb_config.Pecstruct.MSGFun85zone0MSGREG1 = IMC_ZONE0;
 	message_ptr = &sb_config.Pecstruct.MSGFun85zone0MSGREG2;
-	for (i = 0; i < IMC_FAN_SPEED_COUNT ; i++ )
+	for (i = 0; i < IMC_FAN_SPEED_COUNT; i++ )
 		*(message_ptr + i) = sb_chip->imc_zone0_fanspeeds[i];
 
 }
@@ -133,7 +133,7 @@ if (sb_chip->imc_fan_zone1_enabled) {
 	sb_config.Pecstruct.MSGFun81zone1MSGREG0 = 0x00;
 	sb_config.Pecstruct.MSGFun81zone1MSGREG1 = IMC_ZONE1;
 	message_ptr = &sb_config.Pecstruct.MSGFun81zone1MSGREG2;
-	for (i = 0; i < IMC_FAN_CONFIG_COUNT ; i++ )
+	for (i = 0; i < IMC_FAN_CONFIG_COUNT; i++ )
 		*(message_ptr + i) = sb_chip->imc_zone1_config_vals[i];
 
 	/* EC LDN9 function 83 zone 1 - Temperature Thresholds */
@@ -141,14 +141,14 @@ if (sb_chip->imc_fan_zone1_enabled) {
 	sb_config.Pecstruct.MSGFun83zone1MSGREG1 = IMC_ZONE1;
 	sb_config.Pecstruct.MSGFun83zone1MSGREGB = 0x00;
 	message_ptr = &sb_config.Pecstruct.MSGFun83zone1MSGREG2;
-	for (i = 0; i < IMC_FAN_THRESHOLD_COUNT ; i++ )
+	for (i = 0; i < IMC_FAN_THRESHOLD_COUNT; i++ )
 		*(message_ptr + i) = sb_chip->imc_zone1_thresholds[i];
 
 	/* EC LDN9 function 85 zone 1 - Fan Speeds */
 	sb_config.Pecstruct.MSGFun85zone1MSGREG0 = 0x00;
 	sb_config.Pecstruct.MSGFun85zone1MSGREG1 = IMC_ZONE1;
 	message_ptr = &sb_config.Pecstruct.MSGFun85zone1MSGREG2;
-	for (i = 0; i < IMC_FAN_SPEED_COUNT ; i++ )
+	for (i = 0; i < IMC_FAN_SPEED_COUNT; i++ )
 		*(message_ptr + i) = sb_chip->imc_zone1_fanspeeds[i];
 
 }
@@ -165,7 +165,7 @@ if (sb_chip->imc_fan_zone2_enabled) {
 	sb_config.Pecstruct.MSGFun81zone2MSGREG0 = 0x00;
 	sb_config.Pecstruct.MSGFun81zone2MSGREG1 = IMC_ZONE2;
 	message_ptr = &sb_config.Pecstruct.MSGFun81zone2MSGREG2;
-	for (i = 0; i < IMC_FAN_CONFIG_COUNT ; i++ )
+	for (i = 0; i < IMC_FAN_CONFIG_COUNT; i++ )
 		*(message_ptr + i) = sb_chip->imc_zone2_config_vals[i];
 
 	/* EC LDN9 function 83 zone 2 */
@@ -173,14 +173,14 @@ if (sb_chip->imc_fan_zone2_enabled) {
 	sb_config.Pecstruct.MSGFun83zone2MSGREG1 = IMC_ZONE2;
 	sb_config.Pecstruct.MSGFun83zone2MSGREGB = 0x00;
 	message_ptr = &sb_config.Pecstruct.MSGFun83zone2MSGREG2;
-	for (i = 0; i < IMC_FAN_THRESHOLD_COUNT ; i++ )
+	for (i = 0; i < IMC_FAN_THRESHOLD_COUNT; i++ )
 		*(message_ptr + i) = sb_chip->imc_zone2_thresholds[i];
 
 	/* EC LDN9 function 85 zone 2 */
 	sb_config.Pecstruct.MSGFun85zone2MSGREG0 = 0x00;
 	sb_config.Pecstruct.MSGFun85zone2MSGREG1 = IMC_ZONE2;
 	message_ptr = &sb_config.Pecstruct.MSGFun85zone2MSGREG2;
-	for (i = 0; i < IMC_FAN_SPEED_COUNT ; i++ )
+	for (i = 0; i < IMC_FAN_SPEED_COUNT; i++ )
 		*(message_ptr + i) = sb_chip->imc_zone2_fanspeeds[i];
 
 }
@@ -197,7 +197,7 @@ if (sb_chip->imc_fan_zone3_enabled) {
 	sb_config.Pecstruct.MSGFun81zone3MSGREG0 = 0x00;
 	sb_config.Pecstruct.MSGFun81zone3MSGREG1 = IMC_ZONE3;
 	message_ptr = &sb_config.Pecstruct.MSGFun81zone3MSGREG2;
-	for (i = 0; i < IMC_FAN_CONFIG_COUNT ; i++ )
+	for (i = 0; i < IMC_FAN_CONFIG_COUNT; i++ )
 		*(message_ptr + i) = sb_chip->imc_zone3_config_vals[i];
 
 	/* EC LDN9 function 83 zone 3 */
@@ -205,14 +205,14 @@ if (sb_chip->imc_fan_zone3_enabled) {
 	sb_config.Pecstruct.MSGFun83zone3MSGREG1 = IMC_ZONE3;
 	sb_config.Pecstruct.MSGFun83zone3MSGREGB = 0x00;
 	message_ptr = &sb_config.Pecstruct.MSGFun83zone3MSGREG2;
-	for (i = 0; i < IMC_FAN_THRESHOLD_COUNT ; i++ )
+	for (i = 0; i < IMC_FAN_THRESHOLD_COUNT; i++ )
 		*(message_ptr + i) = sb_chip->imc_zone3_thresholds[i];
 
 	/* EC LDN9 function 85 zone 3 */
 	sb_config.Pecstruct.MSGFun85zone3MSGREG0 = 0x00;
 	sb_config.Pecstruct.MSGFun85zone3MSGREG1 = IMC_ZONE3;
 	message_ptr = &sb_config.Pecstruct.MSGFun85zone3MSGREG2;
-	for (i = 0; i < IMC_FAN_SPEED_COUNT ; i++ )
+	for (i = 0; i < IMC_FAN_SPEED_COUNT; i++ )
 		*(message_ptr + i) = sb_chip->imc_zone3_fanspeeds[i];
 
 }

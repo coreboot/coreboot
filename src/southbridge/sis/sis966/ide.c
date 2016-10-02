@@ -133,7 +133,7 @@ printk(BIOS_DEBUG, "IDE_INIT:---------->\n");
 	pci_write_config16(dev, 0x50, word);
 
 
-	byte = 0x20 ; // Latency: 64-->32
+	byte = 0x20; // Latency: 64-->32
 	pci_write_config8(dev, 0xd, byte);
 
 	dword = pci_read_config32(dev, 0xf8);

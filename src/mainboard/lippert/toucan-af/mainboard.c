@@ -47,7 +47,7 @@ static int smb_write_blk(u8 slave, u8 command, u8 length, const u8 *data)
 		__outbyte(SMB0_BLOCKDATA, *(data++));
 	__outbyte(SMB0_CONTROL, 0x54);		// execute block write, no IRQ
 
-	while (__inbyte(SMB0_STATUS) == 0x01) ;	// busy, no errors
+	while (__inbyte(SMB0_STATUS) == 0x01);	// busy, no errors
 	return __inbyte(SMB0_STATUS) ^ 0x02;	// 0x02 = completed, no errors
 }
 

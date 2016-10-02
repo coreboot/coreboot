@@ -151,13 +151,13 @@ static AGESA_STATUS board_GnbPcieSlotReset (UINT32 Func, UINTN Data, VOID *Confi
 			switch (ResetInfo->ResetControl) {
 				case AssertSlotReset:
 					Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG21);
-					Data8 &= ~(UINT8)BIT6 ;
+					Data8 &= ~(UINT8)BIT6;
 					Write64Mem8(GpioMmioAddr+SB_GPIO_REG21, Data8);   // MXM_GPIO0. GPIO21
 					Status = AGESA_SUCCESS;
 					break;
 				case DeassertSlotReset:
 					Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG21);
-					Data8 |= BIT6 ;
+					Data8 |= BIT6;
 					Write64Mem8 (GpioMmioAddr+SB_GPIO_REG21, Data8);       // MXM_GPIO0. GPIO21
 					Status = AGESA_SUCCESS;
 					break;
@@ -167,13 +167,13 @@ static AGESA_STATUS board_GnbPcieSlotReset (UINT32 Func, UINTN Data, VOID *Confi
 			switch (ResetInfo->ResetControl) {
 				case AssertSlotReset:
 					Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG25);
-					Data8 &= ~(UINT8)BIT6 ;
+					Data8 &= ~(UINT8)BIT6;
 					Write64Mem8(GpioMmioAddr+SB_GPIO_REG25, Data8);   // PCIE_RST#_LAN, GPIO25
 					Status = AGESA_SUCCESS;
 					break;
 				case DeassertSlotReset:
 					Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG25);
-					Data8 |= BIT6 ;
+					Data8 |= BIT6;
 					Write64Mem8 (GpioMmioAddr+SB_GPIO_REG25, Data8);       // PCIE_RST#_LAN, GPIO25
 					Status = AGESA_SUCCESS;
 					break;
@@ -183,13 +183,13 @@ static AGESA_STATUS board_GnbPcieSlotReset (UINT32 Func, UINTN Data, VOID *Confi
 			switch (ResetInfo->ResetControl) {
 				case AssertSlotReset:
 					Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG02);
-					Data8 &= ~(UINT8)BIT6 ;
+					Data8 &= ~(UINT8)BIT6;
 					Write64Mem8(GpioMmioAddr+SB_GPIO_REG02, Data8);   // MPCIE_RST0, GPIO02
 					Status = AGESA_SUCCESS;
 					break;
 				case DeassertSlotReset:
 					Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG02);
-					Data8 |= BIT6 ;
+					Data8 |= BIT6;
 					Write64Mem8 (GpioMmioAddr+SB_GPIO_REG02, Data8);       // MPCIE_RST0, GPIO02
 					Status = AGESA_SUCCESS;
 					break;

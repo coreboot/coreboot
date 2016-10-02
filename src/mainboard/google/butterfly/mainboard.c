@@ -43,7 +43,8 @@ static unsigned int search(char *p, char *a, unsigned int lengthp,
 
 	/* Searching */
 	for (j = 0; j <= lengtha - lengthp; j++) {
-		for (i = 0; i < lengthp && p[i] == a[i + j]; i++) ;
+		for (i = 0; i < lengthp && p[i] == a[i + j]; i++)
+			;
 		if (i >= lengthp)
 			return j;
 	}

@@ -347,7 +347,7 @@ int acpi_get_sleep_type(void)
 	tmp = inw(VT8237R_ACPI_IO_BASE + 0x04);
 
 	printk(BIOS_DEBUG, "%02x", tmp);
-	return ((tmp & (7 << 10)) >> 10) == 1 ? 3 : 0 ;
+	return ((tmp & (7 << 10)) >> 10) == 1 ? 3 : 0;
 }
 
 #if defined(__GNUC__)

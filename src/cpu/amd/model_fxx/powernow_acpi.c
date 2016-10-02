@@ -156,8 +156,8 @@ static void pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 
 	/*
 	 * Based on the CPU socket type,cmp_cap and pwr_lmt , get the power limit.
-	 * socket_type : 0x10 SocketF; 0x11 AM2/ASB1 ; 0x12 S1G1
-	 * cmp_cap : 0x0 SingleCore ; 0x1 DualCore
+	 * socket_type : 0x10 SocketF; 0x11 AM2/ASB1; 0x12 S1G1
+	 * cmp_cap : 0x0 SingleCore; 0x1 DualCore
 	 */
 	printk(BIOS_INFO, "Pstates Algorithm ...\n");
 

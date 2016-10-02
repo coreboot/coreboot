@@ -205,7 +205,7 @@ static int dramc_scan_readpipe(void)
 	setbits_le32(&dram->ccr, DRAM_CCR_DATA_TRAINING);
 
 	/* check whether data training process has completed */
-	while (read32(&dram->ccr) & DRAM_CCR_DATA_TRAINING) ;
+	while (read32(&dram->ccr) & DRAM_CCR_DATA_TRAINING);
 
 	/* check data training result */
 	reg32 = read32(&dram->csr);
@@ -408,7 +408,7 @@ unsigned long dramc_init(struct dram_para *para)
 
 	udelay(1);
 
-	while (read32(&dram->ccr) & DRAM_CCR_INIT) ;
+	while (read32(&dram->ccr) & DRAM_CCR_INIT);
 
 	mctl_enable_dllx(para->tpr3);
 
@@ -452,7 +452,7 @@ unsigned long dramc_init(struct dram_para *para)
 
 	/* reset external DRAM */
 	setbits_le32(&dram->ccr, DRAM_CCR_INIT);
-	while (read32(&dram->ccr) & DRAM_CCR_INIT) ;
+	while (read32(&dram->ccr) & DRAM_CCR_INIT);
 
 	/* scan read pipe value */
 	mctl_itm_enable();

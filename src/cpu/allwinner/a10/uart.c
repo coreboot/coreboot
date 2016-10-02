@@ -82,7 +82,7 @@ static int rx_fifo_empty(struct a10_uart *uart)
  */
 static u8 a10_uart_rx_blocking(struct a10_uart *uart)
 {
-	while (rx_fifo_empty(uart)) ;
+	while (rx_fifo_empty(uart));
 
 	return read32(&uart->rbr);
 }
@@ -94,7 +94,7 @@ static u8 a10_uart_rx_blocking(struct a10_uart *uart)
  */
 static void a10_uart_tx_blocking(struct a10_uart *uart, u8 data)
 {
-	while (tx_fifo_full(uart)) ;
+	while (tx_fifo_full(uart));
 
 	return write32(&uart->thr, data);
 }

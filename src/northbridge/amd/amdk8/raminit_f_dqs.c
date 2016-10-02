@@ -479,7 +479,7 @@ static unsigned TrainRcvrEn(const struct mem_controller *ctrl, unsigned Pass, st
 	uint8_t *buf_a, *buf_b;
 	uint32_t ecc_bit;
 	uint32_t dword;
-	uint8_t *dqs_rcvr_dly_a = &sysinfo->dqs_rcvr_dly_a[ctrl->node_id * 2* 8] ; //8 node, channel 2, receiver 8
+	uint8_t *dqs_rcvr_dly_a = &sysinfo->dqs_rcvr_dly_a[ctrl->node_id * 2* 8]; //8 node, channel 2, receiver 8
 
 	int i;
 

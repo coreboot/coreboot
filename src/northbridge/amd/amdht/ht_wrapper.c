@@ -73,7 +73,7 @@ static  u32 get_nodes(void)
 	u32 nodes;
 
 	dev = PCI_DEV(CONFIG_CBB, CONFIG_CDB, 0);
-	nodes = ((pci_read_config32(dev, 0x60)>>4) & 7) ;
+	nodes = ((pci_read_config32(dev, 0x60)>>4) & 7);
 #if CONFIG_MAX_PHYSICAL_CPUS > 8
 	nodes += (((pci_read_config32(dev, 0x160)>>4) & 7)<<3);
 #endif

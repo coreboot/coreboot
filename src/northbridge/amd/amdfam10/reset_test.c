@@ -108,7 +108,7 @@ static u8 node_link_to_bus(u8 node, u8 link) // node are 6 bit, and link three b
 	u32 val;
 
 	// put node and link in correct bit
-	val = ((node & 0x0f)<<4) | ((node & 0x30)<< (12-4)) | ((link & 0x07)<<8) ;
+	val = ((node & 0x0f)<<4) | ((node & 0x30)<< (12-4)) | ((link & 0x07)<<8);
 
 	for (reg = 0xE0; reg < 0xF0; reg += 0x04) {
 		u32 config_map;
@@ -131,7 +131,7 @@ u32 get_sblk(void)
 	u32 reg;
 	/* read PCI_DEV(CONFIG_CBB,CONFIG_CDB,0) 0x64 bit [8:9] to find out SbLink m */
 	reg = pci_io_read_config32(PCI_DEV(CONFIG_CBB, CONFIG_CDB, 0), 0x64);
-	return ((reg>>8) & 3) ;
+	return ((reg>>8) & 3);
 }
 
 

@@ -1607,7 +1607,7 @@ static const struct mem_param *get_mem_param(unsigned min_cycle_time)
 {
 
 	const struct mem_param *param;
-	for (param = &speed[0]; param->cycle_time ; param++) {
+	for (param = &speed[0]; param->cycle_time; param++) {
 		if (min_cycle_time > (param+1)->cycle_time) {
 			break;
 		}

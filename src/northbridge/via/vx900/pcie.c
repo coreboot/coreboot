@@ -52,7 +52,7 @@ static void vx900_pcie_link_init(device_t dev)
 
 	/* Step 2: Wait for device to enter L0 state */
 	/* FIXME: implement timeout detection */
-	while (0x8a != pci_read_config8(dev, 0x1c3)) ;
+	while (0x8a != pci_read_config8(dev, 0x1c3));
 
 	/* Step 3: Clear PCIe error status, then check for failures */
 	pci_write_config32(dev, 0x104, 0xffffffff);

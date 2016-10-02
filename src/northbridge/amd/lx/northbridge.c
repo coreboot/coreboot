@@ -402,7 +402,7 @@ static void pci_domain_enable(device_t dev)
 
 	// print_conf();
 
-	do_vsmbios();		// do the magic stuff here, so prepare your tambourine ;)
+	do_vsmbios();		// do the magic stuff here, so prepare your tambourine;)
 
 	// print_conf();
 

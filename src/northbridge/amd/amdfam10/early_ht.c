@@ -106,7 +106,7 @@ static void enumerate_ht_chain(void)
 					}
 					real_last_unitid = next_unitid;
 					real_last_pos = pos;
-					ht_dev_num++ ;
+					ht_dev_num++;
 #endif
 		#if !CONFIG_HT_CHAIN_END_UNITID_BASE
 					if (!next_unitid)

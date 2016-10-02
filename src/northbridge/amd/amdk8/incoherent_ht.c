@@ -435,7 +435,7 @@ static int ht_setup_chainx(pci_devfn_t udev, uint8_t upos, uint8_t bus,
 #if CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20
 out:
 #endif
-end_of_chain: ;
+end_of_chain:;
 
 #if CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20
 	if (offset_unitid && (ht_dev_num > 1) && (real_last_unitid != CONFIG_HT_CHAIN_END_UNITID_BASE) && !end_used) {
@@ -663,7 +663,7 @@ static int ht_setup_chains(uint8_t ht_c_num)
 		regpos = ((reg & 0xf00)>>8) * 0x20 + 0x94; // link n;it will decide 0x94 or 0xb4, 0x0xd4;
 		busn = (reg & 0xff0000)>>16;
 
-		dword = pci_read_config32(PCI_DEV(0, devpos, 0), regpos) ;
+		dword = pci_read_config32(PCI_DEV(0, devpos, 0), regpos);
 		dword &= ~(0xffff<<8);
 		dword |= (reg & 0xffff0000)>>8;
 		pci_write_config32(PCI_DEV(0, devpos,0), regpos , dword);

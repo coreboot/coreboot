@@ -49,12 +49,12 @@ static void init_egress(void)
 	EPBAR32(0x11c) = 0x00005555;
 	EPBAR32(0x20) |= 1 << 16;
 
-	while ((EPBAR8(0x26) & 1) != 0) ;
+	while ((EPBAR8(0x26) & 1) != 0);
 
 	/* VC1: enable */
 	EPBAR32(0x20) |= 1 << 31;
 
-	while ((EPBAR8(0x26) & 2) != 0) ;
+	while ((EPBAR8(0x26) & 2) != 0);
 }
 
 /* MCH side */
@@ -72,7 +72,7 @@ static void init_dmi(int b2step)
 	/* VC1: enable */
 	DMIBAR32(0x20) |= 1 << 31;
 
-	while ((DMIBAR8(0x26) & 2) != 0) ;
+	while ((DMIBAR8(0x26) & 2) != 0);
 
 	/* additional configuration. */
 	DMIBAR32(0x200) |= 3 << 13;

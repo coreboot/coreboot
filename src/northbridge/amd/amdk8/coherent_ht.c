@@ -1572,7 +1572,7 @@ static unsigned verify_dualcore(unsigned nodes)
 
 	totalcpus = 0;
 	for (node = 0; node < nodes; node++) {
-		tmp = (pci_read_config32(NODE_MC(node), 0xe8) >> 12) & 3 ;
+		tmp = (pci_read_config32(NODE_MC(node), 0xe8) >> 12) & 3;
 		totalcpus += (tmp + 1);
 	}
 

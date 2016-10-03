@@ -56,7 +56,7 @@ void acpi_create_intel_hpet(acpi_hpet_t * hpet)
 static void acpi_create_serialio_ssdt_entry(int id, global_nvs_t *gnvs)
 {
 	char sio_name[5] = {};
-	snprintf(sio_name, sizeof (sio_name), "S%1uEN", id);
+	snprintf(sio_name, sizeof(sio_name), "S%1uEN", id);
 	acpigen_write_name_byte(sio_name, gnvs->s0b[id] ? 1 : 0);
 }
 

@@ -588,7 +588,7 @@ static void set_subsystem(device_t dev, unsigned vendor, unsigned device)
 
 static void southbridge_inject_dsdt(device_t dev)
 {
-	global_nvs_t *gnvs = cbmem_add (CBMEM_ID_ACPI_GNVS, sizeof (*gnvs));
+	global_nvs_t *gnvs = cbmem_add (CBMEM_ID_ACPI_GNVS, sizeof(*gnvs));
 	void *opregion;
 
 	/* Calling northbridge code as gnvs contains opregion address.  */
@@ -597,7 +597,7 @@ static void southbridge_inject_dsdt(device_t dev)
 	if (gnvs) {
 		const struct i915_gpu_controller_info *gfx = intel_gma_get_controller_info();
 
-		memset(gnvs, 0, sizeof (*gnvs));
+		memset(gnvs, 0, sizeof(*gnvs));
 
 		acpi_create_gnvs(gnvs);
 		/* IGD OpRegion Base Address */

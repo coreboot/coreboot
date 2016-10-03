@@ -197,11 +197,8 @@ sub check_for_ifdef {
             my $symbol = $3;
 
             if ( ( exists $symbols{$symbol} ) && ( $symbols{$symbol}{type} ne "string" ) ) {
-                # TODO: Remove special check for CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL
-                if ($symbol ne "MAINBOARD_POWER_ON_AFTER_POWER_FAIL") {
-                    show_error( "#ifdef 'CONFIG_$symbol' used at $file:$lineno."
+                show_warning( "#ifdef 'CONFIG_$symbol' used at $file:$lineno."
                       . "  Symbols of type '$symbols{$symbol}{type}' are always defined." );
-                }
             }
         }
     }
@@ -264,10 +261,7 @@ sub check_for_def {
             my $symbol = $3;
 
             if ( ( exists $symbols{$symbol} ) ) {
-                # TODO: Remove special check for CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL
-                if ($symbol ne "MAINBOARD_POWER_ON_AFTER_POWER_FAIL") {
-                    show_error("#define of symbol 'CONFIG_$symbol' used at $file:$lineno.");
-                }
+                show_warning("#define of symbol 'CONFIG_$symbol' used at $file:$lineno.");
             }
             else {
                 show_warning( "#define 'CONFIG_$symbol' used at $file:$lineno."
@@ -466,9 +460,7 @@ sub check_used_symbols {
         for ( my $i = 0 ; $i <= $symbols{$key}{count} ; $i++ ) {
             my $filename = $symbols{$key}{$i}{file};
             my $line_no  = $symbols{$key}{$i}{line_no};
-            if ($show_note_output) {
-                print("#!!!!! Note: Unused symbol '$key' defined at $filename:$line_no.");
-            }
+            show_warning("Unused symbol '$key' referenced at $filename:$line_no.");
         }
     }
 }
@@ -1170,9 +1162,9 @@ sub load_kconfig_file {
     #if the file exists, try to load it.
     elsif ( -e "$input_file" ) {
 
-        #throw an error if the file has already been loaded.
+        #throw a warning if the file has already been loaded.
         if ( exists $loaded_files{$input_file} ) {
-            show_error("'$input_file' sourced at $loadfile:$loadline was already loaded by $loaded_files{$input_file}");
+            show_warning("'$input_file' sourced at $loadfile:$loadline was already loaded by $loaded_files{$input_file}");
         }
 
         #load the file's contents and mark the file as loaded for checking later

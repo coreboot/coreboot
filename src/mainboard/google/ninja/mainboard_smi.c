@@ -136,7 +136,7 @@ int mainboard_smi_apmc(uint8_t apmc)
 		google_chromeec_set_sci_mask(0);
 		/* Clear all pending events */
 		while (google_chromeec_get_event() != 0);
-		google_chromeec_set_smi_mask(MAINBOARD_EC_SMI_EVENTS);;
+		google_chromeec_set_smi_mask(MAINBOARD_EC_SMI_EVENTS);
 		break;
 	}
 	return 0;

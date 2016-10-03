@@ -530,6 +530,7 @@ typedef struct {
 
 /** Offset 0x009F - HD-Audio BIOS Configuration Lock Down
   Enable/Disable HD-Audio BIOS Configuration Lock Down. 0:Disable(Default), 1:Enable.
+  This option is deprecated
   $EN_DIS
 **/
   UINT8                       BiosCfgLockDown;
@@ -1480,25 +1481,29 @@ typedef struct {
 **/
   UINT8                       MonitorMwaitEnable;
 
-/** Offset 0x0328
+/** Offset 0x0328 - IRQ Interrupt Polarity Control
+  Set IRQ Interrupt Polarity Control to ITSS.IPC[0]~IPC[3]. 0:Active High, 1:Active Low
 **/
-  UINT8                       ReservedFspsUpd[8];
+  UINT32                      IPC[4];
+
+/** Offset 0x0338 - Disable ModPHY dynamic power gate
+  Disable ModPHY dynamic power gate for the specific SATA port.
+**/
+  UINT8                       SataPortsDisableDynamicPg[2];
+
+/** Offset 0x033A - Universal Audio Architecture compliance for DSP enabled system
+  0: Not-UAA Compliant (Intel SST driver supported only), 1: UAA Compliant (HDA Inbox
+  driver or SST driver supported).
+  $EN_DIS
+**/
+  UINT8                       HdAudioDspUaaCompliance;
+
+/** Offset 0x033B
+**/
+  UINT8                       ReservedFspsUpd[5];
 } FSP_S_CONFIG;
 
 /** Fsp S Test Configuration
-**/
-typedef struct {
-
-/** Offset 0x0330
-**/
-  UINT32                      Signature;
-
-/** Offset 0x0334
-**/
-  UINT8                       ReservedFspsTestUpd[12];
-} FSP_S_TEST_CONFIG;
-
-/** Fsp S Restricted Configuration
 **/
 typedef struct {
 
@@ -1507,6 +1512,19 @@ typedef struct {
   UINT32                      Signature;
 
 /** Offset 0x0344
+**/
+  UINT8                       ReservedFspsTestUpd[12];
+} FSP_S_TEST_CONFIG;
+
+/** Fsp S Restricted Configuration
+**/
+typedef struct {
+
+/** Offset 0x0350
+**/
+  UINT32                      Signature;
+
+/** Offset 0x0354
 **/
   UINT8                       ReservedFspsRestrictedUpd[12];
 } FSP_S_RESTRICTED_CONFIG;
@@ -1523,15 +1541,15 @@ typedef struct {
 **/
   FSP_S_CONFIG                FspsConfig;
 
-/** Offset 0x0330
+/** Offset 0x0340
 **/
   FSP_S_TEST_CONFIG           FspsTestConfig;
 
-/** Offset 0x0340
+/** Offset 0x0350
 **/
   FSP_S_RESTRICTED_CONFIG     FspsRestrictedConfig;
 
-/** Offset 0x0350
+/** Offset 0x0360
 **/
   UINT16                      UpdTerminator;
 } FSPS_UPD;

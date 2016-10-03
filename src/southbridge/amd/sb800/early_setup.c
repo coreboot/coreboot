@@ -468,7 +468,7 @@ static void sb800_devices_por_init(void)
 	pci_write_config8(dev, 0x43, 0xff);
 
 	/* Set PCDMA request into height priority list. */
-	/* pci_write_config8(dev, 0x49, 0x1) */ ;
+	/* pci_write_config8(dev, 0x49, 0x1); */
 
 	pci_write_config8(dev, 0x40, 0x26);
 

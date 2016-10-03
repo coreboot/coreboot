@@ -370,13 +370,13 @@ static void sb600_devices_por_init(void)
 	printk(BIOS_INFO, "sb600_devices_por_init(): P2P Bridge, BDF:0-20-4\n");
 	dev = pci_locate_device(PCI_ID(0x1002, 0x4384), 0);
 	/* I don't know why CIM tried to write into a read-only reg! */
-	/*pci_write_config8(dev, 0x0c, 0x20) */ ;
+	/*pci_write_config8(dev, 0x0c, 0x20); */
 
 	/* Arbiter enable. */
 	pci_write_config8(dev, 0x43, 0xff);
 
 	/* Set PCDMA request into height priority list. */
-	/* pci_write_config8(dev, 0x49, 0x1) */ ;
+	/* pci_write_config8(dev, 0x49, 0x1); */
 
 	pci_write_config8(dev, 0x40, 0x26);
 

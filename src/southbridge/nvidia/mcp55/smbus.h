@@ -102,7 +102,7 @@ static int do_smbus_send_byte(unsigned smbus_io_base, unsigned device, unsigned 
 	if (smbus_wait_until_done(smbus_io_base) < 0) {
 		return -3;
 	}
-	global_status_register = inb(smbus_io_base + SMBHSTSTAT) & 0x80; /* lose check */;
+	global_status_register = inb(smbus_io_base + SMBHSTSTAT) & 0x80; /* lose check */
 
 	if (global_status_register != 0x80) {
 		return -1;
@@ -163,7 +163,7 @@ static int do_smbus_write_byte(unsigned smbus_io_base, unsigned device, unsigned
 	if (smbus_wait_until_done(smbus_io_base) < 0) {
 		return -3;
 	}
-	global_status_register = inb(smbus_io_base + SMBHSTSTAT) & 0x80; /* lose check */;
+	global_status_register = inb(smbus_io_base + SMBHSTSTAT) & 0x80; /* lose check */
 
 	if (global_status_register != 0x80) {
 		return -1;

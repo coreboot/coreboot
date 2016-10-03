@@ -310,7 +310,7 @@ void rs690_gpp_sb_init(device_t nb_dev, device_t dev, u32 port)
 	/* step 6d: ASPM L1 for the southbridge link */
 	/* To enable L1s in the southbridge*/
 
-	/* step 6e: ASPM L1 for GPP link(s) */;
+	/* step 6e: ASPM L1 for GPP link(s) */
 	set_pcie_enable_bits(nb_dev, 0xf9, 3 << 13, 2 << 13);
 	set_pcie_enable_bits(dev, 0xa0, 3 << 12, 3 << 12);
 	set_pcie_enable_bits(dev, 0xa0, 0xf << 4, 3 << 4);

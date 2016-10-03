@@ -247,7 +247,7 @@ static void bug118339(void)
 
 	/* SET2M fires if VG pri is odd (3, not 2) and Ystate=0 */
 	msrnum =  MSR_GLCP + 0x042;
-	/* 	msr.hi =  2d6b8000h */;
+	/* 	msr.hi =  2d6b8000h; */
 	msr.hi =  0x596b8000;
 	msr.lo =  0x00000a00;
 	wrmsr(msrnum, msr);

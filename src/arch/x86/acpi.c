@@ -870,7 +870,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	}
 
 	if (dsdt_file->length > dsdt_size
-	    || dsdt_file->length < sizeof (acpi_header_t)
+	    || dsdt_file->length < sizeof(acpi_header_t)
 	    || memcmp(dsdt_file->signature, "DSDT", 4) != 0) {
 		printk(BIOS_ERR, "Invalid DSDT file, skipping ACPI tables\n");
 		return current;
@@ -880,7 +880,7 @@ unsigned long write_acpi_tables(unsigned long start)
 				     CBFS_TYPE_RAW, &slic_size);
 	if (slic_file
 	    && (slic_file->length > slic_size
-		|| slic_file->length < sizeof (acpi_header_t)
+		|| slic_file->length < sizeof(acpi_header_t)
 		|| memcmp(slic_file->signature, "SLIC", 4) != 0)) {
 		slic_file = 0;
 	}

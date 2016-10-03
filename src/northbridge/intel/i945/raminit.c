@@ -16,6 +16,8 @@
 #include <console/console.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/cache.h>
+#include <device/pci_def.h>
+#include <device/device.h>
 #include <lib.h>
 #include <pc80/mc146818rtc.h>
 #include <spd.h>
@@ -25,6 +27,7 @@
 #include <lib.h>
 #include "raminit.h"
 #include "i945.h"
+#include "chip.h"
 #include <cbmem.h>
 
 /* Debugging macros. */
@@ -48,6 +51,7 @@
 #define RAM_EMRS_2			(0x1 << 21)
 #define RAM_EMRS_3			(0x2 << 21)
 
+#define DEFAULT_PCI_MMIO_SIZE		768
 static int get_dimm_spd_address(struct sys_info *sysinfo, int device)
 {
 	if (sysinfo->spd_addresses)
@@ -1495,7 +1499,9 @@ static void sdram_detect_dimm_size(struct sys_info * sysinfo)
 static int sdram_program_row_boundaries(struct sys_info *sysinfo)
 {
 	int i;
-	int cum0, cum1, tolud, tom;
+	int cum0, cum1, tolud, tom, pci_mmio_size;
+	const struct device *dev;
+	const struct northbridge_intel_i945_config *cfg = NULL;
 
 	printk(BIOS_DEBUG, "Setting RAM size...\n");
 
@@ -1534,8 +1540,17 @@ static int sdram_program_row_boundaries(struct sys_info *sysinfo)
 	tom = tolud >> 3;
 
 	/* Limit the value of TOLUD to leave some space for PCI memory. */
-	if (tolud > 0xd0)
-		tolud = 0xd0;	/* 3.25GB : 0.75GB */
+	dev = dev_find_slot(0, PCI_DEVFN(0, 0));
+	if (dev)
+		cfg = dev->chip_info;
+
+	/* Don't use pci mmio sizes smaller than 768M */
+	if (!cfg || cfg->pci_mmio_size <= DEFAULT_PCI_MMIO_SIZE)
+		pci_mmio_size = DEFAULT_PCI_MMIO_SIZE;
+	else
+		pci_mmio_size = cfg->pci_mmio_size;
+
+	tolud = MIN(((4096 - pci_mmio_size) / 128) << 3, tolud);
 
 	pci_write_config8(PCI_DEV(0,0,0), TOLUD, tolud);
 

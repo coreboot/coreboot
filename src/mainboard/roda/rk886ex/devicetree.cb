@@ -25,6 +25,8 @@ chip northbridge/intel/i945
                 end
         end
 
+	register "pci_mmio_size" = "768"
+
         device domain 0 on
                 subsystemid 0x4352 0x6886 inherit
                 device pci 00.0 on end # host bridge

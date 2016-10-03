@@ -370,7 +370,7 @@ static void dram_find_spds_ddr3(spd_raw_data *spd, ramctr_timing *ctrl)
 	int channel, slot, spd_slot;
 	dimm_info *dimm = &ctrl->info;
 
-	memset (ctrl->rankmap, 0, sizeof (ctrl->rankmap));
+	memset (ctrl->rankmap, 0, sizeof(ctrl->rankmap));
 
 	ctrl->extended_temperature_range = 1;
 	ctrl->auto_self_refresh = 1;
@@ -4200,7 +4200,7 @@ void init_dram_ddr3(spd_raw_data *spds, int mobile, int min_tck,
 		halt();
 	}
 
-	memset(&ctrl, 0, sizeof (ctrl));
+	memset(&ctrl, 0, sizeof(ctrl));
 
 	early_pch_init_native();
 	early_thermal_init();
@@ -4415,7 +4415,7 @@ void perform_raminit(int s3resume)
 
 	post_code(0x3a);
 
-	memset (spd, 0, sizeof (spd));
+	memset (spd, 0, sizeof(spd));
 	mainboard_get_spd(spd);
 
 	timestamp_add_now(TS_BEFORE_INITRAM);

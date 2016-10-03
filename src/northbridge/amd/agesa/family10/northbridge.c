@@ -482,7 +482,7 @@ static void amdfam10_set_resource(device_t dev, struct resource *resource,
 		store_conf_mmio_addr(nodeid, link_num, reg, (resource->index >>24), rbase>>8, rend>>8);
 	}
 	resource->flags |= IORESOURCE_STORED;
-	snprintf(buf, sizeof (buf), " <node %x link %x>",
+	snprintf(buf, sizeof(buf), " <node %x link %x>",
 			nodeid, link_num);
 	report_resource_stored(dev, resource, buf);
 }

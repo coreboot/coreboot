@@ -581,7 +581,7 @@ static void amdfam10_set_resource(device_t dev, struct resource *resource,
 		store_conf_mmio_addr(nodeid, link_num, reg, (resource->index >>24), rbase>>8, rend>>8);
 	}
 	resource->flags |= IORESOURCE_STORED;
-	snprintf(buf, sizeof (buf), " <node %x link %x>",
+	snprintf(buf, sizeof(buf), " <node %x link %x>",
 		 nodeid, link_num);
 	report_resource_stored(dev, resource, buf);
 }
@@ -1239,10 +1239,10 @@ static int amdfam10_get_smbios_data17(int* count, int handle, int parent_handle,
 				t->attributes |= ranks & 0xf;	/* rank number is stored in the lowest 4 bits of the attributes field */
 				t->form_factor = MEMORY_FORMFACTOR_DIMM;
 				if (mem_info->dct_stat[node].Dual_Node_Package) {
-					snprintf(string_buffer, sizeof (string_buffer), "NODE %d DIMM_%s%d", node >> 1,
+					snprintf(string_buffer, sizeof(string_buffer), "NODE %d DIMM_%s%d", node >> 1,
 						(mem_info->dct_stat[node].Internal_Node_ID)?((slot & 0x1)?"D":"C"):((slot & 0x1)?"B":"A"), (slot >> 1) + 1);
 				} else {
-					snprintf(string_buffer, sizeof (string_buffer), "NODE %d DIMM_%s%d", node, (slot & 0x1)?"B":"A", (slot >> 1) + 1);
+					snprintf(string_buffer, sizeof(string_buffer), "NODE %d DIMM_%s%d", node, (slot & 0x1)?"B":"A", (slot >> 1) + 1);
 				}
 				t->device_locator = smbios_add_string(t->eos, string_buffer);
 				if (IS_ENABLED(CONFIG_DIMM_DDR2))
@@ -1261,7 +1261,7 @@ static int amdfam10_get_smbios_data17(int* count, int handle, int parent_handle,
 				if (mem_info->dct_stat[node].DimmSerialNumber[slot] == 0) {
 					t->serial_number = smbios_add_string(t->eos, "None");
 				} else {
-					snprintf(string_buffer, sizeof (string_buffer), "%08X", mem_info->dct_stat[node].DimmSerialNumber[slot]);
+					snprintf(string_buffer, sizeof(string_buffer), "%08X", mem_info->dct_stat[node].DimmSerialNumber[slot]);
 					t->serial_number = smbios_add_string(t->eos, string_buffer);
 				}
 				if (IS_ENABLED(CONFIG_DIMM_DDR2)) {

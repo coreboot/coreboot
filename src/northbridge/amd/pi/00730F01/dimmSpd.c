@@ -24,7 +24,7 @@
 
 #include "northbridge/amd/pi/dimmSpd.h"
 
-#define DIMENSION(array)(sizeof (array)/ sizeof (array [0]))
+#define DIMENSION(array)(sizeof(array)/ sizeof(array [0]))
 
 AGESA_STATUS AmdMemoryReadSPD (UINT32 unused1, UINT32 unused2, AGESA_READ_SPD_PARAMS *info)
 {

@@ -52,12 +52,12 @@ AGESA_STATUS agesawrapper_amdinitreset(void)
 
 	LibAmdMemFill (&AmdParamStruct,
 		       0,
-		       sizeof (AMD_INTERFACE_PARAMS),
+		       sizeof(AMD_INTERFACE_PARAMS),
 		       &(AmdParamStruct.StdHeader));
 
 	LibAmdMemFill (&AmdResetParams,
 		       0,
-		       sizeof (AMD_RESET_PARAMS),
+		       sizeof(AMD_RESET_PARAMS),
 		       &(AmdResetParams.StdHeader));
 
 	AmdParamStruct.AgesaFunctionName = AMD_INIT_RESET;
@@ -91,7 +91,7 @@ AGESA_STATUS agesawrapper_amdinitearly(void)
 
 	LibAmdMemFill (&AmdParamStruct,
 		       0,
-		       sizeof (AMD_INTERFACE_PARAMS),
+		       sizeof(AMD_INTERFACE_PARAMS),
 		       &(AmdParamStruct.StdHeader));
 
 	AmdParamStruct.AgesaFunctionName = AMD_INIT_EARLY;
@@ -121,7 +121,7 @@ AGESA_STATUS agesawrapper_amdinitpost(void)
 
 	LibAmdMemFill (&AmdParamStruct,
 		       0,
-		       sizeof (AMD_INTERFACE_PARAMS),
+		       sizeof(AMD_INTERFACE_PARAMS),
 		       &(AmdParamStruct.StdHeader));
 
 	AmdParamStruct.AgesaFunctionName = AMD_INIT_POST;
@@ -179,7 +179,7 @@ AGESA_STATUS agesawrapper_amdinitenv(void)
 
 	LibAmdMemFill (&AmdParamStruct,
 		       0,
-		       sizeof (AMD_INTERFACE_PARAMS),
+		       sizeof(AMD_INTERFACE_PARAMS),
 		       &(AmdParamStruct.StdHeader));
 
 	AmdParamStruct.AgesaFunctionName = AMD_INIT_ENV;
@@ -247,7 +247,7 @@ AGESA_STATUS agesawrapper_amdinitmid(void)
 
 	LibAmdMemFill (&AmdParamStruct,
 		       0,
-		       sizeof (AMD_INTERFACE_PARAMS),
+		       sizeof(AMD_INTERFACE_PARAMS),
 		       &(AmdParamStruct.StdHeader));
 
 	AmdParamStruct.AgesaFunctionName = AMD_INIT_MID;
@@ -285,7 +285,7 @@ AGESA_STATUS agesawrapper_amdinitlate(void)
 
 	LibAmdMemFill (&AmdParamStruct,
 		       0,
-		       sizeof (AMD_INTERFACE_PARAMS),
+		       sizeof(AMD_INTERFACE_PARAMS),
 		       &(AmdParamStruct.StdHeader));
 
 	AmdParamStruct.AgesaFunctionName = AMD_INIT_LATE;
@@ -341,7 +341,7 @@ AGESA_STATUS agesawrapper_amdlaterunaptask (
 
 	LibAmdMemFill (&ApExeParams,
 		       0,
-		       sizeof (AP_EXE_PARAMS),
+		       sizeof(AP_EXE_PARAMS),
 		       &(ApExeParams.StdHeader));
 
 	ApExeParams.StdHeader.AltImageBasePtr = 0;
@@ -371,7 +371,7 @@ AGESA_STATUS agesawrapper_amdinitresume(void)
 
 	LibAmdMemFill (&AmdParamStruct,
 		       0,
-		       sizeof (AMD_INTERFACE_PARAMS),
+		       sizeof(AMD_INTERFACE_PARAMS),
 		       &(AmdParamStruct.StdHeader));
 
 	AmdParamStruct.AgesaFunctionName = AMD_INIT_RESUME;
@@ -416,7 +416,7 @@ AGESA_STATUS agesawrapper_fchs3earlyrestore(void)
 
 	LibAmdMemFill (&FchParams,
 		       0,
-		       sizeof (FchParams),
+		       sizeof(FchParams),
 		       &StdHeader);
 
 	FchParams.StdHeader = &StdHeader;
@@ -439,7 +439,7 @@ AGESA_STATUS agesawrapper_amds3laterestore(void)
 	agesawrapper_amdinitcpuio();
 	LibAmdMemFill (&AmdS3LateParams,
 		       0,
-		       sizeof (AMD_S3LATE_PARAMS),
+		       sizeof(AMD_S3LATE_PARAMS),
 		       &(AmdS3LateParams.StdHeader));
 	AmdInterfaceParams.StdHeader.ImageBasePtr = 0;
 	AmdInterfaceParams.AllocationMethod = ByHost;
@@ -447,7 +447,7 @@ AGESA_STATUS agesawrapper_amds3laterestore(void)
 	AmdInterfaceParams.NewStructPtr = &AmdS3LateParams;
 	AmdInterfaceParams.StdHeader.CalloutPtr = &GetBiosCallout;
 	AmdS3LateParamsPtr = &AmdS3LateParams;
-	AmdInterfaceParams.NewStructSize = sizeof (AMD_S3LATE_PARAMS);
+	AmdInterfaceParams.NewStructSize = sizeof(AMD_S3LATE_PARAMS);
 
 	AmdCreateStruct (&AmdInterfaceParams);
 
@@ -485,7 +485,7 @@ AGESA_STATUS agesawrapper_fchs3laterestore(void)
 
 	LibAmdMemFill (&FchParams,
 		       0,
-		       sizeof (FchParams),
+		       sizeof(FchParams),
 		       &StdHeader);
 
 	FchParams.StdHeader = &StdHeader;
@@ -516,7 +516,7 @@ AGESA_STATUS agesawrapper_amdS3Save(void)
 
 	LibAmdMemFill (&AmdInterfaceParams,
 		       0,
-		       sizeof (AMD_INTERFACE_PARAMS),
+		       sizeof(AMD_INTERFACE_PARAMS),
 		       &(AmdInterfaceParams.StdHeader));
 
 	AmdInterfaceParams.StdHeader.ImageBasePtr = 0;
@@ -576,7 +576,7 @@ AGESA_STATUS agesawrapper_amdreadeventlog (UINT8 HeapStatus)
 
 	LibAmdMemFill (&AmdEventParams,
 		       0,
-		       sizeof (EVENT_PARAMS),
+		       sizeof(EVENT_PARAMS),
 		       &(AmdEventParams.StdHeader));
 
 	AmdEventParams.StdHeader.AltImageBasePtr = 0;

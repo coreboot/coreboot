@@ -201,7 +201,7 @@ void *igd_make_opregion(void)
 	igd_opregion_t *opregion;
 
 	printk(BIOS_DEBUG, "ACPI:    * IGD OpRegion\n");
-	opregion = cbmem_add(CBMEM_ID_IGD_OPREGION, sizeof (*opregion));
+	opregion = cbmem_add(CBMEM_ID_IGD_OPREGION, sizeof(*opregion));
 	if (opregion)
 		init_igd_opregion(opregion);
 	return opregion;

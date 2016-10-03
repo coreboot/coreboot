@@ -140,7 +140,7 @@ static void oem_fan_control(FCH_DATA_BLOCK *FchParams)
 		{FAN_INPUT_INTERNAL_DIODE, (FAN_STEPMODE | FAN_POLARITY_HIGH), FREQ_100HZ, 40, 60,  0, 40, 65, 85, 0, 0},
 		{FAN_INPUT_INTERNAL_DIODE, (FAN_STEPMODE | FAN_POLARITY_HIGH), FREQ_100HZ, 40, 60,  0, 40, 65, 85, 0, 0},
 	};
-	LibAmdMemCopy ((VOID *)(FchParams->Hwm.HwmFanControl), &oem_factl, (sizeof (FCH_HWM_FAN_CTR) * 5), FchParams->StdHeader);
+	LibAmdMemCopy ((VOID *)(FchParams->Hwm.HwmFanControl), &oem_factl, (sizeof(FCH_HWM_FAN_CTR) * 5), FchParams->StdHeader);
 
 	/* Enable IMC fan control. the recommended way */
 #if IS_ENABLED(CONFIG_HUDSON_IMC_FWM)

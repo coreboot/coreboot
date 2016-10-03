@@ -429,7 +429,7 @@ static void set_subsystem(device_t dev, unsigned vendor, unsigned device)
 
 static void southbridge_inject_dsdt(device_t dev)
 {
-	global_nvs_t *gnvs = cbmem_add (CBMEM_ID_ACPI_GNVS, sizeof (*gnvs));
+	global_nvs_t *gnvs = cbmem_add (CBMEM_ID_ACPI_GNVS, sizeof(*gnvs));
 
 	if (gnvs) {
 		memset(gnvs, 0, sizeof(*gnvs));

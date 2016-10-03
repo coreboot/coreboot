@@ -310,7 +310,7 @@ static void mobile5_pm_init(struct device *dev)
 			/* 2010: */ 0x00188200, 0x14000016, 0xbc4abcb5, 0x00000000,
 			/* 2020: */ 0xf0c9605b, 0x13683040, 0x04c8f16e, 0x09e90170
 		};
-	for (i = 0; i < sizeof (rcba2010) / sizeof (rcba2010[0]); i++)
+	for (i = 0; i < sizeof(rcba2010) / sizeof(rcba2010[0]); i++)
 	{
 		RCBA32 (0x2010 + 4 * i) = rcba2010[i];
 		RCBA32 (0x2010 + 4 * i);
@@ -348,7 +348,7 @@ static void mobile5_pm_init(struct device *dev)
 			/* 2270 */ 0x00001c01, 0x16000000, 0x00010107, 0x00160000
 		};
 
-	for (i = 0; i < sizeof (rcba2210) / sizeof (rcba2210[0]); i++)
+	for (i = 0; i < sizeof(rcba2210) / sizeof(rcba2210[0]); i++)
 	{
 		RCBA32 (0x2210 + 4 * i) = rcba2210[i];
 		RCBA32 (0x2210 + 4 * i);
@@ -361,7 +361,7 @@ static void mobile5_pm_init(struct device *dev)
 			/* 2320: */ 0xcccc0cfc, 0x0fbb0fff
 		};
 
-	for (i = 0; i < sizeof (rcba2300) / sizeof (rcba2300[0]); i++)
+	for (i = 0; i < sizeof(rcba2300) / sizeof(rcba2300[0]); i++)
 	{
 		RCBA32 (0x2300 + 4 * i) = rcba2300[i];
 		RCBA32 (0x2300 + 4 * i);
@@ -619,7 +619,7 @@ static void set_subsystem(device_t dev, unsigned vendor, unsigned device)
 
 static void southbridge_inject_dsdt(device_t dev)
 {
-	global_nvs_t *gnvs = cbmem_add (CBMEM_ID_ACPI_GNVS, sizeof (*gnvs));
+	global_nvs_t *gnvs = cbmem_add (CBMEM_ID_ACPI_GNVS, sizeof(*gnvs));
 	void *opregion;
 
 	/* Calling northbridge code as gnvs contains opregion address.  */
@@ -627,7 +627,7 @@ static void southbridge_inject_dsdt(device_t dev)
 
 	if (gnvs) {
 		const struct i915_gpu_controller_info *gfx = intel_gma_get_controller_info();
-		memset(gnvs, 0, sizeof (*gnvs));
+		memset(gnvs, 0, sizeof(*gnvs));
 
 		acpi_create_gnvs(gnvs);
 

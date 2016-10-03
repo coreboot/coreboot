@@ -656,7 +656,7 @@ static void set_subsystem(device_t dev, unsigned vendor, unsigned device)
 
 static void southbridge_inject_dsdt(device_t dev)
 {
-	global_nvs_t *gnvs = cbmem_add (CBMEM_ID_ACPI_GNVS, sizeof (*gnvs));
+	global_nvs_t *gnvs = cbmem_add (CBMEM_ID_ACPI_GNVS, sizeof(*gnvs));
 
 	if (gnvs) {
 		const struct i915_gpu_controller_info *gfx = intel_gma_get_controller_info();

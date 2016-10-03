@@ -22,7 +22,7 @@
 
 typedef signed char  *va_list;
 #ifndef _INTSIZEOF
-  #define _INTSIZEOF (n) ( (sizeof (n) + sizeof (UINTN) - 1) & ~(sizeof (UINTN) - 1) )
+  #define _INTSIZEOF (n) ( (sizeof(n) + sizeof(UINTN) - 1) & ~(sizeof(UINTN) - 1) )
 #endif
 
 // Also support coding convention rules for var arg macros

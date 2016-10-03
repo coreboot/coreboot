@@ -104,7 +104,7 @@ const char *lenovo_mainboard_partnumber(void)
 	if (already_read)
 		return result;
 
-	memset (result, 0, sizeof (result));
+	memset(result, 0, sizeof (result));
 	at24rf08c_read_string(0, 0x27, 7, result);
 
 	already_read = 1;
@@ -129,17 +129,17 @@ void smbios_mainboard_set_uuid(u8 *uuid)
 
 
 	if (already_read) {
-		memcpy (uuid, result, 16);
+		memcpy(uuid, result, 16);
 		return;
 	}
 
-	memset (result, 0, sizeof (result));
+	memset(result, 0, sizeof (result));
 
 	dev = dev_find_slot_on_smbus(1, 0x56);
 	if (dev == NULL) {
 		printk(BIOS_WARNING, "EEPROM not found\n");
 		already_read = 1;
-		memset (uuid, 0, 16);
+		memset(uuid, 0, 16);
 		return;
 	}
 
@@ -155,7 +155,7 @@ void smbios_mainboard_set_uuid(u8 *uuid)
 				break;
 		}
 		if (t < 0) {
-			memset (result, 0, sizeof (result));
+			memset(result, 0, sizeof (result));
 			break;
 		}
 		result[remap[i]] = t;
@@ -163,7 +163,7 @@ void smbios_mainboard_set_uuid(u8 *uuid)
 
 	already_read = 1;
 
-	memcpy (uuid, result, 16);
+	memcpy(uuid, result, 16);
 }
 
 const char *smbios_mainboard_version(void)
@@ -176,7 +176,7 @@ const char *smbios_mainboard_version(void)
 	if (already_read)
 		return result;
 
-	memset (result, 0, sizeof (result));
+	memset(result, 0, sizeof (result));
 
 	dev = at24rf08c_find_bank(2);
 	if (dev == NULL) {

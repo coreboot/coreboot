@@ -416,6 +416,19 @@ static void cr50_vendor_init(struct tpm_chip *chip)
 	chip->vendor.send = &cr50_i2c_tis_send;
 	chip->vendor.cancel = &cr50_i2c_tis_ready;
 	chip->vendor.irq = CONFIG_DRIVER_TPM_I2C_IRQ;
+
+	/*
+	 * Interrupts are not supported this early in firmware,
+	 * use use an arch-specific method to query for interrupt status.
+	 */
+	if (chip->vendor.irq > 0) {
+#if IS_ENABLED(CONFIG_ARCH_X86)
+		/* Query GPE status for interrupt */
+		chip->vendor.irq_status = &acpi_get_gpe;
+#else
+		chip->vendor.irq = -1;
+#endif
+	}
 }
 
 int tpm_vendor_probe(unsigned bus, uint32_t addr)
@@ -469,19 +482,6 @@ int tpm_vendor_init(struct tpm_chip *chip, unsigned bus, uint32_t dev_addr)
 	tpm_dev->addr = dev_addr;
 
 	cr50_vendor_init(chip);
-
-	/*
-	 * Interrupts are not supported this early in firmware,
-	 * use use an arch-specific method to query for interrupt status.
-	 */
-	if (chip->vendor.irq > 0) {
-#if IS_ENABLED(CONFIG_ARCH_X86)
-		/* Query GPE status for interrupt */
-		chip->vendor.irq_status = &acpi_get_gpe;
-#else
-		chip->vendor.irq = -1;
-#endif
-	}
 
 	if (request_locality(chip, 0) != 0)
 		return -1;

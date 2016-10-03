@@ -120,7 +120,7 @@ static void setupFch(UINT16 ioBase)
 
 	/* Enable SMBus MMIO. */
 	PciAddress.AddressValue = MAKE_SBDFO (0, 0, 20, 0, 0xD2);
-	LibAmdPciRead(AccessWidth8, PciAddress, &PciData8, &StdHeader); ;
+	LibAmdPciRead(AccessWidth8, PciAddress, &PciData8, &StdHeader);
 	PciData8 |= BIT0;
 	LibAmdPciWrite(AccessWidth8, PciAddress, &PciData8, &StdHeader);
 

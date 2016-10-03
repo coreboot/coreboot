@@ -32,7 +32,7 @@ static size_t generate_vbt(const struct i915_gpu_controller_info *conf,
 	struct bdb_general_features *genfeat;
 	u8 *ptr;
 
-	memset (head, 0, sizeof (*head));
+	memset(head, 0, sizeof (*head));
 
 	memset(head->signature, ' ', sizeof(head->signature));
 	memcpy(head->signature, idstr, MIN(strlen(idstr),
@@ -42,8 +42,8 @@ static size_t generate_vbt(const struct i915_gpu_controller_info *conf,
 	head->bdb_offset = sizeof (*head);
 
 	bdb_head = (struct bdb_header *) (head + 1);
-	memset (bdb_head, 0, sizeof (*bdb_head));
-	memcpy (bdb_head->signature, "BIOS_DATA_BLOCK ", 16);
+	memset(bdb_head, 0, sizeof (*bdb_head));
+	memcpy(bdb_head->signature, "BIOS_DATA_BLOCK ", 16);
 	bdb_head->version = 0xa8;
 	bdb_head->header_size = sizeof (*bdb_head);
 
@@ -55,7 +55,7 @@ static size_t generate_vbt(const struct i915_gpu_controller_info *conf,
 	ptr += 3;
 
 	genfeat = (struct bdb_general_features *) ptr;
-	memset (genfeat, 0, sizeof (*genfeat));
+	memset(genfeat, 0, sizeof (*genfeat));
 	genfeat->panel_fitting = 3;
 	genfeat->flexaim = 1;
 	genfeat->download_ext_vbt = 1;

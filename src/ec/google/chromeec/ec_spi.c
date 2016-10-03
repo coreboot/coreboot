@@ -20,6 +20,11 @@
 #include <spi-generic.h>
 #include <timer.h>
 
+/* This is assuming that this driver is not used on x86. If that changes, this
+   might need to become a CAR_GLOBAL or maybe even more complicated. */
+static struct stopwatch cs_cooldown_sw;
+static const long cs_cooldown_us = 200;
+
 static const uint8_t EcFramingByte = 0xec;
 
 #define PROTO3_MAX_PACKET_SIZE 268
@@ -44,7 +49,10 @@ void *crosec_get_buffer(size_t size, int req)
 static int crosec_spi_io(size_t req_size, size_t resp_size, void *context)
 {
 	struct spi_slave *slave = (struct spi_slave *)context;
+	int ret = 0;
 
+	while (!stopwatch_expired(&cs_cooldown_sw))
+		/* Wait minimum delay between CS assertions. */;
 	spi_claim_bus(slave);
 
 	 /* Allow EC to ramp up clock after being awaken.
@@ -53,8 +61,8 @@ static int crosec_spi_io(size_t req_size, size_t resp_size, void *context)
 
 	if (spi_xfer(slave, req_buf, req_size, NULL, 0)) {
 		printk(BIOS_ERR, "%s: Failed to send request.\n", __func__);
-		spi_release_bus(slave);
-		return -1;
+		ret = -1;
+		goto out;
 	}
 
 	uint8_t byte;
@@ -65,8 +73,8 @@ static int crosec_spi_io(size_t req_size, size_t resp_size, void *context)
 		if (spi_xfer(slave, NULL, 0, &byte, sizeof(byte))) {
 			printk(BIOS_ERR, "%s: Failed to receive byte.\n",
 			       __func__);
-			spi_release_bus(slave);
-			return -1;
+			ret = -1;
+			goto out;
 		}
 		if (byte == EcFramingByte)
 			break;
@@ -75,28 +83,30 @@ static int crosec_spi_io(size_t req_size, size_t resp_size, void *context)
 			printk(BIOS_ERR,
 			       "%s: Timeout waiting for framing byte.\n",
 			       __func__);
-			spi_release_bus(slave);
-			return -1;
+			ret = -1;
+			goto out;
 		}
 	}
 
 	if (spi_xfer(slave, NULL, 0, resp_buf, resp_size)) {
 		printk(BIOS_ERR, "%s: Failed to receive response.\n", __func__);
-		spi_release_bus(slave);
-		return -1;
+		ret = -1;
 	}
 
+out:
 	spi_release_bus(slave);
-
-	return 0;
+	stopwatch_init_usecs_expire(&cs_cooldown_sw, cs_cooldown_us);
+	return ret;
 }
 
 int google_chromeec_command(struct chromeec_command *cec_command)
 {
 	static struct spi_slave *slave = NULL;
-	if (!slave)
+	if (!slave) {
 		slave = spi_setup_slave(CONFIG_EC_GOOGLE_CHROMEEC_SPI_BUS,
 					CONFIG_EC_GOOGLE_CHROMEEC_SPI_CHIP);
+		stopwatch_init(&cs_cooldown_sw);
+	}
 	return crosec_command_proto(cec_command, crosec_spi_io, slave);
 }
 

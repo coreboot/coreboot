@@ -184,6 +184,15 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd)
 	 */
 	mupd->FspmConfig.SkipCseRbp =
 		IS_ENABLED(CONFIG_BOOT_DEVICE_MEMORY_MAPPED);
+
+	/*
+	 * Converged Security Engine (CSE) has secure storage functionality.
+	 * HECI2 device can be used to access that functionality. However, part
+	 * of S3 resume flow involves resetting HECI2 which takes 136ms. Since
+	 * coreboot does not use secure storage functionality, instruct FSP to
+	 * skip HECI2 reset.
+	 */
+	mupd->FspmConfig.EnableS3Heci2 = 0;
 }
 
 __attribute__ ((weak))

@@ -348,7 +348,7 @@ void acpigen_write_processor(u8 cpuindex, u32 pblock_addr, u8 pblock_len)
 	acpigen_emit_byte(0x83);
 	acpigen_write_len_f();
 
-	snprintf(pscope, sizeof (pscope),
+	snprintf(pscope, sizeof(pscope),
 		 "\\_PR.CP%02d", (unsigned int) cpuindex);
 	acpigen_emit_namestring(pscope);
 	acpigen_emit_byte(cpuindex);

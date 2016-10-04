@@ -530,7 +530,12 @@ static void acpi_dp_write_array(const struct acpi_dp *array)
 	/* Package element count determined as it is populated */
 	pkg_count = acpigen_write_package(0);
 
-	for (dp = array; dp; dp = dp->next) {
+	/*
+	 * Only acpi_dp of type DP_TYPE_TABLE is allowed to be an array.
+	 * DP_TYPE_TABLE does not have a value to be written. Thus, start
+	 * the loop from next type in the array.
+	 */
+	for (dp = array->next; dp; dp = dp->next) {
 		acpi_dp_write_value(dp);
 		(*pkg_count)++;
 	}

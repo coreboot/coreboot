@@ -80,7 +80,7 @@ int ptn3460_init(char *hwi_block)
 	cfg.lvds_interface_ctrl2 = 0x03;  /* no clock spreading, 300 mV LVDS swing */
 	cfg.lvds_interface_ctrl3 = 0x00;  /* no LVDS signal swap */
 	cfg.t2_delay = 1;		  /* Delay T2 (VDD to LVDS active) by 16 ms */
-	cfg.t3_timing = 5;		  /* 250 ms from LVDS to backlight active */
+	cfg.t3_timing = 10;		  /* 500 ms from LVDS to backlight active */
 	cfg.t12_timing = 20;		  /* 1 second re-power delay */
 	cfg.t4_timing = 3;		  /* 150 ms backlight off to LVDS inactive */
 	cfg.t5_delay = 1;		  /* Delay T5 (LVDS to VDD inactive) by 16 ms */

@@ -110,6 +110,11 @@ enum acpi_gpio_io_restrict {
 	ACPI_GPIO_IO_RESTRICT_PRESERVE
 };
 
+enum acpi_gpio_polarity {
+	ACPI_GPIO_ACTIVE_HIGH = 0,
+	ACPI_GPIO_ACTIVE_LOW = 1,
+};
+
 #define ACPI_GPIO_REVISION_ID		1
 #define ACPI_GPIO_MAX_PINS 		8
 
@@ -129,13 +134,23 @@ struct acpi_gpio {
 	uint16_t output_drive_strength;		/* 1/100 mA */
 	int io_shared;
 	enum acpi_gpio_io_restrict io_restrict;
+	enum acpi_gpio_polarity polarity;
 };
 
 /* Basic output GPIO with default pull settings */
-#define ACPI_GPIO_OUTPUT(gpio) { \
+#define ACPI_GPIO_OUTPUT_ACTIVE_HIGH(gpio) { \
 	.type = ACPI_GPIO_TYPE_IO, \
 	.pull = ACPI_GPIO_PULL_DEFAULT, \
 	.io_restrict = ACPI_GPIO_IO_RESTRICT_OUTPUT, \
+	.polarity = ACPI_GPIO_ACTIVE_HIGH,     \
+	.pin_count = 1, \
+	.pins = { (gpio) } }
+
+#define ACPI_GPIO_OUTPUT_ACTIVE_LOW(gpio) { \
+	.type = ACPI_GPIO_TYPE_IO, \
+	.pull = ACPI_GPIO_PULL_DEFAULT, \
+	.io_restrict = ACPI_GPIO_IO_RESTRICT_OUTPUT, \
+	.polarity = ACPI_GPIO_ACTIVE_LOW,     \
 	.pin_count = 1, \
 	.pins = { (gpio) } }
 

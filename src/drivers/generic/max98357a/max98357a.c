@@ -55,7 +55,8 @@ static void max98357a_fill_ssdt(struct device *dev)
 	/* This points to the first pin in the first gpio entry in _CRS */
 	path = acpi_device_path(dev);
 	dp = acpi_dp_new_table("_DSD");
-	acpi_dp_add_gpio(dp, "sdmode-gpio", path, 0, 0, 0);
+	acpi_dp_add_gpio(dp, "sdmode-gpio", path, 0, 0,
+			 config->sdmode_gpio.polarity);
 	acpi_dp_add_integer(dp, "sdmode-delay", config->sdmode_delay);
 	acpi_dp_write(dp);
 

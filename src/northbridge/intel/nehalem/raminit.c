@@ -4788,9 +4788,6 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 
 	dump_timings(&info);
 
-#if 0
-	ram_check(0x100000, 0x200000);
-#endif
 	program_modules_memory_map(&info, 0);
 	program_total_memory_map(&info);
 

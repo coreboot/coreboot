@@ -20,7 +20,6 @@
 static void setup_resource_map(const u32 *register_values, u32 max)
 {
 	u32 i;
-//	printk(BIOS_DEBUG, "setting up resource map....");
 
 	for (i = 0; i < max; i += 3) {
 		pci_devfn_t dev;
@@ -34,14 +33,13 @@ static void setup_resource_map(const u32 *register_values, u32 max)
 		reg |= register_values[i+2];
 		pci_write_config32(dev, where, reg);
 	}
-//	printk(BIOS_DEBUG, "done.\n");
 }
 
 
 void setup_resource_map_offset(const u32 *register_values, u32 max, u32 offset_pci_dev, u32 offset_io_base)
 {
 	u32 i;
-//	printk(BIOS_DEBUG, "setting up resource map offset....");
+
 	for (i = 0; i < max; i += 3) {
 		pci_devfn_t dev;
 		u32 where;
@@ -53,7 +51,6 @@ void setup_resource_map_offset(const u32 *register_values, u32 max, u32 offset_p
 		reg |= register_values[i+2] + offset_io_base;
 		pci_write_config32(dev, where, reg);
 	}
-//	printk(BIOS_DEBUG, "done.\n");
 }
 
 #define RES_PCI_IO 0x10
@@ -124,9 +121,7 @@ void setup_resource_map_x_offset(const u32 *register_values, u32 max, u32 offset
 				printk(BIOS_SPEW, "NOW: %08x\n", reg);
 			}
 			break;
-		} // switch
-
-
+		}
 	}
 
 	if (IS_ENABLED(RES_DEBUG))
@@ -180,46 +175,9 @@ void setup_resource_map_x(const u32 *register_values, u32 max)
 			outl(reg, where);
 			}
 			break;
-		} // switch
-
-
+		}
 	}
 
 	if (IS_ENABLED(RES_DEBUG))
 		printk(BIOS_DEBUG, "done.\n");
 }
-
-#if 0
-static void setup_iob_resource_map(const u32 *register_values, u32 max)
-{
-	u32 i;
-
-	for (i = 0; i < max; i += 3) {
-		u32 where;
-		u32 reg;
-
-		where = register_values[i];
-		reg = inb(where);
-		reg &= register_values[i+1];
-		reg |= register_values[i+2];
-		outb(reg, where);
-	}
-}
-
-static void setup_io_resource_map(const u32 *register_values, u32 max)
-{
-	u32 i;
-
-	for (i = 0; i < max; i += 3) {
-		u32 where;
-		u32 reg;
-
-		where = register_values[i];
-		reg = inl(where);
-		reg &= register_values[i+1];
-		reg |= register_values[i+2];
-
-		outl(reg, where);
-	}
-}
-#endif

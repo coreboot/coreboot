@@ -211,14 +211,6 @@
 #define   DTH_TRFC_127_5_1G  2
 #define   DTH_TRFC_195_2G    3
 #define   DTH_TRFC_327_5_4G  4
-#if 0
-//DDR3
-#define   DTH_TRFC_90_512M   1
-#define   DTH_TRFC_110_5_1G  2
-#define   DTH_TRFC_160_2G    3
-#define   DTH_TRFC_300_4G    4
-#define   DTH_TRFC_UNDEFINED_8G   5
-#endif
 #define  DTH_TRFC1_SHIFT   23 /*for Logical DIMM1 */
 #define  DTH_TRFC2_SHIFT   26 /*for Logical DIMM2 */
 #define  DTH_TRFC3_SHIFT   29 /*for Logical DIMM3 */
@@ -353,12 +345,6 @@
 #define   DODCC_ProcOdt_300_OHMS  0
 #define   DODCC_ProcOdt_150_OHMS 1
 #define   DODCC_ProcOdt_75_OHMS  2
-#if 0
-//DDR3
-#define   DODCC_ProcOdt_240_OHMS  0
-#define   DODCC_ProcOdt_120_OHMS 1
-#define   DODCC_ProcOdt_60_OHMS  2
-#endif
 
 /*
    for DDR2 400, 533, 667, F2x[1,0]9C_x[02:01], [03], [06:05], [07] controll timing of all DIMMs
@@ -526,66 +512,6 @@ that are corresponding to 0x01, 0x02, 0x03, 0x05, 0x06, 0x07
 #define DRAM_DQS_RECV_ENABLE_TIMING_CTRL_ECC_3_1 0x2b
 
 /* 04.06.2006 19:12 */
-
-#if 0
-//DDR3
-#define DRAM_DQS_WRITE_TIME_CTRL_0_0 0x30 //DIMM0 Channel A
-#define  DDWTC_WrDqsFineDlyByte0_SHIFT 0
-#define   DDWTC_WrDqsFineDlyByte0_MASK 0x1f
-#define  DDWTC_WrDqsGrossDlyByte0_SHIFT 5
-#define   DDWTC_WrDqsGrossDlyByte0_MASK 0x3
-#define  DDWTC_WrDqsFineDlyByte1_SHIFT 8
-#define  DDWTC_WrDqsGrossDlyByte1_SHIFT 13
-#define  DDWTC_WrDqsFineDlyByte2_SHIFT 16
-#define  DDWTC_WrDqsGrossDlyByte2_SHIFT 21
-#define  DDWTC_WrDqsFineDlyByte3_SHIFT 24
-#define  DDWTC_WrDqsGrossDlyByte3_SHIFT 29
-
-#define DRAM_DQS_WRTIE_TIME_CTRL_0_1 0x31 //DIMM0 Channel A
-#define  DDWTC_WrDqsFineDlyByte4_SHIFT 0
-#define  DDWTC_WrDqsGrossDlyByte4_SHIFT 5
-#define  DDWTC_WrDqsFineDlyByte5_SHIFT 8
-#define  DDWTC_WrDqsGrossDlyByte5_SHIFT 13
-#define  DDWTC_WrDqsFineDlyByte6_SHIFT 16
-#define  DDWTC_WrDqsGrossDlyByte6_SHIFT 21
-#define  DDWTC_WrDqsFineDlyByte7_SHIFT 24
-#define  DDWTC_WrDqsGrossDlyByte7_SHIFT 29
-
-#define DRAM_DQS_WRITE_TIMING_CTRL_ECC_0_0 0x32
-#define  DDWTCE_WrDqsChkFineDlyByte0_SHIFT 0
-#define  DDWTCE_WrDqsChkGrossDlyByte0_SHIFT 5
-
-#define DRAM_DQS_WRITE_TIME_CTRL_0_2 0x40 //DIMM0 Channel B
-#define  DDWTC_WrDqsFineDlyByte8_SHIFT 0
-#define  DDWTC_WrDqsGrossDlyByte8_SHIFT 5
-#define  DDWTC_WrDqsFineDlyByte9_SHIFT 8
-#define  DDWTC_WrDqsGrossDlyByte9_SHIFT 13
-#define  DDWTC_WrDqsFineDlyByte10_SHIFT 16
-#define  DDWTC_WrDqsGrossDlyByte10_SHIFT 21
-#define  DDWTC_WrDqsFineDlyByte11_SHIFT 24
-#define  DDWTC_WrDqsGrossDlyByte11_SHIFT 29
-
-#define DRAM_DQS_WRTIE_TIME_CTRL_0_3 0x41 //DIMM0 Channel B
-#define  DDWTC_WrDqsFineDlyByte12_SHIFT 0
-#define  DDWTC_WrDqsGrossDlyByte12_SHIFT 5
-#define  DDWTC_WrDqsFineDlyByte13_SHIFT 8
-#define  DDWTC_WrDqsGrossDlyByte13_SHIFT 13
-#define  DDWTC_WrDqsFineDlyByte14_SHIFT 16
-#define  DDWTC_WrDqsGrossDlyByte14_SHIFT 21
-#define  DDWTC_WrDqsFineDlyByte15_SHIFT 24
-#define  DDWTC_WrDqsGrossDlyByte15_SHIFT 29
-
-#define DRAM_DQS_WRITE_TIMING_CTRL_ECC_0_1 0x42
-#define  DDWTCE_WrDqsChkFineDlyByte1_SHIFT 0
-#define  DDWTCE_WrDqsChkGrossDlyByte1_SHIFT 5
-
-#define DRAM_DQS_WRITE_TIME_CTRL_1_0 0x33 //DIMM1 Channel A
-#define DRAM_DQS_WRTIE_TIME_CTRL_1_1 0x34 //DIMM1 Channel A
-#define DRAM_DQS_WRITE_TIMING_CTRL_ECC_1_0 0x35
-#define DRAM_DQS_WRITE_TIME_CTRL_1_2 0x43 //DIMM1 Channel B
-#define DRAM_DQS_WRTIE_TIME_CTRL_1_3 0x44 //DIMM1 Channel B
-#define DRAM_DQS_WRITE_TIMING_CTRL_ECC_1_1 0x45
-#endif
 
 #define DRAM_PHASE_RECOVERY_CTRL_0 0x50
 #define  DPRC_PhRecFineDlyByte0_SHIFT 0

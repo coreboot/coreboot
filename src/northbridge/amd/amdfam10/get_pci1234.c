@@ -71,12 +71,10 @@ void get_pci1234(void)
 	//here we need to set hcdn
 	//1. hypertransport.c need to record hcdn_reg together with 0xe0, 0xe4, 0xe8, 0xec when are set
 	//2. so at the same time we need update hsdn with hcdn_reg here
-//	printk(BIOS_DEBUG, "sysconf.ht_c_num = %02d\n", sysconf.ht_c_num);
 
 	for (j = 0; j < sysconf.ht_c_num; j++) {
 		u32 dwordx;
 		dwordx = sysconf.ht_c_conf_bus[j];
-//		printk(BIOS_DEBUG, "sysconf.ht_c_conf_bus[%02d] = %08x\n", j, sysconf.ht_c_conf_bus[j]);
 		dwordx &=0xfffffffd; //keep bus num, node_id, link_num, enable bits
 		if ((dwordx & 0x7fd) == dword) { //SBLINK
 			sysconf.pci1234[0] = dwordx;

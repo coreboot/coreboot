@@ -16,29 +16,6 @@
 #ifndef RAMINIT_H
 #define RAMINIT_H
 
-#if 0
-#if CONFIG_DIMM_SUPPORT == 0x0110
-//FBDIMM REG
-/* each channel can have 8 fbdimm */
-#define DIMM_SOCKETS 8
-struct mem_controller {
-	u32 node_id;
-	pci_devfn_t f0, f1, f2, f3, f4, f5;
-	/* channelA, channelB belong to DCT0,
-	 * channelC, channelD belong to DCT1
-	 * Each DCT may support one ganged logical FBDIMM ---> 128 bit
-	 *			 or a single unganged channel --->64 bit
-	 * a DCT can not support 2 unganged channels
-	 * two DCTs can not be ganged
-	 */
-	u8 spd_switch_addr;
-	u8 spd_addr[DIMM_SOCKETS*4];
-};
-
-#endif
-#endif
-
-//#if (CONFIG_DIMM_SUPPORT & 0x00ff) == 0x0004
 //DDR2 REG and unbuffered : Socket F 1027 and AM3
 /* every channel have 4 DDR2 DIMM for socket F
  *		       2 for socket M2/M3
@@ -62,8 +39,5 @@ struct mem_controller {
 	u8 spd_switch_addr;
 	u8 spd_addr[DIMM_SOCKETS*2];
 };
-
-//#endif
-
 
 #endif

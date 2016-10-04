@@ -134,8 +134,6 @@ static inline void dump_pci_device_index_wait(u32 dev, u32 index_reg)
 {
 	dump_pci_device_index_wait_range(dev, index_reg, 0, 0x54);
 	dump_pci_device_index_wait_range(dev, index_reg, 0x100, 0x08); //DIMM1 when memclk > 400Hz
-//	dump_pci_device_index_wait_range(dev, index_reg, 0x200, 0x08); //DIMM2
-//	dump_pci_device_index_wait_range(dev, index_reg, 0x300, 0x08); //DIMM3
 }
 
 static inline void dump_pci_device_index(u32 dev, u32 index_reg, u32 type, u32 length)

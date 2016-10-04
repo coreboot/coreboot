@@ -202,17 +202,6 @@ void set_io_addr_reg(device_t dev, u32 nodeid, u32 linkn, u32 reg,
 		pci_write_config32(__f1_dev[i], reg+4, tempreg);
 
 	tempreg = 3 /*| (3<<4)*/ | ((io_min&0xf0)<<(12-4));	      //base :ISA and VGA ?
-#if 0
-	// FIXME: can we use VGA reg instead?
-	if (dev->link[link].bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
-		printk(BIOS_SPEW, "%s, enabling legacy VGA IO forwarding for %s link %s\n",
-			__func__, dev_path(dev), link);
-		tempreg |= PCI_IO_BASE_VGA_EN;
-	}
-	if (dev->link[link].bridge_ctrl & PCI_BRIDGE_CTL_NO_ISA) {
-		tempreg |= PCI_IO_BASE_NO_ISA;
-	}
-#endif
 	for (i = 0; i < sysconf.nodes; i++)
 		pci_write_config32(__f1_dev[i], reg, tempreg);
 }

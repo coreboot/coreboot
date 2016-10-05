@@ -24,7 +24,7 @@ config MAINBOARD_HAS_NATIVE_VGA_INIT
 # FIXME Ugly hack to allow Z9s driver native framebuffer configuration
 config NATIVE_VGA_INIT_USE_EDID
 	bool
-	default n if DRIVERS_XGI_Z9S
+	default n if DRIVERS_XGI_Z9S || MAINBOARD_USE_LIBGFXINIT
 	default y if !DRIVERS_XGI_Z9S
 
 config MAINBOARD_HAS_NATIVE_VGA_INIT_TEXTMODECFG
@@ -41,6 +41,23 @@ config MAINBOARD_DO_NATIVE_VGA_INIT
 	  faster, but also lacks flexibility in setting modes.
 
 	  If unsure, say N.
+
+config MAINBOARD_HAS_LIBGFXINIT
+	def_bool n
+	select MAINBOARD_HAS_NATIVE_VGA_INIT
+	help
+	  Selected by mainboards that implement support for `libgfxinit`.
+	  Usually this requires a list of ports to be probed for displays.
+
+config MAINBOARD_USE_LIBGFXINIT
+	bool "Use libgfxinit for native graphics initialization"
+	depends on MAINBOARD_DO_NATIVE_VGA_INIT
+	depends on MAINBOARD_HAS_LIBGFXINIT
+	select RAMSTAGE_LIBHWBASE
+	default n
+	help
+	  Use the SPARK library `libgfxinit` for the native graphics
+	  initialization. This requires an Ada toolchain.
 
 # TODO: Explain differences (if any) for onboard cards.
 config VGA_ROM_RUN

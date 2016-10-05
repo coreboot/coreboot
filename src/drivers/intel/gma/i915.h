@@ -309,4 +309,7 @@ void
 generate_fake_intel_oprom(const struct i915_gpu_controller_info *conf,
 			  struct device *dev, const char *idstr);
 
+/* interface to libgfxinit (gma.adb) */
+void gma_gfxinit(u64 mmio_base, u64 linear_fb, u32 phys_fb, int *success);
+
 #endif

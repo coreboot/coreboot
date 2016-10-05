@@ -1024,8 +1024,14 @@ static void gma_func0_init(struct device *dev)
 	    && lfb_res && lfb_res->base) {
 		printk(BIOS_SPEW, "Initializing VGA without OPROM. MMIO 0x%llx\n",
 		       gtt_res->base);
-		intel_gma_init(conf, res2mmio(gtt_res, 0, 0), physbase,
-			       pio_res->base, lfb_res->base);
+		if (IS_ENABLED(CONFIG_MAINBOARD_USE_LIBGFXINIT)) {
+			int lightup_ok;
+			gma_gfxinit(gtt_res->base, lfb_res->base,
+				    physbase, &lightup_ok);
+		} else {
+			intel_gma_init(conf, res2mmio(gtt_res, 0, 0), physbase,
+				       pio_res->base, lfb_res->base);
+		}
 	}
 
 	/* Linux relies on VBT for panel info. */

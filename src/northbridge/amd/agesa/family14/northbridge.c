@@ -36,7 +36,6 @@
 #include <sb_cimx.h>
 #endif
 
-//#define FX_DEVS NODE_NUMS
 #define FX_DEVS 1
 
 static device_t __f0_dev[FX_DEVS];
@@ -280,32 +279,6 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 			mem_hole.node_id = 0;	// record the node No with hole
 		}
 	}
-#if 0
-	/* We need to double check if there is special set on base reg and limit reg
-	 * are not continuous instead of hole, it will find out its hole_startk.
-	 */
-	if (mem_hole.node_id == -1) {
-		resource_t limitk_pri = 0;
-		struct dram_base_mask_t d;
-		resource_t base_k, limit_k;
-		d = get_dram_base_mask(0);
-		if (d.base & 1) {
-			base_k = ((resource_t) (d.base & 0x1fffff00)) << 9;
-			if (base_k <= 4 * 1024 * 1024) {
-				if (limitk_pri != base_k) {	// we find the hole
-					mem_hole.hole_startk = (unsigned)limitk_pri;	// must be below 4G
-					mem_hole.node_id = 0;
-				}
-			}
-
-			limit_k =
-			    ((resource_t) ((d.mask + 0x00000100) & 0x1fffff00))
-			    << 9;
-			limitk_pri = limit_k;
-		}
-	}
-#endif
-
 	return mem_hole;
 }
 #endif

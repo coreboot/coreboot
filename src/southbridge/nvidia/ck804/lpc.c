@@ -136,12 +136,6 @@ static void lpc_init(device_t dev)
 		printk(BIOS_DEBUG, "Throttling CPU %2d.%1.1d percent.\n",
 		       (on * 12) + (on >> 1), (on & 1) * 5);
 	}
-#if 0
-	/* Enable Port 92 fast reset (default is enabled). */
-	byte = pci_read_config8(dev, 0xe8);
-	byte |= ~(1 << 3);
-	pci_write_config8(dev, 0xe8, byte);
-#endif
 
 	/* Set up NMI on errors. */
 	byte = inb(0x70);		/* RTC70 */

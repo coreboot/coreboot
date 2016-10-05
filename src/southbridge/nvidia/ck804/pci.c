@@ -33,18 +33,9 @@ static void pci_init(struct device *dev)
 	dword |= (1 << 30);	/* Clear possible errors */
 	pci_write_config32(dev, 0x04, dword);
 
-#if 0
-	word = pci_read_config16(dev, 0x48);
-	word |= (1 << 0);	/* MRL2MRM */
-	word |= (1 << 2);	/* MR2MRM */
-	pci_write_config16(dev, 0x48, word);
-#endif
-
-#if 1
 	dword = pci_read_config32(dev, 0x4c);
 	dword |= 0x00440000;	/* TABORT_SER_ENABLE Park Last Enable. */
 	pci_write_config32(dev, 0x4c, dword);
-#endif
 
 	pci_domain_dev = dev->bus->dev;
 	while (pci_domain_dev) {

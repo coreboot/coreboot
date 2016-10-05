@@ -68,9 +68,7 @@ void mcp55_enable(device_t dev)
 	if (dev->device == 0x0000) {
 		vendorid = pci_read_config32(dev, PCI_VENDOR_ID);
 		deviceid = (vendorid >> 16) & 0xffff;
-//		vendorid &= 0xffff;
 	} else {
-//		vendorid = dev->vendor;
 		deviceid = dev->device;
 	}
 
@@ -200,15 +198,6 @@ void mcp55_enable(device_t dev)
 				| (1 << 11) | (1 << 10) | (1 << 9));
 		pci_write_config32(sm_dev, 0xe8, final_reg); /* Enable all at first. */
 
-#if 0
-		reg_old = reg = pci_read_config32(sm_dev, 0xe4);
-//		reg |= (1 << 0);
-		reg &= ~(0x3f << 4);
-		if (reg != reg_old) {
-			printk(BIOS_DEBUG, "mcp55.c pcie enabled\n");
-			pci_write_config32(sm_dev, 0xe4, reg);
-		}
-#endif
 	}
 
 	if (!dev->enabled) {

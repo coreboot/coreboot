@@ -293,36 +293,16 @@ static void enable_shadow(device_t dev)
 
 static void northbridge_init(device_t dev)
 {
-	//msr_t msr;
 
 	printk(BIOS_SPEW, ">> Entering northbridge.c: %s\n", __func__);
 
 	enable_shadow(dev);
-	/*
-	 * Swiss cheese
-	 */
-	//msr = rdmsr(MSR_GLIU0_SHADOW);
 
-	//msr.hi |= 0x3;
-	//msr.lo |= 0x30000;
-
-	//printk(BIOS_DEBUG, "MSR 0x%08X is now 0x%08X:0x%08X\n", MSR_GLIU0_SHADOW, msr.hi, msr.lo);
-	//printk(BIOS_DEBUG, "MSR 0x%08X is now 0x%08X:0x%08X\n", MSR_GLIU1_SHADOW, msr.hi, msr.lo);
 }
 
 static void northbridge_set_resources(struct device *dev)
 {
 	uint8_t line;
-
-#if 0
-	struct resource *res;
-	for (res = dev->resource_list; res; res = res->next) {
-
-		// andrei: do not change the base address, it will make the VSA virtual registers unusable
-		//pci_set_resource(dev, res);
-		// FIXME: static allocation may conflict with dynamic mappings!
-	}
-#endif
 
 	struct bus *bus;
 	for (bus = dev->link_list; bus; bus = bus->next) {
@@ -400,11 +380,7 @@ static void pci_domain_enable(device_t dev)
 	cpubug();
 	chipsetinit();
 
-	// print_conf();
-
 	do_vsmbios();		// do the magic stuff here, so prepare your tambourine;)
-
-	// print_conf();
 
 	graphics_init();
 }

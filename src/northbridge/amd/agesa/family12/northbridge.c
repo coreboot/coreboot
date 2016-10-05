@@ -34,7 +34,6 @@
 #include "sb_cimx.h"
 #include <northbridge/amd/agesa/agesawrapper.h>
 
-//#define FX_DEVS NODE_NUMS
 #define FX_DEVS 1
 
 static device_t __f0_dev[FX_DEVS];
@@ -284,31 +283,6 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 			mem_hole.node_id = 0; // record the node No with hole
 		}
 	}
-
-#if 0
-	/* We need to double check if there is special set on base reg and limit reg
-	 * are not continuous instead of hole, it will find out its hole_startk.
-	 */
-	if (mem_hole.node_id==-1) {
-		resource_t limitk_pri = 0;
-		struct dram_base_mask_t d;
-		resource_t base_k, limit_k;
-		d = get_dram_base_mask(0);
-		if (d.base & 1) {
-			base_k = ((resource_t)(d.base & 0x1fffff00)) <<9;
-			if (base_k <= 4 *1024 * 1024) {
-				if (limitk_pri != base_k) { // we find the hole
-					mem_hole.hole_startk = (unsigned)limitk_pri; // must be below 4G
-					mem_hole.node_id = 0;
-				}
-			}
-
-		limit_k = ((resource_t)((d.mask + 0x00000100) & 0x1fffff00)) << 9;
-		limitk_pri = limit_k;
-		}
-	}
-#endif
-
 	return mem_hole;
 }
 #endif
@@ -772,7 +746,6 @@ static unsigned long agesa_write_acpi_tables(device_t device,
 	if (srat != NULL) {
 		memcpy((void *)current, srat, srat->header.length);
 		srat = (acpi_srat_t *) current;
-		//acpi_create_srat(srat);
 		current += srat->header.length;
 		acpi_add_table(rsdp, srat);
 	}
@@ -784,7 +757,6 @@ static unsigned long agesa_write_acpi_tables(device_t device,
 	if (slit != NULL) {
 		memcpy((void *)current, slit, slit->header.length);
 		slit = (acpi_slit_t *) current;
-		//acpi_create_slit(slit);
 		current += slit->header.length;
 		acpi_add_table(rsdp, slit);
 	}

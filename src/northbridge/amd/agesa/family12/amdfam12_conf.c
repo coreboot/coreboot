@@ -84,34 +84,11 @@ static void clear_ht_c_io_addr_reg(u32 nodeid, u32 linkn, u32 ht_c_index,
 #if !defined(__PRE_RAM__)
 static u32 get_io_addr_index(u32 nodeid, u32 linkn)
 {
-#if 0
-	u32 index;
-
-	for (index = 0; index < 256; index++) {
-		if (sysconf.conf_io_addrx[index+4] == 0) {
-			sysconf.conf_io_addr[index+4] =  (nodeid & 0x3f);
-			sysconf.conf_io_addrx[index+4] = 1 | ((linkn & 0x7)<<4);
-			return index;
-		 }
-	 }
-#endif
 	 return	 0;
 }
 
 static u32 get_mmio_addr_index(u32 nodeid, u32 linkn)
 {
-#if 0
-	u32 index;
-
-	for (index = 0; index < 64; index++) {
-		if (sysconf.conf_mmio_addrx[index+8] == 0) {
-			sysconf.conf_mmio_addr[index+8] = (nodeid & 0x3f);
-			sysconf.conf_mmio_addrx[index+8] = 1 | ((linkn & 0x7)<<4);
-			return index;
-		}
-	}
-#endif
-
 	return	 0;
 }
 
@@ -125,17 +102,6 @@ static void set_io_addr_reg(device_t dev, u32 nodeid, u32 linkn, u32 reg,
 	pci_write_config32(__f1_dev[0], reg+4, tempreg);
 
 	tempreg = 3 /*| (3<<4)*/ | ((io_min&0xf0)<<(12-4));	      //base :ISA and VGA ?
-#if 0
-	// FIXME: can we use VGA reg instead?
-	if (dev->link[link].bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
-		printk(BIOS_SPEW, "%s, enabling legacy VGA IO forwarding for %s link %s\n",
-			__func__, dev_path(dev), link);
-		tempreg |= PCI_IO_BASE_VGA_EN;
-	}
-	if (dev->link[link].bridge_ctrl & PCI_BRIDGE_CTL_NO_ISA) {
-		tempreg |= PCI_IO_BASE_NO_ISA;
-	}
-#endif
 	pci_write_config32(__f1_dev[0], reg, tempreg);
 }
 

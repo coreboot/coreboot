@@ -56,13 +56,6 @@ static uint8_t ht_lookup_slave_capability(pci_devfn_t dev)
 	return ht_lookup_capability(dev, 0); // Slave/Primary Interface Block Format
 }
 
-#if 0
-static uint8_t ht_lookup_host_capability(pci_devfn_t dev)
-{
-	return ht_lookup_capability(dev, 1); // Host/Secondary Interface Block Format
-}
-#endif
-
 static void ht_collapse_previous_enumeration(uint8_t bus, unsigned offset_unitid)
 {
 	pci_devfn_t dev;
@@ -469,40 +462,6 @@ end_of_chain:;
 #endif
 
 }
-
-#if 0
-#if CONFIG_RAMINIT_SYSINFO
-static void ht_setup_chain(pci_devfn_t udev, unsigned upos,
-		struct sys_info *sysinfo)
-#else
-static int ht_setup_chain(pci_devfn_t udev, unsigned upos)
-#endif
-{
-	unsigned offset_unitid = 0;
-#if ((CONFIG_HT_CHAIN_UNITID_BASE != 1) || (CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20))
-	offset_unitid = 1;
-#endif
-
-	/* Assumption the HT chain that is bus 0 has the HT I/O Hub on it.
-	 * On most boards this just happens.  If a CPU has multiple
-	 * non Coherent links the appropriate bus registers for the
-	 * links needs to be programed to point at bus 0.
-	 */
-
-	/* Make certain the HT bus is not enumerated */
-	ht_collapse_previous_enumeration(0, 0);
-
-#if ((CONFIG_HT_CHAIN_UNITID_BASE != 1) || (CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20))
-	offset_unitid = 1;
-#endif
-
-#if CONFIG_RAMINIT_SYSINFO
-	ht_setup_chainx(udev, upos, 0, offset_unitid, sysinfo);
-#else
-	return ht_setup_chainx(udev, upos, 0, offset_unitid);
-#endif
-}
-#endif
 
 static int optimize_link_read_pointer(uint8_t node, uint8_t linkn, uint8_t linkt, uint8_t val)
 {

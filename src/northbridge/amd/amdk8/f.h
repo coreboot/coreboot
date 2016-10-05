@@ -555,11 +555,6 @@ static inline void wait_all_core0_mem_trained(struct sys_info *sysinfo)
 
 		if (!mask) break;
 
-#if 0
-		/* cpu_relax */
-		__asm__ __volatile__("rep;nop": : :"memory");
-#endif
-
 		i++;
 		i%=sysinfo->nodes;
 	}

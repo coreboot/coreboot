@@ -27,44 +27,6 @@
 
 #include <cpu/amd/amdk8_sysconf.h>
 
-
-#if 0
-unsigned node_link_to_bus(unsigned node, unsigned link)
-{
-	device_t dev;
-	unsigned reg;
-
-	dev = dev_find_slot(0, PCI_DEVFN(0x18, 1));
-	if (!dev) {
-		return 0;
-	}
-	for (reg = 0xE0; reg < 0xF0; reg += 0x04) {
-		uint32_t config_map;
-		unsigned dst_node;
-		unsigned dst_link;
-		unsigned bus_base;
-		config_map = pci_read_config32(dev, reg);
-		if ((config_map & 3) != 3) {
-			continue;
-		}
-		dst_node = (config_map >> 4) & 7;
-		dst_link = (config_map >> 8) & 3;
-		bus_base = (config_map >> 16) & 0xff;
-#if 0
-		printk(BIOS_DEBUG, "node.link=bus: %d.%d=%d 0x%2x->0x%08x\n",
-			dst_node, dst_link, bus_base,
-			reg, config_map);
-#endif
-		if ((dst_node == node) && (dst_link == link))
-		{
-			return bus_base;
-		}
-	}
-	return 0;
-}
-#endif
-
-
 /*
  * Why we need the pci1234[] array
  *

@@ -190,12 +190,13 @@ add-special-class= \
 src-to-obj=\
 	$(patsubst $(obj)/%,$(obj)/$(1)/%,\
 	$(patsubst $(obj)/$(1)/%,$(obj)/%,\
+	$(patsubst 3rdparty/%,$(obj)/%,\
 	$(patsubst src/%,$(obj)/%,\
 	$(patsubst %.ads,%.o,\
 	$(patsubst %.adb,%.o,\
 	$(patsubst %.c,%.o,\
 	$(patsubst %.S,%.o,\
-	$(subst .$(1),,$(2)))))))))
+	$(subst .$(1),,$(2))))))))))
 
 # Converts one or more source file paths to the corresponding build/ paths
 # of their Ada library information (.ali) files.
@@ -204,11 +205,12 @@ src-to-obj=\
 src-to-ali=\
 	$(patsubst $(obj)/%,$(obj)/$(1)/%,\
 	$(patsubst $(obj)/$(1)/%,$(obj)/%,\
+	$(patsubst 3rdparty/%,$(obj)/%,\
 	$(patsubst src/%,$(obj)/%,\
 	$(patsubst %.ads,%.ali,\
 	$(patsubst %.adb,%.ali,\
 	$(subst .$(1),,\
-	$(filter %.ads %.adb,$(2))))))))
+	$(filter %.ads %.adb,$(2)))))))))
 
 # Clean -y variables, include Makefile.inc
 # Add paths to files in X-y to X-srcs

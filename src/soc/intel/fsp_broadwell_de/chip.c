@@ -66,21 +66,9 @@ static void enable_dev(device_t dev)
 	}
 }
 
-static void fsp_notify(void *arg)
-{
-	FspNotify (*(uint32_t *)arg);
-}
-
-static uint32_t gFspNotifyAfterPciEnumeration = EnumInitPhaseAfterPciEnumeration;
-static uint32_t gFspNotifyReadtToBoot         = EnumInitPhaseReadyToBoot;
-static BOOT_STATE_CALLBACK(bscb_fspnotify1, fsp_notify, &gFspNotifyAfterPciEnumeration);
-static BOOT_STATE_CALLBACK(bscb_fspnotify2, fsp_notify, &gFspNotifyReadtToBoot);
-
 /* Called at BS_DEV_INIT_CHIPS time -- very early. Just after BS_PRE_DEVICE. */
 static void soc_init(void *chip_info)
 {
-	boot_state_sched_on_exit(&bscb_fspnotify1, BS_DEV_RESOURCES);
-	boot_state_sched_on_exit(&bscb_fspnotify2, BS_PAYLOAD_LOAD);
 	broadwell_de_init_pre_device();
 }
 

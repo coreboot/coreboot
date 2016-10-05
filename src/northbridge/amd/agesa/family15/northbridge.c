@@ -83,17 +83,6 @@ static void set_io_addr_reg(device_t dev, u32 nodeid, u32 linkn, u32 reg,
 	for (i = 0; i < node_nums; i++)
 		pci_write_config32(__f1_dev[i], reg+4, tempreg);
 	tempreg = 3 /*| (3<<4)*/ | ((io_min&0xf0)<<(12-4));	      //base :ISA and VGA ?
-#if 0
-	// FIXME: can we use VGA reg instead?
-	if (dev->link[link].bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
-		printk(BIOS_SPEW, "%s, enabling legacy VGA IO forwarding for %s link %s\n",
-				__func__, dev_path(dev), link);
-		tempreg |= PCI_IO_BASE_VGA_EN;
-	}
-	if (dev->link[link].bridge_ctrl & PCI_BRIDGE_CTL_NO_ISA) {
-		tempreg |= PCI_IO_BASE_NO_ISA;
-	}
-#endif
 	for (i = 0; i < node_nums; i++)
 		pci_write_config32(__f1_dev[i], reg, tempreg);
 }
@@ -465,7 +454,6 @@ static void scan_chains(device_t dev)
 	if (nodeid == 0) {
 		ASSERT(dev->bus->secondary == 0);
 		for (link = dev->link_list; link; link = link->next) {
-			//if (link->link_num == sblink) { /* devicetree put IO Hub on link_lsit[sblink] */
 			if (link->link_num == 0) { /* devicetree put IO Hub on link_lsit[0] */
 				io_hub = link->children;
 				if (!io_hub || !io_hub->enabled) {
@@ -544,7 +532,6 @@ static unsigned long agesa_write_acpi_tables(device_t device,
 	if (srat != NULL) {
 		memcpy((void *)current, srat, srat->header.length);
 		srat = (acpi_srat_t *) current;
-		//acpi_create_srat(srat);
 		current += srat->header.length;
 		acpi_add_table(rsdp, srat);
 	}
@@ -556,7 +543,6 @@ static unsigned long agesa_write_acpi_tables(device_t device,
 	if (slit != NULL) {
 		memcpy((void *)current, slit, slit->header.length);
 		slit = (acpi_slit_t *) current;
-		//acpi_create_slit(slit);
 		current += slit->header.length;
 		acpi_add_table(rsdp, slit);
 	}
@@ -819,8 +805,6 @@ static void domain_set_resources(device_t dev)
 			sizek = limitk - ((8*64)+(16*16));
 
 		}
-
-		//printk(BIOS_DEBUG, "node %d : mmio_basek=%08lx, basek=%08llx, limitk=%08llx\n", i, mmio_basek, basek, limitk);
 
 		/* split the region to accommodate pci memory space */
 		if ((basek < 4*1024*1024) && (limitk > mmio_basek)) {

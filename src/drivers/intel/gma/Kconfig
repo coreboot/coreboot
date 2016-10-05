@@ -36,3 +36,54 @@ config INTEL_INT15
 config INTEL_GMA_ACPI
 	bool
 	default n
+
+config GFX_GMA_CPU
+	string
+	default "Skylake" if SOC_INTEL_SKYLAKE
+	default "Broadwell" if SOC_INTEL_BROADWELL
+	default "Haswell" if NORTHBRIDGE_INTEL_HASWELL
+	default "Ivybridge" if NORTHBRIDGE_INTEL_IVYBRIDGE
+	default "Sandybridge" if NORTHBRIDGE_INTEL_SANDYBRIDGE
+	default "Ironlake" if NORTHBRIDGE_INTEL_NEHALEM
+
+config GFX_GMA_CPU_VARIANT
+	string
+	default "ULT" if (SOC_INTEL_SKYLAKE && !SKYLAKE_SOC_PCH_H) || SOC_INTEL_BROADWELL || NORTHBRIDGE_INTEL_HASWELL
+	default "Normal"
+
+config GFX_GMA_INTERNAL_IS_EDP
+	bool
+	default n if GFX_GMA_INTERNAL_IS_LVDS
+	default y
+
+config GFX_GMA_INTERNAL_IS_LVDS
+	bool
+	default n
+
+config GFX_GMA_INTERNAL_PORT
+	string
+	default "DP" if GFX_GMA_INTERNAL_IS_EDP
+	default "LVDS"
+
+config GFX_GMA_ANALOG_I2C_HDMI_B
+	bool
+	default n
+
+config GFX_GMA_ANALOG_I2C_HDMI_C
+	bool
+	default n
+
+config GFX_GMA_ANALOG_I2C_HDMI_D
+	bool
+	default n
+
+config GFX_GMA_ANALOG_I2C_PORT
+	string
+	default "PCH_HDMI_B" if GFX_GMA_ANALOG_I2C_HDMI_B
+	default "PCH_HDMI_C" if GFX_GMA_ANALOG_I2C_HDMI_C
+	default "PCH_HDMI_D" if GFX_GMA_ANALOG_I2C_HDMI_D
+	default "PCH_DAC"
+	help
+	  Boards with a DVI-I connector share the I2C pins for both analog and
+	  digital displays. In that case, the EDID for a VGA display has to be
+	  read over the I2C interface of the coupled digital port.

@@ -51,13 +51,6 @@ static void sata_com_reset(struct device *dev, unsigned reset)
 	*(base + 8) = dword;
 	*(base + 0x48) = dword;
 
-#if 0
-	udelay(1000);
-	dword &= ~(0xf);
-	*(base + 8) = dword;
-	*(base + 0x48) = dword;
-#endif
-
 	if (reset)
 		return;
 
@@ -109,17 +102,6 @@ static void sata_init(struct device *dev)
 		dword |= (1 << 1);
 		printk(BIOS_DEBUG, "SATA P\n");
 	}
-#if 0
-	/* Write back */
-	dword |= (1 << 12);
-	dword |= (1 << 14);
-#endif
-
-#if 0
-	/* ADMA */
-	dword |= (1 << 16);
-	dword |= (1 << 17);
-#endif
 
 #if 1
 	/* DO NOT relay OK and PAGE_FRNDLY_DTXFR_CNT. */
@@ -127,23 +109,6 @@ static void sata_init(struct device *dev)
 	dword |= (0x15 << 24);
 #endif
 	pci_write_config32(dev, 0x50, dword);
-
-#if 0
-	/* SLUMBER_DURING_D3 */
-	dword = pci_read_config32(dev, 0x7c);
-	dword &= ~(1 << 4);
-	pci_write_config32(dev, 0x7c, dword);
-
-	dword = pci_read_config32(dev, 0xd0);
-	dword &= ~(0xff << 24);
-	dword |= (0x68 << 24);
-	pci_write_config32(dev, 0xd0, dword);
-
-	dword = pci_read_config32(dev, 0xe0);
-	dword &= ~(0xff << 24);
-	dword |= (0x68 << 24);
-	pci_write_config32(dev, 0xe0, dword);
-#endif
 
 	dword = pci_read_config32(dev, 0xf8);
 	dword |= 2;

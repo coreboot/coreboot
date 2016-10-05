@@ -91,11 +91,6 @@ static void lpc_init(device_t dev)
 
 	lpc_common_init(dev, 1);
 
-#if 0
-	/* Posted memory write enable. */
-	byte = pci_read_config8(dev, 0x46);
-	pci_write_config8(dev, 0x46, byte | (1 << 0));
-#endif
 	/* power after power fail */
 
 #if 1
@@ -121,13 +116,6 @@ static void lpc_init(device_t dev)
 		printk(BIOS_DEBUG, "Throttling CPU %2d.%1.1d percent.\n",
 		       (on * 12) + (on >> 1), (on & 1) * 5);
 	}
-
-#if 0
-	/* Enable Port 92 fast reset (default is enabled). */
-	byte = pci_read_config8(dev, 0xe8);
-	byte |= ~(1 << 3);
-	pci_write_config8(dev, 0xe8, byte);
-#endif
 
 	/* Enable error reporting. */
 	/* Set up sync flood detected. */
@@ -258,7 +246,6 @@ static struct device_operations lpc_ops = {
 	.enable_resources = mcp55_lpc_enable_resources,
 	.init             = lpc_init,
 	.scan_bus         = scan_lpc_bus,
-//	.enable           = mcp55_enable,
 	.ops_pci          = &mcp55_pci_ops,
 };
 static const unsigned short lpc_ids[] = {
@@ -295,7 +282,6 @@ static struct device_operations lpc_slave_ops = {
 	.write_acpi_tables      = acpi_write_hpet,
 #endif
 	.init             = lpc_slave_init,
-//	.enable           = mcp55_enable,
 	.ops_pci          = &mcp55_pci_ops,
 };
 

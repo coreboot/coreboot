@@ -253,7 +253,6 @@ static void mcp55_early_setup(unsigned mcp55_num, unsigned *busn,
 #if CONFIG_MCP55_USE_AZA
 	RES_PCI_IO, PCI_ADDR(0, 6, 1, 0x40), 0x00000000, 0xCB8410DE,
 
-	// RES_PCI_IO, PCI_ADDR(0, 1, 1, 0xE4), ~(1 << 14), (1 << 14),
 #endif
 
 #ifdef MCP55_MB_SETUP
@@ -326,22 +325,6 @@ static void mcp55_early_setup(unsigned mcp55_num, unsigned *busn,
 				PCI_DEV(busn[j], devn[j], 0), io_base[j]);
 	}
 
-#if 0
-	for (j = 0; j < mcp55_num; j++) {
-		// PCI-E (XSPLL) SS table 0x40, x044, 0x48
-		// SATA  (SPPLL) SS table 0xb0, 0xb4, 0xb8
-		// CPU   (PPLL)  SS table 0xc0, 0xc4, 0xc8
-		setup_ss_table(io_base[j] + ANACTRL_IO_BASE + 0x40,
-			io_base[j] + ANACTRL_IO_BASE + 0x44,
-			io_base[j] + ANACTRL_IO_BASE + 0x48, pcie_ss_tbl, 64);
-		setup_ss_table(io_base[j] + ANACTRL_IO_BASE + 0xb0,
-			io_base[j] + ANACTRL_IO_BASE + 0xb4,
-			io_base[j] + ANACTRL_IO_BASE + 0xb8, sata_ss_tbl, 64);
-		setup_ss_table(io_base[j] + ANACTRL_IO_BASE + 0xc0,
-			io_base[j] + ANACTRL_IO_BASE + 0xc4,
-			io_base[j] + ANACTRL_IO_BASE + 0xc8, cpu_ss_tbl, 64);
-	}
-#endif
 }
 
 #ifndef HT_CHAIN_NUM_MAX
@@ -404,8 +387,6 @@ out:
 	mcp55_early_setup(mcp55_num, busn, devn, io_base, pci_e_x);
 
 	mcp55_early_clear_port(mcp55_num, busn, devn, io_base);
-
-	// set_ht_link_mcp55(HT_CHAIN_NUM_MAX);
 
 	return 0;
 }

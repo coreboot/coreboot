@@ -28,13 +28,8 @@ static void mcp55_enable_rom(void)
 	pci_devfn_t addr;
 
 	/* Enable 4MB ROM access at 0xFFC00000 - 0xFFFFFFFF. */
-#if 0
-	/* Default MCP55 LPC single */
-	addr = pci_locate_device(PCI_ID(0x10de, 0x0367), 0);
-#else
-//	addr = pci_locate_device(PCI_ID(0x10de, 0x0360), 0);
+
 	addr = PCI_DEV(0, (MCP55_DEVN_BASE + 1), 0);
-#endif
 
 	/* Set the 15MB enable bits. */
 	byte = pci_read_config8(addr, 0x88);

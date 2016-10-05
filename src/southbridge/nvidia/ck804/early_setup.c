@@ -300,10 +300,6 @@ static void ck804_early_setup(void)
 	setup_ss_table(CK804B_ANACTRL_IO_BASE + 0xc0, CK804B_ANACTRL_IO_BASE + 0xc4, CK804B_ANACTRL_IO_BASE + 0xc8, cpu_ss_tbl, 64);
 #endif
 
-#if 0
-	dump_io_resources(ANACTRL_IO_BASE);
-	dump_io_resources(SYSCTRL_IO_BASE);
-#endif
 }
 
 static int ck804_early_setup_x(void)

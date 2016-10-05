@@ -951,11 +951,6 @@ static void dqsTrainRcvrEn_SW_Fam10(struct MCTStatStruc *pMCTstat,
 			 * This does not seem to be needed, and has a tendency to lock up the
 			 * boot process while attempting to write the test pattern.
 			 */
-#if 0
-			SetUpperFSbase(TestAddr0);
-			WriteLNTestPattern(TestAddr0 << 8, (uint8_t *)TestPattern2_D, 1);
-			mct_Read1LTestPattern_D(pMCTstat, pDCTstat, TestAddr0);
-#endif
 		}
 		MaxDelay_CH[Channel] = CTLRMaxDelay;
 	}
@@ -1087,7 +1082,6 @@ static void generate_dram_receiver_enable_training_pattern_fam15(struct MCTStatS
 	/* 2.10.5.8.6.1.2 */
 	dword = Get_NB32_DCT(dev, dct, 0x270);
 	dword &= ~(0x7ffff);				/* DataPrbsSeed = 55555 */
-// 	dword |= (0x55555);
 	dword |= (0x44443);				/* Use AGESA seed */
 	Set_NB32_DCT(dev, dct, 0x270, dword);
 
@@ -1096,17 +1090,6 @@ static void generate_dram_receiver_enable_training_pattern_fam15(struct MCTStatS
 	dword &= ~(0x1fffff);				/* CmdCount = 192 */
 	dword |= 192;
 	Set_NB32_DCT(dev, dct, 0x260, dword);
-
-#if 0
-	/* TODO: This applies to Fam15h model 10h and above only */
-	/* Program Bubble Count and CmdStreamLen */
-	dword = Get_NB32_DCT(dev, dct, 0x25c);
-	dword &= ~(0x3ff << 12);			/* BubbleCnt = 0 */
-	dword &= ~(0x3ff << 22);			/* BubbleCnt2 = 0 */
-	dword &= ~(0xff);				/* CmdStreamLen = 1 */
-	dword |= 0x1;
-	Set_NB32_DCT(dev, dct, 0x25c, dword);
-#endif
 
 	/* Configure Target A */
 	dword = Get_NB32_DCT(dev, dct, 0x254);

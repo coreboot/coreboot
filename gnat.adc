@@ -35,6 +35,7 @@ pragma Restrictions (Static_Storage_Size);
 pragma Assertion_Policy
   (Statement_Assertions => Disable,
    Pre                  => Disable,
-   Post                 => Disable);
+   Post                 => Disable,
+   Refined_Post         => Disable);
 pragma Overflow_Mode (General => Strict, Assertions => Eliminated);
 pragma SPARK_Mode (On);

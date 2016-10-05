@@ -2,6 +2,10 @@ ramstage-y += vtxprintf.c printk.c vsprintf.c
 ramstage-y += init.c console.c
 ramstage-y += post.c
 ramstage-y += die.c
+ifeq ($(CONFIG_HWBASE_DEBUG_CB),y)
+ramstage-$(CONFIG_RAMSTAGE_LIBHWBASE) += hw-debug_sink.ads
+ramstage-$(CONFIG_RAMSTAGE_LIBHWBASE) += hw-debug_sink.adb
+endif
 
 smm-$(CONFIG_DEBUG_SMI) += init.c console.c vtxprintf.c printk.c
 smm-$(CONFIG_SMM_TSEG) += die.c

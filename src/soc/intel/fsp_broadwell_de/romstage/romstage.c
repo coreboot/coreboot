@@ -58,11 +58,8 @@ void *asmlinkage main(FSP_INFO_HEADER *fsp_info_header)
 	console_init();
 	init_rtc();
 
-	post_code(0x41);
-	timestamp_init(get_initial_timestamp());
-	timestamp_add_now(TS_START_ROMSTAGE);
-
 	/* Call into mainboard. */
+	post_code(0x41);
 	early_mainboard_romstage_entry();
 
 	/*
@@ -71,7 +68,6 @@ void *asmlinkage main(FSP_INFO_HEADER *fsp_info_header)
 	 * structure.
 	 */
 	post_code(0x48);
-	timestamp_add_now(TS_BEFORE_INITRAM);
 	printk(BIOS_DEBUG, "Starting the Intel FSP (early_init)\n");
 	fsp_early_init(fsp_info_header);
 	die("Uh Oh! fsp_early_init should not return here.\n");
@@ -87,6 +83,7 @@ void romstage_main_continue(EFI_STATUS status, void *hob_list_ptr)
 	void *cbmem_hob_ptr;
 
 	post_code(0x4a);
+	timestamp_init(get_initial_timestamp());
 	timestamp_add_now(TS_AFTER_INITRAM);
 	printk(BIOS_DEBUG, "%s status: %x  hob_list_ptr: %x\n",
 		__func__, (u32) status, (u32) hob_list_ptr);

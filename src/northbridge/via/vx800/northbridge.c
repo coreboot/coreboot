@@ -38,22 +38,6 @@ static void memctrl_init(device_t dev)
 /*
   set VGA in uma_ram_setting.c, not in this function.
 */
-#if 0
-	pci_write_config8(dev, 0x85, 0x20);
-	pci_write_config8(dev, 0x86, 0x2d);
-
-	/* Set up VGA timers */
-	pci_write_config8(dev, 0xa2, 0x44);
-
-	/* Enable VGA with a 32mb framebuffer */
-	pci_write_config16(dev, 0xa0, 0xd000);
-
-	pci_write_config16(dev, 0xa4, 0x0010);
-
-	//b0: 60 aa aa 5a 0f 00 00 00 08
-	pci_write_config16(dev, 0xb0, 0xaa00);
-	pci_write_config8(dev, 0xb8, 0x08);
-#endif
 }
 
 static const struct device_operations memctrl_operations = {

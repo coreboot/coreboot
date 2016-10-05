@@ -54,9 +54,6 @@ void enable_vx800_serial(void)
 	post_code(0x06);
 	outb(0x03, 0x22);
 
-	//pci_write_config8(PCI_DEV(0,17,0),0xb4,0x7e);
-	//pci_write_config8(PCI_DEV(0,17,0),0xb0,0x10);
-
 	// turn on pnp
 	vx800_writepnpaddr(0x87);
 	vx800_writepnpaddr(0x87);

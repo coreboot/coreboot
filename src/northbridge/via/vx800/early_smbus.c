@@ -54,7 +54,6 @@
 /* Internal functions */
 static void smbus_print_error(unsigned char host_status_register, int loops)
 {
-//              printk(BIOS_ERR, "some i2c error\n");
 	/* Check if there actually was an error */
 	if (host_status_register == 0x00 || host_status_register == 0x40 ||
 	    host_status_register == 0x42)

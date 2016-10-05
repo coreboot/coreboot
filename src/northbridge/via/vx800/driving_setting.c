@@ -223,8 +223,6 @@ void DrivingODT(DRAM_SYS_ATTR * DramAttr)
 	/*channel B */
 	if (1 == ENABLE_CHC) {
 		//CHB has not auto compensation mode ,so must set it manual,or else CHB initialization will not successful
-		//   Data =0x88;
-		//pci_write_config8(MEMCTRL, 0xd0, Data);
 
 		Data = pci_read_config8(MEMCTRL, 0xd5);
 		Data &= 0xAF;

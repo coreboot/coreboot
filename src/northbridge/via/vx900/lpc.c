@@ -77,7 +77,7 @@ static void vx900_lpc_dma_setup(device_t dev)
 
 	/* Enable Positive South Module PCI Cycle Decoding */
 	/* FIXME: Setting this seems to hang our system */
-	//pci_mod_config8(dev, 0x58, 0, 1<<4);
+
 	/* Positive decoding for ROM + APIC + On-board IO ports */
 	pci_mod_config8(dev, 0x6c, 0, (1 << 2) | (1 << 3) | (1 << 7));
 	/* Enable DMA channels. BIOS guide recommends DMA channel 2 off */

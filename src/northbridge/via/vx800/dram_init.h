@@ -33,7 +33,6 @@
 //Dram Freq
 #define DIMMFREQ_800	400
 #define DIMMFREQ_667	333
-//#define DIMMFREQ_600  300
 #define DIMMFREQ_533	266
 #define DIMMFREQ_400	200
 #define DIMMFREQ_333	166
@@ -66,9 +65,7 @@
 #define BURSTLENGTH4    4
 
 //Data Width
-//#define DATAWIDTHX16    16
-//#define DATAWIDTHX8       8
-//#define DATAWIDTHX4       4
+
 
 #define SPD_MEMORY_TYPE              2	/*Memory type FPM,EDO,SDRAM,DDR,DDR2 */
 #define SPD_SDRAM_ROW_ADDR           3	/*Number of row addresses on this assembly */
@@ -133,17 +130,8 @@ typedef struct _DRAM_CONFIG_DATA {
 
 	u8 CmdRate;
 	u8 DualEn;
-	//u8    IntLv0;
-	//u8    IntLv1;
-	//u8    Ba0Sel;
-	//u8    Ba1Sel;
-	//u8    Ba2Sel;
 	u8 BaScmb;
 	u8 DrdyTiming;
-	//u8    Above4G;
-	//u8    RdsaitMode;
-	//u8    Rdsait;
-	//u8    TopPerf;
 
 	u16 UMASize;
 } DRAM_CONFIG_DATA;

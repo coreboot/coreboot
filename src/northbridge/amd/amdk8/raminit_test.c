@@ -56,10 +56,6 @@ static uint32_t pci_read_config32(device_t dev, unsigned where)
 		(pci_register[addr + 1]  << 8) |
 		(pci_register[addr + 2]  << 16) |
 		(pci_register[addr + 3]  << 24);
-
-#if 0
-	printk(BIOS_DEBUG, "pcir32(%08x): %08x\n", addr, value);
-#endif
 	return value;
 
 }
@@ -87,10 +83,6 @@ static void pci_write_config32(device_t dev, unsigned where, uint32_t value)
 	pci_register[addr + 1] = (value >> 8) & 0xff;
 	pci_register[addr + 2] = (value >> 16) & 0xff;
 	pci_register[addr + 3] = (value >> 24) & 0xff;
-
-#if 0
-	printk(BIOS_DEBUG, "pciw32(%08x, %08x)\n", addr, value);
-#endif
 }
 
 #define PCI_DEV_INVALID (0xffffffffU)
@@ -277,10 +269,6 @@ static int spd_read_byte(unsigned device, unsigned address)
 			result = spd_data[(device << 8) | address];
 		}
 	}
-#if 0
-	printk(BIOS_DEBUG, "spd_read_byte(%08x, %08x) -> %08x\n",
-		device, address, result);
-#endif
 	if (spd_count >= spd_fail_count) {
 		result = -1;
 	}
@@ -355,10 +343,6 @@ static void reset_tests(void)
 		/* NBCAP_ECC | NBCAP_CHIPKILL_ECC | */
 		(NBCAP_MEMCLK_200MHZ << NBCAP_MEMCLK_SHIFT) |
 		NBCAP_MEMCTRL);
-
-#if 0
-	pci_read_config32(PCI_DEV(0, 0x18, 3), NORTHBRIDGE_CAP);
-#endif
 }
 
 static void test1(void)
@@ -367,22 +351,7 @@ static void test1(void)
 
 	memcpy(&spd_data[0*256], spd_micron_512MB_DDR333, 256);
 	memcpy(&spd_data[1*256], spd_micron_512MB_DDR333, 256);
-#if 0
-	memcpy(&spd_data[2*256], spd_micron_512MB_DDR333, 256);
-	memcpy(&spd_data[3*256], spd_micron_512MB_DDR333, 256);
-
-	memcpy(&spd_data[8*256], spd_micron_512MB_DDR333, 256);
-	memcpy(&spd_data[9*256], spd_micron_512MB_DDR333, 256);
-	memcpy(&spd_data[10*256], spd_micron_512MB_DDR333, 256);
-	memcpy(&spd_data[11*256], spd_micron_512MB_DDR333, 256);
-#endif
-
 	raminit_main();
-
-#if 0
-	printk(BIOS_DEBUG, "spd_count: %d\n", spd_count);
-#endif
-
 }
 
 

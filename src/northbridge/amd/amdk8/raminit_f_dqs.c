@@ -1694,13 +1694,6 @@ static void setup_mtrr_dqs(unsigned tom_k, unsigned tom2_k)
 {
 	msr_t msr;
 
-#if 0
-	//still enable from cache_as_ram.inc
-	msr = rdmsr(SYSCFG_MSR);
-	msr.lo |= SYSCFG_MSR_MtrrFixDramModEn;
-	wrmsr(SYSCFG_MSR,msr);
-#endif
-
 	//[0,512k), [512k, 640k)
 	msr.hi = 0x1e1e1e1e;
 	msr.lo = msr.hi;
@@ -2037,8 +2030,6 @@ out:
 static void train_ram(unsigned nodeid, struct sys_info *sysinfo, struct sys_info *sysinfox)
 {
 	dqs_timing(nodeid, &sysinfo->ctrl[nodeid], sysinfo, 0); // keep the output tidy
-//      memcpy(&sysinfox->dqs_rcvr_dly_a[nodeid * 2 * 8],&sysinfo->dqs_rcvr_dly_a[nodeid * 2 * 8], 2*8);
-//      memcpy(&sysinfox->dqs_delay_a[nodeid * 2 * 2 * 9], &sysinfo->dqs_delay_a[nodeid * 2 * 2 * 9], 2 * 2 * 9);
 	sysinfox->mem_trained[nodeid] = sysinfo->mem_trained[nodeid];
 
 }
@@ -2054,15 +2045,7 @@ static inline void train_ram_on_node(unsigned nodeid, unsigned coreid, struct sy
 	wait_till_sysinfo_in_ram(); // use pci to get it
 
 	if (sysinfox->mem_trained[nodeid] == 0x80) {
-	#if 0
-		sysinfo->tom_k = sysinfox->tom_k;
-		sysinfo->tom2_k = sysinfox->tom2_k;
-		sysinfo->meminfo[nodeid].is_Width128 = sysinfox->meminfo[nodeid].is_Width128;
-		sysinfo->mem_trained[nodeid] = sysinfox->mem_trained[nodeid];
-		memcpy(&sysinfo->ctrl[nodeid], &sysinfox->ctrl[nodeid], sizeof(struct mem_controller));
-	#else
 		memcpy(sysinfo, sysinfox, sizeof(*sysinfo));
-	#endif
 		set_top_mem_ap(sysinfo->tom_k, sysinfo->tom2_k); // keep the ap's tom consistent with bsp's
 		printk(BIOS_DEBUG, "CODE IN ROM AND RUN ON NODE: %02x\n", nodeid);
 		train_ram(nodeid, sysinfo, sysinfox);

@@ -147,49 +147,19 @@ static unsigned long acpi_fill_slit(unsigned long current)
 				      3, 4, 2, 3, 1, 2, 0, 1,
 				      4, 4, 3, 2, 2, 1, 1, 0 };
 
-//	u8 outer_node[8];
-
 	u8 *p = (u8 *)current;
 	int nodes = sysconf.nodes;
 	int i,j;
 	memset(p, 0, 8+nodes*nodes);
-//	memset((u8 *)outer_node, 0, 8);
 	*p = (u8) nodes;
 	p += 8;
-
-#if 0
-	for (i = 0; i < sysconf.hc_possible_num; i++) {
-		if ((sysconf.pci1234[i]&1) !=1) continue;
-		outer_node[(sysconf.pci1234[i] >> 4) & 0xf] = 1; // mark the outer node
-	}
-#endif
 
 	for (i = 0; i < nodes; i++) {
 		for (j = 0; j < nodes; j++) {
 			if (i == j) {
 				p[i*nodes+j] = 10;
 			} else {
-#if 0
-				int k;
-				u8 latency_factor = 0;
-				int k_start, k_end;
-				if (i < j) {
-					k_start = i;
-					k_end = j;
-				} else {
-					k_start = j;
-					k_end = i;
-				}
-				for (k = k_start; k <= k_end; k++) {
-					if (outer_node[k]) {
-						latency_factor = 1;
-						break;
-					}
-				}
-				p[i*nodes+j] = hops_8[i*nodes+j] * 2 + latency_factor + 10;
-#else
 				p[i*nodes+j] = hops_8[i*nodes+j] * 2 + 10;
-#endif
 
 			}
 		}

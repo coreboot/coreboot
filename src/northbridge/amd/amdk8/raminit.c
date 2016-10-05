@@ -20,7 +20,6 @@
 void setup_resource_map(const unsigned int *register_values, int max)
 {
 	int i;
-//	printk(BIOS_DEBUG, "setting up resource map....");
 	for (i = 0; i < max; i += 3) {
 		pci_devfn_t dev;
 		unsigned where;
@@ -32,7 +31,6 @@ void setup_resource_map(const unsigned int *register_values, int max)
 		reg |= register_values[i+2];
 		pci_write_config32(dev, where, reg);
 	}
-//	printk(BIOS_DEBUG, "done.\n");
 }
 
 static int controller_present(const struct mem_controller *ctrl)
@@ -519,7 +517,6 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	int max;
 
 	if (!controller_present(ctrl)) {
-//		printk(BIOS_DEBUG, "No memory controller present\n");
 		return;
 	}
 	printk(BIOS_SPEW, "setting up CPU%02x northbridge registers\n", ctrl->node_id);
@@ -965,7 +962,6 @@ static unsigned long interleave_chip_selects(const struct mem_controller *ctrl)
 		if (is_dual_channel(ctrl)) {
 		/* Also we run out of address mask bits if we try and interleave 8 4GB dimms */
 			if ((bits == 3) && (common_size == (1 << (32 - 3)))) {
-//     				printk(BIOS_DEBUG, "8 4GB chip selects cannot be interleaved\n");
 				return 0;
 			}
 			csbase_inc <<=1;
@@ -975,7 +971,6 @@ static unsigned long interleave_chip_selects(const struct mem_controller *ctrl)
 		csbase_inc = 1 << csbase_low_d0_shift[common_cs_mode];
 		if (is_dual_channel(ctrl)) {
 			if ((bits == 3) && (common_cs_mode > 8)) {
-//				printk(BIOS_DEBUG, "8 cs_mode > 8 chip selects cannot be interleaved\n");
 				return 0;
 			}
 			csbase_inc <<=1;
@@ -1469,9 +1464,7 @@ static int spd_dimm_loading_socket(const struct mem_controller *ctrl, long dimm_
 	}
 	/* now the lookup, decode the max speed DDR400_2T etc */
 	dloading = dimm_loading_config[dpos][rpos] & DDR_MASK;
-#if 0
-	printk(BIOS_DEBUG, "XXX %x %x dload %x 2T %x\n", dpos,rpos, dloading, dimm_loading_config[dpos][rpos] & DDR_2T);
-#endif
+
 hw_error:
 	if (dloading != 0) {
 		/* we have valid combination check the restrictions */
@@ -1671,14 +1664,6 @@ static struct spd_set_memclk_result spd_set_memclk(const struct mem_controller *
 	/* Update DRAM Config High with our selected memory speed */
 	value = pci_read_config32(ctrl->f2, DRAM_CONFIG_HIGH);
 	value &= ~(DCH_MEMCLK_MASK << DCH_MEMCLK_SHIFT);
-#if 0
-	/* Improves DQS centering by correcting for case when core speed multiplier and MEMCLK speed result in odd clock divisor, by selecting the next lowest memory speed, required only at DDR400 and higher speeds with certain DIMM loadings ---- cheating???*/
-	if (!is_cpu_pre_e0()) {
-		if (min_cycle_time == 0x50) {
-			value |= 1<<31;
-		}
-	}
-#endif
 
 	value |= result.param->dch_memclk;
 	pci_write_config32(ctrl->f2, DRAM_CONFIG_HIGH, value);
@@ -2189,7 +2174,6 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 	long dimm_mask;
 #if 1
 	if (!controller_present(ctrl)) {
-//		printk(BIOS_DEBUG, "No memory controller present\n");
 		return;
 	}
 #endif
@@ -2453,11 +2437,6 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 
 		if (!is_cpu_pre_c0()) {
 			/* Wait until it is safe to touch memory */
-#if 0
-			/* the registers are marked read-only but code zeros them */
-			dcl &= ~(DCL_MemClrStatus | DCL_DramEnable);
-			pci_write_config32(ctrl[i].f2, DRAM_CONFIG_LOW, dcl);
-#endif
 			do {
 				dcl = pci_read_config32(ctrl[i].f2, DRAM_CONFIG_LOW);
 			} while (((dcl & DCL_MemClrStatus) == 0) || ((dcl & DCL_DramEnable) == 0) ||

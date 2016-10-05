@@ -149,21 +149,6 @@ static void disable_probes(void)
 
 }
 
-#if 0
-static void enable_apic_ext_id(u8 node)
-{
-#if CONFIG_ENABLE_APIC_EXT_ID
-#warning "FIXME Is the right place to enable apic ext id here?"
-
-	u32 val;
-
-	val = pci_read_config32(NODE_HT(node), 0x68);
-	val |= (HTTC_APIC_EXT_SPUR | HTTC_APIC_EXT_ID | HTTC_APIC_EXT_BRD_CST);
-	pci_write_config32(NODE_HT(node), 0x68, val);
-#endif
-}
-#endif
-
 static void enable_routing(u8 node)
 {
 	u32 val;
@@ -566,13 +551,6 @@ static void setup_row_indirect_x(u8 temp, u8 source, u8 dest, u8 gateway, u8 dif
 				val_s-=link_connection(temp, source-2); /* -down*/
 			} else {
 #if CROSS_BAR_47_56
-				#if 0
-				if (source == 7) {
-					val_s-=link_connection(temp, 6); // for 7,2 via 5
-				} else if (source == 6) {
-					val_s-=link_connection(temp, 7); // for 6,3 via 4
-				} else
-				#endif
 				if (source < gateway) { // for 5, 4 via 7
 					val_s-=link_connection(temp, source-2);
 				} else
@@ -743,10 +721,6 @@ static unsigned setup_smp2(void)
 	setup_remote_node(1); /* Setup the regs on the remote node */
 	rename_temp_node(1);  /* Rename Node 7 to Node 1  */
 	enable_routing(1);    /* Enable routing on Node 1 */
-#if 0
-	/*don't need and it is done by clear_dead_links */
-	clear_temp_row(0);
-#endif
 
 	return nodes;
 }
@@ -909,13 +883,6 @@ static unsigned setup_smp4(void)
 	};
 #endif
 	setup_row_indirect_group(conn4_2, ARRAY_SIZE(conn4_2));
-
-#if 0
-	/*We need to do sth to reverse work for setup_temp_row (0,1) (1,3) */
-	/* it will be done by clear_dead_links */
-	clear_temp_row(0);
-	clear_temp_row(1);
-#endif
 
 	return nodes;
 
@@ -1111,15 +1078,6 @@ static unsigned setup_smp6(void)
 
 	setup_row_indirect_group(conn6_4, ARRAY_SIZE(conn6_4));
 
-#if 0
-	/* We need to do sth about reverse about setup_temp_row (0,1), (2,4), (1, 3), (3,5)
-	 * It will be done by clear_dead_links
-	 */
-	for (byte = 0; byte < 4; byte++) {
-		clear_temp_row(byte);
-	}
-#endif
-
 	return nodes;
 
 }
@@ -1260,12 +1218,6 @@ static unsigned setup_smp8(void)
 #endif
 		print_linkn("\t-->(5,6) link=", byte);
 		setup_row_direct(5, 6, byte);
-#if 0
-		setup_temp_row(0,1); /* temp. link between nodes 0 and 1 */
-		for (byte = 0; byte < 4; byte+=2) {
-			setup_temp_row(byte+1,byte+3);
-		}
-#endif
 		setup_temp_row(5,6);
 
 		verify_connection(7);

@@ -563,12 +563,6 @@ static void amdk8_set_resources(device_t dev)
 
 static void mcf0_control_init(struct device *dev)
 {
-#if 0
-	printk(BIOS_DEBUG, "NB: Function 0 Misc Control.. ");
-#endif
-#if 0
-	printk(BIOS_DEBUG, "done.\n");
-#endif
 }
 
 static struct device_operations northbridge_operations = {
@@ -902,8 +896,6 @@ static void amdk8_domain_set_resources(device_t dev)
 			reset_memhole = 0;
 		}
 
-		//mmio_basek = 3*1024*1024; // for debug to meet boundary
-
 		if (reset_memhole) {
 			if (mem_hole.node_id!=-1) { // We need to select CONFIG_HW_MEM_HOLE_SIZEK for raminit, it can not make hole_startk to some basek too....!
 			       // We need to reset our Mem Hole, because We want more big HOLE than we already set
@@ -965,8 +957,6 @@ static void amdk8_domain_set_resources(device_t dev)
 		printk(BIOS_DEBUG, "node %d : uma_memory_base/1024=0x%08llx, mmio_basek=0x%08lx, basek=0x%08x, limitk=0x%08x\n", i, uma_memory_base >> 10, mmio_basek, basek, limitk);
 		if ((uma_memory_base >> 10) < mmio_basek)
 			printk(BIOS_ALERT, "node %d: UMA memory starts below mmio_basek\n", i);
-#else
-//		printk(BIOS_DEBUG, "node %d : mmio_basek=%08x, basek=%08x, limitk=%08x\n", i, mmio_basek, basek, limitk); //yhlu
 #endif
 
 		/* See if I need to split the region to accommodate pci memory space */

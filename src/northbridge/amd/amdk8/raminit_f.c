@@ -701,15 +701,6 @@ index:
 	printk(BIOS_SPEW, "done.\n");
 }
 
-#if 0
-static int is_dual_channel(const struct mem_controller *ctrl)
-{
-	uint32_t dcl;
-	dcl = pci_read_config32(ctrl->f2, DRAM_CONFIG_LOW);
-	return dcl & DCL_Width128;
-}
-#endif
-
 static int is_opteron(const struct mem_controller *ctrl)
 {
 	/* Test to see if I am an Opteron. M2 and S1G1 support dual
@@ -724,19 +715,6 @@ static int is_opteron(const struct mem_controller *ctrl)
 	nbcap = pci_read_config32(ctrl->f3, NORTHBRIDGE_CAP);
 	return !!(nbcap & NBCAP_128Bit);
 }
-
-#if 0
-static int is_registered(const struct mem_controller *ctrl)
-{
-	/* Test to see if we are dealing with registered SDRAM.
-	 * If we are not registered we are unbuffered.
-	 * This function must be called after spd_handle_unbuffered_dimms.
-	 */
-	uint32_t dcl;
-	dcl = pci_read_config32(ctrl->f2, DRAM_CONFIG_LOW);
-	return !(dcl & DCL_UnBuffDimm);
-}
-#endif
 
 static void spd_get_dimm_size(unsigned device, struct dimm_size *sz)
 {
@@ -776,7 +754,6 @@ static void spd_get_dimm_size(unsigned device, struct dimm_size *sz)
 	/* number of physical banks */
 	value = spd_read_byte(device, SPD_MOD_ATTRIB_RANK);
 	if (value < 0) goto hw_err;
-/*	value >>= SPD_MOD_ATTRIB_RANK_NUM_SHIFT; */
 	value &= SPD_MOD_ATTRIB_RANK_NUM_MASK;
 	value += SPD_MOD_ATTRIB_RANK_NUM_BASE; // 0-->1, 1-->2, 3-->4
 	/*
@@ -1350,16 +1327,6 @@ static long spd_handle_unbuffered_dimms(const struct mem_controller *ctrl,
 	}
 
 	if (is_opteron(ctrl)) {
-#if 0
-		if (registered != (meminfo->dimm_mask & ((1 << DIMM_SOCKETS)-1))) {
-			meminfo->dimm_mask &= (registered | (registered << DIMM_SOCKETS)); //disable unbuffered dimm
-//			die("Mixed buffered and registered dimms not supported");
-		}
-		//By yhlu for debug M2, s1g1 can do dual channel, but it use unbuffer DIMM
-		if (!registered) {
-			die("Unbuffered Dimms not supported on Opteron");
-		}
-#endif
 	}
 
 
@@ -1524,7 +1491,6 @@ static long spd_enable_2channels(const struct mem_controller *ctrl, struct mem_i
 				dcm |= DCM_Mode64BitMux;
 				pci_write_config32(ctrl->f2, DRAM_CTRL_MISC, dcm);
 				dcl = pci_read_config32(ctrl->f2, DRAM_CONFIG_LOW);
-				//dcl |= DCL_BurstLength32; /* 32byte mode for channelB only */
 				pci_write_config32(ctrl->f2, DRAM_CONFIG_LOW, dcl);
 				meminfo->is_64MuxMode = 1;
 			} else {
@@ -2080,7 +2046,6 @@ static int update_dimm_TT_1_4(const struct mem_controller *ctrl, const struct me
 
 	old_clocks = ((dtl >> TT_SHIFT) & TT_MASK) + TT_BASE;
 	if (old_clocks >= clocks) { //some one did it?
-//		clocks = old_clocks;
 		return 1;
 	}
 	dtl &= ~(TT_MASK << TT_SHIFT);

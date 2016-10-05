@@ -172,7 +172,6 @@ static void ide_init(struct device *dev)
 	for (i = 0; i < (16 * 12); i++) {
 		pci_write_config8(dev, 0x40 + i, idedevicepcitable[i]);
 	}
-	//pci_write_config8(dev, 0x0d, 0x20);
 	data = pci_read_config8(dev, 0x0d);
 	data &= 0x0f;
 	data |= 0x40;
@@ -185,59 +184,6 @@ static void ide_init(struct device *dev)
 	/* Force interrupts to use compat mode. */
 	pci_write_config8(dev, PCI_INTERRUPT_PIN, 0x0);
 	pci_write_config8(dev, PCI_INTERRUPT_LINE, 0xff);
-#if 0
-	u8 enables;
-	u32 cablesel;
-
-	pci_write_config16(dev, 0x04, 0x0007);
-
-	enables = pci_read_config8(dev, IDE_CS) & ~0x3;
-	enables |= 0x02;
-	pci_write_config8(dev, IDE_CS, enables);
-	enables = pci_read_config8(dev, IDE_CS);
-	printk(BIOS_DEBUG, "Enables in reg 0x40 read back as 0x%x\n", enables);
-
-	/* Enable only compatibility mode. */
-	enables = pci_read_config8(dev, IDE_CONF_II);
-	enables &= ~0xc0;
-	pci_write_config8(dev, IDE_CONF_II, enables);
-	enables = pci_read_config8(dev, IDE_CONF_II);
-	printk(BIOS_DEBUG, "Enables in reg 0x42 read back as 0x%x\n", enables);
-
-	/* Enable prefetch buffers. */
-	enables = pci_read_config8(dev, IDE_CONF_I);
-	enables |= 0xf0;
-	pci_write_config8(dev, IDE_CONF_I, enables);
-
-	/* Flush FIFOs at half. */
-	enables = pci_read_config8(dev, IDE_CONF_FIFO);
-	enables &= 0xf0;
-	enables |= (1 << 2) | (1 << 0);
-	pci_write_config8(dev, IDE_CONF_FIFO, enables);
-
-	/* PIO read prefetch counter, Bus Master IDE Status Reg. Read Retry. */
-	enables = pci_read_config8(dev, IDE_MISC_I);
-	enables &= 0xe2;
-	enables |= (1 << 4) | (1 << 3);
-	pci_write_config8(dev, IDE_MISC_I, enables);
-
-	/* Use memory read multiple, Memory-Write-and-Invalidate. */
-	enables = pci_read_config8(dev, IDE_MISC_II);
-	enables |= (1 << 2) | (1 << 3);
-	pci_write_config8(dev, IDE_MISC_II, enables);
-
-	/* Force interrupts to use compat mode. */
-	pci_write_config8(dev, PCI_INTERRUPT_PIN, 0x0);
-	pci_write_config8(dev, PCI_INTERRUPT_LINE, 0xff);
-
-	/* Cable guy... */
-	cablesel = pci_read_config32(dev, IDE_UDMA);
-	cablesel &= ~((1 << 28) | (1 << 20) | (1 << 12) | (1 << 4));
-	cablesel |= (sb->ide0_80pin_cable << 28) |
-	    (sb->ide0_80pin_cable << 20) |
-	    (sb->ide1_80pin_cable << 12) | (sb->ide1_80pin_cable << 4);
-	pci_write_config32(dev, IDE_UDMA, cablesel);
-#endif
 }
 
 static struct device_operations ide_ops = {

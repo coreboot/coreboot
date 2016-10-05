@@ -91,7 +91,6 @@ void DRAMSizingMATypeM(DRAM_SYS_ATTR * DramAttr)
 {
 	DRAMClearEndingAddress(DramAttr);
 	DRAMSizingEachRank(DramAttr);
-	//DRAMReInitDIMMBL           (DramAttr);
 	DRAMSetRankMAType(DramAttr);
 	DRAMSetEndingAddress(DramAttr);
 	DRAMPRToVRMapping(DramAttr);

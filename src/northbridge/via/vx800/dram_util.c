@@ -182,7 +182,6 @@ void DumpRegisters(INTN DevNum, INTN FuncNum)
 	u8 ByteVal;
 
 	ByteVal = 0;
-	//pci_write_config8(PCI_DEV(0, DevNum, FuncNum), 0xA1, ByteVal);
 	PRINT_DEBUG_MEM("\rDev %02x Fun %02x\r");
 	PRINT_DEBUG_MEM
 	    ("\r    00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f\r");

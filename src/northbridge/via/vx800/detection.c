@@ -52,8 +52,6 @@ CB_STATUS DRAMDetect(DRAM_SYS_ATTR *DramAttr)
 	if (CB_SUCCESS == Status) {
 		/* 64bit or 128Bit */
 
-		// if (RAMTYPE_SDRAMDDR == DramAttr->DramType)
-
 		/* Select command rate. */
 		DRAMCmdRate(DramAttr);
 	}

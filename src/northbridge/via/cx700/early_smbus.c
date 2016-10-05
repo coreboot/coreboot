@@ -102,7 +102,6 @@ static void smbus_reset(void)
 /* Public functions */
 static void set_ics_data(unsigned char dev, int data, char len)
 {
-	//int i;
 	smbus_reset();
 	/* clear host data port */
 	outb(0x00, SMBHSTDAT0);
@@ -114,7 +113,6 @@ static void set_ics_data(unsigned char dev, int data, char len)
 
 	/* fill blocktransfer array */
 	if (dev == 0xd2) {
-		//char d2_data[] = {0x0d,0x00,0x3f,0xcd,0x7f,0xbf,0x1a,0x2a,0x01,0x0f,0x0b,0x00,0x8d,0x9b};
 		outb(0x0d, SMBBLKDAT);
 		outb(0x00, SMBBLKDAT);
 		outb(0x3f, SMBBLKDAT);
@@ -130,7 +128,6 @@ static void set_ics_data(unsigned char dev, int data, char len)
 		outb(0x8d, SMBBLKDAT);
 		outb(0x9b, SMBBLKDAT);
 	} else {
-		//char d4_data[] = {0x08,0xff,0x3f,0x00,0x00,0xff,0xff,0xff,0xff};
 		outb(0x08, SMBBLKDAT);
 		outb(0xff, SMBBLKDAT);
 		outb(0x3f, SMBBLKDAT);
@@ -141,9 +138,6 @@ static void set_ics_data(unsigned char dev, int data, char len)
 		outb(0xff, SMBBLKDAT);
 		outb(0xff, SMBBLKDAT);
 	}
-
-	//for (i = 0; i < len; i++)
-	//      outb(data[i],SMBBLKDAT);
 
 	outb(dev, SMBXMITADD);
 	outb(0, SMBHSTCMD);

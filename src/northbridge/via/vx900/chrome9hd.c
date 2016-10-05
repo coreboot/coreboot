@@ -306,7 +306,6 @@ static void chrome9hd_init(device_t dev)
 	vga_misc_mask(1 << 0, 1 << 0);
 
 	/* FIXME: recheck; Enable Base VGA 16 Bits Decode */
-	////pci_mod_config8(host, 0x4e, 0, 1<<4);
 
 	u32 fb_address = pci_read_config32(dev, PCI_BASE_ADDRESS_2);
 	fb_address &= ~0x0F;

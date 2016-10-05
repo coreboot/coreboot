@@ -134,10 +134,6 @@ static void write_protect_vgabios(void)
 			      PCI_DEVICE_ID_VIA_VX855_MEMCTRL, 0);
 	if (dev)
 		pci_write_config8(dev, 0x80, 0xff);
-	/*vx855 no th 0x61 reg */
-	/*dev = dev_find_device(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_VX855_VLINK, 0);
-	   //if (dev)
-	   //   pci_write_config8(dev, 0x61, 0xff); */
 }
 #endif
 
@@ -166,15 +162,6 @@ static void vga_init(device_t dev)
 	reg8 = reg8 | 2;
 	outb(reg8, 0x92);
 
-	//*
-	//pci_write_config8(dev, 0x04, 0x07);
-	//pci_write_config32(dev,0x10, 0xa0000008);
-	//pci_write_config32(dev,0x14, 0xdd000000);
-	pci_write_config32(dev, 0x10, VIACONFIG_VGA_PCI_10);
-	pci_write_config32(dev, 0x14, VIACONFIG_VGA_PCI_14);
-	pci_write_config8(dev, 0x3c, 0x0a);	//same with vx855_lpc.c
-	//*/
-
 	printk(BIOS_DEBUG, "Initializing VGA...\n");
 
 	pci_dev_init(dev);
@@ -192,13 +179,6 @@ static void vga_init(device_t dev)
 		reg8 |= (0x3 << 4);
 		outb(0x3d, CRTM_INDEX);
 		outb(reg8, CRTM_DATA);
-
-#if 0
-		/* Set framebuffer size to CONFIG_VIDEO_MB mb */
-		reg8 = (CONFIG_VIDEO_MB/4);
-		outb(0x39, SR_INDEX);
-		outb(reg8, SR_DATA);
-#endif
 	}
 }
 

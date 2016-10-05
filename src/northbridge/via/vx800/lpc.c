@@ -83,11 +83,9 @@ static void pci_routing_fixup(struct device *dev)
 
 	/* PCI slot */
 	printk(BIOS_INFO, "setting ide\n");
-	//pci_assign_irqs(0, 0x0f, pin_to_irq(idePins));
 
 	/* Standard usb components */
 	printk(BIOS_INFO, "setting usb1-2\n");
-//	pci_assign_irqs(0, 0x10, pin_to_irq(usbPins));
 
 	/* sound hardware */
 	printk(BIOS_INFO, "setting hdac audio\n");
@@ -109,7 +107,6 @@ static void setup_pm(device_t dev)
 	pci_write_config8(dev, 0x82, 0x49);
 
 	/* Primary interupt channel, define wake events 0 = IRQ0 15 = IRQ15 1 = en. */
-//	pci_write_config16(dev, 0x84, 0x30f2);
 	pci_write_config16(dev, 0x84, 0x609a);	// 0x609a??
 
 	/* SMI output level to low, 7.5us throttle clock */
@@ -131,8 +128,6 @@ static void setup_pm(device_t dev)
 
 	/* GP2 Timer Counter */
 	pci_write_config8(dev, 0x99, 0xfb);
-	/* GP3 Timer Counter */
-	//pci_write_config8(dev, 0x9a, 0x20);
 
 	/* Multi Function Select 1 */
 	pci_write_config8(dev, 0xe4, 0x00);
@@ -178,16 +173,6 @@ static void setup_pm(device_t dev)
 	 * Will work for C3 and for FID/VID change.
 	 */
 	outb(0x1, VX800_ACPI_IO_BASE + 0x11);
-/*
-	outw(0x0, 0x424);
-	outw(0x0, 0x42a);
-	outw(0x1, 0x42c);
-	outl(0x0, 0x434);
-	outl(0x01, 0x438);
-	outb(0x0, 0x442);
-	outl(0xffff7fff, 0x448);
-	outw(0x001, 0x404);
-*/
 }
 
 static void S3_ps2_kb_ms_wakeup(struct device *dev)
@@ -234,7 +219,6 @@ static void vx800_sb_init(struct device *dev)
 	pci_write_config8(dev, 0x6C, enables);
 
 	// Map 4MB of FLASH into the address space
-//	pci_write_config8(dev, 0x41, 0x7f);
 
 	// Set bit 6 of 0x40, because Award does it (IO recovery time)
 	// IMPORTANT FIX - EISA 0x4d0 decoding must be on so that PCI
@@ -255,7 +239,6 @@ static void vx800_sb_init(struct device *dev)
 	pci_write_config8(dev, 0x59, 0x80);
 
 	/* Set 0x5b to 0x01 to match Award */
-	//pci_write_config8(dev, 0x5b, 0x01);
 	enables = pci_read_config8(dev, 0x5b);
 	enables |= 0x01;
 	pci_write_config8(dev, 0x5b, enables);
@@ -264,7 +247,6 @@ static void vx800_sb_init(struct device *dev)
 	pci_write_config8(dev, 0x48, 0x0c);
 
 	/* Set 0x58 to 0x42 APIC and RTC. */
-	//pci_write_config8(dev, 0x58, 0x42); this cmd cause the irq0 can not be triggerd,since bit 5 was set to 0.
 	enables = pci_read_config8(dev, 0x58);
 	enables |= 0x41;	//
 	pci_write_config8(dev, 0x58, enables);

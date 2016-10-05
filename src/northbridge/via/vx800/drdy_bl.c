@@ -439,101 +439,12 @@ void DRAMDRDYSetting(DRAM_SYS_ATTR * DramAttr)
 	Data |= 0x08;
 	pci_write_config8(PCI_DEV(0, 0, 2), 0x54, Data);
 
-	//Data = pci_read_config8(PCI_DEV(0,0,2), 0x55);
-	//Data = Data & (~0x20);
-	//pci_write_config8(PCI_DEV(0,0,2), 0x55, Data);
-
 	//enable drdy timing
 	Data = pci_read_config8(PCI_DEV(0, 0, 2), 0x51);
 	Data = Data | 0x80;
 	pci_write_config8(PCI_DEV(0, 0, 2), 0x51, Data);
 #endif
-#if 0				//default
-	{
-		//disable drdy timing
-		Data = pci_read_config8(PCI_DEV(0, 0, 2), 0x51);
-		Data = Data & 0x7F;
-		pci_write_config8(PCI_DEV(0, 0, 2), 0x51, Data);
-	}
-#endif
-#if 0				//  2:Optimize
-	u8 CpuFreq, DramFreq;
-	u8 CL, RDRPH;
 
-	//CL :reg6x[2:0]
-	Data = pci_read_config8(MEMCTRL, 0x62);
-	CL = Data & 0x07;
-
-	//RDRPH: reg7B[6:4]
-	Data = pci_read_config8(MEMCTRL, 0x7B);
-	RDRPH = (Data & 0x70) >> 4;
-
-	//CpuFreq: F2Reg54[7:5]
-	Data = pci_read_config8(PCI_DEV(0, 0, 2), 0x54);
-	CpuFreq = (Data & 0xE0) >> 5;
-
-	//DramFreq:F3Reg90[2:0]
-	Data = pci_read_config8(MEMCTRL, 0x90);
-	DramFreq = Data & 0x07;
-
-	u8 DelayMode;
-	DelayMode = CL + RDRPH;	// RDELAYMD = bit0 of (CAS Latency + RDRPH)
-	DelayMode &= 0x01;
-
-	u8 ProgData[PT894_RDRDY_TBL_Width];
-
-	//In 364, there is no 128 bit
-	if (DelayMode == 1) {	// DelayMode 1
-		u8 Index;
-		for (Index = 0; Index < PT894_RDRDY_TBL_Width; Index++)
-			ProgData[Index] =
-			    PT894_64bit_DELAYMD1_RCONV0[CpuFreq][DramFreq]
-			    [Index];
-	} else {		// DelayMode 0
-		u8 Index;
-		for (Index = 0; Index < PT894_RDRDY_TBL_Width; Index++)
-			ProgData[Index] =
-			    PT894_64bit_DELAYMD0_RCONV0[CpuFreq][DramFreq]
-			    [Index];
-	}
-
-	Data = ProgData[0];
-	pci_write_config8(PCI_DEV(0, 0, 2), 0x60, Data);
-
-	Data = ProgData[1];
-	pci_write_config8(PCI_DEV(0, 0, 2), 0x61, Data);
-
-	Data = ProgData[2];
-	pci_write_config8(PCI_DEV(0, 0, 2), 0x62, Data);
-
-	Data = ProgData[3];
-	pci_write_config8(PCI_DEV(0, 0, 2), 0x63, Data);
-
-	Data = ProgData[4];
-	pci_write_config8(PCI_DEV(0, 0, 2), 0x64, Data);
-
-	Data = ProgData[5];
-	pci_write_config8(PCI_DEV(0, 0, 2), 0x65, Data);
-
-	Data = ProgData[6];
-	pci_write_config8(PCI_DEV(0, 0, 2), 0x66, Data);
-
-	Data = ProgData[7];
-	pci_write_config8(PCI_DEV(0, 0, 2), 0x67, Data);
-
-	Data = pci_read_config8(PCI_DEV(0, 0, 2), 0x54);
-	Data = (Data & 0xF5) | ProgData[8];
-	pci_write_config8(PCI_DEV(0, 0, 2), 0x54, Data);
-
-	Data = pci_read_config8(PCI_DEV(0, 0, 2), 0x55);
-	Data = Data & (~0x22) | ProgData[9];
-	pci_write_config8(PCI_DEV(0, 0, 2), 0x62, Data);
-
-	//enable drdy timing
-	Data = pci_read_config8(PCI_DEV(0, 0, 2), 0x51);
-	Data = Data | 0x80;
-	pci_write_config8(PCI_DEV(0, 0, 2), 0x51, Data);
-#endif
 }
 
 /*This routine process the ability for North Bridge side burst functionality

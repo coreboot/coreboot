@@ -399,4 +399,13 @@ config NO_EARLY_BOOTBLOCK_POSTCODES
 	  POST codes that go out before the chipset's bootblock initialization
 	  can happen.  This option suppresses those POST codes.
 
+config HWBASE_DEBUG_CB
+	bool
+	default y if DEFAULT_CONSOLE_LOGLEVEL_7 || DEFAULT_CONSOLE_LOGLEVEL_8
+	default n
+
+config HWBASE_DEBUG_NULL
+	def_bool y
+	depends on !HWBASE_DEBUG_CB
+
 endmenu

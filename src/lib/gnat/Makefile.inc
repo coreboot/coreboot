@@ -62,5 +62,5 @@ $(foreach arch,$(standard-archs), \
 	$(eval $(call libgnat-template,$(arch))))
 
 ifeq ($(CONFIG_RAMSTAGE_ADA),y)
-ramstage-libs += $$(obj)/libgnat-$(ARCH-ramstage-y)/libgnat.a
+ramstage-libs += $(obj)/libgnat-$(ARCH-ramstage-y)/libgnat.a
 endif

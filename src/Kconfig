@@ -1271,3 +1271,12 @@ config RAMSTAGE_ADA
 	def_bool n
 	help
 	  Selected by features that use Ada code in ramstage.
+
+config RAMSTAGE_LIBHWBASE
+	def_bool n
+	select RAMSTAGE_ADA
+	help
+	  Selected by features that require `libhwbase` in ramstage.
+
+config HWBASE_DYNAMIC_MMIO
+	def_bool y

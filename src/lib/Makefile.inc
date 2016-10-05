@@ -275,6 +275,16 @@ $(objcbfs)/%.debug.rmod: $(objcbfs)/%.debug | $(RMODTOOL)
 $(obj)/%.elf.rmod: $(obj)/%.elf | $(RMODTOOL)
 	$(RMODTOOL) -i $< -o $@
 
+ifeq ($(CONFIG_RAMSTAGE_LIBHWBASE),y)
+
+$(call add-special-class,hw)
+hw-handler = $(eval ramstage-srcs += $$(addprefix $(1),$(2)))
+subdirs-y += ../../3rdparty/libhwbase
+
+ramstage-$(CONFIG_HAVE_MONOTONIC_TIMER) += hw-time-timer.adb
+
+endif # CONFIG_RAMSTAGE_LIBHWBASE
+
 romstage-$(CONFIG_GENERIC_SPD_BIN) += spd_bin.c
 
 LIB_SPD_BIN = $(obj)/spd.bin

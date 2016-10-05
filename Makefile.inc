@@ -420,6 +420,10 @@ CFLAGS_common += -Os
 ADAFLAGS_common += -Os
 endif
 
+ifeq ($(CONFIG_DEBUG_ADA_CODE),y)
+ADAFLAGS_common += -gnata
+endif
+
 additional-dirs := $(objutil)/cbfstool $(objutil)/romcc $(objutil)/ifdtool \
 		   $(objutil)/ifdfake $(objutil)/options $(obj)/amdfwtool \
 		   $(objutil)/cbootimage $(objutil)/bimgtool

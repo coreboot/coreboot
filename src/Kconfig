@@ -1135,6 +1135,13 @@ config DEBUG_PRINT_PAGE_TABLES
 	  After the page tables have been built, print them on the debug
 	  console.
 
+config DEBUG_ADA_CODE
+	bool "Compile debug code in Ada sources"
+	default n
+	help
+	  Add the compiler switch `-gnata` to compile code guarded by
+	  `pragma Debug`.
+
 endmenu
 
 # These probably belong somewhere else, but they are needed somewhere.

@@ -90,6 +90,7 @@ static void check_ifd_version(char *image, int size)
 		max_regions = MAX_REGIONS_OLD;
 		break;
 	case SPI_FREQUENCY_17MHZ:
+	case SPI_FREQUENCY_50MHZ_30MHZ:
 		ifd_version = IFD_VERSION_2;
 		max_regions = MAX_REGIONS;
 		break;

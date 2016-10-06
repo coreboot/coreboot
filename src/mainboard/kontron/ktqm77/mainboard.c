@@ -159,8 +159,8 @@ static int int15_handler(void)
 
 
 
-// mainboard_enable is executed as first thing after
-// enumerate_buses().
+/* mainboard_enable is executed as first thing after */
+/* enumerate_buses(). */
 
 static void mainboard_enable(device_t dev)
 {

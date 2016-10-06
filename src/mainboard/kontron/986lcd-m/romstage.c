@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-// __PRE_RAM__ means: use "unsigned" for device, not a struct.
+/* __PRE_RAM__ means: use "unsigned" for device, not a struct. */
 
 #include <stdint.h>
 #include <string.h>
@@ -57,21 +57,21 @@ static void ich7_enable_lpc(void)
 {
 	int lpt_en = 0;
 	if (read_option(lpt, 0) != 0) {
-		lpt_en = 1 << 2; // enable LPT
+		lpt_en = 1 << 2; /* enable LPT */
 	}
-	// Enable Serial IRQ
+	/* Enable Serial IRQ */
 	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0x64, 0xd0);
-	// Set COM1/COM2 decode range
+	/* Set COM1/COM2 decode range */
 	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x80, 0x0010);
-	// Enable COM1/COM2/KBD/SuperIO1+2
+	/* Enable COM1/COM2/KBD/SuperIO1+2 */
 	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x82, 0x340b | lpt_en);
-	// Enable HWM at 0xa00
+	/* Enable HWM at 0xa00 */
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0x84, 0x00fc0a01);
-	// COM3 decode
+	/* COM3 decode */
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0x88, 0x000403e9);
-	// COM4 decode
+	/* COM4 decode */
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0x8c, 0x000402e9);
-	// io 0x300 decode
+	/* io 0x300 decode */
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0x90, 0x00000301);
 }
 
@@ -101,10 +101,10 @@ static void early_superio_config_w83627thg(void)
 	dev = PNP_DEV(0x2e, W83627THG_SP1);
 	pnp_enter_func_mode(dev);
 
-	pnp_write_config(dev, 0x24, 0xc6); // PNPCSV
+	pnp_write_config(dev, 0x24, 0xc6); /* PNPCSV */
 
-	pnp_write_config(dev, 0x29, 0x43); // GPIO settings
-	pnp_write_config(dev, 0x2a, 0x40); // GPIO settings
+	pnp_write_config(dev, 0x29, 0x43); /* GPIO settings */
+	pnp_write_config(dev, 0x2a, 0x40); /* GPIO settings */
 
 	dev = PNP_DEV(0x2e, W83627THG_SP1);
 	pnp_set_logical_device(dev);
@@ -118,7 +118,6 @@ static void early_superio_config_w83627thg(void)
 	pnp_set_enable(dev, 0);
 	pnp_set_iobase(dev, PNP_IDX_IO0, 0x2f8);
 	pnp_set_irq(dev, PNP_IDX_IRQ0, 3);
-	// pnp_write_config(dev, 0xf1, 4); // IRMODE0
 	pnp_set_enable(dev, 1);
 
 	dev = PNP_DEV(0x2e, W83627THG_KBC);
@@ -126,25 +125,24 @@ static void early_superio_config_w83627thg(void)
 	pnp_set_enable(dev, 0);
 	pnp_set_iobase(dev, PNP_IDX_IO0, 0x60);
 	pnp_set_iobase(dev, PNP_IDX_IO1, 0x64);
-	// pnp_write_config(dev, 0xf0, 0x82);
 	pnp_set_enable(dev, 1);
 
 	dev = PNP_DEV(0x2e, W83627THG_GAME_MIDI_GPIO1);
 	pnp_set_logical_device(dev);
 	pnp_set_enable(dev, 0);
-	pnp_write_config(dev, 0xf5, 0xff); // invert all GPIOs
+	pnp_write_config(dev, 0xf5, 0xff); /* invert all GPIOs */
 	pnp_set_enable(dev, 1);
 
 	dev = PNP_DEV(0x2e, W83627THG_GPIO2);
 	pnp_set_logical_device(dev);
-	pnp_set_enable(dev, 1); // Just enable it
+	pnp_set_enable(dev, 1); /* Just enable it */
 
 	dev = PNP_DEV(0x2e, W83627THG_GPIO3);
 	pnp_set_logical_device(dev);
 	pnp_set_enable(dev, 0);
-	pnp_write_config(dev, 0xf0, 0xfb); // GPIO bit 2 is output
-	pnp_write_config(dev, 0xf1, 0x00); // GPIO bit 2 is 0
-	pnp_write_config(dev, 0x30, 0x03); // Enable GPIO3+4. pnp_set_enable is not sufficient
+	pnp_write_config(dev, 0xf0, 0xfb); /* GPIO bit 2 is output */
+	pnp_write_config(dev, 0xf1, 0x00); /* GPIO bit 2 is 0 */
+	pnp_write_config(dev, 0x30, 0x03); /* Enable GPIO3+4. pnp_set_enable is not sufficient */
 
 	dev = PNP_DEV(0x2e, W83627THG_FDC);
 	pnp_set_logical_device(dev);
@@ -166,14 +164,14 @@ static void early_superio_config_w83627thg(void)
 	dev = PNP_DEV(0x4e, W83627THG_SP1);
 	pnp_enter_func_mode(dev);
 
-	pnp_set_logical_device(dev); // Set COM3 to sane non-conflicting values
+	pnp_set_logical_device(dev); /* Set COM3 to sane non-conflicting values */
 	pnp_set_enable(dev, 0);
 	pnp_set_iobase(dev, PNP_IDX_IO0, 0x3e8);
 	pnp_set_irq(dev, PNP_IDX_IRQ0, 11);
 	pnp_set_enable(dev, 1);
 
 	dev = PNP_DEV(0x4e, W83627THG_SP2);
-	pnp_set_logical_device(dev); // Set COM4 to sane non-conflicting values
+	pnp_set_logical_device(dev); /* Set COM4 to sane non-conflicting values */
 	pnp_set_enable(dev, 0);
 	pnp_set_iobase(dev, PNP_IDX_IO0, 0x2e8);
 	pnp_set_irq(dev, PNP_IDX_IRQ0, 10);
@@ -201,8 +199,6 @@ static void rcba_config(void)
 	u32 reg32;
 
 	/* Set up virtual channel 0 */
-	//RCBA32(0x0014) = 0x80000001;
-	//RCBA32(0x001c) = 0x03128010;
 
 	/* Device 1f interrupt pin register */
 	RCBA32(0x3100) = 0x00042210;
@@ -267,7 +263,7 @@ static void rcba_config(void)
 	RCBA32(0x3418) = reg32;
 
 	/* Enable PCIe Root Port Clock Gate */
-	// RCBA32(0x341c) = 0x00000001;
+
 }
 
 static void early_ich7_init(void)
@@ -275,15 +271,15 @@ static void early_ich7_init(void)
 	uint8_t reg8;
 	uint32_t reg32;
 
-	// program secondary mlt XXX byte?
+	/* program secondary mlt XXX byte? */
 	pci_write_config8(PCI_DEV(0, 0x1e, 0), 0x1b, 0x20);
 
-	// reset rtc power status
+	/* reset rtc power status */
 	reg8 = pci_read_config8(PCI_DEV(0, 0x1f, 0), 0xa4);
 	reg8 &= ~(1 << 2);
 	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xa4, reg8);
 
-	// usb transient disconnect
+	/* usb transient disconnect */
 	reg8 = pci_read_config8(PCI_DEV(0, 0x1f, 0), 0xad);
 	reg8 |= (3 << 0);
 	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xad, reg8);
@@ -317,7 +313,7 @@ static void early_ich7_init(void)
 	RCBA32(0x3e0e) |= (1 << 7);
 	RCBA32(0x3e4e) |= (1 << 7);
 
-	// next step only on ich7m b0 and later:
+	/* next step only on ich7m b0 and later: */
 	reg32 = RCBA32(0x2034);
 	reg32 &= ~(0x0f << 16);
 	reg32 |= (5 << 16);

@@ -39,8 +39,8 @@ static void *smp_write_config_table(void *v)
 		firewire_bus = firewire->bus->secondary;
 	}
 
-	// If a riser card is used, this riser is detected on bus 4, so its secondary bus is the
-	// highest bus number on the pci bus.
+	/* If a riser card is used, this riser is detected on bus 4, so its secondary bus is the */
+	/* highest bus number on the pci bus. */
 	riser = dev_find_device(0x3388, 0x0021, 0);
 	if (!riser)
 		riser = dev_find_device(0x3388, 0x0022, 0);
@@ -77,11 +77,11 @@ static void *smp_write_config_table(void *v)
 
 	if (riser) {
 		/* Old riser card */
-		// riser slot top 5:8.0
+		/* riser slot top 5:8.0 */
 		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, riser_bus, 0x20, ioapic_id, 0x14);
-		// riser slot middle 5:9.0
+		/* riser slot middle 5:9.0 */
 		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, riser_bus, 0x24, ioapic_id, 0x15);
-		// riser slot bottom 5:a.0
+		/* riser slot bottom 5:a.0 */
 		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, riser_bus, 0x28, ioapic_id, 0x16);
 
 		/* New Riser Card */

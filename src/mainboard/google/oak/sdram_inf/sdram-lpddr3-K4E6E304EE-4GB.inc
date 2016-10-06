@@ -1,7 +1,7 @@
 { /* 4GB (16Gb + 16Gb) for dual rank dram setting */
 	{
-		.impedance_drvp = 0x9,
-		.impedance_drvn = 0xa,
+		.impedance_drvp = 0xc,
+		.impedance_drvn = 0xd,
 		.datlat_ucfirst = 18,
 
 		.ca_train = {

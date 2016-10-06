@@ -18,9 +18,9 @@
 
 const u32 cim_verb_data[] = {
 	/* coreboot specific header */
-	0x11060397,	// Codec Vendor / Device ID: Via VT1708S
-	0x11060000,	// Subsystem ID
-	0x0000000c,	// Number of jacks
+	0x11060397,	/* Codec Vendor / Device ID: Via VT1708S */
+	0x11060000,	/* Subsystem ID */
+	0x0000000c,	/* Number of jacks */
 
 	/* NID 0x01, HDA Codec Subsystem ID Verb Table: 0x11060000 */
 	AZALIA_SUBVENDOR(0x0, 0x11060000),
@@ -95,9 +95,9 @@ const u32 cim_verb_data[] = {
 
 
 	/* coreboot specific header */
-	0x80862806,	// Codec Vendor / Device ID: Intel PantherPoint HDMI
-	0x80860101,	// Subsystem ID
-	0x00000004,	// Number of jacks
+	0x80862806,	/* Codec Vendor / Device ID: Intel PantherPoint HDMI */
+	0x80860101,	/* Subsystem ID */
+	0x00000004,	/* Number of jacks */
 
 	/* NID 0x01, HDA Codec Subsystem ID Verb Table: 0x80860101 */
 	AZALIA_SUBVENDOR(0x0, 0x80860101),

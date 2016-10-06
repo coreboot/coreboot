@@ -78,8 +78,8 @@ static void pnp_exit_ext_func_mode(device_t dev)
 
 void mainboard_config_superio(void)
 {
-	int lvds_3v = 0; // 0 (5V) or 1 (3V3)
-	int dis_bl_inv = 1; // backlight inversion: 1 = disabled, 0 = enabled
+	int lvds_3v = 0; /* 0 (5V) or 1 (3V3) */
+	int dis_bl_inv = 1; /* backlight inversion: 1 = disabled, 0 = enabled */
 	device_t dev = PNP_DEV(0x2e, 0x9);
 	pnp_enter_ext_func_mode(dev);
 	pnp_write_config(dev, 0x29, 0x02); /* Pins 119, 120 are GPIO21, 20 */
@@ -114,17 +114,19 @@ void mainboard_fill_pei_data(struct pei_data *pei_data)
 		.pmbase = DEFAULT_PMBASE,
 		.gpiobase = DEFAULT_GPIOBASE,
 		.thermalbase = 0xfed08000,
-		.system_type = 0, // 0 Mobile, 1 Desktop/Server
+		.system_type = 0, /* 0 Mobile, 1 Desktop/Server */
 		.tseg_size = CONFIG_SMM_TSEG_SIZE,
 		.spd_addresses = { 0xA0, 0x00,0xA4,0x00 },
 		.ts_addresses = { 0x00, 0x00, 0x00, 0x00 },
 		.ec_present = 1,
 		.gbe_enable = 1,
 		.ddr3lv_support = 0,
-		// 0 = leave channel enabled
-		// 1 = disable dimm 0 on channel
-		// 2 = disable dimm 1 on channel
-		// 3 = disable dimm 0+1 on channel
+		/*
+		 * 0 = leave channel enabled
+		 * 1 = disable dimm 0 on channel
+		 * 2 = disable dimm 1 on channel
+		 * 3 = disable dimm 0+1 on channel
+		 */
 		.dimm_channel0_disabled = 2,
 		.dimm_channel1_disabled = 2,
 		.max_ddr3_freq = 1600,

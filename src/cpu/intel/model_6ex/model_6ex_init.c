@@ -69,7 +69,7 @@ static void configure_c_states(void)
 	msr.lo |= (1 << 15); // config lock until next reset.
 	msr.lo |= (1 << 10); // Enable I/O MWAIT redirection for C-States
 	msr.lo &= ~(1 << 9); // Issue a single stop grant cycle upon stpclk
-	// TODO Do we want Deep C4 and  Dynamic L2 shrinking?
+	msr.lo |= (1 << 3); //dynamic L2
 
 	/* Number of supported C-States */
 	msr.lo &= ~7;
@@ -103,7 +103,13 @@ static void configure_misc(void)
 	// TODO: Only if  IA32_PLATFORM_ID[17] = 0 and IA32_PLATFORM_ID[50] = 1
 	msr.lo |= (1 << 16);	/* Enhanced SpeedStep Enable */
 
-	// TODO Do we want Deep C4 and  Dynamic L2 shrinking?
+	/* Enable C2E */
+	msr.lo |= (1 << 26);
+
+	/* Enable C4E */
+	msr.hi |= (1 << (32 - 32)); // C4E
+	msr.hi |= (1 << (33 - 32)); // Hard C4E
+
 	wrmsr(IA32_MISC_ENABLE, msr);
 
 	msr.lo |= (1 << 20);	/* Lock Enhanced SpeedStep Enable */

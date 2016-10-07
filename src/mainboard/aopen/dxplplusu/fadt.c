@@ -66,7 +66,7 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 
 	fadt->pm1_evt_len = 4;
 	fadt->pm1_cnt_len = 2;
-	// XXX: pm2_cnt_len is probably wrong. find out right value (hint: it's != 0)
+	/* XXX: pm2_cnt_len is probably wrong. find out right value (hint: it's != 0) */
 	fadt->pm2_cnt_len = 0;
 	fadt->pm_tmr_len = 4;
 	fadt->gpe0_blk_len = 8;

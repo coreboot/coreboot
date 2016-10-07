@@ -204,7 +204,7 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 		return current;
 
 	reg = pci_read_config32(dev, 0x60);
-	if ((reg & 0x07) != 0x01)  // require enabled + 256MB size
+	if ((reg & 0x07) != 0x01)  /* require enabled + 256MB size */
 		return current;
 
 	current += acpi_create_mcfg_mmconfig((acpi_mcfg_mmconfig_t *) current,

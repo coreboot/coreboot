@@ -34,7 +34,7 @@ static void init_gpio(void)
 
 static void init(struct device *dev)
 {
-	// BOARD-SPECIFIC INIT
+	/* BOARD-SPECIFIC INIT */
 	printk(BIOS_DEBUG, "ARTECGROUP DBE61 ENTER %s\n", __func__);
 
 	init_gpio();

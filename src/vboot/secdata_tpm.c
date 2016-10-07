@@ -245,11 +245,6 @@ static uint32_t _factory_initialize_tpm(struct vb2_context *ctx)
 	VBDEBUG("TPM: Clearing owner\n");
 	RETURN_ON_FAILURE(tpm_clear_and_reenable());
 
-	/* Define the backup space. No need to initialize it, though. */
-	RETURN_ON_FAILURE(safe_define_space(BACKUP_NV_INDEX,
-					    TPM_NV_PER_PPWRITE,
-					    VB2_NVDATA_SIZE));
-
 	/* Define and initialize the kernel space */
 	RETURN_ON_FAILURE(safe_define_space(KERNEL_NV_INDEX,
 					    TPM_NV_PER_PPWRITE,

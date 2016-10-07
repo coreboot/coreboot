@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-
 #ifndef _PLATFORM_CFG_H_
 #define _PLATFORM_CFG_H_
 
@@ -161,7 +160,6 @@
  *  SDIN2 is define at BIT4 & BIT5
  *  SDIN3 is define at BIT6 & BIT7
  */
-//#define AZALIA_SDIN_PIN		0xAA
 #define AZALIA_SDIN_PIN			0x2A
 
 /**

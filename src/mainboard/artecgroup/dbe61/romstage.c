@@ -87,16 +87,4 @@ void main(unsigned long bist)
 	cpuRegInit(0, DIMM0, DIMM1, DRAM_TERMINATED);
 
 	sdram_initialize(1, memctrl);
-
-	/* Dump memory configuration. */
-#if 0
-	msr = rdmsr(MC_CF07_DATA);
-	printk(BIOS_DEBUG, "MC_CF07_DATA: %08x value is: %08x:%08x\n", MC_CF07_DATA, msr.hi, msr.lo);
-
-	msr = rdmsr(MC_CF1017_DATA);
-	printk(BIOS_DEBUG, "MC_CF1017_DATA: %08x value is: %08x:%08x\n", MC_CF07_DATA, msr.hi, msr.lo);
-
-	msr = rdmsr(MC_CF8F_DATA);
-	printk(BIOS_DEBUG, "MC_CF8F_DATA: %08x value is: %08x:%08x\n", MC_CF07_DATA, msr.hi, msr.lo);
-#endif
 }

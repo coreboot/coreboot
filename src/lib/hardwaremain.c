@@ -18,6 +18,7 @@
  * C Bootstrap code for the coreboot
  */
 
+#include <adainit.h>
 #include <arch/exception.h>
 #include <bootstate.h>
 #include <console/console.h>
@@ -429,6 +430,18 @@ static void boot_state_schedule_static_entries(void)
 
 void main(void)
 {
+	/*
+	 * We can generally jump between C and Ada code back and forth
+	 * without trouble. But since we don't have an Ada main() we
+	 * have to do some Ada package initializations that GNAT would
+	 * do there. This has to be done before calling any Ada code.
+	 *
+	 * The package initializations should not have any dependen-
+	 * cies on C code. So we can call them here early, and don't
+	 * have to worry at which point we can start to use Ada.
+	 */
+	ramstage_adainit();
+
 	/* TODO: Understand why this is here and move to arch/platform code. */
 	/* For MMIO UART this needs to be called before any other printk. */
 	if (IS_ENABLED(CONFIG_ARCH_X86))

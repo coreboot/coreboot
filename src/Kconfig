@@ -1243,3 +1243,8 @@ config CHECKLIST_DATA_FILE_LOCATION
 	  symbols contained only in <stage>_complete.dat will be flagged as
 	  required and not implemented if a weak implementation is found in the
 	  resulting image.
+
+config RAMSTAGE_ADA
+	def_bool n
+	help
+	  Selected by features that use Ada code in ramstage.

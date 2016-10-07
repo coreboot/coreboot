@@ -187,7 +187,7 @@ static void set_region(frba_t *frba, int region_type, region_t region)
 
 static const char *region_name(int region_type)
 {
-	if (region_type < 0 || region_type >= MAX_REGIONS) {
+	if (region_type < 0 || region_type >= max_regions) {
 		fprintf(stderr, "Invalid region type.\n");
 		exit (EXIT_FAILURE);
 	}
@@ -197,7 +197,7 @@ static const char *region_name(int region_type)
 
 static const char *region_name_short(int region_type)
 {
-	if (region_type < 0 || region_type >= MAX_REGIONS) {
+	if (region_type < 0 || region_type >= max_regions) {
 		fprintf(stderr, "Invalid region type.\n");
 		exit (EXIT_FAILURE);
 	}
@@ -209,7 +209,7 @@ static int region_num(const char *name)
 {
 	int i;
 
-	for (i = 0; i < MAX_REGIONS; i++) {
+	for (i = 0; i < max_regions; i++) {
 		if (strcasecmp(name, region_names[i].pretty) == 0)
 			return i;
 		if (strcasecmp(name, region_names[i].terse) == 0)
@@ -233,7 +233,7 @@ static const char *region_filename(int region_type)
 		"flashregion_8_ec.bin",
 	};
 
-	if (region_type < 0 || region_type >= MAX_REGIONS) {
+	if (region_type < 0 || region_type >= max_regions) {
 		fprintf(stderr, "Invalid region type %d.\n", region_type);
 		exit (EXIT_FAILURE);
 	}
@@ -295,7 +295,7 @@ static void dump_frba_layout(frba_t * frba, char *layout_fname)
 		exit(EXIT_FAILURE);
 	}
 
-	for (i = 0; i < MAX_REGIONS; i++) {
+	for (i = 0; i < max_regions; i++) {
 		dump_region_layout(buf, bufsize, i, frba);
 		if (write(layout_fd, buf, strlen(buf)) < 0) {
 			perror("Could not write to file");
@@ -980,7 +980,7 @@ void new_layout(char *filename, char *image, int size, char *layout_fname)
 	frba_t *frba =
 	    (frba_t *) (image + (((fdb->flmap0 >> 16) & 0xff) << 4));
 
-	for (i = 0; i < MAX_REGIONS; i++) {
+	for (i = 0; i < max_regions; i++) {
 		current_regions[i] = get_region(frba, i);
 		new_regions[i] = get_region(frba, i);
 	}
@@ -1024,7 +1024,7 @@ void new_layout(char *filename, char *image, int size, char *layout_fname)
 	fclose(romlayout);
 
 	/* check new layout */
-	for (i = 0; i < MAX_REGIONS; i++) {
+	for (i = 0; i < max_regions; i++) {
 		if (new_regions[i].size == 0)
 			continue;
 
@@ -1035,7 +1035,7 @@ void new_layout(char *filename, char *image, int size, char *layout_fname)
 			printf("    This may result in an unusable image.\n");
 		}
 
-		for (j = i + 1; j < MAX_REGIONS; j++) {
+		for (j = i + 1; j < max_regions; j++) {
 			if (regions_collide(new_regions[i], new_regions[j])) {
 				fprintf(stderr, "Regions would overlap.\n");
 				exit(EXIT_FAILURE);
@@ -1057,7 +1057,7 @@ void new_layout(char *filename, char *image, int size, char *layout_fname)
 	/* copy regions to a new image */
 	new_image = malloc(new_extent);
 	memset(new_image, 0xff, new_extent);
-	for (i = 0; i < MAX_REGIONS; i++) {
+	for (i = 0; i < max_regions; i++) {
 		int copy_size = new_regions[i].size;
 		int offset_current = 0, offset_new = 0;
 		region_t current = current_regions[i];
@@ -1095,7 +1095,7 @@ void new_layout(char *filename, char *image, int size, char *layout_fname)
 		exit(EXIT_FAILURE);
 
 	frba = (frba_t *) (new_image + (((fdb->flmap0 >> 16) & 0xff) << 4));
-	for (i = 1; i < MAX_REGIONS; i++) {
+	for (i = 1; i < max_regions; i++) {
 		set_region(frba, i, new_regions[i]);
 	}
 

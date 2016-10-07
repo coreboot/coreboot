@@ -17,8 +17,9 @@
 #include <console/console.h>
 #include <program_loading.h>
 
-// the qemu part of all this is very, very non-hardware like.
-// so it gets its own bootblock.
+/* The qemu part of all this is very, very non-hardware like.
+ * So it gets its own bootblock.
+ */
 void main(void)
 {
 	if (IS_ENABLED(CONFIG_BOOTBLOCK_CONSOLE)) {

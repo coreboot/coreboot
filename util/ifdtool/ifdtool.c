@@ -28,6 +28,7 @@
 #endif
 
 static int ifd_version;
+static int max_regions = 0;
 static int selected_chip = 0;
 
 static const struct region_name region_names[MAX_REGIONS] = {
@@ -85,9 +86,11 @@ static void check_ifd_version(char *image, int size)
 	switch (read_freq) {
 	case SPI_FREQUENCY_20MHZ:
 		ifd_version = IFD_VERSION_1;
+		max_regions = MAX_REGIONS_OLD;
 		break;
 	case SPI_FREQUENCY_17MHZ:
 		ifd_version = IFD_VERSION_2;
+		max_regions = MAX_REGIONS;
 		break;
 	default:
 		fprintf(stderr, "Unknown descriptor version: %d\n",
@@ -653,7 +656,6 @@ static void dump_layout(char *image, int size, char *layout_fname)
 static void write_regions(char *image, int size)
 {
 	int i;
-	int max_regions = MAX_REGIONS;
 
 	fdbar_t *fdb = find_fd(image, size);
 	if (!fdb)
@@ -661,10 +663,6 @@ static void write_regions(char *image, int size)
 
 	frba_t *frba =
 	    (frba_t *) (image + (((fdb->flmap0 >> 16) & 0xff) << 4));
-
-	/* Older descriptor images have fewer regions */
-	if (ifd_version < IFD_VERSION_2)
-		max_regions = MAX_REGIONS_OLD;
 
 	for (i = 0; i < max_regions; i++) {
 		region_t region = get_region(frba, i);

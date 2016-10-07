@@ -15,7 +15,7 @@
  * GNU General Public License for more details.
  */
 
-// __PRE_RAM__ means: use "unsigned" for device, not a struct.
+/* __PRE_RAM__ means: use "unsigned" for device, not a struct. */
 
 #include <stdint.h>
 #include <string.h>
@@ -89,110 +89,116 @@ void setup_ich7_gpios(void)
 
 static void ich7_enable_lpc(void)
 {
-	// Enable Serial IRQ
+	/* Enable Serial IRQ */
 	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0x64, 0xd0);
 
-	// I/O Decode Ranges
-	// X60:       0x0210 == 00000010 00010000
-	// Macbook21: 0x0010 == 00000000 00010000
-	// Bit 9:8    LPT Decode Range. This field determines which range to
-	//            decode for the LPT Port.
-	//            00 = 378h - 37Fh and 778h - 77Fh
-	//            10 = 3BCh - 3BEh and 7BCh - 7BEh
+	/* I/O Decode Ranges
+	 * X60:       0x0210 == 00000010 00010000
+	 * Macbook21: 0x0010 == 00000000 00010000
+	 * Bit 9:8    LPT Decode Range. This field determines which range to
+	 *            decode for the LPT Port.
+	 *            00 = 378h - 37Fh and 778h - 77Fh
+	 *            10 = 3BCh - 3BEh and 7BCh - 7BEh
+	 */
 	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x80, 0x0010);
 
-	// LPC_EN--LPC I/F Enables Register
-	// X60:       0x1f0d == 00011111 00001101
-	// Macbook21: 0x3807 == 00111000 00000111
-	// Bit 13     CNF2_LPC_EN -- R/W. Microcontroller Enable # 2.
-	//            0 = Disable.
-	//            1 = Enables the decoding of the I/O locations 4Eh and 4Fh
-	//            to the LPC interface. This range is used for a
-	//            microcontroller.
-	// Bit 12     CNF1_LPC_EN -- R/W. Super I/O Enable.
-	//            0 = Disable.
-	//            1 = Enables the decoding of the I/O locations 2Eh and 2Fh
-	//            to the LPC interface. This range is used for
-	//            Super I/O devices.
-	// Bit 11     MC_LPC_EN -- R/W. Microcontroller Enable # 1.
-	//            0 = Disable.
-	//            1 = Enables the decoding of the I/O locations 62h and 66h
-	//            to the LPC interface. This range is used for a
-	//            microcontroller.
-	// Bit 10     KBC_LPC_EN -- R/W. Keyboard Enable.
-	//            0 = Disable.
-	//            1 = Enables the decoding of the I/O locations 60h and 64h
-	//            to the LPC interface. This range is used for a
-	//            microcontroller.
-	// Bit 9      GAMEH_LPC_EN -- R/W. High Gameport Enable
-	//            0 = Disable.
-	//            1 = Enables the decoding of the I/O locations 208h to 20Fh
-	//            to the LPC interface. This range is used for a gameport.
-	// Bit 8      GAMEL_LPC_EN -- R/W. Low Gameport Enable
-	//            0 = Disable.
-	//            1 = Enables the decoding of the I/O locations 200h to 207h
-	//            to the LPC interface. This range is used for a gameport.
-	// Bit 3      FDD_LPC_EN -- R/W. Floppy Drive Enable
-	//            0 = Disable.
-	//            1 = Enables the decoding of the FDD range to the LPC
-	//            interface. This range is selected in the LPC_FDD/LPT
-	//            Decode Range Register (D31:F0:80h, bit 12).
-	// Bit 2      LPT_LPC_EN -- R/W. Parallel Port Enable
-	//            0 = Disable.
-	//            1 = Enables the decoding of the LPT range to the LPC
-	//            interface. This range is selected in the LPC_FDD/LPT
-	//            Decode Range Register (D31:F0:80h, bit 9:8).
-	// Bit 1      COMB_LPC_EN -- R/W. Com Port B Enable
-	//            0 = Disable.
-	//            1 = Enables the decoding of the COMB range to the LPC
-	//            interface. This range is selected in the LPC_COM Decode
-	//            Range Register (D31:F0:80h, bits 6:4).
-	// Bit 0      COMA_LPC_EN -- R/W. Com Port A Enable
-	//            0 = Disable.
-	//            1 = Enables the decoding of the COMA range to the LPC
-	//            interface. This range is selected in the LPC_COM Decode
-	//            Range Register (D31:F0:80h, bits 3:2).
+	/* LPC_EN--LPC I/F Enables Register
+	 * X60:       0x1f0d == 00011111 00001101
+	 * Macbook21: 0x3807 == 00111000 00000111
+	 * Bit 13     CNF2_LPC_EN -- R/W. Microcontroller Enable # 2.
+	 *            0 = Disable.
+	 *            1 = Enables the decoding of the I/O locations 4Eh and 4Fh
+	 *            to the LPC interface. This range is used for a
+	 *            microcontroller.
+	 * Bit 12     CNF1_LPC_EN -- R/W. Super I/O Enable.
+	 *            0 = Disable.
+	 *            1 = Enables the decoding of the I/O locations 2Eh and 2Fh
+	 *            to the LPC interface. This range is used for
+	 *            Super I/O devices.
+	 * Bit 11     MC_LPC_EN -- R/W. Microcontroller Enable # 1.
+	 *            0 = Disable.
+	 *            1 = Enables the decoding of the I/O locations 62h and 66h
+	 *            to the LPC interface. This range is used for a
+	 *            microcontroller.
+	 * Bit 10     KBC_LPC_EN -- R/W. Keyboard Enable.
+	 *            0 = Disable.
+	 *            1 = Enables the decoding of the I/O locations 60h and 64h
+	 *            to the LPC interface. This range is used for a
+	 *            microcontroller.
+	 * Bit 9      GAMEH_LPC_EN -- R/W. High Gameport Enable
+	 *            0 = Disable.
+	 *            1 = Enables the decoding of the I/O locations 208h to 20Fh
+	 *            to the LPC interface. This range is used for a gameport.
+	 * Bit 8      GAMEL_LPC_EN -- R/W. Low Gameport Enable
+	 *            0 = Disable.
+	 *            1 = Enables the decoding of the I/O locations 200h to 207h
+	 *            to the LPC interface. This range is used for a gameport.
+	 * Bit 3      FDD_LPC_EN -- R/W. Floppy Drive Enable
+	 *            0 = Disable.
+	 *            1 = Enables the decoding of the FDD range to the LPC
+	 *            interface. This range is selected in the LPC_FDD/LPT
+	 *            Decode Range Register (D31:F0:80h, bit 12).
+	 * Bit 2      LPT_LPC_EN -- R/W. Parallel Port Enable
+	 *            0 = Disable.
+	 *            1 = Enables the decoding of the LPT range to the LPC
+	 *            interface. This range is selected in the LPC_FDD/LPT
+	 *            Decode Range Register (D31:F0:80h, bit 9:8).
+	 * Bit 1      COMB_LPC_EN -- R/W. Com Port B Enable
+	 *            0 = Disable.
+	 *            1 = Enables the decoding of the COMB range to the LPC
+	 *            interface. This range is selected in the LPC_COM Decode
+	 *            Range Register (D31:F0:80h, bits 6:4).
+	 * Bit 0      COMA_LPC_EN -- R/W. Com Port A Enable
+	 *            0 = Disable.
+	 *            1 = Enables the decoding of the COMA range to the LPC
+	 *            interface. This range is selected in the LPC_COM Decode
+	 *            Range Register (D31:F0:80h, bits 3:2).
+	 */
 	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x82, 0x3807);
 
-	/* GEN1_DEC, LPC Interface Generic Decode Range 1 */
-	// X60:       0x1601 0x007c == 00000000 01111100 00010110 00000001
-	// Macbook21: 0x0681 0x000c == 00000000 00001100 00000110 10000001
-	// Bit 31:24  Reserved.
-	// Bit 23:18  Generic I/O Decode Range Address[7:2] Mask: A `1' in any
-	//            bit position indicates that any value in the corresponding
-	//            address bit in a received cycle will be treated as a
-	//            match. The corresponding bit in the Address field, below,
-	//            is ignored. The mask is only provided for the lower 6 bits
-	//            of the DWord address, allowing for decoding blocks up to
-	//            256 bytes in size.
-	// Bit 17:16  Reserved.
-	// Bit 15:2   Generic I/O Decode Range 1 Base Address (GEN1_BASE). This
-	//            address is aligned on a 128-byte boundary, and must have
-	//            address lines 31:16 as 0. NOTE: The Intel ICH7 does not
-	//            provide decode down to the word or byte level.
-	// Bit 1      Reserved.
-	// Bit 0      Generic Decode Range 1 Enable (GEN1_EN) -- R/W.
-	//            0 = Disable.
-	//            1 = Enable the GEN1 I/O range to be forwarded to the LPC
-	//            I/F
+	/* GEN1_DEC, LPC Interface Generic Decode Range 1
+	 * X60:       0x1601 0x007c == 00000000 01111100 00010110 00000001
+	 * Macbook21: 0x0681 0x000c == 00000000 00001100 00000110 10000001
+	 * Bit 31:24  Reserved.
+	 * Bit 23:18  Generic I/O Decode Range Address[7:2] Mask: A `1' in any
+	 *            bit position indicates that any value in the corresponding
+	 *            address bit in a received cycle will be treated as a
+	 *            match. The corresponding bit in the Address field, below,
+	 *            is ignored. The mask is only provided for the lower 6 bits
+	 *            of the DWord address, allowing for decoding blocks up to
+	 *            256 bytes in size.
+	 * Bit 17:16  Reserved.
+	 * Bit 15:2   Generic I/O Decode Range 1 Base Address (GEN1_BASE). This
+	 *            address is aligned on a 128-byte boundary, and must have
+	 *            address lines 31:16 as 0. NOTE: The Intel ICH7 does not
+	 *            provide decode down to the word or byte level.
+	 * Bit 1      Reserved.
+	 * Bit 0      Generic Decode Range 1 Enable (GEN1_EN) -- R/W.
+	 *            0 = Disable.
+	 *            1 = Enable the GEN1 I/O range to be forwarded to the LPC
+	 *            I/F
+	 */
 	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x84, 0x0681);
 	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x86, 0x000c);
 
-	/* GEN2_DEC, LPC Interface Generic Decode Range 2 */
-	// X60:       0x15e1 0x000c == 00000000 00001100 00010101 11100001
-	// Macbook21: 0x1641 0x000c == 00000000 00001100 00010110 01000001
+	/* GEN2_DEC, LPC Interface Generic Decode Range 2
+	 * X60:       0x15e1 0x000c == 00000000 00001100 00010101 11100001
+	 * Macbook21: 0x1641 0x000c == 00000000 00001100 00010110 01000001
+	 */
 	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x88, 0x1641);
 	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x8a, 0x000c);
 
-	/* GEN3_DEC, LPC Interface Generic Decode Range 3 */
-	// X60:       0x1681 0x001c == 00000000 00011100 00010110 10000001
-	// Macbook21: 0x0000 0x0000
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x8c, 0x0000); // obsolete, because it writes zeros?
+	/* GEN3_DEC, LPC Interface Generic Decode Range 3
+	 * X60:       0x1681 0x001c == 00000000 00011100 00010110 10000001
+	 * Macbook21: 0x0000 0x0000
+	 */
+	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x8c, 0x0000); /* obsolete, because it writes zeros? */
 	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x8e, 0x0000);
 
-	/* GEN4_DEC, LPC Interface Generic Decode Range 4 */
-	// X60:       0x0000 0x0000
-	// Macbook21: 0x0301 0x001c == 00000000 00011100 00000011 00000001
+	/* GEN4_DEC, LPC Interface Generic Decode Range 4
+	 * X60:       0x0000 0x0000
+	 * Macbook21: 0x0301 0x001c == 00000000 00011100 00000011 00000001
+	 */
 	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x90, 0x0301);
 	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x92, 0x001c);
 }
@@ -225,11 +231,9 @@ static void rcba_config(void)
 
 	/* Disable unused devices */
 	RCBA32(0x3418) = FD_PCIE6 | FD_PCIE5 | FD_PCIE4 | FD_PCIE3 | FD_INTLAN | FD_ACMOD | FD_ACAUD;
-	RCBA32(0x3418) |= (1 << 0);	// Required.
+	RCBA32(0x3418) |= (1 << 0);	/* Required. */
 
 	/* Set up I/O Trap #0 for 0xfe00 (SMIC) */
-	//	RCBA32(0x1e84) = 0x00020001;
-	//	RCBA32(0x1e80) = 0x0000fe01;
 
 	/* Set up I/O Trap #3 for 0x800-0x80c (Trap) */
 	RCBA32(0x1e9c) = 0x000200f0;
@@ -241,15 +245,15 @@ static void early_ich7_init(void)
 	uint8_t reg8;
 	uint32_t reg32;
 
-	// program secondary mlt XXX byte?
+	/* program secondary mlt XXX byte? */
 	pci_write_config8(PCI_DEV(0, 0x1e, 0), 0x1b, 0x20);
 
-	// reset rtc power status
+	/* reset rtc power status */
 	reg8 = pci_read_config8(PCI_DEV(0, 0x1f, 0), 0xa4);
 	reg8 &= ~(1 << 2);
 	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xa4, reg8);
 
-	// usb transient disconnect
+	/* usb transient disconnect */
 	reg8 = pci_read_config8(PCI_DEV(0, 0x1f, 0), 0xad);
 	reg8 |= (3 << 0);
 	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xad, reg8);
@@ -283,7 +287,7 @@ static void early_ich7_init(void)
 	RCBA32(0x3e0e) |= (1 << 7);
 	RCBA32(0x3e4e) |= (1 << 7);
 
-	// next step only on ich7m b0 and later:
+	/* next step only on ich7m b0 and later: */
 	reg32 = RCBA32(0x2034);
 	reg32 &= ~(0x0f << 16);
 	reg32 |= (5 << 16);

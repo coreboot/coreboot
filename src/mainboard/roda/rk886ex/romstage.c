@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  */
 
-// __PRE_RAM__ means: use "unsigned" for device, not a struct.
+/* __PRE_RAM__ means: use "unsigned" for device, not a struct. */
 
 #include <stdint.h>
 #include <string.h>
@@ -41,47 +41,48 @@ void setup_ich7_gpios(void)
 	/* General Registers */
 	outl(0xbfc0f7c0, DEFAULT_GPIOBASE + 0x00);	/* GPIO_USE_SEL */
 	outl(0x70a87d83, DEFAULT_GPIOBASE + 0x04);	/* GP_IO_SEL */
-	// ------------------------------------------------------------
-	// 0 - GPO6  - Enable power of SATA channel 0
-	// 0 - GPO9  - Wireless LAN power on
-	// 0 - GPO15 - FAN on
-	// 1 - GPO22 - FWH WP
-	// 1 - GPO24 - GPS on
-	// 0 - GPO25 - External Antenna Mux on
-	// 0 - GPO26 - BT on
-	// 0 - GPO27 - GSM on
+	/* ------------------------------------------------------------
+	 * 0 - GPO6  - Enable power of SATA channel 0
+	 * 0 - GPO9  - Wireless LAN power on
+	 * 0 - GPO15 - FAN on
+	 * 1 - GPO22 - FWH WP
+	 * 1 - GPO24 - GPS on
+	 * 0 - GPO25 - External Antenna Mux on
+	 * 0 - GPO26 - BT on
+	 * 0 - GPO27 - GSM on
+	 */
 	outl(0x01400000, DEFAULT_GPIOBASE + 0x0c);	/* GP_LVL */
-	// ------------------------------------------------------------
+	/* ------------------------------------------------------------ */
 	/* Output Control Registers */
 	outl(0x00000000, DEFAULT_GPIOBASE + 0x18);	/* GPO_BLINK */
 	/* Input Control Registers */
 	outl(0x00002180, DEFAULT_GPIOBASE + 0x2c);	/* GPI_INV */
 	outl(0x000100e8, DEFAULT_GPIOBASE + 0x30);	/* GPIO_USE_SEL2 */
 	outl(0x00000030, DEFAULT_GPIOBASE + 0x34);	/* GP_IO_SEL2 */
-	// ------------------------------------------------------------
-	// 1 - GPO48 - FWH TBL#
+	/* ------------------------------------------------------------ */
+	/* 1 - GPO48 - FWH TBL# */
 	outl(0x00010000, DEFAULT_GPIOBASE + 0x38);	/* GP_LVL */
-	// ------------------------------------------------------------
+	/* ------------------------------------------------------------ */
 }
 
 static void ich7_enable_lpc(void)
 {
 	int lpt_en = 0;
 	if (read_option(lpt, 0) != 0) {
-	       lpt_en = 1 << 2; // enable LPT
+	       lpt_en = 1 << 2; /* enable LPT */
 	}
-	// Enable Serial IRQ
+	/* Enable Serial IRQ */
 	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0x64, 0xd0);
-	// decode range
+	/* decode range */
 	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x80, 0x0007);
-	// decode range
+	/* decode range */
 	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x82, 0x3f0b | lpt_en);
-	// Enable 0x02e0
+	/* Enable 0x02e0 */
 	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x84, 0x02e1);
 	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x86, 0x001c);
-	// COM3 decode
+	/* COM3 decode */
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0x88, 0x00fc0601);
-	// COM4 decode
+	/* COM4 decode */
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0x8c, 0x00040069);
 }
 
@@ -116,30 +117,30 @@ static void early_superio_config(void)
 	dev = PNP_DEV(0x2e, 0x00);
 
 	pnp_enter_ext_func_mode(dev);
-	pnp_write_register(dev, 0x01, 0x94); // Extended Parport modes
-	pnp_write_register(dev, 0x02, 0x88); // UART power on
-	pnp_write_register(dev, 0x03, 0x72); // Floppy
-	pnp_write_register(dev, 0x04, 0x01); // EPP + SPP
-	pnp_write_register(dev, 0x14, 0x03); // Floppy
-	pnp_write_register(dev, 0x20, (0x3f0 >> 2)); // Floppy
-	pnp_write_register(dev, 0x23, (0x378 >> 2)); // PP base
-	pnp_write_register(dev, 0x24, (0x3f8 >> 2)); // UART1 base
-	pnp_write_register(dev, 0x25, (0x2f8 >> 2)); // UART2 base
-	pnp_write_register(dev, 0x26, (2 << 4) | 0); // FDC + PP DMA
-	pnp_write_register(dev, 0x27, (6 << 4) | 7); // FDC + PP DMA
-	pnp_write_register(dev, 0x28, (4 << 4) | 3); // UART1,2 IRQ
+	pnp_write_register(dev, 0x01, 0x94); /* Extended Parport modes */
+	pnp_write_register(dev, 0x02, 0x88); /* UART power on */
+	pnp_write_register(dev, 0x03, 0x72); /* Floppy */
+	pnp_write_register(dev, 0x04, 0x01); /* EPP + SPP */
+	pnp_write_register(dev, 0x14, 0x03); /* Floppy */
+	pnp_write_register(dev, 0x20, (0x3f0 >> 2)); /* Floppy */
+	pnp_write_register(dev, 0x23, (0x378 >> 2)); /* PP base */
+	pnp_write_register(dev, 0x24, (0x3f8 >> 2)); /* UART1 base */
+	pnp_write_register(dev, 0x25, (0x2f8 >> 2)); /* UART2 base */
+	pnp_write_register(dev, 0x26, (2 << 4) | 0); /* FDC + PP DMA */
+	pnp_write_register(dev, 0x27, (6 << 4) | 7); /* FDC + PP DMA */
+	pnp_write_register(dev, 0x28, (4 << 4) | 3); /* UART1,2 IRQ */
 	/* These are the SMI status registers in the SIO: */
-	pnp_write_register(dev, 0x30, (0x600 >> 4)); // Runtime Register Block Base
+	pnp_write_register(dev, 0x30, (0x600 >> 4)); /* Runtime Register Block Base */
 
-	pnp_write_register(dev, 0x31, 0x00); // GPIO1 DIR
-	pnp_write_register(dev, 0x32, 0x00); // GPIO1 POL
-	pnp_write_register(dev, 0x33, 0x40); // GPIO2 DIR
-	pnp_write_register(dev, 0x34, 0x00); // GPIO2 POL
-	pnp_write_register(dev, 0x35, 0xff); // GPIO3 DIR
-	pnp_write_register(dev, 0x36, 0x00); // GPIO3 POL
-	pnp_write_register(dev, 0x37, 0xe0); // GPIO4 DIR
-	pnp_write_register(dev, 0x38, 0x00); // GPIO4 POL
-	pnp_write_register(dev, 0x39, 0x80); // GPIO4 POL
+	pnp_write_register(dev, 0x31, 0x00); /* GPIO1 DIR */
+	pnp_write_register(dev, 0x32, 0x00); /* GPIO1 POL */
+	pnp_write_register(dev, 0x33, 0x40); /* GPIO2 DIR */
+	pnp_write_register(dev, 0x34, 0x00); /* GPIO2 POL */
+	pnp_write_register(dev, 0x35, 0xff); /* GPIO3 DIR */
+	pnp_write_register(dev, 0x36, 0x00); /* GPIO3 POL */
+	pnp_write_register(dev, 0x37, 0xe0); /* GPIO4 DIR */
+	pnp_write_register(dev, 0x38, 0x00); /* GPIO4 POL */
+	pnp_write_register(dev, 0x39, 0x80); /* GPIO4 POL */
 
 	pnp_exit_ext_func_mode(dev);
 }
@@ -147,8 +148,6 @@ static void early_superio_config(void)
 static void rcba_config(void)
 {
 	/* Set up virtual channel 0 */
-	//RCBA32(0x0014) = 0x80000001;
-	//RCBA32(0x001c) = 0x03128010;
 
 	/* Device 1f interrupt pin register */
 	RCBA32(0x3100) = 0x00042220;
@@ -168,10 +167,7 @@ static void rcba_config(void)
 	/* Disable unused devices */
 	RCBA32(0x3418) = FD_PCIE6 | FD_PCIE5 | FD_PCIE3 | FD_PCIE2 |
 			 FD_INTLAN | FD_ACMOD | FD_HDAUD | FD_PATA;
-	RCBA32(0x3418) |= (1 << 0); // Required.
-
-	/* Enable PCIe Root Port Clock Gate */
-	// RCBA32(0x341c) = 0x00000001;
+	RCBA32(0x3418) |= (1 << 0); /* Required. */
 
 	/* This should probably go into the ACPI OS Init trap */
 
@@ -189,15 +185,15 @@ static void early_ich7_init(void)
 	uint8_t reg8;
 	uint32_t reg32;
 
-	// program secondary mlt XXX byte?
+	/* program secondary mlt XXX byte? */
 	pci_write_config8(PCI_DEV(0, 0x1e, 0), 0x1b, 0x20);
 
-	// reset rtc power status
+	/* reset rtc power status */
 	reg8 = pci_read_config8(PCI_DEV(0, 0x1f, 0), 0xa4);
 	reg8 &= ~(1 << 2);
 	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xa4, reg8);
 
-	// usb transient disconnect
+	/* usb transient disconnect */
 	reg8 = pci_read_config8(PCI_DEV(0, 0x1f, 0), 0xad);
 	reg8 |= (3 << 0);
 	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xad, reg8);
@@ -231,7 +227,7 @@ static void early_ich7_init(void)
 	RCBA32(0x3e0e) |= (1 << 7);
 	RCBA32(0x3e4e) |= (1 << 7);
 
-	// next step only on ich7m b0 and later:
+	/* next step only on ich7m b0 and later: */
 	reg32 = RCBA32(0x2034);
 	reg32 &= ~(0x0f << 16);
 	reg32 |= (5 << 16);
@@ -240,7 +236,7 @@ static void early_ich7_init(void)
 
 static void init_artec_dongle(void)
 {
-	// Enable 4MB decoding
+	/* Enable 4MB decoding */
 	outb(0xf1, 0x88);
 	outb(0xf4, 0x88);
 }

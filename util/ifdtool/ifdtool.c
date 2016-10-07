@@ -296,6 +296,11 @@ static void dump_frba_layout(frba_t * frba, char *layout_fname)
 	}
 
 	for (i = 0; i < max_regions; i++) {
+		region_t region = get_region(frba, i);
+		/* is region invalid? */
+		if (region.size < 1)
+			continue;
+
 		dump_region_layout(buf, bufsize, i, frba);
 		if (write(layout_fd, buf, strlen(buf)) < 0) {
 			perror("Could not write to file");

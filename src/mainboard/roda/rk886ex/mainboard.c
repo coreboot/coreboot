@@ -28,18 +28,6 @@
 
 static void backlight_enable(void)
 {
-#if 0
-// Disabled, don't let the X9511 burn out
-	int i;
-
-	/* P56 is Brightness Up, and it needs a Pulse instead of a
-	 * Level
-	 */
-	for (i = 0; i < 28; i++) {
-		//m3885_gpio(M3885_GPIO_PULSE|M3885_GPIO_SET|M3885_GPIO_P56);
-		m3885_gpio(M3885_GPIO_PULSE|M3885_GPIO_TOGGLE|M3885_GPIO_P56);
-	}
-#endif
 	printk(BIOS_DEBUG, "Display I/O: 0x%02x\n", inb(0x60f));
 }
 
@@ -68,7 +56,6 @@ static void mainboard_final(device_t dev)
 static void mainboard_enable(device_t dev)
 {
 	/* Configure the MultiKey controller */
-	// m3885_configure_multikey();
 
 	/* Enable LCD Backlight */
 	backlight_enable();
@@ -77,7 +64,6 @@ static void mainboard_enable(device_t dev)
 	outb(inb(0x60f) | (1 << 5), 0x60f);
 
 	/* LCD panel type is SIO GPIO40-43 */
-	// display_id = inb(0x60f) & 0x0f;
 	install_intel_vga_int15_handler(GMA_INT15_ACTIVE_LFP_INT_LVDS, GMA_INT15_PANEL_FIT_DEFAULT, GMA_INT15_BOOT_DISPLAY_DEFAULT, 3);
 
 #if DUMP_RUNTIME_REGISTERS

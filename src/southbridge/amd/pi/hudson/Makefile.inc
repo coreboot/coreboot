@@ -177,7 +177,7 @@ OPT_SMUSCS_FILE=$(call add_opt_prefix, $(CONFIG_SMUSCS_FILE), --smuscs)
 
 OPT_2AMD_PUBKEY_FILE=$(call add_opt_prefix, $(CONFIG_2AMD_PUBKEY_FILE), --pubkey2)
 OPT_2PSPBTLDR_FILE=$(call add_opt_prefix, $(CONFIG_2PSPBTLDR_FILE), --bootloader2)
-OPT_2SMUFWM_FILE=$(call add_opt_prefix, $(CONFIG_2SMUFWM_FILE), --smufirmware2)
+OPT_2SMUFWM_FILE=$(call add_opt_prefix, $(CONFIG_2SMUFWM_FILE), --smufirmware_2)
 OPT_2PSPRCVR_FILE=$(call add_opt_prefix, $(CONFIG_2PSPRCVR_FILE), --recovery2)
 OPT_2PUBSIGNEDKEY_FILE=$(call add_opt_prefix, $(CONFIG_2PUBSIGNEDKEY_FILE), --rtmpubkey2)
 OPT_2PSPSCUREOS_FILE=$(call add_opt_prefix, $(CONFIG_2PSPSCUREOS_FILE), --secureos2)

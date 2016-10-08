@@ -325,16 +325,11 @@ static u32 northbridge_get_base_reg(device_t dev, int reg)
 	return value;
 }
 
-void
-northbridge_get_tseg_base_and_size(u32 *tsegmb, u32 *tseg_size)
+u32 northbridge_get_tseg_base(void)
 {
-	device_t dev;
-	u32 bgsm;
-	dev = dev_find_slot(0, PCI_DEVFN(0, 0));
+	const device_t dev = dev_find_slot(0, PCI_DEVFN(0, 0));
 
-	*tsegmb = northbridge_get_base_reg(dev, TSEG);
-	bgsm = northbridge_get_base_reg(dev, BGSM);
-	*tseg_size = bgsm - *tsegmb;
+	return northbridge_get_base_reg(dev, TSEG);
 }
 
 void northbridge_write_smram(u8 smram)

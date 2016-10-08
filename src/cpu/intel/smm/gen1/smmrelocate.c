@@ -114,22 +114,17 @@ static void asmlinkage cpu_smm_do_relocation(void *arg)
 
 static void fill_in_relocation_params(struct smm_relocation_params *params)
 {
-	u32 tseg_size;
-	u32 tsegmb;
-	int phys_bits;
 	/* All range registers are aligned to 4KiB */
 	const u32 rmask = ~((1 << 12) - 1);
 
-	/* Some of the range registers are dependent on the number of physical
-	 * address bits supported. */
-	phys_bits = cpuid_eax(0x80000008) & 0xff;
+	const u32 tsegmb = northbridge_get_tseg_base();
+	/* TSEG base is usually aligned down (to 8MiB). So we can't
+	   derive the TSEG size from the distance to GTT but use the
+	   configuration value instead. */
+	const u32 tseg_size = CONFIG_SMM_TSEG_SIZE;
 
-	/* The range bounded by the TSEGMB and BGSM registers encompasses the
-	 * SMRAM range as well as the IED range. However, the SMRAM available
-	 * to the handler is 4MiB since the IEDRAM lives TSEGMB + 4MiB.
-	 */
-	northbridge_get_tseg_base_and_size(&tsegmb, &tseg_size);
-
+	/* The SMRAM available to the handler is 4MiB
+	   since the IEDRAM lives at TSEGMB + 4MiB. */
 	params->smram_base = tsegmb;
 	params->smram_size = 4 << 20;
 	params->ied_base = tsegmb + params->smram_size;

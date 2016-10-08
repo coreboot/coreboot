@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2015 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015 - 2016 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -323,7 +323,7 @@ static struct option long_options[] = {
 #if PSP2
 	{"pubkey2",       required_argument, 0, 'P' },
 	{"bootloader2",   required_argument, 0, 'B' },
-	{"smufirmware2",  required_argument, 0, 'S' },
+	{"smufirmware_2", required_argument, 0, 'S' },
 	{"recovery2",     required_argument, 0, 'R' },
 	{"rtmpubkey2",    required_argument, 0, 'K' },
 	{"secureos2",     required_argument, 0, 'C' },

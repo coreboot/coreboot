@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2013 Sage Electronic Engineering, LLC
+ * Copyright (C) 2016 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +19,7 @@
 
 struct northbridge_amd_pi_00670F00_config
 {
-	u8 spdAddrLookup[2][2][4];
+	u8 spdAddrLookup[1][1][2];
 };
 
 #endif

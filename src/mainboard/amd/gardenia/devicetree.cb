@@ -1,7 +1,7 @@
 #
 # This file is part of the coreboot project.
 #
-# Copyright (C) 2015 Advanced Micro Devices, Inc.
+# Copyright (C) 2015-2016 Advanced Micro Devices, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -42,10 +42,7 @@ chip northbridge/amd/pi/00670F00/root_complex
 				device pci 11.0 on  end # SATA
 				device pci 12.0 on  end # EHCI
 				device pci 14.0 on      # SM
-					chip drivers/generic/generic #dimm 0-0-0
-						device i2c 50 on end
-					end
-					chip drivers/generic/generic #dimm 0-0-1
+					chip drivers/generic/generic # dimm 0-0-0
 						device i2c 51 on end
 					end
 				end # SM

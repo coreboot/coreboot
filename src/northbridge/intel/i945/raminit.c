@@ -495,9 +495,6 @@ static void sdram_detect_cas_latency_and_ram_speed(struct sys_info * sysinfo, u8
 	case 667: max_ram_speed = 2; break;
 	}
 
-	if (fsbclk() == 533)
-		max_ram_speed = 1;
-
 	sysinfo->memory_frequency = 0;
 	sysinfo->cas = 0;
 
@@ -2079,6 +2076,7 @@ static void sdram_program_memory_frequency(struct sys_info *sysinfo)
 {
 	u32 clkcfg;
 	u8 reg8;
+	u8 offset = IS_ENABLED(CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GM) ? 1 : 0;
 
 	printk(BIOS_DEBUG, "Setting Memory Frequency... ");
 
@@ -2100,9 +2098,9 @@ static void sdram_program_memory_frequency(struct sys_info *sysinfo)
 	}
 
 	switch (sysinfo->memory_frequency) {
-	case 400: clkcfg |= (2 << 4); break;
-	case 533: clkcfg |= (3 << 4); break;
-	case 667: clkcfg |= (4 << 4); break;
+	case 400: clkcfg |= ((1 + offset) << 4); break;
+	case 533: clkcfg |= ((2 + offset) << 4); break;
+	case 667: clkcfg |= ((3 + offset) << 4); break;
 	default: die("Target Memory Frequency Error");
 	}
 

@@ -15,3 +15,6 @@
 [submodule "3rdparty/chromeec"]
 	path = 3rdparty/chromeec
 	url = ../chrome-ec.git
+[submodule "libhwbase"]
+	path = 3rdparty/libhwbase
+	url = ../libhwbase.git

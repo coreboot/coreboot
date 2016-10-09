@@ -569,7 +569,7 @@ gitconfig:
 		fi;						     \
 	done
 	# Now set up thehooks for 3rdparty/
-	for hooks in .git/modules/{3rdparty/blobs,libhwbase}/hooks; do					\
+	for hooks in .git/modules/{3rdparty/blobs,libhwbase,libgfxinit}/hooks; do			\
 		if [ -d $$hooks -a									\
 		\( util/gitconfig/commit-msg -nt $$hooks/commit-msg -o					\
 			! -x $$hooks/commit-msg \) ]; then						\
@@ -577,7 +577,7 @@ gitconfig:
 			chmod +x $$hooks/commit-msg;							\
 		fi											\
 	done
-	for d in 3rdparty/{blobs,libhwbase}; do					\
+	for d in 3rdparty/{blobs,libhwbase,libgfxinit}; do			\
 		if [ -d $$d ]; then						\
 			(cd $$d;						\
 			 git config remote.origin.push HEAD:refs/for/master);	\

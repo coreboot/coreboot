@@ -591,67 +591,14 @@ static void select_per_cs_training_index(u32 channel, u32 rank)
 	}
 }
 
-/*
- * After write leveling for all ranks, check the PHY_CLK_WRDQS_SLAVE_DELAY
- * result, if the two ranks in one slice both met
- * "0x200-PHY_CLK_WRDQS_SLAVE_DELAY < 0x20 or
- * 0x200-PHY_CLK_WRDQS_SLAVE > 0x1E0",
- * enable PHY_WRLVL_EARLY_FORCE_ZERO for this slice, and trigger write
- * leveling again. Else no additional write leveling is required.
- */
-static void check_write_leveling_value(u32 channel,
-				       const struct rk3399_sdram_params
-				       *sdram_params)
+static void override_write_leveling_value(u32 channel)
 {
 	u32 *denali_ctl = rk3399_ddr_pctl[channel]->denali_ctl;
 	u32 *denali_phy = rk3399_ddr_publ[channel]->denali_phy;
-	u32 i, j;
-	u32 wl_value[2][4];
-	u32 rank = sdram_params->ch[channel].rank;
+	u32 byte;
 
-	for (i = 0; i < rank; i++) {
-		/*
-		 * PHY_8/136/264/392
-		 * phy_per_cs_training_index_X 1bit offset_24
-		 */
-		clrsetbits_le32(&denali_phy[8], 0x1 << 24, i << 24);
-		clrsetbits_le32(&denali_phy[136], 0x1 << 24, i << 24);
-		clrsetbits_le32(&denali_phy[264], 0x1 << 24, i << 24);
-		clrsetbits_le32(&denali_phy[392], 0x1 << 24, i << 24);
-		wl_value[i][0] = (read32(&denali_phy[63]) >> 16) & 0x3ff;
-		wl_value[i][1] = (read32(&denali_phy[191]) >> 16) & 0x3ff;
-		wl_value[i][2] = (read32(&denali_phy[319]) >> 16) & 0x3ff;
-		wl_value[i][3] = (read32(&denali_phy[447]) >> 16) & 0x3ff;
-	}
-
-	/*
-	 * PHY_8/136/264/392
-	 * phy_per_cs_training_multicast_en_X 1bit offset_16
-	 */
-	clrsetbits_le32(&denali_phy[8], 0x1 << 16, 0 << 16);
-	clrsetbits_le32(&denali_phy[136], 0x1 << 16, 0 << 16);
-	clrsetbits_le32(&denali_phy[264], 0x1 << 16, 0 << 16);
-	clrsetbits_le32(&denali_phy[392], 0x1 << 16, 0 << 16);
-
-	for (i = 0; i < rank; i++) {
-		clrsetbits_le32(&denali_phy[8], 0x1 << 24, i << 24);
-		clrsetbits_le32(&denali_phy[136], 0x1 << 24, i << 24);
-		clrsetbits_le32(&denali_phy[264], 0x1 << 24, i << 24);
-		clrsetbits_le32(&denali_phy[392], 0x1 << 24, i << 24);
-		for (j = 0; j < 4; j++) {
-			if (wl_value[i][j] < 0x80)
-				clrsetbits_le32(&denali_phy[63+j*128],
-						0x3ff << 16,
-						(wl_value[i][j]+0x200) << 16);
-			else if ((wl_value[i][j] >= 0x80) &&
-				 (wl_value[i][j] < 0x100))
-				clrsetbits_le32(&denali_phy[78+j*128],
-						0x7 << 8, 0x1 << 8);
-		}
-	}
-
-	/* CTL_200 ctrlupd_req 1bit offset_8 */
-	clrsetbits_le32(&denali_ctl[200], 0x1 << 8, 0x1 << 8);
+	/* PHY_896 PHY_FREQ_SEL_MULTICAST_EN 1bit offset_0 */
+	setbits_le32(&denali_phy[896], 1);
 
 	/*
 	 * PHY_8/136/264/392
@@ -661,6 +608,16 @@ static void check_write_leveling_value(u32 channel,
 	clrsetbits_le32(&denali_phy[136], 0x1 << 16, 1 << 16);
 	clrsetbits_le32(&denali_phy[264], 0x1 << 16, 1 << 16);
 	clrsetbits_le32(&denali_phy[392], 0x1 << 16, 1 << 16);
+
+	for (byte = 0; byte < 4; byte++)
+		clrsetbits_le32(&denali_phy[63 + (128 * byte)], 0xffff << 16,
+			0x200 << 16);
+
+	/* PHY_896 PHY_FREQ_SEL_MULTICAST_EN 1bit offset_0 */
+	clrbits_le32(&denali_phy[896], 1);
+
+	/* CTL_200 ctrlupd_req 1bit offset_8 */
+	clrsetbits_le32(&denali_ctl[200], 0x1 << 8, 0x1 << 8);
 }
 
 static int data_training(u32 channel,
@@ -683,8 +640,7 @@ static int data_training(u32 channel,
 					PI_READ_LEVELING | PI_WDQ_LEVELING;
 		} else if (sdram_params->dramtype == LPDDR3) {
 			training_flag = PI_CA_TRAINING | PI_WRITE_LEVELING |
-					PI_READ_GATE_TRAINING |
-					PI_READ_LEVELING;
+					PI_READ_GATE_TRAINING;
 		} else if (sdram_params->dramtype == DDR3) {
 			training_flag = PI_WRITE_LEVELING |
 					PI_READ_GATE_TRAINING |
@@ -765,18 +721,17 @@ static int data_training(u32 channel,
 				if ((((tmp >> 10) & 0x1) == 0x1) &&
 				    (((tmp >> 13) & 0x1) == 0x1) &&
 				    (((tmp >> 4) & 0x1) == 0x0) &&
-				    (obs_err == 0)) {
-					if ((rank == 2) && (i == 1))
-						check_write_leveling_value
-							(channel, sdram_params);
+				    (obs_err == 0))
 					break;
-				} else if ((((tmp >> 4) & 0x1) == 0x1) ||
+				else if ((((tmp >> 4) & 0x1) == 0x1) ||
 					 (obs_err == 1))
 					return -1;
 			}
 			/* clear interrupt,PI_175 PI_INT_ACK:WR:0:17 */
 			write32((&denali_pi[175]), 0x00003f7c);
 		}
+
+		override_write_leveling_value(channel);
 		clrbits_le32(&denali_pi[60], 0x3 << 8);
 	}
 

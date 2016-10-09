@@ -106,10 +106,8 @@ void sdram_dump_mchbar_registers(void)
 
 static int memclk(void)
 {
-	int offset = 0;
-#if CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GM
-	offset++;
-#endif
+	int offset = IS_ENABLED(CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GM) ? 1 : 0;
+
 	switch (((MCHBAR32(CLKCFG) >> 4) & 7) - offset) {
 	case 1: return 400;
 	case 2: return 533;
@@ -119,29 +117,26 @@ static int memclk(void)
 	return -1;
 }
 
-#if CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GM
 static u16 fsbclk(void)
 {
-	switch (MCHBAR32(CLKCFG) & 7) {
-	case 0: return 400;
-	case 1: return 533;
-	case 3: return 667;
-	default: printk(BIOS_DEBUG, "fsbclk: unknown register value %x\n", MCHBAR32(CLKCFG) & 7);
+	if (IS_ENABLED(CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GM)) {
+		switch (MCHBAR32(CLKCFG) & 7) {
+		case 0: return 400;
+		case 1: return 533;
+		case 3: return 667;
+		default: printk(BIOS_DEBUG, "fsbclk: unknown register value %x\n", MCHBAR32(CLKCFG) & 7);
+		}
+		return 0xffff;
+	} else if (IS_ENABLED(CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GC)) {
+		switch (MCHBAR32(CLKCFG) & 7) {
+		case 0: return 1066;
+		case 1: return 533;
+		case 2: return 800;
+		default: printk(BIOS_DEBUG, "fsbclk: unknown register value %x\n", MCHBAR32(CLKCFG) & 7);
+		}
+		return 0xffff;
 	}
-	return 0xffff;
 }
-#elif CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GC
-static u16 fsbclk(void)
-{
-	switch (MCHBAR32(CLKCFG) & 7) {
-	case 0: return 1066;
-	case 1: return 533;
-	case 2: return 800;
-	default: printk(BIOS_DEBUG, "fsbclk: unknown register value %x\n", MCHBAR32(CLKCFG) & 7);
-	}
-	return 0xffff;
-}
-#endif
 
 static int sdram_capabilities_max_supported_memory_frequency(void)
 {

@@ -18,3 +18,6 @@
 [submodule "libhwbase"]
 	path = 3rdparty/libhwbase
 	url = ../libhwbase.git
+[submodule "libgfxinit"]
+	path = 3rdparty/libgfxinit
+	url = ../libgfxinit.git

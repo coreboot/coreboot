@@ -103,7 +103,8 @@ static int intel_gma_init_lvds(struct northbridge_intel_i945_config *conf,
 	       "i915lightup: graphics %p mmio %p addrport %04x physbase %08x\n",
 	       (void *)pgfx, pmmio, piobase, pphysbase);
 
-	intel_gmbus_read_edid(pmmio + GMBUS0, 3, 0x50, edid_data, 128);
+	intel_gmbus_read_edid(pmmio + GMBUS0, 3, 0x50, edid_data,
+			sizeof(edid_data));
 	decode_edid(edid_data, sizeof(edid_data), &edid);
 	mode = &edid.mode;
 

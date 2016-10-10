@@ -41,11 +41,11 @@ void acpi_create_fadt(acpi_fadt_t *fadt,acpi_facs_t *facs,void *dsdt){
 
 	fadt->firmware_ctrl=(u32)facs;
 	fadt->dsdt= (u32)dsdt;
-	// 3 = Workstation, 4 = Enterprise Server, 7 = Performance Server
+	/*  3 = Workstation, 4 = Enterprise Server, 7 = Performance Server */
 	fadt->preferred_pm_profile = 0x03;
 	fadt->sci_int = 9;
-	// disable system management mode by setting to 0:
-	fadt->smi_cmd = 0;//pm_base+0x2f;
+	/*  disable system management mode by setting to 0: */
+	fadt->smi_cmd = 0;/* pm_base+0x2f  */
 	fadt->acpi_enable = 0xf0;
 	fadt->acpi_disable = 0xf1;
 	fadt->s4bios_req = 0x0;
@@ -75,10 +75,10 @@ void acpi_create_fadt(acpi_fadt_t *fadt,acpi_facs_t *facs,void *dsdt){
 	fadt->flush_stride = 0;
 	fadt->duty_offset = 1;
 	fadt->duty_width = 3;
-	fadt->day_alrm = 0; // 0x7d these have to be
-	fadt->mon_alrm = 0; // 0x7e added to cmos.layout
-	fadt->century =  0; // 0x7f to make rtc alrm work
-	fadt->iapc_boot_arch = 0x3; // See table 5-11
+	fadt->day_alrm = 0; /* 0x7d these have to be */
+	fadt->mon_alrm = 0; /* 0x7e added to cmos.layout */
+	fadt->century =  0; /* 0x7f to make rtc alrm work */
+	fadt->iapc_boot_arch = 0x3; /* See table 5-11 */
 	fadt->flags = 0x25;
 
 	fadt->res2 = 0;

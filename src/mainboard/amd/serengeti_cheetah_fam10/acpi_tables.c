@@ -53,7 +53,6 @@ unsigned long acpi_fill_madt(unsigned long current)
 				current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *)current, m->apicid_8132_1,
 					res->base, gsi_base );
 				gsi_base+=7;
-
 			}
 		}
 		dev = dev_find_slot(m->bus_8132_0, PCI_DEVFN((sysconf.hcdn[0] & 0xff)+1, 1));
@@ -72,7 +71,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 		for(i = 1; i < sysconf.hc_possible_num; i++) {
 			u32 d = 0;
 			if(!(sysconf.pci1234[i] & 0x1) ) continue;
-			// 8131 need to use +4
+			/* 8131 need to use +4 */
 			switch (sysconf.hcid[i]) {
 			case 1:
 				d = 7;
@@ -100,7 +99,6 @@ unsigned long acpi_fill_madt(unsigned long current)
 						current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *)current, m->apicid_8132a[j][1],
 							res->base, gsi_base );
 						gsi_base+=d;
-
 					}
 				}
 				break;
@@ -133,12 +131,13 @@ unsigned long mainboard_write_acpi_tables(device_t device,
 
 	int i;
 
-	get_bus_conf(); //it will get sblk, pci1234, hcdn, and sbdn
+	get_bus_conf(); /* it will get sblk, pci1234, hcdn, and sbdn */
 
 	/* same htio, but different possition? We may have to copy,
-	change HCIN, and recalculate the checknum and add_table */
+	 * change HCIN, and recalculate the checknum and add_table
+	 */
 
-	for(i = 1; i < sysconf.hc_possible_num; i++) {  // 0: is hc sblink
+	for(i = 1; i < sysconf.hc_possible_num; i++) {  /* 0: is hc sblink */
 		const char *file_name;
 		if((sysconf.pci1234[i] & 1) != 1 ) continue;
 		u8 c;
@@ -149,7 +148,7 @@ unsigned long mainboard_write_acpi_tables(device_t device,
 			c  = (u8) ('A' + i - 1 - 6);
 		}
 		current = ALIGN(current, 8);
-		printk(BIOS_DEBUG, "ACPI:    * SSDT for PCI%c at %lx\n", c, current); //pci0 and pci1 are in dsdt
+		printk(BIOS_DEBUG, "ACPI:    * SSDT for PCI%c at %lx\n", c, current); /* pci0 and pci1 are in dsdt */
 		ssdtx = (acpi_header_t *)current;
 		switch(sysconf.hcid[i]) {
 		case 1:
@@ -158,11 +157,11 @@ unsigned long mainboard_write_acpi_tables(device_t device,
 		case 2:
 			file_name = CONFIG_CBFS_PREFIX "/ssdt3.aml";
 			break;
-		case 3: //8131
+		case 3: /* 8131 */
 			file_name = CONFIG_CBFS_PREFIX "/ssdt4.aml";
 			break;
 		default:
-			//HTX no io apic
+			/* HTX no io apic */
 			file_name = CONFIG_CBFS_PREFIX "/ssdt5.aml";
 		}
 		p = cbfs_boot_map_with_leak(

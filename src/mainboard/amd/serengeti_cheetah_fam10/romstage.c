@@ -14,10 +14,8 @@
  */
 
 #define SYSTEM_TYPE 0	/* SERVER */
-//#define SYSTEM_TYPE 1	/* DESKTOP */
-//#define SYSTEM_TYPE 2	/* MOBILE */
 
-//used by incoherent_ht
+/* used by incoherent_ht */
 #define FAM10_SCAN_PCI_BUS 0
 #define FAM10_ALLOCATE_IO_RANGE 0
 
@@ -50,8 +48,8 @@
 
 static void memreset_setup(void)
 {
-	//GPIO on amd8111 to enable MEMRST ????
-	outb((1 << 2)|(1 << 0), SMBUS_IO_BASE + 0xc0 + 16);	// REVC_MEMRST_EN = 1
+	/* GPIO on amd8111 to enable MEMRST ???? */
+	outb((1 << 2)|(1 << 0), SMBUS_IO_BASE + 0xc0 + 16);	/* REVC_MEMRST_EN = 1 */
 	outb((1 << 2)|(0 << 0), SMBUS_IO_BASE + 0xc0 + 17);
 }
 
@@ -87,16 +85,16 @@ static int spd_read_byte(u32 device, u32 address)
 #include "northbridge/amd/amdfam10/early_ht.c"
 
 static const u8 spd_addr[] = {
-	//first node
+	/* first node */
 	RC00, DIMM0, DIMM2, 0, 0, DIMM1, DIMM3, 0, 0,
 #if CONFIG_MAX_PHYSICAL_CPUS > 1
-	//second node
+	/* second node */
 	RC01, DIMM0, DIMM2, DIMM4, DIMM6, DIMM1, DIMM3, DIMM5, DIMM7,
 #endif
 #if CONFIG_MAX_PHYSICAL_CPUS > 2
-	// third node
+	/* third node */
 	RC02, DIMM0, DIMM2, 0, 0, DIMM1, DIMM3, 0, 0,
-	// forth node
+	/* forth node */
 	RC03, DIMM0, DIMM2, DIMM4, DIMM6, DIMM1, DIMM3, DIMM5, DIMM7,
 #endif
 #if CONFIG_MAX_PHYSICAL_CPUS > 4
@@ -208,12 +206,10 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	console_init();
 
-//	dump_mem(CONFIG_DCACHE_RAM_BASE+CONFIG_DCACHE_RAM_SIZE-0x200, CONFIG_DCACHE_RAM_BASE+CONFIG_DCACHE_RAM_SIZE);
-
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
 
-	// Load MPB
+	/* Load MPB */
 	val = cpuid_eax(1);
 	printk(BIOS_DEBUG, "BSP Family_Model: %08x\n", val);
 	printk(BIOS_DEBUG, "*sysinfo range: [%p,%p]\n",sysinfo,sysinfo+1);
@@ -268,10 +264,10 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	post_code(0x39);
 
-	if (!warm_reset_detect(0)) {			// BSP is node 0
+	if (!warm_reset_detect(0)) {			/* BSP is node 0 */
 		init_fidvid_bsp(bsp_apicid, sysinfo->nodes);
 	} else {
-		init_fidvid_stage2(bsp_apicid, 0);	// BSP is node 0
+		init_fidvid_stage2(bsp_apicid, 0);	/* BSP is node 0 */
 	}
 
 	post_code(0x3A);
@@ -308,8 +304,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	memreset_setup();
 	post_code(0x40);
 
-//	die("Die Before MCT init.");
-
 	timestamp_add_now(TS_BEFORE_INITRAM);
 	printk(BIOS_DEBUG, "raminit_amdmct()\n");
 	raminit_amdmct(sysinfo);
@@ -320,18 +314,9 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	amdmct_cbmem_store_info(sysinfo);
 
-/*
-	dump_pci_device_range(PCI_DEV(0, 0x18, 0), 0, 0x200);
-	dump_pci_device_range(PCI_DEV(0, 0x18, 1), 0, 0x200);
-	dump_pci_device_range(PCI_DEV(0, 0x18, 2), 0, 0x200);
-	dump_pci_device_range(PCI_DEV(0, 0x18, 3), 0, 0x200);
-*/
-
-//	die("After MCT init before CAR disabled.");
-
 	post_code(0x42);
-	post_cache_as_ram();	// BSP switch stack to ram, copy then execute LB.
-	post_code(0x43);	// Should never see this post code.
+	post_cache_as_ram();	/* BSP switch stack to ram, copy then execute LB. */
+	post_code(0x43);	/* Should never see this post code. */
 }
 
 /**

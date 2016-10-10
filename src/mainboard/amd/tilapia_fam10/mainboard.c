@@ -88,35 +88,6 @@ void set_pcie_reset()
 	pci_write_config16(sm_dev, 0x7e, word);
 }
 
-#if 0	     /* TODO: */
-/********************************************************
-* tilapia uses SB700 GPIO8 to detect IDE_DMA66.
-* IDE_DMA66 is routed to GPIO 8. So we read Gpio 8 to
-* get the cable type, 40 pin or 80 pin?
-********************************************************/
-static void get_ide_dma66(void)
-{
-	u8 byte;
-	/*u32 sm_dev, ide_dev; */
-	device_t sm_dev, ide_dev;
-
-	sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
-
-	byte = pci_read_config8(sm_dev, 0xA9);
-	byte |= (1 << 4);	/* Set Gpio8 as input */
-	pci_write_config8(sm_dev, 0xA9, byte);
-
-	ide_dev = dev_find_slot(0, PCI_DEVFN(0x14, 1));
-	byte = pci_read_config8(ide_dev, 0x56);
-	byte &= ~(7 << 0);
-	if ((1 << 4) & pci_read_config8(sm_dev, 0xAA))
-		byte |= 2 << 0;	/* mode 2 */
-	else
-		byte |= 5 << 0;	/* mode 5 */
-	pci_write_config8(ide_dev, 0x56, byte);
-}
-#endif
-
 /*
  * justify the dev3 is exist or not
  */
@@ -251,18 +222,7 @@ static void set_thermal_config(void)
 	pm_iowrite(0x3c, byte);
 
 	/* THERMTRIP pin */
-	/* byte = pm_ioread(0x68);
-	 * byte |= 1 << 3;
-	 * pm_iowrite(0x68, byte);
-	 *
-	 * byte = pm_ioread(0x55);
-	 * byte |= 1 << 0;
-	 * pm_iowrite(0x55, byte);
-	 *
-	 * byte = pm_ioread(0x67);
-	 * byte &= ~( 1 << 6);
-	 * pm_iowrite(0x67, byte);
-	 */
+
 }
 
 /*************************************************
@@ -274,7 +234,6 @@ static void mainboard_enable(device_t dev)
 	printk(BIOS_INFO, "Mainboard TILAPIA Enable. dev=0x%p\n", dev);
 
 	set_pcie_dereset();
-	/* get_ide_dma66(); */
 	set_thermal_config();
 	set_gpio40_gfx();
 }

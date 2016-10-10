@@ -14,7 +14,6 @@
  * GNU General Public License for more details.
  */
 
-
 /*
  * ACPI - create the Fixed ACPI Description Tables (FADT)
  */
@@ -44,16 +43,15 @@ void acpi_create_fadt(acpi_fadt_t *fadt,acpi_facs_t *facs,void *dsdt){
 
 	fadt->firmware_ctrl=(u32)facs;
 	fadt->dsdt= (u32)dsdt;
-	// 3 = Workstation, 4 = Enterprise Server, 7 = Performance Server
+	/* 3 = Workstation, 4 = Enterprise Server, 7 = Performance Server */
 	fadt->preferred_pm_profile = 0x03;
 	fadt->sci_int = 9;
-	// disable system management mode by setting to 0:
-	fadt->smi_cmd = 0;//pm_base+0x2f;
+	/* disable system management mode by setting to 0: */
+	fadt->smi_cmd = 0;/* pm_base+0x2f */
 	fadt->acpi_enable = 0xf0;
 	fadt->acpi_disable = 0xf1;
 	fadt->s4bios_req = 0x0;
-	fadt->pstate_cnt = 0x00; // SMM is not used for p-state control
-//	fadt->pstate_cnt = 0xe2;
+	fadt->pstate_cnt = 0x00; /* SMM is not used for p-state control */
 
 	fadt->pm1a_evt_blk = pm_base;
 	fadt->pm1b_evt_blk = 0x0000;
@@ -72,18 +70,17 @@ void acpi_create_fadt(acpi_fadt_t *fadt,acpi_facs_t *facs,void *dsdt){
 	fadt->gpe1_blk_len =  8;
 	fadt->gpe1_base    = 16;
 
-	fadt->cst_cnt    = 0x00;// SMM is not used for p-state control
-//	fadt->cst_cnt    = 0xe3;
+	fadt->cst_cnt    = 0x00;/* SMM is not used for p-state control */
 	fadt->p_lvl2_lat =  101;
 	fadt->p_lvl3_lat = 1001;
 	fadt->flush_size = 0;
 	fadt->flush_stride = 0;
 	fadt->duty_offset = 1;
 	fadt->duty_width = 3;
-	fadt->day_alrm = 0; // 0x7d these have to be
-	fadt->mon_alrm = 0; // 0x7e added to cmos.layout
-	fadt->century =  0; // 0x7f to make rtc alrm work
-	fadt->iapc_boot_arch = 0x3; // See table 5-11
+	fadt->day_alrm = 0; /* 0x7d these have to be */
+	fadt->mon_alrm = 0; /* 0x7e added to cmos.layout */
+	fadt->century =  0; /* 0x7f to make rtc alrm work */
+	fadt->iapc_boot_arch = 0x3; /* See table 5-11 */
 	fadt->flags = 0x25;
 
 	fadt->res2 = 0;
@@ -115,7 +112,6 @@ void acpi_create_fadt(acpi_fadt_t *fadt,acpi_facs_t *facs,void *dsdt){
 	fadt->x_pm1b_evt_blk.addrl = 0x0;
 	fadt->x_pm1b_evt_blk.addrh = 0x0;
 
-
 	fadt->x_pm1a_cnt_blk.space_id = 1;
 	fadt->x_pm1a_cnt_blk.bit_width = 16;
 	fadt->x_pm1a_cnt_blk.bit_offset = 0;
@@ -130,14 +126,12 @@ void acpi_create_fadt(acpi_fadt_t *fadt,acpi_facs_t *facs,void *dsdt){
 	fadt->x_pm1b_cnt_blk.addrl = 0x0;
 	fadt->x_pm1b_cnt_blk.addrh = 0x0;
 
-
 	fadt->x_pm2_cnt_blk.space_id = 1;
 	fadt->x_pm2_cnt_blk.bit_width = 0;
 	fadt->x_pm2_cnt_blk.bit_offset = 0;
 	fadt->x_pm2_cnt_blk.resv = 0;
 	fadt->x_pm2_cnt_blk.addrl = 0x0;
 	fadt->x_pm2_cnt_blk.addrh = 0x0;
-
 
 	fadt->x_pm_tmr_blk.space_id = 1;
 	fadt->x_pm_tmr_blk.bit_width = 32;
@@ -146,14 +140,12 @@ void acpi_create_fadt(acpi_fadt_t *fadt,acpi_facs_t *facs,void *dsdt){
 	fadt->x_pm_tmr_blk.addrl = pm_base+0x08;
 	fadt->x_pm_tmr_blk.addrh = 0x0;
 
-
 	fadt->x_gpe0_blk.space_id = 1;
 	fadt->x_gpe0_blk.bit_width = 32;
 	fadt->x_gpe0_blk.bit_offset = 0;
 	fadt->x_gpe0_blk.resv = 0;
 	fadt->x_gpe0_blk.addrl = pm_base+0x20;
 	fadt->x_gpe0_blk.addrh = 0x0;
-
 
 	fadt->x_gpe1_blk.space_id = 1;
 	fadt->x_gpe1_blk.bit_width = 64;
@@ -163,5 +155,4 @@ void acpi_create_fadt(acpi_fadt_t *fadt,acpi_facs_t *facs,void *dsdt){
 	fadt->x_gpe1_blk.addrh = 0x0;
 
 	header->checksum = acpi_checksum((void *)fadt, sizeof(acpi_fadt_t));
-
 }

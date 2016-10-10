@@ -55,7 +55,7 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 
 	struct mb_sysconf_t *m;
 
-	get_bus_conf();		// it will find out all bus num and apic that share with mptable.c and mptable.c and acpi_tables.c
+	get_bus_conf();		/* it will find out all bus num and apic that share with mptable.c and mptable.c and acpi_tables.c */
 
 	m = sysconf.mb;
 
@@ -105,7 +105,7 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 		}
 	}
 
-//pci bridge
+/* pci bridge */
 	printk(BIOS_DEBUG, "setting Onboard AMD Southbridge\n");
 	static const unsigned char slotIrqs_1_4[4] = { 3, 5, 10, 11 };
 	pci_assign_irqs(m->bus_8111_0, sysconf.sbdn + 1, slotIrqs_1_4);
@@ -123,9 +123,7 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 	pirq_info++;
 	slot_num++;
 
-//pcix bridge
-//        write_pirq_info(pirq_info, m->bus_8132_0, (sbdn3 << 3)|0, 0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0, 0);
-//        pirq_info++; slot_num++;
+/* pcix bridge */
 
 	int j = 0;
 
@@ -157,5 +155,4 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 	printk(BIOS_INFO, "done.\n");
 
 	return (unsigned long)pirq_info;
-
 }

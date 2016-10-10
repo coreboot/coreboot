@@ -23,30 +23,18 @@
 #include <stdlib.h>
 #include "mb_sysconf.h"
 
-// Global variables for MB layouts and these will be shared by irqtable mptable and acpi_tables
+/* Global variables for MB layouts and these will be shared by irqtable mptable and acpi_tables */
 struct mb_sysconf_t mb_sysconf;
 
-static unsigned pci1234x[] = {	//Here you only need to set value in pci1234 for HT-IO that could be installed or not
-	//You may need to preset pci1234 for HTIO board, please refer to src/northbridge/amd/amdk8/get_sblk_pci1234.c for detail
+static unsigned pci1234x[] = {	/*Here you only need to set value in pci1234 for HT-IO that could be installed or not */
+	/* You may need to preset pci1234 for HTIO board, please refer to src/northbridge/amd/amdk8/get_sblk_pci1234.c for detail */
 	0x0000ff0,
 	0x0000ff0,
-//        0x0000ff0,
-//        0x0000ff0,
-//        0x0000ff0,
-//        0x0000ff0,
-//        0x0000ff0,
-//        0x0000ff0
 };
 
-static unsigned hcdnx[] = {	//HT Chain device num, actually it is unit id base of every ht device in chain, assume every chain only have 4 ht device at most
+static unsigned hcdnx[] = {	/* HT Chain device num, actually it is unit id base of every ht device in chain, assume every chain only have 4 ht device at most */
 	0x20202020,
 	0x20202020,
-//        0x20202020,
-//        0x20202020,
-//        0x20202020,
-//        0x20202020,
-//        0x20202020,
-//        0x20202020,
 };
 
 static unsigned get_bus_conf_done = 0;
@@ -64,20 +52,20 @@ static unsigned get_hcid(unsigned i)
 	dev = dev_find_slot(busn, PCI_DEVFN(devn, 0));
 
 	switch (dev->device) {
-	case 0x7458:		//8132
+	case 0x7458:		/*8132 */
 		id = 1;
 		break;
-	case 0x7454:		//8151
+	case 0x7454:		/*8151 */
 		id = 2;
 		break;
-	case 0x7450:		//8131
+	case 0x7450:		/*8131 */
 		id = 3;
 		break;
 	}
 
-	// we may need more way to find out hcid: subsystem id? GPIO read ?
+	/* we may need more way to find out hcid: subsystem id? GPIO read ? */
 
-	// we need use id for 1. bus num, 2. mptable, 3. ACPI table
+	/* we need use id for 1. bus num, 2. mptable, 3. ACPI table */
 
 	return id;
 }
@@ -92,7 +80,7 @@ void get_bus_conf(void)
 	struct mb_sysconf_t *m;
 
 	if (get_bus_conf_done == 1)
-		return;		//do it only once
+		return;		/* do it only once */
 
 	get_bus_conf_done = 1;
 
@@ -150,13 +138,13 @@ void get_bus_conf(void)
 		if (!(sysconf.pci1234[i] & 0x1))
 			continue;
 
-		// check hcid type here
+		/* check hcid type here */
 		sysconf.hcid[i] = get_hcid(i);
 
 		switch (sysconf.hcid[i]) {
 
-		case 1:	//8132
-		case 3:	//8131
+		case 1:	/* 8132 */
+		case 3:	/* 8131 */
 
 			m->bus_8132a[j][0] = (sysconf.pci1234[i] >> 16) & 0xff;
 
@@ -190,7 +178,7 @@ void get_bus_conf(void)
 
 			break;
 
-		case 2:	//8151
+		case 2:	/* 8151 */
 
 			m->bus_8151[j][0] = (sysconf.pci1234[i] >> 16) & 0xff;
 			m->sbdn5[j] = sysconf.hcdn[i] & 0xff;
@@ -202,7 +190,6 @@ void get_bus_conf(void)
 			if (dev) {
 				m->bus_8151[j][1] =
 				    pci_read_config8(dev, PCI_SECONDARY_BUS);
-				//                        printk(BIOS_DEBUG, "bus_8151_1=%d\n",bus_8151[j][1]);
 			} else {
 				printk(BIOS_DEBUG,
 				       "ERROR - could not find PCI %02x:%02x.0, using defaults\n",
@@ -215,7 +202,7 @@ void get_bus_conf(void)
 		j++;
 	}
 
-/*I/O APICs:	APIC ID	Version	State		Address*/
+/* I/O APICs:	APIC ID	Version	State		Address */
 	if (IS_ENABLED(CONFIG_LOGICAL_CPUS))
 		apicid_base = get_apicid_base(3);
 	else
@@ -227,5 +214,4 @@ void get_bus_conf(void)
 		m->apicid_8132a[i][0] = apicid_base + 3 + i * 2;
 		m->apicid_8132a[i][1] = apicid_base + 3 + i * 2 + 1;
 	}
-
 }

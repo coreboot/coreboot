@@ -64,7 +64,6 @@ static void *smp_write_config_table(void *v)
 
 	smp_write_processors(mc);
 
-	//mptable_write_buses(mc, NULL, &bus_isa);
 	my_smp_write_bus(mc, 0, "PCI   ");
 	my_smp_write_bus(mc, 1, "PCI   ");
 	bus_isa = 0x02;

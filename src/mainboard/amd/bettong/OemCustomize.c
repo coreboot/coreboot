@@ -71,7 +71,7 @@ static const PCIe_PORT_DESCRIPTOR PortList [] = {
 	},
 	/* Initialize Port descriptor (PCIe port, Lanes 0-3, PCI Device Number 2, ...) */
 	{
-		DESCRIPTOR_TERMINATE_LIST, // Descriptor flags  !!!IMPORTANT!!! Terminate last element of array
+		DESCRIPTOR_TERMINATE_LIST, /* Descriptor flags  !!!IMPORTANT!!! Terminate last element of array */
 		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 0, 3),
 		PCIE_PORT_DATA_INITIALIZER_V2 (PortEnabled, ChannelTypeExt6db, 2, 1,
 				HotplugDisabled,
@@ -91,7 +91,7 @@ static const PCIe_DDI_DESCRIPTOR DdiList [] = {
 	},
 	/* DP1 */
 	{
-		0, //DESCRIPTOR_TERMINATE_LIST,
+		0, /*DESCRIPTOR_TERMINATE_LIST, */
 		PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 20, 23),
 		PCIE_DDI_DATA_INITIALIZER (ConnectorTypeDP, Aux2, Hdp2)
 	},

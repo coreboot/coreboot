@@ -108,9 +108,6 @@ const u8 mainboard_intr_data[] = {
  * use PIC IRQ 10 if it uses PIN A for its hardware INT.
  */
 static const struct pirq_struct mainboard_pirq_data[] = {
-	/* {PCI_devfn,	{PIN A, PIN B, PIN C, PIN D}}, */
-//	{GFX_DEVFN,		{PIRQ_GFX, PIRQ_NC, PIRQ_NC, PIRQ_NC}},		/* VGA:        01.0 */
-//	{ACTL_DEVFN,	{PIRQ_NC, PIRQ_ACTL, PIRQ_NC, PIRQ_NC}},	/* Audio:      01.1 */
 	{NB_PCIE_PORT1_DEVFN,	{PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D}},	/* PCIe J119:  02.1 */
 	{NB_PCIE_PORT3_DEVFN,	{PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D}},	/* PCIe J118:  03.1 */
 	{NB_PCIE_PORT4_DEVFN,	{PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D}},	/* PCIe J120:  03.2 */

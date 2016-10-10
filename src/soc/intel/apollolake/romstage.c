@@ -31,6 +31,7 @@
 #include <fsp/api.h>
 #include <fsp/memmap.h>
 #include <fsp/util.h>
+#include <soc/cpu.h>
 #include <soc/iomap.h>
 #include <soc/northbridge.h>
 #include <soc/pci_devs.h>
@@ -40,6 +41,9 @@
 #include <soc/uart.h>
 #include <string.h>
 #include <timestamp.h>
+#include <timer.h>
+#include <delay.h>
+#include "chip.h"
 
 static struct chipset_power_state power_state CAR_GLOBAL;
 
@@ -100,6 +104,65 @@ static void migrate_power_state(int is_recovery)
 }
 ROMSTAGE_CBMEM_INIT_HOOK(migrate_power_state);
 
+/*
+ * Punit Initialization code. This all isn't documented, but
+ * this is the recipe.
+ */
+static bool punit_init(void)
+{
+	uint32_t reg;
+	uint32_t data;
+	struct stopwatch sw;
+
+	/*
+	 * Software Core Disable Mask (P_CR_CORE_DISABLE_MASK_0_0_0_MCHBAR).
+	 * Enable all cores here.
+	 */
+	write32((void *)(MCH_BASE_ADDR + P_CR_CORE_DISABLE_MASK_0_0_0_MCHBAR),
+		0x0);
+
+	void *bios_rest_cpl = (void *)(MCH_BASE_ADDR +
+				       P_CR_BIOS_RESET_CPL_0_0_0_MCHBAR);
+	/* P-Unit bring up */
+	reg = read32(bios_rest_cpl);
+	if (reg == 0xffffffff) {
+		/* P-unit not found */
+		printk(BIOS_DEBUG, "Punit MMIO not available \n");
+		return false;
+	} else {
+		/* Set Punit interrupt pin IPIN offset 3D */
+		pci_write_config8(PUNIT_DEVFN, PCI_INTERRUPT_PIN, 0x2);
+
+		/* Set PUINT IRQ to 24 and INTPIN LOCK */
+		write32((void *)(MCH_BASE_ADDR + PUNIT_THERMAL_DEVICE_IRQ),
+			PUINT_THERMAL_DEVICE_IRQ_VEC_NUMBER |
+			PUINT_THERMAL_DEVICE_IRQ_LOCK);
+
+		data = read32((void *)(MCH_BASE_ADDR + 0x7818));
+		data &= 0xFFFFE01F;
+		data |= 0x20 | 0x200;
+		write32((void *)(MCH_BASE_ADDR + 0x7818), data);
+
+		/* Stage0 BIOS Reset Complete (RST_CPL) */
+		write32(bios_rest_cpl, 0x1);
+
+		/*
+		 * Poll for bit 8 in same reg (RST_CPL).
+		 * We wait here till 1 ms for the bit to get set.
+		 */
+		stopwatch_init_msecs_expire(&sw, 1);
+		while (!(read32(bios_rest_cpl) & 0x100)) {
+			if (stopwatch_expired(&sw)) {
+				printk(BIOS_DEBUG,
+				       "Failed to set RST_CPL bit\n");
+				return false;
+			}
+			udelay(100);
+		}
+	}
+	return true;
+}
+
 asmlinkage void car_stage_entry(void)
 {
 	struct postcar_frame pcf;
@@ -119,6 +182,12 @@ asmlinkage void car_stage_entry(void)
 
 	s3wake = fill_power_state(ps) == ACPI_S3;
 	fsp_memory_init(s3wake);
+
+	if (punit_init())
+		set_max_freq();
+	else
+		printk(BIOS_DEBUG, "Punit failed to initialize properly\n");
+
 	if (postcar_frame_init(&pcf, 1*KiB))
 		die("Unable to initialize postcar frame.\n");
 

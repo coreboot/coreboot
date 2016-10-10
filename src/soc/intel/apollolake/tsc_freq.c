@@ -14,12 +14,54 @@
  * GNU General Public License for more details.
  */
 
+#include <cpu/intel/speedstep.h>
+#include <cpu/intel/turbo.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/tsc.h>
 #include <soc/cpu.h>
+#include <console/console.h>
+#include <delay.h>
+#include "chip.h"
 
 unsigned long tsc_freq_mhz(void)
 {
     msr_t msr = rdmsr(MSR_PLATFORM_INFO);
     return (BASE_CLOCK_MHZ * ((msr.lo >> 8) & 0xff));
+}
+
+void set_max_freq(void)
+{
+	msr_t msr, msr_rd;
+	unsigned int eax;
+
+	eax = cpuid_eax(CPUID_LEAF_PM);
+
+	msr = rdmsr(MSR_IA32_MISC_ENABLES);
+	if (!(eax &= 0x2) && ((msr.hi & APL_BURST_MODE_DISABLE) == 0)) {
+		/* Burst Mode has been factory configured as disabled
+		 * and is not available in this physical processor
+		 * package.
+		 */
+		printk(BIOS_DEBUG, "Burst Mode is factory disabled\n");
+		return;
+	}
+
+	/* Enable burst mode */
+	msr.hi &= ~APL_BURST_MODE_DISABLE;
+	wrmsr(MSR_IA32_MISC_ENABLES, msr);
+
+	/* Enable speed step. */
+	msr = rdmsr(MSR_IA32_MISC_ENABLES);
+	msr.lo |= 1 << 16;
+	wrmsr(MSR_IA32_MISC_ENABLES, msr);
+
+	/* Set P-State ratio */
+	msr = rdmsr(IA32_PERF_CTL);
+	msr.lo &= ~0xff00;
+
+	/* Read the frequency limit ratio and set it properly in PERF_CTL */
+	msr_rd = rdmsr(FREQ_LIMIT_RATIO);
+	msr.lo |= (msr_rd.lo & 0xff) << 8;
+
+	wrmsr(IA32_PERF_CTL, msr);
 }

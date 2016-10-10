@@ -23,6 +23,7 @@
 #include <device/device.h>
 
 void apollolake_init_cpus(struct device *dev);
+void set_max_freq(void);
 #endif
 
 #define CPUID_APOLLOLAKE_A0	0x506c8
@@ -87,5 +88,8 @@ void apollolake_init_cpus(struct device *dev);
 
 /* Common Timer Copy (CTC) frequency - 19.2MHz. */
 #define CTC_FREQ 19200000
+
+/* This is burst mode BIT 38 in MSR_IA32_MISC_ENABLES MSR at offset 1A0h */
+#define APL_BURST_MODE_DISABLE		0x40
 
 #endif /* _SOC_APOLLOLAKE_CPU_H_ */

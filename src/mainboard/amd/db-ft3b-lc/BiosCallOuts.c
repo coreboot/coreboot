@@ -140,7 +140,7 @@ static void oem_fan_control(FCH_DATA_BLOCK *FchParams)
 		{FAN_INPUT_INTERNAL_DIODE, (FAN_STEPMODE | FAN_POLARITY_HIGH), FREQ_100HZ, 40, 60,  0, 40, 65, 85, 0, 0},
 		{FAN_INPUT_INTERNAL_DIODE, (FAN_STEPMODE | FAN_POLARITY_HIGH), FREQ_100HZ, 40, 60,  0, 40, 65, 85, 0, 0},
 	};
-	LibAmdMemCopy ((VOID *)(FchParams->Hwm.HwmFanControl), &oem_factl, (sizeof(FCH_HWM_FAN_CTR) * 5), FchParams->StdHeader);
+	LibAmdMemCopy ((VOID *)(FchParams->Hwm.HwmFanControl), &oem_factl, (sizeof (FCH_HWM_FAN_CTR) * 5), FchParams->StdHeader);
 
 	/* Enable IMC fan control. the recommended way */
 #if IS_ENABLED(CONFIG_HUDSON_IMC_FWM)
@@ -158,8 +158,8 @@ static void oem_fan_control(FCH_DATA_BLOCK *FchParams)
 	/* Thermal Zone Parameter */
 	FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg0 = 0x00;
 	FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg1 = 0x00;    /* Zone */
-	FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg2 = 0x00;    //BIT0 | BIT2 | BIT5;
-	FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg3 = 0x00;    //6 | BIT3;
+	FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg2 = 0x00;    /* BIT0 | BIT2 | BIT5 */
+	FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg3 = 0x00;    /* 6 | BIT3 */
 	FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg4 = 0x00;
 	FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg5 = 0x00;
 	FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg6 = 0x98;    /* SMBUS Address for SMBUS based temperature sensor such as SB-TSI and ADM1032 */
@@ -170,15 +170,15 @@ static void oem_fan_control(FCH_DATA_BLOCK *FchParams)
 	/* IMC Fan Policy temperature thresholds */
 	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg0 = 0x00;
 	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg1 = 0x00;    /* Zone */
-	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg2 = 0;       /*AC0 threshold in Celsius */
-	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg3 = 0;       /*AC1 threshold in Celsius */
-	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg4 = 0;       /*AC2 threshold in Celsius */
-	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg5 = 0;       /*AC3 threshold in Celsius, 0xFF is not define */
-	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg6 = 0;       /*AC4 threshold in Celsius, 0xFF is not define */
-	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg7 = 0;       /*AC5 threshold in Celsius, 0xFF is not define */
-	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg8 = 0;       /*AC6 threshold in Celsius, 0xFF is not define */
-	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg9 = 0;       /*AC7 lowest threshold in Celsius, 0xFF is not define */
-	FchParams->Imc.EcStruct.MsgFun83Zone0MsgRegA = 0;       /*critical threshold* in Celsius, 0xFF is not define */
+	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg2 = 0;       /* AC0 threshold in Celsius */
+	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg3 = 0;       /* AC1 threshold in Celsius */
+	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg4 = 0;       /* AC2 threshold in Celsius */
+	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg5 = 0;       /* AC3 threshold in Celsius, 0xFF is not define */
+	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg6 = 0;       /* AC4 threshold in Celsius, 0xFF is not define */
+	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg7 = 0;       /* AC5 threshold in Celsius, 0xFF is not define */
+	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg8 = 0;       /* AC6 threshold in Celsius, 0xFF is not define */
+	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg9 = 0;       /* AC7 lowest threshold in Celsius, 0xFF is not define */
+	FchParams->Imc.EcStruct.MsgFun83Zone0MsgRegA = 0;       /* critical threshold* in Celsius, 0xFF is not define */
 	FchParams->Imc.EcStruct.MsgFun83Zone0MsgRegB = 0x00;
 
 	/* IMC Fan Policy PWM Settings */
@@ -195,7 +195,7 @@ static void oem_fan_control(FCH_DATA_BLOCK *FchParams)
 
 	FchParams->Imc.EcStruct.MsgFun81Zone1MsgReg0 = 0x00;
 	FchParams->Imc.EcStruct.MsgFun81Zone1MsgReg1 = 0x01;    /* Zone */
-	FchParams->Imc.EcStruct.MsgFun81Zone1MsgReg2 = 0x55;    //BIT0 | BIT2 | BIT5;
+	FchParams->Imc.EcStruct.MsgFun81Zone1MsgReg2 = 0x55;    /* BIT0 | BIT2 | BIT5 */
 	FchParams->Imc.EcStruct.MsgFun81Zone1MsgReg3 = 0x17;
 	FchParams->Imc.EcStruct.MsgFun81Zone1MsgReg4 = 0x00;
 	FchParams->Imc.EcStruct.MsgFun81Zone1MsgReg5 = 0x00;
@@ -205,20 +205,20 @@ static void oem_fan_control(FCH_DATA_BLOCK *FchParams)
 	FchParams->Imc.EcStruct.MsgFun81Zone1MsgReg9 = 0;
 
 	FchParams->Imc.EcStruct.MsgFun83Zone1MsgReg0 = 0x00;
-	FchParams->Imc.EcStruct.MsgFun83Zone1MsgReg1 = 0x01;    /* zone */
-	FchParams->Imc.EcStruct.MsgFun83Zone1MsgReg2 = 60;      /*AC0 threshold in Celsius */
-	FchParams->Imc.EcStruct.MsgFun83Zone1MsgReg3 = 40;      /*AC1 threshold in Celsius */
-	FchParams->Imc.EcStruct.MsgFun83Zone1MsgReg4 = 0;       /*AC2 threshold in Celsius */
-	FchParams->Imc.EcStruct.MsgFun83Zone1MsgReg5 = 0;       /*AC3 threshold in Celsius, 0xFF is not define */
-	FchParams->Imc.EcStruct.MsgFun83Zone1MsgReg6 = 0;       /*AC4 threshold in Celsius, 0xFF is not define */
-	FchParams->Imc.EcStruct.MsgFun83Zone1MsgReg7 = 0;       /*AC5 threshold in Celsius, 0xFF is not define */
-	FchParams->Imc.EcStruct.MsgFun83Zone1MsgReg8 = 0;       /*AC6 threshold in Celsius, 0xFF is not define */
-	FchParams->Imc.EcStruct.MsgFun83Zone1MsgReg9 = 0;       /*AC7 lowest threshold in Celsius, 0xFF is not define */
-	FchParams->Imc.EcStruct.MsgFun83Zone1MsgRegA = 0;       /*critical threshold* in Celsius, 0xFF is not define */
+	FchParams->Imc.EcStruct.MsgFun83Zone1MsgReg1 = 0x01;    /* Zone */
+	FchParams->Imc.EcStruct.MsgFun83Zone1MsgReg2 = 60;      /* AC0 threshold in Celsius */
+	FchParams->Imc.EcStruct.MsgFun83Zone1MsgReg3 = 40;      /* AC1 threshold in Celsius */
+	FchParams->Imc.EcStruct.MsgFun83Zone1MsgReg4 = 0;       /* AC2 threshold in Celsius */
+	FchParams->Imc.EcStruct.MsgFun83Zone1MsgReg5 = 0;       /* AC3 threshold in Celsius, 0xFF is not define */
+	FchParams->Imc.EcStruct.MsgFun83Zone1MsgReg6 = 0;       /* AC4 threshold in Celsius, 0xFF is not define */
+	FchParams->Imc.EcStruct.MsgFun83Zone1MsgReg7 = 0;       /* AC5 threshold in Celsius, 0xFF is not define */
+	FchParams->Imc.EcStruct.MsgFun83Zone1MsgReg8 = 0;       /* AC6 threshold in Celsius, 0xFF is not define */
+	FchParams->Imc.EcStruct.MsgFun83Zone1MsgReg9 = 0;       /* AC7 lowest threshold in Celsius, 0xFF is not define */
+	FchParams->Imc.EcStruct.MsgFun83Zone1MsgRegA = 0;       /* critical threshold* in Celsius, 0xFF is not define */
 	FchParams->Imc.EcStruct.MsgFun83Zone1MsgRegB = 0x00;
 
 	FchParams->Imc.EcStruct.MsgFun85Zone1MsgReg0 = 0x00;
-	FchParams->Imc.EcStruct.MsgFun85Zone1MsgReg1 = 0x01;    /*Zone */
+	FchParams->Imc.EcStruct.MsgFun85Zone1MsgReg1 = 0x01;    /* Zone */
 	FchParams->Imc.EcStruct.MsgFun85Zone1MsgReg2 = 0;       /* AL0 percentage */
 	FchParams->Imc.EcStruct.MsgFun85Zone1MsgReg3 = 0;       /* AL1 percentage */
 	FchParams->Imc.EcStruct.MsgFun85Zone1MsgReg4 = 0;       /* AL2 percentage */
@@ -230,7 +230,7 @@ static void oem_fan_control(FCH_DATA_BLOCK *FchParams)
 
 	FchParams->Imc.EcStruct.MsgFun81Zone2MsgReg0 = 0x00;
 	FchParams->Imc.EcStruct.MsgFun81Zone2MsgReg1 = 0x2;     /* Zone */
-	FchParams->Imc.EcStruct.MsgFun81Zone2MsgReg2 = 0x0;     //BIT0 | BIT2 | BIT5;
+	FchParams->Imc.EcStruct.MsgFun81Zone2MsgReg2 = 0x0;     /* BIT0 | BIT2 | BIT5 */
 	FchParams->Imc.EcStruct.MsgFun81Zone2MsgReg3 = 0x0;
 	FchParams->Imc.EcStruct.MsgFun81Zone2MsgReg4 = 0x00;
 	FchParams->Imc.EcStruct.MsgFun81Zone2MsgReg5 = 0x00;
@@ -241,7 +241,7 @@ static void oem_fan_control(FCH_DATA_BLOCK *FchParams)
 
 	FchParams->Imc.EcStruct.MsgFun81Zone3MsgReg0 = 0x00;
 	FchParams->Imc.EcStruct.MsgFun81Zone3MsgReg1 = 0x3;     /* Zone */
-	FchParams->Imc.EcStruct.MsgFun81Zone3MsgReg2 = 0x0;     //BIT0 | BIT2 | BIT5;
+	FchParams->Imc.EcStruct.MsgFun81Zone3MsgReg2 = 0x0;     /* BIT0 | BIT2 | BIT5 */
 	FchParams->Imc.EcStruct.MsgFun81Zone3MsgReg3 = 0x0;
 	FchParams->Imc.EcStruct.MsgFun81Zone3MsgReg4 = 0x00;
 	FchParams->Imc.EcStruct.MsgFun81Zone3MsgReg5 = 0x00;
@@ -251,7 +251,7 @@ static void oem_fan_control(FCH_DATA_BLOCK *FchParams)
 	FchParams->Imc.EcStruct.MsgFun81Zone3MsgReg9 = 0;
 
 	/* IMC Function */
-	FchParams->Imc.EcStruct.IMCFUNSupportBitMap = 0x333;    //BIT0 | BIT4 |BIT8;
+	FchParams->Imc.EcStruct.IMCFUNSupportBitMap = 0x333;    /*BIT0 | BIT4 |BIT8; */
 
 	/* NOTE:
 	 * FchInitLateHwm will overwrite the EcStruct with EcDefaultMessage,
@@ -279,7 +279,6 @@ static AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr)
 	if (StdHeader->Func == AMD_INIT_RESET) {
 		FCH_RESET_DATA_BLOCK *FchParams =  (FCH_RESET_DATA_BLOCK *) FchData;
 		printk(BIOS_DEBUG, "Fch OEM config in INIT RESET ");
-		//FchParams_reset->EcChannel0 = TRUE; /* logical devicd 3 */
 		FchParams->LegacyFree = CONFIG_HUDSON_LEGACY_FREE;
 		FchParams->FchReset.SataEnable = hudson_sata_enable();
 		FchParams->FchReset.IdeEnable = hudson_ide_enable();

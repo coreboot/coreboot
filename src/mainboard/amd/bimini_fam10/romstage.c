@@ -13,11 +13,9 @@
  * GNU General Public License for more details.
  */
 
-//#define SYSTEM_TYPE 0	/* SERVER */
-#define SYSTEM_TYPE 1	/* DESKTOP */
-//#define SYSTEM_TYPE 2	/* MOBILE */
+#define SYSTEM_TYPE 1	/* SERVER = 0, DESKTOP = 1, MOBILE = 2 */
 
-//used by incoherent_ht
+/* used by incoherent_ht */
 #define FAM10_SCAN_PCI_BUS 0
 #define FAM10_ALLOCATE_IO_RANGE 0
 
@@ -100,12 +98,11 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	console_init();
 
-//	dump_mem(CONFIG_DCACHE_RAM_BASE+CONFIG_DCACHE_RAM_SIZE-0x200, CONFIG_DCACHE_RAM_BASE+CONFIG_DCACHE_RAM_SIZE);
 
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
 
-	// Load MPB
+	/* Load MPB */
 	val = cpuid_eax(1);
 	printk(BIOS_DEBUG, "BSP Family_Model: %08x\n", val);
 	printk(BIOS_DEBUG, "*sysinfo range: [%p,%p]\n",sysinfo,sysinfo+1);
@@ -164,10 +161,10 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	post_code(0x39);
 
-	if (!warm_reset_detect(0)) {			// BSP is node 0
+	if (!warm_reset_detect(0)) {			/* BSP is node 0 */
 		init_fidvid_bsp(bsp_apicid, sysinfo->nodes);
 	} else {
-		init_fidvid_stage2(bsp_apicid, 0);	// BSP is node 0
+		init_fidvid_stage2(bsp_apicid, 0);	/* BSP is node 0 */
 	}
 
 	post_code(0x3A);
@@ -194,8 +191,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	post_code(0x40);
 
-//	die("Die Before MCT init.");
-
 	timestamp_add_now(TS_BEFORE_INITRAM);
 	printk(BIOS_DEBUG, "raminit_amdmct()\n");
 	raminit_amdmct(sysinfo);
@@ -206,24 +201,12 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	amdmct_cbmem_store_info(sysinfo);
 
-/*
-	dump_pci_device_range(PCI_DEV(0, 0x18, 0), 0, 0x200);
-	dump_pci_device_range(PCI_DEV(0, 0x18, 1), 0, 0x200);
-	dump_pci_device_range(PCI_DEV(0, 0x18, 2), 0, 0x200);
-	dump_pci_device_range(PCI_DEV(0, 0x18, 3), 0, 0x200);
-*/
-
-//	ram_check(0x00200000, 0x00200000 + (640 * 1024));
-//	ram_check(0x40200000, 0x40200000 + (640 * 1024));
-
-//	die("After MCT init before CAR disabled.");
-
 	rs780_before_pci_init();
 	sb800_before_pci_init();
 
 	post_code(0x42);
-	post_cache_as_ram();	// BSP switch stack to ram, copy then execute LB.
-	post_code(0x43);	// Should never see this post code.
+	post_cache_as_ram();	/* BSP switch stack to ram, copy then execute LB. */
+	post_code(0x43);	/* Should never see this post code. */
 }
 
 /**

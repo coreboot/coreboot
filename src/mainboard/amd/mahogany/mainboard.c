@@ -56,35 +56,6 @@ void set_pcie_reset()
 	pci_write_config16(sm_dev, 0xA8, word);
 }
 
-#if 0	     /* not tested yet */
-/********************************************************
-* mahogany uses SB700 GPIO9 to detect IDE_DMA66.
-* IDE_DMA66 is routed to GPIO 9. So we read Gpio 9 to
-* get the cable type, 40 pin or 80 pin?
-********************************************************/
-static void get_ide_dma66(void)
-{
-	u8 byte;
-	/*u32 sm_dev, ide_dev; */
-	device_t sm_dev, ide_dev;
-
-	sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
-
-	byte = pci_read_config8(sm_dev, 0xA9);
-	byte |= (1 << 5);	/* Set Gpio9 as input */
-	pci_write_config8(sm_dev, 0xA9, byte);
-
-	ide_dev = dev_find_slot(0, PCI_DEVFN(0x14, 1));
-	byte = pci_read_config8(ide_dev, 0x56);
-	byte &= ~(7 << 0);
-	if ((1 << 5) & pci_read_config8(sm_dev, 0xAA))
-		byte |= 2 << 0;	/* mode 2 */
-	else
-		byte |= 5 << 0;	/* mode 5 */
-	pci_write_config8(ide_dev, 0x56, byte);
-}
-#endif	/* get_ide_dma66 */
-
 u8 is_dev3_present(void)
 {
 	return 0;

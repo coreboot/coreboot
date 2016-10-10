@@ -72,7 +72,7 @@ AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr)
 	if (StdHeader->Func == AMD_INIT_RESET) {
 		FCH_RESET_DATA_BLOCK *FchParams_reset = (FCH_RESET_DATA_BLOCK *)FchData;
 		printk(BIOS_DEBUG, "Fch OEM config in INIT RESET ");
-		//FchParams_reset->EcChannel0 = TRUE; /* logical devicd 3 */
+
 		FchParams_reset->FchReset.Xhci0Enable = IS_ENABLED(CONFIG_HUDSON_XHCI_ENABLE);
 		FchParams_reset->FchReset.Xhci1Enable = FALSE;
 		FchParams_reset->EarlyOemGpioTable = oem_bettong_gpio;

@@ -99,7 +99,8 @@ static void gma_init_lvds(const struct northbridge_intel_gm45_config *info,
 	for (i = 0; i <= 0x18; i++)
 		vga_cr_write(i, cr[i]);
 
-	intel_gmbus_read_edid(mmio + GMBUS0, 3, 0x50, edid_data, 128);
+	intel_gmbus_read_edid(mmio + GMBUS0, 3, 0x50, edid_data,
+			sizeof(edid_data));
 	decode_edid(edid_data,
 		    sizeof(edid_data), &edid);
 	mode = &edid.mode;
@@ -410,7 +411,8 @@ static void gma_init_vga(const struct northbridge_intel_gm45_config *info,
 
 	udelay(1);
 
-	intel_gmbus_read_edid(mmio + GMBUS0, 2, 0x50, edid_data, 128);
+	intel_gmbus_read_edid(mmio + GMBUS0, 2, 0x50, edid_data,
+			sizeof(edid_data));
 	intel_gmbus_stop(mmio + GMBUS0);
 	decode_edid(edid_data,
 		    sizeof(edid_data), &edid);
@@ -644,7 +646,8 @@ static u8 vga_connected(u8 *mmio)
 {
 	u8 vga_edid[128];
 	u8 header[8] = {0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x00};
-	intel_gmbus_read_edid(mmio + GMBUS0, 2, 0x50, vga_edid, 128);
+	intel_gmbus_read_edid(mmio + GMBUS0, 2, 0x50, vga_edid,
+			sizeof(vga_edid));
 	intel_gmbus_stop(mmio + GMBUS0);
 	for (int i = 0; i < 8; i++) {
 		if (vga_edid[i] != header[i]) {

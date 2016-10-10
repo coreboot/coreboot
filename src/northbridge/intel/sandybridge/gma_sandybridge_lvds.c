@@ -186,7 +186,8 @@ int i915lightup_sandy(const struct i915_gpu_controller_info *info,
 
 	power_port(mmio);
 
-	intel_gmbus_read_edid(mmio + PCH_GMBUS0, 3, 0x50, edid_data, 128);
+	intel_gmbus_read_edid(mmio + PCH_GMBUS0, 3, 0x50, edid_data,
+			sizeof(edid_data));
 	decode_edid(edid_data, sizeof(edid_data), &edid);
 	mode = &edid.mode;
 

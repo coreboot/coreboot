@@ -305,14 +305,8 @@ static void gma_init_lvds(const struct northbridge_intel_gm45_config *info,
 	write32(mmio + PIPE_LINK_M1(0), link_m1);
 	write32(mmio + PIPE_LINK_N1(0), link_n1);
 
-	write32(mmio + 0x000f000c, 0x00002040);
-	mdelay(1);
-	write32(mmio + 0x000f000c, 0x00002050);
-	write32(mmio + 0x00060100, 0x00044000);
 	mdelay(1);
 	write32(mmio + PIPECONF(0), PIPECONF_BPP_6);
-	write32(mmio + 0x000f0008, 0x00000040);
-	write32(mmio + 0x000f000c, 0x00022050);
 	write32(mmio + PIPECONF(0), PIPECONF_BPP_6 | PIPECONF_DITHER_EN);
 	write32(mmio + PIPECONF(0), PIPECONF_ENABLE | PIPECONF_BPP_6 | PIPECONF_DITHER_EN);
 
@@ -598,14 +592,8 @@ static void gma_init_vga(const struct northbridge_intel_gm45_config *info,
 	write32(mmio + PIPE_LINK_M1(0), link_m1);
 	write32(mmio + PIPE_LINK_N1(0), link_n1);
 
-	write32(mmio + 0x000f000c, 0x00002040);
-	mdelay(1);
-	write32(mmio + 0x000f000c, 0x00002050);
-	write32(mmio + 0x00060100, 0x00044000);
 	mdelay(1);
 	write32(mmio + PIPECONF(0), PIPECONF_BPP_6);
-	write32(mmio + 0x000f0008, 0x00000040);
-	write32(mmio + 0x000f000c, 0x00022050);
 	write32(mmio + PIPECONF(0), PIPECONF_BPP_6 | PIPECONF_DITHER_EN);
 	write32(mmio + PIPECONF(0), PIPECONF_ENABLE
 			| PIPECONF_BPP_6 | PIPECONF_DITHER_EN);

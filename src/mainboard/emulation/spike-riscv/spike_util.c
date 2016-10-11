@@ -33,15 +33,6 @@
 #include <string.h>
 #include <vm.h>
 
-uintptr_t translate_address(uintptr_t vAddr) {
-	// TODO: implement the page table translation algorithm
-	//uintptr_t pageTableRoot = read_csr(sptbr);
-	uintptr_t physAddrMask = 0xfffffff;
-	uintptr_t translationResult = vAddr & physAddrMask;
-	printk(BIOS_DEBUG, "Translated virtual address 0x%llx to physical address 0x%llx\n", vAddr, translationResult);
-	return translationResult;
-}
-
 uintptr_t mcall_query_memory(uintptr_t id, memory_block_info *info)
 {
 	if (id == 0) {
@@ -106,14 +97,4 @@ uintptr_t mcall_console_putchar(uint8_t ch)
 {
 	do_putchar(ch);
 	return 0;
-}
-
-void testPrint(void) {
-	/* Print a test command to check Spike console output */
-	mcall_console_putchar('h');
-	mcall_console_putchar('e');
-	mcall_console_putchar('l');
-	mcall_console_putchar('l');
-	mcall_console_putchar('o');
-	mcall_console_putchar('\n');
 }

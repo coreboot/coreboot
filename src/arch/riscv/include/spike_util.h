@@ -16,24 +16,12 @@
 #ifndef _SPIKE_UTIL_H
 #define _SPIKE_UTIL_H
 
-#include <stdint.h>
-//#include <string.h>
-//#include <errno.h>
 #include <arch/encoding.h>
 #include <atomic.h>
+#include <stdint.h>
 
-#define LOG_REGBYTES 3
-#define REGBYTES (1 << LOG_REGBYTES)
-#define STORE    sd
 #define HLS_SIZE 64
 #define MENTRY_FRAME_SIZE HLS_SIZE
-
-#define TOHOST_CMD(dev, cmd, payload) \
-    (((uint64_t)(dev) << 56) | ((uint64_t)(cmd) << 48) | (uint64_t)(payload))
-
-#define FROMHOST_DEV(fromhost_value) ((uint64_t)(fromhost_value) >> 56)
-#define FROMHOST_CMD(fromhost_value) ((uint64_t)(fromhost_value) << 8 >> 56)
-#define FROMHOST_DATA(fromhost_value) ((uint64_t)(fromhost_value) << 16 >> 16)
 
 typedef struct {
   unsigned long base;
@@ -69,12 +57,8 @@ typedef struct {
 
 #define MACHINE_STACK_SIZE RISCV_PGSIZE
 
-uintptr_t translate_address(uintptr_t vAddr);
 uintptr_t mcall_query_memory(uintptr_t id, memory_block_info *p);
-uintptr_t mcall_hart_id(void);
-uintptr_t htif_interrupt(uintptr_t mcause, uintptr_t* regs);
 uintptr_t mcall_console_putchar(uint8_t ch);
-void testPrint(void);
 uintptr_t mcall_dev_req(sbi_device_message *m);
 uintptr_t mcall_dev_resp(void);
 uintptr_t mcall_set_timer(unsigned long long when);

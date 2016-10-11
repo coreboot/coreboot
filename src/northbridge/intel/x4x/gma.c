@@ -191,7 +191,8 @@ static void intel_gma_init(const struct northbridge_intel_x4x_config *info,
 					u32 vco = DIV_ROUND_CLOSEST(
 						BASE_FREQUENCY * m, candn + 2);
 					u32 dot = DIV_ROUND_CLOSEST(vco, p);
-					u32 this_err = ABS(dot - target_frequency);
+					u32 this_err = MAX(dot, target_frequency) -
+						MIN(dot, target_frequency);
 					if (this_err < err_most) {
 						err_most = this_err;
 						pixel_n = candn;

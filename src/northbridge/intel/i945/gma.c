@@ -177,7 +177,8 @@ static int intel_gma_init_lvds(struct northbridge_intel_i945_config *conf,
 					u32 p = candp1 * pixel_p2;
 					u32 vco = DIV_ROUND_CLOSEST(BASE_FREQUENCY * m, candn + 2);
 					u32 dot = DIV_ROUND_CLOSEST(vco, p);
-					u32 this_err = ABS(dot - target_frequency);
+					u32 this_err = MAX(dot, target_frequency) -
+						MIN(dot, target_frequency);
 					if ((m < 70) || (m > 120))
 						continue;
 					if (this_err < smallest_err) {

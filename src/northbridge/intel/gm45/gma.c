@@ -171,7 +171,8 @@ static void gma_init_lvds(const struct northbridge_intel_gm45_config *info,
 					u32 p = candp1 * pixel_p2;
 					u32 vco = DIV_ROUND_CLOSEST(BASE_FREQUENCY * m, candn + 2);
 					u32 dot = DIV_ROUND_CLOSEST(vco, p);
-					u32 this_err = ABS(dot - target_frequency);
+					u32 this_err = MAX(dot, target_frequency) -
+						MIN(dot, target_frequency);
 					if (this_err < smallest_err) {
 						smallest_err = this_err;
 						pixel_n = candn;
@@ -477,7 +478,8 @@ static void gma_init_vga(const struct northbridge_intel_gm45_config *info,
 					u32 p = candp1 * pixel_p2;
 					u32 vco = DIV_ROUND_CLOSEST(BASE_FREQUENCY * m, candn + 2);
 					u32 dot = DIV_ROUND_CLOSEST(vco, p);
-					u32 this_err = ABS(dot - target_frequency);
+					u32 this_err = MAX(dot, target_frequency) -
+						MIN(dot, target_frequency);
 					if (this_err < smallest_err) {
 						smallest_err= this_err;
 						pixel_n = candn;

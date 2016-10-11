@@ -21,9 +21,10 @@ FLAT_FILE="$1"
 OBJECT_FILE=$(mktemp /tmp/coreboot-spike.XXXXXX.o)
 ELF_FILE="$2"
 TOOL_PATH="$(dirname "$0")"
+XGCC_BIN="$TOOL_PATH/../crossgcc/xgcc/bin"
 
-riscv64-unknown-linux-gnu-objcopy -I binary -O elf64-littleriscv \
+"$XGCC_BIN/riscv64-elf-objcopy" -I binary -O elf64-littleriscv \
 	-B riscv "$FLAT_FILE" "$OBJECT_FILE"
-riscv64-unknown-linux-gnu-ld "$OBJECT_FILE" -T "$TOOL_PATH/spike-elf.ld" \
+"$XGCC_BIN/riscv64-elf-ld" "$OBJECT_FILE" -T "$TOOL_PATH/spike-elf.ld" \
 	 -o "$ELF_FILE"
 rm "$OBJECT_FILE"

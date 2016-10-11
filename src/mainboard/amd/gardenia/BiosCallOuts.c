@@ -53,8 +53,28 @@ const BIOS_CALLOUT_STRUCT BiosCallouts[] =
 const int BiosCalloutsLen = ARRAY_SIZE(BiosCallouts);
 
 static const GPIO_CONTROL oem_gardenia_gpio[] = {
-	{86, Function1, FCH_GPIO_PULL_UP_ENABLE | FCH_GPIO_OUTPUT_VALUE | FCH_GPIO_OUTPUT_ENABLE | DrvStrengthSel_12mA},
-	{64, Function1, FCH_GPIO_PULL_UP_ENABLE | FCH_GPIO_OUTPUT_VALUE | FCH_GPIO_OUTPUT_ENABLE | DrvStrengthSel_12mA},
+	/* BT radio disable */
+	{14, Function1, FCH_GPIO_PULL_UP_ENABLE | FCH_GPIO_OUTPUT_VALUE
+						| FCH_GPIO_OUTPUT_ENABLE},
+	/* NFC PU */
+	{64, Function0, FCH_GPIO_PULL_UP_ENABLE | FCH_GPIO_OUTPUT_VALUE
+						| FCH_GPIO_OUTPUT_ENABLE},
+	/* NFC wake */
+	{65, Function0, FCH_GPIO_PULL_UP_ENABLE | FCH_GPIO_OUTPUT_VALUE
+						| FCH_GPIO_OUTPUT_ENABLE},
+	/* Webcam */
+	{66, Function0, FCH_GPIO_PULL_UP_ENABLE | FCH_GPIO_OUTPUT_VALUE
+						| FCH_GPIO_OUTPUT_ENABLE},
+	/* PCIe presence detect */
+	{69, Function0, FCH_GPIO_PULL_UP_ENABLE},
+	/* GPS sleep */
+	{70, Function0, FCH_GPIO_PULL_UP_ENABLE | FCH_GPIO_OUTPUT_VALUE
+						| FCH_GPIO_OUTPUT_ENABLE},
+	/* MUX for Power Express Eval */
+	{116, Function1, FCH_GPIO_PULL_DOWN_ENABLE},
+	/* SD power */
+	{119, Function2, FCH_GPIO_PULL_UP_ENABLE | FCH_GPIO_OUTPUT_VALUE
+						 | FCH_GPIO_OUTPUT_ENABLE},
 	{-1}
 };
 /**

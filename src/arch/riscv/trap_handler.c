@@ -172,8 +172,8 @@ static uint32_t fetch_instruction(uintptr_t vaddr) {
 }
 
 void handle_misaligned_load(trapframe *tf) {
-	printk(BIOS_DEBUG, "Trapframe ptr: %p\n", tf);
-	printk(BIOS_DEBUG, "Stored sp: %p\n", (void*) tf->gpr[2]);
+	printk(BIOS_DEBUG, "Trapframe ptr:      %p\n", tf);
+	printk(BIOS_DEBUG, "Stored sp:          %p\n", (void*) tf->gpr[2]);
 	uintptr_t faultingInstructionAddr = tf->epc;
 	insn_t faultingInstruction = fetch_instruction(faultingInstructionAddr);
 	printk(BIOS_DEBUG, "Faulting instruction: 0x%x\n", faultingInstruction);
@@ -202,8 +202,8 @@ void handle_misaligned_load(trapframe *tf) {
 }
 
 void handle_misaligned_store(trapframe *tf) {
-	printk(BIOS_DEBUG, "Trapframe ptr: %p\n", tf);
-	printk(BIOS_DEBUG, "Stored sp: %p\n", (void*) tf->gpr[2]);
+	printk(BIOS_DEBUG, "Trapframe ptr:      %p\n", tf);
+	printk(BIOS_DEBUG, "Stored sp:          %p\n", (void*) tf->gpr[2]);
 	uintptr_t faultingInstructionAddr = tf->epc;
 	insn_t faultingInstruction = fetch_instruction(faultingInstructionAddr);
 	printk(BIOS_DEBUG, "Faulting instruction: 0x%x\n", faultingInstruction);

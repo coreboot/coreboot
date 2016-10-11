@@ -57,6 +57,7 @@ config UART_FOR_CONSOLE
 
 # FIXME: Early programming in romstage is incorrect as we should
 # program different LDN to actually change the physical port.
+if ARCH_X86
 config TTYS0_BASE
 	hex
 	depends on DRIVERS_UART
@@ -75,6 +76,7 @@ comment "Serial port base address = 0x3e8"
 depends on UART_FOR_CONSOLE = 2
 comment "Serial port base address = 0x2e8"
 depends on UART_FOR_CONSOLE = 3
+endif # ARCH_X86
 
 choice
 	prompt "Baud rate"

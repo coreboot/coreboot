@@ -31,4 +31,7 @@ void ite_reg_write(pnp_devfn_t dev, u8 reg, u8 value);
 void ite_enable_3vsbsw(pnp_devfn_t dev);
 void ite_kill_watchdog(pnp_devfn_t dev);
 
+void pnp_enter_conf_state(pnp_devfn_t dev);
+void pnp_exit_conf_state(pnp_devfn_t dev);
+
 #endif /* SUPERIO_ITE_COMMON_ROMSTAGE_H */

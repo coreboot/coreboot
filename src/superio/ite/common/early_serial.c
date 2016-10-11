@@ -36,7 +36,7 @@ static void ite_sio_write(pnp_devfn_t dev, u8 reg, u8 value)
 }
 
 /* Enable configuration */
-static void pnp_enter_conf_state(pnp_devfn_t dev)
+void pnp_enter_conf_state(pnp_devfn_t dev)
 {
 	u16 port = dev >> 8;
 
@@ -47,7 +47,7 @@ static void pnp_enter_conf_state(pnp_devfn_t dev)
 }
 
 /* Disable configuration */
-static void pnp_exit_conf_state(pnp_devfn_t dev)
+void pnp_exit_conf_state(pnp_devfn_t dev)
 {
 	ite_sio_write(dev, ITE_CONFIG_REG_CC, 0x02);
 }

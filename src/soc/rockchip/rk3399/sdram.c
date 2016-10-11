@@ -16,12 +16,14 @@
 #include <arch/io.h>
 #include <console/console.h>
 #include <delay.h>
+#include <reset.h>
 #include <soc/addressmap.h>
 #include <soc/clock.h>
 #include <soc/sdram.h>
 #include <soc/grf.h>
 #include <soc/soc.h>
 #include <string.h>
+#include <timer.h>
 #include <types.h>
 
 #define DDR_PI_OFFSET			0x800
@@ -466,8 +468,8 @@ static void phy_io_config(u32 channel,
 	clrsetbits_le32(&denali_phy[939], 0x3 << 17, speed << 17);
 }
 
-static void pctl_cfg(u32 channel,
-		     const struct rk3399_sdram_params *sdram_params)
+static int pctl_cfg(u32 channel,
+		    const struct rk3399_sdram_params *sdram_params)
 {
 	u32 *denali_ctl = rk3399_ddr_pctl[channel]->denali_ctl;
 	u32 *denali_pi = rk3399_ddr_pi[channel]->denali_pi;
@@ -476,6 +478,7 @@ static void pctl_cfg(u32 channel,
 	const u32 *params_phy = sdram_params->phy_regs.denali_phy;
 	u32 tmp, tmp1, tmp2;
 	u32 pwrup_srefresh_exit;
+	struct stopwatch sw;
 
 	/*
 	 * work around controller bug:
@@ -556,12 +559,18 @@ static void pctl_cfg(u32 channel,
 
 	/*
 	 * FIXME:
-	 * need to care ERROR bit
+	 * need to care ERROR bit,
+	 * if 100ms do not get right status, return err
 	 */
-	while (!(read32(&denali_ctl[203]) & (1 << 3)))
-		;
+	stopwatch_init_msecs_expire(&sw, 100);
+	while (!(read32(&denali_ctl[203]) & (1 << 3))) {
+		if (stopwatch_expired(&sw))
+			return -1;
+	}
+
 	clrsetbits_le32(&denali_ctl[68], PWRUP_SREFRESH_EXIT,
 			pwrup_srefresh_exit);
+	return 0;
 }
 
 static void select_per_cs_training_index(u32 channel, u32 rank)
@@ -987,14 +996,25 @@ void sdram_init(const struct rk3399_sdram_params *sdram_params)
 		if (channel >= sdram_params->num_channels)
 			continue;
 
-		pctl_cfg(channel, sdram_params);
+		/*
+		 * TODO: we need to find the root cause why this
+		 * step may fail, before that, we just reset the
+		 * system, and start again.
+		 */
+		if (pctl_cfg(channel, sdram_params) != 0) {
+			printk(BIOS_ERR, "pctl_cfg fail, reset\n");
+			hard_reset();
+		}
 
 		/* LPDDR2/LPDDR3 need to wait DAI complete, max 10us */
 		if (dramtype == LPDDR3)
 			udelay(10);
 
-		if (data_training(channel, sdram_params, PI_FULL_TARINING))
-			die("SDRAM initialization failed!");
+		if (data_training(channel, sdram_params, PI_FULL_TARINING)) {
+			printk(BIOS_DEBUG,
+			       "SDRAM initialization failed, reset\n");
+			hard_reset();
+		}
 
 		set_ddrconfig(sdram_params, channel,
 			      sdram_params->ch[channel].ddrconfig);

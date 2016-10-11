@@ -121,6 +121,7 @@ Maintainers List (try to look for most precise areas first)
 
 RISC-V ARCHITECTURE
 M:	Ronald Minnich <rminnich@gmail.com>
+M:	Jonathan Neuschäfer <j.neuschaefer@gmx.net>
 S:	Maintained
 F:	src/arch/riscv/
 F:	src/soc/ucb/

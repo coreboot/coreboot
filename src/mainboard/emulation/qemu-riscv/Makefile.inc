@@ -12,7 +12,6 @@
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ## GNU General Public License for more details.
 
-bootblock-y += bootblock.c
 bootblock-y += uart.c
 bootblock-y += qemu_util.c
 bootblock-y += rom_media.c

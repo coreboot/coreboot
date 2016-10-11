@@ -6,7 +6,6 @@ config ARCH_BOOTBLOCK_RISCV
 	bool
 	default n
 	select ARCH_RISCV
-	select BOOTBLOCK_CUSTOM
 	select C_ENVIRONMENT_BOOTBLOCK
 
 config ARCH_VERSTAGE_RISCV

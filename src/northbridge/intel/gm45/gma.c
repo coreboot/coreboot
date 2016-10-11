@@ -362,6 +362,7 @@ static void gma_init_vga(const struct northbridge_intel_gm45_config *info,
 	u32 target_frequency;
 	u32 smallest_err = 0xffffffff;
 	u32 pixel_p1 = 1;
+	u32 pixel_p2;
 	u32 pixel_n = 1;
 	u32 pixel_m1 = 1;
 	u32 pixel_m2 = 1;
@@ -465,13 +466,15 @@ static void gma_init_vga(const struct northbridge_intel_gm45_config *info,
 		vga_textmode_init();
 	}
 
+	pixel_p2 = target_frequency <= 225000 ? 10 : 5;
+
 	u32 candn, candm1, candm2, candp1;
 	for (candn = 1; candn <= 4; candn++) {
 		for (candm1 = 23; candm1 >= 17; candm1--) {
 			for (candm2 = 11; candm2 >= 5; candm2--) {
 				for (candp1 = 8; candp1 >= 1; candp1--) {
 					u32 m = 5 * (candm1 + 2) + (candm2 + 2);
-					u32 p = candp1 * 10; /* 10 == p2 */
+					u32 p = candp1 * pixel_p2;
 					u32 vco = DIV_ROUND_CLOSEST(BASE_FREQUENCY * m, candn + 2);
 					u32 dot = DIV_ROUND_CLOSEST(vco, p);
 					u32 this_err = ABS(dot - target_frequency);
@@ -516,23 +519,27 @@ static void gma_init_vga(const struct northbridge_intel_gm45_config *info,
 	       link_frequency);
 	printk(BIOS_SPEW, "Link M1=%d, N1=%d\n",
 	       link_m1, link_n1);
-	printk(BIOS_SPEW, "Pixel N=%d, M1=%d, M2=%d, P1=%d\n",
-	       pixel_n, pixel_m1, pixel_m2, pixel_p1);
+	printk(BIOS_SPEW, "Pixel N=%d, M1=%d, M2=%d, P1=%d, P2=%d\n",
+		pixel_n, pixel_m1, pixel_m2, pixel_p1, pixel_p2);
 	printk(BIOS_SPEW, "Pixel clock %d kHz\n",
 		BASE_FREQUENCY * (5 * (pixel_m1 + 2) + (pixel_m2 + 2) /
-			(pixel_n + 2) / (pixel_p1 * 10)));
+			(pixel_n + 2) / (pixel_p1 * pixel_p2)));
 
 	mdelay(1);
 	write32(mmio + FP0(0), (pixel_n << 16)
 		| (pixel_m1 << 8) | pixel_m2);
 	write32(mmio + DPLL(0), DPLL_VCO_ENABLE
 		| DPLL_VGA_MODE_DIS | DPLLB_MODE_DAC_SERIAL
+		| (pixel_p2 == 10 ? DPLL_DAC_SERIAL_P2_CLOCK_DIV_10 :
+			DPLL_DAC_SERIAL_P2_CLOCK_DIV_5)
 		| (0x10000 << (pixel_p1 - 1))
 		| (6 << 9));
 
 	mdelay(1);
 	write32(mmio + DPLL(0), DPLL_VCO_ENABLE
 		| DPLL_VGA_MODE_DIS | DPLLB_MODE_DAC_SERIAL
+		| (pixel_p2 == 10 ? DPLL_DAC_SERIAL_P2_CLOCK_DIV_10 :
+			DPLL_DAC_SERIAL_P2_CLOCK_DIV_5)
 		| (0x10000 << (pixel_p1 - 1))
 		| (6 << 9));
 

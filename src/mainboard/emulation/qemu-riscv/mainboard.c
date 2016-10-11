@@ -21,8 +21,7 @@ static void mainboard_enable(device_t dev)
 {
 
 	if (!dev) {
-		printk(BIOS_EMERG, "No dev0; die\n");
-		while (1);
+		die("No dev0; die\n");
 	}
 
 	ram_resource(dev, 0, 2048, 32768);

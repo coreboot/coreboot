@@ -193,8 +193,7 @@ void handle_misaligned_load(trapframe *tf) {
 		tf->gpr[destRegister] = value;
 	} else {
 		// panic, this should not have happened
-		printk(BIOS_DEBUG, "Code should not reach this path, misaligned on a non-64 bit store/load\n");
-		while(1);
+		die("Code should not reach this path, misaligned on a non-64 bit store/load\n");
 	}
 
 	// return to where we came from
@@ -223,8 +222,7 @@ void handle_misaligned_store(trapframe *tf) {
 		}
 	} else {
 		// panic, this should not have happened
-		printk(BIOS_DEBUG, "Code should not reach this path, misaligned on a non-64 bit store/load\n");
-		while(1);
+		die("Code should not reach this path, misaligned on a non-64 bit store/load\n");
 	}
 
 	// return to where we came from

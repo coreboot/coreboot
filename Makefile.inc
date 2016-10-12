@@ -1012,18 +1012,18 @@ PHONY+=check-ramstage-overlaps
 endif
 
 junit.xml:
-	echo "Building $(UTIL)"
+	echo "Building $(BLD)"
 	echo '<?xml version="1.0" encoding="utf-8"?><testsuite>' > $@.tmp
-	echo "<testcase classname='$(UTIL)' name='$(UTIL)'>" >> $@.tmp
-	-$(MAKE) -j $(CPUS) -C "util/$(UTIL)" clean distclean > $@.tmp.2 2>&1
-	$(MAKE) -j $(CPUS) -C "util/$(UTIL)" $(MAKETARGET) >> $@.tmp.2 2>&1 && type="system-out" || type="failure"; \
+	echo "<testcase classname='$(BLD)' name='$(BLD)'>" >> $@.tmp
+	-$(MAKE) -j $(CPUS) -C "$(BLD_DIR)$(BLD)" clean distclean > $@.tmp.2 2>&1
+	$(MAKE) -j $(CPUS) -C "$(BLD_DIR)$(BLD)" $(MAKETARGET) >> $@.tmp.2 2>&1 && type="system-out" || type="failure"; \
 	cat $@.tmp.2; \
 	if [ "$$type" = "failure" ]; then \
 		echo "<failure type='buildFailed'>" >> $@.tmp; \
-		echo "Building $(UTIL) Failed"; \
+		echo "Building $(BLD) Failed"; \
 	else \
 		echo "<$$type>" >> $@.tmp; \
-		echo "Building $(UTIL) Succeeded"; \
+		echo "Building $(BLD) Succeeded"; \
 	fi; \
 	echo '<![CDATA[' >> $@.tmp; \
 	cat $@.tmp.2 >> $@.tmp; \
@@ -1031,7 +1031,7 @@ junit.xml:
 	rm -f $@.tmp.2
 	echo "</testcase>" >> $@.tmp
 	echo "</testsuite>" >> $@.tmp
-	mv $@.tmp "util/$(UTIL)/$@"
+	mv $@.tmp "$(BLD_DIR)$(BLD)/$@"
 	echo
 
 TOOLLIST= \
@@ -1050,5 +1050,7 @@ what-jenkins-does:
 	util/abuild/abuild -B -J $(if $(JENKINS_NOCCACHE),,-y) -c $(CPUS) -z -p $(JENKINS_PAYLOAD) -x -X $(top)/abuild-chromeos.xml
 	util/abuild/abuild -B -J $(if $(JENKINS_NOCCACHE),,-y) -c $(CPUS) -z -p $(JENKINS_PAYLOAD)
 	(cd payloads/libpayload; unset COREBOOT_BUILD_DIR; $(MAKE) $(if $(JENKINS_NOCCACHE),,CONFIG_LP_CCACHE=y) V=$(V) Q=$(Q) junit.xml)
-	$(foreach tool, $(TOOLLIST), $(MAKE) CPUS=$(CPUS) V=$(V) Q=$(Q) UTIL="$(tool)" MFLAGS= MAKEFLAGS= MAKETARGET= junit.xml; )
-	$(MAKE) CPUS=$(CPUS) V=$(V) Q=$(Q) UTIL="romcc" MFLAGS= MAKEFLAGS= MAKETARGET=test junit.xml
+	$(foreach tool, $(TOOLLIST), $(MAKE) CPUS=$(CPUS) V=$(V) Q=$(Q) BLD_DIR=util/ BLD="$(tool)" MFLAGS= MAKEFLAGS= MAKETARGET= junit.xml; )
+	$(MAKE) CPUS=$(CPUS) V=$(V) Q=$(Q) BLD_DIR=payloads/ BLD=nvramcui MFLAGS= MAKEFLAGS= MAKETARGET=all junit.xml
+	$(MAKE) CPUS=$(CPUS) V=$(V) Q=$(Q) BLD_DIR=payloads/ BLD=coreinfo MFLAGS= MAKEFLAGS= MAKETARGET=defaultbuild junit.xml
+	$(MAKE) CPUS=$(CPUS) V=$(V) Q=$(Q) BLD_DIR=util/ BLD=romcc MFLAGS= MAKEFLAGS= MAKETARGET=test junit.xml

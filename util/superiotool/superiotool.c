@@ -25,7 +25,7 @@
 #endif
 
 /* Command line options. */
-int dump = 0, verbose = 0, extra_dump = 0;
+int dump = 0, verbose = 0, extra_dump = 0, alternate_dump = 0;
 
 /* Global flag which indicates whether a chip was detected at all. */
 int chip_found = 0;
@@ -105,7 +105,7 @@ static void dump_regs(const struct superio_registers reg_table[],
 		      int i, int j, uint16_t port, uint8_t ldn_sel)
 {
 	int k;
-	const int16_t *idx;
+	const int16_t *idx, *def;
 
 	if (reg_table[i].ldn[j].ldn != NOLDN) {
 		printf("LDN 0x%02x", reg_table[i].ldn[j].ldn);
@@ -120,34 +120,58 @@ static void dump_regs(const struct superio_registers reg_table[],
 	}
 
 	idx = reg_table[i].ldn[j].idx;
+	def = reg_table[i].ldn[j].def;
 
-	printf("\nidx");
-	for (k = 0; idx[k] != EOT; k++) {
-		if (k && !(k % 8))
-			putchar(' ');
-		printf(" %02x", idx[k]);
-	}
+	if (alternate_dump) {
+		int skip_def = 0;
 
-	printf("\nval");
-	for (k = 0; idx[k] != EOT; k++) {
-		if (k && !(k % 8))
-			putchar(' ');
-		printf(" %02x", regval(port, idx[k]));
-	}
+		printf("\nidx   val    def\n");
 
-	printf("\ndef");
-	idx = reg_table[i].ldn[j].def;
-	for (k = 0; idx[k] != EOT; k++) {
-		if (k && !(k % 8))
-			putchar(' ');
-		if (idx[k] == NANA)
-			printf(" NA");
-		else if (idx[k] == RSVD)
-			printf(" RR");
-		else if (idx[k] == MISC)
-			printf(" MM");
-		else
+		for (k = 0; idx[k] != EOT; k++) {
+			printf("0x%02x: 0x%02x", idx[k], regval(port, idx[k]));
+
+			if (skip_def || def[k] == EOT) {
+				skip_def = 1;
+				printf("\n");
+				continue;
+			}
+			if (def[k] == NANA)
+				printf("   (NA)\n");
+			else if (def[k] == RSVD)
+				printf("   (RR)\n");
+			else if (def[k] == MISC)
+				printf("   (MM)\n");
+			else
+				printf("   (0x%02x)\n", def[k]);
+		}
+	} else {
+		printf("\nidx");
+		for (k = 0; idx[k] != EOT; k++) {
+			if (k && !(k % 8))
+				putchar(' ');
 			printf(" %02x", idx[k]);
+		}
+
+		printf("\nval");
+		for (k = 0; idx[k] != EOT; k++) {
+			if (k && !(k % 8))
+				putchar(' ');
+			printf(" %02x", regval(port, idx[k]));
+		}
+
+		printf("\ndef");
+		for (k = 0; def[k] != EOT; k++) {
+			if (k && !(k % 8))
+				putchar(' ');
+			if (def[k] == NANA)
+				printf(" NA");
+			else if (def[k] == RSVD)
+				printf(" RR");
+			else if (def[k] == MISC)
+				printf(" MM");
+			else
+				printf(" %02x", def[k]);
+		}
 	}
 	printf("\n");
 }
@@ -270,6 +294,7 @@ int main(int argc, char *argv[])
 	static const struct option long_options[] = {
 		{"dump",		no_argument, NULL, 'd'},
 		{"extra-dump",		no_argument, NULL, 'e'},
+		{"alternate-dump",	no_argument, NULL, 'a'},
 		{"list-supported",	no_argument, NULL, 'l'},
 		{"verbose",		no_argument, NULL, 'V'},
 		{"version",		no_argument, NULL, 'v'},
@@ -277,7 +302,7 @@ int main(int argc, char *argv[])
 		{0, 0, 0, 0}
 	};
 
-	while ((opt = getopt_long(argc, argv, "delVvh",
+	while ((opt = getopt_long(argc, argv, "dealVvh",
 				  long_options, &option_index)) != EOF) {
 		switch (opt) {
 		case 'd':
@@ -285,6 +310,9 @@ int main(int argc, char *argv[])
 			break;
 		case 'e':
 			extra_dump = 1;
+			break;
+		case 'a':
+			alternate_dump = 1;
 			break;
 		case 'l':
 			print_list_of_supported_chips();

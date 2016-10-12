@@ -353,8 +353,7 @@ static int i5000_amb_smbus_write(struct i5000_fbdimm *d,  int byte1, int byte2)
 
 	printk(BIOS_ERR, "SMBus write failed: %d/%d/%d, byte1 %02x, byte2 %02x status %04x\n",
 	       d->branch->num, d->channel->num, d->num, byte1, byte2, status);
-	for (;;);
-	return -1;
+	die("Error: SMBus write failed");
 }
 
 static int i5000_amb_smbus_read(struct i5000_fbdimm *d, int byte1, u8 *out)

@@ -1,0 +1,2 @@
+config BOARD_LENOVO_X1_CARBON_GEN1
+	bool "ThinkPad X1 carbon gen 1"

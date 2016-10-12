@@ -108,9 +108,10 @@ static __inline__ uint32_t inl(uint16_t port)
 }
 #endif
 
-#define USAGE "Usage: superiotool [-d] [-e] [-l] [-V] [-v] [-h]\n\n\
+#define USAGE "Usage: superiotool [-d] [-e] [-a] [-l] [-V] [-v] [-h]\n\n\
   -d | --dump            Dump Super I/O register contents\n\
   -e | --extra-dump      Dump secondary registers too (e.g. EC registers)\n\
+  -a | --alternate-dump  Use alternative dump format, more suitable for diff\n\
   -l | --list-supported  Show the list of supported Super I/O chips\n\
   -V | --verbose         Verbose mode\n\
   -v | --version         Show the superiotool version\n\

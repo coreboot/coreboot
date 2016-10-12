@@ -82,6 +82,7 @@ static struct param {
 	/* for linux payloads */
 	char *initrd;
 	char *cmdline;
+	int force;
 } param = {
 	/* All variables not listed are initialized as zero. */
 	.arch = CBFS_ARCHITECTURE_UNKNOWN,
@@ -935,7 +936,7 @@ static int cbfs_write(void)
 		return 1;
 	}
 
-	if (region_is_modern_cbfs(param.region_name)) {
+	if (!param.force && region_is_modern_cbfs(param.region_name)) {
 		ERROR("Target image region '%s' is a CBFS and must be manipulated using add and remove\n",
 							param.region_name);
 		return 1;
@@ -952,7 +953,7 @@ static int cbfs_write(void)
 		buffer_delete(&new_content);
 		return 1;
 	}
-	if (buffer_check_magic(&new_content, CBFS_FILE_MAGIC,
+	if (!param.force && buffer_check_magic(&new_content, CBFS_FILE_MAGIC,
 						strlen(CBFS_FILE_MAGIC))) {
 		ERROR("File '%s' appears to be a CBFS and cannot be inserted into a raw region\n",
 								param.filename);
@@ -1088,7 +1089,7 @@ static const struct command commands[] = {
 	{"read", "r:f:vh?", cbfs_read, true, false},
 	{"remove", "H:r:n:vh?", cbfs_remove, true, true},
 	{"update-fit", "H:r:n:x:vh?", cbfs_update_fit, true, true},
-	{"write", "r:f:udvh?", cbfs_write, true, true},
+	{"write", "r:f:Fudvh?", cbfs_write, true, true},
 };
 
 static struct option long_options[] = {
@@ -1104,6 +1105,7 @@ static struct option long_options[] = {
 	{"fill-upward",   no_argument,       0, 'u' },
 	{"flashmap",      required_argument, 0, 'M' },
 	{"fmap-regions",  required_argument, 0, 'r' },
+	{"force",         no_argument,       0, 'F' },
 	{"source-region", required_argument, 0, 'R' },
 	{"hash-algorithm",required_argument, 0, 'A' },
 	{"header-offset", required_argument, 0, 'H' },
@@ -1188,6 +1190,7 @@ static void usage(char *name)
 	     "  -T               Output top-aligned memory address\n"
 	     "  -u               Accept short data; fill upward/from bottom\n"
 	     "  -d               Accept short data; fill downward/from top\n"
+	     "  -F               Force action\n"
 	     "  -g               Generate potition and alignment arguments\n"
 	     "  -v               Provide verbose output\n"
 	     "  -h               Display this help message\n\n"
@@ -1232,7 +1235,7 @@ static void usage(char *name)
 			"Show the contents of the ROM\n"
 	     " extract [-r image,regions] [-m ARCH] -n NAME -f FILE        "
 			"Extracts a raw payload from ROM\n"
-	     " write -r image,regions -f file [-u | -d]                    "
+	     " write [-F] -r image,regions -f file [-u | -d]               "
 			"Write file into same-size [or larger] raw region\n"
 	     " read [-r fmap-region] -f file                               "
 			"Extract raw region contents into binary file\n"
@@ -1443,6 +1446,9 @@ int main(int argc, char **argv)
 				break;
 			case 'f':
 				param.filename = optarg;
+				break;
+			case 'F':
+				param.force = 1;
 				break;
 			case 'i':
 				param.u64val = strtoull(optarg, &suffix, 0);

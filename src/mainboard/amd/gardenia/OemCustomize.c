@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2015 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015-2016 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,90 +16,77 @@
 #include <northbridge/amd/pi/agesawrapper.h>
 
 #define FILECODE PROC_GNB_PCIE_FAMILY_0X15_F15PCIECOMPLEXCONFIG_FILECODE
-
 static const PCIe_PORT_DESCRIPTOR PortList [] = {
-	/* Initialize Port descriptor (PCIe port, Lanes 8-15, PCI Device Number 3, ...) */
+	/* Initialize Port descriptor (PCIe port, Lanes 7:4, D2F1) for x4 slot */
 	{
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 8, 15),
-		PCIE_PORT_DATA_INITIALIZER_V2 (PortEnabled, ChannelTypeExt6db, 3, 1,
-				HotplugDisabled,
-				PcieGenMaxSupported,
-				PcieGenMaxSupported,
-				AspmDisabled, 0x02, 0)
-	},
-
-	/* Initialize Port descriptor (PCIe port, Lanes 2, PCI Device Number 2, ...) */
-	{
-		0,
-		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 7, 7),
-		PCIE_PORT_DATA_INITIALIZER_V2 (PortEnabled, ChannelTypeExt6db, 2, 5,
-				HotplugDisabled,
-				PcieGenMaxSupported,
-				PcieGenMaxSupported,
-				AspmDisabled, 0x03, 0)
-	},
-	/* Initialize Port descriptor (PCIe port, Lanes 3, PCI Device Number 2, ...) */
-	{
-		0,
-		PCIE_ENGINE_DATA_INITIALIZER (PcieUnusedEngine, 6, 6),
-		PCIE_PORT_DATA_INITIALIZER_V2 (PortDisabled, ChannelTypeExt6db, 2, 4,
-				HotplugDisabled,
-				PcieGenMaxSupported,
-				PcieGenMaxSupported,
-				AspmDisabled, 0x04, 0)
-	},
-	/* Initialize Port descriptor (PCIe port, Lanes 4-7, PCI Device Number 2, ...) */
-	{
-		0,
-		PCIE_ENGINE_DATA_INITIALIZER (PcieUnusedEngine, 5, 5),
-		PCIE_PORT_DATA_INITIALIZER_V2 (PortEnabled, ChannelTypeExt6db, 2, 3,
-				HotplugDisabled,
-				PcieGenMaxSupported,
-				PcieGenMaxSupported,
-				AspmDisabled, 0x05, 0)
-	},
-	/* Initialize Port descriptor (PCIe port, Lanes 4-5, PCI Device Number 2, ...) */
-	{
-		0,
-		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 4, 5),
-		PCIE_PORT_DATA_INITIALIZER_V2 (PortEnabled, ChannelTypeExt6db, 2, 2,
-				HotplugDisabled,
-				PcieGenMaxSupported,
-				PcieGenMaxSupported,
-				AspmDisabled, 0x06, 0)
-	},
-	/* Initialize Port descriptor (PCIe port, Lanes 0-3, PCI Device Number 2, ...) */
-	{
-		DESCRIPTOR_TERMINATE_LIST, // Descriptor flags  !!!IMPORTANT!!! Terminate last element of array
-		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 0, 3),
+		PCIE_ENGINE_DATA_INITIALIZER (PcieUnusedEngine, 4, 7),
 		PCIE_PORT_DATA_INITIALIZER_V2 (PortEnabled, ChannelTypeExt6db, 2, 1,
 				HotplugDisabled,
 				PcieGenMaxSupported,
 				PcieGenMaxSupported,
-				AspmDisabled, 0x07, 0)
+				AspmL0sL1, 0x04, 0)
 	},
-
+	/* Initialize Port descriptor (PCIe port, Lanes 1:0, D2F2) for M.2 */
+	{
+		0,
+		PCIE_ENGINE_DATA_INITIALIZER (PcieUnusedEngine, 0, 1),
+		PCIE_PORT_DATA_INITIALIZER_V2 (PortDisabled, ChannelTypeExt6db, 2, 2,
+				HotplugDisabled,
+				PcieGenMaxSupported,
+				PcieGenMaxSupported,
+				AspmL0sL1, 0x17, 0)
+	},
+	{
+		0,
+		PCIE_ENGINE_DATA_INITIALIZER (PcieUnusedEngine, 1, 1),
+		PCIE_PORT_DATA_INITIALIZER_V2 (PortDisabled, ChannelTypeExt6db, 2, 3,
+				HotplugDisabled,
+				PcieGenMaxSupported,
+				PcieGenMaxSupported,
+				AspmL0sL1, 0x17, 0)
+	},
+	/* Initialize Port descriptor (PCIe port, Lane 2, D2F4) for x1 slot */
+	{
+		0,
+		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 2, 2),
+		PCIE_PORT_DATA_INITIALIZER_V2 (PortEnabled, ChannelTypeExt6db, 2, 4,
+				HotplugDisabled,
+				PcieGenMaxSupported,
+				PcieGenMaxSupported,
+				AspmL0sL1, 0x13, 0)
+	},
+	/* Initialize Port descriptor (PCIe port, Lane3, D2F5) for SD */
+	{
+		DESCRIPTOR_TERMINATE_LIST,
+		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 3, 3),
+		PCIE_PORT_DATA_INITIALIZER_V2 (PortEnabled, ChannelTypeExt6db, 2, 5,
+				HotplugDisabled,
+				PcieGenMaxSupported,
+				PcieGenMaxSupported,
+				AspmL0sL1, 0x16, 0)
+	},
+	/* Initialize Port descriptor (PCIe port, Lane 1, D2F3) for M.2 */
 };
 
 static const PCIe_DDI_DESCRIPTOR DdiList [] = {
-	/* DP0 */
+	/* DDI0 - eDP */
 	{
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 16, 19),
-		PCIE_DDI_DATA_INITIALIZER (ConnectorTypeDP, Aux1, Hdp1)
+		PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 8, 11),
+		PCIE_DDI_DATA_INITIALIZER (ConnectorTypeEDP, Aux1, Hdp1)
 	},
-	/* DP1 */
+	/* DDI1 - DP */
 	{
-		0, //DESCRIPTOR_TERMINATE_LIST,
-		PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 20, 23),
+		0,
+		PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 12, 15),
 		PCIE_DDI_DATA_INITIALIZER (ConnectorTypeDP, Aux2, Hdp2)
 	},
-	/* DP2 */
+	/* DDI2 - HDMI */
 	{
 		DESCRIPTOR_TERMINATE_LIST,
-		PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 24, 27),
-		PCIE_DDI_DATA_INITIALIZER (ConnectorTypeDP, Aux3, Hdp3)
+		PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 16, 19),
+		PCIE_DDI_DATA_INITIALIZER (ConnectorTypeHDMI, Aux3, Hdp3)
 	},
 };
 

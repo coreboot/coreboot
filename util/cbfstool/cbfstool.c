@@ -1191,7 +1191,7 @@ static void usage(char *name)
 	     "  -u               Accept short data; fill upward/from bottom\n"
 	     "  -d               Accept short data; fill downward/from top\n"
 	     "  -F               Force action\n"
-	     "  -g               Generate potition and alignment arguments\n"
+	     "  -g               Generate position and alignment arguments\n"
 	     "  -v               Provide verbose output\n"
 	     "  -h               Display this help message\n\n"
 	     "COMMANDs:\n"

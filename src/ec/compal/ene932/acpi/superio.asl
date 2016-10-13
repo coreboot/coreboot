@@ -16,6 +16,7 @@
 // Scope is \_SB.PCI0.LPCB
 
 Device (SIO) {
+	Name (_HID, EisaId("PNP0A05"))
 	Name (_UID, 0)
 	Name (_ADR, 0)
 

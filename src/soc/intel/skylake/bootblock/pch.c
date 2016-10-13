@@ -251,6 +251,27 @@ static void soc_config_rtc(void)
 			B_PCH_PCR_RTC_CONF_UCMOS_EN);
 }
 
+static void enable_heci(void)
+{
+	device_t dev = PCH_DEV_ME;
+	u8 pcireg;
+
+	/* Assign Resources to HECI1 */
+	/* Clear BIT 1-2 of Command Register */
+	pcireg = pci_read_config8(dev, PCI_COMMAND);
+	pcireg &= ~(PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
+	pci_write_config8(dev, PCI_COMMAND, pcireg);
+
+	/* Program Temporary BAR for HECI1 */
+	pci_write_config32(dev, PCI_BASE_ADDRESS_0, HECI1_BASE_ADDRESS);
+	pci_write_config32(dev, PCI_BASE_ADDRESS_1, 0x0);
+
+	/* Enable Bus Master and MMIO Space */
+	pcireg = pci_read_config8(dev, PCI_COMMAND);
+	pcireg |= PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY;
+	pci_write_config8(dev, PCI_COMMAND, pcireg);
+}
+
 void pch_early_init(void)
 {
 	/*
@@ -281,4 +302,6 @@ void pch_early_init(void)
 	enable_smbus();
 
 	soc_config_rtc();
+
+	enable_heci();
 }

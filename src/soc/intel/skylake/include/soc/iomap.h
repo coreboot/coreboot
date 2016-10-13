@@ -56,6 +56,8 @@
 
 #define GPIO_BASE_SIZE		0x10000
 
+#define HECI1_BASE_ADDRESS	0xfed1a000
+
 /*
  * I/O port address space
  */

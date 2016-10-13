@@ -275,7 +275,7 @@ static int intel_gma_init_lvds(struct northbridge_intel_i945_config *conf,
 	write32(pmmio + VBLANK(1), ((vactive + bottom_border + vblank - 1) << 16)
 		| (vactive + bottom_border - 1));
 	write32(pmmio + VSYNC(1),
-		(vactive + bottom_border + vfront_porch + vsync - 1)
+		((vactive + bottom_border + vfront_porch + vsync - 1) << 16)
 		| (vactive + bottom_border + vfront_porch - 1));
 
 #if !IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)

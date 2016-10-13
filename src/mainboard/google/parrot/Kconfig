@@ -14,12 +14,11 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select MAINBOARD_HAS_CHROMEOS
 	select MAINBOARD_HAS_LPC_TPM
 	select INTEL_INT15
+	# Workaround for EC/KBC IRQ1.
+	select SERIRQ_CONTINUOUS_MODE
 
 config CHROMEOS
 	select VBOOT_VBNV_CMOS
-
-	# Workaround for EC/KBC IRQ1.
-	select SERIRQ_CONTINUOUS_MODE
 
 config MAINBOARD_DIR
 	string

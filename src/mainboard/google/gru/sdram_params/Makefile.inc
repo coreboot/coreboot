@@ -15,11 +15,8 @@
 
 sdram-params :=
 
-sdram-params += sdram-lpddr3-hynix-4GB-200
 sdram-params += sdram-lpddr3-hynix-4GB-666
-sdram-params += sdram-lpddr3-hynix-4GB-666-no-odt
 sdram-params += sdram-lpddr3-hynix-4GB-800
-sdram-params += sdram-lpddr3-hynix-4GB-800-no-odt
 sdram-params += sdram-lpddr3-hynix-4GB-933
 
 $(foreach params,$(sdram-params), \

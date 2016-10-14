@@ -15,7 +15,7 @@ chip soc/intel/apollolake
 	# GPIO for PERST_0
 	# If the Board has PERST_0 signal, assign the GPIO
 	# If the Board does not have PERST_0, assign GPIO_PRT0_UDEF
-	register "prt0_gpio" = "GPIO_PRT0_UDEF"
+	register "prt0_gpio" = "GPIO_122"
 
 	# EMMC TX DATA Delay 1
 	# Refer to EDS-Vol2-22.3.

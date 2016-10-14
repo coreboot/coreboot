@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2013 Sage Electronic Engineering, LLC
+ * Copyright (C) 2016 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -92,40 +93,5 @@ Device(PBR8) {
 	Method(_PRT,0) {
 		If(PMOD){ Return(APS8) }	/* APIC mode */
 		Return (PS8)			/* PIC Mode */
-	} /* end _PRT */
-} /* end PBR8 */
-
-/* GFX 1 */
-Device(PBR9) {
-	Name(_ADR, 0x00030002)
-} /* end PBR8 */
-
-/* GFX 2 */
-Device(PBRA) {
-	Name(_ADR, 0x00030003)
-	Name(_PRW, Package() {0x18, 4})
-	Method(_PRT,0) {
-		If(PMOD){ Return(APSA) }	/* APIC mode */
-		Return (PSA)			/* PIC Mode */
-	} /* end _PRT */
-} /* end PBR8 */
-
-/* GFX 3 */
-Device(PBRB) {
-	Name(_ADR, 0x00030004)
-	Name(_PRW, Package() {0x18, 4})
-	Method(_PRT,0) {
-		If(PMOD){ Return(APSB) }	/* APIC mode */
-		Return (PSB)			/* PIC Mode */
-	} /* end _PRT */
-} /* end PBR8 */
-
-/* GFX 4 */
-Device(PBRC) {
-	Name(_ADR, 0x00030005)
-	Name(_PRW, Package() {0x18, 4})
-	Method(_PRT,0) {
-		If(PMOD){ Return(APSC) }	/* APIC mode */
-		Return (PSC)			/* PIC Mode */
 	} /* end _PRT */
 } /* end PBR8 */

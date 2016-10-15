@@ -9,12 +9,12 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:      AGESA
  * @e sub-project:  CPU
- * @e \$Revision: 309899 $   @e \$Date: 2014-12-23 02:21:13 -0600 (Tue, 23 Dec 2014) $
+ * @e \$Revision$   @e \$Date$
  *
  */
  /*****************************************************************************
  *
- * Copyright (c) 2008 - 2015, Advanced Micro Devices, Inc.
+ * Copyright (c) 2008 - 2016, Advanced Micro Devices, Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -429,8 +429,9 @@ typedef struct {
 #define CPUID_EXT_FAMILY_MASK    0x0FF00000ul
 
 #define CZ_SOCKET_FP4       0
+#define CZ_SOCKET_AM4       2
 #define ST_SOCKET_FP4       0
-#define ST_SOCKET_FT4       3
+#define ST_SOCKET_FT4       4
 #define SOCKET_IGNORE       0xF
 
 #define LAPIC_BASE_ADDR_MASK    0x0000FFFFFFFFF000ull

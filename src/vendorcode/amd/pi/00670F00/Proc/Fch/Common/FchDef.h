@@ -9,12 +9,12 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:     AGESA
  * @e sub-project: FCH
- * @e \$Revision: 309090 $   @e \$Date: 2014-12-09 12:28:05 -0600 (Tue, 09 Dec 2014) $
+ * @e \$Revision$   @e \$Date$
  *
  */
  /*****************************************************************************
  *
- * Copyright (c) 2008 - 2015, Advanced Micro Devices, Inc.
+ * Copyright (c) 2008 - 2016, Advanced Micro Devices, Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -72,6 +72,12 @@ VOID          GetFchAcpiMmioBase (OUT UINT32 *AcpiMmioBase, IN AMD_CONFIG_PARAMS
 VOID          GetFchAcpiPmBase (OUT  UINT16 *AcpiPmBase, IN AMD_CONFIG_PARAMS *StdHeader);
 UINT8         ReadFchSleepType (IN AMD_CONFIG_PARAMS *StdHeader);
 UINT8         ReadFchChipsetRevision (IN AMD_CONFIG_PARAMS *StdHeader);
+BOOLEAN       FchCheckBR_ST (IN AMD_CONFIG_PARAMS *StdHeader);
+BOOLEAN       FchCheckBR (IN AMD_CONFIG_PARAMS *StdHeader);
+BOOLEAN       FchCheckST (IN AMD_CONFIG_PARAMS *StdHeader);
+BOOLEAN       FchCheckCZ (IN AMD_CONFIG_PARAMS *StdHeader);
+BOOLEAN       FchCheckPackageAM4 (IN AMD_CONFIG_PARAMS *StdHeader);
+UINT64        FchGetScratchFuse (IN AMD_CONFIG_PARAMS *StdHeader);
 
 ///
 /// Fch Ab Routines

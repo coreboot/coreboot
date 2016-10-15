@@ -9,12 +9,12 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:      AGESA
  * @e sub-project:  OPTION
- * @e \$Revision: 309090 $   @e \$Date: 2014-12-09 12:28:05 -0600 (Tue, 09 Dec 2014) $
+ * @e \$Revision$   @e \$Date$
  *
  */
  /*****************************************************************************
  *
- * Copyright (c) 2008 - 2015, Advanced Micro Devices, Inc.
+ * Copyright (c) 2008 - 2016, Advanced Micro Devices, Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -202,6 +202,19 @@
 ///
 #define LAYERS_4     0x0
 #define LAYERS_6     0x1
+/// DQS Routing Type
+///
+#define DQS_ROUTING_TREE          0x1      ///< Tree topology is applied to DQS routing
+#define DQS_ROUTING_DAISY_CHAIN   0x2      ///< Daisy chain topology is applied to DQS routing
+
+///
+/// DataMaskMbTypes
+/// Motherboard type for processor Data Mask pins.
+///
+#define DATAMASK_NO_CONNECT  0x00   ///< No connect
+#define DATAMASK_DM_ROUTING  0x01   ///< Pins are routed per DM rules
+#define DATAMASK_DQS_ROUTING 0x02   ///< Pins are routed per DQS rules
+
 /*----------------------------------------------------------------------------------------
  *
  * Platform Specific Overriding Table Definitions
@@ -230,6 +243,10 @@
 #define PSO_CPU_FAMILY_TO_OVERRIDE 18     ///< CPU family signature to tell following PSO macros are CPU family dependent
 #define PSO_MAX_SOLDERED_DOWN_DIMMS 19    ///< Max Soldered-down Dimms per channel
 #define PSO_MOTHER_BOARD_LAYERS 20        ///< Mother board layer design
+#define PSO_ON_DIMM_THERMAL_CONTROL 21    ///< On DIMM thermal override
+#define PSO_DATA_MASK_MB_TYPE 22          ///< Motherboard type for processor Data Mask pins.
+#define PSO_DQS_ROUTING_TYPE 23           ///< Dqs Routing Type
+#define PSO_BYPASSED_DIMM_SLOTS 24        ///< Number of bypassed Dimm slots
 
 /*----------------------------------
  * CONDITIONAL PSO SPECIFIC ENTRIES
@@ -303,6 +320,9 @@
 #define NUMBER_OF_SOLDERED_DOWN_DIMMS_SUPPORTED(SocketID, ChannelID, NumberOfSolderedDownDimmsPerChannel) \
   PSO_MAX_SOLDERED_DOWN_DIMMS, 4, SocketID, ChannelID, ALL_DIMMS, NumberOfSolderedDownDimmsPerChannel
 
+#define NUMBER_OF_BYPASSED_DIMM_SLOTS(SocketID, ChannelID, NumberOfBypassedDimmSlots) \
+  PSO_BYPASSED_DIMM_SLOTS, 4, SocketID, ChannelID, ALL_DIMMS, NumberOfBypassedDimmSlots
+
 #define NUMBER_OF_CHIP_SELECTS_SUPPORTED(SocketID, ChannelID, NumberOfChipSelectsPerChannel) \
   PSO_MAX_CHIPSELS, 4, SocketID, ChannelID, ALL_DIMMS, NumberOfChipSelectsPerChannel
 
@@ -341,6 +361,15 @@
 
 #define MOTHER_BOARD_LAYERS(Layers) \
   PSO_MOTHER_BOARD_LAYERS, 4, ANY_SOCKET, ANY_CHANNEL, ALL_DIMMS, Layers
+
+#define ON_DIMM_THERMAL_CONTROL(SocketID, ChannelID, EnableDisable) \
+  PSO_ON_DIMM_THERMAL_CONTROL, 4, SocketID, ChannelID, ALL_DIMMS, EnableDisable
+
+#define DATA_MASK_MB_TYPE(SocketID, ChannelID, DataMaskMbType) \
+  PSO_DATA_MASK_MB_TYPE, 4, SocketID, ChannelID, ALL_DIMMS, DataMaskMbType
+
+#define DQS_ROUTING_TYPE(Type) \
+  PSO_DQS_ROUTING_TYPE, 4, ANY_SOCKET, ANY_CHANNEL, ALL_DIMMS, Type
 
 #define MAX_NUMBER_PSO_TABLES 13
 /*----------------------------------------------------------------------------------------

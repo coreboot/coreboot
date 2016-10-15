@@ -9,12 +9,12 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:     AGESA
  * @e sub-project: FCH
- * @e \$Revision: 314274 $   @e \$Date: 2015-03-08 03:53:49 -0500 (Sun, 08 Mar 2015) $
+ * @e \$Revision$   @e \$Date$
  *
  */
  /*****************************************************************************
  *
- * Copyright (c) 2008 - 2015, Advanced Micro Devices, Inc.
+ * Copyright (c) 2008 - 2016, Advanced Micro Devices, Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -347,7 +347,7 @@
 #define FCH_IDE_VID                  AMD_FCH_VID      // Dev 20 Func 1
 #define FCH_IDE_DID                  0x780C
 #define FCH_AZALIA_VID               AMD_FCH_VID      // Dev 20 Func 2
-#define FCH_AZALIA_DID               0x157a
+#define FCH_AZALIA_DID               0x780D
 #define FCH_LPC_VID                  AMD_FCH_VID      // Dev 20 Func 3
 #define FCH_LPC_DID                  0x780E
 #define FCH_PCIB_VID                 AMD_FCH_VID      // Dev 20 Func 4
@@ -415,6 +415,7 @@
 #define FCH_OHCI3_BUS        0
 #define FCH_OHCI3_DEV        22
 #define FCH_OHCI3_FUNC       0
+#define EHCI_BUS_DEV_FUN       ((0x12 << 3) + 0)    // PORT 0-3
 #define USB1_EHCI_BUS_DEV_FUN       ((0x12 << 3) + 2)    // PORT 0-4
 #define FCH_EHCI1_BUS        0
 #define FCH_EHCI1_DEV        18
@@ -435,9 +436,9 @@
 #define FCH_IDE_BUS          0
 #define FCH_IDE_DEV          20
 #define FCH_IDE_FUNC         1
-#define AZALIA_BUS_DEV_FUN          ((0x9 << 3) + 2)
+#define AZALIA_BUS_DEV_FUN          ((0x14 << 3) + 2)
 #define FCH_AZALIA_BUS       0
-#define FCH_AZALIA_DEV       9
+#define FCH_AZALIA_DEV       20
 #define FCH_AZALIA_FUNC      2
 #define LPC_BUS_DEV_FUN             ((0x14 << 3) + 3)
 #define FCH_LPC_BUS          0
@@ -856,7 +857,7 @@
 
 
 // USB ports
-#define NUM_USB1_PORTS           5
+#define NUM_USB1_PORTS           4
 #define NUM_USB2_PORTS           5
 #define NUM_USB3_PORTS           4
 #define NUM_USB4_PORTS           2
@@ -2041,8 +2042,10 @@ FCH_MISC_REGF0                   EQU     0F0h
 //    offset : 0x1C00
 //
 #define FCH_XHC_PMx00_Configure0             0xFED81C00ul        //
+#define FCH_XHC_PMx00_Configure0_U3pPllReset     BIT8
 #define FCH_XHC_PMx00_Configure0_U3P_D3Cold_PWRDN     BIT15
 #define FCH_XHC_PMx00_Configure0_XHC_SMIB_EN          BIT21
+
 #define FCH_XHC_PMx10_Xhc_Memory_Configure             0xFED81C10ul        //
 #define FCH_XHC_PMx18_Usb20_Link_Status             0xFED81C18ul        //
 #define FCH_XHC_PMx20_Usb20_Wake_Control             0xFED81C20ul        //
@@ -2052,6 +2055,7 @@ FCH_MISC_REGF0                   EQU     0F0h
 #define FCH_XHC_PMx30_Xhci10_Enable             0xFED81C30ul        //
 #define FCH_XHC_PMx60_xHC_Battery_Charger_Enable             0xFED81C60ul        //
 
+#define FCH_XHC_PMx88_SSPHY_Common_Clock_Control_Status             0xFED81C88ul        //
 
 
 
@@ -2506,6 +2510,7 @@ FCH_AOAC_REG4X-7x State field
 #define FCH_XHCI_IND_REG100           0x100 //
 #define FCH_XHCI_IND_REG120           0x120 //
 #define FCH_XHCI_IND_REG128           0x128 //
+#define FCH_XHCI_IND_REG140           0x140 //
 #define FCH_XHCI_IND_REG200           0x200 //
 #define FCH_XHCI_IND_REG240           0x240 //
 #define FCH_XHCI_IND_REG280           0x280 //

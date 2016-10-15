@@ -9,11 +9,11 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:      AGESA
  * @e sub-project:  Include
- * @e \$Revision: 314282 $   @e \$Date: 2015-03-08 04:44:40 -0500 (Sun, 08 Mar 2015) $
+ * @e \$Revision$   @e \$Date$
  */
  /*****************************************************************************
  *
- * Copyright (c) 2008 - 2015, Advanced Micro Devices, Inc.
+ * Copyright (c) 2008 - 2016, Advanced Micro Devices, Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -610,8 +610,8 @@ typedef struct {
                                                            * @li @b Bit31 - last descriptor in topology
                                                            */
   IN       UINT32               SocketId;                 ///< Socket Id
-  IN       const PCIe_PORT_DESCRIPTOR *PciePortList;      ///< Pointer to array of PCIe port descriptors or NULL (Last element of array must be terminated with DESCRIPTOR_TERMINATE_LIST).
-  IN       const PCIe_DDI_DESCRIPTOR  *DdiLinkList;       ///< Pointer to array DDI link descriptors (Last element of array must be terminated with DESCRIPTOR_TERMINATE_LIST).
+  IN       PCIe_PORT_DESCRIPTOR *PciePortList;            ///< Pointer to array of PCIe port descriptors or NULL (Last element of array must be terminated with DESCRIPTOR_TERMINATE_LIST).
+  IN       PCIe_DDI_DESCRIPTOR  *DdiLinkList;             ///< Pointer to array DDI link descriptors (Last element of array must be terminated with DESCRIPTOR_TERMINATE_LIST).
   IN       VOID                 *Reserved;                ///< Reserved for future use
 } PCIe_COMPLEX_DESCRIPTOR;
 
@@ -759,6 +759,7 @@ typedef enum {
 #define EXT_DISPLAY_PATH_CAPS_DP_FIXED_VS_EN             0x02         ///< BIT[1] VBIOS will always output fixed voltage swing during DP link training
 #define EXT_DISPLAY_PATH_CAPS_HDMI20_PI3EQX1204          0x04         ///< BIT[2] HDMI 2.0 connector
 #define EXT_DISPLAY_PATH_CAPS_HDMI20_TISN65DP159RSBT     0x08         ///< BIT[3] HDMI 2.0 connector
+#define EXT_DISPLAY_PATH_CAPS_HDMI20_PARADE_PS175        0x0C         ///< BIT[3:2] DP -> HDMI recoverter chip
 
 /// DP receiver definitions with fixed voltage swing
 typedef enum {
@@ -828,7 +829,7 @@ mInitOffsetCancellation, mDFEControl, mLEQControl, mDynamicOffsetCalibration, mF
 {mPortPresent, mChannelType, mDevAddress, mDevFunction, mMaxLinkSpeed, mAspm, mHotplug, mResetId, {0, mMaxLinkCap, 0, mClkPmSupport}, {0, 0, 0}, EndpointDetect, \
 {mInitOffsetCancellation, mDFEControl, mLEQControl, mDynamicOffsetCalibration, mFOMCalculation, mPIOffsetCalibration}}
 #define  PCIE_DDI_DATA_INITIALIZER(mConnectorType, mAuxIndex, mHpdIndex ) \
-{mConnectorType, mAuxIndex, mHpdIndex, {{0}, {0}}, 0, 0}
+{mConnectorType, mAuxIndex, mHpdIndex, {0, 0}, 0, 0}
 #define  PCIE_DDI_DATA_INITIALIZER_V1(mConnectorType, mAuxIndex, mHpdIndex, mMapping0, mMapping1, mPNInversion) \
 {mConnectorType, mAuxIndex, mHpdIndex, {mMapping0, mMapping1}, mPNInversion, 0}
 #define  PCIE_DDI_DATA_INITIALIZER_V2(mConnectorType, mAuxIndex, mHpdIndex, mMapping0, mMapping1, mPNInversion, mFlags) \
@@ -984,6 +985,22 @@ typedef struct {
   IN UINT8  ExtHDMIReDrvSlvAddr;             ///< @BldCfgItem{BLDCFG_EXT_HDMI_RE_DRIVE_SLAVE_ADDR}
   IN UINT8  ExtHDMIReDrvRegNum;              ///< @BldCfgItem{BLDCFG_EXT_HDMI_RE_DRIVE_REG_NUM}
   IN UINT64 ExtHDMIRegSetting;               ///< @BldCfgItem{BLDCFG_EXT_HDMI_RE_DRIVE_REG_INFO}
+  IN UINT8  DP0ExtHDMIReDrvSlvAddr;          ///< @BldCfgItem{BLDCFG_DP0_EXT_HDMI_RE_DRIVE_SLAVE_ADDR}
+  IN UINT8  DP0ExtHDMIReDrvRegNum;           ///< @BldCfgItem{BLDCFG_DP0_EXT_HDMI_RE_DRIVE_REG_NUM}
+  IN UINT64 DP0ExtHDMIRegSetting;            ///< @BldCfgItem{BLDCFG_DP0_EXT_HDMI_RE_DRIVE_REG_INFO}
+  IN UINT8  DP1ExtHDMIReDrvSlvAddr;          ///< @BldCfgItem{BLDCFG_DP1_EXT_HDMI_RE_DRIVE_SLAVE_ADDR}
+  IN UINT8  DP1ExtHDMIReDrvRegNum;           ///< @BldCfgItem{BLDCFG_DP1_EXT_HDMI_RE_DRIVE_REG_NUM}
+  IN UINT64 DP1ExtHDMIRegSetting;            ///< @BldCfgItem{BLDCFG_DP1_EXT_HDMI_RE_DRIVE_REG_INFO}
+  IN UINT8  DP2ExtHDMIReDrvSlvAddr;          ///< @BldCfgItem{BLDCFG_DP2_EXT_HDMI_RE_DRIVE_SLAVE_ADDR}
+  IN UINT8  DP2ExtHDMIReDrvRegNum;           ///< @BldCfgItem{BLDCFG_DP2_EXT_HDMI_RE_DRIVE_REG_NUM}
+  IN UINT64 DP2ExtHDMIRegSetting;            ///< @BldCfgItem{BLDCFG_DP2_EXT_HDMI_RE_DRIVE_REG_INFO}
+  IN UINT8  DP0ExtHDMI6GRegNum;              ///< @BldCfgItem{BLDCFG_DP0_EXT_HDMI_6G_REG_NUM}
+  IN UINT64 DP0ExtHDMI6GhzRegSetting;        ///< @BldCfgItem{BLDCFG_DP0_EXT_HDMI_6Ghz_REG_INFO}
+  IN UINT8  DP1ExtHDMI6GRegNum;              ///< @BldCfgItem{BLDCFG_DP1_EXT_HDMI_6G_REG_NUM}
+  IN UINT64 DP1ExtHDMI6GhzRegSetting;        ///< @BldCfgItem{BLDCFG_DP1_EXT_HDMI_6Ghz_REG_INFO}
+  IN UINT8  DP2ExtHDMI6GRegNum;              ///< @BldCfgItem{BLDCFG_DP2_EXT_HDMI_6G_REG_NUM}
+  IN UINT64 DP2ExtHDMI6GhzRegSetting;        ///< @BldCfgItem{BLDCFG_DP2_EXT_HDMI_6Ghz_REG_INFO}
+
 } GNB_ENV_CONFIGURATION;
 
 /// Configuration settings for GNB.
@@ -1002,7 +1019,7 @@ typedef struct {
 
 /// GNB configuration info
 typedef struct {
-  IN       const PCIe_COMPLEX_DESCRIPTOR  *PcieComplexList;  /**< Pointer to array of structures describe PCIe topology on each processor package or NULL.
+  IN       PCIe_COMPLEX_DESCRIPTOR  *PcieComplexList;  /**< Pointer to array of structures describe PCIe topology on each processor package or NULL.
                                                         * Last element of array must be terminated with DESCRIPTOR_TERMINATE_LIST
                                                         * Example of topology definition for single socket system:
                                                         * @code
@@ -1243,7 +1260,8 @@ typedef enum {
 /// UMA Version
 typedef enum {
   UMA_LEGACY = 0,              ///< UMA Legacy Version
-  UMA_NON_LEGACY = 1           ///< UMA Non Legacy Version
+  UMA_NON_LEGACY = 1,          ///< UMA Non Legacy Version
+  UMA_HSFB = 2                 ///< UMA HSFB Version
 } UMA_VERSION;
 
 /// UMA Mode
@@ -1267,6 +1285,14 @@ typedef enum {
   PMU_TRAIN_1D_2D = 2,             ///< PMU 1D and 2D Training
   PMU_TRAIN_AUTO = 3               ///< Auto - PMU Training depend on configuration
 } PMU_TRAIN_MODE;
+
+/// BankSwapOnly Mode
+typedef enum {
+  BANK_SWAP_ONLY_DISABLED = 0,      ///< Disable Bank Swap Only
+  BANK_SWAP_ONLY_ENABLED = 1,       ///< Enable Bank Swap Only
+  BANK_SWAP_ONLY_AUTO = 2           ///< Auto - BankSwapOnly depending on family specific configuration
+} BANK_SWAP_ONLY_MODE;
+
 
 ///  The possible DRAM prefetch mode settings.
 typedef enum  {
@@ -1379,7 +1405,7 @@ typedef struct _SPD_DEF_STRUCT {
   IN UINT8   PageAddress;  ///< Indicates the 256 Byte EE Page the data belongs to
                            ///<      0 = Lower Page
                            ///<      1 = Upper Page (DDR4 Only)
-  IN UINT8 Data[256];      ///< Buffer for 256 Bytes of SPD data from DIMM
+  IN UINT8 Data[512];      ///< Buffer for 256 Bytes of SPD data from DIMM
 } SPD_DEF_STRUCT;
 
 //-----------------------------------------------------------------------------
@@ -1646,6 +1672,8 @@ typedef struct _CH_TIMING_STRUCT {
   OUT UINT16  MaxRdLat3;          ///< Max Read Latency 3
   OUT UINT8   WrDatGrossH;        ///< Temporary variables must be removed
   OUT UINT8   DqsRcvEnGrossL;     ///< Temporary variables must be removed
+  OUT UINT8   RdOdtOnDuration;    ///< RdOdtOnDuration
+  OUT UINT8   WrOdtOnDuration;    ///< WrOdtOnDuration
 } CH_TIMING_STRUCT;
 
 ///
@@ -2304,7 +2332,7 @@ typedef union {
 #define MEM_ERROR_HEAP_ALLOCATE_FOR_RECEIVED_DATA     0x04051F00ul    ///< Heap allocation error for RECEIVED_DATA during parallel training
 #define MEM_ERROR_HEAP_ALLOCATE_FOR_S3_SPECIAL_CASE_REGISTERS     0x04061F00ul   ///< Heap allocation error for S3 "SPECIAL_CASE_REGISTER"
 #define MEM_ERROR_HEAP_ALLOCATE_FOR_TRAINING_DATA     0x04071F00ul    ///< Heap allocation error for Training Data
-#define MEM_ERROR_HEAP_ALLOCATE_FOR_IDENTIFY_DIMM_MEM_NB_BLOCK    0x04081F00ul   ///< Heap allocation error for  DIMM Identify "MEM_NB_BLOCK
+#define MEM_ERROR_HEAP_ALLOCATE_FOR_IDENTIFY_DIMM_MEM_NB_BLOCK    0x04081F00ul   ///< Heap allocation error for  DIMM Identify "MEM_NB_BLOCK"
 #define MEM_ERROR_NO_CONSTRUCTOR_FOR_IDENTIFY_DIMM    0x04022300ul    ///< No Constructor for DIMM Identify
 #define MEM_ERROR_VDDIO_UNSUPPORTED                   0x04022500ul    ///< VDDIO of the dimms on the board is not supported
 #define MEM_ERROR_VDDPVDDR_UNSUPPORTED                0x04032500ul    ///< VDDP/VDDR value indicated by the platform BIOS is not supported
@@ -3035,12 +3063,29 @@ typedef struct {
   IN UINT8  CfgExtHDMIReDrvSlvAddr;               ///< @BldCfgItem{BLDCFG_EXT_HDMI_RE_DRIVE_SLAVE_ADDR}
   IN UINT8  CfgExtHDMIReDrvRegNum;                ///< @BldCfgItem{BLDCFG_EXT_HDMI_RE_DRIVE_REG_NUM}
   IN UINT64 CfgExtHDMIRegSetting;                 ///< @BldCfgItem{BLDCFG_EXT_HDMI_RE_DRIVE_REG_INFO}
+  IN UINT8  CfgDP0ExtHDMIReDrvSlvAddr;            ///< @BldCfgItem{BLDCFG_DP0_EXT_HDMI_RE_DRIVE_SLAVE_ADDR}
+  IN UINT8  CfgDP0ExtHDMIReDrvRegNum;             ///< @BldCfgItem{BLDCFG_DP0_EXT_HDMI_RE_DRIVE_REG_NUM}
+  IN UINT64 CfgDP0ExtHDMIRegSetting;              ///< @BldCfgItem{BLDCFG_DP0_EXT_HDMI_RE_DRIVE_REG_INFO}
+  IN UINT8  CfgDP1ExtHDMIReDrvSlvAddr;            ///< @BldCfgItem{BLDCFG_DP1_EXT_HDMI_RE_DRIVE_SLAVE_ADDR}
+  IN UINT8  CfgDP1ExtHDMIReDrvRegNum;             ///< @BldCfgItem{BLDCFG_DP1_EXT_HDMI_RE_DRIVE_REG_NUM}
+  IN UINT64 CfgDP1ExtHDMIRegSetting;              ///< @BldCfgItem{BLDCFG_DP1_EXT_HDMI_RE_DRIVE_REG_INFO}
+  IN UINT8  CfgDP2ExtHDMIReDrvSlvAddr;            ///< @BldCfgItem{BLDCFG_DP2_EXT_HDMI_RE_DRIVE_SLAVE_ADDR}
+  IN UINT8  CfgDP2ExtHDMIReDrvRegNum;             ///< @BldCfgItem{BLDCFG_DP2_EXT_HDMI_RE_DRIVE_REG_NUM}
+  IN UINT64 CfgDP2ExtHDMIRegSetting;              ///< @BldCfgItem{BLDCFG_DP2_EXT_HDMI_RE_DRIVE_REG_INFO}
+  IN UINT8  CfgDP0ExtHDMI6GRegNum;                ///< @BldCfgItem{BLDCFG_DP0_EXT_HDMI_6G_REG_NUM}
+  IN UINT64 CfgDP0ExtHDMI6GhzRegSetting;          ///< @BldCfgItem{BLDCFG_DP0_EXT_HDMI_6Ghz_REG_INFO}
+  IN UINT8  CfgDP1ExtHDMI6GRegNum;                ///< @BldCfgItem{BLDCFG_DP1_EXT_HDMI_6G_REG_NUM}
+  IN UINT64 CfgDP1ExtHDMI6GhzRegSetting;          ///< @BldCfgItem{BLDCFG_DP1_EXT_HDMI_6Ghz_REG_INFO}
+  IN UINT8  CfgDP2ExtHDMI6GRegNum;                ///< @BldCfgItem{BLDCFG_DP2_EXT_HDMI_6G_REG_NUM}
+  IN UINT64 CfgDP2ExtHDMI6GhzRegSetting;          ///< @BldCfgItem{BLDCFG_DP2_EXT_HDMI_6Ghz_REG_INFO}
   IN UINT32 CfgThermCtlLimit;                     ///< @BldCfgItem{BLDCFG_THERMCTL_LIMIT}
-  IN UINT32 CfgCodecVerbTable;                    ///< @BldCfgItem{BLDCFG_CODEC_VERB_TABLE}
+  IN UINT64 CfgCodecVerbTable;                    ///< @BldCfgItem{BLDCFG_CODEC_VERB_TABLE}
   IN UINT32 CfgGnbAzSsid;                         ///< @BldCfgItem{BLDCFG_GNB_AZ_SSID}
   IN UINT16  CfgCustomVddioVoltage;               ///< Custom VDDIO voltage
                                                   ///< @BldCfgItem{BLDCFG_CUSTOM_VDDIO_VOLTAGE}
   IN BOOLEAN CfgAcpPowerGating;                   ///< @BldCfgItem{BLDCFG_ACP_POWER_GATING}
+  IN BOOLEAN CfgSmuOverclocking;                  ///< @BldCfgItem{BLDCFG_SMU_OVERCLOCKING}
+  IN BOOLEAN CfgSmuCPUIdleActivityMonitorEnable;  ///< @BldCfgItem{BLDCFG_CPU_IDLE_ACTIVITY_MONITOR}
   IN BOOLEAN Reserved;                            ///< reserved...
 } BUILD_OPT_CFG;
 
@@ -3123,6 +3168,8 @@ typedef struct _PLATFORM_CONFIGURATION {
   IN UINT32              GnbAzI2sBusSelect;           ///< @BldCfgItem{BLDCFG_GNB_AZ_I2SBUS_SELECT}
   IN UINT32              GnbAzI2sBusPinConfig;        ///< @BldCfgItem{BLDCFG_GNB_AZ_I2SBUS_PIN_CONFIG}
   IN BOOLEAN             AcpPowerGating;              ///< @BldCfgItem{BLDCFG_ACP_POWER_GATING}
+  IN BOOLEAN             SmuOverclocking;             ///< @BldCfgItem{BLDCFG_SMU_OVERCLOCKING}
+  IN BOOLEAN             SmuCPUIdleActivityMonitorEnable; ///< @BldCfgItem{BLDCFG_CPU_IDLE_ACTIVITY_MONITOR}
 } PLATFORM_CONFIGURATION;
 
 
@@ -3316,7 +3363,7 @@ typedef struct {
   OUT UINT16                    Speed;                  ///< Identifies the speed of the device, in megahertz (MHz).
   OUT UINT64                    ManufacturerIdCode;     ///< Manufacturer ID code.
   OUT CHAR8                     SerialNumber[9];        ///< Serial Number.
-  OUT CHAR8                     PartNumber[19];         ///< Part Number.
+  OUT CHAR8                     PartNumber[21];         ///< Part Number.
   OUT UINT8                     Attributes;             ///< Bits 7-4: Reserved, Bits 3-0: rank.
   OUT UINT32                    ExtSize;                ///< Extended Size.
   OUT UINT16                    ConfigSpeed;            ///< Configured memory clock speed
@@ -3341,7 +3388,7 @@ typedef struct {
   OUT UINT16                    Speed;                  ///< Identifies the speed of the device, in megahertz (MHz).
   OUT UINT64                    ManufacturerIdCode;     ///< Manufacturer ID code.
   OUT UINT8                     SerialNumber[4];        ///< Serial Number.
-  OUT UINT8                     PartNumber[18];         ///< Part Number.
+  OUT UINT8                     PartNumber[21];         ///< Part Number.
   OUT UINT8                     Attributes;             ///< Bits 7-4: Reserved, Bits 3-0: rank.
   OUT UINT32                    ExtSize;                ///< Extended Size.
   OUT UINT16                    ConfigSpeed;            ///< Configured memory clock speed

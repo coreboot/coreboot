@@ -8,11 +8,11 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:      AGESA
  * @e sub-project:  PSP
- * @e \$Revision: 309090 $   @e \$Date: 2014-12-09 12:28:05 -0600 (Tue, 09 Dec 2014) $
+ * @e \$Revision$   @e \$Date$
  */
  /*****************************************************************************
  *
- * Copyright (c) 2008 - 2015, Advanced Micro Devices, Inc.
+ * Copyright (c) 2008 - 2016, Advanced Micro Devices, Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -51,6 +51,7 @@ typedef struct _FIRMWARE_ENTRY_TABLE {
   UINT32  GecRomBase;   ///< Base Address for Gmc Firmware
   UINT32  XHCRomBase;   ///< Base Address for XHCI Firmware
   UINT32  PspDirBase;   ///< Base Address for PSP directory
+  UINT32  NewPspDirBase;   ///< Base Address of PSP directory from program start from ST
 } FIRMWARE_ENTRY_TABLE;
 
 /// Define structure for PSP directory
@@ -64,16 +65,32 @@ typedef struct {
 
 /// define various enum type for PSP entry type
 enum _PSP_DIRECTORY_ENTRY_TYPE {
-  AMD_PUBLIC_KEY                  = 0,    ///< PSP entry pointer to AMD public key
-  PSP_FW_BOOT_LOADER              = 1,    ///< PSP entry points to PSP boot loader in SPI space
-  PSP_FW_TRUSTED_OS               = 2,    ///< PSP entry points to PSP Firmware region in SPI space
-  PSP_FW_RECOVERY_BOOT_LOADER     = 3,    ///< PSP entry point to PSP recovery region.
-  PSP_NV_DATA                     = 4,    ///< PSP entry points to PSP data region in SPI space
-  BIOS_PUBLIC_KEY                 = 5,    ///< PSP entry points to BIOS public key stored in SPI space
-  BIOS_RTM_FIRMWARE               = 6,    ///< PSP entry points to BIOS RTM code (PEI volume) in SPI space
-  BIOS_RTM_SIGNATURE              = 7,    ///< PSP entry points to signed BIOS RTM hash stored  in SPI space
-  SMU_OFFCHIP_FW                  = 8     ///< PSP entry points to SMU image
+  AMD_PUBLIC_KEY                  = 0x00,           ///< PSP entry pointer to AMD public key
+  PSP_FW_BOOT_LOADER              = 0x01,           ///< PSP entry points to PSP boot loader in SPI space
+  PSP_FW_TRUSTED_OS               = 0x02,           ///< PSP entry points to PSP Firmware region in SPI space
+  PSP_FW_RECOVERY_BOOT_LOADER     = 0x03,           ///< PSP entry point to PSP recovery region.
+  PSP_NV_DATA                     = 0x04,           ///< PSP entry points to PSP data region in SPI space
+  BIOS_PUBLIC_KEY                 = 0x05,           ///< PSP entry points to BIOS public key stored in SPI space
+  BIOS_RTM_FIRMWARE               = 0x06,           ///< PSP entry points to BIOS RTM code (PEI volume) in SPI space
+  BIOS_RTM_SIGNATURE              = 0x07,           ///< PSP entry points to signed BIOS RTM hash stored  in SPI space
+  SMU_OFFCHIP_FW                  = 0x08,           ///< PSP entry points to SMU image
+  AMD_SEC_DBG_PUBLIC_KEY          = 0x09,           ///< PSP entry pointer to Secure Unlock Public key
+  OEM_PSP_FW_PUBLIC_KEY           = 0x0A,           ///< PSP entry pointer to an optional public part of the OEM PSP Firmware Signing Key Token
+  AMD_SOFT_FUSE_CHAIN_01          = 0x0B,           ///< PSP entry pointer to 64bit PSP Soft Fuse Chain
+  PSP_BOOT_TIME_TRUSTLETS         = 0x0C,           ///< PSP entry points to boot-loaded trustlet binaries
+  PSP_BOOT_TIME_TRUSTLETS_KEY     = 0x0D,           ///< PSP entry points to key of the boot-loaded trustlet binaries
+  PSP_AGESA_RESUME_FW             = 0x10,           ///< PSP Entry points to PSP Agesa-Resume-Firmware
+  SMU_OFF_CHIP_FW_2               = 0x12,           ///< PSP entry points to secondary SMU image
+  PSP_S3_NV_DATA                  = 0x1A,           ///< PSP entry pointer to S3 Data Blob
+  AMD_SCS_BINARY                  = 0x5F,           ///< Software Configuration Settings Data Block
 };
+
+#define PSP_ENTRY_PROGRAM_ID_0             0                  ///< Program identifier 0, used when two programs share the same root key
+#define PSP_ENTRY_PROGRAM_ID_1             1                  ///< Program identifier 1, used when two programs share the same root key
+
+#define PSP_ENTRY_CZ_PROGRAM_ID            PSP_ENTRY_PROGRAM_ID_0       ///< CZ Program identifier
+#define PSP_ENTRY_BR_PROGRAM_ID            PSP_ENTRY_PROGRAM_ID_1       ///< BR Program identifier
+
 typedef UINT32 PSP_DIRECTORY_ENTRY_TYPE;
 
 /// Structure for PSP Entry

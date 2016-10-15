@@ -9,12 +9,12 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:     AGESA
  * @e sub-project: FCH
- * @e \$Revision: 311507 $   @e \$Date: 2015-01-22 06:57:51 +0800 (Thu, 22 Jan 2015) $
+ * @e \$Revision$   @e \$Date$
  *
  */
  /*****************************************************************************
  *
- * Copyright (c) 2008 - 2015, Advanced Micro Devices, Inc.
+ * Copyright (c) 2008 - 2016, Advanced Micro Devices, Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -98,7 +98,9 @@ typedef struct {
   UINT32                XHCI_PMx08_xHCI_Firmware_Addr_1_Ram;       ///< XHCI_PMx08_xHCI_Firmware_Addr_1_Ram
   UINT8                 SataDevSlpPort0S5Pin;                      ///< SataDevSlpPort0S5Pin - Reserved
   UINT8                 SataDevSlpPort1S5Pin;                      ///< SataDevSlpPort1S5Pin - Reserved
-  UINT16                Dummy16;                                   ///< Dummy16 - Reserved
+  UINT16                FchFlag16;                                 ///< Dummy16 - Reserved
+  UINT32                FchFlag32;                                 ///< Dummy32 - Reserved
+                                                                   ///    @li <b>0</b> - Carrizo
   UINT32                SdMmioBase;                                ///< Sd Mmio Base - Reserved
   UINT32                EhciMmioBase;                              ///< Ehci Mmio Base - Reserved
   UINT32                XhciMmioBase;                              ///< Xhci Mmio Base - Reserved
@@ -525,6 +527,7 @@ typedef struct {
 //  UINT8                 SataDevSlpPort1S5Pin;           /// SataDevSlpPort1S5Pin - Reserved
   UINT8                 SataDbgTX_DRV_STR ;           /// TX_DRV_STR - Reserved
   UINT8                 SataDbgTX_DE_EMPH_STR ;           /// TX_DE_EMPH_STR - Reserved
+  BOOLEAN               SataLongTrace[2];                /// Long Trace - Reserved
   UINT32                TempMmio;                       /// TempMmio - Reserved
 } FCH_SATA;
 
@@ -545,6 +548,8 @@ typedef struct {
 #define Fun_87                        0x87
 #define Fun_88                        0x88
 #define Fun_89                        0x89
+#define Fun_8B                        0x8B
+#define Fun_8C                        0x8C
 #define Fun_90                        0x90
 #define MSG_IMC_TO_SYS                0x81
 #define MSG_REG0                      0x82
@@ -789,9 +794,37 @@ typedef struct _FCH_EC {
   UINT8                 MsgFun89Zone3MsgReg9;           ///<Ct DWORD bit 31-24
   UINT8                 MsgFun89Zone3MsgRegA;           ///<Mode bit 0-7
 //
-// FLAG for Fun83/85/89 support
+//EC LDN9 function 8C Startup PWM channel 0
 //
-  UINT16                IMCFUNSupportBitMap;            ///< Bit0=81FunZone0 support(1=On;0=Off); bit1-3=81FunZone1-Zone3;Bit4-7=83FunZone0-Zone3;Bit8-11=85FunZone0-Zone3;Bit11-15=89FunZone0-Zone3;
+  UINT8                 MsgFun8CZone0MsgReg0;           ///<Reture 0xFA stands for success
+  UINT8                 MsgFun8CZone0MsgReg1;           ///<Bit 2-0 Thermal zone number
+  UINT8                 MsgFun8CZone0MsgReg2;           ///<Startup PWM flags; bit0: enable/disable current zone, bit1/2/3: 1 if values in reg3/4/5 are valid.
+  UINT8                 MsgFun8CZone0MsgReg3;           ///<Startup PWM (effective range 1~100)
+//
+//EC LDN9 function 8C Startup PWM channel 1
+//
+  UINT8                 MsgFun8CZone1MsgReg0;           ///<Reture 0xFA stands for success
+  UINT8                 MsgFun8CZone1MsgReg1;           ///<Bit 2-0 Thermal zone number
+  UINT8                 MsgFun8CZone1MsgReg2;           ///<Startup PWM flags; bit0: enable/disable current zone, bit1/2/3: 1 if values in reg3/4/5 are valid.
+  UINT8                 MsgFun8CZone1MsgReg3;           ///<Startup PWM (effective range 1~100)
+//
+//EC LDN9 function 8C Startup PWM channel 2
+//
+  UINT8                 MsgFun8CZone2MsgReg0;           ///<Reture 0xFA stands for success
+  UINT8                 MsgFun8CZone2MsgReg1;           ///<Bit 2-0 Thermal zone number
+  UINT8                 MsgFun8CZone2MsgReg2;           ///<Startup PWM flags; bit0: enable/disable current zone, bit1/2/3: 1 if values in reg3/4/5 are valid.
+  UINT8                 MsgFun8CZone2MsgReg3;           ///<Startup PWM (effective range 1~100)
+//
+//EC LDN9 function 8C Startup PWM channel 3
+//
+  UINT8                 MsgFun8CZone3MsgReg0;           ///<Reture 0xFA stands for success
+  UINT8                 MsgFun8CZone3MsgReg1;           ///<Bit 2-0 Thermal zone number
+  UINT8                 MsgFun8CZone3MsgReg2;           ///<Startup PWM flags; bit0: enable/disable current zone, bit1/2/3: 1 if values in reg3/4/5 are valid.
+  UINT8                 MsgFun8CZone3MsgReg3;           ///<Startup PWM (effective range 1~100)
+//
+// FLAG for Fun83/85/89/8C support
+//
+  UINT32                IMCFUNSupportBitMap;            ///< Bit0=81FunZone0 support(1=On;0=Off); bit1-3=81FunZone1-Zone3;Bit4-7=83FunZone0-Zone3;Bit8-11=85FunZone0-Zone3;Bit11-15=89FunZone0-Zone3;
 } FCH_EC;
 
 ///
@@ -1284,8 +1317,126 @@ typedef struct {
   BOOLEAN               UsbBatteryChargeEnable;         ///< USB Battery Charge Enable
   BOOLEAN               ReduceUSB3PortToLastTwo;        ///< Reduce USB3.0 ports to last 2
   UINT8                 USB30PortInit;                  ///< USB 3.0 Port Init
+  UINT8                 USB30RxLfpsDetTh;               ///< USB 3.0 Rx Lfps Detect Threshhold
 } FCH_USB;
 
+//++++++++++++++++++++++++++++++++++ Promontory param structure
+///PTXhciStructure
+typedef struct {
+  UINT8         PTXhciGen1;                     ///< PTXhciGen1
+  UINT8         PTXhciGen2;                     ///< PTXhciGen2
+  UINT8         PTAOAC;                         ///< PTAOAC
+  UINT8         PTHW_LPM ;                      ///< PTHW_LPM
+  UINT8         PTDbC;                          ///< PTDbC
+  UINT8         PTXHC_PME;                      ///< PTXHC_PME
+  UINT8         PTSystemSpreadSpectrum;         ///< PTSystemSpreadSpectrum
+  UINT8         Equalization4;                  ///< Enable/Disable Equalization 4
+  UINT8         Redriver;                       ///< Enable/Disable Redriver Setting
+} PT_USB;
+///PTSataStructure
+typedef struct {
+  UINT8         PTSataPortEnable;               ///< PTSataEnable
+  UINT8         PTSataMode;                     ///< PTSataMode
+  UINT8         PTSataAggresiveDevSlpP0;        ///< PTSataAggresiveDevSlpP0
+  UINT8         PTSataAggresiveDevSlpP1;        ///< PTSataAggresiveDevSlpP1
+  UINT8         PTSataAggrLinkPmCap;            ///< PTSataAggrLinkPmCap
+  UINT8         PTSataPscCap;                   ///< PTSataPscCap
+  UINT8         PTSataSscCap;                   ///< PTSataSscCap
+  UINT8         PTSataMsiCapability;            ///< PTSataPscCap
+  UINT8         PTSataPortMdPort0;              ///< PTSataPortMdPort0
+  UINT8         PTSataPortMdPort1;              ///< PTSataPortMdPort1
+  UINT8         PTSataHotPlug;                  ///< PTSataHotPlug
+} PT_SATA;
+///PTPcieStructure
+typedef struct {
+  UINT8         PromontoryPCIeEnable;                   ///< PCIeEnable
+  UINT8         PromontoryPCIeASPM;                     ///< PCIeASPM
+} PT_PCIE;
+///PTAddressStructure
+typedef struct {
+  UINT8         GppNumber;                             ///< GppNumber
+  UINT32        XhciID;                                ///< XhciDIDVID
+  UINT32        SataID;                                ///< SataDIDVID
+  UINT32        GpioID;                                ///< GpioDIDVID
+  UINT64        FwVersion;                                ///< FwVersion
+} PT_ADDR;
+///PTUSBPortStructure
+typedef struct {
+  UINT8         PTUsb31P0;                    ///< PTUsb31Port0 Enable/Disable
+  UINT8         PTUsb31P1;                    ///< PTUsb31Port0 Enable/Disable
+  UINT8         PTUsb30P0;                    ///< PTUsb30Port0 Enable/Disable
+  UINT8         PTUsb30P1;                    ///< PTUsb30Port1 Enable/Disable
+  UINT8         PTUsb30P2;                    ///< PTUsb30Port2 Enable/Disable
+  UINT8 		PTUsb30P3;					  ///< PTUsb30Port3 Enable/Disable
+  UINT8		    PTUsb30P4; 					  ///< PTUsb30Port4 Enable/Disable
+  UINT8		    PTUsb30P5;					  ///< PTUsb30Port5 Enable/Disable
+  UINT8         PTUsb20P0;                    ///< PTUsb20Port0 Enable/Disable
+  UINT8         PTUsb20P1;                    ///< PTUsb20Port1 Enable/Disable
+  UINT8         PTUsb20P2;                    ///< PTUsb20Port2 Enable/Disable
+  UINT8 		PTUsb20P3;					  ///< PTUsb20Port3 Enable/Disable
+  UINT8		    PTUsb20P4; 					  ///< PTUsb20Port4 Enable/Disable
+  UINT8		    PTUsb20P5;					  ///< PTUsb20Port5 Enable/Disable
+} PT_USBPort;
+///PTUSB31TxStructure
+typedef struct {
+UINT8		  USB31Gen1Swing; 			///< PTUSB31PCS_B1 genI swing
+UINT8		  USB31Gen2Swing; 			///< PTUSB31PCS_B1 genI swing
+UINT8		  USB31Gen1PreEmEn;			///< PTUSB31PCS_B1 genI pre-emphasis enable
+UINT8		  USB31Gen2PreEmEn;			///< PTUSB31PCS_B1 genII pre-emphasis enable
+UINT8		  USB31Gen1PreEmLe;			///< PTUSB31PCS_B1 genI pre-emphasis level
+UINT8		  USB31Gen2PreEmLe;			///< PTUSB31PCS_B1 genII pre-emphasis level
+UINT8		  USB31Gen1PreShEn;			///< PTUSB31PCS_B1 genI pre-shoot enable
+UINT8		  USB31Gen2PreShEn;			///< PTUSB31PCS_B1 genII pre-shoot enable
+UINT8		  USB31Gen1PreShLe;			///< PTUSB31PCS_B1 genI pre-shoot level
+UINT8		  USB31Gen2PreShLe;			///< PTUSB31PCS_B1 genII pre-shoot level
+} PT_USB31Tx;
+
+///PTUSB30TxStructure
+typedef struct {
+UINT8		  USB30Gen1Swing; 			///< PTUSB30PCS_B3 genI swing
+UINT8		  USB30Gen1PreEmEn;			///< PTUSB30PCS_B3 genI pre-emphasis enable
+UINT8		  USB30Gen1PreEmLe;			///< PTUSB30PCS_B3 genI pre-emphasis level
+} PT_USB30Tx;
+
+
+///PTUSBTxStructure
+typedef struct {
+PT_USB31Tx    USB31Tx[2];                   ///< USB31Tx setting
+PT_USB30Tx    USB30Tx[3];                   ///< USB30Tx setting
+UINT8		  USB20B2Tx00;			        ///< USB2.0 TX driving current, 7: largest By USB_HSDP/N[0]
+UINT8		  USB20B2Tx05;			        ///< USB2.0 TX driving current, 7: largest By USB_HSDP/N[5]
+UINT8		  USB20B3Tx1113;			    ///< USB2.0 TX driving current, 7: largest By USB_HSDP/N[13][11]
+UINT8		  USB20B3Tx1012;			    ///< USB2.0 TX driving current, 7: largest By USB_HSDP/N[12][10]
+UINT8		  USB20B4Tx0206;			    ///< USB2.0 TX driving current, 7: largest By USB_HSDP/N[2][6]
+UINT8		  USB20B4Tx0307;			    ///< USB2.0 TX driving current, 7: largest By USB_HSDP/N[3][7]
+UINT8		  USB20B5Tx0408;			    ///< USB2.0 TX driving current, 7: largest By USB_HSDP/N[4][8]
+UINT8		  USB20B5Tx0109;			    ///< USB2.0 TX driving current, 7: largest By USB_HSDP/N[1][9]
+} PT_USBTx;
+
+///PTSataTxStructure
+typedef struct {
+UINT8		  SATAGen1Swing; 			///< genI swing
+UINT8		  SATAGen2Swing; 			///< genII swing
+UINT8		  SATAGen3Swing; 			///< genIII swing
+UINT8		  SATAGen1PreEmEn;			///< genI pre-emphasis enable
+UINT8		  SATAGen2PreEmEn;			///< genII pre-emphasis enable
+UINT8		  SATAGen3PreEmEn;			///< genIII pre-emphasis enable
+UINT8		  SATAGen1PreEmLevel;		///< genI pre-emphasis level
+UINT8		  SATAGen2PreEmLevel;		///< genII pre-emphasis level
+UINT8		  SATAGen3PreEmLevel;		///< genIII pre-emphasis level
+} PT_SATATx;
+///PTDataStructure
+typedef struct _FCH_PT {
+  PT_USB       PromontoryUSB;                     ///<PTXhciStructure
+  PT_SATA      PromontorySATA;                    ///<PTSataStructure
+  PT_PCIE      PromontoryPCIE;                    ///<PTPcieStructure
+  PT_ADDR      PromontoryAddr;                    ///<PTAddressStructure
+  PT_USBPort   PromontoryUSBPort;                 ///<PTUSBPortStructure
+  PT_USBTx     PTUSBTX;                   ///<PTUSBTX
+  PT_SATATx    PTSATATX[8];                  ///<PTSATATX
+} FCH_PT;
+
+//-------------------------------------------- Promontory param structure
 
 /// Private: FCH_DATA_BLOCK_RESET
 typedef struct _FCH_RESET_DATA_BLOCK {
@@ -1323,15 +1474,16 @@ typedef struct _FCH_RESET_DATA_BLOCK {
   BOOLEAN               QeEnabled;                      /// Quad Mode Enabled
   BOOLEAN               FchOscout1ClkContinous;         ///< FCH OSCOUT1_CLK Continous
   UINT8                 LpcClockDriveStrength;          ///< Lpc Clock Drive Strength
-  const VOID*           EarlyOemGpioTable;              /// Pointer of Early OEM GPIO table
+  FCH_PT                Promontory;                     ///< Promontory structure
+  VOID*                 EarlyOemGpioTable;              /// Pointer of Early OEM GPIO table
 //  VOID*                 OemSpiDeviceTable;              /// Pointer of OEM Spi Device table
 } FCH_RESET_DATA_BLOCK;
 
 
 /// Private: FCH_DATA_BLOCK
 typedef struct _FCH_DATA_BLOCK {
-  AMD_CONFIG_PARAMS     *StdHeader;                     ///< Header structure
   FCH_RUNTIME           FchRunTime;                     ///< FCH Run Time Parameters
+  AMD_CONFIG_PARAMS     *StdHeader;                     ///< Header structure
 
   FCH_ACPI              HwAcpi;                         ///< ACPI structure
   FCH_AB                Ab;                             ///< AB structure
@@ -1352,6 +1504,7 @@ typedef struct _FCH_DATA_BLOCK {
   FCH_IMC               Imc;                            ///< IMC structure
   FCH_MISC              Misc;                           ///< MISC structure
   FCH_IOMUX             IoMux;                          ///< MISC structure
+  FCH_PT                Promontory;                     ///< Promontory structure
   VOID*                 PostOemGpioTable;              /// Pointer of Post OEM GPIO table
 } FCH_DATA_BLOCK;
 

@@ -9,11 +9,11 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:      AGESA
  * @e sub-project:  IDS
- * @e \$Revision: 309899 $   @e \$Date: 2014-12-23 02:21:13 -0600 (Tue, 23 Dec 2014) $
+ * @e \$Revision$   @e \$Date$
  */
  /*****************************************************************************
  *
- * Copyright (c) 2008 - 2015, Advanced Micro Devices, Inc.
+ * Copyright (c) 2008 - 2016, Advanced Micro Devices, Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -223,7 +223,13 @@ typedef enum {                        //vv- for debug reference only
   IDS_AFTER_DQS_TRAINING,             ///< a7 override any settings after DQS training
   IDS_OVERRIDE_DIMM_MASK,             ///< a8 override DimmMask for S3 data blob creation
   IDS_BYPASS_S3_REGISTERS,            ///< a9 bypass restoring certain registers
-  IDS_OPTION_END                      ///< AA End of IDS option
+  IDS_MEM_RTTNOM,                     ///< aa Hook for Override RttNom
+  IDS_MEM_RTTWR,                      ///< ab Hook for Override RttWr
+  IDS_MEM_RTTPARK,                    ///< ac Hook for Override RttPark
+  IDS_MEM_ADDR_CMD_TMG,               ///< ad Address command timing
+  IDS_MEM_MR6_VREF_DQ,                ///< ae MR6 VRefDQ
+  IDS_MEM_PMU_RETRAIN_TIMES,          ///< af override memory PMU retrain times
+  IDS_OPTION_END                      ///< B0 End of IDS option
 } AGESA_IDS_OPTION;
 
 #include "OptionsIds.h"
@@ -507,7 +513,9 @@ typedef enum {                        //vv- for debug reference only
   #define IDS_EXTENDED_HOOK(idsoption, dataptr, idsnvptr, stdheader) IDS_SUCCESS
   #define IDS_TRACE_DEFAULT (0)
   #define IDS_INITIAL_F15_CZ_PM_STEP
+  #define IDS_INITIAL_F15_ST_PM_STEP
   #define IDS_F15_CZ_PM_CUSTOM_STEP
+  #define IDS_F15_ST_PM_CUSTOM_STEP
   #define IDS_EXTENDED_GET_DATA_EARLY(data, StdHeader)
   #define IDS_EXTENDED_GET_DATA_LATE(data, StdHeader)
   #define IDS_EXTENDED_HEAP_SIZE 0
@@ -655,7 +663,7 @@ typedef enum {                        //vv- for debug reference only
 #define MEM_FLOW                                    DEBUG_PRINT_SHIFT (2)
 #define MEM_STATUS                                  DEBUG_PRINT_SHIFT (3)
 #define MEM_UNDEF_BF                                DEBUG_PRINT_SHIFT (4)
-#define MEMORY_TRACE_RSV2                           DEBUG_PRINT_SHIFT (5)
+#define MEM_PMU                                     DEBUG_PRINT_SHIFT (5)
 #define MEMORY_TRACE_RSV3                           DEBUG_PRINT_SHIFT (6)
 #define MEMORY_TRACE_RSV4                           DEBUG_PRINT_SHIFT (7)
 #define MEMORY_TRACE_RSV5                           DEBUG_PRINT_SHIFT (8)
@@ -761,9 +769,15 @@ typedef enum {                        //vv- for debug reference only
 #define MEMORY_TRACE_ALL\
       (\
       MEM_FLOW | MEM_GETREG | MEM_SETREG | MEM_STATUS | \
-      MEMORY_TRACE_RSV1 | MEMORY_TRACE_RSV2 | MEMORY_TRACE_RSV3 | MEMORY_TRACE_RSV4 | \
+      MEM_UNDEF_BF | MEM_PMU | MEMORY_TRACE_RSV3 | MEMORY_TRACE_RSV4 | \
       MEMORY_TRACE_RSV5 | MEMORY_TRACE_RSV6\
       )
+
+#define MEMORY_TRACE_DEFAULT\
+      (\
+      MEM_FLOW | MEM_STATUS | MEM_PMU\
+      )
+
 
 #define TOPO_TRACE_ALL\
       (\
@@ -792,7 +806,7 @@ typedef enum {                        //vv- for debug reference only
 
 #define TRACE_MASK_ALL (0xFFFFFFFFFFFFFFFFull)
 #ifndef IDS_DEBUG_PRINT_MASK
-  #define IDS_DEBUG_PRINT_MASK (GNB_TRACE_DEFAULT  | CPU_TRACE_ALL | MEM_FLOW | MEM_STATUS | TOPO_TRACE_ALL | FCH_TRACE_ALL | MAIN_FLOW | IDS_TRACE_DEFAULT | TEST_POINT | MEM_GETREG)
+  #define IDS_DEBUG_PRINT_MASK (GNB_TRACE_DEFAULT  | CPU_TRACE_ALL | MEMORY_TRACE_DEFAULT | TOPO_TRACE_ALL | FCH_TRACE_ALL | MAIN_FLOW | IDS_TRACE_DEFAULT | TEST_POINT)
 #endif
 
 /// if no specific define INIT & EXIT will be NULL
@@ -1121,6 +1135,7 @@ typedef enum {
   TpProcMemConfigureDCTNonExplicitSeq,///< 8B .. Configure DCT For Non-Explicit
   TpProcMemSynchronizeChannels,       ///< 8C .. Configure to Sync channels
   TpProcMemC6StorageAllocation,       ///< 8D .. Allocate C6 Storage
+  TpProcMemLvDdr4,                    ///< 8E .. Before LV DDR4
 
   // Gnb Earlier init
   TpGnbEarlierPcieConfigurationInit = 0x90,           ///< 90 .. GNB earlier PCIE configuration init

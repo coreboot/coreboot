@@ -1,0 +1,160 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2007-2009 coresystems GmbH
+## Copyright (C) 2016 Arthur Heymans arthur@aheymans.xyz
+##
+## This program is free software; you can redistribute it and/or
+## modify it under the terms of the GNU General Public License as
+## published by the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+
+chip northbridge/intel/i945
+
+	device cpu_cluster 0 on
+		chip cpu/intel/socket_LGA775
+			device lapic 0 on end
+		end
+		chip cpu/intel/model_1067x
+			device lapic 0xACAC off end
+		end
+	end
+
+	device domain 0 on
+		device pci 00.0 on # host bridge
+			subsystemid 0x1458 0x5000
+		end
+		device pci 01.0 on # i945 PCIe root port
+			subsystemid 0x1458 0x5000
+			ioapic_irq 2 INTA 0x10
+		end
+		device pci 02.0 on  # vga controller
+			subsystemid 0x1458 0xd000
+			ioapic_irq 2 INTA 0x10
+		end
+
+		chip southbridge/intel/i82801gx
+			register "pirqa_routing" = "0x8c"
+			register "pirqb_routing" = "0x8a"
+			register "pirqc_routing" = "0x83"
+			register "pirqd_routing" = "0x8b"
+			register "pirqe_routing" = "0x80"
+			register "pirqf_routing" = "0x80"
+			register "pirqg_routing" = "0x80"
+			register "pirqh_routing" = "0x85"
+
+			# GPI routing
+			#  0 No effect (default)
+			#  1 SMI# (if corresponding ALT_GPI_SMI_EN bit is also set)
+			#  2 SCI (if corresponding GPIO_EN bit is also set)
+			register "gpi0_routing" = "1"
+			register "gpi1_routing" = "1"
+			register "gpi2_routing" = "1"
+			register "gpi3_routing" = "1"
+			register "gpi4_routing" = "1"
+			register "gpi5_routing" = "1"
+			register "gpi6_routing" = "1"
+			register "gpi7_routing" = "1"
+			register "gpi8_routing" = "1"
+			register "gpi9_routing" = "1"
+			register "gpi10_routing" = "1"
+			register "gpi11_routing" = "1"
+			register "gpi12_routing" = "1"
+			register "gpi13_routing" = "2"
+			register "gpi14_routing" = "1"
+			register "gpi15_routing" = "1"
+
+			register "gpe0_en" = "0"
+
+			register "ide_legacy_combined" = "0x0"
+			register "ide_enable_primary" = "0x1"
+			register "ide_enable_secondary" = "0x0"
+			register "sata_ahci" = "0x0"
+			register "c3_latency" = "85"
+
+			register "p_cnt_throttling_supported" = "0"
+
+			device pci 1b.0 on # High Definition Audio
+				ioapic_irq 2 INTA 0x10
+			end
+			device pci 1c.0 on end # PCIe
+			device pci 1c.1 on end # PCIe
+			#device pci 1c.2 off end # PCIe port 3
+			#device pci 1c.3 off end # PCIe port 4
+			#device pci 1c.4 off end # PCIe port 5
+			#device pci 1c.5 off end # PCIe port 6
+			device pci 1d.0 on # USB UHCI
+				ioapic_irq 2 INTA 0x10
+			end
+			device pci 1d.1 on # USB UHCI
+				ioapic_irq 2 INTB 0x11
+			end
+			device pci 1d.2 on # USB UHCI
+				ioapic_irq 2 INTC 0x12
+			end
+			device pci 1d.3 on # USB UHCI
+				ioapic_irq 2 INTD 0x13
+			end
+			device pci 1d.7 on # USB2 EHCI
+				ioapic_irq 2 INTA 0x10
+			end
+			device pci 1e.0 on end # PCI bridge
+
+			device pci 1f.0 on # LPC bridge
+				ioapic_irq 2 INTA 0x10
+				chip superio/ite/it8718f # Super I/O
+					device pnp 2e.0 off end # Floppy
+					device pnp 2e.1 on # COM1
+						io 0x60 = 0x3f8
+						irq 0x70 = 4
+					end
+					device pnp 2e.2 off end # COM2
+					device pnp 2e.3 on # Parallel port
+						io 0x60 = 0x378
+						irq 0x70 = 7
+						io 0x62 = 0
+						drq 0x74 = 4
+						irq 0xf0 = 0x08
+					end
+					device pnp 2e.4 on # Environment controller
+						io 0x60 = 0x290
+						irq 0x70 = 0x00
+						io 0x62 = 0x000
+						irq 0xf0 = 0x00
+						irq 0xf1 = 0x00
+						irq 0xf2 = 0x0a
+						irq 0xf3 = 0x00
+						irq 0xf4 = 0x80
+						irq 0xf5 = 0x20
+						irq 0xf6 = 0x3e
+					end
+					device pnp 2e.5 on # Keyboard
+						io 0x60 = 0x60
+						irq 0x70 = 1
+						io 0x62 = 0x64
+						irq 0xf0 = 0x48
+					end
+					device pnp 2e.6 on # Mouse
+						irq 0x70 = 0
+						irq 0x71 = 2
+						irq 0xf0 = 0
+					end
+				end
+			end
+			device pci 1f.1 on # IDE
+				ioapic_irq 2 INTB 0x11
+			end
+			device pci 1f.2 on # SATA
+				ioapic_irq 2 INTC 0x12
+			end
+			device pci 1f.3 on # SMBus
+				ioapic_irq 2 INTD 0x13
+			end
+		end
+	end
+end

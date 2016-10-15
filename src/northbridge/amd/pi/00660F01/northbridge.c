@@ -581,7 +581,7 @@ static struct device_operations northbridge_operations = {
 static const struct pci_driver family15_northbridge __pci_driver = {
 	.ops	= &northbridge_operations,
 	.vendor = PCI_VENDOR_ID_AMD,
-	.device = PCI_DEVICE_ID_AMD_15H_MODEL_006F_NB_HT,
+	.device = PCI_DEVICE_ID_AMD_15H_MODEL_606F_NB_HT,
 };
 
 static void fam15_finalize(void *chip_info)

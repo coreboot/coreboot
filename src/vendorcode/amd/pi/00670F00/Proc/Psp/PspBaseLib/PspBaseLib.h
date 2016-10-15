@@ -211,7 +211,7 @@ GetPspMboxStatus (
 
 
 BOOLEAN
-PspBarInitEarly ();
+PspBarInitEarly (VOID);
 
 VOID
 PspLibPciIndirectRead (
@@ -230,7 +230,7 @@ PspLibPciIndirectWrite (
   );
 
 BOOLEAN
-IsS3Resume ();
+IsS3Resume (VOID);
 
 
 #endif // _AMD_LIB_H_

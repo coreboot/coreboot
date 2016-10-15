@@ -610,8 +610,8 @@ typedef struct {
                                                            * @li @b Bit31 - last descriptor in topology
                                                            */
   IN       UINT32               SocketId;                 ///< Socket Id
-  IN       PCIe_PORT_DESCRIPTOR *PciePortList;            ///< Pointer to array of PCIe port descriptors or NULL (Last element of array must be terminated with DESCRIPTOR_TERMINATE_LIST).
-  IN       PCIe_DDI_DESCRIPTOR  *DdiLinkList;             ///< Pointer to array DDI link descriptors (Last element of array must be terminated with DESCRIPTOR_TERMINATE_LIST).
+  IN       const PCIe_PORT_DESCRIPTOR *PciePortList;      ///< Pointer to array of PCIe port descriptors or NULL (Last element of array must be terminated with DESCRIPTOR_TERMINATE_LIST).
+  IN       const PCIe_DDI_DESCRIPTOR  *DdiLinkList;       ///< Pointer to array DDI link descriptors (Last element of array must be terminated with DESCRIPTOR_TERMINATE_LIST).
   IN       VOID                 *Reserved;                ///< Reserved for future use
 } PCIe_COMPLEX_DESCRIPTOR;
 
@@ -829,7 +829,7 @@ mInitOffsetCancellation, mDFEControl, mLEQControl, mDynamicOffsetCalibration, mF
 {mPortPresent, mChannelType, mDevAddress, mDevFunction, mMaxLinkSpeed, mAspm, mHotplug, mResetId, {0, mMaxLinkCap, 0, mClkPmSupport}, {0, 0, 0}, EndpointDetect, \
 {mInitOffsetCancellation, mDFEControl, mLEQControl, mDynamicOffsetCalibration, mFOMCalculation, mPIOffsetCalibration}}
 #define  PCIE_DDI_DATA_INITIALIZER(mConnectorType, mAuxIndex, mHpdIndex ) \
-{mConnectorType, mAuxIndex, mHpdIndex, {0, 0}, 0, 0}
+{mConnectorType, mAuxIndex, mHpdIndex, {{0}, {0}}, 0, 0}
 #define  PCIE_DDI_DATA_INITIALIZER_V1(mConnectorType, mAuxIndex, mHpdIndex, mMapping0, mMapping1, mPNInversion) \
 {mConnectorType, mAuxIndex, mHpdIndex, {mMapping0, mMapping1}, mPNInversion, 0}
 #define  PCIE_DDI_DATA_INITIALIZER_V2(mConnectorType, mAuxIndex, mHpdIndex, mMapping0, mMapping1, mPNInversion, mFlags) \
@@ -913,7 +913,7 @@ typedef union _DISPLAY_MISC_CONTROL {
 /// HD Audio Codec table list
 typedef struct _CODEC_VERB_TABLE_LIST {
   IN  UINT32           CodecId;             ///<  CodecID - Codec ID
-  IN  UINT32           CodecTablePtr;       ///<  CodecTablePtr - Codec table pointer
+  IN  CONST VOID *     CodecTablePtr;       ///<  CodecTablePtr - Codec table pointer
 } CODEC_VERB_TABLE_LIST;
 
 /// POST Configuration settings for GNB.
@@ -1019,7 +1019,7 @@ typedef struct {
 
 /// GNB configuration info
 typedef struct {
-  IN       PCIe_COMPLEX_DESCRIPTOR  *PcieComplexList;  /**< Pointer to array of structures describe PCIe topology on each processor package or NULL.
+  IN       const PCIe_COMPLEX_DESCRIPTOR  *PcieComplexList;  /**< Pointer to array of structures describe PCIe topology on each processor package or NULL.
                                                         * Last element of array must be terminated with DESCRIPTOR_TERMINATE_LIST
                                                         * Example of topology definition for single socket system:
                                                         * @code

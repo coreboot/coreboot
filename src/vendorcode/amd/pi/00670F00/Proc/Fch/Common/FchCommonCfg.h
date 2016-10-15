@@ -165,7 +165,7 @@ typedef struct _CODEC_ENTRY {
 ///
 typedef struct _CODEC_TBL_LIST {
   UINT32                CodecId;                        /// CodecID - Codec ID
-  CODEC_ENTRY*          CodecTablePtr;                  /// CodecTablePtr - Codec table pointer
+  const CODEC_ENTRY*    CodecTablePtr;                  /// CodecTablePtr - Codec table pointer
 } CODEC_TBL_LIST;
 
 ///
@@ -234,12 +234,12 @@ typedef struct {
 ///
 /// AZOEMTBL - Azalia Controller OEM Codec Table Pointer
 ///
-  CODEC_TBL_LIST        *AzaliaOemCodecTablePtr;        /// AzaliaOemCodecTablePtr - Oem Azalia Codec Table Pointer
+  const CODEC_TBL_LIST  *AzaliaOemCodecTablePtr;        /// AzaliaOemCodecTablePtr - Oem Azalia Codec Table Pointer
 
 ///
 /// AZOEMFPTBL - Azalia Controller Front Panel OEM Table Pointer
 ///
-  VOID                  *AzaliaOemFpCodecTablePtr;      /// AzaliaOemFpCodecTablePtr - Oem Front Panel Codec Table Pointer
+  const VOID            *AzaliaOemFpCodecTablePtr;      /// AzaliaOemFpCodecTablePtr - Oem Front Panel Codec Table Pointer
 } FCH_AZALIA;
 
 ///
@@ -1475,15 +1475,15 @@ typedef struct _FCH_RESET_DATA_BLOCK {
   BOOLEAN               FchOscout1ClkContinous;         ///< FCH OSCOUT1_CLK Continous
   UINT8                 LpcClockDriveStrength;          ///< Lpc Clock Drive Strength
   FCH_PT                Promontory;                     ///< Promontory structure
-  VOID*                 EarlyOemGpioTable;              /// Pointer of Early OEM GPIO table
+  const VOID*           EarlyOemGpioTable;              /// Pointer of Early OEM GPIO table
 //  VOID*                 OemSpiDeviceTable;              /// Pointer of OEM Spi Device table
 } FCH_RESET_DATA_BLOCK;
 
 
 /// Private: FCH_DATA_BLOCK
 typedef struct _FCH_DATA_BLOCK {
-  FCH_RUNTIME           FchRunTime;                     ///< FCH Run Time Parameters
   AMD_CONFIG_PARAMS     *StdHeader;                     ///< Header structure
+  FCH_RUNTIME           FchRunTime;                     ///< FCH Run Time Parameters
 
   FCH_ACPI              HwAcpi;                         ///< ACPI structure
   FCH_AB                Ab;                             ///< AB structure
@@ -1505,7 +1505,7 @@ typedef struct _FCH_DATA_BLOCK {
   FCH_MISC              Misc;                           ///< MISC structure
   FCH_IOMUX             IoMux;                          ///< MISC structure
   FCH_PT                Promontory;                     ///< Promontory structure
-  VOID*                 PostOemGpioTable;              /// Pointer of Post OEM GPIO table
+  const VOID*           PostOemGpioTable;               /// Pointer of Post OEM GPIO table
 } FCH_DATA_BLOCK;
 
 #pragma pack (pop)

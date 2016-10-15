@@ -375,7 +375,7 @@ RwAlink (
     WriteAlink ((FCH_AX_INDXP_REG38 | AccessType), Index & 0x1FFFFFFF, StdHeader);
     Index = FCH_AX_DATAP_REG3C | AccessType;
   }
-  WriteAlink (Index, ReadAlink (Index, StdHeader) & AndMask | OrMask, StdHeader);
+  WriteAlink (Index, (ReadAlink (Index, StdHeader) & AndMask) | OrMask, StdHeader);
 }
 
 

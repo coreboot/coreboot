@@ -40,12 +40,15 @@
  *
  ***************************************************************************/
 
-
 #ifndef _AMD_H_
 #define _AMD_H_
 
+#define Int16FromChar(a,b) (UINT16)((a) << 0 | (b) << 8)
+#define Int32FromChar(a,b,c,d) (UINT32)((a) << 0 | (b) << 8 | (c) << 16 | (d) << 24)
+#define Int64FromChar(a,b,c,d,e,f,g,h) ((UINT64)(Int32FromChar(a,b,c,d)<<32) | (UINT64)Int32FromChar(e,f,g,h))
+
 #define AGESA_REVISION  "Arch2008"
-#define AGESA_ID        "AGESA"
+#define AGESA_ID        {'A', 'G', 'E', 'S', 'A', 0x00, 0x00, 0x00}
 
 //
 //
@@ -53,7 +56,8 @@
 //
 //
 #define LAST_ENTRY          0xFFFFFFFFul
-#define IMAGE_SIGNATURE     'DMA$'
+#define IMAGE_SIGNATURE     Int32FromChar ('$', 'A', 'M', 'D')
+#define MODULE_SIGNATURE    Int32FromChar ('$', 'M', 'O', 'D')
 #define IOCF8 0xCF8
 #define IOCFC 0xCFC
 
@@ -124,27 +128,37 @@ typedef enum ACCESS_WIDTH {
 /// AGESA struct name
 typedef enum {
   // AGESA BASIC FUNCTIONS
-  AMD_INIT_RECOVERY = 0x00020000,                           ///< AmdInitRecovery entry point handle
-  AMD_CREATE_STRUCT,                                        ///< AmdCreateStruct handle
-  AMD_INIT_EARLY,                                           ///< AmdInitEarly entry point handle
-  AMD_INIT_ENV,                                             ///< AmdInitEnv entry point handle
-  AMD_INIT_LATE,                                            ///< AmdInitLate entry point handle
-  AMD_INIT_MID,                                             ///< AmdInitMid entry point handle
-  AMD_INIT_POST,                                            ///< AmdInitPost entry point handle
-  AMD_INIT_RESET,                                           ///< AmdInitReset entry point handle
-  AMD_INIT_RESUME,                                          ///< AmdInitResume entry point handle
-  AMD_RELEASE_STRUCT,                                       ///< AmdReleaseStruct handle
-  AMD_S3LATE_RESTORE,                                       ///< AmdS3LateRestore entry point handle
-  AMD_GET_APIC_ID,                                          ///< AmdGetApicId entry point handle
-  AMD_GET_PCI_ADDRESS,                                      ///< AmdGetPciAddress entry point handle
-  AMD_IDENTIFY_CORE,                                        ///< AmdIdentifyCore general service handle
-  AMD_READ_EVENT_LOG,                                       ///< AmdReadEventLog general service handle
-  AMD_GET_EXECACHE_SIZE,                                    ///< AmdGetAvailableExeCacheSize general service handle
-  AMD_LATE_RUN_AP_TASK,                                     ///< AmdLateRunApTask entry point handle
-  AMD_IDENTIFY_DIMMS,                                       ///< AmdIdentifyDimm general service handle
-  AMD_GET_2D_DATA_EYE,                                      ///< AmdGet2DDataEye general service handle
-  AMD_S3FINAL_RESTORE,                                      ///< AmdS3FinalRestore entry point handle
-  AMD_INIT_RTB                                              ///< AmdInitRtb entry point handle
+  AMD_INIT_RECOVERY          = 0x00021000,                  ///< AmdInitRecovery entry point handle
+  AMD_CREATE_STRUCT          = 0x00022000,                  ///< AmdCreateStruct handle
+  AMD_INIT_EARLY             = 0x00023000,                  ///< AmdInitEarly entry point handle
+  AMD_INIT_ENV               = 0x00024000,                  ///< AmdInitEnv entry point handle
+  AMD_INIT_LATE              = 0x00025000,                  ///< AmdInitLate entry point handle
+  AMD_INIT_MID               = 0x00026000,                  ///< AmdInitMid entry point handle
+  AMD_INIT_POST              = 0x00027000,                  ///< AmdInitPost entry point handle
+  AMD_INIT_RESET             = 0x00028000,                  ///< AmdInitReset entry point handle
+  AMD_INIT_RESUME            = 0x00029000,                  ///< AmdInitResume entry point handle
+  AMD_RELEASE_STRUCT         = 0x0002A000,                  ///< AmdReleaseStruct handle
+  AMD_S3LATE_RESTORE         = 0x0002B000,                  ///< AmdS3LateRestore entry point handle
+  AMD_GET_APIC_ID            = 0x0002C000,                  ///< AmdGetApicId entry point handle
+  AMD_GET_PCI_ADDRESS        = 0x0002D000,                  ///< AmdGetPciAddress entry point handle
+  AMD_IDENTIFY_CORE          = 0x0002E000,                  ///< AmdIdentifyCore general service handle
+  AMD_READ_EVENT_LOG         = 0x0002F000,                  ///< AmdReadEventLog general service handle
+  AMD_GET_EXECACHE_SIZE      = 0x00030000,                  ///< AmdGetAvailableExeCacheSize general service handle
+  AMD_LATE_RUN_AP_TASK       = 0x00031000,                  ///< AmdLateRunApTask entry point handle
+  AMD_IDENTIFY_DIMMS         = 0x00032000,                  ///< AmdIdentifyDimm general service handle
+  AMD_GET_2D_DATA_EYE        = 0x00033000,                  ///< AmdGet2DDataEye general service handle
+  AMD_S3FINAL_RESTORE        = 0x00034000,                  ///< AmdS3FinalRestore entry point handle
+  AMD_INIT_RTB               = 0x00035000,                  ///< AmdInitRtb entry point handle
+  AMD_HEAP_ALLOCATE_BUFFER   = 0x00038000,
+  AMD_HEAP_DEALLOCATE_BUFFER = 0x00039000,
+  FCH_INIT_RESET             = 0x00040000,
+  FCH_INIT_ENV               = 0x00041000,
+  FCH_INIT_MID               = 0x00042000,
+  FCH_INIT_LATE              = 0x00043000,
+  FCH_INIT_S3_EARLY_RESTORE  = 0x00044000,
+  FCH_INIT_S3_LATE_RESTORE   = 0x00045000,
+  AMD_SET_VALUE              = 0x00081000,
+  AMD_GET_VALUE              = 0x00082000
 } AGESA_STRUCT_NAME;
 
   /*  ResetType constant values */
@@ -159,9 +173,9 @@ typedef enum {
 /// The standard header for all AGESA services.
 /// For internal AGESA naming conventions, see @ref amdconfigparamname .
 typedef struct {
-  IN       UINT32          ImageBasePtr;     ///< The AGESA Image base address.
+  IN       VOID *          ImageBasePtr;     ///< The AGESA Image base address.
   IN       UINT32          Func;             ///< The service desired
-  IN       UINT32          AltImageBasePtr;  ///< Alternate Image location
+  IN       VOID *          AltImageBasePtr;  ///< Alternate Image location
   IN       CALLOUT_ENTRY   CalloutPtr;       ///< For Callout from AGESA
   IN       UINT8           HeapStatus;       ///< For heap status from boot time slide.
   IN       UINT64          HeapBasePtr;      ///< Location of the heap

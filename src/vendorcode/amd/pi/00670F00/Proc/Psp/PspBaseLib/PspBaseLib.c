@@ -155,7 +155,7 @@ typedef enum {
   UNSUPPORTED_PROGRAM = 0xFF,   ///< Program ID for unsupported
 } PROGRAM_ID;
 
-PROGRAM_ID
+static PROGRAM_ID
 PspGetProgarmId (
   VOID
   )
@@ -291,7 +291,7 @@ PspSoftWareFuseInfo (
   return (FALSE);
 }
 
-UINT32 Fletcher32 (
+static UINT32 Fletcher32 (
   IN OUT   UINT16  *data,
   IN       UINTN   words
   )
@@ -567,7 +567,7 @@ ReleasePspSmiRegMutex (
 
 
 UINT8
-PspLibAccessWidth (
+static PspLibAccessWidth (
   IN       ACCESS_WIDTH AccessWidth
   )
 {

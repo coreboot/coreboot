@@ -9,12 +9,12 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:      AGESA
  * @e sub-project:  PSP
- * @e \$Revision: 309090 $   @e \$Date: 2014-12-09 12:28:05 -0600 (Tue, 09 Dec 2014) $
+ * @e \$Revision$   @e \$Date$
  *
  */
  /*****************************************************************************
  *
- * Copyright (c) 2008 - 2015, Advanced Micro Devices, Inc.
+ * Copyright (c) 2008 - 2016, Advanced Micro Devices, Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -53,7 +53,7 @@
 #define PSP_PCI_DEV        0x08    ///< PSP Device address
 #define PSP_PCI_FN         0x00    ///< PSP Fn address
 #define PSP_PCI_BDA        ((PSP_PCI_DEV << 11) + (PSP_PCI_FN << 8))
-#define GET_PSP_PCI_ADDR (Offset)    MAKE_SBDFO (PSP_PCI_SEG, PSP_PCI_BUS, PSP_PCI_DEV, PSP_PCI_FN, Offset)
+#define GET_PSP_PCI_ADDR(Offset)    MAKE_SBDFO (PSP_PCI_SEG, PSP_PCI_BUS, PSP_PCI_DEV, PSP_PCI_FN, Offset)
 
 #define PSP_PCI_DEVID_REG           0x00    ///< DevId
 #define PSP_PCI_CMD_REG             0x04    ///< CmdReg
@@ -63,7 +63,7 @@
 #define PSP_PCI_EXTRAPCIHDR_REG     0x48    ///< Extra PCI Header Ctr
 #define PSP_PCI_HTMSICAP_REG        0x5C    ///<  HT MSI Capability
 
-#define PSP_MSR_PRIVATE_BLOCK_BAR   0xC00110A2 ///< PSP Private Block Base Address (PSP_ADDR)
+#define PSP_MSR_PRIVATE_BLOCK_BAR   0xC00110A2ul ///< PSP Private Block Base Address (PSP_ADDR)
 
 #define D8F0x44_PmNxtPtrW_MASK                                  0xff
 
@@ -102,6 +102,28 @@ typedef struct {
 
 
 
+#define PSP_SMM_COMMUNICATION_TYPE_S3SCRIPT       0x1     ///< PspCommunicationType for S3 script
+
+/// PSP communication structure for S3SCRIPT
+typedef struct {
+  UINT64    PspBar3PciAddr;       /// PCI address for PSP BAR3
+  UINT32    PspBar3Val;           /// PCI register value  for PSP BAR3
+  UINT64    Pspx48PciAddr;        /// PCI address for PSP Register 48
+  UINT32    Pspx48Val;            /// PCI register value  for PSP Register 48
+} PSP_SMM_COMMUNICATION_S3SCRIPT;
+
+/// Union for PSP_SMM_COMMUNICATE_DATA
+typedef union _PSP_SMM_COMMUNICATE_DATA {
+  PSP_SMM_COMMUNICATION_S3SCRIPT S3Script;      ///< S3Script
+} PSP_SMM_COMMUNICATE_DATA;
+
+/// PSP communication header
+typedef struct {
+  UINT32                       PspCommunicationType;         ///< Type of smm communication buffer
+  PSP_SMM_COMMUNICATE_DATA     Data;                      ///< Communication buffer
+} PSP_SMM_COMMUNICATION_BUFFER;
+
+
 UINT32
 PspLibPciReadConfig (
   IN  UINT32 Register
@@ -131,9 +153,20 @@ GetPspDirBase (
 
 BOOLEAN
 PSPEntryInfo (
-  IN      PSP_DIRECTORY_ENTRY_TYPE    EntryType,
-  IN OUT  UINT64                      *EntryAddress,
-  IN      UINT32                      *EntrySize
+  IN       PSP_DIRECTORY_ENTRY_TYPE    EntryType,
+  IN OUT   UINT64                      *EntryAddress,
+  IN OUT   UINT32                      *EntrySize
+  );
+
+BOOLEAN
+PspSoftWareFuseInfo (
+  IN OUT   UINTN                       *FuseSpiAddress,
+  IN OUT   UINT64                      *FuseValue
+  );
+
+VOID
+UpdataPspDirCheckSum (
+  IN OUT   PSP_DIRECTORY         *PspDir
   );
 
 BOOLEAN
@@ -161,6 +194,15 @@ GetPspBar3Addr (
   IN OUT   UINT32 *PspMmio
   );
 
+VOID
+AcquirePspSmiRegMutex (
+  VOID
+  );
+
+VOID
+ReleasePspSmiRegMutex (
+  VOID
+  );
 
 BOOLEAN
 GetPspMboxStatus (
@@ -169,7 +211,7 @@ GetPspMboxStatus (
 
 
 BOOLEAN
-PspBarInitEarly (VOID);
+PspBarInitEarly ();
 
 VOID
 PspLibPciIndirectRead (
@@ -187,12 +229,8 @@ PspLibPciIndirectWrite (
   IN      VOID          *Value
   );
 
-UINT8
-PspLibAccessWidth (
-  IN       ACCESS_WIDTH AccessWidth
-  );
-
 BOOLEAN
-IsS3Resume (VOID);
+IsS3Resume ();
+
 
 #endif // _AMD_LIB_H_

@@ -9,12 +9,12 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:      AGESA
  * @e sub-project:  PSP
- * @e \$Revision: 309090 $   @e \$Date: 2014-12-09 12:28:05 -0600 (Tue, 09 Dec 2014) $
+ * @e \$Revision$   @e \$Date$
  *
  */
  /*****************************************************************************
  *
- * Copyright (c) 2008 - 2015, Advanced Micro Devices, Inc.
+ * Copyright (c) 2008 - 2016, Advanced Micro Devices, Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,10 +48,11 @@
  */
 #include "AGESA.h"
 #include "Filecode.h"
+#include "Fch.h"
 #include "PspBaseLib.h"
 
 #define FILECODE PROC_PSP_PSPBASELIB_PSPBASELIB_FILECODE
-#define PSP_BAR1_TMP_BASE 0xFEA00000ul
+#define PSP_BAR_TMP_BASE 0xFEA00000ul
 
 #define GET_PCI_BUS(Reg) (((UINT32) Reg >> 16) & 0xFF)
 #define GET_PCI_DEV(Reg) (((UINT32) Reg >> 11) & 0x1F)
@@ -73,6 +74,13 @@
 #define PSP_NON_SECURE_PART             (SMU_CC_PSP_FUSES_PROTO + SMU_CC_PSP_FUSES_PCPU_DIS)    ///< Non Secure Part
 #define PSP_SECURE_PART                 (SMU_CC_PSP_FUSES_PROTO + SMU_CC_PSP_FUSES_SECURE)      ///< Secure Part
 #define PSP_FRA_MODE                    (SMU_CC_PSP_FUSES_FRA_ENABLE + SMU_CC_PSP_FUSES_PROTO + SMU_CC_PSP_FUSES_SECURE)  ///< FRA Part
+
+#define PSP_MUTEX_REG0_OFFSET     (24 * 4)       ///< PSP Mutex0 register offset
+#define PSP_MUTEX_REG1_OFFSET     (25 * 4)       ///< PSP Mutex1 register offset
+
+#ifndef OFFSET_OF
+#define OFFSET_OF(TYPE, Field) ((UINTN) &(((TYPE *)0)->Field))
+#endif
 
 /*----------------------------------------------------------------------------------------
  *                   D E F I N I T I O N S    A N D    M A C R O S
@@ -139,6 +147,37 @@ PspLibPciWritePspConfig (
   PspLibPciWriteConfig  ((UINT32) (PSP_PCI_BDA  + Offset), Value);
 }
 
+/// Structure for Program ID
+typedef enum {
+  CZ_PROGRAM = 0x00,            ///< Program ID for CZ
+  BR_PROGRAM = 0x01,            ///< Program ID for BR
+  ST_PROGRAM = 0x02,            ///< Program ID for ST
+  UNSUPPORTED_PROGRAM = 0xFF,   ///< Program ID for unsupported
+} PROGRAM_ID;
+
+PROGRAM_ID
+PspGetProgarmId (
+  VOID
+  )
+{
+  CPUID_DATA          Cpuid;
+
+  LibAmdCpuidRead (0x00000001, &Cpuid, NULL);
+  //Stoney CPUID 0x00670F00 or 0x00670F01
+  if ((Cpuid.EAX_Reg >> 16) == 0x67) {
+    return ST_PROGRAM;
+  } else if ((Cpuid.EAX_Reg >> 16) == 0x66) {
+    if ((Cpuid.EAX_Reg & 0xF0) == 0x50) {
+      //Bristol CPUID 0x00660F51
+      return BR_PROGRAM;
+    } else if ((Cpuid.EAX_Reg & 0xF0) == 0x00) {
+      //Carrizo CPUID 0x00660F00 or 0x00660F01
+      return CZ_PROGRAM;
+    }
+  }
+  return UNSUPPORTED_PROGRAM;
+}
+
 BOOLEAN
 GetPspDirBase (
   IN OUT   UINT32     *Address
@@ -146,6 +185,7 @@ GetPspDirBase (
 {
   UINTN                     i;
   FIRMWARE_ENTRY_TABLE      *FirmwareTableBase;
+  PROGRAM_ID                ProgramId;
   CONST UINT32 RomSigAddrTable[] =
   {
     0xFFFA0000, //  --> 512KB base
@@ -156,30 +196,64 @@ GetPspDirBase (
     0xFF020000  //  --> 16MB base
   };
 
+  ProgramId = PspGetProgarmId ();
+
   for (i = 0; i < sizeof (RomSigAddrTable) / sizeof (UINT32); i++) {
     FirmwareTableBase  = (FIRMWARE_ENTRY_TABLE *) (UINTN) RomSigAddrTable[i];
     // Search flash for unique signature 0x55AA55AA
     if (FirmwareTableBase->Signature  == FIRMWARE_TABLE_SIGNATURE) {
-      *Address = FirmwareTableBase->PspDirBase;
+      switch (ProgramId) {
+      case BR_PROGRAM:
+      case CZ_PROGRAM:
+        *Address = FirmwareTableBase->PspDirBase;
+        break;
+      case ST_PROGRAM:
+        *Address = FirmwareTableBase->NewPspDirBase;
+        break;
+      default:
+        *Address = FirmwareTableBase->PspDirBase;
+        break;
+      }
       return TRUE;
     }
   }
-
   return (FALSE);
 }
+
+/**
+ * Get specific PSP Entry information, this routine will auto detect the processor for loading
+ * correct PSP Directory
+ *
+ *
+ *
+ * @param[in] EntryType               PSP DIR Entry Type
+ * @param[in,out] EntryAddress        Address of the specific PSP Entry
+ * @param[in,out] EntrySize           Size of the specific PSP Entry
+ */
 
 BOOLEAN
 PSPEntryInfo (
   IN       PSP_DIRECTORY_ENTRY_TYPE    EntryType,
   IN OUT   UINT64                      *EntryAddress,
-  IN       UINT32                      *EntrySize
+  IN OUT   UINT32                      *EntrySize
   )
 {
   PSP_DIRECTORY         *PspDir;
   UINTN                 i;
+  PROGRAM_ID                ProgramId;
 
+  PspDir = NULL;
   if (GetPspDirBase ((UINT32 *)&PspDir ) != TRUE) {
     return FALSE;
+  }
+
+  ProgramId = PspGetProgarmId ();
+  //Append BR Program ID
+  if ((ProgramId == BR_PROGRAM) &&
+      ((EntryType == SMU_OFFCHIP_FW) ||
+       (EntryType == SMU_OFF_CHIP_FW_2) ||
+       (EntryType == AMD_SCS_BINARY))) {
+    EntryType |= (PSP_ENTRY_BR_PROGRAM_ID << 8);
   }
 
   for (i = 0; i < PspDir->Header.TotalEntries; i++) {
@@ -191,6 +265,66 @@ PSPEntryInfo (
   }
 
   return (FALSE);
+}
+
+BOOLEAN
+PspSoftWareFuseInfo (
+  IN OUT   UINTN                       *FuseSpiAddress,
+  IN OUT   UINT64                      *FuseValue
+  )
+{
+  PSP_DIRECTORY         *PspDir;
+  UINTN                 i;
+
+  PspDir = NULL;
+  if (GetPspDirBase ((UINT32 *)&PspDir ) != TRUE) {
+    return FALSE;
+  }
+
+  for (i = 0; i < PspDir->Header.TotalEntries; i++) {
+    if (PspDir->PspEntry[i].Type == AMD_SOFT_FUSE_CHAIN_01) {
+      *FuseSpiAddress = (UINT32) (UINTN) &PspDir->PspEntry[i].Location;
+      *FuseValue = PspDir->PspEntry[i].Location;
+      return (TRUE);
+    }
+  }
+  return (FALSE);
+}
+
+UINT32 Fletcher32 (
+  IN OUT   UINT16  *data,
+  IN       UINTN   words
+  )
+{
+  UINT32 sum1;
+  UINT32 sum2;
+  UINTN tlen;
+
+  sum1 = 0xffff;
+  sum2 = 0xffff;
+
+  while (words) {
+    tlen = words >= 359 ? 359 : words;
+    words -= tlen;
+    do {
+      sum2 += sum1 += *data++;
+    } while (--tlen);
+    sum1 = (sum1 & 0xffff) + (sum1 >> 16);
+    sum2 = (sum2 & 0xffff) + (sum2 >> 16);
+  }
+  // Second reduction step to reduce sums to 16 bits
+  sum1 = (sum1 & 0xffff) + (sum1 >> 16);
+  sum2 = (sum2 & 0xffff) + (sum2 >> 16);
+  return sum2 << 16 | sum1;
+}
+
+VOID
+UpdataPspDirCheckSum (
+  IN OUT   PSP_DIRECTORY         *PspDir
+  )
+{
+    PspDir->Header.Checksum = Fletcher32 ((UINT16 *) &PspDir->Header.TotalEntries, \
+      (sizeof (PSP_DIRECTORY_HEADER) - OFFSET_OF (PSP_DIRECTORY_HEADER, TotalEntries) + PspDir->Header.TotalEntries * sizeof (PSP_DIRECTORY_ENTRY)) / 2);
 }
 
 /**
@@ -273,7 +407,7 @@ GetPspMboxStatus (
 {
   UINT32 PspMmio;
 
-  if (GetPspBar1Addr (&PspMmio) == FALSE) {
+  if (GetPspBar3Addr (&PspMmio) == FALSE) {
     return (FALSE);
   }
 
@@ -283,7 +417,7 @@ GetPspMboxStatus (
 }
 
 BOOLEAN
-PspBarInitEarly (void)
+PspBarInitEarly ()
 {
   UINT32 PspMmioSize;
   UINT32 Value32;
@@ -293,18 +427,18 @@ PspBarInitEarly (void)
   }
 
   //Check if PSP BAR has been assigned, if not do the PSP BAR initialation
-  if (PspLibPciReadPspConfig (PSP_PCI_BAR1_REG) == 0) {
+  if (PspLibPciReadPspConfig (PSP_PCI_BAR3_REG) == 0) {
     /// Get PSP BAR1 Size
-    PspLibPciWritePspConfig (PSP_PCI_BAR1_REG, 0xFFFFFFFF);
-    PspMmioSize = PspLibPciReadPspConfig (PSP_PCI_BAR1_REG);
+    PspLibPciWritePspConfig (PSP_PCI_BAR3_REG, 0xFFFFFFFF);
+    PspMmioSize = PspLibPciReadPspConfig (PSP_PCI_BAR3_REG);
     PspMmioSize = ~PspMmioSize + 1;
-    /// Assign BAR1 Temporary Address
-    PspLibPciWritePspConfig (PSP_PCI_BAR1_REG, PSP_BAR1_TMP_BASE);
+    /// Assign BAR3 Temporary Address
+    PspLibPciWritePspConfig (PSP_PCI_BAR3_REG, PSP_BAR_TMP_BASE);
     PspLibPciWritePspConfig ( PSP_PCI_CMD_REG, 0x06);
 
     /// Enable GNB redirection to this space @todo use equate & also find proper fix
-    PspLibPciWriteConfig ( ( (0x18 << 11) + (1 << 8) + 0xBC), ((PSP_BAR1_TMP_BASE + PspMmioSize -1) >> 8) & ~0xFF);
-    PspLibPciWriteConfig ( ( (0x18 << 11) + (1 << 8) + 0xB8), (PSP_BAR1_TMP_BASE >> 8) | 3);
+    PspLibPciWriteConfig ( ( (0x18 << 11) + (1 << 8) + 0xBC), ((PSP_BAR_TMP_BASE + PspMmioSize -1) >> 8) & ~0xFF);
+    PspLibPciWriteConfig ( ( (0x18 << 11) + (1 << 8) + 0xB8), (PSP_BAR_TMP_BASE >> 8) | 3);
     /// Enable MsixBarEn, Bar1En, Bar3En
     PspLibPciWritePspConfig ( PSP_PCI_EXTRAPCIHDR_REG, 0x34);
     /// Capability chain update
@@ -354,17 +488,72 @@ GetPspBar3Addr (
   IN OUT   UINT32 *PspMmio
   )
 {
+  UINT32 PciReg48;
+  UINT64 MsrPspAddr;
+
   if (CheckPspDevicePresent () == FALSE) {
     return (FALSE);
   }
 
-  *PspMmio = PspLibPciReadPspConfig  (PSP_PCI_BAR3_REG);
+  PciReg48 = PspLibPciReadPspConfig (PSP_PCI_EXTRAPCIHDR_REG);
+  if (PciReg48 & BIT12) {
+  // D8F0x48[12] Bar3Hide
+    LibAmdMsrRead (PSP_MSR_PRIVATE_BLOCK_BAR, &MsrPspAddr, NULL);
+    *PspMmio = (UINT32)MsrPspAddr;
+  } else {
+    *PspMmio = PspLibPciReadPspConfig (PSP_PCI_BAR3_REG) & 0xFFF00000;
+  }
 
   if ((*PspMmio) == 0xffffffff) {
     return (FALSE);
   }
 
   return (TRUE);
+}
+/**
+ * Acquire the Mutex for access PSP,X86 co-accessed register
+ * Call this routine before access SMIx98 & SMIxA8
+ *
+ */
+VOID
+AcquirePspSmiRegMutex (
+  VOID
+  )
+{
+  UINT32 PspBarAddr;
+  UINT32 MutexReg0;
+  UINT32 MutexReg1;
+
+  PspBarAddr = 0;
+  if (GetPspBar3Addr (&PspBarAddr)) {
+    MutexReg0 = PspBarAddr + PSP_MUTEX_REG0_OFFSET;
+    MutexReg1 = PspBarAddr + PSP_MUTEX_REG1_OFFSET;
+    *(volatile UINT32*)(UINTN)(MutexReg0) |= BIT0;
+    *(volatile UINT32*)(UINTN)(MutexReg1) |= BIT0;
+    //Wait till PSP FW release the mutex
+    while ((*(volatile UINT32*)(UINTN)(MutexReg0)& BIT1) && (*(volatile UINT32*)(UINTN)(MutexReg1) & BIT0)) {
+      ;
+    }
+  }
+}
+/**
+ * Release the Mutex for access PSP,X86 co-accessed register
+ * Call this routine after access SMIx98 & SMIxA8
+ *
+ */
+VOID
+ReleasePspSmiRegMutex (
+  VOID
+  )
+{
+  UINT32 PspBarAddr;
+  UINT32 MutexReg0;
+
+  PspBarAddr = 0;
+  if (GetPspBar3Addr (&PspBarAddr)) {
+    MutexReg0 = PspBarAddr + PSP_MUTEX_REG0_OFFSET;
+    *(volatile UINT32*)(UINTN)(MutexReg0) &= ~BIT0;
+  }
 }
 
 /*---------------------------------------------------------------------------------------*/
@@ -461,4 +650,30 @@ PspLibPciIndirectWrite (
   LibAmdPciWrite (Width, Address, Value, NULL);
 }
 
+BOOLEAN
+IsS3Resume (
+  )
+{
+  UINT16                  AcpiPm1CntBlk;
+  UINT16                  SleepType;
+  UINT8                   PmioAddr;
+
+  AcpiPm1CntBlk = 0;
+  //Get AcpiPm1CntBlk address
+  //PMIO register can only allow 8bits access
+  PmioAddr = PMIO_REG62;
+  LibAmdIoWrite (AccessWidth8, PMIO_INDEX_PORT, &PmioAddr, NULL);
+  LibAmdIoRead (AccessWidth8, PMIO_DATA_PORT, &AcpiPm1CntBlk, NULL);
+
+  PmioAddr++;
+  LibAmdIoWrite (AccessWidth8, PMIO_INDEX_PORT, &PmioAddr, NULL);
+  LibAmdIoRead (AccessWidth8, PMIO_DATA_PORT, ((UINT8 *) &AcpiPm1CntBlk) + 1, NULL);
+
+  //Get Sleep type
+  LibAmdIoRead (AccessWidth16, AcpiPm1CntBlk, &SleepType, NULL);
+  SleepType = SleepType & 0x1C00;
+  SleepType = ((SleepType >> 10) & 7);
+
+  return ((SleepType == 3) ? TRUE : FALSE);
+}
 

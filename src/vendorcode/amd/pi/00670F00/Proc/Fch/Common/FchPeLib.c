@@ -9,12 +9,12 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:     AGESA
  * @e sub-project: FCH
- * @e \$Revision: 309090 $   @e \$Date: 2014-12-09 12:28:05 -0600 (Tue, 09 Dec 2014) $
+ * @e \$Revision$   @e \$Date$
  *
  */
  /*****************************************************************************
  *
- * Copyright (c) 2008 - 2015, Advanced Micro Devices, Inc.
+ * Copyright (c) 2008 - 2016, Advanced Micro Devices, Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,13 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  ***************************************************************************/
+
 #include "FchPlatform.h"
+#include  "cpuFamilyTranslation.h"
+//#include  "Porting.h"
+//#include  "AMD.h"
+//#include  "amdlib.h"
+#include  "heapManager.h"
 #define FILECODE PROC_FCH_COMMON_FCHPELIB_FILECODE
 
 /*----------------------------------------------------------------------------------------*/
@@ -179,8 +185,8 @@ ProgramFchGpioTbl (
 {
   if (pGpioTbl != NULL) {
     while (pGpioTbl->GpioPin != 0xFF) {
-      ACPIMMIO8 (ACPI_MMIO_BASE | IOMUX_BASE | pGpioTbl->GpioPin) = (UINT8) (pGpioTbl->PinFunction);
-      ACPIMMIO8 (ACPI_MMIO_BASE + GPIO_BANK0_BASE + ((UINT32)pGpioTbl->GpioPin << 2) + 2) = (UINT8) (pGpioTbl->CfgByte);
+      ACPIMMIO8 (ACPI_MMIO_BASE + IOMUX_BASE + pGpioTbl->GpioPin) = (UINT8) (pGpioTbl->PinFunction);
+      ACPIMMIO8 (ACPI_MMIO_BASE + GPIO_BANK0_BASE + (pGpioTbl->GpioPin << 2) + 2) = (UINT8) (pGpioTbl->CfgByte);
       pGpioTbl++;
     }
   }
@@ -308,3 +314,359 @@ SbSleepTrapControl (
     ACPIMMIO32 (ACPI_MMIO_BASE + SMI_BASE + FCH_SMI_REGB0) &= ~(BIT2 + BIT3);
   }
 }
+
+/**
+ * FchUsb3D3ColdCallback - Fch Usb3 D3Cold Callback
+ *
+ *
+ * @param[in] FchDataPtr
+ *
+ */
+VOID
+FchUsb3D3ColdCallback (
+  IN  VOID     *FchDataPtr
+  )
+{
+  FCH_DATA_BLOCK         *LocalCfgPtr;
+  AMD_CONFIG_PARAMS      *StdHeader;
+  UINT8 Value8;
+
+  LocalCfgPtr = (FCH_DATA_BLOCK *) FchDataPtr;
+  StdHeader = LocalCfgPtr->StdHeader;
+  //FCH_DEADLOOP ();
+  ACPIMMIO32 (FCH_AOACxA0_PwrGood_Control) |= FCH_AOACxA0_PwrGood_Control_SwUsb3SlpShutdown;
+  do {
+  } while ((ACPIMMIO32 (FCH_AOACxA0_PwrGood_Control) & FCH_AOACxA0_PwrGood_Control_SwUsb3SlpShutdown) == 0);
+
+  ACPIMMIO32 (FCH_XHC_PMx00_Configure0) |= FCH_XHC_PMx00_Configure0_U3P_D3Cold_PWRDN;
+
+  ACPIMMIO8 (FCH_AOACx6E_USB3_D3_CONTROL) &= ~ (AOAC_PWR_ON_DEV);
+  do {
+  } while ((ACPIMMIO8 (FCH_AOACx6F_USB3_D3_STATE) & 0x07) != 0);
+
+  ACPIMMIO8 (FCH_AOACx6E_USB3_D3_CONTROL) |= 3;
+
+  ACPIMMIO32 (FCH_MISCx28_ClkDrvStr2) |= FCH_MISCx28_ClkDrvStr2_USB3_RefClk_Pwdn;
+
+  if ((ACPIMMIO8 (FCH_AOACx64_EHCI_D3_CONTROL) & 0x03) == 3) {
+    ACPIMMIO32 (FCH_AOACxA0_PwrGood_Control) &= ~ (FCH_AOACxA0_PwrGood_Control_SwUsb2S5RstB + FCH_AOACxA0_PwrGood_Control_SwUsb3SlpShutdown);
+    ACPIMMIO32 (FCH_MISCx28_ClkDrvStr2) |= FCH_MISCx28_ClkDrvStr2_USB2_RefClk_Pwdn;
+  }
+
+  ACPIMMIO32 (FCH_AOACxA0_PwrGood_Control) &= ~ (FCH_AOACxA0_PwrGood_Control_XhcPwrGood + FCH_AOACxA0_PwrGood_Control_SwUsb3SlpShutdown);
+  Value8 = ACPIMMIO8 (0xFED803EE);
+  Value8 &= 0xFC;
+  Value8 |= 0x01;
+  ACPIMMIO8 (0xFED803EE) = Value8;
+}
+
+/**
+ * FchUsb3D0Callback - Fch Usb3 D0 Callback
+ *
+ *
+ * @param[in] FchDataPtr
+ *
+ */
+VOID
+FchUsb3D0Callback (
+  IN  VOID     *FchDataPtr
+  )
+{
+  FCH_DATA_BLOCK         *LocalCfgPtr;
+  AMD_CONFIG_PARAMS      *StdHeader;
+  UINT32 Dword32;
+
+  LocalCfgPtr = (FCH_DATA_BLOCK *) FchDataPtr;
+  StdHeader = LocalCfgPtr->StdHeader;
+
+  ACPIMMIO8 (0xFED803EE) &= 0xFC;
+
+  ACPIMMIO8 (FCH_AOACxA0_PwrGood_Control) |= (FCH_AOACxA0_PwrGood_Control_XhcPwrGood);
+  ACPIMMIO32 (FCH_MISCx28_ClkDrvStr2) &= ~ (FCH_MISCx28_ClkDrvStr2_USB2_RefClk_Pwdn);
+  ACPIMMIO32 (FCH_MISCx28_ClkDrvStr2) &= ~ (FCH_MISCx28_ClkDrvStr2_USB3_RefClk_Pwdn);
+  Dword32 = ACPIMMIO32 (FCH_AOACxA0_PwrGood_Control);
+  Dword32 &= ~(FCH_AOACxA0_PwrGood_Control_SwUsb3SlpShutdown);
+  ACPIMMIO32 (FCH_AOACxA0_PwrGood_Control) =  ((FCH_AOACxA0_PwrGood_Control_SwUsb2S5RstB | Dword32) & (~ BIT29));
+
+  ACPIMMIO8 (FCH_AOACx6E_USB3_D3_CONTROL) &= 0xFC;
+  ACPIMMIO8 (FCH_AOACx6E_USB3_D3_CONTROL) |= (AOAC_PWR_ON_DEV);
+  do {
+  } while ((ACPIMMIO8 (FCH_AOACx6F_USB3_D3_STATE) & 0x07) != 7);
+
+  do {
+  } while ((ACPIMMIO32 (FCH_XHC_PMx00_Configure0) & BIT7) != BIT7);
+
+  ACPIMMIO32 (FCH_XHC_PMx00_Configure0) &= ~ (BIT16);
+
+}
+
+/* -----------------------------------------------------------------------------*/
+/**
+ *
+ *
+ *   This function Checks Bristol or Stoney
+ *
+ *   NOTE:
+ *
+ * @param[in] StdHeader
+ *
+ */
+BOOLEAN
+FchCheckBR_ST (
+  IN       AMD_CONFIG_PARAMS   *StdHeader
+  )
+{
+  CPU_LOGICAL_ID LogicalId;
+
+  // Only initialize on CZ processors, otherwise exit.
+  GetLogicalIdOfCurrentCore (&LogicalId, StdHeader);
+  if ((LogicalId.Revision & AMD_F15_BR_ALL) != 0) {
+    return TRUE;
+  }
+  if ((LogicalId.Revision & AMD_F15_ST_ALL) != 0) {
+    return TRUE;
+  }
+
+  return FALSE;
+}
+
+/* -----------------------------------------------------------------------------*/
+/**
+ *
+ *
+ *   This function Checks Bristol
+ *
+ *   NOTE:
+ *
+ * @param[in] StdHeader
+ *
+ */
+BOOLEAN
+FchCheckBR (
+  IN       AMD_CONFIG_PARAMS   *StdHeader
+  )
+{
+  CPU_LOGICAL_ID LogicalId;
+
+  // Only initialize on CZ processors, otherwise exit.
+  GetLogicalIdOfCurrentCore (&LogicalId, StdHeader);
+  if ((LogicalId.Revision & AMD_F15_BR_ALL) != 0) {
+    return TRUE;
+  }
+
+  return FALSE;
+}
+
+/* -----------------------------------------------------------------------------*/
+/**
+ *
+ *
+ *   This function Checks Stoney
+ *
+ *   NOTE:
+ *
+ * @param[in] StdHeader
+ *
+ */
+BOOLEAN
+FchCheckST (
+  IN       AMD_CONFIG_PARAMS   *StdHeader
+  )
+{
+  CPU_LOGICAL_ID LogicalId;
+
+  // Only initialize on CZ processors, otherwise exit.
+  GetLogicalIdOfCurrentCore (&LogicalId, StdHeader);
+  if ((LogicalId.Revision & AMD_F15_ST_ALL) != 0) {
+    return TRUE;
+  }
+
+  return FALSE;
+}
+
+/* -----------------------------------------------------------------------------*/
+/**
+ *
+ *
+ *   This function Checks Carrizo
+ *
+ *   NOTE:
+ *
+ * @param[in] StdHeader
+ *
+ */
+BOOLEAN
+FchCheckCZ (
+  IN       AMD_CONFIG_PARAMS   *StdHeader
+  )
+{
+  CPU_LOGICAL_ID LogicalId;
+
+  // Only initialize on CZ processors, otherwise exit.
+  GetLogicalIdOfCurrentCore (&LogicalId, StdHeader);
+  if ((LogicalId.Revision & AMD_F15_CZ_ALL) != 0) {
+    return TRUE;
+  }
+
+  return FALSE;
+}
+
+/* -----------------------------------------------------------------------------*/
+/**
+ *
+ *
+ *   This function Checks Package AM4
+ *
+ *   NOTE:
+ *
+ * @param[in] StdHeader
+ *
+ */
+BOOLEAN
+FchCheckPackageAM4 (
+  IN       AMD_CONFIG_PARAMS   *StdHeader
+  )
+{
+  CPUID_DATA CpuId;
+  UINT8 RegValue;
+
+  LibAmdCpuidRead (AMD_CPUID_FMF, &CpuId, StdHeader);
+  RegValue = (UINT8) (CpuId.EBX_Reg >> 28) & 0xF; // bit 31:28
+  ///@todo - update the PkgType once it is reflected in BKDG
+  if (RegValue == 2) {
+    return TRUE;
+  } else {
+    return FALSE;
+  }
+}
+
+/* -----------------------------------------------------------------------------*/
+/**
+ *
+ *
+ *   This function Get Scratch Fuse
+ *
+ *   NOTE:
+ *
+ * @param[in] StdHeader
+ *
+ */
+UINT64
+FchGetScratchFuse (
+  IN       AMD_CONFIG_PARAMS   *StdHeader
+  )
+{
+  PCI_ADDR D0F0xB8_SMU_Index_Address;
+  PCI_ADDR D0F0xBC_SMU_Index_Data;
+  UINT64  TempData64;
+  UINT32  TempData32;
+
+  D0F0xB8_SMU_Index_Address.AddressValue = (MAKE_SBDFO (0, 0, 0, 0, 0xB8));
+  D0F0xBC_SMU_Index_Data.AddressValue = (MAKE_SBDFO (0, 0, 0, 0, 0xBC));
+  TempData64 = 0;
+  TempData32 = 0xC0016028;
+  LibAmdPciWrite (AccessWidth32, D0F0xB8_SMU_Index_Address, &TempData32, StdHeader);
+  LibAmdPciRead (AccessWidth32, D0F0xBC_SMU_Index_Data, &TempData32, StdHeader);
+  TempData64 |= (((UINT64) TempData32) & 0xFFFFFFFF) >> 9;
+  TempData32 = 0xC001602C;
+  LibAmdPciWrite (AccessWidth32, D0F0xB8_SMU_Index_Address, &TempData32, StdHeader);
+  LibAmdPciRead (AccessWidth32, D0F0xBC_SMU_Index_Data, &TempData32, StdHeader);
+  TempData64 |= (((UINT64) TempData32) & 0xFFFFFFFF) << (32 - 9);
+  TempData32 = 0xC0016030;
+  LibAmdPciWrite (AccessWidth32, D0F0xB8_SMU_Index_Address, &TempData32, StdHeader);
+  LibAmdPciRead (AccessWidth32, D0F0xBC_SMU_Index_Data, &TempData32, StdHeader);
+  TempData64 |= (((UINT64) TempData32) & 0xFFFFFFFF) << (64 - 9);
+
+  return TempData64;
+}
+
+/*---------------------------------------------------------------------------------------*/
+/**
+ * Allocates space for a new buffer in the heap
+ *
+ *
+ * @param[in]      Handle            Buffer handle
+ * @param[in]      Length            Buffer length
+ * @param[in]      StdHeader         Standard configuration header
+ *
+ * @retval         NULL              Buffer allocation fail
+ *
+ */
+
+VOID *
+FchAllocateHeapBuffer (
+  IN      UINT32              Handle,
+  IN      UINTN               Length,
+  IN      AMD_CONFIG_PARAMS   *StdHeader
+  )
+{
+  AGESA_STATUS          Status;
+  ALLOCATE_HEAP_PARAMS  AllocHeapParams;
+
+  AllocHeapParams.RequestedBufferSize = (UINT32) Length;
+  AllocHeapParams.BufferHandle = Handle;
+  AllocHeapParams.Persist = HEAP_SYSTEM_MEM;
+  Status = HeapAllocateBuffer (&AllocHeapParams, StdHeader);
+  if (Status != AGESA_SUCCESS) {
+    return NULL;
+  }
+  return AllocHeapParams.BufferPtr;
+}
+
+
+/*---------------------------------------------------------------------------------------*/
+/**
+ * Allocates space for a new buffer in the heap and clear it
+ *
+ *
+ * @param[in]      Handle            Buffer handle
+ * @param[in]      Length            Buffer length
+ * @param[in]      StdHeader         Standard configuration header
+ *
+ * @retval         NULL              Buffer allocation fail
+ *
+ */
+
+VOID *
+FchAllocateHeapBufferAndClear (
+  IN      UINT32              Handle,
+  IN      UINTN               Length,
+  IN      AMD_CONFIG_PARAMS   *StdHeader
+  )
+{
+  VOID  *Buffer;
+  Buffer = FchAllocateHeapBuffer (Handle, Length, StdHeader);
+  if (Buffer != NULL) {
+    LibAmdMemFill (Buffer, 0x00, Length, StdHeader);
+  }
+  return Buffer;
+}
+
+/*---------------------------------------------------------------------------------------*/
+/**
+ * Locates a previously allocated buffer on the heap.
+ *
+ *
+ * @param[in]      Handle            Buffer handle
+ * @param[in]      StdHeader         Standard configuration header
+ *
+ * @retval         NULL              Buffer handle not found
+ *
+ */
+
+VOID *
+MemLocateHeapBuffer (
+  IN      UINT32              Handle,
+  IN      AMD_CONFIG_PARAMS   *StdHeader
+  )
+{
+  AGESA_STATUS          Status;
+  LOCATE_HEAP_PTR       LocHeapParams;
+  LocHeapParams.BufferHandle = Handle;
+  Status = HeapLocateBuffer (&LocHeapParams, StdHeader);
+  if (Status != AGESA_SUCCESS) {
+    return NULL;
+  }
+  return LocHeapParams.BufferPtr;
+}
+

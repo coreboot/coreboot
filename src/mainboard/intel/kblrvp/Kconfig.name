@@ -1,0 +1,2 @@
+config BOARD_INTEL_KBLRVP3
+	bool "Kabylake LPDDR3 RVP3"

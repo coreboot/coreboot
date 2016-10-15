@@ -1,0 +1,63 @@
+if BOARD_INTEL_KBLRVP3
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select BOARD_ROMSIZE_KB_16384
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select HAVE_OPTION_TABLE
+	select HAVE_SMI_HANDLER
+	select MMCONF_SUPPORT
+	select MONOTONIC_TIMER_MSR
+	select SOC_INTEL_SKYLAKE
+	select MAINBOARD_USES_FSP2_0
+
+config CHROMEOS
+	select LID_SWITCH
+
+config DRIVERS_GENERIC_MAX98357A
+	default y
+
+config DRIVERS_I2C_GENERIC
+	default y
+
+config DRIVERS_I2C_NAU8825
+	default y
+
+config IRQ_SLOT_COUNT
+	int
+	default 18
+
+config MAINBOARD_DIR
+	string
+	default "intel/kblrvp"
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Kblrvp"
+
+config MAINBOARD_FAMILY
+	string
+	default "Intel_Kblrvp"
+
+config MAX_CPUS
+	int
+	default 8
+
+config TPM_PIRQ
+	hex
+	default 0x18  # GPP_E0_IRQ
+
+config INCLUDE_NHLT_BLOBS
+	bool "Include blobs for audio."
+	select NHLT_DMIC_2CH
+	select NHLT_DMIC_4CH
+	select NHLT_MAX98357
+	select NHLT_NAU88L25
+	select NHLT_SSM4567
+
+config GBB_HWID
+	string
+	depends on CHROMEOS
+	default "KBLRVP TEST 8819"
+endif

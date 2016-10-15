@@ -1713,9 +1713,12 @@ static void sdram_set_timing_and_control(struct sys_info *sysinfo)
 
 	static const u8 drt0_table[] = {
 	  /* CL 3, 4, 5 */
-		3, 4, 5, 	/* FSB533/400, DDR533/400 */
-		4, 5, 6,	/* FSB667, DDR533/400 */
-		4, 5, 6,	/* FSB667, DDR667 */
+		3, 4, 5,	/* FSB533, DDR667/533/400 */
+		4, 5, 6,	/* FSB667, DDR667/533/400 */
+		5, 6, 7,	/* FSB800, DDR400/533 */
+		6, 7, 8,	/* FSB800, DDR667 */
+		5, 6, 7,	/* FSB1066, DDR400 */
+		7, 8, 9,	/* FSB1066, DDR533/DDR667 */
 	};
 
 	static const u8 cas_table[] = {
@@ -1772,12 +1775,29 @@ static void sdram_set_timing_and_control(struct sys_info *sysinfo)
 
 	/* Program Write Auto Precharge to Activate */
 	off32 = 0;
-	if (sysinfo->fsb_frequency == 667) { /* 667MHz FSB */
-		off32 += 3;
+	switch (sysinfo->fsb_frequency) {
+	case 533:
+		off32 = 0;
+		break;
+	case 667:
+		off32 = 3;
+		break;
+	case 800:
+		if (sysinfo->memory_frequency <= 533) {
+			off32 = 6;
+			break;
+		}
+		off32 = 9;
+		break;
+	case 1066:
+		if (sysinfo->memory_frequency == 400) {
+			off32 = 12;
+			break;
+		}
+		off32 = 15;
+		break;
 	}
-	if (sysinfo->memory_frequency == 667) {
-		off32 += 3;
-	}
+
 	off32 += sysinfo->cas - 3;
 	reg32 = drt0_table[off32];
 	temp_drt |= (reg32 << 11);

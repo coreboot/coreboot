@@ -26,12 +26,12 @@ struct cpuid_t *cpuid(void) {
 
 /* First, we need determine which vendor we have */
 #if defined(__DARWIN__) && !defined(__LP64__)
-        asm volatile (
-                "pushl %%ebx    \n"
-                "cpuid          \n"
-                "popl %%ebx     \n"
-                : "=b" (outebx) : "a" (0) : "%ecx", "%edx"
-        );
+	asm volatile (
+		"pushl %%ebx    \n"
+		"cpuid          \n"
+		"popl %%ebx     \n"
+		: "=b" (outebx) : "a" (0) : "%ecx", "%edx"
+	);
 #else
 	asm ("cpuid" : "=b" (outebx) : "a" (0) : "%ecx", "%edx");
 #endif
@@ -40,12 +40,12 @@ struct cpuid_t *cpuid(void) {
 
 /* Then, identificate CPU itself */
 #if defined(__DARWIN__) && !defined(__LP64__)
-        asm volatile (
-                "pushl %%ebx    \n"
-                "cpuid          \n"
-                "popl %%ebx     \n"
-                : "=a" (outeax) : "a" (1) : "%ecx", "%edx"
-        );
+	asm volatile (
+		"pushl %%ebx    \n"
+		"cpuid          \n"
+		"popl %%ebx     \n"
+		: "=a" (outeax) : "a" (1) : "%ecx", "%edx"
+	);
 #else
 	asm ("cpuid" : "=a" (outeax) : "a" (1) : "%ebx", "%ecx", "%edx");
 #endif

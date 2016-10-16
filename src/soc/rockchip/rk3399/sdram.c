@@ -940,23 +940,38 @@ static void switch_to_phy_index1(const struct rk3399_sdram_params *sdram_params)
 {
 	u32 channel;
 	u32 *denali_phy;
+	struct stopwatch sw;
 	u32 ch_count = sdram_params->num_channels;
 
+	stopwatch_init_msecs_expire(&sw, 100);
 	write32(&rk3399_ddr_cic->cic_ctrl0,
 		RK_CLRSETBITS(0x03 << 4 | 1 << 2 | 1,
 			      1 << 4 | 1 << 2 | 1));
-	while (!(read32(&rk3399_ddr_cic->cic_status0) & (1 << 2)))
-		;
+	while (!(read32(&rk3399_ddr_cic->cic_status0) & (1 << 2))) {
+		if (stopwatch_expired(&sw)) {
+			printk(BIOS_ERR,
+			       "index1 frequency change overtime, reset\n");
+			hard_reset();
+		}
+	}
 
+	stopwatch_init_msecs_expire(&sw, 100);
 	write32(&rk3399_ddr_cic->cic_ctrl0, RK_CLRSETBITS(1 << 1, 1 << 1));
-	while (!(read32(&rk3399_ddr_cic->cic_status0) & (1 << 0)))
-		;
+	while (!(read32(&rk3399_ddr_cic->cic_status0) & (1 << 0))) {
+		if (stopwatch_expired(&sw)) {
+			printk(BIOS_ERR,
+			       "index1 frequency done overtime, reset\n");
+			hard_reset();
+		}
+	}
 
 	for (channel = 0; channel < ch_count; channel++) {
 		denali_phy = rk3399_ddr_publ[channel]->denali_phy;
 		clrsetbits_le32(&denali_phy[896], (0x3 << 8) | 1, 1 << 8);
-		if (data_training(channel, sdram_params, PI_FULL_TARINING))
-			printk(BIOS_DEBUG, "training failed\n");
+		if (data_training(channel, sdram_params, PI_FULL_TARINING)) {
+			printk(BIOS_ERR, "index1 training failed, reset\n");
+			hard_reset();
+		}
 	}
 }
 

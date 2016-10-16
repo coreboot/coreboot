@@ -1,0 +1,7 @@
+boot_option=Fallback
+baud_rate=115200
+debug_level=Spew
+hyper_threading=Enable
+nmi=Enable
+boot_devices=''
+gfx_uma_size=8M

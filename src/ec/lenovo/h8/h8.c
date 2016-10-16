@@ -150,7 +150,7 @@ u8 h8_build_id_and_function_spec_version(char *buf, u8 buf_len)
 	for (i = 0; i < 8; i++) {
 		c = ec_read(0xf0 + i);
 		if (c < 0x20 || c > 0x7f) {
-		  i = snprintf(str, sizeof (str), "*INVALID");
+			i = snprintf(str, sizeof (str), "*INVALID");
 			break;
 		}
 		str[i] = c;
@@ -296,7 +296,7 @@ static void h8_enable(struct device *dev)
 	h8_set_audio_mute(0);
 
 #if !IS_ENABLED(CONFIG_H8_DOCK_EARLY_INIT)
-	h8_mainboard_init_dock ();
+	h8_mainboard_init_dock();
 #endif
 }
 

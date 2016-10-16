@@ -70,7 +70,20 @@ entries
 
 # coreboot config options: cpu
 944          1       e       2        hyper_threading
-#945         7       r       0        unused
+#945         4       r       0        unused
+
+# coreboot config options: ec
+949         1       e       9        first_battery
+950         1       e       1        bluetooth
+951         1       e       1        wwan
+952         1       e       1        wlan
+953         1       e       1        trackpoint
+954         1       e       1        fn_ctrl_swap
+955         1       e       1        sticky_fn
+956         1       e       1        power_management_beeps
+959         1       e       1        low_battery_beep
+960         8       h       0        volume
+968         8       h       0        tft_brightness
 
 # coreboot config options: check sums
 984         16       h       0        check_sum
@@ -82,18 +95,6 @@ entries
 1040         8       r       0        RCVENMT
 1048         4       r       0        C0DRT1
 1052         4       r       0        C1DRT1
-
-1064         8       h       0        volume
-1072         8       h       0        tft_brightness
-1080         1       e       9        first_battery
-1081         1       e       1        bluetooth
-1082         1       e       1        wwan
-1083         1       e       1        wlan
-1084         1       e       1        trackpoint
-1085         1       e       1        fn_ctrl_swap
-1086         1       e       1        sticky_fn
-1087         1       e       1        power_management_beeps
-1088         1       e       1        low_battery_beep
 # -----------------------------------------------------------------
 
 enumerations

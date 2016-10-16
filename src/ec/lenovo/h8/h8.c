@@ -288,11 +288,11 @@ static void h8_enable(struct device *dev)
 	ec_write(H8_CONFIG2, conf->config2);
 	ec_write(H8_CONFIG3, conf->config3);
 
-	ec_write(H8_SOUND_REPEAT, 0x00);
 	if (!acpi_is_wakeup_s3())
 		h8_configure(conf);
 
 	/* silence sounds in queue */
+	ec_write(H8_SOUND_REPEAT, 0x00);
 	ec_write(H8_SOUND_REG, 0x00);
 
 	ec_write(0x10, conf->event0_enable);

@@ -202,27 +202,46 @@ struct device_operations h8_dev_ops = {
 	.init = h8_init,
 };
 
-static void h8_enable(struct device *dev)
+/* configure default values or load value from nvram */
+static void h8_configure(struct ec_lenovo_h8_config *conf)
 {
-	struct ec_lenovo_h8_config *conf = dev->chip_info;
 	u8 val;
-	u8 beepmask0, beepmask1, config1;
+	u8 beepmask0, beepmask1;
 
-	dev->ops = &h8_dev_ops;
+	if (get_option(&val, "wlan") != CB_SUCCESS)
+		val = 1;
+	h8_wlan_enable(val);
 
-	h8_log_ec_version();
+	if (get_option(&val, "bluetooth") != CB_SUCCESS)
+		val = 1;
+	h8_bluetooth_enable(val);
 
-	ec_write(H8_CONFIG0, conf->config0);
-	config1 = conf->config1;
+	if (get_option(&val, "wwan") != CB_SUCCESS)
+		val = 1;
+	h8_wwan_enable(val);
 
-	if (conf->has_keyboard_backlight) {
-		if (get_option(&val, "backlight") != CB_SUCCESS)
-			val = 0; /* Both backlights.  */
-		config1 = (config1 & 0xf3) | ((val & 0x3) << 2);
+	if (conf->has_uwb) {
+		if (get_option(&val, "uwb") != CB_SUCCESS)
+			val = 1;
+
+		h8_uwb_enable(val);
 	}
-	ec_write(H8_CONFIG1, config1);
-	ec_write(H8_CONFIG2, conf->config2);
-	ec_write(H8_CONFIG3, conf->config3);
+
+	if (get_option(&val, "fn_ctrl_swap") != CB_SUCCESS)
+		val = 0;
+	h8_fn_ctrl_swap(val);
+
+	if (get_option(&val, "sticky_fn") != CB_SUCCESS)
+		val = 0;
+	h8_sticky_fn(val);
+
+	if (get_option(&val, "first_battery") != CB_SUCCESS)
+		val = PRIMARY_BATTERY;
+	h8_charge_priority(val);
+
+	/* configure sound */
+	if (get_option(&val, "volume") == CB_SUCCESS)
+		ec_write(H8_VOLUME_CONTROL, val);
 
 	beepmask0 = conf->beepmask0;
 	beepmask1 = conf->beepmask1;
@@ -242,11 +261,36 @@ static void h8_enable(struct device *dev)
 		else
 			beepmask0 &= ~2;
 	}
-
 	ec_write(H8_SOUND_ENABLE0, beepmask0);
 	ec_write(H8_SOUND_ENABLE1, beepmask1);
+	h8_set_audio_mute(0);
+}
+
+static void h8_enable(struct device *dev)
+{
+	struct ec_lenovo_h8_config *conf = dev->chip_info;
+	u8 val;
+	u8 config1;
+
+	dev->ops = &h8_dev_ops;
+
+	h8_log_ec_version();
+
+	ec_write(H8_CONFIG0, conf->config0);
+	config1 = conf->config1;
+
+	if (conf->has_keyboard_backlight) {
+		if (get_option(&val, "backlight") != CB_SUCCESS)
+			val = 0; /* Both backlights.  */
+		config1 = (config1 & 0xf3) | ((val & 0x3) << 2);
+	}
+	ec_write(H8_CONFIG1, config1);
+	ec_write(H8_CONFIG2, conf->config2);
+	ec_write(H8_CONFIG3, conf->config3);
 
 	ec_write(H8_SOUND_REPEAT, 0x00);
+	if (!acpi_is_wakeup_s3())
+		h8_configure(conf);
 
 	/* silence sounds in queue */
 	ec_write(H8_SOUND_REG, 0x00);
@@ -270,45 +314,8 @@ static void h8_enable(struct device *dev)
 
 	ec_write(H8_FAN_CONTROL, H8_FAN_CONTROL_AUTO);
 
-	if (get_option(&val, "wlan") != CB_SUCCESS)
-		val = 1;
-	h8_wlan_enable(val);
-
 	h8_trackpoint_enable(1);
 	h8_usb_power_enable(1);
-
-	if (get_option(&val, "volume") == CB_SUCCESS && !acpi_is_wakeup_s3())
-		ec_write(H8_VOLUME_CONTROL, val);
-
-	if (get_option(&val, "bluetooth") != CB_SUCCESS)
-		val = 1;
-	h8_bluetooth_enable(val);
-
-	if (get_option(&val, "wwan") != CB_SUCCESS)
-		val = 1;
-
-	h8_wwan_enable(val);
-
-	if (conf->has_uwb) {
-		if (get_option(&val, "uwb") != CB_SUCCESS)
-			val = 1;
-
-		h8_uwb_enable(val);
-	}
-
-	if (get_option(&val, "fn_ctrl_swap") != CB_SUCCESS)
-		val = 0;
-	h8_fn_ctrl_swap(val);
-
-	if (get_option(&val, "sticky_fn") != CB_SUCCESS)
-		val = 0;
-	h8_sticky_fn(val);
-
-	if (get_option(&val, "first_battery") != CB_SUCCESS)
-		val = PRIMARY_BATTERY;
-	h8_charge_priority(val);
-
-	h8_set_audio_mute(0);
 
 #if !IS_ENABLED(CONFIG_H8_DOCK_EARLY_INIT)
 	h8_mainboard_init_dock();

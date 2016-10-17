@@ -52,23 +52,25 @@ config CPU_SPECIFIC_OPTIONS
 	select TSC_SYNC_MFENCE
 	select UDELAY_TSC
 
-choice
-	prompt "FSP Driver"
-	default USE_FSP1_1_DRIVER
+config MAINBOARD_USES_FSP2_0
+	bool
+	default n
 
 config USE_FSP2_0_DRIVER
 	bool "Build with FSP 2.0"
+	depends on MAINBOARD_USES_FSP2_0
+	default y if MAINBOARD_USES_FSP2_0
 	select PLATFORM_USES_FSP2_0
 	select ADD_VBT_DATA_FILE
 	select SOC_INTEL_COMMON_GFX_OPREGION
 
 config USE_FSP1_1_DRIVER
 	bool "Build with FSP 1.1"
+	depends on !MAINBOARD_USES_FSP2_0
+	default y if !MAINBOARD_USES_FSP2_0
 	select PLATFORM_USES_FSP1_1
 	select GOP_SUPPORT
 	select DISPLAY_FSP_ENTRY_POINTS
-
-endchoice
 
 config CHROMEOS
 	select CHROMEOS_RAMOOPS_DYNAMIC

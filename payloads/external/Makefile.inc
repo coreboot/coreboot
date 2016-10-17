@@ -60,6 +60,8 @@ cbfs-files-$(CONFIG_INCLUDE_CONFIG_FILE) += payload_revision
 payload_revision-file := $(PAYLOAD_VERSION)
 payload_revision-type := raw
 
+# SeaBIOS
+
 SEABIOS_CC_OFFSET=$(if $(filter %ccache,$(HOSTCC)),2,1)
 payloads/external/SeaBIOS/seabios/out/bios.bin.elf seabios: $(DOTCONFIG)
 	$(MAKE) -C payloads/external/SeaBIOS \
@@ -92,10 +94,15 @@ bootorder-file := $(strip $(CONFIG_SEABIOS_BOOTORDER_FILE))
 bootorder-type := raw
 endif
 
+# Depthcharge
+
 payloads/external/depthcharge/depthcharge/build/depthcharge.elf depthcharge: $(DOTCONFIG) $(CBFSTOOL)
+
 	$(MAKE) -C payloads/external/depthcharge \
 		BOARD=$(call ws_to_under,$(call strip_quotes,$(call tolower,$(CONFIG_MAINBOARD_PART_NUMBER)))) \
 		MFLAGS= MAKEFLAGS=
+
+# FILO
 
 filo:
 	$(MAKE) -C payloads/external/FILO \
@@ -109,6 +116,8 @@ payloads/external/FILO/filo/build/filo.elf: filo
 payloads/external/FILO/filo/.config: filo
 payloads/external/FILO/filo/build/version.h: filo
 
+# Grub
+
 grub2:
 	$(MAKE) -C payloads/external/GRUB2 \
 			HOSTCC="$(HOSTCC)" \
@@ -119,13 +128,23 @@ grub2:
 
 payloads/external/GRUB2/grub2/build/default_payload.elf: grub2
 
+# U-Boot
+
 payloads/external/U-Boot/u-boot/u-boot-dtb.bin u-boot: $(DOTCONFIG)
 	$(MAKE) -C payloads/external/U-Boot \
 			CONFIG_UBOOT_MASTER=$(CONFIG_UBOOT_MASTER) \
 			CONFIG_UBOOT_STABLE=$(CONFIG_UBOOT_STABLE)
 
+# TINT
+
 payloads/external/tint/tint/tint.elf tint:
 	$(MAKE) -C payloads/external/tint
+
+cbfs-files-$(CONFIG_TINT_SECONDARY_PAYLOAD) += img/tint
+img/tint-file := payloads/external/tint/tint/tint.elf
+img/tint-type := payload
+
+# Memtest86+
 
 cbfs-files-$(CONFIG_MEMTEST_SECONDARY_PAYLOAD) += img/memtest
 img/memtest-file := payloads/external/Memtest86Plus/memtest86plus/memtest
@@ -137,10 +156,6 @@ ifeq ($(CONFIG_CONSOLE_SERIAL)$(CONFIG_DRIVERS_UART_8250IO),yy)
 		SERIAL_BAUD_RATE=$(CONFIG_TTYS0_BAUD)
 endif
 
-cbfs-files-$(CONFIG_TINT_SECONDARY_PAYLOAD) += img/tint
-img/tint-file := payloads/external/tint/tint/tint.elf
-img/tint-type := payload
-
 payloads/external/Memtest86Plus/memtest86plus/memtest: $(DOTCONFIG)
 	$(MAKE) -C payloads/external/Memtest86Plus all \
 		CC="$(CC_x86_32)" \
@@ -151,6 +166,8 @@ payloads/external/Memtest86Plus/memtest86plus/memtest: $(DOTCONFIG)
 		CONFIG_MEMTEST_STABLE=$(CONFIG_MEMTEST_STABLE) \
 		$(MEMTEST_SERIAL_OPTIONS) \
 		MFLAGS= MAKEFLAGS=
+
+# iPXE
 
 PXE_ROM_PCI_ID:=$(subst $(comma),,$(CONFIG_PXE_ROM_ID))
 

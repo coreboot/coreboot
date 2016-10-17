@@ -51,16 +51,19 @@ config VARIANT_DIR
 	string
 	default "reef" if BOARD_GOOGLE_REEF
 	default "pyro" if BOARD_GOOGLE_PYRO
+	default "snappy" if BOARD_GOOGLE_SNAPPY
 
 config DEVICETREE
 	string
 	default "variants/pyro/devicetree.cb" if BOARD_GOOGLE_PYRO
+	default "variants/snappy/devicetree.cb" if BOARD_GOOGLE_SNAPPY
 	default "variants/baseboard/devicetree.cb"
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "Reef" if BOARD_GOOGLE_REEF
 	default "Pyro" if BOARD_GOOGLE_PYRO
+	default "Snappy" if BOARD_GOOGLE_SNAPPY
 
 config MAINBOARD_FAMILY
 	string
@@ -71,6 +74,7 @@ config GBB_HWID
 	depends on CHROMEOS
 	default "REEF TEST 3240" if BOARD_GOOGLE_REEF
 	default "PYRO TEST 0290" if BOARD_GOOGLE_PYRO
+	default "SNAPPY TEST 1088" if BOARD_GOOGLE_SNAPPY
 
 config MAX_CPUS
 	int

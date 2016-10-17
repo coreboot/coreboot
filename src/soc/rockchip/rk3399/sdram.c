@@ -153,6 +153,14 @@ static void set_memory_map(u32 channel,
 	u32 *denali_pi = rk3399_ddr_pi[channel]->denali_pi;
 	u32 cs_map;
 	u32 reduc;
+	u32 row;
+
+	if ((sdram_ch->ddrconfig < 2) || (sdram_ch->ddrconfig == 4))
+		row = 16;
+	else if (sdram_ch->ddrconfig == 3)
+		row = 14;
+	else
+		row = 15;
 
 	cs_map = (sdram_ch->rank > 1) ? 3 : 1;
 	reduc = (sdram_ch->bw == 2) ? 0 : 1;
@@ -160,7 +168,7 @@ static void set_memory_map(u32 channel,
 	clrsetbits_le32(&denali_ctl[191], 0xF, (12 - sdram_ch->col));
 	clrsetbits_le32(&denali_ctl[190], (0x3 << 16) | (0x7 << 24),
 			((3 - sdram_ch->bk) << 16) |
-			((16 - sdram_ch->cs0_row) << 24));
+			((16 - row) << 24));
 
 	clrsetbits_le32(&denali_ctl[196], 0x3 | (1 << 16),
 			cs_map | (reduc << 16));
@@ -171,7 +179,7 @@ static void set_memory_map(u32 channel,
 	/* PI_155 PI_ROW_DIFF:RW:24:3 PI_BANK_DIFF:RW:16:2 */
 	clrsetbits_le32(&denali_pi[155], (0x3 << 16) | (0x7 << 24),
 			((3 - sdram_ch->bk) << 16) |
-			((16 - sdram_ch->cs0_row) << 24));
+			((16 - row) << 24));
 	/* PI_41 PI_CS_MAP:RW:24:4 */
 	clrsetbits_le32(&denali_pi[41], 0xf << 24, cs_map << 24);
 	if ((sdram_ch->rank == 1) && (sdram_params->dramtype == DDR3))
@@ -873,7 +881,7 @@ static void set_ddrconfig(const struct rk3399_sdram_params *sdram_params,
 		cs1_cap = cs1_cap * 3 / 4;
 	}
 
-	write32(&ddr_msch_regs->ddrconf, ddrconfig | (ddrconfig << 6));
+	write32(&ddr_msch_regs->ddrconf, ddrconfig | (ddrconfig << 8));
 	write32(&ddr_msch_regs->ddrsize, ((cs0_cap / 32) & 0xff) |
 					 (((cs1_cap / 32) & 0xff) << 8));
 }

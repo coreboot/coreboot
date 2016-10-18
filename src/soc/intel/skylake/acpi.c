@@ -223,11 +223,14 @@ unsigned long acpi_fill_madt(unsigned long current)
 	return acpi_madt_irq_overrides(current);
 }
 
-void acpi_fill_in_fadt(acpi_fadt_t *fadt)
+void acpi_fill_fadt(acpi_fadt_t *fadt)
 {
 	const uint16_t pmbase = ACPI_BASE_ADDRESS;
 	const struct device *dev = dev_find_slot(0, PCH_DEVFN_LPC);
 	config_t *config = dev->chip_info;
+
+	/* Use ACPI 5.0 revision */
+	fadt->header.revision = ACPI_FADT_REV_ACPI_5_0;
 
 	fadt->sci_int = acpi_sci_irq();
 	fadt->smi_cmd = APM_CNT;

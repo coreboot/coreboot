@@ -19,7 +19,8 @@
 
 .section ".module_parameters", "aw", @progbits
 /* stack_top indicates the stack to pull MTRR information from. */
-stack_top:
+.global post_car_stack_top
+post_car_stack_top:
 .long	0
 .long	0
 
@@ -38,7 +39,7 @@ _start:
 	invd
 
 	/* Set up new stack. */
-	mov	stack_top, %esp
+	mov	post_car_stack_top, %esp
 
 	/*
 	 * Honor variable MTRR information pushed on the stack with the

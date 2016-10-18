@@ -966,6 +966,7 @@ static int intel_me_read_mbp(me_bios_payload *mbp_data, device_t dev)
 	}
 	#undef ASSIGN_FIELD_PTR
 
+	free(mbp);
 	return ret;
 }
 

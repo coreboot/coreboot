@@ -14,28 +14,32 @@
  * GNU General Public License for more details.
  */
 
-#define DPTF_CPU_PASSIVE        80
-#define DPTF_CPU_CRITICAL       90
-#define DPTF_CPU_ACTIVE_AC0     90
-#define DPTF_CPU_ACTIVE_AC1     80
-#define DPTF_CPU_ACTIVE_AC2     70
-#define DPTF_CPU_ACTIVE_AC3     60
-#define DPTF_CPU_ACTIVE_AC4     50
+#define DPTF_CPU_PASSIVE	95
+#define DPTF_CPU_CRITICAL	99
+#define DPTF_CPU_ACTIVE_AC0	90
+#define DPTF_CPU_ACTIVE_AC1	77
 
 #define DPTF_TSR0_SENSOR_ID	0
 #define DPTF_TSR0_SENSOR_NAME	"TMP432_Internal"
-#define DPTF_TSR0_PASSIVE	48
+#define DPTF_TSR0_PASSIVE	65
 #define DPTF_TSR0_CRITICAL	70
+#define DPTF_TSR0_ACTIVE_AC0	120
+#define DPTF_TSR0_ACTIVE_AC1	110
+#define DPTF_TSR0_ACTIVE_AC2	47
+#define DPTF_TSR0_ACTIVE_AC3	44
+#define DPTF_TSR0_ACTIVE_AC4	41
+#define DPTF_TSR0_ACTIVE_AC5	38
+#define DPTF_TSR0_ACTIVE_AC6	35
 
 #define DPTF_TSR1_SENSOR_ID	1
 #define DPTF_TSR1_SENSOR_NAME	"TMP432_Power_top"
-#define DPTF_TSR1_PASSIVE	60
-#define DPTF_TSR1_CRITICAL	70
+#define DPTF_TSR1_PASSIVE	63
+#define DPTF_TSR1_CRITICAL	68
 
 #define DPTF_TSR2_SENSOR_ID	2
 #define DPTF_TSR2_SENSOR_NAME	"TMP432_CPU_bottom"
-#define DPTF_TSR2_PASSIVE	55
-#define DPTF_TSR2_CRITICAL	70
+#define DPTF_TSR2_PASSIVE	64
+#define DPTF_TSR2_CRITICAL	69
 
 #define DPTF_ENABLE_CHARGER
 #define DPTF_ENABLE_FAN_CONTROL
@@ -79,8 +83,12 @@ Name (DART, Package () {
 		 * Source, Target, Weight, AC0, AC1, AC2, AC3, AC4, AC5, AC6,
 		 *	AC7, AC8, AC9
 		 */
-		\_SB.DPTF.TFN1, \_SB.PCI0.B0D4, 100, 100, 90, 80, 70, 60, 0, 0,
+		\_SB.DPTF.TFN1, \_SB.PCI0.B0D4, 100, 100, 81, 0, 0, 0, 0, 0,
 			0, 0, 0
+	},
+	Package () {
+		\_SB.DPTF.TFN1, \_SB.DPTF.TSR0, 100, 100, 81, 68, 56, 48, 40,
+			35, 0, 0, 0
 	}
 })
 #endif

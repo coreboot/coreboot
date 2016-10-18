@@ -9,7 +9,6 @@ subdirs-y += ../../../cpu/x86/tsc
 subdirs-y += ../../../cpu/x86/cache
 
 bootblock-y += bootblock/bootblock.c
-bootblock-y += bootblock/cache_as_ram.S
 bootblock-y += bootblock/bootblock.c
 bootblock-y += car.c
 bootblock-y += flash_ctrlr.c
@@ -22,6 +21,12 @@ bootblock-y += pmutil.c
 bootblock-y += spi.c
 bootblock-y += tsc_freq.c
 bootblock-$(CONFIG_SOC_UART_DEBUG) += uart_early.c
+
+ifeq ($(CONFIG_FSP_CAR),y)
+bootblock-y += bootblock/cache_as_ram_fsp.S
+else
+bootblock-y += bootblock/cache_as_ram.S
+endif
 
 romstage-y += car.c
 romstage-$(CONFIG_PLATFORM_USES_FSP2_0) += romstage.c
@@ -79,13 +84,18 @@ ramstage-y += sram.c
 ramstage-y += spi.c
 ramstage-y += xhci.c
 
-postcar-y += exit_car.S
 postcar-y += flash_ctrlr.c
 postcar-y += memmap.c
 postcar-y += mmap_boot.c
 postcar-y += spi.c
 postcar-$(CONFIG_SOC_UART_DEBUG) += uart_early.c
 postcar-y += tsc_freq.c
+
+ifeq ($(CONFIG_FSP_CAR),y)
+postcar-y += exit_car_fsp.S
+else
+postcar-y += exit_car.S
+endif
 
 verstage-y += car.c
 verstage-y += flash_ctrlr.c

@@ -52,6 +52,8 @@ enum cb_err fsp_identify(struct fsp_header *hdr, const void *fsp_blob)
 	hdr->component_attribute = read16(raw_hdr + 34);
 	hdr->cfg_region_offset = read32(raw_hdr + 36);
 	hdr->cfg_region_size = read32(raw_hdr + 40);
+	hdr->temp_ram_init_entry = read32(raw_hdr + 48);
+	hdr->temp_ram_exit_entry = read32(raw_hdr + 64);
 	hdr->notify_phase_entry_offset = read32(raw_hdr + 56);
 	hdr->memory_init_entry_offset = read32(raw_hdr + 60);
 	hdr->silicon_init_entry_offset = read32(raw_hdr + 68);

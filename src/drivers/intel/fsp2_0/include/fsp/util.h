@@ -101,6 +101,7 @@ void fsp_handle_reset(uint32_t status);
 /* SoC/chipset must provide this to handle platform-specific reset codes */
 void chipset_handle_reset(uint32_t status);
 
+typedef asmlinkage uint32_t (*temp_ram_exit_fn)(void *param);
 typedef asmlinkage uint32_t (*fsp_memory_init_fn)
 				   (void *raminit_upd, void **hob_list);
 typedef asmlinkage uint32_t (*fsp_silicon_init_fn)(void *silicon_upd);

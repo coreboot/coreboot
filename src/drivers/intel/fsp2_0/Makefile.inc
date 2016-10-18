@@ -40,11 +40,18 @@ ramstage-y += util.c
 ramstage-$(CONFIG_MMA) += mma_core.c
 
 postcar-$(CONFIG_CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM) += stage_cache.c
+postcar-$(CONFIG_FSP_CAR) += temp_ram_exit.c
+postcar-$(CONFIG_FSP_CAR) += util.c
+postcar-$(CONFIG_DISPLAY_FSP_HEADER) += header_display.c
 
 CPPFLAGS_common += -I$(src)/drivers/intel/fsp2_0/include
 
 # Add FSP blobs into cbfs. SoC code may supply  additional options with
 # -options, e.g --xip or -b
+cbfs-files-$(CONFIG_FSP_CAR) += $(CONFIG_FSP_T_CBFS)
+$(CONFIG_FSP_T_CBFS)-file := $(call strip_quotes,$(CONFIG_FSP_T_FILE))
+$(CONFIG_FSP_T_CBFS)-type := fsp
+
 cbfs-files-$(CONFIG_ADD_FSP_BINARIES) += $(CONFIG_FSP_M_CBFS)
 $(CONFIG_FSP_M_CBFS)-file := $(call strip_quotes,$(CONFIG_FSP_M_FILE))
 $(CONFIG_FSP_M_CBFS)-type := fsp

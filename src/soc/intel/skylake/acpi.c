@@ -198,6 +198,10 @@ static void acpi_create_gnvs(global_nvs_t *gnvs)
 
 	/* Fill in the Wifi Region id */
 	gnvs->cid1 = wifi_regulatory_domain();
+
+	/* Set USB2/USB3 wake enable bitmaps. */
+	gnvs->u2we = config->usb2_wake_enable_bitmap;
+	gnvs->u3we = config->usb3_wake_enable_bitmap;
 }
 
 unsigned long acpi_fill_mcfg(unsigned long current)

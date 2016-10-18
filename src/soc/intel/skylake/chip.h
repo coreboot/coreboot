@@ -395,6 +395,12 @@ struct soc_intel_skylake_config {
 
 	/* Use custom SD card detect GPIO configuration */
 	struct acpi_gpio sdcard_cd_gpio;
+
+	/* Wake Enable Bitmap for USB2 ports */
+	u16 usb2_wake_enable_bitmap;
+
+	/* Wake Enable Bitmap for USB3 ports */
+	u8 usb3_wake_enable_bitmap;
 };
 
 typedef struct soc_intel_skylake_config config_t;

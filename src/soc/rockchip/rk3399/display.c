@@ -95,11 +95,8 @@ void rk_display_init(device_t dev, uintptr_t lcdbase,
 		return;
 	}
 
-	edid.framebuffer_bits_per_pixel = conf->framebuffer_bits_per_pixel;
-	edid.bytes_per_line =
-			edid.mode.ha * conf->framebuffer_bits_per_pixel / 8;
-	edid.x_resolution = edid.mode.ha;
-	edid.y_resolution = edid.mode.va;
+	edid_set_framebuffer_bits_per_pixel(&edid,
+		conf->framebuffer_bits_per_pixel, 0);
 	rkvop_mode_set(conf->vop_id, &edid, detected_mode);
 
 	rkvop_enable(conf->vop_id, lcdbase, &edid);

@@ -46,8 +46,6 @@
 
 #define BASE_FREQUENCY 100000
 
-#if CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT
-
 static int gtt_setup(void *mmiobase)
 {
 	unsigned long PGETBL_save;
@@ -218,19 +216,21 @@ static int intel_gma_init_lvds(struct northbridge_intel_i945_config *conf,
 	       BASE_FREQUENCY * (5 * (pixel_m1 + 2) + (pixel_m2 + 2)) /
 	       (pixel_n + 2) / (pixel_p1 * pixel_p2));
 
-#if !IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)
-	write32(pmmio + PF_WIN_SZ(0), vactive | (hactive << 16));
-	write32(pmmio + PF_WIN_POS(0), 0);
-	write32(pmmio + PF_CTL(0),PF_ENABLE | PF_FILTER_MED_3x3);
-	write32(pmmio + PFIT_CONTROL, PFIT_ENABLE | (1 << PFIT_PIPE_SHIFT) | HORIZ_AUTO_SCALE | VERT_AUTO_SCALE);
-#else
-	/* Disable panel fitter (we're in native resolution).  */
-	write32(pmmio + PF_CTL(0), 0);
-	write32(pmmio + PF_WIN_SZ(0), 0);
-	write32(pmmio + PF_WIN_POS(0), 0);
-	write32(pmmio + PFIT_PGM_RATIOS, 0);
-	write32(pmmio + PFIT_CONTROL, 0);
-#endif
+	if (IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)) {
+		/* Disable panel fitter (we're in native resolution). */
+		write32(pmmio + PF_CTL(0), 0);
+		write32(pmmio + PF_WIN_SZ(0), 0);
+		write32(pmmio + PF_WIN_POS(0), 0);
+		write32(pmmio + PFIT_PGM_RATIOS, 0);
+		write32(pmmio + PFIT_CONTROL, 0);
+	} else {
+		write32(pmmio + PF_WIN_SZ(0), vactive | (hactive << 16));
+		write32(pmmio + PF_WIN_POS(0), 0);
+		write32(pmmio + PF_CTL(0), PF_ENABLE | PF_FILTER_MED_3x3);
+		write32(pmmio + PFIT_CONTROL, PFIT_ENABLE
+			| (1 << PFIT_PIPE_SHIFT) | HORIZ_AUTO_SCALE
+			| VERT_AUTO_SCALE);
+	}
 
 	mdelay(1);
 
@@ -279,11 +279,13 @@ static int intel_gma_init_lvds(struct northbridge_intel_i945_config *conf,
 		((vactive + bottom_border + vfront_porch + vsync - 1) << 16)
 		| (vactive + bottom_border + vfront_porch - 1));
 
-#if !IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)
-	write32(pmmio + PIPESRC(1), (639 << 16) | 399);
-#else
-	write32(pmmio + PIPESRC(1), ((hactive - 1) << 16) | (vactive - 1));
-#endif
+	if (IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)) {
+		write32(pmmio + PIPESRC(1), ((hactive - 1) << 16)
+			| (vactive - 1));
+	} else {
+		write32(pmmio + PIPESRC(1), (639 << 16) | 399);
+	}
+
 	mdelay(1);
 
 	write32(pmmio + DSPSIZE(0), (hactive - 1) | ((vactive - 1) << 16));
@@ -368,21 +370,21 @@ static int intel_gma_init_lvds(struct northbridge_intel_i945_config *conf,
 	else
 		printk(BIOS_ERR, "ERROR: GTT is still Disabled!!!\n");
 
-#if !IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)
-	vga_misc_write(0x67);
+	if (IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)) {
+		printk(BIOS_SPEW, "memset %p to 0x00 for %d bytes\n",
+			(void *)pgfx, hactive * vactive * 4);
+		memset((void *)pgfx, 0x00, hactive * vactive * 4);
 
-	write32(pmmio + DSPCNTR(0), DISPPLANE_SEL_PIPE_B);
+		set_vbe_mode_info_valid(&edid, pgfx);
+	} else {
+			vga_misc_write(0x67);
 
-	write32(pmmio + VGACNTRL, 0x02c4008e | VGA_PIPE_B_SELECT);
+			write32(pmmio + DSPCNTR(0), DISPPLANE_SEL_PIPE_B);
+			write32(pmmio + VGACNTRL, 0x02c4008e
+				| VGA_PIPE_B_SELECT);
 
-	vga_textmode_init();
-#else
-	printk(BIOS_SPEW, "memset %p to 0x00 for %d bytes\n",
-	       (void *)pgfx, hactive * vactive * 4);
-	memset((void *)pgfx, 0x00, hactive * vactive * 4);
-
-	set_vbe_mode_info_valid(&edid, pgfx);
-#endif
+			vga_textmode_init();
+	}
 	return 0;
 }
 
@@ -575,7 +577,6 @@ static int probe_edid(u8 *pmmio, u8 slave)
 	return 1;
 }
 
-#endif
 
 static void gma_func0_init(struct device *dev)
 {
@@ -593,49 +594,50 @@ static void gma_func0_init(struct device *dev)
 	pci_write_config32(dev, PCI_COMMAND, reg32 | PCI_COMMAND_MASTER
 		 | PCI_COMMAND_IO | PCI_COMMAND_MEMORY);
 
-#if !CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT
-	/* PCI Init, will run VBIOS */
-	pci_dev_init(dev);
-#endif
-
-
-#if CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT
-	/* This should probably run before post VBIOS init. */
-	printk(BIOS_SPEW, "Initializing VGA without OPROM.\n");
-	void *mmiobase;
-	u32 iobase, graphics_base;
-	struct northbridge_intel_i945_config *conf = dev->chip_info;
-
-	iobase = dev->resource_list[1].base;
-	mmiobase = (void *)(uintptr_t)dev->resource_list[0].base;
-	graphics_base = dev->resource_list[2].base;
-
-	printk(BIOS_SPEW, "GMADR = 0x%08x GTTADR = 0x%08x\n",
-		pci_read_config32(dev, GMADR),
-		pci_read_config32(dev, GTTADR)
-	);
-
-	int err;
-	/* probe if VGA is connected and alway run */
-	/* VGA init if no LVDS is connected */
-	if (!probe_edid(mmiobase, 3) || probe_edid(mmiobase, 2))
-		err = intel_gma_init_vga(conf, pci_read_config32(dev, 0x5c) & ~0xf,
-					iobase, mmiobase, graphics_base);
-	else
-		err = intel_gma_init_lvds(conf, pci_read_config32(dev, 0x5c) & ~0xf,
-			     iobase, mmiobase, graphics_base);
-	if (err == 0)
-		gfx_set_init_done(1);
-	/* Linux relies on VBT for panel info.  */
-	if (CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GM) {
-		generate_fake_intel_oprom(&conf->gfx, dev,
-			"$VBT CALISTOGA");
+	if (IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT)) {
+		/* PCI Init, will run VBIOS */
+		pci_dev_init(dev);
 	}
-	if (CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GC) {
-		generate_fake_intel_oprom(&conf->gfx, dev,
-			"$VBT LAKEPORT-G");
+
+	if (IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT)) {
+		/* This should probably run before post VBIOS init. */
+		printk(BIOS_SPEW, "Initializing VGA without OPROM.\n");
+		void *mmiobase;
+		u32 iobase, graphics_base;
+		struct northbridge_intel_i945_config *conf = dev->chip_info;
+
+		iobase = dev->resource_list[1].base;
+		mmiobase = (void *)(uintptr_t)dev->resource_list[0].base;
+		graphics_base = dev->resource_list[2].base;
+
+		printk(BIOS_SPEW, "GMADR = 0x%08x GTTADR = 0x%08x\n",
+			pci_read_config32(dev, GMADR),
+			pci_read_config32(dev, GTTADR)
+			);
+
+		int err;
+		/* probe if VGA is connected and alway run */
+		/* VGA init if no LVDS is connected */
+		if (!probe_edid(mmiobase, 3) || probe_edid(mmiobase, 2))
+			err = intel_gma_init_vga(conf,
+				pci_read_config32(dev, 0x5c) & ~0xf,
+				iobase, mmiobase, graphics_base);
+		else
+			err = intel_gma_init_lvds(conf,
+				pci_read_config32(dev, 0x5c) & ~0xf,
+				iobase, mmiobase, graphics_base);
+		if (err == 0)
+			gfx_set_init_done(1);
+		/* Linux relies on VBT for panel info.  */
+		if (CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GM) {
+			generate_fake_intel_oprom(&conf->gfx, dev,
+						"$VBT CALISTOGA");
+		}
+		if (CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GC) {
+			generate_fake_intel_oprom(&conf->gfx, dev,
+						"$VBT LAKEPORT-G");
+		}
 	}
-#endif
 }
 
 /* This doesn't reclaim stolen UMA memory, but IGD could still

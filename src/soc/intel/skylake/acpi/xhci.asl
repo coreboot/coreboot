@@ -15,6 +15,55 @@
  * GNU General Public License for more details.
  */
 
+/*
+ * USB Port Wake Enable (UPWE) on usb attach/detach
+ * Arg0 - Port Number
+ * Arg1 - Port 1 Status and control offset
+ * Arg2 - xHCI Memory-mapped address
+ */
+Method (UPWE, 3, Serialized)
+{
+	/* Local0 = Arg1 + ((Arg0 - 1) * 0x10) */
+	Add (Arg1, Multiply (Subtract (Arg0, 1), 0x10), Local0)
+
+	/* Map ((XMEM << 16) + Local0 in PSCR */
+	OperationRegion (PSCR, SystemMemory,
+			 Add (ShiftLeft (Arg2, 16), Local0), 0x10)
+	Field (PSCR, AnyAcc, NoLock, Preserve)
+	{
+		, 25,
+		UPCE, 1,
+		UPDE, 1,
+	}
+	Store (One, UPCE)
+	Store (One, UPDE)
+}
+
+/*
+ * USB Wake Enable Setup (UWES)
+ * Arg0 - Port enable bitmap
+ * Arg1 - Port 1 Status and control offset
+ * Arg2 - xHCI Memory-mapped address
+ */
+Method (UWES, 3, Serialized)
+{
+	Store (Arg0, Local0)
+
+	While (One) {
+		FindSetRightBit (Local0, Local1)
+		If (LEqual (Local1, Zero)) {
+			Break
+		}
+		UPWE (Local1, Arg1, Arg2)
+		/*
+		 * Clear the lowest set bit in Local0 since it was
+		 * processed.
+		 * Local0 = Local0 & (Local0 - 1)
+		 */
+		And (Local0, Subtract (Local0, 1), Local0)
+	}
+}
+
 /* XHCI Controller 0:14.0 */
 
 Device (XHCI)
@@ -26,6 +75,8 @@ Device (XHCI)
 	Method (_DSW, 3)
 	{
 		Store (Arg0, PMEE)
+		UWES (And (\U2WE, 0x3FF), 0x480, XMEM)
+		UWES (And (\U3WE, 0x3F), 0x540, XMEM)
 	}
 
 	Name (_S3D, 3)	/* D3 supported in S3 */

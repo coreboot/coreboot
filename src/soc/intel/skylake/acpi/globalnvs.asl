@@ -64,6 +64,8 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	NHLA,	64,	// 0x31 - NHLT Address
 	NHLL,	32,	// 0x39 - NHLT Length
 	CID1,	16,	// 0x3d - Wifi Country Identifier
+	U2WE,	16,	// 0x3f - USB2 Wake Enable Bitmap
+	U3WE,	8,	// 0x41 - USB3 Wake Enable Bitmap
 
 	/* ChromeOS specific */
 	Offset (0x100),

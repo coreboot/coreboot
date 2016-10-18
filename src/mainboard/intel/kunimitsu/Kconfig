@@ -19,6 +19,19 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select MONOTONIC_TIMER_MSR
 	select SOC_INTEL_SKYLAKE
 
+choice
+	prompt "FSP driver"
+	default KUNIMITSU_USES_FSP1_1
+
+config KUNIMITSU_USES_FSP1_1
+	bool "FSP driver 1.1"
+
+config KUNIMITSU_USES_FSP2_0
+	bool "FSP driver 2.0"
+	select MAINBOARD_USES_FSP2_0
+
+endchoice
+
 config CHROMEOS
 	select LID_SWITCH
 

@@ -110,6 +110,43 @@ Device (TSR0)
 	{
 		\_SB.PCI0.LPCB.EC0.PATD (TMPI)
 	}
+
+#ifdef DPTF_ENABLE_FAN_CONTROL
+	Method (_AC0)
+	{
+		Return (\_SB.DPTF.CTOK (DPTF_TSR0_ACTIVE_AC0))
+	}
+
+	Method (_AC1)
+	{
+		Return (\_SB.DPTF.CTOK (DPTF_TSR0_ACTIVE_AC1))
+	}
+
+	Method (_AC2)
+	{
+		Return (\_SB.DPTF.CTOK (DPTF_TSR0_ACTIVE_AC2))
+	}
+
+	Method (_AC3)
+	{
+		Return (\_SB.DPTF.CTOK (DPTF_TSR0_ACTIVE_AC3))
+	}
+
+	Method (_AC4)
+	{
+		Return (\_SB.DPTF.CTOK (DPTF_TSR0_ACTIVE_AC4))
+	}
+
+	Method (_AC5)
+	{
+		Return (\_SB.DPTF.CTOK (DPTF_TSR0_ACTIVE_AC5))
+	}
+
+	Method (_AC6)
+	{
+		Return (\_SB.DPTF.CTOK (DPTF_TSR0_ACTIVE_AC6))
+	}
+#endif
 }
 #endif
 

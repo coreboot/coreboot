@@ -34,6 +34,8 @@ struct fsp_header {
 	uint16_t component_attribute;
 	size_t cfg_region_offset;
 	size_t cfg_region_size;
+	size_t temp_ram_init_entry;
+	size_t temp_ram_exit_entry;
 	size_t notify_phase_entry_offset;
 	size_t memory_init_entry_offset;
 	size_t silicon_init_entry_offset;

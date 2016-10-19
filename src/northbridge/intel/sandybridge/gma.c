@@ -494,6 +494,18 @@ static void gma_pm_init_pre_vbios(struct device *dev)
 	reg32 = gtt_read(0x6c024);
 	reg32 &= ~0x000001c0;
 	gtt_write(0x6c024, reg32);
+
+	/* Initialize DP buffer translation with recommended defaults */
+	gtt_write(0xe4f00, 0x0100030c);
+	gtt_write(0xe4f04, 0x00b8230c);
+	gtt_write(0xe4f08, 0x06f8930c);
+	gtt_write(0xe4f0c, 0x05f8e38e);
+	gtt_write(0xe4f10, 0x00b8030c);
+	gtt_write(0xe4f14, 0x0b78830c);
+	gtt_write(0xe4f18, 0x09f8d3cf);
+	gtt_write(0xe4f1c, 0x01e8030c);
+	gtt_write(0xe4f20, 0x09f863cf);
+	gtt_write(0xe4f24, 0x0ff803cf);
 }
 
 static void gma_pm_init_post_vbios(struct device *dev)

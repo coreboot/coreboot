@@ -13,6 +13,20 @@
  * GNU General Public License for more details.
  */
 
+Device(AAHB) {
+	Name(_HID,"AAHB0000")
+	Name(_UID,0x0)
+	Name(_CRS, ResourceTemplate()
+	{
+		IRQ(Edge, ActiveHigh, Exclusive) {7}
+		Memory32Fixed(ReadWrite, 0xFEDC0000, 0x2000)
+	})
+
+	Method (_STA, 0x0, NotSerialized) {
+		Return (0x0F)
+	}
+}
+
 Device(GPIO) {
 	Name (_HID, "AMD0030")
 	Name (_CID, "AMD0030")

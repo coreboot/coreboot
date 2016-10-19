@@ -44,9 +44,9 @@ static inline uint8_t inb(unsigned port)
 }
 static inline uint16_t inw(unsigned port)
 {
-        uint16_t data;
-        __asm volatile("inw %w1,%0": "=a" (data) : "d" (port));
-        return data;
+	uint16_t data;
+	__asm volatile("inw %w1,%0": "=a" (data) : "d" (port));
+	return data;
 }
 static inline uint32_t inl(unsigned port)
 {

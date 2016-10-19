@@ -1,8 +1,6 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright 2014 Google Inc.
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 2 of the License.
@@ -13,14 +11,18 @@
  * GNU General Public License for more details.
  */
 
-/* This file contains macro definitions for memlayout.ld linker scripts. */
+	.global riscvpayload
+riscvpayload:
+	/* Jump to a0 in S-mode */
+	mv t0,a0
+	csrw mepc, t0
+	csrr t0, mstatus
+	li t1, ~(3<<11)
+	and t0, t0, t1
+	li t2,  (1<<11)
+	or t0, t0, t2
+	csrw mstatus, t0
 
-#ifndef __ARCH_MEMLAYOUT_H
-#define __ARCH_MEMLAYOUT_H
-
-#define STACK(addr, size) REGION(stack, addr, size, 4096)
-#define PAGETABLES(addr, size) REGION(pagetables, addr, size, 4096)
-
-/* TODO: Need to add DMA_COHERENT region like on ARM? */
-
-#endif /* __ARCH_MEMLAYOUT_H */
+	// We're still in toolchain no mans land.
+	.word 0x30200073
+	//mret

@@ -41,6 +41,10 @@ extern u8 _stack[];
 extern u8 _estack[];
 #define _stack_size (_estack - _stack)
 
+extern u8 _pagetables[];
+extern u8 _epagetables[];
+#define _pagetables_size (_epagetables - _pagetables)
+
 extern u8 _preram_cbfs_cache[];
 extern u8 _epreram_cbfs_cache[];
 #define _preram_cbfs_cache_size (_epreram_cbfs_cache - _preram_cbfs_cache)

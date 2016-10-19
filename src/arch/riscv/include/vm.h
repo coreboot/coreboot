@@ -37,16 +37,6 @@
 #define VA_BITS 39
 #define MEGAPAGE_SIZE (SUPERPAGE_SIZE << RISCV_PGLEVEL_BITS)
 
-#define PROT_READ 1
-#define PROT_WRITE 2
-#define PROT_EXEC 4
-
-#define MAP_PRIVATE 0x2
-#define MAP_FIXED 0x10
-#define MAP_ANONYMOUS 0x20
-#define MAP_POPULATE 0x8000
-#define MREMAP_FIXED 0x2
-
 #define EXTRACT_FIELD(val, which) (((val) & (which)) / ((which) & ~((which)-1)))
 #define INSERT_FIELD(val, which, fieldval) (((val) & ~(which)) | ((fieldval) * ((which) & ~((which)-1))))
 
@@ -66,7 +56,8 @@ pte_t pte_create(uintptr_t ppn, int prot, int user);
 
 void print_page_table(void);
 
-void init_vm(uintptr_t virtMemStart, uintptr_t physMemStart, uintptr_t pageTableStart);
+void init_vm(uintptr_t virtMemStart, uintptr_t physMemStart,
+		pte_t *pageTableStart);
 void mstatus_init(void); // need to setup mstatus so we know we have virtual memory
 
 void flush_tlb(void);

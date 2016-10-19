@@ -17,13 +17,17 @@
 #include <vm.h>
 #include <arch/encoding.h>
 #include <rules.h>
+#include <console/console.h>
 
 void arch_prog_run(struct prog *prog)
 {
 	void (*doit)(void *) = prog_entry(prog);
+	void riscvpayload(void *);
 
 	if (ENV_RAMSTAGE && prog_type(prog) == PROG_PAYLOAD) {
 		initVirtualMemory();
+		printk(BIOS_SPEW, "OK, let's go\n");
+		riscvpayload(doit);
 	}
 
 	doit(prog_entry_arg(prog));

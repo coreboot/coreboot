@@ -21,6 +21,7 @@
 #include <console/console.h>
 #include <stdint.h>
 #include <vm.h>
+#include <symbols.h>
 
 pte_t* root_page_table;
 
@@ -94,7 +95,7 @@ static void print_page_table_at(pte_t *pt, intptr_t virt_addr, int level)
 
 /* Print the page table structures to the console */
 void print_page_table(void) {
-	print_page_table_at(root_page_table, 0, 0);
+	print_page_table_at((void *)(read_csr(sptbr) << RISCV_PGSHIFT), 0, 0);
 }
 
 void flush_tlb(void)
@@ -115,17 +116,17 @@ pte_t ptd_create(uintptr_t ppn)
 pte_t pte_create(uintptr_t ppn, int prot, int user)
 {
 	pte_t pte = (ppn << PTE_PPN_SHIFT) | PTE_R | PTE_V;
-	if (prot & PROT_WRITE)
+	if (prot & PTE_W)
 		pte |= PTE_W;
-	if (prot & PROT_EXEC)
+	if (prot & PTE_X)
 		pte |= PTE_X;
 	if (user)
 		pte |= PTE_U;
 	return pte;
 }
 
-void init_vm(uintptr_t virtMemStart, uintptr_t physMemStart, uintptr_t pageTableStart) {
-	pte_t* sbi_pt = (pte_t*) pageTableStart;
+void init_vm(uintptr_t virtMemStart, uintptr_t physMemStart, pte_t *sbi_pt)
+{
 	memset(sbi_pt, 0, RISCV_PGSIZE);
 	// need to leave room for sbi page
 	uintptr_t memorySize = 0x7F000000; // 0xFFF... - 0xFFFFFFFF81000000 - RISCV_PGSIZE
@@ -147,21 +148,32 @@ void init_vm(uintptr_t virtMemStart, uintptr_t physMemStart, uintptr_t pageTable
 		int l2_shift = RISCV_PGLEVEL_BITS + RISCV_PGSHIFT;
 		size_t l2_idx = (virtMemStart >> l2_shift) & ((1 << RISCV_PGLEVEL_BITS)-1);
 		l2_idx += ((vaddr - virtMemStart) >> l2_shift);
-		middle_pt[l2_idx] = pte_create(paddr >> RISCV_PGSHIFT, PROT_READ|PROT_WRITE|PROT_EXEC, 0);
+		middle_pt[l2_idx] = pte_create(paddr >> RISCV_PGSHIFT,
+					       PTE_U|PTE_R|PTE_W|PTE_X, 0);
 	}
 
 	// map SBI at top of vaddr space
-	uintptr_t num_sbi_pages = 1; // only need to map a single page for sbi interface
+	// only need to map a single page for sbi interface
+	uintptr_t num_sbi_pages = 1;
 	uintptr_t sbiStartAddress = (uintptr_t) &sbi_page;
 	uintptr_t sbiAddr = sbiStartAddress;
 	for (uintptr_t i = 0; i < num_sbi_pages; i++) {
 		uintptr_t idx = (1 << RISCV_PGLEVEL_BITS) - num_sbi_pages + i;
-		sbi_pt[idx] = pte_create(sbiAddr >> RISCV_PGSHIFT, PROT_READ|PROT_EXEC, 0);
+		sbi_pt[idx] = pte_create(sbiAddr >> RISCV_PGSHIFT,
+					 PTE_R|PTE_X, 0);
 		sbiAddr += RISCV_PGSIZE;
 	}
 	pte_t* sbi_pte = middle_pt + ((num_middle_pts << RISCV_PGLEVEL_BITS)-1);
 	*sbi_pte = ptd_create((uintptr_t)sbi_pt >> RISCV_PGSHIFT);
 
+	// IO space.
+	root_pt[0] = pte_create(0, PTE_W|PTE_R, 0);
+	root_pt[1] = pte_create(0x40000000>>RISCV_PGSHIFT,
+				PTE_W|PTE_R, 0);
+
+	// Start of RAM
+	root_pt[2] = pte_create(0x80000000>>RISCV_PGSHIFT,
+				PTE_W|PTE_R, 0);
 	mb();
 	root_page_table = root_pt;
 	uintptr_t ptbr = ((uintptr_t) root_pt) >> RISCV_PGSHIFT;
@@ -185,12 +197,13 @@ void initVirtualMemory(void) {
 		printk(BIOS_DEBUG, "-----------------------------\n");
 	}
 
+	// TODO: Figure out how to grab this from cbfs
 	printk(BIOS_DEBUG, "Initializing virtual memory...\n");
-	uintptr_t physicalStart = 0x90000000; // TODO: Figure out how to grab this from cbfs
-	uintptr_t virtualStart = 0xffffffff80000000;
-	uintptr_t pageTableStart = 0x91400000;
-	init_vm(virtualStart, physicalStart, pageTableStart);
+	uintptr_t physicalStart = 0x81000000;
+	uintptr_t virtualStart = 0xffffffff81000000;
+	init_vm(virtualStart, physicalStart, (pte_t *)_pagetables);
 	mb();
+	flush_tlb();
 
 #if IS_ENABLED(CONFIG_DEBUG_PRINT_PAGE_TABLES)
 	printk(BIOS_DEBUG, "Finished initializing virtual memory, starting walk...\n");
@@ -220,7 +233,12 @@ void mstatus_init(void)
 			| (1 << CAUSE_USER_ECALL)
 	);
 
+
 	/* Enable all user/supervisor-mode counters */
-	write_csr(mscounteren, 0b111);
-	write_csr(mucounteren, 0b111);
+	/* We'll turn these on once lowrisc gets their bitstream up to
+	 * 1.9. Right now there's no agreement on the values for these
+	 * architectural registers.
+	 */
+	//write_csr(mscounteren, 0b111);
+	//write_csr(mucounteren, 0b111);
 }

@@ -19,13 +19,16 @@
 
 .section ".text._start", "ax", %progbits
 
+.globl _stack
+.global _estack
 .globl _start
 _start:
 
-#define STACK_START 0x80800000 /* 2GiB + 8MiB */
-#define STACK_SIZE  0x0000fff0
 
-	li sp, STACK_START + STACK_SIZE
+
+	# N.B. This only works on low 4G of the address space
+	# and the stack must be page-aligned.
+	la sp, _estack
 
 	# make room for HLS and initialize it
 	addi sp, sp, -64 // MENTRY_FRAME_SIZE
@@ -33,7 +36,7 @@ _start:
 	call hls_init
 
 	# poison the stack
-	li t1, STACK_START
+	la t1, _stack
 	li t0, 0xdeadbeef
 	sd t0, 0(t1)
 

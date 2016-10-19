@@ -124,9 +124,9 @@ void ivybridge_dump_timings(const char *dump_spd_file)
 		mad_dimm[channel] = read_mchbar32(0x5004 + 4 * channel);
 	}
 
-	printf(".rankmap = { 0x%x, 0x%x }, \n", rankmap[0], rankmap[1]);
+	printf(".rankmap = { 0x%x, 0x%x },\n", rankmap[0], rankmap[1]);
 
-	printf(".mad_dimm = { 0x%x, 0x%x }, \n", mad_dimm[0], mad_dimm[1]);
+	printf(".mad_dimm = { 0x%x, 0x%x },\n", mad_dimm[0], mad_dimm[1]);
 
 	for (channel = 0; channel < 2; channel++)
 		if (rankmap[channel]) {

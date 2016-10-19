@@ -123,51 +123,51 @@ static const io_register_t sandybridge_dmi_registers[] = {
  * 329002-002
  */
 static const io_register_t haswell_ult_dmi_registers[] = {
-    { 0x00, 4, "DMIVCECH" }, // DMI Virtual Channel Enhanced Capability
-    { 0x04, 4, "DMIPVCCAP1" }, // DMI Port VC Capability Register 1
-    { 0x08, 4, "DMIPVCCAP2" }, // DMI Port VC Capability Register 2
-    { 0x0C, 2, "DMI PVCCTL" }, // DMI Port VC Control
-/*  { 0x0E, 2, "RSVD" }, // Reserved */
-    { 0x10, 4, "DMIVC0RCAP" }, // DMI VC0 Resource Capability
-    { 0x14, 4, "DMIVC0RCTL" }, // DMI VC0 Resource Control
-/*  { 0x18, 2, "RSVD" }, // Reserved */
-    { 0x1A, 2, "DMIVC0RSTS" }, // DMI VC0 Resource Status
-    { 0x1C, 4, "DMIVC1RCAP" }, // DMI VC1 Resource Capability
-    { 0x20, 4, "DMIVC1RCTL" }, // DMI VC1 Resource Control
-/*  { 0x24, 2, "RSVD" }, // Reserved */
-    { 0x26, 2, "DMIVC1RSTS" }, // DMI VC1 Resource Status
-    { 0x28, 4, "DMIVCPRCAP" }, // DMI VCp Resource Capability
-    { 0x2C, 4, "DMIVCPRCTL" }, // DMI VCp Resource Control
-/*  { 0x30, 2, "RSVD" }, // Reserved */
-    { 0x32, 2, "DMIVCPRSTS" }, // DMI VCp Resource Status
-    { 0x34, 4, "DMIVCMRCAP" }, // DMI VCm Resource Capability
-    { 0x38, 4, "DMIVCMRCTL" }, // DMI VCm Resource Control
-/*  { 0x3C, 2, "RSVD" }, // Reserved */
-    { 0x3E, 2, "DMIVCMRSTS" }, // DMI VCm Resource Status
-    { 0x40, 4, "DMIRCLDECH" }, // DMI Root Complex Link Declaration */
-    { 0x44, 4, "DMIESD" }, // DMI Element Self Description
-/*  { 0x48, 4, "RSVD" }, // Reserved */
-/*  { 0x4C, 4, "RSVD" }, // Reserved */
-    { 0x50, 4, "DMILE1D" }, // DMI Link Entry 1 Description
-/*  { 0x54, 4, "RSVD" }, // Reserved */
-    { 0x58, 4, "DMILE1A" }, // DMI Link Entry 1 Address
-    { 0x5C, 4, "DMILUE1A" }, // DMI Link Upper Entry 1 Address
-    { 0x60, 4, "DMILE2D" }, // DMI Link Entry 2 Description
-/*  { 0x64, 4, "RSVD" }, // Reserved */
-    { 0x68, 4, "DMILE2A" }, // DMI Link Entry 2 Address
-/*  { 0x6C, 4, "RSVD" }, // Reserved */
-/*  { 0x70, 4, "RSVD" }, // Reserved */
-/*  { 0x74, 4, "RSVD" }, // Reserved */
-/*  { 0x78, 4, "RSVD" }, // Reserved */
-/*  { 0x7C, 4, "RSVD" }, // Reserved */
-/*  { 0x80, 4, "RSVD" }, // Reserved */
-/*  { 0x84, 4, "RSVD" }, // Reserved */
-    { 0x88, 2, "LCTL" }, // Link Control
-    /*  ... - Reserved */
-    { 0x1C4, 4, "DMIUESTS" }, // DMI Uncorrectable Error Status
-    { 0x1C8, 4, "DMIUEMSK" }, // DMI Uncorrectable Error Mask
-    { 0x1D0, 4, "DMICESTS" }, // DMI Correctable Error Status
-    { 0x1D4, 4, "DMICEMSK" }, // DMI Correctable Error Mask
+	{ 0x00, 4, "DMIVCECH" }, // DMI Virtual Channel Enhanced Capability
+	{ 0x04, 4, "DMIPVCCAP1" }, // DMI Port VC Capability Register 1
+	{ 0x08, 4, "DMIPVCCAP2" }, // DMI Port VC Capability Register 2
+	{ 0x0C, 2, "DMI PVCCTL" }, // DMI Port VC Control
+/*	{ 0x0E, 2, "RSVD" }, // Reserved */
+	{ 0x10, 4, "DMIVC0RCAP" }, // DMI VC0 Resource Capability
+	{ 0x14, 4, "DMIVC0RCTL" }, // DMI VC0 Resource Control
+/*	{ 0x18, 2, "RSVD" }, // Reserved */
+	{ 0x1A, 2, "DMIVC0RSTS" }, // DMI VC0 Resource Status
+	{ 0x1C, 4, "DMIVC1RCAP" }, // DMI VC1 Resource Capability
+	{ 0x20, 4, "DMIVC1RCTL" }, // DMI VC1 Resource Control
+/*	{ 0x24, 2, "RSVD" }, // Reserved */
+	{ 0x26, 2, "DMIVC1RSTS" }, // DMI VC1 Resource Status
+	{ 0x28, 4, "DMIVCPRCAP" }, // DMI VCp Resource Capability
+	{ 0x2C, 4, "DMIVCPRCTL" }, // DMI VCp Resource Control
+/*	{ 0x30, 2, "RSVD" }, // Reserved */
+	{ 0x32, 2, "DMIVCPRSTS" }, // DMI VCp Resource Status
+	{ 0x34, 4, "DMIVCMRCAP" }, // DMI VCm Resource Capability
+	{ 0x38, 4, "DMIVCMRCTL" }, // DMI VCm Resource Control
+/*	{ 0x3C, 2, "RSVD" }, // Reserved */
+	{ 0x3E, 2, "DMIVCMRSTS" }, // DMI VCm Resource Status
+	{ 0x40, 4, "DMIRCLDECH" }, // DMI Root Complex Link Declaration */
+	{ 0x44, 4, "DMIESD" }, // DMI Element Self Description
+/*	{ 0x48, 4, "RSVD" }, // Reserved */
+/*	{ 0x4C, 4, "RSVD" }, // Reserved */
+	{ 0x50, 4, "DMILE1D" }, // DMI Link Entry 1 Description
+/*	{ 0x54, 4, "RSVD" }, // Reserved */
+	{ 0x58, 4, "DMILE1A" }, // DMI Link Entry 1 Address
+	{ 0x5C, 4, "DMILUE1A" }, // DMI Link Upper Entry 1 Address
+	{ 0x60, 4, "DMILE2D" }, // DMI Link Entry 2 Description
+/*	{ 0x64, 4, "RSVD" }, // Reserved */
+	{ 0x68, 4, "DMILE2A" }, // DMI Link Entry 2 Address
+/*	{ 0x6C, 4, "RSVD" }, // Reserved */
+/*	{ 0x70, 4, "RSVD" }, // Reserved */
+/*	{ 0x74, 4, "RSVD" }, // Reserved */
+/*	{ 0x78, 4, "RSVD" }, // Reserved */
+/*	{ 0x7C, 4, "RSVD" }, // Reserved */
+/*	{ 0x80, 4, "RSVD" }, // Reserved */
+/*	{ 0x84, 4, "RSVD" }, // Reserved */
+	{ 0x88, 2, "LCTL" }, // Link Control
+	/*  ... - Reserved */
+	{ 0x1C4, 4, "DMIUESTS" }, // DMI Uncorrectable Error Status
+	{ 0x1C8, 4, "DMIUEMSK" }, // DMI Uncorrectable Error Mask
+	{ 0x1D0, 4, "DMICESTS" }, // DMI Correctable Error Status
+	{ 0x1D4, 4, "DMICEMSK" }, // DMI Correctable Error Mask
 /*  ... - Reserved */
 };
 

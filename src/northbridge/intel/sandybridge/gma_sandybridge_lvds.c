@@ -94,16 +94,6 @@ static void power_port(u8 *mmio)
 	read32(mmio + 0x000e4210); // = 0x5144003e
 	read32(mmio + 0x000e4210); // = 0x5144003e
 	write32(mmio + 0x000e4210, 0x5344003e);
-	write32(mmio + 0x000e4f00, 0x0100030c);
-	write32(mmio + 0x000e4f04, 0x00b8230c);
-	write32(mmio + 0x000e4f08, 0x06f8930c);
-	write32(mmio + 0x000e4f0c, 0x09f8e38e);
-	write32(mmio + 0x000e4f10, 0x00b8030c);
-	write32(mmio + 0x000e4f14, 0x0b78830c);
-	write32(mmio + 0x000e4f18, 0x0ff8d3cf);
-	write32(mmio + 0x000e4f1c, 0x01e8030c);
-	write32(mmio + 0x000e4f20, 0x0ff863cf);
-	write32(mmio + 0x000e4f24, 0x0ff803cf);
 	write32(mmio + 0x000c4030, 0x00001000);
 	read32(mmio + 0x000c4000); // = 0x00000000
 	write32(mmio + 0x000c4030, 0x00001000);

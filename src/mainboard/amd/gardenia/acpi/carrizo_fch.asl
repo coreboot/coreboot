@@ -77,3 +77,29 @@ Device(I2CB)
 		Return (0x0F)
 	}
 }
+
+Device(I2CC) {
+	Name(_HID,"AMD0010")
+	Name(_UID,0x0)
+	Name(_CRS, ResourceTemplate() {
+		IRQ(Edge, ActiveHigh, Exclusive) {6}
+		Memory32Fixed(ReadWrite, 0xFEDC4000, 0x1000)
+	})
+
+	Method (_STA, 0x0, NotSerialized) {
+		Return (0x0F)
+	}
+}
+
+Device(I2CD)
+{
+	Name(_HID,"AMD0010")
+	Name(_UID,0x1)
+	Name(_CRS, ResourceTemplate() {
+		IRQ(Edge, ActiveHigh, Exclusive) {14}
+		Memory32Fixed(ReadWrite, 0xFEDC5000, 0x1000)
+	})
+	Method (_STA, 0x0, NotSerialized) {
+		Return (0x0F)
+	}
+}

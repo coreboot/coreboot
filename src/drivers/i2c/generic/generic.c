@@ -25,6 +25,46 @@
 #include "chip.h"
 
 #if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+
+static void i2c_generic_add_power_res(struct drivers_i2c_generic_config *config)
+{
+	const char *power_res_dev_states[] = { "_PR0", "_PR3" };
+
+	if (!config->reset_gpio && !config->enable_gpio)
+		return;
+
+	/* PowerResource (PRIC, 0, 0) */
+	acpigen_write_power_res("PRIC", 0, 0, power_res_dev_states,
+				ARRAY_SIZE(power_res_dev_states));
+
+	/* Method (_STA, 0, NotSerialized) { Return (0x1) } */
+	acpigen_write_STA(0x1);
+
+	/* Method (_ON, 0, Serialized) */
+	acpigen_write_method_serialized("_ON", 0);
+	if (config->reset_gpio)
+		acpigen_soc_set_tx_gpio(config->reset_gpio);
+	if (config->enable_gpio) {
+		acpigen_soc_set_tx_gpio(config->enable_gpio);
+		acpigen_write_sleep(config->enable_delay_ms);
+	}
+	if (config->reset_gpio) {
+		acpigen_soc_clear_tx_gpio(config->reset_gpio);
+		acpigen_write_sleep(config->reset_delay_ms);
+	}
+	acpigen_pop_len();		/* _ON method */
+
+	/* Method (_OFF, 0, Serialized) */
+	acpigen_write_method_serialized("_OFF", 0);
+	if (config->reset_gpio)
+		acpigen_soc_set_tx_gpio(config->reset_gpio);
+	if (config->enable_gpio)
+		acpigen_soc_clear_tx_gpio(config->enable_gpio);
+	acpigen_pop_len();		/* _OFF method */
+
+	acpigen_pop_len();		/* PowerResource PRIC */
+}
+
 static void i2c_generic_fill_ssdt(struct device *dev)
 {
 	struct drivers_i2c_generic_config *config = dev->chip_info;
@@ -71,6 +111,9 @@ static void i2c_generic_fill_ssdt(struct device *dev)
 		acpi_dp_add_integer(dsd, "linux,probed", 1);
 		acpi_dp_write(dsd);
 	}
+
+	/* Power Resource */
+	i2c_generic_add_power_res(config);
 
 	acpigen_pop_len(); /* Device */
 	acpigen_pop_len(); /* Scope */

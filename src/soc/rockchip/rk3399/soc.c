@@ -39,8 +39,7 @@ static void soc_init(device_t dev)
 	mmio_resource(dev, 1, (0x10000 / KiB), (0x80000 / KiB));
 
 	if (display_init_required())
-		rk_display_init(dev, (uintptr_t)_framebuffer,
-				_framebuffer_size);
+		rk_display_init(dev);
 	else
 		printk(BIOS_INFO, "Skipping display init.\n");
 

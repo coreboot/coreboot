@@ -36,20 +36,14 @@
 
 #include "chip.h"
 
-void rk_display_init(device_t dev, uintptr_t lcdbase,
-		     unsigned long fb_size)
+void rk_display_init(device_t dev)
 {
 	struct edid edid;
-	uint32_t val;
 	struct soc_rockchip_rk3399_config *conf = dev->chip_info;
-	uintptr_t lower = ALIGN_DOWN(lcdbase, MiB);
-	uintptr_t upper = ALIGN_UP(lcdbase + fb_size, MiB);
 	enum vop_modes detected_mode = VOP_MODE_UNKNOWN;
 
-	printk(BIOS_DEBUG, "LCD framebuffer @%p\n", (void *)(lcdbase));
-	memset((void *)lcdbase, 0, fb_size);	/* clear the framebuffer */
-	dcache_clean_invalidate_by_mva((void *)lower, upper - lower);
-	mmu_config_range((void *)lower, upper - lower, UNCACHED_MEM);
+	/* let's use vop0 in rk3399 */
+	uint32_t vop_id = 0;
 
 	switch (conf->vop_mode) {
 	case VOP_MODE_NONE:
@@ -58,12 +52,10 @@ void rk_display_init(device_t dev, uintptr_t lcdbase,
 		/* try EDP first, then HDMI */
 	case VOP_MODE_EDP:
 		printk(BIOS_DEBUG, "Attempting to set up EDP display.\n");
-		rkclk_configure_vop_aclk(conf->vop_id, 192 * MHz);
+		rkclk_configure_vop_aclk(vop_id, 192 * MHz);
 
-		/* select edp signal from vop0(big) or vop1(little) */
-		val = (conf->vop_id == 1) ? RK_SETBITS(1 << 5) :
-					    RK_CLRBITS(1 << 5);
-		write32(&rk3399_grf->soc_con20, val);
+		/* select edp signal from vop0 */
+		write32(&rk3399_grf->soc_con20, RK_CLRBITS(1 << 5));
 
 		/* select edp clk from SoC internal 24M crystal, otherwise,
 		 * it will source from edp's 24M clock (that depends on
@@ -89,7 +81,7 @@ void rk_display_init(device_t dev, uintptr_t lcdbase,
 		return;
 	}
 
-	if (rkclk_configure_vop_dclk(conf->vop_id,
+	if (rkclk_configure_vop_dclk(vop_id,
 				     edid.mode.pixel_clock * KHz)) {
 		printk(BIOS_WARNING, "config vop err\n");
 		return;
@@ -97,9 +89,9 @@ void rk_display_init(device_t dev, uintptr_t lcdbase,
 
 	edid_set_framebuffer_bits_per_pixel(&edid,
 		conf->framebuffer_bits_per_pixel, 0);
-	rkvop_mode_set(conf->vop_id, &edid, detected_mode);
+	rkvop_mode_set(vop_id, &edid, detected_mode);
 
-	rkvop_enable(conf->vop_id, lcdbase, &edid);
+	rkvop_prepare(vop_id, &edid);
 
 	switch (detected_mode) {
 	case VOP_MODE_HDMI:
@@ -115,5 +107,5 @@ void rk_display_init(device_t dev, uintptr_t lcdbase,
 		break;
 	}
 
-	set_vbe_mode_info_valid(&edid, (uintptr_t)lcdbase);
+	set_vbe_mode_info_valid(&edid, (uintptr_t)0);
 }

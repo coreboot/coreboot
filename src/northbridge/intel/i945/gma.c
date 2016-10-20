@@ -595,11 +595,6 @@ static void gma_func0_init(struct device *dev)
 	pci_write_config32(dev, PCI_COMMAND, reg32 | PCI_COMMAND_MASTER
 		 | PCI_COMMAND_IO | PCI_COMMAND_MEMORY);
 
-	if (!IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT)) {
-		/* PCI Init, will run VBIOS */
-		pci_dev_init(dev);
-	}
-
 	if (IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT)) {
 		/* This should probably run before post VBIOS init. */
 		printk(BIOS_SPEW, "Initializing VGA without OPROM.\n");
@@ -638,6 +633,9 @@ static void gma_func0_init(struct device *dev)
 			generate_fake_intel_oprom(&conf->gfx, dev,
 						"$VBT LAKEPORT-G");
 		}
+	} else {
+		/* PCI Init, will run VBIOS */
+		pci_dev_init(dev);
 	}
 }
 

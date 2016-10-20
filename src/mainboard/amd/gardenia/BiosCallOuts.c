@@ -90,6 +90,8 @@ AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr)
 	if (StdHeader->Func == AMD_INIT_RESET) {
 		FCH_RESET_DATA_BLOCK *FchParams_reset = (FCH_RESET_DATA_BLOCK *)FchData;
 		printk(BIOS_DEBUG, "Fch OEM config in INIT RESET ");
+		FchParams_reset->FchReset.SataEnable = hudson_sata_enable();
+		FchParams_reset->FchReset.IdeEnable = hudson_ide_enable();
 		FchParams_reset->EarlyOemGpioTable = oem_gardenia_gpio;
 	} else if (StdHeader->Func == AMD_INIT_ENV) {
 		FCH_DATA_BLOCK *FchParams_env = (FCH_DATA_BLOCK *)FchData;
@@ -106,6 +108,22 @@ AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr)
 #endif
 		FchParams_env->Usb.Xhci1Enable = FALSE;
 		FchParams_env->Usb.USB30PortInit = 8; /* 8: If USB3 port is unremoveable. */
+
+		/* SATA configuration */
+		FchParams_env->Sata.SataClass = CONFIG_HUDSON_SATA_MODE;
+		switch ((SATA_CLASS)CONFIG_HUDSON_SATA_MODE) {
+		case SataRaid:
+		case SataAhci:
+		case SataAhci7804:
+		case SataLegacyIde:
+			FchParams_env->Sata.SataIdeMode = FALSE;
+			break;
+		case SataIde2Ahci:
+		case SataIde2Ahci7804:
+		default: /* SataNativeIde */
+			FchParams_env->Sata.SataIdeMode = TRUE;
+			break;
+		}
 	}
 	printk(BIOS_DEBUG, "Done\n");
 

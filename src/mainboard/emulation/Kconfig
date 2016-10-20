@@ -2,6 +2,7 @@ if VENDOR_EMULATION
 
 choice
 	prompt "Mainboard model"
+	default BOARD_EMULATION_QEMU_X86_I440FX
 
 source "src/mainboard/emulation/*/Kconfig.name"
 

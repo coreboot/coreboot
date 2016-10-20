@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2015 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015-2016 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,31 +18,13 @@ Device(GPIO) {
 	Name (_CID, "AMD0030")
 	Name(_UID, 0)
 
-	Method (_CRS, 0x0, NotSerialized) {
-		Name (RBUF, ResourceTemplate () {
-			//
-			// Interrupt resource. In this example, banks 0 & 1 share the same
-			// interrupt to the parent controller and similarly banks 2 & 3.
-			//
-			// N.B. The definition below is chosen for an arbitrary
-			//      test platform. It needs to be changed to reflect the hardware
-			//      configuration of the actual platform
-			//
-			Interrupt(ResourceConsumer, Level, ActiveLow, Shared, , , ) {7}
-
-			//
-			// Memory resource. The definition below is chosen for an arbitrary
-			// test platform. It needs to be changed to reflect the hardware
-			// configuration of the actual platform.
-			//
-			Memory32Fixed(ReadWrite, 0xFED81500, 0x300)
-		})
-
-		Return (RBUF)
-	}
+	Name(_CRS, ResourceTemplate() {
+		Interrupt(ResourceConsumer, Level, ActiveLow, Shared, , , ) {7}
+		Memory32Fixed(ReadWrite, 0xFED81500, 0x300)
+	})
 
 	Method (_STA, 0x0, NotSerialized) {
-			Return (0x0F)
+		Return (0x0F)
 	}
 }
 

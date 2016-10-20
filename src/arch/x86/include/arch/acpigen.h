@@ -160,4 +160,26 @@ void acpigen_write_else(void);
 
 int get_cst_entries(acpi_cstate_t **);
 
+/*
+ * Soc-implemented functions for generating ACPI AML code for GPIO handling. All
+ * these functions are expected to use only Local5, Local6 and Local7
+ * variables. If the functions call into another ACPI method, then there is no
+ * restriction on the use of Local variables. In case of get/read functions,
+ * return value is expected to be stored in Local0 variable.
+ *
+ * All functions return 0 on success and -1 on error.
+ */
+
+/* Generate ACPI AML code to return Rx value of GPIO in Local0. */
+int acpigen_soc_read_rx_gpio(unsigned int gpio_num);
+
+/* Generate ACPI AML code to return Tx value of GPIO in Local0. */
+int acpigen_soc_get_tx_gpio(unsigned int gpio_num);
+
+/* Generate ACPI AML code to set Tx value of GPIO to 1. */
+int acpigen_soc_set_tx_gpio(unsigned int gpio_num);
+
+/* Generate ACPI AML code to set Tx value of GPIO to 0. */
+int acpigen_soc_clear_tx_gpio(unsigned int gpio_num);
+
 #endif

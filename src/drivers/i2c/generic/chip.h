@@ -22,4 +22,13 @@ struct drivers_i2c_generic_config {
 	/* GPIO used to indicate if this device is present */
 	unsigned device_present_gpio;
 	unsigned device_present_gpio_invert;
+
+	/* GPIO used to take device out of reset or to put it into reset. */
+        unsigned reset_gpio;
+	/* Delay to be inserted after device is taken out of reset. */
+	unsigned reset_delay_ms;
+	/* GPIO used to enable device. */
+	unsigned enable_gpio;
+	/* Delay to be inserted after device is enabled. */
+	unsigned enable_delay_ms;
 };

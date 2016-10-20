@@ -18,8 +18,7 @@
 
 #define REF_CLK_24M (0x1 << 0)
 
-void rk_display_init(device_t dev, uintptr_t lcdbase,
-		     unsigned long fb_size);
+void rk_display_init(device_t dev);
 void mainboard_power_on_backlight(void);
 
 #endif

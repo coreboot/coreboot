@@ -30,7 +30,19 @@ static struct rockchip_vop_regs * const vop_regs[] = {
 	(struct rockchip_vop_regs *)VOP_LIT_BASE
 };
 
-void rkvop_enable(u32 vop_id, u32 fbbase, const struct edid *edid)
+void rkvop_enable(u32 vop_id, u32 fbbase)
+{
+	struct rockchip_vop_regs *preg = vop_regs[vop_id];
+
+	write32(&preg->win0_yrgb_mst, fbbase);
+
+	/* On RK3288, the reg_cfg_done[1:31] is reserved and read-only,
+	 * but it's fine to write to it
+	 */
+	write32(&preg->reg_cfg_done, 0xffff); /* enable reg config */
+}
+
+void rkvop_prepare(u32 vop_id, const struct edid *edid)
 {
 	u32 lb_mode;
 	u32 rgb_mode;
@@ -85,13 +97,6 @@ void rkvop_enable(u32 vop_id, u32 fbbase, const struct edid *edid)
 			M_WIN0_LB_MODE | M_WIN0_DATA_FMT | M_WIN0_EN,
 			V_WIN0_LB_MODE(lb_mode) |
 			V_WIN0_DATA_FMT(rgb_mode) | V_WIN0_EN(1));
-
-	write32(&preg->win0_yrgb_mst, fbbase);
-
-	/* On RK3288, the reg_cfg_done[1:31] is reserved and read-only,
-	 * but it's fine to write to it
-	 */
-	write32(&preg->reg_cfg_done, 0xffff); /* enable reg config */
 }
 
 void rkvop_mode_set(u32 vop_id, const struct edid *edid, u32 mode)

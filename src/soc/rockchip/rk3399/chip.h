@@ -20,7 +20,6 @@
 #include <soc/vop.h>	/* for vop_modes enum used in devicetree.cb */
 
 struct soc_rockchip_rk3399_config {
-	u32 vop_id;
 	gpio_t lcd_bl_pwm_gpio;
 	gpio_t lcd_bl_en_gpio;
 	u32 bl_power_on_udelay;

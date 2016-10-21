@@ -987,10 +987,63 @@ void acpigen_write_if_and(uint8_t arg1, uint8_t arg2)
 	acpigen_emit_byte(arg2);
 }
 
+void acpigen_write_if_lequal(uint8_t arg1, uint8_t arg2)
+{
+	acpigen_write_if();
+	acpigen_emit_byte(LEQUAL_OP);
+	acpigen_emit_byte(arg1);
+	acpigen_emit_byte(arg2);
+}
+
 void acpigen_write_else(void)
 {
 	acpigen_emit_byte(ELSE_OP);
 	acpigen_write_len_f();
+}
+
+void acpigen_write_to_buffer(uint8_t src, uint8_t dst)
+{
+	acpigen_emit_byte(TO_BUFFER_OP);
+	acpigen_emit_byte(src);
+	acpigen_emit_byte(dst);
+}
+
+void acpigen_write_to_integer(uint8_t src, uint8_t dst)
+{
+	acpigen_emit_byte(TO_INTEGER_OP);
+	acpigen_emit_byte(src);
+	acpigen_emit_byte(dst);
+}
+
+void acpigen_write_byte_buffer(uint8_t *arr, uint8_t size)
+{
+	uint8_t i;
+
+	acpigen_emit_byte(BUFFER_OP);
+	acpigen_write_len_f();
+	acpigen_emit_byte(size);
+
+	for (i = 0; i < size; i++)
+		acpigen_emit_byte(arr[i]);
+
+	acpigen_pop_len();
+}
+
+void acpigen_write_return_byte_buffer(uint8_t *arr, uint8_t size)
+{
+	acpigen_emit_byte(RETURN_OP);
+	acpigen_write_byte_buffer(arr, size);
+}
+
+void acpigen_write_return_singleton_buffer(uint8_t arg)
+{
+	acpigen_write_return_byte_buffer(&arg, 1);
+}
+
+void acpigen_write_return_byte(uint8_t arg)
+{
+	acpigen_emit_byte(RETURN_OP);
+	acpigen_write_byte(arg);
 }
 
 /* Soc-implemented functions -- weak definitions. */

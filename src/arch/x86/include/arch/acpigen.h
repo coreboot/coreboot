@@ -75,6 +75,9 @@ enum {
 	AND_OP			= 0x7B,
 	OR_OP			= 0x7D,
 	NOT_OP			= 0x80,
+	LEQUAL_OP		= 0x93,
+	TO_BUFFER_OP		= 0x96,
+	TO_INTEGER_OP		= 0x99,
 	IF_OP			= 0xA0,
 	ELSE_OP		= 0xA1,
 	RETURN_OP		= 0xA4,
@@ -156,7 +159,14 @@ void acpigen_write_debug_integer(uint64_t val);
 void acpigen_write_debug_op(uint8_t op);
 void acpigen_write_if(void);
 void acpigen_write_if_and(uint8_t arg1, uint8_t arg2);
+void acpigen_write_if_lequal(uint8_t arg1, uint8_t arg2);
 void acpigen_write_else(void);
+void acpigen_write_to_buffer(uint8_t src, uint8_t dst);
+void acpigen_write_to_integer(uint8_t src, uint8_t dst);
+void acpigen_write_byte_buffer(uint8_t *arr, uint8_t size);
+void acpigen_write_return_byte_buffer(uint8_t *arr, uint8_t size);
+void acpigen_write_return_singleton_buffer(uint8_t arg);
+void acpigen_write_return_byte(uint8_t arg);
 
 int get_cst_entries(acpi_cstate_t **);
 

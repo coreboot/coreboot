@@ -19,7 +19,7 @@
 #if IS_ENABLED(CONFIG_PLATFORM_USES_FSP1_1)
 #include <fsp/bootblock.h>
 #else
-inline void bootblock_fsp_temp_ram_init(void) {}
+static inline void bootblock_fsp_temp_ram_init(void) {}
 #endif
 
 /* Bootblock pre console init programing */

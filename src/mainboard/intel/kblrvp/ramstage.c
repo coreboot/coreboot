@@ -25,6 +25,9 @@ void mainboard_silicon_init_params(FSP_SIL_UPD *params)
 	 * dependencies during hardware initialization. */
 	gpio_configure_pads(gpio_table, ARRAY_SIZE(gpio_table));
 	params->CdClock = 3;
+
+	/* Enable Virtual Channel 1 */
+	params->PchHdaVcType = 0x1;
 }
 
 static void ioexpander_init(void *unused)

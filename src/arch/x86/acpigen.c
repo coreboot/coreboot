@@ -1046,6 +1046,92 @@ void acpigen_write_return_byte(uint8_t arg)
 	acpigen_write_byte(arg);
 }
 
+/*
+ * Generate ACPI AML code for _DSM method.
+ * This function takes as input uuid for the device, set of callbacks and
+ * argument to pass into the callbacks. Callbacks should ensure that Local0 and
+ * Local1 are left untouched. Use of Local2-Local7 is permitted in callbacks.
+ *
+ * Arguments passed into _DSM method:
+ * Arg0 = UUID
+ * Arg1 = Revision
+ * Arg2 = Function index
+ * Arg3 = Function specific arguments
+ *
+ * AML code generated would look like:
+ * Method (_DSM, 4, Serialized) {
+ * 	ToBuffer (Arg0, Local0)
+ * 	If (LEqual (Local0, ToUUID(uuid))) {
+ * 		ToInteger (Arg2, Local1)
+ * 		If (LEqual (Local1, 0)) {
+ * 			<acpigen by callback[0]>
+ * 		} Else {
+ * 			...
+ * 			If (LEqual (Local1, n)) {
+ * 				<acpigen by callback[n]>
+ * 			} Else {
+ * 				Return (Buffer (One) { 0x0 })
+ * 			}
+ * 		}
+ * 	} Else {
+ * 		Return (Buffer (One) { 0x0 })
+ * 	}
+ * }
+ */
+void acpigen_write_dsm(const char *uuid, void (*callbacks[])(void *),
+		       size_t count, void *arg)
+{
+	size_t i;
+
+	/* Method (_DSM, 4, Serialized) */
+	acpigen_write_method_serialized("_DSM", 0x4);
+
+	/* ToBuffer (Arg0, Local0) */
+	acpigen_write_to_buffer(ARG0_OP, LOCAL0_OP);
+
+	/* If (LEqual (Local0, ToUUID(uuid))) */
+	acpigen_write_if();
+	acpigen_emit_byte(LEQUAL_OP);
+	acpigen_emit_byte(LOCAL0_OP);
+	acpigen_write_uuid(uuid);
+
+	/*   ToInteger (Arg2, Local1) */
+	acpigen_write_to_integer(ARG2_OP, LOCAL1_OP);
+	acpigen_write_debug_op(LOCAL1_OP);
+
+	for (i = 0; i < count; i++) {
+		/*   If (Lequal (Local1, i)) */
+		acpigen_write_if_lequal(LOCAL1_OP, i);
+
+		/*     Callback to write if handler. */
+		if (callbacks[i])
+			callbacks[i](arg);
+
+		acpigen_pop_len();	/* If */
+
+		/*   Else */
+		acpigen_write_else();
+	}
+
+	/*   Default case: Return (Buffer (One) { 0x0 }) */
+	acpigen_write_return_singleton_buffer(0x0);
+
+	/*   Pop lengths for all the else clauses. */
+	for (i = 0; i < count; i++)
+		acpigen_pop_len();
+
+	acpigen_pop_len();	/* If (LEqual (Local0, ToUUID(uuid))) */
+
+	/* Else */
+	acpigen_write_else();
+
+	/*   Return (Buffer (One) { 0x0 }) */
+	acpigen_write_return_singleton_buffer(0x0);
+
+	acpigen_pop_len();	/* Else */
+	acpigen_pop_len();	/* Method _DSM */
+}
+
 /* Soc-implemented functions -- weak definitions. */
 int __attribute__((weak)) acpigen_soc_read_rx_gpio(unsigned int gpio_num)
 {

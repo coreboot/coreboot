@@ -167,6 +167,14 @@ void acpigen_write_byte_buffer(uint8_t *arr, uint8_t size);
 void acpigen_write_return_byte_buffer(uint8_t *arr, uint8_t size);
 void acpigen_write_return_singleton_buffer(uint8_t arg);
 void acpigen_write_return_byte(uint8_t arg);
+/*
+ * Generate ACPI AML code for _DSM method.
+ * This function takes as input uuid for the device, set of callbacks and
+ * argument to pass into the callbacks. Callbacks should ensure that Local0 and
+ * Local1 are left untouched. Use of Local2-Local7 is permitted in callbacks.
+ */
+void acpigen_write_dsm(const char *uuid, void (*callbacks[])(void *),
+		       size_t count, void *arg);
 
 int get_cst_entries(acpi_cstate_t **);
 

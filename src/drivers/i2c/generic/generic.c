@@ -65,7 +65,8 @@ static void i2c_generic_add_power_res(struct drivers_i2c_generic_config *config)
 	acpigen_pop_len();		/* PowerResource PRIC */
 }
 
-static void i2c_generic_fill_ssdt(struct device *dev)
+void i2c_generic_fill_ssdt(struct device *dev,
+			   void (*callback)(struct device *dev))
 {
 	struct drivers_i2c_generic_config *config = dev->chip_info;
 	const char *scope = acpi_device_scope(dev);
@@ -89,6 +90,8 @@ static void i2c_generic_fill_ssdt(struct device *dev)
 	acpigen_write_scope(scope);
 	acpigen_write_device(acpi_device_name(dev));
 	acpigen_write_name_string("_HID", config->hid);
+	if (config->cid)
+		acpigen_write_name_string("_CID", config->cid);
 	acpigen_write_name_integer("_UID", config->uid);
 	acpigen_write_name_string("_DDN", config->desc);
 	acpigen_write_STA(ACPI_STATUS_DEVICE_ALL_ON);
@@ -115,11 +118,20 @@ static void i2c_generic_fill_ssdt(struct device *dev)
 	/* Power Resource */
 	i2c_generic_add_power_res(config);
 
+	/* Callback if any. */
+	if (callback)
+		callback(dev);
+
 	acpigen_pop_len(); /* Device */
 	acpigen_pop_len(); /* Scope */
 
 	printk(BIOS_INFO, "%s: %s at %s\n", acpi_device_path(dev),
 	       config->desc ? : dev->chip_ops->name, dev_path(dev));
+}
+
+static void i2c_generic_fill_ssdt_generator(struct device *dev)
+{
+	i2c_generic_fill_ssdt(dev, NULL);
 }
 
 /* Use name specified in config or build one from I2C address */
@@ -143,7 +155,7 @@ static struct device_operations i2c_generic_ops = {
 	.enable_resources	  = DEVICE_NOOP,
 #if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
 	.acpi_name		  = &i2c_generic_acpi_name,
-	.acpi_fill_ssdt_generator = &i2c_generic_fill_ssdt,
+	.acpi_fill_ssdt_generator = &i2c_generic_fill_ssdt_generator,
 #endif
 };
 

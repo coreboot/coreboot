@@ -1,8 +1,27 @@
+/*
+ * This file is part of the coreboot project.
+ *
+ * Copyright 2016 Google Inc.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+#ifndef __I2C_GENERIC_CHIP_H__
+#define __I2C_GENERIC_CHIP_H__
+
 #include <arch/acpi_device.h>
 #include <device/i2c.h>
 
 struct drivers_i2c_generic_config {
 	const char *hid;	/* ACPI _HID (required) */
+	const char *cid;	/* ACPI _CID */
 	const char *name;	/* ACPI Device Name */
 	const char *desc;	/* Device Description */
 	unsigned uid;		/* ACPI _UID */
@@ -32,3 +51,17 @@ struct drivers_i2c_generic_config {
 	/* Delay to be inserted after device is enabled. */
 	unsigned enable_delay_ms;
 };
+
+/*
+ * Fills in generic information about i2c device from device-tree
+ * properties. Callback can be provided to fill in any
+ * device-specific information in SSDT.
+ *
+ * Drivers calling into this function to generate should place
+ * drivers_i2c_generic_config structure at the beginning of their device config
+ * structure.
+ */
+void i2c_generic_fill_ssdt(struct device *dev,
+			   void (*callback)(struct device *dev));
+
+#endif /* __I2C_GENERIC_CHIP_H__ */

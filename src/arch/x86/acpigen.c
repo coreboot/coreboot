@@ -73,6 +73,12 @@ void acpigen_emit_byte(unsigned char b)
 	(*gencurrent++) = b;
 }
 
+void acpigen_emit_ext_op(uint8_t op)
+{
+	acpigen_emit_byte(EXT_OP_PREFIX);
+	acpigen_emit_byte(op);
+}
+
 void acpigen_emit_word(unsigned int data)
 {
 	acpigen_emit_byte(data & 0xff);
@@ -90,8 +96,7 @@ void acpigen_emit_dword(unsigned int data)
 char *acpigen_write_package(int nr_el)
 {
 	char *p;
-	/* package op */
-	acpigen_emit_byte(0x12);
+	acpigen_emit_byte(PACKAGE_OP);
 	acpigen_write_len_f();
 	p = acpigen_get_current();
 	acpigen_emit_byte(nr_el);
@@ -100,46 +105,42 @@ char *acpigen_write_package(int nr_el)
 
 void acpigen_write_byte(unsigned int data)
 {
-	/* byte op */
-	acpigen_emit_byte(0xa);
+	acpigen_emit_byte(BYTE_PREFIX);
 	acpigen_emit_byte(data & 0xff);
 }
 
 void acpigen_write_word(unsigned int data)
 {
-	/* word op */
-	acpigen_emit_byte(0xb);
+	acpigen_emit_byte(WORD_PREFIX);
 	acpigen_emit_word(data);
 }
 
 void acpigen_write_dword(unsigned int data)
 {
-	/* dword op */
-	acpigen_emit_byte(0xc);
+	acpigen_emit_byte(DWORD_PREFIX);
 	acpigen_emit_dword(data);
 }
 
 void acpigen_write_qword(uint64_t data)
 {
-	/* qword op */
-	acpigen_emit_byte(0xe);
+	acpigen_emit_byte(QWORD_PREFIX);
 	acpigen_emit_dword(data & 0xffffffff);
 	acpigen_emit_dword((data >> 32) & 0xffffffff);
 }
 
 void acpigen_write_zero(void)
 {
-	acpigen_emit_byte(0x00);
+	acpigen_emit_byte(ZERO_OP);
 }
 
 void acpigen_write_one(void)
 {
-	acpigen_emit_byte(0x01);
+	acpigen_emit_byte(ONE_OP);
 }
 
 void acpigen_write_ones(void)
 {
-	acpigen_emit_byte(0xff);
+	acpigen_emit_byte(ONES_OP);
 }
 
 void acpigen_write_integer(uint64_t data)
@@ -216,7 +217,7 @@ void acpigen_emit_string(const char *string)
 
 void acpigen_write_string(const char *string)
 {
-	acpigen_emit_byte(0x0d);
+	acpigen_emit_byte(STRING_PREFIX);
 	acpigen_emit_string(string);
 }
 
@@ -251,8 +252,7 @@ static void acpigen_emit_simple_namestring(const char *name) {
 }
 
 static void acpigen_emit_double_namestring(const char *name, int dotpos) {
-	/* mark dual name prefix */
-	acpigen_emit_byte(0x2e);
+	acpigen_emit_byte(DUAL_NAME_PREFIX);
 	acpigen_emit_simple_namestring(name);
 	acpigen_emit_simple_namestring(&name[dotpos + 1]);
 }
@@ -260,9 +260,8 @@ static void acpigen_emit_double_namestring(const char *name, int dotpos) {
 static void acpigen_emit_multi_namestring(const char *name) {
 	int count = 0;
 	unsigned char *pathlen;
-	/* mark multi name prefix */
-	acpigen_emit_byte(0x2f);
-	acpigen_emit_byte(0x0);
+	acpigen_emit_byte(MULTI_NAME_PREFIX);
+	acpigen_emit_byte(ZERO_OP);
 	pathlen = ((unsigned char *) acpigen_get_current()) - 1;
 
 	while (name[0] != '\0') {
@@ -299,7 +298,7 @@ void acpigen_emit_namestring(const char *namepath) {
 	/* If we have only \\ or only ^...^. Then we need to put a null
 	   name (0x00). */
 	if (namepath[0] == '\0') {
-		acpigen_emit_byte(0x00);
+		acpigen_emit_byte(ZERO_OP);
 		return;
 	}
 
@@ -323,15 +322,13 @@ void acpigen_emit_namestring(const char *namepath) {
 
 void acpigen_write_name(const char *name)
 {
-	/* name op */
-	acpigen_emit_byte(0x8);
+	acpigen_emit_byte(NAME_OP);
 	acpigen_emit_namestring(name);
 }
 
 void acpigen_write_scope(const char *name)
 {
-	/* scope op */
-	acpigen_emit_byte(0x10);
+	acpigen_emit_byte(SCOPE_OP);
 	acpigen_write_len_f();
 	acpigen_emit_namestring(name);
 }
@@ -343,9 +340,7 @@ void acpigen_write_processor(u8 cpuindex, u32 pblock_addr, u8 pblock_len)
 	{
 */
 	char pscope[16];
-	/* processor op */
-	acpigen_emit_byte(0x5b);
-	acpigen_emit_byte(0x83);
+	acpigen_emit_ext_op(PROCESSOR_OP);
 	acpigen_write_len_f();
 
 	snprintf(pscope, sizeof(pscope),
@@ -445,8 +440,7 @@ void acpigen_write_empty_PTC(void)
 
 void acpigen_write_method(const char *name, int nargs)
 {
-	/* method op */
-	acpigen_emit_byte(0x14);
+	acpigen_emit_byte(METHOD_OP);
 	acpigen_write_len_f();
 	acpigen_emit_namestring(name);
 	acpigen_emit_byte(nargs & 7);
@@ -454,9 +448,7 @@ void acpigen_write_method(const char *name, int nargs)
 
 void acpigen_write_device(const char *name)
 {
-	/* device op */
-	acpigen_emit_byte(0x5b);
-	acpigen_emit_byte(0x82);
+	acpigen_emit_ext_op(DEVICE_OP);
 	acpigen_write_len_f();
 	acpigen_emit_namestring(name);
 }
@@ -467,7 +459,7 @@ void acpigen_write_STA(uint8_t status)
 	 * Method (_STA, 0, NotSerialized) { Return (status) }
 	 */
 	acpigen_write_method("_STA", 0);
-	acpigen_emit_byte(0xa4);
+	acpigen_emit_byte(RETURN_OP);
 	acpigen_write_byte(status);
 	acpigen_pop_len();
 }
@@ -484,8 +476,7 @@ void acpigen_write_PPC(u8 nr)
 	}
 */
 	acpigen_write_method("_PPC", 0);
-	/* return */
-	acpigen_emit_byte(0xa4);
+	acpigen_emit_byte(RETURN_OP);
 	/* arg */
 	acpigen_write_byte(nr);
 	acpigen_pop_len();
@@ -504,8 +495,7 @@ void acpigen_write_PPC_NVS(void)
 	}
 */
 	acpigen_write_method("_PPC", 0);
-	/* return */
-	acpigen_emit_byte(0xa4);
+	acpigen_emit_byte(RETURN_OP);
 	/* arg */
 	acpigen_emit_namestring("PPCM");
 	acpigen_pop_len();
@@ -521,7 +511,7 @@ void acpigen_write_TPC(const char *gnvs_tpc_limit)
 	}
 */
 	acpigen_write_method("_TPC", 0);
-	acpigen_emit_byte(0xa4);		/* ReturnOp */
+	acpigen_emit_byte(RETURN_OP);
 	acpigen_emit_namestring(gnvs_tpc_limit);
 	acpigen_pop_len();
 }
@@ -731,9 +721,9 @@ void acpigen_write_resourcetemplate_header(void)
 	 * resource items, terminated by the end tag.
 	 * (small item 0xf, len 1)
 	 */
-	acpigen_emit_byte(0x11);	/* Buffer opcode */
+	acpigen_emit_byte(BUFFER_OP);
 	acpigen_write_len_f();
-	acpigen_emit_byte(0x0b);	/* Word opcode */
+	acpigen_emit_byte(WORD_PREFIX);
 	len_stack[ltop++] = acpigen_get_current();
 	acpigen_emit_byte(0x00);
 	acpigen_emit_byte(0x00);
@@ -862,7 +852,7 @@ void acpigen_write_uuid(const char *uuid)
 		return;
 
 	/* BufferOp */
-	acpigen_emit_byte(0x11);
+	acpigen_emit_byte(BUFFER_OP);
 	acpigen_write_len_f();
 
 	/* Buffer length in bytes */

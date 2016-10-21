@@ -34,6 +34,53 @@
 					 ACPI_STATUS_DEVICE_SHOW_IN_UI |\
 					 ACPI_STATUS_DEVICE_STATE_OK)
 
+/* ACPI Op/Prefix Codes */
+enum {
+	ZERO_OP		= 0x00,
+	ONE_OP			= 0x01,
+	NAME_OP		= 0x08,
+	SCOPE_OP		= 0x10,
+	BUFFER_OP		= 0x11,
+	BYTE_PREFIX		= 0x0A,
+	WORD_PREFIX		= 0x0B,
+	DWORD_PREFIX		= 0x0C,
+	STRING_PREFIX		= 0x0D,
+	QWORD_PREFIX		= 0x0E,
+	PACKAGE_OP		= 0x12,
+	METHOD_OP		= 0x14,
+	DUAL_NAME_PREFIX	= 0x2E,
+	MULTI_NAME_PREFIX	= 0x2F,
+	EXT_OP_PREFIX		= 0x5B,
+	 SLEEP_OP		= 0x22,
+	 DEBUG_OP		= 0x31,
+	 DEVICE_OP		= 0x82,
+	 PROCESSOR_OP		= 0x83,
+	 POWER_RES_OP		= 0x84,
+	LOCAL0_OP		= 0x60,
+	LOCAL1_OP		= 0x61,
+	LOCAL2_OP		= 0x62,
+	LOCAL3_OP		= 0x63,
+	LOCAL4_OP		= 0x64,
+	LOCAL5_OP		= 0x65,
+	LOCAL6_OP		= 0x66,
+	LOCAL7_OP		= 0x67,
+	ARG0_OP		= 0x68,
+	ARG1_OP		= 0x69,
+	ARG2_OP		= 0x6A,
+	ARG3_OP		= 0x6B,
+	ARG4_OP		= 0x6C,
+	ARG5_OP		= 0x6D,
+	ARG6_OP		= 0x6E,
+	STORE_OP		= 0x70,
+	AND_OP			= 0x7B,
+	OR_OP			= 0x7D,
+	NOT_OP			= 0x80,
+	IF_OP			= 0xA0,
+	ELSE_OP		= 0xA1,
+	RETURN_OP		= 0xA4,
+	ONES_OP		= 0xFF,
+};
+
 void acpigen_write_len_f(void);
 void acpigen_pop_len(void);
 void acpigen_set_current(char *curr);
@@ -44,6 +91,7 @@ void acpigen_write_one(void);
 void acpigen_write_ones(void);
 void acpigen_write_byte(unsigned int data);
 void acpigen_emit_byte(unsigned char data);
+void acpigen_emit_ext_op(uint8_t op);
 void acpigen_emit_word(unsigned int data);
 void acpigen_emit_dword(unsigned int data);
 void acpigen_emit_stream(const char *data, int size);

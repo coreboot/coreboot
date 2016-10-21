@@ -58,4 +58,6 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 		mem_cfg->MemorySpdPtr00 = (u32)blk.spd_array[0];
 	}
 	mem_cfg->MemorySpdPtr10 = mem_cfg->MemorySpdPtr00;
+
+	mupd->FspmTestConfig.DmiVc1 = 1;
 }

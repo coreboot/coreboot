@@ -31,6 +31,8 @@ ramstage-$(CONFIG_EC_GOOGLE_CHROMEEC) += ec.c
 ramstage-y += mainboard.c
 ramstage-y += ramstage.c
 
+ramstage-y += hda_verb.c
+
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
 
 subdirs-y += variants/$(VARIANT_DIR)

@@ -438,12 +438,24 @@ void acpigen_write_empty_PTC(void)
 	acpigen_pop_len();
 }
 
-void acpigen_write_method(const char *name, int nargs)
+static void __acpigen_write_method(const char *name, uint8_t flags)
 {
 	acpigen_emit_byte(METHOD_OP);
 	acpigen_write_len_f();
 	acpigen_emit_namestring(name);
-	acpigen_emit_byte(nargs & 7);
+	acpigen_emit_byte(flags);
+}
+
+/* Method (name, nargs, NotSerialized) */
+void acpigen_write_method(const char *name, int nargs)
+{
+	__acpigen_write_method(name, (nargs & 7));
+}
+
+/* Method (name, nargs, Serialized) */
+void acpigen_write_method_serialized(const char *name, int nargs)
+{
+	__acpigen_write_method(name, (nargs & 7) | (1 << 3));
 }
 
 void acpigen_write_device(const char *name)
@@ -863,4 +875,120 @@ void acpigen_write_uuid(const char *uuid)
 		acpigen_emit_byte(buf[order[i]]);
 
 	acpigen_pop_len();
+}
+
+/*
+ * Name (_PRx, Package(One) { name })
+ * ...
+ * PowerResource (name, level, order)
+ */
+void acpigen_write_power_res(const char *name, uint8_t level, uint16_t order,
+			     const char *dev_states[], size_t dev_states_count)
+{
+	int i;
+	for (i = 0; i < dev_states_count; i++) {
+		acpigen_write_name(dev_states[i]);
+		acpigen_write_package(1);
+		acpigen_emit_simple_namestring(name);
+		acpigen_pop_len();		/* Package */
+	}
+
+	acpigen_emit_ext_op(POWER_RES_OP);
+
+	acpigen_write_len_f();
+
+	acpigen_emit_simple_namestring(name);
+	acpigen_emit_byte(level);
+	acpigen_emit_word(order);
+}
+
+/* Sleep (ms) */
+void acpigen_write_sleep(uint64_t sleep_ms)
+{
+	acpigen_emit_ext_op(SLEEP_OP);
+	acpigen_write_integer(sleep_ms);
+}
+
+void acpigen_write_store(void)
+{
+	acpigen_emit_byte(STORE_OP);
+}
+
+/* Store (src, dst) */
+void acpigen_write_store_ops(uint8_t src, uint8_t dst)
+{
+	acpigen_write_store();
+	acpigen_emit_byte(src);
+	acpigen_emit_byte(dst);
+}
+
+/* Or (arg1, arg2, res) */
+void acpigen_write_or(uint8_t arg1, uint8_t arg2, uint8_t res)
+{
+	acpigen_emit_byte(OR_OP);
+	acpigen_emit_byte(arg1);
+	acpigen_emit_byte(arg2);
+	acpigen_emit_byte(res);
+}
+
+/* And (arg1, arg2, res) */
+void acpigen_write_and(uint8_t arg1, uint8_t arg2, uint8_t res)
+{
+	acpigen_emit_byte(AND_OP);
+	acpigen_emit_byte(arg1);
+	acpigen_emit_byte(arg2);
+	acpigen_emit_byte(res);
+}
+
+/* Not (arg, res) */
+void acpigen_write_not(uint8_t arg, uint8_t res)
+{
+	acpigen_emit_byte(NOT_OP);
+	acpigen_emit_byte(arg);
+	acpigen_emit_byte(res);
+}
+
+/* Store (str, DEBUG) */
+void acpigen_write_debug_string(const char *str)
+{
+	acpigen_write_store();
+	acpigen_write_string(str);
+	acpigen_emit_ext_op(DEBUG_OP);
+}
+
+/* Store (val, DEBUG) */
+void acpigen_write_debug_integer(uint64_t val)
+{
+	acpigen_write_store();
+	acpigen_write_integer(val);
+	acpigen_emit_ext_op(DEBUG_OP);
+}
+
+/* Store (op, DEBUG) */
+void acpigen_write_debug_op(uint8_t op)
+{
+	acpigen_write_store();
+	acpigen_emit_byte(op);
+	acpigen_emit_ext_op(DEBUG_OP);
+}
+
+void acpigen_write_if(void)
+{
+	acpigen_emit_byte(IF_OP);
+	acpigen_write_len_f();
+}
+
+/* If (And (arg1, arg2)) */
+void acpigen_write_if_and(uint8_t arg1, uint8_t arg2)
+{
+	acpigen_write_if();
+	acpigen_emit_byte(AND_OP);
+	acpigen_emit_byte(arg1);
+	acpigen_emit_byte(arg2);
+}
+
+void acpigen_write_else(void)
+{
+	acpigen_emit_byte(ELSE_OP);
+	acpigen_write_len_f();
 }

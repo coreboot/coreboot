@@ -114,6 +114,7 @@ void acpigen_write_name_integer(const char *name, uint64_t val);
 void acpigen_write_coreboot_hid(enum coreboot_acpi_ids id);
 void acpigen_write_scope(const char *name);
 void acpigen_write_method(const char *name, int nargs);
+void acpigen_write_method_serialized(const char *name, int nargs);
 void acpigen_write_device(const char *name);
 void acpigen_write_PPC(u8 nr);
 void acpigen_write_PPC_NVS(void);
@@ -142,6 +143,20 @@ void acpigen_write_mainboard_resource_template(void);
 void acpigen_write_mainboard_resources(const char *scope, const char *name);
 void acpigen_write_irq(u16 mask);
 void acpigen_write_uuid(const char *uuid);
+void acpigen_write_power_res(const char *name, uint8_t level, uint16_t order,
+			     const char *dev_states[], size_t dev_states_count);
+void acpigen_write_sleep(uint64_t sleep_ms);
+void acpigen_write_store(void);
+void acpigen_write_store_ops(uint8_t src, uint8_t dst);
+void acpigen_write_or(uint8_t arg1, uint8_t arg2, uint8_t res);
+void acpigen_write_and(uint8_t arg1, uint8_t arg2, uint8_t res);
+void acpigen_write_not(uint8_t arg, uint8_t res);
+void acpigen_write_debug_string(const char *str);
+void acpigen_write_debug_integer(uint64_t val);
+void acpigen_write_debug_op(uint8_t op);
+void acpigen_write_if(void);
+void acpigen_write_if_and(uint8_t arg1, uint8_t arg2);
+void acpigen_write_else(void);
 
 int get_cst_entries(acpi_cstate_t **);
 

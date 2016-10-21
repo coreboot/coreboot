@@ -267,3 +267,92 @@ uint16_t soc_get_acpi_base_address(void)
 {
 	return ACPI_PMIO_BASE;
 }
+
+static void acpigen_soc_get_dw0_in_local5(uintptr_t addr)
+{
+	/*
+	 * Store (\_SB.GPC0 (addr), Local5)
+	 * \_SB.GPC0 is used to read cfg0 value from dw0. It is defined in
+	 * gpiolib.asl.
+	 */
+	acpigen_write_store();
+	acpigen_emit_namestring("\\_SB.GPC0");
+	acpigen_write_integer(addr);
+	acpigen_emit_byte(LOCAL5_OP);
+}
+
+static int acpigen_soc_get_gpio_val(unsigned int gpio_num, uint32_t mask)
+{
+	assert (gpio_num < TOTAL_PADS);
+	uintptr_t addr = (uintptr_t)gpio_dwx_address(gpio_num);
+
+	acpigen_soc_get_dw0_in_local5(addr);
+
+	/* If (And (Local5, mask)) */
+	acpigen_write_if_and(LOCAL5_OP, mask);
+
+	/* Store (One, Local0) */
+	acpigen_write_store_ops(ONE_OP, LOCAL0_OP);
+
+	acpigen_pop_len();	/* If */
+
+	/* Else */
+	acpigen_write_else();
+
+	/* Store (Zero, Local0) */
+	acpigen_write_store_ops(ZERO_OP, LOCAL0_OP);
+
+	acpigen_pop_len();	/* Else */
+
+	return 0;
+}
+
+static int acpigen_soc_set_gpio_val(unsigned int gpio_num, uint32_t val)
+{
+	assert (gpio_num < TOTAL_PADS);
+	uintptr_t addr = (uintptr_t)gpio_dwx_address(gpio_num);
+
+	acpigen_soc_get_dw0_in_local5(addr);
+
+	if (val) {
+		/* Or (Local5, PAD_CFG0_TX_STATE, Local5) */
+		acpigen_write_or(LOCAL5_OP, PAD_CFG0_TX_STATE, LOCAL5_OP);
+	} else {
+		/* Not (PAD_CFG0_TX_STATE, Local6) */
+		acpigen_write_not(PAD_CFG0_TX_STATE, LOCAL6_OP);
+
+		/* And (Local5, Local6, Local5) */
+		acpigen_write_and(LOCAL5_OP, LOCAL6_OP, LOCAL5_OP);
+	}
+
+	/*
+	 * \_SB.SPC0 (addr, Local5)
+	 * \_SB.SPC0 is used to write cfg0 value in dw0. It is defined in
+	 * gpiolib.asl.
+	 */
+	acpigen_emit_namestring("\\_SB.SPC0");
+	acpigen_write_integer(addr);
+	acpigen_emit_byte(LOCAL5_OP);
+
+	return 0;
+}
+
+int acpigen_soc_read_rx_gpio(unsigned int gpio_num)
+{
+	return acpigen_soc_get_gpio_val(gpio_num, PAD_CFG0_RX_STATE);
+}
+
+int acpigen_soc_get_tx_gpio(unsigned int gpio_num)
+{
+	return acpigen_soc_get_gpio_val(gpio_num, PAD_CFG0_TX_STATE);
+}
+
+int acpigen_soc_set_tx_gpio(unsigned int gpio_num)
+{
+	return acpigen_soc_set_gpio_val(gpio_num, 1);
+}
+
+int acpigen_soc_clear_tx_gpio(unsigned int gpio_num)
+{
+	return acpigen_soc_set_gpio_val(gpio_num, 0);
+}

@@ -131,12 +131,16 @@ chip soc/intel/apollolake
 			end
 		end	# - I2C 2
 		device pci 16.3 on
-			chip drivers/i2c/generic
-				register "hid" = ""ELAN0001""
-				register "desc" = ""ELAN Touchscreen""
-				register "irq" = "IRQ_EDGE_LOW(GPIO_21_IRQ)"
-				register "probed" = "1"
-				device i2c 10 on end
+			chip drivers/i2c/wacom_ts
+				register "generic" = "{
+					 .hid = WCOM50C1_HID,
+					 .cid = PNP0C50_CID,
+					 .desc = WCOM_TS_DESC,
+					 .irq = IRQ_EDGE_LOW(GPIO_21_IRQ),
+					 .probed = 1,
+				}"
+				register "hid_desc_reg_offset" = "0x1"
+				device i2c 0xA on end
 			end
 		end	# - I2C 3
 		device pci 17.0 on

@@ -32,6 +32,7 @@
 #include "chip.h"
 
 #define GDRST 0xc0
+#define MSAC 0x62 /* Multi Size Aperture Control */
 
 #define  LVDS_CLOCK_A_POWERUP_ALL	(3 << 8)
 #define  LVDS_CLOCK_B_POWERUP_ALL	(3 << 4)
@@ -707,12 +708,25 @@ static void gma_ssdt(device_t device)
 	drivers_intel_gma_displays_ssdt_generate(gfx);
 }
 
+static void gma_func0_read_resources(device_t dev)
+{
+	u8 reg8;
+
+	/* Set Untrusted Aperture Size to 256mb */
+	reg8 = pci_read_config8(dev, MSAC);
+	reg8 &= ~0x3;
+	reg8 |= 0x2;
+	pci_write_config8(dev, MSAC, reg8);
+
+	pci_dev_read_resources(dev);
+}
+
 static struct pci_operations gma_pci_ops = {
 	.set_subsystem    = gma_set_subsystem,
 };
 
 static struct device_operations gma_func0_ops = {
-	.read_resources		= pci_dev_read_resources,
+	.read_resources		= gma_func0_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= gma_func0_init,

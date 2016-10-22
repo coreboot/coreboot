@@ -177,11 +177,6 @@ static void mc_read_resources(device_t dev)
 
 	pci_dev_read_resources(dev);
 
-	/* So, this is one of the big mysteries in the coreboot resource
-	 * allocator. This resource should make sure that the address space
-	 * of the PCIe memory mapped config space bar. But it does not.
-	 */
-
 	/* We use 0xcf as an unused index for our PCIe bar so that we find it again */
 	resource = new_resource(dev, 0xcf);
 	resource->base = DEFAULT_PCIEXBAR;
@@ -254,8 +249,10 @@ static struct device_operations mc_ops = {
 	.ops_pci          = &intel_pci_ops,
 };
 
-static const unsigned short pci_device_ids[] = { 0x27a0, 0x27ac,
-						 0 };
+static const unsigned short pci_device_ids[] = {
+	0x2770, /* desktop */
+	0x27a0, 0x27ac, /* mobile */
+	0 };
 
 static const struct pci_driver mc_driver __pci_driver = {
 	.ops    = &mc_ops,

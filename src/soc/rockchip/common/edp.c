@@ -921,10 +921,7 @@ static int rk_edp_config_video(struct rk_edp *edp)
 	/* Disable video mute */
 	clrbits_le32(&edp->regs->video_ctl_1, VIDEO_MUTE);
 
-	/* Enable video at next frame */
-	setbits_le32(&edp->regs->video_ctl_1, VIDEO_EN);
-
-	return rk_edp_is_video_stream_on(edp);
+	return 0;
 }
 
 static void rockchip_edp_force_hpd(struct rk_edp *edp)
@@ -985,7 +982,7 @@ int rk_edp_get_edid(struct edid *edid)
 	return retval;
 }
 
-int rk_edp_enable(void)
+int rk_edp_prepare(void)
 {
 	int ret = 0;
 
@@ -1000,6 +997,14 @@ int rk_edp_enable(void)
 		printk(BIOS_ERR, "config video failed\n");
 
 	return ret;
+}
+
+int rk_edp_enable(void)
+{
+	/* Enable video at next frame */
+	setbits_le32(&rk_edp.regs->video_ctl_1, VIDEO_EN);
+
+	return rk_edp_is_video_stream_on(&rk_edp);
 }
 
 void rk_edp_init(void)

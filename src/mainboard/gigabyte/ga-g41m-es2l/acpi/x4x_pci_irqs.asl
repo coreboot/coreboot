@@ -24,9 +24,6 @@ Method(_PRT)
 			Package() { 0x0001ffff, 0, 0, 16 },
 			/* Internal GFX */
 			Package() { 0x0002ffff, 0, 0, 16 },
-			Package() { 0x0002ffff, 1, 0, 17 },
-			Package() { 0x0002ffff, 2, 0, 18 },
-			Package() { 0x0002ffff, 3, 0, 19 },
 			/* High Definition Audio	0:1b.0 */
 			Package() { 0x001bffff, 0, 0, 16 },
 			/* PCIe Root Ports		0:1c.x */
@@ -52,9 +49,6 @@ Method(_PRT)
 			Package() { 0x0001ffff, 0, \_SB.PCI0.LPCB.LNKA, 0 },
 			/* Internal GFX */
 			Package() { 0x0002ffff, 0, \_SB.PCI0.LPCB.LNKA, 0 },
-			Package() { 0x0002ffff, 1, \_SB.PCI0.LPCB.LNKB, 0 },
-			Package() { 0x0002ffff, 2, \_SB.PCI0.LPCB.LNKC, 0 },
-			Package() { 0x0002ffff, 3, \_SB.PCI0.LPCB.LNKD, 0 },
 			/* High Definition Audio	0:1b.0 */
 			Package() { 0x001bffff, 0, \_SB.PCI0.LPCB.LNKA, 0 },
 			/* PCIe Root Ports		0:1c.x */

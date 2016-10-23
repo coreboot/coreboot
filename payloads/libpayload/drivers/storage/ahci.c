@@ -220,6 +220,7 @@ static void ahci_port_probe(hba_ctrl_t *const ctrl,
 #if IS_ENABLED(CONFIG_LP_STORAGE_AHCI_ONLY_TESTED)
 static u32 working_controllers[] = {
 	0x8086 | 0x2929 << 16, /* Mobile ICH9 */
+	0x8086 | 0x1c03 << 16, /* Mobile Cougar Point PCH */
 	0x8086 | 0x1e03 << 16, /* Mobile Panther Point PCH */
 };
 #endif

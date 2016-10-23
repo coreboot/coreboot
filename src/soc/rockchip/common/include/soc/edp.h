@@ -651,6 +651,7 @@ struct rk_edp {
 	u8 train_set[4];
 };
 
+int rk_edp_prepare(void);
 int rk_edp_enable(void);
 void rk_edp_init(void);
 int rk_edp_get_edid(struct edid *edid);

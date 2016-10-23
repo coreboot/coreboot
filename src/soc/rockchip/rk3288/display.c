@@ -128,6 +128,10 @@ void rk_display_init(device_t dev, u32 lcdbase,
 
 	case VOP_MODE_EDP:
 	default:
+		if (rk_edp_prepare()) {
+			printk(BIOS_WARNING, "edp prepare err\n");
+			return;
+		}
 		if (rk_edp_enable()) {
 			printk(BIOS_WARNING, "edp enable err\n");
 			return;

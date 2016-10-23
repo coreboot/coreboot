@@ -99,8 +99,9 @@ void rk_display_init(device_t dev)
 		return;
 	case VOP_MODE_EDP:
 	default:
-		if (rk_edp_enable()) {
-			printk(BIOS_WARNING, "edp enable error\n");
+		/* will enable edp in depthcharge */
+		if (rk_edp_prepare()) {
+			printk(BIOS_WARNING, "edp prepare error\n");
 			return;
 		}
 		mainboard_power_on_backlight();

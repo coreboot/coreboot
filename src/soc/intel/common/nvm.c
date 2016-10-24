@@ -20,9 +20,9 @@
 #include <string.h>
 #include <spi-generic.h>
 #include <spi_flash.h>
-#include <soc/spi.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include "nvm.h"
+#include "spi.h"
 
 /* This module assumes the flash is memory mapped just below 4GiB in the
  * address space for reading. Also this module assumes an area it erased

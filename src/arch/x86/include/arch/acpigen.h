@@ -53,6 +53,8 @@ enum {
 	EXT_OP_PREFIX		= 0x5B,
 	 SLEEP_OP		= 0x22,
 	 DEBUG_OP		= 0x31,
+	 OPREGION_OP		= 0x80,
+	 FIELD_OP		= 0x81,
 	 DEVICE_OP		= 0x82,
 	 PROCESSOR_OP		= 0x83,
 	 POWER_RES_OP		= 0x84,
@@ -82,6 +84,64 @@ enum {
 	ELSE_OP		= 0xA1,
 	RETURN_OP		= 0xA4,
 	ONES_OP		= 0xFF,
+};
+
+#define FIELDLIST_OFFSET(X)		{ .type = OFFSET, \
+					  .name = "",\
+					  .bits = X * 8, \
+					}
+#define FIELDLIST_NAMESTR(X, Y)		{ .type = NAME_STRING, \
+					  .name = X, \
+					  .bits = Y, \
+					}
+
+#define FIELD_ANYACC			0
+#define FIELD_BYTEACC			1
+#define FIELD_WORDACC			2
+#define FIELD_DWORDACC			3
+#define FIELD_QWORDACC			4
+#define FIELD_BUFFERACC			5
+#define FIELD_NOLOCK			(0<<4)
+#define FIELD_LOCK			(1<<4)
+#define FIELD_PRESERVE			(0<<5)
+#define FIELD_WRITEASONES		(1<<5)
+#define FIELD_WRITEASZEROS		(2<<5)
+
+enum field_type {
+	OFFSET,
+	NAME_STRING,
+	FIELD_TYPE_MAX,
+};
+
+struct fieldlist {
+	enum field_type type;
+	const char *name;
+	u32 bits;
+};
+
+#define OPREGION(rname, space, offset, len)	{.name = rname, \
+						 .regionspace = space, \
+						 .regionoffset = offset, \
+						 .regionlen = len, \
+						}
+
+enum region_space {
+	SYSTEMMEMORY,
+	SYSTEMIO,
+	PCI_CONFIG,
+	EMBEDDEDCONTROL,
+	SMBUS,
+	CMOS,
+	PCIBARTARGET,
+	IPMI,
+	REGION_SPACE_MAX,
+};
+
+struct opregion {
+	const char *name;
+	enum region_space regionspace;
+	unsigned long regionoffset;
+	unsigned long regionlen;
 };
 
 void acpigen_write_len_f(void);
@@ -175,6 +235,18 @@ void acpigen_write_return_byte(uint8_t arg);
  */
 void acpigen_write_dsm(const char *uuid, void (*callbacks[])(void *),
 		       size_t count, void *arg);
+/*
+ * Generate ACPI AML code for OperationRegion
+ * This function takes input region name, region space, region offset & region
+ * length.
+ */
+void acpigen_write_opregion(struct opregion *opreg);
+/*
+ * Generate ACPI AML code for Field
+ * This function takes input region name, fieldlist, count & flags.
+ */
+void acpigen_write_field(const char *name, struct fieldlist *l, size_t count,
+			 uint8_t flags);
 
 int get_cst_entries(acpi_cstate_t **);
 

@@ -641,7 +641,9 @@ S3SaveDebugPrintHexArray (
       break;
     case AccessWidth64:
     case AccessS3SaveWidth64:
-      IDS_HDT_CONSOLE (S3_TRACE, "0x%08x%08x", ((UINT32*) ((UINT64*)Array + Index)[1], ((UINT32*) ((UINT64*)Array + Index))[0]));
+	IDS_HDT_CONSOLE(S3_TRACE, "0x%08x%08x",
+		((UINT32 *) ((UINT64 *)Array + Index))[1],
+		((UINT32 *) ((UINT64 *)Array + Index))[0]);
       break;
     default:
       IDS_ERROR_TRAP;

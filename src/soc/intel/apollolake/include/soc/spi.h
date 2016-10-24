@@ -33,8 +33,11 @@
 #define SPIBAR_HSFSTS_CTL		0x04
 #define SPIBAR_FADDR			0x08
 #define SPIBAR_FDATA(n)			(0x10 + ((n) & 0xf) * 4)
+#define SPIBAR_FPR_BASE			0x84
 #define SPIBAR_PTINX			0xcc
 #define SPIBAR_PTDATA			0xd0
+
+#define SPIBAR_FPR_MAX			5
 
 /* Bit definitions and masks for BIOS_BFPREG register. */
 #define  SPIBAR_BFPREG_PRB_MASK	(0x7fff)

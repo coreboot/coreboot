@@ -21,6 +21,7 @@
 #include <spi_flash.h>
 #include <timer.h>
 #include <soc/flash_controller.h>
+#include <soc/intel/common/spi.h>
 #include <soc/pci_devs.h>
 #include <soc/spi.h>
 
@@ -386,40 +387,16 @@ struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs)
 	return slave;
 }
 
-int spi_flash_protect(u32 start, u32 size)
+int spi_get_fpr_info(struct fpr_info *info)
 {
 	pch_spi_regs *spi_bar = get_spi_bar();
-	u32 end = start + size - 1;
-	u32 reg;
-	int prr;
 
 	if (!spi_bar)
 		return -1;
 
-	/* Find first empty PRR */
-	for (prr = 0; prr < SPI_PRR_MAX; prr++) {
-		reg = read32(&spi_bar->pr[prr]);
-		if (reg == 0)
-			break;
-	}
-	if (prr >= SPI_PRR_MAX) {
-		printk(BIOS_ERR, "ERROR: No SPI PRR free!\n");
-		return -1;
-	}
+	info->base = (uintptr_t)&spi_bar->pr[0];
+	info->max = SPI_FPR_MAX;
 
-	/* Set protected range base and limit */
-	reg = SPI_PRR(start, end) | SPI_PRR_WPE;
-
-	/* Set the PRR register and verify it is protected */
-	write32(&spi_bar->pr[prr], reg);
-	reg = read32(&spi_bar->pr[prr]);
-	if (!(reg & SPI_PRR_WPE)) {
-		printk(BIOS_ERR, "ERROR: Unable to set SPI PRR %d\n", prr);
-		return -1;
-	}
-
-	printk(BIOS_INFO, "%s: PRR %d is enabled for range 0x%08x-0x%08x\n",
-	       __func__, prr, start, end);
 	return 0;
 }
 

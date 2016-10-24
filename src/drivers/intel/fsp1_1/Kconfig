@@ -111,4 +111,8 @@ config CHECKLIST_DATA_FILE_LOCATION
 	string
 	default "src/vendorcode/intel/fsp/fsp1_1/checklist"
 
+config RESET_ON_INVALID_RAMSTAGE_CACHE
+	bool "Reset the system on S3 wake when ramstage cache invalid."
+	default n
+
 endif #PLATFORM_USES_FSP1_1

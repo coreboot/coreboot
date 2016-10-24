@@ -68,11 +68,6 @@ static void gma_init_lvds(const struct northbridge_intel_gm45_config *info,
 	u32 pixel_m1 = 1;
 	u32 pixel_m2 = 1;
 	u32 pixel_p2;
-	u32 link_frequency = info->gfx.link_frequency_270_mhz ? 270000 : 162000;
-	u32 data_m1;
-	u32 data_n1 = 0x00800000;
-	u32 link_m1;
-	u32 link_n1 = 0x00080000;
 
 	vga_gr_write(0x18, 0);
 
@@ -190,10 +185,6 @@ static void gma_init_lvds(const struct northbridge_intel_gm45_config *info,
 		return;
 	}
 
-	link_m1 = ((uint64_t)link_n1 * mode->pixel_clock) / link_frequency;
-	data_m1 = ((uint64_t)data_n1 * 18 * mode->pixel_clock)
-		/ (link_frequency * 8 * 4);
-
 	printk(BIOS_INFO, "bringing up panel at resolution %d x %d\n",
 	       hactive, vactive);
 	printk(BIOS_DEBUG, "Borders %d x %d\n",
@@ -210,12 +201,6 @@ static void gma_init_lvds(const struct northbridge_intel_gm45_config *info,
 	       mode->lvds_dual_channel ? "Dual channel\n" : "Single channel\n");
 	printk(BIOS_DEBUG, "Polarities %d, %d\n",
 	       hpolarity, vpolarity);
-	printk(BIOS_DEBUG, "Data M1=%d, N1=%d\n",
-	       data_m1, data_n1);
-	printk(BIOS_DEBUG, "Link frequency %d kHz\n",
-	       link_frequency);
-	printk(BIOS_DEBUG, "Link M1=%d, N1=%d\n",
-	       link_m1, link_n1);
 	printk(BIOS_DEBUG, "Pixel N=%d, M1=%d, M2=%d, P1=%d\n",
 	       pixel_n, pixel_m1, pixel_m2, pixel_p1);
 	printk(BIOS_DEBUG, "Pixel clock %d kHz\n",
@@ -299,13 +284,6 @@ static void gma_init_lvds(const struct northbridge_intel_gm45_config *info,
 	}
 
 	mdelay(1);
-
-	write32(mmio + PIPE_DATA_M1(0), 0x7e000000 | data_m1);
-	write32(mmio + PIPE_DATA_N1(0), data_n1);
-	write32(mmio + PIPE_LINK_M1(0), link_m1);
-	write32(mmio + PIPE_LINK_N1(0), link_n1);
-
-	mdelay(1);
 	write32(mmio + PIPECONF(0), PIPECONF_BPP_6);
 	write32(mmio + PIPECONF(0), PIPECONF_BPP_6 | PIPECONF_DITHER_EN);
 	write32(mmio + PIPECONF(0), PIPECONF_ENABLE | PIPECONF_BPP_6 | PIPECONF_DITHER_EN);
@@ -361,12 +339,6 @@ static void gma_init_vga(const struct northbridge_intel_gm45_config *info,
 	u32 pixel_n = 1;
 	u32 pixel_m1 = 1;
 	u32 pixel_m2 = 1;
-	u32 link_frequency = info->gfx.link_frequency_270_mhz ? 270000 : 162000;
-	u32 data_m1;
-	u32 data_n1 = 0x00800000;
-	u32 link_m1;
-	u32 link_n1 = 0x00040000;
-
 
 	vga_gr_write(0x18, 0);
 
@@ -491,10 +463,6 @@ static void gma_init_vga(const struct northbridge_intel_gm45_config *info,
 		return;
 	}
 
-	link_m1 = ((uint64_t)link_n1 * mode->pixel_clock) / link_frequency;
-	data_m1 = ((uint64_t)data_n1 * 18 * mode->pixel_clock)
-		/ (link_frequency * 8 * 4);
-
 	printk(BIOS_INFO, "Bringing up panel at resolution %d x %d\n",
 	       hactive, vactive);
 	printk(BIOS_SPEW, "Borders %d x %d\n",
@@ -509,12 +477,6 @@ static void gma_init_vga(const struct northbridge_intel_gm45_config *info,
 			    ? "Spread spectrum clock\n" : "DREF clock\n"));
 	printk(BIOS_SPEW, "Polarities %d, %d\n",
 	       hpolarity, vpolarity);
-	printk(BIOS_SPEW, "Data M1=%d, N1=%d\n",
-	       data_m1, data_n1);
-	printk(BIOS_SPEW, "Link frequency %d kHz\n",
-	       link_frequency);
-	printk(BIOS_SPEW, "Link M1=%d, N1=%d\n",
-	       link_m1, link_n1);
 	printk(BIOS_SPEW, "Pixel N=%d, M1=%d, M2=%d, P1=%d, P2=%d\n",
 		pixel_n, pixel_m1, pixel_m2, pixel_p1, pixel_p2);
 	printk(BIOS_SPEW, "Pixel clock %d kHz\n",
@@ -584,13 +546,6 @@ static void gma_init_vga(const struct northbridge_intel_gm45_config *info,
 		write32(mmio + PF_WIN_SZ(0), vactive | (hactive << 16));
 		write32(mmio + PFIT_CONTROL, 0x80000000);
 	}
-
-	mdelay(1);
-
-	write32(mmio + PIPE_DATA_M1(0), 0x7e000000 | data_m1);
-	write32(mmio + PIPE_DATA_N1(0), data_n1);
-	write32(mmio + PIPE_LINK_M1(0), link_m1);
-	write32(mmio + PIPE_LINK_N1(0), link_n1);
 
 	mdelay(1);
 	write32(mmio + PIPECONF(0), PIPECONF_BPP_6);

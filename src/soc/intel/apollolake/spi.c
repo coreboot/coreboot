@@ -21,6 +21,7 @@
 #include <arch/io.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <soc/intel/common/spi.h>
 #include <soc/pci_devs.h>
 #include <soc/spi.h>
 #include <spi_flash.h>
@@ -390,6 +391,19 @@ int spi_read_status(uint8_t *status)
 		return -1;
 
 	drain_xfer_fifo(ctx, status, sizeof(*status));
+
+	return 0;
+}
+
+int spi_get_fpr_info(struct fpr_info *info)
+{
+	BOILERPLATE_CREATE_CTX(ctx);
+
+	if (!ctx->mmio_base)
+		return -1;
+
+	info->base = ctx->mmio_base + SPIBAR_FPR_BASE;
+	info->max = SPIBAR_FPR_MAX;
 
 	return 0;
 }

@@ -351,6 +351,122 @@ void acpigen_write_processor(u8 cpuindex, u32 pblock_addr, u8 pblock_len)
 	acpigen_emit_byte(pblock_len);
 }
 
+/*
+ * Generate ACPI AML code for OperationRegion
+ * Arg0: Pointer to struct opregion opreg = OPREGION(rname, space, offset, len)
+ * where rname is region name, space is region space, offset is region offset &
+ * len is region length.
+ * OperationRegion(regionname, regionspace, regionoffset, regionlength)
+ */
+void acpigen_write_opregion(struct opregion *opreg)
+{
+	/* OpregionOp */
+	acpigen_emit_ext_op(OPREGION_OP);
+	/* NameString 4 chars only */
+	acpigen_emit_simple_namestring(opreg->name);
+	/* RegionSpace */
+	acpigen_emit_byte(opreg->regionspace);
+	/* RegionOffset & RegionLen, it can be byte word or double word */
+	acpigen_write_integer(opreg->regionoffset);
+	acpigen_write_integer(opreg->regionlen);
+}
+
+static void acpigen_write_field_offset(uint32_t offset,
+				       uint32_t current_bit_pos)
+{
+	uint32_t diff_bits;
+	uint8_t i, j;
+	uint8_t emit[4];
+
+	if (offset < current_bit_pos) {
+		printk(BIOS_WARNING, "%s: Cannot move offset backward",
+			__func__);
+		return;
+	}
+
+	diff_bits = offset - current_bit_pos;
+	/* Upper limit */
+	if (diff_bits > 0xFFFFFFF) {
+		printk(BIOS_WARNING, "%s: Offset very large to encode",
+			__func__);
+		return;
+	}
+
+	i = 1;
+	if (diff_bits < 0x40) {
+		emit[0] = diff_bits & 0x3F;
+	} else {
+		emit[0] = diff_bits & 0xF;
+		diff_bits >>= 4;
+		while (diff_bits) {
+			emit[i] = diff_bits & 0xFF;
+			i++;
+			diff_bits >>= 8;
+		}
+	}
+	/* Update bit 7:6 : Number of bytes followed by emit[0] */
+	emit[0] |= (i - 1) << 6;
+
+	acpigen_emit_byte(0);
+	for (j = 0; j < i; j++)
+		acpigen_emit_byte(emit[j]);
+}
+
+/*
+ * Generate ACPI AML code for Field
+ * Arg0: region name
+ * Arg1: Pointer to struct fieldlist.
+ * Arg2: no. of entries in Arg1
+ * Arg3: flags which indicate filed access type, lock rule  & update rule.
+ * Example with fieldlist
+ * struct fieldlist l[] = {
+ *	FIELDLIST_OFFSET(0x84),
+ *	FIELDLIST_NAMESTR("PMCS", 2),
+ *	};
+ * acpigen_write_field("UART", l ,ARRAY_SIZE(l), FIELD_ANYACC | FIELD_NOLOCK |
+ *								FIELD_PRESERVE);
+ * Output:
+ * Field (UART, AnyAcc, NoLock, Preserve)
+ *	{
+ *		Offset (0x84),
+ *		PMCS,   2
+ *	}
+ */
+void acpigen_write_field(const char *name, struct fieldlist *l, size_t count,
+			 uint8_t flags)
+{
+	uint16_t i;
+	uint32_t current_bit_pos = 0;
+
+	/* FieldOp */
+	acpigen_emit_ext_op(FIELD_OP);
+	/* Package Length */
+	acpigen_write_len_f();
+	/* NameString 4 chars only */
+	acpigen_emit_simple_namestring(name);
+	/* Field Flag */
+	acpigen_emit_byte(flags);
+
+	for (i = 0; i < count; i++) {
+		switch (l[i].type) {
+		case NAME_STRING:
+			acpigen_emit_simple_namestring(l[i].name);
+			acpigen_emit_byte(l[i].bits);
+			current_bit_pos += l[i].bits;
+			break;
+		case OFFSET:
+			acpigen_write_field_offset(l[i].bits, current_bit_pos);
+			current_bit_pos = l[i].bits;
+			break;
+		default:
+			printk(BIOS_ERR, "%s: Invalid field type 0x%X\n"
+				, __func__, l[i].type);
+			break;
+		}
+	}
+	acpigen_pop_len();
+}
+
 void acpigen_write_empty_PCT(void)
 {
 /*

@@ -37,7 +37,7 @@ config: libpayload
 
 filo: config
 	echo "    MAKE       FILO $(NAME-y)"
-	$(MAKE) -C filo
+	$(MAKE) -C filo LIBCONFIG_PATH=../../../libpayload
 
 libpayload: checkout
 	cd ../../libpayload && $(MAKE) defconfig && \

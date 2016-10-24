@@ -50,15 +50,14 @@ for script in "$(dirname "$0")/${1}-"*; do
 	grep "^# DESCR:" "$script" | sed "s,.*DESCR: *,,"
 	echo "========"
 	junit_write "	<testcase classname='lint' name='$(basename "$script")'>"
-	$script > "$LINTLOG"
+	$script | tee "$LINTLOG"
 
 	#if the lint script gives any output, that's a failure
 	if [ "$(wc -l < "$LINTLOG")" -eq 0 ]; then
 		echo "success"
 		junit_write "		<system-out><![CDATA[success]]></system-out>"
 	else
-		echo "test failed:"
-		cat "$LINTLOG"
+		echo "test failed"
 		junit_write "		<failure type='testFailed'><![CDATA["
 		junit_write "$(cat "$LINTLOG")"
 		junit_write "]]></failure>"

@@ -101,7 +101,6 @@ static const struct lpddr4_sku skus[] = {
 		.ch0_dual_rank = 1,
 		.ch1_dual_rank = 1,
 		.part_num = "MT53B512M32D2NP",
-		.disable_periodic_retraining = 1,
 	},
 	/* MT53B256M32D1NP - both logical channels */
 	[3] = {
@@ -109,7 +108,6 @@ static const struct lpddr4_sku skus[] = {
 		.ch0_rank_density = LP4_8Gb_DENSITY,
 		.ch1_rank_density = LP4_8Gb_DENSITY,
 		.part_num = "MT53B256M32D1NP",
-		.disable_periodic_retraining = 1,
 	},
 	/*
 	 * H9HCNNNBPUMLHR - both logical channels. While the parts

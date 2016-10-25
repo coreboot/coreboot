@@ -1,0 +1,1 @@
+sdram-lpddr3-K4E6E304EB-4GB.inc

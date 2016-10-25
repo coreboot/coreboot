@@ -1,4 +1,3 @@
-subdirs-y += ../model_6ex
 subdirs-y += ../model_6fx
 subdirs-y += ../model_f3x
 subdirs-y += ../model_f4x

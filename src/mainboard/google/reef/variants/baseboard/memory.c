@@ -62,9 +62,15 @@ const struct lpddr4_swizzle_cfg baseboard_lpddr4_swizzle = {
 	},
 };
 
+/*
+ * The strings in the part_num field aren't necessarily the exact part
+ * numbers used in all the designs. The reason is that the mosys userland
+ * tool uses these strings for dumping more information. Different speed bins
+ * could change in future systems, but the strings still need to match.
+ */
 static const struct lpddr4_sku skus[] = {
 	/*
-	 * K4F6E304HB-MGCJ - both logical channels While the parts
+	 * K4F6E304HB-MG - both logical channels While the parts
 	 * are listed at 16Gb there are 2 ranks per channel so indicate
 	 * the deneisty as 8Gb per rank.
 	 */
@@ -76,7 +82,7 @@ static const struct lpddr4_sku skus[] = {
 		.ch1_dual_rank = 1,
 		.part_num = "K4F6E304HB-MGCJ",
 	},
-	/* K4F8E304HB-MGCJ - both logical channels  */
+	/* K4F8E304HB-MG - both logical channels  */
 	[1] = {
 		.speed = LP4_SPEED_2400,
 		.ch0_rank_density = LP4_8Gb_DENSITY,
@@ -84,7 +90,7 @@ static const struct lpddr4_sku skus[] = {
 		.part_num = "K4F8E304HB-MGCJ",
 	},
 	/*
-	 * MT53B512M32D2NP-062WT:C - both logical channels. While the parts
+	 * MT53B512M32D2NP - both logical channels. While the parts
 	 * are listed at 16Gb there are 2 ranks per channel so indicate
 	 * the deneisty as 8Gb per rank.
 	 */
@@ -97,7 +103,7 @@ static const struct lpddr4_sku skus[] = {
 		.part_num = "MT53B512M32D2NP",
 		.disable_periodic_retraining = 1,
 	},
-	/* MT53B256M32D1NP-062 WT:C - both logical channels */
+	/* MT53B256M32D1NP - both logical channels */
 	[3] = {
 		.speed = LP4_SPEED_2400,
 		.ch0_rank_density = LP4_8Gb_DENSITY,
@@ -106,7 +112,7 @@ static const struct lpddr4_sku skus[] = {
 		.disable_periodic_retraining = 1,
 	},
 	/*
-	 * H9HCNNNBPUMLHR-NLE - both logical channels. While the parts
+	 * H9HCNNNBPUMLHR - both logical channels. While the parts
 	 * are listed at 16Gb there are 2 ranks per channel so indicate the
 	 * density as 8Gb per rank.
 	 */
@@ -118,7 +124,7 @@ static const struct lpddr4_sku skus[] = {
 		.ch1_dual_rank = 1,
 		.part_num = "H9HCNNNBPUMLHR",
 	},
-	/* H9HCNNN8KUMLHR-NLE - both logical channels */
+	/* H9HCNNN8KUMLHR - both logical channels */
 	[5] = {
 		.speed = LP4_SPEED_2400,
 		.ch0_rank_density = LP4_8Gb_DENSITY,

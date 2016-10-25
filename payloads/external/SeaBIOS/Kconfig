@@ -53,7 +53,7 @@ config SEABIOS_THREAD_OPTIONROMS
 
 config SEABIOS_VGA_COREBOOT
 	prompt "Include generated option rom that implements legacy VGA BIOS compatibility"
-	default y
+	default y if !VENDOR_EMULATION
 	depends on !VGA_BIOS && MAINBOARD_DO_NATIVE_VGA_INIT
 	bool
 	help

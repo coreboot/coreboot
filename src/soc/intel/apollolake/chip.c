@@ -461,7 +461,6 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 		silconfig->EmmcRxCmdDataCntl2 = cfg->emmc_rx_cmd_data_cntl2;
 
 	silconfig->LPSS_S0ixEnable = cfg->lpss_s0ix_enable;
-	silconfig->SkipMpInit = 1;
 
 	/* Disable monitor mwait since it is broken due to a hardware bug without a fix */
 	silconfig->MonitorMwaitEnable = 0;

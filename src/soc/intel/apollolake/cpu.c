@@ -25,32 +25,11 @@
 #include <cpu/x86/mtrr.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <reg_script.h>
 #include <soc/cpu.h>
-#include <soc/iomap.h>
 #include <soc/smm.h>
 
-static const struct reg_script core_msr_script[] = {
-	/* Enable C-state and IO/MWAIT redirect */
-	REG_MSR_WRITE(MSR_PMG_CST_CONFIG_CONTROL,
-		(PKG_C_STATE_LIMIT_C2_MASK | CORE_C_STATE_LIMIT_C10_MASK
-		| IO_MWAIT_REDIRECT_MASK | CST_CFG_LOCK_MASK)),
-	/* Power Management I/O base address for I/O trapping to C-states */
-	REG_MSR_WRITE(MSR_PMG_IO_CAPTURE_BASE,
-		(ACPI_PMIO_CST_REG | (PMG_IO_BASE_CST_RNG_BLK_SIZE << 16))),
-	/* Disable C1E */
-	REG_MSR_RMW(MSR_POWER_CTL, ~0x2, 0),
-	REG_SCRIPT_END
-};
-
-static void soc_core_init(device_t cpu)
-{
-	/* Set core MSRs */
-	reg_script_run(core_msr_script);
-}
-
 static struct device_operations cpu_dev_ops = {
-	.init = soc_core_init,
+	.init = DEVICE_NOOP,
 };
 
 static struct cpu_device_id cpu_table[] = {

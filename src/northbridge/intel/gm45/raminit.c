@@ -24,7 +24,7 @@
 #include <spd.h>
 #include <console/console.h>
 #include <lib.h>
-#include "delay.h"
+#include <delay.h>
 #include "gm45.h"
 #include "chip.h"
 
@@ -916,15 +916,15 @@ static void rcomp_initialization(const stepping_t stepping, const int sff)
 
 static void dram_powerup(const int resume)
 {
-	udelay_from_reset(200);
+	udelay(200);
 	MCHBAR32(CLKCFG_MCHBAR) = (MCHBAR32(CLKCFG_MCHBAR) & ~(1 << 3)) | (3 << 21);
 	if (!resume) {
 		MCHBAR32(0x1434) |= (1 << 10);
-		ns100delay(2);
+		udelay(1);
 	}
 	MCHBAR32(0x1434) |= (1 << 6);
 	if (!resume) {
-		ns100delay(1);
+		udelay(1);
 		MCHBAR32(0x1434) |= (1 << 9);
 		MCHBAR32(0x1434) &= ~(1 << 10);
 		udelay(500);

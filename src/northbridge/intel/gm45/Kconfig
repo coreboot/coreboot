@@ -26,7 +26,7 @@ config NORTHBRIDGE_SPECIFIC_OPTIONS # dummy
 	select VGA
 	select INTEL_EDID
 	select INTEL_GMA_ACPI
-	select UDELAY_TSC
+	select UDELAY_LAPIC
 
 config CBFS_SIZE
 	hex

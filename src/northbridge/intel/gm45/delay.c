@@ -84,13 +84,3 @@ void udelay(const u32 us)
 {
 	_udelay(us, 1, 0);
 }
-
-void ns100delay(const u32 ns100)
-{
-	_udelay(ns100, 10, 0);
-}
-
-void udelay_from_reset(const u32 us)
-{
-	_udelay(us, 1, 1);
-}

@@ -279,3 +279,21 @@ subdirs-y += ../../3rdparty/libhwbase
 ramstage-$(CONFIG_HAVE_MONOTONIC_TIMER) += hw-time-timer.adb
 
 endif # CONFIG_RAMSTAGE_LIBHWBASE
+
+romstage-$(CONFIG_GENERIC_SPD_BIN) += spd_bin.c
+
+LIB_SPD_BIN = $(obj)/spd.bin
+
+LIB_SPD_DEPS = $(foreach f, $(SPD_SOURCES), src/mainboard/$(MAINBOARDDIR)/spd/$(f).spd.hex)
+
+# Include spd ROM data
+$(LIB_SPD_BIN): $(LIB_SPD_DEPS)
+	for f in $(LIB_SPD_DEPS); \
+	 do for c in $$(cat $$f | grep -v ^#); \
+	  do printf $$(printf '\%o' 0x$$c); \
+	 done; \
+	done > $@
+
+cbfs-files-$(CONFIG_GENERIC_SPD_BIN) += spd.bin
+spd.bin-file := $(LIB_SPD_BIN)
+spd.bin-type := spd

@@ -591,23 +591,40 @@ void southcluster_inject_dsdt(device_t device)
 /* Save wake source information for calculating ACPI _SWS values */
 int soc_fill_acpi_wake(uint32_t *pm1, uint32_t **gpe0)
 {
+	const struct device *dev = dev_find_slot(0, PCH_DEVFN_LPC);
+	const struct soc_intel_skylake_config *config = dev->chip_info;
 	struct chipset_power_state *ps;
 	static uint32_t gpe0_sts[GPE0_REG_MAX];
 	uint32_t pm1_en;
+	uint32_t gpe0_std;
 	int i;
 
 	ps = cbmem_find(CBMEM_ID_POWER_STATE);
 	if (ps == NULL)
 		return -1;
 
-	/* PM1_EN state is lost in Deep S3 so enable basic wake events */
-	pm1_en = ps->pm1_en | PCIEXPWAK_STS | RTC_STS | PWRBTN_STS | BM_STS;
+	pm1_en = ps->pm1_en;
+	gpe0_std = ps->gpe0_en[3];
+
+	/*
+	 * Chipset state in the suspend well (but not RTC) is lost in Deep S3
+	 * so enable Deep S3 wake events that are configured by the mainboard
+	 */
+	if (ps->prev_sleep_state == ACPI_S3 && config->deep_s3_enable) {
+		pm1_en |= PWRBTN_STS; /* Always enabled as wake source */
+		if (config->deep_sx_config & DSX_EN_LAN_WAKE_PIN)
+			gpe0_std |= LAN_WAK_EN;
+		if (config->deep_sx_config & DSX_EN_WAKE_PIN)
+			pm1_en |= PCIEXPWAK_STS;
+	}
+
 	*pm1 = ps->pm1_sts & pm1_en;
 
 	/* Mask off GPE0 status bits that are not enabled */
 	*gpe0 = &gpe0_sts[0];
-	for (i = 0; i < GPE0_REG_MAX; i++)
+	for (i = 0; i < (GPE0_REG_MAX-1); i++)
 		gpe0_sts[i] = ps->gpe0_sts[i] & ps->gpe0_en[i];
+	gpe0_sts[3] = ps->gpe0_sts[3] & gpe0_std;
 
 	return GPE0_REG_MAX;
 }

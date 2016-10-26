@@ -129,42 +129,6 @@ static void pch_rtc_init(void)
 		cmos_init(rtc_failed);
 }
 
-static void pmc_gpe_init(config_t *config)
-{
-	uint8_t *pmc_regs;
-	uint32_t gpio_cfg;
-	uint32_t gpio_cfg_reg;
-	const uint32_t gpio_cfg_mask =
-		(GPE0_DWX_MASK << GPE0_DW0_SHIFT) |
-		(GPE0_DWX_MASK << GPE0_DW1_SHIFT) |
-		(GPE0_DWX_MASK << GPE0_DW2_SHIFT);
-
-	pmc_regs = pmc_mmio_regs();
-	gpio_cfg = 0;
-
-	/* Route the GPIOs to the GPE0 block. Determine that all values
-	 * are different, and if they aren't use the reset values. */
-	if (config->gpe0_dw0 == config->gpe0_dw1 ||
-		config->gpe0_dw1 == config->gpe0_dw2) {
-		printk(BIOS_INFO, "PMC: Using default GPE route.\n");
-		gpio_cfg = read32(pmc_regs + GPIO_CFG);
-	} else {
-		gpio_cfg |= (uint32_t)config->gpe0_dw0 << GPE0_DW0_SHIFT;
-		gpio_cfg |= (uint32_t)config->gpe0_dw1 << GPE0_DW1_SHIFT;
-		gpio_cfg |= (uint32_t)config->gpe0_dw2 << GPE0_DW2_SHIFT;
-	}
-	gpio_cfg_reg = read32(pmc_regs + GPIO_CFG) & ~gpio_cfg_mask;
-	gpio_cfg_reg |= gpio_cfg & gpio_cfg_mask;
-	write32(pmc_regs + GPIO_CFG, gpio_cfg_reg);
-
-	/* Set the routes in the GPIO communities as well. */
-	gpio_route_gpe(gpio_cfg_reg >> GPE0_DW0_SHIFT);
-
-	/* Set GPE enables based on devictree. */
-	enable_all_gpe(config->gpe0_en_1, config->gpe0_en_2,
-			config->gpe0_en_3, config->gpe0_en_4);
-}
-
 static void pch_power_options(void)
 {
 	u16 reg16;
@@ -172,7 +136,6 @@ static void pch_power_options(void)
 	/*PMC Controller Device 0x1F, Func 02*/
 	device_t dev = PCH_DEV_PMC;
 	/* Get the chip configuration */
-	config_t *config = dev->chip_info;
 	int pwr_on = CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
 
 	/*
@@ -207,7 +170,7 @@ static void pch_power_options(void)
 	printk(BIOS_INFO, "Set power %s after power failure.\n", state);
 
 	/* Set up GPE configuration. */
-	pmc_gpe_init(config);
+	pmc_gpe_init();
 }
 
 static void config_deep_sX(uint32_t offset, uint32_t mask, int sx, int enable)

@@ -19,6 +19,8 @@
  * and the differences between PCH variants.
  */
 
+#define __SIMPLE_DEVICE__
+
 #include <arch/io.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -27,6 +29,7 @@
 #include <halt.h>
 #include <rules.h>
 #include <stdlib.h>
+#include <soc/gpe.h>
 #include <soc/gpio.h>
 #include <soc/iomap.h>
 #include <soc/lpc.h>
@@ -34,6 +37,7 @@
 #include <soc/pm.h>
 #include <soc/pmc.h>
 #include <soc/smbus.h>
+#include "chip.h"
 
 /* Print status bits with descriptive names */
 static void print_status_bits(u32 status, const char *bit_names[])
@@ -464,4 +468,48 @@ void poweroff(void)
 	 */
 	if (!ENV_SMM)
 		halt();
+}
+
+void pmc_gpe_init(void)
+{
+	ROMSTAGE_CONST struct soc_intel_skylake_config *config;
+	ROMSTAGE_CONST struct device *dev = dev_find_slot(0, PCH_DEVFN_PMC);
+	uint8_t *pmc_regs;
+	uint32_t gpio_cfg;
+	uint32_t gpio_cfg_reg;
+	const uint32_t gpio_cfg_mask =
+		(GPE0_DWX_MASK << GPE0_DW0_SHIFT) |
+		(GPE0_DWX_MASK << GPE0_DW1_SHIFT) |
+		(GPE0_DWX_MASK << GPE0_DW2_SHIFT);
+
+	/* Look up the device in devicetree */
+	if (!dev || !dev->chip_info) {
+		printk(BIOS_ERR, "BUG! Could not find SOC devicetree config\n");
+		return;
+	}
+	config = dev->chip_info;
+	pmc_regs = pmc_mmio_regs();
+
+	/* Route the GPIOs to the GPE0 block. Determine that all values
+	 * are different, and if they aren't use the reset values. */
+	gpio_cfg = 0;
+	if (config->gpe0_dw0 == config->gpe0_dw1 ||
+		config->gpe0_dw1 == config->gpe0_dw2) {
+		printk(BIOS_INFO, "PMC: Using default GPE route.\n");
+		gpio_cfg = read32(pmc_regs + GPIO_CFG);
+	} else {
+		gpio_cfg |= (uint32_t)config->gpe0_dw0 << GPE0_DW0_SHIFT;
+		gpio_cfg |= (uint32_t)config->gpe0_dw1 << GPE0_DW1_SHIFT;
+		gpio_cfg |= (uint32_t)config->gpe0_dw2 << GPE0_DW2_SHIFT;
+	}
+	gpio_cfg_reg = read32(pmc_regs + GPIO_CFG) & ~gpio_cfg_mask;
+	gpio_cfg_reg |= gpio_cfg & gpio_cfg_mask;
+	write32(pmc_regs + GPIO_CFG, gpio_cfg_reg);
+
+	/* Set the routes in the GPIO communities as well. */
+	gpio_route_gpe(gpio_cfg_reg >> GPE0_DW0_SHIFT);
+
+	/* Set GPE enables based on devictree. */
+	enable_all_gpe(config->gpe0_en_1, config->gpe0_en_2,
+			config->gpe0_en_3, config->gpe0_en_4);
 }

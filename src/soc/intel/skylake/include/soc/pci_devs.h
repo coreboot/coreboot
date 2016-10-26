@@ -23,7 +23,7 @@
 #define _SA_DEVFN(slot)		PCI_DEVFN(SA_DEV_SLOT_ ## slot, 0)
 #define _PCH_DEVFN(slot, func)	PCI_DEVFN(PCH_DEV_SLOT_ ## slot, func)
 
-#if ENV_RAMSTAGE
+#if ENV_RAMSTAGE && !defined(__SIMPLE_DEVICE__)
 #include <device/device.h>
 #include <device/pci_def.h>
 #define _SA_DEV(slot)		dev_find_slot(0, _SA_DEVFN(slot))

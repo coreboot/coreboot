@@ -301,6 +301,9 @@ void pch_early_init(void)
 	/* Program SMBUS_BASE_ADDRESS and Enable it */
 	enable_smbus();
 
+	/* Set up GPE configuration */
+	pmc_gpe_init();
+
 	soc_config_rtc();
 
 	enable_heci();

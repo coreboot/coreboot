@@ -316,6 +316,31 @@ config GENERIC_GPIO_LIB
 	  implies configurability usually found on SoCs, particularly the
 	  ability to control internal pull resistors.
 
+config GENERIC_SPD_BIN
+	bool
+	default n
+	help
+	  If enabled, add support for adding spd.hex files in cbfs as spd.bin
+	  and locating it runtime to load SPD. Additionally provide provision to
+	  fetch SPD over SMBus.
+
+config DIMM_MAX
+	int
+	default 2
+	depends on GENERIC_SPD_BIN
+	help
+	  Total number of memory DIMM slots available on motherboard.
+	  It is multiplication of number of channel to number of DIMMs per
+	  channel
+
+config DIMM_SPD_SIZE
+	int
+	default 256
+	depends on GENERIC_SPD_BIN
+	help
+	  Total SPD size that will be used for DIMM.
+	  Ex: DDR3 256, DDR4 512.
+
 config BOARD_ID_AUTO
 	bool
 	default n

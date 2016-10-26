@@ -186,6 +186,9 @@ uint16_t smbus_tco_regs(void);
 /* Set the DISB after DRAM init */
 void pmc_set_disb(void);
 
+/* Initialize GPEs */
+void pmc_gpe_init(void);
+
 static inline int deep_s3_enabled(void)
 {
 	uint32_t deep_s3_pol;

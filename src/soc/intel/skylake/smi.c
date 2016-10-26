@@ -62,11 +62,12 @@ void southbridge_smm_enable_smi(void)
 	 *  - on APMC writes (io 0xb2)
 	 *  - on writes to SLP_EN (sleep states)
 	 *  - on writes to GBL_RLS (bios commands)
+	 *  - on eSPI events (does nothing on LPC systems)
 	 * No SMIs:
 	 *  - on microcontroller writes (io 0x62/0x66)
 	 *  - on TCO events
 	 */
-	enable_smi(APMC_EN | SLP_SMI_EN | GBL_SMI_EN | EOS);
+	enable_smi(APMC_EN | SLP_SMI_EN | GBL_SMI_EN | ESPI_SMI_EN | EOS);
 }
 
 void southbridge_trigger_smi(void)

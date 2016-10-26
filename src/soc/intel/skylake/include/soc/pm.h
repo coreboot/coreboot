@@ -46,6 +46,7 @@
 #define SMI_EN			0x30
 #define  XHCI_SMI_EN		(1 << 31)
 #define  ME_SMI_EN		(1 << 30)
+#define  ESPI_SMI_EN		(1 << 28)
 #define  GPIO_UNLOCK_SMI_EN	(1 << 27)
 #define  INTEL_USB2_EN		(1 << 18)
 #define  LEGACY_USB2_EN		(1 << 17)

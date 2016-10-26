@@ -361,6 +361,12 @@ static void southbridge_smi_gpi(void)
 	gpi_clear_get_smi_status(&smi_sts);
 }
 
+void __attribute__((weak)) mainboard_smi_espi_handler(void) { }
+static void southbridge_smi_espi(void)
+{
+	mainboard_smi_espi_handler();
+}
+
 static void southbridge_smi_mc(void)
 {
 	u32 reg32 = inl(ACPI_BASE_ADDRESS + SMI_EN);
@@ -482,6 +488,7 @@ static smi_handler_t southbridge_smi[SMI_STS_BITS] = {
 	[PM1_STS_BIT] = southbridge_smi_pm1,
 	[GPE0_STS_BIT] = southbridge_smi_gpe0,
 	[GPIO_STS_BIT] = southbridge_smi_gpi,
+	[ESPI_SMI_STS_BIT] = southbridge_smi_espi,
 	[MCSMI_STS_BIT] = southbridge_smi_mc,
 	[TCO_STS_BIT] = southbridge_smi_tco,
 	[PERIODIC_STS_BIT] = southbridge_smi_periodic,

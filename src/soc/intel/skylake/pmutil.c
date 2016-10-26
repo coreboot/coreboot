@@ -177,7 +177,8 @@ static u32 print_smi_status(u32 smi_sts)
 		[20] = "PCI_EXP_SMI",
 		[21] = "MONITOR",
 		[26] = "SPI",
-		[27] = "GPIO_UNLOCK"
+		[27] = "GPIO_UNLOCK",
+		[28] = "ESPI_SMI",
 	};
 
 	if (!smi_sts)

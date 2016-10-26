@@ -50,6 +50,8 @@ struct smm_relocation_params {
 /* Mainboard handler for GPI SMIs*/
 void mainboard_smi_gpi_handler(const struct gpi_status *sts);
 
+/* Mainboard handler for eSPI SMIs */
+void mainboard_smi_espi_handler(void);
 
 #if IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)
 void smm_relocation_handler(int cpu, uintptr_t curr_smbase,

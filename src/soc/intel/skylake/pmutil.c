@@ -351,6 +351,26 @@ u32 clear_gpe_status(void)
 				gpe0_sts_3_bits);
 }
 
+/* Read and clear GPE status (defined in arch/acpi.h) */
+int acpi_get_gpe(int gpe)
+{
+	int bank;
+	uint32_t mask, sts;
+
+	if (gpe < 0 || gpe > GPE0_WADT)
+		return -1;
+
+	bank = gpe / 32;
+	mask = 1 << (gpe % 32);
+
+	sts = inl(ACPI_BASE_ADDRESS + GPE0_STS(bank));
+	if (sts & mask) {
+		outl(mask, ACPI_BASE_ADDRESS + GPE0_STS(bank));
+		return 1;
+	}
+	return 0;
+}
+
 /* Enable all requested GPE */
 void enable_all_gpe(u32 set1, u32 set2, u32 set3, u32 set4)
 {

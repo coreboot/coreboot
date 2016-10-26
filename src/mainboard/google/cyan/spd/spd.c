@@ -33,6 +33,8 @@
  * 0b0001 - 4GiB total - 2 x 2GiB Hynix  H5TC4G63CFR-PBA 1600MHz
  * 0b0010 - 2GiB total - 1 x 2GiB Samsung K4B4G1646Q-HYK0 1600MHz
  * 0b0011 - 2GiB total - 1 x 2GiB Hynix  H5TC4G63CFR-PBA 1600MHz
+ * 0b0110 - 2GiB total - 1 x 2GiB Samsung K4B4G1646E-BYK0 1600MHz
+ * 0b0111 - 2GiB total - 1 x 2GiB Micro MT41K256M16TW-107 1600MHz
  */
 static const uint32_t dual_channel_config = (1 << 0) | (1 << 1);
 
@@ -69,6 +71,12 @@ static void *get_spd_pointer(char *spd_file_content, int total_spds, int *dual)
 		break;
 	case 3:
 		printk(BIOS_DEBUG, "2GiB Hynix  H5TC4G63CFR-PBA 1600MHz\n");
+		break;
+	case 6:
+		printk(BIOS_DEBUG, "2GiB Samsung K4B4G1646E-BYK0 1600MHz\n");
+		break;
+	case 7:
+		printk(BIOS_DEBUG, "2GiB Micro MT41K256M16TW-107 1600MHz\n");
 		break;
 	}
 

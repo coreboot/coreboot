@@ -1,0 +1,2 @@
+config BOARD_LOWRISC_NEXYS4DDR
+	bool "nexys4ddr"

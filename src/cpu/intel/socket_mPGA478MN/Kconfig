@@ -1,0 +1,18 @@
+config CPU_INTEL_SOCKET_MPGA478MN
+	bool
+	select CPU_INTEL_MODEL_1067X
+	select CPU_INTEL_MODEL_6FX
+	select MMX
+	select SSE
+
+if CPU_INTEL_SOCKET_MPGA478MN
+
+config DCACHE_RAM_BASE
+	hex
+	default 0xffaf8000
+
+config DCACHE_RAM_SIZE
+	hex
+	default 0x8000
+
+endif

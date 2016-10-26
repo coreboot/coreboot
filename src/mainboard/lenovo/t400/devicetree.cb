@@ -6,7 +6,7 @@ chip northbridge/intel/gm45
 	register "gfx.use_spread_spectrum_clock" = "1"
 
 	device cpu_cluster 0 on
-		chip cpu/intel/socket_BGA956
+		chip cpu/intel/socket_mPGA478MN
 			device lapic 0 on end
 		end
 		chip cpu/intel/model_1067x

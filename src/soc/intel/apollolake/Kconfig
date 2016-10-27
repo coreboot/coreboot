@@ -210,12 +210,26 @@ config IFWI_FILE_NAME
 	help
 	  Name of file to store in the IFWI region.
 
+config NHLT_DMIC_1CH_16B
+	bool
+	depends on ACPI_NHLT
+	default n
+	help
+	  Include DSP firmware settings for 1 channel 16B DMIC array.
+
 config NHLT_DMIC_2CH_16B
 	bool
 	depends on ACPI_NHLT
 	default n
 	help
 	  Include DSP firmware settings for 2 channel 16B DMIC array.
+
+config NHLT_DMIC_4CH_16B
+	bool
+	depends on ACPI_NHLT
+	default n
+	help
+	  Include DSP firmware settings for 4 channel 16B DMIC array.
 
 config NHLT_MAX98357
 	bool

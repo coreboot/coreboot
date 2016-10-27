@@ -18,6 +18,38 @@
 #include <nhlt.h>
 #include <soc/nhlt.h>
 
+static const struct nhlt_format_config dmic_1ch_formats[] = {
+	/* 48 KHz 16-bits per sample. */
+	{
+		.num_channels = 1,
+		.sample_freq_khz = 48,
+		.container_bits_per_sample = 16,
+		.valid_bits_per_sample = 16,
+		.settings_file = "dmic-1ch-48khz-16b.bin",
+	},
+};
+
+static const struct nhlt_dmic_array_config dmic_1ch_mic_config = {
+	.tdm_config = {
+		.config_type = NHLT_TDM_MIC_ARRAY,
+	},
+	.array_type = NHLT_MIC_ARRAY_VENDOR_DEFINED,
+};
+
+static const struct nhlt_endp_descriptor dmic_1ch_descriptors[] = {
+	{
+		.link = NHLT_LINK_PDM,
+		.device = NHLT_PDM_DEV,
+		.direction = NHLT_DIR_CAPTURE,
+		.vid = NHLT_VID,
+		.did = NHLT_DID_DMIC,
+		.cfg = &dmic_1ch_mic_config,
+		.cfg_size = sizeof(dmic_1ch_mic_config),
+		.formats = dmic_1ch_formats,
+		.num_formats = ARRAY_SIZE(dmic_1ch_formats),
+	},
+};
+
 static const struct nhlt_format_config dmic_2ch_formats[] = {
 	/* 48 KHz 16-bits per sample. */
 	{
@@ -47,6 +79,38 @@ static const struct nhlt_endp_descriptor dmic_2ch_descriptors[] = {
 		.cfg_size = sizeof(dmic_2ch_mic_config),
 		.formats = dmic_2ch_formats,
 		.num_formats = ARRAY_SIZE(dmic_2ch_formats),
+	},
+};
+
+static const struct nhlt_format_config dmic_4ch_formats[] = {
+	/* 48 KHz 16-bits per sample. */
+	{
+		.num_channels = 4,
+		.sample_freq_khz = 48,
+		.container_bits_per_sample = 16,
+		.valid_bits_per_sample = 16,
+		.settings_file = "dmic-4ch-48khz-16b.bin",
+	},
+};
+
+static const struct nhlt_dmic_array_config dmic_4ch_mic_config = {
+	.tdm_config = {
+		.config_type = NHLT_TDM_MIC_ARRAY,
+	},
+	.array_type = NHLT_MIC_ARRAY_4CH_L_SHAPED,
+};
+
+static const struct nhlt_endp_descriptor dmic_4ch_descriptors[] = {
+	{
+		.link = NHLT_LINK_PDM,
+		.device = NHLT_PDM_DEV,
+		.direction = NHLT_DIR_CAPTURE,
+		.vid = NHLT_VID,
+		.did = NHLT_DID_DMIC,
+		.cfg = &dmic_4ch_mic_config,
+		.cfg_size = sizeof(dmic_4ch_mic_config),
+		.formats = dmic_4ch_formats,
+		.num_formats = ARRAY_SIZE(dmic_4ch_formats),
 	},
 };
 
@@ -118,13 +182,19 @@ static const struct nhlt_endp_descriptor max98357_descriptors[] = {
 
 int nhlt_soc_add_dmic_array(struct nhlt *nhlt, int num_channels)
 {
-	if (num_channels != 2) {
-		printk(BIOS_ERR, "APL only supports 2CH DMIC array.\n");
-		return -1;
-	}
-
-	return nhlt_add_endpoints(nhlt, dmic_2ch_descriptors,
+	switch (num_channels) {
+		case 1:
+			return nhlt_add_endpoints(nhlt, dmic_1ch_descriptors,
+				ARRAY_SIZE(dmic_1ch_descriptors));
+		case 2:
+			return nhlt_add_endpoints(nhlt, dmic_2ch_descriptors,
 				ARRAY_SIZE(dmic_2ch_descriptors));
+		case 4:
+			return nhlt_add_endpoints(nhlt, dmic_4ch_descriptors,
+				ARRAY_SIZE(dmic_4ch_descriptors));
+		default:
+			return -1;
+	}
 }
 
 int nhlt_soc_add_da7219(struct nhlt *nhlt, int hwlink)

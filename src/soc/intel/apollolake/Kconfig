@@ -210,6 +210,10 @@ config IFWI_FILE_NAME
 	help
 	  Name of file to store in the IFWI region.
 
+config HEAP_SIZE
+	hex
+	default 0x8000
+
 config NHLT_DMIC_1CH_16B
 	bool
 	depends on ACPI_NHLT

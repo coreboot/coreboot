@@ -45,4 +45,7 @@
 #define MEM_CONFIG1	GPIO_102
 #define MEM_CONFIG0	GPIO_101
 
+/* DMIC_CONFIG_PIN: High for 1-DMIC and low for 4-DMIC's */
+#define DMIC_CONFIG_PIN	GPIO_17
+
 #endif /* BASEBOARD_GPIO_H */

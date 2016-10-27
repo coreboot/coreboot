@@ -17,13 +17,23 @@
 #include <console/console.h>
 #include <nhlt.h>
 #include <soc/nhlt.h>
+#include <gpio.h>
+#include <baseboard/gpio.h>
 
 void __attribute__((weak)) variant_nhlt_init(struct nhlt *nhlt)
 {
-	/* 2 Channel DMIC array. */
-	if (!nhlt_soc_add_dmic_array(nhlt, 2))
-		printk(BIOS_ERR, "Added 2CH DMIC array.\n");
+	if (gpio_get(DMIC_CONFIG_PIN) == 1) {
+		/* 1-dmic configuration */
+		if (!nhlt_soc_add_dmic_array(nhlt, 1))
+			printk(BIOS_ERR, "Added 1CH DMIC array.\n");
+	} else {
+		/* 4-dmic configuration */
+		if (!nhlt_soc_add_dmic_array(nhlt, 2))
+			printk(BIOS_ERR, "Added 2CH DMIC array.\n");
 
+		if (!nhlt_soc_add_dmic_array(nhlt, 4))
+			printk(BIOS_ERR, "Added 4CH DMIC array.\n");
+	}
 	/* Dialog for Headset codec.
 	 * Headset codec is bi-directional but uses the same configuration
 	 * settings for render and capture endpoints.

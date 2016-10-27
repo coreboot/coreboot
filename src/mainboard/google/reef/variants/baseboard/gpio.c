@@ -289,7 +289,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI_APIC_HIGH(GPIO_14, DN_20K, DEEP), /* FP_INT */
 	PAD_CFG_GPI_SCI_LOW(GPIO_15, NONE, DEEP, EDGE_SINGLE),	 /* TRACKPAD_INT_1V8_ODL */
 	PAD_CFG_GPI(GPIO_16, UP_20K, DEEP),	 /* unused */
-	PAD_CFG_GPI(GPIO_17, UP_20K, DEEP),	 /* unused */
+	PAD_CFG_GPI(GPIO_17, UP_20K, DEEP),	 /* 1 vs 4 DMIC config */
 	PAD_CFG_GPI_APIC_LOW(GPIO_18, NONE, DEEP), /* Trackpad IRQ */
 	PAD_CFG_GPI(GPIO_19, UP_20K, DEEP),	 /* unused */
 	PAD_CFG_GPI_APIC_LOW(GPIO_20, UP_20K, DEEP), /* NFC IRQ */

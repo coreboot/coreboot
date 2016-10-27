@@ -28,7 +28,8 @@ entries
 # -----------------------------------------------------------------
 # RTC_BOOT_BYTE (coreboot hardcoded)
 384          1       e       4        boot_option
-#386          2       r       1        unused
+#386          1       r       1        unused
+387          1       e       16       cmos_defaults_loaded
 388          4       h       0        reboot_counter
 392          3       e       5        baud_rate
 #395          1       r       1        unused
@@ -165,6 +166,9 @@ enumerations
 15  13  90%
 15  14  95%
 15  15  100%
+# cmos_defaults_loaded
+16  0   No
+16  1   Yes
 # sata_mode
 17  0   AHCI
 17  1   IDE

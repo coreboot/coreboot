@@ -1,4 +1,5 @@
 boot_option=Fallback
+cmos_defaults_loaded=Yes
 baud_rate=115200
 debug_level=Spew
 power_on_after_fail=Enable

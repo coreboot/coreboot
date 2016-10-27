@@ -598,6 +598,7 @@ int soc_fill_acpi_wake(uint32_t *pm1, uint32_t **gpe0)
 	uint32_t pm1_en;
 	uint32_t gpe0_std;
 	int i;
+	const int last_index = GPE0_REG_MAX - 1;
 
 	ps = cbmem_find(CBMEM_ID_POWER_STATE);
 	if (ps == NULL)
@@ -622,9 +623,9 @@ int soc_fill_acpi_wake(uint32_t *pm1, uint32_t **gpe0)
 
 	/* Mask off GPE0 status bits that are not enabled */
 	*gpe0 = &gpe0_sts[0];
-	for (i = 0; i < (GPE0_REG_MAX-1); i++)
+	for (i = 0; i < last_index; i++)
 		gpe0_sts[i] = ps->gpe0_sts[i] & ps->gpe0_en[i];
-	gpe0_sts[3] = ps->gpe0_sts[3] & gpe0_std;
+	gpe0_sts[last_index] = ps->gpe0_sts[last_index] & gpe0_std;
 
 	return GPE0_REG_MAX;
 }

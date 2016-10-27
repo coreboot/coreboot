@@ -17,7 +17,7 @@
 #include <arch/exception.h>
 #include <arch/sbi.h>
 #include <console/console.h>
-#include <spike_util.h>
+#include <mcall.h>
 #include <string.h>
 #include <vm.h>
 

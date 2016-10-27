@@ -17,7 +17,6 @@
 #include <console/uart.h>
 #include <arch/io.h>
 #include <boot/coreboot_tables.h>
-#include <spike_util.h>
 
 uintptr_t uart_platform_base(int idx)
 {

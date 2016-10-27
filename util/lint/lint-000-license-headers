@@ -42,7 +42,7 @@ _shipped$|\
 /sdram-.*\.inc$|\
 Makefile\.inc|\
 \.fmd|\
-devicetree.cb|\
+\.cb|\
 \.cfg$|\
 \.spd|\
 config|\

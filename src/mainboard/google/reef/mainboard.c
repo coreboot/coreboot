@@ -41,12 +41,19 @@ static void mainboard_init(void *chip_info)
 	mainboard_ec_init();
 }
 
+void __attribute__((weak)) variant_nhlt_oem_strings(const char **oem_id,
+						const char **oem_table_id)
+{
+}
+
 static unsigned long mainboard_write_acpi_tables(
 	device_t device, unsigned long current, acpi_rsdp_t *rsdp)
 {
 	uintptr_t start_addr;
 	uintptr_t end_addr;
 	struct nhlt *nhlt;
+	const char *oem_id = NULL;
+	const char *oem_table_id = NULL;
 
 	start_addr = current;
 
@@ -56,8 +63,10 @@ static unsigned long mainboard_write_acpi_tables(
 		return start_addr;
 
 	variant_nhlt_init(nhlt);
+	variant_nhlt_oem_strings(&oem_id, &oem_table_id);
 
-	end_addr = nhlt_soc_serialize(nhlt, start_addr);
+	end_addr = nhlt_soc_serialize_oem_overrides(nhlt, start_addr,
+			oem_id, oem_table_id);
 
 	if (end_addr != start_addr)
 		acpi_add_table(rsdp, (void *)start_addr);

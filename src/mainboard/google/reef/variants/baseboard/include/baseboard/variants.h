@@ -42,6 +42,8 @@ const struct cros_gpio *variant_cros_gpios(size_t *num);
 
 /* Seed the NHLT tables with the board specific information. */
 struct nhlt;
+void variant_nhlt_oem_strings(const char **oem_id,
+			const char **oem_table_id);
 void variant_nhlt_init(struct nhlt *nhlt);
 
 #endif /* BASEBOARD_VARIANTS_H */

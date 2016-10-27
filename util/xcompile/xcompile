@@ -182,7 +182,7 @@ detect_special_flags() {
 	testcc "$GCC"      "$CFLAGS_GCC -fuse-ld=bfd" &&
 		CFLAGS_GCC="$CFLAGS_GCC -fuse-ld=bfd" && LINKER_SUFFIX='.bfd'
 
-	testcc "$GCC"      "$CFLAGS_GCC -fno-stack-protector"&&
+	testcc "$GCC"      "$CFLAGS_GCC -fno-stack-protector" &&
 		CFLAGS_GCC="$CFLAGS_GCC -fno-stack-protector"
 	testcc "$GCC"      "$CFLAGS_GCC -Wl,--build-id=none" &&
 		CFLAGS_GCC="$CFLAGS_GCC -Wl,--build-id=none"

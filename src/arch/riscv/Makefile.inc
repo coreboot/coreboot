@@ -34,6 +34,7 @@ $(call src-to-obj,bootblock,$(dir)/id.S): $(obj)/build.h
 bootblock-y = bootblock.S stages.c
 bootblock-y += trap_util.S
 bootblock-y += trap_handler.c
+bootblock-y += mcall.c
 bootblock-y += virtual_memory.c
 bootblock-y += boot.c
 bootblock-y += misc.c
@@ -89,7 +90,6 @@ endif
 ifeq ($(CONFIG_ARCH_RAMSTAGE_RISCV),y)
 
 ramstage-y =
-ramstage-y += trap_handler.c
 ramstage-y += virtual_memory.c
 ramstage-y += stages.c
 ramstage-y += misc.c

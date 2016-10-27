@@ -13,8 +13,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef _SPIKE_UTIL_H
-#define _SPIKE_UTIL_H
+#ifndef _MCALL_H
+#define _MCALL_H
 
 #include <arch/encoding.h>
 #include <atomic.h>

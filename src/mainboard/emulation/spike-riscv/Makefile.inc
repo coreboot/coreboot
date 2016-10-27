@@ -13,14 +13,11 @@
 ## GNU General Public License for more details.
 
 bootblock-y += uart.c
-bootblock-y += spike_util.c
 bootblock-y += rom_media.c
 romstage-y += romstage.c
 romstage-y += uart.c
-romstage-y += spike_util.c
 romstage-y += rom_media.c
 ramstage-y += uart.c
-ramstage-y += spike_util.c
 ramstage-y += rom_media.c
 
 bootblock-y += memlayout.ld

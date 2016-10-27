@@ -52,25 +52,11 @@ void mainboard_fill_rcomp_res_data(void *rcomp_ptr)
 
 void mainboard_fill_rcomp_strength_data(void *rcomp_strength_ptr)
 {
-	int mem_cfg_id;
-
-	mem_cfg_id = get_spd_index();
 	/* Rcomp target */
 	static const u16 RcompTarget[RCOMP_TARGET_PARAMS] = {
 		100, 40, 40, 23, 40 };
 
-	/* Strengthen the Rcomp Target Ctrl for 8GB K4E6E304EE -EGCF */
-	static const u16 StrengthendRcompTarget[RCOMP_TARGET_PARAMS] = {
-		100, 40, 40, 21, 40 };
-
-
-	if (mem_cfg_id == K4E6E304EE_MEM_ID) {
-		memcpy(rcomp_strength_ptr, StrengthendRcompTarget,
-			sizeof(StrengthendRcompTarget));
-	} else {
-		memcpy(rcomp_strength_ptr, RcompTarget, sizeof(RcompTarget));
-	}
-
+	memcpy(rcomp_strength_ptr, RcompTarget, sizeof(RcompTarget));
 }
 
 uintptr_t mainboard_get_spd_data(void)
@@ -79,7 +65,7 @@ uintptr_t mainboard_get_spd_data(void)
 	int spd_index, spd_span;
 	size_t spd_file_len;
 
-	spd_index = get_spd_index();
+	spd_index = 0;
 	printk(BIOS_INFO, "SPD index %d\n", spd_index);
 
 	/* Load SPD data from CBFS */
@@ -104,15 +90,5 @@ uintptr_t mainboard_get_spd_data(void)
 
 int mainboard_has_dual_channel_mem(void)
 {
-	int spd_index;
-
-	spd_index = get_spd_index();
-
-	if (spd_index != HYNIX_SINGLE_CHAN && spd_index != SAMSUNG_SINGLE_CHAN
-		&& spd_index != MIC_SINGLE_CHAN) {
-		printk(BIOS_INFO,
-			"Dual channel SPD detected writing second channel\n");
-		return 1;
-	}
-	return 0;
+	return 1;
 }

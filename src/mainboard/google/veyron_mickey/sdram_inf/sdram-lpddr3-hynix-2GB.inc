@@ -70,7 +70,7 @@
 	},
 	.noc_timing = 0x20D266A4,
 	.noc_activate = 0x5B6,
-	.ddrconfig = 14,
+	.ddrconfig = 3,
 	.ddr_freq = 533*MHz,
 	.dramtype = LPDDR3,
 	.num_channels = 2,

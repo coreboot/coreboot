@@ -100,6 +100,8 @@
 
 	*(.data);
 	*(.data.*);
+	*(.sdata);
+	*(.sdata.*);
 
 #ifdef __PRE_RAM__
 	PROVIDE(_preram_cbmem_console = .);

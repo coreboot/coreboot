@@ -30,6 +30,7 @@ bootblock-y += tsc_freq.c
 verstage-y += flash_controller.c
 verstage-y += monotonic_timer.c
 verstage-y += pch.c
+verstage-$(CONFIG_UART_DEBUG) += uart_debug.c
 verstage-y += pmutil.c
 verstage-y += bootblock/i2c.c
 

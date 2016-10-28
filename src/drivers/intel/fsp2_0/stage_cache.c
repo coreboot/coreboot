@@ -28,10 +28,3 @@ void stage_cache_external_region(void **base, size_t *size)
 		*size = 0;
 	}
 }
-
-void ramstage_cache_invalid(void)
-{
-	if (IS_ENABLED(CONFIG_RESET_ON_INVALID_RAMSTAGE_CACHE))
-		/* Perform cold reset on invalid ramstage cache. */
-		hard_reset();
-}

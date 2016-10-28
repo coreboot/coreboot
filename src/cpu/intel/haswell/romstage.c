@@ -264,13 +264,3 @@ void asmlinkage romstage_after_car(void)
 	/* Load the ramstage. */
 	run_ramstage();
 }
-
-
-#if IS_ENABLED(CONFIG_CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM)
-void ramstage_cache_invalid(void)
-{
-#if CONFIG_RESET_ON_INVALID_RAMSTAGE_CACHE
-	reset_system();
-#endif
-}
-#endif

@@ -133,14 +133,6 @@ void asmlinkage romstage_after_car(void)
 	while (1);
 }
 
-void ramstage_cache_invalid(void)
-{
-#if CONFIG_RESET_ON_INVALID_RAMSTAGE_CACHE
-	/* Perform cold reset on invalid ramstage cache. */
-	reset_system();
-#endif
-}
-
 int get_sw_write_protect_state(void)
 {
 	u8 status;

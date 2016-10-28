@@ -380,13 +380,6 @@ __attribute__((weak)) void raminit(struct romstage_params *params)
 	die("ERROR - No RAM initialization specified!\n");
 }
 
-void ramstage_cache_invalid(void)
-{
-	if (IS_ENABLED(CONFIG_RESET_ON_INVALID_RAMSTAGE_CACHE))
-		/* Perform cold reset on invalid ramstage cache. */
-		hard_reset();
-}
-
 /* Display the memory configuration */
 __attribute__((weak)) void report_memory_config(void)
 {

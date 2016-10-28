@@ -46,5 +46,8 @@ Scope (\_SB)
 /* eMMC */
 #include "scs.asl"
 
+/* PMC IPC controller */
+#include "pmc_ipc.asl"
+
 /* PCI _OSC */
 #include <soc/intel/common/acpi/pci_osc.asl>

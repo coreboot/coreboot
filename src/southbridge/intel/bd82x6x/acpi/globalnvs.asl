@@ -175,6 +175,7 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	ALFP,	 8,	// 0xf2 - active lfp
 	IMON,	 8,	// 0xf3 - current graphics turbo imon value
 	MMIO,	 8,	// 0xf4 - 64bit mmio support
+	TPIQ,	 8,	// 0xf5 - trackpad IRQ value
 
 	/* ChromeOS specific */
 	Offset (0x100),

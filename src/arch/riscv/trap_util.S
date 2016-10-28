@@ -119,7 +119,9 @@ trap_entry:
 
   # SMP isn't supported yet, to avoid overwriting the same stack with different
   # harts that handle traps at the same time.
-  csrr sp, mhartid
+  # someday this gets fixed.
+  //csrr sp, mhartid
+  csrr sp, 0xf14
 .Lsmp_hang:
   bnez sp, .Lsmp_hang
 

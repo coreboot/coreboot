@@ -29,7 +29,7 @@ void handle_supervisor_call(trapframe *tf) {
 	switch(call) {
 		case SBI_ECALL_HART_ID:
 			printk(BIOS_DEBUG, "Getting hart id...\n");
-			returnValue = read_csr(mhartid);
+			returnValue = read_csr(0xf14);//mhartid);
 			break;
 		case SBI_ECALL_NUM_HARTS:
 			/* TODO: parse the hardware-supplied config string and

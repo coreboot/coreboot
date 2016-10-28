@@ -32,7 +32,11 @@ _start:
 
 	# make room for HLS and initialize it
 	addi sp, sp, -64 // MENTRY_FRAME_SIZE
-	csrr a0, mhartid
+	// Once again, the docs and toolchain disagree.
+	// Rather than get fancy I'll just lock this down
+	// until it all stabilizes.
+	//csrr a0, mhartid
+	csrr a0, 0xf14
 	call hls_init
 
 	# poison the stack

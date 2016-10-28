@@ -132,8 +132,6 @@ void InterleaveBanks_D(struct MCTStatStruc *pMCTstat,
 		print_t("InterleaveBanks_D: Banks Interleaved ");
 	}	/* DoIntlv */
 
-//	dump_pci_device(PCI_DEV(0, 0x18+pDCTstat->Node_ID, 2));
-
 	print_tx("InterleaveBanks_D: Status ", pDCTstat->Status);
 	print_tx("InterleaveBanks_D: ErrStatus ", pDCTstat->ErrStatus);
 	print_tx("InterleaveBanks_D: ErrCode ", pDCTstat->ErrCode);

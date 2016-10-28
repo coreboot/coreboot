@@ -30,9 +30,6 @@ void mctGet_PS_Cfg_D(struct MCTStatStruc *pMCTstat,
 				&(pDCTstat->CH_ADDR_TMG[dct]), &(pDCTstat->CH_ODC_CTL[dct]),
 				&pDCTstat->_2Tmode);
 
-//	print_tx("1 CH_ODC_CTL: ", pDCTstat->CH_ODC_CTL[dct]);
-//	print_tx("1 CH_ADDR_TMG: ", pDCTstat->CH_ADDR_TMG[dct]);
-
 	if (pDCTstat->MAdimms[dct] == 1)
 		pDCTstat->CH_ODC_CTL[dct] |= 0x20000000;	/* 75ohms */
 	else

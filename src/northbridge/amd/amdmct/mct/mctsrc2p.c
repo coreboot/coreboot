@@ -60,12 +60,9 @@ u8 mct_Get_Start_RcvrEnDly_Pass(struct DCTStatStruc *pDCTstat,
 		u8 *p = pDCTstat->CH_D_B_RCVRDLY[Channel][Receiver>>1];
 		u8 bn;
 		bn = 8;
-//		print_tx("mct_Get_Start_RcvrEnDly_Pass: Channel:", Channel);
-//		print_tx("mct_Get_Start_RcvrEnDly_Pass: Receiver:", Receiver);
+
 		for (i = 0; i < bn; i++) {
 			val  = p[i];
-//			print_tx("mct_Get_Start_RcvrEnDly_Pass: i:", i);
-//			print_tx("mct_Get_Start_RcvrEnDly_Pass: val:", val);
 			if (val > max) {
 				max = val;
 			}
@@ -123,9 +120,7 @@ u8 mct_Average_RcvrEnDly_Pass(struct DCTStatStruc *pDCTstat,
 		for (i = 0; i < bn; i++) {
 			val = p[i];
 			/* Add 1/2 Memlock delay */
-			//val += Pass1MemClkDly;
 			val += 0x5; // NOTE: middle value with DQSRCVEN_SAVED_GOOD_TIMES
-			//val += 0x02;
 			p[i] = val;
 			pDCTstat->DimmTrainFail &= ~(1<<(Receiver + Channel));
 		}

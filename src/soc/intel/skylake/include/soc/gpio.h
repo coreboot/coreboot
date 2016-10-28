@@ -144,6 +144,12 @@ void gpio_configure_pads(const struct pad_config *cfgs, size_t num);
 	_PAD_CFG(pad_, term_, \
 	_DW0_VALS(rst_, RAW, NO, LEVEL, NO, NO, YES, NO, NO, NO, GPIO, NO, YES))
 
+/* General purpose input passed through to IOxAPIC as inverted input. */
+#define PAD_CFG_GPI_APIC_INVERT(pad_, term_, rst_) \
+	_PAD_CFG(pad_, term_, \
+	_DW0_VALS(rst_, RAW, NO, LEVEL, NO, YES, YES, NO, NO, NO, GPIO, NO, \
+		  YES))
+
 /* General purpose input routed to SCI. This assumes edge triggered events. */
 #define PAD_CFG_GPI_ACPI_SCI(pad_, term_, rst_, inv_) \
 	_PAD_CFG_ATTRS(pad_, term_, \

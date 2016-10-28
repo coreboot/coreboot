@@ -748,16 +748,26 @@ static struct device_operations gma_func1_ops = {
 	.ops_pci		= &gma_pci_ops,
 };
 
-static const unsigned short pci_device_ids[] = { 0x27a2, 0x27ae, 0x2772, 0 };
+static const unsigned short i945_gma_func0_ids[] = {
+	0x2772, /* 82945G/GZ Integrated Graphics Controller */
+	0x27a2, /* Mobile 945GM/GMS Express Integrated Graphics Controller*/
+	0x27ae, /* Mobile 945GSE Express Integrated Graphics Controller */
+	0
+};
+
+static const unsigned short i945_gma_func1_ids[] = {
+	0x27a6, /* Mobile 945GM/GMS/GME Express Integrated Graphics Controller */
+	0
+};
 
 static const struct pci_driver i945_gma_func0_driver __pci_driver = {
 	.ops	= &gma_func0_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
-	.devices	= pci_device_ids,
+	.devices	= i945_gma_func0_ids,
 };
 
 static const struct pci_driver i945_gma_func1_driver __pci_driver = {
 	.ops	= &gma_func1_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x27a6,
+	.devices	= i945_gma_func1_ids,
 };

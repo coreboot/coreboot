@@ -1356,7 +1356,6 @@ static u8 AutoCycTiming_D(struct MCTStatStruc *pMCTstat,
 		val |= dword;
 		Set_NB32(dev, reg, val);
 	}
-//	dump_pci_device(PCI_DEV(0, 0x18+pDCTstat->Node_ID, 2));
 
 	print_tx("AutoCycTiming: Status ", pDCTstat->Status);
 	print_tx("AutoCycTiming: ErrStatus ", pDCTstat->ErrStatus);
@@ -1723,8 +1722,6 @@ static u8 AutoConfig_D(struct MCTStatStruc *pMCTstat,
 	mct_EarlyArbEn_D(pMCTstat, pDCTstat);
 	mctHookAfterAutoCfg();
 
-//	dump_pci_device(PCI_DEV(0, 0x18+pDCTstat->Node_ID, 2));
-
 	print_tx("AutoConfig: Status ", pDCTstat->Status);
 	print_tx("AutoConfig: ErrStatus ", pDCTstat->ErrStatus);
 	print_tx("AutoConfig: ErrCode ", pDCTstat->ErrCode);
@@ -1857,8 +1854,6 @@ static void SPDSetBanks_D(struct MCTStatStruc *pMCTstat,
 
 	reg = 0x80 + reg_off;		/* Bank Addressing Register */
 	Set_NB32(dev, reg, BankAddrReg);
-
-//	dump_pci_device(PCI_DEV(0, 0x18+pDCTstat->Node_ID, 2));
 
 	print_tx("SPDSetBanks: Status ", pDCTstat->Status);
 	print_tx("SPDSetBanks: ErrStatus ", pDCTstat->ErrStatus);
@@ -2034,8 +2029,6 @@ static void StitchMemory_D(struct MCTStatStruc *pMCTstat,
 		pDCTstat->DCTSysLimit = nxtcsBase - 1;
 		mct_AfterStitchMemory(pMCTstat, pDCTstat, dct);
 	}
-
-//	dump_pci_device(PCI_DEV(0, 0x18+pDCTstat->Node_ID, 2));
 
 	print_tx("StitchMemory: Status ", pDCTstat->Status);
 	print_tx("StitchMemory: ErrStatus ", pDCTstat->ErrStatus);
@@ -2399,7 +2392,6 @@ static u8 Get_DIMMAddress_D(struct DCTStatStruc *pDCTstat, u8 i)
 	u8 *p;
 
 	p = pDCTstat->DIMMAddr;
-	//mct_BeforeGetDIMMAddress();
 	return p[i];
 }
 

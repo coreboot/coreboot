@@ -437,8 +437,6 @@ static void TrainDQSPos_D(struct MCTStatStruc *pMCTstat,
 	u8 dqsDelay_end;
 	u8 tmp, valid;
 
-//	print_tx("TrainDQSPos: Node_ID", pDCTstat->Node_ID);
-//	print_tx("TrainDQSPos: Direction", pDCTstat->Direction);
 
 	/* MutualCSPassW: each byte represents a bitmap of pass/fail per
 	 * ByteLane.  The indext within MutualCSPassW is the delay value

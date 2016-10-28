@@ -61,7 +61,6 @@ static u8 mct_Average_RcvrEnDly_1Pass(struct DCTStatStruc *pDCTstat, u8 Channel,
 
 		p[i] = val;
 	}
-//	pDCTstat->DimmTrainFail &= ~(1<<Receiver+Channel);
 
 	return MaxValue;
 }

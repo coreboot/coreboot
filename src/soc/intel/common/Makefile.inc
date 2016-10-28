@@ -15,6 +15,7 @@ romstage-y += util.c
 romstage-$(CONFIG_MMA) += mma.c
 
 postcar-y += util.c
+postcar-$(CONFIG_SOC_INTEL_COMMON_RESET) += reset.c
 
 ramstage-y += hda_verb.c
 ramstage-$(CONFIG_CACHE_MRC_SETTINGS) += mrc_cache.c

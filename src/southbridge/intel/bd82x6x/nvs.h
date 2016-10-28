@@ -145,7 +145,8 @@ typedef struct {
 	u8	alfp; /* 0xf2 - active lfp */
 	u8	imon; /* 0xf3 - current graphics turbo imon value */
 	u8	mmio; /* 0xf4 - 64bit mmio support */
-	u8	rsvd13[11]; /* 0xf5 - rsvd */
+	u8	tpiq; /* 0xf5 - trackpad IRQ value */
+	u8	rsvd13[10]; /* 0xf6 - rsvd */
 
 	/* ChromeOS specific (starts at 0x100)*/
 	chromeos_acpi_t chromeos;

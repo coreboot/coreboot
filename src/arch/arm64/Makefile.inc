@@ -139,6 +139,8 @@ $(objcbfs)/ramstage.debug: $$(ramstage-objs)
 ifeq ($(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE),y)
 
 BL31_SOURCE := $(top)/3rdparty/arm-trusted-firmware
+BL31_BUILD := $(abspath $(obj)/3rdparty/arm-trusted-firmware)
+BL31_TARGET := $(BL31_BUILD)/bl31/bl31.elf
 
 ifeq ($(V),1)
 BL31_MAKEARGS += V=1
@@ -153,7 +155,10 @@ BL31_MAKEARGS += LOG_LEVEL=0
 endif # CONFIG_CONSOLE_SERIAL
 
 # Avoid build/release|build/debug distinction by overriding BUILD_PLAT directly
-BL31_MAKEARGS += BUILD_PLAT="$(abspath $(obj)/3rdparty/arm-trusted-firmware)"
+BL31_MAKEARGS += BUILD_PLAT="$(BL31_BUILD)"
+
+# Force making .d files and output directories even though target is not 'bl31'
+BL31_MAKEARGS += IS_ANYTHING_TO_BUILD=1
 
 # Set a consistent build timestamp: the same coreboot has
 # The \# \" complications exist to satisfy both gnu make's parser and editors
@@ -171,8 +176,8 @@ $(BL31): $(obj)/build.h
 	CROSS_COMPILE="$(CROSS_COMPILE_arm64)" \
 	CFLAGS="$(BL31_CFLAGS)" \
 	LDFLAGS="$(BL31_LDFLAGS)" \
-	$(MAKE) -C $(BL31_SOURCE) $(BL31_MAKEARGS) bl31
-	mv $(obj)/3rdparty/arm-trusted-firmware/bl31/bl31.elf $@
+	$(MAKE) -C $(BL31_SOURCE) $(BL31_MAKEARGS) $(BL31_TARGET)
+	mv $(BL31_TARGET) $@
 
 .PHONY: $(BL31)
 

@@ -24,17 +24,8 @@ uintptr_t uart_platform_base(int idx)
 	return (uintptr_t) 0x42000000;
 }
 
-/* these are currently not quite right but they are here for reference
- * and will be fixed when lowrisc gives us a standard clock
- * and set of values. */
-// divisor = clk_freq / (16 * Baud)
-unsigned int uart_input_clock_divider(void)
-{
-	return (25 * 1000 * 1000u / (16u * 115200u)) % 0x100;
-}
-
-// System clock 25 MHz, 115200 baud rate
+/* The clock which the UART is based on */
 unsigned int uart_platform_refclk(void)
 {
-	return (25 * 1000 * 1000u / (16u * 115200u)) >> 8;
+	return 25 * MHz;
 }

@@ -1,0 +1,11 @@
+diff -urN binutils-2.27.orig/gold/configure.tgt binutils-2.27/gold/configure.tgt
+--- binutils-2.27.orig/gold/configure.tgt	2016-08-03 15:36:53.000000000 +0800
++++ binutils-2.27/gold/configure.tgt	2016-10-29 19:28:56.140587026 +0800
+@@ -157,6 +157,7 @@
+  targ_obj=mips
+  targ_machine=EM_MIPS_RS3_LE
+  targ_size=32
++ targ_extra_size=64
+  targ_big_endian=false
+  targ_extra_big_endian=true
+  ;;

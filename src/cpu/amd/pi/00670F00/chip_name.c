@@ -16,5 +16,5 @@
 #include <device/device.h>
 
 struct chip_operations cpu_amd_pi_00670F00_ops = {
-	CHIP_NAME("AMD CPU Family 15h")
+	CHIP_NAME("AMD CPU Family 15h Model 70h-7Fh")
 };

@@ -1,6 +1,6 @@
-diff -urN gcc-5.3.0.orig/gcc/config/nds32/nds32.md gcc-5.3.0/gcc/config/nds32/nds32.md
---- gcc-5.3.0.orig/gcc/config/nds32/nds32.md	2015-01-15 22:45:09.000000000 -0800
-+++ gcc-5.3.0/gcc/config/nds32/nds32.md	2016-04-14 22:09:09.000000000 -0700
+diff -urN gcc-6.1.0.orig/gcc/config/nds32/nds32.md gcc-6.1.0/gcc/config/nds32/nds32.md
+--- gcc-6.1.0.orig/gcc/config/nds32/nds32.md	2015-01-15 22:45:09.000000000 -0800
++++ gcc-6.1.0/gcc/config/nds32/nds32.md	2016-04-14 22:09:09.000000000 -0700
 @@ -2289,11 +2289,11 @@
    emit_jump_insn (gen_cbranchsi4 (test, operands[0], operands[2],
  				  operands[4]));

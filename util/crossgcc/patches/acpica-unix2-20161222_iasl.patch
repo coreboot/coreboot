@@ -1,6 +1,6 @@
-diff -Naur acpica-unix2-20160831/source/compiler/asloptions.c acpica-unix2-20160831a/source/compiler/asloptions.c
---- acpica-unix2-20160831/source/compiler/asloptions.c
-+++ acpica-unix2-20160831a/source/compiler/asloptions.c
+diff -Naur acpica-unix2-20161222/source/compiler/asloptions.c acpica-unix2-20161222/source/compiler/asloptions.c
+--- acpica-unix2-20161222/source/compiler/asloptions.c
++++ acpica-unix2-20161222/source/compiler/asloptions.c
 @@ -100,6 +100,7 @@
      if (argc < 2)
      {
@@ -19,9 +19,9 @@ diff -Naur acpica-unix2-20160831/source/compiler/asloptions.c acpica-unix2-20160
              printf ("Ignoring all errors, forcing AML file generation\n\n");
 @@ -711,6 +713,7 @@
          case '^':
- 
+
              printf (ACPI_COMMON_SIGNON (ASL_COMPILER_NAME));
 +            printf ("%s\n", COREBOOT_TOOLCHAIN_VERSION);
              exit (0);
- 
+
          case 'a':

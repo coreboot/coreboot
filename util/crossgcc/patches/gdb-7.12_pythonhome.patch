@@ -1,6 +1,6 @@
-diff -urN gdb-7.11.orig/gdb/python/python.c gdb-7.11/gdb/python/python.c
---- gdb-7.11.orig/gdb/python/python.c	2016-02-09 19:19:39.000000000 -0800
-+++ gdb-7.11/gdb/python/python.c	2016-04-21 17:45:39.119833428 -0700
+diff -urN gdb-7.12.orig/gdb/python/python.c gdb-7.12/gdb/python/python.c
+--- gdb-7.12.orig/gdb/python/python.c	2016-02-09 19:19:39.000000000 -0800
++++ gdb-7.12/gdb/python/python.c	2016-04-21 17:45:39.119833428 -0700
 @@ -1748,6 +1748,15 @@
  #endif
  #endif

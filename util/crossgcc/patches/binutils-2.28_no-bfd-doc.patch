@@ -1,6 +1,6 @@
 diff -ur binutils-2.26.1/bfd/Makefile.in binutils-2.26.1.patched/bfd/Makefile.in
 --- binutils-2.26.1/bfd/Makefile.in	2015-11-13 16:27:40.000000000 +0800
-+++ binutils-2.26.1.patched/bfd/Makefile.in	2016-04-02 11:05:43.398422394 +0800
++++ binutils-2.27/bfd/Makefile.in	2016-04-02 11:05:43.398422394 +0800
 @@ -341,7 +341,7 @@
  ACLOCAL_AMFLAGS = -I . -I .. -I ../config
  INCDIR = $(srcdir)/../include

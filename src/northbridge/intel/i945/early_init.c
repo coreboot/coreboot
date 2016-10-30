@@ -130,6 +130,7 @@ static void i945_detect_chipset(void)
 	reg8 = (pci_read_config8(PCI_DEV(0, 0x00, 0), 0xe4) & 0x07);
 	switch (reg8) {
 	case 0:
+	case 2:
 		printk(BIOS_DEBUG, "up to DDR2-667");
 		break;
 	case 3:

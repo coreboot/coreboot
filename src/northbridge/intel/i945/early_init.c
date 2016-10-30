@@ -90,9 +90,9 @@ static void i945m_detect_chipset(void)
 		printk(BIOS_INFO, "unknown max. RAM clock (%02x).", reg8);	/* Others reserved. */
 	}
 	printk(BIOS_DEBUG, "\n");
-#if CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GC
-	printk(BIOS_ERR, "coreboot is compiled for the wrong chipset.\n");
-#endif
+
+	if (IS_ENABLED(CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GC))
+		printk(BIOS_ERR, "coreboot is compiled for the wrong chipset.\n");
 }
 
 static void i945_detect_chipset(void)
@@ -139,9 +139,9 @@ static void i945_detect_chipset(void)
 		printk(BIOS_INFO, "unknown max. RAM clock (%02x).", reg8);	/* Others reserved. */
 	}
 	printk(BIOS_DEBUG, "\n");
-#if CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GM
-	printk(BIOS_ERR, "coreboot is compiled for the wrong chipset.\n");
-#endif
+
+	if (IS_ENABLED(CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GM))
+		printk(BIOS_ERR, "coreboot is compiled for the wrong chipset.\n");
 }
 
 static void i945_setup_bars(void)

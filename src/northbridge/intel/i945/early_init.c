@@ -232,8 +232,14 @@ static void i945_setup_egress_port(void)
 	/* Egress Port Virtual Channel 1 Configuration */
 	reg32 = EPBAR32(0x2c);
 	reg32 &= 0xffffff00;
+	if (IS_ENABLED(CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GC)) {
+		if ((MCHBAR32(CLKCFG) & 7) == 0)
+			reg32 |= 0x1a;	/* 1067MHz */
+	}
 	if ((MCHBAR32(CLKCFG) & 7) == 1)
 		reg32 |= 0x0d;	/* 533MHz */
+	if ((MCHBAR32(CLKCFG) & 7) == 2)
+		reg32 |= 0x14;	/* 800MHz */
 	if ((MCHBAR32(CLKCFG) & 7) == 3)
 		reg32 |= 0x10;	/* 667MHz */
 	EPBAR32(0x2c) = reg32;
@@ -245,9 +251,21 @@ static void i945_setup_egress_port(void)
 	reg32 |= (0x0a << 16);
 	EPBAR32(EPVC1RCAP) = reg32;
 
+	if (IS_ENABLED(CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GC)) {
+		if ((MCHBAR32(CLKCFG) & 7) == 0){	/* 1067MHz */
+			EPBAR32(EPVC1IST + 0) = 0x01380138;
+			EPBAR32(EPVC1IST + 4) = 0x01380138;
+		}
+	}
+
 	if ((MCHBAR32(CLKCFG) & 7) == 1) {	/* 533MHz */
 		EPBAR32(EPVC1IST + 0) = 0x009c009c;
 		EPBAR32(EPVC1IST + 4) = 0x009c009c;
+	}
+
+	if ((MCHBAR32(CLKCFG) & 7) == 2) {	/* 800MHz */
+		EPBAR32(EPVC1IST + 0) = 0x00f000f0;
+		EPBAR32(EPVC1IST + 4) = 0x00f000f0;
 	}
 
 	if ((MCHBAR32(CLKCFG) & 7) == 3) {	/* 667MHz */

@@ -219,10 +219,10 @@ static const struct pad_config gpio_table[] = {
 
 	/* DMIC or I2S4 */
 	PAD_CFG_NF(GPIO_79, NATIVE, DEEP, NF1),	/* AVS_DMIC_CLK_A1 */
-	PAD_CFG_GPI(GPIO_80, UP_20K, DEEP),	 /* unused */
+	PAD_CFG_NF(GPIO_80, NATIVE, DEEP, NF1), /* AVS_DMIC_CLK_B1 */
 	PAD_CFG_NF(GPIO_81, NATIVE, DEEP, NF1),	/* AVS_DMIC_DATA_1 */
 	PAD_CFG_GPI(GPIO_82, DN_20K, DEEP),	 /* unused -- strap */
-	PAD_CFG_GPI(GPIO_83, UP_20K, DEEP),	 /* unused */
+	PAD_CFG_NF(GPIO_83, NATIVE, DEEP, NF1), /* AVS_DMIC_DATA_2 */
 
 	/* I2S2 -- Headset amp */
 	PAD_CFG_NF(GPIO_84, NATIVE, DEEP, NF1),	 /* AVS_I2S2_MCLK */

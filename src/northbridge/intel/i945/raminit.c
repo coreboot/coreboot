@@ -1236,10 +1236,18 @@ static void sdram_program_dll_timings(struct sys_info *sysinfo)
 	MCHBAR16(DQSMT) |= (1 << 13) | (0xc << 0);
 
 	/* We drive both channels with the same speed */
-	switch (sysinfo->memory_frequency) {
-	case 400: chan0dll = 0x26262626; chan1dll = 0x26262626; break; /* 400MHz */
-	case 533: chan0dll = 0x22222222; chan1dll = 0x22222222; break; /* 533MHz */
-	case 667: chan0dll = 0x11111111; chan1dll = 0x11111111; break; /* 667MHz */
+	if (IS_ENABLED(CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GM)) {
+		switch (sysinfo->memory_frequency) {
+			case 400: chan0dll = 0x26262626; chan1dll = 0x26262626; break; /* 400MHz */
+			case 533: chan0dll = 0x22222222; chan1dll = 0x22222222; break; /* 533MHz */
+			case 667: chan0dll = 0x11111111; chan1dll = 0x11111111; break; /* 667MHz */
+		}
+	} else if (IS_ENABLED(CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GC)) {
+		switch (sysinfo->memory_frequency) {
+			case 400: chan0dll = 0x33333333; chan1dll = 0x33333333; break; /* 400MHz */
+			case 533: chan0dll = 0x24242424; chan1dll = 0x24242424; break; /* 533MHz */
+			case 667: chan0dll = 0x25252525; chan1dll = 0x25252525; break; /* 667MHz */
+		}
 	}
 
 	for (i = 0; i < 4; i++) {
@@ -1247,6 +1255,10 @@ static void sdram_program_dll_timings(struct sys_info *sysinfo)
 		MCHBAR32(C0R0B00DQST + (i * 0x10) + 4) = chan0dll;
 		MCHBAR32(C1R0B00DQST + (i * 0x10) + 0) = chan1dll;
 		MCHBAR32(C1R0B00DQST + (i * 0x10) + 4) = chan1dll;
+		if (IS_ENABLED(CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GC)) {
+			MCHBAR8(C0R0B00DQST + (i * 0x10) + 8) = chan0dll & 0xff;
+			MCHBAR8(C1R0B00DQST + (i * 0x10) + 8) = chan1dll & 0xff;
+                }
 	}
 }
 

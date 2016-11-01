@@ -30,6 +30,7 @@
 static int ifd_version;
 static int max_regions = 0;
 static int selected_chip = 0;
+static int platform = -1;
 
 static const struct region_name region_names[MAX_REGIONS] = {
 	{ "Flash Descriptor", "fd" },
@@ -832,18 +833,32 @@ static void lock_descriptor(char *filename, char *image, int size)
 		fmba->flmstr3 = 0x118;
 	}
 
-	/* CPU/BIOS can read descriptor, BIOS, and GbE. */
-	fmba->flmstr1 |= 0xb << rd_shift;
-	/* CPU/BIOS can write BIOS and GbE. */
-	fmba->flmstr1 |= 0xa << wr_shift;
-	/* ME can read descriptor, ME, and GbE. */
-	fmba->flmstr2 |= 0xd << rd_shift;
-	/* ME can write ME and GbE. */
-	fmba->flmstr2 |= 0xc << wr_shift;
-	/* GbE can write only GbE. */
-	fmba->flmstr3 |= 0x8 << rd_shift;
-	/* GbE can read only GbE. */
-	fmba->flmstr3 |= 0x8 << wr_shift;
+	switch (platform) {
+	case PLATFORM_APOLLOLAKE:
+		/* CPU/BIOS can read descriptor and BIOS */
+		fmba->flmstr1 |= 0x3 << rd_shift;
+		/* CPU/BIOS can write BIOS */
+		fmba->flmstr1 |= 0x2 << wr_shift;
+		/* TXE can read descriptor, BIOS and Device Expansion */
+		fmba->flmstr2 |= 0x23 << rd_shift;
+		/* TXE can only write Device Expansion */
+		fmba->flmstr2 |= 0x20 << wr_shift;
+		break;
+	default:
+		/* CPU/BIOS can read descriptor, BIOS, and GbE. */
+		fmba->flmstr1 |= 0xb << rd_shift;
+		/* CPU/BIOS can write BIOS and GbE. */
+		fmba->flmstr1 |= 0xa << wr_shift;
+		/* ME can read descriptor, ME, and GbE. */
+		fmba->flmstr2 |= 0xd << rd_shift;
+		/* ME can write ME and GbE. */
+		fmba->flmstr2 |= 0xc << wr_shift;
+		/* GbE can write only GbE. */
+		fmba->flmstr3 |= 0x8 << rd_shift;
+		/* GbE can read only GbE. */
+		fmba->flmstr3 |= 0x8 << wr_shift;
+		break;
+	}
 
 	write_image(filename, image, size);
 }
@@ -1140,6 +1155,8 @@ static void print_usage(const char *name)
 	       "                                      Dual Output Fast Read Support\n"
 	       "   -l | --lock                        Lock firmware descriptor and ME region\n"
 	       "   -u | --unlock                      Unlock firmware descriptor and ME region\n"
+	       "   -p | --platform                    Add platform-specific quirks\n"
+	       "                                      aplk - Apollo Lake\n"
 	       "   -v | --version:                    print the version\n"
 	       "   -h | --help:                       print this help\n\n"
 	       "<region> is one of Descriptor, BIOS, ME, GbE, Platform\n"
@@ -1171,10 +1188,11 @@ int main(int argc, char *argv[])
 		{"unlock", 0, NULL, 'u'},
 		{"version", 0, NULL, 'v'},
 		{"help", 0, NULL, 'h'},
+		{"platform", 0, NULL, 'p'},
 		{0, 0, 0, 0}
 	};
 
-	while ((opt = getopt_long(argc, argv, "df:D:C:xi:n:s:eluvh?",
+	while ((opt = getopt_long(argc, argv, "df:D:C:xi:n:s:p:eluvh?",
 				  long_options, &option_index)) != EOF) {
 		switch (opt) {
 		case 'd':
@@ -1322,6 +1340,14 @@ int main(int argc, char *argv[])
 			mode_unlocked = 1;
 			if (mode_locked == 1) {
 				fprintf(stderr, "Locking/Unlocking FD and ME are mutually exclusive\n");
+				exit(EXIT_FAILURE);
+			}
+			break;
+		case 'p':
+			if (!strcmp(optarg, "aplk")) {
+				platform = PLATFORM_APOLLOLAKE;
+			} else {
+				fprintf(stderr, "Unknown platform: %s\n", optarg);
 				exit(EXIT_FAILURE);
 			}
 			break;

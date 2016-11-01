@@ -21,6 +21,10 @@ enum ifd_version {
 	IFD_VERSION_2,
 };
 
+enum platform {
+	PLATFORM_APOLLOLAKE
+};
+
 #define LAYOUT_LINELEN 80
 
 enum spi_frequency {

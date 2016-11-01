@@ -465,6 +465,8 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 	/* Disable monitor mwait since it is broken due to a hardware bug without a fix */
 	silconfig->MonitorMwaitEnable = 0;
 
+	silconfig->SkipMpInit = 1;
+
 	/* Disable setting of EISS bit in FSP. */
 	silconfig->SpiEiss = 0;
 

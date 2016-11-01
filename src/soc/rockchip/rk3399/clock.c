@@ -40,12 +40,12 @@ struct pll_div {
 	.postdiv1 = _postdiv1, .postdiv2 = _postdiv2, .freq = hz};\
 	_Static_assert(((u64)hz * _refdiv * _postdiv1 * _postdiv2 / OSC_HZ) *\
 			 OSC_HZ / (_refdiv * _postdiv1 * _postdiv2) == hz,\
-			 #hz "Hz cannot be hit with PLL "\
+			 STRINGIFY(hz) " Hz cannot be hit with PLL "\
 			 "divisors on line " STRINGIFY(__LINE__))
 
-static const struct pll_div gpll_init_cfg = PLL_DIVISORS(GPLL_HZ, 2, 2, 1);
-static const struct pll_div cpll_init_cfg = PLL_DIVISORS(CPLL_HZ, 1, 2, 2);
-static const struct pll_div ppll_init_cfg = PLL_DIVISORS(PPLL_HZ, 2, 2, 1);
+static const struct pll_div gpll_init_cfg = PLL_DIVISORS(GPLL_HZ, 1, 4, 1);
+static const struct pll_div cpll_init_cfg = PLL_DIVISORS(CPLL_HZ, 1, 3, 1);
+static const struct pll_div ppll_init_cfg = PLL_DIVISORS(PPLL_HZ, 3, 2, 1);
 
 static const struct pll_div apll_1512_cfg = PLL_DIVISORS(1512*MHz, 1, 1, 1);
 static const struct pll_div apll_600_cfg = PLL_DIVISORS(600*MHz, 1, 3, 1);
@@ -402,7 +402,8 @@ void rkclk_init(void)
 
 	/* configure pmu pclk */
 	pclk_div = PPLL_HZ / PMU_PCLK_HZ - 1;
-	assert((pclk_div + 1) * PMU_PCLK_HZ == PPLL_HZ && pclk_div <= 0x1f);
+	assert((unsigned)(PPLL_HZ - (pclk_div + 1) * PMU_PCLK_HZ) <= pclk_div
+	       && pclk_div <= 0x1f);
 	write32(&pmucru_ptr->pmucru_clksel[0],
 		RK_CLRSETBITS(PMU_PCLK_DIV_CON_MASK << PMU_PCLK_DIV_CON_SHIFT,
 			      pclk_div << PMU_PCLK_DIV_CON_SHIFT));
@@ -630,15 +631,20 @@ void rkclk_configure_spi(unsigned int bus, unsigned int hz)
 		RK_CLRSETBITS(I2C_DIV_CON_MASK << I2C ##bus## _DIV_CON_SHIFT, \
 			      (clk_div - 1) << I2C ##bus## _DIV_CON_SHIFT)
 
-static void rkclk_configure_i2c(unsigned int bus, unsigned int hz)
+uint32_t rkclk_i2c_clock_for_bus(unsigned int bus)
 {
-	int src_clk_div;
-	int pll;
+	int src_clk_div, pll, freq;
 
-	/* i2c0,4,8 src clock from ppll, i2c1,2,3,5,6,7 src clock from gpll*/
-	pll = (bus == 0 || bus == 4 || bus == 8) ? PPLL_HZ : GPLL_HZ;
-	src_clk_div = pll / hz;
-	assert((src_clk_div - 1 <= 127) && (src_clk_div * hz == pll));
+	/* i2c0,4,8 src clock from ppll, i2c1,2,3,5,6,7 src clock from gpll */
+	if (bus == 0 || bus == 4 || bus == 8) {
+		pll = PPLL_HZ;
+		freq = 338*MHz;
+	} else {
+		pll = GPLL_HZ;
+		freq = 198*MHz;
+	}
+	src_clk_div = pll / freq;
+	assert((src_clk_div - 1 <= 127) && (src_clk_div * freq == pll));
 
 	switch (bus) {
 	case 0:
@@ -678,15 +684,8 @@ static void rkclk_configure_i2c(unsigned int bus, unsigned int hz)
 			PMU_I2C_CLK_REG_VALUE(8, src_clk_div));
 		break;
 	default:
-		printk(BIOS_ERR, "do not support this i2c bus\n");
+		die("unknown i2c bus\n");
 	}
-}
-
-uint32_t rkclk_i2c_clock_for_bus(unsigned bus)
-{
-	uint32_t freq = 198 * 1000 * 1000;
-
-	rkclk_configure_i2c(bus, freq);
 
 	return freq;
 }
@@ -723,7 +722,7 @@ void rkclk_configure_i2s(unsigned int hz)
 	v = clk_gcd(CPLL_HZ, hz);
 	n = (CPLL_HZ / v) & (0xffff);
 	d = (hz / v) & (0xffff);
-	assert(hz == CPLL_HZ / n * d);
+	assert(hz == (u64)CPLL_HZ * d / n);
 	write32(&cru_ptr->clksel_con[96], d << 16 | n);
 
 	/**

@@ -74,10 +74,10 @@ static struct rk3399_cru_reg * const cru_ptr = (void *)CRU_BASE;
 
 #define OSC_HZ		(24*MHz)
 #define GPLL_HZ		(594*MHz)
-#define CPLL_HZ		(384*MHz)
-#define PPLL_HZ		(594*MHz)
+#define CPLL_HZ		(800*MHz)
+#define PPLL_HZ		(676*MHz)
 
-#define PMU_PCLK_HZ	(99*MHz)
+#define PMU_PCLK_HZ	96571428
 
 #define ACLKM_CORE_HZ	(300*MHz)
 #define ATCLK_CORE_HZ	(300*MHz)

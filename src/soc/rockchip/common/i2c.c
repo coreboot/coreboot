@@ -273,16 +273,19 @@ void i2c_init(unsigned int bus, unsigned int hz)
 	unsigned int divl;
 	unsigned int divh;
 	unsigned int i2c_src_clk;
+	unsigned int i2c_clk;
 	struct rk_i2c_regs *regs = (struct rk_i2c_regs *)(i2c_bus[bus]);
 
 	i2c_src_clk = rkclk_i2c_clock_for_bus(bus);
 
-	/*SCL Divisor = 8*(CLKDIVL + 1 + CLKDIVH + 1)
-	  SCL = PCLK/ SCLK Divisor
-	*/
+	/* SCL Divisor = 8*(CLKDIVL + 1 + CLKDIVH + 1)
+	   SCL = PCLK / SCLK Divisor */
 	clk_div = div_round_up(i2c_src_clk, hz * 8);
 	divh = clk_div * 3 / 7 - 1;
 	divl = clk_div - divh - 2;
-	assert((divh < 65536) && (divl < 65536));
+	i2c_clk = i2c_src_clk / (8 * (divl + 1 + divh + 1));
+	printk(BIOS_DEBUG, "I2C bus %u: %uHz (divh = %u, divl = %u)\n",
+	       bus, i2c_clk, divh, divl);
+	assert((divh < 65536) && (divl < 65536) && hz - i2c_clk < 10*KHz);
 	write32(&regs->i2c_clkdiv, (divh << 16) | (divl << 0));
 }

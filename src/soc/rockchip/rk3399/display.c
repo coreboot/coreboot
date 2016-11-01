@@ -52,7 +52,7 @@ void rk_display_init(device_t dev)
 		/* try EDP first, then HDMI */
 	case VOP_MODE_EDP:
 		printk(BIOS_DEBUG, "Attempting to set up EDP display.\n");
-		rkclk_configure_vop_aclk(vop_id, 192 * MHz);
+		rkclk_configure_vop_aclk(vop_id, 200 * MHz);
 
 		/* select edp signal from vop0 */
 		write32(&rk3399_grf->soc_con20, RK_CLRBITS(1 << 5));

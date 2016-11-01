@@ -48,6 +48,8 @@
 #define CR50_MAX_BUFSIZE	63
 #define CR50_TIMEOUT_LONG_MS	2000	/* Long timeout while waiting for TPM */
 #define CR50_TIMEOUT_SHORT_MS	2	/* Short timeout during transactions */
+#define CR50_TIMEOUT_NOIRQ_MS	20	/* Timeout for TPM ready without IRQ */
+#define CR50_TIMEOUT_IRQ_MS	100	/* Timeout for TPM ready with IRQ */
 #define CR50_DID_VID		0x00281ae0L
 
 struct tpm_inf_dev {
@@ -65,11 +67,11 @@ static int cr50_i2c_wait_tpm_ready(struct tpm_chip *chip)
 
 	if (!chip->vendor.irq_status) {
 		/* Fixed delay if interrupt not supported */
-		mdelay(CR50_TIMEOUT_SHORT_MS);
+		mdelay(CR50_TIMEOUT_NOIRQ_MS);
 		return 0;
 	}
 
-	stopwatch_init_msecs_expire(&sw, 5 * CR50_TIMEOUT_SHORT_MS);
+	stopwatch_init_msecs_expire(&sw, CR50_TIMEOUT_IRQ_MS);
 
 	while (!chip->vendor.irq_status(chip->vendor.irq))
 		if (stopwatch_expired(&sw))
@@ -429,6 +431,11 @@ static void cr50_vendor_init(struct tpm_chip *chip)
 		chip->vendor.irq = -1;
 #endif
 	}
+
+	if (chip->vendor.irq <= 0)
+		printk(BIOS_WARNING,
+		       "%s: No IRQ, will use %ums delay for TPM ready\n",
+		       __func__, CR50_TIMEOUT_NOIRQ_MS);
 }
 
 int tpm_vendor_probe(unsigned bus, uint32_t addr)

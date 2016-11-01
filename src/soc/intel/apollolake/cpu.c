@@ -29,6 +29,7 @@
 #include <soc/cpu.h>
 #include <soc/iomap.h>
 #include <soc/smm.h>
+#include <cpu/intel/turbo.h>
 
 static const struct reg_script core_msr_script[] = {
 	/* Enable C-state and IO/MWAIT redirect */
@@ -40,6 +41,8 @@ static const struct reg_script core_msr_script[] = {
 		(ACPI_PMIO_CST_REG | (PMG_IO_BASE_CST_RNG_BLK_SIZE << 16))),
 	/* Disable C1E */
 	REG_MSR_RMW(MSR_POWER_CTL, ~0x2, 0),
+	/* Disable support for MONITOR and MWAIT instructions */
+	REG_MSR_RMW(MSR_IA32_MISC_ENABLES, ~MONITOR_MWAIT_DIS_MASK, 0),
 	REG_SCRIPT_END
 };
 

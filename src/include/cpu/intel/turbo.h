@@ -21,6 +21,9 @@
 #define PM_CAP_TURBO_MODE	(1 << 1)
 
 #define MSR_IA32_MISC_ENABLES	0x1a0
+/* Disable the Monitor Mwait FSM feature */
+#define MONITOR_MWAIT_DIS_MASK	0x40000
+
 #define H_MISC_DISABLE_TURBO	(1 << 6)
 
 enum {

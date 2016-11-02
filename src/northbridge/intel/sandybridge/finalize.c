@@ -23,6 +23,7 @@
 void intel_sandybridge_finalize_smm(void)
 {
 	pci_or_config16(PCI_DEV_SNB, 0x50, 1 << 0);	/* GGC */
+	pci_or_config16(PCI_DEV_SNB, 0x58, 1 << 2);	/* PAVP Lock */
 	pci_or_config32(PCI_DEV_SNB, 0x5c, 1 << 0);	/* DPR */
 	pci_or_config32(PCI_DEV_SNB, 0x78, 1 << 10);	/* ME */
 	pci_or_config32(PCI_DEV_SNB, 0x90, 1 << 0);	/* REMAPBASE */

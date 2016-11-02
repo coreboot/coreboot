@@ -190,7 +190,7 @@ struct rk3399_sdram_params {
 #define PI_READ_GATE_TRAINING	(1 << 2)
 #define PI_READ_LEVELING	(1 << 3)
 #define PI_WDQ_LEVELING	(1 << 4)
-#define PI_FULL_TARINING	(0xff)
+#define PI_FULL_TRAINING	(0xff)
 
 void sdram_init(const struct rk3399_sdram_params *sdram_params);
 u32 sdram_get_ram_code(void);

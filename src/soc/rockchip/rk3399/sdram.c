@@ -641,7 +641,7 @@ static int data_training(u32 channel,
 	/* PHY_927 PHY_PAD_DQS_DRIVE  RPULL offset_22 */
 	setbits_le32(&denali_phy[927], (1 << 22));
 
-	if (training_flag == PI_FULL_TARINING) {
+	if (training_flag == PI_FULL_TRAINING) {
 		if (sdram_params->dramtype == LPDDR4) {
 			training_flag = PI_CA_TRAINING | PI_WRITE_LEVELING |
 					PI_READ_GATE_TRAINING |
@@ -976,7 +976,7 @@ static void switch_to_phy_index1(const struct rk3399_sdram_params *sdram_params)
 	for (channel = 0; channel < ch_count; channel++) {
 		denali_phy = rk3399_ddr_publ[channel]->denali_phy;
 		clrsetbits_le32(&denali_phy[896], (0x3 << 8) | 1, 1 << 8);
-		if (data_training(channel, sdram_params, PI_FULL_TARINING)) {
+		if (data_training(channel, sdram_params, PI_FULL_TRAINING)) {
 			printk(BIOS_ERR, "index1 training failed, reset\n");
 			hard_reset();
 		}
@@ -1018,7 +1018,7 @@ void sdram_init(const struct rk3399_sdram_params *sdram_params)
 		if (dramtype == LPDDR3)
 			udelay(10);
 
-		if (data_training(channel, sdram_params, PI_FULL_TARINING)) {
+		if (data_training(channel, sdram_params, PI_FULL_TRAINING)) {
 			printk(BIOS_DEBUG,
 			       "SDRAM initialization failed, reset\n");
 			hard_reset();

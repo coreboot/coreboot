@@ -313,8 +313,16 @@ static int nuclear_spi_write(struct spi_flash *flash,
 
 static int nuclear_spi_status(struct spi_flash *flash, uint8_t *reg)
 {
-	printk(BIOS_DEBUG, "NOT IMPLEMENTED: %s() !!!\n", __func__);
-	return E_NOT_IMPLEMENTED;
+	int ret;
+	BOILERPLATE_CREATE_CTX(ctx);
+
+	ret = exec_sync_hwseq_xfer(ctx, SPIBAR_HSFSTS_CYCLE_RD_STATUS, 0,
+				   sizeof(*reg));
+	if (ret != SUCCESS)
+		return ret;
+
+	drain_xfer_fifo(ctx, reg, sizeof(*reg));
+	return ret;
 }
 
 static struct spi_slave boot_spi CAR_GLOBAL;

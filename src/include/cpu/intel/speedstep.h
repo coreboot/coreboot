@@ -46,7 +46,7 @@
 #define MSR_PMG_IO_BASE_ADDR	0xe3
 #define MSR_PMG_IO_CAPTURE_ADDR	0xe4
 #define MSR_EXTENDED_CONFIG	0xee
-
+#define FREQ_LIMIT_RATIO	0x1AD
 
 typedef struct {
 	uint8_t dynfsb : 1; /* whether this is SLFM */

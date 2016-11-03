@@ -37,6 +37,7 @@
 #include <soc/pm.h>
 #include <soc/pmc.h>
 #include <soc/smbus.h>
+#include <timer.h>
 #include "chip.h"
 
 /* Print status bits with descriptive names */
@@ -361,6 +362,8 @@ int acpi_get_gpe(int gpe)
 {
 	int bank;
 	uint32_t mask, sts;
+	struct stopwatch sw;
+	int rc = 0;
 
 	if (gpe < 0 || gpe > GPE0_WADT)
 		return -1;
@@ -368,12 +371,20 @@ int acpi_get_gpe(int gpe)
 	bank = gpe / 32;
 	mask = 1 << (gpe % 32);
 
-	sts = inl(ACPI_BASE_ADDRESS + GPE0_STS(bank));
-	if (sts & mask) {
-		outl(mask, ACPI_BASE_ADDRESS + GPE0_STS(bank));
-		return 1;
-	}
-	return 0;
+	/* Wait up to 1ms for GPE status to clear */
+	stopwatch_init_msecs_expire(&sw, 1);
+	do {
+		if (stopwatch_expired(&sw))
+			return rc;
+
+		sts = inl(ACPI_BASE_ADDRESS + GPE0_STS(bank));
+		if (sts & mask) {
+			outl(mask, ACPI_BASE_ADDRESS + GPE0_STS(bank));
+			rc = 1;
+		}
+	} while (sts & mask);
+
+	return rc;
 }
 
 /* Enable all requested GPE */

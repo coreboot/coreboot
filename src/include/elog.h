@@ -158,7 +158,8 @@ extern int elog_smbios_write_type15(unsigned long *current, int handle);
 /* Stubs to help avoid littering sources with #if CONFIG_ELOG */
 static inline int elog_init(void) { return -1; }
 static inline int elog_clear(void) { return -1; }
-static inline int elog_add_event_raw(void) { return 0; }
+static inline int elog_add_event_raw(u8 event_type, void *data,
+					u8 data_size) { return 0; }
 static inline int elog_add_event(u8 event_type) { return 0; }
 static inline int elog_add_event_byte(u8 event_type, u8 data) { return 0; }
 static inline int elog_add_event_word(u8 event_type, u16 data) { return 0; }

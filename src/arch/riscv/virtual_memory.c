@@ -38,6 +38,7 @@ static int delegate = 0
 	| (1 << CAUSE_FAULT_STORE)
 	| (1 << CAUSE_USER_ECALL)
 	;
+
 pte_t* root_page_table;
 
 /* Indent the following text by 2*level spaces */
@@ -140,11 +141,58 @@ pte_t pte_create(uintptr_t ppn, int prot, int user)
 	return pte;
 }
 
+// The current RISCV *physical* address space is this:
+// * 0 - 2 GiB: miscellaneous IO devices
+// * 2 GiB - 4 GiB DRAM
+// * top 2048 bytes of memory: SBI (which we round out to a 4K page)
+// We have determined, also, that if code references a physical address
+// not backed by a device, we'll take a fault. In other words, we don't
+// need to finely map the memory-mapped devices as we would on an x86.
+// We can use GiB mappings for the IO space and we will take a trap
+// if we reference hardware that does not exist.
+//
+// The intent of the RISCV designers is that pages be set up in M mode
+// for lower privilege software. They have also told me that they
+// expect, unlike other platforms, that next level software use these
+// page tables.  Some kernels (Linux) prefer the old fashioned model,
+// where kernel starts with an identity (ID) map and sets up page tables as
+// it sees fit.  Other kernels (harvey) are fine with using whatever
+// firmware sets up.  We need to accommodate both. So, we set up the
+// identity map for Linux, but also set up the map for kernels that
+// are more willing to conform to the RISCV model.  The map is as
+// follows:
+//
+// ID map: map IO space and all of DRAM 1:1 using 1 GiB PTEs
+// I.e. we use 1 GiB PTEs for 4 GiB.
+// Linux/BSD uses this mapping just enough to replace it.
+//
+// The SBI page is the last page in the 64 bit address space.
+// map that using the middle_pts shown below.
+//
+// Top 2G map, including SBI page: map the 2 Gib - 4 GiB of physical
+// address space to 0xffffffff_80000000. This will be needed until the
+// GNU toolchain can compile code to run at 0xffffffc000000000,
+// i.e. the start of Sv39.
+//
+// Only Harvey/Plan 9 uses this Mapping, and temporarily.  It can
+// never be full removed as we need the 4KiB mapping for the SBI page.
+//
+// standard RISCV map long term: Map IO space, and all of DRAM, to the *lowest*
+// possible negative address for this implementation,
+// e.g. 0xffffffc000000000 for Sv39 CPUs. For now we can use GiB PTEs.
+//
+// RISCV map for now: map IO space, and all of DRAM, starting at
+// 0xffff_ffc0_0000_0000, i.e. just as for Sv39.
+//
+// It is our intent on Harvey (and eventually Akaros) that we use
+// this map, once the toolchain can correctly support it.
+// We have tested this arrangement and it lets us boot harvey to user mode.
 void init_vm(uintptr_t virtMemStart, uintptr_t physMemStart, pte_t *sbi_pt)
 {
 	memset(sbi_pt, 0, RISCV_PGSIZE);
 	// need to leave room for sbi page
-	uintptr_t memorySize = 0x7F000000; // 0xFFF... - 0xFFFFFFFF81000000 - RISCV_PGSIZE
+	// 0xFFF... - 0xFFFFFFFF81000000 - RISCV_PGSIZE
+	intptr_t memorySize = 0x7F000000;
 
 	// middle page table
 	pte_t* middle_pt = (void*)sbi_pt + RISCV_PGSIZE;
@@ -181,14 +229,22 @@ void init_vm(uintptr_t virtMemStart, uintptr_t physMemStart, pte_t *sbi_pt)
 	pte_t* sbi_pte = middle_pt + ((num_middle_pts << RISCV_PGLEVEL_BITS)-1);
 	*sbi_pte = ptd_create((uintptr_t)sbi_pt >> RISCV_PGSHIFT);
 
-	// IO space.
-	root_pt[0] = pte_create(0, PTE_W|PTE_R, 0);
-	root_pt[1] = pte_create(0x40000000>>RISCV_PGSHIFT,
-				PTE_W|PTE_R, 0);
+	// IO space. Identity mapped.
+	root_pt[0x000] = pte_create(0x00000000 >> RISCV_PGSHIFT,
+				PTE_R | PTE_W, 0);
+	root_pt[0x001] = pte_create(0x40000000 >> RISCV_PGSHIFT,
+				PTE_R | PTE_W, 0);
+	root_pt[0x002] = pte_create(0x80000000 >> RISCV_PGSHIFT,
+				PTE_R | PTE_W | PTE_X, 0);
+	root_pt[0x003] = pte_create(0xc0000000 >> RISCV_PGSHIFT,
+				PTE_R | PTE_W | PTE_X, 0);
 
-	// Start of RAM
-	root_pt[2] = pte_create(0x80000000>>RISCV_PGSHIFT,
-				PTE_W|PTE_R, 0);
+	// Negative address space map at 0xffffffc000000000
+	root_pt[0x100] = root_pt[0];
+	root_pt[0x101] = root_pt[1];
+	root_pt[0x102] = root_pt[2];
+	root_pt[0x103] = root_pt[3];
+
 	mb();
 	root_page_table = root_pt;
 	uintptr_t ptbr = ((uintptr_t) root_pt) >> RISCV_PGSHIFT;
@@ -213,9 +269,14 @@ void initVirtualMemory(void) {
 	}
 
 	// TODO: Figure out how to grab this from cbfs
+	// N.B. We used to map physical from 0x81000000,
+	// but since kernels need to be able to see the page tables
+	// created by firmware, we're going to map from start of RAM.
+	// All this is subject to change as we learn more. Much
+	// about RISCV is still in flux.
 	printk(BIOS_DEBUG, "Initializing virtual memory...\n");
-	uintptr_t physicalStart = 0x81000000;
-	uintptr_t virtualStart = 0xffffffff81000000;
+	uintptr_t physicalStart = 0x80000000;
+	uintptr_t virtualStart = 0xffffffff80000000;
 	init_vm(virtualStart, physicalStart, (pte_t *)_pagetables);
 	mb();
 	flush_tlb();
@@ -245,6 +306,9 @@ void mstatus_init(void)
 	 * 1.9. Right now there's no agreement on the values for these
 	 * architectural registers.
 	 */
-	//write_csr(mscounteren, 0b111);
-	//write_csr(mucounteren, 0b111);
+	// write_csr(mscounteren, 0b111);
+	// write_csr(mucounteren, 0b111);
+
+	// for SPIKE:
+	// write_csr(/*mscounteren*/0x321, 0b111);
 }

@@ -161,6 +161,10 @@ config CACHE_MRC_SETTINGS
 	bool
 	default y
 
+config MRC_SETTINGS_VARIABLE_DATA
+	bool
+	default y
+
 config FSP_M_ADDR
 	hex
 	default 0xfef40000

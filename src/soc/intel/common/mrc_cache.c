@@ -17,6 +17,7 @@
 #include <bootstate.h>
 #include <console/console.h>
 #include <cbmem.h>
+#include <elog.h>
 #include <fmap.h>
 #include <ip_checksum.h>
 #include <vboot/vboot_common.h>
@@ -281,6 +282,18 @@ static int protect_mrc_cache(const struct mrc_data_region *region)
 	return 0;
 }
 
+static void log_event_cache_update(uint8_t slot, uint8_t status)
+{
+	const int type = ELOG_TYPE_MEM_CACHE_UPDATE;
+	struct elog_event_mem_cache_update event = {
+		.slot = slot,
+		.status = status,
+	};
+
+	if (elog_add_event_raw(type, &event, sizeof(event)) < 0)
+		printk(BIOS_ERR, "Failed to log mem cache update event.\n");
+}
+
 static void update_mrc_cache(void *unused)
 {
 	const struct mrc_saved_data *current_boot;
@@ -336,7 +349,13 @@ static void update_mrc_cache(void *unused)
 	               current_boot->size + sizeof(*current_boot))) {
 		printk(BIOS_DEBUG, "Failure writing MRC cache to %p.\n",
 		       next_slot);
+		log_event_cache_update(ELOG_MEM_CACHE_UPDATE_SLOT_NORMAL,
+			ELOG_MEM_CACHE_UPDATE_STATUS_FAIL);
+	} else {
+		log_event_cache_update(ELOG_MEM_CACHE_UPDATE_SLOT_NORMAL,
+			ELOG_MEM_CACHE_UPDATE_STATUS_SUCCESS);
 	}
+
 	protect_mrc_cache(&region);
 }
 

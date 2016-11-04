@@ -142,6 +142,13 @@ struct elog_event_data_me_extended {
 /* CPU Thermal Trip */
 #define ELOG_TYPE_THERM_TRIP              0xa7
 
+/* ARM/generic versions of sleep/wake - These came from another firmware
+ * apparently, but not all the firmware sources were updated so that the
+ * elog namespace was coherent. */
+#define ELOG_TYPE_SLEEP                   0xa7
+#define ELOG_TYPE_WAKE                    0xa8
+#define ELOG_TYPE_FW_WAKE                 0xa9
+
 #if CONFIG_ELOG
 /* Eventlog backing storage must be initialized before calling elog_init(). */
 extern int elog_init(void);

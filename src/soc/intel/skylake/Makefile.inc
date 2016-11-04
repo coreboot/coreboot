@@ -73,6 +73,7 @@ ramstage-y += pei_data.c
 ramstage-y += pmc.c
 ramstage-y += pmutil.c
 ramstage-$(CONFIG_PLATFORM_USES_FSP2_0) += reset.c
+ramstage-y += sata.c
 ramstage-y += sd.c
 ramstage-y += smbus.c
 ramstage-y += smbus_common.c

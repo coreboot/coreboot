@@ -10,6 +10,7 @@ wwan=Enable
 wlan=Enable
 touchpad=Enable
 sata_mode=AHCI
+usb_always_on=Disable
 fn_ctrl_swap=Disable
 sticky_fn=Disable
 trackpoint=Enable

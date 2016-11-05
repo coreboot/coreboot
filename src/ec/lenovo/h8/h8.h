@@ -26,6 +26,7 @@ void h8_enable_event(int event);
 void h8_disable_event(int event);
 int h8_ultrabay_device_present(void);
 u8 h8_build_id_and_function_spec_version(char *buf, u8 buf_len);
+void h8_usb_always_on(void);
 
 #if !IS_ENABLED (CONFIG_H8_DOCK_EARLY_INIT)
 void h8_mainboard_init_dock (void);
@@ -63,6 +64,10 @@ void h8_mainboard_init_dock (void);
 #define H8_LED_CONTROL_OFF		0x00
 #define H8_LED_CONTROL_ON		0x80
 #define H8_LED_CONTROL_BLINK		0xc0
+
+#define H8_USB_ALWAYS_ON		0x0d
+#define H8_USB_ALWAYS_ON_ENABLE		0x01
+#define H8_USB_ALWAYS_ON_AC_ONLY	0x0c
 
 #define H8_LED_CONTROL_POWER_LED	0x00
 #define H8_LED_CONTROL_BAT0_LED	0x01

@@ -162,6 +162,16 @@ int vboot_recovery_mode_enabled(void)
 	return !!vboot_check_recovery_request();
 }
 
+int __attribute__((weak)) get_recovery_mode_retrain_switch(void)
+{
+	return 0;
+}
+
+int vboot_recovery_mode_memory_retrain(void)
+{
+	return get_recovery_mode_retrain_switch();
+}
+
 int vboot_developer_mode_enabled(void)
 {
 	if (!IS_ENABLED(CONFIG_VBOOT))

@@ -36,12 +36,16 @@ struct mrc_data_region {
 };
 
 /* common code */
-static int mrc_cache_get_region(struct mrc_data_region *region)
+static int mrc_cache_get_region(const char *name,
+				struct mrc_data_region *region)
 {
 	bool located_by_fmap = true;
 	struct region_device rdev;
 
-	if (fmap_locate_area_as_rdev("RW_MRC_CACHE", &rdev))
+	region->base = NULL;
+	region->size = 0;
+
+	if (fmap_locate_area_as_rdev(name, &rdev))
 		located_by_fmap =  false;
 
 	/* CHROMEOS builds must get their MRC cache from FMAP. */
@@ -60,6 +64,38 @@ static int mrc_cache_get_region(struct mrc_data_region *region)
 	}
 
 	return 0;
+}
+
+/* Protect mrc region with a Protected Range Register */
+static int __protect_mrc_cache(const struct mrc_data_region *region,
+			       const char *name)
+{
+	if (!IS_ENABLED(CONFIG_MRC_SETTINGS_PROTECT))
+		return 0;
+
+	if (nvm_is_write_protected() <= 0) {
+		printk(BIOS_INFO, "MRC: NOT enabling PRR for %s.\n", name);
+		return 1;
+	}
+
+	if (nvm_protect(region->base, region->size) < 0) {
+		printk(BIOS_ERR, "MRC: ERROR setting PRR for %s.\n", name);
+		return -1;
+	}
+
+	printk(BIOS_INFO, "MRC: Enabled Protected Range on %s.\n", name);
+	return 0;
+}
+
+static int protect_mrc_cache(const char *name)
+{
+	struct mrc_data_region region;
+	if (mrc_cache_get_region(name, &region) < 0) {
+		printk(BIOS_ERR, "MRC: Could not find region %s\n", name);
+		return -1;
+	}
+
+	return __protect_mrc_cache(&region, name);
 }
 
 static int mrc_cache_in_region(const struct mrc_data_region *region,
@@ -149,31 +185,56 @@ static int __mrc_cache_get_current(const struct mrc_data_region *region,
 		return -1;
 
 	if (verified_cache->version != version) {
-		printk(BIOS_DEBUG, "MRC cache version mismatch: %x vs %x\n",
+		printk(BIOS_DEBUG, "MRC: cache version mismatch: %x vs %x\n",
 			verified_cache->version, version);
 		return -1;
 	}
 
-	printk(BIOS_DEBUG, "MRC cache slot %d @ %p\n", slot-1, verified_cache);
+	printk(BIOS_DEBUG, "MRC: cache slot %d @ %p\n", slot-1, verified_cache);
+
+	return 0;
+}
+
+int mrc_cache_get_current_from_region(const struct mrc_saved_data **cache,
+				      uint32_t version,
+				      const char *region_name)
+{
+	struct mrc_data_region region;
+
+	if (!region_name) {
+		printk(BIOS_ERR, "MRC: Requires memory retraining.\n");
+		return -1;
+	}
+
+	printk(BIOS_ERR, "MRC: Using data from %s\n", region_name);
+
+	if (mrc_cache_get_region(region_name, &region) < 0) {
+		printk(BIOS_ERR, "MRC: Region %s not found. "
+		       "Requires memory retraining.\n", region_name);
+		return -1;
+	}
+
+	if (__mrc_cache_get_current(&region, cache, version) < 0) {
+		printk(BIOS_ERR, "MRC: Valid slot not found in %s."
+		       "Requires memory retraining.\n", region_name);
+		return -1;
+	}
 
 	return 0;
 }
 
 int mrc_cache_get_current_with_version(const struct mrc_saved_data **cache,
-					uint32_t version)
+				       uint32_t version)
 {
-	struct mrc_data_region region;
-
-	if (mrc_cache_get_region(&region) < 0)
-		return -1;
-
-	return __mrc_cache_get_current(&region, cache, version);
+	return mrc_cache_get_current_from_region(cache, version,
+						 DEFAULT_MRC_CACHE);
 }
 
 int mrc_cache_get_current(const struct mrc_saved_data **cache)
 {
 	return mrc_cache_get_current_with_version(cache, 0);
 }
+
 /* Fill in mrc_saved_data structure with payload. */
 static void mrc_cache_fill(struct mrc_saved_data *cache, const void *data,
                            size_t size, uint32_t version)
@@ -197,14 +258,14 @@ int mrc_cache_stash_data_with_version(const void *data, size_t size,
 	cache = cbmem_add(CBMEM_ID_MRCDATA, cbmem_size);
 
 	if (cache == NULL) {
-		printk(BIOS_ERR, "No space in cbmem for MRC data.\n");
+		printk(BIOS_ERR, "MRC: No space in cbmem for training data.\n");
 		return -1;
 	}
 
 	/* Clear alignment padding bytes at end of data. */
 	memset(&cache->data[size], 0, cbmem_size - size - sizeof(*cache));
 
-	printk(BIOS_DEBUG, "Relocate MRC DATA from %p to %p (%zu bytes)\n",
+	printk(BIOS_DEBUG, "MRC: Relocate data from %p to %p (%zu bytes)\n",
 	       data, cache, size);
 
 	mrc_cache_fill(cache, data, size, version);
@@ -263,25 +324,6 @@ mrc_cache_next_slot(const struct mrc_data_region *region,
 	return next_slot;
 }
 
-/* Protect RW_MRC_CACHE region with a Protected Range Register */
-static int protect_mrc_cache(const struct mrc_data_region *region)
-{
-#if IS_ENABLED(CONFIG_MRC_SETTINGS_PROTECT)
-	if (nvm_is_write_protected() <= 0) {
-		printk(BIOS_INFO, "NOT enabling PRR for RW_MRC_CACHE region\n");
-		return 1;
-	}
-
-	if (nvm_protect(region->base, region->size) < 0) {
-		printk(BIOS_ERR, "ERROR setting PRR for RW_MRC_CACHE region\n");
-		return -1;
-	}
-
-	printk(BIOS_INFO, "Enabled Protected Range on RW_MRC_CACHE region\n");
-#endif
-	return 0;
-}
-
 static void log_event_cache_update(uint8_t slot, uint8_t status)
 {
 	const int type = ELOG_TYPE_MEM_CACHE_UPDATE;
@@ -294,28 +336,38 @@ static void log_event_cache_update(uint8_t slot, uint8_t status)
 		printk(BIOS_ERR, "Failed to log mem cache update event.\n");
 }
 
-static void update_mrc_cache(void *unused)
+static void update_mrc_region(void)
 {
 	const struct mrc_saved_data *current_boot;
 	const struct mrc_saved_data *current_saved;
 	const struct mrc_saved_data *next_slot;
 	struct mrc_data_region region;
+	const char *region_name = DEFAULT_MRC_CACHE;
+	uint8_t slot = ELOG_MEM_CACHE_UPDATE_SLOT_NORMAL;
 
-	printk(BIOS_DEBUG, "Updating MRC cache data.\n");
+	printk(BIOS_DEBUG, "MRC: Updating cache data.\n");
 
-	current_boot = cbmem_find(CBMEM_ID_MRCDATA);
-	if (!current_boot) {
-		printk(BIOS_ERR, "No MRC cache in cbmem.\n");
+	if (vboot_recovery_mode_enabled() &&
+	    IS_ENABLED(CONFIG_HAS_RECOVERY_MRC_CACHE)) {
+		region_name = RECOVERY_MRC_CACHE;
+		slot = ELOG_MEM_CACHE_UPDATE_SLOT_RECOVERY;
+	}
+
+	printk(BIOS_ERR, "MRC: Cache region selected - %s\n", region_name);
+
+	if (mrc_cache_get_region(region_name, &region)) {
+		printk(BIOS_ERR, "MRC: Could not obtain cache region.\n");
 		return;
 	}
 
-	if (mrc_cache_get_region(&region)) {
-		printk(BIOS_ERR, "Could not obtain MRC cache region.\n");
+	current_boot = cbmem_find(CBMEM_ID_MRCDATA);
+	if (!current_boot) {
+		printk(BIOS_ERR, "MRC: No cache in cbmem.\n");
 		return;
 	}
 
 	if (!mrc_cache_valid(&region, current_boot)) {
-		printk(BIOS_ERR, "MRC cache data in cbmem invalid.\n");
+		printk(BIOS_ERR, "MRC: Cache data in cbmem invalid.\n");
 		return;
 	}
 
@@ -326,8 +378,7 @@ static void update_mrc_cache(void *unused)
 		if (current_saved->size == current_boot->size &&
 		    !memcmp(&current_saved->data[0], &current_boot->data[0],
 		            current_saved->size)) {
-			printk(BIOS_DEBUG, "MRC cache up to date.\n");
-			protect_mrc_cache(&region);
+			printk(BIOS_DEBUG, "MRC: Cache up to date.\n");
 			return;
 		}
 	}
@@ -335,10 +386,11 @@ static void update_mrc_cache(void *unused)
 	next_slot = mrc_cache_next_slot(&region, current_saved);
 
 	if (!mrc_slot_valid(&region, next_slot, current_boot)) {
-		printk(BIOS_DEBUG, "Slot @ %p is invalid.\n", next_slot);
+		printk(BIOS_DEBUG, "MRC: Slot @ %p is invalid.\n", next_slot);
 		if (!nvm_is_erased(region.base, region.size)) {
 			if (nvm_erase(region.base, region.size) < 0) {
-				printk(BIOS_DEBUG, "Failure erasing region.\n");
+				printk(BIOS_DEBUG, "MRC: Failure erasing "
+				       "region %s.\n", region_name);
 				return;
 			}
 		}
@@ -347,16 +399,38 @@ static void update_mrc_cache(void *unused)
 
 	if (nvm_write((void *)next_slot, current_boot,
 	               current_boot->size + sizeof(*current_boot))) {
-		printk(BIOS_DEBUG, "Failure writing MRC cache to %p.\n",
-		       next_slot);
-		log_event_cache_update(ELOG_MEM_CACHE_UPDATE_SLOT_NORMAL,
-			ELOG_MEM_CACHE_UPDATE_STATUS_FAIL);
+		printk(BIOS_DEBUG, "MRC: Failure writing MRC cache to %s:%p\n",
+		       region_name, next_slot);
+		log_event_cache_update(slot, ELOG_MEM_CACHE_UPDATE_STATUS_FAIL);
 	} else {
-		log_event_cache_update(ELOG_MEM_CACHE_UPDATE_SLOT_NORMAL,
-			ELOG_MEM_CACHE_UPDATE_STATUS_SUCCESS);
+		log_event_cache_update(slot,
+				       ELOG_MEM_CACHE_UPDATE_STATUS_SUCCESS);
 	}
+}
 
-	protect_mrc_cache(&region);
+static void protect_mrc_region(void)
+{
+	/*
+	 * Check if there is a single unified region that encompasses both
+	 * RECOVERY_MRC_CACHE and DEFAULT_MRC_CACHE. In that case protect the
+	 * entire region using a single PRR.
+	 *
+	 * If we are not able to protect the entire region, try protecting
+	 * individual regions next.
+	 */
+	if (protect_mrc_cache(UNIFIED_MRC_CACHE) == 0)
+		return;
+
+	if (IS_ENABLED(CONFIG_HAS_RECOVERY_MRC_CACHE))
+		protect_mrc_cache(RECOVERY_MRC_CACHE);
+
+	protect_mrc_cache(DEFAULT_MRC_CACHE);
+}
+
+static void update_mrc_cache(void *unused)
+{
+	update_mrc_region();
+	protect_mrc_region();
 }
 
 BOOT_STATE_INIT_ENTRY(BS_WRITE_TABLES, BS_ON_ENTRY, update_mrc_cache, NULL);

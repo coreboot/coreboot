@@ -471,8 +471,20 @@ enum host_event_code {
 	/* Emulate MKBP event */
 	EC_HOST_EVENT_MKBP = 27,
 
+	/* EC desires to change state of host-controlled USB mux */
+	EC_HOST_EVENT_USB_MUX = 28,
+
 	/* TABLET/LAPTOP mode event*/
 	EC_HOST_EVENT_MODE_CHANGE = 29,
+
+	/* Keyboard recovery combo with hardware reinitialization */
+	EC_HOST_EVENT_KEYBOARD_RECOVERY_HW_REINIT = 30,
+
+	/*
+	 * Reserve this last bit to indicate that at least one bit in a
+	 * secondary host event word is set.  See crbug.com/633646.
+	 */
+	EC_HOST_EVENT_EXTENDED = 31,
 
 	/*
 	 * The high bit of the event mask is not used as a host event code.  If

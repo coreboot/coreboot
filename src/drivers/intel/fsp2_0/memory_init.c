@@ -55,13 +55,6 @@ static void save_memory_training_data(bool s3wake, uint32_t fsp_version)
 			printk(BIOS_ERR, "Failed to stash MRC data\n");
 }
 
-/*
- * On every trip to recovery, newly generated MRC data is stored with this
- * version since it is not expected to be a legit version. This ensures that on
- * next normal boot, memory re-training occurs and new MRC data is stored.
- */
-#define MRC_DEAD_VERSION		(0xdeaddead)
-
 static void do_fsp_post_memory_init(bool s3wake, uint32_t fsp_version)
 {
 	struct range_entry fsp_mem;
@@ -89,10 +82,6 @@ static void do_fsp_post_memory_init(bool s3wake, uint32_t fsp_version)
 		(uintptr_t)cbmem_find(CBMEM_ID_FSP_RESERVED_MEMORY))
 		die("Failed to accommodate FSP reserved memory request!\n");
 
-	/* Now that CBMEM is up, save the list so ramstage can use it */
-	if (vboot_recovery_mode_enabled())
-		fsp_version = MRC_DEAD_VERSION;
-
 	save_memory_training_data(s3wake, fsp_version);
 
 	/* Create romstage handof information */
@@ -103,26 +92,39 @@ static void do_fsp_post_memory_init(bool s3wake, uint32_t fsp_version)
 		printk(BIOS_SPEW, "Romstage handoff structure not added!\n");
 }
 
+static const char *mrc_cache_get_region_name(void)
+{
+	/* In normal mode, always use DEFAULT_MRC_CACHE */
+	if (!vboot_recovery_mode_enabled())
+		return DEFAULT_MRC_CACHE;
+
+	/*
+	 * In recovery mode, force retraining by returning NULL if:
+	 * 1. Recovery cache is not supported, or
+	 * 2. Memory retrain switch is set.
+	 */
+	if (!IS_ENABLED(CONFIG_HAS_RECOVERY_MRC_CACHE) ||
+	    vboot_recovery_mode_memory_retrain())
+		return NULL;
+
+	return RECOVERY_MRC_CACHE;
+}
+
 static void fsp_fill_mrc_cache(FSPM_ARCH_UPD *arch_upd, bool s3wake,
 				uint32_t fsp_version)
 {
 	const struct mrc_saved_data *mrc_cache;
+	const char *name;
 
 	arch_upd->NvsBufferPtr = NULL;
 
 	if (!IS_ENABLED(CONFIG_CACHE_MRC_SETTINGS))
 		return;
 
-	/* Don't use saved training data when recovery mode is enabled. */
-	if (vboot_recovery_mode_enabled()) {
-		printk(BIOS_SPEW, "Recovery mode. Not using MRC cache.\n");
-		return;
-	}
+	name = mrc_cache_get_region_name();
 
-	if (mrc_cache_get_current_with_version(&mrc_cache, fsp_version)) {
-		printk(BIOS_SPEW, "MRC cache was not found\n");
+	if (mrc_cache_get_current_from_region(&mrc_cache, fsp_version, name))
 		return;
-	}
 
 	/* MRC cache found */
 	arch_upd->NvsBufferPtr = (void *)mrc_cache->data;

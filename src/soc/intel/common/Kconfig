@@ -27,6 +27,10 @@ config MRC_SETTINGS_PROTECT
 	bool "Enable protection on MRC settings"
 	default n
 
+config HAS_RECOVERY_MRC_CACHE
+	bool
+	default n
+
 endif # CACHE_MRC_SETTINGS
 
 config DISPLAY_MTRRS

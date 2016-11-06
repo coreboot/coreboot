@@ -152,6 +152,7 @@ struct elog_event_data_me_extended {
 /* Memory Cache Update */
 #define ELOG_TYPE_MEM_CACHE_UPDATE        0xaa
 #define  ELOG_MEM_CACHE_UPDATE_SLOT_NORMAL    0
+#define  ELOG_MEM_CACHE_UPDATE_SLOT_RECOVERY  1
 #define  ELOG_MEM_CACHE_UPDATE_STATUS_SUCCESS 0
 #define  ELOG_MEM_CACHE_UPDATE_STATUS_FAIL    1
 struct elog_event_mem_cache_update {

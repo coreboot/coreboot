@@ -55,11 +55,22 @@ int get_recovery_mode_switch(void)
 		  EC_HOST_EVENT_MASK(EC_HOST_EVENT_KEYBOARD_RECOVERY));
 }
 
+int get_recovery_mode_retrain_switch(void)
+{
+	/*
+	 * Check if the EC has posted the keyboard recovery event with memory
+	 * retrain.
+	 */
+	return !!(google_chromeec_get_events_b() &
+		EC_HOST_EVENT_MASK(EC_HOST_EVENT_KEYBOARD_RECOVERY_HW_REINIT));
+}
+
 int clear_recovery_mode_switch(void)
 {
-	/* Clear keyboard recovery event. */
+	/* Clear all host event bits requesting recovery mode. */
 	return google_chromeec_clear_events_b(
-		EC_HOST_EVENT_MASK(EC_HOST_EVENT_KEYBOARD_RECOVERY));
+		EC_HOST_EVENT_MASK(EC_HOST_EVENT_KEYBOARD_RECOVERY) |
+		EC_HOST_EVENT_MASK(EC_HOST_EVENT_KEYBOARD_RECOVERY_HW_REINIT));
 }
 
 int get_write_protect_state(void)

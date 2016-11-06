@@ -44,8 +44,10 @@ DefinitionBlock(
 		#include "acpi/dptf.asl"
 	}
 
+#if IS_ENABLED(CONFIG_CHROMEOS)
 	// Chrome OS specific
 	#include <vendorcode/google/chromeos/acpi/chromeos.asl>
+#endif
 
 	// Chipset specific sleep states
 	#include <soc/intel/skylake/acpi/sleepstates.asl>

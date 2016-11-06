@@ -51,12 +51,13 @@ static struct {
 	u16 lpcid;
 	const char *name;
 } pch_table[] = {
-	{ PCH_SPT_LP_SAMPLE,	"Skylake LP Sample" },
-	{ PCH_SPT_LP_U_BASE,	"Skylake-U Base" },
-	{ PCH_SPT_LP_U_PREMIUM,	"Skylake-U Premium" },
-	{ PCH_SPT_LP_Y_PREMIUM,	"Skylake-Y Premium" },
-	{ PCH_KBL_LP_U_PREMIUM, "Kabylake-U Premium" },
-	{ PCH_KBL_LP_Y_PREMIUM, "Kabylake-Y Premium" },
+	{ PCH_SPT_LP_SAMPLE,		"Skylake LP Sample" },
+	{ PCH_SPT_LP_U_BASE,		"Skylake-U Base" },
+	{ PCH_SPT_LP_U_PREMIUM,		"Skylake-U Premium" },
+	{ PCH_SPT_LP_Y_PREMIUM,		"Skylake-Y Premium" },
+	{ PCH_KBL_LP_U_PREMIUM,		"Kabylake-U Premium" },
+	{ PCH_KBL_LP_Y_PREMIUM,		"Kabylake-Y Premium" },
+	{ PCH_KBL_LP_Y_PREMIUM_HDCP22,	"Kabylake-Y iHDCP 2.2 Premium" },
 };
 
 static struct {

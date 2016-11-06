@@ -119,6 +119,13 @@ static int handle_digest_result(void *slot_hash, size_t slot_hash_sz)
 	int is_resume;
 
 	/*
+	 * Chrome EC is the only support for vboot_save_hash()/vboot_retrieve_hash(), if Chrome EC
+	 * is not enabled then return.
+	 */
+	if (!IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC))
+		return 0;
+
+	/*
 	 * Nothing to do since resuming on the platform doesn't require
 	 * vboot verification again.
 	 */

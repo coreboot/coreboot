@@ -360,6 +360,7 @@ void cmos_check_update_date(void)
 	u8 year, century;
 
 	/* Assume hardware always supports RTC_CLK_ALTCENTURY. */
+	wait_uip();
 	century = cmos_read(RTC_CLK_ALTCENTURY);
 	year = cmos_read(RTC_CLK_YEAR);
 
@@ -388,6 +389,7 @@ int rtc_set(const struct rtc_time *time)
 
 int rtc_get(struct rtc_time *time)
 {
+	wait_uip();
 	time->sec = bcd2bin(cmos_read(RTC_CLK_SECOND));
 	time->min = bcd2bin(cmos_read(RTC_CLK_MINUTE));
 	time->hour = bcd2bin(cmos_read(RTC_CLK_HOUR));

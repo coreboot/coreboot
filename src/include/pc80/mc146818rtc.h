@@ -112,6 +112,16 @@ static inline unsigned char cmos_read(unsigned char addr)
 	return inb(RTC_BASE_PORT + offs + 1);
 }
 
+/* Upon return the caller is guaranteed 244 microseconds to complete any
+ * RTC operations.  wait_uip may be called a single time prior to multiple
+ * accesses, but sequences requiring more time should call wait_uip again.
+ */
+static inline void wait_uip(void)
+{
+	while (cmos_read(RTC_REG_A) & RTC_UIP)
+		;
+}
+
 static inline void cmos_write_inner(unsigned char val, unsigned char addr)
 {
 	int offs = 0;

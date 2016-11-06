@@ -40,8 +40,6 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 		{-1, ACTIVE_HIGH, get_lid_switch(), "lid"},
 		{-1, ACTIVE_HIGH, 0, "power"},
 		{-1, ACTIVE_HIGH, gfx_get_init_done(), "oprom"},
-		{GPIO_EC_IN_RW, ACTIVE_HIGH,
-			gpio_get(GPIO_EC_IN_RW), "EC in RW"},
 	};
 	lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios));
 }
@@ -49,8 +47,12 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 
 int get_lid_switch(void)
 {
-	/* Read lid switch state from the EC. */
-	return !!(google_chromeec_get_switches() & EC_SWITCH_LID_OPEN);
+	if (IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC))
+		/* Read lid switch state from the EC. */
+		return !!(google_chromeec_get_switches() & EC_SWITCH_LID_OPEN);
+
+	/* Lid always open */
+	return 1;
 }
 
 int get_developer_mode_switch(void)
@@ -61,31 +63,40 @@ int get_developer_mode_switch(void)
 
 int get_recovery_mode_switch(void)
 {
-	/* Check for dedicated recovery switch first. */
-	if (google_chromeec_get_switches() & EC_SWITCH_DEDICATED_RECOVERY)
+	if (IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC)) {
+		/* Check for dedicated recovery switch first. */
+		if (google_chromeec_get_switches() &
+			EC_SWITCH_DEDICATED_RECOVERY)
 		return 1;
 
-	/* Otherwise check if the EC has posted the keyboard recovery event. */
-	return !!(google_chromeec_get_events_b() &
-		  EC_HOST_EVENT_MASK(EC_HOST_EVENT_KEYBOARD_RECOVERY));
+		/* Otherwise check if the EC has posted the keyboard recovery
+		 * event. */
+		return !!(google_chromeec_get_events_b() &
+			  EC_HOST_EVENT_MASK(EC_HOST_EVENT_KEYBOARD_RECOVERY));
+	}
+
+	return 0;
 }
 
 int clear_recovery_mode_switch(void)
 {
-	/* Clear keyboard recovery event. */
-	return google_chromeec_clear_events_b(
-		EC_HOST_EVENT_MASK(EC_HOST_EVENT_KEYBOARD_RECOVERY));
+	if (IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC))
+		/* Clear keyboard recovery event. */
+		return google_chromeec_clear_events_b(
+			EC_HOST_EVENT_MASK(EC_HOST_EVENT_KEYBOARD_RECOVERY));
+
+	return 0;
 }
 
 int get_write_protect_state(void)
 {
-	/* Read PCH_WP GPIO. */
-	return gpio_get(GPIO_PCH_WP);
+	/* No write protect */
+	return 0;
 }
 
 static const struct cros_gpio cros_gpios[] = {
 	CROS_GPIO_REC_AL(CROS_GPIO_VIRTUAL, CROS_GPIO_DEVICE_NAME),
-	CROS_GPIO_WP_AH(GPIO_PCH_WP, CROS_GPIO_DEVICE_NAME),
+	CROS_GPIO_WP_AH(CROS_GPIO_VIRTUAL, CROS_GPIO_DEVICE_NAME),
 };
 
 void mainboard_chromeos_acpi_generate(void)

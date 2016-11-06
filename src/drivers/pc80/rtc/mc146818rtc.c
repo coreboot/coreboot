@@ -95,7 +95,7 @@ static void cmos_set_checksum(int range_start, int range_end, int cks_loc)
 #ifndef __SMM__
 void cmos_init(bool invalid)
 {
-	bool cmos_invalid = invalid;
+	bool cmos_invalid;
 	bool checksum_invalid = false;
 	bool clear_cmos;
 	size_t i;
@@ -114,11 +114,11 @@ void cmos_init(bool invalid)
 
 	printk(BIOS_DEBUG, "RTC Init\n");
 
-	if (IS_ENABLED(CONFIG_USE_OPTION_TABLE)) {
-		/* See if there has been a CMOS power problem. */
-		x = cmos_read(RTC_VALID);
-		cmos_invalid = !(x & RTC_VRT);
+	/* See if there has been a CMOS power problem. */
+	x = cmos_read(RTC_VALID);
+	cmos_invalid = !(x & RTC_VRT);
 
+	if (IS_ENABLED(CONFIG_USE_OPTION_TABLE)) {
 		/* See if there is a CMOS checksum error */
 		checksum_invalid = !cmos_checksum_valid(PC_CKS_RANGE_START,
 						PC_CKS_RANGE_END, PC_CKS_LOC);
@@ -127,6 +127,9 @@ void cmos_init(bool invalid)
 	} else {
 		clear_cmos = true;
 	}
+
+	if (cmos_invalid || invalid)
+		cmos_write(cmos_read(RTC_CONTROL) | RTC_SET, RTC_CONTROL);
 
 	if (invalid || cmos_invalid || checksum_invalid) {
 		if (clear_cmos) {

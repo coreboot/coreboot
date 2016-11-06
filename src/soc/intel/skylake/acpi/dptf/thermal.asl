@@ -17,25 +17,24 @@
 /* Thermal Threshold Event Handler */
 Method (TEVT, 1, NotSerialized)
 {
-	Store (ToInteger (Arg0), Local0)
 
 #ifdef DPTF_TSR0_SENSOR_ID
-	If (LEqual (Local0, DPTF_TSR0_SENSOR_ID)) {
+	If (LEqual (ToInteger (Arg0), DPTF_TSR0_SENSOR_ID)) {
 		Notify (^TSR0, 0x90)
 	}
 #endif
 #ifdef DPTF_TSR1_SENSOR_ID
-	If (LEqual (Local0, DPTF_TSR1_SENSOR_ID)) {
+	If (LEqual (ToInteger (Arg0), DPTF_TSR1_SENSOR_ID)) {
 		Notify (^TSR1, 0x90)
 	}
 #endif
 #ifdef DPTF_TSR2_SENSOR_ID
-	If (LEqual (Local0, DPTF_TSR2_SENSOR_ID)) {
+	If (LEqual (ToInteger (Arg0), DPTF_TSR2_SENSOR_ID)) {
 		Notify (^TSR2, 0x90)
 	}
 #endif
 #ifdef DPTF_TSR3_SENSOR_ID
-	If (LEqual (Local0, DPTF_TSR3_SENSOR_ID)) {
+	If (LEqual (ToInteger (Arg0), DPTF_TSR3_SENSOR_ID)) {
 		Notify (^TSR3, 0x90)
 	}
 #endif

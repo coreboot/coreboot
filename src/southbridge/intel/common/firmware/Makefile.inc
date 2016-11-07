@@ -33,6 +33,9 @@ IFD_SECTIONS := $(addprefix -b ,$(CONFIG_IFD_BIOS_SECTION:"%"=%)) \
 		$(addprefix -p ,$(CONFIG_IFD_PLATFORM_SECTION:"%"=%))
 else
 IFD_BIN_PATH := $(CONFIG_IFD_BIN_PATH)
+ifneq ($(call strip_quotes,$(CONFIG_IFD_CHIPSET)),)
+IFDTOOL_USE_CHIPSET := -p $(CONFIG_IFD_CHIPSET)
+endif
 endif
 
 add_intel_firmware: $(obj)/coreboot.pre $(IFDTOOL) $(IFDFAKE)
@@ -50,6 +53,7 @@ endif
 ifeq ($(CONFIG_HAVE_ME_BIN),y)
 	printf "    IFDTOOL    me.bin -> coreboot.pre\n"
 	$(objutil)/ifdtool/ifdtool \
+		$(IFDTOOL_USE_CHIPSET) \
 		-i ME:$(CONFIG_ME_BIN_PATH) \
 		$(obj)/coreboot.pre
 	mv $(obj)/coreboot.pre.new $(obj)/coreboot.pre
@@ -57,23 +61,27 @@ endif
 ifeq ($(CONFIG_HAVE_GBE_BIN),y)
 	printf "    IFDTOOL    gbe.bin -> coreboot.pre\n"
 	$(objutil)/ifdtool/ifdtool \
+		$(IFDTOOL_USE_CHIPSET) \
 		-i GbE:$(CONFIG_GBE_BIN_PATH) \
 		$(obj)/coreboot.pre
 	mv $(obj)/coreboot.pre.new $(obj)/coreboot.pre
 endif
 ifeq ($(CONFIG_LOCK_MANAGEMENT_ENGINE),y)
 	printf "    IFDTOOL    Locking Management Engine\n"
-	$(objutil)/ifdtool/ifdtool -l $(obj)/coreboot.pre
+	$(objutil)/ifdtool/ifdtool \
+		$(IFDTOOL_USE_CHIPSET) -l $(obj)/coreboot.pre
 	mv $(obj)/coreboot.pre.new $(obj)/coreboot.pre
 else ifneq ($(CONFIG_BUILD_WITH_FAKE_IFD),y)
 	printf "    IFDTOOL    Unlocking Management Engine\n"
-	$(objutil)/ifdtool/ifdtool -u $(obj)/coreboot.pre
+	$(objutil)/ifdtool/ifdtool \
+	$(IFDTOOL_USE_CHIPSET) -u $(obj)/coreboot.pre
 	mv $(obj)/coreboot.pre.new $(obj)/coreboot.pre
 endif
 
 ifeq ($(CONFIG_EM100),y)
 	printf "    IFDTOOL    Setting EM100 mode\n"
-	$(objutil)/ifdtool/ifdtool --em100 $(obj)/coreboot.pre
+	$(objutil)/ifdtool/ifdtool \
+		$(IFDTOOL_USE_CHIPSET) --em100 $(obj)/coreboot.pre
 	mv $(obj)/coreboot.pre.new $(obj)/coreboot.pre
 endif
 

@@ -53,6 +53,7 @@ config MAINBOARD_USE_LIBGFXINIT
 	bool "Use libgfxinit for native graphics initialization"
 	depends on MAINBOARD_DO_NATIVE_VGA_INIT
 	depends on MAINBOARD_HAS_LIBGFXINIT
+	select MAINBOARD_HAS_NATIVE_VGA_INIT_TEXTMODECFG
 	select RAMSTAGE_LIBHWBASE
 	default n
 	help

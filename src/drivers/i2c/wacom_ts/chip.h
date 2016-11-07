@@ -19,6 +19,7 @@
 #include <drivers/i2c/generic/chip.h>
 
 #define WCOM50C1_HID		"WCOM50C1"
+#define WCOMNTN2_HID		"WCOMNTN2"
 #define PNP0C50_CID		"PNP0C50"
 #define WCOM_TS_DESC		"WCOM Touchscreen"
 

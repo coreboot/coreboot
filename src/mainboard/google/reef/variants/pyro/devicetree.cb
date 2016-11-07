@@ -133,7 +133,7 @@ chip soc/intel/apollolake
 		device pci 16.3 on
 			chip drivers/i2c/wacom_ts
 				register "generic" = "{
-					 .hid = WCOM50C1_HID,
+					 .hid = WCOMNTN2_HID,
 					 .cid = PNP0C50_CID,
 					 .desc = WCOM_TS_DESC,
 					 .irq = IRQ_EDGE_LOW(GPIO_21_IRQ),

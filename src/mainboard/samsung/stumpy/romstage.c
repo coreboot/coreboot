@@ -144,8 +144,8 @@ static void setup_sio_gpios(void)
 	/*
 	 * GPIO45 as LED_POWER#
 	 */
-	it8772f_gpio_led(DUMMY_DEV, 4 /* set */, (0x1 << 5) /* select */,
-		0x00 /* polarity: non-inverting */, 0x00 /* 0 = pulldown */,
+	it8772f_gpio_led(GPIO_DEV, 4 /* set */, (0x1 << 5) /* select */,
+		(0x1 << 5) /* polarity */, (0x1 << 5) /* 1 = pullup */,
 		(0x1 << 5) /* output */, (0x1 << 5) /* 1 = Simple IO function */,
 		SIO_GPIO_BLINK_GPIO45, IT8772F_GPIO_BLINK_FREQUENCY_1_HZ);
 

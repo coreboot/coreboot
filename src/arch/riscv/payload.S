@@ -11,10 +11,12 @@
  * GNU General Public License for more details.
  */
 
+// "return" to a payload pointed to by a1 with
+// an M-mode pointer (or, to upper levels, physical address)
+// to the config string in a0.
 	.global riscvpayload
 riscvpayload:
-	/* Jump to a0 in S-mode */
-	mv t0,a0
+	mv t0,a1
 	csrw mepc, t0
 	csrr t0, mstatus
 	li t1, ~(3<<11)

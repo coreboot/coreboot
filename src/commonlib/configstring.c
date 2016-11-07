@@ -28,7 +28,6 @@
  */
 
 #include <config.h>
-#include <assert.h>
 #include <string.h>
 #include <commonlib/configstring.h>
 
@@ -49,6 +48,6 @@ void query_rtc(const char *config_string, uintptr_t *mtime)
 
 const char *configstring(void)
 {
-	uint32_t addr = *(uint32_t *)CONFIG_ARCH_CONFIGSTRING_RISCV;
+	uint32_t addr = *(uint32_t *)CONFIG_RISCV_CONFIGSTRING;
 	return (const char *)(uintptr_t)addr;
 }

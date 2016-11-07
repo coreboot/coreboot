@@ -15,9 +15,15 @@
 
 #include <console/console.h>
 #include <program_loading.h>
+#include <commonlib/configstring.h>
 
 void main(void)
 {
+	uintptr_t base;
+	size_t size;
+
 	console_init();
+	query_mem(configstring(), &base, &size);
+	printk(BIOS_SPEW, "0x%zx bytes of memory at 0x%llx\n", size, base);
 	run_ramstage();
 }

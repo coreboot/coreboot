@@ -19,3 +19,8 @@ config ARCH_ROMSTAGE_RISCV
 config ARCH_RAMSTAGE_RISCV
 	bool
 	default n
+
+config RISCV_CONFIGSTRING
+	hex "Location of pointer to RISCV config string"
+	default 0x100c
+	depends on ARCH_RISCV

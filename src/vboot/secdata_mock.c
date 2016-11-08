@@ -36,3 +36,8 @@ uint32_t antirollback_lock_space_firmware()
 {
 	return TPM_SUCCESS;
 }
+
+uint32_t antirollback_lock_space_rec_hash(void)
+{
+	return TPM_SUCCESS;
+}

@@ -134,6 +134,14 @@ config VBOOT_OPROM_MATTERS
 	  it works functionally the same for other platforms that can skip their
 	  native display initialization code instead.
 
+config VBOOT_HAS_REC_HASH_SPACE
+	bool
+	default n
+	depends on VBOOT
+	help
+	  Set this option to indicate to vboot that recovery data hash space
+	  is present in TPM.
+
 config VBOOT
 	bool "Verify firmware with vboot."
 	default n

@@ -72,6 +72,13 @@ static uint32_t read_space_firmware(struct vb2_context *ctx)
 	return TPM_E_CORRUPTED_STATE;
 }
 
+static uint32_t read_space_rec_hash(uint8_t *data)
+{
+	RETURN_ON_FAILURE(tlcl_read(REC_HASH_NV_INDEX, data,
+				    REC_HASH_NV_SIZE));
+	return TPM_SUCCESS;
+}
+
 static uint32_t write_secdata(uint32_t index,
 			      const uint8_t *secdata,
 			      uint32_t len)
@@ -117,6 +124,13 @@ static const uint8_t secdata_kernel[] = {
 	0xE8,
 };
 
+/*
+ * This is used to initialize the TPM space for recovery hash after defining
+ * it. Since there is no data available to calculate hash at the point where TPM
+ * space is defined, initialize it to all 0s.
+ */
+static const uint8_t rec_hash_data[REC_HASH_NV_SIZE] = { };
+
 #if IS_ENABLED(CONFIG_TPM2)
 
 /* Nothing special in the TPM2 path yet. */
@@ -143,11 +157,24 @@ static uint32_t set_kernel_space(const void *kernel_blob)
 	return TPM_SUCCESS;
 }
 
+static uint32_t set_rec_hash_space(const uint8_t *data)
+{
+	RETURN_ON_FAILURE(tlcl_define_space(REC_HASH_NV_INDEX,
+					    REC_HASH_NV_SIZE));
+	RETURN_ON_FAILURE(safe_write(REC_HASH_NV_INDEX, data,
+				     REC_HASH_NV_SIZE));
+	return TPM_SUCCESS;
+}
+
 static uint32_t _factory_initialize_tpm(struct vb2_context *ctx)
 {
 	RETURN_ON_FAILURE(tlcl_force_clear());
 	RETURN_ON_FAILURE(set_firmware_space(ctx->secdata));
 	RETURN_ON_FAILURE(set_kernel_space(secdata_kernel));
+
+	if (IS_ENABLED(CONFIG_VBOOT_HAS_REC_HASH_SPACE))
+		RETURN_ON_FAILURE(set_rec_hash_space(rec_hash_data));
+
 	return TPM_SUCCESS;
 }
 
@@ -161,6 +188,11 @@ uint32_t tpm_clear_and_reenable(void)
 uint32_t antirollback_lock_space_firmware(void)
 {
 	return tlcl_lock_nv_write(FIRMWARE_NV_INDEX);
+}
+
+uint32_t antirollback_lock_space_rec_hash(void)
+{
+	return tlcl_lock_nv_write(REC_HASH_NV_INDEX);
 }
 
 #else
@@ -208,6 +240,18 @@ static uint32_t safe_define_space(uint32_t index, uint32_t perm, uint32_t size)
 	} else {
 		return result;
 	}
+}
+
+static uint32_t set_rec_hash_space(const uint8_t *data)
+{
+	RETURN_ON_FAILURE(safe_define_space(REC_HASH_NV_INDEX,
+					    TPM_NV_PER_GLOBALLOCK |
+					    TPM_NV_PER_PPWRITE,
+					    REC_HASH_NV_SIZE));
+	RETURN_ON_FAILURE(write_secdata(REC_HASH_NV_INDEX, data,
+					REC_HASH_NV_SIZE));
+
+	return TPM_SUCCESS;
 }
 
 static uint32_t _factory_initialize_tpm(struct vb2_context *ctx)
@@ -262,12 +306,26 @@ static uint32_t _factory_initialize_tpm(struct vb2_context *ctx)
 	RETURN_ON_FAILURE(write_secdata(FIRMWARE_NV_INDEX,
 					ctx->secdata,
 					VB2_SECDATA_SIZE));
+
+	/* Define and set rec hash space, if available. */
+	if (IS_ENABLED(CONFIG_VBOOT_HAS_REC_HASH_SPACE))
+		RETURN_ON_FAILURE(set_rec_hash_space(rec_hash_data));
+
 	return TPM_SUCCESS;
 }
 
 uint32_t antirollback_lock_space_firmware(void)
 {
 	return tlcl_set_global_lock();
+}
+
+uint32_t antirollback_lock_space_rec_hash(void)
+{
+	/*
+	 * Nothing needs to be done here, since global lock is already set while
+	 * locking firmware space.
+	 */
+	return TPM_SUCCESS;
 }
 #endif
 
@@ -429,4 +487,43 @@ uint32_t antirollback_read_space_firmware(struct vb2_context *ctx)
 uint32_t antirollback_write_space_firmware(struct vb2_context *ctx)
 {
 	return write_secdata(FIRMWARE_NV_INDEX, ctx->secdata, VB2_SECDATA_SIZE);
+}
+
+uint32_t antirollback_read_space_rec_hash(uint8_t *data, uint32_t size)
+{
+	if (size != REC_HASH_NV_SIZE) {
+		VBDEBUG("TPM: Incorrect buffer size for rec hash. "
+			"(Expected=0x%x Actual=0x%x).\n", REC_HASH_NV_SIZE,
+			size);
+		return TPM_E_READ_FAILURE;
+	}
+	return read_space_rec_hash(data);
+}
+
+uint32_t antirollback_write_space_rec_hash(const uint8_t *data, uint32_t size)
+{
+	uint8_t spc_data[REC_HASH_NV_SIZE];
+	uint32_t rv;
+
+	if (size != REC_HASH_NV_SIZE) {
+		VBDEBUG("TPM: Incorrect buffer size for rec hash. "
+			"(Expected=0x%x Actual=0x%x).\n", REC_HASH_NV_SIZE,
+			size);
+		return TPM_E_WRITE_FAILURE;
+	}
+
+	rv = read_space_rec_hash(spc_data);
+	if (rv == TPM_E_BADINDEX) {
+		/*
+		 * If space is not defined already for recovery hash, define
+		 * new space.
+		 */
+		VBDEBUG("TPM: Initializing recovery hash space.\n");
+		return set_rec_hash_space(data);
+	}
+
+	if (rv != TPM_SUCCESS)
+		return rv;
+
+	return write_secdata(REC_HASH_NV_INDEX, data, size);
 }

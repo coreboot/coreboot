@@ -43,7 +43,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	post_code(0x31);
 
 	/* For serial port. */
-	device_t dev = PCI_DEV(0, 0x14, 3);
+	pci_devfn_t dev = PCI_DEV(0, 0x14, 3);
 	pci_write_config32(dev, 0x44, 0xff03ffd5);
 
 	/* Halt if there was a built in self test failure */

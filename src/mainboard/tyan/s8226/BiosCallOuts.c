@@ -35,7 +35,7 @@
 
 static UINT8 select_socket(UINT8 socket_id)
 {
-	device_t sm_dev       = PCI_DEV(0, 0x14, 0); //SMBUS
+	pci_devfn_t sm_dev       = PCI_DEV(0, 0x14, 0); //SMBUS
 	UINT8    value        = 0;
 	UINT8    gpio52_to_49 = 0;
 
@@ -67,7 +67,7 @@ static UINT8 select_socket(UINT8 socket_id)
 
 static void restore_socket(UINT8 original_value)
 {
-	device_t sm_dev = PCI_DEV(0, 0x14, 0); //SMBUS
+	pci_devfn_t sm_dev = PCI_DEV(0, 0x14, 0); //SMBUS
 	pci_write_config8(sm_dev, PCI_REG_GPIO_52_to_49_CNTRL, original_value);
 
 	// TODO: Restore previous GPIO48 configurations?

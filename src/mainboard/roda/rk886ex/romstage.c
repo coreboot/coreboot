@@ -91,19 +91,19 @@ static void ich7_enable_lpc(void)
  * the two. Also set up the GPIOs from the beginning. This is the "no schematic
  * but safe anyways" method.
  */
-static inline void pnp_enter_ext_func_mode(device_t dev)
+static inline void pnp_enter_ext_func_mode(pnp_devfn_t dev)
 {
 	unsigned int port = dev >> 8;
 	outb(0x55, port);
 }
 
-static void pnp_exit_ext_func_mode(device_t dev)
+static void pnp_exit_ext_func_mode(pnp_devfn_t dev)
 {
 	unsigned int port = dev >> 8;
 	outb(0xaa, port);
 }
 
-static void pnp_write_register(device_t dev, int reg, int val)
+static void pnp_write_register(pnp_devfn_t dev, int reg, int val)
 {
 	unsigned int port = dev >> 8;
 	outb(reg, port);
@@ -112,7 +112,7 @@ static void pnp_write_register(device_t dev, int reg, int val)
 
 static void early_superio_config(void)
 {
-	device_t dev;
+	pnp_devfn_t dev;
 
 	dev = PNP_DEV(0x2e, 0x00);
 

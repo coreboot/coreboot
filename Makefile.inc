@@ -425,7 +425,7 @@ ADAFLAGS_common += -gnata
 endif
 
 additional-dirs := $(objutil)/cbfstool $(objutil)/romcc $(objutil)/ifdtool \
-		   $(objutil)/ifdfake $(objutil)/options $(obj)/amdfwtool \
+		   $(objutil)/ifdfake $(objutil)/options $(objutil)/amdfwtool \
 		   $(objutil)/cbootimage $(objutil)/bimgtool
 
 #######################################################################
@@ -488,8 +488,7 @@ $(IFDFAKE): $(top)/util/ifdfake/ifdfake.c
 	@printf "    HOSTCC     $(subst $(obj)/,,$(@))\n"
 	$(HOSTCC) $(HOSTCFLAGS) -o $@ $<
 
-#TODO: update amdfwtool to pass in size of rom
-AMDFWTOOL:=$(obj)/amdfwtool/amdfwtool
+AMDFWTOOL:=$(objutil)/amdfwtool/amdfwtool
 $(AMDFWTOOL): $(top)/util/amdfwtool/amdfwtool.c
 	@printf "    HOSTCC     $(subst $(obj)/,,$(@))\n"
 	$(HOSTCC) $(HOSTCFLAGS) -DCONFIG_ROM_SIZE=$(CONFIG_ROM_SIZE) -o $@ $<

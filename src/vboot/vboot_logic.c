@@ -416,6 +416,19 @@ void verstage_main(void)
 		vboot_reboot();
 	}
 
+	/* Lock rec hash space if available. */
+	if (IS_ENABLED(CONFIG_VBOOT_HAS_REC_HASH_SPACE)) {
+		rv = antirollback_lock_space_rec_hash();
+		if (rv) {
+			printk(BIOS_INFO, "Failed to lock rec hash space(%x)\n",
+			       rv);
+			vb2api_fail(&ctx, VB2_RECOVERY_RO_TPM_REC_HASH_L_ERROR,
+				    0);
+			save_if_needed(&ctx);
+			vboot_reboot();
+		}
+	}
+
 	printk(BIOS_INFO, "Slot %c is selected\n", is_slot_a(&ctx) ? 'A' : 'B');
 	vb2_set_selected_region(region_device_region(&fw_main));
 	timestamp_add_now(TS_END_VBOOT);

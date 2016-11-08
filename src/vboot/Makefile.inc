@@ -107,6 +107,14 @@ $(VB2_LIB): $(obj)/config.h
 libverstage-srcs += $(VB2_LIB)
 
 ifeq ($(CONFIG_SEPARATE_VERSTAGE),y)
+
+# This works under the assumption that romstage and verstage use the same
+# architecture and thus CC_verstage is the same as CC_romstage. If this is not
+# true, VB2_LIB needs to ensure that correct CC is being used.
+ifeq ($(CONFIG_VBOOT_HAS_REC_HASH_SPACE),y)
+romstage-srcs += $(VB2_LIB)
+endif
+
 cbfs-files-$(CONFIG_SEPARATE_VERSTAGE) += $(CONFIG_CBFS_PREFIX)/verstage
 $(CONFIG_CBFS_PREFIX)/verstage-file := $(objcbfs)/verstage.elf
 $(CONFIG_CBFS_PREFIX)/verstage-type := stage

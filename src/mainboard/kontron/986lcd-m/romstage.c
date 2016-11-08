@@ -76,14 +76,14 @@ static void ich7_enable_lpc(void)
 }
 
 /* TODO: superio code should really not be in mainboard */
-static void pnp_enter_func_mode(device_t dev)
+static void pnp_enter_func_mode(pnp_devfn_t dev)
 {
 	u16 port = dev >> 8;
 	outb(0x87, port);
 	outb(0x87, port);
 }
 
-static void pnp_exit_func_mode(device_t dev)
+static void pnp_exit_func_mode(pnp_devfn_t dev)
 {
 	u16 port = dev >> 8;
 	outb(0xaa, port);
@@ -96,7 +96,7 @@ static void pnp_exit_func_mode(device_t dev)
  */
 static void early_superio_config_w83627thg(void)
 {
-	device_t dev;
+	pnp_devfn_t dev;
 
 	dev = PNP_DEV(0x2e, W83627THG_SP1);
 	pnp_enter_func_mode(dev);

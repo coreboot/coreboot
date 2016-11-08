@@ -20,6 +20,7 @@
 #include <stdint.h>
 
 #define DEFAULT_MRC_CACHE	"RW_MRC_CACHE"
+#define VARIABLE_MRC_CACHE	"RW_VAR_MRC_CACHE"
 #define RECOVERY_MRC_CACHE	"RECOVERY_MRC_CACHE"
 #define UNIFIED_MRC_CACHE	"UNIFIED_MRC_CACHE"
 
@@ -36,6 +37,8 @@ struct mrc_saved_data {
 int mrc_cache_get_current(const struct mrc_saved_data **cache);
 int mrc_cache_get_current_with_version(const struct mrc_saved_data **cache,
 					uint32_t version);
+int mrc_cache_get_vardata(const struct mrc_saved_data **cache,
+			    uint32_t version);
 int mrc_cache_get_current_from_region(const struct mrc_saved_data **cache,
 				      uint32_t version,
 				      const char *region_name);
@@ -44,5 +47,6 @@ int mrc_cache_get_current_from_region(const struct mrc_saved_data **cache,
 int mrc_cache_stash_data(const void *data, size_t size);
 int mrc_cache_stash_data_with_version(const void *data, size_t size,
 					uint32_t version);
+int mrc_cache_stash_vardata(const void *data, size_t size, uint32_t version);
 
 #endif /* _COMMON_MRC_CACHE_H_ */

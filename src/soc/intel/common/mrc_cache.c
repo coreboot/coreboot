@@ -35,6 +35,14 @@ struct mrc_data_region {
 	uint32_t size;
 };
 
+enum result {
+	WRITE_FAILURE		= -1,
+	ERASE_FAILURE		= -2,
+	OTHER_FAILURE		= -3,
+	UPDATE_SUCCESS		= 0,
+	ALREADY_UPTODATE	= 1
+};
+
 /* common code */
 static int mrc_cache_get_region(const char *name,
 				struct mrc_data_region *region)
@@ -235,6 +243,16 @@ int mrc_cache_get_current(const struct mrc_saved_data **cache)
 	return mrc_cache_get_current_with_version(cache, 0);
 }
 
+int mrc_cache_get_vardata(const struct mrc_saved_data **cache, uint32_t version)
+{
+	struct mrc_data_region region;
+
+	if (mrc_cache_get_region(VARIABLE_MRC_CACHE, &region) < 0)
+		return -1;
+
+	return __mrc_cache_get_current(&region, cache, version);
+}
+
 /* Fill in mrc_saved_data structure with payload. */
 static void mrc_cache_fill(struct mrc_saved_data *cache, const void *data,
                            size_t size, uint32_t version)
@@ -247,15 +265,15 @@ static void mrc_cache_fill(struct mrc_saved_data *cache, const void *data,
 	                                      cache->size);
 }
 
-int mrc_cache_stash_data_with_version(const void *data, size_t size,
-					uint32_t version)
+static int _mrc_stash_data(const void *data, size_t size, uint32_t version,
+			    uint32_t cbmem_id)
 {
 	int cbmem_size;
 	struct mrc_saved_data *cache;
 
 	cbmem_size = sizeof(*cache) + ALIGN(size, 16);
 
-	cache = cbmem_add(CBMEM_ID_MRCDATA, cbmem_size);
+	cache = cbmem_add(cbmem_id, cbmem_size);
 
 	if (cache == NULL) {
 		printk(BIOS_ERR, "MRC: No space in cbmem for training data.\n");
@@ -272,6 +290,18 @@ int mrc_cache_stash_data_with_version(const void *data, size_t size,
 
 	return 0;
 }
+
+int mrc_cache_stash_data_with_version(const void *data, size_t size,
+					uint32_t version)
+{
+	return _mrc_stash_data(data, size, version, CBMEM_ID_MRCDATA);
+}
+
+int mrc_cache_stash_vardata(const void *data, size_t size, uint32_t version)
+{
+	return _mrc_stash_data(data, size, version, CBMEM_ID_VAR_MRCDATA);
+}
+
 
 int mrc_cache_stash_data(const void *data, size_t size)
 {
@@ -324,51 +354,57 @@ mrc_cache_next_slot(const struct mrc_data_region *region,
 	return next_slot;
 }
 
-static void log_event_cache_update(uint8_t slot, uint8_t status)
+static void log_event_cache_update(uint8_t slot, enum result res)
 {
 	const int type = ELOG_TYPE_MEM_CACHE_UPDATE;
 	struct elog_event_mem_cache_update event = {
-		.slot = slot,
-		.status = status,
+		.slot = slot
 	};
+
+	/* Filter through interesting events only */
+	switch (res) {
+	case WRITE_FAILURE:				/* fall-through */
+	case ERASE_FAILURE:				/* fall-through */
+	case OTHER_FAILURE:				/* fall-through */
+		event.status = ELOG_MEM_CACHE_UPDATE_STATUS_FAIL;
+		break;
+	case UPDATE_SUCCESS:
+		event.status = ELOG_MEM_CACHE_UPDATE_STATUS_SUCCESS;
+		break;
+	default:
+		return;
+	}
 
 	if (elog_add_event_raw(type, &event, sizeof(event)) < 0)
 		printk(BIOS_ERR, "Failed to log mem cache update event.\n");
 }
 
-static void update_mrc_region(void)
+static int update_mrc_cache_type(uint32_t cbmem_id, const char *region_name)
 {
 	const struct mrc_saved_data *current_boot;
 	const struct mrc_saved_data *current_saved;
 	const struct mrc_saved_data *next_slot;
 	struct mrc_data_region region;
-	const char *region_name = DEFAULT_MRC_CACHE;
-	uint8_t slot = ELOG_MEM_CACHE_UPDATE_SLOT_NORMAL;
+	int res;
 
 	printk(BIOS_DEBUG, "MRC: Updating cache data.\n");
-
-	if (vboot_recovery_mode_enabled() &&
-	    IS_ENABLED(CONFIG_HAS_RECOVERY_MRC_CACHE)) {
-		region_name = RECOVERY_MRC_CACHE;
-		slot = ELOG_MEM_CACHE_UPDATE_SLOT_RECOVERY;
-	}
 
 	printk(BIOS_ERR, "MRC: Cache region selected - %s\n", region_name);
 
 	if (mrc_cache_get_region(region_name, &region)) {
 		printk(BIOS_ERR, "MRC: Could not obtain cache region.\n");
-		return;
+		return OTHER_FAILURE;
 	}
 
-	current_boot = cbmem_find(CBMEM_ID_MRCDATA);
+	current_boot = cbmem_find(cbmem_id);
 	if (!current_boot) {
 		printk(BIOS_ERR, "MRC: No cache in cbmem.\n");
-		return;
+		return OTHER_FAILURE;
 	}
 
 	if (!mrc_cache_valid(&region, current_boot)) {
 		printk(BIOS_ERR, "MRC: Cache data in cbmem invalid.\n");
-		return;
+		return OTHER_FAILURE;
 	}
 
 	current_saved = NULL;
@@ -379,7 +415,7 @@ static void update_mrc_region(void)
 		    !memcmp(&current_saved->data[0], &current_boot->data[0],
 		            current_saved->size)) {
 			printk(BIOS_DEBUG, "MRC: Cache up to date.\n");
-			return;
+			return ALREADY_UPTODATE;
 		}
 	}
 
@@ -391,21 +427,15 @@ static void update_mrc_region(void)
 			if (nvm_erase(region.base, region.size) < 0) {
 				printk(BIOS_DEBUG, "MRC: Failure erasing "
 				       "region %s.\n", region_name);
-				return;
+				return ERASE_FAILURE;
 			}
 		}
 		next_slot = region.base;
 	}
 
-	if (nvm_write((void *)next_slot, current_boot,
-	               current_boot->size + sizeof(*current_boot))) {
-		printk(BIOS_DEBUG, "MRC: Failure writing MRC cache to %s:%p\n",
-		       region_name, next_slot);
-		log_event_cache_update(slot, ELOG_MEM_CACHE_UPDATE_STATUS_FAIL);
-	} else {
-		log_event_cache_update(slot,
-				       ELOG_MEM_CACHE_UPDATE_STATUS_SUCCESS);
-	}
+	res = nvm_write((void *)next_slot, current_boot, current_boot->size
+			 + sizeof(*current_boot));
+	return res < 0 ? WRITE_FAILURE : UPDATE_SUCCESS;
 }
 
 static void protect_mrc_region(void)
@@ -429,7 +459,31 @@ static void protect_mrc_region(void)
 
 static void update_mrc_cache(void *unused)
 {
-	update_mrc_region();
+	uint8_t slot;
+	const char *region_name;
+	enum result res;
+
+	/* First update either recovery or default cache */
+	if (vboot_recovery_mode_enabled() &&
+	    IS_ENABLED(CONFIG_HAS_RECOVERY_MRC_CACHE)) {
+		region_name = RECOVERY_MRC_CACHE;
+		slot = ELOG_MEM_CACHE_UPDATE_SLOT_RECOVERY;
+	} else {
+		region_name = DEFAULT_MRC_CACHE;
+		slot = ELOG_MEM_CACHE_UPDATE_SLOT_NORMAL;
+	}
+
+	res = update_mrc_cache_type(CBMEM_ID_MRCDATA, region_name);
+	log_event_cache_update(slot, res);
+
+	/* Next update variable cache if in use */
+	if (IS_ENABLED(CONFIG_MRC_SETTINGS_VARIABLE_DATA)) {
+		res = update_mrc_cache_type(CBMEM_ID_VAR_MRCDATA,
+					    VARIABLE_MRC_CACHE);
+		log_event_cache_update(ELOG_MEM_CACHE_UPDATE_SLOT_VARIABLE,
+					res);
+	}
+
 	protect_mrc_region();
 }
 

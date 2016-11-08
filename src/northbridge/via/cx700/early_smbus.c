@@ -186,7 +186,7 @@ static unsigned int get_spd_data(const struct mem_controller *ctrl, unsigned int
 
 static void enable_smbus(void)
 {
-	device_t dev;
+	pci_devfn_t dev;
 
 	/* The CX700 ISA Bridge (0x1106, 0x8324) is hardcoded to this location,
 	 * no need to probe.

@@ -1228,7 +1228,7 @@ static void sdram_enable(const struct mem_controller *ctrl)
 {
 	u8 reg8;
 	u8 val, i;
-	device_t dev;
+	pci_devfn_t dev;
 	u8 dl, dh;
 	u32 quot;
 

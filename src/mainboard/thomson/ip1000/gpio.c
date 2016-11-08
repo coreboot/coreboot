@@ -23,7 +23,7 @@
 /* Early mainboard specific GPIO setup. */
 static void mb_gpio_init(void)
 {
-	device_t dev;
+	pci_devfn_t dev;
 	uint16_t port;
 	uint32_t set_gpio;
 

@@ -161,9 +161,9 @@ struct soc_intel_skylake_config {
 	u8 EnableTraceHub;
 
 	/* Pcie Root Ports */
-	u8 PcieRpEnable[20];
-	u8 PcieRpClkReqSupport[20];
-	u8 PcieRpClkReqNumber[20];
+	u8 PcieRpEnable[CONFIG_MAX_ROOT_PORTS];
+	u8 PcieRpClkReqSupport[CONFIG_MAX_ROOT_PORTS];
+	u8 PcieRpClkReqNumber[CONFIG_MAX_ROOT_PORTS];
 
 	/* USB related */
 	struct usb2_port_config usb2_ports[16];

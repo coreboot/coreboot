@@ -239,4 +239,9 @@ config SPI_FLASH_INCLUDE_ALL_DRIVERS
 	bool
 	default n
 
+config MAX_ROOT_PORTS
+	int
+	default 24 if PLATFORM_USES_FSP2_0
+	default 20 if PLATFORM_USES_FSP1_1
+
 endif

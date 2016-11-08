@@ -177,7 +177,7 @@ before_romstage:
 	/* Save return value from romstage_main. It contains the stack to use
 	 * after cache-as-ram is torn down. It also contains the information
 	 * for setting up MTRRs. */
-	movl	%eax, %ebx
+	movl	%eax, %esp
 
 	post_code(0x30)
 
@@ -224,9 +224,6 @@ before_romstage:
 	movl	%eax, %cr0
 
 	post_code(0x38)
-
-	/* Setup stack as indicated by return value from romstage_main(). */
-	movl	%ebx, %esp
 
 	/* Get number of MTRRs. */
 	popl	%ebx

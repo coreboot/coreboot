@@ -38,7 +38,7 @@
 
 static UINT8 select_socket(UINT8 socket_id)
 {
-	device_t sm_dev       = PCI_DEV(0, 0x14, 0); //SMBus
+	pci_devfn_t sm_dev       = PCI_DEV(0, 0x14, 0); //SMBus
 	UINT8    value        = 0;
 	UINT8    gpio56_to_53 = 0;
 
@@ -61,7 +61,7 @@ static UINT8 select_socket(UINT8 socket_id)
 
 static void restore_socket(UINT8 original_value)
 {
-	device_t sm_dev = PCI_DEV(0, 0x14, 0); //SMBus
+	pci_devfn_t sm_dev = PCI_DEV(0, 0x14, 0); //SMBus
 	pci_write_config8(sm_dev, PCI_REG_GPIO_56_to_53_CNTRL, original_value);
 }
 #endif

@@ -73,8 +73,8 @@
 #define CONFIG_ROM_SIZE 0x400000
 #endif
 
-#define ROM_BASE_ADDRESS  (0xFFFFFFFF - CONFIG_ROM_SIZE + 1)
-#define AMD_ROMSIG_OFFSET 0x20000
+#define AMD_ROMSIG_OFFSET	0x20000
+#define MIN_ROM_KB		256
 
 #define ALIGN(val, by) (((val) + (by)-1)&~((by)-1))
 
@@ -227,11 +227,12 @@ void fill_psp_head(uint32_t *pspdir, int count)
 	pspdir[1] = fletcher32((uint16_t *)&pspdir[1], (count *16 + 16)/2 - 2);
 }
 
-uint32_t integrate_firmwares(void *base, uint32_t pos, uint32_t *romsig, amd_fw_entry *fw_table)
+uint32_t integrate_firmwares(void *base, uint32_t pos, uint32_t *romsig, amd_fw_entry *fw_table, uint32_t rom_size)
 {
 	int fd;
 	struct stat fd_stat;
 	int i;
+	uint32_t rom_base_address = 0xFFFFFFFF - rom_size + 1;
 
 	for (i = 0; fw_table[i].type != AMD_FW_INVALID; i ++) {
 		if (fw_table[i].filename != NULL) {
@@ -241,17 +242,25 @@ uint32_t integrate_firmwares(void *base, uint32_t pos, uint32_t *romsig, amd_fw_
 			switch (fw_table[i].type) {
 			case AMD_FW_IMC:
 				pos = ALIGN(pos, 0x10000);
-				romsig[1] = pos + ROM_BASE_ADDRESS;
+				romsig[1] = pos + rom_base_address;
 				break;
 			case AMD_FW_GEC:
-				romsig[2] = pos + ROM_BASE_ADDRESS;
+				romsig[2] = pos + rom_base_address;
 				break;
 			case AMD_FW_XHCI:
-				romsig[3] = pos + ROM_BASE_ADDRESS;
+				romsig[3] = pos + rom_base_address;
 				break;
 			default:
 				/* Error */
 				break;
+			}
+
+			if (pos + fd_stat.st_size > rom_size) {
+				printf("Error: Specified ROM size of %d"
+					" will not fit %s.  Exiting.\n",
+					rom_size, fw_table[i].filename);
+				free(base);
+				exit(1);
 			}
 
 			read (fd, base+pos, fd_stat.st_size);
@@ -265,11 +274,12 @@ uint32_t integrate_firmwares(void *base, uint32_t pos, uint32_t *romsig, amd_fw_
 	return pos;
 }
 
-uint32_t integrate_psp_firmwares(void *base, uint32_t pos, uint32_t *pspdir, amd_fw_entry *fw_table)
+uint32_t integrate_psp_firmwares(void *base, uint32_t pos, uint32_t *pspdir, amd_fw_entry *fw_table, uint32_t rom_size)
 {
 	int fd;
 	struct stat fd_stat;
 	int i;
+	uint32_t rom_base_address = 0xFFFFFFFF - rom_size + 1;
 
 	for (i = 0; fw_table[i].type != AMD_FW_INVALID; i ++) {
 		if (fw_table[i].type == AMD_PSP_FUSE_CHAIN) {
@@ -284,8 +294,16 @@ uint32_t integrate_psp_firmwares(void *base, uint32_t pos, uint32_t *pspdir, amd
 			fstat(fd, &fd_stat);
 			pspdir[4+4*i+1] = fd_stat.st_size;
 
-			pspdir[4+4*i+2] = pos + ROM_BASE_ADDRESS;
+			pspdir[4+4*i+2] = pos + rom_base_address;
 			pspdir[4+4*i+3] = 0;
+
+			if (pos + fd_stat.st_size > rom_size) {
+				printf("Error: Specified ROM size of %d"
+					" will not fit %s.  Exiting.\n",
+					rom_size, fw_table[i].filename);
+				free (base);
+				exit(1);
+			}
 
 			read (fd, base+pos, fd_stat.st_size);
 
@@ -301,9 +319,9 @@ uint32_t integrate_psp_firmwares(void *base, uint32_t pos, uint32_t *pspdir, amd
 }
 
 #if PSP2
-static const char *optstring  = "x:i:g:p:b:s:r:k:c:n:d:t:u:w:m:P:B:S:R:K:C:N:D:T:U:W:M:o:h";
+static const char *optstring  = "x:i:g:p:b:s:r:k:c:n:d:t:u:w:m:P:B:S:R:K:C:N:D:T:U:W:M:o:f:h";
 #else
-static const char *optstring  = "x:i:g:p:b:s:r:k:c:n:d:t:u:w:m:o:h";
+static const char *optstring  = "x:i:g:p:b:s:r:k:c:n:d:t:u:w:m:o:f:h";
 #endif
 
 static struct option long_options[] = {
@@ -341,6 +359,7 @@ static struct option long_options[] = {
 #endif
 
 	{"output",       required_argument, 0, 'o' },
+	{"flashsize",    required_argument, 0, 'f' },
 	{"help",         no_argument,       0, 'h' },
 
 	{NULL,           0,                 0,  0  }
@@ -384,6 +403,7 @@ int main(int argc, char **argv)
 #if PSP2
 	int psp2flag = 0;
 	uint32_t *psp2dir;
+	char *tmp;
 #endif
 #if PSP_COMBO
 	int psp2count;
@@ -395,21 +415,8 @@ int main(int argc, char **argv)
 
 	int targetfd;
 	char *output;
-
-	rom = malloc(CONFIG_ROM_SIZE);
-	memset (rom, 0xFF, CONFIG_ROM_SIZE);
-	if (!rom) {
-		return 1;
-	}
-
-	current = AMD_ROMSIG_OFFSET;
-	amd_romsig = rom + AMD_ROMSIG_OFFSET;
-	amd_romsig[0] = 0x55AA55AA; /* romsig */
-	amd_romsig[1] = 0;
-	amd_romsig[2] = 0;
-	amd_romsig[3] = 0;
-
-	current += 0x20;	    /* size of ROMSIG */
+	uint32_t rom_size = CONFIG_ROM_SIZE;
+	uint32_t rom_base_address;
 
 	while (1) {
 		int optindex = 0;
@@ -530,6 +537,14 @@ int main(int argc, char **argv)
 		case 'o':
 			output = optarg;
 			break;
+		case 'f':
+			rom_size = (uint32_t)strtoul(optarg, &tmp, 16);
+			if (*tmp != '\0') {
+				printf("Error: ROM size specified"
+					" incorrectly (%s)\n\n", optarg);
+				return 1;
+			}
+			break;
 		case 'h':
 			usage();
 			return 1;
@@ -538,23 +553,51 @@ int main(int argc, char **argv)
 		}
 	}
 
-	current = ALIGN(current, 0x1000);
-	current = integrate_firmwares(rom, current, amd_romsig, amd_fw_table);
+	if (rom_size % 1024 != 0) {
+		printf("Error: ROM Size (%d bytes) should be a multiple of"
+			" 1024 bytes.\n", rom_size);
+		exit(1);
+	}
+
+	if (rom_size < MIN_ROM_KB * 1024) {
+		printf("Error: ROM Size (%dKB) must be at least %dKB.\n",
+			rom_size / 1024, MIN_ROM_KB);
+		exit(1);
+	}
+
+	printf("    AMDFWTOOL  Using ROM size of %dKB\n", rom_size / 1024);
+
+	rom_base_address = 0xFFFFFFFF - rom_size + 1;
+	rom = malloc(rom_size);
+	if (!rom)
+		exit(1);
+	memset (rom, 0xFF, rom_size);
+
+	current = AMD_ROMSIG_OFFSET;
+	amd_romsig = rom + AMD_ROMSIG_OFFSET;
+	amd_romsig[0] = 0x55AA55AA; /* romsig */
+	amd_romsig[1] = 0;
+	amd_romsig[2] = 0;
+	amd_romsig[3] = 0;
+
+	current += 0x20;	    /* size of ROMSIG */
+	current = ALIGN(current, 0x1000U);
+	current = integrate_firmwares(rom, current, amd_romsig, amd_fw_table, rom_size);
 
 	if (pspflag == 1) {
 		current = ALIGN(current, 0x10000);
 		pspdir = rom + current;
-		amd_romsig[4] = current + ROM_BASE_ADDRESS;
+		amd_romsig[4] = current + rom_base_address;
 
 		current += 0x200;	/* Conservative size of pspdir */
-		current = integrate_psp_firmwares(rom, current, pspdir, amd_psp_fw_table);
+		current = integrate_psp_firmwares(rom, current, pspdir, amd_psp_fw_table, rom_size);
 	}
 
 #if PSP2
 	if (psp2flag == 1) {
 		current = ALIGN(current, 0x10000); /* PSP2 dir */
 		psp2dir = rom + current;
-		amd_romsig[5] = current + ROM_BASE_ADDRESS;
+		amd_romsig[5] = current + rom_base_address;
 		current += 0x200;	/* Add conservative size of psp2dir. */
 
 #if PSP_COMBO
@@ -564,12 +607,12 @@ int main(int argc, char **argv)
 		/* Now the psp2dir is psp combo dir. */
 		psp2dir[psp2count*4 + 0 + 4] = 0; /* 0 -Compare PSP ID, 1 -Compare chip family ID */
 		psp2dir[psp2count*4 + 1 + 4] = 0x10220B00; /* TODO: PSP ID. Documentation is needed. */
-		psp2dir[psp2count*4 + 2 + 4] = current + ROM_BASE_ADDRESS;
+		psp2dir[psp2count * 4 + 2 + 4] = current + rom_base_address;
 		pspdir = rom + current;
 		psp2dir[psp2count*4 + 3 + 4] = 0;
 
 		current += 0x200;	/* Add conservative size of pspdir. Start of PSP entries. */
-		current = integrate_psp_firmwares(rom, current, pspdir, amd_psp2_fw_table);
+		current = integrate_psp_firmwares(rom, current, pspdir, amd_psp2_fw_table, rom_size);
 		/* } */ /* End of loop */
 
 		/* fill the PSP combo head */
@@ -582,7 +625,7 @@ int main(int argc, char **argv)
 		psp2dir[7] = 0;
 		psp2dir[1] = fletcher32((uint16_t *)&psp2dir[1], (psp2count*16 + 32)/2 - 2);
 #else
-		current = integrate_psp_firmwares(rom, current, psp2dir, amd_psp2_fw_table);
+		current = integrate_psp_firmwares(rom, current, psp2dir, amd_psp2_fw_table, rom_size);
 #endif
 	}
 #endif

@@ -84,10 +84,11 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 
 int get_write_protect_state(void)
 {
-	device_t dev;
-#ifdef __PRE_RAM__
+#ifdef __SIMPLE_DEVICE__
+	pci_devfn_t dev;
 	dev = PCI_DEV(0, 0x1f, 2);
 #else
+	device_t dev;
 	dev = dev_find_slot(0, PCI_DEVFN(0x1f, 2));
 #endif
 	return (pci_read_config32(dev, SATA_SP) >> FLAG_SPI_WP) & 1;
@@ -95,10 +96,11 @@ int get_write_protect_state(void)
 
 int get_developer_mode_switch(void)
 {
-	device_t dev;
-#ifdef __PRE_RAM__
+#ifdef __SIMPLE_DEVICE__
+	pci_devfn_t dev;
 	dev = PCI_DEV(0, 0x1f, 2);
 #else
+	device_t dev;
 	dev = dev_find_slot(0, PCI_DEVFN(0x1f, 2));
 #endif
 	return (pci_read_config32(dev, SATA_SP) >> FLAG_DEV_MODE) & 1;
@@ -106,10 +108,11 @@ int get_developer_mode_switch(void)
 
 int get_recovery_mode_switch(void)
 {
-	device_t dev;
-#ifdef __PRE_RAM__
+#ifdef __SIMPLE_DEVICE__
+	pci_devfn_t dev;
 	dev = PCI_DEV(0, 0x1f, 2);
 #else
+	device_t dev;
 	dev = dev_find_slot(0, PCI_DEVFN(0x1f, 2));
 #endif
 	return (pci_read_config32(dev, SATA_SP) >> FLAG_REC_MODE) & 1;

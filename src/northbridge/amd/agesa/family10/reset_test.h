@@ -29,7 +29,7 @@
 static inline u32 warm_reset_detect(u8 nodeid)
 {
 	u32 htic;
-	device_t device;
+	pci_devfn_t device;
 	device = NODE_PCI(nodeid, 0);
 	htic = pci_io_read_config32(device, HT_INIT_CONTROL);
 	return (htic & HTIC_ColdR_Detect) && !(htic & HTIC_BIOSR_Detect);
@@ -38,7 +38,7 @@ static inline u32 warm_reset_detect(u8 nodeid)
 static inline void distinguish_cpu_resets(u8 nodeid)
 {
 	u32 htic;
-	device_t device;
+	pci_devfn_t device;
 	device = NODE_PCI(nodeid, 0);
 	htic = pci_io_read_config32(device, HT_INIT_CONTROL);
 	htic |= HTIC_ColdR_Detect | HTIC_BIOSR_Detect | HTIC_INIT_Detect;

@@ -19,6 +19,8 @@ enum vb2_pcr_digest;
 #define KERNEL_NV_INDEX                 0x1008
 /* 0x1009 used to be used as a backup space. Think of conflicts if you
  * want to use 0x1009 for something else. */
+#define BACKUP_NV_INDEX                 0x1009
+#define FWMP_NV_INDEX                   0x100a
 
 /* Structure definitions for TPM spaces */
 

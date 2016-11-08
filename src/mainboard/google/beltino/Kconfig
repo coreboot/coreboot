@@ -1,0 +1,77 @@
+config BOARD_GOOGLE_BASEBOARD_BELTINO
+	def_bool n
+	select CPU_INTEL_HASWELL
+	select NORTHBRIDGE_INTEL_HASWELL
+	select SOUTHBRIDGE_INTEL_LYNXPOINT
+	select INTEL_LYNXPOINT_LP
+	select BOARD_ROMSIZE_KB_8192
+	select SUPERIO_ITE_IT8772F
+	select HAVE_ACPI_TABLES
+	select HAVE_OPTION_TABLE
+	select HAVE_ACPI_RESUME
+	select MMCONF_SUPPORT
+	select HAVE_SMI_HANDLER
+	select MAINBOARD_HAS_CHROMEOS
+	select MAINBOARD_HAS_LPC_TPM
+
+if BOARD_GOOGLE_BASEBOARD_BELTINO
+
+config CHROMEOS
+	select PHYSICAL_REC_SWITCH
+	select VBOOT_VBNV_CMOS
+	select VIRTUAL_DEV_SWITCH
+
+config MAINBOARD_DIR
+	string
+	default google/beltino
+
+config VARIANT_DIR
+	string
+	default "mccloud" if BOARD_GOOGLE_MCCLOUD
+	default "monroe" if BOARD_GOOGLE_MONROE
+	default "panther" if BOARD_GOOGLE_PANTHER
+	default "tricky" if BOARD_GOOGLE_TRICKY
+	default "zako" if BOARD_GOOGLE_ZAKO
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Mccloud" if BOARD_GOOGLE_MCCLOUD
+	default "Monroe" if BOARD_GOOGLE_MONROE
+	default "Panther" if BOARD_GOOGLE_PANTHER
+	default "Tricky" if BOARD_GOOGLE_TRICKY
+	default "Zako" if BOARD_GOOGLE_ZAKO
+
+config MAINBOARD_FAMILY
+	string
+	default "Google_Beltino"
+
+config GBB_HWID
+	string
+	depends on CHROMEOS
+	default "X86 MCCLOUD TEST 5268" if BOARD_GOOGLE_MCCLOUD
+	default "X86 MONROE TEST 9962" if BOARD_GOOGLE_MONROE
+	default "X86 PANTHER TEST 6287" if BOARD_GOOGLE_PANTHER
+	default "X86 TRICKY TEST 4487" if BOARD_GOOGLE_TRICKY
+	default "X86 ZAKO TEST 8602" if BOARD_GOOGLE_ZAKO
+
+config MMCONF_BASE_ADDRESS
+	hex
+	default 0xf0000000
+
+config MAX_CPUS
+	int
+	default 8
+
+config VGA_BIOS_FILE
+	string
+	default "pci8086,0406.rom"
+
+config HAVE_IFD_BIN
+	bool
+	default n
+
+config HAVE_ME_BIN
+	bool
+	default n
+
+endif # BOARD_GOOGLE_BASEBOARD_BELTINO

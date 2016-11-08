@@ -67,8 +67,10 @@ verstage-y += common.c
 verstage-y += verstage.c
 ifeq (${CONFIG_VBOOT_MOCK_SECDATA},y)
 libverstage-y += secdata_mock.c
+romstage-$(CONFIG_SEPARATE_VERSTAGE) += secdata_mock.c
 else
 libverstage-y += secdata_tpm.c
+romstage-$(CONFIG_SEPARATE_VERSTAGE) += secdata_tpm.c
 endif
 romstage-y += vboot_handoff.c common.c
 

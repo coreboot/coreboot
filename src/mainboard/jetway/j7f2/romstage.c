@@ -46,7 +46,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 static void enable_mainboard_devices(void)
 {
-	device_t dev;
+	pci_devfn_t dev;
 
 	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
 				PCI_DEVICE_ID_VIA_VT8237R_LPC), 0);

@@ -324,8 +324,9 @@ no_msr_11e:
 	andl	$(~(CR0_CacheDisable | CR0_NoWriteThrough)), %eax
 	movl	%eax, %cr0
 
-	/* Set up the stack pointer. */
-	movl	$(CACHE_AS_RAM_BASE + CACHE_AS_RAM_SIZE - 4), %esp
+	/* Setup the stack. */
+	movl	$(CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE), %eax
+	movl	%eax, %esp
 
 	/* Restore the BIST result. */
 	movl	%ebp, %eax
@@ -340,7 +341,7 @@ before_romstage:
 	/* Save return value from romstage_main. It contains the stack to use
 	 * after cache-as-ram is torn down.
 	 */
-	movl	%eax, %ebx
+	movl	%eax, %esp
 
 	post_code(0x30)
 
@@ -424,11 +425,7 @@ before_romstage:
 __main:
 	post_code(POST_PREPARE_RAMSTAGE)
 	cld			/* Clear direction flag. */
-
-	/* Setup stack as indicated by return value from romstage_main(). */
-	movl	%ebx, %esp
-	movl	%esp, %ebp
-	call	copy_and_run
+	call	romstage_after_car
 
 .Lhlt:
 	post_code(POST_DEAD_CODE)

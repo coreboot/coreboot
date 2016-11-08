@@ -13,3 +13,11 @@
 ##
 
 source src/vendorcode/google/chromeos/Kconfig
+
+config GOOGLE_SMBIOS_MAINBOARD_VERSION
+	bool
+	default n
+	depends on GENERATE_SMBIOS_TABLES
+	help
+	  Provide a common implementation for mainboard version,
+	  which returns a formatted 'rev%d' board_id() string.

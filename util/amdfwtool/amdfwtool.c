@@ -76,7 +76,7 @@
 #define AMD_ROMSIG_OFFSET	0x20000
 #define MIN_ROM_KB		256
 
-#define ALIGN(val, by) (((val) + (by)-1)&~((by)-1))
+#define ALIGN(val, by) (((val) + (by) - 1) & ~((by) - 1))
 
 /*
   Reserved for future.
@@ -263,10 +263,10 @@ static amd_fw_entry amd_fw_table[] = {
 
 static void fill_psp_head(uint32_t *pspdir, uint32_t count)
 {
-	pspdir[0] = 0x50535024;	/* 'PSP$' */
+	pspdir[0] = 0x50535024;		/* 'PSP$' */
 	pspdir[2] = count;		/* size */
 	pspdir[3] = 0;
-	pspdir[1] = fletcher32((uint16_t *)&pspdir[1], (count *16 + 16)/2 - 2);
+	pspdir[1] = fletcher32((uint16_t *)&pspdir[1], (count * 16 + 16) / 2 - 2);
 }
 
 static uint32_t integrate_firmwares(char *base, uint32_t pos, uint32_t *romsig, amd_fw_entry *fw_table, uint32_t rom_size)
@@ -276,9 +276,9 @@ static uint32_t integrate_firmwares(char *base, uint32_t pos, uint32_t *romsig, 
 	int i;
 	uint32_t rom_base_address = 0xFFFFFFFF - rom_size + 1;
 
-	for (i = 0; fw_table[i].type != AMD_FW_INVALID; i ++) {
+	for (i = 0; fw_table[i].type != AMD_FW_INVALID; i++) {
 		if (fw_table[i].filename != NULL) {
-			fd = open (fw_table[i].filename, O_RDONLY);
+			fd = open(fw_table[i].filename, O_RDONLY);
 			fstat(fd, &fd_stat);
 
 			switch (fw_table[i].type) {
@@ -308,7 +308,7 @@ static uint32_t integrate_firmwares(char *base, uint32_t pos, uint32_t *romsig, 
 			read(fd, (void *)(base + pos), (size_t)fd_stat.st_size);
 
 			pos += fd_stat.st_size;
-			close (fd);
+			close(fd);
 			pos = ALIGN(pos, 0x100U);
 		}
 	}
@@ -323,7 +323,7 @@ static uint32_t integrate_psp_firmwares(char *base, uint32_t pos, uint32_t *pspd
 	unsigned int i;
 	uint32_t rom_base_address = 0xFFFFFFFF - rom_size + 1;
 
-	for (i = 0; fw_table[i].type != AMD_FW_INVALID; i ++) {
+	for (i = 0; fw_table[i].type != AMD_FW_INVALID; i++) {
 		if (fw_table[i].type == AMD_PSP_FUSE_CHAIN) {
 			pspdir[4+4*i+0] = fw_table[i].type;
 			pspdir[4+4*i+1] = 0xFFFFFFFF;
@@ -332,7 +332,7 @@ static uint32_t integrate_psp_firmwares(char *base, uint32_t pos, uint32_t *pspd
 		} else if (fw_table[i].filename != NULL) {
 			pspdir[4+4*i+0] = fw_table[i].type;
 
-			fd = open (fw_table[i].filename, O_RDONLY);
+			fd = open(fw_table[i].filename, O_RDONLY);
 			fstat(fd, &fd_stat);
 			pspdir[4+4*i+1] = (uint32_t)fd_stat.st_size;
 
@@ -343,14 +343,14 @@ static uint32_t integrate_psp_firmwares(char *base, uint32_t pos, uint32_t *pspd
 				printf("Error: Specified ROM size of %d"
 					" will not fit %s.  Exiting.\n",
 					rom_size, fw_table[i].filename);
-				free (base);
+				free(base);
 				exit(1);
 			}
 
 			read(fd, (void *)(base + pos), (size_t)fd_stat.st_size);
 
 			pos += fd_stat.st_size;
-			close (fd);
+			close(fd);
 			pos = ALIGN(pos, 0x100U);
 		} else {
 			/* This APU doesn't have this firmware. */
@@ -367,51 +367,51 @@ static const char *optstring  = "x:i:g:p:b:s:r:k:c:n:d:t:u:w:m:o:f:h";
 #endif
 
 static struct option long_options[] = {
-	{"xhci",         required_argument, 0, 'x' },
-	{"imc",          required_argument, 0, 'i' },
-	{"gec",          required_argument, 0, 'g' },
+	{"xhci",          required_argument, 0, 'x' },
+	{"imc",           required_argument, 0, 'i' },
+	{"gec",           required_argument, 0, 'g' },
 	/* PSP */
-	{"pubkey",       required_argument, 0, 'p' },
-	{"bootloader",   required_argument, 0, 'b' },
-	{"smufirmware",  required_argument, 0, 's' },
-	{"recovery",     required_argument, 0, 'r' },
-	{"rtmpubkey",    required_argument, 0, 'k' },
-	{"secureos",     required_argument, 0, 'c' },
-	{"nvram",        required_argument, 0, 'n' },
-	{"securedebug",  required_argument, 0, 'd' },
-	{"trustlets",    required_argument, 0, 't' },
-	{"trustletkey",  required_argument, 0, 'u' },
-	{"smufirmware2", required_argument, 0, 'w' },
-	{"smuscs",       required_argument, 0, 'm' },
+	{"pubkey",        required_argument, 0, 'p' },
+	{"bootloader",    required_argument, 0, 'b' },
+	{"smufirmware",   required_argument, 0, 's' },
+	{"recovery",      required_argument, 0, 'r' },
+	{"rtmpubkey",     required_argument, 0, 'k' },
+	{"secureos",      required_argument, 0, 'c' },
+	{"nvram",         required_argument, 0, 'n' },
+	{"securedebug",   required_argument, 0, 'd' },
+	{"trustlets",     required_argument, 0, 't' },
+	{"trustletkey",   required_argument, 0, 'u' },
+	{"smufirmware2",  required_argument, 0, 'w' },
+	{"smuscs",        required_argument, 0, 'm' },
 
 	/* TODO: PSP2 */
 #if PSP2
-	{"pubkey2",       required_argument, 0, 'P' },
-	{"bootloader2",   required_argument, 0, 'B' },
-	{"smufirmware_2", required_argument, 0, 'S' },
-	{"recovery2",     required_argument, 0, 'R' },
-	{"rtmpubkey2",    required_argument, 0, 'K' },
-	{"secureos2",     required_argument, 0, 'C' },
-	{"nvram2",        required_argument, 0, 'N' },
-	{"securedebug2",  required_argument, 0, 'D' },
-	{"trustlets2",    required_argument, 0, 'T' },
-	{"trustletkey2",  required_argument, 0, 'U' },
-	{"smufirmware2_2",required_argument, 0, 'W' },
-	{"smuscs2",       required_argument, 0, 'M' },
+	{"pubkey2",        required_argument, 0, 'P' },
+	{"bootloader2",    required_argument, 0, 'B' },
+	{"smufirmware_2",  required_argument, 0, 'S' },
+	{"recovery2",      required_argument, 0, 'R' },
+	{"rtmpubkey2",     required_argument, 0, 'K' },
+	{"secureos2",      required_argument, 0, 'C' },
+	{"nvram2",         required_argument, 0, 'N' },
+	{"securedebug2",   required_argument, 0, 'D' },
+	{"trustlets2",     required_argument, 0, 'T' },
+	{"trustletkey2",   required_argument, 0, 'U' },
+	{"smufirmware2_2", required_argument, 0, 'W' },
+	{"smuscs2",        required_argument, 0, 'M' },
 #endif
 
-	{"output",       required_argument, 0, 'o' },
-	{"flashsize",    required_argument, 0, 'f' },
-	{"help",         no_argument,       0, 'h' },
+	{"output",         required_argument, 0, 'o' },
+	{"flashsize",      required_argument, 0, 'f' },
+	{"help",           no_argument,       0, 'h' },
 
-	{NULL,           0,                 0,  0  }
+	{NULL,             0,                 0,  0  }
 };
 
 static void register_fw_filename(amd_fw_type type, char filename[], int pspflag)
 {
 	unsigned int i;
 
-	for (i = 0; i < sizeof(amd_fw_table)/sizeof(amd_fw_entry); i++) {
+	for (i = 0; i < sizeof(amd_fw_table) / sizeof(amd_fw_entry); i++) {
 		if (amd_fw_table[i].type == type) {
 			amd_fw_table[i].filename = filename;
 			return;
@@ -419,7 +419,7 @@ static void register_fw_filename(amd_fw_type type, char filename[], int pspflag)
 	}
 
 	if (pspflag == 1) {
-		for (i = 0; i < sizeof(amd_psp_fw_table)/sizeof(amd_fw_entry); i++) {
+		for (i = 0; i < sizeof(amd_psp_fw_table) / sizeof(amd_fw_entry); i++) {
 			if (amd_psp_fw_table[i].type == type) {
 				amd_psp_fw_table[i].filename = filename;
 				return;
@@ -429,7 +429,7 @@ static void register_fw_filename(amd_fw_type type, char filename[], int pspflag)
 
 #if PSP2
 	if (pspflag == 2) {
-		for (i = 0; i < sizeof(amd_psp2_fw_table)/sizeof(amd_fw_entry); i++) {
+		for (i = 0; i < sizeof(amd_psp2_fw_table) / sizeof(amd_fw_entry); i++) {
 			if (amd_psp2_fw_table[i].type == type) {
 				amd_psp2_fw_table[i].filename = filename;
 				return;
@@ -629,7 +629,7 @@ int main(int argc, char **argv)
 	rom = malloc(rom_size);
 	if (!rom)
 		return 1;
-	memset (rom, 0xFF, rom_size);
+	memset(rom, 0xFF, rom_size);
 
 	current = AMD_ROMSIG_OFFSET;
 	amd_romsig = (void *)(rom + AMD_ROMSIG_OFFSET);
@@ -665,7 +665,7 @@ int main(int argc, char **argv)
 		/* Now the psp2dir is psp combo dir. */
 		psp2dir[psp2count*4 + 0 + 4] = 0; /* 0 -Compare PSP ID, 1 -Compare chip family ID */
 		psp2dir[psp2count*4 + 1 + 4] = 0x10220B00; /* TODO: PSP ID. Documentation is needed. */
-		psp2dir[psp2count * 4 + 2 + 4] = current + rom_base_address;
+		psp2dir[psp2count*4 + 2 + 4] = current + rom_base_address;
 		pspdir = rom + current;
 		psp2dir[psp2count*4 + 3 + 4] = 0;
 
@@ -681,7 +681,7 @@ int main(int argc, char **argv)
 		psp2dir[5] = 0;
 		psp2dir[6] = 0;
 		psp2dir[7] = 0;
-		psp2dir[1] = fletcher32((uint16_t *)&psp2dir[1], (psp2count*16 + 32)/2 - 2);
+		psp2dir[1] = fletcher32((uint16_t *)&psp2dir[1], (psp2count * 16 + 32) / 2 - 2);
 #else
 		current = integrate_psp_firmwares(rom, current, psp2dir, amd_psp2_fw_table, rom_size);
 #endif

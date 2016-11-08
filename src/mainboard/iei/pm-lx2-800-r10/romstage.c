@@ -64,7 +64,7 @@ void main(unsigned long bist)
 	console_init();
 
 	/* Enable COM3. */
-	device_t dev = 	PNP_DEV(0x2e, 0x0b);
+	pnp_devfn_t dev = PNP_DEV(0x2e, 0x0b);
 	u16 port = dev >> 8;
 	outb(0x55, port);
 	pnp_set_logical_device(dev);

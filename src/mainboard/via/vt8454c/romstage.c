@@ -33,7 +33,7 @@
 
 static void enable_mainboard_devices(void)
 {
-	device_t dev;
+	pci_devfn_t dev;
 
 	dev = pci_locate_device(PCI_ID(0x1106, 0x8324), 0);
 	if (dev == PCI_DEV_INVALID) {

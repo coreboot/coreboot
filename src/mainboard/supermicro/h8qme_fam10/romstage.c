@@ -113,14 +113,14 @@ static const u8 spd_addr[] = {
 #define GPIO3_DEV PNP_DEV(0x2e, W83627HF_GPIO3)
 
 /* TODO: superio code should really not be in mainboard */
-static void pnp_enter_ext_func_mode(device_t dev)
+static void pnp_enter_ext_func_mode(pnp_devfn_t dev)
 {
 	u16 port = dev >> 8;
 	outb(0x87, port);
 	outb(0x87, port);
 }
 
-static void pnp_exit_ext_func_mode(device_t dev)
+static void pnp_exit_ext_func_mode(pnp_devfn_t dev)
 {
 	u16 port = dev >> 8;
 	outb(0xaa, port);

@@ -147,7 +147,49 @@ static uint32_t fletcher32(const uint16_t *pptr, int length)
 
 static void usage(void)
 {
-	printf("Create AMD Firmware combination\n");
+	printf("amdfwtool: Create AMD Firmware combination\n");
+	printf("Usage: amdfwtool [options] -f <size> -o <filename>\n");
+	printf("-x | --xhci <FILE>           Add XHCI blob\n");
+	printf("-i | --imc <FILE>            Add IMC blob\n");
+	printf("-g | --gec <FILE>            Add GEC blob\n");
+
+	printf("\nPSP options:\n");
+	printf("-p | --pubkey <FILE>         Add pubkey\n");
+	printf("-b | --bootloader <FILE>     Add bootloader\n");
+	printf("-s | --smufirmware <FILE>    Add smufirmware\n");
+	printf("-r | --recovery <FILE>       Add recovery\n");
+	printf("-k | --rtmpubkey <FILE>      Add rtmpubkey\n");
+	printf("-c | --secureos <FILE>       Add secureos\n");
+	printf("-n | --nvram <FILE>          Add nvram\n");
+	printf("-d | --securedebug <FILE>    Add securedebug\n");
+	printf("-t | --trustlets <FILE>      Add trustlets\n");
+	printf("-u | --trustletkey <FILE>    Add trustletkey\n");
+	printf("-w | --smufirmware2 <FILE>   Add smufirmware2\n");
+	printf("-m | --smuscs <FILE>         Add smuscs\n");
+
+#if PSP2
+	printf("\nPSP2 options:\n");
+	printf("-P | --pubkey2 <FILE>        Add pubkey\n");
+	printf("-B | --bootloader2 <FILE>    Add bootloader\n");
+	printf("-S | --smufirmware_2 <FILE>  Add smufirmware\n");
+	printf("-R | --recovery2 <FILE>      Add recovery\n");
+	printf("-K | --rtmpubkey2 <FILE>     Add rtmpubkey\n");
+	printf("-C | --secureos2 <FILE>      Add secureos\n");
+	printf("-N | --nvram2 <FILE>         Add nvram\n");
+	printf("-D | --securedebug2 <FILE>   Add securedebug\n");
+	printf("-T | --trustlets2 <FILE>     Add trustlets\n");
+	printf("-U | --trustletkey2 <FILE>   Add trustletkey\n");
+	printf("-W | --smufirmware2_2 <FILE> Add smufirmware2\n");
+	printf("-M | --smuscs2 <FILE>        Add smuscs\n");
+#endif
+
+	printf("\n-o | --output <filename>     output filename\n");
+	printf("-f | --flashsize <HEX_VAL>   ROM size in bytes\n");
+	printf("                             size must be larger than %dKB\n",
+		MIN_ROM_KB);
+	printf("                             and must a multiple of 1024\n");
+	printf("-h | --help                  show this help\n");
+
 }
 
 typedef enum _amd_fw_type {

@@ -1627,7 +1627,7 @@ void vx900_init_dram_ddr3(const dimm_layout * dimm_addr)
 	dimm_info dimm_prop;
 	ramctr_timing ctrl_prop;
 	rank_layout ranks;
-	device_t mcu;
+	pci_devfn_t mcu;
 
 	if (!ram_check_noprint_nodie(1 << 20, 1 << 20)) {
 		printram("RAM is already initialized. Skipping init\n");

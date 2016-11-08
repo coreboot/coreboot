@@ -76,7 +76,7 @@ u8 smbus_read_byte(u32 smbus_dev, u8 addr, u8 offset)
 
 void enable_smbus(void)
 {
-	device_t dev;
+	pci_devfn_t dev;
 	u8 reg8;
 	u32 smbus_dev = (u32) SMBUS_IO_BASE;
 

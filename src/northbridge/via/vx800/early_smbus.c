@@ -128,7 +128,7 @@ static unsigned int get_spd_data(unsigned int dimm, unsigned int offset)
 
 void enable_smbus(void)
 {
-	device_t dev;
+	pci_devfn_t dev;
 
 	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_VX855_LPC), 0);
 

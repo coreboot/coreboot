@@ -24,7 +24,7 @@ static void print_debug_pci_dev(unsigned dev)
 
 static inline void print_pci_devices(void)
 {
-	device_t dev;
+	pci_devfn_t dev;
 	for (dev = PCI_DEV(0, 0, 0);
 		dev <= PCI_DEV(0, 0x1f, 0x7);
 		dev += PCI_DEV(0,0,1)) {
@@ -59,7 +59,7 @@ static void dump_pci_device(unsigned dev)
 
 static inline void dump_pci_devices(void)
 {
-	device_t dev;
+	pci_devfn_t dev;
 	for (dev = PCI_DEV(0, 0, 0);
 		dev <= PCI_DEV(0, 0x1f, 0x7);
 		dev += PCI_DEV(0,0,1)) {

@@ -59,9 +59,8 @@ is
 
       success : boolean;
 
-      stride : Width_Type;
-      max_h : pos16 := 1;
-      max_v : pos16 := 1;
+      min_h : pos16 := pos16'last;
+      min_v : pos16 := pos16'last;
    begin
       lightup_ok := 0;
 
@@ -77,30 +76,24 @@ is
             for i in Config_Index loop
                exit when configs (i).Port = Disabled;
 
-               max_h := pos16'max (max_h, configs (i).Mode.H_Visible);
-               max_v := pos16'max (max_v, configs (i).Mode.V_Visible);
+               min_h := pos16'min (min_h, configs (i).Mode.H_Visible);
+               min_v := pos16'min (min_v, configs (i).Mode.V_Visible);
             end loop;
 
-            stride := ((Width_Type (max_h) + 63) / 64) * 64;
+            fb :=
+               (Width   => Width_Type (min_h),
+                Height  => Height_Type (min_v),
+                BPC     => 8,
+                Stride  => ((Width_Type (min_h) + 63) / 64) * 64,
+                Offset  => 0);
             for i in Config_Index loop
                exit when configs (i).Port = Disabled;
 
-               configs (i).Framebuffer :=
-                 (Width    => Width_Type (configs (i).Mode.H_Visible),
-                  Height   => Height_Type (configs (i).Mode.V_Visible),
-                  BPC      => 8,
-                  Stride   => stride,
-                  Offset   => 0);
+               configs (i).Framebuffer := fb;
             end loop;
 
             HW.GFX.GMA.Dump_Configs (configs);
 
-            fb :=
-               (Width   => Width_Type (max_h),
-                Height  => Height_Type (max_v),
-                BPC     => 8,
-                Stride  => stride,
-                Offset  => 0);
             HW.GFX.GMA.Setup_Default_GTT (fb, phys_fb);
             HW.GFX.Framebuffer_Filler.Fill (linear_fb, fb);
 

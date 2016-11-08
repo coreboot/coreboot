@@ -116,7 +116,7 @@ typedef unsigned short uint16_t;
  *              inserted 8 bytes after the beginning of the file.
  *    stderr:   Used to print out error messages.
  */
-uint32_t fletcher32 (const uint16_t *pptr, int length)
+static uint32_t fletcher32(const uint16_t *pptr, int length)
 {
 	uint32_t c0;
 	uint32_t c1;
@@ -145,7 +145,7 @@ uint32_t fletcher32 (const uint16_t *pptr, int length)
 	return checksum;
 }
 
-void usage()
+static void usage(void)
 {
 	printf("Create AMD Firmware combination\n");
 }
@@ -176,7 +176,7 @@ typedef struct _amd_fw_entry {
 	char *filename;
 } amd_fw_entry;
 
-amd_fw_entry amd_psp_fw_table[] = {
+static amd_fw_entry amd_psp_fw_table[] = {
 	{ .type = AMD_FW_PSP_PUBKEY },
 	{ .type = AMD_FW_PSP_BOOTLOADER },
 	{ .type = AMD_FW_PSP_SMU_FIRMWARE },
@@ -194,7 +194,7 @@ amd_fw_entry amd_psp_fw_table[] = {
 };
 
 #if PSP2
-amd_fw_entry amd_psp2_fw_table[] = {
+static amd_fw_entry amd_psp2_fw_table[] = {
 	{ .type = AMD_FW_PSP_PUBKEY },
 	{ .type = AMD_FW_PSP_BOOTLOADER },
 	{ .type = AMD_FW_PSP_SMU_FIRMWARE },
@@ -212,14 +212,14 @@ amd_fw_entry amd_psp2_fw_table[] = {
 };
 #endif
 
-amd_fw_entry amd_fw_table[] = {
+static amd_fw_entry amd_fw_table[] = {
 	{ .type = AMD_FW_XHCI },
 	{ .type = AMD_FW_IMC },
 	{ .type = AMD_FW_GEC },
 	{ .type = AMD_FW_INVALID },
 };
 
-void fill_psp_head(uint32_t *pspdir, int count)
+static void fill_psp_head(uint32_t *pspdir, uint32_t count)
 {
 	pspdir[0] = 0x50535024;	/* 'PSP$' */
 	pspdir[2] = count;		/* size */
@@ -227,7 +227,7 @@ void fill_psp_head(uint32_t *pspdir, int count)
 	pspdir[1] = fletcher32((uint16_t *)&pspdir[1], (count *16 + 16)/2 - 2);
 }
 
-uint32_t integrate_firmwares(void *base, uint32_t pos, uint32_t *romsig, amd_fw_entry *fw_table, uint32_t rom_size)
+static uint32_t integrate_firmwares(char *base, uint32_t pos, uint32_t *romsig, amd_fw_entry *fw_table, uint32_t rom_size)
 {
 	int fd;
 	struct stat fd_stat;
@@ -241,7 +241,7 @@ uint32_t integrate_firmwares(void *base, uint32_t pos, uint32_t *romsig, amd_fw_
 
 			switch (fw_table[i].type) {
 			case AMD_FW_IMC:
-				pos = ALIGN(pos, 0x10000);
+				pos = ALIGN(pos, 0x10000U);
 				romsig[1] = pos + rom_base_address;
 				break;
 			case AMD_FW_GEC:
@@ -263,22 +263,22 @@ uint32_t integrate_firmwares(void *base, uint32_t pos, uint32_t *romsig, amd_fw_
 				exit(1);
 			}
 
-			read (fd, base+pos, fd_stat.st_size);
+			read(fd, (void *)(base + pos), (size_t)fd_stat.st_size);
 
 			pos += fd_stat.st_size;
-			pos = ALIGN(pos, 0x100);
 			close (fd);
+			pos = ALIGN(pos, 0x100U);
 		}
 	}
 
 	return pos;
 }
 
-uint32_t integrate_psp_firmwares(void *base, uint32_t pos, uint32_t *pspdir, amd_fw_entry *fw_table, uint32_t rom_size)
+static uint32_t integrate_psp_firmwares(char *base, uint32_t pos, uint32_t *pspdir, amd_fw_entry *fw_table, uint32_t rom_size)
 {
 	int fd;
 	struct stat fd_stat;
-	int i;
+	unsigned int i;
 	uint32_t rom_base_address = 0xFFFFFFFF - rom_size + 1;
 
 	for (i = 0; fw_table[i].type != AMD_FW_INVALID; i ++) {
@@ -292,7 +292,7 @@ uint32_t integrate_psp_firmwares(void *base, uint32_t pos, uint32_t *pspdir, amd
 
 			fd = open (fw_table[i].filename, O_RDONLY);
 			fstat(fd, &fd_stat);
-			pspdir[4+4*i+1] = fd_stat.st_size;
+			pspdir[4+4*i+1] = (uint32_t)fd_stat.st_size;
 
 			pspdir[4+4*i+2] = pos + rom_base_address;
 			pspdir[4+4*i+3] = 0;
@@ -305,11 +305,11 @@ uint32_t integrate_psp_firmwares(void *base, uint32_t pos, uint32_t *pspdir, amd
 				exit(1);
 			}
 
-			read (fd, base+pos, fd_stat.st_size);
+			read(fd, (void *)(base + pos), (size_t)fd_stat.st_size);
 
 			pos += fd_stat.st_size;
-			pos = ALIGN(pos, 0x100);
 			close (fd);
+			pos = ALIGN(pos, 0x100U);
 		} else {
 			/* This APU doesn't have this firmware. */
 		}
@@ -365,9 +365,9 @@ static struct option long_options[] = {
 	{NULL,           0,                 0,  0  }
 };
 
-void register_fw_filename(amd_fw_type type, char filename[], int pspflag)
+static void register_fw_filename(amd_fw_type type, char filename[], int pspflag)
 {
-	int i;
+	unsigned int i;
 
 	for (i = 0; i < sizeof(amd_fw_table)/sizeof(amd_fw_entry); i++) {
 		if (amd_fw_table[i].type == type) {
@@ -409,12 +409,12 @@ int main(int argc, char **argv)
 	int psp2count;
 #endif
 
-	void *rom = NULL;
+	char *rom = NULL;
 	uint32_t current;
 	uint32_t *amd_romsig, *pspdir;
 
 	int targetfd;
-	char *output;
+	char *output = NULL;
 	uint32_t rom_size = CONFIG_ROM_SIZE;
 	uint32_t rom_base_address;
 
@@ -553,6 +553,12 @@ int main(int argc, char **argv)
 		}
 	}
 
+	if (!output) {
+		printf("Error: Output value is not specified.\n");
+		usage();
+		exit(1);
+	}
+
 	if (rom_size % 1024 != 0) {
 		printf("Error: ROM Size (%d bytes) should be a multiple of"
 			" 1024 bytes.\n", rom_size);
@@ -574,7 +580,7 @@ int main(int argc, char **argv)
 	memset (rom, 0xFF, rom_size);
 
 	current = AMD_ROMSIG_OFFSET;
-	amd_romsig = rom + AMD_ROMSIG_OFFSET;
+	amd_romsig = (void *)(rom + AMD_ROMSIG_OFFSET);
 	amd_romsig[0] = 0x55AA55AA; /* romsig */
 	amd_romsig[1] = 0;
 	amd_romsig[2] = 0;
@@ -585,8 +591,8 @@ int main(int argc, char **argv)
 	current = integrate_firmwares(rom, current, amd_romsig, amd_fw_table, rom_size);
 
 	if (pspflag == 1) {
-		current = ALIGN(current, 0x10000);
-		pspdir = rom + current;
+		current = ALIGN(current, 0x10000U);
+		pspdir = (void *)(rom + current);
 		amd_romsig[4] = current + rom_base_address;
 
 		current += 0x200;	/* Conservative size of pspdir */
@@ -595,8 +601,8 @@ int main(int argc, char **argv)
 
 #if PSP2
 	if (psp2flag == 1) {
-		current = ALIGN(current, 0x10000); /* PSP2 dir */
-		psp2dir = rom + current;
+		current = ALIGN(current, 0x10000U); /* PSP2 dir */
+		psp2dir = (void *)(rom + current);
 		amd_romsig[5] = current + rom_base_address;
 		current += 0x200;	/* Add conservative size of psp2dir. */
 

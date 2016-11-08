@@ -50,7 +50,7 @@
  */
 static int acpi_is_wakeup_early_via_vx800(void)
 {
-	device_t dev;
+	pci_devfn_t dev;
 	u16 tmp, result;
 
 	printk(BIOS_DEBUG, "In acpi_is_wakeup_early_via_vx800\n");
@@ -76,7 +76,7 @@ static int acpi_is_wakeup_early_via_vx800(void)
 /* All content of this function came from the cx700 port of coreboot. */
 static void enable_mainboard_devices(void)
 {
-	device_t dev;
+	pci_devfn_t dev;
 #if 0
 	/*
 	 * Add and close this switch, since some line cause error, some
@@ -370,7 +370,7 @@ void main(unsigned long bist)
 {
 	u16 boot_mode;
 	u8 rambits, Data8, Data;
-	device_t device;
+	pci_devfn_t device;
 	/* device_t dev; */
 
 	/*

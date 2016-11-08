@@ -30,13 +30,13 @@
 #include "tn_post_code.h"
 
 
-#ifdef __PRE_RAM__
+#ifdef __SIMPLE_DEVICE__
 
 // TechNexion's Post Code Initially.
 void technexion_post_code_init(void)
 {
 	uint8_t reg8_data;
-	device_t dev = 0;
+	pci_devfn_t dev = 0;
 
 	// SMBus Module and ACPI Block (Device 20, Function 0)
 	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_ATI, PCI_DEVICE_ID_ATI_SB600_SM), 0);
@@ -129,12 +129,13 @@ void technexion_post_code_init(void)
 void technexion_post_code(uint8_t udata8)
 {
 	uint8_t u8_data;
-	device_t dev = 0;
 
 	// SMBus Module and ACPI Block (Device 20, Function 0)
-#ifdef __PRE_RAM__
+#ifdef __SIMPLE_DEVICE__
+	pci_devfn_t dev = 0;
 	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_ATI, PCI_DEVICE_ID_ATI_SB600_SM), 0);
 #else
+	device_t dev = 0;
 	dev = dev_find_device(PCI_VENDOR_ID_ATI, PCI_DEVICE_ID_ATI_SB600_SM, 0);
 #endif
 

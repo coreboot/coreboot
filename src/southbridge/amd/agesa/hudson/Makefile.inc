@@ -62,6 +62,7 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_HUDSON_XHCI_FWM_FILE)) \
 		$(OPT_HUDSON_XHCI_FWM_FILE) \
 		$(OPT_HUDSON_IMC_FWM_FILE) \
 		$(OPT_HUDSON_GEC_FWM_FILE) \
+		--flashsize $(CONFIG_ROM_SIZE) \
 		--output	$@
 
 cbfs-files-y += apu/amdfw

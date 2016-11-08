@@ -291,6 +291,7 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_HUDSON_XHCI_FWM_FILE)) \
 		$(OPT_2TRUSTLETKEY_FILE) \
 		$(OPT_2SMUFIRMWARE2_FILE) \
 		$(OPT_2SMUSCS_FILE) \
+		--flashsize $(CONFIG_ROM_SIZE) \
 		--output	$@
 
 cbfs-files-y += apu/amdfw

@@ -24,9 +24,9 @@
 
 #if defined(__SMM__)
 
-static const device_t pcu_dev = PCI_DEV(0, PCU_DEV, 0);
+static const pci_devfn_t pcu_dev = PCI_DEV(0, PCU_DEV, 0);
 
-static inline device_t get_pcu_dev(void)
+static inline pci_devfn_t get_pcu_dev(void)
 {
 	return pcu_dev;
 }

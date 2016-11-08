@@ -251,12 +251,13 @@ static void read_reg(const void *src, void *value, uint32_t size)
 
 static ich9_spi_regs *spi_regs(void)
 {
-	device_t dev;
 	uint32_t sbase;
 
 #ifdef __SMM__
+	pci_devfn_t dev;
 	dev = PCI_DEV(0, LPC_DEV, LPC_FUNC);
 #else
+	device_t dev;
 	dev = dev_find_slot(0, PCI_DEVFN(LPC_DEV, LPC_FUNC));
 #endif
 	pci_read_config_dword(dev, SBASE, &sbase);

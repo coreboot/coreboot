@@ -442,6 +442,7 @@ static void register_fw_filename(amd_fw_type type, char filename[], int pspflag)
 int main(int argc, char **argv)
 {
 	int c, pspflag = 0;
+	int retval = 0;
 #if PSP2
 	int psp2flag = 0;
 	uint32_t *psp2dir;
@@ -584,33 +585,42 @@ int main(int argc, char **argv)
 			if (*tmp != '\0') {
 				printf("Error: ROM size specified"
 					" incorrectly (%s)\n\n", optarg);
-				return 1;
+				retval = 1;
 			}
 			break;
 		case 'h':
 			usage();
-			return 1;
+			return 0;
 		default:
 			break;
 		}
 	}
 
 	if (!output) {
-		printf("Error: Output value is not specified.\n");
-		usage();
-		exit(1);
+		printf("Error: Output value is not specified.\n\n");
+		retval = 1;
+	}
+
+	if (!rom_size) {
+		printf("Error: ROM Size is not specified.\n\n");
+		retval = 1;
 	}
 
 	if (rom_size % 1024 != 0) {
 		printf("Error: ROM Size (%d bytes) should be a multiple of"
-			" 1024 bytes.\n", rom_size);
-		exit(1);
+			" 1024 bytes.\n\n", rom_size);
+		retval = 1;
 	}
 
 	if (rom_size < MIN_ROM_KB * 1024) {
-		printf("Error: ROM Size (%dKB) must be at least %dKB.\n",
+		printf("Error: ROM Size (%dKB) must be at least %dKB.\n\n",
 			rom_size / 1024, MIN_ROM_KB);
-		exit(1);
+		retval = 1;
+	}
+
+	if (retval) {
+		usage();
+		return retval;
 	}
 
 	printf("    AMDFWTOOL  Using ROM size of %dKB\n", rom_size / 1024);
@@ -618,7 +628,7 @@ int main(int argc, char **argv)
 	rom_base_address = 0xFFFFFFFF - rom_size + 1;
 	rom = malloc(rom_size);
 	if (!rom)
-		exit(1);
+		return 1;
 	memset (rom, 0xFF, rom_size);
 
 	current = AMD_ROMSIG_OFFSET;
@@ -679,9 +689,14 @@ int main(int argc, char **argv)
 #endif
 
 	targetfd = open(output, O_RDWR | O_CREAT | O_TRUNC, 0666);
-	write(targetfd, amd_romsig, current - AMD_ROMSIG_OFFSET);
-	close(targetfd);
-	free(rom);
+	if (targetfd >= 0) {
+		write(targetfd, amd_romsig, current - AMD_ROMSIG_OFFSET);
+		close(targetfd);
+	} else {
+		printf("Error: could not open file: %s\n", output);
+		retval = 1;
+	}
 
-	return 0;
+	free(rom);
+	return retval;
 }

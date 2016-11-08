@@ -84,7 +84,7 @@ static void default_superio_gpio_setup(void)
 	   GP1 GP2 GP3 GP4
 	    fd  17  88  14
 	*/
-	const device_t sio = PNP_DEV(0x2e, 0);
+	const pnp_devfn_t sio = PNP_DEV(0x2e, 0);
 
 	/* Enter super-io's configuration state. */
 	pnp_enter_conf_state(sio);

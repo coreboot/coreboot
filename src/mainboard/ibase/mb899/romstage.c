@@ -74,7 +74,7 @@ static void ich7_enable_lpc(void)
  */
 static void early_superio_config_w83627ehg(void)
 {
-	device_t dev;
+	pnp_devfn_t dev;
 
 	dev = DUMMY_DEV;
 	pnp_enter_ext_func_mode(dev);

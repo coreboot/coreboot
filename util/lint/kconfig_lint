@@ -85,6 +85,7 @@ sub Main {
 
     load_config($config_file) if ($config_file);
 
+    check_type();
     check_defaults();
     check_referenced_symbols();
 
@@ -273,6 +274,31 @@ sub check_for_def {
 }
 
 #-------------------------------------------------------------------------------
+# check_type - Make sure that all symbols have a type defined.
+#
+# Conflicting types are found when parsing the Kconfig tree.
+#-------------------------------------------------------------------------------
+sub check_type {
+
+    # loop through each defined symbol
+    foreach my $sym ( sort ( keys %symbols ) ) {
+
+        # Make sure there's a type set for the symbol
+        if (!defined $symbols{$sym}{type}) {
+
+            #loop through each instance of that symbol
+            for ( my $sym_num = 0 ; $sym_num <= $symbols{$sym}{count} ; $sym_num++ ) {
+
+                my $filename = $symbols{$sym}{$sym_num}{file};
+                my $line_no  = $symbols{$sym}{$sym_num}{line_no};
+
+                show_error("No type defined for symbol $sym defined at $filename:$line_no.");
+            }
+        }
+    }
+}
+
+#-------------------------------------------------------------------------------
 # check_is_enabled - The IS_ENABLED() macro is only valid for symbols of type
 # bool. It would probably work on type hex or int if the value was 0 or 1, but
 # this seems like a bad plan.  Using it on strings is dead out.
@@ -332,6 +358,9 @@ sub check_defaults {
 
                 my $filename = $symbols{$sym}{$sym_num}{file};
                 my $line_no  = $symbols{$sym}{$sym_num}{default}{$def_num}{default_line_no};
+
+                # Make sure there's a type set for the symbol
+                next if (!defined $symbols{$sym}{type});
 
                 # skip good defaults
                 if (! ((($symbols{$sym}{type} eq "hex") && ($symbols{$sym}{$sym_num}{default}{$def_num}{default} =~ /^0x/)) ||

@@ -89,6 +89,7 @@ Errors in Kconfig that are also caught by Kconfig itself:
   int in another location.
 - Type keywords (bool, int, hex, string) used outside of a config block.
 - Using a 'prompt' keyword not inside a config or choice block.
+- Symbols with no defined type.
 
 Errors in coreboot source files:
 - The IS_ENABLED macro is only valid for bool symbols.

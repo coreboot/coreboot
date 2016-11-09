@@ -49,6 +49,7 @@ static void mainboard_print_spd_info(uint8_t spd[])
 		printk(BIOS_INFO, "DDR3\n");
 		break;
 	case SPD_DRAM_LPDDR3:
+	case SPD_DRAM_LPDDR3_INTEL:
 		printk(BIOS_INFO, "LPDDR3\n");
 		break;
 	default:

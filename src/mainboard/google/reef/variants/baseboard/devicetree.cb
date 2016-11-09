@@ -95,6 +95,17 @@ chip soc/intel/apollolake
 		}
 	}"
 
+	# Limit digitizer speed to 400kHz with manually tuned values.
+	register "i2c[5]" = "{
+		.speed = I2C_SPEED_FAST,
+		.speed_config[0] = {
+			.speed = I2C_SPEED_FAST,
+			.scl_lcnt = 0xd0,
+			.scl_hcnt = 0x68,
+			.sda_hold = 0x27,
+		}
+	}"
+
 	# Minimum SLP S3 assertion width 28ms.
 	register "slp_s3_assertion_width_usecs" = "28000"
 

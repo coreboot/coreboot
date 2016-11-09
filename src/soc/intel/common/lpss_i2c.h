@@ -50,6 +50,15 @@ struct lpss_i2c_speed_config {
  */
 #define LPSS_I2C_SPEED_CONFIG_COUNT	4
 
+struct lpss_i2c_bus_config {
+	/* Bus should be enabled prior to ramstage with temporary base */
+	int early_init;
+	/* Bus speed in Hz, default is I2C_SPEED_FAST (400 KHz) */
+	enum i2c_speed speed;
+	/* Specific bus speed configuration */
+	struct lpss_i2c_speed_config speed_config[LPSS_I2C_SPEED_CONFIG_COUNT];
+};
+
 #define LPSS_I2C_SPEED_CONFIG(speedval,lcnt,hcnt,hold)	\
 	{						\
 		.speed = I2C_SPEED_ ## speedval,	\
@@ -67,37 +76,10 @@ struct lpss_i2c_speed_config {
 uintptr_t lpss_i2c_base_address(unsigned bus);
 
 /*
- * Generate speed configuration for requested controller and bus speed.
- *
- * This allows a SOC or board to automatically generate speed config to use
- * in firmware and provide to the OS.
- */
-int lpss_i2c_gen_speed_config(enum i2c_speed speed,
-			      struct lpss_i2c_speed_config *config);
-
-/*
- * Set raw speed configuration for given speed type.
- *
- * This allows a SOC or board to override the automatic bus speed calculation
- * and provided specific values for the driver to use.
- */
-int lpss_i2c_set_speed_config(unsigned bus,
-			      const struct lpss_i2c_speed_config *config);
-
-/*
  * Generate I2C timing information into the SSDT for the OS driver to consume,
  * optionally applying override values provided by the caller.
  */
-void lpss_i2c_acpi_fill_ssdt(const struct lpss_i2c_speed_config *override);
-
-/*
- * Set I2C bus speed for this controller.
- *
- * This allows an SOC or board to set the basic I2C bus speed.  Values for the
- * controller configuration registers will be calculated, for more specific
- * control the raw configuration can be provided to lpss_i2c_set_speed_config().
- */
-int lpss_i2c_set_speed(unsigned bus, enum i2c_speed speed);
+void lpss_i2c_acpi_fill_ssdt(const struct lpss_i2c_bus_config *bcfg);
 
 /*
  * Initialize this bus controller and set the speed.
@@ -108,6 +90,6 @@ int lpss_i2c_set_speed(unsigned bus, enum i2c_speed speed);
  * The SOC *must* define CONFIG_SOC_INTEL_COMMON_LPSS_I2C_CLOCK for the
  * bus speed calculation to be correct.
  */
-int lpss_i2c_init(unsigned bus, enum i2c_speed speed);
+int lpss_i2c_init(unsigned bus, const struct lpss_i2c_bus_config *bcfg);
 
 #endif

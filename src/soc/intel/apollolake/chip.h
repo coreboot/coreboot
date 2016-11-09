@@ -28,15 +28,6 @@
 #define CLKREQ_DISABLED		0xf
 #define APOLLOLAKE_I2C_DEV_MAX	8
 
-struct apollolake_i2c_config {
-	/* Bus should be enabled prior to ramstage with temporary base */
-	int early_init;
-	/* Bus speed in Hz, default is I2C_SPEED_FAST (400 KHz) */
-	enum i2c_speed speed;
-	/* Specific bus speed configuration */
-	struct lpss_i2c_speed_config speed_config[LPSS_I2C_SPEED_CONFIG_COUNT];
-};
-
 /* Serial IRQ control. SERIRQ_QUIET is the default (0). */
 enum serirq_mode {
 	SERIRQ_QUIET,
@@ -95,7 +86,7 @@ struct soc_intel_apollolake_config {
 	enum serirq_mode serirq_mode;
 
 	/* I2C bus configuration */
-	struct apollolake_i2c_config i2c[APOLLOLAKE_I2C_DEV_MAX];
+	struct lpss_i2c_bus_config i2c[APOLLOLAKE_I2C_DEV_MAX];
 
 	uint8_t gpe0_dw1; /* GPE0_63_32 STS/EN */
 	uint8_t gpe0_dw2; /* GPE0_95_64 STS/EN */

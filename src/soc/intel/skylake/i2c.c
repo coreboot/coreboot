@@ -56,24 +56,12 @@ static int i2c_dev_to_bus(struct device *dev)
 static void i2c_dev_init(struct device *dev)
 {
 	struct soc_intel_skylake_config *config = dev->chip_info;
-	const struct lpss_i2c_speed_config *sptr;
-	enum i2c_speed speed;
-	int i, bus = i2c_dev_to_bus(dev);
+	int bus = i2c_dev_to_bus(dev);
 
 	if (!config || bus < 0)
 		return;
 
-	speed = config->i2c[bus].speed ? : I2C_SPEED_FAST;
-	lpss_i2c_init(bus, speed);
-
-	/* Apply custom speed config if it has been set by the board */
-	for (i = 0; i < LPSS_I2C_SPEED_CONFIG_COUNT; i++) {
-		sptr = &config->i2c[bus].speed_config[i];
-		if (sptr->speed == speed) {
-			lpss_i2c_set_speed_config(bus, sptr);
-			break;
-		}
-	}
+	lpss_i2c_init(bus, &config->i2c[bus]);
 }
 
 /* Generate ACPI I2C device objects */
@@ -86,7 +74,7 @@ static void i2c_fill_ssdt(struct device *dev)
 		return;
 
 	acpigen_write_scope(acpi_device_path(dev));
-	lpss_i2c_acpi_fill_ssdt(config->i2c[bus].speed_config);
+	lpss_i2c_acpi_fill_ssdt(&config->i2c[bus]);
 	acpigen_pop_len();
 }
 

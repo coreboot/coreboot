@@ -20,6 +20,17 @@
 #include <soc/gpe.h>
 #include <soc/gpio.h>
 
+/* TCA6424A  I/O Expander */
+#define IO_EXPANDER_BUS		4
+#define IO_EXPANDER_0_ADDR	0x22
+#define IO_EXPANDER_P0CONF	0x0C	/* Port 0 conf offset */
+#define IO_EXPANDER_P0DOUT	0x04	/* Port 0 data offset */
+#define IO_EXPANDER_P1CONF	0x0D
+#define IO_EXPANDER_P1DOUT	0x05
+#define IO_EXPANDER_P2CONF	0x0E
+#define IO_EXPANDER_P2DOUT	0x06
+#define IO_EXPANDER_1_ADDR	0x23
+
 /* EC wake is LAN_WAKE# which is a special DeepSX wake pin */
 #define GPE_EC_WAKE		GPE0_LAN_WAK
 

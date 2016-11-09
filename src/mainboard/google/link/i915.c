@@ -231,9 +231,10 @@ static int run(int index)
 }
 
 int i915lightup_sandy(const struct i915_gpu_controller_info *info,
-		      u32 pphysbase, u16 piobase, u32 pmmio, u32 pgfx)
+		      u32 pphysbase, u16 piobase, u8 *pmmio, u32 pgfx)
 {
 	static struct edid edid;
+	const struct edid_mode *mode;
 	int edid_ok;
 
 	int index;
@@ -251,26 +252,28 @@ int i915lightup_sandy(const struct i915_gpu_controller_info *info,
 
 	edid_ok = decode_edid((unsigned char *)&link_edid_data,
 			      sizeof(link_edid_data), &edid);
+	mode = &edid.mode;
 	printk(BIOS_SPEW, "decode edid returns %d\n", edid_ok);
 	edid.framebuffer_bits_per_pixel = 32;
 
-	htotal = (edid.ha - 1) | ((edid.ha + edid.hbl- 1) << 16);
+	htotal = (mode->ha - 1) | ((mode->ha + mode->hbl - 1) << 16);
 	printk(BIOS_SPEW, "I915_WRITE(HTOTAL(pipe), %08x)\n", htotal);
 
-	hblank = (edid.ha  - 1) | ((edid.ha + edid.hbl- 1) << 16);
+	hblank = (mode->ha - 1) | ((mode->ha + mode->hbl - 1) << 16);
 	printk(BIOS_SPEW, "I915_WRITE(HBLANK(pipe),0x%08x)\n", hblank);
 
-	hsync = (edid.ha + edid.hso  - 1) |
-		((edid.ha + edid.hso + edid.hspw- 1) << 16);
+	hsync = (mode->ha + mode->hso - 1) |
+		((mode->ha + mode->hso + mode->hspw - 1) << 16);
 	printk(BIOS_SPEW, "I915_WRITE(HSYNC(pipe),0x%08x)\n", hsync);
 
-	vtotal = (edid.va - 1) | ((edid.va + edid.vbl- 1) << 16);
+	vtotal = (mode->va - 1) | ((mode->va + mode->vbl - 1) << 16);
 	printk(BIOS_SPEW, "I915_WRITE(VTOTAL(pipe), %08x)\n", vtotal);
 
-	vblank = (edid.va  - 1) | ((edid.va + edid.vbl- 1) << 16);
+	vblank = (mode->va - 1) | ((mode->va + mode->vbl - 1) << 16);
 	printk(BIOS_SPEW, "I915_WRITE(VBLANK(pipe),0x%08x)\n", vblank);
 
-	vsync = (edid.va + edid.vso  - 1) |((edid.va + edid.vso + edid.vspw- 1) << 16);
+	vsync = (mode->va + mode->vso - 1) |
+		((mode->va + mode->vso + mode->vspw - 1) << 16);
 	printk(BIOS_SPEW, "I915_WRITE(VSYNC(pipe),0x%08x)\n", vsync);
 
 	printk(BIOS_SPEW, "Table has %d elements\n", niodefs);

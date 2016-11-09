@@ -95,17 +95,6 @@ static void pch_enable_lpc(void)
 	/* Lookup device tree in romstage */
 	const struct device *dev;
 	const config_t *config;
-	u16 lpc_en;
-
-	/* IO Decode Range */
-	lpc_en = COMA_RANGE | (COMB_RANGE << 4);
-	pci_write_config16(PCH_DEV_LPC, LPC_IO_DEC, lpc_en);
-	pcr_write16(PID_DMI, R_PCH_PCR_DMI_LPCIOD, lpc_en);
-
-	/* IO Decode Enable */
-	lpc_en = COMA_LPC_EN | KBC_LPC_EN | MC_LPC_EN;
-	pci_write_config16(PCH_DEV_LPC, LPC_EN, lpc_en);
-	pcr_write16(PID_DMI, R_PCH_PCR_DMI_LPCIOE, lpc_en);
 
 	dev = dev_find_slot(0, PCI_DEVFN(PCH_DEV_SLOT_LPC, 0));
 	if (!dev || !dev->chip_info)
@@ -270,6 +259,22 @@ static void enable_heci(void)
 	pcireg = pci_read_config8(dev, PCI_COMMAND);
 	pcireg |= PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY;
 	pci_write_config8(dev, PCI_COMMAND, pcireg);
+}
+
+void pch_early_iorange_init(void)
+{
+	/* Lookup device tree in romstage */
+	u16 lpc_en;
+
+	/* IO Decode Range */
+	lpc_en = COMA_RANGE | (COMB_RANGE << 4);
+	pci_write_config16(PCH_DEV_LPC, LPC_IO_DEC, lpc_en);
+	pcr_write16(PID_DMI, R_PCH_PCR_DMI_LPCIOD, lpc_en);
+
+	/* IO Decode Enable */
+	lpc_en = CNF1_LPC_EN | COMA_LPC_EN | KBC_LPC_EN | MC_LPC_EN;
+	pci_write_config16(PCH_DEV_LPC, LPC_EN, lpc_en);
+	pcr_write16(PID_DMI, R_PCH_PCR_DMI_LPCIOE, lpc_en);
 }
 
 void pch_early_init(void)

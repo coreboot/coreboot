@@ -32,6 +32,7 @@ void pch_uart_init(void);
 void enable_smbus(void);
 void i2c_early_init(void);
 void pch_early_init(void);
+void pch_early_iorange_init(void);
 void report_platform_info(void);
 void report_memory_config(void);
 void set_max_freq(void);

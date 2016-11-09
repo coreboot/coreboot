@@ -191,7 +191,18 @@ chip soc/intel/apollolake
 				device i2c 15 on end
 			end
 		end # - I2C 4
-		device pci 17.1 on  end	# - I2C 5
+		device pci 17.1 on
+			chip drivers/i2c/wacom
+				register "generic" = "{
+					 .hid = WCOM50C1_HID,
+					 .cid = PNP0C50_CID,
+					 .desc = WCOM_DT_DESC,
+					 .irq = IRQ_LEVEL_LOW(GPIO_13_IRQ),
+				}"
+				register "hid_desc_reg_offset" = "0x1"
+				device i2c 0x9 on end
+			end
+		end	# - I2C 5
 		device pci 17.2 on  end	# - I2C 6
 		device pci 17.3 on  end	# - I2C 7
 		device pci 18.0 on  end	# - UART 0

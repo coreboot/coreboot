@@ -42,7 +42,7 @@ config DRIVERS_I2C_DA7219
 config DRIVERS_I2C_GENERIC
 	default y
 
-config DRIVERS_I2C_WACOM_TS
+config DRIVERS_I2C_WACOM
 	default y
 
 config DRIVERS_PS2_KEYBOARD

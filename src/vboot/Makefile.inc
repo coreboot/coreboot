@@ -105,7 +105,6 @@ $(VB2_LIB): $(obj)/config.h
 libverstage-srcs += $(VB2_LIB)
 
 ifeq ($(CONFIG_SEPARATE_VERSTAGE),y)
-romstage-srcs += $(VB2_LIB)
 cbfs-files-$(CONFIG_SEPARATE_VERSTAGE) += $(CONFIG_CBFS_PREFIX)/verstage
 $(CONFIG_CBFS_PREFIX)/verstage-file := $(objcbfs)/verstage.elf
 $(CONFIG_CBFS_PREFIX)/verstage-type := stage

@@ -160,11 +160,11 @@ chip soc/intel/skylake
 	register "usb3_ports[2]" = "USB3_PORT_EMPTY"	# Empty
 	register "usb3_ports[3]" = "USB3_PORT_EMPTY"	# Empty
 
-	register "i2c[0].voltage" = "I2C_VOLTAGE_3V3"	# Touchscreen
-	register "i2c[1].voltage" = "I2C_VOLTAGE_3V3"	# TPM
-	register "i2c[2].voltage" = "I2C_VOLTAGE_1V8"	# Touchpad
-	register "i2c[3].voltage" = "I2C_VOLTAGE_1V8"	# Display
-	register "i2c[4].voltage" = "I2C_VOLTAGE_1V8"	# Audio
+	register "i2c_voltage[0]" = "I2C_VOLTAGE_3V3"	# Touchscreen
+	register "i2c_voltage[1]" = "I2C_VOLTAGE_3V3"	# TPM
+	register "i2c_voltage[2]" = "I2C_VOLTAGE_1V8"	# Touchpad
+	register "i2c_voltage[3]" = "I2C_VOLTAGE_1V8"	# Display
+	register "i2c_voltage[4]" = "I2C_VOLTAGE_1V8"	# Audio
 
 	# Enable I2C1 bus early for TPM access
 	register "i2c[1].early_init" = "1"

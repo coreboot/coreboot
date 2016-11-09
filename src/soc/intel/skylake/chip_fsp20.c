@@ -203,7 +203,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->CpuConfig.Bits.SkipMpInit = config->FspSkipMpInit;
 
 	for (i = 0; i < ARRAY_SIZE(config->i2c); i++)
-		params->SerialIoI2cVoltage[i] = config->i2c[i].voltage;
+		params->SerialIoI2cVoltage[i] = config->i2c_voltage[i];
 
 	for (i = 0; i < ARRAY_SIZE(config->domain_vr_config); i++)
 		fill_vr_domain_config(params, i, &config->domain_vr_config[i]);

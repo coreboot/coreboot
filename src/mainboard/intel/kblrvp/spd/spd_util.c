@@ -19,7 +19,7 @@
 #include <string.h>
 #include <soc/pei_data.h>
 #include <soc/pei_wrapper.h>
-#include "boardid.h"
+#include "../board_id.h"
 #include "spd.h"
 
 void mainboard_fill_dq_map_data(void *dq_map_ptr)
@@ -65,7 +65,7 @@ uintptr_t mainboard_get_spd_data(void)
 	int spd_index, spd_span;
 	size_t spd_file_len;
 
-	spd_index = 0;
+	spd_index = (get_board_id() >> 5) & 0xF;
 	printk(BIOS_INFO, "SPD index %d\n", spd_index);
 
 	/* Load SPD data from CBFS */

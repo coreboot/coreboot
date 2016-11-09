@@ -46,8 +46,6 @@ static void i2c_early_init_bus(unsigned bus)
 {
 	ROMSTAGE_CONST struct soc_intel_skylake_config *config;
 	ROMSTAGE_CONST struct device *tree_dev;
-	const struct lpss_i2c_speed_config *sptr;
-	enum i2c_speed speed;
 	pci_devfn_t dev;
 	int devfn;
 	uintptr_t base;
@@ -86,17 +84,7 @@ static void i2c_early_init_bus(unsigned bus)
 	write32(reg, value);
 
 	/* Initialize the controller */
-	speed = config->i2c[bus].speed ? : I2C_SPEED_FAST;
-	lpss_i2c_init(bus, speed);
-
-	/* Apply custom speed config if it has been set by the board */
-	for (value = 0; value < LPSS_I2C_SPEED_CONFIG_COUNT; value++) {
-		sptr = &config->i2c[bus].speed_config[value];
-		if (sptr->speed == speed) {
-			lpss_i2c_set_speed_config(bus, sptr);
-			break;
-		}
-	}
+	lpss_i2c_init(bus, &config->i2c[bus]);
 }
 
 void i2c_early_init(void)

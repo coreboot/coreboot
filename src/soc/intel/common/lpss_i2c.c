@@ -370,39 +370,8 @@ static void lpss_i2c_acpi_write_speed_config(
 	acpigen_pop_len();
 }
 
-void lpss_i2c_acpi_fill_ssdt(const struct lpss_i2c_speed_config *override)
-{
-	const struct lpss_i2c_speed_config *sptr;
-	struct lpss_i2c_speed_config sgen;
-	enum i2c_speed speeds[LPSS_I2C_SPEED_CONFIG_COUNT] = {
-		I2C_SPEED_STANDARD,
-		I2C_SPEED_FAST,
-		I2C_SPEED_FAST_PLUS,
-		I2C_SPEED_HIGH,
-	};
-	int i;
-
-	/* Report timing values for the OS driver */
-	for (i = 0; i < LPSS_I2C_SPEED_CONFIG_COUNT; i++) {
-		/* Generate speed config for default case */
-		if (lpss_i2c_gen_speed_config(speeds[i], &sgen) < 0)
-			continue;
-
-		/* Apply board specific override for this speed if found */
-		for (sptr = override; sptr && sptr->speed; sptr++) {
-			if (sptr->speed == speeds[i]) {
-				memcpy(&sgen, sptr, sizeof(sgen));
-				break;
-			}
-		}
-
-		/* Generate ACPI based on selected speed config */
-		lpss_i2c_acpi_write_speed_config(&sgen);
-	}
-}
-
-int lpss_i2c_set_speed_config(unsigned bus,
-			      const struct lpss_i2c_speed_config *config)
+static int lpss_i2c_set_speed_config(unsigned bus,
+				const struct lpss_i2c_speed_config *config)
 {
 	struct lpss_i2c_regs *regs;
 	void *hcnt_reg, *lcnt_reg;
@@ -442,15 +411,25 @@ int lpss_i2c_set_speed_config(unsigned bus,
 	return 0;
 }
 
-int lpss_i2c_gen_speed_config(enum i2c_speed speed,
-			      struct lpss_i2c_speed_config *config)
+static int lpss_i2c_gen_speed_config(enum i2c_speed speed,
+					const struct lpss_i2c_bus_config *bcfg,
+					struct lpss_i2c_speed_config *config)
 {
 	const int ic_clk = CONFIG_SOC_INTEL_COMMON_LPSS_I2C_CLOCK_MHZ;
 	uint16_t hcnt_min, lcnt_min;
+	int i;
 
 	/* Clock must be provided by Kconfig */
-	if (!ic_clk || !config)
+	if (!ic_clk)
 		return -1;
+
+	/* Apply board specific override for this speed if found */
+	for (i = 0; i < LPSS_I2C_SPEED_CONFIG_COUNT; i++) {
+		if (bcfg->speed_config[i].speed != speed)
+			continue;
+		memcpy(config, &bcfg->speed_config[i], sizeof(*config));
+		return 0;
+	}
 
 	if (speed >= I2C_SPEED_HIGH) {
 		/* High speed */
@@ -478,7 +457,8 @@ int lpss_i2c_gen_speed_config(enum i2c_speed speed,
 	return 0;
 }
 
-int lpss_i2c_set_speed(unsigned bus, enum i2c_speed speed)
+static int lpss_i2c_set_speed(unsigned bus, enum i2c_speed speed,
+				const struct lpss_i2c_bus_config *bcfg)
 {
 	struct lpss_i2c_regs *regs;
 	struct lpss_i2c_speed_config config;
@@ -504,7 +484,7 @@ int lpss_i2c_set_speed(unsigned bus, enum i2c_speed speed)
 	}
 
 	/* Generate speed config based on clock */
-	if (lpss_i2c_gen_speed_config(speed, &config) < 0)
+	if (lpss_i2c_gen_speed_config(speed, bcfg, &config) < 0)
 		return -1;
 
 	/* Select this speed in the control register */
@@ -516,9 +496,40 @@ int lpss_i2c_set_speed(unsigned bus, enum i2c_speed speed)
 	return 0;
 }
 
-int lpss_i2c_init(unsigned bus, enum i2c_speed speed)
+void lpss_i2c_acpi_fill_ssdt(const struct lpss_i2c_bus_config *bcfg)
+{
+	struct lpss_i2c_speed_config sgen;
+	enum i2c_speed speeds[LPSS_I2C_SPEED_CONFIG_COUNT] = {
+		I2C_SPEED_STANDARD,
+		I2C_SPEED_FAST,
+		I2C_SPEED_FAST_PLUS,
+		I2C_SPEED_HIGH,
+	};
+	int i;
+
+	if (!bcfg)
+		return;
+
+	/* Report timing values for the OS driver */
+	for (i = 0; i < LPSS_I2C_SPEED_CONFIG_COUNT; i++) {
+		/* Generate speed config. */
+		if (lpss_i2c_gen_speed_config(speeds[i], bcfg, &sgen) < 0)
+			continue;
+
+		/* Generate ACPI based on selected speed config */
+		lpss_i2c_acpi_write_speed_config(&sgen);
+	}
+}
+
+int lpss_i2c_init(unsigned bus, const struct lpss_i2c_bus_config *bcfg)
 {
 	struct lpss_i2c_regs *regs;
+	enum i2c_speed speed;
+
+	if (!bcfg)
+		return -1;
+
+	speed = bcfg->speed ? : I2C_SPEED_FAST;
 
 	regs = (struct lpss_i2c_regs *)lpss_i2c_base_address(bus);
 	if (!regs) {
@@ -536,7 +547,7 @@ int lpss_i2c_init(unsigned bus, enum i2c_speed speed)
 		CONTROL_RESTART_ENABLE);
 
 	/* Set bus speed to FAST by default */
-	if (lpss_i2c_set_speed(bus, speed ? : I2C_SPEED_FAST) < 0) {
+	if (lpss_i2c_set_speed(bus, speed, bcfg) < 0) {
 		printk(BIOS_ERR, "I2C failed to set speed for bus %u\n", bus);
 		return -1;
 	}
@@ -549,7 +560,7 @@ int lpss_i2c_init(unsigned bus, enum i2c_speed speed)
 	write32(&regs->intr_mask, INTR_STAT_STOP_DET);
 
 	printk(BIOS_INFO, "LPSS I2C bus %u at 0x%p (%u KHz)\n",
-	       bus, regs, (speed ? : I2C_SPEED_FAST) / KHz);
+	       bus, regs, speed / KHz);
 
 	return 0;
 }

@@ -18,9 +18,9 @@
 #include <stdint.h>
 #include "chip.h"
 
-static void i2c_wacom_ts_fill_dsm(struct device *dev)
+static void i2c_wacom_fill_dsm(struct device *dev)
 {
-	struct drivers_i2c_wacom_ts_config *config = dev->chip_info;
+	struct drivers_i2c_wacom_config *config = dev->chip_info;
 	struct dsm_i2c_hid_config dsm_config = {
 		.hid_desc_reg_offset = config->hid_desc_reg_offset,
 	};
@@ -28,32 +28,32 @@ static void i2c_wacom_ts_fill_dsm(struct device *dev)
 	acpigen_write_dsm_i2c_hid(&dsm_config);
 }
 
-static void i2c_wacom_ts_fill_ssdt_generator(struct device *dev)
+static void i2c_wacom_fill_ssdt_generator(struct device *dev)
 {
-	i2c_generic_fill_ssdt(dev, &i2c_wacom_ts_fill_dsm);
+	i2c_generic_fill_ssdt(dev, &i2c_wacom_fill_dsm);
 }
 
-static const char *i2c_wacom_ts_acpi_name(struct device *dev)
+static const char *i2c_wacom_acpi_name(struct device *dev)
 {
-	return "WCTS";
+	return "WCOM";
 }
 
-static struct device_operations i2c_wacom_ts_ops = {
+static struct device_operations i2c_wacom_ops = {
 	.read_resources		  = DEVICE_NOOP,
 	.set_resources		  = DEVICE_NOOP,
 	.enable_resources	  = DEVICE_NOOP,
 #if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
-	.acpi_name		  = &i2c_wacom_ts_acpi_name,
-	.acpi_fill_ssdt_generator = &i2c_wacom_ts_fill_ssdt_generator,
+	.acpi_name		  = &i2c_wacom_acpi_name,
+	.acpi_fill_ssdt_generator = &i2c_wacom_fill_ssdt_generator,
 #endif
 };
 
-static void i2c_wacom_ts_enable(struct device *dev)
+static void i2c_wacom_enable(struct device *dev)
 {
-	dev->ops = &i2c_wacom_ts_ops;
+	dev->ops = &i2c_wacom_ops;
 }
 
-struct chip_operations drivers_i2c_wacom_ts_ops = {
-	CHIP_NAME("Wacom Touchscreen Device")
-	.enable_dev = &i2c_wacom_ts_enable
+struct chip_operations drivers_i2c_wacom_ops = {
+	CHIP_NAME("Wacom I2C Device")
+	.enable_dev = &i2c_wacom_enable
 };

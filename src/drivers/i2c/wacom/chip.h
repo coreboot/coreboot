@@ -13,8 +13,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __I2C_WACOM_TS_CHIP_H__
-#define __I2C_WACOM_TS_CHIP_H__
+#ifndef __I2C_WACOM_CHIP_H__
+#define __I2C_WACOM_CHIP_H__
 
 #include <drivers/i2c/generic/chip.h>
 
@@ -22,10 +22,11 @@
 #define WCOMNTN2_HID		"WCOMNTN2"
 #define PNP0C50_CID		"PNP0C50"
 #define WCOM_TS_DESC		"WCOM Touchscreen"
+#define WCOM_DT_DESC		"WCOM Digitizer"
 
-struct drivers_i2c_wacom_ts_config {
+struct drivers_i2c_wacom_config {
 	struct drivers_i2c_generic_config generic;
 	uint8_t hid_desc_reg_offset;
 };
 
-#endif /* __I2C_WACOM_TS_CHIP_H__ */
+#endif /* __I2C_WACOM_CHIP_H__ */

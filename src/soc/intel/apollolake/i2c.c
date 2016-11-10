@@ -77,7 +77,7 @@ static void i2c_fill_ssdt(struct device *dev)
 		return;
 
 	acpigen_write_scope(acpi_device_path(dev));
-	lpss_i2c_acpi_fill_ssdt(&config->i2c[bus]);
+	lpss_i2c_acpi_fill_ssdt(bus, &config->i2c[bus]);
 	acpigen_pop_len();
 }
 

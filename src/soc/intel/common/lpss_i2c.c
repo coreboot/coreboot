@@ -24,6 +24,8 @@
 #include <timer.h>
 #include "lpss_i2c.h"
 
+#define LPSS_DEBUG BIOS_NEVER
+
 struct lpss_i2c_regs {
 	uint32_t control;
 	uint32_t target_addr;
@@ -94,6 +96,78 @@ enum {
 	MIN_HS_SCL_LOWTIME		= 160,
 };
 
+/* Frequency represented as ticks per ns. Can also be used to calculate
+ * the number of ticks to meet a time target or the period. */
+struct freq {
+	uint32_t ticks;
+	uint32_t ns;
+};
+
+static const struct i2c_descriptor {
+	enum i2c_speed speed;
+	struct freq freq;
+	int min_thigh_ns;
+	int min_tlow_ns;
+} speed_descriptors[] = {
+	{
+		.speed = I2C_SPEED_STANDARD,
+		.freq = {
+			.ticks = 100,
+			.ns = 1000*1000,
+		},
+		.min_thigh_ns = MIN_SS_SCL_HIGHTIME,
+		.min_tlow_ns = MIN_SS_SCL_LOWTIME,
+	},
+	{
+		.speed = I2C_SPEED_FAST,
+		.freq = {
+			.ticks = 400,
+			.ns = 1000*1000,
+		},
+		.min_thigh_ns = MIN_FS_SCL_HIGHTIME,
+		.min_tlow_ns = MIN_FS_SCL_LOWTIME,
+	},
+	{
+		.speed = I2C_SPEED_FAST_PLUS,
+		.freq = {
+			.ticks = 1,
+			.ns = 1000,
+		},
+		.min_thigh_ns = MIN_FP_SCL_HIGHTIME,
+		.min_tlow_ns = MIN_FP_SCL_LOWTIME,
+	},
+	{
+		/* 100pF max capacitance */
+		.speed = I2C_SPEED_HIGH,
+		.freq = {
+			.ticks = 3400,
+			.ns = 1000*1000,
+		},
+		.min_thigh_ns = MIN_HS_SCL_HIGHTIME,
+		.min_tlow_ns = MIN_HS_SCL_LOWTIME,
+	},
+};
+
+static const struct soc_clock {
+	int clk_speed_mhz;
+	struct freq freq;
+} soc_clocks[] = {
+	{
+		.clk_speed_mhz = 120,
+		.freq = {
+			.ticks = 120,
+			.ns = 1000,
+		},
+	},
+	{
+		.clk_speed_mhz = 133,
+		.freq = {
+			.ticks = 400,
+			.ns = 3000,
+		},
+	},
+};
+
 /* Control register definitions */
 enum {
 	CONTROL_MASTER_MODE		= (1 << 0),
@@ -144,6 +218,38 @@ enum {
 	INTR_STAT_START_DET		= (1 << 10),
 	INTR_STAT_GEN_CALL		= (1 << 11),
 };
+
+static const struct i2c_descriptor *get_bus_descriptor(enum i2c_speed speed)
+{
+	size_t i;
+
+	for (i = 0; i < ARRAY_SIZE(speed_descriptors); i++)
+		if (speed == speed_descriptors[i].speed)
+			return &speed_descriptors[i];
+
+	return NULL;
+}
+
+static const struct soc_clock *get_soc_descriptor(int ic_clk)
+{
+	size_t i;
+
+	for (i = 0; i < ARRAY_SIZE(soc_clocks); i++)
+		if (ic_clk == soc_clocks[i].clk_speed_mhz)
+			return &soc_clocks[i];
+
+	return NULL;
+}
+
+static int counts_from_time(const struct freq *f, int ns)
+{
+	return DIV_ROUND_UP(f->ticks * ns, f->ns);
+}
+
+static int counts_from_freq(const struct freq *fast, const struct freq *slow)
+{
+	return DIV_ROUND_UP(fast->ticks * slow->ns, fast->ns * slow->ticks);
+}
 
 /* Enable this I2C controller */
 static void lpss_i2c_enable(struct lpss_i2c_regs *regs)
@@ -411,7 +517,91 @@ static int lpss_i2c_set_speed_config(unsigned bus,
 	return 0;
 }
 
-static int lpss_i2c_gen_speed_config(enum i2c_speed speed,
+static int lpss_i2c_gen_config_rise_fall_time(struct lpss_i2c_regs *regs,
+					enum i2c_speed speed,
+					const struct lpss_i2c_bus_config *bcfg,
+					int ic_clk,
+					struct lpss_i2c_speed_config *config)
+{
+	const struct i2c_descriptor *bus;
+	const struct soc_clock *soc;
+	int fall_cnt, rise_cnt, min_tlow_cnt, min_thigh_cnt, spk_cnt;
+	int hcnt, lcnt, period_cnt, diff, tot;
+
+	bus = get_bus_descriptor(speed);
+	soc = get_soc_descriptor(ic_clk);
+
+	if (bus == NULL) {
+		printk(BIOS_ERR, "lpss_i2c: invalid bus speed %d\n",
+			config->speed);
+		return -1;
+	}
+
+	if (soc == NULL) {
+		printk(BIOS_ERR, "lpss_i2c: invalid SoC clock speed %d MHz\n",
+			soc->clk_speed_mhz);
+		return -1;
+	}
+
+	/* Get the proper spike suppression count based on target speed. */
+	if (speed >= I2C_SPEED_HIGH)
+		spk_cnt = read32(&regs->hs_spklen);
+	else
+		spk_cnt = read32(&regs->fs_spklen);
+
+	/* Find the period, rise, fall, min tlow, and min thigh in terms of
+	 * counts of SoC clock. */
+	period_cnt = counts_from_freq(&soc->freq, &bus->freq);
+	rise_cnt = counts_from_time(&soc->freq, bcfg->rise_time_ns);
+	fall_cnt = counts_from_time(&soc->freq, bcfg->fall_time_ns);
+	min_tlow_cnt = counts_from_time(&soc->freq, bus->min_tlow_ns);
+	min_thigh_cnt = counts_from_time(&soc->freq, bus->min_thigh_ns);
+
+	printk(LPSS_DEBUG, "lpss_i2c: SoC %d/%d ns Bus: %d/%d ns\n",
+		soc->freq.ticks, soc->freq.ns, bus->freq.ticks, bus->freq.ns);
+	printk(LPSS_DEBUG, "lpss_i2c: period %d rise %d fall %d tlow %d thigh %d spk %d\n",
+		period_cnt, rise_cnt, fall_cnt, min_tlow_cnt, min_thigh_cnt,
+		spk_cnt);
+
+	/*
+	 * Back solve for hcnt and lcnt according to the following equations.
+	 * SCL_High_time = [(HCNT + IC_*_SPKLEN + 7) * ic_clk] + SCL_Fall_time
+	 * SCL_Low_time = [(LCNT + 1) * ic_clk] - SCL_Fall_time + SCL_Rise_time
+	 */
+	hcnt = min_thigh_cnt - fall_cnt - 7 - spk_cnt;
+	lcnt = min_tlow_cnt - rise_cnt + fall_cnt - 1;
+
+	if (hcnt < 0 || lcnt < 0) {
+		printk(BIOS_ERR, "lpss_i2c: bad counts. hcnt = %d lcnt = %d\n",
+			hcnt, lcnt);
+		return -1;
+	}
+
+	/* Now add things back up to ensure the period is hit. If off,
+	 * split the difference and bias to lcnt for remainder. */
+	tot = hcnt + lcnt + 7 + spk_cnt + rise_cnt + 1;
+
+	if (tot < period_cnt) {
+		diff = (period_cnt - tot) / 2;
+		hcnt += diff;
+		lcnt += diff;
+		tot = hcnt + lcnt + 7 + spk_cnt + rise_cnt + 1;
+		lcnt += period_cnt - tot;
+	}
+
+	config->speed = speed;
+	config->scl_lcnt = lcnt;
+	config->scl_hcnt = hcnt;
+	config->sda_hold = counts_from_time(&soc->freq, DEFAULT_SDA_HOLD_TIME);
+
+	printk(LPSS_DEBUG, "lpss_i2c: hcnt = %d lcnt = %d sda hold = %d\n",
+		hcnt, lcnt, config->sda_hold);
+
+	return 0;
+}
+
+static int lpss_i2c_gen_speed_config(struct lpss_i2c_regs *regs,
+					enum i2c_speed speed,
 					const struct lpss_i2c_bus_config *bcfg,
 					struct lpss_i2c_speed_config *config)
 {
@@ -430,6 +620,11 @@ static int lpss_i2c_gen_speed_config(enum i2c_speed speed,
 		memcpy(config, &bcfg->speed_config[i], sizeof(*config));
 		return 0;
 	}
+
+	/* If rise time is set use the time calculation. */
+	if (bcfg->rise_time_ns)
+		return lpss_i2c_gen_config_rise_fall_time(regs, speed, bcfg,
+							ic_clk, config);
 
 	if (speed >= I2C_SPEED_HIGH) {
 		/* High speed */
@@ -484,7 +679,7 @@ static int lpss_i2c_set_speed(unsigned bus, enum i2c_speed speed,
 	}
 
 	/* Generate speed config based on clock */
-	if (lpss_i2c_gen_speed_config(speed, bcfg, &config) < 0)
+	if (lpss_i2c_gen_speed_config(regs, speed, bcfg, &config) < 0)
 		return -1;
 
 	/* Select this speed in the control register */
@@ -496,8 +691,10 @@ static int lpss_i2c_set_speed(unsigned bus, enum i2c_speed speed,
 	return 0;
 }
 
-void lpss_i2c_acpi_fill_ssdt(const struct lpss_i2c_bus_config *bcfg)
+void lpss_i2c_acpi_fill_ssdt(unsigned bus,
+				const struct lpss_i2c_bus_config *bcfg)
 {
+	struct lpss_i2c_regs *regs;
 	struct lpss_i2c_speed_config sgen;
 	enum i2c_speed speeds[LPSS_I2C_SPEED_CONFIG_COUNT] = {
 		I2C_SPEED_STANDARD,
@@ -510,10 +707,14 @@ void lpss_i2c_acpi_fill_ssdt(const struct lpss_i2c_bus_config *bcfg)
 	if (!bcfg)
 		return;
 
+	regs = (struct lpss_i2c_regs *)lpss_i2c_base_address(bus);
+	if (!regs)
+		return;
+
 	/* Report timing values for the OS driver */
 	for (i = 0; i < LPSS_I2C_SPEED_CONFIG_COUNT; i++) {
 		/* Generate speed config. */
-		if (lpss_i2c_gen_speed_config(speeds[i], bcfg, &sgen) < 0)
+		if (lpss_i2c_gen_speed_config(regs, speeds[i], bcfg, &sgen) < 0)
 			continue;
 
 		/* Generate ACPI based on selected speed config */

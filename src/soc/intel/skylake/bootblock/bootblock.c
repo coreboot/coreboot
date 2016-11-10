@@ -28,7 +28,7 @@ void bootblock_soc_early_init(void)
 	bootblock_pch_early_init();
 	bootblock_cpu_init();
 
-	if (IS_ENABLED(CONFIG_BOOTBLOCK_CONSOLE))
+	if (IS_ENABLED(CONFIG_UART_DEBUG))
 		pch_uart_init();
 }
 

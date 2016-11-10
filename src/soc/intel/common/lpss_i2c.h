@@ -55,6 +55,12 @@ struct lpss_i2c_bus_config {
 	int early_init;
 	/* Bus speed in Hz, default is I2C_SPEED_FAST (400 KHz) */
 	enum i2c_speed speed;
+	/* If rise_time_ns is non-zero the calculations for lcnt and hcnt
+	 * registers take into account the times of the bus. However, if
+	 * there is a match in speed_config those register values take
+	 * precedence. */
+	int rise_time_ns;
+	int fall_time_ns;
 	/* Specific bus speed configuration */
 	struct lpss_i2c_speed_config speed_config[LPSS_I2C_SPEED_CONFIG_COUNT];
 };
@@ -79,7 +85,8 @@ uintptr_t lpss_i2c_base_address(unsigned bus);
  * Generate I2C timing information into the SSDT for the OS driver to consume,
  * optionally applying override values provided by the caller.
  */
-void lpss_i2c_acpi_fill_ssdt(const struct lpss_i2c_bus_config *bcfg);
+void lpss_i2c_acpi_fill_ssdt(unsigned bus,
+				const struct lpss_i2c_bus_config *bcfg);
 
 /*
  * Initialize this bus controller and set the speed.

@@ -556,16 +556,9 @@ config HAVE_ACPI_RESUME
 	bool
 	default n
 
-config ACPI_TINY_LOWMEM_BACKUP
-	bool
-	default n
-	help
-	  On S3 resume path, backup only the region of low memory ramstage
-	  will occupy. Requires platform places romstage ramstack in CBMEM.
-
 config ACPI_HUGE_LOWMEM_BACKUP
 	bool
-	default !ACPI_TINY_LOWMEM_BACKUP
+	default n
 	help
 	  On S3 resume path, backup low memory from RAMBASE..RAMTOP in CBMEM.
 

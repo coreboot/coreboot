@@ -14,6 +14,9 @@
 ##
 
 ## include generic nuvoton pre-ram stage driver
+ifeq ($(CONFIG_BOOTBLOCK_CONSOLE),y)
+bootblock-$(CONFIG_SUPERIO_NUVOTON_COMMON_ROMSTAGE) += common/early_serial.c
+endif
 romstage-$(CONFIG_SUPERIO_NUVOTON_COMMON_ROMSTAGE) += common/early_serial.c
 
 subdirs-$(CONFIG_SUPERIO_NUVOTON_WPCM450) += wpcm450

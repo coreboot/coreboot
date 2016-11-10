@@ -12,7 +12,6 @@
  */
 
 #include <antirollback.h>
-#include <arch/early_variables.h>
 #include <arch/io.h>
 #include <arch/cpu.h>
 #include <arch/symbols.h>
@@ -33,22 +32,6 @@
 #include <tpm_lite/tlcl.h>
 #include <vboot/vboot_common.h>
 #include <vb2_api.h>
-
-static uint8_t tpm_init_done CAR_GLOBAL;
-
-static int mrc_cache_tpm_init(void)
-{
-	uint8_t done = car_get_var(tpm_init_done);
-
-	if (done)
-		return 0;
-
-	if (tlcl_lib_init() != VB2_SUCCESS)
-		return -1;
-
-	car_set_var(tpm_init_done, 1);
-	return 0;
-}
 
 static void mrc_cache_update_tpm_hash(const uint8_t *data, size_t size)
 {
@@ -74,7 +57,7 @@ static void mrc_cache_update_tpm_hash(const uint8_t *data, size_t size)
 		return;
 
 	/* Initialize TPM driver. */
-	if (mrc_cache_tpm_init()) {
+	if (tlcl_lib_init() != VB2_SUCCESS) {
 		printk(BIOS_ERR, "MRC: TPM driver initialization failed.\n");
 		return;
 	}
@@ -206,7 +189,7 @@ static int mrc_cache_verify_tpm_hash(const uint8_t *data, size_t size)
 	}
 
 	/* Initialize TPM driver. */
-	if (mrc_cache_tpm_init()) {
+	if (tlcl_lib_init() != VB2_SUCCESS) {
 		printk(BIOS_ERR, "MRC: TPM driver initialization failed.\n");
 		return 0;
 	}

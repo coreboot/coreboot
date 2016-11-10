@@ -157,16 +157,22 @@ uint32_t tlcl_get_flags(uint8_t *disable, uint8_t *deactivated,
 	return TPM_SUCCESS;
 }
 
+static uint8_t tlcl_init_done CAR_GLOBAL;
+
+/* This function is called directly by vboot, uses vboot return types. */
 uint32_t tlcl_lib_init(void)
 {
-	/*
-	 * This function is called directly by vboot, uses vboot return
-	 * types.
-	 */
+	uint8_t done = car_get_var(tlcl_init_done);
+	if (done)
+		return VB2_SUCCESS;
+
 	if (tis_init())
 		return VB2_ERROR_UNKNOWN;
 	if (tis_open())
 		return VB2_ERROR_UNKNOWN;
+
+	car_set_var(tlcl_init_done, 1);
+
 	return VB2_SUCCESS;
 }
 

@@ -154,6 +154,24 @@ static int filter_vga_wrcomb(struct device *dev, struct resource *res)
 	return 1;
 }
 
+static void print_physical_address_space(const struct memranges *addr_space,
+					const char *identifier)
+{
+	const struct range_entry *r;
+
+	if (identifier)
+		printk(BIOS_DEBUG, "MTRR: %s Physical address space:\n",
+			identifier);
+	else
+		printk(BIOS_DEBUG, "MTRR: Physical address space:\n");
+
+	memranges_each_entry(r, addr_space)
+		printk(BIOS_DEBUG,
+		       "0x%016llx - 0x%016llx size 0x%08llx type %ld\n",
+		       range_entry_base(r), range_entry_end(r),
+		       range_entry_size(r), range_entry_tag(r));
+}
+
 static struct memranges *get_physical_address_space(void)
 {
 	static struct memranges *addr_space;
@@ -163,7 +181,6 @@ static struct memranges *get_physical_address_space(void)
 	 *  uncacheable ranges, such as graphics memory, at resource insertion
 	 * time remove uncacheable regions from the cacheable ones. */
 	if (addr_space == NULL) {
-		struct range_entry *r;
 		unsigned long mask;
 		unsigned long match;
 
@@ -193,12 +210,7 @@ static struct memranges *get_physical_address_space(void)
 		                           RANGE_TO_PHYS_ADDR(RANGE_4GB),
 		                           MTRR_TYPE_UNCACHEABLE);
 
-		printk(BIOS_DEBUG, "MTRR: Physical address space:\n");
-		memranges_each_entry(r, addr_space)
-			printk(BIOS_DEBUG,
-			       "0x%016llx - 0x%016llx size 0x%08llx type %ld\n",
-			       range_entry_base(r), range_entry_end(r),
-			       range_entry_size(r), range_entry_tag(r));
+		print_physical_address_space(addr_space, NULL);
 	}
 
 	return addr_space;
@@ -380,11 +392,10 @@ struct var_mtrr_state {
 
 static void clear_var_mtrr(int index)
 {
-	msr_t msr_val;
+	msr_t msr = { .lo = 0, .hi = 0 };
 
-	msr_val = rdmsr(MTRR_PHYS_MASK(index));
-	msr_val.lo &= ~MTRR_PHYS_MASK_VALID;
-	wrmsr(MTRR_PHYS_MASK(index), msr_val);
+	wrmsr(MTRR_PHYS_BASE(index), msr);
+	wrmsr(MTRR_PHYS_MASK(index), msr);
 }
 
 static void prep_var_mtrr(struct var_mtrr_state *var_state,
@@ -817,3 +828,60 @@ void x86_mtrr_check(void)
 
 	post_code(0x93);
 }
+
+static bool put_back_original_solution;
+
+void mtrr_use_temp_range(uintptr_t begin, size_t size, int type)
+{
+	const struct range_entry *r;
+	const struct memranges *orig;
+	struct var_mtrr_solution sol;
+	struct memranges addr_space;
+	const int above4gb = 1; /* Cover above 4GiB by default. */
+	int address_bits;
+
+	/* Make a copy of the original address space and tweak it with the
+	 * provided range. */
+	memranges_init_empty(&addr_space, NULL, 0);
+	orig = get_physical_address_space();
+	memranges_each_entry(r, orig) {
+		unsigned long tag = range_entry_tag(r);
+
+		/* Remove any special tags from original solution. */
+		tag &= ~MTRR_RANGE_UC_USE_HOLE;
+
+		/* Remove any write combining MTRRs from the temporary
+		 * solution as it just fragments the address space. */
+		if (tag == MTRR_TYPE_WRCOMB)
+			tag = MTRR_TYPE_UNCACHEABLE;
+
+		memranges_insert(&addr_space, range_entry_base(r),
+				range_entry_size(r), tag);
+	}
+
+	/* Place new range into the address space. */
+	memranges_insert(&addr_space, begin, size, type);
+
+	print_physical_address_space(&addr_space, "TEMPORARY");
+
+	/* Calculate a new solution with the updated address space. */
+	address_bits = cpu_phys_address_size();
+	memset(&sol, 0, sizeof(sol));
+	sol.mtrr_default_type =
+		calc_var_mtrrs(&addr_space, above4gb, address_bits);
+	prepare_var_mtrrs(&addr_space, sol.mtrr_default_type,
+				above4gb, address_bits, &sol);
+	commit_var_mtrrs(&sol);
+
+	memranges_teardown(&addr_space);
+	put_back_original_solution = true;
+}
+
+static void remove_temp_solution(void *unused)
+{
+	if (put_back_original_solution)
+		commit_var_mtrrs(&mtrr_global_solution);
+}
+
+BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY, remove_temp_solution, NULL);
+BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_LOAD, BS_ON_EXIT, remove_temp_solution, NULL);

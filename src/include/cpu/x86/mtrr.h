@@ -45,6 +45,9 @@
 
 #if !defined (__ASSEMBLER__) && !defined(__PRE_RAM__)
 
+#include <stdint.h>
+#include <stddef.h>
+
 /*
  * The MTRR code has some side effects that the callers should be aware for.
  * 1. The call sequence matters. x86_setup_mtrrs() calls
@@ -77,6 +80,10 @@ void x86_setup_fixed_mtrrs(void);
 /* Set up fixed MTRRs but do not enable them. */
 void x86_setup_fixed_mtrrs_no_enable(void);
 void x86_mtrr_check(void);
+
+/* Insert a temporary MTRR range for the duration of coreboot's runtime.
+ * This function needs to be called after the first MTRR solution is derived. */
+void mtrr_use_temp_range(uintptr_t begin, size_t size, int type);
 #endif
 
 #if !defined(__ASSEMBLER__) && defined(__PRE_RAM__) && !defined(__ROMCC__)

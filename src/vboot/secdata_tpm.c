@@ -329,7 +329,14 @@ uint32_t antirollback_lock_space_rec_hash(void)
 }
 #endif
 
-uint32_t factory_initialize_tpm(struct vb2_context *ctx)
+/**
+ * Perform one-time initializations.
+ *
+ * Create the NVRAM spaces, and set their initial values as needed.  Sets the
+ * nvLocked bit and ensures the physical presence command is enabled and
+ * locked.
+ */
+static uint32_t factory_initialize_tpm(struct vb2_context *ctx)
 {
 	uint32_t result;
 

@@ -203,6 +203,20 @@
 #define POST_BS_PAYLOAD_BOOT			0x7b
 
 /**
+ * \brief Before calling FSP Notify before End of Firmware
+ *
+ * Going to call into FSP binary for Notify phase
+ */
+#define POST_FSP_NOTIFY_BEFORE_END_OF_FIRMWARE	0x88
+
+/**
+ * \brief Before calling FSP Notify after End of Firmware
+ *
+ * Going to call into FSP binary for Notify phase
+ */
+#define POST_FSP_NOTIFY_AFTER_END_OF_FIRMWARE	0x89
+
+/**
  * \brief Before calling FSP TempRamInit
  *
  * Going to call into FSP binary for TempRamInit phase

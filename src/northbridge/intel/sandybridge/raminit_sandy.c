@@ -281,7 +281,8 @@ static void dram_timing(ramctr_timing * ctrl)
 static void dram_freq(ramctr_timing * ctrl)
 {
 	if (ctrl->tCK > TCK_400MHZ) {
-		printk (BIOS_ERR, "DRAM frequency is under lowest supported frequency (400 MHz). Increasing to 400 MHz as last resort");
+		printk (BIOS_ERR, "DRAM frequency is under lowest supported "
+				"frequency (400 MHz). Increasing to 400 MHz as last resort");
 		ctrl->tCK = TCK_400MHZ;
 	}
 	while (1) {
@@ -398,7 +399,8 @@ int try_init_dram_ddr3_sandy(ramctr_timing *ctrl, int fast_boot,
 {
 	int err;
 
-	printk(BIOS_DEBUG, "Starting RAM training (%d).\n", fast_boot);
+	printk(BIOS_DEBUG, "Starting SandyBridge RAM training (%d).\n",
+		   fast_boot);
 
 	if (!fast_boot) {
 		/* Find fastest common supported parameters */

@@ -23,117 +23,266 @@
 #include "raminit_common.h"
 
 /* Frequency multiplier.  */
-static u32 get_FRQ(u32 tCK)
+static u32 get_FRQ(u32 tCK, u8 base_freq)
 {
 	u32 FRQ;
-	FRQ = 256000 / (tCK * BASEFREQ);
-	if (FRQ > 8)
-		return 8;
-	if (FRQ < 3)
-		return 3;
+
+	FRQ = 256000 / (tCK * base_freq);
+
+	if (base_freq == 100) {
+		if (FRQ > 12)
+			return 12;
+		if (FRQ < 7)
+			return 7;
+	} else {
+		if (FRQ > 10)
+			return 10;
+		if (FRQ < 3)
+			return 3;
+	}
+
 	return FRQ;
 }
 
-static u32 get_REFI(u32 tCK)
+static u32 get_REFI(u32 tCK, u8 base_freq)
 {
-	/* Get REFI based on MCU frequency using the following rule:
-	 *        _________________________________________
-	 * FRQ : | 3    | 4    | 5    | 6    | 7    | 8    |
-	 * REFI: | 3120 | 4160 | 5200 | 6240 | 7280 | 8320 |
-	 */
-	static const u32 frq_refi_map[] =
-	    { 3120, 4160, 5200, 6240, 7280, 8320 };
-	return frq_refi_map[get_FRQ(tCK) - 3];
+	u32 refi;
+
+	if (base_freq == 100) {
+		/* Get REFI based on MCU frequency using the following rule:
+		 * tREFI = 7.8usec
+		 *         _________________________________________
+		 * FRQ  : | 7    | 8    | 9    | 10   | 11   | 12   |
+		 * REFI : | 5460 | 6240 | 7020 | 7800 | 8580 | 9360 |
+		 */
+		static const u32 frq_xs_map[] =
+		    { 5460, 6240, 7020, 7800, 8580, 9360 };
+		refi = frq_xs_map[get_FRQ(tCK, 100) - 7];
+	} else {
+		/* Get REFI based on MCU frequency using the following rule:
+		 * tREFI = 7.8usec
+		 *        ________________________________________________________
+		 * FRQ : | 3    | 4    | 5    | 6    | 7    | 8    | 9    | 10    |
+		 * REFI: | 3120 | 4160 | 5200 | 6240 | 7280 | 8320 | 9360 | 10400 |
+		 */
+		static const u32 frq_refi_map[] =
+		    { 3120, 4160, 5200, 6240, 7280, 8320, 9360, 10400 };
+		refi = frq_refi_map[get_FRQ(tCK, 133) - 3];
+	}
+
+	return refi;
 }
 
-static u8 get_XSOffset(u32 tCK)
+static u8 get_XSOffset(u32 tCK, u8 base_freq)
 {
-	/* Get XSOffset based on MCU frequency using the following rule:
-	 *             _________________________
-	 * FRQ      : | 3 | 4 | 5 | 6 | 7  | 8  |
-	 * XSOffset : | 4 | 6 | 7 | 8 | 10 | 11 |
-	 */
-	static const u8 frq_xs_map[] = { 4, 6, 7, 8, 10, 11 };
-	return frq_xs_map[get_FRQ(tCK) - 3];
+	u8 xsoffset;
+
+	if (base_freq == 100) {
+		/* Get XSOffset based on MCU frequency using the following rule:
+		 * tXS-offset: tXS = tRFC+10ns.
+		 *             _____________________________
+		 * FRQ      : | 7  | 8  | 9  | 10 | 11 | 12 |
+		 * XSOffset : | 7  | 8  | 9  | 10 | 11 | 12 |
+		 */
+		static const u8 frq_xs_map[] = { 7, 8, 9, 10, 11, 12 };
+		xsoffset = frq_xs_map[get_FRQ(tCK, 100) - 7];
+	} else {
+		/* Get XSOffset based on MCU frequency using the following rule:
+		 *             ___________________________________
+		 * FRQ      : | 3 | 4 | 5 | 6 | 7  | 8  | 9  | 10 |
+		 * XSOffset : | 4 | 6 | 7 | 8 | 10 | 11 | 12 | 14 |
+		 */
+		static const u8 frq_xs_map[] = { 4, 6, 7, 8, 10, 11, 12, 14 };
+		xsoffset = frq_xs_map[get_FRQ(tCK, 133) - 3];
+	}
+
+	return xsoffset;
 }
 
-static u8 get_MOD(u32 tCK)
+static u8 get_MOD(u32 tCK, u8 base_freq)
 {
-	/* Get MOD based on MCU frequency using the following rule:
-	 *        _____________________________
-	 * FRQ : | 3  | 4  | 5  | 6  | 7  | 8  |
-	 * MOD : | 12 | 12 | 12 | 12 | 15 | 16 |
-	 */
-	static const u8 frq_mod_map[] = { 12, 12, 12, 12, 15, 16 };
-	return frq_mod_map[get_FRQ(tCK) - 3];
+	u8 mod;
+
+	if (base_freq == 100) {
+		/* Get MOD based on MCU frequency using the following rule:
+		 *        _____________________________
+		 * FRQ : | 7  | 8  | 9  | 10 | 11 | 12 |
+		 * MOD : | 12 | 12 | 14 | 15 | 17 | 18 |
+		 */
+
+		static const u8 frq_mod_map[] = { 12, 12, 14, 15, 17, 18 };
+		mod = frq_mod_map[get_FRQ(tCK, 100) - 7];
+	} else {
+		/* Get MOD based on MCU frequency using the following rule:
+		 *        _______________________________________
+		 * FRQ : | 3  | 4  | 5  | 6  | 7  | 8  | 9  | 10 |
+		 * MOD : | 12 | 12 | 12 | 12 | 15 | 16 | 18 | 20 |
+		 */
+
+		static const u8 frq_mod_map[] = { 12, 12, 12, 12, 15, 16, 18, 20 };
+		mod = frq_mod_map[get_FRQ(tCK, 133) - 3];
+	}
+	return mod;
 }
 
-static u8 get_WLO(u32 tCK)
+static u8 get_WLO(u32 tCK, u8 base_freq)
 {
-	/* Get WLO based on MCU frequency using the following rule:
-	 *        _______________________
-	 * FRQ : | 3 | 4 | 5 | 6 | 7 | 8 |
-	 * WLO : | 4 | 5 | 6 | 6 | 8 | 8 |
-	 */
-	static const u8 frq_wlo_map[] = { 4, 5, 6, 6, 8, 8 };
-	return frq_wlo_map[get_FRQ(tCK) - 3];
+	u8 wlo;
+
+	if (base_freq == 100) {
+		/* Get WLO based on MCU frequency using the following rule:
+		 * Write leveling output delay
+		 *        _____________________________
+		 * FRQ : | 7  | 8  | 9  | 10 | 11 | 12 |
+		 * MOD : | 6  | 6  | 7  | 8  | 9  | 9  |
+		 */
+
+		static const u8 frq_wlo_map[] = { 6, 6, 7, 8, 9, 9 };
+		wlo = frq_wlo_map[get_FRQ(tCK, 100) - 7];
+	} else {
+		/* Get WLO based on MCU frequency using the following rule:
+		 * Write leveling output delay
+		 *        ________________________________
+		 * FRQ : | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
+		 * WLO : | 4 | 5 | 6 | 6 | 8 | 8 | 9 | 10 |
+		 */
+		static const u8 frq_wlo_map[] = { 4, 5, 6, 6, 8, 8, 9, 10 };
+		wlo = frq_wlo_map[get_FRQ(tCK, 133) - 3];
+	}
+
+	return wlo;
 }
 
-static u8 get_CKE(u32 tCK)
+static u8 get_CKE(u32 tCK, u8 base_freq)
 {
-	/* Get CKE based on MCU frequency using the following rule:
-	 *        _______________________
-	 * FRQ : | 3 | 4 | 5 | 6 | 7 | 8 |
-	 * CKE : | 3 | 3 | 4 | 4 | 5 | 6 |
-	 */
-	static const u8 frq_cke_map[] = { 3, 3, 4, 4, 5, 6 };
-	return frq_cke_map[get_FRQ(tCK) - 3];
+	u8 cke;
+
+	if (base_freq == 100) {
+		/* Get CKE based on MCU frequency using the following rule:
+		 *        _____________________________
+		 * FRQ : | 7  | 8  | 9  | 10 | 11 | 12 |
+		 * MOD : | 4  | 4  | 5  | 5  | 6  | 6  |
+		 */
+
+		static const u8 frq_cke_map[] = { 4, 4, 5, 5, 6, 6 };
+		cke = frq_cke_map[get_FRQ(tCK, 100) - 7];
+	} else {
+		/* Get CKE based on MCU frequency using the following rule:
+		 *        ________________________________
+		 * FRQ : | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
+		 * WLO : | 3 | 3 | 4 | 4 | 5 | 6 | 6 | 7  |
+		 */
+		static const u8 frq_cke_map[] = { 3, 3, 4, 4, 5, 6, 6, 7 };
+		cke = frq_cke_map[get_FRQ(tCK, 133) - 3];
+	}
+
+	return cke;
 }
 
-static u8 get_XPDLL(u32 tCK)
+static u8 get_XPDLL(u32 tCK, u8 base_freq)
 {
-	/* Get XPDLL based on MCU frequency using the following rule:
-	 *          _____________________________
-	 * FRQ   : | 3  | 4  | 5  | 6  | 7  | 8  |
-	 * XPDLL : | 10 | 13 | 16 | 20 | 23 | 26 |
-	 */
-	static const u8 frq_xpdll_map[] = { 10, 13, 16, 20, 23, 26 };
-	return frq_xpdll_map[get_FRQ(tCK) - 3];
+	u8 xpdll;
+
+	if (base_freq == 100) {
+		/* Get XPDLL based on MCU frequency using the following rule:
+		 *          _____________________________
+		 * FRQ   : | 7  | 8  | 9  | 10 | 11 | 12 |
+		 * XPDLL : | 17 | 20 | 22 | 24 | 27 | 32 |
+		 */
+
+		static const u8 frq_xpdll_map[] = { 17, 20, 22, 24, 27, 32 };
+		xpdll = frq_xpdll_map[get_FRQ(tCK, 100) - 7];
+	} else {
+		/* Get XPDLL based on MCU frequency using the following rule:
+		 *          _______________________________________
+		 * FRQ   : | 3  | 4  | 5  | 6  | 7  | 8  | 9  | 10 |
+		 * XPDLL : | 10 | 13 | 16 | 20 | 23 | 26 | 29 | 32 |
+		 */
+		static const u8 frq_xpdll_map[] = { 10, 13, 16, 20, 23, 26, 29, 32 };
+		xpdll = frq_xpdll_map[get_FRQ(tCK, 133) - 3];
+	}
+
+	return xpdll;
 }
 
-static u8 get_XP(u32 tCK)
+static u8 get_XP(u32 tCK, u8 base_freq)
 {
-	/* Get XP based on MCU frequency using the following rule:
-	 *        _______________________
-	 * FRQ : | 3 | 4 | 5 | 6 | 7 | 8 |
-	 * XP  : | 3 | 4 | 4 | 5 | 6 | 7 |
-	 */
-	static const u8 frq_xp_map[] = { 3, 4, 4, 5, 6, 7 };
-	return frq_xp_map[get_FRQ(tCK) - 3];
+	u8 xp;
+
+	if (base_freq == 100) {
+		/* Get XP based on MCU frequency using the following rule:
+		 *        _____________________________
+		 * FRQ : | 7  | 8  | 9  | 10 | 11 | 12 |
+		 * XP  : | 5  | 5  | 6  | 6  | 7  | 8  |
+		 */
+
+		static const u8 frq_xp_map[] = { 5, 5, 6, 6, 7, 8 };
+		xp = frq_xp_map[get_FRQ(tCK, 100) - 7];
+	} else {
+		/* Get XP based on MCU frequency using the following rule:
+		 *        _______________________________________
+		 * FRQ : | 3  | 4  | 5  | 6  | 7  | 8  | 9  | 10 |
+		 * XP  : | 3  | 4  | 4  | 5  | 6  | 7  | 8  | 8  |
+		 */
+		static const u8 frq_xp_map[] = { 3, 4, 4, 5, 6, 7 , 8, 8 };
+		xp = frq_xp_map[get_FRQ(tCK, 133) - 3];
+	}
+
+	return xp;
 }
 
-static u8 get_AONPD(u32 tCK)
+static u8 get_AONPD(u32 tCK, u8 base_freq)
 {
-	/* Get AONPD based on MCU frequency using the following rule:
-	 *          ________________________
-	 * FRQ   : | 3 | 4 | 5 | 6 | 7 | 8  |
-	 * AONPD : | 4 | 5 | 6 | 8 | 8 | 10 |
-	 */
-	static const u8 frq_aonpd_map[] = { 4, 5, 6, 8, 8, 10 };
-	return frq_aonpd_map[get_FRQ(tCK) - 3];
+	u8 aonpd;
+
+	if (base_freq == 100) {
+		/* Get AONPD based on MCU frequency using the following rule:
+		 *          _____________________________
+		 * FRQ   : | 7  | 8  | 9  | 10 | 11 | 12 |
+		 * AONPD : | 6  | 8  | 8  | 9  | 10 | 11 |
+		 */
+
+		static const u8 frq_aonpd_map[] = { 6, 8, 8, 9, 10, 11 };
+		aonpd = frq_aonpd_map[get_FRQ(tCK, 100) - 7];
+	} else {
+		/* Get AONPD based on MCU frequency using the following rule:
+		 *          _______________________________________
+		 * FRQ   : | 3  | 4  | 5  | 6  | 7  | 8  | 9  | 10 |
+		 * AONPD : | 4  | 5  | 6  | 8  | 8  | 10 | 11 | 12 |
+		 */
+		static const u8 frq_aonpd_map[] = { 4, 5, 6, 8, 8, 10, 11, 12 };
+		aonpd = frq_aonpd_map[get_FRQ(tCK, 133) - 3];
+	}
+
+	return aonpd;
 }
 
-static u32 get_COMP2(u32 tCK)
+static u32 get_COMP2(u32 tCK, u8 base_freq)
 {
-	/* Get COMP2 based on MCU frequency using the following rule:
-	 *         ___________________________________________________________
-	 * FRQ  : | 3       | 4       | 5       | 6       | 7       | 8       |
-	 * COMP : | D6BEDCC | CE7C34C | CA57A4C | C6369CC | C42514C | C21410C |
-	 */
-	static const u32 frq_comp2_map[] = { 0xD6BEDCC, 0xCE7C34C, 0xCA57A4C,
-		0xC6369CC, 0xC42514C, 0xC21410C
-	};
-	return frq_comp2_map[get_FRQ(tCK) - 3];
+	u32 comp2;
+
+	if (base_freq == 100) {
+		/* Get COMP2 based on MCU frequency using the following rule:
+		 *          ______________________________________________________________
+		 * FRQ  : | 7        | 8        | 9        | 10       | 11      | 12      |
+		 * COMP : | CA8C264  | C6671E4  | C6671E4  | C446964  | C235924 | C235924 |
+		 */
+
+		static const u32 frq_comp2_map[] = { 0xCA8C264, 0xC6671E4, 0xC6671E4, 0xC446964, 0xC235924, 0xC235924 };
+		comp2 = frq_comp2_map[get_FRQ(tCK, 100) - 7];
+	} else {
+		/* Get COMP2 based on MCU frequency using the following rule:
+		 *        ________________________________________________________________________________
+		 * FRQ  : | 3       | 4       | 5       | 6       | 7       | 8       | 9       | 10      |
+		 * COMP : | D6FF5E4 | CEBDB64 | CA8C264 | C6671E4 | C446964 | C235924 | C235924 | C235924 |
+		 */
+		static const u32 frq_comp2_map[] = { 0xD6FF5E4, 0xCEBDB64, 0xCA8C264,
+			0xC6671E4, 0xC446964, 0xC235924, 0xC235924, 0xC235924
+		};
+		comp2 = frq_comp2_map[get_FRQ(tCK, 133) - 3];
+	}
+
+	return comp2;
 }
 
 static void dram_timing(ramctr_timing * ctrl)
@@ -268,22 +417,27 @@ static void dram_timing(ramctr_timing * ctrl)
 	ctrl->tRFC = DIV_ROUND_UP(ctrl->tRFC, ctrl->tCK);
 	printk(BIOS_DEBUG, "Selected tRFC          : %uT\n", ctrl->tRFC);
 
-	ctrl->tREFI = get_REFI(ctrl->tCK);
-	ctrl->tMOD = get_MOD(ctrl->tCK);
-	ctrl->tXSOffset = get_XSOffset(ctrl->tCK);
-	ctrl->tWLO = get_WLO(ctrl->tCK);
-	ctrl->tCKE = get_CKE(ctrl->tCK);
-	ctrl->tXPDLL = get_XPDLL(ctrl->tCK);
-	ctrl->tXP = get_XP(ctrl->tCK);
-	ctrl->tAONPD = get_AONPD(ctrl->tCK);
+	ctrl->tREFI = get_REFI(ctrl->tCK, ctrl->base_freq);
+	ctrl->tMOD = get_MOD(ctrl->tCK, ctrl->base_freq);
+	ctrl->tXSOffset = get_XSOffset(ctrl->tCK, ctrl->base_freq);
+	ctrl->tWLO = get_WLO(ctrl->tCK, ctrl->base_freq);
+	ctrl->tCKE = get_CKE(ctrl->tCK, ctrl->base_freq);
+	ctrl->tXPDLL = get_XPDLL(ctrl->tCK, ctrl->base_freq);
+	ctrl->tXP = get_XP(ctrl->tCK, ctrl->base_freq);
+	ctrl->tAONPD = get_AONPD(ctrl->tCK, ctrl->base_freq);
 }
 
 static void dram_freq(ramctr_timing * ctrl)
 {
 	if (ctrl->tCK > TCK_400MHZ) {
-		printk (BIOS_ERR, "DRAM frequency is under lowest supported frequency (400 MHz). Increasing to 400 MHz as last resort");
+		printk (BIOS_ERR, "DRAM frequency is under lowest supported "
+				"frequency (400 MHz). Increasing to 400 MHz as last resort");
 		ctrl->tCK = TCK_400MHZ;
 	}
+
+	/* TODO: implement 100Mhz refclock */
+	ctrl->base_freq = 133;
+
 	while (1) {
 		u8 val2;
 		u32 reg1 = 0;
@@ -307,7 +461,7 @@ static void dram_freq(ramctr_timing * ctrl)
 		}
 
 		/* Frequency multiplier.  */
-		u32 FRQ = get_FRQ(ctrl->tCK);
+		u32 FRQ = get_FRQ(ctrl->tCK, ctrl->base_freq);
 
 		/* The PLL will never lock if the required frequency is
 		 * already set. Exit early to prevent a system hang.
@@ -373,7 +527,7 @@ static void dram_ioregs(ramctr_timing * ctrl)
 	printram("done\n");
 
 	// Set comp2
-	comp2 = get_COMP2(ctrl->tCK);
+	comp2 = get_COMP2(ctrl->tCK, ctrl->base_freq);
 	MCHBAR32(0x3714) = comp2;
 	printram("COMP2 done\n");
 
@@ -398,7 +552,8 @@ int try_init_dram_ddr3_ivy(ramctr_timing *ctrl, int fast_boot,
 {
 	int err;
 
-	printk(BIOS_DEBUG, "Starting RAM training (%d).\n", fast_boot);
+	printk(BIOS_DEBUG, "Starting Ivybridge RAM training (%d).\n",
+		   fast_boot);
 
 	if (!fast_boot) {
 		/* Find fastest common supported parameters */

@@ -74,15 +74,6 @@ uint32_t tpm_extend_pcr(struct vb2_context *ctx, int pcr,
 uint32_t tpm_clear_and_reenable(void);
 
 /**
- * Perform one-time initializations.
- *
- * Create the NVRAM spaces, and set their initial values as needed.  Sets the
- * nvLocked bit and ensures the physical presence command is enabled and
- * locked.
- */
-uint32_t factory_initialize_tpm(struct vb2_context *ctx);
-
-/**
  * Start the TPM and establish the root of trust for the antirollback mechanism.
  */
 uint32_t setup_tpm(struct vb2_context *ctx);

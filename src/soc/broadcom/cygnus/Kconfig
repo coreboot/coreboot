@@ -37,6 +37,18 @@ config CONSOLE_SERIAL_UART_ADDRESS
 	depends on DRIVERS_UART
 	default 0x18023000
 
+config CYGNUS_DDR333
+	def_bool n
+
+config CYGNUS_DDR400
+	def_bool n
+
+config CYGNUS_DDR533
+	def_bool n
+
+config CYGNUS_DDR667
+	def_bool n
+
 config CYGNUS_DDR800
 	bool "DDR Speed at 800MHz"
 	default y

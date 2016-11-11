@@ -4,6 +4,7 @@
  * found in the LICENSE file.
  */
 
+#include <antirollback.h>
 #include <arch/early_variables.h>
 #include <console/console.h>
 #include <endian.h>
@@ -299,14 +300,23 @@ uint32_t tlcl_define_space(uint32_t space_index, size_t space_size)
 	struct tpm2_nv_define_space_cmd nvds_cmd;
 	struct tpm2_response *response;
 	/*
-	 * This policy digest was obtained using TPM2_PolicyPCR selecting only
-	 * PCR_0 with a value of all zeros.
+	 * Different sets of NVRAM space attributes apply to the "ro" spaces,
+	 * i.e. those which should not be possible to delete or modify once
+	 * the RO exits, and the rest of the NVRAM spaces.
 	 */
-	const uint8_t pcr0_unchanged_policy[] = {
-		0x09, 0x93, 0x3C, 0xCE, 0xEB, 0xB4, 0x41, 0x11,
-		0x18, 0x81, 0x1D, 0xD4, 0x47, 0x78, 0x80, 0x08,
-		0x88, 0x86, 0x62, 0x2D, 0xD7, 0x79, 0x94, 0x46,
-		0x62, 0x26, 0x68, 0x8E, 0xEE, 0xE6, 0x6A, 0xA1
+	const TPMA_NV ro_space_attributes = {
+		.TPMA_NV_PPWRITE = 1,
+		.TPMA_NV_AUTHREAD = 1,
+		.TPMA_NV_PPREAD = 1,
+		.TPMA_NV_PLATFORMCREATE = 1,
+		.TPMA_NV_WRITE_STCLEAR = 1,
+		.TPMA_NV_POLICY_DELETE = 1,
+	};
+	const TPMA_NV default_space_attributes = {
+		.TPMA_NV_PPWRITE = 1,
+		.TPMA_NV_AUTHREAD = 1,
+		.TPMA_NV_PPREAD = 1,
+		.TPMA_NV_PLATFORMCREATE = 1,
 	};
 
 	/* Prepare the define space command structure. */
@@ -316,21 +326,31 @@ uint32_t tlcl_define_space(uint32_t space_index, size_t space_size)
 	nvds_cmd.publicInfo.nvIndex = HR_NV_INDEX + space_index;
 	nvds_cmd.publicInfo.nameAlg = TPM_ALG_SHA256;
 
-	/* Attributes common for all NVRAM spaces used by firmware. */
-	nvds_cmd.publicInfo.attributes.TPMA_NV_PPWRITE = 1;
-	nvds_cmd.publicInfo.attributes.TPMA_NV_AUTHREAD = 1;
-	nvds_cmd.publicInfo.attributes.TPMA_NV_PPREAD = 1;
-	nvds_cmd.publicInfo.attributes.TPMA_NV_PLATFORMCREATE = 1;
-	nvds_cmd.publicInfo.attributes.TPMA_NV_WRITE_STCLEAR = 1;
-	nvds_cmd.publicInfo.attributes.TPMA_NV_POLICY_DELETE = 1;
+	/* RO only NV spaces should be impossible to destroy. */
+	if ((space_index == FIRMWARE_NV_INDEX) ||
+	    (space_index == REC_HASH_NV_INDEX)) {
+		/*
+		 * This policy digest was obtained using TPM2_PolicyPCR
+		 * selecting only PCR_0 with a value of all zeros.
+		 */
+		const uint8_t pcr0_unchanged_policy[] = {
+			0x09, 0x93, 0x3C, 0xCE, 0xEB, 0xB4, 0x41, 0x11,
+			0x18, 0x81, 0x1D, 0xD4, 0x47, 0x78, 0x80, 0x08,
+			0x88, 0x86, 0x62, 0x2D, 0xD7, 0x79, 0x94, 0x46,
+			0x62, 0x26, 0x68, 0x8E, 0xEE, 0xE6, 0x6A, 0xA1
+		};
 
-	/*
-	 * Use policy digest based on default pcr0 value. This makes sure that
-	 * the space can not be deleted as soon as PCR0 value has been
-	 * extended from default.
-	 */
-	nvds_cmd.publicInfo.authPolicy.t.buffer = pcr0_unchanged_policy;
-	nvds_cmd.publicInfo.authPolicy.t.size = sizeof(pcr0_unchanged_policy);
+		nvds_cmd.publicInfo.attributes = ro_space_attributes;
+		/*
+		 * Use policy digest based on default pcr0 value. This makes
+		 * sure that the space can not be deleted as soon as PCR0
+		 * value has been extended from default.
+		 */
+		nvds_cmd.publicInfo.authPolicy.t.buffer = pcr0_unchanged_policy;
+		nvds_cmd.publicInfo.authPolicy.t.size = sizeof(pcr0_unchanged_policy);
+	} else {
+		nvds_cmd.publicInfo.attributes = default_space_attributes;
+	}
 
 	response = tpm_process_command(TPM2_NV_DefineSpace, &nvds_cmd);
 	printk(BIOS_INFO, "%s: response is %x\n",

@@ -66,6 +66,9 @@ void set_max_freq(void);
 
 #define MSR_PMG_CST_CONFIG_CONTROL	0xe2
 #define MSR_PMG_IO_CAPTURE_BASE	0xe4
+#define MSR_FEATURE_CONFIG	0x13c
+#define FEATURE_CONFIG_RESERVED_MASK	0x3ULL
+#define FEATURE_CONFIG_LOCK	(1 << 0)
 #define MSR_POWER_CTL	0x1fc
 
 #define MSR_L2_QOS_MASK(reg)		(0xd10 + reg)

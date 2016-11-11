@@ -43,6 +43,12 @@ static const struct reg_script core_msr_script[] = {
 	REG_MSR_RMW(MSR_POWER_CTL, ~0x2, 0),
 	/* Disable support for MONITOR and MWAIT instructions */
 	REG_MSR_RMW(MSR_IA32_MISC_ENABLES, ~MONITOR_MWAIT_DIS_MASK, 0),
+	/*
+	 * Enable and Lock the Advanced Encryption Standard (AES-NI)
+	 * feature register
+	 */
+	REG_MSR_RMW(MSR_FEATURE_CONFIG, ~FEATURE_CONFIG_RESERVED_MASK,
+		FEATURE_CONFIG_LOCK),
 	REG_SCRIPT_END
 };
 

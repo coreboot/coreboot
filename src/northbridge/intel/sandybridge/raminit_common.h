@@ -76,6 +76,7 @@ struct ramctr_timing_st;
 typedef struct ramctr_timing_st {
 	u16 spd_crc[NUM_CHANNELS][NUM_SLOTS];
 	int mobile;
+	int sandybridge;
 
 	u16 cas_supported;
 	/* tLatencies are in units of ns, scaled by x256 */
@@ -176,5 +177,10 @@ void set_42a0(ramctr_timing * ctrl);
 void final_registers(ramctr_timing * ctrl);
 void restore_timings(ramctr_timing * ctrl);
 
-#endif
+int try_init_dram_ddr3_sandy(ramctr_timing *ctrl, int fast_boot,
+		int s3_resume, int me_uma_size);
 
+int try_init_dram_ddr3_ivy(ramctr_timing *ctrl, int fast_boot,
+		int s3_resume, int me_uma_size);
+
+#endif

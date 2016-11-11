@@ -359,6 +359,13 @@ uint32_t tlcl_define_space(uint32_t space_index, size_t space_size)
 	if (!response)
 		return TPM_E_NO_DEVICE;
 
-	return response->hdr.tpm_code ? TPM_E_INTERNAL_INCONSISTENCY :
-		TPM_SUCCESS;
+	/* Map TPM2 retrun codes into common vboot represenation. */
+	switch(response->hdr.tpm_code) {
+	case TPM2_RC_SUCCESS:
+		return TPM_SUCCESS;
+	case TPM2_RC_NV_DEFINED:
+		return TPM_E_NV_DEFINED;
+	default:
+		return TPM_E_INTERNAL_INCONSISTENCY;
+	}
 }

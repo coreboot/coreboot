@@ -29,24 +29,24 @@ extern unsigned int ddr2_init_tab_1066[];
 extern unsigned int ddr2_mode_reg_tab[];
 #endif
 
-#ifdef CONFIG_DDR333
-#define CONFIG_DRAM_FREQ 333
+#if IS_ENABLED(CONFIG_CYGNUS_DDR333)
+#define CYGNUS_DRAM_FREQ 333
 extern unsigned int ddr3_init_tab_667[];
 #endif
-#ifdef CONFIG_DDR400
-#define CONFIG_DRAM_FREQ 400
+#if IS_ENABLED(CONFIG_CYGNUS_DDR400)
+#define CYGNUS_DRAM_FREQ 400
 extern unsigned int ddr3_init_tab_800[];
 #endif
-#ifdef CONFIG_DDR533
-#define CONFIG_DRAM_FREQ 533
+#if IS_ENABLED(CONFIG_CYGNUS_DDR533)
+#define CYGNUS_DRAM_FREQ 533
 extern unsigned int ddr3_init_tab_1066[];
 #endif
-#ifdef CONFIG_DDR667
-#define CONFIG_DRAM_FREQ 667
+#if IS_ENABLED(CONFIG_CYGNUS_DDR667)
+#define CYGNUS_DRAM_FREQ 667
 extern unsigned int ddr3_init_tab_1333[];
 #endif
 #if IS_ENABLED(CONFIG_CYGNUS_DDR800)
-#define CONFIG_DRAM_FREQ 800
+#define CYGNUS_DRAM_FREQ 800
 extern unsigned int ddr3_init_tab_1600[];
 #endif
 
@@ -485,10 +485,10 @@ int is_ddr_32bit(void)
 
 static uint32_t get_ddr_clock(uint32_t sku_id, int ddr_type)
 {
-#ifdef CONFIG_DRAM_FREQ
-	return  CONFIG_DRAM_FREQ;
+#ifdef CYGNUS_DRAM_FREQ
+	return  CYGNUS_DRAM_FREQ;
 #else
-	#error Please set DDR frequency (CONFIG_DRAM_FREQ must be set)
+	#error Please set DDR frequency (CYGNUS_DRAM_FREQ must be set)
 #endif
 }
 
@@ -1461,28 +1461,27 @@ void ddr_init2(void)
 	if (ddr_type) {
 		/* DDR3 */
 		switch(ddr_clk) {
-#ifdef CONFIG_DDR333
+#if IS_ENABLED(CONFIG_CYGNUS_DDR333)
 			case 333:
 				ddr_init_regs(ddr3_init_tab_667);
 				break;
 #endif
-#ifdef CONFIG_DDR400
+#if IS_ENABLED(CONFIG_CYGNUS_DDR400)
 			case 400:
 				ddr_init_regs(ddr3_init_tab_800);
 				break;
 #endif
-#ifdef CONFIG_DDR533
+#if IS_ENABLED(CONFIG_CYGNUS_DDR533)
 			case 533:
 				ddr_init_regs(ddr3_init_tab_1066);
 				break;
 #endif
-#ifdef CONFIG_DDR667
+#if IS_ENABLED(CONFIG_CYGNUS_DDR667)
 			case 667:
 				ddr_init_regs(ddr3_init_tab_1333);
 				break;
 #endif
-#if (defined(CONFIG_DDR750) || IS_ENABLED(CONFIG_CYGNUS_DDR800))
-			case 750:
+#if IS_ENABLED(CONFIG_CYGNUS_DDR800)
 			case 800:
 				ddr_init_regs(ddr3_init_tab_1600);
 				break;

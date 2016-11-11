@@ -292,7 +292,7 @@ const unsigned int ddr2_init_tab_400[] = {
 };
 #endif
 
-#ifdef CONFIG_DDR333
+#if IS_ENABLED(CONFIG_CYGNUS_DDR333)
 const unsigned int ddr3_init_tab_667[] = {
         0, 0x00000600,
         1, 0x00000000,
@@ -552,7 +552,7 @@ const unsigned int ddr3_init_tab_667[] = {
 };
 #endif
 
-#ifdef CONFIG_DDR400
+#if IS_ENABLED(CONFIG_CYGNUS_DDR400)
 const unsigned int ddr3_init_tab_800[] = {
         14, 0x01000000,
         36, 0x0a140a0a,
@@ -864,7 +864,7 @@ const unsigned int ddr3_init_tab_800[] = {
 };
 #endif
 
-#ifdef CONFIG_DDR533
+#if IS_ENABLED(CONFIG_CYGNUS_DDR533)
 const unsigned int ddr3_init_tab_1066[] = {
         14, 0x01000000,
         36, 0x0a140a0a,
@@ -1176,7 +1176,7 @@ const unsigned int ddr3_init_tab_1066[] = {
 };
 #endif
 
-#ifdef CONFIG_DDR667
+#if IS_ENABLED(CONFIG_CYGNUS_DDR667)
 const unsigned int ddr3_init_tab_1333[] = {
         14, 0x01000000,
         36, 0x0a140a0a,

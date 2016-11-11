@@ -40,6 +40,7 @@
 #define TPM_E_WRITE_FAILURE          ((uint32_t)0x00005008)  /* vboot local */
 #define TPM_E_READ_EMPTY             ((uint32_t)0x00005009)  /* vboot local */
 #define TPM_E_READ_FAILURE           ((uint32_t)0x0000500a)  /* vboot local */
+#define TPM_E_NV_DEFINED             ((uint32_t)0x0000500b)  /* vboot local */
 
 #define TPM_NV_INDEX0 ((uint32_t)0x00000000)
 #define TPM_NV_INDEX_LOCK ((uint32_t)0xffffffff)
@@ -55,6 +56,10 @@
 #define TPM_TAG_RSP_COMMAND       ((uint16_t) 0xc4)
 #define TPM_TAG_RSP_AUTH1_COMMAND ((uint16_t) 0xc5)
 #define TPM_TAG_RSP_AUTH2_COMMAND ((uint16_t) 0xc6)
+
+/* Some TPM2 return codes used in this library. */
+#define TPM2_RC_SUCCESS    0
+#define TPM2_RC_NV_DEFINED 0x14c
 
 typedef uint8_t TSS_BOOL;
 typedef uint16_t TPM_STRUCTURE_TAG;

@@ -37,6 +37,9 @@ static void fsp_notify(enum fsp_notify_phase phase)
 	} else if (phase == READY_TO_BOOT) {
 		timestamp_add_now(TS_FSP_BEFORE_FINALIZE);
 		post_code(POST_FSP_NOTIFY_BEFORE_FINALIZE);
+	} else if (phase == END_OF_FIRMWARE) {
+		timestamp_add_now(TS_FSP_BEFORE_END_OF_FIRMWARE);
+		post_code(POST_FSP_NOTIFY_BEFORE_END_OF_FIRMWARE);
 	}
 
 	ret = fspnotify(&notify_params);
@@ -47,6 +50,9 @@ static void fsp_notify(enum fsp_notify_phase phase)
 	} else if (phase == READY_TO_BOOT) {
 		timestamp_add_now(TS_FSP_AFTER_FINALIZE);
 		post_code(POST_FSP_NOTIFY_BEFORE_FINALIZE);
+	} else if (phase == END_OF_FIRMWARE) {
+		timestamp_add_now(TS_FSP_AFTER_END_OF_FIRMWARE);
+		post_code(POST_FSP_NOTIFY_AFTER_END_OF_FIRMWARE);
 	}
 	fsp_debug_after_notify(ret);
 

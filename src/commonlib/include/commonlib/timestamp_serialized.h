@@ -86,6 +86,8 @@ enum timestamp_id {
 	TS_FSP_AFTER_ENUMERATE = 957,
 	TS_FSP_BEFORE_FINALIZE = 958,
 	TS_FSP_AFTER_FINALIZE = 959,
+	TS_FSP_BEFORE_END_OF_FIRMWARE = 960,
+	TS_FSP_AFTER_END_OF_FIRMWARE = 961,
 
 	/* 1000+ reserved for payloads (1000-1200: ChromeOS depthcharge) */
 
@@ -183,7 +185,10 @@ static const struct timestamp_id_to_name {
 	{ TS_FSP_AFTER_ENUMERATE,
 		 "returning from FspNotify(AfterPciEnumeration)" },
 	{ TS_FSP_BEFORE_FINALIZE, "calling FspNotify(ReadyToBoot)" },
-	{ TS_FSP_AFTER_FINALIZE, "returning from FspNotify(ReadyToBoot)" }
+	{ TS_FSP_AFTER_FINALIZE, "returning from FspNotify(ReadyToBoot)" },
+	{ TS_FSP_BEFORE_END_OF_FIRMWARE, "calling FspNotify(EndOfFirmware)" },
+	{ TS_FSP_AFTER_END_OF_FIRMWARE,
+		"returning from FspNotify(EndOfFirmware)" },
 };
 
 #endif

@@ -27,6 +27,8 @@ romstage-y += ram_calc.c
 ifeq ($(CONFIG_USE_NATIVE_RAMINIT),y)
 romstage-y += raminit.c
 romstage-y += raminit_common.c
+romstage-y += raminit_sandy.c
+romstage-y += raminit_ivy.c
 romstage-y += ../../../device/dram/ddr3.c
 else
 romstage-y += raminit_mrc.c

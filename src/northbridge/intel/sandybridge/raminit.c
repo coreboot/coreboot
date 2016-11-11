@@ -491,17 +491,33 @@ static void dram_find_common_params(ramctr_timing *ctrl)
 		die("No valid DIMMs found");
 }
 
-static u8 get_CWL(u8 CAS)
+/* CAS write latency. To be programmed in MR2.
+ * See DDR3 SPEC for MR2 documentation. */
+static u8 get_CWL(u32 tCK)
 {
-	/* Get CWL based on CAS using the following rule:
-	 *       _________________________________________
-	 * CAS: | 4T | 5T | 6T | 7T | 8T | 9T | 10T | 11T |
-	 * CWL: | 5T | 5T | 5T | 6T | 6T | 7T |  7T |  8T |
-	 */
-	static const u8 cas_cwl_map[] = { 5, 5, 5, 6, 6, 7, 7, 8 };
-	if (CAS > 11)
+	/* Get CWL based on tCK using the following rule: */
+	switch (tCK) {
+	case TCK_1333MHZ:
+		return 12;
+	case TCK_1200MHZ:
+	case TCK_1100MHZ:
+		return 11;
+	case TCK_1066MHZ:
+	case TCK_1000MHZ:
+		return 10;
+	case TCK_933MHZ:
+	case TCK_900MHZ:
+		return 9;
+	case TCK_800MHZ:
+	case TCK_700MHZ:
 		return 8;
-	return cas_cwl_map[CAS - 4];
+	case TCK_666MHZ:
+		return 7;
+	case TCK_533MHZ:
+		return 6;
+	default:
+		return 5;
+	}
 }
 
 /* Frequency multiplier.  */
@@ -713,7 +729,7 @@ static void dram_timing(ramctr_timing * ctrl)
 	val32 = (1000 << 8) / ctrl->tCK;
 	printk(BIOS_DEBUG, "Selected DRAM frequency: %u MHz\n", val32);
 
-	/* Find CAS and CWL latencies */
+	/* Find CAS latency */
 	val = (ctrl->tAA + ctrl->tCK - 1) / ctrl->tCK;
 	printk(BIOS_DEBUG, "Minimum  CAS latency   : %uT\n", val);
 	/* Find lowest supported CAS latency that satisfies the minimum value */
@@ -734,7 +750,7 @@ static void dram_timing(ramctr_timing * ctrl)
 
 	printk(BIOS_DEBUG, "Selected CAS latency   : %uT\n", val);
 	ctrl->CAS = val;
-	ctrl->CWL = get_CWL(ctrl->CAS);
+	ctrl->CWL = get_CWL(ctrl->tCK);
 	printk(BIOS_DEBUG, "Selected CWL latency   : %uT\n", ctrl->CWL);
 
 	/* Find tRCD */

@@ -78,6 +78,9 @@ typedef struct ramctr_timing_st {
 	int mobile;
 	int sandybridge;
 
+	/* DDR base_freq = 100 Mhz / 133 Mhz */
+	u8 base_freq;
+
 	u16 cas_supported;
 	/* tLatencies are in units of ns, scaled by x256 */
 	u32 tCK;

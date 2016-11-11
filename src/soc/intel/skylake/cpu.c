@@ -205,6 +205,10 @@ static void configure_thermal_target(void)
 		msr.lo |= (conf->tcc_offset & 0xf) << 24;
 		wrmsr(MSR_TEMPERATURE_TARGET, msr);
 	}
+	msr = rdmsr(MSR_TEMPERATURE_TARGET);
+	msr.lo &= ~0x7f; /* Bits 6:0 */
+	msr.lo |= 0xe6; /* setting 100ms thermal time window */
+	wrmsr(MSR_TEMPERATURE_TARGET, msr);
 }
 
 static void configure_isst(void)

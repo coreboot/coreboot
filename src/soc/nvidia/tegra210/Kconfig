@@ -34,7 +34,7 @@ config MAINBOARD_DO_SOR_INIT
 	help
 	  Initialize dp display
 
-choice CONSOLE_SERIAL_TEGRA210_UART_CHOICES
+choice
 	prompt "Serial Console UART"
 	default CONSOLE_SERIAL_TEGRA210_UARTA
 	depends on CONSOLE_SERIAL

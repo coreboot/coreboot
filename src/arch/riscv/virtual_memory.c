@@ -23,6 +23,21 @@
 #include <vm.h>
 #include <symbols.h>
 
+/* Delegate controls which traps are delegated to the payload. If you
+ * wish to temporarily disable some or all delegation you can, in a
+ * debugger, set it to a different value (e.g. 0 to have all traps go
+ * to M-mode). In practice, this variable has been a lifesaver.  It is
+ * still not quite determined which delegation might by unallowed by
+ * the spec so for now we enumerate and set them all. */
+static int delegate = 0
+	| (1 << CAUSE_MISALIGNED_FETCH)
+	| (1 << CAUSE_FAULT_FETCH)
+	| (1 << CAUSE_ILLEGAL_INSTRUCTION)
+	| (1 << CAUSE_BREAKPOINT)
+	| (1 << CAUSE_FAULT_LOAD)
+	| (1 << CAUSE_FAULT_STORE)
+	| (1 << CAUSE_USER_ECALL)
+	;
 pte_t* root_page_table;
 
 /* Indent the following text by 2*level spaces */
@@ -223,16 +238,7 @@ void mstatus_init(void)
 	clear_csr(mip, MIP_MSIP);
 	set_csr(mie, MIP_MSIP);
 
-	/* Configure which exception causes are delegated to supervisor mode */
-	set_csr(medeleg,  (1 << CAUSE_MISALIGNED_FETCH)
-			| (1 << CAUSE_FAULT_FETCH)
-			| (1 << CAUSE_ILLEGAL_INSTRUCTION)
-			| (1 << CAUSE_BREAKPOINT)
-			| (1 << CAUSE_FAULT_LOAD)
-			| (1 << CAUSE_FAULT_STORE)
-			| (1 << CAUSE_USER_ECALL)
-	);
-
+	set_csr(medeleg, delegate);
 
 	/* Enable all user/supervisor-mode counters */
 	/* We'll turn these on once lowrisc gets their bitstream up to

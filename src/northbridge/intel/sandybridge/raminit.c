@@ -834,11 +834,8 @@ static void dram_freq(ramctr_timing * ctrl)
 		 */
 		reg1 = MCHBAR32(0x5e04);
 		val2 = (u8) reg1;
-		if (val2 == FRQ) {
-			printk(BIOS_DEBUG, "MCU frequency is set at : %d MHz\n",
-			       (1000 << 8) / ctrl->tCK);
+		if (val2)
 			return;
-		}
 
 		/* Step 2 - Select frequency in the MCU */
 		reg1 = FRQ;
@@ -4272,22 +4269,6 @@ void init_dram_ddr3(spd_raw_data *spds, int mobile, int min_tck,
 		/* Get DDR3 SPD data */
 		dram_find_spds_ddr3(spds, &ctrl);
 
-		err = try_init_dram_ddr3(&ctrl, fast_boot, s3resume, me_uma_size);
-	}
-
-	if (err && (ctrl.tCK < TCK_400MHZ)) {
-		/* fallback: lower clock frequency */
-		printk(BIOS_ERR, "RAM training failed, trying fallback.\n");
-		printram("Decreasing clock frequency.\n");
-		ctrl.tCK++;
-		err = try_init_dram_ddr3(&ctrl, fast_boot, s3resume, me_uma_size);
-	}
-
-	if (err && (ctrl.tCK < TCK_400MHZ)) {
-		/* fallback: lower clock frequency */
-		printk(BIOS_ERR, "RAM training failed, trying fallback.\n");
-		printram("Decreasing clock frequency.\n");
-		ctrl.tCK++;
 		err = try_init_dram_ddr3(&ctrl, fast_boot, s3resume, me_uma_size);
 	}
 

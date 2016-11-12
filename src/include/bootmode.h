@@ -24,6 +24,7 @@ int get_developer_mode_switch(void);
 int get_recovery_mode_switch(void);
 int get_recovery_mode_retrain_switch(void);
 int clear_recovery_mode_switch(void);
+void log_recovery_mode_switch(void);
 int get_wipeout_mode_switch(void);
 int get_lid_switch(void);
 

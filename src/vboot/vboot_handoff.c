@@ -153,6 +153,10 @@ void vboot_fill_handoff(void)
 	/* needed until we finish transtion to vboot2 for kernel verification */
 	fill_vboot_handoff(vh, sd);
 
+
+	/* Log the recovery mode switches if required, before clearing them. */
+	log_recovery_mode_switch();
+
 	/*
 	 * The recovery mode switch is cleared (typically backed by EC) here
 	 * to allow multiple queries to get_recovery_mode_switch() and have

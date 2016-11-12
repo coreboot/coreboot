@@ -203,6 +203,9 @@ typedef struct ramctr_timing_st {
 #define MAKE_ERR ((channel<<16)|(slotrank<<8)|1)
 #define GET_ERR_CHANNEL(x) (x>>16)
 
+#define MC_BIOS_REQ 0x5e00
+#define MC_BIOS_DATA 0x5e04
+
 static void program_timings(ramctr_timing * ctrl, int channel);
 static unsigned int get_mmio_size(void);
 
@@ -311,7 +314,7 @@ static void report_memory_config(void)
 	addr_decode_ch[1] = MCHBAR32(0x5008);
 
 	printk(BIOS_DEBUG, "memcfg DDR3 clock %d MHz\n",
-	       (MCHBAR32(0x5e04) * 13333 * 2 + 50) / 100);
+	       (MCHBAR32(MC_BIOS_DATA) * 13333 * 2 + 50) / 100);
 	printk(BIOS_DEBUG, "memcfg channel assignment: A: %d, B % d, C % d\n",
 	       addr_decoder_common & 3, (addr_decoder_common >> 2) & 3,
 	       (addr_decoder_common >> 4) & 3);
@@ -832,7 +835,7 @@ static void dram_freq(ramctr_timing * ctrl)
 		/* The PLL will never lock if the required frequency is
 		 * already set. Exit early to prevent a system hang.
 		 */
-		reg1 = MCHBAR32(0x5e04);
+		reg1 = MCHBAR32(MC_BIOS_DATA);
 		val2 = (u8) reg1;
 		if (val2)
 			return;
@@ -840,15 +843,15 @@ static void dram_freq(ramctr_timing * ctrl)
 		/* Step 2 - Select frequency in the MCU */
 		reg1 = FRQ;
 		reg1 |= 0x80000000;	// set running bit
-		MCHBAR32(0x5e00) = reg1;
+		MCHBAR32(MC_BIOS_REQ) = reg1;
 		while (reg1 & 0x80000000) {
 			printk(BIOS_DEBUG, " PLL busy...");
-			reg1 = MCHBAR32(0x5e00);
+			reg1 = MCHBAR32(MC_BIOS_REQ);
 		}
 		printk(BIOS_DEBUG, "done\n");
 
 		/* Step 3 - Verify lock frequency */
-		reg1 = MCHBAR32(0x5e04);
+		reg1 = MCHBAR32(MC_BIOS_DATA);
 		val2 = (u8) reg1;
 		if (val2 >= FRQ) {
 			printk(BIOS_DEBUG, "MCU frequency is set at : %d MHz\n",

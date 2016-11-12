@@ -25,40 +25,20 @@
 #include <cbmem.h>
 #include "gm45.h"
 
-/** Decodes used Graphics Mode Select (GMS) to kilobytes. */
+/*
+ * Decodes used Graphics Mode Select (GMS) to kilobytes.
+ * The options for 1M, 4M, 8M and 16M preallocated igd memory are
+ * undocumented but are verified to work.
+ */
 u32 decode_igd_memory_size(const u32 gms)
 {
-	switch (gms) {
-	case 1:
-		return   1 << 10;
-	case 2:
-		return   4 << 10; /* guessed */
-	case 3:
-		return   8 << 10; /* guessed */
-	case 4:
-		return  16 << 10;
-	case 5:
-		return  32 << 10;
-	case 6:
-		return  48 << 10;
-	case 7:
-		return  64 << 10;
-	case 8:
-		return 128 << 10;
-	case 9:
-		return 256 << 10;
-	case 10:
-		return  96 << 10;
-	case 11:
-		return 160 << 10;
-	case 12:
-		return 224 << 10;
-	case 13:
-		return 352 << 10;
-	default:
+	static const u16 ggc2uma[] = { 0, 1, 4, 8, 16, 32, 48, 64, 128, 256,
+				       96, 160, 224, 352 };
+
+	if (gms > ARRAY_SIZE(ggc2uma))
 		die("Bad Graphics Mode Select (GMS) setting.\n");
-		return 0;
-	}
+
+	return ggc2uma[gms] << 10;
 }
 
 /** Decodes used Graphics Stolen Memory (GSM) to kilobytes. */

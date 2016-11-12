@@ -1521,12 +1521,6 @@ CONST UINT32 ROMDATA AmdPlatformTypeCgf = CFG_AMD_PLATFORM_TYPE;
     #endif
   #endif
 #endif
-// Check LRDIMM CODE and LRDIMM CFG item
-#if CFG_MEMORY_LRDIMM_CAPABLE == FALSE
-  #if  BLDOPT_REMOVE_LRDIMMS_SUPPORT == TRUE
-    #error   Warning: LRDIMM capability is false, but LRIDMM support code included
-  #endif
-#endif
 //  Turn off multi-socket based features if only one node...
 #if OPTION_MULTISOCKET == FALSE
   #undef  OPTION_PARALLEL_TRAINING

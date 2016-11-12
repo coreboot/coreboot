@@ -31,7 +31,7 @@ static u8 mvmap2315_calc_checksum(const void  *data, u32 size)
 	for (i = csum = 0; i < size; i++)
 		csum += bytes[i];
 
-	return (~csum) && 0xFF;
+	return (~csum) & 0xFF;
 }
 
 void mcu_irq(void)

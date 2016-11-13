@@ -46,6 +46,12 @@ static struct device_operations cpu_dev_ops = {
 
 static const struct cpu_device_id cpu_table[] = {
 	{ X86_VENDOR_INTEL, 0x0f41 }, /* Xeon */
+	{ X86_VENDOR_INTEL, 0x0f43 }, /* Not tested */
+	{ X86_VENDOR_INTEL, 0x0f44 }, /* Not tested */
+	{ X86_VENDOR_INTEL, 0x0f47 },
+	{ X86_VENDOR_INTEL, 0x0f48 }, /* Not tested */
+	{ X86_VENDOR_INTEL, 0x0f49 }, /* Not tested */
+	{ X86_VENDOR_INTEL, 0x0f4a }, /* Not tested */
 	{ 0, 0 },
 };
 

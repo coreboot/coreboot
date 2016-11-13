@@ -66,8 +66,7 @@ static void setup_sio(void)
 	ite_reg_write(GPIO_DEV, 0x29, 0x88);
 	ite_reg_write(GPIO_DEV, 0x2c, 0x1c);
 	ite_reg_write(GPIO_DEV, 0x62, 0x08);
-	ite_reg_write(GPIO_DEV, 0x72, 0x00);
-	ite_reg_write(GPIO_DEV, 0x73, 0x38);
+	ite_kill_watchdog(GPIO_DEV);
 	ite_reg_write(GPIO_DEV, 0xb1, 0x01);
 	ite_reg_write(GPIO_DEV, 0xb8, 0x80);
 	ite_reg_write(GPIO_DEV, 0xbb, 0x40);
@@ -76,7 +75,7 @@ static void setup_sio(void)
 	ite_reg_write(GPIO_DEV, 0xc8, 0x00);
 	ite_reg_write(GPIO_DEV, 0xcb, 0x00);
 	ite_reg_write(GPIO_DEV, 0xf6, 0x26);
-	ite_reg_write(GPIO_DEV, 0xfc, 0x4a);
+	ite_reg_write(GPIO_DEV, 0xfc, 0x01);
 
 	ite_reg_write(EC_DEV, 0x70, 0x00); // Don't use IRQ9
 	ite_reg_write(EC_DEV, 0x30, 0xff); // Enable

@@ -219,7 +219,7 @@ void acpigen_write_debug_integer(uint64_t val);
 void acpigen_write_debug_op(uint8_t op);
 void acpigen_write_if(void);
 void acpigen_write_if_and(uint8_t arg1, uint8_t arg2);
-void acpigen_write_if_lequal(uint8_t arg1, uint8_t arg2);
+void acpigen_write_if_lequal_op_int(uint8_t op, uint64_t val);
 void acpigen_write_else(void);
 void acpigen_write_to_buffer(uint8_t src, uint8_t dst);
 void acpigen_write_to_integer(uint8_t src, uint8_t dst);

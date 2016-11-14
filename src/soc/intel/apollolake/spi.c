@@ -259,6 +259,21 @@ static int nuclear_spi_erase(struct spi_flash *flash, uint32_t offset, size_t le
 	return SUCCESS;
 }
 
+/*
+ * Ensure read/write xfer len is not greater than SPIBAR_FDATA_FIFO_SIZE and
+ * that the operation does not cross 256-byte boundary.
+ */
+static size_t get_xfer_len(uint32_t addr, size_t len)
+{
+	size_t xfer_len = min(len, SPIBAR_FDATA_FIFO_SIZE);
+	size_t bytes_left = ALIGN_UP(addr, 256) - addr;
+
+	if (bytes_left)
+		xfer_len = min(xfer_len, bytes_left);
+
+	return xfer_len;
+}
+
 static int nuclear_spi_read(struct spi_flash *flash, uint32_t addr, size_t len, void *buf)
 {
 	int ret;
@@ -268,7 +283,7 @@ static int nuclear_spi_read(struct spi_flash *flash, uint32_t addr, size_t len, 
 	BOILERPLATE_CREATE_CTX(ctx);
 
 	while (len) {
-		xfer_len = min(len, SPIBAR_FDATA_FIFO_SIZE);
+		xfer_len = get_xfer_len(addr, len);
 
 		ret = exec_sync_hwseq_xfer(ctx, SPIBAR_HSFSTS_CYCLE_READ,
 						addr, xfer_len);
@@ -295,7 +310,7 @@ static int nuclear_spi_write(struct spi_flash *flash,
 	BOILERPLATE_CREATE_CTX(ctx);
 
 	while (len) {
-		xfer_len = min(len, SPIBAR_FDATA_FIFO_SIZE);
+		xfer_len = get_xfer_len(addr, len);
 		fill_xfer_fifo(ctx, data, xfer_len);
 
 		ret = exec_sync_hwseq_xfer(ctx, SPIBAR_HSFSTS_CYCLE_WRITE,

@@ -1103,12 +1103,18 @@ void acpigen_write_if_and(uint8_t arg1, uint8_t arg2)
 	acpigen_emit_byte(arg2);
 }
 
-void acpigen_write_if_lequal(uint8_t arg1, uint8_t arg2)
+/*
+ * Generates ACPI code for checking if operand1 and operand2 are equal, where,
+ * operand1 is ACPI op and operand2 is an integer.
+ *
+ * If (Lequal (op, val))
+ */
+void acpigen_write_if_lequal_op_int(uint8_t op, uint64_t val)
 {
 	acpigen_write_if();
 	acpigen_emit_byte(LEQUAL_OP);
-	acpigen_emit_byte(arg1);
-	acpigen_emit_byte(arg2);
+	acpigen_emit_byte(op);
+	acpigen_write_integer(val);
 }
 
 void acpigen_write_else(void)
@@ -1217,7 +1223,7 @@ void acpigen_write_dsm(const char *uuid, void (*callbacks[])(void *),
 
 	for (i = 0; i < count; i++) {
 		/*   If (Lequal (Local1, i)) */
-		acpigen_write_if_lequal(LOCAL1_OP, i);
+		acpigen_write_if_lequal_op_int(LOCAL1_OP, i);
 
 		/*     Callback to write if handler. */
 		if (callbacks[i])

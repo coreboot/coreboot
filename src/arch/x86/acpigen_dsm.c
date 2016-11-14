@@ -26,14 +26,14 @@ static void i2c_hid_func0_cb(void *arg)
 	/* ToInteger (Arg1, Local2) */
 	acpigen_write_to_integer(ARG1_OP, LOCAL2_OP);
 	/* If (LEqual (Local2, 0x0)) */
-	acpigen_write_if_lequal(LOCAL2_OP, 0x0);
+	acpigen_write_if_lequal_op_int(LOCAL2_OP, 0x0);
 	/*   Return (Buffer (One) { 0x1f }) */
 	acpigen_write_return_singleton_buffer(0x1f);
 	acpigen_pop_len();	/* Pop : If */
 	/* Else */
 	acpigen_write_else();
 	/*   If (LEqual (Local2, 0x1)) */
-	acpigen_write_if_lequal(LOCAL2_OP, 0x1);
+	acpigen_write_if_lequal_op_int(LOCAL2_OP, 0x1);
 	/*     Return (Buffer (One) { 0x3f }) */
 	acpigen_write_return_singleton_buffer(0x3f);
 	acpigen_pop_len();	/* Pop : If */

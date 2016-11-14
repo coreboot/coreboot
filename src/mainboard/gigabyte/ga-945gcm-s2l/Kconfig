@@ -13,7 +13,7 @@
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ## GNU General Public License for more details.
 ##
-if BOARD_GIGABYTE_GA_945GCM_S2L
+if BOARD_GIGABYTE_GA_945GCM_S2L || BOARD_GIGABYTE_GA_945GCM_S2C
 
 config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
@@ -33,15 +33,21 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select CHANNEL_XOR_RANDOMIZATION
 	select MAINBOARD_HAS_NATIVE_VGA_INIT
 	select INTEL_EDID
-	select REALTEK_8168_RESET
+	select REALTEK_8168_RESET if BOARD_GIGABYTE_GA_945GCM_S2L
 
 config MAINBOARD_DIR
 	string
 	default gigabyte/ga-945gcm-s2l
 
+config VARIANT_DIR
+	string
+	default "ga-945gcm-s2l" if BOARD_GIGABYTE_GA_945GCM_S2L
+	default "ga-945gcm-s2c" if BOARD_GIGABYTE_GA_945GCM_S2C
+
 config MAINBOARD_PART_NUMBER
 	string
-	default "GA-945GCM-S2L"
+	default "GA-945GCM-S2L" if BOARD_GIGABYTE_GA_945GCM_S2L
+	default "GA-945GCM-S2C" if BOARD_GIGABYTE_GA_945GCM_S2C
 
 config MMCONF_BASE_ADDRESS
 	hex
@@ -55,4 +61,4 @@ config MAX_CPUS
 	int
 	default 2
 
-endif # BOARD_GIGABYTE_GA_945GCM_S2L
+endif

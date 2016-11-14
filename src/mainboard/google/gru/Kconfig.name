@@ -5,3 +5,7 @@ config BOARD_GOOGLE_KEVIN
 config BOARD_GOOGLE_GRU
 	bool "Gru"
 	select BOARD_GOOGLE_GRU_COMMON
+
+config BOARD_GOOGLE_BOB
+	bool "Bob"
+	select BOARD_GOOGLE_GRU_COMMON

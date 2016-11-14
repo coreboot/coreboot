@@ -359,10 +359,9 @@ generic_build()
 	host_target=$2
 	builddir=$3
 	success=$4
+	version=$5
 
 	fn_exists build_$package || return
-
-	version="$(eval echo \$$package"_VERSION")"
 
 	mkdir -p "$builddir"
 
@@ -387,12 +386,16 @@ generic_build()
 
 build_for_host()
 {
-	generic_build $1 host build-$1 "${TARGETDIR}/.$1.success"
+	package="$1"
+	version="$(eval echo \$$package"_VERSION")"
+	generic_build "$package" host "build-$package" "${TARGETDIR}/.${package}.${version}.success" "$version"
 }
 
 build_for_target()
 {
-	generic_build $1 target build-${TARGETARCH}-$1 "${TARGETDIR}/.${TARGETARCH}-$1.success"
+	package="$1"
+	version="$(eval echo \$$package"_VERSION")"
+	generic_build "$package" target "build-${TARGETARCH}-$package" "${TARGETDIR}/.${TARGETARCH}-${package}.${version}.success" "$version"
 }
 
 build()

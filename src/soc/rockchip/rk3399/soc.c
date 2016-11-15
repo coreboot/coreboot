@@ -20,6 +20,7 @@
 #include <soc/addressmap.h>
 #include <soc/clock.h>
 #include <soc/display.h>
+#include <soc/sdram.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
@@ -27,8 +28,7 @@
 
 static void soc_read_resources(device_t dev)
 {
-	ram_resource(dev, 0, (uintptr_t)_dram / KiB,
-		     min(CONFIG_DRAM_SIZE_MB * KiB, MAX_DRAM_ADDRESS / KiB));
+	ram_resource(dev, 0, (uintptr_t)_dram / KiB, sdram_size_mb() * KiB);
 }
 
 static void soc_init(device_t dev)

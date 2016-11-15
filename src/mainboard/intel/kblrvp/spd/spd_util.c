@@ -58,37 +58,3 @@ void mainboard_fill_rcomp_strength_data(void *rcomp_strength_ptr)
 
 	memcpy(rcomp_strength_ptr, RcompTarget, sizeof(RcompTarget));
 }
-
-uintptr_t mainboard_get_spd_data(void)
-{
-	char *spd_file;
-	int spd_index, spd_span;
-	size_t spd_file_len;
-
-	spd_index = (get_board_id() >> 5) & 0xF;
-	printk(BIOS_INFO, "SPD index %d\n", spd_index);
-
-	/* Load SPD data from CBFS */
-	spd_file = cbfs_boot_map_with_leak("spd.bin", CBFS_TYPE_SPD,
-		&spd_file_len);
-	if (!spd_file)
-		die("SPD data not found.");
-
-	/* make sure we have at least one SPD in the file. */
-	if (spd_file_len < SPD_LEN)
-		die("Missing SPD data.");
-
-	/* Make sure we did not overrun the buffer */
-	if (spd_file_len < ((spd_index + 1) * SPD_LEN)) {
-		printk(BIOS_ERR, "SPD index override to 0 - old hardware?\n");
-		spd_index = 0;
-	}
-
-	spd_span = spd_index * SPD_LEN;
-	return (uintptr_t)(spd_file + spd_span);
-}
-
-int mainboard_has_dual_channel_mem(void)
-{
-	return 1;
-}

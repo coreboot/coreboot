@@ -1035,5 +1035,41 @@ void sdram_init(const struct rk3399_sdram_params *sdram_params)
 
 size_t sdram_size_mb(void)
 {
-	return CONFIG_DRAM_SIZE_MB;
+	u32 rank, col, bk, cs0_row, cs1_row, bw, row_3_4;
+	size_t chipsize_mb = 0;
+	static size_t size_mb = 0;
+	u32 ch;
+
+	if (!size_mb) {
+		u32 sys_reg = read32(&rk3399_pmugrf->os_reg2);
+		u32 ch_num = SYS_REG_DEC_NUM_CH(sys_reg);
+
+		for (ch = 0; ch < ch_num; ch++) {
+			rank = SYS_REG_DEC_RANK(sys_reg, ch);
+			col = SYS_REG_DEC_COL(sys_reg, ch);
+			bk = SYS_REG_DEC_BK(sys_reg, ch);
+			cs0_row = SYS_REG_DEC_CS0_ROW(sys_reg, ch);
+			cs1_row = SYS_REG_DEC_CS1_ROW(sys_reg, ch);
+			bw = SYS_REG_DEC_BW(sys_reg, ch);
+			row_3_4 = SYS_REG_DEC_ROW_3_4(sys_reg, ch);
+
+			chipsize_mb = (1 << (cs0_row + col + bk + bw - 20));
+
+			if (rank > 1)
+				chipsize_mb += chipsize_mb >>
+					(cs0_row - cs1_row);
+			if (row_3_4)
+				chipsize_mb = chipsize_mb * 3 / 4;
+			size_mb += chipsize_mb;
+		}
+
+		/*
+		 * we use the 0x00000000~0xf7ffffff space
+		 * since 0xf8000000~0xffffffff is soc register space
+		 * so we reserve it
+		 */
+		size_mb = MIN(size_mb, 0xf8000000/MiB);
+	}
+
+	return size_mb;
 }

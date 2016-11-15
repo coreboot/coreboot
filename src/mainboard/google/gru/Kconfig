@@ -60,10 +60,6 @@ config MAINBOARD_VENDOR
 	string
 	default "Google"
 
-config DRAM_SIZE_MB
-	int
-	default 4096
-
 config EC_GOOGLE_CHROMEEC_SPI_BUS
 	hex
 	default 0x5

@@ -15,25 +15,11 @@
  */
 
 #ifndef MAINBOARD_SPD_H
+#define MAINBOARD_SPD_H
 
 #include <gpio.h>
 #include "../gpio.h"
 
-#define MAINBOARD_SPD_H
-
-#define SPD_LEN			256
-
-#define SPD_DRAM_TYPE		2
-#define  SPD_DRAM_DDR3		0x0B
-#define  SPD_DRAM_LPDDR3	0x0F
-#define  SPD_DRAM_LPDDR3_INTEL	0xF1
-#define SPD_DENSITY_BANKS	4
-#define SPD_ADDRESSING		5
-#define SPD_ORGANIZATION	7
-#define SPD_BUS_DEV_WIDTH	8
-#define SPD_PART_OFF		128
-#define  SPD_PART_LEN		18
-#define SPD_MANU_OFF		148
 
 #define RCOMP_TARGET_PARAMS	0x5
 
@@ -41,6 +27,4 @@ void mainboard_fill_dq_map_data(void *dq_map_ptr);
 void mainboard_fill_dqs_map_data(void *dqs_map_ptr);
 void mainboard_fill_rcomp_res_data(void *rcomp_ptr);
 void mainboard_fill_rcomp_strength_data(void *rcomp_strength_ptr);
-uintptr_t mainboard_get_spd_data(void);
-int mainboard_has_dual_channel_mem(void);
 #endif

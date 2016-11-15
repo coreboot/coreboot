@@ -40,15 +40,6 @@ config KBLRVP_TPM2_0
 
 endchoice
 
-config DRIVERS_GENERIC_MAX98357A
-	default y
-
-config DRIVERS_I2C_GENERIC
-	default y
-
-config DRIVERS_I2C_NAU8825
-	default y
-
 config IRQ_SLOT_COUNT
 	int
 	default 18
@@ -72,14 +63,6 @@ config MAX_CPUS
 config TPM_PIRQ
 	hex
 	default 0x18  # GPP_E0_IRQ
-
-config INCLUDE_NHLT_BLOBS
-	bool "Include blobs for audio."
-	select NHLT_DMIC_2CH
-	select NHLT_DMIC_4CH
-	select NHLT_MAX98357
-	select NHLT_NAU88L25
-	select NHLT_SSM4567
 
 config GBB_HWID
 	string

@@ -150,30 +150,52 @@ static uint32_t set_firmware_space(const void *firmware_blob)
 
 static uint32_t set_kernel_space(const void *kernel_blob)
 {
-	RETURN_ON_FAILURE(tlcl_define_space(KERNEL_NV_INDEX,
-					    sizeof(secdata_kernel)));
-	RETURN_ON_FAILURE(safe_write(KERNEL_NV_INDEX, kernel_blob,
-				     sizeof(secdata_kernel)));
-	return TPM_SUCCESS;
+	uint32_t rv;
+
+	rv = tlcl_define_space(KERNEL_NV_INDEX, sizeof(secdata_kernel));
+	if (rv == TPM_E_NV_DEFINED) {
+		VBDEBUG("%s: kernel space already exists\n", __func__);
+		return TPM_SUCCESS;
+	}
+
+	if (rv != TPM_SUCCESS)
+		return rv;
+
+	return safe_write(KERNEL_NV_INDEX, kernel_blob, sizeof(secdata_kernel));
 }
 
 static uint32_t set_rec_hash_space(const uint8_t *data)
 {
-	RETURN_ON_FAILURE(tlcl_define_space(REC_HASH_NV_INDEX,
-					    REC_HASH_NV_SIZE));
-	RETURN_ON_FAILURE(safe_write(REC_HASH_NV_INDEX, data,
-				     REC_HASH_NV_SIZE));
-	return TPM_SUCCESS;
+	uint32_t rv;
+
+	rv = tlcl_define_space(REC_HASH_NV_INDEX, REC_HASH_NV_SIZE);
+	if (rv == TPM_E_NV_DEFINED) {
+		VBDEBUG("%s: MRC Hash space already exists\n", __func__);
+		return TPM_SUCCESS;
+	}
+
+	if (rv != TPM_SUCCESS)
+		return rv;
+
+	return safe_write(REC_HASH_NV_INDEX, data, REC_HASH_NV_SIZE);
 }
 
 static uint32_t _factory_initialize_tpm(struct vb2_context *ctx)
 {
 	RETURN_ON_FAILURE(tlcl_force_clear());
-	RETURN_ON_FAILURE(set_firmware_space(ctx->secdata));
+
+	/*
+	 * Of all NVRAM spaces defined by this function the firmware space
+	 * must be defined last, because its existence is considered an
+	 * indication that TPM factory initialization was successfully
+	 * completed.
+	 */
 	RETURN_ON_FAILURE(set_kernel_space(secdata_kernel));
 
 	if (IS_ENABLED(CONFIG_VBOOT_HAS_REC_HASH_SPACE))
 		RETURN_ON_FAILURE(set_rec_hash_space(rec_hash_data));
+
+	RETURN_ON_FAILURE(set_firmware_space(ctx->secdata));
 
 	return TPM_SUCCESS;
 }

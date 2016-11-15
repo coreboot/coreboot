@@ -45,6 +45,7 @@ romstage-y += pei_data.c
 romstage-y += pmutil.c
 romstage-$(CONFIG_PLATFORM_USES_FSP2_0) += reset.c
 romstage-y += smbus_common.c
+romstage-y += early_smbus.c
 romstage-y += tsc_freq.c
 romstage-$(CONFIG_UART_DEBUG) += uart_debug.c
 

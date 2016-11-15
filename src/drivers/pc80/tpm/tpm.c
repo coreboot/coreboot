@@ -27,6 +27,10 @@
 #include <string.h>
 #include <delay.h>
 #include <arch/io.h>
+#include <arch/acpi.h>
+#include <arch/acpigen.h>
+#include <arch/acpi_device.h>
+#include <device/device.h>
 #include <console/console.h>
 #include <tpm.h>
 #include <arch/early_variables.h>
@@ -34,7 +38,10 @@
 #include "chip.h"
 
 #define PREFIX "lpc_tpm: "
-
+/* TCG Physical Presence Interface */
+#define TPM_PPI_UUID	"3dddfaa6-361b-4eb4-a424-8d10089d1653"
+/* TCG Memory Clear Interface */
+#define TPM_MCI_UUID	"376054ed-cc13-4675-901c-4756d7f2d45d"
 /* coreboot wrapper for TPM driver (start) */
 #define	TPM_DEBUG(fmt, args...)		\
 	if (IS_ENABLED(CONFIG_DEBUG_TPM)) {		\
@@ -211,12 +218,28 @@ static inline void tpm_write_int_vector(int vector, int locality)
 	write8(TIS_REG(locality, TIS_REG_INT_VECTOR), vector & 0xf);
 }
 
+static inline u8 tpm_read_int_vector(int locality)
+{
+	u8 value = read8(TIS_REG(locality, TIS_REG_INT_VECTOR));
+	TPM_DEBUG_IO_READ(TIS_REG_INT_VECTOR, value);
+	return value;
+}
+
 static inline void tpm_write_int_polarity(int polarity, int locality)
 {
 	/* Set polarity and leave all other bits at 0 */
 	u32 value = (polarity & 0x3) << 3;
 	TPM_DEBUG_IO_WRITE(TIS_REG_INT_ENABLE, value);
 	write32(TIS_REG(locality, TIS_REG_INT_ENABLE), value);
+}
+
+static inline u32 tpm_read_int_polarity(int locality)
+{
+	/* Get polarity and leave all other bits */
+	u32 value = read8(TIS_REG(locality, TIS_REG_INT_ENABLE));
+	value = (value >> 3) & 0x3;
+	TPM_DEBUG_IO_READ(TIS_REG_INT_ENABLE, value);
+	return value;
 }
 
 /*
@@ -750,9 +773,232 @@ static void lpc_tpm_set_resources(struct device *dev)
 	}
 }
 
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+
+static void tpm_ppi_func0_cb(void *arg)
+{
+	/* Functions 1-8. */
+	u8 buf[] = {0xff, 0x01};
+	acpigen_write_return_byte_buffer(buf, 2);
+}
+
+static void tpm_ppi_func1_cb(void *arg)
+{
+	if (IS_ENABLED(CONFIG_TPM2))
+		/* Interface version: 2.0 */
+		acpigen_write_return_string("2.0");
+	else
+		/* Interface version: 1.2 */
+		acpigen_write_return_string("1.2");
+}
+
+static void tpm_ppi_func2_cb(void *arg)
+{
+	/* Submit operations: drop on the floor and return success. */
+	acpigen_write_return_byte(0);
+}
+
+static void tpm_ppi_func3_cb(void *arg)
+{
+	/* Pending operation: none. */
+	acpigen_emit_byte(RETURN_OP);
+	acpigen_write_package(2);
+	acpigen_write_byte(0);
+	acpigen_write_byte(0);
+	acpigen_pop_len();
+}
+static void tpm_ppi_func4_cb(void *arg)
+{
+	/* Pre-OS transition method: reboot. */
+	acpigen_write_return_byte(2);
+}
+static void tpm_ppi_func5_cb(void *arg)
+{
+	/* Operation response: no operation executed. */
+	acpigen_emit_byte(RETURN_OP);
+	acpigen_write_package(3);
+	acpigen_write_byte(0);
+	acpigen_write_byte(0);
+	acpigen_write_byte(0);
+	acpigen_pop_len();
+}
+static void tpm_ppi_func6_cb(void *arg)
+{
+	/*
+	 * Set preferred user language: deprecated and must return 3 aka
+	 * "not implemented".
+	 */
+	acpigen_write_return_byte(3);
+}
+static void tpm_ppi_func7_cb(void *arg)
+{
+	/* Submit operations: deny. */
+	acpigen_write_return_byte(3);
+}
+static void tpm_ppi_func8_cb(void *arg)
+{
+	/* All actions are forbidden. */
+	acpigen_write_return_byte(1);
+}
+static void (*tpm_ppi_callbacks[])(void *) = {
+	tpm_ppi_func0_cb,
+	tpm_ppi_func1_cb,
+	tpm_ppi_func2_cb,
+	tpm_ppi_func3_cb,
+	tpm_ppi_func4_cb,
+	tpm_ppi_func5_cb,
+	tpm_ppi_func6_cb,
+	tpm_ppi_func7_cb,
+	tpm_ppi_func8_cb,
+};
+
+static void tpm_mci_func0_cb(void *arg)
+{
+	/* Function 1. */
+	acpigen_write_return_singleton_buffer(0x3);
+}
+static void tpm_mci_func1_cb(void *arg)
+{
+	/* Just return success. */
+	acpigen_write_return_byte(0);
+}
+
+static void (*tpm_mci_callbacks[])(void *) = {
+	tpm_mci_func0_cb,
+	tpm_mci_func1_cb,
+};
+
+static void lpc_tpm_fill_ssdt(struct device *dev)
+{
+	const char *path = acpi_device_path(dev->bus->dev);
+	u32 arg;
+	struct opregion opreg = OPREGION("TREG", SYSTEMMEMORY,
+					CONFIG_TPM_TIS_BASE_ADDRESS, 0x5000);
+
+	if (!path)
+		return;
+
+	/* Device */
+	acpigen_write_scope(path);
+	acpigen_write_device(acpi_device_name(dev));
+
+	acpigen_write_name("_HID");
+	acpigen_emit_eisaid("PNP0C31");
+
+	acpigen_write_name("_CID");
+	acpigen_emit_eisaid("PNP0C31");
+
+	acpigen_write_name_integer("_UID", 1);
+
+	acpigen_write_opregion(&opreg);
+
+	struct fieldlist tpm_field_list[] = {
+		/*
+		 * TPM_INT_ENABLE_0
+		 * bit 0 : dataAvailIntEnable,
+		 * bit 1 : stsValidIntEnable,
+		 * bit 2 : localityChangeIntEnable,
+		 * bit 3:4 typePolarity.
+		 */
+		FIELDLIST_OFFSET(0x8),
+		FIELDLIST_NAMESTR("INTE", 3),
+		FIELDLIST_NAMESTR("ITPL", 2),
+
+		/* TPM_INT_VECTOR_0 */
+		FIELDLIST_OFFSET(0xC),
+		FIELDLIST_NAMESTR("IVEC", 4),
+
+		/* TPM_DID_VID */
+		FIELDLIST_OFFSET(0xf00),
+		FIELDLIST_NAMESTR("DVID", 32),
+	};
+
+	acpigen_write_field(opreg.name, tpm_field_list,
+			ARRAY_SIZE(tpm_field_list),
+			FIELD_BYTEACC | FIELD_NOLOCK | FIELD_PRESERVE);
+
+	u32 did_vid = tpm_read_did_vid(0);
+	if (did_vid > 0 && did_vid < 0xffffffff)
+		acpigen_write_STA(ACPI_STATUS_DEVICE_ALL_ON);
+	else
+		acpigen_write_STA(ACPI_STATUS_DEVICE_ALL_OFF);
+
+	/* Resources */
+	acpigen_write_name("_CRS");
+	acpigen_write_resourcetemplate_header();
+	acpigen_write_mem32fixed(1, CONFIG_TPM_TIS_BASE_ADDRESS, 0x5000);
+	acpigen_write_io16(0x2e, 0x2e, 1, 2, 1);
+
+	if (CONFIG_TPM_PIRQ) {
+		/*
+		 * PIRQ: Update interrupt vector with configured PIRQ
+		 * Active-Low Level-Triggered Shared
+		 */
+		struct acpi_irq tpm_irq_a = IRQ_LEVEL_LOW(CONFIG_TPM_PIRQ);
+		acpi_device_write_interrupt(&tpm_irq_a);
+	} else if (tpm_read_int_vector(0) > 0) {
+		u8 int_vec = tpm_read_int_vector(0);
+		u8 int_pol = tpm_read_int_polarity(0);
+		struct acpi_irq tpm_irq = IRQ_LEVEL_LOW(int_vec);
+
+		if (int_pol & 1)
+			tpm_irq.polarity = IRQ_ACTIVE_LOW;
+		else
+			tpm_irq.polarity = IRQ_ACTIVE_HIGH;
+
+		if (int_pol & 2)
+			tpm_irq.mode = IRQ_EDGE_TRIGGERED;
+		else
+			tpm_irq.mode = IRQ_LEVEL_TRIGGERED;
+
+		acpi_device_write_interrupt(&tpm_irq);
+	}
+
+	acpigen_write_resourcetemplate_footer();
+
+	if (!IS_ENABLED(CONFIG_CHROMEOS)) {
+		/*
+		 * _DSM method
+		 */
+		struct dsm_uuid ids[] = {
+			/* Physical presence interface.
+			 * This is used to submit commands like "Clear TPM" to
+			 * be run at next reboot provided that user confirms
+			 * them. Spec allows user to cancel all commands and/or
+			 * configure BIOS to reject commands. So we pretend that
+			 * user did just this: cancelled everything. If user
+			 * really wants to clear TPM the only option now is to
+			 * do it manually in payload.
+			 */
+			DSM_UUID(TPM_PPI_UUID, &tpm_ppi_callbacks[0],
+				ARRAY_SIZE(tpm_ppi_callbacks), (void *) &arg),
+			/* Memory clearing on boot: just a dummy. */
+			DSM_UUID(TPM_MCI_UUID, &tpm_mci_callbacks[0],
+				ARRAY_SIZE(tpm_mci_callbacks), (void *) &arg),
+		};
+
+		acpigen_write_dsm_uuid_arr(ids, ARRAY_SIZE(ids));
+	}
+	acpigen_pop_len(); /* Device */
+	acpigen_pop_len(); /* Scope */
+
+	printk(BIOS_INFO, "%s.%s: %s %s\n", path, acpi_device_name(dev),
+	       dev->chip_ops->name, dev_path(dev));
+}
+
+static const char *lpc_tpm_acpi_name(struct device *dev)
+{
+	return "TPM";
+}
+#endif
+
 static struct device_operations lpc_tpm_ops = {
 	.read_resources   = &lpc_tpm_read_resources,
 	.set_resources    = &lpc_tpm_set_resources,
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+	.acpi_name		= &lpc_tpm_acpi_name,
+	.acpi_fill_ssdt_generator = &lpc_tpm_fill_ssdt,
+#endif
 };
 
 static struct pnp_info pnp_dev_info[] = {

@@ -144,6 +144,20 @@ struct opregion {
 	unsigned long regionlen;
 };
 
+#define DSM_UUID(DSM_UUID, DSM_CALLBACKS, DSM_COUNT, DSM_ARG) \
+	{ .uuid = DSM_UUID, \
+	.callbacks = DSM_CALLBACKS, \
+	.count = DSM_COUNT, \
+	.arg = DSM_ARG, \
+	}
+
+struct dsm_uuid {
+	const char *uuid;
+	void (**callbacks)(void *);
+	size_t count;
+	void *arg;
+};
+
 void acpigen_write_return_integer(uint64_t arg);
 void acpigen_write_return_string(const char *arg);
 void acpigen_write_len_f(void);
@@ -235,8 +249,9 @@ void acpigen_write_return_byte(uint8_t arg);
  * argument to pass into the callbacks. Callbacks should ensure that Local0 and
  * Local1 are left untouched. Use of Local2-Local7 is permitted in callbacks.
  */
-void acpigen_write_dsm(const char *uuid, void (*callbacks[])(void *),
+void acpigen_write_dsm(const char *uuid, void (**callbacks)(void *),
 		       size_t count, void *arg);
+void acpigen_write_dsm_uuid_arr(struct dsm_uuid *ids, size_t count);
 /*
  * Generate ACPI AML code for OperationRegion
  * This function takes input region name, region space, region offset & region

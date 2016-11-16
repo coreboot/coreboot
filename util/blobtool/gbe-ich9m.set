@@ -1,0 +1,88 @@
+#
+# Copyright (C) 2017 Damien Zammit <damien@zamaudio.com>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+
+# GbE values for ICH9M
+{
+	# Hardcoded chipset values
+	"reserved04" = 0xffff,
+	"version05" = 0x1083,
+	"reserved06" = 0xffff,
+	"reserved07" = 0xffff,
+	"pbalow" = 0xffff,
+	"pbahigh" = 0xffff,
+	"pci_loadvid" = 1,
+	"pci_loadssid" = 1,
+	"pci_pmen" = 1,
+	"pci_auxpwr" = 1,
+	"pci_reserved4" = 1,
+	"sh_phy_enpwrdown" = 1,
+	"sh_reserved1" = 0x5,
+	"sh_reserved3" = 1,
+	"sh_sign" = 0x2,
+	"cw1_extcfgptr" = 0x020,
+	"cw1_oemload" = 1,
+	"cw1_reserved1" = 1,
+	"cw2_extphylen" = 0x05,
+	"l1_reserved2" = 1,
+	"l1_reserved4" = 1,
+	"l1_lplu_non_d0a" = 1,
+	"l1_gbedis_non_d0a" = 1,
+	"reserved19" = 0x2b40,
+	"reserved1a" = 0x0043,
+	"reserved1c" = 0x10f5,
+	"reserved1d" = 0xbaad,
+	"_82567lm" = 0x10f5,
+	"_82567lf" = 0x10bf,
+	"reserved20" = 0xbaad,
+	"_82567v" = 0x10cb,
+	"reserved22_0" = 0xbaad,
+	"reserved22_1" = 0xbaad,
+
+	# Hardcoded PXE setup (disabled)
+	"pxe30_defbootsel" = 0x3,
+	"pxe30_ctrlsprompt" = 0x3,
+	"pxe30_pxeabsent" = 1,
+	"pxe31_disablemenu" = 1,
+	"pxe31_disabletitle" = 1,
+	"pxe31_signature" = 1,
+	"pxe32_buildnum" = 0x18,
+	"pxe32_minorversion" = 0x3,
+	"pxe32_majorversion" = 0x1,
+	"pxe33_basecodeabsent" = 1,
+	"pxe33_undipresent" = 1,
+	"pxe33_reserved1" = 1,
+	"pxe33_signature" = 1,
+	"pxe_padding"[11] = 0xffff,
+
+	# GbE power settings
+	"lanpwr_d3pwr" = 1,
+	"lanpwr_d0pwr" = 13,
+
+	# GbE LED modes
+	"l1_led1mode" = 0xb,
+	"l1_led1blinks" = 1,
+	"l02_led0mode" = 0x2,
+	"l02_led2mode" = 0x1,
+
+	# Padding 0xf80 bytes
+	"padding"[0xf80] = 0xff,
+
+	# TODO: make command line switch for these
+
+	# Configurable PCI IDs
+	"ssdid" = 0x20ee,
+	"ssvid" = 0x17aa,
+	"did" = 0x10f5,
+	"vid" = 0x8086
+}

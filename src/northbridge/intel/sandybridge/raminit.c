@@ -4225,8 +4225,6 @@ static void init_dram_ddr3(int mobile, int min_tck, int s3resume)
 		halt();
 	}
 
-	memset(&ctrl, 0, sizeof(ctrl));
-
 	early_pch_init_native();
 	early_thermal_init();
 
@@ -4275,6 +4273,8 @@ static void init_dram_ddr3(int mobile, int min_tck, int s3resume)
 		}
 	}
 	if (!fast_boot) {
+		/* Reset internal state */
+		memset(&ctrl, 0, sizeof(ctrl));
 		ctrl.mobile = mobile;
 		ctrl.tCK = min_tck;
 
@@ -4290,6 +4290,11 @@ static void init_dram_ddr3(int mobile, int min_tck, int s3resume)
 		/* fallback: disable failing channel */
 		printk(BIOS_ERR, "RAM training failed, trying fallback.\n");
 		printram("Disable failing channel.\n");
+
+		/* Reset internal state */
+		memset(&ctrl, 0, sizeof(ctrl));
+		ctrl.mobile = mobile;
+		ctrl.tCK = min_tck;
 
 		/* Reset DDR3 frequency */
 		dram_find_spds_ddr3(spds, &ctrl);

@@ -2971,23 +2971,24 @@ static void reprogram_320c(ramctr_timing * ctrl)
 
 #define MIN_C320C_LEN 13
 
-static int try_cmd_stretch(ramctr_timing *ctrl, int cmd_stretch)
+static int try_cmd_stretch(ramctr_timing *ctrl, int channel, int cmd_stretch)
 {
 	struct ram_rank_timings saved_timings[NUM_CHANNELS][NUM_SLOTRANKS];
-	int channel, slotrank;
+	int slotrank;
 	int c320c;
 	int stat[NUM_SLOTRANKS][256];
+	int delta = 0;
 
-	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS {
-		saved_timings[channel][slotrank] = ctrl->timings[channel][slotrank];
+	printram("Trying cmd_stretch %d on channel %d\n", cmd_stretch, channel);
+
+	FOR_ALL_POPULATED_RANKS {
+		saved_timings[channel][slotrank] =
+			ctrl->timings[channel][slotrank];
 	}
 
-	FOR_ALL_POPULATED_CHANNELS {
-		ctrl->cmd_stretch[channel] = cmd_stretch;
-	}
+	ctrl->cmd_stretch[channel] = cmd_stretch;
 
-	FOR_ALL_POPULATED_CHANNELS
-	    MCHBAR32(0x4004 + 0x400 * channel) =
+	MCHBAR32(0x4004 + 0x400 * channel) =
 		ctrl->tRRD
 		| (ctrl->tRTP << 4)
 		| (ctrl->tCKE << 8)
@@ -2996,50 +2997,46 @@ static int try_cmd_stretch(ramctr_timing *ctrl, int cmd_stretch)
 		| (ctrl->tWR << 24)
 		| (ctrl->cmd_stretch[channel] << 30);
 
+	if (ctrl->cmd_stretch[channel] == 2)
+		delta = 2;
+	else if (ctrl->cmd_stretch[channel] == 0)
+		delta = 4;
 
-	FOR_ALL_CHANNELS {
-		int delta = 0;
-		if (ctrl->cmd_stretch[channel] == 2)
-			delta = 2;
-		else if (ctrl->cmd_stretch[channel] == 0)
-			delta = 4;
+	FOR_ALL_POPULATED_RANKS {
+		ctrl->timings[channel][slotrank].val_4024 -= delta;
+	}
 
+	for (c320c = -127; c320c <= 127; c320c++) {
 		FOR_ALL_POPULATED_RANKS {
-			ctrl->timings[channel][slotrank].val_4024 -= delta;
+			ctrl->timings[channel][slotrank].val_320c = c320c;
+		}
+		program_timings(ctrl, channel);
+		reprogram_320c(ctrl);
+		FOR_ALL_POPULATED_RANKS {
+			stat[slotrank][c320c + 127] =
+				test_320c(ctrl, channel, slotrank);
+			printram("3stat: %d, %d, %d: %x\n",
+				   channel, slotrank, c320c,
+				   stat[slotrank][c320c + 127]);
+		}
+	}
+	FOR_ALL_POPULATED_RANKS {
+		struct run rn =
+			get_longest_zero_run(stat[slotrank], 255);
+		ctrl->timings[channel][slotrank].val_320c =
+			rn.middle - 127;
+		printram("3val: %d, %d: %d\n", channel,
+			   slotrank,
+			   ctrl->timings[channel][slotrank].val_320c);
+		if (rn.all || rn.length < MIN_C320C_LEN) {
+			FOR_ALL_POPULATED_RANKS {
+				ctrl->timings[channel][slotrank] =
+					saved_timings[channel][slotrank];
+			}
+			return MAKE_ERR;
 		}
 	}
 
-	FOR_ALL_POPULATED_CHANNELS {
-		for (c320c = -127; c320c <= 127; c320c++) {
-			FOR_ALL_POPULATED_RANKS {
-				ctrl->timings[channel][slotrank].val_320c = c320c;
-			}
-			program_timings(ctrl, channel);
-			reprogram_320c(ctrl);
-			FOR_ALL_POPULATED_RANKS {
-				stat[slotrank][c320c + 127] =
-				    test_320c(ctrl, channel, slotrank);
-				printram("3stat: %d, %d, %d: %x\n",
-				       channel, slotrank, c320c,
-				       stat[slotrank][c320c + 127]);
-			}
-		}
-		FOR_ALL_POPULATED_RANKS {
-			struct run rn =
-			    get_longest_zero_run(stat[slotrank], 255);
-			ctrl->timings[channel][slotrank].val_320c =
-			    rn.middle - 127;
-			printram("3val: %d, %d: %d\n", channel,
-			       slotrank,
-			       ctrl->timings[channel][slotrank].val_320c);
-			if (rn.all || rn.length < MIN_C320C_LEN) {
-				FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS {
-					ctrl->timings[channel][slotrank] = saved_timings[channel][slotrank];
-				}
-				return MAKE_ERR;
-			}
-		}
-	}
 	return 0;
 }
 
@@ -3056,19 +3053,22 @@ static int command_training(ramctr_timing *ctrl)
 		write32(DEFAULT_MCHBAR + 0x4288 + 0x400 * channel, 0x1f);
 	}
 
-	/* try command rate 1T and 2T */
-	err = try_cmd_stretch(ctrl, 0);
-	if (err) {
-		err = try_cmd_stretch(ctrl, 2);
+	FOR_ALL_POPULATED_CHANNELS {
+		/* try command rate 1T and 2T */
+		err = try_cmd_stretch(ctrl, channel, 0);
 		if (err) {
-			printk(BIOS_EMERG, "c320c discovery failed\n");
-			return err;
-		}
+			err = try_cmd_stretch(ctrl, channel, 2);
+			if (err) {
+				printk(BIOS_EMERG, "c320c discovery failed\n");
+				return err;
+			}
+			printram("Using CMD rate 2T on channel %u\n", channel);
+		} else
+			printram("Using CMD rate 1T on channel %u\n", channel);
 	}
 
-	FOR_ALL_POPULATED_CHANNELS {
+	FOR_ALL_POPULATED_CHANNELS
 		program_timings(ctrl, channel);
-	}
 
 	reprogram_320c(ctrl);
 	return 0;

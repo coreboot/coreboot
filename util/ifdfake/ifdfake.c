@@ -20,6 +20,8 @@
 #include <string.h>
 #include <getopt.h>
 
+#define REGION_COUNT 5
+
 #define FDBAR_OFFSET 0x10
 #define FRBA_OFFSET 0x40
 
@@ -56,15 +58,15 @@ static void write_image(const region_t regions[], const char *const image)
 	} fdbar;
 	memset(&fdbar, 0x00, sizeof(fdbar));
 	fdbar.flvalsig = 0x0ff0a55a;
-	fdbar.flmap0 = (FRBA_OFFSET >> 4) << 16;
+	fdbar.flmap0 = (REGION_COUNT - 1) << 24 | (FRBA_OFFSET >> 4) << 16;
 	if (fwrite(&fdbar, sizeof(fdbar), 1, f) != 1) {
 		fprintf(stderr, "Failed to write fdbar.\n");
 		exit(EXIT_FAILURE);
 	}
 
 	int i;
-	uint32_t frba[5];
-	for (i = 0; i < 5; ++i) {
+	uint32_t frba[REGION_COUNT];
+	for (i = 0; i < REGION_COUNT; ++i) {
 		if (regions[i].size)
 			frba[i] = ((regions[i].limit & 0xfff000) << (16 - 12)) |
 				  ((regions[i].base & 0xfff000) >> 12);
@@ -149,7 +151,7 @@ static void print_usage(const char *name)
 int main(int argc, char *argv[])
 {
 	int opt, option_index = 0, idx;
-	region_t regions[5];
+	region_t regions[REGION_COUNT];
 
 	memset(regions, 0x00, sizeof(regions));
 
@@ -196,7 +198,7 @@ int main(int argc, char *argv[])
 	regions[0].base   = 0x00000000;
 	regions[0].limit  = 0x00000fff;
 	regions[0].size   = 0x00001000;
-	for (idx = 1; idx < 5; ++idx) {
+	for (idx = 1; idx < REGION_COUNT; ++idx) {
 		if (regions[idx].size) {
 			if (regions[idx].base & 0xfff)
 				fprintf(stderr, "Region %d is "

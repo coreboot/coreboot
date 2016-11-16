@@ -149,6 +149,7 @@ config BOOTBLOCK_SAVE_BIST_AND_TIMESTAMP
 
 config HAVE_CMOS_DEFAULT
 	def_bool n
+	depends on HAVE_OPTION_TABLE
 
 config CMOS_DEFAULT_FILE
 	string

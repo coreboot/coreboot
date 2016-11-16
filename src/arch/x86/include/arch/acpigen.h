@@ -144,6 +144,8 @@ struct opregion {
 	unsigned long regionlen;
 };
 
+void acpigen_write_return_integer(uint64_t arg);
+void acpigen_write_return_string(const char *arg);
 void acpigen_write_len_f(void);
 void acpigen_pop_len(void);
 void acpigen_set_current(char *curr);

@@ -106,3 +106,10 @@ config EC_GOOGLE_CHROMEEC_RTC
 	help
 	  Enable support for the real-time clock on the Chrome OS EC. This
 	  uses the EC_CMD_RTC_GET_VALUE command to read the current time.
+
+config EC_GOOGLE_CHROMEEC_SWITCHES
+	depends on EC_GOOGLE_CHROMEEC && CHROMEOS
+	bool
+	help
+	  Enable support for Chrome OS mode switches provided by the Chrome OS
+	  EC.

@@ -29,6 +29,10 @@ smm-$(CONFIG_VBOOT) += vboot_storage.c
 romstage-$(CONFIG_VBOOT) += vboot_storage.c
 verstage-$(CONFIG_VBOOT) += vboot_storage.c
 
+verstage-$(CONFIG_EC_GOOGLE_CHROMEEC_SWITCHES) += switches.c
+romstage-$(CONFIG_EC_GOOGLE_CHROMEEC_SWITCHES) += switches.c
+ramstage-$(CONFIG_EC_GOOGLE_CHROMEEC_SWITCHES) += switches.c
+
 ifneq ($(CONFIG_EC_EXTERNAL_FIRMWARE),y)
 # These are Chrome EC firmware images that a payload (such as depthcharge) can
 # use to update the EC. ecrw is the main embedded controller's firmware,

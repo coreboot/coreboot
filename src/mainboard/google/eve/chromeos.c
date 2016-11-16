@@ -14,15 +14,12 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/io.h>
 #include <rules.h>
 #include <gpio.h>
 #include <soc/gpio.h>
-#include <ec/google/chromeec/ec.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
 #include "gpio.h"
-#include "ec.h"
 
 #if ENV_RAMSTAGE
 #include <boot/coreboot_tables.h>
@@ -42,32 +39,6 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios));
 }
 #endif /* ENV_RAMSTAGE */
-
-int get_lid_switch(void)
-{
-	/* Read lid switch state from the EC. */
-	return !!(google_chromeec_get_switches() & EC_SWITCH_LID_OPEN);
-}
-
-int get_developer_mode_switch(void)
-{
-	/* No physical developer mode switch. */
-	return 0;
-}
-
-int get_recovery_mode_switch(void)
-{
-	/* Check if the EC has posted the keyboard recovery event. */
-	return !!(google_chromeec_get_events_b() &
-		  EC_HOST_EVENT_MASK(EC_HOST_EVENT_KEYBOARD_RECOVERY));
-}
-
-int clear_recovery_mode_switch(void)
-{
-	/* Clear keyboard recovery event. */
-	return google_chromeec_clear_events_b(
-		EC_HOST_EVENT_MASK(EC_HOST_EVENT_KEYBOARD_RECOVERY));
-}
 
 int get_write_protect_state(void)
 {

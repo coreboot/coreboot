@@ -15,16 +15,8 @@
 
 #include <string.h>
 #include <bootmode.h>
-#include <arch/io.h>
-#include <device/device.h>
-#include <device/pci.h>
 #include <soc/gpio.h>
 #include <vendorcode/google/chromeos/chromeos.h>
-
-#if CONFIG_EC_GOOGLE_CHROMEEC
-#include "ec.h"
-#include <ec/google/chromeec/ec.h>
-#endif
 
 /* The WP status pin lives on GPIO_SSUS_6 which is pad 36 in the SUS well. */
 #define WP_STATUS_PAD	36
@@ -45,55 +37,6 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios));
 }
 #endif
-
-int get_lid_switch(void)
-{
-#if CONFIG_EC_GOOGLE_CHROMEEC
-	u8 ec_switches = inb(EC_LPC_ADDR_MEMMAP + EC_MEMMAP_SWITCHES);
-
-	return !!(ec_switches & EC_SWITCH_LID_OPEN);
-#else
-	/* Default to force open. */
-	return 1;
-#endif
-}
-
-int get_developer_mode_switch(void)
-{
-	return 0;
-}
-
-int get_recovery_mode_switch(void)
-{
-#if CONFIG_EC_GOOGLE_CHROMEEC
-	u8 ec_switches = inb(EC_LPC_ADDR_MEMMAP + EC_MEMMAP_SWITCHES);
-	u32 ec_events;
-
-	/* If a switch is set, we don't need to look at events. */
-	if (ec_switches & (EC_SWITCH_DEDICATED_RECOVERY))
-		return 1;
-
-	/* Else check if the EC has posted the keyboard recovery event. */
-	ec_events = google_chromeec_get_events_b();
-
-	return !!(ec_events &
-		  EC_HOST_EVENT_MASK(EC_HOST_EVENT_KEYBOARD_RECOVERY));
-#else
-	return 0;
-#endif
-}
-
-int clear_recovery_mode_switch(void)
-{
-#if CONFIG_EC_GOOGLE_CHROMEEC
-	const uint32_t kb_rec_mask =
-		EC_HOST_EVENT_MASK(EC_HOST_EVENT_KEYBOARD_RECOVERY);
-	/* Unconditionally clear the EC recovery request. */
-	return google_chromeec_clear_events_b(kb_rec_mask);
-#else
-	return 0;
-#endif
-}
 
 int get_write_protect_state(void)
 {

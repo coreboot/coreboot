@@ -13,13 +13,9 @@
  * GNU General Public License for more details.
  */
 
-#include <boardid.h>
+#include <bootmode.h>
 #include <boot/coreboot_tables.h>
-#include <console/console.h>
-#include <ec/google/chromeec/ec.h>
-#include <ec/google/chromeec/ec_commands.h>
 #include <string.h>
-#include <vendorcode/google/chromeos/chromeos.h>
 
 #include "gpio.h"
 
@@ -35,24 +31,6 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 		{AP_SYS_RESET_L, ACTIVE_LOW, -1, "reset"},
 	};
 	lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios));
-}
-
-int get_developer_mode_switch(void)
-{
-	return 0;
-}
-
-int get_recovery_mode_switch(void)
-{
-	uint32_t ec_events;
-
-	ec_events = google_chromeec_get_events_b();
-
-	/* Enter recovery mode either on keyboard recovery / fastboot event. */
-	return !!((ec_events &
-		   EC_HOST_EVENT_MASK(EC_HOST_EVENT_KEYBOARD_RECOVERY)) ||
-		  (ec_events &
-		   EC_HOST_EVENT_MASK(EC_HOST_EVENT_KEYBOARD_FASTBOOT)));
 }
 
 int get_write_protect_state(void)

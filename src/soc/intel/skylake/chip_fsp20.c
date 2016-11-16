@@ -157,6 +157,9 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	memcpy(params->PcieRpClkReqNumber, config->PcieRpClkReqNumber,
 	       sizeof(params->PcieRpClkReqNumber));
 
+	/* disable Legacy PME */
+	memset(params->PcieRpPmSci, 0, sizeof(params->PcieRpPmSci));
+
 	memcpy(params->SerialIoDevMode, config->SerialIoDevMode,
 	       sizeof(params->SerialIoDevMode));
 

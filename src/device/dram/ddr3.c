@@ -129,9 +129,10 @@ int spd_decode_ddr3(dimm_attr * dimm, spd_raw_data spd)
 {
 	int ret;
 	u16 crc, spd_crc;
-	u8 ftb_divisor, ftb_dividend, capacity_shift, bus_width;
+	u8 capacity_shift, bus_width;
 	u8 reg8;
 	u32 mtb;		/* medium time base */
+	u32 ftb;		/* fine time base */
 	unsigned int val, param;
 
 	ret = SPD_STATUS_OK;
@@ -263,12 +264,6 @@ int spd_decode_ddr3(dimm_attr * dimm, spd_raw_data spd)
 	dimm->size_mb = ((1 << (capacity_shift + (25 - 20))) * bus_width
 			 * dimm->ranks) / dimm->width;
 
-	/* Fine Timebase (FTB) Dividend/Divisor */
-	/* Dividend */
-	ftb_dividend = (spd[9] >> 4) & 0x0f;
-	/* Divisor */
-	ftb_divisor = spd[9] & 0x0f;
-
 	/* Medium Timebase =
 	 *   Medium Timebase (MTB) Dividend /
 	 *   Medium Timebase (MTB) Divisor */
@@ -300,6 +295,34 @@ int spd_decode_ddr3(dimm_attr * dimm, spd_raw_data spd)
 	dimm->tRTP = spd[27] * mtb;
 	/* Minimum Four Activate Window Delay Time (tFAWmin) */
 	dimm->tFAW = (((spd[28] & 0x0f) << 8) + spd[29]) * mtb;
+
+	printram("  FTB timings        :");
+	/* FTB is introduced in SPD revision 1.1 */
+	if (spd[1] >= 0x11 && spd[9] & 0x0f) {
+		printram(" yes\n");
+
+		/* Fine timebase (1/256 ps) =
+		 *   Fine Timebase (FTB) Dividend /
+		 *   Fine Timebase (FTB) Divisor */
+		ftb = (((u16) spd[9] & 0xf0) << 4) / (spd[9] & 0x0f);
+
+		/* SPD recommends to round up the MTB part and use a negative
+		 * FTB, so a negative rounding should be always safe */
+
+		/* SDRAM Minimum Cycle Time (tCKmin) correction */
+		dimm->tCK += (s32)((s8) spd[34] * ftb - 500) / 1000;
+		/* Minimum CAS Latency Time (tAAmin) correction */
+		dimm->tAA += (s32)((s8) spd[35] * ftb - 500) / 1000;
+		/* Minimum RAS# to CAS# Delay Time (tRCDmin) correction */
+		dimm->tRCD += (s32)((s8) spd[36] * ftb - 500) / 1000;
+		/* Minimum Row Precharge Delay Time (tRPmin) correction */
+		dimm->tRP += (s32)((s8) spd[37] * ftb - 500) / 1000;
+		/* Minimum Active to Active/Refresh Delay Time (tRCmin) corr. */
+		dimm->tRC += (s32)((s8) spd[38] * ftb - 500) / 1000;
+	}
+	else {
+		printram(" no\n");
+	}
 
 	/* SDRAM Optional Features */
 	reg8 = spd[30];

@@ -15,12 +15,8 @@
 
 #include <boot/coreboot_tables.h>
 #include <bootmode.h>
-#include <console/console.h>
-#include <ec/google/chromeec/ec.h>
-#include <ec/google/chromeec/ec_commands.h>
 #include <gpio.h>
 #include <string.h>
-#include <vendorcode/google/chromeos/chromeos.h>
 
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
@@ -34,20 +30,6 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 		{GPIO(I5), ACTIVE_LOW, -1, "reset"},
 	};
 	lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios));
-}
-
-int get_developer_mode_switch(void)
-{
-	return 0;
-}
-
-int get_recovery_mode_switch(void)
-{
-	uint32_t ec_events;
-
-	ec_events = google_chromeec_get_events_b();
-	return !!(ec_events &
-		  EC_HOST_EVENT_MASK(EC_HOST_EVENT_KEYBOARD_RECOVERY));
 }
 
 int get_write_protect_state(void)

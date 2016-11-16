@@ -15,7 +15,6 @@
 
 #include <baseboard/variants.h>
 #include <boot/coreboot_tables.h>
-#include <ec/google/chromeec/ec.h>
 #include <gpio.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <soc/gpio.h>
@@ -34,43 +33,6 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 			gpio_get(GPIO_EC_IN_RW), "EC in RW"},
 	};
 	lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios));
-}
-
-int get_lid_switch(void)
-{
-	/* Read lid switch state from the EC. */
-	return !!(google_chromeec_get_switches() & EC_SWITCH_LID_OPEN);
-}
-
-int get_developer_mode_switch(void)
-{
-	/* No physical developer mode switch. It's virtual. */
-	return 0;
-}
-
-int get_recovery_mode_switch(void)
-{
-	/* Check if the EC has posted the keyboard recovery event. */
-	return !!(google_chromeec_get_events_b() &
-		  EC_HOST_EVENT_MASK(EC_HOST_EVENT_KEYBOARD_RECOVERY));
-}
-
-int get_recovery_mode_retrain_switch(void)
-{
-	/*
-	 * Check if the EC has posted the keyboard recovery event with memory
-	 * retrain.
-	 */
-	return !!(google_chromeec_get_events_b() &
-		EC_HOST_EVENT_MASK(EC_HOST_EVENT_KEYBOARD_RECOVERY_HW_REINIT));
-}
-
-int clear_recovery_mode_switch(void)
-{
-	/* Clear all host event bits requesting recovery mode. */
-	return google_chromeec_clear_events_b(
-		EC_HOST_EVENT_MASK(EC_HOST_EVENT_KEYBOARD_RECOVERY) |
-		EC_HOST_EVENT_MASK(EC_HOST_EVENT_KEYBOARD_RECOVERY_HW_REINIT));
 }
 
 int get_write_protect_state(void)

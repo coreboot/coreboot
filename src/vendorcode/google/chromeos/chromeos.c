@@ -17,9 +17,15 @@
 #include <string.h>
 #include "chromeos.h"
 
+int __attribute__((weak)) get_developer_mode_switch(void)
+{
+	// Weak implementation. No physical developer switch.
+	return 0;
+}
+
 int __attribute__((weak)) clear_recovery_mode_switch(void)
 {
-	// Can be implemented by a mainboard
+	// Weak implementation. Nothing to do.
 	return 0;
 }
 

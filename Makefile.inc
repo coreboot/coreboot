@@ -38,7 +38,9 @@ endif
 #######################################################################
 # Basic component discovery
 MAINBOARDDIR=$(call strip_quotes,$(CONFIG_MAINBOARD_DIR))
+VARIANT_DIR:=$(call strip_quotes,$(CONFIG_VARIANT_DIR))
 export MAINBOARDDIR
+export VARIANT_DIR
 
 ## Final build results, which CBFSTOOL uses to create the final
 ## rom image file, are placed under $(objcbfs).

@@ -19,12 +19,14 @@
 #include <arch/symbols.h>
 #include <assert.h>
 #include <cpu/x86/mtrr.h>
+#include <cpu/x86/msr.h>
 #include <cbmem.h>
 #include <chip.h>
 #include <console/console.h>
 #include <device/pci_def.h>
 #include <fsp/util.h>
 #include <fsp/memmap.h>
+#include <soc/msr.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/romstage.h>
@@ -94,6 +96,18 @@ asmlinkage void *car_stage_c_entry(void)
 	return postcar_commit_mtrrs(&pcf);
 }
 
+static void cpu_flex_override(FSP_M_CONFIG *m_cfg)
+{
+	msr_t flex_ratio;
+	m_cfg->CpuRatioOverride = 1;
+	/*
+	 * Set cpuratio to that value set in bootblock, This will ensure FSPM
+	 * knows the intended flex ratio.
+	 */
+	flex_ratio = rdmsr(MSR_FLEX_RATIO);
+	m_cfg->CpuRatio = (flex_ratio.lo >> 8) & 0xff;
+}
+
 static void soc_memory_init_params(FSP_M_CONFIG *m_cfg)
 {
 	const struct device *dev;
@@ -130,6 +144,8 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg)
 			mask |= (1<<i);
 	}
 	m_cfg->PcieRpEnableMask = mask;
+
+	cpu_flex_override(m_cfg);
 }
 
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)

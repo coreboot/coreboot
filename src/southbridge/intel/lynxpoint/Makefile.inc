@@ -28,7 +28,11 @@ ramstage-y += smbus.c
 ramstage-y += hda_verb.c
 ramstage-$(CONFIG_INTEL_LYNXPOINT_LP) += serialio.c
 
+ifneq ($(CONFIG_VARIANT_DIR),)
+ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/variants/$(VARIANT_DIR)/hda_verb.c
+else
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/hda_verb.c
+endif
 
 ramstage-y += rcba.c
 ramstage-y += me_status.c

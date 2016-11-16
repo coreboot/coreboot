@@ -150,7 +150,8 @@ u32 top_of_32bit_ram(void)
 	 * PRMMR_BASE MSR. The system hangs if PRMRR_BASE MSR is read before
 	 * PRMRR_MASK MSR lock bit is set.
 	 */
-	if (smm_region_start() == 0)
+	top_of_ram = smm_region_start();
+	if (top_of_ram == 0)
 		return 0;
 
 	dev = dev_find_slot(0, PCI_DEVFN(SA_DEV_SLOT_ROOT, 0));
@@ -163,7 +164,8 @@ u32 top_of_32bit_ram(void)
 	 * Refer to Fsp Integration Guide for the memory mapping layout.
 	 */
 	prmrr_base = rdmsr(UNCORE_PRMRR_PHYS_BASE_MSR);
-	top_of_ram = prmrr_base.lo;
+	if (prmrr_base.lo)
+		top_of_ram = prmrr_base.lo;
 
 	if (config->ProbelessTrace)
 		top_of_ram -= TRACE_MEMORY_SIZE;

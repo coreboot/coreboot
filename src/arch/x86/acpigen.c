@@ -1143,7 +1143,7 @@ void acpigen_write_byte_buffer(uint8_t *arr, uint8_t size)
 
 	acpigen_emit_byte(BUFFER_OP);
 	acpigen_write_len_f();
-	acpigen_emit_byte(size);
+	acpigen_write_byte(size);
 
 	for (i = 0; i < size; i++)
 		acpigen_emit_byte(arr[i]);

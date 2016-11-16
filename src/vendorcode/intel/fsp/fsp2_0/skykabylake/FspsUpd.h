@@ -35,7 +35,7 @@ are permitted provided that the following conditions are met:
 
 #include <FspUpd.h>
 
-#pragma pack(push, 1)
+#pragma pack(1)
 
 
 #include <ConfigBlock/CpuConfigFspData.h>
@@ -170,7 +170,7 @@ typedef struct {
 
 /** Offset 0x0036
 **/
-  UINT16                      UnusedUpdSpace0;
+  UINT8                       UnusedUpdSpace0[2];
 
 /** Offset 0x0038 - MicrocodeRegionBase
   Memory Base of Microcode Updates
@@ -232,25 +232,25 @@ typedef struct {
 
 /** Offset 0x006E
 **/
-  UINT8                       UnusedUpdSpace1[1];
+  UINT8                       UnusedUpdSpace1;
 
-/** Offset 0x006F - Enable SerialIo Device Mode
+/** Offset 0x006F - Number of DevIntConfig Entry
+  Number of Device Interrupt Configuration Entry. If this is not zero, the DevIntConfigPtr
+  must not be NULL.
+**/
+  UINT8                       NumOfDevIntConfig;
+
+/** Offset 0x0070 - Address of PCH_DEVICE_INTERRUPT_CONFIG table.
+  The address of the table of PCH_DEVICE_INTERRUPT_CONFIG.
+**/
+  UINT32                      DevIntConfigPtr;
+
+/** Offset 0x0074 - Enable SerialIo Device Mode
   0:Disabled, 1:ACPI Mode, 2:PCI Mode, 3:Hidden mode, 4:Legacy UART mode - Enable/disable
   SerialIo I2C0,I2C1,I2C2,I2C3,I2C4,I2C5,SPI0,SPI1,UART0,UART1,UART2 device mode
   respectively. One byte for each controller, byte0 for I2C0, byte1 for I2C1, and so on.
 **/
   UINT8                       SerialIoDevMode[11];
-
-/** Offset 0x007A - Address of PCH_DEVICE_INTERRUPT_CONFIG table.
-  The address of the table of PCH_DEVICE_INTERRUPT_CONFIG.
-**/
-  UINT32                      DevIntConfigPtr;
-
-/** Offset 0x007E - Number of DevIntConfig Entry
-  Number of Device Interrupt Configuration Entry. If this is not zero, the DevIntConfigPtr
-  must not be NULL.
-**/
-  UINT8                       NumOfDevIntConfig;
 
 /** Offset 0x007F - PIRQx to IRQx Map Config
   PIRQx to IRQx mapping. The valid value is 0x00 to 0x0F for each. First byte is for
@@ -425,43 +425,43 @@ typedef struct {
 **/
   UINT8                       FwProgress;
 
-/** Offset 0x0158 - SOL Switch
-  Enable/Disable. 0: Disable, 1: enable, Serial Over Lan enable/disable state by Mebx
-  $EN_DIS
-**/
-  UINT8                       AmtSolEnabled;
-
-/** Offset 0x0159 - OS Timer
+/** Offset 0x0158 - OS Timer
   16 bits Value, Set OS watchdog timer.
   $EN_DIS
 **/
   UINT16                      WatchDogTimerOs;
 
-/** Offset 0x015B - BIOS Timer
+/** Offset 0x015A - BIOS Timer
   16 bits Value, Set BIOS watchdog timer.
   $EN_DIS
 **/
   UINT16                      WatchDogTimerBios;
 
+/** Offset 0x015C - SOL Switch
+  Enable/Disable. 0: Disable, 1: enable, Serial Over Lan enable/disable state by Mebx
+  $EN_DIS
+**/
+  UINT8                       AmtSolEnabled;
+
 /** Offset 0x015D
 **/
   UINT8                       UnusedUpdSpace6[163];
 
-/** Offset 0x0200 - Enable/Disable SA CRID
-  Enable: SA CRID, Disable (Default): SA CRID
-  $EN_DIS
-**/
-  UINT8                       CridEnable;
-
-/** Offset 0x0201 - Subsystem Vendor ID for SA devices
+/** Offset 0x0200 - Subsystem Vendor ID for SA devices
   Subsystem ID that will be programmed to SA devices: Default SubSystemVendorId=0x8086
 **/
   UINT16                      DefaultSvid;
 
-/** Offset 0x0203 - Subsystem Device ID for SA devices
+/** Offset 0x0202 - Subsystem Device ID for SA devices
   Subsystem ID that will be programmed to SA devices: Default SubSystemId=0x2015
 **/
   UINT16                      DefaultSid;
+
+/** Offset 0x0204 - Enable/Disable SA CRID
+  Enable: SA CRID, Disable (Default): SA CRID
+  $EN_DIS
+**/
+  UINT8                       CridEnable;
 
 /** Offset 0x0205 - DMI ASPM
   0=Disable, 2(Default)=L1
@@ -469,27 +469,27 @@ typedef struct {
 **/
   UINT8                       DmiAspm;
 
-/** Offset 0x0206 - PCIe DeEmphasis control per root port
+/** Offset 0x0206 - PCIe Physical Slot Number per root port
+  Physical Slot Number per root port
+**/
+  UINT16                      PegPhysicalSlotNumber[3];
+
+/** Offset 0x020C - PCIe DeEmphasis control per root port
   0: -6dB, 1(Default): -3.5dB
   0:Disable, 2:L1
 **/
   UINT8                       PegDeEmphasis[3];
 
-/** Offset 0x0209 - PCIe Slot Power Limit value per root port
+/** Offset 0x020F - PCIe Slot Power Limit value per root port
   Slot power limit value per root port
 **/
   UINT8                       PegSlotPowerLimitValue[3];
 
-/** Offset 0x020C - PCIe Slot Power Limit scale per root port
+/** Offset 0x0212 - PCIe Slot Power Limit scale per root port
   Slot power limit scale per root port
   0:1.0x, 1:0.1x, 2:0.01x, 3:0x001x
 **/
   UINT8                       PegSlotPowerLimitScale[3];
-
-/** Offset 0x020F - PCIe Physical Slot Number per root port
-  Physical Slot Number per root port
-**/
-  UINT16                      PegPhysicalSlotNumber[3];
 
 /** Offset 0x0215 - Enable/Disable PavpEnable
   Enable(Default): Enable PavpEnable, Disable: Disable PavpEnable
@@ -528,14 +528,18 @@ typedef struct {
 **/
   UINT8                       X2ApicOptOut;
 
-/** Offset 0x021B - Base addresses for VT-d function MMIO access
+/** Offset 0x021B
+**/
+  UINT8                       UnusedUpdSpace7[1];
+
+/** Offset 0x021C - Base addresses for VT-d function MMIO access
   Base addresses for VT-d MMIO access per VT-d engine
 **/
   UINT32                      VtdBaseAddress[2];
 
-/** Offset 0x0223
+/** Offset 0x0224
 **/
-  UINT8                       UnusedUpdSpace7[20];
+  UINT8                       UnusedUpdSpace8[19];
 
 /** Offset 0x0237 - SaPostMemProductionRsvd
   Reserved for SA Post-Mem Production
@@ -545,7 +549,7 @@ typedef struct {
 
 /** Offset 0x0247
 **/
-  UINT8                       UnusedUpdSpace8[7];
+  UINT8                       UnusedUpdSpace9[7];
 
 /** Offset 0x024E - Power State 3 enable/disable
   PCODE MMIO Mailbox: Power State 3 enable/disable; 0: Disable; <b>1: Enable</b>.
@@ -645,57 +649,61 @@ typedef struct {
 
 /** Offset 0x027D
 **/
-  UINT8                       UnusedUpdSpace9[8];
+  UINT8                       UnusedUpdSpace10[9];
 
-/** Offset 0x0285 - Thermal Design Current current limit
+/** Offset 0x0286 - Thermal Design Current current limit
   PCODE MMIO Mailbox: Thermal Design Current current limit. Specified in 1/8A units.
   Range is 0-4095. 1000 = 125A. <b>0: Auto</b>. For all VR Indexes
 **/
   UINT16                      TdcPowerLimit[5];
 
-/** Offset 0x028F
+/** Offset 0x0290
 **/
-  UINT8                       UnusedUpdSpace10[10];
+  UINT8                       UnusedUpdSpace11[8];
 
-/** Offset 0x0299 - AcLoadline
+/** Offset 0x0298 - AcLoadline
   PCODE MMIO Mailbox: AcLoadline in 1/100 mOhms (ie. 1250 = 12.50 mOhm); Range is
   0-6249. <b>Intel Recommended Defaults vary by domain and SKU.
 **/
   UINT16                      AcLoadline[5];
 
-/** Offset 0x02A3 - DcLoadline
+/** Offset 0x02A2 - DcLoadline
   PCODE MMIO Mailbox: DcLoadline in 1/100 mOhms (ie. 1250 = 12.50 mOhm); Range is
   0-6249.<b>Intel Recommended Defaults vary by domain and SKU.</b>
 **/
   UINT16                      DcLoadline[5];
 
-/** Offset 0x02AD - Power State 1 Threshold current
+/** Offset 0x02AC - Power State 1 Threshold current
   PCODE MMIO Mailbox: Power State 1 current cuttof in 1/4 Amp increments. Range is
   0-128A. Default Value = 20A.
 **/
   UINT16                      Psi1Threshold[5];
 
-/** Offset 0x02B7 - Power State 2 Threshold current
+/** Offset 0x02B6 - Power State 2 Threshold current
   PCODE MMIO Mailbox: Power State 2 current cuttof in 1/4 Amp increments. Range is
   0-128A. Default Value = 5A.
 **/
   UINT16                      Psi2Threshold[5];
 
-/** Offset 0x02C1 - Power State 3 Threshold current
+/** Offset 0x02C0 - Power State 3 Threshold current
   PCODE MMIO Mailbox: Power State 3 current cuttof in 1/4 Amp increments. Range is
   0-128A. Default Value = 1A.
 **/
   UINT16                      Psi3Threshold[5];
 
-/** Offset 0x02CB - Icc Max limit
+/** Offset 0x02CA - Icc Max limit
   PCODE MMIO Mailbox: VR Icc Max limit. 0-255A in 1/4 A units. 400 = 100A
 **/
   UINT16                      IccMax[5];
 
-/** Offset 0x02D5 - VR Voltage Limit
+/** Offset 0x02D4 - VR Voltage Limit
   PCODE MMIO Mailbox: VR Voltage Limit. Range is 0-7999mV.
 **/
   UINT16                      VrVoltageLimit[5];
+
+/** Offset 0x02DE
+**/
+  UINT8                       UnusedUpdSpace12;
 
 /** Offset 0x02DF - Disable Fast Slew Rate for Deep Package C States for VR GT domain
   Disable Fast Slew Rate for Deep Package C States based on Acoustic Noise Mitigation
@@ -713,7 +721,7 @@ typedef struct {
 
 /** Offset 0x02E1
 **/
-  UINT8                       UnusedUpdSpace11;
+  UINT8                       UnusedUpdSpace13;
 
 /** Offset 0x02E2 - Enable VR specific mailbox command
   VR specific mailbox commands. <b>00b - no VR specific command sent.</b>  01b - A
@@ -730,32 +738,30 @@ typedef struct {
 **/
   UINT8                       SendVrMbxCmd1;
 
-/** Offset 0x02E4
-**/
-  UINT8                       UnusedUpdSpace12;
-
-/** Offset 0x02E5 - CpuS3ResumeMtrrData
+/** Offset 0x02E4 - CpuS3ResumeMtrrData
   Pointer CPU S3 Resume MTRR Data
 **/
   UINT32                      CpuS3ResumeMtrrData;
 
-/** Offset 0x02E9 - CpuS3ResumeMtrrDataSize
+/** Offset 0x02E8 - Cpu Configuration
+  Cpu Configuration data.
+**/
+  CPU_CONFIG_FSP_DATA         CpuConfig;
+
+/** Offset 0x02F0 - MicrocodePatchAddress
+  Pointer to microcode patch that is suitable for this processor.
+  0:Disable, 1:Enable
+**/
+  UINT64                      MicrocodePatchAddress;
+
+/** Offset 0x02F8 - CpuS3ResumeMtrrDataSize
   Size of S3 resume MTRR data.
 **/
   UINT16                      CpuS3ResumeMtrrDataSize;
 
-/** Offset 0x02EB
+/** Offset 0x02FA
 **/
-  UINT8                       UnusedUpdSpace13[2];
-
-/** Offset 0x02ED - Cpu Configuration
-  Size of S3 resume MTRR data.
-**/
-  CPU_CONFIG_FSP_DATA         CpuConfig;
-
-/** Offset 0x02F9
-**/
-  UINT16                      UnusedUpdSpace14;
+  UINT8                       UnusedUpdSpace14;
 
 /** Offset 0x02FB - Enable SkyCam PortA Termination override
   Enable/disable PortA Termination override.
@@ -976,25 +982,25 @@ typedef struct {
 **/
   UINT8                       PchHdaDspEndpointBluetooth;
 
-/** Offset 0x0340 - DSP I2S enablement
-  0: Disable; 1: Enable.
-  $EN_DIS
-**/
-  UINT8                       PchHdaDspEndpointI2s;
-
-/** Offset 0x0341 - Bitmask of supported DSP features
+/** Offset 0x0340 - Bitmask of supported DSP features
   [BIT0] - WoV; [BIT1] - BT Sideband; [BIT2] - Codec VAD; [BIT5] - BT Intel HFP; [BIT6]
   - BT Intel A2DP; [BIT7] - DSP based speech pre-processing disabled; [BIT8] - 0:
   Intel WoV, 1: Windows Voice Activation.
 **/
   UINT32                      PchHdaDspFeatureMask;
 
-/** Offset 0x0345 - Bitmask of supported DSP Pre/Post-Processing Modules
+/** Offset 0x0344 - Bitmask of supported DSP Pre/Post-Processing Modules
   Deprecated: Specific pre/post-processing module bit position must be coherent with
   the ACPI implementation: \_SB.PCI0.HDAS._DSM Function 3: Query Pre/Post Processing
   Module Support.
 **/
   UINT32                      PchHdaDspPpModuleMask;
+
+/** Offset 0x0348 - DSP I2S enablement
+  0: Disable; 1: Enable.
+  $EN_DIS
+**/
+  UINT8                       PchHdaDspEndpointI2s;
 
 /** Offset 0x0349 - Enable PCH Io Apic
   Set to 1 if BDF value is valid.
@@ -1159,25 +1165,31 @@ typedef struct {
 **/
   UINT8                       PchLockDownSpiEiss;
 
-/** Offset 0x0365 - PCH Sub system vendor ID
-  Default Subsystem Vendor ID of the PCH devices. Default is 0x8086.
-**/
-  UINT16                      PchSubSystemVendorId;
-
-/** Offset 0x0367 - PCH Sub system ID
-  Default Subsystem ID of the PCH devices. Default is 0x7270.
-**/
-  UINT16                      PchSubSystemId;
-
-/** Offset 0x0369 - PCH Compatibility Revision ID
+/** Offset 0x0365 - PCH Compatibility Revision ID
   This member describes whether or not the CRID feature of PCH should be enabled.
   $EN_DIS
 **/
   UINT8                       PchCrid;
 
-/** Offset 0x036A
+/** Offset 0x0366 - PCH Sub system vendor ID
+  Default Subsystem Vendor ID of the PCH devices. Default is 0x8086.
 **/
-  UINT8                       UnusedUpdSpace15[6];
+  UINT16                      PchSubSystemVendorId;
+
+/** Offset 0x0368 - PCH Sub system ID
+  Default Subsystem ID of the PCH devices. Default is 0x7270.
+**/
+  UINT16                      PchSubSystemId;
+
+/** Offset 0x036A - PCH Legacy IO Low Latency Enable
+  todo
+  $EN_DIS
+**/
+  UINT8                       PchLegacyIoLowLatency;
+
+/** Offset 0x036B
+**/
+  UINT8                       UnusedUpdSpace15[5];
 
 /** Offset 0x0370 - Enable PCIE RP HotPlug
   Indicate whether the root port is hot plug available.
@@ -1350,18 +1362,18 @@ typedef struct {
 **/
   UINT8                       PcieComplianceTestMode;
 
-/** Offset 0x0636 - PCIE Rp Function Swap
+/** Offset 0x0636 - PCIE Rp Detect Timeout Ms
+  Will wait for link to exit Detect state for enabled ports before assuming there
+  is no device and potentially disabling the port.
+**/
+  UINT16                      PcieDetectTimeoutMs;
+
+/** Offset 0x0638 - PCIE Rp Function Swap
   Allows BIOS to use root port function number swapping when root port of function
   0 is disabled.
   $EN_DIS
 **/
   UINT8                       PcieRpFunctionSwap;
-
-/** Offset 0x0637 - PCIE Rp Detect Timeout Ms
-  Will wait for link to exit Detect state for enabled ports before assuming there
-  is no device and potentially disabling the port.
-**/
-  UINT16                      PcieDetectTimeoutMs;
 
 /** Offset 0x0639 - PCH Pm PME_B0_S5_DIS
   When cleared (default), wake events from PME_B0_STS are allowed in S5 if PME_B0_EN = 1.
@@ -1369,9 +1381,15 @@ typedef struct {
 **/
   UINT8                       PchPmPmeB0S5Dis;
 
-/** Offset 0x063A
+/** Offset 0x063A - PCH Pm Slp S0 Voltage Margining Enable
+  Indicates platform has support for VCCPrim_Core Voltage Margining in SLP_S0# asserted state.
+  $EN_DIS
 **/
-  UINT8                       UnusedUpdSpace16[6];
+  UINT8                       PchPmSlpS0VmEnable;
+
+/** Offset 0x063B
+**/
+  UINT8                       UnusedUpdSpace16[5];
 
 /** Offset 0x0640 - PCH Pm Wol Enable Override
   Corresponds to the WOL Enable Override bit in the General PM Configuration B (GEN_PMCON_B) register.
@@ -1499,11 +1517,9 @@ typedef struct {
 **/
   UINT8                       PchPmPwrCycDur;
 
-/** Offset 0x065B - PCH Pm Pcie Pll Ssc
-  Specifies the Pcie Pll Spread Spectrum Percentage. The default is 0xFF: AUTO - No
-  BIOS override.
+/** Offset 0x065B
 **/
-  UINT8                       PchPmPciePllSsc;
+  UINT8                       UnusedUpdSpace18;
 
 /** Offset 0x065C - PCH Pm WOL_OVR_WK_STS
   Clear the WOL_OVR_WK_STS bit in the Power and Reset Status (PRSTS) register.
@@ -1575,7 +1591,7 @@ typedef struct {
 
 /** Offset 0x06B0 - PCH Sata Rst Raid Alternate Id
   Enable RAID Alternate ID.
-  $EN_DIS
+  0:Client, 1:Alternate, 2:Server
 **/
   UINT8                       SataRstRaidAlternateId;
 
@@ -1741,26 +1757,26 @@ typedef struct {
 **/
   UINT8                       PchThermalDeviceEnable;
 
-/** Offset 0x06DC - Thermal Device SMI Enable
-  This locks down SMI Enable on Alert Thermal Sensor Trip.
-  $EN_DIS
-**/
-  UINT8                       PchTsmicLock;
-
-/** Offset 0x06DD - Thermal Throttling Custimized T0Level Value
+/** Offset 0x06DC - Thermal Throttling Custimized T0Level Value
   Custimized T0Level value.
 **/
   UINT16                      PchT0Level;
 
-/** Offset 0x06DF - Thermal Throttling Custimized T1Level Value
+/** Offset 0x06DE - Thermal Throttling Custimized T1Level Value
   Custimized T1Level value.
 **/
   UINT16                      PchT1Level;
 
-/** Offset 0x06E1 - Thermal Throttling Custimized T2Level Value
+/** Offset 0x06E0 - Thermal Throttling Custimized T2Level Value
   Custimized T2Level value.
 **/
   UINT16                      PchT2Level;
+
+/** Offset 0x06E2 - Thermal Device SMI Enable
+  This locks down SMI Enable on Alert Thermal Sensor Trip.
+  $EN_DIS
+**/
+  UINT8                       PchTsmicLock;
 
 /** Offset 0x06E3 - Enable The Thermal Throttle
   Enable the thermal throttle function.
@@ -1946,7 +1962,7 @@ typedef struct {
 
 /** Offset 0x0720
 **/
-  UINT32                      UnusedUpdSpace18;
+  UINT8                       UnusedUpdSpace19[4];
 
 /** Offset 0x0724 - Pch PCIE device override table pointer
   The PCIe device table is being used to override PCIe device ASPM settings. This
@@ -1964,130 +1980,144 @@ typedef struct {
 **/
   UINT8                       EnableTcoTimer;
 
-/** Offset 0x0729 - BgpdtHash[4]
-  BgpdtHash values
+/** Offset 0x0729 - EcCmdProvisionEav
+  Ephemeral Authorization Value default values. Provisions an ephemeral shared secret to the EC
 **/
-  UINT64                      BgpdtHash[4];
+  UINT8                       EcCmdProvisionEav;
 
-/** Offset 0x0749 - BiosGuardAttr
-  BiosGuardAttr default values
+/** Offset 0x072A - EcCmdLock
+  EcCmdLock default values. Locks Ephemeral Authorization Value sent previously
 **/
-  UINT32                      BiosGuardAttr;
+  UINT8                       EcCmdLock;
 
-/** Offset 0x074D - BiosGuardModulePtr
-  BiosGuardModulePtr default values
+/** Offset 0x072B
 **/
-  UINT64                      BiosGuardModulePtr;
+  UINT8                       UnusedUpdSpace20[5];
 
-/** Offset 0x0755 - SendEcCmd
+/** Offset 0x0730 - SendEcCmd
   SendEcCmd function pointer. \n
   @code typedef EFI_STATUS (EFIAPI *PLATFORM_SEND_EC_COMMAND) (IN EC_COMMAND_TYPE 
   EcCmdType, IN UINT8  EcCmd, IN UINT8  SendData, IN OUT UINT8  *ReceiveData); @endcode
 **/
   UINT64                      SendEcCmd;
 
-/** Offset 0x075D - EcCmdProvisionEav
-  Ephemeral Authorization Value default values. Provisions an ephemeral shared secret to the EC
+/** Offset 0x0738 - BgpdtHash[4]
+  BgpdtHash values
 **/
-  UINT8                       EcCmdProvisionEav;
+  UINT64                      BgpdtHash[4];
 
-/** Offset 0x075E - EcCmdLock
-  EcCmdLock default values. Locks Ephemeral Authorization Value sent previously
+/** Offset 0x0758 - BiosGuardModulePtr
+  BiosGuardModulePtr default values
 **/
-  UINT8                       EcCmdLock;
+  UINT64                      BiosGuardModulePtr;
 
-/** Offset 0x075F - SgxEpoch0
-  SgxEpoch0 default values
+/** Offset 0x0760 - BiosGuardAttr
+  BiosGuardAttr default values
 **/
-  UINT64                      SgxEpoch0;
+  UINT32                      BiosGuardAttr;
 
-/** Offset 0x0767 - SgxEpoch1
-  SgxEpoch1 default values
-**/
-  UINT64                      SgxEpoch1;
-
-/** Offset 0x076F - SgxSinitNvsData
+/** Offset 0x0764 - SgxSinitNvsData
   SgxSinitNvsData default values
 **/
   UINT8                       SgxSinitNvsData;
 
-/** Offset 0x0770
+/** Offset 0x0765
 **/
-  UINT8                       ReservedFspsUpd[13];
+  UINT8                       UnusedUpdSpace21[3];
+
+/** Offset 0x0768 - SgxEpoch0
+  SgxEpoch0 default values
+**/
+  UINT64                      SgxEpoch0;
+
+/** Offset 0x0770 - SgxEpoch1
+  SgxEpoch1 default values
+**/
+  UINT64                      SgxEpoch1;
+
+/** Offset 0x0778 - Enable/Disable ME Unconfig on RTC clear
+  Enable(Default): Enable ME Unconfig On Rtc Clear, Disable: Disable ME Unconfig On Rtc Clear
+  $EN_DIS
+**/
+  UINT8                       MeUnconfigOnRtcClear;
+
+/** Offset 0x0779
+**/
+  UINT8                       ReservedFspsUpd[7];
 } FSP_S_CONFIG;
 
 /** Fsp S Test Configuration
 **/
 typedef struct {
 
-/** Offset 0x077D
+/** Offset 0x0780
 **/
   UINT32                      Signature;
 
-/** Offset 0x0781 - Enable/Disable Device 7 
+/** Offset 0x0784 - Enable/Disable Device 7 
   Enable: Device  7 enabled, Disable (Default): Device 7 disabled
   $EN_DIS
 **/
   UINT8                       ChapDeviceEnable;
 
-/** Offset 0x0782 - Skip PAM regsiter lock
+/** Offset 0x0785 - Skip PAM regsiter lock
   Enable: PAM register will not be locked by RC, platform code should lock it, Disable(Default):
   PAM registers will be locked by RC
   $EN_DIS
 **/
   UINT8                       SkipPamLock;
 
-/** Offset 0x0783 - EDRAM Test Mode
+/** Offset 0x0786 - EDRAM Test Mode
   Enable: PAM register will not be locked by RC, platform code should lock it, Disable(Default):
   PAM registers will be locked by RC
   0: EDRAM SW disable, 1: EDRAM SW Enable, 2: EDRAM HW mode
 **/
   UINT8                       EdramTestMode;
 
-/** Offset 0x0784 - DMI Extended Sync Control
+/** Offset 0x0787 - DMI Extended Sync Control
   Enable: Enable DMI Extended Sync Control, Disable(Default): Disable DMI Extended
   Sync Control
   $EN_DIS
 **/
   UINT8                       DmiExtSync;
 
-/** Offset 0x0785 - DMI IOT Control
+/** Offset 0x0788 - DMI IOT Control
   Enable: Enable DMI IOT Control, Disable(Default): Disable DMI IOT Control
   $EN_DIS
 **/
   UINT8                       DmiIot;
 
-/** Offset 0x0786 - PEG Max Payload size per root port
+/** Offset 0x0789 - PEG Max Payload size per root port
   0xFF(Default):Auto, 0x1: Force 128B, 0X2: Force 256B
   0xFF: Auto, 0x1: Force 128B, 0x2: Force 256B
 **/
   UINT8                       PegMaxPayload[3];
 
-/** Offset 0x0789 - Enable/Disable IGFX RenderStandby
+/** Offset 0x078C - Enable/Disable IGFX RenderStandby
   Enable(Default): Enable IGFX RenderStandby, Disable: Disable IGFX RenderStandby
   $EN_DIS
 **/
   UINT8                       RenderStandby;
 
-/** Offset 0x078A - Enable/Disable IGFX PmSupport
+/** Offset 0x078D - Enable/Disable IGFX PmSupport
   Enable(Default): Enable IGFX PmSupport, Disable: Disable IGFX PmSupport
   $EN_DIS
 **/
   UINT8                       PmSupport;
 
-/** Offset 0x078B - Enable/Disable CdynmaxClamp
+/** Offset 0x078E - Enable/Disable CdynmaxClamp
   Enable(Default): Enable CdynmaxClamp, Disable: Disable CdynmaxClamp
   $EN_DIS
 **/
   UINT8                       CdynmaxClampEnable;
 
-/** Offset 0x078C - Disable VT-d
+/** Offset 0x078F - Disable VT-d
   0=Enable/FALSE(VT-d disabled), 1=Disable/TRUE (VT-d enabled)
   $EN_DIS
 **/
   UINT8                       VtdDisable;
 
-/** Offset 0x078D - GT Frequency Limit
+/** Offset 0x0790 - GT Frequency Limit
   0xFF: Auto(Default), 2: 100 Mhz, 3: 150 Mhz, 4: 200 Mhz, 5: 250 Mhz, 6: 300 Mhz,
   7: 350 Mhz, 8: 400 Mhz, 9: 450 Mhz, 0xA: 500 Mhz, 0xB: 550 Mhz, 0xC: 600 Mhz, 0xD:
   650 Mhz, 0xE: 700 Mhz, 0xF: 750 Mhz, 0x10: 800 Mhz, 0x11: 850 Mhz, 0x12:900 Mhz,
@@ -2101,15 +2131,11 @@ typedef struct {
 **/
   UINT8                       GtFreqMax;
 
-/** Offset 0x078E - SaPostMemTestRsvd
+/** Offset 0x0791 - SaPostMemTestRsvd
   Reserved for SA Post-Mem Test
   $EN_DIS
 **/
-  UINT8                       SaPostMemTestRsvd[12];
-
-/** Offset 0x079A
-**/
-  UINT16                      UnusedUpdSpace19;
+  UINT8                       SaPostMemTestRsvd[11];
 
 /** Offset 0x079C - 1-Core Ratio Limit
   1-Core Ratio Limit: For XE part: LFM to 255, For overclocking part: LFM to Fused
@@ -2145,7 +2171,7 @@ typedef struct {
 
 /** Offset 0x07A0
 **/
-  UINT8                       UnusedUpdSpace20;
+  UINT8                       UnusedUpdSpace22;
 
 /** Offset 0x07A1 - Enable or Disable HWP
   Enable or Disable HWP(Hardware P states) Support. 0: Disable; <b>1: Enable;</b>
@@ -2323,7 +2349,7 @@ typedef struct {
 
 /** Offset 0x07BC
 **/
-  UINT16                      UnusedUpdSpace21;
+  UINT8                       UnusedUpdSpace23[2];
 
 /** Offset 0x07BE - Enable or Disable MLC Streamer Prefetcher
   Enable or Disable MLC Streamer Prefetcher; 0: Disable; <b>1: Enable</b>.
@@ -2375,7 +2401,7 @@ typedef struct {
 
 /** Offset 0x07C6
 **/
-  UINT16                      UnusedUpdSpace22;
+  UINT8                       UnusedUpdSpace24[2];
 
 /** Offset 0x07C8 - Control on Processor Trace output scheme
   Control on Processor Trace output scheme; <b>0: Single Range Output</b>; 1: ToPA Output.
@@ -2390,17 +2416,20 @@ typedef struct {
   UINT8                       ProcTraceEnable;
 
 /** Offset 0x07CA - Memory region allocation for Processor Trace
-  Memory region allocation for Processor Trace, Valid Values are 0 - 4KB , 0x1 - 8KB
-  , 0x2 - 16KB , 0x3 - 32KB , 0x4 - 64KB , 0x5 - 128KB , 0x6 - 256KB , 0x7 - 512KB
-  , 0x8 - 1MB , 0x9 - 2MB , 0xA - 4MB , 0xB - 8MB , 0xC - 16MB , 0xD - 32MB , 0xE
-  - 64MB , 0xF - 128MB , 0xFF: Disable
+  Memory region allocation for Processor Trace, Total Memory required is up to requested
+  value * 2 (for memory alignment) * 8 active threads, to enable Processor Trace,
+  PcdFspReservedMemoryLength must be increased by the total memory required, and
+  PlatformMemorySize policy must also be increased by the total memory required over
+  32MB, Valid Values are 0 - 4KB , 0x1 - 8KB , 0x2 - 16KB , 0x3 - 32KB , 0x4 - 64KB
+  , 0x5 - 128KB , 0x6 - 256KB , 0x7 - 512KB , 0x8 - 1MB , 0x9 - 2MB , 0xA - 4MB ,
+  0xB - 8MB , 0xC - 16MB , 0xD - 32MB , 0xE - 64MB , 0xF - 128MB , 0xFF: Disable
   0x0:0xFF
 **/
   UINT8                       ProcTraceMemSize;
 
 /** Offset 0x07CB
 **/
-  UINT8                       UnusedUpdSpace23;
+  UINT8                       UnusedUpdSpace25;
 
 /** Offset 0x07CC - Enable or Disable Voltage Optimization feature
   Enable or Disable Voltage Optimization feature 0: Disable; <b>1: Enable</b>
@@ -2588,160 +2617,160 @@ typedef struct {
 **/
   UINT8                       ConfigTdpLevel;
 
-/** Offset 0x07E9 - Max P-State Ratio
-  Max P-State Ratio , Valid Range 0 to 0x7F
-  0x0:0xFFFF
-**/
-  UINT16                      MaxRatio;
-
-/** Offset 0x07EB - Maximum P-state ratio to use in the custom P-state table
-  Maximum P-state ratio to use in the custom P-state table. NumOfCustomPStates has
-  valid range between 0 to 40. For no. of P-States supported(NumOfCustomPStates)
-  , StateRatio[NumOfCustomPStates] are configurable. Valid Range of value is 0 to 0x7F
-**/
-  UINT16                      StateRatio[40];
-
-/** Offset 0x083B - Platform Power Pmax
-  PCODE MMIO Mailbox: Platform Power Pmax. <b>0 - Auto</b> Specified in 1/8 Watt increments.
-  Range 0-1024 Watts. Value of 800 = 100W
-  0x0:0xFFFF
-**/
-  UINT16                      PsysPmax;
-
-/** Offset 0x083D - Interrupt Response Time Limit of C-State LatencyContol0
-  Interrupt Response Time Limit of C-State LatencyContol0. Range of value 0 to 0x3FF
-  0x0:0xFFFF
-**/
-  UINT16                      CstateLatencyControl0Irtl;
-
-/** Offset 0x083F - Interrupt Response Time Limit of C-State LatencyContol1
-  Interrupt Response Time Limit of C-State LatencyContol1.Range of value 0 to 0x3FF
-  0x0:0xFFFF
-**/
-  UINT16                      CstateLatencyControl1Irtl;
-
-/** Offset 0x0841 - Interrupt Response Time Limit of C-State LatencyContol2
-  Interrupt Response Time Limit of C-State LatencyContol2.Range of value 0 to 0x3FF
-  0x0:0xFFFF
-**/
-  UINT16                      CstateLatencyControl2Irtl;
-
-/** Offset 0x0843 - Interrupt Response Time Limit of C-State LatencyContol3
-  Interrupt Response Time Limit of C-State LatencyContol3.Range of value 0 to 0x3FF
-  0x0:0xFFFF
-**/
-  UINT16                      CstateLatencyControl3Irtl;
-
-/** Offset 0x0845 - Interrupt Response Time Limit of C-State LatencyContol4
-  Interrupt Response Time Limit of C-State LatencyContol4.Range of value 0 to 0x3FF
-  0x0:0xFFFF
-**/
-  UINT16                      CstateLatencyControl4Irtl;
-
-/** Offset 0x0847 - Interrupt Response Time Limit of C-State LatencyContol5
-  Interrupt Response Time Limit of C-State LatencyContol5.Range of value 0 to 0x3FF
-  0x0:0xFFFF
-**/
-  UINT16                      CstateLatencyControl5Irtl;
-
-/** Offset 0x0849 - Package Long duration turbo mode power limit
-  Package Long duration turbo mode power limit. Units are based on POWER_MGMT_CONFIG.CustomPowerUnit.
-  Valid Range 0 to 4095875 in Step size of 125
-  0x0:0xFFFFFFFF
-**/
-  UINT32                      PowerLimit1;
-
-/** Offset 0x084D - Package Short duration turbo mode power limit
-  Package Short duration turbo mode power limit. Units are based on POWER_MGMT_CONFIG.CustomPowerUnit.Valid
-  Range 0 to 4095875 in Step size of 125
-  0x0:0xFFFFFFFF
-**/
-  UINT32                      PowerLimit2Power;
-
-/** Offset 0x0851 - Package PL3 power limit
-  Package PL3 power limit. Units are based on POWER_MGMT_CONFIG.CustomPowerUnit.Valid
-  Range 0 to 4095875 in Step size of 125
-  0x0:0xFFFFFFFF
-**/
-  UINT32                      PowerLimit3;
-
-/** Offset 0x0855 - Package PL4 power limit
-  Package PL4 power limit. Units are based on POWER_MGMT_CONFIG.CustomPowerUnit.Valid
-  Range 0 to 4095875 in Step size of 125
-  0x0:0xFFFFFFFF
-**/
-  UINT32                      PowerLimit4;
-
-/** Offset 0x0859 - Tcc Offset Time Window for RATL
-  Package PL4 power limit. Units are based on POWER_MGMT_CONFIG.CustomPowerUnit.Valid
-  Range 0 to 4095875 in Step size of 125
-  0x0:0xFFFFFFFF
-**/
-  UINT32                      TccOffsetTimeWindowForRatl;
-
-/** Offset 0x085D - Short term Power Limit value for custom cTDP level 1
-  Short term Power Limit value for custom cTDP level 1. Units are based on POWER_MGMT_CONFIG.CustomPowerUnit.Valid
-  Range 0 to 4095875 in Step size of 125
-  0x0:0xFFFFFFFF
-**/
-  UINT32                      Custom1PowerLimit1;
-
-/** Offset 0x0861 - Long term Power Limit value for custom cTDP level 1
-  Long term Power Limit value for custom cTDP level 1. Units are based on POWER_MGMT_CONFIG.CustomPowerUnit.Valid
-  Range 0 to 4095875 in Step size of 125
-  0x0:0xFFFFFFFF
-**/
-  UINT32                      Custom1PowerLimit2;
-
-/** Offset 0x0865 - Short term Power Limit value for custom cTDP level 2
-  Short term Power Limit value for custom cTDP level 2. Units are based on POWER_MGMT_CONFIG.CustomPowerUnit.Valid
-  Range 0 to 4095875 in Step size of 125
-  0x0:0xFFFFFFFF
-**/
-  UINT32                      Custom2PowerLimit1;
-
-/** Offset 0x0869 - Long term Power Limit value for custom cTDP level 2
-  Long term Power Limit value for custom cTDP level 2. Units are based on POWER_MGMT_CONFIG.CustomPowerUnit.Valid
-  Range 0 to 4095875 in Step size of 125
-  0x0:0xFFFFFFFF
-**/
-  UINT32                      Custom2PowerLimit2;
-
-/** Offset 0x086D - Short term Power Limit value for custom cTDP level 3
-  Short term Power Limit value for custom cTDP level 3. Units are based on POWER_MGMT_CONFIG.CustomPowerUnit.Valid
-  Range 0 to 4095875 in Step size of 125
-  0x0:0xFFFFFFFF
-**/
-  UINT32                      Custom3PowerLimit1;
-
-/** Offset 0x0871 - Long term Power Limit value for custom cTDP level 3
-  Long term Power Limit value for custom cTDP level 3. Units are based on POWER_MGMT_CONFIG.CustomPowerUnit.Valid
-  Range 0 to 4095875 in Step size of 125
-  0x0:0xFFFFFFFF
-**/
-  UINT32                      Custom3PowerLimit2;
-
-/** Offset 0x0875 - Platform PL1 power
-  Platform PL1 power. Units are based on POWER_MGMT_CONFIG.CustomPowerUnit.Valid Range
-  0 to 4095875 in Step size of 125
-  0x0:0xFFFFFFFF
-**/
-  UINT32                      PsysPowerLimit1Power;
-
-/** Offset 0x0879 - Platform PL2 power
-  Platform PL2 power. Units are based on POWER_MGMT_CONFIG.CustomPowerUnit.Valid Range
-  0 to 4095875 in Step size of 125
-  0x0:0xFFFFFFFF
-**/
-  UINT32                      PsysPowerLimit2Power;
-
-/** Offset 0x087D - Race To Halt
+/** Offset 0x07E9 - Race To Halt
   Enable/Disable Race To Halt feature. RTH will dynamically increase CPU frequency
   in order to enter pkg C-State faster to reduce overall power. (RTH is controlled
   through MSR 1FC bit 20)Disable; <b>1: Enable</b>
   $EN_DIS
 **/
   UINT8                       RaceToHalt;
+
+/** Offset 0x07EA - Max P-State Ratio
+  Max P-State Ratio , Valid Range 0 to 0x7F
+  0x0:0xFFFF
+**/
+  UINT16                      MaxRatio;
+
+/** Offset 0x07EC - Maximum P-state ratio to use in the custom P-state table
+  Maximum P-state ratio to use in the custom P-state table. NumOfCustomPStates has
+  valid range between 0 to 40. For no. of P-States supported(NumOfCustomPStates)
+  , StateRatio[NumOfCustomPStates] are configurable. Valid Range of value is 0 to 0x7F
+**/
+  UINT16                      StateRatio[40];
+
+/** Offset 0x083C - Interrupt Response Time Limit of C-State LatencyContol0
+  Interrupt Response Time Limit of C-State LatencyContol0. Range of value 0 to 0x3FF
+  0x0:0xFFFF
+**/
+  UINT16                      CstateLatencyControl0Irtl;
+
+/** Offset 0x083E - Interrupt Response Time Limit of C-State LatencyContol1
+  Interrupt Response Time Limit of C-State LatencyContol1.Range of value 0 to 0x3FF
+  0x0:0xFFFF
+**/
+  UINT16                      CstateLatencyControl1Irtl;
+
+/** Offset 0x0840 - Interrupt Response Time Limit of C-State LatencyContol2
+  Interrupt Response Time Limit of C-State LatencyContol2.Range of value 0 to 0x3FF
+  0x0:0xFFFF
+**/
+  UINT16                      CstateLatencyControl2Irtl;
+
+/** Offset 0x0842 - Interrupt Response Time Limit of C-State LatencyContol3
+  Interrupt Response Time Limit of C-State LatencyContol3.Range of value 0 to 0x3FF
+  0x0:0xFFFF
+**/
+  UINT16                      CstateLatencyControl3Irtl;
+
+/** Offset 0x0844 - Interrupt Response Time Limit of C-State LatencyContol4
+  Interrupt Response Time Limit of C-State LatencyContol4.Range of value 0 to 0x3FF
+  0x0:0xFFFF
+**/
+  UINT16                      CstateLatencyControl4Irtl;
+
+/** Offset 0x0846 - Interrupt Response Time Limit of C-State LatencyContol5
+  Interrupt Response Time Limit of C-State LatencyContol5.Range of value 0 to 0x3FF
+  0x0:0xFFFF
+**/
+  UINT16                      CstateLatencyControl5Irtl;
+
+/** Offset 0x0848 - Package Long duration turbo mode power limit
+  Package Long duration turbo mode power limit. Units are based on POWER_MGMT_CONFIG.CustomPowerUnit.
+  Valid Range 0 to 4095875 in Step size of 125
+  0x0:0xFFFFFFFF
+**/
+  UINT32                      PowerLimit1;
+
+/** Offset 0x084C - Package Short duration turbo mode power limit
+  Package Short duration turbo mode power limit. Units are based on POWER_MGMT_CONFIG.CustomPowerUnit.Valid
+  Range 0 to 4095875 in Step size of 125
+  0x0:0xFFFFFFFF
+**/
+  UINT32                      PowerLimit2Power;
+
+/** Offset 0x0850 - Package PL3 power limit
+  Package PL3 power limit. Units are based on POWER_MGMT_CONFIG.CustomPowerUnit.Valid
+  Range 0 to 4095875 in Step size of 125
+  0x0:0xFFFFFFFF
+**/
+  UINT32                      PowerLimit3;
+
+/** Offset 0x0854 - Package PL4 power limit
+  Package PL4 power limit. Units are based on POWER_MGMT_CONFIG.CustomPowerUnit.Valid
+  Range 0 to 4095875 in Step size of 125
+  0x0:0xFFFFFFFF
+**/
+  UINT32                      PowerLimit4;
+
+/** Offset 0x0858 - Tcc Offset Time Window for RATL
+  Package PL4 power limit. Units are based on POWER_MGMT_CONFIG.CustomPowerUnit.Valid
+  Range 0 to 4095875 in Step size of 125
+  0x0:0xFFFFFFFF
+**/
+  UINT32                      TccOffsetTimeWindowForRatl;
+
+/** Offset 0x085C - Short term Power Limit value for custom cTDP level 1
+  Short term Power Limit value for custom cTDP level 1. Units are based on POWER_MGMT_CONFIG.CustomPowerUnit.Valid
+  Range 0 to 4095875 in Step size of 125
+  0x0:0xFFFFFFFF
+**/
+  UINT32                      Custom1PowerLimit1;
+
+/** Offset 0x0860 - Long term Power Limit value for custom cTDP level 1
+  Long term Power Limit value for custom cTDP level 1. Units are based on POWER_MGMT_CONFIG.CustomPowerUnit.Valid
+  Range 0 to 4095875 in Step size of 125
+  0x0:0xFFFFFFFF
+**/
+  UINT32                      Custom1PowerLimit2;
+
+/** Offset 0x0864 - Short term Power Limit value for custom cTDP level 2
+  Short term Power Limit value for custom cTDP level 2. Units are based on POWER_MGMT_CONFIG.CustomPowerUnit.Valid
+  Range 0 to 4095875 in Step size of 125
+  0x0:0xFFFFFFFF
+**/
+  UINT32                      Custom2PowerLimit1;
+
+/** Offset 0x0868 - Long term Power Limit value for custom cTDP level 2
+  Long term Power Limit value for custom cTDP level 2. Units are based on POWER_MGMT_CONFIG.CustomPowerUnit.Valid
+  Range 0 to 4095875 in Step size of 125
+  0x0:0xFFFFFFFF
+**/
+  UINT32                      Custom2PowerLimit2;
+
+/** Offset 0x086C - Short term Power Limit value for custom cTDP level 3
+  Short term Power Limit value for custom cTDP level 3. Units are based on POWER_MGMT_CONFIG.CustomPowerUnit.Valid
+  Range 0 to 4095875 in Step size of 125
+  0x0:0xFFFFFFFF
+**/
+  UINT32                      Custom3PowerLimit1;
+
+/** Offset 0x0870 - Long term Power Limit value for custom cTDP level 3
+  Long term Power Limit value for custom cTDP level 3. Units are based on POWER_MGMT_CONFIG.CustomPowerUnit.Valid
+  Range 0 to 4095875 in Step size of 125
+  0x0:0xFFFFFFFF
+**/
+  UINT32                      Custom3PowerLimit2;
+
+/** Offset 0x0874 - Platform PL1 power
+  Platform PL1 power. Units are based on POWER_MGMT_CONFIG.CustomPowerUnit.Valid Range
+  0 to 4095875 in Step size of 125
+  0x0:0xFFFFFFFF
+**/
+  UINT32                      PsysPowerLimit1Power;
+
+/** Offset 0x0878 - Platform PL2 power
+  Platform PL2 power. Units are based on POWER_MGMT_CONFIG.CustomPowerUnit.Valid Range
+  0 to 4095875 in Step size of 125
+  0x0:0xFFFFFFFF
+**/
+  UINT32                      PsysPowerLimit2Power;
+
+/** Offset 0x087C - Platform Power Pmax
+  PCODE MMIO Mailbox: Platform Power Pmax. <b>0 - Auto</b> Specified in 1/8 Watt increments.
+  Range 0-1024 Watts. Value of 800 = 100W
+  0x0:0xFFFF
+**/
+  UINT16                      PsysPmax;
 
 /** Offset 0x087E - ReservedCpuPostMemTest
   Reserved for CPU Post-Mem Test
@@ -2768,16 +2797,16 @@ typedef struct {
 **/
   UINT8                       DisableD0I3SettingForHeci;
 
-/** Offset 0x088D - HD Audio Reset Wait Timer
-  The delay timer after Azalia reset, the value is number of microseconds. Default is 600.
-**/
-  UINT16                      PchHdaResetWaitTimer;
-
-/** Offset 0x088F - Enable LOCKDOWN SMI
+/** Offset 0x088D - Enable LOCKDOWN SMI
   Enable SMI_LOCK bit to prevent writes to the Global SMI Enable bit.
   $EN_DIS
 **/
   UINT8                       PchLockDownGlobalSmi;
+
+/** Offset 0x088E - HD Audio Reset Wait Timer
+  The delay timer after Azalia reset, the value is number of microseconds. Default is 600.
+**/
+  UINT16                      PchHdaResetWaitTimer;
 
 /** Offset 0x0890 - Enable LOCKDOWN BIOS Interface
   Enable BIOS Interface Lock Down bit to prevent writes to the Backup Control Register.
@@ -2911,19 +2940,19 @@ typedef struct {
 **/
   FSP_S_CONFIG                FspsConfig;
 
-/** Offset 0x077D
+/** Offset 0x0780
 **/
   FSP_S_TEST_CONFIG           FspsTestConfig;
 
 /** Offset 0x0A40
 **/
-  UINT8                       UnusedUpdSpace24[474];
+  UINT8                       UnusedUpdSpace26[470];
 
-/** Offset 0x0C1A
+/** Offset 0x0C16
 **/
   UINT16                      UpdTerminator;
 } FSPS_UPD;
 
-#pragma pack(pop)
+#pragma pack()
 
 #endif

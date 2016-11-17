@@ -31,12 +31,19 @@
 #include <soc/systemagent.h>
 #include <soc/intel/broadwell/chip.h>
 #include <vboot/vbnv.h>
+#include <soc/igd.h>
 
 #define GT_RETRY 		1000
 #define GT_CDCLK_337		0
 #define GT_CDCLK_450		1
 #define GT_CDCLK_540		2
 #define GT_CDCLK_675		3
+
+static u32 reg_em4;
+static u32 reg_em5;
+
+u32 igd_get_reg_em4(void) { return reg_em4; }
+u32 igd_get_reg_em5(void) { return reg_em5; }
 
 struct reg_script haswell_early_init_script[] = {
 	/* Enable Force Wake */
@@ -364,14 +371,20 @@ static void igd_cdclk_init_haswell(struct device *dev)
 	case GT_CDCLK_337:
 		dpdiv = 169;
 		lpcll = (1 << 26);
+		reg_em4 = 16;
+		reg_em5 = 225;
 		break;
 	case GT_CDCLK_450:
 		dpdiv = 225;
 		lpcll = 0;
+		reg_em4 = 4;
+		reg_em5 = 75;
 		break;
 	case GT_CDCLK_540:
 		dpdiv = 270;
 		lpcll = (1 << 26);
+		reg_em4 = 4;
+		reg_em5 = 90;
 		break;
 	default:
 		return;
@@ -432,24 +445,32 @@ static void igd_cdclk_init_broadwell(struct device *dev)
 		lpcll = (1 << 27);
 		pwctl = 2;
 		dpdiv = 169;
+		reg_em4 = 16;
+		reg_em5 = 225;
 		break;
 	case GT_CDCLK_450:
 		cdset = 449;
 		lpcll = 0;
 		pwctl = 0;
 		dpdiv = 225;
+		reg_em4 = 4;
+		reg_em5 = 75;
 		break;
 	case GT_CDCLK_540:
 		cdset = 539;
 		lpcll = (1 << 26);
 		pwctl = 1;
 		dpdiv = 270;
+		reg_em4 = 4;
+		reg_em5 = 90;
 		break;
 	case GT_CDCLK_675:
 		cdset = 674;
 		lpcll = (1 << 26) | (1 << 27);
 		pwctl = 3;
 		dpdiv = 338;
+		reg_em4 = 8;
+		reg_em5 = 225;
 	default:
 		return;
 	}

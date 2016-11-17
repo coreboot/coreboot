@@ -351,7 +351,7 @@ void mainboard_power_on_backlight(void)
 {
 	gpio_output(GPIO_BACKLIGHT, 1);  /* BL_EN */
 
-	if ((IS_ENABLED(CONFIG_BOARD_GOOGLE_GRU) || IS_ENABLED(CONFIG_BOARD_GOOGLE_BOB)) && board_id() == 0)
+	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_GRU) && board_id() == 0)
 		enable_backlight_booster();
 }
 

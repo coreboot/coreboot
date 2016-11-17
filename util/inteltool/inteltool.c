@@ -428,7 +428,10 @@ int main(int argc, char *argv[])
 			gfx = 0;
 	}
 
-	ahci = pci_get_dev(pacc, 0, 0, 0x1f, 2);
+	if (sb->device_id == PCI_DEVICE_ID_INTEL_BAYTRAIL_LPC)
+		ahci = pci_get_dev(pacc, 0, 0, 0x13, 0);
+	else
+		ahci = pci_get_dev(pacc, 0, 0, 0x1f, 2);
 
 	if (ahci) {
 		pci_fill_info(ahci, PCI_FILL_IDENT|PCI_FILL_BASES|PCI_FILL_SIZES|PCI_FILL_CLASS);

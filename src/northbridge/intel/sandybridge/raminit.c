@@ -255,6 +255,7 @@ static void disable_channel(ramctr_timing *ctrl, int channel) {
 	ctrl->cmd_stretch[channel] = 0;
 	ctrl->mad_dimm[channel] = 0;
 	memset(&ctrl->timings[channel][0], 0, sizeof(ctrl->timings[0]));
+	memset(&ctrl->info.dimm[channel][0], 0, sizeof(ctrl->info.dimm[0]));
 }
 
 /*

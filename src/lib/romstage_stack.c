@@ -44,5 +44,8 @@ uintptr_t romstage_ram_stack_top(void)
 	uintptr_t stack_top = romstage_ram_stack_base(ROMSTAGE_RAM_STACK_SIZE,
 		ROMSTAGE_STACK_CBMEM);
 	stack_top += ROMSTAGE_RAM_STACK_SIZE;
+
+	/* Make it aligned to a 8-byte boundary. */
+	stack_top = ALIGN_DOWN(stack_top, 8);
 	return stack_top;
 }

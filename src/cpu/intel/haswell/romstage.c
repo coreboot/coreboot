@@ -69,15 +69,13 @@ static inline u32 *stack_push(u32 *stack, u32 value)
  * cache-as-ram is torn down as well as the MTRR settings to use. */
 static void *setup_romstage_stack_after_car(void)
 {
-	uintptr_t top_of_stack;
 	int num_mtrrs;
 	u32 *slot;
 	u32 mtrr_mask_upper;
 	u32 top_of_ram;
 
 	/* Top of stack needs to be aligned to a 4-byte boundary. */
-	top_of_stack = romstage_ram_stack_top() & ~3;
-	slot = (void *)top_of_stack;
+	slot = (void *)romstage_ram_stack_top();
 	num_mtrrs = 0;
 
 	/* The upper bits of the MTRR mask need to set according to the number

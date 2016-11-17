@@ -35,14 +35,12 @@ void *setup_stack_and_mtrrs(void)
 	uint32_t max_mtrrs;
 	uint32_t num_mtrrs;
 	uint32_t *slot;
-	unsigned long top_of_stack;
 
 	/* Display the MTTRs */
 	soc_display_mtrrs();
 
 	/* Top of stack needs to be aligned to a 8-byte boundary. */
-	top_of_stack = romstage_ram_stack_top();
-	slot = (void *)top_of_stack;
+	slot = (void *)romstage_ram_stack_top();
 	num_mtrrs = 0;
 	max_mtrrs = soc_get_variable_mtrr_count(NULL);
 

@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include <soc/intel/common/hda_verb.h>
 #include <soc/ramstage.h>
+#include <soc/igd.h>
 
 static const u32 minihd_verb_table[] = {
 	/* coreboot specific header */
@@ -101,6 +102,10 @@ static void minihd_init(struct device *dev)
 					       minihd_verb_table);
 		}
 	}
+
+	/* Set EM4/EM5 registers */
+	write32(base + 0x0100c, igd_get_reg_em4());
+	write32(base + 0x01010, igd_get_reg_em5());
 }
 
 static struct device_operations minihd_ops = {

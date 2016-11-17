@@ -25,6 +25,7 @@
 #include <device/pci.h>
 #include <fsp/api.h>
 #include <fsp/util.h>
+#include <romstage_handoff.h>
 #include <soc/acpi.h>
 #include <soc/interrupt.h>
 #include <soc/irq.h>
@@ -34,8 +35,13 @@
 
 void soc_init_pre_device(void *chip_info)
 {
+	struct romstage_handoff *handoff;
+
+	/* Get S3 status to pass to silicon init. */
+	handoff = romstage_handoff_find_or_add();
+
 	/* Perform silicon specific init. */
-	fsp_silicon_init();
+	fsp_silicon_init(handoff->s3_resume);
 }
 
 static void pci_domain_set_resources(device_t dev)

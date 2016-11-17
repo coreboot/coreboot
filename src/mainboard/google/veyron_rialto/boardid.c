@@ -38,7 +38,7 @@ uint32_t ram_code(void)
 	gpio_t pins[] = {[3] = GPIO(8, A, 3), [2] = GPIO(8, A, 2),
 		[1] = GPIO(8, A, 1), [0] = GPIO(8, A, 0)}; /* GPIO8_A0 is LSB */
 
-	code = gpio_base2_value(pins, ARRAY_SIZE(pins));
+	code = gpio_binary_first_base3_value(pins, ARRAY_SIZE(pins));
 	printk(BIOS_SPEW, "RAM Config: %u.\n", code);
 
 	return code;

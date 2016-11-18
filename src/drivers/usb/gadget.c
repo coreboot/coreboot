@@ -226,11 +226,38 @@ small_write:
 #define FTDI_SIO_SET_DATA_REQUEST      0x04
 #define FTDI_SIO_SET_BITMODE_REQUEST   0x0b
 
+/* Simplified divisor selection for 12MHz base clock only */
+static void ft232h_baud(u16 *const value, u16 *const index, u32 baud)
+{
+	static const u32 fraction_map[8] = { 0, 3, 2, 4, 1, 5, 6, 7 };
+
+	/* divisor must fit into 14 bits */
+	if (baud < 733)
+		baud = 733;
+
+	/* divisor is given as a fraction of 8 */
+	const u32 div8 = ((12 * 1000 * 1000) * 8) / baud;
+	/* upper 3 bits fractional part, lower 14 bits integer */
+	u32 div = fraction_map[div8 & 7] << 14 | div8 / 8;
+
+	/* special case for 12MHz */
+	if (div == 1)
+		div = 0;
+	/* special case for 8MHz */
+	else if (div == (fraction_map[4] << 14 | 1))
+		div = 1;
+
+	*value = div;			/* divisor lower 16 bits */
+	*index = (div >> 8) & 0x0100;   /* divisor bit 16 */
+	*index |= 0x0200;		/* select 120MHz / 10 */
+}
+
 static int probe_for_ftdi(struct ehci_dbg_port *ehci_debug, struct dbgp_pipe *pipe)
 {
 	int ret;
 	u8 devnum = 0;
 	u8 uart_if = 1; /* FTDI_INTERFACE_A 1 */
+	u16 baud_value, baud_index;
 
 	/* Move the device to 127 if it isn't already there */
 	ret = dbgp_control_msg(ehci_debug, devnum,
@@ -260,10 +287,12 @@ static int probe_for_ftdi(struct ehci_dbg_port *ehci_debug, struct dbgp_pipe *pi
 		dprintk(BIOS_INFO, "FTDI SET_BITMODE failed.\n");
 		return -3;
 	}
+	ft232h_baud(&baud_value, &baud_index,
+		    CONFIG_USBDEBUG_DONGLE_FTDI_FT232H_BAUD);
 	ret = dbgp_control_msg(ehci_debug, devnum,
 		USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_OUT,
 		FTDI_SIO_SET_BAUDRATE_REQUEST,
-		0xc068, 0x0200 | uart_if, NULL, 0);
+		baud_value, baud_index | uart_if, NULL, 0);
 	if (ret < 0) {
 		dprintk(BIOS_INFO, "FTDI SET_BAUDRATE failed.\n");
 		return -3;

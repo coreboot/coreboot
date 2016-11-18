@@ -539,7 +539,7 @@ static int lpss_i2c_gen_config_rise_fall_time(struct lpss_i2c_regs *regs,
 
 	if (soc == NULL) {
 		printk(BIOS_ERR, "lpss_i2c: invalid SoC clock speed %d MHz\n",
-			soc->clk_speed_mhz);
+			ic_clk);
 		return -1;
 	}
 

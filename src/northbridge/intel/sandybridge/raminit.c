@@ -4235,22 +4235,21 @@ static void init_dram_ddr3(int mobile, int min_tck, int s3resume)
 		ctrl_cached = (ramctr_timing *)mrc_cache->mrc_data;
 	}
 
-	memset(spds, 0, sizeof(spds));
-	mainboard_get_spd(spds);
+
+	if (!s3resume) {
+		memset(spds, 0, sizeof(spds));
+		mainboard_get_spd(spds);
+	}
 
 	/* verify MRC cache for fast boot */
-	if (ctrl_cached) {
+	if (!s3resume && ctrl_cached) {
 		/* check SPD CRC16 to make sure the DIMMs haven't been replaced */
 		fast_boot = verify_crc16_spds_ddr3(spds, ctrl_cached);
 		if (!fast_boot)
 			printk(BIOS_DEBUG, "Stored timings CRC16 mismatch.\n");
-		if (!fast_boot && s3resume) {
-			/* Failed S3 resume, reset to come up cleanly */
-			outb(0x6, 0xcf9);
-			halt();
-		}
-	} else
-		fast_boot = 0;
+	} else {
+		fast_boot = s3resume;
+	}
 
 	if (fast_boot) {
 		printk(BIOS_DEBUG, "Trying stored timings.\n");

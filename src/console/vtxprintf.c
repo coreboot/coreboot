@@ -228,7 +228,7 @@ repeat:
 			if (!s)
 				s = "<NULL>";
 
-			len = strnlen(s, precision);
+			len = strnlen(s, (size_t)precision);
 
 			if (!(flags & LEFT))
 				while (len < field_width--)

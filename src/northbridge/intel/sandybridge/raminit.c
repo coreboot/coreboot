@@ -355,7 +355,7 @@ static int verify_crc16_spds_ddr3(spd_raw_data *spd, ramctr_timing *ctrl)
 		for (slot = 0; slot < NUM_SLOTS; slot++) {
 			spd_slot = 2 * channel + slot;
 			match &= ctrl->spd_crc[channel][slot] ==
-					spd_ddr3_calc_crc(spd[spd_slot], sizeof(spd_raw_data));
+					spd_ddr3_calc_unique_crc(spd[spd_slot], sizeof(spd_raw_data));
 		}
 	}
 	return match;
@@ -415,7 +415,7 @@ static void dram_find_spds_ddr3(spd_raw_data *spd, ramctr_timing *ctrl)
 
 			/* fill in CRC16 for MRC cache */
 			ctrl->spd_crc[channel][slot] =
-					spd_ddr3_calc_crc(spd[spd_slot], sizeof(spd_raw_data));
+					spd_ddr3_calc_unique_crc(spd[spd_slot], sizeof(spd_raw_data));
 
 			if (dimm->dimm[channel][slot].dram_type != SPD_MEMORY_TYPE_SDRAM_DDR3) {
 				// set dimm invalid

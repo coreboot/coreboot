@@ -87,7 +87,7 @@ int fill_power_state(void)
 	return ps->prev_sleep_state;
 }
 
-void platform_fsp_memory_init_params_cb(FSPM_UPD *fspm_upd)
+void platform_fsp_memory_init_params_cb(FSPM_UPD *fspm_upd, uint32_t version)
 {
 	FSPM_ARCH_UPD *aupd;
 	const struct device *dev;

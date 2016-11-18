@@ -237,7 +237,7 @@ static void fill_console_params(FSPM_UPD *mupd)
 	}
 }
 
-void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd)
+void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 {
 	fill_console_params(mupd);
 	mainboard_memory_init_params(mupd);

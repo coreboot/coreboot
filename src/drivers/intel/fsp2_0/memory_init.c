@@ -316,7 +316,7 @@ static void do_fsp_memory_init(struct fsp_header *hdr, bool s3wake,
 		die("FSPM_ARCH_UPD not found!\n");
 
 	/* Give SoC and mainboard a chance to update the UPD */
-	platform_fsp_memory_init_params_cb(&fspm_upd);
+	platform_fsp_memory_init_params_cb(&fspm_upd, hdr->fsp_revision);
 
 	/* Call FspMemoryInit */
 	fsp_raminit = (void *)(hdr->image_base + hdr->memory_init_entry_offset);

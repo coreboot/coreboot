@@ -132,7 +132,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg)
 	m_cfg->PcieRpEnableMask = mask;
 }
 
-void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd)
+void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 {
 	FSP_M_CONFIG *m_cfg = &mupd->FspmConfig;
 	FSP_M_TEST_CONFIG *m_t_cfg = &mupd->FspmTestConfig;

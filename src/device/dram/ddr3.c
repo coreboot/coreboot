@@ -46,6 +46,24 @@ int dimm_is_registered(enum spd_dimm_type type)
 	return 0;
 }
 
+static u16 crc16(const u8 *ptr, int n_crc)
+{
+	int i;
+	u16 crc = 0;
+
+	while (--n_crc >= 0) {
+		crc = (crc ^ (int)*ptr++) << 8;
+		for (i = 0; i < 8; ++i)
+			if (crc & 0x8000) {
+				crc = (crc << 1) ^ 0x1021;
+			} else {
+				crc = crc << 1;
+			}
+	}
+
+	return crc;
+}
+
 /**
  * \brief Calculate the CRC of a DDR3 SPD
  *
@@ -56,9 +74,7 @@ int dimm_is_registered(enum spd_dimm_type type)
  */
 u16 spd_ddr3_calc_crc(u8 *spd, int len)
 {
-	int n_crc, i;
-	u8 *ptr;
-	u16 crc;
+	int n_crc;
 
 	/* Find the number of bytes covered by CRC */
 	if (spd[0] & 0x80) {
@@ -71,19 +87,24 @@ u16 spd_ddr3_calc_crc(u8 *spd, int len)
 		/* Not enough bytes available to get the CRC */
 		return 0;
 
-	/* Compute the CRC */
-	crc = 0;
-	ptr = spd;
-	while (--n_crc >= 0) {
-		crc = crc ^ (int)*ptr++ << 8;
-		for (i = 0; i < 8; ++i)
-			if (crc & 0x8000) {
-				crc = crc << 1 ^ 0x1021;
-			} else {
-				crc = crc << 1;
-			}
-	}
-	return crc;
+	return crc16(spd, n_crc);
+}
+
+/**
+ * \brief Calculate the CRC of a DDR3 SPD unique identifier
+ *
+ * @param spd pointer to raw SPD data
+ * @param len length of data in SPD
+ *
+ * @return the CRC of SPD data bytes 117..127, or 0 when spd data is truncated.
+ */
+u16 spd_ddr3_calc_unique_crc(u8 *spd, int len)
+{
+	if (len < (117 + 11))
+		/* Not enough bytes available to get the CRC */
+		return 0;
+
+	return crc16(&spd[117], 11);
 }
 
 /**

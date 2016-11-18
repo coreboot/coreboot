@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2012 Advanced Micro Devices, Inc.
+ * Copyright (C) 2016 Renze Nicolai <renze@rnplus.nl>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,17 +70,29 @@
  */
 
 static const PCIe_PORT_DESCRIPTOR PortList [] = {
-	/* PCIe port, Lanes 8:23, PCI Device Number 2, blue x16 slot */
+	/* PCIe port, Lanes 8:23, PCI Device Number 2, x16 slot */
 	{
 		0,
 		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 8, 23),
 		PCIE_PORT_DATA_INITIALIZER (PortEnabled, ChannelTypeExt6db, 2, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 1)
 	},
-	/* PCIe port, Lanes 4:7, PCI Device Number 4, black x16 slot (in fact x4) */
+	/* PCIe port, Lane 4, PCI Device Number 4, Realtek LAN */
 	{
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 4, 7),
+		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 4, 4),
 		PCIE_PORT_DATA_INITIALIZER (PortEnabled, ChannelTypeExt6db, 4, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 1)
+	},
+	/* PCIe port, Lane 5, PCI Device Number 5, x1 slot (1) */
+	{
+		0,
+		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 5, 5),
+		PCIE_PORT_DATA_INITIALIZER (PortEnabled, ChannelTypeExt6db, 5, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 1)
+	},
+	/* PCIe port, Lane 6, PCI Device Number 6, x1 slot (2) */
+	{
+		0,
+		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 6, 6),
+		PCIE_PORT_DATA_INITIALIZER (PortEnabled, ChannelTypeExt6db, 6, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 1)
 	},
 	/* PCIe port, Lanes 0:3, UMI link to SB, PCI Device Number 8 */
 	{
@@ -89,12 +102,6 @@ static const PCIe_PORT_DESCRIPTOR PortList [] = {
 	},
 };
 
-/*
- * It is not known, if the setup is complete.
- *
- * Tested and works: VGA/DVI
- * Untested: HDMI
- */
 static const PCIe_DDI_DESCRIPTOR DdiList [] = {
 	// DP0 to HDMI0/DP
 	{
@@ -205,7 +212,6 @@ static AGESA_STATUS OemInitMid(AMD_MID_PARAMS * InitMid)
  *----------------------------------------------------------------------------------------
  */
 
-#if IS_ENABLED(CONFIG_BOARD_MSI_MS7721)
 /*
  *  Platform Specific Overriding Table allows IBV/OEM to pass in platform information to AGESA
  *  (e.g. MemClk routing, the number of DIMM slots per channel,...). If PlatformSpecificTable
@@ -225,7 +231,6 @@ CONST PSO_ENTRY ROMDATA DefaultPlatformMemoryConfiguration[] = {
   */
   PSO_END
 };
-#endif /* CONFIG_BOARD_MSI_MS7721 */
 
 const struct OEM_HOOK OemCustomize = {
 	.InitEarly = OemInitEarly,

@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2012 Advanced Micro Devices, Inc.
  * Copyright (C) 2013 Sage Electronic Engineering, LLC
+ * Copyright (C) 2016 Renze Nicolai <renze@rnplus.nl>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,12 +20,12 @@ DefinitionBlock (
 	"DSDT.AML",		/* Output filename */
 	"DSDT",			/* Signature */
 	0x02,			/* DSDT Revision, needs to be 2 for 64bit */
-	"ASUS  ",		/* OEMID */
+	"MSI   ",		/* OEMID */
 	"COREBOOT",		/* TABLE ID */
 	0x00010001		/* OEM Revision */
 	)
 {	/* Start of ASL file */
-	/* #include <arch/x86/acpi/debug.asl> */	/* Include global debug methods if needed */
+	#include <arch/x86/acpi/debug.asl>	/* Include global debug methods if needed */
 
 	/* Globals for the platform */
 	#include "acpi/mainboard.asl"
@@ -61,32 +62,13 @@ DefinitionBlock (
 
 			/* Describe the AMD Fusion Controller Hub Southbridge */
 			#include <southbridge/amd/agesa/hudson/acpi/fch.asl>
-
-			/**
-			 * TODO: The devices listed here (SBR0 and SBR1) do not appear to
-			 *       be referenced anywhere and could possibly be removed.
-			 */
-			Device(SBR0) { /* PCIe 1x SB */
-				Name(_ADR, 0x00150000)
-				Name(_PRW, Package() {0x18, 4})
-				Method(_PRT,0) {
-					If(PMOD){ Return(ABR0) }   /* APIC mode */
-					Return (PBR0)              /* PIC mode  */
-				}
-			}
-
-			Device(SBR1) { /* Onboard network */
-				Name(_ADR, 0x00150001)
-				Name(_PRW, Package() {0x18, 4})
-				Method(_PRT, 0) {
-					If(PMOD){ Return(ABR1) }   /* APIC mode */
-					Return (PBR1)              /* PIC mode  */
-				}
-			}
 		}
 
 		/* Describe PCI INT[A-H] for the Southbridge */
 		#include <southbridge/amd/agesa/hudson/acpi/pci_int.asl>
+
+		/* Describe USB for the Southbridge */
+		#include <southbridge/amd/agesa/hudson/acpi/usb.asl>
 
 	}   /* End Scope(_SB)  */
 

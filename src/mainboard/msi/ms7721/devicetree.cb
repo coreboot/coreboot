@@ -2,6 +2,7 @@
 # This file is part of the coreboot project.
 #
 # Copyright (C) 2012 Advanced Micro Devices, Inc.
+# Copyright (C) 2016 Renze Nicolai <renze@rnplus.nl>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -27,25 +28,25 @@ chip northbridge/amd/agesa/family15tn/root_complex
 			chip northbridge/amd/agesa/family15tn # PCI side of HT root complex
 				device pci 0.0 on  end # Root Complex
 				device pci 0.2 on  end # IOMMU
-				device pci 1.0 on  end # Internal Graphics P2P bridge 0x99XX
+				device pci 1.0 on  end # Internal Graphics P2P bridge 0x990e
 				device pci 1.1 on  end # Internal Multimedia
-				device pci 2.0 on  end # PCIE SLOT0 x16 blue
-				device pci 3.0 off end # unused?
-				device pci 4.0 on  end # PCIE 4x black
-				device pci 5.0 off end # unused?
-				device pci 6.0 off end # unused?
+				device pci 2.0 on  end # PCIe x16
+				device pci 3.0 off end # -
+				device pci 4.0 on  end # PCIE Realtek LAN
+				device pci 5.0 on  end # PCIE x1 (1)
+				device pci 6.0 on  end # PCIE x1 (2)
 				device pci 7.0 off end # LAN
 				device pci 8.0 off end # NB/SB Link P2P bridge
 			end	#chip northbridge/amd/agesa/family15tn # PCI side of HT root complex
 
 			chip southbridge/amd/agesa/hudson # it is under NB/SB Link, but on the same pci bus
-				device pci 10.0 on  end # XHCI HC0
-				device pci 10.1 on  end # XHCI HC1
+				device pci 10.0 on  end # USB XHCI
+				device pci 10.1 on  end # USB XHCI
 				device pci 11.0 on  end # SATA
-				device pci 12.0 on  end # USB
-				device pci 12.2 on  end # USB
-				device pci 13.0 on  end # USB
-				device pci 13.2 on  end # USB
+				device pci 12.0 on  end # USB OHCI
+				device pci 12.2 on  end # USB EHCI
+				device pci 13.0 on  end # USB OHCI
+				device pci 13.2 on  end # USB EHCI
 				device pci 14.0 on      # SMBUS
 					chip drivers/generic/generic #dimm 0
 						device i2c 50 on end # 7-bit SPD address
@@ -55,61 +56,102 @@ chip northbridge/amd/agesa/family15tn/root_complex
 					end
 				end # SM
 				device pci 14.1 off end # IDE	0x439c
-				device pci 14.2 on  end # HDA	0x4383
+				device pci 14.2 on  end # Azalia (Audio)
 				device pci 14.3 on      # LPC	0x439d
-					chip superio/ite/it8728f
-						register hwm_ctl_register = "0xc0"
-						register hwm_main_ctl_register = "0x33"
-						register hwm_adc_temp_chan_en_reg = "0x38"
-						register hwm_fan1_ctl_pwm = "0x00"
-						register hwm_fan2_ctl_pwm = "0x00"
-						register hwm_fan3_ctl_pwm = "0x00"
+					chip superio/fintek/f71869ad
+						register "multi_function_register_1" = "0x01"
+						register "multi_function_register_2" = "0x0f"
+						register "multi_function_register_3" = "0x2f"
+						register "multi_function_register_4" = "0x04"
+						register "multi_function_register_5" = "0x3e"
 
-						device pnp 2e.0 off #  Floppy
-							io 0x60 = 0x3f0
-							irq 0x70 = 6
-							drq 0x74 = 2
-						end
-						device pnp 2e.1 on #  Com1
+						# HWM configuration registers
+						register "hwm_smbus_address" = "0x98"
+						register "hwm_smbus_control_reg" = "0x02"
+						register "hwm_fan_type_sel_reg" = "0x00"
+						register "hwm_fan1_temp_adj_rate_reg" = "0x33"
+						register "hwm_fan_mode_sel_reg" = "0x07"
+						register "hwm_fan1_idx_rpm_mode" = "0x0e"
+						register "hwm_fan1_seg1_speed_count" = "0xff"
+						register "hwm_fan1_seg2_speed_count" = "0x0e"
+						register "hwm_fan1_seg3_speed_count" = "0x07"
+						register "hwm_fan1_temp_map_sel" = "0x8c"
+						device pnp 4e.00 off end
+						device pnp 4e.01 on	# COM1
 							io 0x60 = 0x3f8
 							irq 0x70 = 4
 						end
-						device pnp 2e.2 off #  Com2
+						device pnp 4e.02 off	# COM2 (Level converter not populated, but may be usable?)
 							io 0x60 = 0x2f8
 							irq 0x70 = 3
 						end
-						device pnp 2e.3 off #  Parallel Port
+						device pnp 4e.03 on	# Parallel Port
 							io 0x60 = 0x378
-							irq 0x70 = 7
+							irq 0x70 = 5
+							drq 0x74 = 3
+							irq 0xf0 = 0x44 # PRT Mode Select Register
 						end
-						device pnp 2e.4 on #  Env Controller
-							io 0x60 = 0x290
-							io 0x62 = 0x220
+						device pnp 4e.04 on	# Hardware Monitor
+							io 0x60 = 0x600
 							irq 0x70 = 0
 						end
-						device pnp 2e.5 on #  Keyboard
-							io 0x60 = 0x60
-							io 0x62 = 0x64
-							irq 0x70 = 1
+						device pnp 4e.05 on     # KBC
+							io 0x60 = 0x060
+							irq 0x70 = 1 # Keyboard IRQ
+							irq 0x72 = 12 # Mouse IRQ
 						end
-						device pnp 2e.6 off #  Mouse
-							irq 0x70 = 12
-						end
-						device pnp 2e.7 on #  GPIO
-							io 0x60 = 0x228 #SMI
-							io 0x62 = 0x300 #Simple I/O
-							io 0x64 = 0x238 #Phony resource IT8603E does not have it
-							irq 0x70 = 0
-						end
-						device pnp 2e.a off end #  CIR
-					end	#superio/ite/it8728f
+                                                device pnp 4e.06 on     # GPIO
+							# ! GPIO config is disabled because the code in romstage.c
+							# ! has already taken care of it
+                                                        #io 0x60 = 0xa00
+                                                        #irq 0xe0 = 0x04	# GPIO1 output
+                                                        #irq 0xe1 = 0xff	# GPIO1 output data
+                                                        #irq 0xe3 = 0x04	# GPIO1 drive enable
+                                                        #irq 0xe4 = 0x00	# GPIO1 PME enable
+                                                        #irq 0xe5 = 0x00	# GPIO1 input detect select
+                                                        #irq 0xe6 = 0x40	# GPIO1 event status
+
+                                                        #irq 0xd0 = 0x00	# GPIO2 output
+                                                        #irq 0xd1 = 0xff	# GPIO2 output data
+                                                        #irq 0xd3 = 0x00	# GPIO2 drive enable
+
+                                                        #irq 0xc0 = 0x00	# GPIO3 output
+                                                        #irq 0xc1 = 0xff	# GPIO3 output data
+
+                                                        #irq 0xb0 = 0x04	# GPIO4 output
+                                                        #irq 0xb1 = 0x04	# GPIO4 output data
+                                                        #irq 0xb3 = 0x04	# GPIO4 drive enable
+                                                        #irq 0xb4 = 0x00	# GPIO4 PME enable
+                                                        #irq 0xb5 = 0x00	# GPIO4 input detect select
+                                                        #irq 0xb6 = 0x00	# GPIO4 event status
+
+                                                        #irq 0xa0 = 0x00	# GPIO5 output
+                                                        #irq 0xa1 = 0x1f	# GPIO5 output data
+                                                        #irq 0xa3 = 0x00	# GPIO5 drive enable
+                                                        #irq 0xa4 = 0x00	# GPIO5 PME enable
+                                                        #irq 0xa5 = 0xff	# GPIO5 input detect select
+                                                        #irq 0xa6 = 0xe0	# GPIO5 event status
+
+                                                        #irq 0x90 = 0x00	# GPIO6 output
+                                                        #irq 0x91 = 0xff	# GPIO6 output data
+                                                        #irq 0x93 = 0x00	# GPIO6 drive enable
+
+                                                        #irq 0x80 = 0x00	# GPIO7 output
+                                                        #irq 0x81 = 0xff	# GPIO7 output data
+                                                        #irq 0x83 = 0x00	# GPIO7 drive enable
+                                                end
+
+						device pnp 4e.07 on end	# WDT
+						device pnp 4e.08 off end	# CIR
+						device pnp 4e.0a on end	# PME
+					end # f71869ad
 				end	#device pci 14.3 # LPC
-				device pci 14.4 on  end # PCI 0x4384
-				device pci 14.5 on  end # USB 2
+				device pci 14.4 on  end # PCI 0x4384 (PCI slot on board)
+				device pci 14.5 on  end # USB OHCI
 				device pci 14.6 off end # Gec
 				device pci 14.7 off end # SD
-				device pci 15.0 on end # PCIe 0 - onboard PCIe 1x
-				device pci 15.1 on end # PCIe 1 onboard gigabit
+				device pci 15.0 off end # unused
+				device pci 15.1 off end # unused
 				device pci 15.2 off end # unused
 				device pci 15.3 off end # unused
 

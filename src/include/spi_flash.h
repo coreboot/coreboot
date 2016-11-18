@@ -45,6 +45,13 @@ void lb_spi_flash(struct lb_header *header);
 
 /* SPI Flash Driver Public API */
 struct spi_flash *spi_flash_probe(unsigned int bus, unsigned int cs);
+/*
+ * Specialized probing performed by platform. This is a weak function which can
+ * be overriden by platform driver.
+ * spi   = Pointer to spi_slave structure.
+ * force = Indicates if the platform driver can skip specialized probing.
+ */
+struct spi_flash *spi_flash_programmer_probe(struct spi_slave *spi, int force);
 
 /* All the following functions return 0 on success and non-zero on error. */
 int spi_flash_read(const struct spi_flash *flash, u32 offset, size_t len,

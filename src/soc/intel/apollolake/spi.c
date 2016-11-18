@@ -354,7 +354,7 @@ static struct spi_flash boot_flash CAR_GLOBAL;
  * The size of the flash component is always taken from density field in the
  * SFDP table. FLCOMP.C0DEN is no longer used by the Flash Controller.
  */
-static struct spi_flash *nuclear_flash_probe(struct spi_slave *spi)
+struct spi_flash *spi_flash_programmer_probe(struct spi_slave *spi, int force)
 {
 	BOILERPLATE_CREATE_CTX(ctx);
 	struct spi_flash *flash;
@@ -403,8 +403,6 @@ struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs)
 
 	slave->bus = bus;
 	slave->cs = cs;
-	slave->programmer_specific_probe = nuclear_flash_probe;
-	slave->force_programmer_specific = 1;
 
 	return slave;
 }

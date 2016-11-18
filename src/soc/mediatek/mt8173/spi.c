@@ -173,8 +173,6 @@ struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs)
 	case CONFIG_BOOT_DEVICE_SPI_FLASH_BUS:
 		slave.bus = bus;
 		slave.cs = cs;
-		slave.force_programmer_specific = 1;
-		slave.programmer_specific_probe = &mt8173_nor_flash_probe;
 		return &slave;
 	default:
 		die ("wrong bus number.\n");

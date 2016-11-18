@@ -27,16 +27,12 @@
 /*-----------------------------------------------------------------------
  * Representation of a SPI slave, i.e. what we're communicating with.
  *
- * Drivers are expected to extend this with controller-specific data.
- *
  *   bus:	ID of the bus that the slave is attached to.
  *   cs:	ID of the chip select connected to the slave.
  */
 struct spi_slave {
 	unsigned int	bus;
 	unsigned int	cs;
-	int force_programmer_specific;
-	struct spi_flash * (*programmer_specific_probe) (struct spi_slave *spi);
 };
 
 /*-----------------------------------------------------------------------

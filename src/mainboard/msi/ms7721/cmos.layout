@@ -1,0 +1,74 @@
+#*****************************************************************************
+#
+#  This file is part of the coreboot project.
+#
+#  Copyright (C) 2012 Advanced Micro Devices, Inc.
+#
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; version 2 of the License.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#*****************************************************************************
+
+entries
+
+0          384       r       0        reserved_memory
+384          1       e       4        boot_option
+388          4       h       0        reboot_counter
+392          3       e       5        baud_rate
+395          1       e       1        hw_scrubber
+396          1       e       1        interleave_chip_selects
+397          2       e       8        max_mem_clock
+399          1       e       2        multi_core
+400          1       e       1        power_on_after_fail
+412          4       e       6        debug_level
+440          4       e       9        slow_cpu
+444          1       e       1        nmi
+445          1       e       1        iommu
+456          1       e       1        ECC_memory
+728        256       h       0        user_data
+984         16       h       0        check_sum
+# Reserve the extended AMD configuration registers
+1000        24       r       0        amd_reserved
+
+enumerations
+
+#ID value   text
+1     0     Disable
+1     1     Enable
+2     0     Enable
+2     1     Disable
+4     0     Fallback
+4     1     Normal
+5     0     115200
+5     1     57600
+5     2     38400
+5     3     19200
+5     4     9600
+5     5     4800
+5     6     2400
+5     7     1200
+6     6     Notice
+6     7     Info
+6     8     Debug
+6     9     Spew
+8     0     400Mhz
+8     1     333Mhz
+8     2     266Mhz
+8     3     200Mhz
+9     0     off
+9     1     87.5%
+9     2     75.0%
+9     3     62.5%
+9     4     50.0%
+9     5     37.5%
+9     6     25.0%
+9     7     12.5%
+
+checksums
+
+checksum 392 983 984

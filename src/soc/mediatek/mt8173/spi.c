@@ -80,8 +80,11 @@ void mtk_spi_init(unsigned int bus, unsigned int pad_select,
 		  unsigned int speed_hz)
 {
 	u32 div, sck_ticks, cs_ticks, reg_val;
-	/* mtk spi HW just support bus 0 */
-	assert(bus == 0);
+
+	/* mtk spi HW just supports bus 0 */
+	if (bus != 0)
+		die("Error: Only SPI bus 0 is supported.\n");
+
 	struct mtk_spi_bus *slave = &spi_bus[bus];
 	struct mtk_spi_regs *regs = slave->regs;
 

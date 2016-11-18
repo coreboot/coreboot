@@ -254,14 +254,14 @@ static const struct gt_powermeter ivb_pm_gt2_35w[] = {
 
 /* some vga option roms are used for several chipsets but they only have one
  * PCI ID in their header. If we encounter such an option rom, we need to do
- * the mapping ourselfes
+ * the mapping ourselves
  */
 
 u32 map_oprom_vendev(u32 vendev)
 {
 	u32 new_vendev = vendev;
 
-	/* none curently. */
+	/* none currently. */
 
 	return new_vendev;
 }
@@ -758,7 +758,7 @@ static void intel_gma_init(const struct northbridge_intel_nehalem_config *info,
 			u32 current_delta;
 
 			denom = candn * candp1 * 7;
-			/* Doesnt overflow for up to
+			/* Doesn't overflow for up to
 			   5000000 kHz = 5 GHz. */
 			m = (target_frequency * denom + 60000) / 120000;
 

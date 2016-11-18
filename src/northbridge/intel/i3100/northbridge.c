@@ -93,7 +93,7 @@ static void pci_domain_set_resources(device_t dev)
 			/* Find the offset of the remap window from tolm */
 			remapoffsetk = remapbasek - tolmk;
 		}
-		/* Write the RAM configruation registers,
+		/* Write the RAM configuration registers,
 		 * preserving the reserved bits.
 		 */
 		tolm_r = pci_read_config16(mc_dev, 0xc4);

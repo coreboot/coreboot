@@ -173,10 +173,10 @@ static const u8 register_values[] = {
 	 * 0x5c [5:4] 0xD4000 - 0xD7FFF ISA add-on BIOS
 	 * 0x5d [1:0] 0xD8000 - 0xDBFFF ISA add-on BIOS
 	 * 0x5d [5:4] 0xDC000 - 0xDFFFF ISA add-on BIOS
-	 * 0x5e [1:0] 0xE0000 - 0xE3FFF BIOS entension
-	 * 0x5e [5:4] 0xE4000 - 0xE7FFF BIOS entension
-	 * 0x5f [1:0] 0xE8000 - 0xEBFFF BIOS entension
-	 * 0x5f [5:4] 0xEC000 - 0xEFFFF BIOS entension
+	 * 0x5e [1:0] 0xE0000 - 0xE3FFF BIOS extension
+	 * 0x5e [5:4] 0xE4000 - 0xE7FFF BIOS extension
+	 * 0x5f [1:0] 0xE8000 - 0xEBFFF BIOS extension
+	 * 0x5f [5:4] 0xEC000 - 0xEFFFF BIOS extension
 	 *
 	 * Bit assignment:
 	 * 00 = DRAM Disabled (all access goes to memory mapped I/O space)
@@ -587,7 +587,7 @@ static void set_dram_buffer_strength(void)
 }
 
 /*-----------------------------------------------------------------------------
-DIMM-independant configuration functions.
+DIMM-independent configuration functions.
 -----------------------------------------------------------------------------*/
 
 static void spd_enable_refresh(void)
@@ -680,7 +680,7 @@ static struct dimm_size spd_get_dimm_size(unsigned int device)
 
 	/*
 	 * SPD byte 31 is the memory size divided by 4 so we
-	 * need to muliply by 4 to get the total size.
+	 * need to multiply by 4 to get the total size.
 	 */
 	sz.side1 *= 4;
 	sz.side2 *= 4;

@@ -15,7 +15,7 @@
  */
 
 /* Please don't remove this. It's needed it to do debugging
-   and reverse engineering to support in futur more nehalem variants.  */
+   and reverse engineering to support in future more nehalem variants.  */
 #ifndef REAL
 #define REAL 1
 #endif

@@ -92,7 +92,7 @@ static struct dimm_size spd_get_dimm_size(u16 device)
 
 	/* Note it might be easier to use byte 31 here, it has the DIMM size as
 	 * a multiple of 4MB.  The way we do it now we can size both
-	 * sides of an assymetric dimm.
+	 * sides of an asymmetric dimm.
 	 */
 	value = spd_read_byte(device, 3);	/* rows */
 	if (value < 0) goto hw_err;
@@ -385,9 +385,9 @@ static int spd_set_drt_attributes(const struct mem_controller *ctrl,
 			cas_latency = 30;
 		}
 		if ((index & 0x0ff00) <= 0x03c00) {
-			drt |= (1<<8); /* Trp RAS Precharg */
+			drt |= (1<<8); /* Trp RAS Precharge */
 		} else {
-			drt |= (2<<8); /* Trp RAS Precharg */
+			drt |= (2<<8); /* Trp RAS Precharge */
 		}
 
 		/* Trcd RAS to CAS delay */
@@ -437,9 +437,9 @@ static int spd_set_drt_attributes(const struct mem_controller *ctrl,
 		 * for bits 3:2 for all 167 MHz
 		drt |= ((index & 3)<<2); */ /* set CAS latency */
 		if ((index & 0x0ff00) <= 0x03000) {
-			drt |= (1<<8); /* Trp RAS Precharg */
+			drt |= (1<<8); /* Trp RAS Precharge */
 		} else {
-			drt |= (2<<8); /* Trp RAS Precharg */
+			drt |= (2<<8); /* Trp RAS Precharge */
 		}
 
 		/* Trcd RAS to CAS delay */
@@ -480,9 +480,9 @@ static int spd_set_drt_attributes(const struct mem_controller *ctrl,
 	else if (value <= 0x75) { /* 133 MHz */
 		drt |= ((index & 3)<<2); /* set CAS latency */
 		if ((index & 0x0ff00) <= 0x03c00) {
-			drt |= (1<<8); /* Trp RAS Precharg */
+			drt |= (1<<8); /* Trp RAS Precharge */
 		} else {
-			drt |= (2<<8); /* Trp RAS Precharg */
+			drt |= (2<<8); /* Trp RAS Precharge */
 		}
 
 		/* Trcd RAS to CAS delay */
@@ -850,7 +850,7 @@ static void set_receive_enable(const struct mem_controller *ctrl)
 		}
 	}
 	}
-	/* Check for Eratta problem */
+	/* Check for Errata problem */
 	for (i = cnt = 0; i < 32; i+=8) {
 		if (((recena>>i)&0x0f)>7) {
 			cnt+= 0x101;
@@ -1032,7 +1032,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 		while (data32 & 0x80000000);
 	}
 
-	/* Precharg all banks */
+	/* Precharge all banks */
 	do_delay();
 	for (cs = 0; cs < 8; cs+=2) {
 		write32(MCBAR+DCALADDR, 0x04000000);
@@ -1063,7 +1063,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 		while (data32 & 0x80000000);
 	}
 
-	/* Precharg all banks */
+	/* Precharge all banks */
 	do_delay();
 	do_delay();
 	do_delay();

@@ -237,7 +237,7 @@ int i915lightup_sandy(const struct i915_gpu_controller_info *info,
 			u32 current_delta;
 
 			denom = candn * candp1 * 7;
-			/* Doesnt overflow for up to
+			/* Doesn't overflow for up to
 			   5000000 kHz = 5 GHz.  */
 			m = (target_frequency * denom + 60000) / 120000;
 

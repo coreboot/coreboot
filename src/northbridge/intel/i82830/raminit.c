@@ -159,7 +159,7 @@ static void initialize_dimm_rows(void)
 }
 
 /*-----------------------------------------------------------------------------
-DIMM-independant configuration functions.
+DIMM-independent configuration functions.
 -----------------------------------------------------------------------------*/
 
 struct dimm_size {
@@ -206,7 +206,7 @@ static struct dimm_size spd_get_dimm_size(unsigned device)
 	}
 
 	/* SPD byte 31 is the memory size divided by 4 so we
-	 * need to muliply by 4 to get the total size.
+	 * need to multiply by 4 to get the total size.
 	 */
 	sz.side1 *= 4;
 	sz.side2 *= 4;
@@ -426,12 +426,12 @@ static void northbridge_set_registers(void)
 	u16 value;
 	int igd_memory = 0;
 
-	printk(BIOS_DEBUG, "Setting initial Nothbridge registers....\n");
+	printk(BIOS_DEBUG, "Setting initial Northbridge registers....\n");
 
 	/* Set the value for Fixed DRAM Hole Control Register */
 	pci_write_config8(NORTHBRIDGE, FDHC, 0x00);
 
-	/* Set the value for Programable Attribute Map Registers
+	/* Set the value for Programmable Attribute Map Registers
 	 * Ideally, this should be R/W for as many ranges as possible.
 	 */
 	pci_write_config8(NORTHBRIDGE, PAM0, 0x30);

@@ -574,7 +574,7 @@ static void i945_setup_pci_express_x16(void)
 
 	MCHBAR16(UPMC1) &= ~( (1 << 5) | (1 << 0) );
 
-	/* Initialze PEG_CAP */
+	/* Initialize PEG_CAP */
 	reg16 = pci_read_config16(PCI_DEV(0, 0x01, 0), 0xa2);
 	reg16 |= (1 << 8);
 	pci_write_config16(PCI_DEV(0, 0x01, 0), 0xa2, reg16);

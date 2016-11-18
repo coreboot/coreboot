@@ -25,7 +25,6 @@ void mainboard_memory_init_params(FSPM_UPD *mupd);
 void systemagent_early_init(void);
 int smbus_read_byte(unsigned device, unsigned address);
 int early_spi_read_wpsr(u8 *sr);
-
 /* Board type */
 enum board_type {
 	BOARD_TYPE_MOBILE	= 0,

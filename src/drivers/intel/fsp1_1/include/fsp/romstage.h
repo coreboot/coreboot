@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2014 Google Inc.
- * Copyright (C) 2015-2016 Intel Corporation.
+ * Copyright (C) 2015-2016 Intel Corporation
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@
 #include <fsp/car.h>
 #include <fsp/util.h>
 #include <soc/intel/common/util.h>
+#include <soc/intel/common/mma.h>
 #include <soc/pei_wrapper.h>
 #include <soc/pm.h>		/* chip_power_state */
 
@@ -80,6 +81,8 @@ void raminit(struct romstage_params *params);
 void report_memory_config(void);
 void romstage_common(struct romstage_params *params);
 asmlinkage void *romstage_main(FSP_INFO_HEADER *fih);
+/* Initialize memory margin analysis settings. */
+void setup_mma(MEMORY_INIT_UPD *memory_upd);
 void *setup_stack_and_mtrrs(void);
 void soc_after_ram_init(struct romstage_params *params);
 void soc_display_memory_init_params(const MEMORY_INIT_UPD *old,
@@ -87,5 +90,8 @@ void soc_display_memory_init_params(const MEMORY_INIT_UPD *old,
 void soc_memory_init_params(struct romstage_params *params,
 			    MEMORY_INIT_UPD *upd);
 void soc_pre_ram_init(struct romstage_params *params);
+/* Update the SOC specific memory config param for mma. */
+void soc_update_memory_params_for_mma(MEMORY_INIT_UPD *memory_cfg,
+		struct mma_config_param *mma_cfg);
 
 #endif /* _COMMON_ROMSTAGE_H_ */

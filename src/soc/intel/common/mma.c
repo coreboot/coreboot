@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2015 Intel Corporation.
+ * Copyright (C) 2016 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,38 +13,34 @@
  * GNU General Public License for more details.
  */
 
-#include <boot/coreboot_tables.h>
 #include <bootstate.h>
 #include <cbfs.h>
 #include <cbmem.h>
 #include <console/console.h>
-#include <lib.h>
-#include "mma.h"
-#include <soc/romstage.h>
-#include <string.h>
-#include <fmap.h>
+#include <soc/intel/common/mma.h>
 
-#define MMA_TEST_METADATA_FILENAME      "mma_test_metadata.bin"
-#define MMA_TEST_NAME_TAG               "MMA_TEST_NAME"
-#define MMA_TEST_PARAM_TAG              "MMA_TEST_PARAM"
+#define MMA_TEST_METADATA_FILENAME	"mma_test_metadata.bin"
+#define MMA_TEST_NAME_TAG		"MMA_TEST_NAME"
+#define MMA_TEST_PARAM_TAG		"MMA_TEST_PARAM"
+#define TEST_NAME_MAX_SIZE		30
+#define TEST_PARAM_MAX_SIZE		100
+#define MMA_DATA_SIGNATURE		(('M' << 0) | ('M' << 8) | \
+					('A' << 16) | ('D' << 24))
 #define MMA_CBFS_REGION			"COREBOOT"
-#define TEST_NAME_MAX_SIZE              30
-#define TEST_PARAM_MAX_SIZE             100
-#define FSP_MMA_RESULTS_GUID            { 0x8f4e928, 0xf5f, 0x46d4, \
-                { 0x84, 0x10, 0x47, 0x9f, 0xda, 0x27, 0x9d, 0xb6 } }
-#define MMA_DATA_SIGNATURE      (('M'<<0)|('M'<<8)|('A'<<16)|('D'<<24))
 
 struct mma_data_container {
-        u32     mma_signature;  // "MMAD"
-        u8      mma_data[0];    // Variable size, platform/run time dependent.
+	uint32_t mma_signature; /* "MMAD" */
+	uint8_t mma_data[0]; /* Variable size, platform/run time dependent. */
 } __attribute__ ((packed));
 
 /*
-Format of the MMA test metadata file, stored under CBFS
-MMA_TEST_NAME=xxxxxx.efi;MMA_TEST_PARAM=xxxxxx.bin;
-*/
+ * Format of the MMA test metadata file, stored under CBFS
+ * MMA_TEST_NAME=xxxxxx.efi;MMA_TEST_PARAM=xxxxxx.bin;
+ */
 
-/* Returns index in haystack after 'LABEL=' string is found, < 0 on error. */
+/* Returns index in haystack after 'LABEL='
+ * string is found, < 0 on error.
+ */
 static int find_label(const char *haystack, size_t haystack_sz,
 		const char *label)
 {
@@ -72,12 +68,13 @@ static int find_label(const char *haystack, size_t haystack_sz,
 
 	return i + label_sz + 1;
 }
+
 /*
  * Fill in value in dest field located by LABEL=.
- *	Returns 0 on success, < 0 on  error.
+ * Returns 0 on success, < 0 on  error.
  */
 static int label_value(const char *haystack, size_t haystack_sz,
-			const char *label, char *dest, size_t dest_sz)
+		const char *label, char *dest, size_t dest_sz)
 {
 	size_t val_begin;
 	size_t val_end;
@@ -114,159 +111,120 @@ static int label_value(const char *haystack, size_t haystack_sz,
 	return 0;
 }
 
-static void *cbfs_locate_file_in_region(const char *region_name, const char *file_name,
-        uint32_t file_type, uint32_t *file_size)
+int mma_locate_param(struct mma_config_param *mma_cfg)
 {
-        struct region_device rdev;
-        struct cbfsf fh;
-
-        if (file_size != NULL)
-                *file_size = 0;
-
-        if (fmap_locate_area_as_rdev(region_name, &rdev) == 0) {
-                if (cbfs_locate(&fh, &rdev, file_name, &file_type) == 0) {
-                        if (file_size != NULL)
-                                *file_size = region_device_sz(&fh.data);
-                        return rdev_mmap_full(&fh.data);
-                } else
-                        printk(BIOS_DEBUG, "%s file not found in %s region\n",
-                                file_name, region_name);
-        } else
-                printk(BIOS_DEBUG,"%s region not found while looking for %s\n", region_name,
-                        file_name);
-
-        return NULL;
-}
-
-void setup_mma(MEMORY_INIT_UPD *memory_params)
-{
-	void *mma_test_metadata, *mma_test_content, *mma_test_param;
-	size_t mma_test_metadata_file_len, mma_test_content_file_len,
-	       mma_test_param_file_len;
+	void *mma_test_metadata;
+	size_t mma_test_metadata_file_len;
 	char test_filename[TEST_NAME_MAX_SIZE],
-	     test_param_filename[TEST_PARAM_MAX_SIZE];
+		test_param_filename[TEST_PARAM_MAX_SIZE];
+	struct cbfsf metadata_fh, test_content_fh, test_param_fh;
+	uint32_t mma_type = CBFS_TYPE_MMA;
+	uint32_t efi_type = CBFS_TYPE_EFI;
+	bool metadata_parse_flag = true;
 
-	printk(BIOS_DEBUG, "Entry setup_mma\n");
+	printk(BIOS_DEBUG, "MMA: Entry %s\n", __func__);
 
-	memory_params->MmaTestContentPtr = 0;
-	memory_params->MmaTestContentSize = 0;
-	memory_params->MmaTestConfigPtr = 0;
-	memory_params->MmaTestConfigSize = 0;
-
-	mma_test_metadata = cbfs_locate_file_in_region(MMA_CBFS_REGION,
-				MMA_TEST_METADATA_FILENAME, CBFS_TYPE_MMA,
-				&mma_test_metadata_file_len);
-
-	if (!mma_test_metadata) {
-		printk(BIOS_DEBUG, "MMA setup failed: Failed to read %s\n",
+	if (cbfs_locate_file_in_region(&metadata_fh, MMA_CBFS_REGION,
+				MMA_TEST_METADATA_FILENAME, &mma_type)) {
+		printk(BIOS_DEBUG, "MMA: Failed to locate %s\n",
 				MMA_TEST_METADATA_FILENAME);
-		return;
+		return -1;
+	}
+
+	mma_test_metadata = rdev_mmap_full(&metadata_fh.data);
+	mma_test_metadata_file_len = region_device_sz(&metadata_fh.data);
+
+	if (!mma_test_metadata || !mma_test_metadata_file_len) {
+		printk(BIOS_DEBUG, "MMA: Failed to read %s\n",
+				MMA_TEST_METADATA_FILENAME);
+		return -1;
 	}
 
 	if (label_value(mma_test_metadata, mma_test_metadata_file_len,
-			MMA_TEST_NAME_TAG, test_filename, TEST_NAME_MAX_SIZE)) {
-			printk(BIOS_DEBUG, "MMA setup failed : Failed to get %s",
-					MMA_TEST_NAME_TAG);
-			return;
+			MMA_TEST_NAME_TAG, test_filename,
+				TEST_NAME_MAX_SIZE)) {
+		printk(BIOS_DEBUG, "MMA: Failed to get %s\n",
+				MMA_TEST_NAME_TAG);
+		metadata_parse_flag = false;
 	}
 
-	if (label_value(mma_test_metadata, mma_test_metadata_file_len,
+	if (metadata_parse_flag &&
+		label_value(mma_test_metadata, mma_test_metadata_file_len,
 			MMA_TEST_PARAM_TAG, test_param_filename,
-			TEST_PARAM_MAX_SIZE)) {
-		printk(BIOS_DEBUG, "MMA setup failed : Failed to get %s",
+				TEST_PARAM_MAX_SIZE)) {
+		printk(BIOS_DEBUG, "MMA: Failed to get %s\n",
 			MMA_TEST_PARAM_TAG);
-		return;
+		metadata_parse_flag = false;
 	}
 
-	printk(BIOS_DEBUG, "Got MMA_TEST_NAME=%s MMA_TEST_PARAM=%s\n",
+	rdev_munmap(&metadata_fh.data, mma_test_metadata);
+
+	if (!metadata_parse_flag)
+		return -1;
+
+	printk(BIOS_DEBUG, "MMA: Got MMA_TEST_NAME=%s MMA_TEST_PARAM=%s\n",
 			test_filename, test_param_filename);
 
-	mma_test_content = cbfs_locate_file_in_region(MMA_CBFS_REGION,
-				test_filename, CBFS_TYPE_EFI,
-				&mma_test_content_file_len);
-	if (!mma_test_content) {
-		printk(BIOS_DEBUG, "MMA setup failed: Failed to read %s.\n",
-		test_filename);
-		return;
+	if (cbfs_locate_file_in_region(&test_content_fh, MMA_CBFS_REGION,
+				test_filename, &efi_type)) {
+		printk(BIOS_DEBUG, "MMA: Failed to locate %s\n",
+				test_filename);
+		return -1;
 	}
 
-	mma_test_param = cbfs_locate_file_in_region(MMA_CBFS_REGION,
-				test_param_filename, CBFS_TYPE_MMA,
-				&mma_test_param_file_len);
-	if (!mma_test_param) {
-		printk(BIOS_DEBUG, "MMA setup failed: Failed to read %s.\n",
+	cbfs_file_data(&mma_cfg->test_content, &test_content_fh);
+
+	if (cbfs_locate_file_in_region(&test_param_fh, MMA_CBFS_REGION,
+				test_param_filename, &mma_type)) {
+		printk(BIOS_DEBUG, "MMA: Failed to locate %s\n",
 				test_param_filename);
-		return;
+		return -1;
 	}
 
-	memory_params->MmaTestContentPtr = (uintptr_t) mma_test_content;
-	memory_params->MmaTestContentSize = mma_test_content_file_len;
-	memory_params->MmaTestConfigPtr = (uintptr_t) mma_test_param;
-	memory_params->MmaTestConfigSize = mma_test_param_file_len;
-	memory_params->MrcFastBoot = 0x00;
-	memory_params->SaGv = 0x02;
+	cbfs_file_data(&mma_cfg->test_param, &test_param_fh);
 
-	printk(BIOS_DEBUG, "MMA Test name %s\n", test_filename);
-	printk(BIOS_DEBUG, "MMA Test Config name %s\n", test_param_filename);
-	printk(BIOS_DEBUG, "MMA passing following memory_params\n");
-	printk(BIOS_DEBUG, "memory_params->MmaTestContentPtr = %0x\n",
-			memory_params->MmaTestContentPtr);
-	printk(BIOS_DEBUG, "memory_params->MmaTestContentSize = %d\n",
-			memory_params->MmaTestContentSize);
-	printk(BIOS_DEBUG, "memory_params->MmaTestConfigPtr = %0x\n",
-			memory_params->MmaTestConfigPtr);
-	printk(BIOS_DEBUG, "memory_params->MmaTestConfigSize = %d\n",
-			memory_params->MmaTestConfigSize);
-	printk(BIOS_DEBUG, "memory_params->MrcFastBoot = %d\n",
-			memory_params->MrcFastBoot);
-	printk(BIOS_DEBUG, "memory_params->SaGv = %d\n",
-			memory_params->SaGv);
+	printk(BIOS_DEBUG, "MMA: %s exit success\n", __func__);
 
-	printk(BIOS_DEBUG, "MMA setup successfully\n");
+	return 0;
 }
 
 static void save_mma_results_data(void *unused)
 {
-	void *mma_results_hob;
-	u32 mma_hob_size;
-	u32 *mma_hob_data;
+	const void *mma_hob;
+	size_t mma_hob_size;
 	struct mma_data_container *mma_data;
-	int cbmem_size;
+	size_t mma_data_size;
 
-	const EFI_GUID mma_results_guid = FSP_MMA_RESULTS_GUID;
+	printk(BIOS_DEBUG, "MMA: Entry %s\n", __func__);
 
-	printk(BIOS_DEBUG, "Entry save_mma_results_data MMA save data.\n");
-
-	mma_results_hob = get_first_guid_hob(&mma_results_guid);
-	if (mma_results_hob == NULL) {
+	if (fsp_locate_mma_results(&mma_hob, &mma_hob_size)) {
 		printk(BIOS_DEBUG,
-				"MMA results data Hob not present\n");
+				"MMA: results data Hob not present\n");
 		return;
 	}
 
-	mma_hob_data = GET_GUID_HOB_DATA(mma_results_hob);
-	mma_hob_size = GET_HOB_LENGTH(mma_results_hob);
-	cbmem_size = ALIGN(mma_hob_size, 16) +
+	mma_data_size = ALIGN(mma_hob_size, 16) +
 			sizeof(struct mma_data_container);
-	mma_data = cbmem_add(CBMEM_ID_MMA_DATA, cbmem_size);
+
+	mma_data = cbmem_add(CBMEM_ID_MMA_DATA, mma_data_size);
 
 	if (mma_data == NULL) {
 		printk(BIOS_DEBUG,
-			"CBMEM was not available to save the MMA data.\n");
+			"MMA: CBMEM was not available to save the MMA data.\n");
 		return;
 	}
 
 	/*clear the mma_data before coping the actual data */
-	memset(mma_data, 0, cbmem_size);
+	memset(mma_data, 0, mma_data_size);
 
 	printk(BIOS_DEBUG,
-		"Copy MMA DATA to HOB(src addr %p, dest addr %p, %u bytes)\n",
-			mma_hob_data, mma_data, mma_hob_size);
+		"MMA: copy MMA data to CBMEM(src 0x%p, dest 0x%p, %u bytes)\n",
+			mma_hob, mma_data, mma_hob_size);
 
 	mma_data->mma_signature = MMA_DATA_SIGNATURE;
-	memcpy(mma_data->mma_data, mma_hob_data, mma_hob_size);
+	memcpy(mma_data->mma_data, mma_hob, mma_hob_size);
 
-	printk(BIOS_DEBUG, "write MMA results data to cbmem success\n");
+	printk(BIOS_DEBUG, "MMA: %s exit successfully\n", __func__);
 }
 
 BOOT_STATE_INIT_ENTRY(BS_WRITE_TABLES, BS_ON_ENTRY,

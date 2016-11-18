@@ -21,7 +21,6 @@
 #include <fsp/util.h>
 #include <lib.h> /* hexdump */
 #include <reset.h>
-#include <soc/intel/common/mma.h>
 #include <string.h>
 #include <timestamp.h>
 #include <vboot/vboot_common.h>

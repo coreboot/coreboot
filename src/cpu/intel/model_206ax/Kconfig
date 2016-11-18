@@ -25,6 +25,10 @@ config BOOTBLOCK_CPU_INIT
 	string
 	default "cpu/intel/model_206ax/bootblock.c"
 
+config XIP_ROM_SIZE
+	hex
+	default 0x20000 if USE_NATIVE_RAMINIT
+
 config SMM_TSEG_SIZE
 	hex
 	default 0x800000

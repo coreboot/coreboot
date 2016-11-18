@@ -1,0 +1,81 @@
+#
+# This file is part of the coreboot project.
+#
+# Copyright (C) 2012 Advanced Micro Devices, Inc.
+# Copyright (C) 2012 Rudolf Marek <r.marek@assembler.cz>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+
+if BOARD_MSI_MS7721
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select CPU_AMD_AGESA_FAMILY15_TN
+	select NORTHBRIDGE_AMD_AGESA_FAMILY15_TN
+	select SOUTHBRIDGE_AMD_AGESA_HUDSON
+	select HAVE_OPTION_TABLE
+	select HAVE_PIRQ_TABLE
+	select HAVE_MP_TABLE
+	select HAVE_ACPI_TABLES
+	select SUPERIO_ITE_IT8728F
+	select BOARD_ROMSIZE_KB_8192
+	select GFXUMA
+	select HUDSON_DISABLE_IMC
+
+config MAINBOARD_DIR
+	string
+	default msi/ms7721
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "MS-7721"
+
+config HW_MEM_HOLE_SIZEK
+	hex
+	default 0x200000
+
+config MAX_CPUS
+	int
+	default 4
+
+config HW_MEM_HOLE_SIZE_AUTO_INC
+	bool
+	default n
+
+config HUDSON_XHCI_FWM
+	bool
+	default n
+
+config HUDSON_IMC_FWM
+	bool
+	default n
+
+config IRQ_SLOT_COUNT
+	int
+	default 11
+
+config ONBOARD_VGA_IS_PRIMARY
+	bool
+	default y
+
+config VGA_BIOS_ID
+	string
+	default "1002,9993"
+
+config HUDSON_LEGACY_FREE
+	bool
+	default y
+
+config POST_IO
+	bool
+	default n
+
+endif # BOARD_MSI_MS7721

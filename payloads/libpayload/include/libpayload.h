@@ -78,7 +78,7 @@ static inline u32 div_round_up(u32 n, u32 d) { return (n + d - 1) / d; }
 
 #define RAND_MAX 0x7fffffff
 
-#define MAX_ARGC_COUNT 10
+#define MAX_ARGC_COUNT 32
 
 /*
  * Payload information parameters - these are used to pass information

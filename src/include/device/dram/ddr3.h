@@ -199,6 +199,7 @@ enum ddr3_xmp_profile {
 typedef u8 spd_raw_data[256];
 
 u16 spd_ddr3_calc_crc(u8 *spd, int len);
+u16 spd_ddr3_calc_unique_crc(u8 *spd, int len);
 int spd_decode_ddr3(dimm_attr * dimm, spd_raw_data spd_data);
 int dimm_is_registered(enum spd_dimm_type type);
 void dram_print_spd_ddr3(const dimm_attr * dimm);

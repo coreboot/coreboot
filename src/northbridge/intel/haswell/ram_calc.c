@@ -24,7 +24,7 @@ static uintptr_t smm_region_start(void)
 {
 	/*
 	 * Base of TSEG is top of usable DRAM below 4GiB. The register has
-	 * 1 MiB alignement.
+	 * 1 MiB alignment.
 	 */
 	uintptr_t tom = pci_read_config32(PCI_DEV(0,0,0), TSEG);
 	return tom & ~((1 << 20) - 1);

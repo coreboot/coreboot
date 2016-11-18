@@ -810,7 +810,7 @@ static void dll_ddr2(struct sysinfo *s)
 			die("Unhandled case\n");
 		}
 
-		//reg8 = 0x00; // FIXME dont switch on all clocks anyway
+		//reg8 = 0x00; // FIXME don't switch on all clocks anyway
 
 		MCHBAR32(0x400*i + 0x5a0) = (MCHBAR32(0x400*i + 0x5a0) & ~0x3f000000) |
 			((u32)(reg8 << 24));

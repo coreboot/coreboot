@@ -484,7 +484,7 @@ static void sdram_enable(void)
 }
 
 /*-----------------------------------------------------------------------------
-DIMM-independant configuration functions:
+DIMM-independent configuration functions:
 -----------------------------------------------------------------------------*/
 
 /**
@@ -588,7 +588,7 @@ static void spd_set_dram_controller_mode(uint8_t dimm_mask)
 		tRCD = spd_read_byte(dimm, SPD_tRCD);
 		tRP = spd_read_byte(dimm, SPD_tRP);
 		if (tRCD != tRP) {
-			PRINTK_DEBUG(" Disabling RAS lockouk due to tRCD (%d) != tRP (%d)\n", tRCD, tRP);
+			PRINTK_DEBUG(" Disabling RAS lockout due to tRCD (%d) != tRP (%d)\n", tRCD, tRP);
 			controller_mode &= ~(1 << 15);
 		}
 
@@ -746,7 +746,7 @@ static void spd_set_dram_timing(uint8_t dimm_mask)
 
 	/* FIXME: guess work starts here...
 	 *
-	 * Intel refers to DQ turn-arround values for back to calculate the values,
+	 * Intel refers to DQ turn-around values for back to calculate the values,
 	 * but i have no idea what this means
 	 */
 
@@ -900,7 +900,7 @@ static void northbridge_set_registers(void)
 	/* Set the value for Fixed DRAM Hole Control Register */
 	pci_write_config8(NORTHBRIDGE, FDHC, 0x00);
 
-	/* Set the value for Programable Attribute Map Registers
+	/* Set the value for Programmable Attribute Map Registers
 	 * Ideally, this should be R/W for as many ranges as possible.
 	 */
 	pci_write_config8(NORTHBRIDGE, PAM0, 0x30);

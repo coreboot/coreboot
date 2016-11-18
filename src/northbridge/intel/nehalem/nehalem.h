@@ -119,7 +119,7 @@ typedef struct {
 	unsigned int	page_size; /* of whole DIMM in Bytes (4096 or 8192) */
 	unsigned int	banks;
 	unsigned int	ranks;
-	unsigned int	rank_capacity_mb; /* per rank in Mega Bytes */
+	unsigned int	rank_capacity_mb; /* per rank in Megabytes */
 } dimminfo_t;
 
 /* The setup is one DIMM per channel, so there's no need to find a

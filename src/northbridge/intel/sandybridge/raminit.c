@@ -71,7 +71,7 @@
  *
  * DEFAULT_MCHBAR + 0x4230 + 0x400 * X + 4 * Y: idle register
  *  Controls the idle time after issuing this DRAM command
- *  Bit 16-32: number of clock-cylces to idle
+ *  Bit 16-32: number of clock-cycles to idle
  *
  * DEFAULT_MCHBAR + 0x4284 + 0x400 * channel: execute command queue
  *  Starts to execute all queued commands
@@ -835,7 +835,7 @@ static void dram_freq(ramctr_timing * ctrl)
 			die ("No lock frequency found");
 		}
 
-		/* Frequency mulitplier.  */
+		/* Frequency multiplier.  */
 		u32 FRQ = get_FRQ(ctrl->tCK);
 
 		/* The PLL will never lock if the required frequency is

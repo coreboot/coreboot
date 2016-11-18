@@ -21,13 +21,13 @@
 #define GCC0    0x50 /* GMCH Control #0 (0xa072) */
 #define GCC1    0x52 /* GMCH Control #1 (0x0000) */
 #define FDHC    0x58 /* Fixed DRAM Hole Control (0x00) */
-#define PAM0    0x59 /* Programable Attribute Map #0 (0x00) */
-#define PAM1    0x5a /* Programable Attribute Map #1 (0x00) */
-#define PAM2    0x5b /* Programable Attribute Map #2 (0x00) */
-#define PAM3    0x5c /* Programable Attribute Map #3 (0x00) */
-#define PAM4    0x5d /* Programable Attribute Map #4 (0x00) */
-#define PAM5    0x5e /* Programable Attribute Map #5 (0x00) */
-#define PAM6    0x5f /* Programable Attribute Map #6 (0x00) */
+#define PAM0    0x59 /* Programmable Attribute Map #0 (0x00) */
+#define PAM1    0x5a /* Programmable Attribute Map #1 (0x00) */
+#define PAM2    0x5b /* Programmable Attribute Map #2 (0x00) */
+#define PAM3    0x5c /* Programmable Attribute Map #3 (0x00) */
+#define PAM4    0x5d /* Programmable Attribute Map #4 (0x00) */
+#define PAM5    0x5e /* Programmable Attribute Map #5 (0x00) */
+#define PAM6    0x5f /* Programmable Attribute Map #6 (0x00) */
 #define DRB     0x60 /* DRAM Row Boundary #0 (0x00) */
 #define DRB1    0x61 /* DRAM Row Boundary #1 (0x00) */
 #define DRB2    0x62 /* DRAM Row Boundary #2 (0x00) */
@@ -46,7 +46,7 @@
 #define ERRCMD  0x94 /* Error Command (0x0000) */
 #define BUFF_SC 0xec /* System Memory Buffer Strength Control (0x00000000) */
 #define APBASE  0x10 /* Aperture Base Configuration (0x00000008) */
-#define APSIZE  0xb4 /* Apterture Size (0x00) */
+#define APSIZE  0xb4 /* Aperture Size (0x00) */
 #define ATTBASE 0xb8 /* Aperture Translation Table Base (0x00000000) */
 
 #endif /* NORTHBRIDGE_INTEL_I82830_I82830_H */

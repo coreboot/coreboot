@@ -1432,7 +1432,7 @@ static struct dimm_size sdram_get_dimm_size(struct sys_info *sysinfo, u16 dimmno
 	/* Don't die here, I have not come across any of these to test what
 	 * actually happens.
 	 */
-	printk(BIOS_ERR, "Assymetric DIMMs are not supported by this chipset\n");
+	printk(BIOS_ERR, "Asymmetric DIMMs are not supported by this chipset\n");
 
 	sz.side2 -= (rows & 0x0f);		/* Subtract out rows on side 1 */
 	sz.side2 += ((rows >> 4) & 0x0f);	/* Add in rows on side 2 */
@@ -1931,8 +1931,8 @@ static void sdram_set_channel_mode(struct sys_info *sysinfo)
 		reg32 |= (1 << 2);
 	} else if (sdram_capabilities_dual_channel() && sysinfo->dimm[2] !=
 			SYSINFO_DIMM_NOT_POPULATED) {
-		/* Dual Channel Assymetric */
-		printk(BIOS_DEBUG, "Dual Channel Assymetric.\n");
+		/* Dual Channel Asymmetric */
+		printk(BIOS_DEBUG, "Dual Channel Asymmetric.\n");
 		reg32 |= (1 << 0);
 	} else {
 		/* All bits 0 means Single Channel 0 operation */
@@ -2365,7 +2365,7 @@ static void sdram_enhanced_addressing_mode(struct sys_info *sysinfo)
 
 	if (sdram_capabilities_enhanced_addressing_xor()) {
 		if (!sysinfo->interleaved) {
-			/* Single Channel & Dual Channel Assymetric */
+			/* Single Channel & Dual Channel Asymmetric */
 			if (chan0_populated) {
 				if (chan0_dualsided) {
 					chan0 = EA_SINGLECHANNEL_XOR_BANK_RANK_MODE;
@@ -2396,7 +2396,7 @@ static void sdram_enhanced_addressing_mode(struct sys_info *sysinfo)
 		}
 	} else {
 		if (!sysinfo->interleaved) {
-			/* Single Channel & Dual Channel Assymetric */
+			/* Single Channel & Dual Channel Asymmetric */
 			if (chan0_populated) {
 				if (chan0_dualsided) {
 					chan0 = EA_SINGLECHANNEL_BANK_RANK_MODE;

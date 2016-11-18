@@ -198,7 +198,7 @@ void get_gmch_info(sysinfo_t *sysinfo)
 /*
  * Detect if the system went through an interrupted RAM init or is incon-
  * sistent. If so, initiate a cold reboot. Otherwise mark the system to be
- * in RAM init, so this function would detect it on an erreneous reboot.
+ * in RAM init, so this function would detect it on an erroneous reboot.
  */
 void enter_raminit_or_reset(void)
 {

@@ -204,7 +204,7 @@ static void do_ram_command(u8 command)
 }
 
 /*-----------------------------------------------------------------------------
-DIMM-independant configuration functions.
+DIMM-independent configuration functions.
 -----------------------------------------------------------------------------*/
 
 /*
@@ -244,14 +244,14 @@ static void spd_set_dram_size(void)
 
 			/* This array is provided in raminit.h, because it got
 			 * extremely messy. The above way is cleaner, but
-			 * doesn't support any asymetrical/odd configurations.
+			 * doesn't support any asymmetrical/odd configurations.
 			 */
 			dimm_size = translate_spd_to_i82810[dimm_size];
 
 			printk(BIOS_DEBUG, "After translation, dimm_size is %d\n", dimm_size);
 
 			/* If the DIMM is dual-sided, the DRP value is +2 */
-			/* TODO: Figure out asymetrical configurations. */
+			/* TODO: Figure out asymmetrical configurations. */
 			if ((smbus_read_byte(DIMM0 + i, 127) | 0xf) ==
 			    0xff) {
 				printk(BIOS_DEBUG, "DIMM is dual-sided\n");

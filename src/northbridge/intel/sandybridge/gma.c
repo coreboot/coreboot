@@ -249,7 +249,7 @@ static const struct gt_powermeter ivb_pm_gt2_35w[] = {
 
 /* some vga option roms are used for several chipsets but they only have one
  * PCI ID in their header. If we encounter such an option rom, we need to do
- * the mapping ourselfes
+ * the mapping ourselves
  */
 
 u32 map_oprom_vendev(u32 vendev)

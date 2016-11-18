@@ -261,7 +261,7 @@ struct dimminfo {
 	unsigned int	tRP;
 	unsigned int	tRCD;
 	unsigned int	tRAS;
-	unsigned int	rank_capacity_mb; /* per rank in Mega Bytes */
+	unsigned int	rank_capacity_mb; /* per rank in Megabytes */
 	u8		spd_data[256];
 };
 

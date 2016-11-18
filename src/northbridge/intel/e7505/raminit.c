@@ -124,7 +124,7 @@ static const uint8_t dual_channel_parameters[] = {
 	/* (DRAM Read Timing Control, if similar to 855PM?)
 	 * 0x80 - 0x81   documented differently for e7505
 	 * This register has something to do with CAS latencies,
-	 * possibily this is the real chipset control.
+	 * possibly this is the real chipset control.
 	 * At 0x00 CAS latency 1.5 works.
 	 * At 0x06 CAS latency 2.5 works.
 	 * At 0x01 CAS latency 2.0 works.
@@ -755,7 +755,7 @@ static void set_ram_mode(uint16_t jedec_mode_bits)
 }
 
 /*-----------------------------------------------------------------------------
-DIMM-independant configuration functions:
+DIMM-independent configuration functions:
 -----------------------------------------------------------------------------*/
 
 /**
@@ -1406,7 +1406,7 @@ static void configure_e7501_dram_controller_mode(const struct
 				  SPD_CMD_SIGNAL_INPUT_HOLD_TIME);
 		die_on_spd_error(value);
 		if (value >= 0xa0) {	/* At 133MHz this constant should be 0x75 */
-			controller_mode &= ~(1 << 16);	/* Use two clock cyles instead of one */
+			controller_mode &= ~(1 << 16);	/* Use two clock cycles instead of one */
 		}
 #endif
 
@@ -1498,7 +1498,7 @@ static void enable_e7501_clocks(uint8_t dimm_mask)
 	pci_write_config8(MCHDEV, CKDIS, clock_disable);
 }
 
-/* DIMM-dedependent configuration functions */
+/* DIMM-dependent configuration functions */
 
 /**
  * DDR Receive FIFO RE-Sync (?)

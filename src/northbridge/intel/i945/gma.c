@@ -612,7 +612,7 @@ static void gma_func0_init(struct device *dev)
 			);
 
 		int err;
-		/* probe if VGA is connected and alway run */
+		/* probe if VGA is connected and always run */
 		/* VGA init if no LVDS is connected */
 		if (!probe_edid(mmiobase, 3) || probe_edid(mmiobase, 2))
 			err = intel_gma_init_vga(conf,
@@ -640,7 +640,7 @@ static void gma_func0_init(struct device *dev)
 }
 
 /* This doesn't reclaim stolen UMA memory, but IGD could still
-   be reenabled later. */
+   be re-enabled later. */
 static void gma_func0_disable(struct device *dev)
 {
 	struct device *dev_host = dev_find_slot(0, PCI_DEVFN(0x0, 0));
@@ -660,7 +660,7 @@ static void gma_func1_init(struct device *dev)
 	u32 reg32;
 	u8 val;
 
-	/* IGD needs to be Bus Master, also enable IO accesss */
+	/* IGD needs to be Bus Master, also enable IO access */
 	reg32 = pci_read_config32(dev, PCI_COMMAND);
 	pci_write_config32(dev, PCI_COMMAND, reg32 |
 			PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY | PCI_COMMAND_IO);

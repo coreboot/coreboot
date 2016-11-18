@@ -18,8 +18,6 @@
 
 #include <commonlib/cbfs_serialized.h>
 #include <commonlib/region.h>
-/* TODO: remove me! This is for vboot_handoff.c's benefit. */
-#define NEED_VB20_INTERNALS
 #include <vb2_api.h>
 
 /* Object representing cbfs files. */

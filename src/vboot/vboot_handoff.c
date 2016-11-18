@@ -13,11 +13,18 @@
  * GNU General Public License for more details.
  */
 
+/* This needs to be pulled in first so that the handoff code below and
+ * peek into the vb2 data structures. Additionally, vboot doesn't currently
+ * include what it uses in its own headers. Provide the types it's after.
+ * TODO: fix this necessity. */
+#define NEED_VB20_INTERNALS
+#include <stddef.h>
+#include <stdint.h>
+#include <vb2_api.h>
+
 #include <arch/stages.h>
 #include <assert.h>
 #include <bootmode.h>
-#include <stdint.h>
-#include <stddef.h>
 #include <string.h>
 #include <cbfs.h>
 #include <cbmem.h>
@@ -26,8 +33,6 @@
 #include <fmap.h>
 #include <stdlib.h>
 #include <timestamp.h>
-#define NEED_VB20_INTERNALS  /* TODO: remove me! */
-#include <vb2_api.h>
 #include <vboot_struct.h>
 #include <vboot/vbnv.h>
 #include <vboot/misc.h>

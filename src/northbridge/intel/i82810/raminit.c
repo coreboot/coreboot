@@ -240,22 +240,28 @@ static void spd_set_dram_size(void)
 				printk
 				    (BIOS_ERR, "Attempting to treat as 128MB DIMM\n");
 				dimm_size = 32;
+			} else if (dimm_size < 0) {
+				/* On smbus error, set DIMM size to 0 */
+				printk(BIOS_ERR, "Error reading DIMM size\n");
+				dimm_size = 0;
 			}
 
-			/* This array is provided in raminit.h, because it got
-			 * extremely messy. The above way is cleaner, but
-			 * doesn't support any asymmetrical/odd configurations.
-			 */
-			dimm_size = translate_spd_to_i82810[dimm_size];
+			if (dimm_size > 0) {
+				/* This array is provided in raminit.h, because it got
+				 * extremely messy. The above way is cleaner, but
+				 * doesn't support any asymmetrical/odd configurations.
+				 */
+				dimm_size = translate_spd_to_i82810[dimm_size];
 
-			printk(BIOS_DEBUG, "After translation, dimm_size is %d\n", dimm_size);
+				printk(BIOS_DEBUG, "After translation, dimm_size is %d\n",
+					dimm_size);
 
-			/* If the DIMM is dual-sided, the DRP value is +2 */
-			/* TODO: Figure out asymmetrical configurations. */
-			if ((smbus_read_byte(DIMM0 + i, 127) | 0xf) ==
-			    0xff) {
-				printk(BIOS_DEBUG, "DIMM is dual-sided\n");
-				dimm_size += 2;
+				/* If the DIMM is dual-sided, the DRP value is +2 */
+				/* TODO: Figure out asymmetrical configurations. */
+				if ((smbus_read_byte(DIMM0 + i, 127) | 0xf) == 0xff) {
+					printk(BIOS_DEBUG, "DIMM is dual-sided\n");
+					dimm_size += 2;
+				}
 			}
 		} else {
 			printk(BIOS_DEBUG, "No DIMM found in slot %d\n", i);

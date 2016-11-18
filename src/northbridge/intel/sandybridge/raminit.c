@@ -4180,13 +4180,13 @@ static int try_init_dram_ddr3(ramctr_timing *ctrl, int fast_boot,
 	return 0;
 }
 
-void init_dram_ddr3(spd_raw_data *spds, int mobile, int min_tck,
-	int s3resume)
+static void init_dram_ddr3(int mobile, int min_tck, int s3resume)
 {
 	int me_uma_size;
 	int cbmem_was_inited;
 	ramctr_timing ctrl;
 	int fast_boot;
+	spd_raw_data spds[4];
 	struct mrc_data_container *mrc_cache;
 	ramctr_timing *ctrl_cached;
 	int err;
@@ -4234,6 +4234,9 @@ void init_dram_ddr3(spd_raw_data *spds, int mobile, int min_tck,
 	} else {
 		ctrl_cached = (ramctr_timing *)mrc_cache->mrc_data;
 	}
+
+	memset(spds, 0, sizeof(spds));
+	mainboard_get_spd(spds);
 
 	/* verify MRC cache for fast boot */
 	if (ctrl_cached) {
@@ -4412,14 +4415,9 @@ static unsigned int get_mmio_size(void)
 
 void perform_raminit(int s3resume)
 {
-	spd_raw_data spd[4];
-
 	post_code(0x3a);
-
-	memset (spd, 0, sizeof(spd));
-	mainboard_get_spd(spd);
 
 	timestamp_add_now(TS_BEFORE_INITRAM);
 
-	init_dram_ddr3(spd, 1, get_mem_min_tck(), s3resume);
+	init_dram_ddr3(1, get_mem_min_tck(), s3resume);
 }

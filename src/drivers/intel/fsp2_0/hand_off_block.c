@@ -106,6 +106,8 @@ static void save_hob_list(int is_recovery)
 {
 	uint32_t *cbmem_loc;
 	cbmem_loc = cbmem_add(CBMEM_ID_FSP_RUNTIME, sizeof(*cbmem_loc));
+	if (cbmem_loc == NULL)
+		die("Error: Could not add cbmem area for hob list.\n");
 	*cbmem_loc = (uintptr_t)fsp_get_hob_list();
 }
 

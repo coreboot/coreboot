@@ -65,9 +65,9 @@ const struct southbridge_usb_port mainboard_usb_ports[] = {
 	{ 1, 1, -1 }, /* P13: camera, no OC */
 };
 
-void mainboard_get_spd(spd_raw_data *spd) {
-	read_spd (&spd[0], 0x50);
-	read_spd (&spd[2], 0x51);
+void mainboard_get_spd(spd_raw_data *spd, bool id_only) {
+	read_spd (&spd[0], 0x50, id_only);
+	read_spd (&spd[2], 0x51, id_only);
 }
 
 void mainboard_early_init(int s3resume) {

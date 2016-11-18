@@ -209,7 +209,7 @@ const struct southbridge_usb_port mainboard_usb_ports[] = {
 	{ 0, 0, -1 }, /* P13: Empty */
 };
 
-void mainboard_get_spd(spd_raw_data *spd) {
+void mainboard_get_spd(spd_raw_data *spd, bool id_only) {
 	memcpy(&spd[0], locate_spd(), 128);
 }
 

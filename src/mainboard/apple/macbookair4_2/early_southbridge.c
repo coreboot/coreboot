@@ -72,7 +72,7 @@ void mainboard_config_superio(void)
 {
 }
 
-void mainboard_get_spd(spd_raw_data *spd)
+void mainboard_get_spd(spd_raw_data *spd, bool id_only)
 {
 	void *spd_file;
 	size_t spd_file_len = 0;

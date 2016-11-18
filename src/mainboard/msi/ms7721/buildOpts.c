@@ -326,11 +326,11 @@ CONST AP_MTRR_SETTINGS ROMDATA TrinityApMtrrSettingsList[] =
 #define DFLT_FCH_GPP_PORT3_HOTPLUG          FALSE
 //#define BLDCFG_IR_PIN_CONTROL	0x33
 //#define FCH_NO_XHCI_SUPPORT			FALSE
-GPIO_CONTROL   f2a85_m_gpio[] = {
+GPIO_CONTROL   ms7721_m_gpio[] = {
 //	{183, Function1, PullUpB},
 	{-1}
 };
-#define BLDCFG_FCH_GPIO_CONTROL_LIST           (&f2a85_m_gpio[0])
+#define BLDCFG_FCH_GPIO_CONTROL_LIST           (&ms7721_m_gpio[0])
 
 // The following definitions specify the default values for various parameters in which there are
 // no clearly defined defaults to be used in the common file.  The values below are based on product

@@ -123,25 +123,8 @@ static int spi_flash_cmd_read_array(struct spi_slave *spi, u8 *cmd,
 				    size_t cmd_len, u32 offset,
 				    size_t len, void *data)
 {
-	while (len) {
-		size_t transfer_size;
-
-		if (spi->max_transfer_size)
-			transfer_size = min(len, spi->max_transfer_size);
-		else
-			transfer_size = len;
-
-		spi_flash_addr(offset, cmd);
-
-		if (spi_flash_cmd_read(spi, cmd, cmd_len, data, transfer_size))
-			break;
-
-		offset += transfer_size;
-		data = (void *)((uintptr_t)data + transfer_size);
-		len -= transfer_size;
-	}
-
-	return len != 0;
+	spi_flash_addr(offset, cmd);
+	return spi_flash_cmd_read(spi, cmd, cmd_len, data, len);
 }
 
 int spi_flash_cmd_read_fast(const struct spi_flash *flash, u32 offset,

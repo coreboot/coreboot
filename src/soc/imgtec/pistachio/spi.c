@@ -445,7 +445,6 @@ struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs)
 	img_slave->base = base;
 	slave->bus = bus;
 	slave->cs = cs;
-	slave->max_transfer_size = IMGTEC_SPI_MAX_TRANSFER_SIZE;
 
 	device_parameters->bitrate = 64;
 	device_parameters->cs_setup = 0;
@@ -509,22 +508,12 @@ void spi_release_bus(struct spi_slave *slave)
 }
 
 /* SPI transfer */
-int spi_xfer(struct spi_slave *slave, const void *dout, unsigned int bytesout,
-		void *din, unsigned int bytesin)
+static int do_spi_xfer(struct spi_slave *slave, const void *dout,
+		       unsigned int bytesout, void *din, unsigned int bytesin)
 {
 	struct spim_buffer	buff_0;
 	struct spim_buffer	buff_1;
 
-	if (!slave) {
-		printk(BIOS_ERR, "%s: Error: slave was not set up.\n",
-				__func__);
-		return -SPIM_API_NOT_INITIALISED;
-	}
-	if (!dout && !din) {
-		printk(BIOS_ERR, "%s: Error: both buffers are NULL.\n",
-				__func__);
-			return -SPIM_INVALID_TRANSFER_DESC;
-	}
 	/* If we only have a read or a write operation
 	 * the parameters for it will be put in the first buffer
 	 */
@@ -541,6 +530,48 @@ int spi_xfer(struct spi_slave *slave, const void *dout, unsigned int bytesout,
 		buff_1.inter_byte_delay = 0;
 	}
 	return spim_io(slave, &buff_0, (dout && din) ? &buff_1 : NULL);
+}
+
+int spi_xfer(struct spi_slave *slave, const void *dout, unsigned int bytesout,
+	     void *din, unsigned int bytesin)
+{
+	unsigned int in_sz, out_sz;
+	int ret;
+
+	if (!slave) {
+		printk(BIOS_ERR, "%s: Error: slave was not set up.\n",
+				__func__);
+		return -SPIM_API_NOT_INITIALISED;
+	}
+	if (!dout && !din) {
+		printk(BIOS_ERR, "%s: Error: both buffers are NULL.\n",
+				__func__);
+			return -SPIM_INVALID_TRANSFER_DESC;
+	}
+
+	while (bytesin || bytesout) {
+		in_sz = min(IMGTEC_SPI_MAX_TRANSFER_SIZE, bytesin);
+		out_sz = min(IMGTEC_SPI_MAX_TRANSFER_SIZE, bytesout);
+
+		ret = do_spi_xfer(slave, dout, out_sz, din, in_sz);
+		if (ret)
+			return ret;
+
+		bytesin -= in_sz;
+		bytesout -= out_sz;
+
+		if (bytesin)
+			din += in_sz;
+		else
+			din = NULL;
+
+		if (bytesout)
+			dout += out_sz;
+		else
+			dout = NULL;
+	}
+
+	return SPIM_OK;
 }
 
 unsigned int spi_crop_chunk(unsigned int cmd_len, unsigned int buf_len)

@@ -31,15 +31,10 @@
  *
  *   bus:	ID of the bus that the slave is attached to.
  *   cs:	ID of the chip select connected to the slave.
- *   max_transfer_size: maximum amount of bytes which can be sent in a single
- *              read or write transaction, usually this is a controller
- *              property, kept in the slave structure for convenience. Zero in
- *              this field means 'unlimited'.
  */
 struct spi_slave {
 	unsigned int	bus;
 	unsigned int	cs;
-	unsigned int	max_transfer_size;
 	int force_programmer_specific;
 	struct spi_flash * (*programmer_specific_probe) (struct spi_slave *spi);
 };

@@ -532,8 +532,7 @@ static int lpss_i2c_gen_config_rise_fall_time(struct lpss_i2c_regs *regs,
 	soc = get_soc_descriptor(ic_clk);
 
 	if (bus == NULL) {
-		printk(BIOS_ERR, "lpss_i2c: invalid bus speed %d\n",
-			config->speed);
+		printk(BIOS_ERR, "lpss_i2c: invalid bus speed %d\n", speed);
 		return -1;
 	}
 

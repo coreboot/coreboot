@@ -83,10 +83,11 @@ config SOC_INTEL_COMMON_LPSS_I2C_DEBUG
 	  when debugging I2C drivers.
 
 config MMA
-	bool "enable MMA (Memory Margin Analysis) support"
+	bool "Enable MMA (Memory Margin Analysis) support for Intel Core"
 	default n
+	depends on PLATFORM_USES_FSP2_0 || PLATFORM_USES_FSP1_1
 	help
-	  Set this option to y to enable MMA (Memory Margin Analysis) support
+	 Set this option to y to enable MMA (Memory Margin Analysis) support
 
 config MMA_BLOBS_PATH
 	string "Path to MMA blobs"

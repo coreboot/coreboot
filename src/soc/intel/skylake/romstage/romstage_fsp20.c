@@ -165,6 +165,24 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	mainboard_memory_init_params(mupd);
 }
 
+void soc_update_memory_params_for_mma(FSP_M_CONFIG *memory_cfg,
+		struct mma_config_param *mma_cfg)
+{
+	/* Boot media is memory mapped for Skylake and Kabylake (SPI). */
+	assert(IS_ENABLED(CONFIG_BOOT_DEVICE_MEMORY_MAPPED));
+
+	memory_cfg->MmaTestContentPtr =
+			(uintptr_t) rdev_mmap_full(&mma_cfg->test_content);
+	memory_cfg->MmaTestContentSize =
+			region_device_sz(&mma_cfg->test_content);
+	memory_cfg->MmaTestConfigPtr =
+			(uintptr_t) rdev_mmap_full(&mma_cfg->test_param);
+	memory_cfg->MmaTestConfigSize =
+			region_device_sz(&mma_cfg->test_param);
+	memory_cfg->MrcFastBoot = 0x00;
+	memory_cfg->SaGv = 0x02;
+}
+
 __attribute__((weak)) void mainboard_memory_init_params(FSPM_UPD *mupd)
 {
 	/* Do nothing */

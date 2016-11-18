@@ -21,6 +21,7 @@
 #include <arch/cbfs.h>
 #include <arch/stages.h>
 #include <arch/early_variables.h>
+#include <assert.h>
 #include <cbmem.h>
 #include <chip.h>
 #include <console/console.h>
@@ -95,6 +96,24 @@ void soc_memory_init_params(struct romstage_params *params,
 		upd->FspCarBase = CONFIG_DCACHE_RAM_BASE;
 		upd->FspCarSize = CONFIG_DCACHE_RAM_SIZE;
 	}
+}
+
+void soc_update_memory_params_for_mma(MEMORY_INIT_UPD *memory_cfg,
+		struct mma_config_param *mma_cfg)
+{
+	/* Boot media is memory mapped for Skylake and Kabylake (SPI). */
+	assert(IS_ENABLED(CONFIG_BOOT_DEVICE_MEMORY_MAPPED));
+
+	memory_cfg->MmaTestContentPtr =
+			(uintptr_t) rdev_mmap_full(&mma_cfg->test_content);
+	memory_cfg->MmaTestContentSize =
+			region_device_sz(&mma_cfg->test_content);
+	memory_cfg->MmaTestConfigPtr =
+			(uintptr_t) rdev_mmap_full(&mma_cfg->test_param);
+	memory_cfg->MmaTestConfigSize =
+			region_device_sz(&mma_cfg->test_param);
+	memory_cfg->MrcFastBoot = 0x00;
+	memory_cfg->SaGv = 0x02;
 }
 
 void soc_display_memory_init_params(const MEMORY_INIT_UPD *old,

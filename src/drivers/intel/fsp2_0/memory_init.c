@@ -313,6 +313,9 @@ static void do_fsp_memory_init(struct fsp_header *hdr, bool s3wake,
 	/* Give SoC and mainboard a chance to update the UPD */
 	platform_fsp_memory_init_params_cb(&fspm_upd, hdr->fsp_revision);
 
+	if (IS_ENABLED(CONFIG_MMA))
+		setup_mma(&fspm_upd.FspmConfig);
+
 	/* Call FspMemoryInit */
 	fsp_raminit = (void *)(hdr->image_base + hdr->memory_init_entry_offset);
 	fsp_debug_before_memory_init(fsp_raminit, upd, &fspm_upd);

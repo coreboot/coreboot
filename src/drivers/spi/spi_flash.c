@@ -296,45 +296,38 @@ static struct {
 };
 #define IDCODE_LEN (IDCODE_CONT_LEN + IDCODE_PART_LEN)
 
-
-/* Public API implementations. */
-struct spi_flash *spi_flash_probe(unsigned int bus, unsigned int cs)
+struct spi_flash *
+__attribute__((weak)) spi_flash_programmer_probe(struct spi_slave *spi,
+						 int force)
 {
-	struct spi_slave *spi;
-	struct spi_flash *flash = NULL;
+	/* Default weak implementation. Do nothing. */
+	return NULL;
+}
+
+static struct spi_flash *__spi_flash_probe(struct spi_slave *spi)
+{
 	int ret, i, shift;
 	u8 idcode[IDCODE_LEN], *idp;
-
-	spi = spi_setup_slave(bus, cs);
-	if (!spi) {
-		printk(BIOS_WARNING, "SF: Failed to set up slave\n");
-		return NULL;
-	}
-
-	if (spi->force_programmer_specific && spi->programmer_specific_probe) {
-		flash = spi->programmer_specific_probe (spi);
-		if (!flash)
-			goto err_read_id;
-		goto flash_detected;
-	}
+	struct spi_flash *flash = NULL;
 
 	/* Read the ID codes */
 	ret = spi_flash_cmd(spi, CMD_READ_ID, idcode, sizeof(idcode));
 	if (ret)
-		goto err_read_id;
+		return NULL;
 
-#if CONFIG_DEBUG_SPI_FLASH
-	printk(BIOS_SPEW, "SF: Got idcode: ");
-	for (i = 0; i < sizeof(idcode); i++)
-		printk(BIOS_SPEW, "%02x ", idcode[i]);
-	printk(BIOS_SPEW, "\n");
-#endif
+	if (IS_ENABLED(CONFIG_DEBUG_SPI_FLASH)) {
+		printk(BIOS_SPEW, "SF: Got idcode: ");
+		for (i = 0; i < sizeof(idcode); i++)
+			printk(BIOS_SPEW, "%02x ", idcode[i]);
+		printk(BIOS_SPEW, "\n");
+	}
 
 	/* count the number of continuation bytes */
-	for (shift = 0, idp = idcode;
-	     shift < IDCODE_CONT_LEN && *idp == 0x7f;
+	for (shift = 0, idp = idcode; shift < IDCODE_CONT_LEN && *idp == 0x7f;
 	     ++shift, ++idp)
 		continue;
+
+	printk(BIOS_INFO, "Manufacturer: %02x\n", *idp);
 
 	/* search the table for matches in shift and id */
 	for (i = 0; i < ARRAY_SIZE(flashes); ++i)
@@ -345,15 +338,37 @@ struct spi_flash *spi_flash_probe(unsigned int bus, unsigned int cs)
 				break;
 		}
 
-	if (!flash && spi->programmer_specific_probe) {
-		flash = spi->programmer_specific_probe (spi);
-	}
-	if (!flash) {
-		printk(BIOS_WARNING, "SF: Unsupported manufacturer %02x\n", *idp);
-		goto err_manufacturer_probe;
+	return flash;
+}
+
+struct spi_flash *spi_flash_probe(unsigned int bus, unsigned int cs)
+{
+	struct spi_slave *spi;
+	struct spi_flash *flash;
+
+	spi = spi_setup_slave(bus, cs);
+	if (!spi) {
+		printk(BIOS_WARNING, "SF: Failed to set up slave\n");
+		return NULL;
 	}
 
-flash_detected:
+	/* Try special programmer probe if any (without force). */
+	flash = spi_flash_programmer_probe(spi, 0);
+
+	/* If flash is not found, try generic spi flash probe. */
+	if (!flash)
+		flash = __spi_flash_probe(spi);
+
+	/* If flash is not yet found, force special programmer probe if any. */
+	if (!flash)
+		flash = spi_flash_programmer_probe(spi, 1);
+
+	/* Give up -- nothing more to try if flash is not found. */
+	if (!flash) {
+		printk(BIOS_WARNING, "SF: Unsupported manufacturer!\n");
+		return NULL;
+	}
+
 	printk(BIOS_INFO, "SF: Detected %s with sector size 0x%x, total 0x%x\n",
 			flash->name, flash->sector_size, flash->size);
 
@@ -366,10 +381,6 @@ flash_detected:
 		spi_flash_dev = flash;
 
 	return flash;
-
-err_manufacturer_probe:
-err_read_id:
-	return NULL;
 }
 
 int spi_flash_read(const struct spi_flash *flash, u32 offset, size_t len,

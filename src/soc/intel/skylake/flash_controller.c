@@ -345,7 +345,7 @@ int pch_hwseq_read_status(const struct spi_flash *flash, u8 *reg)
 static struct spi_slave boot_spi CAR_GLOBAL;
 static struct spi_flash boot_flash CAR_GLOBAL;
 
-static struct spi_flash *spi_flash_hwseq_probe(struct spi_slave *spi)
+struct spi_flash *spi_flash_programmer_probe(struct spi_slave *spi, int force)
 {
 	struct spi_flash *flash;
 
@@ -380,8 +380,6 @@ struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs)
 
 	slave->bus = bus;
 	slave->cs = cs;
-	slave->force_programmer_specific = 1;
-	slave->programmer_specific_probe = spi_flash_hwseq_probe;
 
 	return slave;
 }

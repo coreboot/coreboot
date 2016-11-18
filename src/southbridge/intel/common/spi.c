@@ -66,7 +66,6 @@
 #endif /* !__SMM__ */
 
 static int spi_is_multichip(void);
-static struct spi_flash *spi_flash_hwseq(struct spi_slave *spi);
 
 typedef struct spi_slave ich_spi_slave;
 
@@ -299,8 +298,6 @@ struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs)
 
 	slave->bus = bus;
 	slave->cs = cs;
-	slave->force_programmer_specific = spi_is_multichip ();
-	slave->programmer_specific_probe = spi_flash_hwseq;
 	return slave;
 }
 
@@ -920,10 +917,18 @@ static int ich_hwseq_write(const struct spi_flash *flash, u32 addr, size_t len,
 }
 
 
-static struct spi_flash *spi_flash_hwseq(struct spi_slave *spi)
+struct spi_flash *spi_flash_programmer_probe(struct spi_slave *spi, int force)
 {
 	struct spi_flash *flash = NULL;
 	uint32_t flcomp;
+
+	/*
+	 * Perform SPI flash probing only if:
+	 * 1. spi_is_multichip returns 1 or
+	 * 2. Specialized probing is forced by SPI flash driver.
+	 */
+	if (!spi_is_multichip() && !force)
+		return NULL;
 
 	flash = malloc(sizeof(*flash));
 	if (!flash) {

@@ -20,7 +20,7 @@
 #include <device/dram/ddr3.h>
 
 /* The order is ch0dimmA, ch0dimmB, ch1dimmA, ch1dimmB.  */
-void read_spd(spd_raw_data *spd, u8 addr);
-void mainboard_get_spd(spd_raw_data *spd);
+void read_spd(spd_raw_data *spd, u8 addr, bool id_only);
+void mainboard_get_spd(spd_raw_data *spd, bool id_only);
 
 #endif				/* RAMINIT_H */

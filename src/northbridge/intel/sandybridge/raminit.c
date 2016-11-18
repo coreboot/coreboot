@@ -361,11 +361,16 @@ static int verify_crc16_spds_ddr3(spd_raw_data *spd, ramctr_timing *ctrl)
 	return match;
 }
 
-void read_spd(spd_raw_data * spd, u8 addr)
+void read_spd(spd_raw_data * spd, u8 addr, bool id_only)
 {
 	int j;
-	for (j = 0; j < 256; j++)
-		(*spd)[j] = do_smbus_read_byte(SMBUS_IO_BASE, addr, j);
+	if (id_only) {
+		for (j = 117; j < 128; j++)
+			(*spd)[j] = do_smbus_read_byte(SMBUS_IO_BASE, addr, j);
+	} else {
+		for (j = 0; j < 256; j++)
+			(*spd)[j] = do_smbus_read_byte(SMBUS_IO_BASE, addr, j);
+	}
 }
 
 static void dram_find_spds_ddr3(spd_raw_data *spd, ramctr_timing *ctrl)
@@ -4235,14 +4240,12 @@ static void init_dram_ddr3(int mobile, int min_tck, int s3resume)
 		ctrl_cached = (ramctr_timing *)mrc_cache->mrc_data;
 	}
 
-
-	if (!s3resume) {
-		memset(spds, 0, sizeof(spds));
-		mainboard_get_spd(spds);
-	}
-
 	/* verify MRC cache for fast boot */
 	if (!s3resume && ctrl_cached) {
+		/* Load SPD unique information data. */
+		memset(spds, 0, sizeof(spds));
+		mainboard_get_spd(spds, 1);
+
 		/* check SPD CRC16 to make sure the DIMMs haven't been replaced */
 		fast_boot = verify_crc16_spds_ddr3(spds, ctrl_cached);
 		if (!fast_boot)
@@ -4273,6 +4276,8 @@ static void init_dram_ddr3(int mobile, int min_tck, int s3resume)
 		ctrl.tCK = min_tck;
 
 		/* Get DDR3 SPD data */
+		memset(spds, 0, sizeof(spds));
+		mainboard_get_spd(spds, 0);
 		dram_find_spds_ddr3(spds, &ctrl);
 
 		err = try_init_dram_ddr3(&ctrl, fast_boot, s3resume, me_uma_size);

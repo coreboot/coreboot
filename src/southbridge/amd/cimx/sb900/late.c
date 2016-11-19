@@ -135,7 +135,7 @@ static struct device_operations lpc_ops = {
 static const struct pci_driver lpc_driver __pci_driver = {
 	.ops = &lpc_ops,
 	.vendor = PCI_VENDOR_ID_AMD,
-	.device = PCI_DEVICE_ID_ATI_SB900_LPC,
+	.device = PCI_DEVICE_ID_AMD_SB900_LPC,
 };
 
 
@@ -170,19 +170,19 @@ static const struct pci_driver sata_driver __pci_driver = {
 	.ops = &sata_ops,
 	.vendor = PCI_VENDOR_ID_AMD,
 #if (CONFIG_SATA_CONTROLLER_MODE == 0x0 || CONFIG_SATA_CONTROLLER_MODE == 0x3)
-	.device = PCI_DEVICE_ID_ATI_SB900_SATA,	//SATA IDE Mode
+	.device = PCI_DEVICE_ID_AMD_SB900_SATA,	//SATA IDE Mode
 #endif
 #if (CONFIG_SATA_CONTROLLER_MODE == 0x2 || CONFIG_SATA_CONTROLLER_MODE == 0x4)
-	.device = PCI_DEVICE_ID_ATI_SB900_SATA_AHCI,	//SATA AHCI Mode
+	.device = PCI_DEVICE_ID_AMD_SB900_SATA_AHCI,	//SATA AHCI Mode
 #endif
 #if (CONFIG_SATA_CONTROLLER_MODE == 0x5 || CONFIG_SATA_CONTROLLER_MODE == 0x6)
-	.device = PCI_DEVICE_ID_ATI_SB900_SATA_AMDAHCI,	//SATA AMDAHCI Mode
+	.device = PCI_DEVICE_ID_AMD_SB900_SATA_AMDAHCI,	//SATA AMDAHCI Mode
 #endif
 #if (CONFIG_SATA_CONTROLLER_MODE == 0x1 && INCHIP_SATA_FORCE_RAID5 == 0x0)
-	.device = PCI_DEVICE_ID_ATI_SB900_SATA_RAID5,	//SATA RAID5 Mode
+	.device = PCI_DEVICE_ID_AMD_SB900_SATA_RAID5,	//SATA RAID5 Mode
 #endif
 #if (CONFIG_SATA_CONTROLLER_MODE == 0x1 && INCHIP_SATA_FORCE_RAID5 == 0x1)
-	.device = PCI_DEVICE_ID_ATI_SB900_SATA_RAID,	//SATA RAID Mode
+	.device = PCI_DEVICE_ID_AMD_SB900_SATA_RAID,	//SATA RAID Mode
 #endif
 };
 
@@ -209,25 +209,25 @@ static struct device_operations usb_ops = {
 static const struct pci_driver usb_xhci123_driver __pci_driver = {
 	.ops = &usb_ops,
 	.vendor = PCI_VENDOR_ID_AMD,
-	.device = PCI_DEVICE_ID_ATI_SB900_USB_16_0, /* XHCI-USB1, XHCI-USB2 */
+	.device = PCI_DEVICE_ID_AMD_SB900_USB_16_0, /* XHCI-USB1, XHCI-USB2 */
 };
 
 static const struct pci_driver usb_ohci123_driver __pci_driver = {
 	.ops = &usb_ops,
 	.vendor = PCI_VENDOR_ID_AMD,
-	.device = PCI_DEVICE_ID_ATI_SB900_USB_18_0, /* OHCI-USB1, OHCI-USB2, OHCI-USB3 */
+	.device = PCI_DEVICE_ID_AMD_SB900_USB_18_0, /* OHCI-USB1, OHCI-USB2, OHCI-USB3 */
 };
 
 static const struct pci_driver usb_ehci123_driver __pci_driver = {
 	.ops = &usb_ops,
 	.vendor = PCI_VENDOR_ID_AMD,
-	.device = PCI_DEVICE_ID_ATI_SB900_USB_18_2, /* EHCI-USB1, EHCI-USB2, EHCI-USB3 */
+	.device = PCI_DEVICE_ID_AMD_SB900_USB_18_2, /* EHCI-USB1, EHCI-USB2, EHCI-USB3 */
 };
 
 static const struct pci_driver usb_ohci4_driver __pci_driver = {
 	.ops = &usb_ops,
 	.vendor = PCI_VENDOR_ID_AMD,
-	.device = PCI_DEVICE_ID_ATI_SB900_USB_20_5, /* OHCI-USB4 */
+	.device = PCI_DEVICE_ID_AMD_SB900_USB_20_5, /* OHCI-USB4 */
 };
 
 
@@ -250,7 +250,7 @@ static struct device_operations azalia_ops = {
 static const struct pci_driver azalia_driver __pci_driver = {
 	.ops = &azalia_ops,
 	.vendor = PCI_VENDOR_ID_AMD,
-	.device = PCI_DEVICE_ID_ATI_SB900_HDA,
+	.device = PCI_DEVICE_ID_AMD_SB900_HDA,
 };
 
 
@@ -274,7 +274,7 @@ static struct device_operations gec_ops = {
 static const struct pci_driver gec_driver __pci_driver = {
 	.ops = &gec_ops,
 	.vendor = PCI_VENDOR_ID_AMD,
-	.device = PCI_DEVICE_ID_ATI_SB900_GEC,
+	.device = PCI_DEVICE_ID_AMD_SB900_GEC,
 };
 
 
@@ -298,7 +298,7 @@ static struct device_operations pci_ops = {
 static const struct pci_driver pci_driver __pci_driver = {
 	.ops = &pci_ops,
 	.vendor = PCI_VENDOR_ID_AMD,
-	.device = PCI_DEVICE_ID_ATI_SB900_PCI,
+	.device = PCI_DEVICE_ID_AMD_SB900_PCI,
 };
 
 
@@ -317,28 +317,28 @@ struct device_operations bridge_ops = {
 static const struct pci_driver PORTA_driver __pci_driver = {
 	.ops = &bridge_ops,
 	.vendor = PCI_VENDOR_ID_AMD,
-	.device = PCI_DEVICE_ID_ATI_SB900_PCIEA,
+	.device = PCI_DEVICE_ID_AMD_SB900_PCIEA,
 };
 
 /* 0:15:1 PCIe PortB */
 static const struct pci_driver PORTB_driver __pci_driver = {
 	.ops = &bridge_ops,
 	.vendor = PCI_VENDOR_ID_AMD,
-	.device = PCI_DEVICE_ID_ATI_SB900_PCIEB,
+	.device = PCI_DEVICE_ID_AMD_SB900_PCIEB,
 };
 
 /* 0:15:2 PCIe PortC */
 static const struct pci_driver PORTC_driver __pci_driver = {
 	.ops = &bridge_ops,
 	.vendor = PCI_VENDOR_ID_AMD,
-	.device = PCI_DEVICE_ID_ATI_SB900_PCIEC,
+	.device = PCI_DEVICE_ID_AMD_SB900_PCIEC,
 };
 
 /* 0:15:3 PCIe PortD */
 static const struct pci_driver PORTD_driver __pci_driver = {
 	.ops = &bridge_ops,
 	.vendor = PCI_VENDOR_ID_AMD,
-	.device = PCI_DEVICE_ID_ATI_SB900_PCIED,
+	.device = PCI_DEVICE_ID_AMD_SB900_PCIED,
 };
 
 

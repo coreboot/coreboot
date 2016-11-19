@@ -850,11 +850,14 @@ static void dram_freq(ramctr_timing * ctrl)
 		reg1 = FRQ;
 		reg1 |= 0x80000000;	// set running bit
 		MCHBAR32(MC_BIOS_REQ) = reg1;
+		int i=0;
+		printk(BIOS_DEBUG, "PLL busy... ");
 		while (reg1 & 0x80000000) {
-			printk(BIOS_DEBUG, " PLL busy...");
+			udelay(10);
+			i++;
 			reg1 = MCHBAR32(MC_BIOS_REQ);
 		}
-		printk(BIOS_DEBUG, "done\n");
+		printk(BIOS_DEBUG, "done in %d us\n", i * 10);
 
 		/* Step 3 - Verify lock frequency */
 		reg1 = MCHBAR32(MC_BIOS_DATA);

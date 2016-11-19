@@ -38,6 +38,10 @@ static void move_gdt(int is_recovery)
 	u16 num_gdt_bytes = (uintptr_t)&gdt_end - (uintptr_t)&gdt;
 	struct gdtarg gdtarg;
 
+	/* ramstage is already in high memory. No need to use a new gdt. */
+	if (IS_ENABLED(CONFIG_RELOCATABLE_RAMSTAGE))
+		return;
+
 	newgdt = cbmem_find(CBMEM_ID_GDT);
 	if (!newgdt) {
 		newgdt = cbmem_add(CBMEM_ID_GDT, ALIGN(num_gdt_bytes, 512));

@@ -54,28 +54,3 @@ static const struct pci_driver usb_0_driver __pci_driver = {
 	.vendor = PCI_VENDOR_ID_AMD,
 	.devices = pci_device_ids,
 };
-
-/*
-static struct device_operations usb_ops2 = {
-	.read_resources = pci_ehci_read_resources,
-	.set_resources = pci_dev_set_resources,
-	.enable_resources = pci_dev_enable_resources,
-	.init = usb_init2,
-	.scan_bus = 0,
-	.ops_pci = &lops_pci,
-};
-*/
-/*
-static const struct pci_driver usb_5_driver __pci_driver = {
-	.ops = &usb_ops2,
-	.vendor = PCI_VENDOR_ID_AMD,
-	.device = PCI_DEVICE_ID_ATI_HUDSON_USB_18_2,
-};
-*/
-/*
- * static const struct pci_driver usb_5_driver __pci_driver = {
- * 	.ops = &usb_ops2,
- * 	.vendor = PCI_VENDOR_ID_AMD,
- * 	.device = PCI_DEVICE_ID_ATI_HUDSON_USB_19_2,
- * };
- */

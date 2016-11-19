@@ -16,7 +16,7 @@
 #include <cpu/intel/romstage.h>
 #include <program_loading.h>
 
-#define DCACHE_RAM_ROMSTAGE_STACK_SIZE 0x800
+#define DCACHE_RAM_ROMSTAGE_STACK_SIZE 0x2000
 
 void * asmlinkage romstage_main(unsigned long bist)
 {

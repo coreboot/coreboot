@@ -271,9 +271,7 @@ static void hda_init(struct device *dev)
 	pm_iowrite(0x59, 0xB);
 
 	/* Find the SMBus */
-	/* FIXME: Need to find out why the call below crashes. */
-	/*sm_dev = dev_find_device(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_ATI_SB600_SM, 0);*/
-	sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
+	sm_dev = dev_find_device(PCI_VENDOR_ID_ATI, PCI_DEVICE_ID_ATI_SB600_SM, 0);
 
 	/* Set routing pin - SMBus ExtFunc (0xf8/0xfc) */
 	pci_write_config32(sm_dev, 0xf8, 0x00);

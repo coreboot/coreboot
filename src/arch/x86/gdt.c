@@ -45,9 +45,9 @@ static void move_gdt(int is_recovery)
 			printk(BIOS_ERR, "Error: Could not relocate GDT.\n");
 			return;
 		}
-		printk(BIOS_DEBUG, "Moving GDT to %p...", newgdt);
 		memcpy((void*)newgdt, &gdt, num_gdt_bytes);
 	}
+	printk(BIOS_DEBUG, "Moving GDT to %p...", newgdt);
 
 	gdtarg.base = (uintptr_t)newgdt;
 	gdtarg.limit = num_gdt_bytes - 1;

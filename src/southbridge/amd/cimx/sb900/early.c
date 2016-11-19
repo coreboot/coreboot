@@ -37,7 +37,7 @@ u32 get_sbdn(u32 bus)
 	printk(BIOS_SPEW, "SB900 - Early.c - get_sbdn - Start.\n");
 
 	dev = pci_locate_device_on_bus(PCI_ID(PCI_VENDOR_ID_AMD,
-				PCI_DEVICE_ID_ATI_SB900_SM), bus);
+				PCI_DEVICE_ID_AMD_SB900_SM), bus);
 
 	printk(BIOS_SPEW, "SB900 - Early.c - get_sbdn - End.\n");
 

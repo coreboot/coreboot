@@ -87,7 +87,7 @@ void hudson_enable(device_t dev)
 			device_t usb_dev = dev_find_slot( 0, PCI_DEVFN( 0x14, 5));
 			u32 usb_device_id = pci_read_config32(usb_dev, 0) >> 16;
 			u8 reg8;
-			if (usb_device_id == PCI_DEVICE_ID_ATI_SB900_USB_20_5) {
+			if (usb_device_id == PCI_DEVICE_ID_AMD_SB900_USB_20_5) {
 				/* turn off and remove device 0:14.5 from PCI space */
 				reg8 = pm_read8(0xef);
 				reg8 &= ~(1 << 6);

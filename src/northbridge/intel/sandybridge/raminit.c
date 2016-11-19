@@ -199,6 +199,8 @@ typedef struct ramctr_timing_st {
 #define MAX_TIMC 127
 #define MAX_TIMB 511
 #define MAX_TIMA 127
+#define MAX_CAS 18
+#define MIN_CAS 4
 
 #define MAKE_ERR ((channel<<16)|(slotrank<<8)|1)
 #define GET_ERR_CHANNEL(x) (x>>16)
@@ -468,7 +470,7 @@ static void dram_find_common_params(ramctr_timing *ctrl)
 	int channel, slot;
 	dimm_info *dimms = &ctrl->info;
 
-	ctrl->cas_supported = 0xff;
+	ctrl->cas_supported = (1 << (MAX_CAS - MIN_CAS + 1)) - 1;
 	valid_dimms = 0;
 	FOR_ALL_CHANNELS for (slot = 0; slot < 2; slot++) {
 		const dimm_attr *dimm = &dimms->dimm[channel][slot];
@@ -742,16 +744,16 @@ static void dram_timing(ramctr_timing * ctrl)
 	val = (ctrl->tAA + ctrl->tCK - 1) / ctrl->tCK;
 	printk(BIOS_DEBUG, "Minimum  CAS latency   : %uT\n", val);
 	/* Find lowest supported CAS latency that satisfies the minimum value */
-	while (!((ctrl->cas_supported >> (val - 4)) & 1)
-	       && (ctrl->cas_supported >> (val - 4))) {
+	while (!((ctrl->cas_supported >> (val - MIN_CAS)) & 1)
+	       && (ctrl->cas_supported >> (val - MIN_CAS))) {
 		val++;
 	}
 	/* Is CAS supported */
-	if (!(ctrl->cas_supported & (1 << (val - 4)))) {
+	if (!(ctrl->cas_supported & (1 << (val - MIN_CAS)))) {
 		printk(BIOS_ERR, "CAS %uT not supported. ", val);
-		val = 18;
+		val = MAX_CAS;
 		/* Find highest supported CAS latency */
-		while (!((ctrl->cas_supported >> (val - 4)) & 1))
+		while (!((ctrl->cas_supported >> (val - MIN_CAS)) & 1))
 			val--;
 
 		printk(BIOS_ERR, "Using CAS %uT instead.\n", val);
@@ -1467,7 +1469,7 @@ static u32 make_mr0(ramctr_timing * ctrl, u8 rank)
 	// Convert tWR to MCH register friendly
 	mch_wr = mch_wr_t[ctrl->tWR - 5];
 
-	mr0reg = (mr0reg & ~0x4) | (mch_cas & 0x1);
+	mr0reg = (mr0reg & ~0x4) | ((mch_cas & 0x1) << 2);
 	mr0reg = (mr0reg & ~0x70) | ((mch_cas & 0xe) << 3);
 	mr0reg = (mr0reg & ~0xe00) | (mch_wr << 9);
 

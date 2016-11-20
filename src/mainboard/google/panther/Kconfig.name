@@ -1,2 +1,0 @@
-config BOARD_GOOGLE_PANTHER
-	bool "Panther"

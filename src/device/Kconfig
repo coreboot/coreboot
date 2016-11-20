@@ -210,11 +210,6 @@ config PCIX_PLUGIN_SUPPORT
 	depends on PCI
 	default y
 
-config PCIEXP_PLUGIN_SUPPORT
-	bool
-	depends on PCI
-	default y
-
 config CARDBUS_PLUGIN_SUPPORT
 	bool
 	depends on PCI
@@ -225,10 +220,16 @@ config AZALIA_PLUGIN_SUPPORT
 	depends on PCI
 	default n
 
+config PCIEXP_PLUGIN_SUPPORT
+	bool
+	depends on PCI
+	default y
+
+if PCIEXP_PLUGIN_SUPPORT
+
 config PCIEXP_COMMON_CLOCK
 	prompt "Enable PCIe Common Clock"
 	bool
-	depends on PCIEXP_PLUGIN_SUPPORT
 	default n
 	help
 	  Detect and enable Common Clock on PCIe links.
@@ -236,7 +237,6 @@ config PCIEXP_COMMON_CLOCK
 config PCIEXP_ASPM
 	prompt "Enable PCIe ASPM"
 	bool
-	depends on PCIEXP_PLUGIN_SUPPORT
 	default n
 	help
 	  Detect and enable ASPM on PCIe links.
@@ -244,10 +244,19 @@ config PCIEXP_ASPM
 config PCIEXP_CLK_PM
 	prompt "Enable PCIe Clock Power Management"
 	bool
-	depends on PCIEXP_PLUGIN_SUPPORT
 	default n
 	help
 	  Detect and enable Clock Power Management on PCIe.
+
+config PCIEXP_L1_SUB_STATE
+	prompt "Enable PCIe ASPM L1 SubState"
+	bool
+	depends on (MMCONF_SUPPORT_DEFAULT || PCI_IO_CFG_EXT)
+	default n
+	help
+	  Detect and enable ASPM on PCIe links.
+
+endif # PCIEXP_PLUGIN_SUPPORT
 
 config EARLY_PCI_BRIDGE
 	bool "Early PCI bridge"
@@ -260,14 +269,6 @@ config EARLY_PCI_BRIDGE
 
 	  This option enables static configuration for a single pre-defined
 	  PCI bridge function on bus 0.
-
-config PCIEXP_L1_SUB_STATE
-	prompt "Enable PCIe ASPM L1 SubState"
-	bool
-	depends on PCIEXP_PLUGIN_SUPPORT && MMCONF_SUPPORT
-	default n
-	help
-	  Detect and enable ASPM on PCIe links.
 
 if EARLY_PCI_BRIDGE
 

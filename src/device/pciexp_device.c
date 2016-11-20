@@ -21,7 +21,6 @@
 #include <device/pci_ids.h>
 #include <device/pciexp.h>
 
-#if IS_ENABLED(CONFIG_MMCONF_SUPPORT)
 unsigned int pciexp_find_extended_cap(device_t dev, unsigned int cap)
 {
 	unsigned int this_cap_offset, next_cap_offset;
@@ -29,10 +28,10 @@ unsigned int pciexp_find_extended_cap(device_t dev, unsigned int cap)
 
 	this_cap_offset = PCIE_EXT_CAP_OFFSET;
 	do {
-		this_cap = pci_mmio_read_config32(dev, this_cap_offset);
+		this_cap = pci_read_config32(dev, this_cap_offset);
 		next_cap_offset = this_cap >> 20;
 		this_cap &= 0xffff;
-		cafe = pci_mmio_read_config32(dev, this_cap_offset + 4);
+		cafe = pci_read_config32(dev, this_cap_offset + 4);
 		cafe &= 0xffff;
 		if (this_cap == cap)
 			return this_cap_offset;
@@ -44,9 +43,7 @@ unsigned int pciexp_find_extended_cap(device_t dev, unsigned int cap)
 
 	return 0;
 }
-#endif
 
-#if CONFIG_PCIEXP_COMMON_CLOCK
 /*
  * Re-train a PCIe link
  */
@@ -109,9 +106,7 @@ static void pciexp_enable_common_clock(device_t root, unsigned root_cap,
 		pciexp_retrain_link(root, root_cap);
 	}
 }
-#endif /* CONFIG_PCIEXP_COMMON_CLOCK */
 
-#if CONFIG_PCIEXP_CLK_PM
 static void pciexp_enable_clock_power_pm(device_t endp, unsigned endp_cap)
 {
 	/* check if per port clk req is supported in device */
@@ -126,17 +121,15 @@ static void pciexp_enable_clock_power_pm(device_t endp, unsigned endp_cap)
 	lnkctl = lnkctl | PCI_EXP_EN_CLK_PM;
 	pci_write_config16(endp, endp_cap + PCI_EXP_LNKCTL, lnkctl);
 }
-#endif /* CONFIG_PCIEXP_CLK_PM */
 
-#if IS_ENABLED(CONFIG_PCIEXP_L1_SUB_STATE) && IS_ENABLED(CONFIG_MMCONF_SUPPORT)
 static void pcie_update_cfg(device_t dev, int reg, u32 mask, u32 or)
 {
 	u32 reg32;
 
-	reg32 = pci_mmio_read_config32(dev, reg);
+	reg32 = pci_read_config32(dev, reg);
 	reg32 &= mask;
 	reg32 |= or;
-	pci_mmio_write_config32(dev, reg, reg32);
+	pci_write_config32(dev, reg, reg32);
 }
 
 static void pciexp_config_max_latency(device_t root, device_t dev)
@@ -170,7 +163,7 @@ static unsigned char pciexp_L1_substate_cal(device_t dev, unsigned int endp_cap,
 	unsigned int power_on_scale = (*data >> 16) & 0x3;
 	unsigned int power_on_value = (*data >> 19) & 0x1f;
 
-	unsigned int endp_data = pci_mmio_read_config32(dev, endp_cap + 4);
+	unsigned int endp_data = pci_read_config32(dev, endp_cap + 4);
 	unsigned int endp_L1SubStateSupport = endp_data & 0xf;
 	unsigned int endp_comm_mode_restore_time = (endp_data >> 8) & 0xff;
 	unsigned int endp_power_on_scale = (endp_data >> 16) & 0x3;
@@ -200,7 +193,7 @@ static void pciexp_L1_substate_commit(device_t root, device_t dev,
 {
 	device_t dev_t;
 	unsigned char L1_ss_ok;
-	unsigned int rp_L1_support = pci_mmio_read_config32(root, root_cap + 4);
+	unsigned int rp_L1_support = pci_read_config32(root, root_cap + 4);
 	unsigned int L1SubStateSupport;
 	unsigned int comm_mode_rst_time;
 	unsigned int power_on_scale;
@@ -282,9 +275,7 @@ static void pciexp_config_L1_sub_state(device_t root, device_t dev)
 
 	pciexp_L1_substate_commit(root, dev, root_cap, end_cap);
 }
-#endif /* CONFIG_PCIEXP_L1_SUB_STATE */
 
-#if CONFIG_PCIEXP_ASPM
 /*
  * Determine the ASPM L0s or L1 exit latency for a link
  * by checking both root port and endpoint and returning
@@ -371,7 +362,6 @@ static void pciexp_enable_aspm(device_t root, unsigned root_cap,
 
 	printk(BIOS_INFO, "ASPM: Enabled %s\n", aspm_type_str[apmc]);
 }
-#endif /* CONFIG_PCIEXP_ASPM */
 
 static void pciexp_tune_dev(device_t dev)
 {
@@ -386,25 +376,21 @@ static void pciexp_tune_dev(device_t dev)
 	if (!root_cap)
 		return;
 
-#if CONFIG_PCIEXP_COMMON_CLOCK
 	/* Check for and enable Common Clock */
-	pciexp_enable_common_clock(root, root_cap, dev, cap);
-#endif
+	if (IS_ENABLED(CONFIG_PCIEXP_COMMON_CLOCK))
+		pciexp_enable_common_clock(root, root_cap, dev, cap);
 
-#if CONFIG_PCIEXP_CLK_PM
 	/* Check if per port CLK req is supported by endpoint*/
-	pciexp_enable_clock_power_pm(dev, cap);
-#endif
+	if (IS_ENABLED(CONFIG_PCIEXP_CLK_PM))
+		pciexp_enable_clock_power_pm(dev, cap);
 
-#if CONFIG_PCIEXP_L1_SUB_STATE
 	/* Enable L1 Sub-State when both root port and endpoint support */
-	pciexp_config_L1_sub_state(root, dev);
-#endif /* CONFIG_PCIEXP_L1_SUB_STATE */
+	if (IS_ENABLED(CONFIG_PCIEXP_L1_SUB_STATE))
+		pciexp_config_L1_sub_state(root, dev);
 
-#if CONFIG_PCIEXP_ASPM
 	/* Check for and enable ASPM */
-	pciexp_enable_aspm(root, root_cap, dev, cap);
-#endif
+	if (IS_ENABLED(CONFIG_PCIEXP_ASPM))
+		pciexp_enable_aspm(root, root_cap, dev, cap);
 }
 
 void pciexp_scan_bus(struct bus *bus, unsigned int min_devfn,

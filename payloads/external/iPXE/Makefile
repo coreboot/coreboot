@@ -54,6 +54,14 @@ ifeq ($(CONSOLE_SERIAL),yy)
 	sed 's|#define\s*COMCONSOLE.*|#define COMCONSOLE $(IPXE_UART)|' "$(project_dir)/src/config/serial.h" > "$(project_dir)/src/config/serial.h.tmp"
 	sed 's|#define\s*COMSPEED.*|#define COMSPEED $(CONFIG_TTYS0_BAUD)|'  "$(project_dir)/src/config/serial.h.tmp" > "$(project_dir)/src/config/serial.h"
 endif
+ifneq ($(CONFIG_PXE_CUSTOM_GENERAL_H),)
+ifneq ("$(wildcard $(CONFIG_PXE_CUSTOM_GENERAL_H))","")
+	cat $(CONFIG_PXE_CUSTOM_GENERAL_H) > ipxe/src/config/local/general.h
+else
+	echo "Error: File $(CONFIG_CUSTOM_GENERAL_H) does not exist"
+	false
+endif
+endif
 
 build: config
 	echo "    MAKE       $(project_name) $(TAG-y)"

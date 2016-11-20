@@ -147,26 +147,16 @@ static const struct pci_driver northbridge_driver __pci_driver = {
 	.device	= PCI_DEVICE_ID_VIA_K8T890CE_PEG,
 };
 
-static const struct pci_driver pcie_drvd3f0 __pci_driver = {
-	.ops	= &pcie_ops,
-	.vendor	= PCI_VENDOR_ID_VIA,
-	.device	= PCI_DEVICE_ID_VIA_K8T890CE_PEX0,
+static const unsigned short pci_device_ids[] = {
+	PCI_DEVICE_ID_VIA_K8T890CE_PEX0,
+	PCI_DEVICE_ID_VIA_K8T890CE_PEX1,
+	PCI_DEVICE_ID_VIA_K8T890CE_PEX2,
+	PCI_DEVICE_ID_VIA_K8T890CE_PEX3,
+	0,
 };
 
-static const struct pci_driver pcie_drvd3f1 __pci_driver = {
-	.ops	= &pcie_ops,
-	.vendor	= PCI_VENDOR_ID_VIA,
-	.device	= PCI_DEVICE_ID_VIA_K8T890CE_PEX1,
-};
-
-static const struct pci_driver pcie_drvd3f2 __pci_driver = {
-	.ops	= &pcie_ops,
-	.vendor	= PCI_VENDOR_ID_VIA,
-	.device	= PCI_DEVICE_ID_VIA_K8T890CE_PEX2,
-};
-
-static const struct pci_driver pcie_drvd3f3 __pci_driver = {
-	.ops	= &pcie_ops,
-	.vendor	= PCI_VENDOR_ID_VIA,
-	.device	= PCI_DEVICE_ID_VIA_K8T890CE_PEX3,
+static const struct pci_driver pex_driver __pci_driver = {
+	.ops = &pcie_ops,
+	.vendor = PCI_VENDOR_ID_VIA,
+	.devices = pci_device_ids,
 };

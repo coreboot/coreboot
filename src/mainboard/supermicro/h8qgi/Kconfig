@@ -30,7 +30,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select HAVE_MP_TABLE
 	select HAVE_ACPI_TABLES
 	select BOARD_ROMSIZE_KB_2048
-	#select MMCONF_SUPPORT_DEFAULT #TODO enable it to resolve Multicore IO conflict
 
 config MAINBOARD_DIR
 	string

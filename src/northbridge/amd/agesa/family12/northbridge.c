@@ -649,13 +649,11 @@ static void cpu_bus_read_resources(device_t dev)
 {
 	printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
 
-#if CONFIG_MMCONF_SUPPORT
 	struct resource *resource = new_resource(dev, 0xc0010058);
 	resource->base = CONFIG_MMCONF_BASE_ADDRESS;
 	resource->size = CONFIG_MMCONF_BUS_NUMBER * 4096*256;
 	resource->flags = IORESOURCE_MEM | IORESOURCE_RESERVE |
 		IORESOURCE_FIXED | IORESOURCE_STORED |  IORESOURCE_ASSIGNED;
-#endif
 	printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
 }
 

@@ -38,6 +38,9 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	u32 val;
 
+	/* Must come first to enable PCI MMCONF. */
+	amd_initmmio();
+
 	/* In Hudson RRG, PMIOxD2[5:4] is "Drive strength control for
 	 *  LpcClk[1:0]".  To be consistent with Parmer, setting to 4mA
 	 *  even though the register is not documented in the Kabini BKDG.
@@ -45,8 +48,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	 */
 	outb(0xD2, 0xcd6);
 	outb(0x00, 0xcd7);
-
-	amd_initmmio();
 
 	/* Set LPC decode enables. */
 	pci_devfn_t dev = PCI_DEV(0, 0x14, 3);

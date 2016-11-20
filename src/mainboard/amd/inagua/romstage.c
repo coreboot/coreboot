@@ -40,10 +40,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	u32 val;
 
-	/* all cores: set pstate 0 (1600 MHz) early to save a few ms of boot time
-	 */
-	__writemsr (0xc0010062, 0);
-
 	amd_initmmio();
 
 	if (!cpu_init_detectedx && boot_cpu()) {

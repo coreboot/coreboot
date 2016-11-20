@@ -37,21 +37,9 @@
 #include <cpu/amd/mtrr.h>
 #include <cpu/amd/agesa/s3_resume.h>
 
-#define MSR_MTRR_VARIABLE_BASE6   0x020C
-#define MSR_MTRR_VARIABLE_MASK6   0x020D
-#define MSR_PSTATE_CONTROL        0xC0010062
-
-
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	u32 val;
-	msr_t msr;
-
-
-	/* All cores: set pstate 0 (1600 MHz) early to save a few ms of boot time */
-	msr.lo = 0;
-	msr.hi = 0;
-	wrmsr (MSR_PSTATE_CONTROL, msr);
 
 	amd_initmmio();
 

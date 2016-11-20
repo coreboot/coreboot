@@ -531,6 +531,7 @@ config MMCONF_SUPPORT_DEFAULT
 
 config MMCONF_SUPPORT
 	bool
+	default y if MMCONF_SUPPORT_DEFAULT
 	default n
 
 source "src/console/Kconfig"

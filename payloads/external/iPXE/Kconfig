@@ -65,7 +65,7 @@ config PXE_ROM_FILE
 
 config PXE_ROM_ID
 	string "network card PCI IDs"
-	default "10ec,8168"
+	default "8086,157b"
 	help
 	  The comma-separated PCI vendor and device ID that would associate
 	  your PXE ROM to your network card.

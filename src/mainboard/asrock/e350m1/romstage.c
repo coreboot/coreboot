@@ -43,13 +43,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	u32 val;
 
-	/*
-	 * All cores: allow caching of flash chip code and data
-	 * (there are no cache-as-ram reliability concerns with family 14h)
-	 */
-	__writemsr(0x20c, (0x0100000000ull - CACHE_ROM_SIZE) | 5);
-	__writemsr(0x20d, (0x1000000000ull - CACHE_ROM_SIZE) | 0x800);
-
 	/* All cores: set pstate 0 (1600 MHz) early to save a few ms of boot time */
 	__writemsr(0xc0010062, 0);
 

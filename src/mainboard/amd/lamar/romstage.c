@@ -41,6 +41,9 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	u32 val;
 
+	/* Must come first to enable PCI MMCONF. */
+	amd_initmmio();
+
 	/*
 	 *  In Hudson RRG, PMIOxD2[5:4] is "Drive strength control for
 	 *  LpcClk[1:0]".  This following register setting has been
@@ -52,7 +55,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	outb(0xD2, 0xcd6);
 	outb(0x00, 0xcd7);
 
-	amd_initmmio();
 	hudson_lpc_decode();
 
 	outb(0x24, 0xCD6);

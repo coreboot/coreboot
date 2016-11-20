@@ -77,13 +77,6 @@ void amd_initmmio(void)
 		(LibAmdBitScanReverse (CONFIG_MMCONF_BUS_NUMBER) << 2) | 1;
 	LibAmdMsrWrite(0xC0010058, &MsrReg, &StdHeader);
 
-	/*
-	  Set the NB_CFG MSR register. Enable CF8 extended config cycles.
-	*/
-	LibAmdMsrRead(0xC001001F, &MsrReg, &StdHeader);
-	MsrReg = MsrReg | 0x0000400000000000;
-	LibAmdMsrWrite(0xC001001F, &MsrReg, &StdHeader);
-
 	/* For serial port */
 	PciData = 0xFF03FFD5;
 	PciAddress.AddressValue = MAKE_SBDFO(0, 0, 0x14, 0x3, 0x44);

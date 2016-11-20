@@ -59,7 +59,7 @@ config AGESA_BINARY_PI_FILE
 
 choice
 	prompt "J19 pins 1-10"
-	default APU2_PINMUX_OFF_C
+	default APU2_PINMUX_UART_C
 
 config APU2_PINMUX_OFF_C
 	bool "disable"
@@ -74,7 +74,7 @@ endchoice
 
 choice
 	prompt "J19 pins 11-20"
-	default APU2_PINMUX_OFF_D
+	default APU2_PINMUX_UART_D
 
 config APU2_PINMUX_OFF_D
 	bool "disable"

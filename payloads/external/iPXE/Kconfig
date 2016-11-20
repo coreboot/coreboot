@@ -21,7 +21,7 @@ menu "PXE Options"
 
 choice
 	prompt "PXE ROM to use"
-	default PXE_ROM
+	default BUILD_IPXE
 
 config PXE_ROM
 	bool "Add an existing PXE ROM image"

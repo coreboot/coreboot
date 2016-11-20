@@ -44,6 +44,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	u32 *addr32;
 
 
+	/* Must come first to enable PCI MMCONF. */
 	amd_initmmio();
 
 	/* Set LPC decode enables. */

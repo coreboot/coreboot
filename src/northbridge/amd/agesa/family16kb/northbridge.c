@@ -325,13 +325,11 @@ static void read_resources(device_t dev)
 	 * It is not honored by the coreboot resource allocator if it is in
 	 * the APIC_CLUSTER.
 	 */
-#if CONFIG_MMCONF_SUPPORT
 	struct resource *resource = new_resource(dev, 0xc0010058);
 	resource->base = CONFIG_MMCONF_BASE_ADDRESS;
 	resource->size = CONFIG_MMCONF_BUS_NUMBER * 4096 * 256;
 	resource->flags = IORESOURCE_MEM | IORESOURCE_RESERVE |
 		IORESOURCE_FIXED | IORESOURCE_STORED |  IORESOURCE_ASSIGNED;
-#endif
 }
 
 static void set_resource(device_t dev, struct resource *resource, u32 nodeid)

@@ -269,13 +269,6 @@ void amd_initmmio(void)
 	MsrReg = CONFIG_MMCONF_BASE_ADDRESS | (LibAmdBitScanReverse(CONFIG_MMCONF_BUS_NUMBER) << 2) | 1;
 	LibAmdMsrWrite(0xC0010058, &MsrReg, &StdHeader);
 
-	/*
-	 * Set the NB_CFG MSR register. Enable CF8 extended configuration cycles.
-	 */
-	LibAmdMsrRead(0xC001001F, &MsrReg, &StdHeader);
-	MsrReg = MsrReg | (1ULL << 46);
-	LibAmdMsrWrite(0xC001001F, &MsrReg, &StdHeader);
-
 #if IS_ENABLED(CONFIG_BOARD_AMD_DINAR)
 	UINT32 PciData;
 	PCI_ADDR PciAddress;

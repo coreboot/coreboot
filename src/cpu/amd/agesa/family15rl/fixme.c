@@ -72,13 +72,6 @@ void amd_initmmio(void)
 	MsrReg = CONFIG_MMCONF_BASE_ADDRESS | (LibAmdBitScanReverse (CONFIG_MMCONF_BUS_NUMBER) << 2) | 1;
 	LibAmdMsrWrite (0xC0010058, &MsrReg, &StdHeader);
 
-	/*
-	  Set the NB_CFG MSR register. Enable CF8 extended configuration cycles.
-	*/
-	LibAmdMsrRead (0xC001001F, &MsrReg, &StdHeader);
-	MsrReg = MsrReg | 0x0000400000000000;
-	LibAmdMsrWrite (0xC001001F, &MsrReg, &StdHeader);
-
 	/* Set ROM cache onto WP to decrease post time */
 	MsrReg = (0x0100000000ull - CACHE_ROM_SIZE) | 5ull;
 	LibAmdMsrWrite (0x20C, &MsrReg, &StdHeader);

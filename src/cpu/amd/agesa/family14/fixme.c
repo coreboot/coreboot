@@ -92,6 +92,12 @@ void amd_initmmio(void)
 	PciAddress.AddressValue = MAKE_SBDFO(0, 0, 0, 0, 0xE4);
 	PciData = (AMD_APU_SSID << 0x10) | AMD_APU_SVID;
 	LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
+
+	/* Set ROM cache onto WP to decrease post time */
+	MsrReg = (0x0100000000ull - CACHE_ROM_SIZE) | MTRR_TYPE_WRPROT;
+	LibAmdMsrWrite (0x20C, &MsrReg, &StdHeader);
+	MsrReg = ((1ULL << CONFIG_CPU_ADDR_BITS) - CACHE_ROM_SIZE) | MTRR_PHYS_MASK_VALID;
+	LibAmdMsrWrite (0x20D, &MsrReg, &StdHeader);
 }
 
 void amd_initenv(void)

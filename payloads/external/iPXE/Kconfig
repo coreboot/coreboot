@@ -80,7 +80,7 @@ config PXE_ROM_ID
 
 config CONFIG_PXE_CUSTOM_GENERAL_H
 	string "iPXE custom general.h file"
-	default ""
+	default "../../../../apu2-documentation/ipxe/general.h"
 	help
 	  This option allows user to customize feature set built-in into iPXE ROM.
 

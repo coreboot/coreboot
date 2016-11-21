@@ -39,12 +39,15 @@
 #include <cpu/amd/car.h>
 #include <sb_cimx.h>
 
+void asmlinkage early_all_cores(void)
+{
+	amd_initmmio();
+}
+
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	struct sysinfo *cb = NULL;
 	u32 val;
-
-	amd_initmmio();
 
 	if (!cpu_init_detectedx && boot_cpu()) {
 		post_code(0x30);

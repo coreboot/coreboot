@@ -32,14 +32,15 @@
 #include <fsp/memmap.h>
 #include <fsp/util.h>
 #include <soc/cpu.h>
+#include <soc/flash_ctrlr.h>
 #include <soc/intel/common/mrc_cache.h>
 #include <soc/iomap.h>
 #include <soc/northbridge.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/romstage.h>
-#include <soc/spi.h>
 #include <soc/uart.h>
+#include <spi_flash.h>
 #include <string.h>
 #include <timestamp.h>
 #include <timer.h>
@@ -316,7 +317,12 @@ void mainboard_save_dimm_info(void)
 int get_sw_write_protect_state(void)
 {
 	uint8_t status;
+	struct spi_flash *flash;
+
+	flash = spi_flash_probe(CONFIG_BOOT_DEVICE_SPI_FLASH_BUS, 0);
+	if (!flash)
+		return 0;
 
 	/* Return unprotected status if status read fails. */
-	return spi_read_status(&status) ? 0 : !!(status & 0x80);
+	return spi_flash_status(flash, &status) ? 0 : !!(status & 0x80);
 }

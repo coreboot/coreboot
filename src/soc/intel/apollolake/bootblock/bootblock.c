@@ -21,6 +21,7 @@
 #include <lib.h>
 #include <soc/iomap.h>
 #include <soc/cpu.h>
+#include <soc/flash_ctrlr.h>
 #include <soc/gpio.h>
 #include <soc/iosf.h>
 #include <soc/mmap_boot.h>
@@ -129,7 +130,7 @@ static void enable_spibar(void)
 	pci_write_config8(dev, PCI_COMMAND, val);
 
 	/* Initialize SPI to allow BIOS to write/erase on flash. */
-	spi_init();
+	spi_flash_init();
 }
 
 static void enable_pmcbar(void)

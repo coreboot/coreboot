@@ -22,9 +22,9 @@
 #include <commonlib/region.h>
 #include <console/console.h>
 #include <fmap.h>
+#include <soc/flash_ctrlr.h>
 #include <soc/intel/common/nvm.h>
 #include <soc/mmap_boot.h>
-#include <soc/spi.h>
 
 /*
  * BIOS region on the flash is mapped right below 4GiB in the address
@@ -81,7 +81,7 @@ static void bios_mmap_init(void)
 	 * Base and Limit.
 	 * Base and Limit fields are in units of 4KiB.
 	 */
-	uint32_t val = spi_ctrlr_reg_read(SPIBAR_BIOS_BFPREG);
+	uint32_t val = spi_flash_ctrlr_reg_read(SPIBAR_BIOS_BFPREG);
 
 	start = (val & SPIBAR_BFPREG_PRB_MASK) * 4 * KiB;
 	bios_end = (((val & SPIBAR_BFPREG_PRL_MASK) >>

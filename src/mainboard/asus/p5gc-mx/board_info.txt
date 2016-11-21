@@ -1,0 +1,6 @@
+Category: desktop
+Board URL: https://www.asus.com/Motherboards/P5GCMX/
+Release year: 2007
+ROM package: DIP-8
+ROM protocol: SPI
+ROM socketed: y

@@ -1,0 +1,53 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2009 coresystems GmbH
+## Copyright (C) 2016 Arthur Heymans <arthur@ahemans.xyz
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+if BOARD_ASUS_P5GC_MX
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select ARCH_X86
+	select CPU_INTEL_SOCKET_LGA775
+	select NORTHBRIDGE_INTEL_I945
+	select NORTHBRIDGE_INTEL_SUBTYPE_I945GC
+	select CHECK_SLFRCS_ON_RESUME
+	select SOUTHBRIDGE_INTEL_I82801GX
+	select SUPERIO_WINBOND_W83627DHG
+	select HAVE_OPTION_TABLE
+	select HAVE_CMOS_DEFAULT
+	select HAVE_MP_TABLE
+	select HAVE_ACPI_TABLES
+	select HAVE_ACPI_RESUME
+	select BOARD_ROMSIZE_KB_512
+	select CHANNEL_XOR_RANDOMIZATION
+	select MAINBOARD_HAS_NATIVE_VGA_INIT
+	select INTEL_EDID
+
+config MAINBOARD_DIR
+	string
+	default asus/p5gc-mx
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "P5GC-MX"
+
+config MMCONF_BASE_ADDRESS
+	hex
+	default 0xf0000000
+
+config MAX_CPUS
+	int
+	default 4 ## 2 may be the chipsets limit
+
+endif # BOARD_ASUS_P5GC_MX

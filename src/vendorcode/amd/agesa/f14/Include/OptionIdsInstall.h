@@ -76,22 +76,22 @@ CONST PF_HtIdsGetPortOverride ROMDATA pf_HtIdsGetPortOverride = M_HTIDS_PORT_OVE
   #if (AGESA_ENTRY_INIT_POST == TRUE)
     #include <mu.h>
     CONST SCRIPT_FUNCTION ROMDATA ScriptFuncList[] = {
-      { (UINT32) (UINT64) MemUWriteCachelines, "WriteCl(PhyAddrLo,BufferAddr,ClCnt)"},
-      { (UINT32) (UINT64) MemUReadCachelines,  "ReadCl(BufferAddr,PhyAddrLo,ClCnt)"},
-      { (UINT32) (UINT64) MemUFlushPattern,    "FlushCl(PhyAddrLo,ClCnt)"}
+      { (UINTN) MemUWriteCachelines, "WriteCl(PhyAddrLo,BufferAddr,ClCnt)"},
+      { (UINTN) MemUReadCachelines, "ReadCl(BufferAddr,PhyAddrLo,ClCnt)"},
+      { (UINTN) MemUFlushPattern, "FlushCl(PhyAddrLo,ClCnt)"}
     };
   #elif (AGESA_ENTRY_INIT_RECOVERY == TRUE)
     #include <mru.h>
     CONST SCRIPT_FUNCTION ROMDATA ScriptFuncList[] = {
-      { (UINT32) (UINT64) MemRecUWrite1CL, "Write1Cl(PhyAddrLo,BufferAddr)"},
-      { (UINT32) (UINT64) MemRecURead1CL,  "Read1Cl(BufferAddr,PhyAddrLo)"},
-      { (UINT32) (UINT64) MemRecUFlushPattern,    "Flush1Cl(PhyAddrLo)"}
+      { (UINTN) MemRecUWrite1CL, "Write1Cl(PhyAddrLo,BufferAddr)"},
+      { (UINTN) MemRecURead1CL, "Read1Cl(BufferAddr,PhyAddrLo)"},
+      { (UINTN) MemRecUFlushPattern, "Flush1Cl(PhyAddrLo)"}
     };
   #else
     CONST SCRIPT_FUNCTION ROMDATA ScriptFuncList[] = {
-      { (UINT32) (UINT64) CommonReturnFalse, "DefRet()"},
-      { (UINT32) (UINT64) CommonReturnFalse,  "DefRet()"},
-      { (UINT32) (UINT64) CommonReturnFalse,    "DefRet()"}
+      { (UINTN) CommonReturnFalse, "DefRet()"},
+      { (UINTN) CommonReturnFalse, "DefRet()"},
+      { (UINTN) CommonReturnFalse, "DefRet()"}
     };
   #endif
 #endif

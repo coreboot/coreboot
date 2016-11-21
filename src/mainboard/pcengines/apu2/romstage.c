@@ -55,12 +55,47 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	hudson_lpc_port80();
 
 	if (!cpu_init_detectedx && boot_cpu()) {
+		u32 data, *memptr;
+
 		post_code(0x30);
 		early_lpc_init();
 
 		hudson_clk_output_48Mhz();
 		post_code(0x31);
 		console_init();
+
+
+		printk(BIOS_INFO, "14-25-48Mhz Clock settings\n");
+
+		memptr = (u32 *)(ACPI_MMIO_BASE + MISC_BASE + FCH_MISC_REG28 );
+		data = *memptr;
+		printk(BIOS_INFO, "FCH_MISC_REG28 is 0x%08x \n", data);
+
+		memptr = (u32 *)(ACPI_MMIO_BASE + MISC_BASE + FCH_MISC_REG40 );
+		data = *memptr;
+		printk(BIOS_INFO, "FCH_MISC_REG40 is 0x%08x \n", data);
+
+		//
+		// Configure clock request
+		//
+		data = *((u32 *)(ACPI_MMIO_BASE + MISC_BASE+FCH_MISC_REG00));
+
+		data &= 0xFFFF0000;
+		data |= (0 + 1) << (0 * 4);	// CLKREQ 0 to CLK0
+		data |= (1 + 1) << (1 * 4);	// CLKREQ 1 to CLK1
+		data |= (2 + 1) << (2 * 4);	// CLKREQ 2 to CLK2
+		// make CLK3 to ignore CLKREQ# input
+		// force it to be always on
+		data |= ( 0xf ) << (3 * 4);	// CLKREQ 3 to CLK3
+
+		*((u32 *)(ACPI_MMIO_BASE + MISC_BASE+FCH_MISC_REG00)) = data;
+
+		data = *((u32 *)(ACPI_MMIO_BASE + MISC_BASE+FCH_MISC_REG04));
+
+		data &= 0xFFFFFF0F;
+		data |= 0xA << (1 * 4);	// CLKREQ GFX to GFXCLK
+
+		*((u32 *)(ACPI_MMIO_BASE + MISC_BASE+FCH_MISC_REG04)) = data;
 	}
 
 	/* Halt if there was a built in self test failure */

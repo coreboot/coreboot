@@ -15,7 +15,7 @@
 
 #include <arch/io.h>
 #include <console/console.h>
-#include "spi.h"
+#include "spi_flash.h"
 
 /*
  * Protect range of SPI flash defined by [start, start+size-1] using Flash
@@ -29,7 +29,7 @@ int spi_flash_protect(u32 start, u32 size)
 	int fpr;
 	uintptr_t fpr_base;
 
-	if (spi_get_fpr_info(&fpr_info) == -1) {
+	if (spi_flash_get_fpr_info(&fpr_info) == -1) {
 		printk(BIOS_ERR, "ERROR: FPR Info not found!\n");
 		return -1;
 	}

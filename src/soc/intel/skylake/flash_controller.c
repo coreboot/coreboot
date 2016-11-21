@@ -20,7 +20,7 @@
 #include <bootstate.h>
 #include <timer.h>
 #include <soc/flash_controller.h>
-#include <soc/intel/common/spi.h>
+#include <soc/intel/common/spi_flash.h>
 #include <soc/pci_devs.h>
 #include <soc/spi.h>
 #include <spi-generic.h>
@@ -384,7 +384,7 @@ struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs)
 	return slave;
 }
 
-int spi_get_fpr_info(struct fpr_info *info)
+int spi_flash_get_fpr_info(struct fpr_info *info)
 {
 	pch_spi_regs *spi_bar = get_spi_bar();
 

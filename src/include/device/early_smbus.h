@@ -64,7 +64,7 @@ int smbus_print_error(u32 smbus_dev, u8 host_status, int loops);
 int smbus_is_busy(u32 smbus_dev);
 int smbus_wait_until_ready(u32 smbus_dev);
 u8 smbus_read_byte(u32 smbus_dev, u8 addr, u8 offset);
-
+u8 smbus_write_byte(u32 smbus_dev, u8 addr, u8 offset, u8 value);
 void smbus_delay(void);
 
 #endif				/* DEVICE_EARLY_SMBUS_H */

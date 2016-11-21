@@ -187,8 +187,8 @@ payloads/external/sortbootorder/sortbootorder/sortbootorder.elf sortbootorder:
 	$(MAKE) -C payloads/external/sortbootorder
 
 cbfs-files-$(CONFIG_SORTBOOTORDER_SECONDARY_PAYLOAD) += img/setup
-img/tint-file := payloads/external/sortbootorder/sortbootorder/sortbootorder.elf
-img/tint-type := payload
+img/setup-file := payloads/external/sortbootorder/sortbootorder/sortbootorder.elf
+img/setup-type := payload
 
 # iPXE
 

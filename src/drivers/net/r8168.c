@@ -45,9 +45,9 @@ static void r8168_init(struct device *dev)
 	struct resource *nic_res = find_resource(dev, PCI_BASE_ADDRESS_0);
 	u16 nic_port = (u16)nic_res->base;
 
-	/* Set bus master */
-	pci_write_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER
-					| PCI_COMMAND_MEMORY | PCI_COMMAND_IO);
+	/* Ensble but do not set bus master. That's dangerous on a NIC. */
+	pci_write_config16(dev, PCI_COMMAND,
+			   PCI_COMMAND_MEMORY | PCI_COMMAND_IO);
 
 	/* Reset NIC */
 	printk(BIOS_DEBUG, "r8168: Resetting NIC...");

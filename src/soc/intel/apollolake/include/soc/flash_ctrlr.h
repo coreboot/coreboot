@@ -84,8 +84,10 @@
  * Reads status register. On success returns 0 and status contains the value
  * read from the status register. On error returns -1.
  */
-int spi_read_status(uint8_t *status);
+int spi_flash_read_status(uint8_t *status);
 
 /* Read SPI controller register. */
-uint32_t spi_ctrlr_reg_read(uint16_t reg);
+uint32_t spi_flash_ctrlr_reg_read(uint16_t reg);
+
+void spi_flash_init(void);
 #endif

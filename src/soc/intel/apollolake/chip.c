@@ -28,6 +28,7 @@
 #include <romstage_handoff.h>
 #include <soc/iomap.h>
 #include <soc/cpu.h>
+#include <soc/flash_ctrlr.h>
 #include <soc/intel/common/vbt.h>
 #include <soc/itss.h>
 #include <soc/nvs.h>
@@ -497,14 +498,14 @@ void platform_fsp_notify_status(enum fsp_notify_phase phase)
 }
 
 /*
- * spi_init() needs to run unconditionally on every boot (including resume) to
- * allow write protect to be disabled for eventlog and nvram updates. This needs
- * to be done as early as possible in ramstage. Thus, add a callback for entry
- * into BS_PRE_DEVICE.
+ * spi_flash init() needs to run unconditionally on every boot (including
+ * resume) to allow write protect to be disabled for eventlog and nvram
+ * updates. This needs to be done as early as possible in ramstage. Thus, add a
+ * callback for entry into BS_PRE_DEVICE.
  */
-static void spi_init_cb(void *unused)
+static void spi_flash_init_cb(void *unused)
 {
-	spi_init();
+	spi_flash_init();
 }
 
-BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_ENTRY, spi_init_cb, NULL);
+BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_ENTRY, spi_flash_init_cb, NULL);

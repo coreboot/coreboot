@@ -21,8 +21,10 @@
  * GNU General Public License for more details.
  */
 
+#include <console/console.h>
 #include <stdlib.h>
 #include <spi_flash.h>
+#include <spi-generic.h>
 
 #include "spi_flash_internal.h"
 
@@ -56,8 +58,8 @@ struct macronix_spi_flash {
 	const struct macronix_spi_flash_params *params;
 };
 
-static inline struct macronix_spi_flash *to_macronix_spi_flash(struct spi_flash
-							       *flash)
+static inline
+struct macronix_spi_flash *to_macronix_spi_flash(const struct spi_flash *flash)
 {
 	return container_of(flash, struct macronix_spi_flash, flash);
 }
@@ -145,8 +147,8 @@ static const struct macronix_spi_flash_params macronix_spi_flash_table[] = {
 	},
 };
 
-static int macronix_write(struct spi_flash *flash,
-			  u32 offset, size_t len, const void *buf)
+static int macronix_write(const struct spi_flash *flash, u32 offset, size_t len,
+			const void *buf)
 {
 	struct macronix_spi_flash *mcx = to_macronix_spi_flash(flash);
 	unsigned long byte_addr;
@@ -158,8 +160,6 @@ static int macronix_write(struct spi_flash *flash,
 
 	page_size = mcx->params->page_size;
 	byte_addr = offset % page_size;
-
-	flash->spi->rw = SPI_WRITE_FLAG;
 
 	for (actual = 0; actual < len; actual += chunk_len) {
 		chunk_len = min(len - actual, page_size - byte_addr);
@@ -227,13 +227,13 @@ struct spi_flash *spi_flash_probe_macronix(struct spi_slave *spi, u8 *idcode)
 	mcx.flash.spi = spi;
 	mcx.flash.name = params->name;
 
-	mcx.flash.write = macronix_write;
-	mcx.flash.erase = spi_flash_cmd_erase;
-	mcx.flash.status = spi_flash_cmd_status;
+	mcx.flash.internal_write = macronix_write;
+	mcx.flash.internal_erase = spi_flash_cmd_erase;
+	mcx.flash.internal_status = spi_flash_cmd_status;
 #if CONFIG_SPI_FLASH_NO_FAST_READ
-	mcx.flash.read = spi_flash_cmd_read_slow;
+	mcx.flash.internal_read = spi_flash_cmd_read_slow;
 #else
-	mcx.flash.read = spi_flash_cmd_read_fast;
+	mcx.flash.internal_read = spi_flash_cmd_read_fast;
 #endif
 	mcx.flash.sector_size = params->page_size * params->pages_per_sector;
 	mcx.flash.size = mcx.flash.sector_size * params->sectors_per_block *

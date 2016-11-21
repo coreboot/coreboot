@@ -737,7 +737,8 @@ static int ich_hwseq_wait_for_cycle_complete(unsigned int timeout,
 }
 
 
-static int ich_hwseq_erase(struct spi_flash *flash, u32 offset, size_t len)
+static int ich_hwseq_erase(const struct spi_flash *flash, u32 offset,
+			size_t len)
 {
 	u32 start, end, erase_size;
 	int ret;
@@ -750,7 +751,6 @@ static int ich_hwseq_erase(struct spi_flash *flash, u32 offset, size_t len)
 		return -1;
 	}
 
-	flash->spi->rw = SPI_WRITE_FLAG;
 	ret = spi_claim_bus(flash->spi);
 	if (ret) {
 		printk(BIOS_ERR, "SF: Unable to claim SPI bus\n");
@@ -801,8 +801,8 @@ static void ich_read_data(uint8_t *data, int len)
 	}
 }
 
-static int ich_hwseq_read(struct spi_flash *flash,
-			  u32 addr, size_t len, void *buf)
+static int ich_hwseq_read(const struct spi_flash *flash, u32 addr, size_t len,
+			void *buf)
 {
 	uint16_t hsfc;
 	uint16_t timeout = 100 * 60;
@@ -869,8 +869,8 @@ static void ich_fill_data(const uint8_t *data, int len)
 		writel_(temp32, cntlr.data + (i - (i % 4)));
 }
 
-static int ich_hwseq_write(struct spi_flash *flash,
-			   u32 addr, size_t len, const void *buf)
+static int ich_hwseq_write(const struct spi_flash *flash, u32 addr, size_t len,
+			const void *buf)
 {
 	uint16_t hsfc;
 	uint16_t timeout = 100 * 60;
@@ -934,9 +934,9 @@ static struct spi_flash *spi_flash_hwseq(struct spi_slave *spi)
 	flash->spi = spi;
 	flash->name = "Opaque HW-sequencing";
 
-	flash->write = ich_hwseq_write;
-	flash->erase = ich_hwseq_erase;
-	flash->read = ich_hwseq_read;
+	flash->internal_write = ich_hwseq_write;
+	flash->internal_erase = ich_hwseq_erase;
+	flash->internal_read = ich_hwseq_read;
 	ich_hwseq_set_addr (0);
 	switch ((cntlr.hsfs >> 3) & 3)
 	{

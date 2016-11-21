@@ -24,9 +24,6 @@
 #define SPI_OPCODE_WREN 0x06
 #define SPI_OPCODE_FAST_READ 0x0b
 
-#define SPI_READ_FLAG	0x01
-#define SPI_WRITE_FLAG	0x02
-
 /*-----------------------------------------------------------------------
  * Representation of a SPI slave, i.e. what we're communicating with.
  *
@@ -34,7 +31,6 @@
  *
  *   bus:	ID of the bus that the slave is attached to.
  *   cs:	ID of the chip select connected to the slave.
- *   rw: 	Read or Write flag
  *   max_transfer_size: maximum amount of bytes which can be sent in a single
  *              read or write transaction, usually this is a controller
  *              property, kept in the slave structure for convenience. Zero in
@@ -43,7 +39,6 @@
 struct spi_slave {
 	unsigned int	bus;
 	unsigned int	cs;
-	unsigned int	rw;
 	unsigned int	max_transfer_size;
 	int force_programmer_specific;
 	struct spi_flash * (*programmer_specific_probe) (struct spi_slave *spi);

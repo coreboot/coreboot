@@ -1140,20 +1140,17 @@ int8_t save_mct_information_to_nvram(void)
 		return -1;
 	}
 
-	/* Set up SPI flash access */
-	flash->spi->rw = SPI_WRITE_FLAG;
-	spi_claim_bus(flash->spi);
+	spi_flash_volatile_group_begin(flash);
 
 	/* Erase and write data structure */
-	flash->erase(flash, s3nv_offset, CONFIG_S3_DATA_SIZE);
-	flash->write(flash, s3nv_offset, sizeof(struct amd_s3_persistent_data), persistent_data);
+	spi_flash_erase(flash, s3nv_offset, CONFIG_S3_DATA_SIZE);
+	spi_flash_write(flash, s3nv_offset,
+			sizeof(struct amd_s3_persistent_data), persistent_data);
 
 	/* Deallocate temporary data structures */
 	free(persistent_data);
 
-	/* Tear down SPI flash access */
-	flash->spi->rw = SPI_WRITE_FLAG;
-	spi_release_bus(flash->spi);
+	spi_flash_volatile_group_end(flash);
 
 	/* Allow training bypass if DIMM configuration is unchanged on next boot */
 	nvram = 1;

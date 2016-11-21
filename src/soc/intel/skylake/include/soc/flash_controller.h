@@ -21,13 +21,12 @@
 #include <console/console.h>
 #include <spi_flash.h>
 
-int pch_hwseq_erase(struct spi_flash *flash, u32 offset, size_t len);
-int pch_hwseq_write(struct spi_flash *flash,
-			   u32 addr, size_t len, const void *buf);
-
-int pch_hwseq_read(struct spi_flash *flash,
-			  u32 addr, size_t len, void *buf);
-int pch_hwseq_read_status(struct spi_flash *flash, u8 *reg);
+int pch_hwseq_erase(const struct spi_flash *flash, u32 offset, size_t len);
+int pch_hwseq_write(const struct spi_flash *flash, u32 addr, size_t len,
+		const void *buf);
+int pch_hwseq_read(const struct spi_flash *flash, u32 addr, size_t len,
+		void *buf);
+int pch_hwseq_read_status(const struct spi_flash *flash, u8 *reg);
 
 
 #if IS_ENABLED(CONFIG_DEBUG_SPI_FLASH)

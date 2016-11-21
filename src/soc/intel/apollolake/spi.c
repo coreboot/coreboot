@@ -19,12 +19,14 @@
 
 #include <arch/early_variables.h>
 #include <arch/io.h>
+#include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <soc/intel/common/spi.h>
 #include <soc/pci_devs.h>
 #include <soc/spi.h>
 #include <spi_flash.h>
+#include <spi-generic.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -224,7 +226,8 @@ void spi_release_bus(struct spi_slave *slave)
 	/* No magic needed here. */
 }
 
-static int nuclear_spi_erase(struct spi_flash *flash, uint32_t offset, size_t len)
+static int nuclear_spi_erase(const struct spi_flash *flash, uint32_t offset,
+			     size_t len)
 {
 	int ret;
 	size_t erase_size;
@@ -274,7 +277,8 @@ static size_t get_xfer_len(uint32_t addr, size_t len)
 	return xfer_len;
 }
 
-static int nuclear_spi_read(struct spi_flash *flash, uint32_t addr, size_t len, void *buf)
+static int nuclear_spi_read(const struct spi_flash *flash, uint32_t addr,
+			size_t len, void *buf)
 {
 	int ret;
 	size_t xfer_len;
@@ -300,8 +304,8 @@ static int nuclear_spi_read(struct spi_flash *flash, uint32_t addr, size_t len, 
 	return SUCCESS;
 }
 
-static int nuclear_spi_write(struct spi_flash *flash,
-			   uint32_t addr, size_t len, const void *buf)
+static int nuclear_spi_write(const struct spi_flash *flash, uint32_t addr,
+			size_t len, const void *buf)
 {
 	int ret;
 	size_t xfer_len;
@@ -326,7 +330,7 @@ static int nuclear_spi_write(struct spi_flash *flash,
 	return SUCCESS;
 }
 
-static int nuclear_spi_status(struct spi_flash *flash, uint8_t *reg)
+static int nuclear_spi_status(const struct spi_flash *flash, uint8_t *reg)
 {
 	int ret;
 	BOILERPLATE_CREATE_CTX(ctx);
@@ -379,10 +383,10 @@ static struct spi_flash *nuclear_flash_probe(struct spi_slave *spi)
 	 * flash->status_cmd = ???
 	 */
 
-	flash->write = nuclear_spi_write;
-	flash->erase = nuclear_spi_erase;
-	flash->read = nuclear_spi_read;
-	flash->status = nuclear_spi_status;
+	flash->internal_write = nuclear_spi_write;
+	flash->internal_erase = nuclear_spi_erase;
+	flash->internal_read = nuclear_spi_read;
+	flash->internal_status = nuclear_spi_status;
 
 	return flash;
 }

@@ -6,7 +6,7 @@
 #ifndef _IPQ806X_SPI_H_
 #define _IPQ806X_SPI_H_
 
-#include <spi_flash.h>
+#include <spi-generic.h>
 #include <soc/iomap.h>
 
 #define QUP5_BASE	((uint32_t)GSBI_QUP5_BASE)

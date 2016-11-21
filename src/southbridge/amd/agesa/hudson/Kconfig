@@ -64,6 +64,7 @@ config HUDSON_XHCI_FWM
 config HUDSON_IMC_FWM
 	bool "Add imc firmware"
 	default y if USE_BLOBS
+	select SPI_FLASH_HAS_VOLATILE_GROUP if SPI_FLASH
 	help
 	  Add Hudson 2/3/4 IMC Firmware to support the onboard fan control
 

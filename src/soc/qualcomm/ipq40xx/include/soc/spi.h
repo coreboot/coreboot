@@ -32,9 +32,9 @@
 #ifndef _IPQ40XX_SPI_H_
 #define _IPQ40XX_SPI_H_
 
-#include <spi_flash.h>
 #include <soc/iomap.h>
 #include <soc/qup.h>
+#include <spi-generic.h>
 
 #define BLSP0_QUP_REG_BASE		((void *)0x78b5000u)
 #define BLSP1_QUP_REG_BASE		((void *)0x78b6000u)

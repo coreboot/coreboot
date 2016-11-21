@@ -19,8 +19,10 @@
  * GNU General Public License for more details.
  */
 
+#include <console/console.h>
 #include <stdlib.h>
 #include <spi_flash.h>
+#include <spi-generic.h>
 
 #include "spi_flash_internal.h"
 
@@ -69,8 +71,8 @@ struct stmicro_spi_flash {
 	const struct stmicro_spi_flash_params *params;
 };
 
-static inline struct stmicro_spi_flash *to_stmicro_spi_flash(struct spi_flash
-							     *flash)
+static inline
+struct stmicro_spi_flash *to_stmicro_spi_flash(const struct spi_flash *flash)
 {
 	return container_of(flash, struct stmicro_spi_flash, flash);
 }
@@ -174,7 +176,7 @@ static const struct stmicro_spi_flash_params stmicro_spi_flash_table[] = {
 	},
 };
 
-static int stmicro_write(struct spi_flash *flash,
+static int stmicro_write(const struct spi_flash *flash,
 			 u32 offset, size_t len, const void *buf)
 {
 	struct stmicro_spi_flash *stm = to_stmicro_spi_flash(flash);
@@ -187,8 +189,6 @@ static int stmicro_write(struct spi_flash *flash,
 
 	page_size = stm->params->page_size;
 	byte_addr = offset % page_size;
-
-	flash->spi->rw = SPI_WRITE_FLAG;
 
 	for (actual = 0; actual < len; actual += chunk_len) {
 		chunk_len = min(len - actual, page_size - byte_addr);
@@ -232,7 +232,6 @@ static int stmicro_write(struct spi_flash *flash,
 	ret = 0;
 
 out:
-	spi_release_bus(flash->spi);
 	return ret;
 }
 
@@ -272,9 +271,9 @@ struct spi_flash *spi_flash_probe_stmicro(struct spi_slave *spi, u8 * idcode)
 	stm.flash.spi = spi;
 	stm.flash.name = params->name;
 
-	stm.flash.write = stmicro_write;
-	stm.flash.erase = spi_flash_cmd_erase;
-	stm.flash.read = spi_flash_cmd_read_fast;
+	stm.flash.internal_write = stmicro_write;
+	stm.flash.internal_erase = spi_flash_cmd_erase;
+	stm.flash.internal_read = spi_flash_cmd_read_fast;
 	stm.flash.sector_size = params->page_size * params->pages_per_sector;
 	stm.flash.size = stm.flash.sector_size * params->nr_sectors;
 	stm.flash.erase_cmd = params->op_erase;

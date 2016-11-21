@@ -8,8 +8,10 @@
  * Licensed under the GPL-2 or later.
  */
 
+#include <console/console.h>
 #include <stdlib.h>
 #include <spi_flash.h>
+#include <spi-generic.h>
 
 #include "spi_flash_internal.h"
 
@@ -44,7 +46,7 @@ struct amic_spi_flash {
 };
 
 static inline struct amic_spi_flash *
-to_amic_spi_flash(struct spi_flash *flash)
+to_amic_spi_flash(const struct spi_flash *flash)
 {
 	return container_of(flash, struct amic_spi_flash, flash);
 }
@@ -60,8 +62,8 @@ static const struct amic_spi_flash_params amic_spi_flash_table[] = {
 	},
 };
 
-static int amic_write(struct spi_flash *flash,
-		u32 offset, size_t len, const void *buf)
+static int amic_write(const struct spi_flash *flash, u32 offset, size_t len,
+		const void *buf)
 {
 	struct amic_spi_flash *amic = to_amic_spi_flash(flash);
 	unsigned long byte_addr;
@@ -73,13 +75,6 @@ static int amic_write(struct spi_flash *flash,
 
 	page_size = 1 << amic->params->l2_page_size;
 	byte_addr = offset % page_size;
-
-	flash->spi->rw = SPI_WRITE_FLAG;
-	ret = spi_claim_bus(flash->spi);
-	if (ret) {
-		printk(BIOS_WARNING, "SF: Unable to claim SPI bus\n");
-		return ret;
-	}
 
 	for (actual = 0; actual < len; actual += chunk_len) {
 		chunk_len = min(len - actual, page_size - byte_addr);
@@ -123,7 +118,6 @@ static int amic_write(struct spi_flash *flash,
 	ret = 0;
 
 out:
-	spi_release_bus(flash->spi);
 	return ret;
 }
 
@@ -159,12 +153,12 @@ struct spi_flash *spi_flash_probe_amic(struct spi_slave *spi, u8 *idcode)
 	/* Assuming power-of-two page size initially. */
 	page_size = 1 << params->l2_page_size;
 
-	amic->flash.write = amic_write;
-	amic->flash.erase = spi_flash_cmd_erase;
+	amic->flash.internal_write = amic_write;
+	amic->flash.internal_erase = spi_flash_cmd_erase;
 #if CONFIG_SPI_FLASH_NO_FAST_READ
-	amic->flash.read = spi_flash_cmd_read_slow;
+	amic->flash.internal_read = spi_flash_cmd_read_slow;
 #else
-	amic->flash.read = spi_flash_cmd_read_fast;
+	amic->flash.internal_read = spi_flash_cmd_read_fast;
 #endif
 	amic->flash.sector_size = (1 << amic->params->l2_page_size) *
 		amic->params->pages_per_sector;

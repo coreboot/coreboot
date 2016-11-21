@@ -81,7 +81,7 @@ int nvm_erase(void *start, size_t size)
 {
 	if (nvm_init() < 0)
 		return -1;
-	return flash->erase(flash, nvm_mmio_to_flash_offset(start), size);
+	return spi_flash_erase(flash, nvm_mmio_to_flash_offset(start), size);
 }
 
 /* Write data to NVM. Returns 0 on success < 0 on error.  */
@@ -89,7 +89,8 @@ int nvm_write(void *start, const void *data, size_t size)
 {
 	if (nvm_init() < 0)
 		return -1;
-	return flash->write(flash, nvm_mmio_to_flash_offset(start), size, data);
+	return spi_flash_write(flash, nvm_mmio_to_flash_offset(start), size,
+				data);
 }
 
 /* Read flash status register to determine if write protect is active */
@@ -107,7 +108,7 @@ int nvm_is_write_protected(void)
 		wp_gpio = get_write_protect_state();
 
 		/* Read Status Register 1 */
-		if (flash->status(flash, &sr1) < 0) {
+		if (spi_flash_status(flash, &sr1) < 0) {
 			printk(BIOS_ERR,
 				"Failed to read SPI status register 1\n");
 			return -1;

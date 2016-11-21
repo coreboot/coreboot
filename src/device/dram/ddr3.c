@@ -52,7 +52,7 @@ static u16 crc16(const u8 *ptr, int n_crc)
 	u16 crc = 0;
 
 	while (--n_crc >= 0) {
-		crc = (crc ^ (int)*ptr++) << 8;
+		crc = crc ^ ((int)*ptr++ << 8);
 		for (i = 0; i < 8; ++i)
 			if (crc & 0x8000) {
 				crc = (crc << 1) ^ 0x1021;

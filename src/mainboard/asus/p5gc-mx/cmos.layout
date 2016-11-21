@@ -1,0 +1,97 @@
+#
+# This file is part of the coreboot project.
+#
+# Copyright (C) 2007-2008 coresystems GmbH
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation; version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+
+# -----------------------------------------------------------------
+entries
+0          120       r       0        reserved_memory
+#120        264       r       0        unused
+
+# -----------------------------------------------------------------
+# RTC_BOOT_BYTE (coreboot hardcoded)
+384          1       e       4        boot_option
+388          4       h       0        reboot_counter
+#390          2       r       0        unused
+
+# -----------------------------------------------------------------
+# coreboot config options: console
+392          3       e       5        baud_rate
+395          4       e       6        debug_level
+#399          1       r       0        unused
+
+# coreboot config options: cpu
+400          1       e       2        hyper_threading
+#401          7       r       0        unused
+
+# coreboot config options: southbridge
+408          1       e       1        nmi
+
+# coreboot config options: northbridge
+411         3       e       11       gfx_uma_size
+
+# coreboot config options: bootloader
+416        512       s       0        boot_devices
+#928         80       r       0        unused
+
+# coreboot config options: check sums
+984         16       h       0        check_sum
+#1000        24       r       0        amd_reserved
+
+# RAM initialization internal data
+1024         8       r       0        C0WL0REOST
+1032         8       r       0        C1WL0REOST
+1040         8       r       0        RCVENMT
+1048         4       r       0        C0DRT1
+1052         4       r       0        C1DRT1
+
+# -----------------------------------------------------------------
+
+enumerations
+
+#ID value   text
+1     0     Disable
+1     1     Enable
+2     0     Enable
+2     1     Disable
+4     0     Fallback
+4     1     Normal
+5     0     115200
+5     1     57600
+5     2     38400
+5     3     19200
+5     4     9600
+5     5     4800
+5     6     2400
+5     7     1200
+6     1     Emergency
+6     2     Alert
+6     3     Critical
+6     4     Error
+6     5     Warning
+6     6     Notice
+6     7     Info
+6     8     Debug
+6     9     Spew
+11    0     1M
+11    1     4M
+11    2     8M
+11    3     16M
+11    4     32M
+11    5     48M
+11    6     64M
+
+# -----------------------------------------------------------------
+checksums
+
+checksum 392 983 984

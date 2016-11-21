@@ -35,13 +35,17 @@
 #include <arch/cpu.h>
 #include "platform_cfg.h"
 
+void asmlinkage early_all_cores(void)
+{
+	amd_initmmio();
+}
+
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	struct sysinfo *cb = NULL;
 	u32 val;
 
 	post_code(0x35);
-	amd_initmmio();
 
 	if (!cpu_init_detectedx && boot_cpu()) {
 		post_code(0x30);

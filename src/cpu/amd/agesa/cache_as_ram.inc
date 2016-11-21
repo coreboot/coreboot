@@ -108,18 +108,23 @@ cache_as_ram_setup:
   # use call far to switch to 64-bit code segment
   ljmp $0x18, $1f
 1:
+
+  .code64
+
+  call early_all_cores
+
   /* Pass the cpu_init_detected */
   cvtsd2si        %xmm1, %esi
 
   /* Pass the BIST result */
   cvtsd2si        %xmm0, %edi
 
-
-  .code64
   call    cache_as_ram_main
   .code32
 
 #else
+
+  call early_all_cores
 
   /* Restore the BIST result */
   cvtsd2si  %xmm0, %edx

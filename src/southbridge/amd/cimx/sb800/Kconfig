@@ -123,6 +123,7 @@ endif
 config SB800_IMC_FWM
 	bool "Add IMC firmware"
 	default n
+	select SPI_FLASH_HAS_VOLATILE_GROUP if SPI_FLASH
 	help
 	  Add SB800 / Hudson 1 IMC Firmware to support the onboard fan control.
 

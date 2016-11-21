@@ -19,7 +19,7 @@
 #include <console/console.h>
 #include <soc/cpu.h>
 #include <soc/spi.h>
-#include <spi_flash.h>
+#include <spi-generic.h>
 #include <stdlib.h>
 #include <string.h>
 #include <symbols.h>
@@ -48,13 +48,12 @@ static struct exynos_spi_slave exynos_spi_slaves[3] = {
 	},
 	// SPI 1
 	{
-		.slave = { .bus = 1, .rw = SPI_READ_FLAG, },
+		.slave = { .bus = 1, },
 		.regs = (void *)EXYNOS5_SPI1_BASE,
 	},
 	// SPI 2
 	{
-		.slave = { .bus = 2,
-			   .rw = SPI_READ_FLAG | SPI_WRITE_FLAG, },
+		.slave = { .bus = 2, },
 		.regs = (void *)EXYNOS5_SPI2_BASE,
 	},
 };

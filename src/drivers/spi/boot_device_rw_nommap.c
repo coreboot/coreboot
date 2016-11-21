@@ -16,6 +16,7 @@
 #include <arch/early_variables.h>
 #include <boot_device.h>
 #include <spi_flash.h>
+#include <spi-generic.h>
 
 static struct spi_flash *sfg CAR_GLOBAL;
 
@@ -27,7 +28,7 @@ static ssize_t spi_readat(const struct region_device *rd, void *b,
 	if (sf == NULL)
 		return -1;
 
-	if (sf->read(sf, offset, size, b))
+	if (spi_flash_read(sf, offset, size, b))
 		return -1;
 
 	return size;
@@ -41,7 +42,7 @@ static ssize_t spi_writeat(const struct region_device *rd, const void *b,
 	if (sf == NULL)
 		return -1;
 
-	if (sf->write(sf, offset, size, b))
+	if (spi_flash_write(sf, offset, size, b))
 		return -1;
 
 	return size;
@@ -55,7 +56,7 @@ static ssize_t spi_eraseat(const struct region_device *rd,
 	if (sf == NULL)
 		return -1;
 
-	if (sf->erase(sf, offset, size))
+	if (spi_flash_erase(sf, offset, size))
 		return -1;
 
 	return size;

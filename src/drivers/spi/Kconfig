@@ -164,6 +164,13 @@ config SPI_FLASH_FAST_READ_DUAL_OUTPUT_3B
 	  output command (opcode 0x3b) where the opcode and address are sent
 	  to the chip on MOSI and data is received on both MOSI and MISO.
 
+config SPI_FLASH_HAS_VOLATILE_GROUP
+	bool
+	default n
+	help
+	  Allows chipset to group write/erase operations under a single volatile
+	  group.
+
 endif # SPI_FLASH
 
 config HAVE_SPI_CONSOLE_SUPPORT

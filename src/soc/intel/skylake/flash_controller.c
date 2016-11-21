@@ -18,12 +18,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <bootstate.h>
-#include <spi_flash.h>
 #include <timer.h>
 #include <soc/flash_controller.h>
 #include <soc/intel/common/spi.h>
 #include <soc/pci_devs.h>
 #include <soc/spi.h>
+#include <spi-generic.h>
 
 static inline uint16_t spi_read_hsfs(pch_spi_regs * const regs)
 {
@@ -181,7 +181,7 @@ void spi_release_bus(struct spi_slave *slave)
 	/* Handled by PCH automatically. */
 }
 
-int pch_hwseq_erase(struct spi_flash *flash, u32 offset, size_t len)
+int pch_hwseq_erase(const struct spi_flash *flash, u32 offset, size_t len)
 {
 	u32 start, end, erase_size;
 	int ret = 0;
@@ -191,8 +191,6 @@ int pch_hwseq_erase(struct spi_flash *flash, u32 offset, size_t len)
 		printk(BIOS_ERR, "SF: Erase offset/length not multiple of erase size\n");
 		return -1;
 	}
-
-	flash->spi->rw = SPI_WRITE_FLAG;
 
 	start = offset;
 	end = start + len;
@@ -231,7 +229,8 @@ static void pch_read_data(uint8_t *data, int len)
 	}
 }
 
-int pch_hwseq_read(struct spi_flash *flash, u32 addr, size_t len, void *buf)
+int pch_hwseq_read(const struct spi_flash *flash, u32 addr, size_t len,
+		void *buf)
 {
 	uint8_t block_len;
 
@@ -292,8 +291,8 @@ static void pch_fill_data(const uint8_t *data, int len)
 		writel_(temp32, (uint8_t *)spi_bar->fdata + (i - (i % 4)));
 }
 
-int pch_hwseq_write(struct spi_flash *flash,
-			   u32 addr, size_t len, const void *buf)
+int pch_hwseq_write(const struct spi_flash *flash, u32 addr, size_t len,
+		const void *buf)
 {
 	uint8_t block_len;
 	uint32_t start = addr;
@@ -330,7 +329,7 @@ int pch_hwseq_write(struct spi_flash *flash,
 	return 0;
 }
 
-int pch_hwseq_read_status(struct spi_flash *flash, u8 *reg)
+int pch_hwseq_read_status(const struct spi_flash *flash, u8 *reg)
 {
 	size_t block_len = SPI_READ_STATUS_LENGTH;
 	const int timeout_ms = 6;
@@ -358,10 +357,10 @@ static struct spi_flash *spi_flash_hwseq_probe(struct spi_slave *spi)
 	flash->spi = spi;
 	flash->name = "Opaque HW-sequencing";
 
-	flash->write = pch_hwseq_write;
-	flash->erase = pch_hwseq_erase;
-	flash->read = pch_hwseq_read;
-	flash->status = pch_hwseq_read_status;
+	flash->internal_write = pch_hwseq_write;
+	flash->internal_erase = pch_hwseq_erase;
+	flash->internal_read = pch_hwseq_read;
+	flash->internal_status = pch_hwseq_read_status;
 
 	/* The hardware sequencing supports 4KiB or 64KiB erase. Use 4KiB. */
 	flash->sector_size = 4*KiB;

@@ -17,17 +17,14 @@
 #include <string.h>
 #include <arch/io.h>
 #include <console/console.h>
+#include <spi_flash.h>
 #include <spi-generic.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ops.h>
 
-#if IS_ENABLED (CONFIG_SB800_IMC_FWM)
 #include "SBPLATFORM.h"
 #include <vendorcode/amd/cimx/sb800/ECfan.h>
-
-static int bus_claimed = 0;
-#endif
 
 #define AMD_SB_SPI_TX_LEN	8
 
@@ -114,8 +111,6 @@ int spi_xfer(struct spi_slave *slave, const void *dout,
 	return 0;
 }
 
-#if IS_ENABLED (CONFIG_SB800_IMC_FWM)
-
 static void ImcSleep(void)
 {
 	u8	cmd_val = 0x96;		/* Kick off IMC Mailbox command 96 */
@@ -142,34 +137,35 @@ static void ImcWakeup(void)
 
 	WaitForEcLDN9MailboxCmdAck();
 }
-#endif
 
 int spi_claim_bus(struct spi_slave *slave)
 {
-#if IS_ENABLED (CONFIG_SB800_IMC_FWM)
-
-	if (slave->rw == SPI_WRITE_FLAG) {
-		bus_claimed++;
-		if (bus_claimed == 1)
-			ImcSleep();
-	}
-#endif
-
+	/* Nothing is required. */
 	return 0;
 }
 
 void spi_release_bus(struct spi_slave *slave)
 {
-#if IS_ENABLED (CONFIG_SB800_IMC_FWM)
+	/* Nothing is required. */
+	return;
+}
 
-	if (slave->rw == SPI_WRITE_FLAG)  {
-		bus_claimed--;
-		if (bus_claimed <= 0) {
-			bus_claimed = 0;
-			ImcWakeup();
-		}
-	}
-#endif
+int chipset_volatile_group_begin(const struct spi_flash *flash)
+{
+	if (!IS_ENABLED(CONFIG_SB800_IMC_FWM))
+		return 0;
+
+	ImcSleep();
+	return 0;
+}
+
+int chipset_volatile_group_end(const struct spi_flash *flash)
+{
+	if (!IS_ENABLED(CONFIG_SB800_IMC_FWM))
+		return 0;
+
+	ImcWakeup();
+	return 0;
 }
 
 struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs)

@@ -212,7 +212,8 @@ static void update_mrc_cache(void *unused)
 		       "Need to erase the MRC cache region of %d bytes at %p\n",
 		       cache_size, cache_base);
 
-		flash->erase(flash, to_flash_offset(flash, cache_base), cache_size);
+		spi_flash_erase(flash, to_flash_offset(flash, cache_base),
+				cache_size);
 
 		/* we will start at the beginning again */
 		cache = cache_base;
@@ -220,8 +221,8 @@ static void update_mrc_cache(void *unused)
 	//  4. write mrc data with flash->write()
 	printk(BIOS_DEBUG, "Finally: write MRC cache update to flash at %p\n",
 	       cache);
-	ret = flash->write(flash, to_flash_offset(flash, cache),
-		     current->mrc_data_size + sizeof(*current), current);
+	ret = spi_flash_write(flash, to_flash_offset(flash, cache),
+			current->mrc_data_size + sizeof(*current), current);
 
 	if (ret)
 		printk(BIOS_WARNING, "Writing the MRC cache failed with ret %d\n",

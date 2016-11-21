@@ -12,8 +12,10 @@
  * Licensed under the GPL-2 or later.
  */
 
+#include <console/console.h>
 #include <stdlib.h>
 #include <spi_flash.h>
+#include <spi-generic.h>
 
 #include "spi_flash_internal.h"
 
@@ -40,7 +42,7 @@ struct sst_spi_flash_params {
 	u8 idcode1;
 	u16 nr_sectors;
 	const char *name;
-	int (*write)(struct spi_flash *flash, u32 offset,
+	int (*write)(const struct spi_flash *flash, u32 offset,
 				 size_t len, const void *buf);
 };
 
@@ -49,10 +51,10 @@ struct sst_spi_flash {
 	const struct sst_spi_flash_params *params;
 };
 
-static int
-sst_write_ai(struct spi_flash *flash, u32 offset, size_t len, const void *buf);
-static int
-sst_write_256(struct spi_flash *flash, u32 offset, size_t len, const void *buf);
+static int sst_write_ai(const struct spi_flash *flash, u32 offset, size_t len,
+			const void *buf);
+static int sst_write_256(const struct spi_flash *flash, u32 offset, size_t len,
+			 const void *buf);
 
 #define SST_SECTOR_SIZE (4 * 1024)
 static const struct sst_spi_flash_params sst_spi_flash_table[] = {
@@ -105,7 +107,7 @@ static const struct sst_spi_flash_params sst_spi_flash_table[] = {
 };
 
 static int
-sst_enable_writing(struct spi_flash *flash)
+sst_enable_writing(const struct spi_flash *flash)
 {
 	int ret = spi_flash_cmd(flash->spi, CMD_SST_WREN, NULL, 0);
 	if (ret)
@@ -114,7 +116,7 @@ sst_enable_writing(struct spi_flash *flash)
 }
 
 static int
-sst_enable_writing_status(struct spi_flash *flash)
+sst_enable_writing_status(const struct spi_flash *flash)
 {
 	int ret = spi_flash_cmd(flash->spi, CMD_SST_EWSR, NULL, 0);
 	if (ret)
@@ -123,7 +125,7 @@ sst_enable_writing_status(struct spi_flash *flash)
 }
 
 static int
-sst_disable_writing(struct spi_flash *flash)
+sst_disable_writing(const struct spi_flash *flash)
 {
 	int ret = spi_flash_cmd(flash->spi, CMD_SST_WRDI, NULL, 0);
 	if (ret)
@@ -132,7 +134,7 @@ sst_disable_writing(struct spi_flash *flash)
 }
 
 static int
-sst_byte_write(struct spi_flash *flash, u32 offset, const void *buf)
+sst_byte_write(const struct spi_flash *flash, u32 offset, const void *buf)
 {
 	int ret;
 	u8 cmd[4] = {
@@ -158,8 +160,8 @@ sst_byte_write(struct spi_flash *flash, u32 offset, const void *buf)
 	return spi_flash_cmd_wait_ready(flash, SPI_FLASH_PROG_TIMEOUT);
 }
 
-static int
-sst_write_256(struct spi_flash *flash, u32 offset, size_t len, const void *buf)
+static int sst_write_256(const struct spi_flash *flash, u32 offset, size_t len,
+			const void *buf)
 {
 	size_t actual, chunk_len, cmd_len;
 	unsigned long byte_addr;
@@ -169,8 +171,6 @@ sst_write_256(struct spi_flash *flash, u32 offset, size_t len, const void *buf)
 
 	page_size = 256;
 	byte_addr = offset % page_size;
-
-	flash->spi->rw = SPI_WRITE_FLAG;
 
 	/* If the data is not word aligned, write out leading single byte */
 	actual = offset % 2;
@@ -234,14 +234,12 @@ done:
 	return ret;
 }
 
-static int
-sst_write_ai(struct spi_flash *flash, u32 offset, size_t len, const void *buf)
+static int sst_write_ai(const struct spi_flash *flash, u32 offset, size_t len,
+			const void *buf)
 {
 	size_t actual, cmd_len;
 	int ret = 0;
 	u8 cmd[4];
-
-	flash->spi->rw = SPI_WRITE_FLAG;
 
 	/* If the data is not word aligned, write out leading single byte */
 	actual = offset % 2;
@@ -301,7 +299,7 @@ done:
 
 
 static int
-sst_unlock(struct spi_flash *flash)
+sst_unlock(const struct spi_flash *flash)
 {
 	int ret;
 	u8 cmd, status;
@@ -349,10 +347,10 @@ spi_flash_probe_sst(struct spi_slave *spi, u8 *idcode)
 	stm->flash.spi = spi;
 	stm->flash.name = params->name;
 
-	stm->flash.write = params->write;
-	stm->flash.erase = spi_flash_cmd_erase;
-	stm->flash.status = spi_flash_cmd_status;
-	stm->flash.read = spi_flash_cmd_read_fast;
+	stm->flash.internal_write = params->write;
+	stm->flash.internal_erase = spi_flash_cmd_erase;
+	stm->flash.internal_status = spi_flash_cmd_status;
+	stm->flash.internal_read = spi_flash_cmd_read_fast;
 	stm->flash.sector_size = SST_SECTOR_SIZE;
 	stm->flash.size = stm->flash.sector_size * params->nr_sectors;
 	stm->flash.erase_cmd = CMD_SST_SE;

@@ -157,7 +157,8 @@ static int pio_read(u32 addr, u8 *buf, u32 len)
 	return 0;
 }
 
-static int nor_read(struct spi_flash *flash, u32 addr, size_t len, void *buf)
+static int nor_read(const struct spi_flash *flash, u32 addr, size_t len,
+		void *buf)
 {
 	u32 next;
 
@@ -195,8 +196,8 @@ static int nor_read(struct spi_flash *flash, u32 addr, size_t len, void *buf)
 	return 0;
 }
 
-static int nor_write(struct spi_flash *flash, u32 addr, size_t len,
-		       const void *buf)
+static int nor_write(const struct spi_flash *flash, u32 addr, size_t len,
+		const void *buf)
 {
 	const u8 *buffer = (const u8 *)buf;
 
@@ -214,7 +215,7 @@ static int nor_write(struct spi_flash *flash, u32 addr, size_t len,
 	return 0;
 }
 
-static int nor_erase(struct spi_flash *flash, u32 offset, size_t len)
+static int nor_erase(const struct spi_flash *flash, u32 offset, size_t len)
 {
 	int sector_start = offset;
 	int sector_num = (u32)len / flash->sector_size;
@@ -242,10 +243,10 @@ struct spi_flash *mt8173_nor_flash_probe(struct spi_slave *spi)
 	write32(&mt8173_nor->wrprot, SFLASH_COMMAND_ENABLE);
 	flash.spi = spi;
 	flash.name = "mt8173 flash controller";
-	flash.write = nor_write;
-	flash.erase = nor_erase;
-	flash.read = nor_read;
-	flash.status = 0;
+	flash.internal_write = nor_write;
+	flash.internal_erase = nor_erase;
+	flash.internal_read = nor_read;
+	flash.internal_status = 0;
 	flash.sector_size = 0x1000;
 	flash.erase_cmd = SECTOR_ERASE_CMD;
 	flash.size = CONFIG_ROM_SIZE;

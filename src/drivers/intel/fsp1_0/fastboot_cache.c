@@ -209,16 +209,16 @@ void update_mrc_cache(void *unused)
 		       "Need to erase the MRC cache region of %d bytes at %p\n",
 		       cache_size, cache_base);
 
-		flash->erase(flash, to_flash_offset(cache_base), cache_size);
+		spi_flash_erase(flash, to_flash_offset(cache_base), cache_size);
 
 		/* we will start at the beginning again */
 		cache = cache_base;
 	}
-	/*  4. write mrc data with flash->write() */
+	/*  4. write mrc data with spi_flash_write() */
 	printk(BIOS_DEBUG, "Write MRC cache update to flash at %p\n",
 	       cache);
-	flash->write(flash, to_flash_offset(cache),
-		     current->mrc_data_size + sizeof(*current), current);
+	spi_flash_write(flash, to_flash_offset(cache),
+			current->mrc_data_size + sizeof(*current), current);
 }
 
 #endif	/* !defined(__PRE_RAM__) */

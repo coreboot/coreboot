@@ -31,15 +31,13 @@ void spi_SaveS3info(u32 pos, u32 size, u8 *buf, u32 len)
 		return;
 	}
 
-	flash->spi->rw = SPI_WRITE_FLAG;
-	spi_claim_bus(flash->spi);
+	spi_flash_volatile_group_begin(flash);
 
-	flash->erase(flash, pos, size);
-	flash->write(flash, pos, sizeof(len), &len);
-	flash->write(flash, pos + sizeof(len), len, buf);
+	spi_flash_erase(flash, pos, size);
+	spi_flash_write(flash, pos, sizeof(len), &len);
+	spi_flash_write(flash, pos + sizeof(len), len, buf);
 
-	flash->spi->rw = SPI_WRITE_FLAG;
-	spi_release_bus(flash->spi);
+	spi_flash_volatile_group_end(flash);
 
 	return;
 }

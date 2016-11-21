@@ -6,8 +6,10 @@
  * Licensed under the GPL-2 or later.
  */
 
+#include <console/console.h>
 #include <stdlib.h>
 #include <spi_flash.h>
+#include <spi-generic.h>
 
 #include "spi_flash_internal.h"
 
@@ -43,7 +45,8 @@ struct eon_spi_flash {
 	const struct eon_spi_flash_params *params;
 };
 
-static inline struct eon_spi_flash *to_eon_spi_flash(struct spi_flash *flash)
+static inline
+struct eon_spi_flash *to_eon_spi_flash(const struct spi_flash *flash)
 {
 	return container_of(flash, struct eon_spi_flash, flash);
 }
@@ -75,7 +78,7 @@ static const struct eon_spi_flash_params eon_spi_flash_table[] = {
 	},
 };
 
-static int eon_write(struct spi_flash *flash,
+static int eon_write(const struct spi_flash *flash,
 		     u32 offset, size_t len, const void *buf)
 {
 	struct eon_spi_flash *eon = to_eon_spi_flash(flash);
@@ -88,8 +91,6 @@ static int eon_write(struct spi_flash *flash,
 
 	page_size = 1 << eon->params->page_size;
 	byte_addr = offset % page_size;
-
-	flash->spi->rw = SPI_WRITE_FLAG;
 
 	for (actual = 0; actual < len; actual += chunk_len) {
 		chunk_len = min(len - actual, page_size - byte_addr);
@@ -166,10 +167,10 @@ struct spi_flash *spi_flash_probe_eon(struct spi_slave *spi, u8 *idcode)
 	eon->flash.spi = spi;
 	eon->flash.name = params->name;
 
-	eon->flash.write = eon_write;
-	eon->flash.erase = spi_flash_cmd_erase;
-	eon->flash.status = spi_flash_cmd_status;
-	eon->flash.read = spi_flash_cmd_read_fast;
+	eon->flash.internal_write = eon_write;
+	eon->flash.internal_erase = spi_flash_cmd_erase;
+	eon->flash.internal_status = spi_flash_cmd_status;
+	eon->flash.internal_read = spi_flash_cmd_read_fast;
 	eon->flash.sector_size = params->page_size * params->pages_per_sector;
 	eon->flash.size = params->page_size * params->pages_per_sector
 	    * params->nr_sectors;

@@ -54,7 +54,7 @@ void spiconsole_tx_byte(unsigned char c) {
 	if (c == '\n' || (sizeof(struct em100_msg_header) +
 			msg.header.msg_length == spi_crop_chunk(0,
 			MAX_MSG_LENGTH))) {
-		struct spi_slave spi = {.rw = SPI_READ_FLAG};
+		struct spi_slave spi = { };
 
 		spi_xfer(&spi, &msg, sizeof(struct em100_msg_header) +
 				msg.header.msg_length, NULL, 0);

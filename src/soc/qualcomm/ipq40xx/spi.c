@@ -28,6 +28,7 @@
  */
 
 #include <arch/io.h>
+#include <console/console.h>
 #include <delay.h>
 #include <gpio.h>
 #include <soc/iomap.h>

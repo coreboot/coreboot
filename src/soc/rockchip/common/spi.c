@@ -37,45 +37,30 @@ struct rockchip_spi_slave {
 
 static struct rockchip_spi_slave rockchip_spi_slaves[] = {
 	{
-	 .slave = {
-		   .bus = 0,
-		   .rw = SPI_READ_FLAG | SPI_WRITE_FLAG,
-		   },
+	 .slave = { .bus = 0, },
 	 .regs = (void *)SPI0_BASE,
 	},
 	{
-	 .slave = {.bus = 1, .rw = SPI_READ_FLAG,},
+	 .slave = { .bus = 1, },
 	 .regs = (void *)SPI1_BASE,
 	},
 	{
-	 .slave = {
-		   .bus = 2,
-		   .rw = SPI_READ_FLAG | SPI_WRITE_FLAG,
-		   },
+	 .slave = { .bus = 2, },
 	 .regs = (void *)SPI2_BASE,
 	},
 #ifdef SPI3_BASE
 	{
-	 .slave = {
-		   .bus = 3,
-		   .rw = SPI_READ_FLAG | SPI_WRITE_FLAG,
-		   },
+	 .slave = { .bus = 3, },
 	 .regs = (void *)SPI3_BASE,
 	},
 #ifdef SPI4_BASE
 	{
-	 .slave = {
-		   .bus = 4,
-		   .rw = SPI_READ_FLAG | SPI_WRITE_FLAG,
-		   },
+	 .slave = { .bus = 4, },
 	 .regs = (void *)SPI4_BASE,
 	},
 #ifdef SPI5_BASE
 	{
-	 .slave = {
-		   .bus = 5,
-		   .rw = SPI_READ_FLAG | SPI_WRITE_FLAG,
-		   },
+	 .slave = { .bus = 5, },
 	 .regs = (void *)SPI5_BASE,
 	},
 #endif

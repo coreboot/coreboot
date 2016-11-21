@@ -4,8 +4,10 @@
  * Licensed under the GPL-2 or later.
  */
 
+#include <console/console.h>
 #include <stdlib.h>
 #include <spi_flash.h>
+#include <spi-generic.h>
 
 #include "spi_flash_internal.h"
 
@@ -40,7 +42,7 @@ struct winbond_spi_flash {
 };
 
 static inline struct winbond_spi_flash *
-to_winbond_spi_flash(struct spi_flash *flash)
+to_winbond_spi_flash(const struct spi_flash *flash)
 {
 	return container_of(flash, struct winbond_spi_flash, flash);
 }
@@ -136,8 +138,8 @@ static const struct winbond_spi_flash_params winbond_spi_flash_table[] = {
 	},
 };
 
-static int winbond_write(struct spi_flash *flash,
-		u32 offset, size_t len, const void *buf)
+static int winbond_write(const struct spi_flash *flash, u32 offset, size_t len,
+			const void *buf)
 {
 	struct winbond_spi_flash *stm = to_winbond_spi_flash(flash);
 	unsigned long byte_addr;
@@ -149,8 +151,6 @@ static int winbond_write(struct spi_flash *flash,
 
 	page_size = 1 << stm->params->l2_page_size;
 	byte_addr = offset % page_size;
-
-	flash->spi->rw = SPI_WRITE_FLAG;
 
 	for (actual = 0; actual < len; actual += chunk_len) {
 		chunk_len = min(len - actual, page_size - byte_addr);
@@ -224,13 +224,13 @@ struct spi_flash *spi_flash_probe_winbond(struct spi_slave *spi, u8 *idcode)
 	/* Assuming power-of-two page size initially. */
 	page_size = 1 << params->l2_page_size;
 
-	stm.flash.write = winbond_write;
-	stm.flash.erase = spi_flash_cmd_erase;
-	stm.flash.status = spi_flash_cmd_status;
+	stm.flash.internal_write = winbond_write;
+	stm.flash.internal_erase = spi_flash_cmd_erase;
+	stm.flash.internal_status = spi_flash_cmd_status;
 #if CONFIG_SPI_FLASH_NO_FAST_READ
-	stm.flash.read = spi_flash_cmd_read_slow;
+	stm.flash.internal_read = spi_flash_cmd_read_slow;
 #else
-	stm.flash.read = spi_flash_cmd_read_fast;
+	stm.flash.internal_read = spi_flash_cmd_read_fast;
 #endif
 	stm.flash.sector_size = (1 << stm.params->l2_page_size) *
 		stm.params->pages_per_sector;

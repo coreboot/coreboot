@@ -20,6 +20,7 @@
  */
 
 #include <boot_device.h>
+#include <console/console.h>
 #include <spi_flash.h>
 #include <symbols.h>
 #include <cbmem.h>
@@ -46,7 +47,7 @@ static ssize_t spi_readat(const struct region_device *rd, void *b,
 
 	if (show)
 		stopwatch_init(&sw);
-	if (spi_flash_info->read(spi_flash_info, offset, size, b))
+	if (spi_flash_read(spi_flash_info, offset, size, b))
 		return -1;
 	if (show) {
 		long usecs;
@@ -67,7 +68,7 @@ static ssize_t spi_readat(const struct region_device *rd, void *b,
 static ssize_t spi_writeat(const struct region_device *rd, const void *b,
 				size_t offset, size_t size)
 {
-	if (spi_flash_info->write(spi_flash_info, offset, size, b))
+	if (spi_flash_write(spi_flash_info, offset, size, b))
 		return -1;
 	return size;
 }
@@ -75,7 +76,7 @@ static ssize_t spi_writeat(const struct region_device *rd, const void *b,
 static ssize_t spi_eraseat(const struct region_device *rd,
 				size_t offset, size_t size)
 {
-	if (spi_flash_info->erase(spi_flash_info, offset, size))
+	if (spi_flash_erase(spi_flash_info, offset, size))
 		return -1;
 	return size;
 }

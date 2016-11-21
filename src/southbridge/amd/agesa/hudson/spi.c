@@ -17,16 +17,13 @@
 #include <string.h>
 #include <arch/io.h>
 #include <console/console.h>
+#include <spi_flash.h>
 #include <spi-generic.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ops.h>
 
-#if IS_ENABLED (CONFIG_HUDSON_IMC_FWM)
 #include <Proc/Fch/FchPlatform.h>
-
-static int bus_claimed = 0;
-#endif
 
 #define SPI_REG_OPCODE		0x0
 #define SPI_REG_CNTRL01		0x1
@@ -149,32 +146,34 @@ int spi_xfer(struct spi_slave *slave, const void *dout,
 
 	return 0;
 }
+
 int spi_claim_bus(struct spi_slave *slave)
 {
-#if IS_ENABLED (CONFIG_HUDSON_IMC_FWM)
-
-	if (slave->rw == SPI_WRITE_FLAG) {
-		bus_claimed++;
-		if (bus_claimed == 1)
-			ImcSleep(NULL);
-	}
-#endif
-
+	/* Nothing is required. */
 	return 0;
 }
 
 void spi_release_bus(struct spi_slave *slave)
 {
-#if IS_ENABLED (CONFIG_HUDSON_IMC_FWM)
+	/* Nothing is required. */
+}
 
-	if (slave->rw == SPI_WRITE_FLAG)  {
-		bus_claimed--;
-		if (bus_claimed <= 0) {
-			bus_claimed = 0;
-			ImcWakeup(NULL);
-		}
-	}
-#endif
+int chipset_volatile_group_begin(const struct spi_flash *flash)
+{
+	if (!IS_ENABLED (CONFIG_HUDSON_IMC_FWM))
+		return 0;
+
+	ImcSleep(NULL);
+	return 0;
+}
+
+int chipset_volatile_group_end(const struct spi_flash *flash)
+{
+	if (!IS_ENABLED (CONFIG_HUDSON_IMC_FWM))
+		return 0;
+
+	ImcWakeup(NULL);
+	return 0;
 }
 
 struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs)

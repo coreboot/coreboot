@@ -16,6 +16,7 @@
 
 #include <soc/flash_controller.h>
 #include <soc/romstage.h>
+#include <spi-generic.h>
 
 /*
  * Minimal set of commands to read WPSR from SPI.

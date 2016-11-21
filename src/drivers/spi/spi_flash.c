@@ -7,6 +7,8 @@
  * Licensed under the GPL-2 or later.
  */
 
+#include <arch/early_variables.h>
+#include <assert.h>
 #include <boot_device.h>
 #include <cbfs.h>
 #include <cpu/x86/smm.h>
@@ -142,8 +144,8 @@ static int spi_flash_cmd_read_array(struct spi_slave *spi, u8 *cmd,
 	return len != 0;
 }
 
-int spi_flash_cmd_read_fast(struct spi_flash *flash, u32 offset,
-		size_t len, void *data)
+int spi_flash_cmd_read_fast(const struct spi_flash *flash, u32 offset,
+			size_t len, void *data)
 {
 	u8 cmd[5];
 
@@ -154,8 +156,8 @@ int spi_flash_cmd_read_fast(struct spi_flash *flash, u32 offset,
 					offset, len, data);
 }
 
-int spi_flash_cmd_read_slow(struct spi_flash *flash, u32 offset,
-			    size_t len, void *data)
+int spi_flash_cmd_read_slow(const struct spi_flash *flash, u32 offset,
+			size_t len, void *data)
 {
 	u8 cmd[4];
 
@@ -164,7 +166,7 @@ int spi_flash_cmd_read_slow(struct spi_flash *flash, u32 offset,
 					offset, len, data);
 }
 
-int spi_flash_cmd_poll_bit(struct spi_flash *flash, unsigned long timeout,
+int spi_flash_cmd_poll_bit(const struct spi_flash *flash, unsigned long timeout,
 			   u8 cmd, u8 poll_bit)
 {
 	struct spi_slave *spi = flash->spi;
@@ -189,13 +191,14 @@ int spi_flash_cmd_poll_bit(struct spi_flash *flash, unsigned long timeout,
 	return -1;
 }
 
-int spi_flash_cmd_wait_ready(struct spi_flash *flash, unsigned long timeout)
+int spi_flash_cmd_wait_ready(const struct spi_flash *flash,
+			unsigned long timeout)
 {
 	return spi_flash_cmd_poll_bit(flash, timeout,
 		CMD_READ_STATUS, STATUS_WIP);
 }
 
-int spi_flash_cmd_erase(struct spi_flash *flash, u32 offset, size_t len)
+int spi_flash_cmd_erase(const struct spi_flash *flash, u32 offset, size_t len)
 {
 	u32 start, end, erase_size;
 	int ret;
@@ -206,8 +209,6 @@ int spi_flash_cmd_erase(struct spi_flash *flash, u32 offset, size_t len)
 		printk(BIOS_WARNING, "SF: Erase offset/length not multiple of erase size\n");
 		return -1;
 	}
-
-	flash->spi->rw = SPI_WRITE_FLAG;
 
 	cmd[0] = flash->erase_cmd;
 	start = offset;
@@ -240,7 +241,7 @@ out:
 	return ret;
 }
 
-int spi_flash_cmd_status(struct spi_flash *flash, u8 *reg)
+int spi_flash_cmd_status(const struct spi_flash *flash, u8 *reg)
 {
 	return spi_flash_cmd(flash->spi, flash->status_cmd, reg, sizeof(*reg));
 }
@@ -312,6 +313,8 @@ static struct {
 };
 #define IDCODE_LEN (IDCODE_CONT_LEN + IDCODE_PART_LEN)
 
+
+/* Public API implementations. */
 struct spi_flash *spi_flash_probe(unsigned int bus, unsigned int cs)
 {
 	struct spi_slave *spi;
@@ -324,8 +327,6 @@ struct spi_flash *spi_flash_probe(unsigned int bus, unsigned int cs)
 		printk(BIOS_WARNING, "SF: Failed to set up slave\n");
 		return NULL;
 	}
-
-	spi->rw = SPI_READ_FLAG;
 
 	if (spi->force_programmer_specific && spi->programmer_specific_probe) {
 		flash = spi->programmer_specific_probe (spi);
@@ -386,6 +387,86 @@ flash_detected:
 err_manufacturer_probe:
 err_read_id:
 	return NULL;
+}
+
+int spi_flash_read(const struct spi_flash *flash, u32 offset, size_t len,
+		void *buf)
+{
+	return flash->internal_read(flash, offset, len, buf);
+}
+
+int spi_flash_write(const struct spi_flash *flash, u32 offset, size_t len,
+		const void *buf)
+{
+	int ret;
+
+	if (spi_flash_volatile_group_begin(flash))
+		return -1;
+
+	ret = flash->internal_write(flash, offset, len, buf);
+
+	if (spi_flash_volatile_group_end(flash))
+		return -1;
+
+	return ret;
+}
+
+int spi_flash_erase(const struct spi_flash *flash, u32 offset, size_t len)
+{
+	int ret;
+
+	if (spi_flash_volatile_group_begin(flash))
+		return -1;
+
+	ret = flash->internal_erase(flash, offset, len);
+
+	if (spi_flash_volatile_group_end(flash))
+		return -1;
+
+	return ret;
+}
+
+int spi_flash_status(const struct spi_flash *flash, u8 *reg)
+{
+	return flash->internal_status(flash, reg);
+}
+
+static uint32_t volatile_group_count CAR_GLOBAL;
+
+int spi_flash_volatile_group_begin(const struct spi_flash *flash)
+{
+	uint32_t count;
+	int ret = 0;
+
+	if (!IS_ENABLED(CONFIG_SPI_FLASH_HAS_VOLATILE_GROUP))
+		return ret;
+
+	count = car_get_var(volatile_group_count);
+	if (count == 0)
+		ret = chipset_volatile_group_begin(flash);
+
+	count++;
+	car_set_var(volatile_group_count, count);
+	return ret;
+}
+
+int spi_flash_volatile_group_end(const struct spi_flash *flash)
+{
+	uint32_t count;
+	int ret = 0;
+
+	if (!IS_ENABLED(CONFIG_SPI_FLASH_HAS_VOLATILE_GROUP))
+		return ret;
+
+	count = car_get_var(volatile_group_count);
+	assert(count == 0);
+	count--;
+	car_set_var(volatile_group_count, count);
+
+	if (count == 0)
+		ret = chipset_volatile_group_end(flash);
+
+	return ret;
 }
 
 void lb_spi_flash(struct lb_header *header)

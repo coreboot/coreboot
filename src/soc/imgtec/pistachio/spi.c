@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <console/console.h>
 #include <soc/cpu.h>
 #include <soc/spi.h>
 #include <spi_flash.h>
@@ -444,7 +445,6 @@ struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs)
 	img_slave->base = base;
 	slave->bus = bus;
 	slave->cs = cs;
-	slave->rw = SPI_READ_FLAG | SPI_WRITE_FLAG;
 	slave->max_transfer_size = IMGTEC_SPI_MAX_TRANSFER_SIZE;
 
 	device_parameters->bitrate = 64;

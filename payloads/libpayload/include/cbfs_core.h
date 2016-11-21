@@ -243,6 +243,12 @@ struct cbfs_media {
 	int (*close)(struct cbfs_media *media);
 };
 
+/* returns pointer to a file entry inside CBFS or NULL */
+struct cbfs_file *cbfs_get_file(struct cbfs_media *media, const char *name);
+
+/* returns value with a given tag inside CBFS */
+char *cbfs_find_string(const char *string, const char *filename);
+
 /*
  * Returns pointer to a copy of the file content or NULL on error.
  * If the file is compressed, data will be decompressed.

@@ -10,14 +10,9 @@ unexport KCONFIG_NEGATIVES
 
 all: sortbootorder
 
-#sortbootorder: patch
-sortbootorder:
+sortbootorder: download
 	echo "    MAKE       sortbootorder     "
 	$(MAKE) -C sortbootorder
-
-#patch: download
-#	cd sortbootorder; \
-#	if [ -e debian ]; then patch -l -p1 < ../libpayload_sortbootorder.patch; fi
 
 download:
 	test -d sortbootorder || { wget $(project_url); \

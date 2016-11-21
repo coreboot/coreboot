@@ -22,7 +22,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <soc/intel/common/spi.h>
+#include <soc/intel/common/spi_flash.h>
 #include <soc/pci_devs.h>
 #include <soc/spi.h>
 #include <spi_flash.h>
@@ -420,7 +420,7 @@ int spi_read_status(uint8_t *status)
 	return 0;
 }
 
-int spi_get_fpr_info(struct fpr_info *info)
+int spi_flash_get_fpr_info(struct fpr_info *info)
 {
 	BOILERPLATE_CREATE_CTX(ctx);
 

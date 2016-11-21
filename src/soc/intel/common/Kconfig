@@ -9,7 +9,7 @@ config CACHE_MRC_SETTINGS
 	bool "Save cached MRC settings"
 	default n
 
-config SOC_INTEL_COMMON_SPI_PROTECT
+config SOC_INTEL_COMMON_SPI_FLASH_PROTECT
 	bool
 	default n
 

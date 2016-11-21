@@ -13,6 +13,9 @@
  * GNU General Public License for more details.
  */
 
+#ifndef __INTEL_COMMON_SPI_FLASH_H__
+#define __INTEL_COMMON_SPI_FLASH_H__
+
 #define SPI_FPR_SHIFT		12
 #define SPI_FPR_MASK		0x7fff
 #define SPI_FPR_BASE_SHIFT	0
@@ -36,10 +39,12 @@ struct fpr_info {
  *
  * On success return 0 else -1.
  */
-int spi_get_fpr_info(struct fpr_info *info);
+int spi_flash_get_fpr_info(struct fpr_info *info);
 
 /*
  * Protect range of SPI flash defined by [start, start+size-1] using Flash
  * Protected Range (FPR) register if available.
  */
 int spi_flash_protect(u32 start, u32 size);
+
+#endif /* __INTEL_COMMON_SPI_FLASH_H__ */

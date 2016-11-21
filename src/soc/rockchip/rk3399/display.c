@@ -41,6 +41,7 @@ void rk_display_init(device_t dev)
 	struct edid edid;
 	struct soc_rockchip_rk3399_config *conf = dev->chip_info;
 	enum vop_modes detected_mode = VOP_MODE_UNKNOWN;
+	int retry_count = 0;
 
 	/* let's use vop0 in rk3399 */
 	uint32_t vop_id = 0;
@@ -63,15 +64,14 @@ void rk_display_init(device_t dev)
 		 */
 		write32(&rk3399_grf->soc_con25, RK_SETBITS(1 << 11));
 
+retry_edp:
 		rk_edp_init();
-
 		if (rk_edp_get_edid(&edid) == 0) {
 			detected_mode = VOP_MODE_EDP;
 			break;
 		}
-		printk(BIOS_WARNING, "Cannot get EDID from EDP.\n");
-		if (conf->vop_mode == VOP_MODE_EDP)
-			return;
+		goto edp_error;
+
 		/* fall thru */
 	case VOP_MODE_HDMI:
 		printk(BIOS_WARNING, "HDMI display is NOT supported yet.\n");
@@ -100,13 +100,24 @@ void rk_display_init(device_t dev)
 	case VOP_MODE_EDP:
 	default:
 		/* will enable edp in depthcharge */
-		if (rk_edp_prepare()) {
-			printk(BIOS_WARNING, "edp prepare error\n");
-			return;
-		}
+		if (rk_edp_prepare())
+			goto edp_error;
 		mainboard_power_on_backlight();
 		break;
 	}
 
 	set_vbe_mode_info_valid(&edid, (uintptr_t)0);
+	return;
+
+edp_error:
+	if (retry_count++ < 3) {
+		/* rst edp */
+		write32(&cru_ptr->softrst_con[17],
+			RK_SETBITS(1 << 12 | 1 << 13));
+			udelay(1);
+		write32(&cru_ptr->softrst_con[17],
+			RK_CLRBITS(1 << 12 | 1 << 13));
+		goto retry_edp;
+	}
+	printk(BIOS_WARNING, "epd initial error\n");
 }

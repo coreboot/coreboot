@@ -62,6 +62,7 @@ cache_as_ram_setup:
   post_code(0xa1)
 
   AMD_ENABLE_STACK
+
 #ifdef __x86_64__
   /* switch to 64 bit long mode */
   mov     %esi, %ecx
@@ -104,10 +105,10 @@ cache_as_ram_setup:
   # use call far to switch to 64-bit code segment
   ljmp $0x18, $1f
 1:
-  /* Pass the BIST result */
+  /* Pass the cpu_init_detected */
   cvtsd2si        %xmm1, %esi
 
-  /* Pass the cpu_init_detected */
+  /* Pass the BIST result */
   cvtsd2si        %xmm0, %edi
 
   /* align the stack */
@@ -118,6 +119,7 @@ cache_as_ram_setup:
   .code32
 
 #else
+
   /* Restore the BIST result */
   cvtsd2si  %xmm0, %edx
 

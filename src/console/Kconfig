@@ -259,7 +259,7 @@ config SPI_CONSOLE
 
 choice
 	prompt "Default console log level"
-	default DEFAULT_CONSOLE_LOGLEVEL_6
+	default DEFAULT_CONSOLE_LOGLEVEL_1
 
 config DEFAULT_CONSOLE_LOGLEVEL_8
 	bool "8: SPEW"

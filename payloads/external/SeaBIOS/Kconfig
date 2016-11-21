@@ -72,7 +72,7 @@ config PAYLOAD_CONFIGFILE
 
 config SEABIOS_BOOTORDER_FILE
 	string "SeaBIOS bootorder file"
-	default ""
+	default "$(top)/src/mainboard/$(MAINBOARDDIR)/bootorder"
 	help
 	  Add a SeaBIOS bootorder file.  From the wiki:
 	  "The bootorder file may be used to configure the boot up order. The file
@@ -85,6 +85,36 @@ config SEABIOS_BOOTORDER_FILE
 
 	  If used, a typical value would be:
 	    $(top)/src/mainboard/$(MAINBOARDDIR)/bootorder
+
+config SEABIOS_BOOTORDER_MAP_FILE
+	string "SeaBIOS bootorder_map file"
+	default "$(top)/src/mainboard/$(MAINBOARDDIR)/bootorder_map"
+	help
+	  TBD
+
+config SEABIOS_BOOTORDER_DEF_FILE
+	string "SeaBIOS bootorder_def file"
+	default "$(top)/src/mainboard/$(MAINBOARDDIR)/bootorder_def"
+	help
+	  TBD
+
+config SEABIOS_BOOTMENU_KEY_FILE
+	string "SeaBIOS boot-menu-key file"
+	default "$(top)/src/mainboard/$(MAINBOARDDIR)/boot-menu-key"
+	help
+	  TBD
+
+config SEABIOS_BOOTMENU_WAIT_FILE
+	string "SeaBIOS boot-menu-wait file"
+	default "$(top)/src/mainboard/$(MAINBOARDDIR)/boot-menu-wait"
+	help
+	  TBD
+
+config SEABIOS_BOOTMENU_MESSAGE_FILE
+	string "SeaBIOS boot-menu-message file"
+	default "$(top)/src/mainboard/$(MAINBOARDDIR)/boot-menu-message"
+	help
+	  TBD
 
 config PAYLOAD_FILE
 	default "payloads/external/SeaBIOS/seabios/out/bios.bin.elf"

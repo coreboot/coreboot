@@ -102,6 +102,41 @@ bootorder-file := $(strip $(CONFIG_SEABIOS_BOOTORDER_FILE))
 bootorder-type := raw
 endif
 
+# add a SeaBIOS bootorder_map file
+ifneq ($(strip $(CONFIG_SEABIOS_BOOTORDER_MAP_FILE)),)
+cbfs-files-y += bootorder_map
+bootorder_map-file := $(strip $(CONFIG_SEABIOS_BOOTORDER_MAP_FILE))
+bootorder_map-type := raw
+endif
+
+# add a SeaBIOS bootorder_def file
+ifneq ($(strip $(CONFIG_SEABIOS_BOOTORDER_DEF_FILE)),)
+cbfs-files-y += bootorder_def
+bootorder_def-file := $(strip $(CONFIG_SEABIOS_BOOTORDER_DEF_FILE))
+bootorder_def-type := raw
+endif
+
+# add a SeaBIOS boot-menu-key file
+ifneq ($(strip $(CONFIG_SEABIOS_BOOTMENU_KEY_FILE)),)
+cbfs-files-y += etc/boot-menu-key
+etc/boot-menu-key-file := $(strip $(CONFIG_SEABIOS_BOOTMENU_KEY_FILE))
+etc/boot-menu-key-type := raw
+endif
+
+# add a SeaBIOS boot-menu-wait file
+ifneq ($(strip $(CONFIG_SEABIOS_BOOTMENU_WAIT_FILE)),)
+cbfs-files-y += etc/boot-menu-wait
+etc/boot-menu-wait-file := $(strip $(CONFIG_SEABIOS_BOOTMENU_WAIT_FILE))
+etc/boot-menu-wait-type := raw
+endif
+
+# add a SeaBIOS boot-menu-message file
+ifneq ($(strip $(CONFIG_SEABIOS_BOOTMENU_MESSAGE_FILE)),)
+cbfs-files-y += etc/boot-menu-message
+etc/boot-menu-message-file := $(strip $(CONFIG_SEABIOS_BOOTMENU_MESSAGE_FILE))
+etc/boot-menu-message-type := raw
+endif
+
 # Depthcharge
 
 payloads/external/depthcharge/depthcharge/build/depthcharge.elf depthcharge: $(DOTCONFIG) $(CBFSTOOL)

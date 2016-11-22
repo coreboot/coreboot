@@ -22,6 +22,7 @@
 #include <console/console.h>
 #include <device/pci_ids.h>
 
+#include <spi_flash.h>
 #include <spi-generic.h>
 
 static int ich_status_poll(u16 bitmask, int wait_til_set);

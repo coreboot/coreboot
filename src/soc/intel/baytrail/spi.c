@@ -21,6 +21,7 @@
 #include <arch/io.h>
 #include <console/console.h>
 #include <device/pci_ids.h>
+#include <spi_flash.h>
 #include <spi-generic.h>
 
 #include <soc/lpc.h>

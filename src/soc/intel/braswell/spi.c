@@ -22,6 +22,7 @@
 #include <rules.h>
 #include <soc/lpc.h>
 #include <soc/pci_devs.h>
+#include <spi_flash.h>
 #include <spi-generic.h>
 #include <stdint.h>
 #include <stdlib.h>

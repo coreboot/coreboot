@@ -15,9 +15,11 @@
  */
 
 #include <boardid.h>
+#include <console/console.h>
 #include <delay.h>
 #include <device/device.h>
 #include <device/i2c.h>
+#include <ec/google/chromeec/ec.h>
 #include <gpio.h>
 #include <soc/bl31_plat_params.h>
 #include <soc/clock.h>
@@ -229,6 +231,17 @@ static void configure_display(void)
 	gpio_output(GPIO(4, D, 3), 1); /* CPU3_EDP_VDDEN for P3.3V_DISP */
 }
 
+static void usb_power_cycle(int port)
+{
+	if (google_chromeec_set_usb_pd_role(port, USB_PD_CTRL_ROLE_FORCE_SINK))
+		printk(BIOS_ERR, "ERROR: Cannot force USB%d PD sink\n", port);
+
+	mdelay(10);	/* Make sure USB stick is fully depowered. */
+
+	if (google_chromeec_set_usb_pd_role(port, USB_PD_CTRL_ROLE_TOGGLE_ON))
+		printk(BIOS_ERR, "ERROR: Cannot restore USB%d PD mode\n", port);
+}
+
 static void setup_usb(void)
 {
 	/* A few magic PHY tuning values that improve eye diagram amplitude
@@ -268,6 +281,17 @@ static void setup_usb(void)
 
 	setup_usb_otg0();
 	setup_usb_otg1();
+
+	/*
+	 * Need to power-cycle USB ports for use in firmware, since some devices
+	 * can't fall back to USB 2.0 after they saw SuperSpeed terminations.
+	 * This takes about a dozen milliseconds, so only do it in boot modes
+	 * that have firmware UI (which one could select USB boot from).
+	 */
+	if (display_init_required()) {
+		usb_power_cycle(0);
+		usb_power_cycle(1);
+	}
 }
 
 static void mainboard_init(device_t dev)

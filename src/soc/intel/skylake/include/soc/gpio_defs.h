@@ -33,6 +33,7 @@
 #define GPIO_NUM_GROUPS		8
 #define GPIO_MAX_NUM_PER_GROUP	24
 
+#define GPIO_DWx_COUNT		2 /* DW0 and DW1 */
 /*
  * GPIOs are ordered monotonically increasing to match ACPI/OS driver.
  */

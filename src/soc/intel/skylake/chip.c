@@ -90,6 +90,8 @@ void soc_silicon_init_params(SILICON_INIT_UPD *params)
 	for (i = 0; i < ARRAY_SIZE(config->usb2_ports); i++) {
 		params->PortUsb20Enable[i] =
 			config->usb2_ports[i].enable;
+		params->Usb2OverCurrentPin[i] =
+			config->usb2_ports[i].ocpin;
 		params->Usb2AfePetxiset[i] =
 			config->usb2_ports[i].pre_emp_bias;
 		params->Usb2AfeTxiset[i] =
@@ -102,6 +104,7 @@ void soc_silicon_init_params(SILICON_INIT_UPD *params)
 
 	for (i = 0; i < ARRAY_SIZE(config->usb3_ports); i++) {
 		params->PortUsb30Enable[i] = config->usb3_ports[i].enable;
+		params->Usb3OverCurrentPin[i] = config->usb3_ports[i].ocpin;
 		if (config->usb3_ports[i].tx_de_emp) {
 			params->Usb3HsioTxDeEmphEnable[i] = 1;
 			params->Usb3HsioTxDeEmph[i] =

@@ -34,6 +34,13 @@ config CPU_AMD_AGESA
 
 if CPU_AMD_AGESA
 
+config AGESA_LEGACY
+	def_bool n
+
+config AGESA_NO_LEGACY
+	bool
+	default !AGESA_LEGACY
+
 config XIP_ROM_SIZE
 	hex
 	default 0x100000

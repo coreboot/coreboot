@@ -76,6 +76,7 @@ enum usb_charge_mode {
 	USB_CHARGE_MODE_DOWNSTREAM_1500MA,
 };
 int google_chromeec_set_usb_charge_mode(u8 port_id, enum usb_charge_mode mode);
+int google_chromeec_set_usb_pd_role(u8 port, enum usb_pd_control_role role);
 
 /* internal structure to send a command to the EC and wait for response. */
 struct chromeec_command {

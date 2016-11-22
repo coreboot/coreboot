@@ -497,6 +497,28 @@ int google_chromeec_set_usb_charge_mode(u8 port_id, enum usb_charge_mode mode)
 	return google_chromeec_command(&cmd);
 }
 
+int google_chromeec_set_usb_pd_role(u8 port, enum usb_pd_control_role role)
+{
+	struct ec_params_usb_pd_control req = {
+		.port = port,
+		.role = role,
+		.mux = USB_PD_CTRL_MUX_NO_CHANGE,
+		.swap = USB_PD_CTRL_SWAP_NONE,
+	};
+	struct ec_response_usb_pd_control rsp;
+	struct chromeec_command cmd = {
+		.cmd_code = EC_CMD_USB_PD_CONTROL,
+		.cmd_version = 0,
+		.cmd_data_in = &req,
+		.cmd_size_in = sizeof(req),
+		.cmd_data_out = &rsp,
+		.cmd_size_out = sizeof(rsp),
+		.cmd_dev_index = 0,
+	};
+
+	return google_chromeec_command(&cmd);
+}
+
 #ifndef __SMM__
 
 static

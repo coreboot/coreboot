@@ -151,17 +151,17 @@ chip soc/intel/skylake
 	# RP 1 uses SRCCLKREQ1#
 	register "PcieRpClkReqNumber[0]" = "1"
 
-	register "usb2_ports[0]" = "USB2_PORT_TYPE_C"  # Type-C Port (board)
-	register "usb2_ports[1]" = "USB2_PORT_MAX"     # Type-C Port (flex)
-	register "usb2_ports[2]" = "USB2_PORT_MID"     # Bluetooth
-	register "usb2_ports[4]" = "USB2_PORT_MID"     # Type-A Port 1
-	register "usb2_ports[6]" = "USB2_PORT_FLEX"    # Camera
-	register "usb2_ports[8]" = "USB2_PORT_MID"     # Type-A Port 2
+	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC2)"   # Type-C Port (board)
+	register "usb2_ports[1]" = "USB2_PORT_MAX(OC3)"      # Type-C Port (flex)
+	register "usb2_ports[2]" = "USB2_PORT_MID(OC_SKIP)"  # Bluetooth
+	register "usb2_ports[4]" = "USB2_PORT_MID(OC0)"      # Type-A Port 1
+	register "usb2_ports[6]" = "USB2_PORT_FLEX(OC_SKIP)" # Camera
+	register "usb2_ports[8]" = "USB2_PORT_MID(OC1)"      # Type-A Port 2
 
-	register "usb3_ports[0]" = "USB3_PORT_DEFAULT" # Type-C Port (board)
-	register "usb3_ports[1]" = "USB3_PORT_DEFAULT" # Type-C Port (flex)
-	register "usb3_ports[2]" = "USB3_PORT_DEFAULT" # Type-A Port 1
-	register "usb3_ports[3]" = "USB3_PORT_DEFAULT" # Type-A Port 2
+	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC2)" # Type-C Port (board)
+	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC3)" # Type-C Port (flex)
+	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC0)" # Type-A Port 1
+	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC1)" # Type-A Port 2
 
 	register "i2c_voltage[4]" = "I2C_VOLTAGE_1V8"  # I2C4 is 1.8V
 

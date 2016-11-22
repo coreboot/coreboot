@@ -226,7 +226,8 @@ static void *gpio_dw_regs(gpio_t pad)
 	pad_relative = pad - comm->min;
 
 	/* DW0 and DW1 regs are 4 bytes each. */
-	return &regs[PAD_CFG_DW_OFFSET + pad_relative * 8];
+	return &regs[PAD_CFG_DW_OFFSET + pad_relative *
+			GPIO_DWx_SIZE(GPIO_DWx_COUNT)];
 }
 
 static void *gpio_hostsw_reg(gpio_t pad, size_t *bit)

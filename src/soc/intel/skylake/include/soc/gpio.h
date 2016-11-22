@@ -19,6 +19,8 @@
 
 #include <soc/gpio_defs.h>
 
+#define GPIO_DWx_SIZE(x)	(sizeof(uint32_t) * (x))
+
 #define CROS_GPIO_DEVICE_NAME	"INT344B:00"
 
 #ifndef __ACPI__

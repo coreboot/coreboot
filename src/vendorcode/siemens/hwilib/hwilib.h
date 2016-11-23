@@ -26,6 +26,7 @@ typedef enum {
 	XIB_VerID,
 	HIB_HwRev,
 	SIB_HwRev,
+	HWID,
 	UniqueNum,
 	Mac1,
 	Mac2,

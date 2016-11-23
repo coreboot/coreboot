@@ -224,7 +224,15 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	dev = dev_find_slot(0, PCH_DEVFN_SPI);
 	params->ShowSpiController = dev->enabled;
 
-	params->SendVrMbxCmd = config->SendVrMbxCmd;
+	/*
+	 * Send VR specific mailbox commands:
+	 * 000b - no VR specific command sent
+	 * 001b - VR mailbox command specifically for the MPS IMPV8 VR
+	 * 	  will be sent
+	 * 010b - VR specific command sent for PS4 exit issue
+	 * 100b - VR specific command sent for MPS VR decay issue
+	 */
+	params->SendVrMbxCmd1 = config->SendVrMbxCmd;
 
 	soc_irq_settings(params);
 }

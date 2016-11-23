@@ -28,13 +28,15 @@
 
 /*
  * XMM map:
- *   xmm0: BIST
  */
 
 .code32
 .globl cache_as_ram_setup, disable_cache_as_ram, cache_as_ram_setup_out
 
 cache_as_ram_setup:
+
+  /* Preserve BIST. */
+  movl %eax, %ebp
 
   post_code(0xa0)
 
@@ -45,11 +47,9 @@ cache_as_ram_setup:
   orl $(3<<9), %eax
   movl %eax, %cr4
 
-  /* Save the BIST result */
-  cvtsi2sd  %ebp, %xmm0
-
   post_code(0xa1)
 
+  /* NOTE: %ebx, %ebp are preserved in AMD_ENABLE_STACK. */
   AMD_ENABLE_STACK
 
   /* Align the stack. */
@@ -100,16 +100,15 @@ cache_as_ram_setup:
 
 #endif
 
-  call early_all_cores
+  /* Calling conventions preserve BIST in %ebp. */
 
-  /* Restore the BIST result */
-  cvtsd2si  %xmm0, %edx
+  call early_all_cores
 
   /* Must maintain 16-byte stack alignment here. */
   pushl $0x0
   pushl $0x0
   pushl $0x0
-  pushl %edx  /* bist */
+  pushl %ebp
   call  romstage_main
 
   /* Should never see this postcode */

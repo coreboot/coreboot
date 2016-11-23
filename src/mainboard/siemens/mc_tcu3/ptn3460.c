@@ -15,6 +15,7 @@
 
 #include <console/console.h>
 #include <hwilib.h>
+#include <string.h>
 #include "soc/i2c.h"
 #include "ptn3460.h"
 
@@ -29,6 +30,7 @@ int ptn3460_init(char *hwi_block)
 	int status;
 	uint8_t disp_con = 0, color_depth = 0;
 	uint8_t edid_data[0x80];
+	uint8_t hwid[4], tcu31_hwid[4] = {7, 9, 2, 0};
 
 	if (!hwi_block || hwilib_find_blocks(hwi_block) != CB_SUCCESS) {
 		printk(BIOS_ERR, "LCD: Info block \"%s\" not found!\n",
@@ -56,6 +58,11 @@ int ptn3460_init(char *hwi_block)
 			hwi_block);
 		return 1;
 	}
+	if (hwilib_get_field(HWID, hwid, sizeof(hwid)) != sizeof(hwid)) {
+		printk(BIOS_ERR, "LCD: Missing HW-ID from %s\n",
+			hwi_block);
+		return 1;
+	}
 	/* Here, all the desired information for setting up DP2LVDS converter*/
 	/* are present. Inside the converter, table 6 will be used for */
 	/* the timings. */
@@ -78,7 +85,10 @@ int ptn3460_init(char *hwi_block)
 		cfg.lvds_interface_ctrl1 |= 0x20; /* Use 18 bits per pixel */
 
 	cfg.lvds_interface_ctrl2 = 0x03;  /* no clock spreading, 300 mV LVDS swing */
-	cfg.lvds_interface_ctrl3 = 0x00;  /* no LVDS signal swap */
+	if (memcmp(hwid, tcu31_hwid, sizeof(hwid)))
+		cfg.lvds_interface_ctrl3 = 0x00;  /* no LVDS signal swap */
+	else
+		cfg.lvds_interface_ctrl3 = 0x01;  /* swap LVDS even and odd */
 	cfg.t2_delay = 1;		  /* Delay T2 (VDD to LVDS active) by 16 ms */
 	cfg.t3_timing = 10;		  /* 500 ms from LVDS to backlight active */
 	cfg.t12_timing = 20;		  /* 1 second re-power delay */

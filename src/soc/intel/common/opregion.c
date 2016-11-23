@@ -15,6 +15,7 @@
 
 #include <console/console.h>
 #include <string.h>
+#include <cbmem.h>
 
 #include "gma.h"
 #include "opregion.h"
@@ -24,6 +25,7 @@ int init_igd_opregion(igd_opregion_t *opregion)
 {
 	struct region_device vbt_rdev;
 	optionrom_vbt_t *vbt;
+	optionrom_vbt_t *ext_vbt;
 
 	if (locate_vbt(&vbt_rdev) == CB_ERR) {
 		printk(BIOS_ERR, "VBT not found\n");
@@ -43,8 +45,22 @@ int init_igd_opregion(igd_opregion_t *opregion)
 					sizeof(opregion->header.signature));
 	memcpy(opregion->header.vbios_version, vbt->coreblock_biosbuild,
 					ARRAY_SIZE(vbt->coreblock_biosbuild));
-	memcpy(opregion->vbt.gvd1, vbt, MIN(vbt->hdr_vbt_size,
-					sizeof(opregion->vbt.gvd1)));
+	/* Extended VBT support */
+	if (vbt->hdr_vbt_size > sizeof(opregion->vbt.gvd1)) {
+		ext_vbt = cbmem_add(CBMEM_ID_EXT_VBT, vbt->hdr_vbt_size);
+
+		if (ext_vbt == NULL) {
+			printk(BIOS_ERR, "Unable to add Ext VBT to cbmem!\n");
+			return 0;
+		}
+
+		memcpy(ext_vbt, vbt, vbt->hdr_vbt_size);
+		opregion->mailbox3.rvda = (uintptr_t)ext_vbt;
+		opregion->mailbox3.rvds = vbt->hdr_vbt_size;
+	} else {
+		/* Raw VBT size which can fit in gvd1 */
+		memcpy(opregion->vbt.gvd1, vbt, vbt->hdr_vbt_size);
+	}
 
 	/* 8KiB */
 	opregion->header.size = sizeof(igd_opregion_t) / KiB;

@@ -18,10 +18,15 @@
 #include <device/pnp.h>
 #include <pc80/keyboard.h>
 #include <stdlib.h>
+#include <superio/ite/common/env_ctrl.h>
+
 #include "it8718f.h"
+#include "chip.h"
 
 static void init(struct device *dev)
 {
+	const struct superio_ite_it8718f_config *conf;
+	const struct resource *res;
 
 	if (!dev->enabled)
 		return;
@@ -31,7 +36,12 @@ static void init(struct device *dev)
 		break;
 	case IT8718F_PP: /* TODO. */
 		break;
-	case IT8718F_EC: /* TODO. */
+	case IT8718F_EC:
+		conf = dev->chip_info;
+		res = find_resource(dev, PNP_IDX_IO0);
+		if (!conf || !res)
+			break;
+		ite_ec_init(res->base, &conf->ec);
 		break;
 	case IT8718F_KBCK:
 		pc_keyboard_init(NO_AUX_DEVICE);

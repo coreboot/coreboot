@@ -18,6 +18,7 @@
 
 void restore_mtrr(void);
 void prepare_for_resume(void);
+void set_resume_cache(void);
 
 void backup_mtrr(void *mtrr_store, u32 *mtrr_store_size);
 const void *OemS3Saved_MTRR_Storage(void);

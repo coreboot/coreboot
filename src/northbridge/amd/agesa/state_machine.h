@@ -23,9 +23,10 @@ struct sysinfo
 	int s3resume;
 };
 
-void board_BeforeAgesa(struct sysinfo *cb);
-
-void platform_once(struct sysinfo *cb);
 void agesa_main(struct sysinfo *cb);
+void agesa_postcar(struct sysinfo *cb);
+
+void board_BeforeAgesa(struct sysinfo *cb);
+void platform_once(struct sysinfo *cb);
 
 #endif /* _STATE_MACHINE_H_ */

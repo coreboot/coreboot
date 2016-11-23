@@ -15,9 +15,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/stages.h>
-#include <cpu/amd/agesa/s3_resume.h>
-
 #include <console/console.h>
 #include <cpu/amd/car.h>
 
@@ -45,28 +42,32 @@ void agesa_main(struct sysinfo *cb)
 	agesawrapper_amdinitearly();
 
 	if (!cb->s3resume) {
+		printk(BIOS_INFO, "Normal boot\n");
+
 		post_code(0x40);
 		agesawrapper_amdinitpost();
-
-		post_code(0x41);
-		agesawrapper_amdinitenv();
-
-		disable_cache_as_ram();
 	} else {
 		printk(BIOS_INFO, "S3 detected\n");
 
 		post_code(0x60);
 		agesawrapper_amdinitresume();
+	}
+}
 
-		amd_initcpuio();
-		agesawrapper_amds3laterestore();
+void agesa_postcar(struct sysinfo *cb)
+{
+	if (!cb->s3resume) {
+		printk(BIOS_INFO, "Normal boot postcar\n");
+
+		post_code(0x41);
+		agesawrapper_amdinitenv();
+	} else {
+		printk(BIOS_INFO, "S3 resume postcar\n");
 
 		post_code(0x61);
-		prepare_for_resume();
+		amd_initcpuio();
+
+		post_code(0x62);
+		agesawrapper_amds3laterestore();
 	}
-
-	post_code(0x50);
-	copy_and_run();
-
-	/* Not reached */
 }

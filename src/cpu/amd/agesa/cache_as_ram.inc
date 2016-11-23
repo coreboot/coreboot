@@ -26,12 +26,8 @@
 #include "gcccar.inc"
 #include <cpu/x86/cache.h>
 
-/*
- * XMM map:
- */
-
 .code32
-.globl cache_as_ram_setup, disable_cache_as_ram, cache_as_ram_setup_out
+.globl cache_as_ram_setup, cache_as_ram_setup_out
 
 cache_as_ram_setup:
 
@@ -110,17 +106,13 @@ cache_as_ram_setup:
   pushl $0x0
   pushl %ebp
   call  romstage_main
+  movl  %eax, %ebx
 
-  /* Should never see this postcode */
-  post_code(0xaf)
-stop:
-  jmp stop
+/* Register %ebx is new stacktop for remaining of romstage.
+ * It is the only register preserved in AMD_DISABLE_STACK.
+ */
 
 disable_cache_as_ram:
-  /* Save return stack */
-  movd 0(%esp), %xmm1
-  movd %esp, %xmm0
-
   /* Disable cache */
   movl	%cr0, %eax
   orl	$CR0_CacheDisable, %eax
@@ -132,12 +124,13 @@ disable_cache_as_ram:
   movl %cr0, %eax
   andl $0x9fffffff, %eax
   movl %eax, %cr0
-  xorl %eax, %eax
 
-  /* Restore the return stack */
-  wbinvd
-  movd %xmm0, %esp
-  movd %xmm1, (%esp)
-  ret
+  movl  %ebx, %esp
+  call  romstage_after_car
+
+  /* Should never see this postcode */
+  post_code(0xaf)
+stop:
+  jmp stop
 
 cache_as_ram_setup_out:

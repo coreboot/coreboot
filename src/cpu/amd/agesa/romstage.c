@@ -15,11 +15,17 @@
 
 #include <arch/acpi.h>
 #include <arch/cpu.h>
+#include <cbmem.h>
 #include <cpu/amd/car.h>
+#include <cpu/amd/agesa/s3_resume.h>
 #include <cpu/x86/bist.h>
+#include <cpu/x86/mtrr.h>
 #include <console/console.h>
+#include <halt.h>
+#include <program_loading.h>
 #include <smp/node.h>
 #include <string.h>
+#include <northbridge/amd/agesa/agesa_helper.h>
 #include <northbridge/amd/agesa/state_machine.h>
 
 static void fill_sysinfo(struct sysinfo *cb)
@@ -51,6 +57,33 @@ void * asmlinkage romstage_main(unsigned long bist)
 
 	agesa_main(cb);
 
-	/* Not reached */
-	return NULL;
+	uintptr_t stack_top = CACHE_TMP_RAMTOP;
+	if (cb->s3resume) {
+		if (cbmem_recovery(1)) {
+			printk(BIOS_EMERG, "Unable to recover CBMEM\n");
+			halt();
+		}
+		stack_top = romstage_ram_stack_base(HIGH_ROMSTAGE_STACK_SIZE,
+			ROMSTAGE_STACK_CBMEM);
+		stack_top += HIGH_ROMSTAGE_STACK_SIZE;
+	}
+
+	printk(BIOS_DEBUG, "Move CAR stack.\n");
+	return (void*)stack_top;
+}
+
+void asmlinkage romstage_after_car(void)
+{
+	struct sysinfo romstage_state;
+	struct sysinfo *cb = &romstage_state;
+
+	printk(BIOS_DEBUG, "CAR disabled.\n");
+
+	fill_sysinfo(cb);
+	agesa_postcar(cb);
+
+	if (cb->s3resume)
+		set_resume_cache();
+
+	run_ramstage();
 }

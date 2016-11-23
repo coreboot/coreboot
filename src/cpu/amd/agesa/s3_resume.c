@@ -51,7 +51,7 @@ static void move_stack_high_mem(void)
 #endif
 }
 
-static void set_resume_cache(void)
+void set_resume_cache(void)
 {
 	msr_t msr;
 

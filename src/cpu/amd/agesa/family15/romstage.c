@@ -16,8 +16,6 @@
 
 #include <lib.h>
 #include <reset.h>
-#include <arch/stages.h>
-#include <cpu/amd/agesa/s3_resume.h>
 
 #include <console/console.h>
 #include <cpu/amd/car.h>
@@ -73,17 +71,13 @@ void agesa_main(struct sysinfo *cb)
 	post_code(0x40);
 	agesawrapper_amdinitpost();
 
+	printk(BIOS_INFO, "Normal boot\n");
+}
+
+void agesa_postcar(struct sysinfo *cb)
+{
+	printk(BIOS_INFO, "Normal boot postcar\n");
+
 	post_code(0x41);
 	agesawrapper_amdinitenv();
-	post_code(0x42);
-
-	post_code(0x50);
-	print_debug("Disabling cache as ram ");
-	disable_cache_as_ram();
-	print_debug("done\n");
-
-	post_code(0x51);
-	copy_and_run();
-
-	/* Not reached */
 }

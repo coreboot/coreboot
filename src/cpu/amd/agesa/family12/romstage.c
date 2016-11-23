@@ -14,8 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/stages.h>
-
 #include <console/console.h>
 #include <cpu/amd/car.h>
 
@@ -49,8 +47,15 @@ void agesa_main(struct sysinfo *cb)
 	post_code(0x37);
 	agesawrapper_amdinitearly();
 
+	printk(BIOS_INFO, "Normal boot\n");
+
 	post_code(0x38);
 	agesawrapper_amdinitpost();
+}
+
+void agesa_postcar(struct sysinfo *cb)
+{
+	printk(BIOS_INFO, "Normal boot postcar\n");
 
 	post_code(0x39);
 	printk(BIOS_DEBUG, "sb_before_pci_init ");
@@ -59,7 +64,4 @@ void agesa_main(struct sysinfo *cb)
 
 	post_code(0x40);
 	agesawrapper_amdinitenv();
-
-	post_code(0x43);
-	copy_and_run();
 }

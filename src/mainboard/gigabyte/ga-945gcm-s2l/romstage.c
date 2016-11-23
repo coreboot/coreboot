@@ -91,6 +91,8 @@ static void ich7_enable_lpc(void)
 	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x82, 0x340d);
 	// Enable SuperIO Power Management Events
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0x84, 0x000c0801);
+	/* LPC decode range 2: Environment Controller */
+	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0x88, 0x00040291);
 }
 
 static void rcba_config(void)

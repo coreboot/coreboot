@@ -163,9 +163,9 @@ static void rl5c476_read_resources(device_t dev)
 
 	struct resource *resource;
 
-	 /* For CF socket we need an extra memory window for
-	  * the control structure of the CF itself
-	  */
+	/* For CF socket we need an extra memory window for
+	 * the control structure of the CF itself
+	 */
 	if ( enable_cf_boot && (PCI_FUNC(dev->path.pci.devfn) == 1)){
 		/* fake index as it isn't in PCI config space */
 		resource = new_resource(dev, 1);
@@ -196,18 +196,18 @@ static void rl5c476_set_resources(device_t dev)
 
 static void rl5c476_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 {
-       u16 miscreg = pci_read_config16(dev, 0x82);
-       /* Enable subsystem id register writes */
-       pci_write_config16(dev, 0x82, miscreg | 0x40);
+	u16 miscreg = pci_read_config16(dev, 0x82);
+	/* Enable subsystem id register writes */
+	pci_write_config16(dev, 0x82, miscreg | 0x40);
 
-       pci_write_config16(dev, 0x40, vendor);
-       pci_write_config16(dev, 0x42, device);
-       /* restore original contents */
-       pci_write_config16(dev, 0x82, miscreg);
+	pci_write_config16(dev, 0x40, vendor);
+	pci_write_config16(dev, 0x42, device);
+	/* restore original contents */
+	pci_write_config16(dev, 0x82, miscreg);
 }
 
 static struct pci_operations rl5c476_pci_ops = {
-       .set_subsystem    = rl5c476_set_subsystem,
+	.set_subsystem    = rl5c476_set_subsystem,
 };
 
 static struct device_operations ricoh_rl5c476_ops = {

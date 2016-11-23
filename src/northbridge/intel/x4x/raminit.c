@@ -140,108 +140,20 @@ static void sdram_read_spds(struct sysinfo *s)
 	}
 
 	FOR_EACH_POPULATED_CHANNEL(s->dimms, chan) {
-		if (s->dimms[chan>>1].sides == 0) {
-			// NC
-			if (s->dimms[(chan>>1) + 1].sides == 0) {
-				// NC/NC
-				s->dimm_config[chan] = 0;
-			} else if (s->dimms[(chan>>1) + 1].sides == 1) {
-				// NC/SS
-				if (s->dimms[(chan>>1) + 1].width == 0) {
-					// NC/8SS
-					s->dimm_config[chan] = 4;
-				} else {
-					// NC/16SS
-					s->dimm_config[chan] = 12;
-				}
+		FOR_EACH_POPULATED_DIMM_IN_CHANNEL(s->dimms, chan, i) {
+			int dimm_config;
+			if (s->dimms[i].ranks == 1) {
+				if (s->dimms[i].width == 0)	/* x8 */
+					dimm_config = 1;
+				else				/* x16 */
+					dimm_config = 3;
 			} else {
-				// NC/DS
-				if (s->dimms[(chan>>1) + 1].width == 0) {
-					// NC/8DS
-					s->dimm_config[chan] = 8;
-				} else {
-					// NOT SUPPORTED
-					die("16DS Not supported\n");
-				}
+				if (s->dimms[i].width == 0)	/* x8 */
+					dimm_config = 2;
+				else
+					die("Dual-rank x16 not supported\n");
 			}
-		} else if (s->dimms[chan>>1].sides == 1) {
-			// SS
-			if (s->dimms[(chan>>1) + 1].sides == 0) {
-				// SS/NC
-				if (s->dimms[chan>>1].width == 0) {
-					// 8SS/NC
-					s->dimm_config[chan] = 1;
-				} else {
-					// 16SS/NC
-					s->dimm_config[chan] = 3;
-				}
-			} else if (s->dimms[(chan>>1) + 1].sides == 1) {
-				// SS/SS
-				if (s->dimms[chan>>1].width == 0) {
-					if (s->dimms[(chan>>1) + 1].width == 0) {
-						// 8SS/8SS
-						s->dimm_config[chan] = 5;
-					} else {
-						// 8SS/16SS
-						s->dimm_config[chan] = 13;
-					}
-				} else {
-					if (s->dimms[(chan>>1) + 1].width == 0) {
-						// 16SS/8SS
-						s->dimm_config[chan] = 7;
-					} else {
-						// 16SS/16SS
-						s->dimm_config[chan] = 15;
-					}
-				}
-			} else {
-				// SS/DS
-				if (s->dimms[chan>>1].width == 0) {
-					if (s->dimms[(chan>>1) + 1].width == 0) {
-						// 8SS/8DS
-						s->dimm_config[chan] = 9;
-					} else {
-						die("16DS not supported\n");
-					}
-				} else {
-					if (s->dimms[(chan>>1) + 1].width == 0) {
-						// 16SS/8DS
-						s->dimm_config[chan] = 11;
-					} else {
-						die("16DS not supported\n");
-					}
-				}
-			}
-		} else {
-			// DS
-			if (s->dimms[(chan>>1) + 1].sides == 0) {
-				// DS/NC
-				if (s->dimms[chan>>1].width == 0) {
-					// 8DS/NC
-					s->dimm_config[chan] = 2;
-				} else {
-					die("16DS not supported\n");
-				}
-			} else if (s->dimms[(chan>>1) + 1].sides == 1) {
-				// DS/SS
-				if (s->dimms[chan>>1].width == 0) {
-					if (s->dimms[(chan>>1) + 1].width == 0) {
-						// 8DS/8SS
-						s->dimm_config[chan] = 6;
-					} else {
-						// 8DS/16SS
-						s->dimm_config[chan] = 14;
-					}
-				} else {
-					die("16DS not supported\n");
-				}
-			} else {
-				// DS/DS
-				if (s->dimms[chan>>1].width == 0 && s->dimms[(chan>>1)+1].width == 0) {
-					// 8DS/8DS
-					s->dimm_config[chan] = 10;
-				}
-			}
+			s->dimm_config[chan] |= dimm_config << (i - chan) * 2;
 		}
 		printk(BIOS_DEBUG, "  Config[CH%d] : %d\n", chan, s->dimm_config[chan]);
 	}

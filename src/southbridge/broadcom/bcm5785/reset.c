@@ -46,5 +46,5 @@ void hard_reset(void)
 	/* Try rebooting through port 0xcf9 */
 	/* Actually it is not a real hard_reset --- it only reset coherent link table, but not reset link freq and width */
 	outb((0 <<3)|(0<<2)|(1<<1), 0xcf9);
-      	outb((0 <<3)|(1<<2)|(1<<1), 0xcf9);
+	outb((0 <<3)|(1<<2)|(1<<1), 0xcf9);
 }

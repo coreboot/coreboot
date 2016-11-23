@@ -1,5 +1,5 @@
 config REALTEK_8168_RESET
-	bool "Realtek 8168 reset"
+	bool
 	help
 	  This forces a realtek 10ec:8168 card to reset to ensure power state
 	  is correct at boot.

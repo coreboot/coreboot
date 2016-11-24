@@ -19,6 +19,8 @@
 #include <console/usb.h>
 #include <cpu/x86/msr.h>
 #include <delay.h>
+#include <arch/io.h>
+#include <device/pci_ops.h>
 #include "raminit_native.h"
 #include "raminit_common.h"
 
@@ -429,14 +431,20 @@ static void dram_timing(ramctr_timing * ctrl)
 
 static void dram_freq(ramctr_timing * ctrl)
 {
+	bool ref_100mhz_support;
+	u32 reg32;
+
 	if (ctrl->tCK > TCK_400MHZ) {
 		printk (BIOS_ERR, "DRAM frequency is under lowest supported "
 				"frequency (400 MHz). Increasing to 400 MHz as last resort");
 		ctrl->tCK = TCK_400MHZ;
 	}
 
-	/* TODO: implement 100Mhz refclock */
-	ctrl->base_freq = 133;
+	/* 100 Mhz reference clock supported */
+	reg32 = pci_read_config32(PCI_DEV(0, 0, 0), CAPID0_B);
+	ref_100mhz_support = !!((reg32 >> 21) & 0x7);
+	printk(BIOS_DEBUG, "100MHz reference clock support: %s\n",
+		   ref_100mhz_support ? "yes" : "no");
 
 	while (1) {
 		u8 val2;
@@ -444,20 +452,47 @@ static void dram_freq(ramctr_timing * ctrl)
 
 		/* Step 1 - Set target PCU frequency */
 
-		if (ctrl->tCK <= TCK_1066MHZ) {
+		if (ctrl->tCK <= TCK_1200MHZ) {
+			ctrl->tCK = TCK_1200MHZ;
+			ctrl->base_freq = 100;
+		} else if (ctrl->tCK <= TCK_1100MHZ) {
+			ctrl->tCK = TCK_1100MHZ;
+			ctrl->base_freq = 100;
+		} else if (ctrl->tCK <= TCK_1066MHZ) {
 			ctrl->tCK = TCK_1066MHZ;
+			ctrl->base_freq = 133;
+		} else if (ctrl->tCK <= TCK_1000MHZ) {
+			ctrl->tCK = TCK_1000MHZ;
+			ctrl->base_freq = 100;
 		} else if (ctrl->tCK <= TCK_933MHZ) {
 			ctrl->tCK = TCK_933MHZ;
+			ctrl->base_freq = 133;
+		} else if (ctrl->tCK <= TCK_900MHZ) {
+			ctrl->tCK = TCK_900MHZ;
+			ctrl->base_freq = 100;
 		} else if (ctrl->tCK <= TCK_800MHZ) {
 			ctrl->tCK = TCK_800MHZ;
+			ctrl->base_freq = 133;
+		} else if (ctrl->tCK <= TCK_700MHZ) {
+			ctrl->tCK = TCK_700MHZ;
+			ctrl->base_freq = 100;
 		} else if (ctrl->tCK <= TCK_666MHZ) {
 			ctrl->tCK = TCK_666MHZ;
+			ctrl->base_freq = 133;
 		} else if (ctrl->tCK <= TCK_533MHZ) {
 			ctrl->tCK = TCK_533MHZ;
+			ctrl->base_freq = 133;
 		} else if (ctrl->tCK <= TCK_400MHZ) {
 			ctrl->tCK = TCK_400MHZ;
+			ctrl->base_freq = 133;
 		} else {
 			die ("No lock frequency found");
+		}
+
+		if (!ref_100mhz_support && ctrl->base_freq == 100) {
+			/* Skip unsupported frequency. */
+			ctrl->tCK++;
+			continue;
 		}
 
 		/* Frequency multiplier.  */
@@ -473,6 +508,8 @@ static void dram_freq(ramctr_timing * ctrl)
 
 		/* Step 2 - Select frequency in the MCU */
 		reg1 = FRQ;
+		if (ctrl->base_freq == 100)
+			reg1 |= 0x100; /* Enable 100Mhz REF clock */
 		reg1 |= 0x80000000;	// set running bit
 		MCHBAR32(MC_BIOS_REQ) = reg1;
 		int i=0;

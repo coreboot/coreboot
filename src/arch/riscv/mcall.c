@@ -28,6 +28,7 @@
 #include <arch/barrier.h>
 #include <arch/errno.h>
 #include <atomic.h>
+#include <commonlib/configstring.h>
 #include <console/console.h>
 #include <mcall.h>
 #include <string.h>
@@ -36,10 +37,13 @@
 uintptr_t mcall_query_memory(uintptr_t id, memory_block_info *info)
 {
 	if (id == 0) {
-		mprv_write_ulong(&info->base, 2U*GiB);
+		uintptr_t base;
+		size_t size;
 
-		/* TODO: Return the correct value */
-		mprv_write_ulong(&info->size, 1*GiB);
+		query_mem(configstring(), &base, &size);
+
+		mprv_write_ulong(&info->base, base);
+		mprv_write_ulong(&info->size, size);
 		return 0;
 	}
 

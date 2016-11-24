@@ -629,11 +629,25 @@ static u32 get_cdclk(struct device *const dev)
 	}
 }
 
+static u32 freq_to_blc_pwm_ctl(struct device *const dev,
+			u16 pwm_freq, u8 duty_perc)
+{
+	u32 blc_mod;
+
+	blc_mod = get_cdclk(dev) / (128 * pwm_freq);
+
+	if (duty_perc <= 100)
+		return (blc_mod << 16) | (blc_mod * duty_perc / 100);
+	else
+		return (blc_mod << 16) | blc_mod;
+}
+
 static void gma_pm_init_post_vbios(struct device *const dev)
 {
 	const struct northbridge_intel_gm45_config *const conf = dev->chip_info;
 
 	u32 reg32;
+	u8 reg8;
 
 	/* Setup Panel Power On Delays */
 	reg32 = gtt_read(PP_ON_DELAYS);
@@ -661,10 +675,14 @@ static void gma_pm_init_post_vbios(struct device *const dev)
 
 	/* Enable Backlight  */
 	gtt_write(BLC_PWM_CTL2, (1 << 31));
-	if (conf->gfx.backlight == 0)
+	reg8 = 100;
+	if (conf->duty_cycle != 0)
+		reg8 = conf->duty_cycle;
+	if (conf->pwm_freq == 0)
 		gtt_write(BLC_PWM_CTL, 0x06100610);
 	else
-		gtt_write(BLC_PWM_CTL, conf->gfx.backlight);
+		gtt_write(BLC_PWM_CTL, freq_to_blc_pwm_ctl(dev,
+						conf->pwm_freq,	reg8));
 }
 
 static void gma_func0_init(struct device *dev)

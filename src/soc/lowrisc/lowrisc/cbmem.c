@@ -11,13 +11,15 @@
  * GNU General Public License for more details.
  */
 
-#include <console/console.h>
 #include <cbmem.h>
+#include <commonlib/configstring.h>
 
 void *cbmem_top(void)
 {
-	// TODO: find out how the lowrisc SOC decides to provide
-	// this information, when they know.
-	printk(BIOS_SPEW, "Returning hard-coded 128M; fix me\n");
-	return (void *)((uintptr_t)(2ULL*GiB+128*MiB));
+	uintptr_t base;
+	size_t size;
+
+	query_mem(configstring(), &base, &size);
+
+	return (void *)(base + size);
 }

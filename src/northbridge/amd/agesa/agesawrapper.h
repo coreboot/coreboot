@@ -27,10 +27,6 @@ AGESA_STATUS agesawrapper_amdinitlate(void);
 AGESA_STATUS agesawrapper_amdinitpost(void);
 AGESA_STATUS agesawrapper_amdinitmid(void);
 
-void agesawrapper_trace(AGESA_STATUS ret, AMD_CONFIG_PARAMS *StdHeader, const char *func);
-#define AGESA_EVENTLOG(status, stdheader) \
-	agesawrapper_trace(status, stdheader, __func__)
-
 AGESA_STATUS agesawrapper_amdinitresume(void);
 AGESA_STATUS agesawrapper_amdS3Save(void);
 AGESA_STATUS agesawrapper_amds3laterestore(void);
@@ -38,6 +34,9 @@ AGESA_STATUS agesawrapper_amdlaterunaptask (UINT32 Func, UINT32 Data, VOID *Conf
 
 AGESA_STATUS agesawrapper_fchs3earlyrestore(void);
 AGESA_STATUS agesawrapper_fchs3laterestore(void);
+
+#define AGESA_EVENTLOG(status, stdheader) \
+	agesawrapper_trace(status, stdheader, __func__)
 
 struct OEM_HOOK
 {

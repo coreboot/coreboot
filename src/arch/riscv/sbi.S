@@ -92,11 +92,13 @@ sbi_page:
 	.align 4
 
 	/* -1872: int sbi_mask_interrupt(int which); */
-	ebreak
+	li a0, 0 # dummy
+	jr ra
 	.align 4
 
 	/* -1856: int sbi_unmask_interrupt(int which); */
-	ebreak
+	li a0, 0 # dummy
+	jr ra
 	.align 4
 
 	/* -1840: void sbi_remote_sfence_vm(const uintptr_t* harts,

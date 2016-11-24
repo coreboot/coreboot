@@ -16,8 +16,8 @@
 
 #set -x # Turn echo on....
 
-ABUILD_DATE="Oct 13, 2015"
-ABUILD_VERSION="0.9.4"
+ABUILD_DATE="Nov 23, 2016"
+ABUILD_VERSION="0.10.0"
 
 TOP=$PWD
 
@@ -50,6 +50,9 @@ failed=0
 
 # default: single CPU build
 cpus=1
+
+# change with -d <directory>
+configdir="$TOP/configs"
 
 # One might want to adjust these in case of cross compiling
 for i in make gmake gnumake nonexistant_make; do
@@ -173,72 +176,114 @@ function normalize_target
 
 function create_config
 {
-	local MAINBOARD=$1
+	local BUILD_NAME=$1
+	local build_dir=$2
 
-	local build_dir=$TARGET/${MAINBOARD}
 	local config_file=${build_dir}/config.build
-	local board_srcdir=$(mainboard_directory ${MAINBOARD})
-
-        # get a working payload for the board if we have one.
-        # the --payload option expects a directory containing
-	# a shell script payload.sh
-	#   Usage: payload.sh [BOARD]
-	# the script returns an absolute path to the payload binary.
-
-	if [ -f $payloads/payload.sh ]; then
-		local PAYLOAD=`sh $payloads/payload.sh $MAINBOARD`
-		if [ $? -gt 0 ]; then
-			echo "problem with payload"
-			exit 1
-		fi
-		if [ "$quiet" == "false" ]; then printf "Using payload $PAYLOAD\n"; fi
-	elif [ "$payloads" = "none" ]; then
-		local PAYLOAD=none
-	fi
+	local board_srcdir=$(mainboard_directory ${BUILD_NAME})
 
 	mkdir -p ${build_dir}
 	mkdir -p $TARGET/sharedutils
 
-	if [ "$quiet" == "false" ]; then printf "  Creating config file for $MAINBOARD... \n"; fi
-	printf "CONFIG_VENDOR_$(mainboard_vendor ${MAINBOARD})=y\n" > ${config_file}
-	printf "CONFIG_BOARD_${MAINBOARD}=y\n" >> ${config_file}
+	if [ "$quiet" == "false" ]; then printf "  Creating config file for $BUILD_NAME... \n"; fi
+	printf "CONFIG_VENDOR_$(mainboard_vendor ${BUILD_NAME})=y\n" > ${config_file}
+	printf "CONFIG_BOARD_${BUILD_NAME}=y\n" >> ${config_file}
 	grep "select[\t ]*ARCH" ${ROOT}/src/mainboard/${board_srcdir}/Kconfig | \
 		sed "s,^.*\(ARCH_.*\)[^A-Z0-9_]*,CONFIG_\1=y," >> ${config_file}
 	printf "CONFIG_MAINBOARD_DIR=\"${board_srcdir}\"\n" >> ${config_file}
-	if [ "$PAYLOAD" = "none" ]; then
-		printf "CONFIG_PAYLOAD_NONE=y\n" >> ${config_file}
-	elif [ "$PAYLOAD" != "/dev/null" ]; then
-		printf "# CONFIG_PAYLOAD_NONE is not set\n" >> ${config_file}
-		printf "# CONFIG_PAYLOAD_SEABIOS is not set\n" >> ${config_file}
-		printf "CONFIG_PAYLOAD_ELF=y\n" >> ${config_file}
-		printf "CONFIG_PAYLOAD_FILE=\"$PAYLOAD\"\n" >> ${config_file}
-	fi
 
-	if [ "$quiet" == "false" ]; then printf "    $MAINBOARD ($customizing)\n"; fi
-	printf "$configoptions" >> ${config_file}
+	update_config "$BUILD_NAME" "$build_dir" "$config_file"
 
-	yes "" 2>/dev/null | $MAKE oldconfig $silent DOTCONFIG=${config_file} obj=${build_dir} objutil=$TARGET/sharedutils &> ${build_dir}/config.log
 	ret=$?
 	if [ $ret -eq 0 ]; then
-		if [ "$quiet" == "false" ]; then printf "  $MAINBOARD config created.\n"; fi
+		if [ "$quiet" == "false" ]; then printf "  $BUILD_NAME config created.\n"; fi
 		return 0
 	else
 		# Does this ever happen?
-		if [ "$quiet" == "false" ]; then printf "$MAINBOARD config creation FAILED!\nLog excerpt:\n"; fi
+		if [ "$quiet" == "false" ]; then printf "$BUILD_NAME config creation FAILED!\nLog excerpt:\n"; fi
 		tail -n $CONTEXT $build_dir/config.log 2> /dev/null || tail -$CONTEXT $build_dir/config.log
+		return 1
+	fi
+}
+
+function update_config
+{
+	local BUILD_NAME=$1
+	local build_dir=$2
+	local config_file=$3
+
+	local defconfig_file
+	defconfig_file=${build_dir}/config.$(echo "${BUILD_NAME}" | tr '[:upper:]' '[:lower:]').default
+
+	# get a working payload for the board if we have one.
+	# the --payload option expects a directory containing
+	# a shell script payload.sh
+	#   Usage: payload.sh [BOARD]
+	# the script returns an absolute path to the payload binary.
+
+	if [ -f "$payloads/payload.sh" ]; then
+		local PAYLOAD=$(sh "$payloads/payload.sh" "$BUILD_NAME")
+		if [ $? -gt 0 ]; then
+			echo "problem with payload"
+			exit 1
+		fi
+		if [ "$quiet" == "false" ]; then printf "Using payload %s\n" "$PAYLOAD"; fi
+	elif [ "$payloads" = "none" ]; then
+		local PAYLOAD=none
+	fi
+
+	if [ "$PAYLOAD" = "none" ]; then
+		{
+			echo "CONFIG_PAYLOAD_NONE=y"
+			echo "# CONFIG_PAYLOAD_SEABIOS is not set"
+			echo "# CONFIG_PAYLOAD_ELF is not set"
+			echo "# CONFIG_PAYLOAD_BAYOU is not set"
+			echo "# CONFIG_PAYLOAD_FILO is not set"
+			echo "# CONFIG_PAYLOAD_GRUB2 is not set"
+			echo "# CONFIG_PAYLOAD_OPENBIOS is not set"
+			echo "# CONFIG_PAYLOAD_DEPTHCHARGE is not set"
+			echo "# CONFIG_PAYLOAD_UBOOT is not set"
+			echo "# CONFIG_PAYLOAD_TIANOCORE is not set"
+		} >> "${config_file}"
+	elif [ "$PAYLOAD" != "/dev/null" ]; then
+		{
+			echo "# CONFIG_PAYLOAD_NONE is not set"
+			echo "# CONFIG_PAYLOAD_SEABIOS is not set"
+			echo "CONFIG_PAYLOAD_ELF=y"
+			echo "CONFIG_PAYLOAD_FILE=\"$PAYLOAD\""
+		} >> "${config_file}"
+	fi
+
+	if [ "$quiet" == "false" ]; then echo "    $MAINBOARD ($customizing)"; fi
+	echo "$configoptions" >> "${config_file}"
+
+	 # shellcheck disable=SC2086
+	$MAKE olddefconfig $silent "DOTCONFIG=${config_file}" "obj=${build_dir}" "objutil=$TARGET/sharedutils" &> "${build_dir}/config.log"
+	if [ $? -eq 0 ]; then
+		$MAKE savedefconfig $silent DEFCONFIG="${defconfig_file}" DOTCONFIG="${config_file}" obj="${build_dir}" objutil="$TARGET/sharedutils" &> "${build_dir}/config.log"
+		return $?
+	else
 		return 1
 	fi
 }
 
 function create_buildenv
 {
-	local MAINBOARD=$1
+	local BUILD_NAME=$1
+	local build_dir=$2
+	local config_file=$3
 
-	create_config $MAINBOARD
+	if [ -z "$config_file" ]; then
+		create_config "$BUILD_NAME" "$build_dir"
+	else
+		local new_config_file="${build_dir}/config.build"
+		cp "$config_file" "$new_config_file"
+		update_config "$BUILD_NAME" "$build_dir" "$new_config_file"
+	fi
 	ret=$?
 
 	# Allow simple "make" in the target directory
-	local MAKEFILE=$TARGET/${MAINBOARD}/Makefile
+	local MAKEFILE=$TARGET/${BUILD_NAME}/Makefile
 	echo "# autogenerated" > $MAKEFILE
 	echo "TOP=$ROOT" >> $MAKEFILE
 	echo "BUILD=$TARGET" >> $MAKEFILE
@@ -255,128 +300,194 @@ function create_buildenv
 	return $ret
 }
 
+function check_config
+{
+	local BUILD_DIR="$1"
+	local TEST_TYPE="$2"
+	local TEST_STRING="$3"
+
+	local CONFIG_FILE="$BUILD_DIR/config.build"
+	local CONFIG_LOG="$BUILD_DIR/config.log"
+
+	if ! grep -q "$TEST_STRING" "$CONFIG_FILE"; then
+		echo "config file: $CONFIG_FILE has incorrect $TEST_TYPE"
+		echo "Error: Expected '$TEST_STRING' in config file." >> "$CONFIG_LOG"
+		return 1
+	fi
+
+	return 0
+}
+
 function compile_target
 {
-	local MAINBOARD=$1
+	local BUILD_NAME=$1
 
 	if [ "$quiet" == "false" ]; then printf "  Compiling $MAINBOARD image$cpuconfig...\n"; fi
 
 	CURR=$( pwd )
 	#stime=`perl -e 'print time();' 2>/dev/null || date +%s`
-	build_dir=$TARGET/${MAINBOARD}
 	eval $BUILDPREFIX $MAKE $silent DOTCONFIG=${build_dir}/config.build obj=${build_dir} objutil=$TARGET/sharedutils \
 		&> ${build_dir}/make.log
 	ret=$?
 	cp .xcompile ${build_dir}/xcompile.build
-	cd $TARGET/${MAINBOARD}
+	cd ${build_dir}
 
 	etime=`perl -e 'print time();' 2>/dev/null || date +%s`
 	duration=$(( $etime - $stime ))
-	junit " <testcase classname='board${testclass/#/.}' name='$MAINBOARD' time='$duration' >"
+	junit " <testcase classname='board${testclass/#/.}' name='$BUILD_NAME' time='$duration' >"
 
 	if [ $ret -eq 0 ]; then
 		junit "<system-out>"
 		junitfile make.log
 		junit "</system-out>"
 		printf "ok\n" > compile.status
-		printf "$MAINBOARD built successfully. (took ${duration}s)\n"
+		printf "$BUILD_NAME built successfully. (took ${duration}s)\n"
 	else
 		ret=1
 		junit "<failure type='BuildFailed'>"
 		junitfile make.log
 		junit "</failure>"
 		printf "failed\n" > compile.status
-		printf "$MAINBOARD build FAILED after ${duration}s!\nLog excerpt:\n"
+		printf "$BUILD_NAME build FAILED after ${duration}s!\nLog excerpt:\n"
 		tail -n $CONTEXT make.log 2> /dev/null || tail -$CONTEXT make.log
 		failed=1
 	fi
 	cd $CURR
 	if [ $clean_work = "true" ]; then
-		rm -rf $TARGET/${MAINBOARD}
+		rm -rf ${build_dir}
 	fi
 	return $ret
 }
 
-function build_target
+function build_config
 {
 	local MAINBOARD=$1
-	local board_srcdir=$(mainboard_directory ${MAINBOARD})
+	local build_dir=$2
+	local BUILD_NAME=$3
+	local config_file=$4
 
-	if [ "`cat $TARGET/${MAINBOARD}/compile.status 2>/dev/null`" = "ok" -a \
+	local board_srcdir=$(mainboard_directory "${MAINBOARD}")
+
+	if [ "$(cat "${build_dir}/compile.status" 2>/dev/null)" = "ok" -a \
 		"$buildall" = "false" ]; then
-		printf "Skipping $MAINBOARD; (already successful)\n"
+		echo "Skipping $BUILD_NAME; (already successful)"
 		return
 	fi
 
- 	HOSTCC='gcc'
+ 	export HOSTCC='gcc'
 
-	if [ $chromeos = true -a `grep -c "^[[:space:]]*select[[:space:]]*MAINBOARD_HAS_CHROMEOS\>" ${ROOT}/src/mainboard/${board_srcdir}/Kconfig` -eq 0 ]; then
-		echo "${MAINBOARD} doesn't support Chrome OS, skipping."
+	if [ "$chromeos" = true ] && [ "$(grep -c "^[[:space:]]*select[[:space:]]*MAINBOARD_HAS_CHROMEOS\>" "${ROOT}/src/mainboard/${board_srcdir}/Kconfig")" -eq 0 ]; then
+		echo "${BUILD_NAME} doesn't support Chrome OS, skipping."
 		return
 	fi
 
-	if [ -f src/mainboard/${board_srcdir}/abuild.disabled ]; then
-		echo "${MAINBOARD} disabled:"
-		cat src/mainboard/${board_srcdir}/abuild.disabled
+	if [ -f "src/mainboard/${board_srcdir}/abuild.disabled" ]; then
+		echo "${BUILD_NAME} disabled:"
+		cat "src/mainboard/${board_srcdir}/abuild.disabled"
 		return
 	fi
 
-	if [ "$quiet" == "false" ]; then printf "Building $MAINBOARD\n"; fi
-	mkdir -p $TARGET/${MAINBOARD} $TARGET/abuild
-	ABSPATH=`cd $TARGET/abuild; pwd`
-	XMLFILE=$ABSPATH/${MAINBOARD}.xml
-	rm -f ${XMLFILE}
+	if [ "$quiet" == "false" ]; then echo "Building $BUILD_NAME"; fi
+	mkdir -p "$TARGET/${BUILD_NAME}" "$TARGET/abuild"
+	ABSPATH="$(cd "$TARGET/abuild"; pwd)"
+	XMLFILE="$ABSPATH/${BUILD_NAME}.xml"
+	rm -f "${XMLFILE}"
+
+	stime=$(perl -e 'print time();' 2>/dev/null || date +%s)
+	create_buildenv "$BUILD_NAME" "$build_dir" "$config_file"
+	local BUILDENV_CREATED=$?
+
+	check_config "$build_dir" "mainboard" "CONFIG_BOARD_${MAINBOARD}=y"
+	local MAINBOARD_OK=$?
+
+	check_config "$build_dir" "vendor" "CONFIG_VENDOR_$(mainboard_vendor "${MAINBOARD}")=y"
+	local VENDOR_OK=$?
+
+	if [ $BUILDENV_CREATED -ne 0 ] || [ $MAINBOARD_OK -ne 0 ] || [ $VENDOR_OK -ne 0 ]; then
+
+		junit "<failure type='BuildFailed'>"
+		junitfile "$build_dir/config.log"
+		junit "</failure>"
+		printf "failed\n" > compile.status
+		printf "$BUILD_NAME build configuration FAILED!\nLog excerpt:\n"
+		tail -n $CONTEXT "$build_dir/config.log" 2> /dev/null || tail -$CONTEXT "$build_dir/config.log"
+
+		junit "</testcase>"
+		return
+	fi
 
 
-	stime=`perl -e 'print time();' 2>/dev/null || date +%s`
-	create_buildenv $MAINBOARD
-
-	required_arches=`egrep "^CONFIG_ARCH_(BOOTBLOCK|R.MSTAGE|VERSTAGE)" $TARGET/${MAINBOARD}/config.build | \
+	required_arches=`egrep "^CONFIG_ARCH_(BOOTBLOCK|R.MSTAGE|VERSTAGE)" $TARGET/${BUILD_NAME}/config.build | \
 			sed "s,^CONFIG_ARCH_[^_]*_\([^=]*\)=.*$,\1," |sort -u |tr 'A-Z\n\r' 'a-z  '`
 	missing_arches=`printf 'include .xcompile\nall: ; @echo $(foreach arch,'"$required_arches"',$(if $(filter $(arch),$(SUBARCH_SUPPORTED)),,$(arch)))' | make --no-print-directory -f -`
 	if [ -n "$missing_arches" ]; then
-		printf "skipping $MAINBOARD because we're missing compilers for ($missing_arches)\n"
+		printf "skipping $BUILD_NAME because we're missing compilers for ($missing_arches)\n"
 		return
 	fi
 
 	if [ $? -eq 0  -a  $configureonly -eq 0 ]; then
 		BUILDPREFIX=
 		if [ "$scanbuild" = "true" ]; then
-			scanbuild_out=$TARGET/${MAINBOARD}-scanbuild
+			scanbuild_out=$TARGET/${BUILD_NAME}-scanbuild
 			rm -rf ${scanbuild_out}
 			BUILDPREFIX="scan-build -o ${scanbuild_out}tmp"
 		fi
-		compile_target ${MAINBOARD}
+		compile_target ${BUILD_NAME}
 		if [ "$scanbuild" = "true" ]; then
 			mv ${scanbuild_out}tmp/* ${scanbuild_out}
 			rmdir ${scanbuild_out}tmp
 		fi
 	fi
-	# Not calculated here because we still print it in compile_target
-	#etime=`perl -e 'print time();' 2>/dev/null || date +%s`
-	#duration=$(( $etime - $stime ))
 
 	junit "</testcase>"
+}
+
+# One target may build several configs
+function build_target
+{
+	local MAINBOARD=$1
+	local MAINBOARD_LC=$(echo "$MAINBOARD" | tr '[:upper:]' '[:lower:]')
+
+	# look for config files in the config directory that match the boardname
+	if [ -n "$( find "$configdir" -maxdepth 1 -name "config.${MAINBOARD_LC}*" -print -quit )" ]; then
+		for config in "$configdir"/config."${MAINBOARD_LC}"*; do
+			BUILD_NAME="${config##*/}"
+			BUILD_NAME="${BUILD_NAME##config.}"
+			BUILD_NAME=$(echo "${BUILD_NAME}" | tr '[:lower:]' '[:upper:]')
+			echo "Building config $BUILD_NAME"
+			build_dir=$TARGET/${BUILD_NAME}
+			build_config "$MAINBOARD" "$build_dir" "$BUILD_NAME" "$config"
+			remove_target "$BUILD_NAME"
+
+		done
+	else
+		echo "Building board $MAINBOARD (using default config)"
+		build_dir=$TARGET/${MAINBOARD}
+
+		build_config "$MAINBOARD" "$build_dir" "$MAINBOARD"
+		remove_target "$MAINBOARD"
+	fi
+
 }
 
 function remove_target
 {
 	if [ "$remove" != "true" ]; then
-		return 0
+		return
 	fi
 
-	local MAINBOARD=$1
+	local BUILD_NAME=$1
 
 	# Save the generated coreboot.rom file of each board.
-	if [ -r "$TARGET/${MAINBOARD}/coreboot.rom" ]; then
-		cp $TARGET/${MAINBOARD}/coreboot.rom \
-		   ${MAINBOARD}_coreboot.rom
+	if [ -r "$TARGET/${BUILD_NAME}/coreboot.rom" ]; then
+		cp "$TARGET/${BUILD_NAME}/coreboot.rom" \
+		   "${BUILD_NAME}_coreboot.rom"
 	fi
 
-	printf "Removing build dir for board $MAINBOARD...\n"
-	rm -rf $TARGET/${MAINBOARD}
+	echo "Removing build dir for $BUILD_NAME..."
+	rm -rf "$TARGET/${BUILD_NAME}"
 
-	return 0
+	return
 }
 
 function myhelp
@@ -391,6 +502,7 @@ Options:\n"
     [-q|--quiet]		  print fewer messages
     [-a|--all]			  build previously succeeded ports as well
     [-r|--remove]                 remove output dir after build
+    [-d|--dir <dir>]              directory containing config files
     [-t|--target <vendor/board>]  attempt to build target vendor/board only
     [-p|--payloads <dir>]         use payloads in <dir> to build images
     [-V|--version]		  print version number and exit
@@ -457,11 +569,11 @@ cmdline="$* -c 1"
 getoptbrand="`getopt -V`"
 if [ "${getoptbrand:0:6}" == "getopt" ]; then
 	# Detected GNU getopt that supports long options.
-	args=`getopt -l version,verbose,quiet,help,all,target:,payloads:,cpus:,silent,junit,config,loglevel:,remove,prefix:,update,scan-build,ccache,blobs,clang,clean,outdir:,chromeos,xmlfile:,kconfig: -o Vvqhat:p:c:sJCl:rP:uyBLzo:xX:K: -- "$@"` || exit 1
+	args=`getopt -l version,verbose,quiet,help,all,target:,payloads:,cpus:,silent,junit,config,loglevel:,remove,prefix:,update,scan-build,ccache,blobs,clang,clean,outdir:,chromeos,xmlfile:,kconfig:,dir: -o Vvqhat:p:c:sJCl:rP:uyBLzo:xX:K:d: -- "$@"` || exit 1
 	eval set -- $args
 else
 	# Detected non-GNU getopt
-	args=`getopt Vvqhat:p:c:sJCl:rP:uyBLzo:xX:K: $*`
+	args=`getopt Vvqhat:p:c:sJCl:rP:uyBLzo:xX:K:d: $*`
 	set -- $args
 fi
 
@@ -481,6 +593,7 @@ while true ; do
 		-J|--junit)     shift; mode=junit; rm -f $XMLFILE ;;
 		-t|--target)	shift; target="$1"; shift;;
 		-a|--all)	shift; buildall=true;;
+		-d|--dir)	shift; configdir="$1"; shift;;
 		-r|--remove)	shift; remove=true;;
 		-v|--verbose)	shift; verbose=true; silent='V=1';;
 		-q|--quiet)	shift; quiet=true;;
@@ -580,7 +693,6 @@ build_targets()
 	local targets=${*-$(get_mainboards)}
 	for MAINBOARD in $targets; do
 		build_target ${MAINBOARD}
-		remove_target ${MAINBOARD}
 	done
 }
 else
@@ -657,7 +769,6 @@ if [ "$target" != "" ]; then
 		exit 1
 	else
 		build_target ${MAINBOARD}
-		remove_target ${MAINBOARD}
 		test "$mode" != "text" && \
 		test -f $TARGET/abuild/${MAINBOARD}.xml && \
 		cat $TARGET/abuild/${MAINBOARD}.xml >> $REAL_XMLFILE

@@ -1,0 +1,32 @@
+#!/bin/sh
+# This file is part of the coreboot project.
+#
+# Copyright (C) 2016 Google Inc.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# DESCR: Check that saved config files are miniconfigs
+
+LC_ALL=C export LC_ALL
+
+SYMBOLS='CONFIG_ARCH_\|CONFIG_MAINBOARD_HAS_'
+
+# Use git grep if the code is in a git repo, otherwise use grep.
+if [ -n "$(command -v git)" ] && [ -d .git ]; then
+	GREP="git grep -l"
+else
+	GREP="grep -rl"
+fi
+
+#look for a couple of things that should only be set by select keywords
+for file in \
+	$($GREP "$SYMBOLS" configs) ; do \
+		echo "Error: $file seems to be a full config"; \
+	done

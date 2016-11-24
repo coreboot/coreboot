@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  */
 
-#define DPTF_CPU_PASSIVE	61
+#define DPTF_CPU_PASSIVE	95
 #define DPTF_CPU_CRITICAL	99
 #define DPTF_CPU_ACTIVE_AC0	90
 #define DPTF_CPU_ACTIVE_AC1	80

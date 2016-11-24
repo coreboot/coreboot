@@ -17,6 +17,12 @@
 #define _STATE_MACHINE_H_
 
 #include <stdint.h>
+#include <AGESA.h>
+
+/* eventlog */
+const char *agesa_struct_name(int state);
+const char *heap_status_name(int status);
+void agesawrapper_trace(AGESA_STATUS ret, AMD_CONFIG_PARAMS *StdHeader, const char *func);
 
 struct sysinfo
 {

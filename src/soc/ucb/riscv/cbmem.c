@@ -12,9 +12,14 @@
  */
 
 #include <cbmem.h>
+#include <commonlib/configstring.h>
 
 void *cbmem_top(void)
 {
-	// TODO: find out how RISCV stores this.
-        return (void *)((uintptr_t)3*GiB);
+	uintptr_t base;
+	size_t size;
+
+	query_mem(configstring(), &base, &size);
+
+	return (void *)(base + size);
 }

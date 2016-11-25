@@ -18,4 +18,6 @@ void disable_cache_as_ram(void);
 
 void asmlinkage early_all_cores(void);
 
+void * asmlinkage romstage_main(unsigned long bist);
+
 #endif

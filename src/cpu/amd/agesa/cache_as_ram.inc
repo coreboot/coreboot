@@ -29,7 +29,6 @@
 /*
  * XMM map:
  *   xmm0: BIST
- *   xmm1: backup ebx -- cpu_init_detected
  */
 
 .code32
@@ -46,18 +45,8 @@ cache_as_ram_setup:
   orl $(3<<9), %eax
   movl %eax, %cr4
 
-  /* Get the cpu_init_detected */
-  mov $1, %eax
-  cpuid
-  shr $24, %ebx
-
   /* Save the BIST result */
   cvtsi2sd  %ebp, %xmm0
-
-  /* for normal part %ebx already contain cpu_init_detected from fallback call */
-
-  /* Save the cpu_init_detected */
-  cvtsi2sd  %ebx, %xmm1
 
   post_code(0xa1)
 
@@ -109,36 +98,19 @@ cache_as_ram_setup:
   ljmp $0x18, $1f
 1:
 
-  .code64
-
-  call early_all_cores
-
-  /* Pass the cpu_init_detected */
-  cvtsd2si        %xmm1, %esi
-
-  /* Pass the BIST result */
-  cvtsd2si        %xmm0, %edi
-
-  call    cache_as_ram_main
-  .code32
-
-#else
+#endif
 
   call early_all_cores
 
   /* Restore the BIST result */
   cvtsd2si  %xmm0, %edx
 
-  /* Restore the  cpu_init_detected */
-  cvtsd2si  %xmm1, %ebx
-
   /* Must maintain 16-byte stack alignment here. */
   pushl $0x0
   pushl $0x0
-  pushl %ebx  /* init detected */
+  pushl $0x0
   pushl %edx  /* bist */
-  call  cache_as_ram_main
-#endif
+  call  romstage_main
 
   /* Should never see this postcode */
   post_code(0xaf)
@@ -170,6 +142,3 @@ disable_cache_as_ram:
   ret
 
 cache_as_ram_setup_out:
-#ifdef __x86_64__
-.code64
-#endif

@@ -3029,9 +3029,15 @@ void normalize_training(ramctr_timing * ctrl)
 		int delta;
 		FOR_ALL_LANES mat =
 		    max(ctrl->timings[channel][slotrank].lanes[lane].timA, mat);
-		 delta = (mat >> 6) - ctrl->timings[channel][slotrank].val_4028;
-		 ctrl->timings[channel][slotrank].val_4024 += delta;
-		 ctrl->timings[channel][slotrank].val_4028 += delta;
+		printram("normalize %d, %d, %d: mat %d\n",
+		    channel, slotrank, lane, mat);
+
+		delta = (mat >> 6) - ctrl->timings[channel][slotrank].val_4028;
+		printram("normalize %d, %d, %d: delta %d\n",
+		    channel, slotrank, lane, delta);
+
+		ctrl->timings[channel][slotrank].val_4024 += delta;
+		ctrl->timings[channel][slotrank].val_4028 += delta;
 	}
 
 	FOR_ALL_POPULATED_CHANNELS {

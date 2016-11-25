@@ -19,8 +19,17 @@ subdirs-$(CONFIG_NORTHBRIDGE_AMD_PI_00630F01) += 00630F01
 subdirs-$(CONFIG_NORTHBRIDGE_AMD_PI_00730F01) += 00730F01
 subdirs-$(CONFIG_NORTHBRIDGE_AMD_PI_00660F01) += 00660F01
 
+ifeq ($(CONFIG_BINARYPI_LEGACY_WRAPPER), y)
 romstage-y += agesawrapper.c
 ramstage-y += agesawrapper.c
+else
+romstage-y += ../agesa/state_machine.c
+ramstage-y += ../agesa/state_machine.c
+
+romstage-y += ../agesa/eventlog.c
+ramstage-y += ../agesa/eventlog.c
+
+endif
 
 romstage-y += ../agesa/def_callouts.c ../agesa/eventlog.c
 ramstage-y += ../agesa/def_callouts.c ../agesa/eventlog.c ../agesa/acpi_tables.c

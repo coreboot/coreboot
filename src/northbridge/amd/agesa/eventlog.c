@@ -38,12 +38,28 @@ static const char *HeapStatusStr[] = {
 	"DoNotExistYet", "LocalCache", "TempMem", "SystemMem", "DoNotExistAnymore","S3Resume"
 };
 
+/* This function has to match with enumeration of AGESA_STRUCT_NAME defined
+ * inside AMD.h header file. Unfortunately those are different across
+ * different vendorcode subtrees.
+ *
+ * TBD: Fix said header or move this function together with the strings above
+ * under vendorcode/ tree.
+ */
+
 const char *agesa_struct_name(int state)
 {
+#if IS_ENABLED(CONFIG_CPU_AMD_AGESA_OPENSOURCE)
 	if ((state < AMD_INIT_RECOVERY) || (state > AMD_IDENTIFY_DIMMS))
 		return undefined;
 
 	int index = state - AMD_INIT_RECOVERY;
+#else
+	state >>= 12;
+	if ((state < AMD_INIT_RECOVERY >> 12) || (state > AMD_IDENTIFY_DIMMS >> 12))
+		return undefined;
+
+	int index = state - (AMD_INIT_RECOVERY >> 12);
+#endif
 	return AgesaFunctionNameStr[index];
 }
 

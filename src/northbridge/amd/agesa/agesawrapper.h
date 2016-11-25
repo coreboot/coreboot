@@ -16,7 +16,8 @@
 #ifndef _AGESAWRAPPER_H_
 #define _AGESAWRAPPER_H_
 
-#if IS_ENABLED(CONFIG_AGESA_LEGACY_WRAPPER) || IS_ENABLED(CONFIG_CPU_AMD_PI)
+#if IS_ENABLED(CONFIG_AGESA_LEGACY_WRAPPER) || \
+	IS_ENABLED(CONFIG_BINARYPI_LEGACY_WRAPPER)
 
 #include <stdint.h>
 #include "Porting.h"
@@ -65,7 +66,7 @@ struct OEM_HOOK
 extern const struct OEM_HOOK OemCustomize;
 #endif
 
-#if IS_ENABLED(CONFIG_CPU_AMD_PI)
+#if IS_ENABLED(CONFIG_BINARYPI_LEGACY_WRAPPER)
 const void *agesawrapper_locate_module (const CHAR8 name[8]);
 
 VOID OemCustomizeInitEarly (IN OUT AMD_EARLY_PARAMS *InitEarly);

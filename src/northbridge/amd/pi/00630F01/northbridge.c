@@ -35,8 +35,10 @@
 #include <cpu/amd/amdfam15.h>
 #include <cpuRegisters.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
+#if IS_ENABLED(CONFIG_BINARYPI_LEGACY_WRAPPER)
 #include <northbridge/amd/pi/agesawrapper.h>
 #include <northbridge/amd/pi/agesawrapper_call.h>
+#endif
 #include "northbridge.h"
 
 #include <cpu/x86/lapic.h>
@@ -630,6 +632,7 @@ static void domain_read_resources(device_t dev)
 
 static void domain_enable_resources(device_t dev)
 {
+#if IS_ENABLED(CONFIG_BINARYPI_LEGACY_WRAPPER)
 	/* Must be called after PCI enumeration and resource allocation */
 	if (!acpi_is_wakeup_s3()) {
 		/* Enable MMIO on AMD CPU Address Map Controller */
@@ -638,6 +641,7 @@ static void domain_enable_resources(device_t dev)
 		agesawrapper_amdinitmid();
 	}
 	printk(BIOS_DEBUG, "  ader - leaving %s.\n", __func__);
+#endif
 }
 
 #if CONFIG_HW_MEM_HOLE_SIZEK != 0

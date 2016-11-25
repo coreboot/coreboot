@@ -19,7 +19,12 @@ subdirs-$(CONFIG_CPU_AMD_PI_00660F01) += 00660F01
 
 cpu_incs-y += $(src)/cpu/amd/agesa/cache_as_ram.inc
 
+ifeq ($(CONFIG_BINARYPI_LEGACY_WRAPPER), y)
 romstage-y += romstage.c
+ramstage-y += amd_late_init.c
+else
+romstage-y += ../agesa/romstage.c
+endif
+
 romstage-y += ../agesa/heapmanager.c
 ramstage-y += ../agesa/heapmanager.c
-ramstage-y += amd_late_init.c

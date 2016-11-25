@@ -30,6 +30,9 @@ config CPU_AMD_PI
 
 if CPU_AMD_PI
 
+config BINARYPI_LEGACY_WRAPPER
+	def_bool n
+
 config XIP_ROM_SIZE
 	hex
 	default 0x100000

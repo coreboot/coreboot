@@ -131,7 +131,7 @@ void asmlinkage romstage_after_car(void)
 	if (HAS_LEGACY_WRAPPER)
 		agesa_postcar(cb);
 
-	if (cb->s3resume)
+	if (!IS_ENABLED(CONFIG_CPU_AMD_PI) && cb->s3resume)
 		set_resume_cache();
 
 	run_ramstage();

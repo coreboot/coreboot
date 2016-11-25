@@ -39,6 +39,7 @@
 #include <cpuRegisters.h>
 
 #include <northbridge/amd/agesa/agesawrapper.h>
+#include <northbridge/amd/agesa/state_machine.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
 
 #define MAX_NODE_NUMS (MAX_NODES * MAX_DIES)
@@ -632,6 +633,7 @@ static void domain_read_resources(device_t dev)
 
 static void domain_enable_resources(device_t dev)
 {
+#if IS_ENABLED(CONFIG_AGESA_LEGACY_WRAPPER)
 	if (acpi_is_wakeup_s3())
 		agesawrapper_fchs3laterestore();
 
@@ -643,6 +645,7 @@ static void domain_enable_resources(device_t dev)
 		agesawrapper_amdinitmid();
 	}
 	printk(BIOS_DEBUG, "  ader - leaving %s.\n", __func__);
+#endif
 }
 
 #if CONFIG_HW_MEM_HOLE_SIZEK != 0

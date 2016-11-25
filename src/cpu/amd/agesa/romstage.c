@@ -32,6 +32,9 @@ static void fill_sysinfo(struct sysinfo *cb)
 {
 	memset(cb, 0, sizeof(*cb));
 	cb->s3resume = acpi_is_wakeup_s3();
+
+	if (!HAS_LEGACY_WRAPPER)
+		agesa_set_interface(cb);
 }
 
 void * asmlinkage romstage_main(unsigned long bist)
@@ -55,7 +58,22 @@ void * asmlinkage romstage_main(unsigned long bist)
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
 
-	agesa_main(cb);
+	if (!HAS_LEGACY_WRAPPER) {
+
+		agesa_execute_state(cb, AMD_INIT_RESET);
+
+		agesa_execute_state(cb, AMD_INIT_EARLY);
+
+		if (!cb->s3resume)
+			agesa_execute_state(cb, AMD_INIT_POST);
+		else
+			agesa_execute_state(cb, AMD_INIT_RESUME);
+
+	} else {
+
+		agesa_main(cb);
+
+	}
 
 	uintptr_t stack_top = CACHE_TMP_RAMTOP;
 	if (cb->s3resume) {
@@ -80,7 +98,16 @@ void asmlinkage romstage_after_car(void)
 	printk(BIOS_DEBUG, "CAR disabled.\n");
 
 	fill_sysinfo(cb);
-	agesa_postcar(cb);
+
+	if (!HAS_LEGACY_WRAPPER) {
+		if (!cb->s3resume)
+			agesa_execute_state(cb, AMD_INIT_ENV);
+		else
+			agesa_execute_state(cb, AMD_S3LATE_RESTORE);
+	} else {
+
+		agesa_postcar(cb);
+	}
 
 	if (cb->s3resume)
 		set_resume_cache();

@@ -16,3 +16,8 @@
 romstage-y += dimmSpd.c
 
 ramstage-y += northbridge.c
+
+ifneq ($(CONFIG_AGESA_LEGACY_WRAPPER), y)
+romstage-y += state_machine.c
+ramstage-y += state_machine.c
+endif

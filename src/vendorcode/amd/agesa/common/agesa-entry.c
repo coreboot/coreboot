@@ -161,11 +161,12 @@ CONST DISPATCH_TABLE ROMDATA DispatchTable[] =
     { AMD_S3LATE_RESTORE, (IMAGE_ENTRY)AmdS3LateRestore },
   #endif
 
+    { AMD_READ_EVENT_LOG, (IMAGE_ENTRY)AmdReadEventLog },
+
   #if AGESA_ENTRY_INIT_GENERAL_SERVICES == TRUE
     { AMD_GET_APIC_ID, (IMAGE_ENTRY)AmdGetApicId },
     { AMD_GET_PCI_ADDRESS, (IMAGE_ENTRY)AmdGetPciAddress },
     { AMD_IDENTIFY_CORE, (IMAGE_ENTRY)AmdIdentifyCore },
-    { AMD_READ_EVENT_LOG, (IMAGE_ENTRY)AmdReadEventLog },
     { AMD_IDENTIFY_DIMMS, (IMAGE_ENTRY)AmdIdentifyDimm },
     { AMD_GET_EXECACHE_SIZE, (IMAGE_ENTRY)AmdGetAvailableExeCacheSize },
   #endif

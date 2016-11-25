@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#include <northbridge/amd/agesa/state_machine.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
 
 #include "AGESA.h"
@@ -36,6 +37,11 @@
 static AMD_LATE_PARAMS *AmdLateParams;
 
 void agesawrapper_setlateinitptr(void *Late)
+{
+	AmdLateParams = Late;
+}
+
+void completion_InitLate(struct sysinfo *cb, AMD_LATE_PARAMS *Late)
 {
 	AmdLateParams = Late;
 }

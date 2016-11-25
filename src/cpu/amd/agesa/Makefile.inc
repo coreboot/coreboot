@@ -32,7 +32,7 @@ endif
 
 romstage-y += heapmanager.c
 ramstage-y += heapmanager.c
-ramstage-y += amd_late_init.c
+ramstage-$(CONFIG_AGESA_LEGACY_WRAPPER) += amd_late_init.c
 
 ifeq ($(CONFIG_HAVE_ACPI_RESUME), y)
 

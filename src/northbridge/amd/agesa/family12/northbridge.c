@@ -32,7 +32,9 @@
 #include <cpu/amd/mtrr.h>
 
 #include "sb_cimx.h"
+
 #include <northbridge/amd/agesa/agesawrapper.h>
+#include <northbridge/amd/agesa/state_machine.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
 
 #define FX_DEVS 1
@@ -597,6 +599,7 @@ static void domain_set_resources(device_t dev)
 
 static void domain_enable_resources(device_t dev)
 {
+#if IS_ENABLED(CONFIG_AGESA_LEGACY_WRAPPER)
 	printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
 
 	/* Must be called after PCI enumeration and resource allocation */
@@ -610,6 +613,7 @@ static void domain_enable_resources(device_t dev)
 
 	agesawrapper_amdinitmid();
 	printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
+#endif
 }
 
 

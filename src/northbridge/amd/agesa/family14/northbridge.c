@@ -32,6 +32,7 @@
 #include <cpu/amd/mtrr.h>
 
 #include <northbridge/amd/agesa/agesawrapper.h>
+#include <northbridge/amd/agesa/state_machine.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
 
 #include <sb_cimx.h>
@@ -581,6 +582,10 @@ static void domain_set_resources(device_t dev)
 
 static void domain_enable_resources(device_t dev)
 {
+#if IS_ENABLED(CONFIG_AGESA_LEGACY_WRAPPER)
+	/* Must be called after PCI enumeration and resource allocation */
+	printk(BIOS_DEBUG, "\nFam14h - %s\n", __func__);
+
 #if IS_ENABLED(CONFIG_AMD_SB_CIMX)
 	if (!acpi_is_wakeup_s3()) {
 		sb_After_Pci_Init();
@@ -590,9 +595,6 @@ static void domain_enable_resources(device_t dev)
 	}
 #endif
 
-	/* Must be called after PCI enumeration and resource allocation */
-	printk(BIOS_DEBUG, "\nFam14h - %s\n", __func__);
-
 	if (!acpi_is_wakeup_s3()) {
 		/* Enable MMIO on AMD CPU Address Map Controller */
 		amd_initcpuio();
@@ -601,6 +603,7 @@ static void domain_enable_resources(device_t dev)
 	}
 
 	printk(BIOS_DEBUG, "  ader - leaving domain_enable_resources.\n");
+#endif
 }
 
 static const char *domain_acpi_name(struct device *dev)

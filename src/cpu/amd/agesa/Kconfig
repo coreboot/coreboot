@@ -37,6 +37,10 @@ if CPU_AMD_AGESA
 config AGESA_LEGACY
 	def_bool n
 
+config AGESA_LEGACY_WRAPPER
+	bool
+	default AGESA_LEGACY
+
 config AGESA_NO_LEGACY
 	bool
 	default !AGESA_LEGACY

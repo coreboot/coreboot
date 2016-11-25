@@ -39,8 +39,8 @@
 #include <cpuRegisters.h>
 
 #include <northbridge/amd/agesa/agesawrapper.h>
+#include <northbridge/amd/agesa/state_machine.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
-
 #include "sb_cimx.h"
 
 #define MAX_NODE_NUMS (MAX_NODES * MAX_DIES)
@@ -637,6 +637,7 @@ static void domain_read_resources(device_t dev)
 
 static void domain_enable_resources(device_t dev)
 {
+#if IS_ENABLED(CONFIG_AGESA_LEGACY_WRAPPER)
 	/* Must be called after PCI enumeration and resource allocation */
 	printk(BIOS_DEBUG, "\nFam15 - %s: AmdInitMid.\n", __func__);
 
@@ -648,6 +649,7 @@ static void domain_enable_resources(device_t dev)
 
 	agesawrapper_amdinitmid();
 	printk(BIOS_DEBUG, "  Fam15 - leaving %s.\n", __func__);
+#endif
 }
 
 #if CONFIG_HW_MEM_HOLE_SIZEK != 0

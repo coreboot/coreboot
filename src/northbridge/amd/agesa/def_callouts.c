@@ -108,21 +108,31 @@ AGESA_STATUS agesa_Reset (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 
 AGESA_STATUS agesa_RunFuncOnAp (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {
+	AMD_CONFIG_PARAMS *StdHeader = ConfigPtr;
 	AGESA_STATUS status;
 	AP_EXE_PARAMS ApExeParams;
 
 	memset(&ApExeParams, 0, sizeof(AP_EXE_PARAMS));
 
-	ApExeParams.StdHeader.AltImageBasePtr = 0;
-	ApExeParams.StdHeader.CalloutPtr = &GetBiosCallout;
-	ApExeParams.StdHeader.Func = 0;
-	ApExeParams.StdHeader.ImageBasePtr = 0;
+	if (HAS_LEGACY_WRAPPER) {
+		ApExeParams.StdHeader.AltImageBasePtr = 0;
+		ApExeParams.StdHeader.CalloutPtr = &GetBiosCallout;
+		ApExeParams.StdHeader.Func = 0;
+		ApExeParams.StdHeader.ImageBasePtr = 0;
+	} else {
+		memcpy(&ApExeParams.StdHeader, StdHeader, sizeof(*StdHeader));
+	}
+
 	ApExeParams.FunctionNumber = Func;
 	ApExeParams.RelatedDataBlock = ConfigPtr;
 
+#if HAS_LEGACY_WRAPPER
 	status = AmdLateRunApTask(&ApExeParams);
-	ASSERT(status == AGESA_SUCCESS);
+#else
+	status = module_dispatch(AMD_LATE_RUN_AP_TASK, &ApExeParams.StdHeader);
+#endif
 
+	ASSERT(status == AGESA_SUCCESS);
 	return status;
 }
 

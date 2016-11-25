@@ -16,6 +16,8 @@
 #ifndef _AGESAWRAPPER_H_
 #define _AGESAWRAPPER_H_
 
+#if IS_ENABLED(CONFIG_AGESA_LEGACY_WRAPPER)
+
 #include <stdint.h>
 #include "Porting.h"
 #include "AGESA.h"
@@ -49,12 +51,16 @@ struct OEM_HOOK
 
 extern const struct OEM_HOOK OemCustomize;
 
-/* For suspend-to-ram support. */
-#if !IS_ENABLED(CONFIG_CPU_AMD_PI)
-/* TODO: With binaryPI we need different interface. */
-AGESA_STATUS OemInitResume(AMD_S3_PARAMS *dataBlock);
-AGESA_STATUS OemS3LateRestore(AMD_S3_PARAMS *dataBlock);
-AGESA_STATUS OemS3Save(AMD_S3_PARAMS *dataBlock);
-#endif
+#else
+
+/* Defined to make unused agesa_main() build. */
+static inline int agesawrapper_amdinitreset(void) { return -1; }
+static inline int agesawrapper_amdinitearly(void) { return -1; }
+static inline int agesawrapper_amdinitenv(void) { return -1; }
+static inline int agesawrapper_amdinitpost(void) { return -1; }
+static inline int agesawrapper_amdinitresume(void) { return -1; }
+static inline int agesawrapper_amds3laterestore(void) { return -1; }
+
+#endif /* IS_ENABLED(CONFIG_AGESA_LEGACY_WRAPPER) */
 
 #endif /* _AGESAWRAPPER_H_ */

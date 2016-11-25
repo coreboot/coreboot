@@ -25,4 +25,7 @@ struct sysinfo
 
 void board_BeforeAgesa(struct sysinfo *cb);
 
+void platform_once(struct sysinfo *cb);
+void agesa_main(struct sysinfo *cb);
+
 #endif /* _STATE_MACHINE_H_ */

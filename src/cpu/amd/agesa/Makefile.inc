@@ -27,6 +27,7 @@ ifeq ($(CONFIG_AGESA_LEGACY), y)
 cpu_incs-y += $(src)/cpu/amd/agesa/cache_as_ram_legacy.inc
 else
 cpu_incs-y += $(src)/cpu/amd/agesa/cache_as_ram.inc
+romstage-y += romstage.c
 endif
 
 romstage-y += heapmanager.c

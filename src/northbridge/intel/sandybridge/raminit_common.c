@@ -3023,10 +3023,11 @@ int discover_timC_write(ramctr_timing *ctrl)
 void normalize_training(ramctr_timing * ctrl)
 {
 	int channel, slotrank, lane;
-	int mat = 0;
+	int mat;
 
 	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS {
 		int delta;
+		mat = 0;
 		FOR_ALL_LANES mat =
 		    max(ctrl->timings[channel][slotrank].lanes[lane].timA, mat);
 		printram("normalize %d, %d, %d: mat %d\n",

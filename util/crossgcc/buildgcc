@@ -388,20 +388,20 @@ build_for_host()
 {
 	package="$1"
 	version="$(eval echo \$$package"_VERSION")"
-	generic_build "$package" host "build-$package" "${TARGETDIR}/.${package}.${version}.success" "$version"
+	generic_build "$package" host "build-$package" "${DESTDIR}${TARGETDIR}/.${package}.${version}.success" "$version"
 }
 
 build_for_target()
 {
 	package="$1"
 	version="$(eval echo \$$package"_VERSION")"
-	generic_build "$package" target "build-${TARGETARCH}-$package" "${TARGETDIR}/.${TARGETARCH}-${package}.${version}.success" "$version"
+	generic_build "$package" target "build-${TARGETARCH}-$package" "${DESTDIR}${TARGETDIR}/.${TARGETARCH}-${package}.${version}.success" "$version"
 }
 
 build()
 {
 	if package_uses_targetarch $1; then
-		if [ $BOOTSTRAP -eq 1 -a ! -f "${TARGETDIR}/.GCC.success" ]; then
+		if [ $BOOTSTRAP -eq 1 -a ! -f "${DESTDIR}${TARGETDIR}/.GCC.success" ]; then
 			build_for_host GCC
 		fi
 		build_for_target $1

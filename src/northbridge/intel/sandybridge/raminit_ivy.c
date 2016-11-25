@@ -292,10 +292,28 @@ static void dram_timing(ramctr_timing * ctrl)
 	u8 val;
 	u32 val32;
 
-	/* Maximum supported DDR3 frequency is 1066MHz (DDR3 2133) so make sure
-	 * we cap it if we have faster DIMMs.
+	/* Maximum supported DDR3 frequency is 1400MHz (DDR3 2800).
+	 * We cap it at 1200Mhz (DDR3 2400).
 	 * Then, align it to the closest JEDEC standard frequency */
-	if (ctrl->tCK <= TCK_1066MHZ) {
+	if (ctrl->tCK <= TCK_1200MHZ) {
+		ctrl->tCK = TCK_1200MHZ;
+		ctrl->edge_offset[0] = 18; //XXX: guessed
+		ctrl->edge_offset[1] = 8;
+		ctrl->edge_offset[2] = 8;
+		ctrl->timC_offset[0] = 20; //XXX: guessed
+		ctrl->timC_offset[1] = 8;
+		ctrl->timC_offset[2] = 8;
+		ctrl->reg_320c_range_threshold = 10;
+	} else if (ctrl->tCK <= TCK_1100MHZ) {
+		ctrl->tCK = TCK_1100MHZ;
+		ctrl->edge_offset[0] = 17; //XXX: guessed
+		ctrl->edge_offset[1] = 7;
+		ctrl->edge_offset[2] = 7;
+		ctrl->timC_offset[0] = 19; //XXX: guessed
+		ctrl->timC_offset[1] = 7;
+		ctrl->timC_offset[2] = 7;
+		ctrl->reg_320c_range_threshold = 13;
+	} else if (ctrl->tCK <= TCK_1066MHZ) {
 		ctrl->tCK = TCK_1066MHZ;
 		ctrl->edge_offset[0] = 16;
 		ctrl->edge_offset[1] = 7;
@@ -303,6 +321,15 @@ static void dram_timing(ramctr_timing * ctrl)
 		ctrl->timC_offset[0] = 18;
 		ctrl->timC_offset[1] = 7;
 		ctrl->timC_offset[2] = 7;
+		ctrl->reg_320c_range_threshold = 13;
+	} else if (ctrl->tCK <= TCK_1000MHZ) {
+		ctrl->tCK = TCK_1000MHZ;
+		ctrl->edge_offset[0] = 15; //XXX: guessed
+		ctrl->edge_offset[1] = 6;
+		ctrl->edge_offset[2] = 6;
+		ctrl->timC_offset[0] = 17; //XXX: guessed
+		ctrl->timC_offset[1] = 6;
+		ctrl->timC_offset[2] = 6;
 		ctrl->reg_320c_range_threshold = 13;
 	} else if (ctrl->tCK <= TCK_933MHZ) {
 		ctrl->tCK = TCK_933MHZ;
@@ -313,6 +340,15 @@ static void dram_timing(ramctr_timing * ctrl)
 		ctrl->timC_offset[1] = 6;
 		ctrl->timC_offset[2] = 6;
 		ctrl->reg_320c_range_threshold = 15;
+	} else if (ctrl->tCK <= TCK_900MHZ) {
+		ctrl->tCK = TCK_900MHZ;
+		ctrl->edge_offset[0] = 14; //XXX: guessed
+		ctrl->edge_offset[1] = 6;
+		ctrl->edge_offset[2] = 6;
+		ctrl->timC_offset[0] = 15; //XXX: guessed
+		ctrl->timC_offset[1] = 6;
+		ctrl->timC_offset[2] = 6;
+		ctrl->reg_320c_range_threshold = 12;
 	} else if (ctrl->tCK <= TCK_800MHZ) {
 		ctrl->tCK = TCK_800MHZ;
 		ctrl->edge_offset[0] = 13;
@@ -322,6 +358,15 @@ static void dram_timing(ramctr_timing * ctrl)
 		ctrl->timC_offset[1] = 5;
 		ctrl->timC_offset[2] = 5;
 		ctrl->reg_320c_range_threshold = 15;
+	} else if (ctrl->tCK <= TCK_700MHZ) {
+		ctrl->tCK = TCK_700MHZ;
+		ctrl->edge_offset[0] = 13; //XXX: guessed
+		ctrl->edge_offset[1] = 5;
+		ctrl->edge_offset[2] = 5;
+		ctrl->timC_offset[0] = 14; //XXX: guessed
+		ctrl->timC_offset[1] = 5;
+		ctrl->timC_offset[2] = 5;
+		ctrl->reg_320c_range_threshold = 16;
 	} else if (ctrl->tCK <= TCK_666MHZ) {
 		ctrl->tCK = TCK_666MHZ;
 		ctrl->edge_offset[0] = 10;

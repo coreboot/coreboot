@@ -152,6 +152,8 @@ static void fan_smartconfig(const u16 base, const u8 fan,
 		pwm_start |= ITE_EC_FAN_CTL_PWM_SLOPE_BIT6(conf->slope);
 
 		pwm_auto = ITE_EC_FAN_CTL_PWM_SLOPE_LOWER(conf->slope);
+		if (conf->smoothing)
+			pwm_auto |= ITE_EC_FAN_CTL_AUTO_SMOOTHING_EN;
 
 		ite_ec_write(base, ITE_EC_FAN_CTL_TEMP_LIMIT_OFF(fan),
 			     conf->tmp_off);

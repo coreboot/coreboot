@@ -436,8 +436,8 @@ static void init_dram_ddr3(int mobile, int min_tck, int s3resume)
 	/* Zone config */
 	dram_zones(&ctrl, 0);
 
-	if (!fast_boot)
-		quick_ram_check();
+	/* Non intrusive, fast ram check */
+	quick_ram_check();
 
 	intel_early_me_status();
 	intel_early_me_init_done(ME_INIT_STATUS_SUCCESS);

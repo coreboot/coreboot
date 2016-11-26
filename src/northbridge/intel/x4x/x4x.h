@@ -144,6 +144,7 @@
 
 #define TOTAL_CHANNELS 2
 #define TOTAL_DIMMS 4
+#define DIMMS_PER_CHANNEL (TOTAL_DIMMS / TOTAL_CHANNELS)
 #define RAW_CARD_UNPOPULATED 0xff
 
 #define DIMM_IS_POPULATED(dimms, idx) (dimms[idx].card_type != RAW_CARD_UNPOPULATED)
@@ -162,7 +163,7 @@
 #define FOR_EACH_POPULATED_DIMM(dimms, idx) \
 	FOR_EACH_DIMM(idx) IF_DIMM_POPULATED(dimms, idx)
 #define FOR_EACH_DIMM_IN_CHANNEL(ch, idx) \
-	for (idx = (ch); idx < (ch) + 2; ++idx)
+	for (idx = (ch) << 1; idx < ((ch) << 1) + DIMMS_PER_CHANNEL; ++idx)
 #define FOR_EACH_POPULATED_DIMM_IN_CHANNEL(dimms, ch, idx) \
 	FOR_EACH_DIMM_IN_CHANNEL(ch, idx) IF_DIMM_POPULATED(dimms, idx)
 #define CHANNEL_IS_POPULATED(dimms, idx) ((dimms[idx<<1].card_type != RAW_CARD_UNPOPULATED) || (dimms[(idx<<1) + 1].card_type != RAW_CARD_UNPOPULATED))

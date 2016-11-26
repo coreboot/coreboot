@@ -153,7 +153,8 @@ static void sdram_read_spds(struct sysinfo *s)
 				else
 					die("Dual-rank x16 not supported\n");
 			}
-			s->dimm_config[chan] |= dimm_config << (i - chan) * 2;
+			s->dimm_config[chan] |=
+				dimm_config << (i % DIMMS_PER_CHANNEL) * 2;
 		}
 		printk(BIOS_DEBUG, "  Config[CH%d] : %d\n", chan, s->dimm_config[chan]);
 	}

@@ -126,6 +126,11 @@ AGESA_STATUS OemS3Save(AMD_S3SAVE_PARAMS *S3SaveParams)
 	if (size && dataBlock->NvStorageSize)
 		spi_SaveS3info(pos, size, dataBlock->NvStorage,
 			dataBlock->NvStorageSize);
+	else
+		printk(BIOS_EMERG,
+			"Error: Cannot store memory training results in SPI.\n"
+			"Error: S3 resume will not be possible.\n"
+		);
 
 	/* To be consumed in AmdS3LateRestore. */
 	char *heap = cbmem_add(CBMEM_ID_RESUME_SCRATCH, HIGH_MEMORY_SCRATCH);

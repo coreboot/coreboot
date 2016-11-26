@@ -189,10 +189,39 @@ void dram_xover(ramctr_timing * ctrl)
 	}
 }
 
-void dram_timing_regs(ramctr_timing * ctrl)
+static void dram_odt_stretch(ramctr_timing *ctrl, int channel)
 {
-	u32 reg, addr, val32, cpu, stretch;
 	struct cpuid_result cpures;
+	u32 reg, addr, cpu, stretch;
+
+	stretch = ctrl->ref_card_offset[channel];
+	/* ODT stretch: Delay ODT signal by stretch value.
+	 * Useful for multi DIMM setups on the same channel. */
+	cpures = cpuid(1);
+	cpu = cpures.eax;
+	if (IS_SANDY_CPU(cpu) && IS_SANDY_CPU_C(cpu)) {
+		if (stretch == 2)
+			stretch = 3;
+		addr = 0x400 * channel + 0x401c;
+		reg = MCHBAR32(addr) & 0xffffc3ff;
+		reg |= (stretch << 12);
+		reg |= (stretch << 10);
+		MCHBAR32(addr) = reg;
+		printram("OTHP Workaround [%x] = %x\n", addr, reg);
+	} else {
+		// OTHP
+		addr = 0x400 * channel + 0x400c;
+		reg = MCHBAR32(addr) & 0xfff0ffff;
+		reg |= (stretch << 16);
+		reg |= (stretch << 18);
+		MCHBAR32(addr) = reg;
+		printram("OTHP [%x] = %x\n", addr, reg);
+	}
+}
+
+void dram_timing_regs(ramctr_timing *ctrl)
+{
+	u32 reg, addr, val32;
 	int channel;
 
 	FOR_ALL_CHANNELS {
@@ -232,52 +261,7 @@ void dram_timing_regs(ramctr_timing * ctrl)
 
 		MCHBAR32(addr) |= 0x00020000;
 
-		// ODT stretch
-		reg = 0;
-
-		cpures = cpuid(1);
-		cpu = cpures.eax;
-		if (IS_IVY_CPU(cpu)
-		    || (IS_SANDY_CPU(cpu) && IS_SANDY_CPU_D2(cpu))) {
-			stretch = 2;
-			addr = 0x400 * channel + 0x400c;
-			printram("ODT stretch [%x] = %x\n",
-			       0x400 * channel + 0x400c, reg);
-			reg = MCHBAR32(addr);
-
-			if (((ctrl->rankmap[channel] & 3) == 0)
-			    || (ctrl->rankmap[channel] & 0xc) == 0) {
-
-				// Rank 0 - operate on rank 2
-				reg = (reg & ~0xc0000) | (stretch << 18);
-
-				// Rank 2 - operate on rank 0
-				reg = (reg & ~0x30000) | (stretch << 16);
-
-				printram("ODT stretch [%x] = %x\n", addr, reg);
-				MCHBAR32(addr) = reg;
-			}
-
-		} else if (IS_SANDY_CPU(cpu) && IS_SANDY_CPU_C(cpu)) {
-			stretch = 3;
-			addr = 0x400 * channel + 0x401c;
-			reg = MCHBAR32(addr);
-
-			if (((ctrl->rankmap[channel] & 3) == 0)
-			    || (ctrl->rankmap[channel] & 0xc) == 0) {
-
-				// Rank 0 - operate on rank 2
-				reg = (reg & ~0x3000) | (stretch << 12);
-
-				// Rank 2 - operate on rank 0
-				reg = (reg & ~0xc00) | (stretch << 10);
-
-				printram("ODT stretch [%x] = %x\n", addr, reg);
-				MCHBAR32(addr) = reg;
-			}
-		} else {
-			stretch = 0;
-		}
+		dram_odt_stretch(ctrl, channel);
 
 		// REFI
 		reg = 0;
@@ -3155,7 +3139,7 @@ void prepare_training(ramctr_timing * ctrl)
 void set_4008c(ramctr_timing * ctrl)
 {
 	int channel, slotrank;
-	u32 reg;
+
 	FOR_ALL_POPULATED_CHANNELS {
 		u32 b20, b4_8_12;
 		int min_320c = 10000;
@@ -3176,11 +3160,8 @@ void set_4008c(ramctr_timing * ctrl)
 		else
 			b4_8_12 = 0x2220;
 
-		reg = read32(DEFAULT_MCHBAR + 0x400c + (channel << 10));
-		write32(DEFAULT_MCHBAR + 0x400c + (channel << 10),
-			(reg & 0xFFF0FFFF)
-			| (ctrl->ref_card_offset[channel] << 16)
-			| (ctrl->ref_card_offset[channel] << 18));
+		dram_odt_stretch(ctrl, channel);
+
 		write32(DEFAULT_MCHBAR + 0x4008 + (channel << 10),
 			0x0a000000
 			| (b20 << 20)

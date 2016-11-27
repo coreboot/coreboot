@@ -1,2 +1,0 @@
-config BOARD_GOOGLE_PEPPY
-	bool "Peppy"

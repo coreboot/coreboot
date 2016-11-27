@@ -13,6 +13,9 @@
  * GNU General Public License for more details.
  */
 
+#include "mct_d.h"
+#include <cpu/x86/cr.h>
+#include <cpu/amd/mtrr.h>
 
 static void CalcEccDQSPos_D(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat, u16 like,
@@ -38,30 +41,20 @@ static u8 CompareDQSTestPattern_D(struct MCTStatStruc *pMCTstat,
 					u32 addr_lo);
 static void FlushDQSTestPattern_D(struct DCTStatStruc *pDCTstat,
 					u32 addr_lo);
-static void SetTargetWTIO_D(u32 TestAddr);
-static void ResetTargetWTIO_D(void);
 static void ReadDQSTestPattern_D(struct MCTStatStruc *pMCTstat,
 					struct DCTStatStruc *pDCTstat,
 					u32 TestAddr_lo);
-void ResetDCTWrPtr_D(u32 dev, u32 index_reg, u32 index);
-u8 mct_DisableDimmEccEn_D(struct MCTStatStruc *pMCTstat,
-				struct DCTStatStruc *pDCTstat);
 static void mct_SetDQSDelayCSR_D(struct MCTStatStruc *pMCTstat,
 					struct DCTStatStruc *pDCTstat,
 					u8 ChipSel);
 static void mct_SetDQSDelayAllCSR_D(struct MCTStatStruc *pMCTstat,
 					struct DCTStatStruc *pDCTstat,
 					u8 cs_start);
-u32 mct_GetMCTSysAddr_D(struct MCTStatStruc *pMCTstat,
-				struct DCTStatStruc *pDCTstat, u8 Channel,
-				u8 receiver, u8 *valid);
 static void SetupDqsPattern_D(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat,
 				u32 *buffer);
 
-#define DQS_TRAIN_DEBUG 0
-
-static void print_debug_dqs(const char *str, u32 val, u8 level)
+void print_debug_dqs(const char *str, u32 val, u8 level)
 {
 #if DQS_TRAIN_DEBUG > 0
 	if (DQS_TRAIN_DEBUG >= level) {
@@ -70,7 +63,7 @@ static void print_debug_dqs(const char *str, u32 val, u8 level)
 #endif
 }
 
-static void print_debug_dqs_pair(const char *str, u32 val, const char *str2, u32 val2, u8 level)
+void print_debug_dqs_pair(const char *str, u32 val, const char *str2, u32 val2, u8 level)
 {
 #if DQS_TRAIN_DEBUG > 0
 	if (DQS_TRAIN_DEBUG >= level) {
@@ -192,9 +185,6 @@ static const u32 TestPatternJD1b_D[] = {
 	0x80808080,0x80808080,0x80808080,0x80808080, /* QW6,CHA-B, DQ7-ODD */
 	0x80808080,0x80808080,0x80808080,0x80808080  /* QW7,CHA-B, DQ7-ODD */
 };
-
-const u8 Table_DQSRcvEn_Offset[] = {0x00,0x01,0x10,0x11};
-
 
 void TrainReceiverEn_D(struct MCTStatStruc *pMCTstat,
 			struct DCTStatStruc *pDCTstatA, u8 Pass)
@@ -653,7 +643,7 @@ static void TrainWriteDQS_D(struct MCTStatStruc *pMCTstat,
 }
 
 
-static void proc_IOCLFLUSH_D(u32 addr_hi)
+void proc_IOCLFLUSH_D(u32 addr_hi)
 {
 	SetTargetWTIO_D(addr_hi);
 	proc_CLFLUSH(addr_hi);
@@ -820,7 +810,7 @@ static void FlushDQSTestPattern_D(struct DCTStatStruc *pDCTstat,
 	}
 }
 
-static void SetTargetWTIO_D(u32 TestAddr)
+void SetTargetWTIO_D(u32 TestAddr)
 {
 	u32 lo, hi;
 	hi = TestAddr >> 24;
@@ -832,7 +822,7 @@ static void SetTargetWTIO_D(u32 TestAddr)
 }
 
 
-static void ResetTargetWTIO_D(void)
+void ResetTargetWTIO_D(void)
 {
 	u32 lo, hi;
 
@@ -1173,7 +1163,7 @@ exitGetAddr:
 }
 
 
-static void mct_Write1LTestPattern_D(struct MCTStatStruc *pMCTstat,
+void mct_Write1LTestPattern_D(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat,
 				u32 TestAddr, u8 pattern)
 {

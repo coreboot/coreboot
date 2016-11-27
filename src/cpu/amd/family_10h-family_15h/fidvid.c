@@ -89,8 +89,7 @@ b.-  prep_fid_change(...)
 
  */
 
-#if CONFIG_SET_FIDVID
-
+#include <inttypes.h>
 #include <northbridge/amd/amdht/AsPsDefs.h>
 
 static inline void print_debug_fv(const char *str, u32 val)
@@ -601,7 +600,7 @@ static void config_acpi_pwr_state_ctrl_regs(pci_devfn_t dev, uint64_t cpuRev,
 	}
 }
 
-static void prep_fid_change(void)
+void prep_fid_change(void)
 {
 	u32 dword;
 	u32 nodes;
@@ -981,7 +980,7 @@ static void finalPstateChange(void)
 	set_pstate(0);
 }
 
-static void init_fidvid_stage2(u32 apicid, u32 nodeid)
+void init_fidvid_stage2(u32 apicid, u32 nodeid)
 {
 	msr_t msr;
 	pci_devfn_t dev;
@@ -1052,7 +1051,7 @@ static void store_ap_apicid(unsigned ap_apicid, void *gp)
 #endif
 
 
-static int init_fidvid_bsp(u32 bsp_apicid, u32 nodes)
+int init_fidvid_bsp(u32 bsp_apicid, u32 nodes)
 {
 #if CONFIG_SET_FIDVID_STORE_AP_APICID_AT_FIRST
 	struct ap_apicid_st ap_apicidx;
@@ -1098,4 +1097,3 @@ static int init_fidvid_bsp(u32 bsp_apicid, u32 nodes)
 
 	return 0;		// No FID/VID changes. Don't reset
 }
-#endif

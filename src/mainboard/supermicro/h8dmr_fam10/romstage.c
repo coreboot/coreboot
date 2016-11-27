@@ -30,40 +30,50 @@
 #include <lib.h>
 #include <spd.h>
 #include <cpu/amd/model_10xxx_rev.h>
-#include "southbridge/nvidia/mcp55/early_smbus.c" // for enable the FAN
-#include <northbridge/amd/amdfam10/raminit.h>
-#include <northbridge/amd/amdfam10/amdfam10.h>
 #include <delay.h>
 #include <cpu/x86/lapic.h>
-#include "northbridge/amd/amdfam10/reset_test.c"
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627hf/w83627hf.h>
 #include <cpu/x86/bist.h>
-#include "northbridge/amd/amdfam10/debug.c"
-#include "northbridge/amd/amdfam10/setup_resource_map.c"
+#include <cpu/amd/car.h>
+#include <northbridge/amd/amdfam10/raminit.h>
+#include <northbridge/amd/amdht/ht_wrapper.h>
+#include <cpu/amd/family_10h-family_15h/init_cpus.h>
+#include <arch/early_variables.h>
+#include <cbmem.h>
+
+#include "southbridge/nvidia/mcp55/early_smbus.c" // for enable the FAN
 #include "southbridge/nvidia/mcp55/early_ctrl.c"
 
-#define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
-#define DUMMY_DEV PNP_DEV(0x2e, 0)
-
-static void activate_spd_rom(const struct mem_controller *ctrl) { }
-
-static inline int spd_read_byte(unsigned device, unsigned address)
-{
-	return smbus_read_byte(device, address);
-}
-
-#include <northbridge/amd/amdfam10/amdfam10.h>
-#include "northbridge/amd/amdfam10/raminit_sysinfo_in_ram.c"
-#include "northbridge/amd/amdfam10/pci.c"
 #include "resourcemap.c"
 #include "cpu/amd/quadcore/quadcore.c"
 #include <southbridge/nvidia/mcp55/early_setup_ss.h>
 #include "southbridge/nvidia/mcp55/early_setup_car.c"
-#include <cpu/amd/microcode.h>
 
-#include "cpu/amd/family_10h-family_15h/init_cpus.c"
-#include "northbridge/amd/amdfam10/early_ht.c"
+#define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
+#define DUMMY_DEV PNP_DEV(0x2e, 0)
+
+void activate_spd_rom(const struct mem_controller *ctrl);
+int spd_read_byte(unsigned device, unsigned address);
+extern struct sys_info sysinfo_car;
+
+void activate_spd_rom(const struct mem_controller *ctrl) { }
+
+inline int spd_read_byte(unsigned device, unsigned address)
+{
+	return smbus_read_byte(device, address);
+}
+
+unsigned get_sbdn(unsigned bus)
+{
+	pci_devfn_t dev;
+
+	/* Find the device. */
+	dev = pci_locate_device_on_bus(PCI_ID(PCI_VENDOR_ID_NVIDIA,
+				       PCI_DEVICE_ID_NVIDIA_MCP55_HT), bus);
+
+	return (dev >> 15) & 0x1f;
+}
 
 static void sio_setup(void)
 {

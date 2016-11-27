@@ -17,7 +17,6 @@
 #define SYSTEM_TYPE 1	/* DESKTOP */
 //#define SYSTEM_TYPE 2	/* MOBILE */
 
-//used by incoherent_ht
 #define FAM10_SCAN_PCI_BUS 0
 #define FAM10_ALLOCATE_IO_RANGE 0
 
@@ -32,42 +31,43 @@
 #include <console/console.h>
 #include <timestamp.h>
 #include <cpu/amd/model_10xxx_rev.h>
-#include <northbridge/amd/amdfam10/raminit.h>
-#include <northbridge/amd/amdfam10/amdfam10.h>
 #include <cpu/x86/lapic.h>
-#include "northbridge/amd/amdfam10/reset_test.c"
 #include <commonlib/loglevel.h>
 #include <cpu/x86/bist.h>
 #include <superio/ite/common/ite.h>
 #include <superio/ite/it8721f/it8721f.h>
 #include <cpu/amd/mtrr.h>
-#include "northbridge/amd/amdfam10/setup_resource_map.c"
+#include <cpu/amd/car.h>
+#include <southbridge/amd/sb800/smbus.h>
+#include <northbridge/amd/amdfam10/raminit.h>
+#include <northbridge/amd/amdht/ht_wrapper.h>
+#include <cpu/amd/family_10h-family_15h/init_cpus.h>
+#include <arch/early_variables.h>
+#include <cbmem.h>
 #include "southbridge/amd/rs780/early_setup.c"
-#include <sb_cimx.h>
-#include <SBPLATFORM.h> /* SB OEM constants */
-#include <southbridge/amd/cimx/sb800/smbus.h>
-#include "northbridge/amd/amdfam10/debug.c"
+#include "southbridge/amd/sb800/early_setup.c"
+#include "spd.h"
+#include <reset.h>
 
-static void activate_spd_rom(const struct mem_controller *ctrl)
+#include "resourcemap.c"
+#include "cpu/amd/quadcore/quadcore.c"
+
+#define SERIAL_DEV PNP_DEV(0x4e, IT8721F_SP1)
+
+void activate_spd_rom(const struct mem_controller *ctrl);
+int spd_read_byte(unsigned device, unsigned address);
+extern struct sys_info sysinfo_car;
+
+void activate_spd_rom(const struct mem_controller *ctrl)
 {
 }
 
-static int spd_read_byte(u32 device, u32 address)
+int spd_read_byte(u32 device, u32 address)
 {
 	return do_smbus_read_byte(SMBUS_IO_BASE, device, address);
 }
 
-#include "northbridge/amd/amdfam10/raminit_sysinfo_in_ram.c"
-#include "northbridge/amd/amdfam10/pci.c"
-#include "resourcemap.c"
-#include "cpu/amd/quadcore/quadcore.c"
-#include <cpu/amd/microcode.h>
-#include "cpu/amd/family_10h-family_15h/init_cpus.c"
-#include "northbridge/amd/amdfam10/early_ht.c"
-#include "spd.h"
-#include <reset.h>
 
-#define SERIAL_DEV PNP_DEV(0x4e, IT8721F_SP1)
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	struct sys_info *sysinfo = &sysinfo_car;
@@ -86,7 +86,8 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		enumerate_ht_chain();
 
 		//enable port80 decoding and southbridge poweron init
-		sb_Poweron_Init();
+		sb800_lpc_init();
+		sb800_pci_port80();
 	}
 
 	post_code(0x30);
@@ -157,11 +158,14 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	/* run _early_setup before soft-reset. */
 	rs780_early_setup();
+	sb800_early_setup();
 
 #if CONFIG_SET_FIDVID
 	msr = rdmsr(0xc0010071);
 	printk(BIOS_DEBUG, "\nBegin FIDVID MSR 0xc0010071 0x%08x 0x%08x\n", msr.hi, msr.lo);
 	post_code(0x39);
+
+	enable_fid_change_on_sb(sysinfo->sbbusn, sysinfo->sbdn);
 
 	if (!warm_reset_detect(0)) {			// BSP is node 0
 		init_fidvid_bsp(bsp_apicid, sysinfo->nodes);
@@ -218,6 +222,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 //	die("After MCT init before CAR disabled.");
 
 	rs780_before_pci_init();
+	sb800_before_pci_init();
 
 	post_code(0x42);
 	post_cache_as_ram();	// BSP switch stack to ram, copy then execute LB.

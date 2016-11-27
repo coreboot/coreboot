@@ -31,9 +31,10 @@
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627hf/w83627hf.h>
 #include "northbridge/amd/amdk8/setup_resource_map.c"
-#include "southbridge/amd/amd8111/early_ctrl.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
+
+unsigned get_sbdn(unsigned bus);
 
 static void memreset_setup(void)
 {
@@ -63,6 +64,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 	return smbus_read_byte(device, address);
 }
 
+#include "southbridge/amd/amd8111/early_ctrl.c"
 #include <northbridge/amd/amdk8/amdk8.h>
 #include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"

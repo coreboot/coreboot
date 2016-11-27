@@ -16,15 +16,12 @@
 #ifndef COMLIB_H
 #define COMLIB_H
 
-#ifndef FILECODE
-#error "FILECODE was not defined, should be #define'd to 0xFxxx"
-#endif
+#undef FILECODE
+#define FILECODE 0xF001
 
+#include <inttypes.h>
+#include <stdlib.h>
 #include "porting.h"
-
-/* include coreboot pci functions */
-#include <device/pci_def.h>
-#include <device/pci_ids.h>
 
 #ifdef AMD_DEBUG
     #define ASSERT(x) ((x) ? 0 : ErrorStop(((uint32)FILECODE)*0x10000 + ((__LINE__)%10) + (((__LINE__/10)%10)*0x10) + (((__LINE__/100)%10)*0x100) +(((__LINE__/1000)%10)*0x1000)))

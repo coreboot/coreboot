@@ -16,6 +16,25 @@
 
 /* AM3/ASB2/C32/G34 DDR3 */
 
+#include <inttypes.h>
+#include "mct_d.h"
+#include "mct_d_gcc.h"
+
+static uint8_t is_fam15h(void)
+{
+	uint8_t fam15h = 0;
+	uint32_t family;
+
+	family = cpuid_eax(0x80000001);
+	family = ((family & 0xf00000) >> 16) | ((family & 0xf00) >> 8);
+
+	if (family >= 0x6f)
+		/* Family 15h or later */
+		fam15h = 1;
+
+	return fam15h;
+}
+
 static void Get_ChannelPS_Cfg0_D(u8 MAAdimms, u8 Speed, u8 MAAload,
 				u32 *ODC_CTL,
 				u8 *CMDmode);

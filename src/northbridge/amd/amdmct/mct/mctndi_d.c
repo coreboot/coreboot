@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  */
 
-
+#include "mct_d.h"
 
 void InterleaveNodes_D(struct MCTStatStruc *pMCTstat,
 			struct DCTStatStruc *pDCTstatA)

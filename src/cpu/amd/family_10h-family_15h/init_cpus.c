@@ -14,17 +14,17 @@
  * GNU General Public License for more details.
  */
 
-#include "cpu/amd/car/post_cache_as_ram.c"
-#include "defaults.h"
-#include <stdlib.h>
-#include <cpu/x86/lapic.h>
-#include <cpu/x86/mtrr.h>
-#include <northbridge/amd/amdfam10/amdfam10.h>
+#include "init_cpus.h"
+
+#if CONFIG_HAVE_OPTION_TABLE
+#include "option_table.h"
+#endif
+#include <pc80/mc146818rtc.h>
+
+#include <northbridge/amd/amdht/ht_wrapper.h>
 #include <northbridge/amd/amdht/AsPsDefs.h>
 #include <northbridge/amd/amdht/porting.h>
-
-#include <northbridge/amd/amdfam10/raminit_amdmct.c>
-#include <reset.h>
+#include <northbridge/amd/amdht/h3ncmn.h>
 
 #if IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_SB700)
 #include <southbridge/amd/sb700/sb700.h>
@@ -34,12 +34,7 @@
 #include <southbridge/amd/sb800/sb800.h>
 #endif
 
-#if IS_ENABLED(CONFIG_SET_FIDVID)
-static void prep_fid_change(void);
-static void init_fidvid_stage2(u32 apicid, u32 nodeid);
-#endif
-
-void cpuSetAMDMSR(uint8_t node_id);
+#include "cpu/amd/car/post_cache_as_ram.c"
 
 #if CONFIG_PCI_IO_CFG_EXT
 static void set_EnableCf8ExtCfg(void)
@@ -57,8 +52,6 @@ static void set_EnableCf8ExtCfg(void) { }
 
 // #define DEBUG_HT_SETUP 1
 // #define FAM10_AP_NODE_SEQUENTIAL_START 1
-
-typedef void (*process_ap_t) (u32 apicid, void *gp);
 
 uint32_t get_boot_apic_id(uint8_t node, uint32_t core) {
 	uint32_t ap_apicid;
@@ -369,7 +362,7 @@ static void STOP_CAR_AND_CPU(uint8_t skip_sharedc_config, uint32_t apicid)
 	stop_this_cpu();
 }
 
-static u32 init_cpus(u32 cpu_init_detectedx, struct sys_info *sysinfo)
+u32 init_cpus(u32 cpu_init_detectedx, struct sys_info *sysinfo)
 {
 	uint32_t bsp_apicid = 0;
 	uint32_t apicid;
@@ -637,7 +630,7 @@ static void setup_remote_node(u8 node)
 #endif				/* CONFIG_MAX_PHYSICAL_CPUS > 1 */
 
 //it is running on core0 of node0
-static void start_other_cores(uint32_t bsp_apicid)
+void start_other_cores(uint32_t bsp_apicid)
 {
 	u32 nodes;
 	u32 nodeid;
@@ -1855,7 +1848,7 @@ static void cpuInitializeMCA(void)
  * Do any additional post HT init
  *
  */
-static void finalize_node_setup(struct sys_info *sysinfo)
+void finalize_node_setup(struct sys_info *sysinfo)
 {
 	u8 i;
 	u8 nodes = get_nodes();
@@ -1886,4 +1879,6 @@ static void finalize_node_setup(struct sys_info *sysinfo)
 #endif
 }
 
-#include "fidvid.c"
+#if IS_ENABLED(CONFIG_SET_FIDVID)
+# include "fidvid.c"
+#endif

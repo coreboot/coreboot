@@ -14,6 +14,9 @@
  * GNU General Public License for more details.
  */
 
+#include "mct_d.h"
+#include <cpu/x86/cr.h>
+
 /******************************************************************************
  Description: Receiver En and DQS Timing Training feature for DDR 2 MCT
 ******************************************************************************/
@@ -43,22 +46,21 @@ static void fenceDynTraining_D(struct MCTStatStruc *pMCTstat,
 			struct DCTStatStruc *pDCTstat, u8 dct);
 static void mct_DisableDQSRcvEn_D(struct DCTStatStruc *pDCTstat);
 
-
 /* Warning:  These must be located so they do not cross a logical 16-bit
    segment boundary! */
-static const u32 TestPattern0_D[] = {
+const u32 TestPattern0_D[] = {
 	0xaaaaaaaa, 0xaaaaaaaa, 0xaaaaaaaa, 0xaaaaaaaa,
 	0xaaaaaaaa, 0xaaaaaaaa, 0xaaaaaaaa, 0xaaaaaaaa,
 	0xaaaaaaaa, 0xaaaaaaaa, 0xaaaaaaaa, 0xaaaaaaaa,
 	0xaaaaaaaa, 0xaaaaaaaa, 0xaaaaaaaa, 0xaaaaaaaa,
 };
-static const u32 TestPattern1_D[] = {
+const u32 TestPattern1_D[] = {
 	0x55555555, 0x55555555, 0x55555555, 0x55555555,
 	0x55555555, 0x55555555, 0x55555555, 0x55555555,
 	0x55555555, 0x55555555, 0x55555555, 0x55555555,
 	0x55555555, 0x55555555, 0x55555555, 0x55555555,
 };
-static const u32 TestPattern2_D[] = {
+const u32 TestPattern2_D[] = {
 	0x12345678, 0x87654321, 0x23456789, 0x98765432,
 	0x59385824, 0x30496724, 0x24490795, 0x99938733,
 	0x40385642, 0x38465245, 0x29432163, 0x05067894,

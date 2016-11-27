@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include "mct_d.h"
 
 u8 mct_checkNumberOfDqsRcvEn_1Pass(u8 pass)
 {

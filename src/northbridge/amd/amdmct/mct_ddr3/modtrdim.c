@@ -16,25 +16,12 @@
 
 /* This file contains functions for odt setting on registered DDR3 dimms */
 
-/*
- *-----------------------------------------------------------------------------
- *                                  MODULES USED
- *
- *-----------------------------------------------------------------------------
- */
-/*----------------------------------------------------------------------------
- *                        PROTOTYPES OF LOCAL FUNCTIONS
- *
- *----------------------------------------------------------------------------
- */
+#include <inttypes.h>
+#include <console/console.h>
+#include <string.h>
+#include "mct_d.h"
+#include "mct_d_gcc.h"
 
-/*
- *-----------------------------------------------------------------------------
- *                                EXPORTED FUNCTIONS
- *
- *-----------------------------------------------------------------------------
- */
-/* -----------------------------------------------------------------------------*/
 /**
  *
  *
@@ -49,7 +36,7 @@
  *
  *     @return     tempW1 - Rtt_Nom
  */
-static u32 RttNomTargetRegDimm (sMCTStruct *pMCTData, sDCTStruct *pDCTData, u8 dimm, BOOL wl, u8 MemClkFreq, u8 rank)
+u32 RttNomTargetRegDimm (sMCTStruct *pMCTData, sDCTStruct *pDCTData, u8 dimm, BOOL wl, u8 MemClkFreq, u8 rank)
 {
 	u32 tempW1;
 	tempW1 = 0;
@@ -105,7 +92,7 @@ static u32 RttNomTargetRegDimm (sMCTStruct *pMCTData, sDCTStruct *pDCTData, u8 d
 			}
 			break;
 		default:
-			ASSERT (FALSE);
+			die("modtrdim.c: WTF?");
 		}
 	} else {
 		switch (mctGet_NVbits(NV_MAX_DIMMS_PER_CH)) {
@@ -141,7 +128,7 @@ static u32 RttNomTargetRegDimm (sMCTStruct *pMCTData, sDCTStruct *pDCTData, u8 d
 			}
 			break;
 		default:
-			ASSERT (FALSE);
+			die("modtrdim.c: WTF?");
 		}
 	}
 	return tempW1;
@@ -162,7 +149,7 @@ static u32 RttNomTargetRegDimm (sMCTStruct *pMCTData, sDCTStruct *pDCTData, u8 d
  *
  *      @return    tempW1 - Rtt_Nom
  */
-static u32 RttNomNonTargetRegDimm (sMCTStruct *pMCTData, sDCTStruct *pDCTData, u8 dimm, BOOL wl, u8 MemClkFreq, u8 rank)
+u32 RttNomNonTargetRegDimm (sMCTStruct *pMCTData, sDCTStruct *pDCTData, u8 dimm, BOOL wl, u8 MemClkFreq, u8 rank)
 {
 	if ((wl) && (mctGet_NVbits(NV_MAX_DIMMS_PER_CH) == 2) && (pDCTData->DimmRanks[dimm] == 2) && (rank == 1)) {
 		return 0x00;	/* for non-target dimm during WL, the second rank of a DR dimm need to have Rtt_Nom = OFF */
@@ -187,7 +174,7 @@ static u32 RttNomNonTargetRegDimm (sMCTStruct *pMCTData, sDCTStruct *pDCTData, u
  *      @return    tempW1 - Rtt_Wr
  */
 
-static u32 RttWrRegDimm (sMCTStruct *pMCTData, sDCTStruct *pDCTData, u8 dimm, BOOL wl, u8 MemClkFreq, u8 rank)
+u32 RttWrRegDimm (sMCTStruct *pMCTData, sDCTStruct *pDCTData, u8 dimm, BOOL wl, u8 MemClkFreq, u8 rank)
 {
 	u32 tempW1;
 	tempW1 = 0;
@@ -230,7 +217,7 @@ static u32 RttWrRegDimm (sMCTStruct *pMCTData, sDCTStruct *pDCTData, u8 dimm, BO
 			}
 			break;
 		default:
-			ASSERT (FALSE);
+			die("modtrdim.c: WTF?");
 		}
 	}
 	return tempW1;
@@ -248,7 +235,7 @@ static u32 RttWrRegDimm (sMCTStruct *pMCTData, sDCTStruct *pDCTData, u8 dimm, BO
  *
  *      @return    WrLvOdt
  */
-static u8 WrLvOdtRegDimm (sMCTStruct *pMCTData, sDCTStruct *pDCTData, u8 dimm)
+u8 WrLvOdtRegDimm (sMCTStruct *pMCTData, sDCTStruct *pDCTData, u8 dimm)
 {
 	u8 WrLvOdt1, i;
 	WrLvOdt1 = 0;

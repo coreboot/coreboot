@@ -20,7 +20,10 @@
 #ifndef MCT_D_H
 #define MCT_D_H
 
-#include <cpu/x86/msr.h>
+#define DQS_TRAIN_DEBUG 0
+
+#include <inttypes.h>
+#include <northbridge/amd/amdfam10/raminit.h>
 
 /*===========================================================================
 	CPU - K8/FAM10
@@ -974,6 +977,11 @@ struct amdmct_memory_info {
 	uint16_t ecc_scrub_rate;
 } __attribute__((packed, aligned(4)));
 
+extern const u8 Table_DQSRcvEn_Offset[];
+extern const u32 TestPattern0_D[];
+extern const u32 TestPattern1_D[];
+extern const u32 TestPattern2_D[];
+
 u32 Get_NB32(u32 dev, u32 reg);
 void Set_NB32(u32 dev, u32 reg, u32 val);
 u32 Get_NB32_index(u32 dev, u32 index_reg, u32 index);
@@ -1013,10 +1021,7 @@ void mct_TrainRcvrEn_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTs
 void mct_EnableDimmEccEn_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, u8 _DisableDramECC);
 u32 procOdtWorkaround(struct DCTStatStruc *pDCTstat, u32 dct, u32 val);
 void mct_BeforeDramInit_D(struct DCTStatStruc *pDCTstat, u32 dct);
-void mctGet_DIMMAddr(struct DCTStatStruc *pDCTstat, u32 node);
-void mctSMBhub_Init(u32 node);
 void DIMMSetVoltages(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA);
-int mctRead_SPD(u32 smaddr, u32 reg);
 void InterleaveNodes_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA);
 void InterleaveChannels_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA);
 void mct_BeforeDQSTrain_Samp_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat);
@@ -1028,5 +1033,127 @@ void mct_Wait(u32 cycles);
 u8 mct_RcvrRankEnabled_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, u8 Channel, u8 ChipSel);
 u32 mct_GetRcvrSysAddr_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, u8 channel, u8 receiver, u8 *valid);
 void mct_Read1LTestPattern_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, u32 addr);
+void mctAutoInitMCT_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA);
+void calculate_spd_hash(uint8_t *spd_data, uint64_t *spd_hash);
+int8_t load_spd_hashes_from_nvram(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat);
+int8_t restore_mct_information_from_nvram(uint8_t training_only);
+uint16_t calculate_nvram_mct_hash(void);
 
+uint32_t fam10h_address_timing_compensation_code(struct DCTStatStruc *pDCTstat, uint8_t dct);
+uint32_t fam15h_output_driver_compensation_code(struct DCTStatStruc *pDCTstat, uint8_t dct);
+uint32_t fam15h_address_timing_compensation_code(struct DCTStatStruc *pDCTstat, uint8_t dct);
+uint8_t fam15h_slow_access_mode(struct DCTStatStruc *pDCTstat, uint8_t dct);
+void precise_memclk_delay_fam15(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, uint8_t dct, uint32_t clocks);
+void mct_EnableDatIntlv_D(struct MCTStatStruc *pMCTstat,
+					struct DCTStatStruc *pDCTstat);
+void SetDllSpeedUp_D(struct MCTStatStruc *pMCTstat,
+				struct DCTStatStruc *pDCTstat, u8 dct);
+uint8_t get_available_lane_count(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat);
+void read_dqs_receiver_enable_control_registers(uint16_t* current_total_delay, uint32_t dev, uint8_t dct, uint8_t dimm, uint32_t index_reg);
+void read_dqs_write_timing_control_registers(uint16_t* current_total_delay, uint32_t dev, uint8_t dct, uint8_t dimm, uint32_t index_reg);
+void fam15EnableTrainingMode(struct MCTStatStruc *pMCTstat,
+		struct DCTStatStruc *pDCTstat, uint8_t dct, uint8_t enable);
+void read_dqs_read_data_timing_registers(uint16_t* delay, uint32_t dev,
+			uint8_t dct, uint8_t dimm, uint32_t index_reg);
+void write_dqs_read_data_timing_registers(uint16_t* delay, uint32_t dev,
+			uint8_t dct, uint8_t dimm, uint32_t index_reg);
+void dqsTrainMaxRdLatency_SW_Fam15(struct MCTStatStruc *pMCTstat,
+				struct DCTStatStruc *pDCTstat);
+void proc_IOCLFLUSH_D(u32 addr_hi);
+u8 ChipSelPresent_D(struct MCTStatStruc *pMCTstat,
+				struct DCTStatStruc *pDCTstat,
+				u8 Channel, u8 ChipSel);
+void mct_Write1LTestPattern_D(struct MCTStatStruc *pMCTstat,
+				struct DCTStatStruc *pDCTstat,
+				u32 TestAddr, u8 pattern);
+u8 NodePresent_D(u8 Node);
+void DCTMemClr_Init_D(struct MCTStatStruc *pMCTstat,
+				struct DCTStatStruc *pDCTstat);
+void DCTMemClr_Sync_D(struct MCTStatStruc *pMCTstat,
+				struct DCTStatStruc *pDCTstat);
+void SPD2ndTiming(struct MCTStatStruc *pMCTstat,
+			struct DCTStatStruc *pDCTstat, u8 dct);
+void ProgDramMRSReg_D(struct MCTStatStruc *pMCTstat,
+				struct DCTStatStruc *pDCTstat, u8 dct);
+u8 PlatformSpec_D(struct MCTStatStruc *pMCTstat,
+				struct DCTStatStruc *pDCTstat, u8 dct);
+void StartupDCT_D(struct MCTStatStruc *pMCTstat,
+				struct DCTStatStruc *pDCTstat, u8 dct);
+uint16_t mhz_to_memclk_config(uint16_t freq);
+void SetTargetFreq(struct MCTStatStruc *pMCTstat,
+				struct DCTStatStruc *pDCTstatA, uint8_t Node);
+void mct_WriteLevelization_HW(struct MCTStatStruc *pMCTstat,
+				struct DCTStatStruc *pDCTstatA, uint8_t Pass);
+uint8_t AgesaHwWlPhase1(struct MCTStatStruc *pMCTstat,
+	struct DCTStatStruc *pDCTstat, u8 dct, u8 dimm, u8 pass);
+uint8_t AgesaHwWlPhase2(struct MCTStatStruc *pMCTstat,
+	struct DCTStatStruc *pDCTstat, uint8_t dct, uint8_t dimm, uint8_t pass);
+uint8_t AgesaHwWlPhase3(struct MCTStatStruc *pMCTstat,
+	struct DCTStatStruc *pDCTstat, u8 dct, u8 dimm, u8 pass);
+void EnableZQcalibration(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat);
+void DisableZQcalibration(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat);
+void PrepareC_MCT(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat);
+void PrepareC_DCT(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, u8 dct);
+void Restore_OnDimmMirror(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat);
+void Clear_OnDimmMirror(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat);
+void MCTMemClr_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA);
+void mct_BeforeDQSTrainSamp(struct DCTStatStruc *pDCTstat);
+void mct_ExtMCTConfig_Bx(struct DCTStatStruc *pDCTstat);
+void mct_ExtMCTConfig_Cx(struct DCTStatStruc *pDCTstat);
+void mct_ExtMCTConfig_Dx(struct DCTStatStruc *pDCTstat);
+u32 mct_SetDramConfigMisc2(struct DCTStatStruc *pDCTstat,
+			uint8_t dct, uint32_t misc2, uint32_t DramControl);
+
+uint8_t dct_ddr_voltage_index(struct DCTStatStruc *pDCTstat, uint8_t dct);
+void mct_DramControlReg_Init_D(struct MCTStatStruc *pMCTstat,
+				struct DCTStatStruc *pDCTstat, uint8_t dct);
+void precise_ndelay_fam15(struct MCTStatStruc *pMCTstat, uint32_t nanoseconds);
+void FreqChgCtrlWrd(struct MCTStatStruc *pMCTstat,
+			struct DCTStatStruc *pDCTstat, uint8_t dct);
+u32 mct_MR1Odt_RDimm(struct MCTStatStruc *pMCTstat,
+			struct DCTStatStruc *pDCTstat, u8 dct, u32 MrsChipSel);
+void mct_DramInit_Sw_D(struct MCTStatStruc *pMCTstat,
+				struct DCTStatStruc *pDCTstat, u8 dct);
+void print_debug_dqs(const char *str, u32 val, u8 level);
+void print_debug_dqs_pair(const char *str, u32 val, const char *str2, u32 val2, u8 level);
+u8 mct_DisableDimmEccEn_D(struct MCTStatStruc *pMCTstat,
+				struct DCTStatStruc *pDCTstat);
+void ResetDCTWrPtr_D(u32 dev, uint8_t dct, u32 index_reg, u32 index);
+void Calc_SetMaxRdLatency_D_Fam15(struct MCTStatStruc *pMCTstat,
+		struct DCTStatStruc *pDCTstat, uint8_t dct, uint8_t calc_min);
+void write_dram_dqs_training_pattern_fam15(struct MCTStatStruc *pMCTstat,
+	struct DCTStatStruc *pDCTstat, uint8_t dct,
+	uint8_t Receiver, uint8_t lane, uint8_t stop_on_error);
+void read_dram_dqs_training_pattern_fam15(struct MCTStatStruc *pMCTstat,
+	struct DCTStatStruc *pDCTstat, uint8_t dct,
+	uint8_t Receiver, uint8_t lane, uint8_t stop_on_error);
+void write_dqs_receiver_enable_control_registers(uint16_t* current_total_delay, uint32_t dev, uint8_t dct, uint8_t dimm, uint32_t index_reg);
+
+uint32_t fenceDynTraining_D(struct MCTStatStruc *pMCTstat,
+			struct DCTStatStruc *pDCTstat, uint8_t dct);
+int32_t abs(int32_t val);
+void SetTargetWTIO_D(u32 TestAddr);
+void ResetTargetWTIO_D(void);
+u32 mct_GetMCTSysAddr_D(struct MCTStatStruc *pMCTstat,
+				struct DCTStatStruc *pDCTstat,
+				u8 Channel, u8 receiver, u8 *valid);
+void set_2t_configuration(struct MCTStatStruc *pMCTstat,
+				struct DCTStatStruc *pDCTstat, u8 dct);
+u8 mct_BeforePlatformSpec(struct MCTStatStruc *pMCTstat,
+					struct DCTStatStruc *pDCTstat, u8 dct);
+u8 mct_PlatformSpec(struct MCTStatStruc *pMCTstat,
+					struct DCTStatStruc *pDCTstat, u8 dct);
+void InitPhyCompensation(struct MCTStatStruc *pMCTstat,
+					struct DCTStatStruc *pDCTstat, u8 dct);
+u32 mct_MR1(struct MCTStatStruc *pMCTstat,
+			struct DCTStatStruc *pDCTstat, u8 dct, u32 MrsChipSel);
+u32 mct_MR2(struct MCTStatStruc *pMCTstat,
+			struct DCTStatStruc *pDCTstat, u8 dct, u32 MrsChipSel);
+uint8_t fam15_rttwr(struct DCTStatStruc *pDCTstat, uint8_t dct, uint8_t dimm, uint8_t rank, uint8_t package_type);
+uint8_t fam15_rttnom(struct DCTStatStruc *pDCTstat, uint8_t dct, uint8_t dimm, uint8_t rank, uint8_t package_type);
+uint8_t fam15_dimm_dic(struct DCTStatStruc *pDCTstat, uint8_t dct, uint8_t dimm, uint8_t rank, uint8_t package_type);
+u32 mct_DramTermDyn_RDimm(struct MCTStatStruc *pMCTstat,
+				struct DCTStatStruc *pDCTstat, u8 dimm);
+
+void restore_mct_data_from_save_variable(struct amd_s3_persistent_data* persistent_data, uint8_t training_only);
 #endif

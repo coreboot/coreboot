@@ -14,10 +14,14 @@
  * GNU General Public License for more details.
  */
 
+#include <inttypes.h>
+#include <console/console.h>
+#include <northbridge/amd/amdfam10/raminit.h>
+#include <northbridge/amd/amdfam10/amdfam10.h>
 
 #define RES_DEBUG 0
 
-static void setup_resource_map(const u32 *register_values, u32 max)
+void setup_resource_map(const u32 *register_values, u32 max)
 {
 	u32 i;
 
@@ -52,11 +56,6 @@ void setup_resource_map_offset(const u32 *register_values, u32 max, u32 offset_p
 		pci_write_config32(dev, where, reg);
 	}
 }
-
-#define RES_PCI_IO 0x10
-#define RES_PORT_IO_8 0x22
-#define RES_PORT_IO_32 0x20
-#define RES_MEM_IO 0x40
 
 void setup_resource_map_x_offset(const u32 *register_values, u32 max, u32 offset_pci_dev, u32 offset_io_base)
 {

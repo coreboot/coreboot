@@ -14,11 +14,30 @@
  * GNU General Public License for more details.
  */
 
+#include <inttypes.h>
+#include <console/console.h>
+#include <string.h>
 #include "mct_d.h"
+#include "mct_d_gcc.h"
 
 static void setSyncOnUnEccEn_D(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstatA);
 static u8 isDramECCEn_D(struct DCTStatStruc *pDCTstat);
+
+static uint8_t is_fam15h(void)
+{
+	uint8_t fam15h = 0;
+	uint32_t family;
+
+	family = cpuid_eax(0x80000001);
+	family = ((family & 0xf00000) >> 16) | ((family & 0xf00) >> 8);
+
+	if (family >= 0x6f)
+		/* Family 15h or later */
+		fam15h = 1;
+
+	return fam15h;
+}
 
 /* Initialize ECC modes of Integrated Dram+Memory Controllers of a network of
  * Hammer processors.  Use Dram background scrubber to fast initialize ECC bits

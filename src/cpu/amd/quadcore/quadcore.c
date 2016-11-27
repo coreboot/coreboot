@@ -16,18 +16,13 @@
 
 #include <console/console.h>
 #include <pc80/mc146818rtc.h>
-#include <northbridge/amd/amdht/ht_wrapper.c>
 #if CONFIG_HAVE_OPTION_TABLE
 #include "option_table.h"
 #endif
 
 #include "cpu/amd/quadcore/quadcore_id.c"
 
-/* get_boot_apic_id and wait_cpu_state located in init_cpus.c */
-uint32_t get_boot_apic_id(uint8_t node, uint32_t core);
-uint32_t wait_cpu_state(uint32_t apicid, uint32_t state, uint32_t state2);
-
-static u32 get_core_num_in_bsp(u32 nodeid)
+u32 get_core_num_in_bsp(u32 nodeid)
 {
 	u32 dword;
 	if (is_fam15h()) {
@@ -46,7 +41,7 @@ static u32 get_core_num_in_bsp(u32 nodeid)
 	return dword;
 }
 
-static u8 set_apicid_cpuid_lo(void)
+u8 set_apicid_cpuid_lo(void)
 {
 	// set the NB_CFG[54]=1; why the OS will be happy with that ???
 	msr_t msr;
@@ -57,7 +52,7 @@ static u8 set_apicid_cpuid_lo(void)
 	return 1;
 }
 
-static void real_start_other_core(uint32_t nodeid, uint32_t cores)
+void real_start_other_core(uint32_t nodeid, uint32_t cores)
 {
 	ssize_t i;
 	uint32_t dword;

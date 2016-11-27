@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include "mct_d.h"
 
 /* Low swap bit vs bank size encoding (physical, not logical address bit)
  * ;To calculate the number by hand, add the number of Bank address bits

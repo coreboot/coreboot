@@ -26,6 +26,5 @@ void enable_fid_change_on_sb(unsigned sbbusn, unsigned sbdn);
 #endif
 
 void ldtstop_sb(void);
-unsigned get_sbdn(unsigned bus);
 
 #endif /* BCM5785_H */

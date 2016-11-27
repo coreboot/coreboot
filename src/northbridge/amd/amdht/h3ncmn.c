@@ -23,10 +23,18 @@
 
 #undef FILECODE
 #define FILECODE 0xF002
+#include "h3ncmn.h"
 #include "h3finit.h"
 #include "h3ffeat.h"
-#include "h3ncmn.h"
 #include "AsPsNb.h"
+
+#include <device/pci.h>
+#include <console/console.h>
+#include <cpu/amd/msr.h>
+#include <device/pci_def.h>
+#include <device/pci_ids.h>
+#include <northbridge/amd/amdfam10/raminit.h>
+#include <northbridge/amd/amdfam10/amdfam10.h>
 
 
 /*----------------------------------------------------------------------------
@@ -89,22 +97,7 @@
  ***			FAMILY/NORTHBRIDGE SPECIFIC FUNCTIONS		***
  ***************************************************************************/
 
-static inline uint8_t is_fam15h(void)
-{
-	uint8_t fam15h = 0;
-	uint32_t family;
-
-	family = cpuid_eax(0x80000001);
-	family = ((family & 0xf00000) >> 16) | ((family & 0xf00) >> 8);
-
-	if (family >= 0x6f)
-		/* Family 15h or later */
-		fam15h = 1;
-
-	return fam15h;
-}
-
-static inline uint8_t is_gt_rev_d(void)
+inline uint8_t is_gt_rev_d(void)
 {
 	uint8_t fam15h = 0;
 	uint8_t rev_gte_d = 0;

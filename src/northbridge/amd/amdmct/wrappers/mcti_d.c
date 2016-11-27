@@ -16,6 +16,9 @@
 
 /* Call-backs */
 #include <delay.h>
+#include <cpu/amd/msr.h>
+#include <console/console.h>
+#include "mcti.h"
 
 #define NVRAM_DDR2_800 0
 #define NVRAM_DDR2_667 1
@@ -26,6 +29,21 @@
 #define NVRAM_DDR3_1333 1
 #define NVRAM_DDR3_1066 2
 #define NVRAM_DDR3_800  3
+
+static inline uint8_t isfam15h(void)
+{
+	uint8_t fam15h = 0;
+	uint32_t family;
+
+	family = cpuid_eax(0x80000001);
+	family = ((family & 0xf00000) >> 16) | ((family & 0xf00) >> 8);
+
+	if (family >= 0x6f)
+		/* Family 15h or later */
+		fam15h = 1;
+
+	return fam15h;
+}
 
 /* The recommended maximum GFX Upper Memory Area
  * size is 256M, however, to be on the safe side
@@ -39,10 +57,7 @@
  */
 #define MINIMUM_DRAM_BELOW_4G 0x1000000
 
-static const uint16_t ddr2_limits[4] = {400, 333, 266, 200};
-static const uint16_t ddr3_limits[16] = {933, 800, 666, 533, 400, 333, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-
-static u16 mctGet_NVbits(u8 index)
+u16 mctGet_NVbits(u8 index)
 {
 	u16 val = 0;
 	int nvram;
@@ -94,7 +109,7 @@ static u16 mctGet_NVbits(u8 index)
 		break;
 	case NV_MIN_MEMCLK:
 		/* Minimum platform supported memclk */
-		if (is_fam15h())
+		if (isfam15h())
 			val =  MEM_MIN_PLATFORM_FREQ_FAM15;
 		else
 			val =  MEM_MIN_PLATFORM_FREQ_FAM10;
@@ -312,12 +327,12 @@ static u16 mctGet_NVbits(u8 index)
 }
 
 
-static void mctHookAfterDIMMpre(void)
+void mctHookAfterDIMMpre(void)
 {
 }
 
 
-static void mctGet_MaxLoadFreq(struct DCTStatStruc *pDCTstat)
+void mctGet_MaxLoadFreq(struct DCTStatStruc *pDCTstat)
 {
 	pDCTstat->PresetmaxFreq = mctGet_NVbits(NV_MAX_MEMCLK);
 
@@ -347,7 +362,7 @@ static void mctGet_MaxLoadFreq(struct DCTStatStruc *pDCTstat)
 		printk(BIOS_DEBUG, "mctGet_MaxLoadFreq: Channel 2: %d DIMM(s) detected\n", ch2_count);
 	}
 
-#if (CONFIG_DIMM_SUPPORT & 0x000F) == 0x0005 /* AMD_FAM10_DDR3 */
+#if IS_ENABLED(CONFIG_DIMM_DDR3)
 	uint8_t dimm;
 
 	for (i = 0; i < MAX_DIMMS_SUPPORTED; i = i + 2) {
@@ -370,111 +385,92 @@ static void mctGet_MaxLoadFreq(struct DCTStatStruc *pDCTstat)
 	pDCTstat->PresetmaxFreq = mct_MaxLoadFreq(max(ch1_count, ch2_count), max(highest_rank_count[0], highest_rank_count[1]), (ch1_registered || ch2_registered), (ch1_voltage | ch2_voltage), pDCTstat->PresetmaxFreq);
 }
 
-#ifdef UNUSED_CODE
-static void mctAdjustAutoCycTmg(void)
-{
-}
-#endif
-
-
-static void mctAdjustAutoCycTmg_D(void)
+void mctAdjustAutoCycTmg_D(void)
 {
 }
 
 
-static void mctHookAfterAutoCycTmg(void)
+void mctHookAfterAutoCycTmg(void)
 {
 }
 
 
-static void mctGetCS_ExcludeMap(void)
+void mctGetCS_ExcludeMap(void)
 {
 }
 
 
-static void mctHookAfterAutoCfg(void)
+void mctHookAfterAutoCfg(void)
 {
 }
 
 
-static void mctHookAfterPSCfg(void)
+void mctHookAfterPSCfg(void)
 {
 }
 
 
-static void mctHookAfterHTMap(void)
+void mctHookAfterHTMap(void)
 {
 }
 
 
-static void mctHookAfterCPU(void)
+void mctHookAfterCPU(void)
 {
 }
 
 
 #if IS_ENABLED(CONFIG_DIMM_DDR2)
-static void mctSaveDQSSigTmg_D(void)
+void mctSaveDQSSigTmg_D(void)
+{
+}
+
+void mctGetDQSSigTmg_D(void)
 {
 }
 #endif
 
-
-#if IS_ENABLED(CONFIG_DIMM_DDR2)
-static void mctGetDQSSigTmg_D(void)
-{
-}
-#endif
-
-
-static void mctHookBeforeECC(void)
+void mctHookBeforeECC(void)
 {
 }
 
-
-static void mctHookAfterECC(void)
+void mctHookAfterECC(void)
 {
 }
 
 #ifdef UNUSED_CODE
-static void mctInitMemGPIOs_A(void)
+void mctInitMemGPIOs_A(void)
 {
 }
 #endif
 
 
-static void mctInitMemGPIOs_A_D(void)
+void mctInitMemGPIOs_A_D(void)
 {
 }
 
 
-static void mctNodeIDDebugPort_D(void)
+void mctNodeIDDebugPort_D(void)
 {
 }
 
 
-#ifdef UNUSED_CODE
-static void mctWarmReset(void)
-{
-}
-#endif
-
-
-static void mctWarmReset_D(void)
+void mctWarmReset_D(void)
 {
 }
 
 
-static void mctHookBeforeDramInit(void)
+void mctHookBeforeDramInit(void)
 {
 }
 
 
-static void mctHookAfterDramInit(void)
+void mctHookAfterDramInit(void)
 {
 }
 
-#if (CONFIG_DIMM_SUPPORT & 0x000F) == 0x0005 /* AMD_FAM10_DDR3 */
-static void vErratum372(struct DCTStatStruc *pDCTstat)
+#if IS_ENABLED(CONFIG_DIMM_DDR3)
+void vErratum372(struct DCTStatStruc *pDCTstat)
 {
 	msr_t msr = rdmsr(NB_CFG_MSR);
 
@@ -489,7 +485,7 @@ static void vErratum372(struct DCTStatStruc *pDCTstat)
 	}
 }
 
-static void vErratum414(struct DCTStatStruc *pDCTstat)
+void vErratum414(struct DCTStatStruc *pDCTstat)
 {
 	int dct = 0;
 	for (; dct < 2 ; dct++) {
@@ -505,9 +501,9 @@ static void vErratum414(struct DCTStatStruc *pDCTstat)
 #endif
 
 
-static void mctHookBeforeAnyTraining(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)
+void mctHookBeforeAnyTraining(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)
 {
-#if (CONFIG_DIMM_SUPPORT & 0x000F) == 0x0005 /* AMD_FAM10_DDR3 */
+#if IS_ENABLED(CONFIG_DIMM_DDR3)
   /* FIXME :  as of 25.6.2010 errata 350 and 372 should apply to  ((RB|BL|DA)-C[23])|(HY-D[01])|(PH-E0) but I don't find constants for all of them */
 	if (pDCTstatA->LogicalCPUID & (AMD_DRBH_Cx | AMD_DR_Dx)) {
 		vErratum372(pDCTstatA);
@@ -516,8 +512,8 @@ static void mctHookBeforeAnyTraining(struct MCTStatStruc *pMCTstat, struct DCTSt
 #endif
 }
 
-#if (CONFIG_DIMM_SUPPORT & 0x000F) == 0x0005 /* AMD_FAM10_DDR3 */
-static u32 mct_AdjustSPDTimings(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA, u32 val)
+#if IS_ENABLED(CONFIG_DIMM_DDR3)
+u32 mct_AdjustSPDTimings(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA, u32 val)
 {
 	if (pDCTstatA->LogicalCPUID & AMD_DR_Bx) {
 		if (pDCTstatA->Status & (1 << SB_Registered)) {
@@ -528,17 +524,17 @@ static u32 mct_AdjustSPDTimings(struct MCTStatStruc *pMCTstat, struct DCTStatStr
 }
 #endif
 
-static void mctHookAfterAnyTraining(void)
+void mctHookAfterAnyTraining(void)
 {
 }
 
-static uint64_t mctGetLogicalCPUID_D(u8 node)
+uint64_t mctGetLogicalCPUID_D(u8 node)
 {
 	return mctGetLogicalCPUID(node);
 }
 
-#if (CONFIG_DIMM_SUPPORT & 0x000F)!=0x0005 /* not needed for AMD_FAM10_DDR3 */
-static u8 mctSetNodeBoundary_D(void)
+#if IS_ENABLED(CONFIG_DIMM_DDR2)
+u8 mctSetNodeBoundary_D(void)
 {
 	return 0;
 }

@@ -13,9 +13,14 @@
  * GNU General Public License for more details.
  */
 
+#include "early_ht.h"
+#include <inttypes.h>
+#include <arch/io.h>
+#include <device/pci_def.h>
+
 // For SB HT chain only
 // mmconf is not ready yet
-static  void set_bsp_node_CHtExtNodeCfgEn(void)
+void set_bsp_node_CHtExtNodeCfgEn(void)
 {
 #if CONFIG_EXT_RT_TBL_SUPPORT
 	u32 dword;
@@ -34,7 +39,7 @@ static  void set_bsp_node_CHtExtNodeCfgEn(void)
 #endif
 }
 
-static void enumerate_ht_chain(void)
+void enumerate_ht_chain(void)
 {
 #if CONFIG_HT_CHAIN_UNITID_BASE != 0
 /* CONFIG_HT_CHAIN_UNITID_BASE could be 0 (only one ht device in the ht chain),

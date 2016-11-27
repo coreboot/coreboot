@@ -17,17 +17,13 @@
 #ifndef H3NCMN_H
 #define H3NCMN_H
 
-/*----------------------------------------------------------------------------
- *   Mixed (DEFINITIONS AND MACROS / TYPEDEFS, STRUCTURES, ENUMS)
- *
- *----------------------------------------------------------------------------
- */
-
-/*-----------------------------------------------------------------------------
- *			DEFINITIONS AND MACROS
- *
- *-----------------------------------------------------------------------------
- */
+#include <inttypes.h>
+#include <device/pci.h>
+#include <console/console.h>
+#include <cpu/amd/msr.h>
+#include "comlib.h"
+#include "h3finit.h"
+#include "h3ffeat.h"
 
 /* Use a macro to convert a node number to a PCI device.  If some future port of
  * this code needs to, this can easily be replaced by a function call:
@@ -64,12 +60,6 @@
 #define fixEarlySampleFreqCapability(fc) \
 	((u16)fc & HT_FREQUENCY_LIMIT_HT1_ONLY)
 #endif
-
-/*----------------------------------------------------------------------------
- *			    TYPEDEFS, STRUCTURES, ENUMS
- *
- *----------------------------------------------------------------------------
- */
 
 struct cNorthBridge
 {
@@ -119,11 +109,7 @@ struct cNorthBridge
 	u32 compatibleKey;
 } ;
 
-/*----------------------------------------------------------------------------
- *			FUNCTIONS PROTOTYPE
- *
- *----------------------------------------------------------------------------
- */
 void newNorthBridge(u8 node, cNorthBridge *nb);
+uint8_t is_gt_rev_d(void);
 
 #endif	 /* H3NCMN_H */

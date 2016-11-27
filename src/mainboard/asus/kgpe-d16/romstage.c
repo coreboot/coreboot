@@ -30,42 +30,36 @@
 #include <lib.h>
 #include <spd.h>
 #include <cpu/amd/model_10xxx_rev.h>
-#include <northbridge/amd/amdfam10/raminit.h>
-#include <northbridge/amd/amdfam10/amdfam10.h>
 #include <delay.h>
 #include <cpu/x86/lapic.h>
-#include "northbridge/amd/amdfam10/reset_test.c"
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83667hg-a/w83667hg-a.h>
 #include <cpu/x86/bist.h>
+#include <cpu/amd/car.h>
 #include <smp/spinlock.h>
-// #include "northbridge/amd/amdk8/incoherent_ht.c"
 #include <southbridge/amd/sb700/sb700.h>
 #include <southbridge/amd/sb700/smbus.h>
 #include <southbridge/amd/sr5650/sr5650.h>
-#include "northbridge/amd/amdfam10/debug.c"
-#include "northbridge/amd/amdfam10/setup_resource_map.c"
+#include <northbridge/amd/amdfam10/raminit.h>
+#include <northbridge/amd/amdht/ht_wrapper.h>
+#include <cpu/amd/family_10h-family_15h/init_cpus.h>
+#include <arch/early_variables.h>
+#include <cbmem.h>
+
+#include "resourcemap.c"
+#include "cpu/amd/quadcore/quadcore.c"
 
 #define SERIAL_0_DEV PNP_DEV(0x2e, W83667HG_A_SP1)
 #define SERIAL_1_DEV PNP_DEV(0x2e, W83667HG_A_SP2)
 
-static void activate_spd_rom(const struct mem_controller *ctrl);
+void activate_spd_rom(const struct mem_controller *ctrl);
+int spd_read_byte(unsigned device, unsigned address);
+extern struct sys_info sysinfo_car;
 
-static inline int spd_read_byte(unsigned device, unsigned address)
+int spd_read_byte(unsigned device, unsigned address)
 {
 	return do_smbus_read_byte(SMBUS_AUX_IO_BASE, device, address);
 }
-
-#include <northbridge/amd/amdfam10/amdfam10.h>
-#include "northbridge/amd/amdfam10/raminit_sysinfo_in_ram.c"
-#include "northbridge/amd/amdfam10/pci.c"
-#include "resourcemap.c"
-#include "cpu/amd/quadcore/quadcore.c"
-
-#include <cpu/amd/microcode.h>
-
-#include "cpu/amd/family_10h-family_15h/init_cpus.c"
-#include "northbridge/amd/amdfam10/early_ht.c"
 
 /*
  * ASUS KGPE-D16 specific SPD enable/disable magic.
@@ -116,9 +110,8 @@ static const uint8_t spd_addr_fam10[] = {
 	RC01, DIMM0, DIMM1, 0, 0, DIMM2, DIMM3, 0, 0,
 };
 
-static void activate_spd_rom(const struct mem_controller *ctrl) {
+void activate_spd_rom(const struct mem_controller *ctrl) {
 	struct sys_info *sysinfo = &sysinfo_car;
-
 	printk(BIOS_DEBUG, "activate_spd_rom() for node %02x\n", ctrl->node_id);
 	if (ctrl->node_id == 0) {
 		printk(BIOS_DEBUG, "enable_spd_node0()\n");

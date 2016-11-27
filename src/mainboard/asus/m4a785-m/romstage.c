@@ -31,42 +31,40 @@
 #include <console/console.h>
 #include <timestamp.h>
 #include <cpu/amd/model_10xxx_rev.h>
-#include <northbridge/amd/amdfam10/raminit.h>
-#include <northbridge/amd/amdfam10/amdfam10.h>
 #include <lib.h>
 #include <cpu/x86/lapic.h>
-#include "northbridge/amd/amdfam10/reset_test.c"
 #include <commonlib/loglevel.h>
 #include <cpu/x86/bist.h>
 #include <superio/ite/common/ite.h>
 #include <superio/ite/it8712f/it8712f.h>
 #include <cpu/amd/mtrr.h>
-#include "northbridge/amd/amdfam10/setup_resource_map.c"
-#include "southbridge/amd/rs780/early_setup.c"
+#include <cpu/amd/car.h>
 #include <southbridge/amd/sb700/sb700.h>
 #include <southbridge/amd/sb700/smbus.h>
-#include "northbridge/amd/amdfam10/debug.c"
+#include <northbridge/amd/amdfam10/raminit.h>
+#include <northbridge/amd/amdht/ht_wrapper.h>
+#include <cpu/amd/family_10h-family_15h/init_cpus.h>
+#include <arch/early_variables.h>
+#include <cbmem.h>
+#include <spd.h>
+#include "southbridge/amd/rs780/early_setup.c"
+
+#include "resourcemap.c"
+#include "cpu/amd/quadcore/quadcore.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, IT8712F_SP1)
 #define GPIO_DEV PNP_DEV(0x2e, IT8712F_GPIO)
 
-static void activate_spd_rom(const struct mem_controller *ctrl) { }
+void activate_spd_rom(const struct mem_controller *ctrl);
+int spd_read_byte(unsigned device, unsigned address);
+extern struct sys_info sysinfo_car;
 
-static int spd_read_byte(u32 device, u32 address)
+void activate_spd_rom(const struct mem_controller *ctrl) { }
+
+int spd_read_byte(u32 device, u32 address)
 {
 	return do_smbus_read_byte(SMBUS_IO_BASE, device, address);
 }
-
-#include <northbridge/amd/amdfam10/amdfam10.h>
-#include "northbridge/amd/amdfam10/raminit_sysinfo_in_ram.c"
-#include "northbridge/amd/amdfam10/pci.c"
-#include "resourcemap.c"
-#include "cpu/amd/quadcore/quadcore.c"
-#include <cpu/amd/microcode.h>
-
-#include "cpu/amd/family_10h-family_15h/init_cpus.c"
-#include "northbridge/amd/amdfam10/early_ht.c"
-#include <spd.h>
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {

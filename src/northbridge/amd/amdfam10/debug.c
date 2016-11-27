@@ -13,26 +13,25 @@
  * GNU General Public License for more details.
  */
 
-/*
- * Generic FAM10 debug code, used by mainboard specific romstage.c
- */
-
-#include "pci.c"
+#include "debug.h"
+#include <console/console.h>
+#include <arch/io.h>
+#include <device/pci_def.h>
 #include <delay.h>
 
-static inline void print_debug_addr(const char *str, void *val)
+void print_debug_addr(const char *str, void *val)
 {
 #if CONFIG_DEBUG_CAR
 		printk(BIOS_DEBUG, "------Address debug: %s%p------\n", str, val);
 #endif
 }
 
-static void print_debug_pci_dev(u32 dev)
+void print_debug_pci_dev(u32 dev)
 {
 	printk(BIOS_DEBUG, "PCI: %02x:%02x.%02x", (dev>>20) & 0xff, (dev>>15) & 0x1f, (dev>>12) & 0x7);
 }
 
-static inline void print_pci_devices(void)
+void print_pci_devices(void)
 {
 	pci_devfn_t dev;
 	for (dev = PCI_DEV(0, 0, 0);
@@ -57,7 +56,7 @@ static inline void print_pci_devices(void)
 	}
 }
 
-static inline void print_pci_devices_on_bus(u32 busn)
+void print_pci_devices_on_bus(u32 busn)
 {
 	pci_devfn_t dev;
 	for (dev = PCI_DEV(busn, 0, 0);
@@ -82,7 +81,7 @@ static inline void print_pci_devices_on_bus(u32 busn)
 	}
 }
 
-static void dump_pci_device_range(u32 dev, u32 start_reg, u32 size)
+void dump_pci_device_range(u32 dev, u32 start_reg, u32 size)
 {
 	int i;
 	print_debug_pci_dev(dev);
@@ -103,12 +102,12 @@ static void dump_pci_device_range(u32 dev, u32 start_reg, u32 size)
 	printk(BIOS_DEBUG, "\n");
 }
 
-static void dump_pci_device(u32 dev)
+void dump_pci_device(u32 dev)
 {
 	dump_pci_device_range(dev, 0, 4096);
 }
 
-static void dump_pci_device_index_wait_range(u32 dev, u32 index_reg, u32 start,
+void dump_pci_device_index_wait_range(u32 dev, u32 index_reg, u32 start,
 					u32 size)
 {
 	int i;
@@ -130,13 +129,13 @@ static void dump_pci_device_index_wait_range(u32 dev, u32 index_reg, u32 start,
 	printk(BIOS_DEBUG, "\n");
 }
 
-static inline void dump_pci_device_index_wait(u32 dev, u32 index_reg)
+void dump_pci_device_index_wait(u32 dev, u32 index_reg)
 {
 	dump_pci_device_index_wait_range(dev, index_reg, 0, 0x54);
 	dump_pci_device_index_wait_range(dev, index_reg, 0x100, 0x08); //DIMM1 when memclk > 400Hz
 }
 
-static inline void dump_pci_device_index(u32 dev, u32 index_reg, u32 type, u32 length)
+void dump_pci_device_index(u32 dev, u32 index_reg, u32 type, u32 length)
 {
 	int i;
 	print_debug_pci_dev(dev);
@@ -156,7 +155,7 @@ static inline void dump_pci_device_index(u32 dev, u32 index_reg, u32 type, u32 l
 	printk(BIOS_DEBUG, "\n");
 }
 
-static inline void dump_pci_devices(void)
+void dump_pci_devices(void)
 {
 	pci_devfn_t dev;
 	for (dev = PCI_DEV(0, 0, 0);
@@ -181,7 +180,7 @@ static inline void dump_pci_devices(void)
 	}
 }
 
-static inline void dump_pci_devices_on_bus(u32 busn)
+void dump_pci_devices_on_bus(u32 busn)
 {
 	pci_devfn_t dev;
 	for (dev = PCI_DEV(busn, 0, 0);
@@ -207,8 +206,7 @@ static inline void dump_pci_devices_on_bus(u32 busn)
 }
 
 #if CONFIG_DEBUG_SMBUS
-
-static void dump_spd_registers(const struct mem_controller *ctrl)
+void dump_spd_registers(const struct mem_controller *ctrl)
 {
 	int i;
 	printk(BIOS_DEBUG, "\n");
@@ -254,7 +252,8 @@ static void dump_spd_registers(const struct mem_controller *ctrl)
 		}
 	}
 }
-static void dump_smbus_registers(void)
+
+void dump_smbus_registers(void)
 {
 	u32 device;
 	printk(BIOS_DEBUG, "\n");
@@ -279,7 +278,8 @@ static void dump_smbus_registers(void)
 	}
 }
 #endif
-static inline void dump_io_resources(u32 port)
+
+void dump_io_resources(u32 port)
 {
 
 	int i;
@@ -299,7 +299,7 @@ static inline void dump_io_resources(u32 port)
 	}
 }
 
-static inline void dump_mem(u32 start, u32 end)
+void dump_mem(u32 start, u32 end)
 {
 	u32 i;
 	printk(BIOS_DEBUG, "dump_mem:");
@@ -310,4 +310,27 @@ static inline void dump_mem(u32 start, u32 end)
 		printk(BIOS_DEBUG, " %02x", (u8)*((u8 *)i));
 	}
 	printk(BIOS_DEBUG, "\n");
+}
+
+#if IS_ENABLED(CONFIG_DIMM_DDR2)
+void print_tx(const char *strval, u32 val)
+{
+#if CONFIG_DEBUG_RAM_SETUP
+	printk(BIOS_DEBUG, "%s%08x\n", strval, val);
+#endif
+}
+
+void print_t(const char *strval)
+{
+#if CONFIG_DEBUG_RAM_SETUP
+	printk(BIOS_DEBUG, "%s", strval);
+#endif
+}
+#endif /* CONFIG_DIMM_DDR2 */
+
+void print_tf(const char *func, const char *strval)
+{
+#if CONFIG_DEBUG_RAM_SETUP
+	printk(BIOS_DEBUG, "%s: %s", func, strval);
+#endif
 }

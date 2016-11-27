@@ -14,6 +14,12 @@
  * GNU General Public License for more details.
  */
 
+#include <inttypes.h>
+#include <console/console.h>
+#include <string.h>
+#include "mct_d.h"
+#include "mct_d_gcc.h"
+
 /* mct_SetDramConfigMisc2_Cx & mct_SetDramConfigMisc2_Dx */
 u32 mct_SetDramConfigMisc2(struct DCTStatStruc *pDCTstat,
 				uint8_t dct, uint32_t misc2, uint32_t DramControl)

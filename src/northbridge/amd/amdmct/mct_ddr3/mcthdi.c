@@ -14,6 +14,10 @@
  * GNU General Public License for more details.
  */
 
+#include <inttypes.h>
+#include "mct_d.h"
+#include "mct_d_gcc.h"
+
 void mct_DramInit_Hw_D(struct MCTStatStruc *pMCTstat,
 			struct DCTStatStruc *pDCTstat, u8 dct)
 {

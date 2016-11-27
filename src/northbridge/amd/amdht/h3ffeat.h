@@ -18,6 +18,8 @@
 #ifndef H3FFEAT_H
 #define H3FFEAT_H
 
+#include "h3finit.h"
+
 /*----------------------------------------------------------------------------
  *	Mixed (DEFINITIONS AND MACROS / TYPEDEFS, STRUCTURES, ENUMS)
  *

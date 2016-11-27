@@ -19,7 +19,6 @@
 #include <arch/io.h>
 #include <string.h>
 #include <stdint.h>
-#include <SBPLATFORM.h>
 #include <cpu/amd/amdfam10_sysconf.h>
 
 extern int bus_isa;
@@ -42,7 +41,7 @@ u8 intr_data[] = {
 static void *smp_write_config_table(void *v)
 {
 	struct mp_config_table *mc;
-	u32 dword;
+	u32 dword = 0;
 	u8 byte;
 
 	mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
@@ -56,7 +55,7 @@ static void *smp_write_config_table(void *v)
 	mptable_write_buses(mc, NULL, &bus_isa);
 
 	/* I/O APICs:   APIC ID Version State   Address */
-	ReadPMIO(SB_PMIOA_REG34, AccWidthUint32, &dword);
+	// FIXME: ReadPMIO(SB_PMIOA_REG34, AccWidthUint32, &dword);
 	dword &= 0xFFFFFFF0;
 
 	smp_write_ioapic(mc, apicid_sb800, 0x11,(void *) dword);

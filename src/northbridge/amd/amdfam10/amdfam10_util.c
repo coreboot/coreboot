@@ -17,8 +17,8 @@
 #include <console/console.h>
 
 #include <arch/cpu.h>
-#include <northbridge/amd/amdmct/wrappers/mcti.h>
-#include <northbridge/amd/amdmct/mct/mct_d.h>
+#include <arch/io.h>
+#include "raminit.h"
 #include <northbridge/amd/amdmct/amddefs.h>
 
 #ifndef __PRE_RAM__

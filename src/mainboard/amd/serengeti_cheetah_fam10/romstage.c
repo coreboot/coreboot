@@ -29,22 +29,30 @@
 #include <console/console.h>
 #include <timestamp.h>
 #include <cpu/amd/model_10xxx_rev.h>
-#include "southbridge/amd/amd8111/early_smbus.c"
-#include <northbridge/amd/amdfam10/raminit.h>
-#include <northbridge/amd/amdfam10/amdfam10.h>
 #include <lib.h>
 #include <spd.h>
 #include <cpu/x86/lapic.h>
-#include "northbridge/amd/amdfam10/reset_test.c"
 #include <commonlib/loglevel.h>
 #include <cpu/x86/bist.h>
-#include "northbridge/amd/amdfam10/debug.c"
+#include <cpu/amd/car.h>
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627hf/w83627hf.h>
-#include "northbridge/amd/amdfam10/setup_resource_map.c"
+#include <northbridge/amd/amdfam10/raminit.h>
+#include <northbridge/amd/amdht/ht_wrapper.h>
+#include <cpu/amd/family_10h-family_15h/init_cpus.h>
+#include <arch/early_variables.h>
+#include <cbmem.h>
+#include "southbridge/amd/amd8111/early_smbus.c"
 #include "southbridge/amd/amd8111/early_ctrl.c"
 
+#include "resourcemap.c"
+#include "cpu/amd/quadcore/quadcore.c"
+
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
+
+void activate_spd_rom(const struct mem_controller *ctrl);
+int spd_read_byte(unsigned device, unsigned address);
+extern struct sys_info sysinfo_car;
 
 static void memreset_setup(void)
 {
@@ -53,7 +61,7 @@ static void memreset_setup(void)
 	outb((1 << 2)|(0 << 0), SMBUS_IO_BASE + 0xc0 + 17);
 }
 
-static void activate_spd_rom(const struct mem_controller *ctrl)
+void activate_spd_rom(const struct mem_controller *ctrl)
 {
 #define SMBUS_HUB 0x18
 	int ret,i;
@@ -69,20 +77,10 @@ static void activate_spd_rom(const struct mem_controller *ctrl)
 	smbus_write_byte(SMBUS_HUB, 0x03, 0);
 }
 
-static int spd_read_byte(u32 device, u32 address)
+int spd_read_byte(u32 device, u32 address)
 {
 	return smbus_read_byte(device, address);
 }
-
-#include <northbridge/amd/amdfam10/amdfam10.h>
-#include "northbridge/amd/amdfam10/raminit_sysinfo_in_ram.c"
-#include "northbridge/amd/amdfam10/pci.c"
-#include "resourcemap.c"
-#include "cpu/amd/quadcore/quadcore.c"
-#include <cpu/amd/microcode.h>
-
-#include "cpu/amd/family_10h-family_15h/init_cpus.c"
-#include "northbridge/amd/amdfam10/early_ht.c"
 
 static const u8 spd_addr[] = {
 	/* first node */

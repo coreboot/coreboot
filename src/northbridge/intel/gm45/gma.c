@@ -611,6 +611,24 @@ static u8 vga_connected(u8 *mmio)
 	return 1;
 }
 
+static u32 get_cdclk(struct device *const dev)
+{
+	const u16 cdclk_sel =
+		pci_read_config16 (dev, GCFGC_OFFSET) & GCFGC_CD_MASK;
+	switch (MCHBAR8(HPLLVCO_MCHBAR) & 0x7) {
+	case VCO_2666:
+	case VCO_4000:
+	case VCO_5333:
+		return cdclk_sel ? 333333333 : 222222222;
+	case VCO_3200:
+		return cdclk_sel ? 320000000 : 228571429;
+	default:
+		printk(BIOS_WARNING,
+		       "Unknown VCO frequency, using default cdclk.\n");
+		return 222222222;
+	}
+}
+
 static void gma_pm_init_post_vbios(struct device *const dev)
 {
 	const struct northbridge_intel_gm45_config *const conf = dev->chip_info;
@@ -635,8 +653,8 @@ static void gma_pm_init_post_vbios(struct device *const dev)
 
 	/* Setup Panel Power Cycle Delay */
 	if (conf->gpu_panel_power_cycle_delay) {
-		reg32 = gtt_read(PP_DIVISOR);
-		reg32 &= ~0x1f;
+		reg32 = (get_cdclk(dev) / 20000 - 1)
+			<< PP_REFERENCE_DIVIDER_SHIFT;
 		reg32 |= conf->gpu_panel_power_cycle_delay & 0x1f;
 		gtt_write(PP_DIVISOR, reg32);
 	}

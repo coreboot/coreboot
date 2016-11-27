@@ -260,6 +260,8 @@ enum {
 #define MCHBAR16(x) *((volatile u16 *)(DEFAULT_MCHBAR + x))
 #define MCHBAR32(x) *((volatile u32 *)(DEFAULT_MCHBAR + x))
 
+#define HPLLVCO_MCHBAR		0x0c0f
+
 #define PMSTS_MCHBAR		0x0f14	/* Self refresh channel status */
 #define PMSTS_WARM_RESET	(1 << 1)
 #define PMSTS_BOTH_SELFREFRESH	(1 << 0)

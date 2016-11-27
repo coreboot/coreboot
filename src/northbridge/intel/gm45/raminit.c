@@ -749,7 +749,7 @@ static void set_system_memory_frequency(const timings_t *const timings)
 
 int raminit_read_vco_index(void)
 {
-	switch (MCHBAR8(0x0c0f) & 0x7) {
+	switch (MCHBAR8(HPLLVCO_MCHBAR) & 0x7) {
 	case VCO_2666:
 		return 0;
 	case VCO_3200:

@@ -15,13 +15,8 @@
 
 #include <stdint.h>
 #include <cpu/x86/lapic.h>
-#include "amdfam10.h"
-
-#define NODE_ID		0x60
-#define HT_INIT_CONTROL	0x6c
-#define HTIC_ColdR_Detect	(1<<4)
-#define HTIC_BIOSR_Detect	(1<<5)
-#define HTIC_INIT_Detect	(1<<6)
+#include <northbridge/amd/amdfam10/raminit.h>
+#include <northbridge/amd/amdfam10/amdfam10.h>
 
 /* mmconf is not ready */
 /* io_ext is not ready */
@@ -60,7 +55,7 @@ u32 other_reset_detected(void)	// other warm reset not started by BIOS
 	return (htic & HTIC_ColdR_Detect) && (htic & HTIC_BIOSR_Detect);
 }
 
-static void distinguish_cpu_resets(u8 nodeid)
+void distinguish_cpu_resets(u8 nodeid)
 {
 	u32 htic;
 	pci_devfn_t device;
@@ -70,7 +65,7 @@ static void distinguish_cpu_resets(u8 nodeid)
 	pci_io_write_config32(device, HT_INIT_CONTROL, htic);
 }
 
-static u32 warm_reset_detect(u8 nodeid)
+u32 warm_reset_detect(u8 nodeid)
 {
 	u32 htic;
 	pci_devfn_t device;
@@ -79,7 +74,6 @@ static u32 warm_reset_detect(u8 nodeid)
 	return (htic & HTIC_ColdR_Detect) && !(htic & HTIC_BIOSR_Detect);
 }
 
-void set_bios_reset(void);
 void set_bios_reset(void)
 {
 

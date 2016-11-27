@@ -18,6 +18,12 @@
  * Description: Max Read Latency Training feature for DDR 3 MCT
  */
 
+#include <inttypes.h>
+#include <console/console.h>
+#include <string.h>
+#include "mct_d.h"
+#include "mct_d_gcc.h"
+
 static u8 CompareMaxRdLatTestPattern_D(u32 pattern_buf, u32 addr);
 static u32 GetMaxRdLatTestAddr_D(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat, u8 Channel,

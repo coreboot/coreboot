@@ -15,8 +15,28 @@
  */
 
 #ifndef AMDFAM10_H
-
 #define AMDFAM10_H
+
+#include <inttypes.h>
+#include <arch/io.h>
+#include <device/device.h>
+#include "early_ht.h"
+
+#include "inline_helper.c"
+struct DCTStatStruc;
+struct MCTStatStruc;
+
+#define RES_PCI_IO 0x10
+#define RES_PORT_IO_8 0x22
+#define RES_PORT_IO_32 0x20
+#define RES_MEM_IO 0x40
+
+#define NODE_ID		0x60
+#define HT_INIT_CONTROL	0x6c
+#define HTIC_ColdR_Detect	(1<<4)
+#define HTIC_BIOSR_Detect	(1<<5)
+#define HTIC_INIT_Detect	(1<<6)
+
 /* Definitions of various FAM10 registers */
 /* Function 0 */
 #define HT_TRANSACTION_CONTROL 0x68
@@ -900,14 +920,8 @@ that are corresponding to 0x01, 0x02, 0x03, 0x05, 0x06, 0x07
 #endif
 #endif
 
-#include "raminit.h"
-
-#include "../amdmct/wrappers/mcti.h"
-#if (CONFIG_DIMM_SUPPORT & 0x000F) == 0x0005 /* AMD_FAM10_DDR3 */
-  #include "../amdmct/mct_ddr3/mct_d.h"
-#else
-  #include "../amdmct/mct/mct_d.h"
-#endif
+/* Include wrapper for MCT (works for DDR2 or DDR3) */
+#include <northbridge/amd/amdmct/wrappers/mcti.h>
 
 struct link_pair_t {
 	pci_devfn_t udev;
@@ -965,10 +979,12 @@ struct sys_info {
 	struct DCTStatStruc DCTstatA[NODE_NUMS];
 } __attribute__((packed));
 
+
+/*
 #ifdef __PRE_RAM__
 extern struct sys_info sysinfo_car;
 #endif
-
+*/
 #ifndef __PRE_RAM__
 device_t get_node_pci(u32 nodeid, u32 fn);
 #endif
@@ -983,14 +999,19 @@ void setup_resource_map_x_offset(const u32 *register_values, u32 max, u32
 		offset_pci_dev, u32 offset_io_base);
 
 void setup_resource_map_x(const u32 *register_values, u32 max);
+void setup_resource_map(const u32 *register_values, u32 max);
 
 /* reset_test.c */
 u32 cpu_init_detected(u8 nodeid);
 u32 bios_reset_detected(void);
 u32 cold_reset_detected(void);
 u32 other_reset_detected(void);
+u32 warm_reset_detect(u8 nodeid);
+void distinguish_cpu_resets(u8 nodeid);
 u32 get_sblk(void);
 u8 get_sbbusn(u8 sblk);
+void set_bios_reset(void);
+
 #endif
 
 #include "northbridge/amd/amdht/porting.h"
@@ -1004,5 +1025,7 @@ unsigned long northbridge_write_acpi_tables(device_t device,
 					    struct acpi_rsdp *rsdp);
 void northbridge_acpi_write_vars(device_t device);
 #endif
+
+void set_sysinfo_in_ram(u32 val);
 
 #endif /* AMDFAM10_H */

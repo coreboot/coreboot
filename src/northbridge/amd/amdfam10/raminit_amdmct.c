@@ -1,6 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
+ * Copyright (C) 2016 Damien Zammit <damien@zamaudio.com>
  * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  * Copyright (C) 2007 Advanced Micro Devices, Inc.
  *
@@ -14,31 +15,26 @@
  * GNU General Public License for more details.
  */
 
+#include <inttypes.h>
+#include <arch/io.h>
+#include <arch/acpi.h>
+#include <device/pci.h>
+#include <string.h>
+#include <cbmem.h>
+#include <console/console.h>
+#include <northbridge/amd/amdfam10/debug.h>
+#include <northbridge/amd/amdfam10/raminit.h>
+#include <northbridge/amd/amdfam10/amdfam10.h>
 
-#if (CONFIG_DIMM_SUPPORT & 0x000F)!=0x0005 /* not needed for AMD_FAM10_DDR3 */
-static  void print_tx(const char *strval, u32 val)
-{
-#if CONFIG_DEBUG_RAM_SETUP
-	printk(BIOS_DEBUG, "%s%08x\n", strval, val);
-#endif
-}
+/* Global allocation of sysinfo_car */
+#include <arch/early_variables.h>
+struct sys_info sysinfo_car CAR_GLOBAL;
 
-static  void print_t(const char *strval)
-{
-#if CONFIG_DEBUG_RAM_SETUP
-	printk(BIOS_DEBUG, "%s", strval);
-#endif
-}
-#endif
+struct mem_controller;
+extern void activate_spd_rom(const struct mem_controller *ctrl);
+extern int spd_read_byte(unsigned device, unsigned address);
 
-static  void print_tf(const char *func, const char *strval)
-{
-#if CONFIG_DEBUG_RAM_SETUP
-	printk(BIOS_DEBUG, "%s: %s", func, strval);
-#endif
-}
-
-static inline void fam15h_switch_dct(uint32_t dev, uint8_t dct)
+void fam15h_switch_dct(uint32_t dev, uint8_t dct)
 {
 	uint32_t dword;
 
@@ -58,7 +54,7 @@ static inline void fam15h_switch_nb_pstate_config_reg(uint32_t dev, uint8_t nb_p
 	Set_NB32(dev, 0x10c, dword);
 }
 
-static inline uint32_t Get_NB32_DCT(uint32_t dev, uint8_t dct, uint32_t reg)
+uint32_t Get_NB32_DCT(uint32_t dev, uint8_t dct, uint32_t reg)
 {
 	if (is_fam15h()) {
 		/* Obtain address of function 0x1 */
@@ -70,7 +66,7 @@ static inline uint32_t Get_NB32_DCT(uint32_t dev, uint8_t dct, uint32_t reg)
 	}
 }
 
-static inline void Set_NB32_DCT(uint32_t dev, uint8_t dct, uint32_t reg, uint32_t val)
+void Set_NB32_DCT(uint32_t dev, uint8_t dct, uint32_t reg, uint32_t val)
 {
 	if (is_fam15h()) {
 		/* Obtain address of function 0x1 */
@@ -82,7 +78,7 @@ static inline void Set_NB32_DCT(uint32_t dev, uint8_t dct, uint32_t reg, uint32_
 	}
 }
 
-static inline uint32_t Get_NB32_DCT_NBPstate(uint32_t dev, uint8_t dct, uint8_t nb_pstate, uint32_t reg)
+uint32_t Get_NB32_DCT_NBPstate(uint32_t dev, uint8_t dct, uint8_t nb_pstate, uint32_t reg)
 {
 	if (is_fam15h()) {
 		/* Obtain address of function 0x1 */
@@ -95,7 +91,7 @@ static inline uint32_t Get_NB32_DCT_NBPstate(uint32_t dev, uint8_t dct, uint8_t 
 	}
 }
 
-static inline void Set_NB32_DCT_NBPstate(uint32_t dev, uint8_t dct, uint8_t nb_pstate, uint32_t reg, uint32_t val)
+void Set_NB32_DCT_NBPstate(uint32_t dev, uint8_t dct, uint8_t nb_pstate, uint32_t reg, uint32_t val)
 {
 	if (is_fam15h()) {
 		/* Obtain address of function 0x1 */
@@ -108,7 +104,7 @@ static inline void Set_NB32_DCT_NBPstate(uint32_t dev, uint8_t dct, uint8_t nb_p
 	}
 }
 
-static inline uint32_t Get_NB32_index_wait_DCT(uint32_t dev, uint8_t dct, uint32_t index_reg, uint32_t index)
+uint32_t Get_NB32_index_wait_DCT(uint32_t dev, uint8_t dct, uint32_t index_reg, uint32_t index)
 {
 	if (is_fam15h()) {
 		/* Obtain address of function 0x1 */
@@ -120,7 +116,7 @@ static inline uint32_t Get_NB32_index_wait_DCT(uint32_t dev, uint8_t dct, uint32
 	}
 }
 
-static inline void Set_NB32_index_wait_DCT(uint32_t dev, uint8_t dct, uint32_t index_reg, uint32_t index, uint32_t data)
+void Set_NB32_index_wait_DCT(uint32_t dev, uint8_t dct, uint32_t index_reg, uint32_t index, uint32_t data)
 {
 	if (is_fam15h()) {
 		/* Obtain address of function 0x1 */
@@ -144,7 +140,7 @@ static uint16_t voltage_index_to_mv(uint8_t index)
 		return 1500;
 }
 
-static uint16_t mct_MaxLoadFreq(uint8_t count, uint8_t highest_rank_count, uint8_t registered, uint8_t voltage, uint16_t freq)
+uint16_t mct_MaxLoadFreq(uint8_t count, uint8_t highest_rank_count, uint8_t registered, uint8_t voltage, uint16_t freq)
 {
 	/* FIXME
 	 * Mainboards need to be able to specify the maximum number of DIMMs installable per channel
@@ -524,106 +520,6 @@ static uint16_t mct_MaxLoadFreq(uint8_t count, uint8_t highest_rank_count, uint8
 	return freq;
 }
 
-#if (CONFIG_DIMM_SUPPORT & 0x000F) == 0x0005 /* AMD_FAM10_DDR3 */
-#include "amdfam10.h"
-#include "../amdmct/wrappers/mcti.h"
-#include "../amdmct/amddefs.h"
-#include "../amdmct/mct_ddr3/mwlc_d.h"
-#include "../amdmct/mct_ddr3/mct_d.h"
-#include "../amdmct/mct_ddr3/mct_d_gcc.h"
-
-#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
-#include "../amdmct/mct_ddr3/s3utils.c"
-#endif
-
-#include "../amdmct/wrappers/mcti_d.c"
-#include "../amdmct/mct_ddr3/mct_d.c"
-
-#include "../amdmct/mct_ddr3/mctmtr_d.c"
-#include "../amdmct/mct_ddr3/mctcsi_d.c"
-#include "../amdmct/mct_ddr3/mctecc_d.c"
-#include "../amdmct/mct_ddr3/mctdqs_d.c"
-#include "../amdmct/mct_ddr3/mctsrc.c"
-#include "../amdmct/mct_ddr3/mctsdi.c"
-#include "../amdmct/mct_ddr3/mctprod.c"
-#include "../amdmct/mct_ddr3/mctproc.c"
-#include "../amdmct/mct_ddr3/mctprob.c"
-#include "../amdmct/mct_ddr3/mcthwl.c"
-#include "../amdmct/mct_ddr3/mctwl.c"
-#include "../amdmct/mct_ddr3/mport_d.c"
-#include "../amdmct/mct_ddr3/mutilc_d.c"
-#include "../amdmct/mct_ddr3/modtrdim.c"
-#include "../amdmct/mct_ddr3/mhwlc_d.c"
-#include "../amdmct/mct_ddr3/mctrci.c"
-#include "../amdmct/mct_ddr3/mctsrc1p.c"
-#include "../amdmct/mct_ddr3/mcttmrl.c"
-#include "../amdmct/mct_ddr3/mcthdi.c"
-#include "../amdmct/mct_ddr3/mctndi_d.c"
-#include "../amdmct/mct_ddr3/mctchi_d.c"
-#include "../amdmct/mct_ddr3/modtrd.c"
-
-#if CONFIG_CPU_SOCKET_TYPE == 0x10
-//TODO: S1G1?
-#elif CONFIG_CPU_SOCKET_TYPE == 0x11
-//AM3
-#include "../amdmct/mct_ddr3/mctardk5.c"
-#elif CONFIG_CPU_SOCKET_TYPE == 0x12
-//F (1207), Fr2, G (1207)
-#include "../amdmct/mct_ddr3/mctardk6.c"
-#elif CONFIG_CPU_SOCKET_TYPE == 0x13
-//ASB2
-#include "../amdmct/mct_ddr3/mctardk5.c"
-//C32
-#elif CONFIG_CPU_SOCKET_TYPE == 0x14
-#include "../amdmct/mct_ddr3/mctardk5.c"
-//G34
-#elif CONFIG_CPU_SOCKET_TYPE == 0x15
-#include "../amdmct/mct_ddr3/mctardk5.c"
-//FM2
-#elif CONFIG_CPU_SOCKET_TYPE == 0x16
-#include "../amdmct/mct_ddr3/mctardk5.c"
-#endif
-
-#else  /* DDR2 */
-
-#include "amdfam10.h"
-#include "../amdmct/wrappers/mcti.h"
-#include "../amdmct/amddefs.h"
-#include "../amdmct/mct/mct_d.h"
-#include "../amdmct/mct/mct_d_gcc.h"
-
-#include "../amdmct/wrappers/mcti_d.c"
-#include "../amdmct/mct/mct_d.c"
-
-
-#include "../amdmct/mct/mctmtr_d.c"
-#include "../amdmct/mct/mctcsi_d.c"
-#include "../amdmct/mct/mctecc_d.c"
-#include "../amdmct/mct/mctpro_d.c"
-#include "../amdmct/mct/mctdqs_d.c"
-#include "../amdmct/mct/mctsrc.c"
-#include "../amdmct/mct/mctsrc1p.c"
-#include "../amdmct/mct/mcttmrl.c"
-#include "../amdmct/mct/mcthdi.c"
-#include "../amdmct/mct/mctndi_d.c"
-#include "../amdmct/mct/mctchi_d.c"
-
-#if CONFIG_CPU_SOCKET_TYPE == 0x10
-//L1
-#include "../amdmct/mct/mctardk3.c"
-#elif CONFIG_CPU_SOCKET_TYPE == 0x11
-//AM2
-#include "../amdmct/mct/mctardk4.c"
-//#elif SYSTEM_TYPE == MOBILE
-//s1g1
-//#include "../amdmct/mct/mctardk5.c"
-#endif
-
-#endif	/* DDR2 */
-
-#include <arch/early_variables.h>
-struct sys_info sysinfo_car CAR_GLOBAL;
-
 int mctRead_SPD(u32 smaddr, u32 reg)
 {
 	return spd_read_byte(smaddr, reg);
@@ -652,14 +548,14 @@ void mctGet_DIMMAddr(struct DCTStatStruc *pDCTstat, u32 node)
 }
 
 #if IS_ENABLED(CONFIG_SET_FIDVID)
-static u8 mctGetProcessorPackageType(void) {
+u8 mctGetProcessorPackageType(void) {
 	/* FIXME: I guess this belongs wherever mctGetLogicalCPUID ends up ? */
 	u32 BrandId = cpuid_ebx(0x80000001);
 	return (u8)((BrandId >> 28) & 0x0F);
 }
 #endif
 
-static void raminit_amdmct(struct sys_info *sysinfo)
+void raminit_amdmct(struct sys_info *sysinfo)
 {
 	struct MCTStatStruc *pMCTstat = &(sysinfo->MCTstat);
 	struct DCTStatStruc *pDCTstatA = sysinfo->DCTstatA;
@@ -671,7 +567,7 @@ static void raminit_amdmct(struct sys_info *sysinfo)
 	printk(BIOS_DEBUG, "raminit_amdmct end:\n");
 }
 
-static void amdmct_cbmem_store_info(struct sys_info *sysinfo)
+void amdmct_cbmem_store_info(struct sys_info *sysinfo)
 {
 	if (!sysinfo)
 		return;

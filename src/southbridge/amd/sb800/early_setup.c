@@ -164,7 +164,7 @@ static void sb800_lpc_init(void)
 }
 
 /* what is its usage? */
-static u32 get_sbdn(u32 bus)
+u32 get_sbdn(u32 bus)
 {
 	pci_devfn_t dev;
 
@@ -625,11 +625,6 @@ static void sb800_early_setup(void)
 	printk(BIOS_INFO, "sb800_early_setup()\n");
 	sb800_por_init();
 	sb800_acpi_init();
-}
-
-static int smbus_read_byte(u32 device, u32 address)
-{
-	return do_smbus_read_byte(SMBUS_IO_BASE, device, address);
 }
 
 int s3_save_nvram_early(u32 dword, int size, int  nvram_pos)

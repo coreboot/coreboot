@@ -14,18 +14,14 @@
  * GNU General Public License for more details.
  */
 
-/*
- *-----------------------------------------------------------------------------
- *			MODULES USED
- *
- *-----------------------------------------------------------------------------
- */
+#include <inttypes.h>
+#include <console/console.h>
+#include <string.h>
+#include "mct_d.h"
+#include "mct_d_gcc.h"
+#include "mwlc_d.h"
+#include <northbridge/amd/amdfam10/amdfam10.h>
 
-/*----------------------------------------------------------------------------
- *			PROTOTYPES OF LOCAL FUNCTIONS
- *
- *----------------------------------------------------------------------------
- */
 u32 swapAddrBits_wl(struct DCTStatStruc *pDCTstat, uint8_t dct, uint32_t MRSValue);
 u32 swapBankBits(struct DCTStatStruc *pDCTstat, uint8_t dct, uint32_t MRSValue);
 void prepareDimms(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat,
@@ -34,20 +30,6 @@ void programODT(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, ui
 void procConfig(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, uint8_t dct, uint8_t dimm, uint8_t pass, uint8_t nibble);
 void setWLByteDelay(struct DCTStatStruc *pDCTstat, uint8_t dct, u8 ByteLane, u8 dimm, u8 targetAddr, uint8_t pass, uint8_t lane_count);
 void getWLByteDelay(struct DCTStatStruc *pDCTstat, uint8_t dct, u8 ByteLane, u8 dimm, uint8_t pass, uint8_t nibble, uint8_t lane_count);
-
-static int32_t abs(int32_t val) {
-	if (val < 0)
-		val *= -1;
-
-	return val;
-}
-
-/*
- *-----------------------------------------------------------------------------
- *		EXPORTED FUNCTIONS
- *
- *-----------------------------------------------------------------------------
- */
 
 /*-----------------------------------------------------------------------------
  * uint8_t AgesaHwWlPhase1(SPDStruct *SPDData,MCTStruct *MCTData, DCTStruct *DCTData,

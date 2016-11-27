@@ -13,13 +13,11 @@
  * GNU General Public License for more details.
  */
 
+#include "pci.h"
 
-#ifndef AMDFAM10_PCI_C
-#define AMDFAM10_PCI_C
 /* bit [10,8] are dev func, bit[1,0] are dev index */
 
-
-static u32 pci_read_config32_index(pci_devfn_t dev, u32 index_reg, u32 index)
+u32 pci_read_config32_index(pci_devfn_t dev, u32 index_reg, u32 index)
 {
 	u32 dword;
 
@@ -29,7 +27,7 @@ static u32 pci_read_config32_index(pci_devfn_t dev, u32 index_reg, u32 index)
 }
 
 #ifdef UNUSED_CODE
-static void pci_write_config32_index(pci_devfn_t dev, u32 index_reg, u32 index,
+void pci_write_config32_index(pci_devfn_t dev, u32 index_reg, u32 index,
 		u32 data)
 {
 
@@ -40,7 +38,7 @@ static void pci_write_config32_index(pci_devfn_t dev, u32 index_reg, u32 index,
 }
 #endif
 
-static u32 pci_read_config32_index_wait(pci_devfn_t dev, u32 index_reg,
+u32 pci_read_config32_index_wait(pci_devfn_t dev, u32 index_reg,
 		u32 index)
 {
 
@@ -56,7 +54,7 @@ static u32 pci_read_config32_index_wait(pci_devfn_t dev, u32 index_reg,
 }
 
 #ifdef UNUSED_CODE
-static void pci_write_config32_index_wait(pci_devfn_t dev, u32 index_reg,
+void pci_write_config32_index_wait(pci_devfn_t dev, u32 index_reg,
 		u32 index, u32 data)
 {
 
@@ -70,5 +68,4 @@ static void pci_write_config32_index_wait(pci_devfn_t dev, u32 index_reg,
 	} while (!(dword & (1<<31)));
 
 }
-#endif
 #endif

@@ -14,17 +14,12 @@
  * GNU General Public License for more details.
  */
 
-static void write_dqs_receiver_enable_control_registers(uint16_t* current_total_delay,
-			uint32_t dev, uint8_t dct, uint8_t dimm, uint32_t index_reg);
-
-static void read_dqs_read_data_timing_registers(uint16_t* delay, uint32_t dev,
-			uint8_t dct, uint8_t dimm, uint32_t index_reg);
-
-static void write_dqs_read_data_timing_registers(uint16_t* delay, uint32_t dev,
-			uint8_t dct, uint8_t dimm, uint32_t index_reg);
-
-static void dqsTrainMaxRdLatency_SW_Fam15(struct MCTStatStruc *pMCTstat,
-				struct DCTStatStruc *pDCTstat);
+#include <inttypes.h>
+#include <console/console.h>
+#include <string.h>
+#include "mct_d.h"
+#include "mct_d_gcc.h"
+#include <cpu/amd/mtrr.h>
 
 static void CalcEccDQSPos_D(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat, u16 like,
@@ -43,28 +38,34 @@ static u16 CompareDQSTestPattern_D(struct MCTStatStruc *pMCTstat,
 					u32 addr_lo);
 static void FlushDQSTestPattern_D(struct DCTStatStruc *pDCTstat,
 					u32 addr_lo);
-static void SetTargetWTIO_D(u32 TestAddr);
-static void ResetTargetWTIO_D(void);
-void ResetDCTWrPtr_D(u32 dev, uint8_t dct, u32 index_reg, u32 index);
-u8 mct_DisableDimmEccEn_D(struct MCTStatStruc *pMCTstat,
-				struct DCTStatStruc *pDCTstat);
 static void mct_SetDQSDelayCSR_D(struct MCTStatStruc *pMCTstat,
 					struct DCTStatStruc *pDCTstat,
 					u8 ChipSel);
-u32 mct_GetMCTSysAddr_D(struct MCTStatStruc *pMCTstat,
-				struct DCTStatStruc *pDCTstat, u8 Channel,
-				u8 receiver, u8 *valid);
 static void SetupDqsPattern_D(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat,
 				u32 *buffer);
-static void proc_IOCLFLUSH_D(u32 addr_hi);
 
 static void StoreDQSDatStrucVal_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, u8 ChipSel);
+
+static uint8_t is_fam15h(void)
+{
+	uint8_t fam15h = 0;
+	uint32_t family;
+
+	family = cpuid_eax(0x80000001);
+	family = ((family & 0xf00000) >> 16) | ((family & 0xf00) >> 8);
+
+	if (family >= 0x6f)
+		/* Family 15h or later */
+		fam15h = 1;
+
+	return fam15h;
+}
 
 #define DQS_TRAIN_DEBUG 0
 // #define PRINT_PASS_FAIL_BITMAPS 1
 
-static void print_debug_dqs(const char *str, u32 val, u8 level)
+void print_debug_dqs(const char *str, u32 val, u8 level)
 {
 #if DQS_TRAIN_DEBUG > 0
 	if (DQS_TRAIN_DEBUG >= level) {
@@ -73,7 +74,7 @@ static void print_debug_dqs(const char *str, u32 val, u8 level)
 #endif
 }
 
-static void print_debug_dqs_pair(const char *str, u32 val, const char *str2, u32 val2, u8 level)
+void print_debug_dqs_pair(const char *str, u32 val, const char *str2, u32 val2, u8 level)
 {
 #if DQS_TRAIN_DEBUG > 0
 	if (DQS_TRAIN_DEBUG >= level) {
@@ -850,8 +851,8 @@ static void TrainDQSRdWrPos_D_Fam10(struct MCTStatStruc *pMCTstat,
 /* Calcuate and set MaxRdLatency
  * Algorithm detailed in the Fam15h BKDG Rev. 3.14 section 2.10.5.8.5
  */
-static void Calc_SetMaxRdLatency_D_Fam15(struct MCTStatStruc *pMCTstat,
-				struct DCTStatStruc *pDCTstat, uint8_t dct, uint8_t calc_min)
+void Calc_SetMaxRdLatency_D_Fam15(struct MCTStatStruc *pMCTstat,
+		struct DCTStatStruc *pDCTstat, uint8_t dct, uint8_t calc_min)
 {
 	uint8_t dimm;
 	uint8_t lane;
@@ -1053,8 +1054,9 @@ static void stop_dram_dqs_training_pattern_fam15(struct MCTStatStruc *pMCTstat,
 	Set_NB32_DCT(dev, dct, 0x250, dword);
 }
 
-static void read_dram_dqs_training_pattern_fam15(struct MCTStatStruc *pMCTstat,
-				struct DCTStatStruc *pDCTstat, uint8_t dct, uint8_t Receiver, uint8_t lane, uint8_t stop_on_error)
+void read_dram_dqs_training_pattern_fam15(struct MCTStatStruc *pMCTstat,
+	struct DCTStatStruc *pDCTstat, uint8_t dct,
+	uint8_t Receiver, uint8_t lane, uint8_t stop_on_error)
 {
 	uint32_t dword;
 	uint32_t dev = pDCTstat->dev_dct;
@@ -1149,8 +1151,9 @@ static void read_dram_dqs_training_pattern_fam15(struct MCTStatStruc *pMCTstat,
 	stop_dram_dqs_training_pattern_fam15(pMCTstat, pDCTstat, dct, Receiver);
 }
 
-static void write_dram_dqs_training_pattern_fam15(struct MCTStatStruc *pMCTstat,
-				struct DCTStatStruc *pDCTstat, uint8_t dct, uint8_t Receiver, uint8_t lane, uint8_t stop_on_error)
+void write_dram_dqs_training_pattern_fam15(struct MCTStatStruc *pMCTstat,
+	struct DCTStatStruc *pDCTstat, uint8_t dct,
+	uint8_t Receiver, uint8_t lane, uint8_t stop_on_error)
 {
 	uint32_t dword;
 	uint32_t dev = pDCTstat->dev_dct;
@@ -1944,14 +1947,14 @@ static void GetDQSDatStrucVal_D(struct MCTStatStruc *pMCTstat,
 
 /* FindDQSDatDimmVal_D is not required since we use an array */
 
-static void proc_IOCLFLUSH_D(u32 addr_hi)
+void proc_IOCLFLUSH_D(u32 addr_hi)
 {
 	SetTargetWTIO_D(addr_hi);
 	proc_CLFLUSH(addr_hi);
 	ResetTargetWTIO_D();
 }
 
-static u8 ChipSelPresent_D(struct MCTStatStruc *pMCTstat,
+u8 ChipSelPresent_D(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat,
 				u8 Channel, u8 ChipSel)
 {
@@ -2139,7 +2142,7 @@ static void FlushDQSTestPattern_D(struct DCTStatStruc *pDCTstat,
 	}
 }
 
-static void SetTargetWTIO_D(u32 TestAddr)
+void SetTargetWTIO_D(u32 TestAddr)
 {
 	u32 lo, hi;
 	hi = TestAddr >> 24;
@@ -2150,7 +2153,7 @@ static void SetTargetWTIO_D(u32 TestAddr)
 	_WRMSR(0xC0010017, lo, hi);		/* IORR0 Mask */
 }
 
-static void ResetTargetWTIO_D(void)
+void ResetTargetWTIO_D(void)
 {
 	u32 lo, hi;
 
@@ -2436,7 +2439,7 @@ exitGetAddr:
 	return val;
 }
 
-static void mct_Write1LTestPattern_D(struct MCTStatStruc *pMCTstat,
+void mct_Write1LTestPattern_D(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat,
 				u32 TestAddr, u8 pattern)
 {

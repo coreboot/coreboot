@@ -21,28 +21,26 @@
  *----------------------------------------------------------------------------
  */
 
-#undef FILECODE
-#define FILECODE 0xF001
-
-#include "comlib.h"
 #include "h3finit.h"
 #include "h3ffeat.h"
 #include "h3ncmn.h"
 #include "h3gtopo.h"
 #include "AsPsNb.h"
-/* this is pre-ram so include the required C files here */
-#include "comlib.c"
-#include "AsPsNb.c"
-#include "h3ncmn.c"
+
+#include <device/pci.h>
+#include <console/console.h>
+#include <cpu/amd/msr.h>
+#include <device/pci_def.h>
+#include <device/pci_ids.h>
+#include <northbridge/amd/amdfam10/raminit.h>
+#include <northbridge/amd/amdfam10/amdfam10.h>
+
 
 /*----------------------------------------------------------------------------
  *			DEFINITIONS AND MACROS
  *
  *----------------------------------------------------------------------------
  */
-
-#undef FILECODE
-#define FILECODE 0xF001
 
 /* APIC defines from amdgesa.inc, which can't be included in to c code. */
 #define APIC_Base_BSP	8

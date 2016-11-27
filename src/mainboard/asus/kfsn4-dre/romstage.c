@@ -20,8 +20,6 @@
 #define FAM10_SCAN_PCI_BUS 0
 #define FAM10_ALLOCATE_IO_RANGE 1
 
-unsigned int get_sbdn(unsigned bus);
-
 #include <stdint.h>
 #include <string.h>
 #include <reset.h>
@@ -34,46 +32,40 @@ unsigned int get_sbdn(unsigned bus);
 #include <timestamp.h>
 #include <lib.h>
 #include <spd.h>
+#include <cbmem.h>
 #include <cpu/amd/model_10xxx_rev.h>
-#include "southbridge/nvidia/ck804/early_smbus.h"
-#include <northbridge/amd/amdfam10/raminit.h>
-#include <northbridge/amd/amdfam10/amdfam10.h>
+#include <cpu/amd/car.h>
+#include <southbridge/nvidia/ck804/early_smbus.h>
 #include <delay.h>
 #include <cpu/x86/lapic.h>
-#include "northbridge/amd/amdfam10/reset_test.c"
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627thg/w83627thg.h>
 #include <cpu/x86/bist.h>
-// #include "northbridge/amd/amdk8/incoherent_ht.c"
-#include "northbridge/amd/amdfam10/debug.c"
-#include "northbridge/amd/amdfam10/setup_resource_map.c"
+#include <northbridge/amd/amdht/ht_wrapper.h>
+#include <northbridge/amd/amdfam10/raminit.h>
+#include <cpu/amd/family_10h-family_15h/init_cpus.h>
 
-#define SERIAL_DEV PNP_DEV(0x2e, W83627THG_SP1)
-
-static void activate_spd_rom(const struct mem_controller *ctrl);
-
-static inline int spd_read_byte(unsigned device, unsigned address)
-{
-	return smbus_read_byte(device, address);
-}
-
-#include <northbridge/amd/amdfam10/amdfam10.h>
-#include "northbridge/amd/amdfam10/raminit_sysinfo_in_ram.c"
-#include "northbridge/amd/amdfam10/pci.c"
 #include "resourcemap.c"
 #include "cpu/amd/quadcore/quadcore.c"
+
+#define SERIAL_DEV PNP_DEV(0x2e, W83627THG_SP1)
 
 #define CK804_MB_SETUP \
 	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+33, ~(0x0f),(0x04 | 0x01),	/* -ENOINFO Proprietary BIOS sets this register; "When in Rome..."*/
 
 #include <southbridge/nvidia/ck804/early_setup_ss.h>
 #include "southbridge/nvidia/ck804/early_setup_car.c"
-#include <cpu/amd/microcode.h>
-
-#include "cpu/amd/family_10h-family_15h/init_cpus.c"
-#include "northbridge/amd/amdfam10/early_ht.c"
 
 #define GPIO3_DEV PNP_DEV(0x2e, W83627THG_GPIO3)
+
+void activate_spd_rom(const struct mem_controller *ctrl);
+int spd_read_byte(unsigned device, unsigned address);
+extern struct sys_info sysinfo_car;
+
+int spd_read_byte(unsigned device, unsigned address)
+{
+	return smbus_read_byte(device, address);
+}
 
 /**
  * @brief Get SouthBridge device number
@@ -182,7 +174,7 @@ static const uint8_t spd_addr[] = {
 	RC01, DIMM0, DIMM2, DIMM4, DIMM6, DIMM1, DIMM3, DIMM5, DIMM7,
 };
 
-static void activate_spd_rom(const struct mem_controller *ctrl) {
+void activate_spd_rom(const struct mem_controller *ctrl) {
 	printk(BIOS_DEBUG, "activate_spd_rom() for node %02x\n", ctrl->node_id);
 	if (ctrl->node_id == 0) {
 		printk(BIOS_DEBUG, "enable_spd_node0()\n");

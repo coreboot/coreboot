@@ -13,6 +13,8 @@
  * GNU General Public License for more details.
  */
 
+#include <inttypes.h>
+#include "mct_d.h"
 
 static void Get_ChannelPS_Cfg0_D(u8 MAAdimms, u8 Speed, u8 MAAload,
 				u8 DATAAload, u32 *AddrTmgCTL, u32 *ODC_CTL);

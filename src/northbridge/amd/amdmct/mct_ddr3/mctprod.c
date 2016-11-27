@@ -14,6 +14,12 @@
  * GNU General Public License for more details.
  */
 
+#include <inttypes.h>
+#include <console/console.h>
+#include <string.h>
+#include "mct_d.h"
+#include "mct_d_gcc.h"
+
 void mct_ExtMCTConfig_Dx(struct DCTStatStruc *pDCTstat)
 {
 	uint32_t dword;

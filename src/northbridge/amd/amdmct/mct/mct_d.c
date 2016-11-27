@@ -33,6 +33,8 @@
  * supported.
  */
 
+#include "mct_d.h"
+
 static u8 ReconfigureDIMMspare_D(struct MCTStatStruc *pMCTstat,
 					struct DCTStatStruc *pDCTstatA);
 static void DQSTiming_D(struct MCTStatStruc *pMCTstat,
@@ -41,15 +43,8 @@ static void LoadDQSSigTmgRegs_D(struct MCTStatStruc *pMCTstat,
 					struct DCTStatStruc *pDCTstatA);
 static void HTMemMapInit_D(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstatA);
-static void MCTMemClr_D(struct MCTStatStruc *pMCTstat,
-				struct DCTStatStruc *pDCTstatA);
-static void DCTMemClr_Init_D(struct MCTStatStruc *pMCTstat,
-				struct DCTStatStruc *pDCTstat);
 static void DCTMemClr_Sync_D(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat);
-static void MCTMemClrSync_D(struct MCTStatStruc *pMCTstat,
-				struct DCTStatStruc *pDCTstatA);
-static u8 NodePresent_D(u8 Node);
 static void SyncDCTsReady_D(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstatA);
 static void StartupDCT_D(struct MCTStatStruc *pMCTstat,
@@ -66,6 +61,8 @@ static u8 AutoConfig_D(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat, u8 dct);
 static u8 PlatformSpec_D(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat, u8 dct);
+static u8 mct_PlatformSpec(struct MCTStatStruc *pMCTstat,
+					struct DCTStatStruc *pDCTstat, u8 dct);
 static void SPDSetBanks_D(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat, u8 dct);
 static void StitchMemory_D(struct MCTStatStruc *pMCTstat,
@@ -81,8 +78,6 @@ static void mct_initDCT(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat);
 static void mct_DramInit(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat, u8 dct);
-static u8 mct_PlatformSpec(struct MCTStatStruc *pMCTstat,
-					struct DCTStatStruc *pDCTstat, u8 dct);
 static void mct_SyncDCTsReady(struct DCTStatStruc *pDCTstat);
 static void Get_Trdrd(struct MCTStatStruc *pMCTstat,
 			struct DCTStatStruc *pDCTstat, u8 dct);
@@ -175,7 +170,9 @@ static const u8 Table_Comp_Rise_Slew_15x[] = {7, 7, 3, 2, 0xFF};
 static const u8 Table_Comp_Fall_Slew_20x[] = {7, 5, 3, 2, 0xFF};
 static const u8 Table_Comp_Fall_Slew_15x[] = {7, 7, 5, 3, 0xFF};
 
-static void mctAutoInitMCT_D(struct MCTStatStruc *pMCTstat,
+const u8 Table_DQSRcvEn_Offset[] = {0x00,0x01,0x10,0x11,0x2};
+
+void mctAutoInitMCT_D(struct MCTStatStruc *pMCTstat,
 			struct DCTStatStruc *pDCTstatA)
 {
 	/*
@@ -661,7 +658,7 @@ static void HTMemMapInit_D(struct MCTStatStruc *pMCTstat,
 }
 
 
-static void MCTMemClr_D(struct MCTStatStruc *pMCTstat,
+void MCTMemClr_D(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstatA)
 {
 
@@ -693,7 +690,7 @@ static void MCTMemClr_D(struct MCTStatStruc *pMCTstat,
 }
 
 
-static void DCTMemClr_Init_D(struct MCTStatStruc *pMCTstat,
+void DCTMemClr_Init_D(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat)
 {
 	u32 val;
@@ -716,7 +713,7 @@ static void DCTMemClr_Init_D(struct MCTStatStruc *pMCTstat,
 }
 
 
-static void MCTMemClrSync_D(struct MCTStatStruc *pMCTstat,
+void MCTMemClrSync_D(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstatA)
 {
 	/* Ensures that memory clear has completed on all node.*/
@@ -768,7 +765,7 @@ static void DCTMemClr_Sync_D(struct MCTStatStruc *pMCTstat,
 }
 
 
-static u8 NodePresent_D(u8 Node)
+u8 NodePresent_D(u8 Node)
 {
 	/*
 	 * Determine if a single Hammer Node exists within the network.
@@ -3655,7 +3652,7 @@ static void mct_BeforeDramInit_Prod_D(struct MCTStatStruc *pMCTstat,
 }
 
 
-static void mct_AdjustDelayRange_D(struct MCTStatStruc *pMCTstat,
+void mct_AdjustDelayRange_D(struct MCTStatStruc *pMCTstat,
 			struct DCTStatStruc *pDCTstat, u8 *dqs_pos)
 {
 	// FIXME: Skip for Ax
@@ -3907,7 +3904,7 @@ static void mct_ResetDLL_D(struct MCTStatStruc *pMCTstat,
 }
 
 
-static void mct_EnableDatIntlv_D(struct MCTStatStruc *pMCTstat,
+void mct_EnableDatIntlv_D(struct MCTStatStruc *pMCTstat,
 					struct DCTStatStruc *pDCTstat)
 {
 	u32 dev = pDCTstat->dev_dct;

@@ -13,7 +13,13 @@
  * GNU General Public License for more details.
  */
 
-static u32 mct_MR1Odt_RDimm(struct MCTStatStruc *pMCTstat,
+#include <inttypes.h>
+#include <console/console.h>
+#include <string.h>
+#include "mct_d.h"
+#include "mct_d_gcc.h"
+
+u32 mct_MR1Odt_RDimm(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat, u8 dct, u32 MrsChipSel)
 {
 	u8 Speed = pDCTstat->Speed;
@@ -55,7 +61,7 @@ static u32 mct_MR1Odt_RDimm(struct MCTStatStruc *pMCTstat,
 	return ret;
 }
 
-static u32 mct_DramTermDyn_RDimm(struct MCTStatStruc *pMCTstat,
+u32 mct_DramTermDyn_RDimm(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat, u8 dimm)
 {
 	u8 DimmsInstalled = dimm;

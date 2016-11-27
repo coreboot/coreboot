@@ -19,6 +19,7 @@
  */
 
 #include <cpu/x86/cache.h>
+#include <cpu/x86/msr.h>
 
 static inline __attribute__((always_inline)) uint32_t amd_fam1x_cpu_family(void)
 {

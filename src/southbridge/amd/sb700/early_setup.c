@@ -30,6 +30,8 @@
 #include "sb700.h"
 #include "smbus.h"
 
+u32 get_sbdn(u32 bus);
+
 static void pmio_write(u8 reg, u8 value)
 {
 	outb(reg, PM_INDEX);

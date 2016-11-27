@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-
+#include "mct_d.h"
 
 void InterleaveChannels_D(struct MCTStatStruc *pMCTstat,
 			struct DCTStatStruc *pDCTstatA)

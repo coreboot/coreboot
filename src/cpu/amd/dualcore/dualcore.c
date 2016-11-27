@@ -60,5 +60,4 @@ static inline void start_other_cores(void)
 			real_start_other_core(nodeid);
 		}
 	}
-
 }

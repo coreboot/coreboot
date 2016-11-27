@@ -13,6 +13,8 @@
  * GNU General Public License for more details.
  */
 
+#include "mct_d.h"
+#include <cpu/x86/cr.h>
 
 /*
  * Description: Max Read Latency Training feature for DDR 2 MCT

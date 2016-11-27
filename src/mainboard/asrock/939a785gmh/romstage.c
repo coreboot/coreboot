@@ -32,13 +32,14 @@
 #include <superio/winbond/w83627dhg/w83627dhg.h>
 #include <cpu/x86/bist.h>
 #include "northbridge/amd/amdk8/setup_resource_map.c"
-#include "southbridge/amd/rs780/early_setup.c"
 #include <southbridge/amd/sb700/sb700.h>
 #include <southbridge/amd/sb700/smbus.h>
 #include "northbridge/amd/amdk8/debug.c" /* After sb700/early_setup.c! */
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627DHG_SP1)
 #define GPIO2345_DEV PNP_DEV(0x2e, W83627DHG_GPIO2345_V)
+
+unsigned get_sbdn(unsigned bus);
 
 static void memreset(int controllers, const struct mem_controller *ctrl) { }
 static void activate_spd_rom(const struct mem_controller *ctrl) { }
@@ -48,6 +49,7 @@ static inline int spd_read_byte(u32 device, u32 address)
 	return do_smbus_read_byte(SMBUS_IO_BASE, device, address);
 }
 
+#include "southbridge/amd/rs780/early_setup.c"
 #include <northbridge/amd/amdk8/amdk8.h>
 #include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "northbridge/amd/amdk8/raminit.c"

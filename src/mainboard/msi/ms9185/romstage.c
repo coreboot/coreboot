@@ -39,10 +39,11 @@
 #include <superio/nsc/pc87417/pc87417.h>
 #include <cpu/x86/bist.h>
 #include "northbridge/amd/amdk8/setup_resource_map.c"
-#include "southbridge/broadcom/bcm5785/early_setup.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, PC87417_SP1)
 #define RTC_DEV PNP_DEV(0x2e, PC87417_RTC)
+
+unsigned get_sbdn(unsigned bus);
 
 static void memreset(int controllers, const struct mem_controller *ctrl) { }
 
@@ -60,6 +61,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 	return smbus_read_byte(device, address);
 }
 
+#include "southbridge/broadcom/bcm5785/early_setup.c"
 #include <northbridge/amd/amdk8/f.h>
 #include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"

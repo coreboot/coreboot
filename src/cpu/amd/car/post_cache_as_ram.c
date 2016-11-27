@@ -17,11 +17,13 @@
  * GNU General Public License for more details.
  */
 #include <string.h>
+#include <console/console.h>
 #include <arch/stages.h>
 #include <arch/early_variables.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/amd/mtrr.h>
 #include <cpu/amd/car.h>
+#include <cpu/amd/msr.h>
 #include <arch/acpi.h>
 #include <romstage_handoff.h>
 #include "cbmem.h"

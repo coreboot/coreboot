@@ -17,6 +17,8 @@
 #ifndef H3FINIT_H
 #define H3FINIT_H
 
+#include "comlib.h"
+
 /*----------------------------------------------------------------------------
  *	Mixed (DEFINITIONS AND MACROS / TYPEDEFS, STRUCTURES, ENUMS)
  *

@@ -12,20 +12,20 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
+#ifndef S3UTILS_H
+#define S3UTILS_H
 
 #include "../wrappers/mcti.h"
 #include "mct_d.h"
 
-void calculate_spd_hash(uint8_t *spd_data, uint64_t *spd_hash);
-uint16_t calculate_nvram_mct_hash(void);
-
-#ifdef __PRE_RAM__
-int8_t load_spd_hashes_from_nvram(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat);
-#endif
-
 #ifdef __RAMSTAGE__
 int8_t save_mct_information_to_nvram(void);
-#endif
-int8_t restore_mct_information_from_nvram(uint8_t training_only);
 void copy_mct_data_to_save_variable(struct amd_s3_persistent_data* persistent_data);
-void restore_mct_data_from_save_variable(struct amd_s3_persistent_data* persistent_data, uint8_t training_only);
+#endif
+
+void calculate_and_store_spd_hashes(struct MCTStatStruc *pMCTstat,
+				struct DCTStatStruc *pDCTstat);
+void compare_nvram_spd_hashes(struct MCTStatStruc *pMCTstat,
+				struct DCTStatStruc *pDCTstat);
+
+#endif

@@ -16,8 +16,6 @@
 
 #include <cpu/x86/msr.h>
 #include <console/console.h>
-#include <northbridge/amd/amdfam10/amdfam10.h>
-
 #include "ht_wrapper.h"
 
 /*----------------------------------------------------------------------------
@@ -51,36 +49,11 @@
 #include "h3gtopo.h"
 #include "h3finit.h"
 
-/* include the main HT source file */
-#include "h3finit.c"
-
-
 /*----------------------------------------------------------------------------
  *			LOCAL FUNCTIONS
  *
  *----------------------------------------------------------------------------
  */
-
-/* FIXME: Find a better place for these pre-ram functions. */
-#define NODE_HT(x) NODE_PCI(x,0)
-#define NODE_MP(x) NODE_PCI(x,1)
-#define NODE_MC(x) NODE_PCI(x,3)
-#define NODE_LC(x) NODE_PCI(x,4)
-
-static  u32 get_nodes(void)
-{
-	pci_devfn_t dev;
-	u32 nodes;
-
-	dev = PCI_DEV(CONFIG_CBB, CONFIG_CDB, 0);
-	nodes = ((pci_read_config32(dev, 0x60)>>4) & 7);
-#if CONFIG_MAX_PHYSICAL_CPUS > 8
-	nodes += (((pci_read_config32(dev, 0x160)>>4) & 7)<<3);
-#endif
-	nodes++;
-
-	return nodes;
-}
 
 static const char * event_class_string_decodes[] = {
 	[HT_EVENT_CLASS_CRITICAL] = "CRITICAL",
@@ -255,7 +228,7 @@ static BOOL AMD_CB_IgnoreLink (u8 node, u8 link)
  *  AMD HT init coreboot wrapper
  *
  */
-static void amd_ht_init(struct sys_info *sysinfo)
+void amd_ht_init(struct sys_info *sysinfo)
 {
 
 	if (!sysinfo) {
@@ -389,4 +362,19 @@ void amd_ht_fixup(struct sys_info *sysinfo) {
 			}
 		}
 	}
+}
+
+u32 get_nodes(void)
+{
+	pci_devfn_t dev;
+	u32 nodes;
+
+	dev = PCI_DEV(CONFIG_CBB, CONFIG_CDB, 0);
+	nodes = ((pci_read_config32(dev, 0x60)>>4) & 7);
+#if CONFIG_MAX_PHYSICAL_CPUS > 8
+	nodes += (((pci_read_config32(dev, 0x160)>>4) & 7)<<3);
+#endif
+	nodes++;
+
+	return nodes;
 }

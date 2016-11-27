@@ -17,6 +17,8 @@
 #ifndef MWLC_D_H
 #define MWLC_D_H
 
+#include <northbridge/amd/amdht/porting.h>
+
 #define MAX_TOTAL_DIMMS 8	/* Maximum Number of DIMMs in systems */
 				/* (DCT0 + DCT1) */
 #define MAX_DIMMS 4		/* Maximum Number of DIMMs on each DCT */
@@ -162,5 +164,29 @@ typedef struct _sDCTStruct
 	uint64_t LogicalCPUID;
 	u8 WLPass;
 } __attribute__((packed, aligned(4))) sDCTStruct;
+
+void set_DCT_ADDR_Bits(sDCTStruct *pDCTData,
+		u8 dct, u8 node, u8 func,
+		u16 offset, u8 low, u8 high, u32 value);
+void AmdMemPCIWriteBits(SBDFO loc, u8 highbit, u8 lowbit, u32 *pValue);
+u32 get_Bits(sDCTStruct *pDCTData,
+		u8 dct, u8 node, u8 func,
+		u16 offset, u8 low, u8 high);
+void AmdMemPCIReadBits(SBDFO loc, u8 highbit, u8 lowbit, u32 *pValue);
+u32 bitTestSet(u32 csMask,u32 tempD);
+u32 bitTestReset(u32 csMask,u32 tempD);
+void set_Bits(sDCTStruct *pDCTData,
+		u8 dct, u8 node, u8 func,
+		u16 offset, u8 low, u8 high, u32 value);
+BOOL bitTest(u32 value, u8 bitLoc);
+u32 RttNomNonTargetRegDimm (sMCTStruct *pMCTData, sDCTStruct *pDCTData, u8 dimm, BOOL wl, u8 MemClkFreq, u8 rank);
+u32 RttNomTargetRegDimm (sMCTStruct *pMCTData, sDCTStruct *pDCTData, u8 dimm, BOOL wl, u8 MemClkFreq, u8 rank);
+u32 RttWrRegDimm (sMCTStruct *pMCTData, sDCTStruct *pDCTData, u8 dimm, BOOL wl, u8 MemClkFreq, u8 rank);
+u8 WrLvOdtRegDimm (sMCTStruct *pMCTData, sDCTStruct *pDCTData, u8 dimm);
+u32 get_ADD_DCT_Bits(sDCTStruct *pDCTData,
+		u8 dct, u8 node, u8 func,
+		u16 offset, u8 low, u8 high);
+void AmdMemPCIRead(SBDFO loc, u32 *Value);
+void AmdMemPCIWrite(SBDFO loc, u32 *Value);
 
 #endif

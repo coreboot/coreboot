@@ -14,18 +14,26 @@
  * GNU General Public License for more details.
  */
 
-static uint8_t AgesaHwWlPhase1(struct MCTStatStruc *pMCTstat,
-					struct DCTStatStruc *pDCTstat, u8 dct, u8 dimm, u8 pass);
-static uint8_t AgesaHwWlPhase2(struct MCTStatStruc *pMCTstat,
-					struct DCTStatStruc *pDCTstat, uint8_t dct, uint8_t dimm, uint8_t pass);
-static uint8_t AgesaHwWlPhase3(struct MCTStatStruc *pMCTstat,
-					struct DCTStatStruc *pDCTstat, u8 dct, u8 dimm, u8 pass);
-static void EnableZQcalibration(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat);
-static void DisableZQcalibration(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat);
-static void PrepareC_MCT(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat);
-static void PrepareC_DCT(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, u8 dct);
-static void Restore_OnDimmMirror(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat);
-static void Clear_OnDimmMirror(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat);
+#include <inttypes.h>
+#include <console/console.h>
+#include <string.h>
+#include "mct_d.h"
+#include "mct_d_gcc.h"
+
+static uint8_t is_fam15h(void)
+{
+	uint8_t fam15h = 0;
+	uint32_t family;
+
+	family = cpuid_eax(0x80000001);
+	family = ((family & 0xf00000) >> 16) | ((family & 0xf00) >> 8);
+
+	if (family >= 0x6f)
+		/* Family 15h or later */
+		fam15h = 1;
+
+	return fam15h;
+}
 
 static void SetEccWrDQS_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat)
 {

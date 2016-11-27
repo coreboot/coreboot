@@ -14,6 +14,8 @@
  * GNU General Public License for more details.
  */
 
+#include "mct_d.h"
+
 void EarlySampleSupport_D(void)
 {
 }
@@ -321,7 +323,7 @@ static u8 mct_AdjustDelay_D(struct DCTStatStruc *pDCTstat, u8 dly)
 }
 #endif
 
-static u8 mct_checkFenceHoleAdjust_D(struct MCTStatStruc *pMCTstat,
+u8 mct_checkFenceHoleAdjust_D(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat, u8 DQSDelay,
 				u8 ChipSel,  u8 *result)
 {
@@ -365,12 +367,6 @@ u8 mct_AdjustDQSPosDelay_D(struct DCTStatStruc *pDCTstat, u8 dly)
 
 }
 
-static void beforeInterleaveChannels_D(struct DCTStatStruc *pDCTstatA, u8 *enabled) {
-
-	if (pDCTstatA->LogicalCPUID & (AMD_DR_Ax))
-		*enabled = 0;
-}
-
 #ifdef UNUSED_CODE
 static u8 mctDoAxRdPtrInit_D(struct DCTStatStruc *pDCTstat, u8 *Rdtr)
 {
@@ -393,4 +389,9 @@ void mct_AdjustScrub_D(struct DCTStatStruc *pDCTstat, u16 *scrub_request) {
 		*scrub_request = 0;
 		pDCTstat->ErrStatus |= 1 << SB_DCBKScrubDis;
 	}
+}
+
+void beforeInterleaveChannels_D(struct DCTStatStruc *pDCTstatA, u8 *enabled) {
+	if (pDCTstatA->LogicalCPUID & (AMD_DR_Ax))
+		*enabled = 0;
 }

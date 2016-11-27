@@ -14,7 +14,28 @@
  * GNU General Public License for more details.
  */
 
-static uint8_t fam15_dimm_dic(struct DCTStatStruc *pDCTstat, uint8_t dct, uint8_t dimm, uint8_t rank, uint8_t package_type)
+#include <inttypes.h>
+#include <console/console.h>
+#include <string.h>
+#include "mct_d.h"
+#include "mct_d_gcc.h"
+
+static uint8_t is_fam15h(void)
+{
+	uint8_t fam15h = 0;
+	uint32_t family;
+
+	family = cpuid_eax(0x80000001);
+	family = ((family & 0xf00000) >> 16) | ((family & 0xf00) >> 8);
+
+	if (family >= 0x6f)
+		/* Family 15h or later */
+		fam15h = 1;
+
+	return fam15h;
+}
+
+uint8_t fam15_dimm_dic(struct DCTStatStruc *pDCTstat, uint8_t dct, uint8_t dimm, uint8_t rank, uint8_t package_type)
 {
 	uint8_t dic;
 
@@ -31,7 +52,7 @@ static uint8_t fam15_dimm_dic(struct DCTStatStruc *pDCTstat, uint8_t dct, uint8_
 	return dic;
 }
 
-static uint8_t fam15_rttwr(struct DCTStatStruc *pDCTstat, uint8_t dct, uint8_t dimm, uint8_t rank, uint8_t package_type)
+uint8_t fam15_rttwr(struct DCTStatStruc *pDCTstat, uint8_t dct, uint8_t dimm, uint8_t rank, uint8_t package_type)
 {
 	uint8_t term = 0;
 	uint8_t number_of_dimms = pDCTstat->MAdimms[dct];
@@ -265,7 +286,7 @@ static uint8_t fam15_rttwr(struct DCTStatStruc *pDCTstat, uint8_t dct, uint8_t d
 	return term;
 }
 
-static uint8_t fam15_rttnom(struct DCTStatStruc *pDCTstat, uint8_t dct, uint8_t dimm, uint8_t rank, uint8_t package_type)
+uint8_t fam15_rttnom(struct DCTStatStruc *pDCTstat, uint8_t dct, uint8_t dimm, uint8_t rank, uint8_t package_type)
 {
 	uint8_t term = 0;
 	uint8_t number_of_dimms = pDCTstat->MAdimms[dct];
@@ -662,9 +683,6 @@ static uint8_t fam15_rttnom(struct DCTStatStruc *pDCTstat, uint8_t dct, uint8_t 
 	return term;
 }
 
-static void mct_DramControlReg_Init_D(struct MCTStatStruc *pMCTstat,
-				struct DCTStatStruc *pDCTstat, u8 dct);
-
 static void mct_DCTAccessDone(struct DCTStatStruc *pDCTstat, u8 dct)
 {
 	u32 dev = pDCTstat->dev_dct;
@@ -736,8 +754,8 @@ static void mct_SendMrsCmd(struct DCTStatStruc *pDCTstat, u8 dct, u32 EMRS)
 	printk(BIOS_DEBUG, "%s: Done\n", __func__);
 }
 
-static u32 mct_MR2(struct MCTStatStruc *pMCTstat,
-				struct DCTStatStruc *pDCTstat, u8 dct, u32 MrsChipSel)
+u32 mct_MR2(struct MCTStatStruc *pMCTstat,
+			struct DCTStatStruc *pDCTstat, u8 dct, u32 MrsChipSel)
 {
 	u32 dev = pDCTstat->dev_dct;
 	u32 dword, ret;
@@ -834,8 +852,8 @@ static u32 mct_MR3(struct MCTStatStruc *pMCTstat,
 	return ret;
 }
 
-static u32 mct_MR1(struct MCTStatStruc *pMCTstat,
-				struct DCTStatStruc *pDCTstat, u8 dct, u32 MrsChipSel)
+u32 mct_MR1(struct MCTStatStruc *pMCTstat,
+			struct DCTStatStruc *pDCTstat, u8 dct, u32 MrsChipSel)
 {
 	u32 dev = pDCTstat->dev_dct;
 	u32 dword, ret;

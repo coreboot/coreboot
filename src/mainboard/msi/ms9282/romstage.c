@@ -39,9 +39,21 @@
 #include <spd.h>
 #include "northbridge/amd/amdk8/setup_resource_map.c"
 #include <device/pci_ids.h>
-#include "southbridge/nvidia/mcp55/early_ctrl.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627EHG_SP1)
+
+unsigned get_sbdn(unsigned bus);
+
+unsigned get_sbdn(unsigned bus)
+{
+	pci_devfn_t dev;
+
+	/* Find the device. */
+	dev = pci_locate_device_on_bus(PCI_ID(PCI_VENDOR_ID_NVIDIA,
+				       PCI_DEVICE_ID_NVIDIA_MCP55_HT), bus);
+
+	return (dev >> 15) & 0x1f;
+}
 
 static void memreset(int controllers, const struct mem_controller *ctrl) { }
 
@@ -59,6 +71,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 	return smbus_read_byte(device, address);
 }
 
+#include "southbridge/nvidia/mcp55/early_ctrl.c"
 #include <northbridge/amd/amdk8/f.h>
 #include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"

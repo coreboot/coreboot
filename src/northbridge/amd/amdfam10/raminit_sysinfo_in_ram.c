@@ -13,6 +13,8 @@
  * GNU General Public License for more details.
  */
 
+#include <northbridge/amd/amdfam10/raminit.h>
+#include <northbridge/amd/amdfam10/amdfam10.h>
 #include <delay.h>
 
 static void set_htic_bit(u8 i, u32 val, u8 bit)
@@ -45,12 +47,7 @@ static void wait_till_sysinfo_in_ram(void)
 }
 #endif
 
-static void set_sysinfo_in_ram(u32 val)
-{
-	set_htic_bit(0, val, 9);
-}
-
-static void fill_mem_ctrl(u32 controllers, struct mem_controller *ctrl_a, const u8 *spd_addr)
+void fill_mem_ctrl(u32 controllers, struct mem_controller *ctrl_a, const u8 *spd_addr)
 {
 	int i;
 	int j;
@@ -75,4 +72,9 @@ static void fill_mem_ctrl(u32 controllers, struct mem_controller *ctrl_a, const 
 
 		}
 	}
+}
+
+void set_sysinfo_in_ram(u32 val)
+{
+	set_htic_bit(0, val, 9);
 }

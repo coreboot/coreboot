@@ -19,6 +19,12 @@
  * ;(2 or 3) to the number of column address bits, plus 3 (the logical
  * ;page size), and subtract 8.
  */
+
+#include <inttypes.h>
+#include "mct_d.h"
+#include "mct_d_gcc.h"
+#include <console/console.h>
+
 static const u8 Tab_int_D[] = {6,7,7,8,8,8,8,8,9,9,8,9};
 
 void InterleaveBanks_D(struct MCTStatStruc *pMCTstat,

@@ -17,6 +17,13 @@
 #define FILECODE 0xCCCC
 #include "comlib.h"
 
+#include <device/pci.h>
+#include <console/console.h>
+#include <cpu/amd/msr.h>
+#include <device/pci_def.h>
+#include <device/pci_ids.h>
+
+
 /*
  *---------------------------------------------------------------------------
  * EXPORTED FUNCTIONS

@@ -1,5 +1,3 @@
-#include <arch/io.h>
-#include <device/pci_def.h>
 #include "northbridge/amd/amdfam10/early_ht.c"
 
 static void bootblock_northbridge_init(void) {

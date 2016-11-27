@@ -29,38 +29,37 @@
 #include <console/console.h>
 #include <timestamp.h>
 #include <cpu/amd/model_10xxx_rev.h>
-#include <northbridge/amd/amdfam10/raminit.h>
-#include <northbridge/amd/amdfam10/amdfam10.h>
 #include <lib.h>
 #include <cpu/x86/lapic.h>
-#include "northbridge/amd/amdfam10/reset_test.c"
 #include <commonlib/loglevel.h>
 #include <cpu/x86/bist.h>
 #include <cpu/amd/mtrr.h>
-#include "northbridge/amd/amdfam10/setup_resource_map.c"
+#include <cpu/amd/car.h>
+#include <southbridge/amd/sb800/smbus.h>
+#include <northbridge/amd/amdfam10/raminit.h>
+#include <northbridge/amd/amdht/ht_wrapper.h>
+#include <cpu/amd/family_10h-family_15h/init_cpus.h>
+#include <arch/early_variables.h>
+#include <cbmem.h>
 #include "southbridge/amd/rs780/early_setup.c"
 #include "southbridge/amd/sb800/early_setup.c"
-#include "northbridge/amd/amdfam10/debug.c"
 #include <spd.h>
 
-static void activate_spd_rom(const struct mem_controller *ctrl)
-{
-}
-
-static int spd_read_byte(u32 device, u32 address)
-{
-	return smbus_read_byte(device, address);
-}
-
-#include <northbridge/amd/amdfam10/amdfam10.h>
-#include "northbridge/amd/amdfam10/raminit_sysinfo_in_ram.c"
-#include "northbridge/amd/amdfam10/pci.c"
 #include "resourcemap.c"
 #include "cpu/amd/quadcore/quadcore.c"
-#include <cpu/amd/microcode.h>
 
-#include "cpu/amd/family_10h-family_15h/init_cpus.c"
-#include "northbridge/amd/amdfam10/early_ht.c"
+void activate_spd_rom(const struct mem_controller *ctrl);
+int spd_read_byte(unsigned device, unsigned address);
+extern struct sys_info sysinfo_car;
+
+void activate_spd_rom(const struct mem_controller *ctrl)
+{
+}
+
+int spd_read_byte(u32 device, u32 address)
+{
+	return do_smbus_read_byte(SMBUS_IO_BASE, device, address);
+}
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {

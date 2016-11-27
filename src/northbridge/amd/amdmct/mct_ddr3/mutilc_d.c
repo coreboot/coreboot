@@ -15,22 +15,29 @@
  */
 
 /* This file contains functions for common utility functions */
+#include <inttypes.h>
+#include <console/console.h>
+#include <string.h>
+#include "mct_d.h"
+#include "mct_d_gcc.h"
+#include "mwlc_d.h"
 
-/*
- *-----------------------------------------------------------------------------
- *		MODULES USED
- *
- *-----------------------------------------------------------------------------
- */
+static uint8_t is_fam15h(void)
+{
+	uint8_t fam15h = 0;
+	uint32_t family;
 
-/*
- *-----------------------------------------------------------------------------
- *		EXPORTED FUNCTIONS
- *
- *-----------------------------------------------------------------------------
- */
+	family = cpuid_eax(0x80000001);
+	family = ((family & 0xf00000) >> 16) | ((family & 0xf00) >> 8);
 
-static void AmdMemPCIReadBits(SBDFO loc, u8 highbit, u8 lowbit, u32 *pValue)
+	if (family >= 0x6f)
+		/* Family 15h or later */
+		fam15h = 1;
+
+	return fam15h;
+}
+
+void AmdMemPCIReadBits(SBDFO loc, u8 highbit, u8 lowbit, u32 *pValue)
 {
 	/* ASSERT(highbit < 32 && lowbit < 32 && highbit >= lowbit && (loc & 3) == 0); */
 
@@ -42,7 +49,7 @@ static void AmdMemPCIReadBits(SBDFO loc, u8 highbit, u8 lowbit, u32 *pValue)
 		*pValue &= (((u32)1 << (highbit-lowbit+1))-1);
 }
 
-static void AmdMemPCIWriteBits(SBDFO loc, u8 highbit, u8 lowbit, u32 *pValue)
+void AmdMemPCIWriteBits(SBDFO loc, u8 highbit, u8 lowbit, u32 *pValue)
 {
 	u32 temp, mask;
 
@@ -72,7 +79,7 @@ static void AmdMemPCIWriteBits(SBDFO loc, u8 highbit, u8 lowbit, u32 *pValue)
  *     OUT    value     =  Target value with the bit set
  *-----------------------------------------------------------------------------
  */
-static u32 bitTestSet(u32 csMask,u32 tempD)
+u32 bitTestSet(u32 csMask,u32 tempD)
 {
 	u32 localTemp;
 	/* ASSERT(tempD < 32); */
@@ -93,7 +100,7 @@ static u32 bitTestSet(u32 csMask,u32 tempD)
  *     OUT    value     =  Target value with the bit re-set
  *-----------------------------------------------------------------------------
  */
-static u32 bitTestReset(u32 csMask,u32 tempD)
+u32 bitTestReset(u32 csMask,u32 tempD)
 {
 	u32 temp, localTemp;
 	/* ASSERT(tempD < 32); */
@@ -126,7 +133,7 @@ static u32 bitTestReset(u32 csMask,u32 tempD)
  *     OUT    value     =  Value read from PCI space
  *-----------------------------------------------------------------------------
  */
-static u32 get_Bits(sDCTStruct *pDCTData,
+u32 get_Bits(sDCTStruct *pDCTData,
 		u8 dct, u8 node, u8 func,
 		u16 offset, u8 low, u8 high)
 {
@@ -200,7 +207,7 @@ static u32 get_Bits(sDCTStruct *pDCTData,
  *     OUT
  *-----------------------------------------------------------------------------
  */
-static void set_Bits(sDCTStruct *pDCTData,
+void set_Bits(sDCTStruct *pDCTData,
 		u8 dct, u8 node, u8 func,
 		u16 offset, u8 low, u8 high, u32 value)
 {
@@ -275,7 +282,7 @@ static void set_Bits(sDCTStruct *pDCTData,
  *     OUT
  *-------------------------------------------------
  */
-static u32 get_ADD_DCT_Bits(sDCTStruct *pDCTData,
+u32 get_ADD_DCT_Bits(sDCTStruct *pDCTData,
 		u8 dct, u8 node, u8 func,
 		u16 offset, u8 low, u8 high)
 {
@@ -313,7 +320,7 @@ static u32 get_ADD_DCT_Bits(sDCTStruct *pDCTData,
  *     OUT
  *-------------------------------------------------
  */
-static void set_DCT_ADDR_Bits(sDCTStruct *pDCTData,
+void set_DCT_ADDR_Bits(sDCTStruct *pDCTData,
 		u8 dct, u8 node, u8 func,
 		u16 offset, u8 low, u8 high, u32 value)
 {
@@ -348,7 +355,7 @@ static void set_DCT_ADDR_Bits(sDCTStruct *pDCTData,
  *          FALSE - bit is clear
  *-------------------------------------------------
  */
-static BOOL bitTest(u32 value, u8 bitLoc)
+BOOL bitTest(u32 value, u8 bitLoc)
 {
 	u32 tempD, compD;
 	tempD = value;

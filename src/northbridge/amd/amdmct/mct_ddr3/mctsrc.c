@@ -19,7 +19,13 @@
  Description: Receiver En and DQS Timing Training feature for DDR 3 MCT
 ******************************************************************************/
 
-static int32_t abs(int32_t val);
+#include <inttypes.h>
+#include <console/console.h>
+#include <string.h>
+#include "mct_d.h"
+#include "mct_d_gcc.h"
+#include <cpu/x86/msr.h>
+
 static void dqsTrainRcvrEn_SW_Fam10(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat, u8 Pass);
 static void dqsTrainRcvrEn_SW_Fam15(struct MCTStatStruc *pMCTstat,
@@ -31,25 +37,38 @@ static void InitDQSPos4RcvrEn_D(struct MCTStatStruc *pMCTstat,
 static void CalcEccDQSRcvrEn_D(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat, u8 Channel);
 static void mct_SetMaxLatency_D(struct DCTStatStruc *pDCTstat, u8 Channel, u16 DQSRcvEnDly);
-static uint32_t fenceDynTraining_D(struct MCTStatStruc *pMCTstat,
-			struct DCTStatStruc *pDCTstat, u8 dct);
 static void mct_DisableDQSRcvEn_D(struct DCTStatStruc *pDCTstat);
+
+static uint8_t is_fam15h(void)
+{
+	uint8_t fam15h = 0;
+	uint32_t family;
+
+	family = cpuid_eax(0x80000001);
+	family = ((family & 0xf00000) >> 16) | ((family & 0xf00) >> 8);
+
+	if (family >= 0x6f)
+		/* Family 15h or later */
+		fam15h = 1;
+
+	return fam15h;
+}
 
 /* Warning:  These must be located so they do not cross a logical 16-bit
    segment boundary! */
-static const u32 TestPattern0_D[] = {
+const u32 TestPattern0_D[] = {
 	0x55555555, 0x55555555, 0x55555555, 0x55555555,
 	0x55555555, 0x55555555, 0x55555555, 0x55555555,
 	0x55555555, 0x55555555, 0x55555555, 0x55555555,
 	0x55555555, 0x55555555, 0x55555555, 0x55555555,
 };
-static const u32 TestPattern1_D[] = {
+const u32 TestPattern1_D[] = {
 	0xaaaaaaaa, 0xaaaaaaaa, 0xaaaaaaaa, 0xaaaaaaaa,
 	0xaaaaaaaa, 0xaaaaaaaa, 0xaaaaaaaa, 0xaaaaaaaa,
 	0xaaaaaaaa, 0xaaaaaaaa, 0xaaaaaaaa, 0xaaaaaaaa,
 	0xaaaaaaaa, 0xaaaaaaaa, 0xaaaaaaaa, 0xaaaaaaaa,
 };
-static const u32 TestPattern2_D[] = {
+const u32 TestPattern2_D[] = {
 	0x12345678, 0x87654321, 0x23456789, 0x98765432,
 	0x59385824, 0x30496724, 0x24490795, 0x99938733,
 	0x40385642, 0x38465245, 0x29432163, 0x05067894,
@@ -236,7 +255,7 @@ static uint16_t fam15_receiver_enable_training_seed(struct DCTStatStruc *pDCTsta
 	return seed;
 }
 
-static void read_dqs_write_timing_control_registers(uint16_t* current_total_delay, uint32_t dev, uint8_t dct, uint8_t dimm, uint32_t index_reg)
+void read_dqs_write_timing_control_registers(uint16_t* current_total_delay, uint32_t dev, uint8_t dct, uint8_t dimm, uint32_t index_reg)
 {
 	uint8_t lane;
 	uint32_t dword;
@@ -334,7 +353,7 @@ static void write_write_data_timing_control_registers(uint16_t* current_total_de
 	}
 }
 
-static void read_dqs_receiver_enable_control_registers(uint16_t* current_total_delay, uint32_t dev, uint8_t dct, uint8_t dimm, uint32_t index_reg)
+void read_dqs_receiver_enable_control_registers(uint16_t* current_total_delay, uint32_t dev, uint8_t dct, uint8_t dimm, uint32_t index_reg)
 {
 	uint8_t lane;
 	uint32_t mask;
@@ -368,7 +387,7 @@ static void read_dqs_receiver_enable_control_registers(uint16_t* current_total_d
 	}
 }
 
-static void write_dqs_receiver_enable_control_registers(uint16_t* current_total_delay, uint32_t dev, uint8_t dct, uint8_t dimm, uint32_t index_reg)
+void write_dqs_receiver_enable_control_registers(uint16_t* current_total_delay, uint32_t dev, uint8_t dct, uint8_t dimm, uint32_t index_reg)
 {
 	uint8_t lane;
 	uint32_t mask;
@@ -475,7 +494,7 @@ static void write_dram_phase_recovery_control_registers(uint16_t* current_total_
 	}
 }
 
-static void read_dqs_read_data_timing_registers(uint16_t* delay, uint32_t dev, uint8_t dct, uint8_t dimm, uint32_t index_reg)
+void read_dqs_read_data_timing_registers(uint16_t* delay, uint32_t dev, uint8_t dct, uint8_t dimm, uint32_t index_reg)
 {
 	uint8_t shift;
 	uint32_t dword;
@@ -509,7 +528,7 @@ static void read_dqs_read_data_timing_registers(uint16_t* delay, uint32_t dev, u
 	delay[8] = (dword & mask) >> shift;
 }
 
-static void write_dqs_read_data_timing_registers(uint16_t* delay, uint32_t dev, uint8_t dct, uint8_t dimm, uint32_t index_reg)
+void write_dqs_read_data_timing_registers(uint16_t* delay, uint32_t dev, uint8_t dct, uint8_t dimm, uint32_t index_reg)
 {
 	uint8_t shift;
 	uint32_t dword;
@@ -1548,7 +1567,7 @@ static void write_max_read_latency_to_registers(struct MCTStatStruc *pMCTstat,
  * The Fam15h BKDG Rev. 3.14 section 2.10.5.8.5.1
  * This algorithm runs at the highest supported MEMCLK.
  */
-static void dqsTrainMaxRdLatency_SW_Fam15(struct MCTStatStruc *pMCTstat,
+void dqsTrainMaxRdLatency_SW_Fam15(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat)
 {
 	u8 Channel;
@@ -2270,7 +2289,7 @@ void phyAssistedMemFnceTraining(struct MCTStatStruc *pMCTstat,
 	printk(BIOS_DEBUG, "%s: Done\n", __func__);
 }
 
-static uint32_t fenceDynTraining_D(struct MCTStatStruc *pMCTstat,
+uint32_t fenceDynTraining_D(struct MCTStatStruc *pMCTstat,
 			struct DCTStatStruc *pDCTstat, uint8_t dct)
 {
 	u16 avRecValue;

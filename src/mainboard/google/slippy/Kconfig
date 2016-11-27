@@ -1,0 +1,88 @@
+config BOARD_GOOGLE_BASEBOARD_SLIPPY
+	def_bool n
+	select SYSTEM_TYPE_LAPTOP
+	select CPU_INTEL_HASWELL
+	select NORTHBRIDGE_INTEL_HASWELL
+	select SOUTHBRIDGE_INTEL_LYNXPOINT
+	select INTEL_LYNXPOINT_LP
+	select BOARD_ROMSIZE_KB_8192
+	select EC_GOOGLE_CHROMEEC
+	select HAVE_ACPI_TABLES
+	select HAVE_OPTION_TABLE
+	select HAVE_ACPI_RESUME
+	select HAVE_SMI_HANDLER
+	select MAINBOARD_HAS_CHROMEOS
+	select MAINBOARD_HAS_LPC_TPM
+	select MAINBOARD_HAS_NATIVE_VGA_INIT if (BOARD_GOOGLE_FALCO || BOARD_GOOGLE_PEPPY)
+	select INTEL_DP if (BOARD_GOOGLE_FALCO || BOARD_GOOGLE_PEPPY)
+	select INTEL_DDI if (BOARD_GOOGLE_FALCO || BOARD_GOOGLE_PEPPY)
+	select INTEL_INT15
+
+if BOARD_GOOGLE_BASEBOARD_SLIPPY
+
+config CHROMEOS
+	select EC_GOOGLE_CHROMEEC_SWITCHES
+	select EC_SOFTWARE_SYNC
+	select LID_SWITCH
+	select MAINBOARD_DO_NATIVE_VGA_INIT if (BOARD_GOOGLE_FALCO || BOARD_GOOGLE_PEPPY)
+	select VBOOT_VBNV_CMOS
+	select VIRTUAL_DEV_SWITCH
+
+config MAINBOARD_DIR
+	string
+	default google/slippy
+
+config VARIANT_DIR
+	string
+	default "falco" if BOARD_GOOGLE_FALCO
+	default "leon" if BOARD_GOOGLE_LEON
+	default "peppy" if BOARD_GOOGLE_PEPPY
+	default "wolf" if BOARD_GOOGLE_WOLF
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Falco" if BOARD_GOOGLE_FALCO
+	default "Leon" if BOARD_GOOGLE_LEON
+	default "Peppy" if BOARD_GOOGLE_PEPPY
+	default "Wolf" if BOARD_GOOGLE_WOLF
+
+config MAINBOARD_FAMILY
+	string
+	default "Google_Slippy"
+
+config GBB_HWID
+	string
+	depends on CHROMEOS
+	default "X86 FALCO TEST 0289" if BOARD_GOOGLE_FALCO
+	default "X86 LEON TEST 5181" if BOARD_GOOGLE_LEON
+	default "X86 PEPPY TEST 4211" if BOARD_GOOGLE_PEPPY
+	default "X86 WOLF TEST 6457" if BOARD_GOOGLE_WOLF
+
+config DEVICETREE
+	string
+	default "variants/falco/devicetree.cb" if BOARD_GOOGLE_FALCO
+	default "variants/leon/devicetree.cb" if BOARD_GOOGLE_LEON
+	default "variants/peppy/devicetree.cb" if BOARD_GOOGLE_PEPPY
+	default "variants/wolf/devicetree.cb" if BOARD_GOOGLE_WOLF
+
+config MMCONF_BASE_ADDRESS
+	hex
+	default 0xf0000000
+
+config MAX_CPUS
+	int
+	default 8
+
+config VGA_BIOS_FILE
+	string
+	default "pci8086,0406.rom"
+
+config HAVE_IFD_BIN
+	bool
+	default n
+
+config HAVE_ME_BIN
+	bool
+	default n
+
+endif # BOARD_GOOGLE_BASEBOARD_SLIPPY

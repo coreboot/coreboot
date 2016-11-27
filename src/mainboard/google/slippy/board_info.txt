@@ -1,0 +1,7 @@
+Vendor name: Google
+Board name: Slippy Haswell Chromebook Reference device
+Category: laptop
+ROM package: SOIC-8
+ROM protocol: SPI
+ROM socketed: n
+Flashrom support: y

@@ -1,0 +1,125 @@
+chip northbridge/intel/haswell
+	# IGD Displays
+	register "gfx.ndid" = "3"
+	register "gfx.did" = "{ 0x80000100, 0x80000240, 0x80000410, 0x80000410, 0x00000005 }"
+
+	# Enable eDP Hotplug with 6ms pulse
+	register "gpu_dp_d_hotplug" = "0x06"
+
+	# Disable DisplayPort C Hotplug
+	register "gpu_dp_c_hotplug" = "0x00"
+
+	# Enable HDMI Hotplug with 6ms pulse
+	register "gpu_dp_b_hotplug" = "0x06"
+
+	# Set backlight PWM values for eDP
+	register "gpu_cpu_backlight" = "0x00000200"
+	register "gpu_pch_backlight" = "0x04000000"
+
+	# Enable Panel and configure power delays
+	register "gpu_panel_port_select" = "1"			# eDP
+	register "gpu_panel_power_cycle_delay" = "5"		# 400ms (T4)
+	register "gpu_panel_power_up_delay" = "600"		# 60ms  (T1+T2)
+	register "gpu_panel_power_down_delay" = "600"		# 60ms  (T3+T7)
+	register "gpu_panel_power_backlight_on_delay" = "2100"	# 210ms (T5)
+	register "gpu_panel_power_backlight_off_delay" = "2100"	# 210ms (T6)
+
+	device cpu_cluster 0 on
+		chip cpu/intel/haswell
+			device lapic 0 on end
+			# Magic APIC ID to locate this chip
+			device lapic 0xACAC off end
+
+			register "c1_battery" = "2"	# ACPI(C1) = MWAIT(C1E)
+			register "c2_battery" = "3"	# ACPI(C2) = MWAIT(C3)
+			register "c3_battery" = "9"	# ACPI(C3) = MWAIT(C7S)
+
+			register "c1_acpower" = "2"	# ACPI(C1) = MWAIT(C1E)
+			register "c2_acpower" = "3"	# ACPI(C2) = MWAIT(C3)
+			register "c3_acpower" = "9"	# ACPI(C3) = MWAIT(C7S)
+		end
+	end
+
+	device domain 0 on
+		device pci 00.0 on end # host bridge
+		device pci 02.0 on end # vga controller
+		device pci 03.0 on end # mini-hd audio
+
+		chip southbridge/intel/lynxpoint
+			register "pirqa_routing" = "0x8b"
+			register "pirqb_routing" = "0x8a"
+			register "pirqc_routing" = "0x8b"
+			register "pirqd_routing" = "0x8b"
+			register "pirqe_routing" = "0x80"
+			register "pirqf_routing" = "0x80"
+			register "pirqg_routing" = "0x80"
+			register "pirqh_routing" = "0x80"
+
+			# EC range is 0x800-0x9ff
+			register "gen1_dec" = "0x00fc0801"
+			register "gen2_dec" = "0x00fc0901"
+
+			# EC_SMI is GPIO34
+			register "alt_gp_smi_en" = "0x0004"
+			register "gpe0_en_1" = "0x00000000"
+			# EC_SCI is GPIO36
+			register "gpe0_en_2" = "0x00000010"
+			register "gpe0_en_3" = "0x00000000"
+			register "gpe0_en_4" = "0x00000000"
+
+			register "ide_legacy_combined" = "0x0"
+			register "sata_ahci" = "0x1"
+			register "sata_port_map" = "0x1"
+
+			register "sio_acpi_mode" = "1"
+			register "sio_i2c0_voltage" = "0" # 3.3V
+			register "sio_i2c1_voltage" = "0" # 3.3V
+
+			# Force enable ASPM for PCIe Port 1
+			register "pcie_port_force_aspm" = "0x01"
+
+			# Route all USB ports to XHCI per default
+			register "xhci_default" = "1"
+
+			# Disable PCIe CLKOUT 1-5 and CLKOUT_XDP
+			register "icc_clock_disable" = "0x013e0000"
+
+			device pci 13.0 off end # Smart Sound Audio DSP
+			device pci 14.0 on end # USB3 XHCI
+			device pci 15.0 on end # Serial I/O DMA
+			device pci 15.1 on end # I2C0
+			device pci 15.2 on end # I2C1
+			device pci 15.3 off end # GSPI0
+			device pci 15.4 off end # GSPI1
+			device pci 15.5 off end # UART0
+			device pci 15.6 off end # UART1
+			device pci 16.0 on end # Management Engine Interface 1
+			device pci 16.1 off end # Management Engine Interface 2
+			device pci 16.2 off end # Management Engine IDE-R
+			device pci 16.3 off end # Management Engine KT
+			device pci 17.0 off end # SDIO
+			device pci 19.0 off end # GbE
+			device pci 1b.0 on end # High Definition Audio
+			device pci 1c.0 on end # PCIe Port #1
+			device pci 1c.1 off end # PCIe Port #2
+			device pci 1c.2 off end # PCIe Port #3
+			device pci 1c.3 off end # PCIe Port #4
+			device pci 1c.4 off end # PCIe Port #5
+			device pci 1c.5 off end # PCIe Port #6
+			device pci 1d.0 on end # USB2 EHCI
+			device pci 1e.0 off end # PCI bridge
+			device pci 1f.0 on
+				chip ec/google/chromeec
+					# We only have one init function that
+					# we need to call to initialize the
+					# keyboard part of the EC.
+					device pnp ff.1 on # dummy address
+					end
+				end
+			end # LPC bridge
+			device pci 1f.2 on end # SATA Controller
+			device pci 1f.3 on end # SMBus
+			device pci 1f.6 on end # Thermal
+		end
+	end
+end

@@ -18,8 +18,7 @@
 #define MAINBOARD_SPD_H
 
 #include <gpio.h>
-#include "../gpio.h"
-
+#include <variant/gpio.h>
 
 #define RCOMP_TARGET_PARAMS	0x5
 

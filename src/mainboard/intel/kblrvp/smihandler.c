@@ -25,7 +25,7 @@
 #include <soc/pm.h>
 #include <soc/smm.h>
 #include "ec.h"
-#include "gpio.h"
+#include <variant/gpio.h>
 
 int mainboard_io_trap_handler(int smif)
 {

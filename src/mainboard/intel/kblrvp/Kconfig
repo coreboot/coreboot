@@ -48,6 +48,10 @@ config MAINBOARD_DIR
 	string
 	default "intel/kblrvp"
 
+config VARIANT_DIR
+	string
+	default "rvp3"
+
 config MAINBOARD_PART_NUMBER
 	string
 	default "Kblrvp"
@@ -68,4 +72,8 @@ config GBB_HWID
 	string
 	depends on CHROMEOS
 	default "KBLRVP TEST 8819"
+
+config DEVICETREE
+	string
+	default "variants/$(CONFIG_VARIANT_DIR)/devicetree.cb"
 endif

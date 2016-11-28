@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  */
 
-#include "../gpio.h"
+#include <variant/gpio.h>
 
 #if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC)
 Scope (\_SB)

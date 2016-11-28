@@ -15,7 +15,7 @@
 
 #include <bootblock_common.h>
 #include <soc/gpio.h>
-#include "gpio.h"
+#include <variant/gpio.h>
 
 static void early_config_gpio(void)
 {

@@ -24,7 +24,7 @@
 #include <soc/nhlt.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include "ec.h"
-#include "gpio.h"
+#include <variant/gpio.h>
 
 static void mainboard_init(device_t dev)
 {

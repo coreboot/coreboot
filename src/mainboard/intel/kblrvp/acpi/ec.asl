@@ -15,7 +15,7 @@
 
 /* mainboard configuration */
 #include "../ec.h"
-#include "../gpio.h"
+#include <variant/gpio.h>
 
 /* Enable EC backed ALS device in ACPI */
 #define EC_ENABLE_ALS_DEVICE

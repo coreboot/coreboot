@@ -41,23 +41,6 @@
 #define EC_DEV PNP_DEV(0x2e, IT8718F_EC)
 #define SUPERIO_DEV PNP_DEV(0x2e, 0)
 
-void setup_ich7_gpios(void)
-{
-	/* TODO: This is highly board specific and should be moved */
-	printk(BIOS_DEBUG, " GPIOS...");
-	/* General Registers */
-	outl(0x1f15f7c1, DEFAULT_GPIOBASE + 0x00);	/* GPIO_USE_SEL */
-	outl(0xe0e8ffc3, DEFAULT_GPIOBASE + 0x04);	/* GP_IO_SEL */
-	outl(0xe2fefc03, DEFAULT_GPIOBASE + 0x0c);	/* GP_LVL */
-	/* Output Control Registers */
-	outl(0x00400000, DEFAULT_GPIOBASE + 0x18);	/* GPO_BLINK */
-	/* Input Control Registers */
-	outl(0x000039ff, DEFAULT_GPIOBASE + 0x2c);	/* GPI_INV */
-	outl(0x000000c7, DEFAULT_GPIOBASE + 0x30);	/* GPIO_USE_SEL2 */
-	outl(0x000000f0, DEFAULT_GPIOBASE + 0x34);	/* GP_IO_SEL2 */
-	outl(0x000000f2, DEFAULT_GPIOBASE + 0x38);	/* GP_LVL2 */
-}
-
 static void setup_sio(void)
 {
 	/* Set default GPIOs on superio */

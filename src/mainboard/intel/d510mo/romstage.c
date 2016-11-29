@@ -21,6 +21,7 @@
 #include <device/pnp_def.h>
 #include <console/console.h>
 #include <southbridge/intel/i82801gx/i82801gx.h>
+#include <southbridge/intel/common/gpio.h>
 #include <northbridge/intel/pineview/raminit.h>
 #include <northbridge/intel/pineview/pineview.h>
 #include <cpu/x86/bist.h>
@@ -47,14 +48,7 @@ static void mb_gpio_init(void)
 	pci_write_config32(dev, GPIO_BASE, (DEFAULT_GPIOBASE | 1));
 	pci_write_config8(dev, GPIO_CNTL, 0x10);
 
-	outl(0x1ff9f7c1, DEFAULT_GPIOBASE + 0x00); /* GPIO_USE_SEL */
-	outl(0xe0e9e803, DEFAULT_GPIOBASE + 0x04); /* GP_IO_SEL */
-	outl(0xece9e842, DEFAULT_GPIOBASE + 0x0c); /* GP_LVL */
-	outl(0x00000000, DEFAULT_GPIOBASE + 0x18); /* GPO_BLINK */
-	outl(0x00002000, DEFAULT_GPIOBASE + 0x2c); /* GPI_INV */
-	outl(0x000000fe, DEFAULT_GPIOBASE + 0x30);
-	outl(0x0000007e, DEFAULT_GPIOBASE + 0x34);
-	outl(0x000300f3, DEFAULT_GPIOBASE + 0x38);
+	setup_pch_gpios(&mainboard_gpio_map);
 }
 
 static void nm10_enable_lpc(void)

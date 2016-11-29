@@ -37,23 +37,6 @@
 #define SERIAL_DEV PNP_DEV(0x2e, LPC47M15X_SP1)
 #define PME_DEV PNP_DEV(0x2e, LPC47M15X_PME)
 
-void setup_ich7_gpios(void)
-{
-	/* TODO: This is highly board specific and should be moved */
-	printk(BIOS_DEBUG, " GPIOS...");
-	/* General Registers */
-	outl(0x3f3df7c1, DEFAULT_GPIOBASE + 0x00);	/* GPIO_USE_SEL */
-	outl(0xc6fcbfc3, DEFAULT_GPIOBASE + 0x04);	/* GP_IO_SEL */
-	outl(0xecfefdff, DEFAULT_GPIOBASE + 0x0c);	/* GP_LVL */
-	/* Output Control Registers */
-	outl(0x00040000, DEFAULT_GPIOBASE + 0x18);	/* GPO_BLINK */
-	/* Input Control Registers */
-	outl(0x0000a000, DEFAULT_GPIOBASE + 0x2c);	/* GPI_INV */
-	outl(0x000000ff, DEFAULT_GPIOBASE + 0x30);	/* GPIO_USE_SEL2 */
-	outl(0x000000bf, DEFAULT_GPIOBASE + 0x34);	/* GP_IO_SEL2 */
-	outl(0x000300fd, DEFAULT_GPIOBASE + 0x38);	/* GP_LVL */
-}
-
 static void ich7_enable_lpc(void)
 {
 	// Enable Serial IRQ

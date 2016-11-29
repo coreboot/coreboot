@@ -25,6 +25,7 @@
 #include <string.h>
 #include "i945.h"
 #include <pc80/mc146818rtc.h>
+#include <southbridge/intel/common/gpio.h>
 
 int i945_silicon_revision(void)
 {
@@ -163,7 +164,7 @@ static void i945_setup_bars(void)
 
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), GPIOBASE, DEFAULT_GPIOBASE | 1);
 	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0x4c /* GC */ , 0x10);	/* Enable GPIOs */
-	setup_ich7_gpios();
+	setup_pch_gpios(&mainboard_gpio_map);
 	printk(BIOS_DEBUG, " done.\n");
 
 	printk(BIOS_DEBUG, "Disabling Watchdog reboot...");

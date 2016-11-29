@@ -35,47 +35,8 @@
 #include <northbridge/intel/i945/i945.h>
 #include <northbridge/intel/i945/raminit.h>
 #include <southbridge/intel/i82801gx/i82801gx.h>
+#include <southbridge/intel/common/gpio.h>
 #include "dock.h"
-
-void setup_ich7_gpios(void)
-{
-	printk(BIOS_DEBUG, " GPIOS...");
-
-	/* X60 GPIO:
-	 * 1: HDD_PRESENCE#
-	 * 6: Unknown (Pulled high by R215 to VCC3B)
-	 * 7: BDC_PRESENCE#
-	 * 8: H8_WAKE#
-	 * 9: RTC_BAT_IN#
-	 * 10: Unknown (Pulled high by R700 to VCC3M)
-	 * 12: H8SCI#
-	 * 13: SLICE_ON_3M#
-	 * 14: Unknown (Pulled high by R321 to VCC3)
-	 * 15: Unknown (Pulled high by R258 to VCC3)
-	 * 19: Unknown (Pulled low  by R594)
-	 * 21: Unknown (Pulled high by R145 to VCC3)
-	 * 22: FWH_WP#
-	 * 25: MDC_KILL#
-	 * 33: HDD_PRESENCE_2#
-	 * 35: CLKREQ_SATA#
-	 * 36: PLANARID0
-	 * 37: PLANARID1
-	 * 38: PLANARID2
-	 * 39: PLANARID3
-	 * 48: FWH_TBL#
-	 */
-
-	outl(0x1f40f7c2, DEFAULT_GPIOBASE + 0x00);	/* GPIO_USE_SEL */
-	outl(0xe0e8ffc3, DEFAULT_GPIOBASE + 0x04);	/* GP_IO_SEL */
-	outl(0xfbf6ddfd, DEFAULT_GPIOBASE + 0x0c);	/* GP_LVL */
-	/* Output Control Registers */
-	outl(0x00040000, DEFAULT_GPIOBASE + 0x18);	/* GPO_BLINK */
-	/* Input Control Registers */
-	outl(0x000039ff, DEFAULT_GPIOBASE + 0x2c);	/* GPI_INV */
-	outl(0x000100f2, DEFAULT_GPIOBASE + 0x30);	/* GPIO_USE_SEL2 */
-	outl(0x000000f0, DEFAULT_GPIOBASE + 0x34);	/* GP_IO_SEL2 */
-	outl(0x00030043, DEFAULT_GPIOBASE + 0x38);	/* GP_LVL */
-}
 
 static void ich7_enable_lpc(void)
 {
@@ -222,7 +183,7 @@ void mainboard_romstage_entry(unsigned long bist)
 	/* Enable GPIOs */
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), GPIOBASE, DEFAULT_GPIOBASE | 1);
 	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0x4c, 0x10);  /* 0x4c == GC */
-	setup_ich7_gpios();
+	setup_pch_gpios(&mainboard_gpio_map);
 
 	ich7_enable_lpc();
 

@@ -35,58 +35,6 @@
 #include <northbridge/intel/i945/raminit.h>
 #include <southbridge/intel/i82801gx/i82801gx.h>
 
-void setup_ich7_gpios(void)
-{
-	printk(BIOS_DEBUG, " GPIOS...");
-
-	/* X60 GPIO:
-	 * 1: HDD_PRESENCE#
-	 * 6: Unknown (Pulled high by R215 to VCC3B)
-	 * 7: BDC_PRESENCE#
-	 * 8: H8_WAKE#
-	 * 9: RTC_BAT_IN#
-	 * 10: Unknown (Pulled high by R700 to VCC3M)
-	 * 12: H8SCI#
-	 * 13: SLICE_ON_3M#
-	 * 14: Unknown (Pulled high by R321 to VCC3)
-	 * 15: Unknown (Pulled high by R258 to VCC3)
-	 * 19: Unknown (Pulled low  by R594)
-	 * 21: Unknown (Pulled high by R145 to VCC3)
-	 * 22: FWH_WP#
-	 * 25: MDC_KILL#
-	 * 33: HDD_PRESENCE_2#
-	 * 35: CLKREQ_SATA#
-	 * 36: PLANARID0
-	 * 37: PLANARID1
-	 * 38: PLANARID2
-	 * 39: PLANARID3
-	 * 48: FWH_TBL#
-	 */
-#if (CONFIG_BOARD_APPLE_MACBOOK11 || CONFIG_BOARD_APPLE_MACBOOK21)
-	outl(0x1f40f7e2, DEFAULT_GPIOBASE + 0x00);	/* GPIO_USE_SEL */
-	outl(0xfea8af83, DEFAULT_GPIOBASE + 0x04);	/* GP_IO_SEL */
-	outl(0xfcc06bdf, DEFAULT_GPIOBASE + 0x0c);	/* GP_LVL */
-	/* Output Control Registers */
-	outl(0x00000000, DEFAULT_GPIOBASE + 0x18);	/* GPO_BLINK */
-	/* Input Control Registers */
-	outl(0x00002082, DEFAULT_GPIOBASE + 0x2c);	/* GPI_INV */
-	outl(0x000100c0, DEFAULT_GPIOBASE + 0x30);	/* GPIO_USE_SEL2 */
-	outl(0x00000030, DEFAULT_GPIOBASE + 0x34);	/* GP_IO_SEL2 */
-	outl(0x000100c0, DEFAULT_GPIOBASE + 0x38);	/* GP_LVL2 */
-#else /* CONFIG_BOARD_APPLE_IMAC52 */
-	outl(0x1f40f7c2, DEFAULT_GPIOBASE + 0x00);	/* GPIO_USE_SEL */
-	outl(0xfea8af83, DEFAULT_GPIOBASE + 0x04);	/* GP_IO_SEL */
-	outl(0xfcc06bff, DEFAULT_GPIOBASE + 0x0c);	/* GP_LVL */
-	/* Output Control Registers */
-	outl(0x00000000, DEFAULT_GPIOBASE + 0x18);	/* GPO_BLINK */
-	/* Input Control Registers */
-	outl(0x00000082, DEFAULT_GPIOBASE + 0x2c);	/* GPI_INV */
-	outl(0x000100c8, DEFAULT_GPIOBASE + 0x30);	/* GPIO_USE_SEL2 */
-	outl(0x00000030, DEFAULT_GPIOBASE + 0x34);	/* GP_IO_SEL2 */
-	outl(0x000100c0, DEFAULT_GPIOBASE + 0x38);	/* GP_LVL2 */
-#endif
-}
-
 static void ich7_enable_lpc(void)
 {
 	/* Enable Serial IRQ */

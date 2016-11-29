@@ -21,6 +21,7 @@
 #include <device/pnp_def.h>
 #include <console/console.h>
 #include <southbridge/intel/i82801gx/i82801gx.h>
+#include <southbridge/intel/common/gpio.h>
 #include <northbridge/intel/x4x/x4x.h>
 #include <cpu/x86/bist.h>
 #include <cpu/intel/romstage.h>
@@ -50,14 +51,7 @@ static void mb_gpio_init(void)
 	pci_write_config32(dev, GPIO_BASE, (DEFAULT_GPIOBASE | 1));
 	pci_write_config8(dev, GPIO_CNTL, 0x10);
 
-	outl(0x1f35f7c0, DEFAULT_GPIOBASE + 0x00); /* GPIO_USE_SEL */
-	outl(0xe2e9ffc3, DEFAULT_GPIOBASE + 0x04); /* GP_IO_SEL */
-	outl(0xe0d7ec02, DEFAULT_GPIOBASE + 0x0c); /* GP_LVL */
-	outl(0x00000000, DEFAULT_GPIOBASE + 0x18); /* GPO_BLINK */
-	outl(0x000039ff, DEFAULT_GPIOBASE + 0x2c); /* GPI_INV */
-	outl(0x000000e7, DEFAULT_GPIOBASE + 0x30);
-	outl(0x000000f0, DEFAULT_GPIOBASE + 0x34);
-	outl(0x00000083, DEFAULT_GPIOBASE + 0x38);
+	setup_pch_gpios(&mainboard_gpio_map);
 
 	/* Set default GPIOs on superio */
 	ite_reg_write(GPIO_DEV, 0x25, 0x00);

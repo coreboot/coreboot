@@ -34,33 +34,9 @@
 #include <timestamp.h>
 #include "option_table.h"
 
-void setup_ich7_gpios(void)
+static void setup_special_ich7_gpios(void)
 {
 	u32 gpios;
-
-	printk(BIOS_DEBUG, " GPIOS...");
-	/* General Registers */
-	outl(0x1f28f7c2, DEFAULT_GPIOBASE + 0x00);	/* GPIO_USE_SEL */
-	outl(0xe0e809c3, DEFAULT_GPIOBASE + 0x04);	/* GP_IO_SEL */
-	// Power On value is eede1fbf, we set: (TODO explain why)
-	//   -- [21] = 1
-	//   -- [20] = 0
-	//   -- [18] = 0
-	//   -- [17] = 0
-	//   -- [13] = 1
-	//   -- [05] = 0
-	//   -- [04] = 0
-	//   -- [03] = 0
-	//   -- [02] = 0
-	//   We should probably do this explicitly bitwise, see below.
-	outl(0xeee83f83, DEFAULT_GPIOBASE + 0x0c);	/* GP_LVL */
-	/* Output Control Registers */
-	outl(0x00000000, DEFAULT_GPIOBASE + 0x18);	/* GPO_BLINK */
-	/* Input Control Registers */
-	outl(0x00000180, DEFAULT_GPIOBASE + 0x2c);	/* GPI_INV */
-	outl(0x000000e6, DEFAULT_GPIOBASE + 0x30);	/* GPIO_USE_SEL2 */
-	outl(0x000000d0, DEFAULT_GPIOBASE + 0x34);	/* GP_IO_SEL2 */
-	outl(0x00000034, DEFAULT_GPIOBASE + 0x38);	/* GP_LVL2 */
 
 	printk(BIOS_SPEW, "\n  Initializing drive bay...\n");
 	gpios = inl(DEFAULT_GPIOBASE + 0x38); // GPIO Level 2
@@ -296,6 +272,8 @@ void mainboard_romstage_entry(unsigned long bist)
 	 * before RAM initialization can work
 	 */
 	i945_early_initialization();
+
+	setup_special_ich7_gpios();
 
 	s3resume = southbridge_detect_s3_resume();
 

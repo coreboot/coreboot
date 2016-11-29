@@ -38,22 +38,6 @@
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627THG_SP1)
 
-void setup_ich7_gpios(void)
-{
-	printk(BIOS_DEBUG, " GPIOS...");
-	/* General Registers */
-	outl(0x1f1ff7c0, DEFAULT_GPIOBASE + 0x00);	/* GPIO_USE_SEL */
-	outl(0xe0e8efc3, DEFAULT_GPIOBASE + 0x04);	/* GP_IO_SEL */
-	outl(0xebffeeff, DEFAULT_GPIOBASE + 0x0c);	/* GP_LVL */
-	/* Output Control Registers */
-	outl(0x00000000, DEFAULT_GPIOBASE + 0x18);	/* GPO_BLINK */
-	/* Input Control Registers */
-	outl(0x00002180, DEFAULT_GPIOBASE + 0x2c);	/* GPI_INV */
-	outl(0x000100ff, DEFAULT_GPIOBASE + 0x30);	/* GPIO_USE_SEL2 */
-	outl(0x00000030, DEFAULT_GPIOBASE + 0x34);	/* GP_IO_SEL2 */
-	outl(0x00010035, DEFAULT_GPIOBASE + 0x38);	/* GP_LVL */
-}
-
 static void ich7_enable_lpc(void)
 {
 	int lpt_en = 0;

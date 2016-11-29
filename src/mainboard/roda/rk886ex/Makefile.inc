@@ -15,3 +15,4 @@
 
 ramstage-y += m3885.c
 ramstage-y += cstates.c
+romstage-y += gpio.c

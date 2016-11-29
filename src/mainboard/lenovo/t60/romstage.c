@@ -35,40 +35,8 @@
 #include <northbridge/intel/i945/i945.h>
 #include <northbridge/intel/i945/raminit.h>
 #include <southbridge/intel/i82801gx/i82801gx.h>
+#include <southbridge/intel/common/gpio.h>
 #include "dock.h"
-
-void setup_ich7_gpios(void)
-{
-	printk(BIOS_DEBUG, " GPIOS...");
-
-	/* T60 GPIO:
-	    6: LEGACYIO#
-	    7: BDC_PRESENCE#
-	    8: H8_WAKE#
-	   10: MDI_DETECT
-	   12: H8SCI#
-	   14: CPUSB#
-	   15: CPPE#
-	   25: MDC_KILL#
-	   27: EXC_PWR_CTRL
-	   28: EXC_AUX_CTRL
-	   35: CLKREQ_SATA#
-	   36: PLANARID0
-	   37: PLANARID1
-	   38: PLANARID2
-	   39: PLANARID3
-	*/
-	outl(0x1f48f7c2, DEFAULT_GPIOBASE + 0x00);	/* GPIO_USE_SEL */
-	outl(0xe0e0ffc3, DEFAULT_GPIOBASE + 0x04);	/* GP_IO_SEL */
-	outl(0xfbfefb7d, DEFAULT_GPIOBASE + 0x0c);	/* GP_LVL */
-	/* Output Control Registers */
-	outl(0x00040000, DEFAULT_GPIOBASE + 0x18);	/* GPO_BLINK */
-	/* Input Control Registers */
-	outl(0x000039ff, DEFAULT_GPIOBASE + 0x2c);	/* GPI_INV */
-	outl(0x000100f0, DEFAULT_GPIOBASE + 0x30);	/* GPIO_USE_SEL2 */
-	outl(0x000000f1, DEFAULT_GPIOBASE + 0x34);	/* GP_IO_SEL2 */
-	outl(0x000300a3, DEFAULT_GPIOBASE + 0x38);	/* GP_LVL2 */
-}
 
 static void ich7_enable_lpc(void)
 {
@@ -224,7 +192,7 @@ void mainboard_romstage_entry(unsigned long bist)
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), GPIOBASE, DEFAULT_GPIOBASE | 1);
 	/* Enable GPIOs */
 	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0x4c /* GC */ , 0x10);
-	setup_ich7_gpios();
+	setup_pch_gpios(&mainboard_gpio_map);
 
 	dock_err = dlpc_init();
 

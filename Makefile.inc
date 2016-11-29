@@ -353,7 +353,7 @@ CPPFLAGS_common += -I$(VBOOT_SOURCE)/firmware/include
 CPPFLAGS_common += -include $(src)/include/kconfig.h
 CPPFLAGS_common += -I3rdparty
 
-CFLAGS_common += -pipe -g -nostdinc
+CFLAGS_common += -pipe -g -nostdinc -std=gnu11
 CFLAGS_common += -nostdlib -Wall -Wundef -Wstrict-prototypes -Wmissing-prototypes
 CFLAGS_common += -Wwrite-strings -Wredundant-decls -Wno-trigraphs
 CFLAGS_common += -Wstrict-aliasing -Wshadow -Wdate-time

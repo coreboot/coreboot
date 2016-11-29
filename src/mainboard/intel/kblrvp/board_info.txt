@@ -1,5 +1,5 @@
 Vendor name: Intel
-Board name: Kblrvp Kabylake RVP3 LPDDR3
+Board name: Kabylake RVP Reference Board
 Category: eval
 ROM protocol: SPI
 ROM socketed: n

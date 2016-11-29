@@ -1,0 +1,267 @@
+chip soc/intel/skylake
+
+	# SATA port 0
+	register "EnableSata" = "1"
+	register "SataPortsEnable[0]" = "1"
+	register "SataPortsEnable[1]" = "1"
+	register "SataPortsEnable[2]" = "1"
+
+	# Enable deep Sx states
+	register "deep_s5_enable" = "1"
+	register "deep_sx_config" = "DSX_EN_LAN_WAKE_PIN"
+
+	# GPE configuration
+	# Note that GPE events called out in ASL code rely on this
+	# route. i.e. If this route changes then the affected GPE
+	# offset bits also need to be changed.
+	register "gpe0_dw0" = "GPP_B"
+	register "gpe0_dw1" = "GPP_D"
+	register "gpe0_dw2" = "GPP_E"
+
+	# EC host command ranges are in 0x800-0x8ff & 0x200-0x20f
+	register "gen1_dec" = "0x00fc0801"
+	register "gen2_dec" = "0x000c0201"
+
+	# Enable "Intel Speed Shift Technology"
+	register "speed_shift_enable" = "1"
+
+	# Enable DPTF
+	register "dptf_enable" = "1"
+
+	# FSP Configuration
+	register "SmbusEnable" = "1"
+	register "ScsEmmcEnabled" = "1"
+	register "ScsEmmcHs400Enabled" = "1"
+	register "ScsSdCardEnabled" = "2"
+	register "InternalGfx" = "1"
+	register "SkipExtGfxScan" = "1"
+	register "Device4Enable" = "1"
+	register "HeciEnabled" = "0"
+	register "SaGv" = "3"
+	register "PmTimerDisabled" = "1"
+
+	register "pirqa_routing" = "PCH_IRQ11"
+	register "pirqb_routing" = "PCH_IRQ10"
+	register "pirqc_routing" = "PCH_IRQ11"
+	register "pirqd_routing" = "PCH_IRQ11"
+	register "pirqe_routing" = "PCH_IRQ11"
+	register "pirqf_routing" = "PCH_IRQ11"
+	register "pirqg_routing" = "PCH_IRQ11"
+	register "pirqh_routing" = "PCH_IRQ11"
+
+	# Enabling SLP_S3#, SLP_S4#, SLP_SUS and SLP_A Stretch
+	# SLP_S3 Minimum Assertion Width. Values 0: 60us, 1: 1ms, 2: 50ms, 3: 2s
+	register "PmConfigSlpS3MinAssert" = "0x02"
+
+	# SLP_S4 Minimum Assertion Width. Values 0: default, 1: 1s, 2: 2s, 3: 3s, 4: 4s
+	register "PmConfigSlpS4MinAssert" = "0x04"
+
+	# SLP_SUS Minimum Assertion Width. Values 0: 0ms, 1: 500ms, 2: 1s, 3: 4s
+	register "PmConfigSlpSusMinAssert" = "0x03"
+
+	# SLP_A Minimum Assertion Width. Values 0: 0ms, 1: 4s, 2: 98ms, 3: 2s
+	register "PmConfigSlpAMinAssert" = "0x03"
+
+	# Determines if enable Serial IRQ. Values 0: Disabled, 1: Enabled
+	register "SerialIrqConfigSirqEnable" = "0x01"
+
+	# VR Settings Configuration for 5 Domains
+	#+----------------+-------+-------+-------------+-------------+-------+
+	#| Domain/Setting |  SA   |  IA   | Ring Sliced | GT Unsliced |  GT   |
+	#+----------------+-------+-------+-------------+-------------+-------+
+	#| Psi1Threshold  | 20A   | 20A   | 20A         | 20A         | 20A   |
+	#| Psi2Threshold  | 4A    | 5A    | 5A          | 5A          | 5A    |
+	#| Psi3Threshold  | 1A    | 1A    | 1A          | 1A          | 1A    |
+	#| Psi3Enable     | 1     | 1     | 1           | 1           | 1     |
+	#| Psi4Enable     | 1     | 1     | 1           | 1           | 1     |
+	#| ImonSlope      | 0     | 0     | 0           | 0           | 0     |
+	#| ImonOffset     | 0     | 0     | 0           | 0           | 0     |
+	#| IccMax         | 7A    | 34A   | 34A         | 35A         | 35A   |
+	#| VrVoltageLimit | 1.52V | 1.52V | 1.52V       | 1.52V       | 1.52V |
+	#+----------------+-------+-------+-------------+-------------+-------+
+	register "domain_vr_config[VR_SYSTEM_AGENT]" = "{
+		.vr_config_enable = 1, \
+		.psi1threshold = 0x50, \
+		.psi2threshold = 0x14, \
+		.psi3threshold = 0x4, \
+		.psi3enable = 1, \
+		.psi4enable = 1, \
+		.imon_slope = 0x0, \
+		.imon_offset = 0x0, \
+		.icc_max = 0x0, \
+		.voltage_limit = 0x0 \
+	}"
+
+	register "domain_vr_config[VR_IA_CORE]" = "{
+		.vr_config_enable = 1, \
+		.psi1threshold = 0x50, \
+		.psi2threshold = 0x14, \
+		.psi3threshold = 0x4, \
+		.psi3enable = 1, \
+		.psi4enable = 1, \
+		.imon_slope = 0x0, \
+		.imon_offset = 0x0, \
+		.icc_max = 0x0, \
+		.voltage_limit = 0x0 \
+	}"
+	register "domain_vr_config[VR_RING]" = "{
+		.vr_config_enable = 1, \
+		.psi1threshold = 0x50, \
+		.psi2threshold = 0x14, \
+		.psi3threshold = 0x4, \
+		.psi3enable = 1, \
+		.psi4enable = 1, \
+		.imon_slope = 0x0, \
+		.imon_offset = 0x0, \
+		.icc_max = 0x0, \
+		.voltage_limit = 0x0, \
+	}"
+
+	register "domain_vr_config[VR_GT_UNSLICED]" = "{
+		.vr_config_enable = 1, \
+		.psi1threshold = 0x50, \
+		.psi2threshold = 0x14, \
+		.psi3threshold = 0x4, \
+		.psi3enable = 1, \
+		.psi4enable = 1, \
+		.imon_slope = 0x0, \
+		.imon_offset = 0x0, \
+		.icc_max = 0x0 ,\
+		.voltage_limit = 0x0 \
+	}"
+
+	register "domain_vr_config[VR_GT_SLICED]" = "{
+		.vr_config_enable = 1, \
+		.psi1threshold = 0x50, \
+		.psi2threshold = 0x14, \
+		.psi3threshold = 0x4, \
+		.psi3enable = 1, \
+		.psi4enable = 1, \
+		.imon_slope = 0x0, \
+		.imon_offset = 0x0, \
+		.icc_max = 0x0, \
+		.voltage_limit = 0x0 \
+	}"
+
+	register "FspSkipMpInit" = "1"
+
+	# Enable Root ports.
+	register "PcieRpEnable[2]" = "1"
+	register "PcieRpEnable[3]" = "1"
+	register "PcieRpEnable[4]" = "1"
+	register "PcieRpEnable[5]" = "1"
+	register "PcieRpEnable[8]" = "1"
+
+	# Enable CLKREQ#
+	register "PcieRpClkReqSupport[2]" = "1"
+	register "PcieRpClkReqSupport[3]" = "1"
+	register "PcieRpClkReqSupport[4]" = "1"
+	register "PcieRpClkReqSupport[5]" = "1"
+	register "PcieRpClkReqSupport[8]" = "1"
+
+	# RP 9 uses SRCCLKREQ5#
+	register "PcieRpClkReqNumber[2]" = "5"
+	register "PcieRpClkReqNumber[3]" = "2"
+	register "PcieRpClkReqNumber[4]" = "3"
+	register "PcieRpClkReqNumber[5]" = "4"
+	register "PcieRpClkReqNumber[8]" = "1"
+
+
+	# USB 2.0 Enable all ports
+        register "usb2_ports[0]" = "USB2_PORT_MAX(OC0)"		# TYPE-A Port
+        register "usb2_ports[1]" = "USB2_PORT_MAX(OC2)"		# TYPE-A Port
+        register "usb2_ports[2]" = "USB2_PORT_MAX(OC_SKIP)"	# Bluetooth
+        register "usb2_ports[4]" = "USB2_PORT_MAX(OC1)"		# Type-A Port
+        register "usb2_ports[5]" = "USB2_PORT_MAX(OC_SKIP)"	# TYPE-A Port
+        register "usb2_ports[6]" = "USB2_PORT_MAX(OC2)"		# TYPE-A Port
+        register "usb2_ports[7]" = "USB2_PORT_MAX(OC2)"		# TYPE-A Port
+        register "usb2_ports[8]" = "USB2_PORT_MAX(OC_SKIP)"	# TYPE-A Port
+        register "usb2_ports[9]" = "USB2_PORT_MAX(OC_SKIP)"	# TYPE-A Port
+        register "usb2_ports[10]" = "USB2_PORT_MAX(OC_SKIP)"	# TYPE-A Port
+        register "usb2_ports[11]" = "USB2_PORT_MAX(OC_SKIP)"	# TYPE-A Port
+
+        # USB 3.0 Enable Port 1-4. Port 5 & 6 Disabled
+        register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC0)"	# TYPE-A Port
+        register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# TYPE-A Port
+        register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# TYPE-A Port
+        register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC1)"	# TYPE-A Port
+        register "usb3_ports[4]" = "USB3_PORT_DEFAULT(OC2)"	# TYPE-A Port
+        register "usb3_ports[5]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# TYPE-A Port
+
+	register "SerialIoDevMode" = "{ \
+		[PchSerialIoIndexI2C0]  = PchSerialIoPci, \
+		[PchSerialIoIndexI2C1]  = PchSerialIoPci, \
+		[PchSerialIoIndexI2C2]  = PchSerialIoDisabled, \
+		[PchSerialIoIndexI2C3]  = PchSerialIoDisabled, \
+		[PchSerialIoIndexI2C4]  = PchSerialIoPci, \
+		[PchSerialIoIndexI2C5]  = PchSerialIoDisabled, \
+		[PchSerialIoIndexSpi0]  = PchSerialIoDisabled, \
+		[PchSerialIoIndexSpi1]  = PchSerialIoDisabled, \
+		[PchSerialIoIndexUart0] = PchSerialIoPci, \
+		[PchSerialIoIndexUart1] = PchSerialIoDisabled, \
+		[PchSerialIoIndexUart2] = PchSerialIoSkipInit, \
+	}"
+
+	# Send an extra VR mailbox command for the PS4 exit issue
+	register "SendVrMbxCmd" = "2"
+
+	# Enable/Disable VMX feature
+	register "VmxEnable" = "0"
+
+	# Use default SD card detect GPIO configuration
+	register "sdcard_cd_gpio_default" = "GPP_G5"
+
+	device cpu_cluster 0 on
+		device lapic 0 on end
+	end
+	device domain 0 on
+		device pci 00.0 on  end # Host Bridge
+		device pci 02.0 on  end # Integrated Graphics Device
+		device pci 14.0 on  end # USB xHCI
+		device pci 14.1 off end # USB xDCI (OTG)
+		device pci 14.2 on  end # Thermal Subsystem
+		device pci 15.0 on  end # I2C #0
+		device pci 15.1 on  end # I2C #1
+		device pci 15.2 off end # I2C #2
+		device pci 15.3 off end # I2C #3
+		device pci 16.0 on  end # Management Engine Interface 1
+		device pci 16.1 off end # Management Engine Interface 2
+		device pci 16.2 off end # Management Engine IDE-R
+		device pci 16.3 off end # Management Engine KT Redirection
+		device pci 16.4 off end # Management Engine Interface 3
+		device pci 17.0 on  end # SATA
+		device pci 19.0 on  end # UART #2
+		device pci 19.1 off end # I2C #5
+		device pci 19.2 on  end #
+		device pci 1c.0 on  end # PCI Express Port 1
+		device pci 1c.1 off end # PCI Express Port 2
+		device pci 1c.2 on  end # PCI Express Port 3
+		device pci 1c.3 on  end # PCI Express Port 4
+		device pci 1c.4 on  end # PCI Express Port 5
+		device pci 1c.5 on  end # PCI Express Port 6
+		device pci 1c.6 off end # PCI Express Port 7
+		device pci 1c.7 off end # PCI Express Port 8
+		device pci 1d.0 on  end # PCI Express Port 9
+		device pci 1d.1 off end # PCI Express Port 10
+		device pci 1d.2 off end # PCI Express Port 11
+		device pci 1d.3 off end # PCI Express Port 12
+		device pci 1e.0 on  end # UART #0
+		device pci 1e.1 off end # UART #1
+		device pci 1e.2 off end # GSPI #0
+		device pci 1e.3 off end # GSPI #1
+		device pci 1e.4 on  end # eMMC
+		device pci 1e.5 off end # SDIO
+		device pci 1e.6 on  end # SDCard
+		device pci 1f.0 on
+			chip drivers/pc80/tpm
+				device pnp 0c31.0 on end
+			end
+		end # LPC Interface
+		device pci 1f.1 on  end # P2SB
+		device pci 1f.2 on  end # Power Management Controller
+		device pci 1f.3 on  end # Intel HDA
+		device pci 1f.4 on  end # SMBus
+		device pci 1f.5 on  end # PCH SPI
+		device pci 1f.6 off end # GbE
+	end
+end

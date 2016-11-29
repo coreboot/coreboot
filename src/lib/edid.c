@@ -573,7 +573,7 @@ detailed_block(struct edid *result_edid, unsigned char *x, int in_extension,
 		"Detailed mode (IN HEX): Clock %d KHz, %x mm x %x mm\n"
 	       "               %04x %04x %04x %04x hborder %x\n"
 	       "               %04x %04x %04x %04x vborder %x\n"
-	       "               %chsync %cvsync%s%s %s\n",
+	       "               %chsync %cvsync%s%s%s\n",
 	       out->mode.pixel_clock,
 	       extra_info.x_mm,
 	       extra_info.y_mm,

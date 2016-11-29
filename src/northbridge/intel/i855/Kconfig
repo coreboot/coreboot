@@ -1,5 +1,6 @@
 config NORTHBRIDGE_INTEL_I855
 	bool
+	select NO_MMCONF_SUPPORT
 	select HAVE_DEBUG_RAM_SETUP
 	select LATE_CBMEM_INIT
 

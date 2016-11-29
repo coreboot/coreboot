@@ -325,15 +325,8 @@ static int pciexp_aspm_latency(device_t root, unsigned root_cap,
 
 /*
  * Enable ASPM on PCIe root port and endpoint.
- *
- * Returns APMC value:
- *   -1 = Error
- *    0 = no ASPM
- *    1 = L0s Enabled
- *    2 = L1 Enabled
- *    3 = L0s and L1 Enabled
  */
-static enum aspm_type pciexp_enable_aspm(device_t root, unsigned root_cap,
+static void pciexp_enable_aspm(device_t root, unsigned root_cap,
 					 device_t endp, unsigned endp_cap)
 {
 	const char *aspm_type_str[] = { "None", "L0s", "L1", "L0s and L1" };
@@ -369,10 +362,14 @@ static enum aspm_type pciexp_enable_aspm(device_t root, unsigned root_cap,
 		lnkctl = pci_read_config16(endp, endp_cap + PCI_EXP_LNKCTL);
 		lnkctl |= apmc;
 		pci_write_config16(endp, endp_cap + PCI_EXP_LNKCTL, lnkctl);
+
+		/* Enable ASPM role based error reporting. */
+		devcap = pci_read_config32(endp, endp_cap + PCI_EXP_DEVCAP);
+		devcap |= PCI_EXP_DEVCAP_RBER;
+		pci_write_config32(endp, endp_cap + PCI_EXP_DEVCAP, devcap);
 	}
 
 	printk(BIOS_INFO, "ASPM: Enabled %s\n", aspm_type_str[apmc]);
-	return apmc;
 }
 #endif /* CONFIG_PCIEXP_ASPM */
 
@@ -406,14 +403,7 @@ static void pciexp_tune_dev(device_t dev)
 
 #if CONFIG_PCIEXP_ASPM
 	/* Check for and enable ASPM */
-	enum aspm_type apmc = pciexp_enable_aspm(root, root_cap, dev, cap);
-
-	if (apmc != PCIE_ASPM_NONE) {
-		/* Enable ASPM role based error reporting. */
-		u32 reg32 = pci_read_config32(dev, cap + PCI_EXP_DEVCAP);
-		reg32 |= PCI_EXP_DEVCAP_RBER;
-		pci_write_config32(dev, cap + PCI_EXP_DEVCAP, reg32);
-	}
+	pciexp_enable_aspm(root, root_cap, dev, cap);
 #endif
 }
 

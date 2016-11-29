@@ -20,6 +20,8 @@
 #include <cpu/x86/mtrr.h>
 #include <program_loading.h>
 #include <rmodule.h>
+#include <romstage_handoff.h>
+#include <stage_cache.h>
 
 static inline void stack_push(struct postcar_frame *pcf, uint32_t val)
 {
@@ -110,18 +112,14 @@ void *postcar_commit_mtrrs(struct postcar_frame *pcf)
 	return (void *) pcf->stack;
 }
 
-void run_postcar_phase(struct postcar_frame *pcf)
+static void load_postcar_cbfs(struct prog *prog, struct postcar_frame *pcf)
 {
-	struct prog prog =
-		PROG_INIT(PROG_UNKNOWN, CONFIG_CBFS_PREFIX "/postcar");
 	struct rmod_stage_load rsl = {
 		.cbmem_id = CBMEM_ID_AFTER_CAR,
-		.prog = &prog,
+		.prog = prog,
 	};
 
-	postcar_commit_mtrrs(pcf);
-
-	if (prog_locate(&prog))
+	if (prog_locate(prog))
 		die("Failed to locate after CAR program.\n");
 	if (rmodule_stage_load(&rsl))
 		die("Failed to load after CAR program.\n");
@@ -138,6 +136,22 @@ void run_postcar_phase(struct postcar_frame *pcf)
 	 */
 	prog_segment_loaded((uintptr_t)rsl.params, sizeof(uintptr_t),
 		SEG_FINAL);
+
+	if (!IS_ENABLED(CONFIG_NO_STAGE_CACHE))
+		stage_cache_add(STAGE_POSTCAR, prog);
+}
+
+void run_postcar_phase(struct postcar_frame *pcf)
+{
+	struct prog prog =
+		PROG_INIT(PROG_UNKNOWN, CONFIG_CBFS_PREFIX "/postcar");
+
+	postcar_commit_mtrrs(pcf);
+
+	if (!IS_ENABLED(CONFIG_NO_STAGE_CACHE) && romstage_handoff_is_resume())
+		stage_cache_load_stage(STAGE_POSTCAR, &prog);
+	else
+		load_postcar_cbfs(&prog, pcf);
 
 	prog_run(&prog);
 }

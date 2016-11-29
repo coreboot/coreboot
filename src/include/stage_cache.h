@@ -23,6 +23,7 @@
 enum {
 	STAGE_RAMSTAGE,
 	STAGE_REFCODE,
+	STAGE_POSTCAR,
 };
 
 /* Cache the loaded stage provided according to the parameters. */

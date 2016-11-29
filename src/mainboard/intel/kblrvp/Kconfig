@@ -1,4 +1,4 @@
-if BOARD_INTEL_KBLRVP3
+if BOARD_INTEL_KBLRVP3 || BOARD_INTEL_KBLRVP7
 
 config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
@@ -50,7 +50,8 @@ config MAINBOARD_DIR
 
 config VARIANT_DIR
 	string
-	default "rvp3"
+	default "rvp3" if BOARD_INTEL_KBLRVP3
+	default "rvp7" if BOARD_INTEL_KBLRVP7
 
 config MAINBOARD_PART_NUMBER
 	string
@@ -76,4 +77,16 @@ config GBB_HWID
 config DEVICETREE
 	string
 	default "variants/$(CONFIG_VARIANT_DIR)/devicetree.cb"
+
+config IFD_BIN_PATH
+	string
+	depends on HAVE_IFD_BIN
+	default "3rdparty/blobs/mainboard/$(CONFIG_MAINBOARD_DIR)/descriptor.rvp3.bin" if BOARD_INTEL_KBLRVP3
+	default "3rdparty/blobs/mainboard/$(CONFIG_MAINBOARD_DIR)/descriptor.rvp7.bin" if BOARD_INTEL_KBLRVP7
+
+config ME_BIN_PATH
+	string
+	depends on HAVE_ME_BIN
+	default "3rdparty/blobs/mainboard/$(CONFIG_MAINBOARD_DIR)/me.rvp3.bin" if BOARD_INTEL_KBLRVP3
+	default "3rdparty/blobs/mainboard/$(CONFIG_MAINBOARD_DIR)/me.rvp7.bin" if BOARD_INTEL_KBLRVP7
 endif

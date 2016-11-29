@@ -36,6 +36,17 @@
 
 #include "chip.h"
 
+static void reset_edp(void)
+{
+	/* rst edp */
+	write32(&cru_ptr->softrst_con[17],
+		RK_SETBITS(1 << 12 | 1 << 13));
+		udelay(1);
+	write32(&cru_ptr->softrst_con[17],
+		RK_CLRBITS(1 << 12 | 1 << 13));
+	printk(BIOS_WARNING, "Retrying epd initialization.\n");
+}
+
 void rk_display_init(device_t dev)
 {
 	struct edid edid;
@@ -65,14 +76,20 @@ void rk_display_init(device_t dev)
 		write32(&rk3399_grf->soc_con25, RK_SETBITS(1 << 11));
 
 retry_edp:
-		rk_edp_init();
-		if (rk_edp_get_edid(&edid) == 0) {
-			detected_mode = VOP_MODE_EDP;
-			break;
+		while (retry_count++ < 3) {
+			rk_edp_init();
+			if (rk_edp_get_edid(&edid) == 0) {
+				detected_mode = VOP_MODE_EDP;
+				break;
+			}
+			if (retry_count == 3) {
+				printk(BIOS_WARNING, "Warning: epd initialization failed.\n");
+				return;
+			} else {
+				reset_edp();
+			}
 		}
-		goto edp_error;
-
-		/* fall thru */
+		break;
 	case VOP_MODE_HDMI:
 		printk(BIOS_WARNING, "HDMI display is NOT supported yet.\n");
 		return;
@@ -100,24 +117,14 @@ retry_edp:
 	case VOP_MODE_EDP:
 	default:
 		/* will enable edp in depthcharge */
-		if (rk_edp_prepare())
-			goto edp_error;
+		if (rk_edp_prepare()) {
+			reset_edp();
+			goto retry_edp; /* Rerun entire init sequence */
+		}
 		mainboard_power_on_backlight();
 		break;
 	}
 
 	set_vbe_mode_info_valid(&edid, (uintptr_t)0);
 	return;
-
-edp_error:
-	if (retry_count++ < 3) {
-		/* rst edp */
-		write32(&cru_ptr->softrst_con[17],
-			RK_SETBITS(1 << 12 | 1 << 13));
-			udelay(1);
-		write32(&cru_ptr->softrst_con[17],
-			RK_CLRBITS(1 << 12 | 1 << 13));
-		goto retry_edp;
-	}
-	printk(BIOS_WARNING, "epd initial error\n");
 }

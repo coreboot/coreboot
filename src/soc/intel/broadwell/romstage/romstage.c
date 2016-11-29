@@ -89,8 +89,6 @@ void * asmlinkage romstage_main(unsigned long bist,
 /* Entry from the mainboard. */
 void romstage_common(struct romstage_params *params)
 {
-	struct romstage_handoff *handoff;
-
 	post_code(0x32);
 
 	timestamp_add_now(TS_BEFORE_INITRAM);
@@ -114,12 +112,7 @@ void romstage_common(struct romstage_params *params)
 
 	timestamp_add_now(TS_AFTER_INITRAM);
 
-	handoff = romstage_handoff_find_or_add();
-	if (handoff != NULL)
-		handoff->s3_resume = (params->power_state->prev_sleep_state ==
-				      ACPI_S3);
-	else
-		printk(BIOS_DEBUG, "Romstage handoff structure not added!\n");
+	romstage_handoff_init(params->power_state->prev_sleep_state == ACPI_S3);
 
 #if CONFIG_LPC_TPM
 	init_tpm(params->power_state->prev_sleep_state == ACPI_S3);

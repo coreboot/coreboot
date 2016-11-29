@@ -218,7 +218,6 @@ void romstage_main_continue(EFI_STATUS status, void *hob_list_ptr)
 	int cbmem_was_initted;
 	void *cbmem_hob_ptr;
 	uint32_t prev_sleep_state;
-	struct romstage_handoff *handoff;
 
 	timestamp_add_now(TS_AFTER_INITRAM);
 
@@ -257,11 +256,7 @@ void romstage_main_continue(EFI_STATUS status, void *hob_list_ptr)
 	*(u32*)cbmem_hob_ptr = (u32)hob_list_ptr;
 	post_code(0x4e);
 
-	handoff = romstage_handoff_find_or_add();
-	if (handoff != NULL)
-		handoff->s3_resume = (prev_sleep_state == ACPI_S3);
-	else
-		printk(BIOS_DEBUG, "Romstage handoff structure not added!\n");
+	romstage_handoff_init(prev_sleep_state == ACPI_S3);
 
 	post_code(0x4f);
 

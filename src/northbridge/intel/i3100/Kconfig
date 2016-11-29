@@ -1,5 +1,6 @@
 config NORTHBRIDGE_INTEL_I3100
 	bool
+	select NO_MMCONF_SUPPORT
 	select LATE_CBMEM_INIT
 	select UDELAY_IO
 

@@ -204,15 +204,11 @@ if PCI
 
 config NO_MMCONF_SUPPORT
 	bool
-	default !MMCONF_SUPPORT_DEFAULT
+	default n
 
 config MMCONF_SUPPORT
 	bool
-	default MMCONF_SUPPORT_DEFAULT
-
-config MMCONF_SUPPORT_DEFAULT
-	bool
-	default n
+	default !NO_MMCONF_SUPPORT
 
 config HYPERTRANSPORT_PLUGIN_SUPPORT
 	bool

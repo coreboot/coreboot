@@ -22,6 +22,14 @@ config NORTHBRIDGE_AMD_AMDK8
 	select LATE_CBMEM_INIT
 
 if NORTHBRIDGE_AMD_AMDK8
+
+config NO_MMCONF_SUPPORT
+	bool
+	default y
+	help
+	   If you want to remove this, you need to make sure any access to CPU
+	   nodes 0:18.0, 0:19.0, ...  continue to use PCI IO config access.
+
 config AGP_APERTURE_SIZE
 	hex
 	default 0x4000000

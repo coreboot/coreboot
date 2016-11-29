@@ -9,6 +9,7 @@ if CPU_AMD_GEODE_LX
 
 config CPU_SPECIFIC_OPTIONS
 	def_bool y
+	select NO_MMCONF_SUPPORT
 	select TSC_MONOTONIC_TIMER
 
 config DCACHE_RAM_BASE

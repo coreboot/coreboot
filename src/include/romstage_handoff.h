@@ -18,6 +18,8 @@
 #include <stdint.h>
 #include <string.h>
 #include <cbmem.h>
+#include <console/console.h>
+#include <rules.h>
 
 /* It is the chipset's responsibility for maintaining the integrity of this
  * structure in CBMEM. For instance, if chipset code adds this structure
@@ -48,13 +50,32 @@ static inline struct romstage_handoff *romstage_handoff_find_or_add(void)
 	 * found so it can be initialized to 0. */
 	handoff = cbmem_find(CBMEM_ID_ROMSTAGE_INFO);
 
-	if (handoff == NULL) {
-		handoff = cbmem_add(CBMEM_ID_ROMSTAGE_INFO, sizeof(*handoff));
-		if (handoff != NULL)
-			memset(handoff, 0, sizeof(*handoff));
-	}
+	if (handoff)
+		return handoff;
+
+	handoff = cbmem_add(CBMEM_ID_ROMSTAGE_INFO, sizeof(*handoff));
+
+	if (handoff != NULL)
+		memset(handoff, 0, sizeof(*handoff));
+	else
+		printk(BIOS_DEBUG, "Romstage handoff structure not added!\n");
 
 	return handoff;
+}
+
+/* Returns 0 if initialized. Else < 0 if handoff structure not added. */
+static inline int romstage_handoff_init(int is_s3_resume)
+{
+	struct romstage_handoff *handoff;
+
+	handoff = romstage_handoff_find_or_add();
+
+	if (handoff == NULL)
+		return -1;
+
+	handoff->s3_resume = is_s3_resume;
+
+	return 0;
 }
 
 #endif /* ROMSTAGE_HANDOFF_H */

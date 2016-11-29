@@ -227,13 +227,7 @@ void sandybridge_early_initialization(int chipset_type)
 
 void northbridge_romstage_finalize(int s3resume)
 {
-	struct romstage_handoff *handoff;
-
 	MCHBAR16(SSKPD) = 0xCAFE;
 
-	handoff = romstage_handoff_find_or_add();
-	if (handoff != NULL)
-		handoff->s3_resume = s3resume;
-	else
-		printk(BIOS_DEBUG, "Romstage handoff structure not added!\n");
+	romstage_handoff_init(s3resume);
 }

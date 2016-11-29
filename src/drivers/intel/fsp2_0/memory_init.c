@@ -117,7 +117,6 @@ static void save_memory_training_data(bool s3wake, uint32_t fsp_version)
 static void do_fsp_post_memory_init(bool s3wake, uint32_t fsp_version)
 {
 	struct range_entry fsp_mem;
-	struct romstage_handoff *handoff;
 
 	if (fsp_find_reserved_memory(&fsp_mem))
 		die("Failed to find FSP_RESERVED_MEMORY_RESOURCE_HOB!\n");
@@ -144,11 +143,7 @@ static void do_fsp_post_memory_init(bool s3wake, uint32_t fsp_version)
 	save_memory_training_data(s3wake, fsp_version);
 
 	/* Create romstage handof information */
-	handoff = romstage_handoff_find_or_add();
-	if (handoff != NULL)
-		handoff->s3_resume = s3wake;
-	else
-		printk(BIOS_SPEW, "Romstage handoff structure not added!\n");
+	romstage_handoff_init(s3wake);
 }
 
 static const char *mrc_cache_get_region_name(void)

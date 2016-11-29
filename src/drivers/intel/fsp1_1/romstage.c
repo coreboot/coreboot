@@ -99,7 +99,6 @@ void *cache_as_ram_stage_main(FSP_INFO_HEADER *fih)
 void romstage_common(struct romstage_params *params)
 {
 	const struct mrc_saved_data *cache;
-	struct romstage_handoff *handoff;
 	struct pei_data *pei_data;
 
 	post_code(0x32);
@@ -165,14 +164,9 @@ void romstage_common(struct romstage_params *params)
 	mainboard_save_dimm_info(params);
 
 	/* Create romstage handof information */
-	handoff = romstage_handoff_find_or_add();
-	if (handoff != NULL)
-		handoff->s3_resume = (params->power_state->prev_sleep_state ==
-				      ACPI_S3);
-	else {
-		printk(BIOS_DEBUG, "Romstage handoff structure not added!\n");
+	if (romstage_handoff_init(
+			params->power_state->prev_sleep_state == ACPI_S3) < 0)
 		hard_reset();
-	}
 
 	/*
 	 * Initialize the TPM, unless the TPM was already initialized

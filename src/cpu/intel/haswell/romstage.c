@@ -172,7 +172,6 @@ void romstage_common(const struct romstage_params *params)
 {
 	int boot_mode;
 	int wake_from_s3;
-	struct romstage_handoff *handoff;
 
 	timestamp_init(get_initial_timestamp());
 	timestamp_add_now(TS_START_ROMSTAGE);
@@ -245,11 +244,7 @@ void romstage_common(const struct romstage_params *params)
 	#endif
 	}
 
-	handoff = romstage_handoff_find_or_add();
-	if (handoff != NULL)
-		handoff->s3_resume = wake_from_s3;
-	else
-		printk(BIOS_DEBUG, "Romstage handoff structure not added!\n");
+	romstage_handoff_init(wake_from_s3);
 
 	post_code(0x3f);
 	if (IS_ENABLED(CONFIG_LPC_TPM)) {

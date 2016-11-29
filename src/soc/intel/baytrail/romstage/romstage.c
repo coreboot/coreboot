@@ -210,7 +210,6 @@ static int chipset_prev_sleep_state(struct chipset_power_state *ps)
 /* Entry from the mainboard. */
 void romstage_common(struct romstage_params *params)
 {
-	struct romstage_handoff *handoff;
 	struct chipset_power_state *ps;
 	int prev_sleep_state;
 
@@ -232,11 +231,7 @@ void romstage_common(struct romstage_params *params)
 
 	timestamp_add_now(TS_AFTER_INITRAM);
 
-	handoff = romstage_handoff_find_or_add();
-	if (handoff != NULL)
-		handoff->s3_resume = (prev_sleep_state == ACPI_S3);
-	else
-		printk(BIOS_DEBUG, "Romstage handoff structure not added!\n");
+	romstage_handoff_init(prev_sleep_state == ACPI_S3);
 
 	if (IS_ENABLED(CONFIG_LPC_TPM)) {
 		init_tpm(prev_sleep_state == ACPI_S3);

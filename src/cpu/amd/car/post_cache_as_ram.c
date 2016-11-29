@@ -129,14 +129,7 @@ void post_cache_as_ram(void)
 
 	prepare_romstage_ramstack(s3resume);
 
-	if (IS_ENABLED(CONFIG_EARLY_CBMEM_INIT)) {
-		struct romstage_handoff *handoff;
-		handoff = romstage_handoff_find_or_add();
-		if (handoff != NULL)
-			handoff->s3_resume = s3resume;
-		else
-			printk(BIOS_DEBUG, "Romstage handoff structure not added!\n");
-	}
+	romstage_handoff_init(s3resume);
 
 	/* from here don't store more data in CAR */
 	if (family >= 0x1f && family <= 0x3f) {

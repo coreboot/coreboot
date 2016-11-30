@@ -2,7 +2,6 @@
 #define STDDEF_H
 
 #include <commonlib/helpers.h>
-#include <rules.h>
 
 typedef long ptrdiff_t;
 #ifndef __SIZE_TYPE__

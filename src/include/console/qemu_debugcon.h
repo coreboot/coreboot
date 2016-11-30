@@ -1,7 +1,6 @@
 #ifndef _QEMU_DEBUGCON_H_
 #define _QEMU_DEBUGCON_H_
 
-#include <rules.h>
 #include <stdint.h>
 
 void qemu_debugcon_init(void);

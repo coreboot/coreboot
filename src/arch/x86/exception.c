@@ -19,7 +19,6 @@
 #include <console/streams.h>
 #include <cpu/x86/cr.h>
 #include <cpu/x86/lapic.h>
-#include <rules.h>
 #include <stdint.h>
 #include <string.h>
 

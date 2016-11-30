@@ -31,7 +31,6 @@
 #include <intelblocks/rtc.h>
 #include <intelblocks/tco.h>
 #include <halt.h>
-#include <rules.h>
 #include <stdlib.h>
 #include <soc/gpe.h>
 #include <soc/gpio.h>

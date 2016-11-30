@@ -18,7 +18,6 @@
 #include <arch/io.h>
 #include <cbmem.h>
 #include <console/console.h>
-#include <rules.h>
 #include <soc/iomap.h>
 #include <soc/lpc.h>
 #include <soc/pci_devs.h>

@@ -20,7 +20,6 @@
 
 /* All these devices live on bus 0 with the associated device and function */
 
-#include <rules.h>
 
 #define _SA_DEVFN(slot) PCI_DEVFN(SA_DEV_SLOT_##slot, 0)
 #define _PCH_DEVFN(slot, func) PCI_DEVFN(PCH_DEV_SLOT_##slot, func)

@@ -16,7 +16,6 @@
 
 #include <stdint.h>
 #include <stddef.h>
-#include <rules.h>
 
 /*
  * EFLAGS bits

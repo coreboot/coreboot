@@ -18,7 +18,6 @@
 #include <ec/ec.h>
 #include <ec/google/chromeec/ec.h>
 #include <intelblocks/lpc_lib.h>
-#include <rules.h>
 #include <variant/ec.h>
 
 static void ramstage_ec_init(void)

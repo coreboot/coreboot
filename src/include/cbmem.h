@@ -18,7 +18,6 @@
 #define _CBMEM_H_
 
 #include <commonlib/cbmem_id.h>
-#include <rules.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <boot/coreboot_tables.h>

@@ -14,7 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include <rules.h>
 #include <stdlib.h>
 #include <arch/io.h>
 #include <boot/coreboot_tables.h>

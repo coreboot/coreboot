@@ -20,7 +20,6 @@
 #include <cbfs.h>
 #include <cbmem.h>
 #include <delay.h>
-#include <rules.h>
 #include <rmodule.h>
 #include <stage_cache.h>
 #include <string.h>

@@ -14,7 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include <rules.h>
 #include <gpio.h>
 #include <string.h>
 #include <vendorcode/google/chromeos/chromeos.h>

@@ -23,7 +23,6 @@
 #include <device/pci_def.h>
 #include <soc/iomap.h>
 #include "chip.h"
-#include <rules.h>
 
 /*
  * AcpiMmio Region

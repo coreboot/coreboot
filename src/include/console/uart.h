@@ -16,7 +16,6 @@
 #ifndef CONSOLE_UART_H
 #define CONSOLE_UART_H
 
-#include <rules.h>
 #include <stdint.h>
 
 /* Return the clock frequency UART uses as reference clock for

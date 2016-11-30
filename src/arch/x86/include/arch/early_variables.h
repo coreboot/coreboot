@@ -18,7 +18,6 @@
 
 #include <arch/symbols.h>
 #include <stdlib.h>
-#include <rules.h>
 
 #if ENV_CACHE_AS_RAM && !IS_ENABLED(CONFIG_NO_CAR_GLOBAL_MIGRATION)
 asm(".section .car.global_data,\"w\",@nobits");

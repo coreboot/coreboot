@@ -16,7 +16,6 @@
 #include <arch/acpi.h>
 #include <baseboard/variants.h>
 #include <gpio.h>
-#include <rules.h>
 #include <soc/gpio.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 

@@ -12,7 +12,6 @@
 #include <boot_device.h>
 #include <cpu/x86/smm.h>
 #include <delay.h>
-#include <rules.h>
 #include <stdlib.h>
 #include <string.h>
 #include <spi-generic.h>

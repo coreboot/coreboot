@@ -17,7 +17,6 @@
 #define __PI_STONEYRIDGE_PCI_DEVS_H__
 
 #include <device/pci_def.h>
-#include <rules.h>
 
 #if !defined(__SIMPLE_DEVICE__)
 #include <device/device.h>

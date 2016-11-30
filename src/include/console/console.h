@@ -17,7 +17,6 @@
 #define CONSOLE_CONSOLE_H_
 
 #include <stdint.h>
-#include <rules.h>
 #include <arch/cpu.h>
 #include <console/post_codes.h>
 #include <commonlib/loglevel.h>

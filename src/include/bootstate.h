@@ -15,7 +15,6 @@
 #ifndef BOOTSTATE_H
 #define BOOTSTATE_H
 
-#include <rules.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stddef.h>

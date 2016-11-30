@@ -17,7 +17,6 @@
 #ifndef _SOC_SMM_H_
 #define _SOC_SMM_H_
 
-#include <rules.h>
 
 #if ENV_RAMSTAGE
 #include <stdint.h>

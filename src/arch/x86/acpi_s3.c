@@ -22,7 +22,6 @@
 #include <timestamp.h>
 #include <program_loading.h>
 #include <romstage_handoff.h>
-#include <rules.h>
 #include <symbols.h>
 
 #if ENV_RAMSTAGE || ENV_POSTCAR

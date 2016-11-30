@@ -30,7 +30,6 @@
 #include <device/pci.h>
 #include <ec/google/chromeec/ec.h>
 #include <drivers/intel/gma/opregion.h>
-#include <rules.h>
 #include <soc/acpi.h>
 #include <soc/gfx.h>
 #include <soc/iomap.h>

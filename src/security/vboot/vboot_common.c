@@ -20,7 +20,6 @@
 #include <fmap.h>
 #include <gbb_header.h>
 #include <reset.h>
-#include <rules.h>
 #include <stddef.h>
 #include <string.h>
 #include <security/vboot/gbb.h>

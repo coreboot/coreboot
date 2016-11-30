@@ -17,7 +17,6 @@
 #ifndef _CONSOLE_USB_H_
 #define _CONSOLE_USB_H_
 
-#include <rules.h>
 #include <stdint.h>
 
 void usbdebug_init(void);

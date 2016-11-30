@@ -20,7 +20,6 @@
 #include <cpu/x86/cr.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/pae.h>
-#include <rules.h>
 #include <string.h>
 #include <symbols.h>
 

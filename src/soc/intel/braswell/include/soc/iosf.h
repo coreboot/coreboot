@@ -17,7 +17,6 @@
 #ifndef _SOC_IOSF_H_
 #define _SOC_IOSF_H_
 
-#include <rules.h>
 #include <stdint.h>
 #if ENV_RAMSTAGE
 #include <device/device.h>

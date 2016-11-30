@@ -16,7 +16,6 @@
 #ifndef __ARCH_MEMLAYOUT_H
 #define __ARCH_MEMLAYOUT_H
 
-#include <rules.h>
 
 #if ENV_BOOTBLOCK || ENV_ROMSTAGE || ENV_VERSTAGE
 /* No .data or .bss sections. Cache as RAM is handled separately. */

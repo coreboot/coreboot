@@ -15,7 +15,6 @@
 
 #include <arch/rom_segs.h>
 #include <cpu/x86/post_code.h>
-#include <rules.h>
 #include <arch/x86/gdt_init.S>
 
 	.code32

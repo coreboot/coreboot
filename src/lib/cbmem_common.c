@@ -15,7 +15,6 @@
 
 #include <cbmem.h>
 #include <bootstate.h>
-#include <rules.h>
 #include <symbols.h>
 
 void cbmem_run_init_hooks(int is_recovery)

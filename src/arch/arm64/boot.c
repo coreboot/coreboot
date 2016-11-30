@@ -19,7 +19,6 @@
 #include <arch/transition.h>
 #include <arm_tf.h>
 #include <program_loading.h>
-#include <rules.h>
 #include <string.h>
 
 static void run_payload(struct prog *prog)

@@ -1,7 +1,6 @@
 #ifndef SPKMODEM_H
 #define SPKMODEM_H 1
 
-#include <rules.h>
 #include <stdint.h>
 
 void spkmodem_init(void);

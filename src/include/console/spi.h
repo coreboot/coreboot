@@ -16,7 +16,6 @@
 #ifndef CONSOLE_SPI_H
 #define CONSOLE_SPI_H 1
 
-#include <rules.h>
 #include <stdint.h>
 
 void spiconsole_init(void);

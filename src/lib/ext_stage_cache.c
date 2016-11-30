@@ -18,7 +18,6 @@
 #include <cbmem.h>
 #include <console/console.h>
 #include <imd.h>
-#include <rules.h>
 #include <stage_cache.h>
 #include <string.h>
 

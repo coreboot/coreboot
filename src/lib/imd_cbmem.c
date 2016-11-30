@@ -18,7 +18,6 @@
 #include <console/console.h>
 #include <cbmem.h>
 #include <imd.h>
-#include <rules.h>
 #include <string.h>
 #include <stdlib.h>
 #include <arch/early_variables.h>

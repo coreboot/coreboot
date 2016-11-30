@@ -14,7 +14,6 @@
  */
 
 #include <random.h>
-#include <rules.h>
 
 /*
  * Intel recommends that applications attempt 10 retries in a tight loop

@@ -16,7 +16,6 @@
 
 #include <endian.h>
 #include <stdint.h>
-#include <rules.h>
 #include <device/pci_type.h>
 
 /*

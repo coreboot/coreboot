@@ -19,7 +19,6 @@
 #include <console/uart.h>
 #include <device/device.h>
 #include <delay.h>
-#include <rules.h>
 #include <stdint.h>
 #include "uart8250reg.h"
 

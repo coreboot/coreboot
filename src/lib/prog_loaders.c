@@ -25,7 +25,6 @@
 #include <reset.h>
 #include <romstage_handoff.h>
 #include <rmodule.h>
-#include <rules.h>
 #include <stage_cache.h>
 #include <symbols.h>
 #include <timestamp.h>

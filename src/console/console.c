@@ -22,7 +22,6 @@
 #include <console/usb.h>
 #include <console/spi.h>
 #include <console/flash.h>
-#include <rules.h>
 
 void console_hw_init(void)
 {

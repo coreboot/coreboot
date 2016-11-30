@@ -20,7 +20,6 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <intelblocks/p2sb.h>
-#include <rules.h>
 #include <soc/iomap.h>
 #include <soc/p2sb.h>
 #include <soc/pci_devs.h>

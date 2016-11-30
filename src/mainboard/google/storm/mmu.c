@@ -11,7 +11,6 @@
  */
 
 #include <arch/cache.h>
-#include <rules.h>
 #include <soc/soc_services.h>
 #include <symbols.h>
 #include "mmu.h"

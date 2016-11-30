@@ -24,7 +24,6 @@
  * performs the final stage of initialization.
  */
 
-#include <rules.h>
 
 #define LHLT_DELAY	0x50000		/* I/O delay between post codes on failure */
 

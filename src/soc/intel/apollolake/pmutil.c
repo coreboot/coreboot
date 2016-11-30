@@ -29,7 +29,6 @@
 #include <intelblocks/pmclib.h>
 #include <intelblocks/rtc.h>
 #include <intelblocks/tco.h>
-#include <rules.h>
 #include <soc/iomap.h>
 #include <soc/cpu.h>
 #include <soc/pci_devs.h>

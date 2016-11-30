@@ -65,7 +65,6 @@ enum platform_type {
 	PLATFORM_DESKTOP_SERVER,
 };
 
-#include <rules.h>
 
 /* Device 0:0.0 PCI configuration space (Host Bridge) */
 

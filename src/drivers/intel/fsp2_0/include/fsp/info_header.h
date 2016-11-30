@@ -13,7 +13,6 @@
 #ifndef _FSP2_0_INFO_HEADER_H_
 #define _FSP2_0_INFO_HEADER_H_
 
-#include <rules.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <types.h>

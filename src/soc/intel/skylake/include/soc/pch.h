@@ -19,7 +19,6 @@
 #define _SOC_PCH_H_
 
 #include <device/device.h>
-#include <rules.h>
 
 void pch_log_state(void);
 #if ENV_RAMSTAGE

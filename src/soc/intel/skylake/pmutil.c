@@ -29,7 +29,6 @@
 #include <halt.h>
 #include <intelblocks/lpc_lib.h>
 #include <intelblocks/tco.h>
-#include <rules.h>
 #include <stdlib.h>
 #include <soc/gpe.h>
 #include <soc/gpio.h>

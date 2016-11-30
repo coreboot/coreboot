@@ -28,7 +28,6 @@
 #include <arch/encoding.h>
 #include <arch/stages.h>
 #include <arch/smp/smp.h>
-#include <rules.h>
 
 void stage_entry(void)
 {

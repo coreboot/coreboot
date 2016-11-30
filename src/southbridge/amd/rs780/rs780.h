@@ -16,7 +16,6 @@
 #ifndef __RS780_H__
 #define __RS780_H__
 
-#include <rules.h>
 #include <stdint.h>
 #include "chip.h"
 #include "rev.h"

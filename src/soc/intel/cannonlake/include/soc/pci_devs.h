@@ -18,7 +18,6 @@
 #define _SOC_CANNONLAKE_PCI_DEVS_H_
 
 #include <device/pci_def.h>
-#include <rules.h>
 
 #define _SA_DEVFN(slot)		PCI_DEVFN(SA_DEV_SLOT_ ## slot, 0)
 #define _PCH_DEVFN(slot, func)	PCI_DEVFN(PCH_DEV_SLOT_ ## slot, func)

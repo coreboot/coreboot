@@ -2,7 +2,6 @@
 #define DEVICE_PNP_H
 
 #include <stdint.h>
-#include <rules.h>
 #include <device/device.h>
 #include <device/pnp_def.h>
 #include <arch/io.h>

@@ -15,7 +15,6 @@
  */
 
 #include <arch/io.h>
-#include <rules.h>
 #include <gpio.h>
 #include <soc/gpio.h>
 #include <string.h>

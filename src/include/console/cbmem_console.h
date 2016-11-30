@@ -15,7 +15,6 @@
 #ifndef _CONSOLE_CBMEM_CONSOLE_H_
 #define _CONSOLE_CBMEM_CONSOLE_H_
 
-#include <rules.h>
 #include <stdint.h>
 
 void cbmemc_init(void);

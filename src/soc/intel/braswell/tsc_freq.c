@@ -16,7 +16,6 @@
 
 #include <cpu/x86/msr.h>
 #include <cpu/x86/tsc.h>
-#include <rules.h>
 #include <soc/msr.h>
 #if ENV_RAMSTAGE
 #include <soc/ramstage.h>

@@ -16,7 +16,6 @@
 #include <arch/acpi.h>
 #include <console/console.h>
 #include <ec/google/chromeec/ec.h>
-#include <rules.h>
 #include <soc/southbridge.h>
 #include <variant/ec.h>
 

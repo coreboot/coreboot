@@ -18,7 +18,6 @@
 #include <console/console.h>
 #include <ec/google/chromeec/ec.h>
 #include <rmodule.h>
-#include <rules.h>
 #include <string.h>
 #include <security/vboot/misc.h>
 #include <security/vboot/symbols.h>

@@ -20,7 +20,6 @@
 #include <console/streams.h>
 #include <device/pci.h>
 #include <option.h>
-#include <rules.h>
 #include <version.h>
 
 /* Mutable console log level only allowed when RAM comes online. */

@@ -18,7 +18,6 @@
 #include <cbmem.h>
 #include <console/console.h>
 #include <romstage_handoff.h>
-#include <rules.h>
 
 struct romstage_handoff {
 	/* Indicate if the current boot is an S3 resume. If

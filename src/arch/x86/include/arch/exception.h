@@ -31,7 +31,6 @@
 #define _ARCH_EXCEPTION_H
 
 #include <arch/cpu.h>
-#include <rules.h>
 
 #if IS_ENABLED(CONFIG_IDT_IN_EVERY_STAGE) || ENV_RAMSTAGE
 asmlinkage void exception_init(void);

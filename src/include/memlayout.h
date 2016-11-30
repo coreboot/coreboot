@@ -18,7 +18,6 @@
 #ifndef __MEMLAYOUT_H
 #define __MEMLAYOUT_H
 
-#include <rules.h>
 #include <arch/memlayout.h>
 
 /* Macros that the architecture can override. */

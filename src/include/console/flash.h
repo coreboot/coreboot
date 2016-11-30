@@ -16,7 +16,6 @@
 #ifndef CONSOLE_FLASH_H
 #define CONSOLE_FLASH_H 1
 
-#include <rules.h>
 #include <stdint.h>
 
 void flashconsole_init(void);

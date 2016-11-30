@@ -23,7 +23,6 @@
 #include <timer.h>
 #include <timestamp.h>
 #include <arch/early_variables.h>
-#include <rules.h>
 #include <smp/node.h>
 
 #define MAX_TIMESTAMPS 192

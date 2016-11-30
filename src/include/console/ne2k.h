@@ -16,7 +16,6 @@
 #ifndef _NE2K_H__
 #define _NE2K_H__
 
-#include <rules.h>
 #include <stdint.h>
 
 void ne2k_append_data(unsigned char *d, int len, unsigned int base);

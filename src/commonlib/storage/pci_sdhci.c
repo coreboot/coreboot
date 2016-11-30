@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <rules.h>
 #if ENV_RAMSTAGE
 #define __SIMPLE_DEVICE__		1
 #endif

@@ -27,7 +27,6 @@
 #include <arch/cpu.h>
 #include <cpu/x86/msr.h>
 #include <cpu/intel/microcode.h>
-#include <rules.h>
 
 #if !defined(__PRE_RAM__)
 #include <smp/spinlock.h>

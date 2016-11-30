@@ -20,7 +20,6 @@
 #include <device/device.h>
 #include <pc80/mc146818rtc.h>
 #include <smp/spinlock.h>
-#include <rules.h>
 
 /* Write POST information */
 

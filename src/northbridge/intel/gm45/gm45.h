@@ -21,7 +21,6 @@
 
 #ifndef __ACPI__
 
-#include <rules.h>
 #include <stdint.h>
 
 typedef enum {

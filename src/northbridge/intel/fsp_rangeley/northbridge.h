@@ -23,7 +23,6 @@
 /* Everything below this line is ignored in the DSDT */
 #ifndef __ACPI__
 
-#include <rules.h>
 #include <device/device.h>
 
 /* Device 0:0.0 PCI configuration space (Host Bridge) */

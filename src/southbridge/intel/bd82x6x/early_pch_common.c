@@ -20,7 +20,6 @@
 #include "pch.h"
 #include <arch/acpi.h>
 #include <console/console.h>
-#include <rules.h>
 
 #if ENV_ROMSTAGE
 int southbridge_detect_s3_resume(void)

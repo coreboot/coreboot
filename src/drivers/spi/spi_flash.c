@@ -32,47 +32,30 @@ static void spi_flash_addr(u32 addr, u8 *cmd)
 	cmd[3] = addr >> 0;
 }
 
-/*
- * If atomic sequencing is used, the cycle type is known to the SPI
- * controller so that it can perform consecutive transfers and arbitrate
- * automatically. Otherwise the SPI controller transfers whatever the
- * user requests immediately, without regard to sequence. Atomic
- * sequencing is commonly used on x86 platforms.
- *
- * SPI flash commands are simple two-step sequences. The command byte is
- * always written first and may be followed by an address. Then data is
- * either read or written. For atomic sequencing we'll pass everything into
- * spi_xfer() at once and let the controller handle the details. Otherwise
- * we will write all output bytes first and then read if necessary.
- *
- * FIXME: This really should be abstracted better, but that will
- * require overhauling the entire SPI infrastructure.
- */
 static int do_spi_flash_cmd(const struct spi_slave *spi, const void *dout,
 			    size_t bytes_out, void *din, size_t bytes_in)
 {
 	int ret = 1;
+	/*
+	 * SPI flash requires command-response kind of behavior. Thus, two
+	 * separate SPI vectors are required -- first to transmit dout and other
+	 * to receive in din. If some specialized SPI flash controllers
+	 * (e.g. x86) can perform both command and response together, it should
+	 * be handled at SPI flash controller driver level.
+	 */
+	struct spi_op vectors[] = {
+		[0] = { .dout = dout, .bytesout = bytes_out,
+			.din = NULL, .bytesin = 0, },
+		[1] = { .dout = NULL, .bytesout = 0,
+			.din = din, .bytesin = bytes_in },
+	};
 
 	if (spi_claim_bus(spi))
 		return ret;
 
-#if CONFIG_SPI_ATOMIC_SEQUENCING == 1
-	if (spi_xfer(spi, dout, bytes_out, din, bytes_in) < 0)
-		goto done;
-#else
-	if (dout && bytes_out) {
-		if (spi_xfer(spi, dout, bytes_out, NULL, 0) < 0)
-			goto done;
-	}
+	if (spi_xfer_vector(spi, vectors, ARRAY_SIZE(vectors)) == 0)
+		ret = 0;
 
-	if (din && bytes_in) {
-		if (spi_xfer(spi, NULL, 0, din, bytes_in) < 0)
-			goto done;
-	}
-#endif
-
-	ret = 0;
-done:
 	spi_release_bus(spi);
 	return ret;
 }

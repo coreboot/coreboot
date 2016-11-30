@@ -659,6 +659,7 @@ static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 
 static const struct spi_ctrlr spi_ctrlr = {
 	.xfer = spi_ctrlr_xfer,
+	.xfer_vector = spi_xfer_two_vectors,
 };
 
 int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)

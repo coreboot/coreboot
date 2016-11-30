@@ -22,10 +22,6 @@
 #include <string.h>
 #include <timer.h>
 
-#if !CONFIG_SPI_ATOMIC_SEQUENCING
-#error "Unsupported SPI driver API"
-#endif
-
 /* Imgtec controller uses 16 bit packet length. */
 #define IMGTEC_SPI_MAX_TRANSFER_SIZE   ((1 << 16) - 1)
 
@@ -496,7 +492,7 @@ static int do_spi_xfer(const struct spi_slave *slave, const void *dout,
 }
 
 static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
-			      size_t bytesout, void *din, size_t bytesin)
+			  size_t bytesout, void *din, size_t bytesin)
 {
 	unsigned int in_sz, out_sz;
 	int ret;
@@ -541,6 +537,7 @@ static const struct spi_ctrlr spi_ctrlr = {
 	.claim_bus = spi_ctrlr_claim_bus,
 	.release_bus = spi_ctrlr_release_bus,
 	.xfer = spi_ctrlr_xfer,
+	.xfer_vector = spi_xfer_two_vectors,
 };
 
 /* Set up communications parameters for a SPI slave. */

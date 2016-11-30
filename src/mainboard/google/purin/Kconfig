@@ -26,7 +26,6 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select SPI_FLASH
 	select SPI_FLASH_SPANSION
 	select SPI_FLASH_STMICRO # required for the reference board BCM958305K
-	select SPI_ATOMIC_SEQUENCING
 
 config CHROMEOS
 	select VBOOT_VBNV_FLASH

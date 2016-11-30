@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#include <assert.h>
 #include <spi-generic.h>
 #include <string.h>
 
@@ -32,10 +33,55 @@ void spi_release_bus(const struct spi_slave *slave)
 		ctrlr->release_bus(slave);
 }
 
+static int spi_xfer_single_op(const struct spi_slave *slave,
+			struct spi_op *op)
+{
+	const struct spi_ctrlr *ctrlr = slave->ctrlr;
+	int ret;
+
+	if (!ctrlr || !ctrlr->xfer)
+		return -1;
+
+	ret = ctrlr->xfer(slave, op->dout, op->bytesout, op->din, op->bytesin);
+	if (ret)
+		op->status = SPI_OP_FAILURE;
+	else
+		op->status = SPI_OP_SUCCESS;
+
+	return ret;
+}
+
+static int spi_xfer_vector_default(const struct spi_slave *slave,
+				struct spi_op vectors[], size_t count)
+{
+	size_t i;
+	int ret;
+
+	for (i = 0; i < count; i++) {
+		ret = spi_xfer_single_op(slave, &vectors[i]);
+		if (ret)
+			return ret;
+	}
+
+	return 0;
+}
+
+int spi_xfer_vector(const struct spi_slave *slave,
+		struct spi_op vectors[], size_t count)
+{
+	const struct spi_ctrlr *ctrlr = slave->ctrlr;
+
+	if (ctrlr && ctrlr->xfer_vector)
+		return ctrlr->xfer_vector(slave, vectors, count);
+
+	return spi_xfer_vector_default(slave, vectors, count);
+}
+
 int spi_xfer(const struct spi_slave *slave, const void *dout, size_t bytesout,
 	     void *din, size_t bytesin)
 {
 	const struct spi_ctrlr *ctrlr = slave->ctrlr;
+
 	if (ctrlr && ctrlr->xfer)
 		return ctrlr->xfer(slave, dout, bytesout, din, bytesin);
 
@@ -75,4 +121,57 @@ int __attribute__((weak)) spi_setup_slave(unsigned int bus, unsigned int cs,
 		return slave->ctrlr->setup(slave);
 
 	return 0;
+}
+
+static int spi_xfer_combine_two_vectors(const struct spi_slave *slave,
+					struct spi_op *v1, struct spi_op *v2)
+{
+	struct spi_op op = {
+		.dout = v1->dout, .bytesout = v1->bytesout,
+		.din = v2->din, .bytesin = v2->bytesin,
+	};
+	int ret;
+
+	/*
+	 * Combine two vectors only if:
+	 * v1 has non-NULL dout and NULL din and
+	 * v2 has non-NULL din and NULL dout and
+	 *
+	 * In all other cases, do not combine the two vectors.
+	 */
+	if ((!v1->dout || v1->din) || (v2->dout || !v2->din))
+		return -1;
+
+	ret = spi_xfer_single_op(slave, &op);
+	v1->status = v2->status = op.status;
+
+	return ret;
+}
+
+/*
+ * Helper function to allow chipsets to combine two vectors if possible. This
+ * function can only handle upto 2 vectors.
+ *
+ * Two vectors are combined if first vector has a non-NULL dout and NULL din and
+ * second vector has a non-NULL din and NULL dout. Otherwise, each vector is
+ * operated upon one at a time.
+ *
+ * Returns 0 on success and non-zero on failure.
+ */
+int spi_xfer_two_vectors(const struct spi_slave *slave,
+			struct spi_op vectors[], size_t count)
+{
+	int ret;
+
+	assert (count <= 2);
+
+	if (count == 2) {
+		ret = spi_xfer_combine_two_vectors(slave, &vectors[0],
+						&vectors[1]);
+
+		if (!ret || (vectors[0].status != SPI_OP_NOT_EXECUTED))
+			return ret;
+	}
+
+	return spi_xfer_vector_default(slave, vectors, count);
 }

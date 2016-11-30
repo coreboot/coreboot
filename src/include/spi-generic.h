@@ -36,20 +36,46 @@ struct spi_slave {
 	const struct spi_ctrlr *ctrlr;
 };
 
+/* Representation of SPI operation status. */
+enum spi_op_status {
+	SPI_OP_NOT_EXECUTED = 0,
+	SPI_OP_SUCCESS = 1,
+	SPI_OP_FAILURE = 2,
+};
+
+/*
+ * Representation of a SPI operation.
+ *
+ * dout:	Pointer to data to send.
+ * bytesout:	Count of data in bytes to send.
+ * din:	Pointer to store received data.
+ * bytesin:	Count of data in bytes to receive.
+ */
+struct spi_op {
+	const void *dout;
+	size_t bytesout;
+	void *din;
+	size_t bytesin;
+	enum spi_op_status status;
+};
+
 /*-----------------------------------------------------------------------
  * Representation of a SPI contoller.
  *
  * claim_bus:	Claim SPI bus and prepare for communication.
  * release_bus: Release SPI bus.
- * xfer:	SPI transfer
  * setup:	Setup given SPI device bus.
+ * xfer:	Perform one SPI transfer operation.
+ * xfer_vector: Vector of SPI transfer operations.
  */
 struct spi_ctrlr {
 	int (*claim_bus)(const struct spi_slave *slave);
 	void (*release_bus)(const struct spi_slave *slave);
+	int (*setup)(const struct spi_slave *slave);
 	int (*xfer)(const struct spi_slave *slave, const void *dout,
 		    size_t bytesout, void *din, size_t bytesin);
-	int (*setup)(const struct spi_slave *slave);
+	int (*xfer_vector)(const struct spi_slave *slave,
+			struct spi_op vectors[], size_t count);
 };
 
 /*-----------------------------------------------------------------------
@@ -134,6 +160,19 @@ void spi_release_bus(const struct spi_slave *slave);
 int spi_xfer(const struct spi_slave *slave, const void *dout, size_t bytesout,
 	     void *din, size_t bytesin);
 
+/*-----------------------------------------------------------------------
+ * Vector of SPI transfer operations
+ *
+ * spi_xfer_vector() interface:
+ *   slave:	The SPI slave which will be sending/receiving the data.
+ *   vectors:	Array of SPI op structures.
+ *   count:	Number of SPI op vectors.
+ *
+ *   Returns: 0 on success, not 0 on failure
+ */
+int spi_xfer_vector(const struct spi_slave *slave,
+		struct spi_op vectors[], size_t count);
+
 unsigned int spi_crop_chunk(unsigned int cmd_len, unsigned int buf_len);
 
 /*-----------------------------------------------------------------------
@@ -157,5 +196,24 @@ static inline int spi_w8r8(const struct spi_slave *slave, unsigned char byte)
 	ret = spi_xfer(slave, dout, 2, din, 2);
 	return ret < 0 ? ret : din[1];
 }
+
+/*
+ * Helper function to allow chipsets to combine two vectors if possible. It can
+ * only handle upto 2 vectors.
+ *
+ * This function is provided to support command-response kind of transactions
+ * expected by users like flash. Some special SPI flash controllers can handle
+ * such command-response operations in a single transaction. For these special
+ * controllers, separate command and response vectors can be combined into a
+ * single operation.
+ *
+ * Two vectors are combined if first vector has a non-NULL dout and NULL din and
+ * second vector has a non-NULL din and NULL dout. Otherwise, each vector is
+ * operated upon one at a time.
+ *
+ * Returns 0 on success and non-zero on failure.
+ */
+int spi_xfer_two_vectors(const struct spi_slave *slave,
+			struct spi_op vectors[], size_t count);
 
 #endif	/* _SPI_GENERIC_H_ */

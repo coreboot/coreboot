@@ -320,7 +320,7 @@ static int spi_hw_init(struct ipq_spi_slave *ds)
 	return SUCCESS;
 }
 
-int spi_claim_bus(struct spi_slave *slave)
+int spi_claim_bus(const struct spi_slave *slave)
 {
 	struct ipq_spi_slave *ds = to_ipq_spi(slave);
 	unsigned int ret;
@@ -332,7 +332,7 @@ int spi_claim_bus(struct spi_slave *slave)
 	return SUCCESS;
 }
 
-void spi_release_bus(struct spi_slave *slave)
+void spi_release_bus(const struct spi_slave *slave)
 {
 	struct ipq_spi_slave *ds = to_ipq_spi(slave);
 
@@ -341,7 +341,7 @@ void spi_release_bus(struct spi_slave *slave)
 	ds->initialized = 0;
 }
 
-static void write_force_cs(struct spi_slave *slave, int assert)
+static void write_force_cs(const struct spi_slave *slave, int assert)
 {
 	struct ipq_spi_slave *ds = to_ipq_spi(slave);
 
@@ -633,8 +633,8 @@ static int blsp_spi_write(struct ipq_spi_slave *ds, u8 *cmd_buffer,
  * This function is invoked with either tx_buf or rx_buf.
  * Calling this function with both null does a chip select change.
  */
-int spi_xfer(struct spi_slave *slave, const void *dout,
-	     unsigned out_bytes, void *din, unsigned in_bytes)
+int spi_xfer(const struct spi_slave *slave, const void *dout,
+	     size_t out_bytes, void *din, size_t in_bytes)
 {
 	struct ipq_spi_slave *ds = to_ipq_spi(slave);
 	u8 *txp = (u8 *)dout;

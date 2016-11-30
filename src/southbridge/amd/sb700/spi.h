@@ -13,5 +13,5 @@
  * GNU General Public License for more details.
  */
 
-int spi_claim_bus(struct spi_slave *slave);
-void spi_release_bus(struct spi_slave *slave);
+int spi_claim_bus(const struct spi_slave *slave);
+void spi_release_bus(const struct spi_slave *slave);

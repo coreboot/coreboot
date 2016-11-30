@@ -357,13 +357,13 @@ static void spi_init_cb(void *unused)
 
 BOOT_STATE_INIT_ENTRY(BS_DEV_INIT, BS_ON_ENTRY, spi_init_cb, NULL);
 
-int spi_claim_bus(struct spi_slave *slave)
+int spi_claim_bus(const struct spi_slave *slave)
 {
 	/* Handled by ICH automatically. */
 	return 0;
 }
 
-void spi_release_bus(struct spi_slave *slave)
+void spi_release_bus(const struct spi_slave *slave)
 {
 	/* Handled by ICH automatically. */
 }
@@ -536,8 +536,8 @@ unsigned int spi_crop_chunk(unsigned int cmd_len, unsigned int buf_len)
 	return min(cntlr.databytes, buf_len);
 }
 
-int spi_xfer(struct spi_slave *slave, const void *dout,
-		unsigned int bytesout, void *din, unsigned int bytesin)
+int spi_xfer(const struct spi_slave *slave, const void *dout,
+		size_t bytesout, void *din, size_t bytesin)
 {
 	uint16_t control;
 	int16_t opcode_index;

@@ -60,7 +60,7 @@ static int wait_status(u32 reg, u32 shift)
 }
 
 /* Transmitter function. Fills TX FIFO with data before enabling SPIM */
-static int transmitdata(struct spi_slave *slave, u8 *buffer, u32 size)
+static int transmitdata(const struct spi_slave *slave, u8 *buffer, u32 size)
 {
 	u32 blocksize, base, write_data;
 	int ret;
@@ -97,7 +97,7 @@ static int transmitdata(struct spi_slave *slave, u8 *buffer, u32 size)
 }
 
 /* Receiver function */
-static int receivedata(struct spi_slave *slave, u8 *buffer, u32 size)
+static int receivedata(const struct spi_slave *slave, u8 *buffer, u32 size)
 {
 	u32 read_data, base;
 	int ret;
@@ -141,7 +141,7 @@ static int receivedata(struct spi_slave *slave, u8 *buffer, u32 size)
 }
 
 /* Sets port parameters in port state register. */
-static void  setparams(struct spi_slave *slave, u32 port,
+static void  setparams(const struct spi_slave *slave, u32 port,
 			struct spim_device_parameters *params)
 {
 	u32 spim_parameters, port_state, base;
@@ -247,7 +247,7 @@ static u32 control_reg_setup(struct spim_buffer *first,
 }
 
 /* Checks the given buffer information */
-static int check_buffers(struct spi_slave *slave, struct spim_buffer *first,
+static int check_buffers(const struct spi_slave *slave, struct spim_buffer *first,
 				struct spim_buffer *second){
 
 	if (!(container_of(slave, struct img_spi_slave, slave)->initialised))
@@ -325,7 +325,7 @@ static int check_device_params(struct spim_device_parameters *pdev_param)
 }
 
 /* Function that carries out read/write operations */
-static int spim_io(struct spi_slave *slave, struct spim_buffer *first,
+static int spim_io(const struct spi_slave *slave, struct spim_buffer *first,
 			struct spim_buffer *second)
 {
 	u32 reg, base;
@@ -459,7 +459,7 @@ struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs)
 }
 
 /* Claim the bus and prepare it for communication */
-int spi_claim_bus(struct spi_slave *slave)
+int spi_claim_bus(const struct spi_slave *slave)
 {
 	int ret;
 	struct img_spi_slave *img_slave;
@@ -490,7 +490,7 @@ int spi_claim_bus(struct spi_slave *slave)
 }
 
 /* Release the SPI bus */
-void spi_release_bus(struct spi_slave *slave)
+void spi_release_bus(const struct spi_slave *slave)
 {
 	struct img_spi_slave *img_slave;
 
@@ -508,8 +508,8 @@ void spi_release_bus(struct spi_slave *slave)
 }
 
 /* SPI transfer */
-static int do_spi_xfer(struct spi_slave *slave, const void *dout,
-		       unsigned int bytesout, void *din, unsigned int bytesin)
+static int do_spi_xfer(const struct spi_slave *slave, const void *dout,
+		       size_t bytesout, void *din, size_t bytesin)
 {
 	struct spim_buffer	buff_0;
 	struct spim_buffer	buff_1;
@@ -532,8 +532,8 @@ static int do_spi_xfer(struct spi_slave *slave, const void *dout,
 	return spim_io(slave, &buff_0, (dout && din) ? &buff_1 : NULL);
 }
 
-int spi_xfer(struct spi_slave *slave, const void *dout, unsigned int bytesout,
-	     void *din, unsigned int bytesin)
+int spi_xfer(const struct spi_slave *slave, const void *dout, size_t bytesout,
+	     void *din, size_t bytesin)
 {
 	unsigned int in_sz, out_sz;
 	int ret;

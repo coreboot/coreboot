@@ -37,11 +37,11 @@
 /* SPI Interface descriptor used by the driver. */
 struct tpm_spi_if {
 	struct spi_slave *slave;
-	int (*cs_assert)(struct spi_slave *slave);
-	void (*cs_deassert)(struct spi_slave *slave);
-	int  (*xfer)(struct spi_slave *slave, const void *dout,
-		     unsigned bytesout, void *din,
-		     unsigned bytesin);
+	int (*cs_assert)(const struct spi_slave *slave);
+	void (*cs_deassert)(const struct spi_slave *slave);
+	int  (*xfer)(const struct spi_slave *slave, const void *dout,
+		     size_t bytesout, void *din,
+		     size_t bytesin);
 };
 
 /* Use the common SPI driver wrapper as the interface callbacks. */

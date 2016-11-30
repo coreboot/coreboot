@@ -618,7 +618,7 @@ static int spi_hw_init(struct ipq_spi_slave *ds)
 	return SUCCESS;
 }
 
-int spi_claim_bus(struct spi_slave *slave)
+int spi_claim_bus(const struct spi_slave *slave)
 {
 	struct ipq_spi_slave *ds = to_ipq_spi(slave);
 	unsigned int ret;
@@ -641,7 +641,7 @@ int spi_claim_bus(struct spi_slave *slave)
 	return SUCCESS;
 }
 
-void spi_release_bus(struct spi_slave *slave)
+void spi_release_bus(const struct spi_slave *slave)
 {
 	struct ipq_spi_slave *ds = to_ipq_spi(slave);
 
@@ -711,8 +711,8 @@ unsigned int spi_crop_chunk(unsigned int cmd_len, unsigned int buf_len)
 	return min(MAX_PACKET_COUNT, buf_len);
 }
 
-int spi_xfer(struct spi_slave *slave, const void *dout,
-	     unsigned out_bytes, void *din, unsigned in_bytes)
+int spi_xfer(const struct spi_slave *slave, const void *dout,
+	     size_t out_bytes, void *din, size_t in_bytes)
 {
 	int ret;
 	struct ipq_spi_slave *ds = to_ipq_spi(slave);

@@ -90,13 +90,13 @@ unsigned int spi_crop_chunk(unsigned int cmd_len, unsigned int buf_len)
 	return min(AMD_SB_SPI_TX_LEN - cmd_len, buf_len);
 }
 
-int spi_xfer(struct spi_slave *slave, const void *dout,
-		unsigned int bytesout, void *din, unsigned int bytesin)
+int spi_xfer(const struct spi_slave *slave, const void *dout,
+		size_t bytesout, void *din, size_t bytesin)
 {
 	/* First byte is cmd which can not being sent through FIFO. */
 	u8 cmd = *(u8 *)dout++;
 	u8 readoffby1;
-	u8 count;
+	size_t count;
 
 	bytesout--;
 
@@ -147,13 +147,13 @@ int spi_xfer(struct spi_slave *slave, const void *dout,
 	return 0;
 }
 
-int spi_claim_bus(struct spi_slave *slave)
+int spi_claim_bus(const struct spi_slave *slave)
 {
 	/* Nothing is required. */
 	return 0;
 }
 
-void spi_release_bus(struct spi_slave *slave)
+void spi_release_bus(const struct spi_slave *slave)
 {
 	/* Nothing is required. */
 }

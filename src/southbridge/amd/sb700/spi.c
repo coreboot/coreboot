@@ -65,13 +65,13 @@ static void execute_command(void)
 		(read8((void *)(spibar+3)) & 0x80));
 }
 
-int spi_claim_bus(struct spi_slave *slave)
+int spi_claim_bus(const struct spi_slave *slave)
 {
 	/* Handled internally by the SB700 */
 	return 0;
 }
 
-void spi_release_bus(struct spi_slave *slave)
+void spi_release_bus(const struct spi_slave *slave)
 {
 	/* Handled internally by the SB700 */
 }
@@ -89,14 +89,14 @@ struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs)
 	return slave;
 }
 
-int spi_xfer(struct spi_slave *slave, const void *dout,
-		unsigned int bytesout, void *din, unsigned int bytesin)
+int spi_xfer(const struct spi_slave *slave, const void *dout,
+		size_t bytesout, void *din, size_t bytesin)
 {
 	/* First byte is cmd which cannot be sent through the FIFO. */
 	u8 cmd = *(u8 *)dout++;
 	u8 readoffby1;
 	u8 readwrite;
-	u8 count;
+	size_t count;
 
 	uint32_t spibar = get_spi_bar();
 

@@ -48,8 +48,8 @@ static void spi_flash_addr(u32 addr, u8 *cmd)
  * FIXME: This really should be abstracted better, but that will
  * require overhauling the entire SPI infrastructure.
  */
-static int do_spi_flash_cmd(struct spi_slave *spi, const void *dout,
-		unsigned int bytes_out, void *din, unsigned int bytes_in)
+static int do_spi_flash_cmd(const struct spi_slave *spi, const void *dout,
+			    size_t bytes_out, void *din, size_t bytes_in)
 {
 	int ret = 1;
 

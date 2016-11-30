@@ -55,7 +55,7 @@ static struct mtk_spi_bus spi_bus[1] = {
 	}
 };
 
-static inline struct mtk_spi_bus *to_mtk_spi(struct spi_slave *slave)
+static inline struct mtk_spi_bus *to_mtk_spi(const struct spi_slave *slave)
 {
 	return container_of(slave, struct mtk_spi_bus, slave);
 }
@@ -182,7 +182,7 @@ struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs)
 	};
 }
 
-int spi_claim_bus(struct spi_slave *slave)
+int spi_claim_bus(const struct spi_slave *slave)
 {
 	struct mtk_spi_bus *mtk_slave = to_mtk_spi(slave);
 	struct mtk_spi_regs *regs = mtk_slave->regs;
@@ -193,8 +193,8 @@ int spi_claim_bus(struct spi_slave *slave)
 	return 0;
 }
 
-static int mtk_spi_fifo_transfer(struct spi_slave *slave, void *in,
-				 const void *out, u32 size)
+static int mtk_spi_fifo_transfer(const struct spi_slave *slave, void *in,
+				 const void *out, size_t size)
 {
 	struct mtk_spi_bus *mtk_slave = to_mtk_spi(slave);
 	struct mtk_spi_regs *regs = mtk_slave->regs;
@@ -269,10 +269,10 @@ error:
 	return -1;
 }
 
-int spi_xfer(struct spi_slave *slave, const void *dout, unsigned int bytes_out,
-	     void *din, unsigned int bytes_in)
+int spi_xfer(const struct spi_slave *slave, const void *dout, size_t bytes_out,
+	     void *din, size_t bytes_in)
 {
-	uint32_t min_size = 0;
+	size_t min_size = 0;
 	int ret;
 
 	while (bytes_out || bytes_in) {
@@ -301,7 +301,7 @@ int spi_xfer(struct spi_slave *slave, const void *dout, unsigned int bytes_out,
 	return 0;
 }
 
-void spi_release_bus(struct spi_slave *slave)
+void spi_release_bus(const struct spi_slave *slave)
 {
 	struct mtk_spi_bus *mtk_slave = to_mtk_spi(slave);
 	struct mtk_spi_regs *regs = mtk_slave->regs;

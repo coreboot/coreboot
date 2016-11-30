@@ -19,11 +19,12 @@
 
 uintptr_t nhlt_soc_serialize(struct nhlt *nhlt, uintptr_t acpi_addr)
 {
-	return nhlt_soc_serialize_oem_overrides(nhlt, acpi_addr, NULL, NULL);
+	return nhlt_soc_serialize_oem_overrides(nhlt, acpi_addr, NULL, NULL, 0);
 }
 
 uintptr_t nhlt_soc_serialize_oem_overrides(struct nhlt *nhlt,
-	uintptr_t acpi_addr, const char *oem_id, const char *oem_table_id)
+	uintptr_t acpi_addr, const char *oem_id, const char *oem_table_id,
+	uint32_t oem_revision)
 {
 	global_nvs_t *gnvs;
 
@@ -37,5 +38,5 @@ uintptr_t nhlt_soc_serialize_oem_overrides(struct nhlt *nhlt,
 	gnvs->nhll = nhlt_current_size(nhlt);
 
 	return nhlt_serialize_oem_overrides(nhlt, acpi_addr,
-						oem_id, oem_table_id);
+					oem_id, oem_table_id, oem_revision);
 }

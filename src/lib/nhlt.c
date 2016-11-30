@@ -390,11 +390,12 @@ static void nhlt_serialize_endpoints(struct nhlt *nhlt, struct cursor *cur)
 
 uintptr_t nhlt_serialize(struct nhlt *nhlt, uintptr_t acpi_addr)
 {
-	return nhlt_serialize_oem_overrides(nhlt, acpi_addr, NULL, NULL);
+	return nhlt_serialize_oem_overrides(nhlt, acpi_addr, NULL, NULL, 0);
 }
 
 uintptr_t nhlt_serialize_oem_overrides(struct nhlt *nhlt,
-	uintptr_t acpi_addr, const char *oem_id, const char *oem_table_id)
+	uintptr_t acpi_addr, const char *oem_id, const char *oem_table_id,
+	uint32_t oem_revision)
 {
 	struct cursor cur;
 	acpi_header_t *header;
@@ -424,6 +425,7 @@ uintptr_t nhlt_serialize_oem_overrides(struct nhlt *nhlt,
 
 	memcpy(header->oem_id, oem_id, oem_id_len);
 	memcpy(header->oem_table_id, oem_table_id, oem_table_id_len);
+	write_le32(&header->oem_revision, oem_revision);
 	memcpy(header->asl_compiler_id, ASLC, 4);
 
 	cur.buf = (void *)(acpi_addr + sizeof(acpi_header_t));

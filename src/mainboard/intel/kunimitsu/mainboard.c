@@ -84,7 +84,7 @@ static unsigned long mainboard_write_acpi_tables(
 			printk(BIOS_ERR, "Couldn't add headset codec.\n");
 
 		end_addr = nhlt_soc_serialize_oem_overrides(nhlt, start_addr,
-						 oem_id, oem_table_id);
+						 oem_id, oem_table_id, 0);
 
 		if (end_addr != start_addr)
 			acpi_add_table(rsdp, (void *)start_addr);

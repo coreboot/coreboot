@@ -19,6 +19,7 @@
 #include <arch/exception.h>
 #include <arch/mmu.h>
 #include <cbfs.h>
+#include <cbmem.h>
 #include <console/console.h>
 #include <program_loading.h>
 #include <romstage_handoff.h>
@@ -28,6 +29,7 @@
 #include <soc/sdram.h>
 #include <symbols.h>
 #include <soc/usb.h>
+#include <stdlib.h>
 
 #include "pwm_regulator.h"
 

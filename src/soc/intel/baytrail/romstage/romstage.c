@@ -28,6 +28,7 @@
 #include <program_loading.h>
 #include <romstage_handoff.h>
 #include <stage_cache.h>
+#include <string.h>
 #include <timestamp.h>
 #include <tpm.h>
 #include <vendorcode/google/chromeos/chromeos.h>

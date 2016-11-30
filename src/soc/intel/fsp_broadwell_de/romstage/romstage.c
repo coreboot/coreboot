@@ -19,6 +19,7 @@
 #include <lib.h>
 #include <arch/io.h>
 #include <arch/cbfs.h>
+#include <cbmem.h>
 #include <console/console.h>
 #include <cpu/x86/mtrr.h>
 #include <program_loading.h>

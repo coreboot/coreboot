@@ -209,7 +209,7 @@ static unsigned int tegra_spi_speed(unsigned int bus)
 	return 50000000;
 }
 
-int spi_claim_bus(struct spi_slave *slave)
+int spi_claim_bus(const struct spi_slave *slave)
 {
 	struct tegra_spi_regs *regs = to_tegra_spi(slave->bus)->regs;
 	u32 val;
@@ -232,7 +232,7 @@ int spi_claim_bus(struct spi_slave *slave)
 	return 0;
 }
 
-void spi_release_bus(struct spi_slave *slave)
+void spi_release_bus(const struct spi_slave *slave)
 {
 	struct tegra_spi_regs *regs = to_tegra_spi(slave->bus)->regs;
 	u32 val;
@@ -719,13 +719,13 @@ unsigned int spi_crop_chunk(unsigned int cmd_len, unsigned int buf_len)
 	return buf_len;
 }
 
-int spi_xfer(struct spi_slave *slave, const void *dout,
-		unsigned int out_bytes, void *din, unsigned int in_bytes)
+int spi_xfer(const struct spi_slave *slave, const void *dout,
+	     size_t out_bytes, void *din, size_t in_bytes)
 {
 	struct tegra_spi_channel *spi = to_tegra_spi(slave->bus);
 	u8 *out_buf = (u8 *)dout;
 	u8 *in_buf = (u8 *)din;
-	unsigned int todo;
+	size_t todo;
 	int ret = 0;
 
 	/* tegra bus numbers start at 1 */

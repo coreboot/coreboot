@@ -58,7 +58,7 @@ static struct exynos_spi_slave exynos_spi_slaves[3] = {
 	},
 };
 
-static inline struct exynos_spi_slave *to_exynos_spi(struct spi_slave *slave)
+static inline struct exynos_spi_slave *to_exynos_spi(const struct spi_slave *slave)
 {
 	return container_of(slave, struct exynos_spi_slave, slave);
 }
@@ -128,7 +128,7 @@ struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs)
 	return &eslave->slave;
 }
 
-int spi_claim_bus(struct spi_slave *slave)
+int spi_claim_bus(const struct spi_slave *slave)
 {
 	struct exynos_spi *regs = to_exynos_spi(slave)->regs;
 	// TODO(hungte) Add some delay if too many transactions happen at once.
@@ -137,19 +137,19 @@ int spi_claim_bus(struct spi_slave *slave)
 }
 
 static void spi_transfer(struct exynos_spi *regs, void *in, const void *out,
-			 u32 size)
+			 size_t size)
 {
 	u8 *inb = in;
 	const u8 *outb = out;
 
-	int width = (size % 4) ? 1 : 4;
+	size_t width = (size % 4) ? 1 : 4;
 
 	while (size) {
-		int packets = size / width;
+		size_t packets = size / width;
 		// The packet count field is 16 bits wide.
 		packets = MIN(packets, (1 << 16) - 1);
 
-		int out_bytes, in_bytes;
+		size_t out_bytes, in_bytes;
 		out_bytes = in_bytes = packets * width;
 
 		spi_sw_reset(regs, width == 4);
@@ -188,13 +188,13 @@ static void spi_transfer(struct exynos_spi *regs, void *in, const void *out,
 	}
 }
 
-int spi_xfer(struct spi_slave *slave, const void *dout, unsigned int bytes_out,
-	     void *din, unsigned int bytes_in)
+int spi_xfer(const struct spi_slave *slave, const void *dout, size_t bytes_out,
+	     void *din, size_t bytes_in)
 {
 	struct exynos_spi *regs = to_exynos_spi(slave)->regs;
 
 	if (bytes_out && bytes_in) {
-		u32 min_size = MIN(bytes_out, bytes_in);
+		size_t min_size = MIN(bytes_out, bytes_in);
 
 		spi_transfer(regs, din, dout, min_size);
 
@@ -213,7 +213,7 @@ int spi_xfer(struct spi_slave *slave, const void *dout, unsigned int bytes_out,
 	return 0;
 }
 
-void spi_release_bus(struct spi_slave *slave)
+void spi_release_bus(const struct spi_slave *slave)
 {
 	struct exynos_spi *regs = to_exynos_spi(slave)->regs;
 	setbits_le32(&regs->cs_reg, SPI_SLAVE_SIG_INACT);

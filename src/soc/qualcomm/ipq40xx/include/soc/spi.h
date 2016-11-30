@@ -186,7 +186,7 @@ struct ipq_spi_slave {
 	int allocated;
 };
 
-static inline struct ipq_spi_slave *to_ipq_spi(struct spi_slave *slave)
+static inline struct ipq_spi_slave *to_ipq_spi(const struct spi_slave *slave)
 {
 	return container_of(slave, struct ipq_spi_slave, slave);
 }

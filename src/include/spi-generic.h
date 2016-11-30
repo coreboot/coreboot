@@ -17,6 +17,7 @@
 #define _SPI_GENERIC_H_
 
 #include <stdint.h>
+#include <stddef.h>
 
 /* Controller-specific definitions: */
 
@@ -67,7 +68,7 @@ struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs);
  * Returns: 0 if the bus was claimed successfully, or a negative value
  * if it wasn't.
  */
-int spi_claim_bus(struct spi_slave *slave);
+int spi_claim_bus(const struct spi_slave *slave);
 
 /*-----------------------------------------------------------------------
  * Release the SPI bus
@@ -78,7 +79,7 @@ int spi_claim_bus(struct spi_slave *slave);
  *
  *   slave:	The SPI slave
  */
-void spi_release_bus(struct spi_slave *slave);
+void spi_release_bus(const struct spi_slave *slave);
 
 /*-----------------------------------------------------------------------
  * SPI transfer
@@ -92,10 +93,8 @@ void spi_release_bus(struct spi_slave *slave);
  *
  *   Returns: 0 on success, not 0 on failure
  */
-int  spi_xfer(struct spi_slave *slave, const void *dout, unsigned int bytesout,
-		void *din, unsigned int bytesin);
-
-
+int spi_xfer(const struct spi_slave *slave, const void *dout, size_t bytesout,
+	     void *din, size_t bytesin);
 
 unsigned int spi_crop_chunk(unsigned int cmd_len, unsigned int buf_len);
 
@@ -108,7 +107,7 @@ unsigned int spi_crop_chunk(unsigned int cmd_len, unsigned int buf_len);
  *
  * TODO: This function probably shouldn't be inlined.
  */
-static inline int spi_w8r8(struct spi_slave *slave, unsigned char byte)
+static inline int spi_w8r8(const struct spi_slave *slave, unsigned char byte)
 {
 	unsigned char dout[2];
 	unsigned char din[2];

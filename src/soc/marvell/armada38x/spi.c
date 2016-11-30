@@ -409,8 +409,8 @@ int mv_spi_8bit_data_tx_rx(unsigned char spi_id,
 	return MV_OK;
 }
 
-static int mrvl_spi_xfer(struct spi_slave *slave,
-			 unsigned int bitlen,
+static int mrvl_spi_xfer(const struct spi_slave *slave,
+			 size_t bitlen,
 			 const void *dout,
 			 void *din)
 {
@@ -454,14 +454,14 @@ struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs)
 	return slave;
 }
 
-int spi_claim_bus(struct spi_slave *slave)
+int spi_claim_bus(const struct spi_slave *slave)
 {
 	mv_spi_cs_set(slave->bus, slave->cs);
 	mv_spi_cs_assert(slave->bus);
 	return 0;
 }
 
-void spi_release_bus(struct spi_slave *slave)
+void spi_release_bus(const struct spi_slave *slave)
 {
 	mv_spi_cs_deassert(slave->bus);
 }
@@ -471,11 +471,11 @@ unsigned int spi_crop_chunk(unsigned int cmd_len, unsigned int buf_len)
 	return buf_len;
 }
 
-int spi_xfer(struct spi_slave *slave,
+int spi_xfer(const struct spi_slave *slave,
 	     const void *dout,
-	     unsigned out_bytes,
+	     size_t out_bytes,
 	     void *din,
-	     unsigned in_bytes)
+	     size_t in_bytes)
 {
 	int ret = -1;
 

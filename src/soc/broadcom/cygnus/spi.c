@@ -156,7 +156,7 @@ static int mspi_enable(struct qspi_priv *priv)
 	return 0;
 }
 
-int spi_claim_bus(struct spi_slave *slave)
+int spi_claim_bus(const struct spi_slave *slave)
 {
 	struct qspi_priv *priv = to_qspi_slave(slave);
 
@@ -175,7 +175,7 @@ int spi_claim_bus(struct spi_slave *slave)
 	return 0;
 }
 
-void spi_release_bus(struct spi_slave *slave)
+void spi_release_bus(const struct spi_slave *slave)
 {
 	struct qspi_priv *priv = to_qspi_slave(slave);
 
@@ -189,8 +189,8 @@ void spi_release_bus(struct spi_slave *slave)
 #define RXRAM_8B(p, i)	(REG_RD((p)->reg + MSPI_RXRAM_REG + \
 				((((i) << 1) + 1) << 2)) & 0xff)
 
-int spi_xfer(struct spi_slave *slave, const void *dout, unsigned int bytesout,
-	     void *din, unsigned int bytesin)
+int spi_xfer(const struct spi_slave *slave, const void *dout, size_t bytesout,
+	     void *din, size_t bytesin)
 {
 	struct qspi_priv *priv = to_qspi_slave(slave);
 	const u8 *tx = (const u8 *)dout;

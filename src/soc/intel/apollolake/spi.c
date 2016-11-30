@@ -184,8 +184,8 @@ unsigned int spi_crop_chunk(unsigned int cmd_len, unsigned int buf_len)
 	return MIN(buf_len, SPIBAR_FDATA_FIFO_SIZE);
 }
 
-int spi_xfer(struct spi_slave *slave, const void *dout,
-		unsigned int bytesout, void *din, unsigned int bytesin)
+int spi_xfer(const struct spi_slave *slave, const void *dout,
+	     size_t bytesout, void *din, size_t bytesin)
 {
 	printk(BIOS_DEBUG, "NOT IMPLEMENTED: %s() !!!\n", __func__);
 	return E_NOT_IMPLEMENTED;
@@ -215,13 +215,13 @@ void spi_init(void)
 	pci_write_config32(ctx->pci_dev, SPIBAR_BIOS_CONTROL, bios_ctl);
 }
 
-int spi_claim_bus(struct spi_slave *slave)
+int spi_claim_bus(const struct spi_slave *slave)
 {
 	/* There's nothing we need to to here. */
 	return 0;
 }
 
-void spi_release_bus(struct spi_slave *slave)
+void spi_release_bus(const struct spi_slave *slave)
 {
 	/* No magic needed here. */
 }

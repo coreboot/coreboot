@@ -151,8 +151,8 @@ static size_t spi_get_flash_size(pch_spi_regs *spi_bar)
 	return size;
 }
 
-int spi_xfer(struct spi_slave *slave, const void *dout,
-		unsigned int bytesout, void *din, unsigned int bytesin)
+int spi_xfer(const struct spi_slave *slave, const void *dout,
+		size_t bytesout, void *din, size_t bytesin)
 {
 	/* TODO: Define xfer for hardware sequencing. */
 	return -1;
@@ -170,13 +170,13 @@ void spi_init(void)
 	pci_write_config_byte(dev, SPIBAR_BIOS_CNTL, bios_cntl);
 }
 
-int spi_claim_bus(struct spi_slave *slave)
+int spi_claim_bus(const struct spi_slave *slave)
 {
 	/* Handled by PCH automatically. */
 	return 0;
 }
 
-void spi_release_bus(struct spi_slave *slave)
+void spi_release_bus(const struct spi_slave *slave)
 {
 	/* Handled by PCH automatically. */
 }

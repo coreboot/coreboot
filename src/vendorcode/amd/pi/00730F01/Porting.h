@@ -278,7 +278,6 @@
 #include "gcc-intrin.h"
 
 #include <assert.h>
-#include <config.h>
 #include <console/console.h>
 #include <commonlib/loglevel.h>
 

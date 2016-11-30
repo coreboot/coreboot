@@ -47,7 +47,6 @@
 #include <device/pciexp.h>
 #include <device/hypertransport.h>
 #include <pc80/i8259.h>
-#include <kconfig.h>
 #include <vboot/vbnv.h>
 
 u8 pci_moving_config8(struct device *dev, unsigned int reg)

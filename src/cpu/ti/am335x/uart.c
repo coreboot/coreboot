@@ -13,7 +13,6 @@
  */
 
 #include <stdlib.h>
-#include <config.h>
 #include <types.h>
 #include <console/uart.h>
 #include <arch/io.h>

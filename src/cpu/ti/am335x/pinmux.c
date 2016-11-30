@@ -16,7 +16,6 @@
 #include "pinmux.h"
 
 #include <arch/io.h>
-#include <config.h>
 
 static struct am335x_pinmux_regs *regs =
 	(struct am335x_pinmux_regs *)(uintptr_t)AM335X_PINMUX_REG_ADDR;

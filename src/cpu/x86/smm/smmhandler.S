@@ -21,8 +21,6 @@
  * to 64k if we can though.
  */
 
-#include <kconfig.h>
-#include <config.h>
 #define LAPIC_BASE_MSR 0x1b
 
 /*

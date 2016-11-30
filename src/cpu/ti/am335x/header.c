@@ -12,7 +12,6 @@
  * GNU General Public License for more details.
  */
 
-#include <config.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <symbols.h>

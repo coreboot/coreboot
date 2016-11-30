@@ -29,7 +29,6 @@
  */
 
 #include <assert.h>
-#include <config.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <symbols.h>

@@ -78,4 +78,17 @@ static inline int romstage_handoff_init(int is_s3_resume)
 	return 0;
 }
 
+/* Return 1 if resuming or 0 if not. */
+static inline int romstage_handoff_is_resume(void)
+{
+	struct romstage_handoff *handoff;
+
+	handoff = cbmem_find(CBMEM_ID_ROMSTAGE_INFO);
+
+	if (handoff == NULL)
+		return 0;
+
+	return handoff->s3_resume;
+}
+
 #endif /* ROMSTAGE_HANDOFF_H */

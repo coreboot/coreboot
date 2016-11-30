@@ -260,7 +260,6 @@ static void set_power_limits(void)
 static void soc_init(void *data)
 {
 	struct global_nvs_t *gnvs;
-	struct romstage_handoff *handoff;
 
 	/* Save VBT info and mapping */
 	vbt = vbt_get(&vbt_rdev);
@@ -269,8 +268,7 @@ static void soc_init(void *data)
 	 * default policy that doesn't honor boards' requirements. */
 	itss_snapshot_irq_polarities(GPIO_IRQ_START, GPIO_IRQ_END);
 
-	handoff = romstage_handoff_find_or_add();
-	fsp_silicon_init(handoff->s3_resume);
+	fsp_silicon_init(romstage_handoff_is_resume());
 
 	/* Restore GPIO IRQ polarities back to previous settings. */
 	itss_restore_irq_polarities(GPIO_IRQ_START, GPIO_IRQ_END);

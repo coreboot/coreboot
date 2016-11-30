@@ -1,0 +1,36 @@
+#!/bin/sh
+# This file is part of the coreboot project.
+#
+# Copyright (C) 2016 Google Inc.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# DESCR: Check for auto-included headers
+
+LC_ALL=C export LC_ALL
+
+INCLUDED_DIRS='^src/'
+EXCLUDED_FILES='src/include/kconfig.h'
+
+# TODO: Add rules when those patches are complete
+HEADER_FILES="k*config"
+
+# Use git grep if the code is in a git repo, otherwise use grep.
+if [ -n "$(command -v git)" ] && [ -d .git ]; then
+	GREP_FILES="git grep -n"
+else
+	GREP_FILES="grep -rn"
+fi
+
+for header in $HEADER_FILES; do
+	${GREP_FILES} "#\s*include\s\+[\"<]\s*${header}\.h\s*[\">]" | \
+		grep "$INCLUDED_DIRS" | \
+		grep -v "$EXCLUDED_FILES"; \
+done

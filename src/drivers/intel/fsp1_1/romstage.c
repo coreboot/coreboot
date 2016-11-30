@@ -34,6 +34,7 @@
 #include <smbios.h>
 #include <soc/intel/common/mrc_cache.h>
 #include <stage_cache.h>
+#include <string.h>
 #include <timestamp.h>
 #include <tpm.h>
 #include <vendorcode/google/chromeos/chromeos.h>

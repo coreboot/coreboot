@@ -34,6 +34,7 @@
 #include <cpu/amd/amdfam16.h>
 #include <cpuRegisters.h>
 #include <Fch/Fch.h>
+#include <spd_cache.h>
 #include "gpio_ftns.h"
 
 #define SPD_SIZE  128

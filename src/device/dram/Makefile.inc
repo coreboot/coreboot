@@ -1,1 +1,2 @@
-romstage-y += ddr3.c ddr2.c
+romstage-$(CONFIG_SPD_CACHE) += spd_cache.c ddr3.c
+ramstage-$(CONFIG_SPD_CACHE) += spd_cache.c ddr3.c

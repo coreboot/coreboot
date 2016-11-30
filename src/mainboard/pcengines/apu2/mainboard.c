@@ -188,7 +188,6 @@ static void mainboard_enable(device_t dev)
 
 	u8 spd_buffer[SPD_SIZE];
 
-	printk(BIOS_ALERT, "Reading SPD index %d to get ECC info \n", spd_index);
 	if (read_spd_from_cbfs(spd_buffer, spd_index) < 0) {
 		/* Indicate no ECC */
 		spd_buffer[3] = 3;

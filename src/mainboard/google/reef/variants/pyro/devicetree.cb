@@ -71,50 +71,33 @@ chip soc/intel/apollolake
 	register "gpe0_dw2" = "PMC_GPE_N_63_32"
 	register "gpe0_dw3" = "PMC_GPE_SW_31_0"
 
-	# Limit I2C0 Audio codec da7219 speed to 400kHz with manually tuned values.
+	# Enable I2C0 for audio codec at 400kHz
 	register "i2c[0]" = "{
 		.speed = I2C_SPEED_FAST,
-		.speed_config[0] = {
-			.speed = I2C_SPEED_FAST,
-			.scl_lcnt = 0xd0,
-			.scl_hcnt = 0x68,
-			.sda_hold = 0x27,
-		}
+		.rise_time_ns = 104,
+		.fall_time_ns = 52,
 	}"
 
-	# Enable I2C2 bus early for TPM access and configure as 400kHz
-	# with manually tuned values.
+	# Enable I2C2 bus early for TPM at 400kHz
 	register "i2c[2]" = "{
 		.early_init = 1,
 		.speed = I2C_SPEED_FAST,
-		.speed_config[0] = {
-			.speed = I2C_SPEED_FAST,
-			.scl_lcnt = 0xd0,
-			.scl_hcnt = 0x68,
-			.sda_hold = 0x27,
-		}
+		.rise_time_ns = 50,
+		.fall_time_ns = 23,
 	}"
 
-	# Limit I2C3 WACOM touchscreen speed to 400kHz with manually tuned values.
+	# touchscreen at 400kHz
 	register "i2c[3]" = "{
 		.speed = I2C_SPEED_FAST,
-		.speed_config[0] = {
-			.speed = I2C_SPEED_FAST,
-			.scl_lcnt = 0xd0,
-			.scl_hcnt = 0x68,
-			.sda_hold = 0x27,
-		}
+		.rise_time_ns = 76,
+		.fall_time_ns = 164,
 	}"
 
-	# Limit trackpad speed to 400kHz with manually tuned values.
+	# trackpad at 400kHz
 	register "i2c[4]" = "{
 		.speed = I2C_SPEED_FAST,
-		.speed_config[0] = {
-			.speed = I2C_SPEED_FAST,
-			.scl_lcnt = 0xd0,
-			.scl_hcnt = 0x68,
-			.sda_hold = 0x27,
-		}
+		.rise_time_ns = 90,
+		.fall_time_ns = 164,
 	}"
 
 	# Minimum SLP S3 assertion width 28ms.

@@ -34,15 +34,8 @@ void configure_gpio(uintptr_t base_addr, u32 iomux_gpio, u8 iomux_ftn, u32 gpio,
 	*memptr = bdata;
 }
 
-int get_spd_offset(void)
+u8 read_gpio(uintptr_t base_addr, u32 gpio)
 {
-	u8 index = 0;
-	/* One SPD file contains all 4 options, determine which index to
-	 * read here, then call into the standard routines.
-	 */
-	u8 *gpio_bank0_ptr = (u8 *)(ACPI_MMIO_BASE + GPIO_BANK0_BASE);
-	if (*(gpio_bank0_ptr + (0x40 << 2) + 2) & BIT0) index |= BIT0;
-	if (*(gpio_bank0_ptr + (0x41 << 2) + 2) & BIT0) index |= BIT1;
-
-	return index;
+	u8 *memptr = (u8 *)(base_addr + GPIO_OFFSET + gpio);
+	return (*memptr & GPIO_DATA_IN) ? 1 : 0;
 }

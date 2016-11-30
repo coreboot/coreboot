@@ -35,13 +35,8 @@
 
 void soc_init_pre_device(void *chip_info)
 {
-	struct romstage_handoff *handoff;
-
-	/* Get S3 status to pass to silicon init. */
-	handoff = romstage_handoff_find_or_add();
-
 	/* Perform silicon specific init. */
-	fsp_silicon_init(handoff->s3_resume);
+	fsp_silicon_init(romstage_handoff_is_resume());
 }
 
 static void pci_domain_set_resources(device_t dev)

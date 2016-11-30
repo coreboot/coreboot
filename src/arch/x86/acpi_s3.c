@@ -32,14 +32,7 @@ int acpi_slp_type = -1;
 #if IS_ENABLED(CONFIG_EARLY_CBMEM_INIT)
 int acpi_get_sleep_type(void)
 {
-	struct romstage_handoff *handoff;
-
-	handoff = cbmem_find(CBMEM_ID_ROMSTAGE_INFO);
-
-	if (handoff == NULL) {
-		printk(BIOS_DEBUG, "Unknown boot method, assuming normal.\n");
-		return ACPI_S0;
-	} else if (handoff->s3_resume) {
+	if (romstage_handoff_is_resume()) {
 		printk(BIOS_DEBUG, "S3 Resume.\n");
 		return ACPI_S3;
 	} else {

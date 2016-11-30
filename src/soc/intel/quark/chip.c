@@ -102,8 +102,6 @@ static const struct reg_script thermal_init_script[] = {
 
 static void chip_init(void *chip_info)
 {
-	struct romstage_handoff *handoff;
-
 	/* Validate the temperature settings */
 	ASSERT(PLATFORM_CATASTROPHIC_TRIP_CELSIUS <= 255);
 	ASSERT(PLATFORM_CATASTROPHIC_TRIP_CELSIUS
@@ -120,8 +118,7 @@ static void chip_init(void *chip_info)
 			| TS_LOCK_AUX_TRIP_PT_REGS_ENABLE));
 
 	/* Perform silicon specific init. */
-	handoff = romstage_handoff_find_or_add();
-	fsp_silicon_init(handoff->s3_resume);
+	fsp_silicon_init(romstage_handoff_is_resume());
 }
 
 static void pci_domain_set_resources(device_t dev)

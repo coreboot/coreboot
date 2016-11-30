@@ -85,19 +85,19 @@ static void ramstage_cache_invalid(void)
 	}
 }
 
-static void run_ramstage_from_resume(struct romstage_handoff *handoff,
-					struct prog *ramstage)
+static void run_ramstage_from_resume(struct prog *ramstage)
 {
-	if (handoff != NULL && handoff->s3_resume) {
-		/* Load the cached ramstage to runtime location. */
-		stage_cache_load_stage(STAGE_RAMSTAGE, ramstage);
+	if (!romstage_handoff_is_resume())
+		return;
 
-		if (prog_entry(ramstage) != NULL) {
-			printk(BIOS_DEBUG, "Jumping to image.\n");
-			prog_run(ramstage);
-		}
-		ramstage_cache_invalid();
+	/* Load the cached ramstage to runtime location. */
+	stage_cache_load_stage(STAGE_RAMSTAGE, ramstage);
+
+	if (prog_entry(ramstage) != NULL) {
+		printk(BIOS_DEBUG, "Jumping to image.\n");
+		prog_run(ramstage);
 	}
+	ramstage_cache_invalid();
 }
 
 static int load_relocatable_ramstage(struct prog *ramstage)
@@ -136,8 +136,7 @@ void run_ramstage(void)
 	if (IS_ENABLED(CONFIG_ARCH_X86) &&
 	    !IS_ENABLED(CONFIG_NO_STAGE_CACHE) &&
 	    IS_ENABLED(CONFIG_EARLY_CBMEM_INIT))
-		run_ramstage_from_resume(romstage_handoff_find_or_add(),
-						&ramstage);
+		run_ramstage_from_resume(&ramstage);
 
 	if (prog_locate(&ramstage))
 		goto fail;

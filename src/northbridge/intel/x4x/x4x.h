@@ -87,8 +87,8 @@
 #define MCHBAR32(x) *((volatile u32 *)(DEFAULT_MCHBAR + x))
 
 #define PMSTS_MCHBAR		0x0f14	/* Self refresh channel status */
-#define PMSTS_WARM_RESET	(1 << 1)
-#define PMSTS_BOTH_SELFREFRESH	(1 << 0)
+#define PMSTS_WARM_RESET	(1 << 8)
+#define PMSTS_BOTH_SELFREFRESH	(3 << 0)
 
 #define CLKCFG_MCHBAR		0x0c00
 #define CLKCFG_FSBCLK_SHIFT	0
@@ -290,6 +290,9 @@ struct sysinfo {
 	struct dimminfo	dimms[4];
 	u8		spd_map[4];
 };
+#define BOOT_PATH_NORMAL	0
+#define BOOT_PATH_WARM_RESET	1
+#define BOOT_PATH_RESUME	2
 
 enum ddr2_signals {
 	CLKSET0 = 0,

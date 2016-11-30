@@ -20,6 +20,11 @@
 #include <console/console.h>
 #include <commonlib/helpers.h>
 #include <delay.h>
+#include <pc80/mc146818rtc.h>
+/* This northbridge can also occur with ICH10 */
+#if IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_I82801GX)
+#include <southbridge/intel/i82801gx/i82801gx.h>
+#endif
 #include "iomap.h"
 #include "x4x.h"
 
@@ -257,26 +262,25 @@ static void clkcross_ddr2(struct sysinfo *s)
 static void checkreset_ddr2(struct sysinfo *s)
 {
 	u8 pmcon2;
-	u8 reset = 0;
 
 	pmcon2 = pci_read_config8(PCI_DEV(0, 0x1f, 0), 0xa2);
-	if (!(pmcon2 & 0x80)) {
-		pmcon2 |= 0x80;
+
+	if (pmcon2 & 0x80) {
+		pmcon2 &= ~0x80;
 		pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xa2, pmcon2);
-		reset = 1;
 
 		/* do magic 0xf0 thing. */
 		u8 reg8 = pci_read_config8(PCI_DEV(0, 0, 0), 0xf0);
 		pci_write_config8(PCI_DEV(0, 0, 0), 0xf0, reg8 & ~(1 << 2));
 		reg8 = pci_read_config8(PCI_DEV(0, 0, 0), 0xf0);
 		pci_write_config8(PCI_DEV(0, 0, 0), 0xf0, reg8 |  (1 << 2));
-	}
-	if (reset) {
+
 		printk(BIOS_DEBUG, "Reset...\n");
-		outb(0xe, 0xcf9);
+		outb(0x6, 0xcf9);
 		asm ("hlt");
 	}
-	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xa2, pmcon2 | 0x80);
+	pmcon2 |= 0x80;
+	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xa2, pmcon2);
 }
 
 static void setioclk_ddr2(struct sysinfo *s)
@@ -1490,6 +1494,78 @@ static void rcven_ddr2(struct sysinfo *s)
 	printk(BIOS_DEBUG, "End rcven\n");
 }
 
+static void sdram_save_receive_enable(void)
+{
+	int i = 0;
+	u16 reg16;
+	u8 values[18];
+	u8 lane, ch;
+
+	FOR_EACH_CHANNEL(ch) {
+		lane = 0;
+		while (lane < 8) {
+			values[i] = (MCHBAR8(0x400*ch + 0x560 + lane++ * 4) & 0xf);
+			values[i++] |= (MCHBAR8(0x400*ch + 0x560 + lane++ * 4) & 0xf) << 4;
+		}
+		values[i++] = (MCHBAR32(0x400*ch + 0x248) >> 16) & 0xf;
+		reg16 = MCHBAR16(0x400*ch + 0x5fa);
+		values[i++] = reg16 & 0xff;
+		values[i++] = (reg16 >> 8) & 0xff;
+		reg16 = MCHBAR16(0x400*ch + 0x58c);
+		values[i++] = reg16 & 0xff;
+		values[i++] = (reg16 >> 8) & 0xff;
+	}
+
+	for (i = 0; i < ARRAY_SIZE(values); i++)
+		cmos_write(values[i], 128 + i);
+}
+
+static void sdram_recover_receive_enable(void)
+{
+	u8 i;
+	u32 reg32;
+	u16 reg16;
+	u8 values[18];
+	u8 ch, lane;
+
+	for (i = 0; i < ARRAY_SIZE(values); i++)
+		values[i] = cmos_read(128 + i);
+
+	i = 0;
+	FOR_EACH_CHANNEL(ch) {
+		lane = 0;
+		while (lane < 8) {
+			MCHBAR8(0x400*ch + 0x560 + lane++ * 4) = 0x70 |
+				(values[i] & 0xf);
+			MCHBAR8(0x400*ch + 0x560 + lane++ * 4) = 0x70 |
+				((values[i++] >> 4) & 0xf);
+		}
+		reg32 = (MCHBAR32(0x400*ch + 0x248) & ~0xf0000)
+		  | ((values[i++] & 0xf) << 16);
+		MCHBAR32(0x400*ch + 0x248) = reg32;
+		reg16 = values[i++];
+		reg16 |= values[i++] << 8;
+		MCHBAR16(0x400*ch + 0x5fa) = reg16;
+		reg16 = values[i++];
+		reg16 |= values[i++] << 8;
+		MCHBAR16(0x400*ch + 0x58c) = reg16;
+	}
+}
+
+static void sdram_program_receive_enable(struct sysinfo *s)
+{
+	/* enable upper CMOS */
+	RCBA32(0x3400) = (1 << 2);
+
+	/* Program Receive Enable Timings */
+	if (s->boot_path == BOOT_PATH_WARM_RESET) {
+		sdram_recover_receive_enable();
+	} else {
+		rcven_ddr2(s);
+		sdram_save_receive_enable();
+	}
+}
+
 static void dradrb_ddr2(struct sysinfo *s)
 {
 	u8 map, i, ch, r, rankpop0, rankpop1;
@@ -1863,23 +1939,25 @@ void raminit_ddr2(struct sysinfo *s)
 	// Reset if required
 	checkreset_ddr2(s);
 
-	// Clear self refresh
-	MCHBAR32(0xf14) = MCHBAR32(0xf14) | 0x3;
+	if (s->boot_path != BOOT_PATH_WARM_RESET) {
+		// Clear self refresh
+		MCHBAR32(PMSTS_MCHBAR) = MCHBAR32(PMSTS_MCHBAR)
+			| PMSTS_BOTH_SELFREFRESH;
 
-	// Clear host clk gate reg
-	MCHBAR32(0x1c) = MCHBAR32(0x1c) | 0xffffffff;
+		// Clear host clk gate reg
+		MCHBAR32(0x1c) = MCHBAR32(0x1c) | 0xffffffff;
 
-	// Select DDR2
-	MCHBAR8(0x1a8) = MCHBAR8(0x1a8) & ~0x4;
+		// Select DDR2
+		MCHBAR8(0x1a8) = MCHBAR8(0x1a8) & ~0x4;
 
-	// Set freq
-	MCHBAR32(0xc00) = (MCHBAR32(0xc00) & ~0x70) |
-		(s->selected_timings.mem_clk << 4) | (1 << 10);
+		// Set freq
+		MCHBAR32(0xc00) = (MCHBAR32(0xc00) & ~0x70) |
+			(s->selected_timings.mem_clk << 4) | (1 << 10);
 
-	// Overwrite freq if chipset rejects it
-	s->selected_timings.mem_clk = (MCHBAR8(0xc00) & 0x70) >> 4;
-	if (s->selected_timings.mem_clk > (s->max_fsb + 3)) {
-		die("Error: DDR is faster than FSB, halt\n");
+		// Overwrite freq if chipset rejects it
+		s->selected_timings.mem_clk = (MCHBAR8(0xc00) & 0x70) >> 4;
+		if (s->selected_timings.mem_clk > (s->max_fsb + 3))
+			die("Error: DDR is faster than FSB, halt\n");
 	}
 
 	udelay(250000);
@@ -1889,8 +1967,10 @@ void raminit_ddr2(struct sysinfo *s)
 	printk(BIOS_DEBUG, "Done clk crossing\n");
 
 	// DDR2 IO
-	setioclk_ddr2(s);
-	printk(BIOS_DEBUG, "Done I/O clk\n");
+	if (s->boot_path != BOOT_PATH_WARM_RESET) {
+		setioclk_ddr2(s);
+		printk(BIOS_DEBUG, "Done I/O clk\n");
+	}
 
 	// Grant to launch
 	launch_ddr2(s);
@@ -1904,16 +1984,21 @@ void raminit_ddr2(struct sysinfo *s)
 	dll_ddr2(s);
 
 	// RCOMP
-	rcomp_ddr2(s);
-	printk(BIOS_DEBUG, "RCOMP\n");
+	if (s->boot_path != BOOT_PATH_WARM_RESET) {
+		rcomp_ddr2(s);
+		printk(BIOS_DEBUG, "RCOMP\n");
+	}
 
 	// ODT
 	odt_ddr2(s);
 	printk(BIOS_DEBUG, "Done ODT\n");
 
 	// RCOMP update
-	while ((MCHBAR8(0x130) & 1) != 0 );
-	printk(BIOS_DEBUG, "Done RCOMP update\n");
+	if (s->boot_path != BOOT_PATH_WARM_RESET) {
+		while ((MCHBAR8(0x130) & 1) != 0)
+			;
+		printk(BIOS_DEBUG, "Done RCOMP update\n");
+	}
 
 	// Set defaults
 	MCHBAR32(0x260) = (MCHBAR32(0x260) & ~1) | 0xf00000;
@@ -1993,7 +2078,7 @@ void raminit_ddr2(struct sysinfo *s)
 	}
 
 	// Receive enable
-	rcven_ddr2(s);
+	sdram_program_receive_enable(s);
 	printk(BIOS_DEBUG, "Done rcven\n");
 
 	// Finish rcven
@@ -2008,16 +2093,23 @@ void raminit_ddr2(struct sysinfo *s)
 	MCHBAR8(0x5dc) = MCHBAR8(0x5dc) | 0x80;
 
 	// Dummy writes / reads
-	volatile u32 data;
-	FOR_EACH_POPULATED_RANK(s->dimms, ch, r) {
-		for (bank = 0; bank < 4; bank++) {
-			reg32 = (ch << 29) | (r*0x8000000) | (bank << 12);
-			write32((u32 *)reg32, 0xffffffff);
-			data = read32((u32 *)reg32);
-			printk(BIOS_DEBUG, "Wrote ones,  Read: [0x%08x]=0x%08x\n", reg32, data);
-			write32((u32 *)reg32, 0x00000000);
-			data = read32((u32 *)reg32);
-			printk(BIOS_DEBUG, "Wrote zeros, Read: [0x%08x]=0x%08x\n", reg32, data);
+	if (s->boot_path == BOOT_PATH_NORMAL) {
+		volatile u32 data;
+		FOR_EACH_POPULATED_RANK(s->dimms, ch, r) {
+			for (bank = 0; bank < 4; bank++) {
+				reg32 = (ch << 29) | (r*0x8000000) |
+					(bank << 12);
+				write32((u32 *)reg32, 0xffffffff);
+				data = read32((u32 *)reg32);
+				printk(BIOS_DEBUG, "Wrote ones,");
+				printk(BIOS_DEBUG, "  Read: [0x%08x]=0x%08x\n",
+					reg32, data);
+				write32((u32 *)reg32, 0x00000000);
+				data = read32((u32 *)reg32);
+				printk(BIOS_DEBUG, "Wrote zeros,");
+				printk(BIOS_DEBUG, " Read: [0x%08x]=0x%08x\n",
+					reg32, data);
+			}
 		}
 	}
 	printk(BIOS_DEBUG, "Done dummy reads\n");

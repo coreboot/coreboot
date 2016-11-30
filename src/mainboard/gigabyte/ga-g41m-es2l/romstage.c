@@ -30,6 +30,7 @@
 #include <lib.h>
 #include <arch/stages.h>
 #include <cbmem.h>
+#include <northbridge/intel/x4x/iomap.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, IT8718F_SP1)
 #define GPIO_DEV PNP_DEV(0x2e, IT8718F_GPIO)
@@ -130,6 +131,7 @@ void mainboard_romstage_entry(unsigned long bist)
 {
 	//                          ch0      ch1
 	const u8 spd_addrmap[4] = { 0x50, 0, 0x52, 0 };
+	u8 boot_path = 0;
 
 	/* Disable watchdog timer */
 	RCBA32(0x3410) = RCBA32(0x3410) | 0x20;
@@ -149,8 +151,11 @@ void mainboard_romstage_entry(unsigned long bist)
 
 	x4x_early_init();
 
+	if (MCHBAR32(PMSTS_MCHBAR) & PMSTS_WARM_RESET)
+		boot_path = BOOT_PATH_WARM_RESET;
+
 	printk(BIOS_DEBUG, "Initializing memory\n");
-	sdram_initialize(0, spd_addrmap);
+	sdram_initialize(boot_path, spd_addrmap);
 	quick_ram_check();
 	cbmem_initialize_empty();
 	printk(BIOS_DEBUG, "Memory initialized\n");

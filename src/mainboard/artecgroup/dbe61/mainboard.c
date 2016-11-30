@@ -44,9 +44,9 @@ static void init(struct device *dev)
 
 static void mainboard_enable(struct device *dev)
 {
-        dev->ops->init = init;
+	dev->ops->init = init;
 }
 
 struct chip_operations mainboard_ops = {
-        .enable_dev = mainboard_enable,
+	.enable_dev = mainboard_enable,
 };

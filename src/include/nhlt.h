@@ -162,7 +162,8 @@ uintptr_t nhlt_serialize(struct nhlt *nhlt, uintptr_t acpi_addr);
  * valid after thisfunction is called.
  */
 uintptr_t nhlt_serialize_oem_overrides(struct nhlt *nhlt, uintptr_t acpi_addr,
-		const char *oem_id, const char *oem_table_id);
+		const char *oem_id, const char *oem_table_id,
+		uint32_t oem_revision);
 
 /*
  * While very similar to nhlt_serialize() the SoC specific function allows
@@ -177,7 +178,8 @@ uintptr_t nhlt_soc_serialize(struct nhlt *nhlt, uintptr_t acpi_addr);
  * as updating ACPI field references for the serialized structure.
  */
 uintptr_t nhlt_soc_serialize_oem_overrides(struct nhlt *nhlt,
-	uintptr_t acpi_addr, const char *oem_id, const char *oem_table_id);
+	uintptr_t acpi_addr, const char *oem_id, const char *oem_table_id,
+	uint32_t oem_revision);
 
 /* Link and device types. */
 enum {

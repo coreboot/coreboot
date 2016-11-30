@@ -54,6 +54,7 @@ static unsigned long mainboard_write_acpi_tables(
 	struct nhlt *nhlt;
 	const char *oem_id = NULL;
 	const char *oem_table_id = NULL;
+	uint32_t oem_revision = 0;
 
 	start_addr = current;
 
@@ -66,7 +67,7 @@ static unsigned long mainboard_write_acpi_tables(
 	variant_nhlt_oem_strings(&oem_id, &oem_table_id);
 
 	end_addr = nhlt_soc_serialize_oem_overrides(nhlt, start_addr,
-			oem_id, oem_table_id);
+			oem_id, oem_table_id, oem_revision);
 
 	if (end_addr != start_addr)
 		acpi_add_table(rsdp, (void *)start_addr);

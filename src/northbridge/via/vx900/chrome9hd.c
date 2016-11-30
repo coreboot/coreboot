@@ -15,7 +15,6 @@
  */
 
 #include <arch/io.h>
-#include <config.h>
 #include <console/console.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>

@@ -13,8 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include "config.h"
-
 /*
 PLL Freq = 25 * NS /(MS * 2^RS)
 CPU Freq = PLL/(CPU_DIV+2)

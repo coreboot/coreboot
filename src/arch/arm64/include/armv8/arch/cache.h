@@ -32,7 +32,6 @@
 #ifndef ARM_ARM64_CACHE_H
 #define ARM_ARM64_CACHE_H
 
-#include <config.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <arch/barrier.h>

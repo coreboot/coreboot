@@ -17,7 +17,6 @@
  * How we use DRAM on Allwinner CPUs
  */
 
-#include <config.h>
 #include <symbols.h>
 
 /*

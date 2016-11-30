@@ -19,7 +19,6 @@
 #include <device/device.h>
 #include <device/pnp.h>
 #include <ec/acpi/ec.h>
-#include <kconfig.h>
 #include <stdlib.h>
 #include <string.h>
 #include <smbios.h>

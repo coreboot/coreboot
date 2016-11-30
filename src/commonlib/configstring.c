@@ -27,7 +27,6 @@
  * MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
  */
 
-#include <config.h>
 #include <string.h>
 #include <commonlib/configstring.h>
 

@@ -14,7 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include <kconfig.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>

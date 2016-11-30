@@ -31,8 +31,10 @@ export KCONFIG_OVERWRITECONFIG=1
 # path to payload. Should be more generic
 PAYLOAD=/dev/null
 
-# path to coreboot XGCC
-XGCCPATH="${TOP}/util/crossgcc/xgcc/bin/"
+# get path to coreboot XGCC if it's not already set
+if [ -z "$XGCCPATH" ]; then
+	XGCCPATH="${TOP}/util/crossgcc/xgcc/bin/"
+fi
 
 # Add XGCC to the path.
 if [ -d "$XGCCPATH" ] && [[ ":$PATH:" != *":$XGCCPATH:"* ]]; then

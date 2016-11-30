@@ -41,8 +41,9 @@ static void mainboard_init(void *chip_info)
 	mainboard_ec_init();
 }
 
-void __attribute__((weak)) variant_nhlt_oem_strings(const char **oem_id,
-						const char **oem_table_id)
+void __attribute__((weak)) variant_nhlt_oem_overrides(const char **oem_id,
+						const char **oem_table_id,
+						uint32_t *oem_revision)
 {
 }
 
@@ -64,7 +65,7 @@ static unsigned long mainboard_write_acpi_tables(
 		return start_addr;
 
 	variant_nhlt_init(nhlt);
-	variant_nhlt_oem_strings(&oem_id, &oem_table_id);
+	variant_nhlt_oem_overrides(&oem_id, &oem_table_id, &oem_revision);
 
 	end_addr = nhlt_soc_serialize_oem_overrides(nhlt, start_addr,
 			oem_id, oem_table_id, oem_revision);

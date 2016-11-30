@@ -646,6 +646,7 @@ int spi_flash_protect(u32 start, u32 size)
 
 static const struct spi_ctrlr spi_ctrlr = {
 	.xfer = spi_ctrlr_xfer,
+	.xfer_vector = spi_xfer_two_vectors,
 };
 
 int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)

@@ -158,6 +158,7 @@ int chipset_volatile_group_end(const struct spi_flash *flash)
 
 static const struct spi_ctrlr spi_ctrlr = {
 	.xfer = spi_ctrlr_xfer,
+	.xfer_vector = spi_xfer_two_vectors,
 };
 
 int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)

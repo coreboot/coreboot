@@ -172,18 +172,37 @@ static void config_gpio_mux(void)
 
 static void mainboard_enable(device_t dev)
 {
-	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
 
 	config_gpio_mux();
 
-	//
-	// Enable the RTC output
-	//
+	setup_bsp_ramtop();
+	u32 top_mem = bsp_topmem() / (1024 * 1024);
+	u32 top_mem2 = (bsp_topmem2() / (1024 * 1024)) - 4 * 1024;
+
+	printk(BIOS_ALERT, CONFIG_MAINBOARD_PART_NUMBER "\n");
+	printk(BIOS_ALERT, "%d MB", top_mem+top_mem2);
+
+	/* Read memory configuration from GPIO 49 and 50 */
+	u8 spd_index = read_gpio(ACPI_MMIO_BASE, GPIO_49);
+	spd_index |= (read_gpio(ACPI_MMIO_BASE, GPIO_50) << 1);
+
+	u8 spd_buffer[SPD_SIZE];
+
+	printk(BIOS_ALERT, "Reading SPD index %d to get ECC info \n", spd_index);
+	if (read_spd_from_cbfs(spd_buffer, spd_index) < 0) {
+		/* Indicate no ECC */
+		spd_buffer[3] = 3;
+	}
+
+	if (spd_buffer[3] == 8) {
+		printk(BIOS_ALERT, " ECC");
+	}
+	printk(BIOS_ALERT, " DRAM\n\n");
+
+	/* Enable the RTC output */
 	pm_write16 ( PM_RTC_CONTROL, pm_read16( PM_RTC_CONTROL ) | (1 << 11));
 
-	//
-	// Enable power on from WAKE#
-	//
+	/* Enable power on from WAKE# */
 	pm_write16 ( PM_S_STATE_CONTROL, pm_read16( PM_S_STATE_CONTROL ) | (1 << 14));
 
 	/* Initialize the PIRQ data structures for consumption */

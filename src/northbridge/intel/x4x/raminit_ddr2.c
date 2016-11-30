@@ -259,41 +259,6 @@ static void clkcross_ddr2(struct sysinfo *s)
 	MCHBAR32(0x70c) = clkxtab[i][j][12];
 }
 
-static void checkreset_ddr2(struct sysinfo *s)
-{
-	u8 pmcon2;
-	u32 pmsts;
-
-	if (s->boot_path >= 1) {
-		pmsts = MCHBAR32(PMSTS_MCHBAR);
-		if (!(pmsts & 1))
-			printk(BIOS_DEBUG,
-				"Channel 0 possibly not in self refresh\n");
-		if (!(pmsts & 2))
-			printk(BIOS_DEBUG,
-				"Channel 1 possibly not in self refresh\n");
-	}
-
-	pmcon2 = pci_read_config8(PCI_DEV(0, 0x1f, 0), 0xa2);
-
-	if (pmcon2 & 0x80) {
-		pmcon2 &= ~0x80;
-		pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xa2, pmcon2);
-
-		/* do magic 0xf0 thing. */
-		u8 reg8 = pci_read_config8(PCI_DEV(0, 0, 0), 0xf0);
-		pci_write_config8(PCI_DEV(0, 0, 0), 0xf0, reg8 & ~(1 << 2));
-		reg8 = pci_read_config8(PCI_DEV(0, 0, 0), 0xf0);
-		pci_write_config8(PCI_DEV(0, 0, 0), 0xf0, reg8 |  (1 << 2));
-
-		printk(BIOS_DEBUG, "Reset...\n");
-		outb(0x6, 0xcf9);
-		asm ("hlt");
-	}
-	pmcon2 |= 0x80;
-	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xa2, pmcon2);
-}
-
 static void setioclk_ddr2(struct sysinfo *s)
 {
 	MCHBAR32(0x1bc) = 0x08060402;
@@ -1936,9 +1901,6 @@ void raminit_ddr2(struct sysinfo *s)
 
 	// Select timings based on SPD info
 	sdram_detect_smallest_params2(s);
-
-	// Reset if required
-	checkreset_ddr2(s);
 
 	if (s->boot_path != BOOT_PATH_WARM_RESET) {
 		// Clear self refresh

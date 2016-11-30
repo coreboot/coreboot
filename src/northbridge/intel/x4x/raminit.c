@@ -302,6 +302,41 @@ static void sdram_detect_ram_speed(struct sysinfo *s)
 	}
 }
 
+static void checkreset_ddr2(int boot_path)
+{
+	u8 pmcon2;
+	u32 pmsts;
+
+	if (boot_path >= 1) {
+		pmsts = MCHBAR32(PMSTS_MCHBAR);
+		if (!(pmsts & 1))
+			printk(BIOS_DEBUG,
+				"Channel 0 possibly not in self refresh\n");
+		if (!(pmsts & 2))
+			printk(BIOS_DEBUG,
+				"Channel 1 possibly not in self refresh\n");
+	}
+
+	pmcon2 = pci_read_config8(PCI_DEV(0, 0x1f, 0), 0xa2);
+
+	if (pmcon2 & 0x80) {
+		pmcon2 &= ~0x80;
+		pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xa2, pmcon2);
+
+		/* do magic 0xf0 thing. */
+		u8 reg8 = pci_read_config8(PCI_DEV(0, 0, 0), 0xf0);
+		pci_write_config8(PCI_DEV(0, 0, 0), 0xf0, reg8 & ~(1 << 2));
+		reg8 = pci_read_config8(PCI_DEV(0, 0, 0), 0xf0);
+		pci_write_config8(PCI_DEV(0, 0, 0), 0xf0, reg8 |  (1 << 2));
+
+		printk(BIOS_DEBUG, "Reset...\n");
+		outb(0x6, 0xcf9);
+		asm ("hlt");
+	}
+	pmcon2 |= 0x80;
+	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xa2, pmcon2);
+}
+
 /**
  * @param boot_path: 0 = normal, 1 = reset, 2 = resume from s3
  */
@@ -321,6 +356,8 @@ void sdram_initialize(int boot_path, const u8 *spd_map)
 	s.spd_map[1] = spd_map[1];
 	s.spd_map[2] = spd_map[2];
 	s.spd_map[3] = spd_map[3];
+
+	checkreset_ddr2(s.boot_path);
 
 	/* Detect dimms per channel */
 	s.dimms_per_ch = 2;

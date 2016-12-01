@@ -225,12 +225,29 @@ before_romstage:
 
 	post_code(0x38)
 
-	/* Get number of MTRRs. */
+	/* Clear all of the variable MTRRs. */
 	popl	%ebx
 	movl	$MTRR_PHYS_BASE(0), %ecx
+	clr	%eax
+	clr	%edx
+
 1:
 	testl	%ebx, %ebx
 	jz	1f
+	wrmsr			/* Write MTRR base. */
+	inc	%ecx
+	wrmsr			/* Write MTRR mask. */
+	inc	%ecx
+	dec	%ebx
+	jmp	1b
+
+1:
+	/* Get number of MTRRs. */
+	popl	%ebx
+	movl	$MTRR_PHYS_BASE(0), %ecx
+2:
+	testl	%ebx, %ebx
+	jz	2f
 
 	/* Low 32 bits of MTRR base. */
 	popl	%eax
@@ -248,8 +265,9 @@ before_romstage:
 	inc	%ecx
 
 	dec	%ebx
-	jmp	1b
-1:
+	jmp	2b
+2:
+
 	post_code(0x39)
 
 	/* And enable cache again after setting MTRRs. */

@@ -1,6 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
+ * Copyright (C) 2012 Google Inc.
  * Copyright (C) 2016 Damien Zammit <damien@zamaudio.com>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -14,11 +15,14 @@
  */
 
 /*
- * This driver forces the 10ec:8168 device to reset so that it goes
- * into a proper power state, also programs a default MAC address
+ * This driver resets the 10ec:8168 NIC then tries to read
+ * "macaddress" string XX:XX:XX:XX:XX:XX from CBFS.
+ * If no MAC is found, it programs a default MAC address in the device
  * so that if the EEPROM/efuse is unconfigured it still has a default MAC.
  */
 
+#include <cbfs.h>
+#include <string.h>
 #include <arch/io.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -36,26 +40,70 @@
 #define  CFG_9346_LOCK		0x00
 #define  CFG_9346_UNLOCK	0xc0
 
-static void r8168_init(struct device *dev)
+static u8 get_hex_digit(const u8 c)
 {
-	u32 i;
-	const u8 mac[6] = { 0x00, 0xe0, 0x4c, 0x00, 0xc0, 0xb0 };
+	u8 ret = 0;
 
-	/* Get the resource of the NIC mmio */
-	struct resource *nic_res = find_resource(dev, PCI_BASE_ADDRESS_0);
-	u16 nic_port = (u16)nic_res->base;
+	ret = c - '0';
+	if (ret > 0x09) {
+		ret = c - 'A' + 0x0a;
+		if (ret > 0x0f)
+			ret = c - 'a' + 0x0a;
+	}
+	if (ret > 0x0f) {
+		printk(BIOS_DEBUG, "Error: Invalid hex digit found: "
+				   "%c - 0x%02x\n", (char)c, c);
+		ret = 0;
+	}
+	return ret;
+}
 
-	/* Ensble but do not set bus master. That's dangerous on a NIC. */
-	pci_write_config16(dev, PCI_COMMAND,
-			   PCI_COMMAND_MEMORY | PCI_COMMAND_IO);
+static void get_mac_address(u8 *macaddr, const u8 *strbuf)
+{
+	size_t offset = 0;
+	int i;
+
+	if ( (strbuf[2] != ':') || (strbuf[5] != ':') ||
+	     (strbuf[8] != ':') || (strbuf[11] != ':') ||
+	     (strbuf[14] != ':') ) {
+		printk(BIOS_ERR, "r8168: ignore invalid MAC address in cbfs\n");
+		return;
+	}
+
+	for (i = 0; i < 6; i++) {
+		macaddr[i] = 0;
+		macaddr[i] |= get_hex_digit(strbuf[offset]) << 4;
+		macaddr[i] |= get_hex_digit(strbuf[offset + 1]);
+		offset += 3;
+	}
+}
+
+#define MACLEN 17
+
+static void program_mac_address(struct device *dev, u16 io_base)
+{
+	struct cbfsf fh;
+	uint32_t matchraw = CBFS_TYPE_RAW;
+	u8 macstrbuf[MACLEN] = { 0 };
+	int i = 0;
+	u8 mac[6] = { 0x00, 0xe0, 0x4c, 0x00, 0xc0, 0xb0 };
+
+	if (!cbfs_boot_locate(&fh, "macaddress", &matchraw)) {
+		if (rdev_readat(&fh.data, macstrbuf, 0, MACLEN) == MACLEN)
+			get_mac_address(mac, macstrbuf);
+		else
+			printk(BIOS_ERR, "r8168: Error reading MAC from CBFS\n");
+	} else {
+		printk(BIOS_ERR, "r8168: 'macaddress' not found in CBFS, "
+				 "using default 00:e0:4c:00:c0:b0\n");
+	}
 
 	/* Reset NIC */
 	printk(BIOS_DEBUG, "r8168: Resetting NIC...");
-	outb(CMD_REG_RESET, nic_port + CMD_REG);
+	outb(CMD_REG_RESET, io_base + CMD_REG);
 
-	i = 0;
-	/* Poll for reset, with 1s timeout */
-	while (i < NIC_TIMEOUT && (inb(nic_port + CMD_REG) & CMD_REG_RESET)) {
+	/* Poll for reset, with 1sec timeout */
+	while (i < NIC_TIMEOUT && (inb(io_base + CMD_REG) & CMD_REG_RESET)) {
 		udelay(1000);
 		if (++i >= NIC_TIMEOUT)
 			printk(BIOS_DEBUG, "timeout waiting for nic to reset\n");
@@ -63,20 +111,39 @@ static void r8168_init(struct device *dev)
 	if (i < NIC_TIMEOUT)
 		printk(BIOS_DEBUG, "done\n");
 
-	/* Unlock config regs */
-	outb(CFG_9346_UNLOCK, nic_port + CFG_9346);
+	printk(BIOS_DEBUG, "r8168: Programming MAC Address...");
 
-	/* Set MAC address 00:e0:4c:00:c0:b0
-	 * NB: only 4-byte write accesses allowed
-	 */
-	outl(mac[4] | mac[5] << 8, nic_port + 4);
-	inl(nic_port + 4);
+	/* Disable register protection */
+	outb(CFG_9346_UNLOCK, io_base + CFG_9346);
 
-	outl(mac[0] | mac[1] << 8 | mac[2] << 16 | mac[3] << 24, nic_port);
-	inl(nic_port);
-
+	/* Set MAC address: only 4-byte write accesses allowed */
+	outl(mac[4] | mac[5] << 8, io_base + 4);
+	inl(io_base + 4);
+	outl(mac[0] | mac[1] << 8 | mac[2] << 16 | mac[3] << 24,
+		io_base);
+	inl(io_base);
 	/* Lock config regs */
-	outb(CFG_9346_LOCK, nic_port + CFG_9346);
+	outb(CFG_9346_LOCK, io_base + CFG_9346);
+
+	printk(BIOS_DEBUG, "done\n");
+}
+
+static void r8168_init(struct device *dev)
+{
+	/* Get the resource of the NIC mmio */
+	struct resource *nic_res = find_resource(dev, PCI_BASE_ADDRESS_0);
+	u16 io_base = (u16)nic_res->base;
+
+	/* Enable but do not set bus master */
+	pci_write_config16(dev, PCI_COMMAND,
+			   PCI_COMMAND_MEMORY | PCI_COMMAND_IO);
+
+	/* Program MAC address based on CBFS "macaddress" containing
+	 * a string AA:BB:CC:DD:EE:FF */
+	if (io_base)
+		program_mac_address(dev, io_base);
+	else
+		printk(BIOS_DEBUG, "r8168: Error cant find MMIO resource\n");
 }
 
 static struct device_operations r8168_ops  = {

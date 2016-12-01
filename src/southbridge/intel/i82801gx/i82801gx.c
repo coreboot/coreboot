@@ -20,10 +20,6 @@
 #include "i82801gx.h"
 #include "sata.h"
 
-#if !CONFIG_MMCONF_SUPPORT_DEFAULT
-#error ICH7 requires CONFIG_MMCONF_SUPPORT_DEFAULT
-#endif
-
 void i82801gx_enable(device_t dev)
 {
 	u32 reg32;

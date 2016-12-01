@@ -330,8 +330,7 @@ static void read_resources(device_t dev)
 	 * It is not honored by the coreboot resource allocator if it is in
 	 * the CPU_CLUSTER.
 	 */
-	if (IS_ENABLED(CONFIG_MMCONF_SUPPORT))
-		enable_mmconf_resource(dev);
+	enable_mmconf_resource(dev);
 }
 
 static void set_resource(device_t dev, struct resource *resource, u32 nodeid)

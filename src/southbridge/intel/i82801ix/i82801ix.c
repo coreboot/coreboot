@@ -23,10 +23,6 @@
 #include <console/console.h>
 #include "i82801ix.h"
 
-#if !CONFIG_MMCONF_SUPPORT_DEFAULT
-#error ICH9 requires CONFIG_MMCONF_SUPPORT_DEFAULT
-#endif
-
 typedef struct southbridge_intel_i82801ix_config config_t;
 
 static void i82801ix_enable_device(device_t dev)

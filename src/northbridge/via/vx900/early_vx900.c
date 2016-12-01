@@ -40,14 +40,13 @@ void vx900_enable_pci_config_space(void)
 	 * accessed */
 	pci_io_write_config8(HOST_CTR, 0x4f, 0x01);
 
-#if CONFIG_MMCONF_SUPPORT
 	/* COOL, now enable MMCONF */
 	u8 reg8 = pci_io_read_config8(TRAF_CTR, 0x60);
 	reg8 |= 3;
 	pci_io_write_config8(TRAF_CTR, 0x60, reg8);
+
 	reg8 = CONFIG_MMCONF_BASE_ADDRESS >> 28;
 	pci_io_write_config8(TRAF_CTR, 0x61, reg8);
-#endif
 }
 
 /**

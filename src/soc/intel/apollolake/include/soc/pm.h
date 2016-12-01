@@ -213,4 +213,6 @@ void global_reset_lock(void);
 
 void pch_log_state(void);
 
+void enable_pm_timer_emulation(void);
+
 #endif

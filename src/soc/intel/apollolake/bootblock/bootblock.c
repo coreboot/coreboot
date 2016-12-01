@@ -41,22 +41,6 @@ static void tpm_enable(void)
 	gpio_configure_pads(tpm_spi_configs, ARRAY_SIZE(tpm_spi_configs));
 }
 
-static void enable_pm_timer(void)
-{
-	/* ACPI PM timer emulation */
-	msr_t msr;
-	/*
-	 * The derived frequency is calculated as follows:
-	 *    (CTC_FREQ * msr[63:32]) >> 32 = target frequency.
-	 * Back solve the multiplier so the 3.579545MHz ACPI timer
-	 * frequency is used.
-	 */
-	msr.hi = (3579545ULL << 32) / CTC_FREQ;
-	/* Set PM1 timer IO port and enable*/
-	msr.lo = EMULATE_PM_TMR_EN | (ACPI_PMIO_BASE + R_ACPI_PM1_TMR);
-	wrmsr(MSR_EMULATE_PM_TMR, msr);
-}
-
 static void enable_cmos_upper_bank(void)
 {
 	uint32_t reg = iosf_read(IOSF_RTC_PORT_ID, RTC_CONFIG);
@@ -177,7 +161,7 @@ void bootblock_soc_early_init(void)
 	if (IS_ENABLED(CONFIG_TPM_ON_FAST_SPI))
 		tpm_enable();
 
-	enable_pm_timer();
+	enable_pm_timer_emulation();
 
 	enable_spibar();
 

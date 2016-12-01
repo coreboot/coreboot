@@ -28,6 +28,7 @@
 #include <reg_script.h>
 #include <soc/cpu.h>
 #include <soc/iomap.h>
+#include <soc/pm.h>
 #include <soc/smm.h>
 #include <cpu/intel/turbo.h>
 
@@ -56,6 +57,12 @@ static void soc_core_init(device_t cpu)
 {
 	/* Set core MSRs */
 	reg_script_run(core_msr_script);
+	/*
+	 * Enable ACPI PM timer emulation, which also lets microcode know
+	 * location of ACPI_PMIO_BASE. This also enables other features
+	 * implemented in microcode.
+	*/
+	enable_pm_timer_emulation();
 }
 
 static struct device_operations cpu_dev_ops = {

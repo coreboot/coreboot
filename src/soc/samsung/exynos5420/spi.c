@@ -117,23 +117,7 @@ static void exynos_spi_init(struct exynos_spi *regs)
 	spi_sw_reset(regs, 1);
 }
 
-int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
-{
-	ASSERT(bus >= 0 && bus < 3);
-	struct exynos_spi_slave *eslave;
-
-	slave->bus = bus;
-	slave->cs = cs;
-
-	eslave = to_exynos_spi(slave);
-	if (!eslave->initialized) {
-		exynos_spi_init(eslave->regs);
-		eslave->initialized = 1;
-	}
-	return 0;
-}
-
-int spi_claim_bus(const struct spi_slave *slave)
+static int spi_ctrlr_claim_bus(const struct spi_slave *slave)
 {
 	struct exynos_spi *regs = to_exynos_spi(slave)->regs;
 	// TODO(hungte) Add some delay if too many transactions happen at once.
@@ -193,7 +177,7 @@ static void spi_transfer(struct exynos_spi *regs, void *in, const void *out,
 	}
 }
 
-int spi_xfer(const struct spi_slave *slave, const void *dout, size_t bytes_out,
+static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout, size_t bytes_out,
 	     void *din, size_t bytes_in)
 {
 	struct exynos_spi *regs = to_exynos_spi(slave)->regs;
@@ -218,10 +202,33 @@ int spi_xfer(const struct spi_slave *slave, const void *dout, size_t bytes_out,
 	return 0;
 }
 
-void spi_release_bus(const struct spi_slave *slave)
+static void spi_ctrlr_release_bus(const struct spi_slave *slave)
 {
 	struct exynos_spi *regs = to_exynos_spi(slave)->regs;
 	setbits_le32(&regs->cs_reg, SPI_SLAVE_SIG_INACT);
+}
+
+static const struct spi_ctrlr spi_ctrlr = {
+	.claim_bus = spi_ctrlr_claim_bus,
+	.release_bus = spi_ctrlr_release_bus,
+	.xfer = spi_ctrlr_xfer,
+};
+
+int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
+{
+	ASSERT(bus >= 0 && bus < 3);
+	struct exynos_spi_slave *eslave;
+
+	slave->bus = bus;
+	slave->cs = cs;
+	slave->ctrlr = &spi_ctrlr;
+
+	eslave = to_exynos_spi(slave);
+	if (!eslave->initialized) {
+		exynos_spi_init(eslave->regs);
+		eslave->initialized = 1;
+	}
+	return 0;
 }
 
 static int exynos_spi_read(struct spi_slave *slave, void *dest, uint32_t len,

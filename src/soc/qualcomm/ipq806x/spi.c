@@ -518,49 +518,6 @@ static struct ipq_spi_slave *to_ipq_spi(const struct spi_slave *slave)
 	return NULL;
 }
 
-int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
-{
-	struct ipq_spi_slave *ds = NULL;
-	int i;
-
-	/*
-	 * IPQ GSBI (Generic Serial Bus Interface) supports SPI Flash
-	 * on different GSBI5, GSBI6 and GSBI7
-	 * with different number of chip selects (CS, channels):
-	*/
-	if ((bus < GSBI5_SPI) || (bus > GSBI7_SPI)
-		|| ((bus == GSBI5_SPI) && (cs > 3))
-		|| ((bus == GSBI6_SPI) && (cs > 0))
-		|| ((bus == GSBI7_SPI) && (cs > 0))) {
-		printk(BIOS_ERR, "SPI error: unsupported bus %d "
-			"(Supported busses 0,1 and 2) or chipselect\n", bus);
-	}
-
-	for (i = 0; i < ARRAY_SIZE(spi_slave_pool); i++) {
-		if (spi_slave_pool[i].allocated)
-			continue;
-		ds = spi_slave_pool + i;
-
-		ds->slave.bus = slave->bus = bus;
-		ds->slave.cs = slave->cs = cs;
-		ds->regs = &spi_reg[bus];
-
-		/*
-		 * TODO(vbendeb):
-		 * hardcoded frequency and mode - we might need to find a way
-		 * to configure this
-		 */
-		ds->freq = 10000000;
-		ds->mode = GSBI_SPI_MODE_0;
-		ds->allocated = 1;
-
-		return 0;
-	}
-
-	printk(BIOS_ERR, "SPI error: all %d pools busy\n", i);
-	return -1;
-}
-
 /*
  * GSBIn SPI Hardware Initialisation
  */
@@ -638,7 +595,7 @@ static int spi_hw_init(struct ipq_spi_slave *ds)
 	return SUCCESS;
 }
 
-int spi_claim_bus(const struct spi_slave *slave)
+static int spi_ctrlr_claim_bus(const struct spi_slave *slave)
 {
 	struct ipq_spi_slave *ds = to_ipq_spi(slave);
 	unsigned int ret;
@@ -661,7 +618,7 @@ int spi_claim_bus(const struct spi_slave *slave)
 	return SUCCESS;
 }
 
-void spi_release_bus(const struct spi_slave *slave)
+static void spi_ctrlr_release_bus(const struct spi_slave *slave)
 {
 	struct ipq_spi_slave *ds = to_ipq_spi(slave);
 
@@ -731,8 +688,8 @@ unsigned int spi_crop_chunk(unsigned int cmd_len, unsigned int buf_len)
 	return min(MAX_PACKET_COUNT, buf_len);
 }
 
-int spi_xfer(const struct spi_slave *slave, const void *dout,
-	     size_t out_bytes, void *din, size_t in_bytes)
+static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
+			size_t out_bytes, void *din, size_t in_bytes)
 {
 	int ret;
 	struct ipq_spi_slave *ds = to_ipq_spi(slave);
@@ -798,4 +755,54 @@ out:
 	(void)config_spi_state(ds, SPI_RESET_STATE);
 
 	return ret;
+}
+
+static const struct spi_ctrlr spi_ctrlr = {
+	.claim_bus = spi_ctrlr_claim_bus,
+	.release_bus = spi_ctrlr_release_bus,
+	.xfer = spi_ctrlr_xfer,
+};
+
+int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
+{
+	struct ipq_spi_slave *ds = NULL;
+	int i;
+
+	/*
+	 * IPQ GSBI (Generic Serial Bus Interface) supports SPI Flash
+	 * on different GSBI5, GSBI6 and GSBI7
+	 * with different number of chip selects (CS, channels):
+	*/
+	if ((bus < GSBI5_SPI) || (bus > GSBI7_SPI)
+		|| ((bus == GSBI5_SPI) && (cs > 3))
+		|| ((bus == GSBI6_SPI) && (cs > 0))
+		|| ((bus == GSBI7_SPI) && (cs > 0))) {
+		printk(BIOS_ERR, "SPI error: unsupported bus %d "
+			"(Supported busses 0,1 and 2) or chipselect\n", bus);
+	}
+
+	for (i = 0; i < ARRAY_SIZE(spi_slave_pool); i++) {
+		if (spi_slave_pool[i].allocated)
+			continue;
+		ds = spi_slave_pool + i;
+
+		ds->slave.bus = slave->bus = bus;
+		ds->slave.cs = slave->cs = cs;
+		slave->ctrlr = &spi_ctrlr;
+		ds->regs = &spi_reg[bus];
+
+		/*
+		 * TODO(vbendeb):
+		 * hardcoded frequency and mode - we might need to find a way
+		 * to configure this
+		 */
+		ds->freq = 10000000;
+		ds->mode = GSBI_SPI_MODE_0;
+		ds->allocated = 1;
+
+		return 0;
+	}
+
+	printk(BIOS_ERR, "SPI error: all %d pools busy\n", i);
+	return -1;
 }

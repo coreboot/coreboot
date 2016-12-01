@@ -59,7 +59,7 @@ unsigned int spi_crop_chunk(unsigned int cmd_len, unsigned int buf_len)
 	return min(AMD_SB_SPI_TX_LEN - cmd_len, buf_len);
 }
 
-int spi_xfer(const struct spi_slave *slave, const void *dout,
+static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 		size_t bytesout, void *din, size_t bytesin)
 {
 	/* First byte is cmd which can not being sent through FIFO. */
@@ -138,18 +138,6 @@ static void ImcWakeup(void)
 	WaitForEcLDN9MailboxCmdAck();
 }
 
-int spi_claim_bus(const struct spi_slave *slave)
-{
-	/* Nothing is required. */
-	return 0;
-}
-
-void spi_release_bus(const struct spi_slave *slave)
-{
-	/* Nothing is required. */
-	return;
-}
-
 int chipset_volatile_group_begin(const struct spi_flash *flash)
 {
 	if (!IS_ENABLED(CONFIG_SB800_IMC_FWM))
@@ -168,9 +156,14 @@ int chipset_volatile_group_end(const struct spi_flash *flash)
 	return 0;
 }
 
+static const struct spi_ctrlr spi_ctrlr = {
+	.xfer = spi_ctrlr_xfer,
+};
+
 int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
 {
 	slave->bus = bus;
 	slave->cs = cs;
+	slave->ctrlr = &spi_ctrlr;
 	return 0;
 }

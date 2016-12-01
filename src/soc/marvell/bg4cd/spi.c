@@ -19,18 +19,3 @@ int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
 {
 	return -1;
 }
-
-int spi_claim_bus(const struct spi_slave *slave)
-{
-	return 0;
-}
-
-void spi_release_bus(const struct spi_slave *slave)
-{
-}
-
-int spi_xfer(const struct spi_slave *slave, const void *dout,
-	     size_t out_bytes, void *din, size_t in_bytes)
-{
-	return 0;
-}

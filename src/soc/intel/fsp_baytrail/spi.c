@@ -249,13 +249,6 @@ static void read_reg(const void *src, void *value, uint32_t size)
 	}
 }
 
-int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
-{
-	slave->bus = bus;
-	slave->cs = cs;
-	return 0;
-}
-
 static ich9_spi_regs *spi_regs(void)
 {
 	device_t dev;
@@ -286,17 +279,6 @@ void spi_init(void)
 	cntlr.status = &ich9_spi->ssfs;
 	cntlr.control = (uint16_t *)ich9_spi->ssfc;
 	cntlr.preop = &ich9_spi->preop;
-}
-
-int spi_claim_bus(const struct spi_slave *slave)
-{
-	/* Handled by ICH automatically. */
-	return 0;
-}
-
-void spi_release_bus(const struct spi_slave *slave)
-{
-	/* Handled by ICH automatically. */
 }
 
 typedef struct spi_transaction {
@@ -460,8 +442,8 @@ unsigned int spi_crop_chunk(unsigned int cmd_len, unsigned int buf_len)
 	return min(cntlr.databytes, buf_len);
 }
 
-int spi_xfer(const struct spi_slave *slave, const void *dout,
-		size_t bytesout, void *din, size_t bytesin)
+static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
+		    size_t bytesout, void *din, size_t bytesin)
 {
 	uint16_t control;
 	int16_t opcode_index;
@@ -605,5 +587,17 @@ spi_xfer_exit:
 	/* Clear atomic preop now that xfer is done */
 	writew_(0, cntlr.preop);
 
+	return 0;
+}
+
+static const struct spi_ctrlr spi_ctrlr = {
+	.xfer = spi_ctrlr_xfer,
+};
+
+int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
+{
+	slave->bus = bus;
+	slave->cs = cs;
+	slave->ctrlr = &spi_ctrlr;
 	return 0;
 }

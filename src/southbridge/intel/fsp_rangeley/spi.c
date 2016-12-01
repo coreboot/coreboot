@@ -322,13 +322,6 @@ static void ich_set_bbar(uint32_t minaddr)
 	writel_(ichspi_bbar, cntlr.bbar);
 }
 
-int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
-{
-	slave->bus = bus;
-	slave->cs = cs;
-	return 0;
-}
-
 /*
  * Check if this device ID matches one of supported Intel SOC devices.
  *
@@ -418,17 +411,6 @@ void spi_init(void)
 	default:
 		break;
 	}
-}
-
-int spi_claim_bus(const struct spi_slave *slave)
-{
-	/* Handled by ICH automatically. */
-	return 0;
-}
-
-void spi_release_bus(const struct spi_slave *slave)
-{
-	/* Handled by ICH automatically. */
 }
 
 typedef struct spi_transaction {
@@ -592,7 +574,7 @@ unsigned int spi_crop_chunk(unsigned int cmd_len, unsigned int buf_len)
 	return min(cntlr.databytes, buf_len);
 }
 
-int spi_xfer(const struct spi_slave *slave, const void *dout,
+static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 		size_t bytesout, void *din, size_t bytesin)
 {
 	uint16_t control;
@@ -737,5 +719,17 @@ spi_xfer_exit:
 	/* Clear atomic preop now that xfer is done */
 	writew_(0, cntlr.preop);
 
+	return 0;
+}
+
+static const struct spi_ctrlr spi_ctrlr = {
+	.xfer = spi_ctrlr_xfer,
+};
+
+int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
+{
+	slave->bus = bus;
+	slave->cs = cs;
+	slave->ctrlr = &spi_ctrlr;
 	return 0;
 }

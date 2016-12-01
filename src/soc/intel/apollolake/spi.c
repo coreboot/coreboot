@@ -184,13 +184,6 @@ unsigned int spi_crop_chunk(unsigned int cmd_len, unsigned int buf_len)
 	return MIN(buf_len, SPIBAR_FDATA_FIFO_SIZE);
 }
 
-int spi_xfer(const struct spi_slave *slave, const void *dout,
-	     size_t bytesout, void *din, size_t bytesin)
-{
-	printk(BIOS_DEBUG, "NOT IMPLEMENTED: %s() !!!\n", __func__);
-	return E_NOT_IMPLEMENTED;
-}
-
 /*
  * Write-protection status for BIOS region (BIOS_CONTROL register):
  * EISS/WPD bits	00	01	10	11
@@ -213,17 +206,6 @@ void spi_init(void)
 	bios_ctl &= ~SPIBAR_BIOS_CONTROL_CACHE_DISABLE;
 
 	pci_write_config32(ctx->pci_dev, SPIBAR_BIOS_CONTROL, bios_ctl);
-}
-
-int spi_claim_bus(const struct spi_slave *slave)
-{
-	/* There's nothing we need to to here. */
-	return 0;
-}
-
-void spi_release_bus(const struct spi_slave *slave)
-{
-	/* No magic needed here. */
 }
 
 static int nuclear_spi_erase(const struct spi_flash *flash, uint32_t offset,
@@ -400,6 +382,7 @@ int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
 
 	slave->bus = bus;
 	slave->cs = cs;
+	slave->ctrlr = NULL;
 
 	return 0;
 }

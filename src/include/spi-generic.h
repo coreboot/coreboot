@@ -21,15 +21,33 @@
 
 /* Controller-specific definitions: */
 
+struct spi_ctrlr;
+
 /*-----------------------------------------------------------------------
  * Representation of a SPI slave, i.e. what we're communicating with.
  *
  *   bus:	ID of the bus that the slave is attached to.
  *   cs:	ID of the chip select connected to the slave.
+ *   ctrlr:	Pointer to SPI controller structure.
  */
 struct spi_slave {
 	unsigned int	bus;
 	unsigned int	cs;
+	const struct spi_ctrlr *ctrlr;
+};
+
+/*-----------------------------------------------------------------------
+ * Representation of a SPI contoller.
+ *
+ * claim_bus:	Claim SPI bus and prepare for communication.
+ * release_bus: Release SPI bus.
+ * xfer:	SPI transfer
+ */
+struct spi_ctrlr {
+	int (*claim_bus)(const struct spi_slave *slave);
+	void (*release_bus)(const struct spi_slave *slave);
+	int (*xfer)(const struct spi_slave *slave, const void *dout,
+		    size_t bytesout, void *din, size_t bytesin);
 };
 
 /*-----------------------------------------------------------------------

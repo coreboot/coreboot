@@ -151,13 +151,6 @@ static size_t spi_get_flash_size(pch_spi_regs *spi_bar)
 	return size;
 }
 
-int spi_xfer(const struct spi_slave *slave, const void *dout,
-		size_t bytesout, void *din, size_t bytesin)
-{
-	/* TODO: Define xfer for hardware sequencing. */
-	return -1;
-}
-
 void spi_init(void)
 {
 	uint8_t bios_cntl;
@@ -168,17 +161,6 @@ void spi_init(void)
 	bios_cntl &= ~SPIBAR_BC_EISS;
 	bios_cntl |= SPIBAR_BC_WPD;
 	pci_write_config_byte(dev, SPIBAR_BIOS_CNTL, bios_cntl);
-}
-
-int spi_claim_bus(const struct spi_slave *slave)
-{
-	/* Handled by PCH automatically. */
-	return 0;
-}
-
-void spi_release_bus(const struct spi_slave *slave)
-{
-	/* Handled by PCH automatically. */
 }
 
 int pch_hwseq_erase(const struct spi_flash *flash, u32 offset, size_t len)
@@ -377,6 +359,7 @@ int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
 
 	slave->bus = bus;
 	slave->cs = cs;
+	slave->ctrlr = NULL;
 
 	return 0;
 }

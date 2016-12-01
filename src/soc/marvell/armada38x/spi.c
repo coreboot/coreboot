@@ -442,22 +442,14 @@ static int mrvl_spi_xfer(const struct spi_slave *slave,
 	return 0;
 }
 
-int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
-{
-	slave->bus = bus;
-	slave->cs = cs;
-	mv_spi_sys_init(bus, cs, CONFIG_SF_DEFAULT_SPEED);
-	return 0;
-}
-
-int spi_claim_bus(const struct spi_slave *slave)
+static int spi_ctrlr_claim_bus(const struct spi_slave *slave)
 {
 	mv_spi_cs_set(slave->bus, slave->cs);
 	mv_spi_cs_assert(slave->bus);
 	return 0;
 }
 
-void spi_release_bus(const struct spi_slave *slave)
+static void spi_ctrlr_release_bus(const struct spi_slave *slave)
 {
 	mv_spi_cs_deassert(slave->bus);
 }
@@ -467,11 +459,11 @@ unsigned int spi_crop_chunk(unsigned int cmd_len, unsigned int buf_len)
 	return buf_len;
 }
 
-int spi_xfer(const struct spi_slave *slave,
-	     const void *dout,
-	     size_t out_bytes,
-	     void *din,
-	     size_t in_bytes)
+static int spi_ctrlr_xfer(const struct spi_slave *slave,
+		       const void *dout,
+		       size_t out_bytes,
+		       void *din,
+		       size_t in_bytes)
 {
 	int ret = -1;
 
@@ -482,4 +474,19 @@ int spi_xfer(const struct spi_slave *slave,
 	else
 		die("Unexpected condition in spi_xfer\n");
 	return ret;
+}
+
+static const spi_ctrlr spi_ctrlr = {
+	.claim_bus = spi_ctrlr_claim_bus,
+	.release_bus = spi_ctrlr_release_bus,
+	.xfer = spi_ctrlr_xfer,
+};
+
+int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
+{
+	slave->bus = bus;
+	slave->cs = cs;
+	slave->ctrlr = &spi_ctrlr;
+	mv_spi_sys_init(bus, cs, CONFIG_SF_DEFAULT_SPEED);
+	return 0;
 }

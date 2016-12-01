@@ -160,29 +160,7 @@ static void mtk_spi_dump_data(const char *name, const uint8_t *data,
 #endif
 }
 
-int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
-{
-	struct mtk_spi_bus *eslave;
-
-	switch (bus) {
-	case CONFIG_EC_GOOGLE_CHROMEEC_SPI_BUS:
-		slave->bus = bus;
-		slave->cs = cs;
-		eslave = to_mtk_spi(slave);
-		assert(read32(&eslave->regs->spi_cfg0_reg) != 0);
-		spi_sw_reset(eslave->regs);
-		return 0;
-	case CONFIG_BOOT_DEVICE_SPI_FLASH_BUS:
-		slave->bus = bus;
-		slave->cs = cs;
-		return 0;
-	default:
-		die ("wrong bus number.\n");
-	};
-	return -1;
-}
-
-int spi_claim_bus(const struct spi_slave *slave)
+static int spi_ctrlr_claim_bus(const struct spi_slave *slave)
 {
 	struct mtk_spi_bus *mtk_slave = to_mtk_spi(slave);
 	struct mtk_spi_regs *regs = mtk_slave->regs;
@@ -269,8 +247,8 @@ error:
 	return -1;
 }
 
-int spi_xfer(const struct spi_slave *slave, const void *dout, size_t bytes_out,
-	     void *din, size_t bytes_in)
+static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
+			size_t bytes_out, void *din, size_t bytes_in)
 {
 	size_t min_size = 0;
 	int ret;
@@ -301,7 +279,7 @@ int spi_xfer(const struct spi_slave *slave, const void *dout, size_t bytes_out,
 	return 0;
 }
 
-void spi_release_bus(const struct spi_slave *slave)
+static void spi_ctrlr_release_bus(const struct spi_slave *slave)
 {
 	struct mtk_spi_bus *mtk_slave = to_mtk_spi(slave);
 	struct mtk_spi_regs *regs = mtk_slave->regs;
@@ -309,4 +287,34 @@ void spi_release_bus(const struct spi_slave *slave)
 	clrbits_le32(&regs->spi_cmd_reg, SPI_CMD_PAUSE_EN);
 	spi_sw_reset(regs);
 	mtk_slave->state = MTK_SPI_IDLE;
+}
+
+static const struct spi_ctrlr spi_ctrlr = {
+	.claim_bus = spi_ctrlr_claim_bus,
+	.release_bus = spi_ctrlr_release_bus,
+	.xfer = spi_ctrlr_xfer,
+};
+
+int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
+{
+	struct mtk_spi_bus *eslave;
+
+	slave->ctrlr = &spi_ctrlr;
+
+	switch (bus) {
+	case CONFIG_EC_GOOGLE_CHROMEEC_SPI_BUS:
+		slave->bus = bus;
+		slave->cs = cs;
+		eslave = to_mtk_spi(slave);
+		assert(read32(&eslave->regs->spi_cfg0_reg) != 0);
+		spi_sw_reset(eslave->regs);
+		return 0;
+	case CONFIG_BOOT_DEVICE_SPI_FLASH_BUS:
+		slave->bus = bus;
+		slave->cs = cs;
+		return 0;
+	default:
+		die ("wrong bus number.\n");
+	};
+	return -1;
 }

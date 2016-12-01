@@ -7,6 +7,7 @@ ramstage-y += spiconsole.c
 smm-$(CONFIG_DEBUG_SMI) += spiconsole.c
 endif
 
+bootblock-y += spi-generic.c
 bootblock-$(CONFIG_COMMON_CBFS_SPI_WRAPPER) += cbfs_spi.c
 bootblock-$(CONFIG_SPI_FLASH) += spi_flash.c
 bootblock-$(CONFIG_BOOT_DEVICE_SPI_FLASH_RW_NOMMAP_EARLY) += boot_device_rw_nommap.c
@@ -22,6 +23,7 @@ bootblock-$(CONFIG_SPI_FLASH_STMICRO) += stmicro.c
 bootblock-$(CONFIG_SPI_FLASH_WINBOND) += winbond.c
 bootblock-$(CONFIG_SPI_FRAM_RAMTRON) += ramtron.c
 
+romstage-y += spi-generic.c
 romstage-$(CONFIG_COMMON_CBFS_SPI_WRAPPER) += cbfs_spi.c
 romstage-$(CONFIG_SPI_FLASH) += spi_flash.c
 romstage-$(CONFIG_BOOT_DEVICE_SPI_FLASH_RW_NOMMAP_EARLY) += boot_device_rw_nommap.c
@@ -37,6 +39,7 @@ romstage-$(CONFIG_SPI_FLASH_STMICRO) += stmicro.c
 romstage-$(CONFIG_SPI_FLASH_WINBOND) += winbond.c
 romstage-$(CONFIG_SPI_FRAM_RAMTRON) += ramtron.c
 
+verstage-y += spi-generic.c
 verstage-$(CONFIG_COMMON_CBFS_SPI_WRAPPER) += cbfs_spi.c
 verstage-$(CONFIG_SPI_FLASH) += spi_flash.c
 verstage-$(CONFIG_BOOT_DEVICE_SPI_FLASH_RW_NOMMAP_EARLY) += boot_device_rw_nommap.c
@@ -52,6 +55,7 @@ verstage-$(CONFIG_SPI_FLASH_STMICRO) += stmicro.c
 verstage-$(CONFIG_SPI_FLASH_WINBOND) += winbond.c
 verstage-$(CONFIG_SPI_FRAM_RAMTRON) += ramtron.c
 
+ramstage-y += spi-generic.c
 ramstage-$(CONFIG_COMMON_CBFS_SPI_WRAPPER) += cbfs_spi.c
 ramstage-$(CONFIG_SPI_FLASH) += spi_flash.c
 ramstage-$(CONFIG_BOOT_DEVICE_SPI_FLASH_RW_NOMMAP) += boot_device_rw_nommap.c
@@ -68,6 +72,7 @@ ramstage-$(CONFIG_SPI_FLASH_WINBOND) += winbond.c
 ramstage-$(CONFIG_SPI_FRAM_RAMTRON) += ramtron.c
 
 ifeq ($(CONFIG_SPI_FLASH_SMM),y)
+smm-y += spi-generic.c
 # SPI flash driver interface
 smm-$(CONFIG_SPI_FLASH) += spi_flash.c
 smm-$(CONFIG_BOOT_DEVICE_SPI_FLASH_RW_NOMMAP) += boot_device_rw_nommap.c

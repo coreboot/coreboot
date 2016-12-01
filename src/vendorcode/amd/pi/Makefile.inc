@@ -97,7 +97,7 @@ $(call src-to-obj,libagesa,$1): $(agesa_src_path)/$(notdir $1) $(obj)/config.h $
 	@printf "    CC         $$(subst $(obj)/,,$$(@))\n"
 	$(CC_libagesa) -c -MMD $(CFLAGS_libagesa) $(AGESA_CFLAGS)                 \
 	               $(AGESA_INC)                                               \
-	               -include $(obj)/config.h -include $(src)/include/kconfig.h \
+	               -include $(src)/include/rules.h -include $(src)/include/kconfig.h \
 	               -o $$@                                                     \
 	               $(agesa_src_path)/$(notdir $1)
 

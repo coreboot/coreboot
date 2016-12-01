@@ -97,9 +97,7 @@
 #define CLKCFG_MEMCLK_MASK	(7 << CLKCFG_MEMCLK_SHIFT)
 #define CLKCFG_UPDATE		(1 << 12)
 
-#define SSKPD_MCHBAR		0x0c1c
-#define SSKPD_CLK_SHIFT		0
-#define SSKPD_CLK_MASK		(7 << SSKPD_CLK_SHIFT)
+#define SSKPD_MCHBAR		0x0c20 /* 64 bit */
 
 /*
  * DMIBAR

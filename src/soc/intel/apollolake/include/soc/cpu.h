@@ -31,6 +31,8 @@ void set_max_freq(void);
 
 #define MSR_PLATFORM_INFO	0xce
 #define MSR_POWER_MISC		0x120
+#define   ENABLE_IA_UNTRUSTED	(1 << 6)
+#define   FLUSH_DL1_L2		(1 << 8)
 #define MSR_CORE_THREAD_COUNT	0x35
 #define MSR_EVICT_CTL		0x2e0
 #define MSR_EMULATE_PM_TMR	0x121

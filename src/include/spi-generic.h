@@ -42,13 +42,32 @@ struct spi_slave {
  * claim_bus:	Claim SPI bus and prepare for communication.
  * release_bus: Release SPI bus.
  * xfer:	SPI transfer
+ * setup:	Setup given SPI device bus.
  */
 struct spi_ctrlr {
 	int (*claim_bus)(const struct spi_slave *slave);
 	void (*release_bus)(const struct spi_slave *slave);
 	int (*xfer)(const struct spi_slave *slave, const void *dout,
 		    size_t bytesout, void *din, size_t bytesin);
+	int (*setup)(const struct spi_slave *slave);
 };
+
+/*-----------------------------------------------------------------------
+ * Structure defining mapping of SPI buses to controller.
+ *
+ * ctrlr:	Pointer to controller structure managing the given SPI buses.
+ * bus_start:	Start bus number managed by the controller.
+ * bus_end:	End bus number manager by the controller.
+ */
+struct spi_ctrlr_buses {
+	const struct spi_ctrlr *ctrlr;
+	unsigned int bus_start;
+	unsigned int bus_end;
+};
+
+/* Mapping of SPI buses to controllers - should be defined by platform. */
+extern const struct spi_ctrlr_buses spi_ctrlr_bus_map[];
+extern const size_t spi_ctrlr_bus_map_count;
 
 /*-----------------------------------------------------------------------
  * Initialization, must be called once on start up.

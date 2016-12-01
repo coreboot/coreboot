@@ -396,7 +396,8 @@ static uint32_t hwilib_read_bytes (const struct param_info *param, uint8_t *dst,
 		return 0;
 	/* Take the first valid block to get the parameter from */
 	do {
-		if ((param->pos[i].len) && (param->pos[i].offset)) {
+		if ((param->pos[i].len) && (param->pos[i].offset) &&
+		     (blk_ptr[param->pos[i].blk_type])) {
 			blk =  blk_ptr[param->pos[i].blk_type];
 			break;
 		}

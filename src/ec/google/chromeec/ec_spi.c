@@ -101,13 +101,17 @@ out:
 
 int google_chromeec_command(struct chromeec_command *cec_command)
 {
-	static struct spi_slave *slave = NULL;
-	if (!slave) {
-		slave = spi_setup_slave(CONFIG_EC_GOOGLE_CHROMEEC_SPI_BUS,
-					CONFIG_EC_GOOGLE_CHROMEEC_SPI_CHIP);
+	static int done = 0;
+	static struct spi_slave slave;
+
+	if (!done) {
+		if (spi_setup_slave(CONFIG_EC_GOOGLE_CHROMEEC_SPI_BUS,
+				    CONFIG_EC_GOOGLE_CHROMEEC_SPI_CHIP, &slave))
+			return -1;
 		stopwatch_init(&cs_cooldown_sw);
+		done = 1;
 	}
-	return crosec_command_proto(cec_command, crosec_spi_io, slave);
+	return crosec_command_proto(cec_command, crosec_spi_io, &slave);
 }
 
 #ifndef __PRE_RAM__

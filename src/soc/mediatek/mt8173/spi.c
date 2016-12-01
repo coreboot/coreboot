@@ -47,9 +47,6 @@ enum {
 
 static struct mtk_spi_bus spi_bus[1] = {
 	{
-		.slave = {
-			.bus = 0,
-		},
 		.regs = (void *)SPI_BASE,
 		.state = MTK_SPI_IDLE,
 	}
@@ -57,7 +54,8 @@ static struct mtk_spi_bus spi_bus[1] = {
 
 static inline struct mtk_spi_bus *to_mtk_spi(const struct spi_slave *slave)
 {
-	return container_of(slave, struct mtk_spi_bus, slave);
+	assert(slave->bus < ARRAY_SIZE(spi_bus));
+	return &spi_bus[slave->bus];
 }
 
 static void spi_sw_reset(struct mtk_spi_regs *regs)
@@ -162,24 +160,26 @@ static void mtk_spi_dump_data(const char *name, const uint8_t *data,
 #endif
 }
 
-struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs)
+int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
 {
 	struct mtk_spi_bus *eslave;
-	static struct spi_slave slave;
 
 	switch (bus) {
 	case CONFIG_EC_GOOGLE_CHROMEEC_SPI_BUS:
-		eslave = &spi_bus[bus];
+		slave->bus = bus;
+		slave->cs = cs;
+		eslave = to_mtk_spi(slave);
 		assert(read32(&eslave->regs->spi_cfg0_reg) != 0);
 		spi_sw_reset(eslave->regs);
-		return &eslave->slave;
+		return 0;
 	case CONFIG_BOOT_DEVICE_SPI_FLASH_BUS:
-		slave.bus = bus;
-		slave.cs = cs;
-		return &slave;
+		slave->bus = bus;
+		slave->cs = cs;
+		return 0;
 	default:
 		die ("wrong bus number.\n");
 	};
+	return -1;
 }
 
 int spi_claim_bus(const struct spi_slave *slave)

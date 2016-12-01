@@ -30,7 +30,6 @@
 #define IMGTEC_SPI_MAX_TRANSFER_SIZE   ((1 << 16) - 1)
 
 struct img_spi_slave {
-	struct spi_slave slave;
 	/* SPIM instance device parameters */
 	struct spim_device_parameters device_parameters;
 	/* SPIM instance base address */
@@ -59,13 +58,20 @@ static int wait_status(u32 reg, u32 shift)
 	return SPIM_OK;
 }
 
+static struct img_spi_slave *get_img_slave(const struct spi_slave *slave)
+{
+	return img_spi_slaves + slave->bus * SPIM_NUM_PORTS_PER_BLOCK +
+		slave->cs;
+}
+
 /* Transmitter function. Fills TX FIFO with data before enabling SPIM */
 static int transmitdata(const struct spi_slave *slave, u8 *buffer, u32 size)
 {
 	u32 blocksize, base, write_data;
 	int ret;
+	struct img_spi_slave *img_slave = get_img_slave(slave);
 
-	base = container_of(slave, struct img_spi_slave, slave)->base;
+	base = img_slave->base;
 	while (size) {
 		/* Wait until FIFO empty */
 		write32(base + SPFI_INT_CLEAR_REG_OFFSET, SPFI_SDE_MASK);
@@ -101,8 +107,9 @@ static int receivedata(const struct spi_slave *slave, u8 *buffer, u32 size)
 {
 	u32 read_data, base;
 	int ret;
+	struct img_spi_slave *img_slave = get_img_slave(slave);
 
-	base = container_of(slave, struct img_spi_slave, slave)->base;
+	base = img_slave->base;
 	/*
 	 * Do 32bit reads first. Clear status GDEX32BIT here so that the first
 	 * status reg. read gets the actual bit state
@@ -145,10 +152,10 @@ static void  setparams(const struct spi_slave *slave, u32 port,
 			struct spim_device_parameters *params)
 {
 	u32 spim_parameters, port_state, base;
+	struct img_spi_slave *img_slave = get_img_slave(slave);
 
+	base = img_slave->base;
 	spim_parameters = 0;
-
-	base = container_of(slave, struct img_spi_slave, slave)->base;
 	port_state = read32(base + SPFI_PORT_STATE_REG_OFFSET);
 	port_state &= ~((SPIM_PORT0_MASK>>port)|SPFI_PORT_SELECT_MASK);
 	port_state |= params->cs_idle_level<<(SPIM_CS0_IDLE_SHIFT-port);
@@ -250,7 +257,9 @@ static u32 control_reg_setup(struct spim_buffer *first,
 static int check_buffers(const struct spi_slave *slave, struct spim_buffer *first,
 				struct spim_buffer *second){
 
-	if (!(container_of(slave, struct img_spi_slave, slave)->initialised))
+	struct img_spi_slave *img_slave = get_img_slave(slave);
+
+	if (!(img_slave->initialised))
 		return -SPIM_API_NOT_INITIALISED;
 	/*
 	 * First operation must always be defined
@@ -331,8 +340,9 @@ static int spim_io(const struct spi_slave *slave, struct spim_buffer *first,
 	u32 reg, base;
 	int i, trans_count, ret;
 	struct spim_buffer *transaction[2];
+	struct img_spi_slave *img_slave = get_img_slave(slave);
 
-	base = container_of(slave, struct img_spi_slave, slave)->base;
+	base = img_slave->base;
 
 	ret = check_buffers(slave, first, second);
 	if (ret)
@@ -412,11 +422,9 @@ void spi_init(void)
 }
 
 /* Set up communications parameters for a SPI slave. */
-struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs)
+int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
 {
-
 	struct img_spi_slave *img_slave = NULL;
-	struct spi_slave *slave;
 	struct spim_device_parameters *device_parameters;
 	u32 base;
 
@@ -430,21 +438,21 @@ struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs)
 	default:
 		printk(BIOS_ERR, "%s: Error: unsupported bus.\n",
 				__func__);
-		return NULL;
+		return -1;
 	}
 	if (cs > SPIM_DEVICE4) {
 		printk(BIOS_ERR, "%s: Error: unsupported chipselect.\n",
 				__func__);
-		return NULL;
+		return -1;
 	}
 
-	img_slave = img_spi_slaves + bus * SPIM_NUM_PORTS_PER_BLOCK + cs;
-	slave = &(img_slave->slave);
+	slave->bus = bus;
+	slave->cs = cs;
+
+	img_slave = get_img_slave(slave);
 	device_parameters = &(img_slave->device_parameters);
 
 	img_slave->base = base;
-	slave->bus = bus;
-	slave->cs = cs;
 
 	device_parameters->bitrate = 64;
 	device_parameters->cs_setup = 0;
@@ -455,7 +463,7 @@ struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs)
 	device_parameters->data_idle_level = 0;
 	img_slave->initialised = IMG_FALSE;
 
-	return slave;
+	return 0;
 }
 
 /* Claim the bus and prepare it for communication */
@@ -469,7 +477,7 @@ int spi_claim_bus(const struct spi_slave *slave)
 				__func__);
 		return -SPIM_API_NOT_INITIALISED;
 	}
-	img_slave = container_of(slave, struct img_spi_slave, slave);
+	img_slave = get_img_slave(slave);
 	if (img_slave->initialised)
 		return SPIM_OK;
 	/* Check device parameters */
@@ -499,7 +507,7 @@ void spi_release_bus(const struct spi_slave *slave)
 				__func__);
 		return;
 	}
-	img_slave = container_of(slave, struct img_spi_slave, slave);
+	img_slave = get_img_slave(slave);
 	img_slave->initialised = IMG_FALSE;
 	/* Soft reset peripheral internals */
 	write32(img_slave->base + SPFI_CONTROL_REG_OFFSET,

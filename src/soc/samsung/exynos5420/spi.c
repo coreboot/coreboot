@@ -60,7 +60,7 @@ static struct exynos_spi_slave exynos_spi_slaves[3] = {
 
 static inline struct exynos_spi_slave *to_exynos_spi(const struct spi_slave *slave)
 {
-	return container_of(slave, struct exynos_spi_slave, slave);
+	return &exynos_spi_slaves[slave->bus];
 }
 
 static void spi_sw_reset(struct exynos_spi *regs, int word)
@@ -117,15 +117,20 @@ static void exynos_spi_init(struct exynos_spi *regs)
 	spi_sw_reset(regs, 1);
 }
 
-struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs)
+int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
 {
 	ASSERT(bus >= 0 && bus < 3);
-	struct exynos_spi_slave *eslave = &exynos_spi_slaves[bus];
+	struct exynos_spi_slave *eslave;
+
+	slave->bus = bus;
+	slave->cs = cs;
+
+	eslave = to_exynos_spi(slave);
 	if (!eslave->initialized) {
 		exynos_spi_init(eslave->regs);
 		eslave->initialized = 1;
 	}
-	return &eslave->slave;
+	return 0;
 }
 
 int spi_claim_bus(const struct spi_slave *slave)

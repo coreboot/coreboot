@@ -76,17 +76,11 @@ void spi_release_bus(const struct spi_slave *slave)
 	/* Handled internally by the SB700 */
 }
 
-struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs)
+int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
 {
-	struct spi_slave *slave = malloc(sizeof(*slave));
-
-	if (!slave) {
-		return NULL;
-	}
-
-	memset(slave, 0, sizeof(*slave));
-
-	return slave;
+	slave->bus = bus;
+	slave->cs = cs;
+	return 0;
 }
 
 int spi_xfer(const struct spi_slave *slave, const void *dout,

@@ -798,11 +798,14 @@ int spi_xfer(const struct spi_slave *slave, const void *dout,
 	return ret;
 }
 
-struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs)
+int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
 {
 	struct tegra_spi_channel *channel = to_tegra_spi(bus);
 	if (!channel)
-		return NULL;
+		return -1;
 
-	return &channel->slave;
+	slave->bus = channel->slave.bus;
+	slave->cs = channel->slave.cs;
+
+	return 0;
 }

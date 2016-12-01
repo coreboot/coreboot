@@ -15,9 +15,9 @@
 #include <stddef.h>
 #include <spi-generic.h>
 
-struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs)
+int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
 {
-	return NULL;
+	return -1;
 }
 
 int spi_claim_bus(const struct spi_slave *slave)

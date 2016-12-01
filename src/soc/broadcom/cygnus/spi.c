@@ -76,9 +76,6 @@
 
 /* QSPI private data */
 struct qspi_priv {
-	/* Slave entry */
-	struct spi_slave slave;
-
 	/* Specified SPI parameters */
 	unsigned int max_hz;
 	unsigned int spi_mode;
@@ -94,16 +91,19 @@ struct qspi_priv {
 
 static struct qspi_priv qspi_slave;
 
-/* Macro to get the private data */
-#define to_qspi_slave(s) container_of(s, struct qspi_priv, slave)
+static struct qspi_priv *to_qspi_slave(const struct spi_slave *slave)
+{
+	return &qspi_slave;
+}
 
-struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs)
+int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
 {
 	struct qspi_priv *priv = &qspi_slave;
 	unsigned int spbr;
 
-	priv->slave.bus = bus;
-	priv->slave.cs = cs;
+	slave->bus = bus;
+	slave->cs = cs;
+
 	priv->max_hz = QSPI_MAX_HZ;
 	priv->spi_mode = QSPI_MODE;
 	priv->reg = (void *)(IPROC_QSPI_BASE);
@@ -129,7 +129,7 @@ struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs)
 	       (8 << 2) |		/* 8 bits per word */
 	       (priv->spi_mode & 3));	/* mode: CPOL / CPHA */
 
-	return &priv->slave;
+	return 0;
 }
 
 static int mspi_enable(struct qspi_priv *priv)

@@ -207,7 +207,26 @@ void spi_init(void)
 	memset(spi_slave_pool, 0, sizeof(spi_slave_pool));
 }
 
-struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs)
+static struct ipq_spi_slave *to_ipq_spi(const struct spi_slave *slave)
+{
+	struct ipq_spi_slave *ds;
+	size_t i;
+
+	for (i = 0; i < ARRAY_SIZE(spi_slave_pool); i++) {
+		ds = spi_slave_pool + i;
+
+		if (!ds->allocated)
+			continue;
+
+		if ((ds->slave.bus == slave->bus) &&
+		    (ds->slave.cs == slave->cs))
+			return ds;
+	}
+
+	return NULL;
+}
+
+int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
 {
 	struct ipq_spi_slave *ds = NULL;
 	int i;
@@ -218,16 +237,17 @@ struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs)
 		printk(BIOS_ERR,
 			"SPI error: unsupported bus %d (Supported busses 0, 1 and 2) "
                         "or chipselect\n", bus);
-		return NULL;
+		return -1;
 	}
 
 	for (i = 0; i < ARRAY_SIZE(spi_slave_pool); i++) {
 		if (spi_slave_pool[i].allocated)
 			continue;
 		ds = spi_slave_pool + i;
-		ds->slave.bus	= bus;
-		ds->slave.cs	= cs;
-		ds->regs	= &spi_reg[bus];
+
+		ds->slave.bus = slave->bus = bus;
+		ds->slave.cs = slave->cs = cs;
+		ds->regs = &spi_reg[bus];
 
 		/*
 		 * TODO(vbendeb):
@@ -238,11 +258,11 @@ struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs)
 		ds->mode = SPI_MODE3;
 		ds->allocated = 1;
 
-		return &ds->slave;
+		return 0;
 	}
 
 	printk(BIOS_ERR, "SPI error: all %d pools busy\n", i);
-	return NULL;
+	return -1;
 }
 
 /*

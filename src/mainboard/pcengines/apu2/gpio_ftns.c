@@ -19,23 +19,28 @@
 #include "FchPlatform.h"
 #include "gpio_ftns.h"
 
-void configure_gpio(uintptr_t base_addr, u32 iomux_gpio, u8 iomux_ftn, u32 gpio, u32 setting)
+void configure_gpio(uintptr_t base_addr, u32 iomux_gpio, u8 iomux_ftn, u32 setting)
 {
 	u8 bdata;
 	u8 *memptr;
+	/* we are interested in bits 16:23 of GPIO configuration space */
+	memptr = (u8 *)(base_addr + GPIO_OFFSET + (iomux_gpio << 2) + 2);
+	bdata = *memptr;
+	/* out the data value to prevent glitches */
+	bdata |= (setting & GPIO_OUTPUT_ENABLE);
+	*memptr = bdata;
+
+	/* set direction and data value */
+	bdata |= (setting & (GPIO_OUTPUT_ENABLE | GPIO_OUTPUT_VALUE | GPIO_PULL_UP_ENABLE | GPIO_PULL_DOWN_ENABLE));
+	*memptr = bdata;
 
 	memptr = (u8 *)(base_addr + IOMUX_OFFSET + iomux_gpio);
 	*memptr = iomux_ftn;
 
-	memptr = (u8 *)(base_addr + GPIO_OFFSET + gpio);
-	bdata = *memptr;
-	bdata &= 0x07;
-	bdata |= setting; /* set direction and data value */
-	*memptr = bdata;
 }
 
-u8 read_gpio(uintptr_t base_addr, u32 gpio)
+u8 read_gpio(uintptr_t base_addr, u32 iomux_gpio)
 {
-	u8 *memptr = (u8 *)(base_addr + GPIO_OFFSET + gpio);
-	return (*memptr & GPIO_DATA_IN) ? 1 : 0;
+	u8 *memptr = (u8 *)(base_addr + GPIO_OFFSET + (iomux_gpio << 2) + 2);
+	return (*memptr & GPIO_OUTPUT_VALUE) ? 1 : 0;
 }

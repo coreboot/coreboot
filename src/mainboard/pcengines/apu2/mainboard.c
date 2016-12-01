@@ -183,8 +183,8 @@ static void mainboard_enable(device_t dev)
 	printk(BIOS_ALERT, "%d MB", top_mem+top_mem2);
 
 	/* Read memory configuration from GPIO 49 and 50 */
-	u8 spd_index = read_gpio(ACPI_MMIO_BASE, GPIO_49);
-	spd_index |= (read_gpio(ACPI_MMIO_BASE, GPIO_50) << 1);
+	u8 spd_index = read_gpio(ACPI_MMIO_BASE, IOMUX_GPIO_49);
+	spd_index |= (read_gpio(ACPI_MMIO_BASE, IOMUX_GPIO_50) << 1);
 
 	u8 spd_buffer[SPD_SIZE];
 
@@ -305,7 +305,7 @@ const char *smbios_mainboard_sku(void)
 	if (sku[0] != 0)
 		return sku;
 
-	memptr = (u8 *)(ACPI_MMIO_BASE + GPIO_OFFSET + GPIO_49);
+	memptr = (u8 *)(ACPI_MMIO_BASE + GPIO_OFFSET + (IOMUX_GPIO_49 << 2) + 2);
 	if (!(*memptr & BIT0))
 		snprintf(sku, sizeof(sku), "2 GB");
 	else

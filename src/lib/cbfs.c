@@ -24,7 +24,7 @@
 #include <lib.h>
 #include <symbols.h>
 #include <timestamp.h>
-
+#include <fmap.h>
 #include "fmap_config.h"
 
 #define ERROR(x...) printk(BIOS_ERR, "CBFS: " x)
@@ -70,6 +70,20 @@ void *cbfs_boot_map_with_leak(const char *name, uint32_t type, size_t *size)
 		*size = fsize;
 
 	return rdev_mmap(&fh.data, 0, fsize);
+}
+
+int cbfs_locate_file_in_region(struct cbfsf *fh, const char *region_name,
+		const char *name, uint32_t *type)
+{
+	struct region_device rdev;
+
+	if (fmap_locate_area_as_rdev(region_name, &rdev)) {
+		LOG("%s region not found while looking for %s\n",
+			region_name, name);
+		return -1;
+	}
+
+	return cbfs_locate(fh, &rdev, name, type);
 }
 
 size_t cbfs_load_and_decompress(const struct region_device *rdev, size_t offset,

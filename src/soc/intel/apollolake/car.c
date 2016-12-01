@@ -28,7 +28,7 @@
 static void flush_l1d_to_l2(void)
 {
 	msr_t msr = rdmsr(MSR_POWER_MISC);
-	msr.lo |= (1 << 8);
+	msr.lo |= FLUSH_DL1_L2;
 	wrmsr(MSR_POWER_MISC, msr);
 }
 

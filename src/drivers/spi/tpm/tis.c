@@ -58,10 +58,16 @@ int tis_close(void)
 
 int tis_init(void)
 {
+	struct spi_slave spi;
 	struct tpm2_info info;
 
-	if (tpm2_init(spi_setup_slave(CONFIG_DRIVER_TPM_SPI_BUS,
-				      CONFIG_DRIVER_TPM_SPI_CHIP))) {
+	if (spi_setup_slave(CONFIG_DRIVER_TPM_SPI_BUS,
+			    CONFIG_DRIVER_TPM_SPI_CHIP, &spi)) {
+		printk(BIOS_ERR, "Failed to setup TPM SPI slave\n");
+		return -1;
+	}
+
+	if (tpm2_init(&spi)) {
 		printk(BIOS_ERR, "Failed to initialize TPM SPI interface\n");
 		return -1;
 	}

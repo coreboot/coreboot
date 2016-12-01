@@ -343,25 +343,24 @@ static struct spi_flash *__spi_flash_probe(struct spi_slave *spi)
 
 struct spi_flash *spi_flash_probe(unsigned int bus, unsigned int cs)
 {
-	struct spi_slave *spi;
+	struct spi_slave spi;
 	struct spi_flash *flash;
 
-	spi = spi_setup_slave(bus, cs);
-	if (!spi) {
+	if (spi_setup_slave(bus, cs, &spi)) {
 		printk(BIOS_WARNING, "SF: Failed to set up slave\n");
 		return NULL;
 	}
 
 	/* Try special programmer probe if any (without force). */
-	flash = spi_flash_programmer_probe(spi, 0);
+	flash = spi_flash_programmer_probe(&spi, 0);
 
 	/* If flash is not found, try generic spi flash probe. */
 	if (!flash)
-		flash = __spi_flash_probe(spi);
+		flash = __spi_flash_probe(&spi);
 
 	/* If flash is not yet found, force special programmer probe if any. */
 	if (!flash)
-		flash = spi_flash_programmer_probe(spi, 1);
+		flash = spi_flash_programmer_probe(&spi, 1);
 
 	/* Give up -- nothing more to try if flash is not found. */
 	if (!flash) {

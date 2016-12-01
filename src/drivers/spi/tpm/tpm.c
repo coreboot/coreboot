@@ -36,7 +36,7 @@
 
 /* SPI Interface descriptor used by the driver. */
 struct tpm_spi_if {
-	struct spi_slave *slave;
+	struct spi_slave slave;
 	int (*cs_assert)(const struct spi_slave *slave);
 	void (*cs_deassert)(const struct spi_slave *slave);
 	int  (*xfer)(const struct spi_slave *slave, const void *dout,
@@ -130,7 +130,7 @@ static void start_transaction(int read_write, size_t bytes, unsigned addr)
 		header.body[i + 1] = (addr >> (8 * (2 - i))) & 0xff;
 
 	/* CS assert wakes up the slave. */
-	tpm_if.cs_assert(tpm_if.slave);
+	tpm_if.cs_assert(&tpm_if.slave);
 
 	/*
 	 * The TCG TPM over SPI specification introduces the notion of SPI
@@ -157,11 +157,11 @@ static void start_transaction(int read_write, size_t bytes, unsigned addr)
 	 * to require to stall the master, this would present an issue.
 	 * crosbug.com/p/52132 has been opened to track this.
 	 */
-	tpm_if.xfer(tpm_if.slave, header.body, sizeof(header.body), NULL, 0);
+	tpm_if.xfer(&tpm_if.slave, header.body, sizeof(header.body), NULL, 0);
 
 	/* Now poll the bus until TPM removes the stall bit. */
 	do {
-		tpm_if.xfer(tpm_if.slave, NULL, 0, &byte, 1);
+		tpm_if.xfer(&tpm_if.slave, NULL, 0, &byte, 1);
 	} while (!(byte & 1));
 }
 
@@ -227,7 +227,7 @@ static void trace_dump(const char *prefix, uint32_t reg,
  */
 static void write_bytes(const void *buffer, size_t bytes)
 {
-	tpm_if.xfer(tpm_if.slave, buffer, bytes, NULL, 0);
+	tpm_if.xfer(&tpm_if.slave, buffer, bytes, NULL, 0);
 }
 
 /*
@@ -236,7 +236,7 @@ static void write_bytes(const void *buffer, size_t bytes)
  */
 static void read_bytes(void *buffer, size_t bytes)
 {
-	tpm_if.xfer(tpm_if.slave, NULL, 0, buffer, bytes);
+	tpm_if.xfer(&tpm_if.slave, NULL, 0, buffer, bytes);
 }
 
 /*
@@ -251,7 +251,7 @@ static int tpm2_write_reg(unsigned reg_number, const void *buffer, size_t bytes)
 	trace_dump("W", reg_number, bytes, buffer, 0);
 	start_transaction(false, bytes, reg_number);
 	write_bytes(buffer, bytes);
-	tpm_if.cs_deassert(tpm_if.slave);
+	tpm_if.cs_deassert(&tpm_if.slave);
 	return 1;
 }
 
@@ -266,7 +266,7 @@ static int tpm2_read_reg(unsigned reg_number, void *buffer, size_t bytes)
 {
 	start_transaction(true, bytes, reg_number);
 	read_bytes(buffer, bytes);
-	tpm_if.cs_deassert(tpm_if.slave);
+	tpm_if.cs_deassert(&tpm_if.slave);
 	trace_dump("R", reg_number, bytes, buffer, 0);
 	return 1;
 }
@@ -303,7 +303,7 @@ int tpm2_init(struct spi_slave *spi_if)
 	uint32_t did_vid, status;
 	uint8_t cmd;
 
-	tpm_if.slave = spi_if;
+	memcpy(&tpm_if.slave, spi_if, sizeof(*spi_if));
 
 	tpm2_read_reg(TPM_DID_VID_REG, &did_vid, sizeof(did_vid));
 

@@ -260,20 +260,11 @@ static void ich_set_bbar(uint32_t minaddr)
 	writel_(ichspi_bbar, cntlr.bbar);
 }
 
-struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs)
+int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
 {
-	ich_spi_slave *slave = malloc(sizeof(*slave));
-
-	if (!slave) {
-		printk(BIOS_DEBUG, "ICH SPI: Bad allocation\n");
-		return NULL;
-	}
-
-	memset(slave, 0, sizeof(*slave));
-
 	slave->bus = bus;
 	slave->cs = cs;
-	return slave;
+	return 0;
 }
 
 static ich9_spi_regs *spi_regs(void)

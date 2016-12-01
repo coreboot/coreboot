@@ -27,7 +27,6 @@
 #include <timer.h>
 
 struct rockchip_spi_slave {
-	struct spi_slave slave;
 	struct rockchip_spi *regs;
 };
 
@@ -37,30 +36,24 @@ struct rockchip_spi_slave {
 
 static struct rockchip_spi_slave rockchip_spi_slaves[] = {
 	{
-	 .slave = { .bus = 0, },
 	 .regs = (void *)SPI0_BASE,
 	},
 	{
-	 .slave = { .bus = 1, },
 	 .regs = (void *)SPI1_BASE,
 	},
 	{
-	 .slave = { .bus = 2, },
 	 .regs = (void *)SPI2_BASE,
 	},
 #ifdef SPI3_BASE
 	{
-	 .slave = { .bus = 3, },
 	 .regs = (void *)SPI3_BASE,
 	},
 #ifdef SPI4_BASE
 	{
-	 .slave = { .bus = 4, },
 	 .regs = (void *)SPI4_BASE,
 	},
 #ifdef SPI5_BASE
 	{
-	 .slave = { .bus = 5, },
 	 .regs = (void *)SPI5_BASE,
 	},
 #endif
@@ -70,13 +63,18 @@ static struct rockchip_spi_slave rockchip_spi_slaves[] = {
 
 static struct rockchip_spi_slave *to_rockchip_spi(const struct spi_slave *slave)
 {
-	return container_of(slave, struct rockchip_spi_slave, slave);
+	assert(slave->bus < ARRAY_SIZE(rockchip_spi_slaves));
+	return &rockchip_spi_slaves[slave->bus];
 }
 
-struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs)
+int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
 {
-	assert(bus >= 0 && bus < ARRAY_SIZE(rockchip_spi_slaves));
-	return &(rockchip_spi_slaves[bus].slave);
+	assert(bus < ARRAY_SIZE(rockchip_spi_slaves));
+
+	slave->bus = bus;
+	slave->cs = cs;
+
+	return 0;
 }
 
 static void spi_cs_activate(const struct spi_slave *slave)

@@ -153,8 +153,6 @@ static MV_SPI_TYPE_INFO spi_types[] = { {.en16_bit = MV_TRUE,
 param define end
 *******************************************************************************/
 
-static struct spi_slave s_spi;
-
 static int mv_spi_baud_rate_set(unsigned char spi_id,
 			unsigned int serial_baud_rate);
 static void mv_spi_cs_deassert(unsigned char spi_id);
@@ -444,14 +442,12 @@ static int mrvl_spi_xfer(const struct spi_slave *slave,
 	return 0;
 }
 
-struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs)
+int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
 {
-	struct spi_slave *slave = &s_spi;
-
 	slave->bus = bus;
 	slave->cs = cs;
 	mv_spi_sys_init(bus, cs, CONFIG_SF_DEFAULT_SPEED);
-	return slave;
+	return 0;
 }
 
 int spi_claim_bus(const struct spi_slave *slave)

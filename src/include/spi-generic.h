@@ -48,11 +48,12 @@ void spi_init(void);
  *
  *   bus:     Bus ID of the slave chip.
  *   cs:      Chip select ID of the slave chip on the specified bus.
+ *   slave:   Pointer to slave structure that needs to be initialized.
  *
- * Returns: A spi_slave reference that can be used in subsequent SPI
- * calls, or NULL if one or more of the parameters are not supported.
+ * Returns:
+ * 0 on success, -1 on error
  */
-struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs);
+int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave);
 
 /*-----------------------------------------------------------------------
  * Claim the bus and prepare it for communication with a given slave.

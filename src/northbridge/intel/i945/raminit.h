@@ -25,7 +25,7 @@
 
 struct sys_info {
 	u16 memory_frequency;	/* 400, 533 or 667 */
-	u16 fsb_frequency;	/* 400, 533 or 667 */
+	u16 fsb_frequency;	/* 945GM: 400, 533 or 667 / 945GC: 533, 800, or 1066 */
 
 	u8 trp;			/* calculated by sdram_detect_smallest_tRP() */
 	u8 trcd;		/* calculated by sdram_detect_smallest_tRCD() */

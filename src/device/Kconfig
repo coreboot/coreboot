@@ -200,30 +200,41 @@ config PCI
 	bool
 	default n
 
+if PCI
+
+config NO_MMCONF_SUPPORT
+	bool
+	default !MMCONF_SUPPORT_DEFAULT
+
+config MMCONF_SUPPORT
+	bool
+	default MMCONF_SUPPORT_DEFAULT
+
+config MMCONF_SUPPORT_DEFAULT
+	bool
+	default n
+
 config HYPERTRANSPORT_PLUGIN_SUPPORT
 	bool
-	depends on PCI
 	default n
 
 config PCIX_PLUGIN_SUPPORT
 	bool
-	depends on PCI
 	default y
 
 config CARDBUS_PLUGIN_SUPPORT
 	bool
-	depends on PCI
 	default y
 
 config AZALIA_PLUGIN_SUPPORT
 	bool
-	depends on PCI
 	default n
 
 config PCIEXP_PLUGIN_SUPPORT
 	bool
-	depends on PCI
 	default y
+
+endif # PCI
 
 if PCIEXP_PLUGIN_SUPPORT
 
@@ -251,7 +262,7 @@ config PCIEXP_CLK_PM
 config PCIEXP_L1_SUB_STATE
 	prompt "Enable PCIe ASPM L1 SubState"
 	bool
-	depends on (MMCONF_SUPPORT_DEFAULT || PCI_IO_CFG_EXT)
+	depends on (MMCONF_SUPPORT || PCI_IO_CFG_EXT)
 	default n
 	help
 	  Detect and enable ASPM on PCIe links.

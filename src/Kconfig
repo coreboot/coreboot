@@ -550,15 +550,6 @@ config MAX_CPUS
 	int
 	default 1
 
-config MMCONF_SUPPORT_DEFAULT
-	bool
-	default n
-
-config MMCONF_SUPPORT
-	bool
-	default y if MMCONF_SUPPORT_DEFAULT
-	default n
-
 source "src/console/Kconfig"
 
 config HAVE_ACPI_RESUME

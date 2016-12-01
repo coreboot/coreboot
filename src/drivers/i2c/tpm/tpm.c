@@ -291,6 +291,8 @@ static uint8_t tpm_tis_i2c_status(struct tpm_chip *chip)
 	uint8_t buf;
 	if (iic_tpm_read(TPM_STS(chip->vendor.locality), &buf, 1) < 0)
 		return 0;
+	else if (buf == 0xff)	/* Some TPMs sometimes randomly return 0xff. */
+		return 0;
 	else
 		return buf;
 }
@@ -316,7 +318,7 @@ static ssize_t get_burstcount(struct tpm_chip *chip)
 		else
 			burstcnt = (buf[2] << 16) + (buf[1] << 8) + buf[0];
 
-		if (burstcnt)
+		if (burstcnt && burstcnt != 0xffffff)
 			return burstcnt;
 		mdelay(TPM_TIMEOUT);
 		timeout--;

@@ -271,6 +271,11 @@ struct postcar_frame {
 int postcar_frame_init(struct postcar_frame *pcf, size_t stack_size);
 
 /*
+ * Initialize postcar_frame object with a fixed stacktop in low memory.
+ */
+void postcar_frame_init_lowmem(struct postcar_frame *pcf);
+
+/*
  * Add variable MTRR covering the provided range with MTRR type.
  */
 void postcar_frame_add_mtrr(struct postcar_frame *pcf,

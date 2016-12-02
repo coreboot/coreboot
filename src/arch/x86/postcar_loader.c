@@ -33,12 +33,19 @@ static inline void stack_push(struct postcar_frame *pcf, uint32_t val)
 	*ptr = val;
 }
 
+static void postcar_frame_prepare(struct postcar_frame *pcf)
+{
+	msr_t msr;
+	msr = rdmsr(MTRR_CAP_MSR);
+
+	pcf->upper_mask = (1 << (cpu_phys_address_size() - 32)) - 1;
+	pcf->max_var_mttrs = msr.lo & MTRR_CAP_VCNT;
+	pcf->num_var_mttrs = 0;
+}
+
 int postcar_frame_init(struct postcar_frame *pcf, size_t stack_size)
 {
 	void *stack;
-	msr_t msr;
-
-	msr = rdmsr(MTRR_CAP_MSR);
 
 	stack = cbmem_add(CBMEM_ID_ROMSTAGE_RAM_STACK, stack_size);
 	if (stack == NULL) {
@@ -47,16 +54,20 @@ int postcar_frame_init(struct postcar_frame *pcf, size_t stack_size)
 		return -1;
 	}
 
+	postcar_frame_prepare(pcf);
 	pcf->stack = (uintptr_t)stack;
 	pcf->stack += stack_size;
-
-	pcf->upper_mask = (1 << (cpu_phys_address_size() - 32)) - 1;
-
-	pcf->max_var_mttrs = msr.lo & MTRR_CAP_VCNT;
-
-	pcf->num_var_mttrs = 0;
-
 	return 0;
+}
+
+/*
+ * For use with LATE_CBMEM_INIT boards only, with a fixed stacktop in
+ * low memory.
+ */
+void postcar_frame_init_lowmem(struct postcar_frame *pcf)
+{
+	postcar_frame_prepare(pcf);
+	pcf->stack = CONFIG_RAMTOP;
 }
 
 void postcar_frame_add_mtrr(struct postcar_frame *pcf,

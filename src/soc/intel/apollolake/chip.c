@@ -203,6 +203,7 @@ static void set_power_limits(void)
 	msr_t rapl_msr_reg, limit;
 	uint32_t power_unit;
 	uint32_t tdp, min_power, max_power;
+	uint32_t pl2_val;
 	uint32_t *rapl_mmio_reg;
 
 	if (!dev || !dev->chip_info) {
@@ -219,6 +220,7 @@ static void set_power_limits(void)
 	/* Get power defaults for this SKU */
 	rapl_msr_reg = rdmsr(MSR_PKG_POWER_SKU);
 	tdp = rapl_msr_reg.lo & PKG_POWER_LIMIT_MASK;
+	pl2_val = rapl_msr_reg.hi & PKG_POWER_LIMIT_MASK;
 	min_power = (rapl_msr_reg.lo >> 16) & PKG_POWER_LIMIT_MASK;
 	max_power = rapl_msr_reg.hi & PKG_POWER_LIMIT_MASK;
 
@@ -231,12 +233,12 @@ static void set_power_limits(void)
 	/* Set PL1 override value */
 	tdp = (cfg->tdp_pl1_override_mw == 0) ?
 		tdp : (cfg->tdp_pl1_override_mw * power_unit) / 1000;
+	/* Set PL2 override value */
+	pl2_val = (cfg->tdp_pl2_override_mw == 0) ?
+		pl2_val : (cfg->tdp_pl2_override_mw * power_unit) / 1000;
 
 	/* Set long term power limit to TDP */
 	limit.lo = tdp & PKG_POWER_LIMIT_MASK;
-	/* PL2 is invalid for small core */
-	limit.hi = 0x0;
-
 	/* Set PL1 Pkg Power clamp bit */
 	limit.lo |= PKG_POWER_LIMIT_CLAMP;
 
@@ -244,18 +246,25 @@ static void set_power_limits(void)
 	limit.lo |= (MB_POWER_LIMIT1_TIME_DEFAULT &
 		PKG_POWER_LIMIT_TIME_MASK) << PKG_POWER_LIMIT_TIME_SHIFT;
 
+	/* Set short term power limit PL2 */
+	limit.hi = pl2_val & PKG_POWER_LIMIT_MASK;
+	limit.hi |= PKG_POWER_LIMIT_EN;
+
 	/* Program package power limits in RAPL MSR */
 	wrmsr(MSR_PKG_POWER_LIMIT, limit);
 	printk(BIOS_INFO, "RAPL PL1 %d.%dW\n", tdp / power_unit,
 				100 * (tdp % power_unit) / power_unit);
+	printk(BIOS_INFO, "RAPL PL2 %d.%dW\n", pl2_val / power_unit,
+				100 * (pl2_val % power_unit) / power_unit);
 
 	/* Get the MMIO address */
 	rapl_mmio_reg = (void *)(uintptr_t) (MCH_BASE_ADDR + MCHBAR_RAPL_PPL);
-	/*
-	 * Disable RAPL MMIO PL1 Power limits because RAPL uses MSR value.
-	 * PL2 (limit.hi) is invalid for small cores
-	 */
+
+	/* Setting RAPL MMIO register for Power limits.
+	* RAPL driver is using MSR instead of MMIO.
+	* So, disabled LIMIT_EN bit for MMIO. */
 	write32(rapl_mmio_reg, limit.lo & ~(PKG_POWER_LIMIT_EN));
+	write32(rapl_mmio_reg + 1, limit.hi & ~(PKG_POWER_LIMIT_EN));
 }
 
 static void soc_init(void *data)

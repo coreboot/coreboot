@@ -429,12 +429,6 @@ static void nb_set_resources(device_t dev)
 			assign_resources(bus);
 		}
 	}
-
-	/* Print the MMCONF region if it has been reserved. */
-	res = find_resource(dev, 0xc0010058);
-	if (res) {
-		report_resource_stored(dev, res, " <mmconfig>");
-	}
 }
 
 static void scan_chains(device_t dev)

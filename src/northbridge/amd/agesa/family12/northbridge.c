@@ -662,13 +662,9 @@ static void cpu_bus_read_resources(device_t dev)
 
 static void cpu_bus_set_resources(device_t dev)
 {
-	struct resource *resource = find_resource(dev, 0xc0010058);
-
 	printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
-	if (resource) {
-		report_resource_stored(dev, resource, " <mmconfig>");
-	}
 	pci_dev_set_resources(dev);
+
 	printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
 }
 

@@ -537,11 +537,6 @@ static void amdfam10_set_resources(device_t dev)
 			assign_resources(bus);
 		}
 	}
-
-	res = find_resource(dev, 0xc0010058);
-	if (res) {
-		report_resource_stored(dev, res, " <mmconfig>");
-	}
 }
 
 static void mcf0_control_init(struct device *dev)

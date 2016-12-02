@@ -100,6 +100,8 @@ struct soc_intel_apollolake_config {
 
 	/* PL1 override value in mW for APL */
 	uint16_t tdp_pl1_override_mw;
+	/* PL2 override value in mW for APL */
+	uint16_t tdp_pl2_override_mw;
 
 	/* Configure Audio clk gate and power gate
 	 * IOSF-SB port ID 92 offset 0x530 [5] and [3]

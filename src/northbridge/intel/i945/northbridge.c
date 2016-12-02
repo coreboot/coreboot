@@ -157,26 +157,11 @@ static void mc_read_resources(device_t dev)
 
 	pci_dev_read_resources(dev);
 
-	/* We use 0xcf as an unused index for our PCIe bar so that we find it again */
 	buses = get_pcie_bar(&pcie_config_base);
 	if (buses) {
-		struct resource *resource = new_resource(dev, 0xcf);
+		struct resource *resource = new_resource(dev, PCIEXBAR);
 		mmconf_resource_init(resource, pcie_config_base, buses);
 	}
-}
-
-static void mc_set_resources(device_t dev)
-{
-	struct resource *resource;
-
-	/* Report the PCIe BAR */
-	resource = find_resource(dev, 0xcf);
-	if (resource) {
-		report_resource_stored(dev, resource, "<mmconfig>");
-	}
-
-	/* And call the normal set_resources */
-	pci_dev_set_resources(dev);
 }
 
 static void intel_set_subsystem(device_t dev, unsigned vendor, unsigned device)
@@ -216,7 +201,7 @@ static struct pci_operations intel_pci_ops = {
 
 static struct device_operations mc_ops = {
 	.read_resources   = mc_read_resources,
-	.set_resources    = mc_set_resources,
+	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.acpi_fill_ssdt_generator = generate_cpu_entries,
 #if CONFIG_HAVE_ACPI_RESUME

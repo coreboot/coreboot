@@ -431,12 +431,6 @@ static void set_resources(device_t dev)
 			assign_resources(bus);
 		}
 	}
-
-	/* Print the MMCONF region if it has been reserved. */
-	res = find_resource(dev, 0xc0010058);
-	if (res) {
-		report_resource_stored(dev, res, " <mmconfig>");
-	}
 }
 
 static unsigned long acpi_fill_hest(acpi_hest_t *hest)

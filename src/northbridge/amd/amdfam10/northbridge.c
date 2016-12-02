@@ -1957,10 +1957,6 @@ static void cpu_bus_init(device_t dev)
 
 static void cpu_bus_set_resources(struct device *dev)
 {
-	struct resource *resource = find_resource(dev, 0xc0010058);
-	if (resource) {
-		report_resource_stored(dev, resource, " <mmconfig>");
-	}
 	pci_dev_set_resources(dev);
 }
 

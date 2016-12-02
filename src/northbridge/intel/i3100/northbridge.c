@@ -138,18 +138,7 @@ static void mc_read_resources(device_t dev)
 {
 	pci_dev_read_resources(dev);
 
-	mmconf_resource(dev, 0xcf);
-}
-
-static void mc_set_resources(device_t dev)
-{
-	struct resource *resource;
-
-	resource = find_resource(dev, 0xcf);
-	if (resource) {
-		report_resource_stored(dev, resource, "<mmconfig>");
-	}
-	pci_dev_set_resources(dev);
+	mmconf_resource(dev, EXPECBASE);
 }
 
 static void intel_set_subsystem(device_t dev, unsigned vendor, unsigned device)
@@ -188,7 +177,7 @@ static struct pci_operations intel_pci_ops = {
 
 static struct device_operations mc_ops = {
 	.read_resources   = mc_read_resources,
-	.set_resources    = mc_set_resources,
+	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init             = 0,
 	.scan_bus         = 0,

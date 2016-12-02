@@ -1399,7 +1399,7 @@ int cbfs_print_entry_info(struct cbfs_image *image, struct cbfs_file *entry,
 	struct cbfs_file_attr_hash *hash = NULL;
 	while ((hash = cbfs_file_get_next_hash(entry, hash)) != NULL) {
 		unsigned int hash_type = ntohl(hash->hash_type);
-		if (hash_type > CBFS_NUM_SUPPORTED_HASHES) {
+		if (hash_type >= CBFS_NUM_SUPPORTED_HASHES) {
 			fprintf(fp, "invalid hash type %d\n", hash_type);
 			break;
 		}

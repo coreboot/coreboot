@@ -33,6 +33,10 @@ config MMCONF_BASE_ADDRESS
 	hex
 	default 0xe0000000
 
+config MMCONF_BUS_NUMBER
+	int
+	default 256
+
 config VGA_BIOS_ID
 	string
 	default "1106,7122"

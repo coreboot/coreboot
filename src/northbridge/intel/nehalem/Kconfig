@@ -24,6 +24,10 @@ config NORTHBRIDGE_INTEL_NEHALEM
 
 if NORTHBRIDGE_INTEL_NEHALEM
 
+config MMCONF_BUS_NUMBER
+	int
+	default 256
+
 config CBFS_SIZE
 	hex
 	default 0x100000

@@ -297,10 +297,7 @@ static void vx900_read_resources(device_t dev)
 	/* Now do the same for our MMCONF
 	 * We always run with MMCONF enabled. We need to access the extended
 	 * config space when configuring PCI-Express links */
-	res = new_resource(dev, idx++);
-	res->size = 256 * MiB;
-	res->base = CONFIG_MMCONF_BASE_ADDRESS;
-	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+	mmconf_resource(dev, idx++);
 
 	pci_domain_read_resources(dev);
 }

@@ -741,14 +741,7 @@ static void amdfam10_domain_read_resources(device_t dev)
 	pci_domain_read_resources(dev);
 
 	/* We have MMCONF_SUPPORT, create the resource window. */
-	struct resource *res = new_resource(dev, 0xc0010058);
-	res->base = CONFIG_MMCONF_BASE_ADDRESS;
-	res->size = CONFIG_MMCONF_BUS_NUMBER * 1024 * 1024;	/* Each bus needs 1M */
-	res->align = log2(res->size);
-	res->gran = log2(res->size);
-	res->limit = 0xffffffffffffffffULL;			/* 64-bit location allowed */
-	res->flags = IORESOURCE_MEM | IORESOURCE_RESERVE |
-		IORESOURCE_FIXED | IORESOURCE_STORED |  IORESOURCE_ASSIGNED;
+	mmconf_resource(dev, 0xc0010058);
 
 	/* Reserve lower DRAM region to force PCI MMIO region to correct location above 0xefffffff */
 	ram_resource(dev, 7, 0, rdmsr(TOP_MEM).lo >> 10);

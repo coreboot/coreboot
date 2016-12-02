@@ -32,9 +32,6 @@
 #include <arch/acpi.h>
 
 
-static u32 max_bus;
-
-
 static void pci_domain_set_resources(device_t dev)
 {
 	device_t mc_dev;
@@ -139,14 +136,9 @@ static struct device_operations pci_domain_ops = {
 
 static void mc_read_resources(device_t dev)
 {
-	struct resource *resource;
-
 	pci_dev_read_resources(dev);
 
-	resource = new_resource(dev, 0xcf);
-	resource->base = 0xe0000000;
-	resource->size = max_bus * 4096*256;
-	resource->flags = IORESOURCE_MEM | IORESOURCE_FIXED | IORESOURCE_STORED |  IORESOURCE_ASSIGNED;
+	mmconf_resource(dev, 0xcf);
 }
 
 static void mc_set_resources(device_t dev)

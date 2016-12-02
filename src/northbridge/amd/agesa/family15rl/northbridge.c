@@ -326,11 +326,7 @@ static void read_resources(struct device *dev)
 	 * It is not honored by the coreboot resource allocator if it is in
 	 * the CPU_CLUSTER.
 	 */
-	struct resource *resource = new_resource(dev, 0xc0010058);
-	resource->base = CONFIG_MMCONF_BASE_ADDRESS;
-	resource->size = CONFIG_MMCONF_BUS_NUMBER * 4096 * 256;
-	resource->flags = IORESOURCE_MEM | IORESOURCE_RESERVE |
-	    IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
+	mmconf_resource(dev, 0xc0010058);
 }
 
 static void set_resource(struct device *dev, struct resource *resource, u32 nodeid)

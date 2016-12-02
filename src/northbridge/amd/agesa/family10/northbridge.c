@@ -424,6 +424,13 @@ static void amdfam10_read_resources(device_t dev)
 			amdfam10_link_read_bases(dev, nodeid, link->link_num);
 		}
 	}
+
+	/*
+	 * This MMCONF resource must be reserved in the PCI domain.
+	 * It is not honored by the coreboot resource allocator if it is in
+	 * the CPU_CLUSTER.
+	 */
+	mmconf_resource(dev, 0xc0010058);
 }
 
 static void amdfam10_set_resource(device_t dev, struct resource *resource,
@@ -529,6 +536,11 @@ static void amdfam10_set_resources(device_t dev)
 		if (bus->children) {
 			assign_resources(bus);
 		}
+	}
+
+	res = find_resource(dev, 0xc0010058);
+	if (res) {
+		report_resource_stored(dev, res, " <mmconfig>");
 	}
 }
 
@@ -1096,19 +1108,10 @@ static void cpu_bus_init(device_t dev)
 
 static void cpu_bus_read_resources(device_t dev)
 {
-	struct resource *resource = new_resource(dev, 0xc0010058);
-	resource->base = CONFIG_MMCONF_BASE_ADDRESS;
-	resource->size = CONFIG_MMCONF_BUS_NUMBER * 4096*256;
-	resource->flags = IORESOURCE_MEM | IORESOURCE_RESERVE |
-		IORESOURCE_FIXED | IORESOURCE_STORED |  IORESOURCE_ASSIGNED;
 }
 
 static void cpu_bus_set_resources(device_t dev)
 {
-	struct resource *resource = find_resource(dev, 0xc0010058);
-	if (resource) {
-		report_resource_stored(dev, resource, " <mmconfig>");
-	}
 	pci_dev_set_resources(dev);
 }
 

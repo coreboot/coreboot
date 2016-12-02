@@ -57,13 +57,12 @@ int bridge_silicon_revision(void)
 static const int legacy_hole_base_k = 0xa0000 / 1024;
 static const int legacy_hole_size_k = 384;
 
-static int get_pcie_bar(u32 *base, u32 *len)
+static int get_pcie_bar(u32 *base)
 {
 	device_t dev;
 	u32 pciexbar_reg;
 
 	*base = 0;
-	*len = 0;
 
 	dev = dev_find_slot(0, PCI_DEVFN(0, 0));
 	if (!dev)
@@ -76,25 +75,13 @@ static int get_pcie_bar(u32 *base, u32 *len)
 
 	*base = pciexbar_reg & ((1 << 31) | (1 << 30) | (1 << 29) |
 				(1 << 28));
-	*len = 256 * 1024 * 1024; /* 256MB ECAM range */
-	return 1;
+	return 256;
 
 }
 
 static int add_fixed_resources(struct device *dev, int index)
 {
 	struct resource *resource;
-	u32 pcie_config_base, pcie_config_size;
-
-	if (get_pcie_bar(&pcie_config_base, &pcie_config_size)) {
-		printk(BIOS_DEBUG, "Adding PCIe config bar base=0x%08x "
-		       "size=0x%x\n", pcie_config_base, pcie_config_size);
-		resource = new_resource(dev, index++);
-		resource->base = (resource_t) pcie_config_base;
-		resource->size = (resource_t) pcie_config_size;
-		resource->flags = IORESOURCE_MEM | IORESOURCE_RESERVE |
-		    IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
-	}
 
 	resource = new_resource(dev, index++); /* Local APIC */
 	resource->base = LAPIC_DEFAULT_BASE;
@@ -154,8 +141,18 @@ static void mc_add_dram_resources(device_t dev)
 
 static void mc_read_resources(device_t dev)
 {
+	u32 pcie_config_base;
+	int buses;
+
 	/* Call the normal read_resources */
 	pci_dev_read_resources(dev);
+
+	/* We use 0xcf as an unused index for our PCIe bar so that we find it again */
+	buses = get_pcie_bar(&pcie_config_base);
+	if (buses) {
+		struct resource *resource = new_resource(dev, 0xcf);
+		mmconf_resource_init(resource, pcie_config_base, buses);
+	}
 
 	/* Calculate and add DRAM resources. */
 	mc_add_dram_resources(dev);

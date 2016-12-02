@@ -62,13 +62,12 @@ int bridge_silicon_revision(void)
 static const int legacy_hole_base_k = 0xa0000 / 1024;
 static const int legacy_hole_size_k = 384;
 
-static int get_pcie_bar(u32 *base, u32 *len)
+static int get_pcie_bar(u32 *base)
 {
 	device_t dev;
 	u32 pciexbar_reg;
 
 	*base = 0;
-	*len = 0;
 
 	dev = dev_find_slot(0, PCI_DEVFN(0, 0));
 	if (!dev)
@@ -82,16 +81,13 @@ static int get_pcie_bar(u32 *base, u32 *len)
 	switch ((pciexbar_reg >> 1) & 3) {
 	case 0: // 256MB
 		*base = pciexbar_reg & ((1 << 31)|(1 << 30)|(1 << 29)|(1 << 28));
-		*len = 256 * 1024 * 1024;
-		return 1;
+		return 256;
 	case 1: // 128M
 		*base = pciexbar_reg & ((1 << 31)|(1 << 30)|(1 << 29)|(1 << 28)|(1 << 27));
-		*len = 128 * 1024 * 1024;
-		return 1;
+		return 128;
 	case 2: // 64M
 		*base = pciexbar_reg & ((1 << 31)|(1 << 30)|(1 << 29)|(1 << 28)|(1 << 27)|(1 << 26));
-		*len = 64 * 1024 * 1024;
-		return 1;
+		return 64;
 	}
 
 	return 0;
@@ -99,20 +95,7 @@ static int get_pcie_bar(u32 *base, u32 *len)
 
 static void add_fixed_resources(struct device *dev, int index)
 {
-	struct resource *resource;
-	u32 pcie_config_base, pcie_config_size;
-
 	mmio_resource(dev, index++, uma_memory_base >> 10, uma_memory_size >> 10);
-
-	if (get_pcie_bar(&pcie_config_base, &pcie_config_size)) {
-		printk(BIOS_DEBUG, "Adding PCIe config bar base=0x%08x "
-		       "size=0x%x\n", pcie_config_base, pcie_config_size);
-		resource = new_resource(dev, index++);
-		resource->base = (resource_t) pcie_config_base;
-		resource->size = (resource_t) pcie_config_size;
-		resource->flags = IORESOURCE_MEM | IORESOURCE_RESERVE |
-		    IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
-	}
 
 	mmio_resource(dev, index++, legacy_hole_base_k, legacy_hole_size_k);
 }
@@ -256,24 +239,17 @@ static struct device_operations pci_domain_ops = {
 
 static void mc_read_resources(device_t dev)
 {
-	struct resource *resource;
+	u32 pcie_config_base;
+	int buses;
 
 	pci_dev_read_resources(dev);
 
-	/* So, this is one of the big mysteries in the coreboot resource
-	 * allocator. This resource should make sure that the address space
-	 * of the PCIe memory mapped config space bar. But it does not.
-	 */
-
 	/* We use 0xcf as an unused index for our PCIe bar so that we find it again */
-	resource = new_resource(dev, 0xcf);
-	resource->base = DEFAULT_PCIEXBAR;
-	resource->size = 64 * 1024 * 1024;	/* 64MB hard coded PCIe config space */
-	resource->flags =
-	    IORESOURCE_MEM | IORESOURCE_FIXED | IORESOURCE_STORED |
-	    IORESOURCE_ASSIGNED;
-	printk(BIOS_DEBUG, "Adding PCIe enhanced config space BAR 0x%08lx-0x%08lx.\n",
-		     (unsigned long)(resource->base), (unsigned long)(resource->base + resource->size));
+	buses = get_pcie_bar(&pcie_config_base);
+	if (buses) {
+		struct resource *resource = new_resource(dev, 0xcf);
+		mmconf_resource_init(resource, pcie_config_base, buses);
+	}
 }
 
 static void mc_set_resources(device_t dev)

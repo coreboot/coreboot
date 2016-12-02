@@ -234,6 +234,9 @@ void pci_domain_scan_bus(struct device *dev);
 void fixed_mem_resource(device_t dev, unsigned long index,
 		  unsigned long basek, unsigned long sizek, unsigned long type);
 
+void mmconf_resource_init(struct resource *res, resource_t base, int buses);
+void mmconf_resource(struct device *dev, unsigned long index);
+
 void scan_smbus(device_t bus);
 void scan_static_bus(device_t bus);
 void scan_lpc_bus(device_t bus);

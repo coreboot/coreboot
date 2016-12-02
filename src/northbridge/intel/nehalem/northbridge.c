@@ -69,11 +69,6 @@ static void add_fixed_resources(struct device *dev, int index)
 	   0xfed1c000-0xfed20000 RCBA
 	   0xfed90000-0xfed94000 IOMMU
 	   0xff800000-0xffffffff ROM. */
-	resource = new_resource(dev, index++);
-	resource->base = (resource_t) 0xe0000000;
-	resource->size = (resource_t) 0x10000000;
-	resource->flags = IORESOURCE_MEM | IORESOURCE_RESERVE |
-	  IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
 
 	resource = new_resource(dev, index++);
 	resource->base = (resource_t) 0xfed00000;
@@ -98,10 +93,6 @@ static void pci_domain_set_resources(device_t dev)
 	assign_resources(dev->link_list);
 }
 
-	/* TODO We could determine how many PCIe busses we need in
-	 * the bar. For now that number is hardcoded to a max of 64.
-	 * See e7525/northbridge.c for an example.
-	 */
 static struct device_operations pci_domain_ops = {
 	.read_resources = pci_domain_read_resources,
 	.set_resources = pci_domain_set_resources,
@@ -118,6 +109,8 @@ static void mc_read_resources(device_t dev)
 	uint16_t reg16;
 
 	pci_dev_read_resources(dev);
+
+	mmconf_resource(dev, 0x50);
 
 	tseg_base = pci_read_config32(dev_find_slot(0, PCI_DEVFN(0, 0)), TSEG);
 	TOUUD = pci_read_config16(dev_find_slot(0, PCI_DEVFN(0, 0)),

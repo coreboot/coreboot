@@ -88,4 +88,8 @@ int spi_flash_volatile_group_end(const struct spi_flash *flash);
 int chipset_volatile_group_begin(const struct spi_flash *flash);
 int chipset_volatile_group_end(const struct spi_flash *flash);
 
+/* Return spi_flash object reference for the boot device. This is only valid
+ * if CONFIG_BOOT_DEVICE_SPI_FLASH is enabled. */
+const struct spi_flash *boot_device_spi_flash(void);
+
 #endif /* _SPI_FLASH_H_ */

@@ -95,3 +95,9 @@ const struct region_device *boot_device_rw(void)
 
 	return &spi_rw;
 }
+
+const struct spi_flash *boot_device_spi_flash(void)
+{
+	boot_device_rw_init();
+	return car_get_var(sfg);
+}

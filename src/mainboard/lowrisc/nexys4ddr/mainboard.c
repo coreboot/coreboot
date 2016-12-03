@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <cbmem.h>
 #include <device/device.h>
 #include <symbols.h>
 
@@ -24,6 +25,8 @@ static void mainboard_enable(device_t dev)
 	const size_t ram_size = 1*GiB;
 
 	ram_resource(dev, 0, (uintptr_t)_dram / KiB, ram_size / KiB);
+
+	cbmem_initialize_empty();
 }
 
 struct chip_operations mainboard_ops = {

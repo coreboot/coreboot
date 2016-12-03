@@ -19,29 +19,13 @@
 
 void set_power_led(int state)
 {
-	switch (state) {
-	case LED_ON:
-	case LED_OFF:
-		it8772f_gpio_led(IT8772F_GPIO_DEV,
-			2 /* set */,
-			0xF7 /* select */,
-			state /* polarity: state dependent */,
-			0x00 /* 0=pulldown */,
-			0x04 /* output */,
-			0x04 /* 1=Simple IO function */,
-			SIO_GPIO_BLINK_GPIO22,
-			IT8772F_GPIO_BLINK_FREQUENCY_1_HZ);
-		break;
-	case LED_BLINK:
-		it8772f_gpio_led(IT8772F_GPIO_DEV,
-			2 /* set */,
-			0xF7 /* select */,
-			0x04 /* polarity */,
-			0x04 /* 1=pullup */,
-			0x04 /* output */,
-			0x00, /* 0=Alternate function */
-			SIO_GPIO_BLINK_GPIO22,
-			IT8772F_GPIO_BLINK_FREQUENCY_1_HZ);
-		break;
-	}
+	it8772f_gpio_led(IT8772F_GPIO_DEV,
+		2, 					/* set */
+		0xF7, 					/* select */
+		state == LED_OFF ? 0x00 : 0x04,		/* polarity */
+		state == LED_BLINK ? 0x04 : 0x00, 	/* pullup/pulldown */
+		0x04, 					/* output */
+		state == LED_BLINK ? 0x00 : 0x04, 	/* I/O function */
+		SIO_GPIO_BLINK_GPIO22,
+		IT8772F_GPIO_BLINK_FREQUENCY_1_HZ);
 }

@@ -437,3 +437,82 @@ const struct region_device_ops xlate_rdev_rw_ops = {
 	.writeat = xlate_writeat,
 	.eraseat = xlate_eraseat,
 };
+
+
+static void *incoherent_mmap(const struct region_device *rd, size_t offset,
+				size_t size)
+{
+	const struct incoherent_rdev *irdev;
+
+	irdev = container_of(rd, const struct incoherent_rdev, rdev);
+
+	return rdev_mmap(irdev->read, offset, size);
+}
+
+static int incoherent_munmap(const struct region_device *rd, void *mapping)
+{
+	const struct incoherent_rdev *irdev;
+
+	irdev = container_of(rd, const struct incoherent_rdev, rdev);
+
+	return rdev_munmap(irdev->read, mapping);
+}
+
+static ssize_t incoherent_readat(const struct region_device *rd, void *b,
+				size_t offset, size_t size)
+{
+	const struct incoherent_rdev *irdev;
+
+	irdev = container_of(rd, const struct incoherent_rdev, rdev);
+
+	return rdev_readat(irdev->read, b, offset, size);
+}
+
+static ssize_t incoherent_writeat(const struct region_device *rd, const void *b,
+			size_t offset, size_t size)
+{
+	const struct incoherent_rdev *irdev;
+
+	irdev = container_of(rd, const struct incoherent_rdev, rdev);
+
+	return rdev_writeat(irdev->write, b, offset, size);
+}
+
+static ssize_t incoherent_eraseat(const struct region_device *rd, size_t offset,
+				size_t size)
+{
+	const struct incoherent_rdev *irdev;
+
+	irdev = container_of(rd, const struct incoherent_rdev, rdev);
+
+	return rdev_eraseat(irdev->write, offset, size);
+}
+
+static const struct region_device_ops incoherent_rdev_ops = {
+	.mmap = incoherent_mmap,
+	.munmap = incoherent_munmap,
+	.readat = incoherent_readat,
+	.writeat = incoherent_writeat,
+	.eraseat = incoherent_eraseat,
+};
+
+const struct region_device *incoherent_rdev_init(struct incoherent_rdev *irdev,
+				const struct region *r,
+				const struct region_device *read,
+				const struct region_device *write)
+{
+	const size_t size = region_sz(r);
+
+	if (size != region_device_sz(read) || size != region_device_sz(write))
+		return NULL;
+
+	/* The region is represented as offset 0 to size. That way, the generic
+	 * rdev operations can be called on the read or write implementation
+	 * without any unnecessary translation because the offsets all start
+	 * at 0. */
+	region_device_init(&irdev->rdev, &incoherent_rdev_ops, 0, size);
+	irdev->read = read;
+	irdev->write = write;
+
+	return &irdev->rdev;
+}

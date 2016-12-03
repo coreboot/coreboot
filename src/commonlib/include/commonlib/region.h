@@ -245,4 +245,27 @@ void xlate_region_device_rw_init(struct xlate_region_device *xdev,
 			      size_t sub_offset, size_t sub_size,
 			      size_t parent_size);
 
+/* This type can be used for incoherent access where the read and write
+ * operations are backed by separate drivers. An example is x86 systems
+ * with memory mapped media for reading but use a spi flash driver for
+ * writing. One needs to ensure using this object is appropriate in context. */
+struct incoherent_rdev {
+	struct region_device rdev;
+	const struct region_device *read;
+	const struct region_device *write;
+};
+
+/* Initialize an incoherent_rdev based on the region as well as the read and
+ * write rdevs. The read and write rdevs should match in size to the passed
+ * in region. If not the initialization will fail returning NULL. Otherwise
+ * the function will return a pointer to the containing region_device to
+ * be used for region operations. Therefore, the lifetime of the returned
+ * pointer matches the lifetime of the incoherent_rdev object. Likewise,
+ * the lifetime of the read and write rdev need to match the lifetime of
+ * the incoherent_rdev object. */
+const struct region_device *incoherent_rdev_init(struct incoherent_rdev *irdev,
+				const struct region *r,
+				const struct region_device *read,
+				const struct region_device *write);
+
 #endif /* _REGION_H_ */

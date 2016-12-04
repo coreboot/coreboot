@@ -1,9 +1,9 @@
 #include <stdint.h>
 #include <ip_checksum.h>
 
-unsigned long compute_ip_checksum(void *addr, unsigned long length)
+unsigned long compute_ip_checksum(const void *addr, unsigned long length)
 {
-	uint8_t *ptr;
+	const uint8_t *ptr;
 	volatile union {
 		uint8_t  byte[2];
 		uint16_t word;

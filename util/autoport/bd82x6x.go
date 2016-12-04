@@ -367,11 +367,11 @@ void mainboard_config_superio(void)
 }
 
 /* FIXME: Put proper SPD map here. */
-void mainboard_get_spd(spd_raw_data *spd)
+void mainboard_get_spd(spd_raw_data *spd, bool id_only)
 {
 `)
 	for i, spd := range guessedMap {
-		fmt.Fprintf(sb, "\tread_spd(&spd[%d], 0x%02x);\n", i, spd)
+		fmt.Fprintf(sb, "\tread_spd(&spd[%d], 0x%02x, id_only);\n", i, spd)
 	}
 	sb.WriteString("}\n")
 

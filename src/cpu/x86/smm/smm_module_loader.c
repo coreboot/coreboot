@@ -45,9 +45,6 @@ struct smm_stub_params {
  */
 extern unsigned char _binary_smmstub_start[];
 
-/* This is the SMM handler that the stub calls. It is encoded as an rmodule. */
-extern unsigned char _binary_smm_start[];
-
 /* Per CPU minimum stack size. */
 #define SMM_MINIMUM_STACK_SIZE 32
 

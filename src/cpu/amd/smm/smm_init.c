@@ -26,9 +26,6 @@
 #include <cpu/x86/smm.h>
 #include <string.h>
 
-extern unsigned char _binary_smm_start;
-extern unsigned char _binary_smm_size;
-
 void smm_init(void)
 {
 	msr_t msr, syscfg_orig, mtrr_aseg_orig;
@@ -63,7 +60,8 @@ void smm_init(void)
 
 	enable_cache();
 	/* copy the real SMM handler */
-	memcpy((void *)SMM_BASE, &_binary_smm_start, (size_t)&_binary_smm_size);
+	memcpy((void *)SMM_BASE, _binary_smm_start,
+		_binary_smm_end - _binary_smm_start);
 	wbinvd();
 	disable_cache();
 

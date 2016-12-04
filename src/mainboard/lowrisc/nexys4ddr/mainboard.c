@@ -14,17 +14,17 @@
  */
 
 #include <cbmem.h>
+#include <commonlib/configstring.h>
 #include <device/device.h>
 #include <symbols.h>
 
 static void mainboard_enable(device_t dev)
 {
-	/*
-	 * TODO: Get this size from the hardware-supplied configuration string.
-	 */
-	const size_t ram_size = 1*GiB;
+	uintptr_t ram_base;
+	size_t ram_size;
 
-	ram_resource(dev, 0, (uintptr_t)_dram / KiB, ram_size / KiB);
+	query_mem(configstring(), &ram_base, &ram_size);
+	ram_resource(dev, 0, ram_base / KiB, ram_size / KiB);
 
 	cbmem_initialize_empty();
 }

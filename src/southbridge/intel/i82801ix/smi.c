@@ -256,6 +256,7 @@ static void smm_relocate(void)
 	/* copy the SMM relocation code */
 	memcpy((void *)0x38000, &smm_relocation_start,
 			&smm_relocation_end - &smm_relocation_start);
+	wbinvd();
 
 	printk(BIOS_DEBUG, "\n");
 	dump_smi_status(reset_smi_status());

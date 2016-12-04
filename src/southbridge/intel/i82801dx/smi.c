@@ -25,9 +25,6 @@
 #include <string.h>
 #include "i82801dx.h"
 
-extern unsigned char _binary_smm_start;
-extern unsigned char _binary_smm_size;
-
 /* I945 */
 #define SMRAM		0x90
 #define   D_OPEN	(1 << 6)
@@ -321,7 +318,8 @@ static void smm_install(void)
 				D_OPEN | G_SMRAME | C_BASE_SEG);
 
 	/* copy the real SMM handler */
-	memcpy((void *)0xa0000, &_binary_smm_start, (size_t)&_binary_smm_size);
+	memcpy((void *)0xa0000, _binary_smm_start,
+		_binary_smm_end - _binary_smm_start);
 	wbinvd();
 
 	/* close the SMM memory window and enable normal SMM */

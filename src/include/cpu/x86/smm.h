@@ -485,6 +485,10 @@ void mainboard_smi_sleep(u8 slp_typ);
 void smi_release_lock(void);
 #endif
 
+/* This is the SMM handler. */
+extern unsigned char _binary_smm_start[];
+extern unsigned char _binary_smm_end[];
+
 /* Get PMBASE address */
 u16 smm_get_pmbase(void);
 

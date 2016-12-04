@@ -15,6 +15,7 @@
 
 #include <arch/cbfs.h>
 #include <arch/io.h>
+#include <assert.h>
 #include <cbfs.h>
 #include <cbmem.h>
 #include <console/console.h>
@@ -41,7 +42,7 @@
  */
 void raminit(struct pei_data *pei_data)
 {
-	const struct mrc_saved_data *cache;
+	struct region_device rdev;
 	struct memory_info* mem_info;
 	pei_wrapper_entry_t entry;
 	int ret;
@@ -51,10 +52,12 @@ void raminit(struct pei_data *pei_data)
 	if (vboot_recovery_mode_enabled()) {
 		/* Recovery mode does not use MRC cache */
 		printk(BIOS_DEBUG, "Recovery mode: not using MRC cache.\n");
-	} else if (!mrc_cache_get_current(&cache)) {
+	} else if (!mrc_cache_get_current(MRC_TRAINING_DATA, 0, &rdev)) {
 		/* MRC cache found */
-		pei_data->saved_data_size = cache->size;
-		pei_data->saved_data = &cache->data[0];
+		pei_data->saved_data_size = region_device_sz(&rdev);
+		pei_data->saved_data = rdev_mmap_full(&rdev);
+		/* Assume boot device is memory mapped. */
+		assert(IS_ENABLED(CONFIG_BOOT_DEVICE_MEMORY_MAPPED));
 	} else if (pei_data->boot_mode == ACPI_S3) {
 		/* Waking from S3 and no cache. */
 		printk(BIOS_DEBUG, "No MRC cache found in S3 resume path.\n");
@@ -118,8 +121,9 @@ void raminit(struct pei_data *pei_data)
 	       pei_data->data_to_save_size);
 
 	if (pei_data->data_to_save != NULL && pei_data->data_to_save_size > 0)
-		mrc_cache_stash_data(pei_data->data_to_save,
-				     pei_data->data_to_save_size);
+		mrc_cache_stash_data(MRC_TRAINING_DATA, 0,
+					pei_data->data_to_save,
+					pei_data->data_to_save_size);
 
 	printk(BIOS_DEBUG, "create cbmem for dimm information\n");
 	mem_info = cbmem_add(CBMEM_ID_MEMINFO, sizeof(struct memory_info));

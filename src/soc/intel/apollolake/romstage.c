@@ -202,8 +202,9 @@ asmlinkage void car_stage_entry(void)
 	new_var_data = fsp_find_extension_hob_by_guid(hob_variable_guid,
 							&var_size);
 	if (new_var_data)
-		mrc_cache_stash_vardata(new_var_data, var_size,
-					car_get_var(fsp_version));
+		mrc_cache_stash_data(MRC_VARIABLE_DATA,
+				car_get_var(fsp_version), new_var_data,
+				var_size);
 	else
 		printk(BIOS_ERR, "Failed to determine variable data\n");
 
@@ -258,7 +259,7 @@ static void fill_console_params(FSPM_UPD *mupd)
 
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 {
-	const struct mrc_saved_data *msd;
+	struct region_device rdev;
 
 	fill_console_params(mupd);
 	mainboard_memory_init_params(mupd);
@@ -293,10 +294,10 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	 * wrong/missing key renders DRAM contents useless.
 	 */
 
-	if (mrc_cache_get_vardata(&msd, version) < 0) {
-		printk(BIOS_DEBUG, "MRC variable data missing/invalid\n");
-	} else {
-		mupd->FspmConfig.VariableNvsBufferPtr = (void*) msd->data;
+	if (mrc_cache_get_current(MRC_VARIABLE_DATA, version, &rdev) == 0) {
+		/* Assume leaking is ok. */
+		assert(IS_ENABLED(CONFIG_BOOT_DEVICE_MEMORY_MAPPED));
+		mupd->FspmConfig.VariableNvsBufferPtr = rdev_mmap_full(&rdev);
 	}
 
 	car_set_var(fsp_version, version);

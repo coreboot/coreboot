@@ -1,0 +1,24 @@
+diff -urp gcc-5.3.0.bak/gcc/cp/cfns.h gcc-5.3.0/gcc/cp/cfns.h
+--- gcc-5.3.0.bak/gcc/cp/cfns.h	2015-01-05 13:33:28.000000000 +0100
++++ gcc-5.3.0/gcc/cp/cfns.h	2016-12-04 01:33:47.568537831 +0100
+@@ -51,8 +51,12 @@ along with GCC; see the file COPYING3.
+ __inline
+ #endif
+ static unsigned int hash (const char *, unsigned int);
++static
+ #ifdef __GNUC__
+ __inline
++#ifdef __GNUC_STDC_INLINE__
++__attribute__ ((__gnu_inline__))
++#endif
+ #endif
+ const char * libc_name_p (const char *, unsigned int);
+ /* maximum key range = 391, duplicates = 0 */
+@@ -122,6 +126,7 @@ hash (register const char *str, register
+   return hval + asso_values[(unsigned char)str[len - 1]];
+ }
+ 
++static
+ #ifdef __GNUC__
+ __inline
+ #ifdef __GNUC_STDC_INLINE__

@@ -14,344 +14,343 @@
  */
 
 #include <string.h>
+#include <boot_device.h>
 #include <bootstate.h>
 #include <console/console.h>
 #include <cbmem.h>
 #include <elog.h>
 #include <fmap.h>
 #include <ip_checksum.h>
+#include <region_file.h>
 #include <vboot/vboot_common.h>
 
 #include "mrc_cache.h"
 #include "nvm.h"
 
-#define MRC_DATA_ALIGN           0x1000
+#define DEFAULT_MRC_CACHE	"RW_MRC_CACHE"
+#define VARIABLE_MRC_CACHE	"RW_VAR_MRC_CACHE"
+#define RECOVERY_MRC_CACHE	"RECOVERY_MRC_CACHE"
+#define UNIFIED_MRC_CACHE	"UNIFIED_MRC_CACHE"
+
 #define MRC_DATA_SIGNATURE       (('M'<<0)|('R'<<8)|('C'<<16)|('D'<<24))
 
-/* The mrc_data_region describes the larger non-volatile area to store
- * mrc_saved_data objects.*/
-struct mrc_data_region {
-	void *base;
-	uint32_t size;
-};
+struct mrc_metadata {
+	uint32_t signature;
+	uint32_t data_size;
+	uint16_t data_checksum;
+	uint16_t header_checksum;
+	uint32_t version;
+} __attribute__((packed));
 
 enum result {
-	WRITE_FAILURE		= -1,
-	ERASE_FAILURE		= -2,
-	OTHER_FAILURE		= -3,
+	UPDATE_FAILURE		= -1,
 	UPDATE_SUCCESS		= 0,
 	ALREADY_UPTODATE	= 1
 };
 
-/* common code */
-static int mrc_cache_get_region(const char *name,
-				struct mrc_data_region *region)
+#define NORMAL_FLAG (1 << 0)
+#define RECOVERY_FLAG (1 << 1)
+
+struct cache_region {
+	const char *name;
+	uint32_t cbmem_id;
+	int type;
+	int elog_slot;
+	int flags;
+};
+
+static const struct cache_region recovery_training = {
+	.name = RECOVERY_MRC_CACHE,
+	.cbmem_id = CBMEM_ID_MRCDATA,
+	.type = MRC_TRAINING_DATA,
+	.elog_slot = ELOG_MEM_CACHE_UPDATE_SLOT_RECOVERY,
+#if IS_ENABLED(CONFIG_HAS_RECOVERY_MRC_CACHE)
+	.flags = RECOVERY_FLAG,
+#else
+	.flags = 0,
+#endif
+};
+
+static const struct cache_region normal_training = {
+	.name = DEFAULT_MRC_CACHE,
+	.cbmem_id = CBMEM_ID_MRCDATA,
+	.type = MRC_TRAINING_DATA,
+	.elog_slot = ELOG_MEM_CACHE_UPDATE_SLOT_NORMAL,
+	.flags = NORMAL_FLAG | RECOVERY_FLAG,
+};
+
+static const struct cache_region variable_data = {
+	.name = VARIABLE_MRC_CACHE,
+	.cbmem_id = CBMEM_ID_VAR_MRCDATA,
+	.type = MRC_VARIABLE_DATA,
+	.elog_slot = ELOG_MEM_CACHE_UPDATE_SLOT_VARIABLE,
+	.flags = NORMAL_FLAG | RECOVERY_FLAG,
+};
+
+/* Order matters here for priority in matching. */
+static const struct cache_region *cache_regions[] = {
+	&recovery_training,
+	&normal_training,
+	&variable_data,
+};
+
+static int lookup_region_by_name(const char *name, struct region *r)
 {
-	bool located_by_fmap = true;
-	struct region_device rdev;
+	/* This assumes memory mapped boot media just under 4GiB. */
+	const uint32_t pointer_base_32bit = -CONFIG_ROM_SIZE;
 
-	region->base = NULL;
-	region->size = 0;
-
-	if (fmap_locate_area_as_rdev(name, &rdev))
-		located_by_fmap =  false;
+	if (fmap_locate_area(name, r) == 0)
+		return 0;
 
 	/* CHROMEOS builds must get their MRC cache from FMAP. */
-	if (IS_ENABLED(CONFIG_CHROMEOS) && !located_by_fmap)
+	if (IS_ENABLED(CONFIG_CHROMEOS)) {
+		printk(BIOS_ERR, "MRC: Chrome OS lookup failure.\n");
+		return -1;
+	}
+
+	if (!IS_ENABLED(CONFIG_BOOT_DEVICE_MEMORY_MAPPED))
 		return -1;
 
-	if (located_by_fmap) {
-		region->size = region_device_sz(&rdev);
-		region->base = rdev_mmap_full(&rdev);
-
-		if (region->base == NULL)
-			return -1;
-	} else {
-		region->base = (void *)CONFIG_MRC_SETTINGS_CACHE_BASE;
-		region->size = CONFIG_MRC_SETTINGS_CACHE_SIZE;
-	}
+	/* Base is in the form of a pointer. Make it an offset. */
+	r->offset = CONFIG_MRC_SETTINGS_CACHE_BASE - pointer_base_32bit;
+	r->size = CONFIG_MRC_SETTINGS_CACHE_SIZE;
 
 	return 0;
 }
 
-/* Protect mrc region with a Protected Range Register */
-static int __protect_mrc_cache(const struct mrc_data_region *region,
-			       const char *name)
+static const struct cache_region *lookup_region_type(int type)
 {
-	if (!IS_ENABLED(CONFIG_MRC_SETTINGS_PROTECT))
-		return 0;
+	int i;
+	int flags;
 
-	if (nvm_is_write_protected() <= 0) {
-		printk(BIOS_INFO, "MRC: NOT enabling PRR for %s.\n", name);
-		return 1;
+	if (vboot_recovery_mode_enabled())
+		flags = RECOVERY_FLAG;
+	else
+		flags = NORMAL_FLAG;
+
+	for (i = 0; i < ARRAY_SIZE(cache_regions); i++) {
+		if (cache_regions[i]->type != type)
+			continue;
+		if ((cache_regions[i]->flags & flags) == flags)
+			return cache_regions[i];
 	}
 
-	if (nvm_protect(region->base, region->size) < 0) {
-		printk(BIOS_ERR, "MRC: ERROR setting PRR for %s.\n", name);
+	return NULL;
+}
+
+int mrc_cache_stash_data(int type, uint32_t version, const void *data,
+			size_t size)
+{
+	const struct cache_region *cr;
+	size_t cbmem_size;
+	struct mrc_metadata *md;
+
+	cr = lookup_region_type(type);
+	if (cr == NULL) {
+		printk(BIOS_ERR, "MRC: failed to add to cbmem for type %d.\n",
+			type);
 		return -1;
 	}
 
-	printk(BIOS_INFO, "MRC: Enabled Protected Range on %s.\n", name);
-	return 0;
-}
+	cbmem_size = sizeof(*md) + size;
 
-static int protect_mrc_cache(const char *name)
-{
-	struct mrc_data_region region;
-	if (mrc_cache_get_region(name, &region) < 0) {
-		printk(BIOS_ERR, "MRC: Could not find region %s\n", name);
+	md = cbmem_add(cr->cbmem_id, cbmem_size);
+
+	if (md == NULL) {
+		printk(BIOS_ERR, "MRC: failed to add '%s' to cbmem.\n",
+			cr->name);
 		return -1;
 	}
 
-	return __protect_mrc_cache(&region, name);
-}
-
-static int mrc_cache_in_region(const struct mrc_data_region *region,
-                               const struct mrc_saved_data *cache)
-{
-	uintptr_t region_end;
-	uintptr_t cache_end;
-
-	if ((uintptr_t)cache < (uintptr_t)region->base)
-		return 0;
-
-	region_end = (uintptr_t)region->base;
-	region_end += region->size;
-
-	if ((uintptr_t)cache >= region_end)
-		return 0;
-
-	if ((sizeof(*cache) + (uintptr_t)cache) >= region_end)
-		return 0;
-
-	cache_end = (uintptr_t)cache;
-	cache_end += cache->size + sizeof(*cache);
-
-	if (cache_end > region_end)
-		return 0;
-
-	return 1;
-}
-
-static int mrc_cache_valid(const struct mrc_data_region *region,
-                           const struct mrc_saved_data *cache)
-{
-	uint32_t checksum;
-
-	if (cache->signature != MRC_DATA_SIGNATURE)
-		return 0;
-
-	if (cache->size > region->size)
-		return 0;
-
-	checksum = compute_ip_checksum((void *)&cache->data[0], cache->size);
-
-	if (cache->checksum != checksum)
-		return 0;
-
-	return 1;
-}
-
-static const struct mrc_saved_data *
-next_cache_block(const struct mrc_saved_data *cache)
-{
-	uintptr_t next = (uintptr_t)cache;
-
-	next += ALIGN(cache->size + sizeof(*cache), MRC_DATA_ALIGN);
-
-	return (const struct mrc_saved_data *)next;
-}
-
-/* Locate the most recently saved MRC data. */
-static int __mrc_cache_get_current(const struct mrc_data_region *region,
-                                   const struct mrc_saved_data **cache,
-                                   uint32_t version)
-{
-	const struct mrc_saved_data *msd;
-	const struct mrc_saved_data *verified_cache;
-	int slot = 0;
-
-	msd = region->base;
-
-	verified_cache = NULL;
-
-	while (mrc_cache_in_region(region, msd) &&
-	       mrc_cache_valid(region, msd)) {
-		verified_cache = msd;
-		msd = next_cache_block(msd);
-		slot++;
-	}
-
-	/*
-	 * Update pointer to the most recently saved MRC data before returning
-	 * any error. This ensures that the caller can use next available slot
-	 * if required.
-	 */
-	*cache = verified_cache;
-
-	if (verified_cache == NULL)
-		return -1;
-
-	if (verified_cache->version != version) {
-		printk(BIOS_DEBUG, "MRC: cache version mismatch: %x vs %x\n",
-			verified_cache->version, version);
-		return -1;
-	}
-
-	printk(BIOS_DEBUG, "MRC: cache slot %d @ %p\n", slot-1, verified_cache);
+	memset(md, 0, sizeof(*md));
+	md->signature = MRC_DATA_SIGNATURE;
+	md->data_size = size;
+	md->version = version;
+	md->data_checksum = compute_ip_checksum(data, size);
+	md->header_checksum = compute_ip_checksum(md, sizeof(*md));
+	memcpy(&md[1], data, size);
 
 	return 0;
 }
 
-int mrc_cache_get_current_from_region(const struct mrc_saved_data **cache,
-				      uint32_t version,
-				      const char *region_name)
+static const struct cache_region *lookup_region(struct region *r, int type)
 {
-	struct mrc_data_region region;
+	const struct cache_region *cr;
 
-	if (!region_name) {
-		printk(BIOS_ERR, "MRC: Requires memory retraining.\n");
+	cr = lookup_region_type(type);
+
+	if (cr == NULL) {
+		printk(BIOS_ERR, "MRC: failed to locate region type %d.\n",
+			type);
+		return NULL;
+	}
+
+	if (lookup_region_by_name(cr->name, r) < 0)
+		return NULL;
+
+	return cr;
+}
+
+static int mrc_header_valid(struct region_device *rdev, struct mrc_metadata *md)
+{
+	uint16_t checksum;
+	uint16_t checksum_result;
+	size_t size;
+
+	if (rdev_readat(rdev, md, 0, sizeof(*md)) < 0) {
+		printk(BIOS_ERR, "MRC: couldn't read metadata\n");
 		return -1;
 	}
 
-	printk(BIOS_ERR, "MRC: Using data from %s\n", region_name);
-
-	if (mrc_cache_get_region(region_name, &region) < 0) {
-		printk(BIOS_ERR, "MRC: Region %s not found. "
-		       "Requires memory retraining.\n", region_name);
+	if (md->signature != MRC_DATA_SIGNATURE) {
+		printk(BIOS_ERR, "MRC: invalid header signature\n");
 		return -1;
 	}
 
-	if (__mrc_cache_get_current(&region, cache, version) < 0) {
-		printk(BIOS_ERR, "MRC: Valid slot not found in %s."
-		       "Requires memory retraining.\n", region_name);
+	/* Compute checksum over header with 0 as the value. */
+	checksum = md->header_checksum;
+	md->header_checksum = 0;
+	checksum_result = compute_ip_checksum(md, sizeof(*md));
+
+	if (checksum != checksum_result) {
+		printk(BIOS_ERR, "MRC: header checksum mismatch: %x vs %x\n",
+			checksum, checksum_result);
+		return -1;
+	}
+
+	/* Put back original. */
+	md->header_checksum = checksum;
+
+	/* Re-size the region device according to the metadata as a region_file
+	 * does block allocation. */
+	size = sizeof(*md) + md->data_size;
+	if (rdev_chain(rdev, rdev, 0, size) < 0) {
+		printk(BIOS_ERR, "MRC: size exceeds rdev size: %zx vs %zx\n",
+			size, region_device_sz(rdev));
 		return -1;
 	}
 
 	return 0;
 }
 
-int mrc_cache_get_current_with_version(const struct mrc_saved_data **cache,
-				       uint32_t version)
+static int mrc_data_valid(const struct region_device *rdev,
+				const struct mrc_metadata *md)
 {
-	return mrc_cache_get_current_from_region(cache, version,
-						 DEFAULT_MRC_CACHE);
-}
+	void *data;
+	uint16_t checksum;
+	const size_t md_size = sizeof(*md);
+	const size_t data_size = md->data_size;
 
-int mrc_cache_get_current(const struct mrc_saved_data **cache)
-{
-	return mrc_cache_get_current_with_version(cache, 0);
-}
-
-int mrc_cache_get_vardata(const struct mrc_saved_data **cache, uint32_t version)
-{
-	struct mrc_data_region region;
-
-	if (mrc_cache_get_region(VARIABLE_MRC_CACHE, &region) < 0)
-		return -1;
-
-	return __mrc_cache_get_current(&region, cache, version);
-}
-
-/* Fill in mrc_saved_data structure with payload. */
-static void mrc_cache_fill(struct mrc_saved_data *cache, const void *data,
-                           size_t size, uint32_t version)
-{
-	cache->signature = MRC_DATA_SIGNATURE;
-	cache->size = size;
-	cache->version = version;
-	memcpy(&cache->data[0], data, size);
-	cache->checksum = compute_ip_checksum((void *)&cache->data[0],
-	                                      cache->size);
-}
-
-static int _mrc_stash_data(const void *data, size_t size, uint32_t version,
-			    uint32_t cbmem_id)
-{
-	int cbmem_size;
-	struct mrc_saved_data *cache;
-
-	cbmem_size = sizeof(*cache) + ALIGN(size, 16);
-
-	cache = cbmem_add(cbmem_id, cbmem_size);
-
-	if (cache == NULL) {
-		printk(BIOS_ERR, "MRC: No space in cbmem for training data.\n");
+	data = rdev_mmap(rdev, md_size, data_size);
+	if (data == NULL) {
+		printk(BIOS_ERR, "MRC: mmap failure on data verification.\n");
 		return -1;
 	}
 
-	/* Clear alignment padding bytes at end of data. */
-	memset(&cache->data[size], 0, cbmem_size - size - sizeof(*cache));
+	checksum = compute_ip_checksum(data, data_size);
 
-	printk(BIOS_DEBUG, "MRC: Relocate data from %p to %p (%zu bytes)\n",
-	       data, cache, size);
-
-	mrc_cache_fill(cache, data, size, version);
+	rdev_munmap(rdev, data);
+	if (md->data_checksum != checksum) {
+		printk(BIOS_ERR, "MRC: data checksum mismatch: %x vs %x\n",
+			md->data_checksum, checksum);
+		return -1;
+	}
 
 	return 0;
 }
 
-int mrc_cache_stash_data_with_version(const void *data, size_t size,
-					uint32_t version)
+static int mrc_cache_latest(const char *name,
+				const struct region_device *backing_rdev,
+				struct mrc_metadata *md,
+				struct region_file *cache_file,
+				struct region_device *rdev,
+				bool fail_bad_data)
 {
-	return _mrc_stash_data(data, size, version, CBMEM_ID_MRCDATA);
-}
-
-int mrc_cache_stash_vardata(const void *data, size_t size, uint32_t version)
-{
-	return _mrc_stash_data(data, size, version, CBMEM_ID_VAR_MRCDATA);
-}
-
-
-int mrc_cache_stash_data(const void *data, size_t size)
-{
-	return mrc_cache_stash_data_with_version(data, size, 0);
-}
-
-static int mrc_slot_valid(const struct mrc_data_region *region,
-                          const struct mrc_saved_data *slot,
-                          const struct mrc_saved_data *to_save)
-{
-	uintptr_t region_begin;
-	uintptr_t region_end;
-	uintptr_t slot_end;
-	uintptr_t slot_begin;
-	uint32_t size;
-
-	region_begin = (uintptr_t)region->base;
-	region_end = region_begin + region->size;
-	slot_begin = (uintptr_t)slot;
-	size = to_save->size + sizeof(*to_save);
-	slot_end = slot_begin + size;
-
-	if (slot_begin < region_begin || slot_begin >= region_end)
-		return 0;
-
-	if (size > region->size)
-		return 0;
-
-	if (slot_end > region_end || slot_end < region_begin)
-		return 0;
-
-	if (!nvm_is_erased(slot, size))
-		return 0;
-
-	return 1;
-}
-
-static const struct mrc_saved_data *
-mrc_cache_next_slot(const struct mrc_data_region *region,
-                    const struct mrc_saved_data *current_slot)
-{
-	const struct mrc_saved_data *next_slot;
-
-	if (current_slot == NULL) {
-		next_slot = region->base;
-	} else {
-		next_slot = next_cache_block(current_slot);
+	/* Init and obtain a handle to the file data. */
+	if (region_file_init(cache_file, backing_rdev) < 0) {
+		printk(BIOS_ERR, "MRC: region file invalid in '%s'\n", name);
+		return -1;
 	}
 
-	return next_slot;
+	/* Provide a 0 sized region_device from here on out so the caller
+	 * has a valid yet unusable region_device. */
+	rdev_chain(rdev, backing_rdev, 0, 0);
+
+	/* No data to return. */
+	if (region_file_data(cache_file, rdev) < 0) {
+		printk(BIOS_ERR, "MRC: no data in '%s'\n", name);
+		return fail_bad_data ? -1 : 0;
+	}
+
+	/* Validate header and resize region to reflect actual usage on the
+	 * saved medium (including metadata and data). */
+	if (mrc_header_valid(rdev, md) < 0) {
+		printk(BIOS_ERR, "MRC: invalid header in '%s'\n", name);
+		return fail_bad_data ? -1 : 0;
+	}
+
+	/* Validate Data */
+	if (mrc_data_valid(rdev, md) < 0) {
+		printk(BIOS_ERR, "MRC: invalid data in '%s'\n", name);
+		return fail_bad_data ? -1 : 0;
+	}
+
+	return 0;
+}
+
+int mrc_cache_get_current(int type, uint32_t version,
+				struct region_device *rdev)
+{
+	const struct cache_region *cr;
+	struct region region;
+	struct region_device read_rdev;
+	struct region_file cache_file;
+	struct mrc_metadata md;
+	size_t data_size;
+	const size_t md_size = sizeof(md);
+	const bool fail_bad_data = true;
+
+	cr = lookup_region(&region, type);
+
+	if (cr == NULL)
+		return -1;
+
+	if (boot_device_ro_subregion(&region, &read_rdev) < 0)
+		return -1;
+
+	if (mrc_cache_latest(cr->name, &read_rdev, &md, &cache_file, rdev,
+		fail_bad_data) < 0)
+		return -1;
+
+	if (version != md.version) {
+		printk(BIOS_INFO, "MRC: version mismatch: %x vs %x\n",
+			md.version, version);
+		return -1;
+	}
+
+	/* Re-size rdev to only contain the data. i.e. remove metadata. */
+	data_size = md.data_size;
+	return rdev_chain(rdev, rdev, md_size, data_size);
+}
+
+static bool mrc_cache_needs_update(const struct region_device *rdev,
+				const struct cbmem_entry *to_be_updated)
+{
+	void *mapping;
+	size_t size = region_device_sz(rdev);
+	bool need_update = false;
+
+	if (cbmem_entry_size(to_be_updated) != size)
+		return true;
+
+	mapping = rdev_mmap_full(rdev);
+
+	if (memcmp(cbmem_entry_start(to_be_updated), mapping, size))
+		need_update = true;
+
+	rdev_munmap(rdev, mapping);
+
+	return need_update;
 }
 
 static void log_event_cache_update(uint8_t slot, enum result res)
@@ -363,9 +362,7 @@ static void log_event_cache_update(uint8_t slot, enum result res)
 
 	/* Filter through interesting events only */
 	switch (res) {
-	case WRITE_FAILURE:				/* fall-through */
-	case ERASE_FAILURE:				/* fall-through */
-	case OTHER_FAILURE:				/* fall-through */
+	case UPDATE_FAILURE:
 		event.status = ELOG_MEM_CACHE_UPDATE_STATUS_FAIL;
 		break;
 	case UPDATE_SUCCESS:
@@ -379,63 +376,95 @@ static void log_event_cache_update(uint8_t slot, enum result res)
 		printk(BIOS_ERR, "Failed to log mem cache update event.\n");
 }
 
-static int update_mrc_cache_type(uint32_t cbmem_id, const char *region_name)
+/* During ramstage this code purposefully uses incoherent transactions between
+ * read and write. The read assumes a memory-mapped boot device that can be used
+ * to quickly locate and compare the up-to-date data. However, when an update
+ * is required it uses the writeable region access to perform the update. */
+static void update_mrc_cache_by_type(int type)
 {
-	const struct mrc_saved_data *current_boot;
-	const struct mrc_saved_data *current_saved;
-	const struct mrc_saved_data *next_slot;
-	struct mrc_data_region region;
-	int res;
+	const struct cache_region *cr;
+	struct region region;
+	struct region_device read_rdev;
+	struct region_device write_rdev;
+	struct region_file cache_file;
+	struct mrc_metadata md;
+	const struct cbmem_entry *to_be_updated;
+	struct incoherent_rdev backing_irdev;
+	const struct region_device *backing_rdev;
+	struct region_device latest_rdev;
+	const bool fail_bad_data = false;
 
-	printk(BIOS_DEBUG, "MRC: Updating cache data.\n");
+	cr = lookup_region(&region, type);
 
-	printk(BIOS_ERR, "MRC: Cache region selected - %s\n", region_name);
+	if (cr == NULL)
+		return;
 
-	if (mrc_cache_get_region(region_name, &region)) {
-		printk(BIOS_ERR, "MRC: Could not obtain cache region.\n");
-		return OTHER_FAILURE;
+	to_be_updated = cbmem_entry_find(cr->cbmem_id);
+	if (to_be_updated == NULL) {
+		printk(BIOS_ERR, "MRC: No data in cbmem for '%s'.\n",
+			cr->name);
+		return;
 	}
 
-	current_boot = cbmem_find(cbmem_id);
-	if (!current_boot) {
-		printk(BIOS_ERR, "MRC: No cache in cbmem.\n");
-		return OTHER_FAILURE;
+	printk(BIOS_DEBUG, "MRC: Checking cached data update for '%s'.\n",
+		cr->name);
+
+	if (boot_device_ro_subregion(&region, &read_rdev) < 0)
+		return;
+
+	if (boot_device_rw_subregion(&region, &write_rdev) < 0)
+		return;
+
+	backing_rdev = incoherent_rdev_init(&backing_irdev, &region, &read_rdev,
+						&write_rdev);
+
+	if (backing_rdev == NULL)
+		return;
+
+	if (mrc_cache_latest(cr->name, backing_rdev, &md, &cache_file,
+		&latest_rdev, fail_bad_data) < 0)
+		return;
+
+	if (!mrc_cache_needs_update(&latest_rdev, to_be_updated)) {
+		log_event_cache_update(cr->elog_slot, ALREADY_UPTODATE);
+		return;
 	}
 
-	if (!mrc_cache_valid(&region, current_boot)) {
-		printk(BIOS_ERR, "MRC: Cache data in cbmem invalid.\n");
-		return OTHER_FAILURE;
+	printk(BIOS_DEBUG, "MRC: cache data '%s' needs update.\n", cr->name);
+
+	if (region_file_update_data(&cache_file,
+		cbmem_entry_start(to_be_updated),
+		cbmem_entry_size(to_be_updated)) < 0)
+		log_event_cache_update(cr->elog_slot, UPDATE_FAILURE);
+	else
+		log_event_cache_update(cr->elog_slot, UPDATE_SUCCESS);
+}
+
+/* Protect mrc region with a Protected Range Register */
+static int protect_mrc_cache(const char *name)
+{
+	struct region region;
+
+	if (!IS_ENABLED(CONFIG_MRC_SETTINGS_PROTECT))
+		return 0;
+
+	if (lookup_region_by_name(name, &region) < 0) {
+		printk(BIOS_ERR, "MRC: Could not find region '%s'\n", name);
+		return -1;
 	}
 
-	current_saved = NULL;
-
-	if (!__mrc_cache_get_current(&region, &current_saved,
-					current_boot->version)) {
-		if (current_saved->size == current_boot->size &&
-		    !memcmp(&current_saved->data[0], &current_boot->data[0],
-		            current_saved->size)) {
-			printk(BIOS_DEBUG, "MRC: Cache up to date.\n");
-			return ALREADY_UPTODATE;
-		}
+	if (nvm_is_write_protected() <= 0) {
+		printk(BIOS_INFO, "MRC: NOT enabling PRR for '%s'.\n", name);
+		return 0;
 	}
 
-	next_slot = mrc_cache_next_slot(&region, current_saved);
-
-	if (!mrc_slot_valid(&region, next_slot, current_boot)) {
-		printk(BIOS_DEBUG, "MRC: Slot @ %p is invalid.\n", next_slot);
-		if (!nvm_is_erased(region.base, region.size)) {
-			if (nvm_erase(region.base, region.size) < 0) {
-				printk(BIOS_DEBUG, "MRC: Failure erasing "
-				       "region %s.\n", region_name);
-				return ERASE_FAILURE;
-			}
-		}
-		next_slot = region.base;
+	if (nvm_protect(&region) < 0) {
+		printk(BIOS_ERR, "MRC: ERROR setting PRR for '%s'.\n", name);
+		return -1;
 	}
 
-	res = nvm_write((void *)next_slot, current_boot, current_boot->size
-			 + sizeof(*current_boot));
-	return res < 0 ? WRITE_FAILURE : UPDATE_SUCCESS;
+	printk(BIOS_INFO, "MRC: Enabled Protected Range on '%s'.\n", name);
+	return 0;
 }
 
 static void protect_mrc_region(void)
@@ -459,30 +488,10 @@ static void protect_mrc_region(void)
 
 static void update_mrc_cache(void *unused)
 {
-	uint8_t slot;
-	const char *region_name;
-	enum result res;
+	update_mrc_cache_by_type(MRC_TRAINING_DATA);
 
-	/* First update either recovery or default cache */
-	if (vboot_recovery_mode_enabled() &&
-	    IS_ENABLED(CONFIG_HAS_RECOVERY_MRC_CACHE)) {
-		region_name = RECOVERY_MRC_CACHE;
-		slot = ELOG_MEM_CACHE_UPDATE_SLOT_RECOVERY;
-	} else {
-		region_name = DEFAULT_MRC_CACHE;
-		slot = ELOG_MEM_CACHE_UPDATE_SLOT_NORMAL;
-	}
-
-	res = update_mrc_cache_type(CBMEM_ID_MRCDATA, region_name);
-	log_event_cache_update(slot, res);
-
-	/* Next update variable cache if in use */
-	if (IS_ENABLED(CONFIG_MRC_SETTINGS_VARIABLE_DATA)) {
-		res = update_mrc_cache_type(CBMEM_ID_VAR_MRCDATA,
-					    VARIABLE_MRC_CACHE);
-		log_event_cache_update(ELOG_MEM_CACHE_UPDATE_SLOT_VARIABLE,
-					res);
-	}
+	if (IS_ENABLED(CONFIG_MRC_SETTINGS_VARIABLE_DATA))
+		update_mrc_cache_by_type(MRC_VARIABLE_DATA);
 
 	protect_mrc_region();
 }

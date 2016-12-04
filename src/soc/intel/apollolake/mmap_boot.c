@@ -23,7 +23,6 @@
 #include <console/console.h>
 #include <fmap.h>
 #include <soc/flash_ctrlr.h>
-#include <soc/intel/common/nvm.h>
 #include <soc/mmap_boot.h>
 
 /*
@@ -147,22 +146,6 @@ const struct cbfs_locator cbfs_master_header_locator = {
 	.name = "IAFW Locator",
 	.locate = iafw_boot_region_properties,
 };
-
-uint32_t nvm_mmio_to_flash_offset(void *p)
-{
-	bios_mmap_init();
-
-	size_t start, size;
-	start = car_get_var(bios_start);
-	size = car_get_var(bios_size);
-
-	/*
-	 * Returns :
-	 * addr - base of mmaped region in addr space + offset of mmaped region
-	 * start on flash
-	 */
-	return (uintptr_t)p - (4ULL * GiB - size) + start;
-}
 
 size_t get_bios_size(void)
 {

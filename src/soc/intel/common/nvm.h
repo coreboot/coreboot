@@ -16,24 +16,12 @@
 #ifndef _COMMON_NVM_H_
 #define _COMMON_NVM_H_
 
-#include <stddef.h>
-
-/* Determine if area is erased. returns 1 if erased. 0 otherwise. */
-int nvm_is_erased(const void *start, size_t size);
-
-/* Erase region according to start and size. Returns < 0 on error else 0. */
-int nvm_erase(void *start, size_t size);
-
-/* Write data to NVM. Returns 0 on success < 0 on error.  */
-int nvm_write(void *start, const void *data, size_t size);
+#include <commonlib/region.h>
 
 /* Determine if flash device is write protected */
 int nvm_is_write_protected(void);
 
 /* Apply protection to a range of flash */
-int nvm_protect(void *start, size_t size);
-
-/* Map MMIO address to actual address in flash */
-uint32_t nvm_mmio_to_flash_offset(void *p);
+int nvm_protect(const struct region *region);
 
 #endif /* _COMMON_NVM_H_ */

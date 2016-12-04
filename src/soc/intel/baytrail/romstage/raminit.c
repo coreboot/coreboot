@@ -15,7 +15,7 @@
 
 #include <stddef.h>
 #include <arch/acpi.h>
-#include <arch/io.h>
+#include <assert.h>
 #include <cbfs.h>
 #include <cbmem.h>
 #include <console/console.h>
@@ -111,7 +111,7 @@ void raminit(struct mrc_params *mp, int prev_sleep_state)
 {
 	int ret;
 	mrc_wrapper_entry_t mrc_entry;
-	const struct mrc_saved_data *cache;
+	struct region_device rdev;
 
 	/* Fill in default entries. */
 	mp->version = MRC_PARAMS_VER;
@@ -125,9 +125,11 @@ void raminit(struct mrc_params *mp, int prev_sleep_state)
 
 	if (vboot_recovery_mode_enabled()) {
 		printk(BIOS_DEBUG, "Recovery mode: not using MRC cache.\n");
-	} else if (!mrc_cache_get_current(&cache)) {
-		mp->saved_data_size = cache->size;
-		mp->saved_data = &cache->data[0];
+	} else if (!mrc_cache_get_current(MRC_TRAINING_DATA, 0, &rdev)) {
+		mp->saved_data_size = region_device_sz(&rdev);
+		mp->saved_data = rdev_mmap_full(&rdev);
+		/* Assume boot device is memory mapped. */
+		assert(IS_ENABLED(CONFIG_BOOT_DEVICE_MEMORY_MAPPED));
 	} else if (prev_sleep_state == ACPI_S3) {
 		/* If waking from S3 and no cache then. */
 		printk(BIOS_DEBUG, "No MRC cache found in S3 resume path.\n");
@@ -178,5 +180,6 @@ void raminit(struct mrc_params *mp, int prev_sleep_state)
 	       mp->data_to_save_size);
 
 	if (mp->data_to_save != NULL && mp->data_to_save_size > 0)
-		mrc_cache_stash_data(mp->data_to_save, mp->data_to_save_size);
+		mrc_cache_stash_data(MRC_TRAINING_DATA, 0, mp->data_to_save,
+					mp->data_to_save_size);
 }

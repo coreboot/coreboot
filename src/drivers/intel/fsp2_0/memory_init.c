@@ -15,6 +15,7 @@
 #include <arch/io.h>
 #include <arch/cpu.h>
 #include <arch/symbols.h>
+#include <assert.h>
 #include <cbfs.h>
 #include <cbmem.h>
 #include <console/console.h>
@@ -107,9 +108,9 @@ static void save_memory_training_data(bool s3wake, uint32_t fsp_version)
 	 * code which saves the data to flash doesn't write if the latest
 	 * training data matches this one.
 	 */
-	if (mrc_cache_stash_data_with_version(mrc_data, mrc_data_size,
-						fsp_version) < 0)
-			printk(BIOS_ERR, "Failed to stash MRC data\n");
+	if (mrc_cache_stash_data(MRC_TRAINING_DATA, fsp_version, mrc_data,
+				mrc_data_size) < 0)
+		printk(BIOS_ERR, "Failed to stash MRC data\n");
 
 	mrc_cache_update_tpm_hash(mrc_data, mrc_data_size);
 }
@@ -144,24 +145,6 @@ static void do_fsp_post_memory_init(bool s3wake, uint32_t fsp_version)
 
 	/* Create romstage handof information */
 	romstage_handoff_init(s3wake);
-}
-
-static const char *mrc_cache_get_region_name(void)
-{
-	/* In normal mode, always use DEFAULT_MRC_CACHE */
-	if (!vboot_recovery_mode_enabled())
-		return DEFAULT_MRC_CACHE;
-
-	/*
-	 * In recovery mode, force retraining by returning NULL if:
-	 * 1. Recovery cache is not supported, or
-	 * 2. Memory retrain switch is set.
-	 */
-	if (!IS_ENABLED(CONFIG_HAS_RECOVERY_MRC_CACHE) ||
-	    vboot_recovery_mode_memory_retrain())
-		return NULL;
-
-	return RECOVERY_MRC_CACHE;
 }
 
 static int mrc_cache_verify_tpm_hash(const uint8_t *data, size_t size)
@@ -209,29 +192,46 @@ static int mrc_cache_verify_tpm_hash(const uint8_t *data, size_t size)
 static void fsp_fill_mrc_cache(FSPM_ARCH_UPD *arch_upd, bool s3wake,
 				uint32_t fsp_version)
 {
-	const struct mrc_saved_data *mrc_cache;
-	const char *name;
+	struct region_device rdev;
+	void *data;
 
 	arch_upd->NvsBufferPtr = NULL;
 
 	if (!IS_ENABLED(CONFIG_CACHE_MRC_SETTINGS))
 		return;
 
-	name = mrc_cache_get_region_name();
+	/*
+	 * In recovery mode, force retraining:
+	 * 1. Recovery cache is not supported, or
+	 * 2. Memory retrain switch is set.
+	 */
+	if (vboot_recovery_mode_enabled()) {
+		if (!IS_ENABLED(CONFIG_HAS_RECOVERY_MRC_CACHE))
+			return;
+		if (vboot_recovery_mode_memory_retrain())
+			return;
+	}
 
-	if (mrc_cache_get_current_from_region(&mrc_cache, fsp_version, name))
+	if (mrc_cache_get_current(MRC_TRAINING_DATA, fsp_version, &rdev) < 0)
 		return;
 
-	if (!mrc_cache_verify_tpm_hash(mrc_cache->data, mrc_cache->size))
+	/* Assume boot device is memory mapped. */
+	assert(IS_ENABLED(CONFIG_BOOT_DEVICE_MEMORY_MAPPED));
+	data = rdev_mmap_full(&rdev);
+
+	if (data == NULL)
+		return;
+
+	if (!mrc_cache_verify_tpm_hash(data, region_device_sz(&rdev)))
 		return;
 
 	/* MRC cache found */
-	arch_upd->NvsBufferPtr = (void *)mrc_cache->data;
+	arch_upd->NvsBufferPtr = data;
 	arch_upd->BootMode = s3wake ?
 		FSP_BOOT_ON_S3_RESUME:
 		FSP_BOOT_ASSUMING_NO_CONFIGURATION_CHANGES;
-	printk(BIOS_SPEW, "MRC cache found, size %x bootmode:%d\n",
-				mrc_cache->size, arch_upd->BootMode);
+	printk(BIOS_SPEW, "MRC cache found, size %zx bootmode:%d\n",
+				region_device_sz(&rdev), arch_upd->BootMode);
 }
 
 static enum cb_err check_region_overlap(const struct memranges *ranges,

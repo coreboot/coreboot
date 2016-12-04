@@ -19,6 +19,7 @@
 #include <arch/io.h>
 #include <arch/cbfs.h>
 #include <arch/early_variables.h>
+#include <assert.h>
 #include <boardid.h>
 #include <console/console.h>
 #include <cbmem.h>
@@ -99,7 +100,7 @@ void *cache_as_ram_stage_main(FSP_INFO_HEADER *fih)
 /* Entry from the mainboard. */
 void romstage_common(struct romstage_params *params)
 {
-	const struct mrc_saved_data *cache;
+	struct region_device rdev;
 	struct pei_data *pei_data;
 
 	post_code(0x32);
@@ -127,11 +128,15 @@ void romstage_common(struct romstage_params *params)
 			printk(BIOS_DEBUG,
 			       "Recovery mode: not using MRC cache.\n");
 		} else if (IS_ENABLED(CONFIG_CACHE_MRC_SETTINGS)
-			&& (!mrc_cache_get_current_with_version(&cache,
-							params->fsp_version))) {
+			&& (!mrc_cache_get_current(MRC_TRAINING_DATA,
+							params->fsp_version,
+							&rdev))) {
 			/* MRC cache found */
-			params->pei_data->saved_data_size = cache->size;
-			params->pei_data->saved_data = &cache->data[0];
+			params->pei_data->saved_data_size =
+				region_device_sz(&rdev);
+			params->pei_data->saved_data = rdev_mmap_full(&rdev);
+			/* Assum boot device is memory mapped. */
+			assert(IS_ENABLED(CONFIG_BOOT_DEVICE_MEMORY_MAPPED));
 		} else if (params->pei_data->boot_mode == ACPI_S3) {
 			/* Waking from S3 and no cache. */
 			printk(BIOS_DEBUG,
@@ -155,10 +160,10 @@ void romstage_common(struct romstage_params *params)
 		if ((params->pei_data->boot_mode != ACPI_S3)
 			&& (params->pei_data->data_to_save_size != 0)
 			&& (params->pei_data->data_to_save != NULL))
-				mrc_cache_stash_data_with_version(
+				mrc_cache_stash_data(MRC_TRAINING_DATA,
+					params->fsp_version,
 					params->pei_data->data_to_save,
-					params->pei_data->data_to_save_size,
-					params->fsp_version);
+					params->pei_data->data_to_save_size);
 	}
 
 	/* Save DIMM information */
@@ -355,15 +360,15 @@ __attribute__((weak)) void mainboard_add_dimm_info(
 }
 
 /* Get the memory configuration data */
-__attribute__((weak)) int mrc_cache_get_current_with_version(
-	const struct mrc_saved_data **cache, uint32_t version)
+__attribute__((weak)) int mrc_cache_get_current(int type, uint32_t version,
+				struct region_device *rdev)
 {
 	return -1;
 }
 
 /* Save the memory configuration data */
-__attribute__((weak)) int mrc_cache_stash_data_with_version(const void *data,
-	size_t size, uint32_t version)
+__attribute__((weak)) int mrc_cache_stash_data(int type, uint32_t version,
+					const void *data, size_t size)
 {
 	return -1;
 }

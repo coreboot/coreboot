@@ -211,6 +211,10 @@ buildcc_major() {
 	echo "${GCC_VERSION}" | cut -d. -f1
 }
 
+buildcc_minor() {
+	echo "${GCC_VERSION}" | cut -d. -f2
+}
+
 buildcc_version() {
 	echo "${GCC_VERSION}" | cut -d. -f1-2
 }
@@ -237,9 +241,14 @@ ada_requested() {
 
 check_gnat() {
 	if hostcc_has_gnat1; then
-		if [ "$(hostcc_version)" != "$(buildcc_version)" -a "${BOOTSTRAP}" != "1" ]; then
+		if [ \( "$(hostcc_major)" -lt "$(buildcc_major)" -o \
+			\( "$(hostcc_major)" -eq "$(buildcc_major)" -a \
+			   "$(hostcc_minor)" -lt "$(buildcc_minor)" \) \) \
+			-a \
+			"${BOOTSTRAP}" != "1" ]; \
+		then
 			printf "\n${RED}ERROR:${red} Building the Ada compiler (gnat $(buildcc_version)) "
-			printf "with a different host compiler\n       version ($(hostcc_version)) "
+			printf "with an older host compiler\n       version ($(hostcc_version)) "
 			printf "requires bootstrapping (-b).${NC}\n\n"
 			HALT_FOR_TOOLS=1
 		fi

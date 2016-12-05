@@ -14,29 +14,10 @@
  * GNU General Public License for more details.
  */
 
+#define __SIMPLE_DEVICE__
+
 #include <arch/io.h>
 #include <reset.h>
-
-#define PCI_DEV(BUS, DEV, FN) ( \
-	(((BUS) & 0xFFF) << 20) | \
-	(((DEV) & 0x1F) << 15) | \
-	(((FN)  & 0x7) << 12))
-
-static void pci_write_config32(pci_devfn_t dev, unsigned where, unsigned value)
-{
-	unsigned addr;
-	addr = (dev>>4) | where;
-	outl(0x80000000 | (addr & ~3), 0xCF8);
-	outl(value, 0xCFC);
-}
-
-static unsigned pci_read_config32(pci_devfn_t dev, unsigned where)
-{
-	unsigned addr;
-	addr = (dev>>4) | where;
-	outl(0x80000000 | (addr & ~3), 0xCF8);
-	return inl(0xCFC);
-}
 
 #include "../../../northbridge/amd/amdk8/reset_test.c"
 

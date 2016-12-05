@@ -212,6 +212,7 @@ static boot_state_t bs_write_tables(void *arg)
 	 */
 	write_tables();
 
+	timestamp_add_now(TS_FINALIZE_CHIPS);
 	dev_finalize_chips();
 
 	return BS_PAYLOAD_LOAD;

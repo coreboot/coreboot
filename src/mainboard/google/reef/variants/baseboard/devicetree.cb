@@ -53,6 +53,8 @@ chip soc/intel/apollolake
 	# current VR solution. Experiments show that SoC TDP max (6W) can
 	# be reached when RAPL PL1 is set to 12W.
 	register "tdp_pl1_override_mw" = "12000"
+	# Set RAPL PL2 to 15W.
+	register "tdp_pl2_override_mw" = "15000"
 
 	# Enable Audio Clock and Power gating
 	register "hdaudio_clk_gate_enable" = "1"

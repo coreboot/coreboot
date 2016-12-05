@@ -505,42 +505,44 @@ function remove_target
 function myhelp
 {
 cat << __END_OF_HELP
-Usage: $0 [-v] [-a] [-b] [-r] [-t <vendor/board>] [-p <dir>] [lbroot]
+Usage: $0 [options] [cbroot]
        $0 [-V|--version]
        $0 [-h|--help]
 
 Options:\n"
-    [-v|--verbose]		  print more messages
-    [-q|--quiet]		  print fewer messages
-    [-a|--all]			  build previously succeeded ports as well
-    [-r|--remove]                 remove output dir after build
-    [-d|--dir <dir>]              directory containing config files
-    [-t|--target <vendor/board>]  attempt to build target vendor/board only
-    [-p|--payloads <dir>]         use payloads in <dir> to build images
-    [-V|--version]		  print version number and exit
-    [-h|--help]			  print this help and exit
-    [-J|--junit]		  write JUnit formatted xml log file
-                                  (defaults to $XMLFILE)
-    [-T|--test]			  submit image(s) to automated test system
-    [-c|--cpus <numcpus>]         build on <numcpus> at the same time
-    [-s|--silent]                 omit compiler calls in logs
-    [-y|--ccache]                 use ccache
-    [-C|--config]                 configure-only mode
-    [-l|--loglevel <num>]         set loglevel
-    [-u|--update]                 update existing image
-    [-P|--prefix <name>]          file name prefix in CBFS
+    [-a|--all]                    Build previously succeeded ports as well
     [-B|--blobs]                  Allow using binary files
-    [-z|--clean]                  Remove build results when finished
-    [-o|--outdir <path>]          store build results in path
-				  (defaults to $TARGET)
+    [-c|--cpus <numcpus>]         Build on <numcpus> at the same time
+    [-C|--config]                 Configure-only mode
+    [-d|--dir <dir>]              Directory containing config files
+    [-J|--junit]                  Write JUnit formatted xml log file
+    [-K|--kconfig <name>]         Prepend file to generated Kconfig
+    [-l|--loglevel <num>]         Set loglevel
     [-L|--clang]                  Use clang
-    [-K|--kconfig <name>]	  Prepend file to generated Kconfig
+    [-o|--outdir <path>]          Store build results in path
+                                  (defaults to $TARGET)
+    [-p|--payloads <dir>]         Use payloads in <dir> to build images
+    [-P|--prefix <name>]          File name prefix in CBFS
+    [-q|--quiet]                  Print fewer messages
+    [-r|--remove]                 Remove output dir after build
+    [--scan-build]                Use clang's static analyzer
+    [-s|--silent]                 Omit compiler calls in logs
+    [-t|--target <vendor/board>]  Attempt to build target vendor/board only
+    [-T|--test]                   Submit image(s) to automated test system
+    [-u|--update]                 Update existing image
+    [-v|--verbose]                Print more messages
     [-x|--chromeos]               Build with CHROMEOS enabled
                                   Skip boards without Chrome OS support
-    [-X|--xmlfile <name>]         set JUnit XML log file filename
-    [--scan-build]                use clang's static analyzer
-    [cbroot]			  absolute path to coreboot sources
-				  (defaults to $ROOT)
+    [-X|--xmlfile <name>]         Set JUnit XML log file filename
+                                  (defaults to $XMLFILE)
+    [-y|--ccache]                 Use ccache
+    [-z|--clean]                  Remove build results when finished
+
+    [cbroot]                      Absolute path to coreboot sources
+                                  (defaults to $ROOT)
+
+    [-V|--version]                Print version number and exit
+    [-h|--help]                   Print this help and exit
 
 __END_OF_HELP
 }

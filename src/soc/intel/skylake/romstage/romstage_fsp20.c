@@ -163,10 +163,6 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	m_t_cfg->DidInitStat = 0x01;
 
 	mainboard_memory_init_params(mupd);
-
-	/* Reserve enough memory under TOLUD to save CBMEM header */
-	mupd->FspmArchUpd.BootLoaderTolumSize = cbmem_overhead_size();
-
 }
 
 __attribute__((weak)) void mainboard_memory_init_params(FSPM_UPD *mupd)

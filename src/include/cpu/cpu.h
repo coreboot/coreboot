@@ -9,10 +9,6 @@ struct bus;
 void initialize_cpus(struct bus *cpu_bus);
 void asmlinkage secondary_cpu_init(unsigned int cpu_index);
 
-void smm_init(void);
-void smm_lock(void);
-void smm_setup_structures(void *gnvs, void *tcg, void *smi1);
-
 #define __cpu_driver __attribute__ ((used,__section__(".rodata.cpu_driver")))
 #ifndef __SIMPLE_DEVICE__
 /** start of compile time generated pci driver array */

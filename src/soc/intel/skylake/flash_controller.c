@@ -191,7 +191,6 @@ int pch_hwseq_erase(const struct spi_flash *flash, u32 offset, size_t len)
 		len, start);
 
 out:
-	spi_release_bus(&flash->spi);
 	return ret;
 }
 

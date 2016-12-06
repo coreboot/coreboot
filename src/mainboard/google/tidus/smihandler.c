@@ -27,7 +27,6 @@
 #include <soc/nvs.h>
 #include <soc/pm.h>
 #include <soc/smm.h>
-#include <superio/ite/it8772f/it8772f.h>
 #include "onboard.h"
 
 /* USB Charger Control: GPIO26 */
@@ -63,13 +62,13 @@ void mainboard_smi_sleep(u8 slp_typ)
 	/* Disable USB charging if required */
 	switch (slp_typ) {
 	case ACPI_S3:
-		set_power_led(SIO_GPIO_BLINK_GPIO10, LED_BLINK);
+		set_power_led(LED_BLINK);
 
 		/* Enable DCP mode */
 		set_gpio(GPIO_USB_CTL_1, 0);
 		break;
 	case ACPI_S5:
-		set_power_led(SIO_GPIO_BLINK_GPIO10, LED_OFF);
+		set_power_led(LED_OFF);
 		break;
 	}
 }

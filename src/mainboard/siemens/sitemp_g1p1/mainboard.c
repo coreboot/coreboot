@@ -760,7 +760,7 @@ static void detect_hw_variant( device_t dev )
 	}
 }
 
-static void smm_lock( void )
+void smm_lock(void)
 {
 	/* LOCK the SMM memory window and enable normal SMM.
 	 * After running this function, only a full reset can

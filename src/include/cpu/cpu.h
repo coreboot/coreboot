@@ -8,6 +8,7 @@ void cpu_initialize(unsigned int cpu_index);
 struct bus;
 void initialize_cpus(struct bus *cpu_bus);
 void asmlinkage secondary_cpu_init(unsigned int cpu_index);
+int cpu_phys_address_size(void);
 
 #define __cpu_driver __attribute__ ((used,__section__(".rodata.cpu_driver")))
 #ifndef __SIMPLE_DEVICE__

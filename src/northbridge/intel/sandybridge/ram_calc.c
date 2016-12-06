@@ -19,6 +19,7 @@
 #include <arch/cpu.h>
 #include <arch/io.h>
 #include <cbmem.h>
+#include <cpu/cpu.h>
 #include <cpu/intel/romstage.h>
 #include <cpu/x86/mtrr.h>
 #include <program_loading.h>

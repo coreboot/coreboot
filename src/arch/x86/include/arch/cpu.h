@@ -161,7 +161,6 @@ static inline unsigned int cpuid_edx(unsigned int op)
 
 int cpu_cpuid_extended_level(void);
 int cpu_have_cpuid(void);
-int cpu_phys_address_size(void);
 
 void smm_init(void);
 void smm_lock(void);

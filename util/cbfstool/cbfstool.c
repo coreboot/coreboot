@@ -90,6 +90,7 @@ static struct param {
 	.hash = VB2_HASH_INVALID,
 	.headeroffset = ~0,
 	.region_name = SECTION_NAME_PRIMARY_CBFS,
+	.u64val = -1,
 };
 
 static bool region_is_flashmap(const char *region)
@@ -980,8 +981,18 @@ static int cbfs_write(void)
 			buffer_delete(&new_content);
 			return 1;
 		}
-		WARN("Written area will abut %s of target region: any unused space will keep its current contents\n",
-				param.fill_partial_upward ? "bottom" : "top");
+		if (param.u64val == (uint64_t)-1) {
+			WARN("Written area will abut %s of target region: any unused space will keep its current contents\n",
+					param.fill_partial_upward ? "bottom" : "top");
+		} else if (param.u64val > 0xff) {
+			ERROR("given fill value (%x) is larger than a byte\n", (unsigned)(param.u64val & 0xff));
+			buffer_delete(&new_content);
+			return 1;
+		} else {
+			memset(buffer_get(param.image_region),
+				param.u64val & 0xff,
+				buffer_size(param.image_region));
+		}
 		if (param.fill_partial_downward)
 			offset = param.image_region->size - new_content.size;
 	}
@@ -1089,7 +1100,7 @@ static const struct command commands[] = {
 	{"read", "r:f:vh?", cbfs_read, true, false},
 	{"remove", "H:r:n:vh?", cbfs_remove, true, true},
 	{"update-fit", "H:r:n:x:vh?", cbfs_update_fit, true, true},
-	{"write", "r:f:Fudvh?", cbfs_write, true, true},
+	{"write", "r:f:i:Fudvh?", cbfs_write, true, true},
 };
 
 static struct option long_options[] = {
@@ -1235,7 +1246,7 @@ static void usage(char *name)
 			"Show the contents of the ROM\n"
 	     " extract [-r image,regions] [-m ARCH] -n NAME -f FILE        "
 			"Extracts a raw payload from ROM\n"
-	     " write [-F] -r image,regions -f file [-u | -d]               "
+	     " write [-F] -r image,regions -f file [-u | -d] [-i int]      "
 			"Write file into same-size [or larger] raw region\n"
 	     " read [-r fmap-region] -f file                               "
 			"Extract raw region contents into binary file\n"

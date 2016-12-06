@@ -16,8 +16,8 @@
 
 #set -x # Turn echo on....
 
-ABUILD_DATE="Nov 23, 2016"
-ABUILD_VERSION="0.10.0"
+ABUILD_DATE="Dec 6, 2016"
+ABUILD_VERSION="0.10.01"
 
 TOP=$PWD
 
@@ -505,7 +505,7 @@ function remove_target
 function myhelp
 {
 cat << __END_OF_HELP
-Usage: $0 [options] [cbroot]
+Usage: $0 [options]
        $0 [-V|--version]
        $0 [-h|--help]
 
@@ -525,6 +525,8 @@ Options:\n"
     [-P|--prefix <name>]          File name prefix in CBFS
     [-q|--quiet]                  Print fewer messages
     [-r|--remove]                 Remove output dir after build
+    [-R|--root <path>]            Absolute path to coreboot sources
+                                  (defaults to $ROOT)
     [--scan-build]                Use clang's static analyzer
     [-s|--silent]                 Omit compiler calls in logs
     [-t|--target <vendor/board>]  Attempt to build target vendor/board only
@@ -537,9 +539,6 @@ Options:\n"
                                   (defaults to $XMLFILE)
     [-y|--ccache]                 Use ccache
     [-z|--clean]                  Remove build results when finished
-
-    [cbroot]                      Absolute path to coreboot sources
-                                  (defaults to $ROOT)
 
     [-V|--version]                Print version number and exit
     [-h|--help]                   Print this help and exit
@@ -585,12 +584,12 @@ getoptbrand="$(getopt -V)"
 # shellcheck disable=SC2086
 if [ "${getoptbrand:0:6}" == "getopt" ]; then
 	# Detected GNU getopt that supports long options.
-	args=$(getopt -l version,verbose,quiet,help,all,target:,payloads:,cpus:,silent,junit,config,loglevel:,remove,prefix:,update,scan-build,ccache,blobs,clang,clean,outdir:,chromeos,xmlfile:,kconfig:,dir: -o Vvqhat:p:c:sJCl:rP:uyBLzo:xX:K:d: -- "$@") || exit 1
+	args=$(getopt -l version,verbose,quiet,help,all,target:,payloads:,cpus:,silent,junit,config,loglevel:,remove,prefix:,update,scan-build,ccache,blobs,clang,clean,outdir:,chromeos,xmlfile:,kconfig:,dir:,root: -o Vvqhat:p:c:sJCl:rP:uyBLzo:xX:K:d:R: -- "$@") || exit 1
 	eval set -- $args
 	retval=$?
 else
 	# Detected non-GNU getopt
-	args=$(getopt Vvqhat:p:c:sJCl:rP:uyBLzo:xX:K:d: "$@")
+	args=$(getopt Vvqhat:p:c:sJCl:rP:uyBLzo:xX:K:d:R: "$@")
 	set -- $args
 	retval=$?
 fi
@@ -618,6 +617,7 @@ while true ; do
 		-V|--version)	shift; myversion; exit 0;;
 		-h|--help)	shift; myversion; myhelp; exit 0;;
 		-p|--payloads)  shift; payloads="$1"; shift;;
+		-R|--root)	shift; ROOT="$1"; shift;;
 		-c|--cpus)	shift
 			export MAKEFLAGS="-j $1"
 			cpus=$1
@@ -769,8 +769,6 @@ build_targets()
 	echo $targets | xargs -P ${cpus:-0} -n 1 "$0" $cmdline -t
 }
 fi
-
-test -z "$1" || ROOT=$1
 
 debug "ROOT=$ROOT"
 

@@ -56,6 +56,6 @@ void mainboard_pre_console_init(void)
 	ite_enable_serial(IT8772F_SERIAL_DEV, CONFIG_TTYS0_BASE);
 
 	/* Turn On GPIO10.LED */
-	set_power_led(SIO_GPIO_BLINK_GPIO10, LED_ON);
+	set_power_led(LED_ON);
 
 }

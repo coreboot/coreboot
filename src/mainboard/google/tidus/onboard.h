@@ -19,7 +19,7 @@
 #ifndef __ACPI__
 void lan_init(void);
 
-void set_power_led(u8 led_pin_map, int state);
+void set_power_led(int state);
 
 enum {
 	LED_OFF		= 0,

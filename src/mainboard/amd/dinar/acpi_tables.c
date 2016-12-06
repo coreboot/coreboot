@@ -21,7 +21,6 @@
 #include <arch/io.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <cpu/amd/mtrr.h>
 
 #include <northbridge/amd/agesa/agesawrapper.h>
 #include <cpu/amd/amdfam15.h>

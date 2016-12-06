@@ -22,7 +22,6 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <northbridge/amd/agesa/agesawrapper.h>
-#include <cpu/amd/mtrr.h>
 #include <cpu/amd/amdfam14.h>
 
 unsigned long acpi_fill_madt(unsigned long current)

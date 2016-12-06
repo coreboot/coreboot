@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <spi_flash.h>
 #include <spi-generic.h>
+#include <string.h>
 
 #include "spi_flash_internal.h"
 
@@ -96,7 +97,7 @@ static int eon_write(const struct spi_flash *flash,
 		chunk_len = min(len - actual, page_size - byte_addr);
 		chunk_len = spi_crop_chunk(sizeof(cmd), chunk_len);
 
-		ret = spi_flash_cmd(flash->spi, CMD_EN25_WREN, NULL, 0);
+		ret = spi_flash_cmd(&flash->spi, CMD_EN25_WREN, NULL, 0);
 		if (ret < 0) {
 			printk(BIOS_WARNING, "SF: Enabling Write failed\n");
 			goto out;
@@ -113,7 +114,7 @@ static int eon_write(const struct spi_flash *flash,
 		     buf + actual, cmd[0], cmd[1], cmd[2], cmd[3], chunk_len);
 #endif
 
-		ret = spi_flash_cmd_write(flash->spi, cmd, sizeof(cmd),
+		ret = spi_flash_cmd_write(&flash->spi, cmd, sizeof(cmd),
 					  buf + actual, chunk_len);
 		if (ret < 0) {
 			printk(BIOS_WARNING, "SF: EON Page Program failed\n");
@@ -164,7 +165,7 @@ struct spi_flash *spi_flash_probe_eon(struct spi_slave *spi, u8 *idcode)
 	}
 
 	eon->params = params;
-	eon->flash.spi = spi;
+	memcpy(&eon->flash.spi, spi, sizeof(*spi));
 	eon->flash.name = params->name;
 
 	eon->flash.internal_write = eon_write;

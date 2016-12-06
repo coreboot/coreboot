@@ -10,6 +10,8 @@
 #include <stdlib.h>
 #include <spi_flash.h>
 #include <spi-generic.h>
+#include <string.h>
+
 #include "spi_flash_internal.h"
 
 /* M25Pxx-specific commands */
@@ -135,13 +137,13 @@ static int atmel_write(const struct spi_flash *flash, u32 offset, size_t len,
 			cmd[0], cmd[1], cmd[2], cmd[3], chunk_len);
 #endif
 
-		ret = spi_flash_cmd(flash->spi, CMD_AT25_WREN, NULL, 0);
+		ret = spi_flash_cmd(&flash->spi, CMD_AT25_WREN, NULL, 0);
 		if (ret < 0) {
 			printk(BIOS_WARNING, "SF: Enabling Write failed\n");
 			goto out;
 		}
 
-		ret = spi_flash_cmd_write(flash->spi, cmd, sizeof(cmd),
+		ret = spi_flash_cmd_write(&flash->spi, cmd, sizeof(cmd),
 				buf + actual, chunk_len);
 		if (ret < 0) {
 			printk(BIOS_WARNING, "SF: Atmel Page Program failed\n");
@@ -192,7 +194,7 @@ struct spi_flash *spi_flash_probe_atmel(struct spi_slave *spi, u8 *idcode)
 	}
 
 	stm->params = params;
-	stm->flash.spi = spi;
+	memcpy(&stm->flash.spi, spi, sizeof(*spi));
 	stm->flash.name = params->name;
 
 	/* Assuming power-of-two page size initially. */

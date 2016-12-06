@@ -352,7 +352,8 @@ struct spi_flash *spi_flash_programmer_probe(struct spi_slave *spi, int force)
 	flash_bits = read_spi_sfdp_param(ctx, 0x04);
 	flash->size = (flash_bits >> 3) + 1;
 
-	flash->spi = spi;
+	memcpy(&flash->spi, spi, sizeof(*spi));
+
 	flash->name = "Apollolake hardware sequencer";
 
 	/* Can erase both 4 KiB and 64 KiB chunks. Declare the smaller size. */

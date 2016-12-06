@@ -191,7 +191,7 @@ int pch_hwseq_erase(const struct spi_flash *flash, u32 offset, size_t len)
 		len, start);
 
 out:
-	spi_release_bus(flash->spi);
+	spi_release_bus(&flash->spi);
 	return ret;
 }
 
@@ -335,7 +335,7 @@ struct spi_flash *spi_flash_programmer_probe(struct spi_slave *spi, int force)
 	/* Ensure writes can take place to the flash. */
 	spi_init();
 
-	flash->spi = spi;
+	memcpy(&flash->spi, spi, sizeof(*spi));
 	flash->name = "Opaque HW-sequencing";
 
 	flash->internal_write = pch_hwseq_write;

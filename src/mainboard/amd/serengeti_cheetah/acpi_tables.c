@@ -27,7 +27,6 @@
 #include <arch/ioapic.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
 #include <cpu/amd/amdk8_sysconf.h>
 #include <cbfs.h>

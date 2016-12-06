@@ -24,7 +24,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <cpu/x86/msr.h>
 
 #include <southbridge/intel/fsp_i89xx/pch.h>
 #include <southbridge/intel/fsp_i89xx/nvs.h>

@@ -23,7 +23,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <cpu/x86/msr.h>
 
 #include "fw_cfg.h"
 #include "acpi.h"

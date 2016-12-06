@@ -23,7 +23,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <cpu/x86/msr.h>
 
 #include "../qemu-i440fx/fw_cfg.h"
 #include "../qemu-i440fx/acpi.h"

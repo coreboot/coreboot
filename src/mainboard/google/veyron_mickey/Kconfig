@@ -72,4 +72,9 @@ config GBB_HWID
 	string
 	depends on CHROMEOS
 	default "MICKEY TEST A-A 0352"
+
+config CHROMEOS_FWID_MODEL
+	string
+	default "Google_Veyron_Mickey"
+
 endif #  BOARD_GOOGLE_VEYRON_MICKEY

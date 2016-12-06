@@ -114,4 +114,17 @@ config GBB_HWID
 	default "SPEEDY TEST A-A 8421" if BOARD_GOOGLE_VEYRON_SPEEDY
 	default "THEA TEST A-A 7163" if BOARD_GOOGLE_VEYRON_THEA
 
+config CHROMEOS_FWID_MODEL
+	string
+	default "Google_Veyron_Gus" if BOARD_GOOGLE_VEYRON_GUS
+	default "Google_Veyron_Jaq" if BOARD_GOOGLE_VEYRON_JAQ
+	default "Google_Veyron_Jerry" if BOARD_GOOGLE_VEYRON_JERRY
+	default "Google_Veyron_Mighty" if BOARD_GOOGLE_VEYRON_MIGHTY
+	default "Google_Veyron_Minnie" if BOARD_GOOGLE_VEYRON_MINNIE
+	default "Google_Veyron_Nicky" if BOARD_GOOGLE_VEYRON_NICKY
+	default "Google_Veyron_Pinky" if BOARD_GOOGLE_VEYRON_PINKY
+	default "Google_Veyron_Shinky" if BOARD_GOOGLE_VEYRON_SHARK
+	default "Google_Veyron_Speedy" if BOARD_GOOGLE_VEYRON_SPEEDY
+	default "Google_Veyron_Thea" if BOARD_GOOGLE_VEYRON_THEA
+
 endif #  BOARD_GOOGLE_VEYRON

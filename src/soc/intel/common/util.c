@@ -15,6 +15,7 @@
 
 #include <arch/cpu.h>
 #include <console/console.h>
+#include <cpu/cpu.h>
 #include <cpu/x86/mtrr.h>
 #include <soc/intel/common/util.h>
 #include <stddef.h>

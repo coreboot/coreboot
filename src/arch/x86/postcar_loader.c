@@ -16,6 +16,7 @@
 #include <arch/cpu.h>
 #include <cbmem.h>
 #include <console/console.h>
+#include <cpu/cpu.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <program_loading.h>

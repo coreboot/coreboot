@@ -676,10 +676,13 @@ while true ; do
 			configoptions="$(cat "$1")${configoptions}\n"
 			shift;;
 		--)		shift; break;;
-		-*)		printf "Invalid option\n\n"; myhelp; exit 1;;
+		-*)		printf "Invalid option '%s'\n\n" "$1"; myhelp; exit 1;;
 		*)		break;;
 	esac
 done
+if [ -n "$1" ]; then
+	printf "Invalid option '%s'\n\n" "$1"; myhelp; exit 1;
+fi
 
 if [ -z "$TARGET" ] || [ "$TARGET" = "/" ]; then
 	echo "Please specify a valid, non-root build directory."

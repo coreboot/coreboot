@@ -22,7 +22,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <cpu/x86/msr.h>
 #include <arch/ioapic.h>
 
 #include "southbridge/intel/i82801gx/nvs.h"

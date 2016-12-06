@@ -37,6 +37,9 @@
 #define TOP_MEM_MASK_KB			(TOP_MEM_MASK >> 10)
 
 #if !defined(__PRE_RAM__) && !defined(__ASSEMBLER__)
+
+#include <cpu/x86/msr.h>
+
 void amd_setup_mtrrs(void);
 
 static inline __attribute__((always_inline)) msr_t rdmsr_amd(unsigned index)

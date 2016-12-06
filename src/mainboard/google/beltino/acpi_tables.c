@@ -21,7 +21,6 @@
 #include <arch/ioapic.h>
 #include <arch/smp/mpspec.h>
 #include <console/console.h>
-#include <cpu/x86/msr.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>

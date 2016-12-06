@@ -24,7 +24,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <cpu/x86/msr.h>
 #include <ec/acpi/ec.h>
 #if CONFIG_CHROMEOS
 #include <vendorcode/google/chromeos/gnvs.h>

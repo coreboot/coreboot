@@ -22,7 +22,6 @@
 #include <arch/ioapic.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <cpu/amd/mtrr.h>
 #include <cpu/amd/amdfam16.h>
 
 #define IO_APIC2_ADDR 0xFEC20000

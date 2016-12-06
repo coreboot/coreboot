@@ -22,7 +22,6 @@
 #include <arch/ioapic.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <cpu/amd/mtrr.h>
 #include <cpu/amd/amdfam15.h>
 
 unsigned long acpi_fill_madt(unsigned long current)

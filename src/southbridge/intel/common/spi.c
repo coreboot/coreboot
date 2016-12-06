@@ -733,7 +733,7 @@ static int ich_hwseq_erase(const struct spi_flash *flash, u32 offset,
 		return -1;
 	}
 
-	ret = spi_claim_bus(flash->spi);
+	ret = spi_claim_bus(&flash->spi);
 	if (ret) {
 		printk(BIOS_ERR, "SF: Unable to claim SPI bus\n");
 		return ret;
@@ -766,7 +766,7 @@ static int ich_hwseq_erase(const struct spi_flash *flash, u32 offset,
 	printk(BIOS_DEBUG, "SF: Successfully erased %zu bytes @ %#x\n", len, start);
 
 out:
-	spi_release_bus(flash->spi);
+	spi_release_bus(&flash->spi);
 	return ret;
 }
 
@@ -921,7 +921,7 @@ struct spi_flash *spi_flash_programmer_probe(struct spi_slave *spi, int force)
 		return NULL;
 	}
 
-	flash->spi = spi;
+	memcpy(&flash->spi, spi, sizeof(*spi));
 	flash->name = "Opaque HW-sequencing";
 
 	flash->internal_write = ich_hwseq_write;

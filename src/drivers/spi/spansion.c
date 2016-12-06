@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <spi_flash.h>
 #include <spi-generic.h>
+#include <string.h>
 
 #include "spi_flash_internal.h"
 
@@ -230,13 +231,13 @@ static int spansion_write(const struct spi_flash *flash, u32 offset, size_t len,
 		     buf + actual, cmd[0], cmd[1], cmd[2], cmd[3], chunk_len);
 #endif
 
-		ret = spi_flash_cmd(flash->spi, CMD_S25FLXX_WREN, NULL, 0);
+		ret = spi_flash_cmd(&flash->spi, CMD_S25FLXX_WREN, NULL, 0);
 		if (ret < 0) {
 			printk(BIOS_WARNING, "SF: Enabling Write failed\n");
 			break;
 		}
 
-		ret = spi_flash_cmd_write(flash->spi, cmd, 4,
+		ret = spi_flash_cmd_write(&flash->spi, cmd, 4,
 					  buf + actual, chunk_len);
 		if (ret < 0) {
 			printk(BIOS_WARNING, "SF: SPANSION Page Program failed\n");
@@ -283,7 +284,7 @@ struct spi_flash *spi_flash_probe_spansion(struct spi_slave *spi, u8 *idcode)
 	spsn = &spsn_flash;
 
 	spsn->params = params;
-	spsn->flash.spi = spi;
+	memcpy(&spsn->flash.spi, spi, sizeof(*spi));
 	spsn->flash.name = params->name;
 
 	spsn->flash.internal_write = spansion_write;

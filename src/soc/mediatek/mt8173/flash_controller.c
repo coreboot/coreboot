@@ -236,12 +236,13 @@ static int nor_erase(const struct spi_flash *flash, u32 offset, size_t len)
 struct spi_flash *spi_flash_programmer_probe(struct spi_slave *spi, int force)
 {
 	static struct spi_flash flash = {0};
+	static int done = 0;
 
-	if (flash.spi)
+	if (done)
 		return &flash;
 
 	write32(&mt8173_nor->wrprot, SFLASH_COMMAND_ENABLE);
-	flash.spi = spi;
+	memcpy(&flash.spi, spi, sizeof(*spi));
 	flash.name = "mt8173 flash controller";
 	flash.internal_write = nor_write;
 	flash.internal_erase = nor_erase;
@@ -250,5 +251,6 @@ struct spi_flash *spi_flash_programmer_probe(struct spi_slave *spi, int force)
 	flash.sector_size = 0x1000;
 	flash.erase_cmd = SECTOR_ERASE_CMD;
 	flash.size = CONFIG_ROM_SIZE;
+	done = 1;
 	return &flash;
 }

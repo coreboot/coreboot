@@ -16,6 +16,7 @@
 #include <stdlib.h>
 #include <spi_flash.h>
 #include <spi-generic.h>
+#include <string.h>
 
 #include "spi_flash_internal.h"
 
@@ -109,7 +110,7 @@ static const struct sst_spi_flash_params sst_spi_flash_table[] = {
 static int
 sst_enable_writing(const struct spi_flash *flash)
 {
-	int ret = spi_flash_cmd(flash->spi, CMD_SST_WREN, NULL, 0);
+	int ret = spi_flash_cmd(&flash->spi, CMD_SST_WREN, NULL, 0);
 	if (ret)
 		printk(BIOS_WARNING, "SF: Enabling Write failed\n");
 	return ret;
@@ -118,7 +119,7 @@ sst_enable_writing(const struct spi_flash *flash)
 static int
 sst_enable_writing_status(const struct spi_flash *flash)
 {
-	int ret = spi_flash_cmd(flash->spi, CMD_SST_EWSR, NULL, 0);
+	int ret = spi_flash_cmd(&flash->spi, CMD_SST_EWSR, NULL, 0);
 	if (ret)
 		printk(BIOS_WARNING, "SF: Enabling Write Status failed\n");
 	return ret;
@@ -127,7 +128,7 @@ sst_enable_writing_status(const struct spi_flash *flash)
 static int
 sst_disable_writing(const struct spi_flash *flash)
 {
-	int ret = spi_flash_cmd(flash->spi, CMD_SST_WRDI, NULL, 0);
+	int ret = spi_flash_cmd(&flash->spi, CMD_SST_WRDI, NULL, 0);
 	if (ret)
 		printk(BIOS_WARNING, "SF: Disabling Write failed\n");
 	return ret;
@@ -146,14 +147,14 @@ sst_byte_write(const struct spi_flash *flash, u32 offset, const void *buf)
 
 #if CONFIG_DEBUG_SPI_FLASH
 	printk(BIOS_SPEW, "BP[%02x]: 0x%p => cmd = { 0x%02x 0x%06x }\n",
-		spi_w8r8(flash->spi, CMD_SST_RDSR), buf, cmd[0], offset);
+		spi_w8r8(&flash->spi, CMD_SST_RDSR), buf, cmd[0], offset);
 #endif
 
 	ret = sst_enable_writing(flash);
 	if (ret)
 		return ret;
 
-	ret = spi_flash_cmd_write(flash->spi, cmd, sizeof(cmd), buf, 1);
+	ret = spi_flash_cmd_write(&flash->spi, cmd, sizeof(cmd), buf, 1);
 	if (ret)
 		return ret;
 
@@ -205,13 +206,13 @@ static int sst_write_256(const struct spi_flash *flash, u32 offset, size_t len,
 		     buf + actual, cmd[0], cmd[1], cmd[2], cmd[3], chunk_len);
 #endif
 
-		ret = spi_flash_cmd(flash->spi, CMD_SST_WREN, NULL, 0);
+		ret = spi_flash_cmd(&flash->spi, CMD_SST_WREN, NULL, 0);
 		if (ret < 0) {
 			printk(BIOS_WARNING, "SF: Enabling Write failed\n");
 			break;
 		}
 
-		ret = spi_flash_cmd_write(flash->spi, cmd, sizeof(cmd),
+		ret = spi_flash_cmd_write(&flash->spi, cmd, sizeof(cmd),
 					  buf + actual, chunk_len);
 		if (ret < 0) {
 			printk(BIOS_WARNING, "SF: SST Page Program failed\n");
@@ -263,11 +264,11 @@ static int sst_write_ai(const struct spi_flash *flash, u32 offset, size_t len,
 	for (; actual < len - 1; actual += 2) {
 #if CONFIG_DEBUG_SPI_FLASH
 		printk(BIOS_SPEW, "WP[%02x]: 0x%p => cmd = { 0x%02x 0x%06x }\n",
-		     spi_w8r8(flash->spi, CMD_SST_RDSR), buf + actual, cmd[0],
+		     spi_w8r8(&flash->spi, CMD_SST_RDSR), buf + actual, cmd[0],
 		     offset);
 #endif
 
-		ret = spi_flash_cmd_write(flash->spi, cmd, cmd_len,
+		ret = spi_flash_cmd_write(&flash->spi, cmd, cmd_len,
 		                          buf + actual, 2);
 		if (ret) {
 			printk(BIOS_WARNING, "SF: SST word program failed\n");
@@ -310,11 +311,11 @@ sst_unlock(const struct spi_flash *flash)
 
 	cmd = CMD_SST_WRSR;
 	status = 0;
-	ret = spi_flash_cmd_write(flash->spi, &cmd, 1, &status, 1);
+	ret = spi_flash_cmd_write(&flash->spi, &cmd, 1, &status, 1);
 	if (ret)
 		printk(BIOS_WARNING, "SF: Unable to set status byte\n");
 
-	printk(BIOS_INFO, "SF: SST: status = %x\n", spi_w8r8(flash->spi, CMD_SST_RDSR));
+	printk(BIOS_INFO, "SF: SST: status = %x\n", spi_w8r8(&flash->spi, CMD_SST_RDSR));
 
 	return ret;
 }
@@ -344,7 +345,7 @@ spi_flash_probe_sst(struct spi_slave *spi, u8 *idcode)
 	}
 
 	stm->params = params;
-	stm->flash.spi = spi;
+	memcpy(&stm->flash.spi, spi, sizeof(*spi));
 	stm->flash.name = params->name;
 
 	stm->flash.internal_write = params->write;

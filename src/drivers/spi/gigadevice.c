@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <spi_flash.h>
 #include <spi-generic.h>
+#include <string.h>
 
 #include "spi_flash_internal.h"
 
@@ -137,7 +138,7 @@ static int gigadevice_write(const struct spi_flash *flash, u32 offset,
 		chunk_len = min(len - actual, page_size - byte_addr);
 		chunk_len = spi_crop_chunk(sizeof(cmd), chunk_len);
 
-		ret = spi_flash_cmd(flash->spi, CMD_GD25_WREN, NULL, 0);
+		ret = spi_flash_cmd(&flash->spi, CMD_GD25_WREN, NULL, 0);
 		if (ret < 0) {
 			printk(BIOS_WARNING,
 			       "SF gigadevice.c: Enabling Write failed\n");
@@ -155,7 +156,7 @@ static int gigadevice_write(const struct spi_flash *flash, u32 offset,
 		       cmd[0], cmd[1], cmd[2], cmd[3], chunk_len);
 #endif
 
-		ret = spi_flash_cmd_write(flash->spi, cmd, sizeof(cmd),
+		ret = spi_flash_cmd_write(&flash->spi, cmd, sizeof(cmd),
 					  buf + actual, chunk_len);
 		if (ret < 0) {
 			printk(BIOS_WARNING,
@@ -205,7 +206,7 @@ struct spi_flash *spi_flash_probe_gigadevice(struct spi_slave *spi, u8 *idcode)
 	}
 
 	stm.params = params;
-	stm.flash.spi = spi;
+	memcpy(&stm.flash.spi, spi, sizeof(*spi));
 	stm.flash.name = params->name;
 
 	/* Assuming power-of-two page size initially. */

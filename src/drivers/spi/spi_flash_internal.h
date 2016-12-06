@@ -32,7 +32,7 @@
 #define STATUS_WIP			0x01
 
 /* Send a single-byte command to the device and read the response */
-int spi_flash_cmd(struct spi_slave *spi, u8 cmd, void *response, size_t len);
+int spi_flash_cmd(const struct spi_slave *spi, u8 cmd, void *response, size_t len);
 
 int spi_flash_cmd_read_fast(const struct spi_flash *flash, u32 offset,
 		size_t len, void *data);
@@ -44,8 +44,8 @@ int spi_flash_cmd_read_slow(const struct spi_flash *flash, u32 offset,
  * Send a multi-byte command to the device followed by (optional)
  * data. Used for programming the flash array, etc.
  */
-int spi_flash_cmd_write(struct spi_slave *spi, const u8 *cmd, size_t cmd_len,
-		const void *data, size_t data_len);
+int spi_flash_cmd_write(const struct spi_slave *spi, const u8 *cmd,
+			size_t cmd_len, const void *data, size_t data_len);
 
 /* Send a command to the device and wait for some bit to clear itself. */
 int spi_flash_cmd_poll_bit(const struct spi_flash *flash, unsigned long timeout,

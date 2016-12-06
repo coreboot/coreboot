@@ -17,6 +17,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include <spi-generic.h>
 #include <boot/coreboot_tables.h>
 
 /* SPI Flash opcodes */
@@ -24,7 +25,7 @@
 #define SPI_OPCODE_FAST_READ 0x0b
 
 struct spi_flash {
-	struct spi_slave *spi;
+	struct spi_slave spi;
 	const char *name;
 	u32 size;
 	u32 sector_size;

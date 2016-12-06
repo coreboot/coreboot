@@ -77,7 +77,7 @@ done:
 	return ret;
 }
 
-int spi_flash_cmd(struct spi_slave *spi, u8 cmd, void *response, size_t len)
+int spi_flash_cmd(const struct spi_slave *spi, u8 cmd, void *response, size_t len)
 {
 	int ret = do_spi_flash_cmd(spi, &cmd, sizeof(cmd), response, len);
 	if (ret)
@@ -86,7 +86,7 @@ int spi_flash_cmd(struct spi_slave *spi, u8 cmd, void *response, size_t len)
 	return ret;
 }
 
-static int spi_flash_cmd_read(struct spi_slave *spi, const u8 *cmd,
+static int spi_flash_cmd_read(const struct spi_slave *spi, const u8 *cmd,
 			      size_t cmd_len, void *data, size_t data_len)
 {
 	int ret = do_spi_flash_cmd(spi, cmd, cmd_len, data, data_len);
@@ -101,8 +101,8 @@ static int spi_flash_cmd_read(struct spi_slave *spi, const u8 *cmd,
 /* TODO: This code is quite possibly broken and overflowing stacks. Fix ASAP! */
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wstack-usage="
-int spi_flash_cmd_write(struct spi_slave *spi, const u8 *cmd, size_t cmd_len,
-		const void *data, size_t data_len)
+int spi_flash_cmd_write(const struct spi_slave *spi, const u8 *cmd,
+			size_t cmd_len, const void *data, size_t data_len)
 {
 	int ret;
 	u8 buff[cmd_len + data_len];
@@ -119,7 +119,7 @@ int spi_flash_cmd_write(struct spi_slave *spi, const u8 *cmd, size_t cmd_len,
 }
 #pragma GCC diagnostic pop
 
-static int spi_flash_cmd_read_array(struct spi_slave *spi, u8 *cmd,
+static int spi_flash_cmd_read_array(const struct spi_slave *spi, u8 *cmd,
 				    size_t cmd_len, u32 offset,
 				    size_t len, void *data)
 {
@@ -135,7 +135,7 @@ int spi_flash_cmd_read_fast(const struct spi_flash *flash, u32 offset,
 	cmd[0] = CMD_READ_ARRAY_FAST;
 	cmd[4] = 0x00;
 
-	return spi_flash_cmd_read_array(flash->spi, cmd, sizeof(cmd),
+	return spi_flash_cmd_read_array(&flash->spi, cmd, sizeof(cmd),
 					offset, len, data);
 }
 
@@ -145,14 +145,14 @@ int spi_flash_cmd_read_slow(const struct spi_flash *flash, u32 offset,
 	u8 cmd[4];
 
 	cmd[0] = CMD_READ_ARRAY_SLOW;
-	return spi_flash_cmd_read_array(flash->spi, cmd, sizeof(cmd),
+	return spi_flash_cmd_read_array(&flash->spi, cmd, sizeof(cmd),
 					offset, len, data);
 }
 
 int spi_flash_cmd_poll_bit(const struct spi_flash *flash, unsigned long timeout,
 			   u8 cmd, u8 poll_bit)
 {
-	struct spi_slave *spi = flash->spi;
+	const struct spi_slave *spi = &flash->spi;
 	int ret;
 	u8 status;
 	struct mono_time current, end;
@@ -205,11 +205,11 @@ int spi_flash_cmd_erase(const struct spi_flash *flash, u32 offset, size_t len)
 		printk(BIOS_SPEW, "SF: erase %2x %2x %2x %2x (%x)\n", cmd[0], cmd[1],
 		      cmd[2], cmd[3], offset);
 #endif
-		ret = spi_flash_cmd(flash->spi, CMD_WRITE_ENABLE, NULL, 0);
+		ret = spi_flash_cmd(&flash->spi, CMD_WRITE_ENABLE, NULL, 0);
 		if (ret)
 			goto out;
 
-		ret = spi_flash_cmd_write(flash->spi, cmd, sizeof(cmd), NULL, 0);
+		ret = spi_flash_cmd_write(&flash->spi, cmd, sizeof(cmd), NULL, 0);
 		if (ret)
 			goto out;
 
@@ -226,7 +226,7 @@ out:
 
 int spi_flash_cmd_status(const struct spi_flash *flash, u8 *reg)
 {
-	return spi_flash_cmd(flash->spi, flash->status_cmd, reg, sizeof(*reg));
+	return spi_flash_cmd(&flash->spi, flash->status_cmd, reg, sizeof(*reg));
 }
 
 /*

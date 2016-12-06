@@ -113,6 +113,20 @@ config HAVE_REGULATORY_DOMAIN
 	help
 	 This option is needed to add ACPI regulatory domain methods
 
+config CHROMEOS_FWID_MODEL
+	string "Chrome OS Firmware ID model"
+	default "$(CONFIG_MAINBOARD_VENDOR)_$(CONFIG_MAINBOARD_PART_NUMBER)"
+	help
+	  This is the first part of the FWID written to various regions of a
+	  Chrome OS firmware image to identify its version.
+
+config CHROMEOS_FWID_VERSION
+	string "Chrome OS Firmware ID version"
+	default "$(KERNELVERSION)"
+	help
+	  This is the second part of the FWID written to various regions of a
+	  Chrome OS firmware image to identify its version.
+
 menu "GBB configuration"
 
 config GBB_HWID

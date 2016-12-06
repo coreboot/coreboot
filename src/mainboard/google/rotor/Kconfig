@@ -37,6 +37,10 @@ config GBB_HWID
 	depends on CHROMEOS
 	default "ROTOR TEST 1234"
 
+config CHROMEOS_FWID_MODEL
+	string
+	default "Marvell_Rotor"
+
 config DRAM_SIZE_MB
 	int
 	default 232

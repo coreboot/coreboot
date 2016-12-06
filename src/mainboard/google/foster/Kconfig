@@ -84,4 +84,9 @@ config GBB_HWID
 	string
 	depends on CHROMEOS
 	default "FOSTER TEST 1184"
+
+config CHROMEOS_FWID_MODEL
+	string
+	default "Nvidia_Foster"
+
 endif # BOARD_GOOGLE_FOSTER

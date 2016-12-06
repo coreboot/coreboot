@@ -24,7 +24,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <cpu/cpu.h>
 #include <soc/acpi.h>
 #include <soc/nvs.h>
 #include "thermal.h"

@@ -115,6 +115,8 @@ static struct boot_state boot_states[] = {
 	BS_INIT_ENTRY(BS_PAYLOAD_BOOT, bs_payload_boot),
 };
 
+void __attribute__((weak)) arch_bootstate_coreboot_exit(void) { }
+
 static boot_state_t bs_pre_device(void *arg)
 {
 	return BS_DEV_INIT_CHIPS;
@@ -198,6 +200,7 @@ static boot_state_t bs_os_resume_check(void *arg)
 static boot_state_t bs_os_resume(void *wake_vector)
 {
 #if CONFIG_HAVE_ACPI_RESUME
+	arch_bootstate_coreboot_exit();
 	acpi_resume(wake_vector);
 #endif
 	return BS_WRITE_TABLES;
@@ -227,6 +230,7 @@ static boot_state_t bs_payload_load(void *arg)
 
 static boot_state_t bs_payload_boot(void *arg)
 {
+	arch_bootstate_coreboot_exit();
 	payload_run();
 
 	printk(BIOS_EMERG, "Boot failed\n");

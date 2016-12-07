@@ -195,4 +195,8 @@ struct boot_state_init_entry {
 		bsie_ ## func_ ##_## state_ ##_## when_ BOOT_STATE_INIT_ATTR = \
 		& func_ ##_## state_ ##_## when_;
 
+/* Hook per arch when coreboot is exiting to payload or ACPI OS resume. It's
+ * the very last thing done before the transition. */
+void arch_bootstate_coreboot_exit(void);
+
 #endif /* BOOTSTATE_H */

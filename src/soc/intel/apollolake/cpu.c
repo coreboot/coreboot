@@ -53,7 +53,7 @@ static const struct reg_script core_msr_script[] = {
 	REG_SCRIPT_END
 };
 
-static void enable_untrusted_mode(void)
+void enable_untrusted_mode(void)
 {
 	msr_t msr = rdmsr(MSR_POWER_MISC);
 	msr.lo |= ENABLE_IA_UNTRUSTED;
@@ -70,8 +70,6 @@ static void soc_core_init(device_t cpu)
 	 * implemented in microcode.
 	*/
 	enable_pm_timer_emulation();
-	/* Drop privilege level */
-	enable_untrusted_mode();
 }
 
 static struct device_operations cpu_dev_ops = {

@@ -72,8 +72,9 @@ else
 endif # ifeq ($(COMPILER_OUT_OF_DATE),1)
 
 # This target controls what the jenkins builder tests
+jenkins-build-toolchain: BUILDGCC_OPTIONS ?= -y --nocolor
 jenkins-build-toolchain:
-	$(MAKE) crosstools clang KEEP_SOURCES=1 BUILDGCC_OPTIONS='-y --nocolor'
+	$(MAKE) crosstools clang KEEP_SOURCES=1 BUILDGCC_OPTIONS='$(BUILDGCC_OPTIONS)'
 	rm -f .xcompile
 	PATH=$(if $(DEST),$(DEST)/bin,$(top)/util/crossgcc/xgcc/bin):$$PATH; $(MAKE) what-jenkins-does
 	-cat .xcompile

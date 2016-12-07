@@ -19,9 +19,12 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <ec/ec.h>
+#include <gpio.h>
 #include <nhlt.h>
+#include <smbios.h>
 #include <soc/gpio.h>
 #include <soc/nhlt.h>
+#include <string.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <variant/ec.h>
 #include <variant/gpio.h>
@@ -39,6 +42,35 @@ static void mainboard_init(void *chip_info)
 	gpio_configure_pads(pads, num);
 
 	mainboard_ec_init();
+}
+
+/*
+ * There are 2 pins on reef-like boards that can be used for SKU'ing
+ * board differences. They each have optional stuffing for a pullup and
+ * a pulldown. This way we can generate 9 different values with the
+ * 2 pins.
+ */
+static int board_sku(void)
+{
+	static int board_sku_num = -1;
+	gpio_t board_sku_gpios[] = {
+		[1] = GPIO_17, [0] = GPIO_16,
+	};
+	const size_t num = ARRAY_SIZE(board_sku_gpios);
+
+	if (board_sku_num < 0)
+		board_sku_num = gpio_base3_value(board_sku_gpios, num);
+
+	return board_sku_num;
+}
+
+const char *smbios_mainboard_sku(void)
+{
+	static char sku_str[5]; /* sku[0-8] */
+
+	snprintf(sku_str, sizeof(sku_str), "sku%d", board_sku());
+
+	return sku_str;
 }
 
 void __attribute__((weak)) variant_nhlt_oem_overrides(const char **oem_id,

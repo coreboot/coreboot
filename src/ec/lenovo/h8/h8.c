@@ -182,6 +182,7 @@ u8 h8_build_id_and_function_spec_version(char *buf, u8 buf_len)
 	return i;
 }
 
+#if IS_ENABLED(CONFIG_GENERATE_SMBIOS_TABLES)
 static void h8_smbios_strings(struct device *dev, struct smbios_type11 *t)
 {
 	char tpec[] = "IBM ThinkPad Embedded Controller -[                 ]-";
@@ -190,6 +191,7 @@ static void h8_smbios_strings(struct device *dev, struct smbios_type11 *t)
 
 	t->count = smbios_add_string(t->eos, tpec);
 }
+#endif
 
 static void h8_init(device_t dev)
 {
@@ -197,7 +199,9 @@ static void h8_init(device_t dev)
 }
 
 struct device_operations h8_dev_ops = {
+#if IS_ENABLED(CONFIG_GENERATE_SMBIOS_TABLES)
 	.get_smbios_strings = h8_smbios_strings,
+#endif
 	.init = h8_init,
 };
 

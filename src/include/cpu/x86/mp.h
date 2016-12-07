@@ -124,6 +124,24 @@ struct mp_ops {
  */
 int mp_init_with_smm(struct bus *cpu_bus, const struct mp_ops *mp_ops);
 
+
+/*
+ * After APs are up and PARALLEL_MP_AP_WORK is enabled one can issue work
+ * to all the APs to perform. Currently the BSP is the only CPU that is allowed
+ * to issue work. i.e. the APs should not call any of these functions.
+ * All functions return < 0 on error, 0 on success.
+ */
+int mp_run_on_aps(void (*func)(void), long expire_us);
+
+/* Like mp_run_on_aps() but also runs func on BSP. */
+int mp_run_on_all_cpus(void (*func)(void), long expire_us);
+
+/*
+ * Park all APs to prepare for OS boot. This is handled automatically
+ * by the coreboot infrastructure.
+ */
+int mp_park_aps(void);
+
 /*
  * SMM helpers to use with initializing CPUs.
  */

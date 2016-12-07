@@ -10,6 +10,12 @@ config PARALLEL_MP
 	 in parallel. It additionally provides a more flexible mechanism
 	 for sequencing the steps of bringing up the APs.
 
+config PARALLEL_MP_AP_WORK
+	def_bool n
+	depends on PARALLEL_MP
+	help
+	 Allow APs to do other work after initialization instead of going
+	 to sleep.
 
 config UDELAY_IO
 	bool

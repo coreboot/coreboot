@@ -21,6 +21,7 @@
 #include <cbmem.h>
 #include <console/console.h>
 #include <cpu/cpu.h>
+#include <cpu/x86/mp.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <fsp/api.h>
@@ -499,11 +500,26 @@ struct chip_operations soc_intel_apollolake_ops = {
 	.final = &soc_final
 };
 
+static void drop_privilege_all(void)
+{
+	/* Drop privilege level on all the CPUs */
+	if (mp_run_on_all_cpus(&enable_untrusted_mode, 1000) < 0)
+		printk(BIOS_ERR, "failed to enable untrusted mode\n");
+}
+
 void platform_fsp_notify_status(enum fsp_notify_phase phase)
 {
-	/* Hide the P2SB device to align with previous behavior. */
-	if (phase == END_OF_FIRMWARE)
+	if (phase == END_OF_FIRMWARE) {
+		/* Hide the P2SB device to align with previous behavior. */
 		p2sb_hide();
+		/*
+		 * As per guidelines BIOS is recommended to drop CPU privilege
+		 * level to IA_UNTRUSTED. After that certain device registers
+		 * and MSRs become inaccessible supposedly increasing system
+		 * security.
+		 */
+		drop_privilege_all();
+	}
 }
 
 /*

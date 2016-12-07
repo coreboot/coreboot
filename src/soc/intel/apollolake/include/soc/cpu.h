@@ -24,6 +24,7 @@
 
 void apollolake_init_cpus(struct device *dev);
 void set_max_freq(void);
+void enable_untrusted_mode(void);
 #endif
 
 #define CPUID_APOLLOLAKE_A0	0x506c8

@@ -107,6 +107,12 @@ build_complete:: $(obj)/gbb.region $(obj)/fwid.region
 	$(CBFSTOOL) $(obj)/coreboot.rom write -u -r RW_FWID_A -i 0 -f $(obj)/fwid.region
 	$(CBFSTOOL) $(obj)/coreboot.rom write -u -r RW_FWID_B -i 0 -f $(obj)/fwid.region
 
+ifneq ($(shell grep "SHARED_DATA" "$(CONFIG_FMDFILE)"),)
+build_complete::
+	printf "\0" > $(obj)/shared_data.region
+	$(CBFSTOOL) $(obj)/coreboot.rom write -u -r SHARED_DATA -i 0 -f $(obj)/shared_data.region
+endif
+
 # Extract FW_MAIN_? region and minimize it if the last file is empty, so it
 # doesn't contain this empty file (that can have a significant size),
 # improving a lot on hash times due to a smaller amount of data loaded from

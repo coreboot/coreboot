@@ -14,9 +14,7 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __PRE_RAM__
-#define __PRE_RAM__ // Use simple device model for this file even in ramstage
-#endif
+#define __SIMPLE_DEVICE__
 
 #include <stdint.h>
 #include <arch/io.h>

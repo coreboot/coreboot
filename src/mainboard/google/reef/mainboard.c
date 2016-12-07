@@ -77,6 +77,9 @@ void __attribute__((weak)) variant_nhlt_oem_overrides(const char **oem_id,
 						const char **oem_table_id,
 						uint32_t *oem_revision)
 {
+	*oem_id = "reef";
+	*oem_table_id = CONFIG_VARIANT_DIR;
+	*oem_revision = board_sku();
 }
 
 static unsigned long mainboard_write_acpi_tables(

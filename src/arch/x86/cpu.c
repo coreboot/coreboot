@@ -11,11 +11,13 @@
  * GNU General Public License for more details.
  */
 
+#include <bootstate.h>
 #include <boot/coreboot_tables.h>
 #include <console/console.h>
 #include <cpu/cpu.h>
 #include <arch/io.h>
 #include <string.h>
+#include <cpu/x86/mp.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/lapic.h>
@@ -309,4 +311,15 @@ void lb_arch_add_records(struct lb_header *header)
 	tsc_info->tag = LB_TAG_TSC_INFO;
 	tsc_info->size = sizeof(*tsc_info);
 	tsc_info->freq_khz = freq_khz;
+}
+
+void arch_bootstate_coreboot_exit(void)
+{
+	/* APs are already parked by existing infrastructure. */
+	if (!IS_ENABLED(CONFIG_PARALLEL_MP_AP_WORK))
+		return;
+
+	/* APs are waiting for work. Last thing to do is park them. */
+	if (mp_park_aps())
+		printk(BIOS_ERR, "Parking APs failed.\n");
 }

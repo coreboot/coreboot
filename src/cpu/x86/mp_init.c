@@ -127,6 +127,7 @@ struct mp_flight_plan {
 	struct mp_flight_record *records;
 };
 
+static int global_num_aps;
 static struct mp_flight_plan mp_info;
 
 struct cpu_map {
@@ -185,6 +186,11 @@ static void ap_do_flight_plan(void)
 	}
 }
 
+static void park_this_cpu(void)
+{
+	stop_this_cpu();
+}
+
 /* By the time APs call ap_init() caching has been setup, and microcode has
  * been loaded. */
 static void asmlinkage ap_init(unsigned int cpu)
@@ -210,7 +216,7 @@ static void asmlinkage ap_init(unsigned int cpu)
 	ap_do_flight_plan();
 
 	/* Park the AP. */
-	stop_this_cpu();
+	park_this_cpu();
 }
 
 static void setup_default_sipi_vector_params(struct sipi_params *sp)
@@ -587,7 +593,6 @@ static void init_bsp(struct bus *cpu_bus)
 static int mp_init(struct bus *cpu_bus, struct mp_params *p)
 {
 	int num_cpus;
-	int num_aps;
 	atomic_t *ap_count;
 
 	init_bsp(cpu_bus);
@@ -621,11 +626,11 @@ static int mp_init(struct bus *cpu_bus, struct mp_params *p)
 	wbinvd();
 
 	/* Start the APs providing number of APs and the cpus_entered field. */
-	num_aps = p->num_cpus - 1;
-	if (start_aps(cpu_bus, num_aps, ap_count) < 0) {
+	global_num_aps = p->num_cpus - 1;
+	if (start_aps(cpu_bus, global_num_aps, ap_count) < 0) {
 		mdelay(1000);
 		printk(BIOS_DEBUG, "%d/%d eventually checked in?\n",
-		       atomic_read(ap_count), num_aps);
+		       atomic_read(ap_count), global_num_aps);
 		return -1;
 	}
 
@@ -838,6 +843,94 @@ static void trigger_smm_relocation(void)
 	mp_state.ops.per_cpu_smm_trigger();
 }
 
+static mp_callback_t ap_callbacks[CONFIG_MAX_CPUS];
+
+static mp_callback_t read_callback(mp_callback_t *slot)
+{
+	return *(volatile mp_callback_t *)slot;
+}
+
+static void store_callback(mp_callback_t *slot, mp_callback_t value)
+{
+	*(volatile mp_callback_t *)slot = value;
+}
+
+static int run_ap_work(mp_callback_t func, long expire_us)
+{
+	int i;
+	int cpus_accepted;
+	struct stopwatch sw;
+	int cur_cpu = cpu_index();
+
+	if (!IS_ENABLED(CONFIG_PARALLEL_MP_AP_WORK)) {
+		printk(BIOS_ERR, "APs already parked. PARALLEL_MP_AP_WORK not selected.\n");
+		return -1;
+	}
+
+	/* Signal to all the APs to run the func. */
+	for (i = 0; i < ARRAY_SIZE(ap_callbacks); i++) {
+		if (cur_cpu == i)
+			continue;
+		store_callback(&ap_callbacks[i], func);
+	}
+	mfence();
+
+	/* Wait for all the APs to signal back that call has been accepted. */
+	stopwatch_init_usecs_expire(&sw, expire_us);
+	for (cpus_accepted = 0; !stopwatch_expired(&sw); cpus_accepted = 0) {
+		for (i = 0; i < ARRAY_SIZE(ap_callbacks); i++) {
+			if (cur_cpu == i)
+				continue;
+			if (read_callback(&ap_callbacks[i]) == NULL)
+				cpus_accepted++;
+		}
+		if (cpus_accepted == global_num_aps)
+			return 0;
+	}
+
+	printk(BIOS_ERR, "AP call expired. %d/%d CPUs accepted.\n",
+		cpus_accepted, global_num_aps);
+	return -1;
+}
+
+static void ap_wait_for_instruction(void)
+{
+	int cur_cpu = cpu_index();
+
+	if (!IS_ENABLED(CONFIG_PARALLEL_MP_AP_WORK))
+		return;
+
+	while (1) {
+		mp_callback_t func = read_callback(&ap_callbacks[cur_cpu]);
+
+		if (func == NULL) {
+			asm ("pause");
+			continue;
+		}
+
+		store_callback(&ap_callbacks[cur_cpu], NULL);
+		mfence();
+		func();
+	}
+}
+
+int mp_run_on_aps(void (*func)(void), long expire_us)
+{
+	return run_ap_work(func, expire_us);
+}
+
+int mp_run_on_all_cpus(void (*func)(void), long expire_us)
+{
+	/* Run on BSP first. */
+	func();
+	return mp_run_on_aps(func, expire_us);
+}
+
+int mp_park_aps(void)
+{
+	return mp_run_on_aps(park_this_cpu, 10 * USECS_PER_MSEC);
+}
+
 static struct mp_flight_record mp_steps[] = {
 	/* Once the APs are up load the SMM handlers. */
 	MP_FR_BLOCK_APS(NULL, load_smm_handlers),
@@ -845,8 +938,8 @@ static struct mp_flight_record mp_steps[] = {
 	MP_FR_NOBLOCK_APS(trigger_smm_relocation, trigger_smm_relocation),
 	/* Initialize each CPU through the driver framework. */
 	MP_FR_BLOCK_APS(mp_initialize_cpu, mp_initialize_cpu),
-	/* Wait for APs to finish everything else then let them park. */
-	MP_FR_BLOCK_APS(NULL, NULL),
+	/* Wait for APs to finish then optionally start looking for work. */
+	MP_FR_BLOCK_APS(ap_wait_for_instruction, NULL),
 };
 
 static void fill_mp_state(struct mp_state *state, const struct mp_ops *ops)

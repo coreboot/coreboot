@@ -235,8 +235,8 @@ static int nor_erase(const struct spi_flash *flash, u32 offset, size_t len)
 
 struct spi_flash *spi_flash_programmer_probe(struct spi_slave *spi, int force)
 {
-	static struct spi_flash flash = {0};
-	static int done = 0;
+	static struct spi_flash flash;
+	static int done;
 
 	if (done)
 		return &flash;

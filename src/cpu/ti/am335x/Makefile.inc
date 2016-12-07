@@ -21,6 +21,8 @@ endif
 $(call add-class,omap-header)
 $(eval $(call create_class_compiler,omap-header,arm))
 
+omap-header-generic-ccopts += -D__COREBOOT_ARM_ARCH__=7
+
 real-target: $(obj)/MLO
 
 header_ld := $(call src-to-obj,omap-header,$(dir)/header.ld)

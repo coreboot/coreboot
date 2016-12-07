@@ -33,11 +33,14 @@
 #include <vboot/vbnv.h>
 #include <soc/igd.h>
 
-#define GT_RETRY 		1000
-#define GT_CDCLK_337		0
-#define GT_CDCLK_450		1
-#define GT_CDCLK_540		2
-#define GT_CDCLK_675		3
+#define GT_RETRY		1000
+enum {
+	GT_CDCLK_DEFAULT = 0,
+	GT_CDCLK_337,
+	GT_CDCLK_450,
+	GT_CDCLK_540,
+	GT_CDCLK_675,
+};
 
 static u32 reg_em4;
 static u32 reg_em5;
@@ -338,81 +341,49 @@ static void igd_setup_panel(struct device *dev)
 	}
 }
 
-static void igd_cdclk_init_haswell(struct device *dev)
+static int igd_get_cdclk_haswell(u32 *const cdsel, int *const inform_pc,
+				 struct device *const dev)
 {
-	config_t *conf = dev->chip_info;
+	const config_t *const conf = dev->chip_info;
 	int cdclk = conf->cdclk;
-	int devid = pci_read_config16(dev, PCI_DEVICE_ID);
-	int gpu_is_ulx = 0;
-	u32 dpdiv, lpcll;
 
 	/* Check for ULX GT1 or GT2 */
-	if (devid == 0x0a0e || devid == 0x0a1e)
-		gpu_is_ulx = 1;
+	const int devid = pci_read_config16(dev, PCI_DEVICE_ID);
+	const int gpu_is_ulx = devid == IGD_HASWELL_ULX_GT1 ||
+				devid == IGD_HASWELL_ULX_GT2;
 
-	/* 675MHz is not supported on haswell */
-	if (cdclk == GT_CDCLK_675)
-		cdclk = GT_CDCLK_337;
-
-	/* If CD clock is fixed or ULT then set to 450MHz */
-	if ((gtt_read(0x42014) & 0x1000000) || cpu_is_ult())
+	/* Check for fixed fused clock */
+	if (gtt_read(0x42014) & 1 << 24)
 		cdclk = GT_CDCLK_450;
 
-	/* 540MHz is not supported on ULX */
-	if (gpu_is_ulx && cdclk == GT_CDCLK_540)
+	/*
+	 *    ULX defaults to 337MHz with possible override for 450MHz
+	 *    ULT is fixed at 450MHz
+	 * others default  to 540MHz with possible override for 450MHz
+	 */
+	if (gpu_is_ulx && cdclk <= GT_CDCLK_337)
 		cdclk = GT_CDCLK_337;
-
-	/* 337.5MHz is not supported on non-ULT/ULX */
-	if (!gpu_is_ulx && !cpu_is_ult() && cdclk == GT_CDCLK_337)
+	else if (gpu_is_ulx || cpu_is_ult() ||
+			cdclk == GT_CDCLK_337 || cdclk == GT_CDCLK_450)
 		cdclk = GT_CDCLK_450;
+	else
+		cdclk = GT_CDCLK_540;
 
-	/* Set variables based on CD Clock setting */
-	switch (cdclk) {
-	case GT_CDCLK_337:
-		dpdiv = 169;
-		lpcll = (1 << 26);
-		reg_em4 = 16;
-		reg_em5 = 225;
-		break;
-	case GT_CDCLK_450:
-		dpdiv = 225;
-		lpcll = 0;
-		reg_em4 = 4;
-		reg_em5 = 75;
-		break;
-	case GT_CDCLK_540:
-		dpdiv = 270;
-		lpcll = (1 << 26);
-		reg_em4 = 4;
-		reg_em5 = 90;
-		break;
-	default:
-		return;
-	}
-
-	/* Set LPCLL_CTL CD Clock Frequency Select */
-	gtt_rmw(0x130040, 0xf3ffffff, lpcll);
-
-	/* ULX: Inform power controller of selected frequency */
-	if (gpu_is_ulx) {
-		if (cdclk == GT_CDCLK_450)
-			gtt_write(0x138128, 0x00000000); /* 450MHz */
-		else
-			gtt_write(0x138128, 0x00000001); /* 337.5MHz */
-		gtt_write(0x13812c, 0x00000000);
-		gtt_write(0x138124, 0x80000017);
-	}
-
-	/* Set CPU DP AUX 2X bit clock dividers */
-	gtt_rmw(0x64010, 0xfffff800, dpdiv);
-	gtt_rmw(0x64810, 0xfffff800, dpdiv);
+	*cdsel = cdclk != GT_CDCLK_450;
+	*inform_pc = gpu_is_ulx;
+	return cdclk;
 }
 
-static void igd_cdclk_init_broadwell(struct device *dev)
+static int igd_get_cdclk_broadwell(u32 *const cdsel, int *const inform_pc,
+				   struct device *const dev)
 {
-	config_t *conf = dev->chip_info;
+	static const u32 cdsel_by_cdclk[] = { 0, 2, 0, 1, 3 };
+	const config_t *const conf = dev->chip_info;
 	int cdclk = conf->cdclk;
-	u32 dpdiv, lpcll, pwctl, cdset;
+
+	/* Check for ULX */
+	const int devid = pci_read_config16(dev, PCI_DEVICE_ID);
+	const int gpu_is_ulx = devid == IGD_BROADWELL_Y_GT2;
 
 	/* Inform power controller of upcoming frequency change */
 	gtt_write(0x138128, 0);
@@ -420,54 +391,69 @@ static void igd_cdclk_init_broadwell(struct device *dev)
 	gtt_write(0x138124, 0x80000018);
 
 	/* Poll GT driver mailbox for run/busy clear */
-	if (!gtt_poll(0x138124, (1 << 31), (0 << 31)))
-		cdclk = GT_CDCLK_450;
-
-	if (gtt_read(0x42014) & 0x1000000) {
-		/* If CD clock is fixed then set to 450MHz */
-		cdclk = GT_CDCLK_450;
+	if (gtt_poll(0x138124, (1 << 31), (0 << 31))) {
+		*inform_pc = 1;
 	} else {
-		/* Program CD clock to highest supported freq */
-		if (cpu_is_ult())
-			cdclk = GT_CDCLK_540;
-		else
-			cdclk = GT_CDCLK_675;
+		cdclk = GT_CDCLK_450;
+		*inform_pc = 0;
 	}
 
-	/* CD clock frequency 675MHz not supported on ULT */
-	if (cpu_is_ult() && cdclk == GT_CDCLK_675)
+	/* Check for fixed fused clock */
+	if (gtt_read(0x42014) & 1 << 24)
+		cdclk = GT_CDCLK_450;
+
+	/*
+	 *    ULX defaults to 450MHz with possible override up to 540MHz
+	 *    ULT defaults to 540MHz with possible override up to 675MHz
+	 * others default  to 675MHz with possible override for lower freqs
+	 */
+	if (cdclk == GT_CDCLK_337)
+		cdclk = GT_CDCLK_337;
+	else if (cdclk == GT_CDCLK_450 ||
+			(gpu_is_ulx && cdclk == GT_CDCLK_DEFAULT))
+		cdclk = GT_CDCLK_450;
+	else if (cdclk == GT_CDCLK_540 || gpu_is_ulx ||
+			(cpu_is_ult() && cdclk == GT_CDCLK_DEFAULT))
 		cdclk = GT_CDCLK_540;
+	else
+		cdclk = GT_CDCLK_675;
+
+	*cdsel = cdsel_by_cdclk[cdclk];
+	return cdclk;
+}
+
+static void igd_cdclk_init(struct device *dev, const int is_broadwell)
+{
+	u32 dpdiv, cdsel, cdval;
+	int cdclk, inform_pc;
+
+	if (is_broadwell)
+		cdclk = igd_get_cdclk_broadwell(&cdsel, &inform_pc, dev);
+	else
+		cdclk = igd_get_cdclk_haswell(&cdsel, &inform_pc, dev);
 
 	/* Set variables based on CD Clock setting */
 	switch (cdclk) {
 	case GT_CDCLK_337:
-		cdset = 337;
-		lpcll = (1 << 27);
-		pwctl = 2;
+		cdval = 337;
 		dpdiv = 169;
 		reg_em4 = 16;
 		reg_em5 = 225;
 		break;
 	case GT_CDCLK_450:
-		cdset = 449;
-		lpcll = 0;
-		pwctl = 0;
+		cdval = 449;
 		dpdiv = 225;
 		reg_em4 = 4;
 		reg_em5 = 75;
 		break;
 	case GT_CDCLK_540:
-		cdset = 539;
-		lpcll = (1 << 26);
-		pwctl = 1;
+		cdval = 539;
 		dpdiv = 270;
 		reg_em4 = 4;
 		reg_em5 = 90;
 		break;
 	case GT_CDCLK_675:
-		cdset = 674;
-		lpcll = (1 << 26) | (1 << 27);
-		pwctl = 3;
+		cdval = 674;
 		dpdiv = 338;
 		reg_em4 = 8;
 		reg_em5 = 225;
@@ -476,15 +462,17 @@ static void igd_cdclk_init_broadwell(struct device *dev)
 	}
 
 	/* Set LPCLL_CTL CD Clock Frequency Select */
-	gtt_rmw(0x130040, 0xf3ffffff, lpcll);
+	gtt_rmw(0x130040, 0xf3ffffff, cdsel << 26);
 
-	/* Inform power controller of selected frequency */
-	gtt_write(0x138128, pwctl);
-	gtt_write(0x13812c, 0);
-	gtt_write(0x138124, 0x80000017);
+	if (inform_pc) {
+		/* Inform power controller of selected frequency */
+		gtt_write(0x138128, cdsel);
+		gtt_write(0x13812c, 0);
+		gtt_write(0x138124, 0x80000017);
+	}
 
 	/* Program CD Clock Frequency */
-	gtt_rmw(0x46200, 0xfffffc00, cdset);
+	gtt_rmw(0x46200, 0xfffffc00, cdval);
 
 	/* Set CPU DP AUX 2X bit clock dividers */
 	gtt_rmw(0x64010, 0xfffff800, dpdiv);
@@ -541,11 +529,10 @@ static void igd_init(struct device *dev)
 	pci_dev_init(dev);
 
 	/* Late init steps */
+	igd_cdclk_init(dev, is_broadwell);
 	if (is_broadwell) {
-		igd_cdclk_init_broadwell(dev);
 		reg_script_run_on_dev(dev, broadwell_late_init_script);
 	} else {
-		igd_cdclk_init_haswell(dev);
 		reg_script_run_on_dev(dev, haswell_late_init_script);
 	}
 

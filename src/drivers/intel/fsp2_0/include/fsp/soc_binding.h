@@ -16,6 +16,8 @@
 #ifndef _FSP2_0_SOC_BINDING_H_
 #define _FSP2_0_SOC_BINDING_H_
 
+#include <stddef.h>
+
 #pragma pack(push)
 /*
  * This file is a implementation specific header. i.e. different

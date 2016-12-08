@@ -67,4 +67,7 @@ DefinitionBlock(
 	{
 		#include "acpi/dptf.asl"
 	}
+
+	/* ACPI code for EC functions */
+	#include "acpi/mainboard.asl"
 }

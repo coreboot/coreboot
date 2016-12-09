@@ -9,7 +9,7 @@ if CPU_INTEL_SOCKET_MPGA478MN
 
 config DCACHE_RAM_BASE
 	hex
-	default 0xffaf8000
+	default 0xfefc0000
 
 config DCACHE_RAM_SIZE
 	hex

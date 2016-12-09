@@ -4,3 +4,15 @@ config CPU_INTEL_SOCKET_LGA771
 	select SSE2
 	select MMX
 	select AP_IN_SIPI_WAIT
+
+if CPU_INTEL_SOCKET_LGA771
+
+config DCACHE_RAM_BASE
+	hex
+	default 0xfefc0000
+
+config DCACHE_RAM_SIZE
+	hex
+	default 0x8000
+
+endif

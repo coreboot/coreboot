@@ -21,14 +21,6 @@ config MAINBOARD_DIR
 	string
 	default ibase/mb899
 
-config DCACHE_RAM_BASE
-	hex
-	default 0xffdf8000
-
-config DCACHE_RAM_SIZE
-	hex
-	default 0x8000
-
 config MAINBOARD_PART_NUMBER
 	string
 	default "MB899"

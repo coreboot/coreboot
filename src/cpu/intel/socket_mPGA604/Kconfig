@@ -22,7 +22,7 @@ config SSE2
 
 config DCACHE_RAM_BASE
 	hex
-	default 0x0ffafc000
+	default 0xfefc0000
 
 config DCACHE_RAM_SIZE
 	hex

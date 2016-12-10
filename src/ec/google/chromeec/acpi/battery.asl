@@ -114,9 +114,9 @@ Device (BAT0)
 		Store (Local2, Index (PBIF, 6))
 
 		// Get battery info from mainboard
-		Store (ToString(BMOD), Index (PBIF, 9))
-		Store (ToString(BSER), Index (PBIF, 10))
-		Store (ToString(BMFG), Index (PBIF, 12))
+		Store (ToString(Concatenate(BMOD, 0x00)), Index (PBIF, 9))
+		Store (ToString(Concatenate(BSER, 0x00)), Index (PBIF, 10))
+		Store (ToString(Concatenate(BMFG, 0x00)), Index (PBIF, 12))
 
 		Return (PBIF)
 	}
@@ -145,9 +145,9 @@ Device (BAT0)
 		Store (BTCC, Index (PBIX, 8))
 
 		// Get battery info from mainboard
-		Store (ToString(BMOD), Index (PBIX, 16))
-		Store (ToString(BSER), Index (PBIX, 17))
-		Store (ToString(BMFG), Index (PBIX, 19))
+		Store (ToString(Concatenate(BMOD, 0x00)), Index (PBIX, 16))
+		Store (ToString(Concatenate(BSER, 0x00)), Index (PBIX, 17))
+		Store (ToString(Concatenate(BMFG, 0x00)), Index (PBIX, 19))
 
 		Return (PBIX)
 	}

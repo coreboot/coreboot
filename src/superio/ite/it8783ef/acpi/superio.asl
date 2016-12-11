@@ -51,6 +51,9 @@
 #define SUPERIO_CHIP_NAME IT8783EF
 #include <superio/acpi/pnp.asl>
 
+#undef PNP_DEFAULT_PSC
+#define PNP_DEFAULT_PSC Return (0) /* no power management */
+
 #define CONFIGURE_CONTROL CCTL
 
 Device(SUPERIO_DEV) {

@@ -4,6 +4,7 @@
 #if !defined(__ASSEMBLER__)
 
 void boot_successful(void);
+void set_boot_successful(void);
 
 #endif /* __ASSEMBLER__ */
 

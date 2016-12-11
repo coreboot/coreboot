@@ -15,7 +15,9 @@
  */
 
 #include <arch/acpi.h>
+#include <arch/io.h>
 #include <bcd.h>
+#include <fallback.h>
 #include <stdint.h>
 #include <version.h>
 #include <console/console.h>
@@ -403,4 +405,36 @@ int rtc_get(struct rtc_time *time)
 	time->year += bcd2bin(cmos_read(RTC_CLK_ALTCENTURY)) * 100;
 	time->wday = bcd2bin(cmos_read(RTC_CLK_DAYOFWEEK)) - 1;
 	return 0;
+}
+
+/*
+ * Signal coreboot proper completed -- just before running payload
+ * or jumping to ACPI S3 wakeup vector.
+ */
+void set_boot_successful(void)
+{
+	uint8_t index, byte;
+
+	index = inb(RTC_PORT(0)) & 0x80;
+	index |= RTC_BOOT_BYTE;
+	outb(index, RTC_PORT(0));
+
+	byte = inb(RTC_PORT(1));
+
+	if (IS_ENABLED(CONFIG_SKIP_MAX_REBOOT_CNT_CLEAR)) {
+		/*
+		 * Set the fallback boot bit to allow for recovery if
+		 * the payload fails to boot.
+		 * It is the responsibility of the payload to reset
+		 * the normal boot bit to 1 if desired
+		 */
+		byte &= ~RTC_BOOT_NORMAL;
+	} else {
+		/* If we are in normal mode set the boot count to 0 */
+		if (byte & RTC_BOOT_NORMAL)
+			byte &= 0x0f;
+
+	}
+
+	outb(byte, RTC_PORT(1));
 }

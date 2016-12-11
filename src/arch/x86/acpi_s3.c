@@ -18,6 +18,7 @@
 #include <arch/acpi.h>
 #include <cbmem.h>
 #include <cpu/cpu.h>
+#include <fallback.h>
 #include <timestamp.h>
 #include <program_loading.h>
 #include <romstage_handoff.h>
@@ -229,6 +230,8 @@ static void acpi_jump_to_wakeup(void *vector)
 
 	/* Copy wakeup trampoline in place. */
 	memcpy((void *)WAKEUP_BASE, &__wakeup, __wakeup_size);
+
+	set_boot_successful();
 
 	timestamp_add_now(TS_ACPI_WAKE_JUMP);
 

@@ -16,11 +16,11 @@
 #ifndef THINKPAD_X60_DOCK_H
 #define THINKPAD_X60_DOCK_H
 
-extern int dock_connect(void);
-extern void dock_disconnect(void);
-extern int dock_present(void);
-extern int dlpc_init(void);
+int dock_connect(void);
+void dock_disconnect(void);
+int dock_present(void);
+int dlpc_init(void);
 
-extern int legacy_io_present(void);
-extern void legacy_io_init(void);
+int legacy_io_present(void);
+void legacy_io_init(void);
 #endif

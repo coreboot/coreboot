@@ -16,7 +16,7 @@
 #ifndef THINKPAD_X201_DOCK_H
 #define THINKPAD_X201_DOCK_H
 
-extern void dock_connect(void);
-extern void dock_disconnect(void);
-extern int dock_present(void);
+void dock_connect(void);
+void dock_disconnect(void);
+int dock_present(void);
 #endif

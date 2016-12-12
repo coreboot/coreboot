@@ -292,12 +292,21 @@ void initVirtualMemory(void) {
 void mstatus_init(void)
 {
 	uintptr_t ms = 0;
+
 	ms = INSERT_FIELD(ms, MSTATUS_FS, 3);
 	ms = INSERT_FIELD(ms, MSTATUS_XS, 3);
 	write_csr(mstatus, ms);
 
-	clear_csr(mip, MIP_MSIP);
-	set_csr(mie, MIP_MSIP);
+	// clear any pending timer interrupts.
+	clear_csr(mip,  MIP_STIP | MIP_SSIP);
+
+	// enable machine and supervisor timer and
+	// all other supervisor interrupts.
+	set_csr(mie, MIP_MTIP | MIP_STIP | MIP_SSIP);
+
+	// Delegate supervisor timer and other interrupts
+	// to supervisor mode.
+	set_csr(mideleg,  MIP_STIP | MIP_SSIP);
 
 	set_csr(medeleg, delegate);
 

@@ -38,6 +38,8 @@
 /* Write Protect and indication if EC is in RW code. */
 #define GPIO_PCH_WP	GPIO_75
 #define GPIO_EC_IN_RW	GPIO_41
+/* Determine if board is in final shipping mode. */
+#define GPIO_SHIP_MODE	GPIO_10
 
 /*  Memory SKU GPIOs. */
 #define MEM_CONFIG3	GPIO_45

@@ -282,7 +282,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI(GPIO_8, UP_20K, DEEP),
 
 	PAD_CFG_GPI_APIC_LOW(GPIO_9, NONE, DEEP), /* dTPM IRQ */
-	PAD_CFG_GPI(GPIO_10, UP_20K, DEEP),	 /* unused */
+	PAD_CFG_GPI(GPIO_10, DN_20K, DEEP),	 /* Board phase enforcement */
 	PAD_CFG_GPI_SCI_LOW(GPIO_11, NONE, DEEP, EDGE_SINGLE), /* EC SCI  */
 	PAD_CFG_GPI(GPIO_12, UP_20K, DEEP),	 /* unused */
 	PAD_CFG_GPI_APIC_LOW(GPIO_13, UP_20K, DEEP), /* PEN_INT_ODL */
@@ -381,6 +381,7 @@ variant_sleep_gpio_table(size_t *num)
 static const struct cros_gpio cros_gpios[] = {
 	CROS_GPIO_REC_AL(CROS_GPIO_VIRTUAL, GPIO_COMM_NW_NAME),
 	CROS_GPIO_WP_AH(PAD_NW(GPIO_PCH_WP), GPIO_COMM_NW_NAME),
+	CROS_GPIO_PE_AH(PAD_N(GPIO_SHIP_MODE), GPIO_COMM_N_NAME),
 };
 
 const struct cros_gpio * __attribute__((weak)) variant_cros_gpios(size_t *num)

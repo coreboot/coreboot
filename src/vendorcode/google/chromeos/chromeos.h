@@ -76,6 +76,7 @@ enum {
 	CROS_GPIO_REC = 1, /* Recovery */
 	CROS_GPIO_DEV = 2, /* Developer */
 	CROS_GPIO_WP = 3, /* Write Protect */
+	CROS_GPIO_PE = 4, /* Phase enforcement for final product */
 
 	CROS_GPIO_ACTIVE_LOW = 0,
 	CROS_GPIO_ACTIVE_HIGH = 1,
@@ -124,5 +125,14 @@ struct cros_gpio {
 
 #define CROS_GPIO_WP_AH(num, dev) \
 	CROS_GPIO_WP_INITIALIZER(CROS_GPIO_ACTIVE_HIGH, num, dev)
+
+#define CROS_GPIO_PE_INITIALIZER(pol, num, dev) \
+	CROS_GPIO_INITIALIZER(CROS_GPIO_PE, pol, num, dev)
+
+#define CROS_GPIO_PE_AL(num, dev) \
+	CROS_GPIO_PE_INITIALIZER(CROS_GPIO_ACTIVE_LOW, num, dev)
+
+#define CROS_GPIO_PE_AH(num, dev) \
+	CROS_GPIO_PE_INITIALIZER(CROS_GPIO_ACTIVE_HIGH, num, dev)
 
 #endif /* __CHROMEOS_H__ */

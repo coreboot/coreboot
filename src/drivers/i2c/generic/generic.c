@@ -29,8 +29,13 @@
 static void i2c_generic_add_power_res(struct drivers_i2c_generic_config *config)
 {
 	const char *power_res_dev_states[] = { "_PR0", "_PR3" };
+	unsigned reset_gpio = config->reset_gpio.pins[0];
+	unsigned enable_gpio = config->enable_gpio.pins[0];
 
-	if (!config->reset_gpio && !config->enable_gpio)
+	if (config->pwr_mgmt_type != POWER_RESOURCE)
+		return;
+
+	if (!reset_gpio && !enable_gpio)
 		return;
 
 	/* PowerResource (PRIC, 0, 0) */
@@ -42,27 +47,49 @@ static void i2c_generic_add_power_res(struct drivers_i2c_generic_config *config)
 
 	/* Method (_ON, 0, Serialized) */
 	acpigen_write_method_serialized("_ON", 0);
-	if (config->reset_gpio)
-		acpigen_soc_set_tx_gpio(config->reset_gpio);
-	if (config->enable_gpio) {
-		acpigen_soc_set_tx_gpio(config->enable_gpio);
+	if (reset_gpio)
+		acpigen_soc_set_tx_gpio(reset_gpio);
+	if (enable_gpio) {
+		acpigen_soc_set_tx_gpio(enable_gpio);
 		acpigen_write_sleep(config->enable_delay_ms);
 	}
-	if (config->reset_gpio) {
-		acpigen_soc_clear_tx_gpio(config->reset_gpio);
+	if (reset_gpio) {
+		acpigen_soc_clear_tx_gpio(reset_gpio);
 		acpigen_write_sleep(config->reset_delay_ms);
 	}
 	acpigen_pop_len();		/* _ON method */
 
 	/* Method (_OFF, 0, Serialized) */
 	acpigen_write_method_serialized("_OFF", 0);
-	if (config->reset_gpio)
-		acpigen_soc_set_tx_gpio(config->reset_gpio);
-	if (config->enable_gpio)
-		acpigen_soc_clear_tx_gpio(config->enable_gpio);
+	if (reset_gpio)
+		acpigen_soc_set_tx_gpio(reset_gpio);
+	if (enable_gpio)
+		acpigen_soc_clear_tx_gpio(enable_gpio);
 	acpigen_pop_len();		/* _OFF method */
 
 	acpigen_pop_len();		/* PowerResource PRIC */
+}
+
+static bool i2c_generic_add_gpios_to_crs(struct drivers_i2c_generic_config *cfg)
+{
+	if (cfg->pwr_mgmt_type == GPIO_EXPORT)
+		return true;
+
+	return false;
+}
+
+static int i2c_generic_write_gpio(struct acpi_gpio *gpio, int *curr_index)
+{
+	int ret = -1;
+
+	if (gpio->pin_count == 0)
+		return ret;
+
+	acpi_device_write_gpio(gpio);
+	ret = *curr_index;
+	(*curr_index)++;
+
+	return ret;
 }
 
 void i2c_generic_fill_ssdt(struct device *dev,
@@ -77,6 +104,9 @@ void i2c_generic_fill_ssdt(struct device *dev,
 		.resource = scope,
 	};
 	struct acpi_dp *dsd = NULL;
+	int curr_index = 0;
+	int reset_gpio_index = -1, enable_gpio_index = -1;
+	const char *path = acpi_device_path(dev);
 
 	if (!dev->enabled || !scope)
 		return;
@@ -101,6 +131,12 @@ void i2c_generic_fill_ssdt(struct device *dev,
 	acpigen_write_resourcetemplate_header();
 	acpi_device_write_i2c(&i2c);
 	acpi_device_write_interrupt(&config->irq);
+	if (i2c_generic_add_gpios_to_crs(config) == true) {
+		reset_gpio_index = i2c_generic_write_gpio(&config->reset_gpio,
+							&curr_index);
+		enable_gpio_index = i2c_generic_write_gpio(&config->enable_gpio,
+							&curr_index);
+	}
 	acpigen_write_resourcetemplate_footer();
 
 	/* Wake capabilities */
@@ -109,9 +145,20 @@ void i2c_generic_fill_ssdt(struct device *dev,
 		acpigen_write_PRW(config->wake, 3);
 	}
 
-	if (config->probed) {
+	/* DSD */
+	if (config->probed || (reset_gpio_index != -1) ||
+		(enable_gpio_index != -1)) {
 		dsd = acpi_dp_new_table("_DSD");
-		acpi_dp_add_integer(dsd, "linux,probed", 1);
+		if (config->probed)
+			acpi_dp_add_integer(dsd, "linux,probed", 1);
+		if (reset_gpio_index != -1)
+			acpi_dp_add_gpio(dsd, "reset-gpios", path,
+					reset_gpio_index, 0,
+					config->reset_gpio.polarity);
+		if (enable_gpio_index != -1)
+			acpi_dp_add_gpio(dsd, "enable-gpios", path,
+					enable_gpio_index, 0,
+					config->enable_gpio.polarity);
 		acpi_dp_write(dsd);
 	}
 
@@ -125,7 +172,7 @@ void i2c_generic_fill_ssdt(struct device *dev,
 	acpigen_pop_len(); /* Device */
 	acpigen_pop_len(); /* Scope */
 
-	printk(BIOS_INFO, "%s: %s at %s\n", acpi_device_path(dev),
+	printk(BIOS_INFO, "%s: %s at %s\n", path,
 	       config->desc ? : dev->chip_ops->name, dev_path(dev));
 }
 

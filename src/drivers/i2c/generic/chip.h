@@ -19,6 +19,11 @@
 #include <arch/acpi_device.h>
 #include <device/i2c.h>
 
+enum power_mgmt_type {
+	POWER_RESOURCE = 1,
+	GPIO_EXPORT = 2,
+};
+
 struct drivers_i2c_generic_config {
 	const char *hid;	/* ACPI _HID (required) */
 	const char *cid;	/* ACPI _CID */
@@ -42,12 +47,15 @@ struct drivers_i2c_generic_config {
 	unsigned device_present_gpio;
 	unsigned device_present_gpio_invert;
 
+	/* Power management type. */
+	enum power_mgmt_type pwr_mgmt_type;
+
 	/* GPIO used to take device out of reset or to put it into reset. */
-        unsigned reset_gpio;
+	struct acpi_gpio reset_gpio;
 	/* Delay to be inserted after device is taken out of reset. */
 	unsigned reset_delay_ms;
 	/* GPIO used to enable device. */
-	unsigned enable_gpio;
+	struct acpi_gpio enable_gpio;
 	/* Delay to be inserted after device is enabled. */
 	unsigned enable_delay_ms;
 };

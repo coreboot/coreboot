@@ -177,10 +177,9 @@ chip soc/intel/apollolake
 				register "desc" = ""ELAN Touchscreen""
 				register "irq" = "IRQ_EDGE_LOW(GPIO_21_IRQ)"
 				register "probed" = "1"
-				register "reset_gpio" = "GPIO_36"
-				register "reset_delay_ms" = "20"
-				register "enable_gpio" = "GPIO_152"
-				register "enable_delay_ms" = "1"
+				register "pwr_mgmt_type" = "GPIO_EXPORT"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_36)"
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_152)"
 				device i2c 10 on end
 			end
 		end	# - I2C 3

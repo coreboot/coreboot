@@ -70,6 +70,7 @@ static struct param {
 	uint32_t cbfsoffset;
 	uint32_t cbfsoffset_assigned;
 	uint32_t arch;
+	bool u64val_assigned;
 	bool fill_partial_upward;
 	bool fill_partial_downward;
 	bool show_immutable;
@@ -717,6 +718,10 @@ static int cbfs_add_flat_binary(void)
 
 static int cbfs_add_integer(void)
 {
+	if (!param.u64val_assigned) {
+		ERROR("You need to specify a value to write.\n");
+		return 1;
+	}
 	return cbfs_add_integer_component(param.name,
 				  param.u64val,
 				  param.baseaddress,
@@ -1463,6 +1468,7 @@ int main(int argc, char **argv)
 				break;
 			case 'i':
 				param.u64val = strtoull(optarg, &suffix, 0);
+				param.u64val_assigned = 1;
 				if (!*optarg || (suffix && *suffix)) {
 					ERROR("Invalid int parameter '%s'.\n",
 						optarg);

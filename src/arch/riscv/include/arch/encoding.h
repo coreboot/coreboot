@@ -48,6 +48,11 @@
 #define MSTATUS32_SD        0x80000000
 #define MSTATUS64_SD        0x8000000000000000
 
+#define MIE_UTIE        0x00000010
+#define MIE_STIE        0x00000020
+#define MIE_HTIE        0x00000040
+#define MIE_MTIE        0x00000080
+
 #define SSTATUS_UIE         0x00000001
 #define SSTATUS_SIE         0x00000002
 #define SSTATUS_UPIE        0x00000010
@@ -126,6 +131,7 @@
 
 #define SIP_SSIP MIP_SSIP
 #define SIP_STIP MIP_STIP
+#define SIE_STIE MIE_STIE
 
 #define PRV_U 0
 #define PRV_S 1

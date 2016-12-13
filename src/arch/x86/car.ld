@@ -36,7 +36,7 @@
 	 * in size. Therefore place them at the beginning .car.data section
 	 * so that multiple stages (romstage and verstage) have a consistent
 	 * link address of these shared objects. */
-	PRERAM_CBMEM_CONSOLE(., (CONFIG_LATE_CBMEM_INIT ? 0 : 0xc00))
+	PRERAM_CBMEM_CONSOLE(., (CONFIG_LATE_CBMEM_INIT ? 0 : CONFIG_PRERAM_CBMEM_CONSOLE_SIZE))
 	_car_relocatable_data_start = .;
 	/* The timestamp implementation relies on this storage to be around
 	 * after migration. One of the fields indicates not to use it as the

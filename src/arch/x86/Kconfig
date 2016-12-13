@@ -118,6 +118,12 @@ config LATE_CBMEM_INIT
 	  early get_top_of_ram() call for romstage. CBMEM tables will be
 	  allocated late in ramstage, after PCI devices resources are known.
 
+config PRERAM_CBMEM_CONSOLE_SIZE
+	hex
+	default 0xc00
+	help
+	  Increase this value if preram cbmem console is getting truncated
+
 config PC80_SYSTEM
 	bool
 	default y if ARCH_X86

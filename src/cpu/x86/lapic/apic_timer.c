@@ -47,32 +47,48 @@ static int set_timer_fsb(void)
 	struct cpuinfo_x86 c;
 	int core_fsb[8] = { -1, 133, -1, 166, -1, 100, -1, -1 };
 	int core2_fsb[8] = { 266, 133, 200, 166, 333, 100, -1, -1 };
+	int f2x_fsb[8] = { 100, 133, 200, 166, -1, -1, -1, -1 };
 
 	get_fms(&c, cpuid_eax(1));
-	if (c.x86 != 6)
-		return -1;
-
-	switch (c.x86_model) {
-	case 0xe:  /* Core Solo/Duo */
-	case 0x1c: /* Atom */
-		car_set_var(g_timer_fsb, core_fsb[rdmsr(MSR_FSB_FREQ).lo & 7]);
-		break;
-	case 0xf:  /* Core 2 or Xeon */
-	case 0x17: /* Enhanced Core */
-		car_set_var(g_timer_fsb, core2_fsb[rdmsr(MSR_FSB_FREQ).lo & 7]);
-		break;
-	case 0x2a: /* SandyBridge BCLK fixed at 100MHz*/
-	case 0x3a: /* IvyBridge BCLK fixed at 100MHz*/
-	case 0x3c: /* Haswell BCLK fixed at 100MHz */
-	case 0x45: /* Haswell-ULT BCLK fixed at 100MHz */
-		car_set_var(g_timer_fsb, 100);
-		break;
+	switch (c.x86) {
+	case 0x6:
+		switch (c.x86_model) {
+		case 0xe:  /* Core Solo/Duo */
+		case 0x1c: /* Atom */
+			car_set_var(g_timer_fsb,
+				core_fsb[rdmsr(MSR_FSB_FREQ).lo & 7]);
+			return 0;
+		case 0xf:  /* Core 2 or Xeon */
+		case 0x17: /* Enhanced Core */
+			car_set_var(g_timer_fsb,
+				core2_fsb[rdmsr(MSR_FSB_FREQ).lo & 7]);
+			return 0;
+		case 0x2a: /* SandyBridge BCLK fixed at 100MHz*/
+		case 0x3a: /* IvyBridge BCLK fixed at 100MHz*/
+		case 0x3c: /* Haswell BCLK fixed at 100MHz */
+		case 0x45: /* Haswell-ULT BCLK fixed at 100MHz */
+			car_set_var(g_timer_fsb, 100);
+			return 0;
+		default:
+			car_set_var(g_timer_fsb, 200);
+			return 0;
+		}
+	case 0xf: /* Netburst */
+		switch (c.x86_model) {
+		case 0x2:
+			car_set_var(g_timer_fsb,
+				f2x_fsb[(rdmsr(0x2c).lo >> 16) & 7]);
+			return 0;
+		case 0x3:
+		case 0x4:
+		case 0x6:
+			car_set_var(g_timer_fsb,
+				core2_fsb[(rdmsr(0x2c).lo >> 16) & 7]);
+			return 0;
+		}  /* default: fallthrough */
 	default:
-		car_set_var(g_timer_fsb, 200);
-		break;
+		return -1;
 	}
-
-	return 0;
 }
 
 static inline u32 get_timer_fsb(void)

@@ -63,15 +63,15 @@ static void pcf8523_init(struct device *dev)
 		 * corrupted and OS bit was not set. */
 		reg = smbus_read_byte(dev, CTRL_REG_1);
 		reg &= ~(STOP_BIT | CAP_SEL);
-		reg |= config->cap_sel;
+		reg |= ((!!config->cap_sel) << 7);
 		smbus_write_byte(dev, CTRL_REG_1, reg);
 		reg = smbus_read_byte(dev, CTRL_REG_3);
 		reg &= ~PM_MASK;
-		reg |= config->power_mode;
+		reg |= ((config->power_mode & 0x07) << 5);
 		smbus_write_byte(dev, CTRL_REG_3, reg);
 		reg = smbus_read_byte(dev, TMR_CLKOUT_REG);
 		reg &= ~COF_MASK;
-		reg |= config->cof_selection;
+		reg |= ((config->cof_selection & 0x07) << 3);
 		smbus_write_byte(dev, TMR_CLKOUT_REG, reg);
 		return;
 	}
@@ -87,7 +87,7 @@ static void pcf8523_init(struct device *dev)
 					  ((!!config->tmrA_int_en) << 1) |
 					  (!!config->tmrB_int_en));
 
-	smbus_write_byte(dev, CTRL_REG_3, ((config->power_mode & 0x03) << 5) |
+	smbus_write_byte(dev, CTRL_REG_3, ((config->power_mode & 0x07) << 5) |
 					  ((!!config->bat_switch_int_en) << 1) |
 					  (!!config->bat_low_int_en));
 
@@ -96,7 +96,7 @@ static void pcf8523_init(struct device *dev)
 
 	smbus_write_byte(dev, TMR_CLKOUT_REG, ((!!config->tmrA_int_mode) << 7) |
 					((!!config->tmrB_int_mode) << 6) |
-					((config->cof_selection & 0x38) << 3) |
+					((config->cof_selection & 0x07) << 3) |
 					((config->tmrA_mode & 0x03) << 1) |
 					(!!config->tmrB_mode));
 

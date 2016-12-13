@@ -89,4 +89,9 @@ config ME_BIN_PATH
 	depends on HAVE_ME_BIN
 	default "3rdparty/blobs/mainboard/$(CONFIG_MAINBOARD_DIR)/me.rvp3.bin" if BOARD_INTEL_KBLRVP3
 	default "3rdparty/blobs/mainboard/$(CONFIG_MAINBOARD_DIR)/me.rvp7.bin" if BOARD_INTEL_KBLRVP7
+
+config PRERAM_CBMEM_CONSOLE_SIZE
+	hex
+	default 0xd00
+
 endif

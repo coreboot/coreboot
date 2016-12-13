@@ -135,9 +135,14 @@ int setsyx(int y, int x)
         curscr->_leaveit = TRUE;
         return OK;
     }
+    else if (y == -1 || x == -1)
+    {
+        return OK;
+    }
     else
     {
         curscr->_leaveit = FALSE;
-        return wmove(curscr, y, x);
+        wmove(curscr, y, x);
+	return OK;
     }
 }

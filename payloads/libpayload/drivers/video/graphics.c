@@ -322,7 +322,7 @@ static int draw_bitmap_v3(const struct vector *top_left,
 	for (d.y = 0; d.y < dim->height; d.y++, p.y += dir) {
 		s0.y = d.y * scale->y.d / scale->y.n;
 		s1.y = s0.y;
-		if (s0.y + 1 < dim_org->height)
+		if (s1.y + 1 < dim_org->height)
 			s1.y++;
 		ty.d = scale->y.n;
 		ty.n = (d.y * scale->y.d) % scale->y.n;

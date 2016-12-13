@@ -117,7 +117,8 @@ int get_spd_cbfs_rdev(struct region_device *spd_rdev, u8 spd_index)
 
 	uint32_t cbfs_type = CBFS_TYPE_SPD;
 
-	cbfs_boot_locate(&fh, "spd.bin", &cbfs_type);
+	if (cbfs_boot_locate(&fh, "spd.bin", &cbfs_type) < 0)
+		return -1;
 	cbfs_file_data(spd_rdev, &fh);
 	return rdev_chain(spd_rdev, spd_rdev, spd_index * CONFIG_DIMM_SPD_SIZE,
 							CONFIG_DIMM_SPD_SIZE);
@@ -152,7 +153,7 @@ static void get_spd(u8 *spd, u8 addr)
 
 void get_spd_smbus(struct spd_block *blk)
 {
-	u8 i, j;
+	u8 i;
 	unsigned char *spd_data_ptr = car_get_var_ptr(&spd_data);
 
 	for (i = 0 ; i < CONFIG_DIMM_MAX; i++) {
@@ -160,9 +161,6 @@ void get_spd_smbus(struct spd_block *blk)
 			0xA0 + (i << 1));
 		blk->spd_array[i] = spd_data_ptr + i * CONFIG_DIMM_SPD_SIZE;
 	}
-
-	for (j = i; j < CONFIG_DIMM_MAX; j++)
-		blk->spd_array[j] = NULL;
 
 	update_spd_len(blk);
 }

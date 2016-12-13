@@ -368,13 +368,8 @@ AmdIdsRunApTaskLate (
   IN       AP_EXE_PARAMS  *AmdApExeParams
   )
 {
-	MODULE_ENTRY Dispatcher = NULL;
-	const AMD_MODULE_HEADER* module = agesawrapper_locate_module(ModuleIdentifier);
 	AmdApExeParams->StdHeader.Func = -1;
 	return AGESA_UNSUPPORTED;
-	if (!module) return AGESA_UNSUPPORTED;
-	Dispatcher = module->ModuleDispatcher;
-	return Dispatcher(AmdApExeParams);
 }
 
 /**********************************************************************

@@ -24,6 +24,18 @@
 #define ACPI_DESCRIPTOR_GPIO		(ACPI_DESCRIPTOR_LARGE | 12)
 #define ACPI_DESCRIPTOR_SERIAL_BUS	(ACPI_DESCRIPTOR_LARGE | 14)
 
+/*
+ * PRP0001 is a special DT namespace link device ID. It provides a means to use
+ * existing DT-compatible device identification in ACPI. When this _HID is used
+ * by an ACPI device, the ACPI subsystem in OS looks up "compatible" property in
+ * device object's _DSD and will use the value of that property to identify the
+ * corresponding device in analogy with the original DT device identification
+ * algorithm.
+ * More details can be found in Linux kernel documentation:
+ * Documentation/acpi/enumeration.txt
+ */
+#define ACPI_DT_NAMESPACE_HID		"PRP0001"
+
 struct device;
 const char *acpi_device_name(struct device *dev);
 const char *acpi_device_path(struct device *dev);

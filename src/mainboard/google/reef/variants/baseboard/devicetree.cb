@@ -179,7 +179,14 @@ chip soc/intel/apollolake
 				register "probed" = "1"
 				register "pwr_mgmt_type" = "GPIO_EXPORT"
 				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_36)"
-				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_152)"
+
+				chip drivers/generic/gpio_regulator
+					register "name" = ""vcc33""
+					register "gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_152)"
+					register "enabled_on_boot" = "1"
+					device generic 0 on end
+				end
+
 				device i2c 10 on end
 			end
 		end	# - I2C 3

@@ -260,14 +260,13 @@ function update_config
 	fi
 
 	if [ "$quiet" == "false" ]; then echo "    $MAINBOARD ($customizing)"; fi
-	echo "$configoptions" >> "${config_file}"
+	# shellcheck disable=SC2059
+	printf "$configoptions" >> "${config_file}"
 
-	# shellcheck disable=SC2086
-	$MAKE olddefconfig $silent "DOTCONFIG=${config_file}" "obj=${build_dir}" "objutil=$TARGET/sharedutils" &> "${build_dir}/config.log" ; \
+	yes "" 2>/dev/null | $MAKE oldconfig $silent "DOTCONFIG=${config_file}" "obj=${build_dir}" "objutil=$TARGET/sharedutils" &> "${build_dir}/config.log" ; \
 		CONFIG_OK=$?
 	if [ $CONFIG_OK -eq 0 ]; then
-		# shellcheck disable=SC2086
-		$MAKE savedefconfig $silent DEFCONFIG="${defconfig_file}" DOTCONFIG="${config_file}" obj="${build_dir}" objutil="$TARGET/sharedutils" &> "${build_dir}/config.log"
+		$MAKE savedefconfig $silent DEFCONFIG="${defconfig_file}" DOTCONFIG="${config_file}" obj="${build_dir}" objutil="$TARGET/sharedutils" &>> "${build_dir}/config.log"
 		return $?
 	else
 		return 1

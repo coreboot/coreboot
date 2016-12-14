@@ -1,7 +1,7 @@
 { /* 2GB (8Gb + 8Gb) for single rank dram setting */
 	{
-		.impedance_drvp = 0xc,
-		.impedance_drvn = 0xd,
+		.impedance_drvp = 0x9,
+		.impedance_drvn = 0xa,
 		.datlat_ucfirst = 19,
 
 		.ca_train = {

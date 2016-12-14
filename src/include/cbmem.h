@@ -158,4 +158,20 @@ void set_top_of_ram(uint64_t ramtop);
 void backup_top_of_ram(uint64_t ramtop);
 #endif
 
+/*
+ * Returns 0 for the stages where we know that cbmem does not come online.
+ * Even if this function returns 1 for romstage, depending upon the point in
+ * bootup, cbmem might not actually be online.
+ */
+static inline int cbmem_possibly_online(void)
+{
+	if (ENV_BOOTBLOCK)
+		return 0;
+
+	if (ENV_VERSTAGE && IS_ENABLED(CONFIG_VBOOT_STARTS_IN_BOOTBLOCK))
+		return 0;
+
+	return 1;
+}
+
 #endif /* _CBMEM_H_ */

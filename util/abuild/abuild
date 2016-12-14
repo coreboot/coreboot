@@ -79,6 +79,9 @@ quiet=false
 # clang mode enabled by -sb option.
 scanbuild=false
 
+# Mark whether abuild was called recursively
+recursive=false
+
 trap interrupt INT
 
 function interrupt
@@ -359,6 +362,7 @@ function compile_target
 		printf "failed\n" > compile.status
 		printf "%s build FAILED after %ss!\nLog excerpt:\n" "$BUILD_NAME" "${duration}"
 		tail -n $CONTEXT make.log 2> /dev/null || tail -$CONTEXT make.log
+		echo "$BUILD_NAME" >> "$FAILED_BOARDS"
 		failed=1
 	fi
 	cd "$CURR" || return $?
@@ -424,6 +428,7 @@ function build_config
 		tail -n $CONTEXT "$build_dir/config.log" 2> /dev/null || tail -$CONTEXT "$build_dir/config.log"
 
 		junit "</testcase>"
+		echo "$BUILD_NAME" >> "$FAILED_BOARDS"
 		return
 	fi
 
@@ -585,12 +590,12 @@ getoptbrand="$(getopt -V)"
 # shellcheck disable=SC2086
 if [ "${getoptbrand:0:6}" == "getopt" ]; then
 	# Detected GNU getopt that supports long options.
-	args=$(getopt -l version,verbose,quiet,help,all,target:,payloads:,cpus:,silent,junit,config,loglevel:,remove,prefix:,update,scan-build,ccache,blobs,clang,clean,outdir:,chromeos,xmlfile:,kconfig:,dir:,root: -o Vvqhat:p:c:sJCl:rP:uyBLzo:xX:K:d:R: -- "$@") || exit 1
+	args=$(getopt -l version,verbose,quiet,help,all,target:,payloads:,cpus:,silent,junit,config,loglevel:,remove,prefix:,update,scan-build,ccache,blobs,clang,clean,outdir:,chromeos,xmlfile:,kconfig:,dir:,root:,recursive -o Vvqhat:p:c:sJCl:rP:uyBLzo:xX:K:d:R:I -- "$@") || exit 1
 	eval set -- $args
 	retval=$?
 else
 	# Detected non-GNU getopt
-	args=$(getopt Vvqhat:p:c:sJCl:rP:uyBLzo:xX:K:d:R: "$@")
+	args=$(getopt Vvqhat:p:c:sJCl:rP:uyBLzo:xX:K:d:R:I "$@")
 	set -- $args
 	retval=$?
 fi
@@ -671,6 +676,7 @@ while true ; do
 			configoptions="${configoptions}CONFIG_CHROMEOS=y\n"
 			;;
 		-X|--xmlfile)	shift; XMLFILE=$1; REAL_XMLFILE=$1; shift;;
+		-I|--recursive) shift; recursive=true;;
 		-K|--kconfig)	shift
 			testclass="$(basename "$1" | tr '.' '_' )"
 			customizing="${customizing}, $1 config"
@@ -693,6 +699,12 @@ fi
 customizing=$(echo "$customizing" | cut -c3-)
 if [ "$customizing" = "" ]; then
 	customizing="default configuration"
+fi
+
+FAILED_BOARDS="$TOP/$TARGET/failed_boards"
+
+if [ "$recursive" = "false" ]; then
+	rm -f "$FAILED_BOARDS"
 fi
 
 USE_XARGS=0
@@ -770,7 +782,7 @@ build_targets()
 	fi
 	rm -rf "$TARGET/temp" "$TMPCFG"
 	# shellcheck disable=SC2086
-	echo $targets | xargs -P ${cpus:-0} -n 1 "$0" $cmdline -t
+	echo $targets | xargs -P ${cpus:-0} -n 1 "$0" $cmdline -I -t
 }
 fi
 
@@ -813,5 +825,16 @@ else
 	XMLFILE=$REAL_XMLFILE
 fi
 junit '</testsuite>'
+
+if [ "$recursive" = "false" ]; then
+
+	# Print the list of failed boards
+	if [ -f "$FAILED_BOARDS" ]; then
+		printf "%s build(s) failed:\n" "$( wc -l < "$FAILED_BOARDS" )"
+		cat "$FAILED_BOARDS"
+	else
+		echo "All tested boards passed."
+	fi
+fi
 
 exit $failed

@@ -23,6 +23,7 @@ subdirs-y += ../../x86/cache
 subdirs-y += ../../x86/smm
 subdirs-y += ../microcode
 subdirs-y += ../turbo
+subdirs-y += ../common
 
 cpu_microcode_bins += 3rdparty/blobs/cpu/intel/model_306cx/microcode.bin
 cpu_microcode_bins += 3rdparty/blobs/cpu/intel/model_4065x/microcode.bin

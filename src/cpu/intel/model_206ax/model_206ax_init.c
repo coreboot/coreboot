@@ -32,6 +32,7 @@
 #include "model_206ax.h"
 #include "chip.h"
 #include <cpu/intel/smm/gen1/smi.h>
+#include <cpu/intel/common/common.h>
 
 /*
  * List of supported C-states in this processor
@@ -109,56 +110,6 @@ static acpi_cstate_t cstate_map[] = {
 	},
 	{ 0 }
 };
-
-static void enable_vmx(void)
-{
-	struct cpuid_result regs;
-	msr_t msr;
-	int enable = CONFIG_ENABLE_VMX;
-
-	regs = cpuid(1);
-	/* Check that the VMX is supported before reading or writing the MSR. */
-	if (!((regs.ecx & CPUID_VMX) || (regs.ecx & CPUID_SMX)))
-		return;
-
-	msr = rdmsr(IA32_FEATURE_CONTROL);
-
-	if (msr.lo & (1 << 0)) {
-		printk(BIOS_ERR, "VMX is locked, so %s will do nothing\n", __func__);
-		/* VMX locked. If we set it again we get an illegal
-		 * instruction
-		 */
-		return;
-	}
-
-	/* The IA32_FEATURE_CONTROL MSR may initialize with random values.
-	 * It must be cleared regardless of VMX config setting.
-	 */
-	msr.hi = msr.lo = 0;
-
-	printk(BIOS_DEBUG, "%s VMX\n", enable ? "Enabling" : "Disabling");
-
-	/* Even though the Intel manual says you must set the lock bit in addition
-	 * to the VMX bit in order for VMX to work, it is incorrect.  Thus we leave
-	 * it unlocked for the OS to manage things itself.  This is good for a few
-	 * reasons:
-	 * - No need to reflash the bios just to toggle the lock bit.
-	 * - The VMX bits really really should match each other across cores, so
-	 *   hard locking it on one while another has the opposite setting can
-	 *   easily lead to crashes as code using VMX migrates between them.
-	 * - Vendors that want to "upsell" from a bios that disables+locks to
-	 *   one that doesn't is sleazy.
-	 * By leaving this to the OS (e.g. Linux), people can do exactly what they
-	 * want on the fly, and do it correctly (e.g. across multiple cores).
-	 */
-	if (enable) {
-		msr.lo |= (1 << 2);
-		if (regs.ecx & CPUID_SMX)
-			msr.lo |= (1 << 1);
-	}
-
-	wrmsr(IA32_FEATURE_CONTROL, msr);
-}
 
 /* Convert time in seconds to POWER_LIMIT_1_TIME MSR value */
 static const u8 power_limit_time_sec_to_msr[] = {
@@ -576,8 +527,8 @@ static void model_206ax_init(struct device *cpu)
 	enable_lapic_tpr();
 	setup_lapic();
 
-	/* Enable virtualization if enabled in CMOS */
-	enable_vmx();
+	/* Set virtualization based on Kconfig option */
+	set_vmx();
 
 	/* Configure C States */
 	configure_c_states();

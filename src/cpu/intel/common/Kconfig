@@ -1,0 +1,23 @@
+config CPU_INTEL_COMMON
+	bool
+
+if CPU_INTEL_COMMON
+
+config ENABLE_VMX
+	bool "Enable VMX for virtualization"
+	default y
+
+config SET_VMX_LOCK_BIT
+	bool "Set lock bit after configuring VMX"
+	depends on ENABLE_VMX
+	default y
+	help
+	  Although the Intel manual says you must set the lock bit in addition
+	  to the VMX bit in order for VMX to work, this isn't strictly true, so
+	  we have the option to leave it unlocked and allow the OS (e.g. Linux)
+	  to manage things itself. This is beneficial for testing purposes as
+	  there is no need to reflash the firmware just to toggle the lock bit.
+	  However, leaving the lock bit unset will break Windows' detection of
+	  VMX support and built-in virtualization features like Hyper-V.
+
+endif

@@ -27,7 +27,7 @@
 #include <cpu/intel/hyperthreading.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/name.h>
-
+#include <cpu/intel/common/common.h>
 #include "chip.h"
 
 static void init_timer(void)
@@ -40,38 +40,6 @@ static void init_timer(void)
 
 	/* Set the initial counter to 0xffffffff */
 	lapic_write(LAPIC_TMICT, 0xffffffff);
-}
-
-#define IA32_FEATURE_CONTROL 0x003a
-
-#define CPUID_VMX (1 << 5)
-#define CPUID_SMX (1 << 6)
-static void enable_vmx(void)
-{
-	struct cpuid_result regs;
-	msr_t msr;
-
-	msr = rdmsr(IA32_FEATURE_CONTROL);
-
-	if (msr.lo & (1 << 0)) {
-		/* VMX locked. If we set it again we get an illegal
-		 * instruction
-		 */
-		return;
-	}
-
-	regs = cpuid(1);
-	if (regs.ecx & CPUID_VMX) {
-		msr.lo |= (1 << 2);
-		if (regs.ecx & CPUID_SMX)
-			msr.lo |= (1 << 1);
-	}
-
-	wrmsr(IA32_FEATURE_CONTROL, msr);
-
-	msr.lo |= (1 << 0); /* Set lock bit */
-
-	wrmsr(IA32_FEATURE_CONTROL, msr);
 }
 
 #define MSR_BBL_CR_CTL3		0x11e
@@ -328,8 +296,8 @@ static void model_1067x_init(struct device *cpu)
 	/* Initialize the APIC timer */
 	init_timer();
 
-	/* Enable virtualization */
-	enable_vmx();
+	/* Set virtualization based on Kconfig option */
+	set_vmx();
 
 	/* Configure C States */
 	configure_c_states(quad);

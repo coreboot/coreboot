@@ -19,6 +19,7 @@ config CPU_SPECIFIC_OPTIONS
 	select PARALLEL_CPU_INIT
 	#select AP_IN_SIPI_WAIT
 	select TSC_SYNC_MFENCE
+	select CPU_INTEL_COMMON
 
 config BOOTBLOCK_CPU_INIT
 	string
@@ -27,10 +28,6 @@ config BOOTBLOCK_CPU_INIT
 config SMM_TSEG_SIZE
 	hex
 	default 0x800000
-
-config ENABLE_VMX
-	bool "Enable VMX for virtualization"
-	default n
 
 config XIP_ROM_SIZE
 	hex

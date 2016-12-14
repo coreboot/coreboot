@@ -37,6 +37,7 @@ config CPU_SPECIFIC_OPTIONS
 	select PARALLEL_CPU_INIT
 	select TSC_SYNC_MFENCE
 	select LAPIC_MONOTONIC_TIMER
+	select CPU_INTEL_COMMON
 
 config BOOTBLOCK_CPU_INIT
 	string
@@ -45,9 +46,5 @@ config BOOTBLOCK_CPU_INIT
 config SMM_TSEG_SIZE
 	hex
 	default 0x800000
-
-config ENABLE_VMX
-	bool "Enable VMX for virtualization"
-	default n
 
 endif

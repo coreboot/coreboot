@@ -26,6 +26,7 @@ config CPU_SPECIFIC_OPTIONS
 	select CPU_INTEL_FIRMWARE_INTERFACE_TABLE
 	select PARALLEL_CPU_INIT
 	select PARALLEL_MP
+	select CPU_INTEL_COMMON
 
 config BOOTBLOCK_CPU_INIT
 	string
@@ -34,10 +35,6 @@ config BOOTBLOCK_CPU_INIT
 config SMM_TSEG_SIZE
 	hex
 	default 0x800000
-
-config ENABLE_VMX
-	bool "Enable VMX for virtualization"
-	default n
 
 config IED_REGION_SIZE
 	hex

@@ -40,6 +40,7 @@
 #include <soc/smm.h>
 #include <soc/systemagent.h>
 #include <soc/intel/broadwell/chip.h>
+#include <cpu/intel/common/common.h>
 
 /* Convert time in seconds to POWER_LIMIT_1_TIME MSR value */
 static const u8 power_limit_time_sec_to_msr[] = {
@@ -579,6 +580,9 @@ static void cpu_core_init(device_t cpu)
 	/* Enable the local CPU apics */
 	enable_lapic_tpr();
 	setup_lapic();
+
+	/* Set virtualization based on Kconfig option */
+	set_vmx();
 
 	/* Configure C States */
 	configure_c_states();

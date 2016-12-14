@@ -25,45 +25,9 @@
 #include <cpu/intel/microcode.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/name.h>
+#include <cpu/intel/common/common.h>
 #include "model_406dx.h"
 #include "chip.h"
-
-static void enable_vmx(void)
-{
-	struct cpuid_result regs;
-	msr_t msr;
-	int enable = IS_ENABLED(CONFIG_ENABLE_VMX);
-
-	regs = cpuid(1);
-	/* Check that the VMX is supported before reading or writing the MSR. */
-	if (!((regs.ecx & CPUID_VMX) || (regs.ecx & CPUID_SMX)))
-		return;
-
-	msr = rdmsr(IA32_FEATURE_CONTROL);
-
-	if (msr.lo & (1 << 0)) {
-		printk(BIOS_ERR, "VMX is locked, so %s will do nothing\n", __func__);
-		/* VMX locked. If we set it again we get an illegal
-		 * instruction
-		 */
-		return;
-	}
-
-	/* The IA32_FEATURE_CONTROL MSR may initialize with random values.
-	 * It must be cleared regardless of VMX config setting.
-	 */
-	msr.hi = msr.lo = 0;
-
-	printk(BIOS_DEBUG, "%s VMX\n", enable ? "Enabling" : "Disabling");
-
-	if (enable) {
-		msr.lo |= (1 << 2);
-		if (regs.ecx & CPUID_SMX)
-			msr.lo |= (1 << 1);
-	}
-
-	wrmsr(IA32_FEATURE_CONTROL, msr);
-}
 
 int cpu_config_tdp_levels(void)
 {
@@ -185,8 +149,8 @@ static void model_406dx_init(struct device *cpu)
 	/* Enable the local CPU APICs */
 	setup_lapic();
 
-	/* Enable virtualization */
-	enable_vmx();
+	/* Set virtualization based on Kconfig option */
+	set_vmx();
 
 	/* Configure Enhanced SpeedStep and Thermal Sensors */
 	configure_misc();

@@ -32,6 +32,7 @@ config CPU_SPECIFIC_OPTIONS
 	select PARALLEL_CPU_INIT
 	select TSC_SYNC_MFENCE
 	select LAPIC_MONOTONIC_TIMER
+	select CPU_INTEL_COMMON
 
 	# Microcode header files are delivered in FSP package
 	select USES_MICROCODE_HEADER_FILES if HAVE_FSP_BIN
@@ -51,10 +52,6 @@ endchoice
 config BOOTBLOCK_CPU_INIT
 	string
 	default "cpu/intel/fsp_model_406dx/bootblock.c"
-
-config ENABLE_VMX
-	bool "Enable VMX for virtualization"
-	default n
 
 #set up microcode for rangeley POSTGOLD4 release
 config CPU_MICROCODE_HEADER_FILES

@@ -1,6 +1,7 @@
 ramstage-y += model_206ax_init.c
 subdirs-y += ../../x86/name
 subdirs-y += ../smm/gen1
+subdirs-y += ../common
 
 ramstage-y += acpi.c
 

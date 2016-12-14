@@ -875,8 +875,10 @@ static void lpc_tpm_fill_ssdt(struct device *dev)
 	struct opregion opreg = OPREGION("TREG", SYSTEMMEMORY,
 					CONFIG_TPM_TIS_BASE_ADDRESS, 0x5000);
 
-	if (!path)
-		return;
+	if (!path) {
+		path = "PCI0.LPCB";
+		printk(BIOS_DEBUG, "Using default TPM ACPI path: '%s'\n", path);
+	}
 
 	/* Device */
 	acpigen_write_scope(path);

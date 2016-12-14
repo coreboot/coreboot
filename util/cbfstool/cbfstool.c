@@ -776,7 +776,8 @@ static int cbfs_create(void)
 	struct buffer bootblock;
 	if (!param.bootblock) {
 		DEBUG("-B not given, creating image without bootblock.\n");
-		buffer_create(&bootblock, 0, "(dummy)");
+		if (buffer_create(&bootblock, 0, "(dummy)") != 0)
+			return 1;
 	} else if (buffer_from_file(&bootblock, param.bootblock)) {
 		return 1;
 	}

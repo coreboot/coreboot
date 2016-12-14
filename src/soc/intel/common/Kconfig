@@ -31,6 +31,10 @@ config HAS_RECOVERY_MRC_CACHE
 	bool
 	default n
 
+config MRC_CLEAR_NORMAL_CACHE_ON_RECOVERY_RETRAIN
+	bool
+	default n
+
 config MRC_SETTINGS_VARIABLE_DATA
 	bool
 	default n

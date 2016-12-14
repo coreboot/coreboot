@@ -486,12 +486,46 @@ static void protect_mrc_region(void)
 	protect_mrc_cache(DEFAULT_MRC_CACHE);
 }
 
+static void invalidate_normal_cache(void)
+{
+	struct region_file cache_file;
+	struct region_device rdev;
+	const char *name = DEFAULT_MRC_CACHE;
+	const uint32_t invalid = ~MRC_DATA_SIGNATURE;
+
+	/* Invalidate only on recovery mode with retraining enabled. */
+	if (!vboot_recovery_mode_enabled())
+		return;
+	if (!vboot_recovery_mode_memory_retrain())
+		return;
+
+	if (fmap_locate_area_as_rdev_rw(name, &rdev) < 0) {
+		printk(BIOS_ERR, "MRC: Couldn't find '%s' region. Invalidation failed\n",
+			name);
+		return;
+	}
+
+	if (region_file_init(&cache_file, &rdev) < 0) {
+		printk(BIOS_ERR, "MRC: region file invalid for '%s'. Invalidation failed\n",
+			name);
+		return;
+	}
+
+	/* Push an update that consists of 4 bytes that is smaller than the
+	 * MRC metadata as well as an invalid signature. */
+	if (region_file_update_data(&cache_file, &invalid, sizeof(invalid)) < 0)
+		printk(BIOS_ERR, "MRC: invalidation failed for '%s'.\n", name);
+}
+
 static void update_mrc_cache(void *unused)
 {
 	update_mrc_cache_by_type(MRC_TRAINING_DATA);
 
 	if (IS_ENABLED(CONFIG_MRC_SETTINGS_VARIABLE_DATA))
 		update_mrc_cache_by_type(MRC_VARIABLE_DATA);
+
+	if (IS_ENABLED(CONFIG_MRC_CLEAR_NORMAL_CACHE_ON_RECOVERY_RETRAIN))
+		invalidate_normal_cache();
 
 	protect_mrc_region();
 }

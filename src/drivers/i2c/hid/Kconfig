@@ -1,0 +1,3 @@
+config DRIVERS_I2C_HID
+	bool
+	select DRIVERS_I2C_GENERIC

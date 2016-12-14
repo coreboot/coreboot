@@ -57,11 +57,13 @@ struct drivers_i2c_generic_config {
  * properties. Callback can be provided to fill in any
  * device-specific information in SSDT.
  *
- * Drivers calling into this function to generate should place
- * drivers_i2c_generic_config structure at the beginning of their device config
- * structure.
+ * Parameters:
+ * dev: Device requesting i2c generic information to be filled
+ * callback: Callback to fill in device-specific information
+ * config: Pointer to drivers_i2c_generic_config structure
  */
 void i2c_generic_fill_ssdt(struct device *dev,
-			   void (*callback)(struct device *dev));
+			void (*callback)(struct device *dev),
+			struct drivers_i2c_generic_config *config);
 
 #endif /* __I2C_GENERIC_CHIP_H__ */

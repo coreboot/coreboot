@@ -30,7 +30,8 @@ static void i2c_wacom_fill_dsm(struct device *dev)
 
 static void i2c_wacom_fill_ssdt_generator(struct device *dev)
 {
-	i2c_generic_fill_ssdt(dev, &i2c_wacom_fill_dsm);
+	struct drivers_i2c_wacom_config *config = dev->chip_info;
+	i2c_generic_fill_ssdt(dev, &i2c_wacom_fill_dsm, &config->generic);
 }
 
 static const char *i2c_wacom_acpi_name(struct device *dev)

@@ -66,9 +66,9 @@ static void i2c_generic_add_power_res(struct drivers_i2c_generic_config *config)
 }
 
 void i2c_generic_fill_ssdt(struct device *dev,
-			   void (*callback)(struct device *dev))
+			void (*callback)(struct device *dev),
+			struct drivers_i2c_generic_config *config)
 {
-	struct drivers_i2c_generic_config *config = dev->chip_info;
 	const char *scope = acpi_device_scope(dev);
 	struct acpi_i2c i2c = {
 		.address = dev->path.i2c.device,
@@ -131,7 +131,7 @@ void i2c_generic_fill_ssdt(struct device *dev,
 
 static void i2c_generic_fill_ssdt_generator(struct device *dev)
 {
-	i2c_generic_fill_ssdt(dev, NULL);
+	i2c_generic_fill_ssdt(dev, NULL, dev->chip_info);
 }
 
 /* Use name specified in config or build one from I2C address */

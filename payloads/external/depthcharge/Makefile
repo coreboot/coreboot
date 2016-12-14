@@ -61,7 +61,7 @@ config: $(libpayload_install_dir) checkout
 build: config
 	echo "    MAKE       $(project_name) $(TAG-y)"
 	cd $(project_dir) && $(MAKE) BOARD=$(BOARD) LIBPAYLOAD_DIR=$(libpayload_install_dir)/libpayload \
-		VB_SOURCE=$(VBOOT_SOURCE) PATH="$(abspath ../../../build/util/cbfstool):$$PATH" depthcharge_unified
+		VB_SOURCE=$(VBOOT_SOURCE) PATH="$(abspath ../../../build/util/cbfstool):$$PATH" depthcharge
 
 clean:
 	test -d $(output_dir) && rm -rf $(output_dir) || exit 0

@@ -15,13 +15,6 @@
  * GNU General Public License for more details.
  */
 
-/*
- * Standard Manufacturer's Identification Code
- * JEP106AS (Revision of JEP106AR, October 2015)
- * MAY 2016
- * http://www.jedec.org/standards-documents/results/JEP106AS
- */
-
 #include <stdlib.h>
 #include <string.h>
 #include <smbios.h>
@@ -134,7 +127,7 @@ static int smbios_processor_name(char *start)
 void smbios_fill_dimm_manufacturer_from_id(uint16_t mod_id, struct smbios_type17 *t)
 {
 	switch (mod_id) {
-		case 0x9b05:
+		case 0x2c80:
 			t->manufacturer = smbios_add_string(t->eos,
 							    "Crucial");
 			break;
@@ -150,7 +143,7 @@ void smbios_fill_dimm_manufacturer_from_id(uint16_t mod_id, struct smbios_type17
 			t->manufacturer = smbios_add_string(t->eos,
 							    "Kingston");
 			break;
-		case 0xad00:
+		case 0x987f:
 			t->manufacturer = smbios_add_string(t->eos,
 							    "Hynix");
 			break;
@@ -162,7 +155,11 @@ void smbios_fill_dimm_manufacturer_from_id(uint16_t mod_id, struct smbios_type17
 			t->manufacturer = smbios_add_string(t->eos,
 							    "OCZ");
 			break;
-		case 0x3406:
+		case 0xad80:
+			t->manufacturer = smbios_add_string(t->eos,
+							    "Hynix/Hyundai");
+			break;
+		case 0xb502:
 			t->manufacturer = smbios_add_string(t->eos,
 							    "SuperTalent");
 			break;
@@ -170,7 +167,7 @@ void smbios_fill_dimm_manufacturer_from_id(uint16_t mod_id, struct smbios_type17
 			t->manufacturer = smbios_add_string(t->eos,
 							    "GSkill");
 			break;
-		case 0xce00:
+		case 0xce80:
 			t->manufacturer = smbios_add_string(t->eos,
 							    "Samsung");
 			break;
@@ -178,7 +175,7 @@ void smbios_fill_dimm_manufacturer_from_id(uint16_t mod_id, struct smbios_type17
 			t->manufacturer = smbios_add_string(t->eos,
 							    "Elpida");
 			break;
-		case 0x2c00:
+		case 0xff2c:
 			t->manufacturer = smbios_add_string(t->eos,
 							    "Micron");
 			break;

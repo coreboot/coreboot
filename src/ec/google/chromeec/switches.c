@@ -14,6 +14,7 @@
  */
 
 #include <bootmode.h>
+#include <cbmem.h>
 #include <ec/google/chromeec/ec.h>
 
 #if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC_LPC)
@@ -41,12 +42,25 @@ int get_recovery_mode_switch(void)
 
 int get_recovery_mode_retrain_switch(void)
 {
+	uint32_t events;
+	const uint32_t mask =
+		EC_HOST_EVENT_MASK(EC_HOST_EVENT_KEYBOARD_RECOVERY_HW_REINIT);
+
 	/*
 	 * Check if the EC has posted the keyboard recovery event with memory
 	 * retrain.
 	 */
-	return !!(google_chromeec_get_events_b() &
-		EC_HOST_EVENT_MASK(EC_HOST_EVENT_KEYBOARD_RECOVERY_HW_REINIT));
+	events = google_chromeec_get_events_b();
+
+	if (cbmem_possibly_online()) {
+		const uint32_t *events_save;
+
+		events_save = cbmem_find(CBMEM_ID_EC_HOSTEVENT);
+		if (events_save != NULL)
+			events |= *events_save;
+	}
+
+	return !!(events & mask);
 }
 
 int clear_recovery_mode_switch(void)

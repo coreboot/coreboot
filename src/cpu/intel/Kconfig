@@ -45,3 +45,4 @@ source src/cpu/intel/socket_rPGA989/Kconfig
 # Architecture specific features
 source src/cpu/intel/fit/Kconfig
 source src/cpu/intel/turbo/Kconfig
+source src/cpu/intel/common/Kconfig

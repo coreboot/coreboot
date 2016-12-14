@@ -71,12 +71,13 @@ int buffer_from_file(struct buffer *buffer, const char *filename)
 		return -1;
 	}
 	buffer->offset = 0;
-	buffer->size = get_file_size(fp);
-	if (buffer->size == -1u) {
+	off_t file_size = get_file_size(fp);
+	if (file_size < 0) {
 		fprintf(stderr, "could not determine size of %s\n", filename);
 		fclose(fp);
 		return -1;
 	}
+	buffer->size = file_size;
 	buffer->name = strdup(filename);
 	buffer->data = (char *)malloc(buffer->size);
 	assert(buffer->data);

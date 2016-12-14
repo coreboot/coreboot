@@ -1411,6 +1411,7 @@ int cbfs_print_entry_info(struct cbfs_image *image, struct cbfs_file *entry,
 			ntohl(entry->len), hash_type, local_hash,
 			hash_len) != VB2_SUCCESS) {
 			fprintf(fp, "failed to hash '%s'\n", name);
+			free(hash_str);
 			break;
 		}
 		int valid = memcmp(local_hash, hash->hash_data, hash_len) == 0;

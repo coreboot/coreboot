@@ -16,6 +16,7 @@
 #include <assert.h>
 #include <bootmode.h>
 #include <bootstate.h>
+#include <cbmem.h>
 #include <rules.h>
 #include <string.h>
 #include <vb2_api.h>
@@ -66,22 +67,6 @@ static void vb2_clear_recovery_reason_vbnv(void *unused)
  */
 BOOT_STATE_INIT_ENTRY(BS_DEV_INIT, BS_ON_EXIT,
 		      vb2_clear_recovery_reason_vbnv, NULL);
-
-/*
- * Returns 0 for the stages where we know that cbmem does not come online.
- * Even if this function returns 1 for romstage, depending upon the point in
- * bootup, cbmem might not actually be online.
- */
-static int cbmem_possibly_online(void)
-{
-	if (ENV_BOOTBLOCK)
-		return 0;
-
-	if (ENV_VERSTAGE && IS_ENABLED(CONFIG_VBOOT_STARTS_IN_BOOTBLOCK))
-		return 0;
-
-	return 1;
-}
 
 /*
  * Returns 1 if vboot is being used and currently in a stage which might have

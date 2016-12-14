@@ -318,9 +318,9 @@ void mainboard_save_dimm_info(void)
 int get_sw_write_protect_state(void)
 {
 	uint8_t status;
-	struct spi_flash *flash;
+	const struct spi_flash *flash;
 
-	flash = spi_flash_probe(CONFIG_BOOT_DEVICE_SPI_FLASH_BUS, 0);
+	flash = boot_device_spi_flash();
 	if (!flash)
 		return 0;
 

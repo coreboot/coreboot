@@ -175,7 +175,8 @@ static int cbfs_file_get_compression_info(struct cbfs_file *entry,
 	uint32_t *decompressed_size)
 {
 	unsigned int compression = CBFS_COMPRESS_NONE;
-	*decompressed_size = ntohl(entry->len);
+	if (decompressed_size)
+		*decompressed_size = ntohl(entry->len);
 	for (struct cbfs_file_attribute *attr = cbfs_file_first_attr(entry);
 	     attr != NULL;
 	     attr = cbfs_file_next_attr(entry, attr)) {

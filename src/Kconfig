@@ -132,8 +132,7 @@ config UNCOMPRESSED_RAMSTAGE
 
 config COMPRESS_RAMSTAGE
 	bool "Compress ramstage with LZMA"
-	default y if !UNCOMPRESSED_RAMSTAGE
-	default n
+	# Default value set at the end of the file
 	help
 	  Compress ramstage to save memory in the flash image. Note
 	  that decompression might slow down booting if the boot flash
@@ -142,7 +141,7 @@ config COMPRESS_RAMSTAGE
 config COMPRESS_PRERAM_STAGES
 	bool "Compress romstage and verstage with LZ4"
 	depends on !ARCH_X86
-	default y
+	# Default value set at the end of the file
 	help
 	  Compress romstage and (if it exists) verstage with LZ4 to save flash
 	  space and speed up boot, since the time for reading the image from SPI
@@ -152,7 +151,7 @@ config COMPRESS_PRERAM_STAGES
 
 config INCLUDE_CONFIG_FILE
 	bool "Include the coreboot .config file into the ROM image"
-	default y
+	# Default value set at the end of the file
 	help
 	  Include the .config file that was used to compile coreboot
 	  in the (CBFS) ROM image. This is useful if you want to know which
@@ -360,7 +359,7 @@ config BOARD_ID_MANUAL
 
 config BOARD_ID_STRING
 	string "Board ID"
-	default "(none)"
+	# Default value set at the end of the file
 	depends on BOARD_ID_MANUAL
 	help
 	  This string is placed in the 'board_id' CBFS file for indicating
@@ -385,7 +384,7 @@ config BOOTSPLASH_IMAGE
 config BOOTSPLASH_FILE
 	string "Bootsplash path and filename"
 	depends on BOOTSPLASH_IMAGE
-	default "bootsplash.jpg"
+	# Default value set at the end of the file
 	help
 	  The path and filename of the file to use as graphical bootsplash
 	  screen. The file format has to be jpg.
@@ -407,9 +406,9 @@ config DEVICETREE
 	  Examples: "devicetree.variant.cb"
 	            "variant/devicetree.cb"
 
-# defaults for CBFS_SIZE are set at the end of the file.
 config CBFS_SIZE
 	hex "Size of CBFS filesystem in ROM"
+	# Default value set at the end of the file
 	help
 	  This is the part of the ROM actually managed by CBFS, located at the
 	  end of the ROM (passed through cbfstool -o) on x86 and at at the start
@@ -1229,14 +1228,6 @@ config MAX_REBOOT_CNT
 	  with the normal image enabled before assuming the normal image is defective
 	  and switching to the fallback image.
 
-config CBFS_SIZE
-	hex
-	default ROM_SIZE
-	help
-	  This is the part of the ROM actually managed by CBFS.  Set it to be
-	  equal to the full ROM size if that hasn't been overridden by the
-	  chipset or mainboard.
-
 config CREATE_BOARD_CHECKLIST
 	bool
 	default n
@@ -1280,3 +1271,28 @@ config RAMSTAGE_LIBHWBASE
 
 config HWBASE_DYNAMIC_MMIO
 	def_bool y
+
+###############################################################################
+# Set default values for symbols created before mainboards.  This allows the
+# option to be displayed in the general menu, but the default to be loaded in
+# the mainboard if desired.
+config COMPRESS_RAMSTAGE
+	default y if !UNCOMPRESSED_RAMSTAGE
+
+config COMPRESS_PRERAM_STAGES
+	depends on !ARCH_X86
+	default y
+
+config INCLUDE_CONFIG_FILE
+	default y
+
+config BOARD_ID_STRING
+	default "(none)"
+	depends on BOARD_ID_MANUAL
+
+config BOOTSPLASH_FILE
+	depends on BOOTSPLASH_IMAGE
+	default "bootsplash.jpg"
+
+config CBFS_SIZE
+	default ROM_SIZE

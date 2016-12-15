@@ -53,5 +53,6 @@ void FillHeaderFromConfigFile(char *h, char *ConfigFileName)
 				h1->Reserved = Reserved;
 			}
 		}
+		fclose(fp);
 	}
 }

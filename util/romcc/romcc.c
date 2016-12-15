@@ -20919,7 +20919,6 @@ static void scc_visit_phi(struct compile_state *state, struct scc_state *scc,
 		}
 		/* meet(X, lattice high) = X */
 		else if (is_lattice_hi(state, tmp)) {
-			lnode->val = lnode->val;
 		}
 		/* meet(lattice high, X) = X */
 		else if (is_lattice_hi(state, lnode)) {

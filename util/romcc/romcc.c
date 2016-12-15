@@ -10779,6 +10779,7 @@ static struct triple *string_constant(struct compile_state *state)
 		ptr = buf;
 		buf = xmalloc(type->elements + str_len + 1, "string_constant");
 		memcpy(buf, ptr, type->elements);
+		free(ptr);
 		ptr = buf + type->elements;
 		do {
 			*ptr++ = char_value(state, &str, end);

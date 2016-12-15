@@ -1,2 +1,0 @@
-config BOARD_APPLE_IMAC52
-	bool "iMac5,2"

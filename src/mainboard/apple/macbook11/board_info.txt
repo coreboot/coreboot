@@ -1,8 +1,0 @@
-Board name: Macbook1,1
-Category: laptop
-ROM package: SOIC-8
-ROM protocol: SPI
-ROM socketed: n
-Flashrom support: n
-Clone of: apple/macbook21
-Release year: 2006

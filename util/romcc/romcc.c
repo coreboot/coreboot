@@ -6287,10 +6287,10 @@ static size_t field_reg_offset(struct compile_state *state,
 		internal_error(state, 0, "field_reg_offset only works on structures and unions");
 	}
 
-	size += reg_needed_padding(state, member, size);
 	if (!member || (member->field_ident != field)) {
 		error(state, 0, "member %s not present", field->name);
 	}
+	size += reg_needed_padding(state, member, size);
 	return size;
 }
 

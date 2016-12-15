@@ -161,7 +161,8 @@ static int clock_select_to_pll(enum peripheral_clock_select sel)
 unsigned long clock_get_periph_rate(enum periph_id peripheral)
 {
 	unsigned long sclk;
-	unsigned int src, div;
+	unsigned int div;
+	int src;
 
 	switch (peripheral) {
 	case PERIPH_ID_UART0:

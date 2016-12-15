@@ -109,7 +109,10 @@ int CreateSecureBootImage(int ac, char **av)
 		--ac, ++av;
 	}
 
-	stat(bl, &file_stat);
+	if (stat(bl, &file_stat) == -1) {
+		puts("Can't stat bl");
+		return -1;
+	}
 	filesize = file_stat.st_size + MIN_SIZE;
 	buf = calloc(sizeof(uint8_t), filesize);
 

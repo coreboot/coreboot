@@ -99,7 +99,7 @@ static int check_ip_clk_status(void)
 	u3_port_num = CAP_U3_PORT_NUM(read32(&ippc_regs->ip_xhci_cap));
 
 	check_bits = STS1_SYSPLL_STABLE | STS1_REF_RST | STS1_SYS125_RST;
-	check_bits = (u3_port_num ? STS1_U3_MAC_RST : 0);
+	check_bits |= (u3_port_num ? STS1_U3_MAC_RST : 0);
 
 	stopwatch_init_usecs_expire(&sw, 50000);
 

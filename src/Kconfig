@@ -214,33 +214,6 @@ config CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM
 	 The relocated ramstage is saved in an area specified by the
 	 by the board and/or chipset.
 
-# TODO: This doesn't belong here, move to src/arch/x86/Kconfig
-choice
-	prompt "Bootblock behaviour"
-	default BOOTBLOCK_SIMPLE
-
-config BOOTBLOCK_SIMPLE
-	bool "Always load fallback"
-
-config BOOTBLOCK_NORMAL
-	bool "Switch to normal if CMOS says so"
-
-endchoice
-
-config BOOTBLOCK_SOURCE
-	string
-	default "bootblock_simple.c" if BOOTBLOCK_SIMPLE
-	default "bootblock_normal.c" if BOOTBLOCK_NORMAL
-
-config SKIP_MAX_REBOOT_CNT_CLEAR
-	bool "Do not clear reboot count after successful boot"
-	depends on BOOTBLOCK_NORMAL
-	help
-	  Do not clear the reboot count immediately after successful boot.
-	  Set to allow the payload to control normal/fallback image recovery.
-	  Note that it is the responsibility of the payload to reset the
-	  normal boot bit to 1 after each successsful boot.
-
 config UPDATE_IMAGE
 	bool "Update existing coreboot.rom image"
 	help

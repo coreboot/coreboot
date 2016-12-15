@@ -15,7 +15,7 @@
 #include <string.h>
 #include "secimage.h"
 
-static unsigned char filebuffer[2048];
+static unsigned char filebuffer[2049];
 
 void FillHeaderFromConfigFile(char *h, char *ConfigFileName)
 {
@@ -32,6 +32,7 @@ void FillHeaderFromConfigFile(char *h, char *ConfigFileName)
 	if (fp != NULL) {
 		printf("\r\n Reading config information from file \r\n");
 		byte_count = fread(filebuffer, 1, 2048, fp);
+		filebuffer[2048] = 0;
 		if (byte_count > 0) {
 			ptr = strstr((char *)filebuffer, "Tag=");
 			if (ptr) {

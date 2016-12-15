@@ -109,6 +109,16 @@ int CreateSecureBootImage(int ac, char **av)
 		--ac, ++av;
 	}
 
+	if (!bl) {
+		puts("-bl not set");
+		return -1;
+	}
+
+	if (!privkey) {
+		puts("-hmac not set");
+		return -1;
+	}
+
 	if (stat(bl, &file_stat) == -1) {
 		puts("Can't stat bl");
 		return -1;

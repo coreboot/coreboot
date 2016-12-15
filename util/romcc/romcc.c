@@ -6406,11 +6406,10 @@ static size_t index_reg_offset(struct compile_state *state,
 			i++;
 			member = member->right;
 		}
-		size += reg_needed_padding(state, member, size);
 		if (i != index) {
 			internal_error(state, 0, "Missing member index: %u", index);
 		}
-
+		size += reg_needed_padding(state, member, size);
 	}
 	else if ((type->type & TYPE_MASK) == TYPE_JOIN) {
 		ulong_t i;

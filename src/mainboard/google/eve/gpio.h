@@ -225,6 +225,10 @@ static const struct pad_config early_gpio_table[] = {
 /* I2C1_SCL */		PAD_CFG_NF(GPP_C19, NONE, DEEP, NF1), /* TPM */
 /* UART2_CTS# */	PAD_CFG_GPI(GPP_C23, 20K_PU, DEEP), /* PCH_WP */
 /* SATAXPCI0 */		PAD_CFG_GPI_APIC_INVERT(GPP_E0, NONE, PLTRST), /* TPM_INT_L */
+
+/* Ensure UART pins are in native mode for H1 */
+/* UART2_RXD */		PAD_CFG_NF(GPP_C20, NONE, DEEP, NF1), /* SERVO */
+/* UART2_TXD */		PAD_CFG_NF(GPP_C21, NONE, DEEP, NF1), /* SERVO */
 };
 
 #endif

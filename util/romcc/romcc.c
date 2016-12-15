@@ -21319,15 +21319,15 @@ static void verify_blocks(struct compile_state *state)
 				"computed users %d != stored users %d",
 				users, block->users);
 		}
+		if (!(block->last->next) || !(block->last->next->u.block)) {
+			internal_error(state, block->last,
+				"bad next block");
+		}
 		if (!triple_stores_block(state, block->last->next)) {
 			internal_error(state, block->last->next,
 				"cannot find next block");
 		}
 		block = block->last->next->u.block;
-		if (!block) {
-			internal_error(state, block->last->next,
-				"bad next block");
-		}
 	} while(block != state->bb.first_block);
 	if (blocks != state->bb.last_vertex) {
 		internal_error(state, 0, "computed blocks: %d != stored blocks %d",

@@ -1,7 +1,0 @@
-if BOARD_APPLE_IMAC52
-
-config MAINBOARD_PART_NUMBER
-	string
-	default "iMac5,2"
-
-endif

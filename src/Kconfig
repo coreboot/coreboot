@@ -111,7 +111,6 @@ config SCONFIG_GENPARSER
 
 config USE_OPTION_TABLE
 	bool "Use CMOS for configuration values"
-	default n
 	depends on HAVE_OPTION_TABLE
 	help
 	  Enable this option if coreboot shall read options from the "CMOS"
@@ -119,7 +118,6 @@ config USE_OPTION_TABLE
 
 config STATIC_OPTION_TABLE
 	bool "Load default configuration values into CMOS on each boot"
-	default n
 	depends on USE_OPTION_TABLE
 	help
 	  Enable this option to reset "CMOS" NVRAM values to default on
@@ -179,14 +177,12 @@ config INCLUDE_CONFIG_FILE
 
 config COLLECT_TIMESTAMPS
 	bool "Create a table of timestamps collected during boot"
-	default n
 	help
 	  Make coreboot create a table of timer-ID/timer-value pairs to
 	  allow measuring time spent at different phases of the boot process.
 
 config USE_BLOBS
 	bool "Allow use of binary-only repository"
-	default n
 	help
 	  This draws in the blobs repository, which contains binary files that
 	  might be required for some chipsets or boards.
@@ -195,7 +191,6 @@ config USE_BLOBS
 config COVERAGE
 	bool "Code coverage support"
 	depends on COMPILER_GCC
-	default n
 	help
 	  Add code coverage support for coreboot. This will store code
 	  coverage information in CBMEM for extraction from user space.
@@ -204,7 +199,6 @@ config COVERAGE
 config RELOCATABLE_RAMSTAGE
 	depends on EARLY_CBMEM_INIT
 	bool "Build the ramstage to be relocatable in 32-bit address space."
-	default n
 	select RELOCATABLE_MODULES
 	help
 	 The reloctable ramstage support allows for the ramstage to be built
@@ -216,7 +210,6 @@ config RELOCATABLE_RAMSTAGE
 config CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM
 	depends on RELOCATABLE_RAMSTAGE
 	bool
-	default n
 	help
 	 The relocated ramstage is saved in an area specified by the
 	 by the board and/or chipset.
@@ -241,7 +234,6 @@ config BOOTBLOCK_SOURCE
 
 config SKIP_MAX_REBOOT_CNT_CLEAR
 	bool "Do not clear reboot count after successful boot"
-	default n
 	depends on BOOTBLOCK_NORMAL
 	help
 	  Do not clear the reboot count immediately after successful boot.
@@ -251,7 +243,6 @@ config SKIP_MAX_REBOOT_CNT_CLEAR
 
 config UPDATE_IMAGE
 	bool "Update existing coreboot.rom image"
-	default n
 	help
 	  If this option is enabled, no new coreboot.rom file
 	  is created. Instead it is expected that there already
@@ -270,7 +261,6 @@ config BOARD_ID_STRING
 
 config RAM_CODE_SUPPORT
 	bool
-	default n
 	help
 	  If enabled, coreboot discovers RAM configuration (value obtained by
 	  reading board straps) and stores it in coreboot table.

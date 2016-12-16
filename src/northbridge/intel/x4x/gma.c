@@ -424,7 +424,13 @@ static struct device_operations gma_func0_ops = {
 
 static const unsigned short pci_device_ids[] =
 {
-	0x2e32, 0
+	0x2e02, /* Eaglelake */
+	0x2e12, /* Q43/Q45 */
+	0x2e22, /* G43/G45 */
+	0x2e32, /* G41 */
+	0x2e42, /* B43 */
+	0x2e92, /* B43_I */
+	0
 };
 
 static const struct pci_driver gma __pci_driver = {

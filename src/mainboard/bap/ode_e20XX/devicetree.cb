@@ -102,7 +102,7 @@ chip northbridge/amd/agesa/family16kb/root_complex
 					end # f81866d
 				end #LPC
 				device pci 14.7 on  end # SD
-			end	#chip southbridge/amd/hudson
+			end	#chip southbridge/amd/agesa/hudson
 
 			device pci 18.0 on  end
 			device pci 18.1 on  end

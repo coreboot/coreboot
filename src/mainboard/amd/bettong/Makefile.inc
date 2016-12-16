@@ -19,7 +19,5 @@ romstage-y += boardid.c
 
 ramstage-y += BiosCallOuts.c
 ramstage-y += OemCustomize.c
-ifeq ($(CONFIG_HUDSON_IMC_FWM), y)
-ramstage-y += fchec.c
-endif
+ramstage-$(CONFIG_HUDSON_IMC_FWM) += fchec.c
 ramstage-y += boardid.c

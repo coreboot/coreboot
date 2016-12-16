@@ -65,7 +65,7 @@ chip northbridge/amd/agesa/family15tn/root_complex
 				device pci 15.1 off end # PCIe 1
 				device pci 15.2 off end # PCIe 2
 				device pci 15.3 off end # PCIe 3
-			end	#chip southbridge/amd/hudson
+			end	#chip southbridge/amd/agesa/hudson
 
 			device pci 18.0 on end
 			device pci 18.1 on end

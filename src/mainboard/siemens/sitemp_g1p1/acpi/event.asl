@@ -39,9 +39,9 @@ Name(WKST,Package(){Zero, Zero})
 *		-none-
 *
 * The _PTS control method is executed at the beginning of the sleep process
-* for S1-S5. The sleeping value is passed to the _PTS control method.	This
+* for S1-S5. The sleeping value is passed to the _PTS control method.  This
 * control method may be executed a relatively long time before entering the
-* sleep state and the OS may abort	the operation without notification to
+* sleep state and the OS may abort the operation without notification to
 * the ACPI driver.  This method cannot modify the configuration or power
 * state of any device in the system.
 */

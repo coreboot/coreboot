@@ -23,6 +23,12 @@ config CHROMEOS
 config DRIVERS_I2C_GENERIC
 	def_bool y
 
+config DRIVERS_I2C_HID
+	def_bool y
+
+config DRIVERS_I2C_WACOM
+	def_bool y
+
 config DRIVERS_PS2_KEYBOARD
 	default y
 

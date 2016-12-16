@@ -1152,7 +1152,7 @@ static int dispatch_command(struct command command)
 		assert(param.image_file);
 
 		if (partitioned_file_is_partitioned(param.image_file)) {
-			LOG("Performing operation on '%s' region...\n",
+			INFO("Performing operation on '%s' region...\n",
 					param.region_name);
 		}
 		if (!partitioned_file_read_region(param.image_region,

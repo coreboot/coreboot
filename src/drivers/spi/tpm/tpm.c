@@ -105,12 +105,15 @@ void tpm2_get_info(struct tpm2_info *info)
 /*
  * Each TPM2 SPI transaction starts the same: CS is asserted, the 4 byte
  * header is sent to the TPM, the master waits til TPM is ready to continue.
+ *
+ * Returns 1 on success, 0 on failure (TPM SPI flow control timeout.)
  */
-static void start_transaction(int read_write, size_t bytes, unsigned addr)
+static int start_transaction(int read_write, size_t bytes, unsigned addr)
 {
 	spi_frame_header header;
 	uint8_t byte;
 	int i;
+	struct stopwatch sw;
 
 	/*
 	 * Give it 10 ms. TODO(vbendeb): remove this once cr50 SPS TPM driver
@@ -159,10 +162,20 @@ static void start_transaction(int read_write, size_t bytes, unsigned addr)
 	 */
 	tpm_if.xfer(&tpm_if.slave, header.body, sizeof(header.body), NULL, 0);
 
-	/* Now poll the bus until TPM removes the stall bit. */
+	/*
+	 * Now poll the bus until TPM removes the stall bit. Give it up to 100
+	 * ms to sort it out - it could be saving stuff in nvram at some
+	 * point.
+	 */
+	stopwatch_init_msecs_expire(&sw, 100);
 	do {
+		if (stopwatch_expired(&sw)) {
+			printk(BIOS_ERR, "TPM flow control failure\n");
+			return 0;
+		}
 		tpm_if.xfer(&tpm_if.slave, NULL, 0, &byte, 1);
 	} while (!(byte & 1));
+	return 1;
 }
 
 /*
@@ -243,13 +256,13 @@ static void read_bytes(void *buffer, size_t bytes)
  * To write a register, start transaction, transfer data to the TPM, deassert
  * CS when done.
  *
- * Returns one to indicate success, zero (not yet implemented) to indicate
- * failure.
+ * Returns one to indicate success, zero to indicate failure.
  */
 static int tpm2_write_reg(unsigned reg_number, const void *buffer, size_t bytes)
 {
 	trace_dump("W", reg_number, bytes, buffer, 0);
-	start_transaction(false, bytes, reg_number);
+	if (!start_transaction(false, bytes, reg_number))
+		return 0;
 	write_bytes(buffer, bytes);
 	tpm_if.cs_deassert(&tpm_if.slave);
 	return 1;
@@ -259,12 +272,14 @@ static int tpm2_write_reg(unsigned reg_number, const void *buffer, size_t bytes)
  * To read a register, start transaction, transfer data from the TPM, deassert
  * CS when done.
  *
- * Returns one to indicate success, zero (not yet implemented) to indicate
- * failure.
+ * Returns one to indicate success, zero to indicate failure.
  */
 static int tpm2_read_reg(unsigned reg_number, void *buffer, size_t bytes)
 {
-	start_transaction(true, bytes, reg_number);
+	if (!start_transaction(true, bytes, reg_number)) {
+		memset(buffer, 0, bytes);
+		return 0;
+	}
 	read_bytes(buffer, bytes);
 	tpm_if.cs_deassert(&tpm_if.slave);
 	trace_dump("R", reg_number, bytes, buffer, 0);
@@ -305,7 +320,12 @@ int tpm2_init(struct spi_slave *spi_if)
 
 	memcpy(&tpm_if.slave, spi_if, sizeof(*spi_if));
 
-	tpm2_read_reg(TPM_DID_VID_REG, &did_vid, sizeof(did_vid));
+	/*
+	 * It is enough to check the first register read error status to bail
+	 * out in case of malfunctioning TPM.
+	 */
+	if (!tpm2_read_reg(TPM_DID_VID_REG, &did_vid, sizeof(did_vid)))
+		return -1;
 
 	/* Try claiming locality zero. */
 	tpm2_read_reg(TPM_ACCESS_REG, &cmd, sizeof(cmd));
@@ -484,6 +504,10 @@ size_t tpm2_process_command(const void *tpm2_command, size_t command_size,
 	uint8_t *rsp_body = tpm2_response;
 	union fifo_transfer_buffer fifo_buffer;
 	const int HEADER_SIZE = 6;
+
+	/* Do not try using an uninitialized TPM. */
+	if (!tpm_info.vendor_id)
+		return 0;
 
 	/* Skip the two byte tag, read the size field. */
 	payload_size = read_be32(cmd_body + 2);

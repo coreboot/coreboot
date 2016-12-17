@@ -286,6 +286,6 @@ void i2c_init(unsigned int bus, unsigned int hz)
 	i2c_clk = i2c_src_clk / (8 * (divl + 1 + divh + 1));
 	printk(BIOS_DEBUG, "I2C bus %u: %uHz (divh = %u, divl = %u)\n",
 	       bus, i2c_clk, divh, divl);
-	assert((divh < 65536) && (divl < 65536) && hz - i2c_clk < 10*KHz);
+	assert((divh < 65536) && (divl < 65536) && hz - i2c_clk < 15*KHz);
 	write32(&regs->i2c_clkdiv, (divh << 16) | (divl << 0));
 }

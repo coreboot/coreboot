@@ -19,3 +19,8 @@ int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
 {
 	return -1;
 }
+
+unsigned int spi_crop_chunk(unsigned int cmd_len, unsigned int buf_len)
+{
+	return buf_len;
+}

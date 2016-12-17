@@ -121,9 +121,9 @@ static int atmel_write(const struct spi_flash *flash, u32 offset, size_t len,
 	u8 cmd[4];
 
 	page_size = 1 << stm->params->l2_page_size;
-	byte_addr = offset % page_size;
 
 	for (actual = 0; actual < len; actual += chunk_len) {
+		byte_addr = offset % page_size;
 		chunk_len = min(len - actual, page_size - byte_addr);
 		chunk_len = spi_crop_chunk(sizeof(cmd), chunk_len);
 
@@ -155,7 +155,6 @@ static int atmel_write(const struct spi_flash *flash, u32 offset, size_t len,
 			goto out;
 
 		offset += chunk_len;
-		byte_addr = 0;
 	}
 
 #if CONFIG_DEBUG_SPI_FLASH

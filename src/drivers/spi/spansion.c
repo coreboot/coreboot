@@ -205,7 +205,6 @@ static int spansion_write(const struct spi_flash *flash, u32 offset, size_t len,
 			const void *buf)
 {
 	struct spansion_spi_flash *spsn = to_spansion_spi_flash(flash);
-	unsigned long page_addr;
 	unsigned long byte_addr;
 	unsigned long page_size;
 	size_t chunk_len;
@@ -214,16 +213,16 @@ static int spansion_write(const struct spi_flash *flash, u32 offset, size_t len,
 	u8 cmd[4];
 
 	page_size = spsn->params->page_size;
-	page_addr = offset / page_size;
-	byte_addr = offset % page_size;
 
 	for (actual = 0; actual < len; actual += chunk_len) {
+		byte_addr = offset % page_size;
 		chunk_len = min(len - actual, page_size - byte_addr);
+		chunk_len = spi_crop_chunk(sizeof(cmd), chunk_len);
 
 		cmd[0] = CMD_S25FLXX_PP;
-		cmd[1] = page_addr >> 8;
-		cmd[2] = page_addr;
-		cmd[3] = byte_addr;
+		cmd[1] = (offset >> 16) & 0xff;
+		cmd[2] = (offset >> 8) & 0xff;
+		cmd[3] = offset & 0xff;
 
 #if CONFIG_DEBUG_SPI_FLASH
 		printk(BIOS_SPEW, "PP: 0x%p => cmd = { 0x%02x 0x%02x%02x%02x }"
@@ -248,8 +247,7 @@ static int spansion_write(const struct spi_flash *flash, u32 offset, size_t len,
 		if (ret)
 			break;
 
-		page_addr++;
-		byte_addr = 0;
+		offset += chunk_len;
 	}
 
 #if CONFIG_DEBUG_SPI_FLASH

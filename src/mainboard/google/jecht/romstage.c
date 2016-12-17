@@ -25,11 +25,9 @@
 #include <superio/ite/common/ite.h>
 #include <superio/ite/it8772f/it8772f.h>
 #include <mainboard/google/jecht/spd/spd.h>
-#include "gpio.h"
+#include <variant/gpio.h>
+#include "onboard.h"
 
-#define DUMMY_DEV PNP_DEV(0x2e, 0)
-#define SERIAL_DEV PNP_DEV(0x2e, IT8772F_SP1)
-#define GPIO_DEV PNP_DEV(0x2e, IT8772F_GPIO)
 
 void mainboard_romstage_entry(struct romstage_params *rp)
 {
@@ -53,7 +51,11 @@ void mainboard_romstage_entry(struct romstage_params *rp)
 void mainboard_pre_console_init(void)
 {
 	/* Early SuperIO setup */
-	it8772f_ac_resume_southbridge(DUMMY_DEV);
-	ite_kill_watchdog(GPIO_DEV);
-	ite_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
+	it8772f_ac_resume_southbridge(IT8772F_DUMMY_DEV);
+	ite_kill_watchdog(IT8772F_GPIO_DEV);
+	ite_enable_serial(IT8772F_SERIAL_DEV, CONFIG_TTYS0_BASE);
+
+	/* Turn On Power LED */
+	set_power_led(LED_ON);
+
 }

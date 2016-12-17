@@ -44,7 +44,7 @@ DefinitionBlock(
 	}
 
 	// Thermal handler
-	#include "acpi/thermal.asl"
+	#include <variant/acpi/thermal.asl>
 
 	// Chrome OS specific
 	#include <vendorcode/google/chromeos/acpi/chromeos.asl>

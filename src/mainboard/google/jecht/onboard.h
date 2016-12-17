@@ -18,6 +18,14 @@
 
 #ifndef __ACPI__
 void lan_init(void);
+
+void set_power_led(int state);
+
+enum {
+	LED_OFF		= 0,
+	LED_ON,
+	LED_BLINK,
+};
 #endif
 
 /* defines for programming the MAC address */
@@ -32,5 +40,14 @@ void lan_init(void);
 
 /* WLAN wake is GPIO 10 */
 #define JECHT_WLAN_WAKE_GPIO		10
+
+/* USB Charger Control: GPIO26 */
+#define GPIO_USB_CTL_1 26
+
+/* IT8772F defs */
+#define IT8772F_BASE 0x2e
+#define IT8772F_SERIAL_DEV PNP_DEV(IT8772F_BASE, IT8772F_SP1)
+#define IT8772F_GPIO_DEV PNP_DEV(IT8772F_BASE, IT8772F_GPIO)
+#define IT8772F_DUMMY_DEV PNP_DEV(IT8772F_BASE, 0)
 
 #endif

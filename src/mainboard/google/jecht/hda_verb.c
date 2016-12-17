@@ -19,75 +19,59 @@ const u32 cim_verb_data[] = {
 	/* coreboot specific header */
 	0x10ec0283,	// Codec Vendor / Device ID: Realtek ALC283
 	0x10ec0283,	// Subsystem ID
-	0x0000000c,	// Number of jacks (NID entries)
+	0x0000000e,	// Number of jacks (NID entries)
 
-	/* NID 0x01, HDA Codec Subsystem ID Verb Table: 0x10ec0283 */
-	0x00172083,
-	0x00172102,
-	0x001722ec,
-	0x00172310,
+	0x0017ff00,	// Function Reset
+	0x0017ff00,	// Double Function Reset
+	0x000F0000,	// Pad - get vendor id
+	0x000F0002,	// Pad - get revision id
+
+	/* NID 0x01, HDA Codec Subsystem ID Verb Table */
+	AZALIA_SUBVENDOR(0x0, 0x11790670),
 
 	/* Pin Widget Verb Table */
 
-	/* Pin Complex (NID 0x12) DMIC */
-	0x01271cf0,
-	0x01271d11,
-	0x01271e11,
-	0x01271f41,
+	/* Pin Complex (NID 0x12) DMIC - Disabled */
+	AZALIA_PIN_CFG(0x0, 0x12, 0x411111f0),
 
-	/* Pin Complex (NID 0x14) SPKR-OUT PORTD */
-	0x01471cf0,
-	0x01471d11,
-	0x01471e11,
-	0x01471f40,
+	/* Pin Complex (NID 0x14) SPKR-OUT PORTD - Disabled */
+	AZALIA_PIN_CFG(0x0, 0x14, 0x411111f0),
 
-	/* Pin Complex (NID 0x17)  */
-	0x01771cf0,
-	0x01771d11,
-	0x01771e11,
-	0x01771f41,
+	/* Pin Complex (NID 0x17) MONO Out - Disabled */
+	AZALIA_PIN_CFG(0x0, 0x17, 0x411111f0),
 
-	/* Pin Complex (NID 0x18)  MIC1 PORTB */
-	0x01971c11, // group 1, cap 1
-	0x01971d10, // black, jack detect
-	0x01971ea7, // mic in, analog
-	0x01971f03, // connector, left panel
+	/* Pin Complex (NID 0x18) MIC1 PORTB */
+	// group 1, cap 1
+	// black, jack detect
+	// mic in, analog
+	// connector, left panel
+	AZALIA_PIN_CFG(0x0, 0x18, 0x03a71011),
 
-	/* Pin Complex (NID 0x19)  MIC2 PORTF */
-	0x01871cf0,
-	0x01871d11,
-	0x01871e11,
-	0x01871f41,
+	/* Pin Complex (NID 0x19) MIC2 PORTF - Disabled */
+	AZALIA_PIN_CFG(0x0, 0x19, 0x411111f0),
 
-	/* Pin Complex (NID 0x1A)  LINE1 PORTC */
-	0x01a71cf0,
-	0x01a71d11,
-	0x01a71e11,
-	0x01a71f41,
+	/* Pin Complex (NID 0x1A) LINE1 PORTC - Disabled */
+	AZALIA_PIN_CFG(0x0, 0x1A, 0x411111f0),
 
-	/* Pin Complex (NID 0x1B)  LINE2 PORTE */
-	0x01a71cf0,
-	0x01a71d11,
-	0x01a71e11,
-	0x01a71f41,
+	/* Pin Complex (NID 0x1B) LINE2 PORTE - Disabled */
+	AZALIA_PIN_CFG(0x0, 0x1B, 0x411111f0),
 
-	/* Pin Complex (NID 0x1d)  PCBeep */
-	0x01d71c2d, // eapd low on ex-amp, laptop, custom enable
-	0x01d71d81, // mute spkr on hpout
-	0x01d71e15, // pcbeep en able, checksum
-	0x01d71f40, // no physical, internal
+	/* Pin Complex (NID 0x1D) PCBeep */
+	// eapd low on ex-amp, laptop, custom enable
+	// mute spkr on hpout
+	// pcbeep en able, checksum
+	// no physical, internal
+	AZALIA_PIN_CFG(0x0, 0x1D, 0x4015812d),
 
-	/* Pin Complex (NID 0x1E)  SPDIF-OUT */
-	0x01e71cf0,
-	0x01e71d11,
-	0x01e71e11,
-	0x01e71f41,
+	/* Pin Complex (NID 0x1E) SPDIF-OUT - Disabled */
+	AZALIA_PIN_CFG(0x0, 0x1E, 0x411111f0),
 
 	/* Pin Complex (NID 0x21) HPOUT PORT-I */
-	0x02171c1f, // group1,
-	0x02171d10, // black, jack detect
-	0x02171e21, // HPOut, 1/8 stereo
-	0x02171f03, // connector, left panel
+	// group1,
+	// black, jack detect
+	// HPOut, 1/8 stereo
+	// connector, left panel
+	AZALIA_PIN_CFG(0x0, 0x21, 0x0321101f),
 
 	/* Undocumented settings from Realtek (needed for beep_gen) */
 	/* Widget node 0x20 */
@@ -95,6 +79,12 @@ const u32 cim_verb_data[] = {
 	0x02040c20,
 	0x0205001b,
 	0x0204081b,
+
+	/* Tuned jack detection */
+	0x02050043,
+	0x0204A614,
+	0x02050047,
+	0x02049470,
 };
 
 const u32 pc_beep_verbs[] = {

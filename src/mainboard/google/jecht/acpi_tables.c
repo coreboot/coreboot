@@ -26,7 +26,17 @@
 #include <device/pci_ids.h>
 #include <soc/acpi.h>
 #include <soc/nvs.h>
-#include "thermal.h"
+#include <variant/thermal.h>
+
+
+static void acpi_update_thermal_table(global_nvs_t *gnvs)
+{
+	gnvs->tmps = TEMPERATURE_SENSOR_ID;
+	gnvs->tcrt = CRITICAL_TEMPERATURE;
+	gnvs->tpsv = PASSIVE_TEMPERATURE;
+	gnvs->tmax = MAX_TEMPERATURE;
+	gnvs->flvl = 1;
+}
 
 void acpi_create_gnvs(global_nvs_t *gnvs)
 {
@@ -38,10 +48,7 @@ void acpi_create_gnvs(global_nvs_t *gnvs)
 	/* Disable USB ports in S5 */
 	gnvs->s5u0 = 0;
 
-	gnvs->tmps = TEMPERATURE_SENSOR_ID;
-	gnvs->tcrt = CRITICAL_TEMPERATURE;
-	gnvs->tpsv = PASSIVE_TEMPERATURE;
-	gnvs->tmax = MAX_TEMPERATURE;
+	acpi_update_thermal_table(gnvs);
 }
 
 unsigned long acpi_fill_madt(unsigned long current)

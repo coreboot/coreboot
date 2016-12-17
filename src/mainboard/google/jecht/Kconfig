@@ -1,7 +1,5 @@
-if BOARD_GOOGLE_JECHT
-
-config BOARD_SPECIFIC_OPTIONS # dummy
-	def_bool y
+config BOARD_GOOGLE_BASEBOARD_JECHT
+	def_bool n
 	select SOC_INTEL_BROADWELL
 	select BOARD_ROMSIZE_KB_8192
 	select SUPERIO_ITE_IT8772F
@@ -11,7 +9,8 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select HAVE_SMI_HANDLER
 	select MAINBOARD_HAS_CHROMEOS
 	select MAINBOARD_HAS_LPC_TPM
-	select INTEL_INT15
+
+if BOARD_GOOGLE_BASEBOARD_JECHT
 
 config CHROMEOS
 	select CHROMEOS_RAMOOPS_DYNAMIC
@@ -23,9 +22,28 @@ config MAINBOARD_DIR
 	string
 	default google/jecht
 
+
+config VARIANT_DIR
+	string
+	default "guado" if BOARD_GOOGLE_GUADO
+	default "jecht" if BOARD_GOOGLE_JECHT
+	default "rikku" if BOARD_GOOGLE_RIKKU
+	default "tidus" if BOARD_GOOGLE_TIDUS
+
 config MAINBOARD_PART_NUMBER
 	string
-	default "Jecht"
+	default "Guado" if BOARD_GOOGLE_GUADO
+	default "Jecht" if BOARD_GOOGLE_JECHT
+	default "Rikku" if BOARD_GOOGLE_RIKKU
+	default "Tidus" if BOARD_GOOGLE_TIDUS
+
+config GBB_HWID
+	string
+	depends on CHROMEOS
+	default "GUADO TEST A-A 7416" if BOARD_GOOGLE_GUADO
+	default "JECHT TEST A-A 8958" if BOARD_GOOGLE_JECHT
+	default "RIKKU TEST A-A 0702" if BOARD_GOOGLE_RIKKU
+	default "TIDUS TEST A-A 0595" if BOARD_GOOGLE_TIDUS
 
 config MAX_CPUS
 	int
@@ -33,7 +51,7 @@ config MAX_CPUS
 
 config VGA_BIOS_FILE
 	string
-	default "pci8086,0166.rom"
+	default "pci8086,0406.rom"
 
 config HAVE_IFD_BIN
 	bool
@@ -43,8 +61,4 @@ config HAVE_ME_BIN
 	bool
 	default n
 
-config GBB_HWID
-	string
-	depends on CHROMEOS
-	default "JECHT TEST A-A 8958"
 endif

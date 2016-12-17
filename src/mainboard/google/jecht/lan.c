@@ -21,7 +21,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <southbridge/intel/bd82x6x/pch.h>
+#include <soc/pch.h>
 #include "onboard.h"
 
 static unsigned int search(char *p, u8 *a, unsigned int lengthp,

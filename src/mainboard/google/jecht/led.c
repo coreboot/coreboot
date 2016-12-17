@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2014 Google Inc.
+ * Copyright (C) 2015 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,19 +13,19 @@
  * GNU General Public License for more details.
  */
 
-#include <soc/pei_data.h>
-#include <mainboard/google/jecht/spd/spd.h>
+#include <types.h>
+#include <superio/ite/it8772f/it8772f.h>
+#include "onboard.h"
 
-/* Copy SPD data for on-board memory */
-void mainboard_fill_spd_data(struct pei_data *pei_data)
+void set_power_led(int state)
 {
-	pei_data->spd_addresses[0] = 0xa0;
-	pei_data->spd_addresses[1] = 0x00;
-	pei_data->spd_addresses[2] = 0xa4;
-	pei_data->spd_addresses[3] = 0x00;
-	pei_data->dimm_channel0_disabled = 2;
-	pei_data->dimm_channel1_disabled = 2;
-	// Enable 2x refresh mode
-	pei_data->ddr_refresh_2x = 1;
-	pei_data->dq_pins_interleaved = 1;
+	it8772f_gpio_led(IT8772F_GPIO_DEV,
+		1, 					/* set */
+		0x01, 					/* select */
+		state == LED_OFF ? 0x00 : 0x01,		/* polarity */
+		state == LED_BLINK ? 0x01 : 0x00,	/* pullup/pulldown */
+		0x01, 					/* output */
+		state == LED_BLINK ? 0x00 : 0x01,	/* I/O function */
+		SIO_GPIO_BLINK_GPIO10,
+		IT8772F_GPIO_BLINK_FREQUENCY_1_HZ);
 }

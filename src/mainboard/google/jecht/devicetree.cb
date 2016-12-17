@@ -9,9 +9,6 @@ chip soc/intel/broadwell
 	# Enable HDMI Hotplug with 6ms pulse
 	register "gpu_dp_b_hotplug" = "0x06"
 
-
-
-
 	register "pirqa_routing" = "0x8b"
 	register "pirqb_routing" = "0x8a"
 	register "pirqc_routing" = "0x8b"
@@ -84,8 +81,14 @@ chip soc/intel/broadwell
 				register "skip_keyboard" = "1"
 				# Enable PECI on TMPIN3
 				register "peci_tmpin" = "3"
+				# Disable use of TMPIN1
+				register "tmpin1_mode" = "0"
+				# Enable Thermal Diode on TMPIN2
+				register "tmpin2_mode" = "1"
 				# Enable FAN2
 				register "fan2_enable" = "1"
+				# Default FAN2 speed
+				register "fan2_speed" = "0x4d"
 
 				device pnp 2e.0 off end # FDC
 				device pnp 2e.1 on # Serial Port 1

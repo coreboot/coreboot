@@ -18,7 +18,12 @@ romstage-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-y += lan.c
 
-smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
+smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c led.c
 
-romstage-y += pei_data.c
-ramstage-y += pei_data.c
+romstage-y += variants/$(VARIANT_DIR)/pei_data.c
+ramstage-y += variants/$(VARIANT_DIR)/pei_data.c
+
+romstage-y += led.c
+
+subdirs-y += variants/$(VARIANT_DIR)
+CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/variants/$(VARIANT_DIR)/include

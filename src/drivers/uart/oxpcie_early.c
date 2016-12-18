@@ -84,20 +84,6 @@ void oxford_remap(u32 new_base)
 {
 	uart0_base = new_base + 0x1000;
 }
-
-void uart_fill_lb(void *data)
-{
-	struct lb_serial serial;
-	serial.type = LB_SERIAL_TYPE_MEMORY_MAPPED;
-	serial.baseaddr = uart_platform_base(CONFIG_UART_FOR_CONSOLE);
-	serial.baud = default_baudrate();
-	serial.regwidth = 1;
-	serial.input_hertz = uart_platform_refclk();
-	serial.uart_pci_addr = CONFIG_UART_PCI_ADDR;
-	lb_add_serial(&serial, data);
-
-	lb_add_console(LB_TAG_CONSOLE_SERIAL8250MEM, data);
-}
 #endif
 
 unsigned int uart_platform_refclk(void)

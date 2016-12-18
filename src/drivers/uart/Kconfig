@@ -47,7 +47,7 @@ config HAVE_UART_SPECIAL
 config DRIVERS_UART_OXPCIE
 	bool "Oxford OXPCIe952"
 	default n
-	depends on PCI
+	depends on PCI && !DRIVERS_UART_8250MEM_32
 	select DRIVERS_UART_8250MEM
 	select EARLY_PCI_BRIDGE
 	select UART_OVERRIDE_REFCLK

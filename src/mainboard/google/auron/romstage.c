@@ -14,7 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include <cbfs.h>
 #include <console/console.h>
 #include <string.h>
 #include <ec/google/chromeec/ec.h>
@@ -22,8 +21,9 @@
 #include <soc/pei_data.h>
 #include <soc/pei_wrapper.h>
 #include <soc/romstage.h>
-#include <mainboard/google/auron/spd/spd.h>
-#include "gpio.h"
+#include <variant/gpio.h>
+#include <variant/spd.h>
+#include "variant.h"
 
 void mainboard_romstage_entry(struct romstage_params *rp)
 {
@@ -45,4 +45,7 @@ void mainboard_romstage_entry(struct romstage_params *rp)
 
 	/* Call into the real romstage main with this board's attributes. */
 	romstage_common(rp);
+
+	/* Do variant-specific (read: Samus) init */
+	variant_romstage_entry(rp);
 }

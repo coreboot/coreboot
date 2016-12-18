@@ -25,15 +25,8 @@
 #include <soc/gpio.h>
 #include <soc/iomap.h>
 #include <soc/nvs.h>
-#include <soc/pm.h>
-#include <soc/smm.h>
 #include "ec.h"
-
-/* Codec enable: GPIO45 */
-#define GPIO_PP3300_CODEC_EN 45
-/* WLAN / BT enable: GPIO46 */
-#define GPIO_WLAN_DISABLE_L  46
-
+#include <variant/onboard.h>
 
 static u8 mainboard_smi_ec(void)
 {
@@ -70,6 +63,20 @@ void mainboard_smi_gpi(u32 gpi_sts)
 	}
 }
 
+static void mainboard_disable_gpios(void)
+{
+#if IS_ENABLED(CONFIG_BOARD_GOOGLE_SAMUS)
+	/* Put SSD in reset to prevent leak */
+	set_gpio(BOARD_SSD_RESET_GPIO, 0);
+	/* Disable LTE */
+	set_gpio(BOARD_LTE_DISABLE_GPIO, 0);
+#else
+	set_gpio(BOARD_PP3300_CODEC_GPIO, 0);
+#endif
+	/* Prevent leak from standby rail to WLAN rail */
+	set_gpio(BOARD_WLAN_DISABLE_GPIO, 0);
+}
+
 void mainboard_smi_sleep(u8 slp_typ)
 {
 	/* Disable USB charging if required */
@@ -82,8 +89,7 @@ void mainboard_smi_sleep(u8 slp_typ)
 				1, USB_CHARGE_MODE_DISABLED);
 		}
 
-		set_gpio(GPIO_PP3300_CODEC_EN, 0);
-		set_gpio(GPIO_WLAN_DISABLE_L, 0);
+		mainboard_disable_gpios();
 
 		/* Enable wake events */
 		google_chromeec_set_wake_mask(MAINBOARD_EC_S3_WAKE_EVENTS);
@@ -96,8 +102,7 @@ void mainboard_smi_sleep(u8 slp_typ)
 				1, USB_CHARGE_MODE_DISABLED);
 		}
 
-		set_gpio(GPIO_PP3300_CODEC_EN, 0);
-		set_gpio(GPIO_WLAN_DISABLE_L, 0);
+		mainboard_disable_gpios();
 
 		/* Enable wake events */
 		google_chromeec_set_wake_mask(MAINBOARD_EC_S5_WAKE_EVENTS);

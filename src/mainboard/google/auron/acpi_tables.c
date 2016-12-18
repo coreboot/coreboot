@@ -13,27 +13,15 @@
  * GNU General Public License for more details.
  */
 
-#include <types.h>
-#include <string.h>
-#include <cbmem.h>
-#include <console/console.h>
-#include <arch/acpi.h>
 #include <arch/ioapic.h>
 #include <arch/acpigen.h>
-#include <arch/smp/mpspec.h>
-#include <device/device.h>
-#include <device/pci.h>
-#include <device/pci_ids.h>
 #include <soc/acpi.h>
 #include <soc/nvs.h>
-#include "thermal.h"
-
-extern const unsigned char AmlCode[];
+#include <variant/thermal.h>
 
 static void acpi_update_thermal_table(global_nvs_t *gnvs)
 {
 	gnvs->tmps = CTL_TDP_SENSOR_ID;
-
 	gnvs->tcrt = CRITICAL_TEMPERATURE;
 	gnvs->tpsv = PASSIVE_TEMPERATURE;
 	gnvs->tmax = MAX_TEMPERATURE;

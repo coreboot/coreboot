@@ -14,23 +14,10 @@
  * GNU General Public License for more details.
  */
 
-#include <types.h>
-#include <string.h>
-#include <smbios.h>
-#include <device/device.h>
-#include <device/device.h>
-#include <device/pci_def.h>
-#include <device/pci_ops.h>
-#include <console/console.h>
 #include <drivers/intel/gma/int15.h>
-#include <pc80/mc146818rtc.h>
-#include <arch/acpi.h>
-#include <arch/io.h>
-#include <arch/interrupt.h>
-#include <boot/coreboot_tables.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include "ec.h"
-#include "onboard.h"
+#include "variant.h"
 
 
 static void mainboard_init(device_t dev)
@@ -41,45 +28,7 @@ static void mainboard_init(device_t dev)
 static int mainboard_smbios_data(device_t dev, int *handle,
 				 unsigned long *current)
 {
-	int len = 0;
-
-	len += smbios_write_type41(
-		current, handle,
-		BOARD_LIGHTSENSOR_NAME,		/* name */
-		BOARD_LIGHTSENSOR_IRQ,		/* instance */
-		BOARD_LIGHTSENSOR_I2C_BUS,	/* segment */
-		BOARD_LIGHTSENSOR_I2C_ADDR,	/* bus */
-		0,				/* device */
-		0);				/* function */
-
-	len += smbios_write_type41(
-		current, handle,
-		BOARD_TRACKPAD_NAME,		/* name */
-		BOARD_TRACKPAD_IRQ,		/* instance */
-		BOARD_TRACKPAD_I2C_BUS,		/* segment */
-		BOARD_TRACKPAD_I2C_ADDR,	/* bus */
-		0,				/* device */
-		0);				/* function */
-
-	len += smbios_write_type41(
-		current, handle,
-		BOARD_TRACKPAD_NAME,		/* name */
-		BOARD_TRACKPAD_IRQ,		/* instance */
-		BOARD_TRACKPAD_I2C_BUS,		/* segment */
-		BOARD_TRACKPAD_GEN5_I2C_ADDR,	/* bus */
-		0,				/* device */
-		0);				/* function */
-
-	len += smbios_write_type41(
-		current, handle,
-		BOARD_TOUCHSCREEN_NAME,		/* name */
-		BOARD_TOUCHSCREEN_IRQ,		/* instance */
-		BOARD_TOUCHSCREEN_I2C_BUS,	/* segment */
-		BOARD_TOUCHSCREEN_I2C_ADDR,	/* bus */
-		0,				/* device */
-		0);				/* function */
-
-	return len;
+	return variant_smbios_data(dev, handle, current);
 }
 
 // mainboard_enable is executed as first thing after

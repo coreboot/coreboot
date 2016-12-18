@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-#include <mainboard/google/auron/thermal.h>
+#include <variant/thermal.h>
 
 // Thermal Zone
 

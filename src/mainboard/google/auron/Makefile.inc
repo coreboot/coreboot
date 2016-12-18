@@ -13,15 +13,20 @@
 ## GNU General Public License for more details.
 ##
 
-subdirs-y += spd
-
 ramstage-$(CONFIG_EC_GOOGLE_CHROMEEC) += ec.c
 
-romstage-y += chromeos.c
-ramstage-y += chromeos.c
-
+romstage-$(CONFIG_CHROMEOS) += chromeos.c
+ramstage-$(CONFIG_CHROMEOS) += chromeos.c
 
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
 
-romstage-y += pei_data.c
-ramstage-y += pei_data.c
+romstage-y += variants/$(VARIANT_DIR)/pei_data.c
+ramstage-y += variants/$(VARIANT_DIR)/pei_data.c
+
+romstage-y += variants/$(VARIANT_DIR)/variant.c
+ramstage-y += variants/$(VARIANT_DIR)/variant.c
+
+subdirs-y += variants/$(VARIANT_DIR)
+subdirs-y += variants/$(VARIANT_DIR)/spd
+
+CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/variants/$(VARIANT_DIR)/include

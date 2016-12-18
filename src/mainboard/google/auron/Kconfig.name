@@ -1,2 +1,19 @@
-config BOARD_GOOGLE_AURON
-	bool "Auron"
+config BOARD_GOOGLE_AURON_PAINE
+	bool "Auron_Paine"
+	select BOARD_GOOGLE_BASEBOARD_AURON
+
+config BOARD_GOOGLE_AURON_YUNA
+	bool "Auron_Yuna"
+	select BOARD_GOOGLE_BASEBOARD_AURON
+
+config BOARD_GOOGLE_GANDOF
+	bool "Gandof"
+	select BOARD_GOOGLE_BASEBOARD_AURON
+
+config BOARD_GOOGLE_LULU
+	bool "Lulu"
+	select BOARD_GOOGLE_BASEBOARD_AURON
+
+config BOARD_GOOGLE_SAMUS
+	bool "Samus"
+	select BOARD_GOOGLE_BASEBOARD_AURON

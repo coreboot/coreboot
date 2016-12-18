@@ -23,4 +23,7 @@ smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
 romstage-y += variants/$(VARIANT_DIR)/romstage.c
 
 subdirs-y += variants/$(VARIANT_DIR)
+
+ramstage-$(CONFIG_MAINBOARD_USE_LIBGFXINIT) += gma-mainboard.ads
+
 CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/variants/$(VARIANT_DIR)/include

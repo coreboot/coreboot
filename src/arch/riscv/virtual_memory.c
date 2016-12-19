@@ -310,14 +310,12 @@ void mstatus_init(void)
 
 	set_csr(medeleg, delegate);
 
-	/* Enable all user/supervisor-mode counters */
-	/* We'll turn these on once lowrisc gets their bitstream up to
-	 * 1.9. Right now there's no agreement on the values for these
-	 * architectural registers.
-	 */
-	// write_csr(mscounteren, 0b111);
-	// write_csr(mucounteren, 0b111);
-
-	// for SPIKE:
-	// write_csr(/*mscounteren*/0x321, 0b111);
+	// Enable all user/supervisor-mode counters using
+	// v1.9.1 register addresses.
+	// They moved from the earlier spec.
+	// Until we trust our toolchain use the hardcoded constants.
+	// These were in flux and people who get the older toolchain
+	// will have difficult-to-debug failures.
+	write_csr(/*mucounteren*/0x320, 7);
+	write_csr(/*mscounteren*/0x321, 7);
 }

@@ -53,7 +53,7 @@ uint64_t timer_raw_value(void)
 	do {
 		count_h = readl(phys_to_virt(CONFIG_LP_TIMER_GENERIC_HIGH_REG));
 		count_l = readl(phys_to_virt(CONFIG_LP_TIMER_GENERIC_REG));
-		cur_tick = readl(phys_to_virt(CONFIG_LP_TIMER_GENERIC_REG));
+		cur_tick = readl(phys_to_virt(CONFIG_LP_TIMER_GENERIC_HIGH_REG));
 	} while (cur_tick != count_h);
 
 	return (cur_tick << 32) + count_l;

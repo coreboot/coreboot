@@ -15,6 +15,7 @@
 
 #include <AGESA.h>
 #include <cbfs.h>
+#include <delay.h>
 #include <cpu/amd/pi/s3_resume.h>
 #include <cpu/x86/mtrr.h>
 #include <cpuRegisters.h>
@@ -107,6 +108,12 @@ AGESA_STATUS agesawrapper_amdinitearly(void)
 
 	AmdEarlyParamsPtr->GnbConfig.PsppPolicy = PsppDisabled;
 	status = AmdInitEarly ((AMD_EARLY_PARAMS *)AmdParamStruct.NewStructPtr);
+	/*
+	 * init_timer() needs to be called on CZ PI, because AGESA resets the LAPIC reload value
+	 * on the AMD_INIT_EARLY call
+	 */
+	if (IS_ENABLED(CONFIG_CPU_AMD_PI_00660F01))
+		init_timer();
 	if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog(AmdParamStruct.StdHeader.HeapStatus);
 	AmdReleaseStruct (&AmdParamStruct);
 

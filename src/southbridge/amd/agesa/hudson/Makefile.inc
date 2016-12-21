@@ -35,8 +35,7 @@ ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c smi_util.c
 # +-----------+---------------+----------------+------------+
 # EC ROM should be 64K aligned.
 
-HUDSON_FWM_POS_CALC=$(call int-add, $(call int-subtract, 0xffffffff $(call int-multiply, $(CONFIG_COREBOOT_ROMSIZE_KB) 1024)) 0x20000 1)
-HUDSON_FWM_POSITION=$(shell printf %u $(CONFIG_HUDSON_FWM_POSITION))
+HUDSON_FWM_POSITION=$(call int-add, $(call int-subtract, 0xffffffff $(CONFIG_ROM_SIZE)) 0x20000 1)
 
 ifdef CONFIG_HUDSON_AHCI_ROM
 stripped_ahci_rom_id = $(call strip_quotes,$(CONFIG_AHCI_ROM_ID))

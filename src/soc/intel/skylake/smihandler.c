@@ -26,6 +26,7 @@
 #include <spi-generic.h>
 #include <elog.h>
 #include <pc80/mc146818rtc.h>
+#include <soc/flash_controller.h>
 #include <soc/iomap.h>
 #include <soc/lpc.h>
 #include <soc/nvs.h>
@@ -276,7 +277,7 @@ static void finalize(void)
 
 	if (IS_ENABLED(CONFIG_SPI_FLASH_SMM))
 		/* Re-init SPI driver to handle locked BAR */
-		spi_init();
+		spi_flash_init();
 }
 
 static void southbridge_smi_apmc(void)

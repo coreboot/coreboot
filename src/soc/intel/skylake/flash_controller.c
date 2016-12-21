@@ -25,23 +25,23 @@
 #include <soc/spi.h>
 #include <spi-generic.h>
 
-static inline uint16_t spi_read_hsfs(pch_spi_regs * const regs)
+static inline uint16_t spi_flash_read_hsfs(pch_spi_flash_regs * const regs)
 {
 	return readw_(&regs->hsfs);
 }
 
-static inline void spi_clear_status(pch_spi_regs * const regs)
+static inline void spi_flash_clear_status(pch_spi_flash_regs * const regs)
 {
 	/* clear FDONE, FCERR, AEL by writing 1 to them (if they are set) */
-	writew_(spi_read_hsfs(regs), &regs->hsfs);
+	writew_(spi_flash_read_hsfs(regs), &regs->hsfs);
 }
 
-static inline uint16_t spi_read_hsfc(pch_spi_regs * const regs)
+static inline uint16_t spi_flash_read_hsfc(pch_spi_flash_regs * const regs)
 {
 	return readw_(&regs->hsfc);
 }
 
-static inline uint32_t spi_read_faddr(pch_spi_regs * const regs)
+static inline uint32_t spi_flash_read_faddr(pch_spi_flash_regs * const regs)
 {
 	return readl_(&regs->faddr) & SPIBAR_FADDR_MASK;
 }
@@ -52,7 +52,7 @@ static inline uint32_t spi_read_faddr(pch_spi_regs * const regs)
  * Returns 0 if the cycle completes successfully without errors within
  * timeout, 1 on errors.
  */
-static int wait_for_completion(pch_spi_regs * const regs, int timeout_ms,
+static int wait_for_completion(pch_spi_flash_regs * const regs, int timeout_ms,
 				size_t len)
 {
 	uint16_t hsfs;
@@ -64,15 +64,15 @@ static int wait_for_completion(pch_spi_regs * const regs, int timeout_ms,
 	stopwatch_init_msecs_expire(&sw, timeout_ms);
 
 	do {
-		hsfs = spi_read_hsfs(regs);
+		hsfs = spi_flash_read_hsfs(regs);
 
 		if ((hsfs & (HSFS_FDONE | HSFS_FCERR)))
 			break;
 	} while (!(timeout = stopwatch_expired(&sw)));
 
 	if (timeout) {
-		addr = spi_read_faddr(regs);
-		hsfc = spi_read_hsfc(regs);
+		addr = spi_flash_read_faddr(regs);
+		hsfc = spi_flash_read_hsfc(regs);
 		printk(BIOS_ERR, "%ld ms Transaction timeout between offset "
 			"0x%08x and 0x%08zx (= 0x%08x + %zd) HSFC=%x HSFS=%x!\n",
 			stopwatch_duration_msecs(&sw), addr, addr + len - 1,
@@ -81,8 +81,8 @@ static int wait_for_completion(pch_spi_regs * const regs, int timeout_ms,
 	}
 
 	if (hsfs & HSFS_FCERR) {
-		addr = spi_read_faddr(regs);
-		hsfc = spi_read_hsfc(regs);
+		addr = spi_flash_read_faddr(regs);
+		hsfc = spi_flash_read_hsfc(regs);
 		printk(BIOS_ERR, "Transaction error between offset 0x%08x and "
 		       "0x%08zx (= 0x%08x + %zd) HSFC=%x HSFS=%x!\n",
 		       addr, addr + len - 1, addr, len - 1,
@@ -94,13 +94,14 @@ static int wait_for_completion(pch_spi_regs * const regs, int timeout_ms,
 }
 
 /* Start operation returning 0 on success, non-zero on error or timeout. */
-static int spi_do_operation(int op, size_t offset, size_t size, int timeout_ms)
+static int spi_flash_do_operation(int op, size_t offset, size_t size,
+				int timeout_ms)
 {
 	uint16_t hsfc;
-	pch_spi_regs * const regs = get_spi_bar();
+	pch_spi_flash_regs * const regs = get_spi_bar();
 
 	/* Clear status prior to operation. */
-	spi_clear_status(regs);
+	spi_flash_clear_status(regs);
 
 	/* Set the FADDR */
 	writel_(offset & SPIBAR_FADDR_MASK, &regs->faddr);
@@ -126,7 +127,7 @@ unsigned int spi_crop_chunk(unsigned int cmd_len, unsigned int buf_len)
 	return min(SPI_FDATA_BYTES, buf_len);
 }
 
-static size_t spi_get_flash_size(pch_spi_regs *spi_bar)
+static size_t spi_get_flash_size(pch_spi_flash_regs *spi_bar)
 {
 	uint32_t flcomp;
 	size_t size;
@@ -151,7 +152,7 @@ static size_t spi_get_flash_size(pch_spi_regs *spi_bar)
 	return size;
 }
 
-void spi_init(void)
+void spi_flash_init(void)
 {
 	uint8_t bios_cntl;
 	device_t dev = PCH_DEV_SPI;
@@ -178,7 +179,7 @@ int pch_hwseq_erase(const struct spi_flash *flash, u32 offset, size_t len)
 	end = start + len;
 
 	while (offset < end) {
-		if (spi_do_operation(HSFC_FCYCLE_4KE, offset, 0, 5000)) {
+		if (spi_flash_do_operation(HSFC_FCYCLE_4KE, offset, 0, 5000)) {
 			printk(BIOS_ERR, "SF: Erase failed at %x\n", offset);
 			ret = -1;
 			goto out;
@@ -197,7 +198,7 @@ out:
 static void pch_read_data(uint8_t *data, int len)
 {
 	int i;
-	pch_spi_regs *spi_bar;
+	pch_spi_flash_regs *spi_bar;
 	uint32_t temp32 = 0;
 
 	spi_bar = get_spi_bar();
@@ -230,7 +231,7 @@ int pch_hwseq_read(const struct spi_flash *flash, u32 addr, size_t len,
 		if (block_len > (~addr & 0xff))
 			block_len = (~addr & 0xff) + 1;
 
-		if (spi_do_operation(HSFC_FCYCLE_RD, addr, block_len,
+		if (spi_flash_do_operation(HSFC_FCYCLE_RD, addr, block_len,
 					timeout_ms))
 			return -1;
 
@@ -251,7 +252,7 @@ static void pch_fill_data(const uint8_t *data, int len)
 {
 	uint32_t temp32 = 0;
 	int i;
-	pch_spi_regs *spi_bar;
+	pch_spi_flash_regs *spi_bar;
 
 	spi_bar = get_spi_bar();
 	if (len <= 0)
@@ -277,7 +278,7 @@ int pch_hwseq_write(const struct spi_flash *flash, u32 addr, size_t len,
 {
 	uint8_t block_len;
 	uint32_t start = addr;
-	pch_spi_regs *spi_bar;
+	pch_spi_flash_regs *spi_bar;
 
 	spi_bar = get_spi_bar();
 
@@ -296,7 +297,7 @@ int pch_hwseq_write(const struct spi_flash *flash, u32 addr, size_t len,
 			block_len = (~addr & 0xff) + 1;
 
 		pch_fill_data(buf, block_len);
-		if (spi_do_operation(HSFC_FCYCLE_WR, addr, block_len,
+		if (spi_flash_do_operation(HSFC_FCYCLE_WR, addr, block_len,
 					timeout_ms)) {
 			printk(BIOS_ERR, "SF: write failure at %x\n", addr);
 			return -1;
@@ -315,7 +316,7 @@ int pch_hwseq_read_status(const struct spi_flash *flash, u8 *reg)
 	size_t block_len = SPI_READ_STATUS_LENGTH;
 	const int timeout_ms = 6;
 
-	if (spi_do_operation(HSFC_FCYCLE_RS, 0, block_len, timeout_ms))
+	if (spi_flash_do_operation(HSFC_FCYCLE_RS, 0, block_len, timeout_ms))
 		return -1;
 
 	pch_read_data(reg, block_len);
@@ -332,7 +333,7 @@ struct spi_flash *spi_flash_programmer_probe(struct spi_slave *spi, int force)
 	flash = car_get_var_ptr(&boot_flash);
 
 	/* Ensure writes can take place to the flash. */
-	spi_init();
+	spi_flash_init();
 
 	memcpy(&flash->spi, spi, sizeof(*spi));
 	flash->name = "Opaque HW-sequencing";
@@ -350,22 +351,9 @@ struct spi_flash *spi_flash_programmer_probe(struct spi_slave *spi, int force)
 	return flash;
 }
 
-int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
-{
-	/* This is special hardware. We expect bus 0 and CS line 0 here. */
-	if ((bus != 0) || (cs != 0))
-		return -1;
-
-	slave->bus = bus;
-	slave->cs = cs;
-	slave->ctrlr = NULL;
-
-	return 0;
-}
-
 int spi_flash_get_fpr_info(struct fpr_info *info)
 {
-	pch_spi_regs *spi_bar = get_spi_bar();
+	pch_spi_flash_regs *spi_bar = get_spi_bar();
 
 	if (!spi_bar)
 		return -1;
@@ -378,13 +366,13 @@ int spi_flash_get_fpr_info(struct fpr_info *info)
 
 #if ENV_RAMSTAGE
 /*
- * spi_init() needs run unconditionally in every boot (including resume) to
- * allow write protect to be disabled for eventlog and firmware updates.
+ * spi_flash_init() needs run unconditionally in every boot (including resume)
+ * to allow write protect to be disabled for eventlog and firmware updates.
  */
-static void spi_init_cb(void *unused)
+static void spi_flash_init_cb(void *unused)
 {
-	spi_init();
+	spi_flash_init();
 }
 
-BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_ENTRY, spi_init_cb, NULL);
+BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_ENTRY, spi_flash_init_cb, NULL);
 #endif

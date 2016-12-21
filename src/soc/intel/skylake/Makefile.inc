@@ -25,6 +25,7 @@ bootblock-y += monotonic_timer.c
 bootblock-y += pch.c
 bootblock-y += pcr.c
 bootblock-y += pmutil.c
+bootblock-y += spi.c
 bootblock-y += tsc_freq.c
 
 verstage-y += flash_controller.c
@@ -33,6 +34,7 @@ verstage-y += pch.c
 verstage-$(CONFIG_UART_DEBUG) += uart_debug.c
 verstage-y += pmutil.c
 verstage-y += bootblock/i2c.c
+verstage-y += spi.c
 
 romstage-y += flash_controller.c
 romstage-y += gpio.c
@@ -46,6 +48,7 @@ romstage-y += pmutil.c
 romstage-$(CONFIG_PLATFORM_USES_FSP2_0) += reset.c
 romstage-y += smbus_common.c
 romstage-y += early_smbus.c
+romstage-y += spi.c
 romstage-y += tsc_freq.c
 romstage-$(CONFIG_UART_DEBUG) += uart_debug.c
 
@@ -80,6 +83,7 @@ ramstage-y += smbus.c
 ramstage-y += smbus_common.c
 ramstage-y += smi.c
 ramstage-y += smmrelocate.c
+ramstage-y += spi.c
 ramstage-y += systemagent.c
 ramstage-y += tsc_freq.c
 ramstage-y += uart.c
@@ -95,6 +99,7 @@ smm-y += pch.c
 smm-y += pmutil.c
 smm-y += smihandler.c
 smm-$(CONFIG_SPI_FLASH_SMM) += flash_controller.c
+smm-$(CONFIG_SPI_FLASH_SMM) += spi.c
 smm-y += tsc_freq.c
 smm-$(CONFIG_UART_DEBUG) += uart_debug.c
 

@@ -101,29 +101,6 @@ config HUDSON_FWM
 	default y if HUDSON_XHCI_FWM || HUDSON_IMC_FWM || HUDSON_GEC_FWM
 	default n
 
-if HUDSON_FWM
-
-config HUDSON_FWM_POSITION
-	hex "Hudson Firmware ROM Position"
-	default 0xFFF20000 if BOARD_ROMSIZE_KB_1024
-	default 0xFFE20000 if BOARD_ROMSIZE_KB_2048
-	default 0xFFC20000 if BOARD_ROMSIZE_KB_4096
-	default 0xFF820000 if BOARD_ROMSIZE_KB_8192
-	default 0xFF020000 if BOARD_ROMSIZE_KB_16384
-	help
-	  Hudson requires the firmware MUST be located at
-	  a specific address (ROM start address + 0x20000), otherwise
-	  xhci host Controller can not find or load the xhci firmware.
-
-	  The firmware start address is dependent on the ROM chip size.
-	  The default offset is 0x20000 from the ROM start address, namely
-	  0xFFF20000 if flash chip size is 1M
-	  0xFFE20000 if flash chip size is 2M
-	  0xFFC20000 if flash chip size is 4M
-	  0xFF820000 if flash chip size is 8M
-	  0xFF020000 if flash chip size is 16M
-endif # HUDSON_FWM
-
 config HUDSON_SATA_MODE
 	int "SATA Mode"
 	default 0

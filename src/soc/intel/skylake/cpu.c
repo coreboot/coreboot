@@ -197,7 +197,7 @@ static void configure_thermal_target(void)
 	config_t *conf = dev->chip_info;
 	msr_t msr;
 
-	/* Set TCC activaiton offset if supported */
+	/* Set TCC activation offset if supported */
 	msr = rdmsr(MSR_PLATFORM_INFO);
 	if ((msr.lo & (1 << 30)) && conf->tcc_offset) {
 		msr = rdmsr(MSR_TEMPERATURE_TARGET);
@@ -366,9 +366,6 @@ static void cpu_core_init(device_t cpu)
 	/* Configure Intel Speed Shift */
 	configure_isst();
 
-	/* Thermal throttle activation offset */
-	configure_thermal_target();
-
 	/* Enable Direct Cache Access */
 	configure_dca_cap();
 
@@ -484,6 +481,9 @@ void soc_init_cpus(device_t dev)
 	if (mp_init_with_smm(cpu_bus, &mp_ops)) {
 		printk(BIOS_ERR, "MP initialization failure.\n");
 	}
+
+	/* Thermal throttle activation offset */
+	configure_thermal_target();
 }
 
 int soc_skip_ucode_update(u32 current_patch_id, u32 new_patch_id)

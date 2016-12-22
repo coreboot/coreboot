@@ -13,6 +13,7 @@ VBOOT_SOURCE ?= $(abspath $(CURDIR)/../../../3rdparty/vboot)
 
 TAG-$(DEPTHCHARGE_MASTER)=origin/master
 TAG-$(DEPTHCHARGE_STABLE)=$(STABLE_COMMIT_ID)
+TAG-$(DEPTHCHARGE_REVISION)=$(DEPTHCHARGE_REVISION_ID)
 
 # todo: consider reverting this once stable moves past the commit below
 payload_target=depthcharge

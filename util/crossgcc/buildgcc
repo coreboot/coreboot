@@ -572,7 +572,7 @@ build_LIBELF() {
 }
 
 build_BINUTILS() {
-	if [ $TARGETARCH == "x86_64-elf" ]; then
+	if [ $TARGETARCH = "x86_64-elf" ]; then
 		ADDITIONALTARGET=",i386-elf"
 	fi
 	CC="$CC" ../binutils-${BINUTILS_VERSION}/configure --prefix=$TARGETDIR \

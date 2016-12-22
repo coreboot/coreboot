@@ -579,7 +579,10 @@ build_BINUTILS() {
 		--target=${TARGETARCH} --enable-targets=${TARGETARCH}${ADDITIONALTARGET} \
 		--disable-werror --disable-nls --enable-lto --enable-gold \
 		--enable-interwork --enable-multilib \
-		--enable-plugins --enable-multilibs CFLAGS="$HOSTCFLAGS" || touch .failed
+		--enable-plugins --enable-multilibs
+		CFLAGS="$HOSTCFLAGS" \
+		CXXFLAGS="$HOSTCFLAGS" \
+		|| touch .failed
 	$MAKE $JOBS || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
 }

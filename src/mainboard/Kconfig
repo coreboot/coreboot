@@ -1,3 +1,5 @@
+comment "Important: Run 'make distclean' before switching boards"
+
 choice
 	prompt "Mainboard vendor"
 	default VENDOR_EMULATION

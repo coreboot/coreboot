@@ -37,7 +37,19 @@ endif
 # updates are wrapped in a container, like AMD's microcode update container. If
 # there is only one microcode binary (i.e. one container), then we don't have
 # this issue, and this rule will continue to work.
-$(obj)/cpu_microcode_blob.bin: $$(cpu_microcode_bins)
+$(obj)/cpu_microcode_blob.bin: $$(wildcard $$(cpu_microcode_bins))
+	for bin in $(cpu_microcode_bins); do \
+		if [ ! -f "$$bin" ]; then \
+			echo "Microcode error: $$bin does not exist"; \
+			NO_MICROCODE_FILE=1; \
+		fi; \
+	done; \
+	if [ -n "$$NO_MICROCODE_FILE" ]; then \
+		if [ -z "$(CONFIG_USE_BLOBS)" ] && [ -n "$(CONFIG_CPU_MICROCODE_CBFS_GENERATE)" ]; then \
+			echo "Try enabling binary-only repository in Kconfig 'General setup' menu."; \
+		fi; \
+		false; \
+	fi
 	@printf "    MICROCODE  $(subst $(obj)/,,$(@))\n"
 	@echo $(cpu_microcode_bins)
 	cat /dev/null $+ > $@

@@ -103,10 +103,13 @@ endif
 # Depthcharge
 
 payloads/external/depthcharge/depthcharge/build/depthcharge.elf depthcharge: $(DOTCONFIG) $(CBFSTOOL)
-
 	$(MAKE) -C payloads/external/depthcharge \
 		BOARD=$(call ws_to_under,$(call strip_quotes,$(call tolower,$(CONFIG_MAINBOARD_PART_NUMBER)))) \
-		MFLAGS= MAKEFLAGS=
+		MFLAGS= MAKEFLAGS= \
+		DEPTHCHARGE_MASTER=$(CONFIG_DEPTHCHARGE_MASTER) \
+		DEPTHCHARGE_STABLE=$(CONFIG_DEPTHCHARGE_STABLE) \
+		DEPTHCHARGE_REVISION=$(CONFIG_DEPTHCHARGE_REVISION) \
+		DEPTHCHARGE_REVISION_ID=$(CONFIG_DEPTHCHARGE_REVISION_ID)
 
 # FILO
 

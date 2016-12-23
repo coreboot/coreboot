@@ -8,6 +8,7 @@
 #define __CROS_VPD_H__
 
 #define CROS_VPD_REGION_NAME "region"
+#define CROS_VPD_WIFI_SAR_NAME "wifi_sar"
 
 /*
  * Reads VPD string value by key.

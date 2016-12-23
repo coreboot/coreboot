@@ -181,6 +181,12 @@ int rtc_get(struct rtc_time *time)
 	rk808_clrsetbits(RTC_CTRL, RTC_CTRL_GET_TIME, 0);
 	rk808_clrsetbits(RTC_CTRL, 0, RTC_CTRL_GET_TIME | RTC_CTRL_RTC_READSEL);
 
+	/*
+	 * After we set the GET_TIME bit, the rtc time can't be read
+	 * immediately. So we should wait up to 31.25 us.
+	 */
+	udelay(32);
+
 	ret |= rk808_read(RTC_SECOND, &value);
 	time->sec = bcd2bin(value & 0x7f);
 

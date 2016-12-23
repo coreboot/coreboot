@@ -35,4 +35,12 @@ config PAYLOAD_FILE
 	string
 	default "payloads/external/depthcharge/depthcharge/build/depthcharge.elf"
 
+config LP_DEFCONFIG_OVERRIDE
+	def_bool n
+	help
+	  The Depthcharge makefile looks for a file config.<boardname> in the
+	  libpayload/configs directory.  Say Y here to use the file defconfig
+	  instead.  This is can be a convenience for development purposes, or
+	  if the defaults in defconfig are sufficient for your system.
+
 endif

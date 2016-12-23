@@ -30,6 +30,13 @@ unexport src srck obj objk
 
 BOARD:=$(notdir $(CONFIG_MAINBOARD_DIR))
 
+ifeq ($(OVERRIDE_DEFCONFIG),y)
+$(info Depthcharge: Using default defconfig for libpayload)
+libpayload_config=$(libpayload_dir)/configs/defconfig
+else
+libpayload_config=$(libpayload_dir)/configs/config.$(BOARD)
+endif
+
 all: build
 
 $(project_dir):
@@ -47,10 +54,10 @@ checkout: fetch
 	cd $(project_dir) ; git checkout master; git branch -D coreboot 2>/dev/null; git checkout -b coreboot $(TAG-y)
 
 $(libpayload_install_dir): $(project_dir)
-	test -f $(libpayload_dir)/configs/config.$(BOARD) || \
-		(echo "Error: $(libpayload_dir)/configs/config.$(BOARD) is not present" && \
+	test -f $(libpayload_config)|| \
+		(echo "Error: $(libpayload_config) is not present" && \
 		false)
-	cp $(libpayload_dir)/configs/config.$(BOARD) $(libpayload_dir)/.config
+	cp $(libpayload_config) $(libpayload_dir)/.config
 	$(MAKE) -C $(libpayload_dir) olddefconfig
 	$(MAKE) -C $(libpayload_dir)
 	$(MAKE) -C $(libpayload_dir) install DESTDIR=$(libpayload_install_dir)

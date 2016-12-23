@@ -268,6 +268,7 @@ ohci_shutdown (hci_t *controller)
 		return;
 	detach_controller (controller);
 	ohci_stop(controller);
+	ohci_reset(controller);
 	free (OHCI_INST (controller)->hcca);
 	free ((void *)OHCI_INST (controller)->periodic_ed);
 	free (OHCI_INST (controller));

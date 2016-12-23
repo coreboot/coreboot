@@ -5,3 +5,27 @@ config DRIVERS_INTEL_WIFI
 	help
 	   When enabled, add identifiers in ACPI and SMBIOS tables to
 	   make OS drivers work with certain Intel PCI-e WiFi chipsets.
+
+config USE_SAR
+	bool
+	default n
+	help
+	  Enable it when wifi driver uses SAR configuration feature.
+	  VPD entry "wifi_sar" is required to support it.
+
+config SAR_ENABLE
+	bool
+	default n
+	depends on USE_SAR
+
+config DSAR_ENABLE
+	bool
+	default n
+	depends on USE_SAR
+
+config DSAR_SET_NUM
+	hex "Number of SAR sets when D-SAR is enabled"
+	default 0x3
+	depends on USE_SAR
+	help
+	  There can be up to 3 optional SAR table sets.

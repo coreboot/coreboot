@@ -20,6 +20,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <sar.h>
 #include <smbios.h>
 #include <string.h>
 #include <wrdd.h>
@@ -59,6 +60,72 @@ static int smbios_write_wifi(struct device *dev, int *handle,
 #endif
 
 #if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+static void emit_sar_acpi_structures(void)
+{
+	int i, j, package_size;
+	struct wifi_sar_limits sar_limits;
+
+	/* Retrieve the sar limits data */
+	if (get_wifi_sar_limits(&sar_limits) < 0) {
+		printk(BIOS_ERR, "Error: failed from getting SAR limits!\n");
+		return;
+	}
+
+	/*
+	 * Name ("WRDS", Package () {
+	 *   Revision,
+	 *   Package () {
+	 *     Domain Type,	// 0x7:WiFi
+	 *     WiFi SAR BIOS,	// BIOS SAR Enable/disable
+	 *     SAR Table Set	// Set#1 of SAR Table (10 bytes)
+	 *   }
+	 * })
+	 */
+	acpigen_write_name("WRDS");
+	acpigen_write_package(2);
+	acpigen_write_dword(WRDS_REVISION);
+	/* Emit 'Domain Type' + 'WiFi SAR BIOS' + 10 bytes for Set#1 */
+	package_size = 1 + 1 + BYTES_PER_SAR_LIMIT;
+	acpigen_write_package(package_size);
+	acpigen_write_dword(WRDS_DOMAIN_TYPE_WIFI);
+	acpigen_write_dword(CONFIG_SAR_ENABLE);
+	for (i = 0; i < BYTES_PER_SAR_LIMIT; i++)
+		acpigen_write_byte(sar_limits.sar_limit[0][i]);
+	acpigen_pop_len();
+	acpigen_pop_len();
+
+	/*
+	 * Name ("EWRD", Package () {
+	 *   Revision,
+	 *   Package () {
+	 *     Domain Type,		// 0x7:WiFi
+	 *     Dynamic SAR Enable,	// Dynamic SAR Enable/disable
+	 *     Extended SAR sets,	// Number of optional SAR table sets
+	 *     SAR Table Set,		// Set#2 of SAR Table (10 bytes)
+	 *     SAR Table Set,		// Set#3 of SAR Table (10 bytes)
+	 *     SAR Table Set		// Set#4 of SAR Table (10 bytes)
+	 *   }
+	 * })
+	 */
+	acpigen_write_name("EWRD");
+	acpigen_write_package(2);
+	acpigen_write_dword(EWRD_REVISION);
+	/*
+	 * Emit 'Domain Type' + "Dynamic SAR Enable' + 'Extended SAR sets'
+	 * + number of bytes for Set#2 & 3 & 4
+	 */
+	package_size = 1 + 1 + 1 + (NUM_SAR_LIMITS - 1) * BYTES_PER_SAR_LIMIT;
+	acpigen_write_package(package_size);
+	acpigen_write_dword(EWRD_DOMAIN_TYPE_WIFI);
+	acpigen_write_dword(CONFIG_DSAR_ENABLE);
+	acpigen_write_dword(CONFIG_DSAR_SET_NUM);
+	for (i = 1; i < NUM_SAR_LIMITS; i++)
+		for (j = 0; j < BYTES_PER_SAR_LIMIT; j++)
+			acpigen_write_byte(sar_limits.sar_limit[i][j]);
+	acpigen_pop_len();
+	acpigen_pop_len();
+}
+
 static void intel_wifi_fill_ssdt(struct device *dev)
 {
 	struct drivers_intel_wifi_config *config = dev->chip_info;
@@ -104,6 +171,10 @@ static void intel_wifi_fill_ssdt(struct device *dev)
 		acpigen_pop_len();
 		acpigen_pop_len();
 	}
+
+	/* Fill Wifi sar related ACPI structures */
+	if (IS_ENABLED(CONFIG_USE_SAR))
+		emit_sar_acpi_structures();
 
 	acpigen_pop_len(); /* Device */
 	acpigen_pop_len(); /* Scope */

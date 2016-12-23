@@ -14,6 +14,11 @@ VBOOT_SOURCE ?= $(abspath $(CURDIR)/../../../3rdparty/vboot)
 TAG-$(DEPTHCHARGE_MASTER)=origin/master
 TAG-$(DEPTHCHARGE_STABLE)=$(STABLE_COMMIT_ID)
 
+# todo: consider reverting this once stable moves past the commit below
+payload_target=depthcharge
+payload_target_old=$(payload_target)_unified
+payload_namechange=74a07395eb9976747055b4ac7a0ae7dcb603a6f4
+
 unexport KCONFIG_AUTOHEADER
 unexport KCONFIG_AUTOCONFIG
 unexport KCONFIG_DEPENDENCIES
@@ -60,8 +65,12 @@ config: $(libpayload_install_dir) checkout
 
 build: config
 	echo "    MAKE       $(project_name) $(TAG-y)"
-	cd $(project_dir) && $(MAKE) BOARD=$(BOARD) LIBPAYLOAD_DIR=$(libpayload_install_dir)/libpayload \
-		VB_SOURCE=$(VBOOT_SOURCE) PATH="$(abspath ../../../build/util/cbfstool):$$PATH" depthcharge
+	cd $(project_dir) && \
+		git merge-base --is-ancestor $(payload_namechange) $(TAG-y) >/dev/null 2>&1 && \
+			$(MAKE) BOARD=$(BOARD) LIBPAYLOAD_DIR=$(libpayload_install_dir)/libpayload \
+				VB_SOURCE=$(VBOOT_SOURCE) PATH="$(abspath ../../../build/util/cbfstool):$$PATH" $(payload_target) || \
+			$(MAKE) BOARD=$(BOARD) LIBPAYLOAD_DIR=$(libpayload_install_dir)/libpayload \
+				VB_SOURCE=$(VBOOT_SOURCE) PATH="$(abspath ../../../build/util/cbfstool):$$PATH" $(payload_target_old)
 
 clean:
 	test -d $(output_dir) && rm -rf $(output_dir) || exit 0

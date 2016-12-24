@@ -23,6 +23,7 @@
 #include "chip.h"
 #include <security/vboot/vboot_common.h>
 #include <southbridge/intel/bd82x6x/pch.h>
+#include <memory_info.h>
 
 /* Management Engine is in the southbridge */
 #include <southbridge/intel/bd82x6x/me.h>
@@ -382,4 +383,79 @@ void perform_raminit(int s3resume)
 		/* Failed S3 resume, reset to come up cleanly */
 		system_reset();
 	}
+	setup_sdram_meminfo(&pei_data);
+}
+
+void setup_sdram_meminfo(struct pei_data *pei_data)
+{
+	u32 addr_decoder_common, addr_decode_ch[2];
+	struct memory_info *mem_info;
+	struct dimm_info *dimm;
+	int dimm_size;
+	int i;
+	int dimm_cnt = 0;
+
+	mem_info = cbmem_add(CBMEM_ID_MEMINFO, sizeof(struct memory_info));
+	memset(mem_info, 0, sizeof(struct memory_info));
+
+	addr_decoder_common = mchbar_read32(MAD_CHNL);
+	addr_decode_ch[0] = mchbar_read32(MAD_DIMM_CH0);
+	addr_decode_ch[1] = mchbar_read32(MAD_DIMM_CH1);
+
+	const int refclk = mchbar_read32(MC_BIOS_REQ) & 0x100 ? 100 : 133;
+	const int ddr_frequency = (mchbar_read32(MC_BIOS_DATA) * refclk * 100 * 2 + 50) / 100;
+
+	for (i = 0; i < ARRAY_SIZE(addr_decode_ch); i++) {
+		u32 ch_conf = addr_decode_ch[i];
+
+		/* DIMM-A */
+		dimm_size = ((ch_conf >> 0) & 0xff) * 256;
+		if (dimm_size) {
+			dimm = &mem_info->dimm[dimm_cnt];
+			dimm->dimm_size = dimm_size;
+			dimm->ddr_type = 0x18;				/* DDR3 */
+			dimm->ddr_frequency = ddr_frequency;
+			dimm->rank_per_dimm = 1 + ((ch_conf >> 17) & 1);
+			dimm->channel_num = i;
+			dimm->dimm_num = 0;
+			dimm->bank_locator = i * 2;
+			memcpy(dimm->serial,				/* bytes 122-125 */
+				&pei_data->spd_data[0][122],
+				sizeof(uint8_t) * 4);
+			memcpy(dimm->module_part_number,		/* bytes 128-145 */
+				&pei_data->spd_data[0][128],
+				sizeof(uint8_t) * 18);
+			dimm->mod_id =					/* bytes 117/118 */
+				(pei_data->spd_data[0][118] << 8) |
+				(pei_data->spd_data[0][117] & 0xFF);
+			dimm->mod_type = 3;				/* SPD_SODIMM */
+			dimm->bus_width = 0x3;				/* 64-bit */
+			dimm_cnt++;
+		}
+		/* DIMM-B */
+		dimm_size = ((ch_conf >> 8) & 0xff) * 256;
+		if (dimm_size) {
+			dimm = &mem_info->dimm[dimm_cnt];
+			dimm->dimm_size = dimm_size;
+			dimm->ddr_type = 0x18;				/* DDR3 */
+			dimm->ddr_frequency = ddr_frequency;
+			dimm->rank_per_dimm =  1 + ((ch_conf >> 18) & 1);
+			dimm->channel_num = i;
+			dimm->dimm_num = 1;
+			dimm->bank_locator = i * 2;
+			memcpy(dimm->serial,				/* bytes 122-125 */
+				&pei_data->spd_data[0][122],
+				sizeof(uint8_t) * 4);
+			memcpy(dimm->module_part_number,		/* bytes 128-145 */
+				&pei_data->spd_data[0][128],
+				sizeof(uint8_t) * 18);
+			dimm->mod_id =					/* bytes 117/118 */
+				(pei_data->spd_data[0][118] << 8) |
+				(pei_data->spd_data[0][117] & 0xFF);
+			dimm->mod_type = 3;				/* SPD_SODIMM */
+			dimm->bus_width = 0x3;				/* 64-bit */
+			dimm_cnt++;
+		}
+	}
+	mem_info->dimm_cnt = dimm_cnt;
 }

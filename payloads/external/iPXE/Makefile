@@ -22,7 +22,7 @@ TAG-$(CONFIG_IPXE_STABLE)=$(STABLE_COMMIT_ID)
 
 project_name=iPXE
 project_dir=ipxe
-project_git_repo=git://git.ipxe.org/ipxe.git
+project_git_repo=https://git.ipxe.org/ipxe.git
 
 all: build
 

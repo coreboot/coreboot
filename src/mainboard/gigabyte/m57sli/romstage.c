@@ -143,7 +143,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
  	it8716f_enable_dev(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	pnp_exit_ext_func_mode(SERIAL_DEV);
 #endif
-	ite_conf_clkin(CLKIN_DEV, ITE_UART_CLK_PREDIVIDE_48);
+	ite_conf_clkin(CLKIN_DEV, ITE_UART_CLK_PREDIVIDE_24);
 	ite_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 
 	setup_mb_resource_map();

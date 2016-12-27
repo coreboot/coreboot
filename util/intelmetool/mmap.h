@@ -21,7 +21,7 @@
 
 #ifndef __DARWIN__
 extern int fd_mem;
-extern void *map_physical(uint64_t phys_addr, size_t len);
+extern void *map_physical(off_t phys_addr, size_t len);
 extern void unmap_physical(void *virt_addr, size_t len);
-extern void *map_physical_exact(uint64_t phys_addr, uint64_t mapto, size_t len);
+extern void *map_physical_exact(off_t phys_addr, void *mapto, size_t len);
 #endif

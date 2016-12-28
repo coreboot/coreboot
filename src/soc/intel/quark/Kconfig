@@ -109,21 +109,54 @@ config ENABLE_DEBUG_LED_ESRAM
 	default n
 	select ENABLE_DEBUG_LED
 	help
-	  Indicate that ESRAM has been successfully initialized.
+	  Indicate that ESRAM has been successfully initialized.  If the SD LED
+	  does not light then the ESRAM initialization needs to be debugged.
 
 config ENABLE_DEBUG_LED_FINDFSP
 	bool "SD LED indicates fsp.bin file was found"
+	depends on PLATFORM_USES_FSP1_1
 	default n
 	select ENABLE_DEBUG_LED
 	help
-	  Indicate that fsp.bin was found.
+	  Indicate that fsp.bin was found.  If the SD LED does not light then
+	  the code between ESRAM initialization through find_fsp needs to
+	  debugged.  Start by verifying that the correct fsp.bin is in the
+	  image.
 
-config ENABLE_DEBUG_LED_TEMPRAMINIT
-	bool "SD LED indicates TempRamInit was successful"
+config ENABLE_DEBUG_LED_BOOTBLOCK_ENTRY
+	bool "SD LED indicates bootblock.c successfully entered"
 	default n
 	select ENABLE_DEBUG_LED
 	help
-	  Indicate that TempRamInit was successful.
+	  Indicate that bootblock_c_entry was entered.  If the SD LED does not
+	  light then debug the code between ESRAM and bootblock_c_entry.  For
+	  FSP 1.1, use ENABLE_DEBUG_LED_FINDFSP to split this code.
+
+config ENABLE_DEBUG_LED_SOC_EARLY_INIT_ENTRY
+	bool "SD LED indicates bootblock_soc_early_init successfully entered"
+	default n
+	select ENABLE_DEBUG_LED
+	help
+	  Indicate that bootblock_soc_early_init was entered.  If the SD LED
+	  does not light then debug the code in bootblock_main_with_timestamp.
+
+config ENABLE_DEBUG_LED_SOC_EARLY_INIT_EXIT
+	bool "SD LED indicates bootblock_soc_early_init successfully exited"
+	default n
+	select ENABLE_DEBUG_LED
+	help
+	  Indicate that bootblock_soc_early_init exited.  If the SD LED does not
+	  light then debug the scripts in bootblock_soc_early_init.
+
+config ENABLE_DEBUG_LED_SOC_INIT_ENTRY
+	bool "SD LED indicates bootblock_soc_init successfully entered"
+	default n
+	select ENABLE_DEBUG_LED
+	help
+	  Indicate that bootblock_soc_init was entered.  If the SD LED does not
+	  light then debug the code in bootblock_mainboard_early_init and
+	  console_init.  If the SD LED does light but there is no serial then
+	  debug the serial port configuration and initialization.
 
 #####
 # ESRAM layout

@@ -507,14 +507,7 @@ L43:
 
 L44:
 #if IS_ENABLED(CONFIG_ENABLE_DEBUG_LED_ESRAM)
-	/* Turn on SD LED to indicate ESRAM successfully initialized */
-	movl	$SD_HOST_CTRL, %ebx
-	movb	0(%ebx), %al
-	orb	$1, %al
-	movb	%al, 0(%ebx)
-
-	/* Loop forever */
-	jmp	.
+	jmp	light_sd_led
 #endif /* CONFIG_ENABLE_DEBUG_LED_ESRAM */
 #endif /* CONFIG_ENABLE_DEBUG_LED */
 
@@ -537,3 +530,17 @@ before_carstage:
 	call bootblock_c_entry
 
 	/* Never reached */
+
+	.global	light_sd_led
+
+light_sd_led:
+	/* Turn on SD LED to indicate ESRAM successfully initialized */
+	movl	$SD_HOST_CTRL, %ebx
+	movb	0(%ebx), %al
+	orb	$1, %al
+	movb	%al, 0(%ebx)
+
+	/* Loop forever */
+die:
+	hlt
+	jmp	die

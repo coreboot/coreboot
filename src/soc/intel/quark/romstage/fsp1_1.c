@@ -26,6 +26,8 @@
 #include <soc/romstage.h>
 #include <string.h>
 
+extern void asmlinkage light_sd_led(void);
+
 asmlinkage void *car_stage_c_entry(void)
 {
 	FSP_INFO_HEADER *fih;
@@ -40,6 +42,8 @@ asmlinkage void *car_stage_c_entry(void)
 
 	/* Locate the FSP header in ESRAM */
 	fih = find_fsp(CONFIG_FSP_ESRAM_LOC);
+	if (IS_ENABLED(CONFIG_ENABLE_DEBUG_LED_FINDFSP))
+		light_sd_led();
 
 	/* Start the early verstage/romstage code */
 	post_code(0x2A);

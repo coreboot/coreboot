@@ -13,13 +13,15 @@
  * GNU General Public License for more details.
  */
 
-#define LHLT_DELAY	0x50000		/* I/O delay between post codes on failure */
+/* I/O delay between post codes on failure */
+#define LHLT_DELAY	0x50000
 
 .text
 .global car_stage_entry
 car_stage_entry:
-	call	romstage_after_verstage
-	#include "after_raminit.S"
+	call	romstage_c_entry
+	#include "src/drivers/intel/fsp1_1/after_raminit.S"
+
 
 	movb	$0x69, %ah
 	jmp	.Lhlt

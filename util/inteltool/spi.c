@@ -12,39 +12,57 @@ static const io_register_t pch_bios_cntl_registers[] = {
 	{ 0x6, 2, "reserved" },
 };
 
-#define SPIBAR 0x3800
+#define ICH9_SPIBAR 0x3800
+#define ICH78_SPIBAR 0x3020
 
 static const io_register_t spi_bar_registers[] = {
-	{ SPIBAR + 0x00, 4, "BFPR - BIOS Flash primary region" },
-	{ SPIBAR + 0x04, 2, "HSFSTS - Hardware Sequencing Flash Status" },
-	{ SPIBAR + 0x06, 2, "HSFCTL - Hardware Sequencing Flash Control" },
-	{ SPIBAR + 0x08, 4, "FADDR - Flash Address" },
-	{ SPIBAR + 0x0c, 4, "Reserved" },
-	{ SPIBAR + 0x10, 4, "FDATA0" },
+	{ 0x00, 4, "BFPR - BIOS Flash primary region" },
+	{ 0x04, 2, "HSFSTS - Hardware Sequencing Flash Status" },
+	{ 0x06, 2, "HSFCTL - Hardware Sequencing Flash Control" },
+	{ 0x08, 4, "FADDR - Flash Address" },
+	{ 0x0c, 4, "Reserved" },
+	{ 0x10, 4, "FDATA0" },
 	/* 0x10 .. 0x4f are filled with data */
-	{ SPIBAR + 0x50, 4, "FRACC - Flash Region Access Permissions" },
-	{ SPIBAR + 0x54, 4, "Flash Region 0" },
-	{ SPIBAR + 0x58, 4, "Flash Region 1" },
-	{ SPIBAR + 0x5c, 4, "Flash Region 2" },
-	{ SPIBAR + 0x60, 4, "Flash Region 3" },
-	{ SPIBAR + 0x64, 4, "Flash Region 4" },
-	{ SPIBAR + 0x74, 4, "FPR0 Flash Protected Range 0" },
-	{ SPIBAR + 0x78, 4, "FPR0 Flash Protected Range 1" },
-	{ SPIBAR + 0x7c, 4, "FPR0 Flash Protected Range 2" },
-	{ SPIBAR + 0x80, 4, "FPR0 Flash Protected Range 3" },
-	{ SPIBAR + 0x84, 4, "FPR0 Flash Protected Range 4" },
-	{ SPIBAR + 0x90, 1, "SSFSTS - Software Sequencing Flash Status" },
-	{ SPIBAR + 0x91, 3, "SSFSTS - Software Sequencing Flash Status" },
-	{ SPIBAR + 0x94, 2, "PREOP - Prefix opcode Configuration" },
-	{ SPIBAR + 0x96, 2, "OPTYPE - Opcode Type Configuration" },
-	{ SPIBAR + 0x98, 8, "OPMENU - Opcode Menu Configuration" },
-	{ SPIBAR + 0xa0, 1, "BBAR - BIOS Base Address Configuration" },
-	{ SPIBAR + 0xb0, 4, "FDOC - Flash Descriptor Observability Control" },
-	{ SPIBAR + 0xb8, 4, "Reserved" },
-	{ SPIBAR + 0xc0, 4, "AFC - Additional Flash Control" },
-	{ SPIBAR + 0xc4, 4, "LVSCC - Host Lower Vendor Specific Component Capabilities" },
-	{ SPIBAR + 0xc8, 4, "UVSCC - Host Upper Vendor Specific Component Capabilities" },
-	{ SPIBAR + 0xd0, 4, "FPB - Flash Partition Boundary" },
+	{ 0x50, 4, "FRACC - Flash Region Access Permissions" },
+	{ 0x54, 4, "Flash Region 0" },
+	{ 0x58, 4, "Flash Region 1" },
+	{ 0x5c, 4, "Flash Region 2" },
+	{ 0x60, 4, "Flash Region 3" },
+	{ 0x64, 4, "Flash Region 4" },
+	{ 0x74, 4, "FPR0 Flash Protected Range 0" },
+	{ 0x78, 4, "FPR0 Flash Protected Range 1" },
+	{ 0x7c, 4, "FPR0 Flash Protected Range 2" },
+	{ 0x80, 4, "FPR0 Flash Protected Range 3" },
+	{ 0x84, 4, "FPR0 Flash Protected Range 4" },
+	{ 0x90, 1, "SSFSTS - Software Sequencing Flash Status" },
+	{ 0x91, 3, "SSFSTS - Software Sequencing Flash Status" },
+	{ 0x94, 2, "PREOP - Prefix opcode Configuration" },
+	{ 0x96, 2, "OPTYPE - Opcode Type Configuration" },
+	{ 0x98, 8, "OPMENU - Opcode Menu Configuration" },
+	{ 0xa0, 1, "BBAR - BIOS Base Address Configuration" },
+	{ 0xb0, 4, "FDOC - Flash Descriptor Observability Control" },
+	{ 0xb8, 4, "Reserved" },
+	{ 0xc0, 4, "AFC - Additional Flash Control" },
+	{ 0xc4, 4, "LVSCC - Host Lower Vendor Specific Component Capabilities" },
+	{ 0xc8, 4, "UVSCC - Host Upper Vendor Specific Component Capabilities" },
+	{ 0xd0, 4, "FPB - Flash Partition Boundary" },
+};
+
+static const io_register_t ich7_spi_bar_registers[] = {
+	{ 0x00, 2, "SPIS - SPI Status" },
+	{ 0x02, 2, "SPIC - SPI Control" },
+	{ 0x04, 4, "SPIA - SPI Address" },
+	/*
+	 *0x08 .. 0x47 are filled with data
+	 *0x48 .. 0x4f is not mentioned by datasheet
+	 */
+	{ 0x50, 4, "BBAR - BIOS Base Address Configuration" },
+	{ 0x54, 2, "PREOP Prefix Opcode Configuration" },
+	{ 0x56, 2, "OPTYPE Opcode Type Configuration" },
+	{ 0x58, 8, "OPMENU Opcode Menu Configuration" },
+	{ 0x60, 4, "PBR0 Protected BIOS Range 0" },
+	{ 0x64, 4, "PBR1 Protected BIOS Range 1" },
+	{ 0x68, 4, "PBR2 Protected BIOS Range 2" },
 };
 
 int print_bioscntl(struct pci_dev *sb)
@@ -100,16 +118,29 @@ int print_spibar(struct pci_dev *sb) {
 	volatile uint8_t *rcba;
 	uint32_t rcba_phys;
 	const io_register_t *spi_register = NULL;
+	uint32_t spibaroffset;
 
 	printf("\n============= SPI Bar ==============\n\n");
 
 	switch (sb->device_id) {
 	case PCI_DEVICE_ID_INTEL_ICH6:
+		printf("This southbridge does not have a SPI controller.\n");
+		return 1;
 	case PCI_DEVICE_ID_INTEL_ICH7:
 	case PCI_DEVICE_ID_INTEL_ICH7M:
 	case PCI_DEVICE_ID_INTEL_ICH7DH:
 	case PCI_DEVICE_ID_INTEL_ICH7MDH:
+		spibaroffset = ICH78_SPIBAR;
+		rcba_phys = pci_read_long(sb, 0xf0) & 0xfffffffe;
+		size = ARRAY_SIZE(ich7_spi_bar_registers);
+		spi_register = ich7_spi_bar_registers;
+		break;
 	case PCI_DEVICE_ID_INTEL_ICH8:
+		spibaroffset = ICH78_SPIBAR;
+		rcba_phys = pci_read_long(sb, 0xf0) & 0xfffffffe;
+		size = ARRAY_SIZE(spi_bar_registers);
+		spi_register = spi_bar_registers;
+		break;
 	case PCI_DEVICE_ID_INTEL_ICH8M:
 	case PCI_DEVICE_ID_INTEL_ICH8ME:
 	case PCI_DEVICE_ID_INTEL_ICH9DH:
@@ -171,6 +202,7 @@ int print_spibar(struct pci_dev *sb) {
 	case PCI_DEVICE_ID_INTEL_LYNXPOINT_LP_PREM:
 	case PCI_DEVICE_ID_INTEL_LYNXPOINT_LP_BASE:
 	case PCI_DEVICE_ID_INTEL_WILDCATPOINT_LP:
+		spibaroffset = ICH9_SPIBAR;
 		rcba_phys = pci_read_long(sb, 0xf0) & 0xfffffffe;
 		size = ARRAY_SIZE(spi_bar_registers);
 		spi_register = spi_bar_registers;
@@ -197,13 +229,13 @@ int print_spibar(struct pci_dev *sb) {
 	for (i = 0; i < size; i++) {
 		switch(spi_register[i].size) {
 			case 1:
-				printf("0x%08x = %s\n", *(uint8_t *)(rcba + spi_register[i].addr), spi_register[i].name);
+				printf("0x%08x = %s\n", *(uint8_t *)(rcba + spibaroffset + spi_register[i].addr), spi_register[i].name);
 				break;
 			case 2:
-				printf("0x%08x = %s\n", *(uint16_t *)(rcba + spi_register[i].addr), spi_register[i].name);
+				printf("0x%08x = %s\n", *(uint16_t *)(rcba + spibaroffset + spi_register[i].addr), spi_register[i].name);
 				break;
 			case 4:
-				printf("0x%08x = %s\n", *(uint32_t *)(rcba + spi_register[i].addr), spi_register[i].name);
+				printf("0x%08x = %s\n", *(uint32_t *)(rcba + spibaroffset + spi_register[i].addr), spi_register[i].name);
 				break;
 			case 8:
 				printf("0x%08x%08x = %s\n", *(uint32_t *)(rcba + spi_register[i].addr), *(uint32_t *)(rcba + spi_register[i].addr + 4), spi_register[i].name);

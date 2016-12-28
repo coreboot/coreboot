@@ -22,6 +22,8 @@
 #include <soc/pci_devs.h>
 #include <soc/reg_access.h>
 
+extern void asmlinkage light_sd_led(void);
+
 static const struct reg_script legacy_gpio_init[] = {
 	/* Temporarily enable the legacy GPIO controller */
 	REG_PCI_WRITE32(R_QNC_LPC_GBA_BASE, IO_ADDRESS_VALID
@@ -77,11 +79,17 @@ static const struct reg_script mtrr_init[] = {
 
 void asmlinkage bootblock_c_entry(uint64_t base_timestamp)
 {
+	if (IS_ENABLED(CONFIG_ENABLE_DEBUG_LED_BOOTBLOCK_ENTRY))
+		light_sd_led();
+
 	bootblock_main_with_timestamp(base_timestamp);
 }
 
 void bootblock_soc_early_init(void)
 {
+	if (IS_ENABLED(CONFIG_ENABLE_DEBUG_LED_SOC_EARLY_INIT_ENTRY))
+		light_sd_led();
+
 	/* Initialize the MTRRs */
 	reg_script_run(mtrr_init);
 
@@ -94,10 +102,16 @@ void bootblock_soc_early_init(void)
 		reg_script_run_on_dev(HSUART0_BDF, hsuart_init);
 	if (IS_ENABLED(CONFIG_ENABLE_BUILTIN_HSUART1))
 		reg_script_run_on_dev(HSUART1_BDF, hsuart_init);
+
+	if (IS_ENABLED(CONFIG_ENABLE_DEBUG_LED_SOC_EARLY_INIT_EXIT))
+		light_sd_led();
 }
 
 void bootblock_soc_init(void)
 {
+	if (IS_ENABLED(CONFIG_ENABLE_DEBUG_LED_SOC_INIT_ENTRY))
+		light_sd_led();
+
 	/* Display the MTRRs */
 	soc_display_mtrrs();
 }

@@ -3,6 +3,20 @@
 #include <stdlib.h>
 #include "inteltool.h"
 
+static const io_register_t ich6_bios_cntl_registers[] = {
+	{ 0x0, 1, "BIOSWE - write enable" },
+	{ 0x1, 1, "BLE - lock enable" },
+	{ 0x2, 6, "reserved" },
+};
+
+static const io_register_t ich7_bios_cntl_registers[] = {
+	{ 0x0, 1, "BIOSWE - write enable" },
+	{ 0x1, 1, "BLE - lock enable" },
+	{ 0x2, 2, "SPI Read configuration" },
+	{ 0x4, 1, "TopSwapStatus" },
+	{ 0x5, 3, "reserved" },
+};
+
 static const io_register_t pch_bios_cntl_registers[] = {
 	{ 0x0, 1, "BIOSWE - write enable" },
 	{ 0x1, 1, "BLE - lock enable" },
@@ -74,6 +88,30 @@ int print_bioscntl(struct pci_dev *sb)
 	printf("\n============= SPI / BIOS CNTL =============\n\n");
 
 	switch (sb->device_id) {
+	case PCI_DEVICE_ID_INTEL_ICH6:
+		bios_cntl = pci_read_byte(sb, 0xdc);
+		bios_cntl_register = ich6_bios_cntl_registers;
+		size = ARRAY_SIZE(ich6_bios_cntl_registers);
+		break;
+	case PCI_DEVICE_ID_INTEL_ICH7:
+	case PCI_DEVICE_ID_INTEL_ICH7M:
+	case PCI_DEVICE_ID_INTEL_ICH7DH:
+	case PCI_DEVICE_ID_INTEL_ICH7MDH:
+	case PCI_DEVICE_ID_INTEL_ICH8:
+	case PCI_DEVICE_ID_INTEL_ICH8M:
+	case PCI_DEVICE_ID_INTEL_ICH8ME:
+	case PCI_DEVICE_ID_INTEL_ICH9DH:
+	case PCI_DEVICE_ID_INTEL_ICH9DO:
+	case PCI_DEVICE_ID_INTEL_ICH9R:
+	case PCI_DEVICE_ID_INTEL_ICH9:
+	case PCI_DEVICE_ID_INTEL_ICH9M:
+	case PCI_DEVICE_ID_INTEL_ICH9ME:
+	case PCI_DEVICE_ID_INTEL_ICH10R:
+	case PCI_DEVICE_ID_INTEL_NM10:
+		bios_cntl = pci_read_byte(sb, 0xdc);
+		bios_cntl_register = ich7_bios_cntl_registers;
+		size = ARRAY_SIZE(ich7_bios_cntl_registers);
+		break;
 	case PCI_DEVICE_ID_INTEL_3400:
 	case PCI_DEVICE_ID_INTEL_3420:
 	case PCI_DEVICE_ID_INTEL_3450:

@@ -3116,8 +3116,14 @@ void sdram_initialize(int boot_path, const u8 *spd_addresses)
 	/* Program PLL settings */
 	sdram_program_pll_settings(&sysinfo);
 
-	/* Program Graphics Frequency */
-	sdram_program_graphics_frequency(&sysinfo);
+	/*
+	 * Program Graphics Frequency
+	 * Set core display and render clock on 945GC to the max
+	 */
+	if (IS_ENABLED(CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GM))
+		sdram_program_graphics_frequency(&sysinfo);
+	else
+		pci_write_config16(PCI_DEV(0, 2, 0), GCFC, 0x0534);
 
 	/* Program System Memory Frequency */
 	sdram_program_memory_frequency(&sysinfo);

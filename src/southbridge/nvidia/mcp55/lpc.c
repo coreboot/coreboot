@@ -240,10 +240,21 @@ static void mcp55_lpc_enable_resources(device_t dev)
 	mcp55_lpc_enable_childrens_resources(dev);
 }
 
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+static void southbridge_acpi_fill_ssdt_generator(device_t device)
+{
+	amd_generate_powernow(0, 0, 0);
+}
+#endif
+
 static struct device_operations lpc_ops = {
 	.read_resources   = mcp55_lpc_read_resources,
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = mcp55_lpc_enable_resources,
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+	.acpi_fill_ssdt_generator = southbridge_acpi_fill_ssdt_generator,
+	.write_acpi_tables = acpi_write_hpet,
+#endif
 	.init             = lpc_init,
 	.scan_bus         = scan_lpc_bus,
 	.ops_pci          = &mcp55_pci_ops,
@@ -264,21 +275,11 @@ static const struct pci_driver lpc_driver __pci_driver = {
 	.devices = lpc_ids,
 };
 
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
-
-static void southbridge_acpi_fill_ssdt_generator(device_t device)
-{
-	amd_generate_powernow(0, 0, 0);
-}
-
-#endif
-
 static struct device_operations lpc_slave_ops = {
 	.read_resources   = mcp55_lpc_read_resources,
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 #if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
-	.acpi_fill_ssdt_generator = southbridge_acpi_fill_ssdt_generator,
 	.write_acpi_tables      = acpi_write_hpet,
 #endif
 	.init             = lpc_slave_init,

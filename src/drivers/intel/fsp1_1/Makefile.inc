@@ -28,7 +28,6 @@ romstage-y += fsp_util.c
 romstage-y += hob.c
 romstage-y += raminit.c
 romstage-y += romstage.c
-romstage-$(CONFIG_SEPARATE_VERSTAGE) += romstage_after_verstage.S
 romstage-y += stack.c
 romstage-y += stage_cache.c
 romstage-$(CONFIG_MMA) += mma_core.c

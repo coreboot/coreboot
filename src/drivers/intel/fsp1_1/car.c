@@ -68,7 +68,7 @@ asmlinkage void *cache_as_ram_main(struct cache_as_ram_params *car_params)
 }
 
 /* Entry point taken when romstage is called after a separate verstage. */
-asmlinkage void *romstage_after_verstage(void)
+asmlinkage void *romstage_c_entry(void)
 {
 	/* Need to locate the current FSP_INFO_HEADER. The cache-as-ram
 	 * is still enabled. We can directly access work buffer here. */

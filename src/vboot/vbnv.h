@@ -22,6 +22,7 @@
 void read_vbnv(uint8_t *vbnv_copy);
 void save_vbnv(const uint8_t *vbnv_copy);
 int verify_vbnv(uint8_t *vbnv_copy);
+void regen_vbnv_crc(uint8_t *vbnv_copy);
 int get_recovery_mode_from_vbnv(void);
 void set_recovery_mode_into_vbnv(int recovery_reason);
 int vboot_wants_oprom(void);

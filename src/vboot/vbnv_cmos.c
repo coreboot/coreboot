@@ -20,6 +20,22 @@
 #include <vboot/vbnv.h>
 #include <vboot/vbnv_layout.h>
 
+static void clear_vbnv_battery_cutoff_flag(uint8_t *vbnv_copy)
+{
+	/*
+	 * Currently battery cutoff is done in payload stage, which does not
+	 * update backup VBNV. And doing battery cutoff will invalidate CMOS.
+	 * This means for every reboot after cutoff, read_vbnv_cmos will reload
+	 * backup VBNV and try to cutoff again, causing endless reboot loop.
+	 * So we should always clear battery cutoff flag from loaded backup.
+	 */
+	if (vbnv_copy[MISC_FLAGS_OFFSET] & MISC_FLAGS_BATTERY_CUTOFF_MASK) {
+		printk(BIOS_INFO, "VBNV: Remove battery cut-off request.\n");
+		vbnv_copy[MISC_FLAGS_OFFSET] &= ~MISC_FLAGS_BATTERY_CUTOFF_MASK;
+		regen_vbnv_crc(vbnv_copy);
+	}
+}
+
 void read_vbnv_cmos(uint8_t *vbnv_copy)
 {
 	int i;
@@ -35,6 +51,7 @@ void read_vbnv_cmos(uint8_t *vbnv_copy)
 		read_vbnv_flash(vbnv_copy);
 
 		if (verify_vbnv(vbnv_copy)) {
+			clear_vbnv_battery_cutoff_flag(vbnv_copy);
 			save_vbnv_cmos(vbnv_copy);
 			printk(BIOS_INFO, "VBNV: Flash backup restored\n");
 		} else {

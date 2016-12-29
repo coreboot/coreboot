@@ -79,6 +79,12 @@ int verify_vbnv(uint8_t *vbnv_copy)
 		(crc8_vbnv(vbnv_copy, CRC_OFFSET) == vbnv_copy[CRC_OFFSET]);
 }
 
+/* Re-generate VBNV checksum. */
+void regen_vbnv_crc(uint8_t *vbnv_copy)
+{
+	vbnv_copy[CRC_OFFSET] = crc8_vbnv(vbnv_copy, CRC_OFFSET);
+}
+
 /*
  * Read VBNV data from configured storage backend.
  * If VBNV verification fails, reset the vbnv copy.

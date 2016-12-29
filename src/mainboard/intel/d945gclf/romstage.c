@@ -24,6 +24,7 @@
 #include <lib.h>
 #include <arch/acpi.h>
 #include <cbmem.h>
+#include <timestamp.h>
 #include <superio/smsc/lpc47m15x/lpc47m15x.h>
 #include <pc80/mc146818rtc.h>
 #include <console/console.h>
@@ -154,6 +155,10 @@ void mainboard_romstage_entry(unsigned long bist)
 {
 	int s3resume = 0, boot_mode = 0;
 
+
+	timestamp_init(get_initial_timestamp());
+	timestamp_add_now(TS_START_ROMSTAGE);
+
 	if (bist == 0)
 		enable_lapic();
 
@@ -187,7 +192,9 @@ void mainboard_romstage_entry(unsigned long bist)
 	dump_spd_registers();
 #endif
 
+	timestamp_add_now(TS_BEFORE_INITRAM);
 	sdram_initialize(s3resume ? 2 : boot_mode, NULL);
+	timestamp_add_now(TS_AFTER_INITRAM);
 
 	/* Perform some initialization that must run before stage2 */
 	early_ich7_init();

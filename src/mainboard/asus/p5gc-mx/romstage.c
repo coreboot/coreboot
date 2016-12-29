@@ -26,6 +26,7 @@
 #include <lib.h>
 #include <arch/acpi.h>
 #include <cbmem.h>
+#include <timestamp.h>
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627dhg/w83627dhg.h>
 #include <pc80/mc146818rtc.h>
@@ -216,6 +217,9 @@ void mainboard_romstage_entry(unsigned long bist)
 	u8 m_bsel;
 	u8 c_bsel = msr_get_fsb();
 
+	timestamp_init(get_initial_timestamp());
+	timestamp_add_now(TS_START_ROMSTAGE);
+
 	if (bist == 0)
 		enable_lapic();
 
@@ -252,7 +256,10 @@ void mainboard_romstage_entry(unsigned long bist)
 #if CONFIG_DEFAULT_CONSOLE_LOGLEVEL > 8
 	dump_spd_registers();
 #endif
+
+	timestamp_add_now(TS_BEFORE_INITRAM);
 	sdram_initialize(s3resume ? 2 : boot_mode, NULL);
+	timestamp_add_now(TS_AFTER_INITRAM);
 
 	/* Perform some initialization that must run before stage2 */
 	early_ich7_init();

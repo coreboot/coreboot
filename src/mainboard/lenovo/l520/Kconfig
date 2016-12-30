@@ -1,0 +1,70 @@
+if BOARD_LENOVO_L520
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select BOARD_ROMSIZE_KB_4096
+	select CPU_INTEL_SOCKET_RPGA989
+	select EC_LENOVO_H8
+	select EC_LENOVO_PMH7
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select INTEL_INT15
+	select HAVE_OPTION_TABLE
+	select HAVE_CMOS_DEFAULT
+	select NORTHBRIDGE_INTEL_SANDYBRIDGE
+	select SANDYBRIDGE_IVYBRIDGE_LVDS
+	select SERIRQ_CONTINUOUS_MODE
+	select SOUTHBRIDGE_INTEL_BD82X6X
+	select SYSTEM_TYPE_LAPTOP
+	select USE_NATIVE_RAMINIT
+	select DRIVERS_LENOVO_HYBRID_GRAPHICS
+
+config HAVE_IFD_BIN
+	bool
+	default n
+
+config HAVE_ME_BIN
+	bool
+	default n
+
+config MAINBOARD_DIR
+	string
+	default lenovo/l520
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "ThinkPad L520"
+
+config VGA_BIOS_FILE
+	string
+	default "pci8086,0126.rom"
+
+config VGA_BIOS_ID
+	string
+	default "8086,0126"
+
+config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
+	hex
+	default 0x21dd
+
+config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
+	hex
+	default 0x17aa
+
+config MMCONF_BASE_ADDRESS
+	hex
+	default 0xf0000000
+
+config DRAM_RESET_GATE_GPIO
+	int
+	default 10
+
+config MAX_CPUS
+	int
+	default 8
+
+config USBDEBUG_HCD_INDEX
+	int
+	default 2
+
+endif

@@ -242,12 +242,7 @@ void mainboard_romstage_entry(unsigned long bist)
 	i945_early_initialization();
 
 	m_bsel = MCHBAR32(CLKCFG) & 7;
-	printk(BIOS_DEBUG, "CPU BSEL: 0x%x\n MCH BSEL: 0x%x\n", c_bsel, m_bsel);
-	if (c_bsel != m_bsel) { /* Should not happen */
-		printk(BIOS_DEBUG, "Setting BSEL straps, resetting...\n");
-		outb(0xe, 0xcf9);
-		halt();
-	}
+	printk(BIOS_DEBUG, "CPU BSEL: 0x%x\nMCH BSEL: 0x%x\n", c_bsel, m_bsel);
 
 	s3resume = southbridge_detect_s3_resume();
 

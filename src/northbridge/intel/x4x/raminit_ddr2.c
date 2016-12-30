@@ -262,6 +262,17 @@ static void clkcross_ddr2(struct sysinfo *s)
 static void checkreset_ddr2(struct sysinfo *s)
 {
 	u8 pmcon2;
+	u32 pmsts;
+
+	if (s->boot_path >= 1) {
+		pmsts = MCHBAR32(PMSTS_MCHBAR);
+		if (!(pmsts & 1))
+			printk(BIOS_DEBUG,
+				"Channel 0 possibly not in self refresh\n");
+		if (!(pmsts & 2))
+			printk(BIOS_DEBUG,
+				"Channel 1 possibly not in self refresh\n");
+	}
 
 	pmcon2 = pci_read_config8(PCI_DEV(0, 0x1f, 0), 0xa2);
 
@@ -1480,7 +1491,6 @@ static void rcven_ddr2(struct sysinfo *s)
 		readdelay[ch] = MCHBAR16(0x400*ch + 0x588);
 	} // END EACH POPULATED CHANNEL
 
-	/* TODO: Resume support using this */
 	FOR_EACH_CHANNEL(ch) {
 		for (lane = 0; lane < 8; lane++) {
 			MCHBAR8(0x400*ch + 0x560 + (lane*4)) =
@@ -1558,7 +1568,8 @@ static void sdram_program_receive_enable(struct sysinfo *s)
 	RCBA32(0x3400) = (1 << 2);
 
 	/* Program Receive Enable Timings */
-	if (s->boot_path == BOOT_PATH_WARM_RESET) {
+	if ((s->boot_path == BOOT_PATH_WARM_RESET)
+		|| (s->boot_path == BOOT_PATH_RESUME)) {
 		sdram_recover_receive_enable();
 	} else {
 		rcven_ddr2(s);
@@ -2046,7 +2057,8 @@ void raminit_ddr2(struct sysinfo *s)
 	printk(BIOS_DEBUG, "Done pre-jedec\n");
 
 	// JEDEC reset
-	jedec_ddr2(s);
+	if (s->boot_path != BOOT_PATH_RESUME)
+		jedec_ddr2(s);
 
 	printk(BIOS_DEBUG, "Done jedec steps\n");
 

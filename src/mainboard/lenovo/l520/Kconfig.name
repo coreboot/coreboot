@@ -1,0 +1,2 @@
+config BOARD_LENOVO_L520
+	bool "ThinkPad L520"

@@ -322,7 +322,7 @@ enum ddr2_signals {
 
 #ifndef __BOOTBLOCK__
 void x4x_early_init(void);
-void x4x_late_init(void);
+void x4x_late_init(int s3resume);
 u32 decode_igd_memory_size(u32 gms);
 u32 decode_igd_gtt_size(u32 gsm);
 u8 decode_pciebar(u32 *const base, u32 *const len);

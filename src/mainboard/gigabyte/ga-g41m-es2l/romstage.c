@@ -132,6 +132,7 @@ void mainboard_romstage_entry(unsigned long bist)
 	//                          ch0      ch1
 	const u8 spd_addrmap[4] = { 0x50, 0, 0x52, 0 };
 	u8 boot_path = 0;
+	u8 s3_resume;
 
 	/* Disable watchdog timer */
 	RCBA32(0x3410) = RCBA32(0x3410) | 0x20;
@@ -151,16 +152,18 @@ void mainboard_romstage_entry(unsigned long bist)
 
 	x4x_early_init();
 
+	s3_resume = southbridge_detect_s3_resume();
+	if (s3_resume)
+		boot_path = BOOT_PATH_RESUME;
 	if (MCHBAR32(PMSTS_MCHBAR) & PMSTS_WARM_RESET)
 		boot_path = BOOT_PATH_WARM_RESET;
 
 	printk(BIOS_DEBUG, "Initializing memory\n");
 	sdram_initialize(boot_path, spd_addrmap);
 	quick_ram_check();
-	cbmem_initialize_empty();
 	printk(BIOS_DEBUG, "Memory initialized\n");
 
-	x4x_late_init();
+	x4x_late_init(s3_resume);
 
 	printk(BIOS_DEBUG, "x4x late init complete\n");
 

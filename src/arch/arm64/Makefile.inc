@@ -166,7 +166,7 @@ BL31_MAKEARGS += IS_ANYTHING_TO_BUILD=1
 # multi line string.
 BL31_MAKEARGS += BUILD_MESSAGE_TIMESTAMP='"$(shell grep "\#define COREBOOT_BUILD\>" $(obj)/build.h |cut -d\" -f2 \# \")"'
 
-BL31_CFLAGS := -fno-pic -fno-stack-protector
+BL31_CFLAGS := -fno-pic -fno-stack-protector -Wno-deprecated-declarations
 BL31_LDFLAGS := --emit-relocs
 
 BL31 := $(obj)/bl31.elf
@@ -176,7 +176,7 @@ $(BL31): $(obj)/build.h
 	+CROSS_COMPILE="$(CROSS_COMPILE_arm64)" \
 	CFLAGS="$(BL31_CFLAGS)" \
 	LDFLAGS="$(BL31_LDFLAGS)" \
-	$(MAKE) -C $(BL31_SOURCE) $(BL31_MAKEARGS) $(BL31_TARGET)
+	$(MAKE) -C $(BL31_SOURCE) $(BL31_MAKEARGS) $(BL31_TARGET) DISABLE_PEDANTIC=1
 	mv $(BL31_TARGET) $@
 
 .PHONY: $(BL31)

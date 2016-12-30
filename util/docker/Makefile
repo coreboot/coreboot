@@ -39,10 +39,15 @@ coreboot-jenkins-node: test_docker
 upload-coreboot-jenkins-node: test_docker_login
 	$(DOCKER) push coreboot/coreboot-jenkins-node:$(crossgcc_version)
 
-clean_coreboot_containers: test_docker
+docker-killall: test_docker
+	@if [ -n "$$($(DOCKER) ps | grep 'coreboot')" ]; then \
+		$(DOCKER) kill $$($(DOCKER) ps | grep 'coreboot' | cut -f1 -d ' '); \
+	fi
+
+clean_coreboot_containers: docker-killall
 	$(DOCKER) rm $(docker ps -a | grep 'coreboot' | sed 's|\s.*$||')
 
-clean_coreboot_images: test_docker
+clean_coreboot_images: docker-killall
 	$(DOCKER) rmi $(docker images | grep coreboot | sed 's|^\S\+\s\+\S\+\s\+||' | sed 's|\s.*$||')
 
 docker_build_coreboot: test_docker

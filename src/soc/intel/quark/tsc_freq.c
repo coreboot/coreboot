@@ -17,20 +17,18 @@
 #include <stdint.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/tsc.h>
-
-static unsigned long bus_freq_khz(void)
-{
-	/* CPU freq = 400 MHz */
-	return 400 * 1000;
-}
+#include <timer.h>
 
 unsigned long tsc_freq_mhz(void)
 {
-	/* assume ratio=1 */
-	unsigned bclk_khz = bus_freq_khz();
+	/* CPU freq = 400 MHz */
+	return 400;
+}
 
-	if (!bclk_khz)
-		return 0;
+void timer_monotonic_get(struct mono_time *mt)
+{
+	uint64_t tsc_value;
 
-	return (bclk_khz * 1) / 1000;
+	tsc_value = rdtscll();
+	mt->microseconds = tsc_value / tsc_freq_mhz();
 }

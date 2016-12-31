@@ -14,7 +14,13 @@
 ##
 export top=$(abspath $(CURDIR)/../..)
 export crossgcc_version=$(shell $(top)/util/crossgcc/buildgcc --version | grep 'cross toolchain' | sed 's/^.*\sv//' | sed 's/\s.*$$//')
-export DOCKER:=$(shell env sh -c "command -v docker")
+export DOCKER:=$(shell $(SHELL) -c "command -v docker")
+
+# Version of the jenkins / sdk container
+export COREBOOT_CONTAINER_VERSION?=$(crossgcc_version)
+
+# Commit id to build from
+export DOCKER_COMMIT?=$(shell git log -n 1 --pretty=%h)
 
 test-docker:
 	$(if $(DOCKER),,\
@@ -28,16 +34,23 @@ test-docker-login: test-docker
 		$(error Docker authentication file not found.  Run 'docker login'))
 
 coreboot-sdk: test-docker
-	$(DOCKER) build -t coreboot/coreboot-sdk:$(crossgcc_version) coreboot-sdk
+	@echo "Building coreboot SDK $(crossgcc_version) from commit $(DOCKER_COMMIT)"
+	cat coreboot-sdk/Dockerfile | \
+		sed "s/{{DOCKER_COMMIT}}/$(DOCKER_COMMIT)/" | \
+		sed "s/{{SDK_VERSION}}/$(COREBOOT_CONTAINER_VERSION)/" | \
+		$(DOCKER) build -t coreboot/coreboot-sdk:$(COREBOOT_CONTAINER_VERSION) -
 
 upload-coreboot-sdk: test-docker-login
-	$(DOCKER) push coreboot/coreboot-sdk:$(crossgcc_version)
+	$(DOCKER) push coreboot/coreboot-sdk:$(COREBOOT_CONTAINER_VERSION)
 
 coreboot-jenkins-node: test-docker
-	$(DOCKER) build -t coreboot/coreboot-jenkins-node:$(crossgcc_version) coreboot-jenkins-node
+	cat coreboot-jenkins-node/Dockerfile | \
+		sed "s/{{SDK_VERSION}}/$(COREBOOT_CONTAINER_VERSION)/" | \
+		sed "s|{{SSH_KEY}}|$$(cat coreboot-jenkins-node/authorized_keys)|" | \
+		$(DOCKER) build -t coreboot/coreboot-jenkins-node:$(COREBOOT_CONTAINER_VERSION) -
 
 upload-coreboot-jenkins-node: test-docker-login
-	$(DOCKER) push coreboot/coreboot-jenkins-node:$(crossgcc_version)
+	$(DOCKER) push coreboot/coreboot-jenkins-node:$(COREBOOT_CONTAINER_VERSION)
 
 docker-killall: test-docker
 	@if [ -n "$$($(DOCKER) ps | grep 'coreboot')" ]; then \
@@ -52,7 +65,7 @@ clean-coreboot-images: docker-killall
 
 docker-build-coreboot: test-docker
 	$(DOCKER) run -u root -it -v $(top):/home/coreboot/coreboot \
-		--rm coreboot/coreboot-sdk:$(crossgcc_version) \
+		--rm coreboot/coreboot-sdk:$(COREBOOT_CONTAINER_VERSION) \
 		/bin/bash -c "cd /home/coreboot/coreboot && \
 		make clean && \
 		make $(BUILD_CMD)"
@@ -62,7 +75,7 @@ docker-build-coreboot: test-docker
 
 docker-abuild: test-docker
 	$(DOCKER) run -u root -it -v $(top):/home/coreboot/coreboot \
-		--rm coreboot/coreboot-sdk:$(crossgcc_version) \
+		--rm coreboot/coreboot-sdk:$(COREBOOT_CONTAINER_VERSION) \
 		/bin/bash -c "cd /home/coreboot/coreboot && \
 		make clean && \
 		util/abuild/abuild $(ABUILD_ARGS)"
@@ -82,6 +95,10 @@ help:
 	@echo "Commands for using docker images"
 	@echo "  docker-build-coreboot <BUILD_CMD=target>  - Build coreboot under coreboot-sdk"
 	@echo "  docker-abuild <ABUILD_ARGS='-a -B'>       - Run abuild under coreboot-sdk"
+	@echo
+	@echo "Variables:"
+	@echo "  COREBOOT_CONTAINER_VERSION = $(COREBOOT_CONTAINER_VERSION)"
+	@echo "  DOCKER_COMMIT = $(DOCKER_COMMIT)"
 
 .PHONY: test-docker test-docker-login
 .PHONY: coreboot-jenkins-node upload-coreboot-jenkins-node

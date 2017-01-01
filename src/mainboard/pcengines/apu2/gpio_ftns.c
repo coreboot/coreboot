@@ -44,3 +44,10 @@ u8 read_gpio(uintptr_t base_addr, u32 iomux_gpio)
 	u8 *memptr = (u8 *)(base_addr + GPIO_OFFSET + (iomux_gpio << 2) + 2);
 	return (*memptr & GPIO_OUTPUT_VALUE) ? 1 : 0;
 }
+
+void write_gpio(uintptr_t base_addr, u32 iomux_gpio, u8 value)
+{
+	u8 *memptr = (u8 *)(base_addr + GPIO_OFFSET + (iomux_gpio << 2) + 2);
+
+	*memptr |= (value > 0) ? GPIO_OUTPUT_VALUE : 0;
+}

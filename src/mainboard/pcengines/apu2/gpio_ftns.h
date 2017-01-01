@@ -18,6 +18,7 @@
 
 void configure_gpio(uintptr_t base_addr, u32 iomux_gpio, u8 iomux_ftn, u32 setting);
 u8 read_gpio(uintptr_t base_addr, u32 gpio);
+void write_gpio(uintptr_t base_addr, u32 iomux_gpio, u8 value);
 
 #define IOMUX_OFFSET    0xD00
 #define GPIO_OFFSET     0x1500

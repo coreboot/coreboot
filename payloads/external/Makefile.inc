@@ -100,6 +100,7 @@ ifneq ($(strip $(CONFIG_SEABIOS_BOOTORDER_FILE)),)
 cbfs-files-y += bootorder
 bootorder-file := $(strip $(CONFIG_SEABIOS_BOOTORDER_FILE))
 bootorder-type := raw
+bootorder-align := 0x1000
 endif
 
 # add a SeaBIOS bootorder_map file

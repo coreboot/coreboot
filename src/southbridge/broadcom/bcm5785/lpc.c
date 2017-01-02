@@ -87,18 +87,18 @@ static void bcm5785_lpc_enable_childrens_resources(device_t dev)
 					switch(base) {
 					case 0x60: //KBC
 					case 0x64:
-						reg |= (1<<29);
+						reg |= (1<<29); break;
 					case 0x3f8: // COM1
 						reg |= (1<<6); 	break;
 					case 0x2f8: // COM2
 						reg |= (1<<7);  break;
-					case 0x378: // Parallal 1
+					case 0x378: // Parallel 1
 						reg |= (1<<0); break;
 					case 0x3f0: // FD0
 						reg |= (1<<26); break;
-					case 0x220:  // Aduio 0
+					case 0x220:  // Audio 0
 						reg |= (1<<14);	break;
-					case 0x300:  // Midi 0
+					case 0x300:  // MIDI 0
 						reg |= (1<<18);	break;
 					}
 				}

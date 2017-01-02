@@ -36,6 +36,8 @@
 #define LPC_DEV PCI_DEV(0, 0x1f, 0)
 #define MCH_DEV PCI_DEV(0, 0, 0)
 
+void hybrid_graphics_init(sysinfo_t *sysinfo);
+
 static void early_lpc_setup(void)
 {
 	/* Set up SuperIO LPC forwards */
@@ -101,9 +103,13 @@ void mainboard_romstage_entry(unsigned long bist)
 	memset(&sysinfo, 0, sizeof(sysinfo));
 	sysinfo.spd_map[0] = 0x50;
 	sysinfo.spd_map[2] = 0x51;
-	sysinfo.enable_igd = 1;
-	sysinfo.enable_peg = 0;
 	get_gmch_info(&sysinfo);
+
+	/* Configure graphic GPIOs.
+	* Make sure there's a little delay between
+	* setup_pch_gpios() and this call ! */
+	hybrid_graphics_init(&sysinfo);
+
 	raminit(&sysinfo, s3resume);
 
 	const u32 deven = pci_read_config32(MCH_DEV, D0F0_DEVEN);

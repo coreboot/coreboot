@@ -517,7 +517,7 @@ set_hostcflags_from_gmp() {
 build_GMP() {
 	# Check if GCC enables `-pie` by default (possible since GCC 6).
 	# We need PIC in all static libraries then.
-	if "${CC}" -dumpspecs 2>/dev/null | grep -q '[{;][[:space:]]*:-pie\>'
+	if $CC -dumpspecs 2>/dev/null | grep -q '[{;][[:space:]]*:-pie\>'
 	then
 		OPTIONS="$OPTIONS --with-pic"
 	fi

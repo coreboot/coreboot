@@ -10021,13 +10021,13 @@ static void simplify_copy(struct compile_state *state, struct triple *ins)
 			/* Ensure I am properly sign extended */
 			if (size_of(state, right->type) < size_of(state, ins->type) &&
 				is_signed(right->type)) {
-				long_t val;
+				uint64_t val;
 				int shift;
 				shift = SIZEOF_LONG - size_of(state, right->type);
 				val = left;
 				val <<= shift;
 				val >>= shift;
-				left = val;
+				left = (ulong_t)val;
 			}
 			mkconst(state, ins, left);
 			break;

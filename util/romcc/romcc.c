@@ -7266,10 +7266,7 @@ static struct triple *do_mk_addr_expr(struct compile_state *state,
 	struct triple *expr, struct type *type, ulong_t offset)
 {
 	struct triple *result;
-	struct type *ptr_type;
 	clvalue(state, expr);
-
-	ptr_type = new_type(TYPE_POINTER | (type->type & QUAL_MASK), type, 0);
 
 
 	result = 0;
@@ -7277,11 +7274,17 @@ static struct triple *do_mk_addr_expr(struct compile_state *state,
 		error(state, expr, "address of auto variables not supported");
 	}
 	else if (expr->op == OP_SDECL) {
+		struct type *ptr_type;
+		ptr_type = new_type(TYPE_POINTER | (type->type & QUAL_MASK), type, 0);
+
 		result = triple(state, OP_ADDRCONST, ptr_type, 0, 0);
 		MISC(result, 0) = expr;
 		result->u.cval = offset;
 	}
 	else if (expr->op == OP_DEREF) {
+		struct type *ptr_type;
+		ptr_type = new_type(TYPE_POINTER | (type->type & QUAL_MASK), type, 0);
+
 		result = triple(state, OP_ADD, ptr_type,
 			RHS(expr, 0),
 			int_const(state, &ulong_type, offset));

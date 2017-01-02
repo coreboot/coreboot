@@ -14250,7 +14250,7 @@ static void compute_closure_variables(struct compile_state *state,
 		}
 		/* Find the lowest unused index value */
 		for(index = 0; index < MAX_INDICIES; index++) {
-			if (!(used_indicies & (1 << index))) {
+			if (!(used_indicies & ((uint64_t)1 << index))) {
 				break;
 			}
 		}

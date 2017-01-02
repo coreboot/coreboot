@@ -5401,7 +5401,7 @@ static void preprocess(struct compile_state *state, struct token *current_token)
 		}
 
 		/* Remember the start of the macro body */
-		tok = raw_peek(state);
+		raw_peek(state);
 		mend = mstart = get_token(state, 1)->pos;
 
 		/* Find the end of the macro */
@@ -5467,7 +5467,6 @@ static void preprocess(struct compile_state *state, struct token *current_token)
 	{
 		char *name;
 		int local;
-		local = 0;
 		name = 0;
 
 		pp_eat(state, TOK_MINCLUDE);
@@ -5871,7 +5870,6 @@ static void name_of(FILE *fp, struct type *type)
 static size_t align_of(struct compile_state *state, struct type *type)
 {
 	size_t align;
-	align = 0;
 	switch(type->type & TYPE_MASK) {
 	case TYPE_VOID:
 		align = 1;
@@ -5927,7 +5925,6 @@ static size_t align_of(struct compile_state *state, struct type *type)
 static size_t reg_align_of(struct compile_state *state, struct type *type)
 {
 	size_t align;
-	align = 0;
 	switch(type->type & TYPE_MASK) {
 	case TYPE_VOID:
 		align = 1;
@@ -6032,7 +6029,6 @@ static size_t reg_needed_padding(struct compile_state *state,
 static size_t size_of(struct compile_state *state, struct type *type)
 {
 	size_t size;
-	size = 0;
 	switch(type->type & TYPE_MASK) {
 	case TYPE_VOID:
 		size = 0;
@@ -6118,7 +6114,6 @@ static size_t size_of(struct compile_state *state, struct type *type)
 static size_t reg_size_of(struct compile_state *state, struct type *type)
 {
 	size_t size;
-	size = 0;
 	switch(type->type & TYPE_MASK) {
 	case TYPE_VOID:
 		size = 0;
@@ -6368,7 +6363,6 @@ static size_t index_offset(struct compile_state *state,
 		i = 0;
 		while(member && ((member->type & TYPE_MASK) == TYPE_OVERLAP)) {
 			if (i == index) {
-				member = member->left;
 				break;
 			}
 			i++;
@@ -6421,7 +6415,6 @@ static size_t index_reg_offset(struct compile_state *state,
 		i = 0;
 		while(member && ((member->type & TYPE_MASK) == TYPE_OVERLAP)) {
 			if (i == index) {
-				member = member->left;
 				break;
 			}
 			i++;
@@ -9165,7 +9158,6 @@ static void decompose_compound_types(struct compile_state *state)
 {
 	struct triple *ins, *next, *first;
 	first = state->first;
-	ins = first;
 
 	/* Pass one expand compound values into pseudo registers.
 	 */
@@ -10535,9 +10527,9 @@ static void register_builtin_function(struct compile_state *state,
 	if ((rtype->type & TYPE_MASK) != TYPE_VOID) {
 		work = write_expr(state, deref_index(state, result, 1), work);
 	}
-	work = flatten(state, first, work);
+	flatten(state, first, work);
 	flatten(state, first, label(state));
-	ret  = flatten(state, first, ret);
+	flatten(state, first, ret);
 	name_len = strlen(name);
 	ident = lookup(state, name, name_len);
 	ftype->type_ident = ident;
@@ -13373,7 +13365,7 @@ static struct triple *function_definition(
 
 	/* Add in the return instruction */
 	ret = triple(state, OP_RET, &void_type, read_expr(state, retvar), 0);
-	ret = flatten(state, first, ret);
+	flatten(state, first, ret);
 
 	/* Walk through the parameters and create symbol table entries
 	 * for them.
@@ -14050,7 +14042,7 @@ static int lookup_closure_index(struct compile_state *state,
 {
 	struct triple *first, *ins, *next;
 	first = RHS(me, 0);
-	ins = next = first;
+	next = first;
 	do {
 		struct triple *result;
 		struct triple *index0, *index1, *index2, *read, *write;
@@ -14070,7 +14062,6 @@ static int lookup_closure_index(struct compile_state *state,
 			(result->id & TRIPLE_FLAG_LOCAL)) {
 			continue;
 		}
-		index0 = ins->next->next;
 		/* The pattern is:
 		 * 0 index result < 0 >
 		 * 1 index 0 < ? >
@@ -14578,7 +14569,6 @@ static int do_inline(struct compile_state *state, struct triple *func)
 		}
 		break;
 	default:
-		do_inline = 0;
 		internal_error(state, 0, "Unimplemented inline policy");
 		break;
 	}
@@ -14606,7 +14596,7 @@ static void inline_function(struct compile_state *state, struct triple *me, void
 	}
 
 	first = RHS(me, 0);
-	ptr = next = first;
+	next = first;
 	do {
 		struct triple *func, *prev;
 		ptr = next;
@@ -14641,7 +14631,7 @@ static void inline_function(struct compile_state *state, struct triple *me, void
 		next = prev->next;
 	} while (next != first);
 
-	ptr = next = first;
+	next = first;
 	do {
 		struct triple *prev, *func;
 		ptr = next;
@@ -18048,7 +18038,7 @@ static void insert_mandatory_copies(struct compile_state *state)
 
 		reg = REG_UNSET;
 		regcm = arch_type_to_regcm(state, ins->type);
-		do_post_copy = do_pre_copy = 0;
+		do_pre_copy = 0;
 
 		/* Walk through the uses of ins and check for conflicts */
 		for(entry = ins->use; entry; entry = next) {
@@ -21914,7 +21904,6 @@ static int arch_encode_flag(struct arch_state *arch, const char *flag)
 	int act;
 
 	act = 1;
-	result = -1;
 	if (strncmp(flag, "no-", 3) == 0) {
 		flag += 3;
 		act = 0;
@@ -22392,7 +22381,6 @@ static unsigned arch_type_to_regcm(struct compile_state *state, struct type *typ
 #warning "FIXME force types smaller (if legal) before I get here"
 #endif
 	unsigned mask;
-	mask = 0;
 	switch(type->type & TYPE_MASK) {
 	case TYPE_ARRAY:
 	case TYPE_VOID:
@@ -23881,7 +23869,6 @@ static long get_mask_pool_ref(
 		ref = 2;
 	}
 	else {
-		ref = 0;
 		internal_error(state, ins, "unhandled mask value");
 	}
 	return ref;
@@ -23952,7 +23939,6 @@ static void print_op_in(struct compile_state *state, struct triple *ins, FILE *f
 	const char *op;
 	int mask;
 	int dreg;
-	mask = 0;
 	switch(ins->op) {
 	case OP_INB: op = "inb", mask = REGCM_GPR8_LO; break;
 	case OP_INW: op = "inw", mask = REGCM_GPR16; break;
@@ -23990,7 +23976,6 @@ static void print_op_out(struct compile_state *state, struct triple *ins, FILE *
 	const char *op;
 	int mask;
 	int lreg;
-	mask = 0;
 	switch(ins->op) {
 	case OP_OUTB: op = "outb", mask = REGCM_GPR8_LO; break;
 	case OP_OUTW: op = "outw", mask = REGCM_GPR16; break;
@@ -24569,7 +24554,6 @@ static void print_op_branch(struct compile_state *state,
 #if DEBUG_ROMCC_WARNINGS
 #warning "FIXME I have observed instructions between the test and branch instructions"
 #endif
-		ptr = RHS(branch, 0);
 		for(ptr = RHS(branch, 0)->next; ptr != branch; ptr = ptr->next) {
 			if (ptr->op != OP_COPY) {
 				internal_error(state, branch, "branch does not follow test");

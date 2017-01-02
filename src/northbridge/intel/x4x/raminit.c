@@ -228,9 +228,7 @@ static void sdram_detect_ram_speed(struct sysinfo *s)
 	// Max RAM speed
 	if (s->spd_type == DDR2) {
 
-		// FIXME: Limit memory speed to 667MHz if FSB is 1333MHz
-		maxfreq = (s->max_fsb == FSB_CLOCK_1333MHz)
-			? MEM_CLOCK_667MHz : MEM_CLOCK_800MHz;
+		maxfreq = MEM_CLOCK_800MHz;
 
 		// Choose common CAS latency from {6,5}, 4 does not work
 		commoncas = 0x60;

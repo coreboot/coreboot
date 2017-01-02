@@ -37,6 +37,13 @@ void setup_pch_gpios(const struct pch_gpio_map *gpio)
 {
 	u16 gpiobase = get_gpio_base();
 
+	/* The order of these calls does matter on ICH9M and prior.
+	 * The level has to be set on pins configured as gpio,
+	 * but on newer platforms we want to change the level first
+	 * to make sure there are no glitches on the lines !
+	 * Write the gpio level twice to satisfy both requirements.
+	 */
+
 	/* GPIO Set 1 */
 	if (gpio->set1.level)
 		outl(*((u32 *)gpio->set1.level), gpiobase + GP_LVL);
@@ -44,6 +51,8 @@ void setup_pch_gpios(const struct pch_gpio_map *gpio)
 		outl(*((u32 *)gpio->set1.mode), gpiobase + GPIO_USE_SEL);
 	if (gpio->set1.direction)
 		outl(*((u32 *)gpio->set1.direction), gpiobase + GP_IO_SEL);
+	if (gpio->set1.level)
+		outl(*((u32 *)gpio->set1.level), gpiobase + GP_LVL);
 	if (gpio->set1.reset)
 		outl(*((u32 *)gpio->set1.reset), gpiobase + GP_RST_SEL1);
 	if (gpio->set1.invert)
@@ -58,6 +67,8 @@ void setup_pch_gpios(const struct pch_gpio_map *gpio)
 		outl(*((u32 *)gpio->set2.mode), gpiobase + GPIO_USE_SEL2);
 	if (gpio->set2.direction)
 		outl(*((u32 *)gpio->set2.direction), gpiobase + GP_IO_SEL2);
+	if (gpio->set2.level)
+		outl(*((u32 *)gpio->set2.level), gpiobase + GP_LVL2);
 	if (gpio->set2.reset)
 		outl(*((u32 *)gpio->set2.reset), gpiobase + GP_RST_SEL2);
 
@@ -68,6 +79,8 @@ void setup_pch_gpios(const struct pch_gpio_map *gpio)
 		outl(*((u32 *)gpio->set3.mode), gpiobase + GPIO_USE_SEL3);
 	if (gpio->set3.direction)
 		outl(*((u32 *)gpio->set3.direction), gpiobase + GP_IO_SEL3);
+	if (gpio->set3.level)
+		outl(*((u32 *)gpio->set3.level), gpiobase + GP_LVL3);
 	if (gpio->set3.reset)
 		outl(*((u32 *)gpio->set3.reset), gpiobase + GP_RST_SEL3);
 }

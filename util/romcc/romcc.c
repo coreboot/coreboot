@@ -14376,6 +14376,8 @@ static void expand_function_call(
 
 	/* Update the called functions closure variable */
 	closure_idx = add_closure_type(state, func, closure_type);
+	free(closure_type);
+	closure_type = NULL;
 
 	/* Generate some needed triples */
 	ret_loc = label(state);

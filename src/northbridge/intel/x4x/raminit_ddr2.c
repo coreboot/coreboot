@@ -520,6 +520,9 @@ static void timings_ddr2(struct sysinfo *s)
 	u8 trpmod = 0;
 	u8 bankmod = 1;
 	u8 pagemod = 0;
+	u8 adjusted_cas;
+
+	adjusted_cas = s->selected_timings.CAS - 3;
 
 	u16 fsb2ps[3] = {
 		5000, // 800
@@ -563,13 +566,14 @@ static void timings_ddr2(struct sysinfo *s)
 	}
 
 	FOR_EACH_POPULATED_CHANNEL(s->dimms, i) {
-		MCHBAR8(0x400*i + 0x2f6) = MCHBAR8(0x400*i + 0x2f6) | 0x3;
+		MCHBAR8(0x400*i + 0x26f) = MCHBAR8(0x400*i + 0x26f) | 0x3;
 		MCHBAR8(0x400*i + 0x228) = (MCHBAR8(0x400*i + 0x228) & ~0x7) | 0x2;
-		MCHBAR8(0x400*i + 0x240) = (MCHBAR8(0x400*i + 0x240) & ~0xf0) | (twl << 4);
+		MCHBAR8(0x400*i + 0x240) = (MCHBAR8(0x400*i + 0x240) & ~0xf0)
+		  | (0 << 4); /* tWL - x ?? */
 		MCHBAR8(0x400*i + 0x240) = (MCHBAR8(0x400*i + 0x240) & ~0xf) |
-			s->selected_timings.CAS;
+			adjusted_cas;
 		MCHBAR16(0x400*i + 0x265) = (MCHBAR16(0x400*i + 0x265) & ~0x3f00) |
-			((s->selected_timings.CAS + 9) << 8);
+			((adjusted_cas + 9) << 8);
 
 		reg16 = (s->selected_timings.tRAS << 11) |
 			((twl + 4 + s->selected_timings.tWR) << 6) |
@@ -649,7 +653,7 @@ static void timings_ddr2(struct sysinfo *s)
 
 		fsb = fsb2ps[s->selected_timings.fsb_clk];
 		ddr = ddr2ps[s->selected_timings.mem_clk];
-		reg32 = (u32)((s->selected_timings.CAS + 7 + reg8) * ddr);
+		reg32 = (u32)((adjusted_cas + 7 + reg8) * ddr);
 		reg32 = (u32)((reg32 / fsb) << 8);
 		reg32 |= 0x0e000000;
 		if ((fsb2mhz(s->selected_timings.fsb_clk) /
@@ -727,7 +731,7 @@ static void timings_ddr2(struct sysinfo *s)
 	MCHBAR32(0x120) = (2 << 29) | (1 << 28) | (1 << 23) | 0xd7f5f;
 	reg8 = (u8)((MCHBAR32(0x252) & 0x1e000) >> 13);
 	MCHBAR8(0x12d) = (MCHBAR8(0x12d) & ~0xf0) | (reg8 << 4);
-	reg8 = (u8)((MCHBAR32(0x258) & ~0x1e0000) >> 17);
+	reg8 = (u8)((MCHBAR32(0x258) & 0x1e0000) >> 17);
 	MCHBAR8(0x12d) = (MCHBAR8(0x12d) & ~0xf) | reg8;
 	MCHBAR8(0x12f) = 0x4c;
 	reg32 = (1 << 31) | (0x80 << 14) | (1 << 13) | (0xa << 9);

@@ -4580,6 +4580,9 @@ static void expand_macro(struct compile_state *state,
 		flen = fmacro.pos - fstart;
 		switch(tk->tok) {
 		case TOK_IDENT:
+			if (macro->argc < 0) {
+				break;
+			}
 			for(i = 0; i < macro->argc; i++) {
 				if (argv[i].ident == tk->ident) {
 					break;

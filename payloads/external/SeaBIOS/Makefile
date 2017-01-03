@@ -42,6 +42,9 @@ config: checkout
 ifeq ($(CONFIG_CONSOLE_SERIAL)$(CONFIG_DRIVERS_UART_8250IO),yy)
 	echo "CONFIG_DEBUG_SERIAL=y" >> seabios/.config
 	echo "CONFIG_DEBUG_SERIAL_PORT=$(CONFIG_TTYS0_BASE)" >> seabios/.config
+else ifeq ($(CONFIG_CONSOLE_SERIAL)$(CONFIG_DRIVERS_UART_8250MEM)$(CONFIG_HUDSON_UART),yyy)
+	echo "CONFIG_DEBUG_SERIAL_MMIO=y" >> seabios/.config
+	echo "CONFIG_DEBUG_SERIAL_MEM_ADDRESS=0xFEDC6000" >> seabios/.config
 else
 	echo "# CONFIG_DEBUG_SERIAL is not set" >> seabios/.config
 endif

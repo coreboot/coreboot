@@ -75,6 +75,26 @@ Device (GPIO)
  */
 Method (GADD, 1, NotSerialized)
 {
+#if IS_ENABLED(CONFIG_SKYLAKE_SOC_PCH_H)
+	/* GPIO Community 0 */
+	If (LAnd (LGreaterEqual (Arg0, GPP_A0), LLessEqual (Arg0, GPP_B23)))
+	{
+		Store (PID_GPIOCOM0, Local0)
+		Subtract (Arg0, GPP_A0, Local1)
+	}
+	/* GPIO Community 1 */
+	If (LAnd (LGreaterEqual (Arg0, GPP_C0), LLessEqual (Arg0, GPP_H23)))
+	{
+		Store (PID_GPIOCOM1, Local0)
+		Subtract (Arg0, GPP_C0, Local1)
+	}
+	/* GPIO Community 03 */
+	If (LAnd (LGreaterEqual (Arg0, GPP_I0), LLessEqual (Arg0, GPP_I10)))
+	{
+		Store (PID_GPIOCOM3, Local0)
+		Subtract (Arg0, GPP_I0, Local1)
+	}
+#else
 	/* GPIO Community 0 */
 	If (LAnd (LGreaterEqual (Arg0, GPP_A0), LLessEqual (Arg0, GPP_B23)))
 	{
@@ -93,6 +113,7 @@ Method (GADD, 1, NotSerialized)
 		Store (PID_GPIOCOM3, Local0)
 		Subtract (Arg0, GPP_F0, Local1)
 	}
+#endif /* CONFIG_SKYLAKE_SOC_PCH_H */
 	Store (PCRB (Local0), Local2)
 	Add (Local2, PAD_CFG_DW_OFFSET, Local2)
 	Return (Add (Local2, Multiply (Local1, 8)))

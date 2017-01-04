@@ -414,8 +414,11 @@ static const unsigned short systemagent_ids[] = {
 	MCH_SKYLAKE_ID_U,
 	MCH_SKYLAKE_ID_Y,
 	MCH_SKYLAKE_ID_ULX,
+	MCH_SKYLAKE_ID_H,
+	MCH_SKYLAKE_ID_H_EM,
 	MCH_KABYLAKE_ID_U,
 	MCH_KABYLAKE_ID_Y,
+	MCH_KABYLAKE_ID_H,
 	0
 };
 

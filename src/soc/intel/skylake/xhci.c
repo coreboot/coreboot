@@ -33,6 +33,7 @@ static struct device_operations usb_xhci_ops = {
 
 static const unsigned short pci_device_ids[] = {
 	0x9d2f, /* SunRisePoint LP */
+	0xa12f, /* KBL-H*/
 	0
 };
 

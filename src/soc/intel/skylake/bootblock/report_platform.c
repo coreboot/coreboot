@@ -32,8 +32,12 @@ static struct {
 } cpu_table[] = {
 	{ CPUID_SKYLAKE_C0,	"Skylake C0" },
 	{ CPUID_SKYLAKE_D0,	"Skylake D0" },
+	{ CPUID_SKYLAKE_HQ0,    "Skylake H Q0" },
+	{ CPUID_SKYLAKE_HR0,    "Skylake H R0" },
 	{ CPUID_KABYLAKE_G0,	"Kabylake G0" },
 	{ CPUID_KABYLAKE_H0,	"Kabylake H0" },
+	{ CPUID_KABYLAKE_HA0,	"Kabylake H A0" },
+	{ CPUID_KABYLAKE_HB0,	"Kabylake H B0" },
 };
 
 static struct {
@@ -43,8 +47,11 @@ static struct {
 	{ MCH_SKYLAKE_ID_U,	"Skylake-U" },
 	{ MCH_SKYLAKE_ID_Y,	"Skylake-Y" },
 	{ MCH_SKYLAKE_ID_ULX,	"Skylake-ULX" },
+	{ MCH_SKYLAKE_ID_H,	"Skylake-H" },
+	{ MCH_SKYLAKE_ID_H_EM,  "Skylake-H Embedded" },
 	{ MCH_KABYLAKE_ID_U,	"Kabylake-U" },
 	{ MCH_KABYLAKE_ID_Y,	"Kabylake-Y" },
+	{ MCH_KABYLAKE_ID_H,	"Kabylake-H" },
 };
 
 static struct {
@@ -55,6 +62,9 @@ static struct {
 	{ PCH_SPT_LP_U_BASE,		"Skylake-U Base" },
 	{ PCH_SPT_LP_U_PREMIUM,		"Skylake-U Premium" },
 	{ PCH_SPT_LP_Y_PREMIUM,		"Skylake-Y Premium" },
+	{ PCH_SPT_H_PREMIUM,		"Skylake-H Premium" },
+	{ PCH_SPT_H_C236,		"Skylake-H C236" },
+	{ PCH_SPT_H_QM170,		"Skylake-H QM170" },
 	{ PCH_KBL_LP_U_PREMIUM,		"Kabylake-U Premium" },
 	{ PCH_KBL_LP_Y_PREMIUM,		"Kabylake-Y Premium" },
 	{ PCH_KBL_LP_Y_PREMIUM_HDCP22,	"Kabylake-Y iHDCP 2.2 Premium" },
@@ -67,9 +77,12 @@ static struct {
 	{ IGD_SKYLAKE_GT1_SULTM, "Skylake ULT GT1"},
 	{ IGD_SKYLAKE_GT2_SULXM, "Skylake ULX GT2" },
 	{ IGD_SKYLAKE_GT2_SULTM, "Skylake ULT GT2" },
+	{ IGD_SKYLAKE_GT2_SHALM, "Skylake HALO GT2" },
+	{ IGD_SKYLAKE_GT4_SHALM, "Skylake HALO GT4" },
 	{ IGD_KABYLAKE_GT1_SULTM, "Kabylake ULT GT1"},
 	{ IGD_KABYLAKE_GT2_SULXM, "Kabylake ULX GT2" },
 	{ IGD_KABYLAKE_GT2_SULTM, "Kabylake ULT GT2" },
+	{ IGD_KABYLAKE_GT2_SHALM, "Kabylake HALO GT2" },
 };
 
 static void report_cpu_info(void)

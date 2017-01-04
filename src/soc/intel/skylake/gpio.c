@@ -45,12 +45,21 @@ static const struct gpio_community communities[] = {
 	{
 		.port_id = PID_GPIOCOM1,
 		.min = GPP_C0,
+#if IS_ENABLED(CONFIG_SKYLAKE_SOC_PCH_H)
+		.max = GPP_H23,
+#else
 		.max = GPP_E23,
+#endif
 	},
 	{
 		.port_id = PID_GPIOCOM3,
+#if IS_ENABLED(CONFIG_SKYLAKE_SOC_PCH_H)
+		.min = GPP_I0,
+		.max = GPP_I10,
+#else
 		.min = GPP_F0,
 		.max = GPP_G7,
+#endif
 	},
 	{
 		.port_id = PID_GPIOCOM2,
@@ -67,6 +76,10 @@ static const char *gpio_group_names[GPIO_NUM_GROUPS] = {
 	"GPP_E",
 	"GPP_F",
 	"GPP_G",
+#if IS_ENABLED(CONFIG_SKYLAKE_SOC_PCH_H)
+	"GPP_H",
+	"GPP_I",
+#endif
 	"GPD",
 };
 

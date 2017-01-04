@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2016 Intel Corporation.
+ * Copyright (C) 2016-2017 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@
 #include <soc/i2c.h>
 #include <soc/ramstage.h>
 #include <soc/reg_access.h>
+#include <timer.h>
 
 static void i2c_disable(I2C_REGS *regs)
 {
@@ -46,17 +47,144 @@ static void i2c_disable(I2C_REGS *regs)
 	status = regs->ic_clr_intr;
 }
 
-int platform_i2c_transfer(unsigned bus, struct i2c_seg *segments, int count)
+static int platform_i2c_write(uint32_t restart, uint8_t *tx_buffer, int length,
+	uint32_t stop, uint8_t *rx_buffer, struct stopwatch *timeout)
 {
-	uint8_t *buffer;
+	int bytes_transferred;
+	uint32_t cmd;
+	I2C_REGS *regs;
+	uint32_t status;
+
+	ASSERT(tx_buffer != NULL);
+	ASSERT(timeout != NULL);
+	regs = get_i2c_address();
+
+	/* Fill the FIFO with the write operation */
+	bytes_transferred = 0;
+	do {
+		status = regs->ic_raw_intr_stat;
+
+		/* Check for errors */
+		if (status & (IC_INTR_RX_OVER | IC_INTR_RX_UNDER
+				| IC_INTR_TX_ABRT | IC_INTR_TX_OVER)) {
+			i2c_disable(regs);
+			return -1;
+		}
+
+		/* Check for timeout */
+		if (stopwatch_expired(timeout))
+			return -1;
+
+		/* Receive any available data */
+		status = regs->ic_status;
+		if (rx_buffer != NULL) {
+			while (status & IC_STATUS_RFNE) {
+				*rx_buffer++ = (uint8_t)regs->ic_data_cmd;
+				bytes_transferred++;
+				status = regs->ic_status;
+			}
+		}
+
+		/* Determine if space is available in the FIFO */
+		if (status & IC_STATUS_TFNF) {
+			/* End of the transaction? */
+			cmd = IC_DATA_CMD_WRITE | *tx_buffer++ | restart;
+			if (length == 1)
+				cmd |= stop;
+			restart = 0;
+
+			/* Place a data byte into the FIFO */
+			regs->ic_data_cmd = cmd;
+			length--;
+			bytes_transferred++;
+		} else
+			udelay(1);
+	} while (length > 0);
+	return bytes_transferred;
+}
+
+static int platform_i2c_read(uint32_t restart, uint8_t *rx_buffer, int length,
+	uint32_t stop, struct stopwatch *timeout)
+{
+	int bytes_transferred;
+	uint32_t cmd;
+	int fifo_bytes;
+	uint8_t junk;
+	I2C_REGS *regs;
+	uint32_t status;
+
+	ASSERT(rx_buffer != NULL);
+	ASSERT(timeout != NULL);
+	regs = get_i2c_address();
+
+	/* Empty the FIFO */
+	status = regs->ic_status;
+	while (status & IC_STATUS_RFNE) {
+		junk = (uint8_t)regs->ic_data_cmd;
+		status = regs->ic_status;
+	}
+
+	/* Fill the FIFO with read commands */
+	fifo_bytes = min(length, 16);
+	bytes_transferred = 0;
+	while (length > 0) {
+		status = regs->ic_raw_intr_stat;
+
+		/* Check for errors */
+		if (status & (IC_INTR_RX_OVER | IC_INTR_RX_UNDER
+				| IC_INTR_TX_ABRT | IC_INTR_TX_OVER)) {
+			i2c_disable(regs);
+			return -1;
+		}
+
+		/* Check for timeout */
+		if (stopwatch_expired(timeout))
+			return -1;
+
+		/* Receive any available data */
+		status = regs->ic_status;
+		if (status & IC_STATUS_RFNE) {
+			/* Save the next data byte, removed from the RX FIFO */
+			*rx_buffer++ = (uint8_t)regs->ic_data_cmd;
+			bytes_transferred++;
+		}
+
+		if ((status & IC_STATUS_TFNF)
+			|| ((status & IC_STATUS_RFNE) && (fifo_bytes > 0))) {
+			/* End of the transaction? */
+			cmd = IC_DATA_CMD_READ | restart;
+			if (length == 1)
+				cmd |= stop;
+			restart = 0;
+
+			/* Place a read command into the TX FIFO */
+			regs->ic_data_cmd = cmd;
+			if (fifo_bytes > 0)
+				fifo_bytes--;
+			length--;
+		} else
+			udelay(1);
+	}
+	return bytes_transferred;
+}
+
+int platform_i2c_transfer(unsigned int bus, struct i2c_seg *segment,
+	int seg_count)
+{
 	int bytes_transferred;
 	uint8_t chip;
 	uint32_t cmd;
+	int data_bytes;
 	int length;
-	int read_length;
 	I2C_REGS *regs;
+	uint32_t restart;
+	uint8_t *rx_buffer;
 	uint32_t status;
-	uint32_t timeout;
+	uint32_t stop;
+	struct stopwatch timeout;
+	int total_bytes;
+	uint8_t *tx_buffer;
+	int tx_bytes;
 
 	regs = get_i2c_address();
 
@@ -64,9 +192,8 @@ int platform_i2c_transfer(unsigned bus, struct i2c_seg *segments, int count)
 	i2c_disable(regs);
 
 	/* Set the slave address */
-	ASSERT (count > 0);
-	ASSERT (segments != NULL);
-	ASSERT (segments->read == 0);
+	ASSERT(seg_count > 0);
+	ASSERT(segment != NULL);
 
 	/* Clear the start and stop detection */
 	status = regs->ic_clr_start_det;
@@ -75,12 +202,12 @@ int platform_i2c_transfer(unsigned bus, struct i2c_seg *segments, int count)
 	/* Set addressing mode to 7-bit and fast mode */
 	cmd = regs->ic_con;
 	cmd &= ~(IC_CON_10B | IC_CON_SPEED);
-	cmd |= IC_CON_RESTART_EN | IC_CON_7B | IC_CON_SPEED_100_KHz
+	cmd |= IC_CON_RESTART_EN | IC_CON_7B | IC_CON_SPEED_400_KHz
 		| IC_CON_MASTER_MODE;
 	regs->ic_con = cmd;
 
 	/* Set the target chip address */
-	chip = segments->chip;
+	chip = segment->chip;
 	regs->ic_tar = chip;
 
 	/* Enable the I2C controller */
@@ -92,86 +219,85 @@ int platform_i2c_transfer(unsigned bus, struct i2c_seg *segments, int count)
 	status = regs->ic_clr_tx_over;
 	status = regs->ic_clr_tx_abrt;
 
+	/* Start the timeout */
+	stopwatch_init_msecs_expire(&timeout, 1000);
+
 	/* Process each of the segments */
+	total_bytes = 0;
+	tx_bytes = 0;
 	bytes_transferred = 0;
-	read_length = 0;
-	buffer = NULL;
-	while (count-- > 0) {
-		buffer = segments->buf;
-		length = segments->len;
-		ASSERT (buffer != NULL);
-		ASSERT (length >= 1);
-		ASSERT (segments->chip == chip);
+	rx_buffer = NULL;
+	restart = 0;
+	while (seg_count-- > 0) {
+		length = segment->len;
+		total_bytes += length;
+		ASSERT(segment->buf != NULL);
+		ASSERT(length >= 1);
+		ASSERT(segment->chip == chip);
 
-		if (segments->read) {
+		/* Determine if this is the last segment of the transaction */
+		stop = (seg_count == 0) ? IC_DATA_CMD_STOP : 0;
+
+		/* Fill the FIFO with the necessary command bytes */
+		if (segment->read) {
 			/* Place read commands into the FIFO */
-			read_length = length;
-			while (length > 0) {
-				/* Send stop bit after last byte */
-				cmd = IC_DATA_CMD_READ;
-				if ((count == 0) && (length == 1))
-					cmd |= IC_DATA_CMD_STOP;
+			rx_buffer = segment->buf;
+			data_bytes = platform_i2c_read(restart, rx_buffer,
+				length, stop, &timeout);
 
-				/* Place read command in transmit FIFO */
-				regs->ic_data_cmd = cmd;
-				length--;
-			}
+			/* Return any detected error */
+			if (data_bytes < 0)
+				return data_bytes;
+			bytes_transferred += data_bytes;
 		} else {
 			/* Write the data into the FIFO */
-			while (length > 0) {
-				/* End of the transaction? */
-				cmd = IC_DATA_CMD_WRITE | *buffer++;
-				if ((count == 0) && (length == 1))
-					cmd |= IC_DATA_CMD_STOP;
+			tx_buffer = segment->buf;
+			tx_bytes += length;
+			data_bytes = platform_i2c_write(restart, tx_buffer,
+				length, stop, rx_buffer, &timeout);
 
-				/* Place a data byte into the FIFO */
-				regs->ic_data_cmd = cmd;
-				length--;
-				bytes_transferred++;
-			}
+			/* Return any detected error */
+			if (data_bytes < 0)
+				return data_bytes;
+			bytes_transferred += data_bytes;
 		}
-		segments++;
+		segment++;
+		restart = IC_DATA_CMD_RESTART;
 	}
 
 	/* Wait for the end of the transaction */
-	timeout = 1 * 1000 * 1000;
+	if (rx_buffer != NULL)
+		rx_buffer += bytes_transferred - tx_bytes;
 	do {
-		status = regs->ic_raw_intr_stat;
-		if (status & IC_INTR_STOP_DET)
-			break;
-		if ((status & (IC_INTR_RX_OVER | IC_INTR_RX_UNDER
-				| IC_INTR_TX_ABRT | IC_INTR_TX_OVER))
-			|| (timeout == 0)) {
-			if (timeout == 0)
-				printk (BIOS_ERR,
-					"ERROR - I2C stop bit not received!\n");
-			if (status & IC_INTR_RX_OVER)
-				printk (BIOS_ERR,
-					"ERROR - I2C receive overrun!\n");
-			if (status & IC_INTR_RX_UNDER)
-				printk (BIOS_ERR,
-					"ERROR - I2C receive underrun!\n");
-			if (status & IC_INTR_TX_ABRT)
-				printk (BIOS_ERR,
-					"ERROR - I2C transmit abort!\n");
-			if (status & IC_INTR_TX_OVER)
-				printk (BIOS_ERR,
-					"ERROR - I2C transmit overrun!\n");
-			i2c_disable(regs);
-			return -1;
+		/* Receive any available data */
+		status = regs->ic_status;
+		if ((rx_buffer != NULL) && (status & IC_STATUS_RFNE)) {
+			*rx_buffer++ = (uint8_t)regs->ic_data_cmd;
+			bytes_transferred++;
+		} else {
+			status = regs->ic_raw_intr_stat;
+			if ((total_bytes == bytes_transferred)
+				&& (status & IC_INTR_STOP_DET))
+				break;
+
+			/* Check for errors */
+			if (status & (IC_INTR_RX_OVER | IC_INTR_RX_UNDER
+					| IC_INTR_TX_ABRT | IC_INTR_TX_OVER)) {
+				i2c_disable(regs);
+				return -1;
+			}
+
+			/* Check for timeout */
+			if (stopwatch_expired(&timeout))
+				return -1;
+
+			/* Delay for a while */
+			udelay(1);
 		}
-		timeout--;
-		udelay(1);
 	} while (1);
+	i2c_disable(regs);
+	regs->ic_tar = 0;
 
-	/* Finish reading the data bytes */
-	while (read_length > 0) {
-		status = regs->ic_status;
-		*buffer++ = (uint8_t)regs->ic_data_cmd;
-		read_length--;
-		bytes_transferred++;
-		status = regs->ic_status;
-	}
-
+	/* Return the number of bytes transferred */
 	return bytes_transferred;
 }

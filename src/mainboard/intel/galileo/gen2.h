@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2016 Intel Corp.
+ * Copyright (C) 2016-2017 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -95,6 +95,18 @@ static const struct reg_script gen2_i2c_init[] = {
 	REG_I2C_AND(GEN2_I2C_GPIO_EXP1, GEN2_GPIO_EXP_PULL_UP_DOWN_EN1, ~BIT7),
 	REG_I2C_OR(GEN2_I2C_GPIO_EXP2, GEN2_GPIO_EXP_CONFIG1, BIT7),
 	REG_I2C_AND(GEN2_I2C_GPIO_EXP2, GEN2_GPIO_EXP_PULL_UP_DOWN_EN1, ~BIT7),
+
+	REG_SCRIPT_END
+};
+
+static const struct reg_script gen2_tpm_reset[] = {
+	/* Reset the TPM using SW_RESET_N_SHLD (EXP1 P1.7):
+	 * low, output, delay, input
+	 */
+	REG_I2C_AND(GEN2_I2C_GPIO_EXP1, GEN2_GPIO_EXP_OUTPUT1, ~BIT7),
+	REG_I2C_AND(GEN2_I2C_GPIO_EXP1, GEN2_GPIO_EXP_CONFIG1, ~BIT7),
+	TIME_DELAY_USEC(5),
+	REG_I2C_OR(GEN2_I2C_GPIO_EXP1, GEN2_GPIO_EXP_CONFIG1, BIT7),
 
 	REG_SCRIPT_END
 };

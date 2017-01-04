@@ -53,6 +53,9 @@ static const unsigned short pci_device_ids[] = {
 	0x9d27, /* UART0 */
 	0x9d28, /* UART1 */
 	0x9d66, /* UART2 */
+	0xa127, /* KBL-H UART0 */
+	0xa128, /* KBL-H UART1 */
+	0xa166, /* KBL-H UART2 */
 	0
 };
 

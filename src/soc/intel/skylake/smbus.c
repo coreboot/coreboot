@@ -99,6 +99,7 @@ static struct device_operations smbus_ops = {
 
 static const unsigned short pci_device_ids[] = {
 	0x9d23, /* SunRisePoint LP */
+	0xa123, /* SunRisePoint H */
 	0
 };
 

@@ -26,8 +26,12 @@
 /* Supported CPUIDs */
 #define CPUID_SKYLAKE_C0	0x406e2
 #define CPUID_SKYLAKE_D0	0x406e3
+#define CPUID_SKYLAKE_HQ0	0x506e1
+#define CPUID_SKYLAKE_HR0	0x506e3
 #define CPUID_KABYLAKE_G0	0x406e8
 #define CPUID_KABYLAKE_H0	0x806e9
+#define CPUID_KABYLAKE_HA0	0x506e8
+#define CPUID_KABYLAKE_HB0	0x906e9
 
 /* CPU bus clock is fixed at 100MHz */
 #define CPU_BCLK		100

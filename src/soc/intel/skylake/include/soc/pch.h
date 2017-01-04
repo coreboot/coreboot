@@ -26,6 +26,9 @@
 #define PCH_SPT_LP_U_BASE		0x9d43
 #define PCH_SPT_LP_U_PREMIUM		0x9d48
 #define PCH_SPT_LP_Y_PREMIUM		0x9d46
+#define PCH_SPT_H_C236			0xa150
+#define PCH_SPT_H_PREMIUM		0xa14e
+#define PCH_SPT_H_QM170			0xa14d
 #define PCH_KBL_LP_Y_PREMIUM_HDCP22	0x9d4b
 #define PCH_KBL_LP_U_PREMIUM		0x9d58
 #define PCH_KBL_LP_Y_PREMIUM		0x9d56

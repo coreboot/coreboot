@@ -244,6 +244,7 @@ static struct device_operations device_ops = {
 
 static const unsigned short pci_device_ids[] = {
 	0x9d21,
+	0xa121,
 	0
 };
 

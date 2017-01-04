@@ -13,9 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <variant/ec.h>
-#include <variant/gpio.h>
-
 DefinitionBlock(
 	"dsdt.aml",
 	"DSDT",
@@ -40,29 +37,6 @@ DefinitionBlock(
 		}
 	}
 
-	/* Chrome OS specific */
-	#include <vendorcode/google/chromeos/acpi/chromeos.asl>
-
 	/* Chipset specific sleep states */
 	#include <soc/intel/apollolake/acpi/sleepstates.asl>
-
-	/* Chrome OS Embedded Controller */
-	Scope (\_SB.PCI0.LPCB)
-	{
-		/* ACPI code for EC SuperIO functions */
-		#include <ec/google/chromeec/acpi/superio.asl>
-		/* ACPI code for EC functions */
-		#include <ec/google/chromeec/acpi/ec.asl>
-	}
-
-	/* Dynamic Platform Thermal Framework */
-	Scope (\_SB)
-	{
-		/* Per board variant specific definitions. */
-		#include <variant/acpi/dptf.asl>
-		/* Include soc specific DPTF changes */
-		#include <soc/intel/apollolake/acpi/dptf.asl>
-		/* Include common dptf ASL files */
-		#include <soc/intel/common/acpi/dptf/dptf.asl>
-	}
 }

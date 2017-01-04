@@ -1,6 +1,6 @@
-Vendor name: Google
-Board name: Reef Apollolake Reference Board
-Category: laptop
+Vendor name: Intel
+Board name: Leafhill Reference Board
+Category: eval
 ROM protocol: SPI
-ROM socketed: n
+ROM socketed: y
 Flashrom support: y

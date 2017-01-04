@@ -1,108 +1,24 @@
-
-config BOARD_GOOGLE_BASEBOARD_REEF
-	def_bool n
-	select SOC_INTEL_APOLLOLAKE
-	select BOARD_ROMSIZE_KB_16384
-	select EC_GOOGLE_CHROMEEC
-	select EC_GOOGLE_CHROMEEC_LPC
-	select HAVE_ACPI_RESUME
-	select HAVE_ACPI_TABLES
-	select I2C_TPM
-	select MAINBOARD_HAS_CHROMEOS
-	select MAINBOARD_HAS_TPM2
-	select MAINBOARD_HAS_I2C_TPM_CR50
-	select TPM2
-	select GOOGLE_SMBIOS_MAINBOARD_VERSION
-
 if BOARD_INTEL_LEAFHILL
 
-config BASEBOARD_REEF_LAPTOP
-	def_bool n
-	select SYSTEM_TYPE_LAPTOP
-
-config DRIVER_TPM_I2C_BUS
-	hex
-	default 0x2
-
-config DRIVER_TPM_I2C_ADDR
-	hex
-	default 0x50
-
-config DRIVER_TPM_I2C_IRQ
-	int
-	default 60 # GPE0_DW1_28
-
-config CHROMEOS
-	select EC_GOOGLE_CHROMEEC_SWITCHES
-	select HAS_RECOVERY_MRC_CACHE
-	select MRC_CLEAR_NORMAL_CACHE_ON_RECOVERY_RETRAIN
-	select LID_SWITCH if BASEBOARD_REEF_LAPTOP
-
-config DRIVERS_I2C_DA7219
-	default y
-
-config DRIVERS_I2C_GENERIC
-	default y
-
-config DRIVERS_I2C_WACOM
-	default y
-
-config DRIVERS_PS2_KEYBOARD
-	default y
-
-config DRIVERS_GENERIC_GPIO_REGULATOR
-	default y
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select SOC_INTEL_APOLLOLAKE
+	select BOARD_ROMSIZE_KB_16384
+	select HAVE_ACPI_TABLES
+#	select HAVE_INTEL_FIRMWARE
+#	select HAVE_ME_BIN
+#	select LOCK_MANAGEMENT_ENGINE
 
 config MAINBOARD_DIR
 	string
 	default intel/leafhill
 
-config VARIANT_DIR
-	string
-	default "reef"
-	default "pyro" if BOARD_GOOGLE_PYRO
-	default "snappy" if BOARD_GOOGLE_SNAPPY
-
 config DEVICETREE
 	string
-	default "variants/pyro/devicetree.cb" if BOARD_GOOGLE_PYRO
-	default "variants/snappy/devicetree.cb" if BOARD_GOOGLE_SNAPPY
-	default "variants/baseboard/devicetree.cb"
+	default "devicetree.cb"
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "Reef"
-	default "Pyro" if BOARD_GOOGLE_PYRO
-	default "Snappy" if BOARD_GOOGLE_SNAPPY
-
-config MAINBOARD_FAMILY
-	string
-	default "Google_Reef"
-
-config GBB_HWID
-	string
-	depends on CHROMEOS
-	default "REEF TEST 3240" if BOARD_GOOGLE_REEF
-	default "PYRO TEST 0290" if BOARD_GOOGLE_PYRO
-	default "SNAPPY TEST 1088" if BOARD_GOOGLE_SNAPPY
-
-config MAX_CPUS
-	int
-	default 8
-
-config UART_FOR_CONSOLE
-	int
-	default 2
-
-config INCLUDE_NHLT_BLOBS
-	bool "Include blobs for audio."
-	select NHLT_DMIC_1CH_16B
-	select NHLT_DMIC_2CH_16B
-	select NHLT_DMIC_4CH_16B
-	select NHLT_DA7219
-	select NHLT_MAX98357
-
-config DRIVERS_GENERIC_MAX98357A
-	default y
+	default "Leafhill"
 
 endif # BOARD_INTEL_LEAFHILL

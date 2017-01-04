@@ -1,4 +1,3 @@
 config BOARD_INTEL_LEAFHILL
 	bool "Leafhill"
-	select BOARD_GOOGLE_BASEBOARD_REEF
-	select BASEBOARD_REEF_LAPTOP
+

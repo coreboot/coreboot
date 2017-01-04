@@ -20,6 +20,7 @@
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
 #include <device/pci_def.h>
+#include <southbridge/amd/common/amd_defs.h>
 #include <southbridge/amd/sb800/sb800.h>
 
 
@@ -45,12 +46,12 @@ void enable_int_gfx(void)
 	byte |= 1;
 	pm_iowrite(0x24, byte);
 
-	gpio_reg = (volatile u8 *)0xFED80000 + 0xD00; /* IoMux Register */
+	gpio_reg = (volatile u8 *)AMD_SB_ACPI_MMIO_ADDR + 0xD00; /* IoMux Register */
 
 	*(gpio_reg + 0x6) = 0x1; /* Int_vga_en */
 	*(gpio_reg + 170) = 0x1; /* gpio_gate */
 
-	gpio_reg = (volatile u8 *)0xFED80000 + 0x100; /* GPIO Registers */
+	gpio_reg = (volatile u8 *)AMD_SB_ACPI_MMIO_ADDR + 0x100; /* GPIO Registers */
 
 	*(gpio_reg + 0x6) = 0x8;
 	*(gpio_reg + 170) = 0x0;

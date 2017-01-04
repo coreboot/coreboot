@@ -29,6 +29,7 @@
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
 #include <device/pnp_def.h>
+#include <southbridge/amd/common/amd_defs.h>
 #include <southbridge/amd/agesa/hudson/hudson.h>
 #include <southbridge/amd/agesa/hudson/smbus.h>
 #include <stdint.h>
@@ -38,8 +39,7 @@
 
 #define MMIO_NON_POSTED_START 0xfed00000
 #define MMIO_NON_POSTED_END   0xfedfffff
-#define SB_MMIO 0xFED80000
-#define SB_MMIO_MISC32(x) *(volatile u32 *)(SB_MMIO + 0xE00 + (x))
+#define SB_MMIO_MISC32(x) *(volatile u32 *)(AMD_SB_ACPI_MMIO_ADDR + 0xE00 + (x))
 
 #define SERIAL_DEV PNP_DEV(0x2e, IT8728F_SP1)
 #define GPIO_DEV PNP_DEV(0x2e, IT8728F_GPIO)

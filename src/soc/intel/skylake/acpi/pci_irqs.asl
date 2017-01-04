@@ -48,6 +48,8 @@ Name (PICP, Package () {
 	Package () { 0x0016FFFF, 1, 0, HECI_2_IRQ },
 	Package () { 0x0016FFFF, 2, 0, IDER_IRQ },
 	Package () { 0x0016FFFF, 3, 0, KT_IRQ },
+	/* D23: Sata controller */
+	Package () { 0x0017FFFF, 0, 0, SATA_IRQ },
 	/* D21: SerialIo */
 	Package () { 0x0015FFFF, 0, 0, LPSS_I2C0_IRQ },
 	Package () { 0x0015FFFF, 1, 0, LPSS_I2C1_IRQ },

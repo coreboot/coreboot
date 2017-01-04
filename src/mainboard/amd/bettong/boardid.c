@@ -15,6 +15,7 @@
 
 #include <stdint.h>
 #include <arch/io.h>
+#include <southbridge/amd/common/amd_defs.h>
 #include <boardid.h>
 
 /**
@@ -34,7 +35,7 @@ uint8_t board_id(void)
 	u8  boardrev = 0;
 	char boardid;
 
-	gpiommioaddr = (void *)0xfed80000ul + 0x1500;
+	gpiommioaddr = (void *)AMD_SB_ACPI_MMIO_ADDR + 0x1500;
 	value = read8(gpiommioaddr + (7 << 2) + 2); /* agpio7: board_id2 */
 	boardrev = value & 1;
 	value = read8(gpiommioaddr + (6 << 2) + 2); /* agpio6: board_id1 */

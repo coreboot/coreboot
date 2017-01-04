@@ -30,6 +30,7 @@
 #include <northbridge/amd/agesa/agesawrapper.h>
 #include <cpu/x86/bist.h>
 #include <cpu/x86/lapic.h>
+#include <southbridge/amd/common/amd_defs.h>
 #include <southbridge/amd/agesa/hudson/hudson.h>
 #include <cpu/amd/agesa/s3_resume.h>
 #include "cbmem.h"
@@ -44,8 +45,7 @@
 
 #define MMIO_NON_POSTED_START	0xfed00000
 #define MMIO_NON_POSTED_END	0xfedfffff
-#define SB_MMIO	0xFED80000
-#define SB_MMIO_MISC32(x)	*(volatile u32 *)(SB_MMIO + 0xE00 + (x))
+#define SB_MMIO_MISC32(x)	*(volatile u32 *)(AMD_SB_ACPI_MMIO_ADDR + 0xE00 + (x))
 
 
 static void it_sio_write(pnp_devfn_t dev, u8 reg, u8 value)

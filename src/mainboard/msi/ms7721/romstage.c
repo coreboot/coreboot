@@ -30,6 +30,7 @@
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
 #include <device/pnp_def.h>
+#include <southbridge/amd/common/amd_defs.h>
 #include <southbridge/amd/agesa/hudson/hudson.h>
 #include <southbridge/amd/agesa/hudson/smbus.h>
 
@@ -41,8 +42,7 @@
 
 #define MMIO_NON_POSTED_START 0xfed00000
 #define MMIO_NON_POSTED_END   0xfedfffff
-#define SB_MMIO 0xFED80000
-#define SB_MMIO_MISC32(x) *(volatile u32 *)(SB_MMIO + 0xE00 + (x))
+#define SB_MMIO_MISC32(x) *(volatile u32 *)(AMD_SB_ACPI_MMIO_ADDR + 0xE00 + (x))
 
 /* Ensure Super I/O config address (i.e., 0x2e or 0x4e) matches that of devicetree.cb */
 #define SUPERIO_ADDRESS 0x4e

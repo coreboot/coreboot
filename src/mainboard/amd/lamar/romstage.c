@@ -30,6 +30,7 @@
 #include <northbridge/amd/pi/agesawrapper_call.h>
 #include <cpu/x86/bist.h>
 #include <cpu/x86/lapic.h>
+#include <southbridge/amd/common/amd_defs.h>
 #include <southbridge/amd/pi/hudson/hudson.h>
 #include <cpu/amd/pi/s3_resume.h>
 #include "cbmem.h"
@@ -59,8 +60,8 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	outb(0x24, 0xCD6);
 	outb(0x01, 0xCD7);
-	*(volatile u32 *) (0xFED80000 + 0xE00 + 0x28) |= 1 << 18; /* 24Mhz */
-	*(volatile u32 *) (0xFED80000 + 0xE00 + 0x40) &= ~(1 << 2); /* 24Mhz */
+	*(volatile u32 *) (AMD_SB_ACPI_MMIO_ADDR + 0xE00 + 0x28) |= 1 << 18; /* 24Mhz */
+	*(volatile u32 *) (AMD_SB_ACPI_MMIO_ADDR + 0xE00 + 0x40) &= ~(1 << 2); /* 24Mhz */
 
 	hudson_lpc_port80();
 

@@ -152,6 +152,7 @@ regions-for-file = $(subst $(spc),$(comma),$(sort \
 		locale_%.bin \
 		font.bin \
 		vbgfx.bin \
+		rmu.bin \
 		,$(1)),COREBOOT,COREBOOT FW_MAIN_A FW_MAIN_B)))
 
 endif # CONFIG_VBOOT

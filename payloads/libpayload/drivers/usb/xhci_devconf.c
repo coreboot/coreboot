@@ -451,6 +451,7 @@ xhci_destroy_dev(hci_t *const controller, const int slot_id)
 	*ic->drop = (1 << num_eps) - 1;	/* Drop all endpoints we can. */
 	*ic->drop &= ~(1 << 1 | 1 << 0); /* Not allowed to drop EP0 or Slot. */
 	int cc = xhci_cmd_evaluate_context(xhci, slot_id, ic);
+	free(ic);
 	if (cc != CC_SUCCESS)
 		xhci_debug("Failed to quiesce slot %d: %d\n", slot_id, cc);
 	cc = xhci_cmd_stop_endpoint(xhci, slot_id, 1);

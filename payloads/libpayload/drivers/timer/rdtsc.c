@@ -37,7 +37,7 @@
 
 uint64_t timer_hz(void)
 {
-	return lib_sysinfo.cpu_khz * 1000;
+	return (uint64_t)lib_sysinfo.cpu_khz * 1000;
 }
 
 uint64_t timer_raw_value(void)

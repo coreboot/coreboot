@@ -25,6 +25,11 @@ bootblock-y += reg_access.c
 bootblock-y += tsc_freq.c
 bootblock-y += uart_common.c
 
+verstage-y += i2c.c
+verstage-y += reg_access.c
+verstage-y += tsc_freq.c
+verstage-$(CONFIG_ENABLE_BUILTIN_HSUART1) += uart_common.c
+
 romstage-y += i2c.c
 romstage-y += memmap.c
 romstage-y += reg_access.c

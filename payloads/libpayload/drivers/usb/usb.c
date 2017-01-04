@@ -336,6 +336,8 @@ generic_set_address (hci_t *controller, usb_speed speed,
 		     int hubport, int hubaddr)
 {
 	int adr = get_free_address (controller);	// address to set
+	if (adr < 0)
+		return NULL;
 	dev_req_t dr;
 
 	memset (&dr, 0, sizeof (dr));

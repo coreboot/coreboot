@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2016 Intel Corp.
+ * Copyright (C) 2016-2017 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -147,6 +147,32 @@ static const struct reg_script gen1_i2c_0x21_init[] = {
 	 */
 	REG_I2C_WRITE(GEN1_I2C_GPIO_EXP_0x21, GEN1_GPIO_EXP_PORT_SELECT, 5),
 	REG_I2C_OR(GEN1_I2C_GPIO_EXP_0x21, GEN1_GPIO_EXP_PORT_DIR, BIT1 | BIT0),
+
+	REG_SCRIPT_END
+};
+
+static const struct reg_script gen1_tpm_reset_0x20[] = {
+	/* Reset the TPM using SW_RESET_N_SHLD (GPORT5_BIT1):
+	 * low, output, delay, input
+	 */
+	REG_I2C_AND(GEN1_I2C_GPIO_EXP_0x20, GEN1_GPIO_EXP_OUTPUT5, ~BIT1),
+	REG_I2C_WRITE(GEN1_I2C_GPIO_EXP_0x20, GEN1_GPIO_EXP_PORT_SELECT, 5),
+	REG_I2C_AND(GEN1_I2C_GPIO_EXP_0x20, GEN1_GPIO_EXP_PORT_DIR, ~BIT1),
+	TIME_DELAY_USEC(5),
+	REG_I2C_OR(GEN1_I2C_GPIO_EXP_0x20, GEN1_GPIO_EXP_PORT_DIR, BIT1),
+
+	REG_SCRIPT_END
+};
+
+static const struct reg_script gen1_tpm_reset_0x21[] = {
+	/* Reset the TPM using SW_RESET_N_SHLD (GPORT5_BIT1):
+	 * low, output, delay, input
+	 */
+	REG_I2C_AND(GEN1_I2C_GPIO_EXP_0x21, GEN1_GPIO_EXP_OUTPUT5, ~BIT1),
+	REG_I2C_WRITE(GEN1_I2C_GPIO_EXP_0x21, GEN1_GPIO_EXP_PORT_SELECT, 5),
+	REG_I2C_AND(GEN1_I2C_GPIO_EXP_0x21, GEN1_GPIO_EXP_PORT_DIR, ~BIT1),
+	TIME_DELAY_USEC(5),
+	REG_I2C_OR(GEN1_I2C_GPIO_EXP_0x21, GEN1_GPIO_EXP_PORT_DIR, BIT1),
 
 	REG_SCRIPT_END
 };

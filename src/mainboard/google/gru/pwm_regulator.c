@@ -28,16 +28,23 @@
  * board design / resistors / capacitors / regulators but due to
  * clock dividers we actually get 3337.
  */
-#define PWM_PERIOD		3337
-#define PWM_DESIGN_VOLTAGE_MIN	8000
-#define PWM_DESIGN_VOLTAGE_MAX	15000
+#define PWM_PERIOD			3337
+#define PWM_DESIGN_VOLTAGE_MIN_OUTDATED	8000
+#define PWM_DESIGN_VOLTAGE_MAX_OUTDATED	15000
 
 /* Later boards (Kevin rev6+, Gru rev2+) use different regulator ranges. */
-int pwm_design_voltage_later[][2] = {
+int kevin6_pwm_design_voltage[][2] = {
 	[PWM_REGULATOR_GPU] = {7858, 12177},
 	[PWM_REGULATOR_BIG] = {7987, 13022},
 	[PWM_REGULATOR_LIT] = {7991, 13037},
 	[PWM_REGULATOR_CENTERLOG] = {8001, 10497}
+};
+
+int pwm_design_voltage[][2] = {
+	[PWM_REGULATOR_GPU] = {7864, 12177},
+	[PWM_REGULATOR_BIG] = {8001, 13022},
+	[PWM_REGULATOR_LIT] = {7977, 13078},
+	[PWM_REGULATOR_CENTERLOG] = {7994, 10499}
 };
 
 void pwm_regulator_configure(enum pwm_regulator pwm, int millivolt)
@@ -45,12 +52,15 @@ void pwm_regulator_configure(enum pwm_regulator pwm, int millivolt)
 	int duty_ns, voltage_max, voltage_min;
 	int voltage = millivolt * 10; /* for higer calculation accuracy */
 
-	voltage_min = PWM_DESIGN_VOLTAGE_MIN;
-	voltage_max = PWM_DESIGN_VOLTAGE_MAX;
-	if (!(IS_ENABLED(CONFIG_BOARD_GOOGLE_KEVIN) && board_id() < 6) &&
-	    !(IS_ENABLED(CONFIG_BOARD_GOOGLE_GRU) && board_id() < 2)) {
-		voltage_min = pwm_design_voltage_later[pwm][0];
-		voltage_max = pwm_design_voltage_later[pwm][1];
+	voltage_min = pwm_design_voltage[pwm][0];
+	voltage_max = pwm_design_voltage[pwm][1];
+	if ((IS_ENABLED(CONFIG_BOARD_GOOGLE_KEVIN) && board_id() < 6) ||
+	    (IS_ENABLED(CONFIG_BOARD_GOOGLE_GRU) && board_id() < 2)) {
+		voltage_min = PWM_DESIGN_VOLTAGE_MIN_OUTDATED;
+		voltage_max = PWM_DESIGN_VOLTAGE_MAX_OUTDATED;
+	} else if (IS_ENABLED(CONFIG_BOARD_GOOGLE_KEVIN) && board_id() >= 6){
+		voltage_min = kevin6_pwm_design_voltage[pwm][0];
+		voltage_max = kevin6_pwm_design_voltage[pwm][1];
 	}
 
 	assert(voltage <= voltage_max && voltage >= voltage_min);

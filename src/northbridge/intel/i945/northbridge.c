@@ -19,7 +19,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <device/hypertransport.h>
 #include <stdlib.h>
 #include <string.h>
 #include <cbmem.h>

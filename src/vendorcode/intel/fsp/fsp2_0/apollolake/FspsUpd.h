@@ -1521,34 +1521,47 @@ typedef struct {
 
 /** Offset 0x0334
 **/
-  UINT8                       ReservedFspsUpd[12];
+  UINT8                       UnusedUpdSpace7[4];
+
+/** Offset 0x0338 - PerPort Half Bit Pre-emphasis
+  PerPort Half Bit Pre-emphasis. Value of register USB2_PER_PORT_PPX [14]
+**/
+  UINT8                       PortUsb20PerPortTxPeHalf[8];
+
+/** Offset 0x0340 - PerPort HS Pre-emphasis Bias
+  PerPort HS Pre-emphasis Bias. Value of register USB2_PER_PORT_PPX [13:11]
+**/
+  UINT8                       PortUsb20PerPortPeTxiSet[8];
+
+/** Offset 0x0348 - PerPort HS Transmitter Bias
+  PerPort HS Transmitter Bias. Value of register USB2_PER_PORT_PPX [10:8]
+**/
+  UINT8                       PortUsb20PerPortTxiSet[8];
+
+/** Offset 0x0350 - Select the skew direction for HS transition
+  Select the skew direction for HS transition. Value of register USB2_PER_PORT_2_PPX [25]
+**/
+  UINT8                       PortUsb20HsSkewSel[8];
+
+/** Offset 0x0358 - Per Port HS Transmitter Emphasis
+  Per Port HS Transmitter Emphasis. Value of register USB2_PER_PORT_2_PPX [24:23]
+**/
+  UINT8                       PortUsb20IUsbTxEmphasisEn[8];
+
+/** Offset 0x0360 - PerPort HS Receiver Bias
+  PerPort HS Receiver Bias. Value of register  USB2_PER_PORT_2_PPX [19:17]
+**/
+  UINT8                       PortUsb20PerPortRXISet[8];
+
+/** Offset 0x0368 - Delay/skew's strength control for HS driver
+  Delay/skew's strength control for HS driver. Value of register USB2_PER_PORT_2_PPX [1:0]
+**/
+  UINT8                       PortUsb20HsNpreDrvSel[8];
+
+/** Offset 0x0370
+**/
+  UINT8                       ReservedFspsUpd[16];
 } FSP_S_CONFIG;
-
-/** Fsp S Test Configuration
-**/
-typedef struct {
-
-/** Offset 0x0340
-**/
-  UINT32                      Signature;
-
-/** Offset 0x0344
-**/
-  UINT8                       ReservedFspsTestUpd[12];
-} FSP_S_TEST_CONFIG;
-
-/** Fsp S Restricted Configuration
-**/
-typedef struct {
-
-/** Offset 0x0350
-**/
-  UINT32                      Signature;
-
-/** Offset 0x0354
-**/
-  UINT8                       ReservedFspsRestrictedUpd[12];
-} FSP_S_RESTRICTED_CONFIG;
 
 /** Fsp S UPD Configuration
 **/
@@ -1562,19 +1575,11 @@ typedef struct {
 **/
   FSP_S_CONFIG                FspsConfig;
 
-/** Offset 0x0340
+/** Offset 0x0380
 **/
-  FSP_S_TEST_CONFIG           FspsTestConfig;
+  UINT8                       UnusedUpdSpace8[46];
 
-/** Offset 0x0350
-**/
-  FSP_S_RESTRICTED_CONFIG     FspsRestrictedConfig;
-
-/** Offset 0x0360
-**/
-  UINT8                       UnusedUpdSpace7[14];
-
-/** Offset 0x036E
+/** Offset 0x03AE
 **/
   UINT16                      UpdTerminator;
 } FSPS_UPD;

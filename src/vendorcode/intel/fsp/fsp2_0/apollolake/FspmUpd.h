@@ -820,32 +820,6 @@ typedef struct {
   UINT8                       ReservedFspmUpd[12];
 } FSP_M_CONFIG;
 
-/** Fsp M Test Configuration
-**/
-typedef struct {
-
-/** Offset 0x0160
-**/
-  UINT32                      Signature;
-
-/** Offset 0x0164
-**/
-  UINT8                       ReservedFspmTestUpd[12];
-} FSP_M_TEST_CONFIG;
-
-/** Fsp M Restricted Configuration
-**/
-typedef struct {
-
-/** Offset 0x0170
-**/
-  UINT32                      Signature;
-
-/** Offset 0x0174
-**/
-  UINT8                       ReservedFspmRestrictedUpd[124];
-} FSP_M_RESTRICTED_CONFIG;
-
 /** Fsp M UPD Configuration
 **/
 typedef struct {
@@ -864,15 +838,7 @@ typedef struct {
 
 /** Offset 0x0160
 **/
-  FSP_M_TEST_CONFIG           FspmTestConfig;
-
-/** Offset 0x0170
-**/
-  FSP_M_RESTRICTED_CONFIG     FspmRestrictedConfig;
-
-/** Offset 0x01F0
-**/
-  UINT8                       UnusedUpdSpace2[14];
+  UINT8                       UnusedUpdSpace2[158];
 
 /** Offset 0x01FE
 **/

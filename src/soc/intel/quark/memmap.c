@@ -26,7 +26,8 @@ void *cbmem_top(void)
 	top_of_memory <<= 16;
 
 	/* Reserve 64 KiB for RMU firmware */
-	top_of_memory -= 0x10000;
+	if (top_of_memory)
+		top_of_memory -= 0x10000;
 
 	/* Return the top of memory */
 	return (void *)top_of_memory;

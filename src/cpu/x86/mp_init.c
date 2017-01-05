@@ -138,14 +138,37 @@ struct cpu_map {
 /* Keep track of APIC and device structure for each CPU. */
 static struct cpu_map cpus[CONFIG_MAX_CPUS];
 
-static inline void barrier_wait(atomic_t *b)
+inline void barrier_wait(atomic_t *b)
 {
 	while (atomic_read(b) == 0)
 		asm ("pause");
 	mfence();
 }
 
-static inline void release_barrier(atomic_t *b)
+/* Returns 1 if timeout occurs before barier is released.
+ * returns 0 if barrier is released before timeout. */
+int barrier_wait_timeout(atomic_t *b, uint32_t timeout_ms)
+{
+	int timeout = 0;
+	struct mono_time current, end;
+
+	timer_monotonic_get(&current);
+	end = current;
+	mono_time_add_msecs(&end, timeout_ms);
+
+	while ((atomic_read(b) == 0) && (!mono_time_after(&current, &end))) {
+		timer_monotonic_get(&current);
+		asm ("pause");
+	}
+	mfence();
+
+	if (mono_time_after(&current, &end))
+		timeout = 1;
+
+	return timeout;
+}
+
+inline void release_barrier(atomic_t *b)
 {
 	mfence();
 	atomic_set(b, 1);

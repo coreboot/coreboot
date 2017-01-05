@@ -18,6 +18,7 @@
 #include <bootblock_common.h>
 #include <console/console.h>
 #include <delay.h>
+#include <pc80/mc146818rtc.h>
 #include <program_loading.h>
 #include <symbols.h>
 #include <timestamp.h>
@@ -34,6 +35,8 @@ void asmlinkage bootblock_main_with_timestamp(uint64_t base_timestamp)
 	/* Initialize timestamps if we have TIMESTAMP region in memlayout.ld. */
 	if (IS_ENABLED(CONFIG_COLLECT_TIMESTAMPS) && _timestamp_size > 0)
 		timestamp_init(base_timestamp);
+
+	cmos_post_init();
 
 	bootblock_soc_early_init();
 	bootblock_mainboard_early_init();

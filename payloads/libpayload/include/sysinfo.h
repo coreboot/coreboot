@@ -124,6 +124,7 @@ struct sysinfo_t {
 	uint64_t boot_media_size;
 	uint64_t mtc_start;
 	uint32_t mtc_size;
+	void	*chromeos_vpd;
 };
 
 extern struct sysinfo_t lib_sysinfo;

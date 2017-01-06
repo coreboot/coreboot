@@ -228,6 +228,12 @@ static void cb_parse_boot_media_params(unsigned char *ptr,
 	info->boot_media_size = bmp->boot_media_size;
 }
 
+static void cb_parse_vpd(void *ptr, struct sysinfo_t *info)
+{
+	struct cb_cbmem_tab *const cbmem = (struct cb_cbmem_tab *)ptr;
+	info->chromeos_vpd = phys_to_virt(cbmem->cbmem_tab);
+}
+
 #if IS_ENABLED(CONFIG_LP_TIMER_RDTSC)
 static void cb_parse_tsc_info(void *ptr, struct sysinfo_t *info)
 {
@@ -398,6 +404,9 @@ int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 			cb_parse_tsc_info(ptr, info);
 			break;
 #endif
+		case CB_TAG_VPD:
+			cb_parse_vpd(ptr, info);
+			break;
 		default:
 			cb_parse_arch_specific(rec, info);
 			break;

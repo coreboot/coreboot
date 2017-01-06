@@ -44,23 +44,6 @@
 #define SERIAL_DEV PNP_DEV(0x2e, W83627DHG_SP1)
 #define GPIO_DEV PNP_DEV(0x2e, W83627DHG_GPIO2345_V)
 
-void setup_ich7_gpios(void)
-{
-	/* TODO: This is highly board specific and should be moved */
-	printk(BIOS_DEBUG, " GPIOS...");
-	/* General Registers */
-	outl(0x1f3dffc1, DEFAULT_GPIOBASE + 0x00);	/* GPIO_USE_SEL */
-	outl(0xe0e8f7c2, DEFAULT_GPIOBASE + 0x04);	/* GP_IO_SEL */
-	outl(0xe2febb7e, DEFAULT_GPIOBASE + 0x0c);	/* GP_LVL */
-	/* Output Control Registers */
-	outl(0x00000000, DEFAULT_GPIOBASE + 0x18);	/* GPO_BLINK */
-	/* Input Control Registers */
-	outl(0x00006000, DEFAULT_GPIOBASE + 0x2c);	/* GPI_INV */
-	outl(0x000000ff, DEFAULT_GPIOBASE + 0x30);	/* GPIO_USE_SEL2 */
-	outl(0x000000f0, DEFAULT_GPIOBASE + 0x34);	/* GP_IO_SEL2 */
-	outl(0x00030033, DEFAULT_GPIOBASE + 0x38);	/* GP_LVL2 */
-}
-
 /*
  * BSEL0 is connected with GPIO32
  * BSEL1 is connected with GPIO33 with inversed logic

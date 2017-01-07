@@ -14,8 +14,8 @@
  * GNU General Public License for more details.
  */
 
-/* Please don't remove this. It's needed it to do debugging
-   and reverse engineering to support in future more nehalem variants.  */
+/* Please don't remove this. It's needed for debugging and reverse
+ * engineering more nehalem variants in the future. */
 #ifndef REAL
 #define REAL 1
 #endif

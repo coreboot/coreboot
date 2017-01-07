@@ -204,6 +204,14 @@ config AZ_PIN
 	  bit 3,2 - pin 1
 	  bit 5,4 - pin 2
 	  bit 7,6 - pin 3
+
+config AMDFW_OUTSIDE_CBFS
+	def_bool n
+	help
+	  The AMDFW (PSP) is typically locatable in cbfs.  Select this
+	  option to manually attach the generated amdfw.rom at an
+	  offset of 0x20000 from the bottom of the coreboot ROM image.
+
 endif
 
 config HUDSON_UART

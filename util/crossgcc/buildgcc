@@ -130,9 +130,9 @@ please_install()
 	*) solution="using your OS packaging system" ;;
 	esac
 
-	printf "${RED}ERROR:${red} Missing tool: Please install \'$1\'. (eg $solution)${NC}\n" >&2
+	printf "${RED}ERROR:${red} Missing tool: Please install '$1'. (eg $solution)${NC}\n" >&2
 	if [ -n "$2" ]; then
-		printf "${RED}ERROR:${red}               or install \'$2\'.${NC}\n" >&2
+		printf "${RED}ERROR:${red}               or install '$2'.${NC}\n" >&2
 	fi
 }
 
@@ -282,15 +282,6 @@ compute_sum() {
 	printf "(checksum created. ${RED}Note. Please upload sum/$1.cksum if the corresponding archive is upgraded.)${NC}"
 }
 
-download_showing_percentage() {
-	url=$1
-	printf " ..${red}  0%%"
-	wget --no-check-certificate $url 2>&1 | while read line; do
-		echo $line | grep -o "[0-9]\+%" | awk '{printf("\b\b\b\b%4s", $1)}'
-	done
-	printf "${NC}"
-}
-
 download() {
 	package=$1
 	archive="$(eval echo \$$package"_ARCHIVE")"
@@ -299,7 +290,7 @@ download() {
 	printf " * $FILE "
 
 	if test -f tarballs/$FILE && check_sum $FILE ; then
-		printf "(cached)"
+		echo "(cached)"
 	else
 		printf "(downloading from $archive)"
 		rm -f tarballs/$FILE
@@ -310,10 +301,9 @@ download() {
 	fi
 
 	if [ ! -f tarballs/$FILE ]; then
-		printf "\n${RED}Failed to download $FILE.${NC}\n"
+		printf "${RED}Failed to download $FILE.${NC}\n"
 		exit 1
 	fi
-	printf "\n"
 }
 
 unpack_and_patch() {
@@ -891,8 +881,24 @@ searchtool flex flex > /dev/null
 searchtool g++ "Free Software Foundation" nofail > /dev/null || \
 searchtool clang "clang version" nofail > /dev/null || \
 searchtool clang "LLVM" "" "g++" > /dev/null
-searchtool wget > /dev/null
 searchtool bzip2 "bzip2," > /dev/null
+
+if searchtool wget "GNU" nofail > /dev/null; then
+	download_showing_percentage() {
+		url=$1
+		printf " ..${red}  0%%"
+		wget $url 2>&1 | while read line; do
+			echo $line | grep -o "[0-9]\+%" | awk '{printf("\b\b\b\b%4s", $1)}'
+		done
+		echo "${NC}"
+	}
+elif searchtool curl "^curl " > /dev/null; then
+	download_showing_percentage() {
+		url=$1
+		echo
+		curl -#OL $url
+	}
+fi
 
 check_for_library "-lz" "zlib (zlib1g-dev or zlib-devel)"
 

@@ -264,7 +264,20 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_HUDSON_XHCI_FWM_FILE)) \
 		--flashsize $(CONFIG_ROM_SIZE) \
 		--output	$@
 
+ifeq ($(CONFIG_AMDFW_OUTSIDE_CBFS),y)
+PHONY+=add_amdfw
+INTERMEDIATE+=add_amdfw
+
+add_amdfw: $(obj)/coreboot.pre $(obj)/amdfw.rom
+	printf "    DD         Adding AMD Firmware\n"
+	dd if=$(obj)/amdfw.rom \
+		of=$(obj)/coreboot.pre conv=notrunc bs=1 seek=131072 >/dev/null 2>&1
+
+else # ifeq ($(CONFIG_AMDFW_OUTSIDE_CBFS),y)
+
 cbfs-files-y += apu/amdfw
 apu/amdfw-file := $(obj)/amdfw.rom
 apu/amdfw-position := $(HUDSON_FWM_POSITION)
 apu/amdfw-type := raw
+
+endif # ifeq ($(CONFIG_AMDFW_OUTSIDE_CBFS),y)

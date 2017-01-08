@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
+ * Copyright (C) 2015-2017 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  * Copyright (C) 2007-2008 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -296,6 +296,34 @@ struct MCTStatStruc {
 	Local DCT Status structure (a structure for each DCT)
 ===============================================================================*/
 
+struct DCTPersistentStatStruc {
+	u8 CH_D_DIR_B_DQS[2][4][2][9];	/* [A/B] [DIMM1-4] [R/W] [DQS] */
+		/* CHA DIMM0 Byte 0 - 7 and Check Write DQS Delay*/
+		/* CHA DIMM0 Byte 0 - 7 and Check Read DQS Delay*/
+		/* CHA DIMM1 Byte 0 - 7 and Check Write DQS Delay*/
+		/* CHA DIMM1 Byte 0 - 7 and Check Read DQS Delay*/
+		/* CHB DIMM0 Byte 0 - 7 and Check Write DQS Delay*/
+		/* CHB DIMM0 Byte 0 - 7 and Check Read DQS Delay*/
+		/* CHB DIMM1 Byte 0 - 7 and Check Write DQS Delay*/
+		/* CHB DIMM1 Byte 0 - 7 and Check  Read DQS Delay*/
+	u8 CH_D_B_RCVRDLY[2][4][8];	/* [A/B] [DIMM0-3] [DQS] */
+		/* CHA DIMM 0 Receiver Enable Delay*/
+		/* CHA DIMM 1 Receiver Enable Delay*/
+		/* CHA DIMM 2 Receiver Enable Delay*/
+		/* CHA DIMM 3 Receiver Enable Delay*/
+
+		/* CHB DIMM 0 Receiver Enable Delay*/
+		/* CHB DIMM 1 Receiver Enable Delay*/
+		/* CHB DIMM 2 Receiver Enable Delay*/
+		/* CHB DIMM 3 Receiver Enable Delay*/
+	u8 CH_D_BC_RCVRDLY[2][4];
+		/* CHA DIMM 0 - 4 Check Byte Receiver Enable Delay*/
+		/* CHB DIMM 0 - 4 Check Byte Receiver Enable Delay*/
+	u16 HostBiosSrvc1;	/* Word sized general purpose field for use by host BIOS.  Scratch space.*/
+	u32 HostBiosSrvc2;	/* Dword sized general purpose field for use by host BIOS.  Scratch space.*/
+} __attribute__((packed));
+
+
 struct DCTStatStruc {		/* A per Node structure*/
 /* DCTStatStruct_F -  start */
 	u8 Node_ID;			/* Node ID of current controller*/
@@ -445,8 +473,6 @@ struct DCTStatStruc {		/* A per Node structure*/
 		/* CH B byte lane 0 - 7 minimum filtered window  passing DQS delay value*/
 		/* CH B byte lane 0 - 7 maximum filtered window  passing DQS delay value*/
 	uint64_t LogicalCPUID;	/* The logical CPUID of the node*/
-	u16 HostBiosSrvc1;	/* Word sized general purpose field for use by host BIOS.  Scratch space.*/
-	u32 HostBiosSrvc2;	/* Dword sized general purpose field for use by host BIOS.  Scratch space.*/
 	u16 DimmQRPresent;	/* QuadRank DIMM present?*/
 	u16 DimmTrainFail;	/* Bitmap showing which dimms failed training*/
 	u16 CSTrainFail;	/* Bitmap showing which chipselects failed training*/
@@ -462,28 +488,6 @@ struct DCTStatStruc {		/* A per Node structure*/
 
 	u16 CH_MaxRdLat[2];	/* Max Read Latency (ns) for DCT 0*/
 		/* Max Read Latency (ns) for DCT 1*/
-	u8 CH_D_DIR_B_DQS[2][4][2][9];	/* [A/B] [DIMM1-4] [R/W] [DQS] */
-		/* CHA DIMM0 Byte 0 - 7 and Check Write DQS Delay*/
-		/* CHA DIMM0 Byte 0 - 7 and Check Read DQS Delay*/
-		/* CHA DIMM1 Byte 0 - 7 and Check Write DQS Delay*/
-		/* CHA DIMM1 Byte 0 - 7 and Check Read DQS Delay*/
-		/* CHB DIMM0 Byte 0 - 7 and Check Write DQS Delay*/
-		/* CHB DIMM0 Byte 0 - 7 and Check Read DQS Delay*/
-		/* CHB DIMM1 Byte 0 - 7 and Check Write DQS Delay*/
-		/* CHB DIMM1 Byte 0 - 7 and Check  Read DQS Delay*/
-	u8 CH_D_B_RCVRDLY[2][4][8];	/* [A/B] [DIMM0-3] [DQS] */
-		/* CHA DIMM 0 Receiver Enable Delay*/
-		/* CHA DIMM 1 Receiver Enable Delay*/
-		/* CHA DIMM 2 Receiver Enable Delay*/
-		/* CHA DIMM 3 Receiver Enable Delay*/
-
-		/* CHB DIMM 0 Receiver Enable Delay*/
-		/* CHB DIMM 1 Receiver Enable Delay*/
-		/* CHB DIMM 2 Receiver Enable Delay*/
-		/* CHB DIMM 3 Receiver Enable Delay*/
-	u8 CH_D_BC_RCVRDLY[2][4];
-		/* CHA DIMM 0 - 4 Check Byte Receiver Enable Delay*/
-		/* CHB DIMM 0 - 4 Check Byte Receiver Enable Delay*/
 	u8 DIMMValidDCT[2];	/* DIMM# in DCT0*/
 				/* DIMM# in DCT1*/
 	u8 MaxDCTs;		/* Max number of DCTs in system*/
@@ -542,6 +546,9 @@ struct DCTStatStruc {		/* A per Node structure*/
 	char DimmPartNumber[MAX_DIMMS_SUPPORTED][SPD_PARTN_LENGTH+1];
 	uint16_t DimmRevisionNumber[MAX_DIMMS_SUPPORTED];
 	uint32_t DimmSerialNumber[MAX_DIMMS_SUPPORTED];
+
+	/* NOTE: This must remain the last entry in this structure */
+	struct DCTPersistentStatStruc persistentData;
 } __attribute__((packed));
 
 /*===============================================================================

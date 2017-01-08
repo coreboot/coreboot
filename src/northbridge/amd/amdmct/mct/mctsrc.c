@@ -476,7 +476,7 @@ static void dqsTrainRcvrEn_SW(struct MCTStatStruc *pMCTstat,
 			printk(BIOS_DEBUG, "Channel: %02x\n", Channel);
 			for (Receiver = 0; Receiver < 8; Receiver+=2) {
 				printk(BIOS_DEBUG, "\t\tReceiver: %02x: ", Receiver);
-				p = pDCTstat->CH_D_B_RCVRDLY[Channel][Receiver>>1];
+				p = pDCTstat->persistentData.CH_D_B_RCVRDLY[Channel][Receiver>>1];
 				for (i = 0; i < 8; i++) {
 					val  = p[i];
 					printk(BIOS_DEBUG, "%02x ", val);
@@ -567,7 +567,7 @@ void mct_SetRcvrEnDly_D(struct DCTStatStruc *pDCTstat, u8 RcvrEnDly,
 	for (i = 0; i < 8; i++) {
 		if (FinalValue) {
 			/*calculate dimm offset */
-			p = pDCTstat->CH_D_B_RCVRDLY[Channel][Receiver >> 1];
+			p = pDCTstat->persistentData.CH_D_B_RCVRDLY[Channel][Receiver >> 1];
 			RcvrEnDly = p[i];
 		}
 
@@ -719,11 +719,11 @@ static u8 mct_SavePassRcvEnDly_D(struct DCTStatStruc *pDCTstat,
 
 		/* find desired stack offset according to channel/dimm/byte */
 		if (Pass == SecondPass) {
-			// FIXME: SecondPass is never used for Barcelona p = pDCTstat->CH_D_B_RCVRDLY_1[Channel][receiver>>1];
+			// FIXME: SecondPass is never used for Barcelona p = pDCTstat->persistentData.CH_D_B_RCVRDLY_1[Channel][receiver>>1];
 			p = 0; // Keep the compiler happy.
 		} else {
 			mask_Saved &= mask_Pass;
-			p = pDCTstat->CH_D_B_RCVRDLY[Channel][receiver>>1];
+			p = pDCTstat->persistentData.CH_D_B_RCVRDLY[Channel][receiver>>1];
 		}
 		for (i = 0; i < 8; i++) {
 			/* cmp per byte lane */
@@ -903,7 +903,7 @@ void SetEccDQSRcvrEn_D(struct DCTStatStruc *pDCTstat, u8 Channel)
 	dev = pDCTstat->dev_dct;
 	index_reg = 0x98 + Channel * 0x100;
 	index = 0x12;
-	p = pDCTstat->CH_D_BC_RCVRDLY[Channel];
+	p = pDCTstat->persistentData.CH_D_BC_RCVRDLY[Channel];
 	print_debug_dqs("\t\tSetEccDQSRcvrPos: Channel ", Channel,  2);
 	for (ChipSel = 0; ChipSel < MAX_CS_SUPPORTED; ChipSel += 2) {
 		val = p[ChipSel>>1];
@@ -929,7 +929,7 @@ static void CalcEccDQSRcvrEn_D(struct MCTStatStruc *pMCTstat,
 	for (ChipSel = 0; ChipSel < MAX_CS_SUPPORTED; ChipSel += 2) {
 		if (mct_RcvrRankEnabled_D(pMCTstat, pDCTstat, Channel, ChipSel)) {
 			u8 *p;
-			p = pDCTstat->CH_D_B_RCVRDLY[Channel][ChipSel>>1];
+			p = pDCTstat->persistentData.CH_D_B_RCVRDLY[Channel][ChipSel>>1];
 
 			/* DQS Delay Value of Data Bytelane
 			 * most like ECC byte lane */
@@ -953,7 +953,7 @@ static void CalcEccDQSRcvrEn_D(struct MCTStatStruc *pMCTstat,
 				val += val0;
 			}
 
-			pDCTstat->CH_D_BC_RCVRDLY[Channel][ChipSel>>1] = val;
+			pDCTstat->persistentData.CH_D_BC_RCVRDLY[Channel][ChipSel>>1] = val;
 		}
 	}
 	SetEccDQSRcvrEn_D(pDCTstat, Channel);

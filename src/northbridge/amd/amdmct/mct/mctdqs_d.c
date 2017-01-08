@@ -351,7 +351,7 @@ static void TrainDQSRdWrPos_D(struct MCTStatStruc *pMCTstat,
 				printk(BIOS_DEBUG, "Channel: %02x\n", Channel);
 				for (Receiver = cs_start; Receiver < (cs_start + 2); Receiver += 2) {
 					printk(BIOS_DEBUG, "\t\tReceiver: %02x: ", Receiver);
-					p = pDCTstat->CH_D_DIR_B_DQS[Channel][Receiver >> 1][Dir];
+					p = pDCTstat->persistentData.CH_D_DIR_B_DQS[Channel][Receiver >> 1][Dir];
 					for (i = 0; i < 8; i++) {
 						val  = p[i];
 						printk(BIOS_DEBUG, "%02x ", val);
@@ -583,7 +583,7 @@ void StoreDQSDatStrucVal_D(struct MCTStatStruc *pMCTstat,
 	if (pDCTstat->Status & (1 << SB_Over400MHz))
 		dn = ChipSel>>1; /* if odd or even logical DIMM */
 
-	pDCTstat->CH_D_DIR_B_DQS[pDCTstat->Channel][dn][pDCTstat->Direction][pDCTstat->ByteLane] =
+	pDCTstat->persistentData.CH_D_DIR_B_DQS[pDCTstat->Channel][dn][pDCTstat->Direction][pDCTstat->ByteLane] =
 					pDCTstat->DQSDelay;
 }
 
@@ -606,7 +606,7 @@ static void GetDQSDatStrucVal_D(struct MCTStatStruc *pMCTstat,
 		dn = ChipSel >> 1; /*if odd or even logical DIMM */
 
 	pDCTstat->DQSDelay =
-		pDCTstat->CH_D_DIR_B_DQS[pDCTstat->Channel][dn][pDCTstat->Direction][pDCTstat->ByteLane];
+		pDCTstat->persistentData.CH_D_DIR_B_DQS[pDCTstat->Channel][dn][pDCTstat->Direction][pDCTstat->ByteLane];
 }
 
 

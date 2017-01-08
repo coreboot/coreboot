@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2015-2016 Raptor Engineering, LLC
+ * Copyright (C) 2015-2017 Raptor Engineering, LLC
  * Copyright (C) 2010 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -3732,7 +3732,7 @@ static void LoadDQSSigTmgRegs_D(struct MCTStatStruc *pMCTstat,
 						2); /* Pass Second Pass ? */
 					/* Restore Write levelization training data */
 					for (ByteLane = 0; ByteLane < 9; ByteLane ++) {
-						txdqs = pDCTstat->CH_D_B_TxDqs[Channel][Receiver >> 1][ByteLane];
+						txdqs = pDCTstat->persistentData.CH_D_B_TxDqs[Channel][Receiver >> 1][ByteLane];
 						index = Table_DQSRcvEn_Offset[ByteLane >> 1];
 						index += (Receiver >> 1) * 3 + 0x10 + 0x20; /* Addl_Index */
 						val = Get_NB32_index_wait_DCT(dev, Channel, 0x98, index);
@@ -7373,23 +7373,13 @@ static void mct_ResetDataStruct_D(struct MCTStatStruc *pMCTstat,
 {
 	uint8_t Node;
 	struct DCTStatStruc *pDCTstat;
-	uint16_t host_serv1, host_serv2;
-	uint8_t CH_D_B_TxDqs_bkp[2][4][9];
 
 	/* Initialize Data structures by clearing all entries to 0 */
-	memset(pMCTstat, 0, sizeof(struct MCTStatStruc));
+	memset(pMCTstat, 0, sizeof(*pMCTstat));
 
 	for (Node = 0; Node < 8; Node++) {
 		pDCTstat = pDCTstatA + Node;
-		host_serv1 = pDCTstat->HostBiosSrvc1;
-		host_serv2 = pDCTstat->HostBiosSrvc2;
-		memcpy(CH_D_B_TxDqs_bkp, pDCTstat->CH_D_B_TxDqs, sizeof(CH_D_B_TxDqs_bkp));
-
-		memset(pDCTstat, 0, sizeof(struct DCTStatStruc));
-
-		pDCTstat->HostBiosSrvc1 = host_serv1;
-		pDCTstat->HostBiosSrvc2 = host_serv2;
-		memcpy(pDCTstat->CH_D_B_TxDqs, CH_D_B_TxDqs_bkp, sizeof(pDCTstat->CH_D_B_TxDqs));
+		memset(pDCTstat, 0, sizeof(*pDCTstat) - sizeof(pDCTstat->persistentData));
 	}
 }
 

@@ -297,7 +297,7 @@ static u32 GetMaxRdLatTestAddr_D(struct MCTStatStruc *pMCTstat,
 		for (d = 0; d < 4; d++) {
 			for (Byte = 0; Byte < bn; Byte++) {
 				u8 tmp;
-				tmp = pDCTstat->CH_D_B_RCVRDLY[ch][d][Byte];
+				tmp = pDCTstat->persistentData.CH_D_B_RCVRDLY[ch][d][Byte];
 				if (tmp > Max) {
 					Max = tmp;
 					Channel_Max = Channel;

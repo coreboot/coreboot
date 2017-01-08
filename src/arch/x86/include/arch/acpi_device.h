@@ -18,6 +18,7 @@
 
 #include <device/i2c.h>
 #include <stdint.h>
+#include <spi-generic.h>
 
 #define ACPI_DESCRIPTOR_LARGE		(1 << 7)
 #define ACPI_DESCRIPTOR_INTERRUPT	(ACPI_DESCRIPTOR_LARGE | 9)
@@ -215,23 +216,6 @@ void acpi_device_write_i2c(const struct acpi_i2c *i2c);
 /*
  * ACPI SPI Bus
  */
-
-enum spi_clock_phase {
-	SPI_CLOCK_PHASE_FIRST,
-	SPI_CLOCK_PHASE_SECOND
-};
-
-/* SPI Flags bit 0 */
-enum spi_wire_mode {
-	SPI_4_WIRE_MODE,
-	SPI_3_WIRE_MODE
-};
-
-/* SPI Flags bit 1 */
-enum spi_polarity {
-	SPI_POLARITY_LOW,
-	SPI_POLARITY_HIGH
-};
 
 struct acpi_spi {
 	/* Device selection */

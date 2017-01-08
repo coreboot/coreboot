@@ -59,9 +59,38 @@ struct spi_op {
 	enum spi_op_status status;
 };
 
+enum spi_clock_phase {
+	SPI_CLOCK_PHASE_FIRST,
+	SPI_CLOCK_PHASE_SECOND
+};
+
+enum spi_wire_mode {
+	SPI_4_WIRE_MODE,
+	SPI_3_WIRE_MODE
+};
+
+enum spi_polarity {
+	SPI_POLARITY_LOW,
+	SPI_POLARITY_HIGH
+};
+
+struct spi_cfg {
+	/* CLK phase - 0: Phase first, 1: Phase second */
+	enum spi_clock_phase clk_phase;
+	/* CLK polarity - 0: Low, 1: High */
+	enum spi_polarity clk_polarity;
+	/* CS polarity - 0: Low, 1: High */
+	enum spi_polarity cs_polarity;
+	/* Wire mode - 0: 4-wire, 1: 3-wire */
+	enum spi_wire_mode wire_mode;
+	/* Data bit length. */
+	unsigned int data_bit_length;
+};
+
 /*-----------------------------------------------------------------------
  * Representation of a SPI contoller.
  *
+ * get_config:	Get configuration of SPI bus
  * claim_bus:	Claim SPI bus and prepare for communication.
  * release_bus: Release SPI bus.
  * setup:	Setup given SPI device bus.
@@ -69,6 +98,8 @@ struct spi_op {
  * xfer_vector: Vector of SPI transfer operations.
  */
 struct spi_ctrlr {
+	int (*get_config)(const struct spi_slave *slave,
+			struct spi_cfg *cfg);
 	int (*claim_bus)(const struct spi_slave *slave);
 	void (*release_bus)(const struct spi_slave *slave);
 	int (*setup)(const struct spi_slave *slave);
@@ -100,6 +131,17 @@ extern const size_t spi_ctrlr_bus_map_count;
  *
  */
 void spi_init(void);
+
+/*
+ * Get configuration of SPI bus.
+ *
+ * slave:     Pointer to slave structure.
+ * cfg:       Pointer to SPI configuration that needs to be filled.
+ *
+ * Returns:
+ * 0 on success, -1 on error
+ */
+int spi_get_config(const struct spi_slave *slave, struct spi_cfg *cfg);
 
 /*-----------------------------------------------------------------------
  * Set up communications parameters for a SPI slave.

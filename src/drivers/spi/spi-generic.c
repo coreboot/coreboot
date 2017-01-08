@@ -88,6 +88,16 @@ int spi_xfer(const struct spi_slave *slave, const void *dout, size_t bytesout,
 	return -1;
 }
 
+int spi_get_config(const struct spi_slave *slave, struct spi_cfg *cfg)
+{
+	const struct spi_ctrlr *ctrlr = slave->ctrlr;
+
+	if (ctrlr && ctrlr->get_config)
+		return ctrlr->get_config(slave, cfg);
+
+	return -1;
+}
+
 void __attribute__((weak)) spi_init(void)
 {
 	/* Default weak implementation - do nothing. */

@@ -17,9 +17,11 @@
 #include <stdint.h>
 #include <string.h>
 #include <assert.h>
+#include <commonlib/endian.h>
 #include <delay.h>
 #include <device/i2c.h>
 #include <endian.h>
+#include <lib.h>
 #include <tpm.h>
 #include "tpm.h"
 #include <timer.h>
@@ -144,11 +146,19 @@ int tis_sendrecv(const uint8_t *sendbuf, size_t sbuf_size,
 {
 	uint8_t buf[TPM_BUFSIZE];
 
+	ASSERT(sbuf_size >= 10);
 	if (sizeof(buf) < sbuf_size)
 		return -1;
 
-	memcpy(buf, sendbuf, sbuf_size);
+	/* Display the TPM command */
+	if (IS_ENABLED(CONFIG_DRIVER_TPM_DISPLAY_TIS_BYTES)) {
+		printk(BIOS_DEBUG, "TPM Command: 0x%08x\n",
+			read_at_be32(sendbuf, sizeof(uint16_t)
+				+ sizeof(uint32_t)));
+		hexdump(sendbuf, sbuf_size);
+	}
 
+	memcpy(buf, sendbuf, sbuf_size);
 	int len = tpm_transmit(buf, sbuf_size);
 
 	if (len < 10) {
@@ -163,6 +173,14 @@ int tis_sendrecv(const uint8_t *sendbuf, size_t sbuf_size,
 
 	memcpy(recvbuf, buf, len);
 	*rbuf_len = len;
+
+	/* Display the TPM response */
+	if (IS_ENABLED(CONFIG_DRIVER_TPM_DISPLAY_TIS_BYTES)) {
+		printk(BIOS_DEBUG, "TPM Response: 0x%08x\n",
+			read_at_be32(recvbuf, sizeof(uint16_t)
+				+ sizeof(uint32_t)));
+		hexdump(recvbuf, *rbuf_len);
+	}
 
 	return 0;
 }

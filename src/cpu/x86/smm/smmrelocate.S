@@ -36,6 +36,9 @@
 #error "Southbridge needs SMM handler support."
 #endif
 
+// ADDR32() macro
+#include <compiler.h>
+
 #if IS_ENABLED(CONFIG_SMM_TSEG)
 #error "Don't use this file with TSEG."
 
@@ -112,7 +115,7 @@ smm_relocation_start:
 	 */
 
 	mov $0x38000 + 0x7efc, %ebx
-	addr32 mov (%ebx), %al
+	ADDR32(mov) (%ebx), %al
 	cmp $0x64, %al
 	je 1f
 
@@ -124,7 +127,7 @@ smm_relocation_start:
 smm_relocate:
 	/* Get this CPU's LAPIC ID */
 	movl $LAPIC_ID, %esi
-	addr32 movl (%esi), %ecx
+	ADDR32(movl) (%esi), %ecx
 	shr  $24, %ecx
 
 	/* calculate offset by multiplying the
@@ -136,7 +139,7 @@ smm_relocate:
 	movl $0xa0000, %eax
 	subl %edx, %eax	/* subtract offset, see above */
 
-	addr32 movl %eax, (%ebx)
+	ADDR32(movl) %eax, (%ebx)
 
 	/* The next section of code is potentially southbridge specific */
 

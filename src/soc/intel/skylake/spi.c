@@ -33,8 +33,31 @@ static const struct spi_ctrlr flash_spi_ctrlr = {
 	.setup = flash_spi_ctrlr_setup,
 };
 
+static int gspi_ctrlr_get_config(const struct spi_slave *dev,
+				struct spi_cfg *cfg)
+{
+	if (dev->cs != 0) {
+		printk(BIOS_ERR, "%s: Unsupported device "
+		       "bus=0x%x,cs=0x%x!\n", __func__, dev->bus, dev->cs);
+		return -1;
+	}
+
+	cfg->clk_phase = SPI_CLOCK_PHASE_FIRST;
+	cfg->clk_polarity = SPI_POLARITY_LOW;
+	cfg->cs_polarity = SPI_POLARITY_LOW;
+	cfg->wire_mode = SPI_4_WIRE_MODE;
+	cfg->data_bit_length = 8;
+
+	return 0;
+}
+
+static const struct spi_ctrlr gspi_ctrlr = {
+	.get_config = gspi_ctrlr_get_config,
+};
+
 const struct spi_ctrlr_buses spi_ctrlr_bus_map[] = {
 	{ .ctrlr = &flash_spi_ctrlr, .bus_start = 0, .bus_end = 0 },
+	{ .ctrlr = &gspi_ctrlr, .bus_start = 1, .bus_end = 2 },
 };
 
 const size_t spi_ctrlr_bus_map_count = ARRAY_SIZE(spi_ctrlr_bus_map);

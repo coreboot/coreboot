@@ -89,7 +89,7 @@ func MakeLogs(outDir string) {
 
 	switch opt {
 	case "y", "yes":
-		opt += " -f"
+		inteltoolArgs += "f"
 	}
 
 	RunAndSave(outDir+"/inteltool.log", "../inteltool/inteltool", inteltoolArgs)

@@ -876,7 +876,8 @@ static void unlock_descriptor(char *filename, char *image, int size)
 	} else {
 		fmba->flmstr1 = 0xffff0000;
 		fmba->flmstr2 = 0xffff0000;
-		fmba->flmstr3 = 0x08080118;
+		/* Keep chipset specific Requester ID */
+		fmba->flmstr3 = 0x08080000 | (fmba->flmstr3 & 0xffff);
 	}
 
 	write_image(filename, image, size);

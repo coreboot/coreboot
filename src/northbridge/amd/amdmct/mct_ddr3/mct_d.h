@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2015-2016 Raptor Engineering, LLC
+ * Copyright (C) 2015-2017 Raptor Engineering, LLC
  * Copyright (C) 2010 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -335,6 +335,20 @@ struct amd_spd_node_data {
 	uint8_t nvram_memclk[2];			/* [channel] */
 } __attribute__((packed, aligned(4)));
 
+struct DCTPersistentStatStruc {
+	u8 CH_D_B_TxDqs[2][4][9];   /* [A/B] [DIMM1-4] [DQS] */
+		/* CHA DIMM0 Byte 0 - 7  TxDqs */
+		/* CHA DIMM0 Byte 0 - 7  TxDqs */
+		/* CHA DIMM1 Byte 0 - 7  TxDqs */
+		/* CHA DIMM1 Byte 0 - 7  TxDqs */
+		/* CHB DIMM0 Byte 0 - 7  TxDqs */
+		/* CHB DIMM0 Byte 0 - 7  TxDqs */
+		/* CHB DIMM1 Byte 0 - 7  TxDqs */
+		/* CHB DIMM1 Byte 0 - 7  TxDqs */
+	u16 HostBiosSrvc1;	/* Word sized general purpose field for use by host BIOS.  Scratch space.*/
+	u32 HostBiosSrvc2;	/* Dword sized general purpose field for use by host BIOS.  Scratch space.*/
+} __attribute__((packed, aligned(4)));
+
 struct DCTStatStruc {		/* A per Node structure*/
 /* DCTStatStruct_F -  start */
 	u8 Node_ID;			/* Node ID of current controller */
@@ -485,8 +499,6 @@ struct DCTStatStruc {		/* A per Node structure*/
 		/* CH B byte lane 0 - 7 minimum filtered window  passing DQS delay value*/
 		/* CH B byte lane 0 - 7 maximum filtered window  passing DQS delay value*/
 	uint64_t LogicalCPUID;	/* The logical CPUID of the node*/
-	u16 HostBiosSrvc1;	/* Word sized general purpose field for use by host BIOS.  Scratch space.*/
-	u32 HostBiosSrvc2;	/* Dword sized general purpose field for use by host BIOS.  Scratch space.*/
 	u16 DimmQRPresent;	/* QuadRank DIMM present?*/
 	u16 DimmTrainFail;	/* Bitmap showing which dimms failed training*/
 	u16 CSTrainFail;	/* Bitmap showing which chipselects failed training*/
@@ -513,15 +525,6 @@ struct DCTStatStruc {		/* A per Node structure*/
 		/* CHB DIMM0 Byte 0 - 7 and Check Read DQS Delay*/
 		/* CHB DIMM1 Byte 0 - 7 and Check Write DQS Delay*/
 		/* CHB DIMM1 Byte 0 - 7 and Check  Read DQS Delay*/
-	u8 CH_D_B_TxDqs[2][4][9];   /* [A/B] [DIMM1-4] [DQS] */
-		/* CHA DIMM0 Byte 0 - 7  TxDqs */
-		/* CHA DIMM0 Byte 0 - 7  TxDqs */
-		/* CHA DIMM1 Byte 0 - 7  TxDqs */
-		/* CHA DIMM1 Byte 0 - 7  TxDqs */
-		/* CHB DIMM0 Byte 0 - 7  TxDqs */
-		/* CHB DIMM0 Byte 0 - 7  TxDqs */
-		/* CHB DIMM1 Byte 0 - 7  TxDqs */
-		/* CHB DIMM1 Byte 0 - 7  TxDqs */
 	u16 CH_D_B_RCVRDLY[2][4][8];	/* [A/B] [DIMM0-3] [DQS] */
 		/* CHA DIMM 0 Receiver Enable Delay*/
 		/* CHA DIMM 1 Receiver Enable Delay*/
@@ -635,6 +638,9 @@ struct DCTStatStruc {		/* A per Node structure*/
 	uint32_t DimmSerialNumber[MAX_DIMMS_SUPPORTED];
 
 	struct amd_spd_node_data spd_data;
+
+	/* NOTE: This must remain the last entry in this structure */
+	struct DCTPersistentStatStruc persistentData;
 } __attribute__((packed, aligned(4)));
 
 struct amd_s3_persistent_mct_channel_data {

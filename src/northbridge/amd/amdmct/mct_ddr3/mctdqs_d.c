@@ -2301,7 +2301,7 @@ static void mct_SetDQSDelayCSR_D(struct MCTStatStruc *pMCTstat,
 		val = Get_NB32_index_wait_DCT(dev, pDCTstat->Channel, index_reg, index);
 		if (ByteLane < 8) {
 			if (pDCTstat->Direction == DQS_WRITEDIR) {
-				dqs_delay += pDCTstat->CH_D_B_TxDqs[pDCTstat->Channel][ChipSel>>1][ByteLane];
+				dqs_delay += pDCTstat->persistentData.CH_D_B_TxDqs[pDCTstat->Channel][ChipSel>>1][ByteLane];
 			} else {
 				dqs_delay <<= 1;
 			}

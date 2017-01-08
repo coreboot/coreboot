@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
+ * Copyright (C) 2015-2017 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  * Copyright (C) 2007-2008 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -34,6 +34,8 @@
  */
 
 #include "mct_d.h"
+
+#include <string.h>
 
 static u8 ReconfigureDIMMspare_D(struct MCTStatStruc *pMCTstat,
 					struct DCTStatStruc *pDCTstatA);
@@ -459,7 +461,7 @@ static void LoadDQSSigTmgRegs_D(struct MCTStatStruc *pMCTstat,
 						}
 					}
 					for (Dir = 0; Dir < 2; Dir++) {//RD/WR
-						p = pDCTstat->CH_D_DIR_B_DQS[Channel][DIMM][Dir];
+						p = pDCTstat->persistentData.CH_D_DIR_B_DQS[Channel][DIMM][Dir];
 						val = stream_to_int(p); /* CHA Read Data Timing High */
 						Set_NB32_index_wait(dev, index_reg, index+1, val);
 						val = stream_to_int(p+4); /* CHA Write Data Timing High */
@@ -3598,37 +3600,16 @@ static void mct_ResetDataStruct_D(struct MCTStatStruc *pMCTstat,
 					struct DCTStatStruc *pDCTstatA)
 {
 	u8 Node;
-	u32 i;
 	struct DCTStatStruc *pDCTstat;
-	u32 start, stop;
-	u8 *p;
-	u16 host_serv1, host_serv2;
 
 	/* Initialize Data structures by clearing all entries to 0 */
-	p = (u8 *) pMCTstat;
-	for (i = 0; i < sizeof(struct MCTStatStruc); i++) {
-		p[i] = 0;
-	}
+	memset(pMCTstat, 0x00, sizeof(*pMCTstat));
 
 	for (Node = 0; Node < 8; Node++) {
 		pDCTstat = pDCTstatA + Node;
-		host_serv1 = pDCTstat->HostBiosSrvc1;
-		host_serv2 = pDCTstat->HostBiosSrvc2;
 
-		p = (u8 *) pDCTstat;
-		start = 0;
-		stop = (u32)(&((struct DCTStatStruc *)0)->CH_MaxRdLat[2]);
-		for (i = start; i < stop; i++) {
-			p[i] = 0;
-		}
-
-		start = (u32)(&((struct DCTStatStruc *)0)->CH_D_BC_RCVRDLY[2][4]);
-		stop = sizeof(struct DCTStatStruc);
-		for (i = start; i < stop; i++) {
-			p[i] = 0;
-		}
-		pDCTstat->HostBiosSrvc1 = host_serv1;
-		pDCTstat->HostBiosSrvc2 = host_serv2;
+		/* Clear all entries except persistentData */
+		memset(pDCTstat, 0x00, sizeof(*pDCTstat) - sizeof(pDCTstat->persistentData));
 	}
 }
 

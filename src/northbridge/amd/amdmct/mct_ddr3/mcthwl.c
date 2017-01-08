@@ -66,7 +66,7 @@ static void SetEccWrDQS_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pD
 				if (OddByte)
 					val >>= 16;
 				/* Save WrDqs to stack for later usage */
-				pDCTstat->CH_D_B_TxDqs[Channel][DimmNum][ByteLane] = val & 0xFF;
+				pDCTstat->persistentData.CH_D_B_TxDqs[Channel][DimmNum][ByteLane] = val & 0xFF;
 				EccDQSScale = pDCTstat->CH_EccDQSScale[Channel];
 				word = pDCTstat->CH_EccDQSLike[Channel];
 				if ((word & 0xFF) == ByteLane) EccRef1 = val & 0xFF;

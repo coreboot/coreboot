@@ -24,4 +24,30 @@ config GRUB2_EXTRA_MODULES
 config PAYLOAD_FILE
 	default "payloads/external/GRUB2/grub2/build/default_payload.elf"
 
+config GRUB2_INCLUDE_RUNTIME_CONFIG_FILE
+	bool "Include GRUB2 runtime config file into ROM image"
+	depends on PAYLOAD_GRUB2
+	default n
+	help
+	  The GRUB2 payload reads its runtime configuration file from etc/grub.cfg
+	  stored in the CBFS on the flash ROM chip. Without that, it’ll just drop
+	  into a rescue shell.
+
+	  This configuration may need to be coreboot specific.
+
+	  Select this option, if you want to include the GRUB2 runtime
+	  configuration file into CBFS as `etc/grub.cfg` automatically.
+
+	  You will be able to specify the path of the configuration file later.
+
+	  Without this option you would need to add this file manually with
+	  build/cbfstool build/coreboot.rom add -f grub.cfg -n etc/grub.cfg -t raw
+
+config GRUB2_RUNTIME_CONFIG_FILE
+	string "Path of grub.cfg"
+	depends on GRUB2_INCLUDE_RUNTIME_CONFIG_FILE
+	default "grub.cfg"
+	help
+	  The path of the GRUB2 runtime configuration file to be added to CBFS.
+
 endif

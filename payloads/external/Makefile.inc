@@ -60,6 +60,11 @@ cbfs-files-$(CONFIG_INCLUDE_CONFIG_FILE) += payload_revision
 payload_revision-file := $(PAYLOAD_VERSION)
 payload_revision-type := raw
 
+cbfs-files-$(CONFIG_GRUB2_INCLUDE_RUNTIME_CONFIG_FILE) += etc/grub.cfg
+etc/grub.cfg-file := $(CONFIG_GRUB2_RUNTIME_CONFIG_FILE)
+etc/grub.cfg-type := raw
+etc/grub.cfg-required := the GRUB runtime configuration file ($(CONFIG_GRUB2_RUNTIME_CONFIG_FILE))
+
 # SeaBIOS
 
 SEABIOS_CC_OFFSET=$(if $(filter %ccache,$(HOSTCC)),2,1)

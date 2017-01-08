@@ -1,5 +1,8 @@
 chip soc/intel/baytrail
 
+	# No Built-in IGD Display
+	register "gfx.ndid" = "0"
+
 	register "usb2_comp_bg" = "0x4700"
 
 	# Allow PCIe devices to wake system from suspend

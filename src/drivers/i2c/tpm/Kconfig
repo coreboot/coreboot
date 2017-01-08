@@ -39,3 +39,8 @@ config DRIVER_I2C_TPM_ACPI
 	bool "Generate I2C TPM ACPI device"
 	default y if ARCH_X86 && I2C_TPM
 	default n
+
+config DRIVER_TPM_DISPLAY_TIS_BYTES
+	bool "TPM: Display the TIS transactions to I2C TPM chip"
+	default n
+	depends on I2C_TPM

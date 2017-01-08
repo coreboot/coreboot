@@ -1,0 +1,2 @@
+config BOARD_BCOM_WINNETP680
+	bool "WinNET P680"

@@ -79,7 +79,7 @@ _start:
 	movl	$(gdtaddr), %ebx
 	sub	$(_start), %ebx
 
-	data32 lgdt (%ebx)
+	lgdtl	(%ebx)
 
 	movl	%cr0, %eax
 	andl	$~CR0_CLEAR_FLAGS, %eax

@@ -31,7 +31,7 @@ _secondary_start:
 	movw	%cs, %ax
 	movw	%ax, %ds
 
-	data32	lgdt	gdtaddr  - _secondary_start
+	lgdtl	gdtaddr  - _secondary_start
 
 	movl	%cr0, %eax
 	andl	$0x7FFAFFD1, %eax /* PG,AM,WP,NE,TS,EM,MP = 0 */

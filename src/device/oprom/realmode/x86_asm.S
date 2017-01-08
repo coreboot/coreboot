@@ -177,7 +177,7 @@ __lcall_instr = RELOCATED(.)
 	/* Now that we are in protected mode
 	 * jump to a 32 bit code segment.
 	 */
-	data32	ljmp	$0x10, $RELOCATED(1f)
+	ljmpl	$0x10, $RELOCATED(1f)
 1:
 	.code32
 	mov	$0x18, %ax
@@ -253,7 +253,7 @@ __realmode_interrupt:
 	movl	%eax, %cr0
 
 	/* Now really going into real mode */
-	data32 ljmp	$0, $RELOCATED(1f)
+	ljmpl	$0, $RELOCATED(1f)
 1:
 
 	/* put the stack at the end of page zero.  That way we can easily
@@ -297,7 +297,7 @@ __intXX_instr = RELOCATED(.)
 	movl	%eax, %cr0
 
 	/* Now that we are in protected mode jump to a 32-bit code segment. */
-	data32	ljmp	$0x10, $RELOCATED(1f)
+	ljmpl	$0x10, $RELOCATED(1f)
 1:
 	.code32
 	mov	$0x18, %ax
@@ -344,7 +344,7 @@ __interrupt_handler_16bit = RELOCATED(.)
 	movl	%eax, %cr0
 
 	/* ... and jump to a 32 bit code segment. */
-	data32 ljmp    $0x10, $RELOCATED(1f)
+	ljmpl	$0x10, $RELOCATED(1f)
 1:
 	.code32
 	mov	$0x18, %ax

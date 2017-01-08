@@ -110,7 +110,7 @@ smm_handler_start:
 untampered_lapic:
 #endif
 	movw    $(smm_gdtptr16 - smm_handler_start + SMM_HANDLER_OFFSET), %bx
-	data32  lgdt %cs:(%bx)
+	lgdtl	%cs:(%bx)
 
 	movl    %cr0, %eax
 	andl    $0x7FFAFFD1, %eax /* PG,AM,WP,NE,TS,EM,MP = 0 */
@@ -118,7 +118,7 @@ untampered_lapic:
 	movl    %eax, %cr0
 
 	/* Enable protected mode */
-	data32  ljmp    $0x08, $1f
+	ljmpl	$0x08, $1f
 
 .code32
 1:

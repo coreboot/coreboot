@@ -181,13 +181,29 @@ chip northbridge/intel/gm45
 				end
 
 				chip superio/nsc/pc87382
-					device pnp 164e.3 off end
-					# IR, not connected
-					device pnp 164e.2 off end
-					# GPIO, not connected
-					device pnp 164e.7 off end
-					# DLPC, not connected
-					device pnp 164e.19 off end
+					device pnp 164e.2 off end # IR
+					device pnp 164e.3 off end # Serial Port
+					device pnp 164e.7 on # GPIO
+						io 0x60 = 0x1680
+					end
+					device pnp 164e.19 on # DLPC
+						io 0x60 = 0x164c
+					end
+				end
+
+				chip superio/nsc/pc87384
+					device pnp 2e.1 on # Parallel Port
+						io 0x60 = 0x3bc
+						irq 0x70 = 7
+					end
+					device pnp 2e.2 off end # Serial Port / IR
+					device pnp 2e.3 on # Serial Port
+						io 0x60 = 0x3f8
+						irq 0x70 = 4
+					end
+					device pnp 2e.7 on # GPIO
+						io 0x60 = 0x1620
+					end
 				end
 
 			end

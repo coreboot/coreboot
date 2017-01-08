@@ -13,6 +13,8 @@
 ## GNU General Public License for more details.
 ##
 
+romstage-y += dock.c
+
 ramstage-y += dock.c
 ramstage-y += cstates.c
 romstage-y += hybrid_graphics.c

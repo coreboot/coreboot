@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 #include <console/console.h>
+#include <lib.h>
 #include <types.h>
 #include <string.h>
 #include <sar.h>
@@ -31,6 +32,7 @@ int get_wifi_sar_limits(struct wifi_sar_limits *sar_limits)
 				    sizeof(uint8_t)) * 2 + 1;
 	char wifi_sar_limit_str[buffer_size];
 	uint8_t bin_buffer[sizeof(struct wifi_sar_limits)];
+	int i;
 
 	/* Try to read the SAR limit entry from VPD */
 	if (!cros_vpd_gets(wifi_sar_limit_key, wifi_sar_limit_str,
@@ -52,7 +54,7 @@ int get_wifi_sar_limits(struct wifi_sar_limits *sar_limits)
 	}
 
 	/* Fill the sar_limits structure with the decoded data */
-	for (int i = 0; i < NUM_SAR_LIMITS; i++)
+	for (i = 0; i < NUM_SAR_LIMITS; i++)
 		memcpy(sar_limits->sar_limit[i],
 			&bin_buffer[BYTES_PER_SAR_LIMIT * i],
 			BYTES_PER_SAR_LIMIT);

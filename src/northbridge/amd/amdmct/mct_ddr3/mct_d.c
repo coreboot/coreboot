@@ -2474,10 +2474,10 @@ static void set_up_cc6_storage_fam15(struct MCTStatStruc *pMCTstat,
 
 		if (interleaved)
 			/* Move upper limit down by 16M * the number of nodes */
-			max_range_limit -= (0x1000000 * num_nodes);
+			max_range_limit -= (0x1000000ULL * num_nodes);
 		else
 			/* Move upper limit down by 16M */
-			max_range_limit -= 0x1000000;
+			max_range_limit -= 0x1000000ULL;
 
 		printk(BIOS_INFO, "%s:\tnew max_range_limit: %16llx\n",
 			__func__, max_range_limit);

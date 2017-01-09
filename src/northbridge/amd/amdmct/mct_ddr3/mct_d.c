@@ -6737,7 +6737,7 @@ void mct_ForceNBPState0_En_Fam15(struct MCTStatStruc *pMCTstat,
 			/* Wait until CurNbPState == NbPstateLo */
 			do {
 				dword2 = Get_NB32(pDCTstat->dev_nbctl, 0x174);
-			} while (((dword2 << 19) & 0x7) != (dword & 0x3));
+			} while (((dword2 >> 19) & 0x7) != (dword & 0x3));
 		}
 		dword = Get_NB32(pDCTstat->dev_nbctl, 0x170);
 		dword &= ~(0x3 << 6);		/* NbPstateHi = 0 */
@@ -6748,7 +6748,7 @@ void mct_ForceNBPState0_En_Fam15(struct MCTStatStruc *pMCTstat,
 			/* Wait until CurNbPState == 0 */
 			do {
 				dword2 = Get_NB32(pDCTstat->dev_nbctl, 0x174);
-			} while (((dword2 << 19) & 0x7) != 0);
+			} while (((dword2 >> 19) & 0x7) != 0);
 		}
 	}
 }

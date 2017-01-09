@@ -14,7 +14,7 @@
 
 #include <variant/onboard.h>
 
-Scope (\_SB.I2C1)
+Scope (\_SB.PCI0.I2C1)
 {
 	Device (ETPA)
 	{
@@ -30,7 +30,7 @@ Scope (\_SB.I2C1)
 				ControllerInitiated,		// SlaveMode
 				400000,				// ConnectionSpeed
 				AddressingMode7Bit,		// AddressingMode
-				"\\_SB.I2C1",			// ResourceSource
+				"\\_SB.PCI0.I2C1",		// ResourceSource
 			)
 			Interrupt (ResourceConsumer, Level, ActiveLow)
 			{

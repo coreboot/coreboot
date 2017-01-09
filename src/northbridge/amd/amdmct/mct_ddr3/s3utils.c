@@ -1123,13 +1123,16 @@ int8_t save_mct_information_to_nvram(void)
 		set_option("allow_spd_nvram_cache_restore", &nvram);
 
 		printk(BIOS_DEBUG, "Hardware configuration unchanged since last boot; skipping write\n");
+		free(persistent_data);
 		return 0;
 	}
 
 	/* Obtain CBFS file offset */
 	s3nv_offset = get_s3nv_file_offset();
-	if (s3nv_offset == -1)
+	if (s3nv_offset == -1) {
+		free(persistent_data);
 		return -1;
+	}
 
 	/* Align flash pointer to nearest boundary */
 	s3nv_offset &= ~(CONFIG_S3_DATA_SIZE-1);

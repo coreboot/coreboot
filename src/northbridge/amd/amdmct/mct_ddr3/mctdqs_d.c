@@ -2242,23 +2242,20 @@ void mct_EnableDimmEccEn_D(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat, u8 _DisableDramECC)
 {
 	u32 val;
-	u32 reg;
 	u32 dev;
 
 	/* Enable ECC correction if it was previously disabled */
-
 	dev = pDCTstat->dev_dct;
 
 	if ((_DisableDramECC & 0x01) == 0x01) {
-		reg = 0x90;
-		val = Get_NB32_DCT(dev, 0, reg);
+		val = Get_NB32_DCT(dev, 0, 0x90);
 		val |= (1<<DimmEcEn);
-		Set_NB32_DCT(dev, 0, reg, val);
+		Set_NB32_DCT(dev, 0, 0x90, val);
 	}
 	if ((_DisableDramECC & 0x02) == 0x02) {
-		val = Get_NB32_DCT(dev, 1, reg);
+		val = Get_NB32_DCT(dev, 1, 0x90);
 		val |= (1<<DimmEcEn);
-		Set_NB32_DCT(dev, 1, reg, val);
+		Set_NB32_DCT(dev, 1, 0x90, val);
 	}
 }
 

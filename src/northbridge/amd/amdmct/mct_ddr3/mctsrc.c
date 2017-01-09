@@ -1484,8 +1484,9 @@ static void dqsTrainRcvrEn_SW_Fam15(struct MCTStatStruc *pMCTstat,
 		}
 	}
 
-	/* Calculate and program MaxRdLatency */
-	Calc_SetMaxRdLatency_D_Fam15(pMCTstat, pDCTstat, Channel, 0);
+	/* Calculate and program MaxRdLatency for both channels */
+	Calc_SetMaxRdLatency_D_Fam15(pMCTstat, pDCTstat, 0, 0);
+	Calc_SetMaxRdLatency_D_Fam15(pMCTstat, pDCTstat, 1, 0);
 
 	if (_DisableDramECC) {
 		mct_EnableDimmEccEn_D(pMCTstat, pDCTstat, _DisableDramECC);

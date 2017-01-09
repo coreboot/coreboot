@@ -14,7 +14,7 @@
 
 #include <variant/onboard.h>
 
-Scope (\_SB.I2C6)
+Scope (\_SB.PCI0.I2C6)
 {
 	Device (ETSA)
 	{
@@ -30,7 +30,7 @@ Scope (\_SB.I2C6)
 				ControllerInitiated,		// SlaveMode
 				400000,				// ConnectionSpeed
 				AddressingMode7Bit,		// AddressingMode
-				"\\_SB.I2C6",			// ResourceSource
+				"\\_SB.PCI0.I2C6",		// ResourceSource
 			)
 			Interrupt (ResourceConsumer, Level, ActiveLow)
 			{

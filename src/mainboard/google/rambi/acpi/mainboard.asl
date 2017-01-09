@@ -81,7 +81,7 @@ Scope (\_SB)
 #endif
 }
 
-Scope (\_SB.I2C2)
+Scope (\_SB.PCI0.I2C2)
 {
 	Device (CODC)
 	{
@@ -102,7 +102,7 @@ Scope (\_SB.I2C2)
 				ControllerInitiated,      // SlaveMode
 				400000,                   // ConnectionSpeed
 				AddressingMode7Bit,       // AddressingMode
-				"\\_SB.I2C2",             // ResourceSource
+				"\\_SB.PCI0.I2C2",        // ResourceSource
 			)
 			Interrupt (ResourceConsumer, Level, ActiveLow)
 			{
@@ -121,7 +121,7 @@ Scope (\_SB.I2C2)
 	}
 }
 
-Scope (\_SB.LPEA)
+Scope (\_SB.PCI0.LPEA)
 {
 	Name (GBUF, ResourceTemplate ()
 	{

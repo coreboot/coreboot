@@ -344,6 +344,7 @@ void mctGet_MaxLoadFreq(struct DCTStatStruc *pDCTstat)
 	uint8_t ch1_voltage = 0;
 	uint8_t ch2_voltage = 0;
 	uint8_t highest_rank_count[2];
+	uint8_t dimm;
 	int i;
 	for (i = 0; i < 15; i = i + 2) {
 		if (pDCTstat->DIMMValid & (1 << i))
@@ -363,14 +364,13 @@ void mctGet_MaxLoadFreq(struct DCTStatStruc *pDCTstat)
 	}
 
 #if IS_ENABLED(CONFIG_DIMM_DDR3)
-	uint8_t dimm;
-
 	for (i = 0; i < MAX_DIMMS_SUPPORTED; i = i + 2) {
 		if (pDCTstat->DIMMValid & (1 << i))
 			ch1_voltage |= pDCTstat->DimmConfiguredVoltage[i];
 		if (pDCTstat->DIMMValid & (1 << (i + 1)))
 			ch2_voltage |= pDCTstat->DimmConfiguredVoltage[i + 1];
 	}
+#endif
 
 	for (i = 0; i < 2; i++) {
 		highest_rank_count[i] = 0x0;
@@ -379,7 +379,6 @@ void mctGet_MaxLoadFreq(struct DCTStatStruc *pDCTstat)
 				highest_rank_count[i] = pDCTstat->DimmRanks[dimm];
 		}
 	}
-#endif
 
 	/* Set limits if needed */
 	pDCTstat->PresetmaxFreq = mct_MaxLoadFreq(max(ch1_count, ch2_count), max(highest_rank_count[0], highest_rank_count[1]), (ch1_registered || ch2_registered), (ch1_voltage | ch2_voltage), pDCTstat->PresetmaxFreq);

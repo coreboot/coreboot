@@ -256,11 +256,11 @@ static uint16_t fam15h_mhz_to_memclk_config(uint16_t freq)
 
 	/* Compute the index value for the given frequency */
 	for (iter = 0; iter <= 0x16; iter++) {
-		if (fam15h_freq_tab[iter] == freq)
+		if (fam15h_freq_tab[iter] == freq) {
+			freq = iter;
 			break;
+		}
 	}
-	if (fam15h_freq_tab[iter] == freq)
-		freq = iter;
 	if (freq == 0)
 		freq = 0x4;
 
@@ -274,11 +274,11 @@ static uint16_t fam10h_mhz_to_memclk_config(uint16_t freq)
 
 	/* Compute the index value for the given frequency */
 	for (iter = 0; iter <= 0x6; iter++) {
-		if (fam10h_freq_tab[iter] == freq)
+		if (fam10h_freq_tab[iter] == freq) {
+			freq = iter;
 			break;
+		}
 	}
-	if (fam10h_freq_tab[iter] == freq)
-		freq = iter;
 	if (freq == 0)
 		freq = 0x3;
 

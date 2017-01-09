@@ -36,3 +36,7 @@ config VIDEO_MB
 	default 64  if CN700_VIDEO_MB_64MB
 	default 128 if CN700_VIDEO_MB_128MB
 	depends on NORTHBRIDGE_VIA_CN700
+
+config VGA_BIOS_ID
+	string
+	default "1106,3344"

@@ -1073,7 +1073,7 @@ void read_dram_dqs_training_pattern_fam15(struct MCTStatStruc *pMCTstat,
 		Set_NB32_DCT(dev, dct, 0x27c, dword);
 	} else if (lane < 8) {
 		Set_NB32_DCT(dev, dct, 0x274, ~0x0);
-		Set_NB32_DCT(dev, dct, 0x278, ~(0xff << (lane * 8)));
+		Set_NB32_DCT(dev, dct, 0x278, ~(0xff << ((lane - 4) * 8)));
 		dword = Get_NB32_DCT(dev, dct, 0x27c);
 		dword |= 0xff;				/* EccMask = 0xff */
 		Set_NB32_DCT(dev, dct, 0x27c, dword);
@@ -1170,7 +1170,7 @@ void write_dram_dqs_training_pattern_fam15(struct MCTStatStruc *pMCTstat,
 		Set_NB32_DCT(dev, dct, 0x27c, dword);
 	} else if (lane < 8) {
 		Set_NB32_DCT(dev, dct, 0x274, ~0x0);
-		Set_NB32_DCT(dev, dct, 0x278, ~(0xff << (lane * 8)));
+		Set_NB32_DCT(dev, dct, 0x278, ~(0xff << ((lane - 4) * 8)));
 		dword = Get_NB32_DCT(dev, dct, 0x27c);
 		dword |= 0xff;				/* EccMask = 0xff */
 		Set_NB32_DCT(dev, dct, 0x27c, dword);

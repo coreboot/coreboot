@@ -208,7 +208,9 @@ void romstage_main_continue(EFI_STATUS status, VOID *HobListPtr) {
 	}
 
 	/* Save the HOB pointer in CBMEM to be used in ramstage. */
-	cbmem_hob_ptr = cbmem_add (CBMEM_ID_HOB_POINTER, sizeof(HobListPtr));
+	cbmem_hob_ptr = cbmem_add(CBMEM_ID_HOB_POINTER, sizeof(HobListPtr));
+	if (cbmem_hob_ptr == NULL)
+		die("Could not allocate cbmem for HOB pointer");
 	*(uint32_t*)cbmem_hob_ptr = (uint32_t)HobListPtr;
 	post_code(0x4f);
 

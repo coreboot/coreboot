@@ -106,11 +106,9 @@ void romstage_main_continue(EFI_STATUS status, void *hob_list_ptr)
 	cbmem_was_initted = !cbmem_recovery(0);
 
 	/* Save the HOB pointer in CBMEM to be used in ramstage*/
-	cbmem_hob_ptr = cbmem_add (CBMEM_ID_HOB_POINTER, sizeof(*hob_list_ptr));
-	if (cbmem_hob_ptr == NULL) {
-	   printk(BIOS_DEBUG, "Failed to save HOB pointer in CBMEM.\n");
-	   return;
-	}
+	cbmem_hob_ptr = cbmem_add(CBMEM_ID_HOB_POINTER, sizeof(*hob_list_ptr));
+	if (cbmem_hob_ptr == NULL)
+		die("Could not allocate cbmem for HOB pointer");
 	*(u32 *)cbmem_hob_ptr = (u32)hob_list_ptr;
 
 	/* Load the ramstage. */

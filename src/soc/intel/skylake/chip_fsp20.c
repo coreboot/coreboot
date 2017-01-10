@@ -14,6 +14,7 @@
  */
 
 #include <chip.h>
+#include <bootmode.h>
 #include <bootstate.h>
 #include <device/pci.h>
 #include <fsp/api.h>
@@ -108,9 +109,18 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	mainboard_silicon_init_params(params);
 
 	/* Load VBT */
-	if (!is_s3_wakeup)
+	if (is_s3_wakeup) {
+		printk(BIOS_DEBUG, "S3 resume do not pass VBT to GOP\n");
+	} else if (display_init_required()) {
+		/* Get VBT data */
 		vbt_data = fsp_load_vbt();
-
+		if (vbt_data)
+			printk(BIOS_DEBUG, "Passing VBT to GOP\n");
+		else
+			printk(BIOS_DEBUG, "VBT not found!\n");
+	} else {
+		printk(BIOS_DEBUG, "Not passing VBT to GOP\n");
+	}
 	params->GraphicsConfigPtr = (u32) vbt_data;
 
 	for (i = 0; i < ARRAY_SIZE(config->usb2_ports); i++) {

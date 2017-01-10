@@ -190,6 +190,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->PchIshEnable = config->IshEnable;
 	params->PchHdaEnable = config->EnableAzalia;
 	params->PchHdaIoBufferOwnership = config->IoBufferOwnership;
+	params->PchHdaIDispCodecDisconnect = 1;
 	params->PchHdaDspEnable = config->DspEnable;
 	params->XdciEnable = config->XdciEnable;
 	params->Device4Enable = config->Device4Enable;

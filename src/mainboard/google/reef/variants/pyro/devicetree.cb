@@ -176,6 +176,21 @@ chip soc/intel/apollolake
 				register "hid_desc_reg_offset" = "0x1"
 				device i2c 0xA on end
 			end
+			chip drivers/i2c/generic
+				register "hid" = ""ELAN0001""
+				register "desc" = ""ELAN Touchscreen""
+				register "irq" = "IRQ_EDGE_LOW(GPIO_21_IRQ)"
+				register "probed" = "1"
+
+				chip drivers/generic/gpio_regulator
+					register "name" = ""vcc33""
+					register "gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_152)"
+					register "enabled_on_boot" = "1"
+					device generic 0 on end
+				end
+
+				device i2c 10 on end
+			end
 		end	# - I2C 3
 		device pci 17.0 on
 			chip drivers/i2c/generic

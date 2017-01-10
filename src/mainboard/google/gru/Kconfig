@@ -91,6 +91,13 @@ config MAINBOARD_PART_NUMBER
 	default "Gru" if BOARD_GOOGLE_GRU
 	default "Kevin" if BOARD_GOOGLE_KEVIN
 
+# The default max sdram freq is 933M(actually 928M dpll), and
+# 800M is another choice.
+config MAX_SDRAM_FREQ
+	int
+	default 800 if BOARD_GOOGLE_BOB
+	default 933
+
 config GBB_HWID
 	string
 	depends on CHROMEOS

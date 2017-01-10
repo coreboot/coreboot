@@ -28,7 +28,7 @@ typedef uint8_t TPMI_YES_NO;
 typedef TPM_ALG_ID TPMI_ALG_HASH;
 typedef TPM_HANDLE TPMI_DH_PCR;
 typedef TPM_HANDLE TPMI_RH_NV_INDEX;
-typedef TPM_HANDLE TPMI_RH_PROVISION;
+typedef TPM_HANDLE TPMI_RH_ENABLES;
 typedef TPM_HANDLE TPMI_SH_AUTH_SESSION;
 typedef TPM_HANDLE TPM_RH;
 
@@ -59,15 +59,16 @@ struct tpm_header {
 } __attribute__((packed));
 
 /* TPM command codes. */
-#define TPM2_Clear          ((TPM_CC)0x00000126)
-#define TPM2_NV_DefineSpace ((TPM_CC)0x0000012A)
-#define TPM2_NV_Write       ((TPM_CC)0x00000137)
-#define TPM2_NV_WriteLock   ((TPM_CC)0x00000138)
-#define TPM2_SelfTest       ((TPM_CC)0x00000143)
-#define TPM2_Startup        ((TPM_CC)0x00000144)
-#define TPM2_NV_Read        ((TPM_CC)0x0000014E)
-#define TPM2_GetCapability  ((TPM_CC)0x0000017A)
-#define TPM2_PCR_Extend     ((TPM_CC)0x00000182)
+#define TPM2_Hierarchy_Control ((TPM_CC)0x00000121)
+#define TPM2_Clear             ((TPM_CC)0x00000126)
+#define TPM2_NV_DefineSpace    ((TPM_CC)0x0000012A)
+#define TPM2_NV_Write          ((TPM_CC)0x00000137)
+#define TPM2_NV_WriteLock      ((TPM_CC)0x00000138)
+#define TPM2_SelfTest          ((TPM_CC)0x00000143)
+#define TPM2_Startup           ((TPM_CC)0x00000144)
+#define TPM2_NV_Read           ((TPM_CC)0x0000014E)
+#define TPM2_GetCapability     ((TPM_CC)0x0000017A)
+#define TPM2_PCR_Extend        ((TPM_CC)0x00000182)
 
 /* Startup values. */
 #define TPM_SU_CLEAR 0
@@ -332,6 +333,11 @@ struct tpm2_nv_write_lock_cmd {
 struct tpm2_pcr_extend_cmd {
 	TPMI_DH_PCR pcrHandle;
 	TPML_DIGEST_VALUES digests;
+};
+
+struct tpm2_hierarchy_control_cmd {
+	TPMI_RH_ENABLES enable;
+	TPMI_YES_NO state;
 };
 
 #endif // __SRC_LIB_TPM2_TLCL_STRUCTURES_H

@@ -49,11 +49,14 @@ static int do_spi_flash_cmd(const struct spi_slave *spi, const void *dout,
 		[1] = { .dout = NULL, .bytesout = 0,
 			.din = din, .bytesin = bytes_in },
 	};
+	size_t count = ARRAY_SIZE(vectors);
+	if (!bytes_in)
+		count = 1;
 
 	if (spi_claim_bus(spi))
 		return ret;
 
-	if (spi_xfer_vector(spi, vectors, ARRAY_SIZE(vectors)) == 0)
+	if (spi_xfer_vector(spi, vectors, count) == 0)
 		ret = 0;
 
 	spi_release_bus(spi);

@@ -369,3 +369,19 @@ uint32_t tlcl_define_space(uint32_t space_index, size_t space_size)
 		return TPM_E_INTERNAL_INCONSISTENCY;
 	}
 }
+
+uint32_t tlcl_disable_platform_hierarchy(void)
+{
+	struct tpm2_response *response;
+	struct tpm2_hierarchy_control_cmd hc = {
+		.enable = TPM_RH_PLATFORM,
+		.state = 0,
+	};
+
+	response = tpm_process_command(TPM2_Hierarchy_Control, &hc);
+
+	if (!response || response->hdr.tpm_code)
+		return TPM_E_INTERNAL_INCONSISTENCY;
+
+	return TPM_SUCCESS;
+}

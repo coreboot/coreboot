@@ -151,4 +151,9 @@ uint32_t tlcl_extend(int pcr_num, const uint8_t *in_digest,
  */
 uint32_t tlcl_get_permanent_flags(TPM_PERMANENT_FLAGS *pflags);
 
+/**
+ * Disable platform hierarchy. Specific to TPM2. The TPM error code is returned.
+ */
+uint32_t tlcl_disable_platform_hierarchy(void);
+
 #endif  /* TPM_LITE_TLCL_H_ */

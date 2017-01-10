@@ -127,6 +127,20 @@ config CHROMEOS_FWID_VERSION
 	  This is the second part of the FWID written to various regions of a
 	  Chrome OS firmware image to identify its version.
 
+config CHROMEOS_DISABLE_PLATFORM_HIERARCHY_ON_RESUME
+	bool
+	default y
+	depends on TPM2 && RESUME_PATH_SAME_AS_BOOT
+	help
+	  Disable the platform heirarchy on resume path if the firmware
+	  is involved in resume. The hierarchy is disabled prior to jumping
+	  to the OS.  Note that this option is sepcific to TPM2 boards.
+	  This option is auto selected if CHROMEOS because it matches with
+	  vboot_reference model which disables the platform hierarchy in
+	  the boot loader. However, those operations need to be symmetric
+	  on normal boot as well as resume and coreboot is only involved
+	  in the resume piece w.r.t. the platform hierarchy.
+
 menu "GBB configuration"
 
 config GBB_HWID

@@ -144,6 +144,8 @@ ramstage-$(CONFIG_GENERIC_GPIO_LIB) += gpio.c
 ramstage-$(CONFIG_GENERIC_UDELAY) += timer.c
 ramstage-y += b64_decode.c
 ramstage-$(CONFIG_ACPI_NHLT) += nhlt.c
+ramstage-$(CONFIG_TPM2) += tpm2_marshaling.c
+ramstage-$(CONFIG_TPM2) += tpm2_tlcl.c
 
 romstage-y += cbmem_common.c
 romstage-y += imd_cbmem.c

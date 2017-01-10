@@ -22,7 +22,6 @@
 #include <pc80/mc146818rtc.h>
 #include <spd.h>
 #include <string.h>
-#include <arch/io.h>
 #include <halt.h>
 #include <lib.h>
 #include "raminit.h"
@@ -2742,8 +2741,6 @@ static void sdram_recover_receive_enable(void)
 	reg32 |= (u32)(values[3] & 0xf0) << (24 - 4);
 	MCHBAR32(C1DRT1) = reg32;
 }
-
-#include "rcven.c"
 
 static void sdram_program_receive_enable(struct sys_info *sysinfo)
 {

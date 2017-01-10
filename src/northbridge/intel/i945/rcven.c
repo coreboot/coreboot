@@ -13,7 +13,10 @@
  * GNU General Public License for more details.
  */
 
+#include <console/console.h>
+#include <arch/io.h>
 #include "raminit.h"
+#include "i945.h"
 
 /**
  * sample the strobes signal

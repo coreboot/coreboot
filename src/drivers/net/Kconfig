@@ -3,3 +3,13 @@ config REALTEK_8168_RESET
 	help
 	  This forces a realtek 10ec:8168 card to reset to ensure power state
 	  is correct at boot.
+
+config REALTEK_8168_MACADDRESS
+	string "Realtek rt8168 mac address"
+	depends on REALTEK_8168_RESET
+	default "00:e0:4c:00:c0:b0"
+	help
+	  This is a string to set the mac address on a Realtek rt8168 card.
+	  It must be in the form  of "xx:xx:xx:xx:xx:xx", where x is a
+	  hexadecimal number for it to be valid. Failing to do so will
+	  result in the default macaddress being used.

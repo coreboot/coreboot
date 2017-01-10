@@ -88,14 +88,14 @@ static void program_mac_address(struct device *dev, u16 io_base)
 	int i = 0;
 	u8 mac[6] = { 0x00, 0xe0, 0x4c, 0x00, 0xc0, 0xb0 };
 
-	if (!cbfs_boot_locate(&fh, "macaddress", &matchraw)) {
+	if (!cbfs_boot_locate(&fh, "rt8168-macaddress", &matchraw)) {
 		if (rdev_readat(&fh.data, macstrbuf, 0, MACLEN) == MACLEN)
 			get_mac_address(mac, macstrbuf);
 		else
 			printk(BIOS_ERR, "r8168: Error reading MAC from CBFS\n");
 	} else {
-		printk(BIOS_ERR, "r8168: 'macaddress' not found in CBFS, "
-				 "using default 00:e0:4c:00:c0:b0\n");
+		printk(BIOS_ERR, "r8168: 'rt8168-macaddress' not found in CBFS,"
+				 " using default 00:e0:4c:00:c0:b0\n");
 	}
 
 	/* Reset NIC */

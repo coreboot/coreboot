@@ -72,7 +72,7 @@ static void phy_detect(u8 *base)
 		val = phy_read(base, phyaddr, 1);
 		if (val < 0)
 			continue;
-		if ((val & 0xffff) == 0xfffff)
+		if ((val & 0xffff) == 0xffff)
 			continue;
 		if ((val & 0xffff) == 0)
 			continue;

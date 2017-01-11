@@ -9,7 +9,7 @@ OBJCOPY ?= objcopy
 VBOOT_SOURCE ?= $(top)/3rdparty/vboot
 
 .PHONY: all
-all: cbfstool fmaptool rmodtool ifwitool
+all: cbfstool fmaptool rmodtool ifwitool cbfs-compression-tool
 
 cbfstool: $(objutil)/cbfstool/cbfstool
 
@@ -19,13 +19,16 @@ rmodtool: $(objutil)/cbfstool/rmodtool
 
 ifwitool: $(objutil)/cbfstool/ifwitool
 
-.PHONY: clean cbfstool fmaptool rmodtool ifwitool
+cbfs-compression-tool: $(objutil)/cbfstool/cbfs-compression-tool
+
+.PHONY: clean cbfstool fmaptool rmodtool ifwitool cbfs-compression-tool
 clean:
 	$(RM) fmd_parser.c fmd_parser.h fmd_scanner.c fmd_scanner.h
 	$(RM) $(objutil)/cbfstool/cbfstool $(cbfsobj)
 	$(RM) $(objutil)/cbfstool/fmaptool $(fmapobj)
 	$(RM) $(objutil)/cbfstool/rmodtool $(rmodobj)
 	$(RM) $(objutil)/cbfstool/ifwitool $(ifwiobj)
+	$(RM) $(objutil)/cbfstool/cbfs-compression-tool $(cbfscompobj)
 
 linux_trampoline.c: linux_trampoline.S
 	rm -f linux_trampoline.c

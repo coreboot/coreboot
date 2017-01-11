@@ -204,11 +204,6 @@ struct cbfs_payload {
  */
 #define CBFS_COMPONENT_NULL 0xFFFFFFFF
 
-struct typedesc_t {
-	uint32_t type;
-	const char *name;
-};
-
 static struct typedesc_t filetypes[] unused = {
 	{CBFS_COMPONENT_BOOTBLOCK, "bootblock"},
 	{CBFS_COMPONENT_CBFSHEADER, "cbfs header"},

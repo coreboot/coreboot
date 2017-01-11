@@ -1,7 +1,20 @@
+compressionobj :=
+compressionobj += compress.o
+# LZ4
+compressionobj += lz4.o
+compressionobj += lz4hc.o
+compressionobj += lz4frame.o
+compressionobj += xxhash.o
+compressionobj += lz4_wrapper.o
+# LZMA
+compressionobj += lzma.o
+compressionobj += LzFind.o
+compressionobj += LzmaDec.o
+compressionobj += LzmaEnc.o
+
 cbfsobj :=
 cbfsobj += cbfstool.o
 cbfsobj += common.o
-cbfsobj += compress.o
 cbfsobj += cbfs_image.o
 cbfsobj += cbfs-mkstage.o
 cbfsobj += cbfs-mkpayload.o
@@ -13,24 +26,13 @@ cbfsobj += partitioned_file.o
 # COMMONLIB
 cbfsobj += cbfs.o
 cbfsobj += fsp_relocate.o
-cbfsobj += lz4_wrapper.o
 cbfsobj += mem_pool.o
 cbfsobj += region.o
-# LZMA
-cbfsobj += lzma.o
-cbfsobj += LzFind.o
-cbfsobj += LzmaDec.o
-cbfsobj += LzmaEnc.o
 # CRYPTOLIB
 cbfsobj += 2sha_utility.o
 cbfsobj += 2sha1.o
 cbfsobj += 2sha256.o
 cbfsobj += 2sha512.o
-# LZ4
-cbfsobj += lz4.o
-cbfsobj += lz4hc.o
-cbfsobj += lz4frame.o
-cbfsobj += xxhash.o
 # FMAP
 cbfsobj += fmap.o
 cbfsobj += kv_pair.o
@@ -38,6 +40,8 @@ cbfsobj += valstr.o
 # linux as payload
 cbfsobj += linux_trampoline.o
 cbfsobj += cbfs-payload-linux.o
+# compression algorithms
+cbfsobj += $(compressionobj)
 
 fmapobj :=
 fmapobj += fmaptool.o
@@ -61,6 +65,10 @@ rmodobj += xdr.o
 ifwiobj :=
 ifwiobj += ifwitool.o
 ifwiobj += common.o
+
+cbfscompobj :=
+cbfscompobj += $(compressionobj)
+cbfscompobj += cbfscomptool.o
 
 TOOLCFLAGS ?= -Werror -Wall -Wextra
 TOOLCFLAGS += -Wcast-qual -Wmissing-prototypes -Wredundant-decls -Wshadow
@@ -140,6 +148,10 @@ $(objutil)/cbfstool/rmodtool: $(addprefix $(objutil)/cbfstool/,$(rmodobj))
 $(objutil)/cbfstool/ifwitool: $(addprefix $(objutil)/cbfstool/,$(ifwiobj))
 	printf "    HOSTCC     $(subst $(objutil)/,,$(@)) (link)\n"
 	$(HOSTCC) $(TOOLLDFLAGS) -o $@ $(addprefix $(objutil)/cbfstool/,$(ifwiobj))
+
+$(objutil)/cbfstool/cbfs-compression-tool: $(addprefix $(objutil)/cbfstool/,$(cbfscompobj))
+	printf "    HOSTCC     $(subst $(objutil)/,,$(@)) (link)\n"
+	$(HOSTCC) $(TOOLLDFLAGS) -o $@ $(addprefix $(objutil)/cbfstool/,$(cbfscompobj))
 
 # Yacc source is superset of header
 $(objutil)/cbfstool/fmd.o: TOOLCFLAGS += -Wno-redundant-decls

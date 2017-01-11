@@ -24,6 +24,7 @@
 #include <soc/intel/common/lpss_i2c.h>
 #include <device/i2c.h>
 #include <soc/pm.h>
+#include <soc/usb.h>
 
 #define CLKREQ_DISABLED		0xf
 #define APOLLOLAKE_I2C_DEV_MAX	8
@@ -115,6 +116,10 @@ struct soc_intel_apollolake_config {
 
 	/* GPIO pin for PERST_0 */
 	uint16_t prt0_gpio;
+
+	/* USB2 eye diagram settings per port */
+	struct usb2_eye_per_port usb2eye[APOLLOLAKE_USB2_PORT_MAX];
+
 };
 
 #endif	/* _SOC_APOLLOLAKE_CHIP_H_ */

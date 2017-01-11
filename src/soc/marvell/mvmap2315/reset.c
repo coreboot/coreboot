@@ -21,8 +21,9 @@
 #include <soc/clock.h>
 #include <soc/reset.h>
 
-void mvmap2315_reset(void)
+void __attribute__((noreturn)) mvmap2315_reset(void)
 {
 	clrbits_le32(&mvmap2315_mpmu_clk->resetmcu, MVMAP2315_MCU_RST_EN);
 	clrbits_le32(&mvmap2315_mpmu_clk->resetap, MVMAP2315_AP_RST_EN);
+	for (;;) ;
 }

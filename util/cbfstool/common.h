@@ -166,6 +166,18 @@ enum comp_algo {
 	CBFS_COMPRESS_LZ4 = 2,
 };
 
+struct typedesc_t {
+	uint32_t type;
+	const char *name;
+};
+
+static const struct typedesc_t types_cbfs_compression[] = {
+	{CBFS_COMPRESS_NONE, "none"},
+	{CBFS_COMPRESS_LZMA, "LZMA"},
+	{CBFS_COMPRESS_LZ4, "LZ4"},
+	{0, NULL},
+};
+
 comp_func_ptr compression_function(enum comp_algo algo);
 decomp_func_ptr decompression_function(enum comp_algo algo);
 

@@ -79,6 +79,7 @@ static struct param {
 	bool machine_parseable;
 	int fit_empty_entries;
 	enum comp_algo compression;
+	int precompression;
 	enum vb2_hash_algorithm hash;
 	/* for linux payloads */
 	char *initrd;
@@ -439,33 +440,51 @@ static int cbfstool_convert_raw(struct buffer *buffer,
 	unused uint32_t *offset, struct cbfs_file *header)
 {
 	char *compressed;
-	int compressed_size;
+	int decompressed_size, compressed_size;
+	comp_func_ptr compress;
 
-	comp_func_ptr compress = compression_function(param.compression);
-	if (!compress)
-		return -1;
-	compressed = calloc(buffer->size, 1);
-
-	if (compress(buffer->data, buffer->size,
-		     compressed, &compressed_size)) {
-		WARN("Compression failed - disabled\n");
-	} else {
-		struct cbfs_file_attr_compression *attrs =
-			(struct cbfs_file_attr_compression *)
-			cbfs_add_file_attr(header,
-				CBFS_FILE_ATTR_TAG_COMPRESSION,
-				sizeof(struct cbfs_file_attr_compression));
-		if (attrs == NULL)
+	decompressed_size = buffer->size;
+	if (param.precompression) {
+		param.compression = le32toh(((uint32_t *)buffer->data)[0]);
+		decompressed_size = le32toh(((uint32_t *)buffer->data)[1]);
+		compressed_size = buffer->size - 8;
+		compressed = malloc(compressed_size);
+		if (!compressed)
 			return -1;
-		attrs->compression = htonl(param.compression);
-		attrs->decompressed_size = htonl(buffer->size);
+		memcpy(compressed, buffer->data + 8, compressed_size);
+	} else {
+		compress = compression_function(param.compression);
+		if (!compress)
+			return -1;
+		compressed = calloc(buffer->size, 1);
+		if (!compressed)
+			return -1;
 
-		free(buffer->data);
-		buffer->data = compressed;
-		buffer->size = compressed_size;
-
-		header->len = htonl(buffer->size);
+		if (compress(buffer->data, buffer->size,
+			     compressed, &compressed_size)) {
+			WARN("Compression failed - disabled\n");
+			free(compressed);
+			return 0;
+		}
 	}
+
+	struct cbfs_file_attr_compression *attrs =
+		(struct cbfs_file_attr_compression *)
+		cbfs_add_file_attr(header,
+			CBFS_FILE_ATTR_TAG_COMPRESSION,
+			sizeof(struct cbfs_file_attr_compression));
+	if (attrs == NULL) {
+		free(compressed);
+		return -1;
+	}
+	attrs->compression = htonl(param.compression);
+	attrs->decompressed_size = htonl(decompressed_size);
+
+	free(buffer->data);
+	buffer->data = compressed;
+	buffer->size = compressed_size;
+
+	header->len = htonl(buffer->size);
 	return 0;
 }
 
@@ -1347,6 +1366,10 @@ int main(int argc, char **argv)
 							optarg);
 				break;
 			case 'c': {
+				if (strcmp(optarg, "precompression") == 0) {
+					param.precompression = 1;
+					break;
+				}
 				int algo = cbfs_parse_comp_algo(optarg);
 				if (algo >= 0)
 					param.compression = algo;

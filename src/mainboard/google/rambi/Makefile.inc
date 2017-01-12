@@ -13,13 +13,18 @@
 ## GNU General Public License for more details.
 ##
 
-subdirs-y += spd
-
-romstage-y += chromeos.c
-ramstage-y += chromeos.c
-ramstage-y += gpio.c
+romstage-$(CONFIG_CHROMEOS) += chromeos.c
+ramstage-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-$(CONFIG_EC_GOOGLE_CHROMEEC) += ec.c
 ramstage-y += irqroute.c
 ramstage-y += w25q64.c
 
 smm-$(CONFIG_HAVE_SMI_HANDLER) += mainboard_smi.c
+
+ramstage-y += variants/$(VARIANT_DIR)/gpio.c
+
+ramstage-$(CONFIG_BOARD_GOOGLE_NINJA) += variants/$(VARIANT_DIR)/lan.c
+
+subdirs-y += variants/$(VARIANT_DIR)
+
+CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/variants/$(VARIANT_DIR)/include

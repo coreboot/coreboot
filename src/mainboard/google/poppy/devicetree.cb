@@ -36,7 +36,7 @@ chip soc/intel/skylake
 	register "Cio2Enable" = "0"
 	register "ScsEmmcEnabled" = "1"
 	register "ScsEmmcHs400Enabled" = "1"
-	register "ScsSdCardEnabled" = "0"
+	register "ScsSdCardEnabled" = "2"
 	register "IshEnable" = "0"
 	register "PttSwitch" = "0"
 	register "InternalGfx" = "1"
@@ -230,7 +230,7 @@ chip soc/intel/skylake
 		device pci 1e.3 on  end # GSPI #1
 		device pci 1e.4 on  end # eMMC
 		device pci 1e.5 off end # SDIO
-		device pci 1e.6 off end # SDCard
+		device pci 1e.6 on end # SDCard
 		device pci 1f.0 on
 			chip ec/google/chromeec
 				device pnp 0c09.0 on end

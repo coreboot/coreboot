@@ -57,8 +57,8 @@ static const struct pad_config gpio_table[] = {
 /* SUSWARN# */		PAD_CFG_NC(GPP_A13),
 /* ESPI_RESET# */
 /* SUSACK# */		PAD_CFG_NF(GPP_A15, NONE, DEEP, NF1),
-/* SD_1P8_SEL */	PAD_CFG_NC(GPP_A16),
-/* SD_PWR_EN# */	PAD_CFG_NC(GPP_A17),
+/* SD_1P8_SEL */	PAD_CFG_NF(GPP_A16, NONE, DEEP, NF1),
+/* SD_PWR_EN# */	PAD_CFG_NF(GPP_A17, NONE, DEEP, NF1),
 /* ISH_GP0 */		PAD_CFG_NC(GPP_A18),
 /* ISH_GP1 */		PAD_CFG_NC(GPP_A19),
 /* ISH_GP2 */		PAD_CFG_GPI_APIC(GPP_A20, NONE,

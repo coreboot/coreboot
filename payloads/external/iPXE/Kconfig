@@ -78,11 +78,17 @@ config PXE_ROM_ID
 
 	  Under GNU/Linux you can run `lspci -nn` to list the IDs of your PCI devices.
 
-config CONFIG_PXE_CUSTOM_GENERAL_H
+config PXE_CUSTOM_GENERAL_H
 	string "iPXE custom general.h file"
 	default "../../../../apu2-documentation/ipxe/general.h"
 	help
 	  This option allows user to customize feature set built-in into iPXE ROM.
+
+config PXE_CUSTOM_BOOTMENU_FILE
+	string "iPXE custom menu.ipxe file"
+	default "../../../../apu2-documentation/ipxe/menu.ipxe"
+	help
+	  This option allows user to customize boot menu for iPXE ROM.
 
 endmenu
 endif

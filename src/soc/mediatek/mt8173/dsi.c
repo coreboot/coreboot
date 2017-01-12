@@ -310,7 +310,7 @@ void mtk_dsi_pin_drv_ctrl(void)
 
 	do {
 		if (stopwatch_expired(&sw)) {
-			printk(BIOS_ERR, "enable lvdstx_power fail!!!\n");
+			printk(BIOS_ERR, "enable lvdstx_power failed!!!\n");
 			return;
 		}
 	} while ((read32(&lvds_tx1->vopll_ctl3) & RG_AD_LVDSTX_PWR_ACK) == 0);

@@ -409,7 +409,7 @@ void rkclk_init(void)
 
 	/* configure pmu pclk */
 	pclk_div = PPLL_HZ / PMU_PCLK_HZ - 1;
-	assert((unsigned)(PPLL_HZ - (pclk_div + 1) * PMU_PCLK_HZ) <= pclk_div
+	assert((unsigned int)(PPLL_HZ - (pclk_div + 1) * PMU_PCLK_HZ) <= pclk_div
 	       && pclk_div <= 0x1f);
 	write32(&pmucru_ptr->pmucru_clksel[0],
 		RK_CLRSETBITS(PMU_PCLK_DIV_CON_MASK << PMU_PCLK_DIV_CON_SHIFT,
@@ -508,6 +508,7 @@ void rkclk_configure_cpu(enum apll_frequencies freq, enum cpu_cluster cluster)
 		pll_con = &cru_ptr->apll_l_con[0];
 		break;
 	case CPU_CLUSTER_BIG:
+	default:
 		con_base = 2;
 		parent = CLK_CORE_PLL_SEL_ABPLL;
 		pll_con = &cru_ptr->apll_b_con[0];

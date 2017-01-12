@@ -75,10 +75,11 @@ static void register_apio_suspend(void)
 static void register_gpio_suspend(void)
 {
 	/*
-	 * these 3 pin to disable gpio2 ~ gpio4 1.5v, 1.8v, 3.3v power supply
-	 * so need to shut down the power supply from high voltage to
-	 * low voltage, and consider register_bl31() appends to the front off
-	 * the list, we should register 1.5v enable pin to 3.3v enable pin
+	 * These three GPIO params are used to shut down the 1.5V, 1.8V and
+	 * 3.3V power rails, which need to be shut down ordered by voltage,
+	 * with highest voltage first.
+	 * Since register_bl31() appends to the front of the list, we need to
+	 * register them backwards, with 1.5V coming first.
 	 */
 	static struct bl31_gpio_param param_p15_en = {
 		.h = {

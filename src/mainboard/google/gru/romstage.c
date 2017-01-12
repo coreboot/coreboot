@@ -42,8 +42,10 @@ static void init_dvs_outputs(void)
 
 static void prepare_usb(void)
 {
-	/* Do dwc3 core soft reset and phy reset. Kick these resets
-	 * off early so they get at least 100ms to settle. */
+	/*
+	 * Do dwc3 core soft reset and phy reset. Kick these resets
+	 * off early so they get at least 100ms to settle.
+	 */
 	reset_usb_otg0();
 	reset_usb_otg1();
 }

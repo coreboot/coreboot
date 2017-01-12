@@ -38,10 +38,10 @@ static void soc_init(device_t dev)
 	 */
 	mmio_resource(dev, 1, (0x10000 / KiB), (0x80000 / KiB));
 
-	if (display_init_required())
+	if (IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) && display_init_required())
 		rk_display_init(dev);
 	else
-		printk(BIOS_INFO, "Skipping display init.\n");
+		printk(BIOS_INFO, "Display initialization disabled.\n");
 
 	/* We don't need big CPUs, but bring them up as a courtesy to Linux. */
 	rkclk_configure_cpu(APLL_600_MHZ, CPU_CLUSTER_BIG);

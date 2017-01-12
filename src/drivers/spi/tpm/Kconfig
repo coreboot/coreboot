@@ -8,6 +8,6 @@ config DRIVER_TPM_SPI_BUS
 	depends on SPI_TPM
 
 config DRIVER_TPM_SPI_CHIP
-       int "Chip Select of the TPM chip on its SPI bus"
-       default 0
-       depends on SPI_TPM
+	int "Chip Select of the TPM chip on its SPI bus"
+	default 0
+	depends on SPI_TPM

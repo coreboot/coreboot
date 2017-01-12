@@ -77,7 +77,7 @@ int ps8640_init(uint8_t bus, uint8_t chip)
 
 	mdelay(50);
 
-	/**
+	/*
 	 * The Manufacturer Command Set (MCS) is a device dependent interface
 	 * intended for factory programming of the display module default
 	 * parameters. Once the display module is configured, the MCS shall be

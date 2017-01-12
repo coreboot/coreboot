@@ -34,7 +34,7 @@ static struct spi_flash *spi_flash_info;
  *
  * read SPI 62854 7db7: 10416 us, 3089 KB/s, 24.712 Mbps
  *
- * The important number is the last one. It should roughyly match your SPI
+ * The important number is the last one. It should roughly match your SPI
  * clock. If it doesn't, your driver might need a little tuning.
  */
 #define SPI_SPEED_DEBUG		0
@@ -43,7 +43,7 @@ static ssize_t spi_readat(const struct region_device *rd, void *b,
 				size_t offset, size_t size)
 {
 	struct stopwatch sw;
-	bool show = SPI_SPEED_DEBUG && size >= 4*KiB;
+	bool show = SPI_SPEED_DEBUG && size >= 4 * KiB;
 
 	if (show)
 		stopwatch_init(&sw);

@@ -450,11 +450,11 @@ static void phy_io_config(u32 channel,
 
 
 	/* speed setting */
-	if (sdram_params->ddr_freq < 400*MHz)
+	if (sdram_params->ddr_freq < 400 * MHz)
 		speed = 0x0;
-	else if (sdram_params->ddr_freq < 800*MHz)
+	else if (sdram_params->ddr_freq < 800 * MHz)
 		speed = 0x1;
-	else if (sdram_params->ddr_freq < 1200*MHz)
+	else if (sdram_params->ddr_freq < 1200 * MHz)
 		speed = 0x2;
 	else
 		speed = 0x3;
@@ -566,11 +566,7 @@ static int pctl_cfg(u32 channel,
 	/* PHY_DLL_RST_EN */
 	clrsetbits_le32(&denali_phy[957], 0x3 << 24, 0x2 << 24);
 
-	/*
-	 * FIXME:
-	 * need to care ERROR bit,
-	 * if 100ms do not get right status, return err
-	 */
+	/* FIXME: need to care ERROR bit */
 	stopwatch_init_msecs_expire(&sw, 100);
 	while (!(read32(&denali_ctl[203]) & (1 << 3))) {
 		if (stopwatch_expired(&sw))
@@ -1019,7 +1015,7 @@ void sdram_init(const struct rk3399_sdram_params *sdram_params)
 			udelay(10);
 
 		if (data_training(channel, sdram_params, PI_FULL_TRAINING)) {
-			printk(BIOS_DEBUG,
+			printk(BIOS_ERR,
 			       "SDRAM initialization failed, reset\n");
 			hard_reset();
 		}

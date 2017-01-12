@@ -252,7 +252,7 @@ int parse_bzImage_to_payload(const struct buffer *input,
 	}
 
 	unsigned long kernel_base = 0x100000;
-	if ((hdr->protocol_version >= 0x200) && (!hdr->loadflags)) {
+	if ((hdr->protocol_version < 0x200) || !(hdr->loadflags & 1)) {
 		kernel_base = 0x1000; /* zImage kernel */
 	}
 	/* kernel prefers an address, so listen */

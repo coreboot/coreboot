@@ -31,7 +31,7 @@
 #include <boot/coreboot_tables.h>
 #include <smbios.h>
 #include "ec.h"
-#include "onboard.h"
+#include <variant/onboard.h>
 #include <soc/gpio.h>
 #include <bootstate.h>
 #include <vendorcode/google/chromeos/chromeos.h>
@@ -129,13 +129,16 @@ static int int15_handler(void)
 static void mainboard_init(device_t dev)
 {
 	mainboard_ec_init();
+#if IS_ENABLED(CONFIG_BOARD_GOOGLE_NINJA)
+	lan_init();
+#endif
 }
 
 static int mainboard_smbios_data(device_t dev, int *handle,
 				 unsigned long *current)
 {
 	int len = 0;
-
+#ifdef BOARD_TRACKPAD_NAME
 	len += smbios_write_type41(
 		current, handle,
 		BOARD_TRACKPAD_NAME,            /* name */
@@ -144,7 +147,8 @@ static int mainboard_smbios_data(device_t dev, int *handle,
 		BOARD_TRACKPAD_I2C_ADDR,        /* bus */
 		0,                              /* device */
 		0);                             /* function */
-
+#endif
+#ifdef BOARD_TOUCHSCREEN_NAME
 	len += smbios_write_type41(
 		current, handle,
 		BOARD_TOUCHSCREEN_NAME,         /* name */
@@ -153,7 +157,7 @@ static int mainboard_smbios_data(device_t dev, int *handle,
 		BOARD_TOUCHSCREEN_I2C_ADDR,     /* bus */
 		0,                              /* device */
 		0);                             /* function */
-
+#endif
 	return len;
 }
 

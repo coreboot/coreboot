@@ -1,3 +1,0 @@
-Category: half
-ROM protocol: SPI
-Flashrom support: y

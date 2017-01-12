@@ -95,14 +95,6 @@ config VGA_BIOS_FILE
 	string
 	default "../intel/cpu/baytrail/vbios/Vga.dat" if VGA_BIOS
 
-config FSP_BAYTRAIL_GFX_INIT
-	default n
-	bool
-	help
-	  Enabling this option will activate graphics init code. With this init,
-	  the graphic power gate registers will be initialized before
-	  VBIOS is executed.
-
 config CPU_MICROCODE_HEADER_FILES
 	string
 	default "../intel/cpu/baytrail/microcode/M0130673322.h ../intel/cpu/baytrail/microcode/M0130679901.h ../intel/cpu/baytrail/microcode/M0230672228.h"

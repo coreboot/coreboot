@@ -65,76 +65,6 @@ Scope (\_SB)
 
 Scope (\_SB.I2C1)
 {
-	Device (ATPB)
-	{
-		Name (_HID, "ATML0000")
-		Name (_DDN, "Atmel Touchpad Bootloader")
-		Name (_UID, 1)
-		Name (ISTP, 1) /* Touchpad */
-
-		Name (_CRS, ResourceTemplate()
-		{
-			I2cSerialBus (
-				0x25,                     // SlaveAddress
-				ControllerInitiated,      // SlaveMode
-				400000,                   // ConnectionSpeed
-				AddressingMode7Bit,       // AddressingMode
-				"\\_SB.I2C1",             // ResourceSource
-			)
-			Interrupt (ResourceConsumer, Edge, ActiveLow)
-			{
-				BOARD_TRACKPAD_IRQ
-			}
-		})
-
-		Method (_STA)
-		{
-			If (LEqual (\S1EN, 1)) {
-				Return (0xF)
-			} Else {
-				Return (0x0)
-			}
-		}
-
-		/* Allow device to power off in S0 */
-		Name (_S0W, 4)
-	}
-
-	Device (ATPA)
-	{
-		Name (_HID, "ATML0000")
-		Name (_DDN, "Atmel Touchpad")
-		Name (_UID, 2)
-		Name (ISTP, 1) /* Touchpad */
-
-		Name (_CRS, ResourceTemplate()
-		{
-			I2cSerialBus (
-				0x4b,                     // SlaveAddress
-				ControllerInitiated,      // SlaveMode
-				400000,                   // ConnectionSpeed
-				AddressingMode7Bit,       // AddressingMode
-				"\\_SB.I2C1",             // ResourceSource
-			)
-			Interrupt (ResourceConsumer, Edge, ActiveLow)
-			{
-				BOARD_TRACKPAD_IRQ
-			}
-		})
-
-		Method (_STA)
-		{
-			If (LEqual (\S1EN, 1)) {
-				Return (0xF)
-			} Else {
-				Return (0x0)
-			}
-		}
-
-		/* Allow device to power off in S0 */
-		Name (_S0W, 4)
-	}
-
 	Device (ETPA)
 	{
 		Name (_HID, "ELAN0000")
@@ -145,11 +75,11 @@ Scope (\_SB.I2C1)
 		Name (_CRS, ResourceTemplate()
 		{
 			I2cSerialBus (
-				0x15,                     // SlaveAddress
-				ControllerInitiated,      // SlaveMode
-				400000,                   // ConnectionSpeed
-				AddressingMode7Bit,       // AddressingMode
-				"\\_SB.I2C1",             // ResourceSource
+				BOARD_TRACKPAD_I2C_ADDR,	// SlaveAddress
+				ControllerInitiated,		// SlaveMode
+				400000,				// ConnectionSpeed
+				AddressingMode7Bit,		// AddressingMode
+				"\\_SB.I2C1",			// ResourceSource
 			)
 			Interrupt (ResourceConsumer, Edge, ActiveLow)
 			{

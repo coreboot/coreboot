@@ -57,7 +57,7 @@ ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smm.c
 
 ramstage-y += placeholders.c
 ramstage-y += i2c.c
-ramstage-$(CONFIG_FSP_BAYTRAIL_GFX_INIT) += gfx.c
+ramstage-y += gfx.c
 
 CPPFLAGS_common += -I$(src)/soc/intel/fsp_baytrail/include
 CPPFLAGS_common += -I$(src)/soc/intel/fsp_baytrail/fsp

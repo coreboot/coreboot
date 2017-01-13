@@ -2,7 +2,7 @@
 
 # rebase.sh - rebase helper script
 #
-# Copyright 2015 Google Inc.
+# Copyright 2015, 2017 Google Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
 #
 
 # Adapt to your remote branch:
-BRANCH="cros/chromeos-2016.05"
+BRANCH="origin/master"
 
 # When pulling in patches from another tree from a gerrit repository,
 # do the following at the end of a larger cherry-pick series:
@@ -26,9 +26,31 @@ BRANCH="cros/chromeos-2016.05"
 # Alternatively, you can run util/gitconfig/rebase.sh after every
 # individual cherry-pick.
 
+# use $0 --cros to add a stub BUG/BRANCH/TEST block
+
 commit_message() {
 	git log -n 1 | grep "^    " | cut -c5-
 }
+
+ORIGIN_HOST=$( commit_message |grep "^Reviewed-on: " |head -1 |cut -d/ -f3 )
+case "${ORIGIN_HOST}" in
+	review.coreboot.org)
+		BRANCH="origin/master"
+		MESSAGE_PREFIX="UPSTREAM: "
+		;;
+	chromium-review.googlesource.com)
+		BRANCH="cros/chromeos-2016.05"
+		MESSAGE_PREFIX=""
+		;;
+esac
+
+# lines must be backwards due to tac(1)
+SPLICE_CMD=""
+if test "$1" = "--cros"; then
+	if test -z "$( commit_message |egrep '^(BUG|TEST)=')"; then
+		SPLICE_CMD='print "\nTEST=none\nBRANCH=none\nBUG=none\n"'
+	fi
+fi
 
 CHID=$( commit_message | grep -i "^Change-Id: I" )
 CID=$( git log -n1 --grep "^$CHID$" --pretty=%H $BRANCH )
@@ -37,9 +59,11 @@ GUID="$(git config user.name) <$(git config user.email)>"
 # TBD: Don't add Original- to empty lines, and possibly make script more
 # solid for commits with an unexpected order of meta data lines.
 
-commit_message | tac | awk '/^$/ {
-		if (end==0)
-			print "Original-Commit-Id: '"$CID"'\nSigned-off-by: '"$GUID"'";
+(printf "${MESSAGE_PREFIX}"; commit_message) | tac | awk '/^$/ {
+		if (end==0) {
+			print "Original-Commit-Id: '"${CID}"'\nSigned-off-by: '"${GUID}"'";
+			'"${SPLICE_CMD}"'
+		}
 		end=1
 	}; {
 		if (end==0)

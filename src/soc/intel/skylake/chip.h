@@ -205,6 +205,7 @@ struct soc_intel_skylake_config {
 
 	/* Camera */
 	u8 Cio2Enable;
+	u8 SaImguEnable;
 
 	/* eMMC and SD */
 	u8 ScsEmmcEnabled;

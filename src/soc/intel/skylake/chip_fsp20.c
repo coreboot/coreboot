@@ -174,6 +174,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	       sizeof(params->SerialIoDevMode));
 
 	params->PchCio2Enable = config->Cio2Enable;
+	params->SaImguEnable = config->SaImguEnable;
 	params->Heci3Enabled = config->Heci3Enabled;
 
 	params->LogoPtr = config->LogoPtr;
@@ -186,7 +187,6 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->PchPmLanWakeFromDeepSx = config->WakeConfigPcieWakeFromDeepSx;
 
 	params->PchLanEnable = config->EnableLan;
-	params->PchCio2Enable = config->Cio2Enable;
 	params->SataSalpSupport = config->SataSalpSupport;
 	params->SsicPortEnable = config->SsicPortEnable;
 	params->ScsEmmcEnabled = config->ScsEmmcEnabled;

@@ -32,6 +32,7 @@
 #include <libpayload.h>
 
 #define I8042_CMD_DIS_KB     0xad
+#define POWER_BUTTON         0x90
 
 struct layout_maps {
 	const char *country;
@@ -254,6 +255,9 @@ int keyboard_getchar(void)
 			}
 		}
 	}
+
+	if (ch == 0x5e)
+		ret = POWER_BUTTON;
 
 	return ret;
 }

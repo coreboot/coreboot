@@ -49,6 +49,7 @@ int benchmark()
 	}
 	char *compressed_data = malloc(bufsize);
 	if (!compressed_data) {
+		free(data);
 		fprintf(stderr, "out of memory\n");
 		return 1;
 	}
@@ -64,6 +65,8 @@ int benchmark()
 		comp_func_ptr comp = compression_function(algo->type);
 		if (comp == NULL) {
 			printf("no handler associated with algorithm\n");
+			free(data);
+			free(compressed_data);
 			return 1;
 		}
 
@@ -80,6 +83,8 @@ int benchmark()
 			bufsize, outsize,
 			t_e.tv_sec - t_s.tv_sec);
 	}
+	free(data);
+	free(compressed_data);
 	return 0;
 }
 

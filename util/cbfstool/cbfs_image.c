@@ -1150,13 +1150,22 @@ static int cbfs_payload_make_elf(struct buffer *buff, uint32_t arch)
 				       segs[i].len);
 		} else if (segs[i].type == PAYLOAD_SEGMENT_ENTRY) {
 			break;
+		} else {
+			ERROR("unknown ELF segment type\n");
+			goto out;
 		}
 
+		if (!name) {
+			ERROR("out of memory\n");
+			goto out;
+		}
 
 		if (elf_writer_add_section(ew, &shdr, &tbuff, name)) {
 			ERROR("Unable to add ELF section: %s\n", name);
+			free(name);
 			goto out;
 		}
+		free(name);
 
 		if (empty_sz != 0) {
 			struct buffer b;
@@ -1168,10 +1177,16 @@ static int cbfs_payload_make_elf(struct buffer *buff, uint32_t arch)
 			shdr.sh_addr = segs[i].load_addr + segs[i].len;
 			shdr.sh_size = empty_sz;
 			name = strdup(".empty");
-			if (elf_writer_add_section(ew, &shdr, &b, name)) {
-				ERROR("Unable to add ELF section: %s\n", name);
+			if (!name) {
+				ERROR("out of memory\n");
 				goto out;
 			}
+			if (elf_writer_add_section(ew, &shdr, &b, name)) {
+				ERROR("Unable to add ELF section: %s\n", name);
+				free(name);
+				goto out;
+			}
+			free(name);
 		}
 	}
 

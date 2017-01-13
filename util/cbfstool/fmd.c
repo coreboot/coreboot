@@ -289,7 +289,7 @@ static void print_with_prefix(const struct flashmap_descriptor *tree,
 	if (tree->list_len) {
 		puts(":");
 
-		char child_prefix[strlen(pre) + 1];
+		char child_prefix[strlen(pre) + 2];
 		strcpy(child_prefix, pre);
 		strcat(child_prefix, "\t");
 		fmd_foreach_child(each, tree)

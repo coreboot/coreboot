@@ -41,4 +41,10 @@ config MAX_CPUS
 	int
 	default 8
 
+config INCLUDE_NHLT_BLOBS
+	bool "Include blobs for audio."
+	select NHLT_DMIC_2CH
+	select NHLT_DMIC_4CH
+	select NHLT_MAX98927
+	select NHLT_RT5663
 endif

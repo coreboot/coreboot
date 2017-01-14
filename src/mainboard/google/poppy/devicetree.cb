@@ -185,6 +185,9 @@ chip soc/intel/skylake
 	register "speed_shift_enable" = "1"
 	register "tdp_pl2_override" = "7"
 
+	# Use default SD card detect GPIO configuration
+	register "sdcard_cd_gpio_default" = "GPP_G7"
+
 	device cpu_cluster 0 on
 		device lapic 0 on end
 	end

@@ -59,6 +59,7 @@ config CPU_SPECIFIC_OPTIONS
 	select TSC_CONSTANT_RATE
 	select TSC_SYNC_MFENCE
 	select UDELAY_TSC
+	select ACPI_NHLT
 
 config MAINBOARD_USES_FSP2_0
 	bool
@@ -233,6 +234,18 @@ config NHLT_SSM4567
 	default n
 	help
 	  Include DSP firmware settings for ssm4567 smart amplifier.
+
+config NHLT_RT5663
+	bool
+	default n
+	help
+	  Include DSP firmware settings for rt5663 headset codec.
+
+config NHLT_MAX98927
+	bool
+	default n
+	help
+	  Include DSP firmware settings for max98927 amplifier.
 
 config SKIP_FSP_CAR
 	bool "Skip cache as RAM setup in FSP"

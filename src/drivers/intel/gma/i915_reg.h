@@ -62,7 +62,7 @@
 #define GCFGC	0xf0 /* 915+ only */
 #define   GC_LOW_FREQUENCY_ENABLE	(1 << 7)
 #define   GC_DISPLAY_CLOCK_190_200_MHZ	(0 << 4)
-#define   GC_DISPLAY_CLOCK_333_MHZ	(4 << 4)
+#define   GC_DISPLAY_CLOCK_333_320_MHZ	(4 << 4)
 #define   GC_DISPLAY_CLOCK_MASK		(7 << 4)
 #define   GM45_GC_RENDER_CLOCK_MASK	(0xf << 0)
 #define   GM45_GC_RENDER_CLOCK_266_MHZ	(8 << 0)

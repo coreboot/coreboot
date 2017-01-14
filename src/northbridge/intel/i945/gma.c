@@ -47,6 +47,8 @@
 
 #define BASE_FREQUENCY 100000
 
+#define DEFAULT_BLC_PWM 180
+
 static int gtt_setup(u8 *mmiobase)
 {
 	unsigned long PGETBL_save;
@@ -134,8 +136,6 @@ static int intel_gma_init_lvds(struct northbridge_intel_i945_config *conf,
 		write32(mmiobase + RENDER_RING_BASE + i, 0);
 	for (i = 0; i < 0x20; i += 4)
 		write32(mmiobase + FENCE_REG_965_0 + i, 0);
-	write32(mmiobase + PP_ON_DELAYS, 0);
-	write32(mmiobase + PP_OFF_DELAYS, 0);
 
 	/* Disable VGA.  */
 	write32(mmiobase + VGACNTRL, VGA_DISP_DISABLE);
@@ -291,9 +291,6 @@ static int intel_gma_init_lvds(struct northbridge_intel_i945_config *conf,
 
 	write32(mmiobase + DSPSIZE(0), (hactive - 1) | ((vactive - 1) << 16));
 	write32(mmiobase + DSPPOS(0), 0);
-
-	/* Backlight init. */
-	write32(mmiobase + BLC_PWM_CTL, conf->gpu_backlight);
 
 	edid.bytes_per_line = (edid.bytes_per_line + 63) & ~63;
 	write32(mmiobase + DSPADDR(0), 0);
@@ -571,6 +568,62 @@ static int probe_edid(u8 *mmiobase, u8 slave)
 	return 1;
 }
 
+static u32 get_cdclk(struct device *const dev)
+{
+	u16 gcfgc = pci_read_config16(dev, GCFGC);
+
+	if (gcfgc & GC_LOW_FREQUENCY_ENABLE) {
+		return 133333333;
+	} else {
+		switch (gcfgc & GC_DISPLAY_CLOCK_MASK) {
+		case GC_DISPLAY_CLOCK_333_320_MHZ:
+			return 320000000;
+		default:
+		case GC_DISPLAY_CLOCK_190_200_MHZ:
+			return 200000000;
+		}
+	}
+}
+
+static u32 freq_to_blc_pwm_ctl(struct device *const dev, u16 pwm_freq)
+{
+	u32 blc_mod;
+
+	/* Set duty cycle to 100% due to use of legacy backlight control */
+	blc_mod = get_cdclk(dev) / (32 * pwm_freq);
+	return BLM_LEGACY_MODE | ((blc_mod / 2) << 17) | ((blc_mod / 2) << 1);
+}
+
+
+static void panel_setup(u8 *mmiobase, struct device *const dev)
+{
+	const struct northbridge_intel_i945_config *const conf = dev->chip_info;
+
+	u32 reg32;
+
+	/* Set up Panel Power On Delays */
+	reg32 = (conf->gpu_panel_power_up_delay & 0x1fff) << 16;
+	reg32 |= (conf->gpu_panel_power_backlight_on_delay & 0x1fff);
+	write32(mmiobase + PP_ON_DELAYS, reg32);
+
+	/* Set up Panel Power Off Delays */
+	reg32 = (conf->gpu_panel_power_down_delay & 0x1fff) << 16;
+	reg32 |= (conf->gpu_panel_power_backlight_off_delay & 0x1fff);
+	write32(mmiobase + PP_OFF_DELAYS, reg32);
+
+	/* Set up Panel Power Cycle Delay */
+	reg32 = (get_cdclk(dev) / 20000 - 1) << PP_REFERENCE_DIVIDER_SHIFT;
+	reg32 |= conf->gpu_panel_power_cycle_delay & 0x1f;
+	write32(mmiobase + PP_DIVISOR, reg32);
+
+	/* Backlight init. */
+	if (conf->pwm_freq)
+		write32(mmiobase + BLC_PWM_CTL, freq_to_blc_pwm_ctl(dev,
+							conf->pwm_freq));
+	else
+		write32(mmiobase + BLC_PWM_CTL, freq_to_blc_pwm_ctl(dev,
+							DEFAULT_BLC_PWM));
+}
 
 static void gma_func0_init(struct device *dev)
 {
@@ -605,6 +658,10 @@ static void gma_func0_init(struct device *dev)
 			);
 
 		int err;
+
+		if (IS_ENABLED(CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GM))
+			panel_setup(mmiobase, dev);
+
 		/* probe if VGA is connected and always run */
 		/* VGA init if no LVDS is connected */
 		if (!probe_edid(mmiobase, 3) || probe_edid(mmiobase, 2))

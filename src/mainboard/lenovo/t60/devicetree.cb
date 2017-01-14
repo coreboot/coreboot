@@ -22,7 +22,12 @@ chip northbridge/intel/i945
 
 	register "gpu_hotplug" = "0x00000220"
 	register "gpu_lvds_use_spread_spectrum_clock" = "1"
-	register "gpu_backlight" = "0x1280128"
+	register "pwm_freq" = "275"
+	register "gpu_panel_power_up_delay" = "250"
+	register "gpu_panel_power_backlight_on_delay" = "2380"
+	register "gpu_panel_power_down_delay" = "250"
+	register "gpu_panel_power_backlight_off_delay" = "2380"
+	register "gpu_panel_power_cycle_delay" = "2"
 
 	device cpu_cluster 0 on
 		chip cpu/intel/socket_mFCPGA478

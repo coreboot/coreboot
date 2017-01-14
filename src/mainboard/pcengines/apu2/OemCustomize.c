@@ -69,32 +69,11 @@ static const PCIe_PORT_DESCRIPTOR PortList [] = {
 	}
 };
 
-static const PCIe_DDI_DESCRIPTOR DdiList [] = {
-	/* DP0 to HDMI0/DP */
-	{
-		0,
-		PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 8, 11),
-		PCIE_DDI_DATA_INITIALIZER (ConnectorTypeDP, Aux1, Hdp1)
-	},
-	/* DP1 to FCH */
-	{
-		0,
-		PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 12, 15),
-		PCIE_DDI_DATA_INITIALIZER (ConnectorTypeDP, Aux2, Hdp2)
-	},
-	/* DP2 to HDMI1/DP */
-	{
-		DESCRIPTOR_TERMINATE_LIST,
-		PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 16, 19),
-		PCIE_DDI_DATA_INITIALIZER (ConnectorTypeCrt, Aux3, Hdp3)
-	},
-};
-
 static const PCIe_COMPLEX_DESCRIPTOR PcieComplex = {
 	.Flags        = DESCRIPTOR_TERMINATE_LIST,
 	.SocketId     = 0,
 	.PciePortList = PortList,
-	.DdiLinkList  = DdiList
+	.DdiLinkList  = NULL,
 };
 
 /*---------------------------------------------------------------------------------------*/

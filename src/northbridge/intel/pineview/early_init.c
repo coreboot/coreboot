@@ -25,6 +25,7 @@
 #include <string.h>
 #include <northbridge/intel/pineview/pineview.h>
 #include <northbridge/intel/pineview/chip.h>
+#include <pc80/mc146818rtc.h>
 
 #define LPC PCI_DEV(0, 0x1f, 0)
 #define D0F0 PCI_DEV(0, 0, 0)
@@ -45,7 +46,16 @@ static void early_graphics_setup(void)
 	const struct northbridge_intel_pineview_config *config = d0f0->chip_info;
 
 	pci_write_config8(D0F0, DEVEN, BOARD_DEVEN);
-	pci_write_config16(D0F0, GGC, 0x130); /* 1MB GTT 8MB UMA */
+
+	/* vram size from cmos option */
+	if (get_option(&reg8, "gfx_uma_size") != CB_SUCCESS)
+		reg8 = 0;	/* 0 for 8MB */
+	/* make sure no invalid setting is used */
+	if (reg8 > 6)
+		reg8 = 0;
+	/* Select 1M GTT */
+	pci_write_config16(PCI_DEV(0, 0x00, 0), GGC, (1 << 8)
+			   | ((reg8 + 3) << 4));
 
 	printk(BIOS_SPEW, "Set GFX clocks...");
 	reg16 = MCHBAR16(MCH_GCFGC);

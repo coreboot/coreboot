@@ -90,18 +90,6 @@ uintptr_t mcall_set_timer(uint64_t when)
 	return 0;
 }
 
-uintptr_t mcall_dev_req(sbi_device_message *m)
-{
-	die("mcall_dev_req is currently not implemented");
-	return 0;
-}
-
-uintptr_t mcall_dev_resp(void)
-{
-	die("mcall_dev_resp is currently not implemented");
-	return 0;
-}
-
 void hls_init(uint32_t hart_id)
 {
 	query_result res;

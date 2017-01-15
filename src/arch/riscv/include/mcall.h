@@ -23,6 +23,20 @@
 /* We save 37 registers, currently. */
 #define MENTRY_FRAME_SIZE (HLS_SIZE + 37 * 8)
 
+#define MCALL_HART_ID			 0
+#define MCALL_NUM_HARTS			 1
+#define MCALL_QUERY_MEMORY		 2
+#define MCALL_CONSOLE_PUTCHAR		 3
+#define MCALL_CONSOLE_GETCHAR		 4
+#define MCALL_SEND_IPI			 6
+#define MCALL_CLEAR_IPI			 7
+#define MCALL_SHUTDOWN			 8
+#define MCALL_SET_TIMER			 9
+#define MCALL_REMOTE_SFENCE_VM		10
+#define MCALL_REMOTE_FENCE_I		11
+#define MCALL_CONFIG_STRING_BASE	12
+#define MCALL_CONFIG_STRING_SIZE	13
+
 #ifndef __ASSEMBLER__
 
 #include <arch/encoding.h>

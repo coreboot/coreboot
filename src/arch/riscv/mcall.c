@@ -34,6 +34,8 @@
 #include <string.h>
 #include <vm.h>
 
+int mcalldebug; // set this interactively for copious debug.
+
 uintptr_t mcall_query_memory(uintptr_t id, memory_block_info *info)
 {
 	if (id == 0) {
@@ -74,9 +76,17 @@ uintptr_t mcall_shutdown(void)
 	return 0;
 }
 
-uintptr_t mcall_set_timer(unsigned long long when)
+uintptr_t mcall_set_timer(uint64_t when)
 {
-	printk(BIOS_DEBUG, "mcall_set_timer is currently not implemented, ignoring\n");
+	uint64_t *timecmp = HLS()->timecmp;
+
+	if (mcalldebug)
+		printk(BIOS_SPEW,
+		       "hart %d: HLS %p: mcall timecmp@%p to 0x%llx\n",
+		       HLS()->hart_id, HLS(), timecmp, when);
+	*timecmp = when;
+	clear_csr(mip, MIP_STIP);
+	set_csr(mie, MIP_MTIP);
 	return 0;
 }
 
@@ -94,8 +104,19 @@ uintptr_t mcall_dev_resp(void)
 
 void hls_init(uint32_t hart_id)
 {
+	query_result res;
+
+	printk(BIOS_SPEW, "hart %d: HLS is %p\n", hart_id, HLS());
 	memset(HLS(), 0, sizeof(*HLS()));
 	HLS()->hart_id = hart_id;
+
+	res = query_config_string(configstring(), "rtc{addr");
+	HLS()->time = (void *)get_uint(res);
+	res = query_config_string(configstring(), "core{0{0{timecmp");
+	HLS()->timecmp = (void *)get_uint(res);
+
+	printk(BIOS_SPEW, "Time is %p and timecmp is %p\n",
+	       HLS()->time, HLS()->timecmp);
 }
 
 uintptr_t mcall_console_putchar(uint8_t ch)

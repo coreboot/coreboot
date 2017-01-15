@@ -15,6 +15,8 @@
  */
 
 #include <bits.h>
+#include <mcall.h>
+
 .macro restore_regs
     # restore x registers
     LOAD  x1,1*REGBYTES(a0)
@@ -100,16 +102,17 @@
   # get faulting insn, if it wasn't a fetch-related trap
   li x5,-1
   STORE x5,36*REGBYTES(x2)
-1:
+
   .endm
 
+.globl estack
   .text
   .global  supervisor_trap_entry
 supervisor_trap_entry:
     csrw mscratch, sp
     # load in the top of the machine stack
-    li sp, 0x80FFF0 - 64
-    1:addi sp,sp,-320
+    la	sp, _estack
+    addi sp,sp,-MENTRY_FRAME_SIZE
     save_tf
     move  a0,sp
     jal trap_handler
@@ -127,7 +130,8 @@ trap_entry:
 
   # TODO: Use the old stack pointer (plus an offset) for exceptions in machine
   # mode, to avoid overwriting stack data.
-  li sp, 0x8000fff0
+    la	sp, _estack
+    addi sp,sp,-MENTRY_FRAME_SIZE
 
   save_tf
   move  a0,sp

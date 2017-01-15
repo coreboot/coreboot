@@ -16,6 +16,7 @@
  */
 
 #include <arch/encoding.h>
+#include <mcall.h>
 
 .section ".text._start", "ax", %progbits
 
@@ -30,19 +31,20 @@ _start:
 	# and the stack must be page-aligned.
 	la sp, _estack
 
+	# poison the stack
+	la t1, _stack
+	li t0, 0xdeadbeef
+	sd t0, 0(t1)
+
 	# make room for HLS and initialize it
-	addi sp, sp, -64 // MENTRY_FRAME_SIZE
+	addi sp, sp, -HLS_SIZE
+
 	// Once again, the docs and toolchain disagree.
 	// Rather than get fancy I'll just lock this down
 	// until it all stabilizes.
 	//csrr a0, mhartid
 	csrr a0, 0xf14
 	call hls_init
-
-	# poison the stack
-	la t1, _stack
-	li t0, 0xdeadbeef
-	sd t0, 0(t1)
 
 	la t0, trap_entry
 	csrw mtvec, t0

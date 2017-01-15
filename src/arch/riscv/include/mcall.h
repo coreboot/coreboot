@@ -16,35 +16,43 @@
 #ifndef _MCALL_H
 #define _MCALL_H
 
+// NOTE: this is the size of hls_t below. A static_assert would be
+// nice to have.
+#define HLS_SIZE 64
+
+/* We save 37 registers, currently. */
+#define MENTRY_FRAME_SIZE (HLS_SIZE + 37 * 8)
+
+#ifndef __ASSEMBLER__
+
 #include <arch/encoding.h>
 #include <atomic.h>
 #include <stdint.h>
 
-#define HLS_SIZE 64
-#define MENTRY_FRAME_SIZE HLS_SIZE
-
 typedef struct {
-  unsigned long base;
-  unsigned long size;
-  unsigned long node_id;
+	unsigned long base;
+	unsigned long size;
+	unsigned long node_id;
 } memory_block_info;
 
 typedef struct {
-  unsigned long dev;
-  unsigned long cmd;
-  unsigned long data;
-  unsigned long sbi_private_data;
+	unsigned long dev;
+	unsigned long cmd;
+	unsigned long data;
+	unsigned long sbi_private_data;
 } sbi_device_message;
 
 
 typedef struct {
-  sbi_device_message* device_request_queue_head;
-  unsigned long device_request_queue_size;
-  sbi_device_message* device_response_queue_head;
-  sbi_device_message* device_response_queue_tail;
+	sbi_device_message *device_request_queue_head;
+	unsigned long device_request_queue_size;
+	sbi_device_message *device_response_queue_head;
+	sbi_device_message *device_response_queue_tail;
 
-  int hart_id;
-  int ipi_pending;
+	int hart_id;
+	int ipi_pending;
+	uint64_t *timecmp;
+	uint64_t *time;
 } hls_t;
 
 #define MACHINE_STACK_TOP() ({ \
@@ -66,5 +74,7 @@ uintptr_t mcall_clear_ipi(void);
 uintptr_t mcall_send_ipi(uintptr_t recipient);
 uintptr_t mcall_shutdown(void);
 void hls_init(uint32_t hart_id); // need to call this before launching linux
+
+#endif // __ASSEMBLER__
 
 #endif

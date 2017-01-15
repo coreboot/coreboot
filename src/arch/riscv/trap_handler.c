@@ -64,9 +64,6 @@ void handle_supervisor_call(trapframe *tf) {
 			returnValue = mcall_shutdown();
 			break;
 		case SBI_ECALL_SET_TIMER:
-			printk(BIOS_DEBUG,
-			       "Setting timer to %p (current time is %p)...\n",
-			       (void *)arg0, (void *)rdtime());
 			returnValue = mcall_set_timer(arg0);
 			break;
 		case SBI_ECALL_QUERY_MEMORY:
@@ -152,7 +149,7 @@ static void gettimer(void)
 static void interrupt_handler(trapframe *tf)
 {
 	uint64_t cause = tf->cause & ~0x8000000000000000ULL;
-	uint32_t ssip, ssie;
+	uint32_t msip, ssie;
 
 	switch (cause) {
 	case IRQ_M_TIMER:
@@ -183,10 +180,11 @@ static void interrupt_handler(trapframe *tf)
 
 		if (!timecmp)
 			gettimer();
+		//printk(BIOS_SPEW, "timer interrupt\n");
 		*timecmp = (uint64_t) -1;
-		ssip = read_csr(sip);
-		ssip |= SIP_STIP;
-		write_csr(sip, ssip);
+		msip = read_csr(mip);
+		msip |= SIP_STIP;
+		write_csr(mip, msip);
 		break;
 	default:
 		printk(BIOS_EMERG, "======================================\n");

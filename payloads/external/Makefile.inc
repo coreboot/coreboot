@@ -86,7 +86,8 @@ payloads/external/SeaBIOS/seabios/out/bios.bin.elf seabios: $(DOTCONFIG)
 			CONFIG_SEABIOS_VGA_COREBOOT=$(CONFIG_SEABIOS_VGA_COREBOOT) \
 			CONFIG_DRIVERS_UART_8250IO=$(CONFIG_DRIVERS_UART_8250IO) \
 			CONFIG_CONSOLE_SERIAL=$(CONFIG_CONSOLE_SERIAL) \
-			CONFIG_TTYS0_BASE=$(CONFIG_TTYS0_BASE)
+			CONFIG_TTYS0_BASE=$(CONFIG_TTYS0_BASE) \
+			CONFIG_SEABIOS_DEBUG_LEVEL=$(CONFIG_SEABIOS_DEBUG_LEVEL)
 
 payloads/external/SeaBIOS/seabios/out/vgabios.bin: seabios
 payloads/external/SeaBIOS/seabios/.config: payloads/external/SeaBIOS/seabios/out/bios.bin.elf

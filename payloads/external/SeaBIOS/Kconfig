@@ -94,4 +94,14 @@ config PAYLOAD_VGABIOS_FILE
 	depends on SEABIOS_VGA_COREBOOT
 	default "payloads/external/SeaBIOS/seabios/out/vgabios.bin"
 
+config SEABIOS_DEBUG_LEVEL
+	prompt "SeaBIOS debug level (verbosity)"
+	default DEFAULT_CONSOLE_LOGLEVEL
+	int
+	help
+	  The higher the number, the more verbose SeaBIOS will be. The range is
+	  not well defined but the typical values range from 0 to about 9 inclusive
+	  where 0 disables all output. Set this value to -1 to use SeaBIOS' default.
+
+	  The default is to use coreboot's loglevel.
 endif

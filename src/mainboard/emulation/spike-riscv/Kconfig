@@ -41,10 +41,6 @@ config MAINBOARD_VENDOR
 	string
 	default "UCB"
 
-config DRAM_SIZE_MB
-	int
-	default 32768
-
 # Memory map for qemu riscv
 #
 # 0x0000_0000: jump instruction (by qemu)

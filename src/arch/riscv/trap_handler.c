@@ -31,42 +31,34 @@ void handle_supervisor_call(trapframe *tf) {
 	uintptr_t arg1 = tf->gpr[11]; /* a1 */
 	uintptr_t returnValue;
 	switch(call) {
-		case SBI_ECALL_HART_ID:
+		case MCALL_HART_ID:
 			printk(BIOS_DEBUG, "Getting hart id...\n");
 			returnValue = read_csr(0xf14);//mhartid);
 			break;
-		case SBI_ECALL_NUM_HARTS:
+		case MCALL_NUM_HARTS:
 			/* TODO: parse the hardware-supplied config string and
 			   return the correct value */
 			returnValue = 1;
 			break;
-		case SBI_ECALL_CONSOLE_PUT:
+		case MCALL_CONSOLE_PUTCHAR:
 			returnValue = mcall_console_putchar(arg0);
 			break;
-		case SBI_ECALL_SEND_DEVICE_REQUEST:
-			printk(BIOS_DEBUG, "Sending device request...\n");
-			returnValue = mcall_dev_req((sbi_device_message*) arg0);
-			break;
-		case SBI_ECALL_RECEIVE_DEVICE_RESPONSE:
-			printk(BIOS_DEBUG, "Getting device response...\n");
-			returnValue = mcall_dev_resp();
-			break;
-		case SBI_ECALL_SEND_IPI:
+		case MCALL_SEND_IPI:
 			printk(BIOS_DEBUG, "Sending IPI...\n");
 			returnValue = mcall_send_ipi(arg0);
 			break;
-		case SBI_ECALL_CLEAR_IPI:
+		case MCALL_CLEAR_IPI:
 			printk(BIOS_DEBUG, "Clearing IPI...\n");
 			returnValue = mcall_clear_ipi();
 			break;
-		case SBI_ECALL_SHUTDOWN:
+		case MCALL_SHUTDOWN:
 			printk(BIOS_DEBUG, "Shutting down...\n");
 			returnValue = mcall_shutdown();
 			break;
-		case SBI_ECALL_SET_TIMER:
+		case MCALL_SET_TIMER:
 			returnValue = mcall_set_timer(arg0);
 			break;
-		case SBI_ECALL_QUERY_MEMORY:
+		case MCALL_QUERY_MEMORY:
 			printk(BIOS_DEBUG, "Querying memory, CPU #%lld...\n", arg0);
 			returnValue = mcall_query_memory(arg0, (memory_block_info*) arg1);
 			break;

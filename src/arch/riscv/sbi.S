@@ -16,7 +16,7 @@
 
 #define __ASSEMBLY__
 #include <arch/encoding.h>
-#include <arch/sbi.h>
+#include <mcall.h>
 
 .section ".text.sbi", "ax", %progbits
 
@@ -33,26 +33,26 @@ sbi_page:
 	.skip 0x800
 
 	/* -2048: size_t sbi_hart_id(void); */
-	li a7, SBI_ECALL_HART_ID
+	li a7, MCALL_HART_ID
 	ecall
 	jr ra
 	.align 4
 
 	/* -2032: size_t sbi_num_harts(void); */
-	li a7, SBI_ECALL_NUM_HARTS
+	li a7, MCALL_NUM_HARTS
 	ecall
 	jr ra
 	.align 4
 
 	/* -2016: unsigned long sbi_query_memory(unsigned long id,
 			memory_block_info *p); */
-	li a7, SBI_ECALL_QUERY_MEMORY
+	li a7, MCALL_QUERY_MEMORY
 	ecall
 	jr ra
 	.align 4
 
 	/* -2000: int sbi_console_putchar(uint8_t ch); */
-	li a7, SBI_ECALL_CONSOLE_PUT
+	li a7, MCALL_CONSOLE_PUTCHAR
 	ecall
 	jr ra
 	.align 4
@@ -80,13 +80,13 @@ sbi_page:
 	.align 4
 
 	/* -1904: void sbi_shutdown(void); */
-	li a7, SBI_ECALL_SHUTDOWN
+	li a7, MCALL_SHUTDOWN
 	ecall
 	jr ra
 	.align 4
 
 	/* -1888: void sbi_set_timer(unsigned long long stime_value); */
-	li a7, SBI_ECALL_SET_TIMER
+	li a7, MCALL_SET_TIMER
 	ecall
 	jr ra
 	.align 4

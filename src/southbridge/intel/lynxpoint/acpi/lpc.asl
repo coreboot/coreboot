@@ -224,7 +224,7 @@ Device (LPCB)
 
 	#include "acpi/superio.asl"
 
-#ifdef ENABLE_TPM
+#if IS_ENABLED(CONFIG_LPC_TPM)
 	Device (TPM)		// Trusted Platform Module
 	{
 		Name(_HID, EISAID("IFX0102"))

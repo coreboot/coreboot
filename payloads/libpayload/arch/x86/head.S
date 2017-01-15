@@ -2,6 +2,7 @@
  * This file is part of the libpayload project.
  *
  * Copyright (C) 2008 Advanced Micro Devices, Inc.
+ * Copyright (C) 2017 Patrick Rudolph <siro@das-labor.org>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -88,6 +89,48 @@ _init:
 	movl %esp, %eax
 	movl $_stack, %esp
 	pushl %eax
+
+	/* Enable special x86 functions if present. */
+	pushl %eax
+	pushl %ebx
+	pushl %ecx
+	pushl %edx
+
+	movl $0, %eax
+	cpuid
+	/* Test if CPUID(eax=1) is available. */
+	test %eax, %eax
+	je cpuid_done
+
+	/* Get CPU features. */
+	movl $1, %eax
+	cpuid
+
+cpuid_fpu:
+	/* Test if x87 FPU is present */
+	test $1, %edx
+	je cpuid_sse
+
+	fninit
+	movl %cr0, %eax
+	andl $0xFFFFFFFB, %eax	/* clear EM */
+	orl $0x00000022, %eax	/* set MP, NE */
+	movl %eax, %cr0
+
+cpuid_sse:
+	/* Test if SSE is available */
+	test $0x02000000, %edx
+	je cpuid_done
+
+	movl %cr4, %eax
+	orl $0x00000600, %eax	/* set OSFXSR, OSXMMEXCPT */
+	movl %eax, %cr4
+
+cpuid_done:
+	popl %edx
+	popl %ecx
+	popl %ebx
+	popl %eax
 
 	/* Let's rock. */
 	call start_main

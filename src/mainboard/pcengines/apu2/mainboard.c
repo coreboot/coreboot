@@ -191,6 +191,38 @@ static void mainboard_enable(device_t dev)
 }
 
 /*
+ * We will stuff a modified version of the first NICs (BDF 1:0.0) MAC address
+ * into the smbios serial number location.
+ */
+const char *smbios_mainboard_serial_number(void)
+{
+	static char serial[10];
+	device_t nic_dev;
+	uintptr_t bar10;
+	u32 mac_addr = 0;
+	int i;
+
+	nic_dev = dev_find_slot(1, PCI_DEVFN(0, 0));
+	if ((serial[0] != 0) || !nic_dev)
+		return serial;
+
+	/* Read in the last 3 bytes of NIC's MAC address. */
+	bar10 = pci_read_config32(nic_dev, 0x10);
+	bar10 &= 0xFFFE0000;
+	bar10 += 0x5400;
+	for (i = 3; i < 6; i++) {
+		mac_addr <<= 8;
+		mac_addr |= read8((u8 *)bar10 + i);
+	}
+	mac_addr &= 0x00FFFFFF;
+	mac_addr /= 4;
+	mac_addr -= 64;
+
+	snprintf(serial, sizeof(serial), "%d", mac_addr);
+	return serial;
+}
+
+/*
  * We will stuff the memory size into the smbios sku location.
  */
 const char *smbios_mainboard_sku(void)

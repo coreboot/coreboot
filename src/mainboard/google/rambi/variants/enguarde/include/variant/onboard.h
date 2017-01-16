@@ -31,6 +31,4 @@
 #define BOARD_CODEC_IRQ                 GPIO_S5_DED_IRQ(CODEC_IRQ_OFFSET)
 #define BOARD_ALS_IRQ                   GPIO_S0_DED_IRQ(ALS_IRQ_OFFSET)
 
-#define BOARD_ALS_I2C_ADDR         	0x44
-
 #endif

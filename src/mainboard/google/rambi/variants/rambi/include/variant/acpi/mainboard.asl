@@ -17,8 +17,8 @@
 /* Elan trackpad */
 #include <mainboard/google/rambi/acpi/trackpad_elan.asl>
 
-/* Amtel trackpad */
-#include <mainboard/google/rambi/acpi/trackpad_amtel.asl>
+/* Atmel trackpad */
+#include <mainboard/google/rambi/acpi/trackpad_atmel.asl>
 
-/* Amtel touchscreen trackpad */
-#include <mainboard/google/rambi/acpi/touchscreen_amtel.asl>
+/* Atmel touchscreen trackpad */
+#include <mainboard/google/rambi/acpi/touchscreen_atmel.asl>

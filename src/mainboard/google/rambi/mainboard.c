@@ -129,7 +129,7 @@ static int int15_handler(void)
 static void mainboard_init(device_t dev)
 {
 	mainboard_ec_init();
-#if IS_ENABLED(CONFIG_BOARD_GOOGLE_NINJA)
+#if IS_ENABLED(CONFIG_BOARD_GOOGLE_NINJA) || IS_ENABLED(CONFIG_BOARD_GOOGLE_SUMO)
 	lan_init();
 #endif
 }

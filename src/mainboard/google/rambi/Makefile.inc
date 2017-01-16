@@ -24,6 +24,7 @@ smm-$(CONFIG_HAVE_SMI_HANDLER) += mainboard_smi.c
 ramstage-y += variants/$(VARIANT_DIR)/gpio.c
 
 ramstage-$(CONFIG_BOARD_GOOGLE_NINJA) += variants/$(VARIANT_DIR)/lan.c
+ramstage-$(CONFIG_BOARD_GOOGLE_SUMO) += variants/$(VARIANT_DIR)/lan.c
 
 subdirs-y += variants/$(VARIANT_DIR)
 

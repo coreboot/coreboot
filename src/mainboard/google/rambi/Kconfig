@@ -26,28 +26,80 @@ config MAINBOARD_DIR
 
 config VARIANT_DIR
 	string
+	default "banjo" if BOARD_GOOGLE_BANJO
+	default "candy" if BOARD_GOOGLE_CANDY
+	default "clapper" if BOARD_GOOGLE_CLAPPER
 	default "enguarde" if BOARD_GOOGLE_ENGUARDE
+	default "glimmer" if BOARD_GOOGLE_GLIMMER
+	default "gnawty" if BOARD_GOOGLE_GNAWTY
+	default "heli" if BOARD_GOOGLE_HELI
+	default "kip" if BOARD_GOOGLE_KIP
 	default "ninja" if BOARD_GOOGLE_NINJA
+	default "orco" if BOARD_GOOGLE_ORCO
+	default "quawks" if BOARD_GOOGLE_QUAWKS
 	default "rambi" if BOARD_GOOGLE_RAMBI
+	default "squawks" if BOARD_GOOGLE_SQUAWKS
+	default "sumo" if BOARD_GOOGLE_SUMO
+	default "swanky" if BOARD_GOOGLE_SWANKY
+	default "winky" if BOARD_GOOGLE_WINKY
 
 config MAINBOARD_PART_NUMBER
 	string
+	default "Banjo" if BOARD_GOOGLE_BANJO
+	default "Candy" if BOARD_GOOGLE_CANDY
+	default "Clapper" if BOARD_GOOGLE_CLAPPER
 	default "Enguarde" if BOARD_GOOGLE_ENGUARDE
+	default "Glimmer" if BOARD_GOOGLE_GLIMMER
+	default "Gnawty" if BOARD_GOOGLE_GNAWTY
+	default "Heli" if BOARD_GOOGLE_HELI
+	default "Kip" if BOARD_GOOGLE_KIP
 	default "Ninja" if BOARD_GOOGLE_NINJA
+	default "Orco" if BOARD_GOOGLE_ORCO
+	default "Quawks" if BOARD_GOOGLE_QUAWKS
 	default "Rambi" if BOARD_GOOGLE_RAMBI
+	default "Squawks" if BOARD_GOOGLE_SQUAWKS
+	default "Sumo" if BOARD_GOOGLE_SUMO
+	default "Swanky" if BOARD_GOOGLE_SWANKY
+	default "Winky" if BOARD_GOOGLE_WINKY
 
 config GBB_HWID
 	string
 	depends on CHROMEOS
+	default "BANJO TEST A-A 8843" if BOARD_GOOGLE_BANJO
+	default "CANDY TEST A-A 3347" if BOARD_GOOGLE_CANDY
+	default "CLAPPER TEST A-A 7705" if BOARD_GOOGLE_CLAPPER
 	default "ENGUARDE TEST A-A 0128" if BOARD_GOOGLE_ENGUARDE
+	default "GLIMMER TEST 8028" if BOARD_GOOGLE_GLIMMER
+	default "GNAWTY TEST A-A 3347" if BOARD_GOOGLE_GNAWTY
+	default "HELI TEST A-A 7705" if BOARD_GOOGLE_HELI
+	default "KIP TEST A-A 0128" if BOARD_GOOGLE_KIP
 	default "NINJA TEST A-A 0653" if BOARD_GOOGLE_NINJA
+	default "ORCO TEST 8028" if BOARD_GOOGLE_ORCO
+	default "QUAWKS TEST A-A 3347" if BOARD_GOOGLE_QUAWKS
 	default "RAMBI TEST A-A 0128" if BOARD_GOOGLE_RAMBI
+	default "SQUAWKS TEST A-A 7705" if BOARD_GOOGLE_SQUAWKS
+	default "SUMO TEST A-A 8843" if BOARD_GOOGLE_SUMO
+	default "SWANKY TEST A-A 0653" if BOARD_GOOGLE_SWANKY
+	default "WINKY TEST 0128" if BOARD_GOOGLE_WINKY
 
 config DEVICETREE
 	string
+	default "variants/banjo/devicetree.cb" if BOARD_GOOGLE_BANJO
+	default "variants/candy/devicetree.cb" if BOARD_GOOGLE_CANDY
+	default "variants/clapper/devicetree.cb" if BOARD_GOOGLE_CLAPPER
 	default "variants/enguarde/devicetree.cb" if BOARD_GOOGLE_ENGUARDE
+	default "variants/glimmer/devicetree.cb" if BOARD_GOOGLE_GLIMMER
+	default "variants/gnawty/devicetree.cb" if BOARD_GOOGLE_GNAWTY
+	default "variants/heli/devicetree.cb" if BOARD_GOOGLE_HELI
+	default "variants/kip/devicetree.cb" if BOARD_GOOGLE_KIP
 	default "variants/ninja/devicetree.cb" if BOARD_GOOGLE_NINJA
+	default "variants/orco/devicetree.cb" if BOARD_GOOGLE_ORCO
+	default "variants/quawks/devicetree.cb" if BOARD_GOOGLE_QUAWKS
 	default "variants/rambi/devicetree.cb" if BOARD_GOOGLE_RAMBI
+	default "variants/squawks/devicetree.cb" if BOARD_GOOGLE_SQUAWKS
+	default "variants/sumo/devicetree.cb" if BOARD_GOOGLE_SUMO
+	default "variants/swanky/devicetree.cb" if BOARD_GOOGLE_SWANKY
+	default "variants/winky/devicetree.cb" if BOARD_GOOGLE_WINKY
 
 config EC_GOOGLE_CHROMEEC_BOARDNAME
 	string

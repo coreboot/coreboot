@@ -68,7 +68,7 @@ static void rehide_me() {
 		printf("Re-hiding MEI device...");
 		fd2 = *(uint32_t *)(rcba + FD2);
 		*(uint32_t *)(rcba + FD2) = fd2 | 0x2;
-		printf("done, ");
+		printf("done\n");
 	}
 }
 
@@ -231,12 +231,12 @@ static void dump_me_info() {
 		exit(1);
 	}
 
-	dev = pci_me_interface_scan(&name);
-	if (!dev) {
+	if (activate_me()) {
 		exit(1);
 	}
 
-	if (activate_me()) {
+	dev = pci_me_interface_scan(&name);
+	if (!dev) {
 		exit(1);
 	}
 

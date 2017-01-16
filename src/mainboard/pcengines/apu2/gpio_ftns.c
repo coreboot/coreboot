@@ -16,6 +16,7 @@
 #include <stdint.h>
 #include <arch/io.h>
 #include <southbridge/amd/cimx/cimx_util.h>
+#include "FchPlatform.h"
 #include "gpio_ftns.h"
 
 void configure_gpio(uintptr_t base_addr, u32 iomux_gpio, u8 iomux_ftn, u32 gpio, u32 setting)
@@ -31,4 +32,17 @@ void configure_gpio(uintptr_t base_addr, u32 iomux_gpio, u8 iomux_ftn, u32 gpio,
 	bdata &= 0x07;
 	bdata |= setting; /* set direction and data value */
 	*memptr = bdata;
+}
+
+int get_spd_offset(void)
+{
+	u8 index = 0;
+	/* One SPD file contains all 4 options, determine which index to
+	 * read here, then call into the standard routines.
+	 */
+	u8 *gpio_bank0_ptr = (u8 *)(ACPI_MMIO_BASE + GPIO_BANK0_BASE);
+	if (*(gpio_bank0_ptr + (0x40 << 2) + 2) & BIT0) index |= BIT0;
+	if (*(gpio_bank0_ptr + (0x41 << 2) + 2) & BIT0) index |= BIT1;
+
+	return index;
 }

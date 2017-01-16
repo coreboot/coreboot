@@ -22,6 +22,7 @@
 #include "heapManager.h"
 #include "FchPlatform.h"
 #include "cbfs.h"
+#include "gpio_ftns.h"
 #if IS_ENABLED(CONFIG_HUDSON_IMC_FWM)
 #include "imc.h"
 #endif
@@ -125,13 +126,12 @@ static AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr)
 	return AGESA_SUCCESS;
 }
 
-
 static AGESA_STATUS board_ReadSpd_from_cbfs(UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
 	AGESA_STATUS Status = AGESA_UNSUPPORTED;
 #ifdef __PRE_RAM__
 	AGESA_READ_SPD_PARAMS	*info = ConfigPtr;
-	int index = 0;
+	u8 index = get_spd_offset();
 
 	if (info->MemChannelId > 0)
 		return AGESA_UNSUPPORTED;
@@ -140,14 +140,7 @@ static AGESA_STATUS board_ReadSpd_from_cbfs(UINT32 Func, UINT32 Data, VOID *Conf
 	if (info->DimmId != 0)
 		return AGESA_UNSUPPORTED;
 
-	/* One SPD file contains all 4 options, determine which index to read here, then call into the standard routines*/
-
-	u8 *gpio_bank0_ptr = (u8 *)(ACPI_MMIO_BASE + GPIO_BANK0_BASE);
-	if (*(gpio_bank0_ptr + (0x40 << 2) + 2) & BIT0) index |= BIT0;
-	if (*(gpio_bank0_ptr + (0x41 << 2) + 2) & BIT0) index |= BIT1;
-
-	printk(BIOS_INFO, "Reading SPD index %d\n", index);
-
+	/* Read index 0, first SPD_SIZE bytes of spd.bin file. */
 	if (read_spd_from_cbfs((u8*)info->Buffer, index) < 0)
 		die("No SPD data\n");
 

@@ -17,6 +17,7 @@
 #define GPIO_FTNS_H
 
 void configure_gpio(uintptr_t base_addr, u32 iomux_gpio, u8 iomux_ftn, u32 gpio, u32 setting);
+int get_spd_offset(void);
 
 #define IOMUX_OFFSET    0xD00
 #define GPIO_OFFSET     0x1500

@@ -28,9 +28,11 @@
 #include <northbridge/amd/pi/00730F01/pci_devs.h>
 #include <southbridge/amd/common/amd_pci_util.h>
 #include <superio/nuvoton/nct5104d/nct5104d.h>
-
+#include <smbios.h>
+#include <string.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
+#include "gpio_ftns.h"
 
 #define SPD_SIZE  128
 #define PM_RTC_CONTROL	    0x56
@@ -186,6 +188,22 @@ static void mainboard_enable(device_t dev)
 
 	/* Initialize the PIRQ data structures for consumption */
 	pirq_setup();
+}
+
+/*
+ * We will stuff the memory size into the smbios sku location.
+ */
+const char *smbios_mainboard_sku(void)
+{
+	static char sku[5];
+	if (sku[0] != 0)
+		return sku;
+
+	if (!get_spd_offset())
+		snprintf(sku, sizeof(sku), "2 GB");
+	else
+		snprintf(sku, sizeof(sku), "4 GB");
+	return sku;
 }
 
 struct chip_operations mainboard_ops = {

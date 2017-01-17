@@ -64,11 +64,19 @@ else
 	false
 endif
 endif
-ifneq ($(CONFIG_SEABIOS_DEBUG_LEVEL),-1)
-	echo "CONFIG_DEBUG_LEVEL=$(CONFIG_SEABIOS_DEBUG_LEVEL)" >> seabios/.config
-endif
-#	This shows how to force a previously set .config option *off*
-#	echo "# CONFIG_SMBIOS is not set" >> seabios/.config
+#
+# Project specific configuration for optimized SeaBIOS
+#
+	echo "# CONFIG_BOOTSPLASH is not set" >> seabios/.config
+	echo "# CONFIG_MEGASAS is not set" >> seabios/.config
+	echo "# CONFIG_FLOPPY is not set" >> seabios/.config
+	echo "# CONFIG_PS2PORT is not set" >> seabios/.config
+	echo "# CONFIG_USB_UHCI is not set" >> seabios/.config
+	echo "# CONFIG_USB_OHCI is not set" >> seabios/.config
+	echo "# CONFIG_LPT is not set" >> seabios/.config
+
+	# This shows how to force a previously set .config option *off*
+	#echo "# CONFIG_SMBIOS is not set" >> seabios/.config
 	$(MAKE) -C seabios olddefconfig OUT=out/
 
 build: config

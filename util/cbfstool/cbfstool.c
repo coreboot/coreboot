@@ -30,6 +30,7 @@
 #include "fit.h"
 #include "partitioned_file.h"
 #include <commonlib/fsp.h>
+#include <commonlib/endian.h>
 
 #define SECTION_WITH_FIT_TABLE	"BOOTBLOCK"
 
@@ -445,8 +446,8 @@ static int cbfstool_convert_raw(struct buffer *buffer,
 
 	decompressed_size = buffer->size;
 	if (param.precompression) {
-		param.compression = le32toh(((uint32_t *)buffer->data)[0]);
-		decompressed_size = le32toh(((uint32_t *)buffer->data)[1]);
+		param.compression = read_le32(buffer->data);
+		decompressed_size = read_le32(buffer->data + sizeof(uint32_t));
 		compressed_size = buffer->size - 8;
 		compressed = malloc(compressed_size);
 		if (!compressed)

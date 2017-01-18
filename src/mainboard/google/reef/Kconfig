@@ -44,6 +44,9 @@ config DRIVERS_I2C_DA7219
 config DRIVERS_I2C_GENERIC
 	default y
 
+config DRIVERS_I2C_HID
+	default y
+
 config DRIVERS_I2C_WACOM
 	default y
 

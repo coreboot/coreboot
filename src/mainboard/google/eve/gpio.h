@@ -206,7 +206,7 @@ static const struct pad_config gpio_table[] = {
 /* SD_WP */		PAD_CFG_NC(GPP_G7),
 
 /* BATLOW# */		PAD_CFG_NF(GPD0, NONE, DEEP, NF1),
-/* ACPRESENT */		PAD_CFG_NF(GPD1, NONE, DEEP, NF1),
+/* ACPRESENT */		PAD_CFG_NF(GPD1, 20K_PU, DEEP, NF1),
 /* LAN_WAKE# */		PAD_CFG_NF(GPD2, NONE, DEEP, NF1), /* EC_PCH_WAKE_L */
 /* PWRBTN# */		PAD_CFG_NF(GPD3, 20K_PU, DEEP, NF1),
 /* SLP_S3# */		PAD_CFG_NF(GPD4, NONE, DEEP, NF1),

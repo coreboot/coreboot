@@ -3027,7 +3027,7 @@ void fam15EnableTrainingMode(struct MCTStatStruc *pMCTstat,
 		/* Disable training mode */
 		uint8_t lane;
 		uint8_t dimm;
-		uint16_t max_cdd_we_delta;
+		int16_t max_cdd_we_delta;
 		int16_t cdd_trwtto_we_delta;
 		uint8_t receiver;
 		uint8_t lane_count;

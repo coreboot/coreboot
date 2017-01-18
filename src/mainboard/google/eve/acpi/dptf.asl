@@ -29,12 +29,12 @@
 
 #define DPTF_TSR2_SENSOR_ID	3
 #define DPTF_TSR2_SENSOR_NAME	"DRAM"
-#define DPTF_TSR2_PASSIVE	50
+#define DPTF_TSR2_PASSIVE	55
 #define DPTF_TSR2_CRITICAL	75
 
 #define DPTF_TSR3_SENSOR_ID	4
 #define DPTF_TSR3_SENSOR_NAME	"eMMC"
-#define DPTF_TSR3_PASSIVE	50
+#define DPTF_TSR3_PASSIVE	55
 #define DPTF_TSR3_CRITICAL	75
 
 #undef DPTF_ENABLE_FAN_CONTROL
@@ -46,7 +46,6 @@ Name (CHPS, Package () {
 	Package () { 0, 0, 0, 0, 24, 0x800, "mA", 0 },	/* 2000mA */
 	Package () { 0, 0, 0, 0, 16, 0x400, "mA", 0 },	/* 1000mA */
 	Package () { 0, 0, 0, 0, 8, 0x200, "mA", 0 },	/* 500mA */
-	Package () { 0, 0, 0, 0, 0, 0x000, "mA", 0 },	/* 0mA */
 })
 
 Name (DTRT, Package () {

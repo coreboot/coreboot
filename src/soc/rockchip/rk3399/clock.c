@@ -181,6 +181,13 @@ enum {
 	CLK_TSADC_DIV_CON_MASK		= 0x3ff,
 	CLK_TSADC_DIV_CON_SHIFT		= 0,
 
+	/* CLKSEL_CON44 */
+	CLK_PCLK_EDP_PLL_SEL_MASK	= 1,
+	CLK_PCLK_EDP_PLL_SEL_SHIFT	= 15,
+	CLK_PCLK_EDP_PLL_SEL_CPLL	= 0,
+	CLK_PCLK_EDP_DIV_CON_MASK	= 0x3f,
+	CLK_PCLK_EDP_DIV_CON_SHIFT	= 8,
+
 	/* CLKSEL_CON47 & CLKSEL_CON48 */
 	ACLK_VOP_PLL_SEL_MASK		= 0x3,
 	ACLK_VOP_PLL_SEL_SHIFT		= 6,
@@ -836,4 +843,22 @@ int rkclk_was_watchdog_reset(void)
 {
 	/* Bits 5 and 4 are "second" and "first" global watchdog reset. */
 	return read32(&cru_ptr->glb_rst_st) & 0x30;
+}
+
+void rkclk_configure_edp(unsigned int hz)
+{
+	int src_clk_div;
+
+	src_clk_div = CPLL_HZ / hz;
+	assert((src_clk_div - 1 <= 63) && (src_clk_div * hz == CPLL_HZ));
+
+	write32(&cru_ptr->clksel_con[44],
+		RK_CLRSETBITS(CLK_PCLK_EDP_PLL_SEL_MASK <<
+			      CLK_PCLK_EDP_PLL_SEL_SHIFT |
+			      CLK_PCLK_EDP_DIV_CON_MASK <<
+			      CLK_PCLK_EDP_DIV_CON_SHIFT,
+			      CLK_PCLK_EDP_PLL_SEL_CPLL <<
+			      CLK_PCLK_EDP_PLL_SEL_SHIFT |
+			      (src_clk_div - 1) <<
+			      CLK_PCLK_EDP_DIV_CON_SHIFT));
 }

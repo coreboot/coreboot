@@ -46,6 +46,7 @@
 #if CONFIG_ARCH_X86
 #include <cpu/x86/mtrr.h>
 #endif
+#include <commonlib/helpers.h>
 
 static struct lb_header *lb_table_init(unsigned long addr)
 {
@@ -348,10 +349,9 @@ static struct lb_mainboard *lb_mainboard(struct lb_header *header)
 	mainboard = (struct lb_mainboard *)rec;
 	mainboard->tag = LB_TAG_MAINBOARD;
 
-	mainboard->size = (sizeof(*mainboard) +
+	mainboard->size = ALIGN_UP(sizeof(*mainboard) +
 		strlen(mainboard_vendor) + 1 +
-		strlen(mainboard_part_number) + 1 +
-		3) & ~3;
+		strlen(mainboard_part_number) + 1, 8);
 
 	mainboard->vendor_idx = 0;
 	mainboard->part_number_idx = strlen(mainboard_vendor) + 1;
@@ -402,7 +402,7 @@ static void lb_strings(struct lb_header *header)
 		rec = (struct lb_string *)lb_new_record(header);
 		len = strlen(strings[i].string);
 		rec->tag = strings[i].tag;
-		rec->size = (sizeof(*rec) + len + 1 + 3) & ~3;
+		rec->size = ALIGN_UP(sizeof(*rec) + len + 1, 8);
 		memcpy(rec->string, strings[i].string, len+1);
 	}
 

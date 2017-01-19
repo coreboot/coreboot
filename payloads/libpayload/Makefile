@@ -81,14 +81,6 @@ DOXYGEN_OUTPUT_DIR := doxygen
 
 all: real-all
 
-# in addition to the dependency below, create the file if it doesn't exist
-# to silence stupid warnings about a file that would be generated anyway.
-$(if $(wildcard .xcompile),,$(eval $(shell $(top)/../../util/xcompile/xcompile $(XGCCPATH) > .xcompile)))
-
-.xcompile: $(top)/../../util/xcompile/xcompile
-	$< $(XGCCPATH) > $@.tmp
-	\mv -f $@.tmp $@ 2> /dev/null
-
 ifeq ($(INNER_SCANBUILD),y)
 CC:=$(CC_real)
 HOSTCC:=$(CC_real) --hostcc
@@ -100,8 +92,6 @@ endif
 include $(srck)/Makefile
 
 include $(HAVE_DOTCONFIG)
-
-include .xcompile
 
 ARCHDIR-$(CONFIG_LP_ARCH_ARM)     := arm
 ARCHDIR-$(CONFIG_LP_ARCH_ARM64)   := arm64
@@ -138,7 +128,7 @@ ifeq ($(strip $(HAVE_DOTCONFIG)),)
 NOCOMPILE:=1
 endif
 ifneq ($(MAKECMDGOALS),)
-ifneq ($(filter %config distclean,$(MAKECMDGOALS)),)
+ifneq ($(filter %config %clean,$(MAKECMDGOALS)),)
 NOCOMPILE:=1
 endif
 endif
@@ -148,6 +138,16 @@ include $(TOPLEVEL)/Makefile.inc
 real-all: config
 
 else
+
+# in addition to the dependency below, create the file if it doesn't exist
+# to silence stupid warnings about a file that would be generated anyway.
+$(if $(wildcard .xcompile)$(NOCOMPILE),,$(eval $(shell $(top)/../../util/xcompile/xcompile $(XGCCPATH) > .xcompile)))
+
+.xcompile: $(top)/../../util/xcompile/xcompile
+	$< $(XGCCPATH) > $@.tmp
+	\mv -f $@.tmp $@ 2> /dev/null
+
+-include .xcompile
 
 ifneq ($(INNER_SCANBUILD),y)
 ifeq ($(CONFIG_LP_COMPILER_LLVM_CLANG),y)

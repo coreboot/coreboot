@@ -13,7 +13,11 @@
 ## GNU General Public License for more details.
 ##
 
+ifneq ($(NOCOMPILE),1)
 GIT:=$(shell [ -e "$(top)/.git" ] && command -v git)
+else
+GIT:=
+endif
 
 #######################################################################
 # normalize Kconfig variables in a central place

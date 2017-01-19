@@ -20,6 +20,7 @@ srck := $(src)/../../util/kconfig
 coreinfo_obj := $(src)/build
 objk := $(src)/build/util/kconfig
 
+ifeq ($(filter %clean,$(MAKECMDGOALS)),)
 export KERNELVERSION      := 0.1.0
 export KCONFIG_AUTOHEADER := $(coreinfo_obj)/config.h
 export KCONFIG_AUTOCONFIG := $(coreinfo_obj)/auto.conf
@@ -128,6 +129,12 @@ $(coreinfo_obj)/config.h:
 
 $(shell mkdir -p $(coreinfo_obj) $(objk)/lxdialog $(KCONFIG_SPLITCONFIG))
 
+include $(srck)/Makefile
+
+.PHONY: $(PHONY) prepare
+
+else
+
 clean:
 	rm -rf build/*.elf build/*.o .xcompile
 
@@ -135,6 +142,5 @@ distclean: clean
 	rm -rf build lpbuild
 	rm -f .config* lp.config*
 
-include $(srck)/Makefile
-
-.PHONY: $(PHONY) prepare clean distclean
+.PHONY: clean distclean
+endif

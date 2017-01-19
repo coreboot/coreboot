@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2013, 2014 Vladimir Serbinenko
+ * Copyright (C) 2017 secunet Security Networks AG
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,7 +60,7 @@ static size_t generate_vbt(const struct i915_gpu_controller_info *const conf,
 	genfeat->flexaim = 1;
 	genfeat->download_ext_vbt = 1;
 	genfeat->enable_ssc = conf->use_spread_spectrum_clock;
-	genfeat->ssc_freq = !conf->link_frequency_270_mhz;
+	genfeat->ssc_freq = IS_ENABLED(CONFIG_INTEL_GMA_SSC_ALTERNATE_REF);
 	genfeat->rsvd10 = 0x4;
 	genfeat->legacy_monitor_detect = 1;
 	genfeat->int_crt_support = 1;

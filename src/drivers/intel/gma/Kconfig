@@ -2,6 +2,7 @@
 ## This file is part of the coreboot project.
 ##
 ## Copyright 2013 Google Inc.
+## Copyright 2016-2017 secunet Security Networks AG
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -36,6 +37,21 @@ config INTEL_INT15
 config INTEL_GMA_ACPI
 	bool
 	default n
+
+config INTEL_GMA_SSC_ALTERNATE_REF
+	bool
+	default n
+	help
+	  Set when the SSC reference clock for LVDS runs at a different fre-
+	  quency than the general display reference clock.
+
+	  To be set by northbridge or mainboard Kconfig.  For most platforms,
+	  there is no choice, i.e. for i945 and gm45 the SSC reference always
+	  differs from the display reference clock (i945: 66Mhz SSC vs. 48MHz
+	  DREF; gm45: 100MHz SSC vs. 96Mhz DREF), for Nehalem and newer, it's
+	  the same frequency for SSC/non-SSC (120MHz).  The only, currently
+	  supported platform with a choice seems to be Pineview, where the
+	  alternative is 100MHz vs. the default 96MHz.
 
 config GFX_GMA_CPU
 	string

@@ -19,42 +19,41 @@
 #include <delay.h>
 #include <device/device.h>
 #include <string.h>
-#include <device/pci_rom.h>
+#include <device/pci.h>
 
 #include "i915.h"
 #include "intel_bios.h"
 
-static size_t generate_vbt(const struct i915_gpu_controller_info *conf,
-		    void *vbt, const char *idstr)
+static size_t generate_vbt(const struct i915_gpu_controller_info *const conf,
+			   struct vbt_header *const head,
+			   const char *const idstr)
 {
-	struct vbt_header *head = vbt;
-	struct bdb_header *bdb_head;
-	struct bdb_general_features *genfeat;
 	u8 *ptr;
 
 	memset(head, 0, sizeof (*head));
 
-	memset(head->signature, ' ', sizeof(head->signature));
-	memcpy(head->signature, idstr, MIN(strlen(idstr),
-						sizeof(head->signature)));
+	memset(head->signature, ' ', sizeof (head->signature));
+	memcpy(head->signature, idstr,
+		MIN(strlen(idstr), sizeof (head->signature)));
 	head->version = 100;
 	head->header_size = sizeof (*head);
 	head->bdb_offset = sizeof (*head);
 
-	bdb_head = (struct bdb_header *) (head + 1);
+	struct bdb_header *const bdb_head = (struct bdb_header *)(head + 1);
 	memset(bdb_head, 0, sizeof (*bdb_head));
 	memcpy(bdb_head->signature, "BIOS_DATA_BLOCK ", 16);
 	bdb_head->version = 0xa8;
 	bdb_head->header_size = sizeof (*bdb_head);
 
-	ptr = (u8 *) (bdb_head + 1);
+	ptr = (u8 *)(bdb_head + 1);
 
 	ptr[0] = BDB_GENERAL_FEATURES;
-	ptr[1] = sizeof (*genfeat);
-	ptr[2] = sizeof (*genfeat) >> 8;
+	ptr[1] = sizeof (struct bdb_general_features);
+	ptr[2] = sizeof (struct bdb_general_features) >> 8;
 	ptr += 3;
 
-	genfeat = (struct bdb_general_features *) ptr;
+	struct bdb_general_features *const genfeat =
+		(struct bdb_general_features *)ptr;
 	memset(genfeat, 0, sizeof (*genfeat));
 	genfeat->panel_fitting = 3;
 	genfeat->flexaim = 1;
@@ -75,34 +74,32 @@ static size_t generate_vbt(const struct i915_gpu_controller_info *conf,
 }
 
 void
-generate_fake_intel_oprom(const struct i915_gpu_controller_info *conf,
-			  struct device *dev, const char *idstr)
+generate_fake_intel_oprom(const struct i915_gpu_controller_info *const conf,
+			  struct device *const dev, const char *const idstr)
 {
-		optionrom_header_t *oh = (void *)PCI_VGA_RAM_IMAGE_START;
-		optionrom_pcir_t *pcir;
-		size_t vbt_size;
-		size_t fake_oprom_size;
+	optionrom_header_t *const oh = (void *)PCI_VGA_RAM_IMAGE_START;
 
-		memset(oh, 0, 8192);
+	memset(oh, 0, 8192);
 
-		oh->signature = PCI_ROM_HDR;
-		oh->pcir_offset = 0x40;
-		oh->vbt_offset = 0x80;
+	oh->signature = PCI_ROM_HDR;
+	oh->pcir_offset = 0x40;
+	oh->vbt_offset = 0x80;
 
-		pcir = (void *)(PCI_VGA_RAM_IMAGE_START + 0x40);
-		pcir->signature = 0x52494350;	// PCIR
-		pcir->vendor = dev->vendor;
-		pcir->device = dev->device;
-		pcir->length = sizeof(*pcir);
-		pcir->revision = dev->class;
-		pcir->classcode[0] = dev->class;
-		pcir->classcode[1] = dev->class >> 8;
-		pcir->classcode[2] = dev->class >> 16;
-		pcir->indicator = 0x80;
+	optionrom_pcir_t *const pcir = (void *)((u8 *)oh + oh->pcir_offset);
+	pcir->signature = 0x52494350;	// PCIR
+	pcir->vendor = dev->vendor;
+	pcir->device = dev->device;
+	pcir->length = sizeof(*pcir);
+	pcir->revision = pci_read_config8(dev, PCI_CLASS_REVISION);
+	pcir->classcode[0] = dev->class;
+	pcir->classcode[1] = dev->class >> 8;
+	pcir->classcode[2] = dev->class >> 16;
+	pcir->indicator = 0x80;
 
-		vbt_size = generate_vbt (conf, (void *)(PCI_VGA_RAM_IMAGE_START + 0x80), idstr);
-		fake_oprom_size = (0x80 + vbt_size + 511) / 512;
-		oh->size = fake_oprom_size;
-		pcir->imagelength = fake_oprom_size;
-
+	const size_t vbt_size =
+		generate_vbt(conf, (void *)((u8 *)oh + oh->vbt_offset), idstr);
+	const size_t fake_oprom_size =
+		DIV_ROUND_UP(oh->vbt_offset + vbt_size, 512);
+	oh->size = fake_oprom_size;
+	pcir->imagelength = fake_oprom_size;
 }

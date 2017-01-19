@@ -203,8 +203,8 @@ static void gma_init_lvds(const struct northbridge_intel_gm45_config *info,
 	printk(BIOS_DEBUG, "Pixel N=%d, M1=%d, M2=%d, P1=%d\n",
 	       pixel_n, pixel_m1, pixel_m2, pixel_p1);
 	printk(BIOS_DEBUG, "Pixel clock %d kHz\n",
-		BASE_FREQUENCY * (5 * (pixel_m1 + 2) + (pixel_m2 + 2) /
-			(pixel_n + 2) / (pixel_p1 * pixel_p2)));
+		BASE_FREQUENCY * (5 * (pixel_m1 + 2) + (pixel_m2 + 2)) /
+			(pixel_n + 2) / (pixel_p1 * pixel_p2));
 
 	write32(mmio + LVDS,
 		(hpolarity << 20) | (vpolarity << 21)
@@ -479,8 +479,8 @@ static void gma_init_vga(const struct northbridge_intel_gm45_config *info,
 	printk(BIOS_SPEW, "Pixel N=%d, M1=%d, M2=%d, P1=%d, P2=%d\n",
 		pixel_n, pixel_m1, pixel_m2, pixel_p1, pixel_p2);
 	printk(BIOS_SPEW, "Pixel clock %d kHz\n",
-		BASE_FREQUENCY * (5 * (pixel_m1 + 2) + (pixel_m2 + 2) /
-			(pixel_n + 2) / (pixel_p1 * pixel_p2)));
+		BASE_FREQUENCY * (5 * (pixel_m1 + 2) + (pixel_m2 + 2)) /
+			(pixel_n + 2) / (pixel_p1 * pixel_p2));
 
 	mdelay(1);
 	write32(mmio + FP0(0), (pixel_n << 16)

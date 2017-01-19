@@ -30,16 +30,6 @@
 ## SUCH DAMAGE.
 ##
 
-# in addition to the dependency below, create the file if it doesn't exist
-# to silence stupid warnings about a file that would be generated anyway.
-$(if $(wildcard .xcompile),,$(eval $(shell util/xcompile/xcompile $(XGCCPATH) > .xcompile || rm -f .xcompile)))
-
-.xcompile: util/xcompile/xcompile
-	rm -f $@
-	$< $(XGCCPATH) > $@.tmp
-	\mv -f $@.tmp $@ 2> /dev/null
-	rm -f $@.tmp
-
 export top := $(CURDIR)
 export src := src
 export srck := $(top)/util/kconfig
@@ -138,6 +128,16 @@ real-all: config
 else
 
 include $(DOTCONFIG)
+
+# in addition to the dependency below, create the file if it doesn't exist
+# to silence stupid warnings about a file that would be generated anyway.
+$(if $(wildcard .xcompile)$(NOCOMPILE),,$(eval $(shell util/xcompile/xcompile $(XGCCPATH) > .xcompile || rm -f .xcompile)))
+
+.xcompile: util/xcompile/xcompile
+	rm -f $@
+	$< $(XGCCPATH) > $@.tmp
+	\mv -f $@.tmp $@ 2> /dev/null
+	rm -f $@.tmp
 
 -include .xcompile
 

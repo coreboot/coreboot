@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  */
 
-#define DPTF_CPU_PASSIVE	57
+#define DPTF_CPU_PASSIVE	80
 #define DPTF_CPU_CRITICAL	90
 #define DPTF_CPU_ACTIVE_AC0	90
 #define DPTF_CPU_ACTIVE_AC1	80
@@ -29,7 +29,7 @@
 
 #define DPTF_TSR1_SENSOR_ID	1
 #define DPTF_TSR1_SENSOR_NAME	"Ambient"
-#define DPTF_TSR1_PASSIVE	55
+#define DPTF_TSR1_PASSIVE	46
 #define DPTF_TSR1_CRITICAL	70
 
 #define DPTF_TSR2_SENSOR_ID	2
@@ -61,7 +61,7 @@ Name (DTRT, Package () {
 #endif
 
 	/* CPU Effect on Temp Sensor 1 */
-	Package () { \_SB.PCI0.TCPU, \_SB.DPTF.TSR1, 100, 550, 0, 0, 0, 0 },
+	Package () { \_SB.PCI0.TCPU, \_SB.DPTF.TSR1, 100, 80, 0, 0, 0, 0 },
 
 	/* CPU Effect on Temp Sensor 2 */
 	Package () { \_SB.PCI0.TCPU, \_SB.DPTF.TSR2, 100, 1200, 0, 0, 0, 0 },

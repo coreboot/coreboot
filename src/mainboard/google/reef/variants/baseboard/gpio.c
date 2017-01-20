@@ -58,8 +58,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPIO_174, UP_20K, DEEP, NF1), /* SDCARD_D1 */
 	PAD_CFG_NF(GPIO_175, UP_20K, DEEP, NF1), /* SDCARD_D2 */
 	PAD_CFG_NF(GPIO_176, UP_20K, DEEP, NF1), /* SDCARD_D3 */
-	/* Card detect is active LOW. Pull up by 20K */
-	PAD_CFG_NF(GPIO_177, UP_20K, DEEP, NF1), /* SDCARD_CD_N */
+	/* Card detect is active LOW with external pull up. */
+	PAD_CFG_NF(GPIO_177, NONE, DEEP, NF1), /* SDCARD_CD_N */
 	PAD_CFG_NF(GPIO_178, UP_20K, DEEP, NF1), /* SDCARD_CMD */
 	/* CLK feedback, internal signal, needs 20K pull down */
 	PAD_CFG_NF(GPIO_179, DN_20K, DEEP, NF1), /* SDCARD_CLK_FB */
@@ -288,7 +288,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI(GPIO_10, DN_20K, DEEP),	 /* Board phase enforcement */
 	PAD_CFG_GPI_SCI_LOW(GPIO_11, NONE, DEEP, EDGE_SINGLE), /* EC SCI  */
 	PAD_CFG_GPI(GPIO_12, UP_20K, DEEP),	 /* unused */
-	PAD_CFG_GPI_APIC_LOW(GPIO_13, UP_20K, DEEP), /* PEN_INT_ODL */
+	PAD_CFG_GPI_APIC_LOW(GPIO_13, NONE, DEEP), /* PEN_INT_ODL */
 	PAD_CFG_GPI_APIC_HIGH(GPIO_14, DN_20K, DEEP), /* FP_INT */
 	PAD_CFG_GPI_SCI_LOW(GPIO_15, NONE, DEEP, EDGE_SINGLE),	 /* TRACKPAD_INT_1V8_ODL */
 	PAD_CFG_GPI(GPIO_16, UP_20K, DEEP),	 /* unused */
@@ -299,7 +299,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI_APIC_LOW(GPIO_21, NONE, DEEP), /* Touch IRQ */
 	PAD_CFG_GPI_SCI_LOW(GPIO_22, NONE, DEEP, LEVEL), /* EC wake */
 	PAD_CFG_GPI(GPIO_23, UP_20K, DEEP),	 /* unused */
-	PAD_CFG_GPI(GPIO_24, UP_20K, DEEP),	 /* PEN_PDCT_ODL */
+	PAD_CFG_GPI(GPIO_24, NONE, DEEP),	 /* PEN_PDCT_ODL */
 	PAD_CFG_GPI(GPIO_25, UP_20K, DEEP),	 /* unused */
 	PAD_CFG_GPI(GPIO_26, UP_20K, DEEP),	 /* unused */
 	PAD_CFG_GPI(GPIO_27, UP_20K, DEEP),	 /* unused */

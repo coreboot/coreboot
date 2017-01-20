@@ -506,7 +506,7 @@
 #define GPIO_10_IRQ			0x6D
 #define GPIO_11_IRQ			0x6E
 #define GPIO_12_IRQ			0x6F
-#define GPIO_13_IRQ			0x6F
+#define GPIO_13_IRQ			0x70
 #define GPIO_14_IRQ			0x71
 #define GPIO_15_IRQ			0x72
 #define GPIO_16_IRQ			0x73

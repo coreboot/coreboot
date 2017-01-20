@@ -17,6 +17,7 @@ payloads/external/depthcharge/depthcharge/
 payloads/external/FILO/filo/
 payloads/external/GRUB2/grub2/
 payloads/external/SeaBIOS/seabios/
+payloads/external/tint/tint/
 payloads/external/U-Boot/u-boot/
 payloads/external/Memtest86Plus/memtest86plus/
 payloads/external/iPXE/ipxe/

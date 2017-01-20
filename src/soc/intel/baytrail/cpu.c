@@ -16,6 +16,7 @@
 #include <stdlib.h>
 #include <console/console.h>
 #include <cpu/cpu.h>
+#include <cpu/intel/common/common.h>
 #include <cpu/intel/microcode.h>
 #include <cpu/intel/turbo.h>
 #include <cpu/x86/cache.h>
@@ -54,6 +55,9 @@ static void baytrail_core_init(struct device *cpu)
 	 * block will just see it already enabled and move on. */
 	if (lapicid())
 		enable_turbo();
+
+	/* Set virtualization based on Kconfig option */
+	set_vmx();
 
 	/* Set core MSRs */
 	reg_script_run(core_msr_script);

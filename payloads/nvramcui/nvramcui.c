@@ -90,8 +90,9 @@ static void cmos_walk_options(struct cb_cmos_option_table *opttbl,
 		FIELD **fields, int numopts, int maxlength)
 {
 	struct cb_cmos_entries *option = first_cmos_entry(opttbl);
+	int i;
 
-	for (int i = 0; i < numopts; i++) {
+	for (i = 0; i < numopts; i++) {
 		while ((option->config == 'r') ||
 		       (strcmp("check_sum", (char *)option->name) == 0)) {
 			option = next_cmos_entry(option);
@@ -173,6 +174,7 @@ static void cmos_walk_options(struct cb_cmos_option_table *opttbl,
 int main(void)
 {
 	int ch, done;
+	int i;
 
 	/* coreboot data structures */
 	lib_get_sysinfo();
@@ -268,7 +270,7 @@ int main(void)
 
 	endwin();
 
-	for (int i = 0; i < numopts; i++) {
+	for (i = 0; i < numopts; i++) {
 		char *name = field_buffer(fields[2 * i], 0);
 		char *value = field_buffer(fields[2 * i + 1], 0);
 		char *ptr;

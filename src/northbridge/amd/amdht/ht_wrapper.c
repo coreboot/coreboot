@@ -121,7 +121,7 @@ static void AMD_CB_EventNotify (u8 evtClass, u16 event, const u8 *pEventData0)
 		case HT_EVENT_CLASS_WARNING:
 		case HT_EVENT_CLASS_INFO:
 			log_level = BIOS_DEBUG;
-			printk(log_level, event_class_string_decodes[evtClass]);
+			printk(log_level, "%s", event_class_string_decodes[evtClass]);
 			break;
 		default:
 			log_level = BIOS_DEBUG;
@@ -135,7 +135,7 @@ static void AMD_CB_EventNotify (u8 evtClass, u16 event, const u8 *pEventData0)
 		case HT_EVENT_COH_NO_TOPOLOGY:
 		case HT_EVENT_COH_LINK_EXCEED:
 		case HT_EVENT_COH_FAMILY_FEUD:
-			printk(log_level, event_string_decode(event));
+			printk(log_level, "%s", event_string_decode(event));
 			break;
 		case HT_EVENT_COH_NODE_DISCOVERED:
 			{
@@ -152,11 +152,11 @@ static void AMD_CB_EventNotify (u8 evtClass, u16 event, const u8 *pEventData0)
 		case HT_EVENT_NCOH_LINK_EXCEED:
 		case HT_EVENT_NCOH_BUS_MAX_EXCEED:
 		case HT_EVENT_NCOH_CFG_MAP_EXCEED:
-			printk(log_level, event_string_decode(event));
+			printk(log_level, "%s", event_string_decode(event));
 			break;
 		case HT_EVENT_NCOH_DEVICE_FAILED:
 			{
-				printk(log_level, event_string_decode(event));
+				printk(log_level, "%s", event_string_decode(event));
 				sHtEventNcohDeviceFailed *evt = (sHtEventNcohDeviceFailed*)pEventData0;
 				printk(log_level, ": node %d link %d depth: %d attemptedBUID: %d",
 					evt->node, evt->link, evt->depth, evt->attemptedBUID);
@@ -165,7 +165,7 @@ static void AMD_CB_EventNotify (u8 evtClass, u16 event, const u8 *pEventData0)
 			}
 		case HT_EVENT_NCOH_AUTO_DEPTH:
 			{
-				printk(log_level, event_string_decode(event));
+				printk(log_level, "%s", event_string_decode(event));
 				sHtEventNcohAutoDepth *evt = (sHtEventNcohAutoDepth*)pEventData0;
 				printk(log_level, ": node %d link %d depth: %d",
 					evt->node, evt->link, evt->depth);
@@ -178,7 +178,7 @@ static void AMD_CB_EventNotify (u8 evtClass, u16 event, const u8 *pEventData0)
 		case HT_EVENT_HW_EVENTS:
 		case HT_EVENT_HW_SYNCHFLOOD:
 		case HT_EVENT_HW_HTCRC:
-			printk(log_level, event_string_decode(event));
+			printk(log_level, "%s", event_string_decode(event));
 			break;
 		default:
 			printk(log_level, "HT_EVENT_UNKNOWN");

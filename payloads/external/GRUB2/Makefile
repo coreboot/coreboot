@@ -40,7 +40,8 @@ config: checkout
 	cd grub2 && ./autogen.sh
 	cd grub2/build && ../configure BUILD_CC="$(HOSTCC)" CC="$(HOSTCC)" \
 	TARGET_CC="$(CC)" \
-	TARGET_OBJCOPY="$(OBJCOPY)" TARGET_STRIP="$(STRIP)" CFLAGS=-O2 TARGET_CFLAGS=-Os --with-platform=coreboot
+	TARGET_OBJCOPY="$(OBJCOPY)" TARGET_STRIP="$(STRIP)" CFLAGS=-O2 TARGET_CFLAGS=-Os --with-platform=coreboot \
+	--enable-boot-time
 
 grub2: config
 	echo "    MAKE       GRUB2 $(NAME-y)"

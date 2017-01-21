@@ -127,6 +127,11 @@ static void disable_igd(const sysinfo_t *const sysinfo)
 		MCHBAR16(0x119e) = (MCHBAR16(0x119e) & ~(7 << 13)) | (4 << 13);
 		MCHBAR16(0x119e) |= (1 << 12);
 	}
+
+	/* Hide IGD. */
+	u32 deven = pci_read_config32(mch_dev, D0F0_DEVEN);
+	deven &= ~(3 << 3);
+	pci_write_config32(mch_dev, D0F0_DEVEN, deven);
 }
 
 void init_igd(const sysinfo_t *const sysinfo)

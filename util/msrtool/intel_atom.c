@@ -16,8 +16,9 @@
 #include "msrtool.h"
 
 int intel_atom_probe(const struct targetdef *target, const struct cpuid_t *id) {
-	return (0x6 == id->family) &&
-		(0x1c == id->model);
+	return ((VENDOR_INTEL == id->vendor) &&
+		(0x6 == id->family) &&
+		(0x1c == id->model));
 }
 
 const struct msrdef intel_atom_msrs[] = {

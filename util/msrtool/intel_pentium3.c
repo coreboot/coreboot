@@ -16,7 +16,8 @@
 #include "msrtool.h"
 
 int intel_pentium3_probe(const struct targetdef *target, const struct cpuid_t *id) {
-	return ((0x6 == id->family) && (
+	return ((VENDOR_INTEL == id->vendor) &&
+		(0x6 == id->family) && (
 		(0xa == id->model) ||
 		(0xb == id->model)
 		));

@@ -16,7 +16,9 @@
 #include "msrtool.h"
 
 int intel_core1_probe(const struct targetdef *target, const struct cpuid_t *id) {
-	return ((0x6 == id->family) && (0xe == id->model));
+	return ((VENDOR_INTEL == id->vendor) &&
+		(0x6 == id->family) &&
+		(0xe == id->model));
 }
 
 const struct msrdef intel_core1_msrs[] = {

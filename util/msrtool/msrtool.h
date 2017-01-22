@@ -95,8 +95,8 @@ struct msrdef {
 #define MAX_CORES 8
 
 typedef enum {
-	VENDOR_INTEL = 1,
-	VENDOR_AMD = 2,
+	VENDOR_INTEL = 0x756e6547,
+	VENDOR_AMD = 0x68747541,
 } vendor_t;
 
 struct cpuid_t {

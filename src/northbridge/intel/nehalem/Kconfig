@@ -49,7 +49,7 @@ config BOOTBLOCK_NORTHBRIDGE_INIT
 	string
 	default "northbridge/intel/nehalem/bootblock.c"
 
-config TRAINING_CACHE_SIZE
+config MRC_CACHE_SIZE
 	hex
 	default 0x10000
 

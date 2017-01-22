@@ -40,6 +40,7 @@ static struct targetdef alltargets[] = {
 	{ "geodelx", "AMD Geode(tm) LX", geodelx_probe, geodelx_msrs },
 	{ "cs5536", "AMD Geode(tm) CS5536", cs5536_probe, cs5536_msrs },
 	{ "K8", "AMD K8 Family", k8_probe, k8_msrs },
+	{ "via_c7", "VIA Esther processor, C7", via_c7_probe, via_c7_msrs },
 	{ "intel_pentium3_early", "Intel Pentium III family", intel_pentium3_early_probe, intel_pentium3_early_msrs },
 	{ "intel_pentium3", "Intel Pentium III Xeon Processor, Intel Pentium III Processor", intel_pentium3_probe, intel_pentium3_msrs },
 	{ "intel_core1", "Intel Core Duo, Intel Core Solo processors", intel_core1_probe, intel_core1_msrs },

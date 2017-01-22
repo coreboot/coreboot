@@ -97,6 +97,7 @@ struct msrdef {
 typedef enum {
 	VENDOR_INTEL = 0x756e6547,
 	VENDOR_AMD = 0x68747541,
+	VENDOR_CENTAUR = 0x746e6543,
 } vendor_t;
 
 struct cpuid_t {
@@ -215,6 +216,10 @@ extern const struct msrdef cs5536_msrs[];
 /* k8.c */
 extern int k8_probe(const struct targetdef *t, const struct cpuid_t *id);
 extern const struct msrdef k8_msrs[];
+
+/* via_c7.c */
+extern int via_c7_probe(const struct targetdef *t, const struct cpuid_t *id);
+extern const struct msrdef via_c7_msrs[];
 
 /* intel_pentium3_early.c */
 extern int intel_pentium3_early_probe(const struct targetdef *t, const struct cpuid_t *id);

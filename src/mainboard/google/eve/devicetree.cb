@@ -51,7 +51,6 @@ chip soc/intel/skylake
 	register "PmConfigSlpSusMinAssert" = "1"       # 500ms
 	register "PmConfigSlpAMinAssert" = "3"         # 2s
 	register "PmTimerDisabled" = "1"
-	register "SendVrMbxCmd" = "1"                  # IMVP8 workaround
 
 	register "pirqa_routing" = "PCH_IRQ11"
 	register "pirqb_routing" = "PCH_IRQ10"
@@ -73,7 +72,7 @@ chip soc/intel/skylake
 	#| Psi4Enable     | 1     | 1     | 1           | 1           | 1     |
 	#| ImonSlope      | 0     | 0     | 0           | 0           | 0     |
 	#| ImonOffset     | 0     | 0     | 0           | 0           | 0     |
-	#| IccMax         | 7A    | 34A   | 34A         | 35A         | 35A   |
+	#| IccMax         | 4A    | 24A   | 24A         | 24A         | 24A   |
 	#| VrVoltageLimit | 1.52V | 1.52V | 1.52V       | 1.52V       | 1.52V |
 	#+----------------+-------+-------+-------------+-------------+-------+
 	register "domain_vr_config[VR_SYSTEM_AGENT]" = "{
@@ -85,7 +84,7 @@ chip soc/intel/skylake
 		.psi4enable = 1,
 		.imon_slope = 0x0,
 		.imon_offset = 0x0,
-		.icc_max = VR_CFG_AMP(7),
+		.icc_max = VR_CFG_AMP(4),
 		.voltage_limit = 1520,
 	}"
 
@@ -98,7 +97,7 @@ chip soc/intel/skylake
 		.psi4enable = 1,
 		.imon_slope = 0x0,
 		.imon_offset = 0x0,
-		.icc_max = VR_CFG_AMP(34),
+		.icc_max = VR_CFG_AMP(24),
 		.voltage_limit = 1520,
 	}"
 
@@ -111,7 +110,7 @@ chip soc/intel/skylake
 		.psi4enable = 1,
 		.imon_slope = 0x0,
 		.imon_offset = 0x0,
-		.icc_max = VR_CFG_AMP(34),
+		.icc_max = VR_CFG_AMP(24),
 		.voltage_limit = 1520,
 	}"
 
@@ -124,7 +123,7 @@ chip soc/intel/skylake
 		.psi4enable = 1,
 		.imon_slope = 0x0,
 		.imon_offset = 0x0,
-		.icc_max = VR_CFG_AMP(35),
+		.icc_max = VR_CFG_AMP(24),
 		.voltage_limit = 1520,
 	}"
 
@@ -137,28 +136,31 @@ chip soc/intel/skylake
 		.psi4enable = 1,
 		.imon_slope = 0x0,
 		.imon_offset = 0x0,
-		.icc_max = VR_CFG_AMP(35),
+		.icc_max = VR_CFG_AMP(24),
 		.voltage_limit = 1520,
 	}"
 
-	# Enable Root port 1.
+	# Enable Root port 1 with SRCCLKREQ1#
 	register "PcieRpEnable[0]" = "1"
-	# Enable CLKREQ#
 	register "PcieRpClkReqSupport[0]" = "1"
-	# RP 1 uses SRCCLKREQ1#
 	register "PcieRpClkReqNumber[0]" = "1"
+
+	# Enable Root port 5 with SRCCLKREQ4#
+	register "PcieRpEnable[4]" = "1"
+	register "PcieRpClkReqSupport[4]" = "1"
+	register "PcieRpClkReqNumber[4]" = "4"
 
 	register "usb2_ports[0]" = "USB2_PORT_LONG(OC0)"	# Type-C Port 1
 	register "usb2_ports[1]" = "USB2_PORT_FLEX(OC_SKIP)"	# Camera
 	register "usb2_ports[2]" = "USB2_PORT_MID(OC_SKIP)"	# Bluetooth
 	register "usb2_ports[4]" = "USB2_PORT_LONG(OC1)"	# Type-C Port 2
-	register "usb2_ports[6]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A Port
+	register "usb2_ports[6]" = "USB2_PORT_MID(OC_SKIP)"	# H1
 	register "usb2_ports[8]" = "USB2_PORT_EMPTY"		# Empty
 
 	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC0)"	# Type-C Port 1
 	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC1)"	# Type-C Port 2
-	register "usb3_ports[2]" = "USB3_PORT_EMPTY"	# Empty
-	register "usb3_ports[3]" = "USB3_PORT_EMPTY"	# Empty
+	register "usb3_ports[2]" = "USB3_PORT_EMPTY"		# Empty
+	register "usb3_ports[3]" = "USB3_PORT_EMPTY"		# Empty
 
 	register "i2c_voltage[0]" = "I2C_VOLTAGE_3V3"	# Touchscreen
 	register "i2c_voltage[1]" = "I2C_VOLTAGE_3V3"	# TPM
@@ -204,7 +206,6 @@ chip soc/intel/skylake
 				register "generic.cid" = "PNP0C50_CID"
 				register "generic.desc" = "WCOM_DT_DESC"
 				register "generic.irq" = "IRQ_LEVEL_LOW(GPP_E7_IRQ)"
-				register "generic.probed" = "1"
 				register "hid_desc_reg_offset" = "0x1"
 				device i2c 0a on end
 			end
@@ -221,7 +222,6 @@ chip soc/intel/skylake
 				register "generic.hid" = ""ACPI0C50""
 				register "generic.desc" = ""Touchpad""
 				register "generic.irq" = "IRQ_LEVEL_LOW(GPP_B3_IRQ)"
-				register "generic.probed" = "1"
 				register "hid_desc_reg_offset" = "0x0"
 				device i2c 49 on end
 			end
@@ -234,7 +234,7 @@ chip soc/intel/skylake
 		device pci 16.4 off end # Management Engine Interface 3
 		device pci 17.0 off end # SATA
 		device pci 19.0 on  end # UART #2
-		device pci 19.1 on  end # I2C #5
+		device pci 19.1 off end # I2C #5
 		device pci 19.2 on  end # I2C #4
 		device pci 1c.0 on
 			chip drivers/intel/wifi
@@ -245,7 +245,7 @@ chip soc/intel/skylake
 		device pci 1c.1 off end # PCI Express Port 2
 		device pci 1c.2 off end # PCI Express Port 3
 		device pci 1c.3 off end # PCI Express Port 4
-		device pci 1c.4 off end # PCI Express Port 5
+		device pci 1c.4 on  end # PCI Express Port 5
 		device pci 1c.5 off end # PCI Express Port 6
 		device pci 1c.6 off end # PCI Express Port 7
 		device pci 1c.7 off end # PCI Express Port 8

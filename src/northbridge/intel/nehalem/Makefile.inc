@@ -31,7 +31,7 @@ smm-$(CONFIG_HAVE_SMI_HANDLER) += finalize.c
 
 $(obj)/mrc.cache:
 	dd if=/dev/zero count=1 \
-	bs=$(shell printf "%d" $(CONFIG_TRAINING_CACHE_SIZE) ) | \
+	bs=$(shell printf "%d" $(CONFIG_MRC_CACHE_SIZE) ) | \
 	tr '\000' '\377' > $@
 
 cbfs-files-y += mrc.cache

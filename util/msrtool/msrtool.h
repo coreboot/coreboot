@@ -45,7 +45,8 @@ enum {
 	PRESENT_BIN,
 	PRESENT_OCT,
 	PRESENT_HEX,
-	PRESENT_HEXDEC
+	PRESENT_HEXDEC,
+	PRESENT_STR,
 } PresentTypes;
 
 struct msr {
@@ -162,6 +163,7 @@ struct pci_dev *pci_dev_find(uint16_t vendor, uint16_t device);
 
 /* msrutils.c */
 void hexprint(FILE *f, const struct msr val, const uint8_t bits);
+void strprint(FILE *f, const struct msr val, const uint8_t bits);
 int msr_eq(const struct msr a, const struct msr b);
 struct msr msr_shl(const struct msr a, const uint8_t bits);
 struct msr msr_shr(const struct msr a, const uint8_t bits);

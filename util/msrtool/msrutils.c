@@ -65,6 +65,9 @@ static void print_bitval(FILE *f, const struct msrbits *mb, const struct msr val
 		hexprint(f, val, mb->size);
 		fprintf(f, " %d", val.lo);
 		break;
+	case PRESENT_STR:
+		strprint(f, val, mb->size);
+		break;
 	}
 	if (mbv->text)
 		fprintf(f, ": %s", mbv->text);
@@ -104,6 +107,25 @@ void hexprint(FILE *f, const struct msr val, const uint8_t bits) {
 		fprintf(f, "0x%07x%08x", val.hi & 0xfffffff, val.lo);
 	else
 		fprintf(f, "0x%08x%08x", val.hi, val.lo);
+}
+
+void strprint(FILE *f, const struct msr val, const uint8_t bits) {
+	if (bits > 56)
+		fputc(val.hi, f);
+	if (bits > 48)
+		fputc(val.hi >> 8, f);
+	if (bits > 40)
+		fputc(val.hi >> 16, f);
+	if (bits > 32)
+		fputc(val.hi >> 24, f);
+	if (bits > 24)
+		fputc(val.lo, f);
+	if (bits > 16)
+		fputc(val.lo >> 8, f);
+	if (bits > 8)
+		fputc(val.lo >> 16, f);
+	if (bits > 0)
+		fputc(val.lo >> 24, f);
 }
 
 int msr_eq(const struct msr a, const struct msr b) {

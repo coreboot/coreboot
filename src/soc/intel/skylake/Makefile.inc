@@ -38,6 +38,7 @@ verstage-y += spi.c
 
 romstage-y += flash_controller.c
 romstage-y += gpio.c
+romstage-y += bootblock/i2c.c
 romstage-y += memmap.c
 romstage-y += monotonic_timer.c
 romstage-y += me.c

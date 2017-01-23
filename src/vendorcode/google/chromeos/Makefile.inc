@@ -145,19 +145,6 @@ $(obj)/VBLOCK_%.bin: $(obj)/FW_MAIN_%.bin $(FUTILITY)
 		--kernelkey "$(CONFIG_VBOOT_KERNEL_KEY)" \
 		--flags $(CONFIG_VBOOT_KEYBLOCK_PREAMBLE_FLAGS)
 
-$(obj)/RO_FRID.bin: $(obj)/coreboot.rom
-	$(CBFSTOOL) $(obj)/coreboot.rom read -r $(basename $(notdir $@)) -f $@
-	printf $(KERNELVERSION) > $@.tmp
-	objcopy -I binary -O binary --pad-to=$$( stat --printf="%s" $@ ) --gap-fill=0 $@.tmp $@
-
-$(obj)/RW_FWID_%.bin: $(obj)/coreboot.rom
-	$(CBFSTOOL) $(obj)/coreboot.rom read -r $(basename $(notdir $@)) -f $@
-	printf $(KERNELVERSION) > $@.tmp
-	objcopy -I binary -O binary --pad-to=$$( stat --printf="%s" $@ ) --gap-fill=0 $@.tmp $@
-
-files_added:: $(obj)/VBLOCK_A.bin $(obj)/VBLOCK_B.bin $(obj)/RO_FRID.bin $(obj)/RW_FWID_A.bin $(obj)/RW_FWID_B.bin
+files_added:: $(obj)/VBLOCK_A.bin $(obj)/VBLOCK_B.bin
 	$(CBFSTOOL) $(obj)/coreboot.rom write -u -r VBLOCK_A -f $(obj)/VBLOCK_A.bin
 	$(CBFSTOOL) $(obj)/coreboot.rom write -u -r VBLOCK_B -f $(obj)/VBLOCK_B.bin
-	$(CBFSTOOL) $(obj)/coreboot.rom write -u -r RO_FRID -f $(obj)/RO_FRID.bin
-	$(CBFSTOOL) $(obj)/coreboot.rom write -u -r RW_FWID_A -f $(obj)/RW_FWID_A.bin
-	$(CBFSTOOL) $(obj)/coreboot.rom write -u -r RW_FWID_B -f $(obj)/RW_FWID_B.bin

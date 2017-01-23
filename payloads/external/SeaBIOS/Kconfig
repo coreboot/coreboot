@@ -95,13 +95,32 @@ config PAYLOAD_VGABIOS_FILE
 	default "payloads/external/SeaBIOS/seabios/out/vgabios.bin"
 
 config SEABIOS_DEBUG_LEVEL
-	prompt "SeaBIOS debug level (verbosity)"
-	default DEFAULT_CONSOLE_LOGLEVEL
-	int
+	int "SeaBIOS debug level (verbosity)"
+	default -1
 	help
-	  The higher the number, the more verbose SeaBIOS will be. The range is
-	  not well defined but the typical values range from 0 to about 9 inclusive
-	  where 0 disables all output. Set this value to -1 to use SeaBIOS' default.
+	  The higher the number, the more verbose SeaBIOS will be. See the table
+	  below for the current values corresponding to various items as of SeaBIOS
+	  version 1.10.1. Set this value to -1 to use SeaBIOS' default.
 
-	  The default is to use coreboot's loglevel.
+	  Output at various SeaBIOS log levels:
+	  level 0  - Logging disabled
+	  level 1  - Basic output, interrupts 5, 18h, 19h, 40h, SMP, PNP, PMM
+	  level 2  - AHCI, Floppy, Basic ps2, interrupts 11h, 12h, 14h, 17h
+	  level 3  - bootsplash, initializations, SeaBIOS VGA BIOS interrupts
+	  level 4  - bios tables, more optionrom
+	  level 5  - Extra bootsplash, more XHCI
+	  level 6  - ATA commands, extra optionrom
+	  level 7  - extra ps2 commands, more OHCI & EHCI
+	  level 8  - extra malloc info, more AHCI
+	  level 9  - interrupts 15h, 16h, 1ah, APM, PCI, SMIs, PCIBIOS,
+	             USB-HID commands, SDcard commands, Floppy commands
+	  level 10 - interrupt 13h (Drives other than floppy)
+	  level 20 - interrupt 10h (Display)
+
+comment "Using default SeaBIOS log level"
+	depends on SEABIOS_DEBUG_LEVEL = -1
+
+comment "SeaBIOS logging disabled"
+	depends on SEABIOS_DEBUG_LEVEL = 0
+
 endif

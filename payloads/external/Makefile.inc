@@ -241,9 +241,13 @@ ifeq ($(CONFIG_CONSOLE_SERIAL)$(CONFIG_DRIVERS_UART_8250IO),yy)
 IPXE_UART=COM$(call int-add,$(CONFIG_UART_FOR_CONSOLE) 1)
 endif
 
-cbfs-files-$(CONFIG_PXE_ROM)$(CONFIG_BUILD_IPXE) += pci$(CONFIG_PXE_ROM_ID).rom
-pci$(CONFIG_PXE_ROM_ID).rom-file := $(PXE_ROM_FILE)
-pci$(CONFIG_PXE_ROM_ID).rom-type := raw
+#cbfs-files-$(CONFIG_PXE_ROM)$(CONFIG_BUILD_IPXE) += pci$(CONFIG_PXE_ROM_ID).rom
+#pci$(CONFIG_PXE_ROM_ID).rom-file := $(PXE_ROM_FILE)
+#pci$(CONFIG_PXE_ROM_ID).rom-type := raw
+
+cbfs-files-$(CONFIG_PXE_ROM)$(CONFIG_BUILD_IPXE) += genroms/pxe.rom
+genroms/pxe.rom-file = $(PXE_ROM_FILE)
+genroms/pxe.rom-type := raw
 
 payloads/external/iPXE/ipxe/ipxe.rom ipxe: $(DOTCONFIG)
 	$(MAKE) -C payloads/external/iPXE all \

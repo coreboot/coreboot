@@ -150,7 +150,12 @@ int compress(char *infile, char *outfile, char *algoname)
 		remsize -= readsz;
 	}
 
-	comp(indata, insize, outdata, &outsize);
+	if (comp(indata, insize, outdata, &outsize) == -1) {
+		outsize = insize;
+		free(outdata);
+		outdata = indata;
+		algo = &types_cbfs_compression[0];
+	}
 
 	char header[8];
 	header[0] = algo->type & 0xff;

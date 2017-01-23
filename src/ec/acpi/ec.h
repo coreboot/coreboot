@@ -40,6 +40,7 @@ int send_ec_command(u8 command);
 int send_ec_data(u8 data);
 int send_ec_data_nowait(u8 data);
 u8 recv_ec_data(void);
+u8 ec_status(void);
 u8 ec_query(void);
 u8 ec_read(u8 addr);
 int ec_write(u8 addr, u8 data);

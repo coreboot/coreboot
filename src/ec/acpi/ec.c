@@ -126,6 +126,11 @@ int ec_write(u8 addr, u8 data)
 	return send_ec_data(data);
 }
 
+u8 ec_status(void)
+{
+	return inb(ec_cmd_reg);
+}
+
 u8 ec_query(void)
 {
 	send_ec_command(0x84);

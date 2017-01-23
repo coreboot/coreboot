@@ -58,6 +58,37 @@ config ME_BIN_PATH
 	default "3rdparty/blobs/mainboard/$(MAINBOARDDIR)/me.bin"
 	depends on HAVE_ME_BIN
 
+config USE_ME_CLEANER
+	bool "Strip down the Intel ME/TXE firmware"
+	depends on HAVE_ME_BIN && (NORTHBRIDGE_INTEL_SANDYBRIDGE || \
+		NORTHBRIDGE_INTEL_IVYBRIDGE || NORTHBRIDGE_INTEL_HASWELL || \
+		SOC_INTEL_BROADWELL || SOC_INTEL_SKYLAKE || \
+		SOC_INTEL_BAYTRAIL || SOC_INTEL_BRASWELL)
+	help
+	  Use me_cleaner to remove all the non-fundamental code from the Intel
+	  ME/TXE firmware.
+	  The resulting Intel ME/TXE firmware will have only the code
+	  responsible for the very basic hardware initialization, leaving the
+	  ME/TXE subsystem essentially in a disabled state.
+
+	  Don't flash a modified ME/TXE firmware and a new coreboot image at the
+	  same time, test them in two different steps.
+
+	  WARNING: this tool isn't based on any official Intel documentation but
+	           only on reverse engineering and trial & error.
+
+	  See the project's page
+	  https://github.com/corna/me_cleaner
+	  or the wiki
+	  https://github.com/corna/me_cleaner/wiki/How-does-it-work%3F
+	  https://github.com/corna/me_cleaner/wiki/me_cleaner-status
+	  for more info about this tool
+
+	  If unsure, say N.
+
+comment "Please test the modified ME/TXE firmware and coreboot in two steps"
+	depends on USE_ME_CLEANER
+
 config HAVE_GBE_BIN
 	bool "Add gigabit ethernet firmware"
 	depends on HAVE_IFD_BIN

@@ -27,6 +27,7 @@
 #include <northbridge/amd/pi/00730F01/pci_devs.h>
 #include <southbridge/amd/common/amd_pci_util.h>
 #include <superio/nuvoton/nct5104d/nct5104d.h>
+#include <build.h>
 #include <smbios.h>
 #include <string.h>
 #include <cpu/x86/msr.h>
@@ -181,6 +182,7 @@ static void mainboard_enable(device_t dev)
 	u32 top_mem2 = (bsp_topmem2() / (1024 * 1024)) - 4 * 1024;
 
 	printk(BIOS_ALERT, CONFIG_MAINBOARD_PART_NUMBER "\n");
+	printk(BIOS_ALERT, "coreboot build %s\n", COREBOOT_BUILD);
 	printk(BIOS_ALERT, "%d MB", top_mem+top_mem2);
 
 	/* Read memory configuration from GPIO 49 and 50 */

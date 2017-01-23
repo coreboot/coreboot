@@ -260,15 +260,20 @@ static void setup_usb(void)
 		RK_CLRSETBITS(0xffff, 0xa7));
 
 	/*
-	 * Disable the pre-emphasize in eop state and chirp
+	 * 1. Disable the pre-emphasize in eop state and chirp
 	 * state to avoid mis-trigger the disconnect detection
 	 * and also avoid high-speed handshake fail for PHY0
 	 * and PHY1 consist of otg-port and host-port.
+	 *
+	 * 2. Configure PHY0 and PHY1 otg-ports squelch detection
+	 * threshold to 125mV (default is 150mV).
 	 */
-	write32(&rk3399_grf->usbphy0_ctrl[0], RK_CLRBITS(0x3));
-	write32(&rk3399_grf->usbphy1_ctrl[0], RK_CLRBITS(0x3));
-	write32(&rk3399_grf->usbphy0_ctrl[13], RK_CLRBITS(0x3));
-	write32(&rk3399_grf->usbphy1_ctrl[13], RK_CLRBITS(0x3));
+	write32(&rk3399_grf->usbphy0_ctrl[0],
+		RK_CLRSETBITS(7 << 13 | 3 << 0, 6 << 13));
+	write32(&rk3399_grf->usbphy1_ctrl[0],
+		RK_CLRSETBITS(7 << 13 | 3 << 0, 6 << 13));
+	write32(&rk3399_grf->usbphy0_ctrl[13], RK_CLRBITS(3 << 0));
+	write32(&rk3399_grf->usbphy1_ctrl[13], RK_CLRBITS(3 << 0));
 
 	/*
 	 * ODT auto compensation bypass, and set max driver

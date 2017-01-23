@@ -306,7 +306,7 @@ AGESA_STATUS agesawrapper_amdinitlate(void)
 	Status = AmdInitLate(AmdLateParams);
 	if (Status != AGESA_SUCCESS) {
 		agesawrapper_amdreadeventlog(AmdLateParams->StdHeader.HeapStatus);
-		ASSERT(Status == AGESA_SUCCESS);
+		printk(BIOS_WARNING, "AmdInitLate returned error!\n");
 	}
 
 	DmiTable    = AmdLateParams->DmiTable;

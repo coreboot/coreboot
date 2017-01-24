@@ -323,7 +323,7 @@ spinlock_t* romstage_console_lock(void)
 
 void initialize_romstage_console_lock(void)
 {
-	car_get_var(printk_spinlock) = SPIN_LOCK_UNLOCKED;
+	spin_unlock(romstage_console_lock());
 }
 
 static spinlock_t nvram_cbfs_spinlock CAR_GLOBAL;
@@ -335,7 +335,7 @@ spinlock_t* romstage_nvram_cbfs_lock(void)
 
 void initialize_romstage_nvram_cbfs_lock(void)
 {
-	car_get_var(nvram_cbfs_spinlock) = SPIN_LOCK_UNLOCKED;
+	spin_unlock(romstage_nvram_cbfs_lock());
 }
 
 static spinlock_t microcode_cbfs_spinlock CAR_GLOBAL;
@@ -347,7 +347,7 @@ spinlock_t* romstage_microcode_cbfs_lock(void)
 
 void initialize_romstage_microcode_cbfs_lock(void)
 {
-	car_get_var(microcode_cbfs_spinlock) = SPIN_LOCK_UNLOCKED;
+	spin_unlock(romstage_microcode_cbfs_lock());
 }
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)

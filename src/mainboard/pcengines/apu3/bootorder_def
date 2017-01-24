@@ -1,0 +1,8 @@
+/pci@i0cf8/usb@10/usb-*@1
+/pci@i0cf8/usb@10/usb-*@2
+/pci@i0cf8/usb@10/usb-*@3
+/pci@i0cf8/usb@10/usb-*@4
+/pci@i0cf8/*@14,7
+/pci@i0cf8/*@11/drive@0/disk@0
+/pci@i0cf8/*@11/drive@1/disk@0
+/rom@genroms/pxe.rom

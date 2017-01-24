@@ -36,7 +36,7 @@ spinlock_t* romstage_microcode_cbfs_lock(void);
 void initialize_romstage_microcode_cbfs_lock(void);
 #endif
 
-#define SPIN_LOCK_UNLOCKED (spinlock_t) { 1 }
+#define SPIN_LOCK_UNLOCKED { 1 }
 
 #ifndef __PRE_RAM__
 #define DECLARE_SPIN_LOCK(x) static spinlock_t x = SPIN_LOCK_UNLOCKED;

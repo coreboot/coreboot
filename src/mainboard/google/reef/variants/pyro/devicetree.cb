@@ -170,7 +170,7 @@ chip soc/intel/apollolake
 					 .hid = WCOMNTN2_HID,
 					 .cid = PNP0C50_CID,
 					 .desc = WCOM_TS_DESC,
-					 .irq = IRQ_EDGE_LOW(GPIO_21_IRQ),
+					 .irq = IRQ_LEVEL_LOW(GPIO_21_IRQ),
 					 .probed = 1,
 				}"
 				register "hid_desc_reg_offset" = "0x1"

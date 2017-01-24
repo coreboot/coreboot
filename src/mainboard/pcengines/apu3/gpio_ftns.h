@@ -24,8 +24,8 @@ void write_gpio(uintptr_t base_addr, u32 iomux_gpio, u8 value);
 #define GPIO_OFFSET     0x1500
 
 //
-// Based on PC Engines APU2C schematics
-// http://www.pcengines.ch/schema/apu2c.pdf
+// Based on PC Engines APU3A schematics
+// http://pcengines.ch/schema/apu3a.pdf
 //
 #define IOMUX_GPIO_32   0x59    // MODESW
 #define IOMUX_GPIO_49   0x40    // STRAP0

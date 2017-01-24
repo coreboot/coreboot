@@ -1,5 +1,5 @@
-Board name: PC Engines APU2
-Board URL: http://www.pcengines.ch/apu2c2.htm
+Board name: PC Engines APU3
+Board URL: http://pcengines.ch/apu3a2.htm
 Category: half
 ROM protocol: SPI
 ROM socketed: n

@@ -8,12 +8,16 @@ Releases 4.5.x are based on mainline support submitted in
 ## [Unreleased]
 
 ## [v4.5.4] - 2017-01-24
+### Added
+- add target for APU3 board (EHCI0 is enabled)
 ### Changed
-- optimizations for SeaBIOS, faster boot
+- add coreboot build string message during boot
+- change SeaBIOS version to 1.9.2.4
+- optimizations for SeaBIOS config, faster boot
+### Fixed
 - fix `WARNING - Timeout at i8042_flush:71!` message during boot
 - fix `ASSERTION ERROR: file 'src/northbridge/amd/pi/agesawrapper.c', line 305`
-  messager during boot
-- add coreboot build string message during boot
+  message during boot
 - fix disabling/enabling iPXE rom by `sortbootorder`
 - fix custom menu/config options for iPXE rom
 

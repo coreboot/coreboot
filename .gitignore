@@ -87,6 +87,7 @@ util/archive/archive
 util/bimgtool/bimgtool
 util/bincfg/bincfg
 util/board_status/board-status
+util/bucts/bucts
 util/cbfstool/cbfs-compression-tool
 util/cbfstool/cbfstool
 util/cbfstool/fmaptool

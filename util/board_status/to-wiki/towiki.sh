@@ -307,6 +307,9 @@ EOF
 			INTEL_SOCKET_LGA771)
 				cpu_nice="Intel Xeon™ 5000 series";
 				socket_nice="Socket LGA771";;
+			INTEL_SOCKET_LGA775)
+				cpu_nice="Intel® Core 2, Pentium 4/D";
+				socket_nice="Socket LGA775";;
 			INTEL_SOCKET_PGA370)
 				cpu_nice="Intel® Pentium® III-800, Celeron®"
 				socket_nice="Socket 370";;

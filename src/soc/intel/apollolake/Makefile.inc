@@ -83,6 +83,7 @@ ramstage-y += reset.c
 ramstage-y += smi.c
 ramstage-y += sram.c
 ramstage-y += spi.c
+ramstage-y += xdci.c
 ramstage-y += xhci.c
 
 postcar-y += flash_ctrlr.c

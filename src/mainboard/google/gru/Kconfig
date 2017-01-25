@@ -86,6 +86,7 @@ config CONSOLE_SERIAL_UART_ADDRESS
 ##########################################################
 config MAINBOARD_PART_NUMBER
 	string
+	default "Scarlet" if BOARD_GOOGLE_SCARLET
 	default "Bob" if BOARD_GOOGLE_BOB
 	default "Gru" if BOARD_GOOGLE_GRU
 	default "Kevin" if BOARD_GOOGLE_KEVIN
@@ -93,6 +94,7 @@ config MAINBOARD_PART_NUMBER
 config GBB_HWID
 	string
 	depends on CHROMEOS
+	default "SCARLET TEST 7598" if BOARD_GOOGLE_SCARLET
 	default "BOB TEST 7422" if BOARD_GOOGLE_BOB
 	default "GRU TEST 5431" if BOARD_GOOGLE_GRU
 	default "KEVIN TEST 1422" if BOARD_GOOGLE_KEVIN

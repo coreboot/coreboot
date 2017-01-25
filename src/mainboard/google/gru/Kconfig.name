@@ -9,3 +9,8 @@ config BOARD_GOOGLE_GRU
 config BOARD_GOOGLE_BOB
 	bool "Bob"
 	select BOARD_GOOGLE_GRU_COMMON
+
+config BOARD_GOOGLE_SCARLET
+	bool "Scarlet"
+	select BOARD_GOOGLE_GRU_COMMON
+

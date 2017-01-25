@@ -7,7 +7,6 @@ Scope (\_SB.PCI0.I2C6)
 	Device (ATSA)
 	{
 		Name (_HID, "ATML0001")
-		Name (_CID, EisaId ("PNP0C0E"))
 		Name (_DDN, "Atmel Touchscreen")
 		Name (_UID, 5)
 		Name (ISTP, 0) /* TouchScreen */

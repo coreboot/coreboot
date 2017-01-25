@@ -251,13 +251,13 @@ enum cb_err get_option(void *dest, const char *name)
 		return CB_CMOS_OPTION_NOT_FOUND;
 	}
 
-	if (get_cmos_value(ce->bit, ce->length, dest) != CB_SUCCESS) {
-		UNLOCK_NVRAM_CBFS_SPINLOCK();
-		return CB_CMOS_ACCESS_ERROR;
-	}
 	if (!cmos_checksum_valid(LB_CKS_RANGE_START, LB_CKS_RANGE_END, LB_CKS_LOC)) {
 		UNLOCK_NVRAM_CBFS_SPINLOCK();
 		return CB_CMOS_CHECKSUM_INVALID;
+	}
+	if (get_cmos_value(ce->bit, ce->length, dest) != CB_SUCCESS) {
+		UNLOCK_NVRAM_CBFS_SPINLOCK();
+		return CB_CMOS_ACCESS_ERROR;
 	}
 	UNLOCK_NVRAM_CBFS_SPINLOCK();
 	return CB_SUCCESS;

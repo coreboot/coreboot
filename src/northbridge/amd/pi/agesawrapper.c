@@ -397,8 +397,15 @@ const void *agesawrapper_locate_module (const CHAR8 name[8])
 	const AMD_MODULE_HEADER* module;
 	size_t file_size;
 
-	agesa = cbfs_boot_map_with_leak((const char *)CONFIG_CBFS_AGESA_NAME,
+	if (IS_ENABLED(CONFIG_VBOOT)) {
+		/* Use phys. location in flash and prevent vboot from searching cbmem */
+		agesa = (void *)CONFIG_AGESA_BINARY_PI_LOCATION;
+		file_size = 0x100000;
+	} else {
+		agesa = cbfs_boot_map_with_leak((const char *)CONFIG_CBFS_AGESA_NAME,
 					CBFS_TYPE_RAW, &file_size);
+	}
+
 	if (!agesa)
 		return NULL;
 	image =  LibAmdLocateImage(agesa, agesa + file_size - 1, 4096, name);

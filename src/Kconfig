@@ -244,7 +244,7 @@ config RELOCATABLE_RAMSTAGE
 
 config CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM
 	depends on RELOCATABLE_RAMSTAGE
-	bool "Cache the relocated ramstage outside of cbmem."
+	bool
 	default n
 	help
 	 The relocated ramstage is saved in an area specified by the

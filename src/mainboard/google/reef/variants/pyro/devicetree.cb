@@ -171,7 +171,6 @@ chip soc/intel/apollolake
 					 .cid = PNP0C50_CID,
 					 .desc = WCOM_TS_DESC,
 					 .irq = IRQ_LEVEL_LOW(GPIO_21_IRQ),
-					 .probed = 1,
 				}"
 				register "hid_desc_reg_offset" = "0x1"
 				device i2c 0xA on end

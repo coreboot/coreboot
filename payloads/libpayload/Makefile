@@ -107,18 +107,6 @@ ARCH-$(CONFIG_LP_ARCH_ARM64)   := arm64
 ARCH-$(CONFIG_LP_ARCH_X86)     := x86_32
 ARCH-$(CONFIG_LP_ARCH_MIPS)    := mips
 
-CC := $(CC_$(ARCH-y))
-AS := $(AS_$(ARCH-y))
-LD := $(LD_$(ARCH-y))
-NM := $(NM_$(ARCH-y))
-OBJCOPY := $(OBJCOPY_$(ARCH-y))
-OBJDUMP := $(OBJDUMP_$(ARCH-y))
-READELF := $(READELF_$(ARCH-y))
-STRIP := $(STRIP_$(ARCH-y))
-AR := $(AR_$(ARCH-y))
-
-CFLAGS += $(CFLAGS_$(ARCH-y))
-
 # Three cases where we don't need fully populated $(obj) lists:
 # 1. when no .config exists
 # 2. when make config (in any flavour) is run
@@ -148,6 +136,18 @@ $(if $(wildcard .xcompile)$(NOCOMPILE),,$(eval $(shell $(top)/../../util/xcompil
 	\mv -f $@.tmp $@ 2> /dev/null
 
 -include .xcompile
+
+CC := $(CC_$(ARCH-y))
+AS := $(AS_$(ARCH-y))
+LD := $(LD_$(ARCH-y))
+NM := $(NM_$(ARCH-y))
+OBJCOPY := $(OBJCOPY_$(ARCH-y))
+OBJDUMP := $(OBJDUMP_$(ARCH-y))
+READELF := $(READELF_$(ARCH-y))
+STRIP := $(STRIP_$(ARCH-y))
+AR := $(AR_$(ARCH-y))
+
+CFLAGS += $(CFLAGS_$(ARCH-y))
 
 ifneq ($(INNER_SCANBUILD),y)
 ifeq ($(CONFIG_LP_COMPILER_LLVM_CLANG),y)
@@ -304,12 +304,12 @@ clean-for-update: doxygen-clean clean-for-update-target
 
 clean: clean-for-update clean-target
 	rm -f .ccwrap junit_config junit_config.old
+	rm -rf $(obj)
 
 clean-cscope:
 	rm -f cscope.out
 
-distclean: clean-cscope
-	rm -rf $(obj)
+distclean: clean-cscope clean
 	rm -f .config .config.old ..config.tmp .kconfig.d .tmpconfig* .ccwrap .xcompile junit.xml
 
 .PHONY: $(PHONY) clean clean-cscope cscope distclean doxygen doxy

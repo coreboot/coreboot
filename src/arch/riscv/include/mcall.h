@@ -70,6 +70,7 @@ typedef struct {
 } hls_t;
 
 #define MACHINE_STACK_TOP() ({ \
+  /* coverity[uninit_use] : FALSE */ \
   register uintptr_t sp asm ("sp"); \
   (void*)((sp + RISCV_PGSIZE) & -RISCV_PGSIZE); })
 

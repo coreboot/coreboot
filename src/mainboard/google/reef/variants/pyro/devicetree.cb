@@ -187,6 +187,12 @@ chip soc/intel/apollolake
 					 .cid = PNP0C50_CID,
 					 .desc = WCOM_TS_DESC,
 					 .irq = IRQ_LEVEL_LOW(GPIO_21_IRQ),
+					 .reset_gpio = ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_36),
+					 .reset_delay_ms = 20,
+					 .enable_gpio = ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_152),
+					 .enable_delay_ms = 1,
+					 .has_power_resource = 1,
+					 .disable_gpio_export_in_crs = 1,
 				}"
 				register "hid_desc_reg_offset" = "0x1"
 				device i2c 0xA on end
@@ -196,14 +202,11 @@ chip soc/intel/apollolake
 				register "desc" = ""ELAN Touchscreen""
 				register "irq" = "IRQ_EDGE_LOW(GPIO_21_IRQ)"
 				register "probed" = "1"
-
-				chip drivers/generic/gpio_regulator
-					register "name" = ""vcc33""
-					register "gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_152)"
-					register "enabled_on_boot" = "1"
-					device generic 0 on end
-				end
-
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_36)"
+				register "reset_delay_ms" = "20"
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_152)"
+				register "enable_delay_ms" = "1"
+				register "has_power_resource" = "1"
 				device i2c 10 on end
 			end
 		end	# - I2C 3

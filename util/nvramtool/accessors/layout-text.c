@@ -695,6 +695,12 @@ static void try_add_layout_file_entry(const cmos_entry_t * cmos_entry)
 		 */
 		return;
 
+	case LAYOUT_MULTIBYTE_ENTRY_NOT_ALIGNED:
+		fprintf(stderr,
+			"%s: Unaligned CMOS option table entry %s "
+			"spans multiple bytes.\n", prog_name, cmos_entry->name);
+		break;
+
 	default:
 		BUG();
 	}

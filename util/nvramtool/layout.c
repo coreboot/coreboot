@@ -169,6 +169,9 @@ int add_cmos_entry(const cmos_entry_t * e, const cmos_entry_t ** conflict)
 	if (e->length < 1)
 		return LAYOUT_ENTRY_BAD_LENGTH;
 
+	if (e->bit % 8 && e->bit / 8 != (e->bit + e->length - 1) / 8)
+		return LAYOUT_MULTIBYTE_ENTRY_NOT_ALIGNED;
+
 	if ((new_entry =
 	     (cmos_entry_item_t *) malloc(sizeof(*new_entry))) == NULL)
 		out_of_memory();

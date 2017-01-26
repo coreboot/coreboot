@@ -41,3 +41,13 @@ uint32_t antirollback_lock_space_rec_hash(void)
 {
 	return TPM_SUCCESS;
 }
+
+uint32_t antirollback_read_space_rec_hash(uint8_t *data, uint32_t size)
+{
+	return TPM_SUCCESS;
+}
+
+uint32_t antirollback_write_space_rec_hash(const uint8_t *data, uint32_t size)
+{
+	return TPM_SUCCESS;
+}

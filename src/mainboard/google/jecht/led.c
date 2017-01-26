@@ -19,10 +19,18 @@
 
 void set_power_led(int state)
 {
+	int polarity;
+
+	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_TIDUS)) {
+		polarity = state == LED_OFF ? 0x00 : 0x01;
+	} else {
+		polarity = state == LED_BLINK ? 0x01 : 0x00;
+	}
+
 	it8772f_gpio_led(IT8772F_GPIO_DEV,
 		1, 					/* set */
 		0x01, 					/* select */
-		state == LED_OFF ? 0x00 : 0x01,		/* polarity */
+		polarity,				/* polarity */
 		state == LED_BLINK ? 0x01 : 0x00,	/* pullup/pulldown */
 		0x01, 					/* output */
 		state == LED_BLINK ? 0x00 : 0x01,	/* I/O function */

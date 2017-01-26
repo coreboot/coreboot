@@ -32,7 +32,7 @@ static void i2c_generic_add_power_res(struct drivers_i2c_generic_config *config)
 	unsigned reset_gpio = config->reset_gpio.pins[0];
 	unsigned enable_gpio = config->enable_gpio.pins[0];
 
-	if (config->pwr_mgmt_type != POWER_RESOURCE)
+	if (!config->has_power_resource)
 		return;
 
 	if (!reset_gpio && !enable_gpio)
@@ -72,10 +72,17 @@ static void i2c_generic_add_power_res(struct drivers_i2c_generic_config *config)
 
 static bool i2c_generic_add_gpios_to_crs(struct drivers_i2c_generic_config *cfg)
 {
-	if (cfg->pwr_mgmt_type == GPIO_EXPORT)
-		return true;
+	/*
+	 * Return false if:
+	 * 1. Request to explicitly disable export of GPIOs in CRS, or
+	 * 2. Both reset and enable GPIOs are not provided.
+	 */
+	if (cfg->disable_gpio_export_in_crs ||
+	    ((cfg->reset_gpio.pin_count == 0) &&
+	     (cfg->enable_gpio.pin_count == 0)))
+		return false;
 
-	return false;
+	return true;
 }
 
 static int i2c_generic_write_gpio(struct acpi_gpio *gpio, int *curr_index)

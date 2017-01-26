@@ -65,7 +65,7 @@ Method(_PTS,1)
 
 	if hasKeyboard {
 		si.WriteString("#include <drivers/pc80/pc/ps2_controller.asl>\n")
-		MainboardInit += fmt.Sprintf("\tpc_keyboard_init();\n")
+		MainboardInit += fmt.Sprintf("\tpc_keyboard_init(NO_AUX_DEVICE);\n")
 		MainboardIncludes = append(MainboardIncludes, "pc80/keyboard.h")
 	}
 

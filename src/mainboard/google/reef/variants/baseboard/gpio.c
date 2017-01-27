@@ -101,8 +101,10 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPIO_131, UP_2K, DEEP, NF1), /* LPSS_I2C3_SCL */
 
 	/* I2C4 - trackpad */
-	PAD_CFG_NF(GPIO_132, UP_2K, DEEP, NF1), /* LPSS_I2C4_SDA */
-	PAD_CFG_NF(GPIO_133, UP_2K, DEEP, NF1), /* LPSS_I2C4_SCL */
+	/* LPSS_I2C4_SDA */
+	PAD_CFG_NF_IOSSTATE(GPIO_132, UP_2K, DEEP, NF1, HIZCRx1),
+	/* LPSS_I2C4_SCL */
+	PAD_CFG_NF_IOSSTATE(GPIO_133, UP_2K, DEEP, NF1, HIZCRx1),
 
 	/* I2C5 -- pen with external pulls  */
 	PAD_CFG_NF(GPIO_134, NONE, DEEP, NF1), /* LPSS_I2C5_SDA */

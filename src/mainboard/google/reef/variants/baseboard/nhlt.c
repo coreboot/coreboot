@@ -23,13 +23,16 @@
 void __attribute__((weak)) variant_nhlt_init(struct nhlt *nhlt)
 {
 	/* 1-dmic configuration */
-	if (!nhlt_soc_add_dmic_array(nhlt, 1))
+	if (IS_ENABLED(CONFIG_NHLT_DMIC_1CH_16B) &&
+			(!nhlt_soc_add_dmic_array(nhlt, 1)))
 		printk(BIOS_ERR, "Added 1CH DMIC array.\n");
 	/* 2-dmic configuration */
-	if (!nhlt_soc_add_dmic_array(nhlt, 2))
+	if (IS_ENABLED(CONFIG_NHLT_DMIC_2CH_16B) &&
+			(!nhlt_soc_add_dmic_array(nhlt, 2)))
 		printk(BIOS_ERR, "Added 2CH DMIC array.\n");
 	/* 4-dmic configuration */
-	if (!nhlt_soc_add_dmic_array(nhlt, 4))
+	if (IS_ENABLED(CONFIG_NHLT_DMIC_4CH_16B) &&
+			(!nhlt_soc_add_dmic_array(nhlt, 4)))
 		printk(BIOS_ERR, "Added 4CH DMIC array.\n");
 	/* Dialog for Headset codec.
 	 * Headset codec is bi-directional but uses the same configuration

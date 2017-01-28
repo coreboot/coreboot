@@ -88,4 +88,8 @@ config APU2_PINMUX_UART_D
 
 endchoice
 
+config DIMM_SPD_SIZE
+	int
+	default 128
+
 endif # BOARD_PCENGINES_APU2

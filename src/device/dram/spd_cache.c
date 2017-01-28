@@ -25,11 +25,13 @@
 #define SPD_CRC_HI	127
 #define SPD_CRC_LO	126
 
+_Static_assert(SPD_SIZE == CONFIG_DIMM_SPD_SIZE, "configured SPD sizes differ");
+
 int read_spd_from_cbfs(u8 *buf, int idx)
 {
 	const char *spd_file;
 	size_t spd_file_len = 0;
-	size_t min_len = (idx + 1) * SPD_SIZE;
+	size_t min_len = (idx + 1) * CONFIG_DIMM_SPD_SIZE;
 
 	spd_file = cbfs_boot_map_with_leak("spd.bin", CBFS_TYPE_SPD,
 						&spd_file_len);
@@ -40,9 +42,9 @@ int read_spd_from_cbfs(u8 *buf, int idx)
 	if (!spd_file || spd_file_len < min_len)
 		return -1;
 
-	memcpy(buf, spd_file + (idx * SPD_SIZE), SPD_SIZE);
+	memcpy(buf, spd_file + (idx * CONFIG_DIMM_SPD_SIZE), CONFIG_DIMM_SPD_SIZE);
 
-	u16 crc = spd_ddr3_calc_crc(buf, SPD_SIZE);
+	u16 crc = spd_ddr3_calc_crc(buf, CONFIG_DIMM_SPD_SIZE);
 
 	if (((buf[SPD_CRC_LO] == 0) && (buf[SPD_CRC_HI] == 0))
 	 || (buf[SPD_CRC_LO] != (crc & 0xff))
@@ -53,7 +55,7 @@ int read_spd_from_cbfs(u8 *buf, int idx)
 		buf[SPD_CRC_HI] = crc >> 8;
 		u16 i;
 		printk(BIOS_WARNING, "\nDisplay the SPD");
-		for (i = 0; i < SPD_SIZE; i++) {
+		for (i = 0; i < CONFIG_DIMM_SPD_SIZE; i++) {
 			if((i % 16) == 0x00)
 				printk(BIOS_WARNING, "\n%02x:  ", i);
 			printk(BIOS_WARNING, "%02x ", buf[i]);

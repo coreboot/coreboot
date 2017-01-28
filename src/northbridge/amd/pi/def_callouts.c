@@ -15,7 +15,7 @@
  */
 
 #include <cbfs.h>
-#include <spd_cache.h>
+#include <spd_bin.h>
 
 #include "AGESA.h"
 #include "amdlib.h"

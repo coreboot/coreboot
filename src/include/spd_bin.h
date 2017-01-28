@@ -54,4 +54,7 @@ int get_spd_cbfs_rdev(struct region_device *spd_rdev, u8 spd_index);
 void dump_spd_info(struct spd_block *blk);
 void get_spd_smbus(struct spd_block *blk);
 
+/* expects SPD size to be 128 bytes, reads from "spd.bin" in CBFS and
+   verifies the checksum. Only available if CONFIG_DIMM_SPD_SIZE == 128. */
+int read_ddr3_spd_from_cbfs(u8 *buf, int idx);
 #endif

@@ -287,9 +287,9 @@ ramstage-$(CONFIG_HAVE_MONOTONIC_TIMER) += hw-time-timer.adb
 
 endif # CONFIG_RAMSTAGE_LIBHWBASE
 
-ifeq ($(CONFIG_GENERIC_SPD_BIN),y)
-romstage-$(CONFIG_GENERIC_SPD_BIN) += spd_bin.c
+romstage-y += spd_bin.c
 
+ifeq ($(CONFIG_GENERIC_SPD_BIN),y)
 LIB_SPD_BIN = $(obj)/spd.bin
 
 LIB_SPD_DEPS = $(foreach f, $(SPD_SOURCES), src/mainboard/$(MAINBOARDDIR)/spd/$(f).spd.hex)

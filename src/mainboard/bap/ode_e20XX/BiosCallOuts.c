@@ -24,7 +24,7 @@
 #include "imc.h"
 #endif
 #include <stdlib.h>
-#include <spd_cache.h>
+#include <spd_bin.h>
 
 static AGESA_STATUS Fch_Oem_config(UINT32 Func, UINTN FchData, VOID *ConfigPtr);
 static AGESA_STATUS board_ReadSpd_from_cbfs(UINT32 Func, UINTN Data, VOID *ConfigPtr);

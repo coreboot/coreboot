@@ -15,7 +15,7 @@
 
 #include "AGESA.h"
 #include "amdlib.h"
-#include <spd_cache.h>
+#include <spd_bin.h>
 #include <northbridge/amd/pi/BiosCallOuts.h>
 #include "Ids.h"
 #include "OptionsIds.h"

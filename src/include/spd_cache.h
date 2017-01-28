@@ -18,9 +18,9 @@
 #include <stdint.h>
 
 #if IS_ENABLED(CONFIG_SPD_CACHE)
-int read_spd_from_cbfs(u8 *buf, int idx);
+int read_ddr3_spd_from_cbfs(u8 *buf, int idx);
 #else
-static inline int read_spd_from_cbfs(u8 *buf, int idx) { return -1; }
+static inline int read_ddr3_spd_from_cbfs(u8 *buf, int idx) { return -1; }
 #endif
 
 #endif

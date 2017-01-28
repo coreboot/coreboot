@@ -173,7 +173,9 @@ Method(_INI, 0) {
 
 #if IS_ENABLED(CONFIG_HUDSON_IMC_FWM)
 	#include "acpi/AmdImc.asl" /* Hudson IMC function */
+#if IS_ENABLED(CONFIG_ACPI_ENABLE_THERMAL_ZONE)
 	ITZE() /* enable IMC Fan Control*/
+#endif
 #endif
 } /* End Method(_SB._INI) */
 

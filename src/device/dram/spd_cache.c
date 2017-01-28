@@ -22,13 +22,14 @@
 #include <string.h>
 
 #define SPD_SIZE	128
-#define SPD_CRC_HI	127
-#define SPD_CRC_LO	126
 
 _Static_assert(SPD_SIZE == CONFIG_DIMM_SPD_SIZE, "configured SPD sizes differ");
 
-int read_spd_from_cbfs(u8 *buf, int idx)
+int read_ddr3_spd_from_cbfs(u8 *buf, int idx)
 {
+	const int SPD_CRC_HI = 127;
+	const int SPD_CRC_LO = 126;
+
 	const char *spd_file;
 	size_t spd_file_len = 0;
 	size_t min_len = (idx + 1) * CONFIG_DIMM_SPD_SIZE;

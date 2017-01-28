@@ -80,4 +80,8 @@ config BAP_E20_DDR3_1066
 
 endchoice
 
+config DIMM_SPD_SIZE
+	int
+	default 128
+
 endif # BOARD_ODE_E20XX

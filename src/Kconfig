@@ -1236,7 +1236,6 @@ config DIMM_MAX
 config DIMM_SPD_SIZE
 	int
 	default 256
-	depends on GENERIC_SPD_BIN
 	help
 	  Total SPD size that will be used for DIMM.
 	  Ex: DDR3 256, DDR4 512.

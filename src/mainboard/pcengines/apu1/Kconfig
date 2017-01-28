@@ -116,4 +116,8 @@ endchoice
 config UART_D_RS485
 	bool "UART D drives RTS# in RS485 mode" if APU1_PINMUX_UART_D
 
+config DIMM_SPD_SIZE
+	int
+	default 128
+
 endif # BOARD_PCENGINES_APU1

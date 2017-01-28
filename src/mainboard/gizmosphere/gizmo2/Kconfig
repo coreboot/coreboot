@@ -61,4 +61,8 @@ config HUDSON_LEGACY_FREE
 	bool
 	default y
 
+config DIMM_SPD_SIZE
+	int
+	default 128
+
 endif # BOARD_GIZMOSPHERE_GIZMO2

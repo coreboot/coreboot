@@ -1,6 +1,8 @@
 /*
  * This file is part of the coreboot project.
  *
+ * Copyright (C) 2012 Advanced Micro Devices, Inc.
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 2 of the License.
@@ -11,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-//BTDC Due to IMC Fan, ACPI control codes
 OperationRegion(IMIO, SystemIO, 0x3E, 0x02)
 Field(IMIO , ByteAcc, NoLock, Preserve) {
 	IMCX,8,

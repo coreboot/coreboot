@@ -19,6 +19,7 @@
 #include <spd_bin.h>
 #include <string.h>
 #include <device/early_smbus.h>
+#include <device/dram/ddr3.h>
 
 static u8 spd_data[CONFIG_DIMM_MAX * CONFIG_DIMM_SPD_SIZE] CAR_GLOBAL;
 
@@ -164,3 +165,46 @@ void get_spd_smbus(struct spd_block *blk)
 
 	update_spd_len(blk);
 }
+
+#if CONFIG_DIMM_SPD_SIZE == 128
+int read_ddr3_spd_from_cbfs(u8 *buf, int idx)
+{
+	const int SPD_CRC_HI = 127;
+	const int SPD_CRC_LO = 126;
+
+	const char *spd_file;
+	size_t spd_file_len = 0;
+	size_t min_len = (idx + 1) * CONFIG_DIMM_SPD_SIZE;
+
+	spd_file = cbfs_boot_map_with_leak("spd.bin", CBFS_TYPE_SPD,
+						&spd_file_len);
+	if (!spd_file)
+		printk(BIOS_EMERG, "file [spd.bin] not found in CBFS");
+	if (spd_file_len < min_len)
+		printk(BIOS_EMERG, "Missing SPD data.");
+	if (!spd_file || spd_file_len < min_len)
+		return -1;
+
+	memcpy(buf, spd_file + (idx * CONFIG_DIMM_SPD_SIZE), CONFIG_DIMM_SPD_SIZE);
+
+	u16 crc = spd_ddr3_calc_crc(buf, CONFIG_DIMM_SPD_SIZE);
+
+	if (((buf[SPD_CRC_LO] == 0) && (buf[SPD_CRC_HI] == 0))
+	 || (buf[SPD_CRC_LO] != (crc & 0xff))
+	 || (buf[SPD_CRC_HI] != (crc >> 8))) {
+		printk(BIOS_WARNING, "SPD CRC %02x%02x is invalid, should be %04x\n",
+			buf[SPD_CRC_HI], buf[SPD_CRC_LO], crc);
+		buf[SPD_CRC_LO] = crc & 0xff;
+		buf[SPD_CRC_HI] = crc >> 8;
+		u16 i;
+		printk(BIOS_WARNING, "\nDisplay the SPD");
+		for (i = 0; i < CONFIG_DIMM_SPD_SIZE; i++) {
+			if((i % 16) == 0x00)
+				printk(BIOS_WARNING, "\n%02x:  ", i);
+			printk(BIOS_WARNING, "%02x ", buf[i]);
+		}
+		printk(BIOS_WARNING, "\n");
+	 }
+	 return 0;
+}
+#endif

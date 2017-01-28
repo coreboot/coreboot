@@ -25,7 +25,7 @@
 #endif
 #include "hudson.h"
 #include <stdlib.h>
-#include <spd_cache.h>
+#include <spd_bin.h>
 
 static AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr);
 static AGESA_STATUS board_ReadSpd_from_cbfs(UINT32 Func, UINTN Data, VOID *ConfigPtr);

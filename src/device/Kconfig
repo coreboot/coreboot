@@ -210,10 +210,6 @@ config SMBUS_HAS_AUX_CHANNELS
 	bool
 	default n
 
-config SPD_CACHE
-	bool
-	default n
-
 config PCI
 	bool
 	default n

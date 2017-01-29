@@ -26,6 +26,7 @@ chip northbridge/amd/agesa/family15tn/root_complex
 
 			chip northbridge/amd/agesa/family15tn # PCI side of HT root complex
 				device pci 0.0 on  end # Root Complex
+				device pci 0.2 on  end # IOMMU
 				device pci 1.0 on  end # Internal Graphics P2P bridge 0x99XX
 				device pci 1.1 on  end # Internal Multimedia
 				device pci 2.0 on  end # PCIE SLOT0 x16 blue

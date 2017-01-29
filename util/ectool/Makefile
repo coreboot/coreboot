@@ -25,7 +25,7 @@ ifeq ($(shell uname -o 2>/dev/null), Cygwin)
 LDFLAGS = -lioperm
 endif
 
-ifeq ($(OS_ARCH), NetBSD)
+ifeq ($(OS_ARCH), $(filter $(OS_ARCH), NetBSD OpenBSD))
 LDFLAGS = -l$(shell uname -p)
 endif
 

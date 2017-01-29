@@ -18,14 +18,24 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <getopt.h>
-#ifndef __NetBSD__
+#if !(defined __NetBSD__ || defined __OpenBSD__)
 #include <sys/io.h>
 #endif
 #include <ec.h>
 #include <stdlib.h>
 
-#ifdef __NetBSD__
+#if defined __NetBSD__ || defined __OpenBSD__
+
 #include <machine/sysarch.h>
+
+# if defined __i386__
+#  define iopl i386_iopl
+# elif defined __NetBSD__
+#  define iopl x86_64_iopl
+# else
+#  define iopl amd64_iopl
+# endif
+
 #endif
 
 
@@ -113,15 +123,7 @@ int main(int argc, char *argv[])
 		}
 	}
 
-#ifdef __NetBSD__
-# ifdef __i386__
-	if (i386_iopl(3)) {
-# else
-	if (x86_64_iopl(3)) {
-# endif
-#else
 	if (iopl(3)) {
-#endif
 		printf("You need to be root.\n");
 		exit(1);
 	}

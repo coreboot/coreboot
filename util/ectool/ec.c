@@ -17,12 +17,12 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <unistd.h>
-#ifndef __NetBSD__
+#if !(defined __NetBSD__ || defined __OpenBSD__)
 #include <sys/io.h>
 #endif
 #include "ec.h"
 
-#ifdef __NetBSD__
+#if defined __NetBSD__ || defined __OpenBSD__
 #include <machine/sysarch.h>
 static uint8_t inb(unsigned port)
 {

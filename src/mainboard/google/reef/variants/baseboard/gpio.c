@@ -299,7 +299,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI(GPIO_19, UP_20K, DEEP),	 /* unused */
 	PAD_CFG_GPI_APIC_LOW(GPIO_20, UP_20K, DEEP), /* NFC IRQ */
 	PAD_CFG_GPI_APIC_LOW(GPIO_21, NONE, DEEP), /* Touch IRQ */
-	PAD_CFG_GPI_SCI_LOW(GPIO_22, NONE, DEEP, LEVEL), /* EC wake */
+	PAD_CFG_GPI_SCI_LOW(GPIO_22, NONE, DEEP, EDGE_SINGLE), /* EC wake */
 	PAD_CFG_GPI(GPIO_23, UP_20K, DEEP),	 /* unused */
 	PAD_CFG_GPI(GPIO_24, NONE, DEEP),	 /* PEN_PDCT_ODL */
 	PAD_CFG_GPI(GPIO_25, UP_20K, DEEP),	 /* unused */

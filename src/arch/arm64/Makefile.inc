@@ -172,8 +172,8 @@ BL31_LDFLAGS := --emit-relocs
 BL31 := $(obj)/bl31.elf
 
 $(BL31): $(obj)/build.h
-	@printf "    MAKE       $(subst $(obj)/,,$(@))\n"
-	CROSS_COMPILE="$(CROSS_COMPILE_arm64)" \
+	printf "    MAKE       $(subst $(obj)/,,$(@))\n"
+	+CROSS_COMPILE="$(CROSS_COMPILE_arm64)" \
 	CFLAGS="$(BL31_CFLAGS)" \
 	LDFLAGS="$(BL31_LDFLAGS)" \
 	$(MAKE) -C $(BL31_SOURCE) $(BL31_MAKEARGS) $(BL31_TARGET)

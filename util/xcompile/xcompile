@@ -56,9 +56,6 @@ clean_up() {
 	fi
 }
 
-# Create temporary file(s).
-TMPFILE="$(mktemp /tmp/temp.XXXXXX 2>/dev/null || echo /tmp/temp.coreboot.$RANDOM)"
-touch "$TMPFILE"
 trap clean_up EXIT
 
 
@@ -438,11 +435,24 @@ test_architecture() {
 	fi
 }
 
-# This loops over all supported architectures.
+OUT="$(mktemp /tmp/temp.XXXXXX 2>/dev/null || echo /tmp/temp.coreboot.$RANDOM)"
+rm -f $OUT
+
 for architecture in $SUPPORTED_ARCHITECTURES; do
+	(
+	TMPFILE="$(mktemp /tmp/temp.XXXXXX 2>/dev/null || echo /tmp/temp.coreboot.$RANDOM)"
+	touch $TMPFILE
 	test_architecture "$architecture"
 	detect_special_flags "$architecture"
 	detect_compiler_runtime "$architecture"
 	report_arch_toolchain
+	clean_up
+	) > $OUT.$architecture &
+done
+wait
+
+for architecture in $SUPPORTED_ARCHITECTURES; do
+	cat $OUT.$architecture
+	rm -f $OUT.$architecture
 done
 echo XCOMPILE_COMPLETE:=1

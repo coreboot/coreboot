@@ -21,7 +21,7 @@
 uint8_t board_id(void)
 {
 	static int id = -1;
-	static gpio_t pins[] = {[3] = GPIO(2, A, 7), [2] = GPIO(2, A, 2),
+	gpio_t pins[] = {[3] = GPIO(2, A, 7), [2] = GPIO(2, A, 2),
 		[1] = GPIO(2, A, 1), [0] = GPIO(2, A, 0)}; /* GPIO2_A0 is LSB */
 
 	if (id < 0) {
@@ -35,7 +35,7 @@ uint8_t board_id(void)
 uint32_t ram_code(void)
 {
 	uint32_t code;
-	static gpio_t pins[] = {[3] = GPIO(8, A, 3), [2] = GPIO(8, A, 2),
+	gpio_t pins[] = {[3] = GPIO(8, A, 3), [2] = GPIO(8, A, 2),
 		[1] = GPIO(8, A, 1), [0] = GPIO(8, A, 0)}; /* GPIO8_A0 is LSB */
 
 	code = gpio_base2_value(pins, ARRAY_SIZE(pins));

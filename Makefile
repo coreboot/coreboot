@@ -168,7 +168,7 @@ real-all: real-target
 .SECONDEXPANSION:
 
 $(KCONFIG_AUTOHEADER): $(KCONFIG_CONFIG)
-	$(MAKE) oldconfig
+	+$(MAKE) oldconfig
 
 # Add a new class of source/object files to the build system
 add-class= \

@@ -95,8 +95,8 @@ VBOOT_CFLAGS += -I$(abspath $(obj)) -include $(top)/src/include/kconfig.h -Wno-m
 VBOOT_CFLAGS += -DVBOOT_DEBUG
 
 $(VB2_LIB): $(obj)/config.h
-	@printf "    MAKE       $(subst $(obj)/,,$(@))\n"
-	$(Q)FIRMWARE_ARCH=$(VB_FIRMWARE_ARCH) \
+	printf "    MAKE       $(subst $(obj)/,,$(@))\n"
+	+FIRMWARE_ARCH=$(VB_FIRMWARE_ARCH) \
 	CC="$(CC_verstage)" \
 	CFLAGS="$(VBOOT_CFLAGS)" VBOOT2="y" \
 	$(MAKE) -C $(VBOOT_SOURCE) \

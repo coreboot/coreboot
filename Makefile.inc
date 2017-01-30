@@ -274,7 +274,7 @@ cbfs-files-processor-vsa= \
 # arg2: output
 cbfs-files-processor-defconfig= \
 	$(eval $(2): $(1) $(obj)/build.h; \
-		printf "    CREATE     $(2) (from $(1))\n"; \
+		+printf "    CREATE     $(2) (from $(1))\n"; \
 		printf "\# This image was built using coreboot " > $(2).tmp && \
 		grep "\<COREBOOT_VERSION\>" $(obj)/build.h |cut -d\" -f2 >> $(2).tmp && \
 		$(MAKE) DOTCONFIG=$(1) DEFCONFIG=$(2).tmp2 savedefconfig && \
@@ -486,7 +486,7 @@ $(ROMCC_BIN): $(top)/util/romcc/romcc.c
 IFDTOOL:=$(objutil)/ifdtool/ifdtool
 $(IFDTOOL):
 	@printf "    Compile IFDTOOL\n"
-	$(MAKE) -C $(top)/util/ifdtool
+	+$(MAKE) -C $(top)/util/ifdtool
 	cp -a $(top)/util/ifdtool/ifdtool $@
 
 IFDFAKE:=$(objutil)/ifdfake/ifdfake

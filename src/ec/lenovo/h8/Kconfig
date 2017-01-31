@@ -2,5 +2,14 @@ config EC_LENOVO_H8
 	select EC_ACPI
 	bool
 
+if EC_LENOVO_H8
+
+config SEABIOS_PS2_TIMEOUT
+	int
+	depends on PAYLOAD_SEABIOS
+	default 3000
+
+endif
+
 config H8_DOCK_EARLY_INIT
 	bool

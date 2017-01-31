@@ -75,9 +75,4 @@ config ONBOARD_VGA_IS_PRIMARY
 	bool
 	default y
 
-config SEABIOS_PS2_TIMEOUT
-	int
-	depends on PAYLOAD_SEABIOS
-	default 3000
-
 endif # BOARD_LENOVO_T520

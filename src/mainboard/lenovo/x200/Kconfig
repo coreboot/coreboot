@@ -47,9 +47,4 @@ config CBFS_SIZE
 	hex
 	default 0x200000
 
-config SEABIOS_PS2_TIMEOUT
-	int
-	depends on PAYLOAD_SEABIOS
-	default 3000
-
 endif # BOARD_LENOVO_X200

@@ -42,9 +42,4 @@ config MAX_CPUS
 	int
 	default 2
 
-config SEABIOS_PS2_TIMEOUT
-	int
-	depends on PAYLOAD_SEABIOS
-	default 3000
-
 endif

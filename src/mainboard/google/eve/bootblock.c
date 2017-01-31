@@ -34,7 +34,7 @@ void bootblock_mainboard_init(void)
 	uint32_t pm1_sts = inl(ACPI_BASE_ADDRESS + PM1_STS);
 
 	/* Turn on keyboard backlight to indicate we are booting */
-	if ((pm1_sts & WAK_STS) && (acpi_sleep_from_pm1(pm1_cnt) != ACPI_S3))
+	if (!((pm1_sts & WAK_STS) && (acpi_sleep_from_pm1(pm1_cnt) == ACPI_S3)))
 		google_chromeec_kbbacklight(75);
 
 	early_config_gpio();

@@ -1,0 +1,17 @@
+if BOARD_SIEMENS_MC_APL1
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select SOC_INTEL_APOLLOLAKE
+	select BOARD_ROMSIZE_KB_16384
+	select HAVE_ACPI_TABLES
+
+config MAINBOARD_DIR
+	string
+	default siemens/mc_apl1
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "MC APL1"
+
+endif # BOARD_SIEMENS_MC_APL1

@@ -1,0 +1,2 @@
+config BOARD_SIEMENS_MC_APL1
+	bool "MC APL1"

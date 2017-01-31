@@ -36,7 +36,7 @@
  *
  * @param type DIMM type. This is byte[3] of the SPD.
  */
-int dimm_is_registered(enum spd_dimm_type type)
+int spd_dimm_is_registered_ddr3(enum spd_dimm_type type)
 {
 	if ((type == SPD_DIMM_TYPE_RDIMM)
 	    | (type == SPD_DIMM_TYPE_MINI_RDIMM)

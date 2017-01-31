@@ -1,1 +1,1 @@
-romstage-y += ddr3.c
+romstage-y += ddr3.c ddr2.c

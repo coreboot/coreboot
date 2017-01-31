@@ -703,7 +703,7 @@ static void vx900_dram_freq(ramctr_timing * ctrl)
 	pci_mod_config8(MCU, 0x6b, 0x80, 0x00);
 
 	/* Step 8 - If we have registered DIMMs, we need to set bit[0] */
-	if (dimm_is_registered(ctrl->dimm_type)) {
+	if (spd_dimm_is_registered_ddr3(ctrl->dimm_type)) {
 		printram("Enabling RDIMM support in memory controller\n");
 		pci_mod_config8(MCU, 0x6c, 0x00, 0x01);
 	}

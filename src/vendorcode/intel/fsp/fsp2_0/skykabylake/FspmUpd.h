@@ -1,6 +1,6 @@
 /** @file
 
-Copyright (c) 2016, Intel Corporation. All rights reserved.<BR>
+Copyright (c) 2017, Intel Corporation. All rights reserved.<BR>
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -773,7 +773,8 @@ typedef struct {
   UINT8                       HyperThreading;
 
 /** Offset 0x02D4 - Enable or Disable CPU Ratio Override
-  Enable or Disable CPU Ratio Override; <b>0: Disable</b>; 1: Enable.
+  Enable or Disable CPU Ratio Override; <b>0: Disable</b>; 1: Enable. @note If disabled,
+  BIOS will use the default max non-turbo ratio, and will not use any flex ratio setting.
   $EN_DIS
 **/
   UINT8                       CpuRatioOverride;

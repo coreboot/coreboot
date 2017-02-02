@@ -32,7 +32,7 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 	/* DQS CPU<>DRAM map */
 	const u8 dqs_map[2][8] = {
 		{ 1, 0, 2, 3, 4, 5, 6, 7 },
-		{ 1, 0, 4, 5, 3, 2, 7, 6 } };
+		{ 1, 0, 5, 4, 2, 3, 7, 6 } };
 	/* Rcomp resistor */
 	const u16 rcomp_resistor[] = { 200, 81, 162 };
 	/* Rcomp target */

@@ -1,6 +1,6 @@
 /** @file
 
-Copyright (c) 2016, Intel Corporation. All rights reserved.<BR>
+Copyright (c) 2017, Intel Corporation. All rights reserved.<BR>
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -363,9 +363,16 @@ typedef struct {
 **/
   UINT8                       PchLanEnable;
 
-/** Offset 0x00FC
+/** Offset 0x00FC - Delay USB PDO Programming
+  Enable/disable delay of PDO programming for USB from PEI phase to DXE phase. 0:
+  disable, 1: enable
+  $EN_DIS
 **/
-  UINT8                       UnusedUpdSpace3[24];
+  UINT8                       DelayUsbPdoProgramming;
+
+/** Offset 0x00FD
+**/
+  UINT8                       UnusedUpdSpace3[23];
 
 /** Offset 0x0114 - Enable PCIE RP CLKREQ Support
   Enable/disable PCIE Root Port CLKREQ support. 0: disable, 1: enable. One byte for
@@ -739,7 +746,7 @@ typedef struct {
   UINT8                       SendVrMbxCmd1;
 
 /** Offset 0x02E4 - CpuS3ResumeMtrrData
-  Pointer CPU S3 Resume MTRR Data
+  Pointer to CPU S3 Resume MTRR Data
 **/
   UINT32                      CpuS3ResumeMtrrData;
 
@@ -2041,9 +2048,15 @@ typedef struct {
 **/
   UINT8                       MeUnconfigOnRtcClear;
 
-/** Offset 0x0779
+/** Offset 0x0779 - Check if MeUnconfigOnRtcClear is valid
+  The MeUnconfigOnRtcClear item could be not valid due to CMOS is clear.
+  $EN_DIS
 **/
-  UINT8                       ReservedFspsUpd[7];
+  UINT8                       MeUnconfigIsValid;
+
+/** Offset 0x077A
+**/
+  UINT8                       ReservedFspsUpd[6];
 } FSP_S_CONFIG;
 
 /** Fsp S Test Configuration
@@ -2517,14 +2530,16 @@ typedef struct {
 **/
   UINT8                       C1e;
 
-/** Offset 0x07DA - Enable or Disable Package Cstate Demotion
-  Enable or Disable Package Cstate Demotion. Disable; <b>1: Enable</b>
+/** Offset 0x07DA - Enable or Disable Package C-State Demotion
+  Enable or Disable Package C-State Demotion. 0: Disable; 1: Enable; <b>2: Auto</b>
+  (Auto: Enabled for Skylake; Disabled for Kabylake)
   $EN_DIS
 **/
   UINT8                       PkgCStateDemotion;
 
-/** Offset 0x07DB - Enable or Disable Package Cstate UnDemotion
-  Enable or Disable Package Cstate UnDemotion. Disable; <b>1: Enable</b>
+/** Offset 0x07DB - Enable or Disable Package C-State UnDemotion
+  Enable or Disable Package C-State UnDemotion. 0: Disable; 1: Enable; <b>2: Auto</b>
+  (Auto: Enabled for Skylake; Disabled for Kabylake)
   $EN_DIS
 **/
   UINT8                       PkgCStateUnDemotion;
@@ -2772,11 +2787,21 @@ typedef struct {
 **/
   UINT16                      PsysPmax;
 
-/** Offset 0x087E - ReservedCpuPostMemTest
+/** Offset 0x087E - CpuS3ResumeDataSize
+  Size of CPU S3 Resume Data
+**/
+  UINT16                      CpuS3ResumeDataSize;
+
+/** Offset 0x0880 - CpuS3ResumeData
+  Pointer to CPU S3 Resume Data
+**/
+  UINT32                      CpuS3ResumeData;
+
+/** Offset 0x0884 - ReservedCpuPostMemTest
   Reserved for CPU Post-Mem Test
   $EN_DIS
 **/
-  UINT8                       ReservedCpuPostMemTest[12];
+  UINT8                       ReservedCpuPostMemTest[6];
 
 /** Offset 0x088A - SgxSinitDataFromTpm
   SgxSinitDataFromTpm default values

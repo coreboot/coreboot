@@ -40,6 +40,7 @@
 #include <soc/cpu.h>
 #include <soc/msr.h>
 #include <soc/pci_devs.h>
+#include <soc/pm.h>
 #include <soc/ramstage.h>
 #include <soc/smm.h>
 #include <soc/systemagent.h>
@@ -371,6 +372,27 @@ static void configure_c_states(void)
 	wrmsr(MSR_C_STATE_LATENCY_CONTROL_5, msr);
 }
 
+/*
+ * The emulated ACPI timer allows disabling of the ACPI timer
+ * (PM1_TMR) to have no impart on the system.
+ */
+static void enable_pm_timer_emulation(void)
+{
+	/* ACPI PM timer emulation */
+	msr_t msr;
+	/*
+	 * The derived frequency is calculated as follows:
+	 *    (CTC_FREQ * msr[63:32]) >> 32 = target frequency.
+	 * Back solve the multiplier so the 3.579545MHz ACPI timer
+	 * frequency is used.
+	 */
+	msr.hi = (3579545ULL << 32) / CTC_FREQ;
+	/* Set PM1 timer IO port and enable*/
+	msr.lo = (EMULATE_DELAY_VALUE << EMULATE_DELAY_OFFSET_VALUE) |
+			EMULATE_PM_TMR_EN | (ACPI_BASE_ADDRESS + PM1_TMR);
+	wrmsr(MSR_EMULATE_PM_TMR, msr);
+}
+
 /* All CPUs including BSP will run the following function. */
 static void cpu_core_init(device_t cpu)
 {
@@ -389,6 +411,9 @@ static void cpu_core_init(device_t cpu)
 
 	/* Configure Intel Speed Shift */
 	configure_isst();
+
+	/* Enable ACPI Timer Emulation via MSR 0x121 */
+	enable_pm_timer_emulation();
 
 	/* Enable Direct Cache Access */
 	configure_dca_cap();
@@ -570,8 +595,6 @@ int soc_skip_ucode_update(u32 current_patch_id, u32 new_patch_id)
 			(current_patch_id == new_patch_id - 1);
 }
 
-/*
- * Do CPU MP Init before FSP Silicon Init
- */
+/* Do CPU MP Init before FSP Silicon Init */
 BOOT_STATE_INIT_ENTRY(BS_DEV_INIT_CHIPS, BS_ON_ENTRY, soc_init_cpus, NULL);
 BOOT_STATE_INIT_ENTRY(BS_DEV_INIT, BS_ON_EXIT, soc_post_cpus_init, NULL);

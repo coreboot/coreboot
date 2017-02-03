@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2007-2009 coresystems GmbH
  * Copyright (C) 2014 Google Inc.
- * Copyright (C) 2015 Intel Corporation.
+ * Copyright (C) 2015-2017 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,6 +15,8 @@
  * GNU General Public License for more details.
  */
 
+#include <assert.h>
+#include <bootstate.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -397,13 +399,6 @@ static const struct cpu_driver driver __cpu_driver = {
 static const void *microcode_patch;
 static int ht_disabled;
 
-static void pre_mp_init(void)
-{
-	/* Setup MTRRs based on physical address size. */
-	x86_setup_mtrrs_with_detect();
-	x86_mtrr_check();
-}
-
 static int get_cpu_count(void)
 {
 	msr_t msr;
@@ -463,7 +458,12 @@ static void post_mp_init(void)
 }
 
 static const struct mp_ops mp_ops = {
-	.pre_mp_init = pre_mp_init,
+	/*
+	 * Skip Pre MP init MTRR programming as MTRRs are mirrored from BSP,
+	 * that are set prior to ramstage.
+	 * Real MTRRs programming are being done after resource allocation.
+	 */
+	.pre_mp_init = NULL,
 	.get_cpu_count = get_cpu_count,
 	.get_smm_info = smm_info,
 	.get_microcode_info = get_microcode_info,
@@ -474,8 +474,10 @@ static const struct mp_ops mp_ops = {
 	.post_mp_init = post_mp_init,
 };
 
-void soc_init_cpus(device_t dev)
+static void soc_init_cpus(void *unused)
 {
+	device_t dev = dev_find_path(NULL, DEVICE_PATH_CPU_CLUSTER);
+	assert(dev != NULL);
 	struct bus *cpu_bus = dev->link_list;
 
 	if (mp_init_with_smm(cpu_bus, &mp_ops)) {
@@ -484,6 +486,13 @@ void soc_init_cpus(device_t dev)
 
 	/* Thermal throttle activation offset */
 	configure_thermal_target();
+}
+
+/* Ensure to re-program all MTRRs based on DRAM resource settings */
+static void soc_post_cpus_init(void *unused)
+{
+	if (mp_run_on_all_cpus(&x86_setup_mtrrs_with_detect, 1000) < 0)
+		printk(BIOS_ERR, "MTRR programming failure\n");
 }
 
 int soc_skip_ucode_update(u32 current_patch_id, u32 new_patch_id)
@@ -498,3 +507,9 @@ int soc_skip_ucode_update(u32 current_patch_id, u32 new_patch_id)
 	msr = rdmsr(MTRR_CAP_MSR);
 	return (msr.lo & PRMRR_SUPPORTED) && (current_patch_id == new_patch_id - 1);
 }
+
+/*
+ * Do CPU MP Init before FSP Silicon Init
+ */
+BOOT_STATE_INIT_ENTRY(BS_DEV_INIT_CHIPS, BS_ON_ENTRY, soc_init_cpus, NULL);
+BOOT_STATE_INIT_ENTRY(BS_DEV_INIT, BS_ON_EXIT, soc_post_cpus_init, NULL);

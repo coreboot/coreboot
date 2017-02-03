@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2014 Google Inc.
- * Copyright (C) 2015 Intel Corporation.
+ * Copyright (C) 2015-2017 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,6 @@
 void mainboard_silicon_init_params(FSP_S_CONFIG *params);
 void pch_enable_dev(device_t dev);
 void soc_init_pre_device(void *chip_info);
-void soc_init_cpus(device_t dev);
 void soc_irq_settings(FSP_SIL_UPD *params);
 const char *soc_acpi_name(struct device *dev);
 

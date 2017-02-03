@@ -81,16 +81,6 @@ entries
 1048         4       r       0        C0DRT1
 1052         4       r       0        C1DRT1
 
-1064         8       h       0        volume
-1080         1       e       9        first_battery
-1081         1       e       1        bluetooth
-1082         1       e       1        wwan
-1083         1       e       1        wlan
-1084         1       e       1        trackpoint
-1085         1       e       1        fn_ctrl_swap
-1086         1       e       1        sticky_fn
-1087         1       e       1        power_management_beeps
-1088         1       e       1        low_battery_beep
 # -----------------------------------------------------------------
 
 enumerations

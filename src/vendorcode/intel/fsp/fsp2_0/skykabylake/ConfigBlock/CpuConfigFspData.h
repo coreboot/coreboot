@@ -62,9 +62,9 @@ typedef union {
     UINT32 TxtEnable           : 1;
     UINT32 SkipMpInit          : 1;                 ///< For Fsp only, Silicon Initialization will skip MP Initialization (including BSP) if enabled. For non-FSP, this should always be 0.
     UINT32 RsvdBits            : 15;                ///< Reserved for future use
-    EFI_PHYSICAL_ADDRESS MicrocodePatchAddress;     ///< Pointer to microcode patch that is suitable for this processor.
+    UINT32 Reserved;
   } Bits;
-  UINT32 Uint32[3];
+  UINT32 Uint32[2];
 } CPU_CONFIG_FSP_DATA;
 #pragma pack (pop)
 

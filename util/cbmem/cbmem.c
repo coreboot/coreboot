@@ -61,6 +61,36 @@ static uint64_t lbtable_address;
 static size_t lbtable_size;
 
 /*
+ * Some architectures map /dev/mem memory in a way that doesn't support
+ * unaligned accesses. Most normal libc memcpy()s aren't safe to use in this
+ * case, so build our own which makes sure to never do unaligned accesses on
+ * *src (*dest is fine since we never map /dev/mem for writing).
+ */
+static void *aligned_memcpy(void *dest, const void *src, size_t n)
+{
+	u8 *d = dest;
+	const volatile u8 *s = src;	/* volatile to prevent optimization */
+
+	while ((uintptr_t)s & (sizeof(size_t) - 1)) {
+		if (n-- == 0)
+			return dest;
+		*d++ = *s++;
+	}
+
+	while (n >= sizeof(size_t)) {
+		*(size_t *)d = *(const volatile size_t *)s;
+		d += sizeof(size_t);
+		s += sizeof(size_t);
+		n -= sizeof(size_t);
+	}
+
+	while (n-- > 0)
+		*d++ = *s++;
+
+	return dest;
+}
+
+/*
  * calculate ip checksum (16 bit quantities) on a passed in buffer. In case
  * the buffer length is odd last byte is excluded from the calculation
  */
@@ -608,7 +638,7 @@ static void dump_console(void)
 
 	console_p = map_memory_size((unsigned long)console.cbmem_addr,
 	                            size + sizeof(size) + sizeof(cursor), 1);
-	memcpy(console_c, console_p + 8, size);
+	aligned_memcpy(console_c, console_p + 8, size);
 
 	printf("%s\n", console_c);
 	if (size < cursor)

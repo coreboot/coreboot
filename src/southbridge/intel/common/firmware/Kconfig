@@ -165,7 +165,6 @@ config IFD_PLATFORM_SECTION
 
 config LOCK_MANAGEMENT_ENGINE
 	bool "Lock ME/TXE section"
-	depends on HAVE_ME_BIN
 	default n
 	help
 	  The Intel Firmware Descriptor supports preventing write accesses

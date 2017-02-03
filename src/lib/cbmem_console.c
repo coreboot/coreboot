@@ -23,14 +23,14 @@
 
 /*
  * Structure describing console buffer. It is overlaid on a flat memory area,
- * with buffer_body covering the extent of the memory. Once the buffer is
+ * with body covering the extent of the memory. Once the buffer is
  * full, the cursor keeps going but the data is dropped on the floor. This
  * allows to tell how much data was lost in the process.
  */
 struct cbmem_console {
-	u32 buffer_size;
-	u32 buffer_cursor;
-	u8  buffer_body[0];
+	u32 size;
+	u32 cursor;
+	u8  body[0];
 }  __attribute__ ((__packed__));
 
 static struct cbmem_console *cbmem_console_p CAR_GLOBAL;
@@ -86,8 +86,8 @@ static inline void init_console_ptr(void *storage, u32 total_space, int flags)
 	}
 
 	if (flags & CBMEMC_RESET) {
-		cbm_cons_p->buffer_size = total_space - sizeof(struct cbmem_console);
-		cbm_cons_p->buffer_cursor = 0;
+		cbm_cons_p->size = total_space - sizeof(struct cbmem_console);
+		cbm_cons_p->cursor = 0;
 	}
 	if (flags & CBMEMC_APPEND) {
 		struct cbmem_console *tmp_cons_p = current_console();
@@ -143,9 +143,9 @@ void cbmemc_tx_byte(unsigned char data)
 	if (!cbm_cons_p)
 		return;
 
-	cursor = cbm_cons_p->buffer_cursor++;
-	if (cursor < cbm_cons_p->buffer_size)
-		cbm_cons_p->buffer_body[cursor] = data;
+	cursor = cbm_cons_p->cursor++;
+	if (cursor < cbm_cons_p->size)
+		cbm_cons_p->body[cursor] = data;
 }
 
 /*
@@ -161,19 +161,19 @@ static void copy_console_buffer(struct cbmem_console *old_cons_p,
 	struct cbmem_console *new_cons_p)
 {
 	u32 copy_size, dropped_chars;
-	u32 cursor = new_cons_p->buffer_cursor;
+	u32 cursor = new_cons_p->cursor;
 
-	if (old_cons_p->buffer_cursor < old_cons_p->buffer_size)
-		copy_size = old_cons_p->buffer_cursor;
+	if (old_cons_p->cursor < old_cons_p->size)
+		copy_size = old_cons_p->cursor;
 	else
-		copy_size = old_cons_p->buffer_size;
+		copy_size = old_cons_p->size;
 
-	if (cursor > new_cons_p->buffer_size)
+	if (cursor > new_cons_p->size)
 		copy_size = 0;
-	else if (cursor + copy_size > new_cons_p->buffer_size)
-		copy_size = new_cons_p->buffer_size - cursor;
+	else if (cursor + copy_size > new_cons_p->size)
+		copy_size = new_cons_p->size - cursor;
 
-	dropped_chars = old_cons_p->buffer_cursor - copy_size;
+	dropped_chars = old_cons_p->cursor - copy_size;
 	if (dropped_chars) {
 		/* Reserve 80 chars to report overflow, if possible. */
 		if (copy_size < 80)
@@ -182,7 +182,7 @@ static void copy_console_buffer(struct cbmem_console *old_cons_p,
 		dropped_chars += 80;
 	}
 
-	memcpy(new_cons_p->buffer_body + cursor, old_cons_p->buffer_body,
+	memcpy(new_cons_p->body + cursor, old_cons_p->body,
 	       copy_size);
 
 	cursor += copy_size;
@@ -200,13 +200,13 @@ static void copy_console_buffer(struct cbmem_console *old_cons_p,
 		/* Way more than possible number of dropped characters. */
 		u32 mult = 100000;
 
-		strcpy((char *)new_cons_p->buffer_body + cursor, loss_str1);
+		strcpy((char *)new_cons_p->body + cursor, loss_str1);
 		cursor += sizeof(loss_str1) - 1;
 
 		while (mult) {
 			int digit = dropped_chars / mult;
 			if (got_first_digit || digit) {
-				new_cons_p->buffer_body[cursor++] = digit + '0';
+				new_cons_p->body[cursor++] = digit + '0';
 				dropped_chars %= mult;
 				/* Excessive, but keeps it simple */
 				got_first_digit = 1;
@@ -214,10 +214,10 @@ static void copy_console_buffer(struct cbmem_console *old_cons_p,
 			mult /= 10;
 		}
 
-		strcpy((char *)new_cons_p->buffer_body + cursor, loss_str2);
+		strcpy((char *)new_cons_p->body + cursor, loss_str2);
 		cursor += sizeof(loss_str2) - 1;
 	}
-	new_cons_p->buffer_cursor = cursor;
+	new_cons_p->cursor = cursor;
 }
 
 static void cbmemc_reinit(int is_recovery)
@@ -260,7 +260,7 @@ void cbmem_dump_console(void)
 		return;
 
 	uart_init(0);
-	for (cursor = 0; cursor < cbm_cons_p->buffer_cursor; cursor++)
-		uart_tx_byte(0, cbm_cons_p->buffer_body[cursor]);
+	for (cursor = 0; cursor < cbm_cons_p->cursor; cursor++)
+		uart_tx_byte(0, cbm_cons_p->body[cursor]);
 }
 #endif

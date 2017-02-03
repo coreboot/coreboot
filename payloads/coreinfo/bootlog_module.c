@@ -35,6 +35,9 @@ struct cbmem_console {
 	u8 body[0];
 } __attribute__ ((__packed__));
 
+#define CURSOR_MASK ((1 << 28) - 1)
+#define OVERFLOW (1 << 31)
+
 
 static u32 char_width(char c, u32 cursor, u32 screen_width)
 {
@@ -114,23 +117,28 @@ static int bootlog_module_init(void)
 	}
 	/* Extract console information */
 	char *buffer = (char *)(&(console->body));
-	u32 buffer_size = console->size;
-	u32 cursor = console->cursor;
+	u32 size = console->size;
+	u32 cursor = console->cursor & CURSOR_MASK;
 
-	/* The cursor may be bigger than buffer size when the buffer is full */
-	if (cursor >= buffer_size) {
-		cursor = buffer_size - 1;
+	/* The cursor may be bigger than buffer size with older console code */
+	if (cursor >= size) {
+		cursor = size - 1;
 	}
 
 	/* Calculate how much characters will be displayed on screen */
-	u32 chars_count = calculate_chars_count(buffer, cursor + 1, SCREEN_X, LINES_SHOWN);
+	u32 chars_count = calculate_chars_count(buffer, cursor, SCREEN_X, LINES_SHOWN);
+	u32 overflow_chars_count = 0;
+	if (console->cursor & OVERFLOW) {
+		overflow_chars_count = calculate_chars_count(buffer + cursor,
+			size - cursor, SCREEN_X, LINES_SHOWN);
+	}
 
 	/* Sanity check, chars_count must be padded to full line */
-	if (chars_count % SCREEN_X != 0) {
+	if (chars_count % SCREEN_X || overflow_chars_count % SCREEN_X) {
 		return -2;
 	}
 
-	g_lines_count = chars_count / SCREEN_X;
+	g_lines_count = (chars_count + overflow_chars_count) / SCREEN_X;
 	g_max_cursor_line = MAX(g_lines_count - 1 - LINES_SHOWN, 0);
 
 	g_buf = malloc(chars_count);
@@ -138,17 +146,26 @@ static int bootlog_module_init(void)
 		return -3;
 	}
 
-	if (sanitize_buffer_for_display(buffer, cursor + 1,
-									g_buf, chars_count,
-									SCREEN_X) < 0) {
-		free(g_buf);
-		g_buf = NULL;
-		return -4;
+	if (console->cursor & OVERFLOW) {
+		if (sanitize_buffer_for_display(buffer + cursor, size - cursor,
+				g_buf, overflow_chars_count, SCREEN_X) < 0) {
+			goto err_free;
+		}
+	}
+	if (sanitize_buffer_for_display(buffer, cursor,
+					g_buf + overflow_chars_count,
+					chars_count, SCREEN_X) < 0) {
+		goto err_free;
 	}
 
 	/* TODO: Maybe a _cleanup hook where we call free()? */
 
 	return 0;
+
+err_free:
+	free(g_buf);
+	g_buf = NULL;
+	return -4;
 }
 
 static int bootlog_module_redraw(WINDOW *win)

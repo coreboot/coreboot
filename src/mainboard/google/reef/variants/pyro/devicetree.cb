@@ -187,6 +187,7 @@ chip soc/intel/apollolake
 					 .cid = PNP0C50_CID,
 					 .desc = WCOM_TS_DESC,
 					 .irq = IRQ_LEVEL_LOW(GPIO_21_IRQ),
+					 .probed = 1,
 					 .reset_gpio = ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_36),
 					 .reset_delay_ms = 20,
 					 .enable_gpio = ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_152),

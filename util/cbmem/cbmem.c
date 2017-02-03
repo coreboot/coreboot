@@ -601,52 +601,67 @@ static void dump_timestamps(int mach_readable)
 	unmap_memory();
 }
 
+struct cbmem_console {
+	u32 size;
+	u32 cursor;
+	u8  body[0];
+}  __attribute__ ((__packed__));
+
+#define CBMC_CURSOR_MASK ((1 << 28) - 1)
+#define CBMC_OVERFLOW (1 << 31)
+
 /* dump the cbmem console */
 static void dump_console(void)
 {
-	void *console_p;
+	struct cbmem_console *console_p;
 	char *console_c;
-	uint32_t size;
-	uint32_t cursor;
+	size_t size, cursor;
 
 	if (console.tag != LB_TAG_CBMEM_CONSOLE) {
 		fprintf(stderr, "No console found in coreboot table.\n");
 		return;
 	}
 
-	console_p = map_memory_size((unsigned long)console.cbmem_addr,
-					2 * sizeof(uint32_t), 1);
-	/* The in-memory format of the console area is:
-	 *  u32  size
-	 *  u32  cursor
-	 *  char console[size]
-	 * Hence we have to add 8 to get to the actual console string.
-	 */
-	size = ((uint32_t *)console_p)[0];
-	cursor = ((uint32_t *)console_p)[1];
-	/* Cursor continues to go on even after no more data fits in
-	 * the buffer but the data is dropped in this case.
-	 */
-	if (size > cursor)
+	size = sizeof(*console_p);
+	console_p = map_memory_size((unsigned long)console.cbmem_addr, size, 1);
+	cursor = console_p->cursor & CBMC_CURSOR_MASK;
+	if (!(console_p->cursor & CBMC_OVERFLOW) && cursor < console_p->size)
 		size = cursor;
-	console_c = calloc(1, size + 1);
+	else
+		size = console_p->size;
 	unmap_memory();
+
+	console_c = malloc(size + 1);
 	if (!console_c) {
 		fprintf(stderr, "Not enough memory for console.\n");
 		exit(1);
 	}
+	console_c[size] = '\0';
 
 	console_p = map_memory_size((unsigned long)console.cbmem_addr,
-	                            size + sizeof(size) + sizeof(cursor), 1);
-	aligned_memcpy(console_c, console_p + 8, size);
+	                            size + sizeof(*console_p), 1);
+	if (console_p->cursor & CBMC_OVERFLOW) {
+		if (cursor >= size) {
+			printf("cbmem: ERROR: CBMEM console struct is illegal, "
+			       "output may be corrupt or out of order!\n\n");
+			cursor = 0;
+		}
+		aligned_memcpy(console_c, console_p->body + cursor,
+			       size - cursor);
+		aligned_memcpy(console_c + size - cursor,
+			       console_p->body, cursor);
+	} else {
+		aligned_memcpy(console_c, console_p->body, size);
+	}
 
+	/* Slight memory corruption may occur between reboots and give us a few
+	   unprintable characters like '\0'. Replace them with '?' on output. */
+	for (cursor = 0; cursor < size; cursor++)
+		if (!isprint(console_c[cursor]) && !isspace(console_c[cursor]))
+			console_c[cursor] = '?';
 	printf("%s\n", console_c);
-	if (size < cursor)
-		printf("%d %s lost\n", cursor - size,
-			(cursor - size) == 1 ? "byte":"bytes");
 
 	free(console_c);
-
 	unmap_memory();
 }
 

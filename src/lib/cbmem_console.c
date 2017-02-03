@@ -23,9 +23,11 @@
 
 /*
  * Structure describing console buffer. It is overlaid on a flat memory area,
- * with body covering the extent of the memory. Once the buffer is
- * full, the cursor keeps going but the data is dropped on the floor. This
- * allows to tell how much data was lost in the process.
+ * with body covering the extent of the memory. Once the buffer is full,
+ * output will wrap back around to the start of the buffer. The high bit of the
+ * cursor field gets set to indicate that this happened. If the underlying
+ * storage allows this, the buffer will persist across multiple boots and append
+ * to the previous log.
  */
 struct cbmem_console {
 	u32 size;
@@ -33,10 +35,13 @@ struct cbmem_console {
 	u8  body[0];
 }  __attribute__ ((__packed__));
 
-static struct cbmem_console *cbmem_console_p CAR_GLOBAL;
+#define MAX_SIZE (1 << 28)	/* can't be changed without breaking readers! */
+#define CURSOR_MASK (MAX_SIZE - 1)	/* bits 31-28 are reserved for flags */
+#define OVERFLOW (1 << 31)		/* set if in ring-buffer mode */
+_Static_assert(CONFIG_CONSOLE_CBMEM_BUFFER_SIZE <= MAX_SIZE,
+	"cbmem_console format cannot support buffers larger than 256MB!");
 
-static void copy_console_buffer(struct cbmem_console *old_cons_p,
-	struct cbmem_console *new_cons_p);
+static struct cbmem_console *cbmem_console_p CAR_GLOBAL;
 
 #ifdef __PRE_RAM__
 /*
@@ -62,37 +67,35 @@ static void copy_console_buffer(struct cbmem_console *old_cons_p,
 static u8 static_console[STATIC_CONSOLE_SIZE];
 #endif
 
-/* flags for init */
-#define CBMEMC_RESET	(1<<0)
-#define CBMEMC_APPEND	(1<<1)
-
-static inline struct cbmem_console *current_console(void)
+static struct cbmem_console *current_console(void)
 {
 	return car_sync_var(cbmem_console_p);
 }
 
-static inline void current_console_set(struct cbmem_console *new_console_p)
+static void current_console_set(struct cbmem_console *new_console_p)
 {
 	car_set_var(cbmem_console_p, new_console_p);
 }
 
-static inline void init_console_ptr(void *storage, u32 total_space, int flags)
+static int buffer_valid(struct cbmem_console *cbm_cons_p, u32 total_space)
+{
+	return (cbm_cons_p->cursor & CURSOR_MASK) < cbm_cons_p->size &&
+	       cbm_cons_p->size <= MAX_SIZE &&
+	       cbm_cons_p->size == total_space - sizeof(struct cbmem_console);
+}
+
+static void init_console_ptr(void *storage, u32 total_space)
 {
 	struct cbmem_console *cbm_cons_p = storage;
 
-	if (!cbm_cons_p || total_space == 0) {
+	if (!cbm_cons_p || total_space <= sizeof(struct cbmem_console)) {
 		current_console_set(NULL);
 		return;
 	}
 
-	if (flags & CBMEMC_RESET) {
+	if (!buffer_valid(cbm_cons_p, total_space)) {
 		cbm_cons_p->size = total_space - sizeof(struct cbmem_console);
 		cbm_cons_p->cursor = 0;
-	}
-	if (flags & CBMEMC_APPEND) {
-		struct cbmem_console *tmp_cons_p = current_console();
-		if (tmp_cons_p)
-			copy_console_buffer(tmp_cons_p, cbm_cons_p);
 	}
 
 	current_console_set(cbm_cons_p);
@@ -101,149 +104,74 @@ static inline void init_console_ptr(void *storage, u32 total_space, int flags)
 void cbmemc_init(void)
 {
 #ifdef __PRE_RAM__
-	int flags = 0;
-
-	/* If in bootblock always initialize the console first. */
-	if (ENV_BOOTBLOCK)
-		flags = CBMEMC_RESET;
-	else if (ENV_ROMSTAGE) {
-		/* Initialize console for the first time in romstage when
-		 * there's no prior stage that initialized it first. */
-		if (!IS_ENABLED(CONFIG_VBOOT_STARTS_IN_BOOTBLOCK) &&
-		    !IS_ENABLED(CONFIG_BOOTBLOCK_CONSOLE))
-			flags = CBMEMC_RESET;
-	} else if (ENV_VERSTAGE) {
-		/*
-		 * Initialize console for the first time in verstage when
-		 * there is no console in bootblock. Otherwise honor the
-		 * bootblock console when verstage comes right after
-		 * bootblock.
-		 */
-		if (IS_ENABLED(CONFIG_VBOOT_STARTS_IN_BOOTBLOCK) &&
-		    !IS_ENABLED(CONFIG_BOOTBLOCK_CONSOLE))
-			flags = CBMEMC_RESET;
-	}
-
-	init_console_ptr(_preram_cbmem_console,
-			_preram_cbmem_console_size, flags);
+	/* Pre-RAM environments use special buffer placed by linker script. */
+	init_console_ptr(_preram_cbmem_console, _preram_cbmem_console_size);
 #else
-	/*
-	 * Initializing before CBMEM is available, use static buffer to store
-	 * the log.
-	 */
-	init_console_ptr(static_console, sizeof(static_console), CBMEMC_RESET);
+	/* Post-RAM uses static (BSS) buffer before CBMEM is reinitialized. */
+	init_console_ptr(static_console, sizeof(static_console));
 #endif
 }
 
 void cbmemc_tx_byte(unsigned char data)
 {
 	struct cbmem_console *cbm_cons_p = current_console();
-	u32 cursor;
 
-	if (!cbm_cons_p)
+	if (!cbm_cons_p || !cbm_cons_p->size)
 		return;
 
-	cursor = cbm_cons_p->cursor++;
-	if (cursor < cbm_cons_p->size)
-		cbm_cons_p->body[cursor] = data;
+	u32 flags = cbm_cons_p->cursor & ~CURSOR_MASK;
+	u32 cursor = cbm_cons_p->cursor & CURSOR_MASK;
+
+	cbm_cons_p->body[cursor++] = data;
+	if (cursor >= cbm_cons_p->size) {
+		cursor = 0;
+		flags |= OVERFLOW;
+	}
+
+	cbm_cons_p->cursor = flags | cursor;
 }
 
 /*
- * Copy the current console buffer (either from the cache as RAM area, or from
- * the static buffer, pointed at by cbmem_console_p) into the CBMEM console
- * buffer space (pointed at by new_cons_p), concatenating the copied data with
- * the CBMEM console buffer contents.
- *
- * If there is overflow - add to the destination area a string, reporting the
- * overflow and the number of dropped characters.
+ * Copy the current console buffer (either from the cache as RAM area or from
+ * the static buffer, pointed at by src_cons_p) into the newly initialized CBMEM
+ * console. The use of cbmemc_tx_byte() ensures that all special cases for the
+ * target console (e.g. overflow) will be handled. If there had been an
+ * overflow in the source console, log a message to that effect.
  */
-static void copy_console_buffer(struct cbmem_console *old_cons_p,
-	struct cbmem_console *new_cons_p)
+static void copy_console_buffer(struct cbmem_console *src_cons_p)
 {
-	u32 copy_size, dropped_chars;
-	u32 cursor = new_cons_p->cursor;
+	u32 c;
 
-	if (old_cons_p->cursor < old_cons_p->size)
-		copy_size = old_cons_p->cursor;
-	else
-		copy_size = old_cons_p->size;
+	if (!src_cons_p)
+		return;
 
-	if (cursor > new_cons_p->size)
-		copy_size = 0;
-	else if (cursor + copy_size > new_cons_p->size)
-		copy_size = new_cons_p->size - cursor;
-
-	dropped_chars = old_cons_p->cursor - copy_size;
-	if (dropped_chars) {
-		/* Reserve 80 chars to report overflow, if possible. */
-		if (copy_size < 80)
-			return;
-		copy_size -= 80;
-		dropped_chars += 80;
+	if (src_cons_p->cursor & OVERFLOW) {
+		const char overflow_warning[] = "\n*** Pre-CBMEM console "
+			"overflowed, log truncated ***\n";
+		for (c = 0; c < sizeof(overflow_warning) - 1; c++)
+			cbmemc_tx_byte(overflow_warning[c]);
+		for (c = src_cons_p->cursor & CURSOR_MASK;
+		     c < src_cons_p->size; c++)
+			cbmemc_tx_byte(src_cons_p->body[c]);
 	}
 
-	memcpy(new_cons_p->body + cursor, old_cons_p->body,
-	       copy_size);
+	for (c = 0; c < (src_cons_p->cursor & CURSOR_MASK); c++)
+		cbmemc_tx_byte(src_cons_p->body[c]);
 
-	cursor += copy_size;
-
-	if (dropped_chars) {
-		const char loss_str1[] = "\n\n*** Log truncated, ";
-		const char loss_str2[] = " characters dropped. ***\n\n";
-
-		/*
-		 * When running from ROM sprintf is not available, a simple
-		 * itoa implementation is used instead.
-		 */
-		int got_first_digit = 0;
-
-		/* Way more than possible number of dropped characters. */
-		u32 mult = 100000;
-
-		strcpy((char *)new_cons_p->body + cursor, loss_str1);
-		cursor += sizeof(loss_str1) - 1;
-
-		while (mult) {
-			int digit = dropped_chars / mult;
-			if (got_first_digit || digit) {
-				new_cons_p->body[cursor++] = digit + '0';
-				dropped_chars %= mult;
-				/* Excessive, but keeps it simple */
-				got_first_digit = 1;
-			}
-			mult /= 10;
-		}
-
-		strcpy((char *)new_cons_p->body + cursor, loss_str2);
-		cursor += sizeof(loss_str2) - 1;
-	}
-	new_cons_p->cursor = cursor;
+	/* Invalidate the source console, so it will be reinitialized on the
+	   next reboot. Otherwise, we might copy the same bytes again. */
+	src_cons_p->size = 0;
 }
 
 static void cbmemc_reinit(int is_recovery)
 {
-	struct cbmem_console *cbm_cons_p;
 	const size_t size = CONFIG_CONSOLE_CBMEM_BUFFER_SIZE;
-	int flags = CBMEMC_APPEND;
+	/* If CBMEM entry already existed, old contents are not altered. */
+	struct cbmem_console *cbmem_cons_p = cbmem_add(CBMEM_ID_CONSOLE, size);
+	struct cbmem_console *previous_cons_p = current_console();
 
-	/* No appending when no preram console available and adding for
-	 * the first time. */
-	if (!ENV_RAMSTAGE && !ENV_POSTCAR && _preram_cbmem_console_size == 0)
-		flags = CBMEMC_RESET;
-
-	/* Need to reset the newly added cbmem console in romstage. */
-	if (ENV_ROMSTAGE)
-		flags |= CBMEMC_RESET;
-
-	/* Need to reset the newly added cbmem console in ramstage
-	 * when there was no console in preram environment. */
-	if (ENV_RAMSTAGE && IS_ENABLED(CONFIG_LATE_CBMEM_INIT))
-		flags |= CBMEMC_RESET;
-
-	/* If CBMEM entry already existed, old contents is not altered. */
-	cbm_cons_p = cbmem_add(CBMEM_ID_CONSOLE, size);
-
-	init_console_ptr(cbm_cons_p, size, flags);
+	init_console_ptr(cbmem_cons_p, size);
+	copy_console_buffer(previous_cons_p);
 }
 ROMSTAGE_CBMEM_INIT_HOOK(cbmemc_reinit)
 RAMSTAGE_CBMEM_INIT_HOOK(cbmemc_reinit)
@@ -253,14 +181,18 @@ POSTCAR_CBMEM_INIT_HOOK(cbmemc_reinit)
 void cbmem_dump_console(void)
 {
 	struct cbmem_console *cbm_cons_p;
-	int cursor;
+	u32 cursor;
 
 	cbm_cons_p = current_console();
 	if (!cbm_cons_p)
 		return;
 
 	uart_init(0);
-	for (cursor = 0; cursor < cbm_cons_p->cursor; cursor++)
+	if (cbm_cons_p->cursor & OVERFLOW)
+		for (cursor = cbm_cons_p->cursor & CURSOR_MASK;
+		     cursor < cbm_cons_p->size; cursor++)
+			uart_tx_byte(0, cbm_cons_p->body[cursor]);
+	for (cursor = 0; cursor < (cbm_cons_p->cursor & CURSOR_MASK); cursor++)
 		uart_tx_byte(0, cbm_cons_p->body[cursor]);
 }
 #endif

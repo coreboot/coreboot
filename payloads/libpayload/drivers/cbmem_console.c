@@ -36,6 +36,9 @@ struct cbmem_console {
 	uint8_t body[0];
 } __attribute__ ((__packed__));
 
+#define CURSOR_MASK ((1 << 28) - 1)
+#define OVERFLOW (1 << 31)
+
 static struct cbmem_console *cbmem_console_p;
 
 static struct console_output_driver cbmem_console_driver =
@@ -43,18 +46,32 @@ static struct console_output_driver cbmem_console_driver =
 	.write = &cbmem_console_write,
 };
 
+static void do_write(const void *buffer, size_t count)
+{
+	memcpy(cbmem_console_p->body + (cbmem_console_p->cursor & CURSOR_MASK),
+	       buffer, count);
+	cbmem_console_p->cursor += count;
+}
+
 void cbmem_console_init(void)
 {
 	cbmem_console_p = lib_sysinfo.cbmem_cons;
-	if (cbmem_console_p)
+	if (cbmem_console_p && cbmem_console_p->size)
 		console_add_output_driver(&cbmem_console_driver);
 }
 
 void cbmem_console_write(const void *buffer, size_t count)
 {
-	if (cbmem_console_p->cursor + count >= cbmem_console_p->size)
-		return;
+	while ((cbmem_console_p->cursor & CURSOR_MASK) + count >=
+	       cbmem_console_p->size) {
+		size_t still_fits = cbmem_console_p->size -
+				    (cbmem_console_p->cursor & CURSOR_MASK);
+		do_write(buffer, still_fits);
+		cbmem_console_p->cursor &= ~CURSOR_MASK;
+		cbmem_console_p->cursor |= OVERFLOW;
+		buffer += still_fits;
+		count -= still_fits;
+	}
 
-	memcpy(cbmem_console_p->body + cbmem_console_p->cursor, buffer, count);
-	cbmem_console_p->cursor += count;
+	do_write(buffer, count);
 }

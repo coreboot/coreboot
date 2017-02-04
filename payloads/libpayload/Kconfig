@@ -331,6 +331,7 @@ config FONT_SCALE_FACTOR
 
 config PC_I8042
 	bool "A common PC i8042 driver"
+	default y if PC_KEYBOARD
 	default n
 	help
 	  To be used by PC_KEYBOARD and PC_MOUSE.

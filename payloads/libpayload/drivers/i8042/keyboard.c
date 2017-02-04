@@ -2,6 +2,7 @@
  * This file is part of the libpayload project.
  *
  * Copyright (C) 2008 Advanced Micro Devices, Inc.
+ * Copyright (C) 2017 Patrick Rudolph <siro@das-labor.org>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -162,31 +163,21 @@ static struct layout_maps keyboard_layouts[] = {
 #define MOD_CAPSLOCK (1 << 2)
 #define MOD_ALT      (1 << 3)
 
-static void keyboard_cmd(unsigned char cmd, unsigned char val)
+static unsigned char keyboard_cmd(unsigned char cmd)
 {
-	while (inb(0x64) & 2);
-	outb(cmd, 0x60);
-	mdelay(20);
+	i8042_write_data(cmd);
 
-	while (inb(0x64) & 2);
-	outb(val, 0x60);
-	mdelay(20);
+	return i8042_wait_read_ps2() == 0xfa;
 }
 
 int keyboard_havechar(void)
 {
-	unsigned char c = inb(0x64);
-	return (c == 0xFF) ? 0 : c & 1;
+	return i8042_data_ready_ps2();
 }
 
 unsigned char keyboard_get_scancode(void)
 {
-	unsigned char ch = 0;
-
-	if (keyboard_havechar())
-		ch = inb(0x60);
-
-	return ch;
+	return i8042_read_data_ps2();
 }
 
 int keyboard_getchar(void)
@@ -224,10 +215,12 @@ int keyboard_getchar(void)
 	case 0x3a:
 		if (modifier & MOD_CAPSLOCK) {
 			modifier &= ~MOD_CAPSLOCK;
-			keyboard_cmd(0xed, (0 << 2));
+			if (keyboard_cmd(0xed))
+				keyboard_cmd(0 << 2);
 		} else {
 			modifier |= MOD_CAPSLOCK;
-			keyboard_cmd(0xed, (1 << 2));
+			if (keyboard_cmd(0xed))
+				keyboard_cmd(1 << 2);
 		}
 		break;
 	}
@@ -262,16 +255,6 @@ int keyboard_getchar(void)
 	return ret;
 }
 
-static int keyboard_wait_write(void)
-{
-	int retries = 10000;
-
-	while(retries-- && (inb(0x64) & 0x02))
-		udelay(50);
-
-	return (retries <= 0) ? -1 : 0;
-}
-
 /**
  * Set keyboard layout
  * @param country string describing the keyboard layout language.
@@ -303,11 +286,32 @@ static struct console_input_driver cons = {
 
 void keyboard_init(void)
 {
+	unsigned int ret;
 	map = &keyboard_layouts[0];
 
-	/* If 0x64 returns 0xff, then we have no keyboard
-	 * controller */
-	if (inb(0x64) == 0xFF)
+	/* Initialized keyboard controller. */
+	if (!i8042_probe() || !i8042_has_ps2())
+		return;
+
+	/* Empty keyboard buffer */
+	while (keyboard_havechar())
+		keyboard_getchar();
+
+	/* Enable first PS/2 port */
+	i8042_cmd(0xae);
+
+	/* Set scancode set 1 */
+	ret = keyboard_cmd(0xf0);
+	if (!ret)
+		return;
+
+	ret = keyboard_cmd(0x01);
+	if (!ret)
+		return;
+
+	/* Enable scanning */
+	ret = keyboard_cmd(0xf4);
+	if (!ret)
 		return;
 
 	console_add_input_driver(&cons);
@@ -325,10 +329,12 @@ void keyboard_disconnect(void)
 		keyboard_getchar();
 
 	/* Send keyboard disconnect command */
-	outb(I8042_CMD_DIS_KB, 0x64);
-	keyboard_wait_write();
+	i8042_cmd(I8042_CMD_DIS_KB);
 
 	/* Hand off with empty buffer */
 	while (keyboard_havechar())
 		keyboard_getchar();
+
+	/* Release keyboard controller driver */
+	i8042_close();
 }

@@ -204,6 +204,15 @@ int i8042_wait_read_aux(void);
 /** @} */
 
 /**
+ * @defgroup i8042 PS2 Mouse functions
+ * @ingroup input
+ * @{
+ */
+void i8042_mouse_init(void);
+void i8042_mouse_disconnect(void);
+/** @} */
+
+/**
  * @defgroup serial Serial functions
  * @ingroup input
  * @{

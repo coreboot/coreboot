@@ -60,7 +60,9 @@ void mouse_cursor_add_input_driver(struct mouse_cursor_input_driver *const in)
 /** Init enabled mouse cursor drivers */
 void mouse_cursor_init(void)
 {
-/* FIXME */
+#if IS_ENABLED(CONFIG_LP_PC_MOUSE)
+	i8042_mouse_init();
+#endif
 }
 
 static u32 mouse_buttons;

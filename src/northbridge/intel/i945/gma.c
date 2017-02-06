@@ -293,14 +293,6 @@ static int intel_gma_init_lvds(struct northbridge_intel_i945_config *conf,
 	write32(mmiobase + DSPPOS(0), 0);
 
 	/* Backlight init. */
-	write32(mmiobase + FW_BLC_SELF, FW_BLC_SELF_EN_MASK);
-	write32(mmiobase + FW_BLC, 0x011d011a);
-	write32(mmiobase + FW_BLC2, 0x00000102);
-	write32(mmiobase + FW_BLC_SELF, FW_BLC_SELF_EN_MASK);
-	write32(mmiobase + FW_BLC_SELF, 0x0001003f);
-	write32(mmiobase + FW_BLC, 0x011d0109);
-	write32(mmiobase + FW_BLC2, 0x00000102);
-	write32(mmiobase + FW_BLC_SELF, FW_BLC_SELF_EN_MASK);
 	write32(mmiobase + BLC_PWM_CTL, conf->gpu_backlight);
 
 	edid.bytes_per_line = (edid.bytes_per_line + 63) & ~63;

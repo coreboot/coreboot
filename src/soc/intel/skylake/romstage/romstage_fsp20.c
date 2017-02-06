@@ -185,16 +185,12 @@ static void cpu_flex_override(FSP_M_CONFIG *m_cfg)
 	m_cfg->CpuRatio = (flex_ratio.lo >> 8) & 0xff;
 }
 
-static void soc_memory_init_params(FSP_M_CONFIG *m_cfg)
+static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
+			const struct soc_intel_skylake_config *config)
 {
-	const struct device *dev;
-	const struct soc_intel_skylake_config *config;
 	int i;
 	uint32_t mask = 0;
 
-	/* Set the parameters for MemoryInit */
-	dev = dev_find_slot(0, PCI_DEVFN(PCH_DEV_SLOT_LPC, 0));
-	config = dev->chip_info;
 	/*
 	 * Set IGD stolen size to 64MB.  The FBC hardware for skylake does not
 	 * have access to the bios_reserved range so it always assumes 8MB is
@@ -207,7 +203,6 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg)
 	m_cfg->TsegSize = CONFIG_SMM_TSEG_SIZE;
 	m_cfg->IedSize = CONFIG_IED_REGION_SIZE;
 	m_cfg->ProbelessTrace = config->ProbelessTrace;
-	m_cfg->EnableTraceHub = config->EnableTraceHub;
 	if (vboot_recovery_mode_enabled())
 		m_cfg->SaGv = 0; /* Disable SaGv in recovery mode. */
 	else
@@ -228,10 +223,15 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg)
 
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 {
+	const struct device *dev;
+	const struct soc_intel_skylake_config *config;
 	FSP_M_CONFIG *m_cfg = &mupd->FspmConfig;
 	FSP_M_TEST_CONFIG *m_t_cfg = &mupd->FspmTestConfig;
 
-	soc_memory_init_params(m_cfg);
+	dev = dev_find_slot(0, PCI_DEVFN(PCH_DEV_SLOT_LPC, 0));
+	config = dev->chip_info;
+
+	soc_memory_init_params(m_cfg, config);
 
 	/* Enable DMI Virtual Channel for ME */
 	m_t_cfg->DmiVcm = 0x01;
@@ -239,6 +239,12 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	/* Enable Sending DID to ME */
 	m_t_cfg->SendDidMsg = 0x01;
 	m_t_cfg->DidInitStat = 0x01;
+
+	/* DCI and TraceHub configs */
+	m_t_cfg->PchDciEn = config->PchDciEn;
+	m_cfg->EnableTraceHub = config->EnableTraceHub;
+	m_cfg->TraceHubMemReg0Size = config->TraceHubMemReg0Size;
+	m_cfg->TraceHubMemReg1Size = config->TraceHubMemReg1Size;
 
 	mainboard_memory_init_params(mupd);
 }

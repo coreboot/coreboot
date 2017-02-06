@@ -157,6 +157,11 @@ struct soc_intel_skylake_config {
 
 	/* Trace Hub function */
 	u8 EnableTraceHub;
+	u32 TraceHubMemReg0Size;
+	u32 TraceHubMemReg1Size;
+
+	/* DCI Enable/Disable */
+	u8 PchDciEn;
 
 	/* Pcie Root Ports */
 	u8 PcieRpEnable[CONFIG_MAX_ROOT_PORTS];

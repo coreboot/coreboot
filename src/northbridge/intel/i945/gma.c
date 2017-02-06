@@ -47,7 +47,7 @@
 
 #define BASE_FREQUENCY 100000
 
-static int gtt_setup(void *mmiobase)
+static int gtt_setup(u8 *mmiobase)
 {
 	unsigned long PGETBL_save;
 	unsigned long tom; // top of memory
@@ -78,7 +78,7 @@ static int gtt_setup(void *mmiobase)
 
 static int intel_gma_init_lvds(struct northbridge_intel_i945_config *conf,
 			  unsigned int pphysbase, unsigned int piobase,
-			  void *pmmio, unsigned int pgfx)
+			  u8 *mmiobase, unsigned int pgfx)
 {
 	struct edid edid;
 	struct edid_mode *mode;
@@ -100,9 +100,9 @@ static int intel_gma_init_lvds(struct northbridge_intel_i945_config *conf,
 
 	printk(BIOS_SPEW,
 	       "i915lightup: graphics %p mmio %p addrport %04x physbase %08x\n",
-	       (void *)pgfx, pmmio, piobase, pphysbase);
+	       (void *)pgfx, mmiobase, piobase, pphysbase);
 
-	intel_gmbus_read_edid(pmmio + GMBUS0, 3, 0x50, edid_data,
+	intel_gmbus_read_edid(mmiobase + GMBUS0, 3, 0x50, edid_data,
 			sizeof(edid_data));
 	decode_edid(edid_data, sizeof(edid_data), &edid);
 	mode = &edid.mode;
@@ -123,41 +123,41 @@ static int intel_gma_init_lvds(struct northbridge_intel_i945_config *conf,
 	for (i = 0; i < 2; i++)
 		for (j = 0; j < 0x100; j++)
 			/* R = j, G = j, B = j.  */
-			write32(pmmio + PALETTE(i) + 4 * j, 0x10101 * j);
+			write32(mmiobase + PALETTE(i) + 4 * j, 0x10101 * j);
 
-	write32(pmmio + PCH_PP_CONTROL, PANEL_UNLOCK_REGS
-		| (read32(pmmio + PCH_PP_CONTROL) & ~PANEL_UNLOCK_MASK));
+	write32(mmiobase + PCH_PP_CONTROL, PANEL_UNLOCK_REGS
+		| (read32(mmiobase + PCH_PP_CONTROL) & ~PANEL_UNLOCK_MASK));
 
-	write32(pmmio + MI_ARB_STATE, MI_ARB_C3_LP_WRITE_ENABLE | (1 << 27));
+	write32(mmiobase + MI_ARB_STATE, MI_ARB_C3_LP_WRITE_ENABLE | (1 << 27));
 	/* Clean registers.  */
 	for (i = 0; i < 0x20; i += 4)
-		write32(pmmio + RENDER_RING_BASE + i, 0);
+		write32(mmiobase + RENDER_RING_BASE + i, 0);
 	for (i = 0; i < 0x20; i += 4)
-		write32(pmmio + FENCE_REG_965_0 + i, 0);
-	write32(pmmio + PP_ON_DELAYS, 0);
-	write32(pmmio + PP_OFF_DELAYS, 0);
+		write32(mmiobase + FENCE_REG_965_0 + i, 0);
+	write32(mmiobase + PP_ON_DELAYS, 0);
+	write32(mmiobase + PP_OFF_DELAYS, 0);
 
 	/* Disable VGA.  */
-	write32(pmmio + VGACNTRL, VGA_DISP_DISABLE);
+	write32(mmiobase + VGACNTRL, VGA_DISP_DISABLE);
 
 	/* Disable pipes.  */
-	write32(pmmio + PIPECONF(0), 0);
-	write32(pmmio + PIPECONF(1), 0);
+	write32(mmiobase + PIPECONF(0), 0);
+	write32(mmiobase + PIPECONF(1), 0);
 
 	/* Init PRB0.  */
-	write32(pmmio + HWS_PGA, 0x352d2000);
-	write32(pmmio + PRB0_CTL, 0);
-	write32(pmmio + PRB0_HEAD, 0);
-	write32(pmmio + PRB0_TAIL, 0);
-	write32(pmmio + PRB0_START, 0);
-	write32(pmmio + PRB0_CTL, 0x0001f001);
+	write32(mmiobase + HWS_PGA, 0x352d2000);
+	write32(mmiobase + PRB0_CTL, 0);
+	write32(mmiobase + PRB0_HEAD, 0);
+	write32(mmiobase + PRB0_TAIL, 0);
+	write32(mmiobase + PRB0_START, 0);
+	write32(mmiobase + PRB0_CTL, 0x0001f001);
 
-	write32(pmmio + D_STATE, DSTATE_PLL_D3_OFF
+	write32(mmiobase + D_STATE, DSTATE_PLL_D3_OFF
 		| DSTATE_GFX_CLOCK_GATING | DSTATE_DOT_CLOCK_GATING);
-	write32(pmmio + ECOSKPD, 0x00010000);
-	write32(pmmio + HWSTAM, 0xeffe);
-	write32(pmmio + PORT_HOTPLUG_EN, conf->gpu_hotplug);
-	write32(pmmio + INSTPM, 0x08000000 | INSTPM_AGPBUSY_DIS);
+	write32(mmiobase + ECOSKPD, 0x00010000);
+	write32(mmiobase + HWSTAM, 0xeffe);
+	write32(mmiobase + PORT_HOTPLUG_EN, conf->gpu_hotplug);
+	write32(mmiobase + INSTPM, 0x08000000 | INSTPM_AGPBUSY_DIS);
 
 	/* p2 divisor must 7 for dual channel LVDS */
 	/* and 14 for single channel LVDS */
@@ -219,32 +219,32 @@ static int intel_gma_init_lvds(struct northbridge_intel_i945_config *conf,
 
 	if (IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)) {
 		/* Disable panel fitter (we're in native resolution). */
-		write32(pmmio + PF_CTL(0), 0);
-		write32(pmmio + PF_WIN_SZ(0), 0);
-		write32(pmmio + PF_WIN_POS(0), 0);
-		write32(pmmio + PFIT_PGM_RATIOS, 0);
-		write32(pmmio + PFIT_CONTROL, 0);
+		write32(mmiobase + PF_CTL(0), 0);
+		write32(mmiobase + PF_WIN_SZ(0), 0);
+		write32(mmiobase + PF_WIN_POS(0), 0);
+		write32(mmiobase + PFIT_PGM_RATIOS, 0);
+		write32(mmiobase + PFIT_CONTROL, 0);
 	} else {
-		write32(pmmio + PF_WIN_SZ(0), vactive | (hactive << 16));
-		write32(pmmio + PF_WIN_POS(0), 0);
-		write32(pmmio + PF_CTL(0), PF_ENABLE | PF_FILTER_MED_3x3);
-		write32(pmmio + PFIT_CONTROL, PFIT_ENABLE
+		write32(mmiobase + PF_WIN_SZ(0), vactive | (hactive << 16));
+		write32(mmiobase + PF_WIN_POS(0), 0);
+		write32(mmiobase + PF_CTL(0), PF_ENABLE | PF_FILTER_MED_3x3);
+		write32(mmiobase + PFIT_CONTROL, PFIT_ENABLE
 			| (1 << PFIT_PIPE_SHIFT) | HORIZ_AUTO_SCALE
 			| VERT_AUTO_SCALE);
 	}
 
 	mdelay(1);
 
-	write32(pmmio + DSPCNTR(0), DISPPLANE_BGRX888
+	write32(mmiobase + DSPCNTR(0), DISPPLANE_BGRX888
 		| DISPPLANE_SEL_PIPE_B | DISPPLANE_GAMMA_ENABLE);
 
 	mdelay(1);
-	write32(pmmio + PP_CONTROL, PANEL_UNLOCK_REGS
-		| (read32(pmmio + PP_CONTROL) & ~PANEL_UNLOCK_MASK));
-	write32(pmmio + FP0(1),
+	write32(mmiobase + PP_CONTROL, PANEL_UNLOCK_REGS
+		| (read32(mmiobase + PP_CONTROL) & ~PANEL_UNLOCK_MASK));
+	write32(mmiobase + FP0(1),
 		(pixel_n << 16)
 		| (pixel_m1 << 8) | pixel_m2);
-	write32(pmmio + DPLL(1),
+	write32(mmiobase + DPLL(1),
 		DPLL_VGA_MODE_DIS |
 		DPLL_VCO_ENABLE | DPLLB_MODE_LVDS
 		| (mode->lvds_dual_channel ? DPLLB_LVDS_P2_CLOCK_DIV_7
@@ -254,7 +254,7 @@ static int intel_gma_init_lvds(struct northbridge_intel_i945_config *conf,
 		   : 0)
 		| (0x10000 << (pixel_p1 - 1)));
 	mdelay(1);
-	write32(pmmio + DPLL(1),
+	write32(mmiobase + DPLL(1),
 		DPLL_VGA_MODE_DIS |
 		DPLL_VCO_ENABLE | DPLLB_MODE_LVDS
 		| (mode->lvds_dual_channel ? DPLLB_LVDS_P2_CLOCK_DIV_7
@@ -262,88 +262,88 @@ static int intel_gma_init_lvds(struct northbridge_intel_i945_config *conf,
 		| ((conf->gpu_lvds_use_spread_spectrum_clock ? 3 : 0) << 13)
 		| (0x10000 << (pixel_p1 - 1)));
 	mdelay(1);
-	write32(pmmio + HTOTAL(1),
+	write32(mmiobase + HTOTAL(1),
 		((hactive + right_border + hblank - 1) << 16)
 		| (hactive - 1));
-	write32(pmmio + HBLANK(1),
+	write32(mmiobase + HBLANK(1),
 		((hactive + right_border + hblank - 1) << 16)
 		| (hactive + right_border - 1));
-	write32(pmmio + HSYNC(1),
+	write32(mmiobase + HSYNC(1),
 		((hactive + right_border + hfront_porch + hsync - 1) << 16)
 		| (hactive + right_border + hfront_porch - 1));
 
-	write32(pmmio + VTOTAL(1), ((vactive + bottom_border + vblank - 1) << 16)
+	write32(mmiobase + VTOTAL(1), ((vactive + bottom_border + vblank - 1) << 16)
 		| (vactive - 1));
-	write32(pmmio + VBLANK(1), ((vactive + bottom_border + vblank - 1) << 16)
+	write32(mmiobase + VBLANK(1), ((vactive + bottom_border + vblank - 1) << 16)
 		| (vactive + bottom_border - 1));
-	write32(pmmio + VSYNC(1),
+	write32(mmiobase + VSYNC(1),
 		((vactive + bottom_border + vfront_porch + vsync - 1) << 16)
 		| (vactive + bottom_border + vfront_porch - 1));
 
 	if (IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)) {
-		write32(pmmio + PIPESRC(1), ((hactive - 1) << 16)
+		write32(mmiobase + PIPESRC(1), ((hactive - 1) << 16)
 			| (vactive - 1));
 	} else {
-		write32(pmmio + PIPESRC(1), (639 << 16) | 399);
+		write32(mmiobase + PIPESRC(1), (639 << 16) | 399);
 	}
 
 	mdelay(1);
 
-	write32(pmmio + DSPSIZE(0), (hactive - 1) | ((vactive - 1) << 16));
-	write32(pmmio + DSPPOS(0), 0);
+	write32(mmiobase + DSPSIZE(0), (hactive - 1) | ((vactive - 1) << 16));
+	write32(mmiobase + DSPPOS(0), 0);
 
 	/* Backlight init. */
-	write32(pmmio + FW_BLC_SELF, FW_BLC_SELF_EN_MASK);
-	write32(pmmio + FW_BLC, 0x011d011a);
-	write32(pmmio + FW_BLC2, 0x00000102);
-	write32(pmmio + FW_BLC_SELF, FW_BLC_SELF_EN_MASK);
-	write32(pmmio + FW_BLC_SELF, 0x0001003f);
-	write32(pmmio + FW_BLC, 0x011d0109);
-	write32(pmmio + FW_BLC2, 0x00000102);
-	write32(pmmio + FW_BLC_SELF, FW_BLC_SELF_EN_MASK);
-	write32(pmmio + BLC_PWM_CTL, conf->gpu_backlight);
+	write32(mmiobase + FW_BLC_SELF, FW_BLC_SELF_EN_MASK);
+	write32(mmiobase + FW_BLC, 0x011d011a);
+	write32(mmiobase + FW_BLC2, 0x00000102);
+	write32(mmiobase + FW_BLC_SELF, FW_BLC_SELF_EN_MASK);
+	write32(mmiobase + FW_BLC_SELF, 0x0001003f);
+	write32(mmiobase + FW_BLC, 0x011d0109);
+	write32(mmiobase + FW_BLC2, 0x00000102);
+	write32(mmiobase + FW_BLC_SELF, FW_BLC_SELF_EN_MASK);
+	write32(mmiobase + BLC_PWM_CTL, conf->gpu_backlight);
 
 	edid.bytes_per_line = (edid.bytes_per_line + 63) & ~63;
-	write32(pmmio + DSPADDR(0), 0);
-	write32(pmmio + DSPSURF(0), 0);
-	write32(pmmio + DSPSTRIDE(0), edid.bytes_per_line);
-	write32(pmmio + DSPCNTR(0), DISPLAY_PLANE_ENABLE | DISPPLANE_BGRX888
+	write32(mmiobase + DSPADDR(0), 0);
+	write32(mmiobase + DSPSURF(0), 0);
+	write32(mmiobase + DSPSTRIDE(0), edid.bytes_per_line);
+	write32(mmiobase + DSPCNTR(0), DISPLAY_PLANE_ENABLE | DISPPLANE_BGRX888
 		| DISPPLANE_SEL_PIPE_B | DISPPLANE_GAMMA_ENABLE);
 	mdelay(1);
 
-	write32(pmmio + PIPECONF(1), PIPECONF_ENABLE);
-	write32(pmmio + LVDS, LVDS_ON
+	write32(mmiobase + PIPECONF(1), PIPECONF_ENABLE);
+	write32(mmiobase + LVDS, LVDS_ON
 		| (hpolarity << 20) | (vpolarity << 21)
 		| (mode->lvds_dual_channel ? LVDS_CLOCK_B_POWERUP_ALL
 		   | LVDS_CLOCK_BOTH_POWERUP_ALL : 0)
 		| LVDS_CLOCK_A_POWERUP_ALL
 		| LVDS_PIPE(1));
 
-	write32(pmmio + PP_CONTROL, PANEL_UNLOCK_REGS | PANEL_POWER_OFF);
-	write32(pmmio + PP_CONTROL, PANEL_UNLOCK_REGS | PANEL_POWER_RESET);
+	write32(mmiobase + PP_CONTROL, PANEL_UNLOCK_REGS | PANEL_POWER_OFF);
+	write32(mmiobase + PP_CONTROL, PANEL_UNLOCK_REGS | PANEL_POWER_RESET);
 	mdelay(1);
-	write32(pmmio + PP_CONTROL, PANEL_UNLOCK_REGS
+	write32(mmiobase + PP_CONTROL, PANEL_UNLOCK_REGS
 		| PANEL_POWER_ON | PANEL_POWER_RESET);
 
 	printk (BIOS_DEBUG, "waiting for panel powerup\n");
 	while (1) {
 		u32 reg32;
-		reg32 = read32(pmmio + PP_STATUS);
+		reg32 = read32(mmiobase + PP_STATUS);
 		if ((reg32 & PP_SEQUENCE_MASK) == PP_SEQUENCE_NONE)
 			break;
 	}
 	printk (BIOS_DEBUG, "panel powered up\n");
 
-	write32(pmmio + PP_CONTROL, PANEL_POWER_ON | PANEL_POWER_RESET);
+	write32(mmiobase + PP_CONTROL, PANEL_POWER_ON | PANEL_POWER_RESET);
 
 	/* Clear interrupts. */
-	write32(pmmio + DEIIR, 0xffffffff);
-	write32(pmmio + SDEIIR, 0xffffffff);
-	write32(pmmio + IIR, 0xffffffff);
-	write32(pmmio + IMR, 0xffffffff);
-	write32(pmmio + EIR, 0xffffffff);
+	write32(mmiobase + DEIIR, 0xffffffff);
+	write32(mmiobase + SDEIIR, 0xffffffff);
+	write32(mmiobase + IIR, 0xffffffff);
+	write32(mmiobase + IMR, 0xffffffff);
+	write32(mmiobase + EIR, 0xffffffff);
 
-	if (gtt_setup(pmmio)) {
+	if (gtt_setup(mmiobase)) {
 		printk(BIOS_ERR, "ERROR: GTT Setup Failed!!!\n");
 		return 0;
 	}
@@ -363,7 +363,7 @@ static int intel_gma_init_lvds(struct northbridge_intel_i945_config *conf,
 		outl(pphysbase + (i << 12) + 1, piobase + 4);
 	}
 
-	temp = read32(pmmio + PGETBL_CTL);
+	temp = read32(mmiobase + PGETBL_CTL);
 	printk(BIOS_INFO, "GTT PGETBL_CTL register: 0x%lx\n", temp);
 
 	if (temp & 1)
@@ -380,8 +380,8 @@ static int intel_gma_init_lvds(struct northbridge_intel_i945_config *conf,
 	} else {
 			vga_misc_write(0x67);
 
-			write32(pmmio + DSPCNTR(0), DISPPLANE_SEL_PIPE_B);
-			write32(pmmio + VGACNTRL, 0x02c4008e
+			write32(mmiobase + DSPCNTR(0), DISPPLANE_SEL_PIPE_B);
+			write32(mmiobase + VGACNTRL, 0x02c4008e
 				| VGA_PIPE_B_SELECT);
 
 			vga_textmode_init();
@@ -391,38 +391,38 @@ static int intel_gma_init_lvds(struct northbridge_intel_i945_config *conf,
 
 static int intel_gma_init_vga(struct northbridge_intel_i945_config *conf,
 			  unsigned int pphysbase, unsigned int piobase,
-			  void *pmmio, unsigned int pgfx)
+			  u8 *mmiobase, unsigned int pgfx)
 {
 	int i;
 	u32 hactive, vactive;
 	u16 reg16;
 	u32 uma_size;
 
-	printk(BIOS_SPEW, "pmmio %x addrport %x physbase %x\n",
-		(u32)pmmio, piobase, pphysbase);
+	printk(BIOS_SPEW, "mmiobase %x addrport %x physbase %x\n",
+		(u32)mmiobase, piobase, pphysbase);
 
-	gtt_setup(pmmio);
+	gtt_setup(mmiobase);
 
 	/* Disable VGA.  */
-	write32(pmmio + VGACNTRL, VGA_DISP_DISABLE);
+	write32(mmiobase + VGACNTRL, VGA_DISP_DISABLE);
 
 	/* Disable pipes.  */
-	write32(pmmio + PIPECONF(0), 0);
-	write32(pmmio + PIPECONF(1), 0);
+	write32(mmiobase + PIPECONF(0), 0);
+	write32(mmiobase + PIPECONF(1), 0);
 
-	write32(pmmio + INSTPM, 0x800);
+	write32(mmiobase + INSTPM, 0x800);
 
 	vga_gr_write(0x18, 0);
 
-	write32(pmmio + VGA0, 0x200074);
-	write32(pmmio + VGA1, 0x200074);
+	write32(mmiobase + VGA0, 0x200074);
+	write32(mmiobase + VGA1, 0x200074);
 
-	write32(pmmio + DSPFW3, 0x7f3f00c1 & ~PINEVIEW_SELF_REFRESH_EN);
-	write32(pmmio + DSPCLK_GATE_D, 0);
-	write32(pmmio + FW_BLC, 0x03060106);
-	write32(pmmio + FW_BLC2, 0x00000306);
+	write32(mmiobase + DSPFW3, 0x7f3f00c1 & ~PINEVIEW_SELF_REFRESH_EN);
+	write32(mmiobase + DSPCLK_GATE_D, 0);
+	write32(mmiobase + FW_BLC, 0x03060106);
+	write32(mmiobase + FW_BLC2, 0x00000306);
 
-	write32(pmmio + ADPA, ADPA_DAC_ENABLE
+	write32(mmiobase + ADPA, ADPA_DAC_ENABLE
 			| ADPA_PIPE_A_SELECT
 			| ADPA_USE_VGA_HVPOLARITY
 			| ADPA_VSYNC_CNTL_ENABLE
@@ -430,12 +430,12 @@ static int intel_gma_init_vga(struct northbridge_intel_i945_config *conf,
 			| ADPA_DPMS_ON
 			);
 
-	write32(pmmio + 0x7041c, 0x0);
+	write32(mmiobase + 0x7041c, 0x0);
 
-	write32(pmmio + DPLL_MD(0), 0x3);
-	write32(pmmio + DPLL_MD(1), 0x3);
-	write32(pmmio + DSPCNTR(1), 0x1000000);
-	write32(pmmio + PIPESRC(1), 0x027f01df);
+	write32(mmiobase + DPLL_MD(0), 0x3);
+	write32(mmiobase + DPLL_MD(1), 0x3);
+	write32(mmiobase + DSPCNTR(1), 0x1000000);
+	write32(mmiobase + PIPESRC(1), 0x027f01df);
 
 	vga_misc_write(0x67);
 	const u8 cr[] = { 0x5f, 0x4f, 0x50, 0x82, 0x55, 0x81, 0xbf, 0x1f,
@@ -454,21 +454,21 @@ static int intel_gma_init_vga(struct northbridge_intel_i945_config *conf,
 	vactive = 400;
 
 	mdelay(1);
-	write32(pmmio + DPLL(0),
+	write32(mmiobase + DPLL(0),
 		DPLL_VCO_ENABLE | DPLLB_MODE_DAC_SERIAL
 		| DPLL_VGA_MODE_DIS
 		| DPLL_DAC_SERIAL_P2_CLOCK_DIV_10
 		| 0x400601
 		);
 	mdelay(1);
-	write32(pmmio + DPLL(0),
+	write32(mmiobase + DPLL(0),
 		DPLL_VCO_ENABLE | DPLLB_MODE_DAC_SERIAL
 		| DPLL_VGA_MODE_DIS
 		| DPLL_DAC_SERIAL_P2_CLOCK_DIV_10
 		| 0x400601
 		);
 
-	write32(pmmio + ADPA, ADPA_DAC_ENABLE
+	write32(mmiobase + ADPA, ADPA_DAC_ENABLE
 			| ADPA_PIPE_A_SELECT
 			| ADPA_USE_VGA_HVPOLARITY
 			| ADPA_VSYNC_CNTL_ENABLE
@@ -476,46 +476,46 @@ static int intel_gma_init_vga(struct northbridge_intel_i945_config *conf,
 			| ADPA_DPMS_ON
 			);
 
-	write32(pmmio + HTOTAL(0),
+	write32(mmiobase + HTOTAL(0),
 		((hactive - 1) << 16)
 		| (hactive - 1));
-	write32(pmmio + HBLANK(0),
+	write32(mmiobase + HBLANK(0),
 		((hactive - 1) << 16)
 		| (hactive - 1));
-	write32(pmmio + HSYNC(0),
+	write32(mmiobase + HSYNC(0),
 		((hactive - 1) << 16)
 		| (hactive - 1));
 
-	write32(pmmio + VTOTAL(0), ((vactive - 1) << 16)
+	write32(mmiobase + VTOTAL(0), ((vactive - 1) << 16)
 		| (vactive - 1));
-	write32(pmmio + VBLANK(0), ((vactive - 1) << 16)
+	write32(mmiobase + VBLANK(0), ((vactive - 1) << 16)
 		| (vactive - 1));
-	write32(pmmio + VSYNC(0),
+	write32(mmiobase + VSYNC(0),
 		((vactive - 1) << 16)
 		| (vactive - 1));
 
-	write32(pmmio + PF_WIN_POS(0), 0);
+	write32(mmiobase + PF_WIN_POS(0), 0);
 
-	write32(pmmio + PIPESRC(0), (639 << 16) | 399);
-	write32(pmmio + PF_CTL(0),PF_ENABLE | PF_FILTER_MED_3x3);
-	write32(pmmio + PF_WIN_SZ(0), vactive | (hactive << 16));
-	write32(pmmio + PFIT_CONTROL, 0x0);
+	write32(mmiobase + PIPESRC(0), (639 << 16) | 399);
+	write32(mmiobase + PF_CTL(0),PF_ENABLE | PF_FILTER_MED_3x3);
+	write32(mmiobase + PF_WIN_SZ(0), vactive | (hactive << 16));
+	write32(mmiobase + PFIT_CONTROL, 0x0);
 
 	mdelay(1);
 
-	write32(pmmio + FDI_RX_CTL(0), 0x00002040);
+	write32(mmiobase + FDI_RX_CTL(0), 0x00002040);
 	mdelay(1);
-	write32(pmmio + FDI_RX_CTL(0), 0x80002050);
-	write32(pmmio + FDI_TX_CTL(0), 0x00044000);
+	write32(mmiobase + FDI_RX_CTL(0), 0x80002050);
+	write32(mmiobase + FDI_TX_CTL(0), 0x00044000);
 	mdelay(1);
-	write32(pmmio + FDI_TX_CTL(0), 0x80044000);
-	write32(pmmio + PIPECONF(0), PIPECONF_ENABLE | PIPECONF_BPP_6 | PIPECONF_DITHER_EN);
+	write32(mmiobase + FDI_TX_CTL(0), 0x80044000);
+	write32(mmiobase + PIPECONF(0), PIPECONF_ENABLE | PIPECONF_BPP_6 | PIPECONF_DITHER_EN);
 
-	write32(pmmio + VGACNTRL, 0x0);
-	write32(pmmio + DSPCNTR(0), DISPLAY_PLANE_ENABLE | DISPPLANE_BGRX888);
+	write32(mmiobase + VGACNTRL, 0x0);
+	write32(mmiobase + DSPCNTR(0), DISPLAY_PLANE_ENABLE | DISPPLANE_BGRX888);
 	mdelay(1);
 
-	write32(pmmio + ADPA, ADPA_DAC_ENABLE
+	write32(mmiobase + ADPA, ADPA_DAC_ENABLE
 			| ADPA_PIPE_A_SELECT
 			| ADPA_USE_VGA_HVPOLARITY
 			| ADPA_VSYNC_CNTL_ENABLE
@@ -523,10 +523,10 @@ static int intel_gma_init_vga(struct northbridge_intel_i945_config *conf,
 			| ADPA_DPMS_ON
 			);
 
-	write32(pmmio + DSPFW3, 0x7f3f00c1);
-	write32(pmmio + MI_MODE, 0x200 | VS_TIMER_DISPATCH);
-	write32(pmmio + CACHE_MODE_0, (0x6820 | (1 << 9)) & ~(1 << 5));
-	write32(pmmio + CACHE_MODE_1, 0x380 & ~(1 << 9));
+	write32(mmiobase + DSPFW3, 0x7f3f00c1);
+	write32(mmiobase + MI_MODE, 0x200 | VS_TIMER_DISPATCH);
+	write32(mmiobase + CACHE_MODE_0, (0x6820 | (1 << 9)) & ~(1 << 5));
+	write32(mmiobase + CACHE_MODE_1, 0x380 & ~(1 << 9));
 
 	/* Set up GTT.  */
 
@@ -544,11 +544,11 @@ static int intel_gma_init_vga(struct northbridge_intel_i945_config *conf,
 	}
 
 	/* Clear interrupts. */
-	write32(pmmio + DEIIR, 0xffffffff);
-	write32(pmmio + SDEIIR, 0xffffffff);
-	write32(pmmio + IIR, 0xffffffff);
-	write32(pmmio + IMR, 0xffffffff);
-	write32(pmmio + EIR, 0xffffffff);
+	write32(mmiobase + DEIIR, 0xffffffff);
+	write32(mmiobase + SDEIIR, 0xffffffff);
+	write32(mmiobase + IIR, 0xffffffff);
+	write32(mmiobase + IMR, 0xffffffff);
+	write32(mmiobase + EIR, 0xffffffff);
 
 	vga_textmode_init();
 
@@ -561,13 +561,13 @@ static int intel_gma_init_vga(struct northbridge_intel_i945_config *conf,
 
 /* compare the header of the vga edid header */
 /* if vga is not connected it should have a correct header */
-static int probe_edid(u8 *pmmio, u8 slave)
+static int probe_edid(u8 *mmiobase, u8 slave)
 {
 	int i;
 	u8 vga_edid[128];
 	u8 header[8] = {0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x00};
-	intel_gmbus_read_edid(pmmio + GMBUS0, slave, 0x50, vga_edid, 128);
-	intel_gmbus_stop(pmmio + GMBUS0);
+	intel_gmbus_read_edid(mmiobase + GMBUS0, slave, 0x50, vga_edid, 128);
+	intel_gmbus_stop(mmiobase + GMBUS0);
 	for (i = 0; i < 8; i++) {
 		if (vga_edid[i] != header[i]) {
 			printk(BIOS_DEBUG, "No display connected on slave %d\n",

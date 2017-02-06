@@ -164,6 +164,20 @@ int keyboard_set_layout(char *country);
 /** @} */
 
 /**
+ * @defgroup mouse Mouse cursor functions
+ * @ingroup input
+ * @{
+ */
+void mouse_cursor_poll(void);
+void mouse_cursor_get_rel(int *x, int *y, int *z);
+u32 mouse_cursor_get_buttons(void);
+void mouse_cursor_set_speed(u32 val);
+u32 mouse_cursor_get_speed(void);
+void mouse_cursor_set_acceleration(u8 val);
+u8 mouse_cursor_get_acceleration(void);
+/** @} */
+
+/**
  * @defgroup serial Serial functions
  * @ingroup input
  * @{
@@ -304,6 +318,29 @@ int console_remove_output_driver(void *function);
 #define havechar havekey
 /** @} */
 
+/**
+ * @defgroup mouse_cursor Mouse cursor functions
+ * @{
+ */
+typedef enum {
+	CURSOR_INPUT_TYPE_UNKNOWN = 0,
+	CURSOR_INPUT_TYPE_USB,
+	CURSOR_INPUT_TYPE_PS2,
+} cursor_input_type;
+
+void mouse_cursor_init(void);
+
+struct mouse_cursor_input_driver;
+struct mouse_cursor_input_driver {
+	struct mouse_cursor_input_driver *next;
+	/* X,Y,Z axis and buttons */
+	void (*get_state)(int *, int *, int *, u32 *);
+	cursor_input_type input_type;
+};
+
+void mouse_cursor_add_input_driver(struct mouse_cursor_input_driver *in);
+
+/** @} */
 
 /**
  * @defgroup exec Execution functions

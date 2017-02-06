@@ -350,6 +350,16 @@ config NVRAM
 	depends on ARCH_X86 # for now
 	default y
 
+config MOUSE_CURSOR
+	bool "Support for mouse cursor handling"
+	default n
+	help
+	  Provides a common interface for various mouse cursor drivers.
+	  * Supports up to 32 buttons.
+	  * Supports 3 axis mice.
+	  * Applies simple cursor acceleration.
+	  * Allows to set cursor acceleration and cursor speed.
+
 config RTC_PORT_EXTENDED_VIA
 	bool "Extended RTC ports are 0x74/0x75"
 	default n

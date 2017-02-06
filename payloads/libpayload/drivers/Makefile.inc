@@ -42,6 +42,8 @@ libc-$(CONFIG_LP_PC_KEYBOARD) += keyboard.c
 
 libc-$(CONFIG_LP_CBMEM_CONSOLE) += cbmem_console.c
 
+libc-$(CONFIG_LP_MOUSE_CURSOR) += mouse_cursor.c
+
 libc-$(CONFIG_LP_NVRAM) += nvram.c
 libc-$(CONFIG_LP_NVRAM) += options.c
 

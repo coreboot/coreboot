@@ -28,12 +28,13 @@
 struct sys_info {
 	u16 memory_frequency;	/* 400, 533 or 667 */
 	u16 fsb_frequency;	/* 945GM: 400, 533 or 667 / 945GC: 533, 800, or 1066 */
+	u32 tclk;
 
-	u8 trp;			/* calculated by sdram_detect_smallest_tRP() */
-	u8 trcd;		/* calculated by sdram_detect_smallest_tRCD() */
-	u8 tras;		/* calculated by sdram_detect_smallest_tRAS() */
-	u8 trfc;		/* calculated by sdram_detect_smallest_tRFC() */
-	u8 twr;			/* calculated by sdram_detect_smallest_tWR() */
+	u8 trp;
+	u8 trcd;
+	u8 tras;
+	u8 trfc;
+	u8 twr;
 
 	u8 cas;			/* 3, 4 or 5 */
 	u8 refresh;		/* 0 = 15.6us, 1 = 7.8us */
@@ -52,6 +53,8 @@ struct sys_info {
 #define SYSINFO_PACKAGE_PLANAR		0x00
 #define SYSINFO_PACKAGE_STACKED		0x01
 	u8 dimm[2 * DIMM_SOCKETS];
+	u8 rows[2 * DIMM_SOCKETS];
+	u8 cols[2 * DIMM_SOCKETS];
 #define SYSINFO_DIMM_X16DS		0x00
 #define SYSINFO_DIMM_X8DS		0x01
 #define SYSINFO_DIMM_X16SS		0x02
@@ -59,7 +62,6 @@ struct sys_info {
 #define SYSINFO_DIMM_NOT_POPULATED	0x04
 
 	u8 banks[2 * DIMM_SOCKETS];
-
 	u8 banksize[2 * 2 * DIMM_SOCKETS];
 	const u8 *spd_addresses;
 

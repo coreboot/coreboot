@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2007-2009 coresystems GmbH
+ * Copyright (C) 2017 Arthur Heymans <arthur@aheymans.xyz>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,6 +29,7 @@
 #include "i945.h"
 #include "chip.h"
 #include <cbmem.h>
+#include <device/dram/ddr2.h>
 
 /* Debugging macros. */
 #if IS_ENABLED(CONFIG_DEBUG_RAM_SETUP)
@@ -283,7 +285,8 @@ static void sdram_detect_errors(struct sys_info *sysinfo)
 	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xa2, reg8);
 
 	/* clear self refresh status if check is disabled or not a resume */
-	if (!CONFIG_CHECK_SLFRCS_ON_RESUME || sysinfo->boot_path != BOOT_PATH_RESUME) {
+	if (!CONFIG_CHECK_SLFRCS_ON_RESUME
+			|| sysinfo->boot_path != BOOT_PATH_RESUME) {
 		MCHBAR8(SLFRCS) |= 3;
 	} else {
 		/* Validate self refresh config */
@@ -307,21 +310,32 @@ static void sdram_detect_errors(struct sys_info *sysinfo)
 	}
 }
 
-/**
- * @brief Get generic DIMM parameters.
- * @param sysinfo Central memory controller information structure
- *
- * This function gathers several pieces of information for each system DIMM:
- *  o DIMM width (x8 / x16)
- *  o DIMM sides (single sided / dual sided)
- *
- *  Also, some non-supported scenarios are detected.
- */
+struct timings {
+	u32 min_tCLK_cas[8];
+	u32 min_tRAS;
+	u32 min_tRP;
+	u32 min_tRCD;
+	u32 min_tWR;
+	u32 min_tRFC;
+	u32 max_tRR;
+	u8 cas_mask;
+};
 
-static void sdram_get_dram_configuration(struct sys_info *sysinfo)
+/**
+ * @brief loop over dimms and save maximal timings
+ */
+static void gather_common_timing(struct sys_info *sysinfo,
+				struct timings *saved_timings)
 {
-	u32 dimm_mask = 0;
-	int i;
+
+	int i, j;
+	u8 raw_spd[SPD_SIZE_MAX_DDR2];
+	u8 dimm_mask = 0;
+
+	memset(saved_timings, 0, sizeof(*saved_timings));
+	saved_timings->max_tRR = UINT32_MAX;
+	saved_timings->cas_mask = SPD_CAS_LATENCY_DDR2_3
+		| SPD_CAS_LATENCY_DDR2_4 | SPD_CAS_LATENCY_DDR2_5;
 
 	/**
 	 * i945 supports two DIMMs, in two configurations:
@@ -336,36 +350,19 @@ static void sdram_get_dram_configuration(struct sys_info *sysinfo)
 	 * but for now we stick with the information we gather via SPD.
 	 */
 
+	printk(BIOS_DEBUG, "This mainboard supports ");
 	if (sdram_capabilities_dual_channel()) {
 		sysinfo->dual_channel = 1;
-		printk(BIOS_DEBUG, "This mainboard supports Dual Channel Operation.\n");
+		printk(BIOS_DEBUG, "Dual Channel Operation.\n");
 	} else {
 		sysinfo->dual_channel = 0;
-		printk(BIOS_DEBUG, "This mainboard supports only Single Channel Operation.\n");
+		printk(BIOS_DEBUG, "only Single Channel Operation.\n");
 	}
 
-	/**
-	 * Since we only support two DIMMs in total, there is a limited number
-	 * of combinations. This function returns the type of DIMMs.
-	 * return value:
-	 *   [0:7]  lower DIMM population
-	 *   [8-15] higher DIMM population
-	 *   [16]   dual channel?
-	 *
-	 * There are 5 different possible populations for a DIMM socket:
-	 * 1. x16 double sided (X16DS)
-	 * 2. x8 double sided  (X8DS)
-	 * 3. x16 single sided (X16SS)
-	 * 4. x8 double stacked (X8DDS)
-	 * 5. not populated (NC)
-	 *
-	 * For the return value we start counting at zero.
-	 *
-	 */
 
 	for (i = 0; i < (2 * DIMM_SOCKETS); i++) {
-		int device = get_dimm_spd_address(sysinfo, i);
-		u8 reg8;
+		int device = get_dimm_spd_address(sysinfo, i), bytes_read;
+		struct dimm_attr_st dimm_info;
 
 		/* Initialize the socket information with a sane value */
 		sysinfo->dimm[i] = SYSINFO_DIMM_NOT_POPULATED;
@@ -374,31 +371,62 @@ static void sdram_get_dram_configuration(struct sys_info *sysinfo)
 		if (!sdram_capabilities_dual_channel() && (i >> 1))
 			continue;
 
-		printk(BIOS_DEBUG, "DDR II Channel %d Socket %d: ", (i >> 1), (i & 1));
-
-		if (spd_read_byte(device, SPD_MEMORY_TYPE) != SPD_MEMORY_TYPE_SDRAM_DDR2) {
-			printk(BIOS_DEBUG, "N/A\n");
+		if (spd_read_byte(device, SPD_MEMORY_TYPE) !=
+					SPD_MEMORY_TYPE_SDRAM_DDR2) {
+			printk(BIOS_DEBUG, "DDR II Channel %d Socket %d: N/A\n",
+				(i >> 1), (i & 1));
 			continue;
 		}
 
-		reg8 = spd_read_byte(device, SPD_DIMM_CONFIG_TYPE);
-		if (reg8 == ERROR_SCHEME_ECC)
-			die("Error: ECC memory not supported by this chipset\n");
+		/*
+		 * spd_decode_ddr2() needs a 128-byte sized array but
+		 * only the first 64 bytes contain data needed for raminit.
+		 */
 
-		reg8 = spd_read_byte(device, SPD_MODULE_ATTRIBUTES);
-		if (reg8 & MODULE_BUFFERED)
-			die("Error: Buffered memory not supported by this chipset\n");
-		if (reg8 & MODULE_REGISTERED)
-			die("Error: Registered memory not supported by this chipset\n");
+		bytes_read = i2c_block_read(device, 0, 64, raw_spd);
+		printk(BIOS_DEBUG, "Reading SPD using i2c block operation.\n");
+		if (IS_ENABLED(CONFIG_DEBUG_RAM_SETUP) && bytes_read > 0)
+			hexdump(raw_spd, bytes_read);
+		if (bytes_read != 64 || spd_decode_ddr2(&dimm_info, raw_spd)
+				!= SPD_STATUS_OK) {
+			/* Try again with SMBUS byte read */
+			printk(BIOS_DEBUG, "i2c block operation failed,"
+				"trying smbus byte operation.\n");
+			for (j = 0; j < 64; j++)
+				raw_spd[j] = spd_read_byte(device, j);
+			if (IS_ENABLED(CONFIG_DEBUG_RAM_SETUP))
+				hexdump(raw_spd, 64);
+			if (spd_decode_ddr2(&dimm_info, raw_spd)
+					!= SPD_STATUS_OK)
+				continue;
+		}
+		if (IS_ENABLED(CONFIG_DEBUG_RAM_SETUP))
+			dram_print_spd_ddr2(&dimm_info);
 
-		switch (spd_read_byte(device, SPD_PRIMARY_SDRAM_WIDTH)) {
-		case 0x08:
-			switch (spd_read_byte(device, SPD_NUM_DIMM_BANKS) & 0x0f) {
-			case 1:
+		if (dimm_info.flags.is_ecc)
+			die("\nError: ECC memory not supported by this chipset\n");
+
+		if (spd_dimm_is_registered_ddr2(dimm_info.dimm_type))
+			die("\nError: Registered memory not supported by this chipset\n");
+
+		printk(BIOS_DEBUG, "DDR II Channel %d Socket %d: ", (i >> 1),
+			(i & 1));
+		/**
+		 * There are 5 different possible populations for a DIMM socket:
+		 * 0. x16 double ranked (X16DS)
+		 * 1. x8 double ranked  (X8DS)
+		 * 2. x16 single ranked (X16SS)
+		 * 3. x8 double stacked (X8DDS)
+		 * 4. Unpopulated
+		 */
+		switch (dimm_info.width) {
+		case 8:
+			switch (dimm_info.ranks) {
+			case 2:
 				printk(BIOS_DEBUG, "x8DDS\n");
 				sysinfo->dimm[i] = SYSINFO_DIMM_X8DDS;
 				break;
-			case 0:
+			case 1:
 				printk(BIOS_DEBUG, "x8DS\n");
 				sysinfo->dimm[i] = SYSINFO_DIMM_X8DS;
 				break;
@@ -406,13 +434,13 @@ static void sdram_get_dram_configuration(struct sys_info *sysinfo)
 				printk(BIOS_DEBUG, "Unsupported.\n");
 			}
 			break;
-		case 0x10:
-			switch (spd_read_byte(device, SPD_NUM_DIMM_BANKS) & 0x0f) {
-			case 1:
+		case 16:
+			switch (dimm_info.ranks) {
+			case 2:
 				printk(BIOS_DEBUG, "x16DS\n");
 				sysinfo->dimm[i] = SYSINFO_DIMM_X16DS;
 				break;
-			case 0:
+			case 1:
 				printk(BIOS_DEBUG, "x16SS\n");
 				sysinfo->dimm[i] = SYSINFO_DIMM_X16SS;
 				break;
@@ -424,449 +452,178 @@ static void sdram_get_dram_configuration(struct sys_info *sysinfo)
 			die("Unsupported DDR-II memory width.\n");
 		}
 
+		/* Is the current DIMM a stacked DIMM? */
+		if (dimm_info.flags.stacked)
+			sysinfo->package = SYSINFO_PACKAGE_STACKED;
+
+		if (!dimm_info.flags.bl8)
+			die("Only DDR-II RAM with burst length 8 is supported by this chipset.\n");
+
+		if (dimm_info.ranksize_mb < 128)
+			die("DDR-II rank size smaller than 128MB is not supported.\n");
+
+		sysinfo->banksize[i * 2] = dimm_info.ranksize_mb / 32;
+		printk(BIOS_DEBUG, "DIMM %d side 0 = %d MB\n", i,
+			sysinfo->banksize[i * 2] * 32);
+		if (dimm_info.ranks == 2) {
+			sysinfo->banksize[(i * 2) + 1] =
+				dimm_info.ranksize_mb / 32;
+			printk(BIOS_DEBUG, "DIMM %d side 1 = %d MB\n",
+				i, sysinfo->banksize[(i * 2) + 1] * 32);
+		}
+
+
+		sysinfo->rows[i] = dimm_info.row_bits;
+		sysinfo->cols[i] = dimm_info.col_bits;
+		sysinfo->banks[i] = dimm_info.banks;
+
+		/* int min_tRAS, min_tRP, min_tRCD, min_tWR, min_tRFC; */
+		saved_timings->min_tRAS = MAX(saved_timings->min_tRAS,
+					dimm_info.tRAS);
+		saved_timings->min_tRP = MAX(saved_timings->min_tRP,
+					dimm_info.tRP);
+		saved_timings->min_tRCD = MAX(saved_timings->min_tRCD,
+					dimm_info.tRCD);
+		saved_timings->min_tWR = MAX(saved_timings->min_tWR,
+					dimm_info.tWR);
+		saved_timings->min_tRFC = MAX(saved_timings->min_tRFC,
+					dimm_info.tRFC);
+		saved_timings->max_tRR = MIN(saved_timings->max_tRR,
+					dimm_info.tRR);
+		saved_timings->cas_mask &= dimm_info.cas_supported;
+		for (j = 0; j < 8; j++) {
+			if (!(saved_timings->cas_mask & (1 << j)))
+				saved_timings->min_tCLK_cas[j] = 0;
+			else
+				saved_timings->min_tCLK_cas[j] =
+					MAX(dimm_info.cycle_time[j],
+						saved_timings->min_tCLK_cas[j]);
+		}
 		dimm_mask |= (1 << i);
 	}
-
-	if (!dimm_mask)
+	if (!dimm_mask) {
 		die("No memory installed.\n");
+	}
 
-	if (!(dimm_mask & ((1 << DIMM_SOCKETS) - 1)))
+	if (!(dimm_mask & ((1 << DIMM_SOCKETS) - 1))) {
+		/* Possibly does not boot in this case */
 		printk(BIOS_INFO, "Channel 0 has no memory populated.\n");
-}
-
-/**
- * @brief determine if any DIMMs are stacked
- *
- * @param sysinfo central sysinfo data structure.
- */
-static void sdram_verify_package_type(struct sys_info *sysinfo)
-{
-	int i;
-
-	/* Assume no stacked DIMMs are available until we find one */
-	sysinfo->package = 0;
-	for (i = 0; i < 2*DIMM_SOCKETS; i++) {
-		if (sysinfo->dimm[i] == SYSINFO_DIMM_NOT_POPULATED)
-			continue;
-
-		/* Is the current DIMM a stacked DIMM? */
-		if (spd_read_byte(get_dimm_spd_address(sysinfo, i), SPD_NUM_DIMM_BANKS) & (1 << 4))
-			sysinfo->package = 1;
 	}
 }
 
-static u8 sdram_possible_cas_latencies(struct sys_info *sysinfo)
+static void choose_tclk(struct sys_info *sysinfo,
+			struct timings *saved_timings)
 {
-	int i;
-	u8 cas_mask;
+	u32 ctrl_min_tclk;
+	int try_cas;
 
-	/* Setup CAS mask with all supported CAS Latencies */
-	cas_mask = SPD_CAS_LATENCY_DDR2_3 |
-		   SPD_CAS_LATENCY_DDR2_4 |
-		   SPD_CAS_LATENCY_DDR2_5;
+	ctrl_min_tclk = 2 * 256 * 1000
+		/ sdram_capabilities_max_supported_memory_frequency();
+	normalize_tck(&ctrl_min_tclk);
 
-	for (i = 0; i < 2*DIMM_SOCKETS; i++) {
-		if (sysinfo->dimm[i] != SYSINFO_DIMM_NOT_POPULATED)
-			cas_mask &= spd_read_byte(get_dimm_spd_address(sysinfo, i),
-						  SPD_ACCEPTABLE_CAS_LATENCIES);
-	}
+	try_cas = spd_get_msbs(saved_timings->cas_mask);
 
-	if (!cas_mask)
-		die("No DDR-II modules with accepted CAS latencies found.\n");
-
-	return cas_mask;
-}
-
-static void sdram_detect_cas_latency_and_ram_speed(struct sys_info *sysinfo, u8 cas_mask)
-{
-	int i, j, idx;
-	int lowest_common_cas = 0;
-	int max_ram_speed = 0;
-
-	const u8 ddr2_speeds_table[] = {
-		0x50, 0x60,	/* DDR2 400: tCLK = 5.0ns  tAC = 0.6ns  */
-		0x3d, 0x50,	/* DDR2 533: tCLK = 3.75ns tAC = 0.5ns  */
-		0x30, 0x45,	/* DDR2 667: tCLK = 3.0ns  tAC = 0.45ns */
-	};
-
-	const u8 spd_lookup_table[] = {
-		SPD_MIN_CYCLE_TIME_AT_CAS_MAX,	SPD_ACCESS_TIME_FROM_CLOCK,
-		SPD_SDRAM_CYCLE_TIME_2ND,	SPD_ACCESS_TIME_FROM_CLOCK_2ND,
-		SPD_SDRAM_CYCLE_TIME_3RD,	SPD_ACCESS_TIME_FROM_CLOCK_3RD
-	};
-
-	switch (sdram_capabilities_max_supported_memory_frequency()) {
-	case 400:
-		max_ram_speed = 0; break;
-	case 533:
-		max_ram_speed = 1; break;
-	case 667:
-		max_ram_speed = 2; break;
-	}
-
-	sysinfo->memory_frequency = 0;
-	sysinfo->cas = 0;
-
-	if (cas_mask & SPD_CAS_LATENCY_DDR2_3)
-		lowest_common_cas = 3;
-	else if (cas_mask & SPD_CAS_LATENCY_DDR2_4)
-		lowest_common_cas = 4;
-	else if (cas_mask & SPD_CAS_LATENCY_DDR2_5)
-		lowest_common_cas = 5;
-	PRINTK_DEBUG("lowest common cas = %d\n", lowest_common_cas);
-
-	for (j = max_ram_speed; j >= 0; j--) {
-		int freq_cas_mask = cas_mask;
-
-		PRINTK_DEBUG("Probing Speed %d\n", j);
-		for (i = 0; i < 2 * DIMM_SOCKETS; i++) {
-			int device = get_dimm_spd_address(sysinfo, i);
-			int current_cas_mask;
-
-			PRINTK_DEBUG("  DIMM: %d\n", i);
-			if (sysinfo->dimm[i] == SYSINFO_DIMM_NOT_POPULATED)
-				continue;
-
-			current_cas_mask = spd_read_byte(device, SPD_ACCEPTABLE_CAS_LATENCIES);
-
-			while (current_cas_mask) {
-				int highest_supported_cas = 0, current_cas = 0;
-				PRINTK_DEBUG("    Current CAS mask: %04x; ", current_cas_mask);
-				if (current_cas_mask & SPD_CAS_LATENCY_DDR2_5)
-					highest_supported_cas = 5;
-				else if (current_cas_mask & SPD_CAS_LATENCY_DDR2_4)
-					highest_supported_cas = 4;
-				else if (current_cas_mask & SPD_CAS_LATENCY_DDR2_3)
-					highest_supported_cas = 3;
-				else
-					die("Invalid max. CAS.\n");
-				if (current_cas_mask & SPD_CAS_LATENCY_DDR2_3)
-					current_cas = 3;
-				else if (current_cas_mask & SPD_CAS_LATENCY_DDR2_4)
-					current_cas = 4;
-				else if (current_cas_mask & SPD_CAS_LATENCY_DDR2_5)
-					current_cas = 5;
-				else
-					die("Invalid CAS.\n");
-
-				idx = highest_supported_cas - current_cas;
-				PRINTK_DEBUG("idx=%d, ", idx);
-				PRINTK_DEBUG("tCLK=%x, ", spd_read_byte(device, spd_lookup_table[2*idx]));
-				PRINTK_DEBUG("tAC=%x", spd_read_byte(device, spd_lookup_table[(2*idx)+1]));
-
-				if (spd_read_byte(device, spd_lookup_table[2*idx]) <= ddr2_speeds_table[2*j] &&
-						spd_read_byte(device, spd_lookup_table[(2*idx)+1]) <= ddr2_speeds_table[(2*j)+1]) {
-					PRINTK_DEBUG(":    OK\n");
-					break;
-				}
-
-				PRINTK_DEBUG(":    Not fast enough!\n");
-
-				current_cas_mask &= ~(1 << (current_cas));
-			}
-
-			freq_cas_mask &= current_cas_mask;
-			if (!current_cas_mask) {
-				PRINTK_DEBUG("    No valid CAS for this speed on DIMM %d\n", i);
-				break;
-			}
-		}
-		PRINTK_DEBUG("  freq_cas_mask for speed %d: %04x\n", j, freq_cas_mask);
-		if (freq_cas_mask) {
-			switch (j) {
-			case 0:
-				sysinfo->memory_frequency = 400; break;
-			case 1:
-				sysinfo->memory_frequency = 533; break;
-			case 2:
-				sysinfo->memory_frequency = 667; break;
-			}
-			if (freq_cas_mask & SPD_CAS_LATENCY_DDR2_3)
-				sysinfo->cas = 3;
-			else if (freq_cas_mask & SPD_CAS_LATENCY_DDR2_4)
-				sysinfo->cas = 4;
-			else if (freq_cas_mask & SPD_CAS_LATENCY_DDR2_5)
-				sysinfo->cas = 5;
+	while (saved_timings->cas_mask & (1 << try_cas) && try_cas > 0) {
+		sysinfo->cas = try_cas;
+		sysinfo->tclk = saved_timings->min_tCLK_cas[try_cas];
+		if (sysinfo->tclk >= ctrl_min_tclk &&
+				saved_timings->min_tCLK_cas[try_cas] !=
+				saved_timings->min_tCLK_cas[try_cas - 1])
 			break;
-		}
+		try_cas--;
 	}
 
-	if (sysinfo->memory_frequency && sysinfo->cas) {
-		printk(BIOS_DEBUG, "Memory will be driven at %dMHz with CAS=%d clocks\n",
-				sysinfo->memory_frequency, sysinfo->cas);
-	} else {
+	normalize_tck(&sysinfo->tclk);
+
+	if ((sysinfo->cas < 3) || (sysinfo->tclk == 0))
 		die("Could not find common memory frequency and CAS\n");
-	}
-}
 
-static void sdram_detect_smallest_tRAS(struct sys_info *sysinfo)
-{
-	int i;
-	int tRAS_time;
-	int tRAS_cycles;
-	int freq_multiplier = 0;
+	/*
+	 * The loop can still results in a timing too fast for the
+	 * memory controller.
+	 */
+	if (sysinfo->tclk < ctrl_min_tclk)
+		sysinfo->tclk = ctrl_min_tclk;
 
-	switch (sysinfo->memory_frequency) {
-	case 400:
-		freq_multiplier = 0x14; break; /* 5ns */
-	case 533:
-		freq_multiplier = 0x0f; break; /* 3.75ns */
-	case 667:
-		freq_multiplier = 0x0c; break; /* 3ns */
-	}
-
-	tRAS_cycles = 4; /* 4 clocks minimum */
-	tRAS_time = tRAS_cycles * freq_multiplier;
-
-	for (i = 0; i < 2*DIMM_SOCKETS; i++) {
-		u8 reg8;
-
-		if (sysinfo->dimm[i] == SYSINFO_DIMM_NOT_POPULATED)
-			continue;
-
-		reg8 = spd_read_byte(get_dimm_spd_address(sysinfo, i), SPD_MIN_ACTIVE_TO_PRECHARGE_DELAY);
-		if (!reg8)
-			die("Invalid tRAS value.\n");
-
-		while ((tRAS_time >> 2) < reg8) {
-			tRAS_time += freq_multiplier;
-			tRAS_cycles++;
-		}
-	}
-	if (tRAS_cycles > 0x18)
-		die("DDR-II Module does not support this frequency (tRAS error)\n");
-
-	printk(BIOS_DEBUG, "tRAS = %d cycles\n", tRAS_cycles);
-	sysinfo->tras = tRAS_cycles;
-}
-
-static void sdram_detect_smallest_tRP(struct sys_info *sysinfo)
-{
-	int i;
-	int tRP_time;
-	int tRP_cycles;
-	int freq_multiplier = 0;
-
-	switch (sysinfo->memory_frequency) {
-	case 400:
-		freq_multiplier = 0x14; break; /* 5ns */
-	case 533:
-		freq_multiplier = 0x0f; break; /* 3.75ns */
-	case 667:
-		freq_multiplier = 0x0c; break; /* 3ns */
-	}
-
-	tRP_cycles = 2; /* 2 clocks minimum */
-	tRP_time = tRP_cycles * freq_multiplier;
-
-	for (i = 0; i < 2*DIMM_SOCKETS; i++) {
-		u8 reg8;
-
-		if (sysinfo->dimm[i] == SYSINFO_DIMM_NOT_POPULATED)
-			continue;
-
-		reg8 = spd_read_byte(get_dimm_spd_address(sysinfo, i), SPD_MIN_ROW_PRECHARGE_TIME);
-		if (!reg8)
-			die("Invalid tRP value.\n");
-
-		while (tRP_time < reg8) {
-			tRP_time += freq_multiplier;
-			tRP_cycles++;
-		}
-	}
-
-	if (tRP_cycles > 6)
-		die("DDR-II Module does not support this frequency (tRP error)\n");
-
-	printk(BIOS_DEBUG, "tRP = %d cycles\n", tRP_cycles);
-	sysinfo->trp = tRP_cycles;
-}
-
-static void sdram_detect_smallest_tRCD(struct sys_info *sysinfo)
-{
-	int i;
-	int tRCD_time;
-	int tRCD_cycles;
-	int freq_multiplier = 0;
-
-	switch (sysinfo->memory_frequency) {
-	case 400:
-		freq_multiplier = 0x14; break; /* 5ns */
-	case 533:
-		freq_multiplier = 0x0f; break; /* 3.75ns */
-	case 667:
-		freq_multiplier = 0x0c; break; /* 3ns */
-	}
-
-	tRCD_cycles = 2; /* 2 clocks minimum */
-	tRCD_time = tRCD_cycles * freq_multiplier;
-
-	for (i = 0; i < 2*DIMM_SOCKETS; i++) {
-		u8 reg8;
-
-		if (sysinfo->dimm[i] == SYSINFO_DIMM_NOT_POPULATED)
-			continue;
-
-		reg8 = spd_read_byte(get_dimm_spd_address(sysinfo, i), SPD_MIN_RAS_TO_CAS_DELAY);
-		if (!reg8)
-			die("Invalid tRCD value.\n");
-
-		while (tRCD_time < reg8) {
-			tRCD_time += freq_multiplier;
-			tRCD_cycles++;
-		}
-	}
-	if (tRCD_cycles > 6)
-		die("DDR-II Module does not support this frequency (tRCD error)\n");
-
-	printk(BIOS_DEBUG, "tRCD = %d cycles\n", tRCD_cycles);
-	sysinfo->trcd = tRCD_cycles;
-}
-
-static void sdram_detect_smallest_tWR(struct sys_info *sysinfo)
-{
-	int i;
-	int tWR_time;
-	int tWR_cycles;
-	int freq_multiplier = 0;
-
-	switch (sysinfo->memory_frequency) {
-	case 400:
-		freq_multiplier = 0x14; break; /* 5ns */
-	case 533:
-		freq_multiplier = 0x0f; break; /* 3.75ns */
-	case 667:
-		freq_multiplier = 0x0c; break; /* 3ns */
-	}
-
-	tWR_cycles = 2; /* 2 clocks minimum */
-	tWR_time = tWR_cycles * freq_multiplier;
-
-	for (i = 0; i < 2*DIMM_SOCKETS; i++) {
-		u8 reg8;
-
-		if (sysinfo->dimm[i] == SYSINFO_DIMM_NOT_POPULATED)
-			continue;
-
-		reg8 = spd_read_byte(get_dimm_spd_address(sysinfo, i), SPD_WRITE_RECOVERY_TIME);
-		if (!reg8)
-			die("Invalid tWR value.\n");
-
-		while (tWR_time < reg8) {
-			tWR_time += freq_multiplier;
-			tWR_cycles++;
-		}
-	}
-	if (tWR_cycles > 5)
-		die("DDR-II Module does not support this frequency (tWR error)\n");
-
-	printk(BIOS_DEBUG, "tWR = %d cycles\n", tWR_cycles);
-	sysinfo->twr = tWR_cycles;
-}
-
-static void sdram_detect_smallest_tRFC(struct sys_info *sysinfo)
-{
-	int i, index = 0;
-
-	const u8 tRFC_cycles[] = {
-	     /* 75 105 127.5 */
-		15, 21, 26,	/* DDR2-400 */
-		20, 28, 34,	/* DDR2-533 */
-		25, 35, 43	/* DDR2-667 */
-	};
-
-	for (i = 0; i < 2*DIMM_SOCKETS; i++) {
-		u8 reg8;
-
-		if (sysinfo->dimm[i] == SYSINFO_DIMM_NOT_POPULATED)
-			continue;
-
-		reg8 = sysinfo->banksize[i*2];
-		switch (reg8) {
-		case 0x04:
-			reg8 = 0; break;
-		case 0x08:
-			reg8 = 1; break;
-		case 0x10:
-			reg8 = 2; break;
-		case 0x20:
-			reg8 = 3; break;
-		}
-
-		if (sysinfo->dimm[i] == SYSINFO_DIMM_X16DS || sysinfo->dimm[i] == SYSINFO_DIMM_X16SS)
-			reg8++;
-
-		if (reg8 > 3) {
-			/* Can this happen? Go back to 127.5ns just to be sure
-			 * we don't run out of the array. This may be wrong
-			 */
-			printk(BIOS_DEBUG, "DIMM %d is 1Gb x16.. Please report.\n", i);
-			reg8 = 3;
-		}
-
-		if (reg8 > index)
-			index = reg8;
-
-	}
-	index--;
-	switch (sysinfo->memory_frequency) {
-	case 667:
-		index += 3; /* Fallthrough */
-	case 533:
-		index += 3; /* Fallthrough */
-	case 400:
+	switch (sysinfo->tclk) {
+	case TCK_200MHZ:
+		sysinfo->memory_frequency = 400;
+		break;
+	case TCK_266MHZ:
+		sysinfo->memory_frequency = 533;
+		break;
+	case TCK_333MHZ:
+		sysinfo->memory_frequency = 667;
 		break;
 	}
 
-	sysinfo->trfc = tRFC_cycles[index];
-	printk(BIOS_DEBUG, "tRFC = %d cycles\n", tRFC_cycles[index]);
+	printk(BIOS_DEBUG,
+		"Memory will be driven at %dMT with CAS=%d clocks\n",
+		sysinfo->memory_frequency, sysinfo->cas);
 }
 
-static void sdram_detect_smallest_refresh(struct sys_info *sysinfo)
+static void derive_timings(struct sys_info *sysinfo,
+			struct timings *saved_timings)
 {
-	int i;
+	sysinfo->tras = DIV_ROUND_UP(saved_timings->min_tRAS, sysinfo->tclk);
+	if (sysinfo->tras > 0x18)
+		die("DDR-II Module does not support this frequency (tRAS error)\n");
 
-	sysinfo->refresh = 0;
+	sysinfo->trp = DIV_ROUND_UP(saved_timings->min_tRP, sysinfo->tclk);
+	if (sysinfo->trp > 6)
+		die("DDR-II Module does not support this frequency (tRP error)\n");
 
-	for (i = 0; i < 2*DIMM_SOCKETS; i++) {
-		int refresh;
+	sysinfo->trcd = DIV_ROUND_UP(saved_timings->min_tRCD, sysinfo->tclk);
+	if (sysinfo->trcd > 6)
+		die("DDR-II Module does not support this frequency (tRCD error)\n");
 
-		if (sysinfo->dimm[i] == SYSINFO_DIMM_NOT_POPULATED)
-			continue;
+	sysinfo->twr = DIV_ROUND_UP(saved_timings->min_tWR, sysinfo->tclk);
+	if (sysinfo->twr > 5)
+		die("DDR-II Module does not support this frequency (tWR error)\n");
 
-		refresh = spd_read_byte(get_dimm_spd_address(sysinfo, i),
-					SPD_REFRESH) & ~(1 << 7);
+	sysinfo->trfc = DIV_ROUND_UP(saved_timings->min_tRFC, sysinfo->tclk);
 
-		/* 15.6us */
-		if (!refresh)
-			continue;
+	printk(BIOS_DEBUG, "tRAS = %d cycles\n", sysinfo->tras);
+	printk(BIOS_DEBUG, "tRP  = %d cycles\n", sysinfo->trp);
+	printk(BIOS_DEBUG, "tRCD = %d cycles\n", sysinfo->trcd);
+	printk(BIOS_DEBUG, "tWR  = %d cycles\n", sysinfo->twr);
+	printk(BIOS_DEBUG, "tRFC = %d cycles\n", sysinfo->trfc);
 
-		/* Refresh is slower than 15.6us, use 15.6us */
-		if (refresh > 2)
-			continue;
+	/* Refresh is slower than 15.6us, use 15.6us */
+	/* tRR is decoded in units of 1/256us */
 
-		if (refresh == 2) {
-			sysinfo->refresh = 1;
-			break;
-		}
+#define T_RR_7_8US 2000000
+#define T_RR_15_6US 4000000
+#define REFRESH_7_8US	1
+#define REFRESH_15_6US	0
 
+	if (saved_timings->max_tRR < T_RR_7_8US)
 		die("DDR-II module has unsupported refresh value\n");
-	}
+	else if (saved_timings->max_tRR < T_RR_15_6US)
+		sysinfo->refresh = REFRESH_7_8US;
+	else
+		sysinfo->refresh = REFRESH_15_6US;
 	printk(BIOS_DEBUG, "Refresh: %s\n", sysinfo->refresh?"7.8us":"15.6us");
 }
 
-static void sdram_verify_burst_length(struct sys_info *sysinfo)
+/**
+ * @brief Get generic DIMM parameters.
+ * @param sysinfo Central memory controller information structure
+ *
+ * This function gathers several pieces of information for each system DIMM:
+ *  o DIMM width (x8 / x16)
+ *  o DIMM rank (single ranked / dual ranked)
+ *
+ *  Also, some non-supported scenarios are detected.
+ */
+
+static void sdram_get_dram_configuration(struct sys_info *sysinfo)
 {
-	int i;
+	struct timings saved_timings;
 
-	for (i = 0; i < 2*DIMM_SOCKETS; i++) {
-		if (sysinfo->dimm[i] == SYSINFO_DIMM_NOT_POPULATED)
-			continue;
-
-		if (!(spd_read_byte(get_dimm_spd_address(sysinfo, i),
-				    SPD_SUPPORTED_BURST_LENGTHS) & SPD_BURST_LENGTH_8))
-			die("Only DDR-II RAM with burst length 8 is supported by this chipset.\n");
-	}
+	gather_common_timing(sysinfo, &saved_timings);
+	choose_tclk(sysinfo, &saved_timings);
+	derive_timings(sysinfo, &saved_timings);
 }
 
 static void sdram_program_dram_width(struct sys_info *sysinfo)
@@ -1419,138 +1176,6 @@ static void sdram_enable_system_memory_io(struct sys_info *sysinfo)
 	}
 }
 
-struct dimm_size {
-	unsigned long side1;
-	unsigned long side2;
-};
-
-static struct dimm_size sdram_get_dimm_size(struct sys_info *sysinfo, u16 dimmno)
-{
-	/* Calculate the log base 2 size of a DIMM in bits */
-	struct dimm_size sz;
-	int value, low, rows, columns, device;
-
-	device = get_dimm_spd_address(sysinfo, dimmno);
-	sz.side1 = 0;
-	sz.side2 = 0;
-
-	rows = spd_read_byte(device, SPD_NUM_ROWS);	/* rows */
-	if (rows < 0)
-		goto hw_err;
-	if ((rows & 0xf) == 0)
-		goto val_err;
-	sz.side1 += rows & 0xf;
-
-	columns = spd_read_byte(device, SPD_NUM_COLUMNS);	/* columns */
-	if (columns < 0)
-		goto hw_err;
-	if ((columns & 0xf) == 0)
-		goto val_err;
-	sz.side1 += columns & 0xf;
-
-	value = spd_read_byte(device, SPD_NUM_BANKS_PER_SDRAM);	/* banks */
-	if (value < 0)
-		goto hw_err;
-	if ((value & 0xff) == 0)
-		goto val_err;
-	sz.side1 += log2(value & 0xff);
-
-	/* Get the module data width and convert it to a power of two */
-	value = spd_read_byte(device, SPD_MODULE_DATA_WIDTH_MSB);	/* (high byte) */
-	if (value < 0)
-		goto hw_err;
-	value &= 0xff;
-	value <<= 8;
-
-	low = spd_read_byte(device, SPD_MODULE_DATA_WIDTH_LSB);	/* (low byte) */
-	if (low < 0)
-		goto hw_err;
-	value = value | (low & 0xff);
-	if ((value != 72) && (value != 64))
-		goto val_err;
-	sz.side1 += log2(value);
-
-	/* side 2 */
-	value = spd_read_byte(device, SPD_NUM_DIMM_BANKS);	/* number of physical banks */
-
-	if (value < 0)
-		goto hw_err;
-	value &= 7;
-	value++;
-	if (value == 1)
-		goto out;
-	if (value != 2)
-		goto val_err;
-
-	/* Start with the symmetrical case */
-	sz.side2 = sz.side1;
-
-	if ((rows & 0xf0) == 0)
-		goto out;	/* If symmetrical we are done */
-
-	/* Don't die here, I have not come across any of these to test what
-	 * actually happens.
-	 */
-	printk(BIOS_ERR, "Asymmetric DIMMs are not supported by this chipset\n");
-
-	sz.side2 -= (rows & 0x0f);		/* Subtract out rows on side 1 */
-	sz.side2 += ((rows >> 4) & 0x0f);	/* Add in rows on side 2 */
-
-	sz.side2 -= (columns & 0x0f);		/* Subtract out columns on side 1 */
-	sz.side2 += ((columns >> 4) & 0x0f);	/* Add in columns on side 2 */
-
-	goto out;
-
- val_err:
-	die("Bad SPD value\n");
- hw_err:
-	/* If a hardware error occurs the spd ROM probably does not exist.
-	 * In this case report that there is no memory
-	 */
-	sz.side1 = 0;
-	sz.side2 = 0;
-out:
-	return sz;
-}
-
-static void sdram_detect_dimm_size(struct sys_info *sysinfo)
-{
-	int i;
-
-	for (i = 0; i < 2 * DIMM_SOCKETS; i++) {
-		struct dimm_size sz;
-
-		sysinfo->banksize[i * 2] = 0;
-		sysinfo->banksize[(i * 2) + 1] = 0;
-
-		if (sysinfo->dimm[i] == SYSINFO_DIMM_NOT_POPULATED)
-			continue;
-
-		sz = sdram_get_dimm_size(sysinfo, i);
-
-		sysinfo->banks[i] = spd_read_byte(get_dimm_spd_address(sysinfo, i),
-						  SPD_NUM_BANKS_PER_SDRAM);	/* banks */
-
-		if (sz.side1 < 30)
-			die("DDR-II rank size smaller than 128MB is not supported.\n");
-
-		sysinfo->banksize[i * 2] = 1 << (sz.side1 - 28);
-
-		printk(BIOS_DEBUG, "DIMM %d side 0 = %d MB\n", i, sysinfo->banksize[i * 2] * 32);
-
-		if (!sz.side2)
-			continue;
-
-		/* If there is a second side, it has to have at least 128M, too */
-		if (sz.side2 < 30)
-			die("DDR-II rank size smaller than 128MB is not supported.\n");
-
-		sysinfo->banksize[(i * 2) + 1] = 1 << (sz.side2 - 28);
-
-		printk(BIOS_DEBUG, "DIMM %d side 1 = %d MB\n", i, sysinfo->banksize[(i * 2) + 1] * 32);
-	}
-}
-
 static int sdram_program_row_boundaries(struct sys_info *sysinfo)
 {
 	int i;
@@ -1620,24 +1245,18 @@ static int sdram_program_row_boundaries(struct sys_info *sysinfo)
 
 static int sdram_set_row_attributes(struct sys_info *sysinfo)
 {
-	int i, value;
+	int i;
 	u16 dra0 = 0, dra1 = 0, dra = 0;
 
 	printk(BIOS_DEBUG, "Setting row attributes...\n");
 	for (i = 0; i < 2 * DIMM_SOCKETS; i++) {
-		u16 device;
 		u8 columnsrows;
 
 		if (sysinfo->dimm[i] == SYSINFO_DIMM_NOT_POPULATED)
 			continue;
 
-		device = get_dimm_spd_address(sysinfo, i);
-
-		value = spd_read_byte(device, SPD_NUM_ROWS);	/* rows */
-		columnsrows = (value & 0x0f);
-
-		value = spd_read_byte(device, SPD_NUM_COLUMNS);	/* columns */
-		columnsrows |= (value & 0xf) << 4;
+		columnsrows = (sysinfo->rows[i] & 0x0f)
+			| (sysinfo->cols[i] & 0xf) << 4;
 
 		switch (columnsrows) {
 		case 0x9d:
@@ -1702,8 +1321,6 @@ static void sdram_set_bank_architecture(struct sys_info *sysinfo)
 	}
 }
 
-#define REFRESH_7_8US	1
-#define REFRESH_15_6US	0
 static void sdram_program_refresh_rate(struct sys_info *sysinfo)
 {
 	u32 reg32;
@@ -3116,7 +2733,7 @@ static void sdram_setup_processor_side(void)
 void sdram_initialize(int boot_path, const u8 *spd_addresses)
 {
 	struct sys_info sysinfo;
-	u8 reg8, cas_mask;
+	u8 reg8;
 
 	printk(BIOS_DEBUG, "Setting up RAM controller.\n");
 
@@ -3130,39 +2747,6 @@ void sdram_initialize(int boot_path, const u8 *spd_addresses)
 
 	/* If error, do cold boot */
 	sdram_detect_errors(&sysinfo);
-
-	/* Check whether we have stacked DIMMs */
-	sdram_verify_package_type(&sysinfo);
-
-	/* Determine common CAS */
-	cas_mask = sdram_possible_cas_latencies(&sysinfo);
-
-	/* Choose Common Frequency */
-	sdram_detect_cas_latency_and_ram_speed(&sysinfo, cas_mask);
-
-	/* Determine smallest common tRAS */
-	sdram_detect_smallest_tRAS(&sysinfo);
-
-	/* Determine tRP */
-	sdram_detect_smallest_tRP(&sysinfo);
-
-	/* Determine tRCD */
-	sdram_detect_smallest_tRCD(&sysinfo);
-
-	/* Determine smallest refresh period */
-	sdram_detect_smallest_refresh(&sysinfo);
-
-	/* Verify all DIMMs support burst length 8 */
-	sdram_verify_burst_length(&sysinfo);
-
-	/* determine tWR */
-	sdram_detect_smallest_tWR(&sysinfo);
-
-	/* Determine DIMM size parameters (rows, columns banks) */
-	sdram_detect_dimm_size(&sysinfo);
-
-	/* determine tRFC */
-	sdram_detect_smallest_tRFC(&sysinfo);
 
 	/* Program PLL settings */
 	sdram_program_pll_settings(&sysinfo);

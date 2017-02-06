@@ -230,6 +230,9 @@ void google_chromeec_check_ec_image(int expected_type)
 		cec_cmd.cmd_dev_index = 0;
 		printk(BIOS_DEBUG, "Rebooting with EC in RO mode:\n");
 		post_code(0); /* clear current post code */
+		/* Let the platform prepare for the EC taking out the system power. */
+		if (IS_ENABLED(CONFIG_VBOOT))
+			vboot_platform_prepare_reboot();
 		google_chromeec_command(&cec_cmd);
 		udelay(1000);
 		hard_reset();

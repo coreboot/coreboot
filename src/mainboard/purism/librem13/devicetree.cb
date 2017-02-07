@@ -49,8 +49,8 @@ chip soc/intel/broadwell
 		device pci 17.0 off end # SDIO
 		device pci 19.0 off end # GbE
 		device pci 1b.0 on  end # High Definition Audio
-		device pci 1c.0 off end # PCIe Port #1
-		device pci 1c.1 off end # PCIe Port #2
+		device pci 1c.0 on  end # PCIe Port #1
+		device pci 1c.1 on  end # PCIe Port #2
 		device pci 1c.2 on  end # PCIe Port #3 - LAN
 		device pci 1c.3 on  end # PCIe Port #4 - WiFi
 		device pci 1c.4 off end # PCIe Port #5

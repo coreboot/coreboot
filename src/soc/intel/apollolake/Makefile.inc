@@ -57,6 +57,7 @@ smm-y += uart_early.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
 ramstage-y += cpu.c
 ramstage-y += chip.c
+ramstage-y += cse.c
 ramstage-y += elog.c
 ramstage-y += flash_ctrlr.c
 ramstage-y += dsp.c

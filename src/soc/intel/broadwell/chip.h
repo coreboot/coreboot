@@ -44,8 +44,12 @@ struct soc_intel_broadwell_config {
 	uint8_t sata_port_map;
 	uint32_t sata_port0_gen3_tx;
 	uint32_t sata_port1_gen3_tx;
+	uint32_t sata_port2_gen3_tx;
+	uint32_t sata_port3_gen3_tx;
 	uint32_t sata_port0_gen3_dtle;
 	uint32_t sata_port1_gen3_dtle;
+	uint32_t sata_port2_gen3_dtle;
+	uint32_t sata_port3_gen3_dtle;
 
 	/*
 	 * SATA DEVSLP Mux

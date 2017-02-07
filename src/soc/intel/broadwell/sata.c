@@ -149,6 +149,22 @@ static void sata_init(struct device *dev)
 				 SATA_SECRT88_VADJ_MASK)
 				<< SATA_SECRT88_VADJ_SHIFT);
 
+	if (config->sata_port2_gen3_tx)
+		pch_iobp_update(SATA_IOBP_SP2_SECRT88,
+				~(SATA_SECRT88_VADJ_MASK <<
+				  SATA_SECRT88_VADJ_SHIFT),
+				(config->sata_port2_gen3_tx &
+				 SATA_SECRT88_VADJ_MASK)
+				<< SATA_SECRT88_VADJ_SHIFT);
+
+	if (config->sata_port3_gen3_tx)
+		pch_iobp_update(SATA_IOBP_SP3_SECRT88,
+				~(SATA_SECRT88_VADJ_MASK <<
+				  SATA_SECRT88_VADJ_SHIFT),
+				(config->sata_port2_gen3_tx &
+				 SATA_SECRT88_VADJ_MASK)
+				<< SATA_SECRT88_VADJ_SHIFT);
+
 	/* Set Gen3 DTLE DATA / EDGE registers if needed */
 	if (config->sata_port0_gen3_dtle) {
 		pch_iobp_update(SATA_IOBP_SP0DTLE_DATA,
@@ -173,6 +189,30 @@ static void sata_init(struct device *dev)
 				(config->sata_port1_gen3_dtle & SATA_DTLE_MASK)
 				<< SATA_DTLE_EDGE_SHIFT);
 	}
+
+	if (config->sata_port2_gen3_dtle) {
+		pch_iobp_update(SATA_IOBP_SP2DTLE_DATA,
+				~(SATA_DTLE_MASK << SATA_DTLE_DATA_SHIFT),
+				(config->sata_port2_gen3_dtle & SATA_DTLE_MASK)
+				<< SATA_DTLE_DATA_SHIFT);
+
+		pch_iobp_update(SATA_IOBP_SP2DTLE_EDGE,
+				~(SATA_DTLE_MASK << SATA_DTLE_EDGE_SHIFT),
+				(config->sata_port2_gen3_dtle & SATA_DTLE_MASK)
+				<< SATA_DTLE_EDGE_SHIFT);
+	}
+	if (config->sata_port3_gen3_dtle) {
+		pch_iobp_update(SATA_IOBP_SP3DTLE_DATA,
+				~(SATA_DTLE_MASK << SATA_DTLE_DATA_SHIFT),
+				(config->sata_port3_gen3_dtle & SATA_DTLE_MASK)
+				<< SATA_DTLE_DATA_SHIFT);
+
+		pch_iobp_update(SATA_IOBP_SP3DTLE_EDGE,
+				~(SATA_DTLE_MASK << SATA_DTLE_EDGE_SHIFT),
+				(config->sata_port3_gen3_dtle & SATA_DTLE_MASK)
+				<< SATA_DTLE_EDGE_SHIFT);
+	}
+
 
 	/*
 	 * Additional Programming Requirements for Power Optimizer

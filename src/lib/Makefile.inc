@@ -50,10 +50,6 @@ verstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 verstage-y += boot_device.c
 verstage-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
 
-ifeq ($(MOCK_TPM),1)
-libverstage-y += mocked_tlcl.c
-romstage-$(CONFIG_SEPARATE_VERSTAGE) += mocked_tlcl.c
-else
 libverstage-$(CONFIG_TPM) += tlcl.c
 libverstage-$(CONFIG_TPM2) += tpm2_marshaling.c
 libverstage-$(CONFIG_TPM2) += tpm2_tlcl.c
@@ -63,8 +59,6 @@ romstage-$(CONFIG_TPM) += tlcl.c
 romstage-$(CONFIG_TPM2) += tpm2_marshaling.c
 romstage-$(CONFIG_TPM2) += tpm2_tlcl.c
 endif # CONFIG_SEPARATE_VERSTAGE
-
-endif
 
 verstage-$(CONFIG_GENERIC_UDELAY) += timer.c
 verstage-$(CONFIG_GENERIC_GPIO_LIB) += gpio.c

@@ -212,6 +212,7 @@ static void display_startup(void)
 	struct edid edid;
 	u8 i2c_bus, i2c_addr;
 	int ret;
+	bool dual_dsi_mode = false;
 
 	if (board_id() + CONFIG_BOARD_ID_ADJUSTMENT > 6) {
 		i2c_bus = 0;
@@ -231,15 +232,15 @@ static void display_startup(void)
 
 	edid_set_framebuffer_bits_per_pixel(&edid, 32, 0);
 
-	mtk_ddp_init();
+	mtk_ddp_init(dual_dsi_mode);
 	ret = mtk_dsi_init(MIPI_DSI_MODE_VIDEO | MIPI_DSI_MODE_VIDEO_SYNC_PULSE,
-			   MIPI_DSI_FMT_RGB888, 4, &edid);
+			   MIPI_DSI_FMT_RGB888, 4, dual_dsi_mode, &edid);
 	if (ret < 0) {
 		printk(BIOS_ERR, "dsi init fail\n");
 		return;
 	}
 
-	mtk_ddp_mode_set(&edid);
+	mtk_ddp_mode_set(&edid, dual_dsi_mode);
 
 	set_vbe_mode_info_valid(&edid, (uintptr_t)0);
 }

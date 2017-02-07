@@ -66,7 +66,7 @@ i386_do_exec:
 	 * and argv are sane
 	 */
 
-	movl  $12345678, %ecx
+	movl  $0x12345678, %ecx
 	pushl %ecx
 
 	/* Jump to the code */

@@ -85,7 +85,7 @@ i386_do_exec:
          */
 
 	movl 20(%ebp), %ecx
-	movl %eax, (%eax)
+	movl %eax, (%ecx)
 
 	/* Get the rest of the saved registers */
 	popl %ecx

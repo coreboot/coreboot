@@ -32,12 +32,6 @@ bootblock-y += watchdog.c
 ramstage-y += watchdog.c
 endif
 
-ifeq ($(MOCK_TPM),1)
-CFLAGS_common += -DMOCK_TPM=1
-else
-CFLAGS_common += -DMOCK_TPM=0
-endif
-
 CONFIG_GBB_HWID := $(call strip_quotes,$(CONFIG_GBB_HWID))
 CONFIG_GBB_BMPFV_FILE := $(call strip_quotes,$(CONFIG_GBB_BMPFV_FILE))
 CONFIG_VBOOT_KEYBLOCK := $(call strip_quotes,$(CONFIG_VBOOT_KEYBLOCK))

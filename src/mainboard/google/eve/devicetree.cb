@@ -218,11 +218,10 @@ chip soc/intel/skylake
 			end
 		end # I2C #1
 		device pci 15.2 on
-			chip drivers/i2c/hid
-				register "generic.hid" = ""ACPI0C50""
-				register "generic.desc" = ""Touchpad""
-				register "generic.irq" = "IRQ_LEVEL_LOW(GPP_B3_IRQ)"
-				register "hid_desc_reg_offset" = "0x0"
+			chip drivers/i2c/generic
+				register "hid" = ""GOOG5400""
+				register "desc" = ""Touchpad""
+				register "irq" = "IRQ_EDGE_LOW(GPP_B3_IRQ)"
 				device i2c 49 on end
 			end
 		end # I2C #2

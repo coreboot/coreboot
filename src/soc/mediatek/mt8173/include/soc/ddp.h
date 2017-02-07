@@ -140,6 +140,7 @@ struct mmsys_cfg_regs {
 	u32 hdmi_en;
 };
 
+check_member(mmsys_cfg_regs, mmsys_sw1_rst_b, 0x144);
 check_member(mmsys_cfg_regs, hdmi_en, 0x904);
 static struct mmsys_cfg_regs * const mmsys_cfg = (void *) MMSYS_BASE;
 
@@ -206,7 +207,20 @@ enum {
 	OVL0_MOUT_EN_COLOR0 = BIT(0),
 	OD_MOUT_EN_RDMA0    = BIT(0),
 	UFOE_MOUT_EN_DSI0   = BIT(0),
-	COLOR0_SEL_IN_OVL0  = BIT(0),
+	UFOE_MOUT_EN_SPLIT1 = BIT(1),
+};
+
+enum {
+	COLOR0_SEL_IN_OVL0  = 1,
+	DSI0_SEL_IN_UFOE    = 0,
+	DSI0_SEL_IN_SPLIT1  = 1,
+	DSI1_SEL_IN_SPLIT1  = 0,
+};
+
+/* MMSYS_SW1_RST_B */
+enum {
+	MMSYS_SW1_RST_DSI0_B = BIT(2),
+	MMSYS_SW1_RST_DSI1_B = BIT(3),
 };
 
 struct disp_mutex_regs {
@@ -386,7 +400,14 @@ static struct disp_ufoe_regs * const disp_ufoe = (void *)DISP_UFOE_BASE;
 
 enum {
 	UFO_BYPASS = BIT(2),
+	UFO_LR = BIT(3) | BIT(0),
 };
+
+struct disp_split_regs {
+	u32 start;
+};
+
+static struct disp_split_regs * const disp_split = (void *)DISP_SPLIT1_BASE;
 
 struct disp_color_regs {
 	u8 reserved0[1024];
@@ -426,7 +447,7 @@ enum OVL_INPUT_FORMAT {
 	OVL_INFMT_ABGR8888 = OVL_INFMT_ARGB8888 + OVL_COLOR_BASE,
 };
 
-void mtk_ddp_init(void);
-void mtk_ddp_mode_set(const struct edid *edid);
+void mtk_ddp_init(bool dual_dsi_mode);
+void mtk_ddp_mode_set(const struct edid *edid, bool dual_dsi_mode);
 
 #endif

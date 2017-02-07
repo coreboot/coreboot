@@ -42,8 +42,8 @@ char *main_argv[MAX_ARGC_COUNT];
  * This is our C entry function - set up the system
  * and jump into the payload entry point.
  */
-void start_main(void);
-void start_main(void)
+int start_main(void);
+int start_main(void)
 {
 	extern int main(int argc, char **argv);
 
@@ -67,10 +67,9 @@ void start_main(void)
 	 * In the future we may care about the return value.
 	 */
 
-	(void) main(main_argc, (main_argc != 0) ? main_argv : NULL);
-
 	/*
-	 * Returning here will go to the _leave function to return
+	 * Returning from main() will go to the _leave function to return
 	 * us to the original context.
 	 */
+	return main(main_argc, (main_argc != 0) ? main_argv : NULL);
 }

@@ -65,20 +65,19 @@ entries
 413         1       e       1        wwan
 414         1       e       1        wlan
 415         1       e       1        trackpoint
-416         1       e       1        fn_ctrl_swap
-417         1       e       1        sticky_fn
+416         8       h       0        volume
+424         1       e       1        fn_ctrl_swap
+425         1       e       1        sticky_fn
+426         1       e       1        power_management_beeps
+427         1       e       1        low_battery_beep
+428         1       e       1        uwb
 
 # coreboot config options: bootloader
-418         512       s       0        boot_devices
-930           8       h       0        boot_default
-
-938         1       e       1        power_management_beeps
-939         1       e       1        low_battery_beep
-940         1       e       1        uwb
+432         512       s       0        boot_devices
+944           8       h       0        boot_default
 
 # coreboot config options: northbridge
-944         8       h       0        volume
-952	    4	    e	    11	     gfx_uma_size
+952         4       e       11       gfx_uma_size
 
 # coreboot config options: check sums
 984          16       h       0        check_sum

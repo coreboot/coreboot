@@ -22,13 +22,14 @@ entries
 384          1       e       4        boot_option
 388          4       h       0        reboot_counter
 393          3       e       5        baud_rate
-396          5       e       10       ecc_scrub_rate
+#396          5      unused
 401          1       e       1        interleave_chip_selects
 402          1       e       1        interleave_nodes
 403          1       e       1        interleave_memory_channels
 404          2       e       8        max_mem_clock
 406          1       e       2        multi_core
 412          4       e       6        debug_level
+416          5       e       10       ecc_scrub_rate
 440          4       e       9        slow_cpu
 444          1       e       1        nmi
 445          1       e       1        gart

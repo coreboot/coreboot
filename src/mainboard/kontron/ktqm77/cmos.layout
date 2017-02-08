@@ -61,14 +61,13 @@ entries
 408          1       e       1        nmi
 409          2       e       7        power_on_after_fail
 411          1       e       11       sata_mode
-#412          4       r       0        unused
 
 # coreboot config options: additional mainboard options
-416          4       e      10        systemp_type
-420          7       h       0        fan1_min
-427          7       h       0        fan1_max
-434          7       h       0        fan2_min
-441          7       h       0        fan2_max
+412          4       e      10        systemp_type
+416          7       h       0        fan1_min
+424          7       h       0        fan1_max
+432          7       h       0        fan2_min
+440          7       h       0        fan2_max
 
 # coreboot config options: bootloader
 448         64       r       0        write_protected_by_bios

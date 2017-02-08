@@ -33,5 +33,7 @@ static const uint32_t dual_channel_config =
 #define GPIO_SSUS_37_PAD 57
 #define GPIO_SSUS_38_PAD 50
 #define GPIO_SSUS_39_PAD 58
+#define GPIO_SSUS_40_PAD 52
+#define GPIO_SSUS_40_PAD_USE_PULLDOWN
 
 #endif

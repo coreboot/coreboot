@@ -454,4 +454,11 @@ static inline void ssus_disable_internal_pull(int pad)
 	write32(ssus_pconf0(pad), read32(ssus_pconf0(pad)) & pull_mask);
 }
 
+static inline void ssus_enable_internal_pull(int pad, int mask)
+{
+	const int pull_mask = ~(0xf << 7);
+	write32(ssus_pconf0(pad),
+		(read32(ssus_pconf0(pad)) & pull_mask) | mask);
+}
+
 #endif /* _BAYTRAIL_GPIO_H_ */

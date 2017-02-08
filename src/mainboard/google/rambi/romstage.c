@@ -32,7 +32,10 @@ static void *get_spd_pointer(char *spd_file_content, int total_spds, int *dual)
 	ssus_disable_internal_pull(GPIO_SSUS_37_PAD);
 	ssus_disable_internal_pull(GPIO_SSUS_38_PAD);
 	ssus_disable_internal_pull(GPIO_SSUS_39_PAD);
-#ifdef GPIO_SSUS_40_PAD
+#ifdef GPIO_SSUS_40_PAD_USE_PULLDOWN
+	/* To prevent floating pin on shipped systems. */
+	ssus_enable_internal_pull(GPIO_SSUS_40_PAD, PAD_PULL_DOWN | PAD_PU_20K);
+#elif defined (GPIO_SSUS_40_PAD)
 	ssus_disable_internal_pull(GPIO_SSUS_40_PAD);
 #endif
 	ram_id |= (ssus_get_gpio(GPIO_SSUS_37_PAD) << 0);

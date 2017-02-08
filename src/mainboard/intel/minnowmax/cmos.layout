@@ -70,11 +70,11 @@ entries
 #1000        24       r       0        amd_reserved
 
 #save timestamps in pre-ram boot areas
-1719        64       h       0        timestamp_value1
-1783        64       h       0        timestamp_value2
-1847        64       h       0        timestamp_value3
-1911        64       h       0        timestamp_value4
-1975        64       h       0        timestamp_value5
+1720        64       h       0        timestamp_value1
+1784        64       h       0        timestamp_value2
+1848        64       h       0        timestamp_value3
+1912        64       h       0        timestamp_value4
+1976        64       h       0        timestamp_value5
 
 # -----------------------------------------------------------------
 

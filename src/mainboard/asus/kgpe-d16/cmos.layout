@@ -22,13 +22,14 @@ entries
 384          1       e       4        boot_option
 388          4       h       0        reboot_counter
 393          3       e       5        baud_rate
-396          5       e       10       ecc_scrub_rate
+#396          5      unused
 401          1       e       1        interleave_chip_selects
 402          1       e       1        interleave_nodes
 403          1       e       1        interleave_memory_channels
 404          4       e       8        max_mem_clock
 408          1       e       2        multi_core
 412          4       e       6        debug_level
+416          5       e       10       ecc_scrub_rate
 440          4       e       9        slow_cpu
 444          1       e       1        nmi
 445          1       e       1        gart
@@ -42,7 +43,7 @@ entries
 466          1       e       1        cpu_cc6_state
 467          1       e       1        sata_ahci_mode
 468          1       e       1        sata_alpm
-469          4       h       0        maximum_p_state_limit
+#469          4      unused
 473          2       e       13       dimm_spd_checksum
 475          1       e       14       probe_filter
 476          1       e       1        l3_cache_partitioning
@@ -52,6 +53,7 @@ entries
 480          1       e       2        ehci_async_data_cache
 481          1       e       1        experimental_memory_speed_boost
 482          1       r       0        allow_spd_nvram_cache_restore
+483          4       h       0        maximum_p_state_limit
 728        256       h       0        user_data
 984         16       h       0        check_sum
 # Reserve the extended AMD configuration registers

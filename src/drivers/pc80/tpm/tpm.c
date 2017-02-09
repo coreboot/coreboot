@@ -876,7 +876,7 @@ static void lpc_tpm_fill_ssdt(struct device *dev)
 					CONFIG_TPM_TIS_BASE_ADDRESS, 0x5000);
 
 	if (!path) {
-		path = "PCI0.LPCB";
+		path = "\\_SB_.PCI0.LPCB";
 		printk(BIOS_DEBUG, "Using default TPM ACPI path: '%s'\n", path);
 	}
 

@@ -3,7 +3,8 @@
 // Scope is \_SB.PCI0.LPCB
 
 Device (SIO) {
-	Name (_ADR, 0x2E)
+	Name (_HID, EisaId ("PNP0A05"))
+
 	OperationRegion (SIOA, SystemIO, 0x2E, 0x02)
 	Field (SIOA, ByteAcc, NoLock, Preserve)
 	{

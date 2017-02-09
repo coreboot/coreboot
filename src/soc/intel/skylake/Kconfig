@@ -3,6 +3,13 @@ config SOC_INTEL_SKYLAKE
 	help
 	  Intel Skylake support
 
+config SOC_INTEL_KABYLAKE
+	bool
+	default n
+	select SOC_INTEL_SKYLAKE
+	help
+	  Intel Kabylake support
+
 if SOC_INTEL_SKYLAKE
 
 config CPU_SPECIFIC_OPTIONS

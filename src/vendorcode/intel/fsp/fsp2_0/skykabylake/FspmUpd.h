@@ -34,6 +34,7 @@ are permitted provided that the following conditions are met:
 #define __FSPMUPD_H__
 
 #include <FspUpd.h>
+#include "MemInfoHob.h"
 
 #pragma pack(1)
 

@@ -258,6 +258,9 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->FastPkgCRampDisableGt = config->FastPkgCRampDisableGt;
 	params->FastPkgCRampDisableSa = config->FastPkgCRampDisableSa;
 
+	/* Enable PMC XRAM read */
+	tconfig->PchPmPmcReadDisable = config->PchPmPmcReadDisable;
+
 	soc_irq_settings(params);
 }
 

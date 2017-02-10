@@ -13,4 +13,3 @@ config BOARD_GOOGLE_BOB
 config BOARD_GOOGLE_SCARLET
 	bool "Scarlet"
 	select BOARD_GOOGLE_GRU_COMMON
-

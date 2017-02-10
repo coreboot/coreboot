@@ -190,4 +190,57 @@ void hudson_clk_output_48Mhz(void)
 	*memptr = data;
 }
 
+static uintptr_t hudson_spibase(void)
+{
+	/* Make sure the base address is predictable */
+	device_t dev = PCI_DEV(0, 0x14, 3);
+
+	u32 base = pci_read_config32(dev, SPIROM_BASE_ADDRESS_REGISTER)
+							& 0xfffffff0;
+	if (!base){
+		base = SPI_BASE_ADDRESS;
+		pci_write_config32(dev, SPIROM_BASE_ADDRESS_REGISTER, base
+							| SPI_ROM_ENABLE);
+		/* PCI_COMMAND_MEMORY is read-only and enabled. */
+	}
+	return (uintptr_t)base;
+}
+
+void hudson_set_spi100(u16 norm, u16 fast, u16 alt, u16 tpm)
+{
+	uintptr_t base = hudson_spibase();
+	write16((void *)base + SPI100_SPEED_CONFIG,
+				(norm << SPI_NORM_SPEED_NEW_SH) |
+				(fast << SPI_FAST_SPEED_NEW_SH) |
+				(alt << SPI_ALT_SPEED_NEW_SH) |
+				(tpm << SPI_TPM_SPEED_NEW_SH));
+	write16((void *)base + SPI100_ENABLE, SPI_USE_SPI100);
+}
+
+void hudson_disable_4dw_burst(void)
+{
+	uintptr_t base = hudson_spibase();
+	write16((void *)base + SPI100_HOST_PREF_CONFIG,
+			read16((void *)base + SPI100_HOST_PREF_CONFIG)
+					& ~SPI_RD4DW_EN_HOST);
+}
+
+/* Hudson 1-3 only.  For Hudson 1, call with fast=1 */
+void hudson_set_readspeed(u16 norm, u16 fast)
+{
+	uintptr_t base = hudson_spibase();
+	write16((void *)base + SPI_CNTRL1, (read16((void *)base + SPI_CNTRL1)
+					& ~SPI_CNTRL1_SPEED_MASK)
+					| (norm << SPI_NORM_SPEED_SH)
+					| (fast << SPI_FAST_SPEED_SH));
+}
+
+void hudson_read_mode(u32 mode)
+{
+	uintptr_t base = hudson_spibase();
+	write32((void *)base + SPI_CNTRL0,
+			(read32((void *)base + SPI_CNTRL0)
+					& ~SPI_READ_MODE_MASK) | mode);
+}
+
 #endif

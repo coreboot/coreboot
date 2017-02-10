@@ -148,6 +148,10 @@ void hudson_lpc_port80(void);
 void hudson_lpc_decode(void);
 void hudson_pci_port80(void);
 void hudson_clk_output_48Mhz(void);
+void hudson_read_mode(u32 mode);
+void hudson_set_spi100(u16 norm, u16 fast, u16 alt, u16 tpm);
+void hudson_disable_4dw_burst(void);
+void hudson_set_readspeed(u16 norm, u16 fast);
 
 int s3_save_nvram_early(u32 dword, int size, int  nvram_pos);
 int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos);

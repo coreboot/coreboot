@@ -93,8 +93,10 @@ check_for_license '"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES'
 check_for_license 'No license required'
 
 for file in $headerlist; do
-	#verify the file exists, and has content that requires a header
-	if [ -f "$file" ] && [ "$(wc -l < "$file")" -ne 0 ]; then
+	# Verify the file exists, and has content that requires a header
+	# This assumes that a file that has 4 lines or fewer is not notable
+	# enough to require a license.
+	if [ -f "$file" ] && [ "$(wc -l < "$file")" -gt 4 ]; then
 		echo "$file has no recognized license header."
 	fi
 done

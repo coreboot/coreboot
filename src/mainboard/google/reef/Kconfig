@@ -64,6 +64,7 @@ config VARIANT_DIR
 	string
 	default "reef" if BOARD_GOOGLE_REEF
 	default "pyro" if BOARD_GOOGLE_PYRO
+	default "sand" if BOARD_GOOGLE_SAND
 	default "snappy" if BOARD_GOOGLE_SNAPPY
 
 config DEVICETREE
@@ -76,6 +77,7 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "Reef" if BOARD_GOOGLE_REEF
 	default "Pyro" if BOARD_GOOGLE_PYRO
+	default "Sand" if BOARD_GOOGLE_SAND
 	default "Snappy" if BOARD_GOOGLE_SNAPPY
 
 config MAINBOARD_FAMILY
@@ -87,6 +89,7 @@ config GBB_HWID
 	depends on CHROMEOS
 	default "REEF TEST 3240" if BOARD_GOOGLE_REEF
 	default "PYRO TEST 0290" if BOARD_GOOGLE_PYRO
+	default "SAND TEST 1904" if BOARD_GOOGLE_SAND
 	default "SNAPPY TEST 1088" if BOARD_GOOGLE_SNAPPY
 
 config MAX_CPUS

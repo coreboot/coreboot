@@ -348,7 +348,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "CORE  ", "COREBOOT", 1)
 					{
 						Return (0x0f)
 					}
-					Method (_CRS, 0, NotSerialized)
+					Method (_CRS, 0, Serialized)
 					{
 						Name (TMP, ResourceTemplate () {
 							IO (Decode16, 0x0060, 0x0060, 0x01, 0x01)
@@ -367,7 +367,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "CORE  ", "COREBOOT", 1)
 					{
 						Return (0x0f)
 					}
-					Method (_CRS, 0, NotSerialized)
+					Method (_CRS, 0, Serialized)
 					{
 						Name (TMP, ResourceTemplate () {
 						     IRQNoFlags () {12}
@@ -384,7 +384,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "CORE  ", "COREBOOT", 1)
 					{
 						Return (0x0f)
 					}
-					Method (_CRS, 0, NotSerialized)
+					Method (_CRS, 0, Serialized)
 					{
 						Name (TMP, ResourceTemplate () {
 							IO (Decode16, 0x0378, 0x0378, 0x01, 0x08)
@@ -406,7 +406,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "CORE  ", "COREBOOT", 1)
 
 			External(TOM1) /* top of memory below 4GB */
 
-			Method(_CRS, 0) {
+			Method(_CRS, 0, Serialized) {
 				Name(TMP, ResourceTemplate() {
 					WordBusNumber(ResourceProducer, MinFixed, MaxFixed, PosDecode,
 						0x0000,             // Granularity

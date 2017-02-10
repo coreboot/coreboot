@@ -49,8 +49,8 @@ Scope (\_SI)
 		If (LEqual (Arg0, 3)) {
 			/* sleep state */
 
-			/* power TLED off */
-			\_SB.PCI0.LPCB.EC.TLED(0x00)
+			/* power TLED pulsing */
+			\_SB.PCI0.LPCB.EC.TLED(0xa0)
 			/* suspend TLED on */
 			\_SB.PCI0.LPCB.EC.TLED(0x87)
 		}

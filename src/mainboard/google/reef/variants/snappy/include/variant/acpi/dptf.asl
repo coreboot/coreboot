@@ -34,8 +34,8 @@
 
 #define DPTF_TSR2_SENSOR_ID	2
 #define DPTF_TSR2_SENSOR_NAME	"Charger"
-#define DPTF_TSR2_PASSIVE	90
-#define DPTF_TSR2_CRITICAL	100
+#define DPTF_TSR2_PASSIVE	70
+#define DPTF_TSR2_CRITICAL	90
 
 #define DPTF_ENABLE_CHARGER
 
@@ -81,7 +81,7 @@ Name (MPPC, Package ()
 	Package () {	/* Power Limit 2 */
 		1,	/* PowerLimitIndex, 1 for Power Limit 2 */
 		8000,	/* PowerLimitMinimum */
-		8000,	/* PowerLimitMaximum */
+		15000,	/* PowerLimitMaximum */
 		1000,	/* TimeWindowMinimum */
 		1000,	/* TimeWindowMaximum */
 		1000	/* StepSize */

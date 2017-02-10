@@ -63,11 +63,8 @@ void h8_mainboard_init_dock (void);
 #define H8_LED_CONTROL		0x0c
 #define H8_LED_CONTROL_OFF		0x00
 #define H8_LED_CONTROL_ON		0x80
+#define H8_LED_CONTROL_PULSE		0xa0	/* Some models, power LED only*/
 #define H8_LED_CONTROL_BLINK		0xc0
-
-#define H8_USB_ALWAYS_ON		0x0d
-#define H8_USB_ALWAYS_ON_ENABLE		0x01
-#define H8_USB_ALWAYS_ON_AC_ONLY	0x0c
 
 #define H8_LED_CONTROL_POWER_LED	0x00
 #define H8_LED_CONTROL_BAT0_LED	0x01
@@ -76,6 +73,10 @@ void h8_mainboard_init_dock (void);
 #define H8_LED_CONTROL_SUSPEND_LED	0x07
 #define H8_LED_CONTROL_DOCK_LED1	0x08
 #define H8_LED_CONTROL_DOCK_LED2	0x09
+
+#define H8_USB_ALWAYS_ON		0x0d
+#define H8_USB_ALWAYS_ON_ENABLE		0x01
+#define H8_USB_ALWAYS_ON_AC_ONLY	0x0c
 
 #define H8_FAN_CONTROL			0x2f
 #define H8_FAN_CONTROL_AUTO		0x80

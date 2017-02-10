@@ -402,6 +402,9 @@ struct soc_intel_skylake_config {
 	 */
 	u32 PrmrrSize;
 
+	/* Enable/Disable host reads to PMC XRAM registers */
+	u8 PchPmPmcReadDisable;
+
 	/* Statically clock gate 8254 PIT. */
 	u8 clock_gate_8254;
 

@@ -253,53 +253,51 @@ static void setup_usb(void)
 	write32(&rk3399_grf->usbphy0_ctrl[3], RK_CLRSETBITS(0xfff, 0x2e3));
 	write32(&rk3399_grf->usbphy1_ctrl[3], RK_CLRSETBITS(0xfff, 0x2e3));
 
-	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_KEVIN)) {
-		/* Set max pre-emphasis level, only on Kevin PHY0 and PHY1. */
-		write32(&rk3399_grf->usbphy0_ctrl[12],
-			RK_CLRSETBITS(0xffff, 0xa7));
-		write32(&rk3399_grf->usbphy1_ctrl[12],
-			RK_CLRSETBITS(0xffff, 0xa7));
+	/* Set max pre-emphasis level on PHY0 and PHY1. */
+	write32(&rk3399_grf->usbphy0_ctrl[12],
+		RK_CLRSETBITS(0xffff, 0xa7));
+	write32(&rk3399_grf->usbphy1_ctrl[12],
+		RK_CLRSETBITS(0xffff, 0xa7));
 
-		/*
-		 * Disable the pre-emphasize in eop state and chirp
-		 * state to avoid mis-trigger the disconnect detection
-		 * and also avoid high-speed handshake fail for PHY0
-		 * and PHY1 consist of otg-port and host-port.
-		 */
-		write32(&rk3399_grf->usbphy0_ctrl[0], RK_CLRBITS(0x3));
-		write32(&rk3399_grf->usbphy1_ctrl[0], RK_CLRBITS(0x3));
-		write32(&rk3399_grf->usbphy0_ctrl[13], RK_CLRBITS(0x3));
-		write32(&rk3399_grf->usbphy1_ctrl[13], RK_CLRBITS(0x3));
+	/*
+	 * Disable the pre-emphasize in eop state and chirp
+	 * state to avoid mis-trigger the disconnect detection
+	 * and also avoid high-speed handshake fail for PHY0
+	 * and PHY1 consist of otg-port and host-port.
+	 */
+	write32(&rk3399_grf->usbphy0_ctrl[0], RK_CLRBITS(0x3));
+	write32(&rk3399_grf->usbphy1_ctrl[0], RK_CLRBITS(0x3));
+	write32(&rk3399_grf->usbphy0_ctrl[13], RK_CLRBITS(0x3));
+	write32(&rk3399_grf->usbphy1_ctrl[13], RK_CLRBITS(0x3));
 
-		/*
-		 * ODT auto compensation bypass, and set max driver
-		 * strength only for PHY0 and PHY1 otg-port.
-		 */
-		write32(&rk3399_grf->usbphy0_ctrl[2],
-			RK_CLRSETBITS(0x7e << 4, 0x60 << 4));
-		write32(&rk3399_grf->usbphy1_ctrl[2],
-			RK_CLRSETBITS(0x7e << 4, 0x60 << 4));
+	/*
+	 * ODT auto compensation bypass, and set max driver
+	 * strength only for PHY0 and PHY1 otg-port.
+	 */
+	write32(&rk3399_grf->usbphy0_ctrl[2],
+		RK_CLRSETBITS(0x7e << 4, 0x60 << 4));
+	write32(&rk3399_grf->usbphy1_ctrl[2],
+		RK_CLRSETBITS(0x7e << 4, 0x60 << 4));
 
-		/*
-		 * ODT auto refresh bypass, and set the max bias current
-		 * tuning reference only for PHY0 and PHY1 otg-port.
-		 */
-		write32(&rk3399_grf->usbphy0_ctrl[3],
-			RK_CLRSETBITS(0x21c, 1 << 4));
-		write32(&rk3399_grf->usbphy1_ctrl[3],
-			RK_CLRSETBITS(0x21c, 1 << 4));
+	/*
+	 * ODT auto refresh bypass, and set the max bias current
+	 * tuning reference only for PHY0 and PHY1 otg-port.
+	 */
+	write32(&rk3399_grf->usbphy0_ctrl[3],
+		RK_CLRSETBITS(0x21c, 1 << 4));
+	write32(&rk3399_grf->usbphy1_ctrl[3],
+		RK_CLRSETBITS(0x21c, 1 << 4));
 
-		/*
-		 * ODT auto compensation bypass, and set default driver
-		 * strength only for PHY0 and PHY1 host-port.
-		 */
-		write32(&rk3399_grf->usbphy0_ctrl[15], RK_SETBITS(1 << 10));
-		write32(&rk3399_grf->usbphy1_ctrl[15], RK_SETBITS(1 << 10));
+	/*
+	 * ODT auto compensation bypass, and set default driver
+	 * strength only for PHY0 and PHY1 host-port.
+	 */
+	write32(&rk3399_grf->usbphy0_ctrl[15], RK_SETBITS(1 << 10));
+	write32(&rk3399_grf->usbphy1_ctrl[15], RK_SETBITS(1 << 10));
 
-		/* ODT auto refresh bypass only for PHY0 and PHY1 host-port. */
-		write32(&rk3399_grf->usbphy0_ctrl[16], RK_CLRBITS(1 << 9));
-		write32(&rk3399_grf->usbphy1_ctrl[16], RK_CLRBITS(1 << 9));
-	}
+	/* ODT auto refresh bypass only for PHY0 and PHY1 host-port. */
+	write32(&rk3399_grf->usbphy0_ctrl[16], RK_CLRBITS(1 << 9));
+	write32(&rk3399_grf->usbphy1_ctrl[16], RK_CLRBITS(1 << 9));
 
 	setup_usb_otg0();
 	setup_usb_otg1();

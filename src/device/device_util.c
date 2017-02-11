@@ -250,6 +250,9 @@ u32 dev_path_encode(device_t dev)
 	case DEVICE_PATH_GENERIC:
 		ret |= dev->path.generic.subid << 8 | dev->path.generic.id;
 		break;
+	case DEVICE_PATH_SPI:
+		ret |= dev->path.spi.cs;
+		break;
 	case DEVICE_PATH_NONE:
 	default:
 		break;
@@ -318,6 +321,10 @@ const char *dev_path(device_t dev)
 			snprintf(buffer, sizeof (buffer),
 				 "GENERIC: %d.%d", dev->path.generic.id,
 				 dev->path.generic.subid);
+			break;
+		case DEVICE_PATH_SPI:
+			snprintf(buffer, sizeof (buffer), "SPI: %02x",
+				 dev->path.spi.cs);
 			break;
 		default:
 			printk(BIOS_ERR, "Unknown device path type: %d\n",
@@ -389,6 +396,9 @@ int path_eq(struct device_path *path1, struct device_path *path2)
 	case DEVICE_PATH_GENERIC:
 		equal = (path1->generic.id == path2->generic.id) &&
 			(path1->generic.subid == path2->generic.subid);
+		break;
+	case DEVICE_PATH_SPI:
+		equal = (path1->spi.cs == path2->spi.cs);
 		break;
 	default:
 		printk(BIOS_ERR, "Unknown device type: %d\n", path1->type);

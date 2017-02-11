@@ -22,7 +22,6 @@ AGESA_INC  = -I$(src)/mainboard/$(MAINBOARDDIR)
 AGESA_INC += -I$(AGESA_ROOT)
 AGESA_INC += -I$(AGESA_ROOT)/../common
 AGESA_INC += -I$(AGESA_ROOT)/Include
-AGESA_INC += -I$(AGESA_ROOT)/Lib
 AGESA_INC += -I$(AGESA_ROOT)/Legacy
 AGESA_INC += -I$(AGESA_ROOT)/Proc/Common
 AGESA_INC += -I$(AGESA_ROOT)/Proc/HT

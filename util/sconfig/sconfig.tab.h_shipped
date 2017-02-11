@@ -71,7 +71,8 @@ extern int yydebug;
     IOAPIC_IRQ = 281,
     IOAPIC = 282,
     PCIINT = 283,
-    GENERIC = 284
+    GENERIC = 284,
+    SPI = 285
   };
 #endif
 

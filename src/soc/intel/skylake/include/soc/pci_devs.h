@@ -176,4 +176,14 @@ static inline int i2c_devfn_to_bus(unsigned devfn)
 	return -1;
 }
 
+static inline int spi_devfn_to_bus(unsigned devfn)
+{
+	switch (devfn) {
+	case PCH_DEVFN_SPI: return 0;
+	case PCH_DEVFN_GSPI0: return 1;
+	case PCH_DEVFN_GSPI1: return 2;
+	}
+	return -1;
+}
+
 #endif

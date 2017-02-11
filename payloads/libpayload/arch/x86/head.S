@@ -28,7 +28,7 @@
  */
 
 	.code32
-	.global _entry, _leave
+	.global _entry
 	.text
 	.align 4
 
@@ -55,6 +55,11 @@ mb_header:
 	.long _end
 	.long _init
 
+#define CB_MAGIC_VALUE	0x12345678
+#define CB_MAGIC	0x04
+#define CB_ARGV		0x08
+#define CB_ARGC		0x10
+
 /*
  * This function saves off the previous stack and switches us to our
  * own execution environment.
@@ -63,34 +68,34 @@ _init:
 	/* No interrupts, please. */
 	cli
 
-	/* There is a bunch of stuff missing here to take arguments on the stack
-	 * See http://www.coreboot.org/Payload_API and exec.S.
-	 */
-	/* Store current stack pointer. */
-	movl %esp, %esi
-
 	/* Store EAX and EBX */
-	movl %eax,loader_eax
-	movl %ebx,loader_ebx
+	movl %eax, loader_eax
+	movl %ebx, loader_ebx
 
-	/* Setup new stack. */
-	movl $_stack, %ebx
+	/* Copy argv[] and argc as demanded by the Payload API,
+	 * see http://www.coreboot.org/Payload_API and exec.S.
+	 */
+	cmpl $CB_MAGIC_VALUE, CB_MAGIC(%esp)
+	jne 1f
 
-	movl %ebx, %esp
+	movl CB_ARGV(%esp), %eax
+	movl %eax, main_argv
 
-	/* Save old stack pointer. */
-	pushl %esi
+	movl CB_ARGC(%esp), %eax
+	movl %eax, main_argc
+1:
+	/* Store current stack pointer and set up new stack. */
+	movl %esp, %eax
+	movl $_stack, %esp
+	pushl %eax
 
 	/* Let's rock. */
 	call start_main
 
 	/* %eax has the return value - pass it on unmolested */
 _leave:
-	/* Get old stack pointer. */
-	popl %ebx
-
 	/* Restore old stack. */
-	movl %ebx, %esp
+	popl %esp
 
 	/* Return to the original context. */
 	ret

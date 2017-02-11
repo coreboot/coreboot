@@ -285,6 +285,11 @@ struct device *new_device(struct device *parent, struct device *busdev,
 	case GENERIC:
 		new_d->path = ".type=DEVICE_PATH_GENERIC,{.generic={ .id = 0x%x, .subid = 0x%x }}";
 		break;
+
+	case SPI:
+		new_d->path = ".type=DEVICE_PATH_SPI,{.spi={ .cs = 0x%x }}";
+		break;
+
 	}
 	return new_d;
 }

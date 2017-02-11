@@ -37,67 +37,48 @@
 .text
 
 .global i386_do_exec
-        .type i386_do_exec,@function
+	.type i386_do_exec,@function
 
 i386_do_exec:
 	pushl %ebp
 	movl %esp, %ebp
-	pushl %eax
 
-	/* Put the run address in %eax */
-	movl 8(%ebp), %eax
-
-	/* Save off the rest of the registers */
-
+	/* Save the remaining callee preserved registers */
+	pushl %ebx
 	pushl %esi
-	pushl %ecx
-	pushl %ebp
+	pushl %edi
 
 	/* Push argc and argv on to the stack.
 	 *
 	 * We need to put a dummy value inbetween, as argc should be at offset
 	 * 0x10, according to the payload API.
 	 */
-
-	movl 12(%ebp), %esi
-	movl 16(%ebp), %ecx
-
-	pushl %esi
+	pushl 12(%ebp)
 	pushl $0
-	pushl %ecx
+	pushl 16(%ebp)
 
-	/* Move a "magic" number on the stack - the other
-	 * payload will use this as a clue that the argc
-	 * and argv are sane
+	/* Push a "magic" number on the stack - the other payload will use this
+	 * as a clue that the argc and argv values on the stack are sane.
 	 */
-
-	movl  $0x12345678, %ecx
-	pushl %ecx
+	pushl $0x12345678
 
 	/* Jump to the code */
-	call *%eax
-
+	call *8(%ebp)
 	/* %eax has the return value */
 
-	/* Skip over the argc/argv stuff still on the stack */
-	addl $12, %esp
+	/* Skip over the argc/argv stuff still on the stack.
+	 * Don't assume %ebp is sane, here. Restore it from the stack.
+	 */
+	addl $0x10, %esp
 
-	/* Get back %ebp */
+	/* Restore the saved registers */
+	popl %edi
+	popl %esi
+	popl %ebx
 	popl %ebp
 
-	/* Get the pointer to the return value
-	 * and save the return value in it
-         */
-
-	movl 20(%ebp), %ecx
+	/* Get pointer to return value and save the return value in it. */
+	movl 16(%esp), %ecx
 	movl %eax, (%ecx)
 
-	/* Get the rest of the saved registers */
-	popl %ecx
-	popl %esi
-	popl %eax
-
-	/* Restore the stack pointer */
-	movl %ebp,%esp
-	popl %ebp
 	ret

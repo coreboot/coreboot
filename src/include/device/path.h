@@ -14,6 +14,7 @@ enum device_path_type {
 	DEVICE_PATH_CPU_BUS,
 	DEVICE_PATH_IOAPIC,
 	DEVICE_PATH_GENERIC,
+	DEVICE_PATH_SPI,
 
 	/*
 	 * When adding path types to this table, please also update the
@@ -33,7 +34,8 @@ enum device_path_type {
 		"DEVICE_PATH_CPU",		\
 		"DEVICE_PATH_CPU_BUS",		\
 		"DEVICE_PATH_IOAPIC",		\
-		"DEVICE_PATH_GENERIC"		\
+		"DEVICE_PATH_GENERIC",		\
+		"DEVICE_PATH_SPI",		\
 }
 
 struct domain_path
@@ -56,6 +58,11 @@ struct i2c_path
 {
 	unsigned device;
 	unsigned mode_10bit;
+};
+
+struct spi_path
+{
+	unsigned cs;
 };
 
 struct apic_path
@@ -107,6 +114,7 @@ struct device_path {
 		struct cpu_path		cpu;
 		struct cpu_bus_path	cpu_bus;
 		struct generic_path	generic;
+		struct spi_path		spi;
 	};
 };
 

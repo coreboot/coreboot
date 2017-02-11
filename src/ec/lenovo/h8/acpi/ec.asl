@@ -32,6 +32,9 @@ Device(EC)
 				HSPA, 1,
 		Offset (0x0C),
 				LEDS, 8,	/* LED state */
+		Offset (0x0F),
+				    , 7,
+				TBSW, 1,	/* Tablet mode switch */
 		Offset (0x1a),
 				DKR2, 1,	/* Dock register 2 */
 		Offset (0x2a),
@@ -353,6 +356,11 @@ Device(EC)
 		Method (MHKA, 0, NotSerialized)
 		{
 			Return (0x07FFFFFF)
+		}
+		/* Report tablet mode switch state */
+		Method (MHKG, 0, NotSerialized)
+		{
+			Return (TBSW << 3)
 		}
 		/* Version */
 		Method (MHKV, 0, NotSerialized)

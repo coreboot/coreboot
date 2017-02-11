@@ -53,12 +53,17 @@ i386_do_exec:
 	pushl %ecx
 	pushl %ebp
 
-	/* Push the argc and argv pointers on to the stack */
+	/* Push argc and argv on to the stack.
+	 *
+	 * We need to put a dummy value inbetween, as argc should be at offset
+	 * 0x10, according to the payload API.
+	 */
 
 	movl 12(%ebp), %esi
 	movl 16(%ebp), %ecx
 
 	pushl %esi
+	pushl $0
 	pushl %ecx
 
 	/* Move a "magic" number on the stack - the other

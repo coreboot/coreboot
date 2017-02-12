@@ -34,8 +34,28 @@
 extern unsigned long loader_eax;
 extern unsigned long loader_ebx;
 
+static int mb_add_memrange(struct sysinfo_t *info, unsigned long long base,
+			   unsigned long long size, unsigned int type)
+{
+	if (info->n_memranges >= SYSINFO_MAX_MEM_RANGES)
+		return -1;
+
+#if IS_ENABLED(CONFIG_LP_MEMMAP_RAM_ONLY)
+	/* 1 == normal RAM.  Ignore everything else for now */
+	if (type != 1)
+		return 0;
+#endif
+
+	info->memrange[info->n_memranges].base = base;
+	info->memrange[info->n_memranges].size = size;
+	info->memrange[info->n_memranges].type = type;
+	info->n_memranges++;
+
+	return 0;
+}
+
 static void mb_parse_mmap(struct multiboot_header *table,
-			struct sysinfo_t *info)
+			  struct sysinfo_t *info)
 {
 	u8 *start = (u8 *) phys_to_virt(table->mmap_addr);
 	u8 *ptr = start;
@@ -45,23 +65,26 @@ static void mb_parse_mmap(struct multiboot_header *table,
 	while(ptr < (start + table->mmap_length)) {
 		struct multiboot_mmap *mmap = (struct multiboot_mmap *) ptr;
 
-#if IS_ENABLED(CONFIG_LP_MEMMAP_RAM_ONLY)
-		/* 1 == normal RAM.  Ignore everything else for now */
-
-		if (mmap->type == 1) {
-#endif
-			info->memrange[info->n_memranges].base = mmap->addr;
-			info->memrange[info->n_memranges].size = mmap->length;
-			info->memrange[info->n_memranges].type = mmap->type;
-
-			if (++info->n_memranges == SYSINFO_MAX_MEM_RANGES)
-				return;
-#if IS_ENABLED(CONFIG_LP_MEMMAP_RAM_ONLY)
-		}
-#endif
+		if (mb_add_memrange(info, mmap->addr, mmap->length, mmap->type))
+			return;
 
 		ptr += (mmap->size + sizeof(mmap->size));
 	}
+}
+
+static void mb_parse_meminfo(struct multiboot_header *table,
+			     struct sysinfo_t *info)
+{
+	unsigned long long mem_low = table->mem_lower;
+	unsigned long long mem_high = table->mem_higher;
+
+	info->n_memranges = 0;
+
+	if (mem_low)
+		mb_add_memrange(info, 0 * MiB, mem_low * KiB, 1);
+
+	if (mem_high)
+		mb_add_memrange(info, 1 * MiB, mem_high * KiB, 1);
 }
 
 static void mb_parse_cmdline(struct multiboot_header *table)
@@ -95,6 +118,8 @@ int get_multiboot_info(struct sysinfo_t *info)
 
 	if (table->flags & MULTIBOOT_FLAGS_MMAP)
 		mb_parse_mmap(table, info);
+	else if (table->flags & MULTIBOOT_FLAGS_MEMINFO)
+		mb_parse_meminfo(table, info);
 
 	if (table->flags & MULTIBOOT_FLAGS_CMDLINE)
 		mb_parse_cmdline(table);

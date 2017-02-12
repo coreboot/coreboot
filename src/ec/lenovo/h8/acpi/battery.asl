@@ -97,21 +97,36 @@ Method(BSTA, 4, NotSerialized)
 	Store(BAMA, Local1)
 	Store(Arg0, PAGE) /* Battery dynamic information */
 
+	/*
+	 * Present rate is a 16bit signed int, positive while charging
+	 * and negative while discharging.
+	 */
 	Store(BAPR, Local2)
 
-	if (Arg2) // charging
+	If (Arg2) // Charging
 	{
 		Or(2, Local0, Local0)
-
-		If (LGreaterEqual (Local2, 0x8000)) {
+	}
+	Else
+	{
+		If (Arg3) // Discharging
+		{
+			Or(1, Local0, Local0)
+			// Negate present rate
+			Subtract(0x10000, Local2, Local2)
+		}
+		Else // Full battery, force to 0
+		{
 			Store(0, Local2)
 		}
 	}
 
-	if (Arg3) // discharging
-	{
-		Or(1, Local0, Local0)
-		Subtract(0x10000, Local2, Local2)
+	/*
+	 * The present rate value must be positive now, if it is not we have an
+	 * EC bug or inconsistency and force the value to 0.
+	 */
+	If (LGreaterEqual (Local2, 0x8000)) {
+		Store(0, Local2)
 	}
 
 	Store(Local0, Index(Arg1, 0x00))

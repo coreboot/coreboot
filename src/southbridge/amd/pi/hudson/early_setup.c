@@ -34,12 +34,8 @@
 
 void configure_hudson_uart(void)
 {
-	msr_t msr;
 	u8 byte;
 
-	msr = rdmsr(0x1B);
-	msr.lo |= 1 << 11;
-	wrmsr(0x1B, msr);
 	byte = read8((void *)ACPI_MMIO_BASE + AOAC_BASE + FCH_AOAC_REG56 + CONFIG_UART_FOR_CONSOLE * 2);
 	byte |= 1 << 3;
 	write8((void *)ACPI_MMIO_BASE + AOAC_BASE + FCH_AOAC_REG56 + CONFIG_UART_FOR_CONSOLE * 2, byte);

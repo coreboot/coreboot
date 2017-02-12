@@ -1,0 +1,2 @@
+config BOARD_LENOVO_S230U
+	bool "ThinkPad S230U (Twist)"

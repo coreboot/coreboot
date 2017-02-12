@@ -35,6 +35,7 @@
 #define MULTIBOOT_MAGIC      0x2BADB002UL
 #define MULTIBOOT_FLAGS_MMAP    (1 << 6)
 #define MULTIBOOT_FLAGS_CMDLINE (1 << 2)
+#define MULTIBOOT_FLAGS_MEMINFO (1 << 0)
 struct multiboot_header {
 	u32 flags;
 	u32 mem_lower;

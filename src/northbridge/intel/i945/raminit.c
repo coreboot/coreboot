@@ -1775,20 +1775,10 @@ static void sdram_program_odt_tristate(struct sys_info *sysinfo)
 
 static void sdram_set_timing_and_control(struct sys_info *sysinfo)
 {
-	u32 reg32, off32;
+	u32 reg32, tRD_min;
 	u32 tWTR;
 	u32 temp_drt;
 	int i, page_size;
-
-	static const u8 drt0_table[] = {
-	  /* CL 3, 4, 5 */
-		3, 4, 5,	/* FSB533, DDR667/533/400 */
-		4, 5, 6,	/* FSB667, DDR667/533/400 */
-		5, 6, 7,	/* FSB800, DDR400/533 */
-		6, 7, 8,	/* FSB800, DDR667 */
-		5, 6, 7,	/* FSB1066, DDR400 */
-		7, 8, 9,	/* FSB1066, DDR533/DDR667 */
-	};
 
 	static const u8 cas_table[] = {
 		2, 1, 0, 3
@@ -1841,34 +1831,24 @@ static void sdram_set_timing_and_control(struct sys_info *sysinfo)
 	/* CxDRT0 [23:22], [21:20], [19:18] [16] have fixed values */
 	temp_drt |= ((1 << 22) | (3 << 20) | (1 << 18) | (0 << 16));
 
-	/* Program Write Auto Precharge to Activate */
-	off32 = 0;
+	/*
+	 * tRD is the delay the memory controller is waiting on the FSB,
+	 * in mclk domain.
+	 * This parameter is important for stability and performance.
+	 * Those values might not be optimal but seem stable.
+	 */
+	tRD_min = sysinfo->cas;
 	switch (sysinfo->fsb_frequency) {
-	case 533:
-		off32 = 0;
+	case 533: break;
+	case 667: tRD_min += 1;
 		break;
-	case 667:
-		off32 = 3;
+	case 800: tRD_min += 2;
 		break;
-	case 800:
-		if (sysinfo->memory_frequency <= 533) {
-			off32 = 6;
-			break;
-		}
-		off32 = 9;
-		break;
-	case 1066:
-		if (sysinfo->memory_frequency == 400) {
-			off32 = 12;
-			break;
-		}
-		off32 = 15;
+	case 1066: tRD_min += 3;
 		break;
 	}
 
-	off32 += sysinfo->cas - 3;
-	reg32 = drt0_table[off32];
-	temp_drt |= (reg32 << 11);
+	temp_drt |= (tRD_min << 11);
 
 	/* Read Auto Precharge to Activate */
 

@@ -376,6 +376,14 @@ struct soc_intel_skylake_config {
 	/* Enable/Disable VMX feature */
 	u8 VmxEnable;
 
+	/*
+	 * PRMRR size setting with three options
+	 * 0x02000000 - 32MiB
+	 * 0x04000000 - 64MiB
+	 * 0x08000000 - 128MiB
+	 */
+	u32 PrmrrSize;
+
 	/* Statically clock gate 8254 PIT. */
 	u8 clock_gate_8254;
 

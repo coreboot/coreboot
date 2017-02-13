@@ -139,6 +139,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg)
 	m_cfg->RMT = config->Rmt;
 	m_cfg->DdrFreqLimit = config->DdrFreqLimit;
 	m_cfg->VmxEnable = config->VmxEnable;
+	m_cfg->PrmrrSize = config->PrmrrSize;
 	for (i = 0; i < ARRAY_SIZE(config->PcieRpEnable); i++) {
 		if (config->PcieRpEnable[i])
 			mask |= (1<<i);

@@ -72,17 +72,17 @@ void scan_lpc_bus(device_t bus)
 	printk(BIOS_SPEW, "%s for %s done\n", __func__, dev_path(bus));
 }
 
-void scan_smbus(device_t bus)
+void scan_generic_bus(device_t bus)
 {
 	device_t child;
 	struct bus *link;
-	static int smbus_max = 0;
+	static int bus_max = 0;
 
 	printk(BIOS_SPEW, "%s for %s\n", __func__, dev_path(bus));
 
 	for (link = bus->link_list; link; link = link->next) {
 
-		link->secondary = ++smbus_max;
+		link->secondary = ++bus_max;
 
 		for (child = link->children; child; child = child->sibling) {
 
@@ -92,7 +92,7 @@ void scan_smbus(device_t bus)
 			if (child->ops && child->ops->enable)
 				child->ops->enable(child);
 
-			printk(BIOS_DEBUG, "smbus: %s[%d]->", dev_path(child->bus->dev),
+			printk(BIOS_DEBUG, "bus: %s[%d]->", dev_path(child->bus->dev),
 			       child->bus->link_num);
 
 			printk(BIOS_DEBUG, "%s %s\n", dev_path(child),
@@ -101,6 +101,11 @@ void scan_smbus(device_t bus)
 	}
 
 	printk(BIOS_SPEW, "%s for %s done\n", __func__, dev_path(bus));
+}
+
+void scan_smbus(device_t bus)
+{
+	scan_generic_bus(bus);
 }
 
 /**

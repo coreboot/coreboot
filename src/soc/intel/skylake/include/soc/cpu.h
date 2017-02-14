@@ -67,5 +67,6 @@ int cpu_config_tdp_levels(void);
 u32 cpu_family_model(void);
 u32 cpu_stepping(void);
 int cpu_is_ult(void);
+int is_secondary_thread(void);
 
 #endif

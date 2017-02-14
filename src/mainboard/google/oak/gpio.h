@@ -42,6 +42,8 @@ enum {
 	EC_IN_RW	= PAD_DAIPCMIN,
 	/* EC AP suspend */
 	EC_SUSPEND_L	= PAD_KPROW1,
+	/* Cr50 interrupt */
+	CR50_IRQ	= PAD_EINT16,
 };
 
 void setup_chromeos_gpios(void);

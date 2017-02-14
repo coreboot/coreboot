@@ -42,6 +42,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 		{POWER_BUTTON, ACTIVE_HIGH, -1, "power"},
 		{EC_IN_RW, ACTIVE_HIGH, -1, "EC in RW"},
 		{EC_IRQ, ACTIVE_LOW, -1, "EC interrupt"},
+		{CR50_IRQ, ACTIVE_HIGH, -1, "TPM interrupt"},
 	};
 	lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios));
 }

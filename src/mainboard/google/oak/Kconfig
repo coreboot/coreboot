@@ -18,6 +18,12 @@ config BOARD_GOOGLE_OAK_COMMON
 
 if BOARD_GOOGLE_OAK_COMMON
 
+config OAK_HAS_TPM2
+	bool
+	default y if BOARD_GOOGLE_ROWAN
+	default n
+	select MAINBOARD_HAS_I2C_TPM_CR50
+
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
 	select SOC_MEDIATEK_MT8173
@@ -56,7 +62,8 @@ config DRIVER_TPM_I2C_BUS
 
 config DRIVER_TPM_I2C_ADDR
 	hex
-	default 0x20
+	default 0x20 if !OAK_HAS_TPM2
+	default 0x50 if OAK_HAS_TPM2
 
 config BOOT_DEVICE_SPI_FLASH_BUS
 	int

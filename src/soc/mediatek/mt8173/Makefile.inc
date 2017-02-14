@@ -40,6 +40,7 @@ verstage-$(CONFIG_DRIVERS_UART) += uart.c
 verstage-y += timer.c
 verstage-y += wdt.c
 verstage-$(CONFIG_SPI_FLASH) += flash_controller.c
+verstage-y += gpio.c
 
 ################################################################################
 

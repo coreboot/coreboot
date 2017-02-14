@@ -435,6 +435,17 @@ static int adjust_apic_id(int index, int apic_id)
 		return index;
 }
 
+/* Check whether the current CPU is the sibling hyperthread. */
+int is_secondary_thread(void)
+{
+	int apic_id;
+	apic_id = lapicid();
+
+	if (!ht_disabled && (apic_id & 1))
+		return 1;
+	return 0;
+}
+
 static void per_cpu_smm_trigger(void)
 {
 	/* Relocate the SMM handler. */

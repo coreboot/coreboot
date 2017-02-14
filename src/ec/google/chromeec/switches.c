@@ -20,7 +20,7 @@
 #if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC_LPC)
 int get_lid_switch(void)
 {
-	if (!IS_ENABLED(CONFIG_LID_SWITCH))
+	if (!IS_ENABLED(CONFIG_VBOOT_LID_SWITCH))
 		return -1;
 
 	return !!(google_chromeec_get_switches() & EC_SWITCH_LID_OPEN);

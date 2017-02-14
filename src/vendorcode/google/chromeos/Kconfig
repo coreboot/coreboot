@@ -59,24 +59,6 @@ config CHROMEOS_RAMOOPS_RAM_SIZE
 	default 0x00100000
 	depends on CHROMEOS_RAMOOPS
 
-config EC_SOFTWARE_SYNC
-	bool "Enable EC software sync"
-	default y if EC_GOOGLE_CHROMEEC
-	default n
-	depends on VBOOT
-	help
-	  EC software sync is a mechanism where the AP helps the EC verify its
-	  firmware similar to how vboot verifies the main system firmware. This
-	  option selects whether depthcharge should support EC software sync.
-
-config VBOOT_EC_SLOW_UPDATE
-	bool "EC is slow to update"
-	default n
-	depends on EC_SOFTWARE_SYNC
-	help
-	  Whether the EC (or PD) is slow to update and needs to display a
-	  screen that informs the user the update is happening.
-
 config NO_TPM_RESUME
 	bool
 	default n
@@ -85,54 +67,11 @@ config NO_TPM_RESUME
 	  boards, booting Windows will break if the TPM resume command
 	  is sent during an S3 resume.
 
-config PHYSICAL_DEV_SWITCH
-	bool
-	default n
-	help
-	  Whether this platform has a physical developer switch. Note that this
-	  disables virtual dev switch functionality (through secdata). Operation
-	  where both a physical pin and the virtual switch get sampled is not
-	  supported by coreboot.
-
-config PHYSICAL_REC_SWITCH
-	bool
-	default n
-	help
-	  Whether this platform has a physical recovery switch
-
-config LID_SWITCH
-	bool "Lid switch is present"
-	default n
-	help
-	  Whether this platform has a lid switch
-
-config WIPEOUT_SUPPORTED
-	bool "User is able to request factory reset"
-	default n
-	help
-	  When this option is enabled, the firmware provides the ability to
-	  signal the application the need for factory reset (a.k.a. wipe
-	  out) of the device
-
 config HAVE_REGULATORY_DOMAIN
 	bool "Add regulatory domain methods"
 	default n
 	help
 	 This option is needed to add ACPI regulatory domain methods
-
-config CHROMEOS_FWID_MODEL
-	string "Chrome OS Firmware ID model"
-	default "$(CONFIG_MAINBOARD_VENDOR)_$(CONFIG_MAINBOARD_PART_NUMBER)"
-	help
-	  This is the first part of the FWID written to various regions of a
-	  Chrome OS firmware image to identify its version.
-
-config CHROMEOS_FWID_VERSION
-	string "Chrome OS Firmware ID version"
-	default "$(KERNELVERSION)"
-	help
-	  This is the second part of the FWID written to various regions of a
-	  Chrome OS firmware image to identify its version.
 
 config CHROMEOS_DISABLE_PLATFORM_HIERARCHY_ON_RESUME
 	bool
@@ -147,109 +86,6 @@ config CHROMEOS_DISABLE_PLATFORM_HIERARCHY_ON_RESUME
 	  the boot loader. However, those operations need to be symmetric
 	  on normal boot as well as resume and coreboot is only involved
 	  in the resume piece w.r.t. the platform hierarchy.
-
-menu "GBB configuration"
-
-config GBB_HWID
-	string "Hardware ID"
-	default "NOCONF HWID"
-
-config GBB_BMPFV_FILE
-	string "Path to bmpfv image"
-	default ""
-
-config GBB_FLAG_DEV_SCREEN_SHORT_DELAY
-	bool "Reduce dev screen delay"
-	default n
-
-config GBB_FLAG_LOAD_OPTION_ROMS
-	bool "Load option ROMs"
-	default n
-
-config GBB_FLAG_ENABLE_ALTERNATE_OS
-	bool "Allow booting a non-Chrome OS kernel if dev switch is on"
-	default n
-
-config GBB_FLAG_FORCE_DEV_SWITCH_ON
-	bool "Force dev switch on"
-	default n
-
-config GBB_FLAG_FORCE_DEV_BOOT_USB
-	bool "Allow booting from USB in dev mode even if dev_boot_usb=0"
-	default y
-
-config GBB_FLAG_DISABLE_FW_ROLLBACK_CHECK
-	bool "Disable firmware rollback protection"
-	default y
-
-config GBB_FLAG_ENTER_TRIGGERS_TONORM
-	bool "Return to normal boot with Enter"
-	default n
-
-config GBB_FLAG_FORCE_DEV_BOOT_LEGACY
-	bool "Allow booting to legacy in dev mode even if dev_boot_legacy=0"
-	default n
-
-config GBB_FLAG_FAFT_KEY_OVERIDE
-	bool "Allow booting using alternative keys for FAFT servo testing"
-	default n
-
-config GBB_FLAG_DISABLE_EC_SOFTWARE_SYNC
-	bool "Disable EC software sync"
-	default n
-
-config GBB_FLAG_DEFAULT_DEV_BOOT_LEGACY
-	bool "Default to booting to legacy in dev mode"
-	default n
-
-config GBB_FLAG_DISABLE_PD_SOFTWARE_SYNC
-	bool "Disable PD software sync"
-	default n
-
-config GBB_FLAG_DISABLE_LID_SHUTDOWN
-	bool "Disable shutdown on closed lid"
-	default n
-
-config GBB_FLAG_FORCE_DEV_BOOT_FASTBOOT_FULL_CAP
-	bool "Allow fastboot even if dev_boot_fastboot_full_cap=0"
-	default n
-
-config GBB_FLAG_ENABLE_SERIAL
-	bool "Tell vboot to enable serial console"
-	default n
-
-endmenu # GBB
-
-menu "Vboot Keys"
-config VBOOT_ROOT_KEY
-	string "Root key (public)"
-	default "$(VBOOT_SOURCE)/tests/devkeys/root_key.vbpubk"
-
-config VBOOT_RECOVERY_KEY
-	string "Recovery key (public)"
-	default "$(VBOOT_SOURCE)/tests/devkeys/recovery_key.vbpubk"
-
-config VBOOT_FIRMWARE_PRIVKEY
-	string "Firmware key (private)"
-	default "$(VBOOT_SOURCE)/tests/devkeys/firmware_data_key.vbprivk"
-
-config VBOOT_KERNEL_KEY
-	string "Kernel subkey (public)"
-	default "$(VBOOT_SOURCE)/tests/devkeys/kernel_subkey.vbpubk"
-
-config VBOOT_KEYBLOCK
-	string "Keyblock to use for the RW regions"
-	default "$(VBOOT_SOURCE)/tests/devkeys/firmware.keyblock"
-
-config VBOOT_KEYBLOCK_VERSION
-	int "Keyblock version number"
-	default 1
-
-config VBOOT_KEYBLOCK_PREAMBLE_FLAGS
-	hex "Keyblock preamble flags"
-	default 0x0
-
-endmenu # Keys
 
 endif # CHROMEOS
 endmenu

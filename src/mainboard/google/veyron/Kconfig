@@ -45,7 +45,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select SPI_FLASH_GIGADEVICE
 	select SPI_FLASH_WINBOND
 
-config CHROMEOS
+config VBOOT
 	select VBOOT_VBNV_EC
 
 config MAINBOARD_DIR
@@ -54,6 +54,11 @@ config MAINBOARD_DIR
 
 config MAINBOARD_PART_NUMBER
 	string
+	default "Veyron_Jaq" if BOARD_GOOGLE_VEYRON_JAQ
+	default "Veyron_Jerry" if BOARD_GOOGLE_VEYRON_JERRY
+	default "Veyron_Mighty" if BOARD_GOOGLE_VEYRON_MIGHTY
+	default "Veyron_Minnie" if BOARD_GOOGLE_VEYRON_MINNIE
+	default "Veyron_Speedy" if BOARD_GOOGLE_VEYRON_SPEEDY
 	default "Veyron"
 
 config MAINBOARD_VENDOR
@@ -111,13 +116,5 @@ config GBB_HWID
 	default "MIGHTY TEST A-A 4557" if BOARD_GOOGLE_VEYRON_MIGHTY
 	default "MINNIE TEST A-A 5151" if BOARD_GOOGLE_VEYRON_MINNIE
 	default "SPEEDY TEST A-A 8421" if BOARD_GOOGLE_VEYRON_SPEEDY
-
-config CHROMEOS_FWID_MODEL
-	string
-	default "Google_Veyron_Jaq" if BOARD_GOOGLE_VEYRON_JAQ
-	default "Google_Veyron_Jerry" if BOARD_GOOGLE_VEYRON_JERRY
-	default "Google_Veyron_Mighty" if BOARD_GOOGLE_VEYRON_MIGHTY
-	default "Google_Veyron_Minnie" if BOARD_GOOGLE_VEYRON_MINNIE
-	default "Google_Veyron_Speedy" if BOARD_GOOGLE_VEYRON_SPEEDY
 
 endif #  BOARD_GOOGLE_VEYRON

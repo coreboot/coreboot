@@ -28,7 +28,7 @@ config SOC_MARVELL_BG4CD
 
 if SOC_MARVELL_BG4CD
 
-config CHROMEOS
+config VBOOT
 	select VBOOT_STARTS_IN_BOOTBLOCK
 
 endif

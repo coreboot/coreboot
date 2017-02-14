@@ -27,7 +27,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select SPI_FLASH_SPANSION
 	select SPI_FLASH_STMICRO # required for the reference board BCM958305K
 
-config CHROMEOS
+config VBOOT
 	select VBOOT_VBNV_FLASH
 
 config MAINBOARD_DIR

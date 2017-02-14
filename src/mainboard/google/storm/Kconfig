@@ -29,9 +29,9 @@ config BOARD_SPECIFIC_OPTIONS
 	select SPI_FLASH_STMICRO
 	select DRIVERS_UART
 
-config CHROMEOS
+config VBOOT
 	select VBOOT_DISABLE_DEV_ON_RECOVERY
-	select WIPEOUT_SUPPORTED
+	select VBOOT_WIPEOUT_SUPPORTED
 
 config BOARD_VARIANT_AP148
 	bool "pick this to build an image for ap148"

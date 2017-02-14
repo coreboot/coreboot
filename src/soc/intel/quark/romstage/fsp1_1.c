@@ -119,7 +119,7 @@ void soc_memory_init_params(struct romstage_params *params,
 		printk(BIOS_SPEW, "| coreboot stack    |\n");
 		printk(BIOS_SPEW, "+-------------------+ 0x%p",
 			_car_stack_start);
-		if (IS_ENABLED(CONFIG_SEPARATE_VERSTAGE)) {
+		if (IS_ENABLED(CONFIG_VBOOT_SEPARATE_VERSTAGE)) {
 			printk(BIOS_SPEW, "\n");
 			printk(BIOS_SPEW, "| vboot data        |\n");
 			printk(BIOS_SPEW, "+-------------------+ 0x%08x",

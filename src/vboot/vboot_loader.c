@@ -29,11 +29,11 @@
 _Static_assert(IS_ENABLED(CONFIG_VBOOT_STARTS_IN_BOOTBLOCK) +
 	       IS_ENABLED(CONFIG_VBOOT_STARTS_IN_ROMSTAGE) == 1,
 	       "vboot must either start in bootblock or romstage (not both!)");
-_Static_assert(!IS_ENABLED(CONFIG_SEPARATE_VERSTAGE) ||
+_Static_assert(!IS_ENABLED(CONFIG_VBOOT_SEPARATE_VERSTAGE) ||
 	       IS_ENABLED(CONFIG_VBOOT_STARTS_IN_BOOTBLOCK),
 	       "stand-alone verstage must start in (i.e. after) bootblock");
-_Static_assert(!IS_ENABLED(CONFIG_RETURN_FROM_VERSTAGE) ||
-	       IS_ENABLED(CONFIG_SEPARATE_VERSTAGE),
+_Static_assert(!IS_ENABLED(CONFIG_VBOOT_RETURN_FROM_VERSTAGE) ||
+	       IS_ENABLED(CONFIG_VBOOT_SEPARATE_VERSTAGE),
 	       "return from verstage only makes sense for separate verstages");
 
 /* The stage loading code is compiled and entered from multiple stages. The
@@ -42,7 +42,7 @@ _Static_assert(!IS_ENABLED(CONFIG_RETURN_FROM_VERSTAGE) ||
 
 static int verification_should_run(void)
 {
-	if (IS_ENABLED(CONFIG_SEPARATE_VERSTAGE))
+	if (IS_ENABLED(CONFIG_VBOOT_SEPARATE_VERSTAGE))
 		return ENV_VERSTAGE;
 	else if (IS_ENABLED(CONFIG_VBOOT_STARTS_IN_ROMSTAGE))
 		return ENV_ROMSTAGE;
@@ -54,7 +54,7 @@ static int verification_should_run(void)
 
 static int verstage_should_load(void)
 {
-	if (IS_ENABLED(CONFIG_SEPARATE_VERSTAGE))
+	if (IS_ENABLED(CONFIG_VBOOT_SEPARATE_VERSTAGE))
 		return ENV_BOOTBLOCK;
 	else
 		return 0;
@@ -87,7 +87,7 @@ int vb2_logic_executed(void)
 static void vboot_prepare(void)
 {
 	if (verification_should_run()) {
-		/* Note: this path is not used for RETURN_FROM_VERSTAGE */
+		/* Note: this path is not used for VBOOT_RETURN_FROM_VERSTAGE */
 		verstage_main();
 		car_set_var(vboot_executed, 1);
 		vb2_save_recovery_reason_vbnv();
@@ -130,7 +130,7 @@ static void vboot_prepare(void)
 		/* This is not actually possible to hit this condition at
 		 * runtime, but this provides a hint to the compiler for dead
 		 * code elimination below. */
-		if (!IS_ENABLED(CONFIG_RETURN_FROM_VERSTAGE))
+		if (!IS_ENABLED(CONFIG_VBOOT_RETURN_FROM_VERSTAGE))
 			return;
 
 		car_set_var(vboot_executed, 1);

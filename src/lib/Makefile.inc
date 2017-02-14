@@ -54,11 +54,11 @@ libverstage-$(CONFIG_TPM) += tlcl.c
 libverstage-$(CONFIG_TPM2) += tpm2_marshaling.c
 libverstage-$(CONFIG_TPM2) += tpm2_tlcl.c
 
-ifeq ($(CONFIG_SEPARATE_VERSTAGE),y)
+ifeq ($(CONFIG_VBOOT_SEPARATE_VERSTAGE),y)
 romstage-$(CONFIG_TPM) += tlcl.c
 romstage-$(CONFIG_TPM2) += tpm2_marshaling.c
 romstage-$(CONFIG_TPM2) += tpm2_tlcl.c
-endif # CONFIG_SEPARATE_VERSTAGE
+endif # CONFIG_VBOOT_SEPARATE_VERSTAGE
 
 verstage-$(CONFIG_GENERIC_UDELAY) += timer.c
 verstage-$(CONFIG_GENERIC_GPIO_LIB) += gpio.c

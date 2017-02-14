@@ -17,7 +17,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	# Workaround for EC/KBC IRQ1.
 	select SERIRQ_CONTINUOUS_MODE
 
-config CHROMEOS
+config VBOOT
 	select VBOOT_VBNV_CMOS
 
 config MAINBOARD_DIR

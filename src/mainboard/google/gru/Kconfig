@@ -83,6 +83,11 @@ config CONSOLE_SERIAL_UART_ADDRESS
 ##########################################################
 #### Update below when adding a new derivative board. ####
 ##########################################################
+config DEVICETREE
+	string
+	default "devicetree.scarlet.cb" if BOARD_GOOGLE_SCARLET
+	default "devicetree.cb"
+
 config MAINBOARD_PART_NUMBER
 	string
 	default "Scarlet" if BOARD_GOOGLE_SCARLET

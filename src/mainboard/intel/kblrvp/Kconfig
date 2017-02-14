@@ -14,8 +14,8 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select MAINBOARD_HAS_CHROMEOS
 	select GENERIC_SPD_BIN
 
-config CHROMEOS
-	select LID_SWITCH
+config VBOOT
+	select VBOOT_LID_SWITCH
 
 choice
 	prompt "TPM to USE"

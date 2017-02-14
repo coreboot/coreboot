@@ -75,7 +75,7 @@ BOOT_STATE_INIT_ENTRY(BS_DEV_INIT, BS_ON_EXIT,
 static int vboot_possibly_executed(void)
 {
 	if (IS_ENABLED(CONFIG_VBOOT_STARTS_IN_BOOTBLOCK)) {
-		if (ENV_BOOTBLOCK && IS_ENABLED(CONFIG_SEPARATE_VERSTAGE))
+		if (ENV_BOOTBLOCK && IS_ENABLED(CONFIG_VBOOT_SEPARATE_VERSTAGE))
 			return 0;
 		return 1;
 	}
@@ -139,6 +139,23 @@ int vboot_check_recovery_request(void)
 int vboot_recovery_mode_enabled(void)
 {
 	return !!vboot_check_recovery_request();
+}
+
+int __attribute__((weak)) clear_recovery_mode_switch(void)
+{
+	// Weak implementation. Nothing to do.
+	return 0;
+}
+
+int __attribute__((weak)) get_sw_write_protect_state(void)
+{
+	// Can be implemented by a platform / mainboard
+	return 0;
+}
+
+void __attribute__((weak)) log_recovery_mode_switch(void)
+{
+	// Weak implementation. Nothing to do.
 }
 
 int __attribute__((weak)) get_recovery_mode_retrain_switch(void)

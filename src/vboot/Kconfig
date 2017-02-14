@@ -12,127 +12,7 @@
 ## GNU General Public License for more details.
 ##
 
-config VBOOT_VBNV_OFFSET
-	hex
-	default 0x26
-	depends on PC80_SYSTEM
-	help
-	  CMOS offset for VbNv data. This value must match cmos.layout
-	  in the mainboard directory, minus 14 bytes for the RTC.
-
-config VBOOT_VBNV_CMOS
-	bool "Vboot non-volatile storage in CMOS."
-	default n
-	help
-	  VBNV is stored in CMOS
-
-config VBOOT_VBNV_CMOS_BACKUP_TO_FLASH
-	bool "Back up Vboot non-volatile storage from CMOS to flash."
-	default n
-	depends on VBOOT_VBNV_CMOS && BOOT_DEVICE_SUPPORTS_WRITES
-	help
-	  Vboot non-volatile storage data will be backed up from CMOS to flash
-	  and restored from flash if the CMOS is invalid due to power loss.
-
-config VBOOT_VBNV_EC
-	bool "Vboot non-volatile storage in EC."
-	default n
-	help
-	  VBNV is stored in EC
-
-config VBOOT_VBNV_FLASH
-	def_bool n
-	depends on BOOT_DEVICE_SUPPORTS_WRITES
-	help
-	  VBNV is stored in flash storage
-
-config VBOOT_STARTS_IN_BOOTBLOCK
-	bool "Vboot starts verifying in bootblock"
-	default n
-	depends on VBOOT
-	help
-	  Firmware verification happens during or at the end of bootblock.
-
-config VBOOT_STARTS_IN_ROMSTAGE
-	bool "Vboot starts verifying in romstage"
-	default n
-	depends on VBOOT && !VBOOT_STARTS_IN_BOOTBLOCK
-	help
-	  Firmware verification happens during or at the end of romstage.
-
-config VBOOT_MOCK_SECDATA
-	bool "Mock secdata for firmware verification"
-	default n
-	depends on VBOOT
-	help
-	  Enabling VBOOT_MOCK_SECDATA will mock secdata for the firmware
-	  verification to avoid access to a secdata storage (typically TPM).
-	  All operations for a secdata storage will be successful. This option
-	  can be used during development when a TPM is not present or broken.
-	  THIS SHOULD NOT BE LEFT ON FOR PRODUCTION DEVICES.
-
-config VBOOT_DISABLE_DEV_ON_RECOVERY
-	bool "Disable dev mode on recovery requests"
-	default n
-	depends on VBOOT
-	help
-	  When this option is enabled, the Chrome OS device leaves the
-	  developer mode as soon as recovery request is detected. This is
-	  handy on embedded devices with limited input capabilities.
-
-config SEPARATE_VERSTAGE
-	bool "Vboot verification is built into a separate stage"
-	default n
-	depends on VBOOT && VBOOT_STARTS_IN_BOOTBLOCK
-	help
-	  If this option is set, vboot verification runs in a standalone stage
-	  that is loaded from the bootblock and exits into romstage. If it is
-	  not set, the verification code is linked directly into the bootblock
-	  or the romstage and runs as part of that stage (cf. related options
-	  VBOOT_STARTS_IN_BOOTBLOCK/_ROMSTAGE and RETURN_FROM_VERSTAGE).
-
-config RETURN_FROM_VERSTAGE
-	bool "The separate verification stage returns to its caller"
-	default n
-	depends on SEPARATE_VERSTAGE
-	help
-	  If this is set, the verstage returns back to the calling stage instead
-	  of exiting to the succeeding stage so that the verstage space can be
-	  reused by the succeeding stage. This is useful if a RAM space is too
-	  small to fit both the verstage and the succeeding stage.
-
-config VBOOT_SAVE_RECOVERY_REASON_ON_REBOOT
-	bool
-	default n
-	depends on VBOOT
-	help
-	  This option ensures that the recovery request is not lost because of
-	  reboots caused after vboot verification is run. e.g. reboots caused by
-	  FSP components on Intel platforms.
-
-config VBOOT_OPROM_MATTERS
-	bool "Video option ROM matters (= can skip display init)"
-	default n
-	depends on VBOOT
-	help
-	  Set this option to indicate to vboot that this platform will skip its
-	  display initialization on a normal (non-recovery, non-developer) boot.
-	  Vboot calls this "oprom matters" because on x86 devices this
-	  traditionally meant that the video option ROM will not be loaded, but
-	  it works functionally the same for other platforms that can skip their
-	  native display initialization code instead.
-
-config VBOOT_HAS_REC_HASH_SPACE
-	bool
-	default n
-	depends on VBOOT
-	help
-	  Set this option to indicate to vboot that recovery data hash space
-	  is present in TPM.
-
-config VBOOT_SOFT_REBOOT_WORKAROUND
-	bool
-	default n
+menu "Verified Boot (vboot)"
 
 config VBOOT
 	bool "Verify firmware with vboot."
@@ -145,3 +25,293 @@ config VBOOT
 	help
 	  Enabling VBOOT will use vboot to verify the components of the firmware
 	  (stages, payload, etc).
+
+if VBOOT
+
+config VBOOT_VBNV_CMOS
+	bool
+	default n
+	depends on PC80_SYSTEM
+	help
+	  VBNV is stored in CMOS
+
+config VBOOT_VBNV_OFFSET
+	hex
+	default 0x26
+	depends on VBOOT_VBNV_CMOS
+	help
+	  CMOS offset for VbNv data. This value must match cmos.layout
+	  in the mainboard directory, minus 14 bytes for the RTC.
+
+config VBOOT_VBNV_CMOS_BACKUP_TO_FLASH
+	bool
+	default n
+	depends on VBOOT_VBNV_CMOS && BOOT_DEVICE_SUPPORTS_WRITES
+	help
+	  Vboot non-volatile storage data will be backed up from CMOS to flash
+	  and restored from flash if the CMOS is invalid due to power loss.
+
+config VBOOT_VBNV_EC
+	bool
+	default n
+	help
+	  VBNV is stored in EC
+
+config VBOOT_VBNV_FLASH
+	bool
+	default n
+	depends on BOOT_DEVICE_SUPPORTS_WRITES
+	help
+	  VBNV is stored in flash storage
+
+config VBOOT_STARTS_IN_BOOTBLOCK
+	bool
+	default n
+	help
+	  Firmware verification happens during the end of or right after the
+	  bootblock. This implies that a static VBOOT2_WORK() buffer must be
+	  allocated in memlayout.
+
+config VBOOT_STARTS_IN_ROMSTAGE
+	bool
+	default n
+	depends on !VBOOT_STARTS_IN_BOOTBLOCK
+	help
+	  Firmware verification happens during the end of romstage (after
+	  memory initialization). This implies that vboot working data is
+	  allocated in CBMEM.
+
+config VBOOT_MOCK_SECDATA
+	bool "Mock secdata for firmware verification"
+	default n
+	help
+	  Enabling VBOOT_MOCK_SECDATA will mock secdata for the firmware
+	  verification to avoid access to a secdata storage (typically TPM).
+	  All operations for a secdata storage will be successful. This option
+	  can be used during development when a TPM is not present or broken.
+	  THIS SHOULD NOT BE LEFT ON FOR PRODUCTION DEVICES.
+
+config VBOOT_DISABLE_DEV_ON_RECOVERY
+	bool
+	default n
+	help
+	  When this option is enabled, the Chrome OS device leaves the
+	  developer mode as soon as recovery request is detected. This is
+	  handy on embedded devices with limited input capabilities.
+
+config VBOOT_SEPARATE_VERSTAGE
+	bool
+	default n
+	depends on VBOOT_STARTS_IN_BOOTBLOCK
+	help
+	  If this option is set, vboot verification runs in a standalone stage
+	  that is loaded from the bootblock and exits into romstage. If it is
+	  not set, the verification code is linked directly into the bootblock
+	  or the romstage and runs as part of that stage (cf. related options
+	  VBOOT_STARTS_IN_BOOTBLOCK/_ROMSTAGE and VBOOT_RETURN_FROM_VERSTAGE).
+
+config VBOOT_RETURN_FROM_VERSTAGE
+	bool
+	default n
+	depends on VBOOT_SEPARATE_VERSTAGE
+	help
+	  If this is set, the verstage returns back to the calling stage instead
+	  of exiting to the succeeding stage so that the verstage space can be
+	  reused by the succeeding stage. This is useful if a RAM space is too
+	  small to fit both the verstage and the succeeding stage.
+
+config VBOOT_SAVE_RECOVERY_REASON_ON_REBOOT
+	bool
+	default n
+	help
+	  This option ensures that the recovery request is not lost because of
+	  reboots caused after vboot verification is run. e.g. reboots caused by
+	  FSP components on Intel platforms.
+
+config VBOOT_OPROM_MATTERS
+	bool
+	default n
+	help
+	  Set this option to indicate to vboot that this platform will skip its
+	  display initialization on a normal (non-recovery, non-developer) boot.
+	  Vboot calls this "oprom matters" because on x86 devices this
+	  traditionally meant that the video option ROM will not be loaded, but
+	  it works functionally the same for other platforms that can skip their
+	  native display initialization code instead.
+
+config VBOOT_HAS_REC_HASH_SPACE
+	bool
+	default n
+	help
+	  Set this option to indicate to vboot that recovery data hash space
+	  is present in TPM.
+
+config VBOOT_SOFT_REBOOT_WORKAROUND
+	bool
+	default n
+
+config VBOOT_EC_SOFTWARE_SYNC
+	bool "Enable EC software sync"
+	default y if EC_GOOGLE_CHROMEEC
+	default n
+	help
+	  EC software sync is a mechanism where the AP helps the EC verify its
+	  firmware similar to how vboot verifies the main system firmware. This
+	  option selects whether vboot should support EC software sync.
+
+config VBOOT_EC_SLOW_UPDATE
+	bool
+	default n
+	depends on VBOOT_EC_SOFTWARE_SYNC
+	help
+	  Whether the EC (or PD) is slow to update and needs to display a
+	  screen that informs the user the update is happening.
+
+config VBOOT_PHYSICAL_DEV_SWITCH
+	bool
+	default n
+	help
+	  Whether this platform has a physical developer switch. Note that this
+	  disables virtual dev switch functionality (through secdata). Operation
+	  where both a physical pin and the virtual switch get sampled is not
+	  supported by coreboot.
+
+config VBOOT_PHYSICAL_REC_SWITCH
+	bool
+	default n
+	help
+	  Whether this platform has a physical recovery switch.
+
+config VBOOT_LID_SWITCH
+	bool
+	default n
+	help
+	  Whether this platform has a lid switch. If it does, vboot will not
+	  decrement try counters for boot failures if the lid is closed.
+
+config VBOOT_WIPEOUT_SUPPORTED
+	bool
+	default n
+	help
+	  When this option is enabled, the firmware provides the ability to
+	  signal the application the need for factory reset (a.k.a. wipe
+	  out) of the device
+
+config VBOOT_FWID_MODEL
+	string "Firmware ID model"
+	default "$(CONFIG_MAINBOARD_VENDOR)_$(CONFIG_MAINBOARD_PART_NUMBER)"
+	help
+	  This is the first part of the FWID written to various regions of a
+	  vboot firmware image to identify its version.
+
+config VBOOT_FWID_VERSION
+	string "Firmware ID version"
+	default "$(KERNELVERSION)"
+	help
+	  This is the second part of the FWID written to various regions of a
+	  vboot firmware image to identify its version.
+
+menu "GBB configuration"
+
+config GBB_HWID
+	string "Hardware ID"
+	default "NOCONF HWID"
+
+config GBB_BMPFV_FILE
+	string "Path to bmpfv image"
+	default ""
+
+config GBB_FLAG_DEV_SCREEN_SHORT_DELAY
+	bool "Reduce dev screen delay"
+	default n
+
+config GBB_FLAG_LOAD_OPTION_ROMS
+	bool "Load option ROMs"
+	default n
+
+config GBB_FLAG_ENABLE_ALTERNATE_OS
+	bool "Allow booting a non-Chrome OS kernel if dev switch is on"
+	default n
+
+config GBB_FLAG_FORCE_DEV_SWITCH_ON
+	bool "Force dev switch on"
+	default n
+
+config GBB_FLAG_FORCE_DEV_BOOT_USB
+	bool "Allow booting from USB in dev mode even if dev_boot_usb=0"
+	default y
+
+config GBB_FLAG_DISABLE_FW_ROLLBACK_CHECK
+	bool "Disable firmware rollback protection"
+	default y
+
+config GBB_FLAG_ENTER_TRIGGERS_TONORM
+	bool "Return to normal boot with Enter"
+	default n
+
+config GBB_FLAG_FORCE_DEV_BOOT_LEGACY
+	bool "Allow booting to legacy in dev mode even if dev_boot_legacy=0"
+	default n
+
+config GBB_FLAG_FAFT_KEY_OVERIDE
+	bool "Allow booting using alternative keys for FAFT servo testing"
+	default n
+
+config GBB_FLAG_DISABLE_EC_SOFTWARE_SYNC
+	bool "Disable EC software sync"
+	default n
+
+config GBB_FLAG_DEFAULT_DEV_BOOT_LEGACY
+	bool "Default to booting to legacy in dev mode"
+	default n
+
+config GBB_FLAG_DISABLE_PD_SOFTWARE_SYNC
+	bool "Disable PD software sync"
+	default n
+
+config GBB_FLAG_DISABLE_LID_SHUTDOWN
+	bool "Disable shutdown on closed lid"
+	default n
+
+config GBB_FLAG_FORCE_DEV_BOOT_FASTBOOT_FULL_CAP
+	bool "Allow fastboot even if dev_boot_fastboot_full_cap=0"
+	default n
+
+config GBB_FLAG_ENABLE_SERIAL
+	bool "Tell vboot to enable serial console"
+	default n
+
+endmenu # GBB
+
+menu "Vboot Keys"
+config VBOOT_ROOT_KEY
+	string "Root key (public)"
+	default "$(VBOOT_SOURCE)/tests/devkeys/root_key.vbpubk"
+
+config VBOOT_RECOVERY_KEY
+	string "Recovery key (public)"
+	default "$(VBOOT_SOURCE)/tests/devkeys/recovery_key.vbpubk"
+
+config VBOOT_FIRMWARE_PRIVKEY
+	string "Firmware key (private)"
+	default "$(VBOOT_SOURCE)/tests/devkeys/firmware_data_key.vbprivk"
+
+config VBOOT_KERNEL_KEY
+	string "Kernel subkey (public)"
+	default "$(VBOOT_SOURCE)/tests/devkeys/kernel_subkey.vbpubk"
+
+config VBOOT_KEYBLOCK
+	string "Keyblock to use for the RW regions"
+	default "$(VBOOT_SOURCE)/tests/devkeys/firmware.keyblock"
+
+config VBOOT_KEYBLOCK_VERSION
+	int "Keyblock version number"
+	default 1
+
+config VBOOT_KEYBLOCK_PREAMBLE_FLAGS
+	hex "Keyblock preamble flags"
+	default 0x0
+
+endmenu # Keys
+endif # VBOOT
+endmenu # Verified Boot (vboot)

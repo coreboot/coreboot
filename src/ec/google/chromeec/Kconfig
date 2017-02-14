@@ -160,7 +160,7 @@ config EC_GOOGLE_CHROMEEC_PD_FIRMWARE_FILE
 	  The path and filename of the PD firmware file to use.
 
 config EC_GOOGLE_CHROMEEC_SWITCHES
-	depends on EC_GOOGLE_CHROMEEC && CHROMEOS
+	depends on EC_GOOGLE_CHROMEEC && VBOOT
 	bool
 	help
 	  Enable support for Chrome OS mode switches provided by the Chrome OS

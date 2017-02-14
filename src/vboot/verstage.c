@@ -30,7 +30,7 @@ void main(void)
 	exception_init();
 	verstage_mainboard_init();
 
-	if (IS_ENABLED(CONFIG_RETURN_FROM_VERSTAGE)) {
+	if (IS_ENABLED(CONFIG_VBOOT_RETURN_FROM_VERSTAGE)) {
 		verstage_main();
 	} else {
 		run_romstage();

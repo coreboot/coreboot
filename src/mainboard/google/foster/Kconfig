@@ -26,7 +26,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select COMMON_CBFS_SPI_WRAPPER
 	select SPI_FLASH_WINBOND
 
-config CHROMEOS
+config VBOOT
 	select VBOOT_VBNV_FLASH
 
 config MAINBOARD_DIR
@@ -84,7 +84,7 @@ config GBB_HWID
 	depends on CHROMEOS
 	default "FOSTER TEST 1184"
 
-config CHROMEOS_FWID_MODEL
+config VBOOT_FWID_MODEL
 	string
 	default "Nvidia_Foster"
 

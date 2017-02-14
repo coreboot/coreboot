@@ -154,7 +154,7 @@
 		INCLUDE "verstage/lib/program.ld"
 
 	#define OVERLAP_VERSTAGE_ROMSTAGE(addr, size) \
-		_ = ASSERT(IS_ENABLED(CONFIG_RETURN_FROM_VERSTAGE) == 1, \
+		_ = ASSERT(IS_ENABLED(CONFIG_VBOOT_RETURN_FROM_VERSTAGE) == 1, \
 			"Must set RETURN_FROM_VERSTAGE to overlap romstage."); \
 		VERSTAGE(addr, size)
 #else

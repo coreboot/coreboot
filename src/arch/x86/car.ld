@@ -21,7 +21,7 @@
 	_car_region_start = . ;
 	/* Vboot work buffer is completely volatile outside of verstage and
 	 * romstage. Appropriate code needs to handle the transition. */
-#if IS_ENABLED(CONFIG_SEPARATE_VERSTAGE)
+#if IS_ENABLED(CONFIG_VBOOT_SEPARATE_VERSTAGE)
 	VBOOT2_WORK(., 16K)
 #endif
 	/* Stack for CAR stages. Since it persists across all stages that

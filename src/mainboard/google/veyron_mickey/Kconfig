@@ -30,8 +30,8 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select SPI_FLASH_GIGADEVICE
 	select SPI_FLASH_WINBOND
 
-config CHROMEOS
-	select PHYSICAL_REC_SWITCH
+config VBOOT
+	select VBOOT_PHYSICAL_REC_SWITCH
 	select VBOOT_VBNV_FLASH
 
 config MAINBOARD_DIR
@@ -40,7 +40,7 @@ config MAINBOARD_DIR
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "Veyron_mickey"
+	default "Veyron_Mickey"
 
 config MAINBOARD_VENDOR
 	string
@@ -71,9 +71,5 @@ config GBB_HWID
 	string
 	depends on CHROMEOS
 	default "MICKEY TEST A-A 0352"
-
-config CHROMEOS_FWID_MODEL
-	string
-	default "Google_Veyron_Mickey"
 
 endif #  BOARD_GOOGLE_VEYRON_MICKEY

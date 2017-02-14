@@ -21,7 +21,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select MAINBOARD_HAS_CHROMEOS
 	select BOARD_ROMSIZE_KB_4096
 
-config CHROMEOS
+config VBOOT
 	select VBOOT_MOCK_SECDATA
 
 config MAINBOARD_DIR
@@ -37,7 +37,7 @@ config GBB_HWID
 	depends on CHROMEOS
 	default "ROTOR TEST 1234"
 
-config CHROMEOS_FWID_MODEL
+config VBOOT_FWID_MODEL
 	string
 	default "Marvell_Rotor"
 

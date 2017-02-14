@@ -329,7 +329,7 @@ void verstage_main(void)
 	antirollback_read_space_firmware(&ctx);
 	timestamp_add_now(TS_END_TPMINIT);
 
-	if (IS_ENABLED(CONFIG_PHYSICAL_DEV_SWITCH) &&
+	if (IS_ENABLED(CONFIG_VBOOT_PHYSICAL_DEV_SWITCH) &&
 	    get_developer_mode_switch())
 		ctx.flags |= VB2_CONTEXT_FORCE_DEVELOPER_MODE;
 
@@ -339,10 +339,11 @@ void verstage_main(void)
 			ctx.flags |= VB2_DISABLE_DEVELOPER_MODE;
 	}
 
-	if (IS_ENABLED(CONFIG_WIPEOUT_SUPPORTED) && get_wipeout_mode_switch())
+	if (IS_ENABLED(CONFIG_VBOOT_WIPEOUT_SUPPORTED) &&
+	    get_wipeout_mode_switch())
 		ctx.flags |= VB2_CONTEXT_FORCE_WIPEOUT_MODE;
 
-	if (IS_ENABLED(CONFIG_LID_SWITCH) && !get_lid_switch())
+	if (IS_ENABLED(CONFIG_VBOOT_LID_SWITCH) && !get_lid_switch())
 		ctx.flags |= VB2_CONTEXT_NOFAIL_BOOT;
 
 	/* Do early init (set up secdata and NVRAM, load GBB) */

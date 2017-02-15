@@ -17,7 +17,6 @@
 #include <soc/romstage.h>
 #include <fsp/api.h>
 #include <FspmUpd.h>
-#include "brd_gpio.h"
 
 static const uint8_t Ch0_Bit_swizzling[] = {
 	0x09, 0x0e, 0x0c, 0x0d, 0x0a, 0x0b, 0x08, 0x0f,
@@ -46,9 +45,6 @@ static const uint8_t Ch3_Bit_swizzling[] = {
 
 void mainboard_memory_init_params(FSPM_UPD *memupd)
 {
-	/* setup early gpio before memory */
-	gpio_configure_pads(gpio_table, ARRAY_SIZE(gpio_table));
-
 	/* DRAM Config settings */
 	memupd->FspmConfig.Package = 0x1;
 	memupd->FspmConfig.Profile = 0xB;

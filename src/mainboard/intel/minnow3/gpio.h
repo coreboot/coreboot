@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright 2016 Google Inc.
+ * Copyright (C) 2015-2016 Intel Corporation. All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,18 +13,8 @@
  * GNU General Public License for more details.
  */
 
-#include <bootblock_common.h>
-#include <soc/lpc.h>
-#include "gpio.h"
+#include <soc/gpio.h>
 
-void bootblock_mainboard_init(void)
-{
-	const struct pad_config *pads;
-	size_t num;
-
-	lpc_configure_pads();
-
-	/* Configure GPIOs needed prior to ramstage. */
-	pads = early_gpio_table(&num);
-	gpio_configure_pads(pads, num);
-}
+const struct pad_config *gpio_table(size_t *num);
+const struct pad_config *early_gpio_table(size_t *num);
+const struct pad_config *sleep_gpio_table(size_t *num);

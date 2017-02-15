@@ -21,6 +21,9 @@ config CHROMEOS
 config DRIVERS_I2C_GENERIC
 	def_bool y
 
+config DRIVERS_I2C_WACOM
+	def_bool y
+
 config GBB_HWID
 	string
 	depends on CHROMEOS

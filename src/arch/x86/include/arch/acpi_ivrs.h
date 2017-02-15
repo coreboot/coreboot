@@ -15,7 +15,7 @@
 
 /*
  * AMD I/O Virtualization Technology (IOMMU)
- * Specification 48882—Rev 2.62—February 2015
+ * Specification 48882-Rev 2.62-February 2015
  *
  * from http://www.uefi.org/acpi
  * I/O Virtualization Reporting Structure (IVRS)

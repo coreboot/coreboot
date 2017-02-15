@@ -54,7 +54,7 @@ DefinitionBlock(
 	}
 
 	// Mainboard specific
-	#include <variant/acpi/mainboard.asl>
+	#include "acpi/mainboard.asl"
 
 	// Thermal handler
 	#include "acpi/thermal.asl"

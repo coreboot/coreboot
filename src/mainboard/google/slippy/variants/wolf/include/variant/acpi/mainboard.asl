@@ -14,30 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include <onboard.h>
-
-Scope (\_SB)
-{
-	Device (LID0)
-	{
-		Name(_HID, EisaId("PNP0C0D"))
-		Method(_LID, 0)
-		{
-			Store (\_SB.PCI0.LPCB.EC0.LIDS, \LIDS)
-			Return (\LIDS)
-		}
-
-		// There is no GPIO for LID, the EC pulses WAKE# pin instead.
-		// There is no GPE for WAKE#, so fake it with PCI_EXP_WAKE
-		Name (_PRW, Package(){ 0x69, 5 }) // PCI_EXP
-	}
-
-	Device (PWRB)
-	{
-		Name(_HID, EisaId("PNP0C0C"))
-	}
-}
-
 Scope (\_SB.PCI0.I2C0)
 {
 	Device (CTPA)

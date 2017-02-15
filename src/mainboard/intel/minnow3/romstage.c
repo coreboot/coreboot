@@ -61,7 +61,7 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 	memupd->FspmConfig.InterleavedMode = 0x2;
 	memupd->FspmConfig.ChannelsSlicesEnable = 0x0;
 	memupd->FspmConfig.MinRefRate2xEnable = 0x0;
-	memupd->FspmConfig.DualRankSupportEnable = 0x1;
+	memupd->FspmConfig.DualRankSupportEnable = 0x0;
 	memupd->FspmConfig.RmtMode = 0x0;
 	memupd->FspmConfig.MemorySizeLimit = 0x1800;
 	memupd->FspmConfig.LowMemoryMaxValue = 0x0;
@@ -69,7 +69,7 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 	memupd->FspmConfig.HighMemoryMaxValue = 0x0;
 	memupd->FspmConfig.DIMM0SPDAddress = 0x0;
 	memupd->FspmConfig.DIMM1SPDAddress = 0x0;
-	memupd->FspmConfig.Ch0_RankEnable = 0x3;
+	memupd->FspmConfig.Ch0_RankEnable = 0x1;
 	memupd->FspmConfig.Ch0_DeviceWidth = 0x1;
 	memupd->FspmConfig.Ch0_DramDensity = 0x2;
 	memupd->FspmConfig.Ch0_Option = 0x3;
@@ -77,7 +77,7 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 	memupd->FspmConfig.Ch0_TristateClk1 = 0x0;
 	memupd->FspmConfig.Ch0_Mode2N = 0x0;
 	memupd->FspmConfig.Ch0_OdtLevels = 0x0;
-	memupd->FspmConfig.Ch1_RankEnable = 0x3;
+	memupd->FspmConfig.Ch1_RankEnable = 0x1;
 	memupd->FspmConfig.Ch1_DeviceWidth = 0x1;
 	memupd->FspmConfig.Ch1_DramDensity = 0x2;
 	memupd->FspmConfig.Ch1_Option = 0x3;
@@ -85,7 +85,7 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 	memupd->FspmConfig.Ch1_TristateClk1 = 0x0;
 	memupd->FspmConfig.Ch1_Mode2N = 0x0;
 	memupd->FspmConfig.Ch1_OdtLevels = 0x0;
-	memupd->FspmConfig.Ch2_RankEnable = 0x3;
+	memupd->FspmConfig.Ch2_RankEnable = 0x1;
 	memupd->FspmConfig.Ch2_DeviceWidth = 0x1;
 	memupd->FspmConfig.Ch2_DramDensity = 0x2;
 	memupd->FspmConfig.Ch2_Option = 0x3;
@@ -93,7 +93,7 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 	memupd->FspmConfig.Ch2_TristateClk1 = 0x0;
 	memupd->FspmConfig.Ch2_Mode2N = 0x0;
 	memupd->FspmConfig.Ch2_OdtLevels = 0x0;
-	memupd->FspmConfig.Ch3_RankEnable = 0x3;
+	memupd->FspmConfig.Ch3_RankEnable = 0x1;
 	memupd->FspmConfig.Ch3_DeviceWidth = 0x1;
 	memupd->FspmConfig.Ch3_DramDensity = 0x2;
 	memupd->FspmConfig.Ch3_Option = 0x3;

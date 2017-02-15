@@ -72,9 +72,6 @@ u32 mct_SetDramConfigMisc2(struct DCTStatStruc *pDCTstat,
 		misc2 |= ((cs_mux_67 & 0x1) << 27);
 		misc2 &= ~(0x1 << 26);		/* CsMux45 = cs_mux_45 */
 		misc2 |= ((cs_mux_45 & 0x1) << 26);
-
-		if (pDCTstat->Status & (1 << SB_Registered))
-			misc2 |= 1 << SubMemclkRegDly;
 	} else if (pDCTstat->LogicalCPUID & (AMD_DR_Dx | AMD_DR_Cx)) {
 		if (pDCTstat->Status & (1 << SB_Registered)) {
 			misc2 |= 1 << SubMemclkRegDly;

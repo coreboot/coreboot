@@ -90,7 +90,6 @@ ramstage-y += tsc_freq.c
 ramstage-y += uart.c
 ramstage-$(CONFIG_UART_DEBUG) += uart_debug.c
 ramstage-y += vr_config.c
-ramstage-y += xhci.c
 
 smm-y += cpu_info.c
 smm-y += gpio.c

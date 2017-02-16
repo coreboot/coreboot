@@ -97,13 +97,4 @@ config LOCK_MANAGEMENT_ENGINE
 	bool
 	default n
 
-config LYNXPOINT_POWER_OPTIMIZER
-	bool "Enable Power Optimizer"
-	default y if CHROMEOS
-	help
-		Enable the power optimizer for the High Speed I/O
-		Power Control (HSIOPC).  This can break graphics
-		under Windows, but can improve battery life under
-		'mostly idle' conditions.
-
 endif

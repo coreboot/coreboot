@@ -347,7 +347,7 @@ const struct rcba_config_instruction lpt_lp_pm_rcba[] = {
 	RCBA_RMW_REG_32(0x3350,  0, 0x022ddfff),
 	RCBA_RMW_REG_32(0x3354,  0, 0x00000001),
 	RCBA_RMW_REG_32(0x33d4, ~0, 0x08000000),  /* Power Optimizer */
-	RCBA_RMW_REG_32(0x33c8, ~0, 0x08000080),  /* Power Optimizer */
+	RCBA_RMW_REG_32(0x33c8, ~0, 0x00000080),  /* Power Optimizer */
 	RCBA_RMW_REG_32(0x2b10,  0, 0x0000883c),  /* Power Optimizer */
 	RCBA_RMW_REG_32(0x2b14,  0, 0x1e0a4616),  /* Power Optimizer */
 	RCBA_RMW_REG_32(0x2b24,  0, 0x40000005),  /* Power Optimizer */

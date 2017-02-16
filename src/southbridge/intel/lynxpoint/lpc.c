@@ -346,7 +346,6 @@ const struct rcba_config_instruction lpt_lp_pm_rcba[] = {
 	RCBA_RMW_REG_32(0x33b4,  0, 0x00007001),
 	RCBA_RMW_REG_32(0x3350,  0, 0x022ddfff),
 	RCBA_RMW_REG_32(0x3354,  0, 0x00000001),
-#if IS_ENABLED(CONFIG_LYNXPOINT_POWER_OPTIMIZER)
 	RCBA_RMW_REG_32(0x33d4, ~0, 0x08000000),  /* Power Optimizer */
 	RCBA_RMW_REG_32(0x33c8, ~0, 0x08000080),  /* Power Optimizer */
 	RCBA_RMW_REG_32(0x2b10,  0, 0x0000883c),  /* Power Optimizer */
@@ -354,7 +353,6 @@ const struct rcba_config_instruction lpt_lp_pm_rcba[] = {
 	RCBA_RMW_REG_32(0x2b24,  0, 0x40000005),  /* Power Optimizer */
 	RCBA_RMW_REG_32(0x2b20,  0, 0x0005db01),  /* Power Optimizer */
 	RCBA_RMW_REG_32(0x3a80,  0, 0x05145005),
-#endif
 	RCBA_END_CONFIG
 };
 

@@ -208,13 +208,4 @@ config CHIPSET_BOOTBLOCK_INCLUDE
 	string
 	default "soc/intel/broadwell/bootblock/timestamp.inc"
 
-config BROADWELL_POWER_OPTIMIZER
-	bool "Enable Power Optimizer"
-	default y if CHROMEOS
-	help
-		Enable the power optimizer for the High Speed I/O
-		Power Control (HSIOPC).  This can break graphics
-		under Windows, but can improve battery life under
-		'mostly idle' conditions.
-
 endif

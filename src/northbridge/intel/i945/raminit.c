@@ -1943,8 +1943,9 @@ static void sdram_set_channel_mode(struct sys_info *sysinfo)
 		/* Channel 1 only */
 		printk(BIOS_DEBUG, "Single Channel 1 only.\n");
 		reg32 |= (1 << 2);
-	} else if (sdram_capabilities_dual_channel() && sysinfo->dimm[2] !=
-			SYSINFO_DIMM_NOT_POPULATED) {
+	} else if (sdram_capabilities_dual_channel() &&
+			(sysinfo->dimm[2] != SYSINFO_DIMM_NOT_POPULATED ||
+			 sysinfo->dimm[3] != SYSINFO_DIMM_NOT_POPULATED)) {
 		/* Dual Channel Asymmetric */
 		printk(BIOS_DEBUG, "Dual Channel Asymmetric.\n");
 		reg32 |= (1 << 0);

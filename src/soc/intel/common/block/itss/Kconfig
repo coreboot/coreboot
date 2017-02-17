@@ -1,0 +1,4 @@
+config SOC_INTEL_COMMON_BLOCK_ITSS
+	bool
+	help
+	  Intel Processor common interrupt timer subsystem support

@@ -127,11 +127,15 @@ static void configure_usb(void)
 	setup_usb_host();
 
 	if (board_id() + CONFIG_BOARD_ID_ADJUSTMENT > 3) {
-		/* Enable current limit */
-		gpio_output(PAD_CM2MCLK, 1);
-		/* Configure USB OC pins*/
+		/* Type C port 0 Over current alert pin */
 		gpio_input_pullup(PAD_MSDC3_DSL);
-		gpio_input_pullup(PAD_CMPCLK);
+		if (!IS_ENABLED(CONFIG_BOARD_GOOGLE_ROWAN)) {
+			/* Enable USB3 type A port 0 5V load switch */
+			gpio_output(PAD_CM2MCLK, 1);
+			/* USB3 Type A port 0 power over current alert pin */
+			gpio_input_pullup(PAD_CMPCLK);
+		}
+		/* Type C port 1 over current alert pin */
 		if (board_id() + CONFIG_BOARD_ID_ADJUSTMENT < 7)
 			gpio_input_pullup(PAD_PCM_SYNC);
 	}
@@ -148,6 +152,9 @@ static void configure_usb(void)
 
 static void configure_usb_hub(void)
 {
+	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_ROWAN))
+		return;
+
 	/* set usb hub reset pin (low active) to high */
 	if (board_id() + CONFIG_BOARD_ID_ADJUSTMENT > 4)
 		gpio_output(PAD_UTXD3, 1);
@@ -257,9 +264,13 @@ static void mainboard_init(device_t dev)
 	mtk_dsi_pin_drv_ctrl();
 
 	if (display_init_required()) {
-		configure_backlight();
-		configure_display();
-		display_startup();
+		if (IS_ENABLED(CONFIG_BOARD_GOOGLE_ROWAN)) {
+			/* display initialization for Rowan */
+		} else {
+			configure_backlight();
+			configure_display();
+			display_startup();
+		}
 	} else {
 		printk(BIOS_INFO, "Skipping display init.\n");
 	}

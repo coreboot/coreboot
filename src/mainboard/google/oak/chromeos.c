@@ -26,7 +26,7 @@ void setup_chromeos_gpios(void)
 	gpio_input(WRITE_PROTECT);
 	gpio_input_pullup(EC_IN_RW);
 	gpio_input_pullup(EC_IRQ);
-	gpio_input_pullup(LID);
+	gpio_input(LID);
 	gpio_input_pullup(POWER_BUTTON);
 	if (board_id() + CONFIG_BOARD_ID_ADJUSTMENT < 5)
 		gpio_output(EC_SUSPEND_L, 1);

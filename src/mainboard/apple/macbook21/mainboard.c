@@ -27,7 +27,6 @@
 #include <northbridge/intel/i945/i945.h>
 #include <pc80/mc146818rtc.h>
 #include <arch/x86/include/arch/acpigen.h>
-#include <smbios.h>
 #include <drivers/intel/gma/int15.h>
 #include <ec/acpi/ec.h>
 #define PANEL INT15_5F35_CL_DISPLAY_DEFAULT

@@ -9,3 +9,7 @@ config BOARD_GOOGLE_ELM
 config BOARD_GOOGLE_HANA
 	bool "Hana"
 	select BOARD_GOOGLE_OAK_COMMON
+
+config BOARD_GOOGLE_ROWAN
+	bool "ROWAN"
+	select BOARD_GOOGLE_OAK_COMMON

@@ -90,9 +90,9 @@ Device (BATX)
 		Store(Local0, Index(PBIF, 5))
 		Multiply(Local1, 0x05, Local0)
 		Store (Local0, Index (PBIF, 6))
-		Store (ToString(BATD), Index (PBIF, 9)) // Model Number
+		Store (ToString(Concatenate(BATD, 0x00)), Index (PBIF, 9)) // Model Number
 		Store (ToDecimalString(BSN0), Index (PBIF, 10)) // Serial Number
-		Store (ToString(BCHM), Index (PBIF, 11)) // Battery Type
+		Store (ToString(Concatenate(BCHM, 0x00)), Index (PBIF, 11)) // Battery Type
 		Store (\BATV, Index (PBIF, 12)) // OEM information
 
 		Return (PBIF)

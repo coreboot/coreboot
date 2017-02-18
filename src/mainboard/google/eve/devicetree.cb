@@ -210,6 +210,7 @@ chip soc/intel/skylake
 				register "generic.cid" = "PNP0C50_CID"
 				register "generic.desc" = "WCOM_DT_DESC"
 				register "generic.irq" = "IRQ_LEVEL_LOW(GPP_E7_IRQ)"
+				register "generic.speed" = "I2C_SPEED_FAST_PLUS"
 				register "hid_desc_reg_offset" = "0x1"
 				device i2c 0a on end
 			end

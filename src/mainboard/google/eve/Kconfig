@@ -8,6 +8,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select DRIVERS_I2C_HID
 	select DRIVERS_I2C_WACOM
 	select DRIVERS_PS2_KEYBOARD
+	select DRIVERS_I2C_MAX98927
 	select DRIVERS_SPI_ACPI
 	select EC_GOOGLE_CHROMEEC
 	select EC_GOOGLE_CHROMEEC_LPC
@@ -63,5 +64,11 @@ config MAINBOARD_FAMILY
 config MAX_CPUS
 	int
 	default 8
+
+config INCLUDE_NHLT_BLOBS
+	bool "Include blobs for audio."
+	select NHLT_DMIC_4CH
+	select NHLT_RT5663
+	select NHLT_MAX98927
 
 endif

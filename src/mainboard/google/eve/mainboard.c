@@ -18,10 +18,14 @@
 #include <device/device.h>
 #include <ec/ec.h>
 #include <vendorcode/google/chromeos/chromeos.h>
+#include <gpio.h>
+#include <soc/gpio.h>
+#include "gpio.h"
 
 static void mainboard_init(device_t dev)
 {
 	mainboard_ec_init();
+	gpio_configure_pads(late_gpio_table, ARRAY_SIZE(late_gpio_table));
 }
 
 static void mainboard_enable(device_t dev)

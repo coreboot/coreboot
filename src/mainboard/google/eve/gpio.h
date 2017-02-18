@@ -103,8 +103,8 @@ static const struct pad_config gpio_table[] = {
 /* SML0ALERT# */	PAD_CFG_NC(GPP_C5),
 /* SM1CLK */		PAD_CFG_GPI(GPP_C6, 20K_PU, DEEP), /* EC_IN_RW */
 /* SM1DATA */		PAD_CFG_NC(GPP_C7),
-/* UART0_RXD */		PAD_CFG_GPI_APIC(GPP_C8, NONE, PLTRST), /* FP_INT */
-/* UART0_TXD */		PAD_CFG_GPO(GPP_C9, 0, DEEP), /* FP_RST_ODL */
+/* UART0_RXD */		PAD_CFG_GPI(GPP_C8, NONE, PLTRST), /* FP_INT */
+/* UART0_TXD */		PAD_CFG_GPO(GPP_C9, 1, DEEP), /* FP_RST_ODL */
 /* UART0_RTS# */	PAD_CFG_NC(GPP_C10),
 /* UART0_CTS# */	PAD_CFG_NC(GPP_C11),
 /* UART1_RXD */		PAD_CFG_GPI(GPP_C12, NONE, DEEP), /* MEM_CONFIG[0] */
@@ -229,6 +229,11 @@ static const struct pad_config early_gpio_table[] = {
 /* Ensure UART pins are in native mode for H1 */
 /* UART2_RXD */		PAD_CFG_NF(GPP_C20, NONE, DEEP, NF1), /* SERVO */
 /* UART2_TXD */		PAD_CFG_NF(GPP_C21, NONE, DEEP, NF1), /* SERVO */
+};
+
+static const struct pad_config late_gpio_table[] = {
+/* UART0_RXD */		PAD_CFG_GPI(GPP_C8, NONE, PLTRST), /* FP_INT */
+/* UART0_TXD */		PAD_CFG_GPO(GPP_C9, 1, DEEP), /* FP_RST_ODL */
 };
 
 #endif

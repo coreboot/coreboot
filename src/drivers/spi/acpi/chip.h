@@ -24,9 +24,29 @@ struct drivers_spi_acpi_config {
 	const char *name;		/* ACPI Device Name */
 	const char *desc;		/* Device Description */
 	unsigned uid;			/* ACPI _UID */
-	unsigned speed;		/* Bus speed in Hz (default 1MHz) */
+	unsigned speed;			/* Bus speed in Hz (default 1MHz) */
 	const char *compat_string;	/* Compatible string for _HID=PRP0001 */
 	struct acpi_irq irq;		/* Interrupt */
+	unsigned wake;			/* Wake GPE */
+
+	/* Use GPIO based interrupt instead of PIRQ */
+	struct acpi_gpio irq_gpio;
+
+	/* Disable reset and enable GPIO export in _CRS */
+	bool disable_gpio_export_in_crs;
+
+	/* Does the device have a power resource? */
+	bool has_power_resource;
+
+	/* GPIO used to take device out of reset or to put it into reset. */
+	struct acpi_gpio reset_gpio;
+	/* Delay to be inserted after device is taken out of reset. */
+	unsigned reset_delay_ms;
+
+	/* GPIO used to enable device. */
+	struct acpi_gpio enable_gpio;
+	/* Delay to be inserted after device is enabled. */
+	unsigned enable_delay_ms;
 };
 
 #endif /* __SPI_ACPI_CHIP_H__ */

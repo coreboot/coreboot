@@ -850,6 +850,14 @@ static void domain_set_resources(device_t dev)
 			assign_resources(link);
 		}
 	}
+	/*
+	 * Reserve everything between A segment and 1MB:
+	 *
+	 * 0xa0000 - 0xbffff: legacy VGA
+	 * 0xc0000 - 0xfffff: RAM
+	 */
+	mmio_resource(dev, 0xa0000, 0xa0000 / KiB, 0x20000 / KiB);
+	reserved_ram_resource(dev, 0xc0000, 0xc0000 / KiB, 0x40000 / KiB);
 }
 
 static struct device_operations pci_domain_ops = {

@@ -260,7 +260,8 @@ chip soc/intel/skylake
 				register "hid" = "ACPI_DT_NAMESPACE_HID"
 				register "uid" = "1"
 				register "compat_string" = ""fpc,fpc1020""
-				register "irq" = "IRQ_EDGE_LOW(GPP_C8_IRQ)"
+				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_HIGH(GPP_C8)"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C9)"
 				device spi 0 on end
 			end
 		end # GSPI #1

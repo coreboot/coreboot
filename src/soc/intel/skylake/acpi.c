@@ -146,9 +146,6 @@ static int cstate_set_non_s0ix[] = {
 	C_STATE_C1E,
 	C_STATE_C3,
 	C_STATE_C7S_LONG_LAT,
-	C_STATE_C8,
-	C_STATE_C9,
-	C_STATE_C10
 };
 
 static int get_cores_per_package(void)

@@ -53,9 +53,6 @@ config DRIVERS_I2C_WACOM
 config DRIVERS_PS2_KEYBOARD
 	default y
 
-config DRIVERS_GENERIC_GPIO_REGULATOR
-	default y
-
 config MAINBOARD_DIR
 	string
 	default google/reef

@@ -490,6 +490,52 @@ void acpi_device_write_spi(const struct acpi_spi *spi)
 	acpi_device_fill_len(desc_length);
 }
 
+/* PowerResource() with Enable and/or Reset control */
+void acpi_device_add_power_res(
+	struct acpi_gpio *reset, unsigned reset_delay_ms,
+	struct acpi_gpio *enable, unsigned enable_delay_ms)
+{
+	const char *power_res_dev_states[] = { "_PR0", "_PR3" };
+	unsigned reset_gpio = reset->pins[0];
+	unsigned enable_gpio = enable->pins[0];
+
+	if (!reset_gpio && !enable_gpio)
+		return;
+
+	/* PowerResource (PRIC, 0, 0) */
+	acpigen_write_power_res("PRIC", 0, 0, power_res_dev_states,
+				ARRAY_SIZE(power_res_dev_states));
+
+	/* Method (_STA, 0, NotSerialized) { Return (0x1) } */
+	acpigen_write_STA(0x1);
+
+	/* Method (_ON, 0, Serialized) */
+	acpigen_write_method_serialized("_ON", 0);
+	if (reset_gpio)
+		acpigen_soc_set_tx_gpio(reset_gpio);
+	if (enable_gpio) {
+		acpigen_soc_set_tx_gpio(enable_gpio);
+		if (enable_delay_ms)
+			acpigen_write_sleep(enable_delay_ms);
+	}
+	if (reset_gpio) {
+		acpigen_soc_clear_tx_gpio(reset_gpio);
+		if (reset_delay_ms)
+			acpigen_write_sleep(reset_delay_ms);
+	}
+	acpigen_pop_len();		/* _ON method */
+
+	/* Method (_OFF, 0, Serialized) */
+	acpigen_write_method_serialized("_OFF", 0);
+	if (reset_gpio)
+		acpigen_soc_set_tx_gpio(reset_gpio);
+	if (enable_gpio)
+		acpigen_soc_clear_tx_gpio(enable_gpio);
+	acpigen_pop_len();		/* _OFF method */
+
+	acpigen_pop_len();		/* PowerResource PRIC */
+}
+
 static void acpi_dp_write_array(const struct acpi_dp *array);
 static void acpi_dp_write_value(const struct acpi_dp *prop)
 {

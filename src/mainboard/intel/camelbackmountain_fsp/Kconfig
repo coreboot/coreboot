@@ -10,6 +10,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select INTEGRATED_UART if FSP_PACKAGE_DEFAULT
 	select HAVE_FSP_BIN if FSP_PACKAGE_DEFAULT
 	select SERIRQ_CONTINUOUS_MODE
+	select CONSOLE_POST
 
 config MAINBOARD_DIR
 	string
@@ -34,10 +35,6 @@ config CBFS_SIZE
 config VIRTUAL_ROM_SIZE
 	hex
 	default 0x1000000
-
-config CONSOLE_POST
-	bool
-	default y
 
 config DRIVERS_UART_8250IO
 	def_bool n

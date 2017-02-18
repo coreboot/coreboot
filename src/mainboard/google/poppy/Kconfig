@@ -4,6 +4,8 @@ config BOARD_SPECIFIC_OPTIONS
 	def_bool y
 	select BOARD_ID_AUTO
 	select BOARD_ROMSIZE_KB_16384
+	select DRIVERS_I2C_GENERIC
+	select DRIVERS_I2C_WACOM
 	select EC_GOOGLE_CHROMEEC
 	select EC_GOOGLE_CHROMEEC_LPC
 	select HAVE_ACPI_RESUME
@@ -17,12 +19,6 @@ config CHROMEOS
 	select EC_GOOGLE_CHROMEEC_SWITCHES
 	select LID_SWITCH
 	select GBB_FLAG_DISABLE_EC_SOFTWARE_SYNC
-
-config DRIVERS_I2C_GENERIC
-	def_bool y
-
-config DRIVERS_I2C_WACOM
-	def_bool y
 
 config GBB_HWID
 	string

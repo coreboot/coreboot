@@ -240,6 +240,15 @@ struct acpi_spi {
 void acpi_device_write_spi(const struct acpi_spi *spi);
 
 /*
+ * Add a basic PowerResource block for a device that includes
+ * GPIOs for enable and/or reset control of the device.  Each
+ * GPIO is optional, but at least one must be provided.
+ */
+void acpi_device_add_power_res(
+	struct acpi_gpio *reset, unsigned reset_delay_ms,
+	struct acpi_gpio *enable, unsigned enable_delay_ms);
+
+/*
  * Writing Device Properties objects via _DSD
  *
  * http://uefi.org/sites/default/files/resources/_DSD-device-properties-UUID.pdf

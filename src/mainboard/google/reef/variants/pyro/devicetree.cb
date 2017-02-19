@@ -181,20 +181,17 @@ chip soc/intel/apollolake
 			end
 		end	# - I2C 2
 		device pci 16.3 on
-			chip drivers/i2c/wacom
-				register "generic" = "{
-					 .hid = WCOMNTN2_HID,
-					 .cid = PNP0C50_CID,
-					 .desc = WCOM_TS_DESC,
-					 .irq = IRQ_LEVEL_LOW(GPIO_21_IRQ),
-					 .probed = 1,
-					 .reset_gpio = ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_36),
-					 .reset_delay_ms = 20,
-					 .enable_gpio = ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_152),
-					 .enable_delay_ms = 1,
-					 .has_power_resource = 1,
-					 .disable_gpio_export_in_crs = 1,
-				}"
+			chip drivers/i2c/hid
+				register "generic.hid" = ""WCOMNTN2""
+				register "generic.desc" = ""WCOM Touchscreen""
+				register "generic.irq" = "IRQ_LEVEL_LOW(GPIO_21_IRQ)"
+				register "generic.probed" = "1"
+				register "generic.reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_36)"
+				register "generic.reset_delay_ms" = "20"
+				register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_152)"
+				register "generic.enable_delay_ms" = "1"
+				register "generic.has_power_resource" = "1"
+				register "generic.disable_gpio_export_in_crs" = "1"
 				register "hid_desc_reg_offset" = "0x1"
 				device i2c 0xA on end
 			end

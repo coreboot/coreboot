@@ -205,10 +205,9 @@ chip soc/intel/skylake
 		device pci 14.1 off end # USB xDCI (OTG)
 		device pci 14.2 on  end # Thermal Subsystem
 		device pci 15.0 on
-			chip drivers/i2c/wacom
-				register "generic.hid" = "WCOM50C1_HID"
-				register "generic.cid" = "PNP0C50_CID"
-				register "generic.desc" = "WCOM_DT_DESC"
+			chip drivers/i2c/hid
+				register "generic.hid" = ""WCOM50C1""
+				register "generic.desc" = ""WCOM Digitizer""
 				register "generic.irq" = "IRQ_LEVEL_LOW(GPP_E7_IRQ)"
 				register "generic.speed" = "I2C_SPEED_FAST_PLUS"
 				register "hid_desc_reg_offset" = "0x1"

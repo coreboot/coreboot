@@ -196,13 +196,10 @@ chip soc/intel/apollolake
 			end
 		end # - I2C 4
 		device pci 17.1 on
-			chip drivers/i2c/wacom
-				register "generic" = "{
-					 .hid = WCOM50C1_HID,
-					 .cid = PNP0C50_CID,
-					 .desc = WCOM_DT_DESC,
-					 .irq = IRQ_LEVEL_LOW(GPIO_13_IRQ),
-				}"
+			chip drivers/i2c/hid
+				register "generic.hid" = ""WCOM50C1""
+				register "generic.desc" = ""WCOM Digitizer""
+				register "generic.irq" = "IRQ_LEVEL_LOW(GPIO_13_IRQ)"
 				register "hid_desc_reg_offset" = "0x1"
 				device i2c 0x9 on end
 			end

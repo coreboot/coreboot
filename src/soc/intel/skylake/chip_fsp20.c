@@ -40,6 +40,11 @@ void soc_init_pre_device(void *chip_info)
 	fsp_silicon_init(romstage_handoff_is_resume());
 }
 
+void soc_fsp_load(void)
+{
+	fsps_load(romstage_handoff_is_resume());
+}
+
 static void pci_domain_set_resources(device_t dev)
 {
 	assign_resources(dev->link_list);

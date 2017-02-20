@@ -19,6 +19,9 @@ chip soc/intel/skylake
 	# EC memory map range is 0x900-0x9ff
 	register "gen3_dec" = "0x00fc0901"
 
+	# Enable DPTF
+	register "dptf_enable" = "1"
+
 	# FSP Configuration
 	register "ProbelessTrace" = "0"
 	register "EnableLan" = "0"
@@ -184,6 +187,7 @@ chip soc/intel/skylake
 
 	register "speed_shift_enable" = "1"
 	register "tdp_pl2_override" = "7"
+	register "tcc_offset" = "10"     # TCC of 90C
 
 	# Use default SD card detect GPIO configuration
 	register "sdcard_cd_gpio_default" = "GPP_G7"

@@ -61,4 +61,10 @@ DefinitionBlock(
 		/* ACPI code for EC functions */
 		#include <ec/google/chromeec/acpi/ec.asl>
 	}
+
+	Scope (\_SB)
+	{
+		/* Dynamic Platform Thermal Framework */
+		#include "acpi/dptf.asl"
+	}
 }

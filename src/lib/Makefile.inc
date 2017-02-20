@@ -282,6 +282,7 @@ ramstage-$(CONFIG_HAVE_MONOTONIC_TIMER) += hw-time-timer.adb
 endif # CONFIG_RAMSTAGE_LIBHWBASE
 
 romstage-y += spd_bin.c
+ramstage-y += spd_bin.c
 
 ifeq ($(CONFIG_GENERIC_SPD_BIN),y)
 LIB_SPD_BIN = $(obj)/spd.bin

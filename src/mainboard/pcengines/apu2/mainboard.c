@@ -34,15 +34,13 @@
 #include <cpu/amd/mtrr.h>
 #include <cpu/amd/amdfam16.h>
 #include <cpuRegisters.h>
+#include <spd_bin.h>
 #include <Fch/Fch.h>
-#include <spd_cache.h>
 #include "gpio_ftns.h"
 
-#define SPD_SIZE  128
 #define PM_RTC_CONTROL	    0x56
 #define PM_RTC_SHADOW	    0x5B
 #define PM_S_STATE_CONTROL  0xBA
-
 
 /***********************************************************
  * These arrays set up the FCH PCI_INTR registers 0xC00/0xC01.
@@ -185,13 +183,13 @@ static void mainboard_enable(device_t dev)
 	printk(BIOS_ALERT, "coreboot build %s\n", COREBOOT_BUILD);
 	printk(BIOS_ALERT, "%d MB", top_mem+top_mem2);
 
-	/* Read memory configuration from GPIO 49 and 50 */
-	u8 spd_index = read_gpio(ACPI_MMIO_BASE, IOMUX_GPIO_49);
-	spd_index |= (read_gpio(ACPI_MMIO_BASE, IOMUX_GPIO_50) << 1);
+	//
+	// Read memory configuration from GPIO 49 and 50
+	//
+	u8 spd_index = get_spd_offset();
 
-	u8 spd_buffer[SPD_SIZE];
-
-	if (read_spd_from_cbfs(spd_buffer, spd_index) < 0) {
+	u8 spd_buffer[CONFIG_DIMM_SPD_SIZE];
+	if (read_ddr3_spd_from_cbfs(spd_buffer, spd_index) < 0) {
 		/* Indicate no ECC */
 		spd_buffer[3] = 3;
 	}
@@ -215,6 +213,15 @@ static void mainboard_enable(device_t dev)
 
 	/* Initialize the PIRQ data structures for consumption */
 	pirq_setup();
+}
+
+static void mainboard_final(void *chip_info)
+{
+	//
+	// Turn off LED D4 and D5
+	//
+	write_gpio(GPIO_58, 1);
+	write_gpio(GPIO_59, 1);
 }
 
 /*

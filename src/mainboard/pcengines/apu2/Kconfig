@@ -28,6 +28,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select BOARD_ROMSIZE_KB_8192
 	select HUDSON_DISABLE_IMC
 	select USE_BLOBS
+	select GENERIC_SPD_BIN
 	select PXE
 
 config MAINBOARD_DIR

@@ -34,7 +34,6 @@
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
 #include <spd_bin.h>
-#include <Fch/Fch.h>
 #include "gpio_ftns.h"
 
 #define PM_RTC_CONTROL	    0x56

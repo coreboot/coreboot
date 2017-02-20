@@ -35,7 +35,6 @@
 #include <cpu/amd/amdfam16.h>
 #include <cpuRegisters.h>
 #include <spd_bin.h>
-#include <Fch/Fch.h>
 #include "gpio_ftns.h"
 
 #define PM_RTC_CONTROL	    0x56

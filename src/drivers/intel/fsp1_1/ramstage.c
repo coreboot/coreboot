@@ -185,10 +185,14 @@ static int fsp_find_and_relocate(struct prog *fsp)
 	return 0;
 }
 
-void intel_silicon_init(void)
+void fsp_load(void)
 {
+	static int load_done;
 	struct prog fsp = PROG_INIT(PROG_REFCODE, "fsp.bin");
 	int is_s3_wakeup = acpi_is_wakeup_s3();
+
+	if (load_done)
+		return;
 
 	if (is_s3_wakeup && !IS_ENABLED(CONFIG_NO_STAGE_CACHE)) {
 		printk(BIOS_DEBUG, "FSP: Loading binary from cache\n");
@@ -201,7 +205,13 @@ void intel_silicon_init(void)
 	/* FSP_INFO_HEADER is set as the program entry. */
 	fsp_update_fih(prog_entry(&fsp));
 
-	fsp_run_silicon_init(fsp_get_fih(), is_s3_wakeup);
+	load_done = 1;
+}
+
+void intel_silicon_init(void)
+{
+	fsp_load();
+	fsp_run_silicon_init(fsp_get_fih(), acpi_is_wakeup_s3());
 }
 
 /* Initialize the UPD parameters for SiliconInit */

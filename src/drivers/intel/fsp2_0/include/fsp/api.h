@@ -42,6 +42,13 @@ void fsp_memory_init(bool s3wake);
 void fsp_silicon_init(bool s3wake);
 void fsp_temp_ram_exit(void);
 
+/*
+ * Load FSP-S from stage cache or CBFS. This allows SoCs to load FSPS-S
+ * separately from calling silicon init. It might be required in cases where
+ * stage cache is no longer available by the point SoC calls into silicon init.
+ */
+void fsps_load(bool s3wake);
+
 /* Callbacks for updating stage-specific parameters */
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version);
 void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd);

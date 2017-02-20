@@ -478,7 +478,7 @@ static const struct mp_ops mp_ops = {
 	 * that are set prior to ramstage.
 	 * Real MTRRs programming are being done after resource allocation.
 	 */
-	.pre_mp_init = NULL,
+	.pre_mp_init = soc_fsp_load,
 	.get_cpu_count = get_cpu_count,
 	.get_smm_info = smm_info,
 	.get_microcode_info = get_microcode_info,

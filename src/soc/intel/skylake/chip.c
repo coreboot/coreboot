@@ -33,6 +33,11 @@ void soc_init_pre_device(void *chip_info)
 	intel_silicon_init();
 }
 
+void soc_fsp_load(void)
+{
+	fsp_load();
+}
+
 static void pci_domain_set_resources(device_t dev)
 {
 	assign_resources(dev->link_list);

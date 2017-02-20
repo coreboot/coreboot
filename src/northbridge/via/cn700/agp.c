@@ -152,8 +152,38 @@ static void agp_bridge_init(device_t dev)
 	pci_write_config8(dev, 0x45, 0x72);
 }
 
+static void agp_bridge_read_resources(device_t dev)
+{
+	struct resource *resource;
+
+	resource = new_resource(dev, 0);
+	if (resource) {
+		resource->base	= 0;
+		resource->size	= 0;
+		resource->limit = 0xffffUL;
+		resource->flags = IORESOURCE_IO | IORESOURCE_BRIDGE;
+	}
+
+	resource = new_resource(dev, 1);
+	if (resource) {
+		resource->base = 0;
+		resource->size = 0;
+		resource->limit = 0xfffffffffULL;
+		resource->flags = IORESOURCE_MEM | IORESOURCE_PREFETCH;
+		resource->flags |= IORESOURCE_BRIDGE;
+	}
+
+	resource = new_resource(dev, 2);
+	if (resource) {
+		resource->base = 0;
+		resource->size = 0;
+		resource->limit = 0xffffffffULL;
+		resource->flags = IORESOURCE_MEM | IORESOURCE_BRIDGE;
+	}
+}
+
 static const struct device_operations agp_bridge_operations = {
-	.read_resources   = DEVICE_NOOP,
+	.read_resources   = agp_bridge_read_resources,
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_bus_enable_resources,
 	.init             = agp_bridge_init,

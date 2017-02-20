@@ -34,6 +34,7 @@
 #include "sb_cimx.h"		/* AMD CIMX wrapper entries */
 #include "smbus.h"
 #include "fan.h"
+#include "pci_devs.h"
 #include <southbridge/amd/common/amd_pci_util.h>
 
 /*implement in mainboard.c*/
@@ -150,6 +151,20 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 	return current;
 }
 
+static const char *lpc_acpi_name(struct device *dev)
+{
+	if (dev->path.type != DEVICE_PATH_PCI)
+		return NULL;
+
+	switch (dev->path.pci.devfn) {
+	/* DSDT: acpi/lpc.asl */
+	case LPC_DEVFN:
+		return "LIBR";
+	}
+
+	return NULL;
+}
+
 static struct device_operations lpc_ops = {
 	.read_resources = lpc_read_resources,
 	.set_resources = lpc_set_resources,
@@ -160,6 +175,7 @@ static struct device_operations lpc_ops = {
 	.init = lpc_init,
 	.scan_bus = scan_lpc_bus,
 	.ops_pci = &lops_pci,
+	.acpi_name = lpc_acpi_name,
 };
 
 static const struct pci_driver lpc_driver __pci_driver = {

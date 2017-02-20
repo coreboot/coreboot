@@ -638,6 +638,14 @@ static void domain_enable_resources(device_t dev)
 	printk(BIOS_DEBUG, "  ader - leaving domain_enable_resources.\n");
 }
 
+static const char *domain_acpi_name(struct device *dev)
+{
+	if (dev->path.type == DEVICE_PATH_DOMAIN)
+		return "PCI0";
+
+	return NULL;
+}
+
 /* Bus related code */
 
 static void cpu_bus_scan(struct device *dev)
@@ -813,6 +821,7 @@ static struct device_operations pci_domain_ops = {
 	.enable_resources = domain_enable_resources,
 	.init = DEVICE_NOOP,
 	.scan_bus = pci_domain_scan_bus,
+	.acpi_name = domain_acpi_name,
 };
 
 static struct device_operations cpu_bus_ops = {

@@ -86,7 +86,6 @@ cbfs-files-y += ecrw
 ecrw-file := $(obj)/mainboard/$(MAINBOARDDIR)/ecrw
 ecrw-name := ecrw
 ecrw-type := raw
-ecrw-compression := $(CBFS_COMPRESS_FLAG)
 cbfs-files-y += ecrw.hash
 ecrw.hash-file := $(obj)/mainboard/$(MAINBOARDDIR)/ecrw.hash
 ecrw.hash-name := ecrw.hash

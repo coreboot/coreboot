@@ -40,6 +40,7 @@
 #define MSR_FEATURE_CONFIG	0x13c
 #define   FEATURE_CONFIG_RESERVED_MASK	0x3ULL
 #define   FEATURE_CONFIG_LOCK	(1 << 0)
+#define IA32_MCG_CAP		0x179
 #define SMM_MCA_CAP_MSR		0x17d
 #define  SMM_CPU_SVRSTR_BIT	57
 #define  SMM_CPU_SVRSTR_MASK	(1 << (SMM_CPU_SVRSTR_BIT - 32))
@@ -57,6 +58,7 @@
 #define MSR_TURBO_RATIO_LIMIT		0x1ad
 #define MSR_POWER_CTL			0x1fc
 #define MSR_EVICT_CTL			0x2e0
+#define IA32_MC0_CTL			0x400
 #define IA32_MC0_STATUS			0x401
 #define SMM_FEATURE_CONTROL_MSR		0x4e0
 #define  SMM_CPU_SAVE_EN		(1 << 1)

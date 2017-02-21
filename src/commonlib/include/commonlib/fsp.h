@@ -18,6 +18,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <sys/types.h>
 
 /*
  * Relocate FSP held within buffer defined by size to new_addr. Returns < 0

@@ -181,7 +181,7 @@ void acpi_device_write_interrupt(const struct acpi_irq *irq)
 		return;
 
 	/* This is supported by GpioInt() but not Interrupt() */
-	if (irq->polarity == IRQ_ACTIVE_BOTH)
+	if (irq->polarity == ACPI_IRQ_ACTIVE_BOTH)
 		return;
 
 	/* Byte 0: Descriptor Type */
@@ -200,13 +200,13 @@ void acpi_device_write_interrupt(const struct acpi_irq *irq)
 	 *    [0]: Resource (0=PRODUCER  1=CONSUMER)
 	 */
 	flags = 1 << 0; /* ResourceConsumer */
-	if (irq->mode == IRQ_EDGE_TRIGGERED)
+	if (irq->mode == ACPI_IRQ_EDGE_TRIGGERED)
 		flags |= 1 << 1;
-	if (irq->polarity == IRQ_ACTIVE_LOW)
+	if (irq->polarity == ACPI_IRQ_ACTIVE_LOW)
 		flags |= 1 << 2;
-	if (irq->shared == IRQ_SHARED)
+	if (irq->shared == ACPI_IRQ_SHARED)
 		flags |= 1 << 3;
-	if (irq->wake == IRQ_WAKE)
+	if (irq->wake == ACPI_IRQ_WAKE)
 		flags |= 1 << 4;
 	acpigen_emit_byte(flags);
 
@@ -262,21 +262,21 @@ void acpi_device_write_gpio(const struct acpi_gpio *gpio)
 		 *    [2:1]: Polarity (0=HIGH      1=LOW     2=BOTH)
 		 *      [0]: Mode     (0=LEVEL     1=EDGE)
 		 */
-		if (gpio->irq.mode == IRQ_EDGE_TRIGGERED)
+		if (gpio->irq.mode == ACPI_IRQ_EDGE_TRIGGERED)
 			flags |= 1 << 0;
-		if (gpio->irq.shared == IRQ_SHARED)
+		if (gpio->irq.shared == ACPI_IRQ_SHARED)
 			flags |= 1 << 3;
-		if (gpio->irq.wake == IRQ_WAKE)
+		if (gpio->irq.wake == ACPI_IRQ_WAKE)
 			flags |= 1 << 4;
 
 		switch (gpio->irq.polarity) {
-		case IRQ_ACTIVE_HIGH:
+		case ACPI_IRQ_ACTIVE_HIGH:
 			flags |= 0 << 1;
 			break;
-		case IRQ_ACTIVE_LOW:
+		case ACPI_IRQ_ACTIVE_LOW:
 			flags |= 1 << 1;
 			break;
-		case IRQ_ACTIVE_BOTH:
+		case ACPI_IRQ_ACTIVE_BOTH:
 			flags |= 2 << 1;
 			break;
 		}

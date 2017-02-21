@@ -47,55 +47,55 @@ const char *acpi_device_path_join(struct device *dev, const char *name);
  * ACPI Descriptor for extended Interrupt()
  */
 
-enum irq_mode {
-	IRQ_EDGE_TRIGGERED,
-	IRQ_LEVEL_TRIGGERED
+enum acpi_irq_mode {
+	ACPI_IRQ_EDGE_TRIGGERED,
+	ACPI_IRQ_LEVEL_TRIGGERED
 };
 
-enum irq_polarity {
-	IRQ_ACTIVE_LOW,
-	IRQ_ACTIVE_HIGH,
-	IRQ_ACTIVE_BOTH
+enum acpi_irq_polarity {
+	ACPI_IRQ_ACTIVE_LOW,
+	ACPI_IRQ_ACTIVE_HIGH,
+	ACPI_IRQ_ACTIVE_BOTH
 };
 
-enum irq_shared {
-	IRQ_EXCLUSIVE,
-	IRQ_SHARED
+enum acpi_irq_shared {
+	ACPI_IRQ_EXCLUSIVE,
+	ACPI_IRQ_SHARED
 };
 
-enum irq_wake {
-	IRQ_NO_WAKE,
-	IRQ_WAKE
+enum acpi_irq_wake {
+	ACPI_IRQ_NO_WAKE,
+	ACPI_IRQ_WAKE
 };
 
 struct acpi_irq {
 	unsigned int pin;
-	enum irq_mode mode;
-	enum irq_polarity polarity;
-	enum irq_shared shared;
-	enum irq_wake wake;
+	enum acpi_irq_mode mode;
+	enum acpi_irq_polarity polarity;
+	enum acpi_irq_shared shared;
+	enum acpi_irq_wake wake;
 };
 
-#define IRQ_EDGE_LOW(x) { \
+#define ACPI_IRQ_EDGE_LOW(x) { \
 	.pin = (x), \
-	.mode = IRQ_EDGE_TRIGGERED, \
-	.polarity = IRQ_ACTIVE_LOW, \
-	.shared = IRQ_EXCLUSIVE, \
-	.wake = IRQ_NO_WAKE }
+	.mode = ACPI_IRQ_EDGE_TRIGGERED, \
+	.polarity = ACPI_IRQ_ACTIVE_LOW, \
+	.shared = ACPI_IRQ_EXCLUSIVE, \
+	.wake = ACPI_IRQ_NO_WAKE }
 
-#define IRQ_EDGE_HIGH(x) { \
+#define ACPI_IRQ_EDGE_HIGH(x) { \
 	.pin = (x), \
-	.mode = IRQ_EDGE_TRIGGERED, \
-	.polarity = IRQ_ACTIVE_HIGH, \
-	.shared = IRQ_EXCLUSIVE, \
-	.wake = IRQ_NO_WAKE }
+	.mode = ACPI_IRQ_EDGE_TRIGGERED, \
+	.polarity = ACPI_IRQ_ACTIVE_HIGH, \
+	.shared = ACPI_IRQ_EXCLUSIVE, \
+	.wake = ACPI_IRQ_NO_WAKE }
 
-#define IRQ_LEVEL_LOW(x) { \
+#define ACPI_IRQ_LEVEL_LOW(x) { \
 	.pin = (x), \
-	.mode = IRQ_LEVEL_TRIGGERED, \
-	.polarity = IRQ_ACTIVE_LOW, \
-	.shared = IRQ_SHARED, \
-	.wake = IRQ_NO_WAKE }
+	.mode = ACPI_IRQ_LEVEL_TRIGGERED, \
+	.polarity = ACPI_IRQ_ACTIVE_LOW, \
+	.shared = ACPI_IRQ_SHARED, \
+	.wake = ACPI_IRQ_NO_WAKE }
 
 /* Write extended Interrupt() descriptor to SSDT AML output */
 void acpi_device_write_interrupt(const struct acpi_irq *irq);
@@ -179,8 +179,8 @@ struct acpi_gpio {
 #define ACPI_GPIO_IRQ_EDGE_HIGH(gpio) { \
 	.type = ACPI_GPIO_TYPE_INTERRUPT, \
 	.pull = ACPI_GPIO_PULL_DEFAULT, \
-	.irq.mode = IRQ_EDGE_TRIGGERED, \
-	.irq.polarity = IRQ_ACTIVE_HIGH, \
+	.irq.mode = ACPI_IRQ_EDGE_TRIGGERED, \
+	.irq.polarity = ACPI_IRQ_ACTIVE_HIGH, \
 	.pin_count = 1, \
 	.pins = { (gpio) } }
 

@@ -30,10 +30,10 @@ static void sd_fill_ssdt(struct device *dev)
 	struct acpi_gpio default_gpio = {
 		.type = ACPI_GPIO_TYPE_INTERRUPT,
 		.pull = ACPI_GPIO_PULL_NONE,
-		.irq.mode = IRQ_EDGE_TRIGGERED,
-		.irq.polarity = IRQ_ACTIVE_BOTH,
-		.irq.shared = IRQ_SHARED,
-		.irq.wake = IRQ_WAKE,
+		.irq.mode = ACPI_IRQ_EDGE_TRIGGERED,
+		.irq.polarity = ACPI_IRQ_ACTIVE_BOTH,
+		.irq.shared = ACPI_IRQ_SHARED,
+		.irq.wake = ACPI_IRQ_WAKE,
 		.interrupt_debounce_timeout = 10000, /* 100ms */
 		.pin_count = 1,
 		.pins = { config->sdcard_cd_gpio_default }

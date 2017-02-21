@@ -1299,3 +1299,26 @@ int __attribute__((weak)) acpigen_soc_clear_tx_gpio(unsigned int gpio_num)
 	acpigen_write_debug_string("clear_tx_gpio not available");
 	return -1;
 }
+
+/*
+ * Helper functions for enabling/disabling Tx GPIOs based on the GPIO
+ * polarity. These functions end up calling acpigen_soc_{set,clear}_tx_gpio to
+ * make callbacks into SoC acpigen code.
+ *
+ * Returns 0 on success and -1 on error.
+ */
+int acpigen_enable_tx_gpio(struct acpi_gpio *gpio)
+{
+	if (gpio->polarity == ACPI_GPIO_ACTIVE_HIGH)
+		return acpigen_soc_set_tx_gpio(gpio->pins[0]);
+	else
+		return acpigen_soc_clear_tx_gpio(gpio->pins[0]);
+}
+
+int acpigen_disable_tx_gpio(struct acpi_gpio *gpio)
+{
+	if (gpio->polarity == ACPI_GPIO_ACTIVE_LOW)
+		return acpigen_soc_set_tx_gpio(gpio->pins[0]);
+	else
+		return acpigen_soc_clear_tx_gpio(gpio->pins[0]);
+}

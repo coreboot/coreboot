@@ -3,6 +3,7 @@
 # Table of contents #
 - Introduction
 - Platform Interface
+- Helper routines
 - Implementation details
 - Arguments and Local Variables Management
 
@@ -55,6 +56,23 @@ adding them as AML code callbacks for the following reasons:
 3. Allows GPIO AML methods to be present under any device scope and
    gives SoC the flexibility to call them without any restrictions.
 
+# Helper routines #
+
+In order to relieve drivers of the task of implementing the same code
+for enabling/disabling Tx GPIOs based on the GPIO polarity, helper
+routines are provided which implement this common code and can be used
+directly in the driver routines:
+1. Enable Tx GPIO
+   int acpigen_enable_tx_gpio(struct acpi_gpio gpio)
+2. Disable Tx GPIO
+   int acpigen_disable_tx_gpio(struct acpi_gpio gpio)
+
+Both the above functions take as input struct acpi_gpio type and
+return -1 on error and 0 on success. These helper routines end up
+calling the platform specific acpigen_soc_{set,clear}_tx_gpio
+functions internally. Thus, all the ACPI AML calling conventions for
+the platform functions apply to these helper functions as well.
+
 # Implementation Details #
 
 ACPI library in coreboot will provide weak definitions for all the
@@ -83,7 +101,6 @@ variables.
                               set Tx to 1.                   Success = 0
  acpigen_soc_clear_tx_gpio    Generate ACPI AML code to      Error = -1
                               set Tx to 0.                   Success = 0
-
 
 Ideally, the operation column in the above table should use one or
 more functions implemented by the platform in AML code library (like

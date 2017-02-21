@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <arch/acpi.h>
+#include <arch/acpi_device.h>
 
 /* Values that can be returned for ACPI Device _STA method */
 #define ACPI_STATUS_DEVICE_PRESENT	(1 << 0)
@@ -288,5 +289,15 @@ int acpigen_soc_set_tx_gpio(unsigned int gpio_num);
 
 /* Generate ACPI AML code to set Tx value of GPIO to 0. */
 int acpigen_soc_clear_tx_gpio(unsigned int gpio_num);
+
+/*
+ * Helper functions for enabling/disabling Tx GPIOs based on the GPIO
+ * polarity. These functions end up calling acpigen_soc_{set,clear}_tx_gpio to
+ * make callbacks into SoC acpigen code.
+ *
+ * Returns 0 on success and -1 on error.
+ */
+int acpigen_enable_tx_gpio(struct acpi_gpio *gpio);
+int acpigen_disable_tx_gpio(struct acpi_gpio *gpio);
 
 #endif

@@ -512,14 +512,14 @@ void acpi_device_add_power_res(
 	/* Method (_ON, 0, Serialized) */
 	acpigen_write_method_serialized("_ON", 0);
 	if (reset_gpio)
-		acpigen_soc_set_tx_gpio(reset_gpio);
+		acpigen_enable_tx_gpio(reset);
 	if (enable_gpio) {
-		acpigen_soc_set_tx_gpio(enable_gpio);
+		acpigen_enable_tx_gpio(enable);
 		if (enable_delay_ms)
 			acpigen_write_sleep(enable_delay_ms);
 	}
 	if (reset_gpio) {
-		acpigen_soc_clear_tx_gpio(reset_gpio);
+		acpigen_disable_tx_gpio(reset);
 		if (reset_delay_ms)
 			acpigen_write_sleep(reset_delay_ms);
 	}
@@ -528,9 +528,9 @@ void acpi_device_add_power_res(
 	/* Method (_OFF, 0, Serialized) */
 	acpigen_write_method_serialized("_OFF", 0);
 	if (reset_gpio)
-		acpigen_soc_set_tx_gpio(reset_gpio);
+		acpigen_enable_tx_gpio(reset);
 	if (enable_gpio)
-		acpigen_soc_clear_tx_gpio(enable_gpio);
+		acpigen_disable_tx_gpio(enable);
 	acpigen_pop_len();		/* _OFF method */
 
 	acpigen_pop_len();		/* PowerResource PRIC */

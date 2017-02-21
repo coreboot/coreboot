@@ -206,7 +206,7 @@ chip soc/intel/skylake
 			chip drivers/i2c/generic
 				register "hid" = ""ELAN0001""
 				register "desc" = ""ELAN Touchscreen""
-				register "irq" = "IRQ_EDGE_LOW(GPP_E7_IRQ)"
+				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_E7_IRQ)"
 				device i2c 10 on end
 			end
 		end # I2C #0
@@ -214,7 +214,7 @@ chip soc/intel/skylake
 			chip drivers/i2c/generic
 				register "hid" = ""ELAN0000""
 				register "desc" = ""ELAN Touchpad""
-				register "irq" = "IRQ_EDGE_LOW(GPP_B3_IRQ)"
+				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_B3_IRQ)"
 				register "wake" = "GPE0_DW0_05"
 				device i2c 15 on end
 			end
@@ -231,7 +231,7 @@ chip soc/intel/skylake
 		device pci 19.1 off end # I2C #5
 		device pci 19.2 on
 			chip drivers/i2c/nau8825
-				register "irq" = "IRQ_LEVEL_LOW(GPP_F10_IRQ)"
+				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_F10_IRQ)"
 				register "jkdet_enable" = "1"
 				register "jkdet_pull_enable" = "1"
 				register "jkdet_pull_up" = "1"

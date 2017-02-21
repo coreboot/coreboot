@@ -201,7 +201,7 @@ chip soc/intel/skylake
 			chip drivers/i2c/generic
 				register "hid" = ""ATML0001""
 				register "desc" = ""Atmel Touchscreen""
-				register "irq" = "IRQ_EDGE_LOW(GPP_E7_IRQ)"
+				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_E7_IRQ)"
 				register "probed" = "1"
 				device i2c 4b on end
 			end
@@ -212,7 +212,7 @@ chip soc/intel/skylake
 			chip drivers/i2c/hid
 				register "generic.hid" = ""WCOM50C1""
 				register "generic.desc" = ""WCOM Digitizer""
-				register "generic.irq" = "IRQ_LEVEL_LOW(GPP_D1_IRQ)"
+				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_D1_IRQ)"
 				register "hid_desc_reg_offset" = "0x1"
 				device i2c 0x9 on end
 			end
@@ -243,7 +243,7 @@ chip soc/intel/skylake
 				register "hid" = ""10EC5663""
 				register "name" = ""RT53""
 				register "desc" = ""Realtek RT5663""
-				register "irq" = "IRQ_LEVEL_LOW(GPP_D9_IRQ)"
+				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_D9_IRQ)"
 				register "probed" = "1"
 				device i2c 13 on end
 			end

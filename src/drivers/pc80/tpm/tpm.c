@@ -936,22 +936,22 @@ static void lpc_tpm_fill_ssdt(struct device *dev)
 		 * PIRQ: Update interrupt vector with configured PIRQ
 		 * Active-Low Level-Triggered Shared
 		 */
-		struct acpi_irq tpm_irq_a = IRQ_LEVEL_LOW(CONFIG_TPM_PIRQ);
+		struct acpi_irq tpm_irq_a = ACPI_IRQ_LEVEL_LOW(CONFIG_TPM_PIRQ);
 		acpi_device_write_interrupt(&tpm_irq_a);
 	} else if (tpm_read_int_vector(0) > 0) {
 		u8 int_vec = tpm_read_int_vector(0);
 		u8 int_pol = tpm_read_int_polarity(0);
-		struct acpi_irq tpm_irq = IRQ_LEVEL_LOW(int_vec);
+		struct acpi_irq tpm_irq = ACPI_IRQ_LEVEL_LOW(int_vec);
 
 		if (int_pol & 1)
-			tpm_irq.polarity = IRQ_ACTIVE_LOW;
+			tpm_irq.polarity = ACPI_IRQ_ACTIVE_LOW;
 		else
-			tpm_irq.polarity = IRQ_ACTIVE_HIGH;
+			tpm_irq.polarity = ACPI_IRQ_ACTIVE_HIGH;
 
 		if (int_pol & 2)
-			tpm_irq.mode = IRQ_EDGE_TRIGGERED;
+			tpm_irq.mode = ACPI_IRQ_EDGE_TRIGGERED;
 		else
-			tpm_irq.mode = IRQ_LEVEL_TRIGGERED;
+			tpm_irq.mode = ACPI_IRQ_LEVEL_TRIGGERED;
 
 		acpi_device_write_interrupt(&tpm_irq);
 	}

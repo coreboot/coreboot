@@ -50,6 +50,12 @@ static void do_ram_command(pci_devfn_t dev, u8 command)
 	pci_write_config8(dev, DRAM_MISC_CTL, reg);
 }
 
+static void c7_pci_write_config8(pci_devfn_t dev, u8 reg, u8 val)
+{
+	udelay(200);
+	pci_write_config8(dev, reg, val);
+}
+
 /**
  * Configure the bus between the CPU and the northbridge. This might be able to
  * be moved to post-ram code in the future. For the most part, these registers
@@ -66,17 +72,17 @@ static void c7_cpu_setup(pci_devfn_t dev)
 {
 	/* Host bus interface registers (D0F2 0x50-0x67) */
 	/* Request phase control */
-	pci_write_config8(dev, 0x50, 0x88);
+	c7_pci_write_config8(dev, 0x50, 0x88);
 	/* CPU Interface Control */
-	pci_write_config8(dev, 0x51, 0x7a);
-	pci_write_config8(dev, 0x52, 0x6f);
+	c7_pci_write_config8(dev, 0x51, 0x7a);
+	c7_pci_write_config8(dev, 0x52, 0x6f);
 	/* Arbitration */
-	pci_write_config8(dev, 0x53, 0x88);
+	c7_pci_write_config8(dev, 0x53, 0x88);
 	/* Miscellaneous Control */
-	pci_write_config8(dev, 0x54, 0x1e);
-	pci_write_config8(dev, 0x55, 0x16);
+	c7_pci_write_config8(dev, 0x54, 0x1e);
+	c7_pci_write_config8(dev, 0x55, 0x16);
 	/* Write Policy */
-	pci_write_config8(dev, 0x56, 0x01);
+	c7_pci_write_config8(dev, 0x56, 0x01);
 	/* Miscellaneous Control */
 	/*
 	 * DRAM Operating Frequency (bits 7:5)
@@ -86,58 +92,59 @@ static void c7_cpu_setup(pci_devfn_t dev)
 	 *      110/111 : Reserved
 	 */
 	/* CPU Miscellaneous Control */
-	pci_write_config8(dev, 0x59, 0x44);
+	c7_pci_write_config8(dev, 0x59, 0x44);
+
 	/* Write Policy */
-	pci_write_config8(dev, 0x5d, 0xb2);
+	c7_pci_write_config8(dev, 0x5d, 0xb2);
 	/* Bandwidth Timer */
-	pci_write_config8(dev, 0x5e, 0x88);
+	c7_pci_write_config8(dev, 0x5e, 0x88);
 	/* CPU Miscellaneous Control */
-	pci_write_config8(dev, 0x5f, 0xc7);
+	c7_pci_write_config8(dev, 0x5f, 0xc7);
 
 	/* Line DRDY# Timing Control */
-	pci_write_config8(dev, 0x60, 0xff);
-	pci_write_config8(dev, 0x61, 0xff);
-	pci_write_config8(dev, 0x62, 0x0f);
+	c7_pci_write_config8(dev, 0x60, 0xff);
+	c7_pci_write_config8(dev, 0x61, 0xff);
+	c7_pci_write_config8(dev, 0x62, 0x0f);
 	/* QW DRDY# Timing Control */
-	pci_write_config8(dev, 0x63, 0xff);
-	pci_write_config8(dev, 0x64, 0xff);
-	pci_write_config8(dev, 0x65, 0x0f);
+	c7_pci_write_config8(dev, 0x63, 0xff);
+	c7_pci_write_config8(dev, 0x64, 0xff);
+	c7_pci_write_config8(dev, 0x65, 0x0f);
 	/* Read Line Burst DRDY# Timing Control */
-	pci_write_config8(dev, 0x66, 0xff);
-	pci_write_config8(dev, 0x67, 0x30);
+	c7_pci_write_config8(dev, 0x66, 0xff);
+	c7_pci_write_config8(dev, 0x67, 0x30);
 
 	/* Host Bus I/O Circuit (see datasheet) */
 	/* Host Address Pullup/down Driving */
-	pci_write_config8(dev, 0x70, 0x11);
-	pci_write_config8(dev, 0x71, 0x11);
-	pci_write_config8(dev, 0x72, 0x11);
-	pci_write_config8(dev, 0x73, 0x11);
+	c7_pci_write_config8(dev, 0x70, 0x11);
+	c7_pci_write_config8(dev, 0x71, 0x11);
+	c7_pci_write_config8(dev, 0x72, 0x11);
+	c7_pci_write_config8(dev, 0x73, 0x11);
 	/* Miscellaneous Control */
-	pci_write_config8(dev, 0x74, 0x35);
+	c7_pci_write_config8(dev, 0x74, 0x35);
 	/* AGTL+ I/O Circuit */
-	pci_write_config8(dev, 0x75, 0x28);
+	c7_pci_write_config8(dev, 0x75, 0x28);
 	/* AGTL+ Compensation Status */
-	pci_write_config8(dev, 0x76, 0x74);
+	c7_pci_write_config8(dev, 0x76, 0x74);
 	/* AGTL+ Auto Compensation Offest */
-	pci_write_config8(dev, 0x77, 0x00);
+	c7_pci_write_config8(dev, 0x77, 0x00);
 	/* Host FSB CKG Control */
-	pci_write_config8(dev, 0x78, 0x0a);
+	c7_pci_write_config8(dev, 0x78, 0x0a);
 	/* Address/Address Clock Output Delay Control */
-	pci_write_config8(dev, 0x79, 0xaa);
+	c7_pci_write_config8(dev, 0x79, 0xaa);
 	/* Address Strobe Input Delay Control */
-	pci_write_config8(dev, 0x7a, 0x24);
+	c7_pci_write_config8(dev, 0x7a, 0x24);
 	/* Address CKG Rising/Falling Time Control */
-	pci_write_config8(dev, 0x7b, 0xaa);
+	c7_pci_write_config8(dev, 0x7b, 0xaa);
 	/* Address CKG Clock Rising/Falling Time Control */
-	pci_write_config8(dev, 0x7c, 0x00);
+	c7_pci_write_config8(dev, 0x7c, 0x00);
 	/* Undefined (can't remember why I did this) */
-	pci_write_config8(dev, 0x7d, 0x6d);
-	pci_write_config8(dev, 0x7e, 0x00);
-	pci_write_config8(dev, 0x7f, 0x00);
-	pci_write_config8(dev, 0x80, 0x1b);
-	pci_write_config8(dev, 0x81, 0x0a);
-	pci_write_config8(dev, 0x82, 0x0a);
-	pci_write_config8(dev, 0x83, 0x0a);
+	c7_pci_write_config8(dev, 0x7d, 0x6d);
+	c7_pci_write_config8(dev, 0x7e, 0x00);
+	c7_pci_write_config8(dev, 0x7f, 0x00);
+	c7_pci_write_config8(dev, 0x80, 0x1b);
+	c7_pci_write_config8(dev, 0x81, 0x0a);
+	c7_pci_write_config8(dev, 0x82, 0x0a);
+	c7_pci_write_config8(dev, 0x83, 0x0a);
 }
 
 /**

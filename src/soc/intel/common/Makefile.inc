@@ -13,6 +13,7 @@ romstage-$(CONFIG_SOC_INTEL_COMMON_LPSS_I2C) += lpss_i2c.c
 romstage-$(CONFIG_SOC_INTEL_COMMON_RESET) += reset.c
 romstage-y += util.c
 romstage-$(CONFIG_MMA) += mma.c
+romstage-y += smbios.c
 
 postcar-y += util.c
 postcar-$(CONFIG_SOC_INTEL_COMMON_RESET) += reset.c

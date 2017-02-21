@@ -205,7 +205,7 @@ chip soc/intel/skylake
 			chip drivers/i2c/generic
 				register "hid" = ""ATML0001""
 				register "desc" = ""Atmel Touchscreen""
-				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_E7_IRQ)"
+				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_E7_IRQ)"
 				register "probed" = "1"
 				device i2c 4b on end
 			end

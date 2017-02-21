@@ -459,6 +459,9 @@ struct soc_intel_skylake_config {
 	u8 SlowSlewRateForIa;
 	u8 SlowSlewRateForGt;
 	u8 SlowSlewRateForSa;
+
+	/* Enable SGX feature */
+	u8 sgx_enable;
 };
 
 typedef struct soc_intel_skylake_config config_t;

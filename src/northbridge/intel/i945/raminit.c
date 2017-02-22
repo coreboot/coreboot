@@ -1238,15 +1238,15 @@ static void sdram_program_dll_timings(struct sys_info *sysinfo)
 	/* We drive both channels with the same speed */
 	if (IS_ENABLED(CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GM)) {
 		switch (sysinfo->memory_frequency) {
-			case 400: chan0dll = 0x26262626; chan1dll = 0x26262626; break; /* 400MHz */
-			case 533: chan0dll = 0x22222222; chan1dll = 0x22222222; break; /* 533MHz */
-			case 667: chan0dll = 0x11111111; chan1dll = 0x11111111; break; /* 667MHz */
+		case 400: chan0dll = 0x26262626; chan1dll = 0x26262626; break; /* 400MHz */
+		case 533: chan0dll = 0x22222222; chan1dll = 0x22222222; break; /* 533MHz */
+		case 667: chan0dll = 0x11111111; chan1dll = 0x11111111; break; /* 667MHz */
 		}
 	} else if (IS_ENABLED(CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GC)) {
 		switch (sysinfo->memory_frequency) {
-			case 400: chan0dll = 0x33333333; chan1dll = 0x33333333; break; /* 400MHz */
-			case 533: chan0dll = 0x24242424; chan1dll = 0x24242424; break; /* 533MHz */
-			case 667: chan0dll = 0x25252525; chan1dll = 0x25252525; break; /* 667MHz */
+		case 400: chan0dll = 0x33333333; chan1dll = 0x33333333; break; /* 400MHz */
+		case 533: chan0dll = 0x24242424; chan1dll = 0x24242424; break; /* 533MHz */
+		case 667: chan0dll = 0x25252525; chan1dll = 0x25252525; break; /* 667MHz */
 		}
 	}
 
@@ -1258,7 +1258,7 @@ static void sdram_program_dll_timings(struct sys_info *sysinfo)
 		if (IS_ENABLED(CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GC)) {
 			MCHBAR8(C0R0B00DQST + (i * 0x10) + 8) = chan0dll & 0xff;
 			MCHBAR8(C1R0B00DQST + (i * 0x10) + 8) = chan1dll & 0xff;
-                }
+		}
 	}
 }
 

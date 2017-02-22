@@ -1,5 +1,8 @@
 ifeq ($(CONFIG_SOC_INTEL_COMMON),y)
 
+subdirs-y += basecode/
+subdirs-y += block/
+
 bootblock-y += util.c
 
 verstage-$(CONFIG_SOC_INTEL_COMMON_LPSS_I2C) += lpss_i2c.c

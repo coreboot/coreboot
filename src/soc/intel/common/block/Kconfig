@@ -1,0 +1,11 @@
+config SOC_INTEL_COMMON_BLOCK
+	bool
+	help
+	  SoC driver for intel common IP code
+
+if SOC_INTEL_COMMON_BLOCK
+
+comment "Intel SoC Common IP Code"
+source "src/soc/intel/common/block/*/Kconfig"
+
+endif

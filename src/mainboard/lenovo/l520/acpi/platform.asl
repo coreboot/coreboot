@@ -24,5 +24,7 @@ Method(_WAK,1)
 
 Method(_PTS,1)
 {
+	\_SB.PCI0.LPCB.EC.MUTE(1)
+	\_SB.PCI0.LPCB.EC.USBP(0)
 	\_SB.PCI0.LPCB.EC.RADI(0)
 }

@@ -22,6 +22,8 @@ Method(_PTS,1)
 {
 	// Call a trap so SMI can prepare for Sleep as well.
 	// TRAP(0x55)
+	\_SB.PCI0.LPCB.EC.MUTE(1)
+	\_SB.PCI0.LPCB.EC.USBP(0)
 	\_SB.PCI0.LPCB.EC.RADI(0)
 }
 

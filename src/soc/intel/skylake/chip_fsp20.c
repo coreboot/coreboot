@@ -220,6 +220,10 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->PchPmPwrBtnOverridePeriod =
 				config->PmConfigPwrBtnOverridePeriod;
 	params->PchPmPwrCycDur = config->PmConfigPwrCycDur;
+
+	/* Indicate whether platform supports Voltage Margining */
+	params->PchPmSlpS0VmEnable = config->PchPmSlpS0VmEnable;
+
 	params->PchSirqEnable = config->SerialIrqConfigSirqEnable;
 	params->PchSirqMode = config->SerialIrqConfigSirqMode;
 

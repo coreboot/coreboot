@@ -58,7 +58,7 @@ void pwm_regulator_configure(enum pwm_regulator pwm, int millivolt)
 	    (IS_ENABLED(CONFIG_BOARD_GOOGLE_GRU) && board_id() < 2)) {
 		voltage_min = PWM_DESIGN_VOLTAGE_MIN_OUTDATED;
 		voltage_max = PWM_DESIGN_VOLTAGE_MAX_OUTDATED;
-	} else if (IS_ENABLED(CONFIG_BOARD_GOOGLE_KEVIN) && board_id() >= 6){
+	} else if (IS_ENABLED(CONFIG_BOARD_GOOGLE_KEVIN) && board_id() >= 6) {
 		voltage_min = kevin6_pwm_design_voltage[pwm][0];
 		voltage_max = kevin6_pwm_design_voltage[pwm][1];
 	}

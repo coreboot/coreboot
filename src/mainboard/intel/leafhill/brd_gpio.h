@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2015-2016 Intel Corporation. All Rights Reserved.
+ * Copyright (C) 2017 Intel Corporation. All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,8 +14,6 @@
  */
 
 #include <soc/gpio.h>
-
-#if ENV_ROMSTAGE
 
 static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPIO_134, NATIVE, DEEP, NF2), /* ISH_I2C0_SDA/IO-OD */
@@ -48,15 +46,4 @@ static const struct pad_config gpio_table[] = {
 
 	PAD_CFG_NF(SMB_CLK, NATIVE, DEEP, NF1),
 	PAD_CFG_NF(SMB_DATA, NATIVE, DEEP, NF1),
-	PAD_CFG_NF(LPC_ILB_SERIRQ, NATIVE, DEEP, NF1),
-	PAD_CFG_NF(LPC_CLKOUT0, NATIVE, DEEP, NF1),
-	PAD_CFG_NF(LPC_CLKOUT1, NATIVE, DEEP, NF1),
-	PAD_CFG_NF(LPC_AD0, NATIVE, DEEP, NF1),
-	PAD_CFG_NF(LPC_AD1, NATIVE, DEEP, NF1),
-	PAD_CFG_NF(LPC_AD2, NATIVE, DEEP, NF1),
-	PAD_CFG_NF(LPC_AD3, NATIVE, DEEP, NF1),
-	PAD_CFG_NF(LPC_CLKRUNB, NATIVE, DEEP, NF1),
-	PAD_CFG_NF(LPC_FRAMEB, NATIVE, DEEP, NF1),
 };
-
-#endif

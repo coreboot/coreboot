@@ -1,5 +1,5 @@
 {
-	/* two Samsung K4B4G1646D-BYK0 chips */
+	/* two Samsung K4B4G1646D-BYK0/K4B4G1646E-BYK0/K4B4G1646Q-HYK0 chips */
         {
                 {
                         .rank = 0x1,

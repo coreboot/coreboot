@@ -384,6 +384,12 @@ INTELMETOOL
 M:	Philipp Deppenwiese <zaolin.daisuki@gmail.com>
 F:	util/intelmetool/
 
+ME_CLEANER
+M:	Nicola Corna <nicola@corna.info>
+W:	https://github.com/corna/me_cleaner
+S:	Maintained
+F:	util/me_cleaner/
+
 IFDTOOL
 M:	Stefan Reinauer <stefan.reinauer@coreboot.org>
 F:	util/ifdtool/

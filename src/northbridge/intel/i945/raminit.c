@@ -1227,7 +1227,7 @@ static void sdram_enable_rcomp(void)
 
 static void sdram_program_dll_timings(struct sys_info *sysinfo)
 {
-	u32 chan0dll = 0, chan1dll = 0;
+	u32 channeldll = 0;
 	int i;
 
 	printk(BIOS_DEBUG, "Programming DLL Timings...\n");
@@ -1238,26 +1238,26 @@ static void sdram_program_dll_timings(struct sys_info *sysinfo)
 	/* We drive both channels with the same speed */
 	if (IS_ENABLED(CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GM)) {
 		switch (sysinfo->memory_frequency) {
-		case 400: chan0dll = 0x26262626; chan1dll = 0x26262626; break; /* 400MHz */
-		case 533: chan0dll = 0x22222222; chan1dll = 0x22222222; break; /* 533MHz */
-		case 667: chan0dll = 0x11111111; chan1dll = 0x11111111; break; /* 667MHz */
+		case 400: channeldll = 0x26262626; break;
+		case 533: channeldll = 0x22222222; break;
+		case 667: channeldll = 0x11111111; break;
 		}
 	} else if (IS_ENABLED(CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GC)) {
 		switch (sysinfo->memory_frequency) {
-		case 400: chan0dll = 0x33333333; chan1dll = 0x33333333; break; /* 400MHz */
-		case 533: chan0dll = 0x24242424; chan1dll = 0x24242424; break; /* 533MHz */
-		case 667: chan0dll = 0x25252525; chan1dll = 0x25252525; break; /* 667MHz */
+		case 400: channeldll = 0x33333333; break;
+		case 533: channeldll = 0x24242424; break;
+		case 667: channeldll = 0x25252525; break;
 		}
 	}
 
 	for (i = 0; i < 4; i++) {
-		MCHBAR32(C0R0B00DQST + (i * 0x10) + 0) = chan0dll;
-		MCHBAR32(C0R0B00DQST + (i * 0x10) + 4) = chan0dll;
-		MCHBAR32(C1R0B00DQST + (i * 0x10) + 0) = chan1dll;
-		MCHBAR32(C1R0B00DQST + (i * 0x10) + 4) = chan1dll;
+		MCHBAR32(C0R0B00DQST + (i * 0x10) + 0) = channeldll;
+		MCHBAR32(C0R0B00DQST + (i * 0x10) + 4) = channeldll;
+		MCHBAR32(C1R0B00DQST + (i * 0x10) + 0) = channeldll;
+		MCHBAR32(C1R0B00DQST + (i * 0x10) + 4) = channeldll;
 		if (IS_ENABLED(CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GC)) {
-			MCHBAR8(C0R0B00DQST + (i * 0x10) + 8) = chan0dll & 0xff;
-			MCHBAR8(C1R0B00DQST + (i * 0x10) + 8) = chan1dll & 0xff;
+			MCHBAR8(C0R0B00DQST + (i * 0x10) + 8) = channeldll & 0xff;
+			MCHBAR8(C1R0B00DQST + (i * 0x10) + 8) = channeldll & 0xff;
 		}
 	}
 }

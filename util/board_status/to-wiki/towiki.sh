@@ -326,7 +326,7 @@ EOF
 			        socket_nice="?"
 				;;
 			INTEL_SOCKET_RPGA989|INTEL_SOCKET_LGA1155|INTEL_SOCKET_RPGA988B)
-			        socket_nice="`echo $socket | sed 's,INTEL_SOCKET_,Socket ,g'`"
+			        socket_nice="`echo $cpu | sed 's,INTEL_SOCKET_,Socket ,g'`"
 				case $northbridge in
 					INTEL_HASWELL)
 						cpu_nice="Intel® 4th Gen (Haswell) Core i3/i5/i7";;

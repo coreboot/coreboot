@@ -16,6 +16,8 @@
 #ifndef _MEMORY_INFO_H_
 #define _MEMORY_INFO_H_
 
+#include <stdint.h>
+
 /*
  * If this table is filled and put in CBMEM,
  * then these info in CBMEM will be used to generate smbios type 17 table

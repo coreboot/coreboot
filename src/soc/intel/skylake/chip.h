@@ -333,6 +333,14 @@ struct soc_intel_skylake_config {
 	 * Values: 0x0 - 4s, 0x1 - 6s, 0x2 - 8s, 0x3 - 10s, 0x4 - 12s, 0x5 - 14s
 	 */
 	u8 PmConfigPwrBtnOverridePeriod;
+
+	/*
+	 * PCH Pm Slp S0 Voltage Margining Enable
+	 * Indicates platform supports VCCPrim_Core Voltage Margining
+	 * in SLP_S0# asserted state.
+	 */
+	u8 PchPmSlpS0VmEnable;
+
 	/*
 	 * Reset Power Cycle Duration could be customized in the unit of second.
 	 * PCH HW default is 4 seconds, and range is 1~4 seconds.

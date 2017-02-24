@@ -226,6 +226,15 @@ cbfs-files-$(CONFIG_SORTBOOTORDER_SECONDARY_PAYLOAD) += img/setup
 img/setup-file := payloads/external/sortbootorder/sortbootorder/sortbootorder.elf
 img/setup-type := payload
 
+# sgabios
+
+payloads/external/sgabios/sgabios.bin sgabios:
+	$(MAKE) -C payloads/external/sgabios
+
+cbfs-files-y += vgaroms/sgabios.bin
+vgaroms/sgabios.bin-file := payloads/external/sgabios/sgabios.bin
+vgaroms/sgabios.bin-type := raw
+
 # iPXE
 
 PXE_ROM_PCI_ID:=$(subst $(comma),,$(CONFIG_PXE_ROM_ID))

@@ -31,7 +31,8 @@ payloads/external/U-Boot \
 payloads/external/Memtest86Plus \
 payloads/external/iPXE \
 payloads/external/tint \
-payloads/external/sortbootorder
+payloads/external/sortbootorder \
+payloads/external/sgabios
 
 payloads/coreinfo/build/coreinfo.elf coreinfo:
 	$(MAKE) -C payloads/coreinfo defaultbuild

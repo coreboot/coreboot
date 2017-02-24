@@ -183,6 +183,10 @@ static void acpi_create_gnvs(struct global_nvs_t *gnvs)
 	/* Assign address of PERST_0 if GPIO is defined in devicetree */
 	if (cfg->prt0_gpio != GPIO_PRT0_UDEF)
 		gnvs->prt0 = (uintptr_t)gpio_dwx_address(cfg->prt0_gpio);
+
+	/* Assign sdcard cd address if GPIO is defined in devicetree */
+	if (cfg->sdcard_cd_gpio)
+		gnvs->scd0 = (uintptr_t)gpio_dwx_address(cfg->sdcard_cd_gpio);
 }
 
 /* Save wake source information for calculating ACPI _SWS values */

@@ -113,6 +113,20 @@ static const char *soc_acpi_name(struct device *dev)
 	return NULL;
 }
 
+static void pci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+{
+	if (!vendor || !device)
+		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
+				pci_read_config32(dev, PCI_VENDOR_ID));
+	else
+		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
+				(device << 16) | vendor);
+}
+
+struct pci_operations soc_pci_ops = {
+	.set_subsystem = &pci_set_subsystem
+};
+
 static void pci_domain_set_resources(device_t dev)
 {
        assign_resources(dev->link_list);

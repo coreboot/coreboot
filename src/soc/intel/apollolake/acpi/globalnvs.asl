@@ -39,6 +39,7 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	NHLA,	64,     // 0x19 - 0x20 - NHLT Address
 	NHLL,	32,     // 0x21 - 0x24 - NHLT Length
 	PRT0,	32,     // 0x25 - 0x28 - PERST_0 Address
+	SCD0,	32,     // 0x29 - 0x2D - SD_CD Address
 
 	/* ChromeOS stuff (0x100 -> 0xfff, size 0xeff) */
 	Offset (0x100),

@@ -401,6 +401,13 @@ fam15_enable_stack_hook_exit:
 *   Return any family specific controls to their 'standard'
 *   settings for using cache with main memory.
 *
+* Note: Customized for coreboot:
+*   A wbinvd is used to send cache to memory.  The existing stack is preserved
+*   at its original location and additional information is preserved (e.g.
+*   coreboot CAR globals, heap structures, etc.). This implementation should
+*   NOT be used with S3 resume IF the stack/cache area is not reserved and
+*   over system memory.
+*
 * Inputs:
 *       ESI - [31:24] flags; [15,8]= Node#; [7,0]= core#
 * Outputs:
@@ -638,7 +645,14 @@ fam15_disable_stack_remote_read_exit:
     _RDMSR
     btr     $INVD_WBINVD, %eax            # Disable INVD -> WBINVD conversion
     _WRMSR
-    wbinvd      #bao                          # Clear the cache tag RAMs
+
+    #--------------------------------------------------------------------------
+    # Send cache to memory. Preserve stack and coreboot CAR globals.
+    # This shouldn't be used with S3 resume IF the stack/cache area is
+    # not reserved and over system memory.
+    #--------------------------------------------------------------------------
+    wbinvd
+
 #    #.if (bh == 01h) || (bh == 03h)      ; Is this TN or KM?
 #    cmp   $01, %bh
 #    jz    4f
@@ -1285,8 +1299,17 @@ ClearTheStack:                          # Stack base is in SS, stack pointer is 
 .endm
 
 /*****************************************************************************
-* AMD_DISABLE_STACK:  Destroy the stack inside the cache. This routine
-*                     should only be executed on the BSP
+* AMD_DISABLE_STACK:  Implementation is modified for coreboot from
+*                     the original AMD intent.  A WBINVD is used in the HOOK
+*                     to send dirty cache contents to DRAM backing before
+*                     disabling cache-as-ram.  This is not safe for S3 resume.
+*
+*                     todo:
+*                       * rework PI/AGESA source to set DRAM to UC to send
+*                         writes directly to memory
+*                       * move DCACHE_BASE or use postcar stage for teardown
+*                         to eliminate car_migrated problem that will occur
+*                         after wbinvd is changed back to invd
 *
 *   In:
 *       none

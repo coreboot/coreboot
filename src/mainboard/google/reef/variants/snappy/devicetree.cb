@@ -17,6 +17,9 @@ chip soc/intel/apollolake
 	# If the Board does not have PERST_0, assign GPIO_PRT0_UDEF
 	register "prt0_gpio" = "GPIO_122"
 
+	# GPIO for SD card detect
+	register "sdcard_cd_gpio" = "GPIO_177"
+
 	# EMMC TX DATA Delay 1
 	# Refer to EDS-Vol2-22.3.
 	# [14:8] steps of delay for HS400, each 125ps.

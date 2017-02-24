@@ -66,11 +66,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	/* TODO: Disable cache is not ok. */
 	disable_cache_as_ram();
 
-	if (acpi_is_wakeup_s4()) {
-		outb(0xEE, PM_INDEX);
-		outb(0x8, PM_DATA);
-	}
-
 	post_code(0x50);
 	copy_and_run();
 

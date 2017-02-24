@@ -2385,8 +2385,8 @@ static void sdram_enhanced_addressing_mode(struct sys_info *sysinfo)
 
 	chan0_populated =  (sysinfo->dimm[0] != SYSINFO_DIMM_NOT_POPULATED ||
 			sysinfo->dimm[1] != SYSINFO_DIMM_NOT_POPULATED);
-	chan1_populated = (sysinfo->dimm[0] != SYSINFO_DIMM_NOT_POPULATED ||
-			sysinfo->dimm[1] != SYSINFO_DIMM_NOT_POPULATED);
+	chan1_populated = (sysinfo->dimm[2] != SYSINFO_DIMM_NOT_POPULATED ||
+			sysinfo->dimm[3] != SYSINFO_DIMM_NOT_POPULATED);
 	chan0_dualsided = (sysinfo->banksize[1] || sysinfo->banksize[3]);
 	chan1_dualsided = (sysinfo->banksize[5] || sysinfo->banksize[7]);
 

@@ -120,6 +120,11 @@ struct soc_intel_apollolake_config {
 	/* USB2 eye diagram settings per port */
 	struct usb2_eye_per_port usb2eye[APOLLOLAKE_USB2_PORT_MAX];
 
+	/* GPIO SD card detect pin */
+	unsigned int sdcard_cd_gpio;
 };
+
+typedef struct soc_intel_apollolake_config config_t;
+extern struct pci_operations soc_pci_ops;
 
 #endif	/* _SOC_APOLLOLAKE_CHIP_H_ */

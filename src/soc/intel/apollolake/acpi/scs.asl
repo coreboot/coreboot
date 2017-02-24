@@ -22,6 +22,9 @@ Scope (\_SB.PCI0) {
 	Field (SBMM, DWordAcc, NoLock, Preserve)
 	{
 		GENR, 32,
+		Offset (0x08),
+		,  5, /* bit[5] represents Force Card Detect SD Card */
+		GRR3,  1, /* GPPRVRW3 for SD Card detect Bypass. It's active high */
 	}
 
 	/* SCC power gate control method, this method must be serialized as
@@ -64,4 +67,39 @@ Scope (\_SB.PCI0) {
 			^^SCPG(1,0x00000041)
 		}
 	} /* Device (SDHA) */
+
+	/* SD CARD */
+	Device (SDCD)
+	{
+		Name (_ADR, 0x001B0000)
+
+		Method (_PS0, 0, NotSerialized)
+		{
+			/* Check SDCard CD pin address is valid */
+			If (LNotEqual (SCD0, 0))
+			{
+				/* Store DW0 into local0 to get rxstate of GPIO */
+				Store (\_SB.GPC0 (\SCD0), Local0)
+				/* Extract rxstate [bit 1] of sdcard card detect pin */
+				And (Local0, PAD_CFG0_RX_STATE, Local0)
+				/* If the sdcard is present, rxstate is low.
+				 * If sdcard is not present, rxstate is High.
+				 * Write the inverted value of rxstate to GRR3.
+				 */
+				If (LEqual (Local0, 0)) {
+					Store (1, ^^GRR3)
+				} Else {
+					Store (0, ^^GRR3)
+				}
+				Sleep (2)
+			}
+		}
+
+		Method (_PS3, 0, NotSerialized)
+		{
+			/* Clear GRR3 to Power Gate SD Controller */
+			Store (0, ^^GRR3)
+		}
+
+	} /* Device (SDCD) */
 }

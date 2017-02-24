@@ -85,6 +85,7 @@ ramstage-y += sram.c
 ramstage-y += spi.c
 ramstage-y += xdci.c
 ramstage-y += xhci.c
+ramstage-y += sd.c
 
 postcar-y += flash_ctrlr.c
 postcar-y += memmap.c

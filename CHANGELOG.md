@@ -5,7 +5,29 @@ Releases 4.0.x are based on PC Engines 20160304 release.
 Releases 4.5.x are based on mainline support submitted in
 [this gerrit ref](https://review.coreboot.org/#/c/14138/).
 
+## Quick build instructions
+1. After cloning run `make crossgcc-i386` to build the toolchain.
+2. `make menuconfig` and set:
+  * `Mainboard/Mainboard vendor` → `PCEngines`
+  * `Mainboard/Mainboard model` → `APU2` or `APU3`
+3. `make`
+
 ## [Unreleased]
+
+## [v4.5.5] - 2017-02-24
+### Added
+- sgabios video oprom is added by default (v.1.0.0 pcengines version)
+
+### Changed
+- SeaBIOS up to 1.10.0.1
+- sortbootorder up to 4.5.4
+- coreboot rebased to the latest mainline
+
+### Fixed
+- Asmedia ASM106x controllers work in the mPCIe1 slot
+
+### Issues
+- Asmedia ASM106x controllers are not working in the mPCIe2 slot
 
 ## [v4.5.4] - 2017-01-24
 ### Added
@@ -31,6 +53,7 @@ Releases 4.5.x are based on mainline support submitted in
 - turn off D4 and D5 leds on boot
 - enable power on after power failure
 
-[Unreleased]: https://github.com/pcengines/coreboot/compare/v4.5.4...coreboot-4.5.x
-[v4.5.4]: https://github.com/pcengines/coreboot/compare/v4.5.3...v4.5.4
+[Unreleased]: https://github.com/pcengines/coreboot/compare/v4.5.5...coreboot-4.5.x
+[v4.5.5]: https://github.com/pcengines/coreboot/compare/v4.5.5...v4.5.4
+[v4.5.4]: https://github.com/pcengines/coreboot/compare/v4.5.4...v4.5.3
 [v4.5.3]: https://github.com/pcengines/coreboot/compare/v4.5.3...v4.5.2

@@ -24,7 +24,7 @@
 #include <lib.h>
 #include <spd.h>
 #include <cpu/amd/model_fxx_rev.h>
-#include "southbridge/nvidia/mcp55/early_smbus.c" // for enable the FAN
+#include <southbridge/nvidia/mcp55/mcp55.h> // for enable the FAN
 #include <northbridge/amd/amdk8/raminit.h>
 #include <delay.h>
 #include <cpu/x86/lapic.h>

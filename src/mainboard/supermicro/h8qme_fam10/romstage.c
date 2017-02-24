@@ -41,7 +41,7 @@
 #include <cpu/amd/family_10h-family_15h/init_cpus.h>
 #include <arch/early_variables.h>
 #include <cbmem.h>
-#include "southbridge/nvidia/mcp55/early_smbus.c" // for enable the FAN
+#include <southbridge/nvidia/mcp55/mcp55.h> // for enable the FAN
 #include "southbridge/nvidia/mcp55/early_ctrl.c"
 
 #include "resourcemap.c"

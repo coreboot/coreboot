@@ -30,6 +30,16 @@ void mcp55_enable(device_t dev);
 extern struct pci_operations mcp55_pci_ops;
 #else
 void enable_fid_change_on_sb(unsigned sbbusn, unsigned sbdn);
+void enable_smbus(void);
+int smbus_recv_byte(unsigned device);
+int smbus_send_byte(unsigned device, unsigned char val);
+int smbus_read_byte(unsigned device, unsigned address);
+int smbus_write_byte(unsigned device, unsigned address, unsigned char val);
+int smbusx_recv_byte(unsigned smb_index, unsigned device);
+int smbusx_send_byte(unsigned smb_index, unsigned device, unsigned char val);
+int smbusx_read_byte(unsigned smb_index, unsigned device, unsigned address);
+int smbusx_write_byte(unsigned smb_index, unsigned device, unsigned address,
+		unsigned char val);
 #endif
 
 #endif

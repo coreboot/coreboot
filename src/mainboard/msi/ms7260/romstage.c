@@ -26,7 +26,7 @@
 #include <pc80/mc146818rtc.h>
 #include <console/console.h>
 #include <cpu/amd/model_fxx_rev.h>
-#include "southbridge/nvidia/mcp55/early_smbus.c"
+#include <southbridge/nvidia/mcp55/mcp55.h>
 #include <northbridge/amd/amdk8/raminit.h>
 #include <delay.h>
 #include <lib.h>

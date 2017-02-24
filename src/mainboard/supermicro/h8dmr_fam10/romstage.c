@@ -42,7 +42,7 @@
 #include <arch/early_variables.h>
 #include <cbmem.h>
 
-#include "southbridge/nvidia/mcp55/early_smbus.c" // for enable the FAN
+#include <southbridge/nvidia/mcp55/mcp55.h> // for enable the FAN
 #include "southbridge/nvidia/mcp55/early_ctrl.c"
 
 #include "resourcemap.c"

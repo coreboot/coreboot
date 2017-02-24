@@ -29,7 +29,7 @@ Releases 4.5.x are based on mainline support submitted in
 
 ### Known issues
 - Asmedia ASM106x controllers are not working in the mPCIe2 slot
-- Some XHCI USB stability after soft-reset issues
+- Some XHCI USB booting stability issues after soft-reset
 
 ## [v4.5.4] - 2017-01-24
 ### Added

@@ -180,7 +180,7 @@ static void mainboard_enable(device_t dev)
 		total_mem += (bsp_topmem2() / (1024 * 1024)) - 4 * 1024;
 
 	printk(BIOS_ALERT, CONFIG_MAINBOARD_PART_NUMBER "\n");
-	printk(BIOS_ALERT, "coreboot build %s\n", COREBOOT_BUILD);
+	printk(BIOS_ALERT, "coreboot build %s\n", COREBOOT_DMI_DATE);
 	printk(BIOS_ALERT, "%d MB", total_mem);
 
 	//

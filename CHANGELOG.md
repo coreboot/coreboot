@@ -25,9 +25,11 @@ Releases 4.5.x are based on mainline support submitted in
 
 ### Fixed
 - Asmedia ASM106x controllers work in the mPCIe1 slot
+- Memory size shown during boot corrected in 2GB SKU devices
 
-### Issues
+### Known issues
 - Asmedia ASM106x controllers are not working in the mPCIe2 slot
+- Some XHCI USB stability after soft-reset issues
 
 ## [v4.5.4] - 2017-01-24
 ### Added

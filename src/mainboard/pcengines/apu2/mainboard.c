@@ -175,12 +175,13 @@ static void mainboard_enable(device_t dev)
 	config_gpio_mux();
 
 	setup_bsp_ramtop();
-	u32 top_mem = bsp_topmem() / (1024 * 1024);
-	u32 top_mem2 = (bsp_topmem2() / (1024 * 1024)) - 4 * 1024;
+	u32 total_mem = bsp_topmem() / (1024 * 1024);
+	if (bsp_topmem2() > 0)
+		total_mem += (bsp_topmem2() / (1024 * 1024)) - 4 * 1024;
 
 	printk(BIOS_ALERT, CONFIG_MAINBOARD_PART_NUMBER "\n");
 	printk(BIOS_ALERT, "coreboot build %s\n", COREBOOT_BUILD);
-	printk(BIOS_ALERT, "%d MB", top_mem+top_mem2);
+	printk(BIOS_ALERT, "%d MB", total_mem);
 
 	//
 	// Read memory configuration from GPIO 49 and 50

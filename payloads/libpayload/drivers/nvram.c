@@ -2,6 +2,7 @@
  * This file is part of the libpayload project.
  *
  * Copyright (C) 2008 Uwe Hermann <uwe@hermann-uwe.de>
+ * Copyright (C) 2017 Patrick Rudolph <siro@das-labor.org>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -111,23 +112,51 @@ int nvram_updating(void)
  */
 void rtc_read_clock(struct tm *time)
 {
+	u16 timeout = 10000;
+	u8 statusB;
+	u8 reg8;
+
 	memset(time, 0, sizeof(*time));
 
-	while(nvram_updating());
+	while (nvram_updating())
+		if (!timeout--)
+			return;
 
-	time->tm_mon = bcd2dec(nvram_read(NVRAM_RTC_MONTH)) - 1;
-	time->tm_sec = bcd2dec(nvram_read(NVRAM_RTC_SECONDS));
-	time->tm_min = bcd2dec(nvram_read(NVRAM_RTC_MINUTES));
-	time->tm_mday = bcd2dec(nvram_read(NVRAM_RTC_DAY));
-	time->tm_hour = bcd2dec(nvram_read(NVRAM_RTC_HOURS));
+	statusB = nvram_read(NVRAM_RTC_STATUSB);
+
+	if (!(statusB & NVRAM_RTC_FORMAT_BINARY)) {
+		time->tm_mon = bcd2dec(nvram_read(NVRAM_RTC_MONTH)) - 1;
+		time->tm_sec = bcd2dec(nvram_read(NVRAM_RTC_SECONDS));
+		time->tm_min = bcd2dec(nvram_read(NVRAM_RTC_MINUTES));
+		time->tm_mday = bcd2dec(nvram_read(NVRAM_RTC_DAY));
+
+		if (!(statusB & NVRAM_RTC_FORMAT_24HOUR)) {
+			reg8 = nvram_read(NVRAM_RTC_HOURS);
+			time->tm_hour = bcd2dec(reg8 & 0x7f);
+			time->tm_hour += (reg8 & 0x80) ? 12 : 0;
+			time->tm_hour %= 24;
+		} else
+			time->tm_hour = bcd2dec(nvram_read(NVRAM_RTC_HOURS));
+		time->tm_year = bcd2dec(nvram_read(NVRAM_RTC_YEAR));
+	} else {
+		time->tm_mon = nvram_read(NVRAM_RTC_MONTH) - 1;
+		time->tm_sec = nvram_read(NVRAM_RTC_SECONDS);
+		time->tm_min = nvram_read(NVRAM_RTC_MINUTES);
+		time->tm_mday = nvram_read(NVRAM_RTC_DAY);
+		if (!(statusB & NVRAM_RTC_FORMAT_24HOUR)) {
+			reg8 = nvram_read(NVRAM_RTC_HOURS);
+			time->tm_hour = reg8 & 0x7f;
+			time->tm_hour += (reg8 & 0x80) ? 12 : 0;
+			time->tm_hour %= 24;
+		} else
+			time->tm_hour = nvram_read(NVRAM_RTC_HOURS);
+		time->tm_year = nvram_read(NVRAM_RTC_YEAR);
+	}
 
 	/* Instead of finding the century register,
 	   we just make an assumption that if the year value is
 	   less then 80, then it is 2000+
 	*/
-
-	time->tm_year = bcd2dec(nvram_read(NVRAM_RTC_YEAR));
-
 	if (time->tm_year < 80)
 		time->tm_year += 100;
 }

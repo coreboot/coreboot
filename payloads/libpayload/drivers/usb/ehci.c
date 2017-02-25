@@ -867,6 +867,9 @@ ehci_pci_init (pcidev_t addr)
 
 	controller = ehci_init((unsigned long)reg_base);
 
+	if (controller)
+		controller->pcidev = addr;
+
 	return controller;
 }
 #endif

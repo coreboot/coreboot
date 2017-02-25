@@ -153,6 +153,7 @@ uhci_pci_init (pcidev_t addr)
 	u16 reg16;
 
 	hci_t *controller = new_controller ();
+	controller->pcidev = addr;
 	controller->instance = xzalloc(sizeof (uhci_t));
 	controller->type = UHCI;
 	controller->start = uhci_start;

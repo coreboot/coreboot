@@ -17,7 +17,6 @@
 #include <string.h>
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
-#include <arch/acpi.h>
 #include <arch/io.h>
 #include <arch/stages.h>
 #include <device/pnp_def.h>
@@ -32,7 +31,6 @@
 #include <cpu/x86/lapic.h>
 #include <southbridge/amd/common/amd_defs.h>
 #include <southbridge/amd/pi/hudson/hudson.h>
-#include <cpu/amd/pi/s3_resume.h>
 #include "cbmem.h"
 #include "superio/fintek/f81216h/f81216h.h"
 
@@ -88,29 +86,16 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	post_code(0x39);
 	AGESAWRAPPER(amdinitearly);
-	int s3resume = acpi_is_wakeup_s3();
-	if (!s3resume) {
-		post_code(0x40);
-		AGESAWRAPPER(amdinitpost);
 
-		post_code(0x41);
-		AGESAWRAPPER(amdinitenv);
-		/*
-		  If code hangs here, please check cahaltasm.S
-		*/
-		disable_cache_as_ram();
-	}
-	else if (IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)) { /* S3 detect */
-		printk(BIOS_INFO, "S3 detected\n");
+	post_code(0x40);
+	AGESAWRAPPER(amdinitpost);
 
-		post_code(0x60);
-		AGESAWRAPPER(amdinitresume);
-
-		AGESAWRAPPER(amds3laterestore);
-
-		post_code(0x61);
-		prepare_for_resume();
-	}
+	post_code(0x41);
+	AGESAWRAPPER(amdinitenv);
+	/*
+	  If code hangs here, please check cahaltasm.S
+	*/
+	disable_cache_as_ram();
 
 	post_code(0x50);
 	copy_and_run();

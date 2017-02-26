@@ -17,7 +17,6 @@
 #include <arch/acpi.h>
 #include <arch/io.h>
 #include <console/console.h>
-#include <cpu/amd/pi/s3_resume.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_def.h>
@@ -124,9 +123,6 @@ static void pirq_setup(void)
 static void mainboard_enable(device_t dev)
 {
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
-
-	if (acpi_is_wakeup_s3())
-		agesawrapper_fchs3earlyrestore();
 
 	/* Initialize the PIRQ data structures for consumption */
 	pirq_setup();

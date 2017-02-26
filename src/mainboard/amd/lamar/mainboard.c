@@ -20,7 +20,6 @@
 #include <device/pci_def.h>
 #include <arch/acpi.h>
 #include <northbridge/amd/pi/BiosCallOuts.h>
-#include <cpu/amd/pi/s3_resume.h>
 #include <northbridge/amd/pi/agesawrapper.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
@@ -147,12 +146,6 @@ static void pirq_setup(void)
 static void mainboard_enable(device_t dev)
 {
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
-	/*
-	 * The mainboard is the first place that we get control in ramstage. Check
-	 * for S3 resume and call the approriate AGESA/CIMx resume functions.
-	 */
-	if (acpi_is_wakeup_s3())
-		agesawrapper_fchs3earlyrestore();
 
 	/* Initialize the PIRQ data structures for consumption */
 	pirq_setup();

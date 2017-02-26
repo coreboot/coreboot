@@ -16,7 +16,6 @@
 #include <arch/acpi.h>
 #include <arch/io.h>
 #include <console/console.h>
-#include <cpu/amd/pi/s3_resume.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_def.h>
@@ -182,9 +181,6 @@ static void mainboard_enable(device_t dev)
 	// Enable power on from WAKE#
 	//
 	pm_write16 ( PM_S_STATE_CONTROL, pm_read16( PM_S_STATE_CONTROL ) | (1 << 14));
-
-	if (acpi_is_wakeup_s3())
-		agesawrapper_fchs3earlyrestore();
 
 	/* Initialize the PIRQ data structures for consumption */
 	pirq_setup();

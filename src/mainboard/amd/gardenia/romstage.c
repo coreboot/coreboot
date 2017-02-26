@@ -20,7 +20,6 @@
 #include <cpu/x86/lapic.h>
 #include <cpu/x86/bist.h>
 #include <cpu/amd/car.h>
-#include <cpu/amd/pi/s3_resume.h>
 #include <northbridge/amd/pi/agesawrapper.h>
 #include <northbridge/amd/pi/agesawrapper_call.h>
 #include <southbridge/amd/pi/hudson/hudson.h>
@@ -28,9 +27,6 @@
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	u32 val;
-#if CONFIG_HAVE_ACPI_RESUME
-	void *resume_backup_memory;
-#endif
 
 	amd_initmmio();
 	hudson_lpc_port80();
@@ -62,27 +58,15 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	post_code(0x39);
 	AGESAWRAPPER(amdinitearly);
-	int s3resume = acpi_is_wakeup_s3();
-	if (!s3resume) {
-		post_code(0x40);
-		AGESAWRAPPER(amdinitpost);
-		post_code(0x41);
-		AGESAWRAPPER(amdinitenv);
-		/* TODO: Disable cache is not ok. */
-		disable_cache_as_ram();
-	} else { /* S3 detect */
-		printk(BIOS_INFO, "S3 detected\n");
 
-		post_code(0x60);
-		AGESAWRAPPER(amdinitresume);
+	post_code(0x40);
+	AGESAWRAPPER(amdinitpost);
+	post_code(0x41);
+	AGESAWRAPPER(amdinitenv);
+	/* TODO: Disable cache is not ok. */
+	disable_cache_as_ram();
 
-		AGESAWRAPPER(amds3laterestore);
-
-		post_code(0x61);
-		prepare_for_resume();
-	}
-
-	if (s3resume || acpi_is_wakeup_s4()) {
+	if (acpi_is_wakeup_s4()) {
 		outb(0xEE, PM_INDEX);
 		outb(0x8, PM_DATA);
 	}

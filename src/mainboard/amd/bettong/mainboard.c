@@ -84,9 +84,6 @@ static void bettong_enable(device_t dev)
 {
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
 
-	if (acpi_is_wakeup_s3())
-		agesawrapper_fchs3earlyrestore();
-
 	/* Initialize the PIRQ data structures for consumption */
 	pirq_setup();
 }

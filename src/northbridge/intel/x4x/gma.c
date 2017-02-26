@@ -376,6 +376,16 @@ static void gma_func0_init(struct device *dev)
 		pci_dev_init(dev);
 }
 
+static void gma_func0_disable(struct device *dev)
+{
+	struct device *dev_host = dev_find_slot(0, PCI_DEVFN(0, 0));
+	u16 ggc;
+
+	ggc = pci_read_config16(dev_host, D0F0_GGC);
+	ggc |= (1 << 1); /* VGA cycles to discrete GPU */
+	pci_write_config16(dev_host, D0F0_GGC, ggc);
+}
+
 static void gma_set_subsystem(device_t dev, unsigned int vendor,
 			unsigned int device)
 {
@@ -419,6 +429,7 @@ static struct device_operations gma_func0_ops = {
 	.acpi_fill_ssdt_generator = gma_ssdt,
 	.init = gma_func0_init,
 	.ops_pci = &gma_pci_ops,
+	.disable = gma_func0_disable,
 };
 
 static const unsigned short pci_device_ids[] = {

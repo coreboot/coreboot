@@ -29,7 +29,6 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/amd/amdfam16.h>
 #include <arch/acpi.h>
-#include <cpu/amd/pi/s3_resume.h>
 
 static void model_16_init(device_t dev)
 {
@@ -62,9 +61,6 @@ static void model_16_init(device_t dev)
 	msr.lo &= ~SYSCFG_MSR_MtrrFixDramModEn;
 	msr.lo |= SYSCFG_MSR_MtrrFixDramEn;
 	wrmsr(SYSCFG_MSR, msr);
-
-	if (acpi_is_wakeup())
-		restore_mtrr();
 
 	x86_mtrr_check();
 	x86_enable_cache();

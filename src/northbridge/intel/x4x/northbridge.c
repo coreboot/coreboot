@@ -196,8 +196,12 @@ static void x4x_init(void *const chip_info)
 	struct device *const d0f0 = dev_find_slot(0, 0);
 
 	/* Hide internal functions based on devicetree info. */
-	for (dev = 3; dev > 0; --dev) {
+	for (dev = 6; dev > 0; --dev) {
 		switch (dev) {
+		case 6: /* PEG1: only on P45 */
+			fn = 0;
+			bit_base = 13;
+			break;
 		case 3: /* ME */
 			fn = 3;
 			bit_base = 6;
@@ -206,10 +210,13 @@ static void x4x_init(void *const chip_info)
 			fn = 1;
 			bit_base = 3;
 			break;
-		case 1: /* PEG */
+		case 1: /* PEG0 */
 			fn = 0;
 			bit_base = 1;
 			break;
+		case 4: /* Nothing to do */
+		case 5:
+			continue;
 		}
 		for (; fn >= 0; --fn) {
 			const struct device *const d =

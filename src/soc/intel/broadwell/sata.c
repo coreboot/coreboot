@@ -161,7 +161,7 @@ static void sata_init(struct device *dev)
 		pch_iobp_update(SATA_IOBP_SP3_SECRT88,
 				~(SATA_SECRT88_VADJ_MASK <<
 				  SATA_SECRT88_VADJ_SHIFT),
-				(config->sata_port2_gen3_tx &
+				(config->sata_port3_gen3_tx &
 				 SATA_SECRT88_VADJ_MASK)
 				<< SATA_SECRT88_VADJ_SHIFT);
 

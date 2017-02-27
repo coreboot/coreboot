@@ -776,6 +776,7 @@ ehci_init (unsigned long physical_bar)
 	int i;
 	hci_t *controller = new_controller ();
 	controller->instance = xzalloc(sizeof (ehci_t));
+	controller->reg_base = (uintptr_t)physical_bar;
 	controller->type = EHCI;
 	controller->start = ehci_start;
 	controller->stop = ehci_stop;

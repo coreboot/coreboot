@@ -173,6 +173,7 @@ ohci_init (unsigned long physical_bar)
 
 	hci_t *controller = new_controller ();
 	controller->instance = xzalloc(sizeof (ohci_t));
+	controller->reg_base = (uintptr_t)physical_bar;
 	controller->type = OHCI;
 	controller->start = ohci_start;
 	controller->stop = ohci_stop;

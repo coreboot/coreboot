@@ -155,7 +155,6 @@ static void register_poweroff_to_bl31(void)
 
 static void configure_sdmmc(void)
 {
-	gpio_output(GPIO(4, D, 5), 1);  /* SDMMC_PWR_EN */
 	gpio_output(GPIO(2, A, 2), 1);  /* SDMMC_SDIO_PWR_EN */
 
 	/* SDMMC_DET_L is different on Kevin board revision 0. */

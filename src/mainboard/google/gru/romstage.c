@@ -20,6 +20,7 @@
 #include <arch/mmu.h>
 #include <cbfs.h>
 #include <cbmem.h>
+#include <gpio.h>
 #include <console/console.h>
 #include <delay.h>
 #include <program_loading.h>
@@ -49,6 +50,13 @@ static void init_dvs_outputs(void)
 	udelay(500);
 }
 
+static void prepare_sdmmc(void)
+{
+	/* Enable main SD rail early to allow ramp time before enabling SDIO
+	 * rail. */
+	gpio_output(GPIO(4, D, 5), 1);	/* SDMMC_PWR_EN */
+}
+
 static void prepare_usb(void)
 {
 	/*
@@ -68,6 +76,7 @@ void main(void)
 	/* Init DVS to conservative values. */
 	init_dvs_outputs();
 
+	prepare_sdmmc();
 	prepare_usb();
 
 	sdram_init(get_sdram_config());

@@ -78,7 +78,6 @@ static void model_16_init(device_t dev)
 		wrmsr(MCI_STATUS + (i * 4), msr);
 	}
 
-
 	/* Enable the local CPU APICs */
 	setup_lapic();
 
@@ -114,7 +113,7 @@ static struct device_operations cpu_dev_ops = {
 };
 
 static struct cpu_device_id cpu_table[] = {
-	{ X86_VENDOR_AMD, 0x700f00 },	  /* KB-A0 */
+	{ X86_VENDOR_AMD, 0x700f00 },	/* KB-A0 */
 	{ 0, 0 },
 };
 

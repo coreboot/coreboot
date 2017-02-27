@@ -34,8 +34,9 @@
 
 static void model_14_init(device_t dev)
 {
-	u32 i;
+	u8 i;
 	msr_t msr;
+	int msrno;
 #if IS_ENABLED(CONFIG_LOGICAL_CPUS)
 	u32 siblings;
 #endif
@@ -58,11 +59,11 @@ static void model_14_init(device_t dev)
 	/* Set shadow WB, RdMEM, WrMEM */
 	msr.lo = msr.hi = 0;
 	wrmsr (0x259, msr);
-	msr.hi = msr.lo = 0x1e1e1e1e;
+	msr.lo = msr.hi = 0x1e1e1e1e;
 	wrmsr(0x250, msr);
 	wrmsr(0x258, msr);
-	for (i = 0x268; i <= 0x26f; i++)
-		wrmsr(i, msr);
+	for (msrno = 0x268; msrno <= 0x26f; i++)
+		wrmsr(msrno, msr);
 
 	msr = rdmsr(SYSCFG_MSR);
 	msr.lo &= ~SYSCFG_MSR_MtrrFixDramModEn;
@@ -97,6 +98,7 @@ static void model_14_init(device_t dev)
 		msr.hi |= 1 << (33 - 32);
 		wrmsr_amd(CPU_ID_EXT_FEATURES_MSR, msr);
 	}
+	printk(BIOS_DEBUG, "siblings = %02d, ", siblings);
 #endif
 
 	/* DisableCf8ExtCfg */
@@ -108,8 +110,6 @@ static void model_14_init(device_t dev)
 	msr = rdmsr(HWCR_MSR);
 	msr.lo |= (1 << 0);
 	wrmsr(HWCR_MSR, msr);
-
-	printk(BIOS_SPEW, "%s done.\n", __func__);
 }
 
 static struct device_operations cpu_dev_ops = {

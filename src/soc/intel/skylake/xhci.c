@@ -21,7 +21,6 @@
 #include <device/pci_ids.h>
 #include <arch/io.h>
 #include <soc/ramstage.h>
-#include <soc/xhci.h>
 #include <soc/cpu.h>
 
 static struct device_operations usb_xhci_ops = {

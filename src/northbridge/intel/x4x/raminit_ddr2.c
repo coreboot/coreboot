@@ -2106,15 +2106,19 @@ void raminit_ddr2(struct sysinfo *s)
 	printk(BIOS_DEBUG, "Done power settings\n");
 
 	// ME related
-	if (RANK_IS_POPULATED(s->dimms, 0, 0)
-			|| RANK_IS_POPULATED(s->dimms, 1, 0)) {
-		MCHBAR8(0xa2f) = MCHBAR8(0xa2f) | (1 << 0);
+	/*
+	 * FIXME: This locks some registers like bit1 of GGC
+	 * and is only needed in case of ME being used.
+	 */
+	if (ME_UMA_SIZEMB != 0) {
+		if (RANK_IS_POPULATED(s->dimms, 0, 0)
+				|| RANK_IS_POPULATED(s->dimms, 1, 0))
+			MCHBAR8(0xa2f) = MCHBAR8(0xa2f) | (1 << 0);
+		if (RANK_IS_POPULATED(s->dimms, 0, 1)
+				|| RANK_IS_POPULATED(s->dimms, 1, 1))
+			MCHBAR8(0xa2f) = MCHBAR8(0xa2f) | (1 << 1);
+		MCHBAR32(0xa30) = MCHBAR32(0xa30) | (1 << 26);
 	}
-	if (RANK_IS_POPULATED(s->dimms, 0, 1)
-			|| RANK_IS_POPULATED(s->dimms, 1, 1)) {
-		MCHBAR8(0xa2f) = MCHBAR8(0xa2f) | (1 << 1);
-	}
-	MCHBAR32(0xa30) = MCHBAR32(0xa30) | (1 << 26);
 
 	printk(BIOS_DEBUG, "Done ddr2\n");
 }

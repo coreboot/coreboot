@@ -130,7 +130,7 @@ static struct device_operations cpu_dev_ops = {
 };
 
 static struct cpu_device_id cpu_table[] = {
-	{ X86_VENDOR_AMD, 0x610f31 },	  /* RL-A1 */
+	{ X86_VENDOR_AMD, 0x610f31 },	/* RL-A1 */
 	{ 0, 0 },
 };
 

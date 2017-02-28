@@ -1,0 +1,7 @@
+config DRIVERS_INTEL_MIPI_CAMERA
+	bool
+	depends on HAVE_ACPI_TABLES
+	default n
+	help
+	  MIPI CSI I2C camera SSDT generator. Generates SSDB and PWDB
+	  structures which are used by the Intel kernel drivers.

@@ -363,7 +363,7 @@ Device(EC)
 		/* Report tablet mode switch state */
 		Method (MHKG, 0, NotSerialized)
 		{
-			Return (TBSW << 3)
+			Return (ShiftLeft(TBSW, 3))
 		}
 		/* Mute audio */
 		Method (SSMS, 1, NotSerialized)

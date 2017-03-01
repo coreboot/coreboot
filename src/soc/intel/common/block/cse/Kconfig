@@ -1,0 +1,7 @@
+config SOC_INTEL_COMMON_BLOCK_CSE
+	bool
+	default n
+	help
+	  Driver for communication with Converged Security Engine (CSE)
+	  over Host Embedded Controller Interface (HECI)
+

@@ -86,6 +86,7 @@
 
 /* LPC BUS */
 #define PCU_DEV			0x14
+#define LPC_DEV			PCU_DEV
 #define LPC_FUNC		3
 #define LPC_DEVID		0x780E
 #define LPC_DEVFN		PCI_DEVFN(LPC_DEV,LPC_FUNC)

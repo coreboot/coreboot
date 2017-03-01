@@ -30,6 +30,7 @@
 #include <pc80/i8259.h>
 #include "hudson.h"
 #include <vboot/vbnv.h>
+#include "pci_devs.h"
 
 static void lpc_init(device_t dev)
 {
@@ -338,6 +339,17 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 	return current;
 }
 
+static const char *lpc_acpi_name(struct device *dev)
+{
+	if (dev->path.type != DEVICE_PATH_PCI)
+		return NULL;
+
+	if (dev->path.pci.devfn == LPC_DEVFN)
+		return "LIBR";
+
+	return NULL;
+}
+
 static struct pci_operations lops_pci = {
 	.set_subsystem = pci_dev_set_subsystem,
 };
@@ -352,6 +364,7 @@ static struct device_operations lpc_ops = {
 	.init = lpc_init,
 	.scan_bus = scan_lpc_bus,
 	.ops_pci = &lops_pci,
+	.acpi_name = lpc_acpi_name,
 };
 
 static const unsigned short pci_device_ids[] = {

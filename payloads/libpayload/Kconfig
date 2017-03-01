@@ -329,6 +329,12 @@ config FONT_SCALE_FACTOR
 	  By default (value of 0), the scale factor is automatically
 	  calculated to ensure at least 130 columns (when possible).
 
+config PC_I8042
+	bool "A common PC i8042 driver"
+	default n
+	help
+	  To be used by PC_KEYBOARD and PC_MOUSE.
+
 config PC_KEYBOARD
 	bool "Allow input from a PC keyboard"
 	default y if ARCH_X86 # uses IO

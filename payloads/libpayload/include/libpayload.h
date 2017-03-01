@@ -179,6 +179,31 @@ u8 mouse_cursor_get_acceleration(void);
 /** @} */
 
 /**
+ * @defgroup i8042 controller functions
+ * @ingroup input
+ * @{
+ */
+size_t i8042_has_ps2(void);
+size_t i8042_has_aux(void);
+
+u8 i8042_probe(void);
+void i8042_close(void);
+
+int i8042_cmd(u8 cmd);
+void i8042_write_data(u8 data);
+
+u8 i8042_data_ready_ps2(void);
+u8 i8042_data_ready_aux(void);
+
+u8 i8042_read_data_ps2(void);
+u8 i8042_read_data_aux(void);
+
+int i8042_wait_read_ps2(void);
+int i8042_wait_read_aux(void);
+
+/** @} */
+
+/**
  * @defgroup serial Serial functions
  * @ingroup input
  * @{

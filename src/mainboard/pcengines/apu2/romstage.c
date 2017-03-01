@@ -31,6 +31,8 @@
 #include <cpu/x86/lapic.h>
 #include <southbridge/amd/pi/hudson/hudson.h>
 #include <Fch/Fch.h>
+#include <tpm.h>
+
 #include "gpio_ftns.h"
 
 static void early_lpc_init(void);
@@ -91,6 +93,8 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	  If code hangs here, please check cahaltasm.S
 	*/
 	disable_cache_as_ram();
+
+	init_tpm(false);
 
 	outb(0xEA, 0xCD6);
 	outb(0x1, 0xcd7);

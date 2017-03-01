@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2017 Patrick Rudolph <siro@das-labor.org>
+ * Copyright (C) 2017 Arthur Heymans <arthur@aheymans.xyz>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +24,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/dram/ddr2.h>
+#include <lib.h>
 #include <string.h>
 
 /*==============================================================================
@@ -100,14 +102,9 @@ u32 spd_decode_eeprom_size_ddr2(u8 byte1)
  *
  * Returns the index fof MSB set.
  */
-static u8 spd_get_msbs(u8 c)
+u8 spd_get_msbs(u8 c)
 {
-	int i;
-	for (i = 7; i >= 0; i--)
-		if (c & (1 << i))
-			return i;
-
-	return 0;
+	return log2(c);
 }
 
 /**
@@ -628,4 +625,26 @@ void dram_print_spd_ddr2(const struct dimm_attr_st *dimm)
 	print_ns("  tQHSmax           : ", dimm->tQHS);
 	print_us("  tPLL              : ", dimm->tPLL);
 	print_us("  tRR               : ", dimm->tRR);
+}
+
+void normalize_tck(u32 *tclk)
+{
+	if (*tclk <= TCK_800MHZ) {
+		*tclk = TCK_800MHZ;
+	} else if (*tclk <= TCK_666MHZ) {
+		*tclk = TCK_666MHZ;
+	} else if (*tclk <= TCK_533MHZ) {
+		*tclk = TCK_533MHZ;
+	} else if (*tclk <= TCK_400MHZ) {
+		*tclk = TCK_400MHZ;
+	} else if (*tclk <= TCK_333MHZ) {
+		*tclk = TCK_333MHZ;
+	} else if (*tclk <= TCK_266MHZ) {
+		*tclk = TCK_266MHZ;
+	} else if (*tclk <= TCK_200MHZ) {
+		*tclk = TCK_200MHZ;
+	} else {
+		*tclk = 0;
+		printk(BIOS_ERR, "Too slow common tCLK found\n");
+	}
 }

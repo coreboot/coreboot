@@ -38,8 +38,8 @@ libc-$(CONFIG_LP_S5P_SERIAL_CONSOLE) += serial/s5p.c serial/serial.c
 libc-$(CONFIG_LP_IPQ806X_SERIAL_CONSOLE) += serial/ipq806x.c serial/serial.c
 libc-$(CONFIG_LP_IPQ40XX_SERIAL_CONSOLE) += serial/ipq40xx.c serial/serial.c
 libc-$(CONFIG_LP_BG4CD_SERIAL_CONSOLE) += serial/bg4cd.c serial/serial.c
+libc-$(CONFIG_LP_PC_KEYBOARD) += i8042/keyboard.c
 libc-$(CONFIG_LP_PC_I8042) += i8042/i8042.c
-libc-$(CONFIG_LP_PC_KEYBOARD) += keyboard.c
 
 libc-$(CONFIG_LP_CBMEM_CONSOLE) += cbmem_console.c
 

@@ -53,13 +53,16 @@
 #define OEM_ID			"CORE  "    /* Must be exactly 6 bytes long! */
 #define ASLC			"CORE"      /* Must be exactly 4 bytes long! */
 
-/* Use GOOGCBxx range until coreboot ID is official */
-#define COREBOOT_ACPI_ID	"GOOG"      /* ACPI ID for coreboot HIDs */
+/*
+ * The assigned ACPI ID for the coreboot project is 'BOOT'
+ * http://www.uefi.org/acpi_id_list
+ */
+#define COREBOOT_ACPI_ID	"BOOT"      /* ACPI ID for coreboot HIDs */
 
 /* List of ACPI HID that use the coreboot ACPI ID */
 enum coreboot_acpi_ids {
-	COREBOOT_ACPI_ID_CBTABLE	= 0xCB00, /* GOOGCB00 */
-	COREBOOT_ACPI_ID_MAX		= 0xCBFF, /* GOOGCBFF */
+	COREBOOT_ACPI_ID_CBTABLE	= 0x0000, /* BOOT0000 */
+	COREBOOT_ACPI_ID_MAX		= 0xFFFF, /* BOOTFFFF */
 };
 
 /* RSDP (Root System Description Pointer) */

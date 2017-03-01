@@ -28,6 +28,8 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select BOARD_ROMSIZE_KB_8192
 	select HUDSON_DISABLE_IMC
 	select USE_BLOBS
+	select TPM
+	select MAINBOARD_HAS_LPC_TPM
 
 config MAINBOARD_DIR
 	string

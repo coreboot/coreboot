@@ -35,8 +35,6 @@
 #include <device/device.h>
 #include "hudson.h"
 
-extern UINT8 picr_data[0x54], intr_data[0x54];
-
 #if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
 #error Use of GetHeapBase() is incorrect or at least suspicious
 #endif
@@ -64,7 +62,6 @@ AGESA_STATUS agesawrapper_fchs3laterestore (void)
 {
 	FCH_DATA_BLOCK      FchParams;
 	AMD_CONFIG_PARAMS StdHeader;
-	UINT8 byte;
 
 	StdHeader.HeapStatus = HEAP_SYSTEM_MEM;
 	StdHeader.HeapBasePtr = (uintptr_t) GetHeapBase() + 0x10;
@@ -76,17 +73,6 @@ AGESA_STATUS agesawrapper_fchs3laterestore (void)
 	FchParams.StdHeader = &StdHeader;
 	s3_resume_init_data(&FchParams);
 	FchInitS3LateRestore(&FchParams);
-	/* PIC IRQ routine */
-	for (byte = 0x0; byte < sizeof(picr_data); byte ++) {
-		outb(byte, 0xC00);
-		outb(picr_data[byte], 0xC01);
-	}
-
-	/* APIC IRQ routine */
-	for (byte = 0x0; byte < sizeof(intr_data); byte ++) {
-		outb(byte | 0x80, 0xC00);
-		outb(intr_data[byte], 0xC01);
-	}
 
 	return AGESA_SUCCESS;
 }

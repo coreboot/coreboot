@@ -199,6 +199,9 @@ PutEventLog (
   UINT16 Index;
   AGESA_STRUCT_BUFFER *AgesaEventAlloc;
 
+  if (EventClass < AGESA_STATUS_LOG_LEVEL)
+    return;
+
   AgesaEventAlloc = NULL;
   GetEventLogHeapPointer (&AgesaEventAlloc, StdHeader);
   ASSERT (AgesaEventAlloc != NULL);

@@ -121,6 +121,8 @@ AmdReadEventLog (
   ASSERT (Event != NULL);
   Event->StdHeader.HeapBasePtr = HeapGetBaseAddress (&Event->StdHeader);
   Status = GetEventLog (&LogEvent, &Event->StdHeader);
+  if (Status != AGESA_SUCCESS)
+    return Status;
 
   Event->EventClass = LogEvent.EventClass;
   Event->EventInfo = LogEvent.EventInfo;
@@ -219,6 +221,9 @@ PutEventLog (
   AgesaEventAlloc = NULL;
   GetEventLogHeapPointer (&AgesaEventAlloc, StdHeader);
   ASSERT (AgesaEventAlloc != NULL);
+  if (AgesaEventAlloc == NULL)
+    return;
+
   Index = AgesaEventAlloc->WriteRecordPtr;
 
   // Add the new event log data into a circular buffer
@@ -281,6 +286,8 @@ GetEventLog (
 
   GetEventLogHeapPointer (&AgesaEventAlloc, StdHeader);
   ASSERT (AgesaEventAlloc != NULL);
+  if (AgesaEventAlloc == NULL)
+    return AGESA_BOUNDS_CHK;
 
   if ((AgesaEventAlloc->ReadRecordPtr == AgesaEventAlloc->WriteRecordPtr) &&
       (AgesaEventAlloc->ReadWriteFlag == 1)) {
@@ -338,6 +345,8 @@ PeekEventLog (
 
   GetEventLogHeapPointer (&AgesaEventAlloc, StdHeader);
   ASSERT (AgesaEventAlloc != NULL);
+  if (AgesaEventAlloc == NULL)
+    return FALSE;
 
   if ((AgesaEventAlloc->ReadRecordPtr == AgesaEventAlloc->WriteRecordPtr) &&
       (AgesaEventAlloc->ReadWriteFlag == 1)) {

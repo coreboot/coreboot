@@ -237,6 +237,12 @@ config NHLT_SSM4567
 	help
 	  Include DSP firmware settings for ssm4567 smart amplifier.
 
+config NHLT_RT5514
+	bool
+	default n
+	help
+	  Include DSP firmware settings for rt5514 DSP.
+
 config NHLT_RT5663
 	bool
 	default n

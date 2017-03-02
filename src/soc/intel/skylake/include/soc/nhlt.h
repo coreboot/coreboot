@@ -61,6 +61,11 @@ int nhlt_soc_add_ssm4567(struct nhlt *nhlt, int hwlink);
 int nhlt_soc_add_max98357(struct nhlt *nhlt, int hwlink);
 
 /*
+ * Add rt5514 DSP on provided SSP link. Return 0 on success, < 0 on error.
+ */
+int nhlt_soc_add_rt5514(struct nhlt *nhlt, int hwlink, int num_channels);
+
+/*
  * Add rt5663 headset codec on provided SSP link. Return 0 on success, < 0
  * on error.
  */

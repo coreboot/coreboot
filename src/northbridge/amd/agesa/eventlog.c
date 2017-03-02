@@ -707,6 +707,7 @@ static void interpret_agesa_eventlog(EVENT_PARAMS *event)
 
 static void amd_readeventlog(AMD_CONFIG_PARAMS *StdHeader)
 {
+	AGESA_STATUS status;
 	EVENT_PARAMS AmdEventParams;
 
 	memset(&AmdEventParams, 0, sizeof(EVENT_PARAMS));
@@ -717,8 +718,8 @@ static void amd_readeventlog(AMD_CONFIG_PARAMS *StdHeader)
 	AmdEventParams.StdHeader.ImageBasePtr = 0;
 	AmdEventParams.StdHeader.HeapStatus = StdHeader->HeapStatus;
 
-	AmdReadEventLog(&AmdEventParams);
-	while (AmdEventParams.EventClass != 0) {
+	status = AmdReadEventLog(&AmdEventParams);
+	while ((status == AGESA_SUCCESS) && (AmdEventParams.EventClass != 0)) {
 		printk(BIOS_DEBUG,"\nEventLog:  EventClass = %x, EventInfo = %x.\n",
 				(unsigned int)AmdEventParams.EventClass,
 				(unsigned int)AmdEventParams.EventInfo);
@@ -728,7 +729,7 @@ static void amd_readeventlog(AMD_CONFIG_PARAMS *StdHeader)
 		printk(BIOS_DEBUG,"  Param3 = %x, Param4 = %x.\n",
 				(unsigned int)AmdEventParams.DataParam3,
 				(unsigned int)AmdEventParams.DataParam4);
-		AmdReadEventLog(&AmdEventParams);
+		status = AmdReadEventLog(&AmdEventParams);
 	}
 }
 

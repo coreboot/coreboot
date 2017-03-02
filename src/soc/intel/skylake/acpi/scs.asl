@@ -20,6 +20,7 @@ Device (EMMC)
 {
 	Name (_ADR, 0x001E0004)
 	Name (_DDN, "eMMC Controller")
+	Name (UUID, ToUUID ("E5C937D0-3553-4D7A-9117-EA4D19C3434D"))
 
 	OperationRegion (EMCR, PCI_Config, 0x00, 0x100)
 	Field (EMCR, DWordAcc, NoLock, Preserve)
@@ -29,6 +30,48 @@ Device (EMMC)
 		Offset (0xa2),	/* PG_CONFIG */
 		, 2,
 		PGEN, 1,	/* PG_ENABLE */
+	}
+
+	/*
+	 * Device Specific Method
+	 * Arg0 - UUID
+	 * Arg1 - Revision
+	 * Arg2 - Function Index
+	 */
+	Method (_DSM, 4)
+	{
+		If (LEqual (Arg0, ^UUID)) {
+			/*
+			 * Function 9: Device Readiness Durations
+			 * Returns a package of five integers covering
+			 * various device related delay in PCIe Base Spec.
+			 */
+			If (LEqual (Arg2, 9)) {
+				/*
+				 * Function 9 support for revision 3.
+				 * ECN link for function definitions
+				 * [https://pcisig.com/sites/default/files/
+				 * specification_documents/
+				 * ECN_fw_latency_optimization_final.pdf]
+				 */
+				If (LEqual (Arg1, 3)) {
+					/*
+					 * Integer 0: FW reset time.
+					 * Integer 1: FW data link up time.
+					 * Integer 2: FW functional level reset
+					 * time.
+					 * Integer 3: FW D3 hot to D0 time.
+					 * Integer 4: FW VF enable time.
+					 * set ACPI constant Ones for elements
+					 * where overriding the default value
+					 * is not desired.
+					 */
+					Return (Package (5) {0, Ones, Ones,
+								    Ones, Ones})
+				}
+			}
+		}
+		Return (Buffer() { 0x00 })
 	}
 
 	Method (_PS0, 0, Serialized)

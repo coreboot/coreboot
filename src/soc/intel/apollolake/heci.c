@@ -22,7 +22,7 @@
 
 uint32_t heci_fw_sts(void)
 {
-	return pci_read_config32(CSE_DEV, REG_SEC_FW_STS0);
+	return pci_read_config32(HECI1_DEV, REG_SEC_FW_STS0);
 }
 
 bool heci_cse_normal(void)

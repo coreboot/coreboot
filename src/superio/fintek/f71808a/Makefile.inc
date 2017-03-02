@@ -1,11 +1,12 @@
 ##
 ## This file is part of the coreboot project.
 ##
-## Copyright (C) 2009 Ronald G. Minnich
+## Copyright (C) 2017 Nicola Corna <nicola@corna.info>
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; version 2 of the License.
+## the Free Software Foundation; either version 2 of the License, or
+## (at your option) any later version.
 ##
 ## This program is distributed in the hope that it will be useful,
 ## but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,15 +14,6 @@
 ## GNU General Public License for more details.
 ##
 
-## include generic fintek pre-ram stage driver
-romstage-$(CONFIG_SUPERIO_FINTEK_COMMON_ROMSTAGE) += common/early_serial.c
-
-subdirs-y += f71805f
-subdirs-y += f71808a
-subdirs-y += f71859
-subdirs-y += f71863fg
-subdirs-y += f71869ad
-subdirs-y += f71872
-subdirs-y += f81216h
-subdirs-y += f81865f
-subdirs-y += f81866d
+ramstage-$(CONFIG_SUPERIO_FINTEK_F71808A) += f71808a_multifunc.c
+ramstage-$(CONFIG_SUPERIO_FINTEK_F71808A) += f71808a_hwm.c
+ramstage-$(CONFIG_SUPERIO_FINTEK_F71808A) += superio.c

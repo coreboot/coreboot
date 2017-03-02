@@ -46,9 +46,9 @@ static unsigned long mainboard_write_acpi_tables(
 	if (!nhlt)
 		return start_addr;
 
-	/* 4 Channel DMIC array. */
-	if (nhlt_soc_add_dmic_array(nhlt, 4))
-		printk(BIOS_ERR, "Couldn't add 4CH DMIC arrays.\n");
+	/* 4 Channel DMIC array */
+	if (nhlt_soc_add_rt5514(nhlt, AUDIO_LINK_SSP0, 4))
+		printk(BIOS_ERR, "Couldn't add rt5514.\n");
 
 	/* RT5663 Headset codec */
 	if (nhlt_soc_add_rt5663(nhlt, AUDIO_LINK_SSP1))

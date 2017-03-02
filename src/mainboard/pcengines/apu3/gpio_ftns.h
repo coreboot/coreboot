@@ -29,6 +29,7 @@ int get_spd_offset(void);
 // http://pcengines.ch/schema/apu3a.pdf
 //
 #define IOMUX_GPIO_32   0x59    // MODESW
+#define IOMUX_GPIO_33   0x5A    // SIMSWAP
 #define IOMUX_GPIO_49   0x40    // STRAP0
 #define IOMUX_GPIO_50   0x41    // STRAP1
 #define IOMUX_GPIO_51   0x42    // PE3 Reset
@@ -42,6 +43,7 @@ int get_spd_offset(void);
 #define IOMUX_GPIO_71   0x4D    // PROCHOT
 
 #define GPIO_32   0x164    // MODESW
+#define GPIO_33   0x168    // SIMSWAP
 #define GPIO_49   0x100    // STRAP0
 #define GPIO_50   0x104    // STRAP1
 #define GPIO_51   0x108    // PE3 Reset

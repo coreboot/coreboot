@@ -173,6 +173,7 @@ static void early_lpc_init(void)
 	// Configure output enabled, value high, pull up/down disabled
 	//
 	setting = GPIO_OUTPUT_ENABLE | GPIO_OUTPUT_VALUE;
+	configure_gpio(IOMUX_GPIO_33, Function0, GPIO_33, setting);
 	configure_gpio(IOMUX_GPIO_51, Function2, GPIO_51, setting);
 	configure_gpio(IOMUX_GPIO_55, Function3, GPIO_55, setting);
 	configure_gpio(IOMUX_GPIO_64, Function2, GPIO_64, setting);

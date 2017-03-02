@@ -2576,17 +2576,19 @@ static void sdram_power_management(struct sys_info *sysinfo)
 	reg32 |= (1 << 12) | (1 << 11);
 	MCHBAR32(C1DRC1) = reg32;
 
-	if (i945_silicon_revision() > 1) {
-		/* FIXME bits 5 and 0 only if PCIe graphics is disabled */
-		u16 peg_bits = (1 << 5) | (1 << 0);
+	if (IS_ENABLED(CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GM)) {
+		if (i945_silicon_revision() > 1) {
+			/* FIXME bits 5 and 0 only if PCIe graphics is disabled */
+			u16 peg_bits = (1 << 5) | (1 << 0);
 
-		MCHBAR16(UPMC1) = 0x1010 | peg_bits;
-	} else {
-		/* FIXME bits 5 and 0 only if PCIe graphics is disabled */
-		u16 peg_bits = (1 << 5) | (1 << 0);
+			MCHBAR16(UPMC1) = 0x1010 | peg_bits;
+		} else {
+			/* FIXME bits 5 and 0 only if PCIe graphics is disabled */
+			u16 peg_bits = (1 << 5) | (1 << 0);
 
-		/* Rev 0 and 1 */
-		MCHBAR16(UPMC1) = 0x0010 | peg_bits;
+			/* Rev 0 and 1 */
+			MCHBAR16(UPMC1) = 0x0010 | peg_bits;
+		}
 	}
 
 	reg16 = MCHBAR16(UPMC2);

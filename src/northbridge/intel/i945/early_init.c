@@ -939,7 +939,8 @@ void i945_late_initialization(int s3resume)
 
 	i945_setup_dmi_rcrb();
 
-	i945_setup_pci_express_x16();
+	if (IS_ENABLED(CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GM))
+		i945_setup_pci_express_x16();
 
 	i945_setup_root_complex_topology();
 

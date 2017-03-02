@@ -281,6 +281,12 @@ chip soc/intel/skylake
 				register "probed" = "1"
 				device i2c 13 on end
 			end
+			chip drivers/i2c/generic
+				register "hid" = ""10EC5514""
+				register "name" = ""RT54""
+				register "desc" = ""Realtek RT5514""
+				device i2c 57 on end
+			end
 		end # I2C #4
 		device pci 1c.0 on
 			chip drivers/intel/wifi
@@ -301,7 +307,14 @@ chip soc/intel/skylake
 		device pci 1d.3 off end # PCI Express Port 12
 		device pci 1e.0 on  end # UART #0
 		device pci 1e.1 off end # UART #1
-		device pci 1e.2 on  end # GSPI #0
+		device pci 1e.2 on
+			chip drivers/spi/acpi
+				register "hid" = "ACPI_DT_NAMESPACE_HID"
+				register "compat_string" = ""realtek,rt5514""
+				register "irq" = "ACPI_IRQ_LEVEL_HIGH(GPP_F10_IRQ)"
+				device spi 0 on end
+			end
+		end # GSPI #0
 		device pci 1e.3 on
 			chip drivers/spi/acpi
 				register "hid" = "ACPI_DT_NAMESPACE_HID"

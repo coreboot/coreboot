@@ -216,6 +216,9 @@ PutEventLog (
                     (EventClass == AGESA_UNSUPPORTED) ? "UNSUPPORTED" :
                     "SUCCESS", EventInfo, DataParam1, DataParam2, DataParam3, DataParam4);
 
+  if (EventClass < AGESA_STATUS_LOG_LEVEL)
+    return;
+
   AgesaEventAlloc = NULL;
   GetEventLogHeapPointer (&AgesaEventAlloc, StdHeader);
   ASSERT (AgesaEventAlloc != NULL);

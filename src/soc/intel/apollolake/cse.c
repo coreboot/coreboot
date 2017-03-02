@@ -28,7 +28,7 @@
 
 static uint32_t dump_status(int index, int reg_addr)
 {
-	uint32_t reg = pci_read_config32(CSE_DEV, reg_addr);
+	uint32_t reg = pci_read_config32(HECI1_DEV, reg_addr);
 
 	printk(BIOS_DEBUG, "CSE FWSTS%d: 0x%08x\n", index, reg);
 

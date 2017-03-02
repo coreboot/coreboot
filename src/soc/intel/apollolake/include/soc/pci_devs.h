@@ -52,8 +52,8 @@
 #define HDA_DEV				_PCI_DEV(0xe, 0)
 #define HDA_DEVFN			_PCI_DEVFN(0xe, 0)
 
-#define CSE_DEV				_PCI_DEV(0xf, 0)
-#define CSE_DEVFN			_PCI_DEVFN(0xf, 0)
+#define HECI1_DEV			_PCI_DEV(0xf, 0)
+#define HECI1_DEVFN			_PCI_DEVFN(0xf, 0)
 
 #define ISH_DEV				_PCI_DEV(0x11, 0)
 #define ISH_DEVFN			_PCI_DEVFN(0x11, 0)

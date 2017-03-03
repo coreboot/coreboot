@@ -64,4 +64,13 @@ int tis_sendrecv(const u8 *sendbuf, size_t send_size, u8 *recvbuf,
 
 void init_tpm(int s3resume);
 
+/*
+ * tis_plat_irq_status()
+ *
+ * Check tpm irq and clear it.
+ *
+ * Returns 1 when irq pending or 0 when not.
+ */
+int tis_plat_irq_status(void);
+
 #endif /* TPM_H_ */

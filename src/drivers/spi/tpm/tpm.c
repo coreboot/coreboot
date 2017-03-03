@@ -21,6 +21,7 @@
 #include <endian.h>
 #include <string.h>
 #include <timer.h>
+#include <tpm.h>
 
 #include "tpm.h"
 
@@ -102,6 +103,39 @@ void tpm2_get_info(struct tpm2_info *info)
 	*info = tpm_info;
 }
 
+__attribute__((weak)) int tis_plat_irq_status(void)
+{
+	static int warning_displayed;
+
+	if (!warning_displayed) {
+		printk(BIOS_WARNING, "WARNING: tis_plat_irq_status() not implemented, wasting 10ms to wait on Cr50!\n");
+		warning_displayed = 1;
+	}
+	mdelay(10);
+
+	return 1;
+}
+
+/*
+ * TPM may trigger a irq after finish processing previous transfer.
+ * Waiting for this irq to sync tpm status.
+ *
+ * Returns 1 on success, 0 on failure (timeout).
+ */
+static int tpm_sync(void)
+{
+	struct stopwatch sw;
+
+	stopwatch_init_usecs_expire(&sw, 10 * 1000);
+	while (!tis_plat_irq_status()) {
+		if (stopwatch_expired(&sw)) {
+			printk(BIOS_ERR, "Timeout wait for tpm irq!\n");
+			return 0;
+		}
+	}
+	return 1;
+}
+
 /*
  * Each TPM2 SPI transaction starts the same: CS is asserted, the 4 byte
  * header is sent to the TPM, the master waits til TPM is ready to continue.
@@ -114,12 +148,13 @@ static int start_transaction(int read_write, size_t bytes, unsigned addr)
 	uint8_t byte;
 	int i;
 	struct stopwatch sw;
+	static int tpm_sync_needed;
 
-	/*
-	 * Give it 10 ms. TODO(vbendeb): remove this once cr50 SPS TPM driver
-	 * performance is fixed.
-	 */
-	mdelay(10);
+	/* Wait for tpm to finish previous transaction if needed */
+	if (tpm_sync_needed)
+		tpm_sync();
+	else
+		tpm_sync_needed = 1;
 
 	/* Try to wake cr50 if it is asleep. */
 	tpm_if.cs_assert(tpm_if.slave);

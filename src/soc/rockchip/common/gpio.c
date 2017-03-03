@@ -56,6 +56,49 @@ void gpio_input_pullup(gpio_t gpio)
 	gpio_set_dir(gpio, GPIO_INPUT);
 }
 
+void gpio_input_irq(gpio_t gpio, enum gpio_irq_type type)
+{
+	uint32_t int_polarity, inttype_level;
+	uint32_t mask = BIT(gpio.num);
+
+	gpio_input(gpio);
+
+	int_polarity = inttype_level = 0;
+	switch (type) {
+		case IRQ_TYPE_EDGE_RISING:
+			int_polarity = mask;
+			inttype_level = mask;
+			break;
+		case IRQ_TYPE_EDGE_FALLING:
+			inttype_level = mask;
+			break;
+		case IRQ_TYPE_LEVEL_HIGH:
+			int_polarity = mask;
+			break;
+		case IRQ_TYPE_LEVEL_LOW:
+			break;
+	}
+	clrsetbits_le32(&gpio_port[gpio.port]->int_polarity,
+			mask, int_polarity);
+	clrsetbits_le32(&gpio_port[gpio.port]->inttype_level,
+			mask, inttype_level);
+
+	setbits_le32(&gpio_port[gpio.port]->inten, mask);
+	clrbits_le32(&gpio_port[gpio.port]->intmask, mask);
+}
+
+int gpio_irq_status(gpio_t gpio)
+{
+	uint32_t mask = BIT(gpio.num);
+	uint32_t int_status = read32(&gpio_port[gpio.port]->int_status);
+
+	if (!(int_status & mask))
+		return 0;
+
+	setbits_le32(&gpio_port[gpio.port]->porta_eoi, mask);
+	return 1;
+}
+
 int gpio_get(gpio_t gpio)
 {
 	return (read32(&gpio_port[gpio.port]->ext_porta) >> gpio.num) & 0x1;

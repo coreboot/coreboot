@@ -409,7 +409,7 @@ static int get_cpu_count(void)
 	int num_threads;
 	int num_cores;
 
-	msr = rdmsr(CORE_THREAD_COUNT_MSR);
+	msr = rdmsr(MSR_CORE_THREAD_COUNT);
 	num_threads = (msr.lo >> 0) & 0xffff;
 	num_cores = (msr.lo >> 16) & 0xffff;
 	printk(BIOS_DEBUG, "CPU has %u cores, %u threads enabled.\n",

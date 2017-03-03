@@ -121,6 +121,12 @@ static int start_transaction(int read_write, size_t bytes, unsigned addr)
 	 */
 	mdelay(10);
 
+	/* Try to wake cr50 if it is asleep. */
+	tpm_if.cs_assert(tpm_if.slave);
+	udelay(1);
+	tpm_if.cs_deassert(tpm_if.slave);
+	udelay(100);
+
 	/*
 	 * The first byte of the frame header encodes the transaction type
 	 * (read or write) and transfer size (set to lentgh - 1), limited to

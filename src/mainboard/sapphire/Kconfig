@@ -1,0 +1,16 @@
+if VENDOR_SAPPHIRE
+
+choice
+	prompt "Mainboard model"
+
+source "src/mainboard/sapphire/*/Kconfig.name"
+
+endchoice
+
+source "src/mainboard/sapphire/*/Kconfig"
+
+config MAINBOARD_VENDOR
+	string
+	default "Sapphire"
+
+endif # VENDOR_SAPPHIRE

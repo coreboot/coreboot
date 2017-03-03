@@ -1,0 +1,6 @@
+Category: mini
+ROM package: SOIC-8
+ROM protocol: SPI
+ROM socketed: y
+Flashrom support: n
+Release year: 2011

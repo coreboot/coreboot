@@ -28,6 +28,7 @@
 #define GPIO_P15V_EN	GPIO(0, B, 2)
 #define GPIO_P30V_EN	GPIO(0, B, 4)
 #define GPIO_P18V_AUDIO_PWREN	GPIO(0, A, 2)
+#define GPIO_TPM_IRQ	GPIO(0, A, 5)
 
 void setup_chromeos_gpios(void);
 

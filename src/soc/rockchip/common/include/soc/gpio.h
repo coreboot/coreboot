@@ -84,6 +84,19 @@ enum gpio_dir {
 	GPIO_OUTPUT = 1,
 };
 
+enum gpio_irq_type {
+	IRQ_TYPE_EDGE_RISING = 0,
+	IRQ_TYPE_EDGE_FALLING,
+	IRQ_TYPE_LEVEL_HIGH,
+	IRQ_TYPE_LEVEL_LOW,
+};
+
+/* Setup and enable irq */
+void gpio_input_irq(gpio_t gpio, enum gpio_irq_type);
+
+/* Check and clear irq status */
+int gpio_irq_status(gpio_t gpio);
+
 /* The gpio pull bias setting may be different between SoCs */
 u32 gpio_get_pull_val(gpio_t gpio, enum gpio_pull pull);
 

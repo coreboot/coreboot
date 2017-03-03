@@ -50,6 +50,7 @@ config CPU_SPECIFIC_OPTIONS
 	select SOC_INTEL_COMMON
 	select SOC_INTEL_COMMON_ACPI
 	select SOC_INTEL_COMMON_ACPI_WAKE_SOURCE
+	select SOC_INTEL_COMMON_BLOCK
 	select SOC_INTEL_COMMON_LPSS_I2C
 	select SOC_INTEL_COMMON_SMI
 	select SOC_INTEL_COMMON_SPI_FLASH_PROTECT
@@ -253,6 +254,7 @@ config NHLT_DA7219
 	default n
 	help
 	  Include DSP firmware settings for headset codec.
+
 choice
 	prompt "Cache-as-ram implementation"
 	default CAR_CQOS
@@ -261,6 +263,8 @@ choice
 
 config CAR_NEM
 	bool "Non-evict mode"
+	select SOC_INTEL_COMMON_BLOCK_CAR
+	select INTEL_CAR_NEM
 	help
 	  Traditionally, CAR is set up by using Non-Evict mode. This method
 	  does not allow CAR and cache to co-exist, because cache fills are
@@ -268,10 +272,18 @@ config CAR_NEM
 
 config CAR_CQOS
 	bool "Cache Quality of Service"
+	select SOC_INTEL_COMMON_BLOCK_CAR
+	select INTEL_CAR_CQOS
 	help
 	  Cache Quality of Service allows more fine-grained control of cache
 	  usage. As result, it is possible to set up portion of L2 cache for
 	  CAR and use remainder for actual caching.
+
+config USE_APOLLOLAKE_FSP_CAR
+	bool "Use FSP CAR"
+	select FSP_CAR
+	help
+	  Use FSP APIs to initialize & tear Down the Cache-As-Ram.
 
 endchoice
 

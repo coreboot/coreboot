@@ -14,6 +14,10 @@ Releases 4.5.x are based on mainline support submitted in
 
 ## [Unreleased]
 
+## [v4.5.5.2] - 2017-03-03
+### Changed
+- (APU3 only) GPIO33 (SIMSWAP) set to output/low by default
+
 ## [v4.5.5.1] - 2017-03-02
 ### Changed
 - (APU3 only) GPIO33 (SIMSWAP) set to output/high by default
@@ -59,7 +63,8 @@ Releases 4.5.x are based on mainline support submitted in
 - turn off D4 and D5 leds on boot
 - enable power on after power failure
 
-[Unreleased]: https://github.com/pcengines/coreboot/compare/v4.5.5.1...coreboot-4.5.x
+[Unreleased]: https://github.com/pcengines/coreboot/compare/v4.5.5.2...coreboot-4.5.x
+[v4.5.5.2]: https://github.com/pcengines/coreboot/compare/v4.5.5.2...v4.5.5.1
 [v4.5.5.1]: https://github.com/pcengines/coreboot/compare/v4.5.5.1...v4.5.5
 [v4.5.5]: https://github.com/pcengines/coreboot/compare/v4.5.5...v4.5.4
 [v4.5.4]: https://github.com/pcengines/coreboot/compare/v4.5.4...v4.5.3

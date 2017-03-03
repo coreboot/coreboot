@@ -1,0 +1,68 @@
+if BOARD_SAPPHIRE_PUREPLATINUMH61
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select ARCH_X86
+	select CPU_INTEL_SOCKET_LGA1155
+	select NORTHBRIDGE_INTEL_IVYBRIDGE
+	select USE_NATIVE_RAMINIT
+	select SOUTHBRIDGE_INTEL_BD82X6X
+	select SUPERIO_FINTEK_F71808A
+	select BOARD_ROMSIZE_KB_4096
+	select HAVE_ACPI_TABLES
+	select HAVE_OPTION_TABLE
+	select HAVE_CMOS_DEFAULT
+	select HAVE_ACPI_RESUME
+	select MAINBOARD_HAS_LIBGFXINIT
+	select INTEL_INT15
+	select UDELAY_TSC
+	select SERIRQ_CONTINUOUS_MODE
+
+config HAVE_IFD_BIN
+	bool
+	default n
+
+config HAVE_ME_BIN
+	bool
+	default n
+
+config MAINBOARD_DIR
+	string
+	default sapphire/pureplatinumh61
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Pure Platinum H61"
+
+config VGA_BIOS_FILE
+	string
+	default "pci8086,0162.rom"
+
+config VGA_BIOS_ID
+	string
+	default "8086,0162"
+
+config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
+	hex
+	default 0x1007
+
+config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
+	hex
+	default 0x174b
+
+config MMCONF_BASE_ADDRESS
+	hex
+	default 0xf0000000
+
+config DRAM_RESET_GATE_GPIO
+	int
+	default 60
+
+config MAX_CPUS
+	int
+	default 8
+
+config USBDEBUG_HCD_INDEX	#USB port on the back under the Bluetooth module
+	int
+	default 4
+endif

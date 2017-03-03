@@ -1,0 +1,2 @@
+config BOARD_SAPPHIRE_PUREPLATINUMH61
+	bool "Pure Platinum H61"

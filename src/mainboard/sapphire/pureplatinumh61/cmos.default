@@ -1,0 +1,8 @@
+boot_option=Fallback
+baud_rate=115200
+debug_level=Spew
+power_on_after_fail=Enable
+nmi=Enable
+volume=0x3
+sata_mode=AHCI
+hyper_threading=Enable

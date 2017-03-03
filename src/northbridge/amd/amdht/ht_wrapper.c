@@ -110,7 +110,7 @@ static void AMD_CB_EventNotify (u8 evtClass, u16 event, const u8 *pEventData0)
 	uint8_t log_level;
 	uint8_t dump_event_detail;
 
-	printk(BIOS_DEBUG, "AMD_CB_EventNotify(): ");
+	printk(BIOS_DEBUG, "%s: ", __func__);
 
 	/* Decode event */
 	dump_event_detail = 1;
@@ -232,7 +232,7 @@ void amd_ht_init(struct sys_info *sysinfo)
 {
 
 	if (!sysinfo) {
-		printk(BIOS_DEBUG, "Skipping amd_ht_init()\n");
+		printk(BIOS_DEBUG, "Skipping %s\n", __func__);
 		return;
 	}
 
@@ -256,9 +256,9 @@ void amd_ht_init(struct sys_info *sysinfo)
 		&sysinfo->ht_link_cfg // struct ht_link_config*
 	};
 
-	printk(BIOS_DEBUG, "Enter amd_ht_init()\n");
+	printk(BIOS_DEBUG, "Enter %s\n", __func__);
 	amdHtInitialize(&ht_wrapper);
-	printk(BIOS_DEBUG, "Exit amd_ht_init()\n");
+	printk(BIOS_DEBUG, "Exit %s\n", __func__);
 }
 
 /**
@@ -268,7 +268,7 @@ void amd_ht_init(struct sys_info *sysinfo)
  *
  */
 void amd_ht_fixup(struct sys_info *sysinfo) {
-	printk(BIOS_DEBUG, "amd_ht_fixup()\n");
+	printk(BIOS_DEBUG, "%s\n", __func__);
 	if (IS_ENABLED(CONFIG_CPU_AMD_MODEL_10XXX)) {
 		uint8_t rev_gte_d = 0;
 		uint8_t fam15h = 0;
@@ -307,7 +307,11 @@ void amd_ht_fixup(struct sys_info *sysinfo) {
 				for (node = 0; node < node_count; node++) {
 					f3xe8 = pci_read_config32(NODE_PCI(node, 3), 0xe8);
 					uint8_t internal_node_number = ((f3xe8 & 0xc0000000) >> 30);
-					printk(BIOS_DEBUG, "amd_ht_fixup(): node %d (internal node ID %d): disabling defective HT link", node, internal_node_number);
+					printk(BIOS_DEBUG,
+					       "%s: node %d (internal node "
+					       "ID %d): disabling defective "
+					       "HT link", __func__, node,
+					       internal_node_number);
 					if (internal_node_number == 0) {
 						uint8_t package_link_3_connected = pci_read_config32(NODE_PCI(node, 0), (fam15h)?0x98:0xd8) & 0x1;
 						printk(BIOS_DEBUG, " (L3 connected: %d)\n", package_link_3_connected);

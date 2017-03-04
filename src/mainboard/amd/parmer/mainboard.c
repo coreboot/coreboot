@@ -22,7 +22,8 @@
 #include <cpu/amd/mtrr.h>
 #include <device/pci_def.h>
 #include <arch/acpi.h>
-#include <northbridge/amd/agesa/agesawrapper.h>
+#include <cpu/amd/agesa/s3_resume.h>
+#include <northbridge/amd/agesa/state_machine.h>
 
 /*************************************************
  * enable the dedicated function in parmer board.
@@ -30,9 +31,6 @@
 static void mainboard_enable(device_t dev)
 {
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
-
-	if (acpi_is_wakeup_s3())
-		agesawrapper_fchs3earlyrestore();
 }
 
 struct chip_operations mainboard_ops = {

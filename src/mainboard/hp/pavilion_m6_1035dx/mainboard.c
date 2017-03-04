@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-#include <northbridge/amd/agesa/agesawrapper.h>
+#include <northbridge/amd/agesa/state_machine.h>
 #include <northbridge/amd/agesa/BiosCallOuts.h>
 #include "ec.h"
 
@@ -43,11 +43,8 @@ static void mainboard_enable(device_t dev)
 	hudson_configure_gevent_smi(EC_SMI_GEVENT, SMI_MODE_SMI, SMI_LVL_HIGH);
 	hudson_enable_smi_generation();
 
-	if (acpi_is_wakeup_s3())
-		agesawrapper_fchs3earlyrestore();
-	else
+	if (!acpi_is_wakeup_s3())
 		pavilion_cold_boot_init();
-
 }
 
 struct chip_operations mainboard_ops = {

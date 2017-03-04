@@ -18,7 +18,7 @@
 #include "AGESA.h"
 #include "amdlib.h"
 
-#include <northbridge/amd/agesa/agesawrapper.h>
+#include <northbridge/amd/agesa/state_machine.h>
 #include <vendorcode/amd/agesa/f15tn/Proc/CPU/heapManager.h>
 #include <PlatformMemoryConfiguration.h>
 
@@ -130,6 +130,13 @@ static const PCIe_COMPLEX_DESCRIPTOR Trinity = {
         &DdiList[0]
 };
 
+void board_BeforeInitReset(struct sysinfo *cb, AMD_RESET_PARAMS *Reset)
+{
+	FCH_RESET_INTERFACE *FchReset = &Reset->FchInterface;
+	FchReset->Xhci0Enable = IS_ENABLED(CONFIG_HUDSON_XHCI_ENABLE);
+	FchReset->Xhci1Enable = IS_ENABLED(CONFIG_HUDSON_XHCI_ENABLE);
+}
+
 /*---------------------------------------------------------------------------------------*/
 /**
  *  OemCustomizeInitEarly
@@ -146,7 +153,7 @@ static const PCIe_COMPLEX_DESCRIPTOR Trinity = {
  **/
 /*---------------------------------------------------------------------------------------*/
 
-static AGESA_STATUS OemInitEarly(AMD_EARLY_PARAMS * InitEarly)
+void board_BeforeInitEarly(struct sysinfo *cb, AMD_EARLY_PARAMS *InitEarly)
 {
 	AGESA_STATUS         Status;
 	VOID                 *TrinityPcieComplexListPtr;
@@ -197,14 +204,6 @@ static AGESA_STATUS OemInitEarly(AMD_EARLY_PARAMS * InitEarly)
 	((PCIe_COMPLEX_DESCRIPTOR*)TrinityPcieComplexListPtr)->DdiLinkList  =  (PCIe_DDI_DESCRIPTOR*)TrinityPcieDdiPtr;
 
 	InitEarly->GnbConfig.PcieComplexList = TrinityPcieComplexListPtr;
-	return AGESA_SUCCESS;
-}
-
-static AGESA_STATUS OemInitMid(AMD_MID_PARAMS * InitMid)
-{
-	/* 0 iGpuVgaAdapter, 1 iGpuVgaNonAdapter; */
-	InitMid->GnbMidConfiguration.iGpuVgaMode = 0;
-	return AGESA_SUCCESS;
 }
 
 /*----------------------------------------------------------------------------------------
@@ -218,7 +217,7 @@ static AGESA_STATUS OemInitMid(AMD_MID_PARAMS * InitMid)
  *  is populated, AGESA will base its settings on the data from the table. Otherwise, it will
  *  use its default conservative settings.
  */
-CONST PSO_ENTRY ROMDATA DefaultPlatformMemoryConfiguration[] = {
+static CONST PSO_ENTRY ROMDATA PlatformMemoryTable[] = {
 
   NUMBER_OF_DIMMS_SUPPORTED (ANY_SOCKET, ANY_CHANNEL, 2),
   NUMBER_OF_CHANNELS_SUPPORTED (ANY_SOCKET, 2),
@@ -232,7 +231,14 @@ CONST PSO_ENTRY ROMDATA DefaultPlatformMemoryConfiguration[] = {
   PSO_END
 };
 
-const struct OEM_HOOK OemCustomize = {
-	.InitEarly = OemInitEarly,
-	.InitMid = OemInitMid,
-};
+
+void board_BeforeInitPost(struct sysinfo *cb, AMD_POST_PARAMS *InitPost)
+{
+	InitPost->MemConfig.PlatformMemoryConfiguration = (PSO_ENTRY *)PlatformMemoryTable;
+}
+
+void board_BeforeInitMid(struct sysinfo *cb, AMD_MID_PARAMS *InitMid)
+{
+	/* 0 iGpuVgaAdapter, 1 iGpuVgaNonAdapter; */
+	InitMid->GnbMidConfiguration.iGpuVgaMode = 0;
+}

@@ -16,10 +16,6 @@
 #ifndef _PLATFORM_GNB_PCIE_COMPLEX_H
 #define _PLATFORM_GNB_PCIE_COMPLEX_H
 
-#include "Porting.h"
-#include "AGESA.h"
-#include "amdlib.h"
-
 //GNB GPP Port4
 #define GNB_GPP_PORT4_PORT_PRESENT      1  //0:Disable 1:Enable
 #define GNB_GPP_PORT4_SPEED_MODE        2  //0:Auto 1:GEN1 2:GEN2

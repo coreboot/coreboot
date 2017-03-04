@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <device/pnp_def.h>
 #include <northbridge/amd/agesa/state_machine.h>
 #include <superio/smsc/kbc1100/kbc1100.h>
 

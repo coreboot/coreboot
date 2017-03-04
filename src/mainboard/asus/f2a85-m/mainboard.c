@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-#include <northbridge/amd/agesa/agesawrapper.h>
+#include <northbridge/amd/agesa/state_machine.h>
 #include <northbridge/amd/agesa/BiosCallOuts.h>
 
 #include <arch/acpi.h>
@@ -45,9 +45,6 @@ static void mainboard_enable(device_t dev)
 	msr = rdmsr(0xC0011023);
 	msr.lo &= ~(1 << 23);
 	wrmsr(0xC0011023, msr);
-
-	if (acpi_is_wakeup_s3())
-		agesawrapper_fchs3earlyrestore();
 }
 
 struct chip_operations mainboard_ops = {

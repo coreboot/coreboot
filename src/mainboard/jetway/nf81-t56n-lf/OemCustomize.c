@@ -17,7 +17,7 @@
 #include "PlatformGnbPcieComplex.h"
 
 #include <string.h>
-#include <northbridge/amd/agesa/agesawrapper.h>
+#include <northbridge/amd/agesa/state_machine.h>
 #include <vendorcode/amd/agesa/f14/Proc/CPU/heapManager.h>
 #include <PlatformMemoryConfiguration.h>
 
@@ -35,7 +35,7 @@
  *
  **/
 
-static AGESA_STATUS OemInitEarly(AMD_EARLY_PARAMS * InitEarly)
+void board_BeforeInitEarly(struct sysinfo *cb, AMD_EARLY_PARAMS *InitEarly)
 {
 	AGESA_STATUS	 Status;
 	void	*BrazosPcieComplexListPtr;
@@ -176,7 +176,6 @@ PCIe_COMPLEX_DESCRIPTOR Brazos = {
 
 	InitEarly->GnbConfig.PcieComplexList = BrazosPcieComplexListPtr;
 	InitEarly->GnbConfig.PsppPolicy = 0;
-	return AGESA_SUCCESS;
 }
 
 /**
@@ -188,12 +187,13 @@ PCIe_COMPLEX_DESCRIPTOR Brazos = {
  * If PlatformSpecificTable is populated, AGESA will base its settings on the
  * data from the table. Otherwise, it will use its default conservative settings.
  */
-const PSO_ENTRY ROMDATA DefaultPlatformMemoryConfiguration[] = {
+static const PSO_ENTRY ROMDATA PlatformMemoryTable[] = {
 	NUMBER_OF_DIMMS_SUPPORTED (ANY_SOCKET, ANY_CHANNEL, 2),
 	NUMBER_OF_CHANNELS_SUPPORTED (ANY_SOCKET, 1),
 	PSO_END
 };
 
-const struct OEM_HOOK OemCustomize = {
-	.InitEarly = OemInitEarly,
-};
+void board_BeforeInitPost(struct sysinfo *cb, AMD_POST_PARAMS *InitPost)
+{
+	InitPost->MemConfig.PlatformMemoryConfiguration = (PSO_ENTRY *)PlatformMemoryTable;
+}

@@ -12,7 +12,6 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
-
 /**
  * @file
  *
@@ -44,7 +43,7 @@
 
 #define IDSOPT_IDS_ENABLED     TRUE
 //#define IDSOPT_CONTROL_ENABLED TRUE
-#define IDSOPT_TRACING_ENABLED TRUE
+//#define IDSOPT_TRACING_ENABLED TRUE
 //#define IDSOPT_PERF_ANALYSIS   TRUE
 #define IDSOPT_ASSERT_ENABLED  TRUE
 //#undef IDSOPT_DEBUG_ENABLED

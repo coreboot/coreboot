@@ -46,6 +46,8 @@ DefinitionBlock (
 		}
 	}   /* End Scope(_SB)  */
 
+	#include "acpi/superio.asl"
+
 	/* Contains the supported sleep states for this chipset */
 	#include <southbridge/amd/cimx/sb800/acpi/sleepstates.asl>
 

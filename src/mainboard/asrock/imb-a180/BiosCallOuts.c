@@ -17,13 +17,12 @@
 #include "AGESA.h"
 #include "amdlib.h"
 #include <northbridge/amd/agesa/BiosCallOuts.h>
+#include <northbridge/amd/agesa/state_machine.h>
 #include "Ids.h"
 #include "heapManager.h"
 #include "FchPlatform.h"
 #include "cbfs.h"
 #include <stdlib.h>
-
-static AGESA_STATUS Fch_Oem_config(UINT32 Func, UINTN FchData, VOID *ConfigPtr);
 
 const BIOS_CALLOUT_STRUCT BiosCallouts[] =
 {
@@ -34,7 +33,6 @@ const BIOS_CALLOUT_STRUCT BiosCallouts[] =
 	{AGESA_GET_IDS_INIT_DATA,        agesa_EmptyIdsInitData },
 	{AGESA_HOOKBEFORE_DQS_TRAINING,  agesa_NoopSuccess },
 	{AGESA_HOOKBEFORE_EXIT_SELF_REF, agesa_NoopSuccess },
-	{AGESA_FCH_OEM_CALLOUT,          Fch_Oem_config },
 	{AGESA_GNB_GFX_GET_VBIOS_IMAGE,  agesa_GfxGetVbiosImage }
 };
 const int BiosCalloutsLen = ARRAY_SIZE(BiosCallouts);
@@ -290,40 +288,16 @@ static void oem_fan_control(FCH_DATA_BLOCK *FchParams)
 }
 #endif
 
-/**
- * Fch Oem setting callback
- *
- *  Configure platform specific Hudson device,
- *   such Azalia, SATA, IMC etc.
- */
-static AGESA_STATUS Fch_Oem_config(UINT32 Func, UINTN FchData, VOID *ConfigPtr)
+
+void board_FCH_InitReset(struct sysinfo *cb_NA, FCH_RESET_DATA_BLOCK *FchParams_reset)
 {
-	AMD_CONFIG_PARAMS *StdHeader = ConfigPtr;
+}
 
-	if (StdHeader->Func == AMD_INIT_RESET) {
-		FCH_RESET_DATA_BLOCK *FchParams_reset = (FCH_RESET_DATA_BLOCK *)FchData;
-		printk(BIOS_DEBUG, "Fch OEM config in INIT RESET ");
-		//FchParams_reset->EcChannel0 = TRUE; /* logical devicd 3 */
-		FchParams_reset->FchReset.Xhci0Enable = IS_ENABLED(CONFIG_HUDSON_XHCI_ENABLE);
-		FchParams_reset->FchReset.Xhci1Enable = FALSE;
-	} else if (StdHeader->Func == AMD_INIT_ENV) {
-		FCH_DATA_BLOCK *FchParams_env = (FCH_DATA_BLOCK *)FchData;
-		printk(BIOS_DEBUG, "Fch OEM config in INIT ENV ");
+void board_FCH_InitEnv(struct sysinfo *cb_NA, FCH_DATA_BLOCK *FchParams_env)
+{
+	/* Azalia Controller OEM Cqodec Table Pointer */
+	FchParams_env->Azalia.AzaliaOemCodecTablePtr = (CODEC_TBL_LIST*)CodecTableList;
 
-		/* Azalia Controller OEM Codec Table Pointer */
-		FchParams_env->Azalia.AzaliaOemCodecTablePtr = (CODEC_TBL_LIST*)CodecTableList;
-		/* Azalia Controller Front Panel OEM Table Pointer */
-
-		/* Fan Control */
-		//oem_fan_control(FchParams_env);
-
-		/* XHCI configuration */
-		FchParams_env->Usb.Xhci0Enable = IS_ENABLED(CONFIG_HUDSON_XHCI_ENABLE);
-		FchParams_env->Usb.Xhci1Enable = FALSE;
-
-		/* sata configuration */
-	}
-	printk(BIOS_DEBUG, "Done\n");
-
-	return AGESA_SUCCESS;
+	/* Fan Control */
+	//oem_fan_control(FchParams_env);
 }

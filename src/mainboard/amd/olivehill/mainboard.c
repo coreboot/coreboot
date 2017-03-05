@@ -22,7 +22,6 @@
 #include <device/pci_def.h>
 #include <arch/acpi.h>
 #include <northbridge/amd/agesa/BiosCallOuts.h>
-#include <cpu/amd/agesa/s3_resume.h>
 #include <northbridge/amd/agesa/agesawrapper.h>
 
 /**********************************************

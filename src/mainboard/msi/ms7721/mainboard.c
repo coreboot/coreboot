@@ -19,7 +19,6 @@
 #include <arch/acpi.h>
 #include <arch/io.h>
 #include <console/console.h>
-#include <cpu/amd/agesa/s3_resume.h>
 #include <cpu/x86/msr.h>
 #include <device/device.h>
 #include <device/pci.h>

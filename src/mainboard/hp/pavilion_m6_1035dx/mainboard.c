@@ -21,7 +21,6 @@
 #include <arch/io.h>
 #include <console/console.h>
 #include <cpu/x86/msr.h>
-#include <cpu/amd/agesa/s3_resume.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_def.h>

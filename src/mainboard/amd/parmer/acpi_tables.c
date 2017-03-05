@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <northbridge/amd/agesa/agesawrapper.h>
 
 #include <console/console.h>
 #include <string.h>

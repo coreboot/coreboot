@@ -25,6 +25,7 @@
 #include <string.h>
 #include <halt.h>
 #include "s3_resume.h"
+#include <northbridge/amd/agesa/agesa_helper.h>
 
 static void move_stack_high_mem(void)
 {

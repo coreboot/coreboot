@@ -17,7 +17,7 @@
 #include "heapManager.h"
 
 #include <cbmem.h>
-#include <cpu/amd/agesa/s3_resume.h>
+#include <northbridge/amd/agesa/agesa_helper.h>
 #include <northbridge/amd/agesa/BiosCallOuts.h>
 
 #include <arch/acpi.h>

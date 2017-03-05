@@ -16,6 +16,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <cpu/x86/mtrr.h>
+#include <northbridge/amd/agesa/agesa_helper.h>
 #include <northbridge/amd/agesa/agesawrapper.h>
 #include <northbridge/amd/agesa/BiosCallOuts.h>
 #include "cpuRegisters.h"
@@ -30,7 +31,6 @@
 #include "heapManager.h"
 #include "FchPlatform.h"
 #include "Fch.h"
-#include <cpu/amd/agesa/s3_resume.h>
 #include <arch/io.h>
 #include <device/device.h>
 #include "hudson.h"

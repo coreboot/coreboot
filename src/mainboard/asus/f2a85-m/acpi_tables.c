@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <northbridge/amd/agesa/agesawrapper.h>
 
 #include <arch/acpi.h>
 #include <arch/acpigen.h>

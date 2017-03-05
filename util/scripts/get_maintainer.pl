@@ -297,11 +297,6 @@ if ($email &&
     die "$P: Please select at least 1 email option\n";
 }
 
-if (!top_of_kernel_tree($lk_path)) {
-    die "$P: The current directory does not appear to be "
-	. "a linux kernel source tree.\n";
-}
-
 ## Read MAINTAINERS for type/value pairs
 
 my @typevalue = ();

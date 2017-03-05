@@ -16,6 +16,8 @@
 #ifndef _AGESA_HELPER_H_
 #define _AGESA_HELPER_H_
 
+#include <stddef.h>
+
 enum {
 	PICK_DMI,       /* DMI Interface */
 	PICK_PSTATE,    /* Acpi Pstate SSDT Table */
@@ -32,5 +34,22 @@ void *agesawrapper_getlateinitptr (int pick);
 void amd_initcpuio(void);
 void amd_initmmio(void);
 void amd_initenv(void);
+
+void *GetHeapBase(void);
+void EmptyHeap(void);
+void ResumeHeap(void **heap, size_t *len);
+
+#define BSP_STACK_BASE_ADDR		0x30000
+
+#if 1
+/* This covers node 0 only. */
+#define HIGH_ROMSTAGE_STACK_SIZE	(0x48000 - BSP_STACK_BASE_ADDR)
+#else
+/* This covers total of 8 nodes. */
+#define HIGH_ROMSTAGE_STACK_SIZE	(0xA0000 - BSP_STACK_BASE_ADDR)
+#endif
+
+#define HIGH_MEMORY_SCRATCH		0x30000
+
 
 #endif /* _AGESA_HELPER_H_ */

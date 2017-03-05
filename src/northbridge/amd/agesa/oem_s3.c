@@ -21,6 +21,7 @@
 #include <cpu/amd/agesa/s3_resume.h>
 #include <northbridge/amd/agesa/agesawrapper.h>
 #include <AGESA.h>
+#include <northbridge/amd/agesa/agesa_helper.h>
 
 typedef enum {
 	S3DataTypeNonVolatile = 0,	///< NonVolatile Data Type

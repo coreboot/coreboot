@@ -28,6 +28,7 @@
 #include <commonlib/loglevel.h>
 #include <cpu/amd/car.h>
 #include <northbridge/amd/agesa/agesawrapper.h>
+#include <northbridge/amd/agesa/agesa_helper.h>
 #include <cpu/x86/bist.h>
 #include <cpu/x86/lapic.h>
 #include <southbridge/amd/agesa/hudson/hudson.h>

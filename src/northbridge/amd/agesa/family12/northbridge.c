@@ -33,6 +33,7 @@
 
 #include "sb_cimx.h"
 #include <northbridge/amd/agesa/agesawrapper.h>
+#include <northbridge/amd/agesa/agesa_helper.h>
 
 #define FX_DEVS 1
 

@@ -32,9 +32,9 @@
 #include <cpu/amd/mtrr.h>
 
 #include <northbridge/amd/agesa/agesawrapper.h>
-#if CONFIG_AMD_SB_CIMX
+#include <northbridge/amd/agesa/agesa_helper.h>
+
 #include <sb_cimx.h>
-#endif
 
 #define FX_DEVS 1
 

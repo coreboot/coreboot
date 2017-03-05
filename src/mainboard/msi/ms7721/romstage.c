@@ -16,6 +16,7 @@
  */
 
 #include <northbridge/amd/agesa/agesawrapper.h>
+#include <northbridge/amd/agesa/agesa_helper.h>
 
 #include <arch/acpi.h>
 #include <arch/cpu.h>

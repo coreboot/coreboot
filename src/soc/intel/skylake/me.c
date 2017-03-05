@@ -30,12 +30,12 @@
 
 static inline u32 me_read_config32(int offset)
 {
-	return pci_read_config32(PCH_DEV_ME, offset);
+	return pci_read_config32(PCH_DEV_CSE, offset);
 }
 
 static inline void me_write_config32(int offset, u32 value)
 {
-	pci_write_config32(PCH_DEV_ME, offset, value);
+	pci_write_config32(PCH_DEV_CSE, offset, value);
 }
 
 static inline u32 me_read_mmio32(int offset)

@@ -48,7 +48,7 @@ static void configure_host_mode_port0(struct device *dev)
 	const struct resource *res;
 	uint32_t reg;
 	struct stopwatch sw;
-	struct device *xhci_dev = XHCI_DEV;
+	struct device *xhci_dev = PCH_DEV_XHCI;
 
 	/*
 	 * Only default to host mode if the xdci device is present and

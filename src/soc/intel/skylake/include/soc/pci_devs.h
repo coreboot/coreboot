@@ -14,8 +14,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef _SOC_PCI_DEVS_H_
-#define _SOC_PCI_DEVS_H_
+#ifndef _SOC_SKYLAKE_PCI_DEVS_H_
+#define _SOC_SKYLAKE_PCI_DEVS_H_
 
 #include <device/pci_def.h>
 #include <rules.h>
@@ -23,7 +23,7 @@
 #define _SA_DEVFN(slot)		PCI_DEVFN(SA_DEV_SLOT_ ## slot, 0)
 #define _PCH_DEVFN(slot, func)	PCI_DEVFN(PCH_DEV_SLOT_ ## slot, func)
 
-#if ENV_RAMSTAGE && !defined(__SIMPLE_DEVICE__)
+#if !defined(__SIMPLE_DEVICE__)
 #include <device/device.h>
 #include <device/pci_def.h>
 #define _SA_DEV(slot)		dev_find_slot(0, _SA_DEVFN(slot))
@@ -72,17 +72,17 @@
 #define  PCH_DEV_I2C2		_PCH_DEV(SIO1, 2)
 #define  PCH_DEV_I2C3		_PCH_DEV(SIO1, 3)
 
-#define PCH_DEV_SLOT_ME		0x16
-#define  PCH_DEVFN_ME		_PCH_DEVFN(ME, 0)
-#define  PCH_DEVFN_ME_2		_PCH_DEVFN(ME, 1)
-#define  PCH_DEVFN_ME_IDER	_PCH_DEVFN(ME, 2)
-#define  PCH_DEVFN_ME_KT	_PCH_DEVFN(ME, 3)
-#define  PCH_DEVFN_ME_3		_PCH_DEVFN(ME, 4)
-#define  PCH_DEV_ME		_PCH_DEV(ME, 0)
-#define  PCH_DEV_ME_2		_PCH_DEV(ME, 1)
-#define  PCH_DEV_ME_IDER	_PCH_DEV(ME, 2)
-#define  PCH_DEV_ME_KT		_PCH_DEV(ME, 3)
-#define  PCH_DEV_ME_3		_PCH_DEV(ME, 4)
+#define PCH_DEV_SLOT_CSE	0x16
+#define  PCH_DEVFN_CSE		_PCH_DEVFN(CSE, 0)
+#define  PCH_DEVFN_CSE_2	_PCH_DEVFN(CSE, 1)
+#define  PCH_DEVFN_CSE_IDER	_PCH_DEVFN(CSE, 2)
+#define  PCH_DEVFN_CSE_KT	_PCH_DEVFN(CSE, 3)
+#define  PCH_DEVFN_CSE_3	_PCH_DEVFN(CSE, 4)
+#define  PCH_DEV_CSE		_PCH_DEV(CSE, 0)
+#define  PCH_DEV_CSE_2		_PCH_DEV(CSE, 1)
+#define  PCH_DEV_CSE_IDER	_PCH_DEV(CSE, 2)
+#define  PCH_DEV_CSE_KT		_PCH_DEV(CSE, 3)
+#define  PCH_DEV_CSE_3		_PCH_DEV(CSE, 4)
 
 #define PCH_DEV_SLOT_SATA	0x17
 #define  PCH_DEVFN_SATA		_PCH_DEVFN(SATA, 0)

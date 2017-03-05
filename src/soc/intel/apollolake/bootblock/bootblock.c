@@ -51,7 +51,7 @@ static void enable_cmos_upper_bank(void)
 
 asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 {
-	device_t dev = NB_DEV_ROOT;
+	device_t dev = SA_DEV_ROOT;
 
 	/* Set PCI Express BAR */
 	pci_io_write_config32(dev, PCIEXBAR, CONFIG_MMCONF_BASE_ADDRESS | 1);
@@ -62,7 +62,7 @@ asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 	 */
 	pci_write_config32(dev, TSEG, 0);
 
-	dev = P2SB_DEV;
+	dev = PCH_DEV_P2SB;
 	/* BAR and MMIO enable for IOSF, so that GPIOs can be configured */
 	pci_write_config32(dev, PCI_BASE_ADDRESS_0, CONFIG_IOSF_BASE_ADDRESS);
 	pci_write_config32(dev, PCI_BASE_ADDRESS_1, 0);
@@ -70,7 +70,7 @@ asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 				PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
 
 	/* Decode the ACPI I/O port range for early firmware verification.*/
-	dev = PMC_DEV;
+	dev = PCH_DEV_PMC;
 	pci_write_config16(dev, PCI_BASE_ADDRESS_4, ACPI_PMIO_BASE);
 	pci_write_config16(dev, PCI_COMMAND,
 				PCI_COMMAND_IO | PCI_COMMAND_MASTER);
@@ -111,7 +111,7 @@ static void cache_bios_region(void)
  */
 static void enable_spibar(void)
 {
-	device_t dev = SPI_DEV;
+	device_t dev = PCH_DEV_SPI;
 	uint8_t val;
 
 	/* Disable Bus Master and MMIO space. */
@@ -135,7 +135,7 @@ static void enable_spibar(void)
 
 static void enable_pmcbar(void)
 {
-	device_t pmc = PMC_DEV;
+	device_t pmc = PCH_DEV_PMC;
 
 	/* Set PMC base addresses and enable decoding. */
 	pci_write_config32(pmc, PCI_BASE_ADDRESS_0, PMC_BAR0);

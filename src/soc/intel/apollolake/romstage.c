@@ -80,10 +80,10 @@ static uint32_t fsp_version CAR_GLOBAL;
 static void soc_early_romstage_init(void)
 {
 	/* Set MCH base address and enable bit */
-	pci_write_config32(NB_DEV_ROOT, MCHBAR, MCH_BASE_ADDR | 1);
+	pci_write_config32(SA_DEV_ROOT, MCHBAR, MCH_BASE_ADDR | 1);
 
 	/* Enable decoding for HPET. Needed for FSP global pointer storage */
-	pci_write_config8(P2SB_DEV, P2SB_HPTC, P2SB_HPTC_ADDRESS_SELECT_0 |
+	pci_write_config8(PCH_DEV_P2SB, P2SB_HPTC, P2SB_HPTC_ADDRESS_SELECT_0 |
 						P2SB_HPTC_ADDRESS_ENABLE);
 }
 
@@ -140,7 +140,7 @@ static bool punit_init(void)
 		return false;
 	}
 	/* Set Punit interrupt pin IPIN offset 3D */
-	pci_write_config8(PUNIT_DEVFN, PCI_INTERRUPT_PIN, 0x2);
+	pci_write_config8(SA_DEV_PUNIT, PCI_INTERRUPT_PIN, 0x2);
 
 	/* Set PUINT IRQ to 24 and INTPIN LOCK */
 	write32((void *)(MCH_BASE_ADDR + PUNIT_THERMAL_DEVICE_IRQ),

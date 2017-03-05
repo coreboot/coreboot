@@ -29,9 +29,9 @@
 static inline int i2c_bus_to_devfn(unsigned int bus)
 {
 	if (bus >= 0 && bus <= 3)
-		return PCI_DEVFN(LPSS_DEV_SLOT_I2C_D0, bus);
+		return PCI_DEVFN(PCH_DEV_SLOT_SIO1, bus);
 	else if (bus >= 4 && bus <= 7)
-		return PCI_DEVFN(LPSS_DEV_SLOT_I2C_D1, (bus - 4));
+		return PCI_DEVFN(PCH_DEV_SLOT_SIO2, (bus - 4));
 	else
 		return -1;
 }
@@ -39,9 +39,9 @@ static inline int i2c_bus_to_devfn(unsigned int bus)
 /* Convert PCI device and function to I2C bus number */
 static inline int i2c_devfn_to_bus(unsigned int devfn)
 {
-	if (PCI_SLOT(devfn) == LPSS_DEV_SLOT_I2C_D0)
+	if (PCI_SLOT(devfn) == PCH_DEV_SLOT_SIO1)
 		return PCI_FUNC(devfn);
-	else if (PCI_SLOT(devfn) == LPSS_DEV_SLOT_I2C_D1)
+	else if (PCI_SLOT(devfn) == PCH_DEV_SLOT_SIO2)
 		return PCI_FUNC(devfn) + 4;
 	else
 		return -1;

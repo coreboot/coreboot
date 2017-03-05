@@ -32,7 +32,7 @@ static void aplk_uart_read_resources(struct device *dev)
 	pci_dev_read_resources(dev);
 
 	if ((IS_ENABLED(CONFIG_SOC_UART_DEBUG) &&
-	    dev->path.pci.devfn == _LPSS_PCI_DEVFN(UART,
+	    dev->path.pci.devfn == _PCH_DEVFN(UART,
 						CONFIG_UART_FOR_CONSOLE))) {
 		/* will override existing resource. */
 		fixed_mem_resource(dev, PCI_BASE_ADDRESS_0,

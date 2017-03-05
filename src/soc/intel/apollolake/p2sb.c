@@ -34,7 +34,7 @@ static void p2sb_set_hide_bit(int hide)
 	const uint8_t mask = HIDE_BIT;
 	uint8_t val;
 
-	dev = P2SB_DEV;
+	dev = PCH_DEV_P2SB;
 
 	val = pci_read_config8(dev, reg);
 	val &= ~mask;

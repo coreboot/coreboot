@@ -34,7 +34,7 @@
 
 int smm_disable_busmaster(device_t dev)
 {
-	if (dev == PMC_DEV)
+	if (dev == PCH_DEV_PMC)
 		return 0;
 	return 1;
 }

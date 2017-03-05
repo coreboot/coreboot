@@ -66,9 +66,9 @@ void lpc_enable_fixed_io_ranges(uint16_t io_enables)
 {
 	uint16_t reg_io_enables;
 
-	reg_io_enables = pci_read_config16(LPC_DEV, REG_IO_ENABLES);
+	reg_io_enables = pci_read_config16(PCH_DEV_LPC, REG_IO_ENABLES);
 	io_enables |= reg_io_enables;
-	pci_write_config16(LPC_DEV, REG_IO_ENABLES, io_enables);
+	pci_write_config16(PCH_DEV_LPC, REG_IO_ENABLES, io_enables);
 }
 
 /*
@@ -81,7 +81,7 @@ static int find_unused_pmio_window(void)
 	uint32_t lgir;
 
 	for (i = 0; i < NUM_GENERIC_IO_RANGES; i++) {
-		lgir = pci_read_config32(LPC_DEV, REG_GENERIC_IO_RANGE(i));
+		lgir = pci_read_config32(PCH_DEV_LPC, REG_GENERIC_IO_RANGE(i));
 
 		if (!(lgir & LGIR_EN))
 			return i;
@@ -95,7 +95,7 @@ void lpc_close_pmio_windows(void)
 	size_t i;
 
 	for (i = 0; i < NUM_GENERIC_IO_RANGES; i++)
-		pci_write_config32(LPC_DEV, REG_GENERIC_IO_RANGE(i), 0);
+		pci_write_config32(PCH_DEV_LPC, REG_GENERIC_IO_RANGE(i), 0);
 }
 
 void lpc_open_pmio_window(uint16_t base, uint16_t size)
@@ -132,7 +132,7 @@ void lpc_open_pmio_window(uint16_t base, uint16_t size)
 		lgir = (bridge_base & LGIR_ADDR_MASK) | LGIR_EN;
 		lgir |= ((window_size - 1) << 16) & LGIR_AMASK_MASK;
 
-		pci_write_config32(LPC_DEV, lgir_reg_offset, lgir);
+		pci_write_config32(PCH_DEV_LPC, lgir_reg_offset, lgir);
 
 		printk(BIOS_DEBUG,
 		       "LPC: Opened IO window LGIR%d: base %llx size %x\n",
@@ -147,7 +147,7 @@ void lpc_open_mmio_window(uintptr_t base, size_t size)
 {
 	uint32_t lgmr;
 
-	lgmr = pci_read_config32(LPC_DEV, REG_GENERIC_MEM_RANGE);
+	lgmr = pci_read_config32(PCH_DEV_LPC, REG_GENERIC_MEM_RANGE);
 
 	if (lgmr & LGMR_EN) {
 		printk(BIOS_ERR,
@@ -165,7 +165,7 @@ void lpc_open_mmio_window(uintptr_t base, size_t size)
 
 	lgmr = (base & LGMR_ADDR_MASK) | LGMR_EN;
 
-	pci_write_config32(LPC_DEV, REG_GENERIC_MEM_RANGE, lgmr);
+	pci_write_config32(PCH_DEV_LPC, REG_GENERIC_MEM_RANGE, lgmr);
 }
 
 bool lpc_fits_fixed_mmio_window(uintptr_t base, size_t size)

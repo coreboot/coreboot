@@ -39,7 +39,7 @@ static inline int invalid_uart_for_console(void)
 void lpss_console_uart_init(void)
 {
 	uint32_t clk_sel;
-	device_t uart = _LPSS_PCI_DEV(UART, CONFIG_UART_FOR_CONSOLE & 3);
+	device_t uart = _PCH_DEV(UART, CONFIG_UART_FOR_CONSOLE & 3);
 
 	if (invalid_uart_for_console())
 		return;

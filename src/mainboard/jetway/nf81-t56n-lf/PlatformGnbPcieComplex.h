@@ -17,9 +17,6 @@
 #ifndef _PLATFORM_GNB_PCIE_COMPLEX_H
 #define _PLATFORM_GNB_PCIE_COMPLEX_H
 
-#include <vendorcode/amd/agesa/f14/AGESA.h>
-#include <amdlib.h>
-
 /**
  * @brief Graphic NorthBridge (GNB) General Purpose Port (GPP)
  *

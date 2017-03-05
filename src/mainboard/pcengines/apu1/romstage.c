@@ -30,6 +30,7 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/amd/car.h>
 #include <northbridge/amd/agesa/agesawrapper.h>
+#include <northbridge/amd/agesa/agesa_helper.h>
 #include <southbridge/amd/cimx/cimx_util.h>
 #include <cpu/x86/bist.h>
 #include <cpu/x86/cache.h>

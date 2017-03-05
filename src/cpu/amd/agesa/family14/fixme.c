@@ -14,7 +14,9 @@
  */
 
 #include <cpu/x86/mtrr.h>
-#include <northbridge/amd/agesa/agesawrapper.h>
+
+#include <northbridge/amd/agesa/agesa_helper.h>
+#include <AGESA.h>
 #include "amdlib.h"
 
 /* Define AMD Ontario APPU SSID/SVID */

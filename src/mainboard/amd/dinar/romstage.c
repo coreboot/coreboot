@@ -26,6 +26,7 @@
 #include <commonlib/loglevel.h>
 #include <cpu/amd/car.h>
 #include <northbridge/amd/agesa/agesawrapper.h>
+#include <northbridge/amd/agesa/agesa_helper.h>
 #include <cpu/x86/bist.h>
 #include <superio/smsc/sch4037/sch4037.h>
 #include <superio/smsc/sio1036/sio1036.h>

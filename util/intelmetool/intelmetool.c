@@ -137,7 +137,8 @@ static int pci_platform_scan() {
 		}
 	}
 
-	if (!PCI_DEV_HAS_ME_DISABLE(dev->device_id) &&
+	if (dev != NULL &&
+	!PCI_DEV_HAS_ME_DISABLE(dev->device_id) &&
 	!PCI_DEV_HAS_ME_DIFFICULT(dev->device_id) &&
 	!PCI_DEV_CAN_DISABLE_ME_IF_PRESENT(dev->device_id) &&
 	!PCI_DEV_ME_NOT_SURE(dev->device_id)) {

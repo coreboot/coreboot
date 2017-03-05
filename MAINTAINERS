@@ -144,7 +144,7 @@ F:	src/ec/lenovo/
 
 LENOVO MAINBOARDS
 M:	Alexander Couzens <lynxis@fe80.eu>
-M:      Patrick Rudolph <siro@das-labor.org>
+M:	Patrick Rudolph <siro@das-labor.org>
 S:	Maintained
 F:	src/mainboard/lenovo/
 
@@ -306,6 +306,7 @@ F:	src/drivers/ati/mach64/
 
 ABUILD
 M:	Patrick Georgi <patrick@georgi-clan.de>
+M:	Martin Roth <gaumless@gmail.com>
 S:	Supported
 F:	util/abuild/
 
@@ -348,8 +349,8 @@ F:	src/include/pc80/
 F:	src/include/cpu/x86/
 
 INTEL SUPPORT
-M:      Patrick Rudolph <siro@das-labor.org>
-S:      Maintained
+M:	Patrick Rudolph <siro@das-labor.org>
+S:	Maintained
 F:	src/vendorcode/intel/
 F:	src/cpu/intel/
 F:	src/northbridge/intel/
@@ -404,6 +405,8 @@ F:	*.inc
 F:	src/include/kconfig.h
 F:	util/kconfig/
 F:	util/sconfig/
+F:	util/xcompile/
+F:	util/genbuild_h/
 
 BOARD STATUS
 M:	Martin Roth <gaumless@gmail.com>
@@ -472,6 +475,22 @@ F:	src/security/tpm12/
 F:	src/security/tpm20/
 F:	util/tss-generator/
 
+DOCKER
+M:	Martin Roth <gaumless@gmail.com>
+S:	Supported
+F:	util/docker/
+
+TOOLCHAIN
+M:	Martin Roth <gaumless@gmail.com>
+S:	Supported
+F:	util/crossgcc/
+
+GIT
+M:	Martin Roth <gaumless@gmail.com>
+S:	Supported
+F:	.git*
+F:	/util/gitconfig
+
 MISSING: TIMERS / DELAYS
 
 MISSING: TIMESTAMPS
@@ -490,13 +509,10 @@ MISSING: DMP / QEMU-X86
 
 MISSING: ELOG
 
-MISSING: GENERIC DRAM (should drop)
-
 MISSING: SPI
 
 THE REST
 M:	Stefan Reinauer <stefan.reinauer@coreboot.org>
-L:	coreboot@coreboot.org
 T:	git http://review.coreboot.org/coreboot
 S:	Buried alive in mainboards
 F:	*

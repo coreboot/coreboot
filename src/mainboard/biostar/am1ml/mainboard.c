@@ -25,7 +25,7 @@
 #include <device/pci_def.h>
 #include <arch/acpi.h>
 #include <northbridge/amd/agesa/BiosCallOuts.h>
-#include <northbridge/amd/agesa/agesawrapper.h>
+#include <northbridge/amd/agesa/state_machine.h>
 #include <southbridge/amd/agesa/hudson/pci_devs.h>
 #include <southbridge/amd/agesa/hudson/amd_pci_int_defs.h>
 #include <southbridge/amd/common/amd_pci_util.h>
@@ -110,9 +110,6 @@ static void pirq_setup(void)
 static void mainboard_enable(device_t dev)
 {
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
-
-	if (acpi_is_wakeup_s3())
-		agesawrapper_fchs3earlyrestore();
 
 	/* Initialize the PIRQ data structures for consumption */
 	pirq_setup();

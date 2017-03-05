@@ -18,13 +18,12 @@
 #include "AGESA.h"
 #include "amdlib.h"
 #include <northbridge/amd/agesa/BiosCallOuts.h>
+#include <northbridge/amd/agesa/state_machine.h>
 #include "Ids.h"
 #include "heapManager.h"
 #include "FchPlatform.h"
 #include "cbfs.h"
 #include <stdlib.h>
-
-static AGESA_STATUS Fch_Oem_config(UINT32 Func, UINTN FchData, VOID *ConfigPtr);
 
 const BIOS_CALLOUT_STRUCT BiosCallouts[] =
 {
@@ -35,7 +34,6 @@ const BIOS_CALLOUT_STRUCT BiosCallouts[] =
 	{AGESA_GET_IDS_INIT_DATA,        agesa_EmptyIdsInitData },
 	{AGESA_HOOKBEFORE_DQS_TRAINING,  agesa_NoopSuccess },
 	{AGESA_HOOKBEFORE_EXIT_SELF_REF, agesa_NoopSuccess },
-	{AGESA_FCH_OEM_CALLOUT,          Fch_Oem_config },
 	{AGESA_GNB_GFX_GET_VBIOS_IMAGE,  agesa_GfxGetVbiosImage }
 };
 const int BiosCalloutsLen = ARRAY_SIZE(BiosCallouts);
@@ -97,63 +95,37 @@ static const CODEC_TBL_LIST CodecTableList[] =
 #define FREQ_14HZ			0xFE
 #define FREQ_11HZ			0xFF
 
-
-
-/**
- * Fch Oem setting callback
- *
- *  Configure platform specific Hudson device,
- *   such Azalia, SATA, IMC etc.
- */
-static AGESA_STATUS Fch_Oem_config(UINT32 Func, UINTN FchData, VOID *ConfigPtr)
+void board_FCH_InitReset(struct sysinfo *cb_NA, FCH_RESET_DATA_BLOCK *FchParams_reset)
 {
-	AMD_CONFIG_PARAMS *StdHeader = ConfigPtr;
+	FchParams_reset->LegacyFree = IS_ENABLED(CONFIG_HUDSON_LEGACY_FREE);
+	FchParams_reset->Mode = 6;
+}
 
-	if (StdHeader->Func == AMD_INIT_RESET) {
-		FCH_RESET_DATA_BLOCK *FchParams_reset = (FCH_RESET_DATA_BLOCK *)FchData;
-		printk(BIOS_DEBUG, "Fch OEM config in INIT RESET ");
-		FchParams_reset->FchReset.Xhci0Enable = IS_ENABLED(CONFIG_HUDSON_XHCI_ENABLE);
-		FchParams_reset->FchReset.Xhci1Enable = FALSE;
-		FchParams_reset->LegacyFree = IS_ENABLED(CONFIG_HUDSON_LEGACY_FREE);
-		FchParams_reset->FchReset.SataEnable = 1;
-		FchParams_reset->FchReset.IdeEnable = 0;
-		FchParams_reset->Mode = 6;
-	} else if (StdHeader->Func == AMD_INIT_ENV) {
-		FCH_DATA_BLOCK *FchParams_env = (FCH_DATA_BLOCK *)FchData;
-		printk(BIOS_DEBUG, "Fch OEM config in INIT ENV ");
+void board_FCH_InitEnv(struct sysinfo *cb_NA, FCH_DATA_BLOCK *FchParams_env)
+{
+	/* Azalia Controller OEM Codec Table Pointer */
+	FchParams_env->Azalia.AzaliaOemCodecTablePtr = (CODEC_TBL_LIST *)(&CodecTableList[0]);
 
-		/* Azalia Controller OEM Codec Table Pointer */
-		FchParams_env->Azalia.AzaliaOemCodecTablePtr = (CODEC_TBL_LIST*)(&CodecTableList[0]);
-		/* Azalia Controller Front Panel OEM Table Pointer */
+	/* Fan Control */
+	FchParams_env->Imc.ImcEnable = FALSE;
+	FchParams_env->Hwm.HwMonitorEnable = FALSE;
+	FchParams_env->Hwm.HwmFchtsiAutoPoll = FALSE;/* 1 enable, 0 disable TSI Auto Polling */
 
-		FchParams_env->Imc.ImcEnable = FALSE;
-		FchParams_env->Hwm.HwMonitorEnable = FALSE;
-		FchParams_env->Hwm.HwmFchtsiAutoPoll = FALSE;/* 1 enable, 0 disable TSI Auto Polling */
+	FchParams_env->Sata.SataClass = CONFIG_HUDSON_SATA_MODE;
+	switch ((SATA_CLASS)CONFIG_HUDSON_SATA_MODE) { // code from olivehillplus (ft3b) - only one place where sata is configured
+	case SataLegacyIde:
+	case SataRaid:
+	case SataAhci:
+	case SataAhci7804:
+		FchParams_env->Sata.SataIdeMode = FALSE;
+		printk(BIOS_DEBUG, "AHCI or RAID or IDE = %x\n", CONFIG_HUDSON_SATA_MODE);
+		break;
 
-		/* sata configuration */
-		printk(BIOS_DEBUG, "Configuring SATA: selected mode = ");
-		FchParams_env->Sata.SataClass = CONFIG_HUDSON_SATA_MODE;
-		switch ((SATA_CLASS)CONFIG_HUDSON_SATA_MODE) { // code from olivehillplus (ft3b) - only one place where sata is configured
-		case SataLegacyIde:
-		case SataRaid:
-		case SataAhci:
-		case SataAhci7804:
-			FchParams_env->Sata.SataIdeMode = FALSE;
-			printk(BIOS_DEBUG, "AHCI or RAID or IDE = %x\n", CONFIG_HUDSON_SATA_MODE);
-			break;
-
-		case SataIde2Ahci:
-		case SataIde2Ahci7804:
-		default: /* SataNativeIde */
-			FchParams_env->Sata.SataIdeMode = TRUE;
-			printk(BIOS_DEBUG, "IDE2AHCI = %x\n", CONFIG_HUDSON_SATA_MODE);
-			break;
-		}
-		/* XHCI configuration */
-		FchParams_env->Usb.Xhci0Enable = IS_ENABLED(CONFIG_HUDSON_XHCI_ENABLE);
-		FchParams_env->Usb.Xhci1Enable = FALSE;
+	case SataIde2Ahci:
+	case SataIde2Ahci7804:
+	default: /* SataNativeIde */
+		FchParams_env->Sata.SataIdeMode = TRUE;
+		printk(BIOS_DEBUG, "IDE2AHCI = %x\n", CONFIG_HUDSON_SATA_MODE);
+		break;
 	}
-	printk(BIOS_DEBUG, "Done\n");
-
-	return AGESA_SUCCESS;
 }

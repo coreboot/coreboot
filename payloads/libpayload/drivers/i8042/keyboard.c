@@ -41,6 +41,7 @@ struct layout_maps {
 };
 
 static struct layout_maps *map;
+static int modifier = 0;
 
 static struct layout_maps keyboard_layouts[] = {
 #if IS_ENABLED(CONFIG_LP_PC_KEYBOARD_LAYOUT_US)
@@ -158,11 +159,6 @@ static struct layout_maps keyboard_layouts[] = {
 #endif
 };
 
-#define MOD_SHIFT    (1 << 0)
-#define MOD_CTRL     (1 << 1)
-#define MOD_CAPSLOCK (1 << 2)
-#define MOD_ALT      (1 << 3)
-
 static unsigned char keyboard_cmd(unsigned char cmd)
 {
 	i8042_write_data(cmd);
@@ -177,12 +173,56 @@ int keyboard_havechar(void)
 
 unsigned char keyboard_get_scancode(void)
 {
-	return i8042_read_data_ps2();
+	unsigned char ch;
+
+	while (!keyboard_havechar()) ;
+
+	ch = i8042_read_data_ps2();
+
+	switch (ch) {
+	case 0x36:
+	case 0x2a:
+		modifier |= KB_MOD_SHIFT;
+		break;
+	case 0x80 | 0x36:
+	case 0x80 | 0x2a:
+		modifier &= ~KB_MOD_SHIFT;
+		break;
+	case 0x38:
+		modifier |= KB_MOD_ALT;
+		break;
+	case 0x80 | 0x38:
+		modifier &= ~KB_MOD_ALT;
+		break;
+	case 0x1d:
+		modifier |= KB_MOD_CTRL;
+		break;
+	case 0x80 | 0x1d:
+		modifier &= ~KB_MOD_CTRL;
+		break;
+	case 0x3a:
+		if (modifier & KB_MOD_CAPSLOCK) {
+			modifier &= ~KB_MOD_CAPSLOCK;
+			if (keyboard_cmd(0xed))
+				keyboard_cmd(0 << 2);
+		} else {
+			modifier |= KB_MOD_CAPSLOCK;
+			if (keyboard_cmd(0xed))
+				keyboard_cmd(1 << 2);
+		}
+		break;
+	}
+
+	return ch;
+}
+
+int keyboard_getmodifier(void)
+{
+	return modifier;
 }
 
 int keyboard_getchar(void)
 {
-	static int modifier = 0;
 	unsigned char ch;
 	int shift;
 	int ret = 0;
@@ -191,57 +231,23 @@ int keyboard_getchar(void)
 
 	ch = keyboard_get_scancode();
 
-	switch (ch) {
-	case 0x36:
-	case 0x2a:
-		modifier |= MOD_SHIFT;
-		break;
-	case 0x80 | 0x36:
-	case 0x80 | 0x2a:
-		modifier &= ~MOD_SHIFT;
-		break;
-	case 0x38:
-		modifier |= MOD_ALT;
-		break;
-	case 0x80 | 0x38:
-		modifier &= ~MOD_ALT;
-		break;
-	case 0x1d:
-		modifier |= MOD_CTRL;
-		break;
-	case 0x80 | 0x1d:
-		modifier &= ~MOD_CTRL;
-		break;
-	case 0x3a:
-		if (modifier & MOD_CAPSLOCK) {
-			modifier &= ~MOD_CAPSLOCK;
-			if (keyboard_cmd(0xed))
-				keyboard_cmd(0 << 2);
-		} else {
-			modifier |= MOD_CAPSLOCK;
-			if (keyboard_cmd(0xed))
-				keyboard_cmd(1 << 2);
-		}
-		break;
-	}
-
 	if (!(ch & 0x80) && ch < 0x57) {
 		shift =
-		    (modifier & MOD_SHIFT) ^ (modifier & MOD_CAPSLOCK) ? 1 : 0;
+		    (modifier & KB_MOD_SHIFT) ^ (modifier & KB_MOD_CAPSLOCK) ? 1 : 0;
 
-		if (modifier & MOD_ALT)
+		if (modifier & KB_MOD_ALT)
 			shift += 2;
 
 		ret = map->map[shift][ch];
 
-		if (modifier & MOD_CTRL) {
+		if (modifier & KB_MOD_CTRL) {
 			switch (ret) {
 			case 'a' ... 'z':
 				ret &= 0x1f;
 				break;
 			case KEY_DC:
 				/* vulcan nerve pinch */
-				if ((modifier & MOD_ALT) && reset_handler)
+				if ((modifier & KB_MOD_ALT) && reset_handler)
 					reset_handler();
 			default:
 				ret = 0;

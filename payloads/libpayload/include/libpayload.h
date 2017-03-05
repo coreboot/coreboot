@@ -163,6 +163,14 @@ int keyboard_havechar(void);
 unsigned char keyboard_get_scancode(void);
 int keyboard_getchar(void);
 int keyboard_set_layout(char *country);
+int keyboard_getmodifier(void);
+
+enum KEYBOARD_MODIFIERS {
+	KB_MOD_SHIFT = (1 << 0),
+	KB_MOD_ALT = (1 << 1),
+	KB_MOD_CTRL = (1 << 2),
+	KB_MOD_CAPSLOCK = (1 << 3),
+};
 /** @} */
 
 /**

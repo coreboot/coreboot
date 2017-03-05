@@ -80,7 +80,7 @@ struct cse_device {
 void heci_init(uintptr_t tempbar)
 {
 	struct cse_device *cse = car_get_var_ptr(&g_cse);
-	device_t dev = HECI1_DEV;
+	device_t dev = PCH_DEV_CSE;
 	u8 pcireg;
 
 	/* Assume it is already initialized, nothing else to do */
@@ -453,7 +453,7 @@ static void update_sec_bar(struct device *dev)
 
 static void cse_set_resources(struct device *dev)
 {
-	if (dev->path.pci.devfn == HECI1_DEVFN)
+	if (dev->path.pci.devfn == PCH_DEVFN_CSE)
 		update_sec_bar(dev);
 
 	pci_dev_set_resources(dev);

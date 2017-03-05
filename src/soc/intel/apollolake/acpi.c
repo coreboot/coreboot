@@ -152,7 +152,7 @@ unsigned long southbridge_write_acpi_tables(device_t device,
 static void acpi_create_gnvs(struct global_nvs_t *gnvs)
 {
 	struct soc_intel_apollolake_config *cfg;
-	struct device *dev = NB_DEV_ROOT;
+	struct device *dev = SA_DEV_ROOT;
 
 	/* Clear out GNVS. */
 	memset(gnvs, 0, sizeof(*gnvs));

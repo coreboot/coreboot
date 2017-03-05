@@ -653,11 +653,11 @@ const char *soc_acpi_name(struct device *dev)
 	case PCH_DEVFN_I2C1:	return "I2C1";
 	case PCH_DEVFN_I2C2:	return "I2C2";
 	case PCH_DEVFN_I2C3:	return "I2C3";
-	case PCH_DEVFN_ME:	return "MEI1";
-	case PCH_DEVFN_ME_2:	return "MEI2";
-	case PCH_DEVFN_ME_IDER:	return "MEID";
-	case PCH_DEVFN_ME_KT:	return "MEKT";
-	case PCH_DEVFN_ME_3:	return "MEI3";
+	case PCH_DEVFN_CSE:	return "CSE1";
+	case PCH_DEVFN_CSE_2:	return "CSE2";
+	case PCH_DEVFN_CSE_IDER:	return "CSED";
+	case PCH_DEVFN_CSE_KT:	return "CSKT";
+	case PCH_DEVFN_CSE_3:	return "CSE3";
 	case PCH_DEVFN_SATA:	return "SATA";
 	case PCH_DEVFN_UART2:	return "UAR2";
 	case PCH_DEVFN_I2C4:	return "I2C4";

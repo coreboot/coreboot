@@ -28,7 +28,7 @@
 
 uintptr_t fsp_soc_get_igd_bar(void)
 {
-	return find_resource(IGD_DEV, PCI_BASE_ADDRESS_2)->base;
+	return find_resource(SA_DEV_IGD, PCI_BASE_ADDRESS_2)->base;
 }
 
 static void igd_set_resources(struct device *dev)

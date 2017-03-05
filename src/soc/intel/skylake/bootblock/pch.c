@@ -242,7 +242,7 @@ static void soc_config_rtc(void)
 
 static void enable_heci(void)
 {
-	device_t dev = PCH_DEV_ME;
+	device_t dev = PCH_DEV_CSE;
 	u8 pcireg;
 
 	/* Assign Resources to HECI1 */

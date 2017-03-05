@@ -60,7 +60,7 @@ static void _get_spi_flash_ctx(struct spi_flash_ctx *ctx)
 	uint32_t bar;
 
 	/* FIXME: use device definition */
-	ctx->pci_dev = SPI_DEV;
+	ctx->pci_dev = PCH_DEV_SPI;
 
 	bar = pci_read_config32(ctx->pci_dev, PCI_BASE_ADDRESS_0);
 	ctx->mmio_base = bar & ~PCI_BASE_ADDRESS_MEM_ATTR_MASK;

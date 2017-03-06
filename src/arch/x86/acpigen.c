@@ -1146,13 +1146,13 @@ void acpigen_write_to_integer(uint8_t src, uint8_t dst)
 	acpigen_emit_byte(dst);
 }
 
-void acpigen_write_byte_buffer(uint8_t *arr, uint8_t size)
+void acpigen_write_byte_buffer(uint8_t *arr, size_t size)
 {
-	uint8_t i;
+	size_t i;
 
 	acpigen_emit_byte(BUFFER_OP);
 	acpigen_write_len_f();
-	acpigen_write_byte(size);
+	acpigen_write_integer(size);
 
 	for (i = 0; i < size; i++)
 		acpigen_emit_byte(arr[i]);
@@ -1160,7 +1160,7 @@ void acpigen_write_byte_buffer(uint8_t *arr, uint8_t size)
 	acpigen_pop_len();
 }
 
-void acpigen_write_return_byte_buffer(uint8_t *arr, uint8_t size)
+void acpigen_write_return_byte_buffer(uint8_t *arr, size_t size)
 {
 	acpigen_emit_byte(RETURN_OP);
 	acpigen_write_byte_buffer(arr, size);

@@ -242,8 +242,8 @@ void acpigen_write_if_lequal_op_int(uint8_t op, uint64_t val);
 void acpigen_write_else(void);
 void acpigen_write_to_buffer(uint8_t src, uint8_t dst);
 void acpigen_write_to_integer(uint8_t src, uint8_t dst);
-void acpigen_write_byte_buffer(uint8_t *arr, uint8_t size);
-void acpigen_write_return_byte_buffer(uint8_t *arr, uint8_t size);
+void acpigen_write_byte_buffer(uint8_t *arr, size_t size);
+void acpigen_write_return_byte_buffer(uint8_t *arr, size_t size);
 void acpigen_write_return_singleton_buffer(uint8_t arg);
 void acpigen_write_return_byte(uint8_t arg);
 /*

@@ -205,7 +205,7 @@ static AGESA_STATUS OemInitMid(AMD_MID_PARAMS * InitMid)
  *----------------------------------------------------------------------------------------
  */
 
-#if IS_ENABLED(CONFIG_BOARD_ASUS_F2A85_M)
+#if IS_ENABLED(CONFIG_BOARD_ASUS_F2A85_M) || IS_ENABLED(CONFIG_BOARD_ASUS_F2A85_M_PRO)
 /*
  *  Platform Specific Overriding Table allows IBV/OEM to pass in platform information to AGESA
  *  (e.g. MemClk routing, the number of DIMM slots per channel,...). If PlatformSpecificTable
@@ -225,7 +225,7 @@ CONST PSO_ENTRY ROMDATA DefaultPlatformMemoryConfiguration[] = {
   */
   PSO_END
 };
-#elif IS_ENABLED(CONFIG_BOARD_ASUS_F2A85_M_PRO)
+#elif IS_ENABLED(CONFIG_BOARD_ASUS_F2A85_M_LE)
 /*
  *  Platform Specific Overriding Table allows IBV/OEM to pass in platform information to AGESA
  *  (e.g. MemClk routing, the number of DIMM slots per channel,...). If PlatformSpecificTable
@@ -234,7 +234,7 @@ CONST PSO_ENTRY ROMDATA DefaultPlatformMemoryConfiguration[] = {
  */
 CONST PSO_ENTRY ROMDATA DefaultPlatformMemoryConfiguration[] = {
 
-  NUMBER_OF_DIMMS_SUPPORTED (ANY_SOCKET, ANY_CHANNEL, 2),
+  NUMBER_OF_DIMMS_SUPPORTED (ANY_SOCKET, ANY_CHANNEL, 1),
   NUMBER_OF_CHANNELS_SUPPORTED (ANY_SOCKET, 2),
 /*
   TODO: is this OK for DDR3 socket FM2?

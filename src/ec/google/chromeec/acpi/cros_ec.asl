@@ -18,4 +18,13 @@ Device (CREC)
 	Name (_HID, "GOOG0004")
 	Name (_UID, 1)
 	Name (_DDN, "EC Command Device")
+
+#ifdef EC_ENABLE_MKBP_DEVICE
+	Device (CKSC)
+	{
+		Name (_HID, "GOOG0007")
+		Name (_UID, 1)
+		Name (_DDN, "EC MKBP Device")
+	}
+#endif
 }

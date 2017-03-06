@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2016 Intel Corp.
+ * Copyright (C) 2016-2017 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -107,9 +107,8 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *fspm_upd, uint32_t version)
 
 	/* Locate the configuration data from devicetree.cb */
 	dev = dev_find_slot(0, LPC_DEV_FUNC);
-	if (!dev) {
+	if (!dev)
 		die("ERROR - LPC device not found!");
-	}
 	config = dev->chip_info;
 
 	/* Update the architectural UPD values. */

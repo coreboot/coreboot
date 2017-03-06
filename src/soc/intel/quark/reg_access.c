@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2016 Intel Corp.
+ * Copyright (C) 2016-2017 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@ static uint16_t get_gpe0_address(uint32_t reg_address)
 
 	/* Get the GPE0 base address */
 	gpe0_base_address = pci_read_config32(LPC_BDF, R_QNC_LPC_GPE0BLK);
-	ASSERT (gpe0_base_address >= 0x80000000);
+	ASSERT(gpe0_base_address >= 0x80000000);
 	gpe0_base_address &= B_QNC_LPC_GPE0BLK_MASK;
 
 	/* Return the GPE0 register address */
@@ -41,7 +41,7 @@ static uint32_t *get_gpio_address(uint32_t reg_address)
 	/* Get the GPIO base address */
 	gpio_base_address = pci_read_config32(I2CGPIO_BDF, PCI_BASE_ADDRESS_1);
 	gpio_base_address &= ~PCI_BASE_ADDRESS_MEM_ATTR_MASK;
-	ASSERT (gpio_base_address != 0x00000000);
+	ASSERT(gpio_base_address != 0x00000000);
 
 	/* Return the GPIO register address */
 	return (uint32_t *)(gpio_base_address + reg_address);
@@ -54,7 +54,7 @@ void *get_i2c_address(void)
 	/* Get the GPIO base address */
 	gpio_base_address = pci_read_config32(I2CGPIO_BDF, PCI_BASE_ADDRESS_0);
 	gpio_base_address &= ~PCI_BASE_ADDRESS_MEM_ATTR_MASK;
-	ASSERT (gpio_base_address != 0x00000000);
+	ASSERT(gpio_base_address != 0x00000000);
 
 	/* Return the GPIO register address */
 	return (void *)gpio_base_address;
@@ -66,7 +66,7 @@ static uint16_t get_legacy_gpio_address(uint32_t reg_address)
 
 	/* Get the GPIO base address */
 	gpio_base_address = pci_read_config32(LPC_BDF, R_QNC_LPC_GBA_BASE);
-	ASSERT (gpio_base_address >= 0x80000000);
+	ASSERT(gpio_base_address >= 0x80000000);
 	gpio_base_address &= B_QNC_LPC_GPA_BASE_MASK;
 
 	/* Return the GPIO register address */
@@ -144,7 +144,7 @@ void port_reg_write(uint8_t port, uint32_t offset, uint32_t value)
 static CRx_TYPE reg_cpu_cr_read(uint32_t reg_address)
 {
 	/* Read the CPU CRx register */
-	switch(reg_address) {
+	switch (reg_address) {
 	case 0:
 		return read_cr0();
 
@@ -157,7 +157,7 @@ static CRx_TYPE reg_cpu_cr_read(uint32_t reg_address)
 static void reg_cpu_cr_write(uint32_t reg_address, CRx_TYPE value)
 {
 	/* Write the CPU CRx register */
-	switch(reg_address) {
+	switch (reg_address) {
 	default:
 		die("ERROR - Unsupported CPU register!\n");
 
@@ -419,7 +419,9 @@ static void reg_write(struct reg_script_context *ctx)
 	case MICROSECOND_DELAY:
 		/* The actual delay is >= the requested delay */
 		if (ctx->display_features) {
-			/* Higher baud-rates will reduce the impact of displaying this message */
+			/* Higher baud-rates will reduce the impact of
+			 * displaying this message
+			 */
 			printk(BIOS_INFO, "Delay %lld uSec\n", step->value);
 			ctx->display_features = REG_SCRIPT_DISPLAY_NOTHING;
 		}
@@ -433,7 +435,7 @@ static void reg_write(struct reg_script_context *ctx)
 	}
 }
 
-msr_t soc_msr_read(unsigned index)
+msr_t soc_msr_read(unsigned int index)
 {
 	uint32_t offset;
 	union {
@@ -455,7 +457,7 @@ msr_t soc_msr_read(unsigned index)
 	return value.msr;
 }
 
-void soc_msr_write(unsigned index, msr_t msr)
+void soc_msr_write(unsigned int index, msr_t msr)
 {
 	uint32_t offset;
 	union {

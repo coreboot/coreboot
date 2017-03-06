@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2007-2008 coresystems GmbH
  * Copyright (C) 2014 Google Inc.
- * Copyright (C) 2015 Intel Corporation.
+ * Copyright (C) 2015-2017 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ struct soc_intel_quark_config {
 	 * MemoryInit:
 	 *
 	 * The following fields come from FspUpdVpd.h and are defined as PCDs
-         * for the FSP binary.  Data for these fields comes from the board's
+	 * for the FSP binary.  Data for these fields comes from the board's
 	 * devicetree.cb file which gets processed into static.c and then
 	 * built into the coreboot image.  The fields below contain retain
 	 * the FSP PCD field name.
@@ -90,7 +90,7 @@ struct soc_intel_quark_config {
 	 * impedance control.
 	 */
 	uint8_t  DramRonVal;
-	uint8_t  DramRttNomVal; /* 0=40ohm, 1=60ohm, 2=120ohm, others=RESERVED */
+	uint8_t  DramRttNomVal; /* 0=40ohm, 1=60ohm, 2=120ohm, others=RSVD */
 	uint8_t  DramRttWrVal;  /* 0=off others=RESERVED */
 
 	/* 0=off, 1=60ohm, 2=120ohm, 3=180ohm, others=RESERVED */

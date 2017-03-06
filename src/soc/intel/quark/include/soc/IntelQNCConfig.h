@@ -1,7 +1,7 @@
 /** @file
 Some configuration of QNC Package
 
-Copyright (c) 2013-2015 Intel Corporation.
+Copyright (c) 2013-2017 Intel Corporation.
 
 This program and the accompanying materials are licensed and made available
 under the terms and conditions of the BSD License.  The full text of the license
@@ -23,11 +23,11 @@ WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
 // Memory arbiter fixed config values.
 //
 #define QNC_FIXED_CONFIG_ASTATUS  ((UINT32) (\
-          (ASTATUS_PRI_NORMAL << ASTATUS0_DEFAULT_BP) | \
-          (ASTATUS_PRI_NORMAL << ASTATUS1_DEFAULT_BP) | \
-          (ASTATUS_PRI_URGENT << ASTATUS0_RASISED_BP) | \
-          (ASTATUS_PRI_URGENT << ASTATUS1_RASISED_BP) \
-          ))
+	(ASTATUS_PRI_NORMAL << ASTATUS0_DEFAULT_BP) | \
+	(ASTATUS_PRI_NORMAL << ASTATUS1_DEFAULT_BP) | \
+	(ASTATUS_PRI_URGENT << ASTATUS0_RASISED_BP) | \
+	(ASTATUS_PRI_URGENT << ASTATUS1_RASISED_BP) \
+	))
 
 //
 // Memory Manager fixed config values.
@@ -67,6 +67,6 @@ WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
 //
 // PCIe Root Port fixed config values.
 //
-#define V_PCIE_ROOT_PORT_SBIC_VALUE                 (B_QNC_PCIE_IOSFSBCTL_SBIC_IDLE_NEVER)
+#define V_PCIE_ROOT_PORT_SBIC_VALUE      (B_QNC_PCIE_IOSFSBCTL_SBIC_IDLE_NEVER)
 
 #endif

@@ -1,17 +1,16 @@
 /** @file
-Header file for QuarkSCSocId Ioh.
-Copyright (c) 2013-2015 Intel Corporation.
-
-This program and the accompanying materials
-are licensed and made available under the terms and conditions of the BSD License
-which accompanies this distribution.  The full text of the license may be found at
-http://opensource.org/licenses/bsd-license.php
-
-THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,
-WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
-
-
-**/
+ * Header file for QuarkSCSocId Ioh.
+ * Copyright (c) 2013-2017 Intel Corporation.
+ *
+ * This program and the accompanying materials are licensed and made available
+ * under the terms and conditions of the BSD License which accompanies this
+ * distribution.  The full text of the license may be found at
+ * http://opensource.org/licenses/bsd-license.php
+ *
+ * THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
+ *
+ */
 #ifndef _IOH_H_
 #define _IOH_H_
 
@@ -60,9 +59,9 @@ WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
 #define BIT31   0x80000000
 #endif
 
-#define IOH_PCI_CFG_ADDRESS(bus,dev,func,reg) \
-    ((UINT32) ( (((UINTN)bus) << 24) + (((UINTN)dev) << 16) + \
-    (((UINTN)func) << 8) + ((UINTN)reg) ))& 0x00000000ffffffff
+#define IOH_PCI_CFG_ADDRESS(bus, dev, func, reg) \
+	(((UINT32) ((((UINTN)bus) << 24) + (((UINTN)dev) << 16) + \
+	(((UINTN)func) << 8) + ((UINTN)reg))) & 0x00000000ffffffff)
 
 //----------------------------------------------------------------------------
 
@@ -156,9 +155,11 @@ WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
 #define R_IOH_EHCI_CAPLENGTH              0x00
 #define R_IOH_EHCI_INSNREG01              0x94
 #define   B_IOH_EHCI_INSNREG01_OUT_THRESHOLD_BP    (16)
-#define   B_IOH_EHCI_INSNREG01_OUT_THRESHOLD_MASK  (0xff << B_IOH_EHCI_INSNREG01_OUT_THRESHOLD_BP)
+#define   B_IOH_EHCI_INSNREG01_OUT_THRESHOLD_MASK  \
+				(0xff << B_IOH_EHCI_INSNREG01_OUT_THRESHOLD_BP)
 #define   B_IOH_EHCI_INSNREG01_IN_THRESHOLD_BP     (0)
-#define   B_IOH_EHCI_INSNREG01_IN_THRESHOLD_MASK   (0xff << B_IOH_EHCI_INSNREG01_IN_THRESHOLD_BP)
+#define   B_IOH_EHCI_INSNREG01_IN_THRESHOLD_MASK   \
+				(0xff << B_IOH_EHCI_INSNREG01_IN_THRESHOLD_BP)
 
 //
 // EHCI memory mapped registers offset from memory BAR0 + Cap length value.
@@ -185,12 +186,12 @@ WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
 //---------------------------------------------------------------------------
 // Quark South Cluster 10/100 Mbps Ethernet Device definitions.
 //---------------------------------------------------------------------------
-#define IOH_MAC0_BUS_NUMBER                                 IOH_BUS
-#define IOH_MAC0_DEVICE_NUMBER                              IOH_PCI_IOSF2AHB_0_DEV_NUM
-#define IOH_MAC0_FUNCTION_NUMBER                            0x06
-#define IOH_MAC1_BUS_NUMBER                                 IOH_BUS
-#define IOH_MAC1_DEVICE_NUMBER                              IOH_PCI_IOSF2AHB_0_DEV_NUM
-#define IOH_MAC1_FUNCTION_NUMBER                            0x07
+#define IOH_MAC0_BUS_NUMBER                           IOH_BUS
+#define IOH_MAC0_DEVICE_NUMBER                        IOH_PCI_IOSF2AHB_0_DEV_NUM
+#define IOH_MAC0_FUNCTION_NUMBER                      0x06
+#define IOH_MAC1_BUS_NUMBER                           IOH_BUS
+#define IOH_MAC1_DEVICE_NUMBER                        IOH_PCI_IOSF2AHB_0_DEV_NUM
+#define IOH_MAC1_FUNCTION_NUMBER                      0x07
 
 //
 // MAC Device PCI config registers.

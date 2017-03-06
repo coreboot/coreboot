@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2016 Intel Corp.
+ * Copyright (C) 2016-2017 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -226,7 +226,8 @@ enum {
 
 /* Time delays */
 #define TIME_DELAY_USEC(value_)   \
-	SOC_ACCESS(WRITE, 0, REG_SCRIPT_SIZE_32, 0, value_, 0, MICROSECOND_DELAY)
+	SOC_ACCESS(WRITE, 0, REG_SCRIPT_SIZE_32, 0, value_, 0, \
+		MICROSECOND_DELAY)
 
 /* USB register access macros */
 #define REG_USB_ACCESS(cmd_, reg_, mask_, value_, timeout_) \

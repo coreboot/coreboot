@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2013 Google Inc.
- * Copyright (C) 2015-2016 Intel Corp.
+ * Copyright (C) 2015-2017 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -77,7 +77,7 @@ static const struct reg_script mtrr_init[] = {
 	REG_SCRIPT_END
 };
 
-void asmlinkage bootblock_c_entry(uint64_t base_timestamp)
+asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 {
 	if (IS_ENABLED(CONFIG_ENABLE_DEBUG_LED_BOOTBLOCK_ENTRY))
 		light_sd_led();

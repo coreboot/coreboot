@@ -100,7 +100,7 @@ static void marshal_blob(void **buffer, void *blob,
 			 size_t blob_size, size_t *buffer_space)
 {
 	if (*buffer_space < blob_size) {
-		*buffer_space = -1;
+		*buffer_space = 0;
 		return;
 	}
 

@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2016 Intel Corp.
+ * Copyright (C) 2016-2017 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@ void mainboard_gpio_i2c_init(device_t dev)
 		script = gen2_i2c_init;
 	else
 		/* Determine which I2C address is in use */
-		script = (reg_legacy_gpio_read (R_QNC_GPIO_RGLVL_RESUME_WELL)
+		script = (reg_legacy_gpio_read(R_QNC_GPIO_RGLVL_RESUME_WELL)
 			& GALILEO_DETERMINE_IOEXP_SLA_RESUMEWELL_GPIO)
 			? gen1_i2c_0x20_init : gen1_i2c_0x21_init;
 

@@ -87,6 +87,7 @@ usb_hid_destroy (usbdev_t *dev)
 static int keycount;
 #define KEYBOARD_BUFFER_SIZE 16
 static short keybuffer[KEYBOARD_BUFFER_SIZE];
+static int modifiers;
 
 const char *countries[36][2] = {
 	{ "not supported", "us" },
@@ -244,9 +245,6 @@ static const struct layout_maps keyboard_layouts[] = {
 //#endif
 };
 
-#define MOD_SHIFT    (1 << 0)
-#define MOD_ALT      (1 << 1)
-#define MOD_CTRL     (1 << 2)
 
 static void usb_hid_keyboard_queue(int ch) {
 	/* ignore key presses if buffer full */
@@ -264,15 +262,17 @@ usb_hid_process_keyboard_event(usbhid_inst_t *const inst,
 {
 	const usb_hid_keyboard_event_t *const previous = &inst->previous;
 
-	int i, keypress = 0, modifiers = 0;
+	int i, keypress = 0;
 
-	if (current->modifiers & 0x01) /* Left-Ctrl */   modifiers |= MOD_CTRL;
-	if (current->modifiers & 0x02) /* Left-Shift */  modifiers |= MOD_SHIFT;
-	if (current->modifiers & 0x04) /* Left-Alt */    modifiers |= MOD_ALT;
+	modifiers = 0;
+
+	if (current->modifiers & 0x01) /* Left-Ctrl */   modifiers |= KB_MOD_CTRL;
+	if (current->modifiers & 0x02) /* Left-Shift */  modifiers |= KB_MOD_SHIFT;
+	if (current->modifiers & 0x04) /* Left-Alt */    modifiers |= KB_MOD_ALT;
 	if (current->modifiers & 0x08) /* Left-GUI */    ;
-	if (current->modifiers & 0x10) /* Right-Ctrl */  modifiers |= MOD_CTRL;
-	if (current->modifiers & 0x20) /* Right-Shift */ modifiers |= MOD_SHIFT;
-	if (current->modifiers & 0x40) /* Right-AltGr */ modifiers |= MOD_ALT;
+	if (current->modifiers & 0x10) /* Right-Ctrl */  modifiers |= KB_MOD_CTRL;
+	if (current->modifiers & 0x20) /* Right-Shift */ modifiers |= KB_MOD_SHIFT;
+	if (current->modifiers & 0x40) /* Right-AltGr */ modifiers |= KB_MOD_ALT;
 	if (current->modifiers & 0x80) /* Right-GUI */   ;
 
 	if ((current->modifiers & 0x05) && ((current->keys[0] == 0x4c) ||
@@ -315,10 +315,10 @@ usb_hid_process_keyboard_event(usbhid_inst_t *const inst,
 			continue;
 
 
-		/* Mask off MOD_CTRL */
+		/* Mask off KB_MOD_CTRL */
 		keypress = map->map[modifiers & 0x03][current->keys[i]];
 
-		if (modifiers & MOD_CTRL) {
+		if (modifiers & KB_MOD_CTRL) {
 			switch (keypress) {
 			case 'a' ... 'z':
 				keypress &= 0x1f;
@@ -508,4 +508,9 @@ int usbhid_getchar (void)
 	memmove(keybuffer, keybuffer + 1, --keycount);
 
 	return (int)ret;
+}
+
+int usbhid_getmodifiers(void)
+{
+	return modifiers;
 }

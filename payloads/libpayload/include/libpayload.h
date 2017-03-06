@@ -141,6 +141,7 @@ int usb_initialize(void);
 int usb_exit (void);
 int usbhid_havechar(void);
 int usbhid_getchar(void);
+int usbhid_getmodifiers(void);
 /** @} */
 
 /**

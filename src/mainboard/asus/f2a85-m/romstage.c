@@ -35,25 +35,15 @@
 #include <southbridge/amd/agesa/hudson/smbus.h>
 #include <stdint.h>
 #include <string.h>
-#if CONFIG_BOARD_ASUS_F2A85_M
+
 #include <superio/ite/common/ite.h>
 #include <superio/ite/it8728f/it8728f.h>
-#elif CONFIG_BOARD_ASUS_F2A85_M_PRO
 #include <superio/nuvoton/common/nuvoton.h>
 #include <superio/nuvoton/nct6779d/nct6779d.h>
-#endif /* CONFIG_BOARD_ASUS_F2A85_M */
-
 
 #define MMIO_NON_POSTED_START 0xfed00000
 #define MMIO_NON_POSTED_END   0xfedfffff
 #define SB_MMIO_MISC32(x) *(volatile u32 *)(AMD_SB_ACPI_MMIO_ADDR + 0xE00 + (x))
-
-#if CONFIG_BOARD_ASUS_F2A85_M
-#define SERIAL_DEV PNP_DEV(0x2e, IT8728F_SP1)
-#define GPIO_DEV PNP_DEV(0x2e, IT8728F_GPIO)
-#elif CONFIG_BOARD_ASUS_F2A85_M_PRO
-#define SERIAL_DEV PNP_DEV(0x2e, NCT6779D_SP1)
-#endif /* CONFIG_BOARD_ASUS_F2A85_M */
 
 static void sbxxx_enable_48mhzout(void)
 {
@@ -69,6 +59,23 @@ static void sbxxx_enable_48mhzout(void)
 	SB_MMIO_MISC32(0x40) = reg32;
 }
 
+static void superio_init_m(void)
+{
+	pnp_devfn_t uart = PNP_DEV(0x2e, IT8728F_SP1);
+	pnp_devfn_t gpio = PNP_DEV(0x2e, IT8728F_GPIO);
+
+	ite_kill_watchdog(gpio);
+	ite_enable_serial(uart, CONFIG_TTYS0_BASE);
+	ite_enable_3vsbsw(gpio);
+}
+
+static void superio_init_m_pro(void)
+{
+	pnp_devfn_t uart = PNP_DEV(0x2e, NCT6779D_SP1);
+
+	nuvoton_enable_serial(uart, CONFIG_TTYS0_BASE);
+}
+
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	u32 val;
@@ -78,12 +85,10 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	/* Must come first to enable PCI MMCONF. */
 	amd_initmmio();
 
-#if IS_ENABLED(CONFIG_POST_DEVICE_PCI_PCIE)
-	hudson_pci_port80();
-#endif
-#if IS_ENABLED(CONFIG_POST_DEVICE_LPC)
-	hudson_lpc_port80();
-#endif
+	if (IS_ENABLED(CONFIG_POST_DEVICE_PCI_PCIE))
+		hudson_pci_port80();
+	else if (IS_ENABLED(CONFIG_POST_DEVICE_LPC))
+		hudson_lpc_port80();
 
 	if (!cpu_init_detectedx && boot_cpu()) {
 
@@ -106,13 +111,12 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 		/* enable SIO clock */
 		sbxxx_enable_48mhzout();
-#if CONFIG_BOARD_ASUS_F2A85_M
-		ite_kill_watchdog(GPIO_DEV);
-		ite_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
-		ite_enable_3vsbsw(GPIO_DEV);
-#elif CONFIG_BOARD_ASUS_F2A85_M_PRO
-		nuvoton_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
-#endif
+
+		if (IS_ENABLED(CONFIG_BOARD_ASUS_F2A85_M_PRO))
+			superio_init_m_pro();
+		else
+			superio_init_m();
+
 		console_init();
 
 		/* turn on secondary smbus at b20 */

@@ -52,7 +52,7 @@ struct cbmem_entry;
 /* Determine the size for CBMEM root and the small allocations */
 static inline size_t cbmem_overhead_size(void)
 {
-   return 2 * CBMEM_ROOT_MIN_SIZE;
+	return 2 * CBMEM_ROOT_MIN_SIZE;
 }
 
 /* By default cbmem is attempted to be recovered. Returns 0 if cbmem was

@@ -47,7 +47,7 @@ int thread_run(void (*func)(void *), void *arg);
  * transitions from occurring in the (state, seq) pair of the boot state
  * machine. */
 int thread_run_until(void (*func)(void *), void *arg,
-                     boot_state_t state, boot_state_sequence_t seq);
+		     boot_state_t state, boot_state_sequence_t seq);
 /* Return 0 on successful yield for the given amount of time, < 0 when thread
  * did not yield. */
 int thread_yield_microseconds(unsigned int microsecs);
@@ -70,7 +70,7 @@ void asmlinkage switch_to_thread(uintptr_t new_stack, uintptr_t *saved_stack);
  * will enter the thread_entry() function with arg as a parameter. The
  * saved_stack field in the struct thread needs to be updated accordingly. */
 void arch_prepare_thread(struct thread *t,
-                         void asmlinkage (*thread_entry)(void *), void *arg);
+			 void asmlinkage (*thread_entry)(void *), void *arg);
 #else
 static inline void threads_initialize(void) {}
 static inline int thread_run(void (*func)(void *), void *arg) { return -1; }

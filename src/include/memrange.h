@@ -73,7 +73,7 @@ static inline unsigned long range_entry_tag(const struct range_entry *r)
 }
 
 static inline void range_entry_update_tag(struct range_entry *r,
-                                          unsigned long new_tag)
+					  unsigned long new_tag)
 {
 	r->tag = new_tag;
 }
@@ -89,14 +89,14 @@ static inline void range_entry_update_tag(struct range_entry *r,
 /* Initialize memranges structure providing an optional array of range_entry
  * to use as the free list. */
 void memranges_init_empty(struct memranges *ranges, struct range_entry *free,
-                          size_t num_free);
+			  size_t num_free);
 
 /* Initialize and fill a memranges structure according to the
  * mask and match type for all memory resources. Tag each entry with the
  * specified type. */
 void memranges_init(struct memranges *ranges,
-                    unsigned long mask, unsigned long match,
-                    unsigned long tag);
+		    unsigned long mask, unsigned long match,
+		    unsigned long tag);
 
 /* Remove and free all entries within the memranges structure. */
 void memranges_teardown(struct memranges *ranges);
@@ -107,8 +107,8 @@ void memranges_teardown(struct memranges *ranges);
  * memranges_add_resources(range, IORESOURCE_CACHEABLE,
  *                            IORESROUCE_CACHEABLE, my_cacheable_tag); */
 void memranges_add_resources(struct memranges *ranges,
-                             unsigned long mask, unsigned long match,
-                             unsigned long tag);
+			     unsigned long mask, unsigned long match,
+			     unsigned long tag);
 
 /* Add memory resources that match with the corresponding mask and match but
  * also provide filter as additional check. The filter will return non-zero
@@ -119,31 +119,31 @@ void memranges_add_resources(struct memranges *ranges,
  *                         IORESROUCE_CACHEABLE, my_cacheable_tag, filter); */
 typedef int (*memrange_filter_t)(struct device *dev, struct resource *res);
 void memranges_add_resources_filter(struct memranges *ranges,
-                                    unsigned long mask, unsigned long match,
-                                    unsigned long tag,
-                                    memrange_filter_t filter);
+				    unsigned long mask, unsigned long match,
+				    unsigned long tag,
+				    memrange_filter_t filter);
 
 /* Fill all address ranges up to limit (exclusive) not covered by an entry by
  * inserting new entries with the provided tag. */
 void memranges_fill_holes_up_to(struct memranges *ranges,
-                                resource_t limit, unsigned long tag);
+				resource_t limit, unsigned long tag);
 
 /* Create a hole in the range by deleting/modifying entries that overlap with
  * the region specified by base and size. */
 void memranges_create_hole(struct memranges *ranges,
-                           resource_t base, resource_t size);
+			   resource_t base, resource_t size);
 
 /* Insert a resource to the given memranges.  All existing ranges
  * covered by range specified by base and size will be removed before a
  * new one is added. */
 void memranges_insert(struct memranges *ranges,
-                      resource_t base, resource_t size, unsigned long tag);
+		      resource_t base, resource_t size, unsigned long tag);
 
 /* Update all entries with old_tag to new_tag. */
 void memranges_update_tag(struct memranges *ranges, unsigned long old_tag,
-                          unsigned long new_tag);
+			  unsigned long new_tag);
 
 /* Returns next entry after the provided entry. NULL if r is last. */
 struct range_entry *memranges_next_entry(struct memranges *ranges,
-                                         const struct range_entry *r);
+					 const struct range_entry *r);
 #endif /* MEMRANGE_H_ */

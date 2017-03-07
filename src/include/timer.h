@@ -86,7 +86,7 @@ static inline void mono_time_add_msecs(struct mono_time *mt, long ms)
 /* Compare two absolute times: Return -1, 0, or 1 if t1 is <, =, or > t2,
  * respectively. */
 static inline int mono_time_cmp(const struct mono_time *t1,
-                                const struct mono_time *t2)
+				const struct mono_time *t2)
 {
 	if (t1->microseconds == t2->microseconds)
 		return 0;
@@ -99,14 +99,14 @@ static inline int mono_time_cmp(const struct mono_time *t1,
 
 /* Return true if t1 after t2  */
 static inline int mono_time_after(const struct mono_time *t1,
-                                  const struct mono_time *t2)
+				  const struct mono_time *t2)
 {
 	return mono_time_cmp(t1, t2) > 0;
 }
 
 /* Return true if t1 before t2. */
 static inline int mono_time_before(const struct mono_time *t1,
-                                   const struct mono_time *t2)
+				   const struct mono_time *t2)
 {
 	return mono_time_cmp(t1, t2) < 0;
 }

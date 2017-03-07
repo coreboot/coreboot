@@ -100,9 +100,9 @@ static inline unsigned int fms(unsigned int x)
 	int r;
 
 	__asm__("bsrl %1,%0\n\t"
-	        "jnz 1f\n\t"
-	        "movl $0,%0\n"
-	        "1:" : "=r" (r) : "g" (x));
+		"jnz 1f\n\t"
+		"movl $0,%0\n"
+		"1:" : "=r" (r) : "g" (x));
 	return r;
 }
 
@@ -112,9 +112,9 @@ static inline unsigned int fls(unsigned int x)
 	int r;
 
 	__asm__("bsfl %1,%0\n\t"
-	        "jnz 1f\n\t"
-	        "movl $32,%0\n"
-	        "1:" : "=r" (r) : "g" (x));
+		"jnz 1f\n\t"
+		"movl $32,%0\n"
+		"1:" : "=r" (r) : "g" (x));
 	return r;
 }
 #endif

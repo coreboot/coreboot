@@ -204,8 +204,8 @@ int spd_decode_ddr3(dimm_attr * dimm, spd_raw_data spd_data);
 int dimm_is_registered(enum spd_dimm_type type);
 void dram_print_spd_ddr3(const dimm_attr * dimm);
 int spd_xmp_decode_ddr3(dimm_attr * dimm,
-		        spd_raw_data spd,
-		        enum ddr3_xmp_profile profile);
+			spd_raw_data spd,
+			enum ddr3_xmp_profile profile);
 
 /**
  * \brief Read double word from specified address

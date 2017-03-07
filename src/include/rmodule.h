@@ -45,7 +45,7 @@ int rmodule_load_alignment(const struct rmodule *m);
  * load_offset is the address to load and relocate the rmodule.
  * region_alignment must be a power of 2. */
 int rmodule_calc_region(unsigned int region_alignment, size_t rmodule_size,
-                        size_t *region_size, int *load_offset);
+			size_t *region_size, int *load_offset);
 
 /* Support for loading rmodule stages. This API is only available when
  * using dynamic cbmem because it uses the dynamic cbmem API to obtain

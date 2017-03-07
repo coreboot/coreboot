@@ -100,7 +100,7 @@ static inline int i2c_read_raw(unsigned int bus, uint8_t chip, uint8_t *data,
  * [start][slave addr][w][data][stop]
  */
 static inline int i2c_write_raw(unsigned int bus, uint8_t chip, uint8_t *data,
-			        int len)
+				int len)
 {
 	struct i2c_seg seg =
 		{ .read = 0, .chip = chip, .buf = data, .len = len };

@@ -64,8 +64,7 @@
 typedef uint8_t TSS_BOOL;
 typedef uint16_t TPM_STRUCTURE_TAG;
 
-typedef struct tdTPM_PERMANENT_FLAGS
-{
+typedef struct tdTPM_PERMANENT_FLAGS {
 	TPM_STRUCTURE_TAG tag;
 	TSS_BOOL disable;
 	TSS_BOOL ownership;
@@ -89,7 +88,7 @@ typedef struct tdTPM_PERMANENT_FLAGS
 	TSS_BOOL disableFullDALogicInfo;
 } TPM_PERMANENT_FLAGS;
 
-typedef struct tdTPM_STCLEAR_FLAGS{
+typedef struct tdTPM_STCLEAR_FLAGS {
 	TPM_STRUCTURE_TAG tag;
 	TSS_BOOL deactivated;
 	TSS_BOOL disableForceClear;

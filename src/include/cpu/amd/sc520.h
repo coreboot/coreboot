@@ -151,7 +151,7 @@ struct gptimers {
 struct watchdog {
 	unsigned short ctl;
 	unsigned short cntll;
-        unsigned short cntlh;
+	unsigned short cntlh;
 	unsigned char pad[10];
 };
 

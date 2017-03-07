@@ -157,9 +157,9 @@ struct boot_state_callback {
  * individual callbacks on a given state. 0 is returned on success < 0 on
  * error. */
 int boot_state_sched_on_entry(struct boot_state_callback *bscb,
-                              boot_state_t state);
+				boot_state_t state);
 int boot_state_sched_on_exit(struct boot_state_callback *bscb,
-                             boot_state_t state);
+				boot_state_t state);
 /* Schedule an array of entries of size num. */
 struct boot_state_init_entry;
 void boot_state_sched_entries(struct boot_state_init_entry *entries,

@@ -28,7 +28,7 @@ uint32_t tlcl_lib_init(void);
  * Perform a raw TPM request/response transaction.
  */
 uint32_t tlcl_send_receive(const uint8_t *request, uint8_t *response,
-                         int max_length);
+			   int max_length);
 
 /* Commands */
 
@@ -127,7 +127,7 @@ uint32_t tlcl_set_deactivated(uint8_t flag);
  * be NULL.  The TPM error code is returned.
  */
 uint32_t tlcl_get_flags(uint8_t *disable, uint8_t *deactivated,
-                        uint8_t *nvlocked);
+			uint8_t *nvlocked);
 
 /**
  * Set the bGlobalLock flag, which only a reboot can clear.  The TPM error
@@ -144,7 +144,7 @@ uint32_t tlcl_lock_nv_write(uint32_t index);
  * Perform a TPM_Extend.
  */
 uint32_t tlcl_extend(int pcr_num, const uint8_t *in_digest,
-                     uint8_t *out_digest);
+		     uint8_t *out_digest);
 
 /**
  * Get the entire set of permanent flags.

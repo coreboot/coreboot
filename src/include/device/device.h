@@ -17,7 +17,7 @@
 struct device;
 
 #ifndef __SIMPLE_DEVICE__
-typedef struct device * device_t;
+typedef struct device *device_t;
 struct pci_operations;
 struct pci_bus_operations;
 struct i2c_bus_operations;
@@ -82,9 +82,9 @@ static inline void device_noop(struct device *dev) {}
 
 struct bus {
 
-	ROMSTAGE_CONST struct device *	dev;		/* This bridge device */
-	ROMSTAGE_CONST struct device *	children;	/* devices behind this bridge */
-	ROMSTAGE_CONST struct bus	*next;		/* The next bridge on this device */
+	ROMSTAGE_CONST struct device *dev;	/* This bridge device */
+	ROMSTAGE_CONST struct device *children;	/* devices behind this bridge */
+	ROMSTAGE_CONST struct bus *next;	/* The next bridge on this device */
 	unsigned int	bridge_ctrl;	/* Bridge control register */
 	uint16_t	bridge_cmd;		/* Bridge command register */
 	unsigned char	link_num;	/* The index of this link */
@@ -111,12 +111,12 @@ struct pci_irq_info {
 };
 
 struct device {
-	ROMSTAGE_CONST struct bus *	bus;		/* bus this device is on, for bridge
+	ROMSTAGE_CONST struct bus *bus;	/* bus this device is on, for bridge
 					 * devices, it is the up stream bus */
 
-	ROMSTAGE_CONST struct device *	sibling;	/* next device on this bus */
+	ROMSTAGE_CONST struct device *sibling;	/* next device on this bus */
 
-	ROMSTAGE_CONST struct device *	next;		/* chain of all devices */
+	ROMSTAGE_CONST struct device *next;	/* chain of all devices */
 
 	struct device_path path;
 	unsigned int	vendor;
@@ -214,7 +214,7 @@ void set_cpu_topology(device_t cpu, unsigned int node, unsigned int package, uns
 	set_cpu_topology(cpu, 0, package, core, thread)
 
 /* Debug functions */
-void print_resource_tree(struct device * root, int debug_level,
+void print_resource_tree(struct device *root, int debug_level,
 			 const char *msg);
 void show_devs_tree(struct device *dev, int debug_level, int depth);
 void show_devs_subtree(struct device *root, int debug_level, const char *msg);
@@ -222,7 +222,7 @@ void show_all_devs(int debug_level, const char *msg);
 void show_all_devs_tree(int debug_level, const char *msg);
 void show_one_resource(int debug_level, struct device *dev,
 		       struct resource *resource, const char *comment);
-void show_all_devs_resources(int debug_level, const char* msg);
+void show_all_devs_resources(int debug_level, const char *msg);
 
 /* Rounding for boundaries.
  * Due to some chip bugs, go ahead and round IO to 16
@@ -268,13 +268,13 @@ u32 find_pci_tolm(struct bus *bus);
 
 #else /* vv __SIMPLE_DEVICE__ vv */
 
-ROMSTAGE_CONST struct device * dev_find_slot (unsigned int bus,
+ROMSTAGE_CONST struct device *dev_find_slot (unsigned int bus,
 						unsigned int devfn);
 ROMSTAGE_CONST struct device *dev_find_next_pci_device(
 						ROMSTAGE_CONST struct device *previous_dev);
-ROMSTAGE_CONST struct device * dev_find_slot_on_smbus (unsigned int bus,
+ROMSTAGE_CONST struct device *dev_find_slot_on_smbus (unsigned int bus,
 							unsigned int addr);
-ROMSTAGE_CONST struct device * dev_find_slot_pnp(u16 port, u16 device);
+ROMSTAGE_CONST struct device *dev_find_slot_pnp(u16 port, u16 device);
 
 #endif
 

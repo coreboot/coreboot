@@ -18,6 +18,6 @@
 #define POWERNOW_H
 
 void amd_generate_powernow(u32 pcontrol_blk, u8 plen, u8 onlyBSP);
-void amd_powernow_update_fadt(acpi_fadt_t * fadt);
+void amd_powernow_update_fadt(acpi_fadt_t *fadt);
 
 #endif

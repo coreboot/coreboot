@@ -89,7 +89,7 @@ void pci_dev_set_subsystem(device_t dev, unsigned int vendor,
 void pci_dev_init(struct device *dev);
 unsigned int pci_match_simple_dev(device_t dev, pci_devfn_t sdev);
 
-const char * pin_to_str(int pin);
+const char *pin_to_str(int pin);
 int get_pci_irq_pins(device_t dev, device_t *parent_bdg);
 void pci_assign_irqs(unsigned int bus, unsigned int slot,
 		     const unsigned char pIntAtoD[4]);

@@ -16,7 +16,7 @@ void *memset(void *s, int c, size_t n);
 int memcmp(const void *s1, const void *s2, size_t n);
 void *memchr(const void *s, int c, size_t n);
 #if !defined(__ROMCC__)
-int snprintf(char * buf, size_t size, const char *fmt, ...);
+int snprintf(char *buf, size_t size, const char *fmt, ...);
 #endif
 
 // simple string functions

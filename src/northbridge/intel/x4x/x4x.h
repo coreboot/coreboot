@@ -345,6 +345,7 @@ u32 decode_igd_gtt_size(u32 gsm);
 u8 decode_pciebar(u32 *const base, u32 *const len);
 void sdram_initialize(int boot_path, const u8 *spd_map);
 void raminit_ddr2(struct sysinfo *);
+void rcven(const struct sysinfo *);
 
 struct acpi_rsdp;
 #ifndef __SIMPLE_DEVICE__

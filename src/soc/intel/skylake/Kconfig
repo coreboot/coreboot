@@ -255,6 +255,32 @@ config NHLT_MAX98927
 	help
 	  Include DSP firmware settings for max98927 amplifier.
 
+choice
+	prompt "Cache-as-ram implementation"
+	default CAR_NEM_ENHANCED
+	help
+	  This option allows you to select how cache-as-ram (CAR) is set up.
+
+config CAR_NEM_ENHANCED
+	bool "Enhanced Non-evict mode"
+	select SOC_INTEL_COMMON_BLOCK_CAR
+	select INTEL_CAR_NEM_ENHANCED
+	help
+	  A current limitation of NEM (Non-Evict mode) is that code and data sizes
+	  are derived from the requirement to not write out any modified cache line.
+	  With NEM, if there is no physical memory behind the cached area,
+	  the modified data will be lost and NEM results will be inconsistent.
+	  ENHANCED NEM guarantees that modified data is always
+	  kept in cache while clean data is replaced.
+
+config USE_SKYLAKE_FSP_CAR
+	bool "Use FSP CAR"
+	select FSP_CAR
+	help
+	  Use FSP APIs to initialize & tear Down the Cache-As-Ram.
+
+endchoice
+
 config SKIP_FSP_CAR
 	bool "Skip cache as RAM setup in FSP"
 	default y

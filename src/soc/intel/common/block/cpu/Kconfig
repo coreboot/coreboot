@@ -1,0 +1,32 @@
+config SOC_INTEL_COMMON_BLOCK_CAR
+	bool
+	default n
+	help
+	  This option allows you to select how cache-as-ram (CAR) is set up.
+
+config INTEL_CAR_NEM
+	bool
+	default n
+	help
+	  Traditionally, CAR is set up by using Non-Evict mode. This method
+	  does not allow CAR and cache to co-exist, because cache fills are
+	  blocked in NEM.
+
+config INTEL_CAR_CQOS
+	bool
+	default n
+	help
+	  Cache Quality of Service allows more fine-grained control of cache
+	  usage. As result, it is possible to set up a portion of L2 cache for
+	  CAR and use the remainder for actual caching.
+
+config INTEL_CAR_NEM_ENHANCED
+	bool
+	default n
+	help
+	  A current limitation of NEM (Non-Evict mode) is that code and data sizes
+	  are derived from the requirement to not write out any modified cache line.
+	  With NEM, if there is no physical memory behind the cached area,
+	  the modified data will be lost and NEM results will be inconsistent.
+	  ENHANCED NEM guarantees that modified data is always
+	  kept in cache while clean data is replaced.

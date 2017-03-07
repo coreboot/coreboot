@@ -195,11 +195,11 @@ void run_bios(struct device *dev, unsigned long addr);
 /* Helper functions */
 device_t find_dev_path(struct bus *parent, struct device_path *path);
 device_t alloc_find_dev(struct bus *parent, struct device_path *path);
-device_t dev_find_device (u16 vendor, u16 device, device_t from);
-device_t dev_find_class (unsigned int class, device_t from);
+device_t dev_find_device(u16 vendor, u16 device, device_t from);
+device_t dev_find_class(unsigned int class, device_t from);
 device_t dev_find_path(device_t prev_match, enum device_path_type path_type);
-device_t dev_find_slot (unsigned int bus, unsigned int devfn);
-device_t dev_find_slot_on_smbus (unsigned int bus, unsigned int addr);
+device_t dev_find_slot(unsigned int bus, unsigned int devfn);
+device_t dev_find_slot_on_smbus(unsigned int bus, unsigned int addr);
 device_t dev_find_slot_pnp(u16 port, u16 device);
 device_t dev_find_lapic(unsigned int apic_id);
 int dev_count_cpu(void);
@@ -268,11 +268,11 @@ u32 find_pci_tolm(struct bus *bus);
 
 #else /* vv __SIMPLE_DEVICE__ vv */
 
-ROMSTAGE_CONST struct device *dev_find_slot (unsigned int bus,
+ROMSTAGE_CONST struct device *dev_find_slot(unsigned int bus,
 						unsigned int devfn);
 ROMSTAGE_CONST struct device *dev_find_next_pci_device(
 						ROMSTAGE_CONST struct device *previous_dev);
-ROMSTAGE_CONST struct device *dev_find_slot_on_smbus (unsigned int bus,
+ROMSTAGE_CONST struct device *dev_find_slot_on_smbus(unsigned int bus,
 							unsigned int addr);
 ROMSTAGE_CONST struct device *dev_find_slot_pnp(u16 port, u16 device);
 

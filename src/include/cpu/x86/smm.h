@@ -511,7 +511,7 @@ struct smm_module_params {
 };
 
 /* smm_handler_t is called with arg of smm_module_params pointer. */
-typedef void asmlinkage (*smm_handler_t)(void *);
+typedef asmlinkage void (*smm_handler_t)(void *);
 
 #ifdef __SMM__
 /* SMM Runtime helpers. */

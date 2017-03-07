@@ -10,7 +10,6 @@ subdirs-y += ../../../cpu/x86/smm
 subdirs-y += ../../../cpu/x86/tsc
 
 bootblock-y += bootblock/bootblock.c
-bootblock-y += bootblock/cache_as_ram.S
 bootblock-y += bootblock/cpu.c
 bootblock-y += bootblock/i2c.c
 bootblock-y += bootblock/pch.c

@@ -14,17 +14,13 @@
  *
  */
 
+#include <commonlib/helpers.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/cr.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/post_code.h>
 #include <rules.h>
-
-#define IA32_PQR_ASSOC 0x0c8f
-#define IA32_L3_MASK_1 0x0c91
-#define IA32_L3_MASK_2 0x0c92
-#define CACHE_INIT_VALUE 0
-#define MSR_EVICT_CTL 0x2e0
+#include <intelblocks/msr.h>
 
 .global bootblock_pre_c_entry
 bootblock_pre_c_entry:
@@ -42,7 +38,7 @@ check_for_clean_reset:
 	and	$(MTRR_DEF_TYPE_EN | MTRR_DEF_TYPE_FIX_EN), %eax
 	cmp	$0, %eax
 	jz	no_reset
-	/* perform soft reset */
+	/* perform warm reset */
 	movw	$0xcf9, %dx
 	movb	$0x06, %al
 	outb	%al, %dx
@@ -54,6 +50,7 @@ no_reset:
 	mov	$fixed_mtrr_list_size, %ebx
 	xor	%eax, %eax
 	xor	%edx, %edx
+
 clear_fixed_mtrr:
 	add	$-2, %ebx
 	movzwl	fixed_mtrr_list(%ebx), %ecx
@@ -107,6 +104,7 @@ clear_var_mtrr:
 
 	post_code(0x24)
 
+#if ((CONFIG_DCACHE_RAM_SIZE & (CONFIG_DCACHE_RAM_SIZE - 1)) == 0)
 	/* Configure CAR region as write-back (WB) */
 	mov	$MTRR_PHYS_BASE(0), %ecx
 	mov	$CONFIG_DCACHE_RAM_BASE, %eax
@@ -120,8 +118,40 @@ clear_var_mtrr:
 	dec	%eax
 	not	%eax
 	or	$MTRR_PHYS_MASK_VALID, %eax
+	movl	%esi, %edx	/* edx <- MTRR_PHYS_MASK_HIGH */
+	wrmsr
+#elif (CONFIG_DCACHE_RAM_SIZE == 768 * KiB) /* 768 KiB */
+	/* Configure CAR region as write-back (WB) */
+	mov	$MTRR_PHYS_BASE(0), %ecx
+	mov	$CONFIG_DCACHE_RAM_BASE, %eax
+	or	$MTRR_TYPE_WRBACK, %eax
+	xor	%edx,%edx
 	wrmsr
 
+	mov	$MTRR_PHYS_MASK(0), %ecx
+	mov	$(512 * KiB), %eax	/* size mask */
+	dec	%eax
+	not	%eax
+	or	$MTRR_PHYS_MASK_VALID, %eax
+	movl	%esi, %edx	/* edx <- MTRR_PHYS_MASK_HIGH */
+	wrmsr
+
+	mov	$MTRR_PHYS_BASE(1), %ecx
+	mov	$(CONFIG_DCACHE_RAM_BASE + 512 * KiB), %eax
+	or	$MTRR_TYPE_WRBACK, %eax
+	xor	%edx,%edx
+	wrmsr
+
+	mov	$MTRR_PHYS_MASK(1), %ecx
+	mov	$(256 * KiB), %eax	/* size mask */
+	dec	%eax
+	not	%eax
+	or	$MTRR_PHYS_MASK_VALID, %eax
+	movl	%esi, %edx	/* edx <- MTRR_PHYS_MASK_HIGH */
+	wrmsr
+#else
+#error "DCACHE_RAM_SIZE is not a power of 2 and setup code is missing"
+#endif
 	post_code(0x25)
 
 	/* Enable variable MTRRs */
@@ -136,6 +166,168 @@ clear_var_mtrr:
 	invd
 	mov	%eax, %cr0
 
+#if IS_ENABLED(CONFIG_INTEL_CAR_NEM)
+	jmp car_nem
+#elif IS_ENABLED(CONFIG_INTEL_CAR_CQOS)
+	jmp car_cqos
+#elif IS_ENABLED(CONFIG_INTEL_CAR_NEM_ENHANCED)
+	jmp car_nem_enhanced
+#else
+	jmp	.halt_forever /* In case nothing has selected */
+#endif
+
+.global car_init_done
+car_init_done:
+
+	post_code(0x29)
+
+	/* Setup bootblock stack */
+	mov	$_car_stack_end, %esp
+
+	/*push TSC value to stack*/
+	movd	%mm2, %eax
+	pushl	%eax	/* tsc[63:32] */
+	movd	%mm1, %eax
+	pushl	%eax 	/* tsc[31:0] */
+
+before_carstage:
+	post_code(0x2A)
+
+	call	bootblock_c_entry
+	/* Never reached */
+
+.halt_forever:
+	post_code(POST_DEAD_CODE)
+	hlt
+	jmp	.halt_forever
+
+fixed_mtrr_list:
+	.word	MTRR_FIX_64K_00000
+	.word	MTRR_FIX_16K_80000
+	.word	MTRR_FIX_16K_A0000
+	.word	MTRR_FIX_4K_C0000
+	.word	MTRR_FIX_4K_C8000
+	.word	MTRR_FIX_4K_D0000
+	.word	MTRR_FIX_4K_D8000
+	.word	MTRR_FIX_4K_E0000
+	.word	MTRR_FIX_4K_E8000
+	.word	MTRR_FIX_4K_F0000
+	.word	MTRR_FIX_4K_F8000
+fixed_mtrr_list_size = . - fixed_mtrr_list
+
+#if IS_ENABLED(CONFIG_INTEL_CAR_NEM)
+.global car_nem
+car_nem:
+	/* Disable cache eviction (setup stage) */
+	mov	$MSR_EVICT_CTL, %ecx
+	rdmsr
+	or	$0x1, %eax
+	wrmsr
+
+	post_code(0x26)
+
+	/* Clear the cache memory region. This will also fill up the cache */
+	movl	$CONFIG_DCACHE_RAM_BASE, %edi
+	movl	$CONFIG_DCACHE_RAM_SIZE, %ecx
+	shr	$0x02, %ecx
+	xor	%eax, %eax
+	cld
+	rep	stosl
+
+	post_code(0x27)
+
+	/* Disable cache eviction (run stage) */
+	mov	$MSR_EVICT_CTL, %ecx
+	rdmsr
+	or	$0x2, %eax
+	wrmsr
+
+	post_code(0x28)
+
+	jmp car_init_done
+
+#elif IS_ENABLED(CONFIG_INTEL_CAR_CQOS)
+.global car_cqos
+car_cqos:
+	/*
+	 * Disable both L1 and L2 prefetcher. For yet-to-understood reason,
+	 * prefetchers slow down filling cache with rep stos in CQOS mode.
+	 */
+	mov	$MSR_PREFETCH_CTL, %ecx
+	rdmsr
+	or	$(PREFETCH_L1_DISABLE | PREFETCH_L2_DISABLE), %eax
+	wrmsr
+
+#if (CONFIG_DCACHE_RAM_SIZE == CONFIG_L2_CACHE_SIZE)
+/*
+ * If CAR size is set to full L2 size, mask is calculated as all-zeros.
+ * This is not supported by the CPU/uCode.
+ */
+#error "CQOS CAR may not use whole L2 cache area"
+#endif
+
+	/* Calculate how many bits to be used for CAR */
+	xor	%edx, %edx
+	mov	$CONFIG_DCACHE_RAM_SIZE, %eax	/* dividend */
+	mov	$CONFIG_CACHE_QOS_SIZE_PER_BIT, %ecx	/* divisor */
+	div	%ecx		/* result is in eax */
+	mov	%eax, %ecx	/* save to ecx */
+	mov	$1, %ebx
+	shl	%cl, %ebx
+	sub	$1, %ebx	/* resulting mask is is in ebx */
+
+	/* Set this mask for initial cache fill */
+	mov	$MSR_L2_QOS_MASK(0), %ecx
+	rdmsr
+	mov	%bl, %al
+	wrmsr
+
+	/* Set CLOS selector to 0 */
+	mov	$MSR_IA32_PQR_ASSOC, %ecx
+	rdmsr
+	and	$~IA32_PQR_ASSOC_MASK, %edx	/* select mask 0 */
+	wrmsr
+
+	/* We will need to block CAR region from evicts */
+	mov	$MSR_L2_QOS_MASK(1), %ecx
+	rdmsr
+	/* Invert bits that are to be used for cache */
+	mov	%bl, %al
+	xor	$~0, %al			/* invert 8 bits */
+	wrmsr
+
+	post_code(0x26)
+
+	/* Clear the cache memory region. This will also fill up the cache */
+	movl	$CONFIG_DCACHE_RAM_BASE, %edi
+	movl	$CONFIG_DCACHE_RAM_SIZE, %ecx
+	shr	$0x02, %ecx
+	xor	%eax, %eax
+	cld
+	rep	stosl
+
+	post_code(0x27)
+
+	/* Cache is populated. Use mask 1 that will block evicts */
+	mov	$MSR_IA32_PQR_ASSOC, %ecx
+	rdmsr
+	and	$~IA32_PQR_ASSOC_MASK, %edx	/* clear index bits first */
+	or	$1, %edx			/* select mask 1 */
+	wrmsr
+
+	/* Enable prefetchers */
+	mov	$MSR_PREFETCH_CTL, %ecx
+	rdmsr
+	and	$~(PREFETCH_L1_DISABLE | PREFETCH_L2_DISABLE), %eax
+	wrmsr
+
+	post_code(0x28)
+
+	jmp car_init_done
+
+#elif IS_ENABLED(CONFIG_INTEL_CAR_NEM_ENHANCED)
+.global car_nem_enhanced
+car_nem_enhanced:
 	/* Disable cache eviction (setup stage) */
 	mov	$MSR_EVICT_CTL, %ecx
 	rdmsr
@@ -188,7 +380,7 @@ find_llc_subleaf:
 	 */
 	shl	%cl, %eax
 	subl	$0x02, %eax
-	movl	$IA32_L3_MASK_1, %ecx
+	movl	$MSR_IA32_L3_MASK_1, %ecx
 	xorl	%edx, %edx
 	wrmsr
 	/*
@@ -197,12 +389,12 @@ find_llc_subleaf:
 	 * For SKL SOC, data size remains 256K consistently.
 	 * Hence, creating 1-way associative cache for Data
 	*/
-	mov	$IA32_L3_MASK_2, %ecx
+	mov	$MSR_IA32_L3_MASK_2, %ecx
 	mov	$0x01, %eax
 	xorl	%edx, %edx
 	wrmsr
 	/*
-	 * Set IA32_PQR_ASSOC = 0x02
+	 * Set MSR_IA32_PQR_ASSOC = 0x02
 	 *
 	 * Possible values:
 	 * 0: Default value, no way mask should be applied
@@ -210,7 +402,7 @@ find_llc_subleaf:
 	 * 2: Apply way mask 2 to LLC
 	 * 3: Shouldn't be use in NEM Mode
 	 */
-	movl	$IA32_PQR_ASSOC, %ecx
+	movl	$MSR_IA32_PQR_ASSOC, %ecx
 	movl	$0x02, %eax
 	xorl	%edx, %edx
 	wrmsr
@@ -218,15 +410,15 @@ find_llc_subleaf:
 	movl	$CONFIG_DCACHE_RAM_BASE, %edi
 	movl	$CONFIG_DCACHE_RAM_SIZE, %ecx
 	shr	$0x02, %ecx
-	movl	$CACHE_INIT_VALUE, %eax
+	xor	%eax, %eax
 	cld
 	rep	stosl
 	/*
-	 * Set IA32_PQR_ASSOC = 0x01
+	 * Set MSR_IA32_PQR_ASSOC = 0x01
 	 * At this stage we apply LLC_WAY_MASK_1 to the cache.
 	 * i.e. way 0 is protected from eviction.
 	*/
-	movl	$IA32_PQR_ASSOC, %ecx
+	movl	$MSR_IA32_PQR_ASSOC, %ecx
 	movl	$0x01, %eax
 	xorl	%edx, %edx
 	wrmsr
@@ -242,42 +434,7 @@ find_llc_subleaf:
 	orl	$0x02, %eax
 	wrmsr
 
-car_init_done:
-
 	post_code(0x28)
 
-	/* Setup bootblock stack */
-	mov	$_car_stack_end, %esp
-
-	post_code(0x29)
-
-	/*push TSC value to stack*/
-	movd	%mm2, %eax
-	pushl	%eax	/* tsc[63:32] */
-	movd	%mm1, %eax
-	pushl	%eax 	/* tsc[31:0] */
-
-before_carstage:
-	post_code(0x2A)
-
-	call	bootblock_c_entry
-	/* Never reached */
-
-.halt_forever:
-	post_code(POST_DEAD_CODE)
-	hlt
-	jmp	.halt_forever
-
-fixed_mtrr_list:
-	.word	MTRR_FIX_64K_00000
-	.word	MTRR_FIX_16K_80000
-	.word	MTRR_FIX_16K_A0000
-	.word	MTRR_FIX_4K_C0000
-	.word	MTRR_FIX_4K_C8000
-	.word	MTRR_FIX_4K_D0000
-	.word	MTRR_FIX_4K_D8000
-	.word	MTRR_FIX_4K_E0000
-	.word	MTRR_FIX_4K_E8000
-	.word	MTRR_FIX_4K_F0000
-	.word	MTRR_FIX_4K_F8000
-fixed_mtrr_list_size = . - fixed_mtrr_list
+	jmp car_init_done
+#endif

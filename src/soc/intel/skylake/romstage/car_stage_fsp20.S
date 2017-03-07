@@ -37,7 +37,8 @@ car_stage_entry:
 	/* Switch to the stack in RAM */
 	movl	%eax, %esp
 
-	#include <soc/car_teardown.S>
+	/* chipset_teardown_car() is expected to disable cache-as-ram. */
+	call	chipset_teardown_car
 
 	/* Display the MTRRs */
 	call	soc_display_mtrrs

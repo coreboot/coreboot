@@ -32,8 +32,8 @@
 
 #if IS_ENABLED(CONFIG_SKIP_FSP_CAR)
 
-	/* SOC specific NEM */
-	#include <soc/car_teardown.S>
+	/* chipset_teardown_car() is expected to disable cache-as-ram. */
+	call	chipset_teardown_car
 
 #else
 .extern fih_car

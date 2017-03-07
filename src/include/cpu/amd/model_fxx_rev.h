@@ -74,9 +74,8 @@ static inline int is_e0_later_in_bsp(int nodeid)
 		return 1;
 
 	// we don't need to do that for node 0 in core0/node0
-	if (nodeid == 0) {
+	if (nodeid == 0)
 		return !is_cpu_pre_e0();
-	}
 
 	// d0 will be treated as e0 with this methods, but the d0 nb_cfg_54 always 0
 	pci_devfn_t dev;
@@ -89,9 +88,8 @@ static inline int is_e0_later_in_bsp(int nodeid)
 	e0_later = !!(val & (1<<3));
 
 	// pre_e0 bit 3 always be 0 and can not be changed
-	if (e0_later) {
+	if (e0_later)
 		pci_write_config32(dev, 0x80, val_old); // restore it
-	}
 
 	return e0_later;
 }

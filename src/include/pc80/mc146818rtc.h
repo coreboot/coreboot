@@ -140,14 +140,12 @@ static inline void cmos_write(unsigned char val, unsigned char addr)
 	 * eg. the Century / AltCentury byte. So to be safe, disable
 	 * RTC before changing any value.
 	 */
-	if ((addr != RTC_CONTROL) && !(control_state & RTC_SET)) {
+	if ((addr != RTC_CONTROL) && !(control_state & RTC_SET))
 		cmos_write_inner(control_state | RTC_SET, RTC_CONTROL);
-	}
 	cmos_write_inner(val, addr);
 	/* reset to prior configuration */
-	if ((addr != RTC_CONTROL) && !(control_state & RTC_SET)) {
+	if ((addr != RTC_CONTROL) && !(control_state & RTC_SET))
 		cmos_write_inner(control_state, RTC_CONTROL);
-	}
 }
 
 static inline void cmos_disable_rtc(void)

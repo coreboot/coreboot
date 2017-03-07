@@ -103,9 +103,8 @@ static inline const struct pci_operations *ops_pci(device_t dev)
 {
 	const struct pci_operations *pops;
 	pops = 0;
-	if (dev && dev->ops) {
+	if (dev && dev->ops)
 		pops = dev->ops->ops_pci;
-	}
 	return pops;
 }
 

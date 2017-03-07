@@ -146,7 +146,7 @@ static void mb_gpio_init(void)
 	}
 }
 
-void main(unsigned long bist)
+void asmlinkage mainboard_romstage_entry(unsigned long bist)
 {
 	int err;
 

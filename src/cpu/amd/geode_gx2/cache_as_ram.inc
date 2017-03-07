@@ -156,7 +156,8 @@ DCacheSetupGood:
 	post_code(0x23)
 
 	/* Call romstage.c main function */
-	call	main
+	call	mainboard_romstage_entry
+
 done_cache_as_ram_main:
 
 	/* We now run over the stack-in-cache, copying it back to itself to invalidate the cache */

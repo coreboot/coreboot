@@ -15,7 +15,7 @@
 #define  PCI_COMMAND_INVALIDATE	0x10	/* Use memory write and invalidate */
 #define  PCI_COMMAND_VGA_PALETTE 0x20	/* Enable palette snooping */
 #define  PCI_COMMAND_PARITY	0x40	/* Enable parity checking */
-#define  PCI_COMMAND_WAIT 	0x80	/* Enable address/data stepping */
+#define  PCI_COMMAND_WAIT	0x80	/* Enable address/data stepping */
 #define  PCI_COMMAND_SERR	0x100	/* Enable SERR */
 #define  PCI_COMMAND_FAST_BACK	0x200	/* Enable back-to-back writes */
 #define  PCI_COMMAND_INT_DISABLE 0x400	/* Interrupt disable */
@@ -183,7 +183,7 @@
 #define  PCI_CAP_ID_PCIX	0x07	/* PCIX  */
 #define  PCI_CAP_ID_HT          0x08	/* Hypertransport */
 #define  PCI_CAP_ID_EHCI_DEBUG	0x0A	/* EHCI debug port */
-#define  PCI_CAP_ID_SHPC 	0x0C	/* PCI Standard Hot-Plug Controller */
+#define  PCI_CAP_ID_SHPC	0x0C	/* PCI Standard Hot-Plug Controller */
 #define  PCI_CAP_ID_PCIE	0x10	/* PCI Express */
 #define  PCI_CAP_ID_MSIX	0x11	/* MSI-X */
 #define PCI_CAP_LIST_NEXT	1	/* Next capability in the list */
@@ -243,8 +243,8 @@
 #define  PCI_AGP_COMMAND_RQ_MASK 0xff000000  /* Master: Maximum number of requests */
 #define  PCI_AGP_COMMAND_SBA	0x0200	/* Sideband addressing enabled */
 #define  PCI_AGP_COMMAND_AGP	0x0100	/* Allow processing of AGP transactions */
-#define  PCI_AGP_COMMAND_64BIT	0x0020 	/* Allow processing of 64-bit addresses */
-#define  PCI_AGP_COMMAND_FW	0x0010 	/* Force FW transfers */
+#define  PCI_AGP_COMMAND_64BIT	0x0020	/* Allow processing of 64-bit addresses */
+#define  PCI_AGP_COMMAND_FW	0x0010	/* Force FW transfers */
 #define  PCI_AGP_COMMAND_RATE4	0x0004	/* Use 4x rate */
 #define  PCI_AGP_COMMAND_RATE2	0x0002	/* Use 4x rate */
 #define  PCI_AGP_COMMAND_RATE1	0x0001	/* Use 4x rate */
@@ -289,7 +289,7 @@
 #define  PCI_X_CMD_ERO		0x0002	/* Enable Relaxed Ordering */
 #define  PCI_X_CMD_MAX_READ	0x000c	/* Max Memory Read Byte Count */
 #define  PCI_X_CMD_MAX_SPLIT	0x0070	/* Max Outstanding Split Transactions */
-#define  PCI_X_CMD_VERSION(x) 	(((x) >> 12) & 3) /* Version */
+#define  PCI_X_CMD_VERSION(x)	(((x) >> 12) & 3) /* Version */
 #define PCI_X_STATUS		4	/* PCI-X capabilities */
 #define  PCI_X_STATUS_DEVFN	0x000000ff	/* A copy of devfn */
 #define  PCI_X_STATUS_BUS	0x0000ff00	/* A copy of bus nr */

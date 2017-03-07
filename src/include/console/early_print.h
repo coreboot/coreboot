@@ -28,9 +28,9 @@
 #define console_log_level(msg_level) (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= msg_level)
 
 #define CALL_CONSOLE_TX(loglevel, tx_func, x) \
-	do { 						\
-		if (console_log_level(loglevel)) { 	\
-			tx_func(x);		 	\
+	do {						\
+		if (console_log_level(loglevel)) {	\
+			tx_func(x);			\
 			console_tx_flush();		\
 		}	\
 	} while (0)

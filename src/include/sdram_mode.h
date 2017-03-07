@@ -50,4 +50,4 @@
 #define SDRAM_EXTMODE_DRIVE_NORMAL	(0 << 1)
 #define SDRAM_EXTMODE_DRIVE_WEAK	(1 << 1)	/* Optional */
 
-#endif 	// __SDRAMMODE_H_DEFINED
+#endif	// __SDRAMMODE_H_DEFINED

@@ -40,64 +40,64 @@ enum device_path_type {
 
 struct domain_path
 {
-	unsigned domain;
+	unsigned int domain;
 };
 
 struct pci_path
 {
-	unsigned devfn;
+	unsigned int devfn;
 };
 
 struct pnp_path
 {
-	unsigned port;
-	unsigned device;
+	unsigned int port;
+	unsigned int device;
 };
 
 struct i2c_path
 {
-	unsigned device;
-	unsigned mode_10bit;
+	unsigned int device;
+	unsigned int mode_10bit;
 };
 
 struct spi_path
 {
-	unsigned cs;
+	unsigned int cs;
 };
 
 struct apic_path
 {
-	unsigned apic_id;
-	unsigned package_id;
-	unsigned node_id;
-	unsigned core_id;
-	unsigned thread_id;
+	unsigned int apic_id;
+	unsigned int package_id;
+	unsigned int node_id;
+	unsigned int core_id;
+	unsigned int thread_id;
 };
 
 struct ioapic_path
 {
-	unsigned ioapic_id;
+	unsigned int ioapic_id;
 };
 
 struct cpu_cluster_path
 {
-	unsigned cluster;
+	unsigned int cluster;
 };
 
 struct cpu_path
 {
-	unsigned id;
+	unsigned int id;
 };
 
 struct cpu_bus_path
 {
-	unsigned id;
+	unsigned int id;
 };
 
 struct generic_path
 {
-	unsigned id;
-	unsigned subid;
+	unsigned int id;
+	unsigned int subid;
 };
 
 

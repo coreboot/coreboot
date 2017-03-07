@@ -31,7 +31,7 @@ extern struct device_operations pnp_ops;
 /* PNP helper operations */
 
 struct io_info {
-	unsigned mask, set;
+	unsigned int mask, set;
 };
 
 struct pnp_info {
@@ -64,7 +64,7 @@ struct pnp_info {
 #define PNP_MSCE 0x800000
 	struct io_info io0, io1, io2, io3;
 };
-struct resource *pnp_get_resource(device_t dev, unsigned index);
+struct resource *pnp_get_resource(device_t dev, unsigned int index);
 void pnp_enable_devices(struct device *dev, struct device_operations *ops,
 			unsigned int functions, struct pnp_info *info);
 

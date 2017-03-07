@@ -3,7 +3,7 @@
 
 void init_timer(void);
 
-void udelay(unsigned usecs);
-void mdelay(unsigned msecs);
-void delay(unsigned secs);
+void udelay(unsigned int usecs);
+void mdelay(unsigned int msecs);
+void delay(unsigned int secs);
 #endif /* DELAY_H */

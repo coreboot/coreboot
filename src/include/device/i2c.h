@@ -40,27 +40,29 @@ struct i2c_seg
 	int len;
 };
 
-int platform_i2c_transfer(unsigned bus, struct i2c_seg *segments, int count);
+int platform_i2c_transfer(unsigned int bus, struct i2c_seg *segments,
+	int count);
 
 #define SOFTWARE_I2C_MAX_BUS 10		/* increase as necessary */
 
 struct software_i2c_ops {
-	void (*set_sda)(unsigned bus, int high);
-	void (*set_scl)(unsigned bus, int high);
-	int (*get_sda)(unsigned bus);
-	int (*get_scl)(unsigned bus);
+	void (*set_sda)(unsigned int bus, int high);
+	void (*set_scl)(unsigned int bus, int high);
+	int (*get_sda)(unsigned int bus);
+	int (*get_scl)(unsigned int bus);
 };
 
 extern struct software_i2c_ops *software_i2c[];
 
-int software_i2c_transfer(unsigned bus, struct i2c_seg *segments, int count);
-void software_i2c_wedge_ack(unsigned bus, u8 chip);
-void software_i2c_wedge_read(unsigned bus, u8 chip, u8 reg, int bit_count);
-void software_i2c_wedge_write(unsigned bus, u8 chip, u8 reg, int bit_count);
+int software_i2c_transfer(unsigned int bus, struct i2c_seg *segments,
+	int count);
+void software_i2c_wedge_ack(unsigned int bus, u8 chip);
+void software_i2c_wedge_read(unsigned int bus, u8 chip, u8 reg, int bit_count);
+void software_i2c_wedge_write(unsigned int bus, u8 chip, u8 reg, int bit_count);
 
-int i2c_read_field(unsigned bus, uint8_t chip, uint8_t reg, uint8_t *data,
+int i2c_read_field(unsigned int bus, uint8_t chip, uint8_t reg, uint8_t *data,
 		   uint8_t mask, uint8_t shift);
-int i2c_write_field(unsigned bus, uint8_t chip, uint8_t reg, uint8_t data,
+int i2c_write_field(unsigned int bus, uint8_t chip, uint8_t reg, uint8_t data,
 		    uint8_t mask, uint8_t shift);
 
 /*
@@ -69,7 +71,7 @@ int i2c_write_field(unsigned bus, uint8_t chip, uint8_t reg, uint8_t data,
  * Need this ugly stub to arbitrate since I2C device drivers hardcode
  * 'i2c_transfer()' as their entry point.
  */
-static inline int i2c_transfer(unsigned bus, struct i2c_seg *segments,
+static inline int i2c_transfer(unsigned int bus, struct i2c_seg *segments,
 			       int count)
 {
 	if (CONFIG_SOFTWARE_I2C)
@@ -84,7 +86,7 @@ static inline int i2c_transfer(unsigned bus, struct i2c_seg *segments,
  *
  * [start][slave addr][r][data][stop]
  */
-static inline int i2c_read_raw(unsigned bus, uint8_t chip, uint8_t *data,
+static inline int i2c_read_raw(unsigned int bus, uint8_t chip, uint8_t *data,
 			       int len)
 {
 	struct i2c_seg seg =
@@ -97,7 +99,7 @@ static inline int i2c_read_raw(unsigned bus, uint8_t chip, uint8_t *data,
  *
  * [start][slave addr][w][data][stop]
  */
-static inline int i2c_write_raw(unsigned bus, uint8_t chip, uint8_t *data,
+static inline int i2c_write_raw(unsigned int bus, uint8_t chip, uint8_t *data,
 			        int len)
 {
 	struct i2c_seg seg =
@@ -110,7 +112,7 @@ static inline int i2c_write_raw(unsigned bus, uint8_t chip, uint8_t *data,
  *
  * [start][slave addr][w][register addr][start][slave addr][r][data...][stop]
  */
-static inline int i2c_read_bytes(unsigned bus, uint8_t chip, uint8_t reg,
+static inline int i2c_read_bytes(unsigned int bus, uint8_t chip, uint8_t reg,
 				 uint8_t *data, int len)
 {
 	struct i2c_seg seg[2];
@@ -132,7 +134,7 @@ static inline int i2c_read_bytes(unsigned bus, uint8_t chip, uint8_t reg,
  *
  * [start][slave addr][w][register addr][start][slave addr][r][data][stop]
  */
-static inline int i2c_readb(unsigned bus, uint8_t chip, uint8_t reg,
+static inline int i2c_readb(unsigned int bus, uint8_t chip, uint8_t reg,
 			    uint8_t *data)
 {
 	struct i2c_seg seg[2];
@@ -154,7 +156,7 @@ static inline int i2c_readb(unsigned bus, uint8_t chip, uint8_t reg,
  *
  * [start][slave addr][w][register addr][data][stop]
  */
-static inline int i2c_writeb(unsigned bus, uint8_t chip, uint8_t reg,
+static inline int i2c_writeb(unsigned int bus, uint8_t chip, uint8_t reg,
 			     uint8_t data)
 {
 	struct i2c_seg seg;

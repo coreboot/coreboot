@@ -19,27 +19,27 @@ static void wrmsr(unsigned long index, msr_t msr)
 
 typedef struct msr_struct
 {
-	unsigned lo;
-	unsigned hi;
+	unsigned int lo;
+	unsigned int hi;
 } msr_t;
 
 typedef struct msrinit_struct
 {
-	unsigned index;
+	unsigned int index;
 	msr_t msr;
 } msrinit_t;
 
 #if IS_ENABLED(CONFIG_SOC_SETS_MSRS)
-msr_t soc_msr_read(unsigned index);
-void soc_msr_write(unsigned index, msr_t msr);
+msr_t soc_msr_read(unsigned int index);
+void soc_msr_write(unsigned int index, msr_t msr);
 
 /* Handle MSR references in the other source code */
-static inline __attribute__((always_inline)) msr_t rdmsr(unsigned index)
+static inline __attribute__((always_inline)) msr_t rdmsr(unsigned int index)
 {
 	return soc_msr_read(index);
 }
 
-static inline __attribute__((always_inline)) void wrmsr(unsigned index, msr_t msr)
+static inline __attribute__((always_inline)) void wrmsr(unsigned int index, msr_t msr)
 {
 	soc_msr_write(index, msr);
 }
@@ -55,7 +55,7 @@ static inline __attribute__((always_inline)) void wrmsr(unsigned index, msr_t ms
  * these functions to always be inlined by adding the qualifier
  * __attribute__((always_inline)) to their declaration.
  */
-static inline __attribute__((always_inline)) msr_t rdmsr(unsigned index)
+static inline __attribute__((always_inline)) msr_t rdmsr(unsigned int index)
 {
 	msr_t result;
 	__asm__ __volatile__ (
@@ -66,7 +66,7 @@ static inline __attribute__((always_inline)) msr_t rdmsr(unsigned index)
 	return result;
 }
 
-static inline __attribute__((always_inline)) void wrmsr(unsigned index, msr_t msr)
+static inline __attribute__((always_inline)) void wrmsr(unsigned int index, msr_t msr)
 {
 	__asm__ __volatile__ (
 		"wrmsr"

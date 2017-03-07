@@ -50,7 +50,7 @@ int thread_run_until(void (*func)(void *), void *arg,
                      boot_state_t state, boot_state_sequence_t seq);
 /* Return 0 on successful yield for the given amount of time, < 0 when thread
  * did not yield. */
-int thread_yield_microseconds(unsigned microsecs);
+int thread_yield_microseconds(unsigned int microsecs);
 
 /* Allow and prevent thread cooperation on current running thread. By default
  * all threads are marked to be cooperative. That means a thread can yield
@@ -74,7 +74,10 @@ void arch_prepare_thread(struct thread *t,
 #else
 static inline void threads_initialize(void) {}
 static inline int thread_run(void (*func)(void *), void *arg) { return -1; }
-static inline int thread_yield_microseconds(unsigned microsecs) { return -1; }
+static inline int thread_yield_microseconds(unsigned int microsecs)
+{
+	return -1;
+}
 static inline void thread_cooperate(void) {}
 static inline void thread_prevent_coop(void) {}
 struct cpu_info;

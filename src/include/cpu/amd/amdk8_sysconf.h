@@ -5,18 +5,18 @@
 
 struct amdk8_sysconf_t {
 	//ht
-	unsigned nodes;
-	unsigned hc_possible_num;
-	unsigned pci1234[HC_POSSIBLE_NUM];
-	unsigned hcdn[HC_POSSIBLE_NUM];
-	unsigned hcid[HC_POSSIBLE_NUM]; //record ht chain type
-	unsigned sbdn;
-	unsigned sblk;
+	unsigned int nodes;
+	unsigned int hc_possible_num;
+	unsigned int pci1234[HC_POSSIBLE_NUM];
+	unsigned int hcdn[HC_POSSIBLE_NUM];
+	unsigned int hcid[HC_POSSIBLE_NUM]; //record ht chain type
+	unsigned int sbdn;
+	unsigned int sblk;
 
-	unsigned hcdn_reg[4]; // it will be used by get_sblk_pci1234
+	unsigned int hcdn_reg[4]; // it will be used by get_sblk_pci1234
 
 	int enabled_apic_ext_id;
-	unsigned lift_bsp_apicid;
+	unsigned int lift_bsp_apicid;
 	int apicid_offset;
 
 	void *mb; // pointer for mb related struct

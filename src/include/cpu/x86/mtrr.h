@@ -87,7 +87,8 @@ void mtrr_use_temp_range(uintptr_t begin, size_t size, int type);
 #endif
 
 #if !defined(__ASSEMBLER__) && defined(__PRE_RAM__) && !defined(__ROMCC__)
-void set_var_mtrr(unsigned reg, unsigned base, unsigned size, unsigned type);
+void set_var_mtrr(unsigned int reg, unsigned int base, unsigned int size,
+	unsigned int type);
 int get_free_var_mtrr(void);
 #endif
 

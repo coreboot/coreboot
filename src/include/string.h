@@ -24,18 +24,16 @@ int snprintf(char * buf, size_t size, const char *fmt, ...);
 static inline size_t strnlen(const char *src, size_t max)
 {
 	size_t i = 0;
-	while ((*src++) && (i < max)) {
+	while ((*src++) && (i < max))
 		i++;
-	}
 	return i;
 }
 
 static inline size_t strlen(const char *src)
 {
 	size_t i = 0;
-	while (*src++) {
+	while (*src++)
 		i++;
-	}
 	return i;
 }
 

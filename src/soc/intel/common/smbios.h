@@ -21,7 +21,8 @@
 
 /* Fill the SMBIOS memory information from FSP MEM_INFO_DATA_HOB in CBMEM.*/
 void dimm_info_fill(struct dimm_info *dimm, u32 dimm_capacity, u8 ddr_type,
-		u32 frequency, u8 channel_id, u8 dimm_id, const char *module_part_num,
+		u32 frequency, u8 channel_id, u8 dimm_id,
+		const char *module_part_num, size_t module_part_number_size,
 		u16 data_width);
 
 #endif /* _COMMON_SMBIOS_H_ */

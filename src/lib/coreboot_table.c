@@ -376,7 +376,7 @@ static struct cmos_checksum *lb_cmos_checksum(struct lb_header *header)
 	cmos_checksum->size = (sizeof(*cmos_checksum));
 
 	cmos_checksum->range_start = LB_CKS_RANGE_START * 8;
-	cmos_checksum->range_end = ( LB_CKS_RANGE_END * 8 ) + 7;
+	cmos_checksum->range_end = (LB_CKS_RANGE_END * 8) + 7;
 	cmos_checksum->location = LB_CKS_LOC * 8;
 	cmos_checksum->type = CHECKSUM_PCBIOS;
 

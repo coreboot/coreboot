@@ -636,7 +636,7 @@ static void dec_makehuff(struct dec_hufftbl *hu, int *hufflen, unsigned char *hu
 #define XMP(a,b) (t = a - b, b = a + b, a = t)
 #define XPM(a,b) (t = a + b, b = b - a, a = t)
 
-#define ROT(a,b,s,c) (	t = IMULT(a + b, s),	\
+#define ROT(a,b,s,c) (t = IMULT(a + b, s),	\
 			a = IMULT(a, c - s) + t,	\
 			b = IMULT(b, c + s) - t)
 
@@ -853,8 +853,8 @@ static void initcol(PREC q[][64])
 (                                                \
   y = outy[(yin) * 8 + xin],                     \
   y = ((CLAMP(y + cr + add*2+1) & 0xf8) <<  8) | \
-      ((CLAMP(y - cg + add    ) & 0xfc) <<  3) | \
-      ((CLAMP(y + cb + add*2+1)       ) >>  3),  \
+      ((CLAMP(y - cg + add)     & 0xfc) <<  3) | \
+      ((CLAMP(y + cb + add*2+1))        >>  3),  \
   p[(xout) * 2 + 0] = y & 0xff,                  \
   p[(xout) * 2 + 1] = y >> 8                     \
 )
@@ -865,7 +865,7 @@ static void initcol(PREC q[][64])
   y = outy[(yin) * 8 + xin],                     \
   y = ((CLAMP(y + cr + add*2+1) & 0xf8) <<  7) | \
       ((CLAMP(y - cg + add*2+1) & 0xf8) <<  2) | \
-      ((CLAMP(y + cb + add*2+1)       ) >>  3),  \
+      ((CLAMP(y + cb + add*2+1))        >>  3),  \
   p[(xout) * 2 + 0] = y >> 8,                    \
   p[(xout) * 2 + 1] = y & 0xff                   \
 )
@@ -874,8 +874,8 @@ static void initcol(PREC q[][64])
 (                                                \
   y = outy[(yin) * 8 + xin],                     \
   y = ((CLAMP(y + cr + add*2+1) & 0xf8) <<  8) | \
-      ((CLAMP(y - cg + add    ) & 0xfc) <<  3) | \
-      ((CLAMP(y + cb + add*2+1)       ) >>  3),  \
+      ((CLAMP(y - cg + add)     & 0xfc) <<  3) | \
+      ((CLAMP(y + cb + add*2+1))        >>  3),  \
   p[(xout) * 2 + 0] = y >> 8,                    \
   p[(xout) * 2 + 1] = y & 0xff                   \
 )

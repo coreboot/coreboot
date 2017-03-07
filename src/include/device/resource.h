@@ -46,10 +46,10 @@ struct resource {
 };
 
 /* Macros to generate index values for resources */
-#define IOINDEX_SUBTRACTIVE(IDX,LINK) (0x10000000 + ((IDX) << 8) + LINK)
+#define IOINDEX_SUBTRACTIVE(IDX, LINK) (0x10000000 + ((IDX) << 8) + LINK)
 #define IOINDEX_SUBTRACTIVE_LINK(IDX) (IDX & 0xff)
 
-#define IOINDEX(IDX,LINK) (((LINK) << 16) + IDX)
+#define IOINDEX(IDX, LINK) (((LINK) << 16) + IDX)
 #define IOINDEX_LINK(IDX) (( IDX & 0xf0000) >> 16)
 #define IOINDEX_IDX(IDX) (IDX & 0xffff)
 

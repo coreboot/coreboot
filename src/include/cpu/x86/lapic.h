@@ -67,7 +67,7 @@ void stop_this_cpu(void);
 
 #if !defined(__PRE_RAM__)
 
-#define xchg(ptr,v) ((__typeof__(*(ptr)))__xchg((unsigned long)(v),(ptr),sizeof(*(ptr))))
+#define xchg(ptr, v) ((__typeof__(*(ptr)))__xchg((unsigned long)(v), (ptr), sizeof(*(ptr))))
 
 struct __xchg_dummy { unsigned long a[100]; };
 #define __xg(x) ((struct __xchg_dummy *)(x))
@@ -111,11 +111,11 @@ static inline void lapic_write_atomic(unsigned long reg, unsigned long v)
 #ifdef X86_GOOD_APIC
 # define FORCE_READ_AROUND_WRITE 0
 # define lapic_read_around(x) lapic_read(x)
-# define lapic_write_around(x,y) lapic_write((x),(y))
+# define lapic_write_around(x, y) lapic_write((x), (y))
 #else
 # define FORCE_READ_AROUND_WRITE 1
 # define lapic_read_around(x) lapic_read(x)
-# define lapic_write_around(x,y) lapic_write_atomic((x),(y))
+# define lapic_write_around(x, y) lapic_write_atomic((x), (y))
 #endif
 
 static inline int lapic_remote_read(int apicid, int reg, unsigned long *pvalue)

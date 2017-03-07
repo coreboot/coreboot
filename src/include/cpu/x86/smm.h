@@ -517,7 +517,7 @@ typedef asmlinkage void (*smm_handler_t)(void *);
 /* SMM Runtime helpers. */
 
 /* Entry point for SMM modules. */
-void asmlinkage smm_handler_start(void *params);
+asmlinkage void smm_handler_start(void *params);
 
 /* Retrieve SMM save state for a given CPU. WARNING: This does not take into
  * account CPUs which are configured to not save their state to RAM. */

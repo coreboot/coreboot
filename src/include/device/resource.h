@@ -37,7 +37,7 @@ struct resource {
 	resource_t base;	/* Base address of the resource */
 	resource_t size;	/* Size of the resource */
 	resource_t limit;	/* Largest valid value base + size -1 */
-	ROMSTAGE_CONST struct resource* next;	/* Next resource in the list */
+	ROMSTAGE_CONST struct resource *next;	/* Next resource in the list */
 	unsigned long flags;	/* Descriptions of the kind of resource */
 	unsigned long index;	/* Bus specific per device resource id */
 	unsigned char align;	/* Required alignment (log 2) of the resource */
@@ -56,13 +56,13 @@ struct resource {
 /* Generic resource helper functions */
 struct device;
 struct bus;
-extern void compact_resources(struct device * dev);
+extern void compact_resources(struct device *dev);
 extern struct resource *probe_resource(struct device *dev, unsigned int index);
-extern struct resource *new_resource(struct device * dev, unsigned int index);
-extern struct resource *find_resource(struct device * dev, unsigned int index);
+extern struct resource *new_resource(struct device *dev, unsigned int index);
+extern struct resource *find_resource(struct device *dev, unsigned int index);
 extern resource_t resource_end(struct resource *resource);
 extern resource_t resource_max(struct resource *resource);
-extern void report_resource_stored(struct device * dev, struct resource *resource, const char *comment);
+extern void report_resource_stored(struct device *dev, struct resource *resource, const char *comment);
 
 typedef void (*resource_search_t)(void *gp, struct device *dev, struct resource *res);
 extern void search_bus_resources(struct bus *bus,

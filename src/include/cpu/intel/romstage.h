@@ -24,7 +24,7 @@ void *setup_stack_and_mtrrs(void);
 
 /* romstage_main is called from the cache-as-ram assembly file to prepare
  * CAR stack guards.*/
-void * asmlinkage romstage_main(unsigned long bist);
+asmlinkage void *romstage_main(unsigned long bist);
 /* romstage_after_car() is the C function called after cache-as-ram has
  * been torn down. It is responsible for loading the ramstage. */
 void asmlinkage romstage_after_car(void);

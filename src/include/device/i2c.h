@@ -32,8 +32,7 @@ enum i2c_address_mode {
 	I2C_MODE_10_BIT
 };
 
-struct i2c_seg
-{
+struct i2c_seg {
 	int read;
 	uint8_t chip;
 	uint8_t *buf;
@@ -89,8 +88,10 @@ static inline int i2c_transfer(unsigned int bus, struct i2c_seg *segments,
 static inline int i2c_read_raw(unsigned int bus, uint8_t chip, uint8_t *data,
 			       int len)
 {
-	struct i2c_seg seg =
-		{ .read = 1, .chip = chip, .buf = data, .len = len };
+	struct i2c_seg seg = {
+		.read = 1, .chip = chip, .buf = data, .len = len
+	};
+
 	return i2c_transfer(bus, &seg, 1);
 }
 
@@ -102,8 +103,10 @@ static inline int i2c_read_raw(unsigned int bus, uint8_t chip, uint8_t *data,
 static inline int i2c_write_raw(unsigned int bus, uint8_t chip, uint8_t *data,
 				int len)
 {
-	struct i2c_seg seg =
-		{ .read = 0, .chip = chip, .buf = data, .len = len };
+	struct i2c_seg seg = {
+		.read = 0, .chip = chip, .buf = data, .len = len
+	};
+
 	return i2c_transfer(bus, &seg, 1);
 }
 

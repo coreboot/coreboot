@@ -17,14 +17,12 @@ static void wrmsr(unsigned long index, msr_t msr)
 
 #else
 
-typedef struct msr_struct
-{
+typedef struct msr_struct {
 	unsigned int lo;
 	unsigned int hi;
 } msr_t;
 
-typedef struct msrinit_struct
-{
+typedef struct msrinit_struct {
 	unsigned int index;
 	msr_t msr;
 } msrinit_t;

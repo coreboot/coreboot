@@ -276,8 +276,7 @@ struct smbios_type2 {
 	char eos[2];
 } __attribute__((packed));
 
-enum
-{
+enum {
 	SMBIOS_ENCLOSURE_DESKTOP = 3,
 	SMBIOS_ENCLOSURE_NOTEBOOK = 9,
 };

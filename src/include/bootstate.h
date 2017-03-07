@@ -150,7 +150,7 @@ struct boot_state_callback {
 		INIT_BOOT_STATE_CALLBACK_DEBUG(bscb_)	\
 		bscb_->callback = func_;		\
 		bscb_->arg = arg_			\
-	} while(0)
+	} while (0)
 
 /* The following 2 functions schedule a callback to be called on entry/exit
  * to a given state. Note that there are no ordering guarantees between the

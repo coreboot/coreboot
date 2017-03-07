@@ -113,7 +113,7 @@ enum AzaliaPinCfgMisc {
 
 union AzaliaPinConfiguration {
 	unsigned int value;
-	struct __attribute__((aligned(4),packed)) {
+	struct __attribute__((aligned(4), packed)) {
 		enum AzaliaPinCfgPortConnectivity   port:2;
 		unsigned char                       location:6;
 		enum AzaliaPinCfgDefaultDevice      device:4;

@@ -29,7 +29,7 @@ typedef struct { int counter; } atomic_t;
  * Atomically sets the value of v to i.  Note that the guaranteed
  * useful range of an atomic_t is only 24 bits.
  */
-#define atomic_set(v,i)		(((v)->counter) = (i))
+#define atomic_set(v, i)	(((v)->counter) = (i))
 
 
 /**

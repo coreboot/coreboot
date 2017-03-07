@@ -183,7 +183,7 @@ struct boot_state_init_entry {
 };
 
 #if ENV_RAMSTAGE
-#define BOOT_STATE_INIT_ATTR  __attribute__ ((used,section (".bs_init")))
+#define BOOT_STATE_INIT_ATTR  __attribute__ ((used, section (".bs_init")))
 #else
 #define BOOT_STATE_INIT_ATTR  __attribute__ ((unused))
 #endif

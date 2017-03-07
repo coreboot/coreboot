@@ -75,7 +75,7 @@
 #define		LAPIC_DELIVERY_MODE_NMI		(4<<8)
 #define		LAPIC_DELIVERY_MODE_EXTINT	(7<<8)
 #define		GET_LAPIC_DELIVERY_MODE(x)	(((x)>>8)&0x7)
-#define		SET_LAPIC_DELIVERY_MODE(x,y)	(((x)&~0x700)|((y)<<8))
+#define		SET_LAPIC_DELIVERY_MODE(x, y)	(((x)&~0x700)|((y)<<8))
 #define			LAPIC_MODE_FIXED		0x0
 #define			LAPIC_MODE_NMI		0x4
 #define			LAPIC_MODE_EXINT		0x7

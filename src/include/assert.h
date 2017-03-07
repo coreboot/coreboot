@@ -24,13 +24,15 @@
 	if (!(x)) {						\
 		printk(BIOS_EMERG, "ASSERTION ERROR: file '%s'"	\
 			", line %d\n", __FILE__, __LINE__);	\
-		if (IS_ENABLED(CONFIG_FATAL_ASSERTS)) hlt();	\
+		if (IS_ENABLED(CONFIG_FATAL_ASSERTS))		\
+			hlt();					\
 	}							\
 }
 #define BUG() {							\
 	printk(BIOS_EMERG, "ERROR: BUG ENCOUNTERED at file '%s'"\
 		", line %d\n", __FILE__, __LINE__);		\
-	if (IS_ENABLED(CONFIG_FATAL_ASSERTS)) hlt();		\
+	if (IS_ENABLED(CONFIG_FATAL_ASSERTS))			\
+		hlt();						\
 }
 
 #define assert(statement)	ASSERT(statement)

@@ -65,7 +65,7 @@ static inline void thread_init_cpu_info_non_bsp(struct cpu_info *ci)
 }
 
 /* Architecture specific thread functions. */
-void asmlinkage switch_to_thread(uintptr_t new_stack, uintptr_t *saved_stack);
+asmlinkage void switch_to_thread(uintptr_t new_stack, uintptr_t *saved_stack);
 /* Set up the stack frame for a new thread so that a switch_to_thread() call
  * will enter the thread_entry() function with arg as a parameter. The
  * saved_stack field in the struct thread needs to be updated accordingly. */

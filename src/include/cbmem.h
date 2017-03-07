@@ -112,36 +112,36 @@ void cbmem_list(void);
 void cbmem_add_records_to_cbtable(struct lb_header *header);
 
 #if ENV_RAMSTAGE
-#define ROMSTAGE_CBMEM_INIT_HOOK(init_fn_) static cbmem_init_hook_t \
-	init_fn_ ## _unused_ __attribute__((unused)) = init_fn_;
+#define ROMSTAGE_CBMEM_INIT_HOOK(init_fn_) __attribute__((unused)) \
+	static cbmem_init_hook_t init_fn_ ## _unused_ = init_fn_;
 #define RAMSTAGE_CBMEM_INIT_HOOK(init_fn_) \
 	static cbmem_init_hook_t init_fn_ ## _ptr_ __attribute__((used, \
 	section(".rodata.cbmem_init_hooks"))) = init_fn_;
-#define POSTCAR_CBMEM_INIT_HOOK(init_fn_) static cbmem_init_hook_t \
-	init_fn_ ## _unused2_ __attribute__((unused)) = init_fn_;
+#define POSTCAR_CBMEM_INIT_HOOK(init_fn_) __attribute__((unused)) \
+	static cbmem_init_hook_t init_fn_ ## _unused2_ = init_fn_;
 #elif ENV_ROMSTAGE
 #define ROMSTAGE_CBMEM_INIT_HOOK(init_fn_) \
 	static cbmem_init_hook_t init_fn_ ## _ptr_ __attribute__((used, \
 	section(".rodata.cbmem_init_hooks"))) = init_fn_;
-#define RAMSTAGE_CBMEM_INIT_HOOK(init_fn_) static cbmem_init_hook_t \
-	init_fn_ ## _unused_ __attribute__((unused)) = init_fn_;
-#define POSTCAR_CBMEM_INIT_HOOK(init_fn_) static cbmem_init_hook_t \
-	init_fn_ ## _unused2_ __attribute__((unused)) = init_fn_;
+#define RAMSTAGE_CBMEM_INIT_HOOK(init_fn_) __attribute__((unused)) \
+	static cbmem_init_hook_t init_fn_ ## _unused_ = init_fn_;
+#define POSTCAR_CBMEM_INIT_HOOK(init_fn_) __attribute__((unused)) \
+	static cbmem_init_hook_t init_fn_ ## _unused2_ = init_fn_;
 #elif ENV_POSTCAR
-#define ROMSTAGE_CBMEM_INIT_HOOK(init_fn_) static cbmem_init_hook_t \
-	init_fn_ ## _unused2_ __attribute__((unused)) = init_fn_;
-#define RAMSTAGE_CBMEM_INIT_HOOK(init_fn_) static cbmem_init_hook_t \
-	init_fn_ ## _unused_ __attribute__((unused)) = init_fn_;
+#define ROMSTAGE_CBMEM_INIT_HOOK(init_fn_) __attribute__((unused)) \
+	static cbmem_init_hook_t init_fn_ ## _unused2_ = init_fn_;
+#define RAMSTAGE_CBMEM_INIT_HOOK(init_fn_) __attribute__((unused)) \
+	static cbmem_init_hook_t init_fn_ ## _unused_ = init_fn_;
 #define POSTCAR_CBMEM_INIT_HOOK(init_fn_) \
 	static cbmem_init_hook_t init_fn_ ## _ptr_ __attribute__((used, \
 	section(".rodata.cbmem_init_hooks"))) = init_fn_;
 #else
-#define ROMSTAGE_CBMEM_INIT_HOOK(init_fn_) static cbmem_init_hook_t \
-	init_fn_ ## _unused_ __attribute__((unused)) = init_fn_;
-#define RAMSTAGE_CBMEM_INIT_HOOK(init_fn_) static cbmem_init_hook_t \
-	init_fn_ ## _unused2_ __attribute__((unused)) = init_fn_;
-#define POSTCAR_CBMEM_INIT_HOOK(init_fn_) static cbmem_init_hook_t \
-	init_fn_ ## _unused3_ __attribute__((unused)) = init_fn_;
+#define ROMSTAGE_CBMEM_INIT_HOOK(init_fn_) __attribute__((unused)) \
+	static cbmem_init_hook_t init_fn_ ## _unused_ = init_fn_;
+#define RAMSTAGE_CBMEM_INIT_HOOK(init_fn_) __attribute__((unused)) \
+	static cbmem_init_hook_t init_fn_ ## _unused2_ = init_fn_;
+#define POSTCAR_CBMEM_INIT_HOOK(init_fn_) __attribute__((unused)) \
+	static cbmem_init_hook_t init_fn_ ## _unused3_ = init_fn_;
 #endif /* ENV_RAMSTAGE */
 
 

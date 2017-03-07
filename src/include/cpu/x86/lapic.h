@@ -25,7 +25,7 @@ static inline __attribute__((always_inline)) void lapic_write(unsigned long reg,
 
 static inline __attribute__((always_inline)) void lapic_wait_icr_idle(void)
 {
-	do { } while ( lapic_read( LAPIC_ICR ) & LAPIC_ICR_BUSY );
+	do { } while (lapic_read(LAPIC_ICR) & LAPIC_ICR_BUSY);
 }
 
 static inline void enable_lapic(void)

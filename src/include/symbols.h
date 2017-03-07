@@ -111,6 +111,6 @@ extern u8 _eframebuffer[];
  * values from that definition will be used. If not, start, end and size will
  * all evaluate to 0. (We can't explicitly assign the symbols to 0 in the
  * assembly due to https://sourceware.org/bugzilla/show_bug.cgi?id=1038.) */
-#define DECLARE_OPTIONAL_REGION(name) asm (".weak _" #name ", _e" #name )
+#define DECLARE_OPTIONAL_REGION(name) asm (".weak _" #name ", _e" #name)
 
 #endif /* __SYMBOLS_H */

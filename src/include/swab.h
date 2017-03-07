@@ -21,14 +21,14 @@
 #define swab16(x) \
 	((unsigned short)( \
 		(((unsigned short)(x) & (unsigned short)0x00ffU) << 8) | \
-		(((unsigned short)(x) & (unsigned short)0xff00U) >> 8) ))
+		(((unsigned short)(x) & (unsigned short)0xff00U) >> 8)))
 
 #define swab32(x) \
 	((unsigned int)( \
 		(((unsigned int)(x) & (unsigned int)0x000000ffUL) << 24) | \
 		(((unsigned int)(x) & (unsigned int)0x0000ff00UL) <<  8) | \
 		(((unsigned int)(x) & (unsigned int)0x00ff0000UL) >>  8) | \
-		(((unsigned int)(x) & (unsigned int)0xff000000UL) >> 24) ))
+		(((unsigned int)(x) & (unsigned int)0xff000000UL) >> 24)))
 
 #define swab64(x) \
 	((uint64_t)( \
@@ -39,6 +39,6 @@
 		(((uint64_t)(x) & (uint64_t)0x000000ff00000000ULL) >>  8) | \
 		(((uint64_t)(x) & (uint64_t)0x0000ff0000000000ULL) >> 24) | \
 		(((uint64_t)(x) & (uint64_t)0x00ff000000000000ULL) >> 40) | \
-		(((uint64_t)(x) & (uint64_t)0xff00000000000000ULL) >> 56) ))
+		(((uint64_t)(x) & (uint64_t)0xff00000000000000ULL) >> 56)))
 
 #endif /* _SWAB_H */

@@ -25,10 +25,10 @@
 
 #define swab32(x) \
 	((unsigned int)( \
-		(((unsigned int)(x) & (unsigned int)0x000000ffUL) << 24) | \
-		(((unsigned int)(x) & (unsigned int)0x0000ff00UL) <<  8) | \
-		(((unsigned int)(x) & (unsigned int)0x00ff0000UL) >>  8) | \
-		(((unsigned int)(x) & (unsigned int)0xff000000UL) >> 24)))
+		(((unsigned int)(x) & 0x000000ffUL) << 24) | \
+		(((unsigned int)(x) & 0x0000ff00UL) <<  8) | \
+		(((unsigned int)(x) & 0x00ff0000UL) >>  8) | \
+		(((unsigned int)(x) & 0xff000000UL) >> 24)))
 
 #define swab64(x) \
 	((uint64_t)( \

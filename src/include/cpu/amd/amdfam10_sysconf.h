@@ -21,41 +21,41 @@
 #include <cpu/x86/msr.h>
 
 struct p_state_t {
-	unsigned corefreq;
-	unsigned power;
-	unsigned transition_lat;
-	unsigned busmaster_lat;
-	unsigned control;
-	unsigned status;
+	unsigned int corefreq;
+	unsigned int power;
+	unsigned int transition_lat;
+	unsigned int busmaster_lat;
+	unsigned int control;
+	unsigned int status;
 };
 
 struct amdfam10_sysconf_t {
 	//ht
-	unsigned hc_possible_num;
-	unsigned pci1234[HC_POSSIBLE_NUM];
-	unsigned hcdn[HC_POSSIBLE_NUM];
-	unsigned hcid[HC_POSSIBLE_NUM]; //record ht chain type
-	unsigned sbdn;
-	unsigned sblk;
+	unsigned int hc_possible_num;
+	unsigned int pci1234[HC_POSSIBLE_NUM];
+	unsigned int hcdn[HC_POSSIBLE_NUM];
+	unsigned int hcid[HC_POSSIBLE_NUM]; //record ht chain type
+	unsigned int sbdn;
+	unsigned int sblk;
 
-	unsigned nodes;
-	unsigned ht_c_num; // we only can have 32 ht chain at most
-	unsigned ht_c_conf_bus[HC_NUMS]; // 4-->32: 4:segn, 8:bus_max, 8:bus_min, 4:linkn, 6: nodeid, 2: enable
-	unsigned io_addr_num;
-	unsigned conf_io_addr[HC_NUMS];
-	unsigned conf_io_addrx[HC_NUMS];
-	unsigned mmio_addr_num;
-	unsigned conf_mmio_addr[HC_NUMS*2]; // mem and pref mem
-	unsigned conf_mmio_addrx[HC_NUMS*2];
-	unsigned segbit;
-	unsigned hcdn_reg[HC_NUMS]; // it will be used by get_pci1234
+	unsigned int nodes;
+	unsigned int ht_c_num; // we only can have 32 ht chain at most
+	unsigned int ht_c_conf_bus[HC_NUMS]; // 4-->32: 4:segn, 8:bus_max, 8:bus_min, 4:linkn, 6: nodeid, 2: enable
+	unsigned int io_addr_num;
+	unsigned int conf_io_addr[HC_NUMS];
+	unsigned int conf_io_addrx[HC_NUMS];
+	unsigned int mmio_addr_num;
+	unsigned int conf_mmio_addr[HC_NUMS*2]; // mem and pref mem
+	unsigned int conf_mmio_addrx[HC_NUMS*2];
+	unsigned int segbit;
+	unsigned int hcdn_reg[HC_NUMS]; // it will be used by get_pci1234
 
 	msr_t msr_pstate[NODE_NUMS * 5]; // quad cores all cores in one node should be the same, and p0,..p5
-	unsigned needs_update_pstate_msrs;
+	unsigned int needs_update_pstate_msrs;
 
-	unsigned bsp_apicid;
+	unsigned int bsp_apicid;
 	int enabled_apic_ext_id;
-	unsigned lift_bsp_apicid;
+	unsigned int lift_bsp_apicid;
 	int apicid_offset;
 
 	void *mb; // pointer for mb related struct

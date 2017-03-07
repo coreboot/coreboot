@@ -12,8 +12,8 @@
 #endif
 
 struct tsc_struct {
-	unsigned lo;
-	unsigned hi;
+	unsigned int lo;
+	unsigned int hi;
 };
 typedef struct tsc_struct tsc_t;
 

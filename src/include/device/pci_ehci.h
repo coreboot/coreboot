@@ -23,7 +23,7 @@
 #define EHCI_BAR_INDEX		0x10
 #define PCI_EHCI_CLASSCODE 	0x0c0320	/* USB2.0 with EHCI controller */
 
-pci_devfn_t pci_ehci_dbg_dev(unsigned hcd_idx);
+pci_devfn_t pci_ehci_dbg_dev(unsigned int hcd_idx);
 u8 *pci_ehci_base_regs(pci_devfn_t dev);
 void pci_ehci_dbg_set_port(pci_devfn_t dev, unsigned int port);
 void pci_ehci_dbg_enable(pci_devfn_t dev, unsigned long base);

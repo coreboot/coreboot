@@ -85,7 +85,7 @@ struct bus {
 	ROMSTAGE_CONST struct device * 	dev;		/* This bridge device */
 	ROMSTAGE_CONST struct device * 	children;	/* devices behind this bridge */
 	ROMSTAGE_CONST struct bus	*next;		/* The next bridge on this device */
-	unsigned	bridge_ctrl;	/* Bridge control register */
+	unsigned int	bridge_ctrl;	/* Bridge control register */
 	uint16_t	bridge_cmd;		/* Bridge command register */
 	unsigned char	link_num;	/* The index of this link */
 	uint16_t	secondary; 	/* secondary bus number */
@@ -93,9 +93,9 @@ struct bus {
 	unsigned char   cap;		/* PCi capability offset */
 	uint32_t	hcdn_reg;		/* For HyperTransport link  */
 
-	unsigned	reset_needed : 1;
-	unsigned	disable_relaxed_ordering : 1;
-	unsigned	ht_link_up : 1;
+	unsigned int	reset_needed : 1;
+	unsigned int	disable_relaxed_ordering : 1;
+	unsigned int	ht_link_up : 1;
 };
 
 /*
@@ -119,8 +119,8 @@ struct device {
 	ROMSTAGE_CONST struct device *	next;		/* chain of all devices */
 
 	struct device_path path;
-	unsigned 	vendor;
-	unsigned 	device;
+	unsigned int	vendor;
+	unsigned int	device;
 	u16		subsystem_vendor;
 	u16		subsystem_device;
 	unsigned int	class;		/* 3 bytes: (base, sub, prog-if) */
@@ -201,11 +201,11 @@ device_t dev_find_path(device_t prev_match, enum device_path_type path_type);
 device_t dev_find_slot (unsigned int bus, unsigned int devfn);
 device_t dev_find_slot_on_smbus (unsigned int bus, unsigned int addr);
 device_t dev_find_slot_pnp(u16 port, u16 device);
-device_t dev_find_lapic(unsigned apic_id);
+device_t dev_find_lapic(unsigned int apic_id);
 int dev_count_cpu(void);
 
-device_t add_cpu_device(struct bus *cpu_bus, unsigned apic_id, int enabled);
-void set_cpu_topology(device_t cpu, unsigned node, unsigned package, unsigned core, unsigned thread);
+device_t add_cpu_device(struct bus *cpu_bus, unsigned int apic_id, int enabled);
+void set_cpu_topology(device_t cpu, unsigned int node, unsigned int package, unsigned int core, unsigned int thread);
 
 #define amd_cpu_topology(cpu, node, core) \
 	set_cpu_topology(cpu, node, 0, core, 0)

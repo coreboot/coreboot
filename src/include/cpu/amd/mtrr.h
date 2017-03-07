@@ -42,7 +42,7 @@
 
 void amd_setup_mtrrs(void);
 
-static inline __attribute__((always_inline)) msr_t rdmsr_amd(unsigned index)
+static inline __attribute__((always_inline)) msr_t rdmsr_amd(unsigned int index)
 {
 	msr_t result;
 	__asm__ __volatile__ (
@@ -53,7 +53,7 @@ static inline __attribute__((always_inline)) msr_t rdmsr_amd(unsigned index)
 	return result;
 }
 
-static inline __attribute__((always_inline)) void wrmsr_amd(unsigned index, msr_t msr)
+static inline __attribute__((always_inline)) void wrmsr_amd(unsigned int index, msr_t msr)
 {
 	__asm__ __volatile__ (
 		"wrmsr"

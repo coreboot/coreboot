@@ -106,35 +106,35 @@ typedef union dimm_flags_st {
 	struct {
 		/* Indicates if rank 1 of DIMM uses a mirrored pin mapping. See:
 		 * Annex K: Serial Presence Detect (SPD) for DDR3 SDRAM */
-		unsigned pins_mirrored:1;
+		unsigned int pins_mirrored:1;
 		/* Module can work at 1.50V - All DIMMS must be 1.5V operable */
-		unsigned operable_1_50V:1;
+		unsigned int operable_1_50V:1;
 		/* Module can work at 1.35V */
-		unsigned operable_1_35V:1;
+		unsigned int operable_1_35V:1;
 		/* Module can work at 1.20V */
-		unsigned operable_1_25V:1;
+		unsigned int operable_1_25V:1;
 		/* Has an 8-bit bus extension, meaning the DIMM supports ECC */
-		unsigned is_ecc:1;
+		unsigned int is_ecc:1;
 		/* DLL-Off Mode Support */
-		unsigned dll_off_mode:1;
+		unsigned int dll_off_mode:1;
 		/* Indicates a drive strength of RZQ/6 (40 Ohm) is supported */
-		unsigned rzq6_supported:1;
+		unsigned int rzq6_supported:1;
 		/* Indicates a drive strength of RZQ/7 (35 Ohm) is supported */
-		unsigned rzq7_supported:1;
+		unsigned int rzq7_supported:1;
 		/* Partial Array Self Refresh */
-		unsigned pasr:1;
+		unsigned int pasr:1;
 		/* On-die Thermal Sensor Readout */
-		unsigned odts:1;
+		unsigned int odts:1;
 		/* Auto Self Refresh */
-		unsigned asr:1;
+		unsigned int asr:1;
 		/* Extended temperature range supported */
-		unsigned ext_temp_range:1;
+		unsigned int ext_temp_range:1;
 		/* Operating at extended temperature requires 2X refresh rate */
-		unsigned ext_temp_refresh:1;
+		unsigned int ext_temp_refresh:1;
 		/* Thermal sensor incorporated */
-		unsigned therm_sensor:1;
+		unsigned int therm_sensor:1;
 	};
-	unsigned raw;
+	unsigned int raw;
 } dimm_flags_t;
 
 /**

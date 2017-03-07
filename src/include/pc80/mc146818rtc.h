@@ -184,7 +184,8 @@ void cmos_check_update_date(void);
 
 enum cb_err set_option(const char *name, void *val);
 enum cb_err get_option(void *dest, const char *name);
-unsigned read_option_lowlevel(unsigned start, unsigned size, unsigned def);
+unsigned int read_option_lowlevel(unsigned int start, unsigned int size,
+	unsigned int def);
 
 #else /* defined(__ROMCC__) */
 #include <drivers/pc80/rtc/mc146818rtc_early.c>

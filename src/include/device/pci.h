@@ -32,7 +32,8 @@
 /* Common pci operations without a standard interface */
 struct pci_operations {
 	/* set the Subsystem IDs for the PCI device */
-	void (*set_subsystem)(device_t dev, unsigned vendor, unsigned device);
+	void (*set_subsystem)(device_t dev, unsigned int vendor,
+		unsigned int device);
 	void (*set_L1_ss_latency)(device_t dev, unsigned int off);
 };
 
@@ -69,26 +70,28 @@ void pci_dev_set_resources(device_t dev);
 void pci_dev_enable_resources(device_t dev);
 void pci_bus_enable_resources(device_t dev);
 void pci_bus_reset(struct bus *bus);
-device_t pci_probe_dev(device_t dev, struct bus *bus, unsigned devfn);
+device_t pci_probe_dev(device_t dev, struct bus *bus, unsigned int devfn);
 
 void do_pci_scan_bridge(device_t bus,
 	void (*do_scan_bus)(struct bus *bus,
-		unsigned min_devfn, unsigned max_devfn));
+		unsigned int min_devfn, unsigned int max_devfn));
 
 void pci_scan_bridge(device_t bus);
-void pci_scan_bus(struct bus *bus, unsigned min_devfn, unsigned max_devfn);
+void pci_scan_bus(struct bus *bus, unsigned int min_devfn,
+	unsigned int max_devfn);
 
-uint8_t pci_moving_config8(struct device *dev, unsigned reg);
-uint16_t pci_moving_config16(struct device *dev, unsigned reg);
-uint32_t pci_moving_config32(struct device *dev, unsigned reg);
+uint8_t pci_moving_config8(struct device *dev, unsigned int reg);
+uint16_t pci_moving_config16(struct device *dev, unsigned int reg);
+uint32_t pci_moving_config32(struct device *dev, unsigned int reg);
 struct resource *pci_get_resource(struct device *dev, unsigned long index);
-void pci_dev_set_subsystem(device_t dev, unsigned vendor, unsigned device);
+void pci_dev_set_subsystem(device_t dev, unsigned int vendor,
+	unsigned int device);
 void pci_dev_init(struct device *dev);
 unsigned int pci_match_simple_dev(device_t dev, pci_devfn_t sdev);
 
 const char * pin_to_str(int pin);
 int get_pci_irq_pins(device_t dev, device_t *parent_bdg);
-void pci_assign_irqs(unsigned bus, unsigned slot,
+void pci_assign_irqs(unsigned int bus, unsigned int slot,
 		     const unsigned char pIntAtoD[4]);
 const char *get_pci_class_name(device_t dev);
 const char *get_pci_subclass_name(device_t dev);
@@ -109,11 +112,13 @@ static inline const struct pci_operations *ops_pci(device_t dev)
 #endif /* ! __SIMPLE_DEVICE__ */
 
 #ifdef __SIMPLE_DEVICE__
-unsigned pci_find_next_capability(pci_devfn_t dev, unsigned cap, unsigned last);
-unsigned pci_find_capability(pci_devfn_t dev, unsigned cap);
+unsigned int pci_find_next_capability(pci_devfn_t dev, unsigned int cap,
+	unsigned int last);
+unsigned int pci_find_capability(pci_devfn_t dev, unsigned int cap);
 #else /* !__SIMPLE_DEVICE__ */
-unsigned pci_find_next_capability(device_t dev, unsigned cap, unsigned last);
-unsigned pci_find_capability(device_t dev, unsigned cap);
+unsigned int pci_find_next_capability(device_t dev, unsigned int cap,
+	unsigned int last);
+unsigned int pci_find_capability(device_t dev, unsigned int cap);
 #endif /* __SIMPLE_DEVICE__ */
 
 void pci_early_bridge_init(void);

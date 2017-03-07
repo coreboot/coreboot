@@ -10,11 +10,11 @@ struct parreg {
 	unsigned long reg[16];
 };
 
-#define PARREG (struct parreg *)0xfffef088
+#define PARREG ((struct parreg *)0xfffef088)
 //static volatile struct parreg *par = PARREG;
 
 
-#define MMCRPIC (struct mmcrpic *) 0xfffefd00
+#define MMCRPIC ((struct mmcrpic *) 0xfffefd00)
 //static volatile struct mmcrpic *pic = MMCRPIC;
 
 #define M_GINT_MODE     1
@@ -308,4 +308,4 @@ struct mmcr {
 };
 
 
-#define MMCRDEFAULT (struct mmcr *) 0xfffef000
+#define MMCRDEFAULT ((struct mmcr *) 0xfffef000)

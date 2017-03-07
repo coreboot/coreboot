@@ -78,7 +78,7 @@
 #define	GL1_PCI		4
 #define	GL1_FG		5
 
-#define	MSR_GLIU0	(GL0_GLIU0	<< 29) + (1 << 28)	/* 1000xxxx - To get on GeodeLink one bit has to be set */
+#define	MSR_GLIU0	((GL0_GLIU0	<< 29) + (1 << 28))	/* 1000xxxx - To get on GeodeLink one bit has to be set */
 #define	MSR_MC		(GL0_MC		<< 29)			/* 2000xxxx */
 #define	MSR_GLIU1	(GL0_GLIU1	<< 29)			/* 4000xxxx */
 #define	MSR_CPU		(GL0_CPU	<< 29)			/* 6000xxxx - this is not used for BIOS since code executing on CPU doesn't need to be routed */
@@ -86,9 +86,9 @@
 #define	MSR_GP		(GL0_GP		<< 29)			/* A000xxxx */
 #define	MSR_DF		(GL0_DF		<< 29)			/* C000xxxx */
 
-#define	MSR_GLCP	(GL1_GLCP << 26) + MSR_GLIU1		/* 4C00xxxx */
-#define	MSR_PCI		(GL1_PCI << 26) + MSR_GLIU1		/* 5000xxxx */
-#define	MSR_FG		(GL1_FG << 26) + MSR_GLIU1		/* 5400xxxx */
+#define	MSR_GLCP	((GL1_GLCP << 26) + MSR_GLIU1)		/* 4C00xxxx */
+#define	MSR_PCI		((GL1_PCI << 26) + MSR_GLIU1)		/* 5000xxxx */
+#define	MSR_FG		((GL1_FG << 26) + MSR_GLIU1)		/* 5400xxxx */
 
 /* GeodeLink Interface Unit 0 (GLIU0) port0 */
 #define	GLIU0_GLD_MSR_CAP		(MSR_GLIU0 + 0x2000)

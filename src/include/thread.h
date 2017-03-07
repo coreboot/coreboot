@@ -70,7 +70,7 @@ void asmlinkage switch_to_thread(uintptr_t new_stack, uintptr_t *saved_stack);
  * will enter the thread_entry() function with arg as a parameter. The
  * saved_stack field in the struct thread needs to be updated accordingly. */
 void arch_prepare_thread(struct thread *t,
-			 void asmlinkage (*thread_entry)(void *), void *arg);
+			 asmlinkage void (*thread_entry)(void *), void *arg);
 #else
 static inline void threads_initialize(void) {}
 static inline int thread_run(void (*func)(void *), void *arg) { return -1; }

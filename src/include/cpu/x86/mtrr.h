@@ -43,7 +43,7 @@
 #define MTRR_FIX_4K_F0000		0x26e
 #define MTRR_FIX_4K_F8000		0x26f
 
-#if !defined (__ASSEMBLER__) && !defined(__PRE_RAM__)
+#if !defined(__ASSEMBLER__) && !defined(__PRE_RAM__)
 
 #include <stdint.h>
 #include <stddef.h>

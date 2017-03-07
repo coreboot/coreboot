@@ -18,6 +18,7 @@
 #ifndef _RESET_TEST_H_
 #define _RESET_TEST_H_
 
+#include <arch/io.h>
 #include "amdfam10.h"	/* NODE_PCI */
 
 #define NODE_ID			0x60

@@ -50,7 +50,7 @@ struct resource {
 #define IOINDEX_SUBTRACTIVE_LINK(IDX) (IDX & 0xff)
 
 #define IOINDEX(IDX, LINK) (((LINK) << 16) + IDX)
-#define IOINDEX_LINK(IDX) (( IDX & 0xf0000) >> 16)
+#define IOINDEX_LINK(IDX) ((IDX & 0xf0000) >> 16)
 #define IOINDEX_IDX(IDX) (IDX & 0xffff)
 
 /* Generic resource helper functions */

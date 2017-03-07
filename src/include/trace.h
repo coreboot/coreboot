@@ -27,10 +27,10 @@
 
 #if CONFIG_TRACE && !defined(__SMM__)
 
-void __cyg_profile_func_enter( void *, void * )
+void __cyg_profile_func_enter(void *, void *)
 				 __attribute__ ((no_instrument_function));
 
-void __cyg_profile_func_exit( void *, void * )
+void __cyg_profile_func_exit(void *, void *)
 				__attribute__ ((no_instrument_function));
 
 extern volatile int trace_dis;

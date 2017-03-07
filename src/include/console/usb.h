@@ -27,8 +27,8 @@ void usb_tx_flush(int idx);
 unsigned char usb_rx_byte(int idx);
 int usb_can_rx_byte(int idx);
 
-#define __CONSOLE_USB_ENABLE__	CONFIG_CONSOLE_USB && \
-	((ENV_ROMSTAGE && CONFIG_USBDEBUG_IN_ROMSTAGE) || ENV_RAMSTAGE)
+#define __CONSOLE_USB_ENABLE__	(CONFIG_CONSOLE_USB && \
+	((ENV_ROMSTAGE && CONFIG_USBDEBUG_IN_ROMSTAGE) || ENV_RAMSTAGE))
 
 #define USB_PIPE_FOR_CONSOLE 0
 #define USB_PIPE_FOR_GDB 0

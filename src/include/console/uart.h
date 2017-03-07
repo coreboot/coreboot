@@ -55,9 +55,9 @@ static inline void *uart_platform_baseptr(int idx)
 
 void oxford_remap(unsigned int new_base);
 
-#define __CONSOLE_SERIAL_ENABLE__	CONFIG_CONSOLE_SERIAL && \
+#define __CONSOLE_SERIAL_ENABLE__	(CONFIG_CONSOLE_SERIAL && \
 	(ENV_BOOTBLOCK || ENV_ROMSTAGE || ENV_RAMSTAGE || ENV_VERSTAGE || \
-	ENV_POSTCAR || (ENV_SMM && CONFIG_DEBUG_SMI))
+	ENV_POSTCAR || (ENV_SMM && CONFIG_DEBUG_SMI)))
 
 #if __CONSOLE_SERIAL_ENABLE__
 static inline void __uart_init(void)		{ uart_init(CONFIG_UART_FOR_CONSOLE); }

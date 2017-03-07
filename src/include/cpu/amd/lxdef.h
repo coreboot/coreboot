@@ -59,7 +59,7 @@
 #define GL1_AES				6
 
 
-#define MSR_GLIU0		(GL0_GLIU0 << 29) + (1 << 28) /* 1000xxxx, To get on GeodeLink one bit has to be set */
+#define MSR_GLIU0		((GL0_GLIU0 << 29) + (1 << 28)) /* 1000xxxx, To get on GeodeLink one bit has to be set */
 #define	MSR_MC				(GL0_MC		<< 29)	/* 2000xxxx */
 #define	MSR_GLIU1			(GL0_GLIU1	<< 29)	/* 4000xxxx */
 #define MSR_CPU			(GL0_CPU	<< 29)	/* 0000xxxx this is not used for BIOS since code executing on CPU doesn't need to be routed*/

@@ -124,8 +124,10 @@ struct boot_state_callback {
 #if IS_ENABLED(CONFIG_DEBUG_BOOT_STATE)
 #define BOOT_STATE_CALLBACK_LOC __FILE__ ":" STRINGIFY(__LINE__)
 #define BOOT_STATE_CALLBACK_INIT_DEBUG .location = BOOT_STATE_CALLBACK_LOC,
-#define INIT_BOOT_STATE_CALLBACK_DEBUG(bscb_) \
-	bscb_->location = BOOT_STATE_CALLBACK_LOC;
+#define INIT_BOOT_STATE_CALLBACK_DEBUG(bscb_) 			\
+	do {							\
+		bscb_->location = BOOT_STATE_CALLBACK_LOC;	\
+	} while (0)
 #else
 #define BOOT_STATE_CALLBACK_INIT_DEBUG
 #define INIT_BOOT_STATE_CALLBACK_DEBUG(bscb_)
@@ -144,9 +146,11 @@ struct boot_state_callback {
 
 /* Initialize an allocated boot_state_callback. */
 #define INIT_BOOT_STATE_CALLBACK(bscb_, func_, arg_)	\
-	INIT_BOOT_STATE_CALLBACK_DEBUG(bscb_)		\
-	bscb_->callback = func_;			\
-	bscb_->arg = arg_
+	do {						\
+		INIT_BOOT_STATE_CALLBACK_DEBUG(bscb_)	\
+		bscb_->callback = func_;		\
+		bscb_->arg = arg_			\
+	} while(0)
 
 /* The following 2 functions schedule a callback to be called on entry/exit
  * to a given state. Note that there are no ordering guarantees between the

@@ -42,7 +42,7 @@ int spd_read_byte(unsigned int device, unsigned int address)
 #include "cpu/amd/geode_lx/syspreinit.c"
 #include "cpu/amd/geode_lx/msrinit.c"
 
-void main(unsigned long bist)
+void asmlinkage mainboard_romstage_entry(unsigned long bist)
 {
 	static const struct mem_controller memctrl[] = {
 		{.channel0 = {DIMM0, DIMM1}}

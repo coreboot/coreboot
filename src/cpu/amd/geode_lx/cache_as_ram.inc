@@ -181,7 +181,8 @@ DCacheSetupGood:
 	post_code(0x23)
 
 	/* Call romstage.c main function */
-	call	main
+	call	mainboard_romstage_entry
+
 .global done_cache_as_ram_main
 done_cache_as_ram_main:
 

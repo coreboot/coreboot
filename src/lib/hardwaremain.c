@@ -495,7 +495,7 @@ int boot_state_block(boot_state_t state, boot_state_sequence_t seq)
 
 	/* Blocking a previously ran state is not appropriate. */
 	if (current_phase.state_id > state ||
-	    (current_phase.state_id == state && current_phase.seq > seq) ) {
+	    (current_phase.state_id == state && current_phase.seq > seq)) {
 		printk(BIOS_WARNING,
 		       "BS: Completed state (%d, %d) block attempted.\n",
 		       state, seq);
@@ -514,7 +514,7 @@ int boot_state_unblock(boot_state_t state, boot_state_sequence_t seq)
 
 	/* Blocking a previously ran state is not appropriate. */
 	if (current_phase.state_id > state ||
-	    (current_phase.state_id == state && current_phase.seq > seq) ) {
+	    (current_phase.state_id == state && current_phase.seq > seq)) {
 		printk(BIOS_WARNING,
 		       "BS: Completed state (%d, %d) unblock attempted.\n",
 		       state, seq);

@@ -63,7 +63,7 @@
  *
  * POSTed before ramstage is about to be loaded into memory
  */
-#define POST_PREPARE_RAMSTAGE 			0x11
+#define POST_PREPARE_RAMSTAGE			0x11
 
 /**
  * \brief Copy/decompression finished; jumping to RAM
@@ -341,7 +341,7 @@
  * \n
  * Check the console output to see exactly where the failure occurred.
  */
-#define POST_DIE 				0xff
+#define POST_DIE				0xff
 
 
 /*

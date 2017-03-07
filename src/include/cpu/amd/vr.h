@@ -35,20 +35,20 @@
     #define PCI_INT_CD			0x0A	// GPIO pins for INTC# and INTD#
     #define WATCHDOG			0x0B	// Watchdog timer
 
-    #define MAX_MISC           	WATCHDOG
+    #define MAX_MISC		WATCHDOG
 
 
 // NOTE:  Do not change the order of the following registers:
-#define	VRC_AUDIO      			0x01	// XpressAudio Class
-	#define AUDIO_VERSION      	0x00
-	#define PM_STATE        	0x01
-	#define SB_16_IO_BASE   	0x02
-	#define MIDI_BASE       	0x03
-	#define CPU_USAGE       	0x04
-	#define CODEC_TYPE      	0x05
-	#define STATE_INDEX     	0x06
-	#define STATE_DATA      	0x07
-	#define AUDIO_IRQ	      	0x08	// For use by native audio drivers
+#define	VRC_AUDIO			0x01	// XpressAudio Class
+	#define AUDIO_VERSION		0x00
+	#define PM_STATE		0x01
+	#define SB_16_IO_BASE		0x02
+	#define MIDI_BASE		0x03
+	#define CPU_USAGE		0x04
+	#define CODEC_TYPE		0x05
+	#define STATE_INDEX		0x06
+	#define STATE_DATA		0x07
+	#define AUDIO_IRQ		0x08	// For use by native audio drivers
 	#define STATUS_PTR			0x09	// For use by native audio drivers
 	#define MAX_AUDIO           STATUS_PTR
 
@@ -189,22 +189,22 @@
 		//		SAA7127 - Not Used
 		//		ADV7300 - HDTV resolutions only
 		//			LO  -> 720x480p
-		//	   		MED -> 1280x720p
+		//			MED -> 1280x720p
 		//			HI  -> 1920x1080i
-		// 		FS454   - Both SD and HD resolutions
-		// 			SD Resolutions - NTSC and PAL
+		//		FS454   - Both SD and HD resolutions
+		//			SD Resolutions - NTSC and PAL
 		//				LO  -> 640x480
-		//	   			MED -> 800x600
+		//				MED -> 800x600
 		//				HI  -> 1024x768
-		// 			HD Resolutions
+		//			HD Resolutions
 		//				LO  -> 720x480p
-		//	   			MED -> 1280x720p
+		//				MED -> 1280x720p
 		//				HI  -> 1920x1080i
 		#define VG_TV_RES			0x0780	// TV resolution select mask
 			#define VG_TV_RES_SHIFT		0x0007	// Right shift value
 			#define VG_TV_RES_LO		0x0000	// Low resolution
 			#define VG_TV_RES_MED		0x0080	// Medium resolution
-			#define VG_TV_RES_HI 		0x0100	// High resolution
+			#define VG_TV_RES_HI		0x0100	// High resolution
 		#define VG_TV_PASSTHRU		0x0800	// TV passthru mode
 
 	#define	VG_TV_SCALE_ADJ		0x05	// Modifies scaling factors for TV resolutions
@@ -237,33 +237,33 @@
 	#define	VG_FT_VESST			0x2C	// Fixed timings, vertical sync start
 	#define	VG_FT_VESND			0x2D	// Fixed timings, vertical sync end
 
-	#define MAX_VGA           	VGA_MEM_SIZE
-//	#define MAX_VG           	VG_FP_OPTION
-//	#define MAX_VG           	VG_START_OFFS_HI
-	#define MAX_VG           	VG_FT_VESND
+	#define MAX_VGA			VGA_MEM_SIZE
+//	#define MAX_VG			VG_FP_OPTION
+//	#define MAX_VG			VG_START_OFFS_HI
+	#define MAX_VG			VG_FT_VESND
 
 #define	VRC_APM					0x03
     #define REPORT_EVENT		0x00
-    #define CAPABILITIES    	0x01
+    #define CAPABILITIES		0x01
 	#define APM_PRESENT		0x02
-	#define MAX_APM           	APM_PRESENT
+	#define MAX_APM			APM_PRESENT
 
 
 #define	VRC_PM					0x04	// Legacy PM Class
 	#define	POWER_MODE			0x00
 	#define POWER_STATE			0x01
 	#define	DOZE_TIMEOUT		0x02
-	#define	STANDBY_TIMEOUT	   	0x03
-	#define	SUSPEND_TIMEOUT	   	0x04
+	#define	STANDBY_TIMEOUT		0x03
+	#define	SUSPEND_TIMEOUT		0x04
     #define PS2_TIMEOUT		    0x05
 	#define RESUME_ON_RING		0x06
 	#define VIDEO_TIMEOUT		0x07
 	#define	DISK_TIMEOUT		0x08
-	#define	FLOPPY_TIMEOUT	   	0x09
+	#define	FLOPPY_TIMEOUT		0x09
 	#define	SERIAL_TIMEOUT	    0x0A
 	#define	PARALLEL_TIMEOUT	0x0B
-	#define IRQ_WAKEUP_MASK	   	0x0C
-//	#define SUSPEND_MODULATION 	0x0D
+	#define IRQ_WAKEUP_MASK		0x0C
+//	#define SUSPEND_MODULATION	0x0D
 	#define SLEEP_PIN			0x0E
 	#define SLEEP_PIN_ATTR		0x0F
 //	#define SMI_WAKEUP_MASK		0x10
@@ -308,24 +308,24 @@
 	#define TV_CONTRAST			0x05
 	#define TV_OUTPUT			0x06
 	#define TV_TIMING			0x10	// 0x10...0x1D are all timings
-	#define MAX_TV           	TV_TIMING
+	#define MAX_TV			TV_TIMING
 
 
 
 #define VRC_EXTERNAL_AMP		0x07
     #define EAPD_VERSION        0x00
-    #define AMP_POWER          	0x01
+    #define AMP_POWER           0x01
 	   #define AMP_OFF          0x00
 	   #define AMP_ON           0x01
 	#define AMP_TYPE            0x02
-	#define MAX_EXTERNAL_AMP    	AMP_TYPE
+	#define MAX_EXTERNAL_AMP	AMP_TYPE
 
 
 #define	VRC_ACPI				0x08
     #define	ENABLE_ACPI			0x00	// Enable ACPI Mode
-	#define SCI_IRQ			   	0x01	// Set the IRQ the SCI is mapped to, sysbios use.
+	#define SCI_IRQ				0x01	// Set the IRQ the SCI is mapped to, sysbios use.
 	#define ACPINVS_LO			0x02	// new calls to send 32bit physAddress of
-	#define ACPINVS_HI		  	0x03	// ACPI NVS region to VSA
+	#define ACPINVS_HI			0x03	// ACPI NVS region to VSA
 	#define GLOBAL_LOCK			0x04	// read requests semaphore, write clears
 	#define ACPI_UNUSED1		0x05
 	#define RW_PIRQ				0x06	// read/write PCI IRQ router regs in SB Func0 cfg space
@@ -371,12 +371,12 @@
 	#define MAX_KEYBOARD        MOUSE_XY
 
 
-#define VRC_DDC     			0x0D	// Video DDC Class
-	#define VRC_DDC_ENABLE 		0x00	// Enable/disable register
+#define VRC_DDC				0x0D	// Video DDC Class
+	#define VRC_DDC_ENABLE		0x00	// Enable/disable register
 		#define DDC_DISABLE		0x00
-		#define DDC_ENABLE 		0x01
-	#define VRC_DDC_IO	  		0x01	// A non-zero value for safety
-	#define MAX_DDC           	VRC_DDC_IO
+		#define DDC_ENABLE		0x01
+	#define VRC_DDC_IO			0x01	// A non-zero value for safety
+	#define MAX_DDC			VRC_DDC_IO
 
 #define VRC_DEBUGGER			0x0E
 	#define MAX_DEBUGGER        NO_VR
@@ -399,7 +399,7 @@
 
 #define	VRC_OWL					0x11		// Virtual Register class
 	#define	VRC_OWL_DAC			0x00		// DAC (Backlight) Control
-	#define	VRC_OWL_GPIO 		0x01		// GPIO Control
+	#define	VRC_OWL_GPIO		0x01		// GPIO Control
 	#define MAX_OWL				VRC_OWL_GPIO
 
 #define	VRC_SYSINFO				0x12		// Virtual Register class
@@ -472,7 +472,7 @@
     #define VRC_THERMAL_SMB_DATA        0x09
     #define MAX_THERMAL         VRC_THERMAL_SMB_DATA
 
-#define MAX_VR_CLASS	  		VRC_THERMAL
+#define MAX_VR_CLASS			VRC_THERMAL
 
 /*
  * Write to a Virtual Register

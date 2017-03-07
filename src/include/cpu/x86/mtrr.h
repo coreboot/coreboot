@@ -25,12 +25,12 @@
 #define SMRR_PHYS_BASE			0x1f2
 #define SMRR_PHYS_MASK			0x1f3
 
-#define MTRR_PHYS_BASE(reg) 		(0x200 + 2 * (reg))
-#define MTRR_PHYS_MASK(reg) 		(MTRR_PHYS_BASE(reg) + 1)
+#define MTRR_PHYS_BASE(reg)		(0x200 + 2 * (reg))
+#define MTRR_PHYS_MASK(reg)		(MTRR_PHYS_BASE(reg) + 1)
 #define  MTRR_PHYS_MASK_VALID		(1 << 11)
 
-#define NUM_FIXED_RANGES 		88
-#define RANGES_PER_FIXED_MTRR 		8
+#define NUM_FIXED_RANGES		88
+#define RANGES_PER_FIXED_MTRR		8
 #define MTRR_FIX_64K_00000		0x250
 #define MTRR_FIX_16K_80000		0x258
 #define MTRR_FIX_16K_A0000		0x259

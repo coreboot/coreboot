@@ -69,7 +69,7 @@
 #define SLAVE_PIC_ICW3		0xa1
 #define    SLAVE_ID		0x02
 
-#define MASTER_PIC_OCW1 	0x21
+#define MASTER_PIC_OCW1		0x21
 #define SLAVE_PIC_OCW1		0xa1
 #define    IRQ2			(1 << 2)
 #define    ALL_IRQS		0xff

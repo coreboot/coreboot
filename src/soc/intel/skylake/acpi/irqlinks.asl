@@ -25,8 +25,8 @@
  * https://bugs.acpica.org/show_bug.cgi?id=1201
  */
 OperationRegion (ITSS, SystemMemory,
-		 Add (R_PCH_PCR_ITSS_PIRQA_ROUT,
-		      Add (PCH_PCR_BASE_ADDRESS,
+		 Add (PCR_ITSS_PIRQA_ROUT,
+		      Add (CONFIG_PCR_BASE_ADDRESS,
 		           ShiftLeft (PID_ITSS, PCR_PORTID_SHIFT))), 8)
 Field (ITSS, ByteAcc, NoLock, Preserve)
 {

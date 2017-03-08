@@ -51,6 +51,7 @@ config CPU_SPECIFIC_OPTIONS
 	select SOC_INTEL_COMMON_ACPI_WAKE_SOURCE
 	select SOC_INTEL_COMMON_BLOCK
 	select SOC_INTEL_COMMON_BLOCK_GSPI
+	select SOC_INTEL_COMMON_BLOCK_PCR
 	select SOC_INTEL_COMMON_BLOCK_SA
 	select SOC_INTEL_COMMON_BLOCK_XHCI
 	select SOC_INTEL_COMMON_LPSS_I2C
@@ -151,6 +152,12 @@ config MONOTONIC_TIMER_MSR
 	select HAVE_MONOTONIC_TIMER
 	help
 	  Provide a monotonic timer using the 24MHz MSR counter.
+
+config PCR_BASE_ADDRESS
+	hex
+	default 0xfd000000
+	help
+	  This option allows you to select MMIO Base Address of sideband bus.
 
 config PRE_GRAPHICS_DELAY
 	int "Graphics initialization delay in ms"

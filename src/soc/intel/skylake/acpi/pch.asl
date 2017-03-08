@@ -15,11 +15,13 @@
  * GNU General Public License for more details.
  */
 
+#include <intelblocks/pcr.h>
 #include <soc/iomap.h>
 #include <soc/irq.h>
+#include <soc/itss.h>
 #include <soc/gpio_defs.h>
 #include <soc/gpe.h>
-#include <soc/pcr.h>
+#include <soc/pcr_ids.h>
 
 /* GPIO Controller */
 #include "gpio.asl"

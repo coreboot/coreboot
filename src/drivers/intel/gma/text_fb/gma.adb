@@ -1,8 +1,10 @@
 with HW.GFX;
 with HW.GFX.GMA;
+with HW.GFX.GMA.Display_Probing;
 
 use HW.GFX;
 use HW.GFX.GMA;
+use HW.GFX.GMA.Display_Probing;
 
 with GMA.Mainboard;
 
@@ -30,7 +32,7 @@ is
       lightup_ok  :    out Interfaces.C.int)
    is
       ports : Port_List;
-      configs : Configs_Type;
+      configs : Pipe_Configs;
 
       success : boolean;
 
@@ -48,7 +50,7 @@ is
 
       if success then
          ports := Mainboard.ports;
-         HW.GFX.GMA.Scan_Ports
+         HW.GFX.GMA.Display_Probing.Scan_Ports
            (Configs  => configs,
             Ports    => ports,
             Max_Pipe => Primary);

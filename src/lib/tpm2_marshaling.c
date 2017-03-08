@@ -390,6 +390,33 @@ static void marshal_hierarchy_control(void **buffer,
 	marshal_u8(buffer, command_body->state, buffer_space);
 }
 
+static void marshal_cr50_vendor_command(void **buffer, void *command_body,
+			size_t *buffer_space)
+{
+	uint16_t *sub_command;
+
+	/* Ensure at least the sub command can fit in the body and there's
+	   valid pointer. Could be reading past the buffer... */
+	if (command_body == NULL || *buffer_space < sizeof(uint16_t)) {
+		*buffer_space = 0;
+		return;
+	}
+
+	sub_command = command_body;
+
+	switch (*sub_command) {
+	case TPM2_CR50_SUB_CMD_NVMEM_ENABLE_COMMITS:
+		marshal_u16(buffer, *sub_command, buffer_space);
+		break;
+	default:
+		/* Unsupported subcommand. */
+		printk(BIOS_WARNING, "Unsupported cr50 subcommand: 0x%04x\n",
+			*sub_command);
+		*buffer_space = 0;
+		break;
+	}
+}
+
 int tpm_marshal_command(TPM_CC command, void *tpm_command_body,
 			void *buffer, size_t buffer_size)
 {
@@ -442,6 +469,11 @@ int tpm_marshal_command(TPM_CC command, void *tpm_command_body,
 
 	case TPM2_PCR_Extend:
 		marshal_pcr_extend(&cmd_body, tpm_command_body, &body_size);
+		break;
+
+	case TPM2_CR50_VENDOR_COMMAND:
+		marshal_cr50_vendor_command(&cmd_body, tpm_command_body,
+			&body_size);
 		break;
 
 	default:
@@ -612,6 +644,11 @@ struct tpm2_response *tpm_unmarshal_response(TPM_CC command,
 	case TPM2_NV_WriteLock:
 	case TPM2_PCR_Extend:
 		/* Session data included in response can be safely ignored. */
+		cr_size = 0;
+		break;
+
+	case TPM2_CR50_VENDOR_COMMAND:
+		/* Assume no other data returned for the time being. */
 		cr_size = 0;
 		break;
 

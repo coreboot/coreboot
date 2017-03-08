@@ -385,3 +385,23 @@ uint32_t tlcl_disable_platform_hierarchy(void)
 
 	return TPM_SUCCESS;
 }
+
+uint32_t tlcl_cr50_enable_nvcommits(void)
+{
+	uint16_t sub_command = TPM2_CR50_SUB_CMD_NVMEM_ENABLE_COMMITS;
+	struct tpm2_response *response;
+
+	printk(BIOS_INFO, "Enabling cr50 nvmem commmits\n");
+
+	response = tpm_process_command(TPM2_CR50_VENDOR_COMMAND, &sub_command);
+
+	if (response == NULL || (response && response->hdr.tpm_code)) {
+		if (response)
+			printk(BIOS_INFO, "%s: failed %x\n", __func__,
+				response->hdr.tpm_code);
+		else
+			printk(BIOS_INFO, "%s: failed\n", __func__);
+		return TPM_E_IOERROR;
+	}
+	return TPM_SUCCESS;
+}

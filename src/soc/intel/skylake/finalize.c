@@ -20,6 +20,8 @@
 #include <console/console.h>
 #include <console/post_codes.h>
 #include <cpu/x86/smm.h>
+#include <device/pci.h>
+#include <intelblocks/pcr.h>
 #include <reg_script.h>
 #include <spi-generic.h>
 #include <stdlib.h>
@@ -27,13 +29,17 @@
 #include <soc/me.h>
 #include <soc/p2sb.h>
 #include <soc/pci_devs.h>
-#include <soc/pcr.h>
+#include <soc/pcr_ids.h>
 #include <soc/pm.h>
 #include <soc/smbus.h>
 #include <soc/spi.h>
 #include <soc/systemagent.h>
-#include <device/pci.h>
-#include <chip.h>
+
+#define PCR_DMI_GCS		0x274C
+#define PCR_DMI_GCS_BILD  	(1 << 0)
+#define PSF_BASE_ADDRESS	0xA00
+#define PCR_PSFX_T0_SHDW_PCIEN	0x1C
+#define PCR_PSFX_T0_SHDW_PCIEN_FUNDIS	(1 << 8)
 
 static void pch_configure_endpoints(device_t dev, int epmask_id, uint32_t mask)
 {
@@ -62,8 +68,8 @@ static void pch_disable_heci(void)
 	pci_write_config8(dev, PCH_P2SB_E0 + 1, 0);
 
 	/* disable heci */
-	pcr_andthenor32(PID_PSF1, PSF_BASE_ADDRESS + PCH_PCR_PSFX_T0_SHDW_PCIEN,
-				~0, PCH_PCR_PSFX_T0_SHDW_PCIEN_FUNDIS);
+	pcr_or32(PID_PSF1, PSF_BASE_ADDRESS + PCR_PSFX_T0_SHDW_PCIEN,
+		PCR_PSFX_T0_SHDW_PCIEN_FUNDIS);
 
 	/* Remove the host accessing right to PSF register range. */
 	/* Set p2sb PCI offset EPMASK5 C4h [29, 28, 27, 26] to [1, 1, 1, 1] */
@@ -171,8 +177,7 @@ static void soc_lockdown(void)
 		/* Reads back for posted write to take effect */
 		pci_read_config32(PCH_DEV_SPI, SPIBAR_BIOS_CNTL);
 		/* GCS reg of DMI */
-		pcr_andthenor8(PID_DMI, R_PCH_PCR_DMI_GCS, 0xFF,
-			       B_PCH_PCR_DMI_GCS_BILD);
+		pcr_or8(PID_DMI, PCR_DMI_GCS, PCR_DMI_GCS_BILD);
 	}
 
 	/* Bios Lock */

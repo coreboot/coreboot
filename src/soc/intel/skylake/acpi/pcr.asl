@@ -20,7 +20,8 @@
  */
 Method (PCRB, 1, NotSerialized)
 {
-	Return (Add (PCH_PCR_BASE_ADDRESS, ShiftLeft (Arg0, PCR_PORTID_SHIFT)))
+	Return (Add (CONFIG_PCR_BASE_ADDRESS,
+				ShiftLeft (Arg0, PCR_PORTID_SHIFT)))
 }
 
 /*

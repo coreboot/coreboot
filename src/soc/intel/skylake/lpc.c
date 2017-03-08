@@ -30,11 +30,13 @@
 #include <cpu/cpu.h>
 #include <cpu/x86/smm.h>
 #include <cbmem.h>
+#include <intelblocks/pcr.h>
 #include <reg_script.h>
 #include <string.h>
 #include <soc/acpi.h>
 #include <soc/gpio.h>
 #include <soc/iomap.h>
+#include <soc/itss.h>
 #include <soc/lpc.h>
 #include <soc/nvs.h>
 #include <soc/pch.h>
@@ -42,7 +44,7 @@
 #include <soc/pm.h>
 #include <soc/pmc.h>
 #include <soc/ramstage.h>
-#include <soc/pcr.h>
+#include <soc/pcr_ids.h>
 #if IS_ENABLED(CONFIG_CHROMEOS)
 #include <vendorcode/google/chromeos/chromeos.h>
 #endif
@@ -97,14 +99,14 @@ static void pch_pirq_init(device_t dev)
 	device_t irq_dev;
 	config_t *config = dev->chip_info;
 
-	pcr_write8(PID_ITSS, R_PCH_PCR_ITSS_PIRQA_ROUT, config->pirqa_routing);
-	pcr_write8(PID_ITSS, R_PCH_PCR_ITSS_PIRQB_ROUT, config->pirqb_routing);
-	pcr_write8(PID_ITSS, R_PCH_PCR_ITSS_PIRQC_ROUT, config->pirqc_routing);
-	pcr_write8(PID_ITSS, R_PCH_PCR_ITSS_PIRQD_ROUT, config->pirqd_routing);
-	pcr_write8(PID_ITSS, R_PCH_PCR_ITSS_PIRQE_ROUT, config->pirqe_routing);
-	pcr_write8(PID_ITSS, R_PCH_PCR_ITSS_PIRQF_ROUT, config->pirqf_routing);
-	pcr_write8(PID_ITSS, R_PCH_PCR_ITSS_PIRQG_ROUT, config->pirqg_routing);
-	pcr_write8(PID_ITSS, R_PCH_PCR_ITSS_PIRQH_ROUT, config->pirqh_routing);
+	pcr_write8(PID_ITSS, PCR_ITSS_PIRQA_ROUT, config->pirqa_routing);
+	pcr_write8(PID_ITSS, PCR_ITSS_PIRQB_ROUT, config->pirqb_routing);
+	pcr_write8(PID_ITSS, PCR_ITSS_PIRQC_ROUT, config->pirqc_routing);
+	pcr_write8(PID_ITSS, PCR_ITSS_PIRQD_ROUT, config->pirqd_routing);
+	pcr_write8(PID_ITSS, PCR_ITSS_PIRQE_ROUT, config->pirqe_routing);
+	pcr_write8(PID_ITSS, PCR_ITSS_PIRQF_ROUT, config->pirqf_routing);
+	pcr_write8(PID_ITSS, PCR_ITSS_PIRQG_ROUT, config->pirqg_routing);
+	pcr_write8(PID_ITSS, PCR_ITSS_PIRQH_ROUT, config->pirqh_routing);
 
 	for (irq_dev = all_devices; irq_dev; irq_dev = irq_dev->next) {
 		u8 int_pin = 0, int_line = 0;
@@ -157,13 +159,12 @@ static const struct reg_script pch_misc_init_script[] = {
 static void clock_gate_8254(struct device *dev)
 {
 	config_t *config = dev->chip_info;
-	const uint32_t cge8254_mask = CGE8254;
+	const uint32_t cge8254_mask = (1 << 2);
 
 	if (!config->clock_gate_8254)
 		return;
 
-	pcr_andthenor32(PID_ITSS, R_PCH_PCR_ITSS_ITSSPRC,
-			~cge8254_mask, cge8254_mask);
+	pcr_rmw32(PID_ITSS, PCR_ITSS_ITSSPRC, ~cge8254_mask, cge8254_mask);
 }
 
 static void lpc_init(struct device *dev)
@@ -190,7 +191,7 @@ static void pch_lpc_add_mmio_resources(device_t dev)
 	 * For this SOC, the range will be from 0FD000000h till FE7FFFFFh"
 	 * Hence, use FD000000h as PCR_BASE
 	 */
-	const u32 default_decode_base = PCH_PCR_BASE_ADDRESS;
+	const u32 default_decode_base = CONFIG_PCR_BASE_ADDRESS;
 
 	res = new_resource(dev, PCI_BASE_ADDRESS_0);
 	res->base = default_decode_base;

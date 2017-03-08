@@ -18,12 +18,19 @@
 #include <arch/io.h>
 #include <console/uart.h>
 #include <device/pci_def.h>
+#include <intelblocks/pcr.h>
 #include <stdint.h>
 #include <soc/bootblock.h>
 #include <soc/pci_devs.h>
-#include <soc/pcr.h>
+#include <soc/pcr_ids.h>
 #include <soc/serialio.h>
 #include <gpio.h>
+
+/* Serial IO UART controller legacy mode */
+#define PCR_SERIAL_IO_GPPRVRW7		0x618
+#define PCR_SIO_PCH_LEGACY_UART0	(1 << 0)
+#define PCR_SIO_PCH_LEGACY_UART1	(1 << 1)
+#define PCR_SIO_PCH_LEGACY_UART2	(1 << 2)
 
 /* UART2 pad configuration. Support RXD and TXD for now. */
 static const struct pad_config uart2_pads[] = {
@@ -64,8 +71,8 @@ void pch_uart_init(void)
 
 	/* Put UART2 in byte access mode for 16550 compatibility */
 	if (!IS_ENABLED(CONFIG_DRIVERS_UART_8250MEM_32))
-		pcr_andthenor32(PID_SERIALIO,
-		R_PCH_PCR_SERIAL_IO_GPPRVRW7, 0, SIO_PCH_LEGACY_UART2);
+		pcr_write32(PID_SERIALIO, PCR_SERIAL_IO_GPPRVRW7,
+			PCR_SIO_PCH_LEGACY_UART2);
 
 	gpio_configure_pads(uart2_pads, ARRAY_SIZE(uart2_pads));
 }

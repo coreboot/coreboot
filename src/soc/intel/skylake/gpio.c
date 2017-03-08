@@ -21,7 +21,8 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <gpio.h>
-#include <soc/pcr.h>
+#include <intelblocks/pcr.h>
+#include <soc/pcr_ids.h>
 #include <soc/iomap.h>
 #include <soc/pm.h>
 
@@ -83,6 +84,11 @@ static const char *gpio_group_names[GPIO_NUM_GROUPS] = {
 	"GPD",
 };
 
+static inline void *gpio_community_regs(int port_id)
+{
+	return pcr_reg_address(port_id, 0);
+}
+
 static inline size_t gpios_in_community(const struct gpio_community *comm)
 {
 	/* max is inclusive */
@@ -128,7 +134,7 @@ static size_t community_clr_get_smi_sts(const struct gpio_community *comm,
 	/* Not all groups can be routed to SMI. However, the registers
 	 * read as 0. In order to simplify the logic read everything from
 	 * each community. */
-	regs = pcr_port_regs(comm->port_id);
+	regs = gpio_community_regs(comm->port_id);
 	gpi_status_reg = (void *)&regs[GPI_SMI_STS_OFFSET];
 	gpi_en_reg = (void *)&regs[GPI_SMI_EN_OFFSET];
 	for (i = 0; i < num_grps; i++) {
@@ -214,7 +220,7 @@ void gpio_route_gpe(uint16_t gpe0_route)
 		uint32_t reg;
 		const struct gpio_community *comm = &communities[i];
 
-		regs = pcr_port_regs(comm->port_id);
+		regs = gpio_community_regs(comm->port_id);
 
 		reg = read32(regs + MISCCFG_OFFSET);
 		reg &= ~misc_cfg_reg_mask;
@@ -234,7 +240,7 @@ static void *gpio_dw_regs(gpio_t pad)
 	if (comm == NULL)
 		return NULL;
 
-	regs = pcr_port_regs(comm->port_id);
+	regs = gpio_community_regs(comm->port_id);
 
 	pad_relative = pad - comm->min;
 
@@ -254,7 +260,7 @@ static void *gpio_hostsw_reg(gpio_t pad, size_t *bit)
 	if (comm == NULL)
 		return NULL;
 
-	regs = pcr_port_regs(comm->port_id);
+	regs = gpio_community_regs(comm->port_id);
 
 	pad_relative = pad - comm->min;
 
@@ -301,7 +307,7 @@ static void gpi_enable_smi(gpio_t pad)
 	comm = gpio_get_community(pad);
 	if (comm == NULL)
 		return;
-	regs = pcr_port_regs(comm->port_id);
+	regs = gpio_community_regs(comm->port_id);
 	gpi_status_reg = (void *)&regs[GPI_SMI_STS_OFFSET];
 	gpi_en_reg = (void *)&regs[GPI_SMI_EN_OFFSET];
 

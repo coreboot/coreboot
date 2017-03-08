@@ -21,21 +21,30 @@
 #include <arch/io.h>
 #include <console/console.h>
 #include <cpu/x86/cache.h>
-#include <device/pci_def.h>
 #include <cpu/x86/smm.h>
-#include <spi-generic.h>
+#include <device/pci_def.h>
 #include <elog.h>
+#include <intelblocks/pcr.h>
 #include <pc80/mc146818rtc.h>
+#include <spi-generic.h>
 #include <soc/flash_controller.h>
 #include <soc/iomap.h>
 #include <soc/lpc.h>
 #include <soc/nvs.h>
 #include <soc/pci_devs.h>
 #include <soc/pch.h>
-#include <soc/pcr.h>
+#include <soc/pcr_ids.h>
 #include <soc/pm.h>
 #include <soc/pmc.h>
 #include <soc/smm.h>
+
+/* IO Trap PCRs */
+/* Trap status Register */
+#define PCR_PSTH_TRPST	0x1E00
+/* Trapped cycle */
+#define PCR_PSTH_TRPC	0x1E10
+/* Trapped write data */
+#define PCR_PSTH_TRPD	0x1E18
 
 static u8 smm_initialized = 0;
 
@@ -425,16 +434,17 @@ static void southbridge_smi_periodic(void)
 static void southbridge_smi_monitor(void)
 {
 #define IOTRAP(x) (trap_sts & (1 << x))
-	u32 trap_sts, trap_cycle;
+	u32 trap_cycle;
 	u32 data, mask = 0;
+	u8 trap_sts;
 	int i;
 	/* TRSR - Trap Status Register */
-	pcr_read32(PID_PSTH, R_PCH_PCR_PSTH_TRPST, &trap_sts);
+	trap_sts = pcr_read8(PID_PSTH, PCR_PSTH_TRPST);
 	/* Clear trap(s) in TRSR */
-	pcr_write8(PID_PSTH, R_PCH_PCR_PSTH_TRPST, trap_sts);
+	pcr_write8(PID_PSTH, PCR_PSTH_TRPST, trap_sts);
 
 	/* TRPC - Trapped cycle */
-	pcr_read32(PID_PSTH, R_PCH_PCR_PSTH_TRPC, &trap_cycle);
+	trap_cycle = pcr_read32(PID_PSTH, PCR_PSTH_TRPC);
 	for (i = 16; i < 20; i++) {
 		if (trap_cycle & (1 << i))
 			mask |= (0xff << ((i - 16) << 2));
@@ -458,7 +468,7 @@ static void southbridge_smi_monitor(void)
 		if (!(trap_cycle & (1 << 24))) { /* It's a write */
 			printk(BIOS_DEBUG, "SMI1 command\n");
 			/* Trapped write data */
-			pcr_read32(PID_PSTH, R_PCH_PCR_PSTH_TRPD, &data);
+			data = pcr_read32(PID_PSTH, PCR_PSTH_TRPD);
 			data &= mask;
 		}
 	}
@@ -475,7 +485,7 @@ static void southbridge_smi_monitor(void)
 
 	if (!(trap_cycle & (1 << 24))) {
 		/* Write Cycle */
-		pcr_read32(PID_PSTH, R_PCH_PCR_PSTH_TRPD, &data);
+		data = pcr_read32(PID_PSTH, PCR_PSTH_TRPD);
 		printk(BIOS_DEBUG, "  iotrap written data = 0x%08x\n", data);
 	}
 #undef IOTRAP

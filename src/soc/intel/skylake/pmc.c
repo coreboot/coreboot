@@ -24,6 +24,7 @@
 #include <arch/ioapic.h>
 #include <arch/acpi.h>
 #include <cpu/cpu.h>
+#include <intelblocks/pcr.h>
 #include <pc80/mc146818rtc.h>
 #include <reg_script.h>
 #include <string.h>
@@ -33,7 +34,7 @@
 #include <soc/pmc.h>
 #include <soc/pm.h>
 #include <cpu/x86/smm.h>
-#include <soc/pcr.h>
+#include <soc/pcr_ids.h>
 #include <soc/ramstage.h>
 #include <vboot/vbnv.h>
 #include <vboot/vbnv_layout.h>

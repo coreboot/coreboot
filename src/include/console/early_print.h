@@ -25,7 +25,7 @@
 /* While in romstage, console loglevel is built-time constant.
  * With ROMCC we inline this test with help from preprocessor.
  */
-#define console_log_level(msg_level) (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= msg_level)
+#define console_log_level(msg_level) (msg_level <= CONFIG_DEFAULT_CONSOLE_LOGLEVEL)
 
 #define CALL_CONSOLE_TX(loglevel, tx_func, x) \
 	do {						\

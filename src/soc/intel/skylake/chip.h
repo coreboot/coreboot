@@ -418,6 +418,35 @@ struct soc_intel_skylake_config {
 
 	/* Wake Enable Bitmap for USB3 ports */
 	u8 usb3_wake_enable_bitmap;
+
+	/*
+	 * Acoustic Noise Mitigation
+	 * 0b - Disable
+	 * 1b - Enable noise mitigation
+	 */
+	u8 AcousticNoiseMitigation;
+
+	/*
+	 * Disable Fast Package C-state ramping
+	 * Need to set AcousticNoiseMitigation = '1' first
+	 * 0b - Enabled
+	 * 1b - Disabled
+	 */
+	u8 FastPkgCRampDisableIa;
+	u8 FastPkgCRampDisableGt;
+	u8 FastPkgCRampDisableSa;
+
+	/*
+	 * Adjust the VR slew rates
+	 * Need to set AcousticNoiseMitigation = '1' first
+	 * 000b - Fast/2
+	 * 001b - Fast/4
+	 * 010b - Fast/8
+	 * 011b - Fast/16
+	 */
+	u8 SlowSlewRateForIa;
+	u8 SlowSlewRateForGt;
+	u8 SlowSlewRateForSa;
 };
 
 typedef struct soc_intel_skylake_config config_t;

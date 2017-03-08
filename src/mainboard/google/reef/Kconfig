@@ -93,4 +93,9 @@ config INCLUDE_NHLT_BLOBS
 	select NHLT_DA7219
 	select NHLT_MAX98357
 
+config PRERAM_CBMEM_CONSOLE_SIZE
+	hex
+	default 0xe00 if CHROMEOS
+	default 0xc00
+
 endif # BOARD_GOOGLE_REEF

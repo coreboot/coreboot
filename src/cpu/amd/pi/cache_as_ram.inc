@@ -63,6 +63,9 @@ cache_as_ram_setup:
 
   AMD_ENABLE_STACK
 
+  /* Align the stack. */
+  and     $0xFFFFFFF0, %esp
+
 #ifdef __x86_64__
   /* switch to 64 bit long mode */
   mov     %esi, %ecx
@@ -111,8 +114,6 @@ cache_as_ram_setup:
   /* Pass the BIST result */
   cvtsd2si        %xmm0, %edi
 
-  /* align the stack */
-  and     $0xFFFFFFF0, %esp
 
   .code64
   call    cache_as_ram_main
@@ -126,6 +127,9 @@ cache_as_ram_setup:
   /* Restore the  cpu_init_detected */
   cvtsd2si  %xmm1, %ebx
 
+  /* Must maintain 16-byte stack alignment here. */
+  pushl $0x0
+  pushl $0x0
   pushl %ebx  /* init detected */
   pushl %edx  /* bist */
   call  cache_as_ram_main

@@ -548,8 +548,8 @@ static void bpdt_read_header(void *data, struct bpdt_header *h,
 			     &h->xor_redundant_block);
 	offset = read_member(data, offset, sizeof(h->ifwi_version),
 			     &h->ifwi_version);
-	offset = read_member(data, offset, sizeof(h->fit_tool_version),
-			     &h->fit_tool_version);
+	read_member(data, offset, sizeof(h->fit_tool_version),
+		    &h->fit_tool_version);
 
 	bpdt_validate_header(h, name);
 	bpdt_print_header(h, name);

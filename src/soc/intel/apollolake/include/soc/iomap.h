@@ -20,7 +20,7 @@
 
 #include <commonlib/helpers.h>
 
-#define P2SB_BAR			CONFIG_IOSF_BASE_ADDRESS
+#define P2SB_BAR			CONFIG_PCR_BASE_ADDRESS
 #define P2SB_SIZE			(16 * MiB)
 #define MCH_BASE_ADDR			0xfed10000
 #define MCH_BASE_SIZE			(32 * KiB)

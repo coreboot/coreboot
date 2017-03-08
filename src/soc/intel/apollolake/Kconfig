@@ -18,6 +18,7 @@ config CPU_SPECIFIC_OPTIONS
 	# CPU specific options
 	select CPU_INTEL_FIRMWARE_INTERFACE_TABLE
 	select IOAPIC
+	select PCR_COMMON_IOSF_1_0
 	select SMP
 	select SSE2
 	select SUPPORT_CPU_UCODE_IN_CBFS
@@ -52,6 +53,7 @@ config CPU_SPECIFIC_OPTIONS
 	select SOC_INTEL_COMMON_ACPI
 	select SOC_INTEL_COMMON_ACPI_WAKE_SOURCE
 	select SOC_INTEL_COMMON_BLOCK
+	select SOC_INTEL_COMMON_BLOCK_PCR
 	select SOC_INTEL_COMMON_BLOCK_SA
 	select SOC_INTEL_COMMON_LPSS_I2C
 	select SOC_INTEL_COMMON_SMI
@@ -91,9 +93,11 @@ config SOC_INTEL_COMMON_RESET
 	bool
 	default y
 
-config IOSF_BASE_ADDRESS
-	hex "MMIO Base Address of sideband bus"
+config PCR_BASE_ADDRESS
+	hex
 	default 0xd0000000
+	help
+	  This option allows you to select MMIO Base Address of sideband bus.
 
 config DCACHE_RAM_BASE
 	hex "Base address of cache-as-RAM"

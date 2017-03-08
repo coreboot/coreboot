@@ -15,34 +15,29 @@
 
 #include <commonlib/helpers.h>
 #include <console/console.h>
+#include <intelblocks/pcr.h>
 #include <stdint.h>
-#include <soc/iosf.h>
 #include <soc/itss.h>
+#include <soc/pcr_ids.h>
 
-#define IOSF_ITSS_PORT_ID	0xd0
-#define ITSS_MAX_IRQ		119
-#define IPC0			0x3200
-#define IRQS_PER_IPC		32
-#define NUM_IPC_REGS		((ITSS_MAX_IRQ + IRQS_PER_IPC - 1)/IRQS_PER_IPC)
+#define ITSS_MAX_IRQ	119
+#define IRQS_PER_IPC	32
+#define NUM_IPC_REGS	((ITSS_MAX_IRQ + IRQS_PER_IPC - 1)/IRQS_PER_IPC)
+#define PCR_IPC0_CONF	0x3200
 
 void itss_set_irq_polarity(int irq, int active_low)
 {
 	uint32_t mask;
-	uint32_t val;
 	uint16_t reg;
-	const uint16_t port = IOSF_ITSS_PORT_ID;
+	const uint16_t port = PID_ITSS;
 
 	if (irq < 0 || irq > ITSS_MAX_IRQ)
 		return;
 
-	reg = IPC0 + sizeof(uint32_t) * (irq / IRQS_PER_IPC);
+	reg = PCR_IPC0_CONF + sizeof(uint32_t) * (irq / IRQS_PER_IPC);
 	mask = 1 << (irq % IRQS_PER_IPC);
 
-	val = iosf_read(port, reg);
-	val &= ~mask;
-	/* Setting the bit makes the IRQ active low. */
-	val |= active_low ? mask : 0;
-	iosf_write(port, reg, val);
+	pcr_rmw32(port, reg, ~mask, (active_low ? mask : 0));
 }
 
 static uint32_t irq_snapshot[NUM_IPC_REGS];
@@ -52,7 +47,7 @@ void itss_snapshot_irq_polarities(int start, int end)
 	int i;
 	int reg_start;
 	int reg_end;
-	const uint16_t port = IOSF_ITSS_PORT_ID;
+	const uint16_t port = PID_ITSS;
 
 	if (start < 0 || start > ITSS_MAX_IRQ ||
 	    end < 0 || end > ITSS_MAX_IRQ || end < start)
@@ -62,20 +57,20 @@ void itss_snapshot_irq_polarities(int start, int end)
 	reg_end = (end + IRQS_PER_IPC - 1) / IRQS_PER_IPC;
 
 	for (i = reg_start; i < reg_end; i++) {
-		uint16_t reg = IPC0 + sizeof(uint32_t) * i;
-		irq_snapshot[i] = iosf_read(port, reg);
+		uint16_t reg = PCR_IPC0_CONF + sizeof(uint32_t) * i;
+		irq_snapshot[i] = pcr_read32(port, reg);
 	}
 }
 
 static void show_irq_polarities(const char *msg)
 {
 	int i;
-	const uint16_t port = IOSF_ITSS_PORT_ID;
+	const uint16_t port = PID_ITSS;
 
 	printk(BIOS_INFO, "ITSS IRQ Polarities %s:\n", msg);
 	for (i = 0; i < NUM_IPC_REGS; i++) {
-		uint16_t reg = IPC0 + sizeof(uint32_t) * i;
-		printk(BIOS_INFO, "IPC%d: 0x%08x\n", i, iosf_read(port, reg));
+		uint16_t reg = PCR_IPC0_CONF + sizeof(uint32_t) * i;
+		printk(BIOS_INFO, "IPC%d: 0x%08x\n", i, pcr_read32(port, reg));
 	}
 }
 
@@ -84,7 +79,7 @@ void itss_restore_irq_polarities(int start, int end)
 	int i;
 	int reg_start;
 	int reg_end;
-	const uint16_t port = IOSF_ITSS_PORT_ID;
+	const uint16_t port = PID_ITSS;
 
 	if (start < 0 || start > ITSS_MAX_IRQ ||
 	    end < 0 || end > ITSS_MAX_IRQ || end < start)
@@ -97,7 +92,6 @@ void itss_restore_irq_polarities(int start, int end)
 
 	for (i = reg_start; i < reg_end; i++) {
 		uint32_t mask;
-		uint32_t val;
 		uint16_t reg;
 		int irq_start;
 		int irq_end;
@@ -118,11 +112,8 @@ void itss_restore_irq_polarities(int start, int end)
 		mask = (((1U << irq_end) - 1) | (1U << irq_end));
 		mask &= ~((1U << irq_start) - 1);
 
-		reg = IPC0 + sizeof(uint32_t) * i;
-		val = iosf_read(port, reg);
-		val &= ~mask;
-		val |= mask & irq_snapshot[i];
-		iosf_write(port, reg, val);
+		reg = PCR_IPC0_CONF + sizeof(uint32_t) * i;
+		pcr_rmw32(port, reg, ~mask, (mask & irq_snapshot[i]));
 	}
 
 	show_irq_polarities("After");

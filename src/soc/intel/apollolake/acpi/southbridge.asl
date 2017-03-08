@@ -15,6 +15,7 @@
  * GNU General Public License for more details.
  */
 
+#include <intelblocks/pcr.h>
 #include <soc/gpe.h>
 
 /* Power button. */

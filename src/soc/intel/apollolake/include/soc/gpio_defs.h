@@ -129,13 +129,6 @@
 #define PAD_CFG_BASE			0x500
 #define PAD_CFG_OFFSET(pad)		(PAD_CFG_BASE + ((pad) * 8))
 
-/* IOSF port numbers for GPIO comminuties*/
-#define GPIO_SW			0xc0
-#define GPIO_S			0xc2
-#define GPIO_NW			0xc4
-#define GPIO_N			0xc5
-#define GPIO_W			0xc7
-
 #define GPI_SMI_STS_0			0x140
 #define GPI_SMI_EN_0			0x150
 #define GPI_SMI_STS_OFFSET(group)	(GPI_SMI_STS_0 + ((group) * 4))

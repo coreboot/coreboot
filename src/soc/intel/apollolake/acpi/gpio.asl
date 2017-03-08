@@ -15,6 +15,7 @@
  * GNU General Public License for more details.
  */
 #include <soc/gpio_defs.h>
+#include <soc/pcr_ids.h>
 #include "gpiolib.asl"
 
 scope (\_SB) {
@@ -39,8 +40,8 @@ scope (\_SB) {
 		Method (_CRS, 0x0, NotSerialized)
 		{
 			CreateDwordField (^RBUF, ^RMEM._BAS, RBAS)
-			ShiftLeft (GPIO_N, 16, Local0)
-			Or (CONFIG_IOSF_BASE_ADDRESS, Local0, RBAS)
+			ShiftLeft (PID_GPIO_N, PCR_PORTID_SHIFT, Local0)
+			Or (CONFIG_PCR_BASE_ADDRESS, Local0, RBAS)
 			Return (^RBUF)
 		}
 
@@ -70,8 +71,8 @@ scope (\_SB) {
 		Method (_CRS, 0x0, NotSerialized)
 		{
 			CreateDwordField (^RBUF, ^RMEM._BAS, RBAS)
-			ShiftLeft (GPIO_NW, 16, Local0)
-			Or (CONFIG_IOSF_BASE_ADDRESS, Local0, RBAS)
+			ShiftLeft (PID_GPIO_NW, PCR_PORTID_SHIFT, Local0)
+			Or (CONFIG_PCR_BASE_ADDRESS, Local0, RBAS)
 			Return (^RBUF)
 		}
 
@@ -101,8 +102,8 @@ scope (\_SB) {
 		Method (_CRS, 0x0, NotSerialized)
 		{
 			CreateDwordField (^RBUF, ^RMEM._BAS, RBAS)
-			ShiftLeft (GPIO_W, 16, Local0)
-			Or (CONFIG_IOSF_BASE_ADDRESS, Local0, RBAS)
+			ShiftLeft (PID_GPIO_W, PCR_PORTID_SHIFT, Local0)
+			Or (CONFIG_PCR_BASE_ADDRESS, Local0, RBAS)
 			Return (^RBUF)
 		}
 
@@ -132,8 +133,8 @@ scope (\_SB) {
 		Method (_CRS, 0x0, NotSerialized)
 		{
 			CreateDwordField (^RBUF, ^RMEM._BAS, RBAS)
-			ShiftLeft (GPIO_SW, 16, Local0)
-			Or (CONFIG_IOSF_BASE_ADDRESS, Local0, RBAS)
+			ShiftLeft (PID_GPIO_SW, PCR_PORTID_SHIFT, Local0)
+			Or (CONFIG_PCR_BASE_ADDRESS, Local0, RBAS)
 			Return (^RBUF)
 		}
 

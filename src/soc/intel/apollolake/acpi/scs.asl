@@ -17,8 +17,8 @@ Scope (\_SB.PCI0) {
 	/* 0xD6- is the port address */
 	/* 0x600- is the dynamic clock gating control register offset (GENR) */
 	OperationRegion (SBMM, SystemMemory,
-				Or ( Or (CONFIG_IOSF_BASE_ADDRESS,
-					ShiftLeft(0xD6, 16)), 0x0600), 0x18)
+		Or ( Or (CONFIG_PCR_BASE_ADDRESS,
+			ShiftLeft(0xD6, PCR_PORTID_SHIFT)), 0x0600), 0x18)
 	Field (SBMM, DWordAcc, NoLock, Preserve)
 	{
 		GENR, 32,

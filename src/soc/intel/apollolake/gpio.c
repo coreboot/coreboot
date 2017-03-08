@@ -17,9 +17,10 @@
 
 #include <assert.h>
 #include <gpio.h>
+#include <intelblocks/pcr.h>
 #include <soc/gpio.h>
-#include <soc/iosf.h>
 #include <soc/itss.h>
+#include <soc/pcr_ids.h>
 #include <soc/pm.h>
 
 /* This list must be in order, from highest pad numbers, to lowest pad numbers*/
@@ -31,25 +32,25 @@ static const struct pad_community {
 	const char *grp_name;
 } gpio_communities[] = {
 	{
-		.port = GPIO_SW,
+		.port = PID_GPIO_SW,
 		.first_pad = SW_OFFSET,
 		.num_gpi_regs = NUM_SW_GPI_REGS,
 		.gpi_offset = 0,
 		.grp_name = "GPIO_GPE_SW",
 	}, {
-		.port = GPIO_W,
+		.port = PID_GPIO_W,
 		.first_pad = W_OFFSET,
 		.num_gpi_regs = NUM_W_GPI_REGS,
 		.gpi_offset = NUM_SW_GPI_REGS,
 		.grp_name = "GPIO_GPE_W",
 	}, {
-		.port = GPIO_NW,
+		.port = PID_GPIO_NW,
 		.first_pad = NW_OFFSET,
 		.num_gpi_regs = NUM_NW_GPI_REGS,
 		.gpi_offset = NUM_W_GPI_REGS + NUM_SW_GPI_REGS,
 		.grp_name = "GPIO_GPE_NW",
 	}, {
-		.port = GPIO_N,
+		.port = PID_GPIO_N,
 		.first_pad = N_OFFSET,
 		.num_gpi_regs = NUM_N_GPI_REGS,
 		.gpi_offset = NUM_NW_GPI_REGS + NUM_W_GPI_REGS
@@ -92,7 +93,7 @@ static void gpio_configure_itss(const struct pad_config *cfg,
 	if (!(cfg->config0 & PAD_CFG0_ROUTE_IOAPIC))
 		return;
 
-	irq = iosf_read(port, pad_cfg_offset + sizeof(uint32_t));
+	irq = pcr_read32(port, pad_cfg_offset + sizeof(uint32_t));
 	irq &= PAD_CFG1_IRQ_MASK;
 	if (!irq) {
 		printk(BIOS_ERR, "GPIO %u doesn't support APIC routing,\n",
@@ -106,7 +107,6 @@ static void gpio_configure_itss(const struct pad_config *cfg,
 static void gpio_configure_owner(const struct pad_config *cfg,
 				 uint16_t port, int pin)
 {
-	uint32_t val;
 	uint16_t hostsw_reg;
 
 	/* The 4th bit in pad_config 1 (RO) is used to indicate if the pad
@@ -119,9 +119,7 @@ static void gpio_configure_owner(const struct pad_config *cfg,
 	 * HOSTSW_OWN register. Value of 0x1 indicates GPIO Driver onwership.
 	 */
 	hostsw_reg = HOSTSW_OWN_REG_BASE + ((pin / 32) * sizeof(uint32_t));
-	val = iosf_read(port, hostsw_reg);
-	val |= 1 << (pin % 32);
-	iosf_write(port, hostsw_reg, val);
+	pcr_or32(port, hostsw_reg, (1 << (pin % 32)));
 }
 
 static void gpi_enable_smi(const struct pad_config *cfg, uint16_t port, int pin)
@@ -137,15 +135,13 @@ static void gpi_enable_smi(const struct pad_config *cfg, uint16_t port, int pin)
 	group = pin / GPIO_MAX_NUM_PER_GROUP;
 
 	sts_reg = GPI_SMI_STS_OFFSET(group);
-	value = iosf_read(port, sts_reg);
+	value = pcr_read32(port, sts_reg);
 	/* Write back 1 to reset the sts bits */
-	iosf_write(port, sts_reg, value);
+	pcr_write32(port, sts_reg, value);
 
 	/* Set enable bits */
 	en_reg = GPI_SMI_EN_OFFSET(group);
-	value = iosf_read(port, en_reg);
-	value |= 1 << (pin % GPIO_MAX_NUM_PER_GROUP);
-	iosf_write(port, en_reg, value);
+	pcr_or32(port, en_reg, (1 << (pin % GPIO_MAX_NUM_PER_GROUP)));
 }
 
 void gpio_configure_pad(const struct pad_config *cfg)
@@ -162,8 +158,8 @@ void gpio_configure_pad(const struct pad_config *cfg)
 	dw1 |= (cfg->config1 & PAD_CFG1_IOSSTATE_MASK)
 		<< PAD_CFG1_IOSSTATE_SHIFT;
 
-	iosf_write(comm->port, config_offset, cfg->config0);
-	iosf_write(comm->port, config_offset + sizeof(uint32_t), dw1);
+	pcr_write32(comm->port, config_offset, cfg->config0);
+	pcr_write32(comm->port, config_offset + sizeof(uint32_t), dw1);
 
 	gpio_configure_itss(cfg, comm->port, config_offset);
 	gpio_configure_owner(cfg, comm->port, cfg->pad - comm->first_pad);
@@ -186,7 +182,8 @@ void *gpio_dwx_address(const uint16_t pad)
 	 * returns - address of GPIO
 	 */
 	const struct pad_community *comm = gpio_get_community(pad);
-	return iosf_address(comm->port, PAD_CFG_OFFSET(pad - comm->first_pad));
+	return pcr_reg_address(comm->port,
+			PAD_CFG_OFFSET(pad - comm->first_pad));
 }
 
 void gpio_input_pulldown(gpio_t gpio)
@@ -219,21 +216,18 @@ int gpio_get(gpio_t gpio_num)
 	const struct pad_community *comm = gpio_get_community(gpio_num);
 	uint16_t config_offset = PAD_CFG_OFFSET(gpio_num - comm->first_pad);
 
-	reg = iosf_read(comm->port, config_offset);
+	reg = pcr_read32(comm->port, config_offset);
 
 	return !!(reg & PAD_CFG0_RX_STATE);
 }
 
 void gpio_set(gpio_t gpio_num, int value)
 {
-	uint32_t reg;
 	const struct pad_community *comm = gpio_get_community(gpio_num);
 	uint16_t config_offset = PAD_CFG_OFFSET(gpio_num - comm->first_pad);
 
-	reg = iosf_read(comm->port, config_offset);
-	reg &= ~PAD_CFG0_TX_STATE;
-	reg |= !!value & PAD_CFG0_TX_STATE;
-	iosf_write(comm->port, config_offset, reg);
+	pcr_rmw32(comm->port, config_offset,
+		~PAD_CFG0_TX_STATE, (!!value & PAD_CFG0_TX_STATE));
 }
 
 const char *gpio_acpi_path(gpio_t gpio_num)
@@ -241,13 +235,13 @@ const char *gpio_acpi_path(gpio_t gpio_num)
 	const struct pad_community *comm = gpio_get_community(gpio_num);
 
 	switch (comm->port) {
-	case GPIO_N:
+	case PID_GPIO_N:
 		return "\\_SB.GPO0";
-	case GPIO_NW:
+	case PID_GPIO_NW:
 		return "\\_SB.GPO1";
-	case GPIO_W:
+	case PID_GPIO_W:
 		return "\\_SB.GPO2";
-	case GPIO_SW:
+	case PID_GPIO_SW:
 		return "\\_SB.GPO3";
 	}
 
@@ -259,13 +253,13 @@ uint16_t gpio_acpi_pin(gpio_t gpio_num)
 	const struct pad_community *comm = gpio_get_community(gpio_num);
 
 	switch (comm->port) {
-	case GPIO_N:
+	case PID_GPIO_N:
 		return PAD_N(gpio_num);
-	case GPIO_NW:
+	case PID_GPIO_NW:
 		return PAD_NW(gpio_num);
-	case GPIO_W:
+	case PID_GPIO_W:
 		return PAD_W(gpio_num);
-	case GPIO_SW:
+	case PID_GPIO_SW:
 		return PAD_SW(gpio_num);
 	}
 
@@ -315,13 +309,13 @@ void gpi_clear_get_smi_status(struct gpi_status *sts)
 		num_groups = comm->num_gpi_regs;
 		index = comm->gpi_offset;
 		for (group = 0; group < num_groups; group++, index++) {
-			sts_value = iosf_read(gpio_communities[i].port,
+			sts_value = pcr_read32(gpio_communities[i].port,
 					GPI_SMI_STS_OFFSET(group));
-			en_value = iosf_read(gpio_communities[i].port,
+			en_value = pcr_read32(gpio_communities[i].port,
 					GPI_SMI_EN_OFFSET(group));
 			sts->grp[index] = sts_value & en_value;
 			/* Clear the set status bits. */
-			iosf_write(gpio_communities[i].port,
+			pcr_write32(gpio_communities[i].port,
 				GPI_SMI_STS_OFFSET(group), sts->grp[index]);
 		}
 	}
@@ -376,7 +370,6 @@ void gpio_route_gpe(uint8_t gpe0b, uint8_t gpe0c, uint8_t gpe0d)
 	int i;
 	uint32_t misccfg_mask;
 	uint32_t misccfg_value;
-	uint32_t value;
 	int ret;
 
 	/* Get the group here for community specific MISCCFG register.
@@ -412,9 +405,7 @@ void gpio_route_gpe(uint8_t gpe0b, uint8_t gpe0c, uint8_t gpe0d)
 	for (i = 0; i < ARRAY_SIZE(gpio_communities); i++) {
 		const struct pad_community *comm = &gpio_communities[i];
 
-		value = iosf_read(comm->port, GPIO_MISCCFG);
-		value &= misccfg_mask;
-		value |= misccfg_value;
-		iosf_write(comm->port, GPIO_MISCCFG, value);
+		pcr_rmw32(comm->port, GPIO_MISCCFG,
+				misccfg_mask, misccfg_value);
 	}
 }

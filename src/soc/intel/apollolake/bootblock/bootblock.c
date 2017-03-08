@@ -18,20 +18,24 @@
 #include <bootblock_common.h>
 #include <cpu/x86/mtrr.h>
 #include <device/pci.h>
+#include <intelblocks/pcr.h>
 #include <intelblocks/systemagent.h>
 #include <lib.h>
 #include <soc/iomap.h>
 #include <soc/cpu.h>
 #include <soc/flash_ctrlr.h>
 #include <soc/gpio.h>
-#include <soc/iosf.h>
 #include <soc/mmap_boot.h>
 #include <soc/systemagent.h>
 #include <soc/pci_devs.h>
+#include <soc/pcr_ids.h>
 #include <soc/pm.h>
 #include <soc/uart.h>
 #include <spi-generic.h>
 #include <timestamp.h>
+
+#define PCR_RTC_CONF		0x3400
+#define PCR_RTC_CONF_UCMOS_EN	0x4
 
 static const struct pad_config tpm_spi_configs[] = {
 	PAD_CFG_NF(GPIO_106, NATIVE, DEEP, NF3),	/* FST_SPI_CS2_N */
@@ -45,9 +49,7 @@ static void tpm_enable(void)
 
 static void enable_cmos_upper_bank(void)
 {
-	uint32_t reg = iosf_read(IOSF_RTC_PORT_ID, RTC_CONFIG);
-	reg |= RTC_CONFIG_UCMOS_ENABLE;
-	iosf_write(IOSF_RTC_PORT_ID, RTC_CONFIG, reg);
+	pcr_or32(PID_RTC, PCR_RTC_CONF, PCR_RTC_CONF_UCMOS_EN);
 }
 
 asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
@@ -57,8 +59,8 @@ asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 	bootblock_systemagent_early_init();
 
 	dev = PCH_DEV_P2SB;
-	/* BAR and MMIO enable for IOSF, so that GPIOs can be configured */
-	pci_write_config32(dev, PCI_BASE_ADDRESS_0, CONFIG_IOSF_BASE_ADDRESS);
+	/* BAR and MMIO enable for PCR-Space, so that GPIOs can be configured */
+	pci_write_config32(dev, PCI_BASE_ADDRESS_0, CONFIG_PCR_BASE_ADDRESS);
 	pci_write_config32(dev, PCI_BASE_ADDRESS_1, 0);
 	pci_write_config16(dev, PCI_COMMAND,
 				PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);

@@ -19,7 +19,8 @@ typedef struct {
 	u8 display_type;	// 0 = NONE, 1 = analog, 2 = digital
 	u16 screen_width;
 	u16 screen_height;
-	u16 screen_linebytes;	// bytes per line in framebuffer, may be more than screen_width
+	u16 screen_linebytes;	// bytes per line in framebuffer, may be more
+				// than screen_width
 	u8 color_depth;	// color depth in bits per pixel
 	u32 framebuffer_address;
 	u8 edid_block_zero[128];
@@ -40,7 +41,8 @@ typedef struct {
 	u16 version;
 	u8 *oem_string_ptr;
 	u32 capabilities;
-	u16 video_mode_list[256];	// lets hope we never have more than 256 video modes...
+	u16 video_mode_list[256];	// lets hope we never have more than
+					// 256 video modes...
 	u16 total_memory;
 } vbe_info_t;
 

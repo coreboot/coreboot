@@ -53,7 +53,8 @@ static inline __attribute__((always_inline)) msr_t rdmsr_amd(unsigned int index)
 	return result;
 }
 
-static inline __attribute__((always_inline)) void wrmsr_amd(unsigned int index, msr_t msr)
+static inline __attribute__((always_inline)) void wrmsr_amd(unsigned int index,
+	msr_t msr)
 {
 	__asm__ __volatile__ (
 		"wrmsr"

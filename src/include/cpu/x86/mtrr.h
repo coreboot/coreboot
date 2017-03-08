@@ -147,7 +147,8 @@ static inline unsigned int fls(unsigned int x)
 #  define CACHE_ROM_SIZE CONFIG_ROM_SIZE
 # else
 #  define CACHE_ROM_SIZE _ALIGN_UP_POW2(CONFIG_ROM_SIZE)
-#  if (CACHE_ROM_SIZE < CONFIG_ROM_SIZE) || (CACHE_ROM_SIZE >= (2 * CONFIG_ROM_SIZE))
+#  if (CACHE_ROM_SIZE < CONFIG_ROM_SIZE) || (CACHE_ROM_SIZE >= \
+	(2 * CONFIG_ROM_SIZE))
 #   error "CACHE_ROM_SIZE is not optimal."
 #  endif
 # endif

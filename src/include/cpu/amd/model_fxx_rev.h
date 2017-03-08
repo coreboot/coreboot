@@ -77,7 +77,8 @@ static inline int is_e0_later_in_bsp(int nodeid)
 	if (nodeid == 0)
 		return !is_cpu_pre_e0();
 
-	// d0 will be treated as e0 with this methods, but the d0 nb_cfg_54 always 0
+	// d0 will be treated as e0 with this methods, but the d0 nb_cfg_54
+	// always 0
 	pci_devfn_t dev;
 	dev = PCI_DEV(0, 0x18+nodeid, 2);
 	val_old = pci_read_config32(dev, 0x80);

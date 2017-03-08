@@ -50,7 +50,9 @@ size_t cbfs_boot_load_struct(const char *name, void *buf, size_t buf_size);
 size_t cbfs_load_and_decompress(const struct region_device *rdev, size_t offset,
 	size_t in_size, void *buffer, size_t buffer_size, uint32_t compression);
 
-/* Return the size and fill base of the memory pstage will occupy after loaded. */
+/* Return the size and fill base of the memory pstage will occupy after
+ * loaded.
+ */
 size_t cbfs_prog_stage_section(struct prog *pstage, uintptr_t *base);
 
 /* Load stage into memory filling in prog. Return 0 on success. < 0 on error. */

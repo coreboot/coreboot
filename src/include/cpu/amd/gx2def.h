@@ -78,10 +78,14 @@
 #define	GL1_PCI		4
 #define	GL1_FG		5
 
-#define	MSR_GLIU0	((GL0_GLIU0	<< 29) + (1 << 28))	/* 1000xxxx - To get on GeodeLink one bit has to be set */
+/* 1000xxxx - To get on GeodeLink one bit has to be set */
+#define	MSR_GLIU0	((GL0_GLIU0	<< 29) + (1 << 28))
 #define	MSR_MC		(GL0_MC		<< 29)			/* 2000xxxx */
 #define	MSR_GLIU1	(GL0_GLIU1	<< 29)			/* 4000xxxx */
-#define	MSR_CPU		(GL0_CPU	<< 29)			/* 6000xxxx - this is not used for BIOS since code executing on CPU doesn't need to be routed */
+/* 6000xxxx - this is not used for BIOS since code executing on CPU doesn't
+ * need to be routed
+ */
+#define	MSR_CPU		(GL0_CPU	<< 29)
 #define	MSR_VG		(GL0_VG		<< 29)			/* 8000xxxx */
 #define	MSR_GP		(GL0_GP		<< 29)			/* A000xxxx */
 #define	MSR_DF		(GL0_DF		<< 29)			/* C000xxxx */
@@ -293,7 +297,7 @@
 #define		RSTPLL_UPPER_VDIV_SHIFT		6
 #define		RSTPLL_UPPER_FBDIV_SHIFT	0
 #define		RSTPLL_LOWER_SWFLAGS_SHIFT	26
-#define		RSTPLL_LOWER_SWFLAGS_MASK	(0x3F<<RSTPLL_LOWER_SWFLAGS_SHIFT)
+#define		RSTPLL_LOWER_SWFLAGS_MASK     (0x3F<<RSTPLL_LOWER_SWFLAGS_SHIFT)
 #define		RSTPPL_LOWER_HOLD_COUNT_SHIFT	16
 #define		RSTPPL_LOWER_BYPASS_SHIFT	15
 #define		RSTPPL_LOWER_TST_SHIFT		11
@@ -392,15 +396,23 @@
 #define MAX_COL_ADDR		17
 
 /* more fun stuff */
-#define BM			1	/* Base Mask - map power of 2 size aligned region */
+/* Base Mask - map power of 2 size aligned region */
+#define BM			1
 #define BMO			2	/* BM with an offset */
 #define R			3	/* Range - 4k range minimum */
 #define RO			4	/* R with offset */
-#define SC			5	/* Swiss 0xCeese - maps a 256K region in to 16K 0xcunks. Set W/R */
+/* Swiss 0xCeese - maps a 256K region in to 16K 0xcunks. Set W/R */
+#define SC			5
 #define BMIO			6	/* Base Mask IO */
 #define SCIO			7	/* Swiss 0xCeese IO */
-#define SC_SHADOW		8	/* Special marker for Shadow SC descriptors so setShadow proc is independent of CPU */
-#define R_SYSMEM		9	/* Special marker for SYSMEM R descriptors so GLIUInit proc is independent of CPU */
+/* Special marker for Shadow SC descriptors so setShadow proc is independent
+ * of CPU
+ */
+#define SC_SHADOW		8
+/* Special marker for SYSMEM R descriptors so GLIUInit proc is independent
+ * of CPU
+ */
+#define R_SYSMEM		9
 #define BMO_SMM			10	/* Special marker for SMM */
 #define BM_SMM			11	/* Special marker for SMM */
 #define BMO_DMM			12	/* Special marker for DMM */
@@ -415,33 +427,33 @@
 /* Set up desc addresses from 20 - E8 */
 /* This is chip specific! */
 //remove after MSRINIT is gone
-#define MSR_GLIU0_BASE1		(MSR_GLIU0 + 0x20)	/* BM */
-#define MSR_GLIU0_BASE2		(MSR_GLIU0 + 0x21)	/* BM */
-#define MSR_GLIU0_SHADOW	(MSR_GLIU0 + 0x2C)	/* SCO should only be SC */
-#define MSR_GLIU0_SYSMEM	(MSR_GLIU0 + 0x28)	/* RO should only be R */
+#define MSR_GLIU0_BASE1		(MSR_GLIU0 + 0x20)  /* BM */
+#define MSR_GLIU0_BASE2		(MSR_GLIU0 + 0x21)  /* BM */
+#define MSR_GLIU0_SHADOW	(MSR_GLIU0 + 0x2C)  /* SCO should only be SC */
+#define MSR_GLIU0_SYSMEM	(MSR_GLIU0 + 0x28)  /* RO should only be R */
 
-#define MSR_GLIU1_BASE1		(MSR_GLIU1 + 0x20)	/* BM */
-#define MSR_GLIU1_BASE2		(MSR_GLIU1 + 0x21)	/* BM */
-#define MSR_GLIU1_SHADOW	(MSR_GLIU1 + 0x2D)	/* SCO should only be SC */
-#define MSR_GLIU1_SYSMEM	(MSR_GLIU1 + 0x29)	/* RO should only be R */
+#define MSR_GLIU1_BASE1		(MSR_GLIU1 + 0x20)  /* BM */
+#define MSR_GLIU1_BASE2		(MSR_GLIU1 + 0x21)  /* BM */
+#define MSR_GLIU1_SHADOW	(MSR_GLIU1 + 0x2D)  /* SCO should only be SC */
+#define MSR_GLIU1_SYSMEM	(MSR_GLIU1 + 0x29)  /* RO should only be R */
 
-#define GLIU0_P2D_BM_0		(MSR_GLIU0 + 0x20)	/* BASE1 */
-#define GLIU0_P2D_BM_1		(MSR_GLIU0 + 0x21)	/* BASE2 */
+#define GLIU0_P2D_BM_0		(MSR_GLIU0 + 0x20)  /* BASE1 */
+#define GLIU0_P2D_BM_1		(MSR_GLIU0 + 0x21)  /* BASE2 */
 #define GLIU0_P2D_BM_2		(MSR_GLIU0 + 0x22)
 #define GLIU0_P2D_BM_3		(MSR_GLIU0 + 0x23)
 #define GLIU0_P2D_BM_4		(MSR_GLIU0 + 0x24)
 #define GLIU0_P2D_BM_5		(MSR_GLIU0 + 0x25)
 
-#define GLIU0_P2D_BMO_0		(MSR_GLIU0 + 0x26)	/* SMM */
-#define GLIU0_P2D_BMO_1		(MSR_GLIU0 + 0x27)	/* DMM */
+#define GLIU0_P2D_BMO_0		(MSR_GLIU0 + 0x26)  /* SMM */
+#define GLIU0_P2D_BMO_1		(MSR_GLIU0 + 0x27)  /* DMM */
 
-#define GLIU0_P2D_R_0		(MSR_GLIU0 + 0x28)	/* SYSMEM */
+#define GLIU0_P2D_R_0		(MSR_GLIU0 + 0x28)  /* SYSMEM */
 
 #define GLIU0_P2D_RO_0		(MSR_GLIU0 + 0x29)
 #define GLIU0_P2D_RO_1		(MSR_GLIU0 + 0x2A)
 #define GLIU0_P2D_RO_2		(MSR_GLIU0 + 0x2B)
 
-#define GLIU0_P2D_SC_0		(MSR_GLIU0 + 0x2C)	/* SHADOW */
+#define GLIU0_P2D_SC_0		(MSR_GLIU0 + 0x2C)  /* SHADOW */
 
 #define GLIU0_IOD_BM_0		(MSR_GLIU0 + 0xE0)
 #define GLIU0_IOD_BM_1		(MSR_GLIU0 + 0xE1)
@@ -454,28 +466,28 @@
 #define GLIU0_IOD_SC_4		(MSR_GLIU0 + 0xE7)
 #define GLIU0_IOD_SC_5		(MSR_GLIU0 + 0xE8)
 
-#define GLIU1_P2D_BM_0		(MSR_GLIU1 + 0x20)	/* BASE1 */
-#define GLIU1_P2D_BM_1		(MSR_GLIU1 + 0x21)	/* BASE2 */
+#define GLIU1_P2D_BM_0		(MSR_GLIU1 + 0x20)  /* BASE1 */
+#define GLIU1_P2D_BM_1		(MSR_GLIU1 + 0x21)  /* BASE2 */
 #define GLIU1_P2D_BM_2		(MSR_GLIU1 + 0x22)
-#define GLIU1_P2D_BM_3		(MSR_GLIU1 + 0x23)	/* SMM */
-#define GLIU1_P2D_BM_4		(MSR_GLIU1 + 0x24)	/* DMM */
+#define GLIU1_P2D_BM_3		(MSR_GLIU1 + 0x23)  /* SMM */
+#define GLIU1_P2D_BM_4		(MSR_GLIU1 + 0x24)  /* DMM */
 #define GLIU1_P2D_BM_5		(MSR_GLIU1 + 0x25)
 #define GLIU1_P2D_BM_6		(MSR_GLIU1 + 0x26)
 #define GLIU1_P2D_BM_7		(MSR_GLIU1 + 0x27)
 #define GLIU1_P2D_BM_8		(MSR_GLIU1 + 0x28)
 
-#define GLIU1_P2D_R_0		(MSR_GLIU1 + 0x29)	/* SYSMEM */
+#define GLIU1_P2D_R_0		(MSR_GLIU1 + 0x29)  /* SYSMEM */
 #define GLIU1_P2D_R_1		(MSR_GLIU1 + 0x2A)
 #define GLIU1_P2D_R_2		(MSR_GLIU1 + 0x2B)
 #define GLIU1_P2D_R_3		(MSR_GLIU1 + 0x2C)
 
-#define GLIU1_P2D_SC_0		(MSR_GLIU1 + 0x2D)	/* SHADOW */
+#define GLIU1_P2D_SC_0		(MSR_GLIU1 + 0x2D)  /* SHADOW */
 
 #define GLIU1_IOD_BM_0		(MSR_GLIU1 + 0xE0)
 #define GLIU1_IOD_BM_1		(MSR_GLIU1 + 0xE1)
 #define GLIU1_IOD_BM_2		(MSR_GLIU1 + 0xE2)
 
-#define GLIU1_IOD_SC_0		(MSR_GLIU1 + 0xE3)	/* FooGlue F0 for FPU */
+#define GLIU1_IOD_SC_0		(MSR_GLIU1 + 0xE3)  /* FooGlue F0 for FPU */
 #define GLIU1_IOD_SC_1		(MSR_GLIU1 + 0xE4)
 #define GLIU1_IOD_SC_2		(MSR_GLIU1 + 0xE5)
 #define GLIU1_IOD_SC_3		(MSR_GLIU1 + 0xE6)
@@ -483,21 +495,22 @@
 #define GLIU1_IOD_SC_5		(MSR_GLIU1 + 0xE8)
 
 /* definitions that are "once you are mostly up, start VSA" type things */
-#define SMM_OFFSET		0x40400000
-#define SMM_SIZE		128		/* changed SMM_SIZE from 256 KB to 128 KB */
-#define DMM_OFFSET		0x0C0000000
-#define DMM_SIZE		128
-#define FB_OFFSET		0x41000000
-#define PCI_MEM_TOP		0x0EFFFFFFF	/* Top of PCI mem allocation region */
-#define PCI_IO_TOP		0x0EFFF		/* Top of PCI I/O allocation region */
-#define END_OPTIONROM_SPACE	0x0DFFF		/* E0000 is reserved for SystemROMs */
+#define SMM_OFFSET	0x40400000
+#define SMM_SIZE	128	/* changed SMM_SIZE from 256 KB to 128 KB */
+#define DMM_OFFSET	0x0C0000000
+#define DMM_SIZE	128
+#define FB_OFFSET	0x41000000
+#define PCI_MEM_TOP	0x0EFFFFFFF	/* Top of PCI mem allocation region */
+#define PCI_IO_TOP		0x0EFFF	/* Top of PCI I/O allocation region */
+#define END_OPTIONROM_SPACE	0x0DFFF	/* E0000 is reserved for SystemROMs */
 
-#define MDD_SMBUS		0x06000		/* SMBUS IO location */
-#define MDD_GPIO		0x06100		/* GPIO & ICF IO location */
-#define MDD_MFGPT		0x06200		/* General Purpose Timers IO location */
-#define MDD_IRQ_MAPPER		0x06300		/* IRQ Mapper */
-#define ACPI_BASE		0x09C00		/* ACPI Base */
-#define MDD_PM			0x09D00		/* Power Management Logic - placed at the end of ACPI */
+#define MDD_SMBUS		0x06000	/* SMBUS IO location */
+#define MDD_GPIO		0x06100	/* GPIO & ICF IO location */
+#define MDD_MFGPT		0x06200	/* General Purpose Timers IO location */
+#define MDD_IRQ_MAPPER		0x06300	/* IRQ Mapper */
+#define ACPI_BASE		0x09C00	/* ACPI Base */
+/* Power Management Logic - placed at the end of ACPI */
+#define MDD_PM			0x09D00
 
 #define CS5535_IDSEL		0x02000000	/* IDSEL = AD25, device #15 */
 #define CHIPSET_DEV_NUM		15

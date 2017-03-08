@@ -474,8 +474,10 @@ void northbridge_smi_handler(void);
 void southbridge_smi_handler(void);
 #else
 void cpu_smi_handler(unsigned int node, smm_state_save_area_t *state_save);
-void northbridge_smi_handler(unsigned int node, smm_state_save_area_t *state_save);
-void southbridge_smi_handler(unsigned int node, smm_state_save_area_t *state_save);
+void northbridge_smi_handler(unsigned int node,
+	smm_state_save_area_t *state_save);
+void southbridge_smi_handler(unsigned int node,
+	smm_state_save_area_t *state_save);
 #endif /* CONFIG_SMM_TSEG */
 void mainboard_smi_gpi(u32 gpi_sts);
 int  mainboard_smi_apmc(u8 data);

@@ -1,7 +1,8 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>,
+ * Raptor Engineering
  * Copyright (C) various authors, the coreboot project
  *
  * This program is free software; you can redistribute it and/or modify
@@ -471,6 +472,7 @@ struct smbios_type127 {
 	u8 eos[2];
 } __attribute__((packed));
 
-void smbios_fill_dimm_manufacturer_from_id(uint16_t mod_id, struct smbios_type17 *t);
+void smbios_fill_dimm_manufacturer_from_id(uint16_t mod_id,
+	struct smbios_type17 *t);
 
 #endif

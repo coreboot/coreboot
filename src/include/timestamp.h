@@ -18,7 +18,8 @@
 
 #include <commonlib/timestamp_serialized.h>
 
-#if CONFIG_COLLECT_TIMESTAMPS && (CONFIG_EARLY_CBMEM_INIT || !defined(__PRE_RAM__))
+#if CONFIG_COLLECT_TIMESTAMPS && (CONFIG_EARLY_CBMEM_INIT \
+	|| !defined(__PRE_RAM__))
 /*
  * timestamp_init() needs to be called once for each of these cases:
  *    1. __PRE_RAM__ (bootblock, romstage, verstage, etc) and

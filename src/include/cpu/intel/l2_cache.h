@@ -83,10 +83,12 @@
 #define L2CMD_MESI_I 0
 
 extern int calculate_l2_latency(void);
-extern int signal_l2(u32 address_low, u32 data_high, u32 data_low, int way, u8 command);
+extern int signal_l2(u32 address_low, u32 data_high, u32 data_low, int way,
+	u8 command);
 extern int read_l2(u32 address);
 extern int write_l2(u32 address, u32 data);
-extern int test_l2_address_alias(u32 address1, u32 address2, u32 data_high, u32 data_low);
+extern int test_l2_address_alias(u32 address1, u32 address2, u32 data_high,
+	u32 data_low);
 extern int calculate_l2_cache_size(void);
 extern int calculate_l2_physical_address_range(void);
 extern int set_l2_ecc(void);

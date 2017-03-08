@@ -21,7 +21,7 @@
 #include <device/device.h>
 
 #define EHCI_BAR_INDEX		0x10
-#define PCI_EHCI_CLASSCODE	0x0c0320	/* USB2.0 with EHCI controller */
+#define PCI_EHCI_CLASSCODE	0x0c0320  /* USB2.0 with EHCI controller */
 
 pci_devfn_t pci_ehci_dbg_dev(unsigned int hcd_idx);
 u8 *pci_ehci_base_regs(pci_devfn_t dev);

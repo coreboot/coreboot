@@ -40,7 +40,8 @@ struct amdfam10_sysconf_t {
 
 	unsigned int nodes;
 	unsigned int ht_c_num; // we only can have 32 ht chain at most
-	unsigned int ht_c_conf_bus[HC_NUMS]; // 4-->32: 4:segn, 8:bus_max, 8:bus_min, 4:linkn, 6: nodeid, 2: enable
+	// 4-->32: 4:segn, 8:bus_max, 8:bus_min, 4:linkn, 6: nodeid, 2: enable
+	unsigned int ht_c_conf_bus[HC_NUMS];
 	unsigned int io_addr_num;
 	unsigned int conf_io_addr[HC_NUMS];
 	unsigned int conf_io_addrx[HC_NUMS];
@@ -50,7 +51,8 @@ struct amdfam10_sysconf_t {
 	unsigned int segbit;
 	unsigned int hcdn_reg[HC_NUMS]; // it will be used by get_pci1234
 
-	msr_t msr_pstate[NODE_NUMS * 5]; // quad cores all cores in one node should be the same, and p0,..p5
+	// quad cores all cores in one node should be the same, and p0,..p5
+	msr_t msr_pstate[NODE_NUMS * 5];
 	unsigned int needs_update_pstate_msrs;
 
 	unsigned int bsp_apicid;

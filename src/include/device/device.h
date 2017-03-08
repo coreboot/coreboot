@@ -54,11 +54,13 @@ struct device_operations {
 	void (*set_link)(device_t dev, unsigned int link);
 	void (*reset_bus)(struct bus *bus);
 #if CONFIG_GENERATE_SMBIOS_TABLES
-	int (*get_smbios_data)(device_t dev, int *handle, unsigned long *current);
+	int (*get_smbios_data)(device_t dev, int *handle,
+		unsigned long *current);
 	void (*get_smbios_strings)(device_t dev, struct smbios_type11 *t);
 #endif
 #if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
-	unsigned long (*write_acpi_tables)(device_t dev, unsigned long start,  struct acpi_rsdp *rsdp);
+	unsigned long (*write_acpi_tables)(device_t dev, unsigned long start,
+		struct acpi_rsdp *rsdp);
 	void (*acpi_fill_ssdt_generator)(device_t dev);
 	void (*acpi_inject_dsdt_generator)(device_t dev);
 	const char *(*acpi_name)(device_t dev);
@@ -84,7 +86,7 @@ struct bus {
 
 	ROMSTAGE_CONST struct device *dev;	/* This bridge device */
 	ROMSTAGE_CONST struct device *children;	/* devices behind this bridge */
-	ROMSTAGE_CONST struct bus *next;	/* The next bridge on this device */
+	ROMSTAGE_CONST struct bus *next;    /* The next bridge on this device */
 	unsigned int	bridge_ctrl;	/* Bridge control register */
 	uint16_t	bridge_cmd;		/* Bridge command register */
 	unsigned char	link_num;	/* The index of this link */
@@ -126,7 +128,7 @@ struct device {
 	unsigned int	class;		/* 3 bytes: (base, sub, prog-if) */
 	unsigned int	hdr_type;	/* PCI header type */
 	unsigned int    enabled : 1;	/* set if we should enable the device */
-	unsigned int    initialized : 1; /* set if we have initialized the device */
+	unsigned int  initialized : 1; /* 1 if we have initialized the device */
 	unsigned int    on_mainboard : 1;
 	struct pci_irq_info pci_irq_info[4];
 	u8 command;
@@ -205,7 +207,8 @@ device_t dev_find_lapic(unsigned int apic_id);
 int dev_count_cpu(void);
 
 device_t add_cpu_device(struct bus *cpu_bus, unsigned int apic_id, int enabled);
-void set_cpu_topology(device_t cpu, unsigned int node, unsigned int package, unsigned int core, unsigned int thread);
+void set_cpu_topology(device_t cpu, unsigned int node, unsigned int package,
+	unsigned int core, unsigned int thread);
 
 #define amd_cpu_topology(cpu, node, core) \
 	set_cpu_topology(cpu, node, 0, core, 0)
@@ -252,7 +255,8 @@ void scan_lpc_bus(device_t bus);
 	fixed_mem_resource(dev, idx, basek, sizek, IORESOURCE_CACHEABLE)
 
 #define reserved_ram_resource(dev, idx, basek, sizek) \
-	fixed_mem_resource(dev, idx, basek, sizek, IORESOURCE_CACHEABLE | IORESOURCE_RESERVE)
+	fixed_mem_resource(dev, idx, basek, sizek, IORESOURCE_CACHEABLE \
+		| IORESOURCE_RESERVE)
 
 #define bad_ram_resource(dev, idx, basek, sizek) \
 	reserved_ram_resource((dev), (idx), (basek), (sizek))
@@ -271,7 +275,7 @@ u32 find_pci_tolm(struct bus *bus);
 ROMSTAGE_CONST struct device *dev_find_slot(unsigned int bus,
 						unsigned int devfn);
 ROMSTAGE_CONST struct device *dev_find_next_pci_device(
-						ROMSTAGE_CONST struct device *previous_dev);
+				ROMSTAGE_CONST struct device *previous_dev);
 ROMSTAGE_CONST struct device *dev_find_slot_on_smbus(unsigned int bus,
 							unsigned int addr);
 ROMSTAGE_CONST struct device *dev_find_slot_pnp(u16 port, u16 device);

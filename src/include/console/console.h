@@ -48,7 +48,8 @@ void __attribute__ ((noreturn)) die(const char *msg);
 #if __CONSOLE_ENABLE__
 asmlinkage void console_init(void);
 int console_log_level(int msg_level);
-int do_printk(int msg_level, const char *fmt, ...) __attribute__((format(printf, 2, 3)));
+int do_printk(int msg_level, const char *fmt, ...)
+	__attribute__((format(printf, 2, 3)));
 void do_putchar(unsigned char byte);
 
 #define printk(LEVEL, fmt, args...) \

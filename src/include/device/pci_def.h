@@ -23,7 +23,8 @@
 #define PCI_STATUS		0x06	/* 16 bits */
 #define  PCI_STATUS_CAP_LIST	0x10	/* Support Capability List */
 #define  PCI_STATUS_66MHZ	0x20	/* Support 66 Mhz PCI 2.1 bus */
-#define  PCI_STATUS_UDF		0x40	/* Support User Definable Features [obsolete] */
+/* Support User Definable Features [obsolete] */
+#define  PCI_STATUS_UDF		0x40
 #define  PCI_STATUS_FAST_BACK	0x80	/* Accept fast-back to back */
 #define  PCI_STATUS_PARITY	0x100	/* Detected parity error */
 #define  PCI_STATUS_DEVSEL_MASK	0x600	/* DEVSEL timing */
@@ -82,11 +83,13 @@
 #define PCI_CARDBUS_CIS		0x28
 #define PCI_SUBSYSTEM_VENDOR_ID	0x2c
 #define PCI_SUBSYSTEM_ID	0x2e
-#define PCI_ROM_ADDRESS		0x30	/* Bits 31..11 are address, 10..1 reserved */
+/* Bits 31..11 are address, 10..1 reserved */
+#define PCI_ROM_ADDRESS		0x30
 #define  PCI_ROM_ADDRESS_ENABLE	0x01
 #define PCI_ROM_ADDRESS_MASK	(~0x7ffUL)
 
-#define PCI_CAPABILITY_LIST	0x34	/* Offset of first capability list entry */
+/* Offset of first capability list entry */
+#define PCI_CAPABILITY_LIST	0x34
 
 /* 0x35-0x3b are reserved */
 #define PCI_INTERRUPT_LINE	0x3c	/* 8 bits */
@@ -97,15 +100,18 @@
 /* Header type 1 (PCI-to-PCI bridges) */
 #define PCI_PRIMARY_BUS		0x18	/* Primary bus number */
 #define PCI_SECONDARY_BUS	0x19	/* Secondary bus number */
-#define PCI_SUBORDINATE_BUS	0x1a	/* Highest bus number behind the bridge */
-#define PCI_SEC_LATENCY_TIMER	0x1b	/* Latency timer for secondary interface */
+/* Highest bus number behind the bridge */
+#define PCI_SUBORDINATE_BUS	0x1a
+/* Latency timer for secondary interface */
+#define PCI_SEC_LATENCY_TIMER	0x1b
 #define PCI_IO_BASE		0x1c	/* I/O range behind the bridge */
 #define PCI_IO_LIMIT		0x1d
 #define  PCI_IO_RANGE_TYPE_MASK	0x0f	/* I/O bridging type */
 #define  PCI_IO_RANGE_TYPE_16	0x00
 #define  PCI_IO_RANGE_TYPE_32	0x01
 #define  PCI_IO_RANGE_MASK	~0x0f
-#define PCI_SEC_STATUS		0x1e	/* Secondary status register, only bit 14 used */
+/* Secondary status register, only bit 14 used */
+#define PCI_SEC_STATUS		0x1e
 #define PCI_MEMORY_BASE		0x20	/* Memory range behind */
 #define PCI_MEMORY_LIMIT	0x22
 #define  PCI_MEMORY_RANGE_TYPE_MASK 0x0f
@@ -116,22 +122,26 @@
 #define  PCI_PREF_RANGE_TYPE_32	0x00
 #define  PCI_PREF_RANGE_TYPE_64	0x01
 #define  PCI_PREF_RANGE_MASK	~0x0f
-#define PCI_PREF_BASE_UPPER32	0x28	/* Upper half of prefetchable memory range */
+/* Upper half of prefetchable memory range */
+#define PCI_PREF_BASE_UPPER32	0x28
 #define PCI_PREF_LIMIT_UPPER32	0x2c
 #define PCI_IO_BASE_UPPER16	0x30	/* Upper half of I/O addresses */
 #define PCI_IO_LIMIT_UPPER16	0x32
 /* 0x34 same as for htype 0 */
 /* 0x35-0x3b is reserved */
-#define PCI_ROM_ADDRESS1	0x38	/* Same as PCI_ROM_ADDRESS, but for htype 1 */
+/* Same as PCI_ROM_ADDRESS, but for htype 1 */
+#define PCI_ROM_ADDRESS1	0x38
 /* 0x3c-0x3d are same as for htype 0 */
 #define PCI_BRIDGE_CONTROL	0x3e
-#define  PCI_BRIDGE_CTL_PARITY	0x01	/* Enable parity detection on secondary interface */
+/* Enable parity detection on secondary interface */
+#define  PCI_BRIDGE_CTL_PARITY	0x01
 #define  PCI_BRIDGE_CTL_SERR	0x02	/* The same for SERR forwarding */
 #define  PCI_BRIDGE_CTL_NO_ISA	0x04	/* Disable bridging of ISA ports */
 #define  PCI_BRIDGE_CTL_VGA	0x08	/* Forward VGA addresses */
 #define  PCI_BRIDGE_CTL_MASTER_ABORT 0x20  /* Report master aborts */
 #define  PCI_BRIDGE_CTL_BUS_RESET 0x40	/* Secondary bus reset */
-#define  PCI_BRIDGE_CTL_FAST_BACK 0x80	/* Fast Back2Back enabled on secondary interface */
+/* Fast Back2Back enabled on secondary interface */
+#define  PCI_BRIDGE_CTL_FAST_BACK 0x80
 
 /* Header type 2 (CardBus bridges) */
 #define PCI_CB_CAPABILITY_LIST	0x14
@@ -156,19 +166,23 @@
 #define  PCI_CB_IO_RANGE_MASK	~0x03
 /* 0x3c-0x3d are same as for htype 0 */
 #define PCI_CB_BRIDGE_CONTROL	0x3e
-#define  PCI_CB_BRIDGE_CTL_PARITY	0x01	/* Similar to standard bridge control register */
+/* Similar to standard bridge control register */
+#define  PCI_CB_BRIDGE_CTL_PARITY	0x01
 #define  PCI_CB_BRIDGE_CTL_SERR		0x02
 #define  PCI_CB_BRIDGE_CTL_ISA		0x04
 #define  PCI_CB_BRIDGE_CTL_VGA		0x08
 #define  PCI_CB_BRIDGE_CTL_MASTER_ABORT	0x20
 #define  PCI_CB_BRIDGE_CTL_CB_RESET	0x40	/* CardBus reset */
-#define  PCI_CB_BRIDGE_CTL_16BIT_INT	0x80	/* Enable interrupt for 16-bit cards */
-#define  PCI_CB_BRIDGE_CTL_PREFETCH_MEM0 0x100	/* Prefetch enable for both memory regions */
+/* Enable interrupt for 16-bit cards */
+#define  PCI_CB_BRIDGE_CTL_16BIT_INT	0x80
+/* Prefetch enable for both memory regions */
+#define  PCI_CB_BRIDGE_CTL_PREFETCH_MEM0 0x100
 #define  PCI_CB_BRIDGE_CTL_PREFETCH_MEM1 0x200
 #define  PCI_CB_BRIDGE_CTL_POST_WRITES	0x400
 #define PCI_CB_SUBSYSTEM_VENDOR_ID 0x40
 #define PCI_CB_SUBSYSTEM_ID	0x42
-#define PCI_CB_LEGACY_MODE_BASE	0x44	/* 16-bit PC Card legacy mode base address (ExCa) */
+/* 16-bit PC Card legacy mode base address (ExCa) */
+#define PCI_CB_LEGACY_MODE_BASE	0x44
 /* 0x48-0x7f reserved */
 
 /* Capability lists */
@@ -223,7 +237,8 @@
 #define  PCI_PM_CTRL_PME_STATUS	0x8000	/* PME pin status */
 #define PCI_PM_PPB_EXTENSIONS	6	/* PPB support extensions (??) */
 #define  PCI_PM_PPB_B2_B3	0x40	/* Stop clock when in D3hot (??) */
-#define  PCI_PM_BPCC_ENABLE	0x80	/* Bus power/clock control enable (??) */
+/* Bus power/clock control enable (??) */
+#define  PCI_PM_BPCC_ENABLE	0x80
 #define PCI_PM_DATA_REGISTER	7	/* (??) */
 #define PCI_PM_SIZEOF		8
 
@@ -232,7 +247,8 @@
 #define PCI_AGP_VERSION		2	/* BCD version number */
 #define PCI_AGP_RFU		3	/* Rest of capability flags */
 #define PCI_AGP_STATUS		4	/* Status register */
-#define  PCI_AGP_STATUS_RQ_MASK	0xff000000	/* Maximum number of requests - 1 */
+/* Maximum number of requests - 1 */
+#define  PCI_AGP_STATUS_RQ_MASK	0xff000000
 #define  PCI_AGP_STATUS_SBA	0x0200	/* Sideband addressing supported */
 #define  PCI_AGP_STATUS_64BIT	0x0020	/* 64-bit addressing supported */
 #define  PCI_AGP_STATUS_FW	0x0010	/* FW transfers supported */
@@ -240,10 +256,13 @@
 #define  PCI_AGP_STATUS_RATE2	0x0002	/* 2x transfer rate supported */
 #define  PCI_AGP_STATUS_RATE1	0x0001	/* 1x transfer rate supported */
 #define PCI_AGP_COMMAND		8	/* Control register */
-#define  PCI_AGP_COMMAND_RQ_MASK 0xff000000  /* Master: Maximum number of requests */
+/* Master: Maximum number of requests */
+#define  PCI_AGP_COMMAND_RQ_MASK 0xff000000
 #define  PCI_AGP_COMMAND_SBA	0x0200	/* Sideband addressing enabled */
-#define  PCI_AGP_COMMAND_AGP	0x0100	/* Allow processing of AGP transactions */
-#define  PCI_AGP_COMMAND_64BIT	0x0020	/* Allow processing of 64-bit addresses */
+/* Allow processing of AGP transactions */
+#define  PCI_AGP_COMMAND_AGP	0x0100
+/* Allow processing of 64-bit addresses */
+#define  PCI_AGP_COMMAND_64BIT	0x0020
 #define  PCI_AGP_COMMAND_FW	0x0010	/* Force FW transfers */
 #define  PCI_AGP_COMMAND_RATE4	0x0004	/* Use 4x rate */
 #define  PCI_AGP_COMMAND_RATE2	0x0002	/* Use 4x rate */
@@ -253,7 +272,8 @@
 /* Slot Identification */
 
 #define PCI_SID_ESR		2	/* Expansion Slot Register */
-#define  PCI_SID_ESR_NSLOTS	0x1f	/* Number of expansion slots available */
+/* Number of expansion slots available */
+#define  PCI_SID_ESR_NSLOTS	0x1f
 #define  PCI_SID_ESR_FIC	0x20	/* First In Chassis Flag */
 #define PCI_SID_CHASSIS_NR	3	/* Chassis Number */
 
@@ -266,7 +286,8 @@
 #define  PCI_MSI_FLAGS_ENABLE	0x01	/* MSI feature enabled */
 #define PCI_MSI_RFU		3	/* Rest of capability flags */
 #define PCI_MSI_ADDRESS_LO	4	/* Lower 32 bits */
-#define PCI_MSI_ADDRESS_HI	8	/* Upper 32 bits (if PCI_MSI_FLAGS_64BIT set) */
+/* Upper 32 bits (if PCI_MSI_FLAGS_64BIT set) */
+#define PCI_MSI_ADDRESS_HI	8
 #define PCI_MSI_DATA_32		8	/* 16 bits of data for 32-bit devices */
 #define PCI_MSI_DATA_64		12	/* 16 bits of data for 64-bit devices */
 #define PCI_MSI_MASK_BIT	16	/* Mask bits register */
@@ -296,24 +317,30 @@
 #define  PCI_X_STATUS_64BIT	0x00010000	/* 64-bit device */
 #define  PCI_X_STATUS_133MHZ	0x00020000	/* 133 MHz capable */
 #define  PCI_X_STATUS_SPL_DISC	0x00040000	/* Split Completion Discarded */
-#define  PCI_X_STATUS_UNX_SPL	0x00080000	/* Unexpected Split Completion */
+/* Unexpected Split Completion */
+#define  PCI_X_STATUS_UNX_SPL	0x00080000
 #define  PCI_X_STATUS_COMPLEX	0x00100000	/* Device Complexity */
-#define  PCI_X_STATUS_MAX_READ	0x00600000	/* Designed Max Memory Read Count */
-#define  PCI_X_STATUS_MAX_SPLIT	0x03800000	/* Designed Max Outstanding Split Transactions */
-#define  PCI_X_STATUS_MAX_CUM	0x1c000000	/* Designed Max Cumulative Read Size */
-#define  PCI_X_STATUS_SPL_ERR	0x20000000	/* Rcvd Split Completion Error Msg */
+/* Designed Max Memory Read Count */
+#define  PCI_X_STATUS_MAX_READ	0x00600000
+/* Designed Max Cumulative Read Size */
+#define  PCI_X_STATUS_MAX_SPLIT	0x03800000
+/* Rcvd Split Completion Error Msg */
+#define  PCI_X_STATUS_SPL_ERR	0x20000000
 #define  PCI_X_STATUS_266MHZ	0x40000000	/* 266 MHz capable */
 #define  PCI_X_STATUS_533MHZ	0x80000000	/* 533 MHz capable */
 
 /* PCI-X bridge registers */
 #define PCI_X_SEC_STATUS	2	/* Secondary status */
-#define  PCI_X_SSTATUS_64BIT	0x0001	/* The bus behind the bridge is 64bits wide */
-#define  PCI_X_SSTATUS_133MHZ	0x0002	/* The bus behind the bridge is 133Mhz Capable */
+/* The bus behind the bridge is 64bits wide */
+#define  PCI_X_SSTATUS_64BIT	0x0001
+/* The bus behind the bridge is 133Mhz Capable */
+#define  PCI_X_SSTATUS_133MHZ	0x0002
 #define  PCI_X_SSTATUS_SPL_DISC 0x0004	/* Split Completion Discarded */
 #define  PCI_X_SSTATUS_UNX_SPL	0x0008	/* Unexpected Split Completion */
 #define  PCI_X_SSTATUS_SPL_OVR	0x0010	/* Split Completion Overrun */
 #define  PCI_X_SSTATUS_SPL_DLY	0x0020	/* Split Completion Delayed */
-#define  PCI_X_SSTATUS_MFREQ(x) (((x) & 0x03c0) >> 6)	/* PCI-X mode and frequency */
+/* PCI-X mode and frequency */
+#define  PCI_X_SSTATUS_MFREQ(x) (((x) & 0x03c0) >> 6)
 #define   PCI_X_SSTATUS_CONVENTIONAL_PCI	0x0
 #define   PCI_X_SSTATUS_MODE1_66MHZ	0x1
 #define   PCI_X_SSTATUS_MODE1_100MHZ	0x2
@@ -325,8 +352,10 @@
 #define   PCI_X_SSTATUS_MODE2_533MHZ_REF_100MHZ	0xe
 #define   PCI_X_SSTATUS_MODE2_533MHZ_REF_133MHZ	0xf
 #define  PCI_X_SSTATUS_VERSION(x)	(((x) >> 12) & 3) /* Version */
-#define  PCI_X_SSTATUS_266MHZ	0x4000	/* The bus behind the bridge is 266Mhz Capable */
-#define  PCI_X_SSTAUTS_533MHZ	0x8000	/* The bus behind the bridge is 533Mhz Capable */
+/* The bus behind the bridge is 266Mhz Capable */
+#define  PCI_X_SSTATUS_266MHZ	0x4000
+/* The bus behind the bridge is 533Mhz Capable */
+#define  PCI_X_SSTAUTS_533MHZ	0x8000
 
 /* PCI Express capability registers */
 

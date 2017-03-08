@@ -40,7 +40,9 @@
    /* 2 values for divider stage reset, others for "testing purposes only" */
 #  define RTC_DIV_RESET1	0x60
 #  define RTC_DIV_RESET2	0x70
-  /* Periodic intr. / Square wave rate select. 0 = none, 1 = 32.8kHz,... 15 = 2Hz */
+  /* Periodic intr. / Square wave rate select. 0 = none,
+   * 1 = 32.8kHz,... 15 = 2Hz
+   */
 # define RTC_RATE_SELECT	0x0F
 #  define RTC_RATE_NONE		0x00
 #  define RTC_RATE_32786HZ	0x01
@@ -188,7 +190,8 @@ unsigned int read_option_lowlevel(unsigned int start, unsigned int size,
 #else /* defined(__ROMCC__) */
 #include <drivers/pc80/rtc/mc146818rtc_early.c>
 #endif /* !defined(__ROMCC__) */
-#define read_option(name, default) read_option_lowlevel(CMOS_VSTART_ ##name, CMOS_VLEN_ ##name, (default))
+#define read_option(name, default) read_option_lowlevel(CMOS_VSTART_ ##name, \
+	CMOS_VLEN_ ##name, (default))
 
 #if CONFIG_CMOS_POST
 #if CONFIG_USE_OPTION_TABLE

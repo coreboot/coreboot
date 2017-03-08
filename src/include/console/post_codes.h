@@ -347,12 +347,13 @@
 /*
  * The following POST codes are taken from src/include/cpu/amd/geode_post_code.h
  * They overlap with previous codes, and most are not even used
- * Some mainboards still require them, but they are deprecated. We want to consolidate
- * our own POST code structure with the codes above.
+ * Some mainboards still require them, but they are deprecated. We want to
+ * consolidate our own POST code structure with the codes above.
  *
  * standard AMD post definitions for the AMD Geode
  */
-#define POST_Output_Port			(0x080)	/*	port to write post codes to*/
+/* port to write post codes to */
+#define POST_Output_Port			(0x080)
 
 #define POST_preSioInit				(0x000)
 #define POST_clockInit				(0x001)

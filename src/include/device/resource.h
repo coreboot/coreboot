@@ -11,7 +11,8 @@
 #define IORESOURCE_IRQ		0x00000400
 #define IORESOURCE_DRQ		0x00000800
 
-#define IORESOURCE_TYPE_MASK	(IORESOURCE_IO | IORESOURCE_MEM | IORESOURCE_IRQ | IORESOURCE_DRQ)
+#define IORESOURCE_TYPE_MASK	(IORESOURCE_IO | IORESOURCE_MEM \
+				| IORESOURCE_IRQ | IORESOURCE_DRQ)
 
 #define IORESOURCE_PREFETCH	0x00001000	/* No side effects */
 #define IORESOURCE_READONLY	0x00002000
@@ -19,14 +20,18 @@
 #define IORESOURCE_RANGELENGTH	0x00008000
 #define IORESOURCE_SHADOWABLE	0x00010000
 #define IORESOURCE_BUS_HAS_VGA	0x00020000
-#define IORESOURCE_SUBTRACTIVE  0x00040000	/* This resource filters all of the unclaimed transactions
-						 * to the bus below.
-						 */
-#define IORESOURCE_BRIDGE	0x00080000	/* The IO resource has a bus below it. */
-#define IORESOURCE_RESERVE	0x10000000	/* The resource needs to be reserved in the coreboot table */
-#define IORESOURCE_STORED	0x20000000	/* The IO resource assignment has been stored in the device */
-#define IORESOURCE_ASSIGNED	0x40000000	/* An IO resource that has been assigned a value */
-#define IORESOURCE_FIXED	0x80000000	/* An IO resource the allocator must not change */
+/* This resource filters all of the unclaimed transactions to the bus below. */
+#define IORESOURCE_SUBTRACTIVE  0x00040000
+/* The IO resource has a bus below it. */
+#define IORESOURCE_BRIDGE	0x00080000
+/* The resource needs to be reserved in the coreboot table */
+#define IORESOURCE_RESERVE	0x10000000
+/* The IO resource assignment has been stored in the device */
+#define IORESOURCE_STORED	0x20000000
+/* An IO resource that has been assigned a value */
+#define IORESOURCE_ASSIGNED	0x40000000
+/* An IO resource the allocator must not change */
+#define IORESOURCE_FIXED	0x80000000
 
 /* PCI specific resource bits (IORESOURCE_BITS) */
 #define IORESOURCE_PCI64	(1<<0)	/* 64bit long pci resource */
@@ -62,9 +67,11 @@ extern struct resource *new_resource(struct device *dev, unsigned int index);
 extern struct resource *find_resource(struct device *dev, unsigned int index);
 extern resource_t resource_end(struct resource *resource);
 extern resource_t resource_max(struct resource *resource);
-extern void report_resource_stored(struct device *dev, struct resource *resource, const char *comment);
+extern void report_resource_stored(struct device *dev,
+	struct resource *resource, const char *comment);
 
-typedef void (*resource_search_t)(void *gp, struct device *dev, struct resource *res);
+typedef void (*resource_search_t)(void *gp, struct device *dev,
+	struct resource *res);
 extern void search_bus_resources(struct bus *bus,
 	unsigned long type_mask, unsigned long type,
 	resource_search_t search, void *gp);

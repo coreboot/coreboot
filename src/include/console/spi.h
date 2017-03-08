@@ -27,7 +27,10 @@ void spiconsole_tx_byte(unsigned char c);
 
 #if __CONSOLE_SPI_ENABLE__
 static inline void __spiconsole_init(void)	{ spiconsole_init(); }
-static inline void __spiconsole_tx_byte(u8 data)	{ spiconsole_tx_byte(data); }
+static inline void __spiconsole_tx_byte(u8 data)
+{
+	spiconsole_tx_byte(data);
+}
 #else
 static inline void __spiconsole_init(void)	{}
 static inline void __spiconsole_tx_byte(u8 data)	{}

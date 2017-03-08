@@ -320,7 +320,8 @@ struct nhlt_dmic_array_config {
 
 /*
  * Microphone array definitions may be found here:
- * https://msdn.microsoft.com/en-us/library/windows/hardware/dn613960%28v=vs.85%29.aspx
+ * https://msdn.microsoft.com/en-us/library/windows/hardware/
+ * dn613960%28v=vs.85%29.aspx
  */
 enum {
 	NHLT_MIC_ARRAY_2CH_SMALL = 0xa,

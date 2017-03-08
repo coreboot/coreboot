@@ -42,9 +42,12 @@ struct pci_bus_operations {
 	uint8_t   (*read8)(struct bus *pbus, int bus, int devfn, int where);
 	uint16_t (*read16)(struct bus *pbus, int bus, int devfn, int where);
 	uint32_t (*read32)(struct bus *pbus, int bus, int devfn, int where);
-	void     (*write8)(struct bus *pbus, int bus, int devfn, int where, uint8_t val);
-	void    (*write16)(struct bus *pbus, int bus, int devfn, int where, uint16_t val);
-	void    (*write32)(struct bus *pbus, int bus, int devfn, int where, uint32_t val);
+	void     (*write8)(struct bus *pbus, int bus, int devfn, int where,
+			uint8_t val);
+	void    (*write16)(struct bus *pbus, int bus, int devfn, int where,
+			uint16_t val);
+	void    (*write32)(struct bus *pbus, int bus, int devfn, int where,
+			uint32_t val);
 };
 
 struct pci_driver {

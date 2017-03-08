@@ -28,9 +28,18 @@ void ne2k_transmit(unsigned int eth_nic_base);
 #endif
 
 #if CONFIG_CONSOLE_NE2K && (ENV_ROMSTAGE || ENV_RAMSTAGE)
-static inline void __ne2k_init(void)		{ ne2k_init(CONFIG_CONSOLE_NE2K_IO_PORT); }
-static inline void __ne2k_tx_byte(u8 data)	{ ne2k_append_data_byte(data, CONFIG_CONSOLE_NE2K_IO_PORT); }
-static inline void __ne2k_tx_flush(void)	{ ne2k_transmit(CONFIG_CONSOLE_NE2K_IO_PORT); }
+static inline void __ne2k_init(void)
+{
+	ne2k_init(CONFIG_CONSOLE_NE2K_IO_PORT);
+}
+static inline void __ne2k_tx_byte(u8 data)
+{
+	ne2k_append_data_byte(data, CONFIG_CONSOLE_NE2K_IO_PORT);
+}
+static inline void __ne2k_tx_flush(void)
+{
+	ne2k_transmit(CONFIG_CONSOLE_NE2K_IO_PORT);
+}
 #else
 static inline void __ne2k_init(void)		{}
 static inline void __ne2k_tx_byte(u8 data)	{}

@@ -35,7 +35,10 @@ int usb_can_rx_byte(int idx);
 
 #if __CONSOLE_USB_ENABLE__
 static inline void __usbdebug_init(void)	{ usbdebug_init(); }
-static inline void __usb_tx_byte(u8 data)	{ usb_tx_byte(USB_PIPE_FOR_CONSOLE, data); }
+static inline void __usb_tx_byte(u8 data)
+{
+	usb_tx_byte(USB_PIPE_FOR_CONSOLE, data);
+}
 static inline void __usb_tx_flush(void)	{ usb_tx_flush(USB_PIPE_FOR_CONSOLE); }
 #else
 static inline void __usbdebug_init(void)	{}
@@ -47,9 +50,15 @@ static inline void __usb_tx_flush(void)	{}
 #if 0 && CONFIG_GDB_STUB && \
 	((ENV_ROMSTAGE && CONFIG_USBDEBUG_IN_ROMSTAGE) || ENV_RAMSTAGE)
 static inline void __gdb_hw_init(void)	{ usbdebug_init(); }
-static inline void __gdb_tx_byte(u8 data)	{ usb_tx_byte(USB_PIPE_FOR_GDB, data); }
+static inline void __gdb_tx_byte(u8 data)
+{
+	usb_tx_byte(USB_PIPE_FOR_GDB, data);
+}
 static inline void __gdb_tx_flush(void)	{ usb_tx_flush(USB_PIPE_FOR_GDB); }
-static inline u8 __gdb_rx_byte(void)		{ return usb_rx_byte(USB_PIPE_FOR_GDB); }
+static inline u8 __gdb_rx_byte(void)
+{
+	return usb_rx_byte(USB_PIPE_FOR_GDB);
+}
 #endif
 
 #endif /* _CONSOLE_USB_H_ */

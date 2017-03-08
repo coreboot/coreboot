@@ -37,7 +37,8 @@ static inline __attribute__((always_inline)) msr_t rdmsr(unsigned int index)
 	return soc_msr_read(index);
 }
 
-static inline __attribute__((always_inline)) void wrmsr(unsigned int index, msr_t msr)
+static inline __attribute__((always_inline)) void wrmsr(unsigned int index,
+	msr_t msr)
 {
 	soc_msr_write(index, msr);
 }
@@ -64,7 +65,8 @@ static inline __attribute__((always_inline)) msr_t rdmsr(unsigned int index)
 	return result;
 }
 
-static inline __attribute__((always_inline)) void wrmsr(unsigned int index, msr_t msr)
+static inline __attribute__((always_inline)) void wrmsr(unsigned int index,
+	msr_t msr)
 {
 	__asm__ __volatile__ (
 		"wrmsr"

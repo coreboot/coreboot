@@ -105,8 +105,8 @@ static const struct pad_config gpio_table[] = {
 /* SM1DATA */		PAD_CFG_NC(GPP_C7),
 /* UART0_RXD */		PAD_CFG_GPI(GPP_C8, NONE, PLTRST), /* FP_INT */
 /* UART0_TXD */		PAD_CFG_GPO(GPP_C9, 1, DEEP), /* FP_RST_ODL */
-/* UART0_RTS# */	PAD_CFG_NC(GPP_C10),
-/* UART0_CTS# */	PAD_CFG_NC(GPP_C11),
+/* UART0_RTS# */	PAD_CFG_GPI(GPP_C10, NONE, DEEP), /* PCH_FPS_MCU_NRST_ODL */
+/* UART0_CTS# */	PAD_CFG_GPO(GPP_C11, 0, DEEP), /* PCH_FPS_MCU_BOOT0 */
 /* UART1_RXD */		PAD_CFG_GPI(GPP_C12, NONE, DEEP), /* MEM_CONFIG[0] */
 /* UART1_TXD */		PAD_CFG_GPI(GPP_C13, NONE, DEEP), /* MEM_CONFIG[1] */
 /* UART1_RTS# */	PAD_CFG_GPI(GPP_C14, NONE, DEEP), /* MEM_CONFIG[2] */
@@ -234,6 +234,8 @@ static const struct pad_config early_gpio_table[] = {
 static const struct pad_config late_gpio_table[] = {
 /* UART0_RXD */		PAD_CFG_GPI(GPP_C8, NONE, PLTRST), /* FP_INT */
 /* UART0_TXD */		PAD_CFG_GPO(GPP_C9, 1, DEEP), /* FP_RST_ODL */
+/* UART0_RTS# */	PAD_CFG_GPI(GPP_C10, NONE, DEEP), /* PCH_FPS_MCU_NRST_ODL */
+/* UART0_CTS# */	PAD_CFG_GPO(GPP_C11, 0, DEEP), /* PCH_FPS_MCU_BOOT0 */
 };
 
 #endif

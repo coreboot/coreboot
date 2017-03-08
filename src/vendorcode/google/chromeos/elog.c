@@ -18,6 +18,10 @@
 #include <elog.h>
 #include <vboot/vboot_common.h>
 
+#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
+#include <arch/acpi.h>
+#endif
+
 static void elog_add_boot_reason(void *unused)
 {
 	int rec = vboot_recovery_mode_enabled();
@@ -35,8 +39,19 @@ static void elog_add_boot_reason(void *unused)
 	}
 
 	if (dev) {
-		elog_add_event(ELOG_TYPE_CROS_DEVELOPER_MODE);
-		printk(BIOS_DEBUG, "%s: Logged dev mode boot\n", __func__);
+		int log_event = 1;
+
+#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
+		/* Skip logging developer mode in ACPI resume path */
+		if (acpi_is_wakeup())
+			log_event = 0;
+#endif
+
+		if (log_event) {
+			elog_add_event(ELOG_TYPE_CROS_DEVELOPER_MODE);
+			printk(BIOS_DEBUG, "%s: Logged dev mode boot\n",
+			       __func__);
+		}
 	}
 }
 

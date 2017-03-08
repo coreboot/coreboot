@@ -249,6 +249,15 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	 */
 	params->SendVrMbxCmd1 = config->SendVrMbxCmd;
 
+	/* Acoustic Noise Mitigation */
+	params->AcousticNoiseMitigation = config->AcousticNoiseMitigation;
+	params->SlowSlewRateForIa = config->SlowSlewRateForIa;
+	params->SlowSlewRateForGt = config->SlowSlewRateForGt;
+	params->SlowSlewRateForSa = config->SlowSlewRateForSa;
+	params->FastPkgCRampDisableIa = config->FastPkgCRampDisableIa;
+	params->FastPkgCRampDisableGt = config->FastPkgCRampDisableGt;
+	params->FastPkgCRampDisableSa = config->FastPkgCRampDisableSa;
+
 	soc_irq_settings(params);
 }
 

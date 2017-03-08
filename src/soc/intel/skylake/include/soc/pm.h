@@ -198,4 +198,12 @@ static inline int deep_s3_enabled(void)
 	return !!(deep_s3_pol & (S3DC_GATE_SUS | S3AC_GATE_SUS));
 }
 
+static inline int deep_s5_enabled(void)
+{
+	uint32_t deep_s5_pol;
+
+	deep_s5_pol = read32(pmc_mmio_regs() + S5_PWRGATE_POL);
+	return !!(deep_s5_pol & (S5DC_GATE_SUS | S5AC_GATE_SUS));
+}
+
 #endif

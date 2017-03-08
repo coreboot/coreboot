@@ -29,7 +29,7 @@
 
 #define DPTF_TSR1_SENSOR_ID	1
 #define DPTF_TSR1_SENSOR_NAME	"Ambient"
-#define DPTF_TSR1_PASSIVE	46
+#define DPTF_TSR1_PASSIVE	50
 #define DPTF_TSR1_CRITICAL	70
 
 #define DPTF_TSR2_SENSOR_ID	2
@@ -72,7 +72,7 @@ Name (MPPC, Package ()
 	0x2,		/* Revision */
 	Package () {	/* Power Limit 1 */
 		0,	/* PowerLimitIndex, 0 for Power Limit 1 */
-		1600,	/* PowerLimitMinimum */
+		2500,	/* PowerLimitMinimum */
 		12000,	/* PowerLimitMaximum */
 		1000,	/* TimeWindowMinimum */
 		1000,	/* TimeWindowMaximum */

@@ -69,10 +69,13 @@ static inline char *strconcat(const char *s1, const char *s2)
 static inline char *strncpy(char *to, const char *from, int count)
 {
 	register char *ret = to;
+	register char data;
 
 	while (count > 0) {
 		count--;
-		if ((*to++ = *from++) == '\0')
+		data = *from++;
+		*to++  = data;
+		if (data == '\0')
 			break;
 	}
 

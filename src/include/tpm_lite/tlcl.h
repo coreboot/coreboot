@@ -156,4 +156,10 @@ uint32_t tlcl_get_permanent_flags(TPM_PERMANENT_FLAGS *pflags);
  */
 uint32_t tlcl_disable_platform_hierarchy(void);
 
+/**
+ * CR50 specific tpm command to enable nvmem commits before internal timeout
+ * expires.
+ */
+uint32_t tlcl_cr50_enable_nvcommits(void);
+
 #endif  /* TPM_LITE_TLCL_H_ */

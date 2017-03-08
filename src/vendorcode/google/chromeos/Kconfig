@@ -31,6 +31,10 @@ config CHROMEOS
 
 if CHROMEOS
 
+config CR50_IMMEDIATELY_COMMIT_FW_SECDATA
+	bool
+	default y if MAINBOARD_HAS_I2C_TPM_CR50 || MAINBOARD_HAS_SPI_TPM_CR50
+
 config CHROMEOS_RAMOOPS
 	bool "Reserve space for Chrome OS ramoops"
 	default y

@@ -1,9 +1,11 @@
 with HW.GFX;
 with HW.GFX.Framebuffer_Filler;
 with HW.GFX.GMA;
+with HW.GFX.GMA.Display_Probing;
 
 use HW.GFX;
 use HW.GFX.GMA;
+use HW.GFX.GMA.Display_Probing;
 
 with GMA.Mainboard;
 
@@ -55,7 +57,7 @@ is
       use type pos32;
 
       ports : Port_List;
-      configs : Configs_Type;
+      configs : Pipe_Configs;
 
       success : boolean;
 
@@ -70,10 +72,10 @@ is
 
       if success then
          ports := Mainboard.ports;
-         HW.GFX.GMA.Scan_Ports (configs, ports);
+         HW.GFX.GMA.Display_Probing.Scan_Ports (configs, ports);
 
          if configs (Primary).Port /= Disabled then
-            for i in Config_Index loop
+            for i in Pipe_Index loop
                exit when configs (i).Port = Disabled;
 
                min_h := pos16'min (min_h, configs (i).Mode.H_Visible);
@@ -86,7 +88,7 @@ is
                 BPC     => 8,
                 Stride  => ((Width_Type (min_h) + 63) / 64) * 64,
                 Offset  => 0);
-            for i in Config_Index loop
+            for i in Pipe_Index loop
                exit when configs (i).Port = Disabled;
 
                configs (i).Framebuffer := fb;

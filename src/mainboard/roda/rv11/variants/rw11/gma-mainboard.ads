@@ -1,6 +1,8 @@
 with HW.GFX.GMA;
+with HW.GFX.GMA.Display_Probing;
 
 use HW.GFX.GMA;
+use HW.GFX.GMA.Display_Probing;
 
 private package GMA.Mainboard is
 
@@ -11,8 +13,8 @@ private package GMA.Mainboard is
    ports : constant Port_List :=
      (DP2,
       DP3,
-      Digital2,
-      Digital3,
+      HDMI2,
+      HDMI3,
       Analog,
       Internal,
       others => Disabled);

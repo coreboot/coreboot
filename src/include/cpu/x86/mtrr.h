@@ -132,7 +132,7 @@ static inline unsigned int fls(unsigned int x)
  */
 #define CACHE_TMP_RAMTOP (16<<20)
 
-#if ((CONFIG_XIP_ROM_SIZE & (CONFIG_XIP_ROM_SIZE -1)) != 0)
+#if ((CONFIG_XIP_ROM_SIZE & (CONFIG_XIP_ROM_SIZE - 1)) != 0)
 # error "CONFIG_XIP_ROM_SIZE is not a power of 2"
 #endif
 

@@ -79,8 +79,12 @@ static void pch_log_power_and_resets(struct chipset_power_state *ps)
 		elog_add_event(ELOG_TYPE_POWER_FAIL);
 
 	/* SUS Well Power Failure */
-	if (ps->gen_pmcon_b & SUS_PWR_FLR)
-		elog_add_event(ELOG_TYPE_SUS_POWER_FAIL);
+	if (ps->gen_pmcon_b & SUS_PWR_FLR) {
+		/* Do not log SUS_PWR_FLR if waking from deep Sx */
+		if (!(ps->prev_sleep_state == ACPI_S3 && deep_s3_enabled()) &&
+		    !(ps->prev_sleep_state == ACPI_S5 && deep_s5_enabled()))
+			elog_add_event(ELOG_TYPE_SUS_POWER_FAIL);
+	}
 
 	/* TCO Timeout */
 	if (ps->prev_sleep_state != ACPI_S3 &&
@@ -122,4 +126,4 @@ static void pch_log_state(void *unused)
 		pch_log_wake_source(ps);
 }
 
-BOOT_STATE_INIT_ENTRY(BS_DEV_INIT, BS_ON_ENTRY, pch_log_state, NULL);
+BOOT_STATE_INIT_ENTRY(BS_DEV_INIT, BS_ON_EXIT, pch_log_state, NULL);

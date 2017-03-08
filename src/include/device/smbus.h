@@ -8,17 +8,17 @@
 
 /* Common SMBus bus operations */
 struct smbus_bus_operations {
-	int (*quick_read)  (device_t dev);
-	int (*quick_write) (device_t dev);
-	int (*recv_byte)   (device_t dev);
-	int (*send_byte)   (device_t dev, u8 value);
-	int (*read_byte)   (device_t dev, u8 addr);
-	int (*write_byte)  (device_t dev, u8 addr, u8 value);
-	int (*read_word)   (device_t dev, u8 addr);
-	int (*write_word)  (device_t dev, u8 addr, u16 value);
+	int   (*quick_read)(device_t dev);
+	int  (*quick_write)(device_t dev);
+	int    (*recv_byte)(device_t dev);
+	int    (*send_byte)(device_t dev, u8 value);
+	int    (*read_byte)(device_t dev, u8 addr);
+	int   (*write_byte)(device_t dev, u8 addr, u8 value);
+	int    (*read_word)(device_t dev, u8 addr);
+	int   (*write_word)(device_t dev, u8 addr, u16 value);
 	int (*process_call)(device_t dev, u8 cmd, u16 data);
-	int (*block_read)  (device_t dev, u8 cmd, u8 bytes, u8 *buffer);
-	int (*block_write) (device_t dev, u8 cmd, u8 bytes, const u8 *buffer);
+	int   (*block_read)(device_t dev, u8 cmd, u8 bytes, u8 *buffer);
+	int  (*block_write)(device_t dev, u8 cmd, u8 bytes, const u8 *buffer);
 };
 
 static inline const struct smbus_bus_operations *ops_smbus_bus(struct bus *bus)

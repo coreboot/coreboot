@@ -34,8 +34,8 @@
 #define PM1_EN			0x02
 #define   PCIEXPWAK_DIS		(1 << 14)
 #define   RTC_EN		(1 << 10)
-#define   PWRBTN_EN     	(1 << 8)
-#define   GBL_EN        	(1 << 5)
+#define   PWRBTN_EN		(1 << 8)
+#define   GBL_EN		(1 << 5)
 
 #define PM1_CNT			0x04
 #define   SCI_EN		(1 << 0)

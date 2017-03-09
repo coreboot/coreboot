@@ -56,8 +56,8 @@ static void pch_log_wake_source(struct chipset_power_state *ps)
 	if (ps->gpe0_sts[GPE0_A] & SMB_WAK_STS)
 		elog_add_event_wake(ELOG_WAKE_SOURCE_SMBUS, 0);
 
-        /* ACPI Wake Event - Always Log prev_sleep_state*/
-        elog_add_event_byte(ELOG_TYPE_ACPI_WAKE, ps->prev_sleep_state);
+	/* ACPI Wake Event - Always Log prev_sleep_state*/
+	elog_add_event_byte(ELOG_TYPE_ACPI_WAKE, ps->prev_sleep_state);
 
 	/* Log GPIO events in set A-D */
 	pch_log_gpio_gpe(ps->gpe0_sts[GPE0_A], ps->gpe0_en[GPE0_A], 0);

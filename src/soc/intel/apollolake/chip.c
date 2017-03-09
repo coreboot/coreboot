@@ -129,7 +129,7 @@ struct pci_operations soc_pci_ops = {
 
 static void pci_domain_set_resources(device_t dev)
 {
-       assign_resources(dev->link_list);
+	assign_resources(dev->link_list);
 }
 
 static struct device_operations pci_domain_ops = {
@@ -448,7 +448,7 @@ static void parse_devicetree(FSP_S_CONFIG *silconfig)
 
 void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 {
-        FSP_S_CONFIG *silconfig = &silupd->FspsConfig;
+	FSP_S_CONFIG *silconfig = &silupd->FspsConfig;
 	static struct soc_intel_apollolake_config *cfg;
 	uint8_t port;
 

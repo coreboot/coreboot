@@ -65,9 +65,8 @@ void udelay(u32 us)
 
 	tsc1 = rdtsc();
 	dword = tsc1.lo + tscd.lo;
-	if ((dword < tsc1.lo) || (dword < tscd.lo)) {
+	if ((dword < tsc1.lo) || (dword < tscd.lo))
 		tsc1.hi++;
-	}
 	tsc1.lo = dword;
 	tsc1.hi += tscd.hi;
 

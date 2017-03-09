@@ -20,5 +20,5 @@ static void bootblock_northbridge_init(void)
 	 * 4GiB.
 	 */
 	reg = CONFIG_MMCONF_BASE_ADDRESS | 4 | 1; /* 64MiB - 0-63 buses. */
-	pci_io_write_config32(PCI_DEV(0,0,0), PCIEXBAR, reg);
+	pci_io_write_config32(PCI_DEV(0, 0, 0), PCIEXBAR, reg);
 }

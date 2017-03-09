@@ -163,7 +163,8 @@ static void mc_read_resources(device_t dev)
 	}
 }
 
-static void intel_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void intel_set_subsystem(device_t dev, unsigned int vendor,
+				unsigned int device)
 {
 	if (!vendor || !device) {
 		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
@@ -214,11 +215,10 @@ static struct device_operations cpu_bus_ops = {
 static void enable_dev(device_t dev)
 {
 	/* Set the operations if it is a special bus type */
-	if (dev->path.type == DEVICE_PATH_DOMAIN) {
+	if (dev->path.type == DEVICE_PATH_DOMAIN)
 		dev->ops = &pci_domain_ops;
-	} else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER) {
+	else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER)
 		dev->ops = &cpu_bus_ops;
-	}
 }
 
 struct chip_operations northbridge_intel_i945_ops = {

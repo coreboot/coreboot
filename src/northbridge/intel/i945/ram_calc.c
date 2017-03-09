@@ -29,15 +29,14 @@ static uintptr_t smm_region_start(void)
 {
 	uintptr_t tom;
 
-	if (pci_read_config8(PCI_DEV(0, 0x0, 0), DEVEN) & (DEVEN_D2F0 | DEVEN_D2F1)) {
+	if (pci_read_config8(PCI_DEV(0, 0x0, 0), DEVEN) & (DEVEN_D2F0 | DEVEN_D2F1))
 		/* IGD enabled, get top of Memory from BSM register */
-		tom = pci_read_config32(PCI_DEV(0,2,0), BSM);
-	} else {
-		tom = (pci_read_config8(PCI_DEV(0,0,0), TOLUD) & 0xf7) << 24;
-	}
+		tom = pci_read_config32(PCI_DEV(0, 2, 0), BSM);
+	else
+		tom = (pci_read_config8(PCI_DEV(0, 0, 0), TOLUD) & 0xf7) << 24;
 
 	/* if TSEG enabled subtract size */
-	switch(pci_read_config8(PCI_DEV(0, 0, 0), ESMRAM) & 0x07) {
+	switch (pci_read_config8(PCI_DEV(0, 0, 0), ESMRAM) & 0x07) {
 	case 0x01:
 		/* 1MB TSEG */
 		tom -= 0x100000;

@@ -30,12 +30,12 @@ static inline void *iosf_address(uint16_t port, uint16_t reg)
 	return (void *)addr;
 }
 
-inline static void iosf_write(uint16_t port, uint16_t reg, uint32_t val)
+static inline void iosf_write(uint16_t port, uint16_t reg, uint32_t val)
 {
 	write32(iosf_address(port, reg), val);
 }
 
-inline static uint32_t iosf_read(uint16_t port, uint16_t reg)
+static inline uint32_t iosf_read(uint16_t port, uint16_t reg)
 {
 	return read32(iosf_address(port, reg));
 }

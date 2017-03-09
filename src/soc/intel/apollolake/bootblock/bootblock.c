@@ -89,7 +89,7 @@ static void cache_bios_region(void)
 
 	mtrr = get_free_var_mtrr();
 
-	if (mtrr==-1)
+	if (mtrr == -1)
 		return;
 
 	/* Only the IFD BIOS region is memory mapped (at top of 4G) */

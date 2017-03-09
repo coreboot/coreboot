@@ -76,7 +76,7 @@ static int mc_add_imr_resources(device_t dev, int index)
 
 	mchbar = (void *)(ALIGN_DOWN(get_bar(dev, MCHBAR), 32*KiB));
 
-	for (i = 0; i < MCH_NUM_IMRS; i ++) {
+	for (i = 0; i < MCH_NUM_IMRS; i++) {
 		imr_offset = i * MCH_IMR_PITCH;
 		base = read32(mchbar + imr_offset + MCHBAR_IMR0BASE);
 		mask = read32(mchbar + imr_offset + MCHBAR_IMR0MASK);

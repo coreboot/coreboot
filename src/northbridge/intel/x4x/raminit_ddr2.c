@@ -61,8 +61,8 @@ static u8 msbpos(u32 val)
 	}
 
 	asm ("bsrl %1, %0"
-		:"=r"(pos)
-		:"r"(val)
+		: "=r"(pos)
+		: "r"(val)
 	);
 
 	return (u8)(pos & 0xff);
@@ -329,13 +329,12 @@ static void launch_ddr2(struct sysinfo *s)
 	u32 launch2 = 0;
 	u32 launch3 = 0;
 
-	if (s->selected_timings.CAS == 5) {
+	if (s->selected_timings.CAS == 5)
 		launch2 = 0x00220201;
-	} else if (s->selected_timings.CAS == 6) {
+	else if (s->selected_timings.CAS == 6)
 		launch2 = 0x00230302;
-	} else {
+	else
 		die("Unsupported CAS\n");
-	}
 
 	FOR_EACH_POPULATED_CHANNEL(s->dimms, i) {
 		MCHBAR32(0x400*i + 0x220) = launch1;
@@ -571,13 +570,13 @@ static void timings_ddr2(struct sysinfo *s)
 	twl = s->selected_timings.CAS - 1;
 
 	FOR_EACH_POPULATED_DIMM(s->dimms, i) {
-		if (s->dimms[i].banks == 1) { // 8 banks
+		if (s->dimms[i].banks == 1) {
+			/* 8 banks */
 			trpmod = 1;
 			bankmod = 0;
 		}
-		if (s->dimms[i].page_size == 2048) {
+		if (s->dimms[i].page_size == 2048)
 			pagemod = 1;
-		}
 	}
 
 	FOR_EACH_POPULATED_CHANNEL(s->dimms, i) {
@@ -606,32 +605,28 @@ static void timings_ddr2(struct sysinfo *s)
 			default:
 			case MEM_CLOCK_667MHz:
 				if (reg8) {
-					if (pagemod) {
+					if (pagemod)
 						reg32 |= 16 << 22;
-					} else {
+					else
 						reg32 |= 12 << 22;
-					}
 				} else {
-					if (pagemod) {
+					if (pagemod)
 						reg32 |= 18 << 22;
-					} else {
+					else
 						reg32 |= 14 << 22;
-					}
 				}
 				break;
 			case MEM_CLOCK_800MHz:
 				if (reg8) {
-					if (pagemod) {
+					if (pagemod)
 						reg32 |= 18 << 22;
-					} else {
+					else
 						reg32 |= 14 << 22;
-					}
 				} else {
-					if (pagemod) {
+					if (pagemod)
 						reg32 |= 20 << 22;
-					} else {
+					else
 						reg32 |= 16 << 22;
-					}
 				}
 				break;
 			}
@@ -678,18 +673,17 @@ static void timings_ddr2(struct sysinfo *s)
 		MCHBAR32(0x400*i + 0x248) = (MCHBAR32(0x400*i + 0x248) & ~0x0f001f00) |
 			reg32;
 
-		if (twl > 2) {
+		if (twl > 2)
 			flag1 = 1;
-		}
-		if (s->selected_timings.mem_clk >= MEM_CLOCK_800MHz) {
+
+		if (s->selected_timings.mem_clk >= MEM_CLOCK_800MHz)
 			flag2 = 1;
-		}
+
 		reg16 = (u8)(twl - 1 - flag1 - flag2);
 		reg16 |= reg16 << 4;
 		if (s->selected_timings.mem_clk == MEM_CLOCK_1333MHz) {
-			if (reg16) {
+			if (reg16)
 				reg16--;
-			}
 		}
 		reg16 |= flag1 << 8;
 		reg16 |= flag2 << 9;
@@ -708,11 +702,10 @@ static void timings_ddr2(struct sysinfo *s)
 			reg16 = 0x99;
 			break;
 		case MEM_CLOCK_800MHz:
-			if (s->selected_timings.CAS == 5) {
+			if (s->selected_timings.CAS == 5)
 				reg16 = 0x19a;
-			} else if (s->selected_timings.CAS == 6) {
+			else if (s->selected_timings.CAS == 6)
 				reg16 = 0x9a;
-			}
 			break;
 		}
 		reg16 &= 0x7;
@@ -807,9 +800,11 @@ static void dll_ddr2(struct sysinfo *s)
 		MCHBAR16(0x400*i + 0x59c) = MCHBAR16(0x400*i + 0x59c) & ~0x3000;
 
 		reg32 = 0;
-		FOR_EACH_RANK_IN_CHANNEL(r) if (!RANK_IS_POPULATED(s->dimms, i, r)) {
-			reg32 |= 0x111 << r;
+		FOR_EACH_RANK_IN_CHANNEL(r) {
+			if (!RANK_IS_POPULATED(s->dimms, i, r))
+				reg32 |= 0x111 << r;
 		}
+
 		MCHBAR32(0x400*i + 0x59c) = (MCHBAR32(0x400*i + 0x59c) & ~0xfff) | reg32;
 		MCHBAR8(0x400*i + 0x594) = MCHBAR8(0x400*i + 0x594) & ~1;
 
@@ -845,56 +840,56 @@ static void dll_ddr2(struct sysinfo *s)
 
 	u8 dll_setting_667[23][5] = {
 	//	tap  pi db  delay
-		{13, 0, 1,0, 0},
-		{4,  1, 0,0, 0},
-		{13, 0, 1,0, 0},
-		{4,  5, 0,0, 0},
-		{4,  1, 0,0, 0},
-		{4,  1, 0,0, 0},
-		{4,  1, 0,0, 0},
-		{1,  5, 1,1, 1},
-		{1,  6, 1,1, 1},
-		{2,  0, 1,1, 1},
-		{2,  1, 1,1, 1},
-		{2,  1, 1,1, 1},
-		{14, 6, 1,0, 0},
-		{14, 3, 1,0, 0},
-		{14, 0, 1,0, 0},
-		{9,  0, 0,0, 1},
-		{9,  1, 0,0, 1},
-		{9,  2, 0,0, 1},
-		{9,  2, 0,0, 1},
-		{9,  1, 0,0, 1},
-		{6,  4, 0,0, 1},
-		{6,  2, 0,0, 1},
-		{5,  4, 0,0, 1}
+		{13, 0, 1, 0, 0},
+		{4,  1, 0, 0, 0},
+		{13, 0, 1, 0, 0},
+		{4,  5, 0, 0, 0},
+		{4,  1, 0, 0, 0},
+		{4,  1, 0, 0, 0},
+		{4,  1, 0, 0, 0},
+		{1,  5, 1, 1, 1},
+		{1,  6, 1, 1, 1},
+		{2,  0, 1, 1, 1},
+		{2,  1, 1, 1, 1},
+		{2,  1, 1, 1, 1},
+		{14, 6, 1, 0, 0},
+		{14, 3, 1, 0, 0},
+		{14, 0, 1, 0, 0},
+		{9,  0, 0, 0, 1},
+		{9,  1, 0, 0, 1},
+		{9,  2, 0, 0, 1},
+		{9,  2, 0, 0, 1},
+		{9,  1, 0, 0, 1},
+		{6,  4, 0, 0, 1},
+		{6,  2, 0, 0, 1},
+		{5,  4, 0, 0, 1}
 	};
 
 	u8 dll_setting_800[23][5] = {
 	//	tap  pi db  delay
-		{11, 5, 1,0, 0},
-		{0,  5, 1,1, 0},
-		{11, 5, 1,0, 0},
-		{1,  4, 1,1, 0},
-		{0,  5, 1,1, 0},
-		{0,  5, 1,1, 0},
-		{0,  5, 1,1, 0},
-		{2,  5, 1,1, 1},
-		{2,  6, 1,1, 1},
-		{3,  0, 1,1, 1},
-		{3,  0, 1,1, 1},
-		{3,  3, 1,1, 1},
-		{2,  0, 1,1, 1},
-		{1,  3, 1,1, 1},
-		{0,  3, 1,1, 1},
-		{9,  3, 0,0, 1},
-		{9,  4, 0,0, 1},
-		{9,  5, 0,0, 1},
-		{9,  6, 0,0, 1},
-		{10, 0, 0,0, 1},
-		{8,  1, 0,0, 1},
-		{7,  5, 0,0, 1},
-		{6,  2, 0,0, 1}
+		{11, 5, 1, 0, 0},
+		{0,  5, 1, 1, 0},
+		{11, 5, 1, 0, 0},
+		{1,  4, 1, 1, 0},
+		{0,  5, 1, 1, 0},
+		{0,  5, 1, 1, 0},
+		{0,  5, 1, 1, 0},
+		{2,  5, 1, 1, 1},
+		{2,  6, 1, 1, 1},
+		{3,  0, 1, 1, 1},
+		{3,  0, 1, 1, 1},
+		{3,  3, 1, 1, 1},
+		{2,  0, 1, 1, 1},
+		{1,  3, 1, 1, 1},
+		{0,  3, 1, 1, 1},
+		{9,  3, 0, 0, 1},
+		{9,  4, 0, 0, 1},
+		{9,  5, 0, 0, 1},
+		{9,  6, 0, 0, 1},
+		{10, 0, 0, 0, 1},
+		{8,  1, 0, 0, 1},
+		{7,  5, 0, 0, 1},
+		{6,  2, 0, 0, 1}
 	};
 
 	FOR_EACH_POPULATED_CHANNEL(s->dimms, i) {
@@ -931,7 +926,8 @@ static void dll_ddr2(struct sysinfo *s)
 	for (i = 0; i < 16; i++) {
 		MCHBAR8(0x1c8) = (MCHBAR8(0x1c8) & ~0x1f) | i;
 		MCHBAR8(0x180) = MCHBAR8(0x180) | 0x10;
-		while (MCHBAR8(0x180) & 0x10);
+		while (MCHBAR8(0x180) & 0x10)
+			;
 		if (MCHBAR32(0x184) == 0xffffffff) {
 			j++;
 			if (j >= 2)
@@ -951,7 +947,8 @@ static void dll_ddr2(struct sysinfo *s)
 		for (; i < 16; i++) {
 			MCHBAR8(0x1c8) = (MCHBAR8(0x1c8) & ~0x1f) | i;
 			MCHBAR8(0x180) = MCHBAR8(0x180) | 0x4;
-			while (MCHBAR8(0x180) & 0x10);
+			while (MCHBAR8(0x180) & 0x10)
+				;
 			if (MCHBAR32(0x184) == 0) {
 				i++;
 				break;
@@ -960,9 +957,10 @@ static void dll_ddr2(struct sysinfo *s)
 		for (; i < 16; i++) {
 			MCHBAR8(0x1c8) = (MCHBAR8(0x1c8) & ~0x1f) | i;
 			MCHBAR8(0x180) = MCHBAR8(0x180) | 0x10;
-			while (MCHBAR8(0x180) & 0x10);
+			while (MCHBAR8(0x180) & 0x10)
+				;
 			if (MCHBAR32(0x184) == 0xffffffff) {
-					j++;
+				j++;
 				if (j >= 2)
 					break;
 			} else {
@@ -972,7 +970,8 @@ static void dll_ddr2(struct sysinfo *s)
 		if (j < 2) {
 			MCHBAR8(0x1c8) = MCHBAR8(0x1c8) & ~0x1f;
 			MCHBAR8(0x180) = MCHBAR8(0x180) | 0x10;
-			while (MCHBAR8(0x180) & 0x10);
+			while (MCHBAR8(0x180) & 0x10)
+				;
 			j = 2;
 		}
 	}
@@ -986,7 +985,7 @@ static void dll_ddr2(struct sysinfo *s)
 	if (async != 1) {
 		reg8 = MCHBAR8(0x188) & 0x1e;
 		if (s->selected_timings.mem_clk == MEM_CLOCK_667MHz &&
-				s->selected_timings.fsb_clk == FSB_CLOCK_800MHz) {
+			s->selected_timings.fsb_clk == FSB_CLOCK_800MHz) {
 			clk = 0x10;
 		} else if (s->selected_timings.mem_clk == MEM_CLOCK_800MHz) {
 			clk = 0x10;
@@ -1002,7 +1001,8 @@ static void dll_ddr2(struct sysinfo *s)
 		i = (i + 10) % 14;
 		MCHBAR8(0x1c8) = (MCHBAR8(0x1c8) & ~0x1f) | i;
 		MCHBAR8(0x180) = MCHBAR8(0x180) | 0x10;
-		while (MCHBAR8(0x180) & 0x10);
+		while (MCHBAR8(0x180) & 0x10)
+			;
 	}
 
 	reg8 = MCHBAR8(0x188) & ~1;
@@ -1013,19 +1013,17 @@ static void dll_ddr2(struct sysinfo *s)
 	reg8 |= 1;
 	MCHBAR8(0x188) = reg8;
 
-	if (s->selected_timings.mem_clk == MEM_CLOCK_1333MHz) {
+	if (s->selected_timings.mem_clk == MEM_CLOCK_1333MHz)
 		MCHBAR8(0x18c) = MCHBAR8(0x18c) | 1;
-	}
 
 	// Program DQ/DQS dll settings
 	reg32 = 0;
 	FOR_EACH_POPULATED_CHANNEL(s->dimms, i) {
 		for (lane = 0; lane < 8; lane++) {
-			if (s->selected_timings.mem_clk == MEM_CLOCK_667MHz) {
+			if (s->selected_timings.mem_clk == MEM_CLOCK_667MHz)
 				reg32 = 0x06db7777;
-			} else if (s->selected_timings.mem_clk == MEM_CLOCK_800MHz) {
+			else if (s->selected_timings.mem_clk == MEM_CLOCK_800MHz)
 				reg32 = 0x00007777;
-			}
 			MCHBAR32(0x400*i + 0x540 + lane*4) =
 				(MCHBAR32(0x400*i + 0x540 + lane*4) & 0x0fffffff) |
 				reg32;
@@ -1034,19 +1032,15 @@ static void dll_ddr2(struct sysinfo *s)
 
 	FOR_EACH_POPULATED_CHANNEL(s->dimms, i) {
 		if (s->selected_timings.mem_clk == MEM_CLOCK_667MHz) {
-			for (lane = 0; lane < 8; lane++) {
+			for (lane = 0; lane < 8; lane++)
 				dqsset(i, lane, &dll_setting_667[DQS1+lane][0]);
-			}
-			for (lane = 0; lane < 8; lane++) {
+			for (lane = 0; lane < 8; lane++)
 				dqset(i, lane, &dll_setting_667[DQ1+lane][0]);
-			}
 		} else {
-			for (lane = 0; lane < 8; lane++) {
+			for (lane = 0; lane < 8; lane++)
 				dqsset(i, lane, &dll_setting_800[DQS1+lane][0]);
-			}
-			for (lane = 0; lane < 8; lane++) {
+			for (lane = 0; lane < 8; lane++)
 				dqset(i, lane, &dll_setting_800[DQ1+lane][0]);
-			}
 		}
 	}
 }
@@ -1054,7 +1048,8 @@ static void dll_ddr2(struct sysinfo *s)
 static void rcomp_ddr2(struct sysinfo *s)
 {
 	u8 i, j, k;
-	u32 x32a[8] = { 0x04040404, 0x06050505, 0x09090807, 0x0D0C0B0A, 0x04040404, 0x08070605, 0x0C0B0A09, 0x100F0E0D };
+	u32 x32a[8] = { 0x04040404, 0x06050505, 0x09090807, 0x0D0C0B0A,
+			0x04040404, 0x08070605, 0x0C0B0A09, 0x100F0E0D };
 	u16 x378[6] = { 0, 0xAAAA, 0x7777, 0x7777, 0x7777, 0x7777 };
 	u32 x382[6] = { 0, 0x02020202, 0x02020202, 0x02020202, 0x04030303, 0x04030303 };
 	u32 x386[6] = { 0, 0x03020202, 0x03020202, 0x03020202, 0x05040404, 0x05040404 };
@@ -1113,12 +1108,10 @@ static void rcomp_ddr2(struct sysinfo *s)
 	MCHBAR16(0x178) = 0x0135;
 	MCHBAR32(0x130) = (MCHBAR32(0x130) & ~0x7bdffe0) | 0x7a9ffa0;
 
-	if (!CHANNEL_IS_POPULATED(s->dimms, 0)) {
+	if (!CHANNEL_IS_POPULATED(s->dimms, 0))
 		MCHBAR32(0x130) = MCHBAR32(0x130) & ~(1 << 27);
-	}
-	if (!CHANNEL_IS_POPULATED(s->dimms, 1)) {
+	if (!CHANNEL_IS_POPULATED(s->dimms, 1))
 		MCHBAR32(0x130) = MCHBAR32(0x130) & ~(1 << 28);
-	}
 
 	MCHBAR8(0x130) = MCHBAR8(0x130) | 1;
 }
@@ -1127,22 +1120,22 @@ static void odt_ddr2(struct sysinfo *s)
 {
 	u8 i;
 	u16 odt[16][2] = {
-		{ 0x0000,0x0000 }, // NC_NC
-		{ 0x0000,0x0001 }, // x8SS_NC
-		{ 0x0000,0x0011 }, // x8DS_NC
-		{ 0x0000,0x0001 }, // x16SS_NC
-		{ 0x0004,0x0000 }, // NC_x8SS
-		{ 0x0101,0x0404 }, // x8SS_x8SS
-		{ 0x0101,0x4444 }, // x8DS_x8SS
-		{ 0x0101,0x0404 }, // x16SS_x8SS
-		{ 0x0044,0x0000 }, // NC_x8DS
-		{ 0x1111,0x0404 }, // x8SS_x8DS
-		{ 0x1111,0x4444 }, // x8DS_x8DS
-		{ 0x1111,0x0404 }, // x16SS_x8DS
-		{ 0x0004,0x0000 }, // NC_x16SS
-		{ 0x0101,0x0404 }, // x8SS_x16SS
-		{ 0x0101,0x4444 }, // x8DS_x16SS
-		{ 0x0101,0x0404 }, // x16SS_x16SS
+		{ 0x0000, 0x0000 }, // NC_NC
+		{ 0x0000, 0x0001 }, // x8SS_NC
+		{ 0x0000, 0x0011 }, // x8DS_NC
+		{ 0x0000, 0x0001 }, // x16SS_NC
+		{ 0x0004, 0x0000 }, // NC_x8SS
+		{ 0x0101, 0x0404 }, // x8SS_x8SS
+		{ 0x0101, 0x4444 }, // x8DS_x8SS
+		{ 0x0101, 0x0404 }, // x16SS_x8SS
+		{ 0x0044, 0x0000 }, // NC_x8DS
+		{ 0x1111, 0x0404 }, // x8SS_x8DS
+		{ 0x1111, 0x4444 }, // x8DS_x8DS
+		{ 0x1111, 0x0404 }, // x16SS_x8DS
+		{ 0x0004, 0x0000 }, // NC_x16SS
+		{ 0x0101, 0x0404 }, // x8SS_x16SS
+		{ 0x0101, 0x4444 }, // x8DS_x16SS
+		{ 0x0101, 0x0404 }, // x16SS_x16SS
 	};
 
 	FOR_EACH_POPULATED_CHANNEL(s->dimms, i) {
@@ -1160,7 +1153,7 @@ static void dojedec_ddr2(u8 r, u8 ch, u8 cmd, u16 val)
 
 	MCHBAR8(0x271) = (MCHBAR8(0x271) & ~0x3e) | cmd;
 	MCHBAR8(0x671) = (MCHBAR8(0x671) & ~0x3e) | cmd;
-	rubbish = read32((void*)((val<<3) | addr));
+	rubbish = read32((void *)((val<<3) | addr));
 	udelay(10);
 	MCHBAR8(0x271) = (MCHBAR8(0x271) & ~0x3e) | NORMALOP_CMD;
 	MCHBAR8(0x671) = (MCHBAR8(0x671) & ~0x3e) | NORMALOP_CMD;
@@ -1250,9 +1243,8 @@ static u8 sampledqs(u16 mchloc, u32 addr, u8 hilow, u8 repeat)
 		barrier();
 		strobe = read32((u32 *)addr);
 		barrier();
-		if (((MCHBAR32(mchloc) & 0x40) >> 6) != hilow) {
+		if (((MCHBAR32(mchloc) & 0x40) >> 6) != hilow)
 			dqsmatch = 0;
-		}
 	}
 	return dqsmatch;
 }
@@ -1277,18 +1269,28 @@ static void rcven_ddr2(struct sysinfo *s)
 
 	FOR_EACH_POPULATED_CHANNEL(s->dimms, ch) {
 		addr = (ch << 29);
-		for (i = 0; !RANK_IS_POPULATED(s->dimms, ch, i); i++) {
+		for (i = 0; !RANK_IS_POPULATED(s->dimms, ch, i); i++)
 			addr += 128*1024*1024;
-		}
+
 		for (lane = 0; lane < 8; lane++) {
 			printk(BIOS_DEBUG, "Channel %d, Lane %d addr=0x%08x\n", ch, lane, addr);
 			coarsecommon = (s->selected_timings.CAS - 1);
 			switch (lane) {
-				case 0: case 1: medium = 0; break;
-				case 2: case 3: medium = 1; break;
-				case 4: case 5: medium = 2; break;
-				case 6: case 7: medium = 3; break;
-				default: medium = 0; break;
+			case 0: case 1:
+				medium = 0;
+				break;
+			case 2: case 3:
+				medium = 1;
+				break;
+			case 4: case 5:
+				medium = 2;
+				break;
+			case 6: case 7:
+				medium = 3;
+				break;
+			default:
+				medium = 0;
+				break;
 			}
 			mchbar = 0x400*ch + 0x561 + (lane << 2);
 			tap = 0;
@@ -1378,9 +1380,8 @@ static void rcven_ddr2(struct sysinfo *s)
 			while (sampledqs(mchbar, addr, 1, 1) == 0) {
 				savetap = tap;
 				tap++;
-				if (tap > 14) {
+				if (tap > 14)
 					break;
-				}
 				MCHBAR8(0x400*ch + 0x560 + (lane*4)) =
 					(MCHBAR8(0x400*ch + 0x560 + (lane*4)) & ~0xf) | tap;
 			}
@@ -1402,9 +1403,8 @@ static void rcven_ddr2(struct sysinfo *s)
 				MCHBAR16(0x400*ch + 0x58c) = (MCHBAR16(0x400*ch + 0x58c) &
 					~(3 << (lane*2))) | (medium << (lane*2));
 			}
-			if (sampledqs(mchbar, addr, 1, 1) == 0) {
+			if (sampledqs(mchbar, addr, 1, 1) == 0)
 				die("Not at DQS high, doh\n");
-			}
 
 			printk(BIOS_DEBUG, "rcven 0.4\n");
 			while (sampledqs(mchbar, addr, 1, 1) == 1) {
@@ -1451,9 +1451,8 @@ static void rcven_ddr2(struct sysinfo *s)
 			while (sampledqs(mchbar, addr, 1, 1) == 0) {
 				savetap = tap;
 				tap++;
-				if (tap > 14) {
+				if (tap > 14)
 					break;
-				}
 				MCHBAR8(0x400*ch + 0x560 + lane*4) =
 					(MCHBAR8(0x400*ch + 0x560 + lane*4) & ~0xf) | tap;
 			}
@@ -1472,9 +1471,8 @@ static void rcven_ddr2(struct sysinfo *s)
 
 		// Find minimum coarse value
 		for (lane = 0; lane < 8; lane++) {
-			if (mincoarse > lanecoarse[lane]) {
+			if (mincoarse > lanecoarse[lane])
 				mincoarse = lanecoarse[lane];
-			}
 		}
 
 		printk(BIOS_DEBUG, "Found min coarse value = %d\n", mincoarse);
@@ -1619,18 +1617,17 @@ static void dradrb_ddr2(struct sysinfo *s)
 	rankpop0 = 0;
 	rankpop1 = 0;
 	FOR_EACH_POPULATED_RANK(s->dimms, ch, r) {
-		if (((s->dimms[ch<<1].card_type != RAW_CARD_UNPOPULATED) && ((r) < s->dimms[ch<<1].ranks))) {
+		if (s->dimms[ch<<1].card_type != RAW_CARD_UNPOPULATED
+				&& (r) < s->dimms[ch<<1].ranks)
 			i = ch << 1;
-		} else {
+		else
 			i = (ch << 1) + 1;
-		}
 		dra = dratab[s->dimms[i].banks]
 			[s->dimms[i].width]
 			[s->dimms[i].cols-9]
 			[s->dimms[i].rows-12];
-		if (s->dimms[i].banks == 1) {
+		if (s->dimms[i].banks == 1)
 			dra |= 0x80;
-		}
 		if (ch == 0) {
 			c0dra |= dra << (r*8);
 			rankpop0 |= 1 << r;
@@ -1645,20 +1642,20 @@ static void dradrb_ddr2(struct sysinfo *s)
 	MCHBAR8(0x262) = (MCHBAR8(0x262) & ~0xf0) | ((rankpop0 << 4) & 0xf0);
 	MCHBAR8(0x662) = (MCHBAR8(0x662) & ~0xf0) | ((rankpop1 << 4) & 0xf0);
 
-	if (ONLY_DIMMA_IS_POPULATED(s->dimms, 0) || ONLY_DIMMB_IS_POPULATED(s->dimms, 0)) {
+	if (ONLY_DIMMA_IS_POPULATED(s->dimms, 0) ||
+			ONLY_DIMMB_IS_POPULATED(s->dimms, 0))
 		MCHBAR8(0x260) = MCHBAR8(0x260) | 1;
-	}
-	if (ONLY_DIMMA_IS_POPULATED(s->dimms, 1) || ONLY_DIMMB_IS_POPULATED(s->dimms, 1)) {
+	if (ONLY_DIMMA_IS_POPULATED(s->dimms, 1) ||
+			ONLY_DIMMB_IS_POPULATED(s->dimms, 1))
 		MCHBAR8(0x660) = MCHBAR8(0x660) | 1;
-	}
 
 	// DRB
 	FOR_EACH_POPULATED_RANK(s->dimms, ch, r) {
-		if (((s->dimms[ch<<1].card_type != RAW_CARD_UNPOPULATED) && ((r) < s->dimms[ch<<1].ranks))) {
+		if (s->dimms[ch<<1].card_type != RAW_CARD_UNPOPULATED
+				&& (r) < s->dimms[ch<<1].ranks)
 			i = ch << 1;
-		} else {
+		else
 			i = (ch << 1) + 1;
-		}
 		if (ch == 0) {
 			dra0 = (c0dra >> (8*r)) & 0x7f;
 			c0drb = (u16)(c0drb + drbtab[dra0]);
@@ -1705,30 +1702,27 @@ static void dradrb_ddr2(struct sysinfo *s)
 	MCHBAR16(0x102) = size0 + size1 - size;
 
 	map = 0;
-	if (size0 == 0) {
+	if (size0 == 0)
 		map = 0;
-	} else if (size1 == 0) {
+	else if (size1 == 0)
 		map |= 0x20;
-	} else {
+	else
 		map |= 0x40;
-	}
-	if (size == 0) {
-		map |= 0x18;
-	}
 
-	if (size0 - ME_UMA_SIZEMB >= size1) {
+	if (size == 0)
+		map |= 0x18;
+
+	if (size0 - ME_UMA_SIZEMB >= size1)
 		map |= 0x4;
-	}
 	MCHBAR8(0x110) = map;
 	MCHBAR16(0x10e) = 0;
 
-	if (size1 != 0) {
+	if (size1 != 0)
 		offset = 0;
-	} else if ((size0 > size1) && ((map & 0x7) == 0x4)) {
+	else if ((size0 > size1) && ((map & 0x7) == 0x4))
 		offset = size/2 + (size0 + size1 - size);
-	} else {
+	else
 		offset = size/2 + ME_UMA_SIZEMB;
-	}
 	MCHBAR16(0x108) = offset;
 	MCHBAR16(0x10a) = size/2;
 }
@@ -1743,7 +1737,7 @@ static void mmap_ddr2(struct sysinfo *s)
 			  160, 224, 352 };
 	u8 ggc2gtt[] = { 0, 1, 0, 2, 0, 0, 0, 0, 0, 2, 3, 4};
 
-	ggc = pci_read_config16(PCI_DEV(0,0,0), 0x52);
+	ggc = pci_read_config16(PCI_DEV(0, 0, 0), 0x52);
 	gfxsize = ggc2uma[(ggc & 0xf0) >> 4];
 	gttsize = ggc2gtt[(ggc & 0xf00) >> 8];
 	tsegsize = 1; // 1MB TSEG
@@ -1770,18 +1764,18 @@ static void mmap_ddr2(struct sysinfo *s)
 	gttbase = gfxbase - gttsize;
 	tsegbase = gttbase - tsegsize;
 
-	pci_write_config16(PCI_DEV(0,0,0), 0xb0, tolud << 4);
-	pci_write_config16(PCI_DEV(0,0,0), 0xa0, tom >> 6);
+	pci_write_config16(PCI_DEV(0, 0, 0), 0xb0, tolud << 4);
+	pci_write_config16(PCI_DEV(0, 0, 0), 0xa0, tom >> 6);
 	if (reclaim) {
-		pci_write_config16(PCI_DEV(0,0,0), 0x98,
+		pci_write_config16(PCI_DEV(0, 0, 0), 0x98,
 					(u16)(reclaimbase >> 6));
-		pci_write_config16(PCI_DEV(0,0,0), 0x9a,
+		pci_write_config16(PCI_DEV(0, 0, 0), 0x9a,
 					(u16)(reclaimlimit >> 6));
 	}
-	pci_write_config16(PCI_DEV(0,0,0), 0xa2, touud);
-	pci_write_config32(PCI_DEV(0,0,0), 0xa4, gfxbase << 20);
-	pci_write_config32(PCI_DEV(0,0,0), 0xa8, gttbase << 20);
-	pci_write_config32(PCI_DEV(0,0,0), 0xac, tsegbase << 20);
+	pci_write_config16(PCI_DEV(0, 0, 0), 0xa2, touud);
+	pci_write_config32(PCI_DEV(0, 0, 0), 0xa4, gfxbase << 20);
+	pci_write_config32(PCI_DEV(0, 0, 0), 0xa8, gttbase << 20);
+	pci_write_config32(PCI_DEV(0, 0, 0), 0xac, tsegbase << 20);
 }
 
 static void enhanced_ddr2(struct sysinfo *s)
@@ -1810,8 +1804,8 @@ static void enhanced_ddr2(struct sysinfo *s)
 		MCHBAR32(0x400*ch + 0x290) = 0x4f2091c;
 	}
 
-	reg8 = pci_read_config8(PCI_DEV(0,0,0), 0xf0);
-	pci_write_config8(PCI_DEV(0,0,0), 0xf0, reg8 | 1);
+	reg8 = pci_read_config8(PCI_DEV(0, 0, 0), 0xf0);
+	pci_write_config8(PCI_DEV(0, 0, 0), 0xf0, reg8 | 1);
 	MCHBAR32(0xfa0) = (MCHBAR32(0xfa0) & ~0x20002) | 0x2;
 	MCHBAR32(0xfa4) = (MCHBAR32(0xfa4) & ~0x219100c3) | 0x219100c2;
 	MCHBAR32(0x2c) = 0x44a53;
@@ -1821,7 +1815,7 @@ static void enhanced_ddr2(struct sysinfo *s)
 	MCHBAR32(0x3c) = 0x23014410;
 	MCHBAR32(0x40) = (MCHBAR32(0x40) & ~0x8f038000) | 0x8f038000;
 	MCHBAR32(0x20) = 0x33001;
-	pci_write_config8(PCI_DEV(0,0,0), 0xf0, reg8 & ~1);
+	pci_write_config8(PCI_DEV(0, 0, 0), 0xf0, reg8 & ~1);
 }
 
 static void power_ddr2(struct sysinfo *s)
@@ -1857,11 +1851,10 @@ static void power_ddr2(struct sysinfo *s)
 	reg3 = 0x232;
 	reg4 = 0x2864;
 
-	if (CHANNEL_IS_POPULATED(s->dimms, 0) && CHANNEL_IS_POPULATED(s->dimms, 1)) {
+	if (CHANNEL_IS_POPULATED(s->dimms, 0) && CHANNEL_IS_POPULATED(s->dimms, 1))
 		MCHBAR32(0x14) = 0x0010461f;
-	} else {
+	else
 		MCHBAR32(0x14) = 0x0010691f;
-	}
 	MCHBAR32(0x18) = 0xdf6437f7;
 	MCHBAR32(0x1c) = 0x0;
 	MCHBAR32(0x24) = (MCHBAR32(0x24) & ~0xe0000000) | 0x30000000;
@@ -1907,22 +1900,20 @@ static void power_ddr2(struct sysinfo *s)
 	MCHBAR32(0xfbc) = (MCHBAR32(0xfbc) & ~0x7f800) | 0xf000;
 	MCHBAR32(0x1104) = 0x3003232;
 	MCHBAR32(0x1108) = 0x74;
-	if (s->selected_timings.fsb_clk == FSB_CLOCK_800MHz) {
+	if (s->selected_timings.fsb_clk == FSB_CLOCK_800MHz)
 		MCHBAR32(0x110c) = 0xaa;
-	} else {
+	else
 		MCHBAR32(0x110c) = 0x100;
-	}
 	MCHBAR32(0x1110) = 0x10810350 & ~0x78;
 	MCHBAR32(0x1114) = 0;
-	if (s->selected_timings.mem_clk == MEM_CLOCK_667MHz) {
+	if (s->selected_timings.mem_clk == MEM_CLOCK_667MHz)
 		twl = 5;
-	} else {
+	else
 		twl = 6;
-	}
 	x592 = 0xff;
-	if (pci_read_config8(PCI_DEV(0,0,0), 0x8) < 3) {
+	if (pci_read_config8(PCI_DEV(0, 0, 0), 0x8) < 3)
 		x592 = ~0x4;
-	}
+
 	FOR_EACH_POPULATED_CHANNEL(s->dimms, ch) {
 		MCHBAR8(0x400*ch + 0x239) = twl + 15;
 		MCHBAR16(0x400*ch + 0x23c) = x23c;
@@ -1933,9 +1924,8 @@ static void power_ddr2(struct sysinfo *s)
 		MCHBAR8(0x400*ch + 0x593) = (MCHBAR8(0x400*ch + 0x593) & ~0x1f) | 0x1e;
 	}
 
-	for (lane = 0; lane < 8; lane++) {
+	for (lane = 0; lane < 8; lane++)
 		MCHBAR8(0x561 + (lane << 2)) = MCHBAR8(0x561 + (lane << 2)) & ~(1 << 3);
-	}
 }
 
 void raminit_ddr2(struct sysinfo *s)
@@ -1971,7 +1961,7 @@ void raminit_ddr2(struct sysinfo *s)
 			die("Error: DDR is faster than FSB, halt\n");
 	}
 
-	udelay(250000);
+	mdelay(250);
 
 	// Program clock crossing
 	clkcross_ddr2(s);
@@ -2026,12 +2016,12 @@ void raminit_ddr2(struct sysinfo *s)
 	MCHBAR8(0x100) = (2 << 5) | (3 << 3);
 	MCHBAR16(0x10e) = 0;
 	MCHBAR32(0x108) = 0;
-	pci_write_config16(PCI_DEV(0,0,0), 0xb0, 0x4000);
-	pci_write_config16(PCI_DEV(0,0,0), 0xa0, 0x0010);
-	pci_write_config16(PCI_DEV(0,0,0), 0xa2, 0x0400);
-	pci_write_config32(PCI_DEV(0,0,0), 0xa4, 0x40000000);
-	pci_write_config32(PCI_DEV(0,0,0), 0xa8, 0x40000000);
-	pci_write_config32(PCI_DEV(0,0,0), 0xac, 0x40000000);
+	pci_write_config16(PCI_DEV(0, 0, 0), 0xb0, 0x4000);
+	pci_write_config16(PCI_DEV(0, 0, 0), 0xa0, 0x0010);
+	pci_write_config16(PCI_DEV(0, 0, 0), 0xa2, 0x0400);
+	pci_write_config32(PCI_DEV(0, 0, 0), 0xa4, 0x40000000);
+	pci_write_config32(PCI_DEV(0, 0, 0), 0xa8, 0x40000000);
+	pci_write_config32(PCI_DEV(0, 0, 0), 0xac, 0x40000000);
 
 	// IOBUFACT
 	if (CHANNEL_IS_POPULATED(s->dimms, 0)) {
@@ -2039,7 +2029,7 @@ void raminit_ddr2(struct sysinfo *s)
 		MCHBAR8(0x5d8) = MCHBAR8(0x5d8) | 0x7;
 	}
 	if (CHANNEL_IS_POPULATED(s->dimms, 1)) {
-		if (pci_read_config8(PCI_DEV(0,0,0), 0x8) < 2) {
+		if (pci_read_config8(PCI_DEV(0, 0, 0), 0x8) < 2) {
 			MCHBAR8(0x5dd) = (MCHBAR8(0x5dd) & ~0x3f) | 0x3f;
 			MCHBAR8(0x5d8) = MCHBAR8(0x5d8) | 1;
 		}
@@ -2065,11 +2055,10 @@ void raminit_ddr2(struct sysinfo *s)
 	// After JEDEC reset
 	MCHBAR8(0x40) = MCHBAR8(0x40) & ~0x2;
 	FOR_EACH_POPULATED_CHANNEL(s->dimms, ch) {
-		if (s->selected_timings.mem_clk == MEM_CLOCK_667MHz) {
+		if (s->selected_timings.mem_clk == MEM_CLOCK_667MHz)
 			reg32 = (2 << 18) | (3 << 13) | (5 << 8);
-		} else {
+		else
 			reg32 = (2 << 18) | (3 << 13) | (4 << 8);
-		}
 		MCHBAR32(0x400*ch + 0x274) = (MCHBAR32(0x400*ch + 0x274) & ~0xfff00) | reg32;
 		MCHBAR8(0x400*ch + 0x274) = MCHBAR8(0x400*ch + 0x274) & ~0x80;
 		MCHBAR8(0x400*ch + 0x26c) = MCHBAR8(0x400*ch + 0x26c) | 1;

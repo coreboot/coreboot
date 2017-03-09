@@ -55,30 +55,27 @@ static void sdram_read_spds(struct sysinfo *s)
 			if (j == 62)
 				s->dimms[i].card_type = ((u8) status) & 0x1f;
 		}
-		if (status >= 0) {
+		if (status >= 0)
 			hexdump(s->dimms[i].spd_data, 64);
-		}
 	}
 
 	s->spd_type = 0;
 	int fail = 1;
 	FOR_EACH_POPULATED_DIMM(s->dimms, i) {
 		switch ((enum ddrxspd) s->dimms[i].spd_data[2]) {
-			case DDR2SPD:
-				if (s->spd_type == 0) {
-					s->spd_type = DDR2;
-				} else if (s->spd_type == DDR3) {
-					die("DIMM type mismatch\n");
-				}
-				break;
-			case DDR3SPD:
-			default:
-				if (s->spd_type == 0) {
-					s->spd_type = DDR3;
-				} else if (s->spd_type == DDR2) {
-					die("DIMM type mismatch\n");
-				}
-				break;
+		case DDR2SPD:
+			if (s->spd_type == 0)
+				s->spd_type = DDR2;
+			else if (s->spd_type == DDR3)
+				die("DIMM type mismatch\n");
+			break;
+		case DDR3SPD:
+		default:
+			if (s->spd_type == 0)
+				s->spd_type = DDR3;
+			else if (s->spd_type == DDR2)
+				die("DIMM type mismatch\n");
+			break;
 		}
 	}
 	if (s->spd_type == DDR3) {
@@ -135,9 +132,8 @@ static void sdram_read_spds(struct sysinfo *s)
 			fail = 0;
 		}
 	}
-	if (fail) {
+	if (fail)
 		die("No memory dimms, halt\n");
-	}
 
 	FOR_EACH_POPULATED_CHANNEL(s->dimms, chan) {
 		FOR_EACH_POPULATED_DIMM_IN_CHANNEL(s->dimms, chan, i) {
@@ -163,7 +159,8 @@ static void sdram_read_spds(struct sysinfo *s)
 static u8 msbpos(u8 val) //Reverse
 {
 	u8 i;
-	for (i = 7; (i >= 0) && ((val & (1 << i)) == 0); i--);
+	for (i = 7; (i >= 0) && ((val & (1 << i)) == 0); i--)
+		;
 	return i;
 }
 
@@ -174,25 +171,21 @@ static void mchinfo_ddr2(struct sysinfo *s)
 	printk(BIOS_WARNING, "%d CPU cores\n", s->cores);
 
 	u32 capid = pci_read_config16(PCI_DEV(0, 0, 0), 0xe8);
-	if (!(capid & (1<<(79-64)))) {
+	if (!(capid & (1<<(79-64))))
 		printk(BIOS_WARNING, "iTPM enabled\n");
-	}
 
 	capid = pci_read_config32(PCI_DEV(0, 0, 0), 0xe4);
-	if (!(capid & (1<<(57-32)))) {
+	if (!(capid & (1<<(57-32))))
 		printk(BIOS_WARNING, "ME enabled\n");
-	}
 
-	if (!(capid & (1<<(56-32)))) {
+	if (!(capid & (1<<(56-32))))
 		printk(BIOS_WARNING, "AMT enabled\n");
-	}
 
 	s->max_ddr2_mhz = 800; // All chipsets in x4x support up to 800MHz DDR2
 	printk(BIOS_WARNING, "Capable of DDR2 of %d MHz or lower\n", s->max_ddr2_mhz);
 
-	if (!(capid & (1<<(48-32)))) {
+	if (!(capid & (1<<(48-32))))
 		printk(BIOS_WARNING, "VT-d enabled\n");
-	}
 }
 
 static void sdram_detect_ram_speed(struct sysinfo *s)
@@ -205,7 +198,8 @@ static void sdram_detect_ram_speed(struct sysinfo *s)
 	u8 freq = 0;
 
 	// spdidx,cycletime @CAS				 5	   6
-	u8 idx800[7][2] = {{0,0}, {0,0}, {0,0}, {0,0}, {0,0}, {23,0x30}, {9,0x25}};
+	u8 idx800[7][2] = {{0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {23, 0x30},
+			   {9, 0x25} };
 	int found = 0;
 
 	// Find max FSB speed
@@ -236,9 +230,8 @@ static void sdram_detect_ram_speed(struct sysinfo *s)
 		FOR_EACH_POPULATED_DIMM(s->dimms, i) {
 			commoncas &= s->dimms[i].cas_latencies;
 		}
-		if (commoncas == 0) {
+		if (commoncas == 0)
 			die("No common CAS among dimms\n");
-		}
 
 		// Working from fastest to slowest,
 		// fast->slow 5@800 6@800 5@667
@@ -281,29 +274,24 @@ static void sdram_detect_ram_speed(struct sysinfo *s)
 		maxfreq = (s->max_ddr2_mhz == 800) ? MEM_CLOCK_800MHz : MEM_CLOCK_667MHz;
 		maxfreq >>= 3;
 		freq = MEM_CLOCK_1333MHz;
-		if (maxfreq) {
+		if (maxfreq)
 			freq = maxfreq + 2;
-		}
-		if (freq > MEM_CLOCK_1333MHz) {
+		if (freq > MEM_CLOCK_1333MHz)
 			freq = MEM_CLOCK_1333MHz;
-		}
 
 		// Limit DDR speed to FSB speed
 		switch (s->max_fsb) {
 		case FSB_CLOCK_800MHz:
-			if (freq > MEM_CLOCK_800MHz) {
+			if (freq > MEM_CLOCK_800MHz)
 				freq = MEM_CLOCK_800MHz;
-			}
 			break;
 		case FSB_CLOCK_1066MHz:
-			if (freq > MEM_CLOCK_1066MHz) {
+			if (freq > MEM_CLOCK_1066MHz)
 				freq = MEM_CLOCK_1066MHz;
-			}
 			break;
 		case FSB_CLOCK_1333MHz:
-			if (freq > MEM_CLOCK_1333MHz) {
+			if (freq > MEM_CLOCK_1333MHz)
 				freq = MEM_CLOCK_1333MHz;
-			}
 			break;
 		default:
 			die("Invalid FSB\n");
@@ -324,7 +312,7 @@ void sdram_initialize(int boot_path, const u8 *spd_map)
 
 	printk(BIOS_DEBUG, "Setting up RAM controller.\n");
 
-	pci_write_config8(PCI_DEV(0,0,0), 0xdf, 0xff);
+	pci_write_config8(PCI_DEV(0, 0, 0), 0xdf, 0xff);
 
 	memset(&s, 0, sizeof(struct sysinfo));
 
@@ -336,7 +324,7 @@ void sdram_initialize(int boot_path, const u8 *spd_map)
 
 	/* Detect dimms per channel */
 	s.dimms_per_ch = 2;
-	reg8 = pci_read_config8(PCI_DEV(0,0,0), 0xe9);
+	reg8 = pci_read_config8(PCI_DEV(0, 0, 0), 0xe9);
 	if (reg8 & 0x10)
 		s.dimms_per_ch = 1;
 
@@ -364,7 +352,7 @@ void sdram_initialize(int boot_path, const u8 *spd_map)
 	reg8 = pci_read_config8(PCI_DEV(0, 0x1f, 0), 0xa2);
 	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xa2, reg8 & ~0x80);
 
-	reg8 = pci_read_config8(PCI_DEV(0,0,0), 0xf4);
-	pci_write_config8(PCI_DEV(0,0,0), 0xf4, reg8 | 1);
+	reg8 = pci_read_config8(PCI_DEV(0, 0, 0), 0xf4);
+	pci_write_config8(PCI_DEV(0, 0, 0), 0xf4, reg8 | 1);
 	printk(BIOS_DEBUG, "RAM initialization finished.\n");
 }

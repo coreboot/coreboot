@@ -159,11 +159,10 @@ static struct device_operations cpu_bus_ops = {
 static void enable_dev(device_t dev)
 {
 	/* Set the operations if it is a special bus type */
-	if (dev->path.type == DEVICE_PATH_DOMAIN) {
+	if (dev->path.type == DEVICE_PATH_DOMAIN)
 		dev->ops = &pci_domain_ops;
-	} else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER) {
+	else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER)
 		dev->ops = &cpu_bus_ops;
-	}
 }
 
 static void x4x_init(void *const chip_info)
@@ -191,7 +190,8 @@ static void x4x_init(void *const chip_info)
 		for (; fn >= 0; --fn) {
 			const struct device *const d =
 				dev_find_slot(0, PCI_DEVFN(dev, fn));
-			if (!d || d->enabled) continue;
+			if (!d || d->enabled)
+				continue;
 			const u32 deven = pci_read_config32(d0f0, D0F0_DEVEN);
 			pci_write_config32(d0f0, D0F0_DEVEN,
 					   deven & ~(1 << (bit_base + fn)));

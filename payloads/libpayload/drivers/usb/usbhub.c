@@ -158,6 +158,21 @@ static const generic_hub_ops_t usb_hub_ops = {
 	.reset_port		= generic_hub_resetport,
 };
 
+/* Clear CSC if set and enumerate port if it's connected regardless of change
+   bits. Some broken hubs don't set CSC if already connected during reset. */
+static void
+usb_hub_port_initialize(usbdev_t *const dev, const int port)
+{
+	unsigned short buf[2];
+	int ret = get_status(dev, port, DR_PORT, sizeof(buf), buf);
+	if (ret < 0)
+		return;
+	if (buf[1] & PORT_CONNECTION)
+		clear_feature(dev, port, SEL_C_PORT_CONNECTION, DR_PORT);
+	if (buf[0] & PORT_CONNECTION)
+		generic_hub_scanport(dev, port);
+}
+
 void
 usb_hub_init(usbdev_t *const dev)
 {
@@ -172,5 +187,10 @@ usb_hub_init(usbdev_t *const dev)
 
 	if (dev->speed == SUPER_SPEED)
 		usb_hub_set_hub_depth(dev);
-	generic_hub_init(dev, desc.bNbrPorts, &usb_hub_ops);
+	if (generic_hub_init(dev, desc.bNbrPorts, &usb_hub_ops) < 0)
+		return;
+
+	int port;
+	for (port = 1; port <= GEN_HUB(dev)->num_ports; ++port)
+		usb_hub_port_initialize(dev, port);
 }

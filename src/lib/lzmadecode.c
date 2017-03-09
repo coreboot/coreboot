@@ -123,8 +123,10 @@ int LzmaDecodeProperties(CLzmaProperties *propsRes, const unsigned char *propsDa
   if (prop0 >= (9 * 5 * 5))
     return LZMA_RESULT_DATA_ERROR;
   {
-    for (propsRes->pb = 0; prop0 >= (9 * 5); propsRes->pb++, prop0 -= (9 * 5));
-    for (propsRes->lp = 0; prop0 >= 9; propsRes->lp++, prop0 -= 9);
+    for (propsRes->pb = 0; prop0 >= (9 * 5); propsRes->pb++, prop0 -= (9 * 5))
+	;
+    for (propsRes->lp = 0; prop0 >= 9; propsRes->lp++, prop0 -= 9)
+	;
     propsRes->lc = prop0;
     /*
     unsigned char remainder = (unsigned char)(prop0 / 9);
@@ -221,9 +223,12 @@ int LzmaDecode(CLzmaDecoderState *vs,
       previousByte = (Byte)symbol;
 
       outStream[nowPos++] = previousByte;
-      if (state < 4) state = 0;
-      else if (state < 10) state -= 3;
-      else state -= 6;
+      if (state < 4)
+	state = 0;
+      else if (state < 10)
+	state -= 3;
+      else
+	state -= 6;
     }
     else
     {

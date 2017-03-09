@@ -296,15 +296,13 @@ detailed_block(struct edid *result_edid, unsigned char *x, int in_extension,
 			if (c->claims_one_point_four) {
 				if (x[4] & 0x02) {
 					v_max_offset = 255;
-					if (x[4] & 0x01) {
+					if (x[4] & 0x01)
 						v_min_offset = 255;
-					}
 				}
 				if (x[4] & 0x04) {
 					h_max_offset = 255;
-					if (x[4] & 0x03) {
+					if (x[4] & 0x03)
 						h_min_offset = 255;
-					}
 				}
 			} else if (x[4]) {
 				c->has_valid_range_descriptor = 0;
@@ -446,9 +444,8 @@ detailed_block(struct edid *result_edid, unsigned char *x, int in_extension,
 		}
 	}
 
-	if (c->seen_non_detailed_descriptor && !in_extension) {
+	if (c->seen_non_detailed_descriptor && !in_extension)
 		c->has_valid_descriptor_ordering = 0;
-	}
 
 	/* Edid contains pixel clock in terms of 10KHz */
 	out->mode.pixel_clock = (x[0] + (x[1] << 8)) * 10;
@@ -871,9 +868,8 @@ parse_cea(struct edid *out, unsigned char *x, struct edid_context *c)
 			} else if (version == 3) {
 				int i;
 				printk(BIOS_SPEW, "%d bytes of CEA data\n", offset - 4);
-				for (i = 4; i < offset; i += (x[i] & 0x1f) + 1) {
+				for (i = 4; i < offset; i += (x[i] & 0x1f) + 1)
 					cea_block(out, x + i);
-				}
 			}
 
 			if (version >= 2) {
@@ -1156,9 +1152,8 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 			extra_info.type = edid[0x14] & 0x0f;
 		} else 	if (c.claims_one_point_two) {
 			conformance_mask = 0x7E;
-			if (edid[0x14] & 0x01) {
+			if (edid[0x14] & 0x01)
 				printk(BIOS_SPEW, "DFP 1.x compatible TMDS\n");
-			}
 		} else
 			conformance_mask = 0x7F;
 

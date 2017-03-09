@@ -134,9 +134,8 @@ static void coverage_init(void *unused)
 	if (ctor == NULL)
 		return;
 
-	for (; *ctor != (func_ptr) 0; ctor++) {
+	for (; *ctor != (func_ptr) 0; ctor++)
 		(*ctor)();
-	}
 }
 
 void __gcov_flush(void);

@@ -18,7 +18,6 @@
 #include <halt.h>
 
 void halt(void) {
-	while (1) {
+	while (1)
 		hlt();
-	}
 }

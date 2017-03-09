@@ -62,9 +62,8 @@ void dump_spd_registers(void)
 		printk(BIOS_DEBUG, "dimm %02x", device);
 		for(i = 0; (i < 256) && (status == 0); i++) {
 			unsigned int char byte;
-			if ((i % 20) == 0) {
+			if ((i % 20) == 0)
 				printk(BIOS_DEBUG, "\n%3d: ", i);
-			}
 			status = smbus_read_byte(device, i, &byte);
 			if (status != 0) {
 				printk(BIOS_DEBUG, "bad device\n");

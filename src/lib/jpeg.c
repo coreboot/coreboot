@@ -931,9 +931,8 @@ static void col221111(int *out, unsigned char *pic, int width)
 	outc = out + 64 * 4;
 	for (i = 2; i > 0; i--) {
 		for (j = 4; j > 0; j--) {
-			for (k = 0; k < 8; k++) {
+			for (k = 0; k < 8; k++)
 				PIC221111(k);
-			}
 			outc += 8;
 			outy += 16;
 			pic0 += 2 * width;
@@ -956,9 +955,8 @@ static void col221111_16(int *out, unsigned char *pic, int width)
 	outc = out + 64 * 4;
 	for (i = 2; i > 0; i--) {
 		for (j = 4; j > 0; j--) {
-			for (k = 0; k < 8; k++) {
+			for (k = 0; k < 8; k++)
 			    PIC221111_16(k);
-			}
 			outc += 8;
 			outy += 16;
 			pic0 += 2 * width;
@@ -981,9 +979,8 @@ static void col221111_32(int *out, unsigned char *pic, int width)
 	outc = out + 64 * 4;
 	for (i = 2; i > 0; i--) {
 		for (j = 4; j > 0; j--) {
-			for (k = 0; k < 8; k++) {
+			for (k = 0; k < 8; k++)
 				PIC221111_32(k);
-			}
 			outc += 8;
 			outy += 16;
 			pic0 += 2 * width;

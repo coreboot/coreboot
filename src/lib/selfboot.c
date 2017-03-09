@@ -369,7 +369,7 @@ static int load_self_segments(struct segment *head, struct prog *payload,
 			return 0;
 	}
 
-	for(ptr = head->next; ptr != head; ptr = ptr->next) {
+	for (ptr = head->next; ptr != head; ptr = ptr->next) {
 		/*
 		 * Add segments to bootmem memory map before a bounce buffer is
 		 * allocated so that there aren't conflicts with the actual
@@ -391,7 +391,7 @@ static int load_self_segments(struct segment *head, struct prog *payload,
 		return 0;
 	}
 
-	for(ptr = head->next; ptr != head; ptr = ptr->next) {
+	for (ptr = head->next; ptr != head; ptr = ptr->next) {
 		unsigned char *dest, *src, *middle, *end;
 		size_t len, memsz;
 		printk(BIOS_DEBUG, "Loading Segment: addr: 0x%016lx memsz: 0x%016lx filesz: 0x%016lx\n",
@@ -415,7 +415,7 @@ static int load_self_segments(struct segment *head, struct prog *payload,
 		end = dest + memsz;
 
 		/* Copy data from the initial buffer */
-		switch(ptr->compression) {
+		switch (ptr->compression) {
 			case CBFS_COMPRESS_LZMA: {
 				printk(BIOS_DEBUG, "using LZMA\n");
 				timestamp_add_now(TS_START_ULZMA);

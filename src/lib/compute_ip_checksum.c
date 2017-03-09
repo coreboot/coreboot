@@ -15,7 +15,7 @@ unsigned long compute_ip_checksum(const void *addr, unsigned long length)
 	 */
 	sum = 0;
 	ptr = addr;
-	for(i = 0; i < length; i++) {
+	for (i = 0; i < length; i++) {
 		unsigned long v;
 		v = ptr[i];
 		if (i & 1)

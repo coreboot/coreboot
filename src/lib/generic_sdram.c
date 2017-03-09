@@ -9,7 +9,7 @@ void sdram_initialize(int controllers, const struct mem_controller *ctrl)
 {
 	int i;
 	/* Set the registers we can set once to reasonable values */
-	for(i = 0; i < controllers; i++) {
+	for (i = 0; i < controllers; i++) {
 		printk(BIOS_DEBUG, "Ram1.%02x\n", i);
 
 	#if CONFIG_RAMINIT_SYSINFO
@@ -20,7 +20,7 @@ void sdram_initialize(int controllers, const struct mem_controller *ctrl)
 	}
 
 	/* Now setup those things we can auto detect */
-	for(i = 0; i < controllers; i++) {
+	for (i = 0; i < controllers; i++) {
 		printk(BIOS_DEBUG, "Ram2.%02x\n", i);
 
 	#if CONFIG_RAMINIT_SYSINFO

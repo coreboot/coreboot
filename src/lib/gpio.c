@@ -137,7 +137,7 @@ int _gpio_base3_value(gpio_t gpio[], int num_gpio, int binary_first)
 		 * now. We know that there can be no binary numbers 1020-102X.
 		 */
 		if (binary_first && !has_z) {
-			switch(temp) {
+			switch (temp) {
 			case 0:	/* Ignore '0' digits. */
 				break;
 			case 1:	/* Account for binaries 0 to 2^index - 1. */

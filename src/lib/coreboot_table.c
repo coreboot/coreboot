@@ -394,7 +394,7 @@ static void lb_strings(struct lb_header *header)
 		{ LB_TAG_COMPILE_TIME,   coreboot_compile_time,   },
 	};
 	unsigned int i;
-	for(i = 0; i < ARRAY_SIZE(strings); i++) {
+	for (i = 0; i < ARRAY_SIZE(strings); i++) {
 		struct lb_string *rec;
 		size_t len;
 		rec = (struct lb_string *)lb_new_record(header);

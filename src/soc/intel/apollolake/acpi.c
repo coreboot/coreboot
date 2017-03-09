@@ -81,7 +81,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 	return acpi_madt_irq_overrides(current);
 }
 
-void acpi_fill_fadt(acpi_fadt_t * fadt)
+void acpi_fill_fadt(acpi_fadt_t *fadt)
 {
 	const uint16_t pmbase = ACPI_PMIO_BASE;
 

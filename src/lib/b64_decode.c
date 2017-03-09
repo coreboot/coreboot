@@ -84,10 +84,10 @@ size_t b64_decode(const uint8_t *input_data,
 		  uint8_t *output_data)
 {
 	struct buffer_descriptor bd;
-	unsigned interim = 0;
+	unsigned int interim = 0;
 	size_t output_size = 0;
 	/* count of processed input bits, modulo log2(64) */
-	unsigned bit_count = 0;
+	unsigned int bit_count = 0;
 
 	/*
 	 * Keep the context on the stack to make things easier if this needs

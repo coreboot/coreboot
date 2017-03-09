@@ -25,12 +25,12 @@ permissions described in the GCC Runtime Library Exception, version
    another source file, after having #included gcov-io.h.  */
 
 #if !IN_GCOV
-static void gcov_write_block (unsigned);
-static gcov_unsigned_t *gcov_write_words (unsigned);
+static void gcov_write_block (unsigned int);
+static gcov_unsigned_t *gcov_write_words (unsigned int);
 #endif
-static const gcov_unsigned_t *gcov_read_words (unsigned);
+static const gcov_unsigned_t *gcov_read_words (unsigned int);
 #if !IN_LIBGCOV
-static void gcov_allocate (unsigned);
+static void gcov_allocate (unsigned int);
 #endif
 
 static inline gcov_unsigned_t from_file (gcov_unsigned_t value)
@@ -198,7 +198,7 @@ gcov_magic (gcov_unsigned_t magic, gcov_unsigned_t expected)
 
 #if !IN_LIBGCOV
 static void
-gcov_allocate (unsigned length)
+gcov_allocate (unsigned int length)
 {
   size_t new_size = gcov_var.alloc;
 
@@ -216,7 +216,7 @@ gcov_allocate (unsigned length)
 /* Write out the current block, if needs be.  */
 
 static void
-gcov_write_block (unsigned size)
+gcov_write_block (unsigned int size)
 {
   if (fwrite (gcov_var.buffer, size << 2, 1, gcov_var.file) != 1)
     gcov_var.error = 1;
@@ -228,7 +228,7 @@ gcov_write_block (unsigned size)
    pointer to those bytes, or NULL on failure.  */
 
 static gcov_unsigned_t *
-gcov_write_words (unsigned words)
+gcov_write_words (unsigned int words)
 {
   gcov_unsigned_t *result;
 
@@ -288,8 +288,8 @@ gcov_write_counter (gcov_type value)
 GCOV_LINKAGE void
 gcov_write_string (const char *string)
 {
-  unsigned length = 0;
-  unsigned alloc = 0;
+  unsigned int length = 0;
+  unsigned int alloc = 0;
   gcov_unsigned_t *buffer;
 
   if (string)
@@ -330,7 +330,7 @@ gcov_write_tag (gcov_unsigned_t tag)
 GCOV_LINKAGE void
 gcov_write_length (gcov_position_t position)
 {
-  unsigned offset;
+  unsigned int offset;
   gcov_unsigned_t length;
   gcov_unsigned_t *buffer;
 
@@ -364,7 +364,7 @@ gcov_write_tag_length (gcov_unsigned_t tag, gcov_unsigned_t length)
 GCOV_LINKAGE void
 gcov_write_summary (gcov_unsigned_t tag, const struct gcov_summary *summary)
 {
-  unsigned ix;
+  unsigned int ix;
   const struct gcov_ctr_summary *csum;
 
   gcov_write_tag_length (tag, GCOV_TAG_SUMMARY_LENGTH);
@@ -386,10 +386,10 @@ gcov_write_summary (gcov_unsigned_t tag, const struct gcov_summary *summary)
    NULL on failure (read past EOF).  */
 
 static const gcov_unsigned_t *
-gcov_read_words (unsigned words)
+gcov_read_words (unsigned int words)
 {
   const gcov_unsigned_t *result;
-  unsigned excess = gcov_var.length - gcov_var.offset;
+  unsigned int excess = gcov_var.length - gcov_var.offset;
 
   gcc_assert (gcov_var.mode > 0);
   if (excess < words)
@@ -472,7 +472,7 @@ gcov_read_counter (void)
 GCOV_LINKAGE const char *
 gcov_read_string (void)
 {
-  unsigned length = gcov_read_unsigned ();
+  unsigned int length = gcov_read_unsigned ();
 
   if (!length)
     return 0;
@@ -484,7 +484,7 @@ gcov_read_string (void)
 GCOV_LINKAGE void
 gcov_read_summary (struct gcov_summary *summary)
 {
-  unsigned ix;
+  unsigned int ix;
   struct gcov_ctr_summary *csum;
 
   summary->checksum = gcov_read_unsigned ();

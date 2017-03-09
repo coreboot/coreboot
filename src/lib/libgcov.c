@@ -79,17 +79,17 @@ void __gcov_flush (void) {}
 
 #ifdef L_gcov_merge_add
 void __gcov_merge_add (gcov_type *counters  __attribute__ ((unused)),
-		       unsigned n_counters __attribute__ ((unused))) {}
+		       unsigned int n_counters __attribute__ ((unused))) {}
 #endif
 
 #ifdef L_gcov_merge_single
 void __gcov_merge_single (gcov_type *counters  __attribute__ ((unused)),
-			  unsigned n_counters __attribute__ ((unused))) {}
+			  unsigned int n_counters __attribute__ ((unused))) {}
 #endif
 
 #ifdef L_gcov_merge_delta
 void __gcov_merge_delta (gcov_type *counters  __attribute__ ((unused)),
-			 unsigned n_counters __attribute__ ((unused))) {}
+			 unsigned int n_counters __attribute__ ((unused))) {}
 #endif
 
 #else
@@ -103,7 +103,7 @@ void __gcov_merge_delta (gcov_type *counters  __attribute__ ((unused)),
 #endif
 #else
 void __gcov_merge_add(gcov_type *counters  __attribute__ ((unused)),
-			unsigned n_counters __attribute__ ((unused))) {}
+			unsigned int n_counters __attribute__ ((unused))) {}
 #endif /* __COREBOOT__ */
 
 #ifdef L_gcov
@@ -112,7 +112,7 @@ void __gcov_merge_add(gcov_type *counters  __attribute__ ((unused)),
 struct gcov_fn_buffer
 {
   struct gcov_fn_buffer *next;
-  unsigned fn_ix;
+  unsigned int fn_ix;
   struct gcov_fn_info info;
   /* note gcov_fn_info ends in a trailing array.  */
 };
@@ -177,10 +177,10 @@ create_file_directory (char *filename)
 
 static struct gcov_fn_buffer *
 free_fn_data (const struct gcov_info *gi_ptr, struct gcov_fn_buffer *buffer,
-	      unsigned limit)
+	      unsigned int limit)
 {
   struct gcov_fn_buffer *next;
-  unsigned ix, n_ctr = 0;
+  unsigned int ix, n_ctr = 0;
 
   if (!buffer)
     return 0;
@@ -195,11 +195,11 @@ free_fn_data (const struct gcov_info *gi_ptr, struct gcov_fn_buffer *buffer,
 
 static struct gcov_fn_buffer **
 buffer_fn_data (const char *filename, const struct gcov_info *gi_ptr,
-		struct gcov_fn_buffer **end_ptr, unsigned fn_ix)
+		struct gcov_fn_buffer **end_ptr, unsigned int fn_ix)
 {
-  unsigned n_ctrs = 0, ix = 0;
+  unsigned int n_ctrs = 0, ix = 0;
   struct gcov_fn_buffer *fn_buffer;
-  unsigned len;
+  unsigned int len;
 
   for (ix = GCOV_COUNTERS; ix--;)
     if (gi_ptr->merge[ix])
@@ -260,11 +260,11 @@ fail:
 static gcov_unsigned_t
 crc32_unsigned (gcov_unsigned_t crc32, gcov_unsigned_t value)
 {
-  unsigned ix;
+  unsigned int ix;
 
   for (ix = 32; ix--; value <<= 1)
     {
-      unsigned feedback;
+      unsigned int feedback;
 
       feedback = (value ^ crc32) & 0x80000000 ? 0x04c11db7 : 0;
       crc32 <<= 1;
@@ -314,7 +314,7 @@ gcov_exit (void)
   struct gcov_summary all_prg;  /* summary for all instances of program.  */
   struct gcov_ctr_summary *cs_ptr;
   const struct gcov_ctr_info *ci_ptr;
-  unsigned t_ix;
+  unsigned int t_ix;
   int f_ix = 0;
   gcov_unsigned_t c_num;
   const char *gcov_prefix;
@@ -331,7 +331,7 @@ gcov_exit (void)
       crc32 = crc32_unsigned (crc32, gi_ptr->stamp);
       crc32 = crc32_unsigned (crc32, gi_ptr->n_functions);
 
-      for (f_ix = 0; (unsigned)f_ix != gi_ptr->n_functions; f_ix++)
+      for (f_ix = 0; (unsigned int)f_ix != gi_ptr->n_functions; f_ix++)
 	{
 	  gfi_ptr = gi_ptr->functions[f_ix];
 
@@ -408,7 +408,7 @@ gcov_exit (void)
   /* Now merge each file.  */
   for (gi_ptr = gcov_list; gi_ptr; gi_ptr = gi_ptr->next)
     {
-      unsigned n_counts;
+      unsigned int n_counts;
       struct gcov_summary prg; /* summary for this object over all
 				  program.  */
       struct gcov_ctr_summary *cs_prg, *cs_tprg, *cs_all;
@@ -519,7 +519,7 @@ gcov_exit (void)
 	    }
 
 	  /* Merge execution counts for each function.  */
-	  for (f_ix = 0; (unsigned)f_ix != gi_ptr->n_functions;
+	  for (f_ix = 0; (unsigned int)f_ix != gi_ptr->n_functions;
 	       f_ix++, tag = gcov_read_unsigned ())
 	    {
 	      gfi_ptr = gi_ptr->functions[f_ix];
@@ -658,11 +658,11 @@ gcov_exit (void)
 	gcov_seek (eof_pos);
 
       /* Write execution counts for each function.  */
-      for (f_ix = 0; (unsigned)f_ix != gi_ptr->n_functions; f_ix++)
+      for (f_ix = 0; (unsigned int)f_ix != gi_ptr->n_functions; f_ix++)
 	{
-	  unsigned buffered = 0;
+	  unsigned int buffered = 0;
 
-	  if (fn_buffer && fn_buffer->fn_ix == (unsigned)f_ix)
+	  if (fn_buffer && fn_buffer->fn_ix == (unsigned int)f_ix)
 	    {
 	      /* Buffered data from another program.  */
 	      buffered = 1;
@@ -757,11 +757,11 @@ __gcov_flush (void)
   gcov_exit ();
   for (gi_ptr = gcov_list; gi_ptr; gi_ptr = gi_ptr->next)
     {
-      unsigned f_ix;
+      unsigned int f_ix;
 
       for (f_ix = 0; f_ix < gi_ptr->n_functions; f_ix++)
 	{
-	  unsigned t_ix;
+	  unsigned int t_ix;
 	  const struct gcov_fn_info *gfi_ptr = gi_ptr->functions[f_ix];
 
 	  if (!gfi_ptr || gfi_ptr->key != gi_ptr)
@@ -786,7 +786,7 @@ __gcov_flush (void)
    an array COUNTERS of N_COUNTERS old counters and it reads the same number
    of counters from the gcov file.  */
 void
-__gcov_merge_add (gcov_type *counters, unsigned n_counters)
+__gcov_merge_add (gcov_type *counters, unsigned int n_counters)
 {
   for (; n_counters; counters++, n_counters--)
     *counters += gcov_read_counter ();
@@ -798,7 +798,7 @@ __gcov_merge_add (gcov_type *counters, unsigned n_counters)
    an array COUNTERS of N_COUNTERS old counters and it reads the same number
    of counters from the gcov file.  */
 void
-__gcov_merge_ior (gcov_type *counters, unsigned n_counters)
+__gcov_merge_ior (gcov_type *counters, unsigned int n_counters)
 {
   for (; n_counters; counters++, n_counters--)
     *counters |= gcov_read_counter ();
@@ -817,9 +817,9 @@ __gcov_merge_ior (gcov_type *counters, unsigned n_counters)
  * -- total number of evaluations of the value
  */
 void
-__gcov_merge_single (gcov_type *counters, unsigned n_counters)
+__gcov_merge_single (gcov_type *counters, unsigned int n_counters)
 {
-  unsigned i, n_measures;
+  unsigned int i, n_measures;
   gcov_type value, counter, all;
 
   gcc_assert (!(n_counters % 3));
@@ -857,9 +857,9 @@ __gcov_merge_single (gcov_type *counters, unsigned n_counters)
  * -- total number of evaluations of the value
  */
 void
-__gcov_merge_delta (gcov_type *counters, unsigned n_counters)
+__gcov_merge_delta (gcov_type *counters, unsigned int n_counters)
 {
-  unsigned i, n_measures;
+  unsigned int i, n_measures;
   gcov_type value, counter, all;
 
   gcc_assert (!(n_counters % 4));
@@ -893,7 +893,7 @@ __gcov_merge_delta (gcov_type *counters, unsigned n_counters)
 
 void
 __gcov_interval_profiler (gcov_type *counters, gcov_type value,
-			  int start, unsigned steps)
+			  int start, unsigned int steps)
 {
   gcov_type delta = value - start;
   if (delta < 0)
@@ -1030,7 +1030,7 @@ int
 __gcov_execl (const char *path, char *arg, ...)
 {
   va_list ap, aq;
-  unsigned i, length;
+  unsigned int i, length;
   char **args;
 
   __gcov_flush ();
@@ -1061,7 +1061,7 @@ int
 __gcov_execlp (const char *path, char *arg, ...)
 {
   va_list ap, aq;
-  unsigned i, length;
+  unsigned int i, length;
   char **args;
 
   __gcov_flush ();
@@ -1092,7 +1092,7 @@ int
 __gcov_execle (const char *path, char *arg, ...)
 {
   va_list ap, aq;
-  unsigned i, length;
+  unsigned int i, length;
   char **args;
   char **envp;
 

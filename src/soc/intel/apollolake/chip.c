@@ -327,8 +327,8 @@ static void soc_final(void *data)
 	global_reset_lock();
 }
 
-static void disable_dev(struct device *dev, FSP_S_CONFIG *silconfig) {
-
+static void disable_dev(struct device *dev, FSP_S_CONFIG *silconfig)
+{
 	switch (dev->path.pci.devfn) {
 	case ISH_DEVFN:
 		silconfig->IshEnable = 0;

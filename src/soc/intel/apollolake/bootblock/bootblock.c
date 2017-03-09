@@ -20,6 +20,7 @@
 #include <device/pci.h>
 #include <intelblocks/pcr.h>
 #include <intelblocks/systemagent.h>
+#include <intelblocks/rtc.h>
 #include <lib.h>
 #include <soc/iomap.h>
 #include <soc/cpu.h>
@@ -28,14 +29,10 @@
 #include <soc/mmap_boot.h>
 #include <soc/systemagent.h>
 #include <soc/pci_devs.h>
-#include <soc/pcr_ids.h>
 #include <soc/pm.h>
 #include <soc/uart.h>
 #include <spi-generic.h>
 #include <timestamp.h>
-
-#define PCR_RTC_CONF		0x3400
-#define PCR_RTC_CONF_UCMOS_EN	0x4
 
 static const struct pad_config tpm_spi_configs[] = {
 	PAD_CFG_NF(GPIO_106, NATIVE, DEEP, NF3),	/* FST_SPI_CS2_N */
@@ -45,11 +42,6 @@ static void tpm_enable(void)
 {
 	/* Configure gpios */
 	gpio_configure_pads(tpm_spi_configs, ARRAY_SIZE(tpm_spi_configs));
-}
-
-static void enable_cmos_upper_bank(void)
-{
-	pcr_or32(PID_RTC, PCR_RTC_CONF, PCR_RTC_CONF_UCMOS_EN);
 }
 
 asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
@@ -71,7 +63,7 @@ asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 	pci_write_config16(dev, PCI_COMMAND,
 				PCI_COMMAND_IO | PCI_COMMAND_MASTER);
 
-	enable_cmos_upper_bank();
+	enable_rtc_upper_bank();
 
 	/* Call lib/bootblock.c main */
 	bootblock_main_with_timestamp(base_timestamp);

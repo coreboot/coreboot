@@ -277,6 +277,7 @@ static const struct pci_driver gec_driver __pci_driver = {
  */
 static void sb800_init(void *chip_info)
 {
+	printk(BIOS_DEBUG, "SB800: %s\n", __func__);
 	sb_config->StdHeader.CALLBACK.CalloutPtr = sb800_callout_entry;
 	sb800_cimx_config(sb_config);
 
@@ -289,36 +290,42 @@ static void sb800_init(void *chip_info)
  */
 void sb_Before_Pci_Init(void)
 {
+	printk(BIOS_DEBUG, "SB800: %s\n", __func__);
 	sb_config->StdHeader.Func = SB_BEFORE_PCI_INIT;
 	AmdSbDispatcher(sb_config);
 }
 
 void sb_After_Pci_Init(void)
 {
+	printk(BIOS_DEBUG, "SB800: %s\n", __func__);
 	sb_config->StdHeader.Func = SB_AFTER_PCI_INIT;
 	AmdSbDispatcher(sb_config);
 }
 
 void sb_Mid_Post_Init(void)
 {
+	printk(BIOS_DEBUG, "SB800: %s\n", __func__);
 	sb_config->StdHeader.Func = SB_MID_POST_INIT;
 	AmdSbDispatcher(sb_config);
 }
 
 void sb_Late_Post(void)
 {
+	printk(BIOS_DEBUG, "SB800: %s\n", __func__);
 	sb_config->StdHeader.Func = SB_LATE_POST_INIT;
 	AmdSbDispatcher(sb_config);
 }
 
 void sb_Before_Pci_Restore_Init(void)
 {
+	printk(BIOS_DEBUG, "SB800: %s\n", __func__);
 	sb_config->StdHeader.Func = SB_BEFORE_PCI_RESTORE_INIT;
 	AmdSbDispatcher(sb_config);
 }
 
 void sb_After_Pci_Restore_Init(void)
 {
+	printk(BIOS_DEBUG, "SB800: %s\n", __func__);
 	sb_config->StdHeader.Func = SB_AFTER_PCI_RESTORE_INIT;
 	AmdSbDispatcher(sb_config);
 }

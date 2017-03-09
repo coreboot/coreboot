@@ -19,6 +19,7 @@
 #include <device/device.h>
 #include <device/pci_def.h>
 #include <intelblocks/pcr.h>
+#include <intelblocks/rtc.h>
 #include <soc/bootblock.h>
 #include <soc/iomap.h>
 #include <soc/itss.h>
@@ -44,9 +45,6 @@
 
 #define PCR_DMI_LPCIOD		0x2770
 #define PCR_DMI_LPCIOE		0x2774
-
-#define PCR_RTC_CONF		0x3400
-#define PCR_RTC_CONF_UCMOS_EN	0x4
 
 /*
  * Enable Prefetching and Caching.
@@ -247,12 +245,6 @@ static void soc_config_tco(void)
 	outw(tcocnt, tcobase + TCO1_CNT);
 }
 
-static void soc_config_rtc(void)
-{
-	/* Enable upper 128 bytes of CMOS */
-	pcr_or32(PID_RTC, PCR_RTC_CONF, PCR_RTC_CONF_UCMOS_EN);
-}
-
 static void enable_heci(void)
 {
 	device_t dev = PCH_DEV_CSE;
@@ -322,7 +314,7 @@ void pch_early_init(void)
 	/* Set up GPE configuration */
 	pmc_gpe_init();
 
-	soc_config_rtc();
+	enable_rtc_upper_bank();
 
 	enable_heci();
 }

@@ -80,7 +80,7 @@ static int fseek(FILE *stream, long offset, int whence)
 {
 	/* fseek should only be called with offset==0 and whence==SEEK_SET
 	 * to a freshly opened file. */
-	gcc_assert (offset == 0 && whence == SEEK_SET);
+	gcc_assert(offset == 0 && whence == SEEK_SET);
 #if CONFIG_DEBUG_COVERAGE
 	printk(BIOS_DEBUG, "fseek %s offset=%ld whence=%d\n",
 		stream->filename, offset, whence);

@@ -25,15 +25,15 @@ permissions described in the GCC Runtime Library Exception, version
    another source file, after having #included gcov-io.h.  */
 
 #if !IN_GCOV
-static void gcov_write_block (unsigned int);
-static gcov_unsigned_t *gcov_write_words (unsigned int);
+static void gcov_write_block(unsigned int);
+static gcov_unsigned_t *gcov_write_words(unsigned int);
 #endif
-static const gcov_unsigned_t *gcov_read_words (unsigned int);
+static const gcov_unsigned_t *gcov_read_words(unsigned int);
 #if !IN_LIBGCOV
-static void gcov_allocate (unsigned int);
+static void gcov_allocate(unsigned int);
 #endif
 
-static inline gcov_unsigned_t from_file (gcov_unsigned_t value)
+static inline gcov_unsigned_t from_file(gcov_unsigned_t value)
 {
 #if !IN_LIBGCOV
   if (gcov_var.endian)
@@ -57,9 +57,9 @@ static inline gcov_unsigned_t from_file (gcov_unsigned_t value)
 
 GCOV_LINKAGE int
 #if IN_LIBGCOV
-gcov_open (const char *name)
+gcov_open(const char *name)
 #else
-gcov_open (const char *name, int mode)
+gcov_open(const char *name, int mode)
 #endif
 {
 #if IN_LIBGCOV
@@ -72,10 +72,10 @@ gcov_open (const char *name, int mode)
   s_flock.l_whence = SEEK_SET;
   s_flock.l_start = 0;
   s_flock.l_len = 0; /* Until EOF.  */
-  s_flock.l_pid = getpid ();
+  s_flock.l_pid = getpid();
 #endif
 
-  gcc_assert (!gcov_var.file);
+  gcc_assert(!gcov_var.file);
   gcov_var.start = 0;
   gcov_var.offset = gcov_var.length = 0;
   gcov_var.overread = -1u;
@@ -88,25 +88,25 @@ gcov_open (const char *name, int mode)
     {
       /* Read-only mode - acquire a read-lock.  */
       s_flock.l_type = F_RDLCK;
-      fd = open (name, O_RDONLY);
+      fd = open(name, O_RDONLY);
     }
   else
     {
       /* Write mode - acquire a write-lock.  */
       s_flock.l_type = F_WRLCK;
-      fd = open (name, O_RDWR | O_CREAT, 0666);
+      fd = open(name, O_RDWR | O_CREAT, 0666);
     }
   if (fd < 0)
     return 0;
 
-  while (fcntl (fd, F_SETLKW, &s_flock) && errno == EINTR)
+  while (fcntl(fd, F_SETLKW, &s_flock) && errno == EINTR)
     continue;
 
-  gcov_var.file = fdopen (fd, (mode > 0) ? "rb" : "r+b");
+  gcov_var.file = fdopen(fd, (mode > 0) ? "rb" : "r+b");
 
   if (!gcov_var.file)
     {
-      close (fd);
+      close(fd);
       return 0;
     }
 
@@ -116,9 +116,9 @@ gcov_open (const char *name, int mode)
     {
       struct stat st;
 
-      if (fstat (fd, &st) < 0)
+      if (fstat(fd, &st) < 0)
 	{
-	  fclose (gcov_var.file);
+	  fclose(gcov_var.file);
 	  gcov_var.file = 0;
 	  return 0;
 	}
@@ -131,13 +131,13 @@ gcov_open (const char *name, int mode)
     gcov_var.mode = mode * 2 + 1;
 #else
   if (mode >= 0)
-    gcov_var.file = fopen (name, (mode > 0) ? "rb" : "r+b");
+    gcov_var.file = fopen(name, (mode > 0) ? "rb" : "r+b");
 
   if (gcov_var.file)
     gcov_var.mode = 1;
   else if (mode <= 0)
     {
-      gcov_var.file = fopen (name, "w+b");
+      gcov_var.file = fopen(name, "w+b");
       if (gcov_var.file)
 	gcov_var.mode = mode * 2 + 1;
     }
@@ -145,7 +145,7 @@ gcov_open (const char *name, int mode)
     return 0;
 #endif
 
-  setbuf (gcov_var.file, (char *)0);
+  setbuf(gcov_var.file, (char *)0);
 
   return 1;
 }
@@ -154,20 +154,20 @@ gcov_open (const char *name, int mode)
    on failure or error flag set.  */
 
 GCOV_LINKAGE int
-gcov_close (void)
+gcov_close(void)
 {
   if (gcov_var.file)
     {
 #if !IN_GCOV
       if (gcov_var.offset && gcov_var.mode < 0)
-	gcov_write_block (gcov_var.offset);
+	gcov_write_block(gcov_var.offset);
 #endif
-      fclose (gcov_var.file);
+      fclose(gcov_var.file);
       gcov_var.file = 0;
       gcov_var.length = 0;
     }
 #if !IN_LIBGCOV
-  free (gcov_var.buffer);
+  free(gcov_var.buffer);
   gcov_var.alloc = 0;
   gcov_var.buffer = 0;
 #endif
@@ -181,7 +181,7 @@ gcov_close (void)
    not EXPECTED.  */
 
 GCOV_LINKAGE int
-gcov_magic (gcov_unsigned_t magic, gcov_unsigned_t expected)
+gcov_magic(gcov_unsigned_t magic, gcov_unsigned_t expected)
 {
   if (magic == expected)
     return 1;
@@ -198,7 +198,7 @@ gcov_magic (gcov_unsigned_t magic, gcov_unsigned_t expected)
 
 #if !IN_LIBGCOV
 static void
-gcov_allocate (unsigned int length)
+gcov_allocate(unsigned int length)
 {
   size_t new_size = gcov_var.alloc;
 
@@ -208,7 +208,7 @@ gcov_allocate (unsigned int length)
   new_size *= 2;
 
   gcov_var.alloc = new_size;
-  gcov_var.buffer = XRESIZEVAR (gcov_unsigned_t, gcov_var.buffer, new_size << 2);
+  gcov_var.buffer = XRESIZEVAR(gcov_unsigned_t, gcov_var.buffer, new_size << 2);
 }
 #endif
 
@@ -216,9 +216,9 @@ gcov_allocate (unsigned int length)
 /* Write out the current block, if needs be.  */
 
 static void
-gcov_write_block (unsigned int size)
+gcov_write_block(unsigned int size)
 {
-  if (fwrite (gcov_var.buffer, size << 2, 1, gcov_var.file) != 1)
+  if (fwrite(gcov_var.buffer, size << 2, 1, gcov_var.file) != 1)
     gcov_var.error = 1;
   gcov_var.start += size;
   gcov_var.offset -= size;
@@ -228,24 +228,24 @@ gcov_write_block (unsigned int size)
    pointer to those bytes, or NULL on failure.  */
 
 static gcov_unsigned_t *
-gcov_write_words (unsigned int words)
+gcov_write_words(unsigned int words)
 {
   gcov_unsigned_t *result;
 
-  gcc_assert (gcov_var.mode < 0);
+  gcc_assert(gcov_var.mode < 0);
 #if IN_LIBGCOV
   if (gcov_var.offset >= GCOV_BLOCK_SIZE)
     {
-      gcov_write_block (GCOV_BLOCK_SIZE);
+      gcov_write_block(GCOV_BLOCK_SIZE);
       if (gcov_var.offset)
 	{
-	  gcc_assert (gcov_var.offset == 1);
-	  memcpy (gcov_var.buffer, gcov_var.buffer + GCOV_BLOCK_SIZE, 4);
+	  gcc_assert(gcov_var.offset == 1);
+	  memcpy(gcov_var.buffer, gcov_var.buffer + GCOV_BLOCK_SIZE, 4);
 	}
     }
 #else
   if (gcov_var.offset + words > gcov_var.alloc)
-    gcov_allocate (gcov_var.offset + words);
+    gcov_allocate(gcov_var.offset + words);
 #endif
   result = &gcov_var.buffer[gcov_var.offset];
   gcov_var.offset += words;
@@ -257,9 +257,9 @@ gcov_write_words (unsigned int words)
    appropriately.  */
 
 GCOV_LINKAGE void
-gcov_write_unsigned (gcov_unsigned_t value)
+gcov_write_unsigned(gcov_unsigned_t value)
 {
-  gcov_unsigned_t *buffer = gcov_write_words (1);
+  gcov_unsigned_t *buffer = gcov_write_words(1);
 
   buffer[0] = value;
 }
@@ -269,12 +269,12 @@ gcov_write_unsigned (gcov_unsigned_t value)
 
 #if IN_LIBGCOV
 GCOV_LINKAGE void
-gcov_write_counter (gcov_type value)
+gcov_write_counter(gcov_type value)
 {
-  gcov_unsigned_t *buffer = gcov_write_words (2);
+  gcov_unsigned_t *buffer = gcov_write_words(2);
 
   buffer[0] = (gcov_unsigned_t) value;
-  if (sizeof (value) > sizeof (gcov_unsigned_t))
+  if (sizeof(value) > sizeof(gcov_unsigned_t))
     buffer[1] = (gcov_unsigned_t) (value >> 32);
   else
     buffer[1] = 0;
@@ -286,7 +286,7 @@ gcov_write_counter (gcov_type value)
    error, overflow flag on overflow */
 
 GCOV_LINKAGE void
-gcov_write_string (const char *string)
+gcov_write_string(const char *string)
 {
   unsigned int length = 0;
   unsigned int alloc = 0;
@@ -294,15 +294,15 @@ gcov_write_string (const char *string)
 
   if (string)
     {
-      length = strlen (string);
+      length = strlen(string);
       alloc = (length + 4) >> 2;
     }
 
-  buffer = gcov_write_words (1 + alloc);
+  buffer = gcov_write_words(1 + alloc);
 
   buffer[0] = alloc;
   buffer[alloc] = 0;
-  memcpy (&buffer[1], string, length);
+  memcpy(&buffer[1], string, length);
 }
 #endif
 
@@ -311,10 +311,10 @@ gcov_write_string (const char *string)
    value to be used for gcov_write_length.  */
 
 GCOV_LINKAGE gcov_position_t
-gcov_write_tag (gcov_unsigned_t tag)
+gcov_write_tag(gcov_unsigned_t tag)
 {
   gcov_position_t result = gcov_var.start + gcov_var.offset;
-  gcov_unsigned_t *buffer = gcov_write_words (2);
+  gcov_unsigned_t *buffer = gcov_write_words(2);
 
   buffer[0] = tag;
   buffer[1] = 0;
@@ -328,21 +328,21 @@ gcov_write_tag (gcov_unsigned_t tag)
    overflow.  */
 
 GCOV_LINKAGE void
-gcov_write_length (gcov_position_t position)
+gcov_write_length(gcov_position_t position)
 {
   unsigned int offset;
   gcov_unsigned_t length;
   gcov_unsigned_t *buffer;
 
-  gcc_assert (gcov_var.mode < 0);
-  gcc_assert (position + 2 <= gcov_var.start + gcov_var.offset);
-  gcc_assert (position >= gcov_var.start);
+  gcc_assert(gcov_var.mode < 0);
+  gcc_assert(position + 2 <= gcov_var.start + gcov_var.offset);
+  gcc_assert(position >= gcov_var.start);
   offset = position - gcov_var.start;
   length = gcov_var.offset - offset - 2;
   buffer = (gcov_unsigned_t *) &gcov_var.buffer[offset];
   buffer[1] = length;
   if (gcov_var.offset >= GCOV_BLOCK_SIZE)
-    gcov_write_block (gcov_var.offset);
+    gcov_write_block(gcov_var.offset);
 }
 
 #else /* IN_LIBGCOV */
@@ -350,9 +350,9 @@ gcov_write_length (gcov_position_t position)
 /* Write a tag TAG and length LENGTH.  */
 
 GCOV_LINKAGE void
-gcov_write_tag_length (gcov_unsigned_t tag, gcov_unsigned_t length)
+gcov_write_tag_length(gcov_unsigned_t tag, gcov_unsigned_t length)
 {
-  gcov_unsigned_t *buffer = gcov_write_words (2);
+  gcov_unsigned_t *buffer = gcov_write_words(2);
 
   buffer[0] = tag;
   buffer[1] = length;
@@ -362,20 +362,20 @@ gcov_write_tag_length (gcov_unsigned_t tag, gcov_unsigned_t length)
    overflow.  */
 
 GCOV_LINKAGE void
-gcov_write_summary (gcov_unsigned_t tag, const struct gcov_summary *summary)
+gcov_write_summary(gcov_unsigned_t tag, const struct gcov_summary *summary)
 {
   unsigned int ix;
   const struct gcov_ctr_summary *csum;
 
-  gcov_write_tag_length (tag, GCOV_TAG_SUMMARY_LENGTH);
-  gcov_write_unsigned (summary->checksum);
+  gcov_write_tag_length(tag, GCOV_TAG_SUMMARY_LENGTH);
+  gcov_write_unsigned(summary->checksum);
   for (csum = summary->ctrs, ix = GCOV_COUNTERS_SUMMABLE; ix--; csum++)
     {
-      gcov_write_unsigned (csum->num);
-      gcov_write_unsigned (csum->runs);
-      gcov_write_counter (csum->sum_all);
-      gcov_write_counter (csum->run_max);
-      gcov_write_counter (csum->sum_max);
+      gcov_write_unsigned(csum->num);
+      gcov_write_unsigned(csum->runs);
+      gcov_write_counter(csum->sum_all);
+      gcov_write_counter(csum->run_max);
+      gcov_write_counter(csum->sum_max);
     }
 }
 #endif /* IN_LIBGCOV */
@@ -386,35 +386,35 @@ gcov_write_summary (gcov_unsigned_t tag, const struct gcov_summary *summary)
    NULL on failure (read past EOF).  */
 
 static const gcov_unsigned_t *
-gcov_read_words (unsigned int words)
+gcov_read_words(unsigned int words)
 {
   const gcov_unsigned_t *result;
   unsigned int excess = gcov_var.length - gcov_var.offset;
 
-  gcc_assert (gcov_var.mode > 0);
+  gcc_assert(gcov_var.mode > 0);
   if (excess < words)
     {
       gcov_var.start += gcov_var.offset;
 #if IN_LIBGCOV
       if (excess)
 	{
-	  gcc_assert (excess == 1);
-	  memcpy (gcov_var.buffer, gcov_var.buffer + gcov_var.offset, 4);
+	  gcc_assert(excess == 1);
+	  memcpy(gcov_var.buffer, gcov_var.buffer + gcov_var.offset, 4);
 	}
 #else
-      memmove (gcov_var.buffer, gcov_var.buffer + gcov_var.offset, excess * 4);
+      memmove(gcov_var.buffer, gcov_var.buffer + gcov_var.offset, excess * 4);
 #endif
       gcov_var.offset = 0;
       gcov_var.length = excess;
 #if IN_LIBGCOV
-      gcc_assert (!gcov_var.length || gcov_var.length == 1);
+      gcc_assert(!gcov_var.length || gcov_var.length == 1);
       excess = GCOV_BLOCK_SIZE;
 #else
       if (gcov_var.length + words > gcov_var.alloc)
-	gcov_allocate (gcov_var.length + words);
+	gcov_allocate(gcov_var.length + words);
       excess = gcov_var.alloc - gcov_var.length;
 #endif
-      excess = fread (gcov_var.buffer + gcov_var.length,
+      excess = fread(gcov_var.buffer + gcov_var.length,
 		      1, excess << 2, gcov_var.file) >> 2;
       gcov_var.length += excess;
       if (gcov_var.length < words)
@@ -433,14 +433,14 @@ gcov_read_words (unsigned int words)
    error, overflow flag on overflow */
 
 GCOV_LINKAGE gcov_unsigned_t
-gcov_read_unsigned (void)
+gcov_read_unsigned(void)
 {
   gcov_unsigned_t value;
-  const gcov_unsigned_t *buffer = gcov_read_words (1);
+  const gcov_unsigned_t *buffer = gcov_read_words(1);
 
   if (!buffer)
     return 0;
-  value = from_file (buffer[0]);
+  value = from_file(buffer[0]);
   return value;
 }
 
@@ -448,16 +448,16 @@ gcov_read_unsigned (void)
    error, overflow flag on overflow */
 
 GCOV_LINKAGE gcov_type
-gcov_read_counter (void)
+gcov_read_counter(void)
 {
   gcov_type value;
-  const gcov_unsigned_t *buffer = gcov_read_words (2);
+  const gcov_unsigned_t *buffer = gcov_read_words(2);
 
   if (!buffer)
     return 0;
-  value = from_file (buffer[0]);
-  if (sizeof (value) > sizeof (gcov_unsigned_t))
-    value |= ((gcov_type) from_file (buffer[1])) << 32;
+  value = from_file(buffer[0]);
+  if (sizeof(value) > sizeof(gcov_unsigned_t))
+    value |= ((gcov_type) from_file(buffer[1])) << 32;
   else if (buffer[1])
     gcov_var.error = -1;
 
@@ -470,31 +470,31 @@ gcov_read_counter (void)
 
 #if !IN_LIBGCOV
 GCOV_LINKAGE const char *
-gcov_read_string (void)
+gcov_read_string(void)
 {
-  unsigned int length = gcov_read_unsigned ();
+  unsigned int length = gcov_read_unsigned();
 
   if (!length)
     return 0;
 
-  return (const char *) gcov_read_words (length);
+  return (const char *) gcov_read_words(length);
 }
 #endif
 
 GCOV_LINKAGE void
-gcov_read_summary (struct gcov_summary *summary)
+gcov_read_summary(struct gcov_summary *summary)
 {
   unsigned int ix;
   struct gcov_ctr_summary *csum;
 
-  summary->checksum = gcov_read_unsigned ();
+  summary->checksum = gcov_read_unsigned();
   for (csum = summary->ctrs, ix = GCOV_COUNTERS_SUMMABLE; ix--; csum++)
     {
-      csum->num = gcov_read_unsigned ();
-      csum->runs = gcov_read_unsigned ();
-      csum->sum_all = gcov_read_counter ();
-      csum->run_max = gcov_read_counter ();
-      csum->sum_max = gcov_read_counter ();
+      csum->num = gcov_read_unsigned();
+      csum->runs = gcov_read_unsigned();
+      csum->sum_all = gcov_read_counter();
+      csum->run_max = gcov_read_counter();
+      csum->sum_max = gcov_read_counter();
     }
 }
 
@@ -503,17 +503,17 @@ gcov_read_summary (struct gcov_summary *summary)
    gcov_position, LENGTH should be a record length.  */
 
 GCOV_LINKAGE void
-gcov_sync (gcov_position_t base, gcov_unsigned_t length)
+gcov_sync(gcov_position_t base, gcov_unsigned_t length)
 {
-  gcc_assert (gcov_var.mode > 0);
+  gcc_assert(gcov_var.mode > 0);
   base += length;
   if (base - gcov_var.start <= gcov_var.length)
     gcov_var.offset = base - gcov_var.start;
   else
     {
       gcov_var.offset = gcov_var.length = 0;
-      fseek (gcov_var.file, base << 2, SEEK_SET);
-      gcov_var.start = ftell (gcov_var.file) >> 2;
+      fseek(gcov_var.file, base << 2, SEEK_SET);
+      gcov_var.start = ftell(gcov_var.file) >> 2;
     }
 }
 #endif
@@ -522,13 +522,13 @@ gcov_sync (gcov_position_t base, gcov_unsigned_t length)
 /* Move to a given position in a gcov file.  */
 
 GCOV_LINKAGE void
-gcov_seek (gcov_position_t base)
+gcov_seek(gcov_position_t base)
 {
-  gcc_assert (gcov_var.mode < 0);
+  gcc_assert(gcov_var.mode < 0);
   if (gcov_var.offset)
-    gcov_write_block (gcov_var.offset);
-  fseek (gcov_var.file, base << 2, SEEK_SET);
-  gcov_var.start = ftell (gcov_var.file) >> 2;
+    gcov_write_block(gcov_var.offset);
+  fseek(gcov_var.file, base << 2, SEEK_SET);
+  gcov_var.start = ftell(gcov_var.file) >> 2;
 }
 #endif
 
@@ -536,11 +536,11 @@ gcov_seek (gcov_position_t base)
 /* Return the modification time of the current gcov file.  */
 
 GCOV_LINKAGE time_t
-gcov_time (void)
+gcov_time(void)
 {
   struct stat status;
 
-  if (fstat (fileno (gcov_var.file), &status))
+  if (fstat(fileno(gcov_var.file), &status))
     return 0;
   else
     return status.st_mtime;

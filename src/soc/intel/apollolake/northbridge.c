@@ -81,9 +81,8 @@ static int mc_add_imr_resources(device_t dev, int index)
 		base = read32(mchbar + imr_offset + MCHBAR_IMR0BASE);
 		mask = read32(mchbar + imr_offset + MCHBAR_IMR0MASK);
 
-		if (is_imr_enabled(base)) {
+		if (is_imr_enabled(base))
 			imr_resource(dev, index++, base, mask);
-		}
 	}
 
 	return index;

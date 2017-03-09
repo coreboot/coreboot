@@ -117,9 +117,8 @@ static void loop_resources(struct device *dev)
 
 	for (res = dev->resource_list; res; res = res->next) {
 
-		if (res->flags & IORESOURCE_IO) {
+		if (res->flags & IORESOURCE_IO)
 			lpc_open_pmio_window(res->base, res->size);
-		}
 
 		if (res->flags & IORESOURCE_MEM) {
 			/* Check if this is already decoded. */
@@ -143,9 +142,8 @@ static void set_child_resources(struct device *dev)
 	struct device *child;
 
 	for (link = dev->link_list; link; link = link->next) {
-		for (child = link->children; child; child = child->sibling) {
+		for (child = link->children; child; child = child->sibling)
 			loop_resources(child);
-		}
 	}
 }
 

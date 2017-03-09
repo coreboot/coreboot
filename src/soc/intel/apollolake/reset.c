@@ -61,7 +61,7 @@ void reset_prepare(void)
 
 void chipset_handle_reset(uint32_t status)
 {
-	switch(status) {
+	switch (status) {
 	case FSP_STATUS_RESET_REQUIRED_5: /* Global Reset */
 		global_reset();
 		break;

@@ -52,7 +52,7 @@ void platform_segment_loaded(uintptr_t start, size_t size, int flags)
 		return;
 
 	/* Loaded program segment should lie entirely within CAR region. */
-	assert (start_car_check && end_car_check);
+	assert(start_car_check && end_car_check);
 
 	flush_l1d_to_l2();
 }

@@ -190,7 +190,7 @@ unsigned int spi_crop_chunk(unsigned int cmd_len, unsigned int buf_len)
 /*
  * Write-protection status for BIOS region (BIOS_CONTROL register):
  * EISS/WPD bits	00	01	10	11
- * 			--	--	--	--
+ *			--	--	--	--
  * normal mode		RO	RW	RO	RO
  * SMM mode		RO	RW	RO	RW
  */

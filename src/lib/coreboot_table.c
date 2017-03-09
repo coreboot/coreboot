@@ -87,9 +87,8 @@ struct lb_record *lb_new_record(struct lb_header *header)
 {
 	struct lb_record *rec;
 	rec = lb_last_record(header);
-	if (header->table_entries) {
+	if (header->table_entries)
 		header->table_bytes += rec->size;
-	}
 	rec = lb_last_record(header);
 	header->table_entries++;
 	rec->tag = LB_TAG_UNUSED;
@@ -286,9 +285,8 @@ static void lb_boot_media_params(struct lb_header *header)
 	bmp->boot_media_size = region_device_sz(boot_dev);
 
 	bmp->fmap_offset = ~(uint64_t)0;
-	if (find_fmap_directory(&fmrd) == 0) {
+	if (find_fmap_directory(&fmrd) == 0)
 		bmp->fmap_offset = region_device_offset(&fmrd);
-	}
 }
 
 static void lb_ram_code(struct lb_header *header)
@@ -443,9 +441,8 @@ static unsigned long lb_table_fini(struct lb_header *head)
 {
 	struct lb_record *rec, *first_rec;
 	rec = lb_last_record(head);
-	if (head->table_entries) {
+	if (head->table_entries)
 		head->table_bytes += rec->size;
-	}
 
 	first_rec = lb_first_record(head);
 	head->table_checksum = compute_ip_checksum(first_rec, head->table_bytes);

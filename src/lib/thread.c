@@ -121,9 +121,8 @@ static void idle_thread(void *unused)
 {
 	/* This thread never voluntarily yields. */
 	thread_prevent_coop();
-	while (1) {
+	while (1)
 		timers_run();
-	}
 }
 
 static void schedule(struct thread *t)
@@ -214,9 +213,8 @@ static void idle_thread_init(void)
 
 	t = get_free_thread();
 
-	if (t == NULL) {
+	if (t == NULL)
 		die("No threads available for idle thread!\n");
-	}
 
 	/* Queue idle thread to run once all other threads have yielded. */
 	prepare_thread(t, idle_thread, NULL, call_wrapper, NULL);

@@ -47,35 +47,35 @@ static int tpm_send_receive(const uint8_t *request,
 }
 
 /* Sets the size field of a TPM command. */
-static inline void set_tpm_command_size(uint8_t* buffer, uint32_t size) {
+static inline void set_tpm_command_size(uint8_t *buffer, uint32_t size) {
 	to_tpm_uint32(buffer + sizeof(uint16_t), size);
 }
 
 /* Gets the size field of a TPM command. */
 __attribute__((unused))
-static inline int tpm_command_size(const uint8_t* buffer) {
+static inline int tpm_command_size(const uint8_t *buffer) {
 	uint32_t size;
 	from_tpm_uint32(buffer + sizeof(uint16_t), &size);
 	return (int) size;
 }
 
 /* Gets the code field of a TPM command. */
-static inline int tpm_command_code(const uint8_t* buffer) {
+static inline int tpm_command_code(const uint8_t *buffer) {
 	uint32_t code;
 	from_tpm_uint32(buffer + sizeof(uint16_t) + sizeof(uint32_t), &code);
 	return code;
 }
 
 /* Gets the return code field of a TPM result. */
-static inline int tpm_return_code(const uint8_t* buffer) {
+static inline int tpm_return_code(const uint8_t *buffer) {
 	return tpm_command_code(buffer);
 }
 
 /* Like TlclSendReceive below, but do not retry if NEEDS_SELFTEST or
  * DOING_SELFTEST errors are returned.
  */
-static uint32_t tlcl_send_receive_no_retry(const uint8_t* request,
-                                           uint8_t* response, int max_length) {
+static uint32_t tlcl_send_receive_no_retry(const uint8_t *request,
+                                           uint8_t *response, int max_length) {
 	uint32_t response_length = max_length;
 	uint32_t result;
 
@@ -103,7 +103,7 @@ return result;
 
 /* Sends a TPM command and gets a response.  Returns 0 if success or the TPM
  * error code if error. Waits for the self test to complete if needed. */
-uint32_t tlcl_send_receive(const uint8_t* request, uint8_t* response,
+uint32_t tlcl_send_receive(const uint8_t *request, uint8_t *response,
 			   int max_length) {
 	uint32_t result = tlcl_send_receive_no_retry(request, response,
 						     max_length);
@@ -133,7 +133,7 @@ uint32_t tlcl_send_receive(const uint8_t* request, uint8_t* response,
 }
 
 /* Sends a command and returns the error code. */
-static uint32_t send(const uint8_t* command) {
+static uint32_t send(const uint8_t *command) {
 	uint8_t response[TPM_LARGE_ENOUGH_COMMAND_SIZE];
 	return tlcl_send_receive(command, response, sizeof(response));
 }
@@ -193,7 +193,7 @@ uint32_t tlcl_define_space(uint32_t index, uint32_t perm, uint32_t size)
 	return send(cmd.buffer);
 }
 
-uint32_t tlcl_write(uint32_t index, const void* data, uint32_t length)
+uint32_t tlcl_write(uint32_t index, const void *data, uint32_t length)
 {
 	struct s_tpm_nv_write_cmd cmd;
 	uint8_t response[TPM_LARGE_ENOUGH_COMMAND_SIZE];
@@ -212,7 +212,7 @@ uint32_t tlcl_write(uint32_t index, const void* data, uint32_t length)
 	return tlcl_send_receive(cmd.buffer, response, sizeof(response));
 }
 
-uint32_t tlcl_read(uint32_t index, void* data, uint32_t length)
+uint32_t tlcl_read(uint32_t index, void *data, uint32_t length)
 {
 	struct s_tpm_nv_read_cmd cmd;
 	uint8_t response[TPM_LARGE_ENOUGH_COMMAND_SIZE];
@@ -226,7 +226,7 @@ uint32_t tlcl_read(uint32_t index, void* data, uint32_t length)
 
 	result = tlcl_send_receive(cmd.buffer, response, sizeof(response));
 	if (result == TPM_SUCCESS && length > 0) {
-		uint8_t* nv_read_cursor = response + kTpmResponseHeaderLength;
+		uint8_t *nv_read_cursor = response + kTpmResponseHeaderLength;
 		from_tpm_uint32(nv_read_cursor, &result_length);
 		nv_read_cursor += sizeof(uint32_t);
 		memcpy(data, nv_read_cursor, result_length);
@@ -275,7 +275,7 @@ uint32_t tlcl_set_deactivated(uint8_t flag)
 	return send(cmd.buffer);
 }
 
-uint32_t tlcl_get_permanent_flags(TPM_PERMANENT_FLAGS* pflags)
+uint32_t tlcl_get_permanent_flags(TPM_PERMANENT_FLAGS *pflags)
 {
 	uint8_t response[TPM_LARGE_ENOUGH_COMMAND_SIZE];
 	uint32_t size;
@@ -290,7 +290,7 @@ uint32_t tlcl_get_permanent_flags(TPM_PERMANENT_FLAGS* pflags)
 	return result;
 }
 
-uint32_t tlcl_get_flags(uint8_t* disable, uint8_t* deactivated,
+uint32_t tlcl_get_flags(uint8_t *disable, uint8_t *deactivated,
                         uint8_t *nvlocked)
 {
 	TPM_PERMANENT_FLAGS pflags;
@@ -312,11 +312,11 @@ uint32_t tlcl_set_global_lock(void)
 {
 	uint32_t x;
 	VBDEBUG("TPM: Set global lock\n");
-	return tlcl_write(TPM_NV_INDEX0, (uint8_t*) &x, 0);
+	return tlcl_write(TPM_NV_INDEX0, (uint8_t *) &x, 0);
 }
 
-uint32_t tlcl_extend(int pcr_num, const uint8_t* in_digest,
-                     uint8_t* out_digest)
+uint32_t tlcl_extend(int pcr_num, const uint8_t *in_digest,
+                     uint8_t *out_digest)
 {
 	struct s_tpm_extend_cmd cmd;
 	uint8_t response[kTpmResponseHeaderLength + kPcrDigestLength];

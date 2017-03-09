@@ -399,7 +399,7 @@ static const struct reg_script_bus_entry
 {
 	extern const struct reg_script_bus_entry *_rsbe_init_begin[];
 	extern const struct reg_script_bus_entry *_ersbe_init_begin[];
-	const struct reg_script_bus_entry * const * bus;
+	const struct reg_script_bus_entry * const *bus;
 	size_t table_entries;
 	size_t i;
 

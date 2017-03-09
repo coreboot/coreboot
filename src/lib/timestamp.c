@@ -92,7 +92,7 @@ static struct timestamp_cache *timestamp_cache_get(void)
 
 static struct timestamp_table *timestamp_alloc_cbmem_table(void)
 {
-	struct timestamp_table* tst;
+	struct timestamp_table *tst;
 
 	tst = cbmem_add(CBMEM_ID_TIMESTAMP,
 			sizeof(struct timestamp_table) +

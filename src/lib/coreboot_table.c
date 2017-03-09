@@ -465,7 +465,7 @@ size_t write_coreboot_forwarding_table(uintptr_t entry, uintptr_t target)
 		(void *)entry);
 
 	head = lb_table_init(entry);
-	lb_forward(head, (struct lb_header*)target);
+	lb_forward(head, (struct lb_header *)target);
 
 	return (uintptr_t)lb_table_fini(head) - entry;
 }

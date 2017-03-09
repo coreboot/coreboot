@@ -973,8 +973,8 @@ __gcov_one_value_profiler (gcov_type *counters, gcov_type value)
 
 /* Tries to determine the most common value among its inputs. */
 void
-__gcov_indirect_call_profiler (gcov_type* counter, gcov_type value,
-			       void* cur_func, void* callee_func)
+__gcov_indirect_call_profiler (gcov_type *counter, gcov_type value,
+			       void *cur_func, void *callee_func)
 {
   /* If the C++ virtual tables contain function descriptors then one
      function may have multiple descriptors and we need to dereference

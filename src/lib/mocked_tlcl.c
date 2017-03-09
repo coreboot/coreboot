@@ -56,13 +56,13 @@ uint32_t tlcl_define_space(uint32_t index, uint32_t perm, uint32_t size)
 	return TPM_E_NO_DEVICE;
 }
 
-uint32_t tlcl_write(uint32_t index, const void* data, uint32_t length)
+uint32_t tlcl_write(uint32_t index, const void *data, uint32_t length)
 {
 	VBDEBUG("MOCK_TPM: %s\n", __func__);
 	return TPM_E_NO_DEVICE;
 }
 
-uint32_t tlcl_read(uint32_t index, void* data, uint32_t length)
+uint32_t tlcl_read(uint32_t index, void *data, uint32_t length)
 {
 	VBDEBUG("MOCK_TPM: %s\n", __func__);
 	return TPM_E_NO_DEVICE;
@@ -105,13 +105,13 @@ uint32_t tlcl_set_deactivated(uint8_t flag)
 	return TPM_E_NO_DEVICE;
 }
 
-uint32_t tlcl_get_permanent_flags(TPM_PERMANENT_FLAGS* pflags)
+uint32_t tlcl_get_permanent_flags(TPM_PERMANENT_FLAGS *pflags)
 {
 	VBDEBUG("MOCK_TPM: %s\n", __func__);
 	return TPM_E_NO_DEVICE;
 }
 
-uint32_t tlcl_get_flags(uint8_t* disable, uint8_t* deactivated,
+uint32_t tlcl_get_flags(uint8_t *disable, uint8_t *deactivated,
                         uint8_t *nvlocked)
 {
 	VBDEBUG("MOCK_TPM: %s\n", __func__);
@@ -124,8 +124,8 @@ uint32_t tlcl_set_global_lock(void)
 	return TPM_E_NO_DEVICE;
 }
 
-uint32_t tlcl_extend(int pcr_num, const uint8_t* in_digest,
-                     uint8_t* out_digest)
+uint32_t tlcl_extend(int pcr_num, const uint8_t *in_digest,
+                     uint8_t *out_digest)
 {
 	VBDEBUG("MOCK_TPM: %s\n", __func__);
 	return TPM_E_NO_DEVICE;

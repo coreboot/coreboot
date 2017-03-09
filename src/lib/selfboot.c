@@ -465,7 +465,7 @@ static int load_self_segments(struct segment *head, struct prog *payload,
 		if ((unsigned long)end > bounce_buffer) {
 			if ((unsigned long)dest < bounce_buffer) {
 				unsigned char *from = dest;
-				unsigned char *to = (unsigned char*)(lb_start-(bounce_buffer-(unsigned long)dest));
+				unsigned char *to = (unsigned char *)(lb_start-(bounce_buffer-(unsigned long)dest));
 				unsigned long amount = bounce_buffer-(unsigned long)dest;
 				printk(BIOS_DEBUG, "move prefix around: from %p, to %p, amount: %lx\n", from, to, amount);
 				memcpy(to, from, amount);
@@ -475,7 +475,7 @@ static int load_self_segments(struct segment *head, struct prog *payload,
 				unsigned long to = lb_end;
 				unsigned long amount = (unsigned long)end - from;
 				printk(BIOS_DEBUG, "move suffix around: from %lx, to %lx, amount: %lx\n", from, to, amount);
-				memcpy((char*)to, (char*)from, amount);
+				memcpy((char *)to, (char *)from, amount);
 			}
 		}
 

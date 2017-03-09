@@ -146,7 +146,7 @@ static inline int tohex4(unsigned int c)
 	return (c <= 9) ? (c + '0') : (c - 10 + 'a');
 }
 
-static void tohex16(unsigned int val, char* dest)
+static void tohex16(unsigned int val, char *dest)
 {
 	dest[0] = tohex4(val>>12);
 	dest[1] = tohex4((val>>8) & 0xf);

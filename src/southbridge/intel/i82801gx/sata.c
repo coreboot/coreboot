@@ -199,7 +199,8 @@ static void sata_init(struct device *dev)
 	pci_write_config32(dev, SATA_IR, reg32);
 }
 
-static void sata_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void sata_set_subsystem(device_t dev, unsigned int vendor,
+			unsigned int device)
 {
 	if (!vendor || !device) {
 		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
@@ -236,7 +237,7 @@ static const unsigned short sata_ids[] = {
 };
 
 static const struct pci_driver i82801gx_sata_driver __pci_driver = {
-	.ops	= &sata_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.devices= sata_ids,
+	.ops		= &sata_ops,
+	.vendor		= PCI_VENDOR_ID_INTEL,
+	.devices	= sata_ids,
 };

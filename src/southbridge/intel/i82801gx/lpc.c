@@ -109,7 +109,7 @@ static void i82801gx_pirq_init(device_t dev)
 	 */
 
 	for (irq_dev = all_devices; irq_dev; irq_dev = irq_dev->next) {
-		u8 int_pin=0, int_line=0;
+		u8 int_pin = 0, int_line = 0;
 
 		if (!irq_dev->enabled || irq_dev->path.type != DEVICE_PATH_PCI)
 			continue;
@@ -117,10 +117,14 @@ static void i82801gx_pirq_init(device_t dev)
 		int_pin = pci_read_config8(irq_dev, PCI_INTERRUPT_PIN);
 
 		switch (int_pin) {
-		case 1: /* INTA# */ int_line = config->pirqa_routing; break;
-		case 2: /* INTB# */ int_line = config->pirqb_routing; break;
-		case 3: /* INTC# */ int_line = config->pirqc_routing; break;
-		case 4: /* INTD# */ int_line = config->pirqd_routing; break;
+		case 1:
+			/* INTA# */ int_line = config->pirqa_routing; break;
+		case 2:
+			/* INTB# */ int_line = config->pirqb_routing; break;
+		case 3:
+			/* INTC# */ int_line = config->pirqc_routing; break;
+		case 4:
+			/* INTD# */ int_line = config->pirqd_routing; break;
 		}
 
 		if (!int_line)
@@ -168,7 +172,7 @@ static void i82801gx_power_options(device_t dev)
 	/* Get the chip configuration */
 	config_t *config = dev->chip_info;
 
-	int pwr_on=CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
+	int pwr_on = CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
 	int nmi_option;
 
 	/* Which state do we want to goto after g3 (power restored)?
@@ -221,7 +225,7 @@ static void i82801gx_power_options(device_t dev)
 		reg8 &= ~(1 << 7);	/* Set NMI. */
 	} else {
 		printk(BIOS_INFO, "NMI sources disabled.\n");
-		reg8 |= ( 1 << 7);	/* Can't mask NMI from PCI-E and NMI_NOW */
+		reg8 |= (1 << 7);	/* Can't mask NMI from PCI-E and NMI_NOW */
 	}
 	outb(reg8, 0x70);
 
@@ -321,7 +325,7 @@ static void enable_clock_gating(void)
 	reg32 |= (1 << 3) | (1 << 1);	// DMI clock gating
 	reg32 |= (1 << 2);	// PCIe clock gating;
 	reg32 &= ~(1 << 20); // No static clock gating for USB
-	reg32 &= ~( (1 << 29) | (1 << 28) ); // Disable UHCI clock gating
+	reg32 &= ~((1 << 29) | (1 << 28)); // Disable UHCI clock gating
 	RCBA32(CG) = reg32;
 }
 
@@ -481,9 +485,9 @@ unsigned long acpi_fill_madt(unsigned long current)
 	return current;
 }
 
-void acpi_fill_fadt(acpi_fadt_t * fadt)
+void acpi_fill_fadt(acpi_fadt_t *fadt)
 {
-	device_t dev = dev_find_slot(0, PCI_DEVFN(0x1f,0));
+	device_t dev = dev_find_slot(0, PCI_DEVFN(0x1f, 0));
 	config_t *chip = dev->chip_info;
 	u16 pmbase = pci_read_config16(dev, 0x40) & 0xfffe;
 
@@ -586,19 +590,17 @@ void acpi_fill_fadt(acpi_fadt_t * fadt)
 	fadt->flush_size = 0;
 	fadt->flush_stride = 0;
 	fadt->duty_offset = 1;
-	if (chip->p_cnt_throttling_supported) {
+	if (chip->p_cnt_throttling_supported)
 		fadt->duty_width = 3;
-	} else {
+	else
 		fadt->duty_width = 0;
-	}
 	fadt->iapc_boot_arch = 0x03;
 	fadt->flags = (ACPI_FADT_WBINVD | ACPI_FADT_C1_SUPPORTED
 		       | ACPI_FADT_SLEEP_BUTTON | ACPI_FADT_S4_RTC_WAKE
 		       | ACPI_FADT_PLATFORM_CLOCK | ACPI_FADT_RESET_REGISTER
 		       | ACPI_FADT_C2_MP_SUPPORTED);
-	if (chip->docking_supported) {
+	if (chip->docking_supported)
 		fadt->flags |= ACPI_FADT_DOCKING_SUPPORTED;
-	}
 }
 
 static void i82801gx_lpc_read_resources(device_t dev)
@@ -643,7 +645,8 @@ static void i82801gx_lpc_read_resources(device_t dev)
 	}
 }
 
-static void set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void set_subsystem(device_t dev, unsigned int vendor,
+			unsigned int device)
 {
 	if (!vendor || !device) {
 		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
@@ -656,7 +659,7 @@ static void set_subsystem(device_t dev, unsigned vendor, unsigned device)
 
 static void southbridge_inject_dsdt(device_t dev)
 {
-	global_nvs_t *gnvs = cbmem_add (CBMEM_ID_ACPI_GNVS, sizeof(*gnvs));
+	global_nvs_t *gnvs = cbmem_add(CBMEM_ID_ACPI_GNVS, sizeof(*gnvs));
 
 	if (gnvs) {
 		const struct i915_gpu_controller_info *gfx = intel_gma_get_controller_info();

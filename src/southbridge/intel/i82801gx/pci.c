@@ -106,7 +106,8 @@ static void ich_pci_bus_enable_resources(struct device *dev)
 	ich_pci_dev_enable_resources(dev);
 }
 
-static void set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void set_subsystem(device_t dev, unsigned int vendor,
+			unsigned int device)
 {
 	/* NOTE: This is not the default position! */
 	if (!vendor || !device) {

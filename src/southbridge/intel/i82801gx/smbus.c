@@ -38,7 +38,8 @@ static int lsmbus_read_byte(device_t dev, u8 address)
 	return do_smbus_read_byte(res->base, device, address);
 }
 
-static int do_smbus_write_byte(unsigned smbus_base, unsigned device, unsigned address, unsigned data)
+static int do_smbus_write_byte(unsigned int smbus_base, unsigned int device,
+			unsigned int address, unsigned int data)
 {
 	unsigned char global_status_register;
 
@@ -92,8 +93,8 @@ static int lsmbus_write_byte(device_t dev, u8 address, u8 data)
 	return do_smbus_write_byte(res->base, device, address, data);
 }
 
-static int do_smbus_block_write(unsigned smbus_base, unsigned device,
-			      unsigned cmd, unsigned bytes, const u8 *buf)
+static int do_smbus_block_write(unsigned int smbus_base, unsigned int device,
+			      unsigned int cmd, unsigned int bytes, const u8 *buf)
 {
 	u8 status;
 
@@ -123,7 +124,8 @@ static int do_smbus_block_write(unsigned smbus_base, unsigned device,
 	outb((inb(smbus_base + SMBHSTCTL) | 0x40),
 	     smbus_base + SMBHSTCTL);
 
-	while (!(inb(smbus_base + SMBHSTSTAT) & 1));
+	while (!(inb(smbus_base + SMBHSTSTAT) & 1))
+		;
 	/* Poll for transaction completion */
 	do {
 		status = inb(smbus_base + SMBHSTSTAT);
@@ -155,8 +157,8 @@ static int lsmbus_block_write(device_t dev, u8 cmd, u8 bytes, const u8 *buf)
 	return do_smbus_block_write(res->base, device, cmd, bytes, buf);
 }
 
-static int do_smbus_block_read(unsigned smbus_base, unsigned device,
-			      unsigned cmd, unsigned bytes, u8 *buf)
+static int do_smbus_block_read(unsigned int smbus_base, unsigned int device,
+			      unsigned int cmd, unsigned int bytes, u8 *buf)
 {
 	u8 status;
 	int bytes_read = 0;
@@ -180,7 +182,8 @@ static int do_smbus_block_read(unsigned smbus_base, unsigned device,
 	outb((inb(smbus_base + SMBHSTCTL) | 0x40),
 	     smbus_base + SMBHSTCTL);
 
-	while (!(inb(smbus_base + SMBHSTSTAT) & 1));
+	while (!(inb(smbus_base + SMBHSTSTAT) & 1))
+		;
 	/* Poll for transaction completion */
 	do {
 		status = inb(smbus_base + SMBHSTSTAT);
@@ -225,7 +228,7 @@ static struct smbus_bus_operations lops_smbus_bus = {
 	.block_write    = lsmbus_block_write,
 };
 
-static void smbus_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void smbus_set_subsystem(device_t dev, unsigned int vendor, unsigned int device)
 {
 	if (!vendor || !device) {
 		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,

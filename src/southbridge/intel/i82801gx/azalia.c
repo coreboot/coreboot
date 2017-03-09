@@ -87,9 +87,9 @@ no_codec:
 	return 0;
 }
 
-static u32 find_verb(struct device *dev, u32 viddid, const u32 ** verb)
+static u32 find_verb(struct device *dev, u32 viddid, const u32 **verb)
 {
-	int idx=0;
+	int idx = 0;
 
 	while (idx < (cim_verb_data_size / sizeof(u32))) {
 		u32 verb_size = 4 * cim_verb_data[idx+2]; // in u32
@@ -303,7 +303,8 @@ static void azalia_init(struct device *dev)
 	}
 }
 
-static void azalia_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void azalia_set_subsystem(device_t dev, unsigned int vendor,
+				unsigned int device)
 {
 	if (!vendor || !device) {
 		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,

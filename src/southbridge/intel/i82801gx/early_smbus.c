@@ -29,9 +29,8 @@ void enable_smbus(void)
 	dev = PCI_DEV(0x0, 0x1f, 0x3);
 
 	/* Check to make sure we've got the right device. */
-	if (pci_read_config16(dev, 0x2) != 0x27da) {
+	if (pci_read_config16(dev, 0x2) != 0x27da)
 		die("SMBus controller not found!");
-	}
 
 	/* Set SMBus I/O base. */
 	pci_write_config32(dev, SMB_BASE,
@@ -51,7 +50,7 @@ void enable_smbus(void)
 	printk(BIOS_DEBUG, "SMBus controller enabled.\n");
 }
 
-int smbus_read_byte(unsigned device, unsigned address)
+int smbus_read_byte(unsigned int device, unsigned int address)
 {
 	return do_smbus_read_byte(SMBUS_IO_BASE, device, address);
 }

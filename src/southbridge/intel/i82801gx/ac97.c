@@ -96,9 +96,8 @@ static int ac97_semaphore(void)
 		reg8 = inb(nabmbar + CAS);
 		timeout--;
 	} while ((reg8 & 1) && timeout);
-	if (! timeout) {
+	if (!timeout)
 		printk(BIOS_DEBUG, "Timeout!\n");
-	}
 
 	return (!timeout);
 }
@@ -220,7 +219,7 @@ static void ac97_modem_init(struct device *dev)
 	mbar = pci_read_config16(dev, MBAR) & 0xfffe;
 
 	reg16 = inw(mmbar + EXT_MODEM_ID1);
-	if ((reg16 & 0xc000) != 0xc000 ) {
+	if ((reg16 & 0xc000) != 0xc000) {
 		if (reg16 & (1 << 0)) {
 			reg32 = inw(mmbar + VENDOR_ID2);
 			reg32 <<= 16;
@@ -247,7 +246,8 @@ static void ac97_modem_init(struct device *dev)
 	}
 }
 
-static void ac97_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void ac97_set_subsystem(device_t dev, unsigned int vendor,
+			unsigned int device)
 {
 	if (!vendor || !device) {
 		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,

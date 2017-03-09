@@ -38,15 +38,15 @@ int southbridge_detect_s3_resume(void)
 	reg32 = inl(DEFAULT_PMBASE + 0x04);
 	printk(BIOS_DEBUG, "PM1_CNT: %08x\n", reg32);
 	if (((reg32 >> 10) & 7) == 5) {
-		if (acpi_s3_resume_allowed()) {
+		if (!acpi_s3_resume_allowed()) {
+			printk(BIOS_DEBUG, "Resume from S3 detected, but disabled.\n");
+		} else {
 			printk(BIOS_DEBUG, "Resume from S3 detected.\n");
 			/* Clear SLP_TYPE. This will break stage2 but
 			 * we care for that when we get there.
 			 */
 			outl(reg32 & ~(7 << 10), DEFAULT_PMBASE + 0x04);
 			return 1;
-		} else {
-			printk(BIOS_DEBUG, "Resume from S3 detected, but disabled.\n");
 		}
 	}
 

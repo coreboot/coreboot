@@ -57,14 +57,22 @@ static u16 reset_pm1_status(void)
 static void dump_pm1_status(u16 pm1_sts)
 {
 	printk(BIOS_DEBUG, "PM1_STS: ");
-	if (pm1_sts & (1 << 15)) printk(BIOS_DEBUG, "WAK ");
-	if (pm1_sts & (1 << 14)) printk(BIOS_DEBUG, "PCIEXPWAK ");
-	if (pm1_sts & (1 << 11)) printk(BIOS_DEBUG, "PRBTNOR ");
-	if (pm1_sts & (1 << 10)) printk(BIOS_DEBUG, "RTC ");
-	if (pm1_sts & (1 <<  8)) printk(BIOS_DEBUG, "PWRBTN ");
-	if (pm1_sts & (1 <<  5)) printk(BIOS_DEBUG, "GBL ");
-	if (pm1_sts & (1 <<  4)) printk(BIOS_DEBUG, "BM ");
-	if (pm1_sts & (1 <<  0)) printk(BIOS_DEBUG, "TMROF ");
+	if (pm1_sts & (1 << 15))
+		printk(BIOS_DEBUG, "WAK ");
+	if (pm1_sts & (1 << 14))
+		printk(BIOS_DEBUG, "PCIEXPWAK ");
+	if (pm1_sts & (1 << 11))
+		printk(BIOS_DEBUG, "PRBTNOR ");
+	if (pm1_sts & (1 << 10))
+		printk(BIOS_DEBUG, "RTC ");
+	if (pm1_sts & (1 <<  8))
+		printk(BIOS_DEBUG, "PWRBTN ");
+	if (pm1_sts & (1 <<  5))
+		printk(BIOS_DEBUG, "GBL ");
+	if (pm1_sts & (1 <<  4))
+		printk(BIOS_DEBUG, "BM ");
+	if (pm1_sts & (1 <<  0))
+		printk(BIOS_DEBUG, "TMROF ");
 	printk(BIOS_DEBUG, "\n");
 }
 
@@ -86,26 +94,46 @@ static u32 reset_smi_status(void)
 static void dump_smi_status(u32 smi_sts)
 {
 	printk(BIOS_DEBUG, "SMI_STS: ");
-	if (smi_sts & (1 << 26)) printk(BIOS_DEBUG, "SPI ");
-	if (smi_sts & (1 << 25)) printk(BIOS_DEBUG, "EL_SMI ");
-	if (smi_sts & (1 << 21)) printk(BIOS_DEBUG, "MONITOR ");
-	if (smi_sts & (1 << 20)) printk(BIOS_DEBUG, "PCI_EXP_SMI ");
-	if (smi_sts & (1 << 18)) printk(BIOS_DEBUG, "INTEL_USB2 ");
-	if (smi_sts & (1 << 17)) printk(BIOS_DEBUG, "LEGACY_USB2 ");
-	if (smi_sts & (1 << 16)) printk(BIOS_DEBUG, "SMBUS_SMI ");
-	if (smi_sts & (1 << 15)) printk(BIOS_DEBUG, "SERIRQ_SMI ");
-	if (smi_sts & (1 << 14)) printk(BIOS_DEBUG, "PERIODIC ");
-	if (smi_sts & (1 << 13)) printk(BIOS_DEBUG, "TCO ");
-	if (smi_sts & (1 << 12)) printk(BIOS_DEBUG, "DEVMON ");
-	if (smi_sts & (1 << 11)) printk(BIOS_DEBUG, "MCSMI ");
-	if (smi_sts & (1 << 10)) printk(BIOS_DEBUG, "GPI ");
-	if (smi_sts & (1 <<  9)) printk(BIOS_DEBUG, "GPE0 ");
-	if (smi_sts & (1 <<  8)) printk(BIOS_DEBUG, "PM1 ");
-	if (smi_sts & (1 <<  6)) printk(BIOS_DEBUG, "SWSMI_TMR ");
-	if (smi_sts & (1 <<  5)) printk(BIOS_DEBUG, "APM ");
-	if (smi_sts & (1 <<  4)) printk(BIOS_DEBUG, "SLP_SMI ");
-	if (smi_sts & (1 <<  3)) printk(BIOS_DEBUG, "LEGACY_USB ");
-	if (smi_sts & (1 <<  2)) printk(BIOS_DEBUG, "BIOS ");
+	if (smi_sts & (1 << 26))
+		printk(BIOS_DEBUG, "SPI ");
+	if (smi_sts & (1 << 25))
+		printk(BIOS_DEBUG, "EL_SMI ");
+	if (smi_sts & (1 << 21))
+		printk(BIOS_DEBUG, "MONITOR ");
+	if (smi_sts & (1 << 20))
+		printk(BIOS_DEBUG, "PCI_EXP_SMI ");
+	if (smi_sts & (1 << 18))
+		printk(BIOS_DEBUG, "INTEL_USB2 ");
+	if (smi_sts & (1 << 17))
+		printk(BIOS_DEBUG, "LEGACY_USB2 ");
+	if (smi_sts & (1 << 16))
+		printk(BIOS_DEBUG, "SMBUS_SMI ");
+	if (smi_sts & (1 << 15))
+		printk(BIOS_DEBUG, "SERIRQ_SMI ");
+	if (smi_sts & (1 << 14))
+		printk(BIOS_DEBUG, "PERIODIC ");
+	if (smi_sts & (1 << 13))
+		printk(BIOS_DEBUG, "TCO ");
+	if (smi_sts & (1 << 12))
+		printk(BIOS_DEBUG, "DEVMON ");
+	if (smi_sts & (1 << 11))
+		printk(BIOS_DEBUG, "MCSMI ");
+	if (smi_sts & (1 << 10))
+		printk(BIOS_DEBUG, "GPI ");
+	if (smi_sts & (1 <<  9))
+		printk(BIOS_DEBUG, "GPE0 ");
+	if (smi_sts & (1 <<  8))
+		printk(BIOS_DEBUG, "PM1 ");
+	if (smi_sts & (1 <<  6))
+		printk(BIOS_DEBUG, "SWSMI_TMR ");
+	if (smi_sts & (1 <<  5))
+		printk(BIOS_DEBUG, "APM ");
+	if (smi_sts & (1 <<  4))
+		printk(BIOS_DEBUG, "SLP_SMI ");
+	if (smi_sts & (1 <<  3))
+		printk(BIOS_DEBUG, "LEGACY_USB ");
+	if (smi_sts & (1 <<  2))
+		printk(BIOS_DEBUG, "BIOS ");
 	printk(BIOS_DEBUG, "\n");
 }
 
@@ -129,23 +157,38 @@ static void dump_gpe0_status(u32 gpe0_sts)
 {
 	int i;
 	printk(BIOS_DEBUG, "GPE0_STS: ");
-	for (i=31; i>= 16; i--) {
-		if (gpe0_sts & (1 << i)) printk(BIOS_DEBUG, "GPIO%d ", (i-16));
+	for (i = 31; i >= 16; i--) {
+		if (gpe0_sts & (1 << i))
+			printk(BIOS_DEBUG, "GPIO%d ", (i-16));
 	}
-	if (gpe0_sts & (1 << 14)) printk(BIOS_DEBUG, "USB4 ");
-	if (gpe0_sts & (1 << 13)) printk(BIOS_DEBUG, "PME_B0 ");
-	if (gpe0_sts & (1 << 12)) printk(BIOS_DEBUG, "USB3 ");
-	if (gpe0_sts & (1 << 11)) printk(BIOS_DEBUG, "PME ");
-	if (gpe0_sts & (1 << 10)) printk(BIOS_DEBUG, "EL_SCI/BATLOW ");
-	if (gpe0_sts & (1 <<  9)) printk(BIOS_DEBUG, "PCI_EXP ");
-	if (gpe0_sts & (1 <<  8)) printk(BIOS_DEBUG, "RI ");
-	if (gpe0_sts & (1 <<  7)) printk(BIOS_DEBUG, "SMB_WAK ");
-	if (gpe0_sts & (1 <<  6)) printk(BIOS_DEBUG, "TCO_SCI ");
-	if (gpe0_sts & (1 <<  5)) printk(BIOS_DEBUG, "AC97 ");
-	if (gpe0_sts & (1 <<  4)) printk(BIOS_DEBUG, "USB2 ");
-	if (gpe0_sts & (1 <<  3)) printk(BIOS_DEBUG, "USB1 ");
-	if (gpe0_sts & (1 <<  2)) printk(BIOS_DEBUG, "HOT_PLUG ");
-	if (gpe0_sts & (1 <<  0)) printk(BIOS_DEBUG, "THRM ");
+	if (gpe0_sts & (1 << 14))
+		printk(BIOS_DEBUG, "USB4 ");
+	if (gpe0_sts & (1 << 13))
+		printk(BIOS_DEBUG, "PME_B0 ");
+	if (gpe0_sts & (1 << 12))
+		printk(BIOS_DEBUG, "USB3 ");
+	if (gpe0_sts & (1 << 11))
+		printk(BIOS_DEBUG, "PME ");
+	if (gpe0_sts & (1 << 10))
+		printk(BIOS_DEBUG, "EL_SCI/BATLOW ");
+	if (gpe0_sts & (1 <<  9))
+		printk(BIOS_DEBUG, "PCI_EXP ");
+	if (gpe0_sts & (1 <<  8))
+		printk(BIOS_DEBUG, "RI ");
+	if (gpe0_sts & (1 <<  7))
+		printk(BIOS_DEBUG, "SMB_WAK ");
+	if (gpe0_sts & (1 <<  6))
+		printk(BIOS_DEBUG, "TCO_SCI ");
+	if (gpe0_sts & (1 <<  5))
+		printk(BIOS_DEBUG, "AC97 ");
+	if (gpe0_sts & (1 <<  4))
+		printk(BIOS_DEBUG, "USB2 ");
+	if (gpe0_sts & (1 <<  3))
+		printk(BIOS_DEBUG, "USB1 ");
+	if (gpe0_sts & (1 <<  2))
+		printk(BIOS_DEBUG, "HOT_PLUG ");
+	if (gpe0_sts & (1 <<  0))
+		printk(BIOS_DEBUG, "THRM ");
 	printk(BIOS_DEBUG, "\n");
 }
 
@@ -169,8 +212,9 @@ static void dump_alt_gp_smi_status(u16 alt_gp_smi_sts)
 {
 	int i;
 	printk(BIOS_DEBUG, "ALT_GP_SMI_STS: ");
-	for (i=15; i>= 0; i--) {
-		if (alt_gp_smi_sts & (1 << i)) printk(BIOS_DEBUG, "GPI%d ", i);
+	for (i = 15; i >= 0; i--) {
+		if (alt_gp_smi_sts & (1 << i))
+			printk(BIOS_DEBUG, "GPI%d ", i);
 	}
 	printk(BIOS_DEBUG, "\n");
 }
@@ -199,19 +243,32 @@ static u32 reset_tco_status(void)
 static void dump_tco_status(u32 tco_sts)
 {
 	printk(BIOS_DEBUG, "TCO_STS: ");
-	if (tco_sts & (1 << 20)) printk(BIOS_DEBUG, "SMLINK_SLV ");
-	if (tco_sts & (1 << 18)) printk(BIOS_DEBUG, "BOOT ");
-	if (tco_sts & (1 << 17)) printk(BIOS_DEBUG, "SECOND_TO ");
-	if (tco_sts & (1 << 16)) printk(BIOS_DEBUG, "INTRD_DET ");
-	if (tco_sts & (1 << 12)) printk(BIOS_DEBUG, "DMISERR ");
-	if (tco_sts & (1 << 10)) printk(BIOS_DEBUG, "DMISMI ");
-	if (tco_sts & (1 <<  9)) printk(BIOS_DEBUG, "DMISCI ");
-	if (tco_sts & (1 <<  8)) printk(BIOS_DEBUG, "BIOSWR ");
-	if (tco_sts & (1 <<  7)) printk(BIOS_DEBUG, "NEWCENTURY ");
-	if (tco_sts & (1 <<  3)) printk(BIOS_DEBUG, "TIMEOUT ");
-	if (tco_sts & (1 <<  2)) printk(BIOS_DEBUG, "TCO_INT ");
-	if (tco_sts & (1 <<  1)) printk(BIOS_DEBUG, "SW_TCO ");
-	if (tco_sts & (1 <<  0)) printk(BIOS_DEBUG, "NMI2SMI ");
+	if (tco_sts & (1 << 20))
+		printk(BIOS_DEBUG, "SMLINK_SLV ");
+	if (tco_sts & (1 << 18))
+		printk(BIOS_DEBUG, "BOOT ");
+	if (tco_sts & (1 << 17))
+		printk(BIOS_DEBUG, "SECOND_TO ");
+	if (tco_sts & (1 << 16))
+		printk(BIOS_DEBUG, "INTRD_DET ");
+	if (tco_sts & (1 << 12))
+		printk(BIOS_DEBUG, "DMISERR ");
+	if (tco_sts & (1 << 10))
+		printk(BIOS_DEBUG, "DMISMI ");
+	if (tco_sts & (1 <<  9))
+		printk(BIOS_DEBUG, "DMISCI ");
+	if (tco_sts & (1 <<  8))
+		printk(BIOS_DEBUG, "BIOSWR ");
+	if (tco_sts & (1 <<  7))
+		printk(BIOS_DEBUG, "NEWCENTURY ");
+	if (tco_sts & (1 <<  3))
+		printk(BIOS_DEBUG, "TIMEOUT ");
+	if (tco_sts & (1 <<  2))
+		printk(BIOS_DEBUG, "TCO_INT ");
+	if (tco_sts & (1 <<  1))
+		printk(BIOS_DEBUG, "SW_TCO ");
+	if (tco_sts & (1 <<  0))
+		printk(BIOS_DEBUG, "NMI2SMI ");
 	printk(BIOS_DEBUG, "\n");
 }
 

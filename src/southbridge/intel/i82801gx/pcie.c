@@ -89,7 +89,8 @@ static void pci_init(struct device *dev)
 	pci_write_config16(dev, 0x1e, reg16);
 }
 
-static void pcie_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void pcie_set_subsystem(device_t dev, unsigned int vendor,
+			unsigned int device)
 {
 	/* NOTE: This is not the default position! */
 	if (!vendor || !device) {
@@ -125,7 +126,7 @@ static const unsigned short i82801gx_pcie_ids[] = {
 };
 
 static const struct pci_driver i82801gx_pcie __pci_driver = {
-	.ops	= &device_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.devices= i82801gx_pcie_ids,
+	.ops		= &device_ops,
+	.vendor		= PCI_VENDOR_ID_INTEL,
+	.devices	= i82801gx_pcie_ids,
 };

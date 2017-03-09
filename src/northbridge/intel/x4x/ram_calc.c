@@ -56,7 +56,7 @@ u8 decode_pciebar(u32 *const base, u32 *const len)
 {
 	*base = 0;
 	*len = 0;
-	const pci_devfn_t dev = PCI_DEV(0,0,0);
+	const pci_devfn_t dev = PCI_DEV(0, 0, 0);
 	u32 pciexbar = 0;
 	u32 pciexbar_reg;
 	u32 reg32;
@@ -98,7 +98,7 @@ u8 decode_pciebar(u32 *const base, u32 *const len)
  */
 void *cbmem_top(void)
 {
-	uintptr_t top_of_ram = pci_read_config32(PCI_DEV(0,0,0), D0F0_TSEG);
+	uintptr_t top_of_ram = pci_read_config32(PCI_DEV(0, 0, 0), D0F0_TSEG);
 	top_of_ram = ALIGN_DOWN(top_of_ram, 4*MiB);
 	return (void *) top_of_ram;
 }

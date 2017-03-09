@@ -34,7 +34,7 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 	u32 pciexbar = 0;
 	u32 length = 0;
 
-	dev = dev_find_slot(0, PCI_DEVFN(0,0));
+	dev = dev_find_slot(0, PCI_DEVFN(0, 0));
 	if (!decode_pciebar(&pciexbar, &length))
 		return current;
 

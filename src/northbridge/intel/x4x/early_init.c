@@ -40,10 +40,10 @@ void x4x_early_init(void)
 
 	/* Setup PMBASE */
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), PMBASE, DEFAULT_PMBASE | 1);
-	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0x44 /* ACPI_CNTL */ , 0x80);
+	pci_write_config8(PCI_DEV(0, 0x1f, 0), ACPI_CNTL, 0x80);
 
 	/* Setup HECIBAR */
-	pci_write_config32(PCI_DEV(0,3,0), 0x10, DEFAULT_HECIBAR);
+	pci_write_config32(PCI_DEV(0, 3, 0), 0x10, DEFAULT_HECIBAR);
 
 	/* Set C0000-FFFFF to access RAM on both reads and writes */
 	pci_write_config8(d0f0, D0F0_PAM(0), 0x30);
@@ -116,13 +116,15 @@ static void init_egress(void)
 	EPBAR32(0x20) = reg32;
 
 	/* Wait for table load */
-	while ((EPBAR8(0x26) & (1 << 0)) != 0);
+	while ((EPBAR8(0x26) & (1 << 0)) != 0)
+		;
 
 	/* VC1: enable */
 	EPBAR32(0x20) |= 1 << 31;
 
 	/* Wait for VC1 */
-	while ((EPBAR8(0x26) & (1 << 1)) != 0);
+	while ((EPBAR8(0x26) & (1 << 1)) != 0)
+		;
 
 	printk(BIOS_DEBUG, "Done Egress Port\n");
 }
@@ -195,10 +197,12 @@ static void init_dmi(void)
 	RCBA32(0x20) |= 1 << 31;
 
 	/* Wait for VC1 */
-	while ((RCBA8(0x26) & (1 << 1)) != 0);
+	while ((RCBA8(0x26) & (1 << 1)) != 0)
+		;
 
 	/* Wait for table load */
-	while ((RCBA8(0x26) & (1 << 0)) != 0);
+	while ((RCBA8(0x26) & (1 << 0)) != 0)
+		;
 
 	/* ASPM on DMI link */
 	RCBA16(0x1a8) &= ~0x3;
@@ -209,7 +213,8 @@ static void init_dmi(void)
 	/* Set up VC1 max time */
 	RCBA32(0x1c) = (RCBA32(0x1c) & ~0x7f0000) | 0x120000;
 
-	while ((DMIBAR32(0x26) & (1 << 1)) != 0);
+	while ((DMIBAR32(0x26) & (1 << 1)) != 0)
+		;
 	printk(BIOS_DEBUG, "Done DMI setup\n");
 
 	/* ASPM on DMI */

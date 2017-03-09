@@ -82,9 +82,9 @@
  * MCHBAR
  */
 
-#define MCHBAR8(x) *((volatile u8 *)(DEFAULT_MCHBAR + x))
-#define MCHBAR16(x) *((volatile u16 *)(DEFAULT_MCHBAR + x))
-#define MCHBAR32(x) *((volatile u32 *)(DEFAULT_MCHBAR + x))
+#define MCHBAR8(x) (*((volatile u8 *)(DEFAULT_MCHBAR + (x))))
+#define MCHBAR16(x) (*((volatile u16 *)(DEFAULT_MCHBAR + (x))))
+#define MCHBAR32(x) (*((volatile u32 *)(DEFAULT_MCHBAR + (x))))
 
 #define PMSTS_MCHBAR		0x0f14	/* Self refresh channel status */
 #define PMSTS_WARM_RESET	(1 << 8)
@@ -103,9 +103,9 @@
  * DMIBAR
  */
 
-#define DMIBAR8(x) *((volatile u8 *)(DEFAULT_DMIBAR + x))
-#define DMIBAR16(x) *((volatile u16 *)(DEFAULT_DMIBAR + x))
-#define DMIBAR32(x) *((volatile u32 *)(DEFAULT_DMIBAR + x))
+#define DMIBAR8(x) (*((volatile u8 *)(DEFAULT_DMIBAR + (x))))
+#define DMIBAR16(x) (*((volatile u16 *)(DEFAULT_DMIBAR + (x))))
+#define DMIBAR32(x) (*((volatile u32 *)(DEFAULT_DMIBAR + (x))))
 
 #define DMIVC0RCTL 0x14
 #define DMIVC1RCTL 0x20
@@ -120,9 +120,9 @@
  * EPBAR
  */
 
-#define EPBAR8(x) *((volatile u8 *)(DEFAULT_EPBAR + x))
-#define EPBAR16(x) *((volatile u16 *)(DEFAULT_EPBAR + x))
-#define EPBAR32(x) *((volatile u32 *)(DEFAULT_EPBAR + x))
+#define EPBAR8(x) (*((volatile u8 *)(DEFAULT_EPBAR + (x))))
+#define EPBAR16(x) (*((volatile u16 *)(DEFAULT_EPBAR + (x))))
+#define EPBAR32(x) (*((volatile u32 *)(DEFAULT_EPBAR + (x))))
 
 #define EPESD 0x44
 #define EPLE1D 0x50
@@ -164,9 +164,15 @@
 	for (idx = (ch) << 1; idx < ((ch) << 1) + DIMMS_PER_CHANNEL; ++idx)
 #define FOR_EACH_POPULATED_DIMM_IN_CHANNEL(dimms, ch, idx) \
 	FOR_EACH_DIMM_IN_CHANNEL(ch, idx) IF_DIMM_POPULATED(dimms, idx)
-#define CHANNEL_IS_POPULATED(dimms, idx) ((dimms[idx<<1].card_type != RAW_CARD_UNPOPULATED) || (dimms[(idx<<1) + 1].card_type != RAW_CARD_UNPOPULATED))
-#define CHANNEL_IS_CARDF(dimms, idx) ((dimms[idx<<1].card_type == 0xf) || (dimms[(idx<<1) + 1].card_type == 0xf))
-#define IF_CHANNEL_POPULATED(dimms, idx) if ((dimms[idx<<1].card_type != RAW_CARD_UNPOPULATED) || (dimms[(idx<<1) + 1].card_type != RAW_CARD_UNPOPULATED))
+#define CHANNEL_IS_POPULATED(dimms, idx) \
+	((dimms[idx<<1].card_type != RAW_CARD_UNPOPULATED) \
+		|| (dimms[(idx<<1) + 1].card_type != RAW_CARD_UNPOPULATED))
+#define CHANNEL_IS_CARDF(dimms, idx) \
+	((dimms[idx<<1].card_type == 0xf) \
+		|| (dimms[(idx<<1) + 1].card_type == 0xf))
+#define IF_CHANNEL_POPULATED(dimms, idx) \
+	if ((dimms[idx<<1].card_type != RAW_CARD_UNPOPULATED) \
+		|| (dimms[(idx<<1) + 1].card_type != RAW_CARD_UNPOPULATED))
 #define FOR_EACH_CHANNEL(idx) \
 	for (idx = 0; idx < TOTAL_CHANNELS; ++idx)
 #define FOR_EACH_POPULATED_CHANNEL(dimms, idx) \
@@ -177,8 +183,10 @@
 	(((dimms[ch<<1].card_type != RAW_CARD_UNPOPULATED) && ((r) < dimms[ch<<1].ranks)) || \
 	((dimms[(ch<<1) + 1].card_type != RAW_CARD_UNPOPULATED) && ((r) >= 2) && ((r) < (dimms[(ch<<1) + 1].ranks + 2))))
 #define IF_RANK_POPULATED(dimms, ch, r) \
-	if (((dimms[ch<<1].card_type != RAW_CARD_UNPOPULATED) && ((r) < dimms[ch<<1].ranks)) || \
-	    ((dimms[(ch<<1) + 1].card_type != RAW_CARD_UNPOPULATED) && ((r) >= 2) && ((r) < (dimms[(ch<<1) + 1].ranks + 2))))
+	if (((dimms[ch<<1].card_type != RAW_CARD_UNPOPULATED) \
+	&& ((r) < dimms[ch<<1].ranks)) \
+	|| ((dimms[(ch<<1) + 1].card_type != RAW_CARD_UNPOPULATED) \
+		&& ((r) >= 2) && ((r) < (dimms[(ch<<1) + 1].ranks + 2))))
 #define FOR_EACH_RANK_IN_CHANNEL(r) \
 	for (r = 0; r < RANKS_PER_CHANNEL; ++r)
 #define FOR_EACH_POPULATED_RANK_IN_CHANNEL(dimms, ch, r) \

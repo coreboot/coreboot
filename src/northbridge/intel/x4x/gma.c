@@ -365,10 +365,10 @@ static void gma_func0_init(struct device *dev)
 	pci_write_config32(dev, PCI_COMMAND, reg32);
 
 	/* configure GMBUSFREQ */
-	reg16 = pci_read_config16(dev_find_slot(0, PCI_DEVFN(0x2,0)), 0xcc);
+	reg16 = pci_read_config16(dev_find_slot(0, PCI_DEVFN(0x2, 0)), 0xcc);
 	reg16 &= ~0x1ff;
 	reg16 |= 0xbc;
-	pci_write_config16(dev_find_slot(0, PCI_DEVFN(0x2,0)), 0xcc, reg16);
+	pci_write_config16(dev_find_slot(0, PCI_DEVFN(0x2, 0)), 0xcc, reg16);
 
 	if (IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT))
 		native_init(dev);
@@ -376,7 +376,8 @@ static void gma_func0_init(struct device *dev)
 		pci_dev_init(dev);
 }
 
-static void gma_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void gma_set_subsystem(device_t dev, unsigned int vendor,
+			unsigned int device)
 {
 	if (!vendor || !device) {
 		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
@@ -391,10 +392,9 @@ static void gma_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 const struct i915_gpu_controller_info *
 intel_gma_get_controller_info(void)
 {
-	device_t dev = dev_find_slot(0, PCI_DEVFN(0x2,0));
-	if (!dev) {
+	device_t dev = dev_find_slot(0, PCI_DEVFN(0x2, 0));
+	if (!dev)
 		return NULL;
-	}
 	struct northbridge_intel_x4x_config *chip = dev->chip_info;
 	return &chip->gfx;
 }
@@ -402,9 +402,8 @@ intel_gma_get_controller_info(void)
 static void gma_ssdt(device_t device)
 {
 	const struct i915_gpu_controller_info *gfx = intel_gma_get_controller_info();
-	if (!gfx) {
+	if (!gfx)
 		return;
-	}
 
 	drivers_intel_gma_displays_ssdt_generate(gfx);
 }
@@ -422,8 +421,7 @@ static struct device_operations gma_func0_ops = {
 	.ops_pci = &gma_pci_ops,
 };
 
-static const unsigned short pci_device_ids[] =
-{
+static const unsigned short pci_device_ids[] = {
 	0x2e02, /* Eaglelake */
 	0x2e12, /* Q43/Q45 */
 	0x2e22, /* G43/G45 */

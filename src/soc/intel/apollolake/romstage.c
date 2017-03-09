@@ -136,38 +136,37 @@ static bool punit_init(void)
 	reg = read32(bios_rest_cpl);
 	if (reg == 0xffffffff) {
 		/* P-unit not found */
-		printk(BIOS_DEBUG, "Punit MMIO not available \n");
+		printk(BIOS_DEBUG, "Punit MMIO not available\n");
 		return false;
-	} else {
-		/* Set Punit interrupt pin IPIN offset 3D */
-		pci_write_config8(PUNIT_DEVFN, PCI_INTERRUPT_PIN, 0x2);
+	}
+	/* Set Punit interrupt pin IPIN offset 3D */
+	pci_write_config8(PUNIT_DEVFN, PCI_INTERRUPT_PIN, 0x2);
 
-		/* Set PUINT IRQ to 24 and INTPIN LOCK */
-		write32((void *)(MCH_BASE_ADDR + PUNIT_THERMAL_DEVICE_IRQ),
-			PUINT_THERMAL_DEVICE_IRQ_VEC_NUMBER |
-			PUINT_THERMAL_DEVICE_IRQ_LOCK);
+	/* Set PUINT IRQ to 24 and INTPIN LOCK */
+	write32((void *)(MCH_BASE_ADDR + PUNIT_THERMAL_DEVICE_IRQ),
+		PUINT_THERMAL_DEVICE_IRQ_VEC_NUMBER |
+		PUINT_THERMAL_DEVICE_IRQ_LOCK);
 
-		data = read32((void *)(MCH_BASE_ADDR + 0x7818));
-		data &= 0xFFFFE01F;
-		data |= 0x20 | 0x200;
-		write32((void *)(MCH_BASE_ADDR + 0x7818), data);
+	data = read32((void *)(MCH_BASE_ADDR + 0x7818));
+	data &= 0xFFFFE01F;
+	data |= 0x20 | 0x200;
+	write32((void *)(MCH_BASE_ADDR + 0x7818), data);
 
-		/* Stage0 BIOS Reset Complete (RST_CPL) */
-		write32(bios_rest_cpl, 0x1);
+	/* Stage0 BIOS Reset Complete (RST_CPL) */
+	write32(bios_rest_cpl, 0x1);
 
-		/*
-		 * Poll for bit 8 in same reg (RST_CPL).
-		 * We wait here till 1 ms for the bit to get set.
-		 */
-		stopwatch_init_msecs_expire(&sw, 1);
-		while (!(read32(bios_rest_cpl) & 0x100)) {
-			if (stopwatch_expired(&sw)) {
-				printk(BIOS_DEBUG,
-				       "Failed to set RST_CPL bit\n");
-				return false;
-			}
-			udelay(100);
+	/*
+	 * Poll for bit 8 in same reg (RST_CPL).
+	 * We wait here till 1 ms for the bit to get set.
+	 */
+	stopwatch_init_msecs_expire(&sw, 1);
+	while (!(read32(bios_rest_cpl) & 0x100)) {
+		if (stopwatch_expired(&sw)) {
+			printk(BIOS_DEBUG,
+			       "Failed to set RST_CPL bit\n");
+			return false;
 		}
+		udelay(100);
 	}
 	return true;
 }

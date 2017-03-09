@@ -183,17 +183,17 @@ static const struct nhlt_endp_descriptor max98357_descriptors[] = {
 int nhlt_soc_add_dmic_array(struct nhlt *nhlt, int num_channels)
 {
 	switch (num_channels) {
-		case 1:
-			return nhlt_add_endpoints(nhlt, dmic_1ch_descriptors,
-				ARRAY_SIZE(dmic_1ch_descriptors));
-		case 2:
-			return nhlt_add_endpoints(nhlt, dmic_2ch_descriptors,
-				ARRAY_SIZE(dmic_2ch_descriptors));
-		case 4:
-			return nhlt_add_endpoints(nhlt, dmic_4ch_descriptors,
-				ARRAY_SIZE(dmic_4ch_descriptors));
-		default:
-			return -1;
+	case 1:
+		return nhlt_add_endpoints(nhlt, dmic_1ch_descriptors,
+			ARRAY_SIZE(dmic_1ch_descriptors));
+	case 2:
+		return nhlt_add_endpoints(nhlt, dmic_2ch_descriptors,
+			ARRAY_SIZE(dmic_2ch_descriptors));
+	case 4:
+		return nhlt_add_endpoints(nhlt, dmic_4ch_descriptors,
+			ARRAY_SIZE(dmic_4ch_descriptors));
+	default:
+		return -1;
 	}
 }
 

@@ -58,7 +58,7 @@ static int acpi_sci_irq(void)
 static unsigned long acpi_madt_irq_overrides(unsigned long current)
 {
 	int sci = acpi_sci_irq();
-	uint16_t flags = MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW;;
+	uint16_t flags = MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW;
 
 	/* INT_SRC_OVR */
 	current += acpi_create_madt_irqoverride((void *)current, 0, 0, 2, 0);

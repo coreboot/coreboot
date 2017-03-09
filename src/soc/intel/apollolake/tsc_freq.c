@@ -37,7 +37,8 @@ void set_max_freq(void)
 	eax = cpuid_eax(CPUID_LEAF_PM);
 
 	msr = rdmsr(MSR_IA32_MISC_ENABLES);
-	if (!(eax &= 0x2) && ((msr.hi & APL_BURST_MODE_DISABLE) == 0)) {
+	eax &= 0x2;
+	if ((!eax) && ((msr.hi & APL_BURST_MODE_DISABLE) == 0)) {
 		/* Burst Mode has been factory configured as disabled
 		 * and is not available in this physical processor
 		 * package.

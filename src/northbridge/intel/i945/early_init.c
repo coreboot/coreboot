@@ -160,10 +160,10 @@ static void i945_setup_bars(void)
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), RCBA, (uintptr_t)DEFAULT_RCBA | 1);
 
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), PMBASE, DEFAULT_PMBASE | 1);
-	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0x44 /* ACPI_CNTL */ , 0x80); /* Enable ACPI BAR */
+	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0x44, 0x80); /* ACPI_CNTL: Enable ACPI BAR */
 
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), GPIOBASE, DEFAULT_GPIOBASE | 1);
-	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0x4c /* GC */ , 0x10);	/* Enable GPIOs */
+	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0x4c, 0x10);	/* GC: Enable GPIOs */
 	setup_pch_gpios(&mainboard_gpio_map);
 	printk(BIOS_DEBUG, " done.\n");
 
@@ -253,7 +253,7 @@ static void i945_setup_egress_port(void)
 	EPBAR32(EPVC1RCAP) = reg32;
 
 	if (IS_ENABLED(CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GC)) {
-		if ((MCHBAR32(CLKCFG) & 7) == 0){	/* 1067MHz */
+		if ((MCHBAR32(CLKCFG) & 7) == 0) {	/* 1067MHz */
 			EPBAR32(EPVC1IST + 0) = 0x01380138;
 			EPBAR32(EPVC1IST + 4) = 0x01380138;
 		}
@@ -275,9 +275,8 @@ static void i945_setup_egress_port(void)
 	}
 
 	/* Is internal graphics enabled? */
-	if (pci_read_config8(PCI_DEV(0, 0x0, 0), DEVEN) & (DEVEN_D2F0 | DEVEN_D2F1)) {
+	if (pci_read_config8(PCI_DEV(0, 0x0, 0), DEVEN) & (DEVEN_D2F0 | DEVEN_D2F1))
 		MCHBAR32(MMARB1) |= (1 << 17);
-	}
 
 	/* Assign Virtual Channel ID 1 to VC1 */
 	reg32 = EPBAR32(EPVC1RCTL);
@@ -305,7 +304,8 @@ static void i945_setup_egress_port(void)
 	printk(BIOS_DEBUG, "Loading port arbitration table ...");
 	/* Loop until bit 0 becomes 0 */
 	timeout = 0x7fffff;
-	while ((EPBAR16(EPVC1RSTS) & 1) && --timeout);
+	while ((EPBAR16(EPVC1RSTS) & 1) && --timeout)
+		;
 	if (!timeout)
 		printk(BIOS_DEBUG, "timeout!\n");
 	else
@@ -317,7 +317,8 @@ static void i945_setup_egress_port(void)
 	printk(BIOS_DEBUG, "Wait for VC1 negotiation ...");
 	/* Wait for VC1 negotiation pending */
 	timeout = 0x7fff;
-	while ((EPBAR16(EPVC1RSTS) & (1 << 1)) && --timeout);
+	while ((EPBAR16(EPVC1RSTS) & (1 << 1)) && --timeout)
+		;
 	if (!timeout)
 		printk(BIOS_DEBUG, "timeout!\n");
 	else
@@ -355,7 +356,7 @@ static void ich7_setup_dmi_rcrb(void)
 	pci_write_config32(PCI_DEV(0, 0x1c, 5), 0x54, 0x00500ce0);
 
 	reg32 = RCBA32(V1CTL);
-	reg32 &= ~( (0x7f << 1) | (7 << 17) | (7 << 24) );
+	reg32 &= ~((0x7f << 1) | (7 << 17) | (7 << 24));
 	reg32 |= (0x40 << 1) | (4 << 17) | (1 << 24) | (1 << 31);
 	RCBA32(V1CTL) = reg32;
 
@@ -410,7 +411,8 @@ static void i945_setup_dmi_rcrb(void)
 	printk(BIOS_DEBUG, "Wait for VC1 negotiation ...");
 	/* Wait for VC1 negotiation pending */
 	timeout = 0x7ffff;
-	while ((DMIBAR16(DMIVC1RSTS) & (1 << 1)) && --timeout);
+	while ((DMIBAR16(DMIVC1RSTS) & (1 << 1)) && --timeout)
+		;
 	if (!timeout)
 		printk(BIOS_DEBUG, "timeout!\n");
 	else
@@ -436,9 +438,8 @@ static void i945_setup_dmi_rcrb(void)
 
 	DMIBAR32(DMICC) = reg32;
 
-	if (activate_aspm) {
+	if (activate_aspm)
 		DMIBAR32(DMILCTL) |= (3 << 0);
-	}
 #endif
 
 	/* Last but not least, some additional steps */
@@ -510,7 +511,8 @@ static void i945_setup_dmi_rcrb(void)
 	/* wait for bit toggle to 0 */
 	printk(BIOS_DEBUG, "Waiting for DMI hardware...");
 	timeout = 0x7fffff;
-	while ((DMIBAR8(0x32) & (1 << 1)) && --timeout);
+	while ((DMIBAR8(0x32) & (1 << 1)) && --timeout)
+		;
 	if (!timeout)
 		printk(BIOS_DEBUG, "timeout!\n");
 	else
@@ -576,9 +578,8 @@ static void i945_setup_pci_express_x16(void)
 
 	reg16 = pci_read_config16(PCI_DEV(0, 0x01, 0), 0xba);
 	printk(BIOS_DEBUG, "SLOTSTS: %04x\n", reg16);
-	if (!(reg16 & 0x48)) {
+	if (!(reg16 & 0x48))
 		goto disable_pciexpress_x16_link;
-	}
 	reg16 |= (1 << 4) | (1 << 0);
 	pci_write_config16(PCI_DEV(0, 0x01, 0), 0xba, reg16);
 
@@ -591,7 +592,7 @@ static void i945_setup_pci_express_x16(void)
 	reg32 &= ~(1 << 8);
 	pci_write_config32(PCI_DEV(0, 0x01, 0), 0x224, reg32);
 
-	MCHBAR16(UPMC1) &= ~( (1 << 5) | (1 << 0) );
+	MCHBAR16(UPMC1) &= ~((1 << 5) | (1 << 0));
 
 	/* Initialize PEG_CAP */
 	reg16 = pci_read_config16(PCI_DEV(0, 0x01, 0), 0xa2);
@@ -613,7 +614,9 @@ static void i945_setup_pci_express_x16(void)
 	/* Wait for training to succeed */
 	printk(BIOS_DEBUG, "PCIe link training ...");
 	timeout = 0x7ffff;
-	while ((((pci_read_config32(PCI_DEV(0, 0x01, 0), PEGSTS) >> 16) & 3) != 3)  && --timeout);
+	while ((((pci_read_config32(PCI_DEV(0, 0x01, 0), PEGSTS) >> 16) & 3) != 3)
+		&& --timeout)
+		;
 
 	reg32 = pci_read_config32(PCI_DEV(0x0a, 0x0, 0), 0);
 	if (reg32 != 0x00000000 && reg32 != 0xffffffff) {
@@ -626,7 +629,7 @@ static void i945_setup_pci_express_x16(void)
 
 		reg32 = pci_read_config32(PCI_DEV(0, 0x01, 0), PEGSTS);
 		reg32 &= ~(0xf << 1);
-		reg32 |=1;
+		reg32 |= 1;
 		pci_write_config32(PCI_DEV(0, 0x01, 0), PEGSTS, reg32);
 
 		reg16 = pci_read_config16(PCI_DEV(0, 0x01, 0), 0x3e);
@@ -638,7 +641,9 @@ static void i945_setup_pci_express_x16(void)
 
 		printk(BIOS_DEBUG, "PCIe link training ...");
 		timeout = 0x7ffff;
-		while ((((pci_read_config32(PCI_DEV(0, 0x01, 0), PEGSTS) >> 16) & 3) != 3)  && --timeout);
+		while ((((pci_read_config32(PCI_DEV(0, 0x01, 0), PEGSTS) >> 16) & 3) != 3)
+			&& --timeout)
+			;
 
 		reg32 = pci_read_config32(PCI_DEV(0xa, 0x00, 0), 0);
 		if (reg32 != 0x00000000 && reg32 != 0xffffffff) {
@@ -659,15 +664,14 @@ static void i945_setup_pci_express_x16(void)
 
 	reg32 = pci_read_config32(PCI_DEV(0, 0x01, 0), 0x204);
 	reg32 &= 0xfffffc00; /* clear [9:0] */
-	if (reg16 == 1) {
+	if (reg16 == 1)
 		reg32 |= 0x32b;
 		// TODO
 		/* pci_write_config32(PCI_DEV(0, 0x01, 0), 0x204, reg32); */
-	} else if (reg16 == 16) {
+	else if (reg16 == 16)
 		reg32 |= 0x0f4;
 		// TODO
 		/* pci_write_config32(PCI_DEV(0, 0x01, 0), 0x204, reg32); */
-	}
 
 	reg32 = (pci_read_config32(PCI_DEV(0xa, 0, 0), 0x8) >> 8);
 	printk(BIOS_DEBUG, "PCIe device class: %06x\n", reg32);
@@ -749,11 +753,10 @@ static void i945_setup_pci_express_x16(void)
 	pci_write_config32(PCI_DEV(0, 0x01, 0), 0x200, reg32);
 
 	reg32 = pci_read_config32(PCI_DEV(0, 0x01, 0), 0xe80);
-	if (i945_silicon_revision() >= 2) {
+	if (i945_silicon_revision() >= 2)
 		reg32 |= (1 << 12);
-	} else {
+	else
 		reg32 &= ~(1 << 12);
-	}
 	pci_write_config32(PCI_DEV(0, 0x01, 0), 0xe80, reg32);
 
 	reg32 = pci_read_config32(PCI_DEV(0, 0x01, 0), 0xeb4);
@@ -780,7 +783,7 @@ static void i945_setup_pci_express_x16(void)
 		}
 	}
 
-	if (i945_silicon_revision() <= 2 ) {
+	if (i945_silicon_revision() <= 2) {
 		/* Set voltage specific parameters */
 		reg32 = pci_read_config32(PCI_DEV(0, 0x01, 0), 0xe80);
 		reg32 &= (0xf << 4);	/* Default case 1.05V */
@@ -813,7 +816,8 @@ disable_pciexpress_x16_link:
 	printk(BIOS_DEBUG, "Wait for link to enter detect state... ");
 	timeout = 0x7fffff;
 	for (reg32 = pci_read_config32(PCI_DEV(0, 0x01, 0), PEGSTS);
-	     (reg32 & 0x000f0000) && --timeout;);
+	     (reg32 & 0x000f0000) && --timeout;)
+		;
 	if (!timeout)
 		printk(BIOS_DEBUG, "timeout!\n");
 	else

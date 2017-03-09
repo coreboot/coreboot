@@ -33,11 +33,10 @@ static u32 sample_strobes(int channel_offset, struct sys_info *sysinfo)
 	addr = 0;
 
 	if (channel_offset != 0) {	/* must be dual channel */
-		if (sysinfo->interleaved == 1) {
+		if (sysinfo->interleaved == 1)
 			addr |= (1 << 6);
-		} else {
+		else
 			addr = ((u32)MCHBAR8(C0DRB3)) << 25;
-		}
 	}
 
 	for (i = 0; i < 28; i++) {
@@ -46,9 +45,8 @@ static u32 sample_strobes(int channel_offset, struct sys_info *sysinfo)
 	}
 
 	reg32 = MCHBAR32(RCVENMT);
-	if (channel_offset == 0) {
+	if (channel_offset == 0)
 		reg32 = reg32 << 2;
-	}
 
 	/**
 	 * [19] = 1: all bits are high
@@ -99,7 +97,7 @@ static void set_receive_enable(int channel_offset, u8 medium, u8 coarse)
 
 }
 
-static int normalize(int channel_offset, u8 * mediumcoarse, u8 * fine)
+static int normalize(int channel_offset, u8 *mediumcoarse, u8 *fine)
 {
 	printk(BIOS_SPEW, "  normalize()\n");
 
@@ -122,7 +120,7 @@ static int normalize(int channel_offset, u8 * mediumcoarse, u8 * fine)
 	return 0;
 }
 
-static int find_preamble(int channel_offset, u8 * mediumcoarse,
+static int find_preamble(int channel_offset, u8 *mediumcoarse,
 			 struct sys_info *sysinfo)
 {
 	/* find start of the data phase */
@@ -156,7 +154,7 @@ static int find_preamble(int channel_offset, u8 * mediumcoarse,
  * add a quarter clock to the current receive enable settings
  */
 
-static int add_quarter_clock(int channel_offset, u8 * mediumcoarse, u8 * fine)
+static int add_quarter_clock(int channel_offset, u8 *mediumcoarse, u8 *fine)
 {
 	printk(BIOS_SPEW, "  add_quarter_clock() mediumcoarse=%02x fine=%02x\n",
 			*mediumcoarse, *fine);
@@ -180,7 +178,7 @@ static int add_quarter_clock(int channel_offset, u8 * mediumcoarse, u8 * fine)
 	return 0;
 }
 
-static int find_strobes_low(int channel_offset, u8 * mediumcoarse, u8 * fine,
+static int find_strobes_low(int channel_offset, u8 *mediumcoarse, u8 *fine,
 			    struct sys_info *sysinfo)
 {
 	u32 rcvenmt;
@@ -214,7 +212,7 @@ static int find_strobes_low(int channel_offset, u8 * mediumcoarse, u8 * fine,
 	return 0;
 }
 
-static int find_strobes_edge(int channel_offset, u8 * mediumcoarse, u8 * fine,
+static int find_strobes_edge(int channel_offset, u8 *mediumcoarse, u8 *fine,
 			     struct sys_info *sysinfo)
 {
 
@@ -313,9 +311,8 @@ static int receive_enable_autoconfig(int channel_offset,
 	/* This is a debug check to see if the rcven code is fully working.
 	 * It can be removed when the output message is not printed anymore
 	 */
-	if (MCHBAR8(C0WL0REOST + channel_offset) == 0) {
+	if (MCHBAR8(C0WL0REOST + channel_offset) == 0)
 		printk(BIOS_DEBUG, "Weird. No C%sWL0REOST\n", channel_offset?"1":"0");
-	}
 
 	return 0;
 }

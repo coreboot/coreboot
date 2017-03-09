@@ -57,6 +57,7 @@ config VARIANT_DIR
 config DEVICETREE
 	string
 	default "variants/pyro/devicetree.cb" if BOARD_GOOGLE_PYRO
+	default "variants/sand/devicetree.cb" if BOARD_GOOGLE_SAND
 	default "variants/snappy/devicetree.cb" if BOARD_GOOGLE_SNAPPY
 	default "variants/baseboard/devicetree.cb"
 

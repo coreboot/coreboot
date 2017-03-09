@@ -49,7 +49,7 @@ static void pch_log_wake_source(struct chipset_power_state *ps)
 		elog_add_event_wake(ELOG_WAKE_SOURCE_PCIE, 0);
 
 	/* PME */
-	if(ps->gpe0_sts[GPE0_A] & CSE_PME_STS)
+	if (ps->gpe0_sts[GPE0_A] & CSE_PME_STS)
 		elog_add_event_wake(ELOG_WAKE_SOURCE_PME, 0);
 
 	/* SMBUS Wake */

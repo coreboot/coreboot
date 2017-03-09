@@ -143,7 +143,7 @@ static void gpi_enable_smi(const struct pad_config *cfg, uint16_t port, int pin)
 
 	/* Set enable bits */
 	en_reg = GPI_SMI_EN_OFFSET(group);
-	value = iosf_read(port, en_reg );
+	value = iosf_read(port, en_reg);
 	value |= 1 << (pin % GPIO_MAX_NUM_PER_GROUP);
 	iosf_write(port, en_reg, value);
 }
@@ -348,7 +348,7 @@ int gpi_status_get(const struct gpi_status *sts, gpio_t gpi)
 /* Helper function to map PMC register groups to tier1 sci groups */
 static int pmc_gpe_route_to_gpio(int route)
 {
-	switch(route) {
+	switch (route) {
 	case PMC_GPE_SW_31_0:
 		return GPIO_GPE_SW_31_0;
 	case PMC_GPE_SW_63_32:

@@ -65,7 +65,7 @@ void lpss_console_uart_init(void)
 
 uintptr_t uart_platform_base(int idx)
 {
-	return (CONFIG_CONSOLE_UART_BASE_ADDRESS);
+	return CONFIG_CONSOLE_UART_BASE_ADDRESS;
 }
 
 static const struct pad_config uart_gpios[] = {

@@ -13,11 +13,15 @@
 # GNU General Public License for more details.
 #
 
-config CPU_AMD_PI_00670F00
+config CPU_AMD_PI_00670F00_FP4
 	bool
 	select X86_AMD_FIXED_MTRRS
 
-if CPU_AMD_PI_00670F00
+config CPU_AMD_PI_00670F00_FT4
+	bool
+	select X86_AMD_FIXED_MTRRS
+
+if CPU_AMD_PI_00670F00_FP4 || CPU_AMD_PI_00670F00_FT4
 
 config CPU_ADDR_BITS
 	int

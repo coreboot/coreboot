@@ -17,7 +17,8 @@ config CPU_AMD_PI
 	bool
 	default y if CPU_AMD_PI_00630F01
 	default y if CPU_AMD_PI_00730F01
-	default y if CPU_AMD_PI_00670F00
+	default y if CPU_AMD_PI_00670F00_FP4
+	default y if CPU_AMD_PI_00670F00_FT4
 	default y if CPU_AMD_PI_00660F01
 	default n
 	select ARCH_BOOTBLOCK_X86_32

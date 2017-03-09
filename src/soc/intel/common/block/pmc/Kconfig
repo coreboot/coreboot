@@ -1,0 +1,6 @@
+config SOC_INTEL_COMMON_BLOCK_PMC
+	depends on SOC_INTEL_COMMON_BLOCK_GPIO
+	bool
+	help
+	  Intel Processor common code for Power Management controller(PMC)
+	  subsystem

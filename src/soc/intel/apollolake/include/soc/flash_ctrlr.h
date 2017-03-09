@@ -50,7 +50,8 @@
 #define  SPIBAR_HSFSTS_FBDC(n)		(((n) << 24) & SPIBAR_HSFSTS_FBDC_MASK)
 #define  SPIBAR_HSFSTS_WET		(1 << 21)
 #define  SPIBAR_HSFSTS_FCYCLE_MASK	(0xf << 17)
-#define  SPIBAR_HSFSTS_FCYCLE(cyc)	(((cyc) << 17) & SPIBAR_HSFSTS_FCYCLE_MASK)
+#define  SPIBAR_HSFSTS_FCYCLE(cyc)	(((cyc) << 17) \
+					& SPIBAR_HSFSTS_FCYCLE_MASK)
 #define  SPIBAR_HSFSTS_FGO		(1 << 16)
 #define  SPIBAR_HSFSTS_FLOCKDN		(1 << 15)
 #define  SPIBAR_HSFSTS_FDV		(1 << 14)

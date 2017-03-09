@@ -159,7 +159,8 @@ void gpio_configure_pad(const struct pad_config *cfg)
 	 * This is done to preserve config1 size as unit16 in gpio.h.
 	 */
 	dw1 = cfg->config1 & ~PAD_CFG1_IOSSTATE_MASK;
-	dw1 |= (cfg->config1 & PAD_CFG1_IOSSTATE_MASK) << PAD_CFG1_IOSSTATE_SHIFT;
+	dw1 |= (cfg->config1 & PAD_CFG1_IOSSTATE_MASK)
+		<< PAD_CFG1_IOSSTATE_SHIFT;
 
 	iosf_write(comm->port, config_offset, cfg->config0);
 	iosf_write(comm->port, config_offset + sizeof(uint32_t), dw1);

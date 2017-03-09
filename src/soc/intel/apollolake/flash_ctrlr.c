@@ -68,7 +68,8 @@ static void _get_spi_flash_ctx(struct spi_flash_ctx *ctx)
 }
 
 /* Read register from the SPI flash controller. 'reg' is the register offset. */
-static uint32_t _spi_flash_ctrlr_reg_read(struct spi_flash_ctx *ctx, uint16_t reg)
+static uint32_t _spi_flash_ctrlr_reg_read(struct spi_flash_ctx *ctx,
+	uint16_t reg)
 {
 	uintptr_t addr =  ALIGN_DOWN(ctx->mmio_base + reg, 4);
 	return read32((void *)addr);

@@ -220,7 +220,8 @@ asmlinkage void car_stage_entry(void)
 	top_of_ram = (uintptr_t) cbmem_top();
 	/* cbmem_top() needs to be at least 16 MiB aligned */
 	assert(ALIGN_DOWN(top_of_ram, 16*MiB) == top_of_ram);
-	postcar_frame_add_mtrr(&pcf, top_of_ram - 16*MiB, 16*MiB, MTRR_TYPE_WRBACK);
+	postcar_frame_add_mtrr(&pcf, top_of_ram - 16*MiB, 16*MiB,
+		MTRR_TYPE_WRBACK);
 
 	/* Cache the memory-mapped boot media. */
 	if (IS_ENABLED(CONFIG_BOOT_DEVICE_MEMORY_MAPPED))
@@ -244,7 +245,8 @@ asmlinkage void car_stage_entry(void)
 static void fill_console_params(FSPM_UPD *mupd)
 {
 	if (IS_ENABLED(CONFIG_CONSOLE_SERIAL)) {
-		mupd->FspmConfig.SerialDebugPortDevice = CONFIG_UART_FOR_CONSOLE;
+		mupd->FspmConfig.SerialDebugPortDevice =
+			CONFIG_UART_FOR_CONSOLE;
 		/* use MMIO port type */
 		mupd->FspmConfig.SerialDebugPortType = 2;
 		/* use 4 byte register stride */

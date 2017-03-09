@@ -181,8 +181,8 @@ permissions described in the GCC Runtime Library Exception, version
 /* About the target */
 
 #if BITS_PER_UNIT == 8
-typedef unsigned gcov_unsigned_t __attribute__ ((mode (SI)));
-typedef unsigned gcov_position_t __attribute__ ((mode (SI)));
+typedef unsigned int gcov_unsigned_t __attribute__ ((mode (SI)));
+typedef unsigned int gcov_position_t __attribute__ ((mode (SI)));
 #if LONG_LONG_TYPE_SIZE > 32
 typedef signed gcov_type __attribute__ ((mode (DI)));
 #else
@@ -190,16 +190,16 @@ typedef signed gcov_type __attribute__ ((mode (SI)));
 #endif
 #else
 #if BITS_PER_UNIT == 16
-typedef unsigned gcov_unsigned_t __attribute__ ((mode (HI)));
-typedef unsigned gcov_position_t __attribute__ ((mode (HI)));
+typedef unsigned int gcov_unsigned_t __attribute__ ((mode (HI)));
+typedef unsigned int gcov_position_t __attribute__ ((mode (HI)));
 #if LONG_LONG_TYPE_SIZE > 32
 typedef signed gcov_type __attribute__ ((mode (SI)));
 #else
 typedef signed gcov_type __attribute__ ((mode (HI)));
 #endif
 #else
-typedef unsigned gcov_unsigned_t __attribute__ ((mode (QI)));
-typedef unsigned gcov_position_t __attribute__ ((mode (QI)));
+typedef unsigned int gcov_unsigned_t __attribute__ ((mode (QI)));
+typedef unsigned int gcov_position_t __attribute__ ((mode (QI)));
 #if LONG_LONG_TYPE_SIZE > 32
 typedef signed gcov_type __attribute__ ((mode (HI)));
 #else
@@ -218,8 +218,8 @@ typedef signed gcov_type __attribute__ ((mode (QI)));
 #else /* !IN_LIBGCOV */
 /* About the host */
 
-typedef unsigned gcov_unsigned_t;
-typedef unsigned gcov_position_t;
+typedef unsigned int gcov_unsigned_t;
+typedef unsigned int gcov_position_t;
 /* gcov_type is typedef'd elsewhere for the compiler */
 #if IN_GCOV
 #define GCOV_LINKAGE static
@@ -376,7 +376,7 @@ typedef HOST_WIDEST_INT gcov_type;
 	(GCOV_TAG_COUNTER_BASE + ((gcov_unsigned_t)(COUNT) << 17))
 /* Convert a tag to a counter.  */
 #define GCOV_COUNTER_FOR_TAG(TAG)					\
-	((unsigned)(((TAG) - GCOV_TAG_COUNTER_BASE) >> 17))
+	((unsigned int)(((TAG) - GCOV_TAG_COUNTER_BASE) >> 17))
 /* Check whether a tag is a counter tag.  */
 #define GCOV_TAG_IS_COUNTER(TAG)				\
 	(!((TAG) & 0xFFFF) && GCOV_COUNTER_FOR_TAG (TAG) < GCOV_COUNTERS)
@@ -463,7 +463,7 @@ struct gcov_info
   gcov_merge_fn merge[GCOV_COUNTERS];  /* merge functions (null for
 					  unused) */
 
-  unsigned n_functions;		/* number of functions */
+  unsigned int n_functions;		/* number of functions */
   const struct gcov_fn_info *const *functions; /* pointer to pointers
 					          to function information  */
 };
@@ -477,20 +477,20 @@ extern void __gcov_flush (void) ATTRIBUTE_HIDDEN;
 #endif
 
 /* The merge function that just sums the counters.  */
-extern void __gcov_merge_add (gcov_type *, unsigned) ATTRIBUTE_HIDDEN;
+extern void __gcov_merge_add (gcov_type *, unsigned int) ATTRIBUTE_HIDDEN;
 
 /* The merge function to choose the most common value.  */
-extern void __gcov_merge_single (gcov_type *, unsigned) ATTRIBUTE_HIDDEN;
+extern void __gcov_merge_single (gcov_type *, unsigned int) ATTRIBUTE_HIDDEN;
 
 /* The merge function to choose the most common difference between
    consecutive values.  */
-extern void __gcov_merge_delta (gcov_type *, unsigned) ATTRIBUTE_HIDDEN;
+extern void __gcov_merge_delta (gcov_type *, unsigned int) ATTRIBUTE_HIDDEN;
 
 /* The merge function that just ors the counters together.  */
-extern void __gcov_merge_ior (gcov_type *, unsigned) ATTRIBUTE_HIDDEN;
+extern void __gcov_merge_ior (gcov_type *, unsigned int) ATTRIBUTE_HIDDEN;
 
 /* The profiler functions.  */
-extern void __gcov_interval_profiler (gcov_type *, gcov_type, int, unsigned);
+extern void __gcov_interval_profiler (gcov_type *, gcov_type, int, unsigned int);
 extern void __gcov_pow2_profiler (gcov_type *, gcov_type);
 extern void __gcov_one_value_profiler (gcov_type *, gcov_type);
 extern void __gcov_indirect_call_profiler (gcov_type *, gcov_type, void *, void *);
@@ -520,9 +520,9 @@ GCOV_LINKAGE struct gcov_var
 {
   FILE *file;
   gcov_position_t start;	/* Position of first byte of block */
-  unsigned offset;		/* Read/write position within the block.  */
-  unsigned length;		/* Read limit in the block.  */
-  unsigned overread;		/* Number of words overread.  */
+  unsigned int offset;		/* Read/write position within the block.  */
+  unsigned int length;		/* Read limit in the block.  */
+  unsigned int overread;		/* Number of words overread.  */
   int error;			/* < 0 overflow, > 0 disk error.  */
   int mode;	                /* < 0 writing, > 0 reading */
 #if IN_LIBGCOV

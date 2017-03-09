@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  */
 
-static void print_debug_pci_dev(unsigned dev)
+static void print_debug_pci_dev(unsigned int dev)
 {
 	printk(BIOS_DEBUG, "PCI: %02x:%02x.%x",
 		(dev >> 16) & 0xff, (dev >> 11) & 0x1f, (dev >> 8) & 7);
@@ -37,7 +37,7 @@ static inline void print_pci_devices(void)
 	}
 }
 
-static void dump_pci_device(unsigned dev)
+static void dump_pci_device(unsigned int dev)
 {
 	int i;
 	print_debug_pci_dev(dev);
@@ -71,7 +71,7 @@ static inline void dump_pci_devices(void)
 }
 
 
-static inline void dump_io_resources(unsigned port)
+static inline void dump_io_resources(unsigned int port)
 {
 	int i;
 	printk(BIOS_DEBUG, "%04x:\n", port);

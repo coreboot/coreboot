@@ -8,14 +8,14 @@ static void dump_spd_registers(const struct mem_controller *ctrl)
 	int i;
 	printk(BIOS_DEBUG, "\n");
 	for(i = 0; i < 4; i++) {
-		unsigned device;
+		unsigned int device;
 		device = ctrl->channel0[i];
 		if (device) {
 			int j;
 			printk(BIOS_DEBUG, "dimm: %02x.0: %02x", i, device);
 			for(j = 0; j < 256; j++) {
 				int status;
-				unsigned char byte;
+				unsigned int char byte;
 				if ((j & 0xf) == 0)
 					printk(BIOS_DEBUG, "\n%02x: ", j);
 				status = spd_read_byte(device, j);
@@ -34,7 +34,7 @@ static void dump_spd_registers(const struct mem_controller *ctrl)
 			printk(BIOS_DEBUG, "dimm: %02x.1: %02x", i, device);
 			for(j = 0; j < 256; j++) {
 				int status;
-				unsigned char byte;
+				unsigned int char byte;
 				if ((j & 0xf) == 0)
 					printk(BIOS_DEBUG, "\n%02x: ");
 				status = spd_read_byte(device, j);
@@ -53,7 +53,7 @@ static void dump_spd_registers(const struct mem_controller *ctrl)
 #if 0
 void dump_spd_registers(void)
 {
-	unsigned device;
+	unsigned int device;
 	device = SMBUS_MEM_DEVICE_START;
 	printk(BIOS_DEBUG, "\n");
 	while(device <= SMBUS_MEM_DEVICE_END) {
@@ -61,7 +61,7 @@ void dump_spd_registers(void)
 		int i;
 		printk(BIOS_DEBUG, "dimm %02x", device);
 		for(i = 0; (i < 256) && (status == 0); i++) {
-			unsigned char byte;
+			unsigned int char byte;
 			if ((i % 20) == 0) {
 				printk(BIOS_DEBUG, "\n%3d: ", i);
 			}

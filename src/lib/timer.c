@@ -20,7 +20,7 @@
 
 __attribute__((weak)) void init_timer() { /* do nothing */ }
 
-void udelay(unsigned usec)
+void udelay(unsigned int usec)
 {
 	struct stopwatch sw;
 

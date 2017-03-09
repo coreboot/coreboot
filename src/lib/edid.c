@@ -382,12 +382,24 @@ detailed_block(struct edid *result_edid, unsigned char *x, int in_extension,
 
 				printk(BIOS_SPEW, "Preferred aspect ratio: ");
 				switch ((x[15] & 0xe0) >> 5) {
-				case 0x00: printk(BIOS_SPEW, "4:3"); break;
-				case 0x01: printk(BIOS_SPEW, "16:9"); break;
-				case 0x02: printk(BIOS_SPEW, "16:10"); break;
-				case 0x03: printk(BIOS_SPEW, "5:4"); break;
-				case 0x04: printk(BIOS_SPEW, "15:9"); break;
-				default: printk(BIOS_SPEW, "(broken)"); break;
+				case 0x00:
+					printk(BIOS_SPEW, "4:3");
+					break;
+				case 0x01:
+					printk(BIOS_SPEW, "16:9");
+					break;
+				case 0x02:
+					printk(BIOS_SPEW, "16:10");
+					break;
+				case 0x03:
+					printk(BIOS_SPEW, "5:4");
+					break;
+				case 0x04:
+					printk(BIOS_SPEW, "15:9");
+					break;
+				default:
+					printk(BIOS_SPEW, "(broken)");
+					break;
 				}
 				printk(BIOS_SPEW, "\n");
 
@@ -709,7 +721,8 @@ cea_hdmi_block(struct edid *out, unsigned char *x)
 				mask = 1;
 			}
 			switch (x[9 + b] & 0x18) {
-			case 0x00: break;
+			case 0x00:
+				break;
 			case 0x08:
 				printk(BIOS_SPEW, "      Base EDID image size is aspect ratio\n");
 				break;
@@ -854,7 +867,8 @@ parse_cea(struct edid *out, unsigned char *x, struct edid_context *c)
 	int offset = x[2];
 	unsigned char *detailed;
 
-	if (version >= 1) do {
+	if (version >= 1)
+		do {
 			if (version == 1 && x[3] != 0)
 				ret = 1;
 
@@ -913,12 +927,23 @@ parse_extension(struct edid *out, unsigned char *x, struct edid_context *c)
 		extension_version(out, x);
 		conformant_extension = parse_cea(out, x, c);
 		break;
-	case 0x10: printk(BIOS_SPEW, "VTB extension block\n"); break;
-	case 0x40: printk(BIOS_SPEW, "DI extension block\n"); break;
-	case 0x50: printk(BIOS_SPEW, "LS extension block\n"); break;
-	case 0x60: printk(BIOS_SPEW, "DPVL extension block\n"); break;
-	case 0xF0: printk(BIOS_SPEW, "Block map\n"); break;
-	case 0xFF: printk(BIOS_SPEW, "Manufacturer-specific extension block\n");
+	case 0x10:
+		printk(BIOS_SPEW, "VTB extension block\n");
+		break;
+	case 0x40:
+		printk(BIOS_SPEW, "DI extension block\n");
+		break;
+	case 0x50:
+		printk(BIOS_SPEW, "LS extension block\n");
+		break;
+	case 0x60:
+		printk(BIOS_SPEW, "DPVL extension block\n");
+		break;
+	case 0xF0:
+		printk(BIOS_SPEW, "Block map\n");
+		break;
+	case 0xFF:
+		printk(BIOS_SPEW, "Manufacturer-specific extension block\n");
 	default:
 		printk(BIOS_SPEW, "Unknown extension block\n");
 		break;
@@ -1140,14 +1165,27 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 			out->panel_bits_per_pixel = 3*out->panel_bits_per_color;
 
 			switch (edid[0x14] & 0x0f) {
-			case 0x00: printk(BIOS_SPEW, "Digital interface is not defined\n"); break;
-			case 0x01: printk(BIOS_SPEW, "DVI interface\n"); break;
-			case 0x02: printk(BIOS_SPEW, "HDMI-a interface\n"); break;
-			case 0x03: printk(BIOS_SPEW, "HDMI-b interface\n"); break;
-			case 0x04: printk(BIOS_SPEW, "MDDI interface\n"); break;
-			case 0x05: printk(BIOS_SPEW, "DisplayPort interface\n"); break;
+			case 0x00:
+				printk(BIOS_SPEW, "Digital interface is not defined\n");
+				break;
+			case 0x01:
+				printk(BIOS_SPEW, "DVI interface\n");
+				break;
+			case 0x02:
+				printk(BIOS_SPEW, "HDMI-a interface\n");
+				break;
+			case 0x03:
+				printk(BIOS_SPEW, "HDMI-b interface\n");
+				break;
+			case 0x04:
+				printk(BIOS_SPEW, "MDDI interface\n");
+				break;
+			case 0x05:
+				printk(BIOS_SPEW, "DisplayPort interface\n");
+				break;
 			default:
-				   c.nonconformant_digital_display = 1;
+				c.nonconformant_digital_display = 1;
+				break;
 			}
 			extra_info.type = edid[0x14] & 0x0f;
 		} else 	if (c.claims_one_point_two) {
@@ -1218,23 +1256,35 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 		else
 			/* XXX Technically 1.3 doesn't say this... */
 			printk(BIOS_SPEW, "Gamma: 1.0\n");
-	} else printk(BIOS_SPEW, "Gamma: %d%%\n", ((edid[0x17] + 100)));
+	} else
+		printk(BIOS_SPEW, "Gamma: %d%%\n", ((edid[0x17] + 100)));
 	printk(BIOS_SPEW, "Check DPMS levels\n");
 	if (edid[0x18] & 0xE0) {
 		printk(BIOS_SPEW, "DPMS levels:");
-		if (edid[0x18] & 0x80) printk(BIOS_SPEW, " Standby");
-		if (edid[0x18] & 0x40) printk(BIOS_SPEW, " Suspend");
-		if (edid[0x18] & 0x20) printk(BIOS_SPEW, " Off");
+		if (edid[0x18] & 0x80)
+			printk(BIOS_SPEW, " Standby");
+		if (edid[0x18] & 0x40)
+			printk(BIOS_SPEW, " Suspend");
+		if (edid[0x18] & 0x20)
+			printk(BIOS_SPEW, " Off");
 		printk(BIOS_SPEW, "\n");
 	}
 
 	/* FIXME: this is from 1.4 spec, check earlier */
 	if (analog) {
 		switch (edid[0x18] & 0x18) {
-			case 0x00: printk(BIOS_SPEW, "Monochrome or grayscale display\n"); break;
-			case 0x08: printk(BIOS_SPEW, "RGB color display\n"); break;
-			case 0x10: printk(BIOS_SPEW, "Non-RGB color display\n"); break;
-			case 0x18: printk(BIOS_SPEW, "Undefined display color type\n");
+			case 0x00:
+				printk(BIOS_SPEW, "Monochrome or grayscale display\n");
+				break;
+			case 0x08:
+				printk(BIOS_SPEW, "RGB color display\n");
+				break;
+			case 0x10:
+				printk(BIOS_SPEW, "Non-RGB color display\n");
+				break;
+			case 0x18:
+				printk(BIOS_SPEW, "Undefined display color type\n");
+				break;
 		}
 	} else {
 		printk(BIOS_SPEW, "Supported color formats: RGB 4:4:4");

@@ -498,7 +498,8 @@ static int dec_rec2(struct in *in, struct dec_hufftbl *hu, int *runp, int c,
 		*runp = i >> 8 & 15;
 		i >>= 16;
 	} else {
-		for (i = DECBITS; (c = ((c << 1) | GETBITS(in, 1))) >= (hu->maxcode[i]); i++);
+		for (i = DECBITS; (c = ((c << 1) | GETBITS(in, 1))) >= (hu->maxcode[i]); i++)
+			;
 		if (i >= 16) {
 			in->marker = M_BADHUFF;
 			return 0;

@@ -49,7 +49,7 @@ static void enable_cmos_upper_bank(void)
 	iosf_write(IOSF_RTC_PORT_ID, RTC_CONFIG, reg);
 }
 
-void asmlinkage bootblock_c_entry(uint64_t base_timestamp)
+asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 {
 	device_t dev = NB_DEV_ROOT;
 

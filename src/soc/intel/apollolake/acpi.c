@@ -64,7 +64,8 @@ static unsigned long acpi_madt_irq_overrides(unsigned long current)
 	current += acpi_create_madt_irqoverride((void *)current, 0, 0, 2, 0);
 
 	/* SCI */
-	current += acpi_create_madt_irqoverride((void *)current, 0, sci, sci, flags);
+	current += acpi_create_madt_irqoverride((void *)current, 0, sci, sci,
+		flags);
 
 	return current;
 }

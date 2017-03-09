@@ -62,14 +62,16 @@ struct soc_intel_apollolake_config {
 	/* [30:24] SDR50 mode Number of dealy elements.Each = 125pSec.
 	 * [22:16] DDR50 mode Number of dealy elements.Each = 125pSec.
 	 * [14:8] SDR25/HS50 mode Number of dealy elements.Each = 125pSec.
-	 * [6:0] SDR12/Compatibility mode Number of dealy elements.Each = 125pSec.
+	 * [6:0] SDR12/Compatibility mode Number of dealy elements.
+	 *       Each = 125pSec.
 	 */
 	uint32_t emmc_tx_data_cntl2;
 
 	/* [30:24] SDR50 mode Number of dealy elements.Each = 125pSec.
 	 * [22:16] DDR50 mode Number of dealy elements.Each = 125pSec.
 	 * [14:8] SDR25/HS50 mode Number of dealy elements.Each = 125pSec.
-	 * [6:0] SDR12/Compatibility mode Number of dealy elements.Each = 125pSec.
+	 * [6:0] SDR12/Compatibility mode Number of dealy elements.
+	 *       Each = 125pSec.
 	 */
 	uint32_t emmc_rx_cmd_data_cntl1;
 

@@ -23,7 +23,8 @@
 #if !defined(__SIMPLE_DEVICE__)
 #include <device/device.h>
 #include <device/pci_def.h>
-#define _LPSS_PCI_DEV(slot, func)	dev_find_slot(0, _LPSS_PCI_DEVFN(slot, func))
+#define _LPSS_PCI_DEV(slot, func)	dev_find_slot(0, _LPSS_PCI_DEVFN(slot, \
+									 func))
 #define _PCI_DEV(slot, func)		dev_find_slot(0, PCI_DEVFN(slot, func))
 #else
 #include <arch/io.h>

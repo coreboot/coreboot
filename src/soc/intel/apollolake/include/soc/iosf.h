@@ -24,7 +24,7 @@
 #define  RTC_CONFIG			0x3400
 #define   RTC_CONFIG_UCMOS_ENABLE	(1 << 2)
 
-static inline void * iosf_address(uint16_t port, uint16_t reg)
+static inline void *iosf_address(uint16_t port, uint16_t reg)
 {
 	uintptr_t addr = (CONFIG_IOSF_BASE_ADDRESS | (port << 16) | (reg & ~3));
 	return (void *)addr;

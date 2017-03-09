@@ -116,7 +116,7 @@ static void fill_xfer_fifo(struct spi_flash_ctx *ctx, const void *data,
 	len = min(len, SPIBAR_FDATA_FIFO_SIZE);
 
 	/* YES! memcpy() works. FDATAn does not require 32-bit accesses. */
-	memcpy((void*)(ctx->mmio_base + SPIBAR_FDATA(0)), data, len);
+	memcpy((void *)(ctx->mmio_base + SPIBAR_FDATA(0)), data, len);
 }
 
 /* Drain FDATAn FIFO after a read transaction populates data. */
@@ -125,7 +125,7 @@ static void drain_xfer_fifo(struct spi_flash_ctx *ctx, void *dest, size_t len)
 	len = min(len, SPIBAR_FDATA_FIFO_SIZE);
 
 	/* YES! memcpy() works. FDATAn does not require 32-bit accesses. */
-	memcpy(dest, (void*)(ctx->mmio_base + SPIBAR_FDATA(0)), len);
+	memcpy(dest, (void *)(ctx->mmio_base + SPIBAR_FDATA(0)), len);
 }
 
 /* Fire up a transfer using the hardware sequencer. */

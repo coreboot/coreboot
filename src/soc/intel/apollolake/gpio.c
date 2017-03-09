@@ -177,7 +177,7 @@ void gpio_configure_pads(const struct pad_config *cfg, size_t num_pads)
 		gpio_configure_pad(cfg + i);
 }
 
-void * gpio_dwx_address(const uint16_t pad)
+void *gpio_dwx_address(const uint16_t pad)
 {
 	/* Calculate Address of DW0 register for given GPIO
 	 * pad - GPIO number

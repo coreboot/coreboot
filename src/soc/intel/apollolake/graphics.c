@@ -97,7 +97,7 @@ static const unsigned short pci_device_ids[] = {
 };
 
 static const struct pci_driver integrated_graphics_driver __pci_driver = {
-	.ops	= &igd_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.devices= pci_device_ids,
+	.ops		= &igd_ops,
+	.vendor		= PCI_VENDOR_ID_INTEL,
+	.devices	= pci_device_ids,
 };

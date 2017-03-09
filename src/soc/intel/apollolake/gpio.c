@@ -52,7 +52,8 @@ static const struct pad_community {
 		.port = GPIO_N,
 		.first_pad = N_OFFSET,
 		.num_gpi_regs = NUM_N_GPI_REGS,
-		.gpi_offset = NUM_NW_GPI_REGS+ NUM_W_GPI_REGS + NUM_SW_GPI_REGS,
+		.gpi_offset = NUM_NW_GPI_REGS + NUM_W_GPI_REGS
+			+ NUM_SW_GPI_REGS,
 		.grp_name = "GPIO_GPE_N",
 	}
 };
@@ -144,7 +145,7 @@ static void gpi_enable_smi(const struct pad_config *cfg, uint16_t port, int pin)
 	en_reg = GPI_SMI_EN_OFFSET(group);
 	value = iosf_read(port, en_reg );
 	value |= 1 << (pin % GPIO_MAX_NUM_PER_GROUP);
-	iosf_write(port, en_reg , value);
+	iosf_write(port, en_reg, value);
 }
 
 void gpio_configure_pad(const struct pad_config *cfg)
@@ -291,7 +292,7 @@ static void print_gpi_status(const struct gpi_status *sts)
 
 				abs_bit = bit_set;
 				abs_bit += group * GPIO_MAX_NUM_PER_GROUP;
-				printk(BIOS_DEBUG, "%s %d\n",comm->grp_name,
+				printk(BIOS_DEBUG, "%s %d\n", comm->grp_name,
 								abs_bit);
 			}
 		}

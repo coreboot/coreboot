@@ -72,8 +72,8 @@ static uint32_t print_smi_status(uint32_t smi_sts)
 		[APM_SMI_STS] = "APM",
 		[SWSMI_TMR_SMI_STS] = "SWSMI_TMR",
 		[FAKE_PM1_SMI_STS] = "PM1",
-		[GPIO_SMI_STS]= "GPIO_SMI",
-		[GPIO_UNLOCK_SMI_STS]= "GPIO_UNLOCK_SSMI",
+		[GPIO_SMI_STS] = "GPIO_SMI",
+		[GPIO_UNLOCK_SMI_STS] = "GPIO_UNLOCK_SSMI",
 		[MC_SMI_STS] = "MCSMI",
 		[TCO_SMI_STS] = "TCO",
 		[PERIODIC_SMI_STS] = "PERIODIC",
@@ -407,7 +407,7 @@ int fill_power_state(struct chipset_power_state *ps)
 	ps->pm1_cnt = inl(ACPI_PMIO_BASE + PM1_CNT);
 	ps->tco_sts = inl(ACPI_PMIO_BASE + TCO_STS);
 	ps->prsts = read32((void *)(pmc_bar0 + PRSTS));
-	ps->gen_pmcon1 =read32((void *)(pmc_bar0 + GEN_PMCON1));
+	ps->gen_pmcon1 = read32((void *)(pmc_bar0 + GEN_PMCON1));
 	ps->gen_pmcon2 = read32((void *)(pmc_bar0 + GEN_PMCON2));
 	ps->gen_pmcon3 = read32((void *)(pmc_bar0 + GEN_PMCON3));
 
@@ -422,7 +422,7 @@ int fill_power_state(struct chipset_power_state *ps)
 		ps->gen_pmcon1, ps->gen_pmcon2, ps->gen_pmcon3);
 	printk(BIOS_DEBUG, "smi_en: %08x smi_sts: %08x\n",
 		inl(ACPI_PMIO_BASE + SMI_EN), inl(ACPI_PMIO_BASE + SMI_STS));
-	for (i=0; i < GPE0_REG_MAX; i++) {
+	for (i = 0; i < GPE0_REG_MAX; i++) {
 		ps->gpe0_sts[i] = inl(ACPI_PMIO_BASE + GPE0_STS(i));
 		ps->gpe0_en[i] = inl(ACPI_PMIO_BASE + GPE0_EN(i));
 		printk(BIOS_DEBUG, "gpe0_sts[%d]: %08x gpe0_en[%d]: %08x\n",

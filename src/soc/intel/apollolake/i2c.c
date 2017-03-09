@@ -26,9 +26,9 @@
 #include <soc/pci_ids.h>
 #include "chip.h"
 
-uintptr_t lpss_i2c_base_address(unsigned bus)
+uintptr_t lpss_i2c_base_address(unsigned int bus)
 {
-	unsigned devfn;
+	unsigned int devfn;
 	struct device *dev;
 	struct resource *res;
 

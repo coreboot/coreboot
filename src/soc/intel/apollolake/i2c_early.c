@@ -25,7 +25,7 @@
 #include <soc/pci_devs.h>
 #include "chip.h"
 
-static int i2c_early_init_bus(unsigned bus)
+static int i2c_early_init_bus(unsigned int bus)
 {
 	ROMSTAGE_CONST struct soc_intel_apollolake_config *config;
 	ROMSTAGE_CONST struct device *tree_dev;
@@ -78,9 +78,9 @@ static int i2c_early_init_bus(unsigned bus)
 	return 0;
 }
 
-uintptr_t lpss_i2c_base_address(unsigned bus)
+uintptr_t lpss_i2c_base_address(unsigned int bus)
 {
-	unsigned devfn;
+	unsigned int devfn;
 	pci_devfn_t dev;
 	uintptr_t base;
 

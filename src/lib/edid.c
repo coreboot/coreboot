@@ -381,7 +381,7 @@ detailed_block(struct edid *result_edid, unsigned char *x, int in_extension,
 					c->has_valid_range_descriptor = 0;
 
 				printk(BIOS_SPEW, "Preferred aspect ratio: ");
-				switch((x[15] & 0xe0) >> 5) {
+				switch ((x[15] & 0xe0) >> 5) {
 				case 0x00: printk(BIOS_SPEW, "4:3"); break;
 				case 0x01: printk(BIOS_SPEW, "16:9"); break;
 				case 0x02: printk(BIOS_SPEW, "16:10"); break;
@@ -907,7 +907,7 @@ parse_extension(struct edid *out, unsigned char *x, struct edid_context *c)
 	int conformant_extension = 0;
 	printk(BIOS_SPEW, "\n");
 
-	switch(x[0]) {
+	switch (x[0]) {
 	case 0x02:
 		printk(BIOS_SPEW, "CEA extension block\n");
 		extension_version(out, x);
@@ -1345,7 +1345,7 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 	 * by v1.3 and we are unlikely to use any EDID 2.0 panels, we ignore
 	 * that case now and can fix it when we need to use a real 2.0 panel.
 	 */
-	for(i = 128; i < size; i += 128)
+	for (i = 128; i < size; i += 128)
 		c.nonconformant_extension +=
 				parse_extension(out, &edid[i], &c);
 
@@ -1562,7 +1562,7 @@ void set_vbe_mode_info_valid(const struct edid *edid, uintptr_t fb_addr)
 	edid_fb.bits_per_pixel = edid->framebuffer_bits_per_pixel;
 	edid_fb.reserved_mask_pos = 0;
 	edid_fb.reserved_mask_size = 0;
-	switch(edid->framebuffer_bits_per_pixel){
+	switch (edid->framebuffer_bits_per_pixel){
 	case 32:
 	case 24:
 		/* packed into 4-byte words */

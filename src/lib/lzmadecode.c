@@ -38,7 +38,7 @@
 	   : ((look_ahead.dw = *(UInt32 *)Buffer), (Buffer += 4), (look_ahead_ptr = 1), look_ahead.raw[0])))
 
 #define RC_INIT2 Code = 0; Range = 0xFFFFFFFF; \
-  { int i; for(i = 0; i < 5; i++) { RC_TEST; Code = (Code << 8) | RC_READ_BYTE; }}
+  { int i; for (i = 0; i < 5; i++) { RC_TEST; Code = (Code << 8) | RC_READ_BYTE; }}
 
 
 #define RC_TEST { if (Buffer == BufferLim) return LZMA_RESULT_DATA_ERROR; }
@@ -60,7 +60,7 @@
 
 #define RangeDecoderBitTreeDecode(probs, numLevels, res) \
   { int i = numLevels; res = 1; \
-  do { CProb *cp = probs + res; RC_GET_BIT(cp, res) } while(--i != 0); \
+  do { CProb *cp = probs + res; RC_GET_BIT(cp, res) } while (--i != 0); \
   res -= (1 << numLevels); }
 
 
@@ -178,7 +178,7 @@ int LzmaDecode(CLzmaDecoderState *vs,
   RC_INIT(inStream, inSize);
 
 
-  while(nowPos < outSize)
+  while (nowPos < outSize)
   {
     CProb *prob;
     UInt32 bound;
@@ -375,7 +375,7 @@ int LzmaDecode(CLzmaDecoderState *vs,
               RC_GET_BIT2(prob3, mi, ; , rep0 |= i);
               i <<= 1;
             }
-            while(--numDirectBits != 0);
+            while (--numDirectBits != 0);
           }
         }
         else
@@ -399,7 +399,7 @@ int LzmaDecode(CLzmaDecoderState *vs,
         len--;
         outStream[nowPos++] = previousByte;
       }
-      while(len != 0 && nowPos < outSize);
+      while (len != 0 && nowPos < outSize);
     }
   }
   RC_NORMALIZE;

@@ -360,7 +360,7 @@ uint32_t tlcl_define_space(uint32_t space_index, size_t space_size)
 		return TPM_E_NO_DEVICE;
 
 	/* Map TPM2 retrun codes into common vboot represenation. */
-	switch(response->hdr.tpm_code) {
+	switch (response->hdr.tpm_code) {
 	case TPM2_RC_SUCCESS:
 		return TPM_SUCCESS;
 	case TPM2_RC_NV_DEFINED:

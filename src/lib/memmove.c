@@ -10,7 +10,7 @@ void *memmove(void *vdest, const void *vsrc, size_t count)
 	} else {
 		src  += count - 1;
 		dest += count - 1;
-		while(count--)
+		while (count--)
 			*dest-- = *src--;
 	}
 	return vdest;

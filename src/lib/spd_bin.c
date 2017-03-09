@@ -199,7 +199,7 @@ int read_ddr3_spd_from_cbfs(u8 *buf, int idx)
 		u16 i;
 		printk(BIOS_WARNING, "\nDisplay the SPD");
 		for (i = 0; i < CONFIG_DIMM_SPD_SIZE; i++) {
-			if((i % 16) == 0x00)
+			if ((i % 16) == 0x00)
 				printk(BIOS_WARNING, "\n%02x:  ", i);
 			printk(BIOS_WARNING, "%02x ", buf[i]);
 		}

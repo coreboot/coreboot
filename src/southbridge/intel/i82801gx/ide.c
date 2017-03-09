@@ -91,7 +91,8 @@ static void ide_init(struct device *dev)
 	printk(BIOS_DEBUG, "\n");
 }
 
-static void ide_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void ide_set_subsystem(device_t dev, unsigned int vendor,
+			unsigned int device)
 {
 	if (!vendor || !device) {
 		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,

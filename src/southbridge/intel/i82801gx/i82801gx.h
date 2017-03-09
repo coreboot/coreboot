@@ -49,7 +49,7 @@ void i82801gx_enable(device_t dev);
 void gpi_route_interrupt(u8 gpi, u8 mode);
 #else
 void enable_smbus(void);
-int smbus_read_byte(unsigned device, unsigned address);
+int smbus_read_byte(unsigned int device, unsigned int address);
 int southbridge_detect_s3_resume(void);
 #endif
 #endif
@@ -200,9 +200,9 @@ int southbridge_detect_s3_resume(void);
 /* Root Complex Register Block */
 #define RCBA		0xf0
 
-#define RCBA8(x) *((volatile u8 *)(DEFAULT_RCBA + x))
-#define RCBA16(x) *((volatile u16 *)(DEFAULT_RCBA + x))
-#define RCBA32(x) *((volatile u32 *)(DEFAULT_RCBA + x))
+#define RCBA8(x) (*((volatile u8 *)(DEFAULT_RCBA + (x))))
+#define RCBA16(x) (*((volatile u16 *)(DEFAULT_RCBA + (x))))
+#define RCBA32(x) (*((volatile u32 *)(DEFAULT_RCBA + (x))))
 
 #define VCH		0x0000	/* 32bit */
 #define VCAP1		0x0004	/* 32bit */
@@ -295,9 +295,9 @@ int southbridge_detect_s3_resume(void);
  * If UHCI controllers get disabled, EHCI
  * must know about it, too! */
 #define FD_UHCI4	(1 << 11)
-#define FD_UHCI34	(1 << 10) | FD_UHCI4
-#define FD_UHCI234	(1 <<  9) | FD_UHCI3
-#define FD_UHCI1234	(1 <<  8) | FD_UHCI2
+#define FD_UHCI34	((1 << 10) | FD_UHCI4)
+#define FD_UHCI234	((1 <<  9) | FD_UHCI3)
+#define FD_UHCI1234	((1 <<  8) | FD_UHCI2)
 
 #define FD_INTLAN	(1 <<  7)
 #define FD_ACMOD	(1 <<  6)

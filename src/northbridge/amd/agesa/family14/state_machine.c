@@ -57,7 +57,7 @@ void platform_AfterInitEnv(struct sysinfo *cb, AMD_ENV_PARAMS *Env)
 {
 	amd_initenv();
 #if 0
-	/* FIXME: It's only in ramstage. */
+	/* FIXME: Should move the callsite from cimx/sb800 to here. */
 	sb_Before_Pci_Init();
 #endif
 }
@@ -69,10 +69,7 @@ void platform_BeforeS3LateRestore(struct sysinfo *cb, AMD_S3LATE_PARAMS *S3Late)
 
 void platform_AfterS3LateRestore(struct sysinfo *cb, AMD_S3LATE_PARAMS *S3Late)
 {
-#if 0
-	/* FIXME: It's only in ramstage. */
 	sb_Before_Pci_Restore_Init();
-#endif
 }
 
 void platform_BeforeInitMid(struct sysinfo *cb, AMD_MID_PARAMS *Mid)

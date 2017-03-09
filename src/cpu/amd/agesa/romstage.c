@@ -109,15 +109,8 @@ void asmlinkage romstage_after_car(void)
 
 	fill_sysinfo(cb);
 
-	if (!HAS_LEGACY_WRAPPER) {
-		if (!cb->s3resume)
-			agesa_execute_state(cb, AMD_INIT_ENV);
-		else
-			agesa_execute_state(cb, AMD_S3LATE_RESTORE);
-	} else {
-
+	if (HAS_LEGACY_WRAPPER)
 		agesa_postcar(cb);
-	}
 
 	if (cb->s3resume)
 		set_resume_cache();

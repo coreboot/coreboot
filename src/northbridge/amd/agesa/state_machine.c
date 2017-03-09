@@ -19,6 +19,7 @@
 
 #include <arch/acpi.h>
 #include <bootstate.h>
+#include <cbmem.h>
 
 #include <northbridge/amd/agesa/state_machine.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
@@ -122,7 +123,9 @@ static AGESA_STATUS amd_dispatch(struct sysinfo *cb,
 			platform_AfterInitResume(cb, param);
 			break;
 		}
+#endif
 
+#if ENV_RAMSTAGE
 		case AMD_INIT_ENV:
 		{
 			AMD_ENV_PARAMS *param = (void *)StdHeader;
@@ -141,8 +144,7 @@ static AGESA_STATUS amd_dispatch(struct sysinfo *cb,
 			platform_AfterS3LateRestore(cb, param);
 			break;
 		}
-#endif
-#if ENV_RAMSTAGE
+
 		case AMD_INIT_MID:
 		{
 			AMD_MID_PARAMS *param = (void *)StdHeader;
@@ -214,6 +216,7 @@ int agesa_execute_state(struct sysinfo *cb, AGESA_STRUCT_NAME func)
 	AMD_INTERFACE_PARAMS aip;
 	union {
 		AMD_RESET_PARAMS reset;
+		AMD_S3LATE_PARAMS s3late;
 	} agesa_params;
 	void *buf = NULL;
 	size_t len = 0;
@@ -228,7 +231,7 @@ int agesa_execute_state(struct sysinfo *cb, AGESA_STRUCT_NAME func)
 	aip.StdHeader = cb->StdHeader;
 
 	/* For these calls, heap is not available. */
-	if (func == AMD_INIT_RESET) {
+	if (func == AMD_INIT_RESET || func == AMD_S3LATE_RESTORE) {
 		buf = (void *) &agesa_params;
 		len = sizeof(agesa_params);
 		memcpy(buf, &cb->StdHeader, sizeof(cb->StdHeader));
@@ -261,6 +264,15 @@ static void amd_bs_ramstage_init(void *arg)
 	struct sysinfo *cb = arg;
 
 	agesa_set_interface(cb);
+
+	if (!acpi_is_wakeup_s3())
+		agesa_execute_state(cb, AMD_INIT_ENV);
+	else {
+		/* We need HEAP from CBMEM early. */
+		if (IS_ENABLED(CONFIG_LATE_CBMEM_INIT))
+			cbmem_initialize();
+		agesa_execute_state(cb, AMD_S3LATE_RESTORE);
+	}
 }
 
 void sb_After_Pci_Restore_Init(void);

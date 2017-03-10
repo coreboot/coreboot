@@ -407,7 +407,8 @@ static uint64_t em64t100_smm_save_state_get_reg(void *state, enum smm_reg reg)
 	return value;
 }
 
-static void em64t100_smm_save_state_set_reg(void *state, enum smm_reg reg, uint64_t val)
+static void em64t100_smm_save_state_set_reg(void *state, enum smm_reg reg,
+	uint64_t val)
 {
 	em64t100_smm_state_save_area_t *smm_state = state;
 	switch (reg) {
@@ -458,7 +459,8 @@ static uint64_t em64t101_smm_save_state_get_reg(void *state, enum smm_reg reg)
 	return value;
 }
 
-static void em64t101_smm_save_state_set_reg(void *state, enum smm_reg reg, uint64_t val)
+static void em64t101_smm_save_state_set_reg(void *state, enum smm_reg reg,
+	uint64_t val)
 {
 	em64t101_smm_state_save_area_t *smm_state = state;
 	switch (reg) {

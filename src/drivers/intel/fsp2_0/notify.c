@@ -27,7 +27,7 @@ static void fsp_notify(enum fsp_notify_phase phase)
 	if (!fsps_hdr.notify_phase_entry_offset)
 		die("Notify_phase_entry_offset is zero!\n");
 
-	fspnotify = (void*) (fsps_hdr.image_base +
+	fspnotify = (void *) (fsps_hdr.image_base +
 			    fsps_hdr.notify_phase_entry_offset);
 	fsp_before_debug_notify(fspnotify, &notify_params);
 

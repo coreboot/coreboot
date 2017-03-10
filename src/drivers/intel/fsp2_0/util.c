@@ -107,7 +107,7 @@ void fsp_handle_reset(uint32_t status)
 
 	printk(BIOS_SPEW, "FSP: handling reset type %x\n", status);
 
-	switch(status) {
+	switch (status) {
 	case FSP_STATUS_RESET_REQUIRED_COLD:
 		hard_reset();
 		break;

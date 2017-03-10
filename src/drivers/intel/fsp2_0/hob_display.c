@@ -17,7 +17,7 @@ struct hob_type_name {
 	const char *name;
 } __attribute__((packed));
 
-static const struct hob_type_name hob_type_names [] = {
+static const struct hob_type_name hob_type_names[] = {
 	{ HOB_TYPE_HANDOFF, "HOB_TYPE_HANDOFF" },
 	{ HOB_TYPE_MEMORY_ALLOCATION, "HOB_TYPE_MEMORY_ALLOCATION" },
 	{ HOB_TYPE_RESOURCE_DESCRIPTOR, "HOB_TYPE_RESOURCE_DESCRIPTOR" },
@@ -190,7 +190,7 @@ void fsp_display_hobs(void)
 		/* Display the HOB header */
 		printk(BIOS_SPEW, "0x%p, 0x%08x bytes: %s\n", hob, hob->length,
 			fsp_get_hob_type_name(hob));
-		switch(hob->type) {
+		switch (hob->type) {
 		default:
 			soc_display_hob(hob);
 			break;

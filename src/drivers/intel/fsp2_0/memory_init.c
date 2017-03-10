@@ -228,7 +228,7 @@ static void fsp_fill_mrc_cache(FSPM_ARCH_UPD *arch_upd, bool s3wake,
 	/* MRC cache found */
 	arch_upd->NvsBufferPtr = data;
 	arch_upd->BootMode = s3wake ?
-		FSP_BOOT_ON_S3_RESUME:
+		FSP_BOOT_ON_S3_RESUME :
 		FSP_BOOT_ASSUMING_NO_CONFIGURATION_CHANGES;
 	printk(BIOS_SPEW, "MRC cache found, size %zx bootmode:%d\n",
 				region_device_sz(&rdev), arch_upd->BootMode);

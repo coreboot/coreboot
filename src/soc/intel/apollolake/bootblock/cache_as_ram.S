@@ -142,7 +142,7 @@ clear_var_mtrr:
 #endif
 
 #if IS_ENABLED(CONFIG_CAR_CQOS)
-#if (CONFIG_DCACHE_RAM_SIZE == L2_CACHE_SIZE)
+#if (CONFIG_DCACHE_RAM_SIZE == CONFIG_L2_CACHE_SIZE)
 /*
  * If CAR size is set to full L2 size, mask is calculated as all-zeros.
  * This is not supported by the CPU/uCode.
@@ -152,7 +152,7 @@ clear_var_mtrr:
 	/* Calculate how many bits to be used for CAR */
 	xor	%edx, %edx
 	mov	$CONFIG_DCACHE_RAM_SIZE, %eax	/* dividend */
-	mov	$CACHE_QOS_SIZE_PER_BIT, %ecx	/* divisor */
+	mov	$CONFIG_CACHE_QOS_SIZE_PER_BIT, %ecx	/* divisor */
 	div	%ecx				/* result is in eax */
 	mov	%eax, %ecx			/* save to ecx */
 	mov	$1, %ebx

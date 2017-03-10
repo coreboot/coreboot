@@ -275,6 +275,19 @@ config CAR_CQOS
 
 endchoice
 
+#
+# Each bit in QOS mask controls this many bytes. This is calculated as:
+# (CACHE_WAYS / CACHE_BITS_PER_MASK) * CACHE_LINE_SIZE * CACHE_SETS
+#
+
+config CACHE_QOS_SIZE_PER_BIT
+	hex
+	default 0x20000 # 128 KB
+
+config L2_CACHE_SIZE
+	hex
+	default 0x100000
+
 config SPI_FLASH_INCLUDE_ALL_DRIVERS
 	bool
 	default n

@@ -83,12 +83,6 @@ void enable_untrusted_mode(void);
 #define CACHE_BITS_PER_MASK		8
 #define CACHE_LINE_SIZE			64
 #define CACHE_SETS			1024
-/*
- * Each bit in QOS mask controls this many bytes. This is calculated as:
- * (CACHE_WAYS / CACHE_BITS_PER_MASK) * CACHE_LINE_SIZE * CACHE_SETS
- */
-#define CACHE_QOS_SIZE_PER_BIT		(128 * KiB)
-#define L2_CACHE_SIZE			0x100000
 
 #define BASE_CLOCK_MHZ		100
 

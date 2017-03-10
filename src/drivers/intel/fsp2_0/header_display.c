@@ -29,7 +29,7 @@ void fsp_print_header_info(const struct fsp_header *hdr)
 	revision.val = hdr->fsp_revision;
 
 	printk(BIOS_SPEW, "Spec version: v%u.%u\n", (hdr->spec_version >> 4),
-							hdr->spec_version & 0xf);
+						     hdr->spec_version & 0xf);
 	printk(BIOS_SPEW, "Revision: %u.%u.%u, Build Number %u\n",
 							revision.rev.major,
 							revision.rev.minor,

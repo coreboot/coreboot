@@ -166,7 +166,8 @@ static int readtables(int till)
 	for (;;) {
 		if (getbyte() != 0xff)
 			return -1;
-		if ((m = getbyte()) == till)
+		m = getbyte();
+		if (m == till)
 			break;
 
 		switch (m) {
@@ -455,15 +456,20 @@ static int fillbits(struct in *in, int le, unsigned int bi)
 	}
 	while (le <= 24) {
 		b = *in->p++;
-		if (b == 0xff && (m = *in->p++) != 0) {
-			if (m == M_EOF) {
-				if (in->func && (m = in->func(in->data)) == 0)
-					continue;
+		if (b == 0xff) {
+			m = *in->p++;
+			if (m != 0) {
+				if (m == M_EOF) {
+					if (in->func) {
+						m = in->func(in->data);
+						if (m == 0)
+							continue;
+				}
+				in->marker = m;
+				if (le <= 16)
+					bi = bi << 16, le += 16;
+				break;
 			}
-			in->marker = m;
-			if (le <= 16)
-				bi = bi << 16, le += 16;
-			break;
 		}
 		bi = bi << 8 | b;
 		le += 8;
@@ -477,7 +483,8 @@ static int dec_readmarker(struct in *in)
 	int m;
 
 	in->left = fillbits(in, in->left, in->bits);
-	if ((m = in->marker) == 0)
+	m = in->marker;
+	if (m == 0)
 		return 0;
 	in->left = 0;
 	in->marker = 0;

@@ -30,7 +30,7 @@ __attribute__((weak)) void bootblock_soc_early_init(void) { /* do nothing */ }
 __attribute__((weak)) void bootblock_soc_init(void) { /* do nothing */ }
 __attribute__((weak)) void bootblock_mainboard_init(void) { /* do nothing */ }
 
-void asmlinkage bootblock_main_with_timestamp(uint64_t base_timestamp)
+asmlinkage void bootblock_main_with_timestamp(uint64_t base_timestamp)
 {
 	/* Initialize timestamps if we have TIMESTAMP region in memlayout.ld. */
 	if (IS_ENABLED(CONFIG_COLLECT_TIMESTAMPS) && _timestamp_size > 0)

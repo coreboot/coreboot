@@ -25,7 +25,7 @@
  * specific implementations may vary
  */
 #define WRAP_LIBGCC_CALL(type, name) \
-	type __real_##name(type a, type b) asmlinkage; \
+	asmlinkage type __real_##name(type a, type b); \
 	type __wrap_##name(type a, type b); \
 	type __wrap_##name(type a, type b) { return __real_##name(a, b); }
 

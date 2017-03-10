@@ -26,7 +26,7 @@ void sdram_initialize(int controllers, const struct mem_controller *ctrl)
 	#if CONFIG_RAMINIT_SYSINFO
 		sdram_set_spd_registers(ctrl + i, sysinfo);
 	#else
-                sdram_set_spd_registers(ctrl + i);
+		sdram_set_spd_registers(ctrl + i);
 	#endif
 
 	}

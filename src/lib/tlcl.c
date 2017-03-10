@@ -75,7 +75,7 @@ static inline int tpm_return_code(const uint8_t *buffer) {
  * DOING_SELFTEST errors are returned.
  */
 static uint32_t tlcl_send_receive_no_retry(const uint8_t *request,
-                                           uint8_t *response, int max_length) {
+					   uint8_t *response, int max_length) {
 	uint32_t response_length = max_length;
 	uint32_t result;
 
@@ -116,7 +116,7 @@ uint32_t tlcl_send_receive(const uint8_t *request, uint8_t *response,
 #if defined(TPM_BLOCKING_CONTINUESELFTEST) || defined(VB_RECOVERY_MODE)
 		/* Retry only once */
 		result = tlcl_send_receive_no_retry(request, response,
-		                                    max_length);
+						    max_length);
 #else
 		/* This needs serious testing. The TPM specification says: "iii.
 		 * The caller MUST wait for the actions of TPM_ContinueSelfTest
@@ -125,7 +125,7 @@ uint32_t tlcl_send_receive(const uint8_t *request, uint8_t *response,
 		 * actions have completed other than trying again? */
 		do {
 			result = tlcl_send_receive_no_retry(request, response,
-			                                    max_length);
+							    max_length);
 		} while (result == TPM_E_DOING_SELFTEST);
 #endif
 	}
@@ -163,8 +163,8 @@ uint32_t tlcl_startup(void) {
 }
 
 uint32_t tlcl_resume(void) {
-  VBDEBUG("TPM: Resume\n");
-  return send(tpm_resume_cmd.buffer);
+	VBDEBUG("TPM: Resume\n");
+	return send(tpm_resume_cmd.buffer);
 }
 
 uint32_t tlcl_self_test_full(void)
@@ -179,7 +179,7 @@ uint32_t tlcl_continue_self_test(void)
 	VBDEBUG("TPM: Continue self test\n");
 	/* Call the No Retry version of SendReceive to avoid recursion. */
 	return tlcl_send_receive_no_retry(tpm_continueselftest_cmd.buffer,
-	                                  response, sizeof(response));
+					  response, sizeof(response));
 }
 
 uint32_t tlcl_define_space(uint32_t index, uint32_t perm, uint32_t size)
@@ -280,7 +280,7 @@ uint32_t tlcl_get_permanent_flags(TPM_PERMANENT_FLAGS *pflags)
 	uint8_t response[TPM_LARGE_ENOUGH_COMMAND_SIZE];
 	uint32_t size;
 	uint32_t result = tlcl_send_receive(tpm_getflags_cmd.buffer, response,
-	                                    sizeof(response));
+					    sizeof(response));
 	if (result != TPM_SUCCESS)
 		return result;
 	from_tpm_uint32(response + kTpmResponseHeaderLength, &size);
@@ -291,7 +291,7 @@ uint32_t tlcl_get_permanent_flags(TPM_PERMANENT_FLAGS *pflags)
 }
 
 uint32_t tlcl_get_flags(uint8_t *disable, uint8_t *deactivated,
-                        uint8_t *nvlocked)
+			uint8_t *nvlocked)
 {
 	TPM_PERMANENT_FLAGS pflags;
 	uint32_t result = tlcl_get_permanent_flags(&pflags);
@@ -316,7 +316,7 @@ uint32_t tlcl_set_global_lock(void)
 }
 
 uint32_t tlcl_extend(int pcr_num, const uint8_t *in_digest,
-                     uint8_t *out_digest)
+		     uint8_t *out_digest)
 {
 	struct s_tpm_extend_cmd cmd;
 	uint8_t response[kTpmResponseHeaderLength + kPcrDigestLength];

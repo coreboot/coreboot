@@ -62,14 +62,14 @@ static inline const struct imd_entry *cbmem_to_imd(const struct cbmem_entry *e)
 
 /* These are the different situations to handle:
  *  CONFIG_EARLY_CBMEM_INIT:
- *  	In ramstage cbmem_initialize() attempts a recovery of the
- *  	cbmem region set up by romstage. It uses cbmem_top() as the
- *  	starting point of recovery.
+ *      In ramstage cbmem_initialize() attempts a recovery of the
+ *      cbmem region set up by romstage. It uses cbmem_top() as the
+ *      starting point of recovery.
  *
- *  	In romstage, similar to ramstage,  cbmem_initialize() needs to
- *  	attempt recovery of the cbmem area using cbmem_top() as the limit.
- *  	cbmem_initialize_empty() initializes an empty cbmem area from
- *  	cbmem_top();
+ *      In romstage, similar to ramstage,  cbmem_initialize() needs to
+ *      attempt recovery of the cbmem area using cbmem_top() as the limit.
+ *      cbmem_initialize_empty() initializes an empty cbmem area from
+ *      cbmem_top();
  *
  */
 static struct imd *imd_init_backing(struct imd *backing)

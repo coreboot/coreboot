@@ -875,11 +875,9 @@ parse_cea(struct edid *out, unsigned char *x, struct edid_context *c)
 			if (offset < 4)
 				break;
 
-			if (version < 3) {
+			if (version < 3)
 				printk(BIOS_SPEW, "%d 8-byte timing descriptors\n", (offset - 4) / 8);
-				if (offset - 4 > 0)
-					/* do stuff */ ;
-			} else if (version == 3) {
+			else if (version == 3) {
 				int i;
 				printk(BIOS_SPEW, "%d bytes of CEA data\n", offset - 4);
 				for (i = 4; i < offset; i += (x[i] & 0x1f) + 1)
@@ -1188,7 +1186,7 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 				break;
 			}
 			extra_info.type = edid[0x14] & 0x0f;
-		} else 	if (c.claims_one_point_two) {
+		} else if (c.claims_one_point_two) {
 			conformance_mask = 0x7E;
 			if (edid[0x14] & 0x01)
 				printk(BIOS_SPEW, "DFP 1.x compatible TMDS\n");
@@ -1273,18 +1271,18 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 	/* FIXME: this is from 1.4 spec, check earlier */
 	if (analog) {
 		switch (edid[0x18] & 0x18) {
-			case 0x00:
-				printk(BIOS_SPEW, "Monochrome or grayscale display\n");
-				break;
-			case 0x08:
-				printk(BIOS_SPEW, "RGB color display\n");
-				break;
-			case 0x10:
-				printk(BIOS_SPEW, "Non-RGB color display\n");
-				break;
-			case 0x18:
-				printk(BIOS_SPEW, "Undefined display color type\n");
-				break;
+		case 0x00:
+			printk(BIOS_SPEW, "Monochrome or grayscale display\n");
+			break;
+		case 0x08:
+			printk(BIOS_SPEW, "RGB color display\n");
+			break;
+		case 0x10:
+			printk(BIOS_SPEW, "Non-RGB color display\n");
+			break;
+		case 0x18:
+			printk(BIOS_SPEW, "Undefined display color type\n");
+			break;
 		}
 	} else {
 		printk(BIOS_SPEW, "Supported color formats: RGB 4:4:4");

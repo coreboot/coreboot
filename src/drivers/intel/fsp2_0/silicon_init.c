@@ -32,9 +32,8 @@ static void do_silicon_init(struct fsp_header *hdr)
 
 	supd = (FSPS_UPD *) (hdr->cfg_region_offset + hdr->image_base);
 
-	if (supd->FspUpdHeader.Signature != FSPS_UPD_SIGNATURE) {
+	if (supd->FspUpdHeader.Signature != FSPS_UPD_SIGNATURE)
 		die("Invalid FSPS signature\n");
-	}
 
 	memcpy(&upd, supd, sizeof(upd));
 
@@ -96,16 +95,14 @@ void fsps_load(bool s3wake)
 	size = region_device_sz(&rdev);
 	dest = cbmem_add(CBMEM_ID_REFCODE, size);
 
-	if (dest == NULL) {
+	if (dest == NULL)
 		die("Could not add FSPS to CBMEM!\n");
-	}
 
 	if (rdev_readat(&rdev, dest, 0, size) < 0)
 		die("Failed to read FSPS!\n");
 
-	if (fsp_component_relocate((uintptr_t)dest, dest, size) < 0) {
+	if (fsp_component_relocate((uintptr_t)dest, dest, size) < 0)
 		die("Unable to relocate FSPS!\n");
-	}
 
 	/* Create new region device in memory after relocation. */
 	rdev_chain(&rdev, &addrspace_32bit.rdev, (uintptr_t)dest, size);

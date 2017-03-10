@@ -47,27 +47,31 @@ static int tpm_send_receive(const uint8_t *request,
 }
 
 /* Sets the size field of a TPM command. */
-static inline void set_tpm_command_size(uint8_t *buffer, uint32_t size) {
+static inline void set_tpm_command_size(uint8_t *buffer, uint32_t size)
+{
 	to_tpm_uint32(buffer + sizeof(uint16_t), size);
 }
 
 /* Gets the size field of a TPM command. */
 __attribute__((unused))
-static inline int tpm_command_size(const uint8_t *buffer) {
+static inline int tpm_command_size(const uint8_t *buffer)
+{
 	uint32_t size;
 	from_tpm_uint32(buffer + sizeof(uint16_t), &size);
 	return (int) size;
 }
 
 /* Gets the code field of a TPM command. */
-static inline int tpm_command_code(const uint8_t *buffer) {
+static inline int tpm_command_code(const uint8_t *buffer)
+{
 	uint32_t code;
 	from_tpm_uint32(buffer + sizeof(uint16_t) + sizeof(uint32_t), &code);
 	return code;
 }
 
 /* Gets the return code field of a TPM result. */
-static inline int tpm_return_code(const uint8_t *buffer) {
+static inline int tpm_return_code(const uint8_t *buffer)
+{
 	return tpm_command_code(buffer);
 }
 
@@ -75,7 +79,8 @@ static inline int tpm_return_code(const uint8_t *buffer) {
  * DOING_SELFTEST errors are returned.
  */
 static uint32_t tlcl_send_receive_no_retry(const uint8_t *request,
-					   uint8_t *response, int max_length) {
+					   uint8_t *response, int max_length)
+{
 	uint32_t response_length = max_length;
 	uint32_t result;
 
@@ -104,7 +109,8 @@ return result;
 /* Sends a TPM command and gets a response.  Returns 0 if success or the TPM
  * error code if error. Waits for the self test to complete if needed. */
 uint32_t tlcl_send_receive(const uint8_t *request, uint8_t *response,
-			   int max_length) {
+			   int max_length)
+{
 	uint32_t result = tlcl_send_receive_no_retry(request, response,
 						     max_length);
 	/* If the command fails because the self test has not completed, try it
@@ -133,7 +139,8 @@ uint32_t tlcl_send_receive(const uint8_t *request, uint8_t *response,
 }
 
 /* Sends a command and returns the error code. */
-static uint32_t send(const uint8_t *command) {
+static uint32_t send(const uint8_t *command)
+{
 	uint8_t response[TPM_LARGE_ENOUGH_COMMAND_SIZE];
 	return tlcl_send_receive(command, response, sizeof(response));
 }
@@ -142,7 +149,8 @@ static uint32_t send(const uint8_t *command) {
 
 static uint8_t tlcl_init_done CAR_GLOBAL;
 
-uint32_t tlcl_lib_init(void) {
+uint32_t tlcl_lib_init(void)
+{
 	uint8_t done = car_get_var(tlcl_init_done);
 	if (done)
 		return VB2_SUCCESS;
@@ -157,12 +165,14 @@ uint32_t tlcl_lib_init(void) {
 	return VB2_SUCCESS;
 }
 
-uint32_t tlcl_startup(void) {
+uint32_t tlcl_startup(void)
+{
 	VBDEBUG("TPM: Startup\n");
 	return send(tpm_startup_cmd.buffer);
 }
 
-uint32_t tlcl_resume(void) {
+uint32_t tlcl_resume(void)
+{
 	VBDEBUG("TPM: Resume\n");
 	return send(tpm_resume_cmd.buffer);
 }
@@ -236,32 +246,38 @@ uint32_t tlcl_read(uint32_t index, void *data, uint32_t length)
 }
 
 
-uint32_t tlcl_assert_physical_presence(void) {
+uint32_t tlcl_assert_physical_presence(void)
+{
 	VBDEBUG("TPM: Asserting physical presence\n");
 	return send(tpm_ppassert_cmd.buffer);
 }
 
-uint32_t tlcl_physical_presence_cmd_enable(void) {
+uint32_t tlcl_physical_presence_cmd_enable(void)
+{
 	VBDEBUG("TPM: Enable the physical presence command\n");
 	return send(tpm_ppenable_cmd.buffer);
 }
 
-uint32_t tlcl_finalize_physical_presence(void) {
+uint32_t tlcl_finalize_physical_presence(void)
+{
 	VBDEBUG("TPM: Enable PP cmd, disable HW pp, and set lifetime lock\n");
 	return send(tpm_finalizepp_cmd.buffer);
 }
 
-uint32_t tlcl_set_nv_locked(void) {
+uint32_t tlcl_set_nv_locked(void)
+{
 	VBDEBUG("TPM: Set NV locked\n");
 	return tlcl_define_space(TPM_NV_INDEX_LOCK, 0, 0);
 }
 
-uint32_t tlcl_force_clear(void) {
+uint32_t tlcl_force_clear(void)
+{
 	VBDEBUG("TPM: Force clear\n");
 	return send(tpm_forceclear_cmd.buffer);
 }
 
-uint32_t tlcl_set_enable(void) {
+uint32_t tlcl_set_enable(void)
+{
 	VBDEBUG("TPM: Enabling TPM\n");
 	return send(tpm_physicalenable_cmd.buffer);
 }

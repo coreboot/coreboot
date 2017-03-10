@@ -192,8 +192,7 @@ static uint32_t reg_script_read_res(struct reg_script_context *ctx)
 		};
 		reg_script_set_step(ctx, &io_step);
 		val = reg_script_read_io(ctx);
-	}
-	else if (res->flags & IORESOURCE_MEM) {
+	} else if (res->flags & IORESOURCE_MEM) {
 		const struct reg_script mmio_step = {
 			.size = step->size,
 			.reg = res->base + step->reg,
@@ -223,8 +222,7 @@ static void reg_script_write_res(struct reg_script_context *ctx)
 		};
 		reg_script_set_step(ctx, &io_step);
 		reg_script_write_io(ctx);
-	}
-	else if (res->flags & IORESOURCE_MEM) {
+	} else if (res->flags & IORESOURCE_MEM) {
 		const struct reg_script mmio_step = {
 			.size = step->size,
 			.reg = res->base + step->reg,

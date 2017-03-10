@@ -23,17 +23,20 @@
 #define VBDEBUG(format, args...) printk(BIOS_DEBUG, format, ## args)
 #endif
 
-uint32_t tlcl_lib_init(void) {
+uint32_t tlcl_lib_init(void)
+{
 	VBDEBUG("MOCK_TPM: %s\n", __func__);
 	return TPM_E_NO_DEVICE;
 }
 
-uint32_t tlcl_startup(void) {
+uint32_t tlcl_startup(void)
+{
 	VBDEBUG("MOCK_TPM: %s\n", __func__);
 	return TPM_E_NO_DEVICE;
 }
 
-uint32_t tlcl_resume(void) {
+uint32_t tlcl_resume(void)
+{
 	VBDEBUG("MOCK_TPM: %s\n", __func__);
 	return TPM_E_NO_DEVICE;
 }
@@ -69,32 +72,38 @@ uint32_t tlcl_read(uint32_t index, void *data, uint32_t length)
 }
 
 
-uint32_t tlcl_assert_physical_presence(void) {
+uint32_t tlcl_assert_physical_presence(void)
+{
 	VBDEBUG("MOCK_TPM: %s\n", __func__);
 	return TPM_E_NO_DEVICE;
 }
 
-uint32_t tlcl_physical_presence_cmd_enable(void) {
+uint32_t tlcl_physical_presence_cmd_enable(void)
+{
 	VBDEBUG("MOCK_TPM: %s\n", __func__);
 	return TPM_E_NO_DEVICE;
 }
 
-uint32_t tlcl_finalize_physical_presence(void) {
+uint32_t tlcl_finalize_physical_presence(void)
+{
 	VBDEBUG("MOCK_TPM: %s\n", __func__);
 	return TPM_E_NO_DEVICE;
 }
 
-uint32_t tlcl_set_nv_locked(void) {
+uint32_t tlcl_set_nv_locked(void)
+{
 	VBDEBUG("MOCK_TPM: %s\n", __func__);
 	return TPM_E_NO_DEVICE;
 }
 
-uint32_t tlcl_force_clear(void) {
+uint32_t tlcl_force_clear(void)
+{
 	VBDEBUG("MOCK_TPM: %s\n", __func__);
 	return TPM_E_NO_DEVICE;
 }
 
-uint32_t tlcl_set_enable(void) {
+uint32_t tlcl_set_enable(void)
+{
 	VBDEBUG("MOCK_TPM: %s\n", __func__);
 	return TPM_E_NO_DEVICE;
 }

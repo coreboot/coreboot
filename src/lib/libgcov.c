@@ -109,8 +109,7 @@ void __gcov_merge_add(gcov_type *counters  __attribute__ ((unused)),
 #ifdef L_gcov
 #include "gcov-io.c"
 
-struct gcov_fn_buffer
-{
+struct gcov_fn_buffer {
 	struct gcov_fn_buffer *next;
 	unsigned int fn_ix;
 	struct gcov_fn_info info;

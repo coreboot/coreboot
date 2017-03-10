@@ -241,7 +241,7 @@ struct lb_gpio {
 #define ACTIVE_HIGH	1
 	uint32_t value;
 #define GPIO_MAX_NAME_LENGTH 16
-        uint8_t name[GPIO_MAX_NAME_LENGTH];
+	uint8_t name[GPIO_MAX_NAME_LENGTH];
 };
 
 struct lb_gpios {
@@ -398,7 +398,7 @@ struct cmos_entries {
 #define LB_TAG_OPTION_ENUM 202
 struct cmos_enums {
 	uint32_t tag;		     /* enumeration type */
-	uint32_t size; 		     /* length of this record */
+	uint32_t size;		     /* length of this record */
 	uint32_t config_id;          /* a number identifying the config id */
 	uint32_t value;              /* the value associated with the text */
 #define CMOS_MAX_TEXT_LENGTH 32

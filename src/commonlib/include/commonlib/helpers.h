@@ -19,17 +19,17 @@
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
 #endif
 
-#define ALIGN(x,a)              __ALIGN_MASK(x,(__typeof__(x))(a)-1UL)
-#define __ALIGN_MASK(x,mask)    (((x)+(mask))&~(mask))
-#define ALIGN_UP(x,a)           ALIGN((x),(a))
-#define ALIGN_DOWN(x,a)         ((x) & ~((__typeof__(x))(a)-1UL))
-#define IS_ALIGNED(x,a)         (((x) & ((__typeof__(x))(a)-1UL)) == 0)
+#define ALIGN(x, a)             __ALIGN_MASK(x, (__typeof__(x))(a)-1UL)
+#define __ALIGN_MASK(x, mask)   (((x)+(mask))&~(mask))
+#define ALIGN_UP(x, a)          ALIGN((x), (a))
+#define ALIGN_DOWN(x, a)        ((x) & ~((__typeof__(x))(a)-1UL))
+#define IS_ALIGNED(x, a)        (((x) & ((__typeof__(x))(a)-1UL)) == 0)
 
 #ifndef MIN
-#define MIN(a,b) ((a) < (b) ? (a) : (b))
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
 #endif
 #ifndef MAX
-#define MAX(a,b) ((a) > (b) ? (a) : (b))
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
 #endif
 #define ABS(a) (((a) < 0) ? (-(a)) : (a))
 #define CEIL_DIV(a, b)  (((a) + (b) - 1) / (b))
@@ -69,7 +69,7 @@
 #if !defined(__clang__)
 #define check_member(structure, member, offset) _Static_assert( \
 	offsetof(struct structure, member) == offset, \
-	"`struct " #structure "` offset for `" #member "` is not " #offset )
+	"`struct " #structure "` offset for `" #member "` is not " #offset)
 #else
 #define check_member(structure, member, offset)
 #endif
@@ -82,8 +82,8 @@
  *
  */
 #define container_of(ptr, type, member) ({			\
-	const __typeof__( ((type *)0)->member ) *__mptr = (ptr);	\
-	(type *)( (char *)__mptr - offsetof(type,member) );})
+	const __typeof__(((type *)0)->member) *__mptr = (ptr);	\
+	(type *)((char *)__mptr - offsetof(type, member)); })
 
 #ifndef __unused
 #define __unused __attribute__((unused))

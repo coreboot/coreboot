@@ -823,7 +823,16 @@ diff -rupN tint-0.03b/tint.c tint/tint.c
  }
  
            /***************************************************************************/
-@@ -663,8 +680,15 @@ int main (int argc,char *argv[])
+@@ -561,6 +578,8 @@ int main (int argc,char *argv[])
+    int ch;
+    engine_t engine;
+    /* Initialize */
++   if (IS_ENABLED(CONFIG_LP_USB))
++      usb_initialize();
+    rand_init ();							/* must be called before engine_init () */
+    engine_init (&engine,score_function);	/* must be called before using engine.curshape */
+    finished = shownext = FALSE;
+@@ -663,8 +682,15 @@
     if (ch != 'q')
  	 {
  		showplayerstats (&engine);

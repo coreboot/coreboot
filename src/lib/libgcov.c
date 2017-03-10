@@ -496,7 +496,8 @@ gcov_exit(void)
 					if (length != GCOV_TAG_SUMMARY_LENGTH)
 						goto read_mismatch;
 					gcov_read_summary(&tmp);
-					if ((error = gcov_is_error()))
+					error = gcov_is_error();
+					if (error)
 						goto read_error;
 					if (summary_pos
 						|| tmp.checksum != crc32)
@@ -584,7 +585,8 @@ gcov_exit(void)
 							ci_ptr->num);
 						ci_ptr++;
 					}
-					if ((error = gcov_is_error()))
+					error = gcov_is_error();
+					if (error)
 						goto read_error;
 				}
 
@@ -713,7 +715,8 @@ read_fatal:;
 			fn_buffer = free_fn_data(gi_ptr, fn_buffer,
 				GCOV_COUNTERS);
 
-		if ((error = gcov_close()))
+		error = gcov_close();
+		if (error)
 			fprintf(stderr, error  < 0 ?
 				"profiling:%s:Overflow writing\n" :
 				"profiling:%s:Error writing\n",

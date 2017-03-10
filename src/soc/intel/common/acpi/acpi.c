@@ -162,16 +162,16 @@ static void generate_p_state_entries(int core, int cores_per_package)
 	/* Calculate CPU TDP in mW */
 	power_max = cpu_get_power_max();
 
-        /* Write _PCT indicating use of FFixedHW */
+	/* Write _PCT indicating use of FFixedHW */
 	acpigen_write_empty_PCT();
 
-        /* Write _PPC with no limit on supported P-state */
+	/* Write _PPC with no limit on supported P-state */
 	acpigen_write_PPC_NVS();
-       /* Write PSD indicating configured coordination type */
+	/* Write PSD indicating configured coordination type */
 	acpigen_write_PSD_package(core, 1, coord_type);
 
-        /* Add P-state entries in _PSS table */
-        acpigen_write_name("_PSS");
+	/* Add P-state entries in _PSS table */
+	acpigen_write_name("_PSS");
 
 	/* Determine ratio points */
 	ratio_step = PSS_RATIO_STEP;

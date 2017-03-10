@@ -58,6 +58,9 @@ ifeq ($(CONFIG_HAVE_ME_BIN),y)
 		$(obj)/coreboot.pre
 	mv $(obj)/coreboot.pre.new $(obj)/coreboot.pre
 endif
+ifeq ($(CONFIG_CHECK_ME),y)
+	util/me_cleaner/me_cleaner.py -c $(obj)/coreboot.pre > /dev/null
+endif
 ifeq ($(CONFIG_USE_ME_CLEANER),y)
 	printf "    ME_CLEANER coreboot.pre\n"
 	util/me_cleaner/me_cleaner.py $(obj)/coreboot.pre > \

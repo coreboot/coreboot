@@ -21,9 +21,9 @@
 #define FSP_HDR_OFFSET			0x94
 #define FSP_HDR_LEN			0x48
 #define FSP_HDR_SIGNATURE		"FSPH"
-#define FSP_HDR_ATTRIB_FSPT		0b0001
-#define FSP_HDR_ATTRIB_FSPM		0b0010
-#define FSP_HDR_ATTRIB_FSPS		0b0011
+#define FSP_HDR_ATTRIB_FSPT		1
+#define FSP_HDR_ATTRIB_FSPM		2
+#define FSP_HDR_ATTRIB_FSPS		3
 
 struct fsp_header {
 	uint32_t fsp_revision;

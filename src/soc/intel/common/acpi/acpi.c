@@ -109,7 +109,7 @@ __attribute__((weak)) acpi_tstate_t *soc_get_tss_table(int *entries)
 __attribute__((weak)) uint16_t soc_get_acpi_base_address(void)
 {
 #define ACPI_BASE_ADDR 0x400
-	return (ACPI_BASE_ADDR);
+	return ACPI_BASE_ADDR;
 }
 
 static int calculate_power(int tdp, int p1_ratio, int ratio)

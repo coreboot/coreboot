@@ -79,7 +79,8 @@ static struct lb_record *lb_first_record(struct lb_header *header)
 static struct lb_record *lb_last_record(struct lb_header *header)
 {
 	struct lb_record *rec;
-	rec = (void *)(((char *)header) + sizeof(*header) + header->table_bytes);
+	rec = (void *)(((char *)header) + sizeof(*header)
+		+ header->table_bytes);
 	return rec;
 }
 
@@ -425,7 +426,8 @@ void __attribute__((weak)) lb_board(struct lb_header *header) { /* NOOP */ }
  */
 void __attribute__((weak)) lb_spi_flash(struct lb_header *header) { /* NOOP */ }
 
-static struct lb_forward *lb_forward(struct lb_header *header, struct lb_header *next_header)
+static struct lb_forward *lb_forward(struct lb_header *header,
+	struct lb_header *next_header)
 {
 	struct lb_record *rec;
 	struct lb_forward *forward;
@@ -445,7 +447,8 @@ static unsigned long lb_table_fini(struct lb_header *head)
 		head->table_bytes += rec->size;
 
 	first_rec = lb_first_record(head);
-	head->table_checksum = compute_ip_checksum(first_rec, head->table_bytes);
+	head->table_checksum = compute_ip_checksum(first_rec,
+		head->table_bytes);
 	head->header_checksum = 0;
 	head->header_checksum = compute_ip_checksum(head, sizeof(*head));
 	printk(BIOS_DEBUG,
@@ -483,12 +486,15 @@ static uintptr_t write_coreboot_table(uintptr_t rom_table_end)
 				CBFS_COMPONENT_CMOS_LAYOUT, NULL);
 		if (option_table) {
 			struct lb_record *rec_dest = lb_new_record(head);
-			/* Copy the option config table, it's already a lb_record... */
+			/* Copy the option config table, it's already a
+			 * lb_record...
+			 */
 			memcpy(rec_dest,  option_table, option_table->size);
 			/* Create cmos checksum entry in coreboot table */
 			lb_cmos_checksum(head);
 		} else {
-			printk(BIOS_ERR, "cmos_layout.bin could not be found!\n");
+			printk(BIOS_ERR,
+				"cmos_layout.bin could not be found!\n");
 		}
 	}
 #endif

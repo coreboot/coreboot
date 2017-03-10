@@ -166,7 +166,8 @@ static int imdr_create_empty(struct imdr *imdr, size_t root_size,
 	if (root_size < (sizeof(*rp) + sizeof(*r)))
 		return -1;
 
-	/* For simplicity don't allow sizes or alignments to exceed LIMIT_ALIGN. */
+	/* For simplicity don't allow sizes or alignments to exceed LIMIT_ALIGN.
+	 */
 	if (root_size > LIMIT_ALIGN || entry_align > LIMIT_ALIGN)
 		return -1;
 

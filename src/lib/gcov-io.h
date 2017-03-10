@@ -493,7 +493,8 @@ extern void __gcov_merge_ior(gcov_type *, unsigned int) ATTRIBUTE_HIDDEN;
 extern void __gcov_interval_profiler(gcov_type *, gcov_type, int, unsigned int);
 extern void __gcov_pow2_profiler(gcov_type *, gcov_type);
 extern void __gcov_one_value_profiler(gcov_type *, gcov_type);
-extern void __gcov_indirect_call_profiler(gcov_type *, gcov_type, void *, void *);
+extern void __gcov_indirect_call_profiler(gcov_type *, gcov_type, void *,
+	void *);
 extern void __gcov_average_profiler(gcov_type *, gcov_type);
 extern void __gcov_ior_profiler(gcov_type *, gcov_type);
 

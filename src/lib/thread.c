@@ -226,7 +226,8 @@ static void idle_thread_init(void)
 /* Don't inline this function so the timeout_callback won't have its storage
  * space on the stack cleaned up before the call to schedule(). */
 static int __attribute__((noinline))
-thread_yield_timed_callback(struct timeout_callback *tocb, unsigned int microsecs)
+thread_yield_timed_callback(struct timeout_callback *tocb,
+	unsigned int microsecs)
 {
 	tocb->priv = current_thread();
 	tocb->callback = thread_resume_from_timeout;

@@ -266,8 +266,7 @@ static size_t ffs_file_size(const EFI_FFS_FILE_HEADER *ffsfh)
 		 */
 		uint32_t file2_size = FFS_FILE2_SIZE(ffsfh);
 		size = read_le32(&file2_size);
-	}
-	else {
+	} else {
 		size = read_le8(&ffsfh->Size[0]) << 0;
 		size |= read_le8(&ffsfh->Size[1]) << 8;
 		size |= read_le8(&ffsfh->Size[2]) << 16;

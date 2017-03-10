@@ -245,7 +245,7 @@ static void *mdev_mmap(const struct region_device *rd, size_t offset,
 	return &mdev->base[offset];
 }
 
-static int mdev_munmap(const struct region_device * rd __unused,
+static int mdev_munmap(const struct region_device *rd __unused,
 			void *mapping __unused)
 {
 	return 0;

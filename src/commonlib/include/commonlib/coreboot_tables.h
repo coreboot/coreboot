@@ -371,12 +371,12 @@ struct cmos_option_table {
 };
 
 /* cmos entry record
-        This record is variable length.  The name field may be
-        shorter than CMOS_MAX_NAME_LENGTH. The entry may start
-        anywhere in the byte, but can not span bytes unless it
-        starts at the beginning of the byte and the length is
-        fills complete bytes.
-*/
+ * This record is variable length.  The name field may be
+ * shorter than CMOS_MAX_NAME_LENGTH. The entry may start
+ * anywhere in the byte, but can not span bytes unless it
+ * starts at the beginning of the byte and the length is
+ * fills complete bytes.
+ */
 #define LB_TAG_OPTION 201
 struct cmos_entries {
 	uint32_t tag;                /* entry type */
@@ -392,9 +392,9 @@ struct cmos_entries {
 
 
 /* cmos enumerations record
-        This record is variable length.  The text field may be
-        shorter than CMOS_MAX_TEXT_LENGTH.
-*/
+ * This record is variable length.  The text field may be
+ * shorter than CMOS_MAX_TEXT_LENGTH.
+ */
 #define LB_TAG_OPTION_ENUM 202
 struct cmos_enums {
 	uint32_t tag;		     /* enumeration type */
@@ -407,8 +407,8 @@ struct cmos_enums {
 };
 
 /* cmos defaults record
-        This record contains default settings for the cmos ram.
-*/
+ * This record contains default settings for the cmos ram.
+ */
 #define LB_TAG_OPTION_DEFAULTS 203
 struct cmos_defaults {
 	uint32_t tag;                /* default type */

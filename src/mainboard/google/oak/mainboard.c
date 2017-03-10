@@ -256,7 +256,7 @@ static void mainboard_init(device_t dev)
 		mt6391_gpio_output(MT6391_KP_ROW2, 1);
 
 	/* Config SD card detection pin */
-	gpio_input(PAD_EINT1); /* SD_DET */
+	gpio_input_pullup(PAD_EINT1); /* SD_DET */
 
 	configure_audio();
 

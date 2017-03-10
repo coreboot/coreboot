@@ -406,8 +406,7 @@ typedef HOST_WIDEST_INT gcov_type;
 /* Structured records.  */
 
 /* Cumulative counter data.  */
-struct gcov_ctr_summary
-{
+struct gcov_ctr_summary {
 	gcov_unsigned_t num;		/* number of counters.  */
 	gcov_unsigned_t runs;		/* number of program runs */
 	gcov_type sum_all;		/* sum of all counters accumulated.  */
@@ -416,8 +415,7 @@ struct gcov_ctr_summary
 };
 
 /* Object & program summary record.  */
-struct gcov_summary
-{
+struct gcov_summary {
 	gcov_unsigned_t checksum;	/* checksum of program */
 	struct gcov_ctr_summary ctrs[GCOV_COUNTERS_SUMMABLE];
 };
@@ -427,8 +425,7 @@ struct gcov_summary
 
 #if IN_LIBGCOV
 /* Information about counters for a single function.  */
-struct gcov_ctr_info
-{
+struct gcov_ctr_info {
 	gcov_unsigned_t num;		/* number of counters.  */
 	gcov_type *values;		/* their values.  */
 };
@@ -439,8 +436,7 @@ struct gcov_ctr_info
    comdat functions was selected -- it points to the gcov_info object
    of the object file containing the selected comdat function.  */
 
-struct gcov_fn_info
-{
+struct gcov_fn_info {
 	const struct gcov_info *key;		/* comdat key */
 	gcov_unsigned_t ident;		/* unique ident of function */
 	gcov_unsigned_t lineno_checksum;	/* function lineo_checksum */
@@ -452,8 +448,7 @@ struct gcov_fn_info
 typedef void (*gcov_merge_fn) (gcov_type *, gcov_unsigned_t);
 
 /* Information about a single object file.  */
-struct gcov_info
-{
+struct gcov_info {
 	gcov_unsigned_t version;	/* expected version number */
 	struct gcov_info *next;	/* link to next, used by libgcov */
 

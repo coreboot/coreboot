@@ -1452,8 +1452,8 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 	for (i = 0; i < 4; i++) {
 		c.has_valid_detailed_blocks &= detailed_block(
 				out, edid + 0x36 + i * 18, 0, &c);
-		if (i == 0 && c.has_preferred_timing && !c.did_detailed_timing)
-		{
+		if (i == 0 && c.has_preferred_timing
+			&& !c.did_detailed_timing) {
 			/* not really accurate... */
 			c.has_preferred_timing = 0;
 		}

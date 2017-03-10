@@ -71,8 +71,8 @@ __attribute__((weak)) uint32_t cpu_get_max_ratio(void)
 __attribute__((weak)) uint32_t cpu_get_bus_clock(void)
 {
 	/* CPU bus clock is set by default here to 100MHz.
-           This function returns the bus clock in KHz.
-	*/
+	 * This function returns the bus clock in KHz.
+	 */
 	return 100 * KHz;
 }
 

@@ -300,7 +300,7 @@ typedef HOST_WIDEST_INT gcov_type;
 #include "gcov-iov.h"
 
 /* Convert a magic or version number to a 4 character string.  */
-#define GCOV_UNSIGNED2STRING(ARRAY,VALUE)	\
+#define GCOV_UNSIGNED2STRING(ARRAY, VALUE)	\
 	((ARRAY)[0] = (char)((VALUE) >> 24),	\
 	(ARRAY)[1] = (char)((VALUE) >> 16),	\
 	(ARRAY)[2] = (char)((VALUE) >> 8),	\
@@ -387,12 +387,12 @@ typedef HOST_WIDEST_INT gcov_type;
 #define GCOV_TAG_MASK(TAG) (((TAG) - 1) ^ (TAG))
 
 /* Return nonzero if SUB is an immediate subtag of TAG.  */
-#define GCOV_TAG_IS_SUBTAG(TAG,SUB)				\
+#define GCOV_TAG_IS_SUBTAG(TAG, SUB)				\
 	(GCOV_TAG_MASK(TAG) >> 8 == GCOV_TAG_MASK(SUB)		\
 	 && !(((SUB) ^ (TAG)) & ~GCOV_TAG_MASK(TAG)))
 
 /* Return nonzero if SUB is at a sublevel to TAG.  */
-#define GCOV_TAG_IS_SUBLEVEL(TAG,SUB)				\
+#define GCOV_TAG_IS_SUBLEVEL(TAG, SUB)				\
 	(GCOV_TAG_MASK(TAG) > GCOV_TAG_MASK(SUB))
 
 /* Basic block flags.  */

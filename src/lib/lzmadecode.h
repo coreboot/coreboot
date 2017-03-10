@@ -42,7 +42,7 @@ typedef struct _CLzmaProperties {
 	int lc;
 	int lp;
 	int pb;
-}CLzmaProperties;
+} CLzmaProperties;
 
 int LzmaDecodeProperties(CLzmaProperties *propsRes, const unsigned char *propsData, int size);
 

@@ -248,7 +248,7 @@ buffer_fn_data(const char *filename, const struct gcov_info *gi_ptr,
 	return &fn_buffer->next;
 
 fail:
-	fprintf(stderr, "profiling:%s:Function %u %s %u \n", filename, fn_ix,
+	fprintf(stderr, "profiling:%s:Function %u %s %u\n", filename, fn_ix,
 		len ? "cannot allocate" : "counter mismatch", len ? len : ix);
 
 	return (struct gcov_fn_buffer **)free_fn_data(gi_ptr, fn_buffer, ix);
@@ -289,7 +289,7 @@ gcov_version(struct gcov_info *ptr, gcov_unsigned_t version,
 
 		fprintf(stderr,
 			"profiling:%s:Version mismatch - expected %.4s got %.4s\n",
-			filename? filename : ptr->filename, e, v);
+			filename ? filename : ptr->filename, e, v);
 		return 0;
 	}
 	return 1;
@@ -603,7 +603,7 @@ gcov_exit(void)
 
 read_error:;
 		fprintf(stderr, "profiling:%s:%s merging\n", gi_filename,
-			error < 0 ? "Overflow": "Error");
+			error < 0 ? "Overflow" : "Error");
 
 		goto read_fatal;
 
@@ -986,7 +986,7 @@ void
 __gcov_average_profiler(gcov_type *counters, gcov_type value)
 {
 	counters[0] += value;
-	counters[1] ++;
+	counters[1]++;
 }
 #endif
 

@@ -553,10 +553,10 @@ detailed_block(struct edid *result_edid, unsigned char *x, int in_extension,
 	       out->mode.va + out->mode.vso + out->mode.vspw,
 	       out->mode.va + out->mode.vbl, out->mode.vborder,
 	       out->mode.phsync, out->mode.pvsync,
-	       extra_info.syncmethod, x[17] & 0x80 ?" interlaced" : "",
+	       extra_info.syncmethod, x[17] & 0x80 ? " interlaced" : "",
 	       extra_info.stereo);
 
-	if (! c->did_detailed_timing) {
+	if (!c->did_detailed_timing) {
 		printk(BIOS_SPEW, "Did detailed timing\n");
 		c->did_detailed_timing = 1;
 		*result_edid = *out;
@@ -654,7 +654,7 @@ cea_video_block(unsigned char *x)
 	int length = x[0] & 0x1f;
 
 	for (i = 1; i < length; i++)
-		printk(BIOS_SPEW,"    VIC %02d %s\n", x[i] & 0x7f,
+		printk(BIOS_SPEW, "    VIC %02d %s\n", x[i] & 0x7f,
 		       x[i] & 0x80 ? "(native)" : "");
 }
 
@@ -995,7 +995,7 @@ static void dump_breakdown(unsigned char *edid)
 	printk(BIOS_SPEW, "Extracted contents:\n");
 	print_subsection("header", edid, 0, 7);
 	print_subsection("serial number", edid, 8, 17);
-	print_subsection("version", edid,18, 19);
+	print_subsection("version", edid, 18, 19);
 	print_subsection("basic params", edid, 20, 24);
 	print_subsection("chroma info", edid, 25, 34);
 	print_subsection("established", edid, 35, 37);
@@ -1610,7 +1610,7 @@ void set_vbe_mode_info_valid(const struct edid *edid, uintptr_t fb_addr)
 	edid_fb.bits_per_pixel = edid->framebuffer_bits_per_pixel;
 	edid_fb.reserved_mask_pos = 0;
 	edid_fb.reserved_mask_size = 0;
-	switch (edid->framebuffer_bits_per_pixel){
+	switch (edid->framebuffer_bits_per_pixel) {
 	case 32:
 	case 24:
 		/* packed into 4-byte words */

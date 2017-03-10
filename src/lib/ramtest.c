@@ -84,7 +84,7 @@ static int ram_bitset_nodie(unsigned long start)
 	uint8_t verbose = 0;
 
 	printk(BIOS_DEBUG, "DRAM bitset write: 0x%08lx\n", start);
-	for (idx=0; idx<0x400; idx+=4) {
+	for (idx = 0; idx < 0x400; idx += 4) {
 		test_pattern(idx, &addr, &value);
 		write_phys(start + addr, value);
 	}
@@ -94,7 +94,7 @@ static int ram_bitset_nodie(unsigned long start)
 
 	printk(BIOS_DEBUG, "DRAM bitset verify: 0x%08lx\n", start);
 	failures = 0;
-	for (idx=0; idx<0x400; idx+=4) {
+	for (idx = 0; idx < 0x400; idx += 4) {
 		test_pattern(idx, &addr, &value);
 		value2 = read_phys(start + addr);
 
@@ -162,7 +162,7 @@ int ram_check_noprint_nodie(unsigned long start, unsigned long stop)
 	unsigned short int idx;
 	unsigned char failed, failures;
 
-	for (idx=0; idx<0x400; idx+=4) {
+	for (idx = 0; idx < 0x400; idx += 4) {
 		test_pattern(idx, &addr, &value);
 		write_phys(start + addr, value);
 	}
@@ -171,7 +171,7 @@ int ram_check_noprint_nodie(unsigned long start, unsigned long stop)
 	phys_memory_barrier();
 
 	failures = 0;
-	for (idx=0; idx<0x400; idx+=4) {
+	for (idx = 0; idx < 0x400; idx += 4) {
 		test_pattern(idx, &addr, &value);
 		value2 = read_phys(start + addr);
 
@@ -189,19 +189,19 @@ static void __quick_ram_check(uintptr_t dst)
 	write_phys(dst, 0x55555555);
 	phys_memory_barrier();
 	if (read_phys(dst) != 0x55555555)
-		fail=1;
+		fail = 1;
 	write_phys(dst, 0xaaaaaaaa);
 	phys_memory_barrier();
 	if (read_phys(dst) != 0xaaaaaaaa)
-		fail=1;
+		fail = 1;
 	write_phys(dst, 0x00000000);
 	phys_memory_barrier();
 	if (read_phys(dst) != 0x00000000)
-		fail=1;
+		fail = 1;
 	write_phys(dst, 0xffffffff);
 	phys_memory_barrier();
 	if (read_phys(dst) != 0xffffffff)
-		fail=1;
+		fail = 1;
 
 	write_phys(dst, backup);
 	if (fail) {

@@ -21,8 +21,8 @@ void fsp_display_upd_value(const char *name, size_t size, uint64_t old,
 	if (old == new) {
 		printk(BIOS_SPEW, "  0x%0*llx: %s\n", (int)size, new, name);
 	} else {
-		printk(BIOS_SPEW, "  0x%0*llx --> 0x%0*llx: %s\n", (int)size, old,
-			(int)size, new, name);
+		printk(BIOS_SPEW, "  0x%0*llx --> 0x%0*llx: %s\n", (int)size,
+			old, (int)size, new, name);
 	}
 }
 

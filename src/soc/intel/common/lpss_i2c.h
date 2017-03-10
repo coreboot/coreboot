@@ -65,12 +65,12 @@ struct lpss_i2c_bus_config {
 	struct lpss_i2c_speed_config speed_config[LPSS_I2C_SPEED_CONFIG_COUNT];
 };
 
-#define LPSS_I2C_SPEED_CONFIG(speedval,lcnt,hcnt,hold)	\
-	{						\
-		.speed = I2C_SPEED_ ## speedval,	\
-		.scl_lcnt = (lcnt),			\
-		.scl_hcnt = (hcnt),			\
-		.sda_hold = (hold),			\
+#define LPSS_I2C_SPEED_CONFIG(speedval, lcnt, hcnt, hold)	\
+	{							\
+		.speed = I2C_SPEED_ ## speedval,		\
+		.scl_lcnt = (lcnt),				\
+		.scl_hcnt = (hcnt),				\
+		.sda_hold = (hold),				\
 	}
 
 /*

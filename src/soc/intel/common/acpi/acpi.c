@@ -273,8 +273,8 @@ void generate_cpu_entries(device_t device)
 	printk(BIOS_DEBUG, "Found %d CPU(s) with %d core(s) each.\n",
 		numcpus, cores_per_package);
 
-	for (cpu_id=0; cpu_id < numcpus; cpu_id++) {
-		for (core_id=0; core_id < cores_per_package; core_id++) {
+	for (cpu_id = 0; cpu_id < numcpus; cpu_id++) {
+		for (core_id = 0; core_id < cores_per_package; core_id++) {
 			if (core_id > 0) {
 				pcontrol_blk = 0;
 				plen = 0;

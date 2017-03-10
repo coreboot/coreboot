@@ -172,9 +172,9 @@ static int hda_wait_for_valid(u8 *base)
  */
 static u32 hda_find_verb(u32 verb_table_bytes,
 			 const u32 *verb_table_data,
-			 u32 viddid, const u32 ** verb)
+			 u32 viddid, const u32 **verb)
 {
-	int idx=0;
+	int idx = 0;
 
 	while (idx < (verb_table_bytes / sizeof(u32))) {
 		u32 verb_size = 4 * verb_table_data[idx+2]; // in u32

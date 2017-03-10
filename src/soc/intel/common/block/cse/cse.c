@@ -323,7 +323,7 @@ heci_send(const void *msg, size_t len, uint8_t host_addr, uint8_t client_addr)
 		hdr |= client_addr << MEI_HDR_CSE_ADDR_START;
 		hdr |= host_addr << MEI_HDR_HOST_ADDR_START;
 		hdr |= (MIN(max_length, remaining) == remaining) ?
-						MEI_HDR_IS_COMPLETE: 0;
+						MEI_HDR_IS_COMPLETE : 0;
 		sent = send_one_message(hdr, p);
 		p += sent;
 		remaining -= sent;

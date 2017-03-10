@@ -2,7 +2,8 @@
 
 /* Setup SDRAM */
 #if CONFIG_RAMINIT_SYSINFO
-void sdram_initialize(int controllers, const struct mem_controller *ctrl, void *sysinfo)
+void sdram_initialize(int controllers, const struct mem_controller *ctrl,
+	void *sysinfo)
 #else
 void sdram_initialize(int controllers, const struct mem_controller *ctrl)
 #endif

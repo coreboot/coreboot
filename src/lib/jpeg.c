@@ -353,7 +353,8 @@ int jpeg_decode(unsigned char *buf, unsigned char *pic,
 	if (dscans[0].cid != 1 || dscans[1].cid != 2 || dscans[2].cid != 3)
 		return ERR_NOT_YCBCR_221111;
 
-	if (dscans[0].hv != 0x22 || dscans[1].hv != 0x11 || dscans[2].hv != 0x11)
+	if (dscans[0].hv != 0x22 || dscans[1].hv != 0x11
+		|| dscans[2].hv != 0x11)
 		return ERR_NOT_YCBCR_221111;
 
 	mcusx = width >> 4;
@@ -385,22 +386,34 @@ int jpeg_decode(unsigned char *buf, unsigned char *pic,
 					return ERR_WRONG_MARKER;
 
 			decode_mcus(&glob_in, decdata->dcts, 6, dscans, max);
-			idct(decdata->dcts, decdata->out, decdata->dquant[0], IFIX(128.5), max[0]);
-			idct(decdata->dcts + 64, decdata->out + 64, decdata->dquant[0], IFIX(128.5), max[1]);
-			idct(decdata->dcts + 128, decdata->out + 128, decdata->dquant[0], IFIX(128.5), max[2]);
-			idct(decdata->dcts + 192, decdata->out + 192, decdata->dquant[0], IFIX(128.5), max[3]);
-			idct(decdata->dcts + 256, decdata->out + 256, decdata->dquant[1], IFIX(0.5), max[4]);
-			idct(decdata->dcts + 320, decdata->out + 320, decdata->dquant[2], IFIX(0.5), max[5]);
+			idct(decdata->dcts, decdata->out, decdata->dquant[0],
+				IFIX(128.5), max[0]);
+			idct(decdata->dcts + 64, decdata->out + 64,
+				decdata->dquant[0], IFIX(128.5), max[1]);
+			idct(decdata->dcts + 128, decdata->out + 128,
+				decdata->dquant[0], IFIX(128.5), max[2]);
+			idct(decdata->dcts + 192, decdata->out + 192,
+				decdata->dquant[0], IFIX(128.5), max[3]);
+			idct(decdata->dcts + 256, decdata->out + 256,
+				decdata->dquant[1], IFIX(0.5), max[4]);
+			idct(decdata->dcts + 320, decdata->out + 320,
+				decdata->dquant[2], IFIX(0.5), max[5]);
 
 			switch (depth) {
 			case 32:
-				col221111_32(decdata->out, pic + (my * 16 * mcusx + mx) * 16 * 4, mcusx * 16 * 4);
+				col221111_32(decdata->out, pic
+					+ (my * 16 * mcusx + mx) * 16 * 4,
+					mcusx * 16 * 4);
 				break;
 			case 24:
-				col221111(decdata->out, pic + (my * 16 * mcusx + mx) * 16 * 3, mcusx * 16 * 3);
+				col221111(decdata->out, pic
+					+ (my * 16 * mcusx + mx) * 16 * 3,
+					mcusx * 16 * 3);
 				break;
 			case 16:
-				col221111_16(decdata->out, pic + (my * 16 * mcusx + mx) * (16 * 2), mcusx * (16 * 2));
+				col221111_16(decdata->out, pic
+					+ (my * 16 * mcusx + mx) * (16 * 2),
+					mcusx * (16 * 2));
 				break;
 			default:
 				return ERR_DEPTH_MISMATCH;
@@ -498,7 +511,8 @@ static int dec_rec2(struct in *in, struct dec_hufftbl *hu, int *runp, int c,
 		*runp = i >> 8 & 15;
 		i >>= 16;
 	} else {
-		for (i = DECBITS; (c = ((c << 1) | GETBITS(in, 1))) >= (hu->maxcode[i]); i++)
+		for (i = DECBITS; (c = ((c << 1) | GETBITS(in, 1)))
+			>= (hu->maxcode[i]); i++)
 			;
 		if (i >= 16) {
 			in->marker = M_BADHUFF;
@@ -538,7 +552,8 @@ static int dec_rec2(struct in *in, struct dec_hufftbl *hu, int *runp, int c,
 	)					\
 )
 
-static void decode_mcus(struct in *in, int *dct, int n, struct scan *sc, int *maxp)
+static void decode_mcus(struct in *in, int *dct, int n, struct scan *sc,
+	int *maxp)
 {
 	struct dec_hufftbl *hu;
 	int i, r, t;
@@ -569,7 +584,8 @@ static void decode_mcus(struct in *in, int *dct, int n, struct scan *sc, int *ma
 	LEBI_PUT(in);
 }
 
-static void dec_makehuff(struct dec_hufftbl *hu, int *hufflen, unsigned char *huffvals)
+static void dec_makehuff(struct dec_hufftbl *hu, int *hufflen,
+	unsigned char *huffvals)
 {
 	int code, k, i, j, d, x, c, v;
 	for (i = 0; i < (1 << DECBITS); i++)
@@ -595,15 +611,19 @@ static void dec_makehuff(struct dec_hufftbl *hu, int *hufflen, unsigned char *hu
 				c = code << (DECBITS - 1 - i);
 				v = hu->vals[k] & 0x0f;	/* size */
 				for (d = 1 << (DECBITS - 1 - i); --d >= 0;) {
-					if (v + i < DECBITS) {	/* both fit in table */
+					/* both fit in table */
+					if (v + i < DECBITS) {
 						x = d >> (DECBITS - 1 - v -
 							  i);
 						if (v && x < (1 << (v - 1)))
 							x += (-1 << v) + 1;
-						x = x << 16 | (hu->vals[k] & 0xf0) << 4 |
-							(DECBITS - (i + 1 + v)) | 128;
+						x = x << 16 | (hu->vals[k]
+							& 0xf0) << 4 |
+							(DECBITS - (i + 1 + v))
+							| 128;
 					} else
-						x = v << 16 | (hu->vals[k] & 0xf0) << 4 |
+						x = v << 16 | (hu->vals[k]
+							& 0xf0) << 4 |
 							(DECBITS - (i + 1));
 					hu->llvals[c | d] = x;
 				}

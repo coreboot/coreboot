@@ -170,7 +170,8 @@ static int relocate_segment(unsigned long buffer, struct segment *seg)
 			/* compute the new value of start */
 			start = seg->s_dstaddr;
 
-			printk(BIOS_SPEW, "   early: [0x%016lx, 0x%016lx, 0x%016lx)\n",
+			printk(BIOS_SPEW,
+				"   early: [0x%016lx, 0x%016lx, 0x%016lx)\n",
 				new->s_dstaddr,
 				new->s_dstaddr + new->s_filesz,
 				new->s_dstaddr + new->s_memsz);
@@ -199,7 +200,8 @@ static int relocate_segment(unsigned long buffer, struct segment *seg)
 			/* Order by stream offset */
 			segment_insert_after(seg, new);
 
-			printk(BIOS_SPEW, "   late: [0x%016lx, 0x%016lx, 0x%016lx)\n",
+			printk(BIOS_SPEW,
+				"   late: [0x%016lx, 0x%016lx, 0x%016lx)\n",
 				new->s_dstaddr,
 				new->s_dstaddr + new->s_filesz,
 				new->s_dstaddr + new->s_memsz);
@@ -274,8 +276,10 @@ static int build_self_segment_list(
 				+ segment.offset;
 			new->s_filesz = segment.len;
 
-			printk(BIOS_DEBUG, "  New segment dstaddr 0x%lx memsize 0x%lx srcaddr 0x%lx filesize 0x%lx\n",
-				new->s_dstaddr, new->s_memsz, new->s_srcaddr, new->s_filesz);
+			printk(BIOS_DEBUG,
+				"  New segment dstaddr 0x%lx memsize 0x%lx srcaddr 0x%lx filesize 0x%lx\n",
+				new->s_dstaddr, new->s_memsz, new->s_srcaddr,
+				new->s_filesz);
 
 			/* Clean up the values */
 			if (new->s_filesz > new->s_memsz)  {
@@ -394,17 +398,20 @@ static int load_self_segments(struct segment *head, struct prog *payload,
 	for (ptr = head->next; ptr != head; ptr = ptr->next) {
 		unsigned char *dest, *src, *middle, *end;
 		size_t len, memsz;
-		printk(BIOS_DEBUG, "Loading Segment: addr: 0x%016lx memsz: 0x%016lx filesz: 0x%016lx\n",
+		printk(BIOS_DEBUG,
+			"Loading Segment: addr: 0x%016lx memsz: 0x%016lx filesz: 0x%016lx\n",
 			ptr->s_dstaddr, ptr->s_memsz, ptr->s_filesz);
 
-		/* Modify the segment to load onto the bounce_buffer if necessary.
+		/* Modify the segment to load onto the bounce_buffer if
+		 * necessary.
 		 */
 		if (relocate_segment(bounce_buffer, ptr)) {
 			ptr = (ptr->prev)->prev;
 			continue;
 		}
 
-		printk(BIOS_DEBUG, "Post relocation: addr: 0x%016lx memsz: 0x%016lx filesz: 0x%016lx\n",
+		printk(BIOS_DEBUG,
+			"Post relocation: addr: 0x%016lx memsz: 0x%016lx filesz: 0x%016lx\n",
 			ptr->s_dstaddr, ptr->s_memsz, ptr->s_filesz);
 
 		/* Compute the boundaries of the segment */
@@ -440,7 +447,8 @@ static int load_self_segments(struct segment *head, struct prog *payload,
 			break;
 		}
 		default:
-			printk(BIOS_INFO,  "CBFS:  Unknown compression type %d\n", ptr->compression);
+			printk(BIOS_INFO,  "CBFS:  Unknown compression type %d\n",
+				ptr->compression);
 			return -1;
 		}
 		/* Calculate middle after any changes to len. */
@@ -453,28 +461,42 @@ static int load_self_segments(struct segment *head, struct prog *payload,
 
 		/* Zero the extra bytes between middle & end */
 		if (middle < end) {
-			printk(BIOS_DEBUG, "Clearing Segment: addr: 0x%016lx memsz: 0x%016lx\n",
-				(unsigned long)middle, (unsigned long)(end - middle));
+			printk(BIOS_DEBUG,
+				"Clearing Segment: addr: 0x%016lx memsz: 0x%016lx\n",
+				(unsigned long)middle,
+				(unsigned long)(end - middle));
 
 			/* Zero the extra bytes */
 			memset(middle, 0, end - middle);
 		}
 
-		/* Copy the data that's outside the area that shadows ramstage */
-		printk(BIOS_DEBUG, "dest %p, end %p, bouncebuffer %lx\n", dest, end, bounce_buffer);
+		/* Copy the data that's outside the area that shadows ramstage
+		 */
+		printk(BIOS_DEBUG, "dest %p, end %p, bouncebuffer %lx\n", dest,
+			end, bounce_buffer);
 		if ((unsigned long)end > bounce_buffer) {
 			if ((unsigned long)dest < bounce_buffer) {
 				unsigned char *from = dest;
-				unsigned char *to = (unsigned char *)(lb_start-(bounce_buffer-(unsigned long)dest));
-				unsigned long amount = bounce_buffer-(unsigned long)dest;
-				printk(BIOS_DEBUG, "move prefix around: from %p, to %p, amount: %lx\n", from, to, amount);
+				unsigned char *to = (unsigned char *)
+					(lb_start - (bounce_buffer
+					- (unsigned long)dest));
+				unsigned long amount = bounce_buffer
+					- (unsigned long)dest;
+				printk(BIOS_DEBUG,
+					"move prefix around: from %p, to %p, amount: %lx\n",
+					from, to, amount);
 				memcpy(to, from, amount);
 			}
-			if ((unsigned long)end > bounce_buffer + (lb_end - lb_start)) {
-				unsigned long from = bounce_buffer + (lb_end - lb_start);
+			if ((unsigned long)end > bounce_buffer + (lb_end
+				- lb_start)) {
+				unsigned long from = bounce_buffer + (lb_end
+					- lb_start);
 				unsigned long to = lb_end;
-				unsigned long amount = (unsigned long)end - from;
-				printk(BIOS_DEBUG, "move suffix around: from %lx, to %lx, amount: %lx\n", from, to, amount);
+				unsigned long amount =
+					(unsigned long)end - from;
+				printk(BIOS_DEBUG,
+					"move suffix around: from %lx, to %lx, amount: %lx\n",
+						from, to, amount);
 				memcpy((char *)to, (char *)from, amount);
 			}
 		}

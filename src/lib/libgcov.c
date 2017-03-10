@@ -633,7 +633,8 @@ rewrite:;
 			if (!cs_all->runs && cs_prg->runs)
 				memcpy(cs_all, cs_prg, sizeof(*cs_all));
 			else if (!all_prg.checksum
-				&& (!GCOV_LOCKED || cs_all->runs == cs_prg->runs)
+				&& (!GCOV_LOCKED
+				|| cs_all->runs == cs_prg->runs)
 				&& memcmp(cs_all, cs_prg, sizeof(*cs_all))) {
 				fprintf(stderr,
 					"profiling:%s:Invocation mismatch - some data files may have been removed%s\n",
@@ -661,10 +662,12 @@ rewrite:;
 			gcov_seek(eof_pos);
 
 		/* Write execution counts for each function.  */
-		for (f_ix = 0; (unsigned int)f_ix != gi_ptr->n_functions; f_ix++) {
+		for (f_ix = 0; (unsigned int)f_ix != gi_ptr->n_functions;
+			f_ix++) {
 			unsigned int buffered = 0;
 
-			if (fn_buffer && fn_buffer->fn_ix == (unsigned int)f_ix) {
+			if (fn_buffer && fn_buffer->fn_ix
+				== (unsigned int)f_ix) {
 				/* Buffered data from another program.  */
 				buffered = 1;
 				gfi_ptr = &fn_buffer->info;
@@ -691,7 +694,8 @@ rewrite:;
 				continue;
 
 				n_counts = ci_ptr->num;
-				gcov_write_tag_length(GCOV_TAG_FOR_COUNTER(t_ix),
+				gcov_write_tag_length(
+					GCOV_TAG_FOR_COUNTER(t_ix),
 					GCOV_TAG_COUNTER_LENGTH(n_counts));
 				gcov_type *c_ptr = ci_ptr->values;
 				while (n_counts--)
@@ -707,7 +711,8 @@ rewrite:;
 
 read_fatal:;
 		while (fn_buffer)
-			fn_buffer = free_fn_data(gi_ptr, fn_buffer, GCOV_COUNTERS);
+			fn_buffer = free_fn_data(gi_ptr, fn_buffer,
+				GCOV_COUNTERS);
 
 		if ((error = gcov_close()))
 			fprintf(stderr, error  < 0 ?
@@ -1045,8 +1050,9 @@ __gcov_execl(const char *path, char *arg, ...)
 #endif
 
 #ifdef L_gcov_execlp
-/* A wrapper for the execlp function.  Flushes the accumulated profiling data, so
-   that they are not lost.  */
+/* A wrapper for the execlp function.  Flushes the accumulated profiling data,
+ * so that they are not lost.
+ */
 
 int
 __gcov_execlp(const char *path, char *arg, ...)
@@ -1076,8 +1082,9 @@ __gcov_execlp(const char *path, char *arg, ...)
 #endif
 
 #ifdef L_gcov_execle
-/* A wrapper for the execle function.  Flushes the accumulated profiling data, so
-   that they are not lost.  */
+/* A wrapper for the execle function.  Flushes the accumulated profiling data,
+ * so that they are not lost.
+ */
 
 int
 __gcov_execle(const char *path, char *arg, ...)
@@ -1121,8 +1128,9 @@ __gcov_execv(const char *path, char *const argv[])
 #endif
 
 #ifdef L_gcov_execvp
-/* A wrapper for the execvp function.  Flushes the accumulated profiling data, so
-   that they are not lost.  */
+/* A wrapper for the execvp function.  Flushes the accumulated profiling data,
+ * so that they are not lost.
+ */
 
 int
 __gcov_execvp(const char *path, char *const argv[])
@@ -1133,8 +1141,9 @@ __gcov_execvp(const char *path, char *const argv[])
 #endif
 
 #ifdef L_gcov_execve
-/* A wrapper for the execve function.  Flushes the accumulated profiling data, so
-   that they are not lost.  */
+/* A wrapper for the execve function.  Flushes the accumulated profiling data,
+ * so that they are not lost.
+ */
 
 int
 __gcov_execve(const char *path, char *const argv[], char *const envp[])

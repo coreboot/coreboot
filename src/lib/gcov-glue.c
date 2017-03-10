@@ -49,7 +49,9 @@ static FILE *fopen(const char *path, const char *mode)
 		current_file = cbmem_add(CBMEM_ID_COVERAGE, 32*1024);
 	} else {
 		previous_file = current_file;
-		current_file = (FILE *)(ALIGN(((unsigned long)previous_file->data + previous_file->len), 16));
+		current_file =
+			(FILE *)(ALIGN(((unsigned long)previous_file->data
+			+ previous_file->len), 16));
 	}
 
 	// TODO check if we're at the end of the CBMEM region (ENOMEM)
@@ -60,7 +62,9 @@ static FILE *fopen(const char *path, const char *mode)
 			previous_file->next = current_file;
 		current_file->filename = (char *)&current_file[1];
 		strcpy(current_file->filename, path);
-		current_file->data = (char *)ALIGN(((unsigned long)current_file->filename + strlen(path) + 1), 16);
+		current_file->data =
+			(char *)ALIGN(((unsigned long)current_file->filename
+			+ strlen(path) + 1), 16);
 		current_file->offset = 0;
 		current_file->len = 0;
 	}

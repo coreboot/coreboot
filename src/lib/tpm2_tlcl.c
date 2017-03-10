@@ -347,7 +347,8 @@ uint32_t tlcl_define_space(uint32_t space_index, size_t space_size)
 		 * value has been extended from default.
 		 */
 		nvds_cmd.publicInfo.authPolicy.t.buffer = pcr0_unchanged_policy;
-		nvds_cmd.publicInfo.authPolicy.t.size = sizeof(pcr0_unchanged_policy);
+		nvds_cmd.publicInfo.authPolicy.t.size =
+			sizeof(pcr0_unchanged_policy);
 	} else {
 		nvds_cmd.publicInfo.attributes = default_space_attributes;
 	}

@@ -388,21 +388,21 @@ static uint64_t em64t100_smm_save_state_get_reg(void *state, enum smm_reg reg)
 	uintptr_t value = 0;
 	em64t100_smm_state_save_area_t *smm_state = state;
 
-	switch(reg) {
-		case RAX:
-			value = smm_state->rax;
-			break;
-		case RBX:
-			value = smm_state->rbx;
-			break;
-		case RCX:
-			value = smm_state->rcx;
-			break;
-		case RDX:
-			value = smm_state->rdx;
-			break;
-		default:
-			break;
+	switch (reg) {
+	case RAX:
+		value = smm_state->rax;
+		break;
+	case RBX:
+		value = smm_state->rbx;
+		break;
+	case RCX:
+		value = smm_state->rcx;
+		break;
+	case RDX:
+		value = smm_state->rdx;
+		break;
+	default:
+		break;
 	}
 	return value;
 }
@@ -410,7 +410,7 @@ static uint64_t em64t100_smm_save_state_get_reg(void *state, enum smm_reg reg)
 static void em64t100_smm_save_state_set_reg(void *state, enum smm_reg reg, uint64_t val)
 {
 	em64t100_smm_state_save_area_t *smm_state = state;
-	switch(reg) {
+	switch (reg) {
 	case RAX:
 		smm_state->rax = val;
 		break;
@@ -439,21 +439,21 @@ static uint64_t em64t101_smm_save_state_get_reg(void *state, enum smm_reg reg)
 	uintptr_t value = 0;
 	em64t101_smm_state_save_area_t *smm_state = state;
 
-	switch(reg) {
-		case RAX:
-			value = smm_state->rax;
-			break;
-		case RBX:
-			value = smm_state->rbx;
-			break;
-		case RCX:
-			value = smm_state->rcx;
-			break;
-		case RDX:
-			value = smm_state->rdx;
-			break;
-		default:
-			break;
+	switch (reg) {
+	case RAX:
+		value = smm_state->rax;
+		break;
+	case RBX:
+		value = smm_state->rbx;
+		break;
+	case RCX:
+		value = smm_state->rcx;
+		break;
+	case RDX:
+		value = smm_state->rdx;
+		break;
+	default:
+		break;
 	}
 	return value;
 }
@@ -461,7 +461,7 @@ static uint64_t em64t101_smm_save_state_get_reg(void *state, enum smm_reg reg)
 static void em64t101_smm_save_state_set_reg(void *state, enum smm_reg reg, uint64_t val)
 {
 	em64t101_smm_state_save_area_t *smm_state = state;
-	switch(reg) {
+	switch (reg) {
 	case RAX:
 		smm_state->rax = val;
 		break;

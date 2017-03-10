@@ -33,7 +33,7 @@ int checkstack(void *top_of_stack, int core)
 	int i;
 	u32 *stack = (u32 *) (top_of_stack - stack_size);
 
-	if (stack[0] != 0xDEADBEEF){
+	if (stack[0] != 0xDEADBEEF) {
 		printk(BIOS_ERR, "Stack overrun on CPU%d (address %p overwritten). "
 			"Increase stack from current %zu bytes\n",
 			core, stack, stack_size);
@@ -41,7 +41,7 @@ int checkstack(void *top_of_stack, int core)
 		return -1;
 	}
 
-	for (i = 1; i < stack_size/sizeof(stack[0]); i++){
+	for (i = 1; i < stack_size/sizeof(stack[0]); i++) {
 		if (stack[i] == 0xDEADBEEF)
 			continue;
 		printk(BIOS_SPEW, "CPU%d: stack: %p - %p, ",

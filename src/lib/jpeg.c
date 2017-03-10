@@ -600,10 +600,10 @@ static void dec_makehuff(struct dec_hufftbl *hu, int *hufflen, unsigned char *hu
 							  i);
 						if (v && x < (1 << (v - 1)))
 							x += (-1 << v) + 1;
-						x = x << 16 | (hu-> vals[k] & 0xf0) << 4 |
+						x = x << 16 | (hu->vals[k] & 0xf0) << 4 |
 							(DECBITS - (i + 1 + v)) | 128;
 					} else
-						x = v << 16 | (hu-> vals[k] & 0xf0) << 4 |
+						x = v << 16 | (hu->vals[k] & 0xf0) << 4 |
 							(DECBITS - (i + 1));
 					hu->llvals[c | d] = x;
 				}
@@ -633,11 +633,11 @@ static void dec_makehuff(struct dec_hufftbl *hu, int *hufflen, unsigned char *hu
 #define C5IC1 ((PREC)IFIX(0.566454497))	/* c5/c1 */
 #define C7IC1 ((PREC)IFIX(0.198912367))	/* c7/c1 */
 
-#define XPP(a,b) (t = a + b, b = a - b, a = t)
-#define XMP(a,b) (t = a - b, b = a + b, a = t)
-#define XPM(a,b) (t = a + b, b = b - a, a = t)
+#define XPP(a, b) (t = a + b, b = a - b, a = t)
+#define XMP(a, b) (t = a - b, b = a + b, a = t)
+#define XPM(a, b) (t = a + b, b = b - a, a = t)
 
-#define ROT(a,b,s,c) (t = IMULT(a + b, s),	\
+#define ROT(a, b, s, c) (t = IMULT(a + b, s),	\
 			a = IMULT(a, c - s) + t,	\
 			b = IMULT(b, c + s) - t)
 
@@ -810,7 +810,7 @@ static void initcol(PREC q[][64])
 }
 
 /* This is optimized for the stupid sun SUNWspro compiler. */
-#define STORECLAMP(a,x)				\
+#define STORECLAMP(a, x)			\
 (						\
 	(a) = (x),				\
 	(unsigned int)(x) >= 256 ?		\
@@ -825,8 +825,8 @@ static void initcol(PREC q[][64])
 
 #define CBCRCG(yin, xin)			\
 (						\
-	cb = outc[0 +yin*8+xin],		\
-	cr = outc[64+yin*8+xin],		\
+	cb = outc[0  + yin * 8 + xin],		\
+	cr = outc[64 + yin * 8 + xin],		\
 	cg = (50 * cb + 130 * cr + 128) >> 8	\
 )
 
@@ -834,8 +834,8 @@ static void initcol(PREC q[][64])
 
 #define CBCRCG(yin, xin)			\
 (						\
-	cb = outc[0 +yin*8+xin],		\
-	cr = outc[64+yin*8+xin],		\
+	cb = outc[0  + yin*8 + xin],		\
+	cr = outc[64 + yin*8 + xin],		\
 	cg = (3 * cb + 8 * cr) >> 4		\
 )
 

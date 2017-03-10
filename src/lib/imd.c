@@ -636,7 +636,7 @@ int imd_entry_remove(const struct imd *imd, const struct imd_entry *entry)
 	imdr = imd_entry_to_imdr(imd, entry);
 
 	if (imdr == NULL)
-		return - 1;
+		return -1;
 
 	r = imdr_root(imdr);
 

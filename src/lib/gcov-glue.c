@@ -129,7 +129,7 @@ static void setbuf(FILE *stream, char *buf)
 static void coverage_init(void *unused)
 {
 	extern long __CTOR_LIST__;
-	typedef void (*func_ptr)(void) ;
+	typedef void (*func_ptr)(void);
 	func_ptr *ctor = (func_ptr *) &__CTOR_LIST__;
 	if (ctor == NULL)
 		return;

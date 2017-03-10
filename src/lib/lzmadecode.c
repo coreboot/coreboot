@@ -37,9 +37,15 @@
 		      : ((((uintptr_t) Buffer & 3) || ((SizeT) (BufferLim - Buffer) <= 4)) ? (*Buffer++) \
 	   : ((look_ahead.dw = *(UInt32 *)Buffer), (Buffer += 4), (look_ahead_ptr = 1), look_ahead.raw[0])))
 
-#define RC_INIT2 Code = 0; Range = 0xFFFFFFFF; \
-	{ int i; for (i = 0; i < 5; i++) { RC_TEST; Code = (Code << 8) \
-		| RC_READ_BYTE; }}
+#define RC_INIT2 Code = 0; Range = 0xFFFFFFFF;		\
+{							\
+	int i;						\
+							\
+	for (i = 0; i < 5; i++) {			\
+		RC_TEST;				\
+		Code = (Code << 8) | RC_READ_BYTE;	\
+	}						\
+}
 
 
 #define RC_TEST { if (Buffer == BufferLim) return LZMA_RESULT_DATA_ERROR; }
@@ -57,7 +63,7 @@
 	{ UpdateBit0(p); mi <<= 1; A0; } else \
 	{ UpdateBit1(p); mi = (mi + mi) + 1; A1; }
 
-#define RC_GET_BIT(p, mi) RC_GET_BIT2(p, mi, ; , ;)
+#define RC_GET_BIT(p, mi) RC_GET_BIT2(p, mi, ;, ;)
 
 #define RangeDecoderBitTreeDecode(probs, numLevels, res)	\
 {								\
@@ -192,7 +198,7 @@ int LzmaDecode(CLzmaDecoderState *vs,
 	while (nowPos < outSize) {
 		CProb *prob;
 		UInt32 bound;
-		int posState = (int)((nowPos)& posStateMask);
+		int posState = (int)((nowPos)&posStateMask);
 
 		prob = p + IsMatch + (state << kNumPosBitsMax) + posState;
 		IfBit0(prob) {
@@ -346,7 +352,7 @@ int LzmaDecode(CLzmaDecoderState *vs,
 						int mi = 1;
 						do {
 							CProb *prob3 = prob + mi;
-							RC_GET_BIT2(prob3, mi, ; , rep0 |= i);
+							RC_GET_BIT2(prob3, mi, ;, rep0 |= i);
 							i <<= 1;
 						} while (--numDirectBits != 0);
 					}

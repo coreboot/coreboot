@@ -165,7 +165,7 @@ int timer_sched_callback(struct timeout_callback *tocb, unsigned long us)
 {
 	struct mono_time current_time;
 
-	if ((long)us< 0)
+	if ((long)us < 0)
 		return -1;
 
 	timer_monotonic_get(&current_time);

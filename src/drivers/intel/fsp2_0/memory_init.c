@@ -293,9 +293,8 @@ static void do_fsp_memory_init(struct fsp_header *hdr, bool s3wake,
 
 	upd = (FSPM_UPD *)(hdr->cfg_region_offset + hdr->image_base);
 
-	if (upd->FspUpdHeader.Signature != FSPM_UPD_SIGNATURE) {
+	if (upd->FspUpdHeader.Signature != FSPM_UPD_SIGNATURE)
 		die("Invalid FSPM signature!\n");
-	}
 
 	/* Copy the default values from the UPD area */
 	memcpy(&fspm_upd, upd, sizeof(fspm_upd));
@@ -417,9 +416,8 @@ void fsp_memory_init(bool s3wake)
 	else
 		status = load_fspm_xip(&hdr, &file_data);
 
-	if (status != CB_SUCCESS) {
+	if (status != CB_SUCCESS)
 		die("Loading FSPM failed!\n");
-	}
 
 	/* Signal that FSP component has been loaded. */
 	prog_segment_loaded(hdr.image_base, hdr.image_size, SEG_FINAL);

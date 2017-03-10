@@ -111,7 +111,7 @@ struct lb_memory_range {
 #define LB_MEM_NVS		 4	/* ACPI NVS Memory */
 #define LB_MEM_UNUSABLE		 5	/* Unusable address space */
 #define LB_MEM_VENDOR_RSVD	 6	/* Vendor Reserved */
-#define LB_MEM_TABLE		16	/* Ram configuration tables are kept in */
+#define LB_MEM_TABLE		16    /* Ram configuration tables are kept in */
 };
 
 struct lb_memory {
@@ -383,7 +383,7 @@ struct cmos_entries {
 	uint32_t bit;                /* starting bit from start of image */
 	uint32_t length;             /* length of field in bits */
 	uint32_t config;             /* e=enumeration, h=hex, r=reserved */
-	uint32_t config_id;          /* a number linking to an enumeration record */
+	uint32_t config_id;      /* a number linking to an enumeration record */
 #define CMOS_MAX_NAME_LENGTH 32
 	uint8_t name[CMOS_MAX_NAME_LENGTH]; /* name of entry in ascii,
 					       variable length int aligned */
@@ -425,8 +425,8 @@ struct	cmos_checksum {
 	/* In practice everything is byte aligned, but things are measured
 	 * in bits to be consistent.
 	 */
-	uint32_t range_start;	/* First bit that is checksummed (byte aligned) */
-	uint32_t range_end;	/* Last bit that is checksummed (byte aligned) */
+	uint32_t range_start; /* First bit that is checksummed (byte aligned) */
+	uint32_t range_end;   /* Last bit that is checksummed (byte aligned) */
 	uint32_t location;	/* First bit of the checksum (byte aligned) */
 	uint32_t type;		/* Checksum algorithm that is used */
 #define CHECKSUM_NONE	0

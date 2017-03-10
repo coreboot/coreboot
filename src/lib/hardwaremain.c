@@ -283,7 +283,7 @@ static void bs_run_timers(int drain) {}
 #endif
 
 static void bs_call_callbacks(struct boot_state *state,
-                              boot_state_sequence_t seq)
+			      boot_state_sequence_t seq)
 {
 	struct boot_phase *phase = &state->phases[seq];
 
@@ -385,8 +385,8 @@ static void bs_walk_state_machine(void)
 }
 
 static int boot_state_sched_callback(struct boot_state *state,
-                                     struct boot_state_callback *bscb,
-                                     boot_state_sequence_t seq)
+				     struct boot_state_callback *bscb,
+				     boot_state_sequence_t seq)
 {
 	if (state->complete) {
 		printk(BIOS_WARNING,
@@ -403,7 +403,7 @@ static int boot_state_sched_callback(struct boot_state *state,
 }
 
 int boot_state_sched_on_entry(struct boot_state_callback *bscb,
-                              boot_state_t state_id)
+			      boot_state_t state_id)
 {
 	struct boot_state *state = &boot_states[state_id];
 
@@ -411,7 +411,7 @@ int boot_state_sched_on_entry(struct boot_state_callback *bscb,
 }
 
 int boot_state_sched_on_exit(struct boot_state_callback *bscb,
-                             boot_state_t state_id)
+			     boot_state_t state_id)
 {
 	struct boot_state *state = &boot_states[state_id];
 

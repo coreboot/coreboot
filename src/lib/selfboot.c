@@ -416,32 +416,32 @@ static int load_self_segments(struct segment *head, struct prog *payload,
 
 		/* Copy data from the initial buffer */
 		switch (ptr->compression) {
-			case CBFS_COMPRESS_LZMA: {
-				printk(BIOS_DEBUG, "using LZMA\n");
-				timestamp_add_now(TS_START_ULZMA);
-				len = ulzman(src, len, dest, memsz);
-				timestamp_add_now(TS_END_ULZMA);
-				if (!len) /* Decompression Error. */
-					return 0;
-				break;
-			}
-			case CBFS_COMPRESS_LZ4: {
-				printk(BIOS_DEBUG, "using LZ4\n");
-				timestamp_add_now(TS_START_ULZ4F);
-				len = ulz4fn(src, len, dest, memsz);
-				timestamp_add_now(TS_END_ULZ4F);
-				if (!len) /* Decompression Error. */
-					return 0;
-				break;
-			}
-			case CBFS_COMPRESS_NONE: {
-				printk(BIOS_DEBUG, "it's not compressed!\n");
-				memcpy(dest, src, len);
-				break;
-			}
-			default:
-				printk(BIOS_INFO,  "CBFS:  Unknown compression type %d\n", ptr->compression);
-				return -1;
+		case CBFS_COMPRESS_LZMA: {
+			printk(BIOS_DEBUG, "using LZMA\n");
+			timestamp_add_now(TS_START_ULZMA);
+			len = ulzman(src, len, dest, memsz);
+			timestamp_add_now(TS_END_ULZMA);
+			if (!len) /* Decompression Error. */
+				return 0;
+			break;
+		}
+		case CBFS_COMPRESS_LZ4: {
+			printk(BIOS_DEBUG, "using LZ4\n");
+			timestamp_add_now(TS_START_ULZ4F);
+			len = ulz4fn(src, len, dest, memsz);
+			timestamp_add_now(TS_END_ULZ4F);
+			if (!len) /* Decompression Error. */
+				return 0;
+			break;
+		}
+		case CBFS_COMPRESS_NONE: {
+			printk(BIOS_DEBUG, "it's not compressed!\n");
+			memcpy(dest, src, len);
+			break;
+		}
+		default:
+			printk(BIOS_INFO,  "CBFS:  Unknown compression type %d\n", ptr->compression);
+			return -1;
 		}
 		/* Calculate middle after any changes to len. */
 		middle = dest + len;

@@ -190,8 +190,8 @@ int read_ddr3_spd_from_cbfs(u8 *buf, int idx)
 	u16 crc = spd_ddr3_calc_crc(buf, CONFIG_DIMM_SPD_SIZE);
 
 	if (((buf[SPD_CRC_LO] == 0) && (buf[SPD_CRC_HI] == 0))
-	 || (buf[SPD_CRC_LO] != (crc & 0xff))
-	 || (buf[SPD_CRC_HI] != (crc >> 8))) {
+		|| (buf[SPD_CRC_LO] != (crc & 0xff))
+		|| (buf[SPD_CRC_HI] != (crc >> 8))) {
 		printk(BIOS_WARNING, "SPD CRC %02x%02x is invalid, should be %04x\n",
 			buf[SPD_CRC_HI], buf[SPD_CRC_LO], crc);
 		buf[SPD_CRC_LO] = crc & 0xff;
@@ -204,7 +204,7 @@ int read_ddr3_spd_from_cbfs(u8 *buf, int idx)
 			printk(BIOS_WARNING, "%02x ", buf[i]);
 		}
 		printk(BIOS_WARNING, "\n");
-	 }
-	 return 0;
+	}
+	return 0;
 }
 #endif

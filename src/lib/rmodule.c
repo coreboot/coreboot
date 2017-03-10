@@ -33,7 +33,7 @@ static inline int rmodule_is_loaded(const struct rmodule *module)
 
 /* Calculate a loaded program address based on the blob address. */
 static inline void *rmodule_load_addr(const struct rmodule *module,
-                                      uintptr_t blob_addr)
+				      uintptr_t blob_addr)
 {
 	char *loc = module->location;
 	return &loc[blob_addr - module->header->module_link_start_address];
@@ -66,7 +66,7 @@ int rmodule_parse(void *ptr, struct rmodule *module)
 	/* The payload lives after the header. */
 	module->payload = &base[rhdr->payload_begin_offset];
 	module->payload_size = rhdr->payload_end_offset -
-	                       rhdr->payload_begin_offset;
+				rhdr->payload_begin_offset;
 	module->relocations = &base[rhdr->relocations_begin_offset];
 
 	return 0;
@@ -204,7 +204,7 @@ int rmodule_load(void *base, struct rmodule *module)
 }
 
 int rmodule_calc_region(unsigned int region_alignment, size_t rmodule_size,
-                        size_t *region_size, int *load_offset)
+			size_t *region_size, int *load_offset)
 {
 	/* region_alignment must be a power of 2. */
 	if (region_alignment & (region_alignment - 1))
@@ -270,7 +270,7 @@ int rmodule_stage_load(struct rmod_stage_load *rsl)
 
 	rmodule_offset =
 		rmodule_calc_region(DYN_CBMEM_ALIGN_SIZE,
-		                    stage.memlen, &region_size, &load_offset);
+				    stage.memlen, &region_size, &load_offset);
 
 	stage_region = cbmem_add(rsl->cbmem_id, region_size);
 

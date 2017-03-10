@@ -49,7 +49,7 @@ static inline struct timeout_callback *timer_queue_head(struct timer_queue *tq)
 }
 
 static int timer_queue_insert(struct timer_queue *tq,
-                              struct timeout_callback *tocb)
+			      struct timeout_callback *tocb)
 {
 	int index;
 
@@ -99,7 +99,7 @@ static int timer_queue_min_child_index(struct timer_queue *tq, int index)
 		return left_child_index;
 
 	if (mono_time_cmp(&tq->queue[left_child_index]->expiration,
-	                 &tq->queue[right_child_index]->expiration) < 0) {
+			&tq->queue[right_child_index]->expiration) < 0) {
 		return left_child_index;
 	}
 	return right_child_index;

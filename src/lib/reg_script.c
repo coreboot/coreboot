@@ -41,14 +41,14 @@
 #endif
 
 static inline void reg_script_set_dev(struct reg_script_context *ctx,
-                                      device_t dev)
+				      device_t dev)
 {
 	ctx->dev = dev;
 	ctx->res = NULL;
 }
 
 static inline void reg_script_set_step(struct reg_script_context *ctx,
-                                       const struct reg_script *step)
+				       const struct reg_script *step)
 {
 	ctx->step = step;
 }
@@ -603,7 +603,7 @@ static void reg_script_rxw(struct reg_script_context *ctx)
  * as the previous one. That will run to completion and then move on to the
  * next step of the previous context. */
 static void reg_script_run_next(struct reg_script_context *ctx,
-                                const struct reg_script *step);
+				const struct reg_script *step);
 
 
 static void reg_script_run_step(struct reg_script_context *ctx,
@@ -670,7 +670,7 @@ static void reg_script_run_with_context(struct reg_script_context *ctx)
 }
 
 static void reg_script_run_next(struct reg_script_context *prev_ctx,
-                                const struct reg_script *step)
+				const struct reg_script *step)
 {
 	struct reg_script_context ctx;
 

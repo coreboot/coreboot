@@ -58,7 +58,7 @@ static int gpio_init(pnp_devfn_t gpio, u16 gpio_base,
 	pnp_set_iobase(gpio, PNP_IDX_IO0, gpio_base);
 	pnp_set_enable(gpio, 1);
 
-	for (i=0; i < num_cfgs; i++) {
+	for (i = 0; i < num_cfgs; i++) {
 		pnp_write_config(gpio, 0xf0, pincfg[i].port);
 		pnp_write_config(gpio, 0xf1, pincfg[i].mode);
 		pnp_write_config(gpio, 0xf2, 0x0);
@@ -92,7 +92,7 @@ static int pc87382_init(pnp_devfn_t dlpc, u16 dlpc_base)
 	/* Reset docking state */
 	outb(0x00, dlpc_base);
 	outb(0x07, dlpc_base);
-	while(!(inb(dlpc_base) & 8) && timeout--)
+	while (!(inb(dlpc_base) & 8) && timeout--)
 		udelay(1000);
 	if (!timeout)
 		return 1;
@@ -111,7 +111,7 @@ static void pc87382_close(pnp_devfn_t dlpc)
 }
 
 static const struct pin_config local_gpio[] = {
-	{0x00, 3}, 	{0x01, 3},	{0x02, 0},	{0x03, 3},
+	{0x00, 3},	{0x01, 3},	{0x02, 0},	{0x03, 3},
 	{0x04, 4},	{0x20, 4},	{0x21, 4},	{0x23, 4},
 };
 
@@ -132,9 +132,8 @@ static int pc87382_connect(void)
 	/* Deassert D_PLTRST# and D_LPCPD# */
 	outb(reg, DLPC_GPDO0);
 
-	if (pc87382_init(l_dlpc, DLPC_CONTROL) != 0) {
+	if (pc87382_init(l_dlpc, DLPC_CONTROL) != 0)
 		return 1;
-	}
 
 	/* Assert D_PLTRST# */
 	reg &= ~D_PLTRST;
@@ -144,7 +143,7 @@ static int pc87382_connect(void)
 	/* Deassert D_PLTRST# */
 	reg |= D_PLTRST;
 	outb(reg, DLPC_GPDO0);
-	udelay(10000);
+	mdelay(10);
 
 	return 0;
 }

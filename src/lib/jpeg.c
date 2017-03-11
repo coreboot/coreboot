@@ -417,7 +417,6 @@ int jpeg_decode(unsigned char *buf, unsigned char *pic,
 				break;
 			default:
 				return ERR_DEPTH_MISMATCH;
-				break;
 			}
 		}
 	}

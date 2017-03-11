@@ -13,8 +13,6 @@
 ## GNU General Public License for more details.
 ##
 
-subdirs-y += spd
-
 bootblock-y += bootblock.c
 bootblock-$(CONFIG_CHROMEOS) += chromeos.c
 

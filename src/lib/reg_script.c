@@ -476,7 +476,7 @@ static uint64_t reg_script_read(struct reg_script_context *ctx)
 
 			/* Read from the platform specific bus */
 			bus = find_bus(step);
-			if (NULL != bus) {
+			if (bus != NULL) {
 				value = bus->reg_script_read(ctx);
 				break;
 			}
@@ -530,7 +530,7 @@ static void reg_script_write(struct reg_script_context *ctx)
 
 			/* Write to the platform specific bus */
 			bus = find_bus(step);
-			if (NULL != bus) {
+			if (bus != NULL) {
 				bus->reg_script_write(ctx);
 				break;
 			}

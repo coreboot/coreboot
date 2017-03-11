@@ -86,7 +86,7 @@ static uint32_t tlcl_send_receive_no_retry(const uint8_t *request,
 
 	result = tpm_send_receive(request, tpm_command_size(request),
 					response, &response_length);
-	if (0 != result) {
+	if (result != 0) {
 		/* Communication with TPM failed, so response is garbage */
 		VBDEBUG("TPM: command 0x%x send/receive failed: 0x%x\n",
 			tpm_command_code(request), result);

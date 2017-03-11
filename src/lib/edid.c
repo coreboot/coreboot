@@ -117,7 +117,7 @@ static int
 detailed_cvt_descriptor(unsigned char *x, int first)
 {
 	const unsigned char empty[3] = { 0, 0, 0 };
-	const char *names[] = { "50", "60", "75", "85" };
+	static const char *names[] = { "50", "60", "75", "85" };
 	int width = 0, height = 0;
 	int valid = 1;
 	int fifty = 0, sixty = 0, seventyfive = 0, eightyfive = 0, reduced = 0;

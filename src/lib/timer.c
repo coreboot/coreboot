@@ -18,7 +18,7 @@
 #include <delay.h>
 #include <thread.h>
 
-__attribute__((weak)) void init_timer() { /* do nothing */ }
+__attribute__((weak)) void init_timer(void) { /* do nothing */ }
 
 void udelay(unsigned int usec)
 {

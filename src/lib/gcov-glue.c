@@ -114,7 +114,7 @@ static size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream)
 static size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream)
 {
 #if CONFIG_DEBUG_COVERAGE
-	printk(BIOS_DEBUG, "fwrite: %zd * 0x%zd bytes to file %s\n",
+	printk(BIOS_DEBUG, "fwrite: %zd * %zd bytes to file %s\n",
 		nmemb, size, stream->filename);
 #endif
 	// TODO check if file is last opened file and fail otherwise.

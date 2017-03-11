@@ -32,7 +32,6 @@ void mainboard_smi_sleep(u8 slp_typ)
 
 int mainboard_smi_apmc(u8 apmc)
 {
-	chromeec_smi_apmc(apmc, MAINBOARD_EC_SCI_EVENTS,
-			MAINBOARD_EC_SMI_EVENTS);
+	chromeec_smi_apmc(apmc, MAINBOARD_EC_SCI_EVENTS, 0);
 	return 0;
 }

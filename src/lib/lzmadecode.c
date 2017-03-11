@@ -71,12 +71,12 @@
 
 #define UpdateBit0(p)						\
 	Range = bound;						\
-	*(p) += (kBitModelTotal - *(p)) >> kNumMoveBits;
+	*(p) += (kBitModelTotal - *(p)) >> kNumMoveBits
 
 #define UpdateBit1(p)				\
 	Range -= bound;				\
 	Code -= bound;				\
-	*(p) -= (*(p)) >> kNumMoveBits;
+	*(p) -= (*(p)) >> kNumMoveBits
 
 #define RC_GET_BIT2(p, mi, A0, A1)			\
 	IfBit0(p) {					\
@@ -230,7 +230,7 @@ int LzmaDecode(CLzmaDecoderState *vs,
 		prob = p + IsMatch + (state << kNumPosBitsMax) + posState;
 		IfBit0(prob) {
 			int symbol = 1;
-			UpdateBit0(prob)
+			UpdateBit0(prob);
 			prob = p + Literal + (LZMA_LIT_SIZE *
 				((((nowPos) & literalPosMask) << lc)
 				+ (previousByte >> (8 - lc))));

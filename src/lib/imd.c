@@ -439,7 +439,7 @@ int imd_create_tiered_empty(struct imd *imd,
 				size_t lg_root_size, size_t lg_entry_align,
 				size_t sm_root_size, size_t sm_entry_align)
 {
-	size_t sm_region_size;;
+	size_t sm_region_size;
 	const struct imd_entry *e;
 	struct imdr *imdr;
 

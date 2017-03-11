@@ -120,9 +120,8 @@ static int ram_bitset_nodie(unsigned long start)
 		post_code(0xea);
 		printk(BIOS_DEBUG, "\nDRAM did _NOT_ verify!\n");
 		return 1;
-	} else {
-		printk(BIOS_DEBUG, "\nDRAM range verified.\n");
 	}
+	printk(BIOS_DEBUG, "\nDRAM range verified.\n");
 	return 0;
 }
 

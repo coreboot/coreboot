@@ -166,7 +166,6 @@ static struct prog global_payload =
 
 void __attribute__((weak)) mirror_payload(struct prog *payload)
 {
-	return;
 }
 
 void payload_load(void)

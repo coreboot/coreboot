@@ -241,14 +241,12 @@ ada_requested() {
 
 check_gnat() {
 	if hostcc_has_gnat1; then
-		if [ \( "$(hostcc_major)" -lt "$(buildcc_major)" -o \
-			\( "$(hostcc_major)" -eq "$(buildcc_major)" -a \
-			   "$(hostcc_minor)" -lt "$(buildcc_minor)" \) \) \
-			-a \
-			"${BOOTSTRAP}" != "1" ]; \
+		if [ \( "$(hostcc_major)" -lt 4 -o \
+			\( "$(hostcc_major)" -eq 4 -a "$(hostcc_minor)" -lt 9 \) \) -a \
+		     "${BOOTSTRAP}" != "1" ];
 		then
 			printf "\n${RED}ERROR:${red} Building the Ada compiler (gnat $(buildcc_version)) "
-			printf "with an older host compiler\n       version ($(hostcc_version)) "
+			printf "with a host compiler older\n       than 4.9.x (yours $(hostcc_version)) "
 			printf "requires bootstrapping (-b).${NC}\n\n"
 			HALT_FOR_TOOLS=1
 		fi
@@ -953,7 +951,9 @@ elif [ $UNAME = "NetBSD" ]; then
 fi
 if [ -z "${LANGUAGES}" ]; then
 	if hostcc_has_gnat1 && \
-		[ "$(hostcc_version)" = "$(buildcc_version)" -o "${BOOTSTRAP}" = "1" ];
+		[ "$(hostcc_major)" -ge 5 -o \
+		  \( "$(hostcc_major)" -eq 4 -a "$(hostcc_minor)" -ge 9 \) -o \
+		  "${BOOTSTRAP}" = "1" ];
 	then
 		printf "\nFound compatible Ada compiler, enabling Ada support by default.\n\n"
 		LANGUAGES="ada,${DEFAULT_LANGUAGES}"

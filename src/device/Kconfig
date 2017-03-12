@@ -55,6 +55,7 @@ config MAINBOARD_USE_LIBGFXINIT
 	depends on MAINBOARD_HAS_LIBGFXINIT
 	select MAINBOARD_HAS_NATIVE_VGA_INIT_TEXTMODECFG
 	select RAMSTAGE_LIBHWBASE
+	select VGA if !FRAMEBUFFER_KEEP_VESA_MODE
 	default n
 	help
 	  Use the SPARK library `libgfxinit` for the native graphics

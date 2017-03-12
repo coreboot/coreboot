@@ -177,9 +177,9 @@ static int qemu_get_smbios_data16(int handle, unsigned long *current)
 	t->type = SMBIOS_PHYS_MEMORY_ARRAY;
 	t->handle = handle;
 	t->length = len - 2;
-	t->location = 3; /* Location: System Board */
-	t->use = 3; /* System memory */
-	t->memory_error_correction = 3; /* No error correction */
+	t->location = MEMORY_ARRAY_LOCATION_SYSTEM_BOARD;
+	t->use = MEMORY_ARRAY_USE_SYSTEM;
+	t->memory_error_correction = MEMORY_ARRAY_ECC_NONE;
 	t->maximum_capacity = qemu_get_memory_size();
 	*current += len;
 	return len;

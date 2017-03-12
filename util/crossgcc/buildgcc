@@ -401,7 +401,7 @@ build_for_target()
 build()
 {
 	if package_uses_targetarch $1; then
-		if [ $BOOTSTRAP -eq 1 -a ! -f "${DESTDIR}${TARGETDIR}/.GCC.success" ]; then
+		if [ $BOOTSTRAP -eq 1 -a ! -f "${DESTDIR}${TARGETDIR}/.GCC.${GCC_VERSION}.success" ]; then
 			build_for_host GCC
 		fi
 		build_for_target $1

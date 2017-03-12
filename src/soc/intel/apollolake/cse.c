@@ -15,7 +15,9 @@
 
 #include <arch/io.h>
 #include <bootstate.h>
+#include <commonlib/region.h>
 #include <console/console.h>
+#include <fmap.h>
 #include <intelblocks/cse.h>
 #include <soc/pci_devs.h>
 #include <stdint.h>
@@ -38,7 +40,14 @@
 
 #define FUSE_LOCK_FILE				"/fpf/intel/SocCfgLock"
 
-static int8_t g_fuse_status;
+/* Status values are made in such a way erase is not needed */
+static enum fuse_flash_state {
+	FUSE_FLASH_FUSED = 0xfc,
+	FUSE_FLASH_UNFUSED = 0xfe,
+	FUSE_FLASH_UNKNOWN = 0xff,
+} g_fuse_state;
+
+#define FPF_STATUS_FMAP				"FPF_STATUS"
 
 /*
  * Read file from CSE internal filesystem.
@@ -115,16 +124,53 @@ static int read_cse_file(const char *path, void *buff, size_t *size,
 	return 1;
 }
 
+static enum fuse_flash_state load_cached_fpf(struct region_device *rdev)
+{
+	enum fuse_flash_state state;
+	uint8_t buff;
+
+	state = FUSE_FLASH_UNKNOWN;
+
+	if (rdev_readat(rdev, &buff, 0, sizeof(buff)) >= 0) {
+		state = read8(&buff);
+		return state;
+	}
+
+	printk(BIOS_WARNING, "failed to load cached FPF value\n");
+
+	return state;
+}
+
+static
+int save_fpf_state(enum fuse_flash_state state, struct region_device *rdev)
+{
+	uint8_t buff;
+
+	write8(&buff, (uint8_t) state);
+	return rdev_writeat(rdev, &buff, 0, sizeof(buff));
+}
+
 static void fpf_blown(void *unused)
 {
-	int8_t fuse;
+	uint8_t fuse;
+	struct region_device rdev;
 	size_t sz = sizeof(fuse);
+	bool rdev_valid = false;
 
-	if (read_cse_file(FUSE_LOCK_FILE, &fuse, &sz, 0, READ_FILE_FLAG_HW)) {
-		g_fuse_status = fuse;
-		return;
+	if (fmap_locate_area_as_rdev_rw(FPF_STATUS_FMAP, &rdev) == 0) {
+		rdev_valid = true;
+		g_fuse_state = load_cached_fpf(&rdev);
+		if (g_fuse_state != FUSE_FLASH_UNKNOWN)
+			return;
 	}
-	g_fuse_status = -1;
+
+	if (!read_cse_file(FUSE_LOCK_FILE, &fuse, &sz, 0, READ_FILE_FLAG_HW))
+		return;
+
+	g_fuse_state = fuse == 1 ? FUSE_FLASH_FUSED : FUSE_FLASH_UNFUSED;
+
+	if (rdev_valid && (save_fpf_state(g_fuse_state, &rdev) < 0))
+		printk(BIOS_CRIT, "failed to save FPF state\n");
 }
 
 static uint32_t dump_status(int index, int reg_addr)
@@ -154,15 +200,15 @@ static void dump_cse_state(void *unused)
 		(fwsts1 & (1 << 0x4)) ? "YES" : "NO");
 
 	printk(BIOS_DEBUG, "ME: FPF status              : ");
-	switch (g_fuse_status) {
-	case 0:
+	switch (g_fuse_state) {
+	case FUSE_FLASH_UNFUSED:
 		printk(BIOS_DEBUG, "unfused");
 		break;
-	case 1:
+	case FUSE_FLASH_FUSED:
 		printk(BIOS_DEBUG, "fused");
 		break;
 	default:
-	case -1:
+	case FUSE_FLASH_UNKNOWN:
 		printk(BIOS_DEBUG, "unknown");
 	}
 	printk(BIOS_DEBUG, "\n");

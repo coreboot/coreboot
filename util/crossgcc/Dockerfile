@@ -5,8 +5,8 @@ RUN \
 	useradd -p locked -m coreboot && \
 	apt-get -qq update && \
 	apt-get -qq upgrade && \
-	apt-get -qqy install gcc g++ make patch python diffutils bison flex \
-		git doxygen ccache subversion p7zip-full unrar-free \
+	apt-get -qqy install gcc g++ gnat-6 make patch python diffutils bison \
+		flex git doxygen ccache subversion p7zip-full unrar-free \
 		m4 wget curl bzip2 vim-common cmake xz-utils pkg-config \
 		dh-autoreconf unifont \
 		libssl-dev libgmp-dev zlib1g-dev libpci-dev liblzma-dev \
@@ -22,7 +22,8 @@ COPY tarballs/ /root/coreboot/util/crossgcc/tarballs/
 
 RUN \
 	cd /root/coreboot/util/crossgcc && \
-	make all_without_gdb CPUS=$(nproc) DEST=/opt/xgcc && \
+	make all_without_gdb \
+        	BUILD_LANGUAGES=c,ada CPUS=$(nproc) DEST=/opt/xgcc && \
 	cd /root && \
 	rm -rf coreboot
 

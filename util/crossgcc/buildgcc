@@ -882,6 +882,7 @@ searchtool g++ "Free Software Foundation" nofail > /dev/null || \
 searchtool clang "clang version" nofail > /dev/null || \
 searchtool clang "LLVM" "" "g++" > /dev/null
 searchtool bzip2 "bzip2," > /dev/null
+searchtool xz "XZ Utils" "" "xz-utils" > /dev/null
 
 if searchtool wget "GNU" nofail > /dev/null; then
 	download_showing_percentage() {

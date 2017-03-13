@@ -173,8 +173,8 @@ chip soc/intel/apollolake
 		end	# - I2C 2
 		device pci 16.3 on
 			chip drivers/i2c/generic
-				register "hid" = ""ELAN0001""
-				register "desc" = ""ELAN Touchscreen""
+				register "hid" = ""RAYD0001""
+				register "desc" = ""Raydium Touchscreen""
 				register "irq" = "ACPI_IRQ_EDGE_LOW(GPIO_21_IRQ)"
 				register "probed" = "1"
 				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_36)"
@@ -182,7 +182,7 @@ chip soc/intel/apollolake
 				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_152)"
 				register "enable_delay_ms" = "1"
 				register "has_power_resource" = "1"
-				device i2c 10 on end
+				device i2c 39 on end
 			end
 		end	# - I2C 3
 		device pci 17.0 on

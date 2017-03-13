@@ -53,6 +53,16 @@ config INTEL_GMA_SSC_ALTERNATE_REF
 	  supported platform with a choice seems to be Pineview, where the
 	  alternative is 100MHz vs. the default 96MHz.
 
+
+config GFX_GMA
+	def_bool y
+	depends on NORTHBRIDGE_INTEL_NEHALEM || NORTHBRIDGE_INTEL_SANDYBRIDGE \
+		   || NORTHBRIDGE_INTEL_IVYBRIDGE || NORTHBRIDGE_INTEL_HASWELL \
+		   || SOC_INTEL_BROADWELL || SOC_INTEL_SKYLAKE
+	depends on MAINBOARD_HAS_LIBGFXINIT
+
+if GFX_GMA
+
 config GFX_GMA_CPU
 	string
 	default "Skylake" if SOC_INTEL_SKYLAKE
@@ -103,3 +113,5 @@ config GFX_GMA_ANALOG_I2C_PORT
 	  Boards with a DVI-I connector share the I2C pins for both analog and
 	  digital displays. In that case, the EDID for a VGA display has to be
 	  read over the I2C interface of the coupled digital port.
+
+endif

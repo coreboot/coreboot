@@ -17,7 +17,6 @@
 
 #include <arch/early_variables.h>
 #include <console/console.h>
-#include <cbfs.h>
 #include "../chip.h"
 #include <fsp/memmap.h>
 #include <fsp/util.h>
@@ -82,8 +81,8 @@ void soc_memory_init_params(struct romstage_params *params,
 {
 	const struct device *dev;
 	const struct soc_intel_quark_config *config;
-	char *rmu_file;
-	size_t rmu_file_len;
+	void *rmu_data;
+	size_t rmu_data_len;
 
 	/* Locate the configuration data from devicetree.cb */
 	dev = dev_find_slot(0, LPC_DEV_FUNC);
@@ -100,9 +99,8 @@ void soc_memory_init_params(struct romstage_params *params,
 	clear_smi_and_wake_events();
 
 	/* Locate the RMU data file in flash */
-	rmu_file = cbfs_boot_map_with_leak("rmu.bin", CBFS_TYPE_RAW,
-		&rmu_file_len);
-	if (!rmu_file)
+	rmu_data = locate_rmu_file(&rmu_data_len);
+	if (!rmu_data)
 		die("Microcode file (rmu.bin) not found.");
 
 	/* Display the ESRAM layout */
@@ -154,8 +152,8 @@ void soc_memory_init_params(struct romstage_params *params,
 	upd->Flags = config->Flags;
 	upd->FspReservedMemoryLength = config->FspReservedMemoryLength;
 	upd->RankMask = config->RankMask;
-	upd->RmuBaseAddress = (uintptr_t)rmu_file;
-	upd->RmuLength = rmu_file_len;
+	upd->RmuBaseAddress = (uintptr_t)rmu_data;
+	upd->RmuLength = rmu_data_len;
 	upd->SerialPortWriteChar = console_log_level(BIOS_SPEW)
 		? (uintptr_t)fsp_write_line : 0;
 	upd->SmmTsegSize = IS_ENABLED(CONFIG_HAVE_SMI_HANDLER) ?

@@ -16,6 +16,7 @@
 #define __SIMPLE_DEVICE__
 
 #include <arch/early_variables.h>
+#include <cbfs.h>
 #include <console/console.h>
 #include <fsp/util.h>
 #include <soc/pci_devs.h>
@@ -60,4 +61,33 @@ void disable_rom_shadow(void)
 		port_reg_write(QUARK_NC_HOST_BRIDGE_SB_PORT_ID,
 			QNC_MSG_FSBIC_REG_HMISC, data);
 	}
+}
+
+void *locate_rmu_file(size_t *rmu_file_len)
+{
+	struct cbfsf fh;
+	size_t fsize;
+	void *rmu_data;
+	uint32_t type;
+
+	/* Locate the rmu.bin file in the read-only region of the flash */
+	type = CBFS_TYPE_RAW;
+	if (cbfs_locate_file_in_region(&fh, "COREBOOT", "rmu.bin", &type))
+		return NULL;
+
+	/* Get the file size */
+	fsize = region_device_sz(&fh.data);
+	if (rmu_file_len != NULL)
+		*rmu_file_len = fsize;
+
+	/* Get the data address */
+	rmu_data = rdev_mmap(&fh.data, 0, fsize);
+
+	/* Since the SPI flash is directly mapped into memory, we do not need
+	 * the mapping provided by the rdev service.  Unmap the file to prevent
+	 * a memory leak.  Return/leak the SPI flash address for the rmu.bin
+	 * file data which will be directly accessed by FSP MemoryInit.
+	 */
+	rdev_munmap(&fh.data, rmu_data);
+	return rmu_data;
 }

@@ -16,4 +16,8 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "MC APL1"
 
+config MAX_CPUS
+	int
+	default 4
+
 endif # BOARD_SIEMENS_MC_APL1

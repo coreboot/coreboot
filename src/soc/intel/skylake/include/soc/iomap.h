@@ -58,6 +58,9 @@
 
 #define HECI1_BASE_ADDRESS	0xfed1a000
 
+/* CPU Trace reserved memory size */
+#define TRACE_MEMORY_SIZE	0x8000000	/* 128MiB */
+
 /*
  * I/O port address space
  */

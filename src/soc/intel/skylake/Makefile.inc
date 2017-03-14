@@ -15,7 +15,6 @@ bootblock-y += bootblock/i2c.c
 bootblock-y += bootblock/pch.c
 bootblock-y += bootblock/report_platform.c
 bootblock-y += bootblock/smbus.c
-bootblock-y += bootblock/systemagent.c
 bootblock-y += flash_controller.c
 bootblock-$(CONFIG_UART_DEBUG) += bootblock/uart.c
 bootblock-$(CONFIG_UART_DEBUG) += uart_debug.c

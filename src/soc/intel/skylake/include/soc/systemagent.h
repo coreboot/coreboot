@@ -15,9 +15,10 @@
  * GNU General Public License for more details.
  */
 
-#ifndef _SOC_SYSTEMAGENT_H_
-#define _SOC_SYSTEMAGENT_H_
+#ifndef SOC_SKYLAKE_SYSTEMAGENT_H
+#define SOC_SKYLAKE_SYSTEMAGENT_H
 
+#include <intelblocks/systemagent.h>
 #include <soc/iomap.h>
 
 #define SA_IGD_OPROM_VENDEV	0x80860406
@@ -44,7 +45,6 @@
 /* Device 0:0.0 PCI configuration space */
 
 #define EPBAR		0x40
-#define MCHBAR		0x48
 #define PCIEXBAR	0x60
 #define DMIBAR		0x68
 #define GGC		0x50	/* GMCH Graphics Control */
@@ -82,11 +82,6 @@
 #define REMAPBASE	0x90	/* Remap base. */
 #define REMAPLIMIT	0x98	/* Remap limit. */
 #define TOM		0xa0	/* Top of DRAM in memory controller space. */
-#define TOUUD		0xa8	/* Top of Upper Usable DRAM */
-#define BDSM		0xb0	/* Base Data Stolen Memory */
-#define BGSM		0xb4	/* Base GTT Stolen Memory */
-#define TSEG		0xb8	/* TSEG base */
-#define TOLUD		0xbc	/* Top of Low Used Memory */
 #define SKPAD		0xdc	/* Scratchpad Data */
 
 /* MCHBAR */
@@ -120,9 +115,6 @@
 #define  MAILBOX_BIOS_ERROR_VR_ERROR		7
 /* Data is passed through bits 31:0 of the data register. */
 #define BIOS_MAILBOX_DATA			0x5da0
-
-/* CPU Trace reserved memory size */
-#define TRACE_MEMORY_SIZE	0x8000000	/* 128MiB */
 
 /* System Agent identification */
 u8 systemagent_revision(void);

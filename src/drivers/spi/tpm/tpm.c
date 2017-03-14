@@ -157,9 +157,9 @@ static int start_transaction(int read_write, size_t bytes, unsigned addr)
 		tpm_sync_needed = 1;
 
 	/* Try to wake cr50 if it is asleep. */
-	tpm_if.cs_assert(tpm_if.slave);
+	tpm_if.cs_assert(&tpm_if.slave);
 	udelay(1);
-	tpm_if.cs_deassert(tpm_if.slave);
+	tpm_if.cs_deassert(&tpm_if.slave);
 	udelay(100);
 
 	/*

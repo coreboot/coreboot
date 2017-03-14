@@ -109,4 +109,9 @@ void fill_vr_domain_config(void *params,
 	vr_params->ImonOffset[domain] = cfg->imon_offset;
 	vr_params->IccMax[domain] = cfg->icc_max;
 	vr_params->VrVoltageLimit[domain] = cfg->voltage_limit;
+
+#if IS_ENABLED(CONFIG_PLATFORM_USES_FSP2_0)
+	vr_params->AcLoadline[domain] = cfg->ac_loadline;
+	vr_params->DcLoadline[domain] = cfg->dc_loadline;
+#endif
 }

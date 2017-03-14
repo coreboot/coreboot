@@ -61,6 +61,10 @@ struct vr_config {
 
 	/* VR Voltage Limit. Range is 0-7999mV */
 	int voltage_limit;
+
+	/* AC and DC Loadline in 1/100 mOhms. Range is 0-6249 */
+	int ac_loadline;
+	int dc_loadline;
 };
 
 #define VR_CFG_AMP(i) ((i) * 4)

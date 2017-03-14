@@ -18,6 +18,7 @@
 #include <bootblock_common.h>
 #include <cpu/x86/mtrr.h>
 #include <device/pci.h>
+#include <intelblocks/systemagent.h>
 #include <lib.h>
 #include <soc/iomap.h>
 #include <soc/cpu.h>
@@ -25,7 +26,7 @@
 #include <soc/gpio.h>
 #include <soc/iosf.h>
 #include <soc/mmap_boot.h>
-#include <soc/northbridge.h>
+#include <soc/systemagent.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/uart.h>
@@ -51,16 +52,9 @@ static void enable_cmos_upper_bank(void)
 
 asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 {
-	device_t dev = SA_DEV_ROOT;
+	device_t dev;
 
-	/* Set PCI Express BAR */
-	pci_io_write_config32(dev, PCIEXBAR, CONFIG_MMCONF_BASE_ADDRESS | 1);
-	/*
-	 * Clear TSEG register - TSEG register comes out of reset with a
-	 * non-zero default value. Clear this register to ensure that there are
-	 * no surprises in CBMEM handling.
-	 */
-	pci_write_config32(dev, TSEG, 0);
+	bootblock_systemagent_early_init();
 
 	dev = PCH_DEV_P2SB;
 	/* BAR and MMIO enable for IOSF, so that GPIOs can be configured */

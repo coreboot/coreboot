@@ -15,18 +15,10 @@
  * GNU General Public License for more details.
  */
 
-#ifndef _SOC_APOLLOLAKE_NORTHBRIDGE_H_
-#define _SOC_APOLLOLAKE_NORTHBRIDGE_H_
+#ifndef SOC_APOLLOLAKE_SYSTEMAGENT_H
+#define SOC_APOLLOLAKE_SYSTEMAGENT_H
 
-#define MCHBAR		0x48
-#define PCIEXBAR	0x60
-#define PCIEX_SIZE	(256 * MiB)
-
-#define BDSM		0xb0	/* Base Data Stolen Memory */
-#define BGSM		0xb4	/* Base GTT Stolen Memory */
-#define TSEG		0xb8	/* TSEG base */
-#define TOLUD		0xbc	/* Top of Low Used Memory */
-#define TOUUD		0xa8	/* Top of Upper Usable DRAM */
+#include <intelblocks/systemagent.h>
 
 /* IMR registers are found under MCHBAR. */
 #define MCHBAR_IMR0BASE		0x6870
@@ -37,4 +29,4 @@
 /* RAPL Package Power Limit register under MCHBAR. */
 #define MCHBAR_RAPL_PPL		0x70A8
 
-#endif /* _SOC_APOLLOLAKE_NORTHBRIDGE_H_ */
+#endif /* SOC_APOLLOLAKE_SYSTEMAGENT_H */

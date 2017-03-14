@@ -27,7 +27,7 @@
 #include <assert.h>
 #include <cbmem.h>
 #include <device/pci.h>
-#include <soc/northbridge.h>
+#include <soc/systemagent.h>
 #include <soc/pci_devs.h>
 #include <soc/smm.h>
 

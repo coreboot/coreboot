@@ -41,6 +41,7 @@ config CPU_SPECIFIC_OPTIONS
 	select PCIEXP_COMMON_CLOCK
 	select PCIEXP_CLK_PM
 	select PCIEXP_L1_SUB_STATE
+	select PCIEX_LENGTH_256MB
 	select POSTCAR_CONSOLE
 	select POSTCAR_STAGE
 	select REG_SCRIPT
@@ -51,6 +52,7 @@ config CPU_SPECIFIC_OPTIONS
 	select SOC_INTEL_COMMON_ACPI
 	select SOC_INTEL_COMMON_ACPI_WAKE_SOURCE
 	select SOC_INTEL_COMMON_BLOCK
+	select SOC_INTEL_COMMON_BLOCK_SA
 	select SOC_INTEL_COMMON_LPSS_I2C
 	select SOC_INTEL_COMMON_SMI
 	select SOC_INTEL_COMMON_SPI_FLASH_PROTECT
@@ -88,10 +90,6 @@ config TPM_ON_FAST_SPI
 config SOC_INTEL_COMMON_RESET
 	bool
 	default y
-
-config MMCONF_BASE_ADDRESS
-	hex "PCI MMIO Base Address"
-	default 0xe0000000
 
 config IOSF_BASE_ADDRESS
 	hex "MMIO Base Address of sideband bus"
@@ -283,7 +281,7 @@ config USE_APOLLOLAKE_FSP_CAR
 	bool "Use FSP CAR"
 	select FSP_CAR
 	help
-	  Use FSP APIs to initialize & tear Down the Cache-As-Ram.
+	  Use FSP APIs to initialize & tear down the Cache-As-Ram.
 
 endchoice
 

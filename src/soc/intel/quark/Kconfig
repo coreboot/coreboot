@@ -177,7 +177,6 @@ config DCACHE_RAM_SIZE
 config DISPLAY_ESRAM_LAYOUT
 	bool "Display ESRAM layout"
 	default n
-	depends on PLATFORM_USES_FSP2_0
 	help
 	  Select this option to display coreboot's use of ESRAM.
 

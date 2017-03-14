@@ -20,13 +20,8 @@ endif
 bootblock-y += gpio.c
 bootblock-y += reg_access.c
 
-verstage-y += gpio.c
-verstage-y += reg_access.c
-verstage-$(CONFIG_VBOOT) += vboot.c
-
 romstage-y += gpio.c
 romstage-y += reg_access.c
-romstage-$(CONFIG_VBOOT) += vboot.c
 
 postcar-y += gpio.c
 postcar-y += reg_access.c

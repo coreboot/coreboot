@@ -1,7 +1,7 @@
 ##
 ## This file is part of the coreboot project.
 ##
-## Copyright (C) 2015-2017 Intel Corp.
+## Copyright (C) 2015-2016 Intel Corp.
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -146,36 +146,5 @@ config FSP_DEBUG_ALL
 	  also turn on FSP 2.0 debug support for ESRAM_LAYOUT,
 	  FSP_CALLS_AND_STATUS, FSP_HEADER, POSTCAR_CONSOLE and VERIFY_HOBS
 	  or FSP 1.1 DISPLAY_FSP_ENTRY_POINTS
-
-config VBOOT_WITH_CRYPTO_SHIELD
-	bool "Verified boot using the Crypto Shield board"
-	default n
-	select I2C_TPM
-	select MAINBOARD_HAS_I2C_TPM_ATMEL
-	select SEPARATE_VERSTAGE
-	select VBOOT
-	select VBOOT_STARTS_IN_BOOTBLOCK
-	select VBOOT_SOFT_REBOOT_WORKAROUND
-	select VBOOT_VBNV_CMOS
-	help
-	  Perform a verified boot using the TPM on the Crypto Shield board.
-
-config DRIVER_TPM_I2C_ADDR
-	hex "Address of the I2C TPM chip"
-	depends on VBOOT_WITH_CRYPTO_SHIELD
-	default 0x29
-	help
-	  I2C address of the TPM chip on the Crypto Shield board.
-
-config FMDFILE
-	string "FMAP description file in fmd format"
-	depends on VBOOT
-	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/vboot.fmd"
-	help
-	  The build system creates a default FMAP from ROM_SIZE and CBFS_SIZE,
-	  but in some cases more complex setups are required.
-
-	  When an FMD descriptionn file is specified, the build system uses it
-	  instead of creating a default FMAP file.
 
 endif # BOARD_INTEL_QUARK

@@ -17,12 +17,12 @@
 #include <fsp/util.h>
 #include <soc/ramstage.h>
 
-void fsp_silicon_init(void)
+void fsp_silicon_init(bool s3wake)
 {
 	if (IS_ENABLED(CONFIG_RELOCATE_FSP_INTO_DRAM))
 		intel_silicon_init();
 	else
-		fsp_run_silicon_init(find_fsp(CONFIG_FSP_ESRAM_LOC), 0);
+		fsp_run_silicon_init(find_fsp(CONFIG_FSP_ESRAM_LOC), s3wake);
 }
 
 void soc_silicon_init_params(SILICON_INIT_UPD *upd)

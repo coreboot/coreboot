@@ -44,6 +44,7 @@ static const struct vr_config default_configs[NUM_VR_DOMAINS] = {
 		.icc_max = VR_CFG_AMP(34),
 		.voltage_limit = 1520,
 	},
+#if IS_ENABLED(CONFIG_PLATFORM_USES_FSP1_1)
 	[VR_RING] = {
 		.vr_config_enable = 1,
 		.psi1threshold = VR_CFG_AMP(20),
@@ -56,6 +57,7 @@ static const struct vr_config default_configs[NUM_VR_DOMAINS] = {
 		.icc_max = VR_CFG_AMP(34),
 		.voltage_limit = 1520,
 	},
+#endif
 	[VR_GT_UNSLICED] = {
 		.vr_config_enable = 1,
 		.psi1threshold = VR_CFG_AMP(20),

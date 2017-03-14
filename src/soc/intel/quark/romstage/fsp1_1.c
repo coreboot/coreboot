@@ -105,6 +105,39 @@ void soc_memory_init_params(struct romstage_params *params,
 	if (!rmu_file)
 		die("Microcode file (rmu.bin) not found.");
 
+	/* Display the ESRAM layout */
+	if (IS_ENABLED(CONFIG_DISPLAY_ESRAM_LAYOUT)) {
+		printk(BIOS_SPEW, "\nESRAM Layout:\n\n");
+		printk(BIOS_SPEW,
+			"+-------------------+ 0x80080000 - ESRAM end\n");
+		if (_car_relocatable_data_end != (void *)0x80080000) {
+			printk(BIOS_SPEW, "|                   |\n");
+			printk(BIOS_SPEW, "+-------------------+ 0x%p\n",
+				_car_relocatable_data_end);
+		}
+		printk(BIOS_SPEW, "| coreboot data     |\n");
+		printk(BIOS_SPEW, "+-------------------+ 0x%p\n",
+			_car_stack_end);
+		printk(BIOS_SPEW, "| coreboot stack    |\n");
+		printk(BIOS_SPEW, "+-------------------+ 0x%p",
+			_car_stack_start);
+		if (IS_ENABLED(CONFIG_SEPARATE_VERSTAGE)) {
+			printk(BIOS_SPEW, "\n");
+			printk(BIOS_SPEW, "| vboot data        |\n");
+			printk(BIOS_SPEW, "+-------------------+ 0x%08x",
+				CONFIG_DCACHE_RAM_BASE);
+		}
+		printk(BIOS_SPEW, " (CONFIG_DCACHE_RAM_BASE)\n");
+
+		printk(BIOS_SPEW, "| FSP data          |\n");
+		printk(BIOS_SPEW, "+-------------------+\n");
+		printk(BIOS_SPEW, "| FSP stack         |\n");
+		printk(BIOS_SPEW, "+-------------------+\n");
+		printk(BIOS_SPEW, "| FSP binary        |\n");
+		printk(BIOS_SPEW,
+			"+-------------------+ 0x80000000 - ESRAM start\n\n");
+	}
+
 	/* Update the UPD data for MemoryInit */
 	upd->AddrMode = config->AddrMode;
 	upd->ChanMask = config->ChanMask;

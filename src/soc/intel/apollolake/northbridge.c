@@ -20,7 +20,7 @@
 #include <soc/iomap.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <soc/northbridge.h>
+#include <soc/systemagent.h>
 #include <soc/pci_ids.h>
 
 static uint32_t get_bar(device_t dev, unsigned int index)
@@ -39,7 +39,7 @@ static int mc_add_fixed_mmio_resources(device_t dev, int index)
 
 	/* PCI extended config region */
 	addr = ALIGN_DOWN(get_bar(dev, PCIEXBAR), 256*MiB) / KiB;
-	mmio_resource(dev, index++, addr, PCIEX_SIZE / KiB);
+	mmio_resource(dev, index++, addr, CONFIG_SA_PCIEX_LENGTH / KiB);
 
 	/* Memory Controller Hub */
 	addr = ALIGN_DOWN(get_bar(dev, MCHBAR), 32*KiB) / KiB;

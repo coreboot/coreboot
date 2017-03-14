@@ -37,7 +37,7 @@
 #include <spi-generic.h>
 #include <soc/pm.h>
 #include <soc/p2sb.h>
-#include <soc/northbridge.h>
+#include <soc/systemagent.h>
 
 #include "chip.h"
 

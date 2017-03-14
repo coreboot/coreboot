@@ -35,7 +35,7 @@
 #include <soc/flash_ctrlr.h>
 #include <soc/intel/common/mrc_cache.h>
 #include <soc/iomap.h>
-#include <soc/northbridge.h>
+#include <soc/systemagent.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/romstage.h>

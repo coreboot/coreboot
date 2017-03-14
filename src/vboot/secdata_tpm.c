@@ -424,23 +424,22 @@ uint32_t setup_tpm(struct vb2_context *ctx)
 		return TPM_SUCCESS;
 	}
 
-#ifdef TEGRA_SOFT_REBOOT_WORKAROUND
-	result = tlcl_startup();
-	if (result == TPM_E_INVALID_POSTINIT) {
-		/*
-		 * Some prototype hardware doesn't reset the TPM on a CPU
-		 * reset.  We do a hard reset to get around this.
-		 */
-		VBDEBUG("TPM: soft reset detected\n", result);
-		ctx->flags |= VB2_CONTEXT_SECDATA_WANTS_REBOOT;
-		return TPM_E_MUST_REBOOT;
-	} else if (result != TPM_SUCCESS) {
-		VBDEBUG("TPM: tlcl_startup returned %08x\n", result);
-		return result;
-	}
-#else
-	RETURN_ON_FAILURE(tlcl_startup());
-#endif
+	if (IS_ENABLED(CONFIG_VBOOT_SOFT_REBOOT_WORKAROUND)) {
+		result = tlcl_startup();
+		if (result == TPM_E_INVALID_POSTINIT) {
+			/*
+			 * Some prototype hardware doesn't reset the TPM on a CPU
+			 * reset.  We do a hard reset to get around this.
+			 */
+			VBDEBUG("TPM: soft reset detected\n");
+			ctx->flags |= VB2_CONTEXT_SECDATA_WANTS_REBOOT;
+			return TPM_E_MUST_REBOOT;
+		} else if (result != TPM_SUCCESS) {
+			VBDEBUG("TPM: tlcl_startup returned %08x\n", result);
+			return result;
+		}
+	} else
+		RETURN_ON_FAILURE(tlcl_startup());
 
 	/*
 	 * Some TPMs start the self test automatically at power on. In that case

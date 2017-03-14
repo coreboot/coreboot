@@ -97,6 +97,13 @@ struct acpi_irq {
 	.shared = ACPI_IRQ_SHARED, \
 	.wake = ACPI_IRQ_NO_WAKE }
 
+#define ACPI_IRQ_LEVEL_HIGH(x) { \
+	.pin = (x), \
+	.mode = ACPI_IRQ_LEVEL_TRIGGERED, \
+	.polarity = ACPI_IRQ_ACTIVE_HIGH, \
+	.shared = ACPI_IRQ_SHARED, \
+	.wake = ACPI_IRQ_NO_WAKE }
+
 /* Write extended Interrupt() descriptor to SSDT AML output */
 void acpi_device_write_interrupt(const struct acpi_irq *irq);
 

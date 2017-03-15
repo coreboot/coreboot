@@ -154,7 +154,7 @@ static inline void release_barrier(atomic_t *b)
 
 /* Returns 1 if timeout waiting for APs. 0 if target aps found. */
 static int wait_for_aps(atomic_t *val, int target, int total_delay,
-                        int delay_step)
+			int delay_step)
 {
 	int timeout = 0;
 	int delayed = 0;
@@ -453,7 +453,7 @@ static int start_aps(struct bus *cpu_bus, int ap_count, atomic_t *num_aps)
 	/* Send INIT IPI to all but self. */
 	lapic_write_around(LAPIC_ICR2, SET_LAPIC_DEST_FIELD(0));
 	lapic_write_around(LAPIC_ICR, LAPIC_DEST_ALLBUT | LAPIC_INT_ASSERT |
-	                   LAPIC_DM_INIT);
+			   LAPIC_DM_INIT);
 	printk(BIOS_DEBUG, "Waiting for 10ms after sending INIT.\n");
 	mdelay(10);
 
@@ -469,7 +469,7 @@ static int start_aps(struct bus *cpu_bus, int ap_count, atomic_t *num_aps)
 
 	lapic_write_around(LAPIC_ICR2, SET_LAPIC_DEST_FIELD(0));
 	lapic_write_around(LAPIC_ICR, LAPIC_DEST_ALLBUT | LAPIC_INT_ASSERT |
-	                   LAPIC_DM_STARTUP | sipi_vector);
+			   LAPIC_DM_STARTUP | sipi_vector);
 	printk(BIOS_DEBUG, "Waiting for 1st SIPI to complete...");
 	if (apic_wait_timeout(10000 /* 10 ms */, 50 /* us */)) {
 		printk(BIOS_DEBUG, "timed out.\n");
@@ -493,7 +493,7 @@ static int start_aps(struct bus *cpu_bus, int ap_count, atomic_t *num_aps)
 
 	lapic_write_around(LAPIC_ICR2, SET_LAPIC_DEST_FIELD(0));
 	lapic_write_around(LAPIC_ICR, LAPIC_DEST_ALLBUT | LAPIC_INT_ASSERT |
-	                   LAPIC_DM_STARTUP | sipi_vector);
+			   LAPIC_DM_STARTUP | sipi_vector);
 	printk(BIOS_DEBUG, "Waiting for 2nd SIPI to complete...");
 	if (apic_wait_timeout(10000 /* 10 ms */, 50 /* us */)) {
 		printk(BIOS_DEBUG, "timed out.\n");
@@ -527,7 +527,7 @@ static int bsp_do_flight_plan(struct mp_params *mp_params)
 		if (atomic_read(&rec->barrier) == 0) {
 			/* Wait for the APs to check in. */
 			if (wait_for_aps(&rec->cpus_entered, num_aps,
-			                 timeout_us, step_us)) {
+					 timeout_us, step_us)) {
 				printk(BIOS_ERR, "MP record %d timeout.\n", i);
 				ret = -1;
 			}

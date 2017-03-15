@@ -65,7 +65,7 @@ struct smm_entry_ins {
  * other entry points are stride size below the previous.
  */
 static void smm_place_jmp_instructions(void *entry_start, int stride, int num,
-                                       void *jmp_target)
+				       void *jmp_target)
 {
 	int i;
 	char *cur;
@@ -95,7 +95,7 @@ static void smm_place_jmp_instructions(void *entry_start, int stride, int num,
 /* Place stacks in base -> base + size region, but ensure the stacks don't
  * overlap the staggered entry points. */
 static void *smm_stub_place_stacks(char *base, int size,
-                                   struct smm_loader_params *params)
+				   struct smm_loader_params *params)
 {
 	int total_stack_size;
 	char *stacks_top;
@@ -106,7 +106,7 @@ static void *smm_stub_place_stacks(char *base, int size,
 	/* If stack space is requested assume the space lives in the lower
 	 * half of SMRAM. */
 	total_stack_size = params->per_cpu_stack_size *
-	                   params->num_concurrent_stacks;
+			   params->num_concurrent_stacks;
 
 	/* There has to be at least one stack user. */
 	if (params->num_concurrent_stacks < 1)
@@ -146,9 +146,9 @@ static void smm_stub_place_staggered_entry_points(char *base,
 			num_entries--;
 		}
 		smm_place_jmp_instructions(base,
-		                           params->per_cpu_save_state_size,
-		                           num_entries,
-		                           rmodule_entry(smm_stub));
+					   params->per_cpu_save_state_size,
+					   num_entries,
+					   rmodule_entry(smm_stub));
 	}
 }
 
@@ -190,7 +190,7 @@ static int smm_module_setup_stub(void *smbase, struct smm_loader_params *params)
 
 	/* Adjust remaining size to account for save state. */
 	total_save_state_size = params->per_cpu_save_state_size *
-	                        params->num_concurrent_save_states;
+				params->num_concurrent_save_states;
 	size -= total_save_state_size;
 
 	/* The save state size encroached over the first SMM entry point. */
@@ -331,7 +331,7 @@ int smm_load_module(void *smram, int size, struct smm_loader_params *params)
 		return -1;
 
 	total_stack_size = params->per_cpu_stack_size *
-	                   params->num_concurrent_stacks;
+			   params->num_concurrent_stacks;
 
 	/* Stacks start at the top of the region. */
 	base = smram;

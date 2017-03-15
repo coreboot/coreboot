@@ -192,14 +192,14 @@ static struct memranges *get_physical_address_space(void)
 		 * regions. */
 		memranges_init(addr_space, mask, mask, MTRR_TYPE_WRBACK);
 		memranges_add_resources(addr_space, mask, 0,
-		                        MTRR_TYPE_UNCACHEABLE);
+					MTRR_TYPE_UNCACHEABLE);
 
 		/* Handle any write combining resources. Only prefetchable
 		 * resources are appropriate for this MTRR type. */
 		match = IORESOURCE_PREFETCH;
 		mask |= match;
 		memranges_add_resources_filter(addr_space, mask, match, MTRR_TYPE_WRCOMB,
-		                               filter_vga_wrcomb);
+					       filter_vga_wrcomb);
 
 		/* The address space below 4GiB is special. It needs to be
 		 * covered entirely by range entries so that MTRR calculations
@@ -207,8 +207,8 @@ static struct memranges *get_physical_address_space(void)
 		 * Therefore, ensure holes are filled up to 4GiB as
 		 * uncacheable */
 		memranges_fill_holes_up_to(addr_space,
-		                           RANGE_TO_PHYS_ADDR(RANGE_4GB),
-		                           MTRR_TYPE_UNCACHEABLE);
+					   RANGE_TO_PHYS_ADDR(RANGE_4GB),
+					   MTRR_TYPE_UNCACHEABLE);
 
 		print_physical_address_space(addr_space, NULL);
 	}
@@ -399,7 +399,7 @@ static void clear_var_mtrr(int index)
 }
 
 static void prep_var_mtrr(struct var_mtrr_state *var_state,
-                          uint32_t base, uint32_t size, int mtrr_type)
+			  uint32_t base, uint32_t size, int mtrr_type)
 {
 	struct var_mtrr_regs *regs;
 	resource_t rbase;
@@ -443,7 +443,7 @@ static void prep_var_mtrr(struct var_mtrr_state *var_state,
 }
 
 static void calc_var_mtrr_range(struct var_mtrr_state *var_state,
-                                uint32_t base, uint32_t size, int mtrr_type)
+				uint32_t base, uint32_t size, int mtrr_type)
 {
 	while (size != 0) {
 		uint32_t addr_lsb;
@@ -471,7 +471,7 @@ static void calc_var_mtrr_range(struct var_mtrr_state *var_state,
 }
 
 static void calc_var_mtrrs_with_hole(struct var_mtrr_state *var_state,
-                                     struct range_entry *r)
+				     struct range_entry *r)
 {
 	uint32_t a1, a2, b1, b2;
 	int mtrr_type;
@@ -549,7 +549,7 @@ static void calc_var_mtrrs_with_hole(struct var_mtrr_state *var_state,
 }
 
 static void calc_var_mtrrs_without_hole(struct var_mtrr_state *var_state,
-                                         struct range_entry *r)
+					struct range_entry *r)
 {
 	uint32_t a1, a2, b1, b2, c1, c2;
 	int mtrr_type;
@@ -608,8 +608,8 @@ static void calc_var_mtrrs_without_hole(struct var_mtrr_state *var_state,
 }
 
 static void __calc_var_mtrrs(struct memranges *addr_space,
-                             int above4gb, int address_bits,
-                             int *num_def_wb_mtrrs, int *num_def_uc_mtrrs)
+			     int above4gb, int address_bits,
+			     int *num_def_wb_mtrrs, int *num_def_uc_mtrrs)
 {
 	int wb_deftype_count;
 	int uc_deftype_count;
@@ -690,22 +690,22 @@ static void __calc_var_mtrrs(struct memranges *addr_space,
 }
 
 static int calc_var_mtrrs(struct memranges *addr_space,
-                          int above4gb, int address_bits)
+			  int above4gb, int address_bits)
 {
 	int wb_deftype_count = 0;
 	int uc_deftype_count = 0;
 
 	__calc_var_mtrrs(addr_space, above4gb, address_bits, &wb_deftype_count,
-	                 &uc_deftype_count);
+			 &uc_deftype_count);
 
 	if (wb_deftype_count > bios_mtrrs && uc_deftype_count > bios_mtrrs) {
 		printk(BIOS_DEBUG, "MTRR: Removing WRCOMB type. "
 		       "WB/UC MTRR counts: %d/%d > %d.\n",
 		       wb_deftype_count, uc_deftype_count, bios_mtrrs);
 		memranges_update_tag(addr_space, MTRR_TYPE_WRCOMB,
-		                     MTRR_TYPE_UNCACHEABLE);
+				     MTRR_TYPE_UNCACHEABLE);
 		__calc_var_mtrrs(addr_space, above4gb, address_bits,
-		                 &wb_deftype_count, &uc_deftype_count);
+				 &wb_deftype_count, &uc_deftype_count);
 	}
 
 	printk(BIOS_DEBUG, "MTRR: default type WB/UC MTRR counts: %d/%d.\n",

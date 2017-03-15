@@ -140,9 +140,8 @@ static struct cpu_map cpus[CONFIG_MAX_CPUS];
 
 static inline void barrier_wait(atomic_t *b)
 {
-	while (atomic_read(b) == 0) {
+	while (atomic_read(b) == 0)
 		asm ("pause");
-	}
 	mfence();
 }
 
@@ -180,9 +179,8 @@ static void ap_do_flight_plan(void)
 		atomic_inc(&rec->cpus_entered);
 		barrier_wait(&rec->barrier);
 
-		if (rec->ap_call != NULL) {
+		if (rec->ap_call != NULL)
 			rec->ap_call();
-		}
 	}
 }
 
@@ -273,9 +271,8 @@ static int save_bsp_msrs(char *start, int size)
 	}
 
 	msr_entry = (void *)start;
-	for (i = 0; i < NUM_FIXED_MTRRS; i++) {
+	for (i = 0; i < NUM_FIXED_MTRRS; i++)
 		msr_entry = save_msr(fixed_mtrrs[i], msr_entry);
-	}
 
 	for (i = 0; i < num_var_mtrrs; i++) {
 		msr_entry = save_msr(MTRR_PHYS_BASE(i), msr_entry);
@@ -350,11 +347,10 @@ static atomic_t *load_sipi_vector(struct mp_params *mp_params)
 	/* Provide pointer to microcode patch. */
 	sp->microcode_ptr = (uint32_t)mp_params->microcode_pointer;
 	/* Pass on abiility to load microcode in parallel. */
-	if (mp_params->parallel_microcode_load) {
+	if (mp_params->parallel_microcode_load)
 		sp->microcode_lock = 0;
-	} else {
+	else
 		sp->microcode_lock = ~0;
-	}
 	sp->c_handler = (uint32_t)&ap_init;
 	ap_count = &sp->ap_count;
 	atomic_set(ap_count, 0);
@@ -386,9 +382,8 @@ static int allocate_cpu_devices(struct bus *cpu_bus, struct mp_params *p)
 
 		/* Assuming linear APIC space allocation. */
 		apic_id = info->cpu->path.apic.apic_id + i;
-		if (p->adjust_apic_id != NULL) {
+		if (p->adjust_apic_id != NULL)
 			apic_id = p->adjust_apic_id(i, apic_id);
-		}
 		cpu_path.apic.apic_id = apic_id;
 
 		/* Allocate the new CPU device structure */
@@ -446,8 +441,8 @@ static int start_aps(struct bus *cpu_bus, int ap_count, atomic_t *num_aps)
 		if (apic_wait_timeout(1000 /* 1 ms */, 50)) {
 			printk(BIOS_DEBUG, "timed out. Aborting.\n");
 			return -1;
-		} else
-			printk(BIOS_DEBUG, "done.\n");
+		}
+		printk(BIOS_DEBUG, "done.\n");
 	}
 
 	/* Send INIT IPI to all but self. */
@@ -463,8 +458,8 @@ static int start_aps(struct bus *cpu_bus, int ap_count, atomic_t *num_aps)
 		if (apic_wait_timeout(1000 /* 1 ms */, 50)) {
 			printk(BIOS_DEBUG, "timed out. Aborting.\n");
 			return -1;
-		} else
-			printk(BIOS_DEBUG, "done.\n");
+		}
+		printk(BIOS_DEBUG, "done.\n");
 	}
 
 	lapic_write_around(LAPIC_ICR2, SET_LAPIC_DEST_FIELD(0));
@@ -474,9 +469,8 @@ static int start_aps(struct bus *cpu_bus, int ap_count, atomic_t *num_aps)
 	if (apic_wait_timeout(10000 /* 10 ms */, 50 /* us */)) {
 		printk(BIOS_DEBUG, "timed out.\n");
 		return -1;
-	} else {
-		printk(BIOS_DEBUG, "done.\n");
 	}
+	printk(BIOS_DEBUG, "done.\n");
 
 	/* Wait for CPUs to check in up to 200 us. */
 	wait_for_aps(num_aps, ap_count, 200 /* us */, 15 /* us */);
@@ -487,8 +481,8 @@ static int start_aps(struct bus *cpu_bus, int ap_count, atomic_t *num_aps)
 		if (apic_wait_timeout(1000 /* 1 ms */, 50)) {
 			printk(BIOS_DEBUG, "timed out. Aborting.\n");
 			return -1;
-		} else
-			printk(BIOS_DEBUG, "done.\n");
+		}
+		printk(BIOS_DEBUG, "done.\n");
 	}
 
 	lapic_write_around(LAPIC_ICR2, SET_LAPIC_DEST_FIELD(0));
@@ -498,9 +492,8 @@ static int start_aps(struct bus *cpu_bus, int ap_count, atomic_t *num_aps)
 	if (apic_wait_timeout(10000 /* 10 ms */, 50 /* us */)) {
 		printk(BIOS_DEBUG, "timed out.\n");
 		return -1;
-	} else {
-		printk(BIOS_DEBUG, "done.\n");
 	}
+	printk(BIOS_DEBUG, "done.\n");
 
 	/* Wait for CPUs to check in. */
 	if (wait_for_aps(num_aps, ap_count, 10000 /* 10 ms */, 50 /* us */)) {
@@ -533,9 +526,8 @@ static int bsp_do_flight_plan(struct mp_params *mp_params)
 			}
 		}
 
-		if (rec->bsp_call != NULL) {
+		if (rec->bsp_call != NULL)
 			rec->bsp_call();
-		}
 
 		release_barrier(&rec->barrier);
 	}
@@ -662,17 +654,16 @@ void smm_initiate_relocation_parallel(void)
 		if (apic_wait_timeout(1000 /* 1 ms */, 50)) {
 			printk(BIOS_DEBUG, "timed out. Aborting.\n");
 			return;
-		} else
-			printk(BIOS_DEBUG, "done.\n");
+		}
+		printk(BIOS_DEBUG, "done.\n");
 	}
 
 	lapic_write_around(LAPIC_ICR2, SET_LAPIC_DEST_FIELD(lapicid()));
 	lapic_write_around(LAPIC_ICR, LAPIC_INT_ASSERT | LAPIC_DM_SMI);
-	if (apic_wait_timeout(1000 /* 1 ms */, 100 /* us */)) {
+	if (apic_wait_timeout(1000 /* 1 ms */, 100 /* us */))
 		printk(BIOS_DEBUG, "SMI Relocation timed out.\n");
-	} else
+	else
 		printk(BIOS_DEBUG, "Relocation complete.\n");
-
 }
 
 DECLARE_SPIN_LOCK(smm_relocation_lock);

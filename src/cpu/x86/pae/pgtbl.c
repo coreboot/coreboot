@@ -72,9 +72,8 @@ void *map_2M_page(unsigned long page)
 	void *result;
 	int i;
 	index = cpu_index();
-	if (index >= CONFIG_MAX_CPUS) {
+	if (index >= CONFIG_MAX_CPUS)
 		return MAPPING_ERROR;
-	}
 	window = page >> 10;
 	if (window != mapped_window[index]) {
 		paging_off();
@@ -102,10 +101,9 @@ void *map_2M_page(unsigned long page)
 		}
 		mapped_window[index] = window;
 	}
-	if (window == 0) {
+	if (window == 0)
 		result = (void *)(page << 21);
-	} else {
+	else
 		result = (void *)(0x80000000 | ((page & 0x3ff) << 21));
-	}
 	return result;
 }

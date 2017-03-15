@@ -116,7 +116,7 @@ void *smm_get_save_state(int cpu)
 	return base;
 }
 
-void asmlinkage smm_handler_start(void *arg)
+asmlinkage void smm_handler_start(void *arg)
 {
 	const struct smm_module_params *p;
 	const struct smm_runtime *runtime;

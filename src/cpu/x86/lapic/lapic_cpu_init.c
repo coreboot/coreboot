@@ -437,26 +437,22 @@ static void start_other_cpus(struct bus *cpu_bus, struct device *bsp_cpu)
 	/* Loop through the cpus once getting them started */
 
 	for (cpu = cpu_bus->children; cpu; cpu = cpu->sibling) {
-		if (cpu->path.type != DEVICE_PATH_APIC) {
+		if (cpu->path.type != DEVICE_PATH_APIC)
 			continue;
-		}
 
 		if (IS_ENABLED(CONFIG_PARALLEL_CPU_INIT) && (cpu == bsp_cpu))
 			continue;
 
-		if (!cpu->enabled) {
+		if (!cpu->enabled)
 			continue;
-		}
 
-		if (cpu->initialized) {
+		if (cpu->initialized)
 			continue;
-		}
 
-		if (!start_cpu(cpu)) {
+		if (!start_cpu(cpu))
 			/* Record the error in cpu? */
 			printk(BIOS_ERR, "CPU 0x%02x would not start!\n",
 				cpu->path.apic.apic_id);
-		}
 
 		if (!IS_ENABLED(CONFIG_PARALLEL_CPU_INIT))
 			udelay(10);
@@ -472,9 +468,8 @@ static void smm_other_cpus(struct bus *cpu_bus, device_t bsp_cpu)
 	/* Loop through the cpus once to let them run through SMM relocator */
 
 	for (cpu = cpu_bus->children; cpu; cpu = cpu->sibling) {
-		if (cpu->path.type != DEVICE_PATH_APIC) {
+		if (cpu->path.type != DEVICE_PATH_APIC)
 			continue;
-		}
 
 		printk(BIOS_ERR, "considering CPU 0x%02x for SMM init\n",
 			cpu->path.apic.apic_id);
@@ -482,15 +477,13 @@ static void smm_other_cpus(struct bus *cpu_bus, device_t bsp_cpu)
 		if (cpu == bsp_cpu)
 			continue;
 
-		if (!cpu->enabled) {
+		if (!cpu->enabled)
 			continue;
-		}
 
-		if (!start_cpu(cpu)) {
+		if (!start_cpu(cpu))
 			/* Record the error in cpu? */
 			printk(BIOS_ERR, "CPU 0x%02x would not start!\n",
 				cpu->path.apic.apic_id);
-		}
 
 		/* FIXME: endless loop */
 		while (atomic_read(&active_cpus) != pre_count);
@@ -518,16 +511,13 @@ static void wait_other_cpus_stop(struct bus *cpu_bus)
 		loopcount++;
 	}
 	for (cpu = cpu_bus->children; cpu; cpu = cpu->sibling) {
-		if (cpu->path.type != DEVICE_PATH_APIC) {
+		if (cpu->path.type != DEVICE_PATH_APIC)
 			continue;
-		}
-		if (cpu->path.apic.apic_id == SPEEDSTEP_APIC_MAGIC) {
+		if (cpu->path.apic.apic_id == SPEEDSTEP_APIC_MAGIC)
 			continue;
-		}
-		if (!cpu->initialized) {
+		if (!cpu->initialized)
 			printk(BIOS_ERR, "CPU 0x%02x did not initialize!\n",
 				cpu->path.apic.apic_id);
-		}
 	}
 	printk(BIOS_DEBUG, "All AP CPUs stopped (%ld loops)\n", loopcount);
 	checkstack(_estack, 0);

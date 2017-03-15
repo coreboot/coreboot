@@ -47,9 +47,8 @@ int tis_open(void)
 	if (rc < 0)
 		chip->is_open = 0;
 
-	if (rc) {
+	if (rc)
 		return -1;
-	}
 
 	return 0;
 }
@@ -115,8 +114,9 @@ static ssize_t tpm_transmit(const uint8_t *buf, size_t bufsiz)
 			goto out_recv;
 		}
 
-		if ((status == chip->vendor.req_canceled)) {
-			printk(BIOS_DEBUG, "tpm_transmit: Operation Canceled\n");
+		if (status == chip->vendor.req_canceled) {
+			printk(BIOS_DEBUG,
+				"tpm_transmit: Operation Canceled\n");
 			rc = -1;
 			goto out;
 		}

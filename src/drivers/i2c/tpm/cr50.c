@@ -438,7 +438,7 @@ static void cr50_vendor_init(struct tpm_chip *chip)
 		       __func__, CR50_TIMEOUT_NOIRQ_MS);
 }
 
-int tpm_vendor_probe(unsigned bus, uint32_t addr)
+int tpm_vendor_probe(unsigned int bus, uint32_t addr)
 {
 	struct tpm_inf_dev *tpm_dev = car_get_var_ptr(&g_tpm_dev);
 	struct tpm_chip probe_chip;
@@ -475,7 +475,7 @@ int tpm_vendor_probe(unsigned bus, uint32_t addr)
 	return 0;
 }
 
-int tpm_vendor_init(struct tpm_chip *chip, unsigned bus, uint32_t dev_addr)
+int tpm_vendor_init(struct tpm_chip *chip, unsigned int bus, uint32_t dev_addr)
 {
 	struct tpm_inf_dev *tpm_dev = car_get_var_ptr(&g_tpm_dev);
 	uint32_t vendor;

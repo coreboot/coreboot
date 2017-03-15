@@ -28,7 +28,8 @@ static int do_driver_init = 1;
 typedef enum { SMI_LOCKED, SMI_UNLOCKED } smi_semaphore;
 
 /* SMI multiprocessing semaphore */
-static volatile smi_semaphore smi_handler_status __attribute__ ((aligned (4))) = SMI_UNLOCKED;
+static __attribute__ ((aligned(4))) volatile smi_semaphore smi_handler_status
+	= SMI_UNLOCKED;
 
 static int smi_obtain_lock(void)
 {
@@ -138,7 +139,7 @@ void smi_handler(u32 smm_revision)
 
 	smi_backup_pci_address();
 
-	node=nodeid();
+	node = nodeid();
 
 	console_init();
 

@@ -441,7 +441,7 @@ static void start_other_cpus(struct bus *cpu_bus, struct device *bsp_cpu)
 			continue;
 		}
 
-		if (IS_ENABLED(CONFIG_PARALLEL_CPU_INIT) && (cpu==bsp_cpu))
+		if (IS_ENABLED(CONFIG_PARALLEL_CPU_INIT) && (cpu == bsp_cpu))
 			continue;
 
 		if (!cpu->enabled) {

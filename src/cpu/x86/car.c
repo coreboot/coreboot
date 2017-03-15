@@ -62,7 +62,7 @@ void *car_get_var_ptr(void *var)
 	}
 
 #if IS_ENABLED(CONFIG_PLATFORM_USES_FSP1_0)
-	migrated_base=(char *)find_saved_temp_mem(
+	migrated_base = (char *)find_saved_temp_mem(
 			*(void **)CBMEM_FSP_HOB_PTR);
 	/* FSP 1.0 migrates the entire DCACHE RAM */
 	offset = (char *)var - (char *)CONFIG_DCACHE_RAM_BASE;
@@ -72,7 +72,7 @@ void *car_get_var_ptr(void *var)
 #endif
 
 	if (migrated_base == NULL)
-		die( "CAR: Could not find migration base!\n");
+		die("CAR: Could not find migration base!\n");
 
 	return &migrated_base[offset];
 }

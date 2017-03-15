@@ -70,8 +70,8 @@ static unsigned long calibrate_tsc_with_pit(void)
 		/* 64-bit subtract - gcc just messes up with long longs */
 		__asm__("subl %2,%0\n\t"
 			"sbbl %3,%1"
-			:"=a" (end.lo), "=d" (end.hi)
-			:"g" (start.lo), "g" (start.hi),
+			: "=a" (end.lo), "=d" (end.hi)
+			: "g" (start.lo), "g" (start.hi),
 			 "0" (end.lo), "1" (end.hi));
 
 		/* Error: ECPUTOOFAST */

@@ -28,7 +28,7 @@ typedef enum { SMI_LOCKED, SMI_UNLOCKED } smi_semaphore;
 
 /* SMI multiprocessing semaphore */
 static volatile
-smi_semaphore smi_handler_status __attribute__ ((aligned (4))) = SMI_UNLOCKED;
+__attribute__ ((aligned(4))) smi_semaphore smi_handler_status = SMI_UNLOCKED;
 
 static int smi_obtain_lock(void)
 {

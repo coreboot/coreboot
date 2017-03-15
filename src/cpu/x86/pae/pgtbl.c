@@ -90,7 +90,7 @@ void *map_2M_page(unsigned long page)
 			pdp[3].addr_lo = ((uint32_t)&pd[512*3])|1;
 			/* The first half of the page table is identity mapped */
 			for (i = 0; i < 1024; i++) {
-				pd[i].addr_lo = ((i & 0x3ff) << 21)| 0xE3;
+				pd[i].addr_lo = ((i & 0x3ff) << 21) | 0xE3;
 				pd[i].addr_hi = 0;
 			}
 			/* The second half of the page table holds the mapped page */

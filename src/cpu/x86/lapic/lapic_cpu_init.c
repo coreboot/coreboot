@@ -95,7 +95,7 @@ static void copy_secondary_start_to_lowest_1M(void)
 		(unsigned char *)_secondary_start, code_size);
 
 	printk(BIOS_DEBUG, "start_eip=0x%08lx, code_size=0x%08lx\n",
-		(long unsigned int)AP_SIPI_VECTOR, code_size);
+		(unsigned long int)AP_SIPI_VECTOR, code_size);
 }
 
 static void recover_lowest_1M(void)
@@ -408,7 +408,7 @@ void stop_this_cpu(void)
 #endif
 
 /* C entry point of secondary cpus */
-void asmlinkage secondary_cpu_init(unsigned int index)
+asmlinkage void secondary_cpu_init(unsigned int index)
 {
 	atomic_inc(&active_cpus);
 
@@ -490,7 +490,8 @@ static void smm_other_cpus(struct bus *cpu_bus, device_t bsp_cpu)
 				cpu->path.apic.apic_id);
 
 		/* FIXME: endless loop */
-		while (atomic_read(&active_cpus) != pre_count);
+		while (atomic_read(&active_cpus) != pre_count)
+			;
 	}
 }
 

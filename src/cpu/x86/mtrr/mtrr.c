@@ -17,7 +17,8 @@
  *	GNU General Public License for more details.
  *
  *
- * Reference: Intel Architecture Software Developer's Manual, Volume 3: System Programming
+ * Reference: Intel Architecture Software Developer's Manual, Volume 3: System
+ * Programming
  */
 
 #include <stddef.h>
@@ -198,8 +199,8 @@ static struct memranges *get_physical_address_space(void)
 		 * resources are appropriate for this MTRR type. */
 		match = IORESOURCE_PREFETCH;
 		mask |= match;
-		memranges_add_resources_filter(addr_space, mask, match, MTRR_TYPE_WRCOMB,
-					       filter_vga_wrcomb);
+		memranges_add_resources_filter(addr_space, mask, match,
+					MTRR_TYPE_WRCOMB, filter_vga_wrcomb);
 
 		/* The address space below 4GiB is special. It needs to be
 		 * covered entirely by range entries so that MTRR calculations

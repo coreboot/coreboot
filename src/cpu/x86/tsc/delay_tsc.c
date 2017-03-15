@@ -47,7 +47,8 @@ static unsigned long calibrate_tsc_with_pit(void)
 	 * (interrupt on terminal count mode), binary count,
 	 * load 5 * LATCH count, (LSB and MSB) to begin countdown.
 	 */
-	outb(0xb0, 0x43);			/* binary, mode 0, LSB/MSB, Ch 2 */
+	outb(0xb0, 0x43);	/* binary, mode 0, LSB/MSB, Ch 2 */
+
 	outb(CALIBRATE_INTERVAL	& 0xff, 0x42);	/* LSB of count */
 	outb(CALIBRATE_INTERVAL	>> 8, 0x42);	/* MSB of count */
 

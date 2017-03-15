@@ -5,7 +5,8 @@
  * Copyright (C) 2001 Ronald G. Minnich
  * Copyright (C) 2005 Yinghai Lu
  * Copyright (C) 2008 coresystems GmbH
- * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>,
+ * Raptor Engineering
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,7 +75,8 @@ static void copy_secondary_start_to_lowest_1M(void)
 	/* Fill in secondary_start's local gdt. */
 	setup_secondary_gdt();
 
-	code_size = (unsigned long)_secondary_start_end - (unsigned long)_secondary_start;
+	code_size = (unsigned long)_secondary_start_end
+		- (unsigned long)_secondary_start;
 
 	if (acpi_is_wakeup_s3()) {
 		/* need to save it for RAM resume */
@@ -89,7 +91,8 @@ static void copy_secondary_start_to_lowest_1M(void)
 	}
 
 	/* copy the _secondary_start to the RAM below 1M*/
-	memcpy((unsigned char *)AP_SIPI_VECTOR, (unsigned char *)_secondary_start, code_size);
+	memcpy((unsigned char *)AP_SIPI_VECTOR,
+		(unsigned char *)_secondary_start, code_size);
 
 	printk(BIOS_DEBUG, "start_eip=0x%08lx, code_size=0x%08lx\n",
 		(long unsigned int)AP_SIPI_VECTOR, code_size);
@@ -145,7 +148,8 @@ static int lapic_start_cpu(unsigned long apicid)
 		}
 		return 0;
 	}
-#if !CONFIG_CPU_AMD_MODEL_10XXX && !CONFIG_CPU_INTEL_MODEL_206AX && !CONFIG_CPU_INTEL_MODEL_2065X
+#if !CONFIG_CPU_AMD_MODEL_10XXX && !CONFIG_CPU_INTEL_MODEL_206AX \
+	&& !CONFIG_CPU_INTEL_MODEL_2065X
 	mdelay(10);
 #endif
 

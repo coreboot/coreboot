@@ -131,7 +131,10 @@ void smi_handler(u32 smm_revision)
 		 */
 		while (smi_handler_status == SMI_LOCKED) {
 			asm volatile (
-				".byte 0xf3, 0x90\n"  /* hint a CPU we are in spinlock (PAUSE instruction, REP NOP) */
+				".byte 0xf3, 0x90\n"  /* hint a CPU we are in
+						       * spinlock (PAUSE
+						       * instruction, REP NOP)
+						       */
 			);
 		}
 		return;
@@ -203,9 +206,12 @@ void smi_handler(u32 smm_revision)
  * weak relocations w/o a symbol have a 0 address which is where the modules
  * are linked at. */
 int __attribute__((weak)) mainboard_io_trap_handler(int smif) { return 0; }
-void __attribute__((weak)) cpu_smi_handler(unsigned int node, smm_state_save_area_t *state_save) {}
-void __attribute__((weak)) northbridge_smi_handler(unsigned int node, smm_state_save_area_t *state_save) {}
-void __attribute__((weak)) southbridge_smi_handler(unsigned int node, smm_state_save_area_t *state_save) {}
+void __attribute__((weak)) cpu_smi_handler(unsigned int node,
+	smm_state_save_area_t *state_save) {}
+void __attribute__((weak)) northbridge_smi_handler(unsigned int node,
+	smm_state_save_area_t *state_save) {}
+void __attribute__((weak)) southbridge_smi_handler(unsigned int node,
+	smm_state_save_area_t *state_save) {}
 void __attribute__((weak)) mainboard_smi_gpi(u32 gpi_sts) {}
 int __attribute__((weak)) mainboard_smi_apmc(u8 data) { return 0; }
 void __attribute__((weak)) mainboard_smi_sleep(u8 slp_typ) {}

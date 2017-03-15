@@ -116,7 +116,7 @@ static inline unsigned long get_clocks_per_usec(void)
 	return car_get_var(clocks_per_usec);
 }
 
-void udelay(unsigned us)
+void udelay(unsigned int us)
 {
 	unsigned long long start;
 	unsigned long long current;

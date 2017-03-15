@@ -62,7 +62,7 @@ static void model_14_init(device_t dev)
 	msr.lo = msr.hi = 0x1e1e1e1e;
 	wrmsr(0x250, msr);
 	wrmsr(0x258, msr);
-	for (msrno = 0x268; msrno <= 0x26f; i++)
+	for (msrno = 0x268; msrno <= 0x26f; msrno++)
 		wrmsr(msrno, msr);
 
 	msr = rdmsr(SYSCFG_MSR);

@@ -29,6 +29,9 @@ struct drivers_i2c_generic_config {
 	unsigned wake;		/* Wake GPE */
 	struct acpi_irq irq;	/* Interrupt */
 
+	/* Use GPIO based interrupt instead of PIRQ */
+	struct acpi_gpio irq_gpio;
+
 	/*
 	 * This flag will add a device propery which will indicate
 	 * to the OS that it should probe this device before adding it.

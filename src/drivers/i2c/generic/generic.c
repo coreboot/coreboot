@@ -68,7 +68,7 @@ void i2c_generic_fill_ssdt(struct device *dev,
 	};
 	struct acpi_dp *dsd = NULL;
 	int curr_index = 0;
-	int reset_gpio_index = -1, enable_gpio_index = -1;
+	int reset_gpio_index = -1, enable_gpio_index = -1, irq_gpio_index = -1;
 	const char *path = acpi_device_path(dev);
 
 	if (!dev->enabled || !scope)
@@ -93,7 +93,14 @@ void i2c_generic_fill_ssdt(struct device *dev,
 	acpigen_write_name("_CRS");
 	acpigen_write_resourcetemplate_header();
 	acpi_device_write_i2c(&i2c);
-	acpi_device_write_interrupt(&config->irq);
+
+	/* Use either Interrupt() or GpioInt() */
+	if (config->irq_gpio.pin_count)
+		irq_gpio_index = i2c_generic_write_gpio(&config->irq_gpio,
+							&curr_index);
+	else
+		acpi_device_write_interrupt(&config->irq);
+
 	if (i2c_generic_add_gpios_to_crs(config) == true) {
 		reset_gpio_index = i2c_generic_write_gpio(&config->reset_gpio,
 							&curr_index);
@@ -110,10 +117,15 @@ void i2c_generic_fill_ssdt(struct device *dev,
 
 	/* DSD */
 	if (config->probed || (reset_gpio_index != -1) ||
-		(enable_gpio_index != -1)) {
+	    (enable_gpio_index != -1) || (irq_gpio_index != -1)) {
 		dsd = acpi_dp_new_table("_DSD");
 		if (config->probed)
 			acpi_dp_add_integer(dsd, "linux,probed", 1);
+		if (irq_gpio_index != -1)
+			acpi_dp_add_gpio(dsd, "irq-gpios", path,
+					 irq_gpio_index, 0,
+					 config->irq_gpio.polarity ==
+					 ACPI_GPIO_ACTIVE_LOW);
 		if (reset_gpio_index != -1)
 			acpi_dp_add_gpio(dsd, "reset-gpios", path,
 					reset_gpio_index, 0,

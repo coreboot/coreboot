@@ -200,6 +200,15 @@ struct acpi_gpio {
 	.pin_count = 1, \
 	.pins = { (gpio) } }
 
+/* Edge Triggered Active Both GPIO interrupt */
+#define ACPI_GPIO_IRQ_EDGE_BOTH(gpio) { \
+	.type = ACPI_GPIO_TYPE_INTERRUPT, \
+	.pull = ACPI_GPIO_PULL_DEFAULT, \
+	.irq.mode = ACPI_IRQ_EDGE_TRIGGERED, \
+	.irq.polarity = ACPI_IRQ_ACTIVE_BOTH, \
+	.pin_count = 1, \
+	.pins = { (gpio) } }
+
 /* Level Triggered Active High GPIO interrupt */
 #define ACPI_GPIO_IRQ_LEVEL_HIGH(gpio) { \
 	.type = ACPI_GPIO_TYPE_INTERRUPT, \

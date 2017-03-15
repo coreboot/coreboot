@@ -195,8 +195,8 @@ struct acpi_gpio {
 #define ACPI_GPIO_IRQ_EDGE_LOW(gpio) { \
 	.type = ACPI_GPIO_TYPE_INTERRUPT, \
 	.pull = ACPI_GPIO_PULL_DEFAULT, \
-	.irq.mode = IRQ_EDGE_TRIGGERED, \
-	.irq.polarity = IRQ_ACTIVE_LOW, \
+	.irq.mode = ACPI_IRQ_EDGE_TRIGGERED, \
+	.irq.polarity = ACPI_IRQ_ACTIVE_LOW, \
 	.pin_count = 1, \
 	.pins = { (gpio) } }
 
@@ -204,8 +204,8 @@ struct acpi_gpio {
 #define ACPI_GPIO_IRQ_LEVEL_HIGH(gpio) { \
 	.type = ACPI_GPIO_TYPE_INTERRUPT, \
 	.pull = ACPI_GPIO_PULL_DEFAULT, \
-	.irq.mode = IRQ_LEVEL_TRIGGERED, \
-	.irq.polarity = IRQ_ACTIVE_HIGH, \
+	.irq.mode = ACPI_IRQ_LEVEL_TRIGGERED, \
+	.irq.polarity = ACPI_IRQ_ACTIVE_HIGH, \
 	.pin_count = 1, \
 	.pins = { (gpio) } }
 
@@ -213,8 +213,8 @@ struct acpi_gpio {
 #define ACPI_GPIO_IRQ_LEVEL_LOW(gpio) { \
 	.type = ACPI_GPIO_TYPE_INTERRUPT, \
 	.pull = ACPI_GPIO_PULL_DEFAULT, \
-	.irq.mode = IRQ_LEVEL_TRIGGERED, \
-	.irq.polarity = IRQ_ACTIVE_LOW, \
+	.irq.mode = ACPI_IRQ_LEVEL_TRIGGERED, \
+	.irq.polarity = ACPI_IRQ_ACTIVE_LOW, \
 	.pin_count = 1, \
 	.pins = { (gpio) } }
 

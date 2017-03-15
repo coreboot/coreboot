@@ -110,6 +110,8 @@ _start:
 	 */
 	post_code(POST_PRE_HARDWAREMAIN)	/* post fe */
 
+	andl	$0xFFFFFFF0, %esp
+
 #if CONFIG_GDB_WAIT
 	call gdb_hw_init
 	call gdb_stub_breakpoint

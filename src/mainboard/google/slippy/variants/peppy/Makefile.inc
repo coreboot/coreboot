@@ -13,8 +13,6 @@
 ## GNU General Public License for more details.
 ##
 
-ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += gma.c i915io.c
-
 ## DIMM SPD for on-board memory
 SPD_BIN = $(obj)/spd.bin
 

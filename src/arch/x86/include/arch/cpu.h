@@ -69,7 +69,7 @@ static inline struct cpuid_result cpuid(int op)
 /*
  * Generic Extended CPUID function
  */
-static inline struct cpuid_result cpuid_ext(int op, unsigned ecx)
+static inline struct cpuid_result cpuid_ext(int op, unsigned int ecx)
 {
 	struct cpuid_result result;
 	asm volatile(
@@ -171,8 +171,8 @@ void smm_setup_structures(void *gnvs, void *tcg, void *smi1);
 struct device;
 
 struct cpu_device_id {
-	unsigned vendor;
-	unsigned device;
+	unsigned int vendor;
+	unsigned int device;
 };
 
 struct cpu_driver {

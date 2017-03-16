@@ -55,7 +55,7 @@ typedef struct { volatile int counter; } atomic_t;
  * Atomically increments v by 1.  Note that the guaranteed
  * useful range of an atomic_t is only 24 bits.
  */
-static __inline__ __attribute__((always_inline)) void atomic_inc(atomic_t *v)
+static inline __attribute__((always_inline)) void atomic_inc(atomic_t *v)
 {
 	__asm__ __volatile__(
 		"lock ; incl %0"
@@ -70,7 +70,7 @@ static __inline__ __attribute__((always_inline)) void atomic_inc(atomic_t *v)
  * Atomically decrements v by 1.  Note that the guaranteed
  * useful range of an atomic_t is only 24 bits.
  */
-static __inline__ __attribute__((always_inline)) void atomic_dec(atomic_t *v)
+static inline __attribute__((always_inline)) void atomic_dec(atomic_t *v)
 {
 	__asm__ __volatile__(
 		"lock ; decl %0"

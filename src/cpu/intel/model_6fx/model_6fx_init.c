@@ -48,12 +48,14 @@ static void configure_c_states(void)
 
 	/* Set Processor MWAIT IO BASE (P_BLK) */
 	msr.hi = 0;
-	msr.lo = ((PMB0_BASE + 4) & 0xffff) | (((PMB1_BASE + 9) & 0xffff) << 16);
+	msr.lo = ((PMB0_BASE + 4) & 0xffff) | (((PMB1_BASE + 9) & 0xffff)
+		<< 16);
 	wrmsr(MSR_PMG_IO_BASE_ADDR, msr);
 
 	/* Set C_LVL controls and IO Capture Address */
 	msr.hi = 0;
-	msr.lo = (PMB0_BASE + 4) | ((HIGHEST_CLEVEL - 2) << 16); // -2 because LVL0+1 aren't counted
+	// -2 because LVL0+1 aren't counted
+	msr.lo = (PMB0_BASE + 4) | ((HIGHEST_CLEVEL - 2) << 16);
 	wrmsr(MSR_PMG_IO_CAPTURE_ADDR, msr);
 }
 

@@ -40,8 +40,9 @@ static struct device_operations cpu_dev_ops = {
 };
 
 static struct cpu_device_id cpu_table[] = {
-	{ X86_VENDOR_INTEL, 0x06D0 }, /* Pentium M on 90nm with 2MiB of L2 cache */
-	{ X86_VENDOR_INTEL, 0x06D6 }, /* Pentium M on 90nm with 2MiB of L2 cache */
+	/* Pentium M on 90nm with 2MiB of L2 cache */
+	{ X86_VENDOR_INTEL, 0x06D0 },
+	{ X86_VENDOR_INTEL, 0x06D6 },
 	{ 0, 0 },
 };
 

@@ -83,7 +83,8 @@ static void configure_c_states(const int quad)
 
 	/* Set Processor MWAIT IO BASE */
 	msr.hi = 0;
-	msr.lo = ((PMB0_BASE + 4) & 0xffff) | (((PMB1_BASE + 9) & 0xffff) << 16);
+	msr.lo = ((PMB0_BASE + 4) & 0xffff) | (((PMB1_BASE + 9) & 0xffff)
+		<< 16);
 	wrmsr(MSR_PMG_IO_BASE_ADDR, msr);
 
 	/* Set IO Capture Address */

@@ -93,12 +93,18 @@ Device (XHCI)
 		Offset (0x10),
 		, 16,
 		XMEM, 16,	/* MEM_BASE */
+		Offset (0x50),	/* XHCLKGTEN */
+		, 2,
+		STGE, 1,	/* SS Link Trunk clock gating enable */
 		Offset (0x74),
 		D0D3, 2,	/* POWERSTATE */
 		, 6,
 		PMEE, 1,	/* PME_EN */
 		, 6,
 		PMES, 1,	/* PME_STS */
+		Offset (0xA2),
+		, 2,
+		D3HE, 1,	/* D3_hot_en */
 	}
 
 	OperationRegion (XREG, SystemMemory,
@@ -123,6 +129,10 @@ Device (XHCI)
 		If (LOr (LEqual (^XMEM, 0xFFFF), LEqual (^XMEM, 0x0000))) {
 			Return
 		}
+
+		/* Disable d3hot and SS link trunk clock gating */
+		Store(Zero, ^D3HE)
+		Store(Zero, ^STGE)
 
 		/* If device is in D3, set back to D0 */
 		If (LEqual (^D0D3, 3)) {
@@ -177,6 +187,10 @@ Device (XHCI)
 
 		/* Enable USB2 PHY SUS Well Power Gating in D0/D0i2/D0i3/D3 */
 		Store (3, ^UPSW)
+
+		/* Enable d3hot and SS link trunk clock gating */
+                Store(One, ^D3HE)
+                Store(One, ^STGE)
 
 		/* Now put device in D3 */
 		Store (3, Local0)

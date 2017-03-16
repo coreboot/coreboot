@@ -288,8 +288,8 @@ void acpi_device_write_spi(const struct acpi_spi *spi);
  * GPIO is optional, but at least one must be provided.
  */
 void acpi_device_add_power_res(
-	struct acpi_gpio *reset, unsigned reset_delay_ms,
-	struct acpi_gpio *enable, unsigned enable_delay_ms);
+	struct acpi_gpio *reset, unsigned int reset_delay_ms,
+	struct acpi_gpio *enable, unsigned int enable_delay_ms);
 
 /*
  * Writing Device Properties objects via _DSD

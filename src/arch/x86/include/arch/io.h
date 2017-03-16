@@ -292,7 +292,7 @@ void pci_write_config16(pci_devfn_t dev, unsigned int where, uint16_t value)
 }
 
 static inline __attribute__((always_inline))
-void pci_write_config32(pci_devfn_t dev, unsigned where, uint32_t value)
+void pci_write_config32(pci_devfn_t dev, unsigned int where, uint32_t value)
 {
 	if (IS_ENABLED(CONFIG_MMCONF_SUPPORT))
 		pci_mmio_write_config32(dev, where, value);
@@ -301,7 +301,7 @@ void pci_write_config32(pci_devfn_t dev, unsigned where, uint32_t value)
 }
 
 #define PCI_DEV_INVALID (0xffffffffU)
-static inline pci_devfn_t pci_io_locate_device(unsigned pci_id, pci_devfn_t dev)
+static inline pci_devfn_t pci_io_locate_device(unsigned int pci_id, pci_devfn_t dev)
 {
 	for (; dev <= PCI_DEV(255, 31, 7); dev += PCI_DEV(0, 0, 1)) {
 		unsigned int id;
@@ -312,7 +312,7 @@ static inline pci_devfn_t pci_io_locate_device(unsigned pci_id, pci_devfn_t dev)
 	return PCI_DEV_INVALID;
 }
 
-static inline pci_devfn_t pci_locate_device(unsigned pci_id, pci_devfn_t dev)
+static inline pci_devfn_t pci_locate_device(unsigned int pci_id, pci_devfn_t dev)
 {
 	for (; dev <= PCI_DEV(255, 31, 7); dev += PCI_DEV(0, 0, 1)) {
 		unsigned int id;
@@ -323,7 +323,8 @@ static inline pci_devfn_t pci_locate_device(unsigned pci_id, pci_devfn_t dev)
 	return PCI_DEV_INVALID;
 }
 
-static inline pci_devfn_t pci_locate_device_on_bus(unsigned pci_id, unsigned bus)
+static inline pci_devfn_t pci_locate_device_on_bus(unsigned int pci_id,
+	unsigned int bus)
 {
 	pci_devfn_t dev, last;
 
@@ -342,14 +343,14 @@ static inline pci_devfn_t pci_locate_device_on_bus(unsigned pci_id, unsigned bus
 /* Generic functions for pnp devices */
 static inline __attribute__((always_inline)) void pnp_write_config(pnp_devfn_t dev, uint8_t reg, uint8_t value)
 {
-	unsigned port = dev >> 8;
+	unsigned int port = dev >> 8;
 	outb(reg, port);
 	outb(value, port + 1);
 }
 
 static inline __attribute__((always_inline)) uint8_t pnp_read_config(pnp_devfn_t dev, uint8_t reg)
 {
-	unsigned port = dev >> 8;
+	unsigned int port = dev >> 8;
 	outb(reg, port);
 	return inb(port + 1);
 }
@@ -357,7 +358,7 @@ static inline __attribute__((always_inline)) uint8_t pnp_read_config(pnp_devfn_t
 static inline __attribute__((always_inline))
 void pnp_set_logical_device(pnp_devfn_t dev)
 {
-	unsigned device = dev & 0xff;
+	unsigned int device = dev & 0xff;
 	pnp_write_config(dev, 0x07, device);
 }
 
@@ -374,26 +375,26 @@ int pnp_read_enable(pnp_devfn_t dev)
 }
 
 static inline __attribute__((always_inline))
-void pnp_set_iobase(pnp_devfn_t dev, unsigned index, unsigned iobase)
+void pnp_set_iobase(pnp_devfn_t dev, unsigned int index, unsigned int iobase)
 {
 	pnp_write_config(dev, index + 0, (iobase >> 8) & 0xff);
 	pnp_write_config(dev, index + 1, iobase & 0xff);
 }
 
 static inline __attribute__((always_inline))
-uint16_t pnp_read_iobase(pnp_devfn_t dev, unsigned index)
+uint16_t pnp_read_iobase(pnp_devfn_t dev, unsigned int index)
 {
 	return ((uint16_t)(pnp_read_config(dev, index)) << 8) | pnp_read_config(dev, index + 1);
 }
 
 static inline __attribute__((always_inline))
-void pnp_set_irq(pnp_devfn_t dev, unsigned index, unsigned irq)
+void pnp_set_irq(pnp_devfn_t dev, unsigned int index, unsigned int irq)
 {
 	pnp_write_config(dev, index, irq);
 }
 
 static inline __attribute__((always_inline))
-void pnp_set_drq(pnp_devfn_t dev, unsigned index, unsigned drq)
+void pnp_set_drq(pnp_devfn_t dev, unsigned int index, unsigned int drq)
 {
 	pnp_write_config(dev, index, drq & 0xff);
 }

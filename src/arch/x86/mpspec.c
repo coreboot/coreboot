@@ -157,9 +157,9 @@ void smp_write_processors(struct mp_config_table *mc)
 {
 	int boot_apic_id;
 	int order_id;
-	unsigned apic_version;
-	unsigned cpu_features;
-	unsigned cpu_feature_flags;
+	unsigned int apic_version;
+	unsigned int cpu_features;
+	unsigned int cpu_feature_flags;
 	struct cpuid_result result;
 	struct device *cpu;
 

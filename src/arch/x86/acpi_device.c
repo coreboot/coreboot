@@ -492,12 +492,12 @@ void acpi_device_write_spi(const struct acpi_spi *spi)
 
 /* PowerResource() with Enable and/or Reset control */
 void acpi_device_add_power_res(
-	struct acpi_gpio *reset, unsigned reset_delay_ms,
-	struct acpi_gpio *enable, unsigned enable_delay_ms)
+	struct acpi_gpio *reset, unsigned int reset_delay_ms,
+	struct acpi_gpio *enable, unsigned int enable_delay_ms)
 {
 	const char *power_res_dev_states[] = { "_PR0", "_PR3" };
-	unsigned reset_gpio = reset->pins[0];
-	unsigned enable_gpio = enable->pins[0];
+	unsigned int reset_gpio = reset->pins[0];
+	unsigned int enable_gpio = enable->pins[0];
 
 	if (!reset_gpio && !enable_gpio)
 		return;

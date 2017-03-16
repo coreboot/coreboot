@@ -17,9 +17,9 @@
 #include <arch/io.h>
 
 static inline __attribute__((always_inline))
-uint8_t pci_io_read_config8(pci_devfn_t dev, unsigned where)
+uint8_t pci_io_read_config8(pci_devfn_t dev, unsigned int where)
 {
-	unsigned addr;
+	unsigned int addr;
 #if !CONFIG_PCI_IO_CFG_EXT
 	addr = (dev>>4) | where;
 #else
@@ -30,9 +30,9 @@ uint8_t pci_io_read_config8(pci_devfn_t dev, unsigned where)
 }
 
 static inline __attribute__((always_inline))
-uint16_t pci_io_read_config16(pci_devfn_t dev, unsigned where)
+uint16_t pci_io_read_config16(pci_devfn_t dev, unsigned int where)
 {
-	unsigned addr;
+	unsigned int addr;
 #if !CONFIG_PCI_IO_CFG_EXT
 	addr = (dev>>4) | where;
 #else
@@ -43,9 +43,9 @@ uint16_t pci_io_read_config16(pci_devfn_t dev, unsigned where)
 }
 
 static inline __attribute__((always_inline))
-uint32_t pci_io_read_config32(pci_devfn_t dev, unsigned where)
+uint32_t pci_io_read_config32(pci_devfn_t dev, unsigned int where)
 {
-	unsigned addr;
+	unsigned int addr;
 #if !CONFIG_PCI_IO_CFG_EXT
 	addr = (dev>>4) | where;
 #else
@@ -56,9 +56,9 @@ uint32_t pci_io_read_config32(pci_devfn_t dev, unsigned where)
 }
 
 static inline __attribute__((always_inline))
-void pci_io_write_config8(pci_devfn_t dev, unsigned where, uint8_t value)
+void pci_io_write_config8(pci_devfn_t dev, unsigned int where, uint8_t value)
 {
-	unsigned addr;
+	unsigned int addr;
 #if !CONFIG_PCI_IO_CFG_EXT
 	addr = (dev>>4) | where;
 #else
@@ -69,9 +69,9 @@ void pci_io_write_config8(pci_devfn_t dev, unsigned where, uint8_t value)
 }
 
 static inline __attribute__((always_inline))
-void pci_io_write_config16(pci_devfn_t dev, unsigned where, uint16_t value)
+void pci_io_write_config16(pci_devfn_t dev, unsigned int where, uint16_t value)
 {
-	unsigned addr;
+	unsigned int addr;
 #if !CONFIG_PCI_IO_CFG_EXT
 	addr = (dev>>4) | where;
 #else
@@ -82,9 +82,9 @@ void pci_io_write_config16(pci_devfn_t dev, unsigned where, uint16_t value)
 }
 
 static inline __attribute__((always_inline))
-void pci_io_write_config32(pci_devfn_t dev, unsigned where, uint32_t value)
+void pci_io_write_config32(pci_devfn_t dev, unsigned int where, uint32_t value)
 {
-	unsigned addr;
+	unsigned int addr;
 #if !CONFIG_PCI_IO_CFG_EXT
 	addr = (dev>>4) | where;
 #else

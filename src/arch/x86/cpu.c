@@ -137,9 +137,7 @@ static const char *cpu_vendor_name(int vendor)
 	name = "<invalid CPU vendor>";
 	if ((vendor < (ARRAY_SIZE(x86_vendor_name))) &&
 		(x86_vendor_name[vendor] != 0))
-	{
 		name = x86_vendor_name[vendor];
-	}
 	return name;
 }
 
@@ -154,19 +152,16 @@ static void identify_cpu(struct device *cpu)
 	/* Find the id and vendor_name */
 	if (!cpu_have_cpuid()) {
 		/* Its a 486 if we can modify the AC flag */
-		if (flag_is_changeable_p(X86_EFLAGS_AC)) {
+		if (flag_is_changeable_p(X86_EFLAGS_AC))
 			cpu->device = 0x00000400; /* 486 */
-		} else {
+		else
 			cpu->device = 0x00000300; /* 386 */
-		}
-		if ((cpu->device == 0x00000400) && test_cyrix_52div()) {
+		if ((cpu->device == 0x00000400) && test_cyrix_52div())
 			memcpy(vendor_name, "CyrixInstead", 13);
 			/* If we ever care we can enable cpuid here */
-		}
 		/* Detect NexGen with old hypercode */
-		else if (deep_magic_nexgen_probe()) {
+		else if (deep_magic_nexgen_probe())
 			memcpy(vendor_name, "NexGenDriven", 13);
-		}
 	}
 #endif
 	if (cpu_have_cpuid()) {
@@ -189,13 +184,11 @@ static void identify_cpu(struct device *cpu)
 		vendor_name[12] = '\0';
 
 		/* Intel-defined flags: level 0x00000001 */
-		if (cpuid_level >= 0x00000001) {
+		if (cpuid_level >= 0x00000001)
 			cpu->device = cpuid_eax(0x00000001);
-		}
-		else {
+		else
 			/* Have CPUID level 0 only unheard of */
 			cpu->device = 0x00000400;
-		}
 	}
 	cpu->vendor = X86_VENDOR_UNKNOWN;
 	for (i = 0; i < ARRAY_SIZE(x86_vendors); i++) {
@@ -215,9 +208,7 @@ struct cpu_driver *find_cpu_driver(struct device *cpu)
 		     id->vendor != X86_VENDOR_INVALID; id++) {
 			if ((cpu->vendor == id->vendor) &&
 				(cpu->device == id->device))
-			{
 				return driver;
-			}
 			if (X86_VENDOR_ANY == id->vendor)
 				return driver;
 		}
@@ -247,9 +238,8 @@ void cpu_initialize(unsigned int index)
 	printk(BIOS_INFO, "Initializing CPU #%d\n", index);
 
 	cpu = info->cpu;
-	if (!cpu) {
+	if (!cpu)
 		die("CPU: missing CPU device structure");
-	}
 
 	if (cpu->initialized)
 		return;

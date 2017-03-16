@@ -100,8 +100,7 @@ static u8 pirq_get_next_free_irq(u8* pirq, u16 bitmap)
 {
 	int i, link;
 	u8 irq = 0;
-	for (i = 2; i <= 15; i++)
-	{
+	for (i = 2; i <= 15; i++) {
 		/* Can we assign this IRQ ? */
 		if (!((bitmap >> i) & 1))
 			continue;
@@ -161,13 +160,11 @@ static void pirq_route_irqs(unsigned long addr)
 			}
 
 			/* yet not routed */
-			if (!pirq[link - 1])
-			{
+			if (!pirq[link - 1]) {
 				irq = pirq_get_next_free_irq(pirq, bitmap);
 				if (irq)
 					pirq[link - 1] = irq;
-			}
-			else
+			} else
 				irq = pirq[link - 1];
 
 			printk(BIOS_DEBUG, "IRQ: %d\n", irq);

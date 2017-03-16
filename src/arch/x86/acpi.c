@@ -287,9 +287,8 @@ static void acpi_create_tcpa(acpi_tcpa_t *tcpa)
 	memset((void *)tcpa, 0, sizeof(acpi_tcpa_t));
 
 	lasa = get_tcpa_log(&tcpa_log_len);
-	if (!lasa) {
+	if (!lasa)
 		return;
-	}
 
 	/* Fill out header fields. */
 	memcpy(header->signature, "TCPA", 4);
@@ -354,9 +353,8 @@ void acpi_create_ssdt_generator(acpi_header_t *ssdt, const char *oem_table_id)
 	{
 		struct device *dev;
 		for (dev = all_devices; dev; dev = dev->next)
-			if (dev->ops && dev->ops->acpi_fill_ssdt_generator) {
+			if (dev->ops && dev->ops->acpi_fill_ssdt_generator)
 				dev->ops->acpi_fill_ssdt_generator(dev);
-			}
 		current = (unsigned long) acpigen_get_current();
 	}
 
@@ -840,11 +838,10 @@ void acpi_create_fadt(acpi_fadt_t *fadt,acpi_facs_t *facs, void *dsdt)
 	fadt->x_dsdt_l = (unsigned long)dsdt;
 	fadt->x_dsdt_h = 0;
 
-	if (IS_ENABLED(CONFIG_SYSTEM_TYPE_LAPTOP)) {
+	if (IS_ENABLED(CONFIG_SYSTEM_TYPE_LAPTOP))
 		fadt->preferred_pm_profile = PM_MOBILE;
-	} else {
+	else
 		fadt->preferred_pm_profile = PM_DESKTOP;
-	}
 
 	acpi_fill_fadt(fadt);
 
@@ -953,9 +950,8 @@ unsigned long write_acpi_tables(unsigned long start)
 
 		acpigen_set_current((char *) current);
 		for (dev = all_devices; dev; dev = dev->next)
-			if (dev->ops && dev->ops->acpi_inject_dsdt_generator) {
+			if (dev->ops && dev->ops->acpi_inject_dsdt_generator)
 				dev->ops->acpi_inject_dsdt_generator(dev);
-			}
 		current = (unsigned long) acpigen_get_current();
 		memcpy((char *)current,
 		       (char *)dsdt_file + sizeof(acpi_header_t),

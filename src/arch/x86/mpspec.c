@@ -63,9 +63,8 @@ static unsigned char smp_compute_checksum(void *v, int len)
 	int i;
 	bytes = v;
 	checksum = 0;
-	for (i = 0; i < len; i++) {
+	for (i = 0; i < len; i++)
 		checksum -= bytes[i];
-	}
 	return checksum;
 }
 
@@ -443,7 +442,9 @@ void mptable_add_isa_interrupts(struct mp_config_table *mc, unsigned long bus_is
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0xf, apicid, 0xf);
 }
 
-void mptable_write_buses(struct mp_config_table *mc, int *max_pci_bus, int *isa_bus) {
+void mptable_write_buses(struct mp_config_table *mc, int *max_pci_bus,
+	int *isa_bus)
+{
 	int dummy, i, highest;
 	char buses[256];
 	struct device *dev;

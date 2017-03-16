@@ -39,8 +39,7 @@
 
 #define SMP_FLOATING_TABLE_LEN sizeof(struct intel_mp_floating)
 
-struct intel_mp_floating
-{
+struct intel_mp_floating {
 	char mpf_signature[4];	/* "_MP_" */
 	u32 mpf_physptr;	/* Configuration table address */
 	u8 mpf_length;	/* Our length (paragraphs) */
@@ -55,8 +54,7 @@ struct intel_mp_floating
 	u8 mpf_feature5;	/* Unused (0) */
 } __attribute__((packed));
 
-struct mp_config_table
-{
+struct mp_config_table {
 	char mpc_signature[4];
 #define MPC_SIGNATURE "PCMP"
 	u16 mpc_length;	/* Size of table */
@@ -81,8 +79,7 @@ struct mp_config_table
 #define	MP_INTSRC	3
 #define	MP_LINTSRC	4
 
-struct mpc_config_processor
-{
+struct mpc_config_processor {
 	u8 mpc_type;
 	u8 mpc_apicid;	/* Local APIC number */
 	u8 mpc_apicver;	/* Its versions */
@@ -97,8 +94,7 @@ struct mpc_config_processor
 	u32 mpc_reserved[2];
 } __attribute__((packed));
 
-struct mpc_config_bus
-{
+struct mpc_config_bus {
 	u8 mpc_type;
 	u8 mpc_busid;
 	u8 mpc_bustype[6];
@@ -112,8 +108,7 @@ struct mpc_config_bus
 #define BUSTYPE_PCI	"PCI"
 #define BUSTYPE_PCMCIA	"PCMCIA"
 
-struct mpc_config_ioapic
-{
+struct mpc_config_ioapic {
 	u8 mpc_type;
 	u8 mpc_apicid;
 	u8 mpc_apicver;
@@ -122,8 +117,7 @@ struct mpc_config_ioapic
 	void *mpc_apicaddr;
 } __attribute__((packed));
 
-struct mpc_config_intsrc
-{
+struct mpc_config_intsrc {
 	u8 mpc_type;
 	u8 mpc_irqtype;
 	u16 mpc_irqflag;
@@ -150,8 +144,7 @@ enum mp_irq_source_types {
 #define MP_IRQ_TRIGGER_MASK     0xc
 
 
-struct mpc_config_lintsrc
-{
+struct mpc_config_lintsrc {
 	u8 mpc_type;
 	u8 mpc_irqtype;
 	u16 mpc_irqflag;

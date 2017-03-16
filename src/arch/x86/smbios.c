@@ -416,11 +416,10 @@ static int smbios_write_type3(unsigned long *current, int handle)
 	t->bootup_state = SMBIOS_STATE_SAFE;
 	t->power_supply_state = SMBIOS_STATE_SAFE;
 	t->thermal_state = SMBIOS_STATE_SAFE;
-	if (IS_ENABLED(CONFIG_SYSTEM_TYPE_LAPTOP)) {
+	if (IS_ENABLED(CONFIG_SYSTEM_TYPE_LAPTOP))
 		t->_type = SMBIOS_ENCLOSURE_NOTEBOOK;
-	} else {
+	else
 		t->_type = SMBIOS_ENCLOSURE_DESKTOP;
-	}
 	t->security_status = SMBIOS_STATE_SAFE;
 	len = t->length + smbios_string_table_len(t->eos);
 	*current += len;
@@ -437,9 +436,8 @@ static int smbios_write_type4(unsigned long *current, int handle)
 	res.eax = res.edx = 0;
 	res.ebx = 0x10000;
 
-	if (cpu_have_cpuid()) {
+	if (cpu_have_cpuid())
 		res = cpuid(1);
-	}
 
 	memset(t, 0, sizeof(struct smbios_type4));
 	t->type = SMBIOS_PROCESSOR_INFORMATION;

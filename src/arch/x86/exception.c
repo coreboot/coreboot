@@ -187,8 +187,7 @@ static uint32_t gdb_stub_registers[NUM_REGS];
 
 
 
-static unsigned char exception_to_signal[] =
-{
+static unsigned char exception_to_signal[] = {
 	[0]  = GDB_SIGFPE,  /* divide by zero */
 	[1]  = GDB_SIGTRAP, /* debug exception */
 	[2]  = GDB_SIGSEGV, /* NMI Interrupt */
@@ -342,8 +341,7 @@ static int get_packet(char *buffer)
 			if (checksum != xmitcsum) {
 				stub_putc('-');	/* failed checksum */
 				stub_flush();
-			}
-			else {
+			} else {
 				stub_putc('+');	/* successful transfer */
 				stub_flush();
 			}
@@ -394,9 +392,8 @@ void x86_exception(struct eregs *info)
 	gdb_stub_registers[CS] = info->cs;
 	gdb_stub_registers[PS] = info->eflags;
 	signo = GDB_UNKNOWN;
-	if (info->vector < ARRAY_SIZE(exception_to_signal)) {
+	if (info->vector < ARRAY_SIZE(exception_to_signal))
 		signo = exception_to_signal[info->vector];
-	}
 
 	/* reply to the host that an exception has occurred */
 	out_buffer[0] = 'S';
@@ -410,9 +407,8 @@ void x86_exception(struct eregs *info)
 		char *ptr;
 		out_buffer[0] = '\0';
 		out_buffer[1] = '\0';
-		if (!get_packet(in_buffer)) {
+		if (!get_packet(in_buffer))
 			break;
-		}
 		switch(in_buffer[0]) {
 		case '?': /* last signal */
 			out_buffer[0] = 'S';
@@ -438,9 +434,8 @@ void x86_exception(struct eregs *info)
 				(*ptr++ == ',') &&
 				parse_ulong(&ptr, &length)) {
 				copy_to_hex(out_buffer, (void *)addr, length);
-			} else {
+			} else
 				memcpy(out_buffer, "E01", 4);
-			}
 			break;
 		case 'M':
 			/* MAA..AA,LLLL: Write LLLL bytes at address AA.AA return OK */
@@ -451,26 +446,22 @@ void x86_exception(struct eregs *info)
 				(*(ptr++) == ':')) {
 				copy_from_hex((void *)addr, ptr, length);
 				memcpy(out_buffer, "OK", 3);
-			}
-			else {
+			} else
 				memcpy(out_buffer, "E02", 4);
-			}
 			break;
 		case 's':
 		case 'c':
 			/* cAA..AA    Continue at address AA..AA(optional) */
 			/* sAA..AA    Step one instruction from AA..AA(optional) */
 			ptr = &in_buffer[1];
-			if (parse_ulong(&ptr, &addr)) {
+			if (parse_ulong(&ptr, &addr))
 				info->eip = addr;
-			}
 
 			/* Clear the trace bit */
 			info->eflags &= ~(1 << 8);
 			/* Set the trace bit if we are single stepping */
-			if (in_buffer[0] == 's') {
+			if (in_buffer[0] == 's')
 				info->eflags |= (1 << 8);
-			}
 			return;
 			break;
 		case 'D':
@@ -513,8 +504,7 @@ void x86_exception(struct eregs *info)
 	 * evident from the looking at the dump */
 	code = (u8*)((uintptr_t)code & ~0x7);
 	int i;
-	for (i = 0; i < MDUMP_SIZE; i++)
-	{
+	for (i = 0; i < MDUMP_SIZE; i++) {
 		if ( (i & 0x07) == 0 )
 			printk(BIOS_EMERG, "\n%p:\t", code + i);
 		printk(BIOS_EMERG, "%.2x ", code[i]);

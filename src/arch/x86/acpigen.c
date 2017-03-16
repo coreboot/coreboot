@@ -204,9 +204,8 @@ void acpigen_write_name_string(const char *name, const char *string)
 void acpigen_emit_stream(const char *data, int size)
 {
 	int i;
-	for (i = 0; i < size; i++) {
+	for (i = 0; i < size; i++)
 		acpigen_emit_byte(data[i]);
-	}
 }
 
 void acpigen_emit_string(const char *string)
@@ -238,7 +237,8 @@ void acpigen_write_coreboot_hid(enum coreboot_acpi_ids id)
  * Check sections 5.3, 18.2.2 and 18.4 of ACPI spec 3.0 for details.
  */
 
-static void acpigen_emit_simple_namestring(const char *name) {
+static void acpigen_emit_simple_namestring(const char *name)
+{
 	int i;
 	char ud[] = "____";
 	for (i = 0; i < 4; i++) {
@@ -251,13 +251,15 @@ static void acpigen_emit_simple_namestring(const char *name) {
 	}
 }
 
-static void acpigen_emit_double_namestring(const char *name, int dotpos) {
+static void acpigen_emit_double_namestring(const char *name, int dotpos)
+{
 	acpigen_emit_byte(DUAL_NAME_PREFIX);
 	acpigen_emit_simple_namestring(name);
 	acpigen_emit_simple_namestring(&name[dotpos + 1]);
 }
 
-static void acpigen_emit_multi_namestring(const char *name) {
+static void acpigen_emit_multi_namestring(const char *name)
+{
 	int count = 0;
 	unsigned char *pathlen;
 	acpigen_emit_byte(MULTI_NAME_PREFIX);
@@ -279,7 +281,8 @@ static void acpigen_emit_multi_namestring(const char *name) {
 }
 
 
-void acpigen_emit_namestring(const char *namepath) {
+void acpigen_emit_namestring(const char *namepath)
+{
 	int dotcount = 0, i;
 	int dotpos = 0;
 
@@ -311,13 +314,12 @@ void acpigen_emit_namestring(const char *namepath) {
 		i++;
 	}
 
-	if (dotcount == 0) {
+	if (dotcount == 0)
 		acpigen_emit_simple_namestring(namepath);
-	} else if (dotcount == 1) {
+	else if (dotcount == 1)
 		acpigen_emit_double_namestring(namepath, dotpos);
-	} else {
+	else
 		acpigen_emit_multi_namestring(namepath);
-	}
 }
 
 void acpigen_write_name(const char *name)

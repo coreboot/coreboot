@@ -306,9 +306,8 @@ static inline pci_devfn_t pci_io_locate_device(unsigned pci_id, pci_devfn_t dev)
 	for (; dev <= PCI_DEV(255, 31, 7); dev += PCI_DEV(0,0,1)) {
 		unsigned int id;
 		id = pci_io_read_config32(dev, 0);
-		if (id == pci_id) {
+		if (id == pci_id)
 			return dev;
-		}
 	}
 	return PCI_DEV_INVALID;
 }
@@ -318,9 +317,8 @@ static inline pci_devfn_t pci_locate_device(unsigned pci_id, pci_devfn_t dev)
 	for (; dev <= PCI_DEV(255, 31, 7); dev += PCI_DEV(0,0,1)) {
 		unsigned int id;
 		id = pci_read_config32(dev, 0);
-		if (id == pci_id) {
+		if (id == pci_id)
 			return dev;
-		}
 	}
 	return PCI_DEV_INVALID;
 }
@@ -335,9 +333,8 @@ static inline pci_devfn_t pci_locate_device_on_bus(unsigned pci_id, unsigned bus
 	for (; dev <=last; dev += PCI_DEV(0,0,1)) {
 		unsigned int id;
 		id = pci_read_config32(dev, 0);
-		if (id == pci_id) {
+		if (id == pci_id)
 			return dev;
-		}
 	}
 	return PCI_DEV_INVALID;
 }

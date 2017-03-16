@@ -92,13 +92,13 @@ static void asmlinkage cpu_smm_do_relocation(void *arg)
 	 * Since one thread runs at a time during the relocation the save state
 	 * is the same for all cpus. */
 	save_state = (void *)(runtime->smbase + SMM_DEFAULT_SIZE -
-                              runtime->save_state_size);
+			      runtime->save_state_size);
 
 	/* The relocated handler runs with all CPUs concurrently. Therefore
 	 * stagger the entry points adjusting SMBASE downwards by save state
 	 * size * CPU num. */
 	save_state->smbase = relo_params->smram_base -
-	                     cpu * runtime->save_state_size;
+			     cpu * runtime->save_state_size;
 	save_state->iedbase = relo_params->ied_base;
 
 	printk(BIOS_DEBUG, "New SMBASE=0x%08x IEDBASE=0x%08x @ %p\n",
@@ -138,7 +138,7 @@ static void fill_in_relocation_params(struct smm_relocation_params *params)
 }
 
 static int install_relocation_handler(int *apic_id_map, int num_cpus,
-                                      struct smm_relocation_params *relo_params)
+				      struct smm_relocation_params *relo_params)
 {
 	/* The default SMM entry happens serially at the default location.
 	 * Therefore, there is only 1 concurrent save state area. Set the
@@ -183,7 +183,7 @@ static void setup_ied_area(struct smm_relocation_params *params)
 }
 
 static int install_permanent_handler(int *apic_id_map, int num_cpus,
-                                     struct smm_relocation_params *relo_params)
+				     struct smm_relocation_params *relo_params)
 {
 	/* There are num_cpus concurrent stacks and num_cpus concurrent save
 	 * state areas. Lastly, set the stack size to the save state size. */

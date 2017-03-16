@@ -221,7 +221,7 @@ static u32 northbridge_get_base_reg(struct device *dev, int reg)
 }
 
 static void fill_in_relocation_params(struct device *dev,
-                                      struct smm_relocation_params *params)
+				      struct smm_relocation_params *params)
 {
 	u32 tseg_size;
 	u32 tsegmb;
@@ -273,7 +273,7 @@ static void fill_in_relocation_params(struct device *dev,
 	params->uncore_emrr_base.lo = emrr_base;
 	params->uncore_emrr_base.hi = 0;
 	params->uncore_emrr_mask.lo = (~(emrr_size - 1) & rmask) |
-	                              MTRR_PHYS_MASK_VALID;
+				      MTRR_PHYS_MASK_VALID;
 	params->uncore_emrr_mask.hi = (1 << (39 - 32)) - 1;
 }
 
@@ -297,7 +297,9 @@ static void setup_ied_area(struct smm_relocation_params *params)
 
 	/* According to the BWG MP init section 2MiB of memory at IEDBASE +
 	 * 2MiB should be zeroed as well. However, I suspect what is intended
-	 * is to clear the memory covered by EMRR. TODO(adurbin): figure out if 	 * this is really required. */
+	 * is to clear the memory covered by EMRR. TODO(adurbin): figure out if
+	 * this is really required.
+	 */
 	//memset(ied_base + (2 << 20), 0, (2 << 20));
 }
 

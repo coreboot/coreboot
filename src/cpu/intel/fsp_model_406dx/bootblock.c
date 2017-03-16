@@ -61,7 +61,7 @@ static void enable_rom_caching(void)
 
 	disable_cache();
 	set_var_mtrr(1, 0xffffffff - CACHE_ROM_SIZE + 1,
-	             CACHE_ROM_SIZE, MTRR_TYPE_WRPROT);
+		     CACHE_ROM_SIZE, MTRR_TYPE_WRPROT);
 	enable_cache();
 
 	/* Enable Variable MTRRs */

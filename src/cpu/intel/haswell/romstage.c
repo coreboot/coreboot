@@ -140,7 +140,7 @@ static void *setup_romstage_stack_after_car(void)
 	return slot;
 }
 
-void * asmlinkage romstage_main(unsigned long bist)
+asmlinkage void *romstage_main(unsigned long bist)
 {
 	int i;
 	void *romstage_stack_after_car;
@@ -253,7 +253,7 @@ void romstage_common(const struct romstage_params *params)
 	}
 }
 
-void asmlinkage romstage_after_car(void)
+asmlinkage void romstage_after_car(void)
 {
 	/* Load the ramstage. */
 	run_ramstage();

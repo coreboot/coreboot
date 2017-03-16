@@ -133,7 +133,7 @@ int calculate_l2_latency(void)
 	 */
 	msr = rdmsr(IA32_PLATFORM_ID);
 
-	printk(BIOS_DEBUG,"rdmsr(IA32_PLATFORM_ID) = %x:%x\n", msr.hi, msr.lo);
+	printk(BIOS_DEBUG, "rdmsr(IA32_PLATFORM_ID) = %x:%x\n", msr.hi, msr.lo);
 
 	l = (msr.hi >> 20) & 0x1e;
 
@@ -160,7 +160,7 @@ int calculate_l2_latency(void)
 		else
 			return -1;
 
-		printk(BIOS_DEBUG,"L2 latency type = %x\n", t);
+		printk(BIOS_DEBUG, "L2 latency type = %x\n", t);
 
 		/* Get CPUID family/model */
 		signature = cpuid_eax(1) & 0xfff0;
@@ -193,7 +193,7 @@ int calculate_l2_latency(void)
 		l = le->value;
 	}
 
-	printk(BIOS_DEBUG,"L2 Cache latency is %d\n", l / 2);
+	printk(BIOS_DEBUG, "L2 Cache latency is %d\n", l / 2);
 
 	/* Writes the calculated latency in BBL_CR_CTL3[4:1]. */
 	msr = rdmsr(BBL_CR_CTL3);
@@ -385,7 +385,7 @@ int calculate_l2_cache_size(void)
 
 		wrmsr(BBL_CR_CTL3, msr);
 
-		printk(BIOS_DEBUG,"Maximum cache mask is %x\n", cache_setting);
+		printk(BIOS_DEBUG, "Maximum cache mask is %x\n", cache_setting);
 
 		/* For now, BBL_CR_CTL3 has the highest cache "size" that register
 		 * will accept. Now we'll ping the cache and see where it wraps.
@@ -432,7 +432,7 @@ int calculate_l2_cache_size(void)
 		msr.lo |= size;
 		wrmsr(BBL_CR_CTL3, msr);
 
-		printk(BIOS_DEBUG,"L2 Cache Mask is %x\n", size);
+		printk(BIOS_DEBUG, "L2 Cache Mask is %x\n", size);
 
 		/* Shift to [6:2] */
 		size >>= 11;
@@ -442,7 +442,7 @@ int calculate_l2_cache_size(void)
 		if (v < 0)
 			return -1;
 
-		printk(BIOS_DEBUG,"L2(2): %x ", v);
+		printk(BIOS_DEBUG, "L2(2): %x ", v);
 
 		v &= 0x3;
 
@@ -452,7 +452,7 @@ int calculate_l2_cache_size(void)
 		/* Or in this size */
 		v |= size;
 
-		printk(BIOS_DEBUG,"-> %x\n", v);
+		printk(BIOS_DEBUG, "-> %x\n", v);
 
 		if (write_l2(2, v) != 0)
 			return -1;
@@ -463,7 +463,7 @@ int calculate_l2_cache_size(void)
 
 		v = read_l2(2);
 
-		printk(BIOS_DEBUG,"L2(2) = %x\n", v);
+		printk(BIOS_DEBUG, "L2(2) = %x\n", v);
 
 		if (v < 0)
 			return -1;
@@ -476,7 +476,7 @@ int calculate_l2_cache_size(void)
 
 		v &= 0xf;
 
-		printk(BIOS_DEBUG,"Calculated a = %x\n", v);
+		printk(BIOS_DEBUG, "Calculated a = %x\n", v);
 
 		if (v == 0)
 			return -1;
@@ -513,7 +513,7 @@ int calculate_l2_physical_address_range(void)
 	else
 		r3 &= 0x7;
 
-	printk(BIOS_DEBUG,"L2 Physical Address Range is %dM\n", (1 << r3) * 512);
+	printk(BIOS_DEBUG, "L2 Physical Address Range is %dM\n", (1 << r3) * 512);
 
 	/* Shift into [22:20] to be saved into BBL_CR_CTL3. */
 	r3 = r3 << 20;
@@ -551,7 +551,7 @@ int set_l2_ecc(void)
 	eax = msr.lo;
 
 	if (eax == data1) {
-		printk(BIOS_DEBUG,"L2 ECC Checking is enabled\n");
+		printk(BIOS_DEBUG, "L2 ECC Checking is enabled\n");
 
 		/* Set ECC Check Enable in BBL_CR_CTL3 */
 		msr = rdmsr(BBL_CR_CTL3);
@@ -591,7 +591,7 @@ int p6_configure_l2_cache(void)
 	/* If bit 23 (L2 Hardware disable) is set then done */
 	/* These would be Covington core Celerons with no L2 cache */
 	if (bblctl3.lo & BBLCR3_L2_NOT_PRESENT) {
-		printk(BIOS_INFO,"hardware disabled\n");
+		printk(BIOS_INFO, "hardware disabled\n");
 		return 0;
 	}
 
@@ -666,7 +666,7 @@ int p6_configure_l2_cache(void)
 
 		v = (calc_eax >> 26) & 0x3;
 
-		printk(BIOS_DEBUG,"write_l2(4, %x)\n", v);
+		printk(BIOS_DEBUG, "write_l2(4, %x)\n", v);
 
 		a = read_l2(4);
 		if (a >= 0)
@@ -772,7 +772,7 @@ int p6_configure_l2_cache(void)
 
 	/* Write 0 to L2 control register 5 */
 	if (write_l2(5, 0) != 0) {
-		printk(BIOS_ERR,"write_l2(5, 0) failed\n");
+		printk(BIOS_ERR, "write_l2(5, 0) failed\n");
 		goto done;
 	}
 

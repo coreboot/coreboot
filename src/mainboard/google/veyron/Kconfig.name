@@ -1,7 +1,3 @@
-config BOARD_GOOGLE_VEYRON_GUS
-	bool "Veyron_Gus"
-	select BOARD_GOOGLE_VEYRON
-
 config BOARD_GOOGLE_VEYRON_JAQ
 	bool "Haier Chromebook 11 (Veyron_Jaq)"
 	select BOARD_GOOGLE_VEYRON
@@ -22,23 +18,7 @@ config BOARD_GOOGLE_VEYRON_MINNIE
 	select BOARD_GOOGLE_VEYRON
 	select SYSTEM_TYPE_LAPTOP
 
-config BOARD_GOOGLE_VEYRON_NICKY
-	bool "Veyron_Nicky"
-	select BOARD_GOOGLE_VEYRON
-
-config BOARD_GOOGLE_VEYRON_PINKY
-	bool "Veyron_Pinky"
-	select BOARD_GOOGLE_VEYRON
-
-config BOARD_GOOGLE_VEYRON_SHARK
-	bool "Veyron_Shark"
-	select BOARD_GOOGLE_VEYRON
-
 config BOARD_GOOGLE_VEYRON_SPEEDY
 	bool "ASUS C201 Chromebook (Veyron_Speedy)"
 	select BOARD_GOOGLE_VEYRON
 	select SYSTEM_TYPE_LAPTOP
-
-config BOARD_GOOGLE_VEYRON_THEA
-	bool "Veyron_Thea"
-	select BOARD_GOOGLE_VEYRON

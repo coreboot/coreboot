@@ -36,10 +36,9 @@ int acpi_get_sleep_type(void)
 	if (romstage_handoff_is_resume()) {
 		printk(BIOS_DEBUG, "S3 Resume.\n");
 		return ACPI_S3;
-	} else {
-		printk(BIOS_DEBUG, "Normal boot.\n");
-		return ACPI_S0;
 	}
+	printk(BIOS_DEBUG, "Normal boot.\n");
+	return ACPI_S0;
 }
 #endif
 
@@ -202,8 +201,8 @@ void acpi_prepare_resume_backup(void)
 
 #define WAKEUP_BASE 0x600
 
-void (*acpi_do_wakeup)(uintptr_t vector, u32 backup_source, u32 backup_target,
-	u32 backup_size) asmlinkage = (void *)WAKEUP_BASE;
+asmlinkage void (*acpi_do_wakeup)(uintptr_t vector, u32 backup_source,
+	u32 backup_target, u32 backup_size) = (void *)WAKEUP_BASE;
 
 extern unsigned char __wakeup;
 extern unsigned int __wakeup_size;

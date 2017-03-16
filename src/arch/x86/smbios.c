@@ -129,60 +129,61 @@ void smbios_fill_dimm_manufacturer_from_id(uint16_t mod_id,
 	struct smbios_type17 *t)
 {
 	switch (mod_id) {
-		case 0x2c80:
-			t->manufacturer = smbios_add_string(t->eos,
-							    "Crucial");
-			break;
-		case 0x4304:
-			t->manufacturer = smbios_add_string(t->eos,
-							    "Ramaxel");
-			break;
-		case 0x4f01:
-			t->manufacturer = smbios_add_string(t->eos,
-							    "Transcend");
-			break;
-		case 0x9801:
-			t->manufacturer = smbios_add_string(t->eos,
-							    "Kingston");
-			break;
-		case 0x987f:
-			t->manufacturer = smbios_add_string(t->eos,
-							    "Hynix");
-			break;
-		case 0x9e02:
-			t->manufacturer = smbios_add_string(t->eos,
-							    "Corsair");
-			break;
-		case 0xb004:
-			t->manufacturer = smbios_add_string(t->eos,
-							    "OCZ");
-			break;
-		case 0xad80:
-			t->manufacturer = smbios_add_string(t->eos,
-							    "Hynix/Hyundai");
-			break;
-		case 0xb502:
-			t->manufacturer = smbios_add_string(t->eos,
-							    "SuperTalent");
-			break;
-		case 0xcd04:
-			t->manufacturer = smbios_add_string(t->eos,
-							    "GSkill");
-			break;
-		case 0xce80:
-			t->manufacturer = smbios_add_string(t->eos,
-							    "Samsung");
-			break;
-		case 0xfe02:
-			t->manufacturer = smbios_add_string(t->eos,
-							    "Elpida");
-			break;
-		case 0xff2c:
-			t->manufacturer = smbios_add_string(t->eos,
-							    "Micron");
-			break;
-		default: {
+	case 0x2c80:
+		t->manufacturer = smbios_add_string(t->eos,
+						    "Crucial");
+		break;
+	case 0x4304:
+		t->manufacturer = smbios_add_string(t->eos,
+						    "Ramaxel");
+		break;
+	case 0x4f01:
+		t->manufacturer = smbios_add_string(t->eos,
+						    "Transcend");
+		break;
+	case 0x9801:
+		t->manufacturer = smbios_add_string(t->eos,
+						    "Kingston");
+		break;
+	case 0x987f:
+		t->manufacturer = smbios_add_string(t->eos,
+						    "Hynix");
+		break;
+	case 0x9e02:
+		t->manufacturer = smbios_add_string(t->eos,
+						    "Corsair");
+		break;
+	case 0xb004:
+		t->manufacturer = smbios_add_string(t->eos,
+						    "OCZ");
+		break;
+	case 0xad80:
+		t->manufacturer = smbios_add_string(t->eos,
+						    "Hynix/Hyundai");
+		break;
+	case 0xb502:
+		t->manufacturer = smbios_add_string(t->eos,
+						    "SuperTalent");
+		break;
+	case 0xcd04:
+		t->manufacturer = smbios_add_string(t->eos,
+						    "GSkill");
+		break;
+	case 0xce80:
+		t->manufacturer = smbios_add_string(t->eos,
+						    "Samsung");
+		break;
+	case 0xfe02:
+		t->manufacturer = smbios_add_string(t->eos,
+						    "Elpida");
+		break;
+	case 0xff2c:
+		t->manufacturer = smbios_add_string(t->eos,
+						    "Micron");
+		break;
+	default: {
 			char string_buffer[256];
+
 			snprintf(string_buffer, sizeof(string_buffer),
 						"Unknown (%x)", mod_id);
 			t->manufacturer = smbios_add_string(t->eos,
@@ -209,21 +210,21 @@ static int create_smbios_type17_for_dimm(struct dimm_info *dimm,
 	t->total_width = t->data_width + 8 * ((dimm->bus_width & 0x18) >> 3);
 
 	switch (dimm->mod_type) {
-		case SPD_RDIMM:
-		case SPD_MINI_RDIMM:
-			t->form_factor = MEMORY_FORMFACTOR_RIMM;
-			break;
-		case SPD_UDIMM:
-		case SPD_MICRO_DIMM:
-		case SPD_MINI_UDIMM:
-			t->form_factor = MEMORY_FORMFACTOR_DIMM;
-			break;
-		case SPD_SODIMM:
-			t->form_factor = MEMORY_FORMFACTOR_SODIMM;
-			break;
-		default:
-			t->form_factor = MEMORY_FORMFACTOR_UNKNOWN;
-			break;
+	case SPD_RDIMM:
+	case SPD_MINI_RDIMM:
+		t->form_factor = MEMORY_FORMFACTOR_RIMM;
+		break;
+	case SPD_UDIMM:
+	case SPD_MICRO_DIMM:
+	case SPD_MINI_UDIMM:
+		t->form_factor = MEMORY_FORMFACTOR_DIMM;
+		break;
+	case SPD_SODIMM:
+		t->form_factor = MEMORY_FORMFACTOR_SODIMM;
+		break;
+	default:
+		t->form_factor = MEMORY_FORMFACTOR_UNKNOWN;
+		break;
 	}
 
 	smbios_fill_dimm_manufacturer_from_id(dimm->mod_id, t);
@@ -476,10 +477,10 @@ static int smbios_write_type11(unsigned long *current, int *handle)
 	int len;
 	struct device *dev;
 
-	memset(t, 0, sizeof *t);
+	memset(t, 0, sizeof(*t));
 	t->type = SMBIOS_OEM_STRINGS;
 	t->handle = *handle;
-	t->length = len = sizeof *t - 2;
+	t->length = len = sizeof(*t) - 2;
 
 	for (dev = all_devices; dev; dev = dev->next) {
 		if (dev->ops && dev->ops->get_smbios_strings)
@@ -487,7 +488,7 @@ static int smbios_write_type11(unsigned long *current, int *handle)
 	}
 
 	if (t->count == 0) {
-		memset(t, 0, sizeof *t);
+		memset(t, 0, sizeof(*t));
 		return 0;
 	}
 

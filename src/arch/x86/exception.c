@@ -286,7 +286,6 @@ static void copy_to_hex(char *buf, void *addr, unsigned long count)
 		*buf++ = hexchars[ch & 0x0f];
 	}
 	*buf = 0;
-	return;
 }
 
 
@@ -319,7 +318,8 @@ static int get_packet(char *buffer)
 		/* wait around for the start character, ignore all other
 		 * characters
 		 */
-		while ((ch = (stub_getc() & 0x7f)) != '$');
+		while ((ch = (stub_getc() & 0x7f)) != '$')
+			;
 		checksum = 0;
 		xmitcsum = -1;
 
@@ -470,7 +470,6 @@ void x86_exception(struct eregs *info)
 			if (in_buffer[0] == 's')
 				info->eflags |= (1 << 8);
 			return;
-			break;
 		case 'D':
 			memcpy(out_buffer, "OK", 3);
 			break;

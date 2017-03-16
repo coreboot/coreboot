@@ -18,6 +18,6 @@
 
 #include <arch/cpu.h>
 
-void asmlinkage copy_and_run(void);
+asmlinkage void copy_and_run(void);
 
 #endif

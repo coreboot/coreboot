@@ -54,11 +54,10 @@ void *car_sync_var_ptr(void *var);
 
 /* Get and set a primitive type global variable. */
 #define car_get_var(var) \
-	*(typeof(var) *)car_get_var_ptr(&(var))
+	(*(typeof(var) *)car_get_var_ptr(&(var)))
 #define car_sync_var(var) \
-	*(typeof(var) *)car_sync_var_ptr(&(var))
-#define car_set_var(var, val) \
-	do { car_get_var(var) = (val); } while (0)
+	(*(typeof(var) *)car_sync_var_ptr(&(var)))
+#define car_set_var(var, val)	car_get_var(var) = (val)
 
 static inline size_t car_data_size(void)
 {
@@ -76,7 +75,7 @@ static inline size_t car_object_offset(void *ptr)
 static inline void *car_get_var_ptr(void *var) { return var; }
 #define car_get_var(var) (var)
 #define car_sync_var(var) (var)
-#define car_set_var(var, val) do { (var) = (val); } while (0)
+#define car_set_var(var, val)	(var) = (val)
 #endif
 
 #endif

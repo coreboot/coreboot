@@ -481,8 +481,10 @@ void mptable_write_buses(struct mp_config_table *mc, int *max_pci_bus,
 	char buses[256];
 	struct device *dev;
 
-	if (!max_pci_bus) max_pci_bus = &dummy;
-	if (!isa_bus) isa_bus = &dummy;
+	if (!max_pci_bus)
+		max_pci_bus = &dummy;
+	if (!isa_bus)
+		isa_bus = &dummy;
 
 	*max_pci_bus = 0;
 	highest = 0;
@@ -497,7 +499,8 @@ void mptable_write_buses(struct mp_config_table *mc, int *max_pci_bus,
 				return;
 			}
 			buses[bus->secondary] = 1;
-			if (highest < bus->secondary) highest = bus->secondary;
+			if (highest < bus->secondary)
+				highest = bus->secondary;
 		}
 	}
 	for (i = 0; i <= highest; i++) {
@@ -545,7 +548,8 @@ unsigned long __attribute__((weak)) write_smp_table(unsigned long addr)
 		if (dev->path.type != DEVICE_PATH_IOAPIC)
 			continue;
 
-		if (!(ioapic_config = dev->chip_info)) {
+		ioapic_config = dev->chip_info;
+		if (!ioapic_config) {
 			printk(BIOS_ERR, "%s has no config, ignoring\n",
 				dev_path(dev));
 			continue;

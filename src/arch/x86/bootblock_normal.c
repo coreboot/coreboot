@@ -18,7 +18,8 @@
 
 static const char *get_fallback(const char *stagelist)
 {
-	while (*stagelist) stagelist++;
+	while (*stagelist)
+		stagelist++;
 	return ++stagelist;
 }
 

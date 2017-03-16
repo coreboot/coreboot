@@ -249,7 +249,7 @@ static inline void get_fms(struct cpuinfo_x86 *c, uint32_t tfms)
  * is the symbol jumped to for each stage after bootblock using
  * cache-as-ram.
  */
-void asmlinkage car_stage_entry(void);
+asmlinkage void car_stage_entry(void);
 
 /*
  * Support setting up a stack frame consisting of MTRR information

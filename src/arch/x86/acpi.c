@@ -1075,7 +1075,8 @@ void *acpi_find_wakeup_vector(void)
 
 	/* Find RSDP. */
 	for (p = (char *)0xe0000; p < (char *)0xfffff; p += 16) {
-		if ((rsdp = valid_rsdp((acpi_rsdp_t *)p)))
+		rsdp = valid_rsdp((acpi_rsdp_t *)p);
+		if (rsdp)
 			break;
 	}
 

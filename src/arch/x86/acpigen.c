@@ -246,9 +246,8 @@ static void acpigen_emit_simple_namestring(const char *name)
 		if ((name[i] == '\0') || (name[i] == '.')) {
 			acpigen_emit_stream(ud, 4 - i);
 			break;
-		} else {
-			acpigen_emit_byte(name[i]);
 		}
+		acpigen_emit_byte(name[i]);
 	}
 }
 

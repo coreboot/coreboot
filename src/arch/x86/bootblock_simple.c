@@ -36,6 +36,7 @@ static void main(unsigned long bist)
 
 	unsigned long entry;
 	entry = findstage(target1);
-	if (entry) call(entry, bist);
+	if (entry)
+		call(entry, bist);
 	halt();
 }

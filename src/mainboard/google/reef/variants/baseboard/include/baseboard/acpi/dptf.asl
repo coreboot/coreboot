@@ -62,9 +62,6 @@ Name (DTRT, Package () {
 
 	/* CPU Effect on Temp Sensor 1 */
 	Package () { \_SB.PCI0.TCPU, \_SB.DPTF.TSR1, 100, 150, 0, 0, 0, 0 },
-
-	/* CPU Effect on Temp Sensor 2 */
-	Package () { \_SB.PCI0.TCPU, \_SB.DPTF.TSR2, 100, 600, 0, 0, 0, 0 },
 })
 
 Name (MPPC, Package ()

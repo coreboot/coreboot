@@ -17,7 +17,7 @@
 #include <vendorcode/google/chromeos/chromeos.h>
 
 /* Provide an entry point for verstage when it's a separate stage. */
-void asmlinkage car_stage_entry(void)
+asmlinkage void car_stage_entry(void)
 {
 	verstage();
 }

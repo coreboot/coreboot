@@ -39,7 +39,8 @@ void initialize_romstage_microcode_cbfs_lock(void);
 #define SPIN_LOCK_UNLOCKED { 1 }
 
 #ifndef __PRE_RAM__
-#define DECLARE_SPIN_LOCK(x) static spinlock_t x = SPIN_LOCK_UNLOCKED;
+#define DECLARE_SPIN_LOCK(x)	\
+	static spinlock_t x = SPIN_LOCK_UNLOCKED;
 #else
 #define DECLARE_SPIN_LOCK(x)
 #endif

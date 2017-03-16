@@ -18,9 +18,9 @@
 #define __ARCH_EBDA_H
 
 #define X86_BDA_SIZE		0x200
-#define X86_BDA_BASE		(void *)0x400
-#define X86_EBDA_SEGMENT	(void *)0x40e
-#define X86_EBDA_LOWMEM		(void *)0x413
+#define X86_BDA_BASE		((void *)0x400)
+#define X86_EBDA_SEGMENT	((void *)0x40e)
+#define X86_EBDA_LOWMEM		((void *)0x413)
 
 #define DEFAULT_EBDA_LOWMEM	(1024 << 10)
 #define DEFAULT_EBDA_SEGMENT	0xF600

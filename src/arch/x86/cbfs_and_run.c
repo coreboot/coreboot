@@ -16,7 +16,7 @@
 #include <arch/stages.h>
 #include <program_loading.h>
 
-void asmlinkage copy_and_run(void)
+asmlinkage void copy_and_run(void)
 {
 	run_ramstage();
 }

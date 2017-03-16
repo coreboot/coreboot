@@ -495,7 +495,7 @@ void acpi_device_add_power_res(
 	struct acpi_gpio *reset, unsigned int reset_delay_ms,
 	struct acpi_gpio *enable, unsigned int enable_delay_ms)
 {
-	const char *power_res_dev_states[] = { "_PR0", "_PR3" };
+	static const char *power_res_dev_states[] = { "_PR0", "_PR3" };
 	unsigned int reset_gpio = reset->pins[0];
 	unsigned int enable_gpio = enable->pins[0];
 

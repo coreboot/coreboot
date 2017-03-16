@@ -118,7 +118,7 @@ static struct {
 	{ X86_VENDOR_SIS,       "SiS SiS SiS ", },
 };
 
-static const char *x86_vendor_name[] = {
+static const char * const x86_vendor_name[] = {
 	[X86_VENDOR_INTEL]     = "Intel",
 	[X86_VENDOR_CYRIX]     = "Cyrix",
 	[X86_VENDOR_AMD]       = "AMD",
@@ -209,7 +209,7 @@ struct cpu_driver *find_cpu_driver(struct device *cpu)
 			if ((cpu->vendor == id->vendor) &&
 				(cpu->device == id->device))
 				return driver;
-			if (X86_VENDOR_ANY == id->vendor)
+			if (id->vendor == X86_VENDOR_ANY)
 				return driver;
 		}
 	}
@@ -264,7 +264,8 @@ void cpu_initialize(unsigned int index)
 		cpu->device -= c.x86_mask;
 		set_cpu_ops(cpu);
 		cpu->device += c.x86_mask;
-		if (!cpu->ops) die("Unknown cpu");
+		if (!cpu->ops)
+			die("Unknown cpu");
 		printk(BIOS_DEBUG, "Using generic CPU ops (good)\n");
 	}
 
@@ -278,8 +279,6 @@ void cpu_initialize(unsigned int index)
 	post_log_clear();
 
 	printk(BIOS_INFO, "CPU #%d initialized\n", index);
-
-	return;
 }
 
 void lb_arch_add_records(struct lb_header *header)

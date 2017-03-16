@@ -169,7 +169,8 @@ int calculate_l2_latency(void)
 		msr = rdmsr(EBL_CR_POWERON);
 		/* Get clock multiplier and FSB frequency.
 		 * Multiplier is in [25:22].
-		 * FSB is in [19:18] in Katmai, [19] in Deschutes ([18] is zero for them).
+		 * FSB is in [19:18] in Katmai, [19] in Deschutes ([18] is zero
+		 * for them).
 		 */
 		eax = msr.lo >> 18;
 		if (signature == 0x650) {
@@ -185,7 +186,9 @@ int calculate_l2_latency(void)
 		for (le = latency_table; le->key != eax; le++) {
 			/* Fail if we get to the end of the table */
 			if (le->key == 0xff) {
-				printk(BIOS_DEBUG, "Could not find key %02x in latency table\n", eax);
+				printk(BIOS_DEBUG,
+				   "Could not find key %02x in latency table\n",
+				   eax);
 				return -1;
 			}
 		}
@@ -281,7 +284,8 @@ int write_l2(u32 address, u32 data)
 	} else
 		v2 &= 0x7;
 
-	/* This write has to be replicated to a number of places. Not sure what. */
+	/* This write has to be replicated to a number of places. Not sure what.
+	 */
 
 	for (i = 0; i < v2; i++) {
 
@@ -339,7 +343,8 @@ int test_l2_address_alias(u32 address1, u32 address2,
 /* Calculates the L2 cache size.
  *
  * Reference: Intel(R) 64 and IA-32 Architectures Software Developer's Manual
- *            Volume 3B: System Programming Guide, Part 2, Intel pub. 253669, pg. B-172.
+ *            Volume 3B: System Programming Guide, Part 2, Intel pub. 253669,
+ *            pg. B-172.
  *
  */
 int calculate_l2_cache_size(void)
@@ -357,8 +362,9 @@ int calculate_l2_cache_size(void)
 		bblcr3 = msr.lo & ~BBLCR3_L2_SIZE;
 		/*
 		 * Successively write in all the possible cache size per bank
-		 * into BBL_CR_CTL3[17:13], starting from 256KB (00001) to 4MB (10000),
-		 * and read the last value written and accepted by the cache.
+		 * into BBL_CR_CTL3[17:13], starting from 256KB (00001) to 4MB
+		 * (10000), and read the last value written and accepted by the
+		 * cache.
 		 *
 		 * No idea why these bits are writable at all.
 		 */
@@ -386,8 +392,9 @@ int calculate_l2_cache_size(void)
 
 		printk(BIOS_DEBUG, "Maximum cache mask is %x\n", cache_setting);
 
-		/* For now, BBL_CR_CTL3 has the highest cache "size" that register
-		 * will accept. Now we'll ping the cache and see where it wraps.
+		/* For now, BBL_CR_CTL3 has the highest cache "size" that
+		 * register will accept. Now we'll ping the cache and see where
+		 * it wraps.
 		 */
 
 		/* Write aaaaaaaa:aaaaaaaa to address 0 in the l2 cache.
@@ -493,7 +500,8 @@ int calculate_l2_cache_size(void)
 	return 0;
 }
 
-// L2 physical address range can be found from L2 control register 3, bits [2:0].
+// L2 physical address range can be found from L2 control register 3,
+// bits [2:0].
 int calculate_l2_physical_address_range(void)
 {
 	int r0, r3;
@@ -512,7 +520,8 @@ int calculate_l2_physical_address_range(void)
 	else
 		r3 &= 0x7;
 
-	printk(BIOS_DEBUG, "L2 Physical Address Range is %dM\n", (1 << r3) * 512);
+	printk(BIOS_DEBUG, "L2 Physical Address Range is %dM\n",
+		(1 << r3) * 512);
 
 	/* Shift into [22:20] to be saved into BBL_CR_CTL3. */
 	r3 = r3 << 20;
@@ -659,8 +668,9 @@ int p6_configure_l2_cache(void)
 		bblctl3.lo = eax;
 		wrmsr(BBL_CR_CTL3, bblctl3);
 
-		/* Write BBL_CR_CTL3[27:26] (reserved??) to bits [1:0] of L2 register 4.
-		 * Apparently all other bits must be preserved, hence these code.
+		/* Write BBL_CR_CTL3[27:26] (reserved??) to bits [1:0] of L2
+		 * register 4.  Apparently all other bits must be preserved,
+		 * hence these code.
 		 */
 
 		v = (calc_eax >> 26) & 0x3;
@@ -685,7 +695,8 @@ int p6_configure_l2_cache(void)
 	/* Read L2 register 0 */
 	v = read_l2(0);
 
-	/* If L2(0)[5] set (and can be read properly), enable CRTN and address parity
+	/* If L2(0)[5] set (and can be read properly), enable CRTN and address
+	 * parity
 	 */
 	if (v >= 0 && (v & 0x20)) {
 		bblctl3 = rdmsr(BBL_CR_CTL3);
@@ -700,7 +711,8 @@ int p6_configure_l2_cache(void)
 	set_l2_ecc();
 
 	if (calculate_l2_physical_address_range() != 0) {
-		printk(BIOS_ERR, "Failed to calculate L2 physical address range");
+		printk(BIOS_ERR,
+			"Failed to calculate L2 physical address range");
 		goto bad;
 	}
 
@@ -738,9 +750,10 @@ int p6_configure_l2_cache(void)
 
 		/* Update each way */
 
-		/* We're supposed to get L2 associativity from BBL_CR_CTL3[10:9].
-		 * But this code only applies to certain members of the P6 processor family
-		 * and since all P6 processors have 4-way L2 cache, we can safely assume
+		/* We're supposed to get L2 associativity from
+		 * BBL_CR_CTL3[10:9].  But this code only applies to certain
+		 * members of the P6 processor family and since all P6
+		 * processors have 4-way L2 cache, we can safely assume
 		 * 4 way for all cache operations.
 		 */
 
@@ -748,8 +761,10 @@ int p6_configure_l2_cache(void)
 			/* Send Tag Write w/Data Write (TWW) to L2 controller
 			 * MESI = Invalid
 			 */
-			if (signal_l2(cache_size, 0, 0, v, L2CMD_TWW | L2CMD_MESI_I) != 0) {
-				printk(BIOS_ERR, "Failed on signal_l2(%x, %x)\n",
+			if (signal_l2(cache_size, 0, 0, v, L2CMD_TWW
+				| L2CMD_MESI_I) != 0) {
+				printk(BIOS_ERR,
+					"Failed on signal_l2(%x, %x)\n",
 				       cache_size, v);
 				goto bad;
 			}

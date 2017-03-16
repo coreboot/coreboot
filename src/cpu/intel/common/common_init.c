@@ -40,7 +40,8 @@ void set_vmx(void)
 	msr = rdmsr(IA32_FEATURE_CONTROL);
 
 	if (msr.lo & (1 << 0)) {
-		printk(BIOS_ERR, "VMX is locked, so %s will do nothing\n", __func__);
+		printk(BIOS_ERR, "VMX is locked, so %s will do nothing\n",
+			__func__);
 		/* VMX locked. If we set it again we get an illegal
 		 * instruction
 		 */
@@ -66,6 +67,7 @@ void set_vmx(void)
 		wrmsr(IA32_FEATURE_CONTROL, msr);
 	}
 
-	printk(BIOS_DEBUG, "VMX status: %s, %s\n", enable ? "enabled" : "disabled",
+	printk(BIOS_DEBUG, "VMX status: %s, %s\n",
+		enable ? "enabled" : "disabled",
 		lock ? "locked" : "unlocked");
 }

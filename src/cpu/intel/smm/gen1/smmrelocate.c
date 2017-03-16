@@ -133,7 +133,8 @@ static void fill_in_relocation_params(struct smm_relocation_params *params)
 	/* SMRR has 32-bits of valid address aligned to 4KiB. */
 	params->smrr_base.lo = (params->smram_base & rmask) | MTRR_TYPE_WRBACK;
 	params->smrr_base.hi = 0;
-	params->smrr_mask.lo = (~(tseg_size - 1) & rmask) | MTRR_PHYS_MASK_VALID;
+	params->smrr_mask.lo = (~(tseg_size - 1) & rmask)
+		| MTRR_PHYS_MASK_VALID;
 	params->smrr_mask.hi = 0;
 }
 
@@ -226,12 +227,14 @@ static int cpu_smm_setup(void)
 		       num_cpus, CONFIG_MAX_CPUS);
 	}
 
-	if (install_relocation_handler(apic_id_map, num_cpus, &smm_reloc_params)) {
+	if (install_relocation_handler(apic_id_map, num_cpus,
+		&smm_reloc_params)) {
 		printk(BIOS_CRIT, "SMM Relocation handler install failed.\n");
 		return -1;
 	}
 
-	if (install_permanent_handler(apic_id_map, num_cpus, &smm_reloc_params)) {
+	if (install_permanent_handler(apic_id_map, num_cpus,
+		&smm_reloc_params)) {
 		printk(BIOS_CRIT, "SMM Permanent handler install failed.\n");
 		return -1;
 	}

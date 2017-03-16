@@ -248,9 +248,8 @@ void romstage_common(const struct romstage_params *params)
 	romstage_handoff_init(wake_from_s3);
 
 	post_code(0x3f);
-	if (IS_ENABLED(CONFIG_LPC_TPM)) {
+	if (IS_ENABLED(CONFIG_LPC_TPM))
 		init_tpm(wake_from_s3);
-	}
 }
 
 asmlinkage void romstage_after_car(void)

@@ -221,9 +221,8 @@ int signal_l2(u32 address, u32 data_high, u32 data_low, int way, u8 command)
 	/* Write data to BBL_CR_D{0..3} */
 	msr.lo = data_low;
 	msr.hi = data_high;
-	for (i = BBL_CR_D0; i <= BBL_CR_D3; i++) {
+	for (i = BBL_CR_D0; i <= BBL_CR_D3; i++)
 		wrmsr(i, msr);
-	}
 
 	/* Put the command and way into BBL_CR_CTL */
 	msr = rdmsr(BBL_CR_CTL);
@@ -669,8 +668,7 @@ int p6_configure_l2_cache(void)
 		printk(BIOS_DEBUG, "write_l2(4, %x)\n", v);
 
 		a = read_l2(4);
-		if (a >= 0)
-		{
+		if (a >= 0) {
 			a &= 0xfffc;
 			a |= v;
 			a = write_l2(4, a);

@@ -33,9 +33,8 @@ static int determine_total_number_of_cores(void)
 			(cpu->bus->dev->path.type != DEVICE_PATH_CPU_CLUSTER)) {
 			continue;
 		}
-		if (!cpu->enabled) {
+		if (!cpu->enabled)
 			continue;
-		}
 		count++;
 	}
 	return count;

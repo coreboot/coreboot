@@ -53,7 +53,7 @@ int intel_ht_sibling(void)
 
 void intel_sibling_init(struct device *cpu)
 {
-	unsigned i, siblings;
+	unsigned int i, siblings;
 	struct cpuid_result result;
 
 	/* On the bootstrap processor see if I want sibling cpus enabled */

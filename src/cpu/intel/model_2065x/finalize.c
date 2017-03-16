@@ -26,7 +26,7 @@
  * Document Number 504790
  * Revision 1.6.0, June 2012 */
 
-static void msr_set_bit(unsigned reg, unsigned bit)
+static void msr_set_bit(unsigned int reg, unsigned int bit)
 {
 	msr_t msr = rdmsr(reg);
 

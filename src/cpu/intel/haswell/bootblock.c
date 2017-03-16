@@ -31,8 +31,8 @@
 #error "CPU must be paired with Intel LynxPoint southbridge"
 #endif
 
-static void set_var_mtrr(
-	unsigned reg, unsigned base, unsigned size, unsigned type)
+static void set_var_mtrr(unsigned int reg, unsigned int base, unsigned int size,
+	unsigned int type)
 
 {
 	/* Bit Bit 32-35 of MTRRphysMask should be set to 1 */

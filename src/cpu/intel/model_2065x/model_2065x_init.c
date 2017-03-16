@@ -115,7 +115,7 @@ int cpu_get_apic_id_map(int *apic_id_map)
 {
 	int i;
 	struct cpuid_result result;
-	unsigned threads_per_package, threads_per_core;
+	unsigned int threads_per_package, threads_per_core;
 
 	/* Logical processors (threads) per core */
 	result = cpuid_ext(0xb, 0);
@@ -258,7 +258,7 @@ static void configure_mca(void)
 static void intel_cores_init(struct device *cpu)
 {
 	struct cpuid_result result;
-	unsigned threads_per_package, threads_per_core, i;
+	unsigned int threads_per_package, threads_per_core, i;
 
 	/* Logical processors (threads) per core */
 	result = cpuid_ext(0xb, 0);

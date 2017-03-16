@@ -157,9 +157,8 @@ static int install_relocation_handler(int *apic_id_map, int num_cpus,
 	if (smm_setup_relocation_handler(&smm_params))
 		return -1;
 	int i;
-	for (i = 0; i < num_cpus; i++) {
+	for (i = 0; i < num_cpus; i++)
 		smm_params.runtime->apic_id_to_cpu[i] = apic_id_map[i];
-	}
 	return 0;
 }
 
@@ -201,9 +200,8 @@ static int install_permanent_handler(int *apic_id_map, int num_cpus,
 			    relo_params->smram_size, &smm_params))
 		return -1;
 	int i;
-	for (i = 0; i < num_cpus; i++) {
+	for (i = 0; i < num_cpus; i++)
 		smm_params.runtime->apic_id_to_cpu[i] = apic_id_map[i];
-	}
 	return 0;
 }
 

@@ -23,7 +23,7 @@
 static void check_pirq_routing_table(struct irq_routing_table *rt)
 {
 	uint8_t *addr = (uint8_t *)rt;
-	uint8_t sum=0;
+	uint8_t sum = 0;
 	int i;
 
 	printk(BIOS_INFO, "Checking Interrupt Routing Table consistency...\n");
@@ -33,7 +33,7 @@ static void check_pirq_routing_table(struct irq_routing_table *rt)
 			       (unsigned int) sizeof(struct irq_routing_table),
 			       rt->size
 			);
-		rt->size=sizeof(struct irq_routing_table);
+		rt->size = sizeof(struct irq_routing_table);
 	}
 
 	for (i = 0; i < rt->size; i++)
@@ -52,13 +52,13 @@ static void check_pirq_routing_table(struct irq_routing_table *rt)
 	}
 
 	if (rt->signature != PIRQ_SIGNATURE || rt->version != PIRQ_VERSION ||
-	    rt->size % 16 ) {
+	    rt->size % 16) {
 		printk(BIOS_WARNING, "Interrupt Routing Table not valid.\n");
 		return;
 	}
 
 	sum = 0;
-	for (i=0; i<rt->size; i++)
+	for (i = 0; i < rt->size; i++)
 		sum += addr[i];
 
 	/* We're manually fixing the checksum above. This warning can probably
@@ -78,8 +78,8 @@ static int verify_copy_pirq_routing_table(unsigned long addr, const struct irq_r
 	int i;
 	uint8_t *rt_orig, *rt_curr;
 
-	rt_curr = (uint8_t*)addr;
-	rt_orig = (uint8_t*)routing_table;
+	rt_curr = (uint8_t *)addr;
+	rt_orig = (uint8_t *)routing_table;
 	printk(BIOS_INFO, "Verifying copy of Interrupt Routing Table at 0x%08lx... ", addr);
 	for (i = 0; i < routing_table->size; i++) {
 		if (*(rt_curr + i) != *(rt_orig + i)) {
@@ -96,7 +96,7 @@ static int verify_copy_pirq_routing_table(unsigned long addr, const struct irq_r
 #endif
 
 #if CONFIG_PIRQ_ROUTE
-static u8 pirq_get_next_free_irq(u8* pirq, u16 bitmap)
+static u8 pirq_get_next_free_irq(u8 *pirq, u16 bitmap)
 {
 	int i, link;
 	u8 irq = 0;
@@ -152,7 +152,7 @@ static void pirq_route_irqs(unsigned long addr)
 			printk(BIOS_DEBUG, "INT: %c link: %x bitmap: %x  ",
 				'A' + intx, link, bitmap);
 
-			if (!bitmap|| !link || link > CONFIG_MAX_PIRQ_LINKS) {
+			if (!bitmap || !link || link > CONFIG_MAX_PIRQ_LINKS) {
 
 				printk(BIOS_DEBUG, "not routed\n");
 				irq_slot[intx] = irq;

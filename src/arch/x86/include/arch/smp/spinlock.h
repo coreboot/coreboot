@@ -30,9 +30,9 @@ typedef struct {
 #ifdef __PRE_RAM__
 spinlock_t *romstage_console_lock(void);
 void initialize_romstage_console_lock(void);
-spinlock_t* romstage_nvram_cbfs_lock(void);
+spinlock_t *romstage_nvram_cbfs_lock(void);
 void initialize_romstage_nvram_cbfs_lock(void);
-spinlock_t* romstage_microcode_cbfs_lock(void);
+spinlock_t *romstage_microcode_cbfs_lock(void);
 void initialize_romstage_microcode_cbfs_lock(void);
 #endif
 
@@ -50,9 +50,9 @@ void initialize_romstage_microcode_cbfs_lock(void);
  *
  * We make no fairness assumptions. They have a cost.
  */
-#define barrier() __asm__ __volatile__("": : :"memory")
+#define barrier() __asm__ __volatile__("" : : : "memory")
 #define spin_is_locked(x)	(*(volatile char *)(&(x)->lock) <= 0)
-#define spin_unlock_wait(x)	do { barrier(); } while(spin_is_locked(x))
+#define spin_unlock_wait(x)	do { barrier(); } while (spin_is_locked(x))
 
 #define spin_lock_string \
 	"\n1:\t" \
@@ -76,31 +76,31 @@ static inline __attribute__((always_inline)) void spin_lock(spinlock_t *lock)
 {
 	__asm__ __volatile__(
 		spin_lock_string
-		:"=m" (lock->lock) : : "memory");
+		: "=m" (lock->lock) : : "memory");
 }
 
 static inline __attribute__((always_inline)) void spin_unlock(spinlock_t *lock)
 {
 	__asm__ __volatile__(
 		spin_unlock_string
-		:"=m" (lock->lock) : : "memory");
+		: "=m" (lock->lock) : : "memory");
 }
 
 /* REP NOP (PAUSE) is a good thing to insert into busy-wait loops. */
 static inline __attribute__((always_inline)) void cpu_relax(void)
 {
-	__asm__ __volatile__("rep;nop": : :"memory");
+	__asm__ __volatile__("rep;nop" : : : "memory");
 }
 
 #else /* !__PRE_RAM__ */
 
 #define DECLARE_SPIN_LOCK(x)
-#define barrier()		do {} while(0)
+#define barrier()		do {} while (0)
 #define spin_is_locked(lock)	0
-#define spin_unlock_wait(lock)	do {} while(0)
-#define spin_lock(lock)		do {} while(0)
-#define spin_unlock(lock)	do {} while(0)
-#define cpu_relax()		do {} while(0)
+#define spin_unlock_wait(lock)	do {} while (0)
+#define spin_lock(lock)		do {} while (0)
+#define spin_unlock(lock)	do {} while (0)
+#define cpu_relax()		do {} while (0)
 
 #endif /* !__PRE_RAM__ */
 

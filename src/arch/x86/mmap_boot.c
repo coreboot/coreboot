@@ -43,7 +43,7 @@ static int cbfs_master_header_props(struct cbfs_props *props)
 	/* The offset is relative to the end of the media. */
 	offset += CONFIG_ROM_SIZE;
 
-	rdev_readat(bdev, &header , offset, sizeof(header));
+	rdev_readat(bdev, &header, offset, sizeof(header));
 
 	header.magic = ntohl(header.magic);
 	header.romsize = ntohl(header.romsize);

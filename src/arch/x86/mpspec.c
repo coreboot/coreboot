@@ -169,7 +169,7 @@ void smp_write_processors(struct mp_config_table *mc)
 	cpu_features = result.eax;
 	cpu_feature_flags = result.edx;
 	/* order the output of the cpus to fix a bug in kernel 2.6.11 */
-	for (order_id = 0;order_id <256; order_id++) {
+	for (order_id = 0; order_id < 256; order_id++) {
 		for (cpu = all_devices; cpu; cpu = cpu->next) {
 			unsigned long cpu_flag;
 			if ((cpu->path.type != DEVICE_PATH_APIC) ||
@@ -424,10 +424,10 @@ void mptable_add_isa_interrupts(struct mp_config_table *mc, unsigned long bus_is
 {
 /*I/O Ints:                   Type         Trigger            Polarity         Bus ID   IRQ  APIC ID   PIN# */
 	smp_write_intsrc(mc, external_int2?mp_INT:mp_ExtINT,
-	                             MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0x0, apicid, 0x0);
+				     MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0x0, apicid, 0x0);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0x1, apicid, 0x1);
 	smp_write_intsrc(mc, external_int2?mp_ExtINT:mp_INT,
-	                             MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0x0, apicid, 0x2);
+				     MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0x0, apicid, 0x2);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0x3, apicid, 0x3);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0x4, apicid, 0x4);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0x6, apicid, 0x6);
@@ -467,7 +467,7 @@ void mptable_write_buses(struct mp_config_table *mc, int *max_pci_bus,
 			if (highest < bus->secondary) highest = bus->secondary;
 		}
 	}
-	for (i=0; i <= highest; i++) {
+	for (i = 0; i <= highest; i++) {
 		if (buses[i]) {
 			smp_write_bus(mc, i, "PCI   ");
 			*max_pci_bus = i;
@@ -556,7 +556,7 @@ unsigned long __attribute__((weak)) write_smp_table(unsigned long addr)
 		if (!have_fixed_entries) {
 			pin = (dev->path.pci.devfn & 7) % 4;
 			oldparent = parent = dev;
-			while((parent = parent->bus->dev)) {
+			while ((parent = parent->bus->dev)) {
 				parentpin = (oldparent->path.pci.devfn >> 3) + (oldparent->path.pci.devfn & 7);
 				parentpin += dev->path.pci.devfn & 7;
 				parentpin += dev->path.pci.devfn >> 3;

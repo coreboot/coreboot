@@ -266,7 +266,7 @@ static int parse_ulong(char **ptr, unsigned long *value)
 	start = *ptr;
 	*value = 0;
 
-	while((digit = hex(**ptr)) >= 0) {
+	while ((digit = hex(**ptr)) >= 0) {
 		*value = ((*value) << 4) | digit;
 		(*ptr)++;
 	}
@@ -280,7 +280,7 @@ static void copy_to_hex(char *buf, void *addr, unsigned long count)
 	unsigned char ch;
 	char *mem = addr;
 
-	while(count--) {
+	while (count--) {
 		ch = *mem++;
 		*buf++ = hexchars[ch >> 4];
 		*buf++ = hexchars[ch & 0x0f];
@@ -297,9 +297,9 @@ static void copy_from_hex(void *addr, char *buf, unsigned long count)
 	unsigned char ch;
 	char *mem = addr;
 
-	while(count--) {
-		ch = hex (*buf++) << 4;
-		ch = ch + hex (*buf++);
+	while (count--) {
+		ch = hex(*buf++) << 4;
+		ch = ch + hex(*buf++);
 		*mem++ = ch;
 	}
 }
@@ -346,7 +346,7 @@ static int get_packet(char *buffer)
 				stub_flush();
 			}
 		}
-	} while(checksum != xmitcsum);
+	} while (checksum != xmitcsum);
 	return 1;
 }
 
@@ -402,14 +402,14 @@ void x86_exception(struct eregs *info)
 	out_buffer[3] = '\0';
 	put_packet(out_buffer);
 
-	while(1) {
+	while (1) {
 		unsigned long addr, length;
 		char *ptr;
 		out_buffer[0] = '\0';
 		out_buffer[1] = '\0';
 		if (!get_packet(in_buffer))
 			break;
-		switch(in_buffer[0]) {
+		switch (in_buffer[0]) {
 		case '?': /* last signal */
 			out_buffer[0] = 'S';
 			out_buffer[1] = hexchars[(signo >> 4) & 0xf];
@@ -425,12 +425,12 @@ void x86_exception(struct eregs *info)
 			info->eip    = gdb_stub_registers[PC];
 			info->cs     = gdb_stub_registers[CS];
 			info->eflags = gdb_stub_registers[PS];
-			memcpy(out_buffer, "OK",3);
+			memcpy(out_buffer, "OK", 3);
 			break;
 		case 'm':
 			/* mAA..AA,LLLL  Read LLLL bytes at address AA..AA */
 			ptr = &in_buffer[1];
-			if (	parse_ulong(&ptr, &addr) &&
+			if (parse_ulong(&ptr, &addr) &&
 				(*ptr++ == ',') &&
 				parse_ulong(&ptr, &length)) {
 				copy_to_hex(out_buffer, (void *)addr, length);
@@ -440,7 +440,7 @@ void x86_exception(struct eregs *info)
 		case 'M':
 			/* MAA..AA,LLLL: Write LLLL bytes at address AA.AA return OK */
 			ptr = &in_buffer[1];
-			if (	parse_ulong(&ptr, &addr) &&
+			if (parse_ulong(&ptr, &addr) &&
 				(*(ptr++) == ',') &&
 				parse_ulong(&ptr, &length) &&
 				(*(ptr++) == ':')) {
@@ -498,14 +498,14 @@ void x86_exception(struct eregs *info)
 		info->error_code, info->eflags,
 		info->eax, info->ebx, info->ecx, info->edx,
 		info->edi, info->esi, info->ebp, info->esp);
-	u8 *code = (u8*)((uintptr_t)info->eip - (MDUMP_SIZE >>1));
+	u8 *code = (u8 *)((uintptr_t)info->eip - (MDUMP_SIZE >> 1));
 	/* Align to 8-byte boundary please, and print eight bytes per row.
 	 * This is done to make DRAM burst timing/reordering errors more
 	 * evident from the looking at the dump */
-	code = (u8*)((uintptr_t)code & ~0x7);
+	code = (u8 *)((uintptr_t)code & ~0x7);
 	int i;
 	for (i = 0; i < MDUMP_SIZE; i++) {
-		if ( (i & 0x07) == 0 )
+		if ((i & 0x07) == 0)
 			printk(BIOS_EMERG, "\n%p:\t", code + i);
 		printk(BIOS_EMERG, "%.2x ", code[i]);
 	}

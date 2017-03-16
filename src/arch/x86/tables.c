@@ -112,7 +112,7 @@ static unsigned long write_acpi_table(unsigned long rom_table_end)
 
 		rom_table_end = ALIGN(rom_table_end, 16);
 		new_high_table_pointer = write_acpi_tables(high_table_pointer);
-		if (new_high_table_pointer > ( high_table_pointer
+		if (new_high_table_pointer > (high_table_pointer
 			+ MAX_ACPI_SIZE))
 			printk(BIOS_ERR, "ERROR: Increase ACPI size\n");
 		printk(BIOS_DEBUG, "ACPI tables: %ld bytes.\n",
@@ -165,7 +165,7 @@ static unsigned long write_smbios_table(unsigned long rom_table_end)
 		memcpy((void *)rom_table_end, (void *)high_table_pointer, sizeof(struct smbios_entry));
 		rom_table_end += sizeof(struct smbios_entry);
 
-		if (new_high_table_pointer > ( high_table_pointer
+		if (new_high_table_pointer > (high_table_pointer
 			+ MAX_SMBIOS_SIZE))
 			printk(BIOS_ERR, "ERROR: Increase SMBIOS size\n");
 		printk(BIOS_DEBUG, "SMBIOS tables: %ld bytes.\n",

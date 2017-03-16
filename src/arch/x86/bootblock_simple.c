@@ -29,9 +29,9 @@ static void main(unsigned long bist)
 	}
 
 #if CONFIG_SEPARATE_VERSTAGE
-	const char* target1 = "fallback/verstage";
+	const char *target1 = "fallback/verstage";
 #else
-	const char* target1 = "fallback/romstage";
+	const char *target1 = "fallback/romstage";
 #endif
 
 	unsigned long entry;

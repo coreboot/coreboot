@@ -19,7 +19,7 @@
 #include <commonlib/cbfs_serialized.h>
 #include <endian.h>
 
-#define CBFS_SUBHEADER(_p) ( (void *) ((((uint8_t *) (_p)) + ntohl((_p)->offset))) )
+#define CBFS_SUBHEADER(_p) ((void *)((((uint8_t *)(_p)) + ntohl((_p)->offset))))
 
 static struct cbfs_file *walkcbfs_head(char *target)
 {
@@ -47,7 +47,7 @@ struct cbfs_stage_restricted {
 	unsigned long entry; // this is really 64bit, but properly endianized
 };
 
-static inline unsigned long findstage(char* target)
+static inline unsigned long findstage(char *target)
 {
 	struct cbfs_stage_restricted *stage = walkcbfs(target);
 	if ((u32)stage != 0)

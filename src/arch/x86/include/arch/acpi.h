@@ -502,7 +502,7 @@ enum acpi_preferred_pm_profiles {
 	PM_MOBILE		= 2,
 	PM_WORKSTATION		= 3,
 	PM_ENTERPRISE_SERVER	= 4,
-	PM_SOHO_SERVER  	= 5,
+	PM_SOHO_SERVER		= 5,
 	PM_APPLIANCE_PC		= 6,
 	PM_PERFORMANCE_SERVER	= 7,
 	PM_TABLET		= 8,	/* ACPI 5.0 */
@@ -589,11 +589,11 @@ unsigned long fw_cfg_acpi_tables(unsigned long start);
 unsigned long write_acpi_tables(unsigned long addr);
 unsigned long acpi_fill_madt(unsigned long current);
 unsigned long acpi_fill_mcfg(unsigned long current);
-unsigned long acpi_fill_ivrs_ioapic(acpi_ivrs_t* ivrs, unsigned long current);
+unsigned long acpi_fill_ivrs_ioapic(acpi_ivrs_t *ivrs, unsigned long current);
 void acpi_create_ssdt_generator(acpi_header_t *ssdt, const char *oem_table_id);
-void acpi_create_fadt(acpi_fadt_t *fadt,acpi_facs_t *facs, void *dsdt);
+void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt);
 #if IS_ENABLED(CONFIG_COMMON_FADT)
-void acpi_fill_fadt(acpi_fadt_t * fadt);
+void acpi_fill_fadt(acpi_fadt_t *fadt);
 #endif
 
 void update_ssdt(void *ssdt);
@@ -617,7 +617,7 @@ unsigned long acpi_create_madt_lapic_nmis(unsigned long current, u16 flags,
 					  u8 lint);
 
 int acpi_create_srat_lapic(acpi_srat_lapic_t *lapic, u8 node, u8 apic);
-int acpi_create_srat_mem(acpi_srat_mem_t *mem, u8 node, u32 basek,u32 sizek,
+int acpi_create_srat_mem(acpi_srat_mem_t *mem, u8 node, u32 basek, u32 sizek,
 			 u32 flags);
 int acpi_create_mcfg_mmconfig(acpi_mcfg_mmconfig_t *mmconfig, u32 base,
 			      u16 seg_nr, u8 start, u8 end);
@@ -631,10 +631,11 @@ void acpi_create_slit(acpi_slit_t *slit,
 void acpi_create_vfct(struct device *device,
 		      struct acpi_vfct *vfct,
 		      unsigned long (*acpi_fill_vfct)(struct device *device,
-		          struct acpi_vfct *vfct_struct, unsigned long current));
+				struct acpi_vfct *vfct_struct,
+				unsigned long current));
 
 void acpi_create_ivrs(acpi_ivrs_t *ivrs,
-		      unsigned long (*acpi_fill_ivrs)(acpi_ivrs_t* ivrs_struct, unsigned long current));
+		      unsigned long (*acpi_fill_ivrs)(acpi_ivrs_t *ivrs_struct, unsigned long current));
 
 #if ENV_RAMSTAGE && !defined(__SIMPLE_DEVICE__)
 void acpi_create_hpet(acpi_hpet_t *hpet);
@@ -649,7 +650,7 @@ void acpi_create_mcfg(acpi_mcfg_t *mcfg);
 void acpi_create_facs(acpi_facs_t *facs);
 
 void acpi_create_dmar(acpi_dmar_t *dmar, enum dmar_flags flags,
-		      unsigned long (*acpi_fill_dmar) (unsigned long));
+		      unsigned long (*acpi_fill_dmar)(unsigned long));
 unsigned long acpi_create_dmar_drhd(unsigned long current, u8 flags,
 				    u16 segment, u32 bar);
 unsigned long acpi_create_dmar_atsr(unsigned long current, u8 flags,

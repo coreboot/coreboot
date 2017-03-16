@@ -136,7 +136,7 @@ enum acpi_gpio_polarity {
 };
 
 #define ACPI_GPIO_REVISION_ID		1
-#define ACPI_GPIO_MAX_PINS 		8
+#define ACPI_GPIO_MAX_PINS		8
 
 struct acpi_gpio {
 	int pin_count;

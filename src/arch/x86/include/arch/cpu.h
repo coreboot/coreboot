@@ -204,7 +204,7 @@ static inline struct cpu_info *cpu_info(void)
 		"andl %%esp,%0; "
 		"orl  %2, %0 "
 #endif
-		:"=r" (ci)
+		: "=r" (ci)
 		: "0" (~(CONFIG_STACK_SIZE - 1)),
 		"r" (CONFIG_STACK_SIZE - sizeof(struct cpu_info))
 	);

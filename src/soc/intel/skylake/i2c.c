@@ -22,7 +22,7 @@
 #include <soc/intel/common/lpss_i2c.h>
 #include <soc/ramstage.h>
 
-uintptr_t lpss_i2c_base_address(unsigned bus)
+uintptr_t lpss_i2c_base_address(unsigned int bus)
 {
 	int devfn;
 	struct device *dev;

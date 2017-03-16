@@ -35,7 +35,7 @@ static u8 readb_(const void *addr)
 {
 	u8 v = read8(addr);
 	printk(BIOS_DEBUG, "read %2.2x from %4.4x\n",
-	       v, ((unsigned) addr & 0xffff) - 0xf020);
+	       v, ((unsigned int) addr & 0xffff) - 0xf020);
 	return v;
 }
 
@@ -43,7 +43,7 @@ static u16 readw_(const void *addr)
 {
 	u16 v = read16(addr);
 	printk(BIOS_DEBUG, "read %4.4x from %4.4x\n",
-	       v, ((unsigned) addr & 0xffff) - 0xf020);
+	       v, ((unsigned int) addr & 0xffff) - 0xf020);
 	return v;
 }
 
@@ -51,7 +51,7 @@ static u32 readl_(const void *addr)
 {
 	u32 v = read32(addr);
 	printk(BIOS_DEBUG, "read %8.8x from %4.4x\n",
-	       v, ((unsigned) addr & 0xffff) - 0xf020);
+	       v, ((unsigned int) addr & 0xffff) - 0xf020);
 	return v;
 }
 
@@ -59,21 +59,21 @@ static void writeb_(u8 b, void *addr)
 {
 	write8(addr, b);
 	printk(BIOS_DEBUG, "wrote %2.2x to %4.4x\n",
-	       b, ((unsigned) addr & 0xffff) - 0xf020);
+	       b, ((unsigned int) addr & 0xffff) - 0xf020);
 }
 
 static void writew_(u16 b, void *addr)
 {
 	write16(addr, b);
 	printk(BIOS_DEBUG, "wrote %4.4x to %4.4x\n",
-	       b, ((unsigned) addr & 0xffff) - 0xf020);
+	       b, ((unsigned int) addr & 0xffff) - 0xf020);
 }
 
 static void writel_(u32 b, void *addr)
 {
 	write32(addr, b);
 	printk(BIOS_DEBUG, "wrote %8.8x to %4.4x\n",
-	       b, ((unsigned) addr & 0xffff) - 0xf020);
+	       b, ((unsigned int) addr & 0xffff) - 0xf020);
 }
 
 #else /* CONFIG_DEBUG_SPI_FLASH ^^^ enabled  vvv NOT enabled */

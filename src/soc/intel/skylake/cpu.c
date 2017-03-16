@@ -117,8 +117,8 @@ void set_power_limits(u8 power_limit_1_time)
 {
 	msr_t msr = rdmsr(MSR_PLATFORM_INFO);
 	msr_t limit;
-	unsigned power_unit;
-	unsigned tdp, min_power, max_power, max_time, tdp_pl2;
+	unsigned int power_unit;
+	unsigned int tdp, min_power, max_power, max_time, tdp_pl2;
 	u8 power_limit_1_val;
 	device_t dev = SA_DEV_ROOT;
 	config_t *conf = dev->chip_info;

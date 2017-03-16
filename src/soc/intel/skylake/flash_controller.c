@@ -219,8 +219,8 @@ int pch_hwseq_read(const struct spi_flash *flash, u32 addr, size_t len,
 	if (addr + len > spi_get_flash_size(get_spi_bar())) {
 		printk(BIOS_ERR,
 			"Attempt to read %x-%x which is out of chip\n",
-			(unsigned) addr,
-			(unsigned) addr+(unsigned) len);
+			(unsigned int) addr,
+			(unsigned int) addr + (unsigned int)len);
 		return -1;
 	}
 
@@ -285,7 +285,7 @@ int pch_hwseq_write(const struct spi_flash *flash, u32 addr, size_t len,
 	if (addr + len > spi_get_flash_size(spi_bar)) {
 		printk(BIOS_ERR,
 			"Attempt to write 0x%x-0x%x which is out of chip\n",
-			(unsigned)addr, (unsigned) (addr+len));
+			(unsigned int)addr, (unsigned int)(addr + len));
 		return -1;
 	}
 
@@ -307,7 +307,7 @@ int pch_hwseq_write(const struct spi_flash *flash, u32 addr, size_t len,
 		len -= block_len;
 	}
 	printk(BIOS_DEBUG, "SF: Successfully written %u bytes @ %#x\n",
-	       (unsigned) (addr - start), start);
+	       (unsigned int)(addr - start), start);
 	return 0;
 }
 

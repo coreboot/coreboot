@@ -23,7 +23,7 @@
 asmlinkage void *car_stage_c_entry(void);
 void mainboard_memory_init_params(FSPM_UPD *mupd);
 void systemagent_early_init(void);
-int smbus_read_byte(unsigned device, unsigned address);
+int smbus_read_byte(unsigned int device, unsigned int address);
 int early_spi_read_wpsr(u8 *sr);
 /* Board type */
 enum board_type {

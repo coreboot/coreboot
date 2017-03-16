@@ -303,7 +303,7 @@ void pci_write_config32(pci_devfn_t dev, unsigned where, uint32_t value)
 #define PCI_DEV_INVALID (0xffffffffU)
 static inline pci_devfn_t pci_io_locate_device(unsigned pci_id, pci_devfn_t dev)
 {
-	for (; dev <= PCI_DEV(255, 31, 7); dev += PCI_DEV(0,0,1)) {
+	for (; dev <= PCI_DEV(255, 31, 7); dev += PCI_DEV(0, 0, 1)) {
 		unsigned int id;
 		id = pci_io_read_config32(dev, 0);
 		if (id == pci_id)
@@ -314,7 +314,7 @@ static inline pci_devfn_t pci_io_locate_device(unsigned pci_id, pci_devfn_t dev)
 
 static inline pci_devfn_t pci_locate_device(unsigned pci_id, pci_devfn_t dev)
 {
-	for (; dev <= PCI_DEV(255, 31, 7); dev += PCI_DEV(0,0,1)) {
+	for (; dev <= PCI_DEV(255, 31, 7); dev += PCI_DEV(0, 0, 1)) {
 		unsigned int id;
 		id = pci_read_config32(dev, 0);
 		if (id == pci_id)
@@ -330,7 +330,7 @@ static inline pci_devfn_t pci_locate_device_on_bus(unsigned pci_id, unsigned bus
 	dev = PCI_DEV(bus, 0, 0);
 	last = PCI_DEV(bus, 31, 7);
 
-	for (; dev <=last; dev += PCI_DEV(0,0,1)) {
+	for (; dev <= last; dev += PCI_DEV(0, 0, 1)) {
 		unsigned int id;
 		id = pci_read_config32(dev, 0);
 		if (id == pci_id)
@@ -343,15 +343,15 @@ static inline pci_devfn_t pci_locate_device_on_bus(unsigned pci_id, unsigned bus
 static inline __attribute__((always_inline)) void pnp_write_config(pnp_devfn_t dev, uint8_t reg, uint8_t value)
 {
 	unsigned port = dev >> 8;
-	outb(reg, port );
-	outb(value, port +1);
+	outb(reg, port);
+	outb(value, port + 1);
 }
 
 static inline __attribute__((always_inline)) uint8_t pnp_read_config(pnp_devfn_t dev, uint8_t reg)
 {
 	unsigned port = dev >> 8;
 	outb(reg, port);
-	return inb(port +1);
+	return inb(port + 1);
 }
 
 static inline __attribute__((always_inline))

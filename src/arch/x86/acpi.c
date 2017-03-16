@@ -272,7 +272,7 @@ static void *get_tcpa_log(u32 *size)
 	}
 
 	printk(BIOS_DEBUG, "TCPA log created at %p\n", lasa);
-	memset (lasa, 0, tcpa_default_log_len);
+	memset(lasa, 0, tcpa_default_log_len);
 
 	*size = tcpa_default_log_len;
 	return lasa;
@@ -420,7 +420,7 @@ void acpi_create_srat(acpi_srat_t *srat,
 }
 
 void acpi_create_dmar(acpi_dmar_t *dmar, enum dmar_flags flags,
-		      unsigned long (*acpi_fill_dmar) (unsigned long))
+		      unsigned long (*acpi_fill_dmar)(unsigned long))
 {
 	acpi_header_t *header = &(dmar->header);
 	unsigned long current = (unsigned long)dmar + sizeof(acpi_dmar_t);
@@ -580,7 +580,7 @@ void acpi_create_hpet(acpi_hpet_t *hpet)
 	addr->addrl = CONFIG_HPET_ADDRESS & 0xffffffff;
 	addr->addrh = ((unsigned long long)CONFIG_HPET_ADDRESS) >> 32;
 
-	hpet->id = *(unsigned int*)CONFIG_HPET_ADDRESS;
+	hpet->id = *(unsigned int *)CONFIG_HPET_ADDRESS;
 	hpet->number = 0;
 	hpet->min_tick = CONFIG_HPET_MIN_TICKS;
 
@@ -613,7 +613,7 @@ void acpi_create_vfct(struct device *device,
 }
 
 void acpi_create_ivrs(acpi_ivrs_t *ivrs,
-		      unsigned long (*acpi_fill_ivrs)(acpi_ivrs_t* ivrs_struct, unsigned long current))
+		      unsigned long (*acpi_fill_ivrs)(acpi_ivrs_t *ivrs_struct, unsigned long current))
 {
 	acpi_header_t *header = &(ivrs->header);
 	unsigned long current = (unsigned long)ivrs + sizeof(acpi_ivrs_t);
@@ -786,7 +786,7 @@ unsigned long acpi_create_hest_error_source(acpi_hest_t *hest, acpi_hest_esd_t *
 		printk(BIOS_DEBUG, "Invalid type of Error Source.");
 		break;
 	}
-	hest->error_source_count ++;
+	hest->error_source_count++;
 
 	memcpy(pos, data, data_len);
 	len += data_len;
@@ -817,7 +817,7 @@ void acpi_write_hest(acpi_hest_t *hest,
 }
 
 #if IS_ENABLED(CONFIG_COMMON_FADT)
-void acpi_create_fadt(acpi_fadt_t *fadt,acpi_facs_t *facs, void *dsdt)
+void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 {
 	acpi_header_t *header = &(fadt->header);
 
@@ -1015,8 +1015,8 @@ unsigned long write_acpi_tables(unsigned long start)
 	madt = (acpi_madt_t *) current;
 	acpi_create_madt(madt);
 	if (madt->header.length > sizeof(acpi_madt_t)) {
-		current+=madt->header.length;
-		acpi_add_table(rsdp,madt);
+		current += madt->header.length;
+		acpi_add_table(rsdp, madt);
 	}
 	current = acpi_align_current(current);
 

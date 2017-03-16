@@ -24,9 +24,9 @@
 asm(".section .car.global_data,\"w\",@nobits");
 asm(".previous");
 #ifdef __clang__
-#define CAR_GLOBAL __attribute__((used,section(".car.global_data")))
+#define CAR_GLOBAL __attribute__((used, section(".car.global_data")))
 #else
-#define CAR_GLOBAL __attribute__((used,section(".car.global_data#")))
+#define CAR_GLOBAL __attribute__((used, section(".car.global_data#")))
 #endif /* __clang__ */
 
 /*
@@ -56,9 +56,9 @@ void *car_sync_var_ptr(void *var);
 #define car_get_var(var) \
 	*(typeof(var) *)car_get_var_ptr(&(var))
 #define car_sync_var(var) \
-	*(typeof (var) *)car_sync_var_ptr(&(var))
+	*(typeof(var) *)car_sync_var_ptr(&(var))
 #define car_set_var(var, val) \
-	do { car_get_var(var) = (val); } while(0)
+	do { car_get_var(var) = (val); } while (0)
 
 static inline size_t car_data_size(void)
 {

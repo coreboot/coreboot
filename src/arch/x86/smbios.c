@@ -75,7 +75,7 @@ int smbios_string_table_len(char *start)
 	char *p = start;
 	int i, len = 0;
 
-	while(*p) {
+	while (*p) {
 		i = strlen(p) + 1;
 		p += i;
 		len += i;
@@ -576,7 +576,14 @@ static int smbios_walk_device_tree(struct device *tree, int *handle, unsigned lo
 	return len;
 }
 
-#define update_max(len, max_len, stmt) do { int tmp = stmt; max_len = MAX(max_len, tmp); len += tmp; } while(0)
+#define update_max(len, max_len, stmt)		\
+	do {					\
+		int tmp = stmt;			\
+						\
+		max_len = MAX(max_len, tmp);	\
+		len += tmp;			\
+	} while (0)
+
 unsigned long smbios_write_tables(unsigned long current)
 {
 	struct smbios_entry *se;

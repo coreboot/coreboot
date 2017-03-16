@@ -1,7 +1,8 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>,
+ * Raptor Engineering
  * Copyright (C) 2011 Sven Schnelle <svens@stackframe.org>
  *
  * This program is free software; you can redistribute it and/or
@@ -124,7 +125,8 @@ static int smbios_processor_name(char *start)
 }
 
 /* this function will fill the corresponding manufacturer */
-void smbios_fill_dimm_manufacturer_from_id(uint16_t mod_id, struct smbios_type17 *t)
+void smbios_fill_dimm_manufacturer_from_id(uint16_t mod_id,
+	struct smbios_type17 *t)
 {
 	switch (mod_id) {
 		case 0x2c80:
@@ -280,7 +282,8 @@ static int smbios_write_type0(unsigned long *current, int handle)
 #if !CONFIG_CHROMEOS
 	t->bios_release_date = smbios_add_string(t->eos, coreboot_dmi_date);
 
-	t->bios_version = smbios_add_string(t->eos, smbios_mainboard_bios_version());
+	t->bios_version = smbios_add_string(t->eos,
+		smbios_mainboard_bios_version());
 #else
 #define SPACES \
 	"                                                                  "
@@ -371,9 +374,12 @@ static int smbios_write_type1(unsigned long *current, int handle)
 	t->type = SMBIOS_SYSTEM_INFORMATION;
 	t->handle = handle;
 	t->length = len - 2;
-	t->manufacturer = smbios_add_string(t->eos, smbios_mainboard_manufacturer());
-	t->product_name = smbios_add_string(t->eos, smbios_mainboard_product_name());
-	t->serial_number = smbios_add_string(t->eos, smbios_mainboard_serial_number());
+	t->manufacturer = smbios_add_string(t->eos,
+		smbios_mainboard_manufacturer());
+	t->product_name = smbios_add_string(t->eos,
+		smbios_mainboard_product_name());
+	t->serial_number = smbios_add_string(t->eos,
+		smbios_mainboard_serial_number());
 	t->sku = smbios_add_string(t->eos, smbios_mainboard_sku());
 	t->version = smbios_add_string(t->eos, smbios_mainboard_version());
 #ifdef CONFIG_MAINBOARD_FAMILY
@@ -394,9 +400,12 @@ static int smbios_write_type2(unsigned long *current, int handle)
 	t->type = SMBIOS_BOARD_INFORMATION;
 	t->handle = handle;
 	t->length = len - 2;
-	t->manufacturer = smbios_add_string(t->eos, smbios_mainboard_manufacturer());
-	t->product_name = smbios_add_string(t->eos, smbios_mainboard_product_name());
-	t->serial_number = smbios_add_string(t->eos, smbios_mainboard_serial_number());
+	t->manufacturer = smbios_add_string(t->eos,
+		smbios_mainboard_manufacturer());
+	t->product_name = smbios_add_string(t->eos,
+		smbios_mainboard_product_name());
+	t->serial_number = smbios_add_string(t->eos,
+		smbios_mainboard_serial_number());
 	t->version = smbios_add_string(t->eos, smbios_mainboard_version());
 	len = t->length + smbios_string_table_len(t->eos);
 	*current += len;
@@ -412,7 +421,8 @@ static int smbios_write_type3(unsigned long *current, int handle)
 	t->type = SMBIOS_SYSTEM_ENCLOSURE;
 	t->handle = handle;
 	t->length = len - 2;
-	t->manufacturer = smbios_add_string(t->eos, smbios_mainboard_manufacturer());
+	t->manufacturer = smbios_add_string(t->eos,
+		smbios_mainboard_manufacturer());
 	t->bootup_state = SMBIOS_STATE_SAFE;
 	t->power_supply_state = SMBIOS_STATE_SAFE;
 	t->thermal_state = SMBIOS_STATE_SAFE;
@@ -500,7 +510,8 @@ static int smbios_write_type17(unsigned long *current, int *handle)
 		return 0;	/* can't find mem info in cbmem */
 
 	printk(BIOS_INFO, "Create SMBIOS type 17\n");
-	for (i = 0; i < meminfo->dimm_cnt && i < ARRAY_SIZE(meminfo->dimm); i++) {
+	for (i = 0; i < meminfo->dimm_cnt && i < ARRAY_SIZE(meminfo->dimm);
+		i++) {
 		struct dimm_info *dimm;
 		dimm = &meminfo->dimm[i];
 		len = create_smbios_type17_for_dimm(dimm, current, handle);
@@ -562,7 +573,8 @@ static int smbios_write_type127(unsigned long *current, int handle)
 	return len;
 }
 
-static int smbios_walk_device_tree(struct device *tree, int *handle, unsigned long *current)
+static int smbios_walk_device_tree(struct device *tree, int *handle,
+	unsigned long *current)
 {
 	struct device *dev;
 	int len = 0;
@@ -600,21 +612,32 @@ unsigned long smbios_write_tables(unsigned long current)
 	current = ALIGN(current, 16);
 
 	tables = current;
-	update_max(len, max_struct_size, smbios_write_type0(&current, handle++));
-	update_max(len, max_struct_size, smbios_write_type1(&current, handle++));
-	update_max(len, max_struct_size, smbios_write_type2(&current, handle++));
-	update_max(len, max_struct_size, smbios_write_type3(&current, handle++));
-	update_max(len, max_struct_size, smbios_write_type4(&current, handle++));
-	update_max(len, max_struct_size, smbios_write_type11(&current, &handle));
+	update_max(len, max_struct_size, smbios_write_type0(&current,
+		handle++));
+	update_max(len, max_struct_size, smbios_write_type1(&current,
+		handle++));
+	update_max(len, max_struct_size, smbios_write_type2(&current,
+		handle++));
+	update_max(len, max_struct_size, smbios_write_type3(&current,
+		handle++));
+	update_max(len, max_struct_size, smbios_write_type4(&current,
+		handle++));
+	update_max(len, max_struct_size, smbios_write_type11(&current,
+		&handle));
 #if CONFIG_ELOG
-	update_max(len, max_struct_size, elog_smbios_write_type15(&current, handle++));
+	update_max(len, max_struct_size, elog_smbios_write_type15(&current,
+		handle++));
 #endif
-	update_max(len, max_struct_size, smbios_write_type17(&current, &handle));
-	update_max(len, max_struct_size, smbios_write_type32(&current, handle++));
+	update_max(len, max_struct_size, smbios_write_type17(&current,
+		&handle));
+	update_max(len, max_struct_size, smbios_write_type32(&current,
+		handle++));
 
-	update_max(len, max_struct_size, smbios_walk_device_tree(all_devices, &handle, &current));
+	update_max(len, max_struct_size, smbios_walk_device_tree(all_devices,
+		&handle, &current));
 
-	update_max(len, max_struct_size, smbios_write_type127(&current, handle++));
+	update_max(len, max_struct_size, smbios_write_type127(&current,
+		handle++));
 
 	memset(se, 0, sizeof(struct smbios_entry));
 	memcpy(se->anchor, "_SM_", 4);
@@ -629,7 +652,8 @@ unsigned long smbios_write_tables(unsigned long current)
 	se->struct_table_length = len;
 
 	se->intermediate_checksum = smbios_checksum((u8 *)se + 0x10,
-						    sizeof(struct smbios_entry) - 0x10);
+						    sizeof(struct smbios_entry)
+						    - 0x10);
 	se->checksum = smbios_checksum((u8 *)se, sizeof(struct smbios_entry));
 	return current;
 }

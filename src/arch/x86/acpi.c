@@ -6,7 +6,8 @@
  *
  * Copyright (C) 2004 SUSE LINUX AG
  * Copyright (C) 2005-2009 coresystems GmbH
- * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>,
+ * Raptor Engineering
  * Copyright (C) 2016 Siemens AG
  *
  * ACPI FADT, FACS, and DSDT table support added by
@@ -589,7 +590,8 @@ void acpi_create_hpet(acpi_hpet_t *hpet)
 
 void acpi_create_vfct(struct device *device,
 		      struct acpi_vfct *vfct,
-		      unsigned long (*acpi_fill_vfct)(struct device *device, struct acpi_vfct *vfct_struct, unsigned long current))
+		      unsigned long (*acpi_fill_vfct)(struct device *device,
+		      struct acpi_vfct *vfct_struct, unsigned long current))
 {
 	acpi_header_t *header = &(vfct->header);
 	unsigned long current = (unsigned long)vfct + sizeof(struct acpi_vfct);
@@ -613,7 +615,8 @@ void acpi_create_vfct(struct device *device,
 }
 
 void acpi_create_ivrs(acpi_ivrs_t *ivrs,
-		      unsigned long (*acpi_fill_ivrs)(acpi_ivrs_t *ivrs_struct, unsigned long current))
+		      unsigned long (*acpi_fill_ivrs)(acpi_ivrs_t *ivrs_struct,
+		      unsigned long current))
 {
 	acpi_header_t *header = &(ivrs->header);
 	unsigned long current = (unsigned long)ivrs + sizeof(acpi_ivrs_t);
@@ -636,7 +639,8 @@ void acpi_create_ivrs(acpi_ivrs_t *ivrs,
 	header->checksum = acpi_checksum((void *)ivrs, header->length);
 }
 
-unsigned long acpi_write_hpet(device_t device, unsigned long current, acpi_rsdp_t *rsdp)
+unsigned long acpi_write_hpet(device_t device, unsigned long current,
+	acpi_rsdp_t *rsdp)
 {
 	acpi_hpet_t *hpet;
 
@@ -737,7 +741,8 @@ static void acpi_write_rsdp(acpi_rsdp_t *rsdp, acpi_rsdt_t *rsdt,
 	rsdp->ext_checksum = acpi_checksum((void *)rsdp, sizeof(acpi_rsdp_t));
 }
 
-unsigned long acpi_create_hest_error_source(acpi_hest_t *hest, acpi_hest_esd_t *esd, u16 type, void *data, u16 data_len)
+unsigned long acpi_create_hest_error_source(acpi_hest_t *hest,
+	acpi_hest_esd_t *esd, u16 type, void *data, u16 data_len)
 {
 	acpi_header_t *header = &(hest->header);
 	acpi_hest_hen_t *hen;
@@ -765,7 +770,7 @@ unsigned long acpi_create_hest_error_source(acpi_hest_t *hest, acpi_hest_esd_t *
 		memset(pos, 0, sizeof(acpi_hest_hen_t));
 		hen->type = 3;		/* SCI? */
 		hen->length = sizeof(acpi_hest_hen_t);
-		hen->conf_we = 0;		/* Configuration Write Enable. */
+		hen->conf_we = 0;	/* Configuration Write Enable. */
 		hen->poll_interval = 0;
 		hen->vector = 0;
 		hen->sw2poll_threshold_val = 0;
@@ -1024,7 +1029,8 @@ unsigned long write_acpi_tables(unsigned long start)
 
 	for (dev = all_devices; dev; dev = dev->next) {
 		if (dev->ops && dev->ops->write_acpi_tables) {
-			current = dev->ops->write_acpi_tables(dev, current, rsdp);
+			current = dev->ops->write_acpi_tables(dev, current,
+				rsdp);
 			current = acpi_align_current(current);
 		}
 	}

@@ -21,7 +21,8 @@
 #if !defined(__PRE_RAM__)
 void __attribute__((weak)) backup_top_of_ram(uint64_t ramtop)
 {
-	/* Do nothing. Chipset may have implementation to save ramtop in NVRAM. */
+	/* Do nothing. Chipset may have implementation to save ramtop in NVRAM.
+	 */
 }
 
 static void *ramtop_pointer;

@@ -349,7 +349,9 @@ gdt:
 
 	/* selgdt 0x10, flat code segment */
 	.word	0xffff, 0x0000
-	.byte	0x00, 0x9b, 0xcf, 0x00 /* G=1 and 0x0f, So we get 4Gbytes for limit */
+	.byte	0x00, 0x9b, 0xcf, 0x00 /* G=1 and 0x0f, So we get 4Gbytes for
+					* limit
+					*/
 
 	/* selgdt 0x18, flat data segment */
 	.word	0xffff, 0x0000
@@ -377,11 +379,15 @@ gdt:
 
 	/* selgdt 0x38, flat data segment 16 bit */
 	.word	0x0000, 0x0000		/* dummy */
-	.byte	0x00, 0x93, 0x8f, 0x00 /* G=1 and 0x0f, So we get 4Gbytes for limit */
+	.byte	0x00, 0x93, 0x8f, 0x00 /* G=1 and 0x0f, So we get 4Gbytes for
+					* limit
+					*/
 
 	/* selgdt 0x40, flat code segment 16 bit */
 	.word	0xffff, 0x0000
-	.byte	0x00, 0x9b, 0x8f, 0x00 /* G=1 and 0x0f, So we get 4Gbytes for limit */
+	.byte	0x00, 0x9b, 0x8f, 0x00 /* G=1 and 0x0f, So we get 4Gbytes for
+					* limit
+					*/
 
 #ifdef __x86_64__
 	/* selgdt 0x48, flat x64 code segment */
@@ -407,14 +413,16 @@ SetCodeSelector:
 	# use iret to jump to a 64-bit offset in a new code segment
 	# iret will pop cs:rip, flags, then ss:rsp
 	mov	%ss, %ax	# need to push ss..
-	push	%rax		# push ss instuction not valid in x64 mode, so use ax
+	push	%rax		# push ss instuction not valid in x64 mode,
+				# so use ax
 	push	%rsp
 	pushfq
 	push	%rcx		# cx is code segment selector from caller
 	mov	$setCodeSelectorLongJump, %rax
 	push	%rax
 
-	# the iret will continue at next instruction, with the new cs value loaded
+	# the iret will continue at next instruction, with the new cs value
+	# loaded
 	iretq
 
 setCodeSelectorLongJump:

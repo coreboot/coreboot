@@ -22,11 +22,11 @@
 
 #if !CONFIG_PCI_IO_CFG_EXT
 #define CONFIG_CMD(bus, devfn, where)	(0x80000000 | (bus << 16) | \
-										(devfn << 8) | (where & ~3))
+					(devfn << 8) | (where & ~3))
 #else
 #define CONFIG_CMD(bus, devfn, where)	(0x80000000 | (bus << 16) | \
-										(devfn << 8) | ((where & 0xff) & ~3) |\
-										((where & 0xf00)<<16))
+					(devfn << 8) | ((where & 0xff) & ~3) |\
+					((where & 0xf00)<<16))
 #endif
 
 static uint8_t pci_conf1_read_config8(struct bus *pbus, int bus, int devfn,

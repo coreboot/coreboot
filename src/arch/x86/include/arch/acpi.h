@@ -4,7 +4,8 @@
  * Copyright (C) 2004 SUSE LINUX AG
  * Copyright (C) 2004 Nick Barker
  * Copyright (C) 2008-2009 coresystems GmbH
- * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>,
+ * Raptor Engineering
  * Copyright (C) 2016 Siemens AG
  * (Written by Stefan Reinauer <stepan@coresystems.de>)
  *
@@ -85,8 +86,9 @@ typedef struct acpi_gen_regaddr {
 	u8  bit_width;		/* Register size in bits */
 	u8  bit_offset;		/* Register bit offset */
 	union {
-		u8  resv;			/* Reserved in ACPI 2.0 - 2.0b */
-		u8  access_size;	/* Access size in ACPI 2.0c/3.0/4.0/5.0 */
+		u8  resv;		/* Reserved in ACPI 2.0 - 2.0b */
+		u8  access_size;	/* Access size in ACPI 2.0c/3.0/4.0/5.0
+					 */
 	};
 	u32 addrl;		/* Register address, low 32 bits */
 	u32 addrh;		/* Register address, high 32 bits */
@@ -109,7 +111,7 @@ typedef struct acpi_gen_regaddr {
 /* 0xc0-0xff: OEM defined */
 
 /* Access size definitions for Generic address structure */
-#define ACPI_ACCESS_SIZE_UNDEFINED		0	/* Undefined (legacy reasons) */
+#define ACPI_ACCESS_SIZE_UNDEFINED	0	/* Undefined (legacy reasons) */
 #define ACPI_ACCESS_SIZE_BYTE_ACCESS	1
 #define ACPI_ACCESS_SIZE_WORD_ACCESS	2
 #define ACPI_ACCESS_SIZE_DWORD_ACCESS	3
@@ -206,7 +208,9 @@ typedef struct acpi_srat_mem {
 	u32 length_low;			/* Mem range length, low */
 	u32 length_high;		/* Mem range length, high */
 	u32 resv1;
-	u32 flags; /* Enable bit 0, hot pluggable bit 1; Non Volatile bit 2, other bits reserved to 0 */
+	u32 flags; /* Enable bit 0, hot pluggable bit 1; Non Volatile bit 2,
+		    * other bits reserved to 0
+		    */
 	u32 resv2[2];
 } __attribute__ ((packed)) acpi_srat_mem_t;
 
@@ -551,7 +555,9 @@ typedef struct acpi_hest_esd {
 	u16 resv;
 	u8 flags;
 	u8 enabled;
-	u32 prealloc_erecords;			/* The number of error records to pre-allocate for this error source. */
+	u32 prealloc_erecords;		/* The number of error records to
+					 * pre-allocate for this error source.
+					 */
 	u32 max_section_per_record;
 } __attribute__ ((packed)) acpi_hest_esd_t;
 
@@ -635,11 +641,13 @@ void acpi_create_vfct(struct device *device,
 				unsigned long current));
 
 void acpi_create_ivrs(acpi_ivrs_t *ivrs,
-		      unsigned long (*acpi_fill_ivrs)(acpi_ivrs_t *ivrs_struct, unsigned long current));
+		      unsigned long (*acpi_fill_ivrs)(acpi_ivrs_t *ivrs_struct,
+		      unsigned long current));
 
 #if ENV_RAMSTAGE && !defined(__SIMPLE_DEVICE__)
 void acpi_create_hpet(acpi_hpet_t *hpet);
-unsigned long acpi_write_hpet(device_t device, unsigned long start, acpi_rsdp_t *rsdp);
+unsigned long acpi_write_hpet(device_t device, unsigned long start,
+			      acpi_rsdp_t *rsdp);
 
 /* cpu/intel/speedstep/acpi.c */
 void generate_cpu_entries(device_t device);
@@ -670,7 +678,8 @@ unsigned long acpi_create_dmar_drhd_ds_msi_hpet(unsigned long current,
 void acpi_write_hest(acpi_hest_t *hest,
 		     unsigned long (*acpi_fill_hest)(acpi_hest_t *hest));
 
-unsigned long acpi_create_hest_error_source(acpi_hest_t *hest, acpi_hest_esd_t *esd, u16 type, void *data, u16 len);
+unsigned long acpi_create_hest_error_source(acpi_hest_t *hest,
+	acpi_hest_esd_t *esd, u16 type, void *data, u16 len);
 
 void acpi_save_gnvs(u32 gnvs_address);
 

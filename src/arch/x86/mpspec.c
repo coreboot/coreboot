@@ -68,7 +68,8 @@ static unsigned char smp_compute_checksum(void *v, int len)
 	return checksum;
 }
 
-static void *smp_write_floating_table_physaddr(uintptr_t addr, uintptr_t mpf_physptr, unsigned int virtualwire)
+static void *smp_write_floating_table_physaddr(uintptr_t addr,
+	uintptr_t mpf_physptr, unsigned int virtualwire)
 {
 	struct intel_mp_floating *mf;
 	void *v;
@@ -96,7 +97,8 @@ void *smp_write_floating_table(unsigned long addr, unsigned int virtualwire)
 {
 	/* 16 byte align the table address */
 	addr = (addr + 0xf) & (~0xf);
-	return smp_write_floating_table_physaddr(addr, addr + SMP_FLOATING_TABLE_LEN, virtualwire);
+	return smp_write_floating_table_physaddr(addr, addr
+		+ SMP_FLOATING_TABLE_LEN, virtualwire);
 }
 
 void *smp_next_mpc_entry(struct mp_config_table *mc)
@@ -173,7 +175,8 @@ void smp_write_processors(struct mp_config_table *mc)
 		for (cpu = all_devices; cpu; cpu = cpu->next) {
 			unsigned long cpu_flag;
 			if ((cpu->path.type != DEVICE_PATH_APIC) ||
-				(cpu->bus->dev->path.type != DEVICE_PATH_CPU_CLUSTER))
+				(cpu->bus->dev->path.type !=
+					DEVICE_PATH_CPU_CLUSTER))
 				continue;
 
 			if (!cpu->enabled)
@@ -182,12 +185,14 @@ void smp_write_processors(struct mp_config_table *mc)
 			cpu_flag = MPC_CPU_ENABLED;
 
 			if (boot_apic_id == cpu->path.apic.apic_id)
-				cpu_flag = MPC_CPU_ENABLED | MPC_CPU_BOOTPROCESSOR;
+				cpu_flag = MPC_CPU_ENABLED
+					| MPC_CPU_BOOTPROCESSOR;
 
 			if (cpu->path.apic.apic_id == order_id) {
 				smp_write_processor(mc,
 					cpu->path.apic.apic_id, apic_version,
-					cpu_flag, cpu_features, cpu_feature_flags
+					cpu_flag, cpu_features,
+					cpu_feature_flags
 				);
 				break;
 			}
@@ -252,7 +257,8 @@ void smp_write_intsrc(struct mp_config_table *mc,
 	mpc->mpc_dstirq = dstirq;
 	smp_add_mpc_entry(mc, sizeof(*mpc));
 #ifdef DEBUG_MPTABLE
-	printk(BIOS_DEBUG, "add intsrc srcbus 0x%x srcbusirq 0x%x, dstapic 0x%x, dstirq 0x%x\n",
+	printk(BIOS_DEBUG,
+		"add intsrc srcbus 0x%x srcbusirq 0x%x, dstapic 0x%x, dstirq 0x%x\n",
 				srcbus, srcbusirq, dstapic, dstirq);
 	hexdump(__func__, mpc, sizeof(*mpc));
 #endif
@@ -272,9 +278,11 @@ void smp_write_pci_intsrc(struct mp_config_table *mc,
 	u8 dstapic, u8 dstirq)
 {
 	u8 srcbusirq = (dev << 2) | pirq;
-	printk(BIOS_SPEW, "\tPCI srcbusirq = 0x%x from dev = 0x%x and pirq = %x\n", srcbusirq, dev, pirq);
-	smp_write_intsrc(mc, irqtype, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, srcbus,
-			srcbusirq, dstapic, dstirq);
+	printk(BIOS_SPEW,
+		"\tPCI srcbusirq = 0x%x from dev = 0x%x and pirq = %x\n",
+		srcbusirq, dev, pirq);
+	smp_write_intsrc(mc, irqtype, MP_IRQ_TRIGGER_LEVEL
+		| MP_IRQ_POLARITY_LOW, srcbus, srcbusirq, dstapic, dstirq);
 }
 
 void smp_write_intsrc_pci_bridge(struct mp_config_table *mc,
@@ -306,9 +314,12 @@ void smp_write_intsrc_pci_bridge(struct mp_config_table *mc,
 
 			if ((child->class >> 16) != PCI_BASE_CLASS_BRIDGE) {
 				/* pci device */
-				printk(BIOS_DEBUG, "route irq: %s\n", dev_path(child));
+				printk(BIOS_DEBUG, "route irq: %s\n",
+					dev_path(child));
 				for (i = 0; i < 4; i++)
-					smp_write_intsrc(mc, irqtype, irqflag, srcbus, (slot<<2)|i, dstapic, dstirq_x[i]);
+					smp_write_intsrc(mc, irqtype, irqflag,
+						srcbus, (slot<<2)|i, dstapic,
+						dstirq_x[i]);
 				goto next;
 			}
 
@@ -316,8 +327,10 @@ void smp_write_intsrc_pci_bridge(struct mp_config_table *mc,
 			case PCI_CLASS_BRIDGE_PCI:
 			case PCI_CLASS_BRIDGE_PCMCIA:
 			case PCI_CLASS_BRIDGE_CARDBUS:
-				printk(BIOS_DEBUG, "route irq bridge: %s\n", dev_path(child));
-				smp_write_intsrc_pci_bridge(mc, irqtype, irqflag, child, dstapic, dstirq_x);
+				printk(BIOS_DEBUG, "route irq bridge: %s\n",
+					dev_path(child));
+				smp_write_intsrc_pci_bridge(mc, irqtype,
+					irqflag, child, dstapic, dstirq_x);
 			}
 
 next:
@@ -416,30 +429,49 @@ void smp_write_compatibility_address_space(struct mp_config_table *mc,
 
 void mptable_lintsrc(struct mp_config_table *mc, unsigned long bus_isa)
 {
-	smp_write_lintsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, bus_isa, 0x0, MP_APIC_ALL, 0x0);
-	smp_write_lintsrc(mc, mp_NMI, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, bus_isa, 0x0, MP_APIC_ALL, 0x1);
+	smp_write_lintsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_EDGE
+		| MP_IRQ_POLARITY_HIGH, bus_isa, 0x0, MP_APIC_ALL, 0x0);
+	smp_write_lintsrc(mc, mp_NMI, MP_IRQ_TRIGGER_EDGE
+		| MP_IRQ_POLARITY_HIGH, bus_isa, 0x0, MP_APIC_ALL, 0x1);
 }
 
-void mptable_add_isa_interrupts(struct mp_config_table *mc, unsigned long bus_isa, unsigned long apicid, int external_int2)
+void mptable_add_isa_interrupts(struct mp_config_table *mc,
+	unsigned long bus_isa, unsigned long apicid, int external_int2)
 {
-/*I/O Ints:                   Type         Trigger            Polarity         Bus ID   IRQ  APIC ID   PIN# */
+/*I/O Ints:                   Type         Trigger            Polarity
+ *                                   Bus ID   IRQ  APIC ID   PIN# */
 	smp_write_intsrc(mc, external_int2?mp_INT:mp_ExtINT,
-				     MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0x0, apicid, 0x0);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0x1, apicid, 0x1);
+				     MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH,
+				     bus_isa, 0x0, apicid, 0x0);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH,
+				     bus_isa, 0x1, apicid, 0x1);
 	smp_write_intsrc(mc, external_int2?mp_ExtINT:mp_INT,
-				     MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0x0, apicid, 0x2);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0x3, apicid, 0x3);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0x4, apicid, 0x4);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0x6, apicid, 0x6);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0x7, apicid, 0x7);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0x8, apicid, 0x8);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0x9, apicid, 0x9);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0xa, apicid, 0xa);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0xb, apicid, 0xb);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0xc, apicid, 0xc);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0xd, apicid, 0xd);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0xe, apicid, 0xe);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0xf, apicid, 0xf);
+				     MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH,
+				     bus_isa, 0x0, apicid, 0x2);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH,
+				     bus_isa, 0x3, apicid, 0x3);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH,
+				     bus_isa, 0x4, apicid, 0x4);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH,
+				     bus_isa, 0x6, apicid, 0x6);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH,
+				     bus_isa, 0x7, apicid, 0x7);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH,
+				     bus_isa, 0x8, apicid, 0x8);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH,
+				     bus_isa, 0x9, apicid, 0x9);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH,
+				     bus_isa, 0xa, apicid, 0xa);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH,
+				     bus_isa, 0xb, apicid, 0xb);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH,
+				     bus_isa, 0xc, apicid, 0xc);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH,
+				     bus_isa, 0xd, apicid, 0xd);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH,
+				     bus_isa, 0xe, apicid, 0xe);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH,
+				     bus_isa, 0xf, apicid, 0xf);
 }
 
 void mptable_write_buses(struct mp_config_table *mc, int *max_pci_bus,
@@ -460,7 +492,8 @@ void mptable_write_buses(struct mp_config_table *mc, int *max_pci_bus,
 		struct bus *bus;
 		for (bus = dev->link_list; bus; bus = bus->next) {
 			if (bus->secondary > 255) {
-				printk(BIOS_ERR, "A bus claims to have a bus ID > 255?!? Aborting");
+				printk(BIOS_ERR,
+					"A bus claims to have a bus ID > 255?!? Aborting");
 				return;
 			}
 			buses[bus->secondary] = 1;
@@ -479,9 +512,11 @@ void mptable_write_buses(struct mp_config_table *mc, int *max_pci_bus,
 
 void *mptable_finalize(struct mp_config_table *mc)
 {
-	mc->mpe_checksum = smp_compute_checksum(smp_next_mpc_entry(mc), mc->mpe_length);
+	mc->mpe_checksum = smp_compute_checksum(smp_next_mpc_entry(mc),
+		mc->mpe_length);
 	mc->mpc_checksum = smp_compute_checksum(mc, mc->mpc_length);
-	printk(BIOS_DEBUG, "Wrote the mp table end at: %p - %p\n", mc, smp_next_mpe_entry(mc));
+	printk(BIOS_DEBUG, "Wrote the mp table end at: %p - %p\n",
+		mc, smp_next_mpe_entry(mc));
 	return smp_next_mpe_entry(mc);
 }
 
@@ -495,6 +530,7 @@ unsigned long __attribute__((weak)) write_smp_table(unsigned long addr)
 	struct device *oldparent;
 	void *tmp, *v;
 	int isaioapic = -1, have_fixed_entries;
+	struct pci_irq_info *pci_irq_info;
 
 	v = smp_write_floating_table(addr, 0);
 	mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
@@ -510,7 +546,8 @@ unsigned long __attribute__((weak)) write_smp_table(unsigned long addr)
 			continue;
 
 		if (!(ioapic_config = dev->chip_info)) {
-			printk(BIOS_ERR, "%s has no config, ignoring\n", dev_path(dev));
+			printk(BIOS_ERR, "%s has no config, ignoring\n",
+				dev_path(dev));
 			continue;
 		}
 		smp_write_ioapic(mc, dev->path.ioapic.ioapic_id,
@@ -519,7 +556,8 @@ unsigned long __attribute__((weak)) write_smp_table(unsigned long addr)
 
 		if (ioapic_config->have_isa_interrupts) {
 			if (isaioapic >= 0)
-				printk(BIOS_ERR, "More than one IOAPIC with ISA interrupts?\n");
+				printk(BIOS_ERR,
+					"More than one IOAPIC with ISA interrupts?\n");
 			else
 				isaioapic = dev->path.ioapic.ioapic_id;
 		}
@@ -539,16 +577,19 @@ unsigned long __attribute__((weak)) write_smp_table(unsigned long addr)
 		have_fixed_entries = 0;
 		for (pin = 0; pin < 4; pin++) {
 			if (dev->pci_irq_info[pin].ioapic_dst_id) {
-				printk(BIOS_DEBUG, "fixed IRQ entry for: %s: INT%c# -> IOAPIC %d PIN %d\n", dev_path(dev),
+				printk(BIOS_DEBUG,
+					"fixed IRQ entry for: %s: INT%c# -> IOAPIC %d PIN %d\n",
+						dev_path(dev),
 				       pin + 'A',
 				       dev->pci_irq_info[pin].ioapic_dst_id,
 				       dev->pci_irq_info[pin].ioapic_irq_pin);
 				smp_write_intsrc(mc, mp_INT,
-						 dev->pci_irq_info[pin].ioapic_flags,
-						 dev->bus->secondary,
-						 ((dev->path.pci.devfn & 0xf8) >> 1) | pin,
-						 dev->pci_irq_info[pin].ioapic_dst_id,
-						 dev->pci_irq_info[pin].ioapic_irq_pin);
+					 dev->pci_irq_info[pin].ioapic_flags,
+					 dev->bus->secondary,
+					 ((dev->path.pci.devfn & 0xf8) >> 1)
+						| pin,
+					 dev->pci_irq_info[pin].ioapic_dst_id,
+					 dev->pci_irq_info[pin].ioapic_irq_pin);
 				have_fixed_entries = 1;
 			}
 		}
@@ -557,28 +598,34 @@ unsigned long __attribute__((weak)) write_smp_table(unsigned long addr)
 			pin = (dev->path.pci.devfn & 7) % 4;
 			oldparent = parent = dev;
 			while ((parent = parent->bus->dev)) {
-				parentpin = (oldparent->path.pci.devfn >> 3) + (oldparent->path.pci.devfn & 7);
+				parentpin = (oldparent->path.pci.devfn >> 3)
+					+ (oldparent->path.pci.devfn & 7);
 				parentpin += dev->path.pci.devfn & 7;
 				parentpin += dev->path.pci.devfn >> 3;
 				parentpin %= 4;
 
-				if (parent->pci_irq_info[parentpin].ioapic_dst_id) {
-					printk(BIOS_DEBUG, "automatic IRQ entry for %s: INT%c# -> IOAPIC %d PIN %d\n",
+				pci_irq_info = &parent->pci_irq_info[parentpin];
+				if (pci_irq_info->ioapic_dst_id) {
+					printk(BIOS_DEBUG,
+					       "automatic IRQ entry for %s: INT%c# -> IOAPIC %d PIN %d\n",
 					       dev_path(dev), pin + 'A',
-					       parent->pci_irq_info[parentpin].ioapic_dst_id,
-					       parent->pci_irq_info[parentpin].ioapic_irq_pin);
+					       pci_irq_info->ioapic_dst_id,
+					       pci_irq_info->ioapic_irq_pin);
 					smp_write_intsrc(mc, mp_INT,
-							 parent->pci_irq_info[parentpin].ioapic_flags,
-							 dev->bus->secondary,
-							 ((dev->path.pci.devfn & 0xf8) >> 1) | pin,
-							 parent->pci_irq_info[parentpin].ioapic_dst_id,
-							 parent->pci_irq_info[parentpin].ioapic_irq_pin);
+						 pci_irq_info->ioapic_flags,
+						 dev->bus->secondary,
+						 ((dev->path.pci.devfn & 0xf8)
+							>> 1) | pin,
+						 pci_irq_info->ioapic_dst_id,
+						 pci_irq_info->ioapic_irq_pin);
 
 					break;
 				}
 
 				if (parent->path.type == DEVICE_PATH_DOMAIN) {
-					printk(BIOS_WARNING, "no IRQ found for %s\n", dev_path(dev));
+					printk(BIOS_WARNING,
+						"no IRQ found for %s\n",
+						dev_path(dev));
 					break;
 				}
 				oldparent = parent;

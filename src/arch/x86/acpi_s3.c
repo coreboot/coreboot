@@ -105,7 +105,8 @@ static int backup_create_or_update(struct resume_backup *backup_mem,
 
 	/* Allocate backup with room for header. */
 	if (!backup_mem) {
-		size_t header_sz = ALIGN_UP(sizeof(*backup_mem), BACKUP_PAGE_SZ);
+		size_t header_sz = ALIGN_UP(sizeof(*backup_mem),
+			BACKUP_PAGE_SZ);
 		backup_mem = cbmem_add(CBMEM_ID_RESUME, header_sz + size);
 		if (!backup_mem)
 			return -1;
@@ -126,7 +127,8 @@ void *acpi_backup_container(uintptr_t base, size_t size)
 	if (!backup_mem)
 		return NULL;
 
-	if (!IS_ALIGNED(base, BACKUP_PAGE_SZ) || !IS_ALIGNED(size, BACKUP_PAGE_SZ))
+	if (!IS_ALIGNED(base, BACKUP_PAGE_SZ) || !IS_ALIGNED(size,
+		BACKUP_PAGE_SZ))
 		return NULL;
 
 	if (backup_create_or_update(backup_mem, base, size) < 0)
@@ -158,7 +160,8 @@ void backup_ramstage_section(uintptr_t base, size_t size)
 
 	/* Back up the OS-controlled memory where ramstage will be loaded. */
 	memcpy((void *)(uintptr_t)backup_mem->cbmem,
-		(void *)(uintptr_t)backup_mem->lowmem, (size_t)backup_mem->size);
+		(void *)(uintptr_t)backup_mem->lowmem,
+		(size_t)backup_mem->size);
 	backup_mem->valid = 1;
 }
 
@@ -175,7 +178,8 @@ void acpi_prepare_for_resume(void)
 
 	/* Back up the OS-controlled memory where ramstage will be loaded. */
 	memcpy((void *)(uintptr_t)backup_mem->cbmem,
-		(void *)(uintptr_t)backup_mem->lowmem, (size_t)backup_mem->size);
+		(void *)(uintptr_t)backup_mem->lowmem,
+		(size_t)backup_mem->size);
 	backup_mem->valid = 1;
 }
 

@@ -316,7 +316,9 @@ static int get_packet(char *buffer)
 
 	/* Wishlit implement a timeout in get_packet */
 	do {
-		/* wait around for the start character, ignore all other characters */
+		/* wait around for the start character, ignore all other
+		 * characters
+		 */
 		while ((ch = (stub_getc() & 0x7f)) != '$');
 		checksum = 0;
 		xmitcsum = -1;
@@ -417,10 +419,12 @@ void x86_exception(struct eregs *info)
 			out_buffer[3] = '\0';
 			break;
 		case 'g': /* return the value of the CPU registers */
-			copy_to_hex(out_buffer, &gdb_stub_registers, sizeof(gdb_stub_registers));
+			copy_to_hex(out_buffer, &gdb_stub_registers,
+				sizeof(gdb_stub_registers));
 			break;
 		case 'G': /* set the value of the CPU registers - return OK */
-			copy_from_hex(&gdb_stub_registers, in_buffer + 1, sizeof(gdb_stub_registers));
+			copy_from_hex(&gdb_stub_registers, in_buffer + 1,
+				sizeof(gdb_stub_registers));
 			memcpy(info, gdb_stub_registers, 8*sizeof(uint32_t));
 			info->eip    = gdb_stub_registers[PC];
 			info->cs     = gdb_stub_registers[CS];
@@ -438,7 +442,9 @@ void x86_exception(struct eregs *info)
 				memcpy(out_buffer, "E01", 4);
 			break;
 		case 'M':
-			/* MAA..AA,LLLL: Write LLLL bytes at address AA.AA return OK */
+			/* MAA..AA,LLLL: Write LLLL bytes at address AA.AA
+			 * return OK
+			 */
 			ptr = &in_buffer[1];
 			if (parse_ulong(&ptr, &addr) &&
 				(*(ptr++) == ',') &&
@@ -451,8 +457,9 @@ void x86_exception(struct eregs *info)
 			break;
 		case 's':
 		case 'c':
-			/* cAA..AA    Continue at address AA..AA(optional) */
-			/* sAA..AA    Step one instruction from AA..AA(optional) */
+			/* cAA..AA    Continue at address AA..AA(optional)
+			 * sAA..AA    Step one instruction from AA..AA(optional)
+			 */
 			ptr = &in_buffer[1];
 			if (parse_ulong(&ptr, &addr))
 				info->eip = addr;

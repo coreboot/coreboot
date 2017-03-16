@@ -132,9 +132,13 @@ static void jmp_payload(void *entry, unsigned long buffer, unsigned long size)
 		"	shrl	$2, %%ecx\n\t"
 		"	rep	movsl\n\t"
 
-		/* Adjust the stack pointer to point into the new coreboot image */
+		/* Adjust the stack pointer to point into the new coreboot
+		 * image
+		 */
 		"	addl	20(%%esp), %%esp\n\t"
-		/* Adjust the instruction pointer to point into the new coreboot image */
+		/* Adjust the instruction pointer to point into the new coreboot
+		 * image
+		 */
 		"	movl	$1f, %%eax\n\t"
 		"	addl	20(%%esp), %%eax\n\t"
 		"	jmp	*%%eax\n\t"
@@ -166,10 +170,14 @@ static void jmp_payload(void *entry, unsigned long buffer, unsigned long size)
 		"	shrl	$2, %%ecx\n\t"
 		"	rep	movsl\n\t"
 
-		/* Adjust the stack pointer to point into the old coreboot image */
+		/* Adjust the stack pointer to point into the old coreboot
+		 * image
+		 */
 		"	subl	20(%%esp), %%esp\n\t"
 
-		/* Adjust the instruction pointer to point into the old coreboot image */
+		/* Adjust the instruction pointer to point into the old coreboot
+		 * image
+		 */
 		"	movl	$1f, %%eax\n\t"
 		"	subl	20(%%esp), %%eax\n\t"
 		"	jmp	*%%eax\n\t"

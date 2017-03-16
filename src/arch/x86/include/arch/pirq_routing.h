@@ -56,7 +56,8 @@ struct irq_routing_table {
 	struct irq_info slots[CONFIG_IRQ_SLOT_COUNT];
 } __attribute__((packed));
 
-unsigned long copy_pirq_routing_table(unsigned long addr, const struct irq_routing_table *routing_table);
+unsigned long copy_pirq_routing_table(unsigned long addr,
+	const struct irq_routing_table *routing_table);
 unsigned long write_pirq_routing_table(unsigned long start);
 
 #if CONFIG_PIRQ_ROUTE

@@ -29,10 +29,10 @@ static void check_pirq_routing_table(struct irq_routing_table *rt)
 	printk(BIOS_INFO, "Checking Interrupt Routing Table consistency...\n");
 
 	if (sizeof(struct irq_routing_table) != rt->size) {
-		printk(BIOS_WARNING, "Inconsistent Interrupt Routing Table size (0x%x/0x%x).\n",
-			       (unsigned int) sizeof(struct irq_routing_table),
-			       rt->size
-			);
+		printk(BIOS_WARNING,
+			"Inconsistent Interrupt Routing Table size (0x%x/0x%x).\n",
+			(unsigned int) sizeof(struct irq_routing_table),
+			rt->size);
 		rt->size = sizeof(struct irq_routing_table);
 	}
 
@@ -46,8 +46,9 @@ static void check_pirq_routing_table(struct irq_routing_table *rt)
 	sum = rt->checksum - sum;
 
 	if (sum != rt->checksum) {
-		printk(BIOS_WARNING, "Interrupt Routing Table checksum is: 0x%02x but should be: 0x%02x.\n",
-			       rt->checksum, sum);
+		printk(BIOS_WARNING,
+			"Interrupt Routing Table checksum is: 0x%02x but should be: 0x%02x.\n",
+			rt->checksum, sum);
 		rt->checksum = sum;
 	}
 
@@ -73,14 +74,17 @@ static void check_pirq_routing_table(struct irq_routing_table *rt)
 	printk(BIOS_INFO, "done.\n");
 }
 
-static int verify_copy_pirq_routing_table(unsigned long addr, const struct irq_routing_table *routing_table)
+static int verify_copy_pirq_routing_table(unsigned long addr,
+	const struct irq_routing_table *routing_table)
 {
 	int i;
 	uint8_t *rt_orig, *rt_curr;
 
 	rt_curr = (uint8_t *)addr;
 	rt_orig = (uint8_t *)routing_table;
-	printk(BIOS_INFO, "Verifying copy of Interrupt Routing Table at 0x%08lx... ", addr);
+	printk(BIOS_INFO,
+		"Verifying copy of Interrupt Routing Table at 0x%08lx... ",
+		addr);
 	for (i = 0; i < routing_table->size; i++) {
 		if (*(rt_curr + i) != *(rt_orig + i)) {
 			printk(BIOS_INFO, "failed\n");
@@ -183,13 +187,15 @@ static void pirq_route_irqs(unsigned long addr)
 }
 #endif
 
-unsigned long copy_pirq_routing_table(unsigned long addr, const struct irq_routing_table *routing_table)
+unsigned long copy_pirq_routing_table(unsigned long addr,
+	const struct irq_routing_table *routing_table)
 {
 	/* Align the table to be 16 byte aligned. */
 	addr = ALIGN(addr, 16);
 
 	/* This table must be between 0xf0000 & 0x100000 */
-	printk(BIOS_INFO, "Copying Interrupt Routing Table to 0x%08lx... ", addr);
+	printk(BIOS_INFO, "Copying Interrupt Routing Table to 0x%08lx... ",
+		addr);
 	memcpy((void *)addr, routing_table, routing_table->size);
 	printk(BIOS_INFO, "done.\n");
 #if CONFIG_DEBUG_PIRQ

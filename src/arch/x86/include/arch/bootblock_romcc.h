@@ -49,8 +49,10 @@ static void bootblock_mainboard_init(void)
 #if CONFIG_USE_OPTION_TABLE
 static void sanitize_cmos(void)
 {
-	if (cmos_error() || !cmos_chksum_valid() || IS_ENABLED(CONFIG_STATIC_OPTION_TABLE)) {
-		unsigned char *cmos_default = (unsigned char *)walkcbfs("cmos.default");
+	if (cmos_error() || !cmos_chksum_valid()
+		|| IS_ENABLED(CONFIG_STATIC_OPTION_TABLE)) {
+		unsigned char *cmos_default =
+			(unsigned char *)walkcbfs("cmos.default");
 		if (cmos_default) {
 			int i;
 			cmos_disable_rtc();

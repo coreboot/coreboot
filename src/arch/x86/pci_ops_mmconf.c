@@ -22,10 +22,10 @@
  */
 
 #define PCI_MMIO_ADDR(SEGBUS, DEVFN, WHERE, MASK)	\
-				((void *)(((uintptr_t)CONFIG_MMCONF_BASE_ADDRESS |\
-					   (((SEGBUS) & 0xFFF) << 20) |\
-					   (((DEVFN) & 0xFF) << 12) |\
-					   ((WHERE) & 0xFFF)) & ~MASK))
+			((void *)(((uintptr_t)CONFIG_MMCONF_BASE_ADDRESS |\
+				   (((SEGBUS) & 0xFFF) << 20) |\
+				   (((DEVFN) & 0xFF) << 12) |\
+				   ((WHERE) & 0xFFF)) & ~MASK))
 
 static uint8_t pci_mmconf_read_config8(struct bus *pbus, int bus, int devfn,
 				       int where)

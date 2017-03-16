@@ -27,7 +27,8 @@ static struct cbfs_file *walkcbfs_head(char *target)
 	asm volatile (
 		"mov $1f, %%esp\n\t"
 		"jmp walkcbfs_asm\n\t"
-		"1:\n\t" : "=a" (entry) : "S" (target) : "ebx", "ecx", "edi", "esp");
+		"1:\n\t" : "=a" (entry) : "S" (target) : "ebx", "ecx", "edi",
+			"esp");
 	return entry;
 }
 
@@ -41,7 +42,9 @@ static void *walkcbfs(char *target)
 	return (void *)0;
 }
 
-/* just enough to support findstage. copied because the original version doesn't easily pass through romcc */
+/* just enough to support findstage. copied because the original version doesn't
+ * easily pass through romcc
+ */
 struct cbfs_stage_restricted {
 	unsigned long compression;
 	unsigned long entry; // this is really 64bit, but properly endianized

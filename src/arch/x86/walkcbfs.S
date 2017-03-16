@@ -71,7 +71,9 @@ walker:
 
 	/* LARCHIVE header found */
 	mov %ebx, %edi
-	add $CBFS_FILE_STRUCTSIZE, %edi /* edi = address of first byte after struct cbfs_file */
+	add $CBFS_FILE_STRUCTSIZE, %edi /* edi = address of first byte after
+					 * struct cbfs_file
+					 */
 	mov %eax, %ecx
 	repe cmpsb
 	/* zero flag set if strings are equal */
@@ -112,7 +114,9 @@ check_for_exit:
 	add $1, %ecx
 
 	cmp %ecx, %ebx
-	/* if bootblockstart >= addr (==we're still in the data area) , jump back */
+	/* if bootblockstart >= addr (==we're still in the data area),
+	 * jump back
+	 */
 	jbe walker
 
 out:

@@ -75,7 +75,7 @@ static void configure_mca(void)
 static void intel_cores_init(struct device *cpu)
 {
 	struct cpuid_result result;
-	unsigned threads_per_package, threads_per_core, i;
+	unsigned int threads_per_package, threads_per_core, i;
 
 	/* Logical processors (threads) per core */
 	result = cpuid_ext(0xb, 0);

@@ -414,8 +414,8 @@ void set_power_limits(u8 power_limit_1_time)
 {
 	msr_t msr = rdmsr(MSR_PLATFORM_INFO);
 	msr_t limit;
-	unsigned power_unit;
-	unsigned tdp, min_power, max_power, max_time;
+	unsigned int power_unit;
+	unsigned int tdp, min_power, max_power, max_time;
 	u8 power_limit_1_val;
 
 	if (power_limit_1_time >= ARRAY_SIZE(power_limit_time_sec_to_msr))

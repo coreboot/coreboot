@@ -33,7 +33,7 @@
 static void init_timer(void)
 {
 	/* Set the APIC timer to no interrupts and periodic mode */
-	lapic_write(LAPIC_LVTT, (1 << 17)|(1<< 16)|(0 << 12)|(0 << 0));
+	lapic_write(LAPIC_LVTT, (1 << 17) | (1 << 16) | (0 << 12) | (0 << 0));
 
 	/* Set the divider to 1, no divider */
 	lapic_write(LAPIC_TDCR, LAPIC_TDR_DIV_1);

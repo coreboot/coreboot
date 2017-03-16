@@ -77,7 +77,7 @@ void intel_sibling_init(struct device *cpu)
 		siblings);
 
 	/* See if I am a sibling cpu */
-	if (cpu->path.apic.apic_id & (siblings -1)) {
+	if (cpu->path.apic.apic_id & (siblings - 1)) {
 		if (disable_siblings) {
 			cpu->enabled = 0;
 		}

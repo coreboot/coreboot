@@ -270,8 +270,8 @@ void generate_cpu_entries(device_t device)
 	       numcpus, cores_per_package);
 
 	for (cpuID = 1; cpuID <= numcpus; cpuID++) {
-		for (coreID=1; coreID<=cores_per_package; coreID++) {
-			if (coreID>1) {
+		for (coreID = 1; coreID <= cores_per_package; coreID++) {
+			if (coreID > 1) {
 				pcontrol_blk = 0;
 				plen = 0;
 			}

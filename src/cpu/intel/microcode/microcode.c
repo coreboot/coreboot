@@ -145,12 +145,12 @@ const void *intel_microcode_find(void)
 	eax = cpuid_eax(1);
 	msr = rdmsr(0x8B);
 	rev = msr.hi;
-	x86_model = (eax >>4) & 0x0f;
-	x86_family = (eax >>8) & 0x0f;
+	x86_model = (eax >> 4) & 0x0f;
+	x86_family = (eax >> 8) & 0x0f;
 	sig = eax;
 
 	pf = 0;
-	if ((x86_model >= 5)||(x86_family>6)) {
+	if ((x86_model >= 5) || (x86_family > 6)) {
 		msr = rdmsr(0x17);
 		pf = 1 << ((msr.hi >> 18) & 7);
 	}

@@ -180,10 +180,10 @@ void romstage_common(const struct romstage_params *params);
  *  +32: MTRR mask 1 63:32
  *  ...
  */
-void * asmlinkage romstage_main(unsigned long bist);
+asmlinkage void *romstage_main(unsigned long bist);
 /* romstage_after_car() is the C function called after cache-as-ram has
  * been torn down. It is responsible for loading the ramstage. */
-void asmlinkage romstage_after_car(void);
+asmlinkage void romstage_after_car(void);
 #endif
 
 #ifdef __SMM__

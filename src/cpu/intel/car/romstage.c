@@ -19,7 +19,7 @@
 
 #define DCACHE_RAM_ROMSTAGE_STACK_SIZE 0x2000
 
-void * asmlinkage romstage_main(unsigned long bist)
+asmlinkage void *romstage_main(unsigned long bist)
 {
 	int i;
 	void *romstage_stack_after_car;
@@ -47,7 +47,7 @@ void * asmlinkage romstage_main(unsigned long bist)
 	return romstage_stack_after_car;
 }
 
-void asmlinkage romstage_after_car(void)
+asmlinkage void romstage_after_car(void)
 {
 	/* Load the ramstage. */
 	run_ramstage();

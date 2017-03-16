@@ -42,7 +42,7 @@
  */
 static acpi_cstate_t cstate_map[] = {
 	{	/* 0: C0 */
-	},{	/* 1: C1 */
+	}, {	/* 1: C1 */
 		.latency = 1,
 		.power = 1000,
 		.resource = {

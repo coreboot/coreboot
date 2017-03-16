@@ -87,12 +87,12 @@ static acpi_cstate_t cstate_map[NUM_C_STATES] = {
 	[C_STATE_C1] = {
 		.latency = 0,
 		.power = 1000,
-		.resource = MWAIT_RES(0,0),
+		.resource = MWAIT_RES(0, 0),
 	},
 	[C_STATE_C1E] = {
 		.latency = 0,
 		.power = 1000,
-		.resource = MWAIT_RES(0,1),
+		.resource = MWAIT_RES(0, 1),
 	},
 	[C_STATE_C3] = {
 		.latency = C_STATE_LATENCY_FROM_LAT_REG(0),

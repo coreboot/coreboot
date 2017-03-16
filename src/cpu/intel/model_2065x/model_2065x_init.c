@@ -42,7 +42,7 @@
  */
 static acpi_cstate_t cstate_map[] = {
 	{	/* 0: C0 */
-	},{	/* 1: C1 */
+	}, {	/* 1: C1 */
 		.latency = 1,
 		.power = 1000,
 		.resource = {
@@ -321,7 +321,8 @@ static void model_2065x_init(struct device *cpu)
 	/* Print processor name */
 	fill_processor_name(processor_name);
 	printk(BIOS_INFO, "CPU: %s.\n", processor_name);
-	printk(BIOS_INFO, "CPU:lapic=%ld, boot_cpu=%d\n", lapicid (), boot_cpu ());
+	printk(BIOS_INFO, "CPU:lapic=%ld, boot_cpu=%d\n", lapicid(),
+		boot_cpu());
 
 	/* Setup MTRRs based on physical address size */
 	x86_setup_mtrrs_with_detect();

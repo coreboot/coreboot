@@ -520,7 +520,8 @@ int soc_skip_ucode_update(u32 current_patch_id, u32 new_patch_id)
 	 * same microcode during CPU initialization.
 	 */
 	msr = rdmsr(MTRR_CAP_MSR);
-	return (msr.lo & PRMRR_SUPPORTED) && (current_patch_id == new_patch_id - 1);
+	return (msr.lo & PRMRR_SUPPORTED)
+		&& (current_patch_id == new_patch_id - 1);
 }
 
 /*

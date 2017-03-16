@@ -147,14 +147,17 @@ void soc_silicon_init_params(SILICON_INIT_UPD *params)
 	params->EnableSata = config->EnableSata;
 	params->SataMode = config->SataMode;
 	params->LockDownConfigGlobalSmi = config->LockDownConfigGlobalSmi;
-	params->LockDownConfigBiosInterface = config->LockDownConfigBiosInterface;
+	params->LockDownConfigBiosInterface =
+		config->LockDownConfigBiosInterface;
 	params->LockDownConfigRtcLock = config->LockDownConfigRtcLock;
 	params->LockDownConfigBiosLock = config->LockDownConfigBiosLock;
 	params->LockDownConfigSpiEiss = config->LockDownConfigSpiEiss;
 	params->PchConfigSubSystemVendorId = config->PchConfigSubSystemVendorId;
 	params->PchConfigSubSystemId = config->PchConfigSubSystemId;
-	params->WakeConfigWolEnableOverride = config->WakeConfigWolEnableOverride;
-	params->WakeConfigPcieWakeFromDeepSx = config->WakeConfigPcieWakeFromDeepSx;
+	params->WakeConfigWolEnableOverride =
+		config->WakeConfigWolEnableOverride;
+	params->WakeConfigPcieWakeFromDeepSx =
+		config->WakeConfigPcieWakeFromDeepSx;
 	params->PmConfigDeepSxPol = config->PmConfigDeepSxPol;
 	params->PmConfigSlpS3MinAssert = config->PmConfigSlpS3MinAssert;
 	params->PmConfigSlpS4MinAssert = config->PmConfigSlpS4MinAssert;
@@ -162,11 +165,13 @@ void soc_silicon_init_params(SILICON_INIT_UPD *params)
 	params->PmConfigSlpAMinAssert = config->PmConfigSlpAMinAssert;
 	params->PmConfigPciClockRun = config->PmConfigPciClockRun;
 	params->PmConfigSlpStrchSusUp = config->PmConfigSlpStrchSusUp;
-	params->PmConfigPwrBtnOverridePeriod = config->PmConfigPwrBtnOverridePeriod;
+	params->PmConfigPwrBtnOverridePeriod =
+		config->PmConfigPwrBtnOverridePeriod;
 	params->PmConfigPwrCycDur = config->PmConfigPwrCycDur;
 	params->SerialIrqConfigSirqEnable = config->SerialIrqConfigSirqEnable;
 	params->SerialIrqConfigSirqMode = config->SerialIrqConfigSirqMode;
-	params->SerialIrqConfigStartFramePulse = config->SerialIrqConfigStartFramePulse;
+	params->SerialIrqConfigStartFramePulse =
+		config->SerialIrqConfigStartFramePulse;
 
 	params->SkipMpInit = config->FspSkipMpInit;
 

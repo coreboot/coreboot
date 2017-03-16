@@ -265,9 +265,10 @@ struct soc_intel_skylake_config {
 	u8 LockDownConfigBiosLock;
 	/*
 	 * Enable InSMM.STS (EISS) in SPI If this bit is set, then WPD must be a
-	 * '1' and InSMM.STS must be '1' also in order to write to BIOS regions of
-	 * SPI Flash. If this bit is clear, then the InSMM.STS is a don't care. The
-	 * BIOS must set the EISS bit while BIOS Guard support is enabled.
+	 * '1' and InSMM.STS must be '1' also in order to write to BIOS regions
+	 * of SPI Flash. If this bit is clear, then the InSMM.STS is a don't
+	 * care. The BIOS must set the EISS bit while BIOS Guard support is
+	 * enabled.
 	 */
 	u8 LockDownConfigSpiEiss;
 	/* Subsystem Vendor ID of the PCH devices*/
@@ -325,7 +326,8 @@ struct soc_intel_skylake_config {
 	 */
 	u8 PmConfigPciClockRun;
 	/*
-	 * SLP_X Stretching After SUS Well Power Up. Values 0: Disabled, 1: Enabled
+	 * SLP_X Stretching After SUS Well Power Up. Values 0: Disabled,
+	 * 1: Enabled
 	 */
 	u8 PmConfigSlpStrchSusUp;
 	/*
@@ -349,7 +351,9 @@ struct soc_intel_skylake_config {
 	u8 PmConfigPwrCycDur;
 	/* Determines if enable Serial IRQ. Values 0: Disabled, 1: Enabled.*/
 	u8 SerialIrqConfigSirqEnable;
-	/* Serial IRQ Mode Select. Values: 0: PchQuietMode, 1: PchContinuousMode.*/
+	/* Serial IRQ Mode Select. Values: 0: PchQuietMode,
+	 * 1: PchContinuousMode.
+	 */
 	u8 SerialIrqConfigSirqMode;
 	/*
 	 * Start Frame Pulse Width.

@@ -176,7 +176,7 @@ static void configure_misc(void)
 
 	msr = rdmsr(IA32_MISC_ENABLE);
 	msr.lo |= (1 << 0);	  /* Fast String enable */
-	msr.lo |= (1 << 3); 	  /* TM1/TM2/EMTTM enable */
+	msr.lo |= (1 << 3);	  /* TM1/TM2/EMTTM enable */
 	msr.lo |= (1 << 16);	  /* Enhanced SpeedStep Enable */
 	wrmsr(IA32_MISC_ENABLE, msr);
 

@@ -26,8 +26,8 @@ void * asmlinkage romstage_main(unsigned long bist)
 	const int num_guards = 4;
 	const u32 stack_guard = 0xdeadbeef;
 	u32 *stack_base = (void *)(CONFIG_DCACHE_RAM_BASE +
-	                           CONFIG_DCACHE_RAM_SIZE -
-	                           DCACHE_RAM_ROMSTAGE_STACK_SIZE);
+				   CONFIG_DCACHE_RAM_SIZE -
+				   DCACHE_RAM_ROMSTAGE_STACK_SIZE);
 
 	for (i = 0; i < num_guards; i++)
 		stack_base[i] = stack_guard;

@@ -692,7 +692,7 @@ int p6_configure_l2_cache(void)
 	if (v >= 0 && (v & 0x20)) {
 		bblctl3 = rdmsr(BBL_CR_CTL3);
 		bblctl3.lo |= (BBLCR3_L2_ADDR_PARITY_ENABLE |
-		               BBLCR3_L2_CRTN_PARITY_ENABLE);
+			       BBLCR3_L2_CRTN_PARITY_ENABLE);
 		wrmsr(BBL_CR_CTL3, bblctl3);
 	}
 

@@ -192,8 +192,8 @@ static void soc_config_pwrmbase(void)
 	 *
 	 * Program "PM Base Address Memory Range Limit" PCR[DMI] + 27ACh[31:16]
 	 * to the value programmed in PMC PCI Offset 48h bit[31:16], this has an
-	 * implication of making sure the memory allocated to PWRMBASE to be 64KB
-	 * in size.
+	 * implication of making sure the memory allocated to PWRMBASE to be
+	 * 64KB in size.
 	 */
 	pcr_write32(PID_DMI, R_PCH_PCR_DMI_PMBASEA,
 		((PCH_PWRM_BASE_ADDRESS & 0xFFFF0000) |

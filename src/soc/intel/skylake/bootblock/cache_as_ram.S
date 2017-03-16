@@ -249,8 +249,8 @@ find_llc_subleaf:
 	 *   Ensure region to cache meets MTRR requirements for
 	 *   size and alignment.
 	 */
-	movl	$(0xFFFFFFFF - CONFIG_ROM_SIZE + 1), %edi	/* Code region base */
-	movl	$CONFIG_ROM_SIZE, %eax				/* Code region size */
+	movl	$(0xFFFFFFFF - CONFIG_ROM_SIZE + 1), %edi /* Code region base */
+	movl	$CONFIG_ROM_SIZE, %eax			  /* Code region size */
 	cmpl	$0, %edi
 	jz	.halt_forever
 	cmpl	$0, %eax

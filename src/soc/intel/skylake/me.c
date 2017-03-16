@@ -279,10 +279,12 @@ void intel_me_status(void)
 		break;
 
 	case ME_HFS2_PHASE_BUP:		/* Bringup Phase */
-		if (hfs2.fields.current_state < ARRAY_SIZE(me_progress_bup_values)
+		if (hfs2.fields.current_state
+			< ARRAY_SIZE(me_progress_bup_values)
 		    && me_progress_bup_values[hfs2.fields.current_state])
 			printk(BIOS_DEBUG, "%s",
-			       me_progress_bup_values[hfs2.fields.current_state]);
+				me_progress_bup_values[
+					hfs2.fields.current_state]);
 		else
 			printk(BIOS_DEBUG, "0x%02x", hfs2.fields.current_state);
 		break;
@@ -335,7 +337,8 @@ void intel_me_status(void)
 			printk(BIOS_DEBUG, "Corporate\n");
 			break;
 		default:
-			printk(BIOS_DEBUG, "Unknown (0x%x)\n", hfs3.fields.fw_sku);
+			printk(BIOS_DEBUG, "Unknown (0x%x)\n",
+				hfs3.fields.fw_sku);
 		}
 	}
 }
@@ -494,7 +497,8 @@ static int recv_heci_packet(union mei_header *head, u32 *packet,
 				}
 				/* here is the message */
 				for (index = 0; index < length; index++)
-					packet[index] = me_read_mmio32(MMIO_ME_CB_RW);
+					packet[index] =
+						me_read_mmio32(MMIO_ME_CB_RW);
 
 				rec_msg = 1;
 				*packet_size = head->fields.length;

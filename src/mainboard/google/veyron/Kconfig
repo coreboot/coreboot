@@ -18,6 +18,16 @@ config BOARD_GOOGLE_VEYRON # dummy option to be selected by variant boards
 
 if BOARD_GOOGLE_VEYRON
 
+# Some Veyron boards incorrectly had their RAM code strapped with 100Kohm
+# resistors. These get overpowered by the SoC's internal pull-downs, so we
+# cannot read those pins as tri-state. They're restricted to binary RAM codes.
+config VEYRON_FORCE_BINARY_RAM_CODE
+	bool
+	default y if BOARD_GOOGLE_VEYRON_JAQ
+	default y if BOARD_GOOGLE_VEYRON_JERRY
+	default y if BOARD_GOOGLE_VEYRON_MIGHTY
+	default n
+
 config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
 	select BOARD_ID_AUTO

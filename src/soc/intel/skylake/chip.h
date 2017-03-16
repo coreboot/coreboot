@@ -408,7 +408,7 @@ struct soc_intel_skylake_config {
 	 *          "\\_SB.PCI0.GPIO", 0, ResourceConsumer)
 	 *          { sdcard_cd_gpio_default }
 	 */
-	unsigned sdcard_cd_gpio_default;
+	unsigned int sdcard_cd_gpio_default;
 
 	/* Use custom SD card detect GPIO configuration */
 	struct acpi_gpio sdcard_cd_gpio;

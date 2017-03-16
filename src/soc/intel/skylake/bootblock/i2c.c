@@ -25,7 +25,7 @@
 #include <soc/serialio.h>
 #include "chip.h"
 
-uintptr_t lpss_i2c_base_address(unsigned bus)
+uintptr_t lpss_i2c_base_address(unsigned int bus)
 {
 	int devfn;
 	pci_devfn_t dev;
@@ -42,7 +42,7 @@ uintptr_t lpss_i2c_base_address(unsigned bus)
 	return ALIGN_DOWN(pci_read_config32(dev, PCI_BASE_ADDRESS_0), 16);
 }
 
-static void i2c_early_init_bus(unsigned bus)
+static void i2c_early_init_bus(unsigned int bus)
 {
 	ROMSTAGE_CONST struct soc_intel_skylake_config *config;
 	ROMSTAGE_CONST struct device *tree_dev;

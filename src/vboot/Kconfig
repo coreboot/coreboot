@@ -95,17 +95,6 @@ config RETURN_FROM_VERSTAGE
 	  reused by the succeeding stage. This is useful if a RAM space is too
 	  small to fit both the verstage and the succeeding stage.
 
-config VBOOT_DYNAMIC_WORK_BUFFER
-	bool "Vboot's work buffer is dynamically allocated."
-	default y if ARCH_ROMSTAGE_X86_32 && !SEPARATE_VERSTAGE
-	default n
-	depends on VBOOT
-	help
-	  This option is used when there isn't enough pre-main memory
-	  RAM to allocate the vboot work buffer. That means vboot verification
-	  is after memory init and requires main memory to back the work
-	  buffer.
-
 config VBOOT_SAVE_RECOVERY_REASON_ON_REBOOT
 	bool
 	default n

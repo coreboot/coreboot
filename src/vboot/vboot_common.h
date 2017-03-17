@@ -97,11 +97,10 @@ int vboot_platform_is_resuming(void);
 
 /* ============================= VERSTAGE ================================== */
 /*
- * Main logic for verified boot. verstage() is the stage entry point
- * while the verstage_main() is just the core logic.
+ * Main logic for verified boot. verstage_main() is just the core vboot logic.
+ * If the verstage is a separate stage, it should be entered via main().
  */
 void verstage_main(void);
-void verstage(void);
 void verstage_mainboard_init(void);
 
 /* Check boot modes */

@@ -95,13 +95,6 @@ config RETURN_FROM_VERSTAGE
 	  reused by the succeeding stage. This is useful if a RAM space is too
 	  small to fit both the verstage and the succeeding stage.
 
-config CHIPSET_PROVIDES_VERSTAGE_MAIN_SYMBOL
-	bool "The chipset provides the main() entry point for verstage"
-	default n
-	depends on SEPARATE_VERSTAGE
-	help
-	  The chipset code provides their own main() entry point.
-
 config VBOOT_DYNAMIC_WORK_BUFFER
 	bool "Vboot's work buffer is dynamically allocated."
 	default y if ARCH_ROMSTAGE_X86_32 && !SEPARATE_VERSTAGE

@@ -123,14 +123,15 @@ void asmlinkage romstage_after_car(void)
 {
 	/* Load the ramstage. */
 	run_ramstage();
-	while (1);
+	while (1)
+		;
 }
 
 int get_sw_write_protect_state(void)
 {
 	u8 status;
 	/* Return unprotected status if status read fails. */
-	return (early_spi_read_wpsr(&status) ? 0 : !!(status & 0x80));
+	return early_spi_read_wpsr(&status) ? 0 : !!(status & 0x80);
 }
 
 void __attribute__((weak)) mainboard_pre_console_init(void) {}

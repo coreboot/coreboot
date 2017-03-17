@@ -427,7 +427,8 @@ static void southbridge_smi_tco(void)
 	if (!tco_sts)
 		return;
 
-	if (tco_sts & (1 << 8)) { // BIOSWR
+	// BIOSWR
+	if (tco_sts & (1 << 8)) {
 		u8 bios_cntl = pci_read_config16(PCH_DEV_LPC, BIOS_CNTL);
 
 		if (bios_cntl & 1) {
@@ -491,7 +492,8 @@ static void southbridge_smi_monitor(void)
 
 	/* IOTRAP(0) SMIC */
 	if (IOTRAP(0)) {
-		if (!(trap_cycle & (1 << 24))) { // It's a write
+		// It's a write
+		if (!(trap_cycle & (1 << 24))) {
 			printk(BIOS_DEBUG, "SMI1 command\n");
 			data = RCBA32(0x1e18);
 			data &= mask;
@@ -505,7 +507,8 @@ static void southbridge_smi_monitor(void)
 	printk(BIOS_DEBUG, "  trapped io address = 0x%x\n",
 	       trap_cycle & 0xfffc);
 	for (i = 0; i < 4; i++)
-		if (IOTRAP(i)) printk(BIOS_DEBUG, "  TRAP = %d\n", i);
+		if (IOTRAP(i))
+			printk(BIOS_DEBUG, "  TRAP = %d\n", i);
 	printk(BIOS_DEBUG, "  AHBE = %x\n", (trap_cycle >> 16) & 0xf);
 	printk(BIOS_DEBUG, "  MASK = 0x%08x\n", mask);
 	printk(BIOS_DEBUG, "  read/write: %s\n",

@@ -530,11 +530,10 @@ static void igd_init(struct device *dev)
 
 	/* Late init steps */
 	igd_cdclk_init(dev, is_broadwell);
-	if (is_broadwell) {
+	if (is_broadwell)
 		reg_script_run_on_dev(dev, broadwell_late_init_script);
-	} else {
+	else
 		reg_script_run_on_dev(dev, haswell_late_init_script);
-	}
 
 	if (gfx_get_init_done()) {
 		/*

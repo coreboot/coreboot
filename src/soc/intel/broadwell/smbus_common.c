@@ -62,9 +62,9 @@ int do_smbus_read_byte(unsigned int smbus_base, unsigned int device,
 	unsigned char global_status_register;
 	unsigned char byte;
 
-	if (smbus_wait_until_ready(smbus_base) < 0) {
+	if (smbus_wait_until_ready(smbus_base) < 0)
 		return SMBUS_WAIT_UNTIL_READY_TIMEOUT;
-	}
+
 	/* Setup transaction */
 	/* Disable interrupts */
 	outb(inb(smbus_base + SMBHSTCTL) & (~1), smbus_base + SMBHSTCTL);
@@ -86,9 +86,8 @@ int do_smbus_read_byte(unsigned int smbus_base, unsigned int device,
 	     smbus_base + SMBHSTCTL);
 
 	/* Poll for transaction completion */
-	if (smbus_wait_until_done(smbus_base) < 0) {
+	if (smbus_wait_until_done(smbus_base) < 0)
 		return SMBUS_WAIT_UNTIL_DONE_TIMEOUT;
-	}
 
 	global_status_register = inb(smbus_base + SMBHSTSTAT);
 
@@ -97,9 +96,8 @@ int do_smbus_read_byte(unsigned int smbus_base, unsigned int device,
 
 	/* Read results of transaction */
 	byte = inb(smbus_base + SMBHSTDAT0);
-	if (global_status_register != (1 << 1)) {
+	if (global_status_register != (1 << 1))
 		return SMBUS_ERROR;
-	}
 	return byte;
 }
 

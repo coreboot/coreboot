@@ -97,7 +97,7 @@ void gpio_configure_pads(const struct pad_config *cfgs, size_t num);
 	 PAD_FIELD(GPIOTXDIS, txdis))
 
 #define _PAD_CFG_ATTRS(pad_, term_, dw0_, attrs_)			\
-	{ 								\
+	{								\
 		.pad = pad_,						\
 		.attrs = PAD_FIELD(PAD_TERM,  term_) | attrs_,		\
 		.dw0 = dw0_,						\

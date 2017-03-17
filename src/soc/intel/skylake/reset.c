@@ -52,7 +52,7 @@ void global_reset(void)
 
 void chipset_handle_reset(uint32_t status)
 {
-	switch(status) {
+	switch (status) {
 	case FSP_STATUS_RESET_REQUIRED_3: /* Global Reset */
 		printk(BIOS_DEBUG, "GLOBAL RESET!!\n");
 		global_reset();

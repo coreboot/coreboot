@@ -568,7 +568,7 @@ void southcluster_inject_dsdt(device_t device)
 
 	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
 	if (!gnvs) {
-		gnvs = cbmem_add(CBMEM_ID_ACPI_GNVS, sizeof (*gnvs));
+		gnvs = cbmem_add(CBMEM_ID_ACPI_GNVS, sizeof(*gnvs));
 		if (gnvs)
 			memset(gnvs, 0, sizeof(*gnvs));
 	}

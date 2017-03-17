@@ -22,6 +22,7 @@
 #include <ec/google/chromeec/ec.h>
 #include <soc/gpio.h>
 #include <soc/sata.h>
+#include "onboard.h"
 
 #define GPIO_SPI_WP	58
 #define GPIO_REC_MODE	12

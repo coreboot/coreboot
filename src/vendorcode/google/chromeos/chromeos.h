@@ -24,8 +24,6 @@
 #include <vboot/misc.h>
 #include <vboot/vboot_common.h>
 
-void save_chromeos_gpios(void);
-
 #if CONFIG_CHROMEOS
 /* functions implemented in watchdog.c */
 void mark_watchdog_tombstone(void);

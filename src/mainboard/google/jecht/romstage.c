@@ -46,6 +46,9 @@ void mainboard_romstage_entry(struct romstage_params *rp)
 
 	/* Call into the real romstage main with this board's attributes. */
 	romstage_common(rp);
+
+	if (IS_ENABLED(CONFIG_CHROMEOS))
+		save_chromeos_gpios();
 }
 
 void mainboard_pre_console_init(void)

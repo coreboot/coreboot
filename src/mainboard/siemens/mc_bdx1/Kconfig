@@ -38,10 +38,6 @@ config VIRTUAL_ROM_SIZE
 	hex
 	default 0x1000000
 
-config CONSOLE_POST
-	bool
-	default y
-
 config INTEGRATED_UART
 	bool
 	default n

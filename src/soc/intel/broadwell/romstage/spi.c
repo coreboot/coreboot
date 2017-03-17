@@ -27,7 +27,7 @@
 
 static int early_spi_read_block(u32 offset, u8 size, u8 *buffer)
 {
-	u32 *ptr32 = (u32*)buffer;
+	u32 *ptr32 = (u32 *)buffer;
 	u32 i;
 
 	/* Clear status bits */
@@ -76,13 +76,13 @@ static int early_spi_read_block(u32 offset, u8 size, u8 *buffer)
 	}
 
 	/* Read the data */
-	for (i = 0; i < size; i+=sizeof(u32)) {
+	for (i = 0; i < size; i += sizeof(u32)) {
 		if (size-i >= 4) {
 			/* reading >= dword */
 			*ptr32++ = SPIBAR32(SPIBAR_FDATA(i/sizeof(u32)));
 		} else {
 			/* reading < dword */
-			u8 j, *ptr8 = (u8*)ptr32;
+			u8 j, *ptr8 = (u8 *)ptr32;
 			u32 temp = SPIBAR32(SPIBAR_FDATA(i/sizeof(u32)));
 			for (j = 0; j < (size-i); j++) {
 				*ptr8++ = temp & 0xff;

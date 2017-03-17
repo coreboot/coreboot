@@ -38,8 +38,8 @@
 #include <vendorcode/google/chromeos/chromeos.h>
 
 /* Entry from cache-as-ram.inc. */
-void * asmlinkage romstage_main(unsigned long bist,
-                                uint32_t tsc_low, uint32_t tsc_hi)
+asmlinkage void *romstage_main(unsigned long bist,
+				uint32_t tsc_low, uint32_t tsc_hi)
 {
 	struct romstage_params rp = {
 		.bist = bist,

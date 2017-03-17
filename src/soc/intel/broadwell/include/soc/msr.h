@@ -37,7 +37,7 @@
 #define  MISC_PWR_MGMT_EIST_HW_DIS	(1 << 0)
 #define MSR_TURBO_RATIO_LIMIT		0x1ad
 #define MSR_TEMPERATURE_TARGET		0x1a2
-#define IA32_PERF_CTL 			0x199
+#define IA32_PERF_CTL			0x199
 #define IA32_THERM_INTERRUPT		0x19b
 #define IA32_ENERGY_PERFORMANCE_BIAS	0x1b0
 #define  ENERGY_POLICY_PERFORMANCE	0
@@ -49,9 +49,9 @@
 #define IA32_PLATFORM_DCA_CAP		0x1f8
 #define MSR_POWER_CTL			0x1fc
 #define MSR_LT_LOCK_MEMORY		0x2e7
-#define UNCORE_EMRRphysBase_MSR 	0x2f4
-#define UNCORE_EMRRphysMask_MSR 	0x2f5
-#define IA32_MC0_STATUS 		0x401
+#define UNCORE_EMRRphysBase_MSR		0x2f4
+#define UNCORE_EMRRphysMask_MSR		0x2f5
+#define IA32_MC0_STATUS			0x401
 #define SMM_FEATURE_CONTROL_MSR		0x4e0
 #define  SMM_CPU_SAVE_EN		(1 << 1)
 

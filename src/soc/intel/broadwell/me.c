@@ -88,7 +88,7 @@ static void mei_dump(void *ptr, int dword, int offset, const char *type)
 	}
 }
 #else
-# define mei_dump(ptr,dword,offset,type) do {} while (0)
+# define mei_dump(ptr, dword, offset, type) do {} while (0)
 #endif
 
 /*
@@ -504,7 +504,7 @@ static int mkhi_get_fwcaps(mbp_mefwcaps *cap)
 			      &cap_msg, sizeof(cap_msg)) < 0) {
 		printk(BIOS_ERR, "ME: GET FWCAPS message failed\n");
 		return -1;
-        }
+	}
 	*cap = cap_msg.caps_sku;
 	return 0;
 }
@@ -616,7 +616,7 @@ static void intel_me_finalize(device_t dev)
 	u32 reg32;
 
 	/* S3 path will have hidden this device already */
-	if (!mei_base_address || mei_base_address == (u8*) 0xfffffff0)
+	if (!mei_base_address || mei_base_address == (u8 *) 0xfffffff0)
 		return;
 
 	/* Make sure IO is disabled */
@@ -647,7 +647,7 @@ static int me_icc_set_clock_enables(u32 mask)
 	if (mei_sendrecv_icc(&icc, &clk, sizeof(clk), NULL, 0) < 0) {
 		printk(BIOS_ERR, "ME: ICC SET CLOCK ENABLES message failed\n");
 		return -1;
-        } else {
+	} else {
 		printk(BIOS_INFO, "ME: ICC SET CLOCK ENABLES 0x%08x\n", mask);
 	}
 
@@ -921,7 +921,7 @@ static int intel_me_read_mbp(me_bios_payload *mbp_data, device_t dev)
 	}
 #endif
 
-#define ASSIGN_FIELD_PTR(field_,val_) \
+#define ASSIGN_FIELD_PTR(field_, val_) \
 	{ \
 		mbp_data->field_ = (typeof(mbp_data->field_))(void *)val_; \
 		break; \
@@ -931,7 +931,7 @@ static int intel_me_read_mbp(me_bios_payload *mbp_data, device_t dev)
 	for (i = 0; i < mbp->header.mbp_size - 1;) {
 		mbp_item_header *item = (void *)&mbp->data[i];
 
-		switch(MBP_MAKE_IDENT(item->app_id, item->item_id)) {
+		switch (MBP_MAKE_IDENT(item->app_id, item->item_id)) {
 		case MBP_IDENT(KERNEL, FW_VER):
 			ASSIGN_FIELD_PTR(fw_version_name, &mbp->data[i+1]);
 

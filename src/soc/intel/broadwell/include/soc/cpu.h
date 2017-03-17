@@ -49,7 +49,7 @@
 	(((1 << ((base)*5)) * (limit)) / 1000)
 #define C_STATE_LATENCY_FROM_LAT_REG(reg) \
 	C_STATE_LATENCY_MICRO_SECONDS(C_STATE_LATENCY_CONTROL_ ##reg## _LIMIT, \
-	                              (IRTL_1024_NS >> 10))
+					(IRTL_1024_NS >> 10))
 
 /* Configure power limits for turbo mode */
 void set_power_limits(u8 power_limit_1_time);

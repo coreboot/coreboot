@@ -90,7 +90,7 @@ static int get_bar(device_t dev, unsigned int index, u32 *base, u32 *len)
  * Intel special features, but they do consume resources that need to be
  * accounted for. */
 static int get_bar_in_mchbar(device_t dev, unsigned int index, u32 *base,
-                             u32 *len)
+			     u32 *len)
 {
 	u32 bar;
 
@@ -110,7 +110,7 @@ struct fixed_mmio_descriptor {
 	unsigned int index;
 	u32 size;
 	int (*get_resource)(device_t dev, unsigned int index,
-	                    u32 *base, u32 *size);
+			    u32 *base, u32 *size);
 	const char *description;
 };
 
@@ -140,13 +140,13 @@ static void mc_add_fixed_mmio_resources(device_t dev)
 		size = mc_fixed_resources[i].size;
 		index = mc_fixed_resources[i].index;
 		if (!mc_fixed_resources[i].get_resource(dev, index,
-		                                        &base, &size))
+							&base, &size))
 			continue;
 
 		resource = new_resource(dev, mc_fixed_resources[i].index);
 		resource->flags = IORESOURCE_MEM | IORESOURCE_FIXED |
-		                  IORESOURCE_STORED | IORESOURCE_RESERVE |
-		                  IORESOURCE_ASSIGNED;
+				  IORESOURCE_STORED | IORESOURCE_RESERVE |
+				  IORESOURCE_ASSIGNED;
 		resource->base = base;
 		resource->size = size;
 		printk(BIOS_DEBUG, "%s: Adding %s @ %x 0x%08lx-0x%08lx.\n",
@@ -185,7 +185,7 @@ struct map_entry {
 };
 
 static void read_map_entry(device_t dev, struct map_entry *entry,
-                           uint64_t *result)
+			   uint64_t *result)
 {
 	uint64_t value;
 	uint64_t mask;
@@ -346,16 +346,16 @@ static void mc_add_dram_resources(device_t dev)
 	resource->base = mc_values[TSEG_REG] - dpr_size;
 	resource->size = mc_values[BGSM_REG] - resource->base;
 	resource->flags = IORESOURCE_MEM | IORESOURCE_FIXED |
-	                  IORESOURCE_STORED | IORESOURCE_RESERVE |
-	                  IORESOURCE_ASSIGNED | IORESOURCE_CACHEABLE;
+			  IORESOURCE_STORED | IORESOURCE_RESERVE |
+			  IORESOURCE_ASSIGNED | IORESOURCE_CACHEABLE;
 
 	/* BGSM -> TOLUD */
 	resource = new_resource(dev, index++);
 	resource->base = mc_values[BGSM_REG];
 	resource->size = mc_values[TOLUD_REG] - resource->base;
 	resource->flags = IORESOURCE_MEM | IORESOURCE_FIXED |
-	                  IORESOURCE_STORED | IORESOURCE_RESERVE |
-	                  IORESOURCE_ASSIGNED;
+			  IORESOURCE_STORED | IORESOURCE_RESERVE |
+			  IORESOURCE_ASSIGNED;
 
 	/* 4GiB -> TOUUD */
 	base_k = 4096 * 1024; /* 4GiB */
@@ -371,7 +371,7 @@ static void mc_add_dram_resources(device_t dev)
 	 */
 	mmio_resource(dev, index++, (0xa0000 >> 10), (0xc0000 - 0xa0000) >> 10);
 	reserved_ram_resource(dev, index++, (0xc0000 >> 10),
-	                      (0x100000 - 0xc0000) >> 10);
+				(0x100000 - 0xc0000) >> 10);
 
 	chromeos_reserve_ram_oops(dev, index++);
 }

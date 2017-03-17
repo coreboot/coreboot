@@ -47,10 +47,10 @@ struct smm_relocation_params {
  * clobbered by the arch/x86/Kconfig if they have the same name. */
 static inline int smm_region_size(void)
 {
-        /* Make it 8MiB by default. */
-        if (CONFIG_SMM_TSEG_SIZE == 0)
-                return (8 << 20);
-        return CONFIG_SMM_TSEG_SIZE;
+	/* Make it 8MiB by default. */
+	if (CONFIG_SMM_TSEG_SIZE == 0)
+		return (8 << 20);
+	return CONFIG_SMM_TSEG_SIZE;
 }
 
 void smm_relocation_handler(int cpu, uintptr_t curr_smbase,

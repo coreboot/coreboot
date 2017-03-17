@@ -30,12 +30,12 @@
 
 void soft_reset(void)
 {
-        outb(0x04, 0xcf9);
+	outb(0x04, 0xcf9);
 }
 
 void hard_reset(void)
 {
-        outb(0x06, 0xcf9);
+	outb(0x06, 0xcf9);
 }
 
 void reset_system(void)

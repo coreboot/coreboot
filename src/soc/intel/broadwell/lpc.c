@@ -106,7 +106,7 @@ static void pch_pirq_init(device_t dev)
 	pci_write_config8(dev, PIRQH_ROUT, config->pirqh_routing);
 
 	for (irq_dev = all_devices; irq_dev; irq_dev = irq_dev->next) {
-		u8 int_pin=0, int_line=0;
+		u8 int_pin = 0, int_line = 0;
 
 		if (!irq_dev->enabled || irq_dev->path.type != DEVICE_PATH_PCI)
 			continue;
@@ -133,7 +133,7 @@ static void pch_power_options(device_t dev)
 	const char *state;
 	/* Get the chip configuration */
 	config_t *config = dev->chip_info;
-	int pwr_on=CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
+	int pwr_on = CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
 
 	/* Which state do we want to goto after g3 (power restored)?
 	 * 0 == S0 Full On
@@ -475,7 +475,7 @@ static void pch_lpc_add_mmio_resources(device_t dev)
 		res->base = RCBA_BASE_ADDRESS;
 		res->size = 16 * 1024;
 		res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED |
-		             IORESOURCE_FIXED | IORESOURCE_RESERVE;
+			     IORESOURCE_FIXED | IORESOURCE_RESERVE;
 	}
 
 	/* Check LPC Memory Decode register. */
@@ -487,7 +487,7 @@ static void pch_lpc_add_mmio_resources(device_t dev)
 			res->base = reg;
 			res->size = 16 * 1024;
 			res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED |
-			             IORESOURCE_FIXED | IORESOURCE_RESERVE;
+				     IORESOURCE_FIXED | IORESOURCE_RESERVE;
 		}
 	}
 }
@@ -591,7 +591,7 @@ static void southcluster_inject_dsdt(device_t device)
 
 	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
 	if (!gnvs) {
-		gnvs = cbmem_add(CBMEM_ID_ACPI_GNVS, sizeof (*gnvs));
+		gnvs = cbmem_add(CBMEM_ID_ACPI_GNVS, sizeof(*gnvs));
 		if (gnvs)
 			memset(gnvs, 0, sizeof(*gnvs));
 	}

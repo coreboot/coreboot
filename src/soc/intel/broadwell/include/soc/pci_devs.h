@@ -17,17 +17,17 @@
 #define _BROADWELL_PCI_DEVS_H_
 
 #define _SA_DEVFN(slot)		PCI_DEVFN(SA_DEV_SLOT_ ## slot, 0)
-#define _PCH_DEVFN(slot,func)	PCI_DEVFN(PCH_DEV_SLOT_ ## slot, func)
+#define _PCH_DEVFN(slot, func)	PCI_DEVFN(PCH_DEV_SLOT_ ## slot, func)
 
 #if defined(__PRE_RAM__) || defined(__SMM__) || defined(__ROMCC__)
 #include <arch/io.h>
 #define _SA_DEV(slot)		PCI_DEV(0, SA_DEV_SLOT_ ## slot, 0)
-#define _PCH_DEV(slot,func)	PCI_DEV(0, PCH_DEV_SLOT_ ## slot, func)
+#define _PCH_DEV(slot, func)	PCI_DEV(0, PCH_DEV_SLOT_ ## slot, func)
 #else
 #include <device/device.h>
 #include <device/pci_def.h>
 #define _SA_DEV(slot)		dev_find_slot(0, _SA_DEVFN(slot))
-#define _PCH_DEV(slot,func)	dev_find_slot(0, _PCH_DEVFN(slot, func))
+#define _PCH_DEV(slot, func)	dev_find_slot(0, _PCH_DEVFN(slot, func))
 #endif
 
 /* System Agent Devices */

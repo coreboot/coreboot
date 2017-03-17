@@ -190,7 +190,7 @@ static u32 northbridge_get_base_reg(device_t dev, int reg)
 }
 
 static void fill_in_relocation_params(device_t dev,
-                                      struct smm_relocation_params *params)
+				      struct smm_relocation_params *params)
 {
 	u32 tseg_size;
 	u32 tsegmb;
@@ -242,7 +242,7 @@ static void fill_in_relocation_params(device_t dev,
 	params->uncore_emrr_base.lo = emrr_base;
 	params->uncore_emrr_base.hi = 0;
 	params->uncore_emrr_mask.lo = (~(emrr_size - 1) & rmask) |
-	                              MTRR_PHYS_MASK_VALID;
+					MTRR_PHYS_MASK_VALID;
 	params->uncore_emrr_mask.hi = (1 << (39 - 32)) - 1;
 }
 

@@ -330,7 +330,7 @@ static void hda_work_around(device_t dev)
 
 static int place_device_in_d3hot(device_t dev)
 {
-	unsigned offset;
+	unsigned int offset;
 
 	printk(BIOS_SPEW, "%s/%s ( %s )\n",
 			__FILE__, __func__, dev_name(dev));

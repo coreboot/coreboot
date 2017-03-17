@@ -339,7 +339,8 @@ struct chip_operations soc_intel_braswell_ops = {
 	.init = soc_init,
 };
 
-static void pci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void pci_set_subsystem(device_t dev, unsigned int vendor,
+	unsigned int device)
 {
 	printk(BIOS_SPEW, "%s/%s ( %s, 0x%04x, 0x%04x )\n",
 			__FILE__, __func__, dev_name(dev), vendor, device);

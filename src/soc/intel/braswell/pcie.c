@@ -159,7 +159,8 @@ static void pcie_enable(device_t dev)
 	southcluster_enable_dev(dev);
 }
 
-static void pcie_root_set_subsystem(device_t dev, unsigned vid, unsigned did)
+static void pcie_root_set_subsystem(device_t dev, unsigned int vid,
+	unsigned int did)
 {
 	printk(BIOS_SPEW, "%s/%s ( %s, 0x%04x, 0x%04x )\n",
 			__FILE__, __func__, dev_name(dev), vid, did);

@@ -59,9 +59,9 @@ static const u8 gpecommunity_gpio_to_pad[GP_EAST_COUNT] = {
 /* GPIO Community descriptions */
 static const struct gpio_bank gpnorth_community = {
 	.gpio_count = GP_NORTH_COUNT,
-	.gpio_to_pad = gpncommunity_gpio_to_pad ,
-	.pad_base = COMMUNITY_GPNORTH_BASE	,
-	.has_gpe_en = GPE_CAPABLE ,
+	.gpio_to_pad = gpncommunity_gpio_to_pad,
+	.pad_base = COMMUNITY_GPNORTH_BASE,
+	.has_gpe_en = GPE_CAPABLE,
 	.has_wake_en = 1,
 };
 

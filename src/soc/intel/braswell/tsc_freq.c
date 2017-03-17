@@ -41,10 +41,9 @@ static const unsigned int cpu_bus_clk_freq_table[] = {
 unsigned int cpu_bus_freq_khz(void)
 {
 	msr_t clk_info = rdmsr(MSR_BSEL_CR_OVERCLOCK_CONTROL);
-	if ((clk_info.lo & 0xF)  < (sizeof(cpu_bus_clk_freq_table)/sizeof(unsigned int)))
-	{
-		return(cpu_bus_clk_freq_table[clk_info.lo & 0xF]);
-	}
+	if ((clk_info.lo & 0xF)
+		< (sizeof(cpu_bus_clk_freq_table) / sizeof(unsigned int)))
+		return cpu_bus_clk_freq_table[clk_info.lo & 0xF];
 	return 0;
 }
 

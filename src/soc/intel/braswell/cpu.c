@@ -229,7 +229,6 @@ void soc_init_cpus(device_t dev)
 	printk(BIOS_SPEW, "%s/%s ( %s )\n",
 			__FILE__, __func__, dev_name(dev));
 
-	if (mp_init_with_smm(cpu_bus, &mp_ops)) {
+	if (mp_init_with_smm(cpu_bus, &mp_ops))
 		printk(BIOS_ERR, "MP initialization failure.\n");
-	}
 }

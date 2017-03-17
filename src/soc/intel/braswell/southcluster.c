@@ -390,7 +390,6 @@ static int place_device_in_d3hot(device_t dev)
 	DEV_CASE(TXE) :
 		/* TXE cannot be placed in D3Hot. */
 		return 0;
-		break;
 	DEV_CASE(PCIE_PORT1) :
 	DEV_CASE(PCIE_PORT2) :
 	DEV_CASE(PCIE_PORT3) :

@@ -58,7 +58,7 @@ struct soc_intel_braswell_config {
 	int disable_slp_x_stretch_sus_fail;
 
 	/* LPE Audio Clock configuration. */
-	enum lpe_clk_src lpe_codec_clk_src; /* 0=xtal 1=PLL, Both are 19.2Mhz. */
+	enum lpe_clk_src lpe_codec_clk_src; /* 0=xtal 1=PLL, Both are 19.2Mhz */
 
 	/* Native SD Card controller - override controller capabilities. */
 	uint32_t sdcard_cap_low;

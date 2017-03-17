@@ -194,7 +194,7 @@ chip soc/intel/apollolake
 				device i2c 10 on end
 			end
 			chip drivers/i2c/hid
-				register "generic.hid" = ""WDHT0001""
+				register "generic.hid" = ""WDHT0002""
 				register "generic.desc" = ""WDT Touchscreen""
 				register "generic.irq" = "ACPI_IRQ_EDGE_LOW(GPIO_21_IRQ)"
 				register "generic.probed" = "1"

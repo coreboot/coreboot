@@ -74,9 +74,6 @@ BOOT_STATE_INIT_ENTRY(BS_DEV_INIT, BS_ON_EXIT,
  */
 static int vboot_possibly_executed(void)
 {
-	if (!IS_ENABLED(CONFIG_VBOOT))
-		return 0;
-
 	if (IS_ENABLED(CONFIG_VBOOT_STARTS_IN_BOOTBLOCK)) {
 		if (ENV_BOOTBLOCK && IS_ENABLED(CONFIG_SEPARATE_VERSTAGE))
 			return 0;
@@ -141,9 +138,6 @@ int vboot_check_recovery_request(void)
 
 int vboot_recovery_mode_enabled(void)
 {
-	if (!IS_ENABLED(CONFIG_VBOOT))
-		return 0;
-
 	return !!vboot_check_recovery_request();
 }
 
@@ -159,9 +153,6 @@ int vboot_recovery_mode_memory_retrain(void)
 
 int vboot_developer_mode_enabled(void)
 {
-	if (!IS_ENABLED(CONFIG_VBOOT))
-		return 0;
-
 	if (cbmem_possibly_online() && vboot_handoff_check_developer_flag())
 		return 1;
 

@@ -13,13 +13,13 @@
 ## GNU General Public License for more details.
 ##
 
+ifeq ($(CONFIG_VBOOT),y)
+
 bootblock-y += bootmode.c
 romstage-y += bootmode.c
 ramstage-y += bootmode.c
 verstage-y += bootmode.c
 postcar-y += bootmode.c
-
-ifeq ($(CONFIG_VBOOT),y)
 
 libverstage-generic-ccopts += -D__PRE_RAM__ -D__VERSTAGE__
 verstage-generic-ccopts += -D__PRE_RAM__ -D__VERSTAGE__

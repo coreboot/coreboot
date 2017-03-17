@@ -43,18 +43,12 @@ static int read_gpio(gpio_t gpio_num)
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
 	struct lb_gpio chromeos_gpios[] = {
-		{DEV_SW, ACTIVE_LOW, read_gpio(DEV_SW), "developer"},
 		{REC_SW, ACTIVE_LOW, read_gpio(REC_SW), "recovery"},
 		{WP_SW, ACTIVE_LOW, read_gpio(WP_SW), "write protect"},
 		{-1, ACTIVE_LOW, 1, "power"},
 		{-1, ACTIVE_LOW, 0, "lid"},
 	};
 	lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios));
-}
-
-int get_developer_mode_switch(void)
-{
-	return 0;
 }
 
 /*

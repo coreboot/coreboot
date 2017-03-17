@@ -29,12 +29,6 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	printk(BIOS_ERR, "%s unsupported, but called\n", __func__);
 }
 
-int get_developer_mode_switch(void)
-{
-	printk(BIOS_ERR, "%s unsupported, but called\n", __func__);
-	return 0;
-}
-
 int get_recovery_mode_switch(void)
 {
 	printk(BIOS_ERR, "%s unsupported, but called\n", __func__);

@@ -162,9 +162,6 @@ int vboot_developer_mode_enabled(void)
 	if (!IS_ENABLED(CONFIG_VBOOT))
 		return 0;
 
-	if (get_developer_mode_switch())
-		return 1;
-
 	if (cbmem_possibly_online() && vboot_handoff_check_developer_flag())
 		return 1;
 

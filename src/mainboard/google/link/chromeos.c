@@ -54,12 +54,6 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	gpios->gpios[3].value = 0;
 	strncpy((char *)gpios->gpios[3].name,"power", GPIO_MAX_NAME_LENGTH);
 
-	/* Developer: a tricky case on Link, there is no switch */
-	gpios->gpios[4].port = -1; /* Indicate that this is a pseudo GPIO */
-	gpios->gpios[4].polarity = ACTIVE_HIGH;
-	gpios->gpios[4].value = get_developer_mode_switch();
-	strncpy((char *)gpios->gpios[4].name,"developer", GPIO_MAX_NAME_LENGTH);
-
 	/* Did we load the VGA Option ROM? */
 	gpios->gpios[5].port = -1; /* Indicate that this is a pseudo GPIO */
 	gpios->gpios[5].polarity = ACTIVE_HIGH;

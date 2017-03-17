@@ -83,7 +83,7 @@ static void fill_vboot_handoff(struct vboot_handoff *vboot_handoff,
 		vb_sd->flags |= VBSD_LF_DEV_SWITCH_ON;
 	}
 	/* TODO: Set these in depthcharge */
-	if (IS_ENABLED(CONFIG_VIRTUAL_DEV_SWITCH))
+	if (!IS_ENABLED(CONFIG_PHYSICAL_DEV_SWITCH))
 		vb_sd->flags |= VBSD_HONOR_VIRT_DEV_SWITCH;
 	if (IS_ENABLED(CONFIG_EC_SOFTWARE_SYNC))
 		vb_sd->flags |= VBSD_EC_SOFTWARE_SYNC;

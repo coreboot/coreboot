@@ -17,10 +17,8 @@ config BOARD_SPECIFIC_OPTIONS
 
 config CHROMEOS
 	select EC_GOOGLE_CHROMEEC_SWITCHES
-	select EC_SOFTWARE_SYNC
 	select LID_SWITCH
 	select VBOOT_VBNV_CMOS
-	select VIRTUAL_DEV_SWITCH
 
 config DYNAMIC_VNN_SUPPORT
 	bool "Enables support for Dynamic VNN"

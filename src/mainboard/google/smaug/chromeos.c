@@ -26,7 +26,6 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 			gpio_get(WRITE_PROTECT_L), "write protect"},
 		{-1, ACTIVE_HIGH, get_recovery_mode_switch(), "recovery"},
 		{POWER_BUTTON, ACTIVE_LOW, -1, "power"},
-		{-1, ACTIVE_HIGH, get_developer_mode_switch(), "developer"},
 		{EC_IN_RW, ACTIVE_HIGH, -1, "EC in RW"},
 		{AP_SYS_RESET_L, ACTIVE_LOW, -1, "reset"},
 	};

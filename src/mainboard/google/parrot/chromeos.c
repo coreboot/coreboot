@@ -56,12 +56,6 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	gpios->gpios[1].value = get_recovery_mode_switch();
 	strncpy((char *)gpios->gpios[1].name,"recovery", GPIO_MAX_NAME_LENGTH);
 
-	/* Developer: Virtual GPIO in the EC ( Servo GPIO17 active low) */
-	gpios->gpios[2].port = -1;
-	gpios->gpios[2].polarity = ACTIVE_HIGH;
-	gpios->gpios[2].value = get_developer_mode_switch();
-	strncpy((char *)gpios->gpios[2].name,"developer", GPIO_MAX_NAME_LENGTH);
-
 	/* Lid switch GPIO active high (open). */
 	gpios->gpios[3].port = 15;
 	gpios->gpios[3].polarity = ACTIVE_HIGH;
@@ -86,22 +80,6 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 int get_lid_switch(void)
 {
 	return get_gpio(15);
-}
-
-int get_developer_mode_switch(void)
-{
-	u8 gpio = !get_gpio(17);
-	/*
-	 * Dev mode is controlled by EC and uboot stores a flag in TPM.
-	 * This GPIO is only for the debug header.
-	 * It is AND'd to the EC request.
-	 */
-
-	printk(BIOS_DEBUG, "DEV MODE GPIO 17: %x\n", gpio);
-
-	/* GPIO17, active low -- return active high reading and let
-	 * it be inverted by the caller if needed. */
-	return gpio;
 }
 
 int get_write_protect_state(void)

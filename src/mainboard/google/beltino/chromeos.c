@@ -38,7 +38,6 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 		{GPIO_SPI_WP, ACTIVE_HIGH, 0, "write protect"},
 		{GPIO_REC_MODE, ACTIVE_LOW,
 			get_recovery_mode_switch(), "recovery"},
-		{-1, ACTIVE_HIGH, get_developer_mode_switch(), "developer"},
 		{-1, ACTIVE_HIGH, 1, "lid"},
 		{-1, ACTIVE_HIGH, 0, "power"},
 		{-1, ACTIVE_HIGH, gfx_get_init_done(), "oprom"},
@@ -56,11 +55,6 @@ int get_write_protect_state(void)
 	dev = dev_find_slot(0, PCI_DEVFN(0x1f, 2));
 #endif
 	return (pci_read_config32(dev, SATA_SP) >> FLAG_SPI_WP) & 1;
-}
-
-int get_developer_mode_switch(void)
-{
-	return 0;
 }
 
 int get_recovery_mode_switch(void)

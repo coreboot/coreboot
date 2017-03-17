@@ -25,7 +25,6 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 		{-1, ACTIVE_HIGH, get_recovery_mode_switch(), "recovery"},
 		{GPIO(R4), ACTIVE_HIGH, -1, "lid"},
 		{GPIO(Q0), ACTIVE_LOW, -1, "power"},
-		{-1, ACTIVE_HIGH, get_developer_mode_switch(), "developer"},
 		{GPIO(U4), ACTIVE_HIGH, -1, "EC in RW"},
 		{GPIO(I5), ACTIVE_LOW, -1, "reset"},
 	};

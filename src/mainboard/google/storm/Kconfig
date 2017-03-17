@@ -32,7 +32,6 @@ config BOARD_SPECIFIC_OPTIONS
 config CHROMEOS
 	select VBOOT_DISABLE_DEV_ON_RECOVERY
 	select WIPEOUT_SUPPORTED
-	select VIRTUAL_DEV_SWITCH
 
 config BOARD_VARIANT_AP148
 	bool "pick this to build an image for ap148"

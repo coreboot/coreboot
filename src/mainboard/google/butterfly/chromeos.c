@@ -29,7 +29,6 @@
 #define WP_GPIO		6
 #define DEVMODE_GPIO	54
 #define FORCE_RECOVERY_MODE	0
-#define FORCE_DEVELOPER_MODE	0
 
 #ifndef __PRE_RAM__
 #include <boot/coreboot_tables.h>
@@ -60,13 +59,6 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	gpios->gpios[1].polarity = ACTIVE_HIGH;
 	gpios->gpios[1].value = get_recovery_mode_switch();
 	strncpy((char *)gpios->gpios[1].name,"recovery", GPIO_MAX_NAME_LENGTH);
-
-	/* Developer: virtual GPIO active high */
-	gpios->gpios[2].port = -1;
-	gpios->gpios[2].polarity = ACTIVE_HIGH;
-	gpios->gpios[2].value = get_developer_mode_switch();
-	strncpy((char *)gpios->gpios[2].name,"developer",
-							GPIO_MAX_NAME_LENGTH);
 
 	/* lid switch value from EC */
 	gpios->gpios[3].port = -1;
@@ -99,23 +91,6 @@ int get_write_protect_state(void)
 int get_lid_switch(void)
 {
 	return (ec_mem_read(EC_HW_GPI_STATUS) >> EC_GPI_LID_STAT_BIT) & 1;
-}
-
-int get_developer_mode_switch(void)
-{
-	int dev_mode = 0;
-
-#if FORCE_DEVELOPER_MODE
-	printk(BIOS_DEBUG,"FORCING DEVELOPER MODE.\n");
-	return 1;
-#endif
-
-	/* Servo GPIO is active low, reverse it for intial state (request) */
-	dev_mode = !get_gpio(DEVMODE_GPIO);
-	printk(BIOS_DEBUG,"DEVELOPER MODE FROM GPIO %d: %x\n",DEVMODE_GPIO,
-								 dev_mode);
-
-	return dev_mode;
 }
 
 int get_recovery_mode_switch(void)

@@ -52,14 +52,6 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 		GPIO_MAX_NAME_LENGTH);
 	count++;
 
-	/* Developer: virtual GPIO active high */
-	gpios->gpios[count].port = -1;
-	gpios->gpios[count].polarity = ACTIVE_HIGH;
-	gpios->gpios[count].value = get_developer_mode_switch();
-	strncpy((char *)gpios->gpios[count].name, "developer",
-		GPIO_MAX_NAME_LENGTH);
-	count++;
-
 	/* TODO: Reset: active low (output) */
 	gpios->gpios[count].port = GPIO(I5);
 	gpios->gpios[count].polarity = ACTIVE_LOW;
@@ -72,11 +64,6 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	gpios->count = count;
 
 	printk(BIOS_ERR, "Added %d GPIOS size %d\n", count, gpios->size);
-}
-
-int get_developer_mode_switch(void)
-{
-	return 0;
 }
 
 int get_recovery_mode_switch(void)

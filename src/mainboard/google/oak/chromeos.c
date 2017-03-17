@@ -40,7 +40,6 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 		{-1, ACTIVE_HIGH, get_recovery_mode_switch(), "recovery"},
 		{LID, ACTIVE_HIGH, -1, "lid"},
 		{POWER_BUTTON, ACTIVE_HIGH, -1, "power"},
-		{-1, ACTIVE_HIGH, get_developer_mode_switch(), "developer"},
 		{EC_IN_RW, ACTIVE_HIGH, -1, "EC in RW"},
 		{EC_IRQ, ACTIVE_LOW, -1, "EC interrupt"},
 	};

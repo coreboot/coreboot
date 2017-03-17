@@ -32,7 +32,6 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	struct lb_gpio chromeos_gpios[] = {
 		{-1, ACTIVE_HIGH, get_write_protect_state(), "write protect"},
 		{-1, ACTIVE_HIGH, vboot_recovery_mode_enabled(), "recovery"},
-		{-1, ACTIVE_HIGH, get_developer_mode_switch(), "developer"},
 		{-1, ACTIVE_HIGH, get_lid_switch(), "lid"},
 		{-1, ACTIVE_HIGH, 0, "power"},
 		{-1, ACTIVE_HIGH, gfx_get_init_done(), "oprom"},

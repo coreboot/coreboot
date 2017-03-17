@@ -36,7 +36,6 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 		return;
 
 	u32 gp_lvl  = inl(gpio_base + GP_LVL);
-	u32 gp_lvl2 = inl(gpio_base + GP_LVL2);
 	u32 gp_lvl3 = inl(gpio_base + GP_LVL3);
 
 	gpios->size = sizeof(*gpios) + (GPIO_COUNT * sizeof(struct lb_gpio));
@@ -54,12 +53,6 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	gpios->gpios[1].polarity = ACTIVE_HIGH;
 	gpios->gpios[1].value = (gp_lvl3 >> (69-64)) & 1;
 	strncpy((char *)gpios->gpios[1].name,"recovery", GPIO_MAX_NAME_LENGTH);
-
-	/* Developer: GPIO48 - BIOS_RESP - J8E4 (silkscreen: J8E3) */
-	gpios->gpios[2].port = 48;
-	gpios->gpios[2].polarity = ACTIVE_LOW;
-	gpios->gpios[2].value = (gp_lvl2 >> (48-32)) & 1;
-	strncpy((char *)gpios->gpios[2].name,"developer", GPIO_MAX_NAME_LENGTH);
 
 	/* Hard code the lid switch GPIO to open. */
 	gpios->gpios[3].port = -1;
@@ -80,15 +73,6 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	strncpy((char *)gpios->gpios[5].name,"oprom", GPIO_MAX_NAME_LENGTH);
 }
 #endif
-
-int get_developer_mode_switch(void)
-{
-	/*
-	 * Developer: GPIO48, Connected to J8E4, however the silkscreen says
-	 * J8E3. The jumper is active low.
-	 */
-	return !get_gpio(48);
-}
 
 int get_recovery_mode_switch(void)
 {

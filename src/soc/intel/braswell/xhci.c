@@ -42,7 +42,8 @@ static void xhci_init(device_t dev)
 				config->usb_comp_bg),
 			REG_SCRIPT_END
 		};
-		printk(BIOS_INFO, "Override USB2_COMPBG to: 0x%X\n", config->usb_comp_bg);
+		printk(BIOS_INFO, "Override USB2_COMPBG to: 0x%X\n",
+			config->usb_comp_bg);
 		reg_script_run(ops);
 	}
 }

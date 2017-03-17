@@ -142,9 +142,9 @@ static void lpe_stash_firmware_info(device_t dev)
 
 	/* Also put the address in MMIO space like on C0 BTM */
 	mmio = find_resource(dev, PCI_BASE_ADDRESS_0);
-	write32((void *)(uintptr_t)(mmio->base + FIRMWARE_REG_BASE_C0), \
+	write32((void *)(uintptr_t)(mmio->base + FIRMWARE_REG_BASE_C0),
 		res->base);
-	write32((void *)(uintptr_t)(mmio->base + FIRMWARE_REG_LENGTH_C0), \
+	write32((void *)(uintptr_t)(mmio->base + FIRMWARE_REG_LENGTH_C0),
 		res->size);
 }
 

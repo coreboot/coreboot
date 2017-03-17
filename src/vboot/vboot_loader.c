@@ -25,75 +25,69 @@
 #include <vboot/symbols.h>
 #include <vboot/vboot_common.h>
 
+/* Ensure vboot configuration is valid: */
+_Static_assert(IS_ENABLED(CONFIG_VBOOT_STARTS_IN_BOOTBLOCK) +
+	       IS_ENABLED(CONFIG_VBOOT_STARTS_IN_ROMSTAGE) == 1,
+	       "vboot must either start in bootblock or romstage (not both!)");
+_Static_assert(!IS_ENABLED(CONFIG_SEPARATE_VERSTAGE) ||
+	       IS_ENABLED(CONFIG_VBOOT_STARTS_IN_BOOTBLOCK),
+	       "stand-alone verstage must start in (i.e. after) bootblock");
+_Static_assert(!IS_ENABLED(CONFIG_RETURN_FROM_VERSTAGE) ||
+	       IS_ENABLED(CONFIG_SEPARATE_VERSTAGE),
+	       "return from verstage only makes sense for separate verstages");
+
 /* The stage loading code is compiled and entered from multiple stages. The
  * helper functions below attempt to provide more clarity on when certain
  * code should be called. */
 
 static int verification_should_run(void)
 {
-	if (ENV_VERSTAGE && IS_ENABLED(CONFIG_SEPARATE_VERSTAGE))
-		return 1;
-
-	if (!IS_ENABLED(CONFIG_SEPARATE_VERSTAGE)) {
-		if (ENV_ROMSTAGE &&
-		    IS_ENABLED(CONFIG_VBOOT_STARTS_IN_ROMSTAGE))
-			return 1;
-		if (ENV_BOOTBLOCK &&
-		    IS_ENABLED(CONFIG_VBOOT_STARTS_IN_BOOTBLOCK))
-			return 1;
-	}
-
-	return 0;
+	if (IS_ENABLED(CONFIG_SEPARATE_VERSTAGE))
+		return ENV_VERSTAGE;
+	else if (IS_ENABLED(CONFIG_VBOOT_STARTS_IN_ROMSTAGE))
+		return ENV_ROMSTAGE;
+	else if (IS_ENABLED(CONFIG_VBOOT_STARTS_IN_BOOTBLOCK))
+		return ENV_BOOTBLOCK;
+	else
+		die("impossible!");
 }
 
 static int verstage_should_load(void)
 {
-	if (!IS_ENABLED(CONFIG_SEPARATE_VERSTAGE))
+	if (IS_ENABLED(CONFIG_SEPARATE_VERSTAGE))
+		return ENV_BOOTBLOCK;
+	else
 		return 0;
-
-	if (ENV_ROMSTAGE && IS_ENABLED(CONFIG_VBOOT_STARTS_IN_ROMSTAGE))
-		return 1;
-
-	if (ENV_BOOTBLOCK && IS_ENABLED(CONFIG_VBOOT_STARTS_IN_BOOTBLOCK))
-		return 1;
-
-	return 0;
 }
 
 static int vboot_executed CAR_GLOBAL;
 
 int vb2_logic_executed(void)
 {
-	/* If this stage is supposed to run the vboot logic ensure it has been
-	 * executed. */
-	if (verification_should_run() && car_get_var(vboot_executed))
+	/* If we are in a stage that would load the verstage or execute the
+	   vboot logic directly, we store the answer in a global. */
+	if (verstage_should_load() || verification_should_run())
+		return car_get_var(vboot_executed);
+
+	if (IS_ENABLED(CONFIG_VBOOT_STARTS_IN_BOOTBLOCK)) {
+		/* All other stages are "after the bootblock" */
+		return !ENV_BOOTBLOCK;
+	} else if (IS_ENABLED(CONFIG_VBOOT_STARTS_IN_ROMSTAGE)) {
+		/* Post-RAM stages are "after the romstage" */
+#ifdef __PRE_RAM__
+		return 0;
+#else
 		return 1;
-
-	/* If this stage is supposed to load verstage and verstage is returning
-	 * back to the calling stage check that it has been executed. */
-	if (verstage_should_load() && IS_ENABLED(CONFIG_RETURN_FROM_VERSTAGE))
-		if (car_get_var(vboot_executed))
-			return 1;
-
-	/* Handle all other stages post vboot execution. */
-	if (!ENV_BOOTBLOCK) {
-		if (IS_ENABLED(CONFIG_VBOOT_STARTS_IN_BOOTBLOCK))
-			return 1;
-		if (IS_ENABLED(CONFIG_VBOOT_STARTS_IN_ROMSTAGE) &&
-				!ENV_ROMSTAGE)
-			return 1;
+#endif
+	} else {
+		die("impossible!");
 	}
-
-	return 0;
 }
 
 static void vboot_prepare(void)
 {
 	if (verification_should_run()) {
-		/*
-		 * Note that this path isn't taken when
-		 * CONFIG_RETURN_FROM_VERSTAGE is employed.
-		 */
+		/* Note: this path is not used for RETURN_FROM_VERSTAGE */
 		verstage_main();
 		car_set_var(vboot_executed, 1);
 		vb2_save_recovery_reason_vbnv();

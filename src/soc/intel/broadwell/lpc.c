@@ -114,10 +114,18 @@ static void pch_pirq_init(device_t dev)
 		int_pin = pci_read_config8(irq_dev, PCI_INTERRUPT_PIN);
 
 		switch (int_pin) {
-		case 1: /* INTA# */ int_line = config->pirqa_routing; break;
-		case 2: /* INTB# */ int_line = config->pirqb_routing; break;
-		case 3: /* INTC# */ int_line = config->pirqc_routing; break;
-		case 4: /* INTD# */ int_line = config->pirqd_routing; break;
+		case 1: /* INTA# */
+			int_line = config->pirqa_routing;
+			break;
+		case 2: /* INTB# */
+			int_line = config->pirqb_routing;
+			break;
+		case 3: /* INTC# */
+			int_line = config->pirqc_routing;
+			break;
+		case 4: /* INTD# */
+			int_line = config->pirqd_routing;
+			break;
 		}
 
 		if (!int_line)

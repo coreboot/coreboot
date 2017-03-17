@@ -86,8 +86,7 @@ struct usb3_port_setting {
 	uint8_t fixed_eq;
 } __attribute__((packed));
 
-struct pei_data
-{
+struct pei_data {
 	uint32_t pei_version;
 
 	enum board_type board_type;

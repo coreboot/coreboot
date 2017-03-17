@@ -647,10 +647,8 @@ static int me_icc_set_clock_enables(u32 mask)
 	if (mei_sendrecv_icc(&icc, &clk, sizeof(clk), NULL, 0) < 0) {
 		printk(BIOS_ERR, "ME: ICC SET CLOCK ENABLES message failed\n");
 		return -1;
-	} else {
-		printk(BIOS_INFO, "ME: ICC SET CLOCK ENABLES 0x%08x\n", mask);
 	}
-
+	printk(BIOS_INFO, "ME: ICC SET CLOCK ENABLES 0x%08x\n", mask);
 	return 0;
 }
 
@@ -916,9 +914,8 @@ static int intel_me_read_mbp(me_bios_payload *mbp_data, device_t dev)
 #if CONFIG_DEBUG_INTEL_ME
 	printk(BIOS_INFO, "ME MBP: Header: items: %d, size dw: %d\n",
 	       mbp->header.num_entries, mbp->header.mbp_size);
-	for (i = 0; i < mbp->header.mbp_size - 1; i++) {
+	for (i = 0; i < mbp->header.mbp_size - 1; i++)
 		printk(BIOS_INFO, "ME MBP: %04x: 0x%08x\n", i, mbp->data[i]);
-	}
 #endif
 
 #define ASSIGN_FIELD_PTR(field_, val_) \

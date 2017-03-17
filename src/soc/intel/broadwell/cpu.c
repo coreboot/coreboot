@@ -688,9 +688,8 @@ void broadwell_init_cpus(device_t dev)
 {
 	struct bus *cpu_bus = dev->link_list;
 
-	if (mp_init_with_smm(cpu_bus, &mp_ops)) {
+	if (mp_init_with_smm(cpu_bus, &mp_ops))
 		printk(BIOS_ERR, "MP initialization failure.\n");
-	}
 }
 
 static struct device_operations cpu_dev_ops = {

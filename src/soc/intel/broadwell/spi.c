@@ -367,43 +367,43 @@ static int spi_setup_opcode(spi_transaction *trans)
 		optypes = (optypes & 0xfffc) | (trans->type & 0x3);
 		writew_(optypes, cntlr.optype);
 		return 0;
-	} else {
-		/* The lock is on. See if what we need is on the menu. */
-		uint8_t optype;
-		uint16_t opcode_index;
-
-		/* Write Enable is handled as atomic prefix */
-		if (trans->opcode == SPI_OPCODE_WREN)
-			return 0;
-
-		read_reg(cntlr.opmenu, opmenu, sizeof(opmenu));
-		for (opcode_index = 0; opcode_index < cntlr.menubytes;
-				opcode_index++) {
-			if (opmenu[opcode_index] == trans->opcode)
-				break;
-		}
-
-		if (opcode_index == cntlr.menubytes) {
-			printk(BIOS_DEBUG, "ICH SPI: Opcode %x not found\n",
-				trans->opcode);
-			return -1;
-		}
-
-		optypes = readw_(cntlr.optype);
-		optype = (optypes >> (opcode_index * 2)) & 0x3;
-		if (trans->type == SPI_OPCODE_TYPE_WRITE_NO_ADDRESS &&
-			optype == SPI_OPCODE_TYPE_WRITE_WITH_ADDRESS &&
-			trans->bytesout >= 3) {
-			/* We guessed wrong earlier. Fix it up. */
-			trans->type = optype;
-		}
-		if (optype != trans->type) {
-			printk(BIOS_DEBUG, "ICH SPI: Transaction doesn't fit type %d\n",
-				optype);
-			return -1;
-		}
-		return opcode_index;
 	}
+
+	/* The lock is on. See if what we need is on the menu. */
+	uint8_t optype;
+	uint16_t opcode_index;
+
+	/* Write Enable is handled as atomic prefix */
+	if (trans->opcode == SPI_OPCODE_WREN)
+		return 0;
+
+	read_reg(cntlr.opmenu, opmenu, sizeof(opmenu));
+	for (opcode_index = 0; opcode_index < cntlr.menubytes;
+			opcode_index++) {
+		if (opmenu[opcode_index] == trans->opcode)
+			break;
+	}
+
+	if (opcode_index == cntlr.menubytes) {
+		printk(BIOS_DEBUG, "ICH SPI: Opcode %x not found\n",
+			trans->opcode);
+		return -1;
+	}
+
+	optypes = readw_(cntlr.optype);
+	optype = (optypes >> (opcode_index * 2)) & 0x3;
+	if (trans->type == SPI_OPCODE_TYPE_WRITE_NO_ADDRESS &&
+		optype == SPI_OPCODE_TYPE_WRITE_WITH_ADDRESS &&
+		trans->bytesout >= 3) {
+		/* We guessed wrong earlier. Fix it up. */
+		trans->type = optype;
+	}
+	if (optype != trans->type) {
+		printk(BIOS_DEBUG, "ICH SPI: Transaction doesn't fit type %d\n",
+			optype);
+		return -1;
+	}
+	return opcode_index;
 }
 
 static int spi_setup_offset(spi_transaction *trans)
@@ -489,9 +489,11 @@ static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 	writew_(SPIS_CDS | SPIS_FCERR, cntlr.status);
 
 	spi_setup_type(&trans);
-	if ((opcode_index = spi_setup_opcode(&trans)) < 0)
+	opcode_index = spi_setup_opcode(&trans);
+	if (opcode_index < 0)
 		return -1;
-	if ((with_address = spi_setup_offset(&trans)) < 0)
+	with_address = spi_setup_offset(&trans);
+	if (with_address < 0)
 		return -1;
 
 	if (trans.opcode == SPI_OPCODE_WREN) {

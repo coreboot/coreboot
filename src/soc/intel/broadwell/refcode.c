@@ -48,9 +48,8 @@ static pei_wrapper_entry_t load_reference_code(void)
 		.prog = &prog,
 	};
 
-	if (acpi_is_wakeup_s3()) {
+	if (acpi_is_wakeup_s3())
 		return load_refcode_from_cache();
-	}
 
 	if (prog_locate(&prog)) {
 		printk(BIOS_DEBUG, "Couldn't locate reference code.\n");

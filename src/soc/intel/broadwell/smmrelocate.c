@@ -292,9 +292,8 @@ void smm_initialize(void)
 	 */
 	smm_initiate_relocation();
 
-	if (smm_reloc_params.smm_save_state_in_msrs) {
+	if (smm_reloc_params.smm_save_state_in_msrs)
 		printk(BIOS_DEBUG, "Doing parallel SMM relocation.\n");
-	}
 }
 
 /* The default SMM entry can happen in parallel or serially. If the

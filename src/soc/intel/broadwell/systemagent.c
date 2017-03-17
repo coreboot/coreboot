@@ -256,9 +256,8 @@ static struct map_entry memory_map[NUM_MAP_ENTRIES] = {
 static void mc_read_map_entries(device_t dev, uint64_t *values)
 {
 	int i;
-	for (i = 0; i < NUM_MAP_ENTRIES; i++) {
+	for (i = 0; i < NUM_MAP_ENTRIES; i++)
 		read_map_entry(dev, &memory_map[i], &values[i]);
-	}
 }
 
 static void mc_report_map_entries(device_t dev, uint64_t *values)

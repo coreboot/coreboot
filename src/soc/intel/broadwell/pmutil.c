@@ -37,7 +37,7 @@ static void print_status_bits(u32 status, const char *bit_names[])
 	if (!status)
 		return;
 
-	for (i=31; i>=0; i--) {
+	for (i = 31; i >= 0; i--) {
 		if (status & (1 << i)) {
 			if (bit_names[i])
 				printk(BIOS_DEBUG, "%s ", bit_names[i]);
@@ -55,7 +55,7 @@ static void print_gpio_status(u32 status, int start)
 	if (!status)
 		return;
 
-	for (i=31; i>=0; i--) {
+	for (i = 31; i >= 0; i--) {
 		if (status & (1 << i))
 			printk(BIOS_DEBUG, "GPIO%d ", start + i);
 	}

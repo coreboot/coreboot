@@ -74,12 +74,12 @@ static acpi_cstate_t cstate_map[NUM_C_STATES] = {
 	[C_STATE_C1] = {
 		.latency = 0,
 		.power = 1000,
-		.resource = MWAIT_RES(0,0),
+		.resource = MWAIT_RES(0, 0),
 	},
 	[C_STATE_C1E] = {
 		.latency = 0,
 		.power = 1000,
-		.resource = MWAIT_RES(0,1),
+		.resource = MWAIT_RES(0, 1),
 	},
 	[C_STATE_C3] = {
 		.latency = C_STATE_LATENCY_FROM_LAT_REG(0),
@@ -185,7 +185,7 @@ void acpi_init_gnvs(global_nvs_t *gnvs)
 #endif
 }
 
-void acpi_create_intel_hpet(acpi_hpet_t * hpet)
+void acpi_create_intel_hpet(acpi_hpet_t *hpet)
 {
 	acpi_header_t *header = &(hpet->header);
 	acpi_addr_t *addr = &(hpet->addr);
@@ -543,28 +543,28 @@ void generate_cpu_entries(device_t device)
 	printk(BIOS_DEBUG, "Found %d CPU(s) with %d core(s) each.\n",
 	       numcpus, cores_per_package);
 
-	for (cpuID=1; cpuID <=numcpus; cpuID++) {
-		for (coreID=1; coreID<=cores_per_package; coreID++) {
-			if (coreID>1) {
+	for (cpuID = 1; cpuID <= numcpus; cpuID++) {
+		for (coreID = 1; coreID <= cores_per_package; coreID++) {
+			if (coreID > 1) {
 				pcontrol_blk = 0;
 				plen = 0;
 			}
 
 			/* Generate processor \_PR.CPUx */
 			acpigen_write_processor(
-				(cpuID-1)*cores_per_package+coreID-1,
+				(cpuID - 1) * cores_per_package+coreID - 1,
 				pcontrol_blk, plen);
 
 			/* Generate P-state tables */
 			generate_P_state_entries(
-				coreID-1, cores_per_package);
+				coreID - 1, cores_per_package);
 
 			/* Generate C-state tables */
 			generate_C_state_entries();
 
 			/* Generate T-state tables */
 			generate_T_state_entries(
-				cpuID-1, cores_per_package);
+				cpuID - 1, cores_per_package);
 
 			acpigen_pop_len();
 		}

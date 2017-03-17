@@ -30,7 +30,7 @@ void set_max_freq(void)
 {
 	msr_t msr, perf_ctl, platform_info;
 
-        /* Check for configurable TDP option */
+	/* Check for configurable TDP option */
 	platform_info = rdmsr(MSR_PLATFORM_INFO);
 
 	if ((platform_info.hi >> 1) & 3) {

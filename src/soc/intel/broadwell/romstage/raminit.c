@@ -43,7 +43,7 @@
 void raminit(struct pei_data *pei_data)
 {
 	struct region_device rdev;
-	struct memory_info* mem_info;
+	struct memory_info *mem_info;
 	pei_wrapper_entry_t entry;
 	int ret;
 
@@ -99,7 +99,7 @@ void raminit(struct pei_data *pei_data)
 	/* Print the MRC version after executing the UEFI PEI stage. */
 	u32 version = MCHBAR32(MCHBAR_PEI_VERSION);
 	printk(BIOS_DEBUG, "MRC Version %d.%d.%d Build %d\n",
-		version >> 24 , (version >> 16) & 0xff,
+		version >> 24, (version >> 16) & 0xff,
 		(version >> 8) & 0xff, version & 0xff);
 
 	report_memory_config();

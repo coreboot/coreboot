@@ -23,7 +23,7 @@
 #define RCBA32(x)	*((volatile u32 *)(RCBA_BASE_ADDRESS + x))
 
 #define RCBA_AND_OR(bits, x, and, or) \
-        RCBA##bits(x) = ((RCBA##bits(x) & (and)) | (or))
+	RCBA##bits(x) = ((RCBA##bits(x) & (and)) | (or))
 #define RCBA8_AND_OR(x, and, or)  RCBA_AND_OR(8, x, and, or)
 #define RCBA16_AND_OR(x, and, or) RCBA_AND_OR(16, x, and, or)
 #define RCBA32_AND_OR(x, and, or) RCBA_AND_OR(32, x, and, or)
@@ -35,9 +35,9 @@
 /* Root Port configuration space hide */
 #define RPFN_HIDE(port)         (1 << (((port) * 4) + 3))
 /* Get the function number assigned to a Root Port */
-#define RPFN_FNGET(reg,port)    (((reg) >> ((port) * 4)) & 7)
+#define RPFN_FNGET(reg, port)   (((reg) >> ((port) * 4)) & 7)
 /* Set the function number for a Root Port */
-#define RPFN_FNSET(port,func)   (((func) & 7) << ((port) * 4))
+#define RPFN_FNSET(port, func)  (((func) & 7) << ((port) * 4))
 /* Root Port function number mask */
 #define RPFN_FNMASK(port)       (7 << ((port) * 4))
 
@@ -135,9 +135,9 @@
 #define SOFT_RESET_CTRL 0x38f4
 #define SOFT_RESET_DATA 0x38f8
 
-#define DIR_ROUTE(a,b,c,d) \
-  (((d) << DIR_IDR) | ((c) << DIR_ICR) | \
-  ((b) << DIR_IBR) | ((a) << DIR_IAR))
+#define DIR_ROUTE(a, b, c, d) \
+	(((d) << DIR_IDR) | ((c) << DIR_ICR) | \
+	((b) << DIR_IBR) | ((a) << DIR_IAR))
 
 #define RC		0x3400	/* 32bit */
 #define HPTC		0x3404	/* 32bit */

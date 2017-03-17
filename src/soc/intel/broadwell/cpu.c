@@ -270,7 +270,7 @@ static void configure_pch_power_sharing(void)
 	pch_power_ext = pcode_mailbox_read(MAILBOX_BIOS_CMD_READ_PCH_POWER_EXT);
 
 	printk(BIOS_INFO, "PCH Power: PCODE Levels 0x%08x 0x%08x\n",
-               pch_power, pch_power_ext);
+		pch_power, pch_power_ext);
 
 	pmsync = RCBA32(PMSYNC_CONFIG);
 	pmsync2 = RCBA32(PMSYNC_CONFIG2);
@@ -434,19 +434,19 @@ static void configure_c_states(void)
 	/* C-state Interrupt Response Latency Control 3 - package C8 */
 	msr.hi = 0;
 	msr.lo = IRTL_VALID | IRTL_1024_NS |
-	         C_STATE_LATENCY_CONTROL_3_LIMIT;
+		C_STATE_LATENCY_CONTROL_3_LIMIT;
 	wrmsr(MSR_C_STATE_LATENCY_CONTROL_3, msr);
 
 	/* C-state Interrupt Response Latency Control 4 - package C9 */
 	msr.hi = 0;
 	msr.lo = IRTL_VALID | IRTL_1024_NS |
-	         C_STATE_LATENCY_CONTROL_4_LIMIT;
+		C_STATE_LATENCY_CONTROL_4_LIMIT;
 	wrmsr(MSR_C_STATE_LATENCY_CONTROL_4, msr);
 
 	/* C-state Interrupt Response Latency Control 5 - package C10 */
 	msr.hi = 0;
 	msr.lo = IRTL_VALID | IRTL_1024_NS |
-	         C_STATE_LATENCY_CONTROL_5_LIMIT;
+		C_STATE_LATENCY_CONTROL_5_LIMIT;
 	wrmsr(MSR_C_STATE_LATENCY_CONTROL_5, msr);
 }
 
@@ -472,7 +472,7 @@ static void configure_misc(void)
 
 	msr = rdmsr(IA32_MISC_ENABLE);
 	msr.lo |= (1 << 0);	  /* Fast String enable */
-	msr.lo |= (1 << 3); 	  /* TM1/TM2/EMTTM enable */
+	msr.lo |= (1 << 3);	  /* TM1/TM2/EMTTM enable */
 	msr.lo |= (1 << 16);	  /* Enhanced SpeedStep Enable */
 	wrmsr(IA32_MISC_ENABLE, msr);
 

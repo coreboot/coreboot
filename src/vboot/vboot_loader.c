@@ -145,12 +145,12 @@ static void vboot_prepare(void)
 	/*
 	 * Fill in vboot cbmem objects before moving to ramstage so all
 	 * downstream users have access to vboot results. This path only
-	 * applies to platforms employing VBOOT_DYNAMIC_WORK_BUFFER because
+	 * applies to platforms employing VBOOT_STARTS_IN_ROMSTAGE because
 	 * cbmem comes online prior to vboot verification taking place. For
 	 * other platforms the vboot cbmem objects are initialized when
 	 * cbmem comes online.
 	 */
-	if (ENV_ROMSTAGE && IS_ENABLED(CONFIG_VBOOT_DYNAMIC_WORK_BUFFER)) {
+	if (ENV_ROMSTAGE && IS_ENABLED(CONFIG_VBOOT_STARTS_IN_ROMSTAGE)) {
 		vb2_store_selected_region();
 		vboot_fill_handoff();
 	}

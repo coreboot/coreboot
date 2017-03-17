@@ -175,12 +175,12 @@ void vboot_fill_handoff(void)
 }
 
 /*
- * For platforms that employ VBOOT_DYNAMIC_WORK_BUFFER, the vboot
+ * For platforms that employ VBOOT_STARTS_IN_ROMSTAGE, the vboot
  * verification doesn't happen until after cbmem is brought online.
  * Therefore, the vboot results would not be initialized so don't
  * automatically add results when cbmem comes online.
  */
-#if !IS_ENABLED(CONFIG_VBOOT_DYNAMIC_WORK_BUFFER)
+#if !IS_ENABLED(CONFIG_VBOOT_STARTS_IN_ROMSTAGE)
 static void vb2_fill_handoff_cbmem(int unused)
 {
 	vboot_fill_handoff();

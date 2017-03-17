@@ -32,7 +32,7 @@ static void smbus_delay(void)
 
 static int smbus_wait_until_ready(u16 smbus_base)
 {
-	unsigned loops = SMBUS_TIMEOUT;
+	unsigned int loops = SMBUS_TIMEOUT;
 	unsigned char byte;
 	do {
 		smbus_delay();
@@ -45,7 +45,7 @@ static int smbus_wait_until_ready(u16 smbus_base)
 
 static int smbus_wait_until_done(u16 smbus_base)
 {
-	unsigned loops = SMBUS_TIMEOUT;
+	unsigned int loops = SMBUS_TIMEOUT;
 	unsigned char byte;
 	do {
 		smbus_delay();
@@ -56,7 +56,8 @@ static int smbus_wait_until_done(u16 smbus_base)
 	return loops ? 0 : -1;
 }
 
-int do_smbus_read_byte(unsigned smbus_base, unsigned device, unsigned address)
+int do_smbus_read_byte(unsigned int smbus_base, unsigned int device,
+	unsigned int address)
 {
 	unsigned char global_status_register;
 	unsigned char byte;
@@ -102,8 +103,8 @@ int do_smbus_read_byte(unsigned smbus_base, unsigned device, unsigned address)
 	return byte;
 }
 
-int do_smbus_write_byte(unsigned smbus_base, unsigned device,
-			unsigned address, unsigned data)
+int do_smbus_write_byte(unsigned int smbus_base, unsigned int device,
+			unsigned int address, unsigned int data)
 {
 	unsigned char global_status_register;
 

@@ -23,7 +23,7 @@
 
 static inline int iobp_poll(void)
 {
-	unsigned try;
+	unsigned int try;
 
 	for (try = IOBP_RETRY; try > 0; try--) {
 		u16 status = RCBA16(IOBPS);

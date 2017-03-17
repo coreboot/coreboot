@@ -149,53 +149,58 @@ static void usage(void)
 {
 	printf("amdfwtool: Create AMD Firmware combination\n");
 	printf("Usage: amdfwtool [options] -f <size> -o <filename>\n");
-	printf("-x | --xhci <FILE>           Add XHCI blob\n");
-	printf("-i | --imc <FILE>            Add IMC blob\n");
-	printf("-g | --gec <FILE>            Add GEC blob\n");
+	printf("-x | --xhci <FILE>             Add XHCI blob\n");
+	printf("-i | --imc <FILE>              Add IMC blob\n");
+	printf("-g | --gec <FILE>              Add GEC blob\n");
 
 	printf("\nPSP options:\n");
-	printf("-p | --pubkey <FILE>         Add pubkey\n");
-	printf("-b | --bootloader <FILE>     Add bootloader\n");
-	printf("-s | --smufirmware <FILE>    Add smufirmware\n");
-	printf("-r | --recovery <FILE>       Add recovery\n");
-	printf("-k | --rtmpubkey <FILE>      Add rtmpubkey\n");
-	printf("-c | --secureos <FILE>       Add secureos\n");
-	printf("-n | --nvram <FILE>          Add nvram\n");
-	printf("-d | --securedebug <FILE>    Add securedebug\n");
-	printf("-t | --trustlets <FILE>      Add trustlets\n");
-	printf("-u | --trustletkey <FILE>    Add trustletkey\n");
-	printf("-w | --smufirmware2 <FILE>   Add smufirmware2\n");
-	printf("-m | --smuscs <FILE>         Add smuscs\n");
+	printf("-p | --pubkey <FILE>           Add pubkey\n");
+	printf("-b | --bootloader <FILE>       Add bootloader\n");
+	printf("-s | --smufirmware <FILE>      Add smufirmware\n");
+	printf("-r | --recovery <FILE>         Add recovery\n");
+	printf("-k | --rtmpubkey <FILE>        Add rtmpubkey\n");
+	printf("-c | --secureos <FILE>         Add secureos\n");
+	printf("-n | --nvram <FILE>            Add nvram\n");
+	printf("-d | --securedebug <FILE>      Add securedebug\n");
+	printf("-t | --trustlets <FILE>        Add trustlets\n");
+	printf("-u | --trustletkey <FILE>      Add trustletkey\n");
+	printf("-w | --smufirmware2 <FILE>     Add smufirmware2\n");
+	printf("-m | --smuscs <FILE>           Add smuscs\n");
 
 #if PSP2
 	printf("\nPSP2 options:\n");
-	printf("-P | --pubkey2 <FILE>        Add pubkey\n");
-	printf("-B | --bootloader2 <FILE>    Add bootloader\n");
-	printf("-S | --smufirmware_2 <FILE>  Add smufirmware\n");
-	printf("-R | --recovery2 <FILE>      Add recovery\n");
-	printf("-K | --rtmpubkey2 <FILE>     Add rtmpubkey\n");
-	printf("-C | --secureos2 <FILE>      Add secureos\n");
-	printf("-N | --nvram2 <FILE>         Add nvram\n");
-	printf("-D | --securedebug2 <FILE>   Add securedebug\n");
-	printf("-T | --trustlets2 <FILE>     Add trustlets\n");
-	printf("-U | --trustletkey2 <FILE>   Add trustletkey\n");
-	printf("-W | --smufirmware2_2 <FILE> Add smufirmware2\n");
-	printf("-M | --smuscs2 <FILE>        Add smuscs\n");
+	printf("-P | --pubkey2 <FILE>          Add pubkey\n");
+	printf("-B | --bootloader2 <FILE>      Add bootloader\n");
+	printf("-S | --smufirmware_2 <FILE>    Add smufirmware\n");
+	printf("-L | --smufnfirmware_2 <FILE>  Add fanless smufirmware\n");
+	printf("-R | --recovery2 <FILE>        Add recovery\n");
+	printf("-K | --rtmpubkey2 <FILE>       Add rtmpubkey\n");
+	printf("-C | --secureos2 <FILE>        Add secureos\n");
+	printf("-N | --nvram2 <FILE>           Add nvram\n");
+	printf("-D | --securedebug2 <FILE>     Add securedebug\n");
+	printf("-T | --trustlets2 <FILE>       Add trustlets\n");
+	printf("-U | --trustletkey2 <FILE>     Add trustletkey\n");
+	printf("-W | --smufirmware2_2 <FILE>   Add smufirmware2\n");
+	printf("-E | --smufnfirmware2_2 <FILE> Add fanless smufirmware2\n");
+	printf("-M | --smuscs2 <FILE>          Add smuscs\n");
 #endif
 
 	printf("\n-o | --output <filename>     output filename\n");
-	printf("-f | --flashsize <HEX_VAL>   ROM size in bytes\n");
-	printf("                             size must be larger than %dKB\n",
+	printf("-f | --flashsize <HEX_VAL>     ROM size in bytes\n");
+	printf("                               size must be larger than %dKB\n",
 		MIN_ROM_KB);
-	printf("                             and must a multiple of 1024\n");
-	printf("-h | --help                  show this help\n");
+	printf("                               and must a multiple of 1024\n");
+	printf("-h | --help                    show this help\n");
 
 }
+
+#define FANLESS_FW 0x100 /* type[15:8]: 0=non-fanless OPNs, 1=fanless */
 
 typedef enum _amd_fw_type {
 	AMD_FW_PSP_PUBKEY = 0,
 	AMD_FW_PSP_BOOTLOADER = 1,
 	AMD_FW_PSP_SMU_FIRMWARE = 8,
+	AMD_FW_PSP_SMU_FN_FIRMWARE = FANLESS_FW + AMD_FW_PSP_SMU_FIRMWARE,
 	AMD_FW_PSP_RECOVERY = 3,
 	AMD_FW_PSP_RTM_PUBKEY = 5,
 	AMD_FW_PSP_SECURED_OS = 2,
@@ -204,6 +209,7 @@ typedef enum _amd_fw_type {
 	AMD_FW_PSP_TRUSTLETS = 12,
 	AMD_FW_PSP_TRUSTLETKEY = 13,
 	AMD_FW_PSP_SMU_FIRMWARE2 = 18,
+	AMD_FW_PSP_SMU_FN_FIRMWARE2 = FANLESS_FW + AMD_FW_PSP_SMU_FIRMWARE2,
 	AMD_PSP_FUSE_CHAIN = 11,
 	AMD_FW_PSP_SMUSCS = 95,
 
@@ -230,6 +236,8 @@ static amd_fw_entry amd_psp_fw_table[] = {
 	{ .type = AMD_FW_PSP_TRUSTLETS },
 	{ .type = AMD_FW_PSP_TRUSTLETKEY },
 	{ .type = AMD_FW_PSP_SMU_FIRMWARE2 },
+	{ .type = AMD_FW_PSP_SMU_FN_FIRMWARE },
+	{ .type = AMD_FW_PSP_SMU_FN_FIRMWARE2 },
 	{ .type = AMD_FW_PSP_SMUSCS },
 	{ .type = AMD_PSP_FUSE_CHAIN },
 	{ .type = AMD_FW_INVALID },
@@ -248,6 +256,8 @@ static amd_fw_entry amd_psp2_fw_table[] = {
 	{ .type = AMD_FW_PSP_TRUSTLETS },
 	{ .type = AMD_FW_PSP_TRUSTLETKEY },
 	{ .type = AMD_FW_PSP_SMU_FIRMWARE2 },
+	{ .type = AMD_FW_PSP_SMU_FN_FIRMWARE },
+	{ .type = AMD_FW_PSP_SMU_FN_FIRMWARE2 },
 	{ .type = AMD_FW_PSP_SMUSCS },
 	{ .type = AMD_PSP_FUSE_CHAIN },
 	{ .type = AMD_FW_INVALID },
@@ -367,50 +377,52 @@ static uint32_t integrate_psp_firmwares(char *base, uint32_t pos,
 
 #if PSP2
 static const char *optstring  =
-	"x:i:g:p:b:s:r:k:c:n:d:t:u:w:m:P:B:S:R:K:C:N:D:T:U:W:M:o:f:h";
+	"x:i:g:p:b:s:r:k:c:n:d:t:u:w:m:P:B:S:L:R:K:C:N:D:T:U:W:E:M:o:f:h";
 #else
 static const char *optstring  = "x:i:g:p:b:s:r:k:c:n:d:t:u:w:m:o:f:h";
 #endif
 
 static struct option long_options[] = {
-	{"xhci",          required_argument, 0, 'x' },
-	{"imc",           required_argument, 0, 'i' },
-	{"gec",           required_argument, 0, 'g' },
+	{"xhci",             required_argument, 0, 'x' },
+	{"imc",              required_argument, 0, 'i' },
+	{"gec",              required_argument, 0, 'g' },
 	/* PSP */
-	{"pubkey",        required_argument, 0, 'p' },
-	{"bootloader",    required_argument, 0, 'b' },
-	{"smufirmware",   required_argument, 0, 's' },
-	{"recovery",      required_argument, 0, 'r' },
-	{"rtmpubkey",     required_argument, 0, 'k' },
-	{"secureos",      required_argument, 0, 'c' },
-	{"nvram",         required_argument, 0, 'n' },
-	{"securedebug",   required_argument, 0, 'd' },
-	{"trustlets",     required_argument, 0, 't' },
-	{"trustletkey",   required_argument, 0, 'u' },
-	{"smufirmware2",  required_argument, 0, 'w' },
-	{"smuscs",        required_argument, 0, 'm' },
+	{"pubkey",           required_argument, 0, 'p' },
+	{"bootloader",       required_argument, 0, 'b' },
+	{"smufirmware",      required_argument, 0, 's' },
+	{"recovery",         required_argument, 0, 'r' },
+	{"rtmpubkey",        required_argument, 0, 'k' },
+	{"secureos",         required_argument, 0, 'c' },
+	{"nvram",            required_argument, 0, 'n' },
+	{"securedebug",      required_argument, 0, 'd' },
+	{"trustlets",        required_argument, 0, 't' },
+	{"trustletkey",      required_argument, 0, 'u' },
+	{"smufirmware2",     required_argument, 0, 'w' },
+	{"smuscs",           required_argument, 0, 'm' },
 
 	/* TODO: PSP2 */
 #if PSP2
-	{"pubkey2",        required_argument, 0, 'P' },
-	{"bootloader2",    required_argument, 0, 'B' },
-	{"smufirmware_2",  required_argument, 0, 'S' },
-	{"recovery2",      required_argument, 0, 'R' },
-	{"rtmpubkey2",     required_argument, 0, 'K' },
-	{"secureos2",      required_argument, 0, 'C' },
-	{"nvram2",         required_argument, 0, 'N' },
-	{"securedebug2",   required_argument, 0, 'D' },
-	{"trustlets2",     required_argument, 0, 'T' },
-	{"trustletkey2",   required_argument, 0, 'U' },
-	{"smufirmware2_2", required_argument, 0, 'W' },
-	{"smuscs2",        required_argument, 0, 'M' },
+	{"pubkey2",          required_argument, 0, 'P' },
+	{"bootloader2",      required_argument, 0, 'B' },
+	{"smufirmware_2",    required_argument, 0, 'S' },
+	{"smufnfirmware_2",  required_argument, 0, 'L' },
+	{"recovery2",        required_argument, 0, 'R' },
+	{"rtmpubkey2",       required_argument, 0, 'K' },
+	{"secureos2",        required_argument, 0, 'C' },
+	{"nvram2",           required_argument, 0, 'N' },
+	{"securedebug2",     required_argument, 0, 'D' },
+	{"trustlets2",       required_argument, 0, 'T' },
+	{"trustletkey2",     required_argument, 0, 'U' },
+	{"smufirmware2_2",   required_argument, 0, 'W' },
+	{"smufnfirmware2_2", required_argument, 0, 'E' },
+	{"smuscs2",          required_argument, 0, 'M' },
 #endif
 
-	{"output",         required_argument, 0, 'o' },
-	{"flashsize",      required_argument, 0, 'f' },
-	{"help",           no_argument,       0, 'h' },
+	{"output",           required_argument, 0, 'o' },
+	{"flashsize",        required_argument, 0, 'f' },
+	{"help",             no_argument,       0, 'h' },
 
-	{NULL,             0,                 0,  0  }
+	{NULL,               0,                 0,  0  }
 };
 
 static void register_fw_filename(amd_fw_type type, char filename[], int pspflag)
@@ -552,6 +564,11 @@ int main(int argc, char **argv)
 					optarg, 2);
 			psp2flag = 1;
 			break;
+		case 'L':
+			register_fw_filename(AMD_FW_PSP_SMU_FN_FIRMWARE,
+					optarg, 2);
+			psp2flag = 1;
+			break;
 		case 'R':
 			register_fw_filename(AMD_FW_PSP_RECOVERY, optarg, 2);
 			psp2flag = 1;
@@ -583,6 +600,11 @@ int main(int argc, char **argv)
 			break;
 		case 'W':
 			register_fw_filename(AMD_FW_PSP_SMU_FIRMWARE2,
+					optarg, 2);
+			psp2flag = 1;
+			break;
+		case 'E':
+			register_fw_filename(AMD_FW_PSP_SMU_FN_FIRMWARE2,
 					optarg, 2);
 			psp2flag = 1;
 			break;

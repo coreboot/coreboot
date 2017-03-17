@@ -161,11 +161,11 @@ int get_gpio(int gpio_num)
  * get a number comprised of multiple GPIO values. gpio_num_array points to
  * the array of gpio pin numbers to scan, terminated by -1.
  */
-unsigned get_gpios(const int *gpio_num_array)
+unsigned int get_gpios(const int *gpio_num_array)
 {
 	int gpio;
-	unsigned bitmask = 1;
-	unsigned vector = 0;
+	unsigned int bitmask = 1;
+	unsigned int vector = 0;
 
 	while (bitmask &&
 	       ((gpio = *gpio_num_array++) != -1)) {

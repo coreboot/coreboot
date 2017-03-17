@@ -24,7 +24,8 @@
 #include <soc/ehci.h>
 #include <soc/pch.h>
 
-static void usb_ehci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void usb_ehci_set_subsystem(device_t dev, unsigned int vendor,
+	unsigned int device)
 {
 	u8 access_cntl;
 

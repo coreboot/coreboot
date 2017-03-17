@@ -186,7 +186,7 @@ static void root_port_init_config(device_t dev)
 static void pch_pcie_device_set_func(int index, int pci_func)
 {
 	device_t dev;
-	unsigned new_devfn;
+	unsigned int new_devfn;
 
 	dev = rpc.ports[index];
 
@@ -638,7 +638,8 @@ static void pch_pcie_enable(device_t dev)
 		root_port_commit_config();
 }
 
-static void pcie_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void pcie_set_subsystem(device_t dev, unsigned int vendor,
+	unsigned int device)
 {
 	/* NOTE: This is not the default position! */
 	if (!vendor || !device)

@@ -102,7 +102,7 @@ typedef struct ich_spi_controller {
 	uint16_t *optype;
 	uint32_t *addr;
 	uint8_t *data;
-	unsigned databytes;
+	unsigned int databytes;
 	uint8_t *status;
 	uint16_t *control;
 	uint32_t *bbar;
@@ -166,7 +166,7 @@ static u8 readb_(const void *addr)
 {
 	u8 v = read8(addr);
 	printk(BIOS_DEBUG, "read %2.2x from %4.4x\n",
-	       v, ((unsigned) addr & 0xffff) - 0xf020);
+	       v, ((unsigned int) addr & 0xffff) - 0xf020);
 	return v;
 }
 
@@ -174,7 +174,7 @@ static u16 readw_(const void *addr)
 {
 	u16 v = read16(addr);
 	printk(BIOS_DEBUG, "read %4.4x from %4.4x\n",
-	       v, ((unsigned) addr & 0xffff) - 0xf020);
+	       v, ((unsigned int) addr & 0xffff) - 0xf020);
 	return v;
 }
 
@@ -182,7 +182,7 @@ static u32 readl_(const void *addr)
 {
 	u32 v = read32(addr);
 	printk(BIOS_DEBUG, "read %8.8x from %4.4x\n",
-	       v, ((unsigned) addr & 0xffff) - 0xf020);
+	       v, ((unsigned int) addr & 0xffff) - 0xf020);
 	return v;
 }
 
@@ -190,21 +190,21 @@ static void writeb_(u8 b, const void *addr)
 {
 	write8(addr, b);
 	printk(BIOS_DEBUG, "wrote %2.2x to %4.4x\n",
-	       b, ((unsigned) addr & 0xffff) - 0xf020);
+	       b, ((unsigned int) addr & 0xffff) - 0xf020);
 }
 
 static void writew_(u16 b, const void *addr)
 {
 	write16(addr, b);
 	printk(BIOS_DEBUG, "wrote %4.4x to %4.4x\n",
-	       b, ((unsigned) addr & 0xffff) - 0xf020);
+	       b, ((unsigned int) addr & 0xffff) - 0xf020);
 }
 
 static void writel_(u32 b, const void *addr)
 {
 	write32(addr, b);
 	printk(BIOS_DEBUG, "wrote %8.8x to %4.4x\n",
-	       b, ((unsigned) addr & 0xffff) - 0xf020);
+	       b, ((unsigned int) addr & 0xffff) - 0xf020);
 }
 
 #else /* CONFIG_DEBUG_SPI_FLASH ^^^ enabled  vvv NOT enabled */
@@ -307,13 +307,13 @@ typedef struct spi_transaction {
 	uint32_t offset;
 } spi_transaction;
 
-static inline void spi_use_out(spi_transaction *trans, unsigned bytes)
+static inline void spi_use_out(spi_transaction *trans, unsigned int bytes)
 {
 	trans->out += bytes;
 	trans->bytesout -= bytes;
 }
 
-static inline void spi_use_in(spi_transaction *trans, unsigned bytes)
+static inline void spi_use_in(spi_transaction *trans, unsigned int bytes)
 {
 	trans->in += bytes;
 	trans->bytesin -= bytes;

@@ -277,7 +277,7 @@ static inline void gtt_rmw(u32 reg, u32 andmask, u32 ormask)
 
 static int gtt_poll(u32 reg, u32 mask, u32 value)
 {
-	unsigned try = GT_RETRY;
+	unsigned int try = GT_RETRY;
 	u32 data;
 
 	while (try--) {

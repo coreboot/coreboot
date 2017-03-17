@@ -186,6 +186,6 @@ int gpio_is_native(int gpio_num);
  * Get a number comprised of multiple GPIO values. gpio_num_array points to
  * the array of gpio pin numbers to scan, terminated by -1.
  */
-unsigned get_gpios(const int *gpio_num_array);
+unsigned int get_gpios(const int *gpio_num_array);
 
 #endif

@@ -104,8 +104,14 @@ void verstage_main(void);
 void verstage_mainboard_init(void);
 
 /* Check boot modes */
+#if IS_ENABLED(CONFIG_VBOOT)
 int vboot_developer_mode_enabled(void);
 int vboot_recovery_mode_enabled(void);
 int vboot_recovery_mode_memory_retrain(void);
+#else /* !CONFIG_VBOOT */
+static inline int vboot_developer_mode_enabled(void) { return 0; }
+static inline int vboot_recovery_mode_enabled(void) { return 0; }
+static inline int vboot_recovery_mode_memory_retrain(void) { return 0; }
+#endif
 
 #endif /* __VBOOT_VBOOT_COMMON_H__ */

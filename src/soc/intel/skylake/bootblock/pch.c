@@ -123,7 +123,7 @@ static void pch_interrupt_init(void)
 
 	dev = dev_find_slot(0, PCI_DEVFN(PCH_DEV_SLOT_LPC, 0));
 	if (!dev || !dev->chip_info)
-	        return;
+		return;
 	config = dev->chip_info;
 
 	pch_interrupt_routing[0] = config->pirqa_routing;

@@ -243,7 +243,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	 * Send VR specific mailbox commands:
 	 * 000b - no VR specific command sent
 	 * 001b - VR mailbox command specifically for the MPS IMPV8 VR
-	 * 	  will be sent
+	 *	  will be sent
 	 * 010b - VR specific command sent for PS4 exit issue
 	 * 100b - VR specific command sent for MPS VR decay issue
 	 */

@@ -41,7 +41,7 @@
 #include "chip.h"
 
 /* Print status bits with descriptive names */
-static void print_status_bits(u32 status, const char *bit_names[])
+static void print_status_bits(u32 status, const char * const bit_names[])
 {
 	int i;
 
@@ -109,7 +109,7 @@ static u16 reset_pm1_status(void)
 /* Print PM1 status bits */
 static u16 print_pm1_status(u16 pm1_sts)
 {
-	const char *pm1_sts_bits[] = {
+	static const char * const pm1_sts_bits[] = {
 		[0] = "TMROF",
 		[4] = "BM",
 		[5] = "GBL",
@@ -158,7 +158,7 @@ static u32 reset_smi_status(void)
 /* Print SMI status bits */
 static u32 print_smi_status(u32 smi_sts)
 {
-	const char *smi_sts_bits[] = {
+	static const char * const smi_sts_bits[] = {
 		[2] = "BIOS",
 		[3] = "LEGACY_USB",
 		[4] = "SLP_SMI",
@@ -245,7 +245,7 @@ static u32 reset_tco_status(void)
 /* Print TCO status bits */
 static u32 print_tco_status(u32 tco_sts)
 {
-	const char *tco_sts_bits[] = {
+	static const char * const tco_sts_bits[] = {
 		[0] = "NMI2SMI",
 		[1] = "SW_TCO",
 		[2] = "TCO_INT",
@@ -306,7 +306,7 @@ static u32 reset_gpe(u16 sts_reg, u16 en_reg)
 }
 
 /* Print GPE0 status bits */
-static u32 print_gpe_status(u32 gpe0_sts, const char *bit_names[])
+static u32 print_gpe_status(u32 gpe0_sts, const char * const bit_names[])
 {
 	if (!gpe0_sts)
 		return 0;
@@ -334,7 +334,7 @@ static u32 print_gpe_gpio(u32 gpe0_sts, int start)
 /* Clear all GPE status and return "standard" GPE event status */
 u32 clear_gpe_status(void)
 {
-	const char *gpe0_sts_3_bits[] = {
+	static const char * const gpe0_sts_3_bits[] = {
 		[1] = "HOTPLUG",
 		[2] = "SWGPE",
 		[6] = "TCO_SCI",

@@ -495,9 +495,8 @@ static void soc_init_cpus(void *unused)
 	assert(dev != NULL);
 	struct bus *cpu_bus = dev->link_list;
 
-	if (mp_init_with_smm(cpu_bus, &mp_ops)) {
+	if (mp_init_with_smm(cpu_bus, &mp_ops))
 		printk(BIOS_ERR, "MP initialization failure.\n");
-	}
 
 	/* Thermal throttle activation offset */
 	configure_thermal_target();

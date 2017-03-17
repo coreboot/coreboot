@@ -14,10 +14,10 @@
  */
 
 #include <arch/cpu.h>
-#include <vendorcode/google/chromeos/chromeos.h>
+#include <main_decl.h>
 
 /* Provide an entry point for verstage when it's a separate stage. */
 asmlinkage void car_stage_entry(void)
 {
-	verstage();
+	main();
 }

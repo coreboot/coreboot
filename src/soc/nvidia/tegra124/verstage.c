@@ -45,9 +45,9 @@ void verstage_mainboard_init(void)
 	early_mainboard_init();
 }
 
-void main(void)
+void stage_entry(void)
 {
 	asm volatile ("bl arm_init_caches"
 		      : : : "r0", "r1", "r2", "r3", "r4", "r5", "ip");
-	verstage();
+	main();
 }

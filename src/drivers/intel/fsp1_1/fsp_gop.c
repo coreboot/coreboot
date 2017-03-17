@@ -71,10 +71,9 @@ void lb_framebuffer(struct lb_header *header)
 	if (vbt_hob == NULL) {
 		printk(BIOS_ERR, "FSP_ERR: Graphics Data HOB is not present\n");
 		return;
-	} else {
-		printk(BIOS_DEBUG, "FSP_DEBUG: Graphics Data HOB present\n");
-		vbt_gop = GET_GUID_HOB_DATA(vbt_hob);
 	}
+	printk(BIOS_DEBUG, "FSP_DEBUG: Graphics Data HOB present\n");
+	vbt_gop = GET_GUID_HOB_DATA(vbt_hob);
 
 	framebuffer->physical_address = vbt_gop->FrameBufferBase;
 	framebuffer->x_resolution = vbt_gop->GraphicsMode.HorizontalResolution;

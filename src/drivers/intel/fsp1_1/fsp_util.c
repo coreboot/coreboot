@@ -45,9 +45,8 @@ FSP_INFO_HEADER *find_fsp(uintptr_t fsp_base_address)
 	fsp_ptr.u32 = fsp_base_address;
 
 	/* Check the FV signature, _FVH */
-	if (fsp_ptr.fvh->Signature != 0x4856465F) {
+	if (fsp_ptr.fvh->Signature != 0x4856465F)
 		return (FSP_INFO_HEADER *)ERROR_NO_FV_SIG;
-	}
 
 	/* Locate the file header which follows the FV header. */
 	fsp_ptr.u32 += fsp_ptr.fvh->ExtHeaderOffset;
@@ -65,22 +64,19 @@ FSP_INFO_HEADER *find_fsp(uintptr_t fsp_base_address)
 	/* Locate the Raw Section Header */
 	fsp_ptr.u32 += sizeof(EFI_FFS_FILE_HEADER);
 
-	if (fsp_ptr.rs->Type != EFI_SECTION_RAW) {
+	if (fsp_ptr.rs->Type != EFI_SECTION_RAW)
 		return (FSP_INFO_HEADER *)ERROR_NO_INFO_HEADER;
-	}
 
 	/* Locate the FSP INFO Header which follows the Raw Header. */
 	fsp_ptr.u32 += sizeof(EFI_RAW_SECTION);
 
 	/* Verify that the FSP base address.*/
-	if (fsp_ptr.fih->ImageBase != fsp_base_address) {
+	if (fsp_ptr.fih->ImageBase != fsp_base_address)
 		return (FSP_INFO_HEADER *)ERROR_IMAGEBASE_MISMATCH;
-	}
 
 	/* Verify the FSP Signature */
-	if (fsp_ptr.fih->Signature != FSP_SIG) {
+	if (fsp_ptr.fih->Signature != FSP_SIG)
 		return (FSP_INFO_HEADER *)ERROR_INFO_HEAD_SIG_MISMATCH;
-	}
 
 	/* Verify the FSP ID */
 	image_id = (u32 *)&fsp_ptr.fih->ImageId[0];
@@ -290,7 +286,8 @@ void fsp_display_upd_value(const char *name, uint32_t size, uint64_t old,
 	}
 }
 
-size_t EFIAPI fsp_write_line(uint8_t *buffer, size_t number_of_bytes)
+__attribute__((cdecl)) size_t fsp_write_line(uint8_t *buffer,
+	size_t number_of_bytes)
 {
 	console_write_line(buffer, number_of_bytes);
 	return number_of_bytes;

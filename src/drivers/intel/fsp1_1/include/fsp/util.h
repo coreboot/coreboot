@@ -92,12 +92,11 @@ int fsp_relocate(struct prog *fsp_relocd, const struct region_device *fsp_src);
 extern void *FspHobListPtr;
 #endif
 
-/* TODO: Remove the EFI types and decorations from coreboot implementations. */
-VOID * EFIAPI get_hob_list(VOID);
-VOID * EFIAPI get_next_hob(UINT16 type, CONST VOID *hob_start);
-VOID * EFIAPI get_first_hob(UINT16 type);
-VOID * EFIAPI get_next_guid_hob(CONST EFI_GUID * guid, CONST VOID *hob_start);
-VOID * EFIAPI get_first_guid_hob(CONST EFI_GUID * guid);
+void *get_hob_list(void);
+void *get_next_hob(uint16_t type, const void *hob_start);
+void *get_first_hob(uint16_t type);
+void *get_next_guid_hob(const EFI_GUID *guid, const void *hob_start);
+void *get_first_guid_hob(const EFI_GUID *guid);
 
 /*
  * Writes number_of_bytes data bytes from buffer to the console.
@@ -106,6 +105,7 @@ VOID * EFIAPI get_first_guid_hob(CONST EFI_GUID * guid);
  * If number_of_bytes is zero, don't output any data but instead wait until
  * the console has output all data, then return 0.
  */
-size_t EFIAPI fsp_write_line(uint8_t *buffer, size_t number_of_bytes);
+__attribute__((cdecl)) size_t fsp_write_line(uint8_t *buffer,
+	size_t number_of_bytes);
 
 #endif	/* FSP1_1_UTIL_H */

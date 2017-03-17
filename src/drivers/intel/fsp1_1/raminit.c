@@ -183,7 +183,7 @@ void raminit(struct romstage_params *params)
 	/* Locate the FSP_SMBIOS_MEMORY_INFO HOB */
 	memory_info_hob = get_next_guid_hob(&memory_info_hob_guid,
 		hob_list_ptr);
-	if (NULL == memory_info_hob) {
+	if (memory_info_hob == NULL) {
 		printk(BIOS_ERR, "FSP_SMBIOS_MEMORY_INFO HOB missing!\n");
 		fsp_verification_failure = 1;
 	} else {
@@ -205,7 +205,7 @@ void raminit(struct romstage_params *params)
 	 *	7.5: EFI_PEI_GRAPHICS_INFO_HOB produced by SiliconInit
 	 *	FSP_SMBIOS_MEMORY_INFO HOB verified above
 	 */
-	if (NULL != cbmem_root) {
+	if (cbmem_root != NULL) {
 		printk(BIOS_DEBUG,
 			"7.4: FSP_BOOTLOADER_TOLUM_HOB: 0x%p\n",
 			cbmem_root);
@@ -215,7 +215,7 @@ void raminit(struct romstage_params *params)
 		printk(BIOS_DEBUG, "    0x%016lx: ResourceLength\n", data);
 	}
 	hob_ptr.Raw = get_next_guid_hob(&mrc_guid, hob_list_ptr);
-	if (NULL == hob_ptr.Raw) {
+	if (hob_ptr.Raw == NULL) {
 		printk(BIOS_ERR, "7.3: FSP_NON_VOLATILE_STORAGE_HOB missing!\n");
 		fsp_verification_failure =
 			(params->pei_data->saved_data == NULL) ? 1 : 0;

@@ -83,7 +83,13 @@ config VBOOT_DISABLE_DEV_ON_RECOVERY
 config SEPARATE_VERSTAGE
 	bool "Vboot verification is built into a separate stage"
 	default n
-	depends on VBOOT
+	depends on VBOOT && VBOOT_STARTS_IN_BOOTBLOCK
+	help
+	  If this option is set, vboot verification runs in a standalone stage
+	  that is loaded from the bootblock and exits into romstage. If it is
+	  not set, the verification code is linked directly into the bootblock
+	  or the romstage and runs as part of that stage (cf. related options
+	  VBOOT_STARTS_IN_BOOTBLOCK/_ROMSTAGE and RETURN_FROM_VERSTAGE).
 
 config RETURN_FROM_VERSTAGE
 	bool "The separate verification stage returns to its caller"

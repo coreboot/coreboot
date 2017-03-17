@@ -44,15 +44,9 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 		{GPIO_RECOVERY_PUSHKEY.raw, ACTIVE_LOW,
 			!get_recovery_mode_switch(), "recovery"},
 		{GPIO_POWER.raw, ACTIVE_LOW, -1, "power"},
-		{-1, ACTIVE_HIGH, get_developer_mode_switch(), "developer"},
 		{GPIO_RESET.raw, ACTIVE_HIGH, -1, "reset"},
 	};
 	lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios));
-}
-
-int get_developer_mode_switch(void)
-{
-	return 0;
 }
 
 int get_recovery_mode_switch(void)

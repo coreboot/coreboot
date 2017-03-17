@@ -33,7 +33,6 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 config CHROMEOS
 	select PHYSICAL_REC_SWITCH
 	select VBOOT_VBNV_FLASH
-	select VIRTUAL_DEV_SWITCH
 
 config MAINBOARD_DIR
 	string

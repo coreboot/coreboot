@@ -55,12 +55,6 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	gpios->gpios[1].value = (gp_lvl >> 22) & 1;
 	strncpy((char *)gpios->gpios[1].name,"recovery", GPIO_MAX_NAME_LENGTH);
 
-	/* Developer: GPIO57 */
-	gpios->gpios[2].port = 57;
-	gpios->gpios[2].polarity = ACTIVE_LOW;
-	gpios->gpios[2].value = (gp_lvl2 >> (57-32)) & 1;
-	strncpy((char *)gpios->gpios[2].name,"developer", GPIO_MAX_NAME_LENGTH);
-
 	/* Hard code the lid switch GPIO to open. */
 	gpios->gpios[3].port = -1;
 	gpios->gpios[3].polarity = ACTIVE_HIGH;
@@ -80,12 +74,6 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	strncpy((char *)gpios->gpios[5].name,"oprom", GPIO_MAX_NAME_LENGTH);
 }
 #endif
-
-int get_developer_mode_switch(void)
-{
-	/* Developer: GPIO57, active high */
-	return get_gpio(57);
-}
 
 int get_recovery_mode_switch(void)
 {

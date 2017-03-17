@@ -329,7 +329,7 @@ void verstage_main(void)
 	antirollback_read_space_firmware(&ctx);
 	timestamp_add_now(TS_END_TPMINIT);
 
-	if (!IS_ENABLED(CONFIG_VIRTUAL_DEV_SWITCH) &&
+	if (IS_ENABLED(CONFIG_PHYSICAL_DEV_SWITCH) &&
 	    get_developer_mode_switch())
 		ctx.flags |= VB2_CONTEXT_FORCE_DEVELOPER_MODE;
 

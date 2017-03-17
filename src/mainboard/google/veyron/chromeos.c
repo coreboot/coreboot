@@ -47,18 +47,12 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 			get_recovery_mode_switch(), "recovery"},
 		{GPIO_LID.raw, ACTIVE_HIGH, -1, "lid"},
 		{GPIO_POWER.raw, ACTIVE_LOW, -1, "power"},
-		{-1, ACTIVE_HIGH, get_developer_mode_switch(), "developer"},
 		{GPIO_ECINRW.raw, ACTIVE_HIGH, -1, "EC in RW"},
 		{GPIO_ECIRQ.raw, ACTIVE_LOW, -1, "EC interrupt"},
 		{GPIO_RESET.raw, ACTIVE_HIGH, -1, "reset"},
 		{GPIO_BACKLIGHT.raw, ACTIVE_HIGH, -1, "backlight"},
 	};
 	lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios));
-}
-
-int get_developer_mode_switch(void)
-{
-	return 0;
 }
 
 int get_recovery_mode_switch(void)

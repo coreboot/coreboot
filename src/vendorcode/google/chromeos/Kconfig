@@ -61,6 +61,7 @@ config CHROMEOS_RAMOOPS_RAM_SIZE
 
 config EC_SOFTWARE_SYNC
 	bool "Enable EC software sync"
+	default y if EC_GOOGLE_CHROMEEC
 	default n
 	depends on VBOOT
 	help
@@ -76,13 +77,6 @@ config VBOOT_EC_SLOW_UPDATE
 	  Whether the EC (or PD) is slow to update and needs to display a
 	  screen that informs the user the update is happening.
 
-config VIRTUAL_DEV_SWITCH
-	bool "Virtual developer switch support"
-	default n
-	depends on VBOOT
-	help
-	  Whether this platform has a virtual developer switch.
-
 config NO_TPM_RESUME
 	bool
 	default n
@@ -91,8 +85,17 @@ config NO_TPM_RESUME
 	  boards, booting Windows will break if the TPM resume command
 	  is sent during an S3 resume.
 
+config PHYSICAL_DEV_SWITCH
+	bool
+	default n
+	help
+	  Whether this platform has a physical developer switch. Note that this
+	  disables virtual dev switch functionality (through secdata). Operation
+	  where both a physical pin and the virtual switch get sampled is not
+	  supported by coreboot.
+
 config PHYSICAL_REC_SWITCH
-	bool "Physical recovery switch is present"
+	bool
 	default n
 	help
 	  Whether this platform has a physical recovery switch

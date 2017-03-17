@@ -49,12 +49,6 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	gpios->gpios[1].value = get_recovery_mode_switch();
 	strncpy((char *)gpios->gpios[1].name,"recovery", GPIO_MAX_NAME_LENGTH);
 
-	/* Developer: Virtual switch */
-	gpios->gpios[2].port = -1;
-	gpios->gpios[2].polarity = ACTIVE_HIGH;
-	gpios->gpios[2].value = get_developer_mode_switch();
-	strncpy((char *)gpios->gpios[2].name,"developer", GPIO_MAX_NAME_LENGTH);
-
 	/* Lid Switch: Virtual switch */
 	gpios->gpios[3].port = -1;
 	gpios->gpios[3].polarity = ACTIVE_HIGH;
@@ -90,12 +84,6 @@ int get_lid_switch(void)
 {
 	/* hard-code to open */
 	return 1;
-}
-
-/* The dev-switch is virtual on Stout (and so handled elsewhere). */
-int get_developer_mode_switch(void)
-{
-	return 0;
 }
 
 /*

@@ -20,11 +20,6 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 {
 }
 
-int get_developer_mode_switch(void)
-{
-	return 0;
-}
-
 int get_recovery_mode_switch(void)
 {
 	return 0;

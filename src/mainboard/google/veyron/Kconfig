@@ -46,9 +46,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select SPI_FLASH_WINBOND
 
 config CHROMEOS
-	select EC_SOFTWARE_SYNC
 	select VBOOT_VBNV_EC
-	select VIRTUAL_DEV_SWITCH
 
 config MAINBOARD_DIR
 	string

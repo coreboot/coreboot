@@ -44,7 +44,7 @@
 #define FIRMWARE_REG_BASE_C0 0x144000
 #define FIRMWARE_REG_LENGTH_C0 (FIRMWARE_REG_BASE_C0 + 4)
 
-static void assign_device_nvs(device_t dev, u32 *field, unsigned index)
+static void assign_device_nvs(device_t dev, u32 *field, unsigned int index)
 {
 	struct resource *res;
 

@@ -90,7 +90,7 @@ typedef struct ich_spi_controller {
 	uint16_t *optype;
 	uint32_t *addr;
 	uint8_t *data;
-	unsigned databytes;
+	unsigned int databytes;
 	uint8_t *status;
 	uint16_t *control;
 } ich_spi_controller;
@@ -290,13 +290,13 @@ typedef struct spi_transaction {
 	uint32_t offset;
 } spi_transaction;
 
-static inline void spi_use_out(spi_transaction *trans, unsigned bytes)
+static inline void spi_use_out(spi_transaction *trans, unsigned int bytes)
 {
 	trans->out += bytes;
 	trans->bytesout -= bytes;
 }
 
-static inline void spi_use_in(spi_transaction *trans, unsigned bytes)
+static inline void spi_use_in(spi_transaction *trans, unsigned int bytes)
 {
 	trans->in += bytes;
 	trans->bytesin -= bytes;

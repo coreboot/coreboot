@@ -103,7 +103,7 @@ static int gpio_get_community_num(gpio_t gpio_num, int *pad)
 static void gpio_config_pad(gpio_t gpio_num, const struct soc_gpio_map *cfg)
 {
 	int comm = 0;
-	int pad_num =0;
+	int pad_num = 0;
 	uint32_t *pad_config0_reg;
 	uint32_t *pad_config1_reg;
 	int max_gpio_cnt = GP_SOUTHWEST_COUNT + GP_NORTH_COUNT + GP_EAST_COUNT
@@ -143,7 +143,7 @@ void gpio_input(gpio_t gpio_num)
 int gpio_get(gpio_t gpio_num)
 {
 	int comm = 0;
-	int pad_num =0;
+	int pad_num = 0;
 	uint32_t *pad_config0_reg;
 	u32 pad_value;
 	int max_gpio_cnt = GP_SOUTHWEST_COUNT + GP_NORTH_COUNT + GP_EAST_COUNT

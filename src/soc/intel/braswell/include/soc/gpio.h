@@ -315,7 +315,7 @@
 			| PAD_GPIO_ENABLE  | PAD_GPIOFG_GPI \
 			| PAD_INT_SEL(int_sel), \
 	.pad_conf1  = PAD_TRIG_EDGE_LOW | PAD_CONFIG1_DEFAULT0, \
-	.int_mask   = 1 ,\
+	.int_mask   = 1,\
 	.wake_mask  = 1 }
 
 #define GPIO_SMI(int_sel) \

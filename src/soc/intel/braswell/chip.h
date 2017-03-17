@@ -34,8 +34,8 @@
 #define MEM_LPDDR3	1
 
 enum lpe_clk_src {
-        LPE_CLK_SRC_XTAL,
-        LPE_CLK_SRC_PLL,
+	LPE_CLK_SRC_XTAL,
+	LPE_CLK_SRC_PLL,
 };
 
 enum usb_comp_bg_value {
@@ -74,10 +74,10 @@ struct soc_intel_braswell_config {
 	int pcie_wake_enable;
 
 	/* Program USB2_COMPBG register.
-         * [10:7] - select vref to AFE port
-         *  x111 - 575mV, x110 - 650mV, x101 - 550mV, x100 - 537.5mV,
-         *  x011 - 625mV, x010 - 700mV, x001 - 600mV, x000 - 675mV
-         */
+	 * [10:7] - select vref to AFE port
+	 *  x111 - 575mV, x110 - 650mV, x101 - 550mV, x100 - 537.5mV,
+	 *  x011 - 625mV, x010 - 700mV, x001 - 600mV, x000 - 675mV
+	 */
 	enum usb_comp_bg_value usb_comp_bg;
 
 

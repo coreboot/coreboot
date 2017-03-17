@@ -119,7 +119,7 @@ void romstage_common(struct romstage_params *params)
 #endif
 }
 
-void asmlinkage romstage_after_car(void)
+asmlinkage void romstage_after_car(void)
 {
 	/* Load the ramstage. */
 	run_ramstage();

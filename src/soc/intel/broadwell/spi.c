@@ -421,7 +421,8 @@ static int spi_setup_offset(spi_transaction *trans)
 		spi_use_out(trans, 3);
 		return 1;
 	default:
-		printk(BIOS_DEBUG, "Unrecognized SPI transaction type %#x\n", trans->type);
+		printk(BIOS_DEBUG, "Unrecognized SPI transaction type %#x\n",
+			trans->type);
 		return -1;
 	}
 }
@@ -533,7 +534,8 @@ static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 			return -1;
 
 		if (status & SPIS_FCERR) {
-			printk(BIOS_DEBUG, "ICH SPI: Command transaction error\n");
+			printk(BIOS_DEBUG,
+				"ICH SPI: Command transaction error\n");
 			return -1;
 		}
 
@@ -548,8 +550,8 @@ static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 	 * by the SPI chip driver.
 	 */
 	if (trans.bytesout > cntlr.databytes) {
-		printk(BIOS_DEBUG, "ICH SPI: Too much to write. Does your SPI chip driver use"
-		     " CONTROLLER_PAGE_LIMIT?\n");
+		printk(BIOS_DEBUG, "ICH SPI: Too much to write. Does your SPI"
+		     " chip driver use CONTROLLER_PAGE_LIMIT?\n");
 		return -1;
 	}
 
@@ -561,7 +563,10 @@ static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 		uint32_t data_length;
 
 		/* SPI addresses are 24 bit only */
-		/* http://www.intel.com/content/dam/www/public/us/en/documents/datasheets/pentium-n3520-j2850-celeron-n2920-n2820-n2815-n2806-j1850-j1750-datasheet.pdf */
+		/* http://www.intel.com/content/dam/www/public/us/en/documents/
+		 * datasheets/pentium-n3520-j2850-celeron-n2920-n2820-n2815-
+		 * n2806-j1850-j1750-datasheet.pdf
+		 */
 		writel_(trans.offset & 0x00FFFFFF, cntlr.addr);
 
 		if (trans.bytesout)

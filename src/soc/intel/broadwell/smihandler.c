@@ -118,7 +118,8 @@ static void backlight_off(void)
 	uint32_t pp_ctrl;
 	uint32_t bl_off_delay;
 
-	reg_base = (void *)((uintptr_t)pci_read_config32(SA_DEV_IGD, PCI_BASE_ADDRESS_0) & ~0xf);
+	reg_base = (void *)((uintptr_t)pci_read_config32(SA_DEV_IGD,
+		PCI_BASE_ADDRESS_0) & ~0xf);
 
 	/* Check if backlight is enabled */
 	pp_ctrl = read32(reg_base + PCH_PP_CONTROL);

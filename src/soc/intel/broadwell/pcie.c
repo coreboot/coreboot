@@ -266,7 +266,8 @@ static void pcie_enable_clock_gating(void)
 			 * In addition to D28Fx PCICFG 420h[30:29] = 11b,
 			 * set 420h[17] = 0b and 420[0] = 1b for L1 SubState.
 			 */
-			pci_update_config32(dev, 0x420, ~0x20000, (3 << 29) | 1);
+			pci_update_config32(dev, 0x420, ~0x20000,
+				(3 << 29) | 1);
 
 		/* Configure shared resource clock gating. */
 		if (rp == 1 || rp == 5 || rp == 6)
@@ -385,29 +386,29 @@ static void root_port_check_disable(device_t dev)
 
 	/* Check Root Port Configuration. */
 	switch (rp) {
-		case 2:
-			/* Root Port 2 is disabled for all lane configurations
-			 * but config 00b (4x1 links). */
-			if ((rpc.strpfusecfg1 >> 14) & 0x3) {
-				root_port_mark_disable(dev);
-				return;
-			}
-			break;
-		case 3:
-			/* Root Port 3 is disabled in config 11b (1x4 links). */
-			if (((rpc.strpfusecfg1 >> 14) & 0x3) == 0x3) {
-				root_port_mark_disable(dev);
-				return;
-			}
-			break;
-		case 4:
-			/* Root Port 4 is disabled in configs 11b (1x4 links)
-			 * and 10b (2x2 links). */
-			if ((rpc.strpfusecfg1 >> 14) & 0x2) {
-				root_port_mark_disable(dev);
-				return;
-			}
-			break;
+	case 2:
+		/* Root Port 2 is disabled for all lane configurations
+		 * but config 00b (4x1 links). */
+		if ((rpc.strpfusecfg1 >> 14) & 0x3) {
+			root_port_mark_disable(dev);
+			return;
+		}
+		break;
+	case 3:
+		/* Root Port 3 is disabled in config 11b (1x4 links). */
+		if (((rpc.strpfusecfg1 >> 14) & 0x3) == 0x3) {
+			root_port_mark_disable(dev);
+			return;
+		}
+		break;
+	case 4:
+		/* Root Port 4 is disabled in configs 11b (1x4 links)
+		 * and 10b (2x2 links). */
+		if ((rpc.strpfusecfg1 >> 14) & 0x2) {
+			root_port_mark_disable(dev);
+			return;
+		}
+		break;
 	}
 
 	/* Check Pin Ownership. */
@@ -487,7 +488,8 @@ static void pch_pcie_early(struct device *dev)
 
 	if (do_aspm) {
 		/* Set ASPM bits in MPC2 register. */
-		pci_update_config32(dev, 0xd4, ~(0x3 << 2), (1 << 4) | (0x2 << 2));
+		pci_update_config32(dev, 0xd4, ~(0x3 << 2),
+			(1 << 4) | (0x2 << 2));
 
 		/* Set unique clock exit latency in MPC register. */
 		pci_update_config32(dev, 0xd8, ~(0x7 << 18), (0x7 << 18));
@@ -552,7 +554,8 @@ static void pch_pcie_early(struct device *dev)
 	pci_update_config8(dev, 0xf5, 0x0f, 0);
 
 	/* Set AER Extended Cap ID to 01h and Next Cap Pointer to 200h. */
-	pci_update_config32(dev, 0x100, ~(1 << 29) & ~0xfffff, (1 << 29) | 0x10001);
+	pci_update_config32(dev, 0x100, ~(1 << 29) & ~0xfffff,
+		(1 << 29) | 0x10001);
 
 	/* Set L1 Sub-State Cap ID to 1Eh and Next Cap Pointer to None. */
 	pci_update_config32(dev, 0x200, ~0xffff, 0x001e);

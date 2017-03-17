@@ -698,7 +698,7 @@ static me_bios_path intel_me_path(device_t dev)
 	/* Check if the MBP is ready */
 	if (!hfs2.mbp_rdy) {
 		printk(BIOS_CRIT, "%s: mbp is not ready!\n",
-		       __FUNCTION__);
+		       __func__);
 		path = ME_ERROR_BIOS_PATH;
 	}
 

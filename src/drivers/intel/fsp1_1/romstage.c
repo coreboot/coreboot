@@ -161,10 +161,10 @@ void romstage_common(struct romstage_params *params)
 		if ((params->pei_data->boot_mode != ACPI_S3)
 			&& (params->pei_data->data_to_save_size != 0)
 			&& (params->pei_data->data_to_save != NULL))
-				mrc_cache_stash_data(MRC_TRAINING_DATA,
-					params->fsp_version,
-					params->pei_data->data_to_save,
-					params->pei_data->data_to_save_size);
+			mrc_cache_stash_data(MRC_TRAINING_DATA,
+				params->fsp_version,
+				params->pei_data->data_to_save,
+				params->pei_data->data_to_save_size);
 	}
 
 	/* Save DIMM information */

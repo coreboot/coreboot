@@ -69,7 +69,7 @@ void *get_first_hob(uint16_t type)
 }
 
 /* Returns the next instance of the matched GUID HOB from the starting HOB. */
-void *get_next_guid_hob(const EFI_GUID * guid, const void *hob_start)
+void *get_next_guid_hob(const EFI_GUID *guid, const void *hob_start)
 {
 	EFI_PEI_HOB_POINTERS hob;
 

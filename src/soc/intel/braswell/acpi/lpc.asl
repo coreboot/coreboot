@@ -157,7 +157,6 @@ Device (LPCB)
 			IO (Decode16, 0x2e, 0x2e, 0x01, 0x02)
 			IO (Decode16, 0x6f0, 0x6f0, 0x01, 0x10)
 			Memory32Fixed (ReadWrite, 0xfed40000, 0x5000)
-			IRQ (Edge, Activehigh, Exclusive) { 6 }
 		})
 	}
 #endif

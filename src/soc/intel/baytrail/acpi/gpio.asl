@@ -26,6 +26,8 @@ Device (GPSC)
 		Return (^RBUF)
 	}
 
+	Method (_HRV, 0, NotSerialized) { Return (0x06) }
+
 	Method (_STA)
 	{
 		Return (0xF)
@@ -55,6 +57,8 @@ Device (GPNC)
 		Return (^RBUF)
 	}
 
+	Method (_HRV, 0, NotSerialized) { Return (0x06) }
+
 	Method (_STA)
 	{
 		Return (0xF)
@@ -83,6 +87,8 @@ Device (GPSS)
 		RBAS = IO_BASE_ADDRESS + IO_BASE_OFFSET_GPSSUS
 		Return (^RBUF)
 	}
+
+	Method (_HRV, 0, NotSerialized) { Return (0x06) }
 
 	Method (_STA)
 	{

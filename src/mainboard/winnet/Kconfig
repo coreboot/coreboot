@@ -14,28 +14,19 @@
 ## GNU General Public License for more details.
 ##
 
-if BOARD_WINNET_G170
+if VENDOR_WINNET
 
-config BOARD_SPECIFIC_OPTIONS
-	def_bool y
-	select CPU_VIA_C7
-	select NORTHBRIDGE_VIA_CN700
-	select SOUTHBRIDGE_VIA_VT8237R
-	select SUPERIO_WINBOND_W83697HF
-	select HAVE_PIRQ_TABLE
-	select HAVE_OPTION_TABLE
-	select BOARD_ROMSIZE_KB_512
+choice
+	prompt "Mainboard model"
 
-config MAINBOARD_DIR
+source "src/mainboard/winnet/*/Kconfig.name"
+
+endchoice
+
+source "src/mainboard/winnet/*/Kconfig"
+
+config MAINBOARD_VENDOR
 	string
-	default winnet/g170
+	default "WinNET"
 
-config MAINBOARD_PART_NUMBER
-	string
-	default "WinNET G170"
-
-config IRQ_SLOT_COUNT
-	int
-	default 10
-
-endif # BOARD_WINNET_G170
+endif # VENDOR_WINNET

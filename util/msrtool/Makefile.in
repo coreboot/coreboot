@@ -19,7 +19,7 @@ PROGRAM = msrtool
 CC      = @CC@
 INSTALL = @INSTALL@
 PREFIX  = @PREFIX@
-CFLAGS  = @CFLAGS@ -fno-pic
+CFLAGS  = @CFLAGS@
 LDFLAGS = @LDFLAGS@
 
 TARGETS = geodegx2.o geodelx.o cs5536.o k8.o intel_pentium3_early.o intel_pentium3.o intel_pentium4_early.o intel_pentium4_later.o intel_core1.o intel_core2_early.o intel_core2_later.o intel_nehalem.o intel_atom.o

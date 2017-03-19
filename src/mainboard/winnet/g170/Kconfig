@@ -39,4 +39,9 @@ config IRQ_SLOT_COUNT
 	int
 	default 10
 
+config PAYLOAD_CONFIGFILE
+	string
+	depends on PAYLOAD_SEABIOS
+	default "$(top)/src/mainboard/$(MAINBOARDDIR)/config_seabios"
+
 endif # BOARD_WINNET_G170

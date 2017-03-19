@@ -363,6 +363,7 @@ int print_dmibar(struct pci_dev *nb)
 	case PCI_DEVICE_ID_INTEL_CORE_2ND_GEN_E3:
 		dmi_registers = sandybridge_dmi_registers;
 		size = ARRAY_SIZE(sandybridge_dmi_registers);
+		/* fall through */
 	case PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_D: /* pretty printing not implemented yet */
 	case PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_M:
 	case PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_E3:

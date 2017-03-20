@@ -55,8 +55,11 @@ static void sdram_read_spds(struct sysinfo *s)
 			if (j == 62)
 				s->dimms[i].card_type = ((u8) status) & 0x1f;
 		}
-		if (status >= 0)
-			hexdump(s->dimms[i].spd_data, 64);
+
+		if (status >= 0) {
+			if (IS_ENABLED(CONFIG_DEBUG_RAM_SETUP))
+				hexdump(s->dimms[i].spd_data, 64);
+		}
 	}
 
 	s->spd_type = 0;

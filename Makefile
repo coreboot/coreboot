@@ -243,10 +243,14 @@ evaluate_subdirs= \
 
 # collect all object files eligible for building
 subdirs:=$(TOPLEVEL)
+postinclude-hooks :=
 $(eval $(call evaluate_subdirs))
 ifeq ($(FAILBUILD),1)
 $(error cannot continue build)
 endif
+
+# Run hooks registered by subdirectories that need to be evaluated after all files have been parsed
+$(eval $(postinclude-hooks))
 
 # Eliminate duplicate mentions of source files in a class
 $(foreach class,$(classes),$(eval $(class)-srcs:=$(sort $($(class)-srcs))))

@@ -21,7 +21,6 @@ ramstage-y += bootmode.c
 verstage-y += bootmode.c
 postcar-y += bootmode.c
 
-libverstage-generic-ccopts += -D__PRE_RAM__ -D__VERSTAGE__
 verstage-generic-ccopts += -D__PRE_RAM__ -D__VERSTAGE__
 
 bootblock-y += vbnv.c
@@ -62,14 +61,14 @@ ramstage-y += vboot_common.c
 postcar-y += vboot_common.c
 
 bootblock-y += common.c
-libverstage-y += vboot_logic.c
+verstage-y += vboot_logic.c
 verstage-y += common.c
-verstage-y += verstage.c
+verstage-$(CONFIG_VBOOT_SEPARATE_VERSTAGE) += verstage.c
 ifeq (${CONFIG_VBOOT_MOCK_SECDATA},y)
-libverstage-y += secdata_mock.c
+verstage-y += secdata_mock.c
 romstage-$(CONFIG_VBOOT_SEPARATE_VERSTAGE) += secdata_mock.c
 else
-libverstage-y += secdata_tpm.c
+verstage-y += secdata_tpm.c
 romstage-$(CONFIG_VBOOT_SEPARATE_VERSTAGE) += secdata_tpm.c
 endif
 romstage-y += vboot_handoff.c common.c
@@ -88,9 +87,9 @@ endif
 endif # CONFIG_VBOOT_SEPARATE_VERSTAGE
 
 VB2_LIB = $(obj)/external/vboot_reference/vboot_fw20.a
-VBOOT_CFLAGS += $(patsubst -I%,-I$(top)/%, $(filter-out -I$(obj), $(filter-out -include $(src)/include/kconfig.h, $(CPPFLAGS_libverstage))))
-VBOOT_CFLAGS += $(CFLAGS_libverstage)
-VBOOT_CFLAGS += $(libverstage-c-ccopts)
+VBOOT_CFLAGS += $(patsubst -I%,-I$(top)/%, $(filter-out -I$(obj), $(filter-out -include $(src)/include/kconfig.h, $(CPPFLAGS_verstage))))
+VBOOT_CFLAGS += $(CFLAGS_verstage)
+VBOOT_CFLAGS += $(verstage-c-ccopts)
 VBOOT_CFLAGS += -I$(abspath $(obj)) -include $(top)/src/include/kconfig.h -Wno-missing-prototypes
 VBOOT_CFLAGS += -DVBOOT_DEBUG
 
@@ -104,7 +103,7 @@ $(VB2_LIB): $(obj)/config.h
 		V=$(V) \
 		fwlib20
 
-libverstage-srcs += $(VB2_LIB)
+verstage-srcs += $(VB2_LIB)
 
 ifeq ($(CONFIG_VBOOT_SEPARATE_VERSTAGE),y)
 
@@ -131,11 +130,11 @@ endif
 
 endif
 
-else
+else # CONFIG_VBOOT_SEPARATE_VERSTAGE
 ifeq ($(CONFIG_VBOOT_STARTS_IN_BOOTBLOCK),y)
-bootblock-srcs += $(objgenerated)/libverstage.a
+postinclude-hooks += $$(eval bootblock-srcs += $$(verstage-srcs))
 else
-romstage-srcs += $(objgenerated)/libverstage.a
+postinclude-hooks += $$(eval romstage-srcs += $$(verstage-srcs))
 endif
 endif # CONFIG_VBOOT_SEPARATE_VERSTAGE
 

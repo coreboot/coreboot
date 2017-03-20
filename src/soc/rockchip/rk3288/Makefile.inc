@@ -37,7 +37,7 @@ verstage-$(CONFIG_DRIVERS_UART) += ../common/uart.c
 verstage-y += ../common/gpio.c
 verstage-y += gpio.c
 verstage-y += clock.c
-libverstage-y += crypto.c
+verstage-y += crypto.c
 verstage-y += ../common/i2c.c
 verstage-$(CONFIG_SOFTWARE_I2C) += software_i2c.c
 

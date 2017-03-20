@@ -47,8 +47,7 @@ HOSTCXX:=CCC_CXX="$(HOSTCXX)" $(CXX)
 ROMCC=CCC_CC="$(ROMCC_BIN)" $(CC)
 endif
 
-COREBOOT_STANDARD_STAGES := bootblock libverstage verstage romstage ramstage
-MAP-libverstage := verstage
+COREBOOT_STANDARD_STAGES := bootblock verstage romstage ramstage
 
 ARCHDIR-i386	:= x86
 ARCHDIR-x86_32	:= x86

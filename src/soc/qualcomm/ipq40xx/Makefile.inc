@@ -24,10 +24,10 @@ bootblock-$(CONFIG_DRIVERS_UART) += uart.c
 
 verstage-y += clock.c
 verstage-y += gpio.c
-libverstage-y += blsp.c
-libverstage-y += i2c.c
-libverstage-y += qup.c
-libverstage-y += spi.c
+verstage-y += blsp.c
+verstage-y += i2c.c
+verstage-y += qup.c
+verstage-y += spi.c
 verstage-y += timer.c
 verstage-$(CONFIG_DRIVERS_UART) += uart.c
 

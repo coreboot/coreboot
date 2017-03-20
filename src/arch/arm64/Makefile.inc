@@ -72,9 +72,9 @@ $(objcbfs)/verstage.debug: $(objgenerated)/libverstage.a $$(verstage-objs)
 verstage-y += boot.c
 verstage-y += div0.c
 verstage-y += eabi_compat.c
-verstage-y += ../../lib/memset.c
-verstage-y += ../../lib/memcpy.c
-verstage-y += ../../lib/memmove.c
+verstage-y += memset.S
+verstage-y += memcpy.S
+verstage-y += memmove.S
 
 verstage-y += transition.c transition_asm.S
 

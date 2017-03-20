@@ -231,6 +231,7 @@ find_llc_subleaf:
 	xorl	%edx, %edx
 	wrmsr
 
+	post_code(0x27)
 	/*
 	 * Enable No-Eviction Mode Run State by setting
 	 * NO_EVICT_MODE MSR 2E0h bit [1] = '1'.
@@ -241,52 +242,14 @@ find_llc_subleaf:
 	orl	$0x02, %eax
 	wrmsr
 
-	post_code(0x27)
-	/*
-	 *   Configure the BIOS code region as write-protected (WP) cacheable
-	 *   memory type using a single variable range MTRR.
-	 *
-	 *   Ensure region to cache meets MTRR requirements for
-	 *   size and alignment.
-	 */
-	movl	$(0xFFFFFFFF - CONFIG_ROM_SIZE + 1), %edi /* Code region base */
-	movl	$CONFIG_ROM_SIZE, %eax			  /* Code region size */
-	cmpl	$0, %edi
-	jz	.halt_forever
-	cmpl	$0, %eax
-	jz	.halt_forever
-
-	post_code(0x28)
-	/*
-	 * Program base register
-	 */
-	xorl	%edx, %edx			/* clear upper dword */
-	movl	$MTRR_PHYS_BASE(1), %ecx	/* setup variable mtrr */
-	movl	%edi, %eax
-	orl	$MTRR_TYPE_WRPROT, %eax	/* set type to write protect */
-	wrmsr
-
-	movl	$CONFIG_ROM_SIZE, %eax
-
-	/*
-	 * Compute MTRR mask value:  Mask = NOT (Size - 1)
-	 */
-	dec	%eax	/* eax - size to cache less one byte */
-	not	%eax	/* eax contains low 32 bits of mask */
-	or	$MTRR_PHYS_MASK_VALID, %eax
-	/*
-	 * Program mask register
-	 */
-	movl	$MTRR_PHYS_MASK(1) , %ecx	/* setup variable mtrr */
-	movl	%esi, %edx	/* edx <- MTRR_PHYS_MASK_HIGH */
-	wrmsr
-
 car_init_done:
 
-	post_code(0x29)
+	post_code(0x28)
 
 	/* Setup bootblock stack */
 	mov	$_car_stack_end, %esp
+
+	post_code(0x29)
 
 	/*push TSC value to stack*/
 	movd	%mm2, %eax

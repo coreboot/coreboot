@@ -48,7 +48,7 @@ static const struct pad_config gpio_table[] = {
 /* ESPI_IO3 */
 /* ESPI_CS# */
 /* SERIRQ */		PAD_CFG_NC(GPP_A6), /* TP44 */
-/* PIRQA# */		PAD_CFG_NC(GPP_A7),
+/* PIRQA# */		PAD_CFG_GPI(GPP_A7, 20K_PU, DEEP), /* SD_CD# */
 /* CLKRUN# */		PAD_CFG_NC(GPP_A8), /* TP45 */
 /* ESPI_CLK */
 /* CLKOUT_LPC1 */	PAD_CFG_NC(GPP_A10),

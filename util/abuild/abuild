@@ -16,8 +16,8 @@
 
 #set -x # Turn echo on....
 
-ABUILD_DATE="Dec 6, 2016"
-ABUILD_VERSION="0.10.01"
+ABUILD_DATE="Mar 28, 2017"
+ABUILD_VERSION="0.10.02"
 
 TOP=$PWD
 
@@ -581,8 +581,8 @@ test "$ROOT" = "" && ROOT=$( cd ../.. && pwd )
 export PATH=$PATH:util/abuild
 getopt - > /dev/null 2>/dev/null || gcc -o util/abuild/getopt util/abuild/getopt.c
 
-# command line for xargs parallelization. Thus overwrite -c X
-cmdline="$* -c 1"
+# Save command line for xargs parallelization.
+cmdline=("$@")
 
 # parse parameters.. try to find out whether we're running GNU getopt
 getoptbrand="$(getopt -V)"
@@ -735,6 +735,8 @@ build_targets()
 	local ABSPATH
 	local stime
 	local etime
+	local num_targets
+	local cpus_per_target
 
 	local targets=${*-$(get_mainboards)}
 	# seed shared utils
@@ -781,8 +783,9 @@ build_targets()
 		rmdir "${scanbuild_out}tmp"
 	fi
 	rm -rf "$TARGET/temp" "$TMPCFG"
-	# shellcheck disable=SC2086
-	echo $targets | xargs -P ${cpus:-0} -n 1 "$0" $cmdline -I -t
+	num_targets=$(wc -w <<<"$targets")
+	cpus_per_target=$(((${cpus:-1} + num_targets - 1) / num_targets))
+	echo "$targets" | xargs -P ${cpus:-0} -n 1 "$0" "${cmdline[@]}" -I -c "$cpus_per_target" -t
 }
 fi
 

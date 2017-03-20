@@ -53,6 +53,7 @@ config VARIANT_DIR
 	default "pyro" if BOARD_GOOGLE_PYRO
 	default "sand" if BOARD_GOOGLE_SAND
 	default "snappy" if BOARD_GOOGLE_SNAPPY
+	default "nasher" if BOARD_GOOGLE_NASHER
 
 config DEVICETREE
 	string
@@ -67,6 +68,7 @@ config MAINBOARD_PART_NUMBER
 	default "Pyro" if BOARD_GOOGLE_PYRO
 	default "Sand" if BOARD_GOOGLE_SAND
 	default "Snappy" if BOARD_GOOGLE_SNAPPY
+	default "Nasher" if BOARD_GOOGLE_NASHER
 
 config MAINBOARD_FAMILY
 	string
@@ -79,6 +81,7 @@ config GBB_HWID
 	default "PYRO TEST 0290" if BOARD_GOOGLE_PYRO
 	default "SAND TEST 1904" if BOARD_GOOGLE_SAND
 	default "SNAPPY TEST 1088" if BOARD_GOOGLE_SNAPPY
+	default "NASHER TEST 4258" if BOARD_GOOGLE_NASHER
 
 config MAX_CPUS
 	int

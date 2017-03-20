@@ -1185,7 +1185,7 @@ static void jedec_ddr2(struct sysinfo *s)
 			}
 			dojedec_ddr2(r + ch*4, ch, jedec[i][0], v);
 			udelay(1);
-			//printk(BIOS_DEBUG, "Jedec step %d\n", i);
+			printk(RAM_SPEW, "Jedec step %d\n", i);
 		}
 	}
 	printk(BIOS_DEBUG, "MRS done\n");

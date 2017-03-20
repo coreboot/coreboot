@@ -18,7 +18,7 @@ ifeq ($(CONFIG_PLATFORM_USES_FSP1_1),y)
 
 verstage-y += car.c
 verstage-y += fsp_util.c
-verstage-y += verstage.c
+verstage-$(CONFIG_SEPARATE_VERSTAGE) += verstage.c
 
 bootblock-y += bootblock.c
 bootblock-y += fsp_util.c

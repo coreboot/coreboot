@@ -97,7 +97,7 @@ subdirs-y += util/checklist
 
 #######################################################################
 # Add source classes and their build options
-classes-y := ramstage romstage bootblock postcar smm smmstub cpu_microcode libverstage verstage
+classes-y := ramstage romstage bootblock postcar smm smmstub cpu_microcode verstage
 
 # Add dynamic classes for rmodules
 $(foreach supported_arch,$(ARCH_SUPPORTED), \
@@ -200,7 +200,6 @@ endif
 
 ramstage-c-deps:=$$(OPTION_TABLE_H)
 romstage-c-deps:=$$(OPTION_TABLE_H)
-libverstage-c-deps:=$$(OPTION_TABLE_H)
 verstage-c-deps:=$$(OPTION_TABLE_H)
 bootblock-c-deps:=$$(OPTION_TABLE_H)
 $(foreach type,ads adb, \
@@ -527,10 +526,6 @@ ramstage-y+=$(DEVICETREE_STATIC_C)
 romstage-y+=$(DEVICETREE_STATIC_C)
 verstage-y+=$(DEVICETREE_STATIC_C)
 bootblock-y+=$(DEVICETREE_STATIC_C)
-
-$(objgenerated)/libverstage.a: $$(libverstage-objs)
-	rm -f $@
-	$(AR_libverstage) rcsT $@ $^
 
 #######################################################################
 # Clean up rules

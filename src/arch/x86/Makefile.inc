@@ -186,7 +186,7 @@ verstage-$(CONFIG_C_ENVIRONMENT_BOOTBLOCK) += verstage.c
 
 verstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 
-verstage-libs += $(objgenerated)/libverstage.a
+verstage-libs ?=
 
 $(eval $(call early_x86_assembly_entry_rule,verstage))
 

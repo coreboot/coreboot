@@ -53,7 +53,6 @@ verstage-y += cpu.S
 verstage-y += cache_helpers.S
 verstage-y += exception.c
 
-libverstage-generic-ccopts += $(armv8_flags)
 verstage-generic-ccopts += $(armv8_flags)
 
 endif

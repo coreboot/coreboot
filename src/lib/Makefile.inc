@@ -50,9 +50,9 @@ verstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 verstage-y += boot_device.c
 verstage-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
 
-libverstage-$(CONFIG_TPM) += tlcl.c
-libverstage-$(CONFIG_TPM2) += tpm2_marshaling.c
-libverstage-$(CONFIG_TPM2) += tpm2_tlcl.c
+verstage-$(CONFIG_TPM) += tlcl.c
+verstage-$(CONFIG_TPM2) += tpm2_marshaling.c
+verstage-$(CONFIG_TPM2) += tpm2_tlcl.c
 
 ifeq ($(CONFIG_VBOOT_SEPARATE_VERSTAGE),y)
 romstage-$(CONFIG_TPM) += tlcl.c

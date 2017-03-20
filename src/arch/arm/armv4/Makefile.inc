@@ -39,7 +39,6 @@ endif # CONFIG_ARCH_BOOTBLOCK_ARMV4
 ################################################################################
 
 ifeq ($(CONFIG_ARCH_VERSTAGE_ARMV4),y)
-libverstage-generic-ccopts += $(armv4_flags)
 verstage-generic-ccopts += $(armv4_flags)
 
 verstage-y += cache.c

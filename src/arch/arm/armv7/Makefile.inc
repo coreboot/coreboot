@@ -71,8 +71,6 @@ endif # CONFIG_ARCH_BOOTBLOCK_ARMV7
 ################################################################################
 
 ifeq ($(CONFIG_ARCH_VERSTAGE_ARMV7),y)
-libverstage-generic-ccopts += $(armv7-a_flags)
-libverstage-S-ccopts += $(armv7_asm_flags)
 verstage-generic-ccopts += $(armv7-a_flags)
 verstage-S-ccopts += $(armv7_asm_flags)
 
@@ -83,14 +81,10 @@ verstage-y += exception_asm.S
 verstage-y += mmu.c
 
 else ifeq ($(CONFIG_ARCH_VERSTAGE_ARMV7_M),y)
-libverstage-generic-ccopts += $(armv7-m_flags)
-libverstage-S-ccopts += $(armv7_asm_flags)
 verstage-generic-ccopts += $(armv7-m_flags)
 verstage-S-ccopts += $(armv7_asm_flags)
 
 else ifeq ($(CONFIG_ARCH_VERSTAGE_ARMV7_R),y)
-libverstage-generic-ccopts += $(armv7-r_flags)
-libverstage-S-ccopts += $(armv7-r_asm_flags)
 verstage-generic-ccopts += $(armv7-r_flags)
 verstage-S-ccopts += $(armv7-r_asm_flags)
 

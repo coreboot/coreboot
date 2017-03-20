@@ -68,9 +68,9 @@ endif # CONFIG_ARCH_BOOTBLOCK_ARM
 
 ifeq ($(CONFIG_ARCH_VERSTAGE_ARM),y)
 
-$(objcbfs)/verstage.debug: $(objgenerated)/libverstage.a $$(verstage-objs)
+$(objcbfs)/verstage.debug: $$(verstage-objs)
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-	$(LD_verstage) $(LDFLAGS_verstage) -o $@ -L$(obj) -T $(call src-to-obj,verstage,src/mainboard/$(MAINBOARDDIR)/memlayout.ld) --whole-archive --start-group $(filter-out %.ld,$(verstage-objs)) $(objgenerated)/libverstage.a --end-group
+	$(LD_verstage) $(LDFLAGS_verstage) -o $@ -L$(obj) -T $(call src-to-obj,verstage,src/mainboard/$(MAINBOARDDIR)/memlayout.ld) --whole-archive --start-group $(filter-out %.ld,$(verstage-objs)) --end-group
 
 verstage-y += boot.c
 verstage-y += div0.c

@@ -406,11 +406,17 @@ config TPM2
 
 	  If unsure, say N.
 
+config POWER_OFF_ON_CR50_UPDATE
+	bool
+	help
+	  Power off machine while waiting for CR50 update to take effect.
+
 config MAINBOARD_HAS_TPM_CR50
 	bool
 	default y if MAINBOARD_HAS_SPI_TPM_CR50 || MAINBOARD_HAS_I2C_TPM_CR50
 	default n
 	select MAINBOARD_HAS_TPM2
+	select POWER_OFF_ON_CR50_UPDATE if ARCH_X86
 
 config HEAP_SIZE
 	hex

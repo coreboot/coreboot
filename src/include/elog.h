@@ -122,6 +122,7 @@
 #define  ELOG_WAKE_SOURCE_GPIO             0x04
 #define  ELOG_WAKE_SOURCE_SMBUS            0x05
 #define  ELOG_WAKE_SOURCE_PWRBTN           0x06
+
 struct elog_event_data_wake {
 	u8 source;
 	u32 instance;
@@ -173,6 +174,9 @@ struct elog_event_mem_cache_update {
 
 /* CPU Thermal Trip */
 #define ELOG_TYPE_THERM_TRIP              0xab
+
+/* Cr50 */
+#define ELOG_TYPE_CR50_UPDATE             0xac
 
 #if CONFIG_ELOG
 /* Eventlog backing storage must be initialized before calling elog_init(). */

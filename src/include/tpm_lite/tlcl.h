@@ -162,4 +162,16 @@ uint32_t tlcl_disable_platform_hierarchy(void);
  */
 uint32_t tlcl_cr50_enable_nvcommits(void);
 
+/**
+ * CR50 specific tpm command to restore header(s) of the dormant RO/RW
+ * image(s) and in case there indeed was a dormant image, trigger reboot after
+ * the timeout milliseconds. Note that timeout of zero means "NO REBOOT", not
+ * "IMMEDIATE REBOOT".
+ *
+ * Return value indicates success or failure of accessing the TPM; in case of
+ * success the number of restored headers is saved in num_restored_headers.
+ */
+uint32_t tlcl_cr50_enable_update(uint16_t timeout_ms,
+				 uint8_t *num_restored_headers);
+
 #endif  /* TPM_LITE_TLCL_H_ */

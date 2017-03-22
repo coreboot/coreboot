@@ -78,6 +78,7 @@ struct tpm_header {
    knowledge of all commands. */
 #define TPM2_CR50_VENDOR_COMMAND ((TPM_CC)(TPM_CC_VENDOR_BIT_MASK | 0))
 #define  TPM2_CR50_SUB_CMD_NVMEM_ENABLE_COMMITS (21)
+#define  TPM2_CR50_SUB_CMD_TURN_UPDATE_ON (24)
 
 /* Startup values. */
 #define TPM_SU_CLEAR 0
@@ -279,6 +280,13 @@ struct nv_read_response {
 	TPM2B_MAX_NV_BUFFER buffer;
 };
 
+struct vendor_command_response {
+	uint16_t vc_subcommand;
+	union {
+		uint8_t num_restored_headers;
+	};
+};
+
 struct tpm2_session_attrs {
 	uint8_t continueSession : 1;
 	uint8_t auditExclusive  : 1;
@@ -311,6 +319,7 @@ struct tpm2_response {
 		struct get_cap_response gc;
 		struct nv_read_response nvr;
 		struct tpm2_session_header def_space;
+		struct vendor_command_response vcr;
 	};
 };
 

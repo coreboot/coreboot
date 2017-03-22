@@ -394,19 +394,15 @@ static void marshal_cr50_vendor_command(void **buffer, void *command_body,
 			size_t *buffer_space)
 {
 	uint16_t *sub_command;
-
-	/* Ensure at least the sub command can fit in the body and there's
-	   valid pointer. Could be reading past the buffer... */
-	if (command_body == NULL || *buffer_space < sizeof(uint16_t)) {
-		*buffer_space = 0;
-		return;
-	}
-
 	sub_command = command_body;
 
 	switch (*sub_command) {
 	case TPM2_CR50_SUB_CMD_NVMEM_ENABLE_COMMITS:
 		marshal_u16(buffer, *sub_command, buffer_space);
+		break;
+	case TPM2_CR50_SUB_CMD_TURN_UPDATE_ON:
+		marshal_u16(buffer, sub_command[0], buffer_space);
+		marshal_u16(buffer, sub_command[1], buffer_space);
 		break;
 	default:
 		/* Unsupported subcommand. */
@@ -596,6 +592,25 @@ static void unmarshal_nv_read(void **buffer, int *size,
 	*size = 0;
 }
 
+static void unmarshal_vendor_command(void **buffer, int *size,
+				     struct vendor_command_response *vcr)
+{
+	vcr->vc_subcommand = unmarshal_u16(buffer, size);
+
+	switch (vcr->vc_subcommand) {
+	case TPM2_CR50_SUB_CMD_NVMEM_ENABLE_COMMITS:
+		break;
+	case TPM2_CR50_SUB_CMD_TURN_UPDATE_ON:
+		vcr->num_restored_headers = unmarshal_u8(buffer, size);
+		break;
+	default:
+		printk(BIOS_ERR,
+		       "%s:%d - unsupported vendor command %#04x!\n",
+		       __func__, __LINE__, vcr->vc_subcommand);
+		break;
+	}
+}
+
 struct tpm2_response *tpm_unmarshal_response(TPM_CC command,
 					     void *response_body,
 					     size_t in_size)
@@ -648,8 +663,8 @@ struct tpm2_response *tpm_unmarshal_response(TPM_CC command,
 		break;
 
 	case TPM2_CR50_VENDOR_COMMAND:
-		/* Assume no other data returned for the time being. */
-		cr_size = 0;
+		unmarshal_vendor_command(&response_body, &cr_size,
+					 &tpm2_resp->vcr);
 		break;
 
 	default:

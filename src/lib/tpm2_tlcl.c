@@ -406,3 +406,22 @@ uint32_t tlcl_cr50_enable_nvcommits(void)
 	}
 	return TPM_SUCCESS;
 }
+
+uint32_t tlcl_cr50_enable_update(uint16_t timeout_ms,
+				 uint8_t *num_restored_headers)
+{
+	struct tpm2_response *response;
+	uint16_t command_body[] = {
+		TPM2_CR50_SUB_CMD_TURN_UPDATE_ON, timeout_ms
+	};
+
+	printk(BIOS_INFO, "Checking cr50 for pending updates\n");
+
+	response = tpm_process_command(TPM2_CR50_VENDOR_COMMAND, command_body);
+
+	if (!response || response->hdr.tpm_code)
+		return TPM_E_INTERNAL_INCONSISTENCY;
+
+	*num_restored_headers = response->vcr.num_restored_headers;
+	return TPM_SUCCESS;
+}

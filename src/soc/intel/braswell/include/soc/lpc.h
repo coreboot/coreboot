@@ -30,6 +30,9 @@
 #define UART_CONT	0x80
 #define RCBA		0xf0
 
+/* Memory Mapped IO in LPC bridge */
+#define SCNT		0x10
+#define SCNT_MODE	(1 << 7) /* When cleared, SERIRQ is in quiet mode */
 
 #define RID_A_STEPPING_START 1
 #define RID_B_STEPPING_START 5

@@ -103,6 +103,20 @@
 #define DECODE_ENABLE_ACPIUC_PORT     BIT(30)
 #define DECODE_ENABLE_ADLIB_PORT      BIT(31)
 
+#define LPC_IO_OR_MEM_DECODE_ENABLE	0x48
+#define   LPC_WIDEIO2_ENABLE	BIT(25)
+#define   LPC_WIDEIO1_ENABLE	BIT(24)
+#define   LPC_WIDEIO0_ENABLE	BIT(2)
+
+#define LPC_WIDEIO_GENERIC_PORT		0x64
+
+#define LPC_ALT_WIDEIO_RANGE_ENABLE	0x74
+#define   LPC_ALT_WIDEIO2_ENABLE	BIT(3)
+#define   LPC_ALT_WIDEIO1_ENABLE	BIT(2)
+#define   LPC_ALT_WIDEIO0_ENABLE	BIT(0)
+
+#define LPC_WIDEIO2_GENERIC_PORT	0x90
+
 #define SPI_CNTRL0                    0x00
 #define SPI_READ_MODE_MASK            (BIT(30) | BIT(29) | BIT(18))
 /* Nominal is 16.7MHz on older devices, 33MHz on newer */
@@ -169,6 +183,9 @@ void hudson_read_mode(u32 mode);
 void hudson_set_spi100(u16 norm, u16 fast, u16 alt, u16 tpm);
 void hudson_disable_4dw_burst(void);
 void hudson_set_readspeed(u16 norm, u16 fast);
+void lpc_wideio_512_window(uint16_t base);
+void lpc_wideio_16_window(uint16_t base);
+
 
 int s3_save_nvram_early(u32 dword, int size, int  nvram_pos);
 int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos);

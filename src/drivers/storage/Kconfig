@@ -1,0 +1,105 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2017 Intel Corp.
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+
+config DRIVERS_STORAGE
+	bool
+	default n
+
+if DRIVERS_STORAGE
+
+config DRIVERS_STORAGE_MMC
+	bool "Enable MultiMediaCard (MMC) and eMMC device support"
+	default n
+
+config DRIVERS_STORAGE_SD
+	bool "Enable Secure Digital (SD) memory card support"
+	default n
+
+config STORAGE_ERASE
+	bool "Support SD/MMC erase operations"
+	default n
+	help
+	  Select to enable SD/MMC erase oprations
+
+config STORAGE_EARLY_ERASE
+	bool "Enable erase operations in bootblock and verstage"
+	default n
+	depends on STORAGE_ERASE
+
+config STORAGE_WRITE
+	bool "Support SD/MMC write operations"
+	default n
+	help
+	  Select to enable SD/MMC write oprations
+
+config STORAGE_EARLY_WRITE
+	bool "Enable write operations in bootblock and verstage"
+	default n
+	depends on STORAGE_WRITE
+
+config SD_MMC_DEBUG
+	bool "Debug SD/MMC card/devices operations"
+	default n
+	help
+	  Display overview of SD/MMC card/device operations
+
+config SD_MMC_TRACE
+	bool "Trace SD/MMC card/device operations"
+	default n
+	help
+	  Display details of SD/MMC card/device operations
+
+config SDHC_DEBUG
+	bool "Debug SD/MMC controller settings"
+	default n
+	help
+	  Display clock speed and bus width settings
+
+config SDHC_TRACE
+	bool "Trace SD/MMC controller operations"
+	default n
+	help
+	  Display the operations performed by the SD/MMC controller
+
+config SDHCI_CONTROLLER
+	bool "Support SD host controller"
+	default n
+
+if SDHCI_CONTROLLER
+
+config SDHCI_ADMA_IN_BOOTBLOCK
+	bool
+	default n
+	help
+	  Determine if bootblock is able to use ADMA2 or ADMA64
+
+config SDHCI_ADMA_IN_ROMSTAGE
+	bool
+	default n
+	help
+	  Determine if romstage is able to use ADMA2 or ADMA64
+
+config SDHCI_ADMA_IN_VERSTAGE
+	bool
+	default n
+	help
+	  Determine if verstage is able to use ADMA2 or ADMA64
+
+config SDHCI_BOUNCE_BUFFER
+	bool "Use DMA bounce buffer for SD/MMC controller"
+	default n
+
+endif # SDHCI_CONTROLLER
+endif # DRIVERS_STORAGE

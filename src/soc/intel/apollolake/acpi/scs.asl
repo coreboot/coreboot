@@ -115,14 +115,32 @@ Scope (\_SB.PCI0) {
 	Device (SDCD)
 	{
 		Name (_ADR, 0x001B0000)
+		Name (_S0W, 4) /* _S0W: S0 Device Wake State */
+		Name (SCD0, 0) /* Store SD_CD DW0 address */
+
+		/* Set the host ownership of sdcard cd during kernel boot */
+		Method (_INI, 0)
+		{
+			/* Check SDCard CD port is valid */
+			If (LAnd (LNotEqual (\SCDP, 0), LNotEqual (\SCDO, 0) ))
+			{
+				/* Store DW0 address of SD_CD */
+				Store (GDW0 (\SCDP, \SCDO), SCD0)
+				/* Get the current SD_CD ownership */
+				Store (\_SB.GHO (\SCDP, \SCDO), Local0)
+				/* Set host ownership as GPIO in HOSTSW_OWN reg */
+				Or (Local0, ShiftLeft (1,  Mod (\SCDO, 32)), Local0)
+				\_SB.SHO (\SCDP, \SCDO, Local0)
+			}
+		}
 
 		Method (_PS0, 0, NotSerialized)
 		{
-			/* Check SDCard CD pin address is valid */
-			If (LNotEqual (SCD0, 0))
+			/* Check SDCard CD port is valid */
+			If (LAnd (LNotEqual (\SCDP, 0), LNotEqual (\SCDO, 0) ))
 			{
 				/* Store DW0 into local0 to get rxstate of GPIO */
-				Store (\_SB.GPC0 (\SCD0), Local0)
+				Store (\_SB.GPC0 (SCD0), Local0)
 				/* Extract rxstate [bit 1] of sdcard card detect pin */
 				And (Local0, PAD_CFG0_RX_STATE, Local0)
 				/* If the sdcard is present, rxstate is low.

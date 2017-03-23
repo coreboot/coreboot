@@ -186,6 +186,16 @@ void *gpio_dwx_address(const uint16_t pad)
 			PAD_CFG_OFFSET(pad - comm->first_pad));
 }
 
+uint8_t gpio_get_pad_portid(const uint16_t pad)
+{
+	/* Get the port id of given pad
+	 * pad - GPIO number
+	 * returns - given pad port id
+	 */
+	const struct pad_community *comm = gpio_get_community(pad);
+	return comm->port;
+}
+
 void gpio_input_pulldown(gpio_t gpio)
 {
 	struct pad_config cfg = PAD_CFG_GPI(gpio, DN_20K, DEEP);

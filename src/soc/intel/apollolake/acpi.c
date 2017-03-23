@@ -30,6 +30,7 @@
 #include <soc/pci_devs.h>
 #include <string.h>
 #include <soc/gpio.h>
+#include <gpio.h>
 #include "chip.h"
 
 #define CSTATE_RES(address_space, width, offset, address)		\
@@ -185,9 +186,13 @@ static void acpi_create_gnvs(struct global_nvs_t *gnvs)
 	if (cfg->prt0_gpio != GPIO_PRT0_UDEF)
 		gnvs->prt0 = (uintptr_t)gpio_dwx_address(cfg->prt0_gpio);
 
-	/* Assign sdcard cd address if GPIO is defined in devicetree */
-	if (cfg->sdcard_cd_gpio)
-		gnvs->scd0 = (uintptr_t)gpio_dwx_address(cfg->sdcard_cd_gpio);
+	/* Get sdcard cd GPIO portid if GPIO is defined in devicetree.
+	 * Get offset of sdcard cd pin.
+	 */
+	if (cfg->sdcard_cd_gpio) {
+		gnvs->scdp = gpio_get_pad_portid(cfg->sdcard_cd_gpio);
+		gnvs->scdo = gpio_acpi_pin(cfg->sdcard_cd_gpio);
+	}
 }
 
 /* Save wake source information for calculating ACPI _SWS values */

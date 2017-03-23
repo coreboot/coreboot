@@ -56,15 +56,13 @@ Name (DTRT, Package () {
 	Package () { \_SB.PCI0.TCPU, \_SB.DPTF.TSR0, 100, 600, 0, 0, 0, 0 },
 
 #ifdef DPTF_ENABLE_CHARGER
-	/* Charger Effect on Temp Sensor 1 */
-	Package () { \_SB.DPTF.TCHG, \_SB.DPTF.TSR2, 100, 1200, 0, 0, 0, 0 },
+	/* Charger Effect on Temp Sensor 2 */
+	Package () { \_SB.DPTF.TCHG, \_SB.DPTF.TSR2, 100, 300, 0, 0, 0, 0 },
 #endif
 
 	/* CPU Effect on Temp Sensor 1 */
-	Package () { \_SB.PCI0.TCPU, \_SB.DPTF.TSR1, 200, 80, 0, 0, 0, 0 },
+	Package () { \_SB.PCI0.TCPU, \_SB.DPTF.TSR1, 100, 80, 0, 0, 0, 0 },
 
-	/* CPU Effect on Temp Sensor 2 */
-	Package () { \_SB.PCI0.TCPU, \_SB.DPTF.TSR2, 100, 150, 0, 0, 0, 0 },
 })
 
 Name (MPPC, Package ()

@@ -58,7 +58,6 @@
  *
  */
 
-static size_t bios_start CAR_GLOBAL;
 static size_t bios_size CAR_GLOBAL;
 
 static struct mem_region_device shadow_dev CAR_GLOBAL;
@@ -66,16 +65,14 @@ static struct xlate_region_device real_dev CAR_GLOBAL;
 
 static void bios_mmap_init(void)
 {
-	size_t size;
+	size_t size, start, bios_end, bios_mapped_size;
+	uintptr_t base;
 
 	size = car_get_var(bios_size);
 
 	/* If bios_size is initialized, then bail out. */
 	if (size != 0)
 		return;
-
-	size_t start, bios_end, bios_mapped_size;
-	uintptr_t base;
 
 	/*
 	 * BIOS_BFPREG provides info about BIOS Flash Primary Region
@@ -110,7 +107,6 @@ static void bios_mmap_init(void)
 				 start, bios_mapped_size,
 				 CONFIG_ROM_SIZE);
 
-	car_set_var(bios_start, start);
 	car_set_var(bios_size, size);
 }
 

@@ -59,7 +59,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPIO_175, UP_20K, DEEP, NF1), /* SDCARD_D2 */
 	PAD_CFG_NF(GPIO_176, UP_20K, DEEP, NF1), /* SDCARD_D3 */
 	/* Card detect is active LOW with external pull up. */
-	PAD_CFG_GPI_GPIO_DRIVER(GPIO_177, NONE, DEEP), /* SDCARD_CD_N */
+	PAD_CFG_NF(GPIO_177, NONE, DEEP, NF1), /* SDCARD_CD_N */
 	PAD_CFG_NF(GPIO_178, UP_20K, DEEP, NF1), /* SDCARD_CMD */
 	/* CLK feedback, internal signal, needs 20K pull down */
 	PAD_CFG_NF(GPIO_179, DN_20K, DEEP, NF1), /* SDCARD_CLK_FB */

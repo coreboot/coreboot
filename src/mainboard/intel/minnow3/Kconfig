@@ -14,4 +14,64 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "Minnow3"
 
+config FMDFILE
+	string
+	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/minnow3.fmd"
+
+config UART_FOR_CONSOLE
+	int "Number of UART port to use for serial log"
+	default 2
+
+config NEED_IFWI
+	# this must be set to y
+	bool "Use IFWI stitching"
+	default n
+
+config IFWI_FMAP_NAME
+	string "section in .fmd file to place ifwi blob"
+	depends on NEED_IFWI
+	default "IFWI"
+
+config IFWI_FILE_NAME
+	string "path to image coming from FIT tool"
+	depends on NEED_IFWI
+	default ""
+
+config IFD_BIN_PATH
+	string "path to descriptor.bin"
+	depends on NEED_IFWI
+	default ""
+
+config HAVE_IFD_BIN
+	bool
+	depends on NEED_IFWI
+	default y
+
+config SOC_UART_DEBUG
+	bool "use serial port debugging"
+	default y
+
+config ADD_FSP_BINARIES
+	bool "Add FSP blobs"
+	depends on PLATFORM_USES_FSP2_0
+	default n
+
+config FSP_M_FILE
+	string "path to FSP-M.Fv blob"
+	depends on ADD_FSP_BINARIES
+	default ""
+
+config FSP_S_FILE
+	string "path to FSP-S.Fv blob"
+	depends on ADD_FSP_BINARIES
+	default ""
+
+config FSP_S_CBFS
+	string
+	default "fsps.bin"
+
+config FSP_M_CBFS
+	string
+	default "fspm.bin"
+
 endif # BOARD_INTEL_MINNOW3

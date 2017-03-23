@@ -18,8 +18,8 @@ MAINTAINER Martin Roth <martin@coreboot.org>
 RUN \
 	useradd -p locked -m coreboot && \
 	apt-get -qq update && \
-	apt-get -qqy install gcc g++ make patch python diffutils bison flex \
-		git doxygen ccache subversion p7zip-full unrar-free \
+	apt-get -qqy install gcc g++ gnat-6 make patch python diffutils bison \
+		flex git doxygen ccache subversion p7zip-full unrar-free \
 		m4 wget curl bzip2 vim-common cmake xz-utils pkg-config \
 		dh-autoreconf unifont \
 		libssl1.0-dev libgmp-dev zlib1g-dev libpci-dev liblzma-dev \
@@ -33,7 +33,8 @@ RUN \
 	git clone http://review.coreboot.org/coreboot && \
 	cd coreboot/util/crossgcc && \
 	git checkout {{DOCKER_COMMIT}} && \
-	make all_without_gdb CPUS=$(nproc) DEST=/opt/xgcc BUILDGCC_OPTIONS=-b && \
+	make all_without_gdb \
+		BUILD_LANGUAGES=c,ada CPUS=$(nproc) DEST=/opt/xgcc && \
 	cd /root && \
 	rm -rf coreboot
 

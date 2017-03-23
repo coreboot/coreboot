@@ -166,7 +166,7 @@ BL31_MAKEARGS += IS_ANYTHING_TO_BUILD=1
 # multi line string.
 BL31_MAKEARGS += BUILD_MESSAGE_TIMESTAMP='"$(shell grep "\#define COREBOOT_BUILD\>" $(obj)/build.h |cut -d\" -f2 \# \")"'
 
-BL31_CFLAGS := -fno-pic -fno-stack-protector -Wno-deprecated-declarations
+BL31_CFLAGS := -fno-pic -fno-stack-protector -Wno-deprecated-declarations -Wno-unused-function
 BL31_LDFLAGS := --emit-relocs
 
 BL31 := $(obj)/bl31.elf

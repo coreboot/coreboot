@@ -210,7 +210,7 @@ static void dram_timing(ramctr_timing * ctrl)
 	printk(BIOS_DEBUG, "Selected DRAM frequency: %u MHz\n", val32);
 
 	/* Find CAS latency */
-	val = (ctrl->tAA + ctrl->tCK - 1) / ctrl->tCK;
+	val = DIV_ROUND_UP(ctrl->tAA, ctrl->tCK);
 	printk(BIOS_DEBUG, "Minimum  CAS latency   : %uT\n", val);
 	/* Find lowest supported CAS latency that satisfies the minimum value */
 	while (!((ctrl->cas_supported >> (val - MIN_CAS)) & 1)
@@ -234,38 +234,38 @@ static void dram_timing(ramctr_timing * ctrl)
 	printk(BIOS_DEBUG, "Selected CWL latency   : %uT\n", ctrl->CWL);
 
 	/* Find tRCD */
-	ctrl->tRCD = (ctrl->tRCD + ctrl->tCK - 1) / ctrl->tCK;
+	ctrl->tRCD = DIV_ROUND_UP(ctrl->tRCD, ctrl->tCK);
 	printk(BIOS_DEBUG, "Selected tRCD          : %uT\n", ctrl->tRCD);
 
-	ctrl->tRP = (ctrl->tRP + ctrl->tCK - 1) / ctrl->tCK;
+	ctrl->tRP = DIV_ROUND_UP(ctrl->tRP, ctrl->tCK);
 	printk(BIOS_DEBUG, "Selected tRP           : %uT\n", ctrl->tRP);
 
 	/* Find tRAS */
-	ctrl->tRAS = (ctrl->tRAS + ctrl->tCK - 1) / ctrl->tCK;
+	ctrl->tRAS = DIV_ROUND_UP(ctrl->tRAS, ctrl->tCK);
 	printk(BIOS_DEBUG, "Selected tRAS          : %uT\n", ctrl->tRAS);
 
 	/* Find tWR */
-	ctrl->tWR = (ctrl->tWR + ctrl->tCK - 1) / ctrl->tCK;
+	ctrl->tWR = DIV_ROUND_UP(ctrl->tWR, ctrl->tCK);
 	printk(BIOS_DEBUG, "Selected tWR           : %uT\n", ctrl->tWR);
 
 	/* Find tFAW */
-	ctrl->tFAW = (ctrl->tFAW + ctrl->tCK - 1) / ctrl->tCK;
+	ctrl->tFAW = DIV_ROUND_UP(ctrl->tFAW, ctrl->tCK);
 	printk(BIOS_DEBUG, "Selected tFAW          : %uT\n", ctrl->tFAW);
 
 	/* Find tRRD */
-	ctrl->tRRD = (ctrl->tRRD + ctrl->tCK - 1) / ctrl->tCK;
+	ctrl->tRRD = DIV_ROUND_UP(ctrl->tRRD, ctrl->tCK);
 	printk(BIOS_DEBUG, "Selected tRRD          : %uT\n", ctrl->tRRD);
 
 	/* Find tRTP */
-	ctrl->tRTP = (ctrl->tRTP + ctrl->tCK - 1) / ctrl->tCK;
+	ctrl->tRTP = DIV_ROUND_UP(ctrl->tRTP, ctrl->tCK);
 	printk(BIOS_DEBUG, "Selected tRTP          : %uT\n", ctrl->tRTP);
 
 	/* Find tWTR */
-	ctrl->tWTR = (ctrl->tWTR + ctrl->tCK - 1) / ctrl->tCK;
+	ctrl->tWTR = DIV_ROUND_UP(ctrl->tWTR, ctrl->tCK);
 	printk(BIOS_DEBUG, "Selected tWTR          : %uT\n", ctrl->tWTR);
 
 	/* Refresh-to-Active or Refresh-to-Refresh (tRFC) */
-	ctrl->tRFC = (ctrl->tRFC + ctrl->tCK - 1) / ctrl->tCK;
+	ctrl->tRFC = DIV_ROUND_UP(ctrl->tRFC, ctrl->tCK - 1);
 	printk(BIOS_DEBUG, "Selected tRFC          : %uT\n", ctrl->tRFC);
 
 	ctrl->tREFI = get_REFI(ctrl->tCK);

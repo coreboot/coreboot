@@ -68,7 +68,8 @@ Errors in Kconfig files:
 - Choice block defined with no symbols.
 - The 'tristate' type is not used in coreboot.
 - A 'select' keyword used outside of a config block.
-- Symbols created both inside and outside of a choice block.
+- Symbols created both inside and outside of a choice block or in two
+  different choice blocks.
 - A 'range' keyword has higher minimum than maximum value.
 - A config block with a prompt at the top level (the top level is currently
   just for menus).

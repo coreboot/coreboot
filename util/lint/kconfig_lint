@@ -788,6 +788,10 @@ sub add_symbol {
             show_error( "$symbol entry at $filename:$line_no has already been created outside a choice block "
                   . "at $symbols{$symbol}{0}{file}:$symbols{$symbol}{0}{line_no}." );
         }
+        elsif ( $inside_choice && $symbols{$symbol}{choice} ) {
+            show_error( "$symbol entry at $filename:$line_no has already been created inside another choice block "
+                  . "at $symbols{$symbol}{0}{file}:$symbols{$symbol}{0}{line_no}." );
+        }
     }
 
     # add the location of this instance

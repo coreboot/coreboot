@@ -34,7 +34,4 @@ void lan_init(void);
 
 #define BOARD_CODEC_IRQ                 GPIO_S5_DED_IRQ(CODEC_IRQ_OFFSET)
 
-/* Disable PS2 keyboard */
-#undef SIO_EC_ENABLE_PS2K
-
 #endif

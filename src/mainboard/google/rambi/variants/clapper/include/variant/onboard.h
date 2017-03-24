@@ -36,4 +36,6 @@
 #define BOARD_I8042_IRQ                 GPIO_S0_DED_IRQ(I8042_IRQ_OFFSET)
 #define BOARD_CODEC_IRQ                 GPIO_S5_DED_IRQ(CODEC_IRQ_OFFSET)
 
+#define SIO_EC_ENABLE_PS2K       // Enable PS/2 Keyboard
+
 #endif

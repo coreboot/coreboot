@@ -17,19 +17,6 @@
 #include <mainboard/google/link/onboard.h>
 
 Scope (\_SB) {
-	Device (LID0)
-	{
-		Name(_HID, EisaId("PNP0C0D"))
-		Method(_LID, 0)
-		{
-			Store (\_SB.PCI0.LPCB.EC0.LIDS, \LIDS)
-			Return (\LIDS)
-		}
-
-		// EC_LID_OUT is GPIO15
-		Name(_PRW, Package(){0x1f, 0x05})
-	}
-
 	Device (PWRB)
 	{
 		Name(_HID, EisaId("PNP0C0C"))

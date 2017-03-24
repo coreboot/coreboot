@@ -18,17 +18,6 @@
 
 Scope (\_SB)
 {
-	Device (LID0)
-	{
-		Name (_HID, EisaId ("PNP0C0D"))
-		Method (_LID, 0)
-		{
-			Return (\_SB.PCI0.LPCB.EC0.LIDS)
-		}
-
-		Name (_PRW, Package () { GPE_EC_WAKE, 5 })
-	}
-
 	Device (PWRB)
 	{
 		Name (_HID, EisaId ("PNP0C0C"))

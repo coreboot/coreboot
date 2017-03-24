@@ -4,6 +4,13 @@ romstage-y += mem_pool.c
 ramstage-y += mem_pool.c
 postcar-y += mem_pool.c
 
+bootblock-y += iobuf.c
+verstage-y += iobuf.c
+romstage-y += iobuf.c
+ramstage-y += iobuf.c
+smm-y += iobuf.c
+postcar-y += iobuf.c
+
 bootblock-y += region.c
 verstage-y += region.c
 romstage-y += region.c

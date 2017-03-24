@@ -26,9 +26,6 @@ External (\_SB.DPTF.TEVT, MethodObj)
 External (\_SB.DPTF.TCHG, DeviceObj)
 #endif
 External (\_SB.DPTF.TPET, MethodObj)
-#ifndef EC_ENABLE_LID_SWITCH
-External (\_SB.LID0, DeviceObj)
-#endif
 
 Device (EC0)
 {
@@ -171,10 +168,6 @@ Device (EC0)
 		Store (LIDS, \LIDS)
 #ifdef EC_ENABLE_LID_SWITCH
 		Notify (LID0, 0x80)
-#else
-		If (CondRefOf (\_SB.LID0)) {
-			Notify (\_SB.LID0, 0x80)
-		}
 #endif
 	}
 
@@ -185,10 +178,6 @@ Device (EC0)
 		Store (LIDS, \LIDS)
 #ifdef EC_ENABLE_LID_SWITCH
 		Notify (LID0, 0x80)
-#else
-		If (CondRefOf (\_SB.LID0)) {
-			Notify (\_SB.LID0, 0x80)
-		}
 #endif
 	}
 

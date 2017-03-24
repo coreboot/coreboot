@@ -75,7 +75,7 @@ Method(_WAK,1)
 	Store (\_SB.PCI0.LPCB.EC0.LIDS, Local0)
 	if (LNotEqual (Local0, \LIDS)) {
 		Store (Local0, \LIDS)
-		Notify (\_SB.LID0, 0x80)
+		Notify (\_SB.PCI0.LPCB.EC0.LID0, 0x80)
 	}
 
 	Return(Package(){0,0})

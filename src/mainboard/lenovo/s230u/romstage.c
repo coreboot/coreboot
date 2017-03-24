@@ -51,10 +51,9 @@ void pch_enable_lpc(void)
 		CONFIG_EC_BASE_ADDRESS | 1);
 	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0xd8, 0xffc0);
 
-	#ifdef CONFIG_USBDEBUG
 	/* Enable external USB port power. */
-	ec_mm_set_bit(0x3b, 4);
-	#endif
+	if (IS_ENABLED(CONFIG_USBDEBUG))
+		ec_mm_set_bit(0x3b, 4);
 }
 
 void rcba_config(void)

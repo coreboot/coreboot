@@ -87,9 +87,10 @@ void dump_spd_registers(void)
 			if ((i % 16) == 0)
 				printk(BIOS_DEBUG, "\n%02x: ", i);
 			status = smbus_read_byte(device, i);
-			if (status < 0)
+			if (status < 0) {
 				printk(BIOS_DEBUG, "bad device: %02x\n", -status);
 				break;
+			}
 			printk(BIOS_DEBUG, "%02x ", status);
 		}
 		device++;

@@ -6,6 +6,7 @@
 #ifndef __SRC_LIB_TPM2_MARSHALING_H
 #define __SRC_LIB_TPM2_MARSHALING_H
 
+#include <commonlib/iobuf.h>
 #include "tpm2_tlcl_structures.h"
 
 /* The below functions are used to serialize/deserialize TPM2 commands. */
@@ -18,14 +19,13 @@
  *
  * @command: code of the TPM2 command to marshal
  * @tpm_command_body: a pointer to the command specific structure
- * @buffer: buffer where command is marshaled to
- * @buffer_size: size of the buffer
+ * @ob: output buffer where command is marshaled to
  *
- * Returns number of bytes placed in the buffer, or -1 on error.
+ * Returns 0 on success or -1 on error.
  *
  */
 int tpm_marshal_command(TPM_CC command, void *tpm_command_body,
-			void *buffer, size_t buffer_size);
+			struct obuf *ob);
 
 /**
  * tpm_unmarshal_response
@@ -36,14 +36,11 @@ int tpm_marshal_command(TPM_CC command, void *tpm_command_body,
  * struct tpm2_response is a union of all possible responses.
  *
  * @command: code of the TPM2 command for which a response is unmarshaled
- * @response_body: buffer containing the serialized response.
- * @response_size: number of bytes in the buffer containing response
+ * @ib: input buffer containing the serialized response.
  *
  * Returns a pointer to the deserialized response or NULL in case of
  * unmarshaling problems.
  */
-struct tpm2_response *tpm_unmarshal_response(TPM_CC command,
-					     void *response_body,
-					     size_t response_size);
+struct tpm2_response *tpm_unmarshal_response(TPM_CC command, struct ibuf *ib);
 
 #endif // __SRC_LIB_TPM2_MARSHALING_H

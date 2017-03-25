@@ -179,8 +179,6 @@ AGESA_STATUS agesawrapper_amdinitpost(void)
 	);
 	if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog(PostParams->StdHeader.HeapStatus);
 	AmdReleaseStruct (&AmdParamStruct);
-	/* Initialize heap space */
-	EmptyHeap();
 
 	return status;
 }
@@ -190,6 +188,9 @@ AGESA_STATUS agesawrapper_amdinitenv(void)
 	AGESA_STATUS status;
 	AMD_INTERFACE_PARAMS AmdParamStruct;
 	AMD_ENV_PARAMS       *EnvParam;
+
+	/* Initialize heap space */
+	EmptyHeap();
 
 	LibAmdMemFill (&AmdParamStruct,
 		       0,

@@ -58,7 +58,6 @@ static void get_s3nv_data(S3_DATA_TYPE S3DataType, uintptr_t *pos, uintptr_t *le
 	}
 }
 
-#if defined(__PRE_RAM__)
 
 AGESA_STATUS OemInitResume(AMD_RESUME_PARAMS *ResumeParams)
 {
@@ -86,7 +85,7 @@ AGESA_STATUS OemS3LateRestore(AMD_S3LATE_PARAMS *S3LateParams)
 	return AGESA_SUCCESS;
 }
 
-#else
+#if ENV_RAMSTAGE
 
 static int spi_SaveS3info(u32 pos, u32 size, u8 *buf, u32 len)
 {
@@ -150,6 +149,8 @@ AGESA_STATUS OemS3Save(AMD_S3SAVE_PARAMS *S3SaveParams)
 	return AGESA_SUCCESS;
 }
 
+#endif /* ENV_RAMSTAGE */
+
 const void *OemS3Saved_MTRR_Storage(void)
 {
 	uintptr_t pos, size;
@@ -159,5 +160,3 @@ const void *OemS3Saved_MTRR_Storage(void)
 
 	return (void*)(pos + sizeof(UINT32));
 }
-
-#endif

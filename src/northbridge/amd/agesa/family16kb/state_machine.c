@@ -30,6 +30,13 @@ void platform_BeforeInitEarly(struct sysinfo *cb, AMD_EARLY_PARAMS *Early)
 
 void platform_BeforeInitPost(struct sysinfo *cb, AMD_POST_PARAMS *Post)
 {
+	AGESA_STATUS status;
+
+	if (IS_ENABLED(CONFIG_ENABLE_MRC_CACHE)) {
+		status = OemInitResume(&Post->MemConfig.MemContext);
+		if (AGESA_SUCCESS == status)
+			Post->MemConfig.MemRestoreCtl = 1;
+	}
 }
 
 void platform_AfterInitPost(struct sysinfo *cb, AMD_POST_PARAMS *Post)

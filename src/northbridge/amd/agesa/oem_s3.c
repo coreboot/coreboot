@@ -58,10 +58,8 @@ static void get_s3nv_data(S3_DATA_TYPE S3DataType, uintptr_t *pos, uintptr_t *le
 	}
 }
 
-
-AGESA_STATUS OemInitResume(AMD_RESUME_PARAMS *ResumeParams)
+AGESA_STATUS OemInitResume(AMD_S3_PARAMS *dataBlock)
 {
-	AMD_S3_PARAMS *dataBlock = &ResumeParams->S3DataBlock;
 	uintptr_t pos, size;
 
 	get_s3nv_data(S3DataTypeNonVolatile, &pos, &size);
@@ -72,9 +70,8 @@ AGESA_STATUS OemInitResume(AMD_RESUME_PARAMS *ResumeParams)
 	return AGESA_SUCCESS;
 }
 
-AGESA_STATUS OemS3LateRestore(AMD_S3LATE_PARAMS *S3LateParams)
+AGESA_STATUS OemS3LateRestore(AMD_S3_PARAMS *dataBlock)
 {
-	AMD_S3_PARAMS *dataBlock = &S3LateParams->S3DataBlock;
 	void *dst;
 	size_t len;
 
@@ -112,9 +109,8 @@ static int spi_SaveS3info(u32 pos, u32 size, u8 *buf, u32 len)
 
 static u8 MTRRStorage[S3_DATA_MTRR_SIZE];
 
-AGESA_STATUS OemS3Save(AMD_S3SAVE_PARAMS *S3SaveParams)
+AGESA_STATUS OemS3Save(AMD_S3_PARAMS *dataBlock)
 {
-	AMD_S3_PARAMS *dataBlock = &S3SaveParams->S3DataBlock;
 	u32 MTRRStorageSize = 0;
 	uintptr_t pos, size;
 

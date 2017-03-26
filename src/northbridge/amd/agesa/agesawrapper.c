@@ -134,7 +134,7 @@ AGESA_STATUS agesawrapper_amdinitresume(void)
 
 	AmdResumeParamsPtr->S3DataBlock.NvStorageSize = 0;
 	AmdResumeParamsPtr->S3DataBlock.VolatileStorageSize = 0;
-	OemInitResume(AmdResumeParamsPtr);
+	OemInitResume(&AmdResumeParamsPtr->S3DataBlock);
 
 	status = AmdInitResume(AmdResumeParamsPtr);
 
@@ -195,7 +195,7 @@ AGESA_STATUS agesawrapper_amds3laterestore(void)
 	AmdS3LateParamsPtr->S3DataBlock.NvStorageSize = 0;
 #endif
 	AmdS3LateParamsPtr->S3DataBlock.VolatileStorageSize = 0;
-	OemS3LateRestore(AmdS3LateParamsPtr);
+	OemS3LateRestore(&AmdS3LateParamsPtr->S3DataBlock);
 
 	status = AmdS3LateRestore(AmdS3LateParamsPtr);
 	AGESA_EVENTLOG(status, &AmdInterfaceParams.StdHeader);
@@ -259,7 +259,7 @@ AGESA_STATUS agesawrapper_amdS3Save(void)
 	AGESA_EVENTLOG(status, &AmdInterfaceParams.StdHeader);
 	ASSERT(status == AGESA_SUCCESS);
 
-	OemS3Save(AmdS3SaveParamsPtr);
+	OemS3Save(&AmdS3SaveParamsPtr->S3DataBlock);
 
 	AmdReleaseStruct(&AmdInterfaceParams);
 

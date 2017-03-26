@@ -115,6 +115,8 @@ util/superiotool/superiotool
 util/vgabios/testbios
 util/viatool/viatool
 util/autoport/autoport
+util/kbc1126/kbc1126_ec_dump
+util/kbc1126/kbc1126_ec_insert
 
 documentation/*.aux
 documentation/*.idx

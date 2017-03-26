@@ -1,0 +1,61 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2017 Iru Cai
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+
+config EC_HP_KBC1126
+	bool
+	help
+	  Interface to SMSC KBC1126 embedded controller in HP laptops.
+
+if EC_HP_KBC1126
+
+comment "Please select the following otherwise your laptop cannot be powered on."
+
+config KBC1126_FIRMWARE
+	bool "Add firmware images for KBC1126 EC"
+	depends on EC_HP_KBC1126
+	default n
+	help
+	  Select this option to add the two firmware blobs for KBC1126.
+	  You need these two blobs to power on your machine.
+
+config KBC1126_FW1
+	string "KBC1126 firmware #1 path and filename"
+	depends on KBC1126_FIRMWARE
+	default "fw1.bin"
+	help
+	  The path and filename of the file to use as KBC1126 firmware #1.
+	  You can use util/kbc1126/kbc1126_ec_dump to dump it from the
+	  vendor firmware.
+
+config KBC1126_FW1_OFFSET
+	string
+	depends on KBC1126_FIRMWARE
+	default "0xffffe800"
+
+config KBC1126_FW2
+	string "KBC1126 filename #2 path and filename"
+	depends on KBC1126_FIRMWARE
+	default "fw2.bin"
+	help
+	  The path and filename of the file to use as KBC1126 firmware #2.
+	  You can use util/kbc1126/kbc1126_ec_dump to dump it from the
+	  vendor firmware.
+
+config KBC1126_FW2_OFFSET
+	string
+	depends on KBC1126_FIRMWARE
+	default "0xfffee000"
+
+endif

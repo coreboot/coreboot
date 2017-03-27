@@ -85,6 +85,11 @@ int tis_sendrecv(const uint8_t *sendbuf, size_t sbuf_size,
 		 uint8_t *recvbuf, size_t *rbuf_len)
 {
 	int len = tpm2_process_command(sendbuf, sbuf_size, recvbuf, *rbuf_len);
+
+	if (len == 0)
+		return -1;
+
 	*rbuf_len = len;
+
 	return 0;
 }

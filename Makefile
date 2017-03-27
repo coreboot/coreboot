@@ -407,7 +407,7 @@ doxygen-clean:
 clean-for-update: doxygen-clean clean-for-update-target
 	rm -rf $(obj) .xcompile
 
-clean: clean-for-update clean-target
+clean: clean-for-update clean-target clean-utils
 	rm -f .ccwrap
 
 clean-cscope:
@@ -416,8 +416,17 @@ clean-cscope:
 clean-ctags:
 	rm -f tags
 
-distclean: clean clean-ctags clean-cscope distclean-payloads
+clean-utils:
+	$(foreach tool, $(TOOLLIST), $(MAKE) -C util/$(tool) clean MFLAGS= MAKEFLAGS= ;)
+
+distclean-utils:
+	$(foreach tool, $(TOOLLIST), $(MAKE) -C util/$(tool) distclean MFLAGS= MAKEFLAGS= ;
+		rm -f /util/$(tool)/junit.xml;)
+
+distclean: clean clean-ctags clean-cscope distclean-payloads distclean-utils
 	rm -f .config .config.old ..config.tmp* .kconfig.d .tmpconfig* .ccwrap .xcompile
+	rm -rf coreboot-builds coreboot-builds-chromeos
+	rm -f abuild*.xml junit.xml* util/lint/junit.xml
 
 .PHONY: $(PHONY) clean clean-for-update clean-cscope cscope distclean doxygen doxy doxygen_simple
 .PHONY: ctags-project cscope-project clean-ctags

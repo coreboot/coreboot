@@ -87,62 +87,6 @@ struct tpm_chip {
 	struct tpm_vendor_specific vendor;
 };
 
-struct tpm_input_header {
-	uint16_t tag;
-	uint32_t length;
-	uint32_t ordinal;
-} __attribute__ ((packed));
-
-struct tpm_output_header {
-	uint16_t tag;
-	uint32_t length;
-	uint32_t return_code;
-} __attribute__ ((packed));
-
-struct timeout_t {
-	uint32_t a;
-	uint32_t b;
-	uint32_t c;
-	uint32_t d;
-} __attribute__ ((packed));
-
-struct duration_t {
-	uint32_t tpm_short;
-	uint32_t tpm_medium;
-	uint32_t tpm_long;
-} __attribute__ ((packed));
-
-typedef union {
-	struct timeout_t timeout;
-	struct duration_t duration;
-} cap_t;
-
-struct tpm_getcap_params_in {
-	uint32_t cap;
-	uint32_t subcap_size;
-	uint32_t subcap;
-} __attribute__ ((packed));
-
-struct tpm_getcap_params_out {
-	uint32_t cap_size;
-	cap_t cap;
-} __attribute__ ((packed));
-
-typedef union {
-	struct tpm_input_header in;
-	struct tpm_output_header out;
-} tpm_cmd_header;
-
-typedef union {
-	struct tpm_getcap_params_out getcap_out;
-	struct tpm_getcap_params_in getcap_in;
-} tpm_cmd_params;
-
-struct tpm_cmd_t {
-	tpm_cmd_header header;
-	tpm_cmd_params params;
-} __attribute__ ((packed));
-
 /* ---------- Interface for TPM vendor ------------ */
 
 int tpm_vendor_probe(unsigned int bus, uint32_t addr);

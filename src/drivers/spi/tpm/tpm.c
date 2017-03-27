@@ -53,7 +53,7 @@ static struct tpm_spi_if tpm_if = {
 };
 
 /* Cached TPM device identification. */
-struct tpm2_info tpm_info;
+static struct tpm2_info tpm_info;
 
 /*
  * TODO(vbendeb): make CONFIG_DEBUG_TPM an int to allow different level of

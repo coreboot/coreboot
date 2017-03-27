@@ -76,13 +76,11 @@ int tis_init(void)
 static ssize_t tpm_transmit(const uint8_t *buf, size_t bufsiz)
 {
 	int rc;
-	uint32_t count, ordinal;
+	uint32_t count;
 	struct tpm_chip *chip = car_get_var_ptr(&g_chip);
 
 	memcpy(&count, buf + TPM_CMD_COUNT_BYTE, sizeof(count));
 	count = be32_to_cpu(count);
-	memcpy(&ordinal, buf + TPM_CMD_ORDINAL_BYTE, sizeof(ordinal));
-	ordinal = be32_to_cpu(ordinal);
 
 	if (!chip->vendor.send || !chip->vendor.status || !chip->vendor.cancel)
 		return -1;

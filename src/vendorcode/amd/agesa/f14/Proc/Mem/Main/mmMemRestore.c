@@ -528,7 +528,8 @@ MemMSetCSRNb (
           IDS_HDT_CONSOLE (MEM_FLOW, "\tSTOP: DIMM config changed\n");
           RetVal = FALSE;
         }
-        if (((Value & 0x4000) == 0) && (NBPtr->GetMemClkFreqId (NBPtr, NBPtr->DCTPtr->Timings.TargetSpeed) != ((Value & 7) + 1))) {
+        if (((Value & 0x4000) == 0) && (NBPtr->GetMemClkFreqId (NBPtr,
+          NBPtr->DCTPtr->Timings.TargetSpeed) != (Value & 0x1f))) {
           IDS_HDT_CONSOLE (MEM_FLOW, "\tSTOP: MemClk has changed\n");
           RetVal = FALSE;
         }

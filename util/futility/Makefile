@@ -1,5 +1,6 @@
 top ?= $(abspath ../..)
 objutil ?= $(top)/util
+RM ?= rm
 
 HOSTCC ?= $(CC)
 VBOOT_SOURCE ?= $(top)/3rdparty/vboot
@@ -9,8 +10,8 @@ all: $(objutil)/futility/futility
 
 .PHONY: clean
 clean:
-	$(RM) $(objutil)/futility/futility
-	$(RM) -r $(objutil)/futility/build
+	$(RM) -f $(objutil)/futility/futility
+	$(RM) -rf $(objutil)/futility/build
 
 distclean: clean
 

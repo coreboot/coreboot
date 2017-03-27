@@ -19,6 +19,7 @@
 #include <string.h>
 #include <hwilib.h>
 #include <i210.h>
+#include "brd_gpio.h"
 
 #define MAX_PATH_DEPTH		12
 #define MAX_NUM_MAPPINGS	10
@@ -100,7 +101,11 @@ enum cb_err mainboard_get_mac_address(struct device *dev, uint8_t mac[6])
 
 static void mainboard_init(void *chip_info)
 {
-	/* Nothing Here Yet */
+	const struct pad_config *pads;
+	size_t num;
+
+	pads = brd_gpio_table(&num);
+	gpio_configure_pads(pads, num);
 }
 
 struct chip_operations mainboard_ops = {

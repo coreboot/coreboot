@@ -16,39 +16,9 @@
 
 #include <soc/gpio.h>
 
-#if ENV_ROMSTAGE
-
-static const struct pad_config gpio_table[] = {
-	/* Debug tracing. */
-	PAD_CFG_NF(GPIO_0, NATIVE, DEEP, NF1),
-	PAD_CFG_NF(GPIO_1, NATIVE, DEEP, NF1),
-	PAD_CFG_NF(GPIO_2, NATIVE, DEEP, NF1),
-	PAD_CFG_NF(GPIO_3, NATIVE, DEEP, NF1),
-	PAD_CFG_NF(GPIO_4, NATIVE, DEEP, NF1),
-	PAD_CFG_NF(GPIO_5, NATIVE, DEEP, NF1),
-	PAD_CFG_NF(GPIO_6, NATIVE, DEEP, NF1),
-	PAD_CFG_NF(GPIO_7, NATIVE, DEEP, NF1),
-	PAD_CFG_NF(GPIO_8, NATIVE, DEEP, NF1),
-
-	PAD_CFG_GPI(GPIO_152, DN_20K, DEEP), /* Unused */
-	PAD_CFG_GPI(GPIO_19, UP_20K, DEEP), /* Unused */
-	PAD_CFG_GPI(GPIO_13, UP_20K, DEEP), /* Unused */
-	PAD_CFG_GPI(GPIO_17, UP_20K, DEEP), /* Unused */
-	PAD_CFG_GPI(GPIO_15, UP_20K, DEEP), /* Unused */
-
-	PAD_CFG_NF(GPIO_210, NATIVE, DEEP, NF1), /* CLKREQ# */
-
-	PAD_CFG_NF(SMB_CLK, NATIVE, DEEP, NF1),
-	PAD_CFG_NF(SMB_DATA, NATIVE, DEEP, NF1),
-	PAD_CFG_NF(LPC_ILB_SERIRQ, UP_20K, DEEP, NF1),
-	PAD_CFG_NF(LPC_CLKOUT0, NATIVE, DEEP, NF1),
-	PAD_CFG_GPI(LPC_CLKOUT1, UP_20K, DEEP), /* LPC_CLKOUT1 -- unused */
-	PAD_CFG_NF(LPC_AD0, UP_20K, DEEP, NF1),
-	PAD_CFG_NF(LPC_AD1, UP_20K, DEEP, NF1),
-	PAD_CFG_NF(LPC_AD2, UP_20K, DEEP, NF1),
-	PAD_CFG_NF(LPC_AD3, UP_20K, DEEP, NF1),
-	PAD_CFG_NF(LPC_CLKRUNB, UP_20K, DEEP, NF1),
-	PAD_CFG_NF(LPC_FRAMEB, UP_20K, DEEP, NF1),
-};
-
-#endif
+/*
+ * The next set of functions return the gpio table and fill in the number of
+ * entries for each table.
+ */
+const struct pad_config *brd_gpio_table(size_t *num);
+const struct pad_config *brd_early_gpio_table(size_t *num);

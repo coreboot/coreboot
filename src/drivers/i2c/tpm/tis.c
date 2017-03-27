@@ -73,13 +73,14 @@ int tis_init(void)
 				CONFIG_DRIVER_TPM_I2C_ADDR);
 }
 
-static ssize_t tpm_transmit(const uint8_t *buf, size_t bufsiz)
+static ssize_t tpm_transmit(const uint8_t *sbuf, size_t sbufsiz, void *rbuf,
+			size_t rbufsiz)
 {
 	int rc;
 	uint32_t count;
 	struct tpm_chip *chip = car_get_var_ptr(&g_chip);
 
-	memcpy(&count, buf + TPM_CMD_COUNT_BYTE, sizeof(count));
+	memcpy(&count, sbuf + TPM_CMD_COUNT_BYTE, sizeof(count));
 	count = be32_to_cpu(count);
 
 	if (!chip->vendor.send || !chip->vendor.status || !chip->vendor.cancel)
@@ -89,14 +90,14 @@ static ssize_t tpm_transmit(const uint8_t *buf, size_t bufsiz)
 		printk(BIOS_DEBUG, "tpm_transmit: no data\n");
 		return -1;
 	}
-	if (count > bufsiz) {
+	if (count > sbufsiz) {
 		printk(BIOS_DEBUG, "tpm_transmit: invalid count value %x %zx\n",
-			count, bufsiz);
+			count, sbufsiz);
 		return -1;
 	}
 
 	ASSERT(chip->vendor.send);
-	rc = chip->vendor.send(chip, (uint8_t *) buf, count);
+	rc = chip->vendor.send(chip, (uint8_t *) sbuf, count);
 	if (rc < 0) {
 		printk(BIOS_DEBUG, "tpm_transmit: tpm_send error\n");
 		goto out;
@@ -132,7 +133,7 @@ static ssize_t tpm_transmit(const uint8_t *buf, size_t bufsiz)
 
 out_recv:
 
-	rc = chip->vendor.recv(chip, (uint8_t *) buf, TPM_BUFSIZE);
+	rc = chip->vendor.recv(chip, (uint8_t *) rbuf, rbufsiz);
 	if (rc < 0)
 		printk(BIOS_DEBUG, "tpm_transmit: tpm_recv: error %d\n", rc);
 out:
@@ -142,11 +143,7 @@ out:
 int tis_sendrecv(const uint8_t *sendbuf, size_t sbuf_size,
 		uint8_t *recvbuf, size_t *rbuf_len)
 {
-	uint8_t buf[TPM_BUFSIZE];
-
 	ASSERT(sbuf_size >= 10);
-	if (sizeof(buf) < sbuf_size)
-		return -1;
 
 	/* Display the TPM command */
 	if (IS_ENABLED(CONFIG_DRIVER_TPM_DISPLAY_TIS_BYTES)) {
@@ -156,8 +153,7 @@ int tis_sendrecv(const uint8_t *sendbuf, size_t sbuf_size,
 		hexdump(sendbuf, sbuf_size);
 	}
 
-	memcpy(buf, sendbuf, sbuf_size);
-	int len = tpm_transmit(buf, sbuf_size);
+	int len = tpm_transmit(sendbuf, sbuf_size, recvbuf, *rbuf_len);
 
 	if (len < 10) {
 		*rbuf_len = 0;
@@ -169,7 +165,6 @@ int tis_sendrecv(const uint8_t *sendbuf, size_t sbuf_size,
 		return -1;
 	}
 
-	memcpy(recvbuf, buf, len);
 	*rbuf_len = len;
 
 	/* Display the TPM response */

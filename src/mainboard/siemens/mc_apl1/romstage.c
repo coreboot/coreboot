@@ -47,8 +47,12 @@ static const uint8_t Ch3_Bit_swizzling[] = {
 
 void mainboard_memory_init_params(FSPM_UPD *memupd)
 {
+	const struct pad_config *pads;
+	size_t num;
+
 	/* setup early gpio before memory */
-	gpio_configure_pads(gpio_table, ARRAY_SIZE(gpio_table));
+	pads = brd_early_gpio_table(&num);
+	gpio_configure_pads(pads, num);
 
 	/* DRAM Config settings */
 	memupd->FspmConfig.Package = 0x1;

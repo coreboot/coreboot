@@ -212,6 +212,7 @@ static int start_transaction(int read_write, size_t bytes, unsigned addr)
 	do {
 		if (stopwatch_expired(&sw)) {
 			printk(BIOS_ERR, "TPM flow control failure\n");
+			tpm_if.cs_deassert(&tpm_if.slave);
 			return 0;
 		}
 		tpm_if.xfer(&tpm_if.slave, NULL, 0, &byte, 1);

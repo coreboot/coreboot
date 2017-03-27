@@ -50,6 +50,9 @@ configureonly=0
 # Did any board fail to build?
 failed=0
 
+# default: don't save checksums
+checksum_file=""
+
 # default: single CPU build
 cpus=1
 
@@ -366,6 +369,11 @@ function compile_target
 		failed=1
 	fi
 	cd "$CURR" || return $?
+	if [ -n "$checksum_file" ]; then
+		sha256sum "${build_dir}/coreboot.rom" >> "${checksum_file}_platform"
+		sort "${build_dir}/config.h" | grep CONFIG_ > "${build_dir}/config.h.sorted"
+		sha256sum "${build_dir}/config.h.sorted" >> "${checksum_file}_config"
+	fi
 	if [ "$clean_work" = "true" ]; then
 		rm -rf "${build_dir}"
 	fi
@@ -518,6 +526,7 @@ Usage: $0 [options]
 Options:\n"
     [-a|--all]                    Build previously succeeded ports as well
     [-B|--blobs]                  Allow using binary files
+    [--checksum <path/basefile>]  Store checksums at path/basefile
     [-c|--cpus <numcpus>]         Build on <numcpus> at the same time
     [-C|--config]                 Configure-only mode
     [-d|--dir <dir>]              Directory containing config files
@@ -590,7 +599,7 @@ getoptbrand="$(getopt -V)"
 # shellcheck disable=SC2086
 if [ "${getoptbrand:0:6}" == "getopt" ]; then
 	# Detected GNU getopt that supports long options.
-	args=$(getopt -l version,verbose,quiet,help,all,target:,payloads:,cpus:,silent,junit,config,loglevel:,remove,prefix:,update,scan-build,ccache,blobs,clang,clean,outdir:,chromeos,xmlfile:,kconfig:,dir:,root:,recursive -o Vvqhat:p:c:sJCl:rP:uyBLzo:xX:K:d:R:I -- "$@") || exit 1
+	args=$(getopt -l version,verbose,quiet,help,all,target:,payloads:,cpus:,silent,junit,config,loglevel:,remove,prefix:,update,scan-build,ccache,blobs,clang,clean,outdir:,chromeos,xmlfile:,kconfig:,dir:,root:,recursive,checksum: -o Vvqhat:p:c:sJCl:rP:uyBLzo:xX:K:d:R:I -- "$@") || exit 1
 	eval set -- $args
 	retval=$?
 else
@@ -682,6 +691,7 @@ while true ; do
 			customizing="${customizing}, $1 config"
 			configoptions="$(cat "$1")${configoptions}\n"
 			shift;;
+		--checksum)	shift; checksum_file="$1"; shift;;
 		--)		shift; break;;
 		-*)		printf "Invalid option '%s'\n\n" "$1"; myhelp; exit 1;;
 		*)		break;;

@@ -584,4 +584,6 @@ static inline void wait_all_core0_mem_trained(struct sys_info *sysinfo)
 }
 #endif
 
+void dqs_restore_MC_NVRAM(unsigned int dev);
+
 #endif /* AMDK8_F_H */

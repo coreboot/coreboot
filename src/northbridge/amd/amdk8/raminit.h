@@ -14,6 +14,9 @@ struct mem_controller {
 struct sys_info;
 void exit_from_self(int controllers, const struct mem_controller *ctrl, struct sys_info *sysinfo);
 void setup_resource_map(const unsigned int *register_values, int max);
+void set_hw_mem_hole(int controllers, const struct mem_controller *ctrl);
+
+#define TIMEOUT_LOOPS 300000
 
 #if defined(__PRE_RAM__) && CONFIG_RAMINIT_SYSINFO
 void sdram_initialize(int controllers, const struct mem_controller *ctrl, void *sysinfo);

@@ -1848,7 +1848,7 @@ static void dqs_save_MC_NVRAM(unsigned int dev)
 }
 #endif
 
-static void dqs_restore_MC_NVRAM(unsigned int dev)
+void dqs_restore_MC_NVRAM(unsigned int dev)
 {
 	int pos = 0;
 	u32 reg;

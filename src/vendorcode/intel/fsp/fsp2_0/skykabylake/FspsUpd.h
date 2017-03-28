@@ -88,19 +88,16 @@ typedef struct {
 
 /** Offset 0x0020 - Logo Pointer
   Points to PEI Display Logo Image
-  0 : 0
 **/
   UINT32                      LogoPtr;
 
 /** Offset 0x0024 - Logo Size
   Size of PEI Display Logo Image
-  0 : 0
 **/
   UINT32                      LogoSize;
 
 /** Offset 0x0028 - Graphics Configuration Ptr
   Points to VBT
-  0 : 0
 **/
   UINT32                      GraphicsConfigPtr;
 
@@ -261,19 +258,16 @@ typedef struct {
 
 /** Offset 0x0087 - Select GPIO IRQ Route
   GPIO IRQ Select. The valid value is 14 or 15.
-  0 : 0xFF
 **/
   UINT8                       GpioIrqRoute;
 
 /** Offset 0x0088 - Select SciIrqSelect
   SCI IRQ Select. The valid value is 9, 10, 11, and 20, 21, 22, 23 for APIC only.
-  0 : 0xFF
 **/
   UINT8                       SciIrqSelect;
 
 /** Offset 0x0089 - Select TcoIrqSelect
   TCO IRQ Select. The valid value is 9, 10, 11, 20, 21, 22, 23.
-  0 : 0xFF
 **/
   UINT8                       TcoIrqSelect;
 
@@ -609,48 +603,46 @@ typedef struct {
 /** Offset 0x0276 - Platform Psys slope correction
   PCODE MMIO Mailbox: Platform Psys slope correction. <b>0 - Auto</b> Specified in
   1/100 increment values. Range is 0-200. 125 = 1.25
-  0x0:0xFF
 **/
   UINT8                       PsysSlope;
 
 /** Offset 0x0277 - Platform Psys offset correction
   PCODE MMIO Mailbox: Platform Psys offset correction. <b>0 - Auto</b> Units 1/4,
   Range 0-255. Value of 100 = 100/4 = 25 offset
-  0x0:0xFF
 **/
   UINT8                       PsysOffset;
 
 /** Offset 0x0278 - Acoustic Noise Mitigation feature
   Enable or Disable Acoustic Noise Mitigation feature. <b>0: Disabled</b>; 1: Enabled
-  0x0:0xFF
+  $EN_DIS
 **/
   UINT8                       AcousticNoiseMitigation;
 
 /** Offset 0x0279 - Disable Fast Slew Rate for Deep Package C States for VR IA domain
   Disable Fast Slew Rate for Deep Package C States based on Acoustic Noise Mitigation
   feature enabled. <b>0: False</b>; 1: True
-  0x0:0xFF
+  $EN_DIS
 **/
   UINT8                       FastPkgCRampDisableIa;
 
 /** Offset 0x027A - Slew Rate configuration for Deep Package C States for VR IA domain
   Slew Rate configuration for Deep Package C States for VR IA domain based on Acoustic
   Noise Mitigation feature enabled. <b>0: Fast/2</b>; 1: Fast/4; 2: Fast/8; 3: Fast/16
-  0x0:0xFF
+  0: Fast/2, 1: Fast/4, 2: Fast/8, 3: Fast/16
 **/
   UINT8                       SlowSlewRateForIa;
 
 /** Offset 0x027B - Slew Rate configuration for Deep Package C States for VR GT domain
   Slew Rate configuration for Deep Package C States for VR GT domain based on Acoustic
   Noise Mitigation feature enabled. <b>0: Fast/2</b>; 1: Fast/4; 2: Fast/8; 3: Fast/16
-  0x0:0xFF
+  0: Fast/2, 1: Fast/4, 2: Fast/8, 3: Fast/16
 **/
   UINT8                       SlowSlewRateForGt;
 
 /** Offset 0x027C - Slew Rate configuration for Deep Package C States for VR SA domain
   Slew Rate configuration for Deep Package C States for VR SA domain based on Acoustic
   Noise Mitigation feature enabled. <b>0: Fast/2</b>; 1: Fast/4; 2: Fast/8; 3: Fast/16
-  0x0:0xFF
+  0: Fast/2, 1: Fast/4, 2: Fast/8, 3: Fast/16
 **/
   UINT8                       SlowSlewRateForSa;
 
@@ -715,14 +707,14 @@ typedef struct {
 /** Offset 0x02DF - Disable Fast Slew Rate for Deep Package C States for VR GT domain
   Disable Fast Slew Rate for Deep Package C States based on Acoustic Noise Mitigation
   feature enabled. <b>0: False</b>; 1: True
-  0x0:0xFF
+  $EN_DIS
 **/
   UINT8                       FastPkgCRampDisableGt;
 
 /** Offset 0x02E0 - Disable Fast Slew Rate for Deep Package C States for VR SA domain
   Disable Fast Slew Rate for Deep Package C States based on Acoustic Noise Mitigation
   feature enabled. <b>0: False</b>; 1: True
-  0x0:0xFF
+  $EN_DIS
 **/
   UINT8                       FastPkgCRampDisableSa;
 
@@ -2154,7 +2146,6 @@ typedef struct {
   1-Core Ratio Limit: For XE part: LFM to 255, For overclocking part: LFM to Fused
   1-Core Ratio Limit + OC Bins.This 1-Core Ratio Limit Must be greater than or equal
   to 2-Core Ratio Limit, 3-Core Ratio Limit, 4-Core Ratio Limit. Range is 0 to 83
-  0x0:0xFF
 **/
   UINT8                       OneCoreRatioLimit;
 
@@ -2162,7 +2153,6 @@ typedef struct {
   2-Core Ratio Limit: For XE part: LFM to 255, For overclocking part: LFM to Fused
   2-Core Ratio Limit + OC Bins.This 2-Core Ratio Limit Must be Less than or equal
   to 1-Core Ratio Limit.Range is 0 to 83
-  0x0:0xFF
 **/
   UINT8                       TwoCoreRatioLimit;
 
@@ -2170,7 +2160,6 @@ typedef struct {
   3-Core Ratio Limit: For XE part: LFM to 255, For overclocking part: LFM to Fused
   3-Core Ratio Limit + OC Bins.This 3-Core Ratio Limit Must be Less than or equal
   to 1-Core Ratio Limit.Range is 0 to 83
-  0x0:0xFF
 **/
   UINT8                       ThreeCoreRatioLimit;
 
@@ -2178,7 +2167,6 @@ typedef struct {
   4-Core Ratio Limit: For XE part: LFM to 255, For overclocking part: LFM to Fused
   4-Core Ratio Limit + OC Bins.This 4-Core Ratio Limit Must be Less than or equal
   to 1-Core Ratio Limit.Range is 0 to 83
-  0x0:0xFF
 **/
   UINT8                       FourCoreRatioLimit;
 
@@ -2202,7 +2190,6 @@ typedef struct {
 /** Offset 0x07A3 - Package Long duration turbo mode time
   Package Long duration turbo mode time window in seconds. Valid values(Unit in seconds)
   0 to 8 , 10 , 12 ,14 , 16 , 20 , 24 , 28 , 32 , 40 , 48 , 56 , 64 , 80 , 96 , 112 , 128
-  0x0:0xFF
 **/
   UINT8                       PowerLimit1Time;
 
@@ -2221,13 +2208,11 @@ typedef struct {
 /** Offset 0x07A6 - Package PL3 time window
   Package PL3 time window range for this policy in milliseconds. Valid values are
   0, 3 to 8, 10, 12, 14, 16, 20 , 24, 28, 32, 40, 48, 55, 56, 64
-  0x0:0xFF
 **/
   UINT8                       PowerLimit3Time;
 
 /** Offset 0x07A7 - Package PL3 Duty Cycle
   Package PL3 Duty Cycle; Valid Range is 0 to 100
-  0x0:0xFF
 **/
   UINT8                       PowerLimit3DutyCycle;
 
@@ -2248,7 +2233,6 @@ typedef struct {
   the Thermal Control Circuit must be activated. TCC will be activated at TCC Activation
   Temperature, in volts.For SKL Y SKU, the recommended default for this policy is
   <b>10</b>, For all other SKUs the recommended default are <b>0</b>
-  0x0:0xFF
 **/
   UINT8                       TccActivationOffset;
 
@@ -2270,61 +2254,51 @@ typedef struct {
 /** Offset 0x07AD - Custom Ratio State Entries
   The number of custom ratio state entries, ranges from 0 to 40 for a valid custom
   ratio table.Sets the number of custom P-states. At least 2 states must be present
-  0x0:0xFF
 **/
   UINT8                       NumberOfEntries;
 
 /** Offset 0x07AE - Custom Short term Power Limit time window
   Short term Power Limit time window value for custom CTDP level 1. Valid Range 0 to 128
-  0x0:0xFF
 **/
   UINT8                       Custom1PowerLimit1Time;
 
 /** Offset 0x07AF - Custom Turbo Activation Ratio
   Turbo Activation Ratio for custom cTDP level 1. Valid Range 0 to 255
-  0x0:0xFF
 **/
   UINT8                       Custom1TurboActivationRatio;
 
 /** Offset 0x07B0 - Custom Config Tdp Control
   Config Tdp Control (0/1/2) value for custom cTDP level 1. Valid Range is 0 to 2
-  0x0:0xFF
 **/
   UINT8                       Custom1ConfigTdpControl;
 
 /** Offset 0x07B1 - Custom Short term Power Limit time window
   Short term Power Limit time window value for custom CTDP level 2. Valid Range 0 to 128
-  0x0:0xFF
 **/
   UINT8                       Custom2PowerLimit1Time;
 
 /** Offset 0x07B2 - Custom Turbo Activation Ratio
   Turbo Activation Ratio for custom cTDP level 2. Valid Range 0 to 255
-  0x0:0xFF
 **/
   UINT8                       Custom2TurboActivationRatio;
 
 /** Offset 0x07B3 - Custom Config Tdp Control
   Config Tdp Control (0/1/2) value for custom cTDP level 1. Valid Range is 0 to 2
-  0x0:0xFF
 **/
   UINT8                       Custom2ConfigTdpControl;
 
 /** Offset 0x07B4 - Custom Short term Power Limit time window
   Short term Power Limit time window value for custom CTDP level 3. Valid Range 0 to 128
-  0x0:0xFF
 **/
   UINT8                       Custom3PowerLimit1Time;
 
 /** Offset 0x07B5 - Custom Turbo Activation Ratio
   Turbo Activation Ratio for custom cTDP level 3. Valid Range 0 to 255
-  0x0:0xFF
 **/
   UINT8                       Custom3TurboActivationRatio;
 
 /** Offset 0x07B6 - Custom Config Tdp Control
   Config Tdp Control (0/1/2) value for custom cTDP level 1. Valid Range is 0 to 2
-  0x0:0xFF
 **/
   UINT8                       Custom3ConfigTdpControl;
 
@@ -2349,7 +2323,6 @@ typedef struct {
 /** Offset 0x07BA - PL1 timewindow
   PL1 timewindow in seconds.Valid values(Unit in seconds) 0 to 8 , 10 , 12 ,14 , 16
   , 20 , 24 , 28 , 32 , 40 , 48 , 56 , 64 , 80 , 96 , 112 , 128
-  0x0:0xFF
 **/
   UINT8                       PsysPowerLimit1Time;
 
@@ -2402,13 +2375,13 @@ typedef struct {
 
 /** Offset 0x07C4 - AP Idle Manner of waiting for SIPI
   AP Idle Manner of waiting for SIPI; 1: HALT loop; <b>2: MWAIT loop</b>; 3: RUN loop.
-  0x0:0xFF
+  1:HALT loop, 2:MWAIT loop, 3:RUN loop
 **/
   UINT8                       ApIdleManner;
 
 /** Offset 0x07C5 - Settings for AP Handoff to OS
   Settings for AP Handoff to OS; 1: HALT loop; <b>2: MWAIT loop</b>.
-  0x0:0xFF
+  1:HALT loop, 2:MWAIT loop
 **/
   UINT8                       ApHandoffManner;
 
@@ -2418,7 +2391,7 @@ typedef struct {
 
 /** Offset 0x07C8 - Control on Processor Trace output scheme
   Control on Processor Trace output scheme; <b>0: Single Range Output</b>; 1: ToPA Output.
-  0x0:0xFF
+  0:Single Range Output, 1:ToPA Output
 **/
   UINT8                       ProcTraceOutputScheme;
 
@@ -2436,7 +2409,6 @@ typedef struct {
   32MB, Valid Values are 0 - 4KB , 0x1 - 8KB , 0x2 - 16KB , 0x3 - 32KB , 0x4 - 64KB
   , 0x5 - 128KB , 0x6 - 256KB , 0x7 - 512KB , 0x8 - 1MB , 0x9 - 2MB , 0xA - 4MB ,
   0xB - 8MB , 0xC - 16MB , 0xD - 32MB , 0xE - 64MB , 0xF - 128MB , 0xFF: Disable
-  0x0:0xFF
 **/
   UINT8                       ProcTraceMemSize;
 
@@ -2566,56 +2538,48 @@ typedef struct {
   Set the Max Pkg Cstate. Default set to Auto which limits the Max Pkg Cstate to deep
   C-state. Valid values 0 - C0/C1 , 1 - C2 , 2 - C3 , 3 - C6 , 4 - C7 , 5 - C7S ,
   6 - C8 , 7 - C9 , 8 - C10 , 254 - CPU Default , 255 - Auto
-  0x0:0xFF
 **/
   UINT8                       PkgCStateLimit;
 
 /** Offset 0x07E0 - TimeUnit for C-State Latency Control0
   TimeUnit for C-State Latency Control0; Valid values 0 - 1ns , 1 - 32ns , 2 - 1024ns
   , 3 - 32768ns , 4 - 1048576ns , 5 - 33554432ns
-  0x0:0xFF
 **/
   UINT8                       CstateLatencyControl0TimeUnit;
 
 /** Offset 0x07E1 - TimeUnit for C-State Latency Control1
   TimeUnit for C-State Latency Control1;Valid values 0 - 1ns , 1 - 32ns , 2 - 1024ns
   , 3 - 32768ns , 4 - 1048576ns , 5 - 33554432ns
-  0x0:0xFF
 **/
   UINT8                       CstateLatencyControl1TimeUnit;
 
 /** Offset 0x07E2 - TimeUnit for C-State Latency Control2
   TimeUnit for C-State Latency Control2;Valid values 0 - 1ns , 1 - 32ns , 2 - 1024ns
   , 3 - 32768ns , 4 - 1048576ns , 5 - 33554432ns
-  0x0:0xFF
 **/
   UINT8                       CstateLatencyControl2TimeUnit;
 
 /** Offset 0x07E3 - TimeUnit for C-State Latency Control3
   TimeUnit for C-State Latency Control3;Valid values 0 - 1ns , 1 - 32ns , 2 - 1024ns
   , 3 - 32768ns , 4 - 1048576ns , 5 - 33554432ns
-  0x0:0xFF
 **/
   UINT8                       CstateLatencyControl3TimeUnit;
 
 /** Offset 0x07E4 - TimeUnit for C-State Latency Control4
   TimeUnit for C-State Latency Control4;Valid values 0 - 1ns , 1 - 32ns , 2 - 1024ns
   , 3 - 32768ns , 4 - 1048576ns , 5 - 33554432ns
-  0x0:0xFF
 **/
   UINT8                       CstateLatencyControl4TimeUnit;
 
 /** Offset 0x07E5 - TimeUnit for C-State Latency Control5
   TimeUnit for C-State Latency Control5;Valid values 0 - 1ns , 1 - 32ns , 2 - 1024ns
   , 3 - 32768ns , 4 - 1048576ns , 5 - 33554432ns
-  0x0:0xFF
 **/
   UINT8                       CstateLatencyControl5TimeUnit;
 
 /** Offset 0x07E6 - Interrupt Redirection Mode Select
   Interrupt Redirection Mode Select.0: Fixed priority; 1: Round robin;2: Hash vector;4:
   PAIR with fixed priority;5: PAIR with round robin;6: PAIR with hash vector;7: No change.
-  0x0:0xFF
 **/
   UINT8                       PpmIrmSetting;
 
@@ -2628,7 +2592,7 @@ typedef struct {
 /** Offset 0x07E8 - Configuration for boot TDP selection
   Configuration for boot TDP selection; <b>0: TDP Nominal</b>; 1: TDP Down; 2: TDP
   Up;0xFF : Deactivate
-  0x0:0xFF
+  0:TDP Nominal, 1:TDP Down, 2:TDP Up, 0xFF:Deactivate
 **/
   UINT8                       ConfigTdpLevel;
 
@@ -2642,7 +2606,6 @@ typedef struct {
 
 /** Offset 0x07EA - Max P-State Ratio
   Max P-State Ratio , Valid Range 0 to 0x7F
-  0x0:0xFFFF
 **/
   UINT16                      MaxRatio;
 
@@ -2655,135 +2618,115 @@ typedef struct {
 
 /** Offset 0x083C - Interrupt Response Time Limit of C-State LatencyContol0
   Interrupt Response Time Limit of C-State LatencyContol0. Range of value 0 to 0x3FF
-  0x0:0xFFFF
 **/
   UINT16                      CstateLatencyControl0Irtl;
 
 /** Offset 0x083E - Interrupt Response Time Limit of C-State LatencyContol1
   Interrupt Response Time Limit of C-State LatencyContol1.Range of value 0 to 0x3FF
-  0x0:0xFFFF
 **/
   UINT16                      CstateLatencyControl1Irtl;
 
 /** Offset 0x0840 - Interrupt Response Time Limit of C-State LatencyContol2
   Interrupt Response Time Limit of C-State LatencyContol2.Range of value 0 to 0x3FF
-  0x0:0xFFFF
 **/
   UINT16                      CstateLatencyControl2Irtl;
 
 /** Offset 0x0842 - Interrupt Response Time Limit of C-State LatencyContol3
   Interrupt Response Time Limit of C-State LatencyContol3.Range of value 0 to 0x3FF
-  0x0:0xFFFF
 **/
   UINT16                      CstateLatencyControl3Irtl;
 
 /** Offset 0x0844 - Interrupt Response Time Limit of C-State LatencyContol4
   Interrupt Response Time Limit of C-State LatencyContol4.Range of value 0 to 0x3FF
-  0x0:0xFFFF
 **/
   UINT16                      CstateLatencyControl4Irtl;
 
 /** Offset 0x0846 - Interrupt Response Time Limit of C-State LatencyContol5
   Interrupt Response Time Limit of C-State LatencyContol5.Range of value 0 to 0x3FF
-  0x0:0xFFFF
 **/
   UINT16                      CstateLatencyControl5Irtl;
 
 /** Offset 0x0848 - Package Long duration turbo mode power limit
   Package Long duration turbo mode power limit. Units are based on POWER_MGMT_CONFIG.CustomPowerUnit.
   Valid Range 0 to 4095875 in Step size of 125
-  0x0:0xFFFFFFFF
 **/
   UINT32                      PowerLimit1;
 
 /** Offset 0x084C - Package Short duration turbo mode power limit
   Package Short duration turbo mode power limit. Units are based on POWER_MGMT_CONFIG.CustomPowerUnit.Valid
   Range 0 to 4095875 in Step size of 125
-  0x0:0xFFFFFFFF
 **/
   UINT32                      PowerLimit2Power;
 
 /** Offset 0x0850 - Package PL3 power limit
   Package PL3 power limit. Units are based on POWER_MGMT_CONFIG.CustomPowerUnit.Valid
   Range 0 to 4095875 in Step size of 125
-  0x0:0xFFFFFFFF
 **/
   UINT32                      PowerLimit3;
 
 /** Offset 0x0854 - Package PL4 power limit
   Package PL4 power limit. Units are based on POWER_MGMT_CONFIG.CustomPowerUnit.Valid
   Range 0 to 4095875 in Step size of 125
-  0x0:0xFFFFFFFF
 **/
   UINT32                      PowerLimit4;
 
 /** Offset 0x0858 - Tcc Offset Time Window for RATL
   Package PL4 power limit. Units are based on POWER_MGMT_CONFIG.CustomPowerUnit.Valid
   Range 0 to 4095875 in Step size of 125
-  0x0:0xFFFFFFFF
 **/
   UINT32                      TccOffsetTimeWindowForRatl;
 
 /** Offset 0x085C - Short term Power Limit value for custom cTDP level 1
   Short term Power Limit value for custom cTDP level 1. Units are based on POWER_MGMT_CONFIG.CustomPowerUnit.Valid
   Range 0 to 4095875 in Step size of 125
-  0x0:0xFFFFFFFF
 **/
   UINT32                      Custom1PowerLimit1;
 
 /** Offset 0x0860 - Long term Power Limit value for custom cTDP level 1
   Long term Power Limit value for custom cTDP level 1. Units are based on POWER_MGMT_CONFIG.CustomPowerUnit.Valid
   Range 0 to 4095875 in Step size of 125
-  0x0:0xFFFFFFFF
 **/
   UINT32                      Custom1PowerLimit2;
 
 /** Offset 0x0864 - Short term Power Limit value for custom cTDP level 2
   Short term Power Limit value for custom cTDP level 2. Units are based on POWER_MGMT_CONFIG.CustomPowerUnit.Valid
   Range 0 to 4095875 in Step size of 125
-  0x0:0xFFFFFFFF
 **/
   UINT32                      Custom2PowerLimit1;
 
 /** Offset 0x0868 - Long term Power Limit value for custom cTDP level 2
   Long term Power Limit value for custom cTDP level 2. Units are based on POWER_MGMT_CONFIG.CustomPowerUnit.Valid
   Range 0 to 4095875 in Step size of 125
-  0x0:0xFFFFFFFF
 **/
   UINT32                      Custom2PowerLimit2;
 
 /** Offset 0x086C - Short term Power Limit value for custom cTDP level 3
   Short term Power Limit value for custom cTDP level 3. Units are based on POWER_MGMT_CONFIG.CustomPowerUnit.Valid
   Range 0 to 4095875 in Step size of 125
-  0x0:0xFFFFFFFF
 **/
   UINT32                      Custom3PowerLimit1;
 
 /** Offset 0x0870 - Long term Power Limit value for custom cTDP level 3
   Long term Power Limit value for custom cTDP level 3. Units are based on POWER_MGMT_CONFIG.CustomPowerUnit.Valid
   Range 0 to 4095875 in Step size of 125
-  0x0:0xFFFFFFFF
 **/
   UINT32                      Custom3PowerLimit2;
 
 /** Offset 0x0874 - Platform PL1 power
   Platform PL1 power. Units are based on POWER_MGMT_CONFIG.CustomPowerUnit.Valid Range
   0 to 4095875 in Step size of 125
-  0x0:0xFFFFFFFF
 **/
   UINT32                      PsysPowerLimit1Power;
 
 /** Offset 0x0878 - Platform PL2 power
   Platform PL2 power. Units are based on POWER_MGMT_CONFIG.CustomPowerUnit.Valid Range
   0 to 4095875 in Step size of 125
-  0x0:0xFFFFFFFF
 **/
   UINT32                      PsysPowerLimit2Power;
 
 /** Offset 0x087C - Platform Power Pmax
   PCODE MMIO Mailbox: Platform Power Pmax. <b>0 - Auto</b> Specified in 1/8 Watt increments.
   Range 0-1024 Watts. Value of 800 = 100W
-  0x0:0xFFFF
 **/
   UINT16                      PsysPmax;
 
@@ -2810,7 +2753,7 @@ typedef struct {
 
 /** Offset 0x088B - End of Post message
   Test, Send End of Post message. Disable(0x0): Disable EOP message, Send in PEI(0x1):
-  EOP send in PEI, Send in DXE(0x2)(Default): EOP send in DXE
+  EOP send in PEI, Send in DXE(0x2)(Default): EOP send in PEI
   0:Disable, 1:Send in PEI, 2:Send in DXE, 3:Reserved
 **/
   UINT8                       EndOfPostMessage;

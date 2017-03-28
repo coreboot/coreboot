@@ -34,10 +34,11 @@ are permitted provided that the following conditions are met:
 #define __FSPMUPD_H__
 
 #include <FspUpd.h>
-#include "MemInfoHob.h"
 
 #pragma pack(1)
 
+
+#include <MemInfoHob.h>
 
 ///
 /// The ChipsetInit Info structure provides the information of ME ChipsetInit CRC and BIOS ChipsetInit CRC.
@@ -56,7 +57,6 @@ typedef struct {
 
 /** Offset 0x0040 - Platform Reserved Memory Size
   The minimum platform memory size required to pass control into DXE
-  0x400000 : 0x400000
 **/
   UINT64                      PlatformMemorySize;
 
@@ -722,9 +722,7 @@ typedef struct {
   UINT8                       SkipStopPbet;
 
 /** Offset 0x02CC - C6DRAM power gating feature
-  This policy indicates whether or not BIOS should allocate PRMRR memory for C6DRAM
-  power gating feature.- <b>0: Don't allocate any PRMRR memory for C6DRAM power gating
-  feature</b>.- 1: Allocate PRMRR memory for C6DRAM power gating feature.
+  This feature is not supported. BIOS is required to disable. <b>0: Disable</b>
   $EN_DIS
 **/
   UINT8                       EnableC6Dram;
@@ -744,7 +742,6 @@ typedef struct {
 /** Offset 0x02CF - Maximum Core Turbo Ratio Override
   Maximum core turbo ratio override allows to increase CPU core frequency beyond the
   fused max turbo ratio limit. <b>0: Hardware defaults.</b> Range: 0-83
-  0 : 83
 **/
   UINT8                       CoreMaxOcRatio;
 
@@ -756,14 +753,12 @@ typedef struct {
 
 /** Offset 0x02D1 - Minimum clr turbo ratio override
   Minimum clr turbo ratio override. <b>0: Hardware defaults.</b> Range: 0-83
-  0x0:0xFF
 **/
   UINT8                       RingMinOcRatio;
 
 /** Offset 0x02D2 - Maximum clr turbo ratio override
   Maximum clr turbo ratio override allows to increase CPU clr frequency beyond the
   fused max turbo ratio limit. <b>0: Hardware defaults.</b>  Range: 0-83
-  0x0:0xFF
 **/
   UINT8                       RingMaxOcRatio;
 
@@ -782,7 +777,6 @@ typedef struct {
 
 /** Offset 0x02D5 - CPU ratio value
   CPU ratio value. Valid Range 0 to 63
-  0x0:0xFF
 **/
   UINT8                       CpuRatio;
 
@@ -790,21 +784,21 @@ typedef struct {
   Sets the boot frequency starting from reset vector.- 0: Maximum battery performance.-
   <b>1: Maximum non-turbo performance</b>.- 2: Turbo performance. @note If Turbo
   is selected BIOS will start in max non-turbo mode and switch to Turbo mode.
-  0x0:0xFF
+  0:0, 1:1, 2:2
 **/
   UINT8                       BootFrequency;
 
 /** Offset 0x02D7 - Number of active cores
   Number of active cores(Depends on Number of cores). <b>0: All</b>;<b>1: 1 </b>;<b>2:
   2 </b>;<b>3: 3 </b>
-  0x0:0xFF
+  0:All, 1:1, 2:2, 3:3
 **/
   UINT8                       ActiveCoreCount;
 
 /** Offset 0x02D8 - Processor Early Power On Configuration FCLK setting
   <b>0: 800 MHz (ULT/ULX)</b>. <b>1: 1 GHz (DT/Halo)</b>. Not supported on ULT/ULX.-
   2: 400 MHz. - 3: Reserved
-  0x0:0xFF
+  0:800 MHz, 1: 1 GHz, 2: 400 MHz, 3: Reserved 
 **/
   UINT8                       FClkFrequency;
 
@@ -829,26 +823,22 @@ typedef struct {
 /** Offset 0x02DC - core voltage override
   The core voltage override which is applied to the entire range of cpu core frequencies.
   Valid Range 0 to 2000
-  0x0:0xFFFF
 **/
   UINT16                      CoreVoltageOverride;
 
 /** Offset 0x02DE - Core Turbo voltage Adaptive
   Extra Turbo voltage applied to the cpu core when the cpu is operating in turbo mode.
   Valid Range 0 to 2000
-  0x0:0xFFFF
 **/
   UINT16                      CoreVoltageAdaptive;
 
 /** Offset 0x02E0 - Core Turbo voltage Offset
   The voltage offset applied to the core while operating in turbo mode.Valid Range 0 to 1000
-  0x0:0xFFFF
 **/
   UINT16                      CoreVoltageOffset;
 
 /** Offset 0x02E2 - Core PLL voltage offset
   Core PLL voltage offset. <b>0: No offset</b>. Range 0-63
-  0x0:0xFFFF
 **/
   UINT16                      CorePllVoltageOffset;
 
@@ -1177,8 +1167,8 @@ typedef struct {
   UINT8                       PcdSerialIoUartNumber;
 
 /** Offset 0x050E - ISA Serial Base selection
-  Select ISA Serial Base address.
-  0(Default):0x3F8, 1:0x2F8
+  Select ISA Serial Base address. Default is 0x3F8.
+  0:0x3F8, 1:0x2F8
 **/
   UINT8                       PcdIsaSerialUartBase;
 
@@ -1188,9 +1178,21 @@ typedef struct {
 **/
   UINT8                       PchPmPciePllSsc;
 
-/** Offset 0x0510
+/** Offset 0x0510 - Enable or Disable Peci C10 Reset command
+  Enable or Disable Peci C10 Reset command; <b>0: Disable;</b> 1: Enable.
+  $EN_DIS
 **/
-  UINT8                       ReservedFspmUpd[16];
+  UINT8                       PeciC10Reset;
+
+/** Offset 0x0511 - Enable or Disable Peci Sx Reset command
+  Enable or Disable Peci Sx Reset command; <b>0: Disable;</b> 1: Enable.
+  $EN_DIS
+**/
+  UINT8                       PeciSxReset;
+
+/** Offset 0x0512
+**/
+  UINT8                       ReservedFspmUpd[14];
 } FSP_M_CONFIG;
 
 /** Fsp M Test Configuration
@@ -1487,7 +1489,7 @@ typedef struct {
   UINT8                       PchDciEn;
 
 /** Offset 0x05A5 - PCH Dci Auto Detect
-  Enable/disable PCH Dci AUTO mode.
+  Deprecated
   $EN_DIS
 **/
   UINT8                       PchDciAutoDetect;

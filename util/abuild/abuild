@@ -17,7 +17,7 @@
 #set -x # Turn echo on....
 
 ABUILD_DATE="Mar 28, 2017"
-ABUILD_VERSION="0.10.02"
+ABUILD_VERSION="0.10.03"
 
 TOP=$PWD
 
@@ -58,6 +58,9 @@ cpus=1
 
 # change with -d <directory>
 configdir="$TOP/configs"
+
+# Timeless builds
+TIMELESS=0
 
 # One might want to adjust these in case of cross compiling
 for i in make gmake gnumake nonexistant_make; do
@@ -342,7 +345,7 @@ function compile_target
 	CURR=$( pwd )
 	#stime=`perl -e 'print time();' 2>/dev/null || date +%s`
 	# shellcheck disable=SC2086
-	eval $BUILDPREFIX $MAKE $silent DOTCONFIG="${build_dir}/config.build" obj="${build_dir}" objutil="$TARGET/sharedutils" \
+	eval $BUILDPREFIX $MAKE $silent DOTCONFIG="${build_dir}/config.build" obj="${build_dir}" objutil="$TARGET/sharedutils" BUILD_TIMELESS=$TIMELESS \
 		&> "${build_dir}/make.log" ; \
 		MAKE_FAILED=$?
 	cp .xcompile "${build_dir}/xcompile.build"
@@ -544,6 +547,7 @@ Options:\n"
                                   (defaults to $ROOT)
     [--scan-build]                Use clang's static analyzer
     [-s|--silent]                 Omit compiler calls in logs
+    [--timeless]                  Generate timeless builds
     [-t|--target <vendor/board>]  Attempt to build target vendor/board only
     [-T|--test]                   Submit image(s) to automated test system
     [-u|--update]                 Update existing image
@@ -599,7 +603,7 @@ getoptbrand="$(getopt -V)"
 # shellcheck disable=SC2086
 if [ "${getoptbrand:0:6}" == "getopt" ]; then
 	# Detected GNU getopt that supports long options.
-	args=$(getopt -l version,verbose,quiet,help,all,target:,payloads:,cpus:,silent,junit,config,loglevel:,remove,prefix:,update,scan-build,ccache,blobs,clang,clean,outdir:,chromeos,xmlfile:,kconfig:,dir:,root:,recursive,checksum: -o Vvqhat:p:c:sJCl:rP:uyBLzo:xX:K:d:R:I -- "$@") || exit 1
+	args=$(getopt -l version,verbose,quiet,help,all,target:,payloads:,cpus:,silent,junit,config,loglevel:,remove,prefix:,update,scan-build,ccache,blobs,clang,clean,outdir:,chromeos,xmlfile:,kconfig:,dir:,root:,recursive,checksum:,timeless -o Vvqhat:p:c:sJCl:rP:uyBLzo:xX:K:d:R:I -- "$@") || exit 1
 	eval set -- $args
 	retval=$?
 else
@@ -692,6 +696,7 @@ while true ; do
 			configoptions="$(cat "$1")${configoptions}\n"
 			shift;;
 		--checksum)	shift; checksum_file="$1"; shift;;
+		--timeless)	shift; TIMELESS=1;;
 		--)		shift; break;;
 		-*)		printf "Invalid option '%s'\n\n" "$1"; myhelp; exit 1;;
 		*)		break;;

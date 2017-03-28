@@ -13,7 +13,13 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/io.h>
+#include <console/console.h>
+#include <cpu/x86/lapic.h>
+#include <delay.h>
+#include <cpu/amd/mtrr.h>
 #include "raminit.h"
+#include "f.h"
 
 void exit_from_self(int controllers, const struct mem_controller *ctrl,
 		    struct sys_info *sysinfo)

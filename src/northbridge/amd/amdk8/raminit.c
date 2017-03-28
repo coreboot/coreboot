@@ -2266,7 +2266,7 @@ static uint32_t hoist_memory(int controllers, const struct mem_controller *ctrl,
 	return carry_over;
 }
 
-static void set_hw_mem_hole(int controllers, const struct mem_controller *ctrl)
+void set_hw_mem_hole(int controllers, const struct mem_controller *ctrl)
 {
 
 	uint32_t hole_startk;
@@ -2325,7 +2325,6 @@ static void set_hw_mem_hole(int controllers, const struct mem_controller *ctrl)
 
 #endif
 
-#define TIMEOUT_LOOPS 300000
 #if CONFIG_RAMINIT_SYSINFO
 static void sdram_enable(int controllers, const struct mem_controller *ctrl, struct sys_info *sysinfo)
 #else

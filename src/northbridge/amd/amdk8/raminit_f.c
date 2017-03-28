@@ -2860,8 +2860,6 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl,
 	return;
 }
 
-#define TIMEOUT_LOOPS 300000
-
 #include "raminit_f_dqs.c"
 
 #if CONFIG_HW_MEM_HOLE_SIZEK != 0
@@ -2919,7 +2917,7 @@ static uint32_t hoist_memory(int controllers, const struct mem_controller *ctrl,
 	return carry_over;
 }
 
-static void set_hw_mem_hole(int controllers, const struct mem_controller *ctrl)
+void set_hw_mem_hole(int controllers, const struct mem_controller *ctrl)
 {
 
 	uint32_t hole_startk;
@@ -2971,9 +2969,6 @@ static void set_hw_mem_hole(int controllers, const struct mem_controller *ctrl)
 	}
 
 }
-#endif
-#if CONFIG_HAVE_ACPI_RESUME
-#include "exit_from_self.c"
 #endif
 
 static void sdram_enable(int controllers, const struct mem_controller *ctrl,

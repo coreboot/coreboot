@@ -13,7 +13,7 @@
 #include <delay.h>
 #include <cpu/x86/lapic.h>
 #include "northbridge/amd/amdk8/reset_test.c"
-#include "northbridge/amd/amdk8/debug.c"
+
 #include <superio/nsc/pc87417/pc87417.h>
 #include <cpu/x86/bist.h>
 #include "northbridge/amd/amdk8/setup_resource_map.c"
@@ -24,16 +24,16 @@
 
 unsigned get_sbdn(unsigned bus);
 static void memreset_setup(void) { }
-static void memreset(int controllers, const struct mem_controller *ctrl) { }
+void memreset(int controllers, const struct mem_controller *ctrl) { }
 
-static inline void activate_spd_rom(const struct mem_controller *ctrl)
+void activate_spd_rom(const struct mem_controller *ctrl)
 {
 #define SMBUS_HUB 0x71
 	unsigned device=(ctrl->channel0[0])>>8;
 	smbus_send_byte(SMBUS_HUB, device);
 }
 
-static inline int spd_read_byte(unsigned device, unsigned address)
+int spd_read_byte(unsigned device, unsigned address)
 {
 	return smbus_read_byte(device, address);
 }

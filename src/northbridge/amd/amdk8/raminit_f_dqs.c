@@ -17,6 +17,12 @@
 #include <arch/stages.h>
 #include <cpu/x86/cr.h>
 #include <cpu/x86/mtrr.h>
+#include <arch/early_variables.h>
+#if IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_SB700)
+#include <southbridge/amd/sb700/sb700.h>
+#else /* IS_ENABLED(CONFIG_SOUTHBRIDGE_VIA_K8T890) */
+#include <southbridge/via/k8t890/k8t890.h>
+#endif
 
 //0: mean no debug info
 #define DQS_TRAIN_DEBUG 0
@@ -1769,7 +1775,7 @@ static void wait_till_sysinfo_in_ram(void)
 }
 #endif
 
-static void set_sysinfo_in_ram(unsigned val)
+void set_sysinfo_in_ram(unsigned val)
 {
 #if CONFIG_MEM_TRAIN_SEQ == 1
 	set_htic_bit(0, val, 9);
@@ -2034,7 +2040,7 @@ static void train_ram(unsigned nodeid, struct sys_info *sysinfo, struct sys_info
 
 }
 
-static inline void train_ram_on_node(unsigned nodeid, unsigned coreid, struct sys_info *sysinfo, unsigned retcall)
+void train_ram_on_node(unsigned nodeid, unsigned coreid, struct sys_info *sysinfo, unsigned retcall)
 {
 	if (coreid) return; // only do it on core0
 	struct sys_info *sysinfox;

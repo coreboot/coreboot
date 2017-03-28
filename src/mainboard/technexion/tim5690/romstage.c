@@ -27,7 +27,7 @@
 #include <spd.h>
 #include <cpu/x86/lapic.h>
 #include "northbridge/amd/amdk8/reset_test.c"
-#include "northbridge/amd/amdk8/debug.c"
+
 #include <superio/ite/common/ite.h>
 #include <superio/ite/it8712f/it8712f.h>
 #include <cpu/x86/bist.h>
@@ -38,17 +38,16 @@
 #define SERIAL_DEV PNP_DEV(0x2e, IT8712F_SP1)
 #define GPIO_DEV PNP_DEV(0x2e, IT8712F_GPIO)
 
-static void memreset(int controllers, const struct mem_controller *ctrl) { }
-static void activate_spd_rom(const struct mem_controller *ctrl) { }
+void memreset(int controllers, const struct mem_controller *ctrl) { }
+void activate_spd_rom(const struct mem_controller *ctrl) { }
 
-static inline int spd_read_byte(u32 device, u32 address)
+int spd_read_byte(u32 device, u32 address)
 {
 	return smbus_read_byte(device, address);
 }
 
 #include <northbridge/amd/amdk8/amdk8.h>
 #include "northbridge/amd/amdk8/incoherent_ht.c"
-#include "northbridge/amd/amdk8/raminit_f.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "lib/generic_sdram.c"
 #include "resourcemap.c"

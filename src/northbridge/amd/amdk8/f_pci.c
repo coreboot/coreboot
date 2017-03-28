@@ -1,6 +1,8 @@
 #ifndef AMDK8_F_PCI_C
 #define AMDK8_F_PCI_C
 
+#include "debug.h"
+
 #ifdef UNUSED_CODE
 /* bit [10,8] are dev func, bit[1,0] are dev index */
 static uint32_t pci_read_config32_index(pci_devfn_t dev, uint32_t index_reg,
@@ -24,7 +26,7 @@ static void pci_write_config32_index(pci_devfn_t dev, uint32_t index_reg,
 }
 #endif
 
-static uint32_t pci_read_config32_index_wait(pci_devfn_t dev,
+uint32_t pci_read_config32_index_wait(pci_devfn_t dev,
 		uint32_t index_reg, uint32_t index)
 {
 	uint32_t dword;

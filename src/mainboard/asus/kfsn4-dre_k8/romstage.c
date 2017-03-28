@@ -35,7 +35,7 @@ unsigned int get_sbdn(unsigned bus);
 #include "northbridge/amd/amdk8/reset_test.c"
 #include <cpu/x86/bist.h>
 #include <delay.h>
-#include "northbridge/amd/amdk8/debug.c"
+
 #include <cpu/amd/mtrr.h>
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627thg/w83627thg.h>
@@ -44,11 +44,9 @@ unsigned int get_sbdn(unsigned bus);
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627THG_SP1)
 
-static void memreset(int controllers, const struct mem_controller *ctrl) { }
+void memreset(int controllers, const struct mem_controller *ctrl) { }
 
-static void activate_spd_rom(const struct mem_controller *ctrl);
-
-static inline int spd_read_byte(unsigned device, unsigned address)
+int spd_read_byte(unsigned device, unsigned address)
 {
 	return smbus_read_byte(device, address);
 }
@@ -56,7 +54,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include <northbridge/amd/amdk8/amdk8.h>
 #include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
-#include "northbridge/amd/amdk8/raminit_f.c"
 #include "lib/generic_sdram.c"
 #include "resourcemap.c"
 #include "cpu/amd/dualcore/dualcore.c"
@@ -181,7 +178,8 @@ static const uint16_t spd_addr[] = {
 	RC01 | DIMM0, RC01 | DIMM2, RC01 | DIMM4, RC01 | DIMM6, RC01 | DIMM1, RC01 | DIMM3, RC01 | DIMM5, RC01 | DIMM7,
 };
 
-static void activate_spd_rom(const struct mem_controller *ctrl) {
+void activate_spd_rom(const struct mem_controller *ctrl)
+{
 	printk(BIOS_DEBUG, "activate_spd_rom() for node %02x\n", ctrl->node_id);
 	if (ctrl->node_id == 0) {
 		printk(BIOS_DEBUG, "enable_spd_node0()\n");

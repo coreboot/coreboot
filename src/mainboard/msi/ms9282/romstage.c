@@ -32,7 +32,7 @@
 #include <delay.h>
 #include <cpu/x86/lapic.h>
 #include "northbridge/amd/amdk8/reset_test.c"
-#include "northbridge/amd/amdk8/debug.c"
+
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627ehg/w83627ehg.h>
 #include <cpu/x86/bist.h>
@@ -55,9 +55,9 @@ unsigned get_sbdn(unsigned bus)
 	return (dev >> 15) & 0x1f;
 }
 
-static void memreset(int controllers, const struct mem_controller *ctrl) { }
+void memreset(int controllers, const struct mem_controller *ctrl) { }
 
-static inline void activate_spd_rom(const struct mem_controller *ctrl)
+void activate_spd_rom(const struct mem_controller *ctrl)
 {
 #define SMBUS_SWITCH1 0x70
 #define SMBUS_SWITCH2 0x72
@@ -66,7 +66,7 @@ static inline void activate_spd_rom(const struct mem_controller *ctrl)
 	smbus_send_byte(SMBUS_SWITCH2, (device >> 4) & 0x0f);
 }
 
-static inline int spd_read_byte(unsigned device, unsigned address)
+int spd_read_byte(unsigned device, unsigned address)
 {
 	return smbus_read_byte(device, address);
 }
@@ -75,7 +75,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include <northbridge/amd/amdk8/f.h>
 #include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
-#include "northbridge/amd/amdk8/raminit_f.c"
 #include "lib/generic_sdram.c"
 #include "resourcemap.c"
 #include "cpu/amd/dualcore/dualcore.c"

@@ -34,7 +34,7 @@ unsigned int get_sbdn(unsigned bus);
 #include <northbridge/amd/amdk8/raminit.h>
 #include <delay.h>
 #include "northbridge/amd/amdk8/reset_test.c"
-#include "northbridge/amd/amdk8/debug.c"
+
 #include <superio/ite/common/ite.h>
 #include <superio/ite/it8712f/it8712f.h>
 #include <southbridge/via/vt8237r/vt8237r.h>
@@ -48,10 +48,10 @@ unsigned int get_sbdn(unsigned bus);
 
 #define IT8712F_GPIO_BASE		0x0a20
 
-static void memreset(int controllers, const struct mem_controller *ctrl) { }
-static void activate_spd_rom(const struct mem_controller *ctrl) { }
+void memreset(int controllers, const struct mem_controller *ctrl) { }
+void activate_spd_rom(const struct mem_controller *ctrl) { }
 
-static inline int spd_read_byte(unsigned device, unsigned address)
+int spd_read_byte(unsigned device, unsigned address)
 {
 	return smbus_read_byte(device, address);
 }
@@ -60,7 +60,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include <northbridge/amd/amdk8/amdk8.h>
 #include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
-#include "northbridge/amd/amdk8/raminit_f.c"
 #include "lib/generic_sdram.c"
 #include "cpu/amd/dualcore/dualcore.c"
 #include "cpu/amd/model_fxx/init_cpus.c"

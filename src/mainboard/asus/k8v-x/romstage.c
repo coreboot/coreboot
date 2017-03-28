@@ -38,7 +38,6 @@ unsigned int get_sbdn(unsigned bus);
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83697hf/w83697hf.h>
 #include <southbridge/via/vt8237r/vt8237r.h>
-#include "northbridge/amd/amdk8/debug.c" /* After vt8237r/early_smbus.c! */
 #include <cpu/x86/bist.h>
 #include "northbridge/amd/amdk8/setup_resource_map.c"
 #include <spd.h>
@@ -46,10 +45,10 @@ unsigned int get_sbdn(unsigned bus);
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83697HF_SP1)
 
-static void memreset(int controllers, const struct mem_controller *ctrl) { }
-static void activate_spd_rom(const struct mem_controller *ctrl) { }
+void memreset(int controllers, const struct mem_controller *ctrl) { }
+void activate_spd_rom(const struct mem_controller *ctrl) { }
 
-static inline int spd_read_byte(unsigned device, unsigned address)
+int spd_read_byte(unsigned device, unsigned address)
 {
 	return smbus_read_byte(device, address);
 }

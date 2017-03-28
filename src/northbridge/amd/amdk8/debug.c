@@ -3,7 +3,13 @@
  *
  */
 
-static inline void print_debug_addr(const char *str, void *val)
+#include "debug.h"
+#include <console/console.h>
+#include <arch/io.h>
+#include <device/pci_def.h>
+#include <delay.h>
+
+void print_debug_addr(const char *str, void *val)
 {
 #if CONFIG_DEBUG_CAR
 	printk(BIOS_DEBUG, "------Address debug: %s%p------\n", str, val);
@@ -11,12 +17,12 @@ static inline void print_debug_addr(const char *str, void *val)
 }
 
 #if 1
-static void print_debug_pci_dev(unsigned dev)
+void print_debug_pci_dev(unsigned dev)
 {
 	printk(BIOS_DEBUG, "PCI: %02x:%02x.%02x", (dev>>20) & 0xff, (dev>>15) & 0x1f, (dev>>12) & 0x7);
 }
 
-static inline void print_pci_devices(void)
+void print_pci_devices(void)
 {
 	pci_devfn_t dev;
 	for (dev = PCI_DEV(0, 0, 0);
@@ -41,7 +47,7 @@ static inline void print_pci_devices(void)
 	}
 }
 
-static void dump_pci_device(unsigned dev)
+void dump_pci_device(unsigned dev)
 {
 	int i;
 	print_debug_pci_dev(dev);
@@ -58,9 +64,7 @@ static void dump_pci_device(unsigned dev)
 }
 
 #if CONFIG_K8_REV_F_SUPPORT
-static uint32_t pci_read_config32_index_wait(pci_devfn_t dev,
-		uint32_t index_reg, uint32_t index);
-static inline void dump_pci_device_index_wait(unsigned dev, uint32_t index_reg)
+void dump_pci_device_index_wait(unsigned dev, uint32_t index_reg)
 {
 	int i;
 	print_debug_pci_dev(dev);
@@ -81,7 +85,7 @@ static inline void dump_pci_device_index_wait(unsigned dev, uint32_t index_reg)
 }
 #endif
 
-static inline void dump_pci_devices(void)
+void dump_pci_devices(void)
 {
 	pci_devfn_t dev;
 	for (dev = PCI_DEV(0, 0, 0);
@@ -106,7 +110,7 @@ static inline void dump_pci_devices(void)
 	}
 }
 
-static inline void dump_pci_devices_on_bus(unsigned busn)
+void dump_pci_devices_on_bus(unsigned busn)
 {
 	pci_devfn_t dev;
 	for (dev = PCI_DEV(busn, 0, 0);
@@ -133,7 +137,7 @@ static inline void dump_pci_devices_on_bus(unsigned busn)
 
 #if CONFIG_DEBUG_SMBUS
 
-static void dump_spd_registers(const struct mem_controller *ctrl)
+void dump_spd_registers(const struct mem_controller *ctrl)
 {
 	int i;
 	printk(BIOS_DEBUG, "\n");
@@ -179,7 +183,7 @@ static void dump_spd_registers(const struct mem_controller *ctrl)
 		}
 	}
 }
-static void dump_smbus_registers(void)
+void dump_smbus_registers(void)
 {
 	unsigned device;
 	printk(BIOS_DEBUG, "\n");
@@ -205,7 +209,7 @@ static void dump_smbus_registers(void)
 }
 #endif
 
-static inline void dump_io_resources(unsigned port)
+void dump_io_resources(unsigned port)
 {
 
 	int i;
@@ -225,7 +229,7 @@ static inline void dump_io_resources(unsigned port)
 	}
 }
 
-static inline void dump_mem(unsigned start, unsigned end)
+void dump_mem(unsigned start, unsigned end)
 {
 	unsigned i;
 	printk(BIOS_DEBUG, "dump_mem:");

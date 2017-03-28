@@ -10,3 +10,10 @@ config CPU_SAMSUNG_EXYNOS5250
 	select HAVE_HARD_RESET
 	bool
 	default n
+
+if CPU_SAMSUNG_EXYNOS5250
+
+config VBOOT
+	select VBOOT_STARTS_IN_ROMSTAGE
+
+endif

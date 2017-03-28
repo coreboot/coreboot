@@ -11,7 +11,6 @@ subdirs-y += ../../../cpu/x86/cache
 bootblock-y += bootblock/bootblock.c
 bootblock-y += bootblock/bootblock.c
 bootblock-y += car.c
-bootblock-y += flash_ctrlr.c
 bootblock-y += gpio.c
 bootblock-y += heci.c
 bootblock-y += lpc_lib.c
@@ -24,7 +23,6 @@ bootblock-$(CONFIG_FSP_CAR) += bootblock/cache_as_ram_fsp.S
 
 romstage-y += car.c
 romstage-$(CONFIG_PLATFORM_USES_FSP2_0) += romstage.c
-romstage-y += flash_ctrlr.c
 romstage-y += gpio.c
 romstage-y += heci.c
 romstage-y += i2c_early.c
@@ -38,7 +36,6 @@ romstage-y += pmutil.c
 romstage-y += reset.c
 romstage-y += spi.c
 
-smm-y += flash_ctrlr.c
 smm-y += mmap_boot.c
 smm-y += pmutil.c
 smm-y += gpio.c
@@ -52,7 +49,6 @@ ramstage-y += cpu.c
 ramstage-y += chip.c
 ramstage-y += cse.c
 ramstage-y += elog.c
-ramstage-y += flash_ctrlr.c
 ramstage-y += dsp.c
 ramstage-y += gpio.c
 ramstage-y += graphics.c
@@ -79,7 +75,6 @@ ramstage-y += xdci.c
 ramstage-y += xhci.c
 ramstage-y += sd.c
 
-postcar-y += flash_ctrlr.c
 postcar-y += memmap.c
 postcar-y += mmap_boot.c
 postcar-y += spi.c
@@ -89,7 +84,6 @@ postcar-y += tsc_freq.c
 postcar-$(CONFIG_FSP_CAR) += exit_car_fsp.S
 
 verstage-y += car.c
-verstage-y += flash_ctrlr.c
 verstage-y += i2c_early.c
 verstage-y += heci.c
 verstage-y += memmap.c

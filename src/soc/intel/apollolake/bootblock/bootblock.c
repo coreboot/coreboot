@@ -18,13 +18,13 @@
 #include <bootblock_common.h>
 #include <cpu/x86/mtrr.h>
 #include <device/pci.h>
+#include <intelblocks/fast_spi.h>
 #include <intelblocks/pcr.h>
-#include <intelblocks/systemagent.h>
 #include <intelblocks/rtc.h>
+#include <intelblocks/systemagent.h>
 #include <lib.h>
 #include <soc/iomap.h>
 #include <soc/cpu.h>
-#include <soc/flash_ctrlr.h>
 #include <soc/gpio.h>
 #include <soc/mmap_boot.h>
 #include <soc/systemagent.h>
@@ -92,35 +92,6 @@ static void cache_bios_region(void)
 	set_var_mtrr(mtrr, 4ULL*GiB - rom_size, rom_size, MTRR_TYPE_WRPROT);
 }
 
-/*
- * Program temporary BAR for SPI in case any of the stages before ramstage need
- * to access SPI MMIO regs. Ramstage will assign a new BAR during PCI
- * enumeration.
- */
-static void enable_spibar(void)
-{
-	device_t dev = PCH_DEV_SPI;
-	uint8_t val;
-
-	/* Disable Bus Master and MMIO space. */
-	val = pci_read_config8(dev, PCI_COMMAND);
-	val &= ~(PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
-	pci_write_config8(dev, PCI_COMMAND, val);
-
-	/* Program Temporary BAR for SPI */
-	pci_write_config32(dev, PCI_BASE_ADDRESS_0,
-			   PRERAM_SPI_BASE_ADDRESS |
-			   PCI_BASE_ADDRESS_SPACE_MEMORY);
-
-	/* Enable Bus Master and MMIO Space */
-	val = pci_read_config8(dev, PCI_COMMAND);
-	val |= PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY;
-	pci_write_config8(dev, PCI_COMMAND, val);
-
-	/* Initialize SPI to allow BIOS to write/erase on flash. */
-	spi_flash_init();
-}
-
 static void enable_pmcbar(void)
 {
 	device_t pmc = PCH_DEV_PMC;
@@ -152,7 +123,7 @@ void bootblock_soc_early_init(void)
 
 	enable_pm_timer_emulation();
 
-	enable_spibar();
+	fast_spi_early_init(PRERAM_SPI_BASE_ADDRESS);
 
 	cache_bios_region();
 

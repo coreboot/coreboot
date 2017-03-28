@@ -24,6 +24,7 @@
 #include <cpu/x86/mp.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <intelblocks/fast_spi.h>
 #include <fsp/api.h>
 #include <fsp/util.h>
 #include <intelblocks/itss.h>
@@ -31,7 +32,6 @@
 #include <soc/iomap.h>
 #include <soc/itss.h>
 #include <soc/cpu.h>
-#include <soc/flash_ctrlr.h>
 #include <soc/intel/common/vbt.h>
 #include <soc/nvs.h>
 #include <soc/pci_devs.h>
@@ -578,7 +578,7 @@ void platform_fsp_notify_status(enum fsp_notify_phase phase)
  */
 static void spi_flash_init_cb(void *unused)
 {
-	spi_flash_init();
+	fast_spi_init();
 }
 
 BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_ENTRY, spi_flash_init_cb, NULL);

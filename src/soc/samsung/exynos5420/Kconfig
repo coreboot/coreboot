@@ -9,3 +9,10 @@ config CPU_SAMSUNG_EXYNOS5420
 	select RELOCATABLE_MODULES
 	bool
 	default n
+
+if CPU_SAMSUNG_EXYNOS5420
+
+config VBOOT
+	select VBOOT_STARTS_IN_ROMSTAGE
+
+endif

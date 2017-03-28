@@ -25,6 +25,9 @@ config NORTHBRIDGE_INTEL_HASWELL
 
 if NORTHBRIDGE_INTEL_HASWELL
 
+config VBOOT
+	select VBOOT_STARTS_IN_ROMSTAGE
+
 config BOOTBLOCK_NORTHBRIDGE_INIT
 	string
 	default "northbridge/intel/haswell/bootblock.c"

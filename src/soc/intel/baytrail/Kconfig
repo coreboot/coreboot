@@ -39,6 +39,9 @@ config CPU_SPECIFIC_OPTIONS
 	select HAVE_INTEL_FIRMWARE
 	select HAVE_SPI_CONSOLE_SUPPORT
 
+config VBOOT
+	select VBOOT_STARTS_IN_ROMSTAGE
+
 config BOOTBLOCK_CPU_INIT
 	string
 	default "soc/intel/baytrail/bootblock/bootblock.c"

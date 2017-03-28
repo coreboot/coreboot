@@ -585,5 +585,7 @@ static inline void wait_all_core0_mem_trained(struct sys_info *sysinfo)
 #endif
 
 void dqs_restore_MC_NVRAM(unsigned int dev);
+void train_ram_on_node(unsigned nodeid, unsigned coreid,
+			       struct sys_info *sysinfo, unsigned retcall);
 
 #endif /* AMDK8_F_H */

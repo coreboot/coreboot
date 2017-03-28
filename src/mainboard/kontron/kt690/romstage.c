@@ -28,7 +28,7 @@
 #include <spd.h>
 #include <cpu/x86/lapic.h>
 #include "northbridge/amd/amdk8/reset_test.c"
-#include "northbridge/amd/amdk8/debug.c"
+
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627dhg/w83627dhg.h>
 #include <cpu/amd/mtrr.h>
@@ -38,17 +38,16 @@
 #include "southbridge/amd/sb600/early_setup.c"
 #include <northbridge/amd/amdk8/f.h>
 
-static void memreset(int controllers, const struct mem_controller *ctrl) { }
-static void activate_spd_rom(const struct mem_controller *ctrl) { }
+void memreset(int controllers, const struct mem_controller *ctrl) { }
+void activate_spd_rom(const struct mem_controller *ctrl) { }
 
-static inline int spd_read_byte(u32 device, u32 address)
+int spd_read_byte(u32 device, u32 address)
 {
 	return smbus_read_byte(device, address);
 }
 
 #include <northbridge/amd/amdk8/amdk8.h>
 #include "northbridge/amd/amdk8/incoherent_ht.c"
-#include "northbridge/amd/amdk8/raminit_f.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "lib/generic_sdram.c"
 #include "resourcemap.c"

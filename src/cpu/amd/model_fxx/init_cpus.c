@@ -17,6 +17,10 @@
 #include "option_table.h"
 #endif
 
+#if IS_ENABLED(CONFIG_K8_REV_F_SUPPORT)
+#include <northbridge/amd/amdk8/f.h>
+#endif
+
 typedef void (*process_ap_t) (u32 apicid, void *gp);
 
 //core_range = 0 : all cores

@@ -37,6 +37,8 @@
 
 #ifdef __PRE_RAM__
 u8 k8t890_early_setup_ht(void);
+int s3_save_nvram_early(u32 dword, int size, int  nvram_pos);
+int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos);
 #define k8x8xx_early_setup_ht() k8t890_early_setup_ht()
 #else
 #include <device/device.h>

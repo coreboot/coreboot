@@ -35,7 +35,7 @@
 #include <southbridge/nvidia/ck804/early_smbus.h>
 #include <northbridge/amd/amdk8/raminit.h>
 #include <delay.h>
-#include "northbridge/amd/amdk8/debug.c"
+
 #include <cpu/x86/bist.h>
 #include "northbridge/amd/amdk8/setup_resource_map.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
@@ -49,10 +49,10 @@
 
 #define SERIAL_DEV PNP_DEV(0x4e, W83627THG_SP1)
 
-static void memreset(int controllers, const struct mem_controller *ctrl) { }
-static void activate_spd_rom(const struct mem_controller *ctrl) { }
+void memreset(int controllers, const struct mem_controller *ctrl) { }
+void activate_spd_rom(const struct mem_controller *ctrl) { }
 
-static inline int spd_read_byte(unsigned device, unsigned address)
+int spd_read_byte(unsigned device, unsigned address)
 {
 	return smbus_read_byte(device, address);
 }

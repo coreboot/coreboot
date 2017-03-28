@@ -4,8 +4,11 @@ ramstage-y += northbridge.c
 ramstage-y += misc_control.c
 ramstage-y += get_sblk_pci1234.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
+
+romstage-y += debug.c
 ifeq ($(CONFIG_K8_REV_F_SUPPORT),y)
 romstage-$(CONFIG_HAVE_ACPI_RESUME) += exit_from_self.c
+romstage-y += raminit_f.c
 endif
 
 # Enable this if you want to check the values of the PCI routing registers.

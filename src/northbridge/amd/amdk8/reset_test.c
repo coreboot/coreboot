@@ -1,7 +1,6 @@
 #include <stdint.h>
 #include <cpu/x86/lapic.h>
-#define NODE_ID		0x60
-#define	HT_INIT_CONTROL 0x6c
+#include "raminit.h"
 
 #define HTIC_ColdR_Detect  (1<<4)
 #define HTIC_BIOSR_Detect  (1<<5)

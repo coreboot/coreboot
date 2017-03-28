@@ -167,7 +167,7 @@ static void memreset(int controllers, const struct mem_controller *ctrl)
 	/* Nothing to do */
 }
 
-static inline void activate_spd_rom(const struct mem_controller *ctrl)
+void activate_spd_rom(const struct mem_controller *ctrl)
 {
 	/* nothing to do */
 }

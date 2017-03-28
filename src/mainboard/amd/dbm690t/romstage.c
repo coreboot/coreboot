@@ -33,22 +33,20 @@
 #include "northbridge/amd/amdk8/setup_resource_map.c"
 #include "southbridge/amd/rs690/early_setup.c"
 #include "southbridge/amd/sb600/early_setup.c"
-#include "northbridge/amd/amdk8/debug.c" /* After sb600_early_setup.c! */
 #include <northbridge/amd/amdk8/f.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, IT8712F_SP1)
 
-static void memreset(int controllers, const struct mem_controller *ctrl) { }
-static void activate_spd_rom(const struct mem_controller *ctrl) { }
+void memreset(int controllers, const struct mem_controller *ctrl) { }
+void activate_spd_rom(const struct mem_controller *ctrl) { }
 
-static inline int spd_read_byte(u32 device, u32 address)
+int spd_read_byte(u32 device, u32 address)
 {
 	return smbus_read_byte(device, address);
 }
 
 #include <northbridge/amd/amdk8/amdk8.h>
 #include "northbridge/amd/amdk8/incoherent_ht.c"
-#include "northbridge/amd/amdk8/raminit_f.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "lib/generic_sdram.c"
 #include "resourcemap.c"

@@ -34,7 +34,6 @@
 #include <superio/ite/common/ite.h>
 #include <superio/ite/it8716f/it8716f.h>
 #include <cpu/x86/bist.h>
-#include "northbridge/amd/amdk8/debug.c"
 #include "northbridge/amd/amdk8/setup_resource_map.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, IT8716F_SP1)
@@ -53,10 +52,10 @@ unsigned get_sbdn(unsigned bus)
 	return (dev >> 15) & 0x1f;
 }
 
-static void memreset(int controllers, const struct mem_controller *ctrl) { }
-static void activate_spd_rom(const struct mem_controller *ctrl) { }
+void memreset(int controllers, const struct mem_controller *ctrl) { }
+void activate_spd_rom(const struct mem_controller *ctrl) { }
 
-static inline int spd_read_byte(unsigned device, unsigned address)
+int spd_read_byte(unsigned device, unsigned address)
 {
 	return smbus_read_byte(device, address);
 }
@@ -75,7 +74,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include <northbridge/amd/amdk8/f.h>
 #include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
-#include "northbridge/amd/amdk8/raminit_f.c"
 #include "lib/generic_sdram.c"
 #include "resourcemap.c"
 #include "cpu/amd/dualcore/dualcore.c"

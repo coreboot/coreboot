@@ -22,7 +22,7 @@
 #include <commonlib/region.h>
 #include <console/console.h>
 #include <fmap.h>
-#include <soc/flash_ctrlr.h>
+#include <intelblocks/fast_spi.h>
 #include <soc/mmap_boot.h>
 
 /*
@@ -65,7 +65,7 @@ static struct xlate_region_device real_dev CAR_GLOBAL;
 
 static void bios_mmap_init(void)
 {
-	size_t size, start, bios_end, bios_mapped_size;
+	size_t size, start, bios_mapped_size;
 	uintptr_t base;
 
 	size = car_get_var(bios_size);
@@ -73,18 +73,7 @@ static void bios_mmap_init(void)
 	/* If bios_size is initialized, then bail out. */
 	if (size != 0)
 		return;
-
-	/*
-	 * BIOS_BFPREG provides info about BIOS Flash Primary Region
-	 * Base and Limit.
-	 * Base and Limit fields are in units of 4KiB.
-	 */
-	uint32_t val = spi_flash_ctrlr_reg_read(SPIBAR_BIOS_BFPREG);
-
-	start = (val & SPIBAR_BFPREG_PRB_MASK) * 4 * KiB;
-	bios_end = (((val & SPIBAR_BFPREG_PRL_MASK) >>
-		     SPIBAR_BFPREG_PRL_SHIFT) + 1) * 4 * KiB;
-	size = bios_end - start;
+	start = fast_spi_get_bios_region(&size);
 
 	/* BIOS region is mapped right below 4G. */
 	base = 4ULL * GiB - size;

@@ -33,7 +33,6 @@
 #include <fsp/util.h>
 #include <reset.h>
 #include <soc/cpu.h>
-#include <soc/flash_ctrlr.h>
 #include <soc/intel/common/mrc_cache.h>
 #include <soc/iomap.h>
 #include <soc/systemagent.h>

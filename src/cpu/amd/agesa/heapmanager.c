@@ -66,12 +66,11 @@ void EmptyHeap(void)
 		(unsigned int)(uintptr_t) base, (unsigned int)(uintptr_t) base + BIOS_HEAP_SIZE - 1);
 }
 
-#if (IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY15_TN) || \
-		IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY15_RL)) && !defined(__PRE_RAM__)
+#if defined(HEAP_CALLOUT_RUNTIME) && ENV_RAMSTAGE
 
 #define AGESA_RUNTIME_SIZE 4096
-
-static AGESA_STATUS alloc_cbmem(AGESA_BUFFER_PARAMS *AllocParams) {
+static AGESA_STATUS alloc_cbmem(AGESA_BUFFER_PARAMS *AllocParams)
+{
 	static unsigned int used = 0;
 	void *p = cbmem_find(CBMEM_ID_AGESA_RUNTIME);
 
@@ -123,14 +122,6 @@ static AGESA_STATUS agesa_AllocateBuffer(UINT32 Func, UINT32 Data, VOID *ConfigP
 
 	AllocParams = ((AGESA_BUFFER_PARAMS *) ConfigPtr);
 	AllocParams->BufferPointer = NULL;
-
-#if (IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY15_TN) || \
-		IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY15_RL)) && !defined(__PRE_RAM__)
-	/* if the allocation is for runtime use simple CBMEM data */
-	if (Data == HEAP_CALLOUT_RUNTIME)
-		return alloc_cbmem(AllocParams);
-#endif
-
 	AvailableHeapSize = BIOS_HEAP_SIZE - sizeof(BIOS_HEAP_MANAGER);
 	BiosHeapBaseAddr = GetHeapBase();
 	BiosHeapBasePtr = (BIOS_HEAP_MANAGER *) BiosHeapBaseAddr;
@@ -394,6 +385,13 @@ static AGESA_STATUS agesa_LocateBuffer(UINT32 Func, UINT32 Data, VOID *ConfigPtr
 
 AGESA_STATUS HeapManagerCallout(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {
+#if defined(HEAP_CALLOUT_RUNTIME) && ENV_RAMSTAGE
+	AGESA_BUFFER_PARAMS *AllocParams = ConfigPtr;
+
+	if (Func == AGESA_ALLOCATE_BUFFER && Data == HEAP_CALLOUT_RUNTIME)
+		return alloc_cbmem(AllocParams);
+#endif
+
 	if (Func == AGESA_LOCATE_BUFFER)
 		return agesa_LocateBuffer(Func, Data, ConfigPtr);
 	else if (Func == AGESA_ALLOCATE_BUFFER)

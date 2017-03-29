@@ -61,24 +61,33 @@ static void get_s3nv_data(S3_DATA_TYPE S3DataType, uintptr_t *pos, uintptr_t *le
 AGESA_STATUS OemInitResume(AMD_S3_PARAMS *dataBlock)
 {
 	uintptr_t pos, size;
-
 	get_s3nv_data(S3DataTypeNonVolatile, &pos, &size);
 
-	/* TODO: Our NvStorage is really const. */
-	dataBlock->NvStorageSize = *(UINT32 *) pos;
-	dataBlock->NvStorage = (void *) (pos + sizeof(UINT32));
+	u32 len = *(u32*)pos;
+
+	/* Test for uninitialized s3nv data in SPI. */
+	if (len == 0 || len == (u32)-1ULL)
+		return AGESA_FATAL;
+
+	dataBlock->NvStorageSize = len;
+	dataBlock->NvStorage = (void *) (pos + sizeof(u32));
 	return AGESA_SUCCESS;
 }
 
 AGESA_STATUS OemS3LateRestore(AMD_S3_PARAMS *dataBlock)
 {
-	void *dst;
-	size_t len;
+	char *heap = cbmem_find(CBMEM_ID_RESUME_SCRATCH);
+	if (heap == NULL)
+		return AGESA_FATAL;
 
-	ResumeHeap(&dst, &len);
-	dataBlock->VolatileStorageSize = len;
-	dataBlock->VolatileStorage = dst;
+	printk(BIOS_DEBUG, "Using resume HEAP at %08x\n",
+		(unsigned int)(uintptr_t) heap);
 
+	/* Return allocated CBMEM size, we do not keep track of
+	 * how much was actually used.
+	 */
+	dataBlock->VolatileStorageSize = HIGH_MEMORY_SCRATCH;
+	dataBlock->VolatileStorage = heap;
 	return AGESA_SUCCESS;
 }
 

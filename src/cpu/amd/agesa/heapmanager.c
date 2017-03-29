@@ -62,16 +62,6 @@ void EmptyHeap(void)
 		(unsigned int)(uintptr_t) base, (unsigned int)(uintptr_t) base + BIOS_HEAP_SIZE - 1);
 }
 
-void ResumeHeap(void **heap, size_t *len)
-{
-	void *base = GetHeapBase();
-	*heap = base;
-	*len = BIOS_HEAP_SIZE;
-
-	printk(BIOS_DEBUG, "Using resume HEAP at [%08x - %08x]\n",
-		(unsigned int)(uintptr_t) base, (unsigned int)(uintptr_t) base + BIOS_HEAP_SIZE - 1);
-}
-
 #if (IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY15_TN) || \
 		IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY15_RL)) && !defined(__PRE_RAM__)
 

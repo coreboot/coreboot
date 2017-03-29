@@ -1,0 +1,14 @@
+config SOC_INTEL_COMMON_BLOCK_PCR
+	bool
+	help
+	  Intel Processor common Private configuration registers (PCR)
+
+config PCR_COMMON_IOSF_1_0
+	bool
+	depends on SOC_INTEL_COMMON_BLOCK_PCR
+	help
+	  The mapping of addresses via the SBREG_BAR assumes the IOSF-SB
+	  agents are using 32-bit aligned accesses for their configuration
+	  registers. For IOSF versions greater than 1_0, IOSF-SB
+	  agents can use any access (8/16/32 bit aligned) for their
+	  configuration registers

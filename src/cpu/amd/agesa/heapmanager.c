@@ -102,10 +102,11 @@ typedef struct _BIOS_BUFFER_NODE {
 	UINT32 NextNodeOffset;
 } BIOS_BUFFER_NODE;
 
-static AGESA_STATUS agesa_AllocateBuffer(UINT32 Func, UINT32 Data, VOID *ConfigPtr)
+static AGESA_STATUS agesa_AllocateBuffer(BIOS_HEAP_MANAGER *BiosHeapBasePtr,
+	AGESA_BUFFER_PARAMS *AllocParams)
 {
 	UINT32              AvailableHeapSize;
-	UINT8               *BiosHeapBaseAddr;
+	UINT8               *BiosHeapBaseAddr = (void *)BiosHeapBasePtr;
 	UINT32              CurrNodeOffset;
 	UINT32              PrevNodeOffset;
 	UINT32              FreedNodeOffset;
@@ -117,14 +118,9 @@ static AGESA_STATUS agesa_AllocateBuffer(UINT32 Func, UINT32 Data, VOID *ConfigP
 	BIOS_BUFFER_NODE   *BestFitNodePtr;
 	BIOS_BUFFER_NODE   *BestFitPrevNodePtr;
 	BIOS_BUFFER_NODE   *NextFreePtr;
-	BIOS_HEAP_MANAGER  *BiosHeapBasePtr;
-	AGESA_BUFFER_PARAMS *AllocParams;
 
-	AllocParams = ((AGESA_BUFFER_PARAMS *) ConfigPtr);
 	AllocParams->BufferPointer = NULL;
 	AvailableHeapSize = BIOS_HEAP_SIZE - sizeof(BIOS_HEAP_MANAGER);
-	BiosHeapBaseAddr = GetHeapBase();
-	BiosHeapBasePtr = (BIOS_HEAP_MANAGER *) BiosHeapBaseAddr;
 
 	if (BiosHeapBasePtr->StartOfAllocatedNodes == 0) {
 		/* First allocation */
@@ -230,10 +226,10 @@ static AGESA_STATUS agesa_AllocateBuffer(UINT32 Func, UINT32 Data, VOID *ConfigP
 	return AGESA_SUCCESS;
 }
 
-static AGESA_STATUS agesa_DeallocateBuffer(UINT32 Func, UINT32 Data, VOID *ConfigPtr)
+static AGESA_STATUS agesa_DeallocateBuffer(BIOS_HEAP_MANAGER *BiosHeapBasePtr,
+	AGESA_BUFFER_PARAMS *AllocParams)
 {
-
-	UINT8               *BiosHeapBaseAddr;
+	UINT8               *BiosHeapBaseAddr = (void *)BiosHeapBasePtr;
 	UINT32              AllocNodeOffset;
 	UINT32              PrevNodeOffset;
 	UINT32              NextNodeOffset;
@@ -243,13 +239,6 @@ static AGESA_STATUS agesa_DeallocateBuffer(UINT32 Func, UINT32 Data, VOID *Confi
 	BIOS_BUFFER_NODE   *PrevNodePtr;
 	BIOS_BUFFER_NODE   *FreedNodePtr;
 	BIOS_BUFFER_NODE   *NextNodePtr;
-	BIOS_HEAP_MANAGER  *BiosHeapBasePtr;
-	AGESA_BUFFER_PARAMS *AllocParams;
-
-	AllocParams = (AGESA_BUFFER_PARAMS *) ConfigPtr;
-
-	BiosHeapBaseAddr = GetHeapBase();
-	BiosHeapBasePtr = (BIOS_HEAP_MANAGER *) BiosHeapBaseAddr;
 
 	/* Find target node to deallocate in list of allocated nodes.
 	 * Return AGESA_BOUNDS_CHK if the BufferHandle is not found.
@@ -349,18 +338,12 @@ static AGESA_STATUS agesa_DeallocateBuffer(UINT32 Func, UINT32 Data, VOID *Confi
 	return AGESA_SUCCESS;
 }
 
-static AGESA_STATUS agesa_LocateBuffer(UINT32 Func, UINT32 Data, VOID *ConfigPtr)
+static AGESA_STATUS agesa_LocateBuffer(BIOS_HEAP_MANAGER *BiosHeapBasePtr,
+	AGESA_BUFFER_PARAMS *AllocParams)
 {
 	UINT32              AllocNodeOffset;
-	UINT8               *BiosHeapBaseAddr;
+	UINT8               *BiosHeapBaseAddr = (void *)BiosHeapBasePtr;
 	BIOS_BUFFER_NODE   *AllocNodePtr;
-	BIOS_HEAP_MANAGER  *BiosHeapBasePtr;
-	AGESA_BUFFER_PARAMS *AllocParams;
-
-	AllocParams = (AGESA_BUFFER_PARAMS *) ConfigPtr;
-
-	BiosHeapBaseAddr = GetHeapBase();
-	BiosHeapBasePtr = (BIOS_HEAP_MANAGER *) BiosHeapBaseAddr;
 
 	AllocNodeOffset = BiosHeapBasePtr->StartOfAllocatedNodes;
 	AllocNodePtr = (BIOS_BUFFER_NODE *) (BiosHeapBaseAddr + AllocNodeOffset);
@@ -385,19 +368,20 @@ static AGESA_STATUS agesa_LocateBuffer(UINT32 Func, UINT32 Data, VOID *ConfigPtr
 
 AGESA_STATUS HeapManagerCallout(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {
-#if defined(HEAP_CALLOUT_RUNTIME) && ENV_RAMSTAGE
 	AGESA_BUFFER_PARAMS *AllocParams = ConfigPtr;
 
+#if defined(HEAP_CALLOUT_RUNTIME) && ENV_RAMSTAGE
 	if (Func == AGESA_ALLOCATE_BUFFER && Data == HEAP_CALLOUT_RUNTIME)
 		return alloc_cbmem(AllocParams);
 #endif
 
+	/* Must not call GetHeapBase() in AGESA_UNSUPPORTED path. */
 	if (Func == AGESA_LOCATE_BUFFER)
-		return agesa_LocateBuffer(Func, Data, ConfigPtr);
+		return agesa_LocateBuffer(GetHeapBase(), AllocParams);
 	else if (Func == AGESA_ALLOCATE_BUFFER)
-		return agesa_AllocateBuffer(Func, Data, ConfigPtr);
+		return agesa_AllocateBuffer(GetHeapBase(), AllocParams);
 	else if (Func == AGESA_DEALLOCATE_BUFFER)
-		return agesa_DeallocateBuffer(Func, Data, ConfigPtr);
-	else
-		return AGESA_UNSUPPORTED;
+		return agesa_DeallocateBuffer(GetHeapBase(), AllocParams);
+
+	return AGESA_UNSUPPORTED;
 }

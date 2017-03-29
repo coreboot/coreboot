@@ -14,12 +14,15 @@
  * GNU General Public License for more details.
  */
 
+#include <device/pci.h>
 #include <device/device.h>
 #include <console/console.h>
+#include <soc/pci_devs.h>
 #include <string.h>
 #include <hwilib.h>
 #include <i210.h>
 #include "brd_gpio.h"
+#include "ptn3460.h"
 
 #define MAX_PATH_DEPTH		12
 #define MAX_NUM_MAPPINGS	10
@@ -108,6 +111,22 @@ static void mainboard_init(void *chip_info)
 	gpio_configure_pads(pads, num);
 }
 
+static void mainboard_final(void *chip_info)
+{
+	int status;
+
+	/**
+	 * Set up the DP2LVDS converter.
+	 * ptn3460_init() may only be executed after i2c bus init.
+	 */
+	status = ptn3460_init("hwinfo.hex");
+	if (status)
+		printk(BIOS_ERR, "LCD: Set up PTN with status 0x%x\n", status);
+	else
+		printk(BIOS_INFO, "LCD: Set up PTN was successful.\n");
+}
+
 struct chip_operations mainboard_ops = {
 	.init = mainboard_init,
+	.final = mainboard_final,
 };

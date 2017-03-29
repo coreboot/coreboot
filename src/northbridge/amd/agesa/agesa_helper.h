@@ -37,7 +37,6 @@ void amd_initenv(void);
 
 void *GetHeapBase(void);
 void EmptyHeap(void);
-void ResumeHeap(void **heap, size_t *len);
 
 #define BSP_STACK_BASE_ADDR		0x30000
 

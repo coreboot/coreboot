@@ -47,8 +47,12 @@ void *GetHeapBase(void)
 {
 	void *heap = (void *)BIOS_HEAP_START_ADDRESS;
 
-	if (acpi_is_wakeup_s3())
+	if (acpi_is_wakeup_s3()) {
+		/* FIXME: For S3 resume path, buffer is in CBMEM
+		 * with some arbitrary header. */
 		heap = cbmem_find(CBMEM_ID_RESUME_SCRATCH);
+		heap += 0x10;
+	}
 
 	return heap;
 }

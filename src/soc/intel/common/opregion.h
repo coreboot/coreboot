@@ -16,7 +16,7 @@
 #ifndef _COMMON_OPREGION_H_
 #define _COMMON_OPREGION_H_
 
-#include "gma.h"
+#include <drivers/intel/gma/opregion.h>
 
 /* Loads vbt and initializes opregion. Returns non-zero on success */
 int init_igd_opregion(igd_opregion_t *opregion);

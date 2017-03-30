@@ -27,6 +27,7 @@
 #include <arch/acpigen.h>
 #include "northbridge.h"
 #include <cbmem.h>
+#include <drivers/intel/gma/intel_bios.h>
 
 unsigned long acpi_fill_mcfg(unsigned long current)
 {

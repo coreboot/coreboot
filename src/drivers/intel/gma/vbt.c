@@ -21,6 +21,7 @@
 #include <device/device.h>
 #include <string.h>
 #include <device/pci.h>
+#include <drivers/intel/gma/opregion.h>
 
 #include "i915.h"
 #include "intel_bios.h"

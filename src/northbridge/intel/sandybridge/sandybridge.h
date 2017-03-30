@@ -236,7 +236,7 @@ unsigned long northbridge_write_acpi_tables(device_t device, unsigned long start
 #endif
 
 #if !defined(__PRE_RAM__)
-#include "gma.h"
+#include <drivers/intel/gma/opregion.h>
 int init_igd_opregion(igd_opregion_t *igd_opregion);
 #endif
 

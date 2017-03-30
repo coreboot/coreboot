@@ -301,7 +301,7 @@ void report_platform_info(void);
 #endif /* !__SMM__ */
 
 #if !defined(__PRE_RAM__)
-#include "gma.h"
+#include <drivers/intel/gma/opregion.h>
 int init_igd_opregion(igd_opregion_t *igd_opregion);
 #endif
 

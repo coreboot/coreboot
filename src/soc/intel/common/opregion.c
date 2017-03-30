@@ -17,7 +17,7 @@
 #include <string.h>
 #include <cbmem.h>
 
-#include "gma.h"
+#include <drivers/intel/gma/opregion.h>
 #include "opregion.h"
 #include "vbt.h"
 

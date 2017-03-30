@@ -27,6 +27,7 @@
 #include <cbmem.h>
 #include <arch/acpigen.h>
 #include <cpu/cpu.h>
+#include <drivers/intel/gma/intel_bios.h>
 
 unsigned long acpi_fill_mcfg(unsigned long current)
 {

@@ -1,0 +1,5 @@
+config SOC_INTEL_COMMON_BLOCK_UART
+	bool
+	select SOC_INTEL_COMMON_BLOCK_LPSS
+	help
+	  Intel Processor common UART support

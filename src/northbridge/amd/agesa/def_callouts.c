@@ -42,6 +42,13 @@ AGESA_STATUS GetBiosCallout (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 	if (status != AGESA_UNSUPPORTED)
 		return status;
 
+#if HAS_AGESA_FCH_OEM_CALLOUT
+	if (!HAS_LEGACY_WRAPPER && Func == AGESA_FCH_OEM_CALLOUT) {
+		agesa_fch_oem_config(Data, ConfigPtr);
+		return AGESA_SUCCESS;
+	}
+#endif
+
 	for (i = 0; i < BiosCalloutsLen; i++) {
 		if (BiosCallouts[i].CalloutName == Func)
 			break;
@@ -177,3 +184,19 @@ AGESA_STATUS agesa_ReadSpd_from_cbfs(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 #endif
 	return Status;
 }
+
+#if HAS_AGESA_FCH_OEM_CALLOUT
+void agesa_fch_oem_config(uintptr_t Data, AMD_CONFIG_PARAMS *StdHeader)
+{
+	/* FIXME: CAR_GLOBAL needed here to pass sysinfo. */
+	struct sysinfo *cb_NA = NULL;
+
+	if (StdHeader->Func == AMD_INIT_RESET) {
+		printk(BIOS_DEBUG, "Fch OEM config in INIT RESET\n");
+		board_FCH_InitReset(cb_NA, (FCH_RESET_DATA_BLOCK *)Data);
+	} else if (StdHeader->Func == AMD_INIT_ENV) {
+		printk(BIOS_DEBUG, "Fch OEM config in INIT ENV\n");
+		board_FCH_InitEnv(cb_NA, (FCH_DATA_BLOCK *)Data);
+	}
+}
+#endif

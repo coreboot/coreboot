@@ -95,4 +95,18 @@ typedef void AMD_S3SAVE_PARAMS;
 #endif
 void platform_AfterS3Save(struct sysinfo *cb, AMD_S3SAVE_PARAMS *S3Save);
 
+/* FCH callouts, not used with CIMx. */
+#define HAS_AGESA_FCH_OEM_CALLOUT \
+	IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_AGESA_HUDSON) || \
+	IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_AGESA_YANGTZE) || \
+	IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_AGESA_BOLTON)
+
+#if HAS_AGESA_FCH_OEM_CALLOUT
+/* FIXME:  Structures included here were supposed to be private to AGESA. */
+#include <FchCommonCfg.h>
+void agesa_fch_oem_config(uintptr_t Data, AMD_CONFIG_PARAMS *StdHeader);
+void board_FCH_InitReset(struct sysinfo *cb, FCH_RESET_DATA_BLOCK *FchReset);
+void board_FCH_InitEnv(struct sysinfo *cb, FCH_DATA_BLOCK *FchEnv);
+#endif
+
 #endif /* _STATE_MACHINE_H_ */

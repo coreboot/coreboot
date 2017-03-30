@@ -7,6 +7,7 @@ extern const char mainboard_part_number[];
 
 /* coreboot Version */
 extern const char coreboot_version[];
+extern const char coreboot_tag[];
 extern const char coreboot_extra_version[];
 extern const char coreboot_build[];
 extern const unsigned int coreboot_version_timestamp;

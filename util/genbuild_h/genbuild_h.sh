@@ -16,6 +16,7 @@
 
 DATE=""
 GITREV=""
+GITTAG=""
 TIMESOURCE=""
 
 export LANG=C
@@ -26,14 +27,17 @@ top=`dirname $0`/../..
 
 if [ "${BUILD_TIMELESS}" = "1" ]; then
 	GITREV=Timeless
+	GITTAG=Timeless
 	TIMESOURCE="fixed"
 	DATE=0
 elif [ -e "${top}/.git" -a -x "$(command -v git)" ]; then
 	GITREV=$(LANG= git log -1 --format=format:%h)
+	GITTAG=$(LANG= git describe --tags --exact-match $GITREV)
 	TIMESOURCE=git
 	DATE=$(git log --pretty=format:%ct -1)
 else
 	GITREV=Unknown
+	GITTAG=Unknown
 	TIMESOURCE="date"
 	DATE=$(LANG= LC_ALL=C TZ=UTC date +%s)
 fi
@@ -58,6 +62,7 @@ printf "#define COREBOOT_VERSION %s\n" "\"$KERNELVERSION\""
 printf "/* timesource: $TIMESOURCE */\n"
 printf "#define COREBOOT_VERSION_TIMESTAMP $DATE\n"
 printf "#define COREBOOT_ORIGIN_GIT_REVISION \"$GITREV\"\n"
+printf "#define COREBOOT_ORIGIN_GIT_TAG \"$GITTAG\"\n"
 
 printf "#define COREBOOT_EXTRA_VERSION \"%s\"\n" "$COREBOOT_EXTRA_VERSION"
 printf "#define COREBOOT_BUILD \"$(our_date "$DATE")\"\n"

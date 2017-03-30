@@ -4,6 +4,7 @@
  * Copyright (C) 2008-2010 by coresystems GmbH
  *  written by Stefan Reinauer <stepan@coresystems.de>
  * Copyright (C) 2009 Carl-Daniel Hailfinger
+ * Copyright (C) 2017 secunet Security Networks AG
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -457,17 +458,24 @@ int main(int argc, char *argv[])
 			gfx = 0;
 	}
 
-	if (sb->device_id == PCI_DEVICE_ID_INTEL_BAYTRAIL_LPC)
+	if (sb->device_id == PCI_DEVICE_ID_INTEL_BAYTRAIL_LPC) {
 		ahci = pci_get_dev(pacc, 0, 0, 0x13, 0);
-	else
+	} else {
 		ahci = pci_get_dev(pacc, 0, 0, 0x1f, 2);
+		if (ahci) {
+			pci_fill_info(ahci, PCI_FILL_CLASS);
+			if (ahci->device_class != PCI_CLASS_STORAGE_SATA)
+				ahci = pci_get_dev(pacc, 0, 0, 0x17, 0);
+		}
+	}
 
 	if (ahci) {
 		pci_fill_info(ahci, PCI_FILL_IDENT | PCI_FILL_BASES |
 				    PCI_FILL_CLASS);
 
-		if (ahci->vendor_id != PCI_VENDOR_ID_INTEL)
-			ahci = 0;
+		if (ahci->vendor_id != PCI_VENDOR_ID_INTEL ||
+		    ahci->device_class != PCI_CLASS_STORAGE_SATA)
+			ahci = NULL;
 	}
 
 	id = cpuid(1);

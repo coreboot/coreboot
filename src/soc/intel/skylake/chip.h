@@ -21,6 +21,7 @@
 
 #include <arch/acpi_device.h>
 #include <device/i2c.h>
+#include <intelblocks/gspi.h>
 #include <stdint.h>
 #include <soc/gpio_defs.h>
 #include <soc/gpe.h>
@@ -207,6 +208,9 @@ struct soc_intel_skylake_config {
 	/* Bus voltage level, default is 3.3V */
 	enum skylake_i2c_voltage i2c_voltage[SKYLAKE_I2C_DEV_MAX];
 	struct lpss_i2c_bus_config i2c[SKYLAKE_I2C_DEV_MAX];
+
+	/* GSPI */
+	struct gspi_cfg gspi[CONFIG_SOC_INTEL_COMMON_BLOCK_GSPI_MAX];
 
 	/* Camera */
 	u8 Cio2Enable;

@@ -186,4 +186,14 @@ static inline int spi_devfn_to_bus(unsigned int devfn)
 	return -1;
 }
 
+static inline int spi_bus_to_devfn(unsigned int bus)
+{
+	switch (bus) {
+	case 0: return PCH_DEVFN_SPI;
+	case 1: return PCH_DEVFN_GSPI0;
+	case 2: return PCH_DEVFN_GSPI1;
+	}
+	return -1;
+}
+
 #endif

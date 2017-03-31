@@ -15,8 +15,6 @@
  * GNU General Public License for more details.
  */
 
-#include <delay.h>
-#include <types.h>
 #include <arch/hlt.h>
 #include <arch/io.h>
 #include <console/console.h>
@@ -24,10 +22,13 @@
 #include <cpu/x86/smm.h>
 #include <device/pci_def.h>
 #include <elog.h>
+#include <intelblocks/fast_spi.h>
 #include <intelblocks/pcr.h>
+#include <delay.h>
+#include <device/pci_def.h>
+#include <elog.h>
 #include <pc80/mc146818rtc.h>
 #include <spi-generic.h>
-#include <soc/flash_controller.h>
 #include <soc/iomap.h>
 #include <soc/lpc.h>
 #include <soc/nvs.h>
@@ -37,6 +38,7 @@
 #include <soc/pm.h>
 #include <soc/pmc.h>
 #include <soc/smm.h>
+#include <types.h>
 
 /* IO Trap PCRs */
 /* Trap status Register */
@@ -286,7 +288,7 @@ static void finalize(void)
 
 	if (IS_ENABLED(CONFIG_SPI_FLASH_SMM))
 		/* Re-init SPI driver to handle locked BAR */
-		spi_flash_init();
+		fast_spi_init();
 }
 
 static void southbridge_smi_apmc(void)

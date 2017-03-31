@@ -33,6 +33,7 @@ verstage-$(CONFIG_UART_DEBUG) += uart_debug.c
 verstage-y += pmutil.c
 verstage-y += bootblock/i2c.c
 verstage-y += spi.c
+verstage-y += tsc_freq.c
 
 romstage-y += flash_controller.c
 romstage-y += gpio.c

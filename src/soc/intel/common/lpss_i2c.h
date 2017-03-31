@@ -61,6 +61,7 @@ struct lpss_i2c_bus_config {
 	 * precedence. */
 	int rise_time_ns;
 	int fall_time_ns;
+	int data_hold_time_ns;
 	/* Specific bus speed configuration */
 	struct lpss_i2c_speed_config speed_config[LPSS_I2C_SPEED_CONFIG_COUNT];
 };

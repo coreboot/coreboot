@@ -527,6 +527,7 @@ static int lpss_i2c_gen_config_rise_fall_time(struct lpss_i2c_regs *regs,
 	const struct soc_clock *soc;
 	int fall_cnt, rise_cnt, min_tlow_cnt, min_thigh_cnt, spk_cnt;
 	int hcnt, lcnt, period_cnt, diff, tot;
+	int data_hold_time_ns;
 
 	bus = get_bus_descriptor(speed);
 	soc = get_soc_descriptor(ic_clk);
@@ -591,7 +592,13 @@ static int lpss_i2c_gen_config_rise_fall_time(struct lpss_i2c_regs *regs,
 	config->speed = speed;
 	config->scl_lcnt = lcnt;
 	config->scl_hcnt = hcnt;
-	config->sda_hold = counts_from_time(&soc->freq, DEFAULT_SDA_HOLD_TIME);
+
+	/* Use internal default unless other value is specified. */
+	data_hold_time_ns = DEFAULT_SDA_HOLD_TIME;
+	if (bcfg->data_hold_time_ns)
+		data_hold_time_ns = bcfg->data_hold_time_ns;
+
+	config->sda_hold = counts_from_time(&soc->freq, data_hold_time_ns);
 
 	printk(LPSS_DEBUG, "lpss_i2c: hcnt = %d lcnt = %d sda hold = %d\n",
 		hcnt, lcnt, config->sda_hold);

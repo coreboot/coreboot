@@ -106,7 +106,8 @@ static void dump_me_memory() {
 static int pci_platform_scan() {
 	struct pci_access *pacc;
 	struct pci_dev *dev;
-	char namebuf[1024], *name;
+	char namebuf[1024];
+	const char *name;
 
 	pacc = pci_alloc();
 	pacc->method = PCI_ACCESS_I386_TYPE1;
@@ -152,10 +153,9 @@ static int pci_platform_scan() {
 	return 0;
 }
 
-static struct pci_dev *pci_me_interface_scan(char **name) {
+static struct pci_dev *pci_me_interface_scan(const char **name, char *namebuf, int namebuf_size) {
 	struct pci_access *pacc;
 	struct pci_dev *dev;
-	char namebuf[1024];
 	int me = 0;
 
 	pacc = pci_alloc();
@@ -166,7 +166,7 @@ static struct pci_dev *pci_me_interface_scan(char **name) {
 
 	for (dev=pacc->devices; dev; dev=dev->next) {
 		pci_fill_info(dev, PCI_FILL_IDENT | PCI_FILL_BASES | PCI_FILL_SIZES | PCI_FILL_CLASS);
-		*name = pci_lookup_name(pacc, namebuf, sizeof(namebuf),
+		*name = pci_lookup_name(pacc, namebuf, namebuf_size,
 			PCI_LOOKUP_DEVICE, dev->vendor_id, dev->device_id);
 		if (dev->vendor_id == 0x8086) {
 			if (PCI_DEV_HAS_SUPPORTED_ME(dev->device_id)) {
@@ -226,7 +226,8 @@ static int activate_me() {
 static void dump_me_info() {
 	struct pci_dev *dev;
 	uint32_t stat, stat2;
-	char *name;
+	char namebuf[1024];
+	const char *name;
 
 	if (pci_platform_scan()) {
 		exit(1);
@@ -236,7 +237,7 @@ static void dump_me_info() {
 		exit(1);
 	}
 
-	dev = pci_me_interface_scan(&name);
+	dev = pci_me_interface_scan(&name, namebuf, sizeof(namebuf));
 	if (!dev) {
 		exit(1);
 	}

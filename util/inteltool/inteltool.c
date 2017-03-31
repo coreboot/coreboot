@@ -425,7 +425,7 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	pci_fill_info(sb, PCI_FILL_IDENT|PCI_FILL_BASES|PCI_FILL_SIZES|PCI_FILL_CLASS);
+	pci_fill_info(sb, PCI_FILL_IDENT | PCI_FILL_BASES | PCI_FILL_CLASS);
 
 	if (sb->vendor_id != PCI_VENDOR_ID_INTEL) {
 		printf("Not an Intel(R) southbridge.\n");
@@ -438,7 +438,7 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	pci_fill_info(nb, PCI_FILL_IDENT|PCI_FILL_BASES|PCI_FILL_SIZES|PCI_FILL_CLASS);
+	pci_fill_info(nb, PCI_FILL_IDENT | PCI_FILL_BASES | PCI_FILL_CLASS);
 
 	if (nb->vendor_id != PCI_VENDOR_ID_INTEL) {
 		printf("Not an Intel(R) northbridge.\n");
@@ -448,7 +448,8 @@ int main(int argc, char *argv[])
 	gfx = pci_get_dev(pacc, 0, 0, 0x02, 0);
 
 	if (gfx) {
-		pci_fill_info(gfx, PCI_FILL_IDENT|PCI_FILL_BASES|PCI_FILL_SIZES|PCI_FILL_CLASS);
+		pci_fill_info(gfx, PCI_FILL_IDENT | PCI_FILL_BASES |
+				   PCI_FILL_CLASS);
 
 		if (gfx->vendor_id != PCI_VENDOR_ID_INTEL)
 			gfx = 0;
@@ -460,7 +461,8 @@ int main(int argc, char *argv[])
 		ahci = pci_get_dev(pacc, 0, 0, 0x1f, 2);
 
 	if (ahci) {
-		pci_fill_info(ahci, PCI_FILL_IDENT|PCI_FILL_BASES|PCI_FILL_SIZES|PCI_FILL_CLASS);
+		pci_fill_info(ahci, PCI_FILL_IDENT | PCI_FILL_BASES |
+				    PCI_FILL_CLASS);
 
 		if (ahci->vendor_id != PCI_VENDOR_ID_INTEL)
 			ahci = 0;

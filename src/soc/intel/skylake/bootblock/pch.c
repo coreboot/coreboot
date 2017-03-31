@@ -18,6 +18,7 @@
 #include <chip.h>
 #include <device/device.h>
 #include <device/pci_def.h>
+#include <intelblocks/fast_spi.h>
 #include <intelblocks/itss.h>
 #include <intelblocks/pcr.h>
 #include <intelblocks/rtc.h>
@@ -46,38 +47,6 @@
 #define PCR_DMI_LPCIOD		0x2770
 #define PCR_DMI_LPCIOE		0x2774
 
-/*
- * Enable Prefetching and Caching.
- */
-static void enable_spi_prefetch(void)
-{
-	u8 reg8 = pci_read_config8(PCH_DEV_SPI, 0xdc);
-	reg8 &= ~(3 << 2);
-	reg8 |= (2 << 2); /* Prefetching and Caching Enabled */
-	pci_write_config8(PCH_DEV_SPI, 0xdc, reg8);
-}
-
-static void enable_spibar(void)
-{
-	device_t dev = PCH_DEV_SPI;
-	u8 pcireg;
-
-	/* Assign Resources to SPI Controller */
-	/* Clear BIT 1-2 SPI Command Register */
-	pcireg = pci_read_config8(dev, PCI_COMMAND);
-	pcireg &= ~(PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
-	pci_write_config8(dev, PCI_COMMAND, pcireg);
-
-	/* Program Temporary BAR for SPI */
-	pci_write_config32(dev, PCI_BASE_ADDRESS_0,
-		SPI_BASE_ADDRESS | PCI_BASE_ADDRESS_SPACE_MEMORY);
-
-	/* Enable Bus Master and MMIO Space */
-	pcireg = pci_read_config8(dev, PCI_COMMAND);
-	pcireg |= PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY;
-	pci_write_config8(dev, PCI_COMMAND, pcireg);
-}
-
 static void enable_p2sbbar(void)
 {
 	device_t dev = PCH_DEV_P2SB;
@@ -99,8 +68,7 @@ static void enable_p2sbbar(void)
 
 void bootblock_pch_early_init(void)
 {
-	enable_spibar();
-	enable_spi_prefetch();
+	fast_spi_early_init(SPI_BASE_ADDRESS);
 	enable_p2sbbar();
 }
 

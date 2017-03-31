@@ -14,20 +14,20 @@
  * GNU General Public License for more details.
  */
 
-#include <stdint.h>
-#include <delay.h>
 #include <arch/io.h>
 #include <console/console.h>
-#include <cpu/x86/mtrr.h>
 #include <cpu/intel/microcode/microcode.c>
-#include <reset.h>
+#include <cpu/x86/mtrr.h>
+#include <delay.h>
+#include <intelblocks/fast_spi.h>
 #include <lib.h>
+#include <reset.h>
 #include <soc/bootblock.h>
 #include <soc/cpu.h>
 #include <soc/iomap.h>
 #include <soc/msr.h>
 #include <soc/pci_devs.h>
-#include <soc/spi.h>
+#include <stdint.h>
 
 /* Soft Reset Data Register Bit 12 = MAX Boot Frequency */
 #define SPI_STRAP_MAX_FREQ	(1<<12)
@@ -36,14 +36,7 @@
 
 static void set_pch_cpu_strap(u8 flex_ratio)
 {
-	uint8_t *spibar = (void *)SPI_BASE_ADDRESS;
-	u32 ssl, ssms, soft_reset_data;
-
-
-	/* Set Strap Lock Disable */
-	ssl = read32(spibar + SPIBAR_RESET_LOCK);
-	ssl |= SPIBAR_RESET_LOCK_DISABLE;
-	write32(spibar + SPIBAR_RESET_LOCK, ssl);
+	u32 soft_reset_data;
 
 	/* Soft Reset Data Register Bit 12 = MAX Boot Frequency
 	 * Bit 6-11 = Flex Ratio
@@ -51,17 +44,7 @@ static void set_pch_cpu_strap(u8 flex_ratio)
 	 */
 	soft_reset_data = SPI_STRAP_MAX_FREQ;
 	soft_reset_data |= (flex_ratio << FLEX_RATIO_BIT);
-	write32(spibar + SPIBAR_RESET_DATA, soft_reset_data);
-
-	/* Set Strap Mux Select  set to '1' */
-	ssms = read32(spibar + SPIBAR_RESET_CTRL);
-	ssms |= SPIBAR_RESET_CTRL_SSMC;
-	write32(spibar + SPIBAR_RESET_CTRL, ssms);
-
-	/* Set Strap Lock Enable */
-	ssl = read32(spibar + SPIBAR_RESET_LOCK);
-	ssl |= SPIBAR_RESET_LOCK_ENABLE;
-	write32(spibar + SPIBAR_RESET_LOCK, ssl);
+	fast_spi_set_strap_msg_data(soft_reset_data);
 }
 
 static void set_flex_ratio_to_tdp_nominal(void)

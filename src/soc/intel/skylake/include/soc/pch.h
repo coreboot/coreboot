@@ -37,7 +37,6 @@
 
 u8 pch_revision(void);
 u16 pch_type(void);
-u32 pch_read_soft_strap(int id);
 void pch_log_state(void);
 #if ENV_RAMSTAGE
 void pch_disable_devfn(device_t dev);

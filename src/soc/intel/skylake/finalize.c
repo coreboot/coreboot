@@ -21,10 +21,10 @@
 #include <console/post_codes.h>
 #include <cpu/x86/smm.h>
 #include <device/pci.h>
+#include <intelblocks/fast_spi.h>
 #include <intelblocks/pcr.h>
 #include <reg_script.h>
 #include <spi-generic.h>
-#include <stdlib.h>
 #include <soc/lpc.h>
 #include <soc/me.h>
 #include <soc/p2sb.h>
@@ -32,8 +32,8 @@
 #include <soc/pcr_ids.h>
 #include <soc/pm.h>
 #include <soc/smbus.h>
-#include <soc/spi.h>
 #include <soc/systemagent.h>
+#include <stdlib.h>
 
 #define PCR_DMI_GCS		0x274C
 #define PCR_DMI_GCS_BILD  	(1 << 0)
@@ -87,8 +87,7 @@ static void pch_disable_heci(void)
 static void pch_finalize_script(void)
 {
 	device_t dev;
-	uint32_t reg32, hsfs;
-	void *spibar = get_spi_bar();
+	uint32_t reg32;
 	u16 tcobase;
 	u16 tcocnt;
 	uint8_t *pmcbase;
@@ -96,15 +95,11 @@ static void pch_finalize_script(void)
 	u32 pmsyncreg;
 	u8 reg8;
 
-	/* Set SPI opcode menu */
-	write16(spibar + SPIBAR_PREOP, SPI_OPPREFIX);
-	write16(spibar + SPIBAR_OPTYPE, SPI_OPTYPE);
-	write32(spibar + SPIBAR_OPMENU_LOWER, SPI_OPMENU_LOWER);
-	write32(spibar + SPIBAR_OPMENU_UPPER, SPI_OPMENU_UPPER);
-	/* Lock SPIBAR */
-	hsfs = read32(spibar + SPIBAR_HSFS);
-	hsfs |= SPIBAR_HSFS_FLOCKDN;
-	write32(spibar + SPIBAR_HSFS, hsfs);
+	/* Set FAST_SPI opcode menu */
+	fast_spi_set_opcode_menu();
+
+	/* Lock FAST_SPIBAR */
+	fast_spi_lock_bar();
 
 	/*TCO Lock down */
 	tcobase = smbus_tco_regs();
@@ -177,12 +172,9 @@ static void soc_lockdown(void)
 						   BIOS_CNTL) | LPC_BC_BILD);
 		/* Reads back for posted write to take effect */
 		pci_read_config8(PCH_DEV_LPC, BIOS_CNTL);
-		pci_write_config32(PCH_DEV_SPI, SPIBAR_BIOS_CNTL,
-				   pci_read_config32(PCH_DEV_SPI,
-						     SPIBAR_BIOS_CNTL) |
-				   SPIBAR_BC_BILD);
-		/* Reads back for posted write to take effect */
-		pci_read_config32(PCH_DEV_SPI, SPIBAR_BIOS_CNTL);
+
+		fast_spi_set_bios_interface_lock_down();
+
 		/* GCS reg of DMI */
 		pcr_or8(PID_DMI, PCR_DMI_GCS, PCR_DMI_GCS_BILD);
 	}
@@ -192,9 +184,8 @@ static void soc_lockdown(void)
 		pci_write_config8(PCH_DEV_LPC, BIOS_CNTL,
 				  pci_read_config8(PCH_DEV_LPC,
 						   BIOS_CNTL) | LPC_BC_LE);
-		pci_write_config8(PCH_DEV_SPI, BIOS_CNTL,
-				  pci_read_config8(PCH_DEV_SPI,
-						   BIOS_CNTL) | SPIBAR_BC_LE);
+
+		fast_spi_set_lock_enable();
 	}
 
 	/* SPIEiss */
@@ -202,10 +193,8 @@ static void soc_lockdown(void)
 		pci_write_config8(PCH_DEV_LPC, BIOS_CNTL,
 				  pci_read_config8(PCH_DEV_LPC,
 						   BIOS_CNTL) | LPC_BC_EISS);
-		pci_write_config8(PCH_DEV_SPI, BIOS_CNTL,
-				  pci_read_config8(PCH_DEV_SPI,
-						   SPIBAR_BIOS_CNTL) |
-				  SPIBAR_BC_EISS);
+
+		fast_spi_set_eiss();
 	}
 }
 

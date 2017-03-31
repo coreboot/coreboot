@@ -1,6 +1,6 @@
 config SPI_TPM
 	bool "SPI TPM"
-	depends on !PC80_SYSTEM && TPM2
+	depends on TPM2
 
 config DRIVER_TPM_SPI_BUS
 	hex "SPI bus TPM chip is connected to"

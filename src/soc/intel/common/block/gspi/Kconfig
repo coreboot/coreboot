@@ -1,0 +1,12 @@
+config SOC_INTEL_COMMON_BLOCK_GSPI
+	bool
+	help
+	  Intel Processor Common GSPI support
+
+config SOC_INTEL_COMMON_BLOCK_GSPI_MAX
+	int
+	depends on SOC_INTEL_COMMON_BLOCK_GSPI
+	help
+	  Maximum number of GSPI controllers supported by the PCH. SoC
+	  must define this config if SOC_INTEL_COMMON_BLOCK_GSPI is
+	  selected.

@@ -1,11 +1,5 @@
 # Kconfig in coreboot
 
-
-## Document History
-- Initial Version: June 15, 2015
-- First public version: October 8, 2016
-
-
 ## Overview
 Kconfig is a tool used in coreboot, Linux, and many other projects as the main configuration mechanism.  In coreboot, it allows a developer both to select which platform to build and to modify various features within the platform. The Kconfig language was developed as a way to configure the Linux kernel, and is still maintained as a part of the Linux kernel tree. Starting in Linux 2.5.45, the ncurses based menuconfig was added, which is still used as the main configuration front end in coreboot today.
 
@@ -925,9 +919,15 @@ The file kconfig_lint and its associated readme can be found in the coreboot uti
        -e|--errors_off          Don't print warnings or errors
        -w|--warnings_off        Don't print warnings
        -n|--notes               Show minor notes
-          --path=dir            Path to top level kconfig
+       --path=dir               Path to top level kconfig
        -c|--config=file         Filename of config file to load
        -G|--no_git_grep         Use standard grep tools instead of git grep
 
 
 The -p option is very useful for debugging Kconfig issues, because it reads all of the Kconfig files in the order that the Kconfig tools would read them, and prints it out, along with where each line came from and which menu it appears in.
+
+## License:
+This work is licensed under the Creative Commons Attribution 4.0 International License. To view a copy of this license, visit https://creativecommons.org/licenses/by/4.0/ or send a letter to Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
+
+Code examples snippets are licensed under GPLv2, and are used here under fair
+use laws.

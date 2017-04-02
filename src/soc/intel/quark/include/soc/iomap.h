@@ -28,6 +28,9 @@
 #define I2C_BASE_ADDRESS		0xa0020000
 #define GPIO_BASE_ADDRESS		0xa0021000
 
+/* Temporary BAR for SD controller */
+#define SD_BASE_ADDRESS			0xa0022000
+
 /*
  * I/O port address space
  */

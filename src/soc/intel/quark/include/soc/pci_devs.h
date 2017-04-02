@@ -33,8 +33,10 @@
 
 /* IO Fabric 1 */
 #define SIO1_DEV		0x14
+#define SD_MMC_DEV		SIO1_DEV
 #define HSUART0_DEV		SIO1_DEV
 #define HSUART1_DEV		SIO1_DEV
+#define SD_MMC_FUNC		0
 #define HSUART0_FUNC		1
 #define USB_DEV_PORT_FUNC	2
 #define EHCI_FUNC		3

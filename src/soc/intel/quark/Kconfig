@@ -304,4 +304,22 @@ config C_ENV_BOOTBLOCK_SIZE
 	hex
 	default 0x8000
 
+#####
+# Test support
+#####
+
+config STORAGE_TEST
+	bool "Test SD/MMC/eMMC card or device access"
+	default n
+	select DRIVERS_STORAGE
+	select SDHCI_CONTROLLER
+	help
+	  Read block 0 from each parition of the storage device.  User must
+	  also enable one or both of DRIVERS_STORAGE_SD or DRIVERS_STORAGE_MMC.
+
+config STORAGE_LOG
+	bool "Log and display SD/MMC commands"
+	default n
+	depends on STORAGE_TEST
+
 endif # SOC_INTEL_QUARK

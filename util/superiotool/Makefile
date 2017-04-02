@@ -60,7 +60,7 @@ LIBS += -lpciutils
 endif
 endif
 
-all: $(PROGRAM)
+all: pciutils $(PROGRAM)
 
 superiotool.o: *.c superiotool.h
 
@@ -79,3 +79,34 @@ clean:
 distclean: clean
 
 .PHONY: all install clean distclean
+
+ifeq ($(CONFIG_PCI), yes)
+define LIBPCI_TEST
+/* Avoid a failing test due to libpci header symbol shadowing breakage */
+#define index shadow_workaround_index
+#ifdef __NetBSD__
+#include <pciutils/pci.h>
+#else
+#include <pci/pci.h>
+#endif
+struct pci_access *pacc;
+int main(int argc, char **argv)
+{
+	(void) argc;
+	(void) argv;
+	pacc = pci_alloc();
+	return 0;
+}
+endef
+export LIBPCI_TEST
+
+pciutils:
+	@printf "\nChecking for pciutils and zlib... "
+	@echo "$$LIBPCI_TEST" > .test.c
+	@$(CC) $(CFLAGS) .test.c -o .test $(LIBS) >/dev/null 2>&1 &&	  \
+		printf "found.\n" || ( printf "not found.\n\n"; 	  \
+		printf "Please install pciutils-devel and zlib-devel.\n"; \
+		printf "See README for more information.\n\n";		  \
+		rm -f .test.c .test; exit 1)
+	@rm -rf .test.c .test .test.dSYM
+endif

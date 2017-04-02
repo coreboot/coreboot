@@ -135,7 +135,8 @@ chip northbridge/intel/sandybridge
 						io 0x60 = 0xa00
 					end
 					device pnp 4e.8 off end	# CIR
-					device pnp 4e.a off	# PME, ACPI, EUP
+					device pnp 4e.a on	# PME, ACPI, EUP
+						irq 0xe0 = 0x90
 						irq 0xf8 = 0x00
 						irq 0xf9 = 0x09
 						irq 0xfa = 0x00

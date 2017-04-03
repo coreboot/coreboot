@@ -119,6 +119,8 @@ static int pci_platform_scan() {
 		pci_fill_info(dev, PCI_FILL_IDENT | PCI_FILL_BASES | PCI_FILL_SIZES | PCI_FILL_CLASS);
 		name = pci_lookup_name(pacc, namebuf, sizeof(namebuf),
 			PCI_LOOKUP_DEVICE, dev->vendor_id, dev->device_id);
+		if (name == NULL)
+			name = "<unknown>";
 		if (dev->vendor_id == 0x8086) {
 			if (PCI_DEV_HAS_ME_DISABLE(dev->device_id)) {
 				printf(CGRN "Good news, you have a `%s` so ME is present but can be disabled, continuing...\n\n" RESET, name);
@@ -242,6 +244,8 @@ static void dump_me_info() {
 		exit(1);
 	}
 
+	if (name == NULL)
+		name = "<unknown>";
 	printf("MEI found: [%x:%x] %s\n\n", dev->vendor_id, dev->device_id, name);
 	stat = pci_read_long(dev, 0x40);
 	printf("ME Status   : 0x%x\n", stat);

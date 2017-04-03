@@ -31,7 +31,6 @@
 #include "BiosCallOuts.h"
 #include "northbridge/amd/pi/dimmSpd.h"
 #include "northbridge/amd/pi/agesawrapper.h"
-#include <PlatformMemoryConfiguration.h>
 
 static AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr);
 
@@ -129,23 +128,3 @@ AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr)
 
 	return AGESA_SUCCESS;
 }
-
-#ifdef __PRE_RAM__
-
-const PSO_ENTRY DDR4PlatformMemoryConfiguration[] = {
-	DRAM_TECHNOLOGY(ANY_SOCKET, DDR4_TECHNOLOGY),
-	NUMBER_OF_DIMMS_SUPPORTED (ANY_SOCKET, ANY_CHANNEL, 2),
-	NUMBER_OF_CHANNELS_SUPPORTED (ANY_SOCKET, 2),
-	MOTHER_BOARD_LAYERS (LAYERS_6),
-	MEMCLK_DIS_MAP (ANY_SOCKET, ANY_CHANNEL, 0xff, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00),
-	CKE_TRI_MAP (ANY_SOCKET, ANY_CHANNEL, 0xff, 0xff, 0xff, 0xff),
-	ODT_TRI_MAP (ANY_SOCKET, ANY_CHANNEL, 0xff, 0xff, 0xff, 0xff),
-	CS_TRI_MAP (ANY_SOCKET, ANY_CHANNEL, 0xff, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00),
-	PSO_END
-};
-
-void OemPostParams(AMD_POST_PARAMS *PostParams)
-{
-	PostParams->MemConfig.PlatformMemoryConfiguration = (PSO_ENTRY *)DDR4PlatformMemoryConfiguration;
-}
-#endif

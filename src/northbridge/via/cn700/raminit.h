@@ -24,4 +24,9 @@ struct mem_controller {
 	u8 channel0[DIMM_SOCKETS];
 };
 
+void ddr_ram_setup(const struct mem_controller *ctrl);
+
+/* mainboard specific */
+int spd_read_byte(unsigned device, unsigned address);
+
 #endif

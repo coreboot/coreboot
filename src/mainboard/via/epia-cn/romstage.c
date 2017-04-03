@@ -30,12 +30,10 @@
 #include "southbridge/via/vt8237r/early_serial.c"
 #include <spd.h>
 
-static inline int spd_read_byte(unsigned device, unsigned address)
+int spd_read_byte(unsigned device, unsigned address)
 {
 	return smbus_read_byte(device, address);
 }
-
-#include "northbridge/via/cn700/raminit.c"
 
 static void enable_mainboard_devices(void)
 {

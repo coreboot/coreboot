@@ -13,7 +13,7 @@
 ## GNU General Public License for more details.
 ##
 
-if BOARD_INTEL_BAYLEYBAY_FSP
+if BOARD_INTEL_BAYLEYBAY_FSP || BOARD_INTEL_BAKERSPORT_FSP
 
 config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
@@ -31,6 +31,7 @@ config MAINBOARD_DIR
 
 config MAINBOARD_PART_NUMBER
 	string
+	default "Bakersport CRB (FSP)" if BOARD_INTEL_BAKERSPORT_FSP
 	default "Bayley Bay CRB (FSP)"
 
 config MAX_CPUS
@@ -43,6 +44,7 @@ config CACHE_ROM_SIZE_OVERRIDE
 
 config FSP_FILE
 	string
+	default "../intel/fsp/baytrail/BAYTRAIL_FSP_ECC.fd" if BOARD_INTEL_BAKERSPORT_FSP
 	default "../intel/fsp/baytrail/BAYTRAIL_FSP.fd"
 
 config CBFS_SIZE
@@ -67,4 +69,4 @@ config VGA_BIOS
 	bool
 	default y if FSP_PACKAGE_DEFAULT
 
-endif # BOARD_INTEL_BAYLEYBAY_FSP
+endif # BOARD_INTEL_BAYLEYBAY_FSP || BOARD_INTEL_BAKERSPORT_FSP

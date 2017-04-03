@@ -26,7 +26,7 @@
  * /brief mainboard call for setup that needs to be done before fsp init
  *
  */
-void early_mainboard_romstage_entry()
+void early_mainboard_romstage_entry(void)
 {
 
 }
@@ -45,7 +45,7 @@ void get_func_disables(uint32_t *fd_mask, uint32_t *fd2_mask)
  * /brief mainboard call for setup that needs to be done after fsp init
  *
  */
-void late_mainboard_romstage_entry()
+void late_mainboard_romstage_entry(void)
 {
 
 }
@@ -70,7 +70,7 @@ void romstage_fsp_rt_buffer_callback(FSP_INIT_RT_BUFFER *FspRtBuffer)
 		UpdData->PcdMemoryParameters.DIMMDensity
 		+= (DIMM_DENSITY_4G_BIT - DIMM_DENSITY_2G_BIT);
 	printk(BIOS_NOTICE, "%s GB Minnowboard Max detected.\n",
-			gpio5 ? "2 / 4" : "1" );
+			gpio5 ? "2 / 4" : "1");
 	/* Update XHCI UPD value if required */
 	get_option(&use_xhci, "use_xhci_over_ehci");
 	if ((use_xhci < 2) && (use_xhci != UpdData->PcdEnableXhci)) {
@@ -78,6 +78,4 @@ void romstage_fsp_rt_buffer_callback(FSP_INIT_RT_BUFFER *FspRtBuffer)
 		printk(FSP_INFO_LEVEL, "Xhci updated from CMOS:\t\t\t%s\n",
 			UpdData->PcdEnableXhci?"Enabled":"Disabled");
 	}
-
-	return;
 }

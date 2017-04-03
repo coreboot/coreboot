@@ -19,5 +19,6 @@ ifeq ($(CONFIG_NORTHBRIDGE_VIA_CN700),y)
 ramstage-y += northbridge.c
 ramstage-y += agp.c
 ramstage-y += vga.c
+romstage-y += raminit.c
 
 endif

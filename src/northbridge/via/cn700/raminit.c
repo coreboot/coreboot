@@ -16,6 +16,10 @@
  * GNU General Public License for more details.
  */
 
+#include <stdint.h>
+#include <arch/io.h>
+#include <northbridge/via/cn700/raminit.h>
+#include <console/console.h>
 #include <spd.h>
 #include <delay.h>
 #include "cn700.h"
@@ -446,7 +450,7 @@ static void sdram_enable(pci_devfn_t dev, u8 *rank_address)
 /*
  * Support one DIMM with up to 2 ranks.
  */
-static void ddr_ram_setup(const struct mem_controller *ctrl)
+void ddr_ram_setup(const struct mem_controller *ctrl)
 {
 	u8 reg;
 

@@ -33,12 +33,10 @@
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83697HF_SP1)
 
-static inline int spd_read_byte(unsigned device, unsigned address)
+int spd_read_byte(unsigned device, unsigned address)
 {
 	return smbus_read_byte(device, address);
 }
-
-#include "northbridge/via/cn700/raminit.c"
 
 static void enable_mainboard_devices(void)
 {

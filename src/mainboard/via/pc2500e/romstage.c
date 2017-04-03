@@ -33,12 +33,10 @@
 
 #define SERIAL_DEV PNP_DEV(0x2e, IT8716F_SP1)
 
-static int spd_read_byte(u16 device, u16 address)
+int spd_read_byte(unsigned device, unsigned address)
 {
 	return smbus_read_byte(device, address);
 }
-
-#include "northbridge/via/cn700/raminit.c"
 
 static const struct mem_controller ctrl = {
 	.d0f0 = 0x0000,

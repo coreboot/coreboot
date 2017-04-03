@@ -439,7 +439,7 @@ void main(unsigned long bist)
 	enable_smbus();
 
 	/* This fix does help vx800!, but vx855 doesn't need this. */
-	/* smbus_fixup(&ctrl); */
+	/* smbus_fixup(ctrl.channel0, ARRAY_SIZE(ctrl.channel0)); */
 
 	/* Halt if there was a built-in self test failure. */
 	report_bist_failure(bist);

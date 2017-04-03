@@ -26,7 +26,7 @@
 #include <cpu/x86/bist.h>
 #include <cpu/amd/car.h>
 #include <delay.h>
-#include "southbridge/via/vt8237r/early_smbus.c"
+#include <southbridge/via/vt8237r/vt8237r.h>
 #include "southbridge/via/vt8237r/early_serial.c"
 #include <spd.h>
 
@@ -80,7 +80,7 @@ void main(unsigned long bist)
 	enable_vt8237r_serial();
 	console_init();
 	enable_smbus();
-	smbus_fixup(&ctrl);
+	smbus_fixup(ctrl.channel0, ARRAY_SIZE(ctrl.channel0));
 	report_bist_failure(bist);
 	enable_mainboard_devices();
 	ddr_ram_setup(&ctrl);

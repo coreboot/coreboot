@@ -136,8 +136,7 @@ struct vt8237_network_rom {
 u8 smbus_read_byte(u8 dimm, u8 offset);
 void smbus_write_byte(u8 dimm, u8 offset, u8 data);
 void enable_smbus(void);
-void smbus_fixup(const struct mem_controller *ctrl);
-// these are in vt8237_early_smbus.c - do they really belong there?
+void smbus_fixup(const u8 channel0[], int ram_slots);
 void vt8237_sb_enable_fid_vid(void);
 void enable_rom_decode(void);
 void vt8237_early_spi_init(void);

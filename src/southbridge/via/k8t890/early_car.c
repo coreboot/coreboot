@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include <cbmem.h>
 #include <arch/io.h>
+#include <arch/acpi.h>
 #include "k8x8xx.h"
 
 /* The 256 bytes of NVRAM for S3 storage, 256B aligned */

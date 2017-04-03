@@ -24,6 +24,7 @@ ramstage-y += usb.c
 ramstage-$(CONFIG_PIRQ_ROUTE) += pirq.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += fadt.c
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c
+romstage-y += early_smbus.c
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
 
 endif

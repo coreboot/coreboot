@@ -18,6 +18,9 @@
 #if !defined(__ROMCC__)
 #include <arch/acpi.h>
 #endif
+#include <console/console.h>
+#include <arch/io.h>
+#include <device/pci_def.h>
 #include <device/pci_ids.h>
 #include <spd.h>
 #include <stdlib.h>
@@ -218,12 +221,11 @@ void enable_smbus(void)
  *
  * @param ctrl The memory controller and SMBus addresses.
  */
-void smbus_fixup(const struct mem_controller *ctrl)
+void smbus_fixup(const u8 channel0[], int ram_slots)
 {
-	int i, ram_slots, current_slot = 0;
+	int i, current_slot = 0;
 	u8 result = 0;
 
-	ram_slots = ARRAY_SIZE(ctrl->channel0);
 	if (!ram_slots) {
 		printk(BIOS_ERR, "smbus_fixup() thinks there are no RAM slots!\n");
 		return;
@@ -242,7 +244,7 @@ void smbus_fixup(const struct mem_controller *ctrl)
 		if (current_slot > ram_slots)
 			current_slot = 0;
 
-		result = smbus_read_byte(ctrl->channel0[current_slot],
+		result = smbus_read_byte(channel0[current_slot],
 					 SPD_MEMORY_TYPE);
 		current_slot++;
 		PRINT_DEBUG(".");

@@ -37,7 +37,7 @@ unsigned int get_sbdn(unsigned bus);
 #include "northbridge/amd/amdk8/early_ht.c"
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627ehg/w83627ehg.h>
-#include "southbridge/via/vt8237r/early_smbus.c"
+#include <southbridge/via/vt8237r/vt8237r.h>
 #include "northbridge/amd/amdk8/debug.c" /* After vt8237r/early_smbus.c! */
 #include <cpu/x86/bist.h>
 #include "northbridge/amd/amdk8/setup_resource_map.c"

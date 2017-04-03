@@ -27,7 +27,7 @@
 #include <delay.h>
 #include <lib.h>
 #include <spd.h>
-#include "southbridge/via/vt8237r/early_smbus.c"
+#include <southbridge/via/vt8237r/vt8237r.h>
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83697hf/w83697hf.h>
 
@@ -84,7 +84,7 @@ void main(unsigned long bist)
 	console_init();
 
 	enable_smbus();
-	smbus_fixup(&ctrl);
+	smbus_fixup(ctrl.channel0, ARRAY_SIZE(ctrl.channel0));
 
 	/* Halt if there was a built-in self test failure. */
 	report_bist_failure(bist);

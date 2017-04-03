@@ -18,6 +18,10 @@ mainmenu "coreboot configuration"
 
 menu "General setup"
 
+config COREBOOT_BUILD
+	bool
+	default y
+
 config LOCALVERSION
 	string "Local version string"
 	help

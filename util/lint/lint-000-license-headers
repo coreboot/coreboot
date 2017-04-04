@@ -90,6 +90,8 @@ check_for_license 'IS PROVIDED .*"AS IS"'
 check_for_license 'IS DISTRIBUTED .*"AS IS"'
 check_for_license "IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE"
 check_for_license '"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES'
+check_for_license 'assumes any liability or responsibility for the use'
+check_for_license 'THE AUTHORS DISCLAIM.*ALL WARRANTIES WITH REGARD TO THIS SOFTWARE'
 check_for_license 'No license required'
 
 for file in $headerlist; do

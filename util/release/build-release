@@ -1,8 +1,8 @@
 #!/bin/bash
 # ${VERSION_NAME}: new version name
-# ${GPG_KEY_ID}: gpg key id (if not don't sign)
-# ${USERNAME}: username (if not default to https)
 # ${COMMIT_ID}: commit id (if not master)
+# ${USERNAME}: username (if not default to https)
+# ${GPG_KEY_ID}: gpg key id (if not don't sign)
 VERSION_NAME=$1
 COMMIT_ID=$2
 USERNAME=$3
@@ -16,14 +16,14 @@ LANG=C
 TZ=UTC
 export LC_ALL LANG TZ
 
-if [ -z "$VERSION_NAME" ] || [ "$VERSION_NAME" = "--help" ]; then
-	echo "usage: $0 <version> [commit id] [gpg key id] [username]"
+if [ -z "$VERSION_NAME" ] || [ "$VERSION_NAME" = "--help" ] || [ -z "$COMMIT_ID" ]; then
+	echo "usage: $0 <version> <commit id> [username] [gpg key id]"
 	echo "Tags a new coreboot version and creates a tar archive"
 	echo
 	echo "version:    New version name to tag the tree with"
 	echo "commit id:  check out this commit-id after cloning the coreboot tree"
-	echo "gpg key id: used to tag the version, and generate a gpg signature"
 	echo "username:   clone the tree using ssh://USERNAME - defaults to https://"
+	echo "gpg key id: used to tag the version, and generate a gpg signature"
 	exit 1
 fi
 
@@ -34,10 +34,12 @@ if ! tar --sort=name -cf /dev/null /dev/null 2>/dev/null ; then
 	exit 1
 fi
 
-if [ -n "${USERNAME}" ]; then
-	git clone "ssh://${USERNAME}@review.coreboot.org:29418/coreboot.git" "coreboot-${VERSION_NAME}"
-else
-	git clone https://review.coreboot.org/coreboot.git "coreboot-${VERSION_NAME}"
+if [ ! -d "coreboot-${VERSION_NAME}" ]; then
+	if [ -n "${USERNAME}" ]; then
+		git clone "ssh://${USERNAME}@review.coreboot.org:29418/coreboot.git" "coreboot-${VERSION_NAME}"
+	else
+		git clone https://review.coreboot.org/coreboot.git "coreboot-${VERSION_NAME}"
+	fi
 fi
 
 cd "coreboot-${VERSION_NAME}" || exit 1

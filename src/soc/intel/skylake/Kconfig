@@ -109,10 +109,6 @@ config CPU_ADDR_BITS
 	int
 	default 36
 
-config SOC_INTEL_COMMON_LPSS_I2C_CLOCK_MHZ
-	int
-	default 120
-
 config DCACHE_RAM_BASE
 	hex "Base address of cache-as-RAM"
 	default 0xfef00000
@@ -299,5 +295,9 @@ config NO_FADT_8042
 	default n
 	help
 	  Choose this option if you want to disable 8042 Keyboard
+
+config SOC_INTEL_COMMON_LPSS_CLOCK_MHZ
+	int
+	default 120
 
 endif

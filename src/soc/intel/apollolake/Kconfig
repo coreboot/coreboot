@@ -117,8 +117,7 @@ config CPU_ADDR_BITS
 	int
 	default 36
 
-config SOC_INTEL_COMMON_LPSS_I2C_CLOCK_MHZ
-	depends on SOC_INTEL_COMMON_LPSS_I2C
+config SOC_INTEL_COMMON_LPSS_CLOCK_MHZ
 	int
 	default 133
 

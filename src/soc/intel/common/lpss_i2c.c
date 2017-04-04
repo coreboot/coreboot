@@ -611,7 +611,7 @@ static int lpss_i2c_gen_speed_config(struct lpss_i2c_regs *regs,
 					const struct lpss_i2c_bus_config *bcfg,
 					struct lpss_i2c_speed_config *config)
 {
-	const int ic_clk = CONFIG_SOC_INTEL_COMMON_LPSS_I2C_CLOCK_MHZ;
+	const int ic_clk = CONFIG_SOC_INTEL_COMMON_LPSS_CLOCK_MHZ;
 	uint16_t hcnt_min, lcnt_min;
 	int i;
 

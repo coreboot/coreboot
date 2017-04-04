@@ -21,7 +21,7 @@
 
 /*
  * Timing values are in units of clock period, with the clock speed
- * provided by the SOC in CONFIG_SOC_INTEL_COMMON_LPSS_I2C_CLOCK_MHZ.
+ * provided by the SOC in CONFIG_SOC_INTEL_COMMON_LPSS_CLOCK_MHZ.
  * Automatic configuration is done based on requested speed, but the
  * values may need tuned depending on the board and the number of
  * devices present on the bus.

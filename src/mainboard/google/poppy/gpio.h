@@ -48,7 +48,7 @@ static const struct pad_config gpio_table[] = {
 /* ESPI_IO3 */
 /* ESPI_CS# */
 /* SERIRQ */		PAD_CFG_NC(GPP_A6), /* TP44 */
-/* PIRQA# */		PAD_CFG_GPI(GPP_A7, 20K_PU, DEEP), /* SD_CD# */
+/* PIRQA# */		PAD_CFG_NC(GPP_A7),
 /* CLKRUN# */		PAD_CFG_NC(GPP_A8), /* TP45 */
 /* ESPI_CLK */
 /* CLKOUT_LPC1 */	PAD_CFG_NC(GPP_A10),
@@ -166,7 +166,7 @@ static const struct pad_config gpio_table[] = {
 					NF1), /* USB_C0_DP_HPD */
 /* DDPC_HPD1 */		PAD_CFG_NF(GPP_E14, NONE, DEEP,
 					NF1), /* USB_C1_DP_HPD */
-/* DDPD_HPD2 */		PAD_CFG_NC(GPP_E15), /* TP48 */
+/* DDPD_HPD2 */		PAD_CFG_GPI(GPP_E15, 20K_PU, DEEP), /* SD_CD# */
 /* DDPE_HPD3 */		PAD_CFG_NC(GPP_E16), /* TP244 */
 /* EDP_HPD */		PAD_CFG_NF(GPP_E17, NONE, DEEP, NF1),
 /* DDPB_CTRLCLK */	PAD_CFG_NC(GPP_E18),

@@ -39,6 +39,7 @@ ramstage-y += hda.c
 ramstage-y += pci.c
 ramstage-y += pcie.c
 ramstage-y += sd.c
+ramstage-$(CONFIG_SOUTHBRIDGE_AMD_PI_KERN) += gpio.c
 
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += fadt.c
 ramstage-y += reset.c

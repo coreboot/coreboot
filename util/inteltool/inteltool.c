@@ -568,8 +568,12 @@ int main(int argc, char *argv[])
 	}
 
 	/* Clean up */
+	if (ahci)
+		pci_free_dev(ahci);
+	if (gfx)
+		pci_free_dev(gfx);
 	pci_free_dev(nb);
-	// pci_free_dev(sb); // TODO: glibc detected "double free or corruption"
+	/* `sb` wasn't allocated by pci_get_dev() */
 	pci_cleanup(pacc);
 
 	return 0;

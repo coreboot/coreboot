@@ -17,10 +17,12 @@
 
 PROGRAM = inteltool
 
+top ?= $(abspath ../..)
+
 CC      ?= gcc
 INSTALL ?= /usr/bin/install
 PREFIX  ?= /usr/local
-CFLAGS  ?= -O2 -g -Wall -W
+CFLAGS  ?= -O2 -g -Wall -W -I$(top)/src/commonlib/include
 LDFLAGS += -lpci -lz
 
 OBJS = inteltool.o cpu.o gpio.o rootcmplx.o powermgt.o memory.o pcie.o amb.o ivy_memory.o spi.o gfx.o ahci.o

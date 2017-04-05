@@ -48,7 +48,7 @@
 #define PM_HUD_SD_FLASH_CTRL	0xE7
 #define PM_YANG_SD_FLASH_CTRL	0xE8
 
-#define HUDSON_ACPI_IO_BASE 0x800
+#define HUDSON_ACPI_IO_BASE 0x600
 #define ACPI_PM_EVT_BLK		(HUDSON_ACPI_IO_BASE + 0x00) /* 4 bytes */
 #define ACPI_PM1_CNT_BLK	(HUDSON_ACPI_IO_BASE + 0x04) /* 2 bytes */
 #define ACPI_PM_TMR_BLK		(HUDSON_ACPI_IO_BASE + 0x18) /* 4 bytes */

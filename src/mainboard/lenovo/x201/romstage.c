@@ -37,10 +37,10 @@
 #include <cbmem.h>
 #include <tpm.h>
 
-#include "gpio.h"
 #include "dock.h"
 #include "arch/early_variables.h"
 #include <southbridge/intel/ibexpeak/pch.h>
+#include <southbridge/intel/common/gpio.h>
 #include <northbridge/intel/nehalem/nehalem.h>
 
 #include <northbridge/intel/nehalem/raminit.h>
@@ -200,7 +200,7 @@ void mainboard_romstage_entry(unsigned long bist)
 	pci_write_config32(PCH_LPC_DEV, GPIO_BASE, DEFAULT_GPIOBASE | 1);
 	pci_write_config8(PCH_LPC_DEV, GPIO_CNTL, 0x10);
 
-	setup_pch_gpios(&x201_gpio_map);
+	setup_pch_gpios(&mainboard_gpio_map);
 
 
 	/* This should probably go away. Until now it is required

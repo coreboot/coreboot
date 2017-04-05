@@ -31,12 +31,12 @@
 
 #define ME_UMA_SIZEMB 0
 
-static u32 fsb2mhz(u32 speed)
+u32 fsb2mhz(u32 speed)
 {
 	return (speed * 267) + 800;
 }
 
-static u32 ddr2mhz(u32 speed)
+u32 ddr2mhz(u32 speed)
 {
 	static const u16 mhz[] = { 0, 0, 667, 800, 1067, 1333 };
 
@@ -62,113 +62,6 @@ static u8 msbpos(u32 val)
 	);
 
 	return (u8)(pos & 0xff);
-}
-
-static void sdram_detect_smallest_params2(struct sysinfo *s)
-{
-	u16 mult[6] = {
-		5000, // 400
-		3750, // 533
-		3000, // 667
-		2500, // 800
-		1875, // 1066
-		1500, // 1333
-	};
-
-	u8 i;
-	u32 tmp;
-	u32 maxtras = 0;
-	u32 maxtrp = 0;
-	u32 maxtrcd = 0;
-	u32 maxtwr = 0;
-	u32 maxtrfc = 0;
-	u32 maxtwtr = 0;
-	u32 maxtrrd = 0;
-	u32 maxtrtp = 0;
-
-	FOR_EACH_POPULATED_DIMM(s->dimms, i) {
-		maxtras = MAX(maxtras, s->dimms[i].spd_data[30] * 1000);
-		maxtrp = MAX(maxtrp, (s->dimms[i].spd_data[27] * 1000) >> 2);
-		maxtrcd = MAX(maxtrcd, (s->dimms[i].spd_data[29] * 1000) >> 2);
-		maxtwr = MAX(maxtwr, (s->dimms[i].spd_data[36] * 1000) >> 2);
-		maxtrfc = MAX(maxtrfc, s->dimms[i].spd_data[42] * 1000 +
-				(s->dimms[i].spd_data[40] & 0xf));
-		maxtwtr = MAX(maxtwtr, (s->dimms[i].spd_data[37] * 1000) >> 2);
-		maxtrrd = MAX(maxtrrd, (s->dimms[i].spd_data[28] * 1000) >> 2);
-		maxtrtp = MAX(maxtrtp, (s->dimms[i].spd_data[38] * 1000) >> 2);
-	}
-	for (i = 9; i < 24; i++) {
-		tmp = mult[s->selected_timings.mem_clk] * i;
-		if (tmp >= maxtras) {
-			s->selected_timings.tRAS = i;
-			break;
-		}
-	}
-	for (i = 3; i < 10; i++) {
-		tmp = mult[s->selected_timings.mem_clk] * i;
-		if (tmp >= maxtrp) {
-			s->selected_timings.tRP = i;
-			break;
-		}
-	}
-	for (i = 3; i < 10; i++) {
-		tmp = mult[s->selected_timings.mem_clk] * i;
-		if (tmp >= maxtrcd) {
-			s->selected_timings.tRCD = i;
-			break;
-		}
-	}
-	for (i = 3; i < 15; i++) {
-		tmp = mult[s->selected_timings.mem_clk] * i;
-		if (tmp >= maxtwr) {
-			s->selected_timings.tWR = i;
-			break;
-		}
-	}
-	for (i = 15; i < 78; i++) {
-		tmp = mult[s->selected_timings.mem_clk] * i;
-		if (tmp >= maxtrfc) {
-			s->selected_timings.tRFC = ((i + 16) & 0xfe) - 15;
-			break;
-		}
-	}
-	for (i = 4; i < 15; i++) {
-		tmp = mult[s->selected_timings.mem_clk] * i;
-		if (tmp >= maxtwtr) {
-			s->selected_timings.tWTR = i;
-			break;
-		}
-	}
-	for (i = 2; i < 15; i++) {
-		tmp = mult[s->selected_timings.mem_clk] * i;
-		if (tmp >= maxtrrd) {
-			s->selected_timings.tRRD = i;
-			break;
-		}
-	}
-	for (i = 4; i < 15; i++) {
-		tmp = mult[s->selected_timings.mem_clk] * i;
-		if (tmp >= maxtrtp) {
-			s->selected_timings.tRTP = i;
-			break;
-		}
-	}
-
-	s->selected_timings.fsb_clk = s->max_fsb;
-
-	printk(BIOS_DEBUG, "Selected timings:\n");
-	printk(BIOS_DEBUG, "\tFSB:  %dMHz\n", fsb2mhz(s->selected_timings.fsb_clk));
-	printk(BIOS_DEBUG, "\tDDR:  %dMHz\n", ddr2mhz(s->selected_timings.mem_clk));
-
-	printk(BIOS_DEBUG, "\tCAS:  %d\n", s->selected_timings.CAS);
-	printk(BIOS_DEBUG, "\ttRAS: %d\n", s->selected_timings.tRAS);
-	printk(BIOS_DEBUG, "\ttRP:  %d\n", s->selected_timings.tRP);
-	printk(BIOS_DEBUG, "\ttRCD: %d\n", s->selected_timings.tRCD);
-	printk(BIOS_DEBUG, "\ttWR:  %d\n", s->selected_timings.tWR);
-	printk(BIOS_DEBUG, "\ttRFC: %d\n", s->selected_timings.tRFC);
-	printk(BIOS_DEBUG, "\ttWTR: %d\n", s->selected_timings.tWTR);
-	printk(BIOS_DEBUG, "\ttRRD: %d\n", s->selected_timings.tRRD);
-	printk(BIOS_DEBUG, "\ttRTP: %d\n", s->selected_timings.tRTP);
 }
 
 static void clkcross_ddr2(struct sysinfo *s)
@@ -500,8 +393,7 @@ static void timings_ddr2(struct sysinfo *s)
 	twl = s->selected_timings.CAS - 1;
 
 	FOR_EACH_POPULATED_DIMM(s->dimms, i) {
-		if (s->dimms[i].banks == 1) {
-			/* 8 banks */
+		if (s->dimms[i].n_banks == N_BANKS_8) {
 			trpmod = 1;
 			bankmod = 0;
 		}
@@ -1276,11 +1168,12 @@ static void dradrb_ddr2(struct sysinfo *s)
 			i = ch << 1;
 		else
 			i = (ch << 1) + 1;
-		dra = dratab[s->dimms[i].banks]
+
+		dra = dratab[s->dimms[i].n_banks]
 			[s->dimms[i].width]
 			[s->dimms[i].cols-9]
 			[s->dimms[i].rows-12];
-		if (s->dimms[i].banks == 1)
+		if (s->dimms[i].n_banks == N_BANKS_8)
 			dra |= 0x80;
 		if (ch == 0) {
 			c0dra |= dra << (r*8);
@@ -1313,12 +1206,10 @@ static void dradrb_ddr2(struct sysinfo *s)
 		if (ch == 0) {
 			dra0 = (c0dra >> (8*r)) & 0x7f;
 			c0drb = (u16)(c0drb + drbtab[dra0]);
-			s->dimms[i].rank_capacity_mb = drbtab[dra0] << 6;
 			MCHBAR16(0x200 + 2*r) = c0drb;
 		} else {
 			dra1 = (c1dra >> (8*r)) & 0x7f;
 			c1drb = (u16)(c1drb + drbtab[dra1]);
-			s->dimms[i].rank_capacity_mb = drbtab[dra1] << 6;
 			MCHBAR16(0x600 + 2*r) = c1drb;
 		}
 	}
@@ -1587,9 +1478,6 @@ void raminit_ddr2(struct sysinfo *s)
 	u8 ch;
 	u8 r, bank;
 	u32 reg32;
-
-	// Select timings based on SPD info
-	sdram_detect_smallest_params2(s);
 
 	if (s->boot_path != BOOT_PATH_WARM_RESET) {
 		// Clear self refresh

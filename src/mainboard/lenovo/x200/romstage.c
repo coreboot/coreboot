@@ -27,9 +27,9 @@
 #include <lib.h>
 #include <romstage_handoff.h>
 #include <console/console.h>
+#include <southbridge/intel/common/gpio.h>
 #include <southbridge/intel/i82801ix/i82801ix.h>
 #include <northbridge/intel/gm45/gm45.h>
-#include "gpio.h"
 #include <timestamp.h>
 
 #define LPC_DEV PCI_DEV(0, 0x1f, 0)
@@ -79,7 +79,7 @@ void mainboard_romstage_entry(unsigned long bist)
 		gm45_early_reset();
 	}
 
-	setup_pch_gpios(&x200_gpio_map);
+	setup_pch_gpios(&mainboard_gpio_map);
 
 	/* ASPM related setting, set early by original BIOS. */
 	DMIBAR16(0x204) &= ~(3 << 10);

@@ -14,6 +14,8 @@
  * GNU General Public License for more details.
  */
 
+#include <commonlib/helpers.h>
+
 #include <stdint.h>
 
 #if defined(__GLIBC__)
@@ -207,8 +209,6 @@ static inline uint32_t inl(unsigned port)
 #define PCI_DEVICE_ID_INTEL_CORE_4TH_GEN_U	0x0a04 /* Haswell-ULT */
 #define PCI_DEVICE_ID_INTEL_CORE_5TH_GEN_U	0x1604 /* Broadwell-ULT */
 #define PCI_DEVICE_ID_INTEL_CORE_6TH_GEN_WST	0x1918
-
-#define ARRAY_SIZE(a) ((int)(sizeof(a) / sizeof((a)[0])))
 
 #if !defined(__DARWIN__) && !defined(__FreeBSD__)
 typedef struct { uint32_t hi, lo; } msr_t;

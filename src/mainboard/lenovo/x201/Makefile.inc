@@ -17,3 +17,4 @@ smm-$(CONFIG_HAVE_SMI_HANDLER) += dock.c
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
 romstage-y += dock.c
 ramstage-y += dock.c
+romstage-y += gpio.c

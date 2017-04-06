@@ -17,17 +17,6 @@
 #ifndef _SERIALIO_H_
 #define _SERIALIO_H_
 
-#define SIO_REG_PPR_CLOCK         0x200
-#define SIO_REG_PPR_CLOCK_EN      (1 << 0)
-#define SIO_REG_PPR_CLOCK_UPDATE  (1 << 31)
-#define SIO_REG_PPR_CLOCK_N_DIV   0xc35
-#define SIO_REG_PPR_CLOCK_M_DIV   0x30
-
-#define SIO_REG_PPR_RESETS        0x204
-#define SIO_REG_PPR_RESETS_FUNC   (1 << 0)
-#define SIO_REG_PPR_RESETS_APB    (1 << 1)
-#define SIO_REG_PPR_RESETS_IDMA   (1 << 2)
-
 typedef enum {
 	PchSerialIoDisabled,
 	PchSerialIoAcpi,

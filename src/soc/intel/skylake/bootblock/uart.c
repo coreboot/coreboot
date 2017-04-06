@@ -18,12 +18,12 @@
 #include <arch/io.h>
 #include <console/uart.h>
 #include <device/pci_def.h>
+#include <intelblocks/lpss.h>
 #include <intelblocks/pcr.h>
 #include <stdint.h>
 #include <soc/bootblock.h>
 #include <soc/pci_devs.h>
 #include <soc/pcr_ids.h>
-#include <soc/serialio.h>
 #include <gpio.h>
 
 /* Serial IO UART controller legacy mode */
@@ -31,6 +31,10 @@
 #define PCR_SIO_PCH_LEGACY_UART0	(1 << 0)
 #define PCR_SIO_PCH_LEGACY_UART1	(1 << 1)
 #define PCR_SIO_PCH_LEGACY_UART2	(1 << 2)
+
+/* Clock divider parameters for 115200 baud rate */
+#define CLOCK_DIV_M_VAL	0x30
+#define CLOCK_DIV_N_VAL	0xc35
 
 /* UART2 pad configuration. Support RXD and TXD for now. */
 static const struct pad_config uart2_pads[] = {
@@ -42,7 +46,7 @@ void pch_uart_init(void)
 {
 	device_t dev = PCH_DEV_UART2;
 	u32 tmp;
-	u8 *base = (void *)uart_platform_base(CONFIG_UART_FOR_CONSOLE);
+	uintptr_t base = uart_platform_base(CONFIG_UART_FOR_CONSOLE);
 
 	/* Set configured UART2 base address */
 	pci_write_config32(dev, PCI_BASE_ADDRESS_0, (u32)base);
@@ -53,21 +57,14 @@ void pch_uart_init(void)
 	pci_write_config32(dev, PCI_COMMAND, tmp);
 
 	/* Take UART2 out of reset */
-	tmp = read32(base + SIO_REG_PPR_RESETS);
-	tmp |= SIO_REG_PPR_RESETS_FUNC | SIO_REG_PPR_RESETS_APB |
-		SIO_REG_PPR_RESETS_IDMA;
-	write32(base + SIO_REG_PPR_RESETS, tmp);
+	lpss_reset_release(base);
 
 	/*
 	 * Set M and N divisor inputs and enable clock.
 	 * Main reference frequency to UART is:
 	 * 120MHz * M / N = 120MHz * 48 / 3125 = 1843200Hz
 	 */
-	tmp = read32(base + SIO_REG_PPR_CLOCK);
-	tmp |= SIO_REG_PPR_CLOCK_EN | SIO_REG_PPR_CLOCK_UPDATE |
-		(SIO_REG_PPR_CLOCK_N_DIV << 16) |
-		(SIO_REG_PPR_CLOCK_M_DIV << 1);
-	write32(base + SIO_REG_PPR_CLOCK, tmp);
+	lpss_clk_update(base, CLOCK_DIV_M_VAL, CLOCK_DIV_N_VAL);
 
 	/* Put UART2 in byte access mode for 16550 compatibility */
 	if (!IS_ENABLED(CONFIG_DRIVERS_UART_8250MEM_32))

@@ -18,11 +18,11 @@
 #include <device/device.h>
 #include <device/i2c.h>
 #include <device/pci_def.h>
+#include <intelblocks/lpss.h>
 #include <soc/intel/common/lpss_i2c.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
 #include <soc/bootblock.h>
-#include <soc/serialio.h>
 #include "chip.h"
 
 uintptr_t lpss_i2c_base_address(unsigned int bus)
@@ -49,8 +49,6 @@ static void i2c_early_init_bus(unsigned int bus)
 	pci_devfn_t dev;
 	int devfn;
 	uintptr_t base;
-	uint32_t value;
-	void *reg;
 
 	/* Find the PCI device for this bus controller */
 	devfn = i2c_bus_to_devfn(bus);
@@ -77,11 +75,7 @@ static void i2c_early_init_bus(unsigned int bus)
 			   PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER);
 
 	/* Take device out of reset */
-	reg = (void *)(base + SIO_REG_PPR_RESETS);
-	value = read32(reg);
-	value |= SIO_REG_PPR_RESETS_FUNC | SIO_REG_PPR_RESETS_APB |
-		SIO_REG_PPR_RESETS_IDMA;
-	write32(reg, value);
+	lpss_reset_release(base);
 
 	/* Initialize the controller */
 	lpss_i2c_init(bus, &config->i2c[bus]);

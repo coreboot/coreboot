@@ -135,9 +135,8 @@ int main(int argc, char *argv[])
 	}
 
 	/* preserve default - dump_ram if nothing selected */
-	if (!dump_ram && !dump_idx && !dump_query && !write_addr) {
+	if (!dump_ram && !dump_idx && !dump_query && (write_addr == -1))
 		dump_ram = 1;
-	}
 
 	if (dump_ram) {
 		printf("EC RAM:\n");

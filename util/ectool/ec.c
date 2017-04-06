@@ -70,7 +70,7 @@ int send_ec_data(uint8_t data)
 		if ((timeout & 0xff) == 0)
 			debug(".");
 	}
-	if (timeout) {
+	if (!timeout) {
 		debug("Timeout while sending data 0x%02x to EC!\n", data);
 		// return -1;
 	}

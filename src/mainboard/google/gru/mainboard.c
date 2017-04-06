@@ -333,30 +333,8 @@ static void mainboard_init(device_t dev)
 	register_apio_suspend();
 }
 
-static void enable_backlight_booster(void)
+static void prepare_backlight_i2c(void)
 {
-	const struct {
-		uint8_t reg;
-		uint8_t value;
-	} i2c_writes[] = {
-		{1, 0x84},
-		{1, 0x85},
-		{0, 0x26}
-	};
-	int i;
-	const int booster_i2c_port = 0;
-	uint8_t i2c_buf[2];
-	struct i2c_seg i2c_command = { .read = 0, .chip = 0x2c,
-				       .buf = i2c_buf, .len = sizeof(i2c_buf)
-	};
-
-	/*
-	 * This function is called on Gru right after BL_EN is asserted. It
-	 * takes time for the switcher chip to come online, let's wait a bit
-	 * to let the voltage settle, so that the chip can be accessed.
-	 */
-	udelay(1000);
-
 	gpio_input(GPIO(1, B, 7));	/* I2C0_SDA remove pull_up */
 	gpio_input(GPIO(1, C, 0));	/* I2C0_SCL remove pull_up */
 
@@ -364,20 +342,14 @@ static void enable_backlight_booster(void)
 
 	write32(&rk3399_pmugrf->iomux_i2c0_sda, IOMUX_I2C0_SDA);
 	write32(&rk3399_pmugrf->iomux_i2c0_scl, IOMUX_I2C0_SCL);
-
-	for (i = 0; i < ARRAY_SIZE(i2c_writes); i++) {
-		i2c_buf[0] = i2c_writes[i].reg;
-		i2c_buf[1] = i2c_writes[i].value;
-		i2c_transfer(booster_i2c_port, &i2c_command, 1);
-	}
 }
 
 void mainboard_power_on_backlight(void)
 {
 	gpio_output(GPIO_BACKLIGHT, 1);  /* BL_EN */
 
-	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_GRU) && board_id() == 0)
-		enable_backlight_booster();
+	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_GRU))
+		prepare_backlight_i2c();
 }
 
 static void mainboard_enable(device_t dev)

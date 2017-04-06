@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2013 Google Inc.
  * Copyright (C) 2015-2016 Intel Corp.
+ * Copyright (C) 2017 Siemens AG
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +27,10 @@
 #include <soc/msr.h>
 #include <soc/pattrs.h>
 #include <soc/ramstage.h>
+#include <soc/smm.h>
+
+/* MP initialization support. */
+static const void *microcode_patch;
 
 static void pre_mp_init(void)
 {
@@ -42,18 +47,43 @@ static int get_cpu_count(void)
 	return pattrs->num_cpus;
 }
 
+static void per_cpu_smm_trigger(void)
+{
+	/* Relocate the SMM handler. */
+	smm_relocate();
+
+	/* After SMM relocation a 2nd microcode load is required. */
+	intel_microcode_load_unlocked(microcode_patch);
+}
+
 static void get_microcode_info(const void **microcode, int *parallel)
 {
 	const struct pattrs *pattrs = pattrs_get();
 
+	microcode_patch = pattrs->microcode_patch;
 	*microcode = pattrs->microcode_patch;
 	*parallel = 1;
 }
 
+static void post_mp_init(void)
+{
+	/* Now that all APs have been relocated as well as the BSP let SMIs
+	   start flowing. */
+	southbridge_smm_enable_smi();
+
+	/* Set SMI lock bits. */
+	smm_lock();
+}
+
 static const struct mp_ops mp_ops = {
 	.pre_mp_init = pre_mp_init,
+	.get_smm_info = smm_info,
 	.get_cpu_count = get_cpu_count,
 	.get_microcode_info = get_microcode_info,
+	.pre_mp_smm_init = smm_initialize,
+	.per_cpu_smm_trigger = per_cpu_smm_trigger,
+	.relocation_handler = smm_relocation_handler,
+	.post_mp_init = post_mp_init
 };
 
 void broadwell_de_init_cpus(device_t dev)
@@ -76,8 +106,8 @@ static void configure_mca(void)
 	num_banks = msr.lo & 0xff;
 
 	/* TODO(adurbin): This should only be done on a cold boot. Also, some
-	 * of these banks are core vs package scope. For now every CPU clears
-	 * every bank. */
+	   of these banks are core vs package scope. For now every CPU clears
+	   every bank. */
 	msr.lo = msr.hi = 0;
 	for (i = 0; i < num_banks; i++) {
 		wrmsr(MSR_IA32_MC0_STATUS + (i * 4) + 1, msr);

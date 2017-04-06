@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2013 Google Inc.
  * Copyright (C) 2015-2016 Intel Corp.
+ * Copyright (C) 2017 Siemens AG
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -118,5 +119,11 @@
 #define PCIE_PORT6_DEV_FUNC PCI_DEVFN(PCIE_DEV, PCIE_PORT6_FUNC)
 #define PCIE_PORT7_DEV_FUNC PCI_DEVFN(PCIE_DEV, PCIE_PORT7_FUNC)
 #define PCIE_PORT8_DEV_FUNC PCI_DEVFN(PCIE_DEV, PCIE_PORT8_FUNC)
+
+/* The SMM device is located on bus 0xff (QPI) */
+#define QPI_BUS			0xff
+#define SMM_DEV			0x10
+#define SMM_FUNC		0x06
+#define SMM_DEV_FUNC		PCI_DEVFN(SMM_DEV, SMM_FUNC)
 
 #endif /* _SOC_PCI_DEVS_H_ */

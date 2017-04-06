@@ -520,6 +520,7 @@ sub build_and_parse_kconfig_tree {
         my $line_no  = $parseline[0]{file_line_no};
 
         #handle help - help text: "help" or "---help---"
+        my $lastline_was_help = $inside_help;
         $inside_help = handle_help( $line, $inside_help, $inside_config, $inside_choice, $filename, $line_no );
         $parseline[0]{inside_help} = $inside_help;
 
@@ -535,7 +536,7 @@ sub build_and_parse_kconfig_tree {
         }
 
         #handle config
-        elsif ( $line =~ /^\s*config/ ) {
+        elsif ( $line =~ /^\s*config\s+/ ) {
             $line =~ /^\s*config\s+([^"\s]+)\s*(?>#.*)?$/;
             my $symbol = $1;
             $inside_config = $symbol;
@@ -710,7 +711,12 @@ sub build_and_parse_kconfig_tree {
             # do nothing
         }
         else {
-            show_error("$line  ($filename:$line_no unrecognized)");
+            if ($lastline_was_help) {
+                show_error("The line \"$line\"  ($filename:$line_no) wasn't recognized - supposed to be inside help?");
+            }
+            else {
+                show_error("The line \"$line\"  ($filename:$line_no) wasn't recognized");
+            }
         }
 
         if ( defined $inside_menu[0] ) {

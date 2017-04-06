@@ -1,0 +1,4 @@
+config SOC_INTEL_COMMON_BLOCK_LPSS
+	bool
+	help
+	  Intel Processor common LPSS support

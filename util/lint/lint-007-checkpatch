@@ -22,7 +22,8 @@ INCLUDED_FILES='.*\.[ch]\|Kconfig.*$'
 EXCLUDED_DIRS="^payloads/libpayload/util/kconfig\|\
 ^payloads/libpayload/curses/PDCurses\|\
 ^util/kconfig\|\
-^src/vendorcode"
+^src/vendorcode\|\
+^Documentation"
 
 # Space separated list of directories to test
 if [ "$1" = "" ]; then

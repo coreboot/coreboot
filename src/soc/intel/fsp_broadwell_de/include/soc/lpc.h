@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2013 Google Inc.
  * Copyright (C) 2015-2016 Intel Corp.
+ * Copyright (C) 2017 Siemens AG
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,6 +35,9 @@
 #define LPC_GEN3_DEC		0x8c
 #define LPC_GEN4_DEC		0x90
 #define GEN_PMCON_1		0xA0
+#define   SMI_LOCK		(1 << 4)
+#define   SMI_LOCK_GP6		(1 << 5)
+#define   SMI_LOCK_GP22		(1 << 6)
 #define GEN_PMCON_2		0xA2
 #define GEN_PMCON_3		0xA4
 #define   RTC_PWR_STS		(1 << 2)
@@ -72,6 +76,22 @@
 #define   HOT_PLUG_STS		(1 << 1)
 #define GPE0_EN			0x28
 #define SMI_EN			0x30
+#define  XHCI_SMI_EN		(1 << 31)
+#define  ME_SMI_EN		(1 << 30)
+#define  GPIO_UNLOCK_SMI_EN	(1 << 27)
+#define  INTEL_USB2_EN		(1 << 18)
+#define  LEGACY_USB2_EN		(1 << 17)
+#define  PERIODIC_EN		(1 << 14)
+#define  TCO_EN			(1 << 13)
+#define  MCSMI_EN		(1 << 11)
+#define  BIOS_RLS		(1 <<  7)
+#define  SWSMI_TMR_EN		(1 <<  6)
+#define  APMC_EN		(1 <<  5)
+#define  SLP_SMI_EN		(1 <<  4)
+#define  LEGACY_USB_EN		(1 <<  3)
+#define  BIOS_EN		(1 <<  2)
+#define  EOS			(1 <<  1)
+#define  GBL_SMI_EN		(1 <<  0)
 #define SMI_STS			0x34
 #define ALT_GPIO_SMI		0x38
 #define UPRWC			0x3c
@@ -86,5 +106,18 @@
 #define   TCO_LOCK		(1 << 12)
 #define   TCO_TMR_HALT		(1 << 11)
 #define TCO_TMR			0x70
+
+/* PM1_CNT */
+void enable_pm1_control(uint32_t mask);
+void disable_pm1_control(uint32_t mask);
+
+/* PM1 */
+uint16_t clear_pm1_status(void);
+void enable_pm1(uint16_t events);
+uint32_t clear_smi_status(void);
+
+/* SMI */
+void enable_smi(uint32_t mask);
+void disable_smi(uint32_t mask);
 
 #endif /* _SOC_LPC_H_ */

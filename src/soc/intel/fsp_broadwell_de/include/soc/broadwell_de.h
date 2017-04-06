@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2013 Google, Inc.
  * Copyright (C) 2015-2016 Intel Corp.
+ * Copyright (C) 2017 Siemens AG
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,5 +20,10 @@
 
 #define VTBAR_OFFSET		0x180
 #define VTBAR_MASK		0xffffe000
+
+#define SMM_FEATURE_CONTROL	0x58
+#define  SMM_CPU_SAVE_EN	(1 << 1)
+#define TSEG_BASE		0xa8	/* TSEG base */
+#define TSEG_LIMIT		0xac	/* TSEG limit */
 
 #endif /* _SOC_BROADWELL_DE_H_ */

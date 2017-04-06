@@ -23,6 +23,8 @@ config CPU_SPECIFIC_OPTIONS
 	# Microcode header files are delivered in FSP package
 	select USES_MICROCODE_HEADER_FILES if HAVE_FSP_BIN
 	select HAVE_INTEL_FIRMWARE
+	select SMM_TSEG
+	select HAVE_SMI_HANDLER
 
 config CBFS_SIZE
 	hex
@@ -55,6 +57,14 @@ config CPU_ADDR_BITS
 config VGA_BIOS
 	bool
 	default n
+
+config SMM_TSEG_SIZE
+	hex
+	default 0x800000
+
+config SMM_RESERVED_SIZE
+	hex
+	default 0x100000
 
 config INTEGRATED_UART
 	bool "Integrated UART ports"

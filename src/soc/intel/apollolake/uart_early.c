@@ -17,15 +17,10 @@
 
 #include <console/uart.h>
 #include <device/pci.h>
+#include <intelblocks/lpss.h>
 #include <soc/gpio.h>
 #include <soc/uart.h>
 #include <soc/pci_devs.h>
-
-static void lpss_uart_write(uint16_t reg, uint32_t val)
-{
-	uintptr_t base = CONFIG_CONSOLE_UART_BASE_ADDRESS | reg;
-	write32((void *)base, val);
-}
 
 static inline int invalid_uart_for_console(void)
 {
@@ -38,28 +33,27 @@ static inline int invalid_uart_for_console(void)
 
 void lpss_console_uart_init(void)
 {
-	uint32_t clk_sel;
+	uintptr_t base = CONFIG_CONSOLE_UART_BASE_ADDRESS;
 	device_t uart = _PCH_DEV(UART, CONFIG_UART_FOR_CONSOLE & 3);
 
 	if (invalid_uart_for_console())
 		return;
 
 	/* Enable BAR0 for the UART -- this is where the 8250 registers hide */
-	pci_write_config32(uart, PCI_BASE_ADDRESS_0,
-			   CONFIG_CONSOLE_UART_BASE_ADDRESS);
+	pci_write_config32(uart, PCI_BASE_ADDRESS_0, base);
 
 	/* Enable memory access and bus master */
 	pci_write_config32(uart, PCI_COMMAND,
 			   PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER);
 
 	/* Take UART out of reset */
-	lpss_uart_write(UART_RESET, UART_RESET_UART_EN);
+	lpss_reset_release(base);
 
-	/* These values get us a 1.836 MHz clock (ideally we want 1.843 MHz) */
-	clk_sel = UART_CLK_DIV_N(0x7fff) | UART_CLK_DIV_M(0x025a);
-	/* Set M and N divisor inputs and enable clock */
-	lpss_uart_write(UART_CLK, clk_sel | UART_CLK_UPDATE);
-	lpss_uart_write(UART_CLK, clk_sel | UART_CLK_EN);
+	/*
+	 * Set M and N divisor inputs and enable clock. These values
+	 * get us a 1.836 MHz clock (ideally we want 1.843 MHz)
+	 */
+	lpss_clk_update(base, 0x025a, 0x7fff);
 
 }
 

@@ -19,6 +19,7 @@
 #include <device/device.h>
 #include <device/i2c.h>
 #include <device/pci_def.h>
+#include <intelblocks/lpss.h>
 #include <soc/intel/common/lpss_i2c.h>
 #include <soc/i2c.h>
 #include <soc/iomap.h>
@@ -32,8 +33,6 @@ static int i2c_early_init_bus(unsigned int bus)
 	pci_devfn_t dev;
 	int devfn;
 	uintptr_t base;
-	uint32_t value;
-	void *reg;
 
 	/* Find the PCI device for this bus controller */
 	devfn = i2c_bus_to_devfn(bus);
@@ -64,10 +63,7 @@ static int i2c_early_init_bus(unsigned int bus)
 			   PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER);
 
 	/* Take device out of reset */
-	reg = (void *)(base + I2C_LPSS_REG_RESET);
-	value = read32(reg);
-	value |= I2C_LPSS_RESET_RELEASE_HC;
-	write32(reg, value);
+	lpss_reset_release(base);
 
 	/* Initialize the controller */
 	if (lpss_i2c_init(bus, &config->i2c[bus]) < 0) {

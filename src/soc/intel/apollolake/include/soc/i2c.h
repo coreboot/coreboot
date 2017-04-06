@@ -20,11 +20,6 @@
 #include <device/pci_def.h>
 #include <soc/pci_devs.h>
 
-/* I2C Controller Reset in MMIO private region */
-#define I2C_LPSS_REG_RESET		0x204
-#define I2C_LPSS_RESET_RELEASE_HC	((1 << 1) | (1 << 0))
-#define I2C_LPSS_RESET_RELEASE_IDMA	(1 << 2)
-
 /* Convert I2C bus number to PCI device and function */
 static inline int i2c_bus_to_devfn(unsigned int bus)
 {

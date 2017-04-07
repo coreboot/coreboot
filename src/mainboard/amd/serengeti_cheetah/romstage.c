@@ -31,6 +31,7 @@
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627hf/w83627hf.h>
 #include "northbridge/amd/amdk8/setup_resource_map.c"
+#include <northbridge/amd/amdk8/f.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 

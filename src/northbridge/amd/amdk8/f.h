@@ -520,7 +520,7 @@ struct sys_info {
 
 #ifdef __PRE_RAM__
 #include <arch/early_variables.h>
-struct sys_info sysinfo_car CAR_GLOBAL;
+extern struct sys_info sysinfo_car;
 #endif
 
 #include <reset.h>

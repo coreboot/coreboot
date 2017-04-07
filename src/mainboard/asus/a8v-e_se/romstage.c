@@ -42,6 +42,7 @@ unsigned int get_sbdn(unsigned bus);
 #include <cpu/x86/bist.h>
 #include "northbridge/amd/amdk8/setup_resource_map.c"
 #include <spd.h>
+#include <northbridge/amd/amdk8/pre_f.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627EHG_SP1)
 #define GPIO_DEV PNP_DEV(0x2e, W83627EHG_GPIO_SUSLED_V)

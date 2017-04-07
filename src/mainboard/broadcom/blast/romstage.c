@@ -17,6 +17,7 @@
 #include <superio/nsc/pc87417/pc87417.h>
 #include <cpu/x86/bist.h>
 #include "northbridge/amd/amdk8/setup_resource_map.c"
+#include <northbridge/amd/amdk8/pre_f.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, PC87417_SP1)
 #define RTC_DEV PNP_DEV(0x2e, PC87417_RTC)

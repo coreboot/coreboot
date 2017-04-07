@@ -37,9 +37,10 @@
 #define printk_raminit(args...)
 #endif
 
+#include <arch/early_variables.h>
+struct sys_info sysinfo_car CAR_GLOBAL;
 
 #include "f_pci.c"
-
 
 	/* for PCI_ADDR(0, 0x18, 2, 0x98) index,
 	 and PCI_ADDR(0x, 0x18, 2, 0x9c) data */

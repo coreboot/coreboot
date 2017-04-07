@@ -41,6 +41,7 @@
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "cpu/amd/dualcore/dualcore.c"
 #include <spd.h>
+#include <northbridge/amd/amdk8/pre_f.h>
 
 #if CONFIG_HAVE_OPTION_TABLE
 #include "option_table.h"

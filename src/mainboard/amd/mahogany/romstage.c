@@ -34,6 +34,7 @@
 #include <southbridge/amd/sb700/sb700.h>
 #include <southbridge/amd/sb700/smbus.h>
 #include "northbridge/amd/amdk8/debug.c" /* After sb700/early_setup.c! */
+#include <northbridge/amd/amdk8/f.h>
 
 unsigned get_sbdn(unsigned bus);
 

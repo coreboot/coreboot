@@ -307,26 +307,6 @@ int __attribute__((weak)) gspi_get_soc_spi_cfg(unsigned int gspi_bus,
 	return 0;
 }
 
-static int gspi_ctrlr_get_config(const struct spi_slave *dev,
-				struct spi_cfg *cfg)
-{
-	unsigned int gspi_bus;
-
-	/* Currently, only chip select 0 is supported. */
-	if (dev->cs != 0) {
-		printk(BIOS_ERR, "%s: Invalid CS value: cs=%u.\n", __func__,
-			dev->cs);
-		return -1;
-	}
-
-	if (gspi_soc_spi_to_gspi_bus(dev->bus, &gspi_bus)) {
-		printk(BIOS_ERR, "%s: Failed to find GSPI bus for SPI %u.\n",
-		       __func__, dev->bus);
-		return -1;
-	}
-	return gspi_get_soc_spi_cfg(gspi_bus, cfg);
-}
-
 static int gspi_cs_assert(const struct spi_slave *dev)
 {
 	return gspi_cs_change(dev, CS_ASSERT);
@@ -627,7 +607,6 @@ static int gspi_ctrlr_xfer(const struct spi_slave *dev,
 }
 
 const struct spi_ctrlr gspi_ctrlr = {
-	.get_config = gspi_ctrlr_get_config,
 	.claim_bus = gspi_cs_assert,
 	.release_bus = gspi_cs_deassert,
 	.setup = gspi_ctrlr_setup,

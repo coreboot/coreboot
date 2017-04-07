@@ -16,6 +16,7 @@
  */
 
 #include <arch/early_variables.h>
+#include <assert.h>
 #include <commonlib/endian.h>
 #include <console/console.h>
 #include <delay.h>
@@ -47,35 +48,6 @@ static struct tpm2_info g_tpm_info CAR_GLOBAL;
  * debug traces. Right now it is either 0 or 1.
  */
 static const int debug_level_ = CONFIG_DEBUG_TPM;
-
-/* Locality management bits (in TPM_ACCESS_REG) */
-enum tpm_access_bits {
-	tpm_reg_valid_sts = (1 << 7),
-	active_locality = (1 << 5),
-	request_use = (1 << 1),
-	tpm_establishment = (1 << 0),
-};
-
-/*
- * Variuous fields of the TPM status register, arguably the most important
- * register when interfacing to a TPM.
- */
-enum tpm_sts_bits {
-	tpm_family_shift = 26,
-	tpm_family_mask = ((1 << 2) - 1),  /* 2 bits wide. */
-	tpm_family_tpm2 = 1,
-	reset_establishment_bit = (1 << 25),
-	command_cancel = (1 << 24),
-	burst_count_shift = 8,
-	burst_count_mask = ((1 << 16) - 1),  /* 16 bits wide. */
-	sts_valid = (1 << 7),
-	command_ready = (1 << 6),
-	tpm_go = (1 << 5),
-	data_avail = (1 << 4),
-	expect = (1 << 3),
-	self_test_done = (1 << 2),
-	response_retry = (1 << 1),
-};
 
 /*
  * SPI frame header for TPM transactions is 4 bytes in size, it is described
@@ -113,7 +85,7 @@ static int tpm_sync(void)
 {
 	struct stopwatch sw;
 
-	stopwatch_init_usecs_expire(&sw, 10 * 1000);
+	stopwatch_init_msecs_expire(&sw, 10);
 	while (!tis_plat_irq_status()) {
 		if (stopwatch_expired(&sw)) {
 			printk(BIOS_ERR, "Timeout wait for tpm irq!\n");
@@ -347,7 +319,53 @@ static uint32_t get_burst_count(void)
 	uint32_t status;
 
 	read_tpm_sts(&status);
-	return (status >> burst_count_shift) & burst_count_mask;
+	return (status & TPM_STS_BURST_COUNT_MASK) >> TPM_STS_BURST_COUNT_SHIFT;
+}
+
+static uint8_t tpm2_read_access_reg(void)
+{
+	uint8_t access;
+	tpm2_read_reg(TPM_ACCESS_REG, &access, sizeof(access));
+	/* We do not care about access establishment bit state. Ignore it. */
+	return access & ~TPM_ACCESS_ESTABLISHMENT;
+}
+
+static void tpm2_write_access_reg(uint8_t cmd)
+{
+	/* Writes to access register can set only 1 bit at a time. */
+	assert (!(cmd & (cmd - 1)));
+
+	tpm2_write_reg(TPM_ACCESS_REG, &cmd, sizeof(cmd));
+}
+
+static int tpm2_claim_locality(void)
+{
+	uint8_t access;
+
+	access = tpm2_read_access_reg();
+	/*
+	 * If active locality is set (maybe reset line is not connected?),
+	 * release the locality and try again.
+	 */
+	if (access & TPM_ACCESS_ACTIVE_LOCALITY) {
+		tpm2_write_access_reg(TPM_ACCESS_ACTIVE_LOCALITY);
+		access = tpm2_read_access_reg();
+	}
+
+	if (access != TPM_ACCESS_VALID) {
+		printk(BIOS_ERR, "Invalid reset status: %#x\n", access);
+		return 0;
+	}
+
+	tpm2_write_access_reg(TPM_ACCESS_REQUEST_USE);
+	access = tpm2_read_access_reg();
+	if (access != (TPM_ACCESS_VALID | TPM_ACCESS_ACTIVE_LOCALITY)) {
+		printk(BIOS_ERR, "Failed to claim locality 0, status: %#x\n",
+		       access);
+		return 0;
+	}
+
+	return 1;
 }
 
 int tpm2_init(struct spi_slave *spi_if)
@@ -366,38 +384,12 @@ int tpm2_init(struct spi_slave *spi_if)
 	if (!tpm2_read_reg(TPM_DID_VID_REG, &did_vid, sizeof(did_vid)))
 		return -1;
 
-	/* Try claiming locality zero. */
-	tpm2_read_reg(TPM_ACCESS_REG, &cmd, sizeof(cmd));
-	if ((cmd & (active_locality & tpm_reg_valid_sts)) ==
-	    (active_locality & tpm_reg_valid_sts)) {
-		/*
-		 * Locality active - maybe reset line is not connected?
-		 * Release the locality and try again
-		 */
-		cmd = active_locality;
-		tpm2_write_reg(TPM_ACCESS_REG, &cmd, sizeof(cmd));
-		tpm2_read_reg(TPM_ACCESS_REG, &cmd, sizeof(cmd));
-	}
-
-	/* The tpm_establishment bit can be either set or not, ignore it. */
-	if ((cmd & ~tpm_establishment) != tpm_reg_valid_sts) {
-		printk(BIOS_ERR, "invalid reset status: %#x\n", cmd);
+	/* Claim locality 0. */
+	if (!tpm2_claim_locality())
 		return -1;
-	}
-
-	cmd = request_use;
-	tpm2_write_reg(TPM_ACCESS_REG, &cmd, sizeof(cmd));
-	tpm2_read_reg(TPM_ACCESS_REG, &cmd, sizeof(cmd));
-	if ((cmd &  ~tpm_establishment) !=
-	    (tpm_reg_valid_sts | active_locality)) {
-		printk(BIOS_ERR, "failed to claim locality 0, status: %#x\n",
-		       cmd);
-		return -1;
-	}
 
 	read_tpm_sts(&status);
-	if (((status >> tpm_family_shift) & tpm_family_mask) !=
-	    tpm_family_tpm2) {
+	if ((status & TPM_STS_FAMILY_MASK) != TPM_STS_FAMILY_TPM_2_0) {
 		printk(BIOS_ERR, "unexpected TPM family value, status: %#x\n",
 		       status);
 		return -1;
@@ -563,7 +555,7 @@ size_t tpm2_process_command(const void *tpm2_command, size_t command_size,
 	}
 
 	/* Let the TPM know that the command is coming. */
-	write_tpm_sts(command_ready);
+	write_tpm_sts(TPM_STS_COMMAND_READY);
 
 	/*
 	 * Tpm commands and responses written to and read from the FIFO
@@ -580,10 +572,10 @@ size_t tpm2_process_command(const void *tpm2_command, size_t command_size,
 	fifo_transfer(command_size, fifo_buffer, fifo_transmit);
 
 	/* Now tell the TPM it can start processing the command. */
-	write_tpm_sts(tpm_go);
+	write_tpm_sts(TPM_STS_GO);
 
 	/* Now wait for it to report that the response is ready. */
-	expected_status_bits = sts_valid | data_avail;
+	expected_status_bits = TPM_STS_VALID | TPM_STS_DATA_AVAIL;
 	if (!wait_for_status(expected_status_bits, expected_status_bits)) {
 		/*
 		 * If timed out, which should never happen, let's at least
@@ -642,13 +634,13 @@ size_t tpm2_process_command(const void *tpm2_command, size_t command_size,
 
 	/* Verify that 'data available' is not asseretd any more. */
 	read_tpm_sts(&status);
-	if ((status & expected_status_bits) != sts_valid) {
+	if ((status & expected_status_bits) != TPM_STS_VALID) {
 		printk(BIOS_ERR, "unexpected final status %#x\n", status);
 		return 0;
 	}
 
 	/* Move the TPM back to idle state. */
-	write_tpm_sts(command_ready);
+	write_tpm_sts(TPM_STS_COMMAND_READY);
 
 	return payload_size;
 }

@@ -843,11 +843,6 @@ int print_gpios(struct pci_dev *sb, int show_all, int show_diffs)
 	const gpio_default_t *gpio_defaults = NULL;
 	uint32_t gpio_diff;
 
-	if (show_diffs && !show_all)
-		printf("\n========== GPIO DIFFS ===========\n\n");
-	else
-		printf("\n============= GPIOS =============\n\n");
-
 	switch (sb->device_id) {
 	case PCI_DEVICE_ID_INTEL_LYNXPOINT_LP_FULL:
 	case PCI_DEVICE_ID_INTEL_LYNXPOINT_LP_PREM:
@@ -1010,6 +1005,9 @@ int print_gpios(struct pci_dev *sb, int show_all, int show_diffs)
 		gpio_registers = baytrail_score_ssus_gpio_registers;
 		size = ARRAY_SIZE(baytrail_score_ssus_gpio_registers);
 		break;
+	case PCI_DEVICE_ID_INTEL_CM236:
+		print_gpio_groups(sb);
+		return 0;
 	case PCI_DEVICE_ID_INTEL_82371XX:
 		printf("This southbridge has GPIOs in the PM unit.\n");
 		return 1;
@@ -1020,6 +1018,11 @@ int print_gpios(struct pci_dev *sb, int show_all, int show_diffs)
 		printf("Error: Dumping GPIOs on this southbridge is not (yet) supported.\n");
 		return 1;
 	}
+
+	if (show_diffs && !show_all)
+		printf("\n========== GPIO DIFFS ===========\n\n");
+	else
+		printf("\n============= GPIOS =============\n\n");
 
 	printf("GPIOBASE = 0x%04x (IO)\n\n", gpiobase);
 

@@ -35,6 +35,7 @@
 #include <southbridge/amd/sb700/sb700.h>
 #include <southbridge/amd/sb700/smbus.h>
 #include "northbridge/amd/amdk8/debug.c" /* After sb700/early_setup.c! */
+#include <northbridge/amd/amdk8/pre_f.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627DHG_SP1)
 #define GPIO2345_DEV PNP_DEV(0x2e, W83627DHG_GPIO2345_V)

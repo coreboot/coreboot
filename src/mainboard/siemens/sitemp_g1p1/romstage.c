@@ -41,6 +41,7 @@
 #include "southbridge/amd/rs690/early_setup.c"
 #include "southbridge/amd/sb600/early_setup.c"
 #include "northbridge/amd/amdk8/debug.c" /* After sb600_early_setup.c! */
+#include <northbridge/amd/amdk8/f.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, CONFIG_UART_FOR_CONSOLE == 1 ? IT8712F_SP2 : IT8712F_SP1)
 #define GPIO_DEV PNP_DEV(0x2e, IT8712F_GPIO)

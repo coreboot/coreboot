@@ -17,6 +17,9 @@
 #include "option_table.h"
 #endif
 
+#include <arch/early_variables.h>
+struct sys_info sysinfo_car CAR_GLOBAL;
+
 void setup_resource_map(const unsigned int *register_values, int max)
 {
 	int i;

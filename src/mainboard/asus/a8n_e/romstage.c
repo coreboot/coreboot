@@ -44,6 +44,7 @@
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "cpu/amd/dualcore/dualcore.c"
 #include <spd.h>
+#include <northbridge/amd/amdk8/pre_f.h>
 
 static void memreset(int controllers, const struct mem_controller *ctrl) { }
 static void activate_spd_rom(const struct mem_controller *ctrl) { }

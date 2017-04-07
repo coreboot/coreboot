@@ -20,6 +20,7 @@
 #include <cpu/x86/bist.h>
 #include "superio/smsc/lpc47b397/early_gpio.c"
 #include "northbridge/amd/amdk8/setup_resource_map.c"
+#include <northbridge/amd/amdk8/pre_f.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, LPC47B397_SP1)
 #define SUPERIO_GPIO_DEV PNP_DEV(0x2e, LPC47B397_RT)

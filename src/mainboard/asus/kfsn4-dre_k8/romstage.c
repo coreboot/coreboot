@@ -40,6 +40,7 @@ unsigned int get_sbdn(unsigned bus);
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627thg/w83627thg.h>
 #include "northbridge/amd/amdk8/setup_resource_map.c"
+#include <northbridge/amd/amdk8/f.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627THG_SP1)
 

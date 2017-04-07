@@ -32,6 +32,7 @@
 #include "southbridge/amd/rs690/early_setup.c"
 #include "southbridge/amd/sb600/early_setup.c"
 #include "northbridge/amd/amdk8/debug.c" /* After sb600/early_setup.c! */
+#include <northbridge/amd/amdk8/f.h>
 
 static void memreset(int controllers, const struct mem_controller *ctrl) { }
 static void activate_spd_rom(const struct mem_controller *ctrl) { }

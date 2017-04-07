@@ -34,7 +34,7 @@ asm(".previous");
  * accessed unconditionally because cbmem is never initialized until romstage
  * when dram comes up.
  */
-#if ENV_VERSTAGE || ENV_BOOTBLOCK
+#if ENV_VERSTAGE || ENV_BOOTBLOCK || IS_ENABLED(CONFIG_NO_CAR_GLOBAL_MIGRATION)
 static inline void *car_get_var_ptr(void *var)
 {
 	return var;

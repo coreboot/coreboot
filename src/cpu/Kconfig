@@ -10,6 +10,15 @@ config CACHE_AS_RAM
 	bool
 	default !ROMCC
 
+config NO_CAR_GLOBAL_MIGRATION
+	bool
+	default n
+	depends on CACHE_AS_RAM
+	help
+	  This option is selected if there is no need to migrate CAR globals.
+	  All stages which use CAR globals can directly access the variables
+	  from their linked addresses.
+
 config DCACHE_RAM_BASE
 	hex
 

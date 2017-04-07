@@ -1,5 +1,7 @@
 ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32)$(CONFIG_ARCH_ROMSTAGE_X86_64),y)
+ifneq ($(CONFIG_NO_CAR_GLOBAL_MIGRATION),y)
 romstage-$(CONFIG_CACHE_AS_RAM) += car.c
+endif
 endif
 
 subdirs-$(CONFIG_PARALLEL_MP) += name

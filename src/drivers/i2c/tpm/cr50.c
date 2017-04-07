@@ -39,6 +39,7 @@
 #include <device/i2c.h>
 #include <endian.h>
 #include <timer.h>
+#include <tpm.h>
 #include "tpm.h"
 
 #if IS_ENABLED(CONFIG_ARCH_X86)

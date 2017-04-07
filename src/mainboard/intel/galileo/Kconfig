@@ -179,4 +179,12 @@ config FMDFILE
 	  When an FMD descriptionn file is specified, the build system uses it
 	  instead of creating a default FMAP file.
 
+config ENABLE_SD_TESTING
+	bool "Enable SD card testing"
+	default y
+	select DRIVERS_STORAGE_SD
+	select SDHC_DEBUG
+	select STORAGE_LOG
+	select STORAGE_TEST
+
 endif # BOARD_INTEL_QUARK

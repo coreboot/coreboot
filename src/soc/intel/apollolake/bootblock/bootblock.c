@@ -145,7 +145,7 @@ void bootblock_soc_early_init(void)
 
 	/* Prepare UART for serial console. */
 	if (IS_ENABLED(CONFIG_SOC_UART_DEBUG))
-		soc_console_uart_init();
+		pch_uart_init();
 
 	if (IS_ENABLED(CONFIG_TPM_ON_FAST_SPI))
 		tpm_enable();

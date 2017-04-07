@@ -76,13 +76,15 @@ static void spi_acpi_fill_ssdt_generator(struct device *dev)
 	struct drivers_spi_acpi_config *config = dev->chip_info;
 	const char *scope = acpi_device_scope(dev);
 	const char *path = acpi_device_path(dev);
-	struct spi_cfg spi_cfg;
-	struct spi_slave slave;
-	int bus = -1, cs = dev->path.spi.cs;
 	struct acpi_spi spi = {
-		.device_select = cs,
+		.device_select = dev->path.spi.cs,
 		.speed = config->speed ? : 1 * MHz,
 		.resource = scope,
+		.device_select_polarity = SPI_POLARITY_LOW,
+		.wire_mode = SPI_4_WIRE_MODE,
+		.data_bit_length = 8,
+		.clock_phase = SPI_CLOCK_PHASE_FIRST,
+		.clock_polarity = SPI_POLARITY_LOW,
 	};
 	int curr_index = 0;
 	int irq_gpio_index = -1;
@@ -92,10 +94,9 @@ static void spi_acpi_fill_ssdt_generator(struct device *dev)
 	if (!dev->enabled || !scope)
 		return;
 
-	bus = spi_acpi_get_bus(dev);
-	if (bus == -1) {
+	if (spi_acpi_get_bus(dev) == -1) {
 		printk(BIOS_ERR, "%s: ERROR: Cannot get bus for device.\n",
-		       dev_path(dev));
+			dev_path(dev));
 		return;
 	}
 
@@ -103,23 +104,6 @@ static void spi_acpi_fill_ssdt_generator(struct device *dev)
 		printk(BIOS_ERR, "%s: ERROR: HID required.\n", dev_path(dev));
 		return;
 	}
-
-	if (spi_setup_slave(bus, cs, &slave)) {
-		printk(BIOS_ERR, "%s: ERROR: SPI setup failed.\n",
-			dev_path(dev));
-		return;
-	}
-
-	if (spi_get_config(&slave, &spi_cfg)) {
-		printk(BIOS_ERR, "%s: ERROR: SPI get config failed.\n",
-			dev_path(dev));
-		return;
-	}
-
-	spi.device_select_polarity = spi_cfg.cs_polarity;
-	spi.wire_mode = spi_cfg.wire_mode;
-	spi.data_bit_length = spi_cfg.data_bit_length;
-	spi.clock_phase = spi_cfg.clk_phase;
 
 	/* Device */
 	acpigen_write_scope(scope);

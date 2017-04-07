@@ -90,7 +90,6 @@ struct spi_cfg {
 /*-----------------------------------------------------------------------
  * Representation of a SPI contoller.
  *
- * get_config:	Get configuration of SPI bus
  * claim_bus:	Claim SPI bus and prepare for communication.
  * release_bus: Release SPI bus.
  * setup:	Setup given SPI device bus.
@@ -98,8 +97,6 @@ struct spi_cfg {
  * xfer_vector: Vector of SPI transfer operations.
  */
 struct spi_ctrlr {
-	int (*get_config)(const struct spi_slave *slave,
-			struct spi_cfg *cfg);
 	int (*claim_bus)(const struct spi_slave *slave);
 	void (*release_bus)(const struct spi_slave *slave);
 	int (*setup)(const struct spi_slave *slave);

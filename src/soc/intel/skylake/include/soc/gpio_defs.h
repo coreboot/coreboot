@@ -15,12 +15,30 @@
 
 #ifndef _SOC_GPIO_DEFS_H_
 #define _SOC_GPIO_DEFS_H_
-
+#ifndef __ACPI__
+#include <stddef.h>
+#endif
 #if IS_ENABLED(CONFIG_SKYLAKE_SOC_PCH_H)
 # include <soc/gpio_pch_h_defs.h>
 #else
 # include <soc/gpio_soc_defs.h>
 #endif
+
+#define GPIO_NUM_PAD_CFG_REGS   2 /* DW0, DW1 */
+
+#define NUM_GPIO_COMx_GPI_REGS(n)	\
+	(ALIGN_UP((n), GPIO_MAX_NUM_PER_GROUP) / GPIO_MAX_NUM_PER_GROUP)
+
+#define NUM_GPIO_COM0_GPI_REGS NUM_GPIO_COMx_GPI_REGS(NUM_GPIO_COM0_PADS)
+#define NUM_GPIO_COM1_GPI_REGS NUM_GPIO_COMx_GPI_REGS(NUM_GPIO_COM1_PADS)
+#define NUM_GPIO_COM2_GPI_REGS NUM_GPIO_COMx_GPI_REGS(NUM_GPIO_COM2_PADS)
+#define NUM_GPIO_COM3_GPI_REGS NUM_GPIO_COMx_GPI_REGS(NUM_GPIO_COM3_PADS)
+
+#define NUM_GPI_STATUS_REGS	\
+		((NUM_GPIO_COM0_GPI_REGS) +\
+		(NUM_GPIO_COM1_GPI_REGS) +\
+		(NUM_GPIO_COM3_GPI_REGS) +\
+		(NUM_GPIO_COM2_GPI_REGS))
 
 /*
  * IOxAPIC IRQs for the GPIOs
@@ -76,6 +94,7 @@
 #define GPP_B21_IRQ		0x45
 #define GPP_B22_IRQ		0x46
 #define GPP_B23_IRQ		0x47
+
 /* Group C */
 #define GPP_C0_IRQ		0x48
 #define GPP_C1_IRQ		0x49
@@ -200,121 +219,13 @@
 #define GPD11_IRQ		0x5b
 
 /* Register defines. */
-#define MISCCFG_OFFSET		0x10
-#define  GPIO_DRIVER_IRQ_ROUTE_MASK	8
-#define  GPIO_DRIVER_IRQ_ROUTE_IRQ14	0
-#define  GPIO_DRIVER_IRQ_ROUTE_IRQ15	8
-#define  GPE_DW_SHIFT		8
-#define  GPE_DW_MASK		0xfff00
-#define PAD_OWN_REG_OFFSET	0x20
-#define  PAD_OWN_PADS_PER	8
-#define  PAD_OWN_WIDTH_PER	4
-#define  PAD_OWN_MASK		0x03
-#define  PAD_OWN_HOST		0x00
-#define  PAD_OWN_ME		0x01
-#define  PAD_OWN_ISH		0x02
-#define HOSTSW_OWN_REG_OFFSET	0xd0
-#define  HOSTSW_OWN_PADS_PER	24
-#define  HOSTSW_OWN_ACPI	0
-#define  HOSTSW_OWN_GPIO	1
-#define PAD_CFG_DW_OFFSET	0x400
-	/* PADRSTCFG - when to reset the pad config */
-#define  PADRSTCFG_SHIFT	30
-#define  PADRSTCFG_MASK		0x3
-#define  PADRSTCFG_DSW_PWROK	0
-#define  PADRSTCFG_DEEP		1
-#define  PADRSTCFG_PLTRST	2
-#define  PADRSTCFG_RSMRST	3
-	/* RXPADSTSEL - raw signal or internal state */
-#define  RXPADSTSEL_SHIFT	29
-#define  RXPADSTSEL_MASK	0x1
-#define  RXPADSTSEL_RAW		0
-#define  RXPADSTSEL_INTERNAL	1
-	/* RXRAW1 - drive 1 instead instead of pad value */
-#define  RXRAW1_SHIFT		28
-#define  RXRAW1_MASK		0x1
-#define  RXRAW1_NO		0
-#define  RXRAW1_YES		1
-	/* RXEVCFG - Interrupt and wake types */
-#define  RXEVCFG_SHIFT		25
-#define  RXEVCFG_MASK		0x3
-#define  RXEVCFG_LEVEL		0
-#define  RXEVCFG_EDGE		1
-#define  RXEVCFG_DRIVE0		2
-	/* PREGFRXSEL - use filtering on Rx pad */
-#define  PREGFRXSEL_SHIFT	24
-#define  PREGFRXSEL_MASK	0x1
-#define  PREGFRXSEL_NO		0
-#define  PREGFRXSEL_YES		1
-	/* RXINV - invert signal to SMI, SCI, NMI, or IRQ routing. */
-#define  RXINV_SHIFT		23
-#define  RXINV_MASK		0x1
-#define  RXINV_NO		0
-#define  RXINV_YES		1
-	/* GPIROUTIOXAPIC - route to io-xapic or not */
-#define  GPIROUTIOXAPIC_SHIFT	20
-#define  GPIROUTIOXAPIC_MASK	0x1
-#define  GPIROUTIOXAPIC_NO	0
-#define  GPIROUTIOXAPIC_YES	1
-	/* GPIROUTSCI - route to SCI */
-#define  GPIROUTSCI_SHIFT	19
-#define  GPIROUTSCI_MASK	0x1
-#define  GPIROUTSCI_NO		0
-#define  GPIROUTSCI_YES		1
-	/* GPIROUTSMI - route to SMI */
-#define  GPIROUTSMI_SHIFT	18
-#define  GPIROUTSMI_MASK	0x1
-#define  GPIROUTSMI_NO		0
-#define  GPIROUTSMI_YES		1
-	/* GPIROUTNMI - route to NMI */
-#define  GPIROUTNMI_SHIFT	17
-#define  GPIROUTNMI_MASK	0x1
-#define  GPIROUTNMI_NO		0
-#define  GPIROUTNMI_YES		1
-	/* PMODE - mode of pad */
-#define  PMODE_SHIFT		10
-#define  PMODE_MASK		0x3
-#define  PMODE_GPIO		0
-#define  PMODE_NF1		1
-#define  PMODE_NF2		2
-#define  PMODE_NF3		3
-	/* GPIORXDIS - Disable Rx */
-#define  GPIORXDIS_SHIFT	9
-#define  GPIORXDIS_MASK		0x1
-#define  GPIORXDIS_NO		0
-#define  GPIORXDIS_YES		1
-	/* GPIOTXDIS - Disable Tx */
-#define  GPIOTXDIS_SHIFT	8
-#define  GPIOTXDIS_MASK		0x1
-#define  GPIOTXDIS_NO		0
-#define  GPIOTXDIS_YES		1
-	/* GPIORXSTATE - Internal state after glitch filter */
-#define  GPIORXSTATE_SHIFT	1
-#define  GPIORXSTATE_MASK	0x1
-	/* GPIOTXSTATE - Drive value onto pad */
-#define  GPIOTXSTATE_SHIFT	0
-#define  GPIOTXSTATE_MASK	0x1
-	/* TERM - termination control */
-#define  PAD_TERM_SHIFT		10
-#define  PAD_TERM_MASK		0xf
-#define  PAD_TERM_NONE		0
-#define  PAD_TERM_5K_PD		2
-#define  PAD_TERM_20K_PD	4
-#define  PAD_TERM_1K_PU		9
-#define  PAD_TERM_2K_PU		11
-#define  PAD_TERM_5K_PU		10
-#define  PAD_TERM_20K_PU	12
-#define  PAD_TERM_667_PU	13
-#define  PAD_TERM_NATIVE	15
-	/* TOL - voltage tolerance */
-#define  PAD_TOL_SHIFT		25
-#define  PAD_TOL_MASK		0x1
-#define  PAD_TOL_3V3		0	/* 3.3V default */
-#define  PAD_TOL_1V8		1	/* 1.8V tolerant */
-
-#define GPI_GPE_STS_OFFSET	0x140
-#define GPI_GPE_EN_OFFSET	0x160
-#define GPI_SMI_STS_OFFSET	0x180
-#define GPI_SMI_EN_OFFSET	0x1a0
+#define GPIO_MISCCFG		0x10
+#define  GPIO_DRIVER_IRQ_ROUTE_MASK    8
+#define  GPIO_DRIVER_IRQ_ROUTE_IRQ14   0
+#define  GPIO_DRIVER_IRQ_ROUTE_IRQ15   8
+#define HOSTSW_OWN_REG_0	0xd0
+#define PAD_CFG_BASE		0x400
+#define GPI_SMI_STS_0		0x180
+#define GPI_SMI_EN_0		0x1a0
 
 #endif /* _SOC_GPIO_DEFS_H_ */

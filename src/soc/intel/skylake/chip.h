@@ -24,8 +24,8 @@
 #include <intelblocks/gspi.h>
 #include <intelblocks/lpss_i2c.h>
 #include <stdint.h>
-#include <soc/gpio_defs.h>
 #include <soc/gpe.h>
+#include <soc/gpio.h>
 #include <soc/irq.h>
 #include <soc/pci_devs.h>
 #include <soc/pmc.h>

@@ -90,6 +90,9 @@
 #define GPP_B21			45
 #define GPP_B22			46
 #define GPP_B23			47
+
+#define NUM_GPIO_COM0_PADS	(GPP_B23 - GPP_A0 + 1)
+
 /* Group C */
 #define GPP_C0			48
 #define GPP_C1			49
@@ -229,6 +232,9 @@
 #define GPP_H21			178
 #define GPP_H22			179
 #define GPP_H23			180
+
+#define NUM_GPIO_COM1_PADS	(GPP_H23 - GPP_C0 + 1)
+
 /* Group I */
 #define GPP_I0			181
 #define GPP_I1			182
@@ -241,6 +247,9 @@
 #define GPP_I8			189
 #define GPP_I9			190
 #define GPP_I10			191
+
+#define NUM_GPIO_COM3_PADS	(GPP_I10 - GPP_I0 + 1)
+
 /* Group GPD  */
 #define GPD0			192
 #define GPD1			193
@@ -254,4 +263,7 @@
 #define GPD9			201
 #define GPD10			202
 #define GPD11			203
+
+#define NUM_GPIO_COM2_PADS	(GPD11 - GPD0 + 1)
+
 #endif /* _SOC_GPIO_PCH_H_DEFS_H_ */

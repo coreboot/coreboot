@@ -13,7 +13,10 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
-#include <soc/gpio_defs.h>
+#include <soc/gpio.h>
+
+#define  GPIOTXSTATE_MASK	0x1
+#define  GPIORXSTATE_MASK	0x1
 
 Device (GPIO)
 {
@@ -51,7 +54,7 @@ Device (GPIO)
 		Store (GPIO_BASE_SIZE, LEN3)
 
 		CreateDWordField (^RBUF, ^GIRQ._INT, IRQN)
-		And (^^PCRR (PID_GPIOCOM0, MISCCFG_OFFSET),
+		And (^^PCRR (PID_GPIOCOM0, GPIO_MISCCFG),
 			GPIO_DRIVER_IRQ_ROUTE_MASK, Local0)
 
 		If (LEqual (Local0, GPIO_DRIVER_IRQ_ROUTE_IRQ14)) {
@@ -115,7 +118,7 @@ Method (GADD, 1, NotSerialized)
 	}
 #endif /* CONFIG_SKYLAKE_SOC_PCH_H */
 	Store (PCRB (Local0), Local2)
-	Add (Local2, PAD_CFG_DW_OFFSET, Local2)
+	Add (Local2, PAD_CFG_BASE, Local2)
 	Return (Add (Local2, Multiply (Local1, 8)))
 }
 
@@ -130,7 +133,7 @@ Method (GRXS, 1, Serialized)
 	{
 		VAL0, 32
 	}
-	And (GPIORXSTATE_MASK, ShiftRight (VAL0, GPIORXSTATE_SHIFT), Local0)
+	And (GPIORXSTATE_MASK, ShiftRight (VAL0, PAD_CFG0_RX_STATE_BIT), Local0)
 
 	Return (Local0)
 }
@@ -146,7 +149,7 @@ Method (GTXS, 1, Serialized)
 	{
 		VAL0, 32
 	}
-	And (GPIOTXSTATE_MASK, ShiftRight (VAL0, GPIOTXSTATE_SHIFT), Local0)
+	And (GPIOTXSTATE_MASK, ShiftRight (VAL0, PAD_CFG0_TX_STATE_BIT), Local0)
 
 	Return (Local0)
 }

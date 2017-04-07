@@ -536,7 +536,9 @@ void pmc_gpe_init(void)
 	write32(pmc_regs + GPIO_CFG, gpio_cfg_reg);
 
 	/* Set the routes in the GPIO communities as well. */
-	gpio_route_gpe(gpio_cfg_reg >> GPE0_DW0_SHIFT);
+	gpio_route_gpe((gpio_cfg_reg >> GPE0_DW0_SHIFT) & GPE0_DWX_MASK,
+		(gpio_cfg_reg >> GPE0_DW1_SHIFT) & GPE0_DWX_MASK,
+		(gpio_cfg_reg >> GPE0_DW2_SHIFT) & GPE0_DWX_MASK);
 
 	/* Set GPE enables based on devictree. */
 	enable_all_gpe(config->gpe0_en_1, config->gpe0_en_2,

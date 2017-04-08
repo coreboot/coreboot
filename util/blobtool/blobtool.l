@@ -45,14 +45,16 @@ char* stripquotes (char *string)
 {
 	char *stripped;
 	unsigned int len = strlen(string);
-	if (len >= 2 && string[0] == '\"' && string[len-1] == '\"') {
-		stripped = (char *) malloc (len - 2 + 1);
-		snprintf (stripped, len - 2 + 1, "%s", string+1);
-		stripped[len-2] = '\0';
+	if (len >= 2 && string[0] == '"' && string[len - 1] == '"') {
+		stripped = (char *) malloc (len - 1);
+		if (stripped == NULL) {
+			printf("Out of memory\n");
+			exit(1);
+		}
+		snprintf (stripped, len - 1, "%s", string + 1);
 		return stripped;
-	} else {
-		return 0;
 	}
+	return NULL;
 }
 
 %}
@@ -60,27 +62,14 @@ char* stripquotes (char *string)
 %option noyywrap
 %option nounput
 
-DIGIT1to9 [1-9]
 DIGIT [0-9]
-DIGITS {DIGIT}+
-INT {DIGIT}|{DIGIT1to9}{DIGITS}|-{DIGIT}|-{DIGIT1to9}{DIGITS}
-FRAC [.]{DIGITS}
-E [eE][+-]?
-EXP {E}{DIGITS}
-HEX_DIGIT [0-9a-fA-F]
-HEX_DIGITS {HEX_DIGIT}+
+INT [-]?{DIGIT}|[-]?[1-9]{DIGIT}+
+FRAC [.]{DIGIT}+
+EXP [eE][+-]?{DIGIT}+
 NUMBER {INT}|{INT}{FRAC}|{INT}{EXP}|{INT}{FRAC}{EXP}
-UNICODECHAR \\u{HEX_DIGIT}{HEX_DIGIT}{HEX_DIGIT}{HEX_DIGIT}
-ALPHA [a-zA-Z]
-SPECIAL [()\[\]"'@_\-+:;/\\.,<> 	]
-VARCHAR {ALPHA}|{DIGIT}|{SPECIAL}
-CHAR {VARCHAR}|{UNICODECHAR}
-CHARS {CHAR}+
-QUOTE ["]
-HEX_PREFIX [0][x]
-HEX {HEX_PREFIX}{HEX_DIGITS}
-STRING {QUOTE}{QUOTE}|{QUOTE}{CHARS}{QUOTE}
-COMMENT [#]{CHARS}[\n]|[#]\n
+HEX [0][x][0-9a-fA-F]+
+STRING ["][^"]*["]
+COMMENT [#][^\n]*$
 
 %%
 
@@ -142,4 +131,3 @@ COMMENT [#]{CHARS}[\n]|[#]\n
 void set_input_string(char* in) {
 	yy_scan_string(in);
 }
-

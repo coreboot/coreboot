@@ -36,6 +36,7 @@ static struct {
 	{ CPUID_SKYLAKE_HR0,    "Skylake H R0" },
 	{ CPUID_KABYLAKE_G0,	"Kabylake G0" },
 	{ CPUID_KABYLAKE_H0,	"Kabylake H0" },
+	{ CPUID_KABYLAKE_Y0,	"Kabylake Y0" },
 	{ CPUID_KABYLAKE_HA0,	"Kabylake H A0" },
 	{ CPUID_KABYLAKE_HB0,	"Kabylake H B0" },
 };
@@ -50,6 +51,7 @@ static struct {
 	{ MCH_SKYLAKE_ID_H,	"Skylake-H" },
 	{ MCH_SKYLAKE_ID_H_EM,  "Skylake-H Embedded" },
 	{ MCH_KABYLAKE_ID_U,	"Kabylake-U" },
+	{ MCH_KABYLAKE_ID_U_R,	"Kabylake-R ULT"},
 	{ MCH_KABYLAKE_ID_Y,	"Kabylake-Y" },
 	{ MCH_KABYLAKE_ID_H,	"Kabylake-H" },
 };
@@ -82,6 +84,7 @@ static struct {
 	{ IGD_KABYLAKE_GT1_SULTM, "Kabylake ULT GT1"},
 	{ IGD_KABYLAKE_GT2_SULXM, "Kabylake ULX GT2" },
 	{ IGD_KABYLAKE_GT2_SULTM, "Kabylake ULT GT2" },
+	{ IGD_KABYLAKE_GT2_SULTMR, "Kabylake-R ULT GT2"},
 	{ IGD_KABYLAKE_GT2_SHALM, "Kabylake HALO GT2" },
 };
 

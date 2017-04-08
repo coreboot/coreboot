@@ -28,7 +28,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	struct lb_gpio chromeos_gpios[] = {
 		{-1, ACTIVE_HIGH, get_write_protect_state(), "write protect"},
 		{-1, ACTIVE_HIGH, get_recovery_mode_switch(), "recovery"},
-		{-1, ACTIVE_HIGH, get_lid_switch(), "lid"},
+		{-1, ACTIVE_HIGH, 1, "lid"}, /* Lid switch always open */
 		{-1, ACTIVE_HIGH, 0, "power"},
 		{-1, ACTIVE_HIGH, gfx_get_init_done(), "oprom"},
 		{GPIO_EC_IN_RW, ACTIVE_HIGH, gpio_get(GPIO_EC_IN_RW),

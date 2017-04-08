@@ -1,5 +1,5 @@
-# release-R50-7978.B
-STABLE_COMMIT_ID=124af94fa5599a0698e59bf3d73675eb52fc6879
+# stabilize-9430.B - Wed Mar 29, 2017
+STABLE_COMMIT_ID=eb583fa82e697a97cb13a2906fcda6e2470c7623
 
 project_name=depthcharge
 project_dir=$(CURDIR)/depthcharge

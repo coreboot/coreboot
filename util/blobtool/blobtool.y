@@ -53,13 +53,22 @@ struct blob {
 
 struct blob *binary;
 
-unsigned char* value_to_bits (unsigned int v, unsigned int w)
+static void check_pointer (void *ptr)
+{
+	if (ptr == NULL) {
+		printf("Error: Out of memory\n");
+		exit(1);
+	}
+}
+
+static unsigned char* value_to_bits (unsigned int v, unsigned int w)
 {
 	unsigned int i;
 	unsigned char* bitarr;
 
 	if (w > MAX_WIDTH) w = MAX_WIDTH;
 	bitarr = (unsigned char *) malloc (w * sizeof (unsigned char));
+	check_pointer(bitarr);
 	memset (bitarr, 0, w);
 
 	for (i = 0; i < w; i++) {
@@ -69,10 +78,11 @@ unsigned char* value_to_bits (unsigned int v, unsigned int w)
 }
 
 /* Store each bit of a bitfield in a new byte sequentially 0x80 or 0x81 */
-void append_field_to_blob (unsigned char b[], unsigned int w)
+static void append_field_to_blob (unsigned char b[], unsigned int w)
 {
 	unsigned int i, j;
 	binary->blb = (unsigned char *) realloc (binary->blb, binary->bloblen + w);
+	check_pointer(binary->blb);
 	for (j = 0, i = binary->bloblen; i < binary->bloblen + w; i++, j++) {
 		binary->blb[i] = VALID_BIT | (b[j] & 1);
 		//fprintf (stderr, "blob[%d] = %d\n", i, binary->blb[i] & 1);
@@ -80,7 +90,7 @@ void append_field_to_blob (unsigned char b[], unsigned int w)
 	binary->bloblen += w;
 }
 
-void set_bitfield(char *name, unsigned int value)
+static void set_bitfield(char *name, unsigned int value)
 {
 	unsigned long long i;
 	struct field *bf = getsym (name);
@@ -97,11 +107,12 @@ void set_bitfield(char *name, unsigned int value)
 	}
 }
 
-void set_bitfield_array(char *name, unsigned int n, unsigned int value)
+static void set_bitfield_array(char *name, unsigned int n, unsigned int value)
 {
 	unsigned int i;
-	unsigned int len = strlen (name);
+	unsigned long len = strlen (name);
 	char *namen = (char *) malloc ((len + 9) * sizeof (char));
+	check_pointer(namen);
 	for (i = 0; i < n; i++) {
 		snprintf (namen, len + 8, "%s%x", name, i);
 		set_bitfield (namen, value);
@@ -109,7 +120,7 @@ void set_bitfield_array(char *name, unsigned int n, unsigned int value)
 	free(namen);
 }
 
-void create_new_bitfield(char *name, unsigned int width)
+static void create_new_bitfield(char *name, unsigned int width)
 {
 	struct field *bf;
 
@@ -117,11 +128,12 @@ void create_new_bitfield(char *name, unsigned int width)
 	//fprintf(stderr, "Added bitfield `%s` : %d\n", bf->name, width);
 }
 
-void create_new_bitfields(char *name, unsigned int n, unsigned int width)
+static void create_new_bitfields(char *name, unsigned int n, unsigned int width)
 {
 	unsigned int i;
-	unsigned int len = strlen (name);
+	unsigned long len = strlen (name);
 	char *namen = (char *) malloc ((len + 9) * sizeof (char));
+	check_pointer(namen);
 	for (i = 0; i < n; i++) {
 		snprintf (namen, len + 8, "%s%x", name, i);
 		create_new_bitfield (namen, width);
@@ -136,7 +148,9 @@ struct field *putsym (char const *sym_name, unsigned int w)
 		return 0;
 	}
 	struct field *ptr = (struct field *) malloc (sizeof (struct field));
+	check_pointer(ptr);
 	ptr->name = (char *) malloc (strlen (sym_name) + 1);
+	check_pointer(ptr->name);
 	strcpy (ptr->name, sym_name);
 	ptr->width = w;
 	ptr->value = 0;
@@ -161,7 +175,7 @@ struct field *getsym (char const *sym_name)
 	return 0;
 }
 
-void dump_all_values (void)
+static void dump_all_values (void)
 {
 	struct field *ptr;
 	for (ptr = sym_table; ptr != (struct field *) 0;
@@ -173,7 +187,7 @@ void dump_all_values (void)
 	}
 }
 
-void empty_field_table(void)
+static void empty_field_table(void)
 {
 	struct field *ptr;
 	struct field *ptrnext;
@@ -190,21 +204,23 @@ void empty_field_table(void)
 	sym_table_tail = 0;
 }
 
-void create_binary_blob (void)
+static void create_binary_blob (void)
 {
 	if (binary && binary->blb) {
 		free(binary->blb);
 		free(binary);
 	}
 	binary = (struct blob *) malloc (sizeof (struct blob));
+	check_pointer(binary);
 	binary->blb = (unsigned char *) malloc (sizeof (unsigned char));
+	check_pointer(binary->blb);
 	binary->bloblen = 0;
 	binary->blb[0] = VALID_BIT;
 }
 
-void interpret_next_blob_value (struct field *f)
+static void interpret_next_blob_value (struct field *f)
 {
-	int i;
+	unsigned int i;
 	unsigned int v = 0;
 
 	if (binary->bloblen >= binary->lenactualblob * 8) {
@@ -220,7 +236,7 @@ void interpret_next_blob_value (struct field *f)
 }
 
 /* {}%BIN -> {} */
-void generate_setter_bitfields(unsigned char *bin)
+static void generate_setter_bitfields(unsigned char *bin)
 {
 	unsigned int i;
 	struct field *ptr;
@@ -245,7 +261,7 @@ void generate_setter_bitfields(unsigned char *bin)
 	fprintf (fp, "\n}\n");
 }
 
-void generate_binary_with_gbe_checksum(void)
+static void generate_binary_with_gbe_checksum(void)
 {
 	int i;
 	unsigned short checksum;
@@ -317,7 +333,7 @@ void generate_binary_with_gbe_checksum(void)
 }
 
 /* {}{} -> BIN */
-void generate_binary(void)
+static void generate_binary(void)
 {
 	unsigned int i;
 	struct field *ptr;
@@ -435,14 +451,39 @@ void yyerror (char const *s)
 void set_input_string(char* in);
 
 /* This function parses a string */
-int parse_string(unsigned char* in) {
+static int parse_string(unsigned char* in) {
 	set_input_string ((char *)in);
 	return yyparse ();
 }
 
+static unsigned int loadfile (char *file, char *filetype,
+	unsigned char **parsestring, unsigned int lenstr)
+{
+	unsigned int lenfile;
+
+	if ((fp = fopen(file, "r")) == NULL) {
+		printf("Error: Could not open %s file: %s\n",filetype,file);
+		exit(1);
+	}
+	fseek(fp, 0, SEEK_END);
+	lenfile = ftell(fp);
+	fseek(fp, 0, SEEK_SET);
+
+	if (lenstr == 0)
+		*parsestring = (unsigned char *) malloc (lenfile + 2);
+	else
+		*parsestring = (unsigned char *) realloc (*parsestring,
+						lenfile + lenstr);
+
+	check_pointer(*parsestring);
+	fread(*parsestring + lenstr, 1, lenfile, fp);
+	fclose(fp);
+	return lenfile;
+}
+
 int main (int argc, char *argv[])
 {
-	unsigned int lenspec, lensetter;
+	unsigned int lenspec;
 	unsigned char *parsestring;
 	unsigned char c;
 	unsigned int pos = 0;
@@ -458,70 +499,43 @@ int main (int argc, char *argv[])
 		/* Compile mode */
 
 		/* Load Spec */
-		fp = fopen(argv[1], "r");
-		fseek(fp, 0, SEEK_END);
-		lenspec = ftell(fp);
-		fseek(fp, 0, SEEK_SET);
-		parsestring = (unsigned char *) malloc (lenspec);
-		if (!parsestring) {
-			printf("Out of memory\n");
-			exit(1);
-		}
-		fread(parsestring, 1, lenspec, fp);
-		fclose(fp);
-
-		/* Load Setter */
-		fp = fopen(argv[2], "r");
-		fseek(fp, 0, SEEK_END);
-		lensetter = ftell(fp);
-		fseek(fp, 0, SEEK_SET);
-		parsestring = (unsigned char *) realloc (parsestring,
-							lenspec + lensetter);
-		if (!parsestring) {
-			printf("Out of memory\n");
-			exit(1);
-		}
-		fread(parsestring + lenspec, 1, lensetter, fp);
-		fclose(fp);
+		lenspec = loadfile(argv[1], "spec", &parsestring, 0);
+		loadfile(argv[2], "setter", &parsestring, lenspec);
 
 		/* Open output and parse string - output to fp */
-		fp = fopen(argv[3], "wb");
+		if ((fp = fopen(argv[3], "wb")) == NULL) {
+			printf("Error: Could not open output file: %s\n",argv[3]);
+			exit(1);
+		}
 		ret = parse_string(parsestring);
 		free(parsestring);
 	} else if (argc == 5 && strcmp (argv[1], "-d") == 0) {
 		/* Decompile mode */
 
 		/* Load Spec */
-		fp = fopen(argv[2], "r");
-		fseek(fp, 0, SEEK_END);
-		lenspec = ftell(fp);
-		fseek(fp, 0, SEEK_SET);
-		parsestring = (unsigned char *) malloc (lenspec + 1);
-		fread(parsestring, 1, lenspec, fp);
-		if (!parsestring) {
-			printf("Out of memory\n");
-			exit(1);
-		}
-		fclose(fp);
+		lenspec = loadfile(argv[2], "spec", &parsestring, 0);
 
-		/* Add binary read trigger token */
 		parsestring[lenspec] = '%';
+		parsestring[lenspec + 1] = '\0';
 
 		/* Load Actual Binary */
-		fp = fopen(argv[3], "rb");
+		if ((fp = fopen(argv[3], "rb")) == NULL) {
+			printf("Error: Could not open binary file: %s\n",argv[3]);
+			exit(1);
+		}
 		fseek(fp, 0, SEEK_END);
 		binary->lenactualblob = ftell(fp);
 		fseek(fp, 0, SEEK_SET);
 		binary->actualblob = (unsigned char *) malloc (binary->lenactualblob);
-		if (!binary->actualblob) {
-			printf("Out of memory\n");
-			exit(1);
-		}
+		check_pointer(binary->actualblob);
 		fread(binary->actualblob, 1, binary->lenactualblob, fp);
 		fclose(fp);
 
 		/* Open output and parse - output to fp */
-		fp = fopen(argv[4], "w");
+		if ((fp = fopen(argv[4], "w")) == NULL) {
+			printf("Error: Could not open output file: %s\n",argv[4]);
+			exit(1);
+		}
 		ret = parse_string(parsestring);
 		free(parsestring);
 		free(binary->actualblob);

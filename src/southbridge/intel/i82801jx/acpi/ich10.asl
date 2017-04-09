@@ -27,7 +27,7 @@ Scope(\)
 		TRP0, 8		// IO-Trap at 0x808
 	}
 
-	// ICH9 Power Management Registers, located at PMBASE (0x1f.0 0x40.l)
+	// ICH10 Power Management Registers, located at PMBASE (0x1f.0 0x40.l)
 	OperationRegion(PMIO, SystemIO, DEFAULT_PMBASE, 0x80)
 	Field(PMIO, ByteAcc, NoLock, Preserve)
 	{
@@ -42,7 +42,7 @@ Scope(\)
 	}
 
 	// FIXME: purposes of the GPIOs (comments) are probably wrong
-	// ICH9 GPIO IO mapped registers (0x1f.0 reg 0x48.l)
+	// ICH10 GPIO IO mapped registers (0x1f.0 reg 0x48.l)
 	OperationRegion(GPIO, SystemIO, DEFAULT_GPIOBASE, 0x3c)
 	Field(GPIO, ByteAcc, NoLock, Preserve)
 	{
@@ -124,7 +124,7 @@ Scope(\)
 	}
 
 
-	// ICH9 Root Complex Register Block. Memory Mapped through RCBA)
+	// ICH10 Root Complex Register Block. Memory Mapped through RCBA)
 	OperationRegion(RCRB, SystemMemory, DEFAULT_RCBA, 0x4000)
 	Field(RCRB, DWordAcc, Lock, Preserve)
 	{

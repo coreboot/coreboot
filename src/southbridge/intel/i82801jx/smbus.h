@@ -15,7 +15,7 @@
  */
 
 #include <device/smbus_def.h>
-#include "i82801ix.h"
+#include "i82801jx.h"
 
 static void smbus_delay(void)
 {

@@ -23,7 +23,11 @@
 #include <halt.h>
 #include <lib.h>
 #include "iomap.h"
+#if IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_I82801GX)
 #include <southbridge/intel/i82801gx/i82801gx.h> /* smbus_read_byte */
+#else
+#include <southbridge/intel/i82801jx/i82801jx.h> /* smbus_read_byte */
+#endif
 #include "x4x.h"
 #include <pc80/mc146818rtc.h>
 #include <spd.h>

@@ -29,6 +29,9 @@
 #include "../../../soc/intel/sch/sch.h"
 #elif IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_I82801IX)
 #include "../../../southbridge/intel/i82801ix/i82801ix.h"
+#elif CONFIG_SOUTHBRIDGE_INTEL_I82801JX
+#include "../../../southbridge/intel/i82801jx/i82801jx.h"
+
 #else
 #error "Southbridge needs SMM handler support."
 #endif

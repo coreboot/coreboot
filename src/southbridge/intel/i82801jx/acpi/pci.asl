@@ -65,7 +65,7 @@ Device (PCIB)
 
 	Method (_PRT)
 	{
-		#include "acpi/ich9_pci_irqs.asl"
+		#include "acpi/ich10_pci_irqs.asl"
 	}
 
 }

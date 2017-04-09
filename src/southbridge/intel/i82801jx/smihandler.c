@@ -22,7 +22,7 @@
 #include <cpu/x86/smm.h>
 #include <device/pci_def.h>
 #include <pc80/mc146818rtc.h>
-#include "i82801ix.h"
+#include "i82801jx.h"
 
 #include "nvs.h"
 

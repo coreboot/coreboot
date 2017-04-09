@@ -15,8 +15,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef SOUTHBRIDGE_INTEL_I82801GX_I82801IX_H
-#define SOUTHBRIDGE_INTEL_I82801GX_I82801IX_H
+#ifndef SOUTHBRIDGE_INTEL_I82801GX_I82801JX_H
+#define SOUTHBRIDGE_INTEL_I82801GX_I82801JX_H
 
 #ifndef __ACPI__
 #ifndef __ASSEMBLER__
@@ -86,7 +86,9 @@
 
 /* D31:F0 LPC bridge */
 #define D31F0_PMBASE		0x40
+#define PMBASE		D31F0_PMBASE
 #define D31F0_ACPI_CNTL		0x44
+#define ACPI_CNTL		D31F0_ACPI_CNTL
 #define D31F0_GPIO_BASE		0x48
 #define D31F0_GPIO_CNTL		0x4c
 #define D31F0_PIRQA_ROUT	0x60
@@ -221,9 +223,9 @@ static inline int lpc_is_mobile(const u16 devid)
 #if defined(__PRE_RAM__)
 void enable_smbus(void);
 int smbus_read_byte(unsigned device, unsigned address);
-void i82801ix_early_init(void);
-void i82801ix_dmi_setup(void);
-void i82801ix_dmi_poll_vc1(void);
+void i82801jx_early_init(void);
+void i82801jx_dmi_setup(void);
+void i82801jx_dmi_poll_vc1(void);
 #endif
 
 #endif

@@ -20,10 +20,10 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include "i82801ix.h"
+#include "i82801jx.h"
 #include <pc80/mc146818rtc.h>
 
-typedef struct southbridge_intel_i82801ix_config config_t;
+typedef struct southbridge_intel_i82801jx_config config_t;
 
 static void sata_enable_ahci_mmap(struct device *const dev, const u8 port_map,
 				  const int is_mobile)
@@ -148,10 +148,10 @@ static void sata_init(struct device *const dev)
 	const int is_mobile = (devid == 0x2928) || (devid == 0x2929);
 	u8 sata_mode;
 
-	printk(BIOS_DEBUG, "i82801ix_sata: initializing...\n");
+	printk(BIOS_DEBUG, "i82801jx_sata: initializing...\n");
 
 	if (config == NULL) {
-		printk(BIOS_ERR, "i82801ix_sata: error: "
+		printk(BIOS_ERR, "i82801jx_sata: error: "
 				 "device not in devicetree.cb!\n");
 		return;
 	}
@@ -277,8 +277,14 @@ static struct device_operations sata_ops = {
 };
 
 static const unsigned short pci_device_ids[] = {
-	0x2920, 0x2921, 0x2922, 0x2923,
-	0x2928, 0x2929,
+	0x3a00,
+	0x3a02,
+	0x3a05,
+	0x3a06,
+	0x3a20,
+	0x3a22,
+	0x3a25,
+	0x3a26,
 	0,
 };
 

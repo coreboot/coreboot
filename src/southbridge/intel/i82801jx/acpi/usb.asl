@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  */
 
-/* Intel i82801I USB support */
+/* Intel i82801J USB support */
 
 // USB Controller 0:1d.0
 

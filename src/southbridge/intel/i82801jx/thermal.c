@@ -20,7 +20,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 
-#include "i82801ix.h"
+#include "i82801jx.h"
 
 static void thermal_init(struct device *dev)
 {
@@ -74,8 +74,14 @@ static struct device_operations device_ops = {
 	.ops_pci		= &thermal_pci_ops,
 };
 
-static const struct pci_driver ich9_thermal __pci_driver = {
+static const unsigned short pci_device_ids[] = {
+	0x3a32,
+	0x3a62,
+	0
+};
+
+static const struct pci_driver ich10_thermal __pci_driver = {
 	.ops	= &device_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x2932,
+	.devices	= pci_device_ids,
 };

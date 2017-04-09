@@ -21,11 +21,11 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <console/console.h>
-#include "i82801ix.h"
+#include "i82801jx.h"
 
-typedef struct southbridge_intel_i82801ix_config config_t;
+typedef struct southbridge_intel_i82801jx_config config_t;
 
-static void i82801ix_enable_device(device_t dev)
+static void i82801jx_enable_device(device_t dev)
 {
 	u32 reg32;
 
@@ -35,7 +35,7 @@ static void i82801ix_enable_device(device_t dev)
 	pci_write_config32(dev, PCI_COMMAND, reg32);
 }
 
-static void i82801ix_early_settings(const config_t *const info)
+static void i82801jx_early_settings(const config_t *const info)
 {
 	/* Program FERR# as processor break event indicator. */
 	RCBA32(0x3410) |= (1 << 6);
@@ -49,7 +49,7 @@ static void i82801ix_early_settings(const config_t *const info)
 	RCBA32(0x352c) |= (3 << 16);
 }
 
-static void i82801ix_pcie_init(const config_t *const info)
+static void i82801jx_pcie_init(const config_t *const info)
 {
 	device_t pciePort[6];
 	int i, slot_number = 1; /* Reserve slot number 0 for nb's PEG. */
@@ -113,7 +113,7 @@ static void i82801ix_pcie_init(const config_t *const info)
 	}
 }
 
-static void i82801ix_ehci_init(void)
+static void i82801jx_ehci_init(void)
 {
 	const device_t pciEHCI1 = dev_find_slot(0, PCI_DEVFN(0x1d, 7));
 	if (!pciEHCI1)
@@ -134,7 +134,7 @@ static void i82801ix_ehci_init(void)
 					   (1 << 29) | (1 << 17) | (2 << 2));
 }
 
-static int i82801ix_function_disabled(const unsigned devfn)
+static int i82801jx_function_disabled(const unsigned int devfn)
 {
 	const struct device *const dev = dev_find_slot(0, devfn);
 	if (!dev) {
@@ -146,7 +146,7 @@ static int i82801ix_function_disabled(const unsigned devfn)
 	return !dev->enabled;
 }
 
-static void i82801ix_hide_functions(void)
+static void i82801jx_hide_functions(void)
 {
 	int i;
 	u32 reg32;
@@ -155,7 +155,7 @@ static void i82801ix_hide_functions(void)
 	          some functions have to be disabled in right order and/or have
 		  other constraints. */
 
-	if (i82801ix_function_disabled(PCI_DEVFN(0x19, 0)))
+	if (i82801jx_function_disabled(PCI_DEVFN(0x19, 0)))
 		RCBA32(RCBA_BUC) |= BUC_LAND;
 
 	reg32 = RCBA32(RCBA_FD);
@@ -185,7 +185,7 @@ static void i82801ix_hide_functions(void)
 		{ PCI_DEVFN(0x1f, 6), FD_TTD },		/* Thermal Throttle */
 	};
 	for (i = 0; i < ARRAY_SIZE(functions); ++i) {
-		if (i82801ix_function_disabled(functions[i].devfn))
+		if (i82801jx_function_disabled(functions[i].devfn))
 			reg32 |= functions[i].mask;
 	}
 	RCBA32(RCBA_FD) = reg32;
@@ -195,7 +195,7 @@ static void i82801ix_hide_functions(void)
 	/* Hide PCIe root port PCI functions. RPFN is partially R/WO. */
 	reg32 = RCBA32(RCBA_RPFN);
 	for (i = 0; i < 6; ++i) {
-		if (i82801ix_function_disabled(PCI_DEVFN(0x1c, i)))
+		if (i82801jx_function_disabled(PCI_DEVFN(0x1c, i)))
 			reg32 |= (1 << ((i * 4) + 3));
 	}
 	RCBA32(RCBA_RPFN) = reg32;
@@ -204,22 +204,22 @@ static void i82801ix_hide_functions(void)
 	RCBA32(RCBA_MAP) = RCBA32(RCBA_MAP);
 }
 
-static void i82801ix_init(void *chip_info)
+static void i82801jx_init(void *chip_info)
 {
 	const config_t *const info = (config_t *)chip_info;
 
-	printk(BIOS_DEBUG, "Initializing i82801ix southbridge...\n");
+	printk(BIOS_DEBUG, "Initializing i82801jx southbridge...\n");
 
-	i82801ix_early_settings(info);
+	i82801jx_early_settings(info);
 
 	/* PCI Express setup. */
-	i82801ix_pcie_init(info);
+	i82801jx_pcie_init(info);
 
 	/* EHCI configuration. */
-	i82801ix_ehci_init();
+	i82801jx_ehci_init();
 
 	/* Now hide internal functions. We can't access them after this. */
-	i82801ix_hide_functions();
+	i82801jx_hide_functions();
 
 	/* Reset watchdog timer. */
 #if !CONFIG_HAVE_SMI_HANDLER
@@ -228,8 +228,8 @@ static void i82801ix_init(void *chip_info)
 	outw(0x0000, DEFAULT_TCOBASE + 0x00); /* Update timer. */
 }
 
-struct chip_operations southbridge_intel_i82801ix_ops = {
-	CHIP_NAME("Intel ICH9/ICH9-M (82801Ix) Series Southbridge")
-	.enable_dev	= i82801ix_enable_device,
-	.init		= i82801ix_init,
+struct chip_operations southbridge_intel_i82801jx_ops = {
+	CHIP_NAME("Intel ICH10 (82801Jx) Series Southbridge")
+	.enable_dev	= i82801jx_enable_device,
+	.init		= i82801jx_init,
 };

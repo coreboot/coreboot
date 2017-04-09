@@ -18,7 +18,7 @@
 #include <device/pci_def.h>
 #include <console/console.h>
 #include <northbridge/intel/gm45/gm45.h>
-#include "i82801ix.h"
+#include "i82801jx.h"
 
 /* VC1 Port Arbitration Table */
 static const u8 vc1_pat[] = {
@@ -39,7 +39,7 @@ static const u8 vc1_pat[] = {
 	0x00, 0xf0, 0x00, 0x00,
 	0x00, 0x00, 0x00, 0x00,
 };
-void i82801ix_dmi_setup(void)
+void i82801jx_dmi_setup(void)
 {
 	int i;
 	u32 reg32;
@@ -109,12 +109,12 @@ void i82801ix_dmi_setup(void)
 }
 
 /* Should be called after VC1 has been enabled on both sides. */
-void i82801ix_dmi_poll_vc1(void)
+void i82801jx_dmi_poll_vc1(void)
 {
 	int timeout;
 
 	timeout = 0x7ffff;
-	printk(BIOS_DEBUG, "ICH9 waits for VC1 negotiation... ");
+	printk(BIOS_DEBUG, "ICH10 waits for VC1 negotiation... ");
 	while ((RCBA32(RCBA_V1STS) & (1 << 1)) && --timeout) {}
 	if (!timeout)
 		printk(BIOS_DEBUG, "timeout!\n");
@@ -132,7 +132,7 @@ void i82801ix_dmi_poll_vc1(void)
 	}
 
 	timeout = 0x7ffff;
-	printk(BIOS_DEBUG, "ICH9 waits for port arbitration table update... ");
+	printk(BIOS_DEBUG, "ICH10 waits for port arbitration table update... ");
 	while ((RCBA32(RCBA_V1STS) & (1 << 0)) && --timeout) {}
 	if (!timeout)
 		printk(BIOS_DEBUG, "timeout!\n");

@@ -21,9 +21,10 @@
 #include <commonlib/helpers.h>
 #include <delay.h>
 #include <pc80/mc146818rtc.h>
-/* This northbridge can also occur with ICH10 */
 #if IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_I82801GX)
 #include <southbridge/intel/i82801gx/i82801gx.h>
+#else
+#include <southbridge/intel/i82801jx/i82801jx.h>
 #endif
 #include "iomap.h"
 #include "x4x.h"

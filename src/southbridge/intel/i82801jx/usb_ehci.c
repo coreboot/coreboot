@@ -18,7 +18,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include "i82801ix.h"
+#include "i82801jx.h"
 #include <device/pci_ehci.h>
 
 static void usb_ehci_init(struct device *dev)
@@ -55,8 +55,10 @@ static void usb_ehci_set_subsystem(device_t dev, unsigned vendor, unsigned devic
 }
 
 static const unsigned short pci_device_ids[] = {
-	0x293a,
-	0x293c,
+	0x3a3a,
+	0x3a6a,
+	0x3a3c,
+	0x3a6c,
 	0
 };
 

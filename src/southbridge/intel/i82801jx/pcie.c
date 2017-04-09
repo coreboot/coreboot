@@ -27,9 +27,9 @@ static void pci_init(struct device *dev)
 {
 	u16 reg16;
 	u32 reg32;
-	struct southbridge_intel_i82801ix_config *config = dev->chip_info;
+	struct southbridge_intel_i82801jx_config *config = dev->chip_info;
 
-	printk(BIOS_DEBUG, "Initializing ICH9 PCIe root port.\n");
+	printk(BIOS_DEBUG, "Initializing ICH10 PCIe root port.\n");
 
 	/* Enable Bus Master */
 	reg32 = pci_read_config32(dev, PCI_COMMAND);
@@ -108,7 +108,7 @@ static void pcie_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 
 static void pch_pciexp_scan_bridge(device_t dev)
 {
-	struct southbridge_intel_i82801ix_config *config = dev->chip_info;
+	struct southbridge_intel_i82801jx_config *config = dev->chip_info;
 
 	/* Normal PCIe Scan */
 	pciexp_scan_bridge(dev);
@@ -131,17 +131,25 @@ static struct device_operations device_ops = {
 	.ops_pci		= &pci_ops,
 };
 
-/* 82801Ix (ICH9DH/ICH9DO/ICH9R/ICH9/ICH9M-E/ICH9M) */
+/* 82801lJx, ICH10  */
 static const unsigned short pci_device_ids[] = {
-	0x2940, /* Port 1 */
-	0x2942, /* Port 2 */
-	0x2944, /* Port 3 */
-	0x2946, /* Port 4 */
-	0x2948, /* Port 5 */
-	0x294a, /* Port 6 */
+	0x3a40, /* Port 1 */
+	0x3a42, /* Port 2 */
+	0x3a44, /* Port 3 */
+	0x3a46, /* Port 4 */
+	0x3a48, /* Port 5 */
+	0x3a4a, /* Port 6 */
+
+	0x3a70, /* Port 1 */
+	0x3a72, /* Port 2 */
+	0x3a74, /* Port 3 */
+	0x3a76, /* Port 4 */
+	0x3a78, /* Port 5 */
+	0x3a7a, /* Port 6 */
 	0
 };
-static const struct pci_driver ich9_pcie __pci_driver = {
+
+static const struct pci_driver ich10_pcie __pci_driver = {
 	.ops		= &device_ops,
 	.vendor		= PCI_VENDOR_ID_INTEL,
 	.devices	= pci_device_ids,

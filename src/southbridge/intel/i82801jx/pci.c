@@ -17,7 +17,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include "i82801ix.h"
+#include "i82801jx.h"
 
 static void pci_init(struct device *dev)
 {
@@ -70,12 +70,11 @@ static struct device_operations device_ops = {
 };
 
 static const unsigned short pci_device_ids[] = {
-	0x244e, /* Desktop */
-	0x2448, /* Mobile */
+	0x244e,
 	0
 };
 
-static const struct pci_driver ich9_pci __pci_driver = {
+static const struct pci_driver ich10_pci __pci_driver = {
 	.ops		= &device_ops,
 	.vendor		= PCI_VENDOR_ID_INTEL,
 	.devices	= pci_device_ids,

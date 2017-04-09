@@ -25,7 +25,7 @@
 #include <cpu/x86/cache.h>
 #include <cpu/x86/smm.h>
 #include <string.h>
-#include "i82801ix.h"
+#include "i82801jx.h"
 
 /* I945/GM45 */
 #define SMRAM		0x9d
@@ -276,7 +276,7 @@ static void smm_relocate(void)
 	smi_en |= TCO_EN;
 	smi_en |= APMC_EN;
 #if DEBUG_PERIODIC_SMIS
-	/* Set DEBUG_PERIODIC_SMIS in i82801ix.h to debug using
+	/* Set DEBUG_PERIODIC_SMIS in i82801jx.h to debug using
 	 * periodic SMIs.
 	 */
 	smi_en |= PERIODIC_EN;

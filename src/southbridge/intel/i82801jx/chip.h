@@ -14,15 +14,15 @@
  * GNU General Public License for more details.
  */
 
-#ifndef SOUTHBRIDGE_INTEL_I82801IX_CHIP_H
-#define SOUTHBRIDGE_INTEL_I82801IX_CHIP_H
+#ifndef SOUTHBRIDGE_INTEL_I82801JX_CHIP_H
+#define SOUTHBRIDGE_INTEL_I82801JX_CHIP_H
 
 enum {
 	THTL_DEF = 0, THTL_87_5 = 1, THTL_75_0 = 2, THTL_62_5 = 3,
 	THTL_50_0 = 4, THTL_37_5 = 5, THTL_25_0 = 6, THTL_12_5 = 7
 };
 
-struct southbridge_intel_i82801ix_config {
+struct southbridge_intel_i82801jx_config {
 	/**
 	 * Interrupt Routing configuration
 	 * If bit7 is 1, the interrupt is disabled.
@@ -88,4 +88,4 @@ struct southbridge_intel_i82801ix_config {
 	uint8_t pcie_hotplug_map[8];
 };
 
-#endif				/* SOUTHBRIDGE_INTEL_I82801IX_CHIP_H */
+#endif				/* SOUTHBRIDGE_INTEL_I82801JX_CHIP_H */

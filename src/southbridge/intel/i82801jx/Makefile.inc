@@ -16,7 +16,7 @@
 
 ifeq ($(CONFIG_SOUTHBRIDGE_INTEL_I82801JX),y)
 
-ramstage-y += i82801ix.c
+ramstage-y += i82801jx.c
 ramstage-y += pci.c
 ramstage-y += lpc.c
 ramstage-y += pcie.c
@@ -36,8 +36,6 @@ ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += ../../../cpu/x86/smm/smmrelocate.S
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
 
-romstage-y += early_init.c
 romstage-y += early_smbus.c
-romstage-y += dmi_setup.c
 
 endif

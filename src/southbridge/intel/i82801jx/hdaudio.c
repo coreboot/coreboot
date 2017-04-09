@@ -23,13 +23,13 @@
 #include <arch/io.h>
 #include <delay.h>
 #include <device/azalia_device.h>
-#include "i82801ix.h"
+#include "i82801jx.h"
 
 #define HDA_ICII_REG 0x68
 #define HDA_ICII_BUSY (1 << 0)
 #define HDA_ICII_VALID (1 << 1)
 
-typedef struct southbridge_intel_i82801ix_config config_t;
+typedef struct southbridge_intel_i82801jx_config config_t;
 
 static int set_bits(void *port, u32 mask, u32 val)
 {
@@ -311,9 +311,14 @@ static struct device_operations azalia_ops = {
 	.ops_pci		= &azalia_pci_ops,
 };
 
-/* ICH9DH/ICH9DO/ICH9R/ICH9/ICH9M-E/ICH9M */
-static const struct pci_driver i82801ix_azalia __pci_driver = {
+static const unsigned short pci_device_ids[] = {
+	0x3a3e,
+	0x3a6e,
+	0
+};
+
+static const struct pci_driver i82801jx_azalia __pci_driver = {
 	.ops	= &azalia_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x293e,
+	.devices	= pci_device_ids,
 };

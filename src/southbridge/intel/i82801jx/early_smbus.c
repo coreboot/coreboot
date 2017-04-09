@@ -19,7 +19,7 @@
 #include <console/console.h>
 #include <device/pci_ids.h>
 #include <device/pci_def.h>
-#include "i82801ix.h"
+#include "i82801jx.h"
 #include "smbus.h"
 
 void enable_smbus(void)
@@ -28,11 +28,6 @@ void enable_smbus(void)
 
 	/* Set the SMBus device statically. */
 	dev = PCI_DEV(0x0, 0x1f, 0x3);
-
-	/* Check to make sure we've got the right device. */
-	if (pci_read_config16(dev, 0x2) != 0x2930) {
-		die("SMBus controller not found!");
-	}
 
 	/* Set SMBus I/O base. */
 	pci_write_config32(dev, SMB_BASE,

@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  */
 
-/* Intel i82801I HDA */
+/* Intel i82801L HDA */
 
 // Intel High Definition Audio (Azalia) 0:1b.0
 

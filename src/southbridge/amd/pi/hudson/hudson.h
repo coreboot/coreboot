@@ -22,6 +22,12 @@
 #include <device/device.h>
 #include "chip.h"
 
+/* Offsets from ACPI_MMIO_BASE
+ * This is defined by AGESA, but we don't include AGESA headers to avoid
+ * polluting the namespace.
+ */
+#define PM_MMIO_BASE 0xfed80300
+
 /* Power management index/data registers */
 #define BIOSRAM_INDEX	0xcd4
 #define BIOSRAM_DATA	0xcd5
@@ -30,8 +36,19 @@
 #define PM2_INDEX	0xcd0
 #define PM2_DATA	0xcd1
 
-#define HUDSON_ACPI_IO_BASE 0x800
+#define PM_SERIRQ_CONF		0x54
+#define PM_EVT_BLK		0x60
+#define PM1_CNT_BLK		0x62
+#define PM_TMR_BLK		0x64
+#define PM_CPU_CTRL		0x66
+#define PM_GPE0_BLK		0x68
+#define PM_ACPI_SMI_CMD		0x6A
+#define PM_ACPI_CONF		0x74
+#define PM_MANUAL_RESET		0xD3
+#define PM_HUD_SD_FLASH_CTRL	0xE7
+#define PM_YANG_SD_FLASH_CTRL	0xE8
 
+#define HUDSON_ACPI_IO_BASE 0x800
 #define ACPI_PM_EVT_BLK		(HUDSON_ACPI_IO_BASE + 0x00) /* 4 bytes */
 #define ACPI_PM1_CNT_BLK	(HUDSON_ACPI_IO_BASE + 0x04) /* 2 bytes */
 #define ACPI_PM_TMR_BLK		(HUDSON_ACPI_IO_BASE + 0x18) /* 4 bytes */

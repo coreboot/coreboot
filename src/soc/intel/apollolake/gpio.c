@@ -17,9 +17,9 @@
 
 #include <assert.h>
 #include <gpio.h>
+#include <intelblocks/itss.h>
 #include <intelblocks/pcr.h>
 #include <soc/gpio.h>
-#include <soc/itss.h>
 #include <soc/pcr_ids.h>
 #include <soc/pm.h>
 

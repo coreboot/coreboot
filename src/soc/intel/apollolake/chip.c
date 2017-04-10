@@ -26,12 +26,13 @@
 #include <device/pci.h>
 #include <fsp/api.h>
 #include <fsp/util.h>
+#include <intelblocks/itss.h>
 #include <romstage_handoff.h>
 #include <soc/iomap.h>
+#include <soc/itss.h>
 #include <soc/cpu.h>
 #include <soc/flash_ctrlr.h>
 #include <soc/intel/common/vbt.h>
-#include <soc/itss.h>
 #include <soc/nvs.h>
 #include <soc/pci_devs.h>
 #include <spi-generic.h>

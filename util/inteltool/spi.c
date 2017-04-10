@@ -106,6 +106,7 @@ int print_bioscntl(struct pci_dev *sb)
 	case PCI_DEVICE_ID_INTEL_ICH9:
 	case PCI_DEVICE_ID_INTEL_ICH9M:
 	case PCI_DEVICE_ID_INTEL_ICH9ME:
+	case PCI_DEVICE_ID_INTEL_ICH10:
 	case PCI_DEVICE_ID_INTEL_ICH10R:
 	case PCI_DEVICE_ID_INTEL_NM10:
 		bios_cntl = pci_read_byte(sb, 0xdc);
@@ -187,6 +188,7 @@ int print_spibar(struct pci_dev *sb) {
 	case PCI_DEVICE_ID_INTEL_ICH9:
 	case PCI_DEVICE_ID_INTEL_ICH9M:
 	case PCI_DEVICE_ID_INTEL_ICH9ME:
+	case PCI_DEVICE_ID_INTEL_ICH10:
 	case PCI_DEVICE_ID_INTEL_ICH10R:
 	case PCI_DEVICE_ID_INTEL_NM10:
 	case PCI_DEVICE_ID_INTEL_I63XX:

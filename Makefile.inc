@@ -86,7 +86,7 @@ subdirs-y += src/superio
 subdirs-y += $(wildcard src/drivers/*) $(wildcard src/drivers/*/*)
 subdirs-y += src/cpu src/vendorcode
 subdirs-y += util/cbfstool util/sconfig util/nvramtool util/broadcom
-subdirs-y += util/futility util/marvell
+subdirs-y += util/futility util/marvell util/blobtool
 subdirs-y += $(wildcard src/arch/*)
 subdirs-y += src/mainboard/$(MAINBOARDDIR)
 subdirs-y += src/vboot
@@ -590,7 +590,7 @@ gitconfig:
 include util/crossgcc/Makefile.inc
 
 .PHONY: tools
-tools: $(objutil)/kconfig/conf $(CBFSTOOL) $(objutil)/cbfstool/cbfs-compression-tool $(FMAPTOOL) $(RMODTOOL) $(IFWITOOL) $(objutil)/nvramtool/nvramtool $(ROMCC_BIN) $(objutil)/sconfig/sconfig $(IFDTOOL) $(IFDFAKE) $(CBOOTIMAGE) $(AMDFWTOOL) $(FUTILITY)
+tools: $(objutil)/kconfig/conf $(CBFSTOOL) $(objutil)/cbfstool/cbfs-compression-tool $(FMAPTOOL) $(RMODTOOL) $(IFWITOOL) $(objutil)/nvramtool/nvramtool $(ROMCC_BIN) $(objutil)/sconfig/sconfig $(IFDTOOL) $(IFDFAKE) $(CBOOTIMAGE) $(AMDFWTOOL) $(FUTILITY) $(objutil)/blobtool/blobtool
 
 ###########################################################################
 # Common recipes for all stages

@@ -19,7 +19,7 @@ $(objutil)/sconfig/%.o: $(objutil)/sconfig/%.c
 	printf "    HOSTCC     $(subst $(obj)/,,$(@))\n"
 	$(HOSTCC) $(SCONFIGFLAGS) $(HOSTCFLAGS) -c -o $@ $<
 
-ifdef CONFIG_SCONFIG_GENPARSER
+ifeq ($(CONFIG_UTIL_GENPARSER),y)
 $(top)/util/sconfig/lex.yy.c_shipped: $(top)/util/sconfig/sconfig.l
 	printf "    FLEX       $(subst $(top)/,,$(@))\n"
 	flex -L -o $@ $<

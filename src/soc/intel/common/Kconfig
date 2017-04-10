@@ -92,14 +92,15 @@ config SOC_INTEL_COMMON_LPSS_I2C_DEBUG
 config MMA
 	bool "Enable MMA (Memory Margin Analysis) support for Intel Core"
 	default n
-	depends on PLATFORM_USES_FSP2_0 || PLATFORM_USES_FSP1_1
+	depends on SOC_INTEL_KABYLAKE || SOC_INTEL_SKYLAKE
 	help
 	 Set this option to y to enable MMA (Memory Margin Analysis) support
 
 config MMA_BLOBS_PATH
 	string "Path to MMA blobs"
 	depends on MMA
-	default "3rdparty/blobs/mainboard/$(MAINBOARDDIR)/mma"
+	default "3rdparty/blobs/soc/intel/kabylake/mma-blobs" if SOC_INTEL_KABYLAKE
+	default "3rdparty/blobs/soc/intel/skylake/mma-blobs" if SOC_INTEL_SKYLAKE
 
 config ADD_VBT_DATA_FILE
 	bool "Add a Video Bios Table (VBT) binary to CBFS"

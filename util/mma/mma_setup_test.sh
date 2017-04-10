@@ -3,7 +3,7 @@
 #
 # This file is part of the coreboot project.
 #
-# Copyright (C) 2015 Intel Corporation.
+# Copyright (C) 2017 Intel Corporation.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@ printf_separator() {
 }
 
 show_usage() {
+	printf "MMA blobs version : 2.1018\n"
 	printf "usage: $(basename "${0}") %s\n" \
 		"set [<mma_test_name_efi> <mma_test_param_bin>] | reset"
 	printf '=%.0s' {1..29}
@@ -72,14 +73,22 @@ show_usage() {
 	printf "Test name \tMarginMapper.efi\n"
 	printf "Test Config\n"
         printf "\t\t%s %s\n" \
-		MarginMapperRxVref-RxDqsDelayConfigCh0.bin \
-		MarginMapperRxVref-RxDqsDelayConfigCh1.bin \
-		MarginMapperTxVref-TxDqDelayConfigCh0.bin \
-		MarginMapperTxVref-TxDqDelayConfigCh1.bin \
-		ScoreRxVref-RxDqsDelayConfigCh0.bin \
-		ScoreRxVref-RxDqsDelayConfigCh1.bin \
-		ScoreTxVref-TxDqDelayConfigCh0.bin \
-		ScoreTxVref-TxDqDelayConfigCh1.bin
+		MarginMapperRxVref-RxDqsDelayConfigVCh0ACh0_single_ch.bin \
+		MarginMapperRxVref-RxDqsDelayConfigVCh0ACh1_dual_ch.bin \
+		MarginMapperRxVref-RxDqsDelayConfigVCh1ACh0_dual_ch.bin \
+		MarginMapperRxVref-RxDqsDelayConfigVCh1ACh1_single_ch.bin \
+		MarginMapperTxVref-TxDqDelayConfigVCh0ACh0_single_ch.bin \
+		MarginMapperTxVref-TxDqDelayConfigVCh0ACh1_dual_ch.bin \
+		MarginMapperTxVref-TxDqDelayConfigVCh1ACh0_dual_ch.bin \
+		MarginMapperTxVref-TxDqDelayConfigVCh1ACh1_single_ch.bin \
+		ScoreRxVref-RxDqsDelayConfigVCh0ACh0_single_ch.bin \
+		ScoreRxVref-RxDqsDelayConfigVCh0ACh1_dual_ch.bin \
+		ScoreRxVref-RxDqsDelayConfigVCh1ACh0_dual_ch.bin \
+		ScoreRxVref-RxDqsDelayConfigVCh1ACh1_single_ch.bin \
+		ScoreTxVref-TxDqDelayConfigVCh0ACh0_single_ch.bin \
+		ScoreTxVref-TxDqDelayConfigVCh0ACh1_dual_ch.bin \
+		ScoreTxVref-TxDqDelayConfigVCh1ACh0_dual_ch.bin \
+		ScoreTxVref-TxDqDelayConfigVCh1ACh1_single_ch.bin
 	printf_separator
 	printf "Test Name \tRMT.efi\n"
 	printf "Test Config\n"

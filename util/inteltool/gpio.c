@@ -939,6 +939,7 @@ int print_gpios(struct pci_dev *sb, int show_all, int show_diffs)
 		gpio_defaults = pp_pch_mobile_defaults;
 		defaults_size = ARRAY_SIZE(pp_pch_mobile_defaults);
 		break;
+	case PCI_DEVICE_ID_INTEL_ICH10:
 	case PCI_DEVICE_ID_INTEL_ICH10R:
 		gpiobase = pci_read_word(sb, 0x48) & 0xfffc;
 		gpio_registers = ich10_gpio_registers;

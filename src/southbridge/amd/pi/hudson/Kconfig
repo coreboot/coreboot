@@ -213,6 +213,12 @@ config AMDFW_OUTSIDE_CBFS
 	  option to manually attach the generated amdfw.rom at an
 	  offset of 0x20000 from the bottom of the coreboot ROM image.
 
+config SERIRQ_CONTINUOUS_MODE
+	bool
+	default n
+	help
+	  Set this option to y for serial IRQ in continuous mode.
+	  Otherwise it is in quiet mode.
 endif
 
 config HUDSON_UART

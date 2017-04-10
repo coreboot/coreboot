@@ -100,12 +100,12 @@ config FMD_GENPARSER
 
 	  Otherwise, say N to use the provided pregenerated scanner/parser.
 
-config SCONFIG_GENPARSER
-	bool "Generate SCONFIG parser using flex and bison"
+config UTIL_GENPARSER
+	bool "Generate SCONFIG & BLOBTOOL parser using flex and bison"
 	default n
 	help
 	  Enable this option if you are working on the sconfig device tree
-	  parser and made changes to sconfig.l or sconfig.y.
+	  parser or blobtool and made changes to the .l or .y files.
 
 	  Otherwise, say N to use the provided pregenerated scanner/parser.
 

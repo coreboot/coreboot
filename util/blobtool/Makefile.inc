@@ -16,7 +16,7 @@ $(objutil)/blobtool/%.o: $(objutil)/blobtool/%.c
 	printf "    HOSTCC     $(subst $(obj)/,,$(@))\n"
 	$(HOSTCC) $(BLOBTOOL_FLAGS) $(HOSTCFLAGS) -c -o $@ $<
 
-ifeq (0,1)
+ifeq ($(CONFIG_UTIL_GENPARSER),y)
 $(top)/util/blobtool/blobtool.lex.c_shipped: $(top)/util/blobtool/blobtool.l
 	printf "    FLEX       $(subst $(top)/,,$(@))\n"
 	flex -L -o $@ $<

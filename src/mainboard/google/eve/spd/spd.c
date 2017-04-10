@@ -77,20 +77,24 @@ static void mainboard_print_spd_info(uint8_t spd[])
 	}
 }
 
-uintptr_t mainboard_get_spd_data(void)
+int mainboard_get_spd_index(void)
 {
-	char *spd_file;
-	size_t spd_file_len;
-	int spd_index;
-
 	gpio_t spd_gpios[] = {
 		GPIO_MEM_CONFIG_0,
 		GPIO_MEM_CONFIG_1,
 		GPIO_MEM_CONFIG_2,
 		GPIO_MEM_CONFIG_3,
 	};
+	return gpio_base2_value(spd_gpios, ARRAY_SIZE(spd_gpios));
+}
 
-	spd_index = gpio_base2_value(spd_gpios, ARRAY_SIZE(spd_gpios));
+uintptr_t mainboard_get_spd_data(void)
+{
+	char *spd_file;
+	size_t spd_file_len;
+	int spd_index;
+
+	spd_index = mainboard_get_spd_index();
 	printk(BIOS_INFO, "SPD index %d\n", spd_index);
 
 	/* Load SPD data from CBFS */

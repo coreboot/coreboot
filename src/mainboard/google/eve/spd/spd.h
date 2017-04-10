@@ -30,6 +30,7 @@
 #define  SPD_PART_LEN		18
 #define SPD_MANU_OFF		148
 
+int mainboard_get_spd_index(void);
 uintptr_t mainboard_get_spd_data(void);
 
 #endif

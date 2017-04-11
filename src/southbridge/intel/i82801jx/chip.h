@@ -73,6 +73,9 @@ struct southbridge_intel_i82801jx_config {
 	int c4onc3_enable:1;
 	int c5_enable : 1;
 	int c6_enable : 1;
+	int c3_latency;
+	int p_cnt_throttling_supported:1;
+	int docking_supported:1;
 
 	int throttle_duty : 3;
 

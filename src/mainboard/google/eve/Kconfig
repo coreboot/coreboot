@@ -27,6 +27,11 @@ config VBOOT
 	select VBOOT_LID_SWITCH
 	select MRC_CLEAR_NORMAL_CACHE_ON_RECOVERY_RETRAIN
 
+config CHROMEOS
+	select DSAR_ENABLE
+	select SAR_ENABLE
+	select USE_SAR
+
 config DRIVER_TPM_I2C_BUS
 	hex
 	default 0x1

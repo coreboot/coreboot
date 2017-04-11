@@ -30,13 +30,13 @@
 #include <cpu/cpu.h>
 #include <cpu/x86/smm.h>
 #include <cbmem.h>
+#include <intelblocks/itss.h>
 #include <intelblocks/pcr.h>
 #include <reg_script.h>
 #include <string.h>
 #include <soc/acpi.h>
 #include <soc/gpio.h>
 #include <soc/iomap.h>
-#include <soc/itss.h>
 #include <soc/lpc.h>
 #include <soc/nvs.h>
 #include <soc/pch.h>
@@ -98,15 +98,18 @@ static void pch_pirq_init(device_t dev)
 {
 	device_t irq_dev;
 	config_t *config = dev->chip_info;
+	uint8_t pch_interrupt_routing[MAX_PXRC_CONFIG];
 
-	pcr_write8(PID_ITSS, PCR_ITSS_PIRQA_ROUT, config->pirqa_routing);
-	pcr_write8(PID_ITSS, PCR_ITSS_PIRQB_ROUT, config->pirqb_routing);
-	pcr_write8(PID_ITSS, PCR_ITSS_PIRQC_ROUT, config->pirqc_routing);
-	pcr_write8(PID_ITSS, PCR_ITSS_PIRQD_ROUT, config->pirqd_routing);
-	pcr_write8(PID_ITSS, PCR_ITSS_PIRQE_ROUT, config->pirqe_routing);
-	pcr_write8(PID_ITSS, PCR_ITSS_PIRQF_ROUT, config->pirqf_routing);
-	pcr_write8(PID_ITSS, PCR_ITSS_PIRQG_ROUT, config->pirqg_routing);
-	pcr_write8(PID_ITSS, PCR_ITSS_PIRQH_ROUT, config->pirqh_routing);
+	pch_interrupt_routing[0] = config->pirqa_routing;
+	pch_interrupt_routing[1] = config->pirqb_routing;
+	pch_interrupt_routing[2] = config->pirqc_routing;
+	pch_interrupt_routing[3] = config->pirqd_routing;
+	pch_interrupt_routing[4] = config->pirqe_routing;
+	pch_interrupt_routing[5] = config->pirqf_routing;
+	pch_interrupt_routing[6] = config->pirqg_routing;
+	pch_interrupt_routing[7] = config->pirqh_routing;
+
+	itss_irq_init(pch_interrupt_routing);
 
 	for (irq_dev = all_devices; irq_dev; irq_dev = irq_dev->next) {
 		u8 int_pin = 0, int_line = 0;
@@ -159,12 +162,11 @@ static const struct reg_script pch_misc_init_script[] = {
 static void clock_gate_8254(struct device *dev)
 {
 	config_t *config = dev->chip_info;
-	const uint32_t cge8254_mask = (1 << 2);
 
 	if (!config->clock_gate_8254)
 		return;
 
-	pcr_rmw32(PID_ITSS, PCR_ITSS_ITSSPRC, ~cge8254_mask, cge8254_mask);
+	itss_clock_gate_8254();
 }
 
 static void lpc_init(struct device *dev)

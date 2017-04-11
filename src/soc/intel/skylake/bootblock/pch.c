@@ -18,11 +18,11 @@
 #include <chip.h>
 #include <device/device.h>
 #include <device/pci_def.h>
+#include <intelblocks/itss.h>
 #include <intelblocks/pcr.h>
 #include <intelblocks/rtc.h>
 #include <soc/bootblock.h>
 #include <soc/iomap.h>
-#include <soc/itss.h>
 #include <soc/lpc.h>
 #include <soc/p2sb.h>
 #include <soc/pch.h>
@@ -132,8 +132,7 @@ static void pch_interrupt_init(void)
 {
 	const struct device *dev;
 	const config_t *config;
-	u8 index = 0;
-	u8 pch_interrupt_routing[MAX_PXRC_CONFIG];
+	uint8_t pch_interrupt_routing[MAX_PXRC_CONFIG];
 
 	dev = dev_find_slot(0, PCI_DEVFN(PCH_DEV_SLOT_LPC, 0));
 	if (!dev || !dev->chip_info)
@@ -149,16 +148,9 @@ static void pch_interrupt_init(void)
 	pch_interrupt_routing[6] = config->pirqg_routing;
 	pch_interrupt_routing[7] = config->pirqh_routing;
 
-	for (index = 0; index < MAX_PXRC_CONFIG; index++) {
-		if (pch_interrupt_routing[index] < 16 &&
-			pch_interrupt_routing[index] > 2 &&
-			pch_interrupt_routing[index] != 8 &&
-			pch_interrupt_routing[index] != 13) {
-			pcr_write8(PID_ITSS, PCR_ITSS_PIRQA_ROUT + index,
-					pch_interrupt_routing[index]);
-		}
-	}
+	itss_irq_init(pch_interrupt_routing);
 }
+
 
 static void soc_config_acpibase(void)
 {

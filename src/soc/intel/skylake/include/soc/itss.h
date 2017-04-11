@@ -16,26 +16,8 @@
 #ifndef SOC_INTEL_SKL_ITSS_H
 #define SOC_INTEL_SKL_ITSS_H
 
-/* Max PXRC registers in ITSS*/
-#define MAX_PXRC_CONFIG         0x08
-
-/* PIRQA Routing Control Register*/
-#define PCR_ITSS_PIRQA_ROUT	0x3100
-/* PIRQB Routing Control Register*/
-#define PCR_ITSS_PIRQB_ROUT	0x3101
-/* PIRQC Routing Control Register*/
-#define PCR_ITSS_PIRQC_ROUT	0x3102
-/* PIRQD Routing Control Register*/
-#define PCR_ITSS_PIRQD_ROUT	0x3103
-/* PIRQE Routing Control Register*/
-#define PCR_ITSS_PIRQE_ROUT	0x3104
-/* PIRQF Routing Control Register*/
-#define PCR_ITSS_PIRQF_ROUT	0x3105
-/* PIRQG Routing Control Register*/
-#define PCR_ITSS_PIRQG_ROUT	0x3106
-/* PIRQH Routing Control Register*/
-#define PCR_ITSS_PIRQH_ROUT	0x3107
-/* ITSS Power reduction control */
-#define PCR_ITSS_ITSSPRC	0x3300
+#define ITSS_MAX_IRQ	119
+#define IRQS_PER_IPC	32
+#define NUM_IPC_REGS	((ITSS_MAX_IRQ + IRQS_PER_IPC - 1)/IRQS_PER_IPC)
 
 #endif	/* SOC_INTEL_SKL_ITSS_H */

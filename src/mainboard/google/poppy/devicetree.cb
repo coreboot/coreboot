@@ -157,6 +157,13 @@ chip soc/intel/skylake
 	register "i2c_voltage[4]" = "I2C_VOLTAGE_1V8"		# Camera
 	register "i2c_voltage[5]" = "I2C_VOLTAGE_1V8"		# Audio
 
+	# Use GSPI0 for cr50 TPM. Early init is required to set up a BAR for TPM
+	# communication before memory is up.
+	register "gspi[0]" = "{
+		 .speed_mhz = 1,
+		 .early_init = 1,
+	}"
+
 	# Must leave UART0 enabled or SD/eMMC will not work as PCI
 	register "SerialIoDevMode" = "{
 		[PchSerialIoIndexI2C0]  = PchSerialIoPci,

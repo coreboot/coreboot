@@ -48,3 +48,16 @@ config INCLUDE_NHLT_BLOBS
 	select NHLT_MAX98927
 	select NHLT_RT5663
 endif
+
+# Select this option to enable use of cr50 SPI TPM on poppy.
+# This option is disabled by default.
+config POPPY_USE_SPI_TPM
+	bool
+	default n
+	select MAINBOARD_HAS_SPI_TPM_CR50
+	select MAINBOARD_HAS_TPM2
+	select SPI_TPM
+	select TPM2
+
+config DRIVER_TPM_SPI_BUS
+	default 0x1

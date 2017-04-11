@@ -13,9 +13,12 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/acpi.h>
 #include <gpio.h>
 #include <rules.h>
+#include <soc/gpe.h>
 #include <soc/gpio.h>
+#include <tpm.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
 #include "gpio.h"
@@ -52,4 +55,9 @@ static const struct cros_gpio cros_gpios[] = {
 void mainboard_chromeos_acpi_generate(void)
 {
 	chromeos_acpi_gpio_generate(cros_gpios, ARRAY_SIZE(cros_gpios));
+}
+
+int tis_plat_irq_status(void)
+{
+	return acpi_get_gpe(GPE0_DW2_00);
 }

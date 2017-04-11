@@ -226,6 +226,7 @@ int smbus_read_byte(unsigned device, unsigned address);
 void i82801jx_early_init(void);
 void i82801jx_dmi_setup(void);
 void i82801jx_dmi_poll_vc1(void);
+int southbridge_detect_s3_resume(void);
 #endif
 
 #endif

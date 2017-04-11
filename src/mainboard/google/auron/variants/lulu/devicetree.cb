@@ -43,7 +43,6 @@ chip soc/intel/broadwell
 	register "gpe0_en_4" = "0x00000000"
 
 	register "sata_port_map" = "0x1"
-	register "sata_devslp_disable" = "1"
 
 	register "sio_acpi_mode" = "1"
 

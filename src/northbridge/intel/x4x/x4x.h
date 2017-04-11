@@ -322,7 +322,6 @@ struct rcven_timings {
 /* The setup is up to two DIMMs per channel */
 struct sysinfo {
 	int		boot_path;
-	int		max_ddr2_mhz;
 	enum fsb_clock	max_fsb;
 
 	int		dimm_config[2];

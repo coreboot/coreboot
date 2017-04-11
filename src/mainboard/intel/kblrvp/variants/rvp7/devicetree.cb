@@ -7,7 +7,8 @@ chip soc/intel/skylake
 	register "SataPortsEnable[2]" = "1"
 
 	# Enable deep Sx states
-	register "deep_s5_enable" = "1"
+	register "deep_s5_enable_ac" = "1"
+	register "deep_s5_enable_dc" = "1"
 	register "deep_sx_config" = "DSX_EN_LAN_WAKE_PIN"
 
 	# GPE configuration

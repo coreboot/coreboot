@@ -610,7 +610,8 @@ int soc_fill_acpi_wake(uint32_t *pm1, uint32_t **gpe0)
 	 * Chipset state in the suspend well (but not RTC) is lost in Deep S3
 	 * so enable Deep S3 wake events that are configured by the mainboard
 	 */
-	if (ps->prev_sleep_state == ACPI_S3 && config->deep_s3_enable) {
+	if (ps->prev_sleep_state == ACPI_S3 &&
+	    (config->deep_s3_enable_ac || config->deep_s3_enable_dc)) {
 		pm1_en |= PWRBTN_STS; /* Always enabled as wake source */
 		if (config->deep_sx_config & DSX_EN_LAN_WAKE_PIN)
 			gpe0_std |= LAN_WAK_EN;

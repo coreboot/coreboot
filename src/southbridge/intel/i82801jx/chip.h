@@ -24,19 +24,6 @@ enum {
 
 struct southbridge_intel_i82801jx_config {
 	/**
-	 * Interrupt Routing configuration
-	 * If bit7 is 1, the interrupt is disabled.
-	 */
-	uint8_t pirqa_routing;
-	uint8_t pirqb_routing;
-	uint8_t pirqc_routing;
-	uint8_t pirqd_routing;
-	uint8_t pirqe_routing;
-	uint8_t pirqf_routing;
-	uint8_t pirqg_routing;
-	uint8_t pirqh_routing;
-
-	/**
 	 * GPI Routing configuration
 	 *
 	 * Only the lower two bits have a meaning:

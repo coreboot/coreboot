@@ -94,42 +94,43 @@ static void i82801jx_enable_serial_irqs(struct device *dev)
 static void i82801jx_pirq_init(device_t dev)
 {
 	device_t irq_dev;
-	/* Get the chip configuration */
-	config_t *config = dev->chip_info;
 
-	pci_write_config8(dev, D31F0_PIRQA_ROUT, config->pirqa_routing);
-	pci_write_config8(dev, D31F0_PIRQB_ROUT, config->pirqb_routing);
-	pci_write_config8(dev, D31F0_PIRQC_ROUT, config->pirqc_routing);
-	pci_write_config8(dev, D31F0_PIRQD_ROUT, config->pirqd_routing);
+	/* Interrupt 11 is not used by legacy devices and so can always be used
+	 * for PCI interrupts. Full legacy IRQ routing is complicated and hard
+	 * to get right. Fortunately all modern OS use MSI and so it's not that
+	 * big of an issue anyway. Still we have to provide a reasonable
+	 * default. Using interrupt 11 for it everywhere is a working default.
+	 * ACPI-aware OS can move it to any interrupt and others will just leave
+	 * them at default.
+	 */
+	const u8 pirq_routing = 11;
 
-	pci_write_config8(dev, D31F0_PIRQE_ROUT, config->pirqe_routing);
-	pci_write_config8(dev, D31F0_PIRQF_ROUT, config->pirqf_routing);
-	pci_write_config8(dev, D31F0_PIRQG_ROUT, config->pirqg_routing);
-	pci_write_config8(dev, D31F0_PIRQH_ROUT, config->pirqh_routing);
+	pci_write_config8(dev, D31F0_PIRQA_ROUT, pirq_routing);
+	pci_write_config8(dev, D31F0_PIRQB_ROUT, pirq_routing);
+	pci_write_config8(dev, D31F0_PIRQC_ROUT, pirq_routing);
+	pci_write_config8(dev, D31F0_PIRQD_ROUT, pirq_routing);
+
+	pci_write_config8(dev, D31F0_PIRQE_ROUT, pirq_routing);
+	pci_write_config8(dev, D31F0_PIRQF_ROUT, pirq_routing);
+	pci_write_config8(dev, D31F0_PIRQG_ROUT, pirq_routing);
+	pci_write_config8(dev, D31F0_PIRQH_ROUT, pirq_routing);
 
 	/* Eric Biederman once said we should let the OS do this.
 	 * I am not so sure anymore he was right.
 	 */
 
 	for (irq_dev = all_devices; irq_dev; irq_dev = irq_dev->next) {
-		u8 int_pin=0, int_line=0;
+		u8 int_pin = 0;
 
 		if (!irq_dev->enabled || irq_dev->path.type != DEVICE_PATH_PCI)
 			continue;
 
 		int_pin = pci_read_config8(irq_dev, PCI_INTERRUPT_PIN);
 
-		switch (int_pin) {
-		case 1: /* INTA# */ int_line = config->pirqa_routing; break;
-		case 2: /* INTB# */ int_line = config->pirqb_routing; break;
-		case 3: /* INTC# */ int_line = config->pirqc_routing; break;
-		case 4: /* INTD# */ int_line = config->pirqd_routing; break;
-		}
-
-		if (!int_line)
+		if (int_pin == 0)
 			continue;
 
-		pci_write_config8(irq_dev, PCI_INTERRUPT_LINE, int_line);
+		pci_write_config8(irq_dev, PCI_INTERRUPT_LINE, pirq_routing);
 	}
 }
 

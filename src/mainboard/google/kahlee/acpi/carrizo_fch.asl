@@ -18,7 +18,6 @@ Device(AAHB) {
 	Name(_UID,0x0)
 	Name(_CRS, ResourceTemplate()
 	{
-		IRQ(Edge, ActiveHigh, Exclusive) {7}
 		Memory32Fixed(ReadWrite, 0xFEDC0000, 0x2000)
 	})
 

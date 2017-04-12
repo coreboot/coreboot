@@ -34,3 +34,27 @@ Name (SSFG, 0x0D)
 Name (OSVR, 3)		/* WinXp = 1, Vista = 2, Linux = 3, WinCE = 4 */
 Name (OSV, Ones)	/* Assume nothing */
 Name (PMOD, One)	/* Assume APIC */
+
+Device (ETPA)
+{
+	Name (_HID, "ELAN0000")
+	Name (_DDN, "Elan Touchpad")
+	Name (_UID, 1)
+	Name (ISTP, 1)	/* Touchpad */
+
+	Name (_CRS, ResourceTemplate()
+	{
+		I2cSerialBus (
+			0x15,			/* SlaveAddress */
+			ControllerInitiated,	/* SlaveMode */
+			400000,			/* ConnectionSpeed */
+			AddressingMode7Bit,	/* AddressingMode */
+			"\\_SB.I2CD",		/* ResourceSource */
+		)
+		GpioInt (Level, ActiveLow, ExclusiveAndWake, PullNone,,
+			"\\_SB.GPIO") { 0x5 }
+	})
+
+	/* Allow device to power off in S0 */
+	Name (_S0W, 3)
+}

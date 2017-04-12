@@ -654,10 +654,6 @@ static void set_subsystem(device_t dev, unsigned vendor, unsigned device)
 static void southbridge_inject_dsdt(device_t dev)
 {
 	global_nvs_t *gnvs = cbmem_add (CBMEM_ID_ACPI_GNVS, sizeof(*gnvs));
-	void *opregion;
-
-	/* Calling northbridge code as gnvs contains opregion address.  */
-	opregion = igd_make_opregion();
 
 	if (gnvs) {
 		const struct i915_gpu_controller_info *gfx = intel_gma_get_controller_info();
@@ -676,8 +672,6 @@ static void southbridge_inject_dsdt(device_t dev)
 		chromeos_init_vboot(&(gnvs->chromeos));
 #endif
 
-		/* IGD OpRegion Base Address */
-		gnvs->aslb = (u32)opregion;
 		/* And tell SMI about it */
 		smm_setup_structures(gnvs, NULL, NULL);
 

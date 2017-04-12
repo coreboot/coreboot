@@ -19,6 +19,8 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <southbridge/intel/fsp_bd82x6x/nvs.h>
+#include <cbmem.h>
 
 #include "chip.h"
 #include "northbridge.h"
@@ -80,6 +82,30 @@ static void gma_ssdt(device_t device)
 	drivers_intel_gma_displays_ssdt_generate(gfx);
 }
 
+static unsigned long
+gma_write_acpi_tables(struct device *const dev,
+		      unsigned long current,
+		      struct acpi_rsdp *const rsdp)
+{
+	igd_opregion_t *opregion;
+	global_nvs_t *gnvs;
+
+	// FIXME: Replace by common VBT implementation writing to current
+	opregion = igd_make_opregion();
+	if (opregion) {
+		/* GNVS has been already set up */
+		gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
+		if (gnvs) {
+			/* IGD OpRegion Base Address */
+			gnvs->aslb = (u32)(uintptr_t)opregion;
+		} else {
+			printk(BIOS_ERR, "Error: GNVS table not found.\n");
+		}
+	}
+
+	return current;
+}
+
 static struct pci_operations gma_pci_ops = {
 	.set_subsystem    = gma_set_subsystem,
 };
@@ -93,6 +119,7 @@ static struct device_operations gma_func0_ops = {
 	.scan_bus		= 0,
 	.enable			= 0,
 	.ops_pci		= &gma_pci_ops,
+	.write_acpi_tables	= gma_write_acpi_tables,
 };
 
 static const unsigned short gma_ids[] = {

@@ -32,7 +32,7 @@ const u32 cim_verb_data[] = {
 	/* Pin Widget Verb Table */
 
 	/* Pin Complex (NID 0x12) DMIC - interior mobile lid */
-	AZALIA_PIN_CFG(0x0, 0x12, 0xb7a61010),
+	AZALIA_PIN_CFG(0x0, 0x12, 0xb7a60110),
 
 	/* Pin Complex (NID 0x14) SPKR-OUT PORTD */
 	// group 1, front left/right
@@ -58,7 +58,7 @@ const u32 cim_verb_data[] = {
 	AZALIA_PIN_CFG(0x0, 0x1a, 0x411111f0),
 
 	/* Pin Complex (NID 0x1B) LINE2 PORTE - Disabled */
-	AZALIA_PIN_CFG(0x0, 0x1a, 0x411111f0),
+	AZALIA_PIN_CFG(0x0, 0x1b, 0x411111f0),
 
 	/* Pin Complex (NID 0x1d) PCBeep */
 	// eapd low on ex-amp, laptop, custom enable

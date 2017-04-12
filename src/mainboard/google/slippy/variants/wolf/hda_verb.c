@@ -37,7 +37,7 @@ const u32 cim_verb_data[] = {
 	/* Pin Widget Verb Table */
 
 	/* Pin Complex (NID 0x12) DMIC - interior mobile lid */
-	AZALIA_PIN_CFG(0x0, 0x12, 0xb7a61010),
+	AZALIA_PIN_CFG(0x0, 0x12, 0xb7a60110),
 
 	/* Pin Complex (NID 0x14) SPKR-OUT - Internal Speakers */
 	// group 1, cap 0
@@ -59,12 +59,8 @@ const u32 cim_verb_data[] = {
 	// connector, External left panel
 	AZALIA_PIN_CFG(0x0, 0x19, 0x03a11020),
 
-	/* Pin Complex (NID 0x1A) LINE1 - Internal Mic */
-	// group 1, cap 1
-	// no connector, no jack detect
-	// mic in, analog connection
-	// Fixed function, internal, Location N/A
-	AZALIA_PIN_CFG(0x0, 0x1a, 0x90a70111),
+	/* Pin Complex (NID 0x1A) LINE1 PORTC - Disabled */
+	AZALIA_PIN_CFG(0x0, 0x1a, 0x411111f0),
 
 	/* Pin Complex (NID 0x1B) LINE2 - Disabled */
 	AZALIA_PIN_CFG(0x0, 0x1b, 0x411111f0),

@@ -23,6 +23,7 @@
 #include <console/console.h>
 #include <halt.h>
 #include <program_loading.h>
+#include <romstage_handoff.h>
 #include <smp/node.h>
 #include <string.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
@@ -52,6 +53,8 @@ void * asmlinkage romstage_main(unsigned long bist)
 	struct sysinfo romstage_state;
 	struct sysinfo *cb = &romstage_state;
 	u8 initial_apic_id = (u8) (cpuid_ebx(1) >> 24);
+	uintptr_t stack_top = CACHE_TMP_RAMTOP;
+	int cbmem_initted = 0;
 
 	fill_sysinfo(cb);
 
@@ -85,16 +88,22 @@ void * asmlinkage romstage_main(unsigned long bist)
 
 	}
 
-	uintptr_t stack_top = CACHE_TMP_RAMTOP;
-	if (cb->s3resume) {
-		if (cbmem_recovery(1)) {
-			printk(BIOS_EMERG, "Unable to recover CBMEM\n");
-			halt();
-		}
+	if (IS_ENABLED(CONFIG_EARLY_CBMEM_INIT) || cb->s3resume)
+		cbmem_initted = !cbmem_recovery(cb->s3resume);
+
+	if (cb->s3resume && !cbmem_initted) {
+		printk(BIOS_EMERG, "Unable to recover CBMEM\n");
+		halt();
+	}
+
+	if (IS_ENABLED(CONFIG_EARLY_CBMEM_INIT) || cb->s3resume) {
 		stack_top = romstage_ram_stack_base(HIGH_ROMSTAGE_STACK_SIZE,
 			ROMSTAGE_STACK_CBMEM);
 		stack_top += HIGH_ROMSTAGE_STACK_SIZE;
 	}
+
+	if (IS_ENABLED(CONFIG_EARLY_CBMEM_INIT))
+		romstage_handoff_init(cb->s3resume);
 
 	printk(BIOS_DEBUG, "Move CAR stack.\n");
 	return (void*)stack_top;

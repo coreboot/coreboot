@@ -19,8 +19,8 @@
 #include <console/console.h>
 #include <device/pci_ids.h>
 #include <device/pci_def.h>
+#include <southbridge/intel/common/smbus.h>
 #include "i82371eb.h"
-#include "smbus.h"
 
 void enable_smbus(void)
 {
@@ -46,7 +46,7 @@ void enable_smbus(void)
 	pci_write_config16(dev, PCI_COMMAND, reg16);
 
 	/* Clear any lingering errors, so the transaction will run. */
-	outb(inb(SMBUS_IO_BASE + SMBHST_STATUS), SMBUS_IO_BASE + SMBHST_STATUS);
+	outb(inb(SMBUS_IO_BASE + SMBHSTSTAT), SMBUS_IO_BASE + SMBHSTSTAT);
 }
 
 int smbus_read_byte(u8 device, u8 address)

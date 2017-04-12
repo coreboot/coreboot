@@ -90,15 +90,4 @@ int smbus_read_byte(u8 device, u8 address);
 #define SMB_SMI_EN		(1 << 1)
 #define HST_EN			(1 << 0)
 
-/* SMBus I/O registers. */
-#define SMBHSTSTAT		0x0
-#define SMBHSTCTL		0x2
-#define SMBHSTCMD		0x3
-#define SMBXMITADD		0x4
-#define SMBHSTDAT0		0x5
-#define SMBHSTDAT1		0x6
-#define SMBBLKDAT		0x7
-
-#define SMBUS_TIMEOUT		(10 * 1000 * 100)
-
 #endif

@@ -19,8 +19,8 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <arch/io.h>
+#include <southbridge/intel/common/smbus.h>
 #include "i82801bx.h"
-#include "smbus.h"
 
 static int lsmbus_read_byte(device_t dev, u8 address)
 {

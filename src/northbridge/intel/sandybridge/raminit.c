@@ -25,7 +25,7 @@
 #include <timestamp.h>
 #include <northbridge/intel/common/mrc_cache.h>
 #include <southbridge/intel/bd82x6x/me.h>
-#include <southbridge/intel/bd82x6x/smbus.h>
+#include <southbridge/intel/common/smbus.h>
 #include <cpu/x86/msr.h>
 #include <delay.h>
 #include <smbios.h>

@@ -14,7 +14,7 @@
  *
  */
 
-#include "smbus.h"
+#include <southbridge/intel/common/smbus.h>
 
 #define SMBUS_IO_BASE 0x0f00
 

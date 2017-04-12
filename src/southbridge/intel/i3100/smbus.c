@@ -21,8 +21,8 @@
 #include <device/pci_ops.h>
 #include <device/smbus.h>
 #include <arch/io.h>
+#include <southbridge/intel/common/smbus.h>
 #include "i3100.h"
-#include "smbus.h"
 
 static int lsmbus_read_byte(device_t dev, u8 address)
 {

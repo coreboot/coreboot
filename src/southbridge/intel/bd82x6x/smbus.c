@@ -22,8 +22,8 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <arch/io.h>
+#include <southbridge/intel/common/smbus.h>
 #include "pch.h"
-#include "smbus.h"
 
 static void pch_smbus_init(device_t dev)
 {
@@ -52,49 +52,6 @@ static int lsmbus_read_byte(device_t dev, u8 address)
 	res = find_resource(pbus->dev, 0x20);
 
 	return do_smbus_read_byte(res->base, device, address);
-}
-
-static  int do_smbus_write_byte(unsigned smbus_base, unsigned device, unsigned address, unsigned data)
-{
-	unsigned char global_status_register;
-
-	if (smbus_wait_until_ready(smbus_base) < 0)
-		return SMBUS_WAIT_UNTIL_READY_TIMEOUT;
-
-	/* Setup transaction */
-	/* Disable interrupts */
-	outb(inb(smbus_base + SMBHSTCTL) & (~1), smbus_base + SMBHSTCTL);
-	/* Set the device I'm talking too */
-	outb(((device & 0x7f) << 1) & ~0x01, smbus_base + SMBXMITADD);
-	/* Set the command/address... */
-	outb(address & 0xff, smbus_base + SMBHSTCMD);
-	/* Set up for a byte data read */
-	outb((inb(smbus_base + SMBHSTCTL) & 0xe3) | (0x2 << 2),
-	     (smbus_base + SMBHSTCTL));
-	/* Clear any lingering errors, so the transaction will run */
-	outb(inb(smbus_base + SMBHSTSTAT), smbus_base + SMBHSTSTAT);
-
-	/* Clear the data byte... */
-	outb(data, smbus_base + SMBHSTDAT0);
-
-	/* Start the command */
-	outb((inb(smbus_base + SMBHSTCTL) | 0x40),
-	     smbus_base + SMBHSTCTL);
-
-	/* Poll for transaction completion */
-	if (smbus_wait_until_done(smbus_base) < 0)
-		return SMBUS_WAIT_UNTIL_DONE_TIMEOUT;
-
-	global_status_register = inb(smbus_base + SMBHSTSTAT);
-
-	/* Ignore the "In Use" status... */
-	global_status_register &= ~(3 << 5);
-
-	/* Read results of transaction */
-	if (global_status_register != (1 << 1))
-		return SMBUS_ERROR;
-
-	return 0;
 }
 
 static int lsmbus_write_byte(device_t dev, u8 address, u8 val)

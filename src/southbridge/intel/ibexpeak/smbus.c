@@ -22,8 +22,8 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <arch/io.h>
+#include <southbridge/intel/common/smbus.h>
 #include "pch.h"
-#include "smbus.h"
 
 static void pch_smbus_init(device_t dev)
 {

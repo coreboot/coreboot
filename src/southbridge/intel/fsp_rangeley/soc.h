@@ -176,21 +176,6 @@ void rangeley_sb_early_initialization(void);
 #define SMB_SMI_EN		(1 << 1)
 #define HST_EN			(1 << 0)
 
-/* SMBus I/O bits. */
-#define SMBHSTSTAT		0x0
-#define SMBHSTCTL		0x2
-#define SMBHSTCMD		0x3
-#define SMBXMITADD		0x4
-#define SMBHSTDAT0		0x5
-#define SMBHSTDAT1		0x6
-#define SMBBLKDAT		0x7
-#define SMBTRNSADD		0x9
-#define SMBSLVDATA		0xa
-#define SMLINK_PIN_CTL		0xe
-#define SMBUS_PIN_CTL		0xf
-
-#define SMBUS_TIMEOUT		(10 * 1000 * 100)
-
 /* Root Complex Register Block */
 #define RCBA		0xf0
 #define  RCBA_ENABLE 0x01

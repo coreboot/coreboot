@@ -188,6 +188,23 @@
 #define RCBA_FDSW		0x3420
 #define RCBA_MAP		0x35f0 /* UHCI controller #6 remapping */
 
+#define D31IP		0x3100	/* 32bit */
+#define D30IP		0x3104	/* 32bit R0: does not generate interrupt */
+#define D29IP		0x3108	/* 32bit */
+#define D28IP		0x310c	/* 32bit */
+#define D27IP		0x3110	/* 32bit */
+#define D26IP		0x3114  /* 32bit */
+#define D25IP		0x3114  /* 32bit */
+
+#define D31IR		0x3140	/* 16bit */
+#define D30IR		0x3142	/* 16bit R0: does not generate interrupt */
+#define D29IR		0x3144	/* 16bit */
+#define D28IR		0x3146	/* 16bit */
+#define D27IR		0x3148	/* 16bit */
+#define D26IR		0x314c	/* 16bit */
+#define D25IR		0x3150	/* 16bit */
+#define OIC		0x31ff	/*  8bit */
+
 #define BUC_LAND	(1 <<  5) /* LAN */
 #define FD_SAD2		(1 << 25) /* SATA #2 */
 #define FD_TTD		(1 << 24) /* Thermal Throttle */

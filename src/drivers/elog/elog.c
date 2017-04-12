@@ -881,8 +881,15 @@ int elog_add_event_raw(u8 event_type, void *data, u8 data_size)
 
 	elog_mirror_increment_last_write(event_size);
 
-	printk(BIOS_INFO, "ELOG: Event(%X) added with size %d\n",
+	printk(BIOS_INFO, "ELOG: Event(%X) added with size %d ",
 	       event_type, event_size);
+	if (event->day != 0) {
+		printk(BIOS_INFO, "at 20%02x-%02x-%02x %02x:%02x:%02x UTC\n",
+		       event->year, event->month, event->day,
+		       event->hour, event->minute, event->second);
+	} else {
+		printk(BIOS_INFO, "(timestamp unavailable)\n");
+	}
 
 	/* Shrink the log if we are getting too full */
 	if (elog_shrink() < 0)

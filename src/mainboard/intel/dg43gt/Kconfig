@@ -1,0 +1,57 @@
+#
+# This file is part of the coreboot project.
+#
+# Copyright (C) 2015 Damien Zammit <damien@zamaudio.com>
+# Copyright (C) 2017 Arthur Heymans <arthur@aheymans.xyz>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+
+if BOARD_INTEL_DG43GT
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select ARCH_X86
+	select CPU_INTEL_SOCKET_LGA775
+	select NORTHBRIDGE_INTEL_X4X
+	select SOUTHBRIDGE_INTEL_I82801JX
+	select SUPERIO_WINBOND_W83627DHG
+	select HAVE_ACPI_TABLES
+	select BOARD_ROMSIZE_KB_4096
+	select PCIEXP_ASPM
+	select PCIEXP_CLK_PM
+	select HAVE_OPTION_TABLE
+	select HAVE_CMOS_DEFAULT
+	select HAVE_ACPI_RESUME
+	select INTEL_EDID
+	select MAINBOARD_HAS_NATIVE_VGA_INIT
+
+config VGA_BIOS_ID
+	string
+	default "8086,2e22"
+
+
+config MMCONF_BASE_ADDRESS
+	hex
+	default 0xe0000000
+
+config MAINBOARD_DIR
+	string
+	default "intel/dg43gt"
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "DG43GT"
+
+config MAX_CPUS
+	int
+	default 4
+
+endif # BOARD_INTEL_DG43GT

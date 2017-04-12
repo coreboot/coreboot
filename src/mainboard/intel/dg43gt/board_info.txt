@@ -1,0 +1,6 @@
+Category: desktop
+Board URL: https://ark.intel.com/products/41036/Intel-Desktop-Board-DG43GT
+ROM package: SOIC-8
+ROM protocol: SPI
+ROM socketed: n
+Flashrom support: y

@@ -1,0 +1,110 @@
+#
+# This file is part of the coreboot project.
+#
+# Copyright (C) 2015  Damien Zammit <damien@zamaudio.com>
+# Copyright (C) 2017 Arthur Heymans <arthur@aheymans.xyz>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+
+chip northbridge/intel/x4x		# Northbridge
+	device cpu_cluster 0 on		# APIC cluster
+		chip cpu/intel/socket_LGA775
+			device lapic 0 on end
+		end
+		chip cpu/intel/model_1067x		# CPU
+			device lapic 0xACAC off end
+		end
+	end
+	device domain 0 on		# PCI domain
+		device pci 0.0 on end			# Host Bridge
+		device pci 2.0 on end			# Integrated graphics controller
+		device pci 2.1 on end			# Integrated graphics controller 2
+		device pci 3.0 off end		# ME
+		device pci 3.1 off end		# ME
+		chip southbridge/intel/i82801jx	# Southbridge
+			register "gpe0_en" = "0x40"
+
+			# Set AHCI mode.
+			register "sata_port_map"	= "0x1f"
+			register "sata_clock_request"	= "0"
+			register "sata_traffic_monitor"	= "0"
+
+			# Enable PCIe ports 0,2,3 as slots.
+			register "pcie_slot_implemented"	= "0xb"
+
+			device pci 19.0 on end		# GBE
+			device pci 1a.0 on end		# USB
+			device pci 1a.1 on end 		# USB
+			device pci 1a.2 on end 		# USB
+			device pci 1a.7 on end 		# USB
+			device pci 1b.0 on end		# Audio
+			device pci 1c.0 on end		# PCIe 1
+			device pci 1c.1 off end		# PCIe 2
+			device pci 1c.2 on end		# PCIe 3
+			device pci 1c.3 on end		# PCIe 4
+			device pci 1c.4 off end 	# PCIe 5
+			device pci 1c.5 off end 	# PCIe 6
+			device pci 1d.0 on end		# USB
+			device pci 1d.1 on end		# USB
+			device pci 1d.2 on end		# USB
+			device pci 1d.7 on end		# USB
+			device pci 1e.0 on end		# PCI bridge
+			device pci 1f.0 on		# ISA bridge
+				chip superio/winbond/w83627dhg	# Super I/O
+					device pnp 2e.0 on		# Floppy
+						# GLOBAL
+						io 0x60 = 0x3f0
+						irq 0x70 = 6
+						drq 0x74 = 2
+					end
+					device pnp 2e.1 on		# Parallel port
+						io 0x60 = 0x378
+						irq 0x70 = 5
+						drq 0x74 = 4
+					end
+					device pnp 2e.2 on		# COM 1
+						io 0x60 = 0x3f8
+						irq 0x70 = 4
+					end
+					device pnp 2e.3 off end		# COM 2
+					device pnp 2e.5 on		# Keyboard
+						io 0x60 = 0x60
+						irq 0x70 = 1
+						io 0x62 = 0x64
+						irq 0xf0 = 0x85
+					end
+					device pnp 2e.6 off end		# SPI
+					device pnp 2e.7 on		# GPIO 6
+						irq 0x30 = 0x06
+					end
+					device pnp 2e.8 off end		# WDTO# PLED
+					device pnp 2e.9 on		# GPIO 2,3,4,5
+						irq 0x30 = 0x0a
+					end
+					device pnp 2e.a on		# ACPI
+						irq 0xe4 = 0x30 # power dram during S3
+					end
+					device pnp 2e.b on		# Hardware monitor
+						io 0x60 = 0x290
+					end
+					device pnp 2e.c off end		# PECI, SST
+				end
+			end
+			device pci 1f.1 on end		# PATA/IDE
+			device pci 1f.2 on end		# SATA
+			device pci 1f.3 on end		# SMbus
+			device pci 1f.4 off end
+			device pci 1f.5 on end		# IDE
+			device pci 1f.6 off end
+		end
+	end
+end

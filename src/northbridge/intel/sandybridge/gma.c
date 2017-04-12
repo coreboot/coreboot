@@ -24,6 +24,8 @@
 #include <device/pci_ops.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
+#include <southbridge/intel/bd82x6x/nvs.h>
+#include <cbmem.h>
 
 #include "chip.h"
 #include "sandybridge.h"
@@ -649,6 +651,30 @@ static void gma_ssdt(device_t device)
 	drivers_intel_gma_displays_ssdt_generate(gfx);
 }
 
+static unsigned long
+gma_write_acpi_tables(struct device *const dev,
+		      unsigned long current,
+		      struct acpi_rsdp *const rsdp)
+{
+	igd_opregion_t *opregion;
+	global_nvs_t *gnvs;
+
+	// FIXME: Replace by common VBT implementation writing to current
+	opregion = igd_make_opregion();
+	if (opregion) {
+		/* GNVS has been already set up */
+		gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
+		if (gnvs) {
+			/* IGD OpRegion Base Address */
+			gnvs->aslb = (u32)(uintptr_t)opregion;
+		} else {
+			printk(BIOS_ERR, "Error: GNVS table not found.\n");
+		}
+	}
+
+	return current;
+}
+
 /* called by pci set_vga_bridge function */
 static void gma_func0_disable(struct device *dev)
 {
@@ -676,6 +702,7 @@ static struct device_operations gma_func0_ops = {
 	.enable			= 0,
 	.disable		= gma_func0_disable,
 	.ops_pci		= &gma_pci_ops,
+	.write_acpi_tables	= gma_write_acpi_tables,
 };
 
 static const unsigned short pci_device_ids[] = { 0x0102, 0x0106, 0x010a, 0x0112,

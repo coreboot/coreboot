@@ -60,7 +60,7 @@ config ME_BIN_PATH
 
 config CHECK_ME
 	bool "Verify the integrity of the supplied ME/TXE firmware"
-	default y
+	default n
 	depends on HAVE_ME_BIN && (NORTHBRIDGE_INTEL_NEHALEM || \
 		NORTHBRIDGE_INTEL_SANDYBRIDGE || \
 		NORTHBRIDGE_INTEL_IVYBRIDGE || NORTHBRIDGE_INTEL_HASWELL || \

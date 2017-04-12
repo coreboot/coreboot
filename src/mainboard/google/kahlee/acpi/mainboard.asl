@@ -58,3 +58,44 @@ Device (ETPA)
 	/* Allow device to power off in S0 */
 	Name (_S0W, 3)
 }
+
+/* Realtek Audio Codec */
+Device (RTEK)   /* Audio Codec driver I2CS*/
+{
+	Name (_ADR, 0)
+	Name (_HID, "10EC5650")
+	Name (_CID, "10EC5650")
+	Name (_DDN, "RTEK Codec Controller ")
+	Name (_UID, 1)
+
+	Device (I2S) /* I2S machine driver for RT5650 */
+	{
+		Name (_ADR, 1)
+		Name (_HID, "AMDI1002")
+		Name (_CID, "AMDI1002")
+	}
+
+	Method (_CRS, 0x0, NotSerialized)
+	{
+		Name (SBUF, ResourceTemplate ()
+		{
+			I2CSerialBus(
+			0x1A,   /* SlaveAddress: bus address */
+			ControllerInitiated,    /* SlaveMode: default to ControllerInitiated */
+			400000,                 /* ConnectionSpeed: in Hz */
+			AddressingMode7Bit,     /* Addressing Mode: default to 7 bit */
+			"\\_SB.I2CA",           /* ResourceSource: I2C bus controller name */
+			)
+
+			/* Jack Detect AGPIO90 */
+			GpioInt (Edge, ActiveLow, ExclusiveAndWake, PullNone,,
+				"\\_SB.GPIO") { 90 }
+		})
+		Return (SBUF)
+	}
+
+	Method (_STA)
+	{
+		Return (0xF)
+	}
+}

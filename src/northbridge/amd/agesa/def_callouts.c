@@ -106,10 +106,7 @@ AGESA_STATUS agesa_RunFuncOnAp (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 	return Status;
 }
 
-#if IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY15_TN) || \
-  IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY15_RL) || \
-  IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY16_KB)
-/* FIXME: we would like GFX disable for fam14 too for headless systems. */
+#if defined(AGESA_GNB_GFX_GET_VBIOS_IMAGE)
 AGESA_STATUS agesa_GfxGetVbiosImage(UINT32 Func, UINTN FchData, VOID *ConfigPrt)
 {
 	GFX_VBIOS_IMAGE_INFO  *pVbiosImageInfo = (GFX_VBIOS_IMAGE_INFO *)ConfigPrt;

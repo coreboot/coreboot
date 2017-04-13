@@ -1,2 +1,3 @@
 config BOARD_GOOGLE_POPPY
 	bool "Poppy"
+	select BOARD_GOOGLE_BASEBOARD_POPPY

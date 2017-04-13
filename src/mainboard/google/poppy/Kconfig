@@ -1,46 +1,30 @@
-if BOARD_GOOGLE_POPPY
 
-config BOARD_SPECIFIC_OPTIONS
-	def_bool y
+config BOARD_GOOGLE_BASEBOARD_POPPY
+	def_bool n
 	select BOARD_ID_AUTO
 	select BOARD_ROMSIZE_KB_16384
 	select DRIVERS_INTEL_MIPI_CAMERA
 	select DRIVERS_I2C_GENERIC
 	select DRIVERS_I2C_HID
+	select DRIVERS_I2C_MAX98927
 	select EC_GOOGLE_CHROMEEC
 	select EC_GOOGLE_CHROMEEC_LPC
 	select HAVE_ACPI_RESUME
 	select HAVE_ACPI_TABLES
 	select MAINBOARD_HAS_CHROMEOS
 	select MAINBOARD_USES_FSP2_0
-	select DRIVERS_I2C_MAX98927
 	select NO_FADT_8042
 	select SOC_INTEL_KABYLAKE
 
-config VBOOT
-	select EC_GOOGLE_CHROMEEC_SWITCHES
-	select VBOOT_LID_SWITCH
+if BOARD_GOOGLE_BASEBOARD_POPPY
+
+config DRIVER_TPM_SPI_BUS
+	default 0x1
 
 config GBB_HWID
 	string
 	depends on CHROMEOS
-	default "POPPY TEST 8294"
-
-config MAINBOARD_DIR
-	string
-	default "google/poppy"
-
-config MAINBOARD_PART_NUMBER
-	string
-	default "Poppy"
-
-config MAINBOARD_FAMILY
-	string
-	default "Google_Poppy"
-
-config MAX_CPUS
-	int
-	default 8
+	default "POPPY TEST 8294" if BOARD_GOOGLE_POPPY
 
 config INCLUDE_NHLT_BLOBS
 	bool "Include blobs for audio."
@@ -48,7 +32,22 @@ config INCLUDE_NHLT_BLOBS
 	select NHLT_DMIC_4CH
 	select NHLT_MAX98927
 	select NHLT_RT5663
-endif
+
+config MAINBOARD_DIR
+	string
+	default "google/poppy"
+
+config MAINBOARD_FAMILY
+	string
+	default "Google_Poppy" if BOARD_GOOGLE_POPPY
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Poppy" if BOARD_GOOGLE_POPPY
+
+config MAX_CPUS
+	int
+	default 8
 
 # Select this option to enable use of cr50 SPI TPM on poppy.
 # This option is disabled by default.
@@ -60,5 +59,8 @@ config POPPY_USE_SPI_TPM
 	select SPI_TPM
 	select TPM2
 
-config DRIVER_TPM_SPI_BUS
-	default 0x1
+config VBOOT
+	select EC_GOOGLE_CHROMEEC_SWITCHES
+	select VBOOT_LID_SWITCH
+
+endif # BOARD_GOOGLE_BASEBOARD_POPPY

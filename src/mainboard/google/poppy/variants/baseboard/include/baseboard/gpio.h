@@ -13,8 +13,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __MAINBOARD_GPIO_H__
-#define __MAINBOARD_GPIO_H__
+#ifndef __BASEBOARD_GPIO_H__
+#define __BASEBOARD_GPIO_H__
 
 #include <soc/gpe.h>
 #include <soc/gpio.h>
@@ -396,6 +396,6 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_GPI_APIC_INVERT(GPP_E0, NONE, PLTRST),
 };
 
-#endif
+#endif /* __ACPI__ */
 
-#endif
+#endif /* BASEBOARD_GPIO_H */

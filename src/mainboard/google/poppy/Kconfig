@@ -18,6 +18,10 @@ config BOARD_GOOGLE_BASEBOARD_POPPY
 
 if BOARD_GOOGLE_BASEBOARD_POPPY
 
+config DEVICETREE
+	string
+	default "variants/baseboard/devicetree.cb"
+
 config DRIVER_TPM_SPI_BUS
 	default 0x1
 
@@ -58,6 +62,10 @@ config POPPY_USE_SPI_TPM
 	select MAINBOARD_HAS_TPM2
 	select SPI_TPM
 	select TPM2
+
+config VARIANT_DIR
+	string
+	default "poppy" if BOARD_GOOGLE_POPPY
 
 config VBOOT
 	select EC_GOOGLE_CHROMEEC_SWITCHES

@@ -13,13 +13,13 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __MAINBOARD_EC_H__
-#define __MAINBOARD_EC_H__
+#ifndef __BASEBOARD_EC_H__
+#define __BASEBOARD_EC_H__
 
 #include <ec/ec.h>
 #include <ec/google/chromeec/ec_commands.h>
 
-#include "gpio.h"
+#include <variant/gpio.h>
 
 #define MAINBOARD_EC_SCI_EVENTS \
 	(EC_HOST_EVENT_MASK(EC_HOST_EVENT_LID_CLOSED)        |\

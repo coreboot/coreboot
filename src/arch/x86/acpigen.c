@@ -862,6 +862,8 @@ void acpigen_write_resourcetemplate_header(void)
 	acpigen_write_len_f();
 	acpigen_emit_byte(WORD_PREFIX);
 	len_stack[ltop++] = acpigen_get_current();
+	/* Add 2 dummy bytes for the ACPI word (keep aligned with
+	   the calclulation in acpigen_write_resourcetemplate() below). */
 	acpigen_emit_byte(0x00);
 	acpigen_emit_byte(0x00);
 }
@@ -879,7 +881,9 @@ void acpigen_write_resourcetemplate_footer(void)
 	acpigen_emit_byte(0x79);
 	acpigen_emit_byte(0x00);
 
-	len = gencurrent - p;
+	/* Start counting past the 2-bytes length added in
+	   acpigen_write_resourcetemplate() above. */
+	len = acpigen_get_current() - (p + 2);
 
 	/* patch len word */
 	p[0] = len & 0xff;

@@ -271,6 +271,17 @@ static void southbridge_acpi_fill_ssdt_generator(device_t device) {
 	amd_generate_powernow(ACPI_CPU_CONTROL, 6, 1);
 }
 
+static const char *lpc_acpi_name(struct device *dev) {
+	if (dev->path.type != DEVICE_PATH_PCI)
+		return NULL;
+
+	switch (dev->path.pci.devfn) {
+		case PCI_DEVFN(0x14, 3):
+			return "LPC";
+	}
+
+	return NULL;
+}
 #endif
 
 
@@ -283,7 +294,8 @@ static struct device_operations lpc_ops = {
 	.set_resources = sb700_lpc_set_resources,
 	.enable_resources = sb700_lpc_enable_resources,
 #if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
-	.write_acpi_tables      = acpi_write_hpet,
+	.acpi_name = lpc_acpi_name,
+	.write_acpi_tables = acpi_write_hpet,
 	.acpi_fill_ssdt_generator = southbridge_acpi_fill_ssdt_generator,
 #endif
 	.init = lpc_init,

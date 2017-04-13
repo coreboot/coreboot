@@ -852,6 +852,7 @@ int print_gpios(struct pci_dev *sb, int show_all, int show_diffs)
 	case PCI_DEVICE_ID_INTEL_LYNXPOINT_LP_FULL:
 	case PCI_DEVICE_ID_INTEL_LYNXPOINT_LP_PREM:
 	case PCI_DEVICE_ID_INTEL_LYNXPOINT_LP_BASE:
+	case PCI_DEVICE_ID_INTEL_WILDCATPOINT_LP_PREM:
 	case PCI_DEVICE_ID_INTEL_WILDCATPOINT_LP:
 		gpiobase = pci_read_word(sb, 0x48) & 0xfffc;
 		gpio_registers = lynxpoint_lp_gpio_registers;
@@ -1048,6 +1049,7 @@ int print_gpios(struct pci_dev *sb, int show_all, int show_diffs)
 	case PCI_DEVICE_ID_INTEL_LYNXPOINT_LP_FULL:
 	case PCI_DEVICE_ID_INTEL_LYNXPOINT_LP_PREM:
 	case PCI_DEVICE_ID_INTEL_LYNXPOINT_LP_BASE:
+	case PCI_DEVICE_ID_INTEL_WILDCATPOINT_LP_PREM:
 	case PCI_DEVICE_ID_INTEL_WILDCATPOINT_LP:
 		for (i = 0; i < 95; i++) {
 			io_register_t tmp_gpio;

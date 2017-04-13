@@ -44,15 +44,13 @@ static void sb700_enable_rom(void)
 
 	dev = PCI_DEV(0, 0x14, 3);
 
-	/* The LPC settings below work for SPI flash as well;
-	 * the hardware does not distinguish between LPC and SPI flash ROM
-	 * aside from offering additional side-channel access to SPI flash
-	 * via a separate register-based interface.
-	 */
-
-	/* Decode variable LPC ROM address ranges 1 and 2. */
 	reg8 = pci_io_read_config8(dev, IO_MEM_PORT_DECODE_ENABLE_5);
-	reg8 |= (1 << 3) | (1 << 4);
+	if (IS_ENABLED(CONFIG_SPI_FLASH))
+		/* Disable decode of variable LPC ROM address ranges 1 and 2. */
+		reg8 &= ~((1 << 3) | (1 << 4));
+	else
+		/* Decode variable LPC ROM address ranges 1 and 2. */
+		reg8 |= (1 << 3) | (1 << 4);
 	pci_io_write_config8(dev, IO_MEM_PORT_DECODE_ENABLE_5, reg8);
 
 	/* LPC ROM address range 1: */

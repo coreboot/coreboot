@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2016 Damien Zammit <damien@zamaudio.com>
- * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
+ * Copyright (C) 2015 - 2017 Timothy Pearson <tpearson@raptorengineering.com>, Raptor Engineering
  * Copyright (C) 2007 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -644,6 +644,13 @@ static void mcf0_control_init(struct device *dev)
 {
 }
 
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+static const char *amdfam10_northbridge_acpi_name(struct device *dev)
+{
+	return "";
+}
+#endif
+
 static struct device_operations northbridge_operations = {
 	.read_resources	  = amdfam10_read_resources,
 	.set_resources	  = amdfam10_set_resources,
@@ -653,6 +660,7 @@ static struct device_operations northbridge_operations = {
 #if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
 	.write_acpi_tables = northbridge_write_acpi_tables,
 	.acpi_fill_ssdt_generator = northbridge_acpi_write_vars,
+	.acpi_name = amdfam10_northbridge_acpi_name,
 #endif
 	.enable		  = 0,
 	.ops_pci	  = 0,
@@ -1302,6 +1310,16 @@ static int amdfam10_get_smbios_data(device_t dev, int *handle, unsigned long *cu
 }
 #endif
 
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+static const char *amdfam10_domain_acpi_name(struct device *dev)
+{
+	if (dev->path.type == DEVICE_PATH_DOMAIN)
+		return "PCI0";
+
+	return NULL;
+}
+#endif
+
 static struct device_operations pci_domain_ops = {
 	.read_resources	  = amdfam10_domain_read_resources,
 	.set_resources	  = amdfam10_domain_set_resources,
@@ -1309,6 +1327,9 @@ static struct device_operations pci_domain_ops = {
 	.init		  = NULL,
 	.scan_bus	  = amdfam10_domain_scan_bus,
 	.ops_pci_bus	  = pci_bus_default_ops,
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+	.acpi_name	  = amdfam10_domain_acpi_name,
+#endif
 #if CONFIG_GENERATE_SMBIOS_TABLES
 	.get_smbios_data  = amdfam10_get_smbios_data,
 #endif

@@ -113,7 +113,9 @@ static size_t acpi_device_path_fill(struct device *dev, char *buf,
 
 	/* Fill in the path from the root device */
 	next += snprintf(buf + next, buf_len - next, "%s%s",
-			 dev->path.type == DEVICE_PATH_ROOT ? "" : ".", name);
+			 (dev->path.type == DEVICE_PATH_ROOT
+				|| (strlen(name) == 0)) ?
+					"" : ".", name);
 
 	return next;
 }

@@ -24,6 +24,13 @@
 #include "BiosCallOuts.h"
 #include "dimmSpd.h"
 
+#if IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_PI)
+#if IS_ENABLED(CONFIG_ARCH_ROMSTAGE_X86_64) || \
+	IS_ENABLED(CONFIG_ARCH_RAMSTAGE_X86_64)
+#error "FIXME: CALLOUT_ENTRY is UINT32 Data, not UINT Data"
+#endif
+#endif
+
 AGESA_STATUS GetBiosCallout (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {
 	AGESA_STATUS status;

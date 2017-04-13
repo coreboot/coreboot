@@ -17,7 +17,7 @@
 #include <device/device.h>
 #include "AGESA.h"
 #include "amdlib.h"
-#include <northbridge/amd/pi/BiosCallOuts.h>
+#include <northbridge/amd/agesa/BiosCallOuts.h>
 #include <northbridge/amd/pi/00660F01/chip.h>
 #include "Ids.h"
 #include "heapManager.h"
@@ -28,7 +28,6 @@
 #endif
 #include "hudson.h"
 #include <stdlib.h>
-#include "BiosCallOuts.h"
 #include "northbridge/amd/pi/dimmSpd.h"
 #include "northbridge/amd/pi/agesawrapper.h"
 #include <boardid.h>

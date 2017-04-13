@@ -20,9 +20,10 @@ subdirs-$(CONFIG_NORTHBRIDGE_AMD_PI_00730F01) += 00730F01
 subdirs-$(CONFIG_NORTHBRIDGE_AMD_PI_00660F01) += 00660F01
 
 romstage-y += agesawrapper.c
-romstage-y += def_callouts.c
 ramstage-y += agesawrapper.c
-ramstage-y += def_callouts.c
+
+romstage-y += ../agesa/def_callouts.c
+ramstage-y += ../agesa/def_callouts.c
 
 romstage-y += ramtop.c
 ramstage-y += ramtop.c

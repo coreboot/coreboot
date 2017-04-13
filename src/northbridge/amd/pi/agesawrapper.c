@@ -22,7 +22,7 @@
 #include <FchPlatform.h>
 #include <heapManager.h>
 #include <northbridge/amd/pi/agesawrapper.h>
-#include <northbridge/amd/pi/BiosCallOuts.h>
+#include <northbridge/amd/agesa/BiosCallOuts.h>
 
 void __attribute__((weak)) OemPostParams(AMD_POST_PARAMS *PostParams) {}
 

@@ -71,7 +71,7 @@ Scope (\_SB)
 		/* Arg0 - GPIO portid */
 		/* Arg1 - GPIO pad offset relative to the community */
 		Store (0, Local1)
-		Or( Or (ShiftLeft (Arg0, 16), CONFIG_IOSF_BASE_ADDRESS),
+		Or( Or (ShiftLeft (Arg0, 16), CONFIG_PCR_BASE_ADDRESS),
 					Local1, Local1)
 		Or( Add (PAD_CFG_BASE, Multiply (Arg1, 8)), Local1, Local1)
 		Return (Local1)
@@ -93,7 +93,7 @@ Scope (\_SB)
 		Store (CHSA (Arg1), Local1)
 
 		OperationRegion (SHO0, SystemMemory, Or ( Or
-			(CONFIG_IOSF_BASE_ADDRESS, ShiftLeft (Arg0, 16)), Local1), 4)
+			(CONFIG_PCR_BASE_ADDRESS, ShiftLeft (Arg0, 16)), Local1), 4)
 		Field (SHO0, AnyAcc, NoLock, Preserve) {
 			TEMP, 32
 		}
@@ -109,7 +109,7 @@ Scope (\_SB)
 		Store (CHSA (Arg1), Local1)
 
 		OperationRegion (SHO0, SystemMemory, Or ( Or
-			(CONFIG_IOSF_BASE_ADDRESS, ShiftLeft (Arg0, 16)), Local1), 4)
+			(CONFIG_PCR_BASE_ADDRESS, ShiftLeft (Arg0, 16)), Local1), 4)
 		Field (SHO0, AnyAcc, NoLock, Preserve) {
 			TEMP, 32
 		}

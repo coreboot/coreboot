@@ -95,6 +95,7 @@ int print_rcba(struct pci_dev *sb)
 	case PCI_DEVICE_ID_INTEL_LYNXPOINT_LP_FULL:
 	case PCI_DEVICE_ID_INTEL_LYNXPOINT_LP_PREM:
 	case PCI_DEVICE_ID_INTEL_LYNXPOINT_LP_BASE:
+	case PCI_DEVICE_ID_INTEL_WILDCATPOINT_LP_PREM:
 	case PCI_DEVICE_ID_INTEL_WILDCATPOINT_LP:
 		rcba_phys = pci_read_long(sb, 0xf0) & 0xfffffffe;
 		break;

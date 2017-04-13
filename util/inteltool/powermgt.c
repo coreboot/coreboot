@@ -701,6 +701,7 @@ int print_pmbase(struct pci_dev *sb, struct pci_access *pacc)
 	case PCI_DEVICE_ID_INTEL_LYNXPOINT_LP_FULL:
 	case PCI_DEVICE_ID_INTEL_LYNXPOINT_LP_PREM:
 	case PCI_DEVICE_ID_INTEL_LYNXPOINT_LP_BASE:
+	case PCI_DEVICE_ID_INTEL_WILDCATPOINT_LP_PREM:
 	case PCI_DEVICE_ID_INTEL_WILDCATPOINT_LP:
 	case PCI_DEVICE_ID_INTEL_BAYTRAIL_LPC:
 		pmbase = pci_read_word(sb, 0x40) & 0xff80;

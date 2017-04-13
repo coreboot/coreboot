@@ -13,8 +13,8 @@
  * GNU General Public License for more details.
  */
 
-#include "ec.h"
-#include "gpio.h"
+#include <variant/ec.h>
+#include <variant/gpio.h>
 
 DefinitionBlock(
 	"dsdt.aml",
@@ -67,6 +67,6 @@ DefinitionBlock(
 	Scope (\_SB)
 	{
 		/* Dynamic Platform Thermal Framework */
-		#include "acpi/dptf.asl"
+		#include <variant/acpi/dptf.asl>
 	}
 }

@@ -23,7 +23,7 @@
 #include <soc/romstage.h>
 #include <string.h>
 
-#include "../gpio.h"
+#include <variant/gpio.h>
 #include "spd.h"
 
 static void mainboard_print_spd_info(uint8_t spd[])

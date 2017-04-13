@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2016 Google Inc.
+ * Copyright 2017 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -9,21 +9,13 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  */
 
-#include <bootblock_common.h>
-#include <soc/gpio.h>
+#ifndef __MAINBOARD_EC_H__
+#define __MAINBOARD_EC_H__
 
-#include <variant/gpio.h>
+#include <baseboard/ec.h>
 
-static void early_config_gpio(void)
-{
-	gpio_configure_pads(early_gpio_table, ARRAY_SIZE(early_gpio_table));
-}
-
-void bootblock_mainboard_init(void)
-{
-	early_config_gpio();
-}
+#endif /* __MAINBOARD_EC_H__ */

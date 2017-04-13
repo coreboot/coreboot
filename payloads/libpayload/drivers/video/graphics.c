@@ -125,9 +125,9 @@ static inline uint32_t calculate_color(const struct rgb_color *rgb)
 static inline void set_pixel(struct vector *coord, uint32_t color)
 {
 	const int bpp = fbinfo->bits_per_pixel;
+	const int bpl = fbinfo->bytes_per_line;
 	int i;
-	uint8_t * const pixel = fbaddr + (coord->x +
-			coord->y * fbinfo->x_resolution) * bpp / 8;
+	uint8_t * const pixel = fbaddr + coord->y * bpl + coord->x * bpp / 8;
 	for (i = 0; i < bpp / 8; i++)
 		pixel[i] = (color >> (i * 8));
 }
@@ -156,8 +156,11 @@ static int cbgfx_init(void)
 
 	/* Calculate canvas size & offset, assuming the screen is landscape */
 	if (screen.size.height > screen.size.width) {
-		LOG("Portrait screen not supported\n");
-		return CBGFX_ERROR_PORTRAIT_SCREEN;
+		const int bpl = fbinfo->bytes_per_line;
+		LOG("Portrait screen not supported, forcing square image!\n");
+		memset(fbaddr + screen.size.width * bpl, 0,
+		       (screen.size.height - screen.size.width) * bpl);
+		screen.size.height = screen.size.width;
 	}
 	canvas.size.height = screen.size.height;
 	canvas.size.width = canvas.size.height;

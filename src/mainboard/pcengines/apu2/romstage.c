@@ -25,6 +25,7 @@
 #include <console/console.h>
 #include <commonlib/loglevel.h>
 #include <cpu/amd/car.h>
+#include <northbridge/amd/agesa/state_machine.h>
 #include <northbridge/amd/pi/agesawrapper.h>
 #include <northbridge/amd/pi/agesawrapper_call.h>
 #include <cpu/x86/bist.h>
@@ -51,8 +52,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	 */
 	outb(0xD2, 0xcd6);
 	outb(0x00, 0xcd7);
-
-	amd_initmmio();
 
 	hudson_lpc_port80();
 
@@ -85,26 +84,19 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	post_code(0x40);
 	AGESAWRAPPER(amdinitpost);
+}
 
+void agesa_postcar(struct sysinfo *cb)
+{
 	//PspMboxBiosCmdDramInfo();
 	post_code(0x41);
 	AGESAWRAPPER(amdinitenv);
-	/*
-	  If code hangs here, please check cahaltasm.S
-	*/
-	disable_cache_as_ram();
 
 	init_tpm(false);
 
 	outb(0xEA, 0xCD6);
 	outb(0x1, 0xcd7);
-
-	post_code(0x50);
-	copy_and_run();
-
-	post_code(0x54);  /* Should never see this post code. */
 }
-
 
 static void early_lpc_init(void)
 {

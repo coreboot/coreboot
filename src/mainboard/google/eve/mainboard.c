@@ -19,10 +19,7 @@
 #include <device/device.h>
 #include <ec/ec.h>
 #include <vendorcode/google/chromeos/chromeos.h>
-#include <gpio.h>
-#include <soc/gpio.h>
 #include <soc/nhlt.h>
-#include "gpio.h"
 
 static const char *oem_id_maxim = "GOOGLE";
 static const char *oem_table_id_maxim = "EVEMAX";
@@ -30,7 +27,6 @@ static const char *oem_table_id_maxim = "EVEMAX";
 static void mainboard_init(device_t dev)
 {
 	mainboard_ec_init();
-	gpio_configure_pads(late_gpio_table, ARRAY_SIZE(late_gpio_table));
 }
 
 static unsigned long mainboard_write_acpi_tables(

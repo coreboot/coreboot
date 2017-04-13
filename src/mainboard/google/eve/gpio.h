@@ -231,13 +231,6 @@ static const struct pad_config early_gpio_table[] = {
 /* UART2_TXD */		PAD_CFG_NF(GPP_C21, NONE, DEEP, NF1), /* SERVO */
 };
 
-static const struct pad_config late_gpio_table[] = {
-/* UART0_RXD */		PAD_CFG_GPI(GPP_C8, NONE, PLTRST), /* FP_INT */
-/* UART0_TXD */		PAD_CFG_GPI(GPP_C9, NONE, DEEP), /* FP_RST_ODL */
-/* UART0_RTS# */	PAD_CFG_GPI(GPP_C10, NONE, DEEP), /* PCH_FPS_MCU_NRST_ODL */
-/* UART0_CTS# */	PAD_CFG_GPI(GPP_C11, NONE, DEEP), /* PCH_FPS_MCU_BOOT0 */
-};
-
 #endif
 
 #endif

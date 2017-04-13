@@ -21,6 +21,6 @@ ramstage-$(CONFIG_SPI_FLASH) += spi.c
 
 cpu_incs-y += $(src)/cpu/amd/pi/cache_as_ram.inc
 
-romstage-y += heapmanager.c
-ramstage-y += heapmanager.c
+romstage-y += ../agesa/heapmanager.c
+ramstage-y += ../agesa/heapmanager.c
 ramstage-y += amd_late_init.c

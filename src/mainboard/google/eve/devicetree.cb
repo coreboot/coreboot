@@ -277,7 +277,6 @@ chip soc/intel/skylake
 				register "name" = ""RT53""
 				register "desc" = ""Realtek RT5663""
 				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPP_D9)"
-				register "probed" = "1"
 				device i2c 13 on end
 			end
 			chip drivers/i2c/generic

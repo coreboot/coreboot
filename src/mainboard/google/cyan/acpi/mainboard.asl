@@ -26,15 +26,6 @@ Scope (\_SB)
 	}
 }
 
-
-/*
- * LPC Trusted Platform Module
- */
-Scope (\_SB.PCI0.LPCB)
-{
-	#include <drivers/pc80/tpm/acpi/tpm.asl>
-}
-
 Scope (\_SB.I2C1)
 {
 	Device (ETSA)

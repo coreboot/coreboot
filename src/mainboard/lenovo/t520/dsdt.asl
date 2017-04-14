@@ -51,14 +51,6 @@ DefinitionBlock(
 		}
 	}
 
-	/*
-	 * LPC Trusted Platform Module
-	 */
-	Scope (\_SB.PCI0.LPCB)
-	{
-		#include <drivers/pc80/tpm/acpi/tpm.asl>
-	}
-
 	/* Chipset specific sleep states */
 	#include <southbridge/intel/bd82x6x/acpi/sleepstates.asl>
 }

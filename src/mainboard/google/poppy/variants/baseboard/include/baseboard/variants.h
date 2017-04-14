@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2016 Google Inc.
+ * Copyright 2017 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,16 +13,21 @@
  * GNU General Public License for more details.
  */
 
-#include <baseboard/variants.h>
-#include <soc/ramstage.h>
+#ifndef __BASEBOARD_VARIANTS_H__
+#define __BASEBOARD_VARIANTS_H__
 
-#include <variant/gpio.h>
+#include <soc/gpio.h>
+#include <stdint.h>
 
-void mainboard_silicon_init_params(FSP_SIL_UPD *params)
-{
-	const struct pad_config *pads;
-	size_t num;
+/* Return the board id for the current variant board. */
+uint8_t variant_board_id(void);
 
-	pads = variant_gpio_table(&num);
-	gpio_configure_pads(pads, num);
-}
+/*
+ * The next set of functions return the gpio table and fill in the number of
+ * entries for each table.
+ */
+const struct pad_config *variant_gpio_table(size_t *num);
+const struct pad_config *variant_early_gpio_table(size_t *num);
+
+
+#endif /* __BASEBOARD_VARIANTS_H__ */

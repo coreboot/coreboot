@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2016 Google Inc.
+ * Copyright 2017 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,15 +14,9 @@
  */
 
 #include <baseboard/variants.h>
-#include <soc/ramstage.h>
+#include <ec/google/chromeec/ec.h>
 
-#include <variant/gpio.h>
-
-void mainboard_silicon_init_params(FSP_SIL_UPD *params)
+uint8_t __attribute__((weak)) variant_board_id(void)
 {
-	const struct pad_config *pads;
-	size_t num;
-
-	pads = variant_gpio_table(&num);
-	gpio_configure_pads(pads, num);
+	return google_chromeec_get_board_version();
 }

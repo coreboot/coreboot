@@ -46,8 +46,8 @@ static void pmic_write_reg(unsigned bus, uint8_t chip, uint8_t reg, uint8_t val,
 	if (i2c_writeb(bus, chip, reg, val)) {
 		printk(BIOS_ERR, "%s: reg = 0x%02X, value = 0x%02X failed!\n",
 			__func__, reg, val);
-		/* Reset the SoC on any PMIC write error */
-		cpu_reset();
+		/* Reset the board on any PMIC write error */
+		hard_reset();
 	} else {
 		if (delay)
 			udelay(500);

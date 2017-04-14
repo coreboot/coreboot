@@ -18,6 +18,7 @@
 
 #include <soc/gpio.h>
 #include <stdint.h>
+#include <vendorcode/google/chromeos/chromeos.h>
 
 /* Return the board id for the current variant board. */
 uint8_t variant_board_id(void);
@@ -29,5 +30,6 @@ uint8_t variant_board_id(void);
 const struct pad_config *variant_gpio_table(size_t *num);
 const struct pad_config *variant_early_gpio_table(size_t *num);
 
+const struct cros_gpio *variant_cros_gpios(size_t *num);
 
 #endif /* __BASEBOARD_VARIANTS_H__ */

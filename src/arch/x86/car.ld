@@ -44,6 +44,11 @@
 	 * to reside in the migrated area (between _car_relocatable_data_start
 	 * and _car_relocatable_data_end). */
 	TIMESTAMP(., 0x100)
+#if IS_ENABLED(CONFIG_DRIVERS_STORAGE)
+	_car_drivers_storage_start = .;
+	. += 256;
+	_car_drivers_storage_end = .;
+#endif
 	/* _car_global_start and _car_global_end provide symbols to per-stage
 	 * variables that are not shared like the timestamp and the pre-ram
 	 * cbmem console. This is useful for clearing this area on a per-stage

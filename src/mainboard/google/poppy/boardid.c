@@ -13,15 +13,16 @@
  * GNU General Public License for more details.
  */
 
+#include <baseboard/variants.h>
 #include <boardid.h>
-#include <ec/google/chromeec/ec.h>
+#include <stddef.h>
 
 uint8_t board_id(void)
 {
 	MAYBE_STATIC int id = -1;
 
 	if (id < 0)
-		id = google_chromeec_get_board_version();
+		id = variant_board_id();
 
 	return id;
 }

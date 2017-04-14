@@ -16,23 +16,22 @@
 
 /* simple name description */
 /*
-DefinitionBlock ("DSDT.AML","DSDT",0x01,"XXXXXX","XXXXXXXX",0x00010001
-		)
-	{
-		#include "usb.asl"
-	}
-*/
+ * DefinitionBlock ("DSDT.AML","DSDT",0x01,"XXXXXX","XXXXXXXX",0x00010001)
+ * {
+ *	#include "usb.asl"
+ * }
+ */
 
 /* USB overcurrent mapping pins.   */
-Name(UOM0, 0)
-Name(UOM1, 2)
-Name(UOM2, 0)
-Name(UOM3, 7)
-Name(UOM4, 2)
-Name(UOM5, 2)
-Name(UOM6, 6)
-Name(UOM7, 2)
-Name(UOM8, 6)
-Name(UOM9, 6)
+Name (UOM0, 0)
+Name (UOM1, 2)
+Name (UOM2, 0)
+Name (UOM3, 7)
+Name (UOM4, 2)
+Name (UOM5, 2)
+Name (UOM6, 6)
+Name (UOM7, 2)
+Name (UOM8, 6)
+Name (UOM9, 6)
 
 /* USB Overcurrent GPEs */

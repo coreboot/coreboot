@@ -13,106 +13,124 @@
  * GNU General Public License for more details.
  */
 
-Device(AAHB) {
-	Name(_HID,"AAHB0000")
-	Name(_UID,0x0)
-	Name(_CRS, ResourceTemplate()
+Device (AAHB)
+{
+	Name (_HID, "AAHB0000")
+	Name (_UID, 0x0)
+	Name (_CRS, ResourceTemplate()
 	{
-		Memory32Fixed(ReadWrite, 0xFEDC0000, 0x2000)
+		Memory32Fixed (ReadWrite, 0xFEDC0000, 0x2000)
 	})
 
-	Method (_STA, 0x0, NotSerialized) {
+	Method (_STA, 0x0, NotSerialized)
+	{
 		Return (0x0F)
 	}
 }
 
-Device(GPIO) {
+Device (GPIO)
+{
 	Name (_HID, "AMD0030")
 	Name (_CID, "AMD0030")
 	Name(_UID, 0)
 
-	Name(_CRS, ResourceTemplate() {
-		Interrupt(ResourceConsumer, Level, ActiveLow, Shared, , , ) {7}
-		Memory32Fixed(ReadWrite, 0xFED81500, 0x300)
+	Name (_CRS, ResourceTemplate()
+	{
+		Interrupt (ResourceConsumer, Level, ActiveLow, Shared, , , )
+			{ 7 }
+		Memory32Fixed (ReadWrite, 0xFED81500, 0x300)
 	})
 
-	Method (_STA, 0x0, NotSerialized) {
+	Method (_STA, 0x0, NotSerialized)
+	{
 		Return (0x0F)
 	}
 }
 
-Device(FUR0) {
-	Name(_HID,"AMD0020")
-	Name(_UID,0x0)
-	Name(_CRS, ResourceTemplate() {
-		IRQ(Edge, ActiveHigh, Exclusive) {10}
-		Memory32Fixed(ReadWrite, 0xFEDC6000, 0x2000)
+Device (FUR0)
+{
+	Name (_HID, "AMD0020")
+	Name (_UID, 0x0)
+	Name (_CRS, ResourceTemplate()
+	{
+		IRQ (Edge, ActiveHigh, Exclusive) { 10 }
+		Memory32Fixed (ReadWrite, 0xFEDC6000, 0x2000)
 	})
-	Method (_STA, 0x0, NotSerialized) {
+	Method (_STA, 0x0, NotSerialized)
+	{
 		Return (0x0F)
 	}
 }
 
-Device(FUR1) {
-	Name(_HID,"AMD0020")
-	Name(_UID,0x1)
-	Name(_CRS, ResourceTemplate() {
-			IRQ(Edge, ActiveHigh, Exclusive) {11}
-			Memory32Fixed(ReadWrite, 0xFEDC8000, 0x2000)
+Device (FUR1) {
+	Name (_HID, "AMD0020")
+	Name (_UID, 0x1)
+	Name (_CRS, ResourceTemplate()
+	{
+			IRQ (Edge, ActiveHigh, Exclusive) { 11 }
+			Memory32Fixed (ReadWrite, 0xFEDC8000, 0x2000)
 	})
-	Method (_STA, 0x0, NotSerialized) {
+	Method (_STA, 0x0, NotSerialized)
+	{
 			Return (0x0F)
 	}
 }
 
-Device(I2CA) {
-	Name(_HID,"AMD0010")
-	Name(_UID,0x0)
-	Name(_CRS, ResourceTemplate() {
-		IRQ(Edge, ActiveHigh, Exclusive) {3}
-		Memory32Fixed(ReadWrite, 0xFEDC2000, 0x1000)
+Device (I2CA) {
+	Name (_HID, "AMD0010")
+	Name (_UID, 0x0)
+	Name (_CRS, ResourceTemplate()
+	{
+		IRQ (Edge, ActiveHigh, Exclusive) { 3 }
+		Memory32Fixed (ReadWrite, 0xFEDC2000, 0x1000)
 	})
 
-	Method (_STA, 0x0, NotSerialized) {
+	Method (_STA, 0x0, NotSerialized)
+	{
 		Return (0x0F)
 	}
 }
 
-Device(I2CB)
+Device (I2CB)
 {
-	Name(_HID,"AMD0010")
-	Name(_UID,0x1)
-	Name(_CRS, ResourceTemplate() {
-		IRQ(Edge, ActiveHigh, Exclusive) {15}
-		Memory32Fixed(ReadWrite, 0xFEDC3000, 0x1000)
+	Name (_HID, "AMD0010")
+	Name (_UID, 0x1)
+	Name (_CRS, ResourceTemplate()
+	{
+		IRQ (Edge, ActiveHigh, Exclusive) { 15 }
+		Memory32Fixed (ReadWrite, 0xFEDC3000, 0x1000)
 	})
-	Method (_STA, 0x0, NotSerialized) {
+	Method (_STA, 0x0, NotSerialized)
+	{
 		Return (0x0F)
 	}
 }
 
-Device(I2CC) {
-	Name(_HID,"AMD0010")
-	Name(_UID,0x0)
-	Name(_CRS, ResourceTemplate() {
-		IRQ(Edge, ActiveHigh, Exclusive) {6}
-		Memory32Fixed(ReadWrite, 0xFEDC4000, 0x1000)
+Device (I2CC) {
+	Name (_HID, "AMD0010")
+	Name (_UID, 0x0)
+	Name (_CRS, ResourceTemplate()
+	{
+		IRQ (Edge, ActiveHigh, Exclusive) { 6 }
+		Memory32Fixed (ReadWrite, 0xFEDC4000, 0x1000)
 	})
 
-	Method (_STA, 0x0, NotSerialized) {
+	Method (_STA, 0x0, NotSerialized)
+	{
 		Return (0x0F)
 	}
 }
 
-Device(I2CD)
+Device (I2CD)
 {
-	Name(_HID,"AMD0010")
-	Name(_UID,0x1)
-	Name(_CRS, ResourceTemplate() {
-		IRQ(Edge, ActiveHigh, Exclusive) {14}
+	Name (_HID, "AMD0010")
+	Name (_UID, 0x1)
+	Name (_CRS, ResourceTemplate() {
+		IRQ (Edge, ActiveHigh, Exclusive) { 14 }
 		Memory32Fixed(ReadWrite, 0xFEDC5000, 0x1000)
 	})
-	Method (_STA, 0x0, NotSerialized) {
+	Method (_STA, 0x0, NotSerialized)
+	{
 		Return (0x0F)
 	}
 }

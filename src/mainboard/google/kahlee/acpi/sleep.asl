@@ -14,7 +14,7 @@
  */
 
 /* Wake status package */
-Name(WKST,Package(){Zero, Zero})
+Name (WKST, Package() { Zero, Zero })
 
 /*
 * \_PTS - Prepare to Sleep method
@@ -32,55 +32,58 @@ Name(WKST,Package(){Zero, Zero})
 * the ACPI driver.  This method cannot modify the configuration or power
 * state of any device in the system.
 */
-Method(_PTS, 1) {
-	/* DBGO("\\_PTS\n") */
-	/* DBGO("From S0 to S") */
-	/* DBGO(Arg0) */
-	/* DBGO("\n") */
+Method (_PTS, 1)
+{
+	/* DBGO ("\\_PTS\n") */
+	/* DBGO ("From S0 to S") */
+	/* DBGO (Arg0) */
+	/* DBGO ("\n") */
 
 	/* Clear wake status structure. */
-	Store(0, PEWD)
-	Store(0, Index(WKST,0))
-	Store(0, Index(WKST,1))
-	Store(7, UPWS)
-} /* End Method(\_PTS) */
-
-/*
-*	\_BFS OEM Back From Sleep method
-*
-*	Entry:
-*		Arg0=The value of the sleeping state S1=1, S2=2
-*
-*	Exit:
-*		-none-
-*/
-Method(\_BFS, 1) {
-	/* DBGO("\\_BFS\n") */
-	/* DBGO("From S") */
-	/* DBGO(Arg0) */
-	/* DBGO(" to S0\n") */
+	Store (0, PEWD)
+	Store (0, Index(WKST,0))
+	Store (0, Index(WKST,1))
+	Store (7, UPWS)
 }
 
 /*
-*  \_WAK System Wake method
-*
-*	Entry:
-*		Arg0=The value of the sleeping state S1=1, S2=2
-*
-*	Exit:
-*		Return package of 2 DWords
-*		Dword 1 - Status
-*			0x00000000	wake succeeded
-*			0x00000001	Wake was signaled but failed due to lack of power
-*			0x00000002	Wake was signaled but failed due to thermal condition
-*		Dword 2 - Power Supply state
-*			if non-zero the effective S-state the power supply entered
-*/
-Method(\_WAK, 1) {
-	/* DBGO("\\_WAK\n") */
-	/* DBGO("From S") */
-	/* DBGO(Arg0) */
-	/* DBGO(" to S0\n") */
+ *	\_BFS OEM Back From Sleep method
+ *
+ *	Entry:
+ *		Arg0=The value of the sleeping state S1=1, S2=2
+ *
+ *	Exit:
+ *		-none-
+ */
+Method (\_BFS, 1)
+{
+	/* DBGO ("\\_BFS\n") */
+	/* DBGO ("From S") */
+	/* DBGO (Arg0) */
+	/* DBGO (" to S0\n") */
+}
 
-	Return(WKST)
-} /* End Method(\_WAK) */
+/*
+ *  \_WAK System Wake method
+ *
+ *	Entry:
+ *		Arg0=The value of the sleeping state S1=1, S2=2
+ *
+ *	Exit:
+ *		Return package of 2 DWords
+ *		Dword 1 - Status
+ *			0x00000000	wake succeeded
+ *			0x00000001	Wake was signaled but failed due to lack of power
+ *			0x00000002	Wake was signaled but failed due to thermal condition
+ *		Dword 2 - Power Supply state
+ *			if non-zero the effective S-state the power supply entered
+ */
+Method (\_WAK, 1)
+{
+	/* DBGO ("\\_WAK\n") */
+	/* DBGO ("From S") */
+	/* DBGO (Arg0) */
+	/* DBGO (" to S0\n") */
+
+	Return (WKST)
+}

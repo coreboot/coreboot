@@ -22,11 +22,3 @@ Scope (\_SB)
 		Name (_HID, EisaId ("PNP0C0C"))
 	}
 }
-
-/*
- * LPC Trusted Platform Module
- */
-Scope (\_SB.PCI0.LPCB)
-{
-	#include <drivers/pc80/tpm/acpi/tpm.asl>
-}

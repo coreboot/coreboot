@@ -23,11 +23,3 @@ Scope (\_SB)
 	}
 }
 #endif
-
-/*
- * LPC Trusted Platform Module
- */
-Scope (\_SB.PCI0.LPCB)
-{
-	#include <drivers/pc80/tpm/acpi/tpm.asl>
-}

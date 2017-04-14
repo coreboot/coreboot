@@ -82,6 +82,7 @@ util/*/.test
 util/amdfwtool/amdfwtool
 util/archive/archive
 util/bimgtool/bimgtool
+util/blobtool/blobtool
 util/board_status/board-status
 util/cbfstool/cbfstool
 util/cbfstool/fmaptool

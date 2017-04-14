@@ -21,6 +21,7 @@
 #include <console/console.h>
 #include <pc80/keyboard.h>
 #include <stdlib.h>
+#include <superio/ite/common/env_ctrl.h>
 
 #include "chip.h"
 #include "it8728f.h"
@@ -28,13 +29,19 @@
 
 static void it8728f_init(struct device *dev)
 {
+	const struct superio_ite_it8728f_config *conf = dev->chip_info;
+	const struct resource *res;
+
 	if (!dev->enabled)
 		return;
 
 	switch(dev->path.pnp.device) {
-	/* TODO: Might potentially need code for HWM or FDC etc. */
+	/* TODO: Might potentially need code for FDC etc. */
 	case IT8728F_EC:
-		it8728f_hwm_ec_init(dev);
+		res = find_resource(dev, PNP_IDX_IO0);
+		if (!conf || !res)
+			break;
+		ite_ec_init(res->base, &conf->ec);
 		break;
 	case IT8728F_KBCK:
 		set_kbc_ps2_mode();

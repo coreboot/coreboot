@@ -58,12 +58,22 @@ chip northbridge/amd/agesa/family15tn/root_complex
 				device pci 14.2 on  end # HDA	0x4383
 				device pci 14.3 on      # LPC	0x439d
 					chip superio/ite/it8728f
-						register hwm_ctl_register = "0xc0"
-						register hwm_main_ctl_register = "0x33"
-						register hwm_adc_temp_chan_en_reg = "0x38"
-						register hwm_fan1_ctl_pwm = "0x00"
-						register hwm_fan2_ctl_pwm = "0x00"
-						register hwm_fan3_ctl_pwm = "0x00"
+						register "TMPIN1" = "THERMAL_RESISTOR"
+						register "TMPIN2" = "THERMAL_RESISTOR"
+						register "TMPIN3" = "THERMAL_RESISTOR"
+
+						register "FAN1.mode" = "FAN_SMART_AUTOMATIC"
+						register "FAN1.smart.tmpin" = "1"
+						register "FAN1.smart.tmp_off" = "0x80" # never
+						register "FAN1.smart.tmp_start" = "20"
+						register "FAN1.smart.tmp_full" = "70"
+						register "FAN1.smart.tmp_delta" = "0"
+						register "FAN1.smart.smoothing" = "1"
+						register "FAN1.smart.pwm_start" = "20"
+						register "FAN1.smart.slope" = "32"
+
+						# Enable tacho reading for chassis fan.
+						register "FAN2.mode" = "FAN_MODE_OFF"
 
 						device pnp 2e.0 off #  Floppy
 							io 0x60 = 0x3f0

@@ -17,14 +17,10 @@
 #ifndef SUPERIO_ITE_IT8728F_CHIP_H
 #define SUPERIO_ITE_IT8728F_CHIP_H
 
+#include <superio/ite/common/env_ctrl_chip.h>
+
 struct superio_ite_it8728f_config {
-	/* HWM configuration registers */
-	uint8_t hwm_ctl_register;
-	uint8_t hwm_main_ctl_register;
-	uint8_t hwm_adc_temp_chan_en_reg;
-	uint8_t hwm_fan1_ctl_pwm;
-	uint8_t hwm_fan2_ctl_pwm;
-	uint8_t hwm_fan3_ctl_pwm;
+	struct ite_ec_config ec;
 };
 
 #endif /* SUPERIO_ITE_IT8728F_CHIP_H */

@@ -14,5 +14,4 @@
 ## GNU General Public License for more details.
 ##
 
-ramstage-$(CONFIG_SUPERIO_ITE_IT8728F) += it8728f_hwm.c
 ramstage-$(CONFIG_SUPERIO_ITE_IT8728F) += superio.c

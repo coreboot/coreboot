@@ -84,7 +84,7 @@ static void lpc_init(device_t dev)
 	/* Initialize i8254 timers */
 	setup_i8254 ();
 
-	/* Setup SERIRQ, enable continuous mode */
+	/* Set up SERIRQ, enable continuous mode */
 	byte = (BIT(4) | BIT(7));
 	if (!IS_ENABLED(CONFIG_SERIRQ_CONTINUOUS_MODE))
 		byte |= BIT(6);

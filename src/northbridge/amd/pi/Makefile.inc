@@ -25,4 +25,6 @@ romstage-y += def_callouts.c
 ramstage-y += agesawrapper.c
 ramstage-y += def_callouts.c
 
+romstage-y += ramtop.c
+ramstage-y += ramtop.c
 endif

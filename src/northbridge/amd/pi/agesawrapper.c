@@ -15,6 +15,7 @@
 
 #include <AGESA.h>
 #include <cbfs.h>
+#include <cbmem.h>
 #include <delay.h>
 #include <cpu/x86/mtrr.h>
 #include <cpuRegisters.h>
@@ -137,15 +138,25 @@ AGESA_STATUS agesawrapper_amdinitpost(void)
 	AmdCreateStruct (&AmdParamStruct);
 	PostParams = (AMD_POST_PARAMS *)AmdParamStruct.NewStructPtr;
 
-	OemPostParams(PostParams);
-
 	// Do not use IS_ENABLED here.  CONFIG_GFXUMA should always have a value.  Allow
 	// the compiler to flag the error if CONFIG_GFXUMA is not set.
 	PostParams->MemConfig.UmaMode = CONFIG_GFXUMA ? UMA_AUTO : UMA_NONE;
 	PostParams->MemConfig.UmaSize = 0;
 	PostParams->MemConfig.BottomIo = (UINT16)
 					 (CONFIG_BOTTOMIO_POSITION >> 24);
+
+	OemPostParams(PostParams);
+
 	status = AmdInitPost (PostParams);
+
+	/* If UMA is enabled we currently have it below TOP_MEM as well.
+	 * UMA may or may not be cacheable, so Sub4GCacheTop could be
+	 * higher than UmaBase. With UMA_NONE we see UmaBase==0. */
+	if (PostParams->MemConfig.UmaBase)
+		backup_top_of_ram(PostParams->MemConfig.UmaBase << 16);
+	else
+		backup_top_of_ram(PostParams->MemConfig.Sub4GCacheTop);
+
 	printk(
 			BIOS_SPEW,
 			"setup_uma_memory: umamode %s\n",
@@ -166,7 +177,6 @@ AGESA_STATUS agesawrapper_amdinitpost(void)
 			(unsigned long)(PostParams->MemConfig.UmaSize) >> (20 - 16),
 			(unsigned long)(PostParams->MemConfig.UmaBase) << 16
 	);
-
 	if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog(PostParams->StdHeader.HeapStatus);
 	AmdReleaseStruct (&AmdParamStruct);
 	/* Initialize heap space */

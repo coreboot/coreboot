@@ -259,8 +259,8 @@ static void receive_enable_calibration(const timings_t *const timings,
 				rec_timings[ch][group].c - c_min;
 			rec_timings[ch][group].c = c_min;
 			program_timing(ch, group, rec_timings);
-			printk(BIOS_SPEW, "Final timings for group %d "
-					  "on channel %d: %d.%d.%d.%d.%d\n",
+			printk(RAM_DEBUG, "Final timings for ");
+			printk(BIOS_DEBUG, "group %d, ch %d: %d.%d.%d.%d.%d\n",
 			       group, ch,
 			       rec_timings[ch][group].c,
 			       rec_timings[ch][group].pre,

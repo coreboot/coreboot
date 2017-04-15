@@ -56,7 +56,7 @@ static void print_read_timing(const int msg_lvl, const char *const msg,
 			      const int lane, const int channel,
 			      const read_timing_t *const timing)
 {
-	printk(msg_lvl, "%s for byte lane %d on channel %d: %d.%d\n",
+	printk(msg_lvl, "%sbyte lane %d, ch %d: %d.%d\n",
 	       msg, lane, channel, timing->t, timing->p);
 }
 
@@ -187,7 +187,7 @@ static void read_training_per_lane(const int channel, const int lane,
 	lower.p = 0;
 	if (read_training_find_lower(channel, lane, addresses, &lower) < 0)
 		die("Read training failure: lower bound.\n");
-	print_read_timing(BIOS_SPEW, "Lower bound", lane, channel, &lower);
+	print_read_timing(RAM_DEBUG, "Lower bound for ", lane, channel, &lower);
 
 	/*** Search upper bound. ***/
 
@@ -197,7 +197,7 @@ static void read_training_per_lane(const int channel, const int lane,
 	if (read_training_find_upper(channel, lane, addresses, &upper) < 0)
 		/* Overflow on upper edge is not fatal. */
 		printk(BIOS_WARNING, "Read training failure: upper bound.\n");
-	print_read_timing(BIOS_SPEW, "Upper bound", lane, channel, &upper);
+	print_read_timing(RAM_DEBUG, "Upper bound for ", lane, channel, &upper);
 
 	/*** Calculate and program mean value. ***/
 
@@ -208,7 +208,8 @@ static void read_training_per_lane(const int channel, const int lane,
 	lower.t = mean_p >> READ_TIMING_P_SHIFT;
 	lower.p = mean_p & (READ_TIMING_P_BOUND - 1);
 	program_read_timing(channel, lane, &lower);
-	print_read_timing(BIOS_DEBUG, "Final timings", lane, channel, &lower);
+	printk(RAM_DEBUG, "Final timings for ");
+	print_read_timing(BIOS_DEBUG, "", lane, channel, &lower);
 }
 static void perform_read_training(const dimminfo_t *const dimms)
 {
@@ -351,7 +352,7 @@ static void print_write_timing(const int msg_lvl, const char *const msg,
 			       const int group, const int channel,
 			       const write_timing_t *const timing)
 {
-	printk(msg_lvl, "%s for group %d on channel %d: %d.%d.%d\n",
+	printk(msg_lvl, "%sgroup %d, ch %d: %d.%d.%d\n",
 	       msg, group, channel, timing->f, timing->t, timing->p);
 }
 
@@ -531,7 +532,7 @@ static void write_training_per_group(const int ch, const int group,
 	if (write_training_find_lower(ch, group, addresses,
 				      masks, memclk1067, &lower) < 0)
 		die("Write training failure: lower bound.\n");
-	print_write_timing(BIOS_SPEW, "Lower bound", group, ch, &lower);
+	print_write_timing(RAM_DEBUG, "Lower bound for ", group, ch, &lower);
 
 	/*** Search upper bound. ***/
 
@@ -543,7 +544,7 @@ static void write_training_per_group(const int ch, const int group,
 	if (write_training_find_upper(ch, group, addresses,
 				      masks, memclk1067, &upper) < 0)
 		printk(BIOS_WARNING, "Write training failure: upper bound.\n");
-	print_write_timing(BIOS_SPEW, "Upper bound", group, ch, &upper);
+	print_write_timing(RAM_DEBUG, "Upper bound for ", group, ch, &upper);
 
 	/*** Calculate and program mean value. ***/
 
@@ -557,7 +558,8 @@ static void write_training_per_group(const int ch, const int group,
 	lower.t = (mean_p >> WRITE_TIMING_P_SHIFT) % lower.t_bound;
 	lower.p = mean_p & (WRITE_TIMING_P_BOUND - 1);
 	program_write_timing(ch, group, &lower, memclk1067);
-	print_write_timing(BIOS_DEBUG, "Final timings", group, ch, &lower);
+	printk(RAM_DEBUG, "Final timings for ");
+	print_write_timing(BIOS_DEBUG, "", group, ch, &lower);
 }
 static void perform_write_training(const int memclk1067,
 				   const dimminfo_t *const dimms)

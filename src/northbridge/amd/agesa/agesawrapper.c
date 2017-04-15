@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <cbmem.h>
 #include <stdint.h>
 #include <string.h>
 
@@ -109,6 +110,8 @@ AGESA_STATUS agesawrapper_amdinitpost(void)
 
 	status = AmdInitPost(PostParams);
 	AGESA_EVENTLOG(status, &PostParams->StdHeader);
+
+	backup_top_of_ram(PostParams->MemConfig.Sub4GCacheTop);
 
 	AmdReleaseStruct(&AmdParamStruct);
 

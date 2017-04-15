@@ -422,34 +422,6 @@ static void set_resources(device_t dev)
 	printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
 }
 
-static void setup_uma_memory(void)
-{
-#if CONFIG_GFXUMA
-	uint32_t topmem = (uint32_t) bsp_topmem();
-	uint32_t sys_mem;
-
-	/* refer to UMA Size Consideration in Family12h BKDG. */
-	/* Please reference MemNGetUmaSizeLN () */
-	/*
-	 *     Total system memory   UMASize
-	 *     >= 2G                 512M
-	 *     >=1G                  256M
-	 *     <1G                    64M
-	 */
-	sys_mem = topmem + 0x1000000; // Ignore 16MB allocated for C6 when finding UMA size
-	if ((bsp_topmem2()>>32) || (sys_mem >= 0x80000000)) {
-		uma_memory_size = 0x20000000;	/* >= 2G memory, 512M recommended UMA */
-	} else if (sys_mem >= 0x40000000) {
-		uma_memory_size = 0x10000000;	/* >= 1G memory, 256M recommended UMA */
-	} else {
-		uma_memory_size = 0x4000000; 	/* <1G memory, 64M recommended UMA */
-	}
-	uma_memory_base = topmem - uma_memory_size; /* TOP_MEM1 */
-	printk(BIOS_INFO, "%s: uma size 0x%08llx, memory start 0x%08llx\n",
-			__func__, uma_memory_size, uma_memory_base);
-#endif
-}
-
 /* Domain/Root Complex related code */
 
 static void domain_read_resources(device_t dev)
@@ -514,7 +486,6 @@ static void domain_set_resources(device_t dev)
 
 	unsigned long mmio_basek;
 	u32 pci_tolm;
-	u64 ramtop = 0;
 	int idx;
 	struct bus *link;
 #if CONFIG_HW_MEM_HOLE_SIZEK != 0
@@ -595,8 +566,6 @@ static void domain_set_resources(device_t dev)
 					ram_resource(dev, idx, basek, pre_sizek);
 					idx += 0x10;
 					sizek -= pre_sizek;
-					if (!ramtop)
-						ramtop = mmio_basek * 1024;
 				}
 				basek = mmio_basek;
 			}
@@ -612,17 +581,10 @@ static void domain_set_resources(device_t dev)
 		idx += 0x10;
 		printk(BIOS_DEBUG, "%d: mmio_basek=%08lx, basek=%08llx, limitk=%08llx\n",
 		   0, mmio_basek, basek, limitk);
-		if (!ramtop)
-			ramtop = limitk * 1024;
 	}
 	printk(BIOS_DEBUG, "  adsr - mmio_basek = %lx.\n", mmio_basek);
 
-#if CONFIG_GFXUMA
-	set_top_of_ram(uma_memory_base);
-	uma_resource(dev, 7, uma_memory_base >> 10, uma_memory_size >> 10);
-#else
-	set_top_of_ram(ramtop);
-#endif
+	add_uma_resource_below_tolm(dev, 7);
 
 	for (link = dev->link_list; link; link = link->next) {
 		if (link->children)
@@ -811,11 +773,8 @@ static void root_complex_enable_dev(struct device *dev)
 	printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
 	static int done = 0;
 
-	/* Do not delay UMA setup, as a device on the PCI bus may evaluate
-	   the global uma_memory variables already in its enable function. */
 	if (!done) {
 		setup_bsp_ramtop();
-		setup_uma_memory();
 		done = 1;
 	}
 

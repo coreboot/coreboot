@@ -20,23 +20,6 @@
 #include <console/console.h>	/* printk */
 #include <cbmem.h>
 
-#if IS_ENABLED(CONFIG_LATE_CBMEM_INIT)
-
-#define BIOSRAM_INDEX   0xcd4
-#define BIOSRAM_DATA    0xcd5
-
-void backup_top_of_ram(uint64_t ramtop)
-{
-	u32 dword = (u32) ramtop;
-	int nvram_pos = 0xfc, i;
-	for (i = 0; i < 4; i++) {
-		outb(nvram_pos, BIOSRAM_INDEX);
-		outb((dword >>(8 * i)) & 0xff , BIOSRAM_DATA);
-		nvram_pos++;
-	}
-}
-#endif
-
 void lpc_read_resources(device_t dev)
 {
 	struct resource *res;

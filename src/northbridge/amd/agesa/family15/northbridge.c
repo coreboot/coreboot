@@ -699,43 +699,10 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 }
 #endif
 
-#define ONE_MB_SHIFT  20
-
-static void setup_uma_memory(void)
-{
-#if CONFIG_GFXUMA
-	uint32_t topmem = (uint32_t) bsp_topmem();
-	uint32_t sys_mem;
-
-	/* refer to UMA Size Consideration in Family15h BKDG. */
-	/* Please reference MemNGetUmaSizeOR () */
-	/*
-	 *     Total system memory   UMASize
-	 *     >= 2G                 512M
-	 *     >=1G                  256M
-	 *     <1G                    64M
-	 */
-	sys_mem = topmem + (16 << ONE_MB_SHIFT);   // Ignore 16MB allocated for C6 when finding UMA size
-	if ((bsp_topmem2()>>32) || (sys_mem >= 2048 << ONE_MB_SHIFT)) {
-		uma_memory_size = 512 << ONE_MB_SHIFT;
-	} else if (sys_mem >= 1024 << ONE_MB_SHIFT) {
-		uma_memory_size = 256 << ONE_MB_SHIFT;
-	} else {
-		uma_memory_size = 64 << ONE_MB_SHIFT;
-	}
-	uma_memory_base = topmem - uma_memory_size; /* TOP_MEM1 */
-
-	printk(BIOS_INFO, "%s: uma size 0x%08llx, memory start 0x%08llx\n",
-			__func__, uma_memory_size, uma_memory_base);
-#endif
-}
-
-
 static void domain_set_resources(device_t dev)
 {
 	unsigned long mmio_basek;
 	u32 pci_tolm;
-	u64 ramtop = 0;
 	int i, idx;
 	struct bus *link;
 #if CONFIG_HW_MEM_HOLE_SIZEK != 0
@@ -806,8 +773,6 @@ static void domain_set_resources(device_t dev)
 					ram_resource(dev, (idx | i), basek, pre_sizek);
 					idx += 0x10;
 					sizek -= pre_sizek;
-					if (!ramtop)
-						ramtop = mmio_basek * 1024;
 				}
 				basek = mmio_basek;
 			}
@@ -824,16 +789,9 @@ static void domain_set_resources(device_t dev)
 		idx += 0x10;
 		printk(BIOS_DEBUG, "node %d: mmio_basek=%08lx, basek=%08llx, limitk=%08llx\n",
 				i, mmio_basek, basek, limitk);
-		if (!ramtop)
-			ramtop = limitk * 1024;
 	}
 
-#if CONFIG_GFXUMA
-	set_top_of_ram(uma_memory_base);
-	uma_resource(dev, 7, uma_memory_base >> 10, uma_memory_size >> 10);
-#else
-	set_top_of_ram(ramtop);
-#endif
+	add_uma_resource_below_tolm(dev, 7);
 
 	for (link = dev->link_list; link; link = link->next) {
 		if (link->children) {
@@ -1095,11 +1053,8 @@ static void root_complex_enable_dev(struct device *dev)
 {
 	static int done = 0;
 
-	/* Do not delay UMA setup, as a device on the PCI bus may evaluate
-	   the global uma_memory variables already in its enable function. */
 	if (!done) {
 		setup_bsp_ramtop();
-		setup_uma_memory();
 		done = 1;
 	}
 

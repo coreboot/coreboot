@@ -1,32 +1,11 @@
-##
-## This file is part of the coreboot project.
-##
-## Copyright (C) 2016 Google Inc.
-## Copyright (C) 2016 Intel Corporation
-##
-## This program is free software; you can redistribute it and/or modify
-## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; version 2 of the License.
-##
-## This program is distributed in the hope that it will be useful,
-## but WITHOUT ANY WARRANTY; without even the implied warranty of
-## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-## GNU General Public License for more details.
-##
-
-romstage-y += spd.c
 
 SPD_BIN = $(obj)/spd.bin
 
-SPD_SOURCES = empty				# 0b0000
-SPD_SOURCES += empty				# 0b0001
-SPD_SOURCES += empty				# 0b0010
-SPD_SOURCES += micron_dimm_MT52L512M64D4PQ-107	# 0b0011
-SPD_SOURCES += hynix_dimm_H9CCNNNCPTALBR-NUD	# 0b0100
-SPD_SOURCES += micron_dimm_MT52L1G64D8QC-107	# 0b0101
-SPD_SOURCES += hynix_dimm_H9CCNNNFAGMLLR-NUD	# 0b0110
-
-SPD_DEPS := $(foreach f, $(SPD_SOURCES), src/mainboard/$(MAINBOARDDIR)/spd/$(f).spd.hex)
+ifeq ($(SPD_SOURCES),)
+	SPD_DEPS := $(error SPD_SOURCES is not set. Variant must provide this)
+else
+	SPD_DEPS := $(foreach f, $(SPD_SOURCES), src/mainboard/$(MAINBOARDDIR)/spd/$(f).spd.hex)
+endif
 
 # Include spd ROM data
 $(SPD_BIN): $(SPD_DEPS)

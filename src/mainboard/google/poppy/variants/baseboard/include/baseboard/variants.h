@@ -32,4 +32,18 @@ const struct pad_config *variant_early_gpio_table(size_t *num);
 
 const struct cros_gpio *variant_cros_gpios(size_t *num);
 
+struct memory_params {
+	const void *dq_map;
+	size_t dq_map_size;
+	const void *dqs_map;
+	size_t dqs_map_size;
+	const void *rcomp_resistor;
+	size_t rcomp_resistor_size;
+	const void *rcomp_target;
+	size_t rcomp_target_size;
+};
+
+void variant_memory_params(struct memory_params *p);
+int variant_memory_sku(void);
+
 #endif /* __BASEBOARD_VARIANTS_H__ */

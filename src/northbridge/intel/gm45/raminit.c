@@ -1593,7 +1593,7 @@ static void jedec_init(const timings_t *const timings,
 		/* We won't do this in dual-interleaved mode,
 		   so don't care about the offset. */
 		const u32 rankaddr = raminit_get_rank_addr(ch, r);
-		printk(BIOS_DEBUG, "Performing Jedec initialization at address 0x%08x.\n", rankaddr);
+		printk(BIOS_DEBUG, "JEDEC init @0x%08x\n", rankaddr);
 		MCHBAR32(DCC_MCHBAR) = (MCHBAR32(DCC_MCHBAR) & ~DCC_SET_EREG_MASK) | DCC_SET_EREGx(2);
 		read32((u32 *)(rankaddr | WL));
 		MCHBAR32(DCC_MCHBAR) = (MCHBAR32(DCC_MCHBAR) & ~DCC_SET_EREG_MASK) | DCC_SET_EREGx(3);

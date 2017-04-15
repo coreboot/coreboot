@@ -14,14 +14,11 @@
  */
 
 #include <arch/acpi.h>
-#include <console/console.h>
+#include <baseboard/variants.h>
 #include <device/device.h>
 #include <ec/ec.h>
 #include <soc/nhlt.h>
 #include <vendorcode/google/chromeos/chromeos.h>
-
-static const char *oem_id_maxim = "GOOGLE";
-static const char *oem_table_id_maxim = "POPPYMAX";
 
 static void mainboard_init(device_t dev)
 {
@@ -34,6 +31,9 @@ static unsigned long mainboard_write_acpi_tables(device_t device,
 	uintptr_t start_addr;
 	uintptr_t end_addr;
 	struct nhlt *nhlt;
+	const char *oem_id = NULL;
+	const char *oem_table_id = NULL;
+	uint32_t oem_revision = 0;
 
 	start_addr = current;
 
@@ -42,24 +42,11 @@ static unsigned long mainboard_write_acpi_tables(device_t device,
 	if (nhlt == NULL)
 		return start_addr;
 
-	/* 2 Channel DMIC array. */
-	if (nhlt_soc_add_dmic_array(nhlt, 2))
-		printk(BIOS_ERR, "Couldn't add 2CH DMIC array.\n");
-
-	/* 4 Channel DMIC array. */
-	if (nhlt_soc_add_dmic_array(nhlt, 4))
-		printk(BIOS_ERR, "Couldn't add 4CH DMIC arrays.\n");
-
-	/* Maxim MAX98927 Smart Amps for left and right channel */
-	if (nhlt_soc_add_max98927(nhlt, AUDIO_LINK_SSP0))
-		printk(BIOS_ERR, "Couldn't add Maxim MAX98927\n");
-
-	/* Realtek RT5663 Headset codec. */
-	if (nhlt_soc_add_rt5663(nhlt, AUDIO_LINK_SSP1))
-		printk(BIOS_ERR, "Couldn't add Realtek RT5663.\n");
+	variant_nhlt_init(nhlt);
+	variant_nhlt_oem_overrides(&oem_id, &oem_table_id, &oem_revision);
 
 	end_addr = nhlt_soc_serialize_oem_overrides(nhlt, start_addr,
-			oem_id_maxim, oem_table_id_maxim, 0);
+			oem_id, oem_table_id, oem_revision);
 
 	if (end_addr != start_addr)
 		acpi_add_table(rsdp, (void *)start_addr);

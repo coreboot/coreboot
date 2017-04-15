@@ -46,4 +46,9 @@ struct memory_params {
 void variant_memory_params(struct memory_params *p);
 int variant_memory_sku(void);
 
+struct nhlt;
+void variant_nhlt_init(struct nhlt *nhlt);
+void variant_nhlt_oem_overrides(const char **oem_id, const char **oem_table_id,
+				uint32_t *oem_revision);
+
 #endif /* __BASEBOARD_VARIANTS_H__ */

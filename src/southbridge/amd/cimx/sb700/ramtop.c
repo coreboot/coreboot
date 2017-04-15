@@ -15,21 +15,13 @@
 
 #include <stdint.h>
 #include <arch/io.h>
-#include <arch/acpi.h>
 #include <cbmem.h>
-#include "SBPLATFORM.h"
-
-int acpi_get_sleep_type(void)
-{
-	u16 tmp = inw(PM1_CNT_BLK_ADDRESS);
-	tmp = ((tmp & (7 << 10)) >> 10);
-	return (int)tmp;
-}
+#include <southbridge/amd/cimx/cimx_util.h>
 
 void backup_top_of_ram(uint64_t ramtop)
 {
 	u32 dword = ramtop;
-	int nvram_pos = 0xf8, i; /* temp */
+	int nvram_pos = 0xfc, i;
 	for (i = 0; i < 4; i++) {
 		outb(nvram_pos, BIOSRAM_INDEX);
 		outb((dword >> (8 * i)) & 0xff, BIOSRAM_DATA);
@@ -40,7 +32,7 @@ void backup_top_of_ram(uint64_t ramtop)
 unsigned long get_top_of_ram(void)
 {
 	u32 xdata = 0;
-	int xnvram_pos = 0xf8, xi;
+	int xnvram_pos = 0xfc, xi;
 	for (xi = 0; xi < 4; xi++) {
 		outb(xnvram_pos, BIOSRAM_INDEX);
 		xdata &= ~(0xff << (xi * 8));

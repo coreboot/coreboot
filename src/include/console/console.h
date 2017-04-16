@@ -22,6 +22,9 @@
 #include <console/post_codes.h>
 #include <commonlib/loglevel.h>
 
+#define RAM_DEBUG (IS_ENABLED(CONFIG_DEBUG_RAM_SETUP) ? BIOS_DEBUG : BIOS_NEVER)
+#define RAM_SPEW  (IS_ENABLED(CONFIG_DEBUG_RAM_SETUP) ? BIOS_SPEW  : BIOS_NEVER)
+
 #ifndef __ROMCC__
 
 void post_code(u8 value);

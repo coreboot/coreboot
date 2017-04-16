@@ -216,13 +216,14 @@ static void power_well_enable(void)
 {
 	gtt_write(HSW_PWR_WELL_CTL1, HSW_PWR_WELL_ENABLE);
 	gtt_poll(HSW_PWR_WELL_CTL1, HSW_PWR_WELL_STATE, HSW_PWR_WELL_STATE);
-#if CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT
+
 	/* In the native graphics case, we've got about 20 ms.
 	 * after we power up the the AUX channel until we can talk to it.
 	 * So get that going right now. We can't turn on the panel, yet, just VDD.
 	 */
-	gtt_write(PCH_PP_CONTROL, PCH_PP_UNLOCK| EDP_FORCE_VDD | PANEL_POWER_RESET);
-#endif
+	if (IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT)) {
+		gtt_write(PCH_PP_CONTROL, PCH_PP_UNLOCK| EDP_FORCE_VDD | PANEL_POWER_RESET);
+	}
 }
 
 static void gma_pm_init_pre_vbios(struct device *dev)
@@ -422,13 +423,15 @@ static void gma_pm_init_post_vbios(struct device *dev)
 
 static void gma_func0_init(struct device *dev)
 {
-#if CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT
-	struct northbridge_intel_haswell_config *conf = dev->chip_info;
-	struct intel_dp dp;
-#endif
-
 	int lightup_ok = 0;
 	u32 reg32;
+	u64 physbase;
+	const struct resource *const linearfb_res =
+		find_resource(dev, PCI_BASE_ADDRESS_2);
+
+	if (!linearfb_res || !linearfb_res->base)
+        	return;
+
 	/* IGD needs to be Bus Master */
 	reg32 = pci_read_config32(dev, PCI_COMMAND);
 	reg32 |= PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY | PCI_COMMAND_IO;
@@ -437,44 +440,24 @@ static void gma_func0_init(struct device *dev)
 	/* Init graphics power management */
 	gma_pm_init_pre_vbios(dev);
 
-	/* Post VBIOS init */
+	/* Pre panel init */
 	gma_setup_panel(dev);
 
-#if CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT
-	printk(BIOS_SPEW, "NATIVE graphics, run native enable\n");
-	/* Default set to 1 since it might be required for
-	   stuff like seabios */
-	unsigned int init_fb = 1;
-
-	/* the BAR for graphics space is a well known number for
-	 * sandy and ivy. And the resource code renumbers it.
-	 * So it's almost like having two hardcodes.
-	 */
-	dp.graphics = (void *)((uintptr_t)dev->resource_list[1].base);
-	dp.physbase = pci_read_config32(dev, 0x5c) & ~0xf;
-	dp.panel_power_down_delay = conf->gpu_panel_power_down_delay;
-	dp.panel_power_up_delay = conf->gpu_panel_power_up_delay;
-	dp.panel_power_cycle_delay = conf->gpu_panel_power_cycle_delay;
-
-#if IS_ENABLED(CONFIG_CHROMEOS)
-	init_fb = display_init_required();
-#endif
-	if (IS_ENABLED(CONFIG_MAINBOARD_USE_LIBGFXINIT)) {
-		gma_gfxinit(gtt_res->base, (u32)dp.graphics,
-			dp.physbase, &lightup_ok);
-	} else {
-		lightup_ok = panel_lightup(&dp, init_fb);
+	if (IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT)) {
+		printk(BIOS_SPEW, "NATIVE graphics, run native enable\n");
+		physbase = pci_read_config32(dev, 0x5c) & ~0xf;
+		gma_gfxinit(gtt_res->base, linearfb_res->base,
+			physbase, &lightup_ok);
+		gfx_set_init_done(1);
 	}
 
-	gfx_set_init_done(1);
-#endif
 	if (! lightup_ok) {
 		printk(BIOS_SPEW, "FUI did not run; using VBIOS\n");
 		mdelay(CONFIG_PRE_GRAPHICS_DELAY);
 		pci_dev_init(dev);
 	}
 
-	/* Post VBIOS init */
+	/* Post panel init */
 	gma_pm_init_post_vbios(dev);
 }
 

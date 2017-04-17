@@ -39,7 +39,13 @@ static void init_dvs_outputs(void)
 {
 	pwm_regulator_configure(PWM_REGULATOR_GPU, 900);
 	pwm_regulator_configure(PWM_REGULATOR_BIG, 900);
-	pwm_regulator_configure(PWM_REGULATOR_CENTERLOG, 900);
+
+	/* Kevin's logic rail has some ripple, so up the voltage a bit */
+	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_KEVIN))
+		pwm_regulator_configure(PWM_REGULATOR_CENTERLOG, 925);
+	else
+		pwm_regulator_configure(PWM_REGULATOR_CENTERLOG, 900);
+
 	/* Allow time for the regulators to settle */
 	udelay(500);
 }

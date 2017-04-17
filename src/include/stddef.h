@@ -2,6 +2,7 @@
 #define STDDEF_H
 
 #include <commonlib/helpers.h>
+#include <rules.h>
 
 typedef long ptrdiff_t;
 #ifndef __SIZE_TYPE__
@@ -21,10 +22,18 @@ typedef unsigned int wint_t;
 
 #define NULL ((void *)0)
 
-#ifdef __PRE_RAM__
-#define ROMSTAGE_CONST const
+/* The devicetree data structures are only mutable in ramstage. All other
+   stages have a constant devicetree. */
+#if !ENV_RAMSTAGE
+#define DEVTREE_EARLY 1
 #else
-#define ROMSTAGE_CONST
+#define DEVTREE_EARLY 0
+#endif
+
+#if DEVTREE_EARLY
+#define DEVTREE_CONST const
+#else
+#define DEVTREE_CONST
 #endif
 
 /* Work around non-writable data segment in execute-in-place romstage on x86. */

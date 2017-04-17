@@ -24,7 +24,7 @@
 #include <device/resource.h>
 
 /** Linked list of ALL devices */
-ROMSTAGE_CONST struct device * ROMSTAGE_CONST all_devices = &dev_root;
+DEVTREE_CONST struct device * DEVTREE_CONST all_devices = &dev_root;
 
 /**
  * Given a PCI bus and a devfn number, find the device structure.
@@ -33,10 +33,10 @@ ROMSTAGE_CONST struct device * ROMSTAGE_CONST all_devices = &dev_root;
  * @param devfn A device/function number.
  * @return Pointer to the device structure (if found), 0 otherwise.
  */
-ROMSTAGE_CONST struct device *dev_find_slot(unsigned int bus,
+DEVTREE_CONST struct device *dev_find_slot(unsigned int bus,
 						unsigned int devfn)
 {
-	ROMSTAGE_CONST struct device *dev, *result;
+	DEVTREE_CONST struct device *dev, *result;
 
 	result = 0;
 	for (dev = all_devices; dev; dev = dev->next) {
@@ -56,10 +56,10 @@ ROMSTAGE_CONST struct device *dev_find_slot(unsigned int bus,
  * @param previous_dev A pointer to a PCI device structure.
  * @return Pointer to the next device structure (if found), 0 otherwise.
  */
-ROMSTAGE_CONST struct device *dev_find_next_pci_device(
-		ROMSTAGE_CONST struct device *previous_dev)
+DEVTREE_CONST struct device *dev_find_next_pci_device(
+		DEVTREE_CONST struct device *previous_dev)
 {
-	ROMSTAGE_CONST struct device *dev, *result;
+	DEVTREE_CONST struct device *dev, *result;
 
 	if (previous_dev == NULL)
 		previous_dev = all_devices;
@@ -81,10 +81,10 @@ ROMSTAGE_CONST struct device *dev_find_next_pci_device(
  * @param addr A device number.
  * @return Pointer to the device structure (if found), 0 otherwise.
  */
-ROMSTAGE_CONST struct device *dev_find_slot_on_smbus(unsigned int bus,
+DEVTREE_CONST struct device *dev_find_slot_on_smbus(unsigned int bus,
 							unsigned int addr)
 {
-	ROMSTAGE_CONST struct device *dev, *result;
+	DEVTREE_CONST struct device *dev, *result;
 
 	result = 0;
 	for (dev = all_devices; dev; dev = dev->next) {
@@ -105,9 +105,9 @@ ROMSTAGE_CONST struct device *dev_find_slot_on_smbus(unsigned int bus,
  * @param device Logical device number.
  * @return Pointer to the device structure (if found), 0 otherwise.
  */
-ROMSTAGE_CONST struct device *dev_find_slot_pnp(u16 port, u16 device)
+DEVTREE_CONST struct device *dev_find_slot_pnp(u16 port, u16 device)
 {
-	ROMSTAGE_CONST struct device *dev;
+	DEVTREE_CONST struct device *dev;
 
 	for (dev = all_devices; dev; dev = dev->next) {
 		if ((dev->path.type == DEVICE_PATH_PNP) &&

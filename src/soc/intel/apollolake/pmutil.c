@@ -502,10 +502,10 @@ void pmc_gpe_init(void)
 	uint32_t gpio_cfg = 0;
 	uint32_t gpio_cfg_reg;
 	uint8_t dw1, dw2, dw3;
-	ROMSTAGE_CONST struct soc_intel_apollolake_config *config;
+	DEVTREE_CONST struct soc_intel_apollolake_config *config;
 
 	/* Look up the device in devicetree */
-	ROMSTAGE_CONST struct device *dev = dev_find_slot(0, SA_DEVFN_ROOT);
+	DEVTREE_CONST struct device *dev = dev_find_slot(0, SA_DEVFN_ROOT);
 	if (!dev || !dev->chip_info) {
 		printk(BIOS_ERR, "BUG! Could not find SOC devicetree config\n");
 		return;

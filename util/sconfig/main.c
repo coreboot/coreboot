@@ -407,18 +407,18 @@ void add_ioapic_info(struct device *dev, int apicid, const char *_srcpin,
 static void pass0(FILE * fil, struct device *ptr)
 {
 	if (ptr->type == device && ptr->id == 0)
-		fprintf(fil, "ROMSTAGE_CONST struct bus %s_links[];\n",
+		fprintf(fil, "DEVTREE_CONST struct bus %s_links[];\n",
 			ptr->name);
 
 	if ((ptr->type == device) && (ptr->id != 0) && (!ptr->used)) {
-		fprintf(fil, "ROMSTAGE_CONST static struct device %s;\n",
+		fprintf(fil, "DEVTREE_CONST static struct device %s;\n",
 			ptr->name);
 		if (ptr->rescnt > 0)
 			fprintf(fil,
-				"ROMSTAGE_CONST struct resource %s_res[];\n",
+				"DEVTREE_CONST struct resource %s_res[];\n",
 				ptr->name);
 		if (ptr->children || ptr->multidev)
-			fprintf(fil, "ROMSTAGE_CONST struct bus %s_links[];\n",
+			fprintf(fil, "DEVTREE_CONST struct bus %s_links[];\n",
 				ptr->name);
 	}
 }
@@ -429,9 +429,9 @@ static void pass1(FILE * fil, struct device *ptr)
 	if (!ptr->used && (ptr->type == device)) {
 		if (ptr->id != 0)
 			fprintf(fil, "static ");
-		fprintf(fil, "ROMSTAGE_CONST struct device %s = {\n",
+		fprintf(fil, "DEVTREE_CONST struct device %s = {\n",
 			ptr->name);
-		fprintf(fil, "#ifndef __PRE_RAM__\n");
+		fprintf(fil, "#if !DEVTREE_EARLY\n");
 		fprintf(fil, "\t.ops = %s,\n", (ptr->ops) ? (ptr->ops) : "0");
 		fprintf(fil, "#endif\n");
 		fprintf(fil, "\t.bus = &%s_links[%d],\n", ptr->bus->name,
@@ -470,7 +470,7 @@ static void pass1(FILE * fil, struct device *ptr)
 			fprintf(fil, "\t.link_list = NULL,\n");
 		if (ptr->sibling)
 			fprintf(fil, "\t.sibling = &%s,\n", ptr->sibling->name);
-		fprintf(fil, "#ifndef __PRE_RAM__\n");
+		fprintf(fil, "#if !DEVTREE_EARLY\n");
 		fprintf(fil, "\t.chip_ops = &%s_ops,\n",
 			ptr->chip->name_underscore);
 		if (ptr->chip->chip == &mainboard)
@@ -485,7 +485,7 @@ static void pass1(FILE * fil, struct device *ptr)
 	}
 	if (ptr->rescnt > 0) {
 		int i = 1;
-		fprintf(fil, "ROMSTAGE_CONST struct resource %s_res[] = {\n",
+		fprintf(fil, "DEVTREE_CONST struct resource %s_res[] = {\n",
 			ptr->name);
 		struct resource *r = ptr->res;
 		while (r) {
@@ -510,7 +510,7 @@ static void pass1(FILE * fil, struct device *ptr)
 	}
 	if (!ptr->used && ptr->type == device
 	    && (ptr->children || ptr->multidev)) {
-		fprintf(fil, "ROMSTAGE_CONST struct bus %s_links[] = {\n",
+		fprintf(fil, "DEVTREE_CONST struct bus %s_links[] = {\n",
 			ptr->name);
 		if (ptr->multidev) {
 			struct device *d = ptr;
@@ -554,7 +554,7 @@ static void pass1(FILE * fil, struct device *ptr)
 	if ((ptr->type == chip) && (ptr->chiph_exists)) {
 		if (ptr->reg) {
 			fprintf(fil,
-				"ROMSTAGE_CONST struct %s_config %s_info_%d = {\n",
+				"DEVTREE_CONST struct %s_config %s_info_%d = {\n",
 				ptr->name_underscore, ptr->name_underscore,
 				ptr->id);
 			struct reg *r = ptr->reg;
@@ -565,7 +565,7 @@ static void pass1(FILE * fil, struct device *ptr)
 			fprintf(fil, "};\n\n");
 		} else {
 			fprintf(fil,
-				"ROMSTAGE_CONST struct %s_config %s_info_%d = { };\n",
+				"DEVTREE_CONST struct %s_config %s_info_%d = { };\n",
 				ptr->name_underscore, ptr->name_underscore,
 				ptr->id);
 		}
@@ -665,7 +665,7 @@ int main(int argc, char **argv)
 		if (h->chiph_exists)
 			fprintf(autogen, "#include \"%s/chip.h\"\n", h->name);
 	}
-	fprintf(autogen, "\n#ifndef __PRE_RAM__\n");
+	fprintf(autogen, "\n#if !DEVTREE_EARLY\n");
 	fprintf(autogen,
 		"__attribute__((weak)) struct chip_operations mainboard_ops = {};\n");
 	h = &headers;
@@ -683,7 +683,7 @@ int main(int argc, char **argv)
 	fprintf(autogen, "\n/* pass 0 */\n");
 	walk_device_tree(autogen, &root, pass0, NULL);
 	fprintf(autogen, "\n/* pass 1 */\n"
-		"ROMSTAGE_CONST struct device * ROMSTAGE_CONST last_dev = &%s;\n",
+		"DEVTREE_CONST struct device * DEVTREE_CONST last_dev = &%s;\n",
 		lastdev->name);
 	walk_device_tree(autogen, &root, pass1, NULL);
 

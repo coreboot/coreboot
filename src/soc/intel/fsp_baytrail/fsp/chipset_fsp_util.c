@@ -82,8 +82,8 @@ static const char *emmc_mode_strings[] = {
  */
 static void ConfigureDefaultUpdData(FSP_INFO_HEADER *FspInfo, UPD_DATA_REGION *UpdData)
 {
-	ROMSTAGE_CONST struct device *dev;
-	ROMSTAGE_CONST config_t *config;
+	DEVTREE_CONST struct device *dev;
+	DEVTREE_CONST config_t *config;
 	printk(FSP_INFO_LEVEL, "Configure Default UPD Data\n");
 
 	dev = dev_find_slot(0, SOC_DEV_FUNC);

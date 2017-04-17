@@ -25,7 +25,7 @@
 #include <device/pci_def.h>
 
 static unsigned int oxpcie_present CAR_GLOBAL;
-static ROMSTAGE_CONST u32 uart0_base = CONFIG_EARLY_PCI_MMIO_BASE + 0x1000;
+static DEVTREE_CONST u32 uart0_base = CONFIG_EARLY_PCI_MMIO_BASE + 0x1000;
 
 int pci_early_device_probe(u8 bus, u8 dev, u32 mmio_base)
 {

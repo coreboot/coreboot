@@ -121,7 +121,10 @@ void mainboard_romstage_entry(unsigned long bist)
 	post_code(0x30);
 
 	printk(BIOS_DEBUG, "Initializing memory\n");
-	sdram_initialize(0, spd_addrmap);
+	if (MCHBAR32(0xf14) & (1 << 8)) /* HOT RESET */
+		sdram_initialize(BOOT_PATH_RESET, spd_addrmap);
+	else
+		sdram_initialize(BOOT_PATH_NORMAL, spd_addrmap);
 	printk(BIOS_DEBUG, "Memory initialized\n");
 
 	post_code(0x31);

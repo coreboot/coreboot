@@ -101,3 +101,6 @@ Scope (\_SB) {
 	}
 
 }
+
+/* USB port entries */
+#include "acpi/usb.asl"

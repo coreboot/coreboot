@@ -103,6 +103,11 @@ smm-$(CONFIG_SPI_FLASH_SMM) += spi.c
 smm-y += tsc_freq.c
 smm-$(CONFIG_UART_DEBUG) += uart_debug.c
 
+postcar-y += memmap.c
+postcar-y += monotonic_timer.c
+postcar-y += tsc_freq.c
+postcar-$(CONFIG_UART_DEBUG) += uart_debug.c
+
 # cpu_microcode_bins += ???
 
 CPPFLAGS_common += -I$(src)/soc/intel/skylake

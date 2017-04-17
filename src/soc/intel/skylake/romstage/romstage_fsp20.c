@@ -115,7 +115,7 @@ static void save_dimm_info(void)
 	printk(BIOS_DEBUG, "%d DIMMs found\n", mem_info->dimm_cnt);
 }
 
-asmlinkage void *car_stage_c_entry(void)
+asmlinkage void car_stage_entry(void)
 {
 	bool s3wake;
 	struct postcar_frame pcf;
@@ -170,7 +170,7 @@ asmlinkage void *car_stage_c_entry(void)
 	postcar_frame_add_mtrr(&pcf, 0xFFFFFFFF - CONFIG_ROM_SIZE + 1,
 				CONFIG_ROM_SIZE, MTRR_TYPE_WRPROT);
 
-	return postcar_commit_mtrrs(&pcf);
+	run_postcar_phase(&pcf);
 }
 
 static void cpu_flex_override(FSP_M_CONFIG *m_cfg)

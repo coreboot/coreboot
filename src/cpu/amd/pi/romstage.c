@@ -14,10 +14,12 @@
  */
 
 #include <arch/cpu.h>
+#include <cbmem.h>
 #include <cpu/amd/car.h>
 #include <cpu/x86/mtrr.h>
 #include <console/console.h>
 #include <program_loading.h>
+#include <romstage_handoff.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
 #include <northbridge/amd/agesa/state_machine.h>
 
@@ -28,11 +30,19 @@ void asmlinkage early_all_cores(void)
 
 void * asmlinkage romstage_main(unsigned long bist)
 {
-	uintptr_t stack_top = CACHE_TMP_RAMTOP;
+	int s3resume = 0;
 	u8 initial_apic_id = cpuid_ebx(1) >> 24;
 
 	/* Only BSP returns from here. */
 	cache_as_ram_main(bist, initial_apic_id);
+
+	cbmem_recovery(s3resume);
+
+	romstage_handoff_init(s3resume);
+
+	uintptr_t stack_top = romstage_ram_stack_base(HIGH_ROMSTAGE_STACK_SIZE,
+		ROMSTAGE_STACK_CBMEM);
+	stack_top += HIGH_ROMSTAGE_STACK_SIZE;
 
 	printk(BIOS_DEBUG, "Move CAR stack.\n");
 	return (void*)stack_top;

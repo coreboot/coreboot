@@ -21,6 +21,7 @@ ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/hda_verb.c
 endif
 
 bootblock-y += device_simple.c
+postcar-y += device_simple.c
 verstage-y += device_simple.c
 romstage-y += device_simple.c
 romstage-$(CONFIG_PCI) += pci_early.c

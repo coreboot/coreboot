@@ -137,10 +137,10 @@ void serial_console_init(void)
 		return;
 
 	serial_init();
+	serial_hardware_is_present = 1;
 
 	console_add_input_driver(&consin);
 	console_add_output_driver(&consout);
-	serial_hardware_is_present = 1;
 }
 
 void serial_putchar(unsigned int c)

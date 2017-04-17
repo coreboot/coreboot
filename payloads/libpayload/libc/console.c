@@ -76,6 +76,9 @@ void console_add_input_driver(struct console_input_driver *in)
 	/* Check if this driver was already added to the console list */
 	if (input_driver_exists(in))
 		return;
+	/* Flush out the driver input buffer. */
+	while (in->havekey())
+		in->getchar();
 	in->next = console_in;
 	console_in = in;
 }

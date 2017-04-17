@@ -310,9 +310,6 @@ void keyboard_init(void)
 	if (inb(0x64) == 0xFF)
 		return;
 
-	/* Empty keyboard buffer */
-	while (keyboard_havechar()) keyboard_getchar();
-
 	console_add_input_driver(&cons);
 }
 

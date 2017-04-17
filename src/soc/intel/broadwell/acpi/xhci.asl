@@ -355,12 +355,19 @@ Device (XHCI)
 	{
 		Name (_ADR, 0x00000000)
 
-		// How many are there?
 		Device (PRT1) { Name (_ADR, 1) } // USB Port 0
 		Device (PRT2) { Name (_ADR, 2) } // USB Port 1
 		Device (PRT3) { Name (_ADR, 3) } // USB Port 2
 		Device (PRT4) { Name (_ADR, 4) } // USB Port 3
 		Device (PRT5) { Name (_ADR, 5) } // USB Port 4
 		Device (PRT6) { Name (_ADR, 6) } // USB Port 5
+		Device (PRT7) { Name (_ADR, 7) } // USB Port 6
+		Device (PRT8) { Name (_ADR, 8) } // USB Port 7
+		Device (SSP1) { Name (_ADR, 10) } // USB Port 10
+		Device (SSP2) { Name (_ADR, 11) } // USB Port 11
+		Device (SSP3) { Name (_ADR, 12) } // USB Port 12
+		Device (SSP4) { Name (_ADR, 13) } // USB Port 13
+		Device (SSP5) { Name (_ADR, 14) } // USB Port 14
+		Device (SSP6) { Name (_ADR, 15) } // USB Port 15
 	}
 }

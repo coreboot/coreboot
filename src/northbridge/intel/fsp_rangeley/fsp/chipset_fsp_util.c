@@ -55,8 +55,8 @@ typedef struct northbridge_intel_fsp_rangeley_config config_t;
  */
 static void ConfigureDefaultUpdData(UPD_DATA_REGION *UpdData)
 {
-	ROMSTAGE_CONST struct device *dev;
-	ROMSTAGE_CONST config_t *config;
+	DEVTREE_CONST struct device *dev;
+	DEVTREE_CONST config_t *config;
 	printk(BIOS_DEBUG, "Configure Default UPD Data\n");
 
 	dev = dev_find_slot(0, SOC_DEV_FUNC);

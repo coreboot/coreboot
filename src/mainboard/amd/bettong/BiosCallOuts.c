@@ -109,8 +109,8 @@ static AGESA_STATUS board_ReadSpd(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 	int spdAddress;
 	AGESA_READ_SPD_PARAMS *info = ConfigPtr;
 
-	ROMSTAGE_CONST struct device *dev = dev_find_slot(0, PCI_DEVFN(0x18, 2));
-	ROMSTAGE_CONST struct northbridge_amd_pi_00660F01_config *config = dev->chip_info;
+	DEVTREE_CONST struct device *dev = dev_find_slot(0, PCI_DEVFN(0x18, 2));
+	DEVTREE_CONST struct northbridge_amd_pi_00660F01_config *config = dev->chip_info;
 	UINT8 spdAddrLookup_rev_F [2][2][4]= {
 		{ {0xA0, 0xA2}, {0xA4, 0xAC}, }, /* socket 0 - Channel 0 & 1 - 8-bit SPD addresses */
 		{ {0x00, 0x00}, {0x00, 0x00}, }, /* socket 1 - Channel 0 & 1 - 8-bit SPD addresses */

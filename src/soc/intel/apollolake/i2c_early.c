@@ -28,8 +28,8 @@
 
 static int i2c_early_init_bus(unsigned int bus)
 {
-	ROMSTAGE_CONST struct soc_intel_apollolake_config *config;
-	ROMSTAGE_CONST struct device *tree_dev;
+	DEVTREE_CONST struct soc_intel_apollolake_config *config;
+	DEVTREE_CONST struct device *tree_dev;
 	pci_devfn_t dev;
 	int devfn;
 	uintptr_t base;

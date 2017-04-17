@@ -484,8 +484,8 @@ void poweroff(void)
 
 void pmc_gpe_init(void)
 {
-	ROMSTAGE_CONST struct soc_intel_skylake_config *config;
-	ROMSTAGE_CONST struct device *dev = dev_find_slot(0, PCH_DEVFN_PMC);
+	DEVTREE_CONST struct soc_intel_skylake_config *config;
+	DEVTREE_CONST struct device *dev = dev_find_slot(0, PCH_DEVFN_PMC);
 	uint8_t *pmc_regs;
 	uint32_t gpio_cfg;
 	uint32_t gpio_cfg_reg;

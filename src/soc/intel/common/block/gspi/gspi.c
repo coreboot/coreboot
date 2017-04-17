@@ -107,13 +107,13 @@
 #if defined(__SIMPLE_DEVICE__)
 
 static uintptr_t gspi_get_base_addr(int devfn,
-				ROMSTAGE_CONST struct device *dev)
+				DEVTREE_CONST struct device *dev)
 {
 	pci_devfn_t pci_dev = PCI_DEV(0, PCI_SLOT(devfn), PCI_FUNC(devfn));
 	return ALIGN_DOWN(pci_read_config32(pci_dev, PCI_BASE_ADDRESS_0), 16);
 }
 
-static void gspi_set_base_addr(int devfn, ROMSTAGE_CONST struct device *dev,
+static void gspi_set_base_addr(int devfn, DEVTREE_CONST struct device *dev,
 				uintptr_t base)
 {
 	pci_devfn_t pci_dev = PCI_DEV(0, PCI_SLOT(devfn), PCI_FUNC(devfn));
@@ -172,7 +172,7 @@ static void gspi_set_base_addr(int devfn, struct device *dev, uintptr_t base)
 static uintptr_t gspi_calc_base_addr(unsigned int gspi_bus)
 {
 	uintptr_t bus_base, gspi_base_addr;
-	ROMSTAGE_CONST struct device *dev;
+	DEVTREE_CONST struct device *dev;
 	int devfn = gspi_soc_bus_to_devfn(gspi_bus);
 
 	if (devfn < 0)

@@ -34,11 +34,11 @@ AGESA_STATUS AmdMemoryReadSPD (UINT32 unused1, UINT32 unused2, AGESA_READ_SPD_PA
 {
 	UINT8 spdAddress;
 
-	ROMSTAGE_CONST struct device *dev = dev_find_slot(0, PCI_DEVFN(0x18, 2));
+	DEVTREE_CONST struct device *dev = dev_find_slot(0, PCI_DEVFN(0x18, 2));
 	if (dev == NULL)
 		return AGESA_ERROR;
 
-	ROMSTAGE_CONST struct northbridge_amd_agesa_family14_config *config = dev->chip_info;
+	DEVTREE_CONST struct northbridge_amd_agesa_family14_config *config = dev->chip_info;
 	if (config == NULL)
 		return AGESA_ERROR;
 

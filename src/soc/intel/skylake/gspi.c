@@ -22,9 +22,9 @@
 
 const struct gspi_cfg *gspi_get_soc_cfg(void)
 {
-	ROMSTAGE_CONST struct soc_intel_skylake_config *config;
+	DEVTREE_CONST struct soc_intel_skylake_config *config;
 	int devfn = SA_DEVFN_ROOT;
-	ROMSTAGE_CONST struct device *dev = dev_find_slot(0, devfn);
+	DEVTREE_CONST struct device *dev = dev_find_slot(0, devfn);
 
 	if (!dev || !dev->chip_info) {
 		printk(BIOS_ERR, "%s: Could not find SoC devicetree config!\n",

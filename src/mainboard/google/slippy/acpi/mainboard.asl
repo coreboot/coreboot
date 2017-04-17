@@ -23,3 +23,6 @@ Scope (\_SB)
 }
 
 #include <variant/acpi/mainboard.asl>
+
+/* USB port entries */
+#include <variant/acpi/usb.asl>

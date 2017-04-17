@@ -109,7 +109,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 	return smbus_read_byte(device, address);
 }
 
-static int decode_spd(struct dimminfo *d)
+static int decode_spd(struct dimminfo *d, int i)
 {
 	d->type = 0;
 	if (d->spd_data[20] == 0x2) {
@@ -136,7 +136,7 @@ static int decode_spd(struct dimminfo *d)
 	d->tWR = d->spd_data[36];
 	d->ranks = d->sides; // XXX
 #if CONFIG_DEBUG_RAM_SETUP
-	const char *ubso[] = { {"UB"}, {"SO"} };
+	const char *ubso[2] = { "UB", "SO" };
 #endif
 	PRINTK_DEBUG("%s-DIMM %d\n", &ubso[d->type][0], i);
 	PRINTK_DEBUG("  Sides     : %d\n", d->sides);
@@ -305,7 +305,7 @@ static void sdram_read_spds(struct sysinfo *s)
 
 	int err = 1;
 	FOR_EACH_POPULATED_DIMM(s->dimms, i) {
-		err = decode_spd(&s->dimms[i]);
+		err = decode_spd(&s->dimms[i], i);
 		s->dt0mode |= (s->dimms[i].spd_data[49] & 0x2) >> 1;
 	}
 	if (err) {

@@ -27,5 +27,6 @@ Device (XHCI)
 		Device (PRT2) { Name (_ADR, 2) }
 		Device (PRT3) { Name (_ADR, 3) }
 		Device (PRT4) { Name (_ADR, 4) }
+		Device (SSP1) { Name (_ADR, 7) }
 	}
 }

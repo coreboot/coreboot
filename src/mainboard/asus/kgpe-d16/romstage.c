@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2015 - 2016 Raptor Engineering, LLC
+ * Copyright (C) 2015 - 2017 Raptor Engineering, LLC
  *
  * Copyright (C) 2007 AMD
  * Written by Yinghai Lu <yinghailu@amd.com> for AMD.
@@ -45,6 +45,7 @@
 #include <cpu/amd/family_10h-family_15h/init_cpus.h>
 #include <arch/early_variables.h>
 #include <cbmem.h>
+#include <tpm.h>
 
 #include "resourcemap.c"
 #include "cpu/amd/quadcore/quadcore.c"
@@ -621,6 +622,9 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	pci_write_config16(PCI_DEV(0, 0x14, 0), 0x54, 0x0707);
 	pci_write_config16(PCI_DEV(0, 0x14, 0), 0x56, 0x0bb0);
 	pci_write_config16(PCI_DEV(0, 0x14, 0), 0x5a, 0x0ff0);
+
+	if (IS_ENABLED(CONFIG_LPC_TPM))
+		init_tpm(s3resume);
 
 	post_cache_as_ram();	// BSP switch stack to ram, copy then execute LB.
 	post_code(0x43);	// Should never see this post code.

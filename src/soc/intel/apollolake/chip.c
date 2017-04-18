@@ -31,6 +31,7 @@
 #include <fsp/util.h>
 #include <intelblocks/cpulib.h>
 #include <intelblocks/itss.h>
+#include <intelblocks/pmclib.h>
 #include <romstage_handoff.h>
 #include <soc/iomap.h>
 #include <soc/itss.h>
@@ -326,9 +327,9 @@ static void soc_final(void *data)
 		rdev_munmap(&vbt_rdev, vbt);
 
 	/* Disable global reset, just in case */
-	global_reset_enable(0);
+	pmc_global_reset_enable(0);
 	/* Make sure payload/OS can't trigger global reset */
-	global_reset_lock();
+	pmc_global_reset_lock();
 }
 
 static void disable_dev(struct device *dev, FSP_S_CONFIG *silconfig)

@@ -22,6 +22,7 @@
 #include <cpu/cpu.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/smm.h>
+#include <intelblocks/pmclib.h>
 #include <string.h>
 #include <soc/pm.h>
 #include <soc/smm.h>
@@ -30,7 +31,7 @@ void southbridge_smm_clear_state(void)
 {
 	printk(BIOS_DEBUG, "Initializing Southbridge SMI...");
 
-	if (get_smi_en() & APMC_EN) {
+	if (pmc_get_smi_en() & APMC_EN) {
 		printk(BIOS_INFO, "SMI# handler already enabled?\n");
 		return;
 	}
@@ -38,21 +39,21 @@ void southbridge_smm_clear_state(void)
 	printk(BIOS_DEBUG, "Done\n");
 
 	/* Dump and clear status registers */
-	clear_smi_status();
-	clear_pm1_status();
-	clear_tco_status();
-	clear_gpe_status();
+	pmc_clear_smi_status();
+	pmc_clear_pm1_status();
+	pmc_clear_tco_status();
+	pmc_clear_gpe_status();
 }
 
 void southbridge_smm_enable_smi(void)
 {
 	printk(BIOS_DEBUG, "Enabling SMIs.\n");
 	/* Configure events */
-	enable_pm1(PWRBTN_EN | GBL_EN);
-	disable_gpe(PME_B0_EN);
+	pmc_enable_pm1(PWRBTN_EN | GBL_EN);
+	pmc_disable_gpe(PME_B0_EN);
 
 	/* Enable SMI generation */
-	enable_smi(APMC_EN | SLP_SMI_EN | GBL_SMI_EN | EOS | GPIO_EN);
+	pmc_enable_smi(APMC_EN | SLP_SMI_EN | GBL_SMI_EN | EOS | GPIO_EN);
 }
 
 void smm_setup_structures(void *gnvs, void *tcg, void *smi1)

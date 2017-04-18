@@ -22,6 +22,7 @@
 #include <intelblocks/pcr.h>
 #include <intelblocks/rtc.h>
 #include <intelblocks/systemagent.h>
+#include <intelblocks/pmclib.h>
 #include <soc/iomap.h>
 #include <soc/cpu.h>
 #include <soc/gpio.h>
@@ -91,7 +92,7 @@ void bootblock_soc_early_init(void)
 	enable_pmcbar();
 
 	/* Clear global reset promotion bit */
-	global_reset_enable(0);
+	pmc_global_reset_enable(0);
 
 	/* Prepare UART for serial console. */
 	if (IS_ENABLED(CONFIG_SOC_UART_DEBUG))

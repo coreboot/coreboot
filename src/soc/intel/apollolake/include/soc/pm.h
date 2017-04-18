@@ -21,6 +21,8 @@
 #include <stdint.h>
 #include <compiler.h>
 #include <arch/acpi.h>
+#include <soc/gpe.h>
+#include <soc/iomap.h>
 
 /* ACPI_BASE_ADDRESS */
 
@@ -135,6 +137,7 @@
 #define  GPE0_B			1
 #define  GPE0_C			2
 #define  GPE0_D			3
+#define GPE_STD			GPE0_A
 #define   SATA_PME_STS		(1 << 17)
 #define   SMB_WAK_STS		(1 << 16)
 #define   AVS_PME_STS		(1 << 14)
@@ -176,9 +179,7 @@
 #       define CF9_GLB_RST      (1 << 20)
 #define GPIO_GPE_CFG		0x1050
 #define  GPE0_DWX_MASK		0xf
-#define  GPE0_DW1_SHIFT		4
-#define  GPE0_DW2_SHIFT		8
-#define  GPE0_DW3_SHIFT		12
+#define GPE0_DW_SHIFT(x)	(4 + 4*(x))
 
 #if IS_ENABLED(CONFIG_SOC_INTEL_GLK)
 #define PMC_GPE_N_95_64		8
@@ -215,33 +216,6 @@ struct chipset_power_state {
 	uint32_t gen_pmcon3;
 	uint32_t prev_sleep_state;
 } __packed;
-
-int fill_power_state(struct chipset_power_state *ps);
-int chipset_prev_sleep_state(struct chipset_power_state *ps);
-/* Rewrite the gpe0 registers in cbmem to proper values as per routing table */
-void fixup_power_state(void);
-
-/* Power Management Utility Functions. */
-uint32_t clear_smi_status(void);
-uint16_t clear_pm1_status(void);
-uint32_t clear_tco_status(void);
-uint32_t clear_gpe_status(void);
-void clear_pmc_status(void);
-void clear_gpi_gpe_sts(void);
-uint32_t get_smi_en(void);
-void enable_smi(uint32_t mask);
-void disable_smi(uint32_t mask);
-void enable_pm1(uint16_t events);
-void enable_pm1_control(uint32_t mask);
-void disable_pm1_control(uint32_t mask);
-void enable_gpe(uint32_t mask);
-void disable_gpe(uint32_t mask);
-void disable_all_gpe(void);
-uintptr_t get_pmc_mmio_bar(void);
-void pmc_gpe_init(void);
-
-void global_reset_enable(bool enable);
-void global_reset_lock(void);
 
 void pch_log_state(void);
 

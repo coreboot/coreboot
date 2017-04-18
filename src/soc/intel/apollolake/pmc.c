@@ -20,6 +20,7 @@
 #include <device/pci_ids.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
+#include <intelblocks/pmclib.h>
 #include <soc/iomap.h>
 #include <soc/gpio.h>
 #include <soc/pci_devs.h>
@@ -128,7 +129,7 @@ static int choose_slp_s3_assertion_width(int width_usecs)
 static void set_slp_s3_assertion_width(int width_usecs)
 {
 	uint32_t reg;
-	uintptr_t gen_pmcon3 = get_pmc_mmio_bar() + GEN_PMCON3;
+	uintptr_t gen_pmcon3 = soc_read_pmc_base() + GEN_PMCON3;
 	int setting = choose_slp_s3_assertion_width(width_usecs);
 
 	reg = read32((void *)gen_pmcon3);
@@ -143,7 +144,7 @@ static void pmc_init(struct device *dev)
 
 	/* Set up GPE configuration */
 	pmc_gpe_init();
-	fixup_power_state();
+	pmc_fixup_power_state();
 	pch_set_acpi_mode();
 
 	if (cfg != NULL)
@@ -153,7 +154,7 @@ static void pmc_init(struct device *dev)
 	pch_log_state();
 
 	/* Now that things have been logged clear out the PMC state. */
-	clear_pmc_status();
+	pmc_clear_status();
 }
 
 static const struct device_operations device_ops = {

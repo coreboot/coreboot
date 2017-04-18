@@ -136,4 +136,5 @@
 #define GPE0_DW3_30		126
 #define GPE0_DW3_31		127
 
+#define GPE_MAX			GPE0_DW3_31
 #endif

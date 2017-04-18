@@ -33,6 +33,7 @@
 #include <fsp/util.h>
 #include <intelblocks/cpulib.h>
 #include <intelblocks/systemagent.h>
+#include <intelblocks/pmclib.h>
 #include <reset.h>
 #include <soc/cpu.h>
 #include <soc/intel/common/mrc_cache.h>
@@ -231,7 +232,7 @@ asmlinkage void car_stage_entry(void)
 
 	console_init();
 
-	s3wake = fill_power_state(ps) == ACPI_S3;
+	s3wake = pmc_fill_power_state(ps) == ACPI_S3;
 	fsp_memory_init(s3wake);
 
 	if (punit_init())

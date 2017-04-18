@@ -16,6 +16,7 @@
 #include <console/console.h>
 #include <delay.h>
 #include <fsp/util.h>
+#include <intelblocks/pmclib.h>
 #include <reset.h>
 #include <soc/heci.h>
 #include <soc/pm.h>
@@ -25,8 +26,8 @@
 
 void do_global_reset(void)
 {
-	global_reset_enable(1);
-	do_hard_reset();
+	pmc_global_reset_enable(1);
+	hard_reset();
 }
 
 void soc_reset_prepare(enum reset_type reset_type)

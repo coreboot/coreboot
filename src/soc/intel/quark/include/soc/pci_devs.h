@@ -20,7 +20,6 @@
 
 #include <device/pci.h>
 #include <device/pci_def.h>
-#include <soc/reg_access.h>
 
 /* DEVICE 0 (Memory Controller Hub) */
 #define MC_BDF			PCI_DEV(PCI_BUS_NUMBER_QNC, MC_DEV, MC_FUN)

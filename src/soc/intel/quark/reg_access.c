@@ -20,6 +20,7 @@
 #include <console/console.h>
 #include <soc/pci_devs.h>
 #include <soc/ramstage.h>
+#include <soc/reg_access.h>
 
 static uint16_t get_gpe0_address(uint32_t reg_address)
 {

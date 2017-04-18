@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright 2014 Google Inc.
+ * Copyright 2017 Google Inc.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -31,31 +31,10 @@
 #ifndef ARCH_CACHE_H
 #define ARCH_CACHE_H
 
-#include <arch/early_variables.h>
-#include <cpu/x86/cache.h>
-
-/*
- * For the purposes of the currently executing CPU loading code that will be
- * run there aren't any cache coherency operations required. This just provides
- * symmetry between architectures.
- */
+/* TODO: implement these API stubs once caching is available on Power 8 */
 static inline void cache_sync_instructions(void) {}
-
-/* Executing WBINVD when running out of CAR would not be good, prevent that. */
-static inline void dcache_clean_invalidate_all(void)
-{
-	if (!car_active())
-		wbinvd();
-}
-static inline void dcache_clean_all(void)
-{
-	/* x86 doesn't have a "clean without invalidate", fall back to both. */
-	dcache_clean_invalidate_all();
-}
-static inline void dcache_invalidate_all(void)
-{
-	if (!car_active())
-		invd();
-}
+static inline void dcache_clean_all(void) {}
+static inline void dcache_invalidate_all(void) {}
+static inline void dcache_clean_invalidate_all(void) {}
 
 #endif /* ARCH_CACHE_H */

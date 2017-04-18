@@ -41,4 +41,11 @@ void perform_cache_operation(uintptr_t start, size_t size, uint8_t operation);
 /* Invalidate all caches: instruction, data, L2 data */
 void cache_invalidate_all(uintptr_t start, size_t size);
 
+/* TODO: Global cache API. Implement properly once we finally have a MIPS board
+   again where we can figure out what exactly these should be doing. */
+static inline void cache_sync_instructions(void) {}
+static inline void dcache_clean_all(void) {}
+static inline void dcache_invalidate_all(void) {}
+static inline void dcache_clean_invalidate_all(void) {}
+
 #endif /* __MIPS_ARCH_CACHE_H */

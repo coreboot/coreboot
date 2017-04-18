@@ -25,6 +25,7 @@ enum {
 	MAX_GPIO_REG_BITS = 16,
 	MAX_GPIO_MODE_PER_REG = 5,
 	GPIO_MODE_BITS = 3,
+	MAX_EINT_REG_BITS = 32,
 };
 
 enum {
@@ -46,6 +47,12 @@ static void pos_bit_calc_for_mode(u32 pin, u32 *pos, u32 *bit)
 {
 	*pos = pin / MAX_GPIO_MODE_PER_REG;
 	*bit = (pin % MAX_GPIO_MODE_PER_REG) * GPIO_MODE_BITS;
+}
+
+static void pos_bit_calc_for_eint(u32 pin, u32 *pos, u32 *bit)
+{
+	*pos = pin / MAX_EINT_REG_BITS;
+	*bit = pin % MAX_EINT_REG_BITS;
 }
 
 static s32 gpio_set_dir(u32 pin, u32 dir)
@@ -174,4 +181,59 @@ void gpio_output(gpio_t gpio, int value)
 	gpio_set(gpio, value);
 	gpio_set_dir(gpio, GPIO_DIRECTION_OUT);
 	gpio_set_mode(gpio, GPIO_MODE);
+}
+
+int gpio_eint_poll(gpio_t gpio)
+{
+	u32 pos;
+	u32 bit;
+	u32 status;
+
+	assert(gpio <= MAX_8173_GPIO);
+
+	pos_bit_calc_for_eint(gpio, &pos, &bit);
+
+	status = (read32(&mt8173_eint->sta.regs[pos]) >> bit) & 0x1;
+
+	if (status)
+		write32(&mt8173_eint->ack.regs[pos], 1 << bit);
+
+	return status;
+}
+
+void gpio_eint_configure(gpio_t gpio, enum gpio_irq_type type)
+{
+	u32 pos;
+	u32 bit, mask;
+
+	assert(gpio <= MAX_8173_GPIO);
+
+	pos_bit_calc_for_eint(gpio, &pos, &bit);
+	mask = 1 << bit;
+
+	/* Make it an input first. */
+	gpio_input_pullup(gpio);
+
+	write32(&mt8173_eint->d0en[pos], mask);
+
+	switch (type) {
+	case IRQ_TYPE_EDGE_FALLING:
+		write32(&mt8173_eint->sens_clr.regs[pos], mask);
+		write32(&mt8173_eint->pol_clr.regs[pos], mask);
+		break;
+	case IRQ_TYPE_EDGE_RISING:
+		write32(&mt8173_eint->sens_clr.regs[pos], mask);
+		write32(&mt8173_eint->pol_set.regs[pos], mask);
+		break;
+	case IRQ_TYPE_LEVEL_LOW:
+		write32(&mt8173_eint->sens_set.regs[pos], mask);
+		write32(&mt8173_eint->pol_clr.regs[pos], mask);
+		break;
+	case IRQ_TYPE_LEVEL_HIGH:
+		write32(&mt8173_eint->sens_set.regs[pos], mask);
+		write32(&mt8173_eint->pol_set.regs[pos], mask);
+		break;
+	}
+
+	write32(&mt8173_eint->mask_clr.regs[pos], mask);
 }

@@ -87,4 +87,55 @@ void gpio_set_pull(gpio_t gpio, enum pull_enable enable,
 void gpio_set_mode(gpio_t gpio, int mode);
 void gpio_init(enum external_power);
 
+enum gpio_irq_type {
+	IRQ_TYPE_EDGE_RISING,
+	IRQ_TYPE_EDGE_FALLING,
+	IRQ_TYPE_LEVEL_HIGH,
+	IRQ_TYPE_LEVEL_LOW,
+};
+
+struct eint_section {
+	uint32_t	regs[7];
+	uint32_t	align1[9];
+};
+
+struct eint_regs {
+	struct eint_section sta;
+	struct eint_section ack;
+	struct eint_section mask;
+	struct eint_section mask_set;
+	struct eint_section mask_clr;
+	struct eint_section sens;
+	struct eint_section sens_set;
+	struct eint_section sens_clr;
+	struct eint_section soft;
+	struct eint_section soft_set;
+	struct eint_section soft_clr;
+	struct eint_section rsv00;
+	struct eint_section pol;
+	struct eint_section pol_set;
+	struct eint_section pol_clr;
+	struct eint_section rsv01;
+	uint32_t	    d0en[7];
+	uint32_t	    rsv02;
+	uint32_t	    d1en[7];
+};
+
+check_member(eint_regs, d1en, 0x420);
+
+static struct eint_regs *const mt8173_eint = (void *)(EINT_BASE);
+
+/*
+ * Firmware never enables interrupts on this platform.  This function
+ * reads current EINT status and clears the pending interrupt.
+ *
+ * Returns 1 if the interrupt was pending, else 0.
+ */
+int gpio_eint_poll(gpio_t gpio);
+
+/*
+ * Configure a GPIO to handle external interrupts (EINT) of given irq type.
+ */
+void gpio_eint_configure(gpio_t gpio, enum gpio_irq_type type);
+
 #endif /* SOC_MEDIATEK_MT8173_GPIO_H */

@@ -29,6 +29,7 @@ config GBB_HWID
 	string
 	depends on CHROMEOS
 	default "POPPY TEST 8294" if BOARD_GOOGLE_POPPY
+	default "SORAKA TEST 1869" if BOARD_GOOGLE_SORAKA
 
 config INCLUDE_NHLT_BLOBS
 	bool "Include blobs for audio."
@@ -44,10 +45,12 @@ config MAINBOARD_DIR
 config MAINBOARD_FAMILY
 	string
 	default "Google_Poppy" if BOARD_GOOGLE_POPPY
+	default "Google_Soraka" if BOARD_GOOGLE_SORAKA
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "Poppy" if BOARD_GOOGLE_POPPY
+	default "Soraka" if BOARD_GOOGLE_SORAKA
 
 config MAX_CPUS
 	int
@@ -66,6 +69,7 @@ config POPPY_USE_SPI_TPM
 config VARIANT_DIR
 	string
 	default "poppy" if BOARD_GOOGLE_POPPY
+	default "soraka" if BOARD_GOOGLE_SORAKA
 
 config VBOOT
 	select EC_GOOGLE_CHROMEEC_SWITCHES

@@ -37,6 +37,11 @@ ramstage-$(CONFIG_SOC_INTEL_COMMON_NHLT) += nhlt.c
 
 smm-$(CONFIG_SOC_INTEL_COMMON_SMI) += smihandler.c
 
+bootblock-$(CONFIG_MAINBOARD_HAS_TPM_CR50) += tpm_tis.c
+verstage-$(CONFIG_MAINBOARD_HAS_TPM_CR50) += tpm_tis.c
+romstage-$(CONFIG_MAINBOARD_HAS_TPM_CR50) += tpm_tis.c
+ramstage-$(CONFIG_MAINBOARD_HAS_TPM_CR50) += tpm_tis.c
+
 # Create and add the MRC cache to the cbfs image
 ifneq ($(CONFIG_CHROMEOS),y)
 $(obj)/mrc.cache: $(obj)/config.h

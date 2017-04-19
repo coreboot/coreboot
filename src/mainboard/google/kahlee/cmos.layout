@@ -58,6 +58,8 @@ entries
 440          4       e       9        slow_cpu
 444          1       e       1        nmi
 445          1       e       1        iommu
+#Used by ChromeOS:
+448        128       r       0        vbnv
 728        256       h       0        user_data
 984         16       h       0        check_sum
 # Reserve the extended AMD configuration registers

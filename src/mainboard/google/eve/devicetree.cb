@@ -244,7 +244,7 @@ chip soc/intel/skylake
 			chip drivers/i2c/generic
 				register "hid" = ""GOOG5400""
 				register "desc" = ""Touchpad""
-				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_B3_IRQ)"
+				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_B3_IRQ)"
 				device i2c 49 on end
 			end
 		end # I2C #2

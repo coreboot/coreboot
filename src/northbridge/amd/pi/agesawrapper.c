@@ -153,9 +153,9 @@ AGESA_STATUS agesawrapper_amdinitpost(void)
 	 * UMA may or may not be cacheable, so Sub4GCacheTop could be
 	 * higher than UmaBase. With UMA_NONE we see UmaBase==0. */
 	if (PostParams->MemConfig.UmaBase)
-		backup_top_of_ram(PostParams->MemConfig.UmaBase << 16);
+		backup_top_of_low_cacheable(PostParams->MemConfig.UmaBase << 16);
 	else
-		backup_top_of_ram(PostParams->MemConfig.Sub4GCacheTop);
+		backup_top_of_low_cacheable(PostParams->MemConfig.Sub4GCacheTop);
 
 	printk(
 			BIOS_SPEW,

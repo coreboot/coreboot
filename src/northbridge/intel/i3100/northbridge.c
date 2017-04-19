@@ -119,7 +119,7 @@ static void pci_domain_set_resources(device_t dev)
 				(remaplimitk + 64*1024) - remapbasek);
 		}
 
-		set_top_of_ram(tolmk * 1024);
+		set_late_cbmem_top(tolmk * 1024);
 	}
 	assign_resources(dev->link_list);
 }

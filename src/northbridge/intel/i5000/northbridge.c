@@ -107,7 +107,7 @@ static void mc_read_resources(device_t dev)
 	resource->flags = IORESOURCE_MEM | IORESOURCE_RESERVE |
 	    IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
 
-	set_top_of_ram(tolm);
+	set_late_cbmem_top(tolm);
 }
 
 static struct pci_operations intel_pci_ops = {

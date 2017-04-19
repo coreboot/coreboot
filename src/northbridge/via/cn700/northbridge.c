@@ -130,7 +130,7 @@ static void pci_domain_set_resources(device_t dev)
 			tolmk = tomk;
 		}
 
-		set_top_of_ram((tolmk - CONFIG_VIDEO_MB * 1024) * 1024);
+		set_late_cbmem_top((tolmk - CONFIG_VIDEO_MB * 1024) * 1024);
 
 		/* Report the memory regions. */
 		idx = 10;

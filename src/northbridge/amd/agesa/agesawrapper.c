@@ -111,7 +111,7 @@ AGESA_STATUS agesawrapper_amdinitpost(void)
 	status = AmdInitPost(PostParams);
 	AGESA_EVENTLOG(status, &PostParams->StdHeader);
 
-	backup_top_of_ram(PostParams->MemConfig.Sub4GCacheTop);
+	backup_top_of_low_cacheable(PostParams->MemConfig.Sub4GCacheTop);
 
 	AmdReleaseStruct(&AmdParamStruct);
 

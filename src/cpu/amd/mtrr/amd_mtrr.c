@@ -80,7 +80,7 @@ static void setup_ap_ramtop(void)
 void add_uma_resource_below_tolm(struct device *nb, int idx)
 {
 	uint32_t topmem = bsp_topmem();
-	uint32_t top_of_cacheable = get_top_of_ram();
+	uint32_t top_of_cacheable = restore_top_of_low_cacheable();
 
 	if (top_of_cacheable == topmem)
 		return;

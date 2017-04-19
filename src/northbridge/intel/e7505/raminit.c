@@ -1892,10 +1892,10 @@ void e7505_mch_init(const struct mem_controller *memctrl)
 	sdram_enable(memctrl);
 }
 
-unsigned long get_top_of_ram(void)
+uintptr_t restore_top_of_low_cacheable(void)
 {
 	u32 tolm = (pci_read_config16(MCHDEV, TOLM) & ~0x7ff) << 16;
-	return (unsigned long) tolm;
+	return tolm;
 }
 
 /**

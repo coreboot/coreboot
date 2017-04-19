@@ -18,7 +18,7 @@
 #include <cbmem.h>
 #include <southbridge/amd/cimx/cimx_util.h>
 
-void backup_top_of_ram(uint64_t ramtop)
+void backup_top_of_low_cacheable(uintptr_t ramtop)
 {
 	u32 dword = ramtop;
 	int nvram_pos = 0xfc, i;
@@ -29,7 +29,7 @@ void backup_top_of_ram(uint64_t ramtop)
 	}
 }
 
-unsigned long get_top_of_ram(void)
+uintptr_t restore_top_of_low_cacheable(void)
 {
 	u32 xdata = 0;
 	int xnvram_pos = 0xfc, xi;
@@ -39,5 +39,5 @@ unsigned long get_top_of_ram(void)
 		xdata |= inb(BIOSRAM_DATA) << (xi *8);
 		xnvram_pos++;
 	}
-	return (unsigned long) xdata;
+	return xdata;
 }

@@ -18,10 +18,10 @@
 #include <arch/io.h>
 #include <console/console.h>
 
-unsigned long get_top_of_ram(void)
+uintptr_t restore_top_of_low_cacheable(void)
 {
-	u16 reg_tom = pci_read_config8(MCU, 0x88);
-	return (((unsigned long)reg_tom) << 24) - (256 << 20);
+	u8 reg_tom = pci_read_config8(MCU, 0x88);
+	return (reg_tom << 24) - 256 * MiB;
 }
 
 /**

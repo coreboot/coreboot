@@ -89,7 +89,7 @@ int acpi_get_sleep_type(void)
 	return ((tmp & (7 << 10)) >> 10);
 }
 
-void backup_top_of_ram(uint64_t ramtop)
+void backup_top_of_low_cacheable(uintptr_t ramtop)
 {
 	u32 dword = (u32) ramtop;
 	int nvram_pos = 0xfc, i;

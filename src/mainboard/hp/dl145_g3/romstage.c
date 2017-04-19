@@ -35,7 +35,6 @@
 #include <northbridge/amd/amdk8/raminit.h>
 #include <delay.h>
 #include <cpu/x86/lapic.h>
-#include "northbridge/amd/amdk8/reset_test.c"
 #include <superio/serverengines/pilot/pilot.h>
 #include <superio/nsc/pc87417/pc87417.h>
 #include <cpu/x86/bist.h>

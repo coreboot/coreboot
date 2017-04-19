@@ -31,7 +31,6 @@
 #include <northbridge/amd/amdk8/raminit.h>
 #include <delay.h>
 #include <cpu/x86/lapic.h>
-#include "northbridge/amd/amdk8/reset_test.c"
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627hf/w83627hf.h>
 #include <cpu/x86/bist.h>

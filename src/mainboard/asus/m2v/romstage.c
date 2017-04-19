@@ -33,7 +33,6 @@ unsigned int get_sbdn(unsigned bus);
 #include <halt.h>
 #include <northbridge/amd/amdk8/raminit.h>
 #include <delay.h>
-#include "northbridge/amd/amdk8/reset_test.c"
 
 #include <superio/ite/common/ite.h>
 #include <superio/ite/it8712f/it8712f.h>

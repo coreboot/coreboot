@@ -1,10 +1,8 @@
+#include <arch/io.h>
+#include <console/console.h>
 #include <stdint.h>
 #include <cpu/x86/lapic.h>
-#include "raminit.h"
-
-#define HTIC_ColdR_Detect  (1<<4)
-#define HTIC_BIOSR_Detect  (1<<5)
-#define HTIC_INIT_Detect   (1<<6)
+#include "amdk8.h"
 
 static inline int cpu_init_detected(unsigned nodeid)
 {
@@ -33,7 +31,7 @@ static inline int cold_reset_detected(void)
 	return !(htic & HTIC_ColdR_Detect);
 }
 
-static inline void distinguish_cpu_resets(unsigned nodeid)
+void distinguish_cpu_resets(unsigned int nodeid)
 {
 	u32 htic;
 	pci_devfn_t device;
@@ -43,7 +41,6 @@ static inline void distinguish_cpu_resets(unsigned nodeid)
 	pci_io_write_config32(device, HT_INIT_CONTROL, htic);
 }
 
-void set_bios_reset(void);
 void set_bios_reset(void)
 {
 	u32 htic;
@@ -71,7 +68,7 @@ static unsigned node_link_to_bus(unsigned node, unsigned link)
 	return 0;
 }
 
-static inline unsigned get_sblk(void)
+unsigned int get_sblk(void)
 {
 	u32 reg;
 	/* read PCI_DEV(0,0x18,0) 0x64 bit [8:9] to find out SbLink m */
@@ -79,7 +76,7 @@ static inline unsigned get_sblk(void)
 	return ((reg>>8) & 3);
 }
 
-static inline unsigned get_sbbusn(unsigned sblk)
+unsigned int get_sbbusn(unsigned sblk)
 {
 	return node_link_to_bus(0, sblk);
 }

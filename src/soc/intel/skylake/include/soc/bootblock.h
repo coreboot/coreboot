@@ -30,7 +30,6 @@ void bootblock_pch_early_init(void);
 void pch_uart_init(void);
 
 /* Bootblock post console init programing */
-void enable_smbus(void);
 void i2c_early_init(void);
 void pch_early_init(void);
 void pch_early_iorange_init(void);

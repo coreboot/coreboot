@@ -51,7 +51,7 @@
 #define  INTEL_USB2_EN		(1 << 18)
 #define  LEGACY_USB2_EN		(1 << 17)
 #define  PERIODIC_EN		(1 << 14)
-#define  TCO_EN			(1 << 13)
+#define  TCO_SMI_EN		(1 << 13)
 #define  MCSMI_EN		(1 << 11)
 #define  BIOS_RLS		(1 <<  7)
 #define  SWSMI_TMR_EN		(1 <<  6)

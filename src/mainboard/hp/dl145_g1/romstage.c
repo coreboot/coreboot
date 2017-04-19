@@ -84,7 +84,6 @@ int spd_read_byte(unsigned device, unsigned address)
 #include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "northbridge/amd/amdk8/raminit.c"
 #include "resourcemap.c"
-#include "northbridge/amd/amdk8/coherent_ht.c"
 #include "lib/generic_sdram.c"
 #include "cpu/amd/dualcore/dualcore.c"
 #include <spd.h>

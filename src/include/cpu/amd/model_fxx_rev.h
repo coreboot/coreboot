@@ -1,4 +1,5 @@
 #include <arch/cpu.h>
+#include <arch/io.h>
 
 int init_processor_name(void);
 

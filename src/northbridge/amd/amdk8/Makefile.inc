@@ -12,6 +12,7 @@ romstage-y += raminit_f.c
 endif
 
 romstage-y += reset_test.c
+romstage-y += coherent_ht.c
 
 # Enable this if you want to check the values of the PCI routing registers.
 # Call show_all_routes() anywhere amdk8.h is included.

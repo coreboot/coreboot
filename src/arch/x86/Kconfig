@@ -111,8 +111,15 @@ config ROMCC
 	bool
 	default n
 
+config CBMEM_TOP_BACKUP
+	def_bool n
+	help
+	  Platform implements non-volatile storage to cache cbmem_top()
+	  over stage transitions and optionally also over S3 suspend.
+
 config LATE_CBMEM_INIT
 	def_bool n
+	select CBMEM_TOP_BACKUP
 	help
 	  Enable this in chipset's Kconfig if northbridge does not implement
 	  early get_top_of_ram() call for romstage. CBMEM tables will be

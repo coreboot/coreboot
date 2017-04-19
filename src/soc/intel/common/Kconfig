@@ -130,4 +130,10 @@ config SOC_INTEL_COMMON_NHLT
 	bool
 	default n
 
+config TPM_TIS_ACPI_INTERRUPT
+	int
+	help
+	  acpi_get_gpe() is used to provide interrupt status to TPM layer.
+	  This option specifies the GPE number.
+
 endif # SOC_INTEL_COMMON

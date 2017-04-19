@@ -277,7 +277,7 @@ static void vx900_set_resources(device_t dev)
 	u64 tor = vx900_remap_above_4g(mcu, pci_tolm);
 	ram_resource(dev, idx++, RAM_4GB >> 10, (tor - RAM_4GB) >> 10);
 
-	set_top_of_ram(tolmk << 10);
+	set_late_cbmem_top(tolmk << 10);
 
 	printk(BIOS_DEBUG, "======================================================\n");
 	assign_resources(dev->link_list);

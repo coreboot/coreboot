@@ -710,7 +710,7 @@ static void setup_lx_cache(void)
 	wbinvd();
 }
 
-unsigned long get_top_of_ram(void)
+uintptr_t restore_top_of_low_cacheable(void)
 {
 	uint32_t systop;
 	msr_t msr;

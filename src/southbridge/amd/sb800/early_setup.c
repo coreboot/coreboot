@@ -665,8 +665,7 @@ int acpi_get_sleep_type(void)
 	return ((tmp & (7 << 10)) >> 10);
 }
 
-#if IS_ENABLED(CONFIG_LATE_CBMEM_INIT)
-unsigned long get_top_of_ram(void)
+uintptr_t restore_top_of_low_cacheable(void)
 {
 	uint32_t xdata = 0;
 	int xnvram_pos = 0xfc, xi;
@@ -678,8 +677,7 @@ unsigned long get_top_of_ram(void)
 		xdata |= inb(BIOSRAM_DATA) << (xi *8);
 		xnvram_pos++;
 	}
-	return (unsigned long) xdata;
+	return xdata;
 }
-#endif
 
 #endif

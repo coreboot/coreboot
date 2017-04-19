@@ -19,13 +19,13 @@
 
 #define CBMEM_TOP_SCRATCHPAD 0x78
 
-void backup_top_of_ram(uint64_t ramtop)
+void backup_top_of_low_cacheable(uintptr_t ramtop)
 {
 	uint16_t top_cache = ramtop >> 16;
 	pci_write_config16(PCI_DEV(0,0,0), CBMEM_TOP_SCRATCHPAD, top_cache);
 }
 
-unsigned long get_top_of_ram(void)
+uintptr_t restore_top_of_low_cacheable(void)
 {
 	uint16_t top_cache;
 	top_cache = pci_read_config16(PCI_DEV(0,0,0), CBMEM_TOP_SCRATCHPAD);

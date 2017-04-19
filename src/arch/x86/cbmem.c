@@ -18,13 +18,13 @@
 
 #if IS_ENABLED(CONFIG_LATE_CBMEM_INIT)
 
-void __attribute__((weak)) backup_top_of_ram(uint64_t ramtop)
+void __attribute__((weak)) backup_top_of_low_cacheable(uintptr_t ramtop)
 {
 	/* Do nothing. Chipset may have implementation to save ramtop in NVRAM.
 	 */
 }
 
-unsigned long __attribute__((weak)) get_top_of_ram(void)
+uintptr_t __attribute__((weak)) restore_top_of_low_cacheable(void)
 {
 	return 0;
 }
@@ -33,29 +33,34 @@ unsigned long __attribute__((weak)) get_top_of_ram(void)
 
 #if IS_ENABLED(CONFIG_CBMEM_TOP_BACKUP)
 
-static void *ramtop_pointer;
+static void *cbmem_top_backup;
 
-void set_top_of_ram(uint64_t ramtop)
+void set_late_cbmem_top(uintptr_t ramtop)
 {
-	backup_top_of_ram(ramtop);
+	backup_top_of_low_cacheable(ramtop);
 	if (ENV_RAMSTAGE)
-		ramtop_pointer = (void *)(uintptr_t)ramtop;
+		cbmem_top_backup = (void *)ramtop;
+}
+
+/* Top of CBMEM is at highest usable DRAM address below 4GiB. */
+uintptr_t __attribute__((weak)) restore_cbmem_top(void)
+{
+	return restore_top_of_low_cacheable();
 }
 
 void *cbmem_top(void)
 {
-	/* Top of cbmem is at lowest usable DRAM address below 4GiB. */
-	uintptr_t ramtop;
+	uintptr_t top_backup;
 
-	if (ENV_RAMSTAGE && ramtop_pointer != NULL)
-		return ramtop_pointer;
+	if (ENV_RAMSTAGE && cbmem_top_backup != NULL)
+		return cbmem_top_backup;
 
-	ramtop = get_top_of_ram();
+	top_backup = restore_cbmem_top();
 
 	if (ENV_RAMSTAGE)
-		ramtop_pointer = (void *)ramtop;
+		cbmem_top_backup = (void *)top_backup;
 
-	return (void *)ramtop;
+	return (void *)top_backup;
 }
 
 #endif /* CBMEM_TOP_BACKUP */

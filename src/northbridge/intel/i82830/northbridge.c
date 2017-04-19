@@ -87,7 +87,7 @@ static void pci_domain_set_resources(device_t dev)
 
 	assign_resources(dev->link_list);
 
-	set_top_of_ram(tomk_stolen * 1024);
+	set_late_cbmem_top(tomk_stolen * 1024);
 }
 
 static struct device_operations pci_domain_ops = {

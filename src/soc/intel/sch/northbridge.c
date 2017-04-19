@@ -165,7 +165,7 @@ static void pci_domain_set_resources(device_t dev)
 
 	assign_resources(dev->link_list);
 
-	set_top_of_ram(tomk * 1024 - uma_memory_size - tseg_memory_base);
+	set_late_cbmem_top(tomk * 1024 - uma_memory_size - tseg_memory_base);
 }
 
 /*

@@ -358,14 +358,14 @@ static void pci_domain_set_resources(device_t dev)
 
 	mc_dev = dev->link_list->children;
 	if (mc_dev) {
-		tomk = get_top_of_ram() / 1024;
+		tomk = restore_top_of_low_cacheable() / 1024;
 		/* Report the memory regions
 		   All memory up to systop except 0xa0000-0xbffff */
 		idx = 10;
 		ram_resource(dev, idx++, 0, 640);
 		ram_resource(dev, idx++, 768, tomk - 768);	// Systop - 0xc0000 -> KB
 
-		set_top_of_ram(tomk * 1024);
+		set_late_cbmem_top(tomk * 1024);
 	}
 
 	assign_resources(dev->link_list);

@@ -67,7 +67,7 @@ static void i440bx_domain_set_resources(device_t dev)
 		ram_resource(dev, idx++, 0, 640);
 		ram_resource(dev, idx++, 768, tolmk - 768);
 
-		set_top_of_ram(tomk * 1024);
+		set_late_cbmem_top(tomk * 1024);
 	}
 	assign_resources(dev->link_list);
 }

@@ -26,7 +26,7 @@ int acpi_get_sleep_type(void)
 	return (int)tmp;
 }
 
-void backup_top_of_ram(uint64_t ramtop)
+void backup_top_of_low_cacheable(uintptr_t ramtop)
 {
 	u32 dword = ramtop;
 	int nvram_pos = 0xf8, i; /* temp */
@@ -37,7 +37,7 @@ void backup_top_of_ram(uint64_t ramtop)
 	}
 }
 
-unsigned long get_top_of_ram(void)
+uintptr_t restore_top_of_low_cacheable(void)
 {
 	u32 xdata = 0;
 	int xnvram_pos = 0xf8, xi;
@@ -47,5 +47,5 @@ unsigned long get_top_of_ram(void)
 		xdata |= inb(BIOSRAM_DATA) << (xi *8);
 		xnvram_pos++;
 	}
-	return (unsigned long) xdata;
+	return xdata;
 }

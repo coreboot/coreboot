@@ -177,9 +177,9 @@ int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos)
 	return nvram_pos;
 }
 
-unsigned long get_top_of_ram(void)
+uintptr_t restore_top_of_low_cacheable(void)
 {
 	if (acpi_get_sleep_type() != 3)
 		return 0;
-	return (unsigned long) inl(K8T890_NVRAM_IO_BASE+K8T890_NVRAM_TOP_OF_RAM);
+	return inl(K8T890_NVRAM_IO_BASE+K8T890_NVRAM_TOP_OF_RAM);
 }

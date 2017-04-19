@@ -18,49 +18,47 @@
 
 #if IS_ENABLED(CONFIG_LATE_CBMEM_INIT)
 
-#if !defined(__PRE_RAM__)
 void __attribute__((weak)) backup_top_of_ram(uint64_t ramtop)
 {
 	/* Do nothing. Chipset may have implementation to save ramtop in NVRAM.
 	 */
 }
 
-static void *ramtop_pointer;
-
-void set_top_of_ram(uint64_t ramtop)
-{
-	backup_top_of_ram(ramtop);
-	ramtop_pointer = (void *)(uintptr_t)ramtop;
-}
-
-static inline void *saved_ramtop(void)
-{
-	return ramtop_pointer;
-}
-#else
-static inline void *saved_ramtop(void)
-{
-	return NULL;
-}
-#endif /* !__PRE_RAM__ */
-
 unsigned long __attribute__((weak)) get_top_of_ram(void)
 {
 	return 0;
 }
 
+#endif /* LATE_CBMEM_INIT */
+
+#if IS_ENABLED(CONFIG_CBMEM_TOP_BACKUP)
+
+static void *ramtop_pointer;
+
+void set_top_of_ram(uint64_t ramtop)
+{
+	backup_top_of_ram(ramtop);
+	if (ENV_RAMSTAGE)
+		ramtop_pointer = (void *)(uintptr_t)ramtop;
+}
+
 void *cbmem_top(void)
 {
 	/* Top of cbmem is at lowest usable DRAM address below 4GiB. */
-	void *ptr = saved_ramtop();
+	uintptr_t ramtop;
 
-	if (ptr != NULL)
-		return ptr;
+	if (ENV_RAMSTAGE && ramtop_pointer != NULL)
+		return ramtop_pointer;
 
-	return (void *)get_top_of_ram();
+	ramtop = get_top_of_ram();
+
+	if (ENV_RAMSTAGE)
+		ramtop_pointer = (void *)ramtop;
+
+	return (void *)ramtop;
 }
 
-#endif /* LATE_CBMEM_INIT */
+#endif /* CBMEM_TOP_BACKUP */
 
 /* Something went wrong, our high memory area got wiped */
 void cbmem_fail_resume(void)

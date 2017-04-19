@@ -145,11 +145,12 @@ void cbmem_add_records_to_cbtable(struct lb_header *header);
 #endif /* ENV_RAMSTAGE */
 
 
-/* These are for compatibility with old boards only. Any new chipset and board
- * must implement cbmem_top() for both romstage and ramstage to support
- * early features like COLLECT_TIMESTAMPS and CBMEM_CONSOLE.
+/* Any new chipset and board must implement cbmem_top() for both
+ * romstage and ramstage to support early features like COLLECT_TIMESTAMPS
+ * and CBMEM_CONSOLE. Sometimes it is necessary to have cbmem_top()
+ * value stored in nvram to enable early recovery on S3 path.
  */
-#if IS_ENABLED(CONFIG_ARCH_X86) && IS_ENABLED(CONFIG_LATE_CBMEM_INIT)
+#if IS_ENABLED(CONFIG_ARCH_X86)
 /* Note that many of the current providers of get_top_of_ram() conditionally
  * return 0 when the sleep type is non S3. i.e. cold and warm boots would
  * return 0 from get_top_of_ram(). */

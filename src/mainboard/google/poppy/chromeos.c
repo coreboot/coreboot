@@ -17,9 +17,7 @@
 #include <baseboard/variants.h>
 #include <gpio.h>
 #include <rules.h>
-#include <soc/gpe.h>
 #include <soc/gpio.h>
-#include <tpm.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
 #include <variant/gpio.h>
@@ -55,9 +53,4 @@ void mainboard_chromeos_acpi_generate(void)
 
 	gpios = variant_cros_gpios(&num);
 	chromeos_acpi_gpio_generate(gpios, num);
-}
-
-int tis_plat_irq_status(void)
-{
-	return acpi_get_gpe(GPE0_DW2_00);
 }

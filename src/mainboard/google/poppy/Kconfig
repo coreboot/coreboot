@@ -62,7 +62,6 @@ config POPPY_USE_SPI_TPM
 	bool
 	default n
 	select MAINBOARD_HAS_SPI_TPM_CR50
-	select MAINBOARD_HAS_TPM2
 	select SPI_TPM
 	select TPM2
 

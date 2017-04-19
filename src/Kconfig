@@ -402,6 +402,12 @@ config TPM2
 
 	  If unsure, say N.
 
+config MAINBOARD_HAS_TPM_CR50
+	bool
+	default y if MAINBOARD_HAS_SPI_TPM_CR50 || MAINBOARD_HAS_I2C_TPM_CR50
+	default n
+	select MAINBOARD_HAS_TPM2
+
 config HEAP_SIZE
 	hex
 	default 0x4000

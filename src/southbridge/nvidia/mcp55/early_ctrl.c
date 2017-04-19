@@ -15,7 +15,14 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/io.h>
+#include <console/console.h>
 #include <reset.h>
+#if IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AMDK8)
+#include <northbridge/amd/amdk8/amdk8.h>
+#else /* CONFIG_NORTHBRIDGE_AMD_AMDFAM10 */
+#include <northbridge/amd/amdfam10/amdfam10.h>
+#endif
 #include "mcp55.h"
 
 void soft_reset(void)

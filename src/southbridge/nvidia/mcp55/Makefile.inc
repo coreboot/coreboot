@@ -20,6 +20,7 @@ ramstage-y += reset.c
 romstage-$(CONFIG_USBDEBUG_IN_ROMSTAGE) += enable_usbdebug.c
 ramstage-$(CONFIG_USBDEBUG) += enable_usbdebug.c
 romstage-y += early_smbus.c
+romstage-y += early_ctrl.c
 
 ifeq ($(CONFIG_MCP55_USE_AZA),y)
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/hda_verb.c

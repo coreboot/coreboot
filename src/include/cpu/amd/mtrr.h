@@ -41,6 +41,8 @@
 #include <cpu/x86/msr.h>
 
 void amd_setup_mtrrs(void);
+struct device;
+void add_uma_resource_below_tolm(struct device *nb, int idx);
 
 static inline __attribute__((always_inline)) msr_t rdmsr_amd(unsigned int index)
 {

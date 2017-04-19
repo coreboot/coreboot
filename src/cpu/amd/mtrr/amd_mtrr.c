@@ -11,6 +11,7 @@
  * GNU General Public License for more details.
  */
 
+#include <cbmem.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <arch/cpu.h>
@@ -74,6 +75,23 @@ static void setup_ap_ramtop(void)
 	msr.hi = v >> 32;
 	msr.lo = (uint32_t) v;
 	wrmsr(TOP_MEM2, msr);
+}
+
+void add_uma_resource_below_tolm(struct device *nb, int idx)
+{
+	uint32_t topmem = bsp_topmem();
+	uint32_t top_of_cacheable = get_top_of_ram();
+
+	if (top_of_cacheable == topmem)
+		return;
+
+	uint32_t uma_base = top_of_cacheable;
+	uint32_t uma_size = topmem - top_of_cacheable;
+
+	printk(BIOS_INFO, "%s: uma size 0x%08x, memory start 0x%08x\n",
+			__func__, uma_size, uma_base);
+
+	uma_resource(nb, idx, uma_base / KiB, uma_size / KiB);
 }
 
 void amd_setup_mtrrs(void)

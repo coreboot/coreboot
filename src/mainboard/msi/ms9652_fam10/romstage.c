@@ -42,7 +42,6 @@
 #include <arch/early_variables.h>
 #include <cbmem.h>
 #include <southbridge/nvidia/mcp55/mcp55.h>
-#include "southbridge/nvidia/mcp55/early_ctrl.c"
 
 #include "resourcemap.c"
 #include "cpu/amd/quadcore/quadcore.c"

@@ -62,7 +62,6 @@ int spd_read_byte(unsigned int device, unsigned int address)
 	return smbus_read_byte(device, address);
 }
 
-#include "southbridge/nvidia/mcp55/early_ctrl.c"
 #include <northbridge/amd/amdk8/f.h>
 #include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"

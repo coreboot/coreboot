@@ -37,7 +37,6 @@
 
 #include <cpu/x86/bist.h>
 #include "northbridge/amd/amdk8/setup_resource_map.c"
-#include "northbridge/amd/amdk8/coherent_ht.c"
 #include "cpu/amd/dualcore/dualcore.c"
 #include <spd.h>
 #include <northbridge/amd/amdk8/pre_f.h>

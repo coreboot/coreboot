@@ -58,7 +58,6 @@ int spd_read_byte(unsigned device, unsigned address)
 #include "southbridge/via/k8t890/early_car.c"
 #include <northbridge/amd/amdk8/amdk8.h>
 #include "northbridge/amd/amdk8/incoherent_ht.c"
-#include "northbridge/amd/amdk8/coherent_ht.c"
 #include "lib/generic_sdram.c"
 #include "cpu/amd/dualcore/dualcore.c"
 #include "cpu/amd/model_fxx/init_cpus.c"

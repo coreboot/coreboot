@@ -63,11 +63,14 @@
 			CPU1-------------CPU0
  */
 
+#include <console/console.h>
+#include <cpu/amd/model_fxx_rev.h>
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
 #include <device/hypertransport_def.h>
 #include <lib.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <arch/io.h>
 #include <pc80/mc146818rtc.h>
 #if CONFIG_HAVE_OPTION_TABLE
@@ -77,10 +80,6 @@
 #include "amdk8.h"
 
 #define enable_bsp_routing()	enable_routing(0)
-
-#define NODE_HT(x) PCI_DEV(0,24+x,0)
-#define NODE_MP(x) PCI_DEV(0,24+x,1)
-#define NODE_MC(x) PCI_DEV(0,24+x,3)
 
 #define DEFAULT 0x00010101	/* default row entry */
 
@@ -1703,12 +1702,12 @@ static int optimize_link_read_pointers(unsigned nodes)
 	return needs_reset;
 }
 
-static inline unsigned get_nodes(void)
+unsigned int get_nodes(void)
 {
 	return ((pci_read_config32(PCI_DEV(0, 0x18, 0), 0x60)>>4) & 7) + 1;
 }
 
-static int optimize_link_coherent_ht(void)
+int optimize_link_coherent_ht(void)
 {
 	int needs_reset = 0;
 
@@ -1772,9 +1771,9 @@ static int optimize_link_coherent_ht(void)
 }
 
 #if CONFIG_RAMINIT_SYSINFO
-static void setup_coherent_ht_domain(void)
+void setup_coherent_ht_domain(void)
 #else
-static int setup_coherent_ht_domain(void)
+int setup_coherent_ht_domain(void)
 #endif
 {
 	unsigned nodes;

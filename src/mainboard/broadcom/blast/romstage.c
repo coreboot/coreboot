@@ -39,7 +39,6 @@ int spd_read_byte(unsigned device, unsigned address)
 
 #include "southbridge/broadcom/bcm5785/early_setup.c"
 #include "northbridge/amd/amdk8/raminit.c"
-#include "northbridge/amd/amdk8/coherent_ht.c"
 #include "lib/generic_sdram.c"
 #include "resourcemap.c"
 #include "cpu/amd/dualcore/dualcore.c"

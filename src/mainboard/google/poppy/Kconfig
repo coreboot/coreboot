@@ -74,4 +74,11 @@ config VBOOT
 	select EC_GOOGLE_CHROMEEC_SWITCHES
 	select VBOOT_LID_SWITCH
 
+config DRIVER_TPM_SPI_BUS
+	default 0x1
+
+config TPM_TIS_ACPI_INTERRUPT
+	int
+	default 64  # GPE0_DW2_00 (GPP_E0)
+
 endif # BOARD_GOOGLE_BASEBOARD_POPPY

@@ -22,6 +22,7 @@
 #include <intelblocks/itss.h>
 #include <intelblocks/pcr.h>
 #include <intelblocks/rtc.h>
+#include <intelblocks/smbus.h>
 #include <soc/bootblock.h>
 #include <soc/iomap.h>
 #include <soc/lpc.h>
@@ -182,14 +183,14 @@ static void soc_config_tco(void)
 
 	/* Disable TCO in SMBUS Device first before changing Base Address */
 	reg32 = pci_read_config32(PCH_DEV_SMBUS, TCOCTL);
-	reg32 &= ~SMBUS_TCO_EN;
+	reg32 &= ~TCO_EN;
 	pci_write_config32(PCH_DEV_SMBUS, TCOCTL, reg32);
 
 	/* Program TCO Base */
 	pci_write_config32(PCH_DEV_SMBUS, TCOBASE, TCO_BASE_ADDDRESS);
 
 	/* Enable TCO in SMBUS */
-	pci_write_config32(PCH_DEV_SMBUS, TCOCTL, reg32 | SMBUS_TCO_EN);
+	pci_write_config32(PCH_DEV_SMBUS, TCOCTL, reg32 | TCO_EN);
 
 	/*
 	 * Program "TCO Base Address" PCR[DMI] + 2778h[15:5, 1]
@@ -269,7 +270,7 @@ void pch_early_init(void)
 	pch_enable_lpc();
 
 	/* Program SMBUS_BASE_ADDRESS and Enable it */
-	enable_smbus();
+	smbus_common_init();
 
 	/* Set up GPE configuration */
 	pmc_gpe_init();

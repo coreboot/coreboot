@@ -33,7 +33,6 @@
 #include <northbridge/amd/amdk8/raminit.h>
 #include <delay.h>
 #include <cpu/x86/lapic.h>
-#include "northbridge/amd/amdk8/reset_test.c"
 #include <superio/ite/common/ite.h>
 #include <superio/ite/it8716f/it8716f.h>
 #include <cpu/x86/bist.h>

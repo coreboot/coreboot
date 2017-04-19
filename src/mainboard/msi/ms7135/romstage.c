@@ -26,7 +26,6 @@
 #include <cpu/x86/lapic.h>
 #include <pc80/mc146818rtc.h>
 #include <cpu/x86/lapic.h>
-#include "northbridge/amd/amdk8/reset_test.c"
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627thg/w83627thg.h>
 #include <cpu/amd/model_fxx_rev.h>

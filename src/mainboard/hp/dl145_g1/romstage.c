@@ -15,7 +15,6 @@
 #include <northbridge/amd/amdk8/amdk8.h>
 #include "southbridge/amd/amd8111/early_smbus.c"
 #include <northbridge/amd/amdk8/raminit.h>
-#include "northbridge/amd/amdk8/reset_test.c"
 
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627hf/w83627hf.h>

@@ -11,6 +11,8 @@ romstage-$(CONFIG_HAVE_ACPI_RESUME) += exit_from_self.c
 romstage-y += raminit_f.c
 endif
 
+romstage-y += reset_test.c
+
 # Enable this if you want to check the values of the PCI routing registers.
 # Call show_all_routes() anywhere amdk8.h is included.
 #ramstage-y += util.c

@@ -29,7 +29,6 @@
 #include <cpu/x86/lapic.h>
 #include <pc80/mc146818rtc.h>
 #include <cpu/x86/lapic.h>
-#include "northbridge/amd/amdk8/reset_test.c"
 #include <superio/ite/common/ite.h>
 #include <superio/ite/it8712f/it8712f.h>
 #include <cpu/amd/model_fxx_rev.h>

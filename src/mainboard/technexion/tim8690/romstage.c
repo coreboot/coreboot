@@ -26,7 +26,6 @@
 #include <delay.h>
 #include <spd.h>
 #include <cpu/x86/lapic.h>
-#include "northbridge/amd/amdk8/reset_test.c"
 
 #include <superio/ite/common/ite.h>
 #include <superio/ite/it8712f/it8712f.h>

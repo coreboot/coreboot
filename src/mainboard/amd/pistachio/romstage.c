@@ -25,7 +25,6 @@
 #include <northbridge/amd/amdk8/raminit.h>
 #include <delay.h>
 #include <cpu/x86/lapic.h>
-#include "northbridge/amd/amdk8/reset_test.c"
 #include <spd.h>
 #include <cpu/x86/bist.h>
 #include "northbridge/amd/amdk8/setup_resource_map.c"

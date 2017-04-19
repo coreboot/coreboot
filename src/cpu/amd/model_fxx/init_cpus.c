@@ -11,6 +11,8 @@
  * GNU General Public License for more details.
  */
 
+#include <cpu/x86/lapic.h>
+#include <northbridge/amd/amdk8/amdk8.h>
 #include "cpu/amd/car/post_cache_as_ram.c"
 
 #if CONFIG_HAVE_OPTION_TABLE

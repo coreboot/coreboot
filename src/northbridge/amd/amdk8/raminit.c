@@ -5,7 +5,9 @@
 */
 
 #include <cpu/x86/cache.h>
+#include <cpu/x86/lapic.h>
 #include <cpu/x86/mtrr.h>
+#include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
 #include <lib.h>
 #include <stdlib.h>

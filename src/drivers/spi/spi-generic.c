@@ -88,6 +88,25 @@ int spi_xfer(const struct spi_slave *slave, const void *dout, size_t bytesout,
 	return -1;
 }
 
+unsigned int spi_crop_chunk(const struct spi_slave *slave, unsigned int cmd_len,
+			unsigned int buf_len)
+{
+	const struct spi_ctrlr *ctrlr = slave->ctrlr;
+	unsigned int ctrlr_max;
+
+	if (!ctrlr)
+		return 0;
+
+	ctrlr_max = ctrlr->max_xfer_size;
+
+	assert (ctrlr_max != 0);
+
+	if (ctrlr->deduct_cmd_len && (ctrlr_max > cmd_len))
+		ctrlr_max -= cmd_len;
+
+	return min(ctrlr_max, buf_len);
+}
+
 void __attribute__((weak)) spi_init(void)
 {
 	/* Default weak implementation - do nothing. */

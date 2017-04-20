@@ -212,6 +212,7 @@ static const struct spi_ctrlr spi_ctrlr = {
 	.claim_bus = spi_ctrlr_claim_bus,
 	.release_bus = spi_ctrlr_release_bus,
 	.xfer = spi_ctrlr_xfer,
+	.max_xfer_size = SPI_CTRLR_DEFAULT_MAX_XFER_SIZE,
 };
 
 int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)

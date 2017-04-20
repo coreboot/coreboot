@@ -108,11 +108,6 @@ static int sector_erase(int offset)
 	return 0;
 }
 
-unsigned int spi_crop_chunk(unsigned int cmd_len, unsigned int buf_len)
-{
-	return min(65535, buf_len);
-}
-
 static int dma_read(u32 addr, u8 *buf, u32 len, uintptr_t dma_buf,
 		    size_t dma_buf_len)
 {

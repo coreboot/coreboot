@@ -19,6 +19,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <delay.h>
+#include <commonlib/helpers.h>
 #include <arch/io.h>
 #include <console/console.h>
 #include <device/pci_ids.h>
@@ -452,11 +453,6 @@ static int ich_status_poll(uint16_t bitmask, int wait_til_set)
 	return -1;
 }
 
-unsigned int spi_crop_chunk(unsigned int cmd_len, unsigned int buf_len)
-{
-	return min(cntlr.databytes, buf_len);
-}
-
 static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 		    size_t bytesout, void *din, size_t bytesin)
 {
@@ -610,6 +606,7 @@ spi_xfer_exit:
 static const struct spi_ctrlr spi_ctrlr = {
 	.xfer = spi_ctrlr_xfer,
 	.xfer_vector = spi_xfer_two_vectors,
+	.max_xfer_size = member_size(ich9_spi_regs, fdata),
 };
 
 int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)

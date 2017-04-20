@@ -364,4 +364,5 @@ static int fast_spi_flash_ctrlr_setup(const struct spi_slave *dev)
 
 const struct spi_ctrlr fast_spi_flash_ctrlr = {
 	.setup = fast_spi_flash_ctrlr_setup,
+	.max_xfer_size = SPI_CTRLR_DEFAULT_MAX_XFER_SIZE,
 };

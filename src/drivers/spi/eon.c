@@ -95,7 +95,7 @@ static int eon_write(const struct spi_flash *flash,
 	for (actual = 0; actual < len; actual += chunk_len) {
 		byte_addr = offset % page_size;
 		chunk_len = min(len - actual, page_size - byte_addr);
-		chunk_len = spi_crop_chunk(sizeof(cmd), chunk_len);
+		chunk_len = spi_crop_chunk(&flash->spi, sizeof(cmd), chunk_len);
 
 		ret = spi_flash_cmd(&flash->spi, CMD_EN25_WREN, NULL, 0);
 		if (ret < 0) {

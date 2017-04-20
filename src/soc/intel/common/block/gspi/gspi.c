@@ -611,4 +611,5 @@ const struct spi_ctrlr gspi_ctrlr = {
 	.release_bus = gspi_cs_deassert,
 	.setup = gspi_ctrlr_setup,
 	.xfer = gspi_ctrlr_xfer,
+	.max_xfer_size = SPI_CTRLR_DEFAULT_MAX_XFER_SIZE,
 };

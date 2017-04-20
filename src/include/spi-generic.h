@@ -87,14 +87,27 @@ struct spi_cfg {
 	unsigned int data_bit_length;
 };
 
+/*
+ * If there is no limit on the maximum transfer size for the controller,
+ * max_xfer_size can be set to SPI_CTRLR_DEFAULT_MAX_XFER_SIZE which is equal to
+ * UINT32_MAX.
+ */
+#define SPI_CTRLR_DEFAULT_MAX_XFER_SIZE	(UINT32_MAX)
+
 /*-----------------------------------------------------------------------
- * Representation of a SPI contoller.
+ * Representation of a SPI controller.
  *
- * claim_bus:	Claim SPI bus and prepare for communication.
- * release_bus: Release SPI bus.
- * setup:	Setup given SPI device bus.
- * xfer:	Perform one SPI transfer operation.
- * xfer_vector: Vector of SPI transfer operations.
+ * claim_bus:		Claim SPI bus and prepare for communication.
+ * release_bus:	Release SPI bus.
+ * setup:		Setup given SPI device bus.
+ * xfer:		Perform one SPI transfer operation.
+ * xfer_vector:	Vector of SPI transfer operations.
+ * max_xfer_size:	Maximum transfer size supported by the controller
+ *			(0 = invalid,
+ *			 SPI_CTRLR_DEFAULT_MAX_XFER_SIZE = unlimited)
+ * deduct_cmd_len:	Whether cmd_len should be deducted from max_xfer_size
+ *			when calculating max_data_size
+ *
  */
 struct spi_ctrlr {
 	int (*claim_bus)(const struct spi_slave *slave);
@@ -104,6 +117,8 @@ struct spi_ctrlr {
 		    size_t bytesout, void *din, size_t bytesin);
 	int (*xfer_vector)(const struct spi_slave *slave,
 			struct spi_op vectors[], size_t count);
+	uint32_t max_xfer_size;
+	bool deduct_cmd_len;
 };
 
 /*-----------------------------------------------------------------------
@@ -212,7 +227,14 @@ int spi_xfer(const struct spi_slave *slave, const void *dout, size_t bytesout,
 int spi_xfer_vector(const struct spi_slave *slave,
 		struct spi_op vectors[], size_t count);
 
-unsigned int spi_crop_chunk(unsigned int cmd_len, unsigned int buf_len);
+/*-----------------------------------------------------------------------
+ * Given command length and length of remaining data, return the maximum data
+ * that can be transferred in next spi_xfer.
+ *
+ * Returns: 0 on error, non-zero data size that can be xfered on success.
+ */
+unsigned int spi_crop_chunk(const struct spi_slave *slave, unsigned int cmd_len,
+			unsigned int buf_len);
 
 /*-----------------------------------------------------------------------
  * Write 8 bits, then read 8 bits.

@@ -46,7 +46,7 @@ void spiconsole_tx_byte(unsigned char c) {
 	};
 
 	/* Verify the spi buffer is big enough to send even a single byte */
-	if (spi_crop_chunk(0,MAX_MSG_LENGTH) <
+	if (spi_crop_chunk(&slave, 0, MAX_MSG_LENGTH) <
 			sizeof(struct em100_msg_header) + 1)
 		return;
 
@@ -55,7 +55,7 @@ void spiconsole_tx_byte(unsigned char c) {
 
 	/* Send the data on newline or when the max spi length is reached */
 	if (c == '\n' || (sizeof(struct em100_msg_header) +
-			msg.header.msg_length == spi_crop_chunk(0,
+			msg.header.msg_length == spi_crop_chunk(&slave, 0,
 			MAX_MSG_LENGTH))) {
 		spi_xfer(&slave, &msg, sizeof(struct em100_msg_header) +
 				msg.header.msg_length, NULL, 0);

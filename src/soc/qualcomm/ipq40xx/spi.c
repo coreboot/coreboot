@@ -410,11 +410,6 @@ static void enable_io_config(struct ipq_spi_slave *ds,
 	return;
 }
 
-unsigned int spi_crop_chunk(unsigned int cmd_len, unsigned int buf_len)
-{
-	return min(MAX_PACKET_COUNT, buf_len);
-}
-
 /*
  * Function to read bytes number of data from the Input FIFO
  */
@@ -657,6 +652,7 @@ static const struct spi_ctrlr spi_ctrlr = {
 	.release_bus = spi_ctrlr_release_bus,
 	.xfer = spi_ctrlr_xfer,
 	.xfer_vector = spi_xfer_two_vectors,
+	.max_xfer_size = MAX_PACKET_COUNT,
 };
 
 int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)

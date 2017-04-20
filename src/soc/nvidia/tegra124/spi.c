@@ -714,11 +714,6 @@ static int xfer_finish(struct tegra_spi_channel *spi)
 	return ret;
 }
 
-unsigned int spi_crop_chunk(unsigned int cmd_len, unsigned int buf_len)
-{
-	return buf_len;
-}
-
 static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 			  size_t out_bytes, void *din, size_t in_bytes)
 {
@@ -802,6 +797,7 @@ static const struct spi_ctrlr spi_ctrlr = {
 	.claim_bus = spi_ctrlr_claim_bus,
 	.release_bus = spi_ctrlr_release_bus,
 	.xfer = spi_ctrlr_xfer,
+	.max_xfer_size = SPI_CTRLR_DEFAULT_MAX_XFER_SIZE,
 };
 
 int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)

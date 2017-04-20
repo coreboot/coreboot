@@ -280,6 +280,7 @@ static const struct spi_ctrlr spi_ctrlr = {
 	.release_bus = spi_ctrlr_release_bus,
 	.xfer = spi_ctrlr_xfer,
 	.xfer_vector = spi_xfer_two_vectors,
+	.max_xfer_size = 65535,
 };
 
 int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
@@ -317,9 +318,4 @@ int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
 	       (priv->spi_mode & 3));	/* mode: CPOL / CPHA */
 
 	return 0;
-}
-
-unsigned int spi_crop_chunk(unsigned int cmd_len, unsigned int buf_len)
-{
-	return min(65535, buf_len);
 }

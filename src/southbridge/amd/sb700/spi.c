@@ -40,11 +40,6 @@ void spi_init(void)
 	/* Not needed */
 }
 
-unsigned int spi_crop_chunk(unsigned int cmd_len, unsigned int buf_len)
-{
-	return min(AMD_SB_SPI_TX_LEN - cmd_len, buf_len);
-}
-
 static void reset_internal_fifo_pointer(void)
 {
 	uint32_t spibar = get_spi_bar();
@@ -121,6 +116,8 @@ static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 static const struct spi_ctrlr spi_ctrlr = {
 	.xfer = spi_ctrlr_xfer,
 	.xfer_vector = spi_xfer_two_vectors,
+	.max_xfer_size = AMD_SB_SPI_TX_LEN,
+	.deduct_cmd_len = true,
 };
 
 int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)

@@ -17,8 +17,11 @@
 #include <spi_flash.h>
 #include <console/spi.h>
 
+static struct spi_slave slave;
+
 void spiconsole_init(void) {
 	spi_init();
+	spi_setup_slave(0, 0, &slave);
 	return;
 }
 
@@ -54,9 +57,7 @@ void spiconsole_tx_byte(unsigned char c) {
 	if (c == '\n' || (sizeof(struct em100_msg_header) +
 			msg.header.msg_length == spi_crop_chunk(0,
 			MAX_MSG_LENGTH))) {
-		struct spi_slave spi = { };
-
-		spi_xfer(&spi, &msg, sizeof(struct em100_msg_header) +
+		spi_xfer(&slave, &msg, sizeof(struct em100_msg_header) +
 				msg.header.msg_length, NULL, 0);
 
 		msg.header.msg_length = 0;

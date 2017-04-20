@@ -182,8 +182,6 @@ static void configure_backlight(void)
 
 static void configure_display(void)
 {
-	mtcmos_display_power_on();
-
 	/* board from Rev2 */
 	gpio_output(PAD_CMMCLK, 1); /* PANEL_3V3_ENABLE */
 	/* vgp2 set to 3.3V for ps8640 */
@@ -207,12 +205,54 @@ static void configure_display(void)
 	udelay(100);
 }
 
-static void display_startup(void)
+static void configure_backlight_rowan(void)
 {
-	struct edid edid;
+	gpio_output(PAD_DAIPCMOUT, 0);	/* PANEL_LCD_POWER_EN */
+	gpio_output(PAD_DISP_PWM0, 0);	/* DISP_PWM0 */
+	gpio_output(PAD_PCM_TX, 0);	/* PANEL_POWER_EN */
+}
+
+static void configure_display_rowan(void)
+{
+	gpio_output(PAD_UCTS2, 1); /* VDDIO_EN */
+	/* delay 15 ms for panel vddio to stabilize */
+	mdelay(15);
+
+	gpio_output(PAD_SRCLKENAI2, 1); /* LCD_RESET */
+	udelay(20);
+	gpio_output(PAD_SRCLKENAI2, 0); /* LCD_RESET */
+	udelay(20);
+	gpio_output(PAD_SRCLKENAI2, 1); /* LCD_RESET */
+	mdelay(20);
+
+	/* Rowan panel avdd */
+	gpio_output(PAD_URTS2, 1);
+
+	/* Rowan panel avee */
+	gpio_output(PAD_URTS0, 1);
+
+	/* panel.delay.prepare */
+	mdelay(20);
+}
+
+static const struct edid rowan_boe_edid = {
+	.panel_bits_per_color = 8,
+	.panel_bits_per_pixel = 24,
+	.mode = {
+		.name = "1536x2048@60Hz",
+		.pixel_clock = 241646,
+		.lvds_dual_channel = 1,
+		.refresh = 60,
+		.ha = 1536, .hbl = 404, .hso = 200, .hspw = 4, .hborder = 0,
+		.va = 2048, .vbl = 28, .vso = 12, .vspw = 2, .vborder = 0,
+		.phsync = '-', .pvsync = '-',
+		.x_mm = 147, .y_mm = 196,
+	},
+};
+
+static int read_edid_from_ps8640(struct edid *edid)
+{
 	u8 i2c_bus, i2c_addr;
-	int ret;
-	bool dual_dsi_mode = false;
 
 	if (board_id() + CONFIG_BOARD_ID_ADJUSTMENT > 6) {
 		i2c_bus = 0;
@@ -225,16 +265,42 @@ static void display_startup(void)
 	mtk_i2c_bus_init(i2c_bus);
 
 	ps8640_init(i2c_bus, i2c_addr);
-	if (ps8640_get_edid(i2c_bus, i2c_addr, &edid)) {
+	if (ps8640_get_edid(i2c_bus, i2c_addr, edid)) {
 		printk(BIOS_ERR, "Can't get panel's edid\n");
-		return;
+		return -1;
+	}
+
+	return 0;
+}
+
+static void display_startup(void)
+{
+	struct edid edid;
+	int ret;
+	u32 mipi_dsi_flags;
+	bool dual_dsi_mode;
+
+	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_ROWAN)) {
+		edid = rowan_boe_edid;
+		dual_dsi_mode = true;
+		mipi_dsi_flags = MIPI_DSI_MODE_VIDEO |
+				 MIPI_DSI_MODE_VIDEO_SYNC_PULSE |
+				 MIPI_DSI_MODE_LPM | MIPI_DSI_MODE_EOT_PACKET |
+				 MIPI_DSI_CLOCK_NON_CONTINUOUS;
+	} else {
+		if (read_edid_from_ps8640(&edid) < 0)
+			return;
+
+		dual_dsi_mode = false;
+		mipi_dsi_flags = MIPI_DSI_MODE_VIDEO |
+				 MIPI_DSI_MODE_VIDEO_SYNC_PULSE;
 	}
 
 	edid_set_framebuffer_bits_per_pixel(&edid, 32, 0);
 
 	mtk_ddp_init(dual_dsi_mode);
-	ret = mtk_dsi_init(MIPI_DSI_MODE_VIDEO | MIPI_DSI_MODE_VIDEO_SYNC_PULSE,
-			   MIPI_DSI_FMT_RGB888, 4, dual_dsi_mode, &edid);
+	ret = mtk_dsi_init(mipi_dsi_flags, MIPI_DSI_FMT_RGB888, 4,
+			   dual_dsi_mode, &edid);
 	if (ret < 0) {
 		printk(BIOS_ERR, "dsi init fail\n");
 		return;
@@ -262,13 +328,15 @@ static void mainboard_init(device_t dev)
 	mtk_dsi_pin_drv_ctrl();
 
 	if (display_init_required()) {
+		mtcmos_display_power_on();
 		if (IS_ENABLED(CONFIG_BOARD_GOOGLE_ROWAN)) {
-			/* display initialization for Rowan */
+			configure_backlight_rowan();
+			configure_display_rowan();
 		} else {
 			configure_backlight();
 			configure_display();
-			display_startup();
 		}
+		display_startup();
 	} else {
 		printk(BIOS_INFO, "Skipping display init.\n");
 	}

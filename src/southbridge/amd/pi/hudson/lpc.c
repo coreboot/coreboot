@@ -29,6 +29,7 @@
 #include <pc80/i8254.h>
 #include <pc80/i8259.h>
 #include "hudson.h"
+#include <vboot/vbnv.h>
 
 static void lpc_init(device_t dev)
 {
@@ -76,7 +77,10 @@ static void lpc_init(device_t dev)
 	 * update CMOS unless it is invalid.
 	 * 1 tells cmos_init to always initialize the CMOS.
 	 */
-	cmos_init(0);
+	if (IS_ENABLED(CONFIG_VBOOT_VBNV_CMOS))
+		init_vbnv_cmos(0);
+	else
+		cmos_init(0);
 
 	/* Initialize i8259 pic */
 	setup_i8259 ();

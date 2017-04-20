@@ -174,6 +174,14 @@ static inline __attribute__((always_inline)) uint32_t read32(
 	return *((volatile uint32_t *)(addr));
 }
 
+#ifndef __ROMCC__
+static inline __attribute__((always_inline)) uint64_t read64(
+	const volatile void *addr)
+{
+	return *((volatile uint64_t *)(addr));
+}
+#endif
+
 static inline __attribute__((always_inline)) void write8(volatile void *addr,
 	uint8_t value)
 {
@@ -191,6 +199,14 @@ static inline __attribute__((always_inline)) void write32(volatile void *addr,
 {
 	*((volatile uint32_t *)(addr)) = value;
 }
+
+#ifndef __ROMCC__
+static inline __attribute__((always_inline)) void write64(volatile void *addr,
+	uint64_t value)
+{
+	*((volatile uint64_t *)(addr)) = value;
+}
+#endif
 
 /* Conflicts with definition in lib.h */
 #if defined(__ROMCC__)

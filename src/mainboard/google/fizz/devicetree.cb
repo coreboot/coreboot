@@ -130,12 +130,33 @@ chip soc/intel/skylake
 		.voltage_limit = 1520,
 	}"
 
-	# Enable Root port 1.
-	register "PcieRpEnable[0]" = "1"
+	# Enable Root port 3(x1) for LAN.
+	register "PcieRpEnable[2]" = "1"
 	# Enable CLKREQ#
-	register "PcieRpClkReqSupport[0]" = "1"
-	# RP 1 uses SRCCLKREQ1#
-	register "PcieRpClkReqNumber[0]" = "1"
+	register "PcieRpClkReqSupport[2]" = "1"
+	# RP 3 uses SRCCLKREQ0#
+	register "PcieRpClkReqNumber[2]" = "0"
+
+	# Enable Root port 4(x1) for WLAN.
+	register "PcieRpEnable[3]" = "1"
+	# Enable CLKREQ#
+	register "PcieRpClkReqSupport[3]" = "1"
+	# RP 4 uses SRCCLKREQ5#
+	register "PcieRpClkReqNumber[3]" = "5"
+
+	# Enable Root port 5(x4) for NVMe.
+	register "PcieRpEnable[4]" = "1"
+	# Enable CLKREQ#
+	register "PcieRpClkReqSupport[4]" = "1"
+	# RP 5 uses SRCCLKREQ1#
+	register "PcieRpClkReqNumber[4]" = "1"
+
+	# Enable Root port 9 for BtoB.
+	register "PcieRpEnable[8]" = "1"
+	# Enable CLKREQ#
+	register "PcieRpClkReqSupport[8]" = "1"
+	# RP 9 uses SRCCLKREQ2#
+	register "PcieRpClkReqNumber[8]" = "2"
 
 	register "usb2_ports[0]" = "USB2_PORT_LONG(OC0)"	# Type-C
 	register "usb2_ports[1]" = "USB2_PORT_MID(OC3)"		# Type-A Rear
@@ -151,6 +172,8 @@ chip soc/intel/skylake
 	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC3)"	# Type-A Rear
 	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC2)"	# Type-A Front
 	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC2)"	# Type-A Front
+	register "usb3_ports[4]" = "USB3_PORT_DEFAULT(OC1)"	# Type-A Rear
+	register "usb3_ports[5]" = "USB3_PORT_DEFAULT(OC1)"	# Type-A Rear
 
 	register "i2c_voltage[0]" = "I2C_VOLTAGE_3V3"		# HDMI CEC
 	register "i2c_voltage[1]" = "I2C_VOLTAGE_3V3"		# TPM
@@ -204,20 +227,20 @@ chip soc/intel/skylake
 		device pci 19.1 on
 		end # I2C #5
 		device pci 19.2 off  end # I2C #4
-		device pci 1c.0 on
+		device pci 1c.0 off end # PCI Express Port 1
+		device pci 1c.1 off end # PCI Express Port 2
+		device pci 1c.2 on end # PCI Express Port 3 for LAN
+		device pci 1c.3 on
 			chip drivers/intel/wifi
 				register "wake" = "GPE0_PCI_EXP"
 				device pci 00.0 on end
 			end
-		end # PCI Express Port 1
-		device pci 1c.1 off end # PCI Express Port 2
-		device pci 1c.2 off end # PCI Express Port 3
-		device pci 1c.3 off end # PCI Express Port 4
-		device pci 1c.4 off end # PCI Express Port 5
+		end # PCI Express Port 4 for WLAN
+		device pci 1c.4 on end # PCI Express Port 5 for NVMe
 		device pci 1c.5 off end # PCI Express Port 6
 		device pci 1c.6 off end # PCI Express Port 7
 		device pci 1c.7 off end # PCI Express Port 8
-		device pci 1d.0 off end # PCI Express Port 9
+		device pci 1d.0 on end # PCI Express Port 9 for BtoB
 		device pci 1d.1 off end # PCI Express Port 10
 		device pci 1d.2 off end # PCI Express Port 11
 		device pci 1d.3 off end # PCI Express Port 12

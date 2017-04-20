@@ -1,0 +1,58 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+chip soc/intel/skylake
+
+	register "SkipExtGfxScan" = "1"
+
+	device domain 0 on
+		device pci 1c.0 off end # PCI Express Port 1
+		device pci 1c.1 off end # PCI Express Port 2
+		device pci 1c.2 off end # PCI Express Port 3
+		device pci 1c.3 off end # PCI Express Port 4
+		device pci 1d.3 off end # PCI Express Port 12
+		device pci 1f.0 on
+			chip ec/kontron/kempld
+				device generic 1.0 on # I2C
+					chip drivers/i2c/lm96000
+						register "vin[1].low"	= "1140*100/116"
+						register "vin[1].high"	= "1260*100/116"
+						register "vin[0].low"	= "1810"
+						register "vin[0].high"	= "2000"
+						register "vin[2].low"	= "3140"
+						register "vin[2].high"	= "3470"
+						register "vin[3].low"	= "4750"
+						register "vin[3].high"	= "5250"
+						register "vin[4].low"	= "11400"
+						register "vin[4].high"	= "12600"
+
+						register "fan_in[0].low"	= "3240"
+						register "fan_in[1].low"	= "3240"
+
+						register "fan[0].mode"		= "LM96000_FAN_MANUAL"
+						register "fan[0].spinup"	= "LM96000_SPINUP_250MS"
+						register "fan[0].freq"		= "LM96000_PWM_25_7KHZ"
+						register "fan[0].duty_cycle"	= "100"
+
+						register "fan[1].mode"		= "LM96000_FAN_MANUAL"
+						register "fan[1].spinup"	= "LM96000_SPINUP_250MS"
+						register "fan[1].freq"		= "LM96000_PWM_25_7KHZ"
+						register "fan[1].duty_cycle"	= "100"
+
+						device i2c 0x2c on end
+					end
+					chip drivers/secunet/dmi
+						device i2c 0x57 on end # Serial EEPROM
+					end
+				end
+			end
+		end # LPC Interface
+		device pci 1f.4 on
+			chip drivers/i2c/nct7802y
+				register "fan[1].mode" = "FAN_MANUAL"
+				register "fan[1].duty_cycle" = "100"
+			end
+		end # SMBus
+		device pci 1f.5 on  end # PCH SPI
+		device pci 1f.6 on  end # GbE # Debug
+	end
+end

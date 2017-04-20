@@ -1,0 +1,61 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+if BOARD_KONTRON_BSL6 || BOARD_SIEMENS_BOXER26
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select BOARD_ROMSIZE_KB_16384
+	select SOC_INTEL_SKYLAKE
+	select SKYLAKE_SOC_PCH_H
+	select EXCLUDE_NATIVE_SD_INTERFACE
+	select NO_FADT_8042
+	select HAVE_ACPI_RESUME if BOARD_KONTRON_BSL6
+	select HAVE_ACPI_TABLES
+	select HAVE_OPTION_TABLE
+	select HAVE_CMOS_DEFAULT
+	select MAINBOARD_HAS_LPC_TPM
+	select EC_KONTRON_KEMPLD
+	select MAINBOARD_HAS_LIBGFXINIT
+	select DRIVERS_I2C_NCT7802Y
+	select DRIVERS_I2C_LM96000 if BOARD_SIEMENS_BOXER26
+	select SECUNET_DMI if BOARD_SIEMENS_BOXER26
+
+config MAINBOARD_DIR
+	string
+	default "kontron/bsl6"
+
+config MAINBOARD_VENDOR
+	string
+	default "Siemens" if BOARD_SIEMENS_BOXER26
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "bSL6" if BOARD_KONTRON_BSL6
+	default "Boxer26" if BOARD_SIEMENS_BOXER26
+
+config VARIANT_DIR
+	string
+	default "bsl6" if BOARD_KONTRON_BSL6
+	default "boxer26" if BOARD_SIEMENS_BOXER26
+
+config OVERRIDE_DEVICETREE
+	string
+	default "variants/$(CONFIG_VARIANT_DIR)/overridetree.cb"
+
+config CBFS_SIZE
+	hex
+	default 0x600000 if BOARD_SIEMENS_BOXER26
+
+config MAX_CPUS
+	int
+	default 8
+
+config DIMM_MAX
+	int
+	default 2
+
+config DIMM_SPD_SIZE
+	int
+	default 512
+
+endif

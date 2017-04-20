@@ -1,0 +1,43 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+chip soc/intel/skylake
+	# Enable Root port 1..4 (COMe 4..7), 12 (COMe 3)
+	register "PcieRpEnable[ 0]" = "1"
+	register "PcieRpEnable[ 1]" = "1"
+	register "PcieRpEnable[ 2]" = "1"
+	register "PcieRpEnable[ 3]" = "1"
+	register "PcieRpEnable[11]" = "1"
+
+	register "usb2_ports[5]" = "USB2_PORT_LONG(OC2)"
+	register "usb2_ports[6]" = "USB2_PORT_LONG(OC3)"
+	register "usb2_ports[7]" = "USB2_PORT_LONG(OC3)"
+	register "usb2_ports[8]" = "USB2_PORT_MID(OC4)"
+
+	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC0)"
+	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC0)"
+	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC1)"
+	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC1)"
+
+	register "SataPortsEnable[3]"	= "1"
+
+	device domain 0 on
+		device pci 1c.0 on  end # PCI Express Port 1
+		device pci 1c.1 on  end # PCI Express Port 2
+		device pci 1c.2 on  end # PCI Express Port 3
+		device pci 1c.3 on  end # PCI Express Port 4
+		device pci 1d.3 on  end # PCI Express Port 12
+		device pci 1f.4 on
+			chip drivers/i2c/nct7802y
+				register "peci[0]" = "{ PECI_DOMAIN_0, 100 }"
+				register "fan[1].mode" = "FAN_SMART"
+				register "fan[1].smart.mode"	= "SMART_FAN_DUTY"
+				register "fan[1].smart.tempsrc"	= "TEMP_SOURCE_PECI_0"
+				register "fan[1].smart.table"	= "{ { 30, 40 },
+								     { 40, 48 },
+								     { 50, 60 },
+								     { 60, 76 } }"
+				register "fan[1].smart.critical_temp" = "80"
+			end
+		end # SMBus
+	end
+end

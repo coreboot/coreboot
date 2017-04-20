@@ -229,10 +229,7 @@ static void display_startup(void)
 		return;
 	}
 
-	edid.x_resolution = edid.mode.ha;
-	edid.y_resolution = edid.mode.va;
-	edid.bytes_per_line = edid.mode.ha * edid.framebuffer_bits_per_pixel /
-			      8;
+	edid_set_framebuffer_bits_per_pixel(&edid, 32, 0);
 
 	mtk_ddp_init();
 	ret = mtk_dsi_init(MIPI_DSI_MODE_VIDEO | MIPI_DSI_MODE_VIDEO_SYNC_PULSE,

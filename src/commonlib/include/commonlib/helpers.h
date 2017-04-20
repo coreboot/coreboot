@@ -85,6 +85,9 @@
 	const __typeof__(((type *)0)->member) *__mptr = (ptr);	\
 	(type *)((char *)__mptr - offsetof(type, member)); })
 
+/* Calculate size of structure member. */
+#define member_size(type, member)	(sizeof(((type *)0)->member))
+
 #ifndef __unused
 #define __unused __attribute__((unused))
 #endif

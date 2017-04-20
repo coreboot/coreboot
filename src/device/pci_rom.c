@@ -18,6 +18,7 @@
  */
 
 #include <console/console.h>
+#include <commonlib/endian.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
@@ -172,6 +173,31 @@ struct rom_header *pci_rom_load(struct device *dev,
 
 /* ACPI */
 #if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+
+/* VBIOS may be modified after oprom init so use the copy if present. */
+static struct rom_header *check_initialized(struct device *dev)
+{
+	struct rom_header *run_rom;
+	struct pci_data *rom_data;
+
+	if (!IS_ENABLED(CONFIG_VGA_ROM_RUN))
+		return NULL;
+
+	run_rom = (struct rom_header *)(uintptr_t)PCI_VGA_RAM_IMAGE_START;
+	if (read_le16(&run_rom->signature) != PCI_ROM_HDR)
+		return NULL;
+
+	rom_data = (struct pci_data *)((u8 *)run_rom
+			+ read_le32(&run_rom->data));
+
+	if (read_le32(&rom_data->signature) == PCI_DATA_HDR
+			&& read_le16(&rom_data->device) == dev->device
+			&& read_le16(&rom_data->vendor) == dev->vendor)
+		return run_rom;
+	else
+		return NULL;
+}
+
 static unsigned long
 pci_rom_acpi_fill_vfct(struct device *device,
 					   struct acpi_vfct *vfct_struct,
@@ -182,11 +208,19 @@ pci_rom_acpi_fill_vfct(struct device *device,
 
 	vfct_struct->VBIOSImageOffset = (size_t)header - (size_t)vfct_struct;
 
-	rom = pci_rom_probe(device);
+	rom = check_initialized(device);
+	if (!rom)
+		rom = pci_rom_probe(device);
 	if (!rom) {
 		printk(BIOS_ERR, "pci_rom_acpi_fill_vfct failed\n");
 		return current;
 	}
+
+	printk(BIOS_DEBUG, "           Copying %sVBIOS image from %p\n",
+			rom == (struct rom_header *)
+					(uintptr_t)PCI_VGA_RAM_IMAGE_START ?
+			"initialized " : "",
+			rom);
 
 	header->DeviceID = device->device;
 	header->VendorID = device->vendor;
@@ -224,7 +258,7 @@ pci_rom_write_acpi_tables(struct device *device,
 	/* AMD/ATI uses VFCT */
 	if (device->vendor == PCI_VENDOR_ID_ATI) {
 		current = ALIGN(current, 8);
-		printk(BIOS_DEBUG, "ACPI:   * VFCT at %lx\n", current);
+		printk(BIOS_DEBUG, "ACPI:    * VFCT at %lx\n", current);
 		vfct = (struct acpi_vfct *)current;
 		acpi_create_vfct(device, vfct, pci_rom_acpi_fill_vfct);
 		current += vfct->header.length;

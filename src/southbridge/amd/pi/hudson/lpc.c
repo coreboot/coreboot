@@ -126,10 +126,13 @@ static void hudson_lpc_read_resources(device_t dev)
 static void hudson_lpc_set_resources(struct device *dev)
 {
 	struct resource *res;
+	u32 spi_enable_bits;
 
-	/* Special case. SPI Base Address. The SpiRomEnable should STAY set. */
+	/* Special case. The SpiRomEnable and other enables should STAY set. */
 	res = find_resource(dev, 2);
-	pci_write_config32(dev, SPIROM_BASE_ADDRESS_REGISTER, res->base | SPI_ROM_ENABLE);
+	spi_enable_bits = pci_read_config32(dev, SPIROM_BASE_ADDRESS_REGISTER);
+	spi_enable_bits &= 0xF;
+	pci_write_config32(dev, SPIROM_BASE_ADDRESS_REGISTER, res->base | spi_enable_bits);
 
 	pci_dev_set_resources(dev);
 }

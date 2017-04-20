@@ -69,6 +69,7 @@
 #define REV_HUDSON_A12			0x12
 
 #define SPIROM_BASE_ADDRESS_REGISTER	0xA0
+#define   ROUTE_TPM_2_SPI		BIT(3)
 #define   SPI_ROM_ENABLE		0x02
 #define   SPI_BASE_ADDRESS		0xFEC10000
 
@@ -188,8 +189,7 @@ void hudson_disable_4dw_burst(void);
 void hudson_set_readspeed(u16 norm, u16 fast);
 void lpc_wideio_512_window(uint16_t base);
 void lpc_wideio_16_window(uint16_t base);
-
-
+void hudson_tpm_decode_spi(void);
 int s3_save_nvram_early(u32 dword, int size, int  nvram_pos);
 int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos);
 #if IS_ENABLED(CONFIG_HUDSON_UART)

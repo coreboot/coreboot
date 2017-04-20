@@ -327,4 +327,13 @@ void hudson_read_mode(u32 mode)
 					& ~SPI_READ_MODE_MASK) | mode);
 }
 
+void hudson_tpm_decode_spi(void)
+{
+	device_t dev = PCI_DEV(0, 0x14, 3);	/* LPC device */
+
+	u32 spibase = pci_read_config32(dev, SPIROM_BASE_ADDRESS_REGISTER);
+	pci_write_config32(dev, SPIROM_BASE_ADDRESS_REGISTER, spibase
+							| ROUTE_TPM_2_SPI);
+}
+
 #endif

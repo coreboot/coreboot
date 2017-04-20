@@ -15,9 +15,13 @@
 
 #include <bootblock_common.h>
 #include <ec.h>
+#include <soc/hudson.h>
 
 void bootblock_mainboard_init(void)
 {
 	/* Enable the EC as soon as we have visibility */
 	mainboard_ec_init();
+
+	/* Setup TPM decode before verstage */
+	hudson_tpm_decode_spi();
 }

@@ -528,6 +528,7 @@
 #if defined(__PRE_RAM__)
 void cpuRegInit(void);
 void SystemPreInit(void);
+void asmlinkage mainboard_romstage_entry(unsigned long bist);
 #endif
 void cpubug(void);
 #endif

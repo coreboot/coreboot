@@ -647,6 +647,7 @@
 #if defined(__PRE_RAM__)
 void cpuRegInit(int debug_clock_disable, u8 dimm0, u8 dimm1, int terminated);
 void SystemPreInit(void);
+void asmlinkage mainboard_romstage_entry(unsigned long bist);
 #endif
 void cpubug(void);
 #endif

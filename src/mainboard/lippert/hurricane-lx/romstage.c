@@ -25,7 +25,6 @@
 #include <console/console.h>
 #include <cpu/x86/bist.h>
 #include <cpu/x86/msr.h>
-#include <cpu/amd/car.h>
 #include <cpu/amd/lxdef.h>
 #include <southbridge/amd/cs5536/cs5536.h>
 #include <spd.h>

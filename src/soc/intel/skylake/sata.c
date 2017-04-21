@@ -61,7 +61,7 @@ static struct device_operations sata_ops = {
 static const unsigned short pci_device_ids[] = {
 	0x9d03, /* SKL-U Base */
 	0x9d07, /* SKL-Y Premium, SKL-U Premium */
-	0xa282, /* KBL */
+	0x282a, /* KBL */
 	0
 };
 

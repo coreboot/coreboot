@@ -26,7 +26,6 @@
 #include <console/console.h>
 #include <lib.h>
 #include <cpu/x86/bist.h>
-#include <cpu/amd/car.h>
 #include <string.h>
 #include <timestamp.h>
 

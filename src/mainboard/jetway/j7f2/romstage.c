@@ -23,7 +23,6 @@
 #include <console/console.h>
 #include <northbridge/via/cn700/raminit.h>
 #include <cpu/x86/bist.h>
-#include <cpu/amd/car.h>
 #include <delay.h>
 #include <southbridge/via/vt8237r/vt8237r.h>
 #include <superio/fintek/common/fintek.h>

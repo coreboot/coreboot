@@ -103,6 +103,7 @@ void mainboard_romstage_entry(unsigned long bist)
 	const u8 spd_addrmap[4] = { 0x50, 0x51, 0, 0 };
 	int cbmem_was_initted;
 	int s3resume = 0;
+	int boot_path;
 
 	if (bist == 0)
 		enable_lapic();
@@ -124,15 +125,24 @@ void mainboard_romstage_entry(unsigned long bist)
 
 	post_code(0x30);
 
+	s3resume = southbridge_detect_s3_resume();
+
+	if (s3resume) {
+		boot_path = BOOT_PATH_RESUME;
+	} else {
+		if (MCHBAR32(0xf14) & (1 << 8)) /* HOT RESET */
+			boot_path = BOOT_PATH_RESET;
+		else
+			boot_path = BOOT_PATH_NORMAL;
+	}
+
 	printk(BIOS_DEBUG, "Initializing memory\n");
-	if (MCHBAR32(0xf14) & (1 << 8)) /* HOT RESET */
-		sdram_initialize(BOOT_PATH_RESET, spd_addrmap);
-	else
-		sdram_initialize(BOOT_PATH_NORMAL, spd_addrmap);
+	sdram_initialize(boot_path, spd_addrmap);
 	printk(BIOS_DEBUG, "Memory initialized\n");
 
 	post_code(0x31);
-	ram_check(0x200000,0x300000);
+
+	quick_ram_check();
 
 	rcba_config();
 

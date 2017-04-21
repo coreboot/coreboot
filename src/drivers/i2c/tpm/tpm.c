@@ -545,9 +545,6 @@ int tpm_vendor_init(struct tpm_chip *chip, unsigned int bus, uint32_t dev_addr)
 	chip->vendor.send = &tpm_tis_i2c_send;
 	chip->vendor.cancel = &tpm_tis_i2c_ready;
 
-	/* Disable interrupts (not supported) */
-	chip->vendor.irq = 0;
-
 	if (request_locality(chip, 0) != 0)
 		return -1;
 

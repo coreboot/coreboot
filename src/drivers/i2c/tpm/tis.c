@@ -103,9 +103,6 @@ static ssize_t tpm_transmit(const uint8_t *sbuf, size_t sbufsiz, void *rbuf,
 		goto out;
 	}
 
-	if (chip->vendor.irq)
-		goto out_recv;
-
 	int timeout = 2 * 60 * 1000; /* two minutes timeout */
 	while (timeout) {
 		ASSERT(chip->vendor.status);

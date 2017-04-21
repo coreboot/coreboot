@@ -59,7 +59,6 @@ struct tpm_vendor_specific {
 	uint8_t req_complete_val;
 	uint8_t req_canceled;
 	int irq;
-	int (*irq_status)(int irq);
 	int (*recv)(struct tpm_chip *, uint8_t *, size_t);
 	int (*send)(struct tpm_chip *, uint8_t *, size_t);
 	void (*cancel)(struct tpm_chip *);

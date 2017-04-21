@@ -15,4 +15,3 @@ config DRIVER_TPM_SPI_CHIP
 config MAINBOARD_HAS_SPI_TPM_CR50
 	bool
 	default n
-	depends on SPI_TPM

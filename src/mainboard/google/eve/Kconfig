@@ -43,10 +43,6 @@ config TPM_TIS_ACPI_INTERRUPT
 	int
 	default 64  # GPE0_DW2_00 (GPP_E0)
 
-config DRIVER_TPM_I2C_IRQ
-	int
-	default 64  # GPE0_DW2_00 (GPP_E0)
-
 config GBB_HWID
 	string
 	depends on CHROMEOS

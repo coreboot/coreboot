@@ -587,11 +587,17 @@ void initialize_cpus(struct bus *cpu_bus)
 		}
 	}
 
+	smm_init_completion();
+
 	if (is_smp_boot())
 		recover_lowest_1M();
 }
 
 /* Platform-specific code for SMI handler overrides this. */
 __attribute__((weak)) void smm_init(void)
+{
+}
+
+__attribute__((weak)) void smm_init_completion(void)
 {
 }

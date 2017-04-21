@@ -234,6 +234,7 @@ static void smi_set_eos(void)
 }
 
 extern uint8_t smm_relocation_start, smm_relocation_end;
+static void *default_smm_area = NULL;
 
 static void smm_relocate(void)
 {
@@ -250,6 +251,8 @@ static void smm_relocate(void)
 		printk(BIOS_INFO, "SMI# handler already enabled?\n");
 		return;
 	}
+
+	default_smm_area = backup_default_smm_area();
 
 	/* copy the SMM relocation code */
 	memcpy((void *)0x38000, &smm_relocation_start,
@@ -352,6 +355,11 @@ void smm_init(void)
 
 	/* We're done. Make sure SMIs can happen! */
 	smi_set_eos();
+}
+
+void smm_init_completion(void)
+{
+	restore_default_smm_area(default_smm_area);
 }
 
 void smm_lock(void)

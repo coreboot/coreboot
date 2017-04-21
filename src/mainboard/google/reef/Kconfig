@@ -32,6 +32,10 @@ config DRIVER_TPM_I2C_ADDR
 	hex
 	default 0x50
 
+config TPM_TIS_ACPI_INTERRUPT
+	int
+	default 60 # GPE0_DW1_28
+
 config DRIVER_TPM_I2C_IRQ
 	int
 	default 60 # GPE0_DW1_28

@@ -31,6 +31,8 @@
 #include <superio/winbond/common/winbond.h>
 #include <lib.h>
 #include <arch/stages.h>
+#include <cbmem.h>
+#include <romstage_handoff.h>
 
 #define SERIAL_DEV PNP_DEV(0x4e, W83627THG_SP1)
 #define SUPERIO_DEV PNP_DEV(0x4e, 0)
@@ -99,6 +101,8 @@ static void rcba_config(void)
 void mainboard_romstage_entry(unsigned long bist)
 {
 	const u8 spd_addrmap[4] = { 0x50, 0x51, 0, 0 };
+	int cbmem_was_initted;
+	int s3resume = 0;
 
 	if (bist == 0)
 		enable_lapic();
@@ -131,4 +135,14 @@ void mainboard_romstage_entry(unsigned long bist)
 	ram_check(0x200000,0x300000);
 
 	rcba_config();
+
+	cbmem_was_initted = !cbmem_recovery(s3resume);
+
+	if (!cbmem_was_initted && s3resume) {
+		/* Failed S3 resume, reset to come up cleanly */
+		outb(0x6, 0xcf9);
+		halt();
+	}
+
+	romstage_handoff_init(s3resume);
 }

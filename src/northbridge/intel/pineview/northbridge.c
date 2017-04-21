@@ -25,7 +25,6 @@
 #include <cpu/cpu.h>
 #include <boot/tables.h>
 #include <arch/acpi.h>
-#include <cbmem.h>
 #include <northbridge/intel/pineview/pineview.h>
 
 /* Reserve everything between A segment and 1MB:
@@ -126,8 +125,6 @@ static void mch_domain_read_resources(device_t dev)
 	}
 
 	add_fixed_resources(dev, index);
-
-	set_top_of_ram(tomk << 10);
 }
 
 static void mch_domain_set_resources(device_t dev)

@@ -20,7 +20,6 @@
 #include <arch/io.h>
 #include <device/pci_def.h>
 #include <device/pci.h>
-#include <cbmem.h>
 #include <halt.h>
 #include <string.h>
 #include <northbridge/intel/pineview/pineview.h>

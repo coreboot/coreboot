@@ -42,10 +42,6 @@
 #include <tpm.h>
 #include "tpm.h"
 
-#if IS_ENABLED(CONFIG_ARCH_X86)
-#include <arch/acpi.h>
-#endif
-
 #define CR50_MAX_BUFSIZE	63
 #define CR50_TIMEOUT_LONG_MS	2000	/* Long timeout while waiting for TPM */
 #define CR50_TIMEOUT_SHORT_MS	2	/* Short timeout during transactions */
@@ -61,31 +57,31 @@ struct tpm_inf_dev {
 
 static struct tpm_inf_dev g_tpm_dev CAR_GLOBAL;
 
+__attribute__ ((weak)) int tis_plat_irq_status(void)
+{
+	static int warning_displayed CAR_GLOBAL;
+
+	if (!car_get_var(warning_displayed)) {
+		printk(BIOS_WARNING, "WARNING: tis_plat_irq_status() not implemented, wasting 20ms to wait on Cr50!\n");
+		car_set_var(warning_displayed, 1);
+	}
+	mdelay(CR50_TIMEOUT_NOIRQ_MS);
+
+	return 1;
+}
+
 /* Wait for interrupt to indicate the TPM is ready */
 static int cr50_i2c_wait_tpm_ready(struct tpm_chip *chip)
 {
 	struct stopwatch sw;
 
-	if (!chip->vendor.irq_status) {
-		/* Fixed delay if interrupt not supported */
-		mdelay(CR50_TIMEOUT_NOIRQ_MS);
-		return 0;
-	}
-
 	stopwatch_init_msecs_expire(&sw, CR50_TIMEOUT_IRQ_MS);
 
-	while (!chip->vendor.irq_status(chip->vendor.irq))
+	while (!tis_plat_irq_status())
 		if (stopwatch_expired(&sw))
 			return -1;
 
 	return 0;
-}
-
-/* Clear pending interrupts */
-static void cr50_i2c_clear_tpm_irq(struct tpm_chip *chip)
-{
-	if (chip->vendor.irq_status)
-		chip->vendor.irq_status(chip->vendor.irq);
 }
 
 /*
@@ -111,7 +107,7 @@ static int cr50_i2c_read(struct tpm_chip *chip, uint8_t addr,
 		return -1;
 
 	/* Clear interrupt before starting transaction */
-	cr50_i2c_clear_tpm_irq(chip);
+	tis_plat_irq_status();
 
 	/* Send the register address byte to the TPM */
 	if (i2c_write_raw(tpm_dev->bus, tpm_dev->addr, &addr, 1)) {
@@ -161,7 +157,7 @@ static int cr50_i2c_write(struct tpm_chip *chip,
 	memcpy(tpm_dev->buf + 1, buffer, len);
 
 	/* Clear interrupt before starting transaction */
-	cr50_i2c_clear_tpm_irq(chip);
+	tis_plat_irq_status();
 
 	/* Send write request buffer with address */
 	if (i2c_write_raw(tpm_dev->bus, tpm_dev->addr, tpm_dev->buf, len + 1)) {
@@ -418,25 +414,6 @@ static void cr50_vendor_init(struct tpm_chip *chip)
 	chip->vendor.recv = &cr50_i2c_tis_recv;
 	chip->vendor.send = &cr50_i2c_tis_send;
 	chip->vendor.cancel = &cr50_i2c_tis_ready;
-	chip->vendor.irq = CONFIG_DRIVER_TPM_I2C_IRQ;
-
-	/*
-	 * Interrupts are not supported this early in firmware,
-	 * use use an arch-specific method to query for interrupt status.
-	 */
-	if (chip->vendor.irq > 0) {
-#if IS_ENABLED(CONFIG_ARCH_X86)
-		/* Query GPE status for interrupt */
-		chip->vendor.irq_status = &acpi_get_gpe;
-#else
-		chip->vendor.irq = -1;
-#endif
-	}
-
-	if (chip->vendor.irq <= 0)
-		printk(BIOS_WARNING,
-		       "%s: No IRQ, will use %ums delay for TPM ready\n",
-		       __func__, CR50_TIMEOUT_NOIRQ_MS);
 }
 
 int tpm_vendor_probe(unsigned int bus, uint32_t addr)
@@ -503,8 +480,8 @@ int tpm_vendor_init(struct tpm_chip *chip, unsigned int bus, uint32_t dev_addr)
 		goto out_err;
 	}
 
-	printk(BIOS_DEBUG, "cr50 TPM 2.0 (i2c %u:0x%02x irq %d id 0x%x)\n",
-	       bus, dev_addr, chip->vendor.irq, vendor >> 16);
+	printk(BIOS_DEBUG, "cr50 TPM 2.0 (i2c %u:0x%02x id 0x%x)\n",
+	       bus, dev_addr, vendor >> 16);
 
 	chip->is_open = 1;
 	return 0;

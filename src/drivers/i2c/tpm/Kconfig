@@ -44,11 +44,6 @@ config DRIVER_TPM_I2C_ADDR
 	default 0x2 # FIXME, workaround for Kconfig BS
 	depends on I2C_TPM
 
-config DRIVER_TPM_I2C_IRQ
-	int "IRQ or GPE to use for TPM interrupt"
-	default -1
-	depends on I2C_TPM
-
 config DRIVER_I2C_TPM_ACPI
 	bool "Generate I2C TPM ACPI device"
 	default y if ARCH_X86 && I2C_TPM

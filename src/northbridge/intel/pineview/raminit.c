@@ -2616,10 +2616,10 @@ void sdram_initialize(int boot_path, const u8 *spd_addresses)
 
 	if (si.boot_path != BOOT_PATH_RESUME) {
 		MCHBAR32(0x260) = MCHBAR32(0x260) | (1 << 27);
-	}
 
-	sdram_jedecinit(&si);
-	PRINTK_DEBUG("Done MRS\n");
+		sdram_jedecinit(&si);
+		PRINTK_DEBUG("Done MRS\n");
+	}
 
 	sdram_misc(&si);
 	PRINTK_DEBUG("Done misc\n");

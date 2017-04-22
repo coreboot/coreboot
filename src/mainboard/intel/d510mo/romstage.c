@@ -33,6 +33,7 @@
 #include <arch/stages.h>
 #include <cbmem.h>
 #include <romstage_handoff.h>
+#include <timestamp.h>
 
 #define SERIAL_DEV PNP_DEV(0x4e, W83627THG_SP1)
 #define SUPERIO_DEV PNP_DEV(0x4e, 0)
@@ -105,6 +106,9 @@ void mainboard_romstage_entry(unsigned long bist)
 	int s3resume = 0;
 	int boot_path;
 
+	timestamp_init(get_initial_timestamp());
+	timestamp_add_now(TS_START_ROMSTAGE);
+
 	if (bist == 0)
 		enable_lapic();
 
@@ -137,7 +141,9 @@ void mainboard_romstage_entry(unsigned long bist)
 	}
 
 	printk(BIOS_DEBUG, "Initializing memory\n");
+	timestamp_add_now(TS_BEFORE_INITRAM);
 	sdram_initialize(boot_path, spd_addrmap);
+	timestamp_add_now(TS_AFTER_INITRAM);
 	printk(BIOS_DEBUG, "Memory initialized\n");
 
 	post_code(0x31);

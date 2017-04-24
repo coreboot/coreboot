@@ -28,6 +28,7 @@ chip soc/intel/skylake
 	register "SataSalpSupport" = "1"
 	register "SataMode" = "1"
 	register "SataPortsEnable[0]" = "1"
+	register "SataPortsEnable[1]" = "1"
 	register "EnableAzalia" = "1"
 	register "DspEnable" = "1"
 	register "IoBufferOwnership" = "3"

@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2008-2010 by coresystems GmbH
  *  written by Stefan Reinauer <stepan@coresystems.de>
+ * Copyright (C) 2017 secunet Security Networks AG
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,7 +16,31 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <inttypes.h>
+#include <commonlib/helpers.h>
 #include "inteltool.h"
+
+static const io_register_t sunrise_pm_registers[] = {
+	{ 0x00, 2, "PM1_STS" }, /* PM1 Status;  ACPI pointer: PM1a_EVT_BLK   */
+	{ 0x02, 2, "PM1_EN" },  /* PM1 Enables; ACPI pointer: PM1a_EVT_BLK+2 */
+	{ 0x04, 4, "PM1_CNT" }, /* PM1 Control; ACPI pointer: PM1a_CNT_BLK   */
+	{ 0x08, 4, "PM1_TMR" }, /* PM1 Timer;   ACPI pointer: PMTMR_BLK      */
+	{ 0x30, 4, "SMI_EN" },
+	{ 0x34, 4, "SMI_STS" },
+	{ 0x40, 4, "GPE_CNTL" },
+	{ 0x44, 2, "DEVACT_STS" }, /* Device Activity Status */
+	{ 0x50, 4, "PM2_CNT" }, /* PM2 Control; ACPI pointer: PM2a_CNT_BLK   */
+	{ 0x54, 4, "OC_WDT_CTL" }, /* Overclocking WDT Control */
+	{ 0x80, 4, "GPE0_STS_31_0" },
+	{ 0x84, 4, "GPE0_STS_63_31" },
+	{ 0x88, 4, "GPE0_STS_95_64" },
+	{ 0x8c, 4, "GPE0_STS_127_96" },
+	{ 0x90, 4, "GPE0_EN_31_0" },
+	{ 0x94, 4, "GPE0_EN_63_31" },
+	{ 0x98, 4, "GPE0_EN_95_64" },
+	{ 0x9c, 4, "GPE0_EN_127_96" },
+};
 
 static const io_register_t pch_pm_registers[] = {
 	{ 0x00, 2, "PM1_STS" }, // PM1 Status; ACPI pointer: PM1a_EVT_BLK
@@ -644,12 +669,13 @@ static const io_register_t i63xx_pm_registers[] = {
 
 int print_pmbase(struct pci_dev *sb, struct pci_access *pacc)
 {
-	int i, size;
+	size_t i, size;
 	uint16_t pmbase;
 	const io_register_t *pm_registers;
+	uint64_t pwrmbase_phys = 0;
 	struct pci_dev *acpi;
 
-	printf("\n============= PMBASE ============\n\n");
+	printf("\n========== PMBASE/ABASE =========\n\n");
 
 	switch (sb->device_id) {
 	case PCI_DEVICE_ID_INTEL_3400:
@@ -772,6 +798,8 @@ int print_pmbase(struct pci_dev *sb, struct pci_access *pacc)
 			return 1;
 		}
 		pmbase = pci_read_word(acpi, 0x40) & 0xfffc;
+		pci_free_dev(acpi);
+
 		pm_registers = i82371xx_pm_registers;
 		size = ARRAY_SIZE(i82371xx_pm_registers);
 		break;
@@ -780,6 +808,20 @@ int print_pmbase(struct pci_dev *sb, struct pci_access *pacc)
 		pmbase = pci_read_word(sb, 0x40) & 0xfffc;
 		pm_registers = i63xx_pm_registers;
 		size = ARRAY_SIZE(i63xx_pm_registers);
+		break;
+
+	case PCI_DEVICE_ID_INTEL_CM236:
+		acpi = pci_get_dev(pacc, sb->domain, sb->bus, sb->dev, 2);
+		if (!acpi) {
+			printf("PMC device not found.\n");
+			return 1;
+		}
+		pmbase = pci_read_word(acpi, 0x40) & ~0xff;
+		pwrmbase_phys = pci_read_long(acpi, 0x48) & ~0xfff;
+		pci_free_dev(acpi);
+
+		pm_registers = sunrise_pm_registers;
+		size = ARRAY_SIZE(sunrise_pm_registers);
 		break;
 
 	case 0x1234: // Dummy for non-existent functionality
@@ -821,6 +863,27 @@ int print_pmbase(struct pci_dev *sb, struct pci_access *pacc)
 				pm_registers[i].name);
 			break;
 		}
+	}
+
+	if (pwrmbase_phys) {
+		const size_t pwrmbase_size = 4 * KiB;
+		volatile const u8 *const pwrmbase =
+			map_physical(pwrmbase_phys, pwrmbase_size);
+		if (!pwrmbase) {
+			perror("Error mapping PWRMBASE");
+			exit(1);
+		}
+
+		printf("\n=========== PWRMBASE ===========\n\n");
+		printf("PWRMBASE = 0x%08" PRIx64 " (MEM)\n\n", pwrmbase_phys);
+
+		for (i = 0; i < pwrmbase_size; i += 4) {
+			if (*(uint32_t *)(pwrmbase + i))
+				printf("0x%04zx: 0x%08"PRIx32"\n",
+				       i, *(uint32_t *)(pwrmbase + i));
+		}
+
+		unmap_physical((void *)pwrmbase, pwrmbase_size);
 	}
 
 	return 0;

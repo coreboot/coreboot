@@ -22,20 +22,48 @@
 #include <rules.h>
 #include <version.h>
 
-/* While in romstage, console loglevel is built-time constant. */
-static ROMSTAGE_CONST int console_loglevel = CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
+/* Mutable console log level only allowed when RAM comes online. */
+#if defined(__PRE_RAM__)
+#define CONSOLE_LEVEL_CONST 1
+#else
+#define CONSOLE_LEVEL_CONST 0
+#endif
+
+static int console_loglevel = CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
+
+static inline int get_log_level(void)
+{
+	if (CONSOLE_LEVEL_CONST)
+		return CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
+
+	return console_loglevel;
+}
+
+static inline void set_log_level(int new_level)
+{
+	if (CONSOLE_LEVEL_CONST)
+		return;
+
+	console_loglevel = new_level;
+}
+
+static void init_log_level(void)
+{
+	int debug_level = CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
+
+	get_option(&debug_level, "debug_level");
+
+	set_log_level(debug_level);
+}
 
 int console_log_level(int msg_level)
 {
-	return (console_loglevel >= msg_level);
+	return (get_log_level() >= msg_level);
 }
 
 asmlinkage void console_init(void)
 {
-#if !defined(__PRE_RAM__)
-	console_loglevel = CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
-	get_option(&console_loglevel, "debug_level");
-#endif
+	init_log_level();
 
 #if CONFIG_EARLY_PCI_BRIDGE && !defined(__SMM__)
 	pci_early_bridge_init();

@@ -17,9 +17,8 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <device/pci_ids.h>
+#include <intelblocks/xdci.h>
 #include <soc/pci_devs.h>
-#include <soc/pci_ids.h>
 #include <timer.h>
 
 #define DUAL_ROLE_CFG0		0x80d8
@@ -48,19 +47,19 @@ static void configure_host_mode_port0(struct device *dev)
 	const struct resource *res;
 	uint32_t reg;
 	struct stopwatch sw;
-	struct device *xhci_dev = PCH_DEV_XHCI;
+	struct device *xdci_dev = PCH_DEV_XDCI;
 
 	/*
 	 * Only default to host mode if the xdci device is present and
 	 * enabled. If it's disabled assume the switch was already done
 	 * in FSP.
 	 */
-	if (!dev->enabled || !xhci_dev->enabled)
+	if (!dev->enabled || !xdci_dev->enabled)
 		return;
 
 	printk(BIOS_INFO, "Putting port 0 into host mode.\n");
 
-	res = find_resource(xhci_dev, PCI_BASE_ADDRESS_0);
+	res = find_resource(xdci_dev, PCI_BASE_ADDRESS_0);
 
 	cfg0 = (void *)(uintptr_t)(res->base + DUAL_ROLE_CFG0);
 	cfg1 = (void *)(uintptr_t)(res->base + DUAL_ROLE_CFG1);
@@ -82,24 +81,12 @@ static void configure_host_mode_port0(struct device *dev)
 		}
 	}
 
-	printk(BIOS_INFO, "XHCI port 0 host switch over took %lu ms\n",
+	printk(BIOS_INFO, "XDCI port 0 host switch over took %lu ms\n",
 		stopwatch_duration_msecs(&sw));
 }
 
-static void xdci_init(struct device *dev)
+void soc_xdci_init(struct device *dev)
 {
 	configure_host_mode_port0(dev);
 }
 
-static const struct device_operations device_ops = {
-	.read_resources		= pci_dev_read_resources,
-	.set_resources		= pci_dev_set_resources,
-	.enable_resources	= pci_dev_enable_resources,
-	.init			= xdci_init,
-};
-
-static const struct pci_driver pmc __pci_driver = {
-	.ops	= &device_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= PCI_DEVICE_ID_APOLLOLAKE_XDCI,
-};

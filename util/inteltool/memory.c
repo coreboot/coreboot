@@ -218,6 +218,7 @@ int print_mchbar(struct pci_dev *nb, struct pci_access *pacc, const char *dump_s
 	case PCI_DEVICE_ID_INTEL_CORE_4TH_GEN_E3:
 	case PCI_DEVICE_ID_INTEL_CORE_4TH_GEN_U:
 	case PCI_DEVICE_ID_INTEL_CORE_5TH_GEN_U:
+	case PCI_DEVICE_ID_INTEL_CORE_6TH_GEN_WST:
 		mchbar_phys = pci_read_long(nb, 0x48);
 		mchbar_phys |= ((uint64_t)pci_read_long(nb, 0x4c)) << 32;
 		mchbar_phys &= 0x0000007fffff8000UL; /* 38:15 */

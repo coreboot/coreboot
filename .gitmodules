@@ -1,23 +1,23 @@
 [submodule "3rdparty/blobs"]
 	path = 3rdparty/blobs
-	url = ../blobs.git
+	url = https://github.com/coreboot/blobs.git
 	update = none
 	ignore = dirty
 [submodule "util/nvidia-cbootimage"]
 	path = util/nvidia/cbootimage
-	url = ../nvidia-cbootimage.git
+	url = https://github.com/coreboot/nvidia-cbootimage.git
 [submodule "vboot"]
 	path = 3rdparty/vboot
-	url = ../vboot.git
+	url = https://github.com/coreboot/vboot.git
 [submodule "arm-trusted-firmware"]
 	path = 3rdparty/arm-trusted-firmware
-	url = ../arm-trusted-firmware.git
+	url = https://github.com/coreboot/arm-trusted-firmware.git
 [submodule "3rdparty/chromeec"]
 	path = 3rdparty/chromeec
-	url = ../chrome-ec.git
+	url = https://github.com/coreboot/chrome-ec.git
 [submodule "libhwbase"]
 	path = 3rdparty/libhwbase
-	url = ../libhwbase.git
+	url = https://github.com/coreboot/libhwbase.git
 [submodule "libgfxinit"]
 	path = 3rdparty/libgfxinit
-	url = ../libgfxinit.git
+	url = https://github.com/coreboot/libgfxinit.git

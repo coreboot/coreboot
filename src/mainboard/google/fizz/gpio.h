@@ -159,8 +159,8 @@ static const struct pad_config gpio_table[] = {
 					   NF1), /* Front USB Ports */
 /* USB2_OC3# */		PAD_CFG_NF(GPP_E12, NONE, DEEP,
 					   NF1), /* Rear Single USB Port */
-/* DDPB_HPD0 */		PAD_CFG_GPI_APIC(GPP_E13, NONE,
-						 PLTRST), /* INT_HDMI_HPD */
+/* DDPB_HPD0 */		PAD_CFG_NF(GPP_E13, NONE, DEEP,
+					   NF1), /* INT_HDMI_HPD */
 /* DDPC_HPD1 */		PAD_CFG_NF(GPP_E14, NONE, DEEP,
 					   NF1), /* DDI2_HPD */
 /* DDPD_HPD2 */		PAD_CFG_NC(GPP_E15), /* TP325 */

@@ -28,6 +28,16 @@
  * cursor field gets set to indicate that this happened. If the underlying
  * storage allows this, the buffer will persist across multiple boots and append
  * to the previous log.
+ *
+ * NOTE: These are known implementations accessing this console that need to be
+ * updated in case of structure/API changes:
+ *
+ * cbmem:	[coreboot]/src/util/cbmem/cbmem.c
+ * libpayload:	[coreboot]/payloads/libpayload/drivers/cbmem_console.c
+ * coreinfo:	[coreboot]/payloads/coreinfo/bootlog_module.c
+ * Linux:	drivers/firmware/google/memconsole-coreboot.c
+ * SeaBIOS:	src/firmware/coreboot.c
+ * GRUB:	grub-core/term/i386/coreboot/cbmemc.c
  */
 struct cbmem_console {
 	u32 size;

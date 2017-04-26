@@ -534,7 +534,7 @@ build_MPFR() {
 
 	# work around build problem of libgmp.la
 	if [ "$DESTDIR" != "" ]; then
-	    perl -pi -e "s,$DESTDIR,," $DESTDIR$TARGETDIR/libgmp.la
+	    perl -pi -e "s,$DESTDIR,," $DESTDIR$TARGETDIR/lib/libgmp.la
 	fi
 }
 
@@ -543,8 +543,19 @@ build_MPC() {
 		--infodir=$TARGETDIR/info --with-mpfr=$DESTDIR$TARGETDIR \
 		--with-gmp=$DESTDIR$TARGETDIR CFLAGS="$HOSTCFLAGS" || \
 		touch .failed
+
+	# work around build problem of libmpfr.la
+	if [ "$DESTDIR" != "" ]; then
+	    perl -pi -e "s,$TARGETDIR/lib/libgmp.la,$DESTDIR\$&," $DESTDIR$TARGETDIR/lib/libmpfr.la
+	fi
+
 	$MAKE $JOBS || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
+
+	# work around build problem of libmpfr.la
+	if [ "$DESTDIR" != "" ]; then
+	    perl -pi -e "s,$DESTDIR,," $DESTDIR$TARGETDIR/lib/libmpfr.la
+	fi
 
 	normalize_dirs
 }

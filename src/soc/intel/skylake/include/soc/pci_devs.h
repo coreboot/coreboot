@@ -148,34 +148,6 @@
 #define  PCH_DEV_SPI		_PCH_DEV(LPC, 5)
 #define  PCH_DEV_GBE		_PCH_DEV(LPC, 6)
 
-/* Convert I2C bus number to PCI device and function */
-static inline int i2c_bus_to_devfn(unsigned int bus)
-{
-	switch (bus) {
-	case 0: return PCH_DEVFN_I2C0;
-	case 1: return PCH_DEVFN_I2C1;
-	case 2: return PCH_DEVFN_I2C2;
-	case 3: return PCH_DEVFN_I2C3;
-	case 4: return PCH_DEVFN_I2C4;
-	case 5: return PCH_DEVFN_I2C5;
-	}
-	return -1;
-}
-
-/* Convert PCI device and function to I2C bus number */
-static inline int i2c_devfn_to_bus(unsigned int devfn)
-{
-	switch (devfn) {
-	case PCH_DEVFN_I2C0: return 0;
-	case PCH_DEVFN_I2C1: return 1;
-	case PCH_DEVFN_I2C2: return 2;
-	case PCH_DEVFN_I2C3: return 3;
-	case PCH_DEVFN_I2C4: return 4;
-	case PCH_DEVFN_I2C5: return 5;
-	}
-	return -1;
-}
-
 static inline int spi_devfn_to_bus(unsigned int devfn)
 {
 	switch (devfn) {

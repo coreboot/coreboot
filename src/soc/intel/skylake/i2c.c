@@ -13,92 +13,55 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/acpigen.h>
+#include <console/console.h>
 #include <device/device.h>
-#include <device/i2c.h>
-#include <device/pci.h>
-#include <device/pci_def.h>
-#include <device/pci_ids.h>
-#include <soc/intel/common/lpss_i2c.h>
-#include <soc/ramstage.h>
+#include <intelblocks/lpss_i2c.h>
+#include <soc/iomap.h>
+#include <soc/pci_devs.h>
+#include "chip.h"
 
-uintptr_t lpss_i2c_base_address(unsigned int bus)
+const struct lpss_i2c_bus_config *i2c_get_soc_cfg(unsigned int bus,
+					const struct device *dev)
 {
-	int devfn;
-	struct device *dev;
-	struct resource *res;
-
-	/* bus -> devfn */
-	devfn = i2c_bus_to_devfn(bus);
-	if (devfn >= 0) {
-		/* devfn -> dev */
-		dev = dev_find_slot(0, devfn);
-		if (dev) {
-			/* dev -> bar0 */
-			res = find_resource(dev, PCI_BASE_ADDRESS_0);
-			if (res)
-				return res->base;
-		}
+	const struct soc_intel_skylake_config *config;
+	if (!dev || !dev->chip_info) {
+		printk(BIOS_ERR, "%s: Could not find SoC devicetree config!\n",
+		       __func__);
+		return NULL;
 	}
 
-	return (uintptr_t)NULL;
+	config = dev->chip_info;
+
+	return &config->i2c[bus];
 }
 
-static int i2c_dev_to_bus(struct device *dev)
+uintptr_t i2c_get_soc_early_base(unsigned int bus)
 {
-	return i2c_devfn_to_bus(dev->path.pci.devfn);
+	return EARLY_I2C_BASE(bus);
 }
 
-/*
- * The device should already be enabled and out of reset,
- * either from early init in coreboot or SiliconInit in FSP.
- */
-static void i2c_dev_init(struct device *dev)
+int i2c_soc_devfn_to_bus(unsigned int devfn)
 {
-	struct soc_intel_skylake_config *config = dev->chip_info;
-	int bus = i2c_dev_to_bus(dev);
-
-	if (!config || bus < 0)
-		return;
-
-	lpss_i2c_init(bus, &config->i2c[bus]);
+	switch (devfn) {
+	case PCH_DEVFN_I2C0: return 0;
+	case PCH_DEVFN_I2C1: return 1;
+	case PCH_DEVFN_I2C2: return 2;
+	case PCH_DEVFN_I2C3: return 3;
+	case PCH_DEVFN_I2C4: return 4;
+	case PCH_DEVFN_I2C5: return 5;
+	}
+	return -1;
 }
 
-/* Generate ACPI I2C device objects */
-static void i2c_fill_ssdt(struct device *dev)
+int i2c_soc_bus_to_devfn(unsigned int bus)
 {
-	struct soc_intel_skylake_config *config = dev->chip_info;
-	int bus = i2c_dev_to_bus(dev);
-
-	if (!config || bus < 0)
-		return;
-
-	acpigen_write_scope(acpi_device_path(dev));
-	lpss_i2c_acpi_fill_ssdt(bus, &config->i2c[bus]);
-	acpigen_pop_len();
+	switch (bus) {
+	case 0: return PCH_DEVFN_I2C0;
+	case 1: return PCH_DEVFN_I2C1;
+	case 2: return PCH_DEVFN_I2C2;
+	case 3: return PCH_DEVFN_I2C3;
+	case 4: return PCH_DEVFN_I2C4;
+	case 5: return PCH_DEVFN_I2C5;
+	}
+	return -1;
 }
-
-static struct i2c_bus_operations i2c_bus_ops = {
-	.dev_to_bus			= &i2c_dev_to_bus,
-};
-
-static struct device_operations i2c_dev_ops = {
-	.read_resources			= &pci_dev_read_resources,
-	.set_resources			= &pci_dev_set_resources,
-	.enable_resources		= &pci_dev_enable_resources,
-	.scan_bus			= &scan_smbus,
-	.ops_pci			= &soc_pci_ops,
-	.ops_i2c_bus			= &i2c_bus_ops,
-	.init				= &i2c_dev_init,
-	.acpi_fill_ssdt_generator	= &i2c_fill_ssdt,
-};
-
-static const unsigned short pci_device_ids[] = {
-	0x9d60, 0x9d61, 0x9d62, 0x9d63, 0x9d64, 0x9d65, 0
-};
-
-static const struct pci_driver pch_i2c __pci_driver = {
-	.ops	 = &i2c_dev_ops,
-	.vendor	 = PCI_VENDOR_ID_INTEL,
-	.devices = pci_device_ids,
-};

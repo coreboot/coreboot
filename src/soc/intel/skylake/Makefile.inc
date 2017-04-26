@@ -11,7 +11,7 @@ subdirs-y += ../../../cpu/x86/tsc
 
 bootblock-y += bootblock/bootblock.c
 bootblock-y += bootblock/cpu.c
-bootblock-y += bootblock/i2c.c
+bootblock-y += i2c.c
 bootblock-y += bootblock/pch.c
 bootblock-y += bootblock/report_platform.c
 bootblock-$(CONFIG_UART_DEBUG) += bootblock/uart.c
@@ -29,13 +29,13 @@ verstage-y += monotonic_timer.c
 verstage-y += pch.c
 verstage-$(CONFIG_UART_DEBUG) += uart_debug.c
 verstage-y += pmutil.c
-verstage-y += bootblock/i2c.c
+verstage-y += i2c.c
 verstage-y += spi.c
 verstage-y += tsc_freq.c
 
 romstage-y += gpio.c
 romstage-y += gspi.c
-romstage-y += bootblock/i2c.c
+romstage-y += i2c.c
 romstage-y += memmap.c
 romstage-y += monotonic_timer.c
 romstage-y += me.c

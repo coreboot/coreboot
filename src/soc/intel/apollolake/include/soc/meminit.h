@@ -69,6 +69,20 @@ enum {
 	LP4_16Gb_DENSITY,
 };
 
+/*
+ * ODT settings :
+ * If ODT PIN to LP4 DRAM is pulled HIGH for ODT_A, and HIGH for ODT_B,
+ * choose ODT_AB_HIGH_HIGH. If ODT PIN to LP4 DRAM is pulled HIGH for ODT_A,
+ * and LOW for ODT_B, choose ODT_AB_HIGH_LOW.
+ *
+ * Note that the enum values correspond to the interpreted UPD fields
+ * witihn Ch[3:0]_OdtConfig parameters.
+*/
+enum {
+	ODT_A_B_HIGH_LOW = 0 << 1,
+	ODT_A_B_HIGH_HIGH = 1 << 1,
+};
+
 /* Provide bit swizzling per DQS and byte swapping within a channel. */
 struct lpddr4_chan_swizzle_cfg {
 	uint8_t dqs[LP4_NUM_BYTE_LANES][DQ_BITS_PER_DQS];

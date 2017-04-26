@@ -73,11 +73,12 @@ static void set_lpddr4_defaults(FSP_M_CONFIG *cfg)
 	cfg->Ch2_Option = 0x3;
 	cfg->Ch3_Option = 0x3;
 
-	/* Weak on-die termination. */
-	cfg->Ch0_OdtConfig = 0;
-	cfg->Ch1_OdtConfig = 0;
-	cfg->Ch2_OdtConfig = 0;
-	cfg->Ch3_OdtConfig = 0;
+	/* Set CA ODT with default setting of ODT pins of LPDDR4 modules pulled
+	   up to 1.1V. */
+	cfg->Ch0_OdtConfig = ODT_A_B_HIGH_HIGH;
+	cfg->Ch1_OdtConfig = ODT_A_B_HIGH_HIGH;
+	cfg->Ch2_OdtConfig = ODT_A_B_HIGH_HIGH;
+	cfg->Ch3_OdtConfig = ODT_A_B_HIGH_HIGH;
 }
 
 void meminit_lpddr4(FSP_M_CONFIG *cfg, int speed)
@@ -318,4 +319,10 @@ void save_lpddr4_dimm_info(const struct lpddr4_cfg *lp4cfg, size_t mem_sku)
 	}
 	mem_info->dimm_cnt = index;
 	printk(BIOS_DEBUG, "%d DIMMs found\n", mem_info->dimm_cnt);
+}
+
+uint8_t fsp_memory_soc_version(void)
+{
+	/* Bump this value when the memory configuration parameters change. */
+	return 1;
 }

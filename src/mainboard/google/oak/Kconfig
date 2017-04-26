@@ -93,7 +93,7 @@ config GBB_HWID
 	default "OAK TEST 6858" if BOARD_GOOGLE_OAK
 	default "ELM TEST 3839" if BOARD_GOOGLE_ELM
 	default "HANA TEST 5855" if BOARD_GOOGLE_HANA
-	default "ROWAN TEST 5855" if BOARD_GOOGLE_ROWAN
+	default "ROWAN TEST 9387" if BOARD_GOOGLE_ROWAN
 
 # All Oak-derivatives count their board IDs as 0 being equivalent to Oak rev6.
 config BOARD_ID_ADJUSTMENT

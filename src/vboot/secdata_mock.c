@@ -34,6 +34,7 @@
 
 #include <antirollback.h>
 #include <stdlib.h>
+#include <tpm_lite/tlcl.h>
 #include <vb2_api.h>
 
 uint32_t tpm_extend_pcr(struct vb2_context *ctx, int pcr,
@@ -76,4 +77,9 @@ uint32_t antirollback_read_space_rec_hash(uint8_t *data, uint32_t size)
 uint32_t antirollback_write_space_rec_hash(const uint8_t *data, uint32_t size)
 {
 	return TPM_SUCCESS;
+}
+
+uint32_t tlcl_lib_init(void)
+{
+	return VB2_SUCCESS;
 }

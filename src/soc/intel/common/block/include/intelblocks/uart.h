@@ -17,8 +17,11 @@
 #define SOC_INTEL_COMMON_BLOCK_UART_H
 
 #include <arch/io.h>
+#include <device/device.h>
 
 void uart_common_init(device_t dev, uintptr_t baseaddr,
 		uint32_t clk_m_val, uint32_t clk_n_val);
+
+void pch_uart_read_resources(struct device *dev);
 
 #endif	/* SOC_INTEL_COMMON_BLOCK_UART_H */

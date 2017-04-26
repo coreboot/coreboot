@@ -226,8 +226,8 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	const struct device *dev = dev_find_slot(0, PCH_DEVFN_LPC);
 	config_t *config = dev->chip_info;
 
-	/* Use ACPI 5.0 revision */
-	fadt->header.revision = ACPI_FADT_REV_ACPI_5_0;
+	/* Use ACPI 3.0 revision */
+	fadt->header.revision = ACPI_FADT_REV_ACPI_3_0;
 
 	fadt->sci_int = acpi_sci_irq();
 	fadt->smi_cmd = APM_CNT;

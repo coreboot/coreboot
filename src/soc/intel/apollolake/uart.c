@@ -20,14 +20,12 @@
  * shouldn't cause any fragmentation.
  */
 
-#include <console/uart.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <device/pci_ids.h>
-#include <soc/pci_ids.h>
+#include <intelblocks/uart.h>
 #include <soc/pci_devs.h>
 
-static void aplk_uart_read_resources(struct device *dev)
+void pch_uart_read_resources(struct device *dev)
 {
 	pci_dev_read_resources(dev);
 
@@ -39,23 +37,3 @@ static void aplk_uart_read_resources(struct device *dev)
 				CONFIG_CONSOLE_UART_BASE_ADDRESS >> 10, 4, 0);
 	}
 }
-
-static struct device_operations uart_ops = {
-	.read_resources   = aplk_uart_read_resources,
-	.set_resources    = pci_dev_set_resources,
-	.enable_resources = pci_dev_enable_resources,
-	.init             = pci_dev_init,
-	.enable           = DEVICE_NOOP
-};
-
-static const unsigned short uart_ids[] = {
-	PCI_DEVICE_ID_APOLLOLAKE_UART0, PCI_DEVICE_ID_APOLLOLAKE_UART1,
-	PCI_DEVICE_ID_APOLLOLAKE_UART2, PCI_DEVICE_ID_APOLLOLAKE_UART3,
-	0
-};
-
-static const struct pci_driver uart_driver __pci_driver = {
-	.ops     = &uart_ops,
-	.vendor  = PCI_VENDOR_ID_INTEL,
-	.devices = uart_ids
-};

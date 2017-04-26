@@ -13,8 +13,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef SOC_INTEL_COMMON_LPSS_I2C_H
-#define SOC_INTEL_COMMON_LPSS_I2C_H
+#ifndef SOC_INTEL_COMMON_BLOCK_LPSS_I2C_H
+#define SOC_INTEL_COMMON_BLOCK_LPSS_I2C_H
 
 #include <device/i2c.h>
 #include <stdint.h>
@@ -74,30 +74,32 @@ struct lpss_i2c_bus_config {
 		.sda_hold = (hold),				\
 	}
 
-/*
- * Return the base address for this bus controller.
- *
- * This function *must* be implemented by the SOC and return the appropriate
- * base address for the I2C registers that correspond to the provided bus.
- */
-uintptr_t lpss_i2c_base_address(unsigned int bus);
+/* Functions to be implemented by SoC code */
+
+/* Get base address for early init of I2C controllers. */
+uintptr_t i2c_get_soc_early_base(unsigned int bus);
 
 /*
- * Generate I2C timing information into the SSDT for the OS driver to consume,
- * optionally applying override values provided by the caller.
+ * Map given I2C bus number to devfn.
+ * Return value:
+ * -1 = error
+ * otherwise, devfn(>=0) corresponding to I2C bus number.
  */
-void lpss_i2c_acpi_fill_ssdt(unsigned int bus,
-				const struct lpss_i2c_bus_config *bcfg);
+int i2c_soc_devfn_to_bus(unsigned int devfn);
 
 /*
- * Initialize this bus controller and set the speed.
- *
- * The bus speed can be passed in Hz or using values from device/i2c.h and
- * will default to I2C_SPEED_FAST if it is not provided.
- *
- * The SOC *must* define CONFIG_SOC_INTEL_COMMON_LPSS_I2C_CLOCK for the
- * bus speed calculation to be correct.
+ * Map given bus number to a I2C Controller.
+ * Return value:
+ * -1 = error
+ * otherwise, devfn(>=0) corresponding to I2C bus number.
  */
-int lpss_i2c_init(unsigned int bus, const struct lpss_i2c_bus_config *bcfg);
+int i2c_soc_bus_to_devfn(unsigned int bus);
 
-#endif
+/*
+ * SoC implemented callback for getting I2C bus configuration.
+ *
+ * Returns NULL if i2c config is not found
+ */
+const struct lpss_i2c_bus_config *i2c_get_soc_cfg(unsigned int bus,
+						const struct device *dev);
+#endif /* SOC_INTEL_COMMON_BLOCK_LPSS_I2C_H */

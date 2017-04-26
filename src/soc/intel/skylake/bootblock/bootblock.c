@@ -15,6 +15,7 @@
 
 #include <bootblock_common.h>
 #include <intelblocks/gspi.h>
+#include <intelblocks/lpss_i2c.h>
 #include <soc/bootblock.h>
 
 asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
@@ -48,6 +49,6 @@ void bootblock_soc_init(void)
 	report_platform_info();
 	set_max_freq();
 	pch_early_init();
-	i2c_early_init();
+
 	gspi_early_bar_init();
 }

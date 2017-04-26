@@ -16,64 +16,16 @@
 
 #include <arch/acpigen.h>
 #include <arch/io.h>
-#include <commonlib/helpers.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/i2c.h>
+#include <device/pci.h>
+#include <device/pci_def.h>
+#include <device/pci_ids.h>
+#include <intelblocks/lpss_i2c.h>
 #include <string.h>
 #include <timer.h>
 #include "lpss_i2c.h"
-
-#define LPSS_DEBUG BIOS_NEVER
-
-struct lpss_i2c_regs {
-	uint32_t control;
-	uint32_t target_addr;
-	uint32_t slave_addr;
-	uint32_t master_addr;
-	uint32_t cmd_data;
-	uint32_t ss_scl_hcnt;
-	uint32_t ss_scl_lcnt;
-	uint32_t fs_scl_hcnt;
-	uint32_t fs_scl_lcnt;
-	uint32_t hs_scl_hcnt;
-	uint32_t hs_scl_lcnt;
-	uint32_t intr_stat;
-	uint32_t intr_mask;
-	uint32_t raw_intr_stat;
-	uint32_t rx_thresh;
-	uint32_t tx_thresh;
-	uint32_t clear_intr;
-	uint32_t clear_rx_under_intr;
-	uint32_t clear_rx_over_intr;
-	uint32_t clear_tx_over_intr;
-	uint32_t clear_rd_req_intr;
-	uint32_t clear_tx_abrt_intr;
-	uint32_t clear_rx_done_intr;
-	uint32_t clear_activity_intr;
-	uint32_t clear_stop_det_intr;
-	uint32_t clear_start_det_intr;
-	uint32_t clear_gen_call_intr;
-	uint32_t enable;
-	uint32_t status;
-	uint32_t tx_level;
-	uint32_t rx_level;
-	uint32_t sda_hold;
-	uint32_t tx_abort_source;
-	uint32_t slv_data_nak_only;
-	uint32_t dma_cr;
-	uint32_t dma_tdlr;
-	uint32_t dma_rdlr;
-	uint32_t sda_setup;
-	uint32_t ack_general_call;
-	uint32_t enable_status;
-	uint32_t fs_spklen;
-	uint32_t hs_spklen;
-	uint32_t clr_restart_det;
-	uint32_t comp_param1;
-	uint32_t comp_version;
-	uint32_t comp_type;
-} __attribute__((packed));
 
 /* Use a ~10ms timeout for various operations */
 #define LPSS_I2C_TIMEOUT_US		10000
@@ -101,6 +53,57 @@ enum {
 struct freq {
 	uint32_t ticks;
 	uint32_t ns;
+};
+
+/* Control register definitions */
+enum {
+	CONTROL_MASTER_MODE		= (1 << 0),
+	CONTROL_SPEED_SS		= (1 << 1),
+	CONTROL_SPEED_FS		= (1 << 2),
+	CONTROL_SPEED_HS		= (3 << 1),
+	CONTROL_SPEED_MASK		= (3 << 1),
+	CONTROL_10BIT_SLAVE		= (1 << 3),
+	CONTROL_10BIT_MASTER		= (1 << 4),
+	CONTROL_RESTART_ENABLE		= (1 << 5),
+	CONTROL_SLAVE_DISABLE		= (1 << 6),
+};
+
+/* Command/Data register definitions */
+enum {
+	CMD_DATA_CMD			= (1 << 8),
+	CMD_DATA_STOP			= (1 << 9),
+};
+
+/* Status register definitions */
+enum {
+	STATUS_ACTIVITY			= (1 << 0),
+	STATUS_TX_FIFO_NOT_FULL		= (1 << 1),
+	STATUS_TX_FIFO_EMPTY		= (1 << 2),
+	STATUS_RX_FIFO_NOT_EMPTY	= (1 << 3),
+	STATUS_RX_FIFO_FULL		= (1 << 4),
+	STATUS_MASTER_ACTIVITY		= (1 << 5),
+	STATUS_SLAVE_ACTIVITY		= (1 << 6),
+};
+
+/* Enable register definitions */
+enum {
+	ENABLE_CONTROLLER		= (1 << 0),
+};
+
+/* Interrupt status register definitions */
+enum {
+	INTR_STAT_RX_UNDER		= (1 << 0),
+	INTR_STAT_RX_OVER		= (1 << 1),
+	INTR_STAT_RX_FULL		= (1 << 2),
+	INTR_STAT_TX_OVER		= (1 << 3),
+	INTR_STAT_TX_EMPTY		= (1 << 4),
+	INTR_STAT_RD_REQ		= (1 << 5),
+	INTR_STAT_TX_ABORT		= (1 << 6),
+	INTR_STAT_RX_DONE		= (1 << 7),
+	INTR_STAT_ACTIVITY		= (1 << 8),
+	INTR_STAT_STOP_DET		= (1 << 9),
+	INTR_STAT_START_DET		= (1 << 10),
+	INTR_STAT_GEN_CALL		= (1 << 11),
 };
 
 static const struct i2c_descriptor {
@@ -166,57 +169,6 @@ static const struct soc_clock {
 			.ns = 3000,
 		},
 	},
-};
-
-/* Control register definitions */
-enum {
-	CONTROL_MASTER_MODE		= (1 << 0),
-	CONTROL_SPEED_SS		= (1 << 1),
-	CONTROL_SPEED_FS		= (1 << 2),
-	CONTROL_SPEED_HS		= (3 << 1),
-	CONTROL_SPEED_MASK		= (3 << 1),
-	CONTROL_10BIT_SLAVE		= (1 << 3),
-	CONTROL_10BIT_MASTER		= (1 << 4),
-	CONTROL_RESTART_ENABLE		= (1 << 5),
-	CONTROL_SLAVE_DISABLE		= (1 << 6),
-};
-
-/* Command/Data register definitions */
-enum {
-	CMD_DATA_CMD			= (1 << 8),
-	CMD_DATA_STOP			= (1 << 9),
-};
-
-/* Status register definitions */
-enum {
-	STATUS_ACTIVITY			= (1 << 0),
-	STATUS_TX_FIFO_NOT_FULL		= (1 << 1),
-	STATUS_TX_FIFO_EMPTY		= (1 << 2),
-	STATUS_RX_FIFO_NOT_EMPTY	= (1 << 3),
-	STATUS_RX_FIFO_FULL		= (1 << 4),
-	STATUS_MASTER_ACTIVITY		= (1 << 5),
-	STATUS_SLAVE_ACTIVITY		= (1 << 6),
-};
-
-/* Enable register definitions */
-enum {
-	ENABLE_CONTROLLER		= (1 << 0),
-};
-
-/* Interrupt status register definitions */
-enum {
-	INTR_STAT_RX_UNDER		= (1 << 0),
-	INTR_STAT_RX_OVER		= (1 << 1),
-	INTR_STAT_RX_FULL		= (1 << 2),
-	INTR_STAT_TX_OVER		= (1 << 3),
-	INTR_STAT_TX_EMPTY		= (1 << 4),
-	INTR_STAT_RD_REQ		= (1 << 5),
-	INTR_STAT_TX_ABORT		= (1 << 6),
-	INTR_STAT_RX_DONE		= (1 << 7),
-	INTR_STAT_ACTIVITY		= (1 << 8),
-	INTR_STAT_STOP_DET		= (1 << 9),
-	INTR_STAT_START_DET		= (1 << 10),
-	INTR_STAT_GEN_CALL		= (1 << 11),
 };
 
 static const struct i2c_descriptor *get_bus_descriptor(enum i2c_speed speed)
@@ -441,41 +393,6 @@ out:
 	return ret;
 }
 
-/*
- * Write ACPI object to describe speed configuration.
- *
- * ACPI Object: Name ("xxxx", Package () { scl_lcnt, scl_hcnt, sda_hold }
- *
- * SSCN: I2C_SPEED_STANDARD
- * FMCN: I2C_SPEED_FAST
- * FPCN: I2C_SPEED_FAST_PLUS
- * HSCN: I2C_SPEED_HIGH
- */
-static void lpss_i2c_acpi_write_speed_config(
-	const struct lpss_i2c_speed_config *config)
-{
-	if (!config)
-		return;
-	if (!config->scl_lcnt && !config->scl_hcnt && !config->sda_hold)
-		return;
-
-	if (config->speed >= I2C_SPEED_HIGH)
-		acpigen_write_name("HSCN");
-	else if (config->speed >= I2C_SPEED_FAST_PLUS)
-		acpigen_write_name("FPCN");
-	else if (config->speed >= I2C_SPEED_FAST)
-		acpigen_write_name("FMCN");
-	else
-		acpigen_write_name("SSCN");
-
-	/* Package () { scl_lcnt, scl_hcnt, sda_hold } */
-	acpigen_write_package(3);
-	acpigen_write_word(config->scl_hcnt);
-	acpigen_write_word(config->scl_lcnt);
-	acpigen_write_dword(config->sda_hold);
-	acpigen_pop_len();
-}
-
 static int lpss_i2c_set_speed_config(unsigned int bus,
 				const struct lpss_i2c_speed_config *config)
 {
@@ -606,7 +523,7 @@ static int lpss_i2c_gen_config_rise_fall_time(struct lpss_i2c_regs *regs,
 	return 0;
 }
 
-static int lpss_i2c_gen_speed_config(struct lpss_i2c_regs *regs,
+int lpss_i2c_gen_speed_config(struct lpss_i2c_regs *regs,
 					enum i2c_speed speed,
 					const struct lpss_i2c_bus_config *bcfg,
 					struct lpss_i2c_speed_config *config)
@@ -697,37 +614,13 @@ static int lpss_i2c_set_speed(unsigned int bus, enum i2c_speed speed,
 	return 0;
 }
 
-void lpss_i2c_acpi_fill_ssdt(unsigned int bus,
-				const struct lpss_i2c_bus_config *bcfg)
-{
-	struct lpss_i2c_regs *regs;
-	struct lpss_i2c_speed_config sgen;
-	enum i2c_speed speeds[LPSS_I2C_SPEED_CONFIG_COUNT] = {
-		I2C_SPEED_STANDARD,
-		I2C_SPEED_FAST,
-		I2C_SPEED_FAST_PLUS,
-		I2C_SPEED_HIGH,
-	};
-	int i;
 
-	if (!bcfg)
-		return;
-
-	regs = (struct lpss_i2c_regs *)lpss_i2c_base_address(bus);
-	if (!regs)
-		return;
-
-	/* Report timing values for the OS driver */
-	for (i = 0; i < LPSS_I2C_SPEED_CONFIG_COUNT; i++) {
-		/* Generate speed config. */
-		if (lpss_i2c_gen_speed_config(regs, speeds[i], bcfg, &sgen) < 0)
-			continue;
-
-		/* Generate ACPI based on selected speed config */
-		lpss_i2c_acpi_write_speed_config(&sgen);
-	}
-}
-
+/*
+ * Initialize this bus controller and set the speed.
+ *
+ * The bus speed can be passed in Hz or using values from device/i2c.h and
+ * will default to I2C_SPEED_FAST if it is not provided.
+ */
 int lpss_i2c_init(unsigned int bus, const struct lpss_i2c_bus_config *bcfg)
 {
 	struct lpss_i2c_regs *regs;

@@ -21,7 +21,7 @@
 #include <soc/gpe.h>
 #include <soc/gpio_defs.h>
 #include <soc/gpio.h>
-#include <soc/intel/common/lpss_i2c.h>
+#include <intelblocks/lpss_i2c.h>
 #include <device/i2c.h>
 #include <soc/pm.h>
 #include <soc/usb.h>

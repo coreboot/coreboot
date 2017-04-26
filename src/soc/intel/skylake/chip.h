@@ -22,11 +22,11 @@
 #include <arch/acpi_device.h>
 #include <device/i2c.h>
 #include <intelblocks/gspi.h>
+#include <intelblocks/lpss_i2c.h>
 #include <stdint.h>
 #include <soc/gpio_defs.h>
 #include <soc/gpe.h>
 #include <soc/irq.h>
-#include <soc/intel/common/lpss_i2c.h>
 #include <soc/pci_devs.h>
 #include <soc/pmc.h>
 #include <soc/serialio.h>

@@ -5,14 +5,11 @@ subdirs-y += block/
 
 bootblock-y += util.c
 
-verstage-$(CONFIG_SOC_INTEL_COMMON_LPSS_I2C) += lpss_i2c.c
 verstage-$(CONFIG_SOC_INTEL_COMMON_RESET) += reset.c
 
 bootblock-$(CONFIG_SOC_INTEL_COMMON_RESET) += reset.c
-bootblock-$(CONFIG_SOC_INTEL_COMMON_LPSS_I2C) += lpss_i2c.c
 
 romstage-$(CONFIG_CACHE_MRC_SETTINGS) += mrc_cache.c
-romstage-$(CONFIG_SOC_INTEL_COMMON_LPSS_I2C) += lpss_i2c.c
 romstage-$(CONFIG_SOC_INTEL_COMMON_RESET) += reset.c
 romstage-y += util.c
 romstage-$(CONFIG_MMA) += mma.c
@@ -25,7 +22,6 @@ ramstage-y += hda_verb.c
 ramstage-$(CONFIG_CACHE_MRC_SETTINGS) += mrc_cache.c
 ramstage-$(CONFIG_CACHE_MRC_SETTINGS) += nvm.c
 ramstage-$(CONFIG_SOC_INTEL_COMMON_SPI_FLASH_PROTECT) += spi_flash.c
-ramstage-$(CONFIG_SOC_INTEL_COMMON_LPSS_I2C) += lpss_i2c.c
 ramstage-$(CONFIG_SOC_INTEL_COMMON_RESET) += reset.c
 ramstage-y += util.c
 ramstage-$(CONFIG_MMA) += mma.c

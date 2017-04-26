@@ -1,0 +1,4 @@
+config SOC_INTEL_COMMON_BLOCK_I2C
+	bool
+	help
+	  Intel Processor Common I2C support

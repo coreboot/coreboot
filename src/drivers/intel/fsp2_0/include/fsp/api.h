@@ -53,6 +53,15 @@ void fsps_load(bool s3wake);
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version);
 void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd);
 
+/*
+ * The following functions are used when FSP_PLATFORM_MEMORY_SETTINGS_VERSION
+ * is employed allowing the mainboard and SoC to supply their own version
+ * for memory settings respectively. The valid values are 0-15 for each
+ * function.
+ */
+uint8_t fsp_memory_mainboard_version(void);
+uint8_t fsp_memory_soc_version(void);
+
 /* Callback after processing FSP notify */
 void platform_fsp_notify_status(enum fsp_notify_phase phase);
 

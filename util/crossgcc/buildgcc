@@ -600,6 +600,7 @@ bootstrap_GCC() {
 		--disable-werror --disable-nls \
 		--disable-shared --disable-multilib \
 		--disable-libssp --disable-libquadmath --disable-libcc1 \
+		--disable-libsanitizer \
 		${GCC_OPTIONS} --enable-languages="${LANGUAGES}" \
 		--with-gmp=$DESTDIR$TARGETDIR --with-mpfr=$DESTDIR$TARGETDIR \
 		--with-mpc=$DESTDIR$TARGETDIR --with-libelf=$DESTDIR$TARGETDIR \

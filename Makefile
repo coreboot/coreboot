@@ -412,7 +412,7 @@ clean-ctags:
 	rm -f tags
 
 distclean: clean clean-ctags clean-cscope distclean-payloads
-	rm -f .config .config.old ..config.tmp .kconfig.d .tmpconfig* .ccwrap .xcompile
+	rm -f .config .config.old ..config.tmp* .kconfig.d .tmpconfig* .ccwrap .xcompile
 
 .PHONY: $(PHONY) clean clean-for-update clean-cscope cscope distclean doxygen doxy doxygen_simple
 .PHONY: ctags-project cscope-project clean-ctags

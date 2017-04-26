@@ -31,6 +31,7 @@
 #include <fsp/api.h>
 #include <fsp/memmap.h>
 #include <fsp/util.h>
+#include <reset.h>
 #include <soc/cpu.h>
 #include <soc/flash_ctrlr.h>
 #include <soc/intel/common/mrc_cache.h>
@@ -258,9 +259,26 @@ static void fill_console_params(FSPM_UPD *mupd)
 	}
 }
 
+static void check_full_retrain(const FSPM_UPD *mupd)
+{
+	struct chipset_power_state *ps;
+
+	if (mupd->FspmArchUpd.BootMode != FSP_BOOT_WITH_FULL_CONFIGURATION)
+		return;
+
+	ps = car_get_var_ptr(&power_state);
+
+	if (ps->gen_pmcon1 & WARM_RESET_STS) {
+		printk(BIOS_INFO, "Full retrain unsupported on warm reboot.\n");
+		hard_reset();
+	}
+}
+
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 {
 	struct region_device rdev;
+
+	check_full_retrain(mupd);
 
 	fill_console_params(mupd);
 	mainboard_memory_init_params(mupd);

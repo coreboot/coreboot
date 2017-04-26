@@ -118,4 +118,12 @@ config FSP2_0_USES_TPM_MRC_HASH
 	default n
 	select VBOOT_HAS_REC_HASH_SPACE
 
+config FSP_PLATFORM_MEMORY_SETTINGS_VERSIONS
+	bool
+	help
+	  This is selected by SoC or mainboard to supply their own
+	  concept of a version for the memory settings respectively.
+	  This allows deployed systems to bump their version number
+	  with the same FSP which will trigger a retrain of the memory.
+
 endif

@@ -599,8 +599,15 @@ void pci_dev_enable_resources(struct device *dev)
 	if (dev->on_mainboard && ops && ops->set_subsystem) {
 		if (CONFIG_SUBSYSTEM_VENDOR_ID)
 			dev->subsystem_vendor = CONFIG_SUBSYSTEM_VENDOR_ID;
+		else if (!dev->subsystem_vendor)
+			dev->subsystem_vendor = pci_read_config16(dev,
+							PCI_VENDOR_ID);
 		if (CONFIG_SUBSYSTEM_DEVICE_ID)
 			dev->subsystem_device = CONFIG_SUBSYSTEM_DEVICE_ID;
+		else if (!dev->subsystem_device)
+			dev->subsystem_device = pci_read_config16(dev,
+							PCI_DEVICE_ID);
+
 		printk(BIOS_DEBUG, "%s subsystem <- %04x/%04x\n",
 			dev_path(dev), dev->subsystem_vendor,
 			dev->subsystem_device);

@@ -73,7 +73,7 @@ static void pch_log_power_and_resets(struct chipset_power_state *ps)
 		elog_add_event(ELOG_TYPE_RTC_RESET);
 
 	/* System Reset */
-	if (ps->gen_pmcon1 & SRS)
+	if (ps->gen_pmcon1 & WARM_RESET_STS)
 		elog_add_event(ELOG_TYPE_SYSTEM_RESET);
 
 	/* TCO Timeout */

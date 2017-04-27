@@ -206,7 +206,7 @@ config VBOOT_FWID_MODEL
 
 config VBOOT_FWID_VERSION
 	string "Firmware ID version"
-	default "$(KERNELVERSION)"
+	default ".$(KERNELVERSION)"
 	help
 	  This is the second part of the FWID written to various regions of a
 	  vboot firmware image to identify its version.

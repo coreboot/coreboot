@@ -154,18 +154,18 @@ static int cbgfx_init(void)
 	screen.offset.x = 0;
 	screen.offset.y = 0;
 
-	/* Calculate canvas size & offset, assuming the screen is landscape */
+	/* Calculate canvas size & offset. Canvas is always square. */
 	if (screen.size.height > screen.size.width) {
-		const int bpl = fbinfo->bytes_per_line;
-		LOG("Portrait screen not supported, forcing square image!\n");
-		memset(fbaddr + screen.size.width * bpl, 0,
-		       (screen.size.height - screen.size.width) * bpl);
-		screen.size.height = screen.size.width;
+		canvas.size.height = screen.size.width;
+		canvas.size.width = canvas.size.height;
+		canvas.offset.x = 0;
+		canvas.offset.y = (screen.size.height - canvas.size.height) / 2;
+	} else {
+		canvas.size.height = screen.size.height;
+		canvas.size.width = canvas.size.height;
+		canvas.offset.x = (screen.size.width - canvas.size.width) / 2;
+		canvas.offset.y = 0;
 	}
-	canvas.size.height = screen.size.height;
-	canvas.size.width = canvas.size.height;
-	canvas.offset.x = (screen.size.width - canvas.size.width) / 2;
-	canvas.offset.y = 0;
 
 	initialized = 1;
 	LOG("cbgfx initialized: screen:width=%d, height=%d, offset=%d canvas:width=%d, height=%d, offset=%d\n",

@@ -953,3 +953,13 @@ void rkclk_configure_edp(unsigned int hz)
 			      (src_clk_div - 1) <<
 			      CLK_PCLK_EDP_DIV_CON_SHIFT));
 }
+
+void rkclk_configure_mipi(void)
+{
+	/* Enable clk_mipidphy_ref and clk_mipidphy_cfg */
+	write32(&cru_ptr->clkgate_con[11],
+		RK_CLRBITS(1 << 14 | 1 << 15));
+	/* Enable pclk_mipi_dsi0 */
+	write32(&cru_ptr->clkgate_con[29],
+		RK_CLRBITS(1 << 1));
+}

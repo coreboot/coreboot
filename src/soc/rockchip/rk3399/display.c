@@ -31,6 +31,7 @@
 #include <soc/gpio.h>
 #include <soc/grf.h>
 #include <soc/mmu_operations.h>
+#include <soc/mipi.h>
 #include <soc/soc.h>
 #include <soc/vop.h>
 
@@ -47,6 +48,21 @@ static void reset_edp(void)
 	printk(BIOS_WARNING, "Retrying epd initialization.\n");
 }
 
+static void rk_get_mipi_mode(struct edid *edid, device_t dev)
+{
+	struct soc_rockchip_rk3399_config *conf = dev->chip_info;
+
+	edid->mode.pixel_clock = conf->panel_pixel_clock;
+	edid->mode.refresh = conf->panel_refresh;
+	edid->mode.ha = conf->panel_ha;
+	edid->mode.hbl = conf->panel_hbl;
+	edid->mode.hso = conf->panel_hso;
+	edid->mode.hspw = conf->panel_hspw;
+	edid->mode.va = conf->panel_va;
+	edid->mode.vbl = conf->panel_vbl;
+	edid->mode.vso = conf->panel_vso;
+	edid->mode.vspw = conf->panel_vspw;
+}
 void rk_display_init(device_t dev)
 {
 	struct edid edid;
@@ -60,8 +76,6 @@ void rk_display_init(device_t dev)
 	switch (conf->vop_mode) {
 	case VOP_MODE_NONE:
 		return;
-	case VOP_MODE_AUTO_DETECT:
-		/* try EDP first, then HDMI */
 	case VOP_MODE_EDP:
 		printk(BIOS_DEBUG, "Attempting to set up EDP display.\n");
 		rkclk_configure_vop_aclk(vop_id, 200 * MHz);
@@ -91,11 +105,22 @@ retry_edp:
 			}
 		}
 		break;
-	case VOP_MODE_HDMI:
-		printk(BIOS_WARNING, "HDMI display is NOT supported yet.\n");
-		return;
+	case VOP_MODE_MIPI:
+		printk(BIOS_DEBUG, "Attempting to setup MIPI display.\n");
+
+		rkclk_configure_mipi();
+		rkclk_configure_vop_aclk(vop_id, 200 * MHz);
+
+		/* disable turnrequest turndisable forcetxstop forcerxmode */
+		write32(&rk3399_grf->soc_con22, RK_CLRBITS(0xffff));
+		/* select mipi-dsi0 signal from vop0 */
+		write32(&rk3399_grf->soc_con20, RK_CLRBITS(1 << 0));
+
+		rk_get_mipi_mode(&edid, dev);
+		detected_mode = VOP_MODE_MIPI;
+		break;
 	default:
-		printk(BIOS_WARNING, "Cannot read any EDID info, aborting.\n");
+		printk(BIOS_WARNING, "Unsupported vop_mode, aborting.\n");
 		return;
 	}
 
@@ -112,20 +137,21 @@ retry_edp:
 	rkvop_prepare(vop_id, &edid);
 
 	switch (detected_mode) {
-	case VOP_MODE_HDMI:
-		/* should not be here before HDMI supported */
-		return;
+	case VOP_MODE_MIPI:
+		rk_mipi_prepare(&edid, conf->panel_display_on_mdelay, conf->panel_video_mode_mdelay);
+		break;
 	case VOP_MODE_EDP:
-	default:
 		/* will enable edp in depthcharge */
 		if (rk_edp_prepare()) {
 			reset_edp();
 			goto retry_edp; /* Rerun entire init sequence */
 		}
-		mainboard_power_on_backlight();
+		break;
+	default:
 		break;
 	}
-
+	mainboard_power_on_backlight();
 	set_vbe_mode_info_valid(&edid, (uintptr_t)0);
+
 	return;
 }

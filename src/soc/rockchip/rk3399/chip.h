@@ -26,6 +26,18 @@ struct soc_rockchip_rk3399_config {
 	u32 bl_pwm_to_enable_udelay;
 	u32 framebuffer_bits_per_pixel;
 	u32 vop_mode;
+	u32 panel_pixel_clock;	/* below only be considered for MIPI displays */
+	u32 panel_refresh;
+	u32 panel_ha;
+	u32 panel_hbl;
+	u32 panel_hso;
+	u32 panel_hspw;
+	u32 panel_va;
+	u32 panel_vbl;
+	u32 panel_vso;
+	u32 panel_vspw;
+	u32 panel_display_on_mdelay;
+	u32 panel_video_mode_mdelay;
 };
 
 #endif /* __SOC_ROCKCHIP_RK3399_CHIP_H__ */

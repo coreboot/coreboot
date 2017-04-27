@@ -59,6 +59,7 @@
 #define SARADC_BASE		0xff100000
 #define RK_PWM_BASE		0xff420000
 #define EDP_BASE		0xff970000
+#define MIPI_BASE		0xff960000
 
 #define VOP_BIG_BASE		0xff900000 /* corresponds to vop_id 0 */
 #define VOP_LIT_BASE		0xff8f0000 /* corresponds to vop_id 1 */

@@ -66,6 +66,7 @@ ramstage-$(CONFIG_DRIVERS_UART) += ../common/uart.c
 ramstage-y += clock.c
 ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += display.c
 ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += ../common/edp.c
+ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += mipi.c
 ramstage-y += ../common/gpio.c
 ramstage-y += gpio.c
 ramstage-y += ../common/i2c.c

@@ -219,6 +219,15 @@ config SERIRQ_CONTINUOUS_MODE
 	help
 	  Set this option to y for serial IRQ in continuous mode.
 	  Otherwise it is in quiet mode.
+
+config HUDSON_ACPI_IO_BASE
+	hex
+	default 0x400 if CPU_AMD_PI_00670F00_FP4 || CPU_AMD_PI_00670F00_FT4
+	default 0x800
+	help
+	  Base address for the ACPI registers.
+	  This value must match the hardcoded value of AGESA.
+
 endif
 
 config HUDSON_UART

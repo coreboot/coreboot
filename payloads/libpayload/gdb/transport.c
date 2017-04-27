@@ -22,8 +22,6 @@ typedef u32 mmio_word_t;
 static const int timeout_us = 100 * 1000;
 static const char output_overrun[] = "GDB output buffer overrun (try "
 				     "increasing reply.size)!\n";
-static const char input_underrun[] = "GDB input message truncated (bug or "
-				     "communication problem)?\n";
 
 /* Serial-specific glue code... add more transport layers here when desired. */
 

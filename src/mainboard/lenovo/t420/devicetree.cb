@@ -75,6 +75,10 @@ chip northbridge/intel/sandybridge
 			register "c2_latency" = "101"  # c2 not supported
 			register "p_cnt_throttling_supported" = "1"
 
+			# device specific SPI configuration
+			register "spi_uvscc" = "0x2005"
+			register "spi_lvscc" = "0x2005"
+
 			device pci 16.0 off end # Management Engine Interface 1
 			device pci 16.1 off end # Management Engine Interface 2
 			device pci 16.2 off end # Management Engine IDE-R

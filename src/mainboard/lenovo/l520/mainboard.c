@@ -17,20 +17,13 @@
 
 #include <device/device.h>
 #include <drivers/intel/gma/int15.h>
-#include <southbridge/intel/bd82x6x/pch.h>
 #include <ec/lenovo/h8/h8.h>
-
-static void mainboard_init(device_t dev)
-{
-	RCBA32(0x38c8) = 0x00000000;
-	RCBA32(0x38c4) = 0x00000000;
-}
 
 static void mainboard_enable(device_t dev)
 {
-	dev->ops->init = mainboard_init;
-
-	install_intel_vga_int15_handler(GMA_INT15_ACTIVE_LFP_INT_LVDS, GMA_INT15_PANEL_FIT_DEFAULT, GMA_INT15_BOOT_DISPLAY_DEFAULT, 0);
+	install_intel_vga_int15_handler(GMA_INT15_ACTIVE_LFP_INT_LVDS,
+					GMA_INT15_PANEL_FIT_DEFAULT,
+					GMA_INT15_BOOT_DISPLAY_DEFAULT, 0);
 }
 
 void h8_mainboard_init_dock(void)

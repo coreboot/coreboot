@@ -20,19 +20,12 @@
 #include <console/console.h>
 #include <drivers/intel/gma/int15.h>
 #include <ec/acpi/ec.h>
-#include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/common/gpio.h>
 #include <string.h>
 #include <smbios.h>
 #include "ec.h"
 
 #include <arch/acpi.h>
-
-static void mainboard_init(device_t dev)
-{
-	RCBA32(0x38c8) = 0x00002005;
-	RCBA32(0x38c4) = 0x00802005;
-}
 
 static u8 mainboard_fill_ec_version(char *buf, u8 buf_len)
 {
@@ -74,7 +67,6 @@ static void mainboard_smbios_strings(
 
 static void mainboard_enable(device_t dev)
 {
-	dev->ops->init = mainboard_init;
 	dev->ops->get_smbios_strings = mainboard_smbios_strings,
 
 	install_intel_vga_int15_handler(

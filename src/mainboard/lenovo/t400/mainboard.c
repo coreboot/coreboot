@@ -13,30 +13,14 @@
  * GNU General Public License for more details.
  */
 
-#include <stdint.h>
-#include <stdlib.h>
-#include <arch/io.h>
 #include <device/device.h>
-#include <console/console.h>
 #include <drivers/intel/gma/int15.h>
-#include <pc80/keyboard.h>
-#include <ec/acpi/ec.h>
-#include <smbios.h>
-#include <string.h>
-#include <ec/lenovo/pmh7/pmh7.h>
-#include <ec/acpi/ec.h>
-#include <ec/lenovo/h8/h8.h>
-#include "drivers/lenovo/lenovo.h"
-
-static void fill_ssdt(device_t device)
-{
-}
 
 static void mainboard_enable(device_t dev)
 {
-	install_intel_vga_int15_handler(GMA_INT15_ACTIVE_LFP_INT_LVDS, GMA_INT15_PANEL_FIT_CENTERING, GMA_INT15_BOOT_DISPLAY_DEFAULT, 2);
-
-	dev->ops->acpi_fill_ssdt_generator = fill_ssdt;
+	install_intel_vga_int15_handler(GMA_INT15_ACTIVE_LFP_INT_LVDS,
+					GMA_INT15_PANEL_FIT_CENTERING,
+					GMA_INT15_BOOT_DISPLAY_DEFAULT, 2);
 }
 
 struct chip_operations mainboard_ops = {

@@ -15,34 +15,18 @@
  * GNU General Public License for more details.
  */
 
-#include <types.h>
-#include <string.h>
 #include <device/device.h>
-#include <device/pci_def.h>
-#include <device/pci_ops.h>
-#include <console/console.h>
 #include <drivers/intel/gma/int15.h>
-#include <arch/acpi.h>
-#include <southbridge/intel/bd82x6x/pch.h>
-#include <smbios.h>
-#include <device/pci.h>
-#include <pc80/keyboard.h>
 #include <ec/lenovo/h8/h8.h>
-
-static void mainboard_init(device_t dev)
-{
-	RCBA32(0x38c8) = 0x00002005;
-	RCBA32(0x38c4) = 0x00802005;
-}
 
 // mainboard_enable is executed as first thing after
 // enumerate_buses().
 
 static void mainboard_enable(device_t dev)
 {
-	dev->ops->init = mainboard_init;
-
-	install_intel_vga_int15_handler(GMA_INT15_ACTIVE_LFP_INT_LVDS, GMA_INT15_PANEL_FIT_DEFAULT, GMA_INT15_BOOT_DISPLAY_DEFAULT, 0);
+	install_intel_vga_int15_handler(GMA_INT15_ACTIVE_LFP_INT_LVDS,
+					GMA_INT15_PANEL_FIT_DEFAULT,
+					GMA_INT15_BOOT_DISPLAY_DEFAULT, 0);
 }
 
 void h8_mainboard_init_dock (void)

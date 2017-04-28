@@ -15,26 +15,17 @@
  * GNU General Public License for more details.
  */
 
-#include <console/console.h>
-#include <device/device.h>
-#include <arch/acpi.h>
-#include <arch/io.h>
-#include <delay.h>
-#include <string.h>
 #include <device/pci_def.h>
-#include <device/pci_ops.h>
 #include <device/pci_ids.h>
-#include <arch/interrupt.h>
-#include <ec/lenovo/pmh7/pmh7.h>
+#include <device/device.h>
+#include <arch/io.h>
 #include <ec/acpi/ec.h>
-#include <ec/lenovo/h8/h8.h>
 #include <northbridge/intel/i945/i945.h>
 #include <pc80/mc146818rtc.h>
 #include "dock.h"
-#include <arch/x86/include/arch/acpigen.h>
-#include <smbios.h>
 #include <drivers/intel/gma/int15.h>
-#include "drivers/lenovo/lenovo.h"
+#include <drivers/lenovo/lenovo.h>
+#include <arch/acpigen.h>
 
 #define PANEL INT15_5F35_CL_DISPLAY_DEFAULT
 
@@ -88,7 +79,9 @@ static void mainboard_init(device_t dev)
 		ec_write(0x0c, 0x88);
 	}
 
-	install_intel_vga_int15_handler(GMA_INT15_ACTIVE_LFP_INT_LVDS, GMA_INT15_PANEL_FIT_DEFAULT, PANEL, 3);
+	install_intel_vga_int15_handler(GMA_INT15_ACTIVE_LFP_INT_LVDS,
+					GMA_INT15_PANEL_FIT_DEFAULT,
+					PANEL, 3);
 
 	/* If we're resuming from suspend, blink suspend LED */
 	if (acpi_is_wakeup_s3())

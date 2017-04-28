@@ -1311,6 +1311,198 @@ void acpigen_write_dsm_uuid_arr(struct dsm_uuid *ids, size_t count)
 	acpigen_pop_len();	/* Method _DSM */
 }
 
+/*
+ * Generate ACPI AML code for _ROM method.
+ * This function takes as input ROM data and ROM length.
+ *
+ * Arguments passed into _DSM method:
+ * Arg0 = Offset in Bytes
+ * Arg1 = Bytes to return
+ *
+ * Example:
+ *   acpigen_write_rom(0xdeadbeef, 0x10000)
+ *
+ * AML code generated would look like:
+ * Method (_ROM, 2, NotSerialized) {
+ *
+ *	OperationRegion("ROMS", SYSTEMMEMORY, 0xdeadbeef, 0x10000)
+ *	Field (ROMS, AnyAcc, NoLock, Preserve)
+ *	{
+ *		Offset (0),
+ *		RBF0,   0x80000
+ *	}
+ *
+ *	Store (Arg0, Local0)
+ *	Store (Arg1, Local1)
+ *
+ *	If (LGreater (Local1, 0x1000))
+ *	{
+ *		Store (0x1000, Local1)
+ *	}
+ *
+ *	If (LGreater (Local0, 0x10000))
+ *	{
+ *		Return(Buffer(Local1){0})
+ *	}
+ *
+ *	If (LGreater (Local0, 0x0f000))
+ *	{
+ *		Subtract (0x10000, Local0, Local2)
+ *		If (LGreater (Local1, Local2))
+ *		{
+ *			Store (Local2, Local1)
+ *		}
+ *	}
+ *
+ *	Name (ROM1, Buffer (Local1) {0})
+ *
+ *	Multiply (Local0, 0x08, Local0)
+ *	Multiply (Local1, 0x08, Local1)
+ *
+ *	CreateField (RBF0, Local0, Local1, TMPB)
+ *	Store (TMPB, ROM1)
+ *	Return (ROM1)
+ * }
+ */
+
+void acpigen_write_rom(void *bios, const size_t length)
+{
+	ASSERT(bios)
+	ASSERT(length)
+
+	/* Method (_ROM, 2, NotSerialized) */
+	acpigen_write_method("_ROM", 2);
+
+	/* OperationRegion("ROMS", SYSTEMMEMORY, current, length) */
+	struct opregion opreg = OPREGION("ROMS", SYSTEMMEMORY,
+			(uintptr_t)bios, length);
+	acpigen_write_opregion(&opreg);
+
+	struct fieldlist l[] = {
+		FIELDLIST_OFFSET(0),
+		FIELDLIST_NAMESTR("RBF0", 8 * length),
+	};
+
+	/* Field (ROMS, AnyAcc, NoLock, Preserve)
+	 * {
+	 *  Offset (0),
+	 *  RBF0,   0x80000
+	 * } */
+	acpigen_write_field(opreg.name, l, 2, FIELD_ANYACC |
+			    FIELD_NOLOCK | FIELD_PRESERVE);
+
+	/* Store (Arg0, Local0) */
+	acpigen_write_store();
+	acpigen_emit_byte(ARG0_OP);
+	acpigen_emit_byte(LOCAL0_OP);
+
+	/* Store (Arg1, Local1) */
+	acpigen_write_store();
+	acpigen_emit_byte(ARG1_OP);
+	acpigen_emit_byte(LOCAL1_OP);
+
+	/* ACPI SPEC requires to return at maximum 4KiB */
+	/* If (LGreater (Local1, 0x1000)) */
+	acpigen_write_if();
+	acpigen_emit_byte(LGREATER_OP);
+	acpigen_emit_byte(LOCAL1_OP);
+	acpigen_write_integer(0x1000);
+
+	/* Store (0x1000, Local1) */
+	acpigen_write_store();
+	acpigen_write_integer(0x1000);
+	acpigen_emit_byte(LOCAL1_OP);
+
+	/* Pop if */
+	acpigen_pop_len();
+
+	/* If (LGreater (Local0, length)) */
+	acpigen_write_if();
+	acpigen_emit_byte(LGREATER_OP);
+	acpigen_emit_byte(LOCAL0_OP);
+	acpigen_write_integer(length);
+
+	/* Return(Buffer(Local1){0}) */
+	acpigen_emit_byte(RETURN_OP);
+	acpigen_emit_byte(BUFFER_OP);
+	acpigen_write_len_f();
+	acpigen_emit_byte(LOCAL1_OP);
+	acpigen_emit_byte(0);
+	acpigen_pop_len();
+
+	/* Pop if */
+	acpigen_pop_len();
+
+	/* If (LGreater (Local0, length - 4096)) */
+	acpigen_write_if();
+	acpigen_emit_byte(LGREATER_OP);
+	acpigen_emit_byte(LOCAL0_OP);
+	acpigen_write_integer(length - 4096);
+
+	/* Subtract (length, Local0, Local2) */
+	acpigen_emit_byte(SUBTRACT_OP);
+	acpigen_write_integer(length);
+	acpigen_emit_byte(LOCAL0_OP);
+	acpigen_emit_byte(LOCAL2_OP);
+
+	/* If (LGreater (Local1, Local2)) */
+	acpigen_write_if();
+	acpigen_emit_byte(LGREATER_OP);
+	acpigen_emit_byte(LOCAL1_OP);
+	acpigen_emit_byte(LOCAL2_OP);
+
+	/* Store (Local2, Local1) */
+	acpigen_write_store();
+	acpigen_emit_byte(LOCAL2_OP);
+	acpigen_emit_byte(LOCAL1_OP);
+
+	/* Pop if */
+	acpigen_pop_len();
+
+	/* Pop if */
+	acpigen_pop_len();
+
+	/* Name (ROM1, Buffer (Local1) {0}) */
+	acpigen_write_name("ROM1");
+	acpigen_emit_byte(BUFFER_OP);
+	acpigen_write_len_f();
+	acpigen_emit_byte(LOCAL1_OP);
+	acpigen_emit_byte(0);
+	acpigen_pop_len();
+
+	/* Multiply (Local1, 0x08, Local1) */
+	acpigen_emit_byte(MULTIPLY_OP);
+	acpigen_emit_byte(LOCAL1_OP);
+	acpigen_write_integer(0x08);
+	acpigen_emit_byte(LOCAL1_OP);
+
+	/* Multiply (Local0, 0x08, Local0) */
+	acpigen_emit_byte(MULTIPLY_OP);
+	acpigen_emit_byte(LOCAL0_OP);
+	acpigen_write_integer(0x08);
+	acpigen_emit_byte(LOCAL0_OP);
+
+	/* CreateField (RBF0, Local0, Local1, TMPB) */
+	acpigen_emit_ext_op(CREATEFIELD_OP);
+	acpigen_emit_namestring("RBF0");
+	acpigen_emit_byte(LOCAL0_OP);
+	acpigen_emit_byte(LOCAL1_OP);
+	acpigen_emit_namestring("TMPB");
+
+	/* Store (TMPB, ROM1) */
+	acpigen_write_store();
+	acpigen_emit_namestring("TMPB");
+	acpigen_emit_namestring("ROM1");
+
+	/* Return (ROM1) */
+	acpigen_emit_byte(RETURN_OP);
+	acpigen_emit_namestring("ROM1");
+
+	/* Pop method */
+	acpigen_pop_len();
+}
+
+
 /* Soc-implemented functions -- weak definitions. */
 int __attribute__((weak)) acpigen_soc_read_rx_gpio(unsigned int gpio_num)
 {

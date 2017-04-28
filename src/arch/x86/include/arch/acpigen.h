@@ -264,6 +264,14 @@ void acpigen_write_return_byte(uint8_t arg);
 void acpigen_write_dsm(const char *uuid, void (**callbacks)(void *),
 		       size_t count, void *arg);
 void acpigen_write_dsm_uuid_arr(struct dsm_uuid *ids, size_t count);
+
+/*
+ * Generate ACPI AML code for _ROM method.
+ * This function takes as input ROM data and ROM length.
+ * The ROM length has to be multiple of 4096 and has to be less
+ * than the current implementation limit of 0x40000.
+ */
+void acpigen_write_rom(void *bios, const size_t length);
 /*
  * Generate ACPI AML code for OperationRegion
  * This function takes input region name, region space, region offset & region

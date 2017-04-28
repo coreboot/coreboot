@@ -31,6 +31,7 @@
 #include <sys/mman.h>
 #include <libgen.h>
 #include <assert.h>
+#include <regex.h>
 #include <commonlib/cbmem_id.h>
 #include <commonlib/timestamp_serialized.h>
 #include <commonlib/coreboot_tables.h>
@@ -611,7 +612,7 @@ struct cbmem_console {
 #define CBMC_OVERFLOW (1 << 31)
 
 /* dump the cbmem console */
-static void dump_console(void)
+static void dump_console(int one_boot_only)
 {
 	struct cbmem_console *console_p;
 	char *console_c;
@@ -659,8 +660,32 @@ static void dump_console(void)
 	for (cursor = 0; cursor < size; cursor++)
 		if (!isprint(console_c[cursor]) && !isspace(console_c[cursor]))
 			console_c[cursor] = '?';
-	printf("%s\n", console_c);
 
+	/* We detect the last boot by looking for a bootblock, romstage or
+	   ramstage banner, in that order (to account for platforms without
+	   CONFIG_BOOTBLOCK_CONSOLE and/or CONFIG_EARLY_CONSOLE). Once we find
+	   a banner, store the last match for that stage in cursor and stop. */
+	cursor = 0;
+	if (one_boot_only) {
+#define BANNER_REGEX(stage) "\n\ncoreboot-[^\n]* " stage " starting\\.\\.\\.\n"
+		const char *regex[] = { BANNER_REGEX("bootblock"),
+					BANNER_REGEX("romstage"),
+					BANNER_REGEX("ramstage")};
+		int i;
+
+		for (i = 0; !cursor && i < ARRAY_SIZE(regex); i++) {
+			regex_t re;
+			regmatch_t match;
+			assert(!regcomp(&re, regex[i], 0));
+
+			/* Keep looking for matches so we find the last one. */
+			while (!regexec(&re, console_c + cursor, 1, &match, 0))
+				cursor += match.rm_so + 1;
+			regfree(&re);
+		}
+	}
+
+	puts(console_c + cursor);
 	free(console_c);
 	unmap_memory();
 }
@@ -936,6 +961,7 @@ static void print_usage(const char *name, int exit_code)
 	printf("usage: %s [-cCltTxVvh?]\n", name);
 	printf("\n"
 	     "   -c | --console:                   print cbmem console\n"
+	     "   -1 | --oneboot:                   print cbmem console for last boot only\n"
 	     "   -C | --coverage:                  dump coverage information\n"
 	     "   -l | --list:                      print cbmem table of contents\n"
 	     "   -x | --hexdump:                   print hexdump of cbmem area\n"
@@ -1074,11 +1100,13 @@ int main(int argc, char** argv)
 	int print_rawdump = 0;
 	int print_timestamps = 0;
 	int machine_readable_timestamps = 0;
+	int one_boot_only = 0;
 	unsigned int rawdump_id = 0;
 
 	int opt, option_index = 0;
 	static struct option long_options[] = {
 		{"console", 0, 0, 'c'},
+		{"oneboot", 0, 0, '1'},
 		{"coverage", 0, 0, 'C'},
 		{"list", 0, 0, 'l'},
 		{"timestamps", 0, 0, 't'},
@@ -1090,11 +1118,16 @@ int main(int argc, char** argv)
 		{"help", 0, 0, 'h'},
 		{0, 0, 0, 0}
 	};
-	while ((opt = getopt_long(argc, argv, "cCltTxVvh?r:",
+	while ((opt = getopt_long(argc, argv, "c1CltTxVvh?r:",
 				  long_options, &option_index)) != EOF) {
 		switch (opt) {
 		case 'c':
 			print_console = 1;
+			print_defaults = 0;
+			break;
+		case '1':
+			print_console = 1;
+			one_boot_only = 1;
 			print_defaults = 0;
 			break;
 		case 'C':
@@ -1211,7 +1244,7 @@ int main(int argc, char** argv)
 #endif
 
 	if (print_console)
-		dump_console();
+		dump_console(one_boot_only);
 
 	if (print_coverage)
 		dump_coverage();

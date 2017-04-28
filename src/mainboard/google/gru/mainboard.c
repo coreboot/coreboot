@@ -14,6 +14,7 @@
  *
  */
 
+#include <assert.h>
 #include <boardid.h>
 #include <console/console.h>
 #include <delay.h>
@@ -242,20 +243,20 @@ static void usb_power_cycle(int port)
 		printk(BIOS_ERR, "ERROR: Cannot restore USB%d PD mode\n", port);
 }
 
-static void setup_usb(void)
+static void setup_usb(int port)
 {
+	/* Must be PHY0 or PHY1. */
+	assert(port == 0 || port == 1);
+
 	/*
 	 * A few magic PHY tuning values that improve eye diagram amplitude
 	 * and make it extra sure we get reliable communication in firmware
 	 * Set max ODT compensation voltage and current tuning reference.
 	 */
-	write32(&rk3399_grf->usbphy0_ctrl[3], RK_CLRSETBITS(0xfff, 0x2e3));
-	write32(&rk3399_grf->usbphy1_ctrl[3], RK_CLRSETBITS(0xfff, 0x2e3));
+	write32(&rk3399_grf->usbphy_ctrl[port][3], RK_CLRSETBITS(0xfff, 0x2e3));
 
 	/* Set max pre-emphasis level on PHY0 and PHY1. */
-	write32(&rk3399_grf->usbphy0_ctrl[12],
-		RK_CLRSETBITS(0xffff, 0xa7));
-	write32(&rk3399_grf->usbphy1_ctrl[12],
+	write32(&rk3399_grf->usbphy_ctrl[port][12],
 		RK_CLRSETBITS(0xffff, 0xa7));
 
 	/*
@@ -267,44 +268,37 @@ static void setup_usb(void)
 	 * 2. Configure PHY0 and PHY1 otg-ports squelch detection
 	 * threshold to 125mV (default is 150mV).
 	 */
-	write32(&rk3399_grf->usbphy0_ctrl[0],
+	write32(&rk3399_grf->usbphy_ctrl[port][0],
 		RK_CLRSETBITS(7 << 13 | 3 << 0, 6 << 13));
-	write32(&rk3399_grf->usbphy1_ctrl[0],
-		RK_CLRSETBITS(7 << 13 | 3 << 0, 6 << 13));
-	write32(&rk3399_grf->usbphy0_ctrl[13], RK_CLRBITS(3 << 0));
-	write32(&rk3399_grf->usbphy1_ctrl[13], RK_CLRBITS(3 << 0));
+	write32(&rk3399_grf->usbphy_ctrl[port][13], RK_CLRBITS(3 << 0));
 
 	/*
 	 * ODT auto compensation bypass, and set max driver
 	 * strength only for PHY0 and PHY1 otg-port.
 	 */
-	write32(&rk3399_grf->usbphy0_ctrl[2],
-		RK_CLRSETBITS(0x7e << 4, 0x60 << 4));
-	write32(&rk3399_grf->usbphy1_ctrl[2],
+	write32(&rk3399_grf->usbphy_ctrl[port][2],
 		RK_CLRSETBITS(0x7e << 4, 0x60 << 4));
 
 	/*
 	 * ODT auto refresh bypass, and set the max bias current
 	 * tuning reference only for PHY0 and PHY1 otg-port.
 	 */
-	write32(&rk3399_grf->usbphy0_ctrl[3],
-		RK_CLRSETBITS(0x21c, 1 << 4));
-	write32(&rk3399_grf->usbphy1_ctrl[3],
+	write32(&rk3399_grf->usbphy_ctrl[port][3],
 		RK_CLRSETBITS(0x21c, 1 << 4));
 
 	/*
 	 * ODT auto compensation bypass, and set default driver
 	 * strength only for PHY0 and PHY1 host-port.
 	 */
-	write32(&rk3399_grf->usbphy0_ctrl[15], RK_SETBITS(1 << 10));
-	write32(&rk3399_grf->usbphy1_ctrl[15], RK_SETBITS(1 << 10));
+	write32(&rk3399_grf->usbphy_ctrl[port][15], RK_SETBITS(1 << 10));
 
 	/* ODT auto refresh bypass only for PHY0 and PHY1 host-port. */
-	write32(&rk3399_grf->usbphy0_ctrl[16], RK_CLRBITS(1 << 9));
-	write32(&rk3399_grf->usbphy1_ctrl[16], RK_CLRBITS(1 << 9));
+	write32(&rk3399_grf->usbphy_ctrl[port][16], RK_CLRBITS(1 << 9));
 
-	setup_usb_otg0();
-	setup_usb_otg1();
+	if (port == 0)
+		setup_usb_otg0();
+	else
+		setup_usb_otg1();
 
 	/*
 	 * Need to power-cycle USB ports for use in firmware, since some devices
@@ -312,10 +306,8 @@ static void setup_usb(void)
 	 * This takes about a dozen milliseconds, so only do it in boot modes
 	 * that have firmware UI (which one could select USB boot from).
 	 */
-	if (display_init_required()) {
-		usb_power_cycle(0);
-		usb_power_cycle(1);
-	}
+	if (display_init_required())
+		usb_power_cycle(port);
 }
 
 static void mainboard_init(device_t dev)
@@ -325,7 +317,9 @@ static void mainboard_init(device_t dev)
 	configure_emmc();
 	configure_codec();
 	configure_display();
-	setup_usb();
+	setup_usb(0);
+	if (!IS_ENABLED(CONFIG_BOARD_GOOGLE_SCARLET))
+		setup_usb(1);
 	register_reset_to_bl31();
 	register_poweroff_to_bl31();
 	register_gpio_suspend();

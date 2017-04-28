@@ -71,10 +71,8 @@ struct rk3399_grf_regs {
 	u32 reserved10[0xc9];
 	u32 hsicphy_con0;
 	u32 reserved11[3];
-	u32 usbphy0_ctrl[26];
-	u32 reserved12[6];
-	u32 usbphy1_ctrl[26];
-	u32 reserved13[0x72f];
+	u32 usbphy_ctrl[2][26 + 6]; /* 26 PHY regs, 6 reserved padding regs */
+	u32 reserved13[0x729];
 	u32 soc_con9;
 	u32 reserved14[0x0a];
 	u32 soc_con20;

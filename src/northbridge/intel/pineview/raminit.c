@@ -356,7 +356,6 @@ static void sdram_detect_smallest_params(struct sysinfo *s)
 	};
 
 	u8 i;
-	u32 tmp;
 	u32 maxtras = 0;
 	u32 maxtrp = 0;
 	u32 maxtrcd = 0;
@@ -377,62 +376,28 @@ static void sdram_detect_smallest_params(struct sysinfo *s)
 		maxtrrd = max(maxtrrd, (s->dimms[i].spd_data[28] * 1000) >> 2);
 		maxtrtp = max(maxtrtp, (s->dimms[i].spd_data[38] * 1000) >> 2);
 	}
-	for (i = 9; i < 24; i++) { // 16
-		tmp = mult[s->selected_timings.mem_clock] * i;
-		if (tmp >= maxtras) {
-			s->selected_timings.tRAS = i;
-			break;
-		}
-	}
-	for (i = 3; i < 10; i++) {
-		tmp = mult[s->selected_timings.mem_clock] * i;
-		if (tmp >= maxtrp) {
-			s->selected_timings.tRP = i;
-			break;
-		}
-	}
-	for (i = 3; i < 10; i++) {
-		tmp = mult[s->selected_timings.mem_clock] * i;
-		if (tmp >= maxtrcd) {
-			s->selected_timings.tRCD = i;
-			break;
-		}
-	}
-	for (i = 3; i < 15; i++) {
-		tmp = mult[s->selected_timings.mem_clock] * i;
-		if (tmp >= maxtwr) {
-			s->selected_timings.tWR = i;
-			break;
-		}
-	}
-	for (i = 15; i < 78; i++) {
-		tmp = mult[s->selected_timings.mem_clock] * i;
-		if (tmp >= maxtrfc) {
-			s->selected_timings.tRFC = ((i + 16) & 0xfe) - 15;
-			break;
-		}
-	}
-	for (i = 4; i < 15; i++) {
-		tmp = mult[s->selected_timings.mem_clock] * i;
-		if (tmp >= maxtwtr) {
-			s->selected_timings.tWTR = i;
-			break;
-		}
-	}
-	for (i = 2; i < 15; i++) {
-		tmp = mult[s->selected_timings.mem_clock] * i;
-		if (tmp >= maxtrrd) {
-			s->selected_timings.tRRD = i;
-			break;
-		}
-	}
-	for (i = 4; i < 15; i++) {
-		tmp = mult[s->selected_timings.mem_clock] * i;
-		if (tmp >= maxtrtp) {
-			s->selected_timings.tRTP = i;
-			break;
-		}
-	}
+	/*
+	 * TODO: on ddr3 there might be some minimal required values for some
+	 * Timings: MIN_TRAS = 9, MIN_TRP = 3, MIN_TRCD = 3, MIN_TWR = 3,
+	 * MIN_TWTR = 4, MIN_TRRD = 2, MIN_TRTP = 4
+	 */
+	s->selected_timings.tRAS = MIN(24, DIV_ROUND_UP(maxtras,
+					mult[s->selected_timings.mem_clock]));
+	s->selected_timings.tRP = MIN(10, DIV_ROUND_UP(maxtrp,
+					mult[s->selected_timings.mem_clock]));
+	s->selected_timings.tRCD = MIN(10, DIV_ROUND_UP(maxtrcd,
+					mult[s->selected_timings.mem_clock]));
+	s->selected_timings.tWR = MIN(15, DIV_ROUND_UP(maxtwr,
+					mult[s->selected_timings.mem_clock]));
+	/* Needs to be even */
+	s->selected_timings.tRFC = 0xfe & (MIN(78, DIV_ROUND_UP(maxtrfc,
+				mult[s->selected_timings.mem_clock])) + 1);
+	s->selected_timings.tWTR = MIN(15, DIV_ROUND_UP(maxtwtr,
+					mult[s->selected_timings.mem_clock]));
+	s->selected_timings.tRRD = MIN(15, DIV_ROUND_UP(maxtrrd,
+					mult[s->selected_timings.mem_clock]));
+	s->selected_timings.tRTP = MIN(15, DIV_ROUND_UP(maxtras,
+					mult[s->selected_timings.mem_clock]));
 
 	PRINTK_DEBUG("Selected timings:\n");
 	PRINTK_DEBUG("\tFSB:  %dMHz\n", fsb_reg_to_mhz(s->selected_timings.fsb_clock));

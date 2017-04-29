@@ -26,7 +26,7 @@ struct northbridge_intel_gm45_config {
 	u16 gpu_panel_power_backlight_off_delay; /* Tx time sequence */
 	u8 gpu_panel_power_cycle_delay;          /* T4 time sequence */
 	struct i915_gpu_controller_info gfx;
-	u16 pwm_freq;
+	u16 default_pwm_freq;
 	u8 duty_cycle;
 
 	/*

@@ -470,9 +470,11 @@ detailed_block(struct edid *result_edid, unsigned char *x, int in_extension,
 			 * slots, seems to be specified by SPWG:
 			 * http://www.spwg.org/
 			 */
+			strcpy(result_edid->ascii_string, extract_string(x + 5,
+				&c->has_valid_string_termination,
+						EDID_ASCII_STRING_LENGTH));
 			printk(BIOS_SPEW, "ASCII string: %s\n",
-			       extract_string(x + 5,
-			       &c->has_valid_string_termination, 13));
+				result_edid->ascii_string);
 			return 1;
 		case 0xFF:
 			printk(BIOS_SPEW, "Serial number: %s\n",

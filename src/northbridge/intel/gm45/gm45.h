@@ -436,6 +436,13 @@ u32 decode_igd_gtt_size(u32 gsm);
 
 void init_iommu(void);
 
+struct blc_pwm_t {
+	char ascii_string[13];
+	int pwm_freq; /* In Hz */
+};
+int get_blc_values(const struct blc_pwm_t **entries);
+
+
 #if ENV_RAMSTAGE && !defined(__SIMPLE_DEVICE__)
 #include <device/device.h>
 

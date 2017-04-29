@@ -653,12 +653,16 @@ static u32 freq_to_blc_pwm_ctl(struct device *const dev,
 		return (blc_mod << 16) | blc_mod;
 }
 
-static void gma_pm_init_post_vbios(struct device *const dev)
+static void gma_pm_init_post_vbios(struct device *const dev,
+				const char *edid_ascii_string)
 {
 	const struct northbridge_intel_gm45_config *const conf = dev->chip_info;
 
 	u32 reg32;
 	u8 reg8;
+	const struct blc_pwm_t *blc_pwm;
+	int blc_array_len, i;
+	u16 pwm_freq = 0;
 
 	/* Setup Panel Power On Delays */
 	reg32 = gtt_read(PP_ON_DELAYS);
@@ -689,11 +693,35 @@ static void gma_pm_init_post_vbios(struct device *const dev)
 	reg8 = 100;
 	if (conf->duty_cycle != 0)
 		reg8 = conf->duty_cycle;
-	if (conf->pwm_freq == 0)
+	blc_array_len = get_blc_values(&blc_pwm);
+	if (conf->default_pwm_freq != 0)
+		pwm_freq = conf->default_pwm_freq;
+
+	/* Find EDID string and pwm freq in lookup table */
+	for (i = 0; i < blc_array_len; i++) {
+		if (!strncmp(blc_pwm[i].ascii_string, edid_ascii_string,
+				strlen(blc_pwm[i].ascii_string))) {
+			pwm_freq = blc_pwm[i].pwm_freq;
+			printk(BIOS_DEBUG, "Found EDID string: %s in lookup table, pwm: %dHz\n",
+				blc_pwm[i].ascii_string, pwm_freq);
+			break;
+		}
+	}
+
+	if (i == blc_array_len)
+		printk(BIOS_NOTICE, "Your panels EDID `%s` wasn't found in the"
+			"lookup table.\n You may have issues with your panels"
+			"backlight.\n If you want to help improving coreboot"
+			"please report: this EDID string\n and the result"
+			"of `intel_read read BLC_PWM_CTL`"
+			"(from intel-gpu-tools)\n while running vendor BIOS\n",
+			edid_ascii_string);
+
+	if (pwm_freq == 0)
 		gtt_write(BLC_PWM_CTL, 0x06100610);
 	else
-		gtt_write(BLC_PWM_CTL, freq_to_blc_pwm_ctl(dev,
-						conf->pwm_freq,	reg8));
+		gtt_write(BLC_PWM_CTL, freq_to_blc_pwm_ctl(dev, pwm_freq,
+								reg8));
 }
 
 static void gma_func0_init(struct device *dev)
@@ -726,7 +754,7 @@ static void gma_func0_init(struct device *dev)
 	decode_edid(edid_data_lvds, sizeof(edid_data_lvds), &edid_lvds);
 
 	/* Post VBIOS init */
-	gma_pm_init_post_vbios(dev);
+	gma_pm_init_post_vbios(dev, edid_lvds.ascii_string);
 
 	if (IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT))
 		gma_ngi(dev, &edid_lvds);

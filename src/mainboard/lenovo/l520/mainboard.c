@@ -24,7 +24,6 @@ static void mainboard_init(device_t dev)
 {
 	RCBA32(0x38c8) = 0x00000000;
 	RCBA32(0x38c4) = 0x00000000;
-	RCBA32(0x38c0) = 0x00000000;
 }
 
 static void mainboard_enable(device_t dev)

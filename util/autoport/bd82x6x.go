@@ -180,7 +180,7 @@ func (b bd82x6x) Scan(ctx Context, addr PCIDevData) {
 	/* SPI init */
 	MainboardIncludes = append(MainboardIncludes, "southbridge/intel/bd82x6x/pch.h")
 	/* FIXME:XX Move this to runtime.  */
-	for _, addr := range []uint16{0x38c8, 0x38c4, 0x38c0} {
+	for _, addr := range []uint16{0x38c8, 0x38c4} {
 		MainboardInit += fmt.Sprintf("\tRCBA32(0x%04x) = 0x%08x;\n", addr, inteltool.RCBA[addr])
 	}
 

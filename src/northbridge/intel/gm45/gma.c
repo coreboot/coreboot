@@ -50,12 +50,10 @@ void gtt_write(u32 reg, u32 data)
 }
 
 static void gma_init_lvds(const struct northbridge_intel_gm45_config *info,
-			   u8 *mmio, u32 physbase, u16 piobase, u32 lfb)
+			u8 *mmio, u32 physbase, u16 piobase, u32 lfb,
+			struct edid *edid)
 {
-
 	int i;
-	u8 edid_data[128];
-	struct edid edid;
 	struct edid_mode *mode;
 	u32 hactive, vactive, right_border, bottom_border;
 	int hpolarity, vpolarity;
@@ -93,17 +91,13 @@ static void gma_init_lvds(const struct northbridge_intel_gm45_config *info,
 	for (i = 0; i <= 0x18; i++)
 		vga_cr_write(i, cr[i]);
 
-	intel_gmbus_read_edid(mmio + GMBUS0, 3, 0x50, edid_data,
-			sizeof(edid_data));
-	decode_edid(edid_data,
-		    sizeof(edid_data), &edid);
-	mode = &edid.mode;
-
 	/* Disable screen memory to prevent garbage from appearing. */
 	vga_sr_write(1, vga_sr_read(1) | 0x20);
 
-	hactive = edid.x_resolution;
-	vactive = edid.y_resolution;
+	mode = &edid->mode;
+
+	hactive = edid->x_resolution;
+	vactive = edid->y_resolution;
 	right_border = mode->hborder;
 	bottom_border = mode->vborder;
 	hpolarity = (mode->phsync == '-');
@@ -131,11 +125,11 @@ static void gma_init_lvds(const struct northbridge_intel_gm45_config *info,
 		vga_gr_write(0x10, 0x1);
 		vga_gr_write(0x11, 0);
 
-		edid.bytes_per_line = (edid.bytes_per_line + 63) & ~63;
+		edid->bytes_per_line = (edid->bytes_per_line + 63) & ~63;
 
 		write32(mmio + DSPCNTR(0), DISPPLANE_BGRX888);
 		write32(mmio + DSPADDR(0), 0);
-		write32(mmio + DSPSTRIDE(0), edid.bytes_per_line);
+		write32(mmio + DSPSTRIDE(0), edid->bytes_per_line);
 		write32(mmio + DSPSURF(0), 0);
 		for (i = 0; i < 0x100; i++)
 			write32(mmio + LGC_PALETTE(0) + 4 * i, i * 0x010101);
@@ -315,18 +309,17 @@ static void gma_init_lvds(const struct northbridge_intel_gm45_config *info,
 
 	if (IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)) {
 		memset((void *) lfb, 0,
-		       edid.x_resolution * edid.y_resolution * 4);
-		set_vbe_mode_info_valid(&edid, lfb);
+		       edid->x_resolution * edid->y_resolution * 4);
+		set_vbe_mode_info_valid(edid, lfb);
 	}
 }
 
 static void gma_init_vga(const struct northbridge_intel_gm45_config *info,
-			 u8 *mmio, u32 physbase, u16 piobase, u32 lfb)
+			u8 *mmio, u32 physbase, u16 piobase, u32 lfb,
+			struct edid *edid)
 {
 
 	int i;
-	u8 edid_data[128];
-	struct edid edid;
 	struct edid_mode *mode;
 	u32 hactive, vactive, right_border, bottom_border;
 	int hpolarity, vpolarity;
@@ -378,19 +371,13 @@ static void gma_init_vga(const struct northbridge_intel_gm45_config *info,
 
 	udelay(1);
 
-	intel_gmbus_read_edid(mmio + GMBUS0, 2, 0x50, edid_data,
-			sizeof(edid_data));
-	intel_gmbus_stop(mmio + GMBUS0);
-	decode_edid(edid_data,
-		    sizeof(edid_data), &edid);
-	mode = &edid.mode;
-
-
 	/* Disable screen memory to prevent garbage from appearing.  */
 	vga_sr_write(1, vga_sr_read(1) | 0x20);
 
-	hactive = edid.x_resolution;
-	vactive = edid.y_resolution;
+	mode = &edid->mode;
+
+	hactive = edid->x_resolution;
+	vactive = edid->y_resolution;
 	right_border = mode->hborder;
 	bottom_border = mode->vborder;
 	hpolarity = (mode->phsync == '-');
@@ -419,12 +406,12 @@ static void gma_init_vga(const struct northbridge_intel_gm45_config *info,
 		vga_gr_write(0x10, 0x1);
 		vga_gr_write(0x11, 0);
 
-		edid.bytes_per_line = (edid.bytes_per_line + 63) & ~63;
+		edid->bytes_per_line = (edid->bytes_per_line + 63) & ~63;
 
 		write32(mmio + DSPCNTR(0), DISPLAY_PLANE_ENABLE
 			| DISPPLANE_BGRX888);
 		write32(mmio + DSPADDR(0), 0);
-		write32(mmio + DSPSTRIDE(0), edid.bytes_per_line);
+		write32(mmio + DSPSTRIDE(0), edid->bytes_per_line);
 		write32(mmio + DSPSURF(0), 0);
 		for (i = 0; i < 0x100; i++)
 			write32(mmio + LGC_PALETTE(0) + 4 * i, i * 0x010101);
@@ -584,30 +571,55 @@ static void gma_init_vga(const struct northbridge_intel_gm45_config *info,
 
 	if (IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)) {
 		memset((void *) lfb, 0,
-			edid.x_resolution * edid.y_resolution * 4);
-		set_vbe_mode_info_valid(&edid, lfb);
+			edid->x_resolution * edid->y_resolution * 4);
+		set_vbe_mode_info_valid(edid, lfb);
 	}
 
 
 }
 
-/* compare the header of the vga edid header */
-/* if vga is not connected it should not have a correct header */
-static u8 vga_connected(u8 *mmio)
+static void gma_ngi(struct device *const dev, struct edid *edid_lvds)
 {
-	u8 vga_edid[128];
-	u8 header[8] = {0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x00};
-	intel_gmbus_read_edid(mmio + GMBUS0, 2, 0x50, vga_edid,
-			sizeof(vga_edid));
+	u8 edid_data_vga[128];
+	struct edid edid_vga;
+	int vga_edid_status;
+	u8 *mmio;
+	struct northbridge_intel_gm45_config *conf = dev->chip_info;
+
+	mmio = res2mmio(gtt_res, 0, 0);
+	printk(BIOS_DEBUG, "VGA EDID\n");
+	intel_gmbus_read_edid(mmio + GMBUS0, 2, 0x50, edid_data_vga,
+			sizeof(edid_data_vga));
 	intel_gmbus_stop(mmio + GMBUS0);
-	for (int i = 0; i < 8; i++) {
-		if (vga_edid[i] != header[i]) {
-			printk(BIOS_DEBUG, "VGA not connected. Using LVDS display\n");
-			return 0;
-		}
+	vga_edid_status = decode_edid(edid_data_vga,
+				sizeof(edid_data_vga), &edid_vga);
+
+	u32 physbase;
+	struct resource *lfb_res;
+	struct resource *pio_res;
+
+	lfb_res = find_resource(dev, PCI_BASE_ADDRESS_2);
+	pio_res = find_resource(dev, PCI_BASE_ADDRESS_4);
+
+	physbase = pci_read_config32(dev, 0x5c) & ~0xf;
+
+	if (!(physbase && pio_res && pio_res->base && lfb_res && lfb_res->base))
+		return;
+
+	printk(BIOS_SPEW, "Initializing display without OPROM. MMIO 0x%llx\n",
+		gtt_res->base);
+	if (vga_edid_status != EDID_ABSENT) {
+		printk(BIOS_DEBUG, "Initialising display on VGA output\n");
+		gma_init_vga(conf, mmio, physbase, pio_res->base, lfb_res->base,
+			&edid_vga);
+	} else {
+		printk(BIOS_DEBUG, "Initialising display on LVDS output\n");
+		gma_init_lvds(conf, mmio, physbase, pio_res->base,
+			lfb_res->base, edid_lvds);
 	}
-	printk(BIOS_SPEW, "VGA display connected\n");
-	return 1;
+
+	/* Linux relies on VBT for panel info.  */
+	generate_fake_intel_oprom(&conf->gfx, dev, "$VBT CANTIGA");
 }
 
 static u32 get_cdclk(struct device *const dev)
@@ -687,51 +699,37 @@ static void gma_pm_init_post_vbios(struct device *const dev)
 static void gma_func0_init(struct device *dev)
 {
 	u32 reg32;
+	u8 *mmio;
+	u8 edid_data_lvds[128];
+	struct edid edid_lvds;
 
 	/* IGD needs to be Bus Master */
 	reg32 = pci_read_config32(dev, PCI_COMMAND);
 	reg32 |= PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY | PCI_COMMAND_IO;
 	pci_write_config32(dev, PCI_COMMAND, reg32);
 
-	/* Init graphics power management */
 	gtt_res = find_resource(dev, PCI_BASE_ADDRESS_0);
-
-	struct northbridge_intel_gm45_config *conf = dev->chip_info;
+	if (gtt_res == NULL)
+		return;
+	mmio = res2mmio(gtt_res, 0, 0);
 
 	if (!IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT)) {
 		/* PCI Init, will run VBIOS */
+		printk(BIOS_DEBUG, "Initialising IGD using VBIOS\n");
 		pci_dev_init(dev);
 	}
+
+	printk(BIOS_DEBUG, "LVDS EDID\n");
+	intel_gmbus_read_edid(mmio + GMBUS0, 3, 0x50, edid_data_lvds,
+			sizeof(edid_data_lvds));
+	intel_gmbus_stop(mmio + GMBUS0);
+	decode_edid(edid_data_lvds, sizeof(edid_data_lvds), &edid_lvds);
 
 	/* Post VBIOS init */
 	gma_pm_init_post_vbios(dev);
 
-	if (IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT)) {
-		u32 physbase;
-		struct resource *lfb_res;
-		struct resource *pio_res;
-
-		lfb_res = find_resource(dev, PCI_BASE_ADDRESS_2);
-		pio_res = find_resource(dev, PCI_BASE_ADDRESS_4);
-
-		physbase = pci_read_config32(dev, 0x5c) & ~0xf;
-
-		if (gtt_res && gtt_res->base && physbase && pio_res
-		    && pio_res->base && lfb_res && lfb_res->base) {
-			printk(BIOS_SPEW,
-			       "Initializing VGA without OPROM. MMIO 0x%llx\n",
-			       gtt_res->base);
-			if (vga_connected(res2mmio(gtt_res, 0, 0)))
-				gma_init_vga(conf, res2mmio(gtt_res, 0, 0),
-					physbase, pio_res->base, lfb_res->base);
-			else
-				gma_init_lvds(conf, res2mmio(gtt_res, 0, 0),
-					physbase, pio_res->base, lfb_res->base);
-		}
-
-		/* Linux relies on VBT for panel info.  */
-		generate_fake_intel_oprom(&conf->gfx, dev, "$VBT CANTIGA");
-	}
+	if (IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT))
+		gma_ngi(dev, &edid_lvds);
 }
 
 static void gma_set_subsystem(device_t dev, unsigned vendor, unsigned device)

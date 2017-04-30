@@ -330,7 +330,7 @@ static void checkreset_ddr2(int boot_path)
 		pci_write_config8(PCI_DEV(0, 0, 0), 0xf0, reg8 |  (1 << 2));
 
 		printk(BIOS_DEBUG, "Reset...\n");
-		outb(0x6, 0xcf9);
+		outb(0xe, 0xcf9);
 		asm ("hlt");
 	}
 	pmcon2 |= 0x80;

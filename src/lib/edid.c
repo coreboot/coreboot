@@ -66,7 +66,7 @@ struct edid_context {
 	int seen_non_detailed_descriptor;
 	int warning_excessive_dotclock_correction;
 	int warning_zero_preferred_refresh;
-	int conformant;
+	enum edid_status conformant;
 };
 
 /* Stuff that isn't used anywhere but is nice to pretty-print while
@@ -1134,7 +1134,7 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 	    .has_valid_range_descriptor = 1,
 	    .has_valid_max_dotclock = 1,
 	    .has_valid_string_termination = 1,
-	    .conformant = 1,
+	    .conformant = EDID_CONFORMANT,
 	};
 
 	dump_breakdown(edid);
@@ -1143,7 +1143,7 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 
 	if (!edid || memcmp(edid, "\x00\xFF\xFF\xFF\xFF\xFF\xFF\x00", 8)) {
 		printk(BIOS_SPEW, "No header found\n");
-		return 1;
+		return EDID_ABSENT;
 	}
 
 	if (manufacturer_name(edid + 0x08))
@@ -1485,11 +1485,12 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 		if (c.nonconformant_digital_display ||
 		    !c.has_valid_string_termination ||
 		    !c.has_valid_descriptor_pad ||
-		    !c.has_preferred_timing)
-			c.conformant = 0;
-		if (!c.conformant)
+			!c.has_preferred_timing) {
+			c.conformant = EDID_NOT_CONFORMANT;
 			printk(BIOS_ERR,
 				"EDID block does NOT conform to EDID 1.4!\n");
+		}
+
 		if (c.nonconformant_digital_display)
 			printk(BIOS_ERR,
 			       "\tDigital display field contains garbage: %x\n",
@@ -1507,7 +1508,7 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 		    !c.has_valid_string_termination ||
 		    !c.has_valid_descriptor_pad ||
 		    !c.has_preferred_timing) {
-			c.conformant = 0;
+			c.conformant = EDID_NOT_CONFORMANT;
 		}
 		/**
 		 * According to E-EDID (EDIDv1.3), has_name_descriptor and
@@ -1516,7 +1517,7 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 		 * don't have them. As a workaround, we only print warning
 		 * messages.
 		 */
-		if (!c.conformant)
+		if (c.conformant == EDID_NOT_CONFORMANT)
 			printk(BIOS_ERR,
 				"EDID block does NOT conform to EDID 1.3!\n");
 		else if (!c.has_name_descriptor || !c.has_range_descriptor)
@@ -1542,11 +1543,11 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 			   "\tDetailed block string not properly terminated\n");
 	} else if (c.claims_one_point_two) {
 		if (c.nonconformant_digital_display ||
-		    !c.has_valid_string_termination)
-			c.conformant = 0;
-		if (!c.conformant)
+			!c.has_valid_string_termination) {
+			c.conformant = EDID_NOT_CONFORMANT;
 			printk(BIOS_ERR,
 				"EDID block does NOT conform to EDID 1.2!\n");
+		}
 		if (c.nonconformant_digital_display)
 			printk(BIOS_ERR,
 			       "\tDigital display field contains garbage: %x\n",
@@ -1555,11 +1556,11 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 			printk(BIOS_ERR,
 			   "\tDetailed block string not properly terminated\n");
 	} else if (c.claims_one_point_oh) {
-		if (c.seen_non_detailed_descriptor)
-			c.conformant = 0;
-		if (!c.conformant)
+		if (c.seen_non_detailed_descriptor) {
+			c.conformant = EDID_NOT_CONFORMANT;
 			printk(BIOS_ERR,
 				"EDID block does NOT conform to EDID 1.0!\n");
+		}
 		if (c.seen_non_detailed_descriptor)
 			printk(BIOS_ERR,
 				"\tHas descriptor blocks other than detailed timings\n");
@@ -1576,7 +1577,7 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 	    !c.has_valid_descriptor_ordering ||
 	    !c.has_valid_range_descriptor ||
 	    !c.manufacturer_name_well_formed) {
-		c.conformant = 0;
+		c.conformant = EDID_NOT_CONFORMANT;
 		printk(BIOS_ERR, "EDID block does not conform at all!\n");
 		if (c.nonconformant_extension)
 			printk(BIOS_ERR,
@@ -1618,7 +1619,7 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 	if (c.warning_zero_preferred_refresh)
 		printk(BIOS_ERR,
 		       "Warning: CVT block does not set preferred refresh rate\n");
-	return !c.conformant;
+	return c.conformant;
 }
 
 /*

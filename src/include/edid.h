@@ -91,6 +91,12 @@ struct edid {
 	int hdmi_monitor_detected;
 };
 
+enum edid_status {
+	EDID_CONFORMANT,
+	EDID_NOT_CONFORMANT,
+	EDID_ABSENT,
+};
+
 /* Defined in src/lib/edid.c */
 int decode_edid(unsigned char *edid, int size, struct edid *out);
 void edid_set_framebuffer_bits_per_pixel(struct edid *edid, int fb_bpp,

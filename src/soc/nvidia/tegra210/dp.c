@@ -1361,7 +1361,7 @@ static void tegra_dp_update_config(struct tegra_dc_dp_data *dp,
 		return;
 	}
 
-	if (decode_edid(buf, sizeof(buf), &edid)) {
+	if (decode_edid(buf, sizeof(buf), &edid) != EDID_CONFORMANT) {
 		printk(BIOS_ERR, "%s: Failed to decode EDID. Use defaults.\n",
 		       __func__);
 		return;

@@ -2577,11 +2577,8 @@ void sdram_initialize(int boot_path, const u8 *spd_addresses)
 
 	/* Enable HPET */
 	enable_hpet();
-	hpet_udelay(300000);
 
 	MCHBAR16(0xc1c) = MCHBAR16(0xc1c) | (1 << 15);
-
-	hpet_udelay(100000);
 
 	sdram_clk_crossing(&si);
 
@@ -2598,8 +2595,6 @@ void sdram_initialize(int boot_path, const u8 *spd_addresses)
 		sdram_dlltiming(&si);
 		PRINTK_DEBUG("Done dlltiming\n");
 	}
-
-	hpet_udelay(200000);
 
 	if (si.boot_path != BOOT_PATH_RESET) {
 		sdram_rcomp(&si);

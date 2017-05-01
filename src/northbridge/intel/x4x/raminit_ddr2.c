@@ -1923,8 +1923,6 @@ void raminit_ddr2(struct sysinfo *s)
 			die("Error: DDR is faster than FSB, halt\n");
 	}
 
-	mdelay(250);
-
 	// Program clock crossing
 	clkcross_ddr2(s);
 	printk(BIOS_DEBUG, "Done clk crossing\n");

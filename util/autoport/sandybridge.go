@@ -144,7 +144,7 @@ func init() {
 	for _, id := range []uint16{
 		0x0102, 0x0106, 0x010a, 0x0112,
 		0x0116, 0x0122, 0x0126, 0x0156,
-		0x0166,
+		0x0162, 0x0166,
 	} {
 		RegisterPCI(0x8086, id, GenericVGA{GenericPCI{Comment: "VGA controller"}})
 	}

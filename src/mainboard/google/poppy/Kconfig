@@ -14,12 +14,14 @@ config BOARD_GOOGLE_BASEBOARD_POPPY
 	select MAINBOARD_HAS_CHROMEOS
 	select MAINBOARD_USES_FSP2_0
 	select NO_FADT_8042
+	select POPPY_USE_I2C_TPM if BOARD_GOOGLE_SORAKA
 	select SOC_INTEL_KABYLAKE
 
 if BOARD_GOOGLE_BASEBOARD_POPPY
 
 config DEVICETREE
 	string
+	default "variants/soraka/devicetree.cb" if BOARD_GOOGLE_SORAKA
 	default "variants/baseboard/devicetree.cb"
 
 config DRIVER_TPM_I2C_BUS

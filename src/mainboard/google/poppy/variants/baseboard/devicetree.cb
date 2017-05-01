@@ -154,7 +154,7 @@ chip soc/intel/skylake
 	register "usb3_ports[3]" = "USB3_PORT_EMPTY"		# Empty
 
 	register "i2c_voltage[0]" = "I2C_VOLTAGE_3V3"		# Touchscreen
-	register "i2c_voltage[1]" = "I2C_VOLTAGE_3V3"		# NFC
+	register "i2c_voltage[1]" = "I2C_VOLTAGE_3V3"		# H1
 	register "i2c_voltage[2]" = "I2C_VOLTAGE_1V8"		# Camera
 	register "i2c_voltage[3]" = "I2C_VOLTAGE_1V8"		# Pen
 	register "i2c_voltage[4]" = "I2C_VOLTAGE_1V8"		# Camera
@@ -164,6 +164,12 @@ chip soc/intel/skylake
 	# communication before memory is up.
 	register "gspi[0]" = "{
 		 .speed_mhz = 1,
+		 .early_init = 1,
+	}"
+
+	# Configure I2C1 for cr50 TPM. Early init is required to set up a BAR
+	# for TPM communication before memory is up.
+	register "i2c[1]" = "{
 		 .early_init = 1,
 	}"
 

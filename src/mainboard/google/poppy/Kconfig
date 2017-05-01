@@ -22,7 +22,16 @@ config DEVICETREE
 	string
 	default "variants/baseboard/devicetree.cb"
 
+config DRIVER_TPM_I2C_BUS
+	depends on POPPY_USE_I2C_TPM
+	default 0x4
+
+config DRIVER_TPM_I2C_ADDR
+	depends on POPPY_USE_I2C_TPM
+	default 0x50
+
 config DRIVER_TPM_SPI_BUS
+	depends on POPPY_USE_SPI_TPM
 	default 0x1
 
 config GBB_HWID
@@ -56,6 +65,14 @@ config MAX_CPUS
 	int
 	default 8
 
+# Select this option to enable use of cr50 I2C TPM on poppy.
+config POPPY_USE_I2C_TPM
+	bool
+	default n
+	select I2C_TPM
+	select MAINBOARD_HAS_I2C_TPM_CR50
+	select TPM2
+
 # Select this option to enable use of cr50 SPI TPM on poppy.
 # This option is disabled by default.
 config POPPY_USE_SPI_TPM
@@ -64,6 +81,10 @@ config POPPY_USE_SPI_TPM
 	select MAINBOARD_HAS_SPI_TPM_CR50
 	select SPI_TPM
 	select TPM2
+
+config TPM_TIS_ACPI_INTERRUPT
+	int
+	default 64  # GPE0_DW2_00 (GPP_E0)
 
 config VARIANT_DIR
 	string
@@ -75,12 +96,5 @@ config VBOOT
 	select HAS_RECOVERY_MRC_CACHE
 	select MRC_CLEAR_NORMAL_CACHE_ON_RECOVERY_RETRAIN
 	select VBOOT_LID_SWITCH
-
-config DRIVER_TPM_SPI_BUS
-	default 0x1
-
-config TPM_TIS_ACPI_INTERRUPT
-	int
-	default 64  # GPE0_DW2_00 (GPP_E0)
 
 endif # BOARD_GOOGLE_BASEBOARD_POPPY

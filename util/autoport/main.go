@@ -207,6 +207,27 @@ func Create(ctx Context, name string) *os.File {
 	return mf
 }
 
+func Add_gpl(fp *os.File) {
+	fp.WriteString(`/*
+ * This file is part of the coreboot project.
+ *
+ * Copyright (C) 2008-2009 coresystems GmbH
+ * Copyright (C) 2014 Vladimir Serbinenko
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; version 2 of
+ * the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+`)
+}
+
 func RestorePCI16Simple(f *os.File, pcidev PCIDevData, addr uint16) {
 	fmt.Fprintf(f, "	pci_write_config16(PCI_DEV(%d, 0x%02x, %d), 0x%02x, 0x%02x%02x);\n",
 		pcidev.Bus, pcidev.Dev, pcidev.Func, addr,

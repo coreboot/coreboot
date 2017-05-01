@@ -43,6 +43,7 @@ func (b bd82x6x) GPIO(ctx Context, inteltool InteltoolData) {
 
 	AddROMStageFile("gpio.c", "")
 
+	Add_gpl(gpio)
 	gpio.WriteString("#include <southbridge/intel/common/gpio.h>\n\n")
 
 	addresses := [3][6]int{
@@ -305,6 +306,7 @@ func (b bd82x6x) Scan(ctx Context, addr PCIDevData) {
 	sb := Create(ctx, "early_southbridge.c")
 	defer sb.Close()
 	AddROMStageFile("early_southbridge.c", "")
+	Add_gpl(sb)
 	sb.WriteString(`#include <stdint.h>
 #include <string.h>
 #include <lib.h>
@@ -401,6 +403,7 @@ void mainboard_get_spd(spd_raw_data *spd, bool id_only)
 	gnvs := Create(ctx, "gnvs.c")
 	defer gnvs.Close()
 
+	Add_gpl(gnvs)
 	gnvs.WriteString(`#include <southbridge/intel/bd82x6x/nvs.h>
 
 /* FIXME: check this function.  */

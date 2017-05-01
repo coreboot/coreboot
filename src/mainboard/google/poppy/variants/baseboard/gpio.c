@@ -29,7 +29,7 @@ static const struct pad_config gpio_table[] = {
 	/* A5  : ESPI_CS# */
 	/* A6  : SERIRQ ==> NC(TP44) */
 	PAD_CFG_NC(GPP_A6),
-	/* A7  : PIRQA# ==> NC */
+	/* A7  : PIRQA# ==> NC(TP29) */
 	PAD_CFG_NC(GPP_A7),
 	/* A8  : CLKRUN# ==> NC(TP45) */
 	PAD_CFG_NC(GPP_A8),
@@ -40,8 +40,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NC(GPP_A11),
 	/* A12 : BM_BUSY# ==> NC */
 	PAD_CFG_NC(GPP_A12),
-	/* A13 : SUSWARN# ==> NC */
-	PAD_CFG_NC(GPP_A13),
+	/* A13 : SUSWARN# ==> SUSWARN_L */
+	PAD_CFG_NF(GPP_A13, NONE, DEEP, NF1),
 	/* A14 : ESPI_RESET# */
 	/* A15 : SUSACK# ==> SUSACK_L */
 	PAD_CFG_NF(GPP_A15, NONE, DEEP, NF1),
@@ -130,11 +130,11 @@ static const struct pad_config gpio_table[] = {
 	/* C8  : UART0_RXD ==> FP_INT */
 	PAD_CFG_GPI_APIC(GPP_C8, NONE, PLTRST),
 	/* C9  : UART0_TXD ==> FP_RST_ODL */
-	PAD_CFG_GPO(GPP_C9, 0, DEEP), /* FP_RST_ODL */
-	/* C10 : UART0_RTS# ==> NC */
-	PAD_CFG_NC(GPP_C10),
-	/* C11 : UART0_CTS# ==> NC */
-	PAD_CFG_NC(GPP_C11),
+	PAD_CFG_GPO(GPP_C9, 0, DEEP),
+	/* C10 : UART0_RTS# ==> EC_CAM_PMIC_RST_L */
+	PAD_CFG_GPO(GPP_C10, 1, DEEP),
+	/* C11 : UART0_CTS# ==> EN_PP3300_DX_CAM */
+	PAD_CFG_GPO(GPP_C11, 1, DEEP),
 	/* C12 : UART1_RXD ==> PCH_MEM_CONFIG[0] */
 	PAD_CFG_GPI(GPP_C12, NONE, DEEP),
 	/* C13 : UART1_TXD ==> PCH_MEM_CONFIG[1] */
@@ -147,9 +147,9 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_C16, NONE, DEEP, NF1),
 	/* C17 : I2C0_SCL ==> PCH_I2C0_TOUCHSCREEN_3V3_SCL */
 	PAD_CFG_NF(GPP_C17, NONE, DEEP, NF1),
-	/* C18 : I2C1_SDA ==> PCH_I2C1_NFC_3V3_SDA */
+	/* C18 : I2C1_SDA ==> PCH_I2C1_H1_3V3_SDA */
 	PAD_CFG_NF(GPP_C18, NONE, DEEP, NF1),
-	/* C19 : I2C1_SCL ==> PCH_I2C1_NFC_3V3_SCL */
+	/* C19 : I2C1_SCL ==> PCH_I2C1_H1_3V3_SCL */
 	PAD_CFG_NF(GPP_C19, NONE, DEEP, NF1),
 	/* C20 : UART2_RXD ==> PCHRX_SERVOTX_UART */
 	PAD_CFG_NF(GPP_C20, NONE, DEEP, NF1),
@@ -190,8 +190,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NC(GPP_D13),
 	/* D14 : ISH_UART0_TXD ==> NC */
 	PAD_CFG_NC(GPP_D14),
-	/* D15 : ISH_UART0_RTS# ==> MIC_IRQ_L */
-	PAD_CFG_GPI_APIC(GPP_D15, NONE, PLTRST),
+	/* D15 : ISH_UART0_RTS# ==> NC */
+	PAD_CFG_NC(GPP_D15),
 	/* D16 : ISH_UART0_CTS# ==> NC */
 	PAD_CFG_NC(GPP_D16),
 	/* D17 : DMIC_CLK1 */
@@ -217,14 +217,14 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NC(GPP_E2),
 	/* E3  : CPU_GP0 ==> NC */
 	PAD_CFG_NC(GPP_E3),
-	/* E4  : SATA_DEVSLP0 ==> NFC_RESET_ODL */
-	PAD_CFG_GPO(GPP_E4, 0, DEEP),
-	/* E5  : SATA_DEVSLP1 ==> NFC_INT_L */
-	PAD_CFG_GPI_APIC(GPP_E5, NONE, PLTRST),
-	/* E6  : SATA_DEVSLP2 ==> NFC_FW_DL */
-	PAD_CFG_GPO(GPP_E6, 0, DEEP), /* NFC_FW_DL */
+	/* E4  : SATA_DEVSLP0 ==> NC */
+	PAD_CFG_NC(GPP_E4),
+	/* E5  : SATA_DEVSLP1 ==> NC */
+	PAD_CFG_NC(GPP_E5),
+	/* E6  : SATA_DEVSLP2 ==> NC */
+	PAD_CFG_NC(GPP_E6),
 	/* E7  : CPU_GP1 ==> TOUCHSCREEN_INT_L */
-	PAD_CFG_GPI_APIC(GPP_E7, NONE, PLTRST), /* TOUCHSCREEN_INT_L */
+	PAD_CFG_GPI_APIC(GPP_E7, NONE, PLTRST),
 	/* E8  : SATALED# ==> NC */
 	PAD_CFG_NC(GPP_E8),
 	/* E9  : USB2_OCO# ==> USB_C0_OC_ODL */
@@ -346,7 +346,7 @@ static const struct pad_config gpio_table[] = {
 	/* GPD9: SLP_WLAN# ==> NC(TP25) */
 	PAD_CFG_NC(GPD9),
 	/* GPD10: SLP_S5# ==> NC(TP15) */
-	PAD_CFG_NC(GPD10), /* TP15 */
+	PAD_CFG_NC(GPD10),
 	/* GPD11: LANPHYC ==> NC */
 	PAD_CFG_NC(GPD11),
 };
@@ -361,6 +361,11 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_NF(GPP_B17, NONE, DEEP, NF1),
 	/* B18 : GSPI0_MOSI ==> PCH_SPI_H1_3V3_MOSI */
 	PAD_CFG_NF(GPP_B18, NONE, DEEP, NF1),
+
+	/* C18 : I2C1_SDA ==> PCH_I2C1_H1_3V3_SDA */
+	PAD_CFG_NF(GPP_C18, NONE, DEEP, NF1),
+	/* C19 : I2C1_SCL ==> PCH_I2C1_H1_3V3_SCL */
+	PAD_CFG_NF(GPP_C19, NONE, DEEP, NF1),
 
 	/* Ensure UART pins are in native mode for H1. */
 	/* C20 : UART2_RXD ==> PCHRX_SERVOTX_UART */

@@ -106,3 +106,20 @@ void enable_turbo(void)
 		printk(BIOS_INFO, "Turbo has been enabled\n");
 	}
 }
+
+/*
+ * Try to disable Turbo mode.
+ */
+void disable_turbo(void)
+{
+	msr_t msr;
+
+	/* Set Turbo Disable bit in Misc Enables */
+	msr = rdmsr(MSR_IA32_MISC_ENABLES);
+	msr.hi |= H_MISC_DISABLE_TURBO;
+	wrmsr(MSR_IA32_MISC_ENABLES, msr);
+
+	/* Update cached turbo state */
+	set_global_turbo_state(TURBO_UNAVAILABLE);
+	printk(BIOS_INFO, "Turbo has been disabled\n");
+}

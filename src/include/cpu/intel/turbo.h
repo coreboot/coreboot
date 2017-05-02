@@ -39,4 +39,7 @@ int get_turbo_state(void);
 /* Enable turbo */
 void enable_turbo(void);
 
+/* Disable turbo */
+void disable_turbo(void);
+
 #endif

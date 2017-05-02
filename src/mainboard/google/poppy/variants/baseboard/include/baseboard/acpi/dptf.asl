@@ -32,6 +32,11 @@
 #define DPTF_TSR2_PASSIVE	52
 #define DPTF_TSR2_CRITICAL	75
 
+#define DPTF_TSR3_SENSOR_ID	4
+#define DPTF_TSR3_SENSOR_NAME	"eMMC"
+#define DPTF_TSR3_PASSIVE	55
+#define DPTF_TSR3_CRITICAL	75
+
 #define DPTF_ENABLE_CHARGER
 
 /* Charger performance states, board-specific values from charger and EC */
@@ -46,16 +51,19 @@ Name (DTRT, Package () {
 	/* CPU Throttle Effect on CPU */
 	Package () { \_SB.PCI0.B0D4, \_SB.PCI0.B0D4, 100, 50, 0, 0, 0, 0 },
 
-	/* CPU Effect on Temp Sensor 0 */
+	/* CPU Throttle Effect on Ambient (TSR0) */
 	Package () { \_SB.PCI0.B0D4, \_SB.DPTF.TSR0, 100, 600, 0, 0, 0, 0 },
 
 #ifdef DPTF_ENABLE_CHARGER
-	/* Charger Effect on Temp Sensor 1 */
-	Package () { \_SB.DPTF.TCHG, \_SB.DPTF.TSR1, 200, 600, 0, 0, 0, 0 },
+	/* Charger Throttle Effect on Charger (TSR1) */
+	Package () { \_SB.DPTF.TCHG, \_SB.DPTF.TSR1, 100, 600, 0, 0, 0, 0 },
 #endif
 
-	/* CPU Effect on Temp Sensor 2 */
+	/* CPU Throttle Effect on DRAM (TSR2) */
 	Package () { \_SB.PCI0.B0D4, \_SB.DPTF.TSR2, 100, 90, 0, 0, 0, 0 },
+
+	/* CPU Throttle Effect on eMMC (TSR3) */
+	Package () { \_SB.PCI0.B0D4, \_SB.DPTF.TSR3, 100, 600, 0, 0, 0, 0 },
 })
 
 Name (MPPC, Package ()

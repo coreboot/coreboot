@@ -40,15 +40,6 @@ enum skylake_i2c_voltage {
 	I2C_VOLTAGE_1V8
 };
 
-struct skylake_i2c_config {
-	/* Bus speed in Hz, default is I2C_SPEED_FAST (400 KHz) */
-	enum i2c_speed speed;
-	/* Bus should be enabled prior to ramstage with temporary base */
-	int early_init;
-	/* Custom bus speed configuration { scl_lcnt, scl_hcnt, sda_hold } */
-	struct lpss_i2c_speed_config speed_config[LPSS_I2C_SPEED_CONFIG_COUNT];
-};
-
 struct soc_intel_skylake_config {
 	/*
 	 * Interrupt Routing configuration

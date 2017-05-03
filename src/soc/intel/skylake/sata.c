@@ -40,14 +40,16 @@ static void *get_ahci_bar(void)
 static void sata_final(device_t dev)
 {
 	void *ahcibar = get_ahci_bar();
-	u8 port_impl;
+	u32 port_impl, temp;
 
 	dev = PCH_DEV_SATA;
 	/* Read Ports Implemented (GHC_PI) */
-	port_impl = read32(ahcibar + 0x0c);
-	port_impl = ~port_impl & 0x07;
+	port_impl = read32(ahcibar + 0x0c) & 0x07;
 	/* Port enable */
-	pci_write_config8(dev, 0x92, port_impl);
+	temp = pci_read_config32(dev, 0x92);
+	temp |= port_impl;
+	pci_write_config32(dev, 0x92, temp);
+
 }
 
 static struct device_operations sata_ops = {

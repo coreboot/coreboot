@@ -140,6 +140,7 @@ early_usb_init (const struct southbridge_usb_port *portmap);
 #define GEN_PMCON_1		0xa0
 #define GEN_PMCON_2		0xa2
 #define GEN_PMCON_3		0xa4
+#define GEN_PMCON_LOCK		0xa6
 #define ETR3			0xac
 #define  ETR3_CWORWRE		(1 << 18)
 #define  ETR3_CF9GR		(1 << 20)

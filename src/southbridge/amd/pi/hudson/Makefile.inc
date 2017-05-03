@@ -28,36 +28,38 @@
 #
 #*****************************************************************************
 
-romstage-y += smbus.c smbus_spd.c
-ramstage-y += hudson.c
-ramstage-y += usb.c
-ramstage-y += lpc.c
-ramstage-y += sm.c
-ramstage-y += ide.c
-ramstage-y += sata.c
+romstage-y += early_setup.c
+romstage-$(CONFIG_USBDEBUG_IN_ROMSTAGE) += enable_usbdebug.c
+romstage-$(CONFIG_HUDSON_IMC_FWM) += imc.c
+romstage-y += smbus.c
+romstage-y += smbus_spd.c
+romstage-$(CONFIG_HUDSON_UART) += uart.c
+
+verstage-y += early_setup.c
+verstage-y += reset.c
+verstage-$(CONFIG_HUDSON_UART) += uart.c
+
+ramstage-$(CONFIG_USBDEBUG) += enable_usbdebug.c
+ramstage-$(CONFIG_HAVE_ACPI_TABLES) += fadt.c
+ramstage-$(CONFIG_SOUTHBRIDGE_AMD_PI_KERN) += gpio.c
 ramstage-y += hda.c
+ramstage-y += hudson.c
+ramstage-y += ide.c
+ramstage-$(CONFIG_HUDSON_IMC_FWM) += imc.c
+ramstage-y += lpc.c
 ramstage-y += pci.c
 ramstage-y += pcie.c
-ramstage-y += sd.c
-ramstage-$(CONFIG_SOUTHBRIDGE_AMD_PI_KERN) += gpio.c
-
-ramstage-$(CONFIG_HAVE_ACPI_TABLES) += fadt.c
 ramstage-y += reset.c
-romstage-$(CONFIG_USBDEBUG_IN_ROMSTAGE) += enable_usbdebug.c
-ramstage-$(CONFIG_USBDEBUG) += enable_usbdebug.c
-romstage-y += early_setup.c
-ifeq ($(CONFIG_HUDSON_IMC_FWM), y)
-romstage-y += imc.c
-ramstage-y += imc.c
-endif
+ramstage-y += sata.c
+ramstage-y += sd.c
+ramstage-y += sm.c
+ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c
+ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi_util.c
+ramstage-$(CONFIG_HUDSON_UART) += uart.c
+ramstage-y += usb.c
 
-ifeq ($(CONFIG_HUDSON_UART), y)
-romstage-y += uart.c
-ramstage-y += uart.c
-endif
-
-smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c smi_util.c
-ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c smi_util.c
+smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
+smm-$(CONFIG_HAVE_SMI_HANDLER) += smi_util.c
 
 # ROMSIG At ROMBASE + 0x20000:
 # +-----------+---------------+----------------+------------+

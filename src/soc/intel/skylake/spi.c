@@ -20,28 +20,13 @@
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
 #include <device/spi.h>
+#include <intelblocks/fast_spi.h>
 #include <intelblocks/gspi.h>
 #include <soc/ramstage.h>
 #include <spi-generic.h>
 
-/* SPI controller managing the flash-device SPI. */
-static int flash_spi_ctrlr_setup(const struct spi_slave *dev)
-{
-	if ((dev->bus != 0) || (dev->cs != 0)) {
-		printk(BIOS_ERR, "%s: Unsupported device bus=0x%x,cs=0x%x!\n",
-			__func__, dev->bus, dev->cs);
-		return -1;
-	}
-
-	return 0;
-}
-
-static const struct spi_ctrlr flash_spi_ctrlr = {
-	.setup = flash_spi_ctrlr_setup,
-};
-
 const struct spi_ctrlr_buses spi_ctrlr_bus_map[] = {
-	{ .ctrlr = &flash_spi_ctrlr, .bus_start = 0, .bus_end = 0 },
+	{ .ctrlr = &fast_spi_flash_ctrlr, .bus_start = 0, .bus_end = 0 },
 #if !ENV_SMM
 	{ .ctrlr = &gspi_ctrlr, .bus_start = 1,
 	  .bus_end =  1 + (CONFIG_SOC_INTEL_COMMON_BLOCK_GSPI_MAX - 1)},

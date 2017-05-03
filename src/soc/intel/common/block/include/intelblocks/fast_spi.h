@@ -64,4 +64,10 @@ size_t fast_spi_get_bios_region(size_t *bios_size);
  */
 void fast_spi_early_init(uintptr_t spi_base_address);
 
+/*
+ * Fast SPI flash controller structure to allow SoCs to define bus-controller
+ * mapping.
+ */
+extern const struct spi_ctrlr fast_spi_flash_ctrlr;
+
 #endif	/* SOC_INTEL_COMMON_BLOCK_FAST_SPI_H */

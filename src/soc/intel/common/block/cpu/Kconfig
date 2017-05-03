@@ -1,3 +1,12 @@
+config SOC_INTEL_COMMON_BLOCK_CPU
+	bool
+	default n
+	help
+	  This option helps to select Intel Common CPU Model support code
+	  which provides various CPU related APIs which are common
+	  between all Intel Processor families. Common CPU code is supported
+	  for SOCs starting from SKL,KBL,APL, and future.
+
 config SOC_INTEL_COMMON_BLOCK_CAR
 	bool
 	default n

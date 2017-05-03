@@ -36,6 +36,7 @@
 #define   ENABLE_IA_UNTRUSTED	(1 << 6)
 #define   FLUSH_DL1_L2		(1 << 8)
 #define MSR_EMULATE_PM_TMR	0x121
+#define   EMULATE_DELAY_OFFSET_VALUE	20
 #define   EMULATE_PM_TMR_EN	(1 << 16)
 #define MSR_FEATURE_CONFIG	0x13c
 #define   FEATURE_CONFIG_RESERVED_MASK	0x3ULL
@@ -44,8 +45,13 @@
 #define SMM_MCA_CAP_MSR		0x17d
 #define  SMM_CPU_SVRSTR_BIT	57
 #define  SMM_CPU_SVRSTR_MASK	(1 << (SMM_CPU_SVRSTR_BIT - 32))
+#define MSR_FLEX_RATIO		0x194
+#define  FLEX_RATIO_LOCK		(1 << 20)
+#define  FLEX_RATIO_EN			(1 << 16)
 #define MSR_IA32_PERF_CTL	0x199
 #define IA32_MISC_ENABLE	0x1a0
+/* This is burst mode BIT 38 in MSR_IA32_MISC_ENABLES MSR at offset 1A0h */
+#define BURST_MODE_DISABLE		(1 << 6)
 #define MSR_TEMPERATURE_TARGET	0x1a2
 #define MSR_PREFETCH_CTL	0x1a4
 #define   PREFETCH_L1_DISABLE	(1 << 0)
@@ -56,8 +62,13 @@
 #define  MISC_PWR_MGMT_ISST_EN_INT	(1 << 7)
 #define  MISC_PWR_MGMT_ISST_EN_EPP	(1 << 12)
 #define MSR_TURBO_RATIO_LIMIT		0x1ad
+#define PRMRR_PHYS_MASK_MSR		0x1f5
+#define  PRMRR_PHYS_MASK_LOCK		(1 << 10)
+#define  PRMRR_PHYS_MASK_VALID		(1 << 11)
 #define MSR_POWER_CTL			0x1fc
 #define MSR_EVICT_CTL			0x2e0
+#define UNCORE_PRMRR_PHYS_BASE_MSR	0x2f4
+#define UNCORE_PRMRR_PHYS_MASK_MSR	0x2f5
 #define IA32_MC0_CTL			0x400
 #define IA32_MC0_STATUS			0x401
 #define SMM_FEATURE_CONTROL_MSR		0x4e0
@@ -98,12 +109,20 @@
 #define PKG_POWER_LIMIT_CLAMP		(1 << 16)
 #define PKG_POWER_LIMIT_TIME_SHIFT	17
 #define PKG_POWER_LIMIT_TIME_MASK	(0x7f)
+/* SMM save state MSRs */
+#define SMBASE_MSR			0xc20
+#define IEDBASE_MSR			0xc22
+
 #define MSR_IA32_PQR_ASSOC		0x0c8f
 /* MSR bits 33:32 encode slot number 0-3 */
 #define   IA32_PQR_ASSOC_MASK		(1 << 0 | 1 << 1)
 #define MSR_IA32_L3_MASK_1		0x0c91
 #define MSR_IA32_L3_MASK_2		0x0c92
 #define MSR_L2_QOS_MASK(reg)		(0xd10 + reg)
+
+/* MTRR_CAP_MSR bits */
+#define SMRR_SUPPORTED	(1<<11)
+#define PRMRR_SUPPORTED	(1<<12)
 
 #endif	/* SOC_INTEL_COMMON_MSR_H */
 

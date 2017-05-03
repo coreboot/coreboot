@@ -30,10 +30,10 @@ static void sandybridge_setup_bars(void)
 {
 	/* Setting up Southbridge. In the northbridge code. */
 	printk(BIOS_DEBUG, "Setting up static southbridge registers...");
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), RCBA, (uintptr_t)DEFAULT_RCBA | 1);
+	pci_write_config32(PCH_LPC_DEV, RCBA, (uintptr_t)DEFAULT_RCBA | 1);
 
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), PMBASE, DEFAULT_PMBASE | 1);
-	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0x44 /* ACPI_CNTL */ , 0x80); /* Enable ACPI BAR */
+	pci_write_config32(PCH_LPC_DEV, PMBASE, DEFAULT_PMBASE | 1);
+	pci_write_config8(PCH_LPC_DEV, ACPI_CNTL, 0x80); /* Enable ACPI BAR */
 
 	printk(BIOS_DEBUG, " done.\n");
 

@@ -65,8 +65,38 @@ static void get_microcode_info(const void **microcode, int *parallel)
 	*parallel = 1;
 }
 
+static int cpu_config_tdp_levels(void)
+{
+	msr_t platform_info;
+
+	/* Bits 34:33 indicate how many levels are supported. */
+	platform_info = rdmsr(MSR_PLATFORM_INFO);
+	return (platform_info.hi >> 1) & 3;
+}
+
+static void set_max_ratio(void)
+{
+	msr_t msr, perf_ctl;
+
+	perf_ctl.hi = 0;
+
+	/* Check for configurable TDP option. */
+	if (cpu_config_tdp_levels()) {
+		/* Set to nominal TDP ratio. */
+		msr = rdmsr(MSR_CONFIG_TDP_NOMINAL);
+		perf_ctl.lo = (msr.lo & 0xff) << 8;
+	} else {
+		/* Platform Info Bits 15:8 give max ratio. */
+		msr = rdmsr(MSR_PLATFORM_INFO);
+		perf_ctl.lo = msr.lo & 0xff00;
+	}
+	wrmsr(IA32_PERF_CTL, perf_ctl);
+}
+
 static void post_mp_init(void)
 {
+	/* Set Max Ratio */
+	set_max_ratio();
 	/* Now that all APs have been relocated as well as the BSP let SMIs
 	   start flowing. */
 	southbridge_smm_enable_smi();

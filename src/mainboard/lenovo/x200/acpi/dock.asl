@@ -51,7 +51,17 @@ Scope(\_SB.PCI0.LPCB.EC)
 		Notify(\_SB.DOCK, 3)
 	}
 
+	Method(_Q37, 0, NotSerialized)
+	{
+		Notify(\_SB.DOCK, 0)
+	}
+
 	Method(_Q45, 0, NotSerialized)
+	{
+		Notify(\_SB.DOCK, 3)
+	}
+
+	Method(_Q50, 0, NotSerialized)
 	{
 		Notify(\_SB.DOCK, 3)
 	}
@@ -61,8 +71,8 @@ Scope(\_SB.PCI0.LPCB.EC)
 		Notify(\_SB.DOCK, 0)
 	}
 
-	Method(_Q37, 0, NotSerialized)
+	Method(_Q5A, 0, NotSerialized)
 	{
-		Notify(\_SB.DOCK, 0)
+		Notify(\_SB.DOCK, 3)
 	}
 }

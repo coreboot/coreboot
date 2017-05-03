@@ -38,9 +38,9 @@ static void early_pch_init(void)
 	u8 reg8;
 
 	// reset rtc power status
-	reg8 = pci_read_config8(PCH_LPC_DEV, 0xa4);
+	reg8 = pci_read_config8(PCH_LPC_DEV, GEN_PMCON_3);
 	reg8 &= ~(1 << 2);
-	pci_write_config8(PCH_LPC_DEV, 0xa4, reg8);
+	pci_write_config8(PCH_LPC_DEV, GEN_PMCON_3, reg8);
 }
 
 /* Platform has no romstage entry point under mainboard directory,

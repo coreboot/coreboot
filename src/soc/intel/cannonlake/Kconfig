@@ -1,0 +1,67 @@
+config SOC_INTEL_CANNONLAKE
+	bool
+	help
+	  Intel Cannonlake support
+
+if SOC_INTEL_CANNONLAKE
+
+config CPU_SPECIFIC_OPTIONS
+	def_bool y
+	select ARCH_BOOTBLOCK_X86_32
+	select ARCH_VERSTAGE_X86_32
+	select ARCH_RAMSTAGE_X86_32
+	select ARCH_ROMSTAGE_X86_32
+	select HAVE_MONOTONIC_TIMER
+	select TSC_CONSTANT_RATE
+	select TSC_MONOTONIC_TIMER
+	select UDELAY_TSC
+	select REG_SCRIPT
+	select C_ENVIRONMENT_BOOTBLOCK
+	select HAVE_HARD_RESET
+	select HAVE_INTEL_FIRMWARE
+	select INTEL_CAR_NEM_ENHANCED
+	select PLATFORM_USES_FSP2_0
+	select SOC_INTEL_COMMON
+	select SOC_INTEL_COMMON_BLOCK_SA
+	select SOC_INTEL_COMMON_BLOCK
+	select SOC_INTEL_COMMON_BLOCK_CAR
+	select SOC_INTEL_COMMON_RESET
+	select SOC_INTEL_COMMON_BLOCK_LPSS
+	select SOC_INTEL_COMMON_BLOCK_UART
+	select SOC_INTEL_COMMON_BLOCK_FAST_SPI
+	select SOC_INTEL_COMMON_BLOCK_PCR
+	select SOC_INTEL_COMMON_BLOCK_SMBUS
+	select SOC_INTEL_COMMON_BLOCK_RTC
+	select SOC_INTEL_COMMON_BLOCK_CSE
+
+config UART_DEBUG
+	bool "Enable UART debug port."
+	default y
+	select CONSOLE_SERIAL
+	select BOOTBLOCK_CONSOLE
+	select DRIVERS_UART
+	select DRIVERS_UART_8250IO
+
+config DCACHE_RAM_BASE
+	default 0xfef00000
+
+config DCACHE_RAM_SIZE
+	default 0x40000
+	help
+	  The size of the cache-as-ram region required during bootblock
+	  and/or romstage.
+
+config DCACHE_BSP_STACK_SIZE
+	hex
+	default 0x4000
+	help
+	  The amount of anticipated stack usage in CAR by bootblock and
+	  other stages.
+
+config PCR_BASE_ADDRESS
+	hex
+	default 0xfd000000
+	help
+	  This option allows you to select MMIO Base Address of sideband bus.
+
+endif

@@ -34,19 +34,17 @@ static void store_initial_timestamp(void)
 static void enable_spi_prefetch(void)
 {
 	u8 reg8;
-	pci_devfn_t dev;
+	pci_devfn_t dev = PCH_LPC_DEV;
 
-	dev = PCI_DEV(0, 0x1f, 0);
-
-	reg8 = pci_read_config8(dev, 0xdc);
+	reg8 = pci_read_config8(dev, BIOS_CNTL);
 	reg8 &= ~(3 << 2);
 	reg8 |= (2 << 2); /* Prefetching and Caching Enabled */
-	pci_write_config8(dev, 0xdc, reg8);
+	pci_write_config8(dev, BIOS_CNTL, reg8);
 }
 
 static void enable_port80_on_lpc(void)
 {
-	pci_devfn_t dev = PCI_DEV(0, 0x1f, 0);
+	pci_devfn_t dev = PCH_LPC_DEV;
 
 	/* Enable port 80 POST on LPC */
 	pci_write_config32(dev, RCBA, (uintptr_t)DEFAULT_RCBA | 1);

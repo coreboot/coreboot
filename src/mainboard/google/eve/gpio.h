@@ -58,7 +58,7 @@ static const struct pad_config gpio_table[] = {
 /* CLKOUT_LPC1 */	PAD_CFG_NC(GPP_A10),
 /* PME# */		PAD_CFG_NC(GPP_A11), /* TP67 */
 /* BM_BUSY# */		PAD_CFG_NC(GPP_A12),
-/* SUSWARN# */		PAD_CFG_NC(GPP_A13),
+/* SUSWARN# */		PAD_CFG_NF(GPP_A13, NONE, DEEP, NF1),
 /* ESPI_RESET# */
 /* SUSACK# */		PAD_CFG_NF(GPP_A15, NONE, DEEP, NF1),
 /* SD_1P8_SEL */	PAD_CFG_NC(GPP_A16),

@@ -350,3 +350,18 @@ int fast_spi_flash_read_wpsr(u8 *sr)
 
 	return 0;
 }
+
+static int fast_spi_flash_ctrlr_setup(const struct spi_slave *dev)
+{
+	if (dev->cs != 0) {
+		printk(BIOS_ERR, "%s: Invalid CS for fast SPI bus=0x%x,cs=0x%x!\n",
+		       __func__, dev->bus, dev->cs);
+		return -1;
+	}
+
+	return 0;
+}
+
+const struct spi_ctrlr fast_spi_flash_ctrlr = {
+	.setup = fast_spi_flash_ctrlr_setup,
+};

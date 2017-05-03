@@ -25,6 +25,15 @@ static const struct nhlt_format_config max98927_render_formats[] = {
 		.speaker_mask = SPEAKER_FRONT_LEFT | SPEAKER_FRONT_RIGHT,
 		.settings_file = "max98927-render-2ch-48khz-24b.bin",
 	},
+	/* 48 KHz 16-bits per sample. */
+	{
+		.num_channels = 2,
+		.sample_freq_khz = 48,
+		.container_bits_per_sample = 16,
+		.valid_bits_per_sample = 16,
+		.speaker_mask = SPEAKER_FRONT_LEFT | SPEAKER_FRONT_RIGHT,
+		.settings_file = "max98927-render-2ch-48khz-16b.bin",
+	},
 };
 
 static const struct nhlt_endp_descriptor max98927_descriptors[] = {

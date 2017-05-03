@@ -19,7 +19,8 @@ DMIC_4CH_48KHZ_16B = dmic-4ch-48khz-16b.bin
 DMIC_4CH_48KHZ_32B = dmic-4ch-48khz-32b.bin
 NAU88L25 = nau88l25-2ch-48khz-24b.bin
 MAX98357_RENDER = max98357-render-2ch-48khz-24b.bin
-MAX98927_RENDER = max98927-render-2ch-48khz-24b.bin
+MAX98927_RENDER_24B = max98927-render-2ch-48khz-24b.bin
+MAX98927_RENDER_16B = max98927-render-2ch-48khz-16b.bin
 RT5514_CAPTURE = rt5514-capture-4ch-48khz-16b.bin
 RT5663 = rt5663-2ch-48khz-24b.bin
 SSM4567_RENDER = ssm4567-render-2ch-48khz-24b.bin
@@ -65,6 +66,10 @@ cbfs-files-$(CONFIG_NHLT_RT5663) += $(RT5663)
 $(RT5663)-file := $(NHLT_BLOB_PATH)/$(RT5663)
 $(RT5663)-type := raw
 
-cbfs-files-$(CONFIG_NHLT_MAX98927) += $(MAX98927_RENDER)
-$(MAX98927_RENDER)-file := $(NHLT_BLOB_PATH)/$(MAX98927_RENDER)
-$(MAX98927_RENDER)-type := raw
+cbfs-files-$(CONFIG_NHLT_MAX98927) += $(MAX98927_RENDER_16B)
+$(MAX98927_RENDER_16B)-file := $(NHLT_BLOB_PATH)/$(MAX98927_RENDER_16B)
+$(MAX98927_RENDER_16B)-type := raw
+
+cbfs-files-$(CONFIG_NHLT_MAX98927) += $(MAX98927_RENDER_24B)
+$(MAX98927_RENDER_24B)-file := $(NHLT_BLOB_PATH)/$(MAX98927_RENDER_24B)
+$(MAX98927_RENDER_24B)-type := raw

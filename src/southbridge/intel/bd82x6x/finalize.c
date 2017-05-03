@@ -65,6 +65,9 @@ void intel_pch_finalize_smm(void)
 	/* GEN_PMCON Lock */
 	pci_or_config8(PCH_LPC_DEV, GEN_PMCON_LOCK, (1 << 1) | (1 << 2));
 
+	/* ETR3: CF9GR Lockdown */
+	pci_update_config32(PCH_LPC_DEV, ETR3, ~ETR3_CF9GR, ETR3_CF9LOCK);
+
 	/* R/WO registers */
 	RCBA32(0x21a4) = RCBA32(0x21a4);
 	pci_write_config32(PCI_DEV(0, 27, 0), 0x74,

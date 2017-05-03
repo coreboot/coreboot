@@ -144,6 +144,7 @@ early_usb_init (const struct southbridge_usb_port *portmap);
 #define ETR3			0xac
 #define  ETR3_CWORWRE		(1 << 18)
 #define  ETR3_CF9GR		(1 << 20)
+#define  ETR3_CF9LOCK		(1 << 31)
 
 /* GEN_PMCON_3 bits */
 #define RTC_BATTERY_DEAD	(1 << 2)

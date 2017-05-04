@@ -57,6 +57,10 @@ int google_chromeec_vstore_info(uint32_t *locked);
 int google_chromeec_vstore_read(int slot, uint8_t *data);
 int google_chromeec_vstore_write(int slot, uint8_t *data, size_t size);
 
+/* Issue reboot command to EC with specified type and flags. Returns 0 on
+   success, < 0 otherwise. */
+int google_chromeec_reboot(int dev_idx, enum ec_reboot_cmd type, uint8_t flags);
+
 /* MEC uses 0x800/0x804 as register/index pair, thus an 8-byte resource. */
 #define MEC_EMI_BASE		0x800
 #define MEC_EMI_SIZE		8

@@ -82,7 +82,22 @@ enum {
 	PLL_MODE_DEEP,
 	PLL_DSMPD_MASK			= 1,
 	PLL_DSMPD_SHIFT			= 3,
+	PLL_FRAC_MODE			= 0,
 	PLL_INTEGER_MODE		= 1,
+
+	/* PLL_CON4 */
+	PLL_SSMOD_BP_MASK		= 1,
+	PLL_SSMOD_BP_SHIFT		= 0,
+	PLL_SSMOD_DIS_SSCG_MASK		= 1,
+	PLL_SSMOD_DIS_SSCG_SHIFT	= 1,
+	PLL_SSMOD_RESET_MASK		= 1,
+	PLL_SSMOD_RESET_SHIFT		= 2,
+	PLL_SSMOD_DOWNSPEAD_MASK	= 1,
+	PLL_SSMOD_DOWNSPEAD_SHIFT	= 3,
+	PLL_SSMOD_DIVVAL_MASK		= 0Xf,
+	PLL_SSMOD_DIVVAL_SHIFT		= 4,
+	PLL_SSMOD_SPREADAMP_MASK	= 0x1f,
+	PLL_SSMOD_SPREADAMP_SHIFT	= 8,
 
 	/* PMUCRU_CLKSEL_CON0 */
 	PMU_PCLK_DIV_CON_MASK		= 0x1f,
@@ -324,6 +339,83 @@ static void rkclk_set_pll(u32 *pll_con, const struct pll_div *div)
 	/* pll enter normal mode */
 	write32(&pll_con[3], RK_CLRSETBITS(PLL_MODE_MASK << PLL_MODE_SHIFT,
 					   PLL_MODE_NORM << PLL_MODE_SHIFT));
+}
+
+/*
+ * Configure the DPLL spread spectrum feature on memory clock.
+ * Configure sequence:
+ * 1. PLL been configured as frac mode, and DACPD should be set to 1’b0.
+ * 2. Configure DOWNSPERAD, SPREAD, DIVVAL(option: configure xPLL_CON5 with
+ *    extern wave table).
+ * 3. set ssmod_disable_sscg = 1’b0, and set ssmod_bp = 1’b0.
+ * 4. Assert RESET = 1’b1 to SSMOD.
+ * 5. RESET = 1’b0 on SSMOD.
+ * 6. Adjust SPREAD/DIVVAL/DOWNSPREAD.
+ */
+static void rkclk_set_dpllssc(struct pll_div *dpll_cfg)
+{
+	u32 divval;
+
+	/*
+	 * TODO find the root cause why is the delay needed, otherwise sometimes
+	 * hang somewhere with reboot tests.
+	 */
+	udelay(30);
+	assert(dpll_cfg->refdiv && dpll_cfg->refdiv <= 6);
+
+	/*
+	 * Need to acquire ~30kHZ which is the target modulation frequency.
+	 * The modulation frequency ~ 30kHz= OSC_HZ/revdiv/128/divval
+	 * (the 128 is the number points in the query table).
+	 */
+	divval = OSC_HZ / 128 / (30 * KHz) / dpll_cfg->refdiv;
+
+	/*
+	 * Use frac mode.
+	 * Make sure the output frequency isn't offset, set 0 for Fractional
+	 * part of feedback divide.
+	 */
+	write32(&cru_ptr->dpll_con[3],
+		RK_CLRSETBITS(PLL_DSMPD_MASK << PLL_DSMPD_SHIFT,
+			      PLL_FRAC_MODE << PLL_DSMPD_SHIFT));
+	clrsetbits_le32(&cru_ptr->dpll_con[2],
+			PLL_FRACDIV_MASK << PLL_FRACDIV_SHIFT,
+			0 << PLL_FRACDIV_SHIFT);
+
+	/*
+	 * Configure SSC divval.
+	 * Spread amplitude range = 0.1 * SPREAD[4:0] (%).
+	 * The below 8 means SPREAD[4:0] that appears to mitigate EMI on boards
+	 * tested. Center and down spread modulation amplitudes based on the
+	 * value of SPREAD.
+	 * SPREAD[4:0]	Center Spread	Down Spread
+	 *	0	0		0
+	 *	1	±0.1%		-0.10%
+	 *	2	±0.2%		-0.20%
+	 *	3	±0.3%		-0.30%
+	 *	4	±0.4%		-0.40%
+	 *	5	±0.5%		-0.50%
+	 *	...
+	 *	31	±3.1%		-3.10%
+	 */
+	write32(&cru_ptr->dpll_con[4],
+		RK_CLRSETBITS(PLL_SSMOD_DIVVAL_MASK << PLL_SSMOD_DIVVAL_SHIFT,
+			      divval << PLL_SSMOD_DIVVAL_SHIFT));
+	write32(&cru_ptr->dpll_con[4],
+		RK_CLRSETBITS(PLL_SSMOD_SPREADAMP_MASK <<
+			      PLL_SSMOD_SPREADAMP_SHIFT,
+			      8 << PLL_SSMOD_SPREADAMP_SHIFT));
+
+	/* Enable SSC for DPLL */
+	write32(&cru_ptr->dpll_con[4],
+		RK_CLRBITS(PLL_SSMOD_BP_MASK << PLL_SSMOD_BP_SHIFT |
+			   PLL_SSMOD_DIS_SSCG_MASK << PLL_SSMOD_DIS_SSCG_SHIFT));
+
+	/* Deassert reset SSMOD */
+	write32(&cru_ptr->dpll_con[4],
+		RK_CLRBITS(PLL_SSMOD_RESET_MASK << PLL_SSMOD_RESET_SHIFT));
+
+	udelay(20);
 }
 
 static int pll_para_config(u32 freq_hz, struct pll_div *div)
@@ -571,6 +663,9 @@ void rkclk_configure_ddr(unsigned int hz)
 		die("Unsupported SDRAM frequency, add to clock.c!");
 	}
 	rkclk_set_pll(&cru_ptr->dpll_con[0], &dpll_cfg);
+
+	if (IS_ENABLED(CONFIG_RK3399_SPREAD_SPECTRUM_DDR))
+		rkclk_set_dpllssc(&dpll_cfg);
 }
 
 #define SPI_CLK_REG_VALUE(bus, clk_div) \

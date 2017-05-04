@@ -24,4 +24,12 @@ config PMIC_BUS
 	int
 	default -1
 
+config RK3399_SPREAD_SPECTRUM_DDR
+	bool "Spread-spectrum DDR clock"
+	default n
+	help
+	  Select Spread Spectrum Modulator (SSMOD) is a fully-digital circuit
+	  used to modulate the frequency of the Silicon Creations’ Fractional
+	  PLL in order to reduce EMI.
+
 endif

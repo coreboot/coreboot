@@ -34,6 +34,7 @@
 #include <cpu/x86/name.h>
 #include <cpu/x86/smm.h>
 #include <delay.h>
+#include <intelblocks/cpulib.h>
 #include <intelblocks/fast_spi.h>
 #include <pc80/mc146818rtc.h>
 #include <soc/cpu.h>
@@ -104,15 +105,6 @@ static const u8 power_limit_time_msr_to_sec[] = {
 	[0x70] = 112,
 	[0x11] = 128,
 };
-
-int cpu_config_tdp_levels(void)
-{
-	msr_t platform_info;
-
-	/* Bits 34:33 indicate how many levels supported */
-	platform_info = rdmsr(MSR_PLATFORM_INFO);
-	return (platform_info.hi >> 1) & 3;
-}
 
 /*
  * Configure processor power limits if possible
@@ -193,7 +185,7 @@ void set_power_limits(u8 power_limit_1_time)
 	if (cpu_config_tdp_levels()) {
 		msr = rdmsr(MSR_CONFIG_TDP_NOMINAL);
 		limit.hi = 0;
-		limit.lo = msr.lo & 0xff;
+		limit.lo = cpu_get_tdp_nominal_ratio();
 		wrmsr(MSR_TURBO_ACTIVATION_RATIO, limit);
 	}
 }
@@ -254,9 +246,9 @@ static void configure_misc(void)
 	msr.lo |= (1 << 0);	/* Fast String enable */
 	msr.lo |= (1 << 3);	/* TM1/TM2/EMTTM enable */
 	if (conf->eist_enable)
-		msr.lo |= (1 << 16);	/* Enhanced SpeedStep Enable */
+		cpu_enable_eist();
 	else
-		msr.lo &= ~(1 << 16);	/* Enhanced SpeedStep Disable */
+		cpu_disable_eist();
 	wrmsr(IA32_MISC_ENABLE, msr);
 
 	/* Disable Thermal interrupts */
@@ -297,31 +289,6 @@ static void configure_dca_cap(void)
 		msr.lo |= 1;
 		wrmsr(IA32_PLATFORM_DCA_CAP, msr);
 	}
-}
-
-static void set_max_ratio(void)
-{
-	msr_t msr, perf_ctl;
-
-	perf_ctl.hi = 0;
-
-	/* Check for configurable TDP option */
-	if (get_turbo_state() == TURBO_ENABLED) {
-		msr = rdmsr(MSR_TURBO_RATIO_LIMIT);
-		perf_ctl.lo = (msr.lo & 0xff) << 8;
-	} else if (cpu_config_tdp_levels()) {
-		/* Set to nominal TDP ratio */
-		msr = rdmsr(MSR_CONFIG_TDP_NOMINAL);
-		perf_ctl.lo = (msr.lo & 0xff) << 8;
-	} else {
-		/* Platform Info bits 15:8 give max ratio */
-		msr = rdmsr(MSR_PLATFORM_INFO);
-		perf_ctl.lo = msr.lo & 0xff00;
-	}
-	wrmsr(IA32_PERF_CTL, perf_ctl);
-
-	printk(BIOS_DEBUG, "cpu: frequency set to %d\n",
-	       ((perf_ctl.lo >> 8) & 0xff) * CONFIG_CPU_BCLK_MHZ);
 }
 
 static void set_energy_perf_bias(u8 policy)
@@ -514,7 +481,7 @@ static void per_cpu_smm_trigger(void)
 static void post_mp_init(void)
 {
 	/* Set Max Ratio */
-	set_max_ratio();
+	cpu_set_max_ratio();
 
 	/*
 	 * Now that all APs have been relocated as well as the BSP let SMIs

@@ -14,18 +14,13 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/io.h>
-#include <console/console.h>
 #include <cpu/x86/msr.h>
 #include <delay.h>
+#include <intelblocks/cpulib.h>
 #include <intelblocks/fast_spi.h>
+#include <intelblocks/msr.h>
 #include <reset.h>
 #include <soc/bootblock.h>
-#include <soc/cpu.h>
-#include <soc/iomap.h>
-#include <soc/msr.h>
-#include <soc/pci_devs.h>
-#include <stdint.h>
 
 /* Soft Reset Data Register Bit 12 = MAX Boot Frequency */
 #define SPI_STRAP_MAX_FREQ	(1<<12)
@@ -93,24 +88,10 @@ void bootblock_cpu_init(void)
 
 void set_max_freq(void)
 {
-	msr_t msr, perf_ctl, platform_info;
-
-	/* Check for configurable TDP option */
-	platform_info = rdmsr(MSR_PLATFORM_INFO);
-
-	if ((platform_info.hi >> 1) & 3) {
+	if (cpu_config_tdp_levels())
 		/* Set to nominal TDP ratio */
-		msr = rdmsr(MSR_CONFIG_TDP_NOMINAL);
-		perf_ctl.lo = (msr.lo & 0xff) << 8;
-	} else {
-		/* Platform Info bits 15:8 give max ratio */
-		msr = rdmsr(MSR_PLATFORM_INFO);
-		perf_ctl.lo = msr.lo & 0xff00;
-	}
-
-	perf_ctl.hi = 0;
-	wrmsr(MSR_IA32_PERF_CTL, perf_ctl);
-
-	printk(BIOS_DEBUG, "CPU: frequency set to %d MHz\n",
-		((perf_ctl.lo >> 8) & 0xff) * CONFIG_CPU_BCLK_MHZ);
+		cpu_set_p_state_to_nominal_tdp_ratio();
+	else
+		/* Set to max non Turbo ratio */
+		cpu_set_p_state_to_max_non_turbo_ratio();
 }

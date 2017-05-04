@@ -79,7 +79,7 @@ static void rehide_me() {
  * so we avoid cloning to this part.
  */
 static void dump_me_memory() {
-	uint32_t me_clone = 0x60000000;
+	uintptr_t me_clone = 0x60000000;
 	uint8_t *dump;
 
 	dump = map_physical_exact((off_t)me_clone, (void *)me_clone, 0x2000000);

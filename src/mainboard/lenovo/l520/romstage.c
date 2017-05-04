@@ -25,12 +25,11 @@
 
 void pch_enable_lpc(void)
 {
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x82, 0x3c0f);
+	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x82, 0x3c0c);
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0x84, 0x007c1611);
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0x88, 0x00040069);
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0x8c, 0x000c0701);
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0x90, 0x00000000);
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x80, 0x0010);
 }
 
 void rcba_config(void)

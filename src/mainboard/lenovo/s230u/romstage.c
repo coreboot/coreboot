@@ -42,7 +42,6 @@ void pch_enable_lpc(void)
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0x88, 0x000c0701);
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0x8c, 0x000c0069);
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0x90, 0x000c06a1);
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x80, 0x0000);
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), ETR3, 0x10000);
 
 	/* Memory map KB9012 EC registers */

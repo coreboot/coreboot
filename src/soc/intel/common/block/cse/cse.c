@@ -471,7 +471,7 @@ static const struct pci_driver cse_driver __pci_driver = {
 	.ops			= &cse_ops,
 	.vendor			= PCI_VENDOR_ID_INTEL,
 	/* SoC/chipset needs to provide PCI device ID */
-	.device			= PCI_DEVICE_ID_HECI1
+	.device			= PCI_DEVICE_ID_INTEL_APOLLOLAKE_CSE0
 };
 
 #endif

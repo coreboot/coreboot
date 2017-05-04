@@ -581,6 +581,10 @@ uint32_t intel_mei_setup(struct pci_dev *dev)
 	mei_base_address = dev->base_addr[0] & ~0xf;
 	pagerounded = mei_base_address & ~0xfff;
 	mei_mmap = map_physical(pagerounded, 0x2000) + mei_base_address - pagerounded;
+	if (mei_mmap == NULL) {
+		printf("Could not map ME setup memory\n");
+		return 1;
+	}
 
 	/* Ensure Memory and Bus Master bits are set */
 	reg32 = pci_read_long(dev, PCI_COMMAND);

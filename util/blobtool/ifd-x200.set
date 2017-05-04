@@ -24,7 +24,7 @@
 	"flmap0_nc" = 0x0,
 	"flmap0_reserved0" = 0x0,
 	"flmap0_frba" = 0x4,
-	"flmap0_nr" = 0x2,
+	"flmap0_nr" = 0x3,
 	"flmap0_reserved1" = 0x0,
 	"flmap1_fmba" = 0x6,
 	"flmap1_nm" = 0x2,

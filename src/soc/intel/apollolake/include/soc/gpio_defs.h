@@ -125,6 +125,10 @@
 #define PAD_CFG1_IOSSTATE_IGNORE	(0xf << 0) /* Ignore Iostandby */
 #define PAD_CFG1_IOSSTATE_MASK		0xf /* mask to extract Iostandby bits */
 #define PAD_CFG1_IOSSTATE_SHIFT	14 /* set Iostandby bits [17:14] */
+#define PAD_CFG1_IOSTERM_SAME		(0x0 << 8) /* Same as functional mode */
+#define PAD_CFG1_IOSTERM_DISPUPD	(0x1 << 8) /* Disable Pull-up/Pull-down */
+#define PAD_CFG1_IOSTERM_ENPD		(0x2 << 8) /* Enable Pull-down */
+#define PAD_CFG1_IOSTERM_ENPU		(0x3 << 8) /* Enable Pull-up */
 
 #define PAD_CFG_BASE			0x500
 #define PAD_CFG_OFFSET(pad)		(PAD_CFG_BASE + ((pad) * 8))

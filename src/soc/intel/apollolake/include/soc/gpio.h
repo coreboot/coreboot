@@ -48,6 +48,7 @@ int gpi_status_get(const struct gpi_status *sts, gpio_t gpi);
 #define PAD_RESET(value)	PAD_CFG0_RESET_##value
 #define PAD_PULL(value)		PAD_CFG1_PULL_##value
 #define PAD_IOSSTATE(value)	PAD_CFG1_IOSSTATE_##value
+#define PAD_IOSTERM(value)	PAD_CFG1_IOSTERM_##value
 #define PAD_IRQ_CFG(route, trig, inv) \
 				(PAD_CFG0_ROUTE_##route | \
 				PAD_CFG0_TRIG_##trig | \
@@ -62,13 +63,15 @@ int gpi_status_get(const struct gpi_status *sts, gpio_t gpi);
 
 /* Native function configuration */
 #define PAD_CFG_NF(pad, pull, rst, func) \
-	_PAD_CFG_STRUCT(pad, PAD_RESET(rst) | PAD_FUNC(func), PAD_PULL(pull) | \
-		PAD_IOSSTATE(TxLASTRxE))
+	PAD_CFG_NF_IOSSTATE(pad, pull, rst, func, TxLASTRxE)
 
 /* Native function configuration for standby state */
 #define PAD_CFG_NF_IOSSTATE(pad, pull, rst, func, iosstate) \
+	PAD_CFG_NF_IOSSTATE_IOSTERM(pad,pull, rst, func, iosstate, SAME)
+
+#define PAD_CFG_NF_IOSSTATE_IOSTERM(pad, pull, rst, func, iosstate, iosterm) \
 	_PAD_CFG_STRUCT(pad, PAD_RESET(rst) | PAD_FUNC(func), PAD_PULL(pull) | \
-		PAD_IOSSTATE(iosstate))
+		PAD_IOSSTATE(iosstate) | PAD_IOSTERM(iosterm))
 
 /* General purpose output, no pullup/down. */
 #define PAD_CFG_GPO(pad, val, rst)	\

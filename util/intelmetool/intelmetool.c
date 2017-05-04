@@ -83,6 +83,10 @@ static void dump_me_memory() {
 	uint8_t *dump;
 
 	dump = map_physical_exact((off_t)me_clone, (void *)me_clone, 0x2000000);
+	if (dump == NULL) {
+		printf("Could not map ME memory\n");
+		return;
+	}
 	zeroit(dump, 0x2000000);
 	printf("Send magic command for memory clone\n");
 
@@ -210,6 +214,12 @@ static int activate_me() {
 
 	rcba_phys = pci_read_long(sb, 0xf0) & 0xfffffffe;
 	rcba = map_physical((off_t)rcba_phys, size);
+	if (rcba == NULL) {
+		printf("Could not map MEI PCI device memory\n");
+		pci_free_dev(sb);
+		pci_cleanup(pacc);
+		return 1;
+	}
 
 	//printf("RCBA at 0x%08" PRIx32 "\n", (uint32_t)rcba_phys);
 	fd2 = *(uint32_t *)(rcba + FD2);

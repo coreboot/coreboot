@@ -15,6 +15,7 @@
 
 #include "mmap.h"
 #include <errno.h>
+#include <string.h>
 
 #ifndef __DARWIN__
 int fd_mem;
@@ -28,8 +29,8 @@ void *map_physical_exact(off_t phys_addr, void *mapto, size_t len) {
 
   if (virt_addr == MAP_FAILED) {
     err = errno;
-    printf("Error mapping physical memory 0x%016jd [0x%zx] ERRNO=%d\n",
-            (intmax_t)phys_addr, len, err);
+    printf("Error mapping physical memory 0x%016jd [0x%zx] ERRNO=%d %s\n",
+            (intmax_t)phys_addr, len, err, strerror(err));
     return NULL;
   }
 
@@ -44,8 +45,8 @@ void *map_physical(off_t phys_addr, size_t len) {
 
   if (virt_addr == MAP_FAILED) {
     err = errno;
-    printf("Error mapping physical memory 0x%016jd [0x%zx] ERRNO=%d\n",
-            (intmax_t)phys_addr, len, err);
+    printf("Error mapping physical memory 0x%016jd [0x%zx] ERRNO=%d %s\n",
+            (intmax_t)phys_addr, len, err, strerror(err));
     return NULL;
   }
 

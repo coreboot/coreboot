@@ -220,6 +220,7 @@ static int activate_me() {
 		printf("MEI not hidden on PCI, checking if visible\n");
 	}
 
+	pci_free_dev(sb);
 	pci_cleanup(pacc);
 
 	return 0;

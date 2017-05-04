@@ -17,7 +17,6 @@
 #include <lib.h>
 #include <hwilib.h>
 #include <device/i2c.h>
-#include <soc/i2c.h>
 #include "ptn3460.h"
 
 /**

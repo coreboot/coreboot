@@ -85,7 +85,7 @@ void pch_enable_lpc(void)
 	pci_write_config32(PCH_LPC_DEV, LPC_GEN1_DEC, 0x3c0a01);
 	pci_write_config16(PCH_LPC_DEV, LPC_IO_DEC, 0x10);
 
-	pci_write_config32(PCH_LPC_DEV, 0xac, 0x10000);
+	pci_write_config32(PCH_LPC_DEV, ETR3, 0x10000);
 
 	/* Initialize SuperIO */
 	ite_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);

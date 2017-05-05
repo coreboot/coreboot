@@ -13,7 +13,7 @@
 ## GNU General Public License for more details.
 ##
 
-subdirs-y += sdram_params_$(CONFIG_MAX_SDRAM_FREQ)/
+subdirs-y += sdram_params/
 
 bootblock-y += bootblock.c
 bootblock-y += chromeos.c

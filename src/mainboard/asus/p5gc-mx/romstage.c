@@ -49,7 +49,7 @@
  * BSEL1 is connected with GPIO33 with inversed logic
  * BSEL2 is connected with GPIO55
  */
-static void setup_sio_gpio(u8 bsel)
+static int setup_sio_gpio(u8 bsel)
 {
 	int need_reset = 0;
 	u8 reg, old_reg;
@@ -83,13 +83,7 @@ static void setup_sio_gpio(u8 bsel)
 
 	pnp_exit_ext_func_mode(GPIO_DEV);
 
-	if (need_reset) {
-		int i = 1000;
-		while (i--)
-			outb(i & 0xff, 0x80);
-		outb(0xe, 0xcf9);
-		halt();
-	}
+	return need_reset;
 }
 
 static u8 msr_get_fsb(void)
@@ -197,7 +191,6 @@ void mainboard_romstage_entry(unsigned long bist)
 {
 	int s3resume = 0, boot_mode = 0;
 
-	u8 m_bsel;
 	u8 c_bsel = msr_get_fsb();
 
 	timestamp_init(get_initial_timestamp());
@@ -209,8 +202,6 @@ void mainboard_romstage_entry(unsigned long bist)
 	ich7_enable_lpc();
 
 	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
-
-	setup_sio_gpio(c_bsel);
 
 	/* Set up the console */
 	console_init();
@@ -228,10 +219,18 @@ void mainboard_romstage_entry(unsigned long bist)
 	 */
 	i945_early_initialization();
 
-	m_bsel = MCHBAR32(CLKCFG) & 7;
-	printk(BIOS_DEBUG, "CPU BSEL: 0x%x\nMCH BSEL: 0x%x\n", c_bsel, m_bsel);
-
 	s3resume = southbridge_detect_s3_resume();
+
+	/*
+	 * Result is that FSB is incorrect on s3 resume (fixed at 800MHz).
+	 * Some CPU accept this others don't.
+	 */
+	if (!s3resume && setup_sio_gpio(c_bsel)) {
+		printk(BIOS_DEBUG,
+			"Needs reset to configure CPU BSEL straps\n");
+		outb(0xe, 0xcf9);
+		halt();
+	}
 
 	/* Enable SPD ROMs and DDR-II DRAM */
 	enable_smbus();

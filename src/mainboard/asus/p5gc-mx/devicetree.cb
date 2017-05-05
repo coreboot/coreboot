@@ -113,9 +113,20 @@ chip northbridge/intel/i945
 					device pnp 2e.6 off end # SPI
 					device pnp 2e.7 on end # GPIO6
 					device pnp 2e.8 off end # WDTO# & PLED
-					device pnp 2e.9 on end # GPIO2-5
+					device pnp 2e.9 off end # GPIO2
+					device pnp 2e.109 on # GPIO3
+						irq 0xf0 = 0xf3 # BSEL straps to output
+						irq 0xf2 = 0x08 # INVERT GPIO33
+					end
+					device pnp 2e.209 on # GPIO4
+						irq 0xf5 = 0xf8
+					end
+					device pnp 2e.309 on  # GPIO5
+						irq 0xe0 = 0xde
+					end
 					device pnp 2e.a on # ACPI
 						irq 0x70 = 0
+						irq 0xe4 = 0x10 # VSBGATE# to power dram during S3
 					end
 					device pnp 2e.b on # HWM
 						io 0x60 = 0x290

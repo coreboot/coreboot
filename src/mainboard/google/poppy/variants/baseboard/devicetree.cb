@@ -236,84 +236,7 @@ chip soc/intel/skylake
 				device i2c 50 on end
 			end
 		end # I2C #1
-		device pci 15.2 on
-			chip drivers/intel/mipi_camera
-				register "acpi_hid" = ""INT3472""
-				register "acpi_name" = ""PMIC""
-				register "chip_name" = ""TPS68470 PMIC""
-				register "device_type" = "INTEL_ACPI_CAMERA_PMIC"
-				device i2c 4d on end
-			end
-			chip drivers/intel/mipi_camera
-				register "acpi_hid" = ""OVTID858""
-				register "acpi_name" = ""CAM0""
-				register "chip_name" = ""OV 13858 Camera""
-				register "device_type" = "INTEL_ACPI_CAMERA_SENSOR"
-
-				# Camera SSDB buffer
-				register "ssdb.sensor_card_sku" = "0x50"
-				register "ssdb.link_used" = "0x00"
-				register "ssdb.lanes_used" = "0x04"
-				register "ssdb.rom_type" = "0x08"
-				register "ssdb.vcm_type" = "0x03"
-				register "ssdb.platform" = "0x09"
-				register "ssdb.flash_support" = "0x02"
-				register "ssdb.privacy_led" = "0x01"
-				register "ssdb.degree" = "0x00"
-				register "ssdb.mipi_define" = "0x01"
-				register "ssdb.mclk" = "0x016E3600"
-
-				# Sensor PWDB entries
-				register "num_pwdb_entries" = "5"
-
-				register "pwdb[0].name" = ""VSIO""
-				register "pwdb[0].value" = "1800600"
-				register "pwdb[0].entry_type" = "INTEL_ACPI_CAMERA_REGULATOR"
-				register "pwdb[0].delay_usec" = "0"
-
-				register "pwdb[1].name" = ""tps68470-a""
-				register "pwdb[1].value" = "19200000"
-				register "pwdb[1].entry_type" = "INTEL_ACPI_CAMERA_CLK"
-				register "pwdb[1].delay_usec" = "0"
-
-				register "pwdb[2].name" = ""ANA""
-				register "pwdb[2].value" = "2815200"
-				register "pwdb[2].entry_type" = "INTEL_ACPI_CAMERA_REGULATOR"
-				register "pwdb[2].delay_usec" = "3000"
-
-				register "pwdb[3].name" = ""s_resetn""
-				register "pwdb[3].value" = "1"
-				register "pwdb[3].entry_type" = "INTEL_ACPI_CAMERA_GPIO"
-				register "pwdb[3].delay_usec" = "0"
-
-				register "pwdb[4].name" = ""CORE""
-				register "pwdb[4].value" = "1200000"
-				register "pwdb[4].entry_type" = "INTEL_ACPI_CAMERA_REGULATOR"
-				register "pwdb[4].delay_usec" = "3000"
-
-				device i2c 10 on end
-			end
-			chip drivers/intel/mipi_camera
-				register "acpi_hid" = ""DW9714""
-				register "acpi_name" = ""VCM0""
-				register "chip_name" = ""Dongwoon AF DAC""
-				register "device_type" = "INTEL_ACPI_CAMERA_VCM"
-
-				# VCM PWDB entries
-				register "num_pwdb_entries" = "2"
-				register "pwdb[0].name" = ""VSIO""
-				register "pwdb[0].value" = "1800600"
-				register "pwdb[0].entry_type" = "INTEL_ACPI_CAMERA_REGULATOR"
-				register "pwdb[0].delay_usec" = "0"
-
-				register "pwdb[1].name" = ""VCM""
-				register "pwdb[1].value" = "2815200"
-				register "pwdb[1].entry_type" = "INTEL_ACPI_CAMERA_REGULATOR"
-				register "pwdb[1].delay_usec" = "3000"
-
-				device i2c 0xc on end
-			end
-		end # I2C #2
+		device pci 15.2 on end # I2C #2
 		device pci 15.3 on
 			chip drivers/i2c/hid
 				register "generic.hid" = ""WCOM50C1""
@@ -354,61 +277,7 @@ chip soc/intel/skylake
 				device i2c 13 on end
 			end
 		end # I2C #5
-		device pci 19.2 on
-			chip drivers/intel/mipi_camera
-				register "acpi_hid" = ""INT3479""
-				register "acpi_name" = ""CAM1""
-				register "chip_name" = ""OV 5670 Camera""
-				register "device_type" = "INTEL_ACPI_CAMERA_SENSOR"
-
-				# Camera SSDB buffer
-				register "ssdb.sensor_card_sku" = "0x50"
-				register "ssdb.link_used" = "0x01"
-				register "ssdb.lanes_used" = "0x02"
-				register "ssdb.rom_type" = "0x08"
-				register "ssdb.vcm_type" = "0x03"
-				register "ssdb.platform" = "0x09"
-				register "ssdb.flash_support" = "0x02"
-				register "ssdb.privacy_led" = "0x01"
-				register "ssdb.mipi_define" = "0x01"
-				register "ssdb.mclk" = "0x016E3600"
-
-				# Sensor PWDB entries
-				register "num_pwdb_entries" = "6"
-
-				register "pwdb[0].name" = ""VSIO""
-				register "pwdb[0].value" = "1800600"
-				register "pwdb[0].entry_type" = "INTEL_ACPI_CAMERA_REGULATOR"
-				register "pwdb[0].delay_usec" = "0"
-
-				register "pwdb[1].name" = ""AUX2""
-				register "pwdb[1].value" = "1800600"
-				register "pwdb[1].entry_type" = "INTEL_ACPI_CAMERA_REGULATOR"
-				register "pwdb[1].delay_usec" = "0"
-
-				register "pwdb[2].name" = ""tps68470-b""
-				register "pwdb[2].value" = "19200000"
-				register "pwdb[2].entry_type" = "INTEL_ACPI_CAMERA_CLK"
-				register "pwdb[2].delay_usec" = "0"
-
-				register "pwdb[3].name" = ""gpio.4""
-				register "pwdb[3].value" = "1"
-				register "pwdb[3].entry_type" = "INTEL_ACPI_CAMERA_GPIO"
-				register "pwdb[3].delay_usec" = "3000"
-
-				register "pwdb[4].name" = ""gpio.5""
-				register "pwdb[4].value" = "1"
-				register "pwdb[4].entry_type" = "INTEL_ACPI_CAMERA_GPIO"
-				register "pwdb[4].delay_usec" = "0"
-
-				register "pwdb[5].name" = ""AUX1""
-				register "pwdb[5].value" = "1213200"
-				register "pwdb[5].entry_type" = "INTEL_ACPI_CAMERA_REGULATOR"
-				register "pwdb[5].delay_usec" = "3000"
-
-				device i2c 36 on end
-			end
-		end # I2C #4
+		device pci 19.2 on end # I2C #4
 		device pci 1c.0 on
 			chip drivers/intel/wifi
 				register "wake" = "GPE0_PCI_EXP"

@@ -1,7 +1,7 @@
 ##
 ## This file is part of the coreboot project.
 ##
-## Copyright 2016 Rockchip Inc.
+## Copyright 2017 Rockchip Inc.
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -14,11 +14,17 @@
 ##
 
 sdram-params :=
-sdram-params += sdram-lpddr3-hynix-4GB
-sdram-params += sdram-lpddr3-samsung-2GB-24EB
-sdram-params += sdram-lpddr3-micron-2GB
-sdram-params += sdram-lpddr3-samsung-4GB-04EB
-sdram-params += sdram-lpddr3-micron-4GB
+sdram-params += sdram-lpddr3-hynix-4GB-928
+
+sdram-params += sdram-lpddr3-micron-2GB-800
+sdram-params += sdram-lpddr3-micron-2GB-928
+sdram-params += sdram-lpddr3-micron-4GB-800
+sdram-params += sdram-lpddr3-micron-4GB-928
+
+sdram-params += sdram-lpddr3-samsung-2GB-24EB-800
+sdram-params += sdram-lpddr3-samsung-2GB-24EB-928
+sdram-params += sdram-lpddr3-samsung-4GB-04EB-800
+sdram-params += sdram-lpddr3-samsung-4GB-04EB-928
 
 $(foreach params,$(sdram-params), \
 	$(eval cbfs-files-y += $(params)) \

@@ -70,38 +70,6 @@ void southbridge_smm_enable_smi(void)
 	enable_smi(APMC_EN | SLP_SMI_EN | GBL_SMI_EN | ESPI_SMI_EN | EOS);
 }
 
-void southbridge_trigger_smi(void)
-{
-	/*
-	 * There are several methods of raising a controlled SMI# via
-	 * software, among them:
-	 *  - Writes to io 0xb2 (APMC)
-	 *  - Writes to the Local Apic ICR with Delivery mode SMI.
-	 *
-	 * Using the local apic is a bit more tricky. According to
-	 * AMD Family 11 Processor BKDG no destination shorthand must be
-	 * used.
-	 * The whole SMM initialization is quite a bit hardware specific, so
-	 * I'm not too worried about the better of the methods at the moment
-	 */
-
-	/* raise an SMI interrupt */
-	printk(BIOS_SPEW, "  ... raise SMI#\n");
-	outb(0x00, 0xb2);
-}
-
-void southbridge_clear_smi_status(void)
-{
-	/* Clear SMI status */
-	clear_smi_status();
-
-	/* Clear PM1 status */
-	clear_pm1_status();
-
-	/* Set EOS bit so other SMIs can occur. */
-	enable_smi(EOS);
-}
-
 void smm_setup_structures(void *gnvs, void *tcg, void *smi1)
 {
 	/*

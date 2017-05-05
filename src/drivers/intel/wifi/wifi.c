@@ -59,6 +59,12 @@ static int smbios_write_wifi(struct device *dev, int *handle,
 }
 #endif
 
+__attribute__((weak))
+int get_wifi_sar_limits(struct wifi_sar_limits *sar_limits)
+{
+	return -1;
+}
+
 #if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
 static void emit_sar_acpi_structures(void)
 {

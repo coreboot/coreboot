@@ -1,0 +1,83 @@
+
+config BOARD_INTEL_BASEBOARD_GLKRVP
+	def_bool n
+	select SOC_INTEL_GLK
+	select BOARD_ROMSIZE_KB_16384
+	select DRIVERS_I2C_GENERIC
+	select DRIVERS_PS2_KEYBOARD
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select MAINBOARD_HAS_CHROMEOS
+	select MAINBOARD_HAS_LPC_TPM
+	select MAINBOARD_HAS_TPM2
+
+if BOARD_INTEL_BASEBOARD_GLKRVP
+
+config BASEBOARD_GLKRVP_LAPTOP
+	def_bool n
+	select SYSTEM_TYPE_LAPTOP
+
+choice GLK_EC
+	prompt "ON BOARD EC"
+	default GLK_CHROME_EC
+	help
+	  This option allows you to select the on board EC to use.
+	  Select whether the board  has Intel EC or Chrome EC
+
+config GLK_CHROME_EC
+	bool "Chrome EC"
+	select EC_GOOGLE_CHROMEEC
+	select EC_GOOGLE_CHROMEEC_LPC
+
+config GLK_INTEL_EC
+	bool "Intel EC"
+	select EC_ACPI
+endchoice
+
+config CHROMEOS
+	bool
+	default y
+	select GBB_FLAG_DISABLE_EC_SOFTWARE_SYNC
+	select VBOOT_LID_SWITCH
+
+config MAINBOARD_DIR
+	string
+	default intel/glkrvp
+
+config VARIANT_DIR
+	string
+	default "glkrvp" if BOARD_INTEL_GLKRVP
+
+config DEVICETREE
+	string
+	default "variants/baseboard/devicetree.cb"
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "glkrvp" if BOARD_INTEL_GLKRVP
+
+config MAINBOARD_FAMILY
+	string
+	default "Intel_Glkrvp" if BOARD_INTEL_GLKRVP
+
+config GBB_HWID
+	string
+	depends on CHROMEOS
+	default "GLKRVP TEST A-A 6939" if BOARD_INTEL_GLKRVP
+
+config MAX_CPUS
+	int
+	default 4
+
+config UART_FOR_CONSOLE
+	int
+	default 2
+
+config INCLUDE_NHLT_BLOBS
+	bool "Include blobs for audio."
+
+config IS_GLK_RVP_1
+	bool "Is this RVP1?"
+	default n
+
+endif # BOARD_INTEL_GLKRVP

@@ -49,6 +49,9 @@ DefinitionBlock(
 		}
 	}
 
+	/* MIPI camera */
+	#include "acpi/mipi_camera.asl"
+
 	/* Chrome OS specific */
 	#include <vendorcode/google/chromeos/acpi/chromeos.asl>
 

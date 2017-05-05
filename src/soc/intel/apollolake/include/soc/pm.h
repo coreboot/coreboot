@@ -180,6 +180,17 @@
 #define  GPE0_DW2_SHIFT		8
 #define  GPE0_DW3_SHIFT		12
 
+#if IS_ENABLED(CONFIG_SOC_INTEL_GLK)
+#define PMC_GPE_N_95_64		8
+#define PMC_GPE_N_63_32		7
+#define PMC_GPE_N_31_0		6
+#define PMC_GPE_NW_127_96	5
+#define PMC_GPE_NW_95_64	4
+#define PMC_GPE_NW_63_32	3
+#define PMC_GPE_NW_31_0		2
+#define PMC_GPE_SCC_63_32	1
+#define PMC_GPE_SCC_31_0	0
+#else  /*For APL*/
 #define  PMC_GPE_SW_31_0	0
 #define  PMC_GPE_SW_63_32	1
 #define  PMC_GPE_NW_31_0	3
@@ -188,6 +199,7 @@
 #define  PMC_GPE_N_31_0		6
 #define  PMC_GPE_N_63_32	7
 #define  PMC_GPE_W_31_0		9
+#endif
 
 /* Track power state from reset to log events. */
 struct chipset_power_state {

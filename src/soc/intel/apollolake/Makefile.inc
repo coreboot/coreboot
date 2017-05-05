@@ -9,9 +9,7 @@ subdirs-y += ../../../cpu/x86/tsc
 subdirs-y += ../../../cpu/x86/cache
 
 bootblock-y += bootblock/bootblock.c
-bootblock-y += bootblock/bootblock.c
 bootblock-y += car.c
-bootblock-y += gpio_apl.c
 bootblock-y += heci.c
 bootblock-y += i2c.c
 bootblock-y += lpc_lib.c
@@ -23,7 +21,6 @@ bootblock-$(CONFIG_FSP_CAR) += bootblock/cache_as_ram_fsp.S
 
 romstage-y += car.c
 romstage-$(CONFIG_PLATFORM_USES_FSP2_0) += romstage.c
-romstage-y += gpio_apl.c
 romstage-y += heci.c
 romstage-y += i2c.c
 romstage-$(CONFIG_SOC_UART_DEBUG) += uart_early.c
@@ -37,7 +34,6 @@ romstage-y += spi.c
 
 smm-y += mmap_boot.c
 smm-y += pmutil.c
-smm-y += gpio_apl.c
 smm-y += smihandler.c
 smm-y += spi.c
 smm-y += uart_early.c
@@ -48,7 +44,6 @@ ramstage-y += chip.c
 ramstage-y += cse.c
 ramstage-y += elog.c
 ramstage-y += dsp.c
-ramstage-y += gpio_apl.c
 ramstage-y += graphics.c
 ramstage-y += heci.c
 ramstage-y += i2c.c
@@ -87,8 +82,24 @@ verstage-y += pmutil.c
 verstage-y += reset.c
 verstage-y += spi.c
 
+ifeq ($(CONFIG_SOC_INTEL_GLK),y)
+bootblock-y += gpio_glk.c
+romstage-y += gpio_glk.c
+smm-y += gpio_glk.c
+ramstage-y += gpio_glk.c
+else
+bootblock-y += gpio_apl.c
+romstage-y += gpio_apl.c
+smm-y += gpio_apl.c
+ramstage-y += gpio_apl.c
+endif
+
 CPPFLAGS_common += -I$(src)/soc/intel/apollolake/include
+ifeq ($(CONFIG_SOC_INTEL_GLK),y)
+CPPFLAGS_common += -I$(src)/vendorcode/intel/fsp/fsp2_0/glk
+else
 CPPFLAGS_common += -I$(src)/vendorcode/intel/fsp/fsp2_0/apollolake
+endif
 
 # Since FSP-M runs in CAR we need to relocate it to a specific address
 $(CONFIG_FSP_M_CBFS)-options := -b $(CONFIG_FSP_M_ADDR)

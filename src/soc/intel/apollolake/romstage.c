@@ -165,10 +165,12 @@ static bool punit_init(void)
 			PUINT_THERMAL_DEVICE_IRQ_VEC_NUMBER |
 			PUINT_THERMAL_DEVICE_IRQ_LOCK;
 
-	data = MCHBAR32(0x7818);
-	data &= 0xFFFFE01F;
-	data |= 0x20 | 0x200;
-	MCHBAR32(0x7818) = data;
+	if (!IS_ENABLED(CONFIG_SOC_INTEL_GLK)) {
+		data = MCHBAR32(0x7818);
+		data &= 0xFFFFE01F;
+		data |= 0x20 | 0x200;
+		MCHBAR32(0x7818) = data;
+	}
 
 	/* Stage0 BIOS Reset Complete (RST_CPL) */
 	enable_bios_reset_cpl();

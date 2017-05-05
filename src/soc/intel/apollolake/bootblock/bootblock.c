@@ -33,7 +33,11 @@
 #include <timestamp.h>
 
 static const struct pad_config tpm_spi_configs[] = {
+#if IS_ENABLED(CONFIG_SOC_INTEL_GLK)
+	PAD_CFG_NF(GPIO_81, NATIVE, DEEP, NF3),	/* FST_SPI_CS2_N */
+#else
 	PAD_CFG_NF(GPIO_106, NATIVE, DEEP, NF3),	/* FST_SPI_CS2_N */
+#endif
 };
 
 static void tpm_enable(void)

@@ -20,6 +20,8 @@
 
 #define CPUID_APOLLOLAKE_A0	0x506c8
 #define CPUID_APOLLOLAKE_B0	0x506c9
+#define CPUID_GLK_A0		0x706a0
+#define CPUID_GLK_B0		0x706a1
 
 /* Common Timer Copy (CTC) frequency - 19.2MHz. */
 #define CTC_FREQ		19200000

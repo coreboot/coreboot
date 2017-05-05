@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2015 Intel Corp.
+ * Copyright (C) 2015 - 2017 Intel Corp.
  * (Written by Alexandru Gagniuc <alexandrux.gagniuc@intel.com> for Intel Corp.)
  * (Written by Andrey Petrov <andrey.petrov@intel.com> for Intel Corp.)
  *
@@ -445,11 +445,56 @@ static void parse_devicetree(FSP_S_CONFIG *silconfig)
 	}
 }
 
+static void apl_fsp_silicon_init_params_cb(struct soc_intel_apollolake_config
+	*cfg, FSP_S_CONFIG *silconfig)
+{
+#if !IS_ENABLED(CONFIG_SOC_INTEL_GLK) /* GLK FSP does not have these
+					 fields in FspsUpd.h yet */
+	uint8_t port;
+
+	for (port = 0; port < APOLLOLAKE_USB2_PORT_MAX; port++) {
+		if (cfg->usb2eye[port].Usb20PerPortTxPeHalf != 0)
+			silconfig->PortUsb20PerPortTxPeHalf[port] =
+				cfg->usb2eye[port].Usb20PerPortTxPeHalf;
+
+		if (cfg->usb2eye[port].Usb20PerPortPeTxiSet != 0)
+			silconfig->PortUsb20PerPortPeTxiSet[port] =
+				cfg->usb2eye[port].Usb20PerPortPeTxiSet;
+
+		if (cfg->usb2eye[port].Usb20PerPortTxiSet != 0)
+			silconfig->PortUsb20PerPortTxiSet[port] =
+				cfg->usb2eye[port].Usb20PerPortTxiSet;
+
+		if (cfg->usb2eye[port].Usb20HsSkewSel != 0)
+			silconfig->PortUsb20HsSkewSel[port] =
+				cfg->usb2eye[port].Usb20HsSkewSel;
+
+		if (cfg->usb2eye[port].Usb20IUsbTxEmphasisEn != 0)
+			silconfig->PortUsb20IUsbTxEmphasisEn[port] =
+				cfg->usb2eye[port].Usb20IUsbTxEmphasisEn;
+
+		if (cfg->usb2eye[port].Usb20PerPortRXISet != 0)
+			silconfig->PortUsb20PerPortRXISet[port] =
+				cfg->usb2eye[port].Usb20PerPortRXISet;
+
+		if (cfg->usb2eye[port].Usb20HsNpreDrvSel != 0)
+			silconfig->PortUsb20HsNpreDrvSel[port] =
+				cfg->usb2eye[port].Usb20HsNpreDrvSel;
+	}
+#endif
+}
+
+static void glk_fsp_silicon_init_params_cb(
+	struct soc_intel_apollolake_config *cfg, FSP_S_CONFIG *silconfig)
+{
+	silconfig->Gmm = 0;
+	silconfig->HdaEnable = 0;
+}
+
 void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 {
 	FSP_S_CONFIG *silconfig = &silupd->FspsConfig;
 	static struct soc_intel_apollolake_config *cfg;
-	uint8_t port;
 
 	/* Load VBT before devicetree-specific config. */
 	silconfig->GraphicsConfigPtr = (uintptr_t)vbt;
@@ -506,38 +551,10 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 	silconfig->HDAudioPwrGate = cfg->hdaudio_pwr_gate_enable;
 	/* Bios config lockdown Audio clk and power gate */
 	silconfig->BiosCfgLockDown = cfg->hdaudio_bios_config_lockdown;
-
-	/* USB2 eye diagram settings per port */
-	for (port = 0; port < APOLLOLAKE_USB2_PORT_MAX; port++) {
-		if (cfg->usb2eye[port].Usb20PerPortTxPeHalf != 0)
-			silconfig->PortUsb20PerPortTxPeHalf[port] =
-				cfg->usb2eye[port].Usb20PerPortTxPeHalf;
-
-		if (cfg->usb2eye[port].Usb20PerPortPeTxiSet != 0)
-			silconfig->PortUsb20PerPortPeTxiSet[port] =
-				cfg->usb2eye[port].Usb20PerPortPeTxiSet;
-
-		if (cfg->usb2eye[port].Usb20PerPortTxiSet != 0)
-			silconfig->PortUsb20PerPortTxiSet[port] =
-				cfg->usb2eye[port].Usb20PerPortTxiSet;
-
-		if (cfg->usb2eye[port].Usb20HsSkewSel != 0)
-			silconfig->PortUsb20HsSkewSel[port] =
-				cfg->usb2eye[port].Usb20HsSkewSel;
-
-		if (cfg->usb2eye[port].Usb20IUsbTxEmphasisEn != 0)
-			silconfig->PortUsb20IUsbTxEmphasisEn[port] =
-				cfg->usb2eye[port].Usb20IUsbTxEmphasisEn;
-
-		if (cfg->usb2eye[port].Usb20PerPortRXISet != 0)
-			silconfig->PortUsb20PerPortRXISet[port] =
-				cfg->usb2eye[port].Usb20PerPortRXISet;
-
-		if (cfg->usb2eye[port].Usb20HsNpreDrvSel != 0)
-			silconfig->PortUsb20HsNpreDrvSel[port] =
-				cfg->usb2eye[port].Usb20HsNpreDrvSel;
-	}
-
+	if (IS_ENABLED(CONFIG_SOC_INTEL_GLK))
+		glk_fsp_silicon_init_params_cb(cfg, silconfig);
+	else
+		apl_fsp_silicon_init_params_cb(cfg, silconfig);
 }
 
 struct chip_operations soc_intel_apollolake_ops = {

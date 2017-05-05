@@ -3,6 +3,13 @@ config SOC_INTEL_APOLLOLAKE
 	help
 	  Intel Apollolake support
 
+config SOC_INTEL_GLK
+	bool
+	default n
+	select SOC_INTEL_APOLLOLAKE
+	help
+	  Intel GLK support
+
 if SOC_INTEL_APOLLOLAKE
 
 config CPU_SPECIFIC_OPTIONS
@@ -275,7 +282,8 @@ config NHLT_DA7219
 
 choice
 	prompt "Cache-as-ram implementation"
-	default CAR_CQOS
+	default CAR_CQOS if !SOC_INTEL_GLK
+	default CAR_NEM
 	help
 	  This option allows you to select how cache-as-ram (CAR) is set up.
 

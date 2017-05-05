@@ -16,7 +16,7 @@
 #ifndef AMD_GARDENIA_FCHEC
 #define AMD_GARDENIA_FCHEC
 
-#include "imc.h"
+#include <soc/imc.h>
 #include "Porting.h"
 #include "AGESA.h"
 #include "FchCommonCfg.h"

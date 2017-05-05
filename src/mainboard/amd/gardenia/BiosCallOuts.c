@@ -15,22 +15,18 @@
 
 #include <device/pci_def.h>
 #include <device/device.h>
-#include "AGESA.h"
-#include "amdlib.h"
-#include <northbridge/amd/pi/BiosCallOuts.h>
-#include <northbridge/amd/pi/00670F00/chip.h>
-#include "Ids.h"
-#include "heapManager.h"
-#include "FchPlatform.h"
-#include "cbfs.h"
-#if IS_ENABLED(CONFIG_HUDSON_IMC_FWM)
-#include "imc.h"
-#endif
-#include "hudson.h"
+#include <AGESA.h>
+#include <amdlib.h>
+#include <BiosCallOuts.h>
+#include <Ids.h>
+#include <heapManager.h>
+#include <FchPlatform.h>
+#include <cbfs.h>
+#include <soc/imc.h>
+#include <soc/hudson.h>
 #include <stdlib.h>
-#include "BiosCallOuts.h"
-#include "northbridge/amd/pi/dimmSpd.h"
-#include "northbridge/amd/pi/agesawrapper.h"
+#include <dimmSpd.h>
+#include <agesawrapper.h>
 
 static AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr);
 
@@ -95,12 +91,12 @@ AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr)
 	} else if (StdHeader->Func == AMD_INIT_ENV) {
 		FCH_DATA_BLOCK *FchParams_env = (FCH_DATA_BLOCK *)FchData;
 		printk(BIOS_DEBUG, "Fch OEM config in INIT ENV ");
-#if IS_ENABLED(CONFIG_HUDSON_IMC_FWM)
+#if IS_ENABLED(CONFIG_STONEYRIDGE_IMC_FWM)
 		oem_fan_control(FchParams_env);
 #endif
 
 		/* XHCI configuration */
-#if CONFIG_HUDSON_XHCI_ENABLE
+#if CONFIG_STONEYRIDGE_XHCI_ENABLE
 		FchParams_env->Usb.Xhci0Enable = TRUE;
 #else
 		FchParams_env->Usb.Xhci0Enable = FALSE;
@@ -109,8 +105,8 @@ AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr)
 		FchParams_env->Usb.USB30PortInit = 8; /* 8: If USB3 port is unremoveable. */
 
 		/* SATA configuration */
-		FchParams_env->Sata.SataClass = CONFIG_HUDSON_SATA_MODE;
-		switch ((SATA_CLASS)CONFIG_HUDSON_SATA_MODE) {
+		FchParams_env->Sata.SataClass = CONFIG_STONEYRIDGE_SATA_MODE;
+		switch ((SATA_CLASS)CONFIG_STONEYRIDGE_SATA_MODE) {
 		case SataRaid:
 		case SataAhci:
 		case SataAhci7804:

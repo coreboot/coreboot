@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-#include <northbridge/amd/pi/agesawrapper.h>
+#include <agesawrapper.h>
 
 #include <console/console.h>
 #include <string.h>

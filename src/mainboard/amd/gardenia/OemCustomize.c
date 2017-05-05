@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-#include <northbridge/amd/pi/agesawrapper.h>
+#include <agesawrapper.h>
 #include <PlatformMemoryConfiguration.h>
 
 #define FILECODE PROC_GNB_PCIE_FAMILY_0X15_F15PCIECOMPLEXCONFIG_FILECODE

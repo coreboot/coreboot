@@ -32,20 +32,20 @@ DefinitionBlock (
 	#include "acpi/usb_oc.asl"
 
 	/* PCI IRQ mapping for the Southbridge */
-	#include <southbridge/amd/pi/hudson/acpi/pcie.asl>
+	#include <pcie.asl>
 
 	/* Describe the processor tree (\_PR) */
-	#include <cpu/amd/pi/00670F00/acpi/cpu.asl>
+	#include <cpu.asl>
 
 	/* Contains the supported sleep states for this chipset */
-	#include <southbridge/amd/pi/hudson/acpi/sleepstates.asl>
+	#include <sleepstates.asl>
 
 	/* Contains the Sleep methods (WAK, PTS, GTS, etc.) */
 	#include "acpi/sleep.asl"
 
 	/* System Bus */
 	Scope(\_SB) { /* Start \_SB scope */
-	 	/* global utility methods expected within the \_SB scope */
+		/* global utility methods expected within the \_SB scope */
 		#include <arch/x86/acpi/globutil.asl>
 
 		/* Describe IRQ Routing mapping for this platform (within the \_SB scope) */
@@ -60,14 +60,14 @@ DefinitionBlock (
 
 		Device(PCI0) {
 			/* Describe the AMD Northbridge */
-			#include <northbridge/amd/pi/00670F00/acpi/northbridge.asl>
+			#include <northbridge.asl>
 
 			/* Describe the AMD Fusion Controller Hub Southbridge */
-			#include <southbridge/amd/pi/hudson/acpi/fch.asl>
+			#include <fch.asl>
 		}
 
 		/* Describe PCI INT[A-H] for the Southbridge */
-		#include <southbridge/amd/pi/hudson/acpi/pci_int.asl>
+		#include <pci_int.asl>
 
 		/* Describe the devices in the Southbridge */
 		#include "acpi/carrizo_fch.asl"
@@ -75,7 +75,7 @@ DefinitionBlock (
 	} /* End \_SB scope */
 
 	/* Describe SMBUS for the Southbridge */
-	#include <southbridge/amd/pi/hudson/acpi/smbus.asl>
+	#include <smbus.asl>
 
 	/* Define the General Purpose Events for the platform */
 	#include "acpi/gpe.asl"

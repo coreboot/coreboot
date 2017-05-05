@@ -17,7 +17,7 @@
 #include <device/device.h>
 #include <arch/acpi.h>
 #include <agesawrapper.h>
-#include <southbridge/amd/common/amd_pci_util.h>
+#include <amd_pci_util.h>
 
 /***********************************************************
  * These arrays set up the FCH PCI_INTR registers 0xC00/0xC01.

@@ -22,7 +22,7 @@
 #include <cpu/amd/car.h>
 #include <northbridge/amd/pi/agesawrapper.h>
 #include <northbridge/amd/pi/agesawrapper_call.h>
-#include <southbridge/amd/pi/hudson/hudson.h>
+#include <soc/hudson.h>
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
@@ -35,9 +35,9 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	if (!cpu_init_detectedx && boot_cpu()) {
 		post_code(0x30);
 
-#if IS_ENABLED(CONFIG_HUDSON_UART)
-		configure_hudson_uart();
-#endif
+		if (IS_ENABLED(CONFIG_STONEYRIDGE_UART))
+			configure_hudson_uart();
+
 		post_code(0x31);
 		console_init();
 	}

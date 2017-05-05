@@ -17,15 +17,14 @@ if BOARD_AMD_GARDENIA
 
 config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
-	select CPU_AMD_PI_00670F00_FP4
-	select NORTHBRIDGE_AMD_PI_00670F00
-	select SOUTHBRIDGE_AMD_PI_KERN
+	select SOC_AMD_STONEYRIDGE_FP4
 	select HAVE_OPTION_TABLE
 	select HAVE_PIRQ_TABLE
 	select HAVE_MP_TABLE
 	select HAVE_ACPI_TABLES
 	select BOARD_ROMSIZE_KB_8192
 	select GFXUMA
+	select STONEYRIDGE_IMC_FWM
 
 config MAINBOARD_DIR
 	string
@@ -47,7 +46,7 @@ config ONBOARD_VGA_IS_PRIMARY
 	bool
 	default y
 
-config HUDSON_LEGACY_FREE
+config STONEYRIDGE_LEGACY_FREE
 	bool
 	default y
 

@@ -61,10 +61,6 @@ void smm_info(uintptr_t *perm_smbase, size_t *perm_smsize,
 void smm_initialize(void);
 void smm_relocate(void);
 
-/* These helpers are for performing SMM relocation. */
-void southbridge_trigger_smi(void);
-void southbridge_clear_smi_status(void);
-
 /*
  * The initialization of the southbridge is split into 2 compoments. One is
  * for clearing the state in the SMM registers. The other is for enabling
@@ -80,8 +76,6 @@ static inline void smm_info(uintptr_t *perm_smbase, size_t *perm_smsize,
 static inline void smm_initialize(void) {}
 
 static inline void smm_relocate(void) {}
-static inline void southbridge_trigger_smi(void) {}
-static inline void southbridge_clear_smi_status(void) {}
 static inline void southbridge_smm_clear_state(void) {}
 static inline void southbridge_smm_enable_smi(void) {}
 #endif	/* CONFIG_HAVE_SMI_HANDLER */

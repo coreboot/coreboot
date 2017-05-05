@@ -102,6 +102,9 @@ static void rcba_config(void)
 void mainboard_romstage_entry(unsigned long bist)
 {
 	const u8 spd_addrmap[4] = { 0x50, 0x51, 0, 0 };
+	const u8 clockgen_block[13] = { 0x61, 0xd9, 0xfe, 0xff, 0xff, 0x00,
+					0x00, 0x01, 0x03, 0x25, 0x83, 0x17,
+					0x0d };
 	int cbmem_was_initted;
 	int s3resume = 0;
 	int boot_path;
@@ -124,6 +127,8 @@ void mainboard_romstage_entry(unsigned long bist)
 
 	report_bist_failure(bist);
 	enable_smbus();
+
+	smbus_block_write(0x69, 0, 13, clockgen_block);
 
 	pineview_early_initialization();
 

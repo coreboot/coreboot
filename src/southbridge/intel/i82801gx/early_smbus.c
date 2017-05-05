@@ -59,3 +59,14 @@ int i2c_block_read(unsigned int device, unsigned int offset, u32 bytes, u8 *buf)
 {
 	return do_i2c_block_read(SMBUS_IO_BASE, device, offset, bytes, buf);
 }
+
+int smbus_block_read(unsigned int device, unsigned int cmd, u8 bytes, u8 *buf)
+{
+	return do_smbus_block_read(SMBUS_IO_BASE, device, cmd, bytes, buf);
+}
+
+int smbus_block_write(unsigned int device, unsigned int cmd, u8 bytes,
+		const u8 *buf)
+{
+	return do_smbus_block_write(SMBUS_IO_BASE, device, cmd, bytes, buf);
+}

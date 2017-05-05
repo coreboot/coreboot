@@ -15,16 +15,6 @@
 
 chip soc/rockchip/rk3399
 	device cpu_cluster 0 on end
-	register "vop_mode" = "VOP_MODE_MIPI"
+	register "vop_mode" = "VOP_MODE_NONE"
 	register "framebuffer_bits_per_pixel" = "32"
-	register "panel_pixel_clock" = "56900"
-	register "panel_refresh" = "60"
-	register "panel_ha" = "768"
-	register "panel_hbl" = "120"
-	register "panel_hso" = "40"
-	register "panel_hspw" = "40"
-	register "panel_va" = "1024"
-	register "panel_vbl" = "44"
-	register "panel_vso" = "20"
-	register "panel_vspw" = "4"
 end

@@ -1,0 +1,4 @@
+config SOC_AMD_COMMON
+	bool
+	help
+	  common code for AMD SOCs

@@ -1,0 +1,167 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2017 Advanced Micro Devices, Inc.
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+
+config SOC_AMD_STONEYRIDGE
+	bool
+	select IOAPIC
+	select HAVE_USBDEBUG_OPTIONS
+	select HAVE_HARD_RESET
+	select SOC_AMD_COMMON
+
+if SOC_AMD_STONEYRIDGE
+
+config BOOTBLOCK_SOUTHBRIDGE_INIT
+	string
+	default "soc/amd/stoneyridge/bootblock/bootblock.c"
+
+config SOUTHBRIDGE_AMD_STONEYRIDGE_SKIP_ISA_DMA_INIT
+	bool
+	default n
+
+config EHCI_BAR
+	hex
+	default 0xfef00000
+
+config STONEYRIDGE_XHCI_ENABLE
+	bool "Enable Stoney Ridge XHCI Controller"
+	default y
+	help
+	  The XHCI controller must be enabled and the XHCI firmware
+	  must be added in order to have USB 3.0 support configured
+	  by coreboot. The OS will be responsible for enabling the XHCI
+	  controller if the the XHCI firmware is available but the
+	  XHCI controller is not enabled by coreboot.
+
+config STONEYRIDGE_XHCI_FWM
+	bool "Add xhci firmware"
+	default y
+	help
+	  Add Stoney Ridge XHCI Firmware to support the onboard USB 3.0
+
+config STONEYRIDGE_IMC_FWM
+	bool "Add IMC firmware"
+	default n
+	help
+	  Add Stoney Ridge IMC Firmware to support the onboard fan control
+
+config STONEYRIDGE_GEC_FWM
+	bool
+	default n
+	help
+	  Add Stoney Ridge GEC Firmware to support the onboard gigabit Ethernet MAC.
+	  Must be connected to a Broadcom B50610 or B50610M PHY on the motherboard.
+
+config STONEYRIDGE_XHCI_FWM_FILE
+	string "XHCI firmware path and filename"
+	default "3rdparty/blobs/southbridge/amd/kern/xhci.bin"
+	depends on STONEYRIDGE_XHCI_FWM
+
+config STONEYRIDGE_IMC_FWM_FILE
+	string "IMC firmware path and filename"
+	default "3rdparty/blobs/southbridge/amd/kern/imc.bin"
+	depends on STONEYRIDGE_IMC_FWM
+
+config STONEYRIDGE_GEC_FWM_FILE
+	string "GEC firmware path and filename"
+	depends on STONEYRIDGE_GEC_FWM
+
+config AMD_PUBKEY_FILE
+	string "AMD public Key"
+	default "3rdparty/blobs/southbridge/amd/kern/PSP/AmdPubKeyST.bin"
+
+config STONEYRIDGE_SATA_MODE
+	int "SATA Mode"
+	default 0
+	range 0 6
+	help
+	  Select the mode in which SATA should be driven.
+	  The default is NATIVE.
+	  0: NATIVE mode does not require a ROM.
+	  2: AHCI may work with or without AHCI ROM. It depends on the payload support.
+	     For example, seabios does not require the AHCI ROM.
+	  3: LEGACY IDE
+	  4: IDE to AHCI
+	  5: AHCI7804: ROM Required, and AMD driver required in the OS.
+	  6: IDE to AHCI7804: ROM Required, and AMD driver required in the OS.
+
+comment "NATIVE"
+	depends on STONEYRIDGE_SATA_MODE = 0
+
+comment "AHCI"
+	depends on STONEYRIDGE_SATA_MODE = 2
+
+comment "LEGACY IDE"
+	depends on STONEYRIDGE_SATA_MODE = 3
+
+comment "IDE to AHCI"
+	depends on STONEYRIDGE_SATA_MODE = 4
+
+comment "AHCI7804"
+	depends on STONEYRIDGE_SATA_MODE = 5
+
+comment "IDE to AHCI7804"
+	depends on STONEYRIDGE_SATA_MODE = 6
+
+if STONEYRIDGE_SATA_MODE = 2 || STONEYRIDGE_SATA_MODE = 5
+
+config AHCI_ROM_ID
+	string  "AHCI device PCI IDs"
+	default "1022,7801" if STONEYRIDGE_SATA_MODE = 2
+	default "1022,7804" if STONEYRIDGE_SATA_MODE = 5
+
+endif # STONEYRIDGE_SATA_MODE = 2 || STONEYRIDGE_SATA_MODE = 5
+
+config STONEYRIDGE_LEGACY_FREE
+	bool "System is legacy free"
+	help
+	  Select y if there is no keyboard controller in the system.
+	  This sets variables in AGESA and ACPI.
+
+config AMDFW_OUTSIDE_CBFS
+	def_bool n
+	help
+	  The AMDFW (PSP) is typically locatable in cbfs.  Select this
+	  option to manually attach the generated amdfw.rom at an
+	  offset of 0x20000 from the bottom of the coreboot ROM image.
+
+config SERIRQ_CONTINUOUS_MODE
+	bool
+	default n
+	help
+	  Set this option to y for serial IRQ in continuous mode.
+	  Otherwise it is in quiet mode.
+
+config STONEYRIDGE_ACPI_IO_BASE
+	hex
+	default 0x400
+	help
+	  Base address for the ACPI registers.
+	  This value must match the hardcoded value of AGESA.
+
+config STONEYRIDGE_UART
+	bool "UART controller on Stoney Ridge"
+	default n
+	select DRIVERS_UART_8250MEM
+	select DRIVERS_UART_8250MEM_32
+	select NO_UART_ON_SUPERIO
+	select UART_OVERRIDE_REFCLK
+	help
+	  There are two UART controllers in Stoney Ridge.
+	  The UART registers are memory-mapped. UART
+	  controller 0 registers range from FEDC_6000h
+	  to FEDC_6FFFh. UART controller 1 registers
+	  range from FEDC_8000h to FEDC_8FFFh.
+
+endif # SOC_AMD_STONEYRIDGE

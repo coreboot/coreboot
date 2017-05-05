@@ -61,7 +61,12 @@ AGESA_INC += -I$(AGESA_ROOT)/Proc/IDS
 endif
 
 AGESA_INC += -I$(src)/northbridge/amd/pi
+
+ifeq ($(CONFIG_SOC_AMD_STONEYRIDGE),y)
+AGESA_INC += -I$(src)/soc/amd/stoneyridge/include
+else
 AGESA_INC += -I$(src)/southbridge/amd/pi/hudson
+endif
 
 AGESA_INC += -I$(src)/arch/x86/include
 AGESA_INC += -I$(src)/include
@@ -115,7 +120,7 @@ agesa_raw_files += $(wildcard $(AGESA_ROOT)/Proc/Fch/Kern/KernImc/*.[cS])
 agesa_raw_files += $(wildcard $(AGESA_ROOT)/Proc/Fch/Common/*.[cS])
 agesa_raw_files += $(wildcard $(AGESA_ROOT)/Proc/Psp/PspBaseLib/*.[cS])
 endif
-ifeq ($(CONFIG_HUDSON_IMC_FWM),y)
+ifeq ($(CONFIG_HUDSON_IMC_FWM)$(CONFIG_STONEYRIDGE_IMC_FWM),y)
 agesa_raw_files += $(wildcard $(src)/vendorcode/amd/pi/Lib/imc/*.c)
 endif
 

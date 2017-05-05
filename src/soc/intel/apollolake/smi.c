@@ -55,18 +55,6 @@ void southbridge_smm_enable_smi(void)
 	enable_smi(APMC_EN | SLP_SMI_EN | GBL_SMI_EN | EOS | GPIO_EN);
 }
 
-void southbridge_clear_smi_status(void)
-{
-	/* Clear SMI status */
-	clear_smi_status();
-
-	/* Clear PM1 status */
-	clear_pm1_status();
-
-	/* Set EOS bit so other SMIs can occur. */
-	enable_smi(EOS);
-}
-
 void smm_setup_structures(void *gnvs, void *tcg, void *smi1)
 {
 	/*

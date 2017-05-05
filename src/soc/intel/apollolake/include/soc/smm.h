@@ -22,9 +22,6 @@
 #include <soc/gpio.h>
 #include <fsp/memmap.h>
 
-/* These helpers are for performing SMM relocation. */
-void southbridge_clear_smi_status(void);
-
 /*
  * The initialization of the southbridge is split into 2 compoments. One is
  * for clearing the state in the SMM registers. The other is for enabling

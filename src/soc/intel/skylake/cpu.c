@@ -523,6 +523,7 @@ static void soc_post_cpus_init(void *unused)
 {
 	if (mp_run_on_all_cpus(&x86_setup_mtrrs_with_detect, 1000) < 0)
 		printk(BIOS_ERR, "MTRR programming failure\n");
+	x86_mtrr_check();
 }
 
 int soc_skip_ucode_update(u32 current_patch_id, u32 new_patch_id)

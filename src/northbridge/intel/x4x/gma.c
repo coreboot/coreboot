@@ -356,7 +356,7 @@ static void native_init(struct device *dev)
 
 static void gma_func0_init(struct device *dev)
 {
-	u16 reg16;
+	u16 reg16, ggc;
 	u32 reg32;
 
 	/* IGD needs to be Bus Master */
@@ -370,10 +370,18 @@ static void gma_func0_init(struct device *dev)
 	reg16 |= 0xbc;
 	pci_write_config16(dev_find_slot(0, PCI_DEVFN(0x2, 0)), 0xcc, reg16);
 
-	if (IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT))
+	ggc = pci_read_config16(dev_find_slot(0, PCI_DEVFN(0, 0)), D0F0_GGC);
+
+	if (IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT)) {
+		if (ggc & (1 << 1)) {
+			printk(BIOS_DEBUG, "VGA cycles not assigned to IGD. "
+				"Not running native graphic init.\n");
+			return;
+		}
 		native_init(dev);
-	else
+	} else {
 		pci_dev_init(dev);
+	}
 }
 
 static void gma_func0_disable(struct device *dev)

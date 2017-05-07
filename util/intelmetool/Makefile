@@ -17,7 +17,7 @@ PROGRAM = intelmetool
 CC      ?= gcc
 INSTALL ?= /usr/bin/install
 PREFIX  ?= /usr/local
-CFLAGS  ?= -O0 -g -Wall -W -Wno-unused-parameter -Wno-unused-but-set-variable -Wno-sign-compare -Wno-unused-function
+CFLAGS  ?= -O0 -g -Wall -W -Wno-unused-parameter -Wno-sign-compare -Wno-unused-function
 LDFLAGS += -lpci -lz
 
 OBJS = intelmetool.o me.o me_status.o mmap.o

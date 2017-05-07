@@ -47,14 +47,14 @@ static uint8_t* mei_mmap;
 
 static void mei_dump(void *ptr, int dword, int offset, const char *type)
 {
-	struct mei_csr *csr;
+	/* struct mei_csr *csr; */
 
 
 	switch (offset) {
 	case MEI_H_CSR:
 	case MEI_ME_CSR_HA:
-		csr = ptr;
-/*		if (!csr) {
+/*		csr = ptr;
+		if (!csr) {
 		printf("%-9s[%02x] : ", type, offset);
 			printf("ERROR: 0x%08x\n", dword);
 			break;

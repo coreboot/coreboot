@@ -22,8 +22,6 @@
 #include "spi_flash_internal.h"
 #include <timer.h>
 
-static struct spi_flash *spi_flash_dev = NULL;
-
 static void spi_flash_addr(u32 addr, u8 *cmd)
 {
 	/* cmd[0] is actual command */
@@ -357,14 +355,6 @@ struct spi_flash *spi_flash_probe(unsigned int bus, unsigned int cs)
 	printk(BIOS_INFO, "SF: Detected %s with sector size 0x%x, total 0x%x\n",
 			flash->name, flash->sector_size, flash->size);
 
-	/*
-	 * Only set the global spi_flash_dev if this is the boot
-	 * device's bus and it's previously unset while in ramstage.
-	 */
-	if (ENV_RAMSTAGE && IS_ENABLED(CONFIG_BOOT_DEVICE_SPI_FLASH) &&
-		CONFIG_BOOT_DEVICE_SPI_FLASH_BUS == bus && !spi_flash_dev)
-		spi_flash_dev = flash;
-
 	return flash;
 }
 
@@ -451,6 +441,7 @@ int spi_flash_volatile_group_end(const struct spi_flash *flash)
 void lb_spi_flash(struct lb_header *header)
 {
 	struct lb_spi_flash *flash;
+	const struct spi_flash *spi_flash_dev;
 
 	if (!IS_ENABLED(CONFIG_BOOT_DEVICE_SPI_FLASH))
 		return;
@@ -460,9 +451,7 @@ void lb_spi_flash(struct lb_header *header)
 	flash->tag = LB_TAG_SPI_FLASH;
 	flash->size = sizeof(*flash);
 
-	/* Try to get the flash device if not loaded yet */
-	if (!spi_flash_dev)
-		boot_device_init();
+	spi_flash_dev = boot_device_spi_flash();
 
 	if (spi_flash_dev) {
 		flash->flash_size = spi_flash_dev->size;

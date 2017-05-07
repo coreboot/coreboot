@@ -28,8 +28,9 @@
 #
 #*****************************************************************************
 
-ifeq ($(CONFIG_CPU_AMD_PI_00630F01)$(CONFIG_CPU_AMD_PI_00730F01)$(CONFIG_CPU_AMD_PI_00670F00_FP4)$(CONFIG_CPU_AMD_PI_00670F00_FT4)$(CONFIG_CPU_AMD_PI_00660F01),y)
+ifeq ($(CONFIG_CPU_AMD_PI_00630F01)$(CONFIG_CPU_AMD_PI_00730F01)$(CONFIG_CPU_AMD_PI_00670F00_FP4)$(CONFIG_CPU_AMD_PI_00670F00_FT4)$(CONFIG_CPU_AMD_PI_00660F01)$(CONFIG_SOC_AMD_STONEYRIDGE_FP4)$(CONFIG_SOC_AMD_STONEYRIDGE_FT4),y)
 # AGESA V5 Files
+
 AGESA_ROOT = $(call strip_quotes,$(CONFIG_AGESA_BINARY_PI_VENDORCODE_PATH))
 
 AGESA_INC = -I$(obj)
@@ -48,7 +49,7 @@ AGESA_INC += -I$(AGESA_ROOT)/Proc/CPU/Family
 AGESA_INC += -I$(AGESA_ROOT)/Proc/CPU/Feature
 AGESA_INC += -I$(AGESA_ROOT)/Proc/Fch
 AGESA_INC += -I$(AGESA_ROOT)/Proc/Fch/Common
-ifeq ($(CONFIG_CPU_AMD_PI_00670F00_FP4)$(CONFIG_CPU_AMD_PI_00670F00_FT4),y)
+ifeq ($(CONFIG_CPU_AMD_PI_00670F00_FP4)$(CONFIG_CPU_AMD_PI_00670F00_FT4)$(CONFIG_SOC_AMD_STONEYRIDGE_FP4)$(CONFIG_SOC_AMD_STONEYRIDGE_FT4),y)
 AGESA_INC += -I$(AGESA_ROOT)/Proc/Fch/Kern
 AGESA_INC += -I$(AGESA_ROOT)/Proc/Psp/PspBaseLib
 endif
@@ -62,7 +63,7 @@ endif
 
 AGESA_INC += -I$(src)/northbridge/amd/pi
 
-ifeq ($(CONFIG_SOC_AMD_STONEYRIDGE),y)
+ifeq ($(CONFIG_SOC_AMD_STONEYRIDGE_FP4)$(CONFIG_SOC_AMD_STONEYRIDGE_FT4),y)
 AGESA_INC += -I$(src)/soc/amd/stoneyridge/include
 else
 AGESA_INC += -I$(src)/southbridge/amd/pi/hudson
@@ -110,7 +111,7 @@ endef
 
 agesa_raw_files += $(wildcard $(src)/vendorcode/amd/pi/Lib/*.[cS])
 agesa_raw_files += $(wildcard $(AGESA_ROOT)/binaryPI/*.[cS])
-ifeq ($(CONFIG_CPU_AMD_PI_00670F00_FP4)$(CONFIG_CPU_AMD_PI_00670F00_FT4),y)
+ifeq ($(CONFIG_CPU_AMD_PI_00670F00_FP4)$(CONFIG_CPU_AMD_PI_00670F00_FT4)$(CONFIG_SOC_AMD_STONEYRIDGE_FP4)$(CONFIG_SOC_AMD_STONEYRIDGE_FT4),y)
 agesa_raw_files += $(wildcard $(AGESA_ROOT)/Proc/Fch/Kern/KernImc/*.[cS])
 agesa_raw_files += $(wildcard $(AGESA_ROOT)/Proc/Fch/Common/*.[cS])
 agesa_raw_files += $(wildcard $(AGESA_ROOT)/Proc/Psp/PspBaseLib/*.[cS])

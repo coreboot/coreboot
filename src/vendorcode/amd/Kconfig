@@ -1,7 +1,7 @@
 #
 # This file is part of the coreboot project.
 #
-# Copyright (C) 2013-2014 Sage Electronic Engineering, LLC
+# Copyright (C) 2013-2017 Sage Electronic Engineering, LLC
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -13,13 +13,14 @@
 # GNU General Public License for more details.
 #
 
-if CPU_AMD_PI
+if CPU_AMD_PI || SOC_AMD_PI
 
 menu "AMD Platform Initialization"
 
 choice
 	prompt "AGESA source"
 	default CPU_AMD_AGESA_BINARY_PI if CPU_AMD_PI
+	default CPU_AMD_AGESA_BINARY_PI if SOC_AMD_PI
 	default CPU_AMD_AGESA_OPENSOURCE
 	help
 	  Select the method for including the AMD Platform Initialization

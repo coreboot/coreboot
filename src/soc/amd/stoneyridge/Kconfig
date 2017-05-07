@@ -13,14 +13,61 @@
 ## GNU General Public License for more details.
 ##
 
-config SOC_AMD_STONEYRIDGE
+config SOC_AMD_STONEYRIDGE_FP4
 	bool
+	help
+	  AMD Stoney Ridge FP4 support
+
+config SOC_AMD_STONEYRIDGE_FT4
+	bool
+	help
+	  AMD Stoney Ridge FT4 support
+
+if SOC_AMD_STONEYRIDGE_FP4 || SOC_AMD_STONEYRIDGE_FT4
+
+config CPU_SPECIFIC_OPTIONS
+	def_bool y
+	select ARCH_BOOTBLOCK_X86_32
+	select ARCH_VERSTAGE_X86_32
+	select ARCH_ROMSTAGE_X86_32
+	select ARCH_RAMSTAGE_X86_32
 	select IOAPIC
 	select HAVE_USBDEBUG_OPTIONS
 	select HAVE_HARD_RESET
+	select LAPIC_MONOTONIC_TIMER
 	select SOC_AMD_COMMON
+	select SOC_AMD_PI
+	select SPI_FLASH if HAVE_ACPI_RESUME
+	select TSC_SYNC_LFENCE
+	select UDELAY_LAPIC
 
-if SOC_AMD_STONEYRIDGE
+config UDELAY_LAPIC_FIXED_FSB
+	int
+	default 200
+
+# TODO: Sync these with definitions in PI vendorcode.
+# DCACHE_RAM_BASE must equal BSP_STACK_BASE_ADDR.
+# DCACHE_RAM_SIZE must equal BSP_STACK_SIZE.
+
+config DCACHE_RAM_BASE
+	hex
+	default 0x30000
+
+config DCACHE_RAM_SIZE
+	hex
+	default 0x10000
+
+config CPU_ADDR_BITS
+	int
+	default 48
+
+config CBB
+	hex
+	default 0x0
+
+config CDB
+	hex
+	default 0x18
 
 config BOOTBLOCK_SOUTHBRIDGE_INIT
 	string
@@ -164,4 +211,4 @@ config STONEYRIDGE_UART
 	  to FEDC_6FFFh. UART controller 1 registers
 	  range from FEDC_8000h to FEDC_8FFFh.
 
-endif # SOC_AMD_STONEYRIDGE
+endif # SOC_AMD_STONEYRIDGE_FP4 || SOC_AMD_STONEYRIDGE_FT4

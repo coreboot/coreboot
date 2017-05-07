@@ -27,10 +27,19 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 #*****************************************************************************
-ifeq ($(CONFIG_SOC_AMD_STONEYRIDGE),y)
+ifeq ($(CONFIG_SOC_AMD_STONEYRIDGE_FP4)$(CONFIG_SOC_AMD_STONEYRIDGE_FT4),y)
+
+subdirs-y += ../../../cpu/amd/mtrr/
+subdirs-y += ../../../cpu/x86/tsc
+subdirs-y += ../../../cpu/x86/lapic
+subdirs-y += ../../../cpu/x86/cache
+subdirs-y += ../../../cpu/x86/mtrr
+subdirs-y += ../../../cpu/x86/pae
+subdirs-y += ../../../cpu/x86/smm
 
 romstage-y += early_setup.c
 romstage-$(CONFIG_USBDEBUG_IN_ROMSTAGE) += enable_usbdebug.c
+romstage-y += fixme.c
 romstage-$(CONFIG_STONEYRIDGE_IMC_FWM) += imc.c
 romstage-y += smbus.c
 romstage-y += smbus_spd.c
@@ -39,12 +48,14 @@ romstage-$(CONFIG_STONEYRIDGE_UART) += uart.c
 ramstage-y += chip.c
 ramstage-$(CONFIG_USBDEBUG) += enable_usbdebug.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += fadt.c
+ramstage-y += fixme.c
 ramstage-y += gpio.c
 ramstage-y += hda.c
 ramstage-y += hudson.c
 ramstage-y += ide.c
 ramstage-$(CONFIG_STONEYRIDGE_IMC_FWM) += imc.c
 ramstage-y += lpc.c
+ramstage-y += model_15_init.c
 ramstage-y += pci.c
 ramstage-y += pcie.c
 ramstage-y += reset.c
@@ -233,4 +244,4 @@ apu/amdfw-type := raw
 
 endif # ifeq ($(CONFIG_AMDFW_OUTSIDE_CBFS),y)
 
-endif
+endif # ($(CONFIG_SOC_AMD_STONEYRIDGE_FP4)$(CONFIG_SOC_AMD_STONEYRIDGE_FT4),y)

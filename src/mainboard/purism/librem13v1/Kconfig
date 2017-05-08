@@ -21,6 +21,9 @@ config DRIVERS_UART_8250IO
 	  This platform does not have any way to get standard
 	  serial output so disable it by default.
 
+config PCIEXP_L1_SUB_STATE
+	def_bool n
+
 config HAVE_IFD_BIN
 	bool
 	default n

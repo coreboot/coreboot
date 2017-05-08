@@ -550,9 +550,6 @@ static void sdhci_set_ios(struct sd_mmc_ctrlr *ctrlr)
 	u32 bus_width;
 	int version;
 
-	if (ctrlr->set_control_reg)
-		ctrlr->set_control_reg(ctrlr);
-
 	/* Set the clock frequency */
 	if (ctrlr->bus_hz != ctrlr->request_hz)
 		sdhci_set_clock(sdhci_ctrlr, ctrlr->request_hz);

@@ -19,8 +19,8 @@
  * GNU General Public License for more details.
  */
 
+#include <commonlib/storage.h>
 #include <console/console.h>
-#include <device/storage.h>
 #include "sd_mmc.h"
 #include "mmc.h"
 #include "sd_mmc.h"

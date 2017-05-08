@@ -26,7 +26,7 @@ verstage-$(CONFIG_VBOOT) += vboot.c
 
 romstage-y += gpio.c
 romstage-y += reg_access.c
-romstage-$(CONFIG_DRIVERS_STORAGE_SD) += sd.c
+romstage-$(CONFIG_COMMONLIB_STORAGE_SD) += sd.c
 romstage-$(CONFIG_VBOOT) += vboot.c
 
 postcar-y += gpio.c
@@ -34,4 +34,4 @@ postcar-y += reg_access.c
 
 ramstage-y += gpio.c
 ramstage-y += reg_access.c
-ramstage-$(CONFIG_DRIVERS_STORAGE_SD) += sd.c
+ramstage-$(CONFIG_COMMONLIB_STORAGE_SD) += sd.c

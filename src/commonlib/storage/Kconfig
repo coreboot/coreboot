@@ -13,17 +13,17 @@
 ## GNU General Public License for more details.
 ##
 
-config DRIVERS_STORAGE
+config COMMONLIB_STORAGE
 	bool
 	default n
 
-if DRIVERS_STORAGE
+if COMMONLIB_STORAGE
 
-config DRIVERS_STORAGE_MMC
+config COMMONLIB_STORAGE_MMC
 	bool "Enable MultiMediaCard (MMC) and eMMC device support"
 	default n
 
-config DRIVERS_STORAGE_SD
+config COMMONLIB_STORAGE_SD
 	bool "Enable Secure Digital (SD) memory card support"
 	default n
 
@@ -102,4 +102,4 @@ config SDHCI_BOUNCE_BUFFER
 	default n
 
 endif # SDHCI_CONTROLLER
-endif # DRIVERS_STORAGE
+endif # COMMONLIB_STORAGE

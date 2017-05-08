@@ -16,10 +16,10 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __DEVICE_STORAGE_H__
-#define __DEVICE_STORAGE_H__
+#ifndef __COMMONLIB_STORAGE_H__
+#define __COMMONLIB_STORAGE_H__
 
-#include <device/sd_mmc_ctrlr.h>
+#include <commonlib/sd_mmc_ctrlr.h>
 
 /*
  * EXT_CSD fields
@@ -148,4 +148,4 @@ int storage_set_partition(struct storage_media *media,
 
 void storage_display_setup(struct storage_media *media);
 
-#endif /* __DEVICE_STORAGE_H__ */
+#endif /* __COMMONLIB_STORAGE_H__ */

@@ -16,10 +16,10 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
-#ifndef __DEVICE_SDHCI_H__
-#define __DEVICE_SDHCI_H__
+#ifndef __COMMONLIB_SDHCI_H__
+#define __COMMONLIB_SDHCI_H__
 
-#include <device/sd_mmc_ctrlr.h>
+#include <commonlib/sd_mmc_ctrlr.h>
 
 /* Driver specific capabilities */
 #define DRVR_CAP_1V8_VDD			0x00010000
@@ -73,4 +73,4 @@ struct sd_mmc_ctrlr *new_pci_sdhci_controller(uint32_t dev);
 /* Add SDHCI controller with memory address */
 struct sd_mmc_ctrlr *new_mem_sdhci_controller(void *ioaddr);
 
-#endif /* __DEVICE_SDHCI_H__ */
+#endif /* __COMMONLIB_SDHCI_H__ */

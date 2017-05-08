@@ -1,3 +1,5 @@
+subdirs-y += storage
+
 bootblock-y += mem_pool.c
 verstage-y += mem_pool.c
 romstage-y += mem_pool.c

@@ -16,10 +16,10 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __DRIVER_STORAGE_MMC_H__
-#define __DRIVER_STORAGE_MMC_H__
+#ifndef __COMMONLIB_STORAGE_MMC_H__
+#define __COMMONLIB_STORAGE_MMC_H__
 
-#include <device/sd_mmc_ctrlr.h>
+#include <commonlib/sd_mmc_ctrlr.h>
 
 #define MMC_HS_TIMING		0x00000100
 #define MMC_HS_52MHZ		0x2
@@ -51,4 +51,4 @@
 int storage_block_setup_media(struct storage_media *media,
 	struct sd_mmc_ctrlr *ctrlr);
 
-#endif /* __DRIVER_STORAGE_MMC_H__ */
+#endif /* __COMMONLIB_STORAGE_MMC_H__ */

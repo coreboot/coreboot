@@ -353,6 +353,7 @@ source "src/device/Kconfig"
 menu "Generic Drivers"
 source "src/drivers/*/Kconfig"
 source "src/drivers/*/*/Kconfig"
+source "src/commonlib/storage/Kconfig"
 endmenu
 
 source "src/acpi/Kconfig"

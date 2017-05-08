@@ -20,10 +20,10 @@
 #include <assert.h>
 #include "bouncebuf.h"
 #include <console/console.h>
+#include <commonlib/sd_mmc_ctrlr.h>
+#include <commonlib/sdhci.h>
+#include <commonlib/storage.h>
 #include <delay.h>
-#include <device/sd_mmc_ctrlr.h>
-#include <device/sdhci.h>
-#include <device/storage.h>
 #include <endian.h>
 #include <halt.h>
 #include "sdhci.h"

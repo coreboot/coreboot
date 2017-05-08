@@ -16,8 +16,8 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
-#ifndef __DEVICE_SD_MMC_CTRLR_H__
-#define __DEVICE_SD_MMC_CTRLR_H__
+#ifndef __COMMONLIB_SD_MMC_CTRLR_H__
+#define __COMMONLIB_SD_MMC_CTRLR_H__
 
 #include <stdint.h>
 
@@ -225,4 +225,4 @@ void sdhc_log_command_issued(void);
 void sdhc_log_response(uint32_t entries, uint32_t *response);
 void sdhc_log_ret(int ret);
 
-#endif /* __DEVICE_SD_MMC_CTRLR_H__ */
+#endif /* __COMMONLIB_SD_MMC_CTRLR_H__ */

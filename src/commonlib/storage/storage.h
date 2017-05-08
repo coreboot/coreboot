@@ -12,11 +12,11 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __DRIVERS_STORAGE_STORAGE_H__
-#define __DRIVERS_STORAGE_STORAGE_H__
+#ifndef __COMMONLIB_STORAGE_STORAGE_H__
+#define __COMMONLIB_STORAGE_STORAGE_H__
 
 #include <stdint.h>
-#include <device/storage.h>
+#include <commonlib/storage.h>
 
 #define DMA_MINALIGN (64)
 #define ROUND(a, b) (((a) + (b) - 1) & ~((b) - 1))
@@ -34,4 +34,4 @@ int storage_startup(struct storage_media *media);
 int storage_block_setup(struct storage_media *media, uint64_t start,
 	uint64_t count, int is_read);
 
-#endif /* __DRIVERS_STORAGE_STORAGE_H__ */
+#endif /* __COMMONLIB_STORAGE_STORAGE_H__ */

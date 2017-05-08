@@ -27,10 +27,6 @@ config CPU_SPECIFIC_OPTIONS
 	select RELOCATABLE_RAMSTAGE
 	select REG_SCRIPT
 	select PARALLEL_MP
-	select PCIEXP_ASPM
-	select PCIEXP_COMMON_CLOCK
-	select PCIEXP_CLK_PM
-	select PCIEXP_L1_SUB_STATE
 	select RTC
 	select SMM_TSEG
 	select SMP
@@ -45,6 +41,22 @@ config CPU_SPECIFIC_OPTIONS
 	select SOC_INTEL_COMMON_ACPI_WAKE_SOURCE
 	select HAVE_SPI_CONSOLE_SUPPORT
 	select CPU_INTEL_COMMON
+
+config PCIEXP_ASPM
+	bool
+	default y
+
+config PCIEXP_COMMON_CLOCK
+	bool
+	default y
+
+config PCIEXP_CLK_PM
+	bool
+	default y
+
+config PCIEXP_L1_SUB_STATE
+	bool
+	default y
 
 config VBOOT
 	select VBOOT_STARTS_IN_ROMSTAGE

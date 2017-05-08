@@ -15,8 +15,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __DRIVERS_STORAGE_BOUNCEBUF_H__
-#define __DRIVERS_STORAGE_BOUNCEBUF_H__
+#ifndef __COMMONLIB_STORAGE_BOUNCEBUF_H__
+#define __COMMONLIB_STORAGE_BOUNCEBUF_H__
 
 #include <stddef.h>
 #include <stdint.h>
@@ -93,4 +93,4 @@ int bounce_buffer_stop(struct bounce_buffer *state);
 #define ARCH_DMA_MINALIGN (DMA_MINALIGN)
 #endif
 
-#endif // __DRIVERS_STORAGE_BOUNCEBUF_H__
+#endif // __COMMONLIB_STORAGE_BOUNCEBUF_H__

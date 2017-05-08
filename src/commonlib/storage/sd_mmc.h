@@ -12,11 +12,11 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __DRIVERS_STORAGE_SD_MMC_H__
-#define __DRIVERS_STORAGE_SD_MMC_H__
+#ifndef __COMMONLIB_STORAGE_SD_MMC_H__
+#define __COMMONLIB_STORAGE_SD_MMC_H__
 
-#include <device/sd_mmc_ctrlr.h>
-#include <device/storage.h>
+#include <commonlib/sd_mmc_ctrlr.h>
+#include <commonlib/storage.h>
 #include <stddef.h>
 
 #define SD_MMC_IO_RETRIES	1000
@@ -49,11 +49,13 @@ int sd_mmc_send_status(struct storage_media *media, ssize_t tries);
 int sd_mmc_set_blocklen(struct sd_mmc_ctrlr *ctrlr, int len);
 
 /* MMC support routines */
+int mmc_change_freq(struct storage_media *media);
 int mmc_complete_op_cond(struct storage_media *media);
 const char *mmc_partition_name(struct storage_media *media,
 	unsigned int partition_number);
 int mmc_send_ext_csd(struct sd_mmc_ctrlr *ctrlr, unsigned char *ext_csd);
 int mmc_send_op_cond(struct storage_media *media);
+int mmc_set_bus_width(struct storage_media *media);
 int mmc_set_partition(struct storage_media *media,
 	unsigned int partition_number);
 int mmc_update_capacity(struct storage_media *media);
@@ -64,13 +66,9 @@ const char *sd_partition_name(struct storage_media *media,
 	unsigned int partition_number);
 int sd_send_if_cond(struct storage_media *media);
 int sd_send_op_cond(struct storage_media *media);
+int sd_set_bus_width(struct storage_media *media);
 int sd_set_partition(struct storage_media *media,
 	unsigned int partition_number);
-int sd_set_bus_width(struct storage_media *media);
-
-int mmc_change_freq(struct storage_media *media);
-int mmc_send_status(struct storage_media *media, ssize_t tries);
-int mmc_set_bus_width(struct storage_media *media);
 
 /* Controller debug functions */
 #define sdhc_debug(format...) \
@@ -98,4 +96,4 @@ int mmc_set_bus_width(struct storage_media *media);
 	} while (0)
 #define sd_mmc_error(format...) printk(BIOS_ERR, "ERROR: " format)
 
-#endif /* __DRIVERS_STORAGE_SD_MMC_H__ */
+#endif /* __COMMONLIB_STORAGE_SD_MMC_H__ */

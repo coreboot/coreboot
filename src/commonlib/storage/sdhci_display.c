@@ -17,10 +17,10 @@
  * GNU General Public License for more details.
  */
 
+#include <commonlib/sd_mmc_ctrlr.h>
+#include <commonlib/sdhci.h>
+#include <commonlib/storage.h>
 #include <console/console.h>
-#include <device/sd_mmc_ctrlr.h>
-#include <device/sdhci.h>
-#include <device/storage.h>
 #include "sdhci.h"
 #include "sd_mmc.h"
 #include "storage.h"

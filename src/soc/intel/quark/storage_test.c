@@ -18,9 +18,9 @@
 #include <assert.h>
 #include <cbmem.h>
 #include <commonlib/cbmem_id.h>
+#include <commonlib/sdhci.h>
+#include <commonlib/storage.h>
 #include <console/console.h>
-#include <device/sdhci.h>
-#include <device/storage.h>
 #include <lib.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>

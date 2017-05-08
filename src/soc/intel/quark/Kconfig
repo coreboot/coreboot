@@ -311,11 +311,12 @@ config C_ENV_BOOTBLOCK_SIZE
 config STORAGE_TEST
 	bool "Test SD/MMC/eMMC card or device access"
 	default n
-	select DRIVERS_STORAGE
+	select COMMONLIB_STORAGE
 	select SDHCI_CONTROLLER
 	help
-	  Read block 0 from each parition of the storage device.  User must
-	  also enable one or both of DRIVERS_STORAGE_SD or DRIVERS_STORAGE_MMC.
+	  Read block 0 from each parition of the storage device.  User
+	  must also enable one or both of COMMONLIB_STORAGE_SD or
+	  COMMONLIB_STORAGE_MMC.
 
 config STORAGE_LOG
 	bool "Log and display SD/MMC commands"

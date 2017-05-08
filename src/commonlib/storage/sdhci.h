@@ -14,11 +14,11 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
-#ifndef __DRIVERS_STORAGE_SDHCI_H__
-#define __DRIVERS_STORAGE_SDHCI_H__
+#ifndef __COMMONLIB_STORAGE_SDHCI_H__
+#define __COMMONLIB_STORAGE_SDHCI_H__
 
 #include <arch/io.h>
-#include <device/sd_mmc_ctrlr.h>
+#include <commonlib/sd_mmc_ctrlr.h>
 
 /*
  * Controller registers
@@ -278,4 +278,4 @@ int sdhci_setup_adma(struct sdhci_ctrlr *sdhci_ctrlr, struct mmc_data *data);
 int sdhci_complete_adma(struct sdhci_ctrlr *sdhci_ctrlr,
 	struct mmc_command *cmd);
 
-#endif /* __DRIVERS_STORAGE_SDHCI_H__ */
+#endif /* __COMMONLIB_STORAGE_SDHCI_H__ */

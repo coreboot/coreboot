@@ -13,9 +13,9 @@
  * GNU General Public License for more details.
  */
 
+#include <commonlib/sdhci.h>
+#include <commonlib/storage.h>
 #include <console/console.h>
-#include <device/sdhci.h>
-#include <device/storage.h>
 
 void soc_sd_mmc_controller_quirks(struct sd_mmc_ctrlr *ctrlr)
 {

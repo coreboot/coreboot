@@ -18,9 +18,9 @@
  */
 
 #include <assert.h>
+#include <commonlib/sdhci.h>
+#include <commonlib/storage.h>
 #include <delay.h>
-#include <device/sdhci.h>
-#include <device/storage.h>
 #include <endian.h>
 #include "sdhci.h"
 #include "sd_mmc.h"

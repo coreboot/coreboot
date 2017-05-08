@@ -13,7 +13,7 @@
 # GNU General Public License for more details.
 #
 
-ifeq ($(CONFIG_DRIVERS_STORAGE),y)
+ifeq ($(CONFIG_COMMONLIB_STORAGE),y)
 
 bootblock-y += sd_mmc.c
 bootblock-y += storage.c
@@ -69,22 +69,22 @@ endif # CONFIG_SDHCI_BOUNCE_BUFFER
 endif # CONFIG_SDHCI_CONTROLLER
 
 # Determine if MultiMediaCards or embedded MMC devices are supported
-ifeq ($(CONFIG_DRIVERS_STORAGE_MMC),y)
+ifeq ($(CONFIG_COMMONLIB_STORAGE_MMC),y)
 bootblock-y += mmc.c
 verstage-y += mmc.c
 romstage-y += mmc.c
 postcar-y += mmc.c
 ramstage-y += mmc.c
-endif # CONFIG_DRIVERS_STORAGE_MMC
+endif # CONFIG_COMMONLIB_STORAGE_MMC
 
 # Determine if Secure Digital cards are supported
-ifeq ($(CONFIG_DRIVERS_STORAGE_SD),y)
+ifeq ($(CONFIG_COMMONLIB_STORAGE_SD),y)
 bootblock-y += sd.c
 verstage-y += sd.c
 romstage-y += sd.c
 postcar-y += sd.c
 ramstage-y += sd.c
-endif # CONFIG_DRIVERS_STORAGE_SD
+endif # CONFIG_COMMONLIB_STORAGE_SD
 
 # Determine if erase operations are supported
 ifeq ($(CONFIG_STORAGE_ERASE),y)
@@ -104,4 +104,4 @@ postcar-y += storage_write.c
 ramstage-y += storage_write.c
 endif # CONFIG_STORAGE_WRITE
 
-endif # CONFIG_DRIVERS_STORAGE
+endif # CONFIG_COMMONLIB_STORAGE

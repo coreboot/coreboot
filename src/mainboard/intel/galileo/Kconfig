@@ -182,7 +182,7 @@ config FMDFILE
 config ENABLE_SD_TESTING
 	bool "Enable SD card testing"
 	default y
-	select DRIVERS_STORAGE_SD
+	select COMMONLIB_STORAGE_SD
 	select SDHC_DEBUG
 	select STORAGE_LOG
 	select STORAGE_TEST

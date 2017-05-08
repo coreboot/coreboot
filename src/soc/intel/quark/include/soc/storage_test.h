@@ -16,9 +16,9 @@
 #ifndef __STORAGE_TEST_H__
 #define __STORAGE_TEST_H__
 
+#include <commonlib/sd_mmc_ctrlr.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <device/sd_mmc_ctrlr.h>
 #include <timer.h>
 
 #ifdef __SIMPLE_DEVICE__

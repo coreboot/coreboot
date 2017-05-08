@@ -69,7 +69,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPIO_179, DN_20K, DEEP, NF1),	/* SDCARD_CLK_FB */
 	PAD_CFG_GPI(GPIO_186, UP_20K, DEEP),		/* SDCARD_LVL_WP */
 	/* EN_SD_SOCKET_PWR_L for SD slot power control. Default on. */
-	PAD_CFG_GPO(GPIO_183, 0, DEEP),			/* SDIO_PWR_DOWN_N */
+	PAD_CFG_GPO(GPIO_183, 1, DEEP),			/* SDIO_PWR_DOWN_N */
 
 	/* SMBus */
 	PAD_CFG_GPI(SMB_ALERTB, UP_20K, DEEP),		/* SMB_ALERT _N */
@@ -349,17 +349,6 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI(GPIO_71, DN_20K, DEEP),	/* GP_CAMERASB09 */
 	PAD_CFG_GPI(GPIO_72, DN_20K, DEEP),	/* GP_CAMERASB10 */
 	PAD_CFG_GPI(GPIO_73, DN_20K, DEEP),	/* GP_CAMERASB11 */
-
-	/* JTAG interface. */
-	PAD_CFG_NF(TCK, DN_20K, DEEP, NF1),		/* TCK */
-	PAD_CFG_NF(TRST_B, DN_20K, DEEP, NF1),		/* TRST_B */
-	PAD_CFG_NF(TMS, UP_20K, DEEP, NF1),		/* TMS */
-	PAD_CFG_NF(TDI, UP_20K, DEEP, NF1),		/* TDI */
-	PAD_CFG_NF(CX_PMODE, NONE, DEEP, NF1),		/* CX_PMODE */
-	PAD_CFG_NF(CX_PREQ_B, UP_20K, DEEP, NF1),	/* CX_PREQ_B */
-	PAD_CFG_NF(JTAGX, UP_20K, DEEP, NF1),		/* JTAGX */
-	PAD_CFG_NF(CX_PRDY_B, UP_20K, DEEP, NF1),	/* CX_PRDY_B */
-	PAD_CFG_NF(TDO, UP_20K, DEEP, NF1),		/* TDO */
 
 	/* CNV bridge described into IAFW Vol2. */
 	/* GPIO_[216:219] described into EDS Vol1. */

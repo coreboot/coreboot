@@ -127,7 +127,6 @@ struct sd_mmc_ctrlr {
 	int (*send_cmd)(struct sd_mmc_ctrlr *ctrlr,
 		struct mmc_command *cmd, struct mmc_data *data);
 	void (*set_ios)(struct sd_mmc_ctrlr *ctrlr);
-	void (*set_control_reg)(struct sd_mmc_ctrlr *ctrlr);
 	void (*tuning_start)(struct sd_mmc_ctrlr *ctrlr, int retune);
 	int (*is_tuning_complete)(struct sd_mmc_ctrlr *ctrlr, int *successful);
 

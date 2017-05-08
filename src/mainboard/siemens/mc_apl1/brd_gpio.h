@@ -14,6 +14,9 @@
  * GNU General Public License for more details.
  */
 
+#ifndef _BRD_GPIO_H_
+#define _BRD_GPIO_H_
+
 #include <soc/gpio.h>
 
 /*
@@ -22,3 +25,5 @@
  */
 const struct pad_config *brd_gpio_table(size_t *num);
 const struct pad_config *brd_early_gpio_table(size_t *num);
+
+#endif /* _BRD_GPIO_H_ */

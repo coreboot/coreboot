@@ -21,6 +21,8 @@
 #include <arch/io.h>
 #include <stdint.h>
 
+void nuvoton_pnp_enter_conf_state(pnp_devfn_t dev);
+void nuvoton_pnp_exit_conf_state(pnp_devfn_t dev);
 void nuvoton_enable_serial(pnp_devfn_t dev, u16 iobase);
 
 #endif /* SUPERIO_NUVOTON_COMMON_ROMSTAGE_H */

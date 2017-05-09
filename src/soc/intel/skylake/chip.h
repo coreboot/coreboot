@@ -94,6 +94,9 @@ struct soc_intel_skylake_config {
 	/* TCC activation offset */
 	int tcc_offset;
 
+	/* PL2 Override value in Watts */
+	u32 tdp_pl2_override;
+
 	/*
 	 * The following fields come from FspUpdVpd.h.
 	 * These are configuration values that are passed to FSP during
@@ -392,8 +395,6 @@ struct soc_intel_skylake_config {
 	 * Setting to 0 (default) disables Heci1 and hides the device from OS
 	 */
 	u8 HeciEnabled;
-	/* PL2 Override value in Watts */
-	u32 tdp_pl2_override;
 	u8 PmTimerDisabled;
 	/* Intel Speed Shift Technology */
 	u8 speed_shift_enable;

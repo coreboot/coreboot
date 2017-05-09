@@ -30,41 +30,9 @@
 #define DECIMAL_CAPACITY_MULTIPLIER	1000ULL
 #define HEX_CAPACITY_MULTIPLIER		1024ULL
 
-static const char * const hex_unit_name[] = {
-	"TiB", "GiB", "MiB", "KiB", "B"
-};
-static const char * const decimal_unit_name[] = {
-	"TB", "GB", "MB", "KB", "B"
-};
-
-static const uint64_t decimal_capacity_table[] = {
-	/* TB */
-	DECIMAL_CAPACITY_MULTIPLIER * DECIMAL_CAPACITY_MULTIPLIER
-		* DECIMAL_CAPACITY_MULTIPLIER * DECIMAL_CAPACITY_MULTIPLIER,
-	/* GB */
-	DECIMAL_CAPACITY_MULTIPLIER * DECIMAL_CAPACITY_MULTIPLIER
-		* DECIMAL_CAPACITY_MULTIPLIER,
-	/* MB */
-	DECIMAL_CAPACITY_MULTIPLIER * DECIMAL_CAPACITY_MULTIPLIER,
-	/* KB */
-	DECIMAL_CAPACITY_MULTIPLIER,
-	/* B */
-	1
-};
-
-static const uint64_t hex_capacity_table[] = {
-	/* TiB */
-	HEX_CAPACITY_MULTIPLIER * HEX_CAPACITY_MULTIPLIER
-		* HEX_CAPACITY_MULTIPLIER * HEX_CAPACITY_MULTIPLIER,
-	/* GiB */
-	HEX_CAPACITY_MULTIPLIER * HEX_CAPACITY_MULTIPLIER
-		* HEX_CAPACITY_MULTIPLIER,
-	/* MiB */
-	HEX_CAPACITY_MULTIPLIER * HEX_CAPACITY_MULTIPLIER,
-	/* KiB */
-	HEX_CAPACITY_MULTIPLIER,
-	/* B */
-	1
+struct capacity {
+	const char * const units;
+	uint64_t bytes;
 };
 
 static void display_capacity(struct storage_media *media, int partition_number)
@@ -77,6 +45,26 @@ static void display_capacity(struct storage_media *media, int partition_number)
 	int index;
 	const char *name;
 	const char *separator;
+	const struct capacity decimal_list[] = {
+		{"TB", DECIMAL_CAPACITY_MULTIPLIER * DECIMAL_CAPACITY_MULTIPLIER
+			* DECIMAL_CAPACITY_MULTIPLIER
+			* DECIMAL_CAPACITY_MULTIPLIER},
+		{"GB", DECIMAL_CAPACITY_MULTIPLIER * DECIMAL_CAPACITY_MULTIPLIER
+			* DECIMAL_CAPACITY_MULTIPLIER},
+		{"MB", DECIMAL_CAPACITY_MULTIPLIER
+			* DECIMAL_CAPACITY_MULTIPLIER},
+		{"KB", DECIMAL_CAPACITY_MULTIPLIER},
+		{"B", 1}
+	};
+	const struct capacity hex_list[] = {
+		{"TiB", HEX_CAPACITY_MULTIPLIER * HEX_CAPACITY_MULTIPLIER
+			* HEX_CAPACITY_MULTIPLIER * HEX_CAPACITY_MULTIPLIER},
+		{"GiB", HEX_CAPACITY_MULTIPLIER * HEX_CAPACITY_MULTIPLIER
+			* HEX_CAPACITY_MULTIPLIER},
+		{"MiB", HEX_CAPACITY_MULTIPLIER * HEX_CAPACITY_MULTIPLIER},
+		{"KiB", HEX_CAPACITY_MULTIPLIER},
+		{"B", 1}
+	};
 
 	/* Get the partition name */
 	capacity = media->capacity[partition_number];
@@ -86,23 +74,20 @@ static void display_capacity(struct storage_media *media, int partition_number)
 		separator = ": ";
 
 	/* Determine the decimal divisor for the capacity */
-	ASSERT(ARRAY_SIZE(decimal_capacity_table)
-		== ARRAY_SIZE(decimal_unit_name));
-	for (index = 0; index < ARRAY_SIZE(decimal_capacity_table); index++) {
-		if (capacity >= decimal_capacity_table[index])
+	for (index = 0; index < ARRAY_SIZE(decimal_list) - 1; index++) {
+		if (capacity >= decimal_list[index].bytes)
 			break;
 	}
-	decimal_divisor = decimal_capacity_table[index];
-	decimal_units = decimal_unit_name[index];
+	decimal_divisor = decimal_list[index].bytes;
+	decimal_units = decimal_list[index].units;
 
 	/* Determine the hex divisor for the capacity */
-	ASSERT(ARRAY_SIZE(hex_capacity_table) == ARRAY_SIZE(hex_unit_name));
-	for (index = 0; index < ARRAY_SIZE(hex_capacity_table); index++) {
-		if (capacity >= hex_capacity_table[index])
+	for (index = 0; index < ARRAY_SIZE(hex_list) - 1; index++) {
+		if (capacity >= hex_list[index].bytes)
 			break;
 	}
-	hex_divisor = hex_capacity_table[index];
-	hex_units = hex_unit_name[index];
+	hex_divisor = hex_list[index].bytes;
+	hex_units = hex_list[index].units;
 
 	/* Display the capacity */
 	sdhc_debug("%3lld.%03lld %sytes (%3lld.%03lld %sytes)%s%s\n",

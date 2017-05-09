@@ -240,6 +240,15 @@ enum chip_cap { /* as in DDR3 spd */
 	CHIP_CAP_16G	= 6,
 };
 
+struct dll_setting {
+	u8 tap;
+	u8 pi;
+	u8 db_en;
+	u8 db_sel;
+	u8 clk_delay;
+	u8 coarse;
+};
+
 struct timings {
 	unsigned int	CAS;
 	enum fsb_clock	fsb_clk;

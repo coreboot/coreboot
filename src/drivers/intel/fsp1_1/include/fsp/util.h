@@ -87,6 +87,7 @@ int fsp_relocate(struct prog *fsp_relocd, const struct region_device *fsp_src);
 #define ERROR_IMAGEBASE_MISMATCH		4
 #define ERROR_INFO_HEAD_SIG_MISMATCH		5
 #define ERROR_FSP_SIG_MISMATCH			6
+#define ERROR_FSP_REV_MISMATCH			7
 
 #if ENV_RAMSTAGE
 extern void *FspHobListPtr;

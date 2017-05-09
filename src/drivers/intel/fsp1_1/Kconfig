@@ -50,13 +50,6 @@ config FSP_FILE
 	help
 	  The path and filename of the Intel FSP binary for this platform.
 
-config FSP_IMAGE_ID_STRING
-	string "8 byte platform string identifying the FSP platform"
-	default "$XXXFSP$"
-	help
-	  8 ASCII character byte signature string that will help match the FSP
-	  binary to a supported hardware configuration.
-
 config FSP_LOC
 	hex "Intel FSP Binary location in CBFS"
 	default 0xffee0000

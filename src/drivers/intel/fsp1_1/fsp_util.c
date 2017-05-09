@@ -32,14 +32,8 @@ FSP_INFO_HEADER *find_fsp(uintptr_t fsp_base_address)
 		EFI_RAW_SECTION *rs;
 		u32 u32;
 	} fsp_ptr;
-	static const union {
-		char str_id[8];
-		u32 int_id[2];
-	} fsp_id = {
-		.str_id = CONFIG_FSP_IMAGE_ID_STRING
-	};
 
-	u32 *image_id;
+	u64 *image_id;
 
 	/* Get the FSP binary base address in CBFS */
 	fsp_ptr.u32 = fsp_base_address;
@@ -79,10 +73,13 @@ FSP_INFO_HEADER *find_fsp(uintptr_t fsp_base_address)
 		return (FSP_INFO_HEADER *)ERROR_INFO_HEAD_SIG_MISMATCH;
 
 	/* Verify the FSP ID */
-	image_id = (u32 *)&fsp_ptr.fih->ImageId[0];
-	if ((image_id[0] != fsp_id.int_id[0])
-		|| (image_id[1] != fsp_id.int_id[1]))
+	image_id = (u64 *)&fsp_ptr.fih->ImageId[0];
+	if (*image_id != FSP_IMAGE_ID)
 		return (FSP_INFO_HEADER *)ERROR_FSP_SIG_MISMATCH;
+
+	/* Verify the FSP Revision */
+	if (fsp_ptr.fih->ImageRevision != FSP_IMAGE_REV)
+		return (FSP_INFO_HEADER *)ERROR_FSP_REV_MISMATCH;
 
 	return fsp_ptr.fih;
 }

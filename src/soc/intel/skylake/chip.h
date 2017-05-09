@@ -302,26 +302,38 @@ struct soc_intel_skylake_config {
 	 * 4: PchDpS4S5AlwaysEn, 5: PchDpS3S4S5BatteryEn, 6: PchDpS3S4S5AlwaysEn
 	 */
 	u8 PmConfigDeepSxPol;
-	/*
-	 * SLP_S3 Minimum Assertion Width Policy. Values 0: PchSlpS360us,
-	 * 1: PchSlpS31ms, 2: PchSlpS350ms, 3: PchSlpS32s.
-	 */
-	u8 PmConfigSlpS3MinAssert;
-	/*
-	 * SLP_S4 Minimum Assertion Width Policy. Values 0: PchSlpS4PchTime,
-	 * 1: PchSlpS41s, 2: PchSlpS42s, 3: PchSlpS43s, 4: PchSlpS44s.
-	 */
-	u8 PmConfigSlpS4MinAssert;
-	/*
-	 * SLP_SUS Minimum Assertion Width Policy. Values 0: PchSlpSus0ms,
-	 * 1: PchSlpSus500ms, 2: PchSlpSus1s, 3: PchSlpSus4s.
-	 */
-	u8 PmConfigSlpSusMinAssert;
-	/*
-	 * SLP_A Minimum Assertion Width Policy. Values 0: PchSlpA0ms,
-	 * 1: PchSlpA4s, 2: PchSlpA98ms, 3: PchSlpA2s.
-	 */
-	u8 PmConfigSlpAMinAssert;
+
+	enum {
+		SLP_S3_MIN_ASSERT_60US = 0,
+		SLP_S3_MIN_ASSERT_1MS  = 1,
+		SLP_S3_MIN_ASSERT_50MS = 2,
+		SLP_S3_MIN_ASSERT_2S   = 3,
+	} PmConfigSlpS3MinAssert;
+
+	enum {
+		SLP_S4_MIN_ASSERT_PCH = 0,
+		SLP_S4_MIN_ASSERT_1S  = 1,
+		SLP_S4_MIN_ASSERT_2S  = 2,
+		SLP_S4_MIN_ASSERT_3S  = 3,
+		SLP_S4_MIN_ASSERT_4S  = 4,
+	} PmConfigSlpS4MinAssert;
+
+	/* When deep Sx enabled: Must be greater than or equal to
+	                         all other minimum assertion widths. */
+	enum {
+		SLP_SUS_MIN_ASSERT_0MS   = 0,
+		SLP_SUS_MIN_ASSERT_500MS = 1,
+		SLP_SUS_MIN_ASSERT_1S    = 2,
+		SLP_SUS_MIN_ASSERT_4S    = 3,
+	} PmConfigSlpSusMinAssert;
+
+	enum {
+		SLP_A_MIN_ASSERT_0MS  = 0,
+		SLP_A_MIN_ASSERT_4S   = 1,
+		SLP_A_MIN_ASSERT_98MS = 2,
+		SLP_A_MIN_ASSERT_2S   = 3,
+	} PmConfigSlpAMinAssert;
+
 	/*
 	 * This member describes whether or not the PCI ClockRun feature of PCH
 	 * should be enabled. Values 0: Disabled, 1: Enabled
@@ -345,24 +357,30 @@ struct soc_intel_skylake_config {
 	 */
 	u8 PchPmSlpS0VmEnable;
 
-	/*
-	 * Reset Power Cycle Duration could be customized in the unit of second.
-	 * PCH HW default is 4 seconds, and range is 1~4 seconds.
-	 * Values: 0x0 - 0s, 0x1 - 1s, 0x2 - 2s, 0x3 - 3s, 0x4 - 4s
-	 */
-	u8 PmConfigPwrCycDur;
+	enum {
+		RESET_POWER_CYCLE_DEFAULT = 0,
+		RESET_POWER_CYCLE_1S      = 1,
+		RESET_POWER_CYCLE_2S      = 2,
+		RESET_POWER_CYCLE_3S      = 3,
+		RESET_POWER_CYCLE_4S      = 4,
+	} PmConfigPwrCycDur;
+
 	/* Determines if enable Serial IRQ. Values 0: Disabled, 1: Enabled.*/
 	u8 SerialIrqConfigSirqEnable;
-	/* Serial IRQ Mode Select. Values: 0: PchQuietMode,
-	 * 1: PchContinuousMode.
-	 */
-	u8 SerialIrqConfigSirqMode;
-	/*
-	 * Start Frame Pulse Width.
-	 * Values: 0: PchSfpw4Clk, 1: PchSfpw6Clk, 2; PchSfpw8Clk.
-	 */
-	u8 SerialIrqConfigStartFramePulse;
+
+	enum {
+		SERIAL_IRQ_QUIET_MODE      = 0,
+		SERIAL_IRQ_CONTINUOUS_MODE = 1,
+	} SerialIrqConfigSirqMode;
+
+	enum {
+		SERIAL_IRQ_FRAME_PULSE_4CLK = 0,
+		SERIAL_IRQ_FRAME_PULSE_6CLK = 1,
+		SERIAL_IRQ_FRAME_PULSE_8CLK = 2,
+	} SerialIrqConfigStartFramePulse;
+
 	u8 FspSkipMpInit;
+
 	/*
 	 * VrConfig Settings for 5 domains
 	 * 0 = System Agent, 1 = IA Core, 2 = Ring,

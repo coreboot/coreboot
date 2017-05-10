@@ -254,7 +254,7 @@ CLANG_CC_${TARCH}:=${CLANG}
 CLANG_CFLAGS_${TARCH}:=${CFLAGS_CLANG}
 CLANG_CFLAGS_${TARCH}+=-no-integrated-as -Qunused-arguments -m${TWIDTH}
 # tone down clang compiler warnings
-CLANG_CFLAGS_${TARCH}+=-Wno-unused-variable -Wno-unused-function -Wno-tautological-compare -Wno-shift-overflow
+CLANG_CFLAGS_${TARCH}+=-Wno-unused-variable -Wno-unused-function -Wno-tautological-compare -Wno-shift-overflow -Wno-address-of-packed-member
 CLANG_COMPILER_RT_${TARCH}:=${CC_RT_CLANG}
 CLANG_COMPILER_RT_FLAGS_${TARCH}:=${CC_RT_EXTRA_CLANG}
 

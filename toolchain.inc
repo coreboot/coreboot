@@ -79,11 +79,13 @@ CFLAGS_power8	+=
 # for an example).
 # (If you absolutely need a larger stack frame and are 100% sure it cannot
 # cause problems, you can whitelist it with #pragma diagnostic.)
+ifeq ($(CONFIG_COMPILER_GCC),y)
 CFLAGS_arm	+= -Wstack-usage=1536
 CFLAGS_arm64	+= -Wstack-usage=1536
 CFLAGS_mips	+= -Wstack-usage=1536
 CFLAGS_riscv	+= -Wstack-usage=1536
 CFLAGS_power8	+= -Wstack-usage=1536
+endif
 
 toolchain_to_dir = \
 	$(foreach arch,$(ARCH_SUPPORTED),\

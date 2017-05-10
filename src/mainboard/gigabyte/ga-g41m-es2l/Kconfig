@@ -35,10 +35,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select HAVE_CMOS_DEFAULT
 	select HAVE_ACPI_RESUME
 
-config MMCONF_BASE_ADDRESS
-	hex
-	default 0xe0000000
-
 config MAINBOARD_DIR
 	string
 	default "gigabyte/ga-g41m-es2l"

@@ -67,6 +67,21 @@ Method(_WAK,1)
 	Return(Package(){0,0})
 }
 
+Method(UCMS, 1, Serialized)
+{
+	Switch(ToInteger(Arg0))
+	{
+		Case (0x0c) /* Turn on ThinkLight */
+		{
+			\_SB.PCI0.LPCB.EC.LGHT(1)
+		}
+		Case (0x0d) /* Turn off ThinkLight */
+		{
+			\_SB.PCI0.LPCB.EC.LGHT(0)
+		}
+	}
+}
+
 /* System Bus */
 
 Scope(\_SB)

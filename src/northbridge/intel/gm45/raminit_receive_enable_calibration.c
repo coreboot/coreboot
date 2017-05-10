@@ -211,7 +211,7 @@ static void receive_enable_calibration(const timings_t *const timings,
 
 	const int cardF[] = {
 		dimms[0].card_type == 0xf,
-		dimms[0].card_type == 0xf,
+		dimms[1].card_type == 0xf,
 	};
 
 	const unsigned int t_bound =

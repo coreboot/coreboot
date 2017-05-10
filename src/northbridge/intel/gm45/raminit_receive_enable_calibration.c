@@ -209,11 +209,14 @@ static void receive_enable_calibration(const timings_t *const timings,
 	/*     F */{ { 0, 0 }, { 3, 3 }, { 6, 6 }, { 5, 5 } },
 	};
 
-	const int cardF[] =
-		{ dimms[0].card_type == 0xf, dimms[0].card_type == 0xf };
-	const unsigned t_bound =
+	const int cardF[] = {
+		dimms[0].card_type == 0xf,
+		dimms[0].card_type == 0xf,
+	};
+
+	const unsigned int t_bound =
 		(timings->mem_clock == MEM_CLOCK_1067MT) ? 9 : 12;
-	const unsigned p_bound =
+	const unsigned int p_bound =
 		(timings->mem_clock == MEM_CLOCK_1067MT) ? 8 : 1;
 
 	rec_timing_t rec_timings[2][4] = {

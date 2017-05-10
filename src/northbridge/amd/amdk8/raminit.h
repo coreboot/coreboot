@@ -33,6 +33,8 @@ void sdram_enable(int controllers, const struct mem_controller *ctrl,
 void sdram_set_registers(const struct mem_controller *ctrl, struct sys_info *sysinfo);
 void sdram_set_spd_registers(const struct mem_controller *ctrl,
 			struct sys_info *sysinfo);
+void dump_spd_registers(const struct mem_controller *ctrl);
+void dump_smbus_registers(void);
 #else
 void sdram_set_registers(const struct mem_controller *ctrl);
 void sdram_set_spd_registers(const struct mem_controller *ctrl);

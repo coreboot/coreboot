@@ -8,6 +8,7 @@
 #include <arch/io.h>
 #include <device/pci_def.h>
 #include <delay.h>
+#include "raminit.h"
 
 void print_debug_addr(const char *str, void *val)
 {
@@ -153,7 +154,7 @@ void dump_spd_registers(const struct mem_controller *ctrl)
 				if ((j & 0xf) == 0) {
 					printk(BIOS_DEBUG, "\n%02x: ", j);
 				}
-				status = smbus_read_byte(device, j);
+				status = spd_read_byte(device, j);
 				if (status < 0) {
 					break;
 				}
@@ -172,7 +173,7 @@ void dump_spd_registers(const struct mem_controller *ctrl)
 				if ((j & 0xf) == 0) {
 					printk(BIOS_DEBUG, "\n%02x: ", j);
 				}
-				status = smbus_read_byte(device, j);
+				status = spd_read_byte(device, j);
 				if (status < 0) {
 					break;
 				}
@@ -189,12 +190,13 @@ void dump_smbus_registers(void)
 	printk(BIOS_DEBUG, "\n");
 	for (device = 1; device < 0x80; device++) {
 		int j;
-		if (smbus_read_byte(device, 0) < 0) continue;
+		if (spd_read_byte(device, 0) < 0)
+			continue;
 		printk(BIOS_DEBUG, "smbus: %02x", device);
 		for (j = 0; j < 256; j++) {
 			int status;
 			unsigned char byte;
-			status = smbus_read_byte(device, j);
+			status = spd_read_byte(device, j);
 			if (status < 0) {
 				break;
 			}

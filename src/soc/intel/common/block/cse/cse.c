@@ -464,7 +464,6 @@ static struct device_operations cse_ops = {
 	.read_resources		= pci_dev_read_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= pci_dev_init,
-	.enable_resources	= pci_dev_enable_resources
 };
 
 static const struct pci_driver cse_driver __pci_driver = {

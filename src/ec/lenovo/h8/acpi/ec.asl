@@ -107,6 +107,11 @@ Device(EC)
 		Store(Arg0, USPW)
 	}
 
+	Method (LGHT, 1, NotSerialized)
+	{
+		Store(Arg0, KBLT)
+	}
+
 
 	/* Sleep Button pressed */
 	Method(_Q13, 0, NotSerialized)

@@ -39,10 +39,6 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "D945GCLF"
 
-config MMCONF_BASE_ADDRESS
-	hex
-	default 0xf0000000
-
 config IRQ_SLOT_COUNT
 	int
 	default 18

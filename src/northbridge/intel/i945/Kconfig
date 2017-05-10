@@ -46,6 +46,10 @@ config CHANNEL_XOR_RANDOMIZATION
 	bool
 	default n
 
+config MMCONF_BASE_ADDRESS
+	hex
+	default 0xf0000000
+
 config OVERRIDE_CLOCK_DISABLE
 	bool
 	default n

@@ -25,7 +25,7 @@
 /* ACTLR */
 uint32_t raw_read_actlr_el1(void)
 {
-	uint32_t actlr_el1;
+	uint64_t actlr_el1;
 
 	__asm__ __volatile__("mrs %0, ACTLR_EL1\n\t" : "=r" (actlr_el1) :  : "memory");
 
@@ -34,12 +34,12 @@ uint32_t raw_read_actlr_el1(void)
 
 void raw_write_actlr_el1(uint32_t actlr_el1)
 {
-	__asm__ __volatile__("msr ACTLR_EL1, %0\n\t" : : "r" (actlr_el1) : "memory");
+	__asm__ __volatile__("msr ACTLR_EL1, %0\n\t" : : "r" ((uint64_t)actlr_el1) : "memory");
 }
 
 uint32_t raw_read_actlr_el2(void)
 {
-	uint32_t actlr_el2;
+	uint64_t actlr_el2;
 
 	__asm__ __volatile__("mrs %0, ACTLR_EL2\n\t" : "=r" (actlr_el2) :  : "memory");
 
@@ -48,12 +48,12 @@ uint32_t raw_read_actlr_el2(void)
 
 void raw_write_actlr_el2(uint32_t actlr_el2)
 {
-	__asm__ __volatile__("msr ACTLR_EL2, %0\n\t" : : "r" (actlr_el2) : "memory");
+	__asm__ __volatile__("msr ACTLR_EL2, %0\n\t" : : "r" ((uint64_t)actlr_el2) : "memory");
 }
 
 uint32_t raw_read_actlr_el3(void)
 {
-	uint32_t actlr_el3;
+	uint64_t actlr_el3;
 
 	__asm__ __volatile__("mrs %0, ACTLR_EL3\n\t" : "=r" (actlr_el3) :  : "memory");
 
@@ -62,7 +62,7 @@ uint32_t raw_read_actlr_el3(void)
 
 void raw_write_actlr_el3(uint32_t actlr_el3)
 {
-	__asm__ __volatile__("msr ACTLR_EL3, %0\n\t" : : "r" (actlr_el3) : "memory");
+	__asm__ __volatile__("msr ACTLR_EL3, %0\n\t" : : "r" ((uint64_t)actlr_el3) : "memory");
 }
 
 uint32_t raw_read_actlr_current(void)
@@ -90,7 +90,7 @@ void raw_write_actlr(uint32_t actlr, uint32_t el)
 /* AFSR0 */
 uint32_t raw_read_afsr0_el1(void)
 {
-	uint32_t afsr0_el1;
+	uint64_t afsr0_el1;
 
 	__asm__ __volatile__("mrs %0, AFSR0_EL1\n\t" : "=r" (afsr0_el1) :  : "memory");
 
@@ -99,12 +99,12 @@ uint32_t raw_read_afsr0_el1(void)
 
 void raw_write_afsr0_el1(uint32_t afsr0_el1)
 {
-	__asm__ __volatile__("msr AFSR0_EL1, %0\n\t" : : "r" (afsr0_el1) : "memory");
+	__asm__ __volatile__("msr AFSR0_EL1, %0\n\t" : : "r" ((uint64_t)afsr0_el1) : "memory");
 }
 
 uint32_t raw_read_afsr0_el2(void)
 {
-	uint32_t afsr0_el2;
+	uint64_t afsr0_el2;
 
 	__asm__ __volatile__("mrs %0, AFSR0_EL2\n\t" : "=r" (afsr0_el2) :  : "memory");
 
@@ -113,12 +113,12 @@ uint32_t raw_read_afsr0_el2(void)
 
 void raw_write_afsr0_el2(uint32_t afsr0_el2)
 {
-	__asm__ __volatile__("msr AFSR0_EL2, %0\n\t" : : "r" (afsr0_el2) : "memory");
+	__asm__ __volatile__("msr AFSR0_EL2, %0\n\t" : : "r" ((uint64_t)afsr0_el2) : "memory");
 }
 
 uint32_t raw_read_afsr0_el3(void)
 {
-	uint32_t afsr0_el3;
+	uint64_t afsr0_el3;
 
 	__asm__ __volatile__("mrs %0, AFSR0_EL3\n\t" : "=r" (afsr0_el3) :  : "memory");
 
@@ -127,7 +127,7 @@ uint32_t raw_read_afsr0_el3(void)
 
 void raw_write_afsr0_el3(uint32_t afsr0_el3)
 {
-	__asm__ __volatile__("msr AFSR0_EL3, %0\n\t" : : "r" (afsr0_el3) : "memory");
+	__asm__ __volatile__("msr AFSR0_EL3, %0\n\t" : : "r" ((uint64_t)afsr0_el3) : "memory");
 }
 
 uint32_t raw_read_afsr0_current(void)
@@ -155,7 +155,7 @@ void raw_write_afsr0(uint32_t afsr0, uint32_t el)
 /* AFSR1 */
 uint32_t raw_read_afsr1_el1(void)
 {
-	uint32_t afsr1_el1;
+	uint64_t afsr1_el1;
 
 	__asm__ __volatile__("mrs %0, AFSR1_EL1\n\t" : "=r" (afsr1_el1) :  : "memory");
 
@@ -164,12 +164,12 @@ uint32_t raw_read_afsr1_el1(void)
 
 void raw_write_afsr1_el1(uint32_t afsr1_el1)
 {
-	__asm__ __volatile__("msr AFSR1_EL1, %0\n\t" : : "r" (afsr1_el1) : "memory");
+	__asm__ __volatile__("msr AFSR1_EL1, %0\n\t" : : "r" ((uint64_t)afsr1_el1) : "memory");
 }
 
 uint32_t raw_read_afsr1_el2(void)
 {
-	uint32_t afsr1_el2;
+	uint64_t afsr1_el2;
 
 	__asm__ __volatile__("mrs %0, AFSR1_EL2\n\t" : "=r" (afsr1_el2) :  : "memory");
 
@@ -178,12 +178,12 @@ uint32_t raw_read_afsr1_el2(void)
 
 void raw_write_afsr1_el2(uint32_t afsr1_el2)
 {
-	__asm__ __volatile__("msr AFSR1_EL2, %0\n\t" : : "r" (afsr1_el2) : "memory");
+	__asm__ __volatile__("msr AFSR1_EL2, %0\n\t" : : "r" ((uint64_t)afsr1_el2) : "memory");
 }
 
 uint32_t raw_read_afsr1_el3(void)
 {
-	uint32_t afsr1_el3;
+	uint64_t afsr1_el3;
 
 	__asm__ __volatile__("mrs %0, AFSR1_EL3\n\t" : "=r" (afsr1_el3) :  : "memory");
 
@@ -192,7 +192,7 @@ uint32_t raw_read_afsr1_el3(void)
 
 void raw_write_afsr1_el3(uint32_t afsr1_el3)
 {
-	__asm__ __volatile__("msr AFSR1_EL3, %0\n\t" : : "r" (afsr1_el3) : "memory");
+	__asm__ __volatile__("msr AFSR1_EL3, %0\n\t" : : "r" ((uint64_t)afsr1_el3) : "memory");
 }
 
 uint32_t raw_read_afsr1_current(void)
@@ -220,7 +220,7 @@ void raw_write_afsr1(uint32_t afsr1, uint32_t el)
 /* AIDR */
 uint32_t raw_read_aidr_el1(void)
 {
-	uint32_t aidr_el1;
+	uint64_t aidr_el1;
 
 	__asm__ __volatile__("mrs %0, AIDR_EL1\n\t" : "=r" (aidr_el1) :  : "memory");
 
@@ -295,7 +295,7 @@ void raw_write_amair(uint64_t amair, uint32_t el)
 /* CCSIDR */
 uint32_t raw_read_ccsidr_el1(void)
 {
-	uint32_t ccsidr_el1;
+	uint64_t ccsidr_el1;
 
 	__asm__ __volatile__("mrs %0, CCSIDR_EL1\n\t" : "=r" (ccsidr_el1) :  : "memory");
 
@@ -305,7 +305,7 @@ uint32_t raw_read_ccsidr_el1(void)
 /* CLIDR */
 uint32_t raw_read_clidr_el1(void)
 {
-	uint32_t clidr_el1;
+	uint64_t clidr_el1;
 
 	__asm__ __volatile__("mrs %0, CLIDR_EL1\n\t" : "=r" (clidr_el1) :  : "memory");
 
@@ -315,7 +315,7 @@ uint32_t raw_read_clidr_el1(void)
 /* CPACR */
 uint32_t raw_read_cpacr_el1(void)
 {
-	uint32_t cpacr_el1;
+	uint64_t cpacr_el1;
 
 	__asm__ __volatile__("mrs %0, CPACR_EL1\n\t" : "=r" (cpacr_el1) :  : "memory");
 
@@ -324,13 +324,13 @@ uint32_t raw_read_cpacr_el1(void)
 
 void raw_write_cpacr_el1(uint32_t cpacr_el1)
 {
-	__asm__ __volatile__("msr CPACR_EL1, %0\n\t" : : "r" (cpacr_el1) : "memory");
+	__asm__ __volatile__("msr CPACR_EL1, %0\n\t" : : "r" ((uint64_t)cpacr_el1) : "memory");
 }
 
 /* CPTR */
 uint32_t raw_read_cptr_el2(void)
 {
-	uint32_t cptr_el2;
+	uint64_t cptr_el2;
 
 	__asm__ __volatile__("mrs %0, CPTR_EL2\n\t" : "=r" (cptr_el2) :  : "memory");
 
@@ -339,12 +339,12 @@ uint32_t raw_read_cptr_el2(void)
 
 void raw_write_cptr_el2(uint32_t cptr_el2)
 {
-	__asm__ __volatile__("msr CPTR_EL2, %0\n\t" : : "r" (cptr_el2) : "memory");
+	__asm__ __volatile__("msr CPTR_EL2, %0\n\t" : : "r" ((uint64_t)cptr_el2) : "memory");
 }
 
 uint32_t raw_read_cptr_el3(void)
 {
-	uint32_t cptr_el3;
+	uint64_t cptr_el3;
 
 	__asm__ __volatile__("mrs %0, CPTR_EL3\n\t" : "=r" (cptr_el3) :  : "memory");
 
@@ -353,13 +353,13 @@ uint32_t raw_read_cptr_el3(void)
 
 void raw_write_cptr_el3(uint32_t cptr_el3)
 {
-	__asm__ __volatile__("msr CPTR_EL3, %0\n\t" : : "r" (cptr_el3) : "memory");
+	__asm__ __volatile__("msr CPTR_EL3, %0\n\t" : : "r" ((uint64_t)cptr_el3) : "memory");
 }
 
 /* CSSELR */
 uint32_t raw_read_csselr_el1(void)
 {
-	uint32_t csselr_el1;
+	uint64_t csselr_el1;
 
 	__asm__ __volatile__("mrs %0, CSSELR_EL1\n\t" : "=r" (csselr_el1) :  : "memory");
 
@@ -368,13 +368,13 @@ uint32_t raw_read_csselr_el1(void)
 
 void raw_write_csselr_el1(uint32_t csselr_el1)
 {
-	__asm__ __volatile__("msr CSSELR_EL1, %0\n\t" : : "r" (csselr_el1) : "memory");
+	__asm__ __volatile__("msr CSSELR_EL1, %0\n\t" : : "r" ((uint64_t)csselr_el1) : "memory");
 }
 
 /* CTR */
 uint32_t raw_read_ctr_el0(void)
 {
-	uint32_t ctr_el0;
+	uint64_t ctr_el0;
 
 	__asm__ __volatile__("mrs %0, CTR_EL0\n\t" : "=r" (ctr_el0) :  : "memory");
 
@@ -384,7 +384,7 @@ uint32_t raw_read_ctr_el0(void)
 /* ESR */
 uint32_t raw_read_esr_el1(void)
 {
-	uint32_t esr_el1;
+	uint64_t esr_el1;
 
 	__asm__ __volatile__("mrs %0, ESR_EL1\n\t" : "=r" (esr_el1) :  : "memory");
 
@@ -393,12 +393,12 @@ uint32_t raw_read_esr_el1(void)
 
 void raw_write_esr_el1(uint32_t esr_el1)
 {
-	__asm__ __volatile__("msr ESR_EL1, %0\n\t" : : "r" (esr_el1) : "memory");
+	__asm__ __volatile__("msr ESR_EL1, %0\n\t" : : "r" ((uint64_t)esr_el1) : "memory");
 }
 
 uint32_t raw_read_esr_el2(void)
 {
-	uint32_t esr_el2;
+	uint64_t esr_el2;
 
 	__asm__ __volatile__("mrs %0, ESR_EL2\n\t" : "=r" (esr_el2) :  : "memory");
 
@@ -407,12 +407,12 @@ uint32_t raw_read_esr_el2(void)
 
 void raw_write_esr_el2(uint32_t esr_el2)
 {
-	__asm__ __volatile__("msr ESR_EL2, %0\n\t" : : "r" (esr_el2) : "memory");
+	__asm__ __volatile__("msr ESR_EL2, %0\n\t" : : "r" ((uint64_t)esr_el2) : "memory");
 }
 
 uint32_t raw_read_esr_el3(void)
 {
-	uint32_t esr_el3;
+	uint64_t esr_el3;
 
 	__asm__ __volatile__("mrs %0, ESR_EL3\n\t" : "=r" (esr_el3) :  : "memory");
 
@@ -421,7 +421,7 @@ uint32_t raw_read_esr_el3(void)
 
 void raw_write_esr_el3(uint32_t esr_el3)
 {
-	__asm__ __volatile__("msr ESR_EL3, %0\n\t" : : "r" (esr_el3) : "memory");
+	__asm__ __volatile__("msr ESR_EL3, %0\n\t" : : "r" ((uint64_t)esr_el3) : "memory");
 }
 
 uint32_t raw_read_esr_current(void)
@@ -604,7 +604,7 @@ void raw_write_mair(uint64_t mair, uint32_t el)
 /* MIDR */
 uint32_t raw_read_midr_el1(void)
 {
-	uint32_t midr_el1;
+	uint64_t midr_el1;
 
 	__asm__ __volatile__("mrs %0, MIDR_EL1\n\t" : "=r" (midr_el1) :  : "memory");
 
@@ -624,7 +624,7 @@ uint64_t raw_read_mpidr_el1(void)
 /* RMR */
 uint32_t raw_read_rmr_el1(void)
 {
-	uint32_t rmr_el1;
+	uint64_t rmr_el1;
 
 	__asm__ __volatile__("mrs %0, RMR_EL1\n\t" : "=r" (rmr_el1) :  : "memory");
 
@@ -633,12 +633,12 @@ uint32_t raw_read_rmr_el1(void)
 
 void raw_write_rmr_el1(uint32_t rmr_el1)
 {
-	__asm__ __volatile__("msr RMR_EL1, %0\n\t" : : "r" (rmr_el1) : "memory");
+	__asm__ __volatile__("msr RMR_EL1, %0\n\t" : : "r" ((uint64_t)rmr_el1) : "memory");
 }
 
 uint32_t raw_read_rmr_el2(void)
 {
-	uint32_t rmr_el2;
+	uint64_t rmr_el2;
 
 	__asm__ __volatile__("mrs %0, RMR_EL2\n\t" : "=r" (rmr_el2) :  : "memory");
 
@@ -647,12 +647,12 @@ uint32_t raw_read_rmr_el2(void)
 
 void raw_write_rmr_el2(uint32_t rmr_el2)
 {
-	__asm__ __volatile__("msr RMR_EL2, %0\n\t" : : "r" (rmr_el2) : "memory");
+	__asm__ __volatile__("msr RMR_EL2, %0\n\t" : : "r" ((uint64_t)rmr_el2) : "memory");
 }
 
 uint32_t raw_read_rmr_el3(void)
 {
-	uint32_t rmr_el3;
+	uint64_t rmr_el3;
 
 	__asm__ __volatile__("mrs %0, RMR_EL3\n\t" : "=r" (rmr_el3) :  : "memory");
 
@@ -661,7 +661,7 @@ uint32_t raw_read_rmr_el3(void)
 
 void raw_write_rmr_el3(uint32_t rmr_el3)
 {
-	__asm__ __volatile__("msr RMR_EL3, %0\n\t" : : "r" (rmr_el3) : "memory");
+	__asm__ __volatile__("msr RMR_EL3, %0\n\t" : : "r" ((uint64_t)rmr_el3) : "memory");
 }
 
 uint32_t raw_read_rmr_current(void)
@@ -754,7 +754,7 @@ void raw_write_rvbar(uint64_t rvbar, uint32_t el)
 /* Scr */
 uint32_t raw_read_scr_el3(void)
 {
-	uint32_t scr_el3;
+	uint64_t scr_el3;
 
 	__asm__ __volatile__("mrs %0, SCR_EL3\n\t" : "=r" (scr_el3) :  : "memory");
 
@@ -763,13 +763,13 @@ uint32_t raw_read_scr_el3(void)
 
 void raw_write_scr_el3(uint32_t scr_el3)
 {
-	__asm__ __volatile__("msr SCR_EL3, %0\n\t" : : "r" (scr_el3) : "memory");
+	__asm__ __volatile__("msr SCR_EL3, %0\n\t" : : "r" ((uint64_t)scr_el3) : "memory");
 }
 
 /* SCTLR */
 uint32_t raw_read_sctlr_el1(void)
 {
-	uint32_t sctlr_el1;
+	uint64_t sctlr_el1;
 
 	__asm__ __volatile__("mrs %0, SCTLR_EL1\n\t" : "=r" (sctlr_el1) :  : "memory");
 
@@ -778,12 +778,12 @@ uint32_t raw_read_sctlr_el1(void)
 
 void raw_write_sctlr_el1(uint32_t sctlr_el1)
 {
-	__asm__ __volatile__("msr SCTLR_EL1, %0\n\t" : : "r" (sctlr_el1) : "memory");
+	__asm__ __volatile__("msr SCTLR_EL1, %0\n\t" : : "r" ((uint64_t)sctlr_el1) : "memory");
 }
 
 uint32_t raw_read_sctlr_el2(void)
 {
-	uint32_t sctlr_el2;
+	uint64_t sctlr_el2;
 
 	__asm__ __volatile__("mrs %0, SCTLR_EL2\n\t" : "=r" (sctlr_el2) :  : "memory");
 
@@ -792,12 +792,12 @@ uint32_t raw_read_sctlr_el2(void)
 
 void raw_write_sctlr_el2(uint32_t sctlr_el2)
 {
-	__asm__ __volatile__("msr SCTLR_EL2, %0\n\t" : : "r" (sctlr_el2) : "memory");
+	__asm__ __volatile__("msr SCTLR_EL2, %0\n\t" : : "r" ((uint64_t)sctlr_el2) : "memory");
 }
 
 uint32_t raw_read_sctlr_el3(void)
 {
-	uint32_t sctlr_el3;
+	uint64_t sctlr_el3;
 
 	__asm__ __volatile__("mrs %0, SCTLR_EL3\n\t" : "=r" (sctlr_el3) :  : "memory");
 
@@ -806,7 +806,7 @@ uint32_t raw_read_sctlr_el3(void)
 
 void raw_write_sctlr_el3(uint32_t sctlr_el3)
 {
-	__asm__ __volatile__("msr SCTLR_EL3, %0\n\t" : : "r" (sctlr_el3) : "memory");
+	__asm__ __volatile__("msr SCTLR_EL3, %0\n\t" : : "r" ((uint64_t)sctlr_el3) : "memory");
 }
 
 uint32_t raw_read_sctlr_current(void)
@@ -848,7 +848,7 @@ void raw_write_tcr_el1(uint64_t tcr_el1)
 
 uint32_t raw_read_tcr_el2(void)
 {
-	uint32_t tcr_el2;
+	uint64_t tcr_el2;
 
 	__asm__ __volatile__("mrs %0, TCR_EL2\n\t" : "=r" (tcr_el2) :  : "memory");
 
@@ -857,12 +857,12 @@ uint32_t raw_read_tcr_el2(void)
 
 void raw_write_tcr_el2(uint32_t tcr_el2)
 {
-	__asm__ __volatile__("msr TCR_EL2, %0\n\t" : : "r" (tcr_el2) : "memory");
+	__asm__ __volatile__("msr TCR_EL2, %0\n\t" : : "r" ((uint64_t)tcr_el2) : "memory");
 }
 
 uint32_t raw_read_tcr_el3(void)
 {
-	uint32_t tcr_el3;
+	uint64_t tcr_el3;
 
 	__asm__ __volatile__("mrs %0, TCR_EL3\n\t" : "=r" (tcr_el3) :  : "memory");
 
@@ -871,7 +871,7 @@ uint32_t raw_read_tcr_el3(void)
 
 void raw_write_tcr_el3(uint32_t tcr_el3)
 {
-	__asm__ __volatile__("msr TCR_EL3, %0\n\t" : : "r" (tcr_el3) : "memory");
+	__asm__ __volatile__("msr TCR_EL3, %0\n\t" : : "r" ((uint64_t)tcr_el3) : "memory");
 }
 
 
@@ -1049,15 +1049,13 @@ void raw_write_vbar(uint64_t vbar, uint32_t el)
 
 uint32_t raw_read_cntfrq_el0(void)
 {
-	uint32_t cntfrq_el0;
+	uint64_t cntfrq_el0;
 
-	__asm__ __volatile__("mrs %0, CNTFRQ_EL0\n\t" : "=r" (cntfrq_el0) : :
-			     "memory");
+	__asm__ __volatile__("mrs %0, CNTFRQ_EL0\n\t" : "=r" (cntfrq_el0) : : "memory");
 	return cntfrq_el0;
 }
 
 void raw_write_cntfrq_el0(uint32_t cntfrq_el0)
 {
-	__asm__ __volatile__("msr CNTFRQ_EL0, %0\n\t" : : "r" (cntfrq_el0) :
-			     "memory");
+	__asm__ __volatile__("msr CNTFRQ_EL0, %0\n\t" : : "r" ((uint64_t)cntfrq_el0) : "memory");
 }

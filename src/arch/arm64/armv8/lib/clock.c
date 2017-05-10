@@ -23,5 +23,5 @@
 
 void set_cntfrq(uint32_t freq)
 {
-	__asm__ __volatile__("msr cntfrq_el0, %0" :: "r"(freq));
+	__asm__ __volatile__("msr cntfrq_el0, %0" :: "r"((uint64_t)freq));
 }

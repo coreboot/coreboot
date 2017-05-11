@@ -304,6 +304,17 @@ static enum cb_err set_cmos_value(unsigned long bit, unsigned long length,
 	return CB_SUCCESS;
 }
 
+unsigned int read_option_lowlevel(unsigned int start, unsigned int size,
+				  unsigned int def)
+{
+	printk(BIOS_NOTICE, "NOTICE: read_option() used to access CMOS "
+		"from non-ROMCC code, please use get_option() instead.\n");
+	if (IS_ENABLED(CONFIG_USE_OPTION_TABLE)) {
+		const unsigned char byte = cmos_read(start / 8);
+		return (byte >> (start & 7U)) & ((1U << size) - 1U);
+	}
+	return def;
+}
 
 enum cb_err set_option(const char *name, void *value)
 {

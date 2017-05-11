@@ -1,9 +1,6 @@
 ifeq ($(CONFIG_ARCH_X86),y)
 
-romstage-$(CONFIG_DRIVERS_MC146818) += mc146818rtc_early.c
 romstage-$(CONFIG_DRIVERS_MC146818) += mc146818rtc.c
-
-ramstage-$(CONFIG_DRIVERS_MC146818) += mc146818rtc_early.c
 ramstage-$(CONFIG_DRIVERS_MC146818) += mc146818rtc.c
 
 ifeq ($(CONFIG_USE_OPTION_TABLE),y)

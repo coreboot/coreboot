@@ -7,6 +7,14 @@ ramstage-y += spiconsole.c
 smm-$(CONFIG_DEBUG_SMI) += spiconsole.c
 endif
 
+ifeq ($(CONFIG_CONSOLE_SPI_FLASH),y)
+bootblock-y += flashconsole.c
+romstage-y += flashconsole.c
+ramstage-y += flashconsole.c
+smm-$(CONFIG_DEBUG_SMI) += flashconsole.c
+
+endif
+
 bootblock-y += spi-generic.c
 bootblock-$(CONFIG_COMMON_CBFS_SPI_WRAPPER) += cbfs_spi.c
 bootblock-$(CONFIG_SPI_FLASH) += spi_flash.c

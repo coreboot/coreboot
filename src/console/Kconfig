@@ -233,6 +233,37 @@ config CONSOLE_CBMEM_DUMP_TO_UART
 
 endif
 
+config CONSOLE_SPI_FLASH
+	bool "SPI Flash console output"
+	default n
+	select BOOT_DEVICE_SPI_FLASH_RW_NOMMAP_EARLY if !COMMON_CBFS_SPI_WRAPPER
+	help
+	  Send coreboot debug output to the SPI Flash in the FMAP CONSOLE area
+
+	  This option can cause premature wear on the SPI flash and should not
+	  be used as a normal means of debugging. It is only to be enabled and
+	  used when porting a new motherboard which has no other console
+	  available (no UART, no POST, no cbmem access(non bootable)). Since
+	  a non bootable machine will require the use of an external SPI Flash
+	  programmer, the developer can grab the console log at the same time.
+
+	  The flash console will not be erased on reboot, so once it is full,
+	  the flashconsole driver will stop writing to it. This is to avoid
+	  wear on the flash, and to avoid erasing sectors (which may freeze
+	  the SPI controller on skylake).
+
+	  The 'CONSOLE' area can be extracted from the FMAP with :
+	  cbfstool rom.bin read -r CONSOLE -f console.log
+
+config CONSOLE_SPI_FLASH_BUFFER_SIZE
+	hex "Room allocated for console output in FMAP"
+	default 0x20000
+	depends on CONSOLE_SPI_FLASH
+	help
+	  Space allocated for console output storage in FMAP. The default
+	  value (128K or 0x20000 bytes) is large enough to accommodate
+	  even the BIOS_SPEW level.
+
 config CONSOLE_QEMU_DEBUGCON
 	bool "QEMU debug console output"
 	depends on BOARD_EMULATION_QEMU_X86

@@ -790,9 +790,19 @@ FMAP_BIOS_SIZE := $(shell echo $(CONFIG_CBFS_SIZE) | tr A-F a-f)
 # position and size of flashmap, relative to BIOS_BASE
 FMAP_FMAP_BASE := 0
 FMAP_FMAP_SIZE := 0x100
+# position, size and entry line of CONSOLE relative to BIOS_BASE, if enabled
+ifeq ($(CONFIG_CONSOLE_SPI_FLASH),y)
+FMAP_CONSOLE_BASE := $(call int-add, $(FMAP_FMAP_BASE) $(FMAP_FMAP_SIZE))
+FMAP_CONSOLE_SIZE := $(CONFIG_CONSOLE_SPI_FLASH_BUFFER_SIZE)
+FMAP_CONSOLE_ENTRY := CONSOLE@$(FMAP_CONSOLE_BASE) $(FMAP_CONSOLE_SIZE)
+else # ifeq ($(CONFIG_CONSOLE_SPI_FLASH),y)
+FMAP_CONSOLE_BASE := 0
+FMAP_CONSOLE_SIZE := 0
+FMAP_CONSOLE_ENTRY :=
+endif # ifeq ($(CONFIG_CONSOLE_SPI_FLASH),y)
 # position and size of CBFS, relative to BIOS_BASE
-FMAP_CBFS_BASE := $(FMAP_FMAP_SIZE)
-FMAP_CBFS_SIZE := $(call int-subtract, $(FMAP_BIOS_SIZE) $(FMAP_FMAP_SIZE))
+FMAP_CBFS_BASE := $(call int-add, $(FMAP_CONSOLE_SIZE) $(FMAP_FMAP_SIZE))
+FMAP_CBFS_SIZE := $(call int-subtract, $(FMAP_BIOS_SIZE) $(FMAP_CBFS_BASE))
 else # ifeq ($(CONFIG_ARCH_X86),y)
 DEFAULT_FLASHMAP:=$(top)/util/cbfstool/default.fmd
 # entire flash
@@ -805,8 +815,18 @@ FMAP_BIOS_SIZE := $(CONFIG_CBFS_SIZE)
 # position and size of flashmap, relative to BIOS_BASE
 FMAP_FMAP_BASE := 0x20000
 FMAP_FMAP_SIZE := 0x100
+# position, size and entry line of CONSOLE relative to BIOS_BASE, if enabled
+ifeq ($(CONFIG_CONSOLE_SPI_FLASH),y)
+FMAP_CONSOLE_BASE := $(call int-add, $(FMAP_FMAP_BASE) $(FMAP_FMAP_SIZE))
+FMAP_CONSOLE_SIZE := $(CONFIG_CONSOLE_SPI_FLASH_BUFFER_SIZE)
+FMAP_CONSOLE_ENTRY := CONSOLE@$(FMAP_CONSOLE_BASE) $(FMAP_CONSOLE_SIZE)
+else # ifeq ($(CONFIG_CONSOLE_SPI_FLASH),y)
+FMAP_CONSOLE_BASE := 0
+FMAP_CONSOLE_SIZE := 0
+FMAP_CONSOLE_ENTRY :=
+endif # ifeq ($(CONFIG_CONSOLE_SPI_FLASH),y)
 # position and size of CBFS, relative to BIOS_BASE
-FMAP_CBFS_BASE := $(call int-add,$(FMAP_FMAP_BASE) $(FMAP_FMAP_SIZE))
+FMAP_CBFS_BASE := $(call int-add,$(FMAP_FMAP_BASE) $(FMAP_FMAP_SIZE) $(FMAP_CONSOLE_SIZE))
 FMAP_CBFS_SIZE := $(call int-subtract,$(FMAP_BIOS_SIZE) $(FMAP_CBFS_BASE))
 endif # ifeq ($(CONFIG_ARCH_X86),y)
 
@@ -817,6 +837,7 @@ $(obj)/fmap.fmd: $(top)/Makefile.inc $(DEFAULT_FLASHMAP) $(obj)/config.h
 	    -e "s,##BIOS_SIZE##,$(FMAP_BIOS_SIZE)," \
 	    -e "s,##FMAP_BASE##,$(FMAP_FMAP_BASE)," \
 	    -e "s,##FMAP_SIZE##,$(FMAP_FMAP_SIZE)," \
+	    -e "s,##CONSOLE_ENTRY##,$(FMAP_CONSOLE_ENTRY)," \
 	    -e "s,##CBFS_BASE##,$(FMAP_CBFS_BASE)," \
 	    -e "s,##CBFS_SIZE##,$(FMAP_CBFS_SIZE)," \
 		$(DEFAULT_FLASHMAP) > $@.tmp

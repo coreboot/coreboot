@@ -136,6 +136,7 @@ static void sd_recalculate_clock(struct storage_media *media)
 
 int sd_change_freq(struct storage_media *media)
 {
+	int delay;
 	int err, timeout;
 	struct mmc_command cmd;
 	struct sd_mmc_ctrlr *ctrlr = media->ctrlr;
@@ -225,10 +226,22 @@ int sd_change_freq(struct storage_media *media)
 	if (!((ctrlr->caps & DRVR_CAP_HS52) && (ctrlr->caps & DRVR_CAP_HS)))
 		goto out;
 
+	/* Give the card time to recover afer the switch operation.  Wait for
+	 * 9 (>= 8) clock cycles receiving the switch status.
+	 */
+	delay = (9000000 + ctrlr->bus_hz - 1) / ctrlr->bus_hz;
+	udelay(delay);
+
+	/* Switch to high speed */
 	err = sd_switch(ctrlr, SD_SWITCH_SWITCH, 0, 1,
 			(uint8_t *)switch_status);
 	if (err)
 		return err;
+
+	/* Give the card time to perform the switch operation.  Wait for 9
+	 * (>= 8) clock cycles receiving the switch status.
+	 */
+	udelay(delay);
 
 	if ((ntohl(switch_status[4]) & 0x0f000000) == 0x01000000) {
 		media->caps |= DRVR_CAP_HS;

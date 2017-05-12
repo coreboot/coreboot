@@ -165,7 +165,9 @@ static void *map_memory_size(u64 physical, size_t size, uint8_t abort_on_failure
 
 	v = mmap(NULL, size, PROT_READ, MAP_SHARED, mem_fd, p);
 
-	if (v == MAP_FAILED) {
+	/* Only try growing down when address exceeds page size so that
+	   one doesn't underflow the offset request. */
+	if (v == MAP_FAILED && p >= page) {
 		/* The mapped area may have overrun the upper cbmem boundary when trying to
 		 * align to the page size.  Try growing down instead of up...
 		 */

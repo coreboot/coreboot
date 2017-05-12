@@ -360,6 +360,44 @@ static void configure_mca(void)
 	}
 }
 
+static void configure_c_states(void)
+{
+	msr_t msr;
+
+	/* C-state Interrupt Response Latency Control 0 - package C3 latency */
+	msr.hi = 0;
+	msr.lo = IRTL_VALID | IRTL_1024_NS | C_STATE_LATENCY_CONTROL_0_LIMIT;
+	wrmsr(MSR_C_STATE_LATENCY_CONTROL_0, msr);
+
+	/* C-state Interrupt Response Latency Control 1 - package C6/C7 short */
+	msr.hi = 0;
+	msr.lo = IRTL_VALID | IRTL_1024_NS | C_STATE_LATENCY_CONTROL_1_LIMIT;
+	wrmsr(MSR_C_STATE_LATENCY_CONTROL_1, msr);
+
+	/* C-state Interrupt Response Latency Control 2 - package C6/C7 long */
+	msr.hi = 0;
+	msr.lo = IRTL_VALID | IRTL_1024_NS | C_STATE_LATENCY_CONTROL_2_LIMIT;
+	wrmsr(MSR_C_STATE_LATENCY_CONTROL_2, msr);
+
+	/* C-state Interrupt Response Latency Control 3 - package C8 */
+	msr.hi = 0;
+	msr.lo = IRTL_VALID | IRTL_1024_NS |
+		C_STATE_LATENCY_CONTROL_3_LIMIT;
+	wrmsr(MSR_C_STATE_LATENCY_CONTROL_3, msr);
+
+	/* C-state Interrupt Response Latency Control 4 - package C9 */
+	msr.hi = 0;
+	msr.lo = IRTL_VALID | IRTL_1024_NS |
+		C_STATE_LATENCY_CONTROL_4_LIMIT;
+	wrmsr(MSR_C_STATE_LATENCY_CONTROL_4, msr);
+
+	/* C-state Interrupt Response Latency Control 5 - package C10 */
+	msr.hi = 0;
+	msr.lo = IRTL_VALID | IRTL_1024_NS |
+		C_STATE_LATENCY_CONTROL_5_LIMIT;
+	wrmsr(MSR_C_STATE_LATENCY_CONTROL_5, msr);
+}
+
 /* All CPUs including BSP will run the following function. */
 static void cpu_core_init(device_t cpu)
 {
@@ -369,6 +407,9 @@ static void cpu_core_init(device_t cpu)
 	/* Enable the local CPU apics */
 	enable_lapic_tpr();
 	setup_lapic();
+
+	/* Configure c-state interrupt response time */
+	configure_c_states();
 
 	/* Configure Enhanced SpeedStep and Thermal Sensors */
 	configure_misc();

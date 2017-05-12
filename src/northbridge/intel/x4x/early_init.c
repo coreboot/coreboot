@@ -27,7 +27,6 @@
 
 void x4x_early_init(void)
 {
-	u8 gfxsize;
 	const pci_devfn_t d0f0 = PCI_DEV(0, 0, 0);
 
 	/* Setup MCHBAR. */
@@ -58,19 +57,17 @@ void x4x_early_init(void)
 	if (!(pci_read_config32(d0f0, D0F0_CAPID0 + 4) & (1 << (46 - 32)))) {
 		/* Enable internal GFX */
 		pci_write_config32(d0f0, D0F0_DEVEN, BOARD_DEVEN);
-		/* Set preallocated IGD size from cmos */
 
-		if (get_option(&gfxsize, "gfx_uma_size") != CB_SUCCESS) {
-			/* 6 for 64MB, default if not set in cmos */
+		/* Set preallocated IGD size from cmos */
+		u8 gfxsize = 6; /* 6 for 64MiB, default if not set in cmos */
+		get_option(&gfxsize, "gfx_uma_size");
+		if (gfxsize > 12)
 			gfxsize = 6;
-		}
-		pci_write_config16(d0f0, D0F0_GGC,
-				0x0100 | ((gfxsize + 1) << 4));
+		pci_write_config16(d0f0, D0F0_GGC, 0x0100 | (gfxsize + 1) << 4);
 	} else { /* Does not feature internal graphics */
 		pci_write_config32(d0f0, D0F0_DEVEN, D0EN | D1EN | PEG1EN);
 		pci_write_config16(d0f0, D0F0_GGC, (1 << 1));
 	}
-	pci_write_config16(d0f0, D0F0_GGC, 0x0100 | ((gfxsize + 1) << 4));
 }
 
 static void init_egress(void)

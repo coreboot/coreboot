@@ -32,6 +32,7 @@
 #include <southbridge/intel/i82801ix/i82801ix.h>
 #include <northbridge/intel/gm45/gm45.h>
 #include <superio/smsc/lpc47n227/lpc47n227.h>
+#include <timestamp.h>
 
 #define LPC_DEV PCI_DEV(0, 0x1f, 0)
 #define SERIAL_DEV PNP_DEV(0x2e, LPC47N227_SP1)
@@ -123,6 +124,9 @@ void mainboard_romstage_entry(unsigned long bist)
 	int s3resume = 0;
 	int cbmem_initted;
 	u16 reg16;
+
+	timestamp_init(timestamp_get());
+	timestamp_add_now(TS_START_ROMSTAGE);
 
 	/* basic northbridge setup, including MMCONF BAR */
 	gm45_early_init();

@@ -25,6 +25,7 @@
 #include <console/console.h>
 #include <lib.h>
 #include <delay.h>
+#include <timestamp.h>
 #include "gm45.h"
 #include "chip.h"
 
@@ -1713,6 +1714,7 @@ void raminit(sysinfo_t *const sysinfo, const int s3resume)
 	int ch;
 	u8 reg8;
 
+	timestamp_add_now(TS_BEFORE_INITRAM);
 
 	/* Wait for some bit, maybe TXT clear. */
 	if (sysinfo->txt_enabled) {
@@ -1825,4 +1827,6 @@ void raminit(sysinfo_t *const sysinfo, const int s3resume)
 
 	raminit_thermal(sysinfo);
 	init_igd(sysinfo);
+
+	timestamp_add_now(TS_AFTER_INITRAM);
 }

@@ -54,5 +54,12 @@ config DIMM_SPD_SIZE
 	int
 	default 512
 
+config CPU_MICROCODE_CBFS_LEN
+	hex
+	default 0x17800
+
+config CPU_MICROCODE_CBFS_LOC
+	hex
+	default 0xFFE115A0
 
 endif

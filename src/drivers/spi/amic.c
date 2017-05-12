@@ -40,18 +40,6 @@ struct amic_spi_flash_params {
 	const char	*name;
 };
 
-/* spi_flash needs to be first so upper layers can free() it */
-struct amic_spi_flash {
-	struct spi_flash flash;
-	const struct amic_spi_flash_params *params;
-};
-
-static inline struct amic_spi_flash *
-to_amic_spi_flash(const struct spi_flash *flash)
-{
-	return container_of(flash, struct amic_spi_flash, flash);
-}
-
 static const struct amic_spi_flash_params amic_spi_flash_table[] = {
 	{
 		.id			= 0x3016,
@@ -66,7 +54,6 @@ static const struct amic_spi_flash_params amic_spi_flash_table[] = {
 static int amic_write(const struct spi_flash *flash, u32 offset, size_t len,
 		const void *buf)
 {
-	struct amic_spi_flash *amic = to_amic_spi_flash(flash);
 	unsigned long byte_addr;
 	unsigned long page_size;
 	size_t chunk_len;
@@ -74,7 +61,7 @@ static int amic_write(const struct spi_flash *flash, u32 offset, size_t len,
 	int ret;
 	u8 cmd[4];
 
-	page_size = 1 << amic->params->l2_page_size;
+	page_size = flash->page_size;
 	byte_addr = offset % page_size;
 
 	for (actual = 0; actual < len; actual += chunk_len) {
@@ -125,9 +112,8 @@ out:
 struct spi_flash *spi_flash_probe_amic(struct spi_slave *spi, u8 *idcode)
 {
 	const struct amic_spi_flash_params *params;
-	unsigned page_size;
-	struct amic_spi_flash *amic;
 	unsigned int i;
+	struct spi_flash *flash;
 
 	for (i = 0; i < ARRAY_SIZE(amic_spi_flash_table); i++) {
 		params = &amic_spi_flash_table[i];
@@ -141,32 +127,29 @@ struct spi_flash *spi_flash_probe_amic(struct spi_slave *spi, u8 *idcode)
 		return NULL;
 	}
 
-	amic = malloc(sizeof(struct amic_spi_flash));
-	if (!amic) {
+	flash = malloc(sizeof(*flash));
+	if (!flash) {
 		printk(BIOS_WARNING, "SF: Failed to allocate memory\n");
 		return NULL;
 	}
 
-	amic->params = params;
-	memcpy(&amic->flash.spi, spi, sizeof(*spi));
-	amic->flash.name = params->name;
+	memcpy(&flash->spi, spi, sizeof(*spi));
+	flash->name = params->name;
 
 	/* Assuming power-of-two page size initially. */
-	page_size = 1 << params->l2_page_size;
+	flash->page_size = 1 << params->l2_page_size;
+	flash->sector_size = flash->page_size * params->pages_per_sector;
+	flash->size = flash->sector_size * params->sectors_per_block *
+			params->nr_blocks;
+	flash->erase_cmd = CMD_A25_SE;
 
-	amic->flash.internal_write = amic_write;
-	amic->flash.internal_erase = spi_flash_cmd_erase;
+	flash->internal_write = amic_write;
+	flash->internal_erase = spi_flash_cmd_erase;
 #if CONFIG_SPI_FLASH_NO_FAST_READ
-	amic->flash.internal_read = spi_flash_cmd_read_slow;
+	flash->internal_read = spi_flash_cmd_read_slow;
 #else
-	amic->flash.internal_read = spi_flash_cmd_read_fast;
+	flash->internal_read = spi_flash_cmd_read_fast;
 #endif
-	amic->flash.sector_size = (1 << amic->params->l2_page_size) *
-		amic->params->pages_per_sector;
-	amic->flash.size = page_size * params->pages_per_sector
-				* params->sectors_per_block
-				* params->nr_blocks;
-	amic->flash.erase_cmd = CMD_A25_SE;
 
-	return &amic->flash;
+	return flash;
 }

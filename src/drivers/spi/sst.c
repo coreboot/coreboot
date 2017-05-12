@@ -47,11 +47,6 @@ struct sst_spi_flash_params {
 				 size_t len, const void *buf);
 };
 
-struct sst_spi_flash {
-	struct spi_flash flash;
-	const struct sst_spi_flash_params *params;
-};
-
 static int sst_write_ai(const struct spi_flash *flash, u32 offset, size_t len,
 			const void *buf);
 static int sst_write_256(const struct spi_flash *flash, u32 offset, size_t len,
@@ -323,7 +318,7 @@ struct spi_flash *
 spi_flash_probe_sst(struct spi_slave *spi, u8 *idcode)
 {
 	const struct sst_spi_flash_params *params;
-	struct sst_spi_flash *stm;
+	struct spi_flash *flash;
 	size_t i;
 
 	for (i = 0; i < ARRAY_SIZE(sst_spi_flash_table); ++i) {
@@ -337,27 +332,26 @@ spi_flash_probe_sst(struct spi_slave *spi, u8 *idcode)
 		return NULL;
 	}
 
-	stm = malloc(sizeof(*stm));
-	if (!stm) {
+	flash = malloc(sizeof(*flash));
+	if (!flash) {
 		printk(BIOS_WARNING, "SF: Failed to allocate memory\n");
 		return NULL;
 	}
 
-	stm->params = params;
-	memcpy(&stm->flash.spi, spi, sizeof(*spi));
-	stm->flash.name = params->name;
+	memcpy(&flash->spi, spi, sizeof(*spi));
+	flash->name = params->name;
+	flash->sector_size = SST_SECTOR_SIZE;
+	flash->size = flash->sector_size * params->nr_sectors;
+	flash->erase_cmd = CMD_SST_SE;
+	flash->status_cmd = CMD_SST_RDSR;
 
-	stm->flash.internal_write = params->write;
-	stm->flash.internal_erase = spi_flash_cmd_erase;
-	stm->flash.internal_status = spi_flash_cmd_status;
-	stm->flash.internal_read = spi_flash_cmd_read_fast;
-	stm->flash.sector_size = SST_SECTOR_SIZE;
-	stm->flash.size = stm->flash.sector_size * params->nr_sectors;
-	stm->flash.erase_cmd = CMD_SST_SE;
-	stm->flash.status_cmd = CMD_SST_RDSR;
+	flash->internal_write = params->write;
+	flash->internal_erase = spi_flash_cmd_erase;
+	flash->internal_status = spi_flash_cmd_status;
+	flash->internal_read = spi_flash_cmd_read_fast;
 
 	/* Flash powers up read-only, so clear BP# bits */
-	sst_unlock(&stm->flash);
+	sst_unlock(flash);
 
-	return &stm->flash;
+	return flash;
 }

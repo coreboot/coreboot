@@ -29,6 +29,7 @@ struct spi_flash {
 	const char *name;
 	u32 size;
 	u32 sector_size;
+	u32 page_size;
 	u8 erase_cmd;
 	u8 status_cmd;
 	/*

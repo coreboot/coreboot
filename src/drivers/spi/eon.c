@@ -40,18 +40,6 @@ struct eon_spi_flash_params {
 	const char *name;
 };
 
-/* spi_flash needs to be first so upper layers can free() it */
-struct eon_spi_flash {
-	struct spi_flash flash;
-	const struct eon_spi_flash_params *params;
-};
-
-static inline
-struct eon_spi_flash *to_eon_spi_flash(const struct spi_flash *flash)
-{
-	return container_of(flash, struct eon_spi_flash, flash);
-}
-
 static const struct eon_spi_flash_params eon_spi_flash_table[] = {
 	{
 		.id = EON_ID_EN25Q128,
@@ -82,7 +70,6 @@ static const struct eon_spi_flash_params eon_spi_flash_table[] = {
 static int eon_write(const struct spi_flash *flash,
 		     u32 offset, size_t len, const void *buf)
 {
-	struct eon_spi_flash *eon = to_eon_spi_flash(flash);
 	unsigned long byte_addr;
 	unsigned long page_size;
 	size_t chunk_len;
@@ -90,7 +77,7 @@ static int eon_write(const struct spi_flash *flash,
 	int ret = 0;
 	u8 cmd[4];
 
-	page_size = 1 << eon->params->page_size;
+	page_size = flash->page_size;
 
 	for (actual = 0; actual < len; actual += chunk_len) {
 		byte_addr = offset % page_size;
@@ -142,7 +129,7 @@ out:
 struct spi_flash *spi_flash_probe_eon(struct spi_slave *spi, u8 *idcode)
 {
 	const struct eon_spi_flash_params *params;
-	struct eon_spi_flash *eon;
+	struct spi_flash *flash;
 	unsigned int i;
 
 	for (i = 0; i < ARRAY_SIZE(eon_spi_flash_table); ++i) {
@@ -157,25 +144,25 @@ struct spi_flash *spi_flash_probe_eon(struct spi_slave *spi, u8 *idcode)
 		return NULL;
 	}
 
-	eon = malloc(sizeof(*eon));
-	if (!eon) {
+	flash = malloc(sizeof(*flash));
+	if (!flash) {
 		printk(BIOS_WARNING, "SF: Failed to allocate memory\n");
 		return NULL;
 	}
 
-	eon->params = params;
-	memcpy(&eon->flash.spi, spi, sizeof(*spi));
-	eon->flash.name = params->name;
+	memcpy(&flash->spi, spi, sizeof(*spi));
 
-	eon->flash.internal_write = eon_write;
-	eon->flash.internal_erase = spi_flash_cmd_erase;
-	eon->flash.internal_status = spi_flash_cmd_status;
-	eon->flash.internal_read = spi_flash_cmd_read_fast;
-	eon->flash.sector_size = params->page_size * params->pages_per_sector;
-	eon->flash.size = params->page_size * params->pages_per_sector
-	    * params->nr_sectors;
-	eon->flash.erase_cmd = CMD_EN25_SE;
-	eon->flash.status_cmd = CMD_EN25_RDSR;
+	flash->name = params->name;
+	flash->page_size = params->page_size;
+	flash->sector_size = params->page_size * params->pages_per_sector;
+	flash->size = flash->sector_size * params->nr_sectors;
+	flash->erase_cmd = CMD_EN25_SE;
+	flash->status_cmd = CMD_EN25_RDSR;
 
-	return &eon->flash;
+	flash->internal_write = eon_write;
+	flash->internal_erase = spi_flash_cmd_erase;
+	flash->internal_status = spi_flash_cmd_status;
+	flash->internal_read = spi_flash_cmd_read_fast;
+
+	return flash;
 }

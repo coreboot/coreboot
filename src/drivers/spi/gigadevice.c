@@ -49,18 +49,6 @@ struct gigadevice_spi_flash_params {
 	const char	*name;
 };
 
-/* spi_flash needs to be first so upper layers can free() it */
-struct gigadevice_spi_flash {
-	struct spi_flash flash;
-	const struct gigadevice_spi_flash_params *params;
-};
-
-static inline struct gigadevice_spi_flash *
-to_gigadevice_spi_flash(const struct spi_flash *flash)
-{
-	return container_of(flash, struct gigadevice_spi_flash, flash);
-}
-
 static const struct gigadevice_spi_flash_params gigadevice_spi_flash_table[] = {
 	{
 		.id			= 0x4014,
@@ -123,7 +111,6 @@ static const struct gigadevice_spi_flash_params gigadevice_spi_flash_table[] = {
 static int gigadevice_write(const struct spi_flash *flash, u32 offset,
 			size_t len, const void *buf)
 {
-	struct gigadevice_spi_flash *stm = to_gigadevice_spi_flash(flash);
 	unsigned long byte_addr;
 	unsigned long page_size;
 	size_t chunk_len;
@@ -131,7 +118,7 @@ static int gigadevice_write(const struct spi_flash *flash, u32 offset,
 	int ret = 0;
 	u8 cmd[4];
 
-	page_size = 1 << stm->params->l2_page_size;
+	page_size = flash->page_size;
 
 	for (actual = 0; actual < len; actual += chunk_len) {
 		byte_addr = offset % page_size;
@@ -183,12 +170,11 @@ out:
 	return ret;
 }
 
-static struct gigadevice_spi_flash stm;
+static struct spi_flash flash;
 
 struct spi_flash *spi_flash_probe_gigadevice(struct spi_slave *spi, u8 *idcode)
 {
 	const struct gigadevice_spi_flash_params *params;
-	unsigned page_size;
 	unsigned int i;
 
 	for (i = 0; i < ARRAY_SIZE(gigadevice_spi_flash_table); i++) {
@@ -204,28 +190,25 @@ struct spi_flash *spi_flash_probe_gigadevice(struct spi_slave *spi, u8 *idcode)
 		return NULL;
 	}
 
-	stm.params = params;
-	memcpy(&stm.flash.spi, spi, sizeof(*spi));
-	stm.flash.name = params->name;
+	memcpy(&flash.spi, spi, sizeof(*spi));
+	flash.name = params->name;
 
 	/* Assuming power-of-two page size initially. */
-	page_size = 1 << params->l2_page_size;
+	flash.page_size = 1 << params->l2_page_size;
+	flash.sector_size = flash.page_size * params->pages_per_sector;
+	flash.size = flash.sector_size * params->sectors_per_block *
+			params->nr_blocks;
+	flash.erase_cmd = CMD_GD25_SE;
+	flash.status_cmd = CMD_GD25_RDSR;
 
-	stm.flash.internal_write = gigadevice_write;
-	stm.flash.internal_erase = spi_flash_cmd_erase;
-	stm.flash.internal_status = spi_flash_cmd_status;
+	flash.internal_write = gigadevice_write;
+	flash.internal_erase = spi_flash_cmd_erase;
+	flash.internal_status = spi_flash_cmd_status;
 #if CONFIG_SPI_FLASH_NO_FAST_READ
-	stm.flash.internal_read = spi_flash_cmd_read_slow;
+	flash.internal_read = spi_flash_cmd_read_slow;
 #else
-	stm.flash.internal_read = spi_flash_cmd_read_fast;
+	flash.internal_read = spi_flash_cmd_read_fast;
 #endif
-	stm.flash.sector_size = (1 << stm.params->l2_page_size) *
-		stm.params->pages_per_sector;
-	stm.flash.size = page_size * params->pages_per_sector
-				* params->sectors_per_block
-				* params->nr_blocks;
-	stm.flash.erase_cmd = CMD_GD25_SE;
-	stm.flash.status_cmd = CMD_GD25_RDSR;
 
-	return &stm.flash;
+	return &flash;
 }

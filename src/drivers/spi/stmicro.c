@@ -66,18 +66,6 @@ struct stmicro_spi_flash_params {
 	const char *name;
 };
 
-/* spi_flash needs to be first so upper layers can free() it */
-struct stmicro_spi_flash {
-	struct spi_flash flash;
-	const struct stmicro_spi_flash_params *params;
-};
-
-static inline
-struct stmicro_spi_flash *to_stmicro_spi_flash(const struct spi_flash *flash)
-{
-	return container_of(flash, struct stmicro_spi_flash, flash);
-}
-
 static const struct stmicro_spi_flash_params stmicro_spi_flash_table[] = {
 	{
 		.device_id = STM_ID_M25P10,
@@ -180,7 +168,6 @@ static const struct stmicro_spi_flash_params stmicro_spi_flash_table[] = {
 static int stmicro_write(const struct spi_flash *flash,
 			 u32 offset, size_t len, const void *buf)
 {
-	struct stmicro_spi_flash *stm = to_stmicro_spi_flash(flash);
 	unsigned long byte_addr;
 	unsigned long page_size;
 	size_t chunk_len;
@@ -188,7 +175,7 @@ static int stmicro_write(const struct spi_flash *flash,
 	int ret = 0;
 	u8 cmd[4];
 
-	page_size = stm->params->page_size;
+	page_size = flash->page_size;
 
 	for (actual = 0; actual < len; actual += chunk_len) {
 		byte_addr = offset % page_size;
@@ -235,7 +222,7 @@ out:
 	return ret;
 }
 
-static struct stmicro_spi_flash stm;
+static struct spi_flash flash;
 
 struct spi_flash *spi_flash_probe_stmicro(struct spi_slave *spi, u8 * idcode)
 {
@@ -267,16 +254,16 @@ struct spi_flash *spi_flash_probe_stmicro(struct spi_slave *spi, u8 * idcode)
 		return NULL;
 	}
 
-	stm.params = params;
-	memcpy(&stm.flash.spi, spi, sizeof(*spi));
-	stm.flash.name = params->name;
+	memcpy(&flash.spi, spi, sizeof(*spi));
+	flash.name = params->name;
+	flash.page_size = params->page_size;
+	flash.sector_size = params->page_size * params->pages_per_sector;
+	flash.size = flash.sector_size * params->nr_sectors;
+	flash.erase_cmd = params->op_erase;
 
-	stm.flash.internal_write = stmicro_write;
-	stm.flash.internal_erase = spi_flash_cmd_erase;
-	stm.flash.internal_read = spi_flash_cmd_read_fast;
-	stm.flash.sector_size = params->page_size * params->pages_per_sector;
-	stm.flash.size = stm.flash.sector_size * params->nr_sectors;
-	stm.flash.erase_cmd = params->op_erase;
+	flash.internal_write = stmicro_write;
+	flash.internal_erase = spi_flash_cmd_erase;
+	flash.internal_read = spi_flash_cmd_read_fast;
 
-	return &stm.flash;
+	return &flash;
 }

@@ -154,12 +154,13 @@ static int exec_sync_hwseq_xfer(struct fast_spi_flash_ctx *ctx,
 
 /*
  * Ensure read/write xfer len is not greater than SPIBAR_FDATA_FIFO_SIZE and
- * that the operation does not cross 256-byte boundary.
+ * that the operation does not cross page boundary.
  */
-static size_t get_xfer_len(uint32_t addr, size_t len)
+static size_t get_xfer_len(const struct spi_flash *flash, uint32_t addr,
+			   size_t len)
 {
 	size_t xfer_len = min(len, SPIBAR_FDATA_FIFO_SIZE);
-	size_t bytes_left = ALIGN_UP(addr, 256) - addr;
+	size_t bytes_left = ALIGN_UP(addr, flash->page_size) - addr;
 
 	if (bytes_left)
 		xfer_len = min(xfer_len, bytes_left);
@@ -217,7 +218,7 @@ static int fast_spi_flash_read(const struct spi_flash *flash,
 	BOILERPLATE_CREATE_CTX(ctx);
 
 	while (len) {
-		xfer_len = get_xfer_len(addr, len);
+		xfer_len = get_xfer_len(flash, addr, len);
 
 		ret = exec_sync_hwseq_xfer(ctx, SPIBAR_HSFSTS_CYCLE_READ,
 						addr, xfer_len);
@@ -244,7 +245,7 @@ static int fast_spi_flash_write(const struct spi_flash *flash,
 	BOILERPLATE_CREATE_CTX(ctx);
 
 	while (len) {
-		xfer_len = get_xfer_len(addr, len);
+		xfer_len = get_xfer_len(flash, addr, len);
 		fill_xfer_fifo(ctx, data, xfer_len);
 
 		ret = exec_sync_hwseq_xfer(ctx, SPIBAR_HSFSTS_CYCLE_WRITE,
@@ -303,6 +304,7 @@ struct spi_flash *spi_flash_programmer_probe(struct spi_slave *dev, int force)
 
 	/* Can erase both 4 KiB and 64 KiB chunks. Declare the smaller size. */
 	flash->sector_size = 4 * KiB;
+	flash->page_size = 256;
 	/*
 	 * FIXME: Get erase+cmd, and status_cmd from SFDP.
 	 *

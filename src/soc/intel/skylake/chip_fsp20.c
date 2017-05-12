@@ -261,6 +261,9 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	/* Enable PMC XRAM read */
 	tconfig->PchPmPmcReadDisable = config->PchPmPmcReadDisable;
 
+	/* Enable/Disable EIST */
+	tconfig->Eist = config->eist_enable;
+
 	soc_irq_settings(params);
 }
 

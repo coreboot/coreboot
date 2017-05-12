@@ -459,6 +459,12 @@ struct soc_intel_skylake_config {
 
 	/* Enable SGX feature */
 	u8 sgx_enable;
+
+	/* Enable/Disable EIST
+	 * 1b - Enabled
+	 * 0b - Disabled
+	 */
+	u8 eist_enable;
 };
 
 typedef struct soc_intel_skylake_config config_t;

@@ -523,9 +523,10 @@ void generate_cpu_entries(device_t device)
 			generate_c_state_entries(is_s0ix_enable,
 				max_c_state);
 
-			/* Generate P-state tables */
-			generate_p_state_entries(core_id,
-				cores_per_package);
+			if (config->eist_enable)
+				/* Generate P-state tables */
+				generate_p_state_entries(core_id,
+						cores_per_package);
 
 			acpigen_pop_len();
 		}

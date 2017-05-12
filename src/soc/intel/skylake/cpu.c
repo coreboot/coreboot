@@ -245,12 +245,17 @@ static void configure_isst(void)
 
 static void configure_misc(void)
 {
+	device_t dev = SA_DEV_ROOT;
+	config_t *conf = dev->chip_info;
 	msr_t msr;
 
 	msr = rdmsr(IA32_MISC_ENABLE);
 	msr.lo |= (1 << 0);	/* Fast String enable */
 	msr.lo |= (1 << 3);	/* TM1/TM2/EMTTM enable */
-	msr.lo |= (1 << 16);	/* Enhanced SpeedStep Enable */
+	if (conf->eist_enable)
+		msr.lo |= (1 << 16);	/* Enhanced SpeedStep Enable */
+	else
+		msr.lo &= ~(1 << 16);	/* Enhanced SpeedStep Disable */
 	wrmsr(IA32_MISC_ENABLE, msr);
 
 	/* Disable Thermal interrupts */

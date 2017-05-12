@@ -20,7 +20,7 @@ entries
 0          384       r       0        reserved_memory
 384          1       e       4        boot_option
 388          4       h       0        reboot_counter
-392          3       e       5        baud_rate
+#392          3       r       0        unused
 395          1       e       1        hw_scrubber
 396          1       e       1        interleave_chip_selects
 397          2       e       8        max_mem_clock
@@ -47,14 +47,6 @@ enumerations
 2     1     Disable
 4     0     Fallback
 4     1     Normal
-5     0     115200
-5     1     57600
-5     2     38400
-5     3     19200
-5     4     9600
-5     5     4800
-5     6     2400
-5     7     1200
 6     6     Notice
 6     7     Info
 6     8     Debug

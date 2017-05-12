@@ -23,11 +23,6 @@
  * baudrate generator. */
 unsigned int uart_platform_refclk(void);
 
-/* Return the baudrate determined from option_table, or when that is
- * not used, CONFIG_TTYS0_BAUD.
- */
-unsigned int default_baudrate(void);
-
 /* Returns the divisor value for a given baudrate.
  * The formula to satisfy is:
  *    refclk / divisor = baudrate * oversample

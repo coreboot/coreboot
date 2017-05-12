@@ -21,8 +21,8 @@ entries
 0          384       r       0        reserved_memory
 384          1       e       4        boot_option
 388          4       h       0        reboot_counter
-393          3       e       5        baud_rate
-#396          5      unused
+393          3       r       0        unused
+#394         7       unused
 401          1       e       1        interleave_chip_selects
 402          1       e       1        interleave_nodes
 403          1       e       1        interleave_memory_channels
@@ -73,14 +73,6 @@ enumerations
 3     2     Last
 4     0     Fallback
 4     1     Normal
-5     0     115200
-5     1     57600
-5     2     38400
-5     3     19200
-5     4     9600
-5     5     4800
-5     6     2400
-5     7     1200
 6     0     Emergency
 6     1     Alert
 6     2     Critical

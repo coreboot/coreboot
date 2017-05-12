@@ -177,7 +177,7 @@ void uart_fill_lb(void *data)
 	struct lb_serial serial;
 	serial.type = LB_SERIAL_TYPE_MEMORY_MAPPED;
 	serial.baseaddr = UART0_BASE;
-	serial.baud = default_baudrate();
+	serial.baud = CONFIG_TTYS0_BAUD;
 	serial.regwidth = 4;
 	lb_add_serial(&serial, data);
 

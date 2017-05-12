@@ -1,4 +1,3 @@
-baud_rate = 115200
 debug_level = Spew
 multi_core = Enable
 slow_cpu = off

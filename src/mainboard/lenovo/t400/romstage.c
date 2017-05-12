@@ -31,6 +31,7 @@
 #include <console/console.h>
 #include <southbridge/intel/i82801ix/i82801ix.h>
 #include <northbridge/intel/gm45/gm45.h>
+#include <timestamp.h>
 #include "dock.h"
 #include "gpio.h"
 
@@ -59,6 +60,9 @@ void mainboard_romstage_entry(unsigned long bist)
 	int s3resume = 0;
 	int cbmem_initted;
 	u16 reg16;
+
+	timestamp_init(timestamp_get());
+	timestamp_add_now(TS_START_ROMSTAGE);
 
 	/* basic northbridge setup, including MMCONF BAR */
 	gm45_early_init();

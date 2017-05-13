@@ -18,6 +18,10 @@
 #include <intelblocks/pcr.h>
 #include <soc/pcr_ids.h>
 
+#if !defined(CONFIG_PCR_BASE_ADDRESS) || (CONFIG_PCR_BASE_ADDRESS == 0)
+#error "PCR_BASE_ADDRESS need to be non-zero!"
+#endif
+
 static void *__pcr_reg_address(uint8_t pid, uint16_t offset)
 {
 	uintptr_t reg_addr;

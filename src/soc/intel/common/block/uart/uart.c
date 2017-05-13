@@ -60,6 +60,11 @@ static const unsigned short pci_device_ids[] = {
 	PCI_DEVICE_ID_INTEL_APL_UART1,
 	PCI_DEVICE_ID_INTEL_APL_UART2,
 	PCI_DEVICE_ID_INTEL_APL_UART3,
+	PCI_DEVICE_ID_INTEL_GLK_UART0,
+	PCI_DEVICE_ID_INTEL_GLK_UART1,
+	PCI_DEVICE_ID_INTEL_GLK_UART2,
+	PCI_DEVICE_ID_INTEL_GLK_UART3,
+	0,
 };
 
 static const struct pci_driver pch_uart __pci_driver = {

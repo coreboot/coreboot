@@ -263,4 +263,9 @@ config STONEYRIDGE_UART
 	  to FEDC_6FFFh. UART controller 1 registers
 	  range from FEDC_8000h to FEDC_8FFFh.
 
+config SMM_TSEG_SIZE
+	hex
+	default 0x800000 if HAVE_SMI_HANDLER
+	default 0x0
+
 endif # SOC_AMD_STONEYRIDGE_FP4 || SOC_AMD_STONEYRIDGE_FT4

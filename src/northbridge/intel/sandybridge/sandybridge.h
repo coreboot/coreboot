@@ -75,7 +75,9 @@
 #define GGC		0x50			/* GMCH Graphics Control */
 
 #define DEVEN		0x54			/* Device Enable */
+#define  DEVEN_D7EN	(1 << 14)
 #define  DEVEN_PEG60	(1 << 13)
+#define  DEVEN_D4EN	(1 << 7)
 #define  DEVEN_IGD	(1 << 4)
 #define  DEVEN_PEG10	(1 << 3)
 #define  DEVEN_PEG11	(1 << 2)

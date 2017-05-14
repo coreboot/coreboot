@@ -357,10 +357,20 @@ static void disable_peg(void)
 		printk(BIOS_DEBUG, "Disabling IGD.\n");
 		reg &= ~DEVEN_IGD;
 	}
+	dev = dev_find_slot(0, PCI_DEVFN(4, 0));
+	if (!dev || !dev->enabled) {
+		printk(BIOS_DEBUG, "Disabling Device 4.\n");
+		reg &= ~DEVEN_D4EN;
+	}
 	dev = dev_find_slot(0, PCI_DEVFN(6, 0));
 	if (!dev || !dev->enabled) {
 		printk(BIOS_DEBUG, "Disabling PEG60.\n");
 		reg &= ~DEVEN_PEG60;
+	}
+	dev = dev_find_slot(0, PCI_DEVFN(7, 0));
+	if (!dev || !dev->enabled) {
+		printk(BIOS_DEBUG, "Disabling Device 7.\n");
+		reg &= ~DEVEN_D7EN;
 	}
 
 	dev = dev_find_slot(0, PCI_DEVFN(0, 0));

@@ -106,7 +106,8 @@ static int within_box(const struct vector *v, const struct rect *bound)
 		return -1;
 }
 
-static inline uint32_t calculate_color(const struct rgb_color *rgb)
+static inline uint32_t calculate_color(const struct rgb_color *rgb,
+				       uint8_t invert)
 {
 	uint32_t color = 0;
 	color |= (rgb->red >> (8 - fbinfo->red_mask_size))
@@ -115,6 +116,8 @@ static inline uint32_t calculate_color(const struct rgb_color *rgb)
 		<< fbinfo->green_mask_pos;
 	color |= (rgb->blue >> (8 - fbinfo->blue_mask_size))
 		<< fbinfo->blue_mask_pos;
+	if (invert)
+		color ^= 0xffffffff;
 	return color;
 }
 
@@ -180,7 +183,7 @@ int draw_box(const struct rect *box, const struct rgb_color *rgb)
 	struct vector top_left;
 	struct vector size;
 	struct vector p, t;
-	const uint32_t color = calculate_color(rgb);
+	const uint32_t color = calculate_color(rgb, 0);
 	const struct scale top_left_s = {
 		.x = { .n = box->offset.x, .d = CANVAS_SCALE, },
 		.y = { .n = box->offset.y, .d = CANVAS_SCALE, }
@@ -230,7 +233,7 @@ int clear_screen(const struct rgb_color *rgb)
 		return CBGFX_ERROR_INIT;
 
 	struct vector p;
-	uint32_t color = calculate_color(rgb);
+	uint32_t color = calculate_color(rgb, 0);
 	const int bpp = fbinfo->bits_per_pixel;
 	const int bpl = fbinfo->bytes_per_line;
 
@@ -269,7 +272,8 @@ static int draw_bitmap_v3(const struct vector *top_left,
 			  const struct vector *dim_org,
 			  const struct bitmap_header_v3 *header,
 			  const struct bitmap_palette_element_v3 *pal,
-			  const uint8_t *pixel_array)
+			  const uint8_t *pixel_array,
+			  uint8_t invert)
 {
 	const int bpp = header->bits_per_pixel;
 	int32_t dir;
@@ -361,7 +365,7 @@ static int draw_bitmap_v3(const struct vector *top_left,
 					    pal[c01].blue, pal[c11].blue,
 					    &tx, &ty),
 			};
-			set_pixel(&p, calculate_color(&rgb));
+			set_pixel(&p, calculate_color(&rgb, invert));
 		}
 	}
 
@@ -552,8 +556,8 @@ static int check_boundary(const struct vector *top_left,
 }
 
 int draw_bitmap(const void *bitmap, size_t size,
-		const struct scale *pos_rel, uint8_t pivot,
-		const struct scale *dim_rel)
+		const struct scale *pos_rel, const struct scale *dim_rel,
+		uint32_t flags)
 {
 	struct bitmap_header_v3 header;
 	const struct bitmap_palette_element_v3 *palette;
@@ -561,6 +565,8 @@ int draw_bitmap(const void *bitmap, size_t size,
 	struct vector top_left, dim, dim_org;
 	struct scale scale;
 	int rv;
+	const uint8_t pivot = flags & PIVOT_MASK;
+	const uint8_t invert = (flags & INVERT_COLORS) >> INVERT_SHIFT;
 
 	if (cbgfx_init())
 		return CBGFX_ERROR_INIT;
@@ -594,7 +600,7 @@ int draw_bitmap(const void *bitmap, size_t size,
 	}
 
 	return draw_bitmap_v3(&top_left, &scale, &dim, &dim_org,
-			      &header, palette, pixel_array);
+			      &header, palette, pixel_array, invert);
 }
 
 int draw_bitmap_direct(const void *bitmap, size_t size,
@@ -629,7 +635,7 @@ int draw_bitmap_direct(const void *bitmap, size_t size,
 	}
 
 	return draw_bitmap_v3(top_left, &scale, &dim, &dim,
-			      &header, palette, pixel_array);
+			      &header, palette, pixel_array, 0);
 }
 
 int get_bitmap_dimension(const void *bitmap, size_t sz, struct scale *dim_rel)

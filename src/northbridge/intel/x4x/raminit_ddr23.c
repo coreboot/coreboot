@@ -52,6 +52,7 @@ u32 ddr2mhz(u32 speed)
 static void program_crossclock(struct sysinfo *s)
 {
 	u8 i, j;
+	u32 reg32;
 	MCHBAR16(0xc1c) = MCHBAR16(0xc1c) | (1 << 15);
 
 	static const u32 clkxtab[6][3][13] = {
@@ -61,7 +62,7 @@ static void program_crossclock(struct sysinfo *s)
 		{{}, {}, {} },
 		/* MEMCLK 667
 		 * FSB 800 */
-		{{0x1f1f1f1f, 0x1a07070b, 0x00000000, 0x10000000,
+		{{0x1f1f1f1f, 0x0d07070b, 0x00000000, 0x10000000,
 		  0x20010208, 0x04080000, 0x10010002, 0x00000000,
 		  0x00000000, 0x02000000, 0x04000100, 0x08000000,
 		  0x10200204},
@@ -84,8 +85,8 @@ static void program_crossclock(struct sysinfo *s)
 		/* FSB 1067 */
 		{0x07070707, 0x06030303, 0x00000000, 0x00000000,
 		 0x08010200, 0x00000000, 0x04000102, 0x00000000,
-		 0x00000000, 0x00000000, 0x00020001, 0x00000000,
-		 0x02040801},
+		 0x00000000, 0x00000000, 0x00020100, 0x00000000,
+		 0x04080100},
 		/* FSB 1333 */
 		{0x0d0b0707, 0x3e1f1f2f, 0x01010000, 0x00000000,
 		 0x10020400, 0x02000000, 0x00040100, 0x00000000,
@@ -116,7 +117,13 @@ static void program_crossclock(struct sysinfo *s)
 	j = (u8)s->selected_timings.fsb_clk;
 
 	MCHBAR32(0xc04) = clkxtab[i][j][0];
-	MCHBAR32(0xc50) = clkxtab[i][j][1];
+	reg32 = clkxtab[i][j][1];
+	if (s->spd_type == DDR3 && s->max_fsb == FSB_CLOCK_1333MHz
+		&& s->selected_timings.mem_clk == MEM_CLOCK_800MHz) {
+		reg32 &= ~(0xff << 24);
+		reg32 |= 0x3d << 24;
+	}
+	MCHBAR32(0xc50) = reg32;
 	MCHBAR32(0xc54) = clkxtab[i][j][2];
 	MCHBAR8(0xc08) = MCHBAR8(0xc08) | (1 << 7);
 	MCHBAR32(0x6d8) = clkxtab[i][j][3];
@@ -1545,8 +1552,11 @@ void do_raminit(struct sysinfo *s, int fast_boot)
 		// Clear host clk gate reg
 		MCHBAR32(0x1c) = MCHBAR32(0x1c) | 0xffffffff;
 
-		// Select DDR2
-		MCHBAR8(0x1a8) = MCHBAR8(0x1a8) & ~0x4;
+		// Select type
+		if (s->spd_type == DDR2)
+			MCHBAR8(0x1a8) = MCHBAR8(0x1a8) & ~0x4;
+		else
+			MCHBAR8(0x1a8) = MCHBAR8(0x1a8) | 0x4;
 
 		// Set freq
 		MCHBAR32(0xc00) = (MCHBAR32(0xc00) & ~0x70) |

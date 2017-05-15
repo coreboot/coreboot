@@ -17,6 +17,7 @@
 #include <arch/acpi.h>
 #include <arch/io.h>
 #include <arch/stages.h>
+#include <cbmem.h>
 #include <cpu/x86/lapic.h>
 #include <cpu/x86/bist.h>
 #include <cpu/amd/car.h>
@@ -62,7 +63,11 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	post_code(0x40);
 	AGESAWRAPPER(amdinitpost);
+
 	post_code(0x41);
+	cbmem_initialize_empty();
+
+	post_code(0x42);
 	AGESAWRAPPER(amdinitenv);
 	/* TODO: Disable cache is not ok. */
 	disable_cache_as_ram();

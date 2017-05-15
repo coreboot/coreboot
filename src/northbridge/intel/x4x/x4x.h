@@ -360,7 +360,7 @@ u32 decode_igd_memory_size(u32 gms);
 u32 decode_igd_gtt_size(u32 gsm);
 u8 decode_pciebar(u32 *const base, u32 *const len);
 void sdram_initialize(int boot_path, const u8 *spd_map);
-void raminit_ddr2(struct sysinfo *s, int fast_boot);
+void do_raminit(struct sysinfo *, int fast_boot);
 void rcven(struct sysinfo *s);
 u32 fsb2mhz(u32 speed);
 u32 ddr2mhz(u32 speed);

@@ -674,17 +674,7 @@ void sdram_initialize(int boot_path, const u8 *spd_map)
 		find_dimm_config(&s);
 	}
 
-	switch (s.spd_type) {
-	case DDR2:
-		raminit_ddr2(&s, fast_boot);
-		break;
-	case DDR3:
-		// FIXME Add: raminit_ddr3(&s);
-		break;
-	default:
-		die("Unknown DDR type\n");
-		break;
-	}
+	do_raminit(&s, fast_boot);
 
 	reg8 = pci_read_config8(PCI_DEV(0, 0x1f, 0), 0xa2);
 	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xa2, reg8 & ~0x80);

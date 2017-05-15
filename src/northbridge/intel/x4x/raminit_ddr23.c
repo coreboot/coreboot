@@ -48,7 +48,8 @@ u32 ddr2mhz(u32 speed)
 	return mhz[speed];
 }
 
-static void clkcross_ddr2(struct sysinfo *s)
+
+static void program_crossclock(struct sysinfo *s)
 {
 	u8 i, j;
 	MCHBAR16(0xc1c) = MCHBAR16(0xc1c) | (1 << 15);
@@ -132,7 +133,7 @@ static void clkcross_ddr2(struct sysinfo *s)
 	MCHBAR32(0x70c) = clkxtab[i][j][12];
 }
 
-static void setioclk_ddr2(struct sysinfo *s)
+static void setioclk_dram(struct sysinfo *s)
 {
 	MCHBAR32(0x1bc) = 0x08060402;
 	MCHBAR16(0x1c0) = MCHBAR16(0x1c0) | 0x200;
@@ -160,7 +161,7 @@ static void setioclk_ddr2(struct sysinfo *s)
 	MCHBAR32(0x994) = MCHBAR32(0x994) | (1 << 31);
 }
 
-static void launch_ddr2(struct sysinfo *s)
+static void launch_dram(struct sysinfo *s)
 {
 	u8 i;
 	u32 launch1 = 0x58001117;
@@ -346,7 +347,7 @@ void rt_set_dqs(u8 channel, u8 lane, u8 rank,
 	MCHBAR16(0x542 + 0x400 * channel + lane * 4) = saved_pi;
 }
 
-static void timings_ddr2(struct sysinfo *s)
+static void program_timings(struct sysinfo *s)
 {
 	u8 i;
 	u8 twl, ta1, ta2, ta3, ta4;
@@ -571,7 +572,7 @@ static void timings_ddr2(struct sysinfo *s)
 	MCHBAR8(0x6c4) = (MCHBAR8(0x6c4) & ~0x7) | 0x2;
 }
 
-static void dll_ddr2(struct sysinfo *s)
+static void program_dll(struct sysinfo *s)
 {
 	u8 i, j, r, reg8, clk, async = 0;
 	u16 reg16 = 0;
@@ -853,7 +854,7 @@ static void set_all_dq_dqs_dll_settings(struct sysinfo *s)
 	}
 }
 
-static void rcomp_ddr2(struct sysinfo *s)
+static void prog_rcomp(struct sysinfo *s)
 {
 	u8 i, j, k;
 	u32 x32a[8] = { 0x04040404, 0x06050505, 0x09090807, 0x0D0C0B0A,
@@ -924,7 +925,7 @@ static void rcomp_ddr2(struct sysinfo *s)
 	MCHBAR8(0x130) = MCHBAR8(0x130) | 1;
 }
 
-static void odt_ddr2(struct sysinfo *s)
+static void program_odt(struct sysinfo *s)
 {
 	u8 i;
 	u16 odt[16][2] = {
@@ -1146,7 +1147,7 @@ static void sdram_program_receive_enable(struct sysinfo *s, int fast_boot)
 		rcven(s);
 }
 
-static void dradrb_ddr2(struct sysinfo *s)
+static void set_dradrb(struct sysinfo *s)
 {
 	u8 map, i, ch, r, rankpop0, rankpop1;
 	u32 c0dra = 0;
@@ -1320,7 +1321,7 @@ static void dradrb_ddr2(struct sysinfo *s)
 	MCHBAR16(0x10a) = dual_channel_size / 2;
 }
 
-static void mmap_ddr2(struct sysinfo *s)
+static void configure_mmap(struct sysinfo *s)
 {
 	bool reclaim;
 	u32 gfxsize, gttsize, tsegsize, mmiosize, tom, tolud, touud;
@@ -1380,7 +1381,7 @@ static void mmap_ddr2(struct sysinfo *s)
 	pci_write_config32(PCI_DEV(0, 0, 0), 0xac, tsegbase << 20);
 }
 
-static void enhanced_ddr2(struct sysinfo *s)
+static void set_enhanced_mode(struct sysinfo *s)
 {
 	u8 ch, reg8;
 
@@ -1420,7 +1421,7 @@ static void enhanced_ddr2(struct sysinfo *s)
 	pci_write_config8(PCI_DEV(0, 0, 0), 0xf0, reg8 & ~1);
 }
 
-static void power_ddr2(struct sysinfo *s)
+static void power_settings(struct sysinfo *s)
 {
 	u32 reg1, reg2, reg3, reg4, clkgate, x592;
 	u8 lane, ch;
@@ -1530,7 +1531,7 @@ static void power_ddr2(struct sysinfo *s)
 		MCHBAR8(0x561 + (lane << 2)) = MCHBAR8(0x561 + (lane << 2)) & ~(1 << 3);
 }
 
-void raminit_ddr2(struct sysinfo *s, int fast_boot)
+void do_raminit(struct sysinfo *s, int fast_boot)
 {
 	u8 ch;
 	u8 r, bank;
@@ -1558,37 +1559,36 @@ void raminit_ddr2(struct sysinfo *s, int fast_boot)
 	}
 
 	// Program clock crossing
-	clkcross_ddr2(s);
+	program_crossclock(s);
 	printk(BIOS_DEBUG, "Done clk crossing\n");
 
-	// DDR2 IO
 	if (s->boot_path != BOOT_PATH_WARM_RESET) {
-		setioclk_ddr2(s);
+		setioclk_dram(s);
 		printk(BIOS_DEBUG, "Done I/O clk\n");
 	}
 
 	// Grant to launch
-	launch_ddr2(s);
+	launch_dram(s);
 	printk(BIOS_DEBUG, "Done launch\n");
 
-	// Program DDR2 timings
-	timings_ddr2(s);
+	// Program DRAM timings
+	program_timings(s);
 	printk(BIOS_DEBUG, "Done timings\n");
 
 	// Program DLL
-	dll_ddr2(s);
+	program_dll(s);
 	if (!fast_boot)
 		select_default_dq_dqs_settings(s);
 	set_all_dq_dqs_dll_settings(s);
 
 	// RCOMP
 	if (s->boot_path != BOOT_PATH_WARM_RESET) {
-		rcomp_ddr2(s);
+		prog_rcomp(s);
 		printk(BIOS_DEBUG, "RCOMP\n");
 	}
 
 	// ODT
-	odt_ddr2(s);
+	program_odt(s);
 	printk(BIOS_DEBUG, "Done ODT\n");
 
 	// RCOMP update
@@ -1650,7 +1650,7 @@ void raminit_ddr2(struct sysinfo *s, int fast_boot)
 
 	printk(BIOS_DEBUG, "Done post-jedec\n");
 
-	// Set DDR2 init complete
+	// Set DDR init complete
 	FOR_EACH_POPULATED_CHANNEL(s->dimms, ch) {
 		MCHBAR32(0x400*ch + 0x268) = (MCHBAR32(0x400*ch + 0x268) & ~0xc0000000) | 0xc0000000;
 	}
@@ -1704,15 +1704,15 @@ void raminit_ddr2(struct sysinfo *s, int fast_boot)
 	}
 
 	// DRADRB
-	dradrb_ddr2(s);
+	set_dradrb(s);
 	printk(BIOS_DEBUG, "Done DRADRB\n");
 
 	// Memory map
-	mmap_ddr2(s);
+	configure_mmap(s);
 	printk(BIOS_DEBUG, "Done memory map\n");
 
 	// Enhanced mode
-	enhanced_ddr2(s);
+	set_enhanced_mode(s);
 	printk(BIOS_DEBUG, "Done enhanced mode\n");
 
 	// Periodic RCOMP
@@ -1722,7 +1722,7 @@ void raminit_ddr2(struct sysinfo *s, int fast_boot)
 	printk(BIOS_DEBUG, "Done PRCOMP\n");
 
 	// Power settings
-	power_ddr2(s);
+	power_settings(s);
 	printk(BIOS_DEBUG, "Done power settings\n");
 
 	// ME related
@@ -1740,5 +1740,5 @@ void raminit_ddr2(struct sysinfo *s, int fast_boot)
 		MCHBAR32(0xa30) = MCHBAR32(0xa30) | (1 << 26);
 	}
 
-	printk(BIOS_DEBUG, "Done ddr2\n");
+	printk(BIOS_DEBUG, "Done raminit\n");
 }

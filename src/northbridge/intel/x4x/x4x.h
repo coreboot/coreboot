@@ -338,6 +338,7 @@ struct sysinfo {
 	struct rt_dqs_setting rt_dqs[TOTAL_CHANNELS][TOTAL_BYTELANES];
 	struct dll_setting dqs_settings[TOTAL_CHANNELS][TOTAL_BYTELANES];
 	struct dll_setting dq_settings[TOTAL_CHANNELS][TOTAL_BYTELANES];
+	u8		nmode;
 };
 #define BOOT_PATH_NORMAL	0
 #define BOOT_PATH_WARM_RESET	1

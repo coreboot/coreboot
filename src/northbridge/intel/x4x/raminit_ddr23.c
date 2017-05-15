@@ -171,27 +171,96 @@ static void setioclk_dram(struct sysinfo *s)
 static void launch_dram(struct sysinfo *s)
 {
 	u8 i;
-	u32 launch1 = 0x58001117;
+	u32 launch1;
 	u32 launch2 = 0;
-	u32 launch3 = 0;
 
-	if (s->selected_timings.CAS == 5)
-		launch2 = 0x00220201;
-	else if (s->selected_timings.CAS == 6)
-		launch2 = 0x00230302;
-	else
-		die("Unsupported CAS\n");
+	static const u32 ddr3_launch1_tab[2][3] = {
+		/* 1N */
+		{0x58000007, /* DDR3 800 */
+		 0x58000007, /* DDR3 1067 */
+		 0x58100107}, /* DDR3 1333 */
+		/* 2N */
+		{0x58001117, /* DDR3 800 */
+		 0x58001117, /* DDR3 1067 */
+		 0x58001117} /* DDR3 1333 */
+	};
+
+	static const u32 ddr3_launch2_tab[2][3][6] = {
+		{ /* 1N */
+			/* DDR3 800 */
+			{0x08030000,	/* CL = 5 */
+			 0x0C040100},	/* CL = 6 */
+			/* DDR3 1066 */
+			{0x00000000,	/* CL = 5 */
+			 0x00000000,	/* CL = 6 */
+			 0x10050100,	/* CL = 7 */
+			 0x14260200},	/* CL = 8 */
+			/* DDR3 1333 */
+			{0x00000000,	/* CL = 5 */
+			 0x00000000,	/* CL = 6 */
+			 0x00000000,	/* CL = 7 */
+			 0x14060000,	/* CL = 8 */
+			 0x18070100,	/* CL = 9 */
+			 0x1C280200},	/* CL = 10 */
+
+		},
+		{ /* 2N */
+			/* DDR3 800 */
+			{0x00040101,	/* CL = 5 */
+			 0x00250201},	/* CL = 6 */
+			/* DDR3 1066 */
+			{0x00000000,	/* CL = 5 */
+			 0x00050101,	/* CL = 6 */
+			 0x04260201,	/* CL = 7 */
+			 0x08470301},	/* CL = 8 */
+			/* DDR3 1333 */
+			{0x00000000,	/* CL = 5 */
+			 0x00000000,	/* CL = 6 */
+			 0x00000000,	/* CL = 7 */
+			 0x08070100,	/* CL = 8 */
+			 0x0C280200,	/* CL = 9 */
+			 0x10490300}	/* CL = 10 */
+		}
+	};
+
+	if (s->spd_type == DDR2) {
+		launch1 = 0x58001117;
+		if (s->selected_timings.CAS == 5)
+			launch2 = 0x00220201;
+		else if (s->selected_timings.CAS == 6)
+			launch2 = 0x00230302;
+		else
+			die("Unsupported CAS\n");
+	} else { /* DDR3 */
+		/* Default 2N mode */
+		s->nmode = 2;
+
+		if (s->selected_timings.mem_clk <= MEM_CLOCK_1066MHz)
+			s->nmode = 1;
+		/* 2N on DDR3 1066 with with 2 dimms per channel */
+		if ((s->selected_timings.mem_clk == MEM_CLOCK_1066MHz) &&
+			(BOTH_DIMMS_ARE_POPULATED(s->dimms, 0) ||
+				BOTH_DIMMS_ARE_POPULATED(s->dimms, 1)))
+			s->nmode = 2;
+		launch1 = ddr3_launch1_tab[s->nmode - 1]
+			[s->selected_timings.mem_clk - MEM_CLOCK_800MHz];
+		launch2 = ddr3_launch2_tab[s->nmode - 1]
+			[s->selected_timings.mem_clk - MEM_CLOCK_800MHz]
+			[s->selected_timings.CAS - 5];
+	}
 
 	FOR_EACH_POPULATED_CHANNEL(s->dimms, i) {
 		MCHBAR32(0x400*i + 0x220) = launch1;
 		MCHBAR32(0x400*i + 0x224) = launch2;
-		MCHBAR32(0x400*i + 0x21c) = launch3;
+		MCHBAR32(0x400*i + 0x21c) = 0;
 		MCHBAR32(0x400*i + 0x248) = MCHBAR32(0x400*i + 0x248) | (1 << 23);
 	}
 
 	MCHBAR32(0x2c0) = (MCHBAR32(0x2c0) & ~0x58000000) | 0x48000000;
 	MCHBAR32(0x2c0) = MCHBAR32(0x2c0) | 0x1e0;
 	MCHBAR32(0x2c4) = (MCHBAR32(0x2c4) & ~0xf) | 0xc;
+	if (s->spd_type == DDR3)
+		MCHBAR32(0x2c4) = MCHBAR32(0x2c4) | 0x100;
 }
 
 static void clkset0(u8 ch, const struct dll_setting *setting)

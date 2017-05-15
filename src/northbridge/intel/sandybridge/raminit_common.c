@@ -1020,30 +1020,18 @@ void program_timings(ramctr_timing * ctrl, int channel)
 			shift = 0;
 
 		FOR_ALL_LANES {
-			if (post_timA_min_high >
-			    ((ctrl->timings[channel][slotrank].lanes[lane].
-			      timA + shift) >> 6))
-				post_timA_min_high =
-				    ((ctrl->timings[channel][slotrank].
-				      lanes[lane].timA + shift) >> 6);
-			if (pre_timA_min_high >
-			    (ctrl->timings[channel][slotrank].lanes[lane].
-			     timA >> 6))
-				pre_timA_min_high =
-				    (ctrl->timings[channel][slotrank].
-				     lanes[lane].timA >> 6);
-			if (post_timA_max_high <
-			    ((ctrl->timings[channel][slotrank].lanes[lane].
-			      timA + shift) >> 6))
-				post_timA_max_high =
-				    ((ctrl->timings[channel][slotrank].
-				      lanes[lane].timA + shift) >> 6);
-			if (pre_timA_max_high <
-			    (ctrl->timings[channel][slotrank].lanes[lane].
-			     timA >> 6))
-				pre_timA_max_high =
-				    (ctrl->timings[channel][slotrank].
-				     lanes[lane].timA >> 6);
+			post_timA_min_high = MIN(post_timA_min_high,
+				(ctrl->timings[channel][slotrank].lanes[lane].
+					timA + shift) >> 6);
+			pre_timA_min_high = MIN(pre_timA_min_high,
+				ctrl->timings[channel][slotrank].lanes[lane].
+						timA >> 6);
+			post_timA_max_high = MAX(post_timA_max_high,
+				(ctrl->timings[channel][slotrank].lanes[lane].
+					timA + shift) >> 6);
+			pre_timA_max_high = MAX(pre_timA_max_high,
+				ctrl->timings[channel][slotrank].lanes[lane].
+						timA >> 6);
 		}
 
 		if (pre_timA_max_high - pre_timA_min_high <

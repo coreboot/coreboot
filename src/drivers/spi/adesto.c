@@ -126,10 +126,10 @@ out:
 	return ret;
 }
 
-struct spi_flash *spi_flash_probe_adesto(struct spi_slave *spi, u8 *idcode)
+int spi_flash_probe_adesto(struct spi_slave *spi, u8 *idcode,
+			   struct spi_flash *flash)
 {
 	const struct adesto_spi_flash_params *params;
-	struct spi_flash *flash;
 	unsigned int i;
 
 	for (i = 0; i < ARRAY_SIZE(adesto_spi_flash_table); i++) {
@@ -141,13 +141,7 @@ struct spi_flash *spi_flash_probe_adesto(struct spi_slave *spi, u8 *idcode)
 	if (i == ARRAY_SIZE(adesto_spi_flash_table)) {
 		printk(BIOS_WARNING, "SF: Unsupported adesto ID %02x%02x\n",
 				idcode[1], idcode[2]);
-		return NULL;
-	}
-
-	flash = malloc(sizeof(*flash));
-	if (!flash) {
-		printk(BIOS_WARNING, "SF: Failed to allocate memory\n");
-		return NULL;
+		return -1;
 	}
 
 	memcpy(&flash->spi, spi, sizeof(*spi));
@@ -167,5 +161,5 @@ struct spi_flash *spi_flash_probe_adesto(struct spi_slave *spi, u8 *idcode)
 	flash->internal_read = spi_flash_cmd_read_fast;
 #endif
 
-	return flash;
+	return 0;
 }

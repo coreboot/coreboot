@@ -314,11 +314,10 @@ sst_unlock(const struct spi_flash *flash)
 	return ret;
 }
 
-struct spi_flash *
-spi_flash_probe_sst(struct spi_slave *spi, u8 *idcode)
+int spi_flash_probe_sst(struct spi_slave *spi, u8 *idcode,
+			struct spi_flash *flash)
 {
 	const struct sst_spi_flash_params *params;
-	struct spi_flash *flash;
 	size_t i;
 
 	for (i = 0; i < ARRAY_SIZE(sst_spi_flash_table); ++i) {
@@ -329,13 +328,7 @@ spi_flash_probe_sst(struct spi_slave *spi, u8 *idcode)
 
 	if (i == ARRAY_SIZE(sst_spi_flash_table)) {
 		printk(BIOS_WARNING, "SF: Unsupported SST ID %02x\n", idcode[1]);
-		return NULL;
-	}
-
-	flash = malloc(sizeof(*flash));
-	if (!flash) {
-		printk(BIOS_WARNING, "SF: Failed to allocate memory\n");
-		return NULL;
+		return -1;
 	}
 
 	memcpy(&flash->spi, spi, sizeof(*spi));
@@ -353,5 +346,5 @@ spi_flash_probe_sst(struct spi_slave *spi, u8 *idcode)
 	/* Flash powers up read-only, so clear BP# bits */
 	sst_unlock(flash);
 
-	return flash;
+	return 0;
 }

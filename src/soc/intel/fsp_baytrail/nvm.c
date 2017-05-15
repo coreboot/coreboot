@@ -21,25 +21,27 @@
 #include <spi-generic.h>
 #include <spi_flash.h>
 #include <soc/nvm.h>
+#include <stdint.h>
 
 /* This module assumes the flash is memory mapped just below 4GiB in the
  * address space for reading. Also this module assumes an area it erased
  * when all bytes read as all 0xff's. */
 
-static struct spi_flash *flash;
+static struct spi_flash flash;
+static bool spi_flash_init_done;
 
 static int nvm_init(void)
 {
-	if (flash != NULL)
+	if (spi_flash_init_done == true)
 		return 0;
 
 	spi_init();
-	flash = spi_flash_probe(0, 0);
-	if (!flash) {
+	if (spi_flash_probe(0, 0, &flash)) {
 		printk(BIOS_DEBUG, "Could not find SPI device\n");
 		return -1;
 	}
 
+	spi_flash_init_done = true;
 	return 0;
 }
 
@@ -67,7 +69,7 @@ int nvm_erase(void *start, size_t size)
 {
 	if (nvm_init() < 0)
 		return -1;
-	spi_flash_erase(flash, to_flash_offset(start), size);
+	spi_flash_erase(&flash, to_flash_offset(start), size);
 	return 0;
 }
 
@@ -76,6 +78,6 @@ int nvm_write(void *start, const void *data, size_t size)
 {
 	if (nvm_init() < 0)
 		return -1;
-	spi_flash_write(flash, to_flash_offset(start), size, data);
+	spi_flash_write(&flash, to_flash_offset(start), size, data);
 	return 0;
 }

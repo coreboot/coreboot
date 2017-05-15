@@ -184,9 +184,8 @@ out:
 	return ret;
 }
 
-static struct spi_flash flash;
-
-struct spi_flash *spi_flash_probe_winbond(struct spi_slave *spi, u8 *idcode)
+int spi_flash_probe_winbond(struct spi_slave *spi, u8 *idcode,
+			    struct spi_flash *flash)
 {
 	const struct winbond_spi_flash_params *params;
 	unsigned int i;
@@ -200,27 +199,27 @@ struct spi_flash *spi_flash_probe_winbond(struct spi_slave *spi, u8 *idcode)
 	if (i == ARRAY_SIZE(winbond_spi_flash_table)) {
 		printk(BIOS_WARNING, "SF: Unsupported Winbond ID %02x%02x\n",
 				idcode[1], idcode[2]);
-		return NULL;
+		return -1;
 	}
 
-	memcpy(&flash.spi, spi, sizeof(*spi));
-	flash.name = params->name;
+	memcpy(&flash->spi, spi, sizeof(*spi));
+	flash->name = params->name;
 	/* Assuming power-of-two page size initially. */
-	flash.page_size = 1 << params->l2_page_size;
-	flash.sector_size = flash.page_size * params->pages_per_sector;
-	flash.size = flash.sector_size * params->sectors_per_block *
+	flash->page_size = 1 << params->l2_page_size;
+	flash->sector_size = flash->page_size * params->pages_per_sector;
+	flash->size = flash->sector_size * params->sectors_per_block *
 			params->nr_blocks;
-	flash.erase_cmd = CMD_W25_SE;
-	flash.status_cmd = CMD_W25_RDSR;
+	flash->erase_cmd = CMD_W25_SE;
+	flash->status_cmd = CMD_W25_RDSR;
 
-	flash.internal_write = winbond_write;
-	flash.internal_erase = spi_flash_cmd_erase;
-	flash.internal_status = spi_flash_cmd_status;
+	flash->internal_write = winbond_write;
+	flash->internal_erase = spi_flash_cmd_erase;
+	flash->internal_status = spi_flash_cmd_status;
 #if CONFIG_SPI_FLASH_NO_FAST_READ
-	flash.internal_read = spi_flash_cmd_read_slow;
+	flash->internal_read = spi_flash_cmd_read_slow;
 #else
-	flash.internal_read = spi_flash_cmd_read_fast;
+	flash->internal_read = spi_flash_cmd_read_fast;
 #endif
 
-	return &flash;
+	return 0;
 }

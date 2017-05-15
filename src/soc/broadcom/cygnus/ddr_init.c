@@ -717,7 +717,7 @@ static int write_shmoo_to_flash(void *buf, int length)
 
 static int write_shmoo_to_flash(void *buf, int length)
 {
-	struct spi_flash *flash;
+	struct spi_flash flash;
 	int erase = 0;
 	volatile uint32_t *flptr;
 	int i, j, ret = 0;
@@ -734,13 +734,7 @@ static int write_shmoo_to_flash(void *buf, int length)
 	}
 
 	/* Probe flash */
-	flash = spi_flash_probe(
-		CONFIG_ENV_SPI_BUS,
-		CONFIG_ENV_SPI_CS,
-		CONFIG_ENV_SPI_MAX_HZ,
-		CONFIG_ENV_SPI_MODE
-		);
-	if (!flash) {
+	if (spi_flash_probe(CONFIG_ENV_SPI_BUS, CONFIG_ENV_SPI_CS, &flash)) {
 		printk(BIOS_ERR, "Failed to initialize SPI flash for saving Shmoo values!\n");
 		return -1;
 	}
@@ -748,25 +742,21 @@ static int write_shmoo_to_flash(void *buf, int length)
 	/* Erase if necessary */
 	if (erase) {
 		ret = spi_flash_erase(
-			flash,
+			&flash,
 			offset / flash->sector_size * flash->sector_size,
 			flash->sector_size
 			);
 		if (ret) {
 			printk(BIOS_ERR, "SPI flash erase failed, error=%d\n", ret);
-			spi_flash_free(flash);
 			return ret;
 		}
 	}
 
 	/* Write data */
-	ret = spi_flash_write(flash, offset, length, buf);
+	ret = spi_flash_write(&flash, offset, length, buf);
 	if (ret) {
 		printk(BIOS_ERR, "SPI flash write failed, error=%d\n", ret);
 	}
-
-	/* Free flash instance */
-	spi_flash_free(flash);
 
 	return ret;
 }

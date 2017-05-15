@@ -24,9 +24,11 @@
 #include <spi_flash.h>
 #include <symbols.h>
 #include <cbmem.h>
+#include <stdint.h>
 #include <timer.h>
 
-static struct spi_flash *spi_flash_info;
+static struct spi_flash spi_flash_info;
+static bool spi_flash_init_done;
 
 /*
  * Set this to 1 to debug SPI speed, 0 to disable it
@@ -47,7 +49,7 @@ static ssize_t spi_readat(const struct region_device *rd, void *b,
 
 	if (show)
 		stopwatch_init(&sw);
-	if (spi_flash_read(spi_flash_info, offset, size, b))
+	if (spi_flash_read(&spi_flash_info, offset, size, b))
 		return -1;
 	if (show) {
 		long usecs;
@@ -68,7 +70,7 @@ static ssize_t spi_readat(const struct region_device *rd, void *b,
 static ssize_t spi_writeat(const struct region_device *rd, const void *b,
 				size_t offset, size_t size)
 {
-	if (spi_flash_write(spi_flash_info, offset, size, b))
+	if (spi_flash_write(&spi_flash_info, offset, size, b))
 		return -1;
 	return size;
 }
@@ -76,7 +78,7 @@ static ssize_t spi_writeat(const struct region_device *rd, const void *b,
 static ssize_t spi_eraseat(const struct region_device *rd,
 				size_t offset, size_t size)
 {
-	if (spi_flash_erase(spi_flash_info, offset, size))
+	if (spi_flash_erase(&spi_flash_info, offset, size))
 		return -1;
 	return size;
 }
@@ -112,10 +114,13 @@ void boot_device_init(void)
 	int bus = CONFIG_BOOT_DEVICE_SPI_FLASH_BUS;
 	int cs = 0;
 
-	if (spi_flash_info != NULL)
+	if (spi_flash_init_done == true)
 		return;
 
-	spi_flash_info = spi_flash_probe(bus, cs);
+	if (spi_flash_probe(bus, cs, &spi_flash_info))
+		return;
+
+	spi_flash_init_done = true;
 
 	mmap_helper_device_init(&mdev, _cbfs_cache, _cbfs_cache_size);
 }
@@ -123,7 +128,7 @@ void boot_device_init(void)
 /* Return the CBFS boot device. */
 const struct region_device *boot_device_ro(void)
 {
-	if (spi_flash_info == NULL)
+	if (spi_flash_init_done != true)
 		return NULL;
 
 	return &mdev.rdev;
@@ -138,5 +143,9 @@ const struct region_device *boot_device_rw(void)
 const struct spi_flash *boot_device_spi_flash(void)
 {
 	boot_device_init();
-	return spi_flash_info;
+
+	if (spi_flash_init_done != true)
+		return NULL;
+
+	return &spi_flash_info;
 }

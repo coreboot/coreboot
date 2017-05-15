@@ -157,6 +157,7 @@ void update_mrc_cache(void *unused)
 	struct mrc_data_container *current = cbmem_find(CBMEM_ID_MRCDATA);
 	struct mrc_data_container *cache, *cache_base;
 	u32 cache_size;
+	struct spi_flash flash;
 
 	if (!current) {
 		printk(BIOS_ERR, "No fast boot cache in cbmem. Can't update flash.\n");
@@ -189,8 +190,7 @@ void update_mrc_cache(void *unused)
 
 	/*  1. use spi_flash_probe() to find the flash, then... */
 	spi_init();
-	struct spi_flash *flash = spi_flash_probe(0, 0);
-	if (!flash) {
+	if (spi_flash_probe(0, 0, &flash)) {
 		printk(BIOS_DEBUG, "Could not find SPI device\n");
 		return;
 	}
@@ -209,7 +209,8 @@ void update_mrc_cache(void *unused)
 		       "Need to erase the MRC cache region of %d bytes at %p\n",
 		       cache_size, cache_base);
 
-		spi_flash_erase(flash, to_flash_offset(cache_base), cache_size);
+		spi_flash_erase(&flash, to_flash_offset(cache_base),
+				cache_size);
 
 		/* we will start at the beginning again */
 		cache = cache_base;
@@ -217,7 +218,7 @@ void update_mrc_cache(void *unused)
 	/*  4. write mrc data with spi_flash_write() */
 	printk(BIOS_DEBUG, "Write MRC cache update to flash at %p\n",
 	       cache);
-	spi_flash_write(flash, to_flash_offset(cache),
+	spi_flash_write(&flash, to_flash_offset(cache),
 			current->mrc_data_size + sizeof(*current), current);
 }
 

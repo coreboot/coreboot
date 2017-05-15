@@ -222,9 +222,8 @@ out:
 	return ret;
 }
 
-static struct spi_flash flash;
-
-struct spi_flash *spi_flash_probe_stmicro(struct spi_slave *spi, u8 * idcode)
+int spi_flash_probe_stmicro(struct spi_slave *spi, u8 *idcode,
+			    struct spi_flash *flash)
 {
 	const struct stmicro_spi_flash_params *params;
 	unsigned int i;
@@ -232,13 +231,13 @@ struct spi_flash *spi_flash_probe_stmicro(struct spi_slave *spi, u8 * idcode)
 	if (idcode[0] == 0xff) {
 		i = spi_flash_cmd(spi, CMD_M25PXX_RES, idcode, 4);
 		if (i)
-			return NULL;
+			return -1;
 		if ((idcode[3] & 0xf0) == 0x10) {
 			idcode[0] = 0x20;
 			idcode[1] = 0x20;
 			idcode[2] = idcode[3] + 1;
 		} else
-			return NULL;
+			return -1;
 	}
 
 	for (i = 0; i < ARRAY_SIZE(stmicro_spi_flash_table); i++) {
@@ -251,19 +250,19 @@ struct spi_flash *spi_flash_probe_stmicro(struct spi_slave *spi, u8 * idcode)
 	if (i == ARRAY_SIZE(stmicro_spi_flash_table)) {
 		printk(BIOS_WARNING, "SF: Unsupported STMicro ID %02x%02x\n",
 		       idcode[1], idcode[2]);
-		return NULL;
+		return -1;
 	}
 
-	memcpy(&flash.spi, spi, sizeof(*spi));
-	flash.name = params->name;
-	flash.page_size = params->page_size;
-	flash.sector_size = params->page_size * params->pages_per_sector;
-	flash.size = flash.sector_size * params->nr_sectors;
-	flash.erase_cmd = params->op_erase;
+	memcpy(&flash->spi, spi, sizeof(*spi));
+	flash->name = params->name;
+	flash->page_size = params->page_size;
+	flash->sector_size = params->page_size * params->pages_per_sector;
+	flash->size = flash->sector_size * params->nr_sectors;
+	flash->erase_cmd = params->op_erase;
 
-	flash.internal_write = stmicro_write;
-	flash.internal_erase = spi_flash_cmd_erase;
-	flash.internal_read = spi_flash_cmd_read_fast;
+	flash->internal_write = stmicro_write;
+	flash->internal_erase = spi_flash_cmd_erase;
+	flash->internal_read = spi_flash_cmd_read_fast;
 
-	return &flash;
+	return 0;
 }

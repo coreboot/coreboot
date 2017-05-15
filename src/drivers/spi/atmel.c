@@ -154,11 +154,11 @@ out:
 	return ret;
 }
 
-struct spi_flash *spi_flash_probe_atmel(struct spi_slave *spi, u8 *idcode)
+int spi_flash_probe_atmel(struct spi_slave *spi, u8 *idcode,
+			  struct spi_flash *flash)
 {
 	const struct atmel_spi_flash_params *params;
 	unsigned int i;
-	struct spi_flash *flash;
 
 	for (i = 0; i < ARRAY_SIZE(atmel_spi_flash_table); i++) {
 		params = &atmel_spi_flash_table[i];
@@ -169,13 +169,7 @@ struct spi_flash *spi_flash_probe_atmel(struct spi_slave *spi, u8 *idcode)
 	if (i == ARRAY_SIZE(atmel_spi_flash_table)) {
 		printk(BIOS_WARNING, "SF: Unsupported Atmel ID %02x%02x\n",
 				idcode[1], idcode[2]);
-		return NULL;
-	}
-
-	flash = malloc(sizeof(*flash));
-	if (!flash) {
-		printk(BIOS_WARNING, "SF: Failed to allocate memory\n");
-		return NULL;
+		return -1;
 	}
 
 	memcpy(&flash->spi, spi, sizeof(*spi));
@@ -196,5 +190,5 @@ struct spi_flash *spi_flash_probe_atmel(struct spi_slave *spi, u8 *idcode)
 	flash->internal_read = spi_flash_cmd_read_fast;
 #endif
 
-	return flash;
+	return 0;
 }

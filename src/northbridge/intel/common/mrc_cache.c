@@ -160,6 +160,7 @@ static void update_mrc_cache(void *unused)
 	struct mrc_data_container *cache, *cache_base;
 	u32 cache_size;
 	int ret;
+	struct spi_flash flash;
 
 	if (!current) {
 		printk(BIOS_ERR, "No MRC cache in cbmem. Can't update flash.\n");
@@ -192,8 +193,7 @@ static void update_mrc_cache(void *unused)
 
 	//  1. use spi_flash_probe() to find the flash, then
 	spi_init();
-	struct spi_flash *flash = spi_flash_probe(0, 0);
-	if (!flash) {
+	if (spi_flash_probe(0, 0, &flash)) {
 		printk(BIOS_DEBUG, "Could not find SPI device\n");
 		return;
 	}
@@ -212,7 +212,7 @@ static void update_mrc_cache(void *unused)
 		       "Need to erase the MRC cache region of %d bytes at %p\n",
 		       cache_size, cache_base);
 
-		spi_flash_erase(flash, to_flash_offset(flash, cache_base),
+		spi_flash_erase(&flash, to_flash_offset(&flash, cache_base),
 				cache_size);
 
 		/* we will start at the beginning again */
@@ -221,7 +221,7 @@ static void update_mrc_cache(void *unused)
 	//  4. write mrc data with flash->write()
 	printk(BIOS_DEBUG, "Finally: write MRC cache update to flash at %p\n",
 	       cache);
-	ret = spi_flash_write(flash, to_flash_offset(flash, cache),
+	ret = spi_flash_write(&flash, to_flash_offset(&flash, cache),
 			current->mrc_data_size + sizeof(*current), current);
 
 	if (ret)

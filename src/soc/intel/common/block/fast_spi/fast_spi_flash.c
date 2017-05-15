@@ -169,9 +169,6 @@ static size_t get_xfer_len(const struct spi_flash *flash, uint32_t addr,
 }
 
 
-/* Flash device operations. */
-static struct spi_flash boot_flash CAR_GLOBAL;
-
 static int fast_spi_flash_erase(const struct spi_flash *flash,
 				uint32_t offset, size_t len)
 {
@@ -283,13 +280,11 @@ static int fast_spi_flash_status(const struct spi_flash *flash,
  * The size of the flash component is always taken from density field in the
  * SFDP table. FLCOMP.C0DEN is no longer used by the Flash Controller.
  */
-struct spi_flash *spi_flash_programmer_probe(struct spi_slave *dev, int force)
+int spi_flash_programmer_probe(struct spi_slave *dev,
+				int force, struct spi_flash *flash)
 {
 	BOILERPLATE_CREATE_CTX(ctx);
-	struct spi_flash *flash;
 	uint32_t flash_bits;
-
-	flash = car_get_var_ptr(&boot_flash);
 
 	/*
 	 * bytes = (bits + 1) / 8;
@@ -317,7 +312,7 @@ struct spi_flash *spi_flash_programmer_probe(struct spi_slave *dev, int force)
 	flash->internal_read = fast_spi_flash_read;
 	flash->internal_status = fast_spi_flash_status;
 
-	return flash;
+	return 0;
 }
 
 int spi_flash_get_fpr_info(struct fpr_info *info)

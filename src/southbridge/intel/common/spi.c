@@ -899,10 +899,9 @@ static int ich_hwseq_write(const struct spi_flash *flash, u32 addr, size_t len,
 	return 0;
 }
 
-
-struct spi_flash *spi_flash_programmer_probe(struct spi_slave *spi, int force)
+int spi_flash_programmer_probe(struct spi_slave *spi,
+			       int force, struct spi_flash *flash)
 {
-	struct spi_flash *flash = NULL;
 	uint32_t flcomp;
 
 	/*
@@ -911,13 +910,7 @@ struct spi_flash *spi_flash_programmer_probe(struct spi_slave *spi, int force)
 	 * 2. Specialized probing is forced by SPI flash driver.
 	 */
 	if (!spi_is_multichip() && !force)
-		return NULL;
-
-	flash = malloc(sizeof(*flash));
-	if (!flash) {
-		printk(BIOS_WARNING, "SF: Failed to allocate memory\n");
-		return NULL;
-	}
+		return -1;
 
 	memcpy(&flash->spi, spi, sizeof(*spi));
 	flash->name = "Opaque HW-sequencing";
@@ -951,5 +944,5 @@ struct spi_flash *spi_flash_programmer_probe(struct spi_slave *spi, int force)
 		flash->size += 1 << (19 + ((flcomp >> 3) & 7));
 	printk (BIOS_DEBUG, "flash size 0x%x bytes\n", flash->size);
 
-	return flash;
+	return 0;
 }

@@ -246,9 +246,8 @@ static int spansion_write(const struct spi_flash *flash, u32 offset, size_t len,
 	return ret;
 }
 
-static struct spi_flash flash;
-
-struct spi_flash *spi_flash_probe_spansion(struct spi_slave *spi, u8 *idcode)
+int spi_flash_probe_spansion(struct spi_slave *spi, u8 *idcode,
+				struct spi_flash *flash)
 {
 	const struct spansion_spi_flash_params *params;
 	unsigned int i;
@@ -263,21 +262,21 @@ struct spi_flash *spi_flash_probe_spansion(struct spi_slave *spi, u8 *idcode)
 		printk(BIOS_WARNING,
 		       "SF: Unsupported SPANSION ID %02x %02x %02x %02x %02x\n",
 		       idcode[0], idcode[1], idcode[2], idcode[3], idcode[4]);
-		return NULL;
+		return -1;
 	}
 
-	memcpy(&flash.spi, spi, sizeof(*spi));
-	flash.name = params->name;
-	flash.page_size = params->page_size;
-	flash.sector_size = params->page_size * params->pages_per_sector;
-	flash.size = flash.sector_size * params->nr_sectors;
-	flash.erase_cmd = CMD_S25FLXX_SE;
-	flash.status_cmd = CMD_S25FLXX_RDSR;
+	memcpy(&flash->spi, spi, sizeof(*spi));
+	flash->name = params->name;
+	flash->page_size = params->page_size;
+	flash->sector_size = params->page_size * params->pages_per_sector;
+	flash->size = flash->sector_size * params->nr_sectors;
+	flash->erase_cmd = CMD_S25FLXX_SE;
+	flash->status_cmd = CMD_S25FLXX_RDSR;
 
-	flash.internal_write = spansion_write;
-	flash.internal_erase = spi_flash_cmd_erase;
-	flash.internal_read = spi_flash_cmd_read_slow;
-	flash.internal_status = spi_flash_cmd_status;
+	flash->internal_write = spansion_write;
+	flash->internal_erase = spi_flash_cmd_erase;
+	flash->internal_read = spi_flash_cmd_read_slow;
+	flash->internal_status = spi_flash_cmd_status;
 
-	return &flash;
+	return 0;
 }

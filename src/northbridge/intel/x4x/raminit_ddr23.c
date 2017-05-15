@@ -464,12 +464,72 @@ static void program_timings(struct sysinfo *s)
 		5200
 	};
 
-	ta1 = 6;
-	ta2 = 6;
-	ta3 = 5;
-	ta4 = 8;
+	const static u8 ddr3_turnaround_tab[3][6][4] = {
+		{ /* DDR3 800 */
+			{0x9, 0x7, 0x7, 0x9},	/* CL = 5 */
+			{0x9, 0x7, 0x8, 0x8},	/* CL = 6 */
+		},
+		{ /* DDR3 1066 */
+			{0x0, 0x0, 0x0, 0x0},	/* CL = 5 - Not supported */
+			{0x9, 0x7, 0x7, 0x9},	/* CL = 6 */
+			{0x9, 0x7, 0x8, 0x8},	/* CL = 7 */
+			{0x9, 0x7, 0x9, 0x7}	/* CL = 8 */
+		},
+		{ /* DDR3 1333 */
+			{0x0, 0x0, 0x0, 0x0},	/* CL = 5 - Not supported */
+			{0x0, 0x0, 0x0, 0x0},	/* CL = 6 - Not supported */
+			{0x0, 0x0, 0x0, 0x0},	/* CL = 7 - Not supported */
+			{0x9, 0x7, 0x9, 0x8},	/* CL = 8 */
+			{0x9, 0x7, 0xA, 0x7},	/* CL = 9 */
+			{0x9, 0x7, 0xB, 0x6},	/* CL = 10 */
+		}
+	};
 
-	twl = s->selected_timings.CAS - 1;
+	/* [DDR freq][0x26F & 1][pagemod] */
+	const static u8 ddr2_x252_tab[2][2][2] =  {
+		{ /* DDR2 667 */
+			{12, 16},
+			{14, 18}
+		},
+		{ /* DDR2 800 */
+			{14, 18},
+			{16, 20}
+		}
+	};
+
+	const static u8 ddr3_x252_tab[3][2][2] =  {
+		{ /* DDR3 800 */
+			{16, 20},
+			{18, 22}
+		},
+		{ /* DDR3 1067 */
+			{20, 26},
+			{26, 26}
+		},
+		{ /* DDR3 1333 */
+			{20, 30},
+			{22, 32},
+		}
+	};
+
+	if (s->spd_type == DDR2) {
+		ta1 = 6;
+		ta2 = 6;
+		ta3 = 5;
+		ta4 = 8;
+	} else {
+		int ddr3_idx = s->selected_timings.mem_clk - MEM_CLOCK_800MHz;
+		int cas_idx = s->selected_timings.CAS - 5;
+		ta1 = ddr3_turnaround_tab[ddr3_idx][cas_idx][0];
+		ta2 = ddr3_turnaround_tab[ddr3_idx][cas_idx][1];
+		ta3 = ddr3_turnaround_tab[ddr3_idx][cas_idx][2];
+		ta4 = ddr3_turnaround_tab[ddr3_idx][cas_idx][3];
+	}
+
+	if (s->spd_type == DDR2)
+		twl = s->selected_timings.CAS - 1;
+	else /* DDR3 */
+		twl = s->selected_timings.mem_clk - MEM_CLOCK_800MHz + 5;
 
 	FOR_EACH_POPULATED_DIMM(s->dimms, i) {
 		if (s->dimms[i].n_banks == N_BANKS_8) {
@@ -500,37 +560,16 @@ static void program_timings(struct sysinfo *s)
 			(s->selected_timings.tRP << 13) |
 			((s->selected_timings.tRP + trpmod) << 9) |
 			s->selected_timings.tRFC;
-		reg8 = (MCHBAR8(0x400*i + 0x26f) >> 1) & 1;
-		if (bankmod) {
-			switch (s->selected_timings.mem_clk) {
-			default:
-			case MEM_CLOCK_667MHz:
-				if (reg8) {
-					if (pagemod)
-						reg32 |= 16 << 22;
-					else
-						reg32 |= 12 << 22;
-				} else {
-					if (pagemod)
-						reg32 |= 18 << 22;
-					else
-						reg32 |= 14 << 22;
-				}
-				break;
-			case MEM_CLOCK_800MHz:
-				if (reg8) {
-					if (pagemod)
-						reg32 |= 18 << 22;
-					else
-						reg32 |= 14 << 22;
-				} else {
-					if (pagemod)
-						reg32 |= 20 << 22;
-					else
-						reg32 |= 16 << 22;
-				}
-				break;
-			}
+		if (bankmod == 0) {
+			reg8 = (MCHBAR8(0x400*i + 0x26f) >> 1) & 1;
+			if (s->spd_type == DDR2)
+				reg32 |= ddr2_x252_tab[s->selected_timings.mem_clk
+						- MEM_CLOCK_667MHz][reg8][pagemod]
+					<< 22;
+			else
+				reg32 |= ddr3_x252_tab[s->selected_timings.mem_clk
+						- MEM_CLOCK_800MHz][reg8][pagemod]
+					<< 22;
 		}
 		MCHBAR32(0x400*i + 0x252) = reg32;
 
@@ -564,7 +603,7 @@ static void program_timings(struct sysinfo *s)
 
 		fsb = fsb2ps[s->selected_timings.fsb_clk];
 		ddr = ddr2ps[s->selected_timings.mem_clk];
-		reg32 = (u32)((adjusted_cas + 7 + reg8) * ddr);
+		reg32 = (u32)((s->selected_timings.CAS + 7 + reg8) * ddr);
 		reg32 = (u32)((reg32 / fsb) << 8);
 		reg32 |= 0x0e000000;
 		if ((fsb2mhz(s->selected_timings.fsb_clk) /

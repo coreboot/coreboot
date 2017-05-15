@@ -1218,7 +1218,7 @@ static void prog_rcomp(struct sysinfo *s)
 static void program_odt(struct sysinfo *s)
 {
 	u8 i;
-	u16 odt[16][2] = {
+	static u16 ddr2_odt[16][2] = {
 		{ 0x0000, 0x0000 }, // NC_NC
 		{ 0x0000, 0x0001 }, // x8SS_NC
 		{ 0x0000, 0x0011 }, // x8DS_NC
@@ -1237,11 +1237,43 @@ static void program_odt(struct sysinfo *s)
 		{ 0x0101, 0x0404 }, // x16SS_x16SS
 	};
 
+	static const u16 ddr3_odt[16][2] = {
+		{ 0x0000, 0x0000 }, // NC_NC
+		{ 0x0000, 0x0001 }, // x8SS_NC
+		{ 0x0000, 0x0021 }, // x8DS_NC
+		{ 0x0000, 0x0001 }, // x16SS_NC
+		{ 0x0004, 0x0000 }, // NC_x8SS
+		{ 0x0105, 0x0405 }, // x8SS_x8SS
+		{ 0x0105, 0x4465 }, // x8DS_x8SS
+		{ 0x0105, 0x0405 }, // x16SS_x8SS
+		{ 0x0084, 0x0000 }, // NC_x8DS
+		{ 0x1195, 0x0405 }, // x8SS_x8DS
+		{ 0x1195, 0x4465 }, // x8DS_x8DS
+		{ 0x1195, 0x0405 }, // x16SS_x8DS
+		{ 0x0004, 0x0000 }, // NC_x16SS
+		{ 0x0105, 0x0405 }, // x8SS_x16SS
+		{ 0x0105, 0x4465 }, // x8DS_x16SS
+		{ 0x0105, 0x0405 }, // x16SS_x16SS
+	};
+
 	FOR_EACH_POPULATED_CHANNEL(s->dimms, i) {
-		MCHBAR16(0x400*i + 0x298) = odt[s->dimm_config[i]][1];
-		MCHBAR16(0x400*i + 0x294) = odt[s->dimm_config[i]][0];
-		MCHBAR16(0x400*i + 0x29c) = (MCHBAR16(0x400*i + 0x29c) & ~0xfff) | 0x66b;
-		MCHBAR32(0x400*i + 0x260) = (MCHBAR32(0x400*i + 0x260) & ~0x70e3c00) | 0x3063c00;
+		if (s->spd_type == DDR2) {
+			MCHBAR16(0x400 * i + 0x298) =
+				ddr2_odt[s->dimm_config[i]][1];
+			MCHBAR16(0x400 * i + 0x294) =
+				ddr2_odt[s->dimm_config[i]][0];
+		} else {
+			MCHBAR16(0x400 * i + 0x298) =
+				ddr3_odt[s->dimm_config[i]][1];
+			MCHBAR16(0x400 * i + 0x294) =
+				ddr3_odt[s->dimm_config[i]][0];
+		}
+		u16 reg16 = MCHBAR16(0x400*i + 0x29c);
+		reg16 &= ~0xfff;
+		reg16 |= (s->spd_type == DDR2 ? 0x66b : 0x778);
+		MCHBAR16(0x400*i + 0x29c) = reg16;
+		MCHBAR32(0x400*i + 0x260) = (MCHBAR32(0x400*i + 0x260)
+					& ~0x70e3c00) | 0x3063c00;
 	}
 }
 

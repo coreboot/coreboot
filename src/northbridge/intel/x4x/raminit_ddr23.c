@@ -1083,60 +1083,123 @@ static void set_all_dq_dqs_dll_settings(struct sysinfo *s)
 
 static void prog_rcomp(struct sysinfo *s)
 {
-	u8 i, j, k;
-	u32 x32a[8] = { 0x04040404, 0x06050505, 0x09090807, 0x0D0C0B0A,
+	u8 i, j, k, reg8;
+	const u32 ddr2_x32a[8] = { 0x04040404, 0x06050505, 0x09090807, 0x0D0C0B0A,
 			0x04040404, 0x08070605, 0x0C0B0A09, 0x100F0E0D };
-	u16 x378[6] = { 0, 0xAAAA, 0x7777, 0x7777, 0x7777, 0x7777 };
-	u32 x382[6] = { 0, 0x02020202, 0x02020202, 0x02020202, 0x04030303, 0x04030303 };
-	u32 x386[6] = { 0, 0x03020202, 0x03020202, 0x03020202, 0x05040404, 0x05040404 };
-	u32 x38a[6] = { 0, 0x04040303, 0x04040303, 0x04040303, 0x07070605, 0x07070605 };
-	u32 x38e[6] = { 0, 0x06060505, 0x06060505, 0x06060505, 0x09090808, 0x09090808 };
-	u32 x392[6] = { 0, 0x02020202, 0x02020202, 0x02020202, 0x03030202, 0x03030202 };
-	u32 x396[6] = { 0, 0x03030202, 0x03030202, 0x03030202, 0x05040303, 0x05040303 };
-	u32 x39a[6] = { 0, 0x04040403, 0x04040403, 0x04040403, 0x07070605, 0x07070605 };
-	u32 x39e[6] = { 0, 0x06060505, 0x06060505, 0x06060505, 0x08080808, 0x08080808 };
-	u16 addr[6] = { 0x31c, 0x374, 0x3a2, 0x3d0, 0x3fe, 0x42c };
+	const u16 ddr2_x378[6] = { 0, 0xAAAA, 0x7777, 0x7777, 0x7777, 0x7777 };
+	const u32 ddr2_x382[6] = { 0, 0x02020202, 0x02020202, 0x02020202, 0x04030303, 0x04030303 };
+	const u32 ddr2_x386[6] = { 0, 0x03020202, 0x03020202, 0x03020202, 0x05040404, 0x05040404 };
+	const u32 ddr2_x38a[6] = { 0, 0x04040303, 0x04040303, 0x04040303, 0x07070605, 0x07070605 };
+	const u32 ddr2_x38e[6] = { 0, 0x06060505, 0x06060505, 0x06060505, 0x09090808, 0x09090808 };
+	const u32 ddr2_x392[6] = { 0, 0x02020202, 0x02020202, 0x02020202, 0x03030202, 0x03030202 };
+	const u32 ddr2_x396[6] = { 0, 0x03030202, 0x03030202, 0x03030202, 0x05040303, 0x05040303 };
+	const u32 ddr2_x39a[6] = { 0, 0x04040403, 0x04040403, 0x04040403, 0x07070605, 0x07070605 };
+	const u32 ddr2_x39e[6] = { 0, 0x06060505, 0x06060505, 0x06060505, 0x08080808, 0x08080808 };
+
+	const u32 ddr3_x32a[8] = {0x06060606, 0x06060606, 0x0b090807, 0x12110f0d,
+				 0x06060606, 0x08070606, 0x0d0b0a09, 0x16161511};
+	const u16 ddr3_x378[6] = {0, 0xbbbb, 0x6666, 0x6666, 0x6666, 0x6666};
+	const u32 ddr3_x382[6] = {0, 0x05050505, 0x04040404, 0x04040404, 0x34343434, 0x34343434};
+	const u32 ddr3_x386[6] = {0, 0x05050505, 0x04040404, 0x04040404, 0x34343434, 0x34343434};
+	const u32 ddr3_x38a[6] = {0, 0x06060605, 0x07060504, 0x07060504, 0x34343434, 0x34343434};
+	const u32 ddr3_x38e[6] = {0, 0x09080707, 0x09090808, 0x09090808, 0x34343434, 0x34343434};
+	const u32 ddr3_x392[6] = {0, 0x05050505, 0x04040404, 0x04040404, 0x34343434, 0x34343434};
+	const u32 ddr3_x396[6] = {0, 0x05050505, 0x04040404, 0x04040404, 0x34343434, 0x34343434};
+	const u32 ddr3_x39a[6] = {0, 0x07060606, 0x08070605, 0x08070605, 0x34343434, 0x34343434};
+	const u32 ddr3_x39e[6] = {0, 0x09090807, 0x0b0b0a09, 0x0b0b0a09, 0x34343434, 0x34343434};
+
+	const u16 *x378;
+	const u32 *x32a, *x382, *x386, *x38a, *x38e;
+	const u32 *x392, *x396, *x39a, *x39e;
+
+	const u16 addr[6] = { 0x31c, 0x374, 0x3a2, 0x3d0, 0x3fe, 0x42c };
 	u8 bit[6] = { 0, 0, 1, 1, 0, 0 };
+
+	if (s->spd_type == DDR2) {
+		x32a = ddr2_x32a;
+		x378 = ddr2_x378;
+		x382 = ddr2_x382;
+		x386 = ddr2_x386;
+		x38a = ddr2_x38a;
+		x38e = ddr2_x38e;
+		x392 = ddr2_x392;
+		x396 = ddr2_x396;
+		x39a = ddr2_x39a;
+		x39e = ddr2_x39e;
+	} else { /* DDR3 */
+		x32a = ddr3_x32a;
+		x378 = ddr3_x378;
+		x382 = ddr3_x382;
+		x386 = ddr3_x386;
+		x38a = ddr3_x38a;
+		x38e = ddr3_x38e;
+		x392 = ddr3_x392;
+		x396 = ddr3_x396;
+		x39a = ddr3_x39a;
+		x39e = ddr3_x39e;
+	}
 
 	FOR_EACH_POPULATED_CHANNEL(s->dimms, i) {
 		for (j = 0; j < 6; j++) {
 			if (j == 0) {
 				MCHBAR32(0x400*i + addr[j]) =
-					(MCHBAR32(0x400*i + addr[j]) & ~0xff000) | 0xaa000;
-				MCHBAR16(0x400*i + 0x320) = (MCHBAR16(0x400*i + 0x320) & ~0xffff) | 0x6666;
+					(MCHBAR32(0x400*i + addr[j]) & ~0xff000)
+					| 0xaa000;
+				MCHBAR16(0x400*i + 0x320) = (MCHBAR16(0x400*i + 0x320)
+							& ~0xffff) | 0x6666;
 				for (k = 0; k < 8; k++) {
 					MCHBAR32(0x400*i + addr[j] + 0xe + (k << 2)) =
-						(MCHBAR32(0x400*i + addr[j] + 0xe + (k << 2)) & ~0x3f3f3f3f) | x32a[k];
+						(MCHBAR32(0x400*i + addr[j] + 0xe + (k << 2))
+							& ~0x3f3f3f3f) | x32a[k];
 					MCHBAR32(0x400*i + addr[j] + 0x2e + (k << 2)) =
-						(MCHBAR32(0x400*i + addr[j] + 0x2e + (k << 2)) & ~0x3f3f3f3f) | x32a[k];
+						(MCHBAR32(0x400*i + addr[j] + 0x2e + (k << 2))
+							& ~0x3f3f3f3f) | x32a[k];
 				}
 			} else {
-				MCHBAR16(0x400*i + addr[j]) = (MCHBAR16(0x400*i + addr[j]) & ~0xf000) | 0xa000;
-				MCHBAR16(0x400*i + addr[j] + 4) = (MCHBAR16(0x400*i + addr[j] + 4) & ~0xffff) |
-					x378[j];
+				MCHBAR16(0x400*i + addr[j]) =
+					(MCHBAR16(0x400*i + addr[j])
+						& ~0xf000) | 0xa000;
+				MCHBAR16(0x400*i + addr[j] + 4) =
+					(MCHBAR16(0x400*i + addr[j] + 4)
+						& ~0xffff) | x378[j];
 				MCHBAR32(0x400*i + addr[j] + 0xe) =
-					(MCHBAR32(0x400*i + addr[j] + 0xe) & ~0x3f3f3f3f) | x382[j];
+					(MCHBAR32(0x400*i + addr[j] + 0xe)
+						& ~0x3f3f3f3f) | x382[j];
 				MCHBAR32(0x400*i + addr[j] + 0x12) =
-					(MCHBAR32(0x400*i + addr[j] + 0x12) & ~0x3f3f3f3f) | x386[j];
+					(MCHBAR32(0x400*i + addr[j] + 0x12)
+						& ~0x3f3f3f3f) | x386[j];
 				MCHBAR32(0x400*i + addr[j] + 0x16) =
-					(MCHBAR32(0x400*i + addr[j] + 0x16) & ~0x3f3f3f3f) | x38a[j];
+					(MCHBAR32(0x400*i + addr[j] + 0x16)
+						& ~0x3f3f3f3f) | x38a[j];
 				MCHBAR32(0x400*i + addr[j] + 0x1a) =
-					(MCHBAR32(0x400*i + addr[j] + 0x1a) & ~0x3f3f3f3f) | x38e[j];
+					(MCHBAR32(0x400*i + addr[j] + 0x1a)
+						& ~0x3f3f3f3f) | x38e[j];
 				MCHBAR32(0x400*i + addr[j] + 0x1e) =
-					(MCHBAR32(0x400*i + addr[j] + 0x1e) & ~0x3f3f3f3f) | x392[j];
+					(MCHBAR32(0x400*i + addr[j] + 0x1e)
+						& ~0x3f3f3f3f) | x392[j];
 				MCHBAR32(0x400*i + addr[j] + 0x22) =
-					(MCHBAR32(0x400*i + addr[j] + 0x22) & ~0x3f3f3f3f) | x396[j];
+					(MCHBAR32(0x400*i + addr[j] + 0x22)
+						& ~0x3f3f3f3f) | x396[j];
 				MCHBAR32(0x400*i + addr[j] + 0x26) =
-					(MCHBAR32(0x400*i + addr[j] + 0x26) & ~0x3f3f3f3f) | x39a[j];
+					(MCHBAR32(0x400*i + addr[j] + 0x26)
+						& ~0x3f3f3f3f) | x39a[j];
 				MCHBAR32(0x400*i + addr[j] + 0x2a) =
-					(MCHBAR32(0x400*i + addr[j] + 0x2a) & ~0x3f3f3f3f) | x39e[j];
+					(MCHBAR32(0x400*i + addr[j] + 0x2a)
+						& ~0x3f3f3f3f) | x39e[j];
+			}
+			if (s->spd_type == DDR3
+				&& BOTH_DIMMS_ARE_POPULATED(s->dimms, i)) {
+					MCHBAR16(0x378 + 0x400 * i) =
+						(MCHBAR16(0x378 + 0x400 * i)
+							& ~0xffff) | 0xcccc;
 			}
 			MCHBAR8(0x400*i + addr[j]) = (MCHBAR8(0x400*i + addr[j]) & ~1) | bit[j];
 		}
-		MCHBAR8(0x400*i + 0x45a) = (MCHBAR8(0x400*i + 0x45a) & ~0x3f) | 0x12;
-		MCHBAR8(0x400*i + 0x45e) = (MCHBAR8(0x400*i + 0x45e) & ~0x3f) | 0x12;
-		MCHBAR8(0x400*i + 0x462) = (MCHBAR8(0x400*i + 0x462) & ~0x3f) | 0x12;
-		MCHBAR8(0x400*i + 0x466) = (MCHBAR8(0x400*i + 0x466) & ~0x3f) | 0x12;
+		reg8 = (s->spd_type == DDR2) ? 0x12 : 0x36;
+		MCHBAR8(0x400*i + 0x45a) = (MCHBAR8(0x400*i + 0x45a) & ~0x3f) | reg8;
+		MCHBAR8(0x400*i + 0x45e) = (MCHBAR8(0x400*i + 0x45e) & ~0x3f) | reg8;
+		MCHBAR8(0x400*i + 0x462) = (MCHBAR8(0x400*i + 0x462) & ~0x3f) | reg8;
+		MCHBAR8(0x400*i + 0x466) = (MCHBAR8(0x400*i + 0x466) & ~0x3f) | reg8;
 	} // END EACH POPULATED CHANNEL
 
 	MCHBAR32(0x134) = (MCHBAR32(0x134) & ~0x63c00) | 0x63c00;

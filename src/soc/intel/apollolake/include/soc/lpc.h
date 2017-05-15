@@ -29,8 +29,11 @@
  * IO decode enable macros are in the format IO_<peripheral>_<IO port>.
  * For example, to open ports 0x60, 0x64 for the keyboard controller,
  * use IOE_KBC_60_64 macro. For IOE_ macros that do not specify a port range,
- * the port range is selectable via the IO decodes register (not referenced).
+ * the port range is selectable via the IO decodes register.
  */
+#define REG_IO_DECODE			0x80
+#define  IOD_COMA_RANGE			(0 << 0) /* 0x3F8 - 0x3FF COMA*/
+#define  IOD_COMB_RANGE			(1 << 4) /* 0x2F8 - 0x2FF COMB*/
 #define REG_IO_ENABLES			0x82
 #define  IOE_EC_4E_4F			(1 << 13)
 #define  IOE_SUPERIO_2E_2F		(1 << 12)

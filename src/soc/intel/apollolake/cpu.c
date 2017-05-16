@@ -45,6 +45,7 @@
 #include <soc/pm.h>
 
 static const struct reg_script core_msr_script[] = {
+#if !IS_ENABLED(CONFIG_SOC_INTEL_GLK)
 	/* Enable C-state and IO/MWAIT redirect */
 	REG_MSR_WRITE(MSR_PMG_CST_CONFIG_CONTROL,
 		(PKG_C_STATE_LIMIT_C2_MASK | CORE_C_STATE_LIMIT_C10_MASK
@@ -56,6 +57,7 @@ static const struct reg_script core_msr_script[] = {
 	REG_MSR_RMW(MSR_POWER_CTL, ~0x2, 0),
 	/* Disable support for MONITOR and MWAIT instructions */
 	REG_MSR_RMW(MSR_IA32_MISC_ENABLES, ~MONITOR_MWAIT_DIS_MASK, 0),
+#endif
 	/*
 	 * Enable and Lock the Advanced Encryption Standard (AES-NI)
 	 * feature register

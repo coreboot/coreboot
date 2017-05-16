@@ -565,9 +565,10 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 	silconfig->LPSS_S0ixEnable = cfg->lpss_s0ix_enable;
 
 	/* Disable monitor mwait since it is broken due to a hardware bug
-	 * without a fix
+	 * without a fix. Specific to Apollolake.
 	 */
-	silconfig->MonitorMwaitEnable = 0;
+	if (!IS_ENABLED(CONFIG_SOC_INTEL_GLK))
+		silconfig->MonitorMwaitEnable = 0;
 
 	silconfig->SkipMpInit = 1;
 

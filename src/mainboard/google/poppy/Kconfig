@@ -24,7 +24,7 @@ config DEVICETREE
 
 config DRIVER_TPM_I2C_BUS
 	depends on POPPY_USE_I2C_TPM
-	default 0x4
+	default 0x1
 
 config DRIVER_TPM_I2C_ADDR
 	depends on POPPY_USE_I2C_TPM

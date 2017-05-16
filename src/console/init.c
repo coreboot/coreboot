@@ -71,6 +71,6 @@ asmlinkage void console_init(void)
 
 	console_hw_init();
 
-	printk(BIOS_INFO, "\n\ncoreboot-%s%s %s " ENV_STRING " starting...\n",
+	printk(BIOS_NOTICE, "\n\ncoreboot-%s%s %s " ENV_STRING " starting...\n",
 	       coreboot_version, coreboot_extra_version, coreboot_build);
 }

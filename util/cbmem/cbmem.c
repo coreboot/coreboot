@@ -670,9 +670,12 @@ static void dump_console(int one_boot_only)
 	cursor = 0;
 	if (one_boot_only) {
 #define BANNER_REGEX(stage) "\n\ncoreboot-[^\n]* " stage " starting\\.\\.\\.\n"
+#define OVERFLOW_REGEX(stage) "\n*** Pre-CBMEM " stage " console overflowed"
 		const char *regex[] = { BANNER_REGEX("bootblock"),
 					BANNER_REGEX("romstage"),
-					BANNER_REGEX("ramstage")};
+					OVERFLOW_REGEX("romstage"),
+					BANNER_REGEX("ramstage"),
+					OVERFLOW_REGEX("ramstage") };
 		int i;
 
 		for (i = 0; !cursor && i < ARRAY_SIZE(regex); i++) {

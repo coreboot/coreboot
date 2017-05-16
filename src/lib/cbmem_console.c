@@ -156,8 +156,8 @@ static void copy_console_buffer(struct cbmem_console *src_cons_p)
 		return;
 
 	if (src_cons_p->cursor & OVERFLOW) {
-		const char overflow_warning[] = "\n*** Pre-CBMEM console "
-			"overflowed, log truncated ***\n";
+		const char overflow_warning[] = "\n*** Pre-CBMEM " ENV_STRING
+			" console overflowed, log truncated! ***\n";
 		for (c = 0; c < sizeof(overflow_warning) - 1; c++)
 			cbmemc_tx_byte(overflow_warning[c]);
 		for (c = src_cons_p->cursor & CURSOR_MASK;

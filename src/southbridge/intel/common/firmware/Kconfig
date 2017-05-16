@@ -102,6 +102,21 @@ config GBE_BIN_PATH
 	depends on HAVE_GBE_BIN
 	default "3rdparty/blobs/mainboard/$(MAINBOARDDIR)/gbe.bin"
 
+config HAVE_EC_BIN
+	bool "Add EC firmware"
+	depends on HAVE_IFD_BIN
+	help
+	  The embedded controller needs a firmware file.
+
+	  Select this if you are going to use the PCH integrated controller
+	  and have the EC firmware. EC firmware will be added to final image
+	  through ifdtool.
+
+config EC_BIN_PATH
+	string "Path to EC firmware"
+	depends on HAVE_EC_BIN
+	default "3rdparty/blobs/mainboard/$(MAINBOARDDIR)/ec.bin"
+
 ##### Fake IFD #####
 
 config BUILD_WITH_FAKE_IFD

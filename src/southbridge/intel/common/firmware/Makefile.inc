@@ -71,6 +71,14 @@ ifeq ($(CONFIG_HAVE_GBE_BIN),y)
 		$(obj)/coreboot.pre
 	mv $(obj)/coreboot.pre.new $(obj)/coreboot.pre
 endif
+ifeq ($(CONFIG_HAVE_EC_BIN),y)
+	printf "    IFDTOOL    ec.bin -> coreboot.pre\n"
+	$(objutil)/ifdtool/ifdtool \
+		$(IFDTOOL_USE_CHIPSET) \
+		-i EC:$(CONFIG_EC_BIN_PATH) \
+		$(obj)/coreboot.pre
+	mv $(obj)/coreboot.pre.new $(obj)/coreboot.pre
+endif
 ifeq ($(CONFIG_LOCK_MANAGEMENT_ENGINE),y)
 	printf "    IFDTOOL    Locking Management Engine\n"
 	$(objutil)/ifdtool/ifdtool \

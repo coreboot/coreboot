@@ -12,6 +12,35 @@ chip soc/intel/apollolake
 	register "pcie_rp4_clkreq_pin" = "CLKREQ_DISABLED"
 	register "pcie_rp5_clkreq_pin" = "CLKREQ_DISABLED"
 
+	# EMMC TX DATA Delay 1
+	# Refer to EDS-Vol2-22.3.
+	# [14:8] steps of delay for HS400, each 125ps.
+	# [6:0] steps of delay for SDR104/HS200, each 125ps.
+	register "emmc_tx_data_cntl1" = "0x0C16"
+
+	# EMMC TX DATA Delay 2
+	# Refer to EDS-Vol2-22.3.
+	# [30:24] steps of delay for SDR50, each 125ps.
+	# [22:16] steps of delay for DDR50, each 125ps.
+	# [14:8] steps of delay for SDR25/HS50, each 125ps.
+	# [6:0] steps of delay for SDR12, each 125ps.
+	register "emmc_tx_data_cntl2" = "0x28162828"
+
+	# EMMC RX CMD/DATA Delay 1
+	# Refer to EDS-Vol2-22.3.
+	# [30:24] steps of delay for SDR50, each 125ps.
+	# [22:16] steps of delay for DDR50, each 125ps.
+	# [14:8] steps of delay for SDR25/HS50, each 125ps.
+	# [6:0] steps of delay for SDR12, each 125ps.
+	register "emmc_rx_cmd_data_cntl1" = "0x00181717"
+
+	# EMMC RX CMD/DATA Delay 2
+	# Refer to EDS-Vol2-22.3.
+	# [17:16] stands for Rx Clock before Output Buffer
+	# [14:8] steps of delay for Auto Tuning Mode, each 125ps.
+	# [6:0] steps of delay for HS200, each 125ps.
+	register "emmc_rx_cmd_data_cntl2" = "0x10008"
+
 	device domain 0 on
 		device pci 00.0 on  end	# - Host Bridge
 		device pci 00.1 off end	# - DPTF

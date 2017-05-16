@@ -126,7 +126,7 @@ out:
 	return ret;
 }
 
-int spi_flash_probe_eon(struct spi_slave *spi, u8 *idcode,
+int spi_flash_probe_eon(const struct spi_slave *spi, u8 *idcode,
 			struct spi_flash *flash)
 {
 	const struct eon_spi_flash_params *params;

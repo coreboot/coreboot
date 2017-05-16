@@ -126,7 +126,7 @@ out:
 	return ret;
 }
 
-int spi_flash_probe_adesto(struct spi_slave *spi, u8 *idcode,
+int spi_flash_probe_adesto(const struct spi_slave *spi, u8 *idcode,
 			   struct spi_flash *flash)
 {
 	const struct adesto_spi_flash_params *params;

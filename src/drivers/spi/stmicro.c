@@ -222,7 +222,7 @@ out:
 	return ret;
 }
 
-int spi_flash_probe_stmicro(struct spi_slave *spi, u8 *idcode,
+int spi_flash_probe_stmicro(const struct spi_slave *spi, u8 *idcode,
 			    struct spi_flash *flash)
 {
 	const struct stmicro_spi_flash_params *params;

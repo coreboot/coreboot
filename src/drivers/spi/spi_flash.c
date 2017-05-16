@@ -240,7 +240,7 @@ int spi_flash_cmd_status(const struct spi_flash *flash, u8 *reg)
 static struct {
 	const u8 shift;
 	const u8 idcode;
-	int (*probe) (struct spi_slave *spi, u8 *idcode,
+	int (*probe) (const struct spi_slave *spi, u8 *idcode,
 		      struct spi_flash *flash);
 } flashes[] = {
 	/* Keep it sorted by define name */
@@ -282,7 +282,7 @@ static struct {
 #define IDCODE_LEN (IDCODE_CONT_LEN + IDCODE_PART_LEN)
 
 int
-__attribute__((weak)) spi_flash_programmer_probe(struct spi_slave *spi,
+__attribute__((weak)) spi_flash_programmer_probe(const struct spi_slave *spi,
 						 int force,
 						 struct spi_flash *flash)
 {
@@ -290,7 +290,8 @@ __attribute__((weak)) spi_flash_programmer_probe(struct spi_slave *spi,
 	return -1;
 }
 
-static int __spi_flash_probe(struct spi_slave *spi, struct spi_flash *flash)
+static int __spi_flash_probe(const struct spi_slave *spi,
+				struct spi_flash *flash)
 {
 	int ret, i, shift;
 	u8 idcode[IDCODE_LEN], *idp;

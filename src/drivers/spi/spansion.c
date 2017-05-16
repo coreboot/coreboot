@@ -246,7 +246,7 @@ static int spansion_write(const struct spi_flash *flash, u32 offset, size_t len,
 	return ret;
 }
 
-int spi_flash_probe_spansion(struct spi_slave *spi, u8 *idcode,
+int spi_flash_probe_spansion(const struct spi_slave *spi, u8 *idcode,
 				struct spi_flash *flash)
 {
 	const struct spansion_spi_flash_params *params;

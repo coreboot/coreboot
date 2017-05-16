@@ -16,7 +16,7 @@
 #ifndef _STONEYRIDGE_GPIO_H_
 #define _STONEYRIDGE_GPIO_H_
 
-#include <soc/amd/common/amd_defs.h>
+#include <amd_defs.h>
 #include <types.h>
 
 #define CROS_GPIO_DEVICE_NAME	"AmdKern"

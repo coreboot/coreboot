@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2010-2017 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,24 +13,14 @@
  * GNU General Public License for more details.
  */
 
-#ifndef STONEYRIDGE_CHIP_H
-#define STONEYRIDGE_CHIP_H
+#ifndef NORTHBRIDGE_AMD_AGESA_FAM15H_H
+#define NORTHBRIDGE_AMD_AGESA_FAM15H_H
 
-#include <stdint.h>
+void cpu_bus_scan(device_t dev);
+void domain_enable_resources(device_t dev);
+void domain_read_resources(device_t dev);
+void domain_set_resources(device_t dev);
+void fam15_finalize(void *chip_info);
+void setup_uma_memory(void);
 
-struct soc_amd_stoneyridge_config
-{
-	u8 spdAddrLookup[1][1][2];
-	u32 ide0_enable : 1;
-	u32 sata0_enable : 1;
-	u32 boot_switch_sata_ide : 1;
-	u32 hda_viddid;
-	u8  gpp_configuration;
-	u8  sd_mode;
-};
-
-typedef struct soc_amd_stoneyridge_config config_t;
-
-extern struct device_operations pci_domain_ops;
-
-#endif /* STONEYRIDGE_CHIP_H */
+#endif /* NORTHBRIDGE_AMD_AGESA_FAM15H_H */

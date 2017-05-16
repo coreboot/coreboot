@@ -35,10 +35,11 @@ config CPU_SPECIFIC_OPTIONS
 	select HAVE_USBDEBUG_OPTIONS
 	select HAVE_HARD_RESET
 	select LAPIC_MONOTONIC_TIMER
-	select SOC_AMD_COMMON
-	select SOC_AMD_PI
+	select LATE_CBMEM_INIT
 	select SPI_FLASH if HAVE_ACPI_RESUME
 	select TSC_SYNC_LFENCE
+	select SOC_AMD_COMMON
+	select SOC_AMD_PI
 	select UDELAY_LAPIC
 
 config UDELAY_LAPIC_FIXED_FSB
@@ -68,6 +69,57 @@ config CBB
 config CDB
 	hex
 	default 0x18
+
+config BOTTOMIO_POSITION
+	hex "Bottom of 32-bit IO space"
+	default 0xD0000000
+	help
+	  If PCI peripherals with big BARs are connected to the system
+	  the bottom of the IO must be decreased to allocate such
+	  devices.
+
+	  Declare the beginning of the 128MB-aligned MMIO region.  This
+	  option is useful when PCI peripherals requesting large address
+	  ranges are present.
+
+config HW_MEM_HOLE_SIZEK
+	hex
+	default 0x200000
+
+config HW_MEM_HOLE_SIZE_AUTO_INC
+	bool
+	default n
+
+config MMCONF_BASE_ADDRESS
+	hex
+	default 0xF8000000
+
+config MMCONF_BUS_NUMBER
+	int
+	default 64
+
+config VGA_BIOS_ID
+	string
+	default "1002,98e4"
+	help
+	  The default VGA BIOS PCI vendor/device ID should be set to the
+	  result of the map_oprom_vendev() function in northbridge.c.
+
+config VGA_BIOS_FILE
+	string
+	default "3rdparty/blobs/northbridge/amd/00670F00/VBIOS.bin"
+
+config RAMTOP
+	hex
+	default 0x1000000
+
+config HEAP_SIZE
+	hex
+	default 0xc0000
+
+config RAMBASE
+	hex
+	default 0x200000
 
 config BOOTBLOCK_SOUTHBRIDGE_INIT
 	string

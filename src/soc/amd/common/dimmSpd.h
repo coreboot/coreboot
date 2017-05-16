@@ -13,28 +13,13 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/acpi.h>
-#include <bootstate.h>
-#include <console/console.h>
-#include <device/device.h>
-#include <device/pci_def.h>
-#include <device/pci_ops.h>
+#ifndef _DIMMSPD_H_
+#define _DIMMSPD_H_
 
-#include <agesawrapper.h>
-#include <agesawrapper_call.h>
+AGESA_STATUS
+AmdMemoryReadSPD (IN UINT32 Func, IN UINT32 Data, IN OUT AGESA_READ_SPD_PARAMS *SpdData);
 
-static void agesawrapper_post_device(void *unused)
-{
-	if (acpi_is_wakeup_s3())
-		return;
+int hudson_readSpd(int spdAddress, char *buf, size_t len);
+int smbus_readSpd(int spdAddress, char *buf, size_t len);
 
-	AGESAWRAPPER(amdinitlate);
-
-	if (!acpi_s3_resume_allowed())
-		return;
-
-	AGESAWRAPPER(amdS3Save);
-}
-
-BOOT_STATE_INIT_ENTRY(BS_POST_DEVICE, BS_ON_EXIT,
-			agesawrapper_post_device, NULL);
+#endif

@@ -61,11 +61,11 @@ ifeq ($(CONFIG_CPU_AMD_PI_00630F01),y)
 AGESA_INC += -I$(AGESA_ROOT)/Proc/IDS
 endif
 
-AGESA_INC += -I$(src)/northbridge/amd/pi
-
 ifeq ($(CONFIG_SOC_AMD_STONEYRIDGE_FP4)$(CONFIG_SOC_AMD_STONEYRIDGE_FT4),y)
 AGESA_INC += -I$(src)/soc/amd/stoneyridge/include
+AGESA_INC += -I$(src)/soc/amd/common
 else
+AGESA_INC += -I$(src)/northbridge/amd/pi
 AGESA_INC += -I$(src)/southbridge/amd/pi/hudson
 endif
 

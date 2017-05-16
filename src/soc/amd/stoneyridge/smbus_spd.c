@@ -20,8 +20,7 @@
 #include <Porting.h>
 #include <AGESA.h>
 #include <amdlib.h>
-
-#include <northbridge/amd/pi/dimmSpd.h>
+#include <dimmSpd.h>
 
 /*-----------------------------------------------------------------------------
  *

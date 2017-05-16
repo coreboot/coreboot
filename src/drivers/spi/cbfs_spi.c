@@ -134,3 +134,9 @@ const struct region_device *boot_device_rw(void)
 {
 	return boot_device_ro();
 }
+
+const struct spi_flash *boot_device_spi_flash(void)
+{
+	boot_device_init();
+	return spi_flash_info;
+}

@@ -136,16 +136,65 @@ static u32 get_COMP2(u32 tCK)
 	return frq_comp2_map[get_FRQ(tCK) - 3];
 }
 
-static void dram_timing(ramctr_timing * ctrl)
+static void snb_normalize_tclk(u32 *tclk)
+{
+	if (*tclk <= TCK_1066MHZ) {
+		*tclk = TCK_1066MHZ;
+	} else if (*tclk <= TCK_933MHZ) {
+		*tclk = TCK_933MHZ;
+	} else if (*tclk <= TCK_800MHZ) {
+		*tclk = TCK_800MHZ;
+	} else if (*tclk <= TCK_666MHZ) {
+		*tclk = TCK_666MHZ;
+	} else if (*tclk <= TCK_533MHZ) {
+		*tclk = TCK_533MHZ;
+	} else if (*tclk <= TCK_400MHZ) {
+		*tclk = TCK_400MHZ;
+	} else {
+		*tclk = 0;
+	}
+}
+
+static void find_cas_tck(ramctr_timing *ctrl)
 {
 	u8 val;
 	u32 val32;
 
+	/* Find CAS latency */
+	while (1) {
+		/* Normalising tCK before computing clock could potentially
+		 * results in lower selected CAS, which is desired.
+		 */
+		snb_normalize_tclk(&(ctrl->tCK));
+		if (!(ctrl->tCK))
+			die("Couldn't find compatible clock / CAS settings\n");
+		val = DIV_ROUND_UP(ctrl->tAA, ctrl->tCK);
+		printk(BIOS_DEBUG, "Trying CAS %u, tCK %u.\n", val, ctrl->tCK);
+		for (; val <= MAX_CAS; val++)
+			if ((ctrl->cas_supported >> (val - MIN_CAS)) & 1)
+				break;
+		if (val == (MAX_CAS + 1)) {
+			ctrl->tCK++;
+			continue;
+		} else {
+			printk(BIOS_DEBUG, "Found compatible clock, CAS pair.\n");
+			break;
+		}
+	}
+
+	val32 = NS2MHZ_DIV256 / ctrl->tCK;
+	printk(BIOS_DEBUG, "Selected DRAM frequency: %u MHz\n", val32);
+
+	printk(BIOS_DEBUG, "Selected CAS latency   : %uT\n", val);
+	ctrl->CAS = val;
+}
+
+static void dram_timing(ramctr_timing *ctrl)
+{
 	/* Maximum supported DDR3 frequency is 1066MHz (DDR3 2133) so make sure
 	 * we cap it if we have faster DIMMs.
 	 * Then, align it to the closest JEDEC standard frequency */
-	if (ctrl->tCK <= TCK_1066MHZ) {
-		ctrl->tCK = TCK_1066MHZ;
+	if (ctrl->tCK == TCK_1066MHZ) {
 		ctrl->edge_offset[0] = 16;
 		ctrl->edge_offset[1] = 7;
 		ctrl->edge_offset[2] = 7;
@@ -153,8 +202,7 @@ static void dram_timing(ramctr_timing * ctrl)
 		ctrl->timC_offset[1] = 7;
 		ctrl->timC_offset[2] = 7;
 		ctrl->reg_320c_range_threshold = 13;
-	} else if (ctrl->tCK <= TCK_933MHZ) {
-		ctrl->tCK = TCK_933MHZ;
+	} else if (ctrl->tCK == TCK_933MHZ) {
 		ctrl->edge_offset[0] = 14;
 		ctrl->edge_offset[1] = 6;
 		ctrl->edge_offset[2] = 6;
@@ -162,8 +210,7 @@ static void dram_timing(ramctr_timing * ctrl)
 		ctrl->timC_offset[1] = 6;
 		ctrl->timC_offset[2] = 6;
 		ctrl->reg_320c_range_threshold = 15;
-	} else if (ctrl->tCK <= TCK_800MHZ) {
-		ctrl->tCK = TCK_800MHZ;
+	} else if (ctrl->tCK == TCK_800MHZ) {
 		ctrl->edge_offset[0] = 13;
 		ctrl->edge_offset[1] = 5;
 		ctrl->edge_offset[2] = 5;
@@ -171,8 +218,7 @@ static void dram_timing(ramctr_timing * ctrl)
 		ctrl->timC_offset[1] = 5;
 		ctrl->timC_offset[2] = 5;
 		ctrl->reg_320c_range_threshold = 15;
-	} else if (ctrl->tCK <= TCK_666MHZ) {
-		ctrl->tCK = TCK_666MHZ;
+	} else if (ctrl->tCK == TCK_666MHZ) {
 		ctrl->edge_offset[0] = 10;
 		ctrl->edge_offset[1] = 4;
 		ctrl->edge_offset[2] = 4;
@@ -180,8 +226,7 @@ static void dram_timing(ramctr_timing * ctrl)
 		ctrl->timC_offset[1] = 4;
 		ctrl->timC_offset[2] = 4;
 		ctrl->reg_320c_range_threshold = 16;
-	} else if (ctrl->tCK <= TCK_533MHZ) {
-		ctrl->tCK = TCK_533MHZ;
+	} else if (ctrl->tCK == TCK_533MHZ) {
 		ctrl->edge_offset[0] = 8;
 		ctrl->edge_offset[1] = 3;
 		ctrl->edge_offset[2] = 3;
@@ -206,30 +251,6 @@ static void dram_timing(ramctr_timing * ctrl)
 	/* DLL_CONFIG_MDLL_W_TIMER */
 	ctrl->reg_5064b0 = (128000 / ctrl->tCK) + 3;
 
-	val32 = (1000 << 8) / ctrl->tCK;
-	printk(BIOS_DEBUG, "Selected DRAM frequency: %u MHz\n", val32);
-
-	/* Find CAS latency */
-	val = DIV_ROUND_UP(ctrl->tAA, ctrl->tCK);
-	printk(BIOS_DEBUG, "Minimum  CAS latency   : %uT\n", val);
-	/* Find lowest supported CAS latency that satisfies the minimum value */
-	while (!((ctrl->cas_supported >> (val - MIN_CAS)) & 1)
-		   && (ctrl->cas_supported >> (val - MIN_CAS))) {
-		val++;
-	}
-	/* Is CAS supported */
-	if (!(ctrl->cas_supported & (1 << (val - MIN_CAS)))) {
-		printk(BIOS_ERR, "CAS %uT not supported. ", val);
-		val = MAX_CAS;
-		/* Find highest supported CAS latency */
-		while (!((ctrl->cas_supported >> (val - MIN_CAS)) & 1))
-			val--;
-
-		printk(BIOS_ERR, "Using CAS %uT instead.\n", val);
-	}
-
-	printk(BIOS_DEBUG, "Selected CAS latency   : %uT\n", val);
-	ctrl->CAS = val;
 	ctrl->CWL = get_CWL(ctrl->tCK);
 	printk(BIOS_DEBUG, "Selected CWL latency   : %uT\n", ctrl->CWL);
 
@@ -280,32 +301,18 @@ static void dram_timing(ramctr_timing * ctrl)
 
 static void dram_freq(ramctr_timing * ctrl)
 {
+
 	if (ctrl->tCK > TCK_400MHZ) {
-		printk (BIOS_ERR, "DRAM frequency is under lowest supported "
-				"frequency (400 MHz). Increasing to 400 MHz as last resort");
+		printk(BIOS_ERR, "DRAM frequency is under lowest supported "
+			"frequency (400 MHz). Increasing to 400 MHz as last resort");
 		ctrl->tCK = TCK_400MHZ;
 	}
+
 	while (1) {
 		u8 val2;
 		u32 reg1 = 0;
 
-		/* Step 1 - Set target PCU frequency */
-
-		if (ctrl->tCK <= TCK_1066MHZ) {
-			ctrl->tCK = TCK_1066MHZ;
-		} else if (ctrl->tCK <= TCK_933MHZ) {
-			ctrl->tCK = TCK_933MHZ;
-		} else if (ctrl->tCK <= TCK_800MHZ) {
-			ctrl->tCK = TCK_800MHZ;
-		} else if (ctrl->tCK <= TCK_666MHZ) {
-			ctrl->tCK = TCK_666MHZ;
-		} else if (ctrl->tCK <= TCK_533MHZ) {
-			ctrl->tCK = TCK_533MHZ;
-		} else if (ctrl->tCK <= TCK_400MHZ) {
-			ctrl->tCK = TCK_400MHZ;
-		} else {
-			die ("No lock frequency found");
-		}
+		find_cas_tck(ctrl);
 
 		/* Frequency multiplier.  */
 		u32 FRQ = get_FRQ(ctrl->tCK);
@@ -318,7 +325,7 @@ static void dram_freq(ramctr_timing * ctrl)
 		if (val2)
 			return;
 
-		/* Step 2 - Select frequency in the MCU */
+		/* Step 1 - Select frequency in the MCU */
 		reg1 = FRQ;
 		reg1 |= 0x80000000;	// set running bit
 		MCHBAR32(MC_BIOS_REQ) = reg1;
@@ -331,7 +338,7 @@ static void dram_freq(ramctr_timing * ctrl)
 		}
 		printk(BIOS_DEBUG, "done in %d us\n", i * 10);
 
-		/* Step 3 - Verify lock frequency */
+		/* Step 2 - Verify lock frequency */
 		reg1 = MCHBAR32(MC_BIOS_DATA);
 		val2 = (u8) reg1;
 		if (val2 >= FRQ) {

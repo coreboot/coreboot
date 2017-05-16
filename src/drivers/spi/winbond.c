@@ -184,7 +184,7 @@ out:
 	return ret;
 }
 
-int spi_flash_probe_winbond(struct spi_slave *spi, u8 *idcode,
+int spi_flash_probe_winbond(const struct spi_slave *spi, u8 *idcode,
 			    struct spi_flash *flash)
 {
 	const struct winbond_spi_flash_params *params;

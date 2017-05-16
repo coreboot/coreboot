@@ -154,7 +154,7 @@ out:
 	return ret;
 }
 
-int spi_flash_probe_atmel(struct spi_slave *spi, u8 *idcode,
+int spi_flash_probe_atmel(const struct spi_slave *spi, u8 *idcode,
 			  struct spi_flash *flash)
 {
 	const struct atmel_spi_flash_params *params;

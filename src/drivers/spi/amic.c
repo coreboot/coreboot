@@ -109,7 +109,7 @@ out:
 	return ret;
 }
 
-int spi_flash_probe_amic(struct spi_slave *spi, u8 *idcode,
+int spi_flash_probe_amic(const struct spi_slave *spi, u8 *idcode,
 			 struct spi_flash *flash)
 {
 	const struct amic_spi_flash_params *params;

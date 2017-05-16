@@ -170,7 +170,7 @@ out:
 	return ret;
 }
 
-int spi_flash_probe_gigadevice(struct spi_slave *spi, u8 *idcode,
+int spi_flash_probe_gigadevice(const struct spi_slave *spi, u8 *idcode,
 				struct spi_flash *flash)
 {
 	const struct gigadevice_spi_flash_params *params;

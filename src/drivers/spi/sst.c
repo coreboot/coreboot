@@ -314,7 +314,7 @@ sst_unlock(const struct spi_flash *flash)
 	return ret;
 }
 
-int spi_flash_probe_sst(struct spi_slave *spi, u8 *idcode,
+int spi_flash_probe_sst(const struct spi_slave *spi, u8 *idcode,
 			struct spi_flash *flash)
 {
 	const struct sst_spi_flash_params *params;

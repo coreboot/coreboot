@@ -899,7 +899,7 @@ static int ich_hwseq_write(const struct spi_flash *flash, u32 addr, size_t len,
 	return 0;
 }
 
-int spi_flash_programmer_probe(struct spi_slave *spi,
+int spi_flash_programmer_probe(const struct spi_slave *spi,
 			       int force, struct spi_flash *flash)
 {
 	uint32_t flcomp;

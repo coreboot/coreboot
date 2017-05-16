@@ -64,25 +64,25 @@ int spi_flash_cmd_erase(const struct spi_flash *flash, u32 offset, size_t len);
 int spi_flash_cmd_status(const struct spi_flash *flash, u8 *reg);
 
 /* Manufacturer-specific probe functions */
-int spi_flash_probe_spansion(struct spi_slave *spi, u8 *idcode,
+int spi_flash_probe_spansion(const struct spi_slave *spi, u8 *idcode,
 			     struct spi_flash *flash);
-int spi_flash_probe_amic(struct spi_slave *spi, u8 *idcode,
+int spi_flash_probe_amic(const struct spi_slave *spi, u8 *idcode,
 			 struct spi_flash *flash);
-int spi_flash_probe_atmel(struct spi_slave *spi, u8 *idcode,
+int spi_flash_probe_atmel(const struct spi_slave *spi, u8 *idcode,
 			  struct spi_flash *flash);
-int spi_flash_probe_eon(struct spi_slave *spi, u8 *idcode,
+int spi_flash_probe_eon(const struct spi_slave *spi, u8 *idcode,
 			struct spi_flash *flash);
-int spi_flash_probe_macronix(struct spi_slave *spi, u8 *idcode,
+int spi_flash_probe_macronix(const struct spi_slave *spi, u8 *idcode,
 			     struct spi_flash *flash);
-int spi_flash_probe_sst(struct spi_slave *spi, u8 *idcode,
+int spi_flash_probe_sst(const struct spi_slave *spi, u8 *idcode,
 			struct spi_flash *flash);
-int spi_flash_probe_stmicro(struct spi_slave *spi, u8 *idcode,
+int spi_flash_probe_stmicro(const struct spi_slave *spi, u8 *idcode,
 			    struct spi_flash *flash);
-int spi_flash_probe_winbond(struct spi_slave *spi, u8 *idcode,
+int spi_flash_probe_winbond(const struct spi_slave *spi, u8 *idcode,
 			    struct spi_flash *flash);
-int spi_flash_probe_gigadevice(struct spi_slave *spi, u8 *idcode,
+int spi_flash_probe_gigadevice(const struct spi_slave *spi, u8 *idcode,
 			       struct spi_flash *flash);
-int spi_flash_probe_adesto(struct spi_slave *spi, u8 *idcode,
+int spi_flash_probe_adesto(const struct spi_slave *spi, u8 *idcode,
 			   struct spi_flash *flash);
 
 #endif /* SPI_FLASH_INTERNAL_H */

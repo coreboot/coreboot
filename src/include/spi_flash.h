@@ -78,7 +78,7 @@ int spi_flash_probe(unsigned int bus, unsigned int cs, struct spi_flash *flash);
  * 0 = success
  * non-zero = error
  */
-int spi_flash_programmer_probe(struct spi_slave *spi, int force,
+int spi_flash_programmer_probe(const struct spi_slave *spi, int force,
 				struct spi_flash *flash);
 
 /* All the following functions return 0 on success and non-zero on error. */

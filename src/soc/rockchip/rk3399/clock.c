@@ -356,11 +356,6 @@ static void rkclk_set_dpllssc(struct pll_div *dpll_cfg)
 {
 	u32 divval;
 
-	/*
-	 * TODO find the root cause why is the delay needed, otherwise sometimes
-	 * hang somewhere with reboot tests.
-	 */
-	udelay(30);
 	assert(dpll_cfg->refdiv && dpll_cfg->refdiv <= 6);
 
 	/*

@@ -42,6 +42,12 @@ void post_log_clear(void);
 void mainboard_post(u8 value);
 void __attribute__((noreturn)) die(const char *msg);
 
+/*
+ * This function is weak and can be overridden to provide additional
+ * feedback to the user. Possible use case: Play a beep.
+ */
+void die_notify(void);
+
 #define __CONSOLE_ENABLE__ \
 	((ENV_BOOTBLOCK && IS_ENABLED(CONFIG_BOOTBLOCK_CONSOLE)) || \
 	(ENV_POSTCAR && IS_ENABLED(CONFIG_POSTCAR_CONSOLE)) || \

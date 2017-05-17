@@ -4,3 +4,8 @@ config NORTHBRIDGE_VIA_VX800
 	select HAVE_DEBUG_RAM_SETUP
 	select HAVE_DEBUG_SMBUS
 	select LATE_CBMEM_INIT
+
+config VIDEO_MB
+	int
+	default 0 # FIXME
+	depends on NORTHBRIDGE_VIA_VX800

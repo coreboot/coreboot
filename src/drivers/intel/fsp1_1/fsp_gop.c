@@ -57,11 +57,8 @@ const optionrom_vbt_t *fsp_get_vbt(uint32_t *vbt_len)
 	return vbt.data;
 }
 
-void lb_framebuffer(struct lb_header *header)
+int fill_lb_framebuffer(struct lb_framebuffer *framebuffer)
 {
-	struct lb_framebuffer *framebuffer;
-	framebuffer = (struct lb_framebuffer *)lb_new_record(header);
-
 	VOID *hob_list_ptr;
 	hob_list_ptr = get_hob_list();
 	const EFI_GUID vbt_guid = EFI_PEI_GRAPHICS_INFO_HOB_GUID;
@@ -70,7 +67,7 @@ void lb_framebuffer(struct lb_header *header)
 	vbt_hob = get_next_guid_hob(&vbt_guid, hob_list_ptr);
 	if (vbt_hob == NULL) {
 		printk(BIOS_ERR, "FSP_ERR: Graphics Data HOB is not present\n");
-		return;
+		return -1;
 	}
 	printk(BIOS_DEBUG, "FSP_DEBUG: Graphics Data HOB present\n");
 	vbt_gop = GET_GUID_HOB_DATA(vbt_hob);
@@ -89,6 +86,6 @@ void lb_framebuffer(struct lb_header *header)
 	framebuffer->blue_mask_size = 8;
 	framebuffer->reserved_mask_pos = 24;
 	framebuffer->reserved_mask_size = 8;
-	framebuffer->tag = LB_TAG_FRAMEBUFFER;
-	framebuffer->size = sizeof(*framebuffer);
+
+	return 0;
 }

@@ -88,8 +88,7 @@ enum cb_err fsp_fill_lb_framebuffer(struct lb_framebuffer *framebuffer)
 	framebuffer->blue_mask_size = fbinfo->blue.size;
 	framebuffer->reserved_mask_pos = fbinfo->rsvd.pos;
 	framebuffer->reserved_mask_size = fbinfo->rsvd.pos;
-	framebuffer->tag = LB_TAG_FRAMEBUFFER;
-	framebuffer->size = sizeof(*framebuffer);
+
 	return CB_SUCCESS;
 }
 
@@ -104,10 +103,9 @@ uintptr_t fsp_load_vbt(void)
 	return (uintptr_t)vbt;
 }
 
-void lb_framebuffer(struct lb_header *header)
+int fill_lb_framebuffer(struct lb_framebuffer *framebuffer)
 {
 	enum cb_err ret;
-	struct lb_framebuffer *framebuffer;
 	uintptr_t framebuffer_bar;
 
 	/* Pci enumeration happens after silicon init.
@@ -118,20 +116,21 @@ void lb_framebuffer(struct lb_header *header)
 
 	if (!framebuffer_bar) {
 		printk(BIOS_ALERT, "Framebuffer BAR invalid\n");
-		return;
+		return -1;
 	}
 
-	framebuffer = (void *)lb_new_record(header);
 	ret = fsp_fill_lb_framebuffer(framebuffer);
 	if (ret != CB_SUCCESS) {
 		printk(BIOS_ALERT, "FSP did not return a valid framebuffer\n");
-		return;
+		return -1;
 	}
 
 	/* Resource allocator can move the BAR around after FSP configures it */
 	framebuffer->physical_address = framebuffer_bar;
 	printk(BIOS_DEBUG, "Graphics framebuffer located at 0x%llx\n",
 		framebuffer->physical_address);
+
+	return 0;
 }
 
 __attribute__((weak)) uintptr_t fsp_soc_get_igd_bar(void)

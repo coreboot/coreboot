@@ -426,9 +426,14 @@ int vbe_mode_info_valid(void)
 	return xgi_vbe_valid;
 }
 
-void fill_lb_framebuffer(struct lb_framebuffer *framebuffer)
+int fill_lb_framebuffer(struct lb_framebuffer *framebuffer)
 {
+	if (!vbe_mode_info_valid())
+		return -1;
+
 	*framebuffer = xgi_fb;
+
+	return 0;
 }
 
 struct xgifb_video_info *xgifb_video_info_ptr;

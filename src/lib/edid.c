@@ -1750,13 +1750,13 @@ void set_vbe_mode_info_valid(const struct edid *edid, uintptr_t fb_addr)
 }
 
 #if IS_ENABLED(CONFIG_NATIVE_VGA_INIT_USE_EDID)
-int vbe_mode_info_valid(void)
+int fill_lb_framebuffer(struct lb_framebuffer *framebuffer)
 {
-	return vbe_valid;
-}
+	if (!vbe_valid)
+		return -1;
 
-void fill_lb_framebuffer(struct lb_framebuffer *framebuffer)
-{
 	*framebuffer = edid_fb;
+
+	return 0;
 }
 #endif

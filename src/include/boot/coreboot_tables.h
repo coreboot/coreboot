@@ -22,8 +22,9 @@ void lb_add_console(uint16_t consoletype, void *data);
 /* Define this in mainboard.c to add board-specific table entries. */
 void lb_board(struct lb_header *header);
 
-/* Define this in soc or fsp driver to add specific table entries. */
-void lb_framebuffer(struct lb_header *header);
+/* Define this function to fill in the frame buffer returning 0 on success and
+   < 0 on error. */
+int fill_lb_framebuffer(struct lb_framebuffer *framebuffer);
 
 /* Allow arch to add records. */
 void lb_arch_add_records(struct lb_header *header);

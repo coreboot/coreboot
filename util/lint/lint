@@ -31,7 +31,7 @@ if [ -z "$1" ] || [ "$1" != "lint" ] && [ "$1" != "lint-stable" ]  && \
 	exit 1
 fi
 
-LINTLOG=$(mktemp .tmpconfig.lintXXXXX);
+LINTLOG=$(mktemp .tmpconfig.lintXXXXXX);
 XMLFILE="$(dirname "$0")/junit.xml"
 if [ "$1" = "lint-extended" ]; then
 	XMLFILE="$(dirname "$0")/extended-junit.xml"

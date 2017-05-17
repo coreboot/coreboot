@@ -541,11 +541,6 @@ config CACHE_ROM_SIZE_OVERRIDE
 	hex
 	default 0x0
 
-# TODO: Can probably be removed once all chipsets have kconfig options for it.
-config VIDEO_MB
-	int
-	default 0
-
 config USE_WATCHDOG_ON_BOOT
 	bool
 	default n

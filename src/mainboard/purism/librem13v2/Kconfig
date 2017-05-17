@@ -9,6 +9,8 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select HAVE_ACPI_RESUME
 	select HAVE_ACPI_TABLES
 	select SOC_INTEL_SKYLAKE
+	# Workaround for EC/KBC IRQ1
+	select SERIRQ_CONTINUOUS_MODE
 
 config IRQ_SLOT_COUNT
 	int

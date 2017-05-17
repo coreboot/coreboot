@@ -550,12 +550,6 @@ config USE_WATCHDOG_ON_BOOT
 	bool
 	default n
 
-config VGA
-	bool
-	default n
-	help
-	  Build board-specific VGA code.
-
 config GFXUMA
 	bool
 	default n

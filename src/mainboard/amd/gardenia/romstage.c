@@ -24,6 +24,7 @@
 #include <northbridge/amd/pi/agesawrapper.h>
 #include <northbridge/amd/pi/agesawrapper_call.h>
 #include <soc/hudson.h>
+#include <amdblocks/psp.h>
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
@@ -65,9 +66,12 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	AGESAWRAPPER(amdinitpost);
 
 	post_code(0x41);
-	cbmem_initialize_empty();
+	psp_notify_dram();
 
 	post_code(0x42);
+	cbmem_initialize_empty();
+
+	post_code(0x43);
 	AGESAWRAPPER(amdinitenv);
 	/* TODO: Disable cache is not ok. */
 	disable_cache_as_ram();

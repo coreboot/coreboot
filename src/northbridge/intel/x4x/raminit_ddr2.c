@@ -714,7 +714,7 @@ static void timings_ddr2(struct sysinfo *s)
 
 static void dll_ddr2(struct sysinfo *s)
 {
-	u8 i, j, r, reg8, clk, async;
+	u8 i, j, r, reg8, clk, async = 0;
 	u16 reg16 = 0;
 	u32 reg32 = 0;
 	u8 lane;

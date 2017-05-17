@@ -300,11 +300,6 @@ void dump_mem(unsigned start, unsigned end);
 void report_platform_info(void);
 #endif /* !__SMM__ */
 
-#if !defined(__PRE_RAM__)
-#include <drivers/intel/gma/opregion.h>
-int init_igd_opregion(igd_opregion_t *igd_opregion);
-#endif
-
 #endif
 #endif
 #endif /* __NORTHBRIDGE_INTEL_NEHALEM_NEHALEM_H__ */

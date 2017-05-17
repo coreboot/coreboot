@@ -11,16 +11,13 @@ with GMA.Mainboard;
 package body GMA
 is
 
-   function vbe_mode_info_valid return Interfaces.C.int
+   function fill_lb_framebuffer
+     (framebuffer : in out lb_framebuffer)
+      return Interfaces.C.int
    is
+      use type Interfaces.C.int;
    begin
-      return 0;
-   end vbe_mode_info_valid;
-
-   procedure fill_lb_framebuffer (framebuffer : out lb_framebuffer)
-   is
-   begin
-      null;
+      return -1;
    end fill_lb_framebuffer;
 
    ----------------------------------------------------------------------------

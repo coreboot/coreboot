@@ -112,7 +112,6 @@ typedef struct {
 #define VESA_SET_MODE		0x4f02
 
 int vbe_mode_info_valid(void);
-void fill_lb_framebuffer(struct lb_framebuffer *framebuffer);
 void vbe_set_graphics(void);
 void vbe_textmode_console(void);
 

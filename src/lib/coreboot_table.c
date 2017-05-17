@@ -135,22 +135,23 @@ void lb_add_console(uint16_t consoletype, void *data)
 	console->type = consoletype;
 }
 
-void __attribute__((weak)) lb_framebuffer(struct lb_header *header)
+int __attribute__((weak)) fill_lb_framebuffer(struct lb_framebuffer *fb)
 {
-#if CONFIG_FRAMEBUFFER_KEEP_VESA_MODE || CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT
-	void fill_lb_framebuffer(struct lb_framebuffer *framebuffer);
-	int vbe_mode_info_valid(void);
+	return -1;
+}
 
-	// If there isn't any mode info to put in the table, don't ask for it
-	// to be filled with junk.
-	if (!vbe_mode_info_valid())
-		return;
+static void lb_framebuffer(struct lb_header *header)
+{
 	struct lb_framebuffer *framebuffer;
+	struct lb_framebuffer fb;
+
+	if (fill_lb_framebuffer(&fb))
+		return;
+
 	framebuffer = (struct lb_framebuffer *)lb_new_record(header);
-	fill_lb_framebuffer(framebuffer);
+	memcpy(framebuffer, &fb, sizeof(*framebuffer));
 	framebuffer->tag = LB_TAG_FRAMEBUFFER;
 	framebuffer->size = sizeof(*framebuffer);
-#endif
 }
 
 void lb_add_gpios(struct lb_gpios *gpios, const struct lb_gpio *gpio_table,

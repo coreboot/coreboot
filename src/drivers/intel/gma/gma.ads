@@ -15,9 +15,6 @@ is
 
    ----------------------------------------------------------------------------
 
-   function vbe_mode_info_valid return Interfaces.C.int;
-   pragma Export (C, vbe_mode_info_valid, "vbe_mode_info_valid");
-
    type lb_framebuffer is record
       tag                  : word32;
       size                 : word32;
@@ -37,7 +34,9 @@ is
       reserved_mask_size   : word8;
    end record;
 
-   procedure fill_lb_framebuffer (framebuffer : out lb_framebuffer);
+   function fill_lb_framebuffer
+     (framebuffer : in out lb_framebuffer)
+      return Interfaces.C.int;
    pragma Export (C, fill_lb_framebuffer, "fill_lb_framebuffer");
 
 end GMA;

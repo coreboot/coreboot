@@ -12,38 +12,40 @@ with GMA.Mainboard;
 package body GMA
 is
 
-   vbe_valid : boolean := false;
+   fb_valid : boolean := false;
 
    linear_fb_addr : word64;
 
    fb : Framebuffer_Type;
 
-   function vbe_mode_info_valid return Interfaces.C.int
-   is
-   begin
-      return (if vbe_valid then 1 else 0);
-   end vbe_mode_info_valid;
-
-   procedure fill_lb_framebuffer (framebuffer : out lb_framebuffer)
+   function fill_lb_framebuffer
+     (framebuffer : in out lb_framebuffer)
+      return Interfaces.C.int
    is
       use type word32;
+      use type Interfaces.C.int;
    begin
-      framebuffer :=
-        (tag                  =>  0,
-         size                 =>  0,
-         physical_address     => linear_fb_addr,
-         x_resolution         => word32 (fb.Width),
-         y_resolution         => word32 (fb.Height),
-         bytes_per_line       => 4 * word32 (fb.Stride),
-         bits_per_pixel       => 32,
-         reserved_mask_pos    => 24,
-         reserved_mask_size   =>  8,
-         red_mask_pos         => 16,
-         red_mask_size        =>  8,
-         green_mask_pos       =>  8,
-         green_mask_size      =>  8,
-         blue_mask_pos        =>  0,
-         blue_mask_size       =>  8);
+      if fb_valid then
+         framebuffer :=
+           (tag                  =>  0,
+            size                 =>  0,
+            physical_address     => linear_fb_addr,
+            x_resolution         => word32 (fb.Width),
+            y_resolution         => word32 (fb.Height),
+            bytes_per_line       => 4 * word32 (fb.Stride),
+            bits_per_pixel       => 32,
+            reserved_mask_pos    => 24,
+            reserved_mask_size   =>  8,
+            red_mask_pos         => 16,
+            red_mask_size        =>  8,
+            green_mask_pos       =>  8,
+            green_mask_size      =>  8,
+            blue_mask_pos        =>  0,
+            blue_mask_size       =>  8);
+         return 0;
+      else
+         return -1;
+      end if;
    end fill_lb_framebuffer;
 
    ----------------------------------------------------------------------------
@@ -102,7 +104,7 @@ is
             HW.GFX.GMA.Update_Outputs (configs);
 
             linear_fb_addr := linear_fb;
-            vbe_valid := true;
+            fb_valid := true;
 
             lightup_ok := 1;
          end if;

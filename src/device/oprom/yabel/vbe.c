@@ -763,8 +763,11 @@ void vbe_set_graphics(void)
 #endif
 }
 
-void fill_lb_framebuffer(struct lb_framebuffer *framebuffer)
+int fill_lb_framebuffer(struct lb_framebuffer *framebuffer)
 {
+	if (!vbe_mode_info_valid())
+		return -1;
+
 	framebuffer->physical_address = le32_to_cpu(mode_info.vesa.phys_base_ptr);
 
 	framebuffer->x_resolution = le16_to_cpu(mode_info.vesa.x_resolution);
@@ -783,6 +786,8 @@ void fill_lb_framebuffer(struct lb_framebuffer *framebuffer)
 
 	framebuffer->reserved_mask_pos = mode_info.vesa.reserved_mask_pos;
 	framebuffer->reserved_mask_size = mode_info.vesa.reserved_mask_size;
+
+	return 0;
 }
 
 void vbe_textmode_console(void)

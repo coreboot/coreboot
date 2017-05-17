@@ -111,7 +111,6 @@ typedef struct {
 #define VESA_GET_MODE_INFO	0x4f01
 #define VESA_SET_MODE		0x4f02
 
-int vbe_mode_info_valid(void);
 void vbe_set_graphics(void);
 void vbe_textmode_console(void);
 

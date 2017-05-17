@@ -216,7 +216,7 @@ static void setup_realmode_idt(void)
 vbe_mode_info_t mode_info;
 static int mode_info_valid;
 
-int vbe_mode_info_valid(void)
+static int vbe_mode_info_valid(void)
 {
 	return mode_info_valid;
 }

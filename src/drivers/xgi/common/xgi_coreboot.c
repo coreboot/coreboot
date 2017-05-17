@@ -421,7 +421,7 @@ int xgifb_modeset(struct pci_dev *pdev, struct xgifb_video_info *xgifb_info)
 	return 0;
 }
 
-int vbe_mode_info_valid(void)
+static int vbe_mode_info_valid(void)
 {
 	return xgi_vbe_valid;
 }

@@ -82,8 +82,10 @@ static int uart8250_mem_can_rx_byte(void *base)
 static unsigned char uart8250_mem_rx_byte(void *base)
 {
 	unsigned long int i = SINGLE_CHAR_TIMEOUT;
-	while (i-- && !uart8250_mem_can_rx_byte(base))
+	while (i && !uart8250_mem_can_rx_byte(base)) {
 		udelay(1);
+		i--;
+	}
 	if (i)
 		return uart8250_read(base, UART8250_RBR);
 	else

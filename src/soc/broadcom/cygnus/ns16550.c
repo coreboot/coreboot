@@ -84,8 +84,10 @@ static int ns16550_tst_byte(void)
 static unsigned char ns16550_rx_byte(void)
 {
 	unsigned long int i = SINGLE_CHAR_TIMEOUT;
-	while (i-- && !ns16550_tst_byte())
+	while (i && !ns16550_tst_byte()) {
 		udelay(1);
+		i--;
+	}
 	if (i)
 		return read32(&regs->rbr);
 	else

@@ -21,7 +21,6 @@
 #include <string.h> /* for memset */
 #include "k8x8xx.h"
 
-#if CONFIG_VGA
 #include <pc80/vga_io.h>
 #include <pc80/vga.h>
 #include <arch/io.h>
@@ -109,8 +108,6 @@ chrome_vga_init(struct device *dev)
 	vga_cr_mask(0x33, 0x08, 0x08); /* Enable Prefetch Mode */
 }
 
-#endif /* CONFIG_VGA */
-
 /*
  *
  */
@@ -138,19 +135,19 @@ chrome_init(struct device *dev)
 
 	//k8m890_host_fb_direct_set(fb_address);
 
-#if CONFIG_VGA
-	/* Now set up the VGA console */
-	vga_io_init(); /* Enable full IO access */
+	if (IS_ENABLED(SOUTHBRIDGE_VIA_K8M890_VGA_EN)) {
+		/* Now set up the VGA console */
+		vga_io_init(); /* Enable full IO access */
 
-	chrome_vga_init(dev);
+		chrome_vga_init(dev);
 
-	vga_textmode_init();
+		vga_textmode_init();
 
-	printk(BIOS_INFO, "Chrome VGA Textmode initialized.\n");
+		printk(BIOS_INFO, "Chrome VGA Textmode initialized.\n");
 
-	/* if we don't have console, at least print something... */
-	vga_line_write(0, "Chrome VGA Textmode initialized.");
-#endif /* CONFIG_VGA */
+		/* if we don't have console, at least print something... */
+		vga_line_write(0, "Chrome VGA Textmode initialized.");
+	}
 }
 
 static struct device_operations

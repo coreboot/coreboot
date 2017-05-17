@@ -17,7 +17,7 @@
 #if (defined(__MACH__) && defined(__APPLE__))
 #include <DirectHW/DirectHW.h>
 #endif
-#if defined(__NetBSD__)
+#if defined(__NetBSD__) || defined(__OpenBSD__)
 #if defined(__i386__) || defined(__x86_64__)
 #include <machine/sysarch.h>
 
@@ -58,7 +58,11 @@ static inline uint32_t inl(uint16_t port)
 }
 #endif
 #ifdef __x86_64__
+#ifdef __OpenBSD__
+#define iopl amd64_iopl
+#else
 #define iopl x86_64_iopl
+#endif
 #endif
 #ifdef __i386__
 #define iopl i386_iopl

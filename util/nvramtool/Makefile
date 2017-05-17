@@ -34,7 +34,7 @@ OS_ARCH        = $(shell uname)
 ifeq ($(OS_ARCH), Darwin)
 LDFLAGS = -framework DirectHW
 endif
-ifeq ($(OS_ARCH), NetBSD)
+ifeq ($(OS_ARCH),$(filter $(OS_ARCH),NetBSD OpenBSD))
 LDFLAGS = -l$(shell uname -p)
 endif
 ifeq ($(shell uname -o 2>/dev/null), Cygwin)

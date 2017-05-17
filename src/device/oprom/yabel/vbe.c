@@ -156,7 +156,7 @@ vbe_info(vbe_info_t * info)
 
 static int mode_info_valid;
 
-int vbe_mode_info_valid(void)
+static int vbe_mode_info_valid(void)
 {
 	return mode_info_valid;
 }

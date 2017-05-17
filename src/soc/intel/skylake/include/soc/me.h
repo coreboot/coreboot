@@ -186,6 +186,18 @@ union me_hfs3 {
 	} __attribute__ ((packed)) fields;
 };
 
+#define PCI_ME_HFSTS6			0x6c
+#define ME_HFS6_FPF_NOT_COMMITTED	0x0
+#define ME_HFS6_FPF_ERROR		0x2
+
+union me_hfs6 {
+	u32 data;
+	struct {
+		u32 reserved1: 30;
+		u32 fpf_nvars: 2;
+	} __attribute__ ((packed)) fields;
+};
+
 /*
  * Management Engine MMIO registers
  */

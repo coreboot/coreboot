@@ -224,10 +224,12 @@ void intel_me_status(void)
 	union me_hfs hfs;
 	union me_hfs2 hfs2;
 	union me_hfs3 hfs3;
+	union me_hfs6 hfs6;
 
 	hfs.data = me_read_config32(PCI_ME_HFSTS1);
 	hfs2.data = me_read_config32(PCI_ME_HFSTS2);
 	hfs3.data = me_read_config32(PCI_ME_HFSTS3);
+	hfs6.data = me_read_config32(PCI_ME_HFSTS6);
 
 	/* Check Current States */
 	printk(BIOS_DEBUG, "ME: FW Partition Table      : %s\n",
@@ -340,6 +342,18 @@ void intel_me_status(void)
 			printk(BIOS_DEBUG, "Unknown (0x%x)\n",
 				hfs3.fields.fw_sku);
 		}
+	}
+
+	printk(BIOS_DEBUG, "ME: FPF status               : ");
+	switch (hfs6.fields.fpf_nvars) {
+	case ME_HFS6_FPF_NOT_COMMITTED:
+		printk(BIOS_DEBUG, "unfused\n");
+		break;
+	case ME_HFS6_FPF_ERROR:
+		printk(BIOS_DEBUG, "unknown\n");
+		break;
+	default:
+		printk(BIOS_DEBUG, "fused\n");
 	}
 }
 

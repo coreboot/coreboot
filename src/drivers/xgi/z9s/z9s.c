@@ -16,7 +16,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <arch/io.h>
-#include <edid.h>
 
 #include <console/console.h>
 #include <device/device.h>

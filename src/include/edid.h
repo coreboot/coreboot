@@ -16,6 +16,8 @@
 #ifndef EDID_H
 #define EDID_H
 
+#include <stdint.h>
+
 enum edid_modes {
 	EDID_MODE_640x480_60Hz,
 	EDID_MODE_720x480_60Hz,

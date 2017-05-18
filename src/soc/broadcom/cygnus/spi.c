@@ -275,22 +275,10 @@ static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 	return 0;
 }
 
-static const struct spi_ctrlr spi_ctrlr = {
-	.claim_bus = spi_ctrlr_claim_bus,
-	.release_bus = spi_ctrlr_release_bus,
-	.xfer = spi_ctrlr_xfer,
-	.xfer_vector = spi_xfer_two_vectors,
-	.max_xfer_size = 65535,
-};
-
-int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
+static int spi_ctrlr_setup(const struct spi_slave *slave)
 {
 	struct qspi_priv *priv = &qspi_slave;
 	unsigned int spbr;
-
-	slave->bus = bus;
-	slave->cs = cs;
-	slave->ctrlr = &spi_ctrlr;
 
 	priv->max_hz = QSPI_MAX_HZ;
 	priv->spi_mode = QSPI_MODE;
@@ -319,3 +307,22 @@ int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
 
 	return 0;
 }
+
+static const struct spi_ctrlr spi_ctrlr = {
+	.setup = spi_ctrlr_setup,
+	.claim_bus = spi_ctrlr_claim_bus,
+	.release_bus = spi_ctrlr_release_bus,
+	.xfer = spi_ctrlr_xfer,
+	.xfer_vector = spi_xfer_two_vectors,
+	.max_xfer_size = 65535,
+};
+
+const struct spi_ctrlr_buses spi_ctrlr_bus_map[] = {
+	{
+		.ctrlr = &spi_ctrlr,
+		.bus_start = CONFIG_BOOT_DEVICE_SPI_FLASH_BUS,
+		.bus_end = CONFIG_BOOT_DEVICE_SPI_FLASH_BUS,
+	},
+};
+
+const size_t spi_ctrlr_bus_map_count = ARRAY_SIZE(spi_ctrlr_bus_map);

@@ -1043,6 +1043,9 @@ endmenu
 ###############################################################################
 # Set variables with no prompt - these can be set anywhere, and putting at
 # the end of this file gives the most flexibility.
+
+source "src/lib/Kconfig"
+
 config ENABLE_APIC_EXT_ID
 	bool
 	default n

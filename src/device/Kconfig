@@ -21,13 +21,6 @@ config MAINBOARD_HAS_NATIVE_VGA_INIT
 	bool
 	default n
 
-# FIXME Ugly hack to allow Z9s driver native framebuffer configuration
-config NATIVE_VGA_INIT_USE_EDID
-	bool
-	depends on MAINBOARD_DO_NATIVE_VGA_INIT
-	default n if DRIVERS_XGI_Z9S || MAINBOARD_USE_LIBGFXINIT
-	default y if !DRIVERS_XGI_Z9S
-
 config MAINBOARD_HAS_NATIVE_VGA_INIT_TEXTMODECFG
 	bool
 	default n
@@ -57,6 +50,7 @@ config MAINBOARD_USE_LIBGFXINIT
 	select MAINBOARD_HAS_NATIVE_VGA_INIT_TEXTMODECFG
 	select RAMSTAGE_LIBHWBASE
 	select VGA if !FRAMEBUFFER_KEEP_VESA_MODE
+	select NO_EDID_FILL_FB
 	default n
 	help
 	  Use the SPARK library `libgfxinit` for the native graphics

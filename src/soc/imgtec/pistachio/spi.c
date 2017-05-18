@@ -533,22 +533,13 @@ static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 	return SPIM_OK;
 }
 
-static const struct spi_ctrlr spi_ctrlr = {
-	.claim_bus = spi_ctrlr_claim_bus,
-	.release_bus = spi_ctrlr_release_bus,
-	.xfer = spi_ctrlr_xfer,
-	.xfer_vector = spi_xfer_two_vectors,
-	.max_xfer_size = IMGTEC_SPI_MAX_TRANSFER_SIZE,
-};
-
-/* Set up communications parameters for a SPI slave. */
-int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
+static int spi_ctrlr_setup(const struct spi_slave *slave)
 {
 	struct img_spi_slave *img_slave = NULL;
 	struct spim_device_parameters *device_parameters;
 	u32 base;
 
-	switch (bus) {
+	switch (slave->bus) {
 	case 0:
 		base = IMG_SPIM0_BASE_ADDRESS;
 		break;
@@ -560,15 +551,11 @@ int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
 				__func__);
 		return -1;
 	}
-	if (cs > SPIM_DEVICE4) {
+	if (slave->cs > SPIM_DEVICE4) {
 		printk(BIOS_ERR, "%s: Error: unsupported chipselect.\n",
 				__func__);
 		return -1;
 	}
-
-	slave->bus = bus;
-	slave->cs = cs;
-	slave->ctrlr = &spi_ctrlr;
 
 	img_slave = get_img_slave(slave);
 	device_parameters = &(img_slave->device_parameters);
@@ -586,3 +573,22 @@ int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
 
 	return 0;
 }
+
+static const struct spi_ctrlr spi_ctrlr = {
+	.setup = spi_ctrlr_setup,
+	.claim_bus = spi_ctrlr_claim_bus,
+	.release_bus = spi_ctrlr_release_bus,
+	.xfer = spi_ctrlr_xfer,
+	.xfer_vector = spi_xfer_two_vectors,
+	.max_xfer_size = IMGTEC_SPI_MAX_TRANSFER_SIZE,
+};
+
+const struct spi_ctrlr_buses spi_ctrlr_bus_map[] = {
+	{
+		.ctrlr = &spi_ctrlr,
+		.bus_start = 0,
+		.bus_end = 1,
+	},
+};
+
+const size_t spi_ctrlr_bus_map_count = ARRAY_SIZE(spi_ctrlr_bus_map);

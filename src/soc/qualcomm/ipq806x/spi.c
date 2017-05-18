@@ -752,17 +752,12 @@ out:
 	return ret;
 }
 
-static const struct spi_ctrlr spi_ctrlr = {
-	.claim_bus = spi_ctrlr_claim_bus,
-	.release_bus = spi_ctrlr_release_bus,
-	.xfer = spi_ctrlr_xfer,
-	.max_xfer_size = MAX_PACKET_COUNT,
-};
-
-int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
+static int spi_ctrlr_setup(const struct spi_slave *slave)
 {
 	struct ipq_spi_slave *ds = NULL;
 	int i;
+	unsigned int bus = slave->bus;
+	unsigned int cs = slave->cs;
 
 	/*
 	 * IPQ GSBI (Generic Serial Bus Interface) supports SPI Flash
@@ -782,9 +777,8 @@ int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
 			continue;
 		ds = spi_slave_pool + i;
 
-		ds->slave.bus = slave->bus = bus;
-		ds->slave.cs = slave->cs = cs;
-		slave->ctrlr = &spi_ctrlr;
+		ds->slave.bus = bus;
+		ds->slave.cs = cs;
 		ds->regs = &spi_reg[bus];
 
 		/*
@@ -802,3 +796,21 @@ int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
 	printk(BIOS_ERR, "SPI error: all %d pools busy\n", i);
 	return -1;
 }
+
+static const struct spi_ctrlr spi_ctrlr = {
+	.setup = spi_ctrlr_setup,
+	.claim_bus = spi_ctrlr_claim_bus,
+	.release_bus = spi_ctrlr_release_bus,
+	.xfer = spi_ctrlr_xfer,
+	.max_xfer_size = MAX_PACKET_COUNT,
+};
+
+const struct spi_ctrlr_buses spi_ctrlr_bus_map[] = {
+	{
+		.ctrlr = &spi_ctrlr,
+		.bus_start = GSBI5_SPI,
+		.bus_end = GSBI7_SPI,
+	},
+};
+
+const size_t spi_ctrlr_bus_map_count = ARRAY_SIZE(spi_ctrlr_bus_map);

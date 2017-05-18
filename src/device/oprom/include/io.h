@@ -11,7 +11,7 @@
  * GNU General Public License for more details.
  */
 
-#if CONFIG_ARCH_X86
+#if IS_ENABLED(CONFIG_ARCH_X86)
 #include <arch/io.h>
 #else
 void outb(u8 val, u16 port);

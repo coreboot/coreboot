@@ -102,7 +102,7 @@ struct x86_fpu_registers {
 
 #endif /* X86_FPU_SUPPORT */
 
-#if CONFIG_X86EMU_DEBUG
+#if IS_ENABLED(CONFIG_X86EMU_DEBUG)
 # define DECODE_PRINTINSTR32(t,mod,rh,rl)     	\
 	DECODE_PRINTF(t[(mod<<3)+(rh)]);
 # define DECODE_PRINTINSTR256(t,mod,rh,rl)    	\

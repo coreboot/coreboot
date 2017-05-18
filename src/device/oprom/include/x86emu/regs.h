@@ -278,7 +278,7 @@ typedef struct {
     u32                         mode;
     volatile int                intr;   /* mask of pending interrupts */
     volatile int                         debug;
-#if CONFIG_X86EMU_DEBUG
+#if IS_ENABLED(CONFIG_X86EMU_DEBUG)
     int                         check;
     u16                         saved_ip;
     u16                         saved_cs;

@@ -167,10 +167,12 @@ static const struct spi_ctrlr spi_ctrlr = {
 	.deduct_cmd_len = true,
 };
 
-int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
-{
-	slave->bus = bus;
-	slave->cs = cs;
-	slave->ctrlr = &spi_ctrlr;
-	return 0;
-}
+const struct spi_ctrlr_buses spi_ctrlr_bus_map[] = {
+	{
+		.ctrlr = &spi_ctrlr,
+		.bus_start = 0,
+		.bus_end = 0,
+	},
+};
+
+const size_t spi_ctrlr_bus_map_count = ARRAY_SIZE(spi_ctrlr_bus_map);

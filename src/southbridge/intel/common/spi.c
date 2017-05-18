@@ -885,6 +885,12 @@ static int ich_hwseq_write(const struct spi_flash *flash, u32 addr, size_t len,
 	return 0;
 }
 
+static const struct spi_flash_ops spi_flash_ops = {
+	.read = ich_hwseq_read,
+	.write = ich_hwseq_write,
+	.erase = ich_hwseq_erase,
+};
+
 static int spi_flash_programmer_probe(const struct spi_slave *spi,
 					struct spi_flash *flash)
 {
@@ -897,9 +903,6 @@ static int spi_flash_programmer_probe(const struct spi_slave *spi,
 	memcpy(&flash->spi, spi, sizeof(*spi));
 	flash->name = "Opaque HW-sequencing";
 
-	flash->internal_write = ich_hwseq_write;
-	flash->internal_erase = ich_hwseq_erase;
-	flash->internal_read = ich_hwseq_read;
 	ich_hwseq_set_addr (0);
 	switch ((cntlr.hsfs >> 3) & 3)
 	{
@@ -921,6 +924,8 @@ static int spi_flash_programmer_probe(const struct spi_slave *spi,
 	flcomp = readl_(&cntlr.ich9_spi->fdod);
 
 	flash->size = 1 << (19 + (flcomp & 7));
+
+	flash->ops = &spi_flash_ops;
 
 	if ((cntlr.hsfs & HSFS_FDV) && ((cntlr.flmap0 >> 8) & 3))
 		flash->size += 1 << (19 + ((flcomp >> 3) & 7));

@@ -126,6 +126,13 @@ out:
 	return ret;
 }
 
+static const struct spi_flash_ops spi_flash_ops = {
+	.write = eon_write,
+	.erase = spi_flash_cmd_erase,
+	.status = spi_flash_cmd_status,
+	.read = spi_flash_cmd_read_fast,
+};
+
 int spi_flash_probe_eon(const struct spi_slave *spi, u8 *idcode,
 			struct spi_flash *flash)
 {
@@ -153,10 +160,7 @@ int spi_flash_probe_eon(const struct spi_slave *spi, u8 *idcode,
 	flash->erase_cmd = CMD_EN25_SE;
 	flash->status_cmd = CMD_EN25_RDSR;
 
-	flash->internal_write = eon_write;
-	flash->internal_erase = spi_flash_cmd_erase;
-	flash->internal_status = spi_flash_cmd_status;
-	flash->internal_read = spi_flash_cmd_read_fast;
+	flash->ops = &spi_flash_ops;
 
 	return 0;
 }

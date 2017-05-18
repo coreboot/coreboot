@@ -228,18 +228,24 @@ static int nor_erase(const struct spi_flash *flash, u32 offset, size_t len)
 	return 0;
 }
 
-int mtk_spi_flash_probe(const struct spi_slave *spi, struct spi_flash *flash)
+const struct spi_flash_ops spi_flash_ops = {
+	.read = nor_read,
+	.write = nor_write,
+	.erase = nor_erase,
+};
+
+int mtk_spi_flash_probe(const struct spi_slave *spi,
+				struct spi_flash *flash)
 {
 	write32(&mt8173_nor->wrprot, SFLASH_COMMAND_ENABLE);
 	memcpy(&flash->spi, spi, sizeof(*spi));
+
 	flash->name = "mt8173 flash controller";
-	flash->internal_write = nor_write;
-	flash->internal_erase = nor_erase;
-	flash->internal_read = nor_read;
-	flash->internal_status = 0;
 	flash->sector_size = 0x1000;
 	flash->erase_cmd = SECTOR_ERASE_CMD;
 	flash->size = CONFIG_ROM_SIZE;
+
+	flash->ops = &spi_flash_ops;
 
 	return 0;
 }

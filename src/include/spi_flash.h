@@ -24,6 +24,24 @@
 #define SPI_OPCODE_WREN 0x06
 #define SPI_OPCODE_FAST_READ 0x0b
 
+struct spi_flash;
+
+/*
+ * Representation of SPI flash operations:
+ * read:	Flash read operation.
+ * write:	Flash write operation.
+ * erase:	Flash erase operation.
+ * status:	Read flash status register.
+ */
+struct spi_flash_ops {
+	int (*read)(const struct spi_flash *flash, u32 offset, size_t len,
+			void *buf);
+	int (*write)(const struct spi_flash *flash, u32 offset, size_t len,
+			const void *buf);
+	int (*erase)(const struct spi_flash *flash, u32 offset, size_t len);
+	int (*status)(const struct spi_flash *flash, u8 *reg);
+};
+
 struct spi_flash {
 	struct spi_slave spi;
 	const char *name;
@@ -32,19 +50,7 @@ struct spi_flash {
 	u32 page_size;
 	u8 erase_cmd;
 	u8 status_cmd;
-	/*
-	 * Internal functions are expected to be called ONLY by spi flash
-	 * driver. External components should only use the public API calls
-	 * spi_flash_{read,write,erase,status,volatile_group_begin,
-	 * volatile_group_end}.
-	 */
-	int (*internal_read)(const struct spi_flash *flash, u32 offset,
-				size_t len, void *buf);
-	int (*internal_write)(const struct spi_flash *flash, u32 offset,
-				size_t len, const void *buf);
-	int (*internal_erase)(const struct spi_flash *flash, u32 offset,
-				size_t len);
-	int (*internal_status)(const struct spi_flash *flash, u8 *reg);
+	const struct spi_flash_ops *ops;
 };
 
 void lb_spi_flash(struct lb_header *header);

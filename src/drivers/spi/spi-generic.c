@@ -112,11 +112,7 @@ void __attribute__((weak)) spi_init(void)
 	/* Default weak implementation - do nothing. */
 }
 
-const struct spi_ctrlr_buses spi_ctrlr_bus_map[0] __attribute__((weak));
-const size_t spi_ctrlr_bus_map_count __attribute__((weak));
-
-int __attribute__((weak)) spi_setup_slave(unsigned int bus, unsigned int cs,
-					  struct spi_slave *slave)
+int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
 {
 	size_t i;
 

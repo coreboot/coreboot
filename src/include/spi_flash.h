@@ -65,20 +65,19 @@ void lb_spi_flash(struct lb_header *header);
  * non-zero = error
  */
 int spi_flash_probe(unsigned int bus, unsigned int cs, struct spi_flash *flash);
+
 /*
- * Specialized probing performed by platform. This is a weak function which can
- * be overriden by platform driver.
+ * Generic probing for SPI flash chip based on the different flashes provided.
  *
  * Params:
- * spi   = Pointer to spi_slave structure.
- * force = Indicates if the platform driver can skip specialized probing.
+ * spi   = Pointer to spi_slave structure
  * flash = Pointer to spi_flash structure that needs to be filled.
  *
  * Return value:
- * 0 = success
+ * 0        = success
  * non-zero = error
  */
-int spi_flash_programmer_probe(const struct spi_slave *spi, int force,
+int spi_flash_generic_probe(const struct spi_slave *slave,
 				struct spi_flash *flash);
 
 /* All the following functions return 0 on success and non-zero on error. */

@@ -280,8 +280,8 @@ static int fast_spi_flash_status(const struct spi_flash *flash,
  * The size of the flash component is always taken from density field in the
  * SFDP table. FLCOMP.C0DEN is no longer used by the Flash Controller.
  */
-int spi_flash_programmer_probe(const struct spi_slave *dev,
-				int force, struct spi_flash *flash)
+static int fast_spi_flash_probe(const struct spi_slave *dev,
+				struct spi_flash *flash)
 {
 	BOILERPLATE_CREATE_CTX(ctx);
 	uint32_t flash_bits;
@@ -362,4 +362,5 @@ static int fast_spi_flash_ctrlr_setup(const struct spi_slave *dev)
 const struct spi_ctrlr fast_spi_flash_ctrlr = {
 	.setup = fast_spi_flash_ctrlr_setup,
 	.max_xfer_size = SPI_CTRLR_DEFAULT_MAX_XFER_SIZE,
+	.flash_probe = fast_spi_flash_probe,
 };

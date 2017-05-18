@@ -87,4 +87,6 @@ struct mt8173_nor_regs {
 check_member(mt8173_nor_regs, fdma_end_dadr, 0x724);
 static struct mt8173_nor_regs * const mt8173_nor = (void *)SFLASH_REG_BASE;
 
+int mtk_spi_flash_probe(const struct spi_slave *spi, struct spi_flash *flash);
+
 #endif /* __SOC_MEDIATEK_MT8173_FLASH_CONTROLLER_H__ */

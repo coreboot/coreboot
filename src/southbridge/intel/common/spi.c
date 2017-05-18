@@ -653,20 +653,6 @@ static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 	return 0;
 }
 
-static const struct spi_ctrlr spi_ctrlr = {
-	.xfer = spi_ctrlr_xfer,
-	.xfer_vector = spi_xfer_two_vectors,
-	.max_xfer_size = member_size(ich9_spi_regs, fdata),
-};
-
-int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
-{
-	slave->bus = bus;
-	slave->cs = cs;
-	slave->ctrlr = &spi_ctrlr;
-	return 0;
-}
-
 /* Sets FLA in FADDR to (addr & 0x01FFFFFF) without touching other bits. */
 static void ich_hwseq_set_addr(uint32_t addr)
 {
@@ -899,18 +885,14 @@ static int ich_hwseq_write(const struct spi_flash *flash, u32 addr, size_t len,
 	return 0;
 }
 
-int spi_flash_programmer_probe(const struct spi_slave *spi,
-			       int force, struct spi_flash *flash)
+static int spi_flash_programmer_probe(const struct spi_slave *spi,
+					struct spi_flash *flash)
 {
 	uint32_t flcomp;
 
-	/*
-	 * Perform SPI flash probing only if:
-	 * 1. spi_is_multichip returns 1 or
-	 * 2. Specialized probing is forced by SPI flash driver.
-	 */
-	if (!spi_is_multichip() && !force)
-		return -1;
+	/* Try generic probing first if spi_is_multichip returns 0. */
+	if (!spi_is_multichip() && !spi_flash_generic_probe(spi, flash))
+		return 0;
 
 	memcpy(&flash->spi, spi, sizeof(*spi));
 	flash->name = "Opaque HW-sequencing";
@@ -944,5 +926,20 @@ int spi_flash_programmer_probe(const struct spi_slave *spi,
 		flash->size += 1 << (19 + ((flcomp >> 3) & 7));
 	printk (BIOS_DEBUG, "flash size 0x%x bytes\n", flash->size);
 
+	return 0;
+}
+
+static const struct spi_ctrlr spi_ctrlr = {
+	.xfer = spi_ctrlr_xfer,
+	.xfer_vector = spi_xfer_two_vectors,
+	.max_xfer_size = member_size(ich9_spi_regs, fdata),
+	.flash_probe = spi_flash_programmer_probe,
+};
+
+int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
+{
+	slave->bus = bus;
+	slave->cs = cs;
+	slave->ctrlr = &spi_ctrlr;
 	return 0;
 }

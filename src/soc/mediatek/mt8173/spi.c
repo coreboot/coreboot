@@ -295,6 +295,7 @@ static const struct spi_ctrlr spi_ctrlr = {
 	.xfer = spi_ctrlr_xfer,
 	.xfer_vector = spi_xfer_two_vectors,
 	.max_xfer_size = 65535,
+	.flash_probe = mtk_spi_flash_probe,
 };
 
 int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)

@@ -281,16 +281,7 @@ static struct {
 };
 #define IDCODE_LEN (IDCODE_CONT_LEN + IDCODE_PART_LEN)
 
-int
-__attribute__((weak)) spi_flash_programmer_probe(const struct spi_slave *spi,
-						 int force,
-						 struct spi_flash *flash)
-{
-	/* Default weak implementation. Do nothing. */
-	return -1;
-}
-
-static int __spi_flash_probe(const struct spi_slave *spi,
+int spi_flash_generic_probe(const struct spi_slave *spi,
 				struct spi_flash *flash)
 {
 	int ret, i, shift;
@@ -330,32 +321,29 @@ static int __spi_flash_probe(const struct spi_slave *spi,
 int spi_flash_probe(unsigned int bus, unsigned int cs, struct spi_flash *flash)
 {
 	struct spi_slave spi;
+	int ret = -1;
 
 	if (spi_setup_slave(bus, cs, &spi)) {
 		printk(BIOS_WARNING, "SF: Failed to set up slave\n");
 		return -1;
 	}
 
-	/* Try special programmer probe if any (without force). */
-	if (spi_flash_programmer_probe(&spi, 0, flash) == 0)
-		goto flash_found;
+	/* Try special programmer probe if any. */
+	if (spi.ctrlr->flash_probe)
+		ret = spi.ctrlr->flash_probe(&spi, flash);
 
 	/* If flash is not found, try generic spi flash probe. */
-	if (__spi_flash_probe(&spi, flash) == 0)
-		goto flash_found;
-
-	/* If flash is not yet found, force special programmer probe if any. */
-	if (spi_flash_programmer_probe(&spi, 1, flash) == 0)
-		goto flash_found;
+	if (ret)
+		ret = spi_flash_generic_probe(&spi, flash);
 
 	/* Give up -- nothing more to try if flash is not found. */
-	printk(BIOS_WARNING, "SF: Unsupported manufacturer!\n");
-	return -1;
+	if (ret) {
+		printk(BIOS_WARNING, "SF: Unsupported manufacturer!\n");
+		return -1;
+	}
 
-flash_found:
 	printk(BIOS_INFO, "SF: Detected %s with sector size 0x%x, total 0x%x\n",
 			flash->name, flash->sector_size, flash->size);
-
 	return 0;
 }
 

@@ -25,6 +25,7 @@
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <southbridge/intel/bd82x6x/nvs.h>
+#include <northbridge/intel/common/gma_opregion.h>
 #include <cbmem.h>
 
 #include "chip.h"
@@ -652,27 +653,50 @@ static void gma_ssdt(device_t device)
 	drivers_intel_gma_displays_ssdt_generate(gfx);
 }
 
+/* Enable SCI to ACPI _GPE._L06 */
+static void gma_enable_swsci(void)
+{
+	u16 reg16;
+
+	/* clear DMISCI status */
+	reg16 = inw(DEFAULT_PMBASE + TCO1_STS);
+	reg16 &= DMISCI_STS;
+	outw(DEFAULT_PMBASE + TCO1_STS, reg16);
+
+	/* clear acpi tco status */
+	outl(DEFAULT_PMBASE + GPE0_STS, TCOSCI_STS);
+
+	/* enable acpi tco scis */
+	reg16 = inw(DEFAULT_PMBASE + GPE0_EN);
+	reg16 |= TCOSCI_EN;
+	outw(DEFAULT_PMBASE + GPE0_EN, reg16);
+}
+
 static unsigned long
 gma_write_acpi_tables(struct device *const dev,
 		      unsigned long current,
 		      struct acpi_rsdp *const rsdp)
 {
-	igd_opregion_t *opregion;
+	igd_opregion_t *opregion = (igd_opregion_t *)current;
 	global_nvs_t *gnvs;
 
-	// FIXME: Replace by common VBT implementation writing to current
-	opregion = igd_make_opregion();
-	if (opregion) {
-		/* GNVS has been already set up */
-		gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
-		if (gnvs) {
-			/* IGD OpRegion Base Address */
-			gnvs->aslb = (u32)(uintptr_t)opregion;
-		} else {
-			printk(BIOS_ERR, "Error: GNVS table not found.\n");
-		}
+	if (init_igd_opregion(opregion) != CB_SUCCESS)
+		return current;
+
+	current += sizeof(igd_opregion_t);
+
+	/* GNVS has been already set up */
+	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
+	if (gnvs) {
+		/* IGD OpRegion Base Address */
+		gnvs->aslb = (u32)(uintptr_t)opregion;
+	} else {
+		printk(BIOS_ERR, "Error: GNVS table not found.\n");
 	}
 
+	gma_enable_swsci();
+
+	current = acpi_align_current(current);
 	return current;
 }
 

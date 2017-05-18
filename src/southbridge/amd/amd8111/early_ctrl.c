@@ -38,7 +38,7 @@ static void enable_cf9(void)
 	enable_cf9_x(sbbusn, sbdn);
 }
 
-void hard_reset(void)
+void do_hard_reset(void)
 {
 	set_bios_reset();
 	/* reset */
@@ -71,7 +71,7 @@ static void soft_reset_x(unsigned sbbusn, unsigned sbdn)
 
 }
 
-void soft_reset(void)
+void do_soft_reset(void)
 {
 
 	unsigned sblk = get_sblk();

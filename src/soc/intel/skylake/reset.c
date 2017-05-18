@@ -41,7 +41,7 @@ static void do_force_global_reset(void)
 	hard_reset();
 }
 
-void global_reset(void)
+void do_global_reset(void)
 {
 	if (send_global_reset() != 0) {
 		/* If ME unable to reset platform then

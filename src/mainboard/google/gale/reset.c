@@ -19,7 +19,7 @@
 #include <soc/iomap.h>
 #include <reset.h>
 
-void hard_reset(void)
+void do_hard_reset(void)
 {
 	/*
 	 * At boot time the boot loaders would have set a magic cookie

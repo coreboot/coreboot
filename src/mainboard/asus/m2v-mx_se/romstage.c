@@ -81,7 +81,7 @@ static void ldtstop_sb(void)
 #include "cpu/amd/model_fxx/fidvid.c"
 #include "northbridge/amd/amdk8/resourcemap.c"
 
-void soft_reset(void)
+void do_soft_reset(void)
 {
 	uint8_t tmp;
 

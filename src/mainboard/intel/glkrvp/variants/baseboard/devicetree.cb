@@ -55,10 +55,8 @@ chip soc/intel/apollolake
 	# Enable DPTF
 	register "dptf_enable" = "1"
 
-	# PL1 override 12000 mW: the energy calculation is wrong with the
-	# current VR solution. Experiments show that SoC TDP max (6W) can
-	# be reached when RAPL PL1 is set to 12W.
-	register "tdp_pl1_override_mw" = "12000"
+	# PL1 override: 7.5W setting gives a run-time 6W actual
+	register "tdp_pl1_override_mw" = "7500"
 	# Set RAPL PL2 to 15W.
 	register "tdp_pl2_override_mw" = "15000"
 

@@ -113,6 +113,11 @@ void *car_sync_var_ptr(void *var)
 	return mig_var;
 }
 
+int car_active(void)
+{
+	return !car_migrated;
+}
+
 static void do_car_migrate_variables(void)
 {
 	void *migrated_base;

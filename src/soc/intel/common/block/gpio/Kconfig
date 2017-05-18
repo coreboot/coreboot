@@ -1,0 +1,36 @@
+config SOC_INTEL_COMMON_BLOCK_GPIO
+	bool
+	help
+	  Intel Processor common GPIO support
+
+config DEBUG_SOC_COMMON_BLOCK_GPIO
+	depends on SOC_INTEL_COMMON_BLOCK_GPIO
+	bool "Output verbose GPIO debug messages"
+	default n
+	help
+	  This option enables GPIO debug messages
+
+# Used in small core SOCs to invert the polarity as ITSS only takes
+# active high signals
+config SOC_INTEL_COMMON_BLOCK_GPIO_ITSS_POL_CFG
+	depends on SOC_INTEL_COMMON_BLOCK_GPIO
+	bool
+	default n
+
+# Used to configure Pad Tolerance as 1.8V or 3.3V
+config SOC_INTEL_COMMON_BLOCK_GPIO_PADCFG_PADTOL
+	depends on SOC_INTEL_COMMON_BLOCK_GPIO
+	bool
+	default n
+
+# Used to configure IOSSTATE and IOSTERM
+config SOC_INTEL_COMMON_BLOCK_GPIO_IOSTANDBY
+	depends on SOC_INTEL_COMMON_BLOCK_GPIO
+	bool
+	default n
+
+# Used to provide support for legacy macros
+config SOC_INTEL_COMMON_BLOCK_GPIO_LEGACY_MACROS
+	depends on SOC_INTEL_COMMON_BLOCK_GPIO
+	bool
+	default n

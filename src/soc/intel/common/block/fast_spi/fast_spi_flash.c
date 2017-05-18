@@ -273,6 +273,13 @@ static int fast_spi_flash_status(const struct spi_flash *flash,
 	return ret;
 }
 
+const struct spi_flash_ops fast_spi_flash_ops = {
+	.read = fast_spi_flash_read,
+	.write = fast_spi_flash_write,
+	.erase = fast_spi_flash_erase,
+	.status = fast_spi_flash_status,
+};
+
 /*
  * We can't use FDOC and FDOD to read FLCOMP, as previous platforms did.
  * For details see:
@@ -307,11 +314,7 @@ static int fast_spi_flash_probe(const struct spi_slave *dev,
 	 * flash->status_cmd = ???
 	 */
 
-	flash->internal_write = fast_spi_flash_write;
-	flash->internal_erase = fast_spi_flash_erase;
-	flash->internal_read = fast_spi_flash_read;
-	flash->internal_status = fast_spi_flash_status;
-
+	flash->ops = &fast_spi_flash_ops;
 	return 0;
 }
 

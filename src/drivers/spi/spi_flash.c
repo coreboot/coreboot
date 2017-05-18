@@ -350,7 +350,7 @@ int spi_flash_probe(unsigned int bus, unsigned int cs, struct spi_flash *flash)
 int spi_flash_read(const struct spi_flash *flash, u32 offset, size_t len,
 		void *buf)
 {
-	return flash->internal_read(flash, offset, len, buf);
+	return flash->ops->read(flash, offset, len, buf);
 }
 
 int spi_flash_write(const struct spi_flash *flash, u32 offset, size_t len,
@@ -361,7 +361,7 @@ int spi_flash_write(const struct spi_flash *flash, u32 offset, size_t len,
 	if (spi_flash_volatile_group_begin(flash))
 		return -1;
 
-	ret = flash->internal_write(flash, offset, len, buf);
+	ret = flash->ops->write(flash, offset, len, buf);
 
 	if (spi_flash_volatile_group_end(flash))
 		return -1;
@@ -376,7 +376,7 @@ int spi_flash_erase(const struct spi_flash *flash, u32 offset, size_t len)
 	if (spi_flash_volatile_group_begin(flash))
 		return -1;
 
-	ret = flash->internal_erase(flash, offset, len);
+	ret = flash->ops->erase(flash, offset, len);
 
 	if (spi_flash_volatile_group_end(flash))
 		return -1;
@@ -386,7 +386,10 @@ int spi_flash_erase(const struct spi_flash *flash, u32 offset, size_t len)
 
 int spi_flash_status(const struct spi_flash *flash, u8 *reg)
 {
-	return flash->internal_status(flash, reg);
+	if (flash->ops->status)
+		return flash->ops->status(flash, reg);
+
+	return -1;
 }
 
 static uint32_t volatile_group_count CAR_GLOBAL;

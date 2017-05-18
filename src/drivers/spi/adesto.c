@@ -126,6 +126,16 @@ out:
 	return ret;
 }
 
+static const struct spi_flash_ops spi_flash_ops = {
+	.write = adesto_write,
+	.erase = spi_flash_cmd_erase,
+#if IS_ENABLED(CONFIG_SPI_FLASH_NO_FAST_READ)
+	.read = spi_flash_cmd_read_slow,
+#else
+	.read = spi_flash_cmd_read_fast,
+#endif
+};
+
 int spi_flash_probe_adesto(const struct spi_slave *spi, u8 *idcode,
 			   struct spi_flash *flash)
 {
@@ -153,13 +163,7 @@ int spi_flash_probe_adesto(const struct spi_slave *spi, u8 *idcode,
 			params->nr_blocks;
 	flash->erase_cmd = CMD_AT25DF_SE;
 
-	flash->internal_write = adesto_write;
-	flash->internal_erase = spi_flash_cmd_erase;
-#if CONFIG_SPI_FLASH_NO_FAST_READ
-	flash->internal_read = spi_flash_cmd_read_slow;
-#else
-	flash->internal_read = spi_flash_cmd_read_fast;
-#endif
+	flash->ops = &spi_flash_ops;
 
 	return 0;
 }

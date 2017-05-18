@@ -43,8 +43,7 @@ struct sst_spi_flash_params {
 	u8 idcode1;
 	u16 nr_sectors;
 	const char *name;
-	int (*write)(const struct spi_flash *flash, u32 offset,
-				 size_t len, const void *buf);
+	const struct spi_flash_ops *ops;
 };
 
 static int sst_write_ai(const struct spi_flash *flash, u32 offset, size_t len,
@@ -52,53 +51,67 @@ static int sst_write_ai(const struct spi_flash *flash, u32 offset, size_t len,
 static int sst_write_256(const struct spi_flash *flash, u32 offset, size_t len,
 			 const void *buf);
 
+static const struct spi_flash_ops spi_flash_ops_write_ai = {
+	.write = sst_write_ai,
+	.erase = spi_flash_cmd_erase,
+	.status = spi_flash_cmd_status,
+	.read = spi_flash_cmd_read_fast,
+};
+
+static const struct spi_flash_ops spi_flash_ops_write_256 = {
+	.write = sst_write_256,
+	.erase = spi_flash_cmd_erase,
+	.status = spi_flash_cmd_status,
+	.read = spi_flash_cmd_read_fast,
+};
+
 #define SST_SECTOR_SIZE (4 * 1024)
 static const struct sst_spi_flash_params sst_spi_flash_table[] = {
 	{
 		.idcode1 = 0x8d,
 		.nr_sectors = 128,
 		.name = "SST25VF040B",
-		.write = sst_write_ai,
+		.ops = &spi_flash_ops_write_ai,
 	},{
 		.idcode1 = 0x8e,
 		.nr_sectors = 256,
 		.name = "SST25VF080B",
-		.write = sst_write_ai,
+		.ops = &spi_flash_ops_write_ai,
 	},{
 		.idcode1 = 0x41,
 		.nr_sectors = 512,
 		.name = "SST25VF016B",
-		.write = sst_write_ai,
+		.ops = &spi_flash_ops_write_ai,
 	},{
 		.idcode1 = 0x4a,
 		.nr_sectors = 1024,
 		.name = "SST25VF032B",
-		.write = sst_write_ai,
+		.ops = &spi_flash_ops_write_ai,
 	},{
 		.idcode1 = 0x4b,
 		.nr_sectors = 2048,
 		.name = "SST25VF064C",
-		.write = sst_write_256,
+		.ops = &spi_flash_ops_write_256,
 	},{
 		.idcode1 = 0x01,
 		.nr_sectors = 16,
 		.name = "SST25WF512",
-		.write = sst_write_ai,
+		.ops = &spi_flash_ops_write_ai,
 	},{
 		.idcode1 = 0x02,
 		.nr_sectors = 32,
 		.name = "SST25WF010",
-		.write = sst_write_ai,
+		.ops = &spi_flash_ops_write_ai,
 	},{
 		.idcode1 = 0x03,
 		.nr_sectors = 64,
 		.name = "SST25WF020",
-		.write = sst_write_ai,
+		.ops = &spi_flash_ops_write_ai,
 	},{
 		.idcode1 = 0x04,
 		.nr_sectors = 128,
 		.name = "SST25WF040",
-		.write = sst_write_ai,
+		.ops = &spi_flash_ops_write_ai,
 	},
 };
 
@@ -338,10 +351,7 @@ int spi_flash_probe_sst(const struct spi_slave *spi, u8 *idcode,
 	flash->erase_cmd = CMD_SST_SE;
 	flash->status_cmd = CMD_SST_RDSR;
 
-	flash->internal_write = params->write;
-	flash->internal_erase = spi_flash_cmd_erase;
-	flash->internal_status = spi_flash_cmd_status;
-	flash->internal_read = spi_flash_cmd_read_fast;
+	flash->ops = params->ops;
 
 	/* Flash powers up read-only, so clear BP# bits */
 	sst_unlock(flash);

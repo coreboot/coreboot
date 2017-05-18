@@ -246,6 +246,13 @@ static int spansion_write(const struct spi_flash *flash, u32 offset, size_t len,
 	return ret;
 }
 
+static const struct spi_flash_ops spi_flash_ops = {
+	.write = spansion_write,
+	.erase = spi_flash_cmd_erase,
+	.read = spi_flash_cmd_read_slow,
+	.status = spi_flash_cmd_status,
+};
+
 int spi_flash_probe_spansion(const struct spi_slave *spi, u8 *idcode,
 				struct spi_flash *flash)
 {
@@ -273,10 +280,7 @@ int spi_flash_probe_spansion(const struct spi_slave *spi, u8 *idcode,
 	flash->erase_cmd = CMD_S25FLXX_SE;
 	flash->status_cmd = CMD_S25FLXX_RDSR;
 
-	flash->internal_write = spansion_write;
-	flash->internal_erase = spi_flash_cmd_erase;
-	flash->internal_read = spi_flash_cmd_read_slow;
-	flash->internal_status = spi_flash_cmd_status;
+	flash->ops = &spi_flash_ops;
 
 	return 0;
 }

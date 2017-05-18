@@ -222,6 +222,12 @@ out:
 	return ret;
 }
 
+static const struct spi_flash_ops spi_flash_ops = {
+	.write = stmicro_write,
+	.erase = spi_flash_cmd_erase,
+	.read = spi_flash_cmd_read_fast,
+};
+
 int spi_flash_probe_stmicro(const struct spi_slave *spi, u8 *idcode,
 			    struct spi_flash *flash)
 {
@@ -260,9 +266,7 @@ int spi_flash_probe_stmicro(const struct spi_slave *spi, u8 *idcode,
 	flash->size = flash->sector_size * params->nr_sectors;
 	flash->erase_cmd = params->op_erase;
 
-	flash->internal_write = stmicro_write;
-	flash->internal_erase = spi_flash_cmd_erase;
-	flash->internal_read = spi_flash_cmd_read_fast;
+	flash->ops = &spi_flash_ops;
 
 	return 0;
 }

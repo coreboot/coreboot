@@ -46,7 +46,7 @@ static void bootblock_mainboard_init(void)
 }
 #endif
 
-#if CONFIG_USE_OPTION_TABLE
+#if IS_ENABLED(CONFIG_USE_OPTION_TABLE)
 static void sanitize_cmos(void)
 {
 	if (cmos_error() || !cmos_chksum_valid()

@@ -27,7 +27,7 @@
  * CAUTION: If you change this, pirq_routing will not work correctly*/
 #define MAX_INTX_ENTRIES 4
 
-#if CONFIG_GENERATE_PIRQ_TABLE
+#if IS_ENABLED(CONFIG_GENERATE_PIRQ_TABLE)
 #include <stdint.h>
 
 #define PIRQ_SIGNATURE	(('$' << 0) + ('P' << 8) + ('I' << 16) + ('R' << 24))
@@ -60,7 +60,7 @@ unsigned long copy_pirq_routing_table(unsigned long addr,
 	const struct irq_routing_table *routing_table);
 unsigned long write_pirq_routing_table(unsigned long start);
 
-#if CONFIG_PIRQ_ROUTE
+#if IS_ENABLED(CONFIG_PIRQ_ROUTE)
 void pirq_assign_irqs(const unsigned char pirq[CONFIG_MAX_PIRQ_LINKS]);
 #endif
 

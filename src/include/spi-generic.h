@@ -94,6 +94,8 @@ struct spi_cfg {
  */
 #define SPI_CTRLR_DEFAULT_MAX_XFER_SIZE	(UINT32_MAX)
 
+struct spi_flash;
+
 /*-----------------------------------------------------------------------
  * Representation of a SPI controller.
  *
@@ -108,6 +110,11 @@ struct spi_cfg {
  * deduct_cmd_len:	Whether cmd_len should be deducted from max_xfer_size
  *			when calculating max_data_size
  *
+ * Following member is provided by specialized SPI controllers that are
+ * actually SPI flash controllers.
+ *
+ * flash_probe:	Specialized probe function provided by SPI flash
+ *			controllers.
  */
 struct spi_ctrlr {
 	int (*claim_bus)(const struct spi_slave *slave);
@@ -119,6 +126,8 @@ struct spi_ctrlr {
 			struct spi_op vectors[], size_t count);
 	uint32_t max_xfer_size;
 	bool deduct_cmd_len;
+	int (*flash_probe)(const struct spi_slave *slave,
+				struct spi_flash *flash);
 };
 
 /*-----------------------------------------------------------------------

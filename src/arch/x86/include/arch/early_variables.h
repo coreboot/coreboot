@@ -44,12 +44,20 @@ static inline void *car_sync_var_ptr(void *var)
 {
 	return var;
 }
+
+static inline int car_active(void)
+{
+	return 1;
+}
 #else
 /* Get the correct pointer for the CAR global variable. */
 void *car_get_var_ptr(void *var);
 
 /* Get and update a CAR_GLOBAL pointing elsewhere in car.global_data*/
 void *car_sync_var_ptr(void *var);
+
+/* Return 1 when currently running with globals in Cache-as-RAM, 0 otherwise. */
+int car_active(void);
 #endif /* ENV_VERSTAGE */
 
 /* Get and set a primitive type global variable. */
@@ -73,6 +81,7 @@ static inline size_t car_object_offset(void *ptr)
 #else
 #define CAR_GLOBAL
 static inline void *car_get_var_ptr(void *var) { return var; }
+static inline int car_active(void) { return 0; }
 #define car_get_var(var) (var)
 #define car_sync_var(var) (var)
 #define car_set_var(var, val)	(var) = (val)

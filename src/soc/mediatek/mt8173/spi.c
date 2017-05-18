@@ -289,35 +289,39 @@ static void spi_ctrlr_release_bus(const struct spi_slave *slave)
 	mtk_slave->state = MTK_SPI_IDLE;
 }
 
+static int spi_ctrlr_setup(const struct spi_slave *slave)
+{
+	struct mtk_spi_bus *eslave = to_mtk_spi(slave);
+	assert(read32(&eslave->regs->spi_cfg0_reg) != 0);
+	spi_sw_reset(eslave->regs);
+	return 0;
+}
+
+static const struct spi_ctrlr spi_flash_ctrlr = {
+	.max_xfer_size = 65535,
+	.flash_probe = mtk_spi_flash_probe,
+};
+
 static const struct spi_ctrlr spi_ctrlr = {
+	.setup = spi_ctrlr_setup,
 	.claim_bus = spi_ctrlr_claim_bus,
 	.release_bus = spi_ctrlr_release_bus,
 	.xfer = spi_ctrlr_xfer,
 	.xfer_vector = spi_xfer_two_vectors,
 	.max_xfer_size = 65535,
-	.flash_probe = mtk_spi_flash_probe,
 };
 
-int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
-{
-	struct mtk_spi_bus *eslave;
+const struct spi_ctrlr_buses spi_ctrlr_bus_map[] = {
+	{
+		.ctrlr = &spi_ctrlr,
+		.bus_start = 0,
+		.bus_end = 0,
+	},
+	{
+		.ctrlr = &spi_flash_ctrlr,
+		.bus_start = CONFIG_BOOT_DEVICE_SPI_FLASH_BUS,
+		.bus_end = CONFIG_BOOT_DEVICE_SPI_FLASH_BUS,
+	},
+};
 
-	slave->ctrlr = &spi_ctrlr;
-
-	switch (bus) {
-	case CONFIG_EC_GOOGLE_CHROMEEC_SPI_BUS:
-		slave->bus = bus;
-		slave->cs = cs;
-		eslave = to_mtk_spi(slave);
-		assert(read32(&eslave->regs->spi_cfg0_reg) != 0);
-		spi_sw_reset(eslave->regs);
-		return 0;
-	case CONFIG_BOOT_DEVICE_SPI_FLASH_BUS:
-		slave->bus = bus;
-		slave->cs = cs;
-		return 0;
-	default:
-		die ("wrong bus number.\n");
-	};
-	return -1;
-}
+const size_t spi_ctrlr_bus_map_count = ARRAY_SIZE(spi_ctrlr_bus_map);

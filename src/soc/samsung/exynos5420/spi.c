@@ -208,21 +208,10 @@ static void spi_ctrlr_release_bus(const struct spi_slave *slave)
 	setbits_le32(&regs->cs_reg, SPI_SLAVE_SIG_INACT);
 }
 
-static const struct spi_ctrlr spi_ctrlr = {
-	.claim_bus = spi_ctrlr_claim_bus,
-	.release_bus = spi_ctrlr_release_bus,
-	.xfer = spi_ctrlr_xfer,
-	.max_xfer_size = SPI_CTRLR_DEFAULT_MAX_XFER_SIZE,
-};
-
-int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
+static int spi_ctrlr_setup(const struct spi_slave *slave)
 {
-	ASSERT(bus >= 0 && bus < 3);
+	ASSERT(slave->bus >= 0 && slave->bus < 3);
 	struct exynos_spi_slave *eslave;
-
-	slave->bus = bus;
-	slave->cs = cs;
-	slave->ctrlr = &spi_ctrlr;
 
 	eslave = to_exynos_spi(slave);
 	if (!eslave->initialized) {
@@ -231,6 +220,24 @@ int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
 	}
 	return 0;
 }
+
+static const struct spi_ctrlr spi_ctrlr = {
+	.setup = spi_ctrlr_setup,
+	.claim_bus = spi_ctrlr_claim_bus,
+	.release_bus = spi_ctrlr_release_bus,
+	.xfer = spi_ctrlr_xfer,
+	.max_xfer_size = SPI_CTRLR_DEFAULT_MAX_XFER_SIZE,
+};
+
+const struct spi_ctrlr_buses spi_ctrlr_bus_map[] = {
+	{
+		.ctrlr = &spi_ctrlr,
+		.bus_start = 0,
+		.bus_end = 2,
+	},
+};
+
+const size_t spi_ctrlr_bus_map_count = ARRAY_SIZE(spi_ctrlr_bus_map);
 
 static int exynos_spi_read(struct spi_slave *slave, void *dest, uint32_t len,
 			   uint32_t off)

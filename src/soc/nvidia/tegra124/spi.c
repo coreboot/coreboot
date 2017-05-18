@@ -800,15 +800,12 @@ static const struct spi_ctrlr spi_ctrlr = {
 	.max_xfer_size = SPI_CTRLR_DEFAULT_MAX_XFER_SIZE,
 };
 
-int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
-{
-	struct tegra_spi_channel *channel = to_tegra_spi(bus);
-	if (!channel)
-		return -1;
+const struct spi_ctrlr_buses spi_ctrlr_bus_map[] = {
+	{
+		.ctrlr = &spi_ctrlr,
+		.bus_start = 1,
+		.bus_end = ARRAY_SIZE(tegra_spi_channels)
+	},
+};
 
-	slave->bus = channel->slave.bus;
-	slave->cs = channel->slave.cs;
-	slave->ctrlr = &spi_ctrlr;
-
-	return 0;
-}
+const size_t spi_ctrlr_bus_map_count = ARRAY_SIZE(spi_ctrlr_bus_map);

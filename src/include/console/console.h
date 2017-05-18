@@ -28,7 +28,7 @@
 #ifndef __ROMCC__
 
 void post_code(u8 value);
-#if CONFIG_CMOS_POST_EXTRA
+#if IS_ENABLED(CONFIG_CMOS_POST_EXTRA)
 void post_log_extra(u32 value);
 struct device;
 void post_log_path(struct device *dev);
@@ -46,7 +46,7 @@ void __attribute__ ((noreturn)) die(const char *msg);
 	((ENV_BOOTBLOCK && IS_ENABLED(CONFIG_BOOTBLOCK_CONSOLE)) || \
 	(ENV_POSTCAR && IS_ENABLED(CONFIG_POSTCAR_CONSOLE)) || \
 	ENV_VERSTAGE || ENV_ROMSTAGE || ENV_RAMSTAGE || ENV_LIBAGESA || \
-	(ENV_SMM && CONFIG_DEBUG_SMI))
+	(ENV_SMM && IS_ENABLED(CONFIG_DEBUG_SMI)))
 
 #if __CONSOLE_ENABLE__
 asmlinkage void console_init(void);

@@ -123,7 +123,8 @@ static void ich7_enable_lpc(void)
 	/* Decode range */
 	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x80, 0x0010);
 	pci_write_config16(PCI_DEV(0, 0x1f, 0), LPC_EN,
-		CNF1_LPC_EN | CNF2_LPC_EN | KBC_LPC_EN | COMA_LPC_EN | COMB_LPC_EN);
+		CNF1_LPC_EN | CNF2_LPC_EN | KBC_LPC_EN | FDD_LPC_EN
+			| LPT_LPC_EN | COMA_LPC_EN | COMB_LPC_EN);
 
 	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x88, 0x0291);
 	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x8a, 0x007c);

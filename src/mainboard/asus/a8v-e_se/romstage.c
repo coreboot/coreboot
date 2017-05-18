@@ -55,7 +55,7 @@ int spd_read_byte(unsigned device, unsigned address)
 }
 
 #include <reset.h>
-void soft_reset(void)
+void do_soft_reset(void)
 {
 	uint8_t tmp;
 

@@ -43,7 +43,7 @@ static uint64_t uma_memory_size = 0;
  * remapping mechanism will overflow, the effects of which are unknown.
  */
 
-void hard_reset(void)
+void do_hard_reset(void)
 {
 	outb((1 << 2) | (1 << 1), 0xcf9);
 }

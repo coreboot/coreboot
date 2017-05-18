@@ -105,7 +105,7 @@ void ldtstop_sb(void)
 }
 
 
-void hard_reset(void)
+void do_hard_reset(void)
 {
 	bcm5785_enable_wdt_port_cf9();
 
@@ -116,7 +116,7 @@ void hard_reset(void)
 	outb(0x0e, 0x0cf9);
 }
 
-void soft_reset(void)
+void do_soft_reset(void)
 {
 	bcm5785_enable_wdt_port_cf9();
 

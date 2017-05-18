@@ -23,7 +23,7 @@ void warm_reset(void)
     outb(0x06, 0xcf9);
 }
 
-void hard_reset(void)
+void do_hard_reset(void)
 {
 	warm_reset();
 }

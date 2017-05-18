@@ -23,13 +23,13 @@
 
 #define CSE_WAIT_MAX_MS							1000
 
-void global_reset(void)
+void do_global_reset(void)
 {
 	global_reset_enable(1);
-	hard_reset();
+	do_hard_reset();
 }
 
-void reset_prepare(void)
+void soc_reset_prepare(enum reset_type reset_type)
 {
 	struct stopwatch sw;
 

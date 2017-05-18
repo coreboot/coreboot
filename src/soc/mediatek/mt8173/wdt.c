@@ -57,10 +57,7 @@ int mtk_wdt_init(void)
 	return wdt_sta;
 }
 
-void hard_reset(void)
+void do_hard_reset(void)
 {
 	write32(&mt8173_wdt->wdt_swrst, MTK_WDT_SWRST_KEY);
-
-	while (1)
-		;
 }

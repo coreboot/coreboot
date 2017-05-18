@@ -223,6 +223,13 @@ romstage-y += halt.c
 ramstage-y += halt.c
 smm-y += halt.c
 
+bootblock-y += reset.c
+verstage-y += reset.c
+romstage-y += reset.c
+postcar-y += reset.c
+ramstage-y += reset.c
+smm-y += reset.c
+
 postcar-y += bootmode.c
 postcar-y += boot_device.c
 postcar-y += cbfs.c

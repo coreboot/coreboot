@@ -16,7 +16,7 @@
 #include <reset.h>
 #include <soc/reset.h>
 
-void hard_reset(void)
+void do_hard_reset(void)
 {
 	mvmap2315_reset();
 }

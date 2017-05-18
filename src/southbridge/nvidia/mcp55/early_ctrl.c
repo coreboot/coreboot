@@ -25,7 +25,7 @@
 #endif
 #include "mcp55.h"
 
-void soft_reset(void)
+void do_soft_reset(void)
 {
 	set_bios_reset();
 	/* link reset */
@@ -33,7 +33,7 @@ void soft_reset(void)
 	outb(0x06, 0x0cf9);
 }
 
-void hard_reset(void)
+void do_hard_reset(void)
 {
 	set_bios_reset();
 

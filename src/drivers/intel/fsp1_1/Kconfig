@@ -99,6 +99,7 @@ config GOP_SUPPORT
 	bool "Enable GOP support"
 	default n
 	select ADD_VBT_DATA_FILE
+	select HAVE_LINEAR_FRAMEBUFFER
 
 config USE_GENERIC_FSP_CAR_INC
 	bool

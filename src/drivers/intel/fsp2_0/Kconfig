@@ -16,6 +16,7 @@
 config PLATFORM_USES_FSP2_0
 	bool
 	select UDK_2015_BINDING
+	select HAVE_LINEAR_FRAMEBUFFER
 	help
 	  Include FSP 2.0 wrappers and functionality
 

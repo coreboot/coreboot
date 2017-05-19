@@ -23,7 +23,20 @@ config MAINBOARD_HAS_NATIVE_VGA_INIT
 
 config HAVE_VGA_TEXT_FRAMEBUFFER
 	bool
-	default n
+	help
+	  Selected by graphics drivers that support legacy VGA text mode.
+
+config HAVE_VBE_LINEAR_FRAMEBUFFER
+	bool
+	help
+	  Selected by graphics drivers that can set up a VBE linear-framebuffer
+	  mode.
+
+config HAVE_LINEAR_FRAMEBUFFER
+	bool
+	help
+	  Selected by graphics drivers that can set up a generic linear
+	  framebuffer.
 
 config MAINBOARD_DO_NATIVE_VGA_INIT
 	bool "Use native graphics initialization"
@@ -48,6 +61,7 @@ config MAINBOARD_USE_LIBGFXINIT
 	depends on MAINBOARD_DO_NATIVE_VGA_INIT
 	depends on MAINBOARD_HAS_LIBGFXINIT
 	select HAVE_VGA_TEXT_FRAMEBUFFER
+	select HAVE_LINEAR_FRAMEBUFFER
 	select RAMSTAGE_LIBHWBASE
 	select VGA if !FRAMEBUFFER_KEEP_VESA_MODE
 	select NO_EDID_FILL_FB
@@ -383,12 +397,13 @@ config SOFTWARE_I2C
 endmenu
 
 menu "Display"
-	depends on PCI_OPTION_ROM_RUN_YABEL || PCI_OPTION_ROM_RUN_REALMODE || MAINBOARD_DO_NATIVE_VGA_INIT
+	depends on HAVE_VGA_TEXT_FRAMEBUFFER || HAVE_LINEAR_FRAMEBUFFER
 
 config FRAMEBUFFER_SET_VESA_MODE
 	prompt "Set framebuffer graphics resolution"
 	bool
 	depends on PCI_OPTION_ROM_RUN_YABEL || PCI_OPTION_ROM_RUN_REALMODE
+	select HAVE_VBE_LINEAR_FRAMEBUFFER
 	help
 	  Set VESA/native framebuffer mode (needed for bootsplash and graphical framebuffer console)
 
@@ -527,7 +542,7 @@ config FRAMEBUFFER_VESA_MODE
 config FRAMEBUFFER_KEEP_VESA_MODE
 	prompt "Keep VESA framebuffer"
 	bool
-	depends on HAVE_VGA_TEXT_FRAMEBUFFER
+	depends on HAVE_VGA_TEXT_FRAMEBUFFER && (HAVE_VBE_LINEAR_FRAMEBUFFER || HAVE_LINEAR_FRAMEBUFFER)
 	help
 	  This option keeps the framebuffer mode set after coreboot finishes
 	  execution. If this option is enabled, coreboot will pass a

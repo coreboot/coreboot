@@ -26,6 +26,7 @@ config MAINBOARD_DO_DSI_INIT
 	bool "Use dsi graphics interface"
 	depends on MAINBOARD_DO_NATIVE_VGA_INIT
 	default n
+	select HAVE_LINEAR_FRAMEBUFFER
 	help
 	  Initialize dsi display
 
@@ -33,6 +34,7 @@ config MAINBOARD_DO_SOR_INIT
 	bool "Use dp graphics interface"
 	depends on MAINBOARD_DO_NATIVE_VGA_INIT
 	default n
+	select HAVE_LINEAR_FRAMEBUFFER
 	help
 	  Initialize dp display
 

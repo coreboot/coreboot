@@ -21,7 +21,7 @@ config MAINBOARD_HAS_NATIVE_VGA_INIT
 	bool
 	default n
 
-config MAINBOARD_HAS_NATIVE_VGA_INIT_TEXTMODECFG
+config HAVE_VGA_TEXT_FRAMEBUFFER
 	bool
 	default n
 
@@ -47,7 +47,7 @@ config MAINBOARD_USE_LIBGFXINIT
 	bool "Use libgfxinit for native graphics initialization"
 	depends on MAINBOARD_DO_NATIVE_VGA_INIT
 	depends on MAINBOARD_HAS_LIBGFXINIT
-	select MAINBOARD_HAS_NATIVE_VGA_INIT_TEXTMODECFG
+	select HAVE_VGA_TEXT_FRAMEBUFFER
 	select RAMSTAGE_LIBHWBASE
 	select VGA if !FRAMEBUFFER_KEEP_VESA_MODE
 	select NO_EDID_FILL_FB
@@ -62,6 +62,7 @@ config VGA_ROM_RUN
 	default n if PAYLOAD_SEABIOS
 	default y if !PAYLOAD_SEABIOS
 	depends on PCI && !MAINBOARD_DO_NATIVE_VGA_INIT
+	select HAVE_VGA_TEXT_FRAMEBUFFER
 	help
 	  Execute VGA Option ROMs in coreboot if found. This is required
 	  to enable PCI/AGP/PCI-E video cards when not using a SeaBIOS
@@ -526,7 +527,7 @@ config FRAMEBUFFER_VESA_MODE
 config FRAMEBUFFER_KEEP_VESA_MODE
 	prompt "Keep VESA framebuffer"
 	bool
-	depends on PCI_OPTION_ROM_RUN_YABEL || PCI_OPTION_ROM_RUN_REALMODE || (MAINBOARD_HAS_NATIVE_VGA_INIT_TEXTMODECFG && MAINBOARD_DO_NATIVE_VGA_INIT)
+	depends on HAVE_VGA_TEXT_FRAMEBUFFER
 	help
 	  This option keeps the framebuffer mode set after coreboot finishes
 	  execution. If this option is enabled, coreboot will pass a

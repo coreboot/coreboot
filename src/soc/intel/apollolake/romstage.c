@@ -31,6 +31,7 @@
 #include <fsp/api.h>
 #include <fsp/memmap.h>
 #include <fsp/util.h>
+#include <intelblocks/systemagent.h>
 #include <reset.h>
 #include <soc/cpu.h>
 #include <soc/intel/common/mrc_cache.h>
@@ -80,8 +81,13 @@ static uint32_t fsp_version CAR_GLOBAL;
  */
 static void soc_early_romstage_init(void)
 {
-	/* Set MCH base address and enable bit */
-	pci_write_config32(SA_DEV_ROOT, MCHBAR, MCH_BASE_ADDRESS | 1);
+	static const struct sa_mmio_descriptor soc_fixed_pci_resources[] = {
+		{ MCHBAR, MCH_BASE_ADDRESS, MCH_BASE_SIZE, "MCHBAR" },
+	};
+
+	/* Set Fixed MMIO addresss into PCI configuration space */
+	sa_set_pci_bar(soc_fixed_pci_resources,
+			ARRAY_SIZE(soc_fixed_pci_resources));
 
 	/* Enable decoding for HPET. Needed for FSP global pointer storage */
 	pci_write_config8(PCH_DEV_P2SB, P2SB_HPTC, P2SB_HPTC_ADDRESS_SELECT_0 |
@@ -140,12 +146,10 @@ static bool punit_init(void)
 	 * Software Core Disable Mask (P_CR_CORE_DISABLE_MASK_0_0_0_MCHBAR).
 	 * Enable all cores here.
 	 */
-	write32((void *)(MCH_BASE_ADDRESS + CORE_DISABLE_MASK), 0x0);
-
-	void *bios_rest_cpl = (void *)(MCH_BASE_ADDRESS + BIOS_RESET_CPL);
+	MCHBAR32(CORE_DISABLE_MASK) = 0x0;
 
 	/* P-Unit bring up */
-	reg = read32(bios_rest_cpl);
+	reg = MCHBAR32(BIOS_RESET_CPL);
 	if (reg == 0xffffffff) {
 		/* P-unit not found */
 		printk(BIOS_DEBUG, "Punit MMIO not available\n");
@@ -155,31 +159,32 @@ static bool punit_init(void)
 	pci_write_config8(SA_DEV_PUNIT, PCI_INTERRUPT_PIN, 0x2);
 
 	/* Set PUINT IRQ to 24 and INTPIN LOCK */
-	write32((void *)(MCH_BASE_ADDRESS + PUNIT_THERMAL_DEVICE_IRQ),
-		PUINT_THERMAL_DEVICE_IRQ_VEC_NUMBER |
-		PUINT_THERMAL_DEVICE_IRQ_LOCK);
+	MCHBAR32(PUNIT_THERMAL_DEVICE_IRQ) =
+			PUINT_THERMAL_DEVICE_IRQ_VEC_NUMBER |
+			PUINT_THERMAL_DEVICE_IRQ_LOCK;
 
-	data = read32((void *)(MCH_BASE_ADDRESS + 0x7818));
+	data = MCHBAR32(0x7818);
 	data &= 0xFFFFE01F;
 	data |= 0x20 | 0x200;
-	write32((void *)(MCH_BASE_ADDRESS + 0x7818), data);
+	MCHBAR32(0x7818) = data;
 
 	/* Stage0 BIOS Reset Complete (RST_CPL) */
-	write32(bios_rest_cpl, 0x1);
+	enable_bios_reset_cpl();
 
 	/*
-	 * Poll for bit 8 in same reg (RST_CPL).
+	 * Poll for bit 8 to check if PCODE has completed its action
+	 * in reponse to BIOS Reset complete.
 	 * We wait here till 1 ms for the bit to get set.
 	 */
 	stopwatch_init_msecs_expire(&sw, 1);
-	while (!(read32(bios_rest_cpl) & 0x100)) {
+	while (!(MCHBAR32(BIOS_RESET_CPL) & PCODE_INIT_DONE)) {
 		if (stopwatch_expired(&sw)) {
-			printk(BIOS_DEBUG,
-			       "Failed to set RST_CPL bit\n");
+			printk(BIOS_DEBUG, "PCODE Init Done Failure\n");
 			return false;
 		}
 		udelay(100);
 	}
+
 	return true;
 }
 

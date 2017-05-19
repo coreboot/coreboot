@@ -50,6 +50,7 @@ config CPU_SPECIFIC_OPTIONS
 	select RELOCATABLE_RAMSTAGE	# Build fails if this is not selected
 	select RTC
 	select SMM_TSEG
+	select SA_ENABLE_IMR
 	select SOC_INTEL_COMMON
 	select SOC_INTEL_COMMON_ACPI
 	select SOC_INTEL_COMMON_ACPI_WAKE_SOURCE

@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2015 Intel Corp.
  * (Written by Andrey Petrov <andrey.petrov@intel.com> for Intel Corp.)
+ * (Written by Alexandru Gagniuc <alexandrux.gagniuc@intel.com> for Intel Corp.)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,18 +16,25 @@
  * GNU General Public License for more details.
  */
 
-#ifndef SOC_APOLLOLAKE_SYSTEMAGENT_H
-#define SOC_APOLLOLAKE_SYSTEMAGENT_H
-
+#include <device/device.h>
 #include <intelblocks/systemagent.h>
+#include <soc/iomap.h>
+#include <soc/systemagent.h>
 
-/* RAPL Package Power Limit register under MCHBAR. */
-#define PUNIT_THERMAL_DEVICE_IRQ		0x700C
-#define PUINT_THERMAL_DEVICE_IRQ_VEC_NUMBER	0x18
-#define PUINT_THERMAL_DEVICE_IRQ_LOCK		0x80000000
-#define BIOS_RESET_CPL		0x7078
-#define   PCODE_INIT_DONE	(1 << 8)
-#define MCHBAR_RAPL_PPL		0x70A8
-#define CORE_DISABLE_MASK	0x7168
+/*
+ * SoC implementation
+ *
+ * Add all known fixed memory ranges for Host Controller/Mmeory
+ * controller.
+ */
+void soc_add_fixed_mmio_resources(struct device *dev, int *index)
+{
+	static const struct sa_mmio_descriptor soc_fixed_resources[] = {
+		{ PCIEXBAR, CONFIG_MMCONF_BASE_ADDRESS, CONFIG_SA_PCIEX_LENGTH,
+				"PCIEXBAR" },
+		{ MCHBAR, MCH_BASE_ADDRESS, MCH_BASE_SIZE, "MCHBAR" },
+	};
 
-#endif /* SOC_APOLLOLAKE_SYSTEMAGENT_H */
+	sa_add_fixed_mmio_resources(dev, index, soc_fixed_resources,
+			ARRAY_SIZE(soc_fixed_resources));
+}

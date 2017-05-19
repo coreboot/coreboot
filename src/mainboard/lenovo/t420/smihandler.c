@@ -25,25 +25,6 @@
 #define GPE_EC_SCI	1
 #define GPE_EC_WAKE	13
 
-static void mainboard_smm_init(void)
-{
-	printk(BIOS_DEBUG, "initializing SMI\n");
-	/* Enable 0x1600/0x1600 register pair */
-	ec_set_bit(0x00, 0x05);
-}
-
-int mainboard_io_trap_handler(int smif)
-{
-	static int smm_initialized;
-
-	if (!smm_initialized) {
-		mainboard_smm_init();
-		smm_initialized = 1;
-	}
-
-	return 0;
-}
-
 static void mainboard_smi_handle_ec_sci(void)
 {
 	u8 status = inb(EC_SC);

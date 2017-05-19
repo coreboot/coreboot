@@ -18,8 +18,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select HAVE_ACPI_TABLES
 	select HAVE_ACPI_RESUME
 	select USE_OPTION_TABLE
-	select MAINBOARD_HAS_NATIVE_VGA_INIT
-	select VGA
+	select I945_LVDS
 
 config MAINBOARD_DIR
 	string

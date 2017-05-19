@@ -43,6 +43,15 @@ config VGA_BIOS_ID
 	default "8086,27a2" if NORTHBRIDGE_INTEL_SUBTYPE_I945GM
 	default "8086,2772" if NORTHBRIDGE_INTEL_SUBTYPE_I945GC
 
+config I945_LVDS
+	def_bool n
+	select MAINBOARD_HAS_NATIVE_VGA_INIT
+	select HAVE_LINEAR_FRAMEBUFFER if MAINBOARD_DO_NATIVE_VGA_INIT
+	help
+	  Selected by mainboards that use native graphics initialization
+	  for the LVDS port. A linear framebuffer is only supported for
+	  LVDS.
+
 config CHANNEL_XOR_RANDOMIZATION
 	bool
 	default n

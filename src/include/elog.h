@@ -113,6 +113,7 @@
 
 /* Sleep/Wake */
 #define ELOG_TYPE_ACPI_ENTER              0x9d
+/* Deep Sx wake variant is provided below - 0xad */
 #define ELOG_TYPE_ACPI_WAKE               0x9e
 #define ELOG_TYPE_WAKE_SOURCE             0x9f
 #define  ELOG_WAKE_SOURCE_PCIE             0x00
@@ -177,6 +178,9 @@ struct elog_event_mem_cache_update {
 
 /* Cr50 */
 #define ELOG_TYPE_CR50_UPDATE             0xac
+
+/* Deep Sx wake variant */
+#define ELOG_TYPE_ACPI_DEEP_WAKE          0xad
 
 #if CONFIG_ELOG
 /* Eventlog backing storage must be initialized before calling elog_init(). */

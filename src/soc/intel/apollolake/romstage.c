@@ -81,7 +81,7 @@ static uint32_t fsp_version CAR_GLOBAL;
 static void soc_early_romstage_init(void)
 {
 	/* Set MCH base address and enable bit */
-	pci_write_config32(SA_DEV_ROOT, MCHBAR, MCH_BASE_ADDR | 1);
+	pci_write_config32(SA_DEV_ROOT, MCHBAR, MCH_BASE_ADDRESS | 1);
 
 	/* Enable decoding for HPET. Needed for FSP global pointer storage */
 	pci_write_config8(PCH_DEV_P2SB, P2SB_HPTC, P2SB_HPTC_ADDRESS_SELECT_0 |
@@ -140,11 +140,10 @@ static bool punit_init(void)
 	 * Software Core Disable Mask (P_CR_CORE_DISABLE_MASK_0_0_0_MCHBAR).
 	 * Enable all cores here.
 	 */
-	write32((void *)(MCH_BASE_ADDR + P_CR_CORE_DISABLE_MASK_0_0_0_MCHBAR),
-		0x0);
+	write32((void *)(MCH_BASE_ADDRESS + CORE_DISABLE_MASK), 0x0);
 
-	void *bios_rest_cpl = (void *)(MCH_BASE_ADDR +
-				       P_CR_BIOS_RESET_CPL_0_0_0_MCHBAR);
+	void *bios_rest_cpl = (void *)(MCH_BASE_ADDRESS + BIOS_RESET_CPL);
+
 	/* P-Unit bring up */
 	reg = read32(bios_rest_cpl);
 	if (reg == 0xffffffff) {
@@ -156,14 +155,14 @@ static bool punit_init(void)
 	pci_write_config8(SA_DEV_PUNIT, PCI_INTERRUPT_PIN, 0x2);
 
 	/* Set PUINT IRQ to 24 and INTPIN LOCK */
-	write32((void *)(MCH_BASE_ADDR + PUNIT_THERMAL_DEVICE_IRQ),
+	write32((void *)(MCH_BASE_ADDRESS + PUNIT_THERMAL_DEVICE_IRQ),
 		PUINT_THERMAL_DEVICE_IRQ_VEC_NUMBER |
 		PUINT_THERMAL_DEVICE_IRQ_LOCK);
 
-	data = read32((void *)(MCH_BASE_ADDR + 0x7818));
+	data = read32((void *)(MCH_BASE_ADDRESS + 0x7818));
 	data &= 0xFFFFE01F;
 	data |= 0x20 | 0x200;
-	write32((void *)(MCH_BASE_ADDR + 0x7818), data);
+	write32((void *)(MCH_BASE_ADDRESS + 0x7818), data);
 
 	/* Stage0 BIOS Reset Complete (RST_CPL) */
 	write32(bios_rest_cpl, 0x1);

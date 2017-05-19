@@ -219,7 +219,6 @@ static void set_power_limits(void)
 	uint32_t power_unit;
 	uint32_t tdp, min_power, max_power;
 	uint32_t pl2_val;
-	uint32_t *rapl_mmio_reg;
 
 	if (!dev || !dev->chip_info) {
 		printk(BIOS_ERR, "BUG! Could not find SOC devicetree config\n");
@@ -272,15 +271,11 @@ static void set_power_limits(void)
 	printk(BIOS_INFO, "RAPL PL2 %d.%dW\n", pl2_val / power_unit,
 				100 * (pl2_val % power_unit) / power_unit);
 
-	/* Get the MMIO address */
-	rapl_mmio_reg = (void *)(uintptr_t) (MCH_BASE_ADDRESS +
-				MCHBAR_RAPL_PPL);
-
 	/* Setting RAPL MMIO register for Power limits.
 	* RAPL driver is using MSR instead of MMIO.
 	* So, disabled LIMIT_EN bit for MMIO. */
-	write32(rapl_mmio_reg, limit.lo & ~(PKG_POWER_LIMIT_EN));
-	write32(rapl_mmio_reg + 1, limit.hi & ~(PKG_POWER_LIMIT_EN));
+	MCHBAR32(MCHBAR_RAPL_PPL) = limit.lo & ~PKG_POWER_LIMIT_EN;
+	MCHBAR32(MCHBAR_RAPL_PPL + 4) =  limit.hi & ~PKG_POWER_LIMIT_EN;
 }
 
 static void soc_init(void *data)

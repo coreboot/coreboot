@@ -70,6 +70,17 @@ static void pch_log_wake_source(struct chipset_power_state *ps)
 
 static void pch_log_power_and_resets(struct chipset_power_state *ps)
 {
+	bool deep_sx;
+
+	/*
+	 * Platform entered deep Sx if:
+	 * 1. Prev sleep state was Sx and deep_sx_enabled() is true
+	 * 2. SUS well power was lost
+	 */
+	deep_sx = ((((ps->prev_sleep_state == ACPI_S3) && deep_s3_enabled()) ||
+		   ((ps->prev_sleep_state == ACPI_S5) && deep_s5_enabled())) &&
+		   (ps->gen_pmcon_b & SUS_PWR_FLR));
+
 	/* Thermal Trip */
 	if (ps->gblrst_cause[0] & GBLRST_CAUSE0_THERMTRIP)
 		elog_add_event(ELOG_TYPE_THERM_TRIP);
@@ -81,8 +92,7 @@ static void pch_log_power_and_resets(struct chipset_power_state *ps)
 	/* SUS Well Power Failure */
 	if (ps->gen_pmcon_b & SUS_PWR_FLR) {
 		/* Do not log SUS_PWR_FLR if waking from deep Sx */
-		if (!(ps->prev_sleep_state == ACPI_S3 && deep_s3_enabled()) &&
-		    !(ps->prev_sleep_state == ACPI_S5 && deep_s5_enabled()))
+		if (!deep_sx)
 			elog_add_event(ELOG_TYPE_SUS_POWER_FAIL);
 	}
 
@@ -104,8 +114,14 @@ static void pch_log_power_and_resets(struct chipset_power_state *ps)
 		elog_add_event(ELOG_TYPE_SYSTEM_RESET);
 
 	/* ACPI Wake Event */
-	if (ps->prev_sleep_state != ACPI_S0)
-		elog_add_event_byte(ELOG_TYPE_ACPI_WAKE, ps->prev_sleep_state);
+	if (ps->prev_sleep_state != ACPI_S0) {
+		if (deep_sx)
+			elog_add_event_byte(ELOG_TYPE_ACPI_DEEP_WAKE,
+					    ps->prev_sleep_state);
+		else
+			elog_add_event_byte(ELOG_TYPE_ACPI_WAKE,
+					    ps->prev_sleep_state);
+	}
 }
 
 static void pch_log_state(void *unused)

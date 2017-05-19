@@ -24,3 +24,15 @@ config PCIEX_LENGTH_128MB
 
 config PCIEX_LENGTH_64MB
 	bool "64MB"
+
+config SA_ENABLE_IMR
+	bool
+	default n
+	help
+	  This option allows you to add the isolated memory ranges (IMRs).
+
+config SA_ENABLE_DPR
+	bool
+	default n
+	help
+	  This option allows you to add the DMA Protected Range (DPR).

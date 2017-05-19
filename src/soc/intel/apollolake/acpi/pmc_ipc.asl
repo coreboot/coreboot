@@ -47,9 +47,9 @@ scope (\_SB) {
 			Store (PMC_BAR0, IBAS)
 
 			CreateDwordField (^RBUF, ^MDAT._BAS, MDBA)
-			Store (MCH_BASE_ADDR + MAILBOX_DATA, MDBA)
+			Store (MCH_BASE_ADDRESS + MAILBOX_DATA, MDBA)
 			CreateDwordField (^RBUF, ^MINF._BAS, MIBA)
-			Store (MCH_BASE_ADDR + MAILBOX_INTF, MIBA)
+			Store (MCH_BASE_ADDRESS + MAILBOX_INTF, MIBA)
 
 			CreateDwordField (^RBUF, ^SBAR._BAS, SBAS)
 			Store (PMC_SRAM_BASE_0, SBAS)

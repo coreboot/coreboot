@@ -273,7 +273,8 @@ static void set_power_limits(void)
 				100 * (pl2_val % power_unit) / power_unit);
 
 	/* Get the MMIO address */
-	rapl_mmio_reg = (void *)(uintptr_t) (MCH_BASE_ADDR + MCHBAR_RAPL_PPL);
+	rapl_mmio_reg = (void *)(uintptr_t) (MCH_BASE_ADDRESS +
+				MCHBAR_RAPL_PPL);
 
 	/* Setting RAPL MMIO register for Power limits.
 	* RAPL driver is using MSR instead of MMIO.

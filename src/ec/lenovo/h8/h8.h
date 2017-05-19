@@ -71,6 +71,8 @@ void h8_mainboard_init_dock (void);
 #define H8_LED_CONTROL_SUSPEND_LED	0x07
 #define H8_LED_CONTROL_DOCK_LED1	0x08
 #define H8_LED_CONTROL_DOCK_LED2	0x09
+#define H8_LED_CONTROL_ACDC_LED		0x0c
+#define H8_LED_CONTROL_MUTE_LED		0x0e
 
 #define H8_USB_ALWAYS_ON		0x0d
 #define H8_USB_ALWAYS_ON_ENABLE		0x01

@@ -9,6 +9,18 @@ config SEABIOS_PS2_TIMEOUT
 	depends on PAYLOAD_SEABIOS
 	default 3000
 
+config H8_BEEP_ON_DEATH
+	bool "Beep on fatal error"
+	default y
+	help
+	  Beep when encountered a fatal error.
+
+config H8_FLASH_LEDS_ON_DEATH
+	bool "Flash LEDs on fatal error"
+	default y
+	help
+	  Flash all LEDs when encountered a fatal error.
+
 endif
 
 config H8_DOCK_EARLY_INIT

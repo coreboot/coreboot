@@ -493,6 +493,22 @@ static void gma_ssdt(device_t device)
 	drivers_intel_gma_displays_ssdt_generate(gfx);
 }
 
+static unsigned long
+gma_write_acpi_tables(struct device *const dev,
+		      unsigned long current,
+		      struct acpi_rsdp *const rsdp)
+{
+	igd_opregion_t *opregion = (igd_opregion_t *)current;
+
+	if (init_igd_opregion(opregion))
+		return current;
+
+	current += sizeof(igd_opregion_t);
+
+	current = acpi_align_current(current);
+	return current;
+}
+
 static struct pci_operations gma_pci_ops = {
 	.set_subsystem    = gma_set_subsystem,
 };
@@ -506,6 +522,7 @@ static struct device_operations gma_func0_ops = {
 	.scan_bus		= 0,
 	.enable			= 0,
 	.ops_pci		= &gma_pci_ops,
+	.write_acpi_tables	= gma_write_acpi_tables,
 };
 
 static const unsigned short pci_device_ids[] = {

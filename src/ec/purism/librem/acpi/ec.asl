@@ -59,7 +59,7 @@ Device (EC)
 		Offset (0x1D),
 		TPAD, 1,	/* Touchpad Enable/Disable */
 		WIFI, 1,	/* WiFi Enable/Disable */
-		, 2,
+		, 3,
 		BTLE, 1,	/* Bluetooth Enable/Disable */
 		Offset (0x25),
 		, 5,

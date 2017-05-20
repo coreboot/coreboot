@@ -1,8 +1,11 @@
 menu "Payload"
 
+config NO_DEFAULT_PAYLOAD
+	bool
+
 choice
 	prompt "Add a payload"
-	default PAYLOAD_NONE if !ARCH_X86
+	default PAYLOAD_NONE if NO_DEFAULT_PAYLOAD || !ARCH_X86
 	default PAYLOAD_SEABIOS if ARCH_X86
 
 config PAYLOAD_NONE

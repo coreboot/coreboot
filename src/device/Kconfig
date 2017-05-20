@@ -117,9 +117,9 @@ config ON_DEVICE_ROM_LOAD
 	bool "Load Option ROMs on PCI devices"
 	default n if PAYLOAD_SEABIOS
 	default y if !PAYLOAD_SEABIOS
-	depends on PCI
+	depends on VGA_ROM_RUN
 	help
-	  Load Option ROMs stored on PCI/PCIe/AGP devices in coreboot.
+	  Load Option ROMs stored on PCI/PCIe/AGP VGA devices in coreboot.
 
 	  If disabled, only Option ROMs stored in CBFS will be executed by
 	  coreboot. If you are concerned about security, you might want to

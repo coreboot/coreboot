@@ -430,7 +430,7 @@ static void gma_func0_init(struct device *dev)
 		find_resource(dev, PCI_BASE_ADDRESS_2);
 
 	if (!linearfb_res || !linearfb_res->base)
-        	return;
+		return;
 
 	/* IGD needs to be Bus Master */
 	reg32 = pci_read_config32(dev, PCI_COMMAND);

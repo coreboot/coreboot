@@ -23,6 +23,7 @@
 #include <drivers/intel/gma/i915_reg.h>
 #include <drivers/intel/gma/i915.h>
 #include <cpu/intel/haswell/haswell.h>
+#include <northbridge/intel/common/gma_opregion.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -493,6 +494,20 @@ static void gma_ssdt(device_t device)
 	drivers_intel_gma_displays_ssdt_generate(gfx);
 }
 
+/* Enable SCI to ACPI _GPE._L06 */
+static void gma_enable_swsci(void)
+{
+	u16 reg16;
+
+	/* clear DMISCI status */
+	reg16 = inw(get_pmbase() + TCO1_STS);
+	reg16 &= DMISCI_STS;
+	outw(get_pmbase() + TCO1_STS, reg16);
+
+	/* clear and enable ACPI TCO SCI */
+	enable_tco_sci();
+}
+
 static unsigned long
 gma_write_acpi_tables(struct device *const dev,
 		      unsigned long current,
@@ -500,10 +515,12 @@ gma_write_acpi_tables(struct device *const dev,
 {
 	igd_opregion_t *opregion = (igd_opregion_t *)current;
 
-	if (init_igd_opregion(opregion))
+	if (init_igd_opregion(opregion) != CB_SUCCESS)
 		return current;
 
 	current += sizeof(igd_opregion_t);
+
+	gma_enable_swsci();
 
 	current = acpi_align_current(current);
 	return current;

@@ -200,7 +200,7 @@ int i915lightup_sandy(const struct i915_gpu_controller_info *info,
 	target_frequency = mode->lvds_dual_channel ? mode->pixel_clock
 		: (2 * mode->pixel_clock);
 
-	if (IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)) {
+	if (IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER)) {
 		vga_sr_write(1, 1);
 		vga_sr_write(0x2, 0xf);
 		vga_sr_write(0x3, 0x0);
@@ -361,7 +361,7 @@ int i915lightup_sandy(const struct i915_gpu_controller_info *info,
 	write32(mmio + PIPECONF(0), PIPECONF_DISABLE);
 
 	write32(mmio + PF_WIN_POS(0), 0);
-	if (IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)) {
+	if (IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER)) {
 		write32(mmio + PIPESRC(0), ((hactive - 1) << 16) | (vactive - 1));
 		write32(mmio + PF_CTL(0),0);
 		write32(mmio + PF_WIN_SZ(0), 0);
@@ -388,14 +388,14 @@ int i915lightup_sandy(const struct i915_gpu_controller_info *info,
 	write32(mmio + PIPECONF(0), PIPECONF_BPP_6 | PIPECONF_DITHER_EN);
 	write32(mmio + PIPECONF(0), PIPECONF_ENABLE | PIPECONF_BPP_6 | PIPECONF_DITHER_EN);
 
-	if (IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE))
+	if (IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER))
 		write32(mmio + CPU_VGACNTRL, 0x20298e | VGA_DISP_DISABLE);
 	else
 		write32(mmio + CPU_VGACNTRL, 0x20298e);
 
 	train_link(mmio);
 
-	if (IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)) {
+	if (IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER)) {
 		write32(mmio + DSPCNTR(0), DISPLAY_PLANE_ENABLE | DISPPLANE_BGRX888);
 		mdelay(1);
 	}
@@ -424,7 +424,7 @@ int i915lightup_sandy(const struct i915_gpu_controller_info *info,
 	write32(mmio + 0x000f000c, 0x801a2350);
 	mdelay(1);
 
-	if (IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE))
+	if (IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER))
 		write32(mmio + TRANSCONF(0), TRANS_ENABLE | TRANS_6BPC
 					   | TRANS_STATE_MASK);
 	else
@@ -462,7 +462,7 @@ int i915lightup_sandy(const struct i915_gpu_controller_info *info,
 	write32(mmio + DEIIR, 0xffffffff);
 	write32(mmio + SDEIIR, 0xffffffff);
 
-	if (IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)) {
+	if (IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER)) {
 		memset ((void *) lfb, 0, edid.x_resolution
 					* edid.y_resolution * 4);
 		set_vbe_mode_info_valid(&edid, lfb);

@@ -724,32 +724,33 @@ static void intel_gma_init(const struct northbridge_intel_nehalem_config *info,
 	target_frequency = mode->lvds_dual_channel ? mode->pixel_clock
 		: (2 * mode->pixel_clock);
 	vga_textmode_init();
-#if IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)
-	vga_sr_write(1, 1);
-	vga_sr_write(0x2, 0xf);
-	vga_sr_write(0x3, 0x0);
-	vga_sr_write(0x4, 0xe);
-	vga_gr_write(0, 0x0);
-	vga_gr_write(1, 0x0);
-	vga_gr_write(2, 0x0);
-	vga_gr_write(3, 0x0);
-	vga_gr_write(4, 0x0);
-	vga_gr_write(5, 0x0);
-	vga_gr_write(6, 0x5);
-	vga_gr_write(7, 0xf);
-	vga_gr_write(0x10, 0x1);
-	vga_gr_write(0x11, 0);
+
+	if (IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER)) {
+		vga_sr_write(1, 1);
+		vga_sr_write(0x2, 0xf);
+		vga_sr_write(0x3, 0x0);
+		vga_sr_write(0x4, 0xe);
+		vga_gr_write(0, 0x0);
+		vga_gr_write(1, 0x0);
+		vga_gr_write(2, 0x0);
+		vga_gr_write(3, 0x0);
+		vga_gr_write(4, 0x0);
+		vga_gr_write(5, 0x0);
+		vga_gr_write(6, 0x5);
+		vga_gr_write(7, 0xf);
+		vga_gr_write(0x10, 0x1);
+		vga_gr_write(0x11, 0);
 
 
-	edid.bytes_per_line = (edid.bytes_per_line + 63) & ~63;
+		edid.bytes_per_line = (edid.bytes_per_line + 63) & ~63;
 
-	write32(mmio + DSPCNTR(0), DISPPLANE_BGRX888);
-	write32(mmio + DSPADDR(0), 0);
-	write32(mmio + DSPSTRIDE(0), edid.bytes_per_line);
-	write32(mmio + DSPSURF(0), 0);
-	for (i = 0; i < 0x100; i++)
-		write32(mmio + LGC_PALETTE(0) + 4 * i, i * 0x010101);
-#endif
+		write32(mmio + DSPCNTR(0), DISPPLANE_BGRX888);
+		write32(mmio + DSPADDR(0), 0);
+		write32(mmio + DSPSTRIDE(0), edid.bytes_per_line);
+		write32(mmio + DSPSURF(0), 0);
+		for (i = 0; i < 0x100; i++)
+			write32(mmio + LGC_PALETTE(0) + 4 * i, i * 0x010101);
+	}
 
 	/* Find suitable divisors. */
 	for (candp1 = 1; candp1 <= 8; candp1++) {
@@ -883,15 +884,15 @@ static void intel_gma_init(const struct northbridge_intel_nehalem_config *info,
 	write32(mmio + PIPECONF(0), PIPECONF_DISABLE);
 
 	write32(mmio + PF_WIN_POS(0), 0);
-#if IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)
-	write32(mmio + PIPESRC(0), ((hactive - 1) << 16) | (vactive - 1));
-	write32(mmio + PF_CTL(0),0);
-	write32(mmio + PF_WIN_SZ(0), 0);
-#else
-	write32(mmio + PIPESRC(0), (639 << 16) | 399);
-	write32(mmio + PF_CTL(0),PF_ENABLE | PF_FILTER_MED_3x3);
-	write32(mmio + PF_WIN_SZ(0), vactive | (hactive << 16));
-#endif
+	if (IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER)) {
+		write32(mmio + PIPESRC(0), (hactive - 1) << 16 | (vactive - 1));
+		write32(mmio + PF_CTL(0), 0);
+		write32(mmio + PF_WIN_SZ(0), 0);
+	} else {
+		write32(mmio + PIPESRC(0), (639 << 16) | 399);
+		write32(mmio + PF_CTL(0), PF_ENABLE | PF_FILTER_MED_3x3);
+		write32(mmio + PF_WIN_SZ(0), vactive | (hactive << 16));
+	}
 
 	mdelay(1);
 
@@ -911,17 +912,18 @@ static void intel_gma_init(const struct northbridge_intel_nehalem_config *info,
 	write32(mmio + PIPECONF(0), PIPECONF_BPP_6 | PIPECONF_DITHER_EN);
 	write32(mmio + PIPECONF(0), PIPECONF_ENABLE | PIPECONF_BPP_6 | PIPECONF_DITHER_EN);
 
-#if IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)
-	write32(mmio + CPU_VGACNTRL, 0x20298e | VGA_DISP_DISABLE);
-#else
-	write32(mmio + CPU_VGACNTRL, 0x20298e);
-#endif
+	if (IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER))
+		write32(mmio + CPU_VGACNTRL, 0x20298e | VGA_DISP_DISABLE);
+	else
+		write32(mmio + CPU_VGACNTRL, 0x20298e);
+
 	train_link(mmio);
 
-#if IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)
-	write32(mmio + DSPCNTR(0), DISPLAY_PLANE_ENABLE | DISPPLANE_BGRX888);
-	mdelay(1);
-#endif
+	if (IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER)) {
+		write32(mmio + DSPCNTR(0),
+			DISPLAY_PLANE_ENABLE | DISPPLANE_BGRX888);
+		mdelay(1);
+	}
 
 	write32(mmio + TRANS_HTOTAL(0),
 		((hactive + right_border + hblank - 1) << 16)
@@ -946,11 +948,8 @@ static void intel_gma_init(const struct northbridge_intel_nehalem_config *info,
 	write32(mmio + 0x00060100, 0xb01c4000);
 	write32(mmio + 0x000f000c, 0xb01a2050);
 	mdelay(1);
-	write32(mmio + TRANSCONF(0), TRANS_ENABLE | TRANS_6BPC
-#if IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)
-		| TRANS_STATE_MASK
-#endif
-		);
+	write32(mmio + TRANSCONF(0), TRANS_ENABLE | TRANS_6BPC |
+		(IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER) ? TRANS_STATE_MASK : 0));
 	write32(mmio + PCH_LVDS,
 		LVDS_PORT_ENABLE
 		| (hpolarity << 20) | (vpolarity << 21)
@@ -988,10 +987,11 @@ static void intel_gma_init(const struct northbridge_intel_nehalem_config *info,
 	write32(mmio + 0x0004f04c, 0x7f7f0000);
 	write32(mmio + 0x0004f054, 0x0000020d);
 
-#if IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)
-	memset ((void *) lfb, 0, edid.x_resolution * edid.y_resolution * 4);
-	set_vbe_mode_info_valid(&edid, lfb);
-#endif
+	if (IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER)) {
+		memset((void *)lfb, 0,
+		       edid.x_resolution * edid.y_resolution * 4);
+		set_vbe_mode_info_valid(&edid, lfb);
+	}
 }
 
 #endif

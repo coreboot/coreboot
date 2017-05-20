@@ -217,7 +217,7 @@ int i915lightup_ivy(const struct i915_gpu_controller_info *info,
 	u32 pixel_m2 = 1;
 
 	vga_textmode_init();
-	if (IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)) {
+	if (IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER)) {
 		vga_sr_write(1, 1);
 		vga_sr_write(0x2, 0xf);
 		vga_sr_write(0x3, 0x0);
@@ -387,7 +387,7 @@ int i915lightup_ivy(const struct i915_gpu_controller_info *info,
 
 	write32(mmio + 0xf0008, 0);
 
-	if (IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)) {
+	if (IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER)) {
 		write32(mmio + PIPESRC(0), ((hactive - 1) << 16) | (vactive - 1));
 		write32(mmio + PF_CTL(0),0);
 		write32(mmio + PF_WIN_SZ(0), 0);
@@ -408,7 +408,7 @@ int i915lightup_ivy(const struct i915_gpu_controller_info *info,
 
 	link_train(mmio);
 
-	if (IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE))
+	if (IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER))
 		write32(mmio+CPU_VGACNTRL,0x298e | VGA_DISP_DISABLE);
 	else
 		write32(mmio+CPU_VGACNTRL,0x298e);
@@ -419,7 +419,7 @@ int i915lightup_ivy(const struct i915_gpu_controller_info *info,
 	mdelay(1);
 	read32(mmio + 0x000f0014); // = 0x00000600
 
-	if (IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)) {
+	if (IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER)) {
 		write32(mmio + DSPCNTR(0), DISPLAY_PLANE_ENABLE
 					| DISPPLANE_BGRX888);
 		mdelay(1);
@@ -451,7 +451,7 @@ int i915lightup_ivy(const struct i915_gpu_controller_info *info,
 
 	mdelay(1);
 
-	if (IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE))
+	if (IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER))
 		write32(mmio + PCH_TRANSCONF(0), TRANS_ENABLE | TRANS_6BPC
 						| TRANS_STATE_MASK);
 	else
@@ -490,7 +490,7 @@ int i915lightup_ivy(const struct i915_gpu_controller_info *info,
 	write32(mmio + DEIIR, 0xffffffff);
 	write32(mmio + SDEIIR, 0xffffffff);
 
-	if (IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)) {
+	if (IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER)) {
 		memset ((void *) lfb, 0, edid.x_resolution
 					* edid.y_resolution * 4);
 		set_vbe_mode_info_valid(&edid, lfb);

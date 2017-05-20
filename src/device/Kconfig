@@ -63,7 +63,7 @@ config MAINBOARD_USE_LIBGFXINIT
 	select HAVE_VGA_TEXT_FRAMEBUFFER
 	select HAVE_LINEAR_FRAMEBUFFER
 	select RAMSTAGE_LIBHWBASE
-	select VGA if !FRAMEBUFFER_KEEP_VESA_MODE
+	select VGA if VGA_TEXT_FRAMEBUFFER
 	select NO_EDID_FILL_FB
 	default n
 	help
@@ -539,16 +539,44 @@ config FRAMEBUFFER_VESA_MODE
 	default 0x11B if FRAMEBUFFER_VESA_MODE_11B
 	default 0x117 if FRAMEBUFFER_VESA_MODE_USER
 
-config FRAMEBUFFER_KEEP_VESA_MODE
-	prompt "Keep VESA framebuffer"
-	bool
-	depends on HAVE_VGA_TEXT_FRAMEBUFFER && (HAVE_VBE_LINEAR_FRAMEBUFFER || HAVE_LINEAR_FRAMEBUFFER)
+choice
+	prompt "Framebuffer mode"
+	default VGA_TEXT_FRAMEBUFFER
+
+config VGA_TEXT_FRAMEBUFFER
+	bool "Legacy VGA text mode"
+	depends on HAVE_VGA_TEXT_FRAMEBUFFER
+	help
+	  If this option is enabled, coreboot will initialize graphics in
+	  legacy VGA text mode or, if a VGA BIOS is used and a VESA mode set,
+	  switch to text mode before handing control to a payload.
+
+config VBE_LINEAR_FRAMEBUFFER
+	bool "VESA framebuffer"
+	depends on HAVE_VBE_LINEAR_FRAMEBUFFER
 	help
 	  This option keeps the framebuffer mode set after coreboot finishes
 	  execution. If this option is enabled, coreboot will pass a
 	  framebuffer entry in its coreboot table and the payload will need a
-	  framebuffer driver. If this option is disabled, coreboot will switch
-	  back to text mode before handing control to a payload.
+	  compatible driver.
+
+config GENERIC_LINEAR_FRAMEBUFFER
+	bool "Linear \"high-resolution\" framebuffer"
+	depends on HAVE_LINEAR_FRAMEBUFFER
+	help
+	  This option enables a high-resolution, linear framebuffer. If this
+	  option is enabled, coreboot will pass a framebuffer entry in its
+	  coreboot table and the payload will need a compatible driver.
+
+endchoice
+
+# Workaround to have LINEAR_FRAMEBUFFER set in both cases
+# VBE_LINEAR_FRAMEBUFFER and GENERIC_LINEAR_FRAMEBUFFER.
+# `kconfig_lint` doesn't let us use the same name with
+# different texts in the choice above.
+config LINEAR_FRAMEBUFFER
+	def_bool y
+	depends on VBE_LINEAR_FRAMEBUFFER || GENERIC_LINEAR_FRAMEBUFFER
 
 config BOOTSPLASH
 	prompt "Show graphical bootsplash"

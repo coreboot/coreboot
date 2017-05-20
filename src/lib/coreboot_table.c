@@ -135,17 +135,12 @@ void lb_add_console(uint16_t consoletype, void *data)
 	console->type = consoletype;
 }
 
-int __attribute__((weak)) fill_lb_framebuffer(struct lb_framebuffer *fb)
-{
-	return -1;
-}
-
 static void lb_framebuffer(struct lb_header *header)
 {
 	struct lb_framebuffer *framebuffer;
 	struct lb_framebuffer fb;
 
-	if (fill_lb_framebuffer(&fb))
+	if (!IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER) || fill_lb_framebuffer(&fb))
 		return;
 
 	framebuffer = (struct lb_framebuffer *)lb_new_record(header);

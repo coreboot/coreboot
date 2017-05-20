@@ -217,6 +217,203 @@ config MULTIPLE_VGA_ADAPTERS
 	bool
 	default n
 
+menu "Display"
+	depends on HAVE_VGA_TEXT_FRAMEBUFFER || HAVE_LINEAR_FRAMEBUFFER
+
+config FRAMEBUFFER_SET_VESA_MODE
+	prompt "Set framebuffer graphics resolution"
+	bool
+	depends on PCI_OPTION_ROM_RUN_YABEL || PCI_OPTION_ROM_RUN_REALMODE
+	select HAVE_VBE_LINEAR_FRAMEBUFFER
+	help
+	  Set VESA/native framebuffer mode (needed for bootsplash and graphical framebuffer console)
+
+if FRAMEBUFFER_SET_VESA_MODE
+
+choice
+	prompt "framebuffer graphics resolution"
+	default FRAMEBUFFER_VESA_MODE_117
+	help
+	  This option sets the resolution used for the coreboot framebuffer (and
+	  bootsplash screen).
+
+config FRAMEBUFFER_VESA_MODE_100
+	bool "640x400 256-color"
+
+config FRAMEBUFFER_VESA_MODE_101
+	bool "640x480 256-color"
+
+config FRAMEBUFFER_VESA_MODE_102
+	bool "800x600 16-color"
+
+config FRAMEBUFFER_VESA_MODE_103
+	bool "800x600 256-color"
+
+config FRAMEBUFFER_VESA_MODE_104
+	bool "1024x768 16-color"
+
+config FRAMEBUFFER_VESA_MODE_105
+	bool "1024x768 256-color"
+
+config FRAMEBUFFER_VESA_MODE_106
+	bool "1280x1024 16-color"
+
+config FRAMEBUFFER_VESA_MODE_107
+	bool "1280x1024 256-color"
+
+config FRAMEBUFFER_VESA_MODE_108
+	bool "80x60 text"
+
+config FRAMEBUFFER_VESA_MODE_109
+	bool "132x25 text"
+
+config FRAMEBUFFER_VESA_MODE_10A
+	bool "132x43 text"
+
+config FRAMEBUFFER_VESA_MODE_10B
+	bool "132x50 text"
+
+config FRAMEBUFFER_VESA_MODE_10C
+	bool "132x60 text"
+
+config FRAMEBUFFER_VESA_MODE_10D
+	bool "320x200 32k-color (1:5:5:5)"
+
+config FRAMEBUFFER_VESA_MODE_10E
+	bool "320x200 64k-color (5:6:5)"
+
+config FRAMEBUFFER_VESA_MODE_10F
+	bool "320x200 16.8M-color (8:8:8)"
+
+config FRAMEBUFFER_VESA_MODE_110
+	bool "640x480 32k-color (1:5:5:5)"
+
+config FRAMEBUFFER_VESA_MODE_111
+	bool "640x480 64k-color (5:6:5)"
+
+config FRAMEBUFFER_VESA_MODE_112
+	bool "640x480 16.8M-color (8:8:8)"
+
+config FRAMEBUFFER_VESA_MODE_113
+	bool "800x600 32k-color (1:5:5:5)"
+
+config FRAMEBUFFER_VESA_MODE_114
+	bool "800x600 64k-color (5:6:5)"
+
+config FRAMEBUFFER_VESA_MODE_115
+	bool "800x600 16.8M-color (8:8:8)"
+
+config FRAMEBUFFER_VESA_MODE_116
+	bool "1024x768 32k-color (1:5:5:5)"
+
+config FRAMEBUFFER_VESA_MODE_117
+	bool "1024x768 64k-color (5:6:5)"
+
+config FRAMEBUFFER_VESA_MODE_118
+	bool "1024x768 16.8M-color (8:8:8)"
+
+config FRAMEBUFFER_VESA_MODE_119
+	bool "1280x1024 32k-color (1:5:5:5)"
+
+config FRAMEBUFFER_VESA_MODE_11A
+	bool "1280x1024 64k-color (5:6:5)"
+
+config FRAMEBUFFER_VESA_MODE_11B
+	bool "1280x1024 16.8M-color (8:8:8)"
+
+config FRAMEBUFFER_VESA_MODE_USER
+	bool "Manually select VESA mode"
+
+endchoice
+
+# Map the config names to an integer (KB).
+config FRAMEBUFFER_VESA_MODE
+	prompt "VESA mode" if FRAMEBUFFER_VESA_MODE_USER
+	hex
+	default 0x100 if FRAMEBUFFER_VESA_MODE_100
+	default 0x101 if FRAMEBUFFER_VESA_MODE_101
+	default 0x102 if FRAMEBUFFER_VESA_MODE_102
+	default 0x103 if FRAMEBUFFER_VESA_MODE_103
+	default 0x104 if FRAMEBUFFER_VESA_MODE_104
+	default 0x105 if FRAMEBUFFER_VESA_MODE_105
+	default 0x106 if FRAMEBUFFER_VESA_MODE_106
+	default 0x107 if FRAMEBUFFER_VESA_MODE_107
+	default 0x108 if FRAMEBUFFER_VESA_MODE_108
+	default 0x109 if FRAMEBUFFER_VESA_MODE_109
+	default 0x10A if FRAMEBUFFER_VESA_MODE_10A
+	default 0x10B if FRAMEBUFFER_VESA_MODE_10B
+	default 0x10C if FRAMEBUFFER_VESA_MODE_10C
+	default 0x10D if FRAMEBUFFER_VESA_MODE_10D
+	default 0x10E if FRAMEBUFFER_VESA_MODE_10E
+	default 0x10F if FRAMEBUFFER_VESA_MODE_10F
+	default 0x110 if FRAMEBUFFER_VESA_MODE_110
+	default 0x111 if FRAMEBUFFER_VESA_MODE_111
+	default 0x112 if FRAMEBUFFER_VESA_MODE_112
+	default 0x113 if FRAMEBUFFER_VESA_MODE_113
+	default 0x114 if FRAMEBUFFER_VESA_MODE_114
+	default 0x115 if FRAMEBUFFER_VESA_MODE_115
+	default 0x116 if FRAMEBUFFER_VESA_MODE_116
+	default 0x117 if FRAMEBUFFER_VESA_MODE_117
+	default 0x118 if FRAMEBUFFER_VESA_MODE_118
+	default 0x119 if FRAMEBUFFER_VESA_MODE_119
+	default 0x11A if FRAMEBUFFER_VESA_MODE_11A
+	default 0x11B if FRAMEBUFFER_VESA_MODE_11B
+	default 0x117 if FRAMEBUFFER_VESA_MODE_USER
+
+config BOOTSPLASH
+	prompt "Show graphical bootsplash"
+	bool
+	help
+	  This option shows a graphical bootsplash screen. The graphics are
+	  loaded from the CBFS file bootsplash.jpg.
+
+	  You can either specify the location and file name of the
+	  image in the 'General' section or add it manually to CBFS, using,
+	  for example, cbfstool.
+
+endif # FRAMEBUFFER_SET_VESA_MODE
+
+choice
+	prompt "Framebuffer mode"
+	default VGA_TEXT_FRAMEBUFFER
+
+config VGA_TEXT_FRAMEBUFFER
+	bool "Legacy VGA text mode"
+	depends on HAVE_VGA_TEXT_FRAMEBUFFER
+	help
+	  If this option is enabled, coreboot will initialize graphics in
+	  legacy VGA text mode or, if a VGA BIOS is used and a VESA mode set,
+	  switch to text mode before handing control to a payload.
+
+config VBE_LINEAR_FRAMEBUFFER
+	bool "VESA framebuffer"
+	depends on HAVE_VBE_LINEAR_FRAMEBUFFER
+	help
+	  This option keeps the framebuffer mode set after coreboot finishes
+	  execution. If this option is enabled, coreboot will pass a
+	  framebuffer entry in its coreboot table and the payload will need a
+	  compatible driver.
+
+config GENERIC_LINEAR_FRAMEBUFFER
+	bool "Linear \"high-resolution\" framebuffer"
+	depends on HAVE_LINEAR_FRAMEBUFFER
+	help
+	  This option enables a high-resolution, linear framebuffer. If this
+	  option is enabled, coreboot will pass a framebuffer entry in its
+	  coreboot table and the payload will need a compatible driver.
+
+endchoice
+
+# Workaround to have LINEAR_FRAMEBUFFER set in both cases
+# VBE_LINEAR_FRAMEBUFFER and GENERIC_LINEAR_FRAMEBUFFER.
+# `kconfig_lint` doesn't let us use the same name with
+# different texts in the choice above.
+config LINEAR_FRAMEBUFFER
+	def_bool y
+	depends on VBE_LINEAR_FRAMEBUFFER || GENERIC_LINEAR_FRAMEBUFFER
+
+endmenu # "Display"
+
 config SMBUS_HAS_AUX_CHANNELS
 	bool
 	default n
@@ -393,201 +590,5 @@ config SOFTWARE_I2C
 	  be useful for debugging or on platforms where a driver for the real
 	  I2C controller is not (yet) available. The platform code needs to
 	  provide bindings to manually toggle I2C lines.
-
-endmenu
-
-menu "Display"
-	depends on HAVE_VGA_TEXT_FRAMEBUFFER || HAVE_LINEAR_FRAMEBUFFER
-
-config FRAMEBUFFER_SET_VESA_MODE
-	prompt "Set framebuffer graphics resolution"
-	bool
-	depends on PCI_OPTION_ROM_RUN_YABEL || PCI_OPTION_ROM_RUN_REALMODE
-	select HAVE_VBE_LINEAR_FRAMEBUFFER
-	help
-	  Set VESA/native framebuffer mode (needed for bootsplash and graphical framebuffer console)
-
-choice
-	prompt "framebuffer graphics resolution"
-	default FRAMEBUFFER_VESA_MODE_117
-	depends on FRAMEBUFFER_SET_VESA_MODE
-	help
-	  This option sets the resolution used for the coreboot framebuffer (and
-	  bootsplash screen).
-
-config FRAMEBUFFER_VESA_MODE_100
-	bool "640x400 256-color"
-
-config FRAMEBUFFER_VESA_MODE_101
-	bool "640x480 256-color"
-
-config FRAMEBUFFER_VESA_MODE_102
-	bool "800x600 16-color"
-
-config FRAMEBUFFER_VESA_MODE_103
-	bool "800x600 256-color"
-
-config FRAMEBUFFER_VESA_MODE_104
-	bool "1024x768 16-color"
-
-config FRAMEBUFFER_VESA_MODE_105
-	bool "1024x768 256-color"
-
-config FRAMEBUFFER_VESA_MODE_106
-	bool "1280x1024 16-color"
-
-config FRAMEBUFFER_VESA_MODE_107
-	bool "1280x1024 256-color"
-
-config FRAMEBUFFER_VESA_MODE_108
-	bool "80x60 text"
-
-config FRAMEBUFFER_VESA_MODE_109
-	bool "132x25 text"
-
-config FRAMEBUFFER_VESA_MODE_10A
-	bool "132x43 text"
-
-config FRAMEBUFFER_VESA_MODE_10B
-	bool "132x50 text"
-
-config FRAMEBUFFER_VESA_MODE_10C
-	bool "132x60 text"
-
-config FRAMEBUFFER_VESA_MODE_10D
-	bool "320x200 32k-color (1:5:5:5)"
-
-config FRAMEBUFFER_VESA_MODE_10E
-	bool "320x200 64k-color (5:6:5)"
-
-config FRAMEBUFFER_VESA_MODE_10F
-	bool "320x200 16.8M-color (8:8:8)"
-
-config FRAMEBUFFER_VESA_MODE_110
-	bool "640x480 32k-color (1:5:5:5)"
-
-config FRAMEBUFFER_VESA_MODE_111
-	bool "640x480 64k-color (5:6:5)"
-
-config FRAMEBUFFER_VESA_MODE_112
-	bool "640x480 16.8M-color (8:8:8)"
-
-config FRAMEBUFFER_VESA_MODE_113
-	bool "800x600 32k-color (1:5:5:5)"
-
-config FRAMEBUFFER_VESA_MODE_114
-	bool "800x600 64k-color (5:6:5)"
-
-config FRAMEBUFFER_VESA_MODE_115
-	bool "800x600 16.8M-color (8:8:8)"
-
-config FRAMEBUFFER_VESA_MODE_116
-	bool "1024x768 32k-color (1:5:5:5)"
-
-config FRAMEBUFFER_VESA_MODE_117
-	bool "1024x768 64k-color (5:6:5)"
-
-config FRAMEBUFFER_VESA_MODE_118
-	bool "1024x768 16.8M-color (8:8:8)"
-
-config FRAMEBUFFER_VESA_MODE_119
-	bool "1280x1024 32k-color (1:5:5:5)"
-
-config FRAMEBUFFER_VESA_MODE_11A
-	bool "1280x1024 64k-color (5:6:5)"
-
-config FRAMEBUFFER_VESA_MODE_11B
-	bool "1280x1024 16.8M-color (8:8:8)"
-
-config FRAMEBUFFER_VESA_MODE_USER
-	bool "Manually select VESA mode"
-	depends on !MAINBOARD_DO_NATIVE_VGA_INIT
-
-endchoice
-
-# Map the config names to an integer (KB).
-config FRAMEBUFFER_VESA_MODE
-	prompt "VESA mode" if FRAMEBUFFER_VESA_MODE_USER
-	hex
-	default 0x100 if FRAMEBUFFER_VESA_MODE_100
-	default 0x101 if FRAMEBUFFER_VESA_MODE_101
-	default 0x102 if FRAMEBUFFER_VESA_MODE_102
-	default 0x103 if FRAMEBUFFER_VESA_MODE_103
-	default 0x104 if FRAMEBUFFER_VESA_MODE_104
-	default 0x105 if FRAMEBUFFER_VESA_MODE_105
-	default 0x106 if FRAMEBUFFER_VESA_MODE_106
-	default 0x107 if FRAMEBUFFER_VESA_MODE_107
-	default 0x108 if FRAMEBUFFER_VESA_MODE_108
-	default 0x109 if FRAMEBUFFER_VESA_MODE_109
-	default 0x10A if FRAMEBUFFER_VESA_MODE_10A
-	default 0x10B if FRAMEBUFFER_VESA_MODE_10B
-	default 0x10C if FRAMEBUFFER_VESA_MODE_10C
-	default 0x10D if FRAMEBUFFER_VESA_MODE_10D
-	default 0x10E if FRAMEBUFFER_VESA_MODE_10E
-	default 0x10F if FRAMEBUFFER_VESA_MODE_10F
-	default 0x110 if FRAMEBUFFER_VESA_MODE_110
-	default 0x111 if FRAMEBUFFER_VESA_MODE_111
-	default 0x112 if FRAMEBUFFER_VESA_MODE_112
-	default 0x113 if FRAMEBUFFER_VESA_MODE_113
-	default 0x114 if FRAMEBUFFER_VESA_MODE_114
-	default 0x115 if FRAMEBUFFER_VESA_MODE_115
-	default 0x116 if FRAMEBUFFER_VESA_MODE_116
-	default 0x117 if FRAMEBUFFER_VESA_MODE_117
-	default 0x118 if FRAMEBUFFER_VESA_MODE_118
-	default 0x119 if FRAMEBUFFER_VESA_MODE_119
-	default 0x11A if FRAMEBUFFER_VESA_MODE_11A
-	default 0x11B if FRAMEBUFFER_VESA_MODE_11B
-	default 0x117 if FRAMEBUFFER_VESA_MODE_USER
-
-choice
-	prompt "Framebuffer mode"
-	default VGA_TEXT_FRAMEBUFFER
-
-config VGA_TEXT_FRAMEBUFFER
-	bool "Legacy VGA text mode"
-	depends on HAVE_VGA_TEXT_FRAMEBUFFER
-	help
-	  If this option is enabled, coreboot will initialize graphics in
-	  legacy VGA text mode or, if a VGA BIOS is used and a VESA mode set,
-	  switch to text mode before handing control to a payload.
-
-config VBE_LINEAR_FRAMEBUFFER
-	bool "VESA framebuffer"
-	depends on HAVE_VBE_LINEAR_FRAMEBUFFER
-	help
-	  This option keeps the framebuffer mode set after coreboot finishes
-	  execution. If this option is enabled, coreboot will pass a
-	  framebuffer entry in its coreboot table and the payload will need a
-	  compatible driver.
-
-config GENERIC_LINEAR_FRAMEBUFFER
-	bool "Linear \"high-resolution\" framebuffer"
-	depends on HAVE_LINEAR_FRAMEBUFFER
-	help
-	  This option enables a high-resolution, linear framebuffer. If this
-	  option is enabled, coreboot will pass a framebuffer entry in its
-	  coreboot table and the payload will need a compatible driver.
-
-endchoice
-
-# Workaround to have LINEAR_FRAMEBUFFER set in both cases
-# VBE_LINEAR_FRAMEBUFFER and GENERIC_LINEAR_FRAMEBUFFER.
-# `kconfig_lint` doesn't let us use the same name with
-# different texts in the choice above.
-config LINEAR_FRAMEBUFFER
-	def_bool y
-	depends on VBE_LINEAR_FRAMEBUFFER || GENERIC_LINEAR_FRAMEBUFFER
-
-config BOOTSPLASH
-	prompt "Show graphical bootsplash"
-	bool
-	depends on FRAMEBUFFER_SET_VESA_MODE
-	help
-	  This option shows a graphical bootsplash screen. The graphics are
-	  loaded from the CBFS file bootsplash.jpg.
-
-	  You can either specify the location and file name of the
-	  image in the 'General' section or add it manually to CBFS, using,
-	  for example, cbfstool.
 
 endmenu

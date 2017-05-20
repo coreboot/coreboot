@@ -13,7 +13,6 @@
 ## GNU General Public License for more details.
 ##
 
-ramstage-$(CONFIG_INTEL_DP) += intel_dp.c drm_dp_helper.c display.c
 ramstage-$(CONFIG_INTEL_DDI) += intel_ddi.c
 ramstage-$(CONFIG_INTEL_EDID) += edid.c vbt.c
 ifeq ($(CONFIG_VGA_ROM_RUN),y)

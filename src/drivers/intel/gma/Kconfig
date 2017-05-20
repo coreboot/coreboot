@@ -14,12 +14,6 @@
 ## GNU General Public License for more details.
 ##
 
-config INTEL_DP
-	bool
-	default n
-	help
-	  helper functions for intel display port operations
-
 config INTEL_DDI
 	bool
 	default n

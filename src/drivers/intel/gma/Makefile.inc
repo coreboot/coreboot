@@ -39,7 +39,7 @@ CONFIG_GFX_GMA_DEFAULT_MMIO := 0 # dummy, will be overwritten at runtime
 subdirs-y += ../../../../3rdparty/libgfxinit
 
 ramstage-y += gma.ads
-ifeq ($(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE),y)
+ifeq ($(CONFIG_LINEAR_FRAMEBUFFER),y)
 ramstage-y += hires_fb/gma.adb
 else
 ramstage-y += text_fb/gma.adb

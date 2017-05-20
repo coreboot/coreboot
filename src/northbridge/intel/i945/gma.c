@@ -217,7 +217,7 @@ static int intel_gma_init_lvds(struct northbridge_intel_i945_config *conf,
 	       BASE_FREQUENCY * (5 * (pixel_m1 + 2) + (pixel_m2 + 2)) /
 	       (pixel_n + 2) / (pixel_p1 * pixel_p2));
 
-	if (IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)) {
+	if (IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER)) {
 		/* Disable panel fitter (we're in native resolution). */
 		write32(mmiobase + PF_CTL(0), 0);
 		write32(mmiobase + PF_WIN_SZ(0), 0);
@@ -280,7 +280,7 @@ static int intel_gma_init_lvds(struct northbridge_intel_i945_config *conf,
 		((vactive + bottom_border + vfront_porch + vsync - 1) << 16)
 		| (vactive + bottom_border + vfront_porch - 1));
 
-	if (IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)) {
+	if (IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER)) {
 		write32(mmiobase + PIPESRC(1), ((hactive - 1) << 16)
 			| (vactive - 1));
 	} else {
@@ -359,7 +359,7 @@ static int intel_gma_init_lvds(struct northbridge_intel_i945_config *conf,
 	else
 		printk(BIOS_ERR, "ERROR: GTT is still Disabled!!!\n");
 
-	if (IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)) {
+	if (IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER)) {
 		printk(BIOS_SPEW, "memset %p to 0x00 for %d bytes\n",
 			(void *)pgfx, hactive * vactive * 4);
 		memset((void *)pgfx, 0x00, hactive * vactive * 4);

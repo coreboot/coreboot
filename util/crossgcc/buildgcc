@@ -901,7 +901,7 @@ if searchtool wget "GNU" nofail > /dev/null; then
 		wget $url 2>&1 | while read line; do
 			echo $line | grep -o "[0-9]\+%" | awk '{printf("\b\b\b\b%4s", $1)}'
 		done
-		echo "${NC}"
+		printf "${NC}"
 	}
 elif searchtool curl "^curl " > /dev/null; then
 	download_showing_percentage() {

@@ -28,14 +28,6 @@
 #include "h8.h"
 #include "chip.h"
 
-static void h8_bluetooth_enable(int on)
-{
-	if (on)
-		ec_set_bit(0x3a, 4);
-	else
-		ec_clr_bit(0x3a, 4);
-}
-
 void h8_trackpoint_enable(int on)
 {
 	ec_write(H8_TRACKPOINT_CTRL,
@@ -288,8 +280,7 @@ static void h8_enable(struct device *dev)
 	if (get_option(&val, "volume") == CB_SUCCESS && !acpi_is_wakeup_s3())
 		ec_write(H8_VOLUME_CONTROL, val);
 
-	if (get_option(&val, "bluetooth") != CB_SUCCESS)
-		val = 1;
+	val = h8_has_bdc(dev) && h8_bluetooth_nv_enable();
 	h8_bluetooth_enable(val);
 
 	if (get_option(&val, "wwan") != CB_SUCCESS)

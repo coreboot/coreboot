@@ -6,6 +6,7 @@ ramstage-y += panic.c
 endif
 
 ramstage-y += h8.c
+ramstage-y += bluetooth.c
 smm-y += smm.c
 
 endif

@@ -46,6 +46,10 @@ struct ec_lenovo_h8_config {
 	u8 has_keyboard_backlight;
 	u8 has_power_management_beeps;
 	u8 has_uwb;
+	u8 has_bdc_detection;
+
+	u8 bdc_gpio_num;
+	u8 bdc_gpio_lvl;
 };
 
 #endif /* EC_LENOVO_H8EC_CHIP_H */

@@ -72,6 +72,10 @@ chip northbridge/intel/nehalem
 		register "eventb_enable" = "0xff"
 		register "eventc_enable" = "0xff"
 		register "eventd_enable" = "0xff"
+
+		register "has_bdc_detection" = "1"
+		register "bdc_gpio_num" = "48"
+		register "bdc_gpio_lvl" = "0"
 	end
 
 	device cpu_cluster 0 on

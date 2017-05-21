@@ -134,6 +134,10 @@ chip northbridge/intel/i945
 					register "eventb_enable" = "0xff"
 					register "eventc_enable" = "0xff"
 					register "eventd_enable" = "0xff"
+
+					register "has_bdc_detection" = "1"
+					register "bdc_gpio_num" = "7"
+					register "bdc_gpio_lvl" = "0"
 				end
 				chip superio/nsc/pc87382
 					device pnp 164e.2 on # IR

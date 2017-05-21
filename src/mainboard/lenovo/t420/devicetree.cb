@@ -158,6 +158,10 @@ chip northbridge/intel/sandybridge
 					register "eventc_enable" = "0xff"
 					register "eventd_enable" = "0xff"
 					register "evente_enable" = "0x0d"
+
+					register "has_bdc_detection" = "1"
+					register "bdc_gpio_num" = "54"
+					register "bdc_gpio_lvl" = "0"
 				end
 				chip drivers/lenovo/hybrid_graphics
 					device pnp ff.f on end # dummy

@@ -178,6 +178,10 @@ chip northbridge/intel/gm45
 					register "eventb_enable" = "0xff"
 					register "eventc_enable" = "0xff"
 					register "eventd_enable" = "0xff"
+
+					register "has_bdc_detection" = "1"
+					register "bdc_gpio_num" = "48"
+					register "bdc_gpio_lvl" = "0"
 				end
 
 				chip superio/nsc/pc87382

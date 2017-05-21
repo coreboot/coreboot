@@ -13,6 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#define EC_SCI_GPI 10
+#define EC_SCI_GPI 0x50
 
 #include <ec/purism/librem/acpi/ec.asl>

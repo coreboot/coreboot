@@ -190,6 +190,7 @@ u32 dev_path_encode(device_t dev);
 const char *bus_path(struct bus *bus);
 void dev_set_enabled(device_t dev, int enable);
 void disable_children(struct bus *bus);
+bool dev_is_active_bridge(device_t dev);
 
 /* Option ROM helper functions */
 void run_bios(struct device *dev, unsigned long addr);

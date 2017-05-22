@@ -775,6 +775,31 @@ void disable_children(struct bus *bus)
 	}
 }
 
+/*
+ * Returns true if the device is an enabled bridge that has at least
+ * one enabled device on its secondary bus.
+ */
+bool dev_is_active_bridge(device_t dev)
+{
+	struct bus *link;
+	device_t child;
+
+	if (!dev || !dev->enabled)
+		return 0;
+
+	if (!dev->link_list || !dev->link_list->children)
+		return 0;
+
+	for (link = dev->link_list; link; link = link->next) {
+		for (child = link->children; child; child = child->sibling) {
+			if (child->enabled)
+				return 1;
+		}
+	}
+
+	return 0;
+}
+
 static void resource_tree(struct device *root, int debug_level, int depth)
 {
 	int i = 0;

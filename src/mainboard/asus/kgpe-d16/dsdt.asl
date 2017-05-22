@@ -53,6 +53,9 @@ DefinitionBlock (
 
 	#include <southbridge/amd/common/acpi/sleepstates.asl>
 
+	/* IPMI KCS enable */
+	Name (KCSE, 0x1)
+
 	/* The _PIC method is called by the OS to choose between interrupt
 		* routing via the i8259 interrupt controller or the APIC.
 		*
@@ -486,6 +489,13 @@ DefinitionBlock (
 				Name (_HID, EisaId ("PNP0A05"))
 				Name (_ADR, 0x00140003)
 
+				OperationRegion (BMRG, SystemIO, 0xca2, 0x02) /* BMC KCS registers */
+				Field (BMRG, AnyAcc, NoLock, Preserve)
+				{
+					BMRI, 8,	/* Index */
+					BMRD, 8,	/* Data */
+				}
+
 				/* Real Time Clock Device */
 				Device(RTC0) {
 					Name(_HID, EISAID("PNP0B00"))   /* AT Real Time Clock (not PIIX4 compatible) */
@@ -605,6 +615,27 @@ DefinitionBlock (
 							IO(Decode16, 0x2f8, 0x2f8, 0x8, 0x8)
 							IRQNoFlags() { 3 }
 						})
+					}
+				}
+
+				Device (KCS1) {   /* IPMI KCS */
+					Name (_HID, EISAID ("IPI0001"))		/* ASpeed BMC */
+					Method (_STA, 0, NotSerialized) {
+						If (KCSE) {			/* Detection enabled */
+							If (LNotEqual (BMRD, 0xff)) {
+								Return (0x0f)	/* Device present */
+							}
+							Return (Zero)
+						}
+						Return (Zero)
+					}
+					Method (_CRS, 0) {
+						Return (ResourceTemplate() {
+							IO(Decode16, 0x0ca2, 0x0ca2, 0x01, 0x02)
+						})
+					}
+					Method (_IFT, 0, NotSerialized) {	/* Interface type */
+						Return (One)			/* KCS interface */
 					}
 				}
 			}

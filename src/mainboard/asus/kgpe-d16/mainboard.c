@@ -46,6 +46,8 @@ void set_pcie_dereset(void)
 * enable the dedicated function in kgpe-d16 board.
 * This function is called earlier than sr5650_enable.
 *************************************************/
+#define BMC_KCS_BASE 0xca2
+
 static void mainboard_enable(struct device *dev)
 {
 	printk(BIOS_INFO, "Mainboard KGPE-D16 Enable. dev=0x%p\n", dev);
@@ -66,6 +68,13 @@ static void mainboard_enable(struct device *dev)
 
 	set_pcie_dereset();
 	/* get_ide_dma66(); */
+
+	/* Enable access to the BMC IPMI via KCS */
+	struct device *lpc_sio_dev = dev_find_slot_pnp(BMC_KCS_BASE, 0);
+	struct resource *res = new_resource(lpc_sio_dev, BMC_KCS_BASE);
+	res->base = BMC_KCS_BASE;
+	res->size = 1;
+	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 }
 
 /* override the default SATA PHY setup */

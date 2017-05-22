@@ -32,13 +32,13 @@ romstage-y += stack.c
 romstage-y += stage_cache.c
 romstage-$(CONFIG_MMA) += mma_core.c
 
-ramstage-$(CONFIG_GOP_SUPPORT) += fsp_gop.c
+ramstage-$(CONFIG_RUN_FSP_GOP) += fsp_gop.c
 ramstage-y += fsp_relocate.c
 ramstage-y += fsp_util.c
 ramstage-y += hob.c
 ramstage-y += ramstage.c
 ramstage-y += stage_cache.c
-ramstage-$(CONFIG_GOP_SUPPORT) += vbt.c
+ramstage-$(CONFIG_RUN_FSP_GOP) += vbt.c
 ramstage-$(CONFIG_MMA) += mma_core.c
 
 CPPFLAGS_common += -Isrc/drivers/intel/fsp1_1/include

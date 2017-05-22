@@ -119,7 +119,7 @@ void fsp_run_silicon_init(FSP_INFO_HEADER *fsp_info_header, int is_s3_wakeup)
 	soc_silicon_init_params(&silicon_init_params);
 
 	/* Locate VBT and pass to FSP GOP */
-	if (IS_ENABLED(CONFIG_GOP_SUPPORT))
+	if (IS_ENABLED(CONFIG_RUN_FSP_GOP))
 		load_vbt(is_s3_wakeup, &silicon_init_params);
 	mainboard_silicon_init_params(&silicon_init_params);
 
@@ -141,7 +141,7 @@ void fsp_run_silicon_init(FSP_INFO_HEADER *fsp_info_header, int is_s3_wakeup)
 	printk(BIOS_DEBUG, "FspSiliconInit returned 0x%08x\n", status);
 
 	/* Mark graphics init done after SiliconInit if VBT was provided */
-#if IS_ENABLED(CONFIG_GOP_SUPPORT)
+#if IS_ENABLED(CONFIG_RUN_FSP_GOP)
 	/* GraphicsConfigPtr doesn't exist in Quark X1000's FSP, so this needs
 	 * to be #if'd out instead of using if (). */
 	if (silicon_init_params.GraphicsConfigPtr)

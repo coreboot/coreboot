@@ -85,7 +85,11 @@ enum cb_err fsp_validate_component(struct fsp_header *hdr,
 					const struct region_device *rdev);
 
 /* Load a vbt.bin file for graphics. Returns 0 if a valid VBT is not found. */
+#if IS_ENABLED(CONFIG_RUN_FSP_GOP)
 uintptr_t fsp_load_vbt(void);
+#else
+static inline uintptr_t fsp_load_vbt(void) { return 0; }
+#endif
 
 /* Get igd framebuffer bar from SoC */
 uintptr_t fsp_soc_get_igd_bar(void);

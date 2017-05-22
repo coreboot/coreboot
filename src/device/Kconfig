@@ -33,6 +33,12 @@ config HAVE_LINEAR_FRAMEBUFFER
 	  Selected by graphics drivers that can set up a generic linear
 	  framebuffer.
 
+config HAVE_FSP_GOP
+	bool
+	help
+	  Selected by drivers that support to run a blob that implements
+	  the Graphics Output Protocol (GOP).
+
 config MAINBOARD_HAS_NATIVE_VGA_INIT
 	def_bool n
 	help
@@ -75,6 +81,15 @@ config MAINBOARD_USE_LIBGFXINIT
 	help
 	  Use the SPARK library `libgfxinit` for the native graphics
 	  initialization. This requires an Ada toolchain.
+
+config RUN_FSP_GOP
+	bool "Run a GOP driver"
+	depends on HAVE_FSP_GOP
+	select HAVE_LINEAR_FRAMEBUFFER
+	help
+	  Some platforms (e.g. Intel Braswell and Skylake/Kaby Lake) support
+	  to run a GOP blob. This option enables graphics initialization with
+	  such a blob.
 
 # TODO: Explain differences (if any) for onboard cards.
 config VGA_ROM_RUN

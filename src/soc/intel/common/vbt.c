@@ -47,6 +47,9 @@ void *vbt_get(struct region_device *rdev)
 {
 	void *vbt_data;
 
+	if (!IS_ENABLED(CONFIG_RUN_FSP_GOP))
+		return NULL;
+
 	/* Normal mode and S3 resume path PEIM GFX init is not needed.
 	 * Passing NULL as VBT will not make PEIM GFX to execute. */
 	if (acpi_is_wakeup_s3())

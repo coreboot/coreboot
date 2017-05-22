@@ -595,7 +595,8 @@ static void gma_func0_init(struct device *dev)
 	/* Post VBIOS init */
 	gma_pm_init_post_vbios(dev);
 
-	if (IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT)) {
+	if (IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) ||
+	    IS_ENABLED(CONFIG_MAINBOARD_USE_LIBGFXINIT)) {
 		/* This should probably run before post VBIOS init. */
 		printk(BIOS_SPEW, "Initializing VGA without OPROM.\n");
 		u8 *mmiobase;

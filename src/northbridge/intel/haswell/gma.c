@@ -443,7 +443,7 @@ static void gma_func0_init(struct device *dev)
 	/* Pre panel init */
 	gma_setup_panel(dev);
 
-	if (IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT)) {
+	if (IS_ENABLED(CONFIG_MAINBOARD_USE_LIBGFXINIT)) {
 		printk(BIOS_SPEW, "NATIVE graphics, run native enable\n");
 		physbase = pci_read_config32(dev, 0x5c) & ~0xf;
 		gma_gfxinit(gtt_res->base, linearfb_res->base,

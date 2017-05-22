@@ -16,6 +16,7 @@
 config PLATFORM_USES_FSP1_1
 	bool
 	select UEFI_2_4_BINDING
+	select ADD_VBT_DATA_FILE if RUN_FSP_GOP
 	help
 	  Does the code require the Intel Firmware Support Package?
 
@@ -87,12 +88,6 @@ config FSP_USES_UPD
 	help
 	  If this FSP uses UPD/VPD data regions, select this in the chipset
 	  Kconfig.
-
-config GOP_SUPPORT
-	bool "Enable GOP support"
-	default n
-	select ADD_VBT_DATA_FILE
-	select HAVE_LINEAR_FRAMEBUFFER
 
 config USE_GENERIC_FSP_CAR_INC
 	bool

@@ -482,15 +482,15 @@ unsigned long southcluster_write_acpi_tables(device_t device,
 	current = acpi_write_hpet(device, current, rsdp);
 	current = acpi_align_current(current);
 
-#if CONFIG_GOP_SUPPORT
-	igd_opregion_t *opregion;
+	if (IS_ENABLED(CONFIG_RUN_FSP_GOP)) {
+		igd_opregion_t *opregion;
 
-	printk(BIOS_DEBUG, "ACPI:    * IGD OpRegion\n");
-	opregion = (igd_opregion_t *)current;
-	init_igd_opregion(opregion);
-	current += sizeof(igd_opregion_t);
-	current = acpi_align_current(current);
-#endif
+		printk(BIOS_DEBUG, "ACPI:    * IGD OpRegion\n");
+		opregion = (igd_opregion_t *)current;
+		init_igd_opregion(opregion);
+		current += sizeof(igd_opregion_t);
+		current = acpi_align_current(current);
+	}
 
 	ssdt2 = (acpi_header_t *)current;
 	memset(ssdt2, 0, sizeof(acpi_header_t));
@@ -544,7 +544,6 @@ __attribute__((weak)) void acpi_create_serialio_ssdt(acpi_header_t *ssdt)
 {
 }
 
-#if CONFIG_GOP_SUPPORT
 /* Reading VBT table from flash */
 static void get_fsp_vbt(igd_opregion_t *opregion)
 {
@@ -615,4 +614,3 @@ int init_igd_opregion(igd_opregion_t *opregion)
 
 	return 0;
 }
-#endif

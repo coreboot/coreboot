@@ -27,7 +27,7 @@ romstage-$(CONFIG_CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM) += stage_cache.c
 romstage-$(CONFIG_MMA) += mma_core.c
 
 ramstage-y += debug.c
-ramstage-y += graphics.c
+ramstage-$(CONFIG_RUN_FSP_GOP) += graphics.c
 ramstage-y += hand_off_block.c
 ramstage-$(CONFIG_DISPLAY_FSP_HEADER) += header_display.c
 ramstage-$(CONFIG_DISPLAY_HOBS) += hob_display.c

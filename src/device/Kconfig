@@ -16,11 +16,6 @@
 
 menu "Devices"
 
-# Only set this in the mainboard
-config MAINBOARD_HAS_NATIVE_VGA_INIT
-	bool
-	default n
-
 config HAVE_VGA_TEXT_FRAMEBUFFER
 	bool
 	help
@@ -37,6 +32,20 @@ config HAVE_LINEAR_FRAMEBUFFER
 	help
 	  Selected by graphics drivers that can set up a generic linear
 	  framebuffer.
+
+config MAINBOARD_HAS_NATIVE_VGA_INIT
+	def_bool n
+	help
+	  Selected by mainboards / drivers that provide native graphics
+	  init within coreboot.
+
+config MAINBOARD_FORCE_NATIVE_VGA_INIT
+	def_bool n
+	depends on MAINBOARD_HAS_NATIVE_VGA_INIT || MAINBOARD_HAS_LIBGFXINIT
+	select MAINBOARD_DO_NATIVE_VGA_INIT
+	help
+	  Selected by mainboards / chipsets whose graphics driver can't or
+	  shouldn't be disabled.
 
 config MAINBOARD_DO_NATIVE_VGA_INIT
 	bool "Use native graphics initialization"

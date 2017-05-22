@@ -18,6 +18,8 @@
 #include <northbridge/intel/gm45/gm45.h>
 
 static const struct blc_pwm_t blc_entries[] = {
+	/* corrected to 320MHz CDClk, vendor set 753; works fine at both: */
+	{"LTD121EQ3B", 447},
 	{"LTD121EWVB", 165},
 	{"B121EW03 V6 ", 165},
 	/* datasheets: between 100 and 20k, typical 200 */

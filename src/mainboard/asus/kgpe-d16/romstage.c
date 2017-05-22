@@ -87,6 +87,76 @@ static void switch_spd_mux(uint8_t channel)
 	byte &= ~0xc0;			/* Enable SPD mux GPIO output drivers */
 	byte |= (channel << 2) & 0xc;	/* Set SPD mux GPIOs */
 	pci_write_config8(PCI_DEV(0, 0x14, 0), 0x54, byte);
+
+	/* Temporary AST PCI mapping */
+	const uint32_t memory_base = 0xfc000000;
+	const uint32_t memory_limit = 0xfc800000;
+
+#define TEMP_PCI_BUS 0x2
+	/* Save S100 PCI bridge settings */
+	uint16_t prev_sec_cfg = pci_read_config16(PCI_DEV(0, 0x14, 4),
+						PCI_COMMAND);
+	uint8_t prev_sec_bus = pci_read_config8(PCI_DEV(0, 0x14, 4),
+						PCI_SECONDARY_BUS);
+	uint8_t prev_sec_sub_bus = pci_read_config8(PCI_DEV(0, 0x14, 4),
+						PCI_SUBORDINATE_BUS);
+	uint16_t prev_sec_mem_base = pci_read_config16(PCI_DEV(0, 0x14, 4),
+						PCI_MEMORY_BASE);
+	uint16_t prev_sec_mem_limit = pci_read_config16(PCI_DEV(0, 0x14, 4),
+							PCI_MEMORY_LIMIT);
+	/* Temporarily enable the SP5100 PCI bridge */
+	pci_write_config8(PCI_DEV(0, 0x14, 4), PCI_SECONDARY_BUS, TEMP_PCI_BUS);
+	pci_write_config8(PCI_DEV(0, 0x14, 4), PCI_SUBORDINATE_BUS, 0xff);
+	pci_write_config16(PCI_DEV(0, 0x14, 4), PCI_MEMORY_BASE,
+			(memory_base >> 20));
+	pci_write_config16(PCI_DEV(0, 0x14, 4), PCI_MEMORY_LIMIT,
+			(memory_limit >> 20));
+	pci_write_config16(PCI_DEV(0, 0x14, 4), PCI_COMMAND,
+			PCI_COMMAND_MEMORY);
+
+	/* Temporarily enable AST BAR1 */
+	uint16_t prev_ast_cmd = pci_read_config16(PCI_DEV(TEMP_PCI_BUS, 0x1, 0),
+						PCI_COMMAND);
+	uint16_t prev_ast_sts = pci_read_config16(PCI_DEV(TEMP_PCI_BUS, 0x1, 0),
+						PCI_STATUS);
+	uint32_t prev_ast_bar1 = pci_read_config32(
+		PCI_DEV(TEMP_PCI_BUS, 0x1, 0), PCI_BASE_ADDRESS_1);
+	pci_write_config32(PCI_DEV(TEMP_PCI_BUS, 0x1, 0), PCI_BASE_ADDRESS_1,
+			memory_base);
+	pci_write_config16(PCI_DEV(TEMP_PCI_BUS, 0x1, 0), PCI_COMMAND,
+			PCI_COMMAND_MEMORY);
+	pci_write_config16(PCI_DEV(TEMP_PCI_BUS, 0x1, 0), PCI_STATUS,
+			PCI_STATUS_CAP_LIST | PCI_STATUS_DEVSEL_MEDIUM);
+
+	/* Use the P2A bridge to set ASpeed SPD mux GPIOs to the same values as the SP5100 */
+	void* ast_bar1 = (void*)memory_base;
+	/* Enable access to GPIO controller */
+	write32(ast_bar1 + 0xf004, 0x1e780000);
+	write32(ast_bar1 + 0xf000, 0x1);
+	/* Enable SPD mux GPIO output drivers */
+	write32(ast_bar1 + 0x10024, read32(ast_bar1 + 0x10024) | 0x3000);
+	/* Set SPD mux GPIOs */
+	write32(ast_bar1 + 0x10020, (read32(ast_bar1 + 0x10020) & ~0x3000)
+		| ((channel & 0x3) << 12));
+	write32(ast_bar1 + 0xf000, 0x0);
+
+	/* Deconfigure AST BAR1 */
+	pci_write_config16(PCI_DEV(TEMP_PCI_BUS, 0x1, 0), PCI_COMMAND,
+			prev_ast_cmd);
+	pci_write_config16(PCI_DEV(TEMP_PCI_BUS, 0x1, 0), PCI_STATUS,
+			prev_ast_sts);
+	pci_write_config32(PCI_DEV(TEMP_PCI_BUS, 0x1, 0), PCI_BASE_ADDRESS_1,
+			prev_ast_bar1);
+
+	/* Deconfigure SP5100 PCI bridge */
+	pci_write_config16(PCI_DEV(0, 0x14, 4), PCI_COMMAND, prev_sec_cfg);
+	pci_write_config16(PCI_DEV(0, 0x14, 4), PCI_MEMORY_LIMIT,
+			prev_sec_mem_limit);
+	pci_write_config16(PCI_DEV(0, 0x14, 4), PCI_MEMORY_BASE,
+			prev_sec_mem_base);
+	pci_write_config8(PCI_DEV(0, 0x14, 4), PCI_SUBORDINATE_BUS,
+			prev_sec_sub_bus);
+	pci_write_config8(PCI_DEV(0, 0x14, 4), PCI_SECONDARY_BUS, prev_sec_bus);
 }
 
 static const uint8_t spd_addr_fam15[] = {

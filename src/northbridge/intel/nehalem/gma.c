@@ -1008,38 +1008,40 @@ static void gma_func0_init(struct device *dev)
 	/* Init graphics power management */
 	gma_pm_init_pre_vbios(dev);
 
-#if !CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT
-	/* PCI Init, will run VBIOS */
-	pci_dev_init(dev);
-#else
-	u32 physbase;
-	struct northbridge_intel_nehalem_config *conf = dev->chip_info;
-	struct resource *lfb_res;
-	struct resource *pio_res;
+	if (IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) ||
+	    IS_ENABLED(CONFIG_MAINBOARD_USE_LIBGFXINIT)) {
+		u32 physbase;
+		struct northbridge_intel_nehalem_config *conf = dev->chip_info;
+		struct resource *lfb_res;
+		struct resource *pio_res;
 
-	lfb_res = find_resource(dev, PCI_BASE_ADDRESS_2);
-	pio_res = find_resource(dev, PCI_BASE_ADDRESS_4);
+		lfb_res = find_resource(dev, PCI_BASE_ADDRESS_2);
+		pio_res = find_resource(dev, PCI_BASE_ADDRESS_4);
 
-	physbase = pci_read_config32(dev, 0x5c) & ~0xf;
+		physbase = pci_read_config32(dev, 0x5c) & ~0xf;
 
-	if (gtt_res && gtt_res->base && physbase && pio_res && pio_res->base
-	    && lfb_res && lfb_res->base) {
-		printk(BIOS_SPEW, "Initializing VGA without OPROM. MMIO 0x%llx\n",
-		       gtt_res->base);
-		if (IS_ENABLED(CONFIG_MAINBOARD_USE_LIBGFXINIT)) {
-			int lightup_ok;
-			gma_gfxinit(gtt_res->base, lfb_res->base,
-				    physbase, &lightup_ok);
-		} else {
-			intel_gma_init(conf, res2mmio(gtt_res, 0, 0), physbase,
-				       pio_res->base, lfb_res->base);
+		if (gtt_res && gtt_res->base && physbase &&
+		    pio_res && pio_res->base && lfb_res && lfb_res->base) {
+			printk(BIOS_SPEW,
+			       "Initializing VGA without OPROM. MMIO 0x%llx\n",
+			       gtt_res->base);
+			if (IS_ENABLED(CONFIG_MAINBOARD_USE_LIBGFXINIT)) {
+				int lightup_ok;
+				gma_gfxinit(gtt_res->base, lfb_res->base,
+					    physbase, &lightup_ok);
+			} else {
+				intel_gma_init(conf, res2mmio(gtt_res, 0, 0),
+					physbase, pio_res->base, lfb_res->base);
+			}
 		}
+
+		/* Linux relies on VBT for panel info. */
+		generate_fake_intel_oprom(&conf->gfx, dev,
+					  "$VBT IRONLAKE-MOBILE");
+	} else {
+		/* PCI Init, will run VBIOS */
+		pci_dev_init(dev);
 	}
-
-	/* Linux relies on VBT for panel info. */
-	generate_fake_intel_oprom(&conf->gfx, dev, "$VBT IRONLAKE-MOBILE");
-#endif
-
 
 	/* Post VBIOS init */
 	gma_pm_init_post_vbios(dev);

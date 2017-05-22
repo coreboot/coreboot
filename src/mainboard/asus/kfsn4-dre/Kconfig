@@ -81,10 +81,6 @@ config ONBOARD_VGA_IS_PRIMARY
 	bool
 	default y
 
-config MAINBOARD_DO_NATIVE_VGA_INIT
-	bool
-	default y
-
 config MAINBOARD_POWER_ON_AFTER_POWER_FAIL
 	bool
 	default y

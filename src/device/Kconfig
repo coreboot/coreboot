@@ -42,39 +42,36 @@ config MAINBOARD_HAS_NATIVE_VGA_INIT
 config MAINBOARD_FORCE_NATIVE_VGA_INIT
 	def_bool n
 	depends on MAINBOARD_HAS_NATIVE_VGA_INIT || MAINBOARD_HAS_LIBGFXINIT
-	select MAINBOARD_DO_NATIVE_VGA_INIT
 	help
 	  Selected by mainboards / chipsets whose graphics driver can't or
 	  shouldn't be disabled.
 
-config MAINBOARD_DO_NATIVE_VGA_INIT
-	bool "Use native graphics initialization"
-	depends on MAINBOARD_HAS_NATIVE_VGA_INIT
-	default n
-	help
-	  Some mainboards, such as the Google Link, allow initializing the display
-	  without the need of a binary only VGA OPROM. Enabling this option may be
-	  faster, but also lacks flexibility in setting modes.
-
-	  If unsure, say N.
-
 config MAINBOARD_HAS_LIBGFXINIT
 	def_bool n
-	select MAINBOARD_HAS_NATIVE_VGA_INIT
 	help
 	  Selected by mainboards that implement support for `libgfxinit`.
 	  Usually this requires a list of ports to be probed for displays.
 
+choice
+	prompt "Graphics initialization"
+	default NO_GFX_INIT if VGA_BIOS && PAYLOAD_SEABIOS
+	default VGA_ROM_RUN if VGA_BIOS
+
+config MAINBOARD_DO_NATIVE_VGA_INIT
+	bool "Use native graphics init"
+	depends on MAINBOARD_HAS_NATIVE_VGA_INIT
+	help
+	  Some mainboards, such as the Google Link, allow initializing the
+	  display without the need of a binary only VGA OPROM. Enabling this
+	  option may be faster, but also lacks flexibility in setting modes.
+
 config MAINBOARD_USE_LIBGFXINIT
-	bool "Use libgfxinit for native graphics initialization"
-	depends on MAINBOARD_DO_NATIVE_VGA_INIT
+	bool "Use libgfxinit"
 	depends on MAINBOARD_HAS_LIBGFXINIT
 	select HAVE_VGA_TEXT_FRAMEBUFFER
 	select HAVE_LINEAR_FRAMEBUFFER
 	select RAMSTAGE_LIBHWBASE
 	select VGA if VGA_TEXT_FRAMEBUFFER
-	select NO_EDID_FILL_FB
-	default n
 	help
 	  Use the SPARK library `libgfxinit` for the native graphics
 	  initialization. This requires an Ada toolchain.
@@ -82,12 +79,10 @@ config MAINBOARD_USE_LIBGFXINIT
 # TODO: Explain differences (if any) for onboard cards.
 config VGA_ROM_RUN
 	bool "Run VGA Option ROMs"
-	default n if PAYLOAD_SEABIOS
-	default y if !PAYLOAD_SEABIOS
-	depends on PCI && !MAINBOARD_DO_NATIVE_VGA_INIT
+	depends on PCI && !MAINBOARD_FORCE_NATIVE_VGA_INIT
 	select HAVE_VGA_TEXT_FRAMEBUFFER
 	help
-	  Execute VGA Option ROMs in coreboot if found. This is required
+	  Execute VGA Option ROMs in coreboot if found. This can be used
 	  to enable PCI/AGP/PCI-E video cards when not using a SeaBIOS
 	  payload.
 
@@ -95,7 +90,15 @@ config VGA_ROM_RUN
 	  more complete BIOS interrupt services available than coreboot,
 	  which some option ROMs require in order to function correctly.
 
-	  If unsure, say N when using SeaBIOS as payload, Y otherwise.
+config NO_GFX_INIT
+	bool "None"
+	depends on !MAINBOARD_FORCE_NATIVE_VGA_INIT
+	help
+	  Select this to not perform any graphics initialization in
+	  coreboot. This is useful if the payload (e.g. SeaBIOS) can
+	  initialize graphics or if pre-boot graphics are not required.
+
+endchoice
 
 config S3_VGA_ROM_RUN
 	bool "Re-run VGA Option ROMs on S3 resume"

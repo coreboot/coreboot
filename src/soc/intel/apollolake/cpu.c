@@ -28,7 +28,9 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <fsp/api.h>
+#include <intelblocks/cpulib.h>
 #include <intelblocks/fast_spi.h>
+#include <intelblocks/msr.h>
 #include <reg_script.h>
 #include <romstage_handoff.h>
 #include <soc/cpu.h>
@@ -57,13 +59,6 @@ static const struct reg_script core_msr_script[] = {
 		FEATURE_CONFIG_LOCK),
 	REG_SCRIPT_END
 };
-
-void enable_untrusted_mode(void)
-{
-	msr_t msr = rdmsr(MSR_POWER_MISC);
-	msr.lo |= ENABLE_IA_UNTRUSTED;
-	wrmsr(MSR_POWER_MISC, msr);
-}
 
 static void soc_core_init(device_t cpu)
 {

@@ -17,6 +17,7 @@
 #include <arch/cpu.h>
 #include <bootblock_common.h>
 #include <device/pci.h>
+#include <intelblocks/cpulib.h>
 #include <intelblocks/fast_spi.h>
 #include <intelblocks/pcr.h>
 #include <intelblocks/rtc.h>

@@ -18,7 +18,6 @@ bootblock-y += lpc_lib.c
 bootblock-y += mmap_boot.c
 bootblock-y += pmutil.c
 bootblock-y += spi.c
-bootblock-y += tsc_freq.c
 bootblock-$(CONFIG_SOC_UART_DEBUG) += uart_early.c
 bootblock-$(CONFIG_FSP_CAR) += bootblock/cache_as_ram_fsp.S
 
@@ -32,7 +31,6 @@ romstage-y += lpc_lib.c
 romstage-y += memmap.c
 romstage-y += meminit.c
 romstage-y += mmap_boot.c
-romstage-y += tsc_freq.c
 romstage-y += pmutil.c
 romstage-y += reset.c
 romstage-y += spi.c
@@ -42,7 +40,6 @@ smm-y += pmutil.c
 smm-y += gpio.c
 smm-y += smihandler.c
 smm-y += spi.c
-smm-y += tsc_freq.c
 smm-y += uart_early.c
 
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
@@ -65,7 +62,6 @@ ramstage-y += uart.c
 ramstage-y += nhlt.c
 ramstage-y += systemagent.c
 ramstage-y += spi.c
-ramstage-y += tsc_freq.c
 ramstage-y += pmutil.c
 ramstage-y += pmc.c
 ramstage-y += reset.c
@@ -79,7 +75,6 @@ postcar-y += memmap.c
 postcar-y += mmap_boot.c
 postcar-y += spi.c
 postcar-$(CONFIG_SOC_UART_DEBUG) += uart_early.c
-postcar-y += tsc_freq.c
 
 postcar-$(CONFIG_FSP_CAR) += exit_car_fsp.S
 
@@ -89,7 +84,6 @@ verstage-y += heci.c
 verstage-y += memmap.c
 verstage-y += mmap_boot.c
 verstage-$(CONFIG_SOC_UART_DEBUG) += uart_early.c
-verstage-y += tsc_freq.c
 verstage-y += pmutil.c
 verstage-y += reset.c
 verstage-y += spi.c

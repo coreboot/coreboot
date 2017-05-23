@@ -17,8 +17,9 @@
 
 #include <arch/cpu.h>
 #include <assert.h>
+#include <cpu/x86/msr.h>
+#include <intelblocks/msr.h>
 #include <program_loading.h>
-#include <soc/cpu.h>
 
 /*
  * This file supports the necessary hoops one needs to jump through since

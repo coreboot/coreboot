@@ -25,6 +25,7 @@
 #include <rules.h>
 #include <device/pci_def.h>
 #include <halt.h>
+#include <intelblocks/msr.h>
 #include <soc/iomap.h>
 #include <soc/cpu.h>
 #include <soc/pci_devs.h>

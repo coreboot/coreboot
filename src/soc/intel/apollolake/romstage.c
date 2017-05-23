@@ -31,6 +31,7 @@
 #include <fsp/api.h>
 #include <fsp/memmap.h>
 #include <fsp/util.h>
+#include <intelblocks/cpulib.h>
 #include <intelblocks/systemagent.h>
 #include <reset.h>
 #include <soc/cpu.h>
@@ -186,6 +187,27 @@ static bool punit_init(void)
 	}
 
 	return true;
+}
+
+void set_max_freq(void)
+{
+	if (cpu_get_burst_mode_state() == BURST_MODE_UNAVAILABLE) {
+		/* Burst Mode has been factory configured as disabled
+		 * and is not available in this physical processor
+		 * package.
+		 */
+		printk(BIOS_DEBUG, "Burst Mode is factory disabled\n");
+		return;
+	}
+
+	/* Enable burst mode */
+	cpu_enable_burst_mode();
+
+	/* Enable speed step. */
+	cpu_enable_eist();
+
+	/* Set P-State ratio */
+	cpu_set_p_state_to_turbo_ratio();
 }
 
 asmlinkage void car_stage_entry(void)

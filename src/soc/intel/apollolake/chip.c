@@ -22,16 +22,18 @@
 #include <console/console.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/mp.h>
+#include <cpu/x86/msr.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <intelblocks/fast_spi.h>
+#include <intelblocks/msr.h>
 #include <fsp/api.h>
 #include <fsp/util.h>
+#include <intelblocks/cpulib.h>
 #include <intelblocks/itss.h>
 #include <romstage_handoff.h>
 #include <soc/iomap.h>
 #include <soc/itss.h>
-#include <soc/cpu.h>
 #include <soc/intel/common/vbt.h>
 #include <soc/nvs.h>
 #include <soc/pci_devs.h>
@@ -547,7 +549,7 @@ struct chip_operations soc_intel_apollolake_ops = {
 static void drop_privilege_all(void)
 {
 	/* Drop privilege level on all the CPUs */
-	if (mp_run_on_all_cpus(&enable_untrusted_mode, 1000) < 0)
+	if (mp_run_on_all_cpus(&cpu_enable_untrusted_mode, 1000) < 0)
 		printk(BIOS_ERR, "failed to enable untrusted mode\n");
 }
 

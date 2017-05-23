@@ -174,7 +174,7 @@ static const struct pad_config gpio_table[] = {
 	/* C21 : UART2_TXD ==> PCHTX_SERVORX_UART */
 	PAD_CFG_NF(GPP_C21, NONE, DEEP, NF1),
 	/* C22 : UART2_RTS# ==> EN_PP3300_DX_TOUCHSCREEN */
-	PAD_CFG_GPO(GPP_C22, 1, DEEP),
+	PAD_CFG_GPO(GPP_C22, 0, DEEP),
 	/* C23 : UART2_CTS# ==> PCH_WP */
 	PAD_CFG_GPI(GPP_C23, 20K_PU, DEEP),
 

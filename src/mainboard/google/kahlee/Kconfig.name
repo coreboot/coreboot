@@ -1,0 +1,2 @@
+config BOARD_GOOGLE_KAHLEE
+	bool "Kahlee"

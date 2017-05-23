@@ -1,0 +1,53 @@
+#
+# This file is part of the coreboot project.
+#
+# Copyright (C) 2015 Advanced Micro Devices, Inc.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+
+if BOARD_GOOGLE_KAHLEE
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select SOC_AMD_STONEYRIDGE_FP4
+	select HAVE_OPTION_TABLE
+	select HAVE_PIRQ_TABLE
+	select HAVE_MP_TABLE
+	select HAVE_ACPI_TABLES
+	select BOARD_ROMSIZE_KB_8192
+	select GFXUMA
+	select STONEYRIDGE_IMC_FWM
+
+config MAINBOARD_DIR
+	string
+	default google/kahlee
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Kahlee"
+
+config MAX_CPUS
+	int
+	default 4
+
+config IRQ_SLOT_COUNT
+	int
+	default 11
+
+config ONBOARD_VGA_IS_PRIMARY
+	bool
+	default y
+
+config STONEYRIDGE_LEGACY_FREE
+	bool
+	default y
+
+endif # BOARD_GOOGLE_KAHLEE

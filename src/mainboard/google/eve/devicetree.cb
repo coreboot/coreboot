@@ -68,7 +68,7 @@ chip soc/intel/skylake
 	#| Domain/Setting |  SA   |  IA   | GTUS  |  GTS  |
 	#+----------------+-------+-------+-------+-------+
 	#| Psi1Threshold  | 20A   | 20A   | 20A   | 20A   |
-	#| Psi2Threshold  | 4A    | 5A    | 5A    | 5A    |
+	#| Psi2Threshold  | 2A    | 2A    | 2A    | 2A    |
 	#| Psi3Threshold  | 1A    | 1A    | 1A    | 1A    |
 	#| Psi3Enable     | 1     | 1     | 1     | 1     |
 	#| Psi4Enable     | 1     | 1     | 1     | 1     |
@@ -76,13 +76,13 @@ chip soc/intel/skylake
 	#| ImonOffset     | 0     | 0     | 0     | 0     |
 	#| IccMax         | 4A    | 24A   | 24A   | 24A   |
 	#| VrVoltageLimit | 1.52V | 1.52V | 1.52V | 1.52V |
-	#| AcLoadline     | 17.9  | 5.9   | 5.7   | 5.7   |
-	#| DcLoadline     | 14    | 4.7   | 4.2   | 4.2   |
+	#| AcLoadline     | 14.9  | 5     | 5.7   | 4.57  |
+	#| DcLoadline     | 14.2  | 4.86  | 4.2   | 4.3   |
 	#+----------------+-------+-------+-------+-------+
 	register "domain_vr_config[VR_SYSTEM_AGENT]" = "{
 		.vr_config_enable = 1,
 		.psi1threshold = VR_CFG_AMP(20),
-		.psi2threshold = VR_CFG_AMP(4),
+		.psi2threshold = VR_CFG_AMP(2),
 		.psi3threshold = VR_CFG_AMP(1),
 		.psi3enable = 1,
 		.psi4enable = 1,
@@ -90,14 +90,14 @@ chip soc/intel/skylake
 		.imon_offset = 0x0,
 		.icc_max = VR_CFG_AMP(4),
 		.voltage_limit = 1520,
-		.ac_loadline = 1790,
-		.dc_loadline = 1400,
+		.ac_loadline = 1490,
+		.dc_loadline = 1420,
 	}"
 
 	register "domain_vr_config[VR_IA_CORE]" = "{
 		.vr_config_enable = 1,
 		.psi1threshold = VR_CFG_AMP(20),
-		.psi2threshold = VR_CFG_AMP(5),
+		.psi2threshold = VR_CFG_AMP(2),
 		.psi3threshold = VR_CFG_AMP(1),
 		.psi3enable = 1,
 		.psi4enable = 1,
@@ -105,14 +105,14 @@ chip soc/intel/skylake
 		.imon_offset = 0x0,
 		.icc_max = VR_CFG_AMP(24),
 		.voltage_limit = 1520,
-		.ac_loadline = 590,
-		.dc_loadline = 470,
+		.ac_loadline = 500,
+		.dc_loadline = 486,
 	}"
 
 	register "domain_vr_config[VR_GT_UNSLICED]" = "{
 		.vr_config_enable = 1,
 		.psi1threshold = VR_CFG_AMP(20),
-		.psi2threshold = VR_CFG_AMP(5),
+		.psi2threshold = VR_CFG_AMP(2),
 		.psi3threshold = VR_CFG_AMP(1),
 		.psi3enable = 1,
 		.psi4enable = 1,
@@ -127,7 +127,7 @@ chip soc/intel/skylake
 	register "domain_vr_config[VR_GT_SLICED]" = "{
 		.vr_config_enable = 1,
 		.psi1threshold = VR_CFG_AMP(20),
-		.psi2threshold = VR_CFG_AMP(5),
+		.psi2threshold = VR_CFG_AMP(2),
 		.psi3threshold = VR_CFG_AMP(1),
 		.psi3enable = 1,
 		.psi4enable = 1,
@@ -135,8 +135,8 @@ chip soc/intel/skylake
 		.imon_offset = 0x0,
 		.icc_max = VR_CFG_AMP(24),
 		.voltage_limit = 1520,
-		.ac_loadline = 570,
-		.dc_loadline = 420,
+		.ac_loadline = 457,
+		.dc_loadline = 430,
 	}"
 
 	# Enable Root port 1 with SRCCLKREQ1#

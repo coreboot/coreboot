@@ -217,7 +217,13 @@ chip soc/intel/skylake
 				device i2c 4b on end
 			end
 		end # I2C #0
-		device pci 15.1 on  end # I2C #1
+		device pci 15.1 on
+			chip drivers/i2c/tpm
+				register "hid" = ""GOOG0005""
+				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_E0_IRQ)"
+				device i2c 50 on end
+			end
+		end # I2C #1
 		device pci 15.2 on
 			chip drivers/intel/mipi_camera
 				register "acpi_hid" = ""INT3472""

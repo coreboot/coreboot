@@ -172,7 +172,7 @@ void mainboard_romstage_entry(unsigned long bist)
 {
 	int s3resume = 0;
 	int dock_err;
-	const u8 spd_addrmap[2 * DIMM_SOCKETS] = { 0x50, 0x52, 0x51, 0x53 };
+	const u8 spd_addrmap[2 * DIMM_SOCKETS] = { 0x50, 0, 0x51, 0 };
 
 
 	timestamp_init(get_initial_timestamp());

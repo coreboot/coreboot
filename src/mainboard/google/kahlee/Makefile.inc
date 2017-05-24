@@ -1,7 +1,7 @@
 #
 # This file is part of the coreboot project.
 #
-# Copyright (C) 2015 Advanced Micro Devices, Inc.
+# Copyright (C) 2015-2017 Advanced Micro Devices, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -13,11 +13,19 @@
 # GNU General Public License for more details.
 #
 
+bootblock-y += bootblock/bootblock.c
 bootblock-y += bootblock/BiosCallOuts.c
 bootblock-y += bootblock/OemCustomize.c
+bootblock-y += ec.c
 
 romstage-y += BiosCallOuts.c
+romstage-y += chromeos.c
 romstage-y += OemCustomize.c
 
 ramstage-y += BiosCallOuts.c
+ramstage-y += chromeos.c
+ramstage-y += ec.c
 ramstage-y += OemCustomize.c
+
+verstage-y += chromeos.c
+verstage-y += ec.c

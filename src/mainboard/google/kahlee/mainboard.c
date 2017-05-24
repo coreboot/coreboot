@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2015 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015-2017 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +18,7 @@
 #include <arch/acpi.h>
 #include <agesawrapper.h>
 #include <amd_pci_util.h>
+#include <ec.h>
 
 /***********************************************************
  * These arrays set up the FCH PCI_INTR registers 0xC00/0xC01.
@@ -78,7 +79,7 @@ static void pirq_setup(void)
 
 
 /*************************************************
- * enable the dedicated function in kahlee board.
+ * Dedicated mainboard function
  *************************************************/
 static void kahlee_enable(device_t dev)
 {
@@ -87,6 +88,8 @@ static void kahlee_enable(device_t dev)
 
 	/* Initialize the PIRQ data structures for consumption */
 	pirq_setup();
+
+	mainboard_ec_init();
 }
 
 struct chip_operations mainboard_ops = {

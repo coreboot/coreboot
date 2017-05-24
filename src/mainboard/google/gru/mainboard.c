@@ -33,6 +33,15 @@
 #include "board.h"
 
 /*
+ * We have to drive the stronger pull-up within 1 second of powering up the
+ * touchpad to prevent its firmware from falling into recovery.
+ */
+static void configure_touchpad(void)
+{
+	gpio_output(GPIO(3, B, 4), 1); /* TP's I2C pull-up rail */
+}
+
+/*
  * Wifi's PDN/RST line is pulled down by its (unpowered) voltage rails, but
  * this reset pin is pulled up by default. Let's drive it low as early as we
  * can.
@@ -313,6 +322,7 @@ static void setup_usb(int port)
 static void mainboard_init(device_t dev)
 {
 	deassert_wifi_power();
+	configure_touchpad();
 	configure_sdmmc();
 	configure_emmc();
 	configure_codec();

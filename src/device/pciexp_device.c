@@ -361,11 +361,6 @@ static void pciexp_enable_aspm(device_t root, unsigned root_cap,
 		lnkctl = pci_read_config16(endp, endp_cap + PCI_EXP_LNKCTL);
 		lnkctl |= apmc;
 		pci_write_config16(endp, endp_cap + PCI_EXP_LNKCTL, lnkctl);
-
-		/* Enable ASPM role based error reporting. */
-		devcap = pci_read_config32(endp, endp_cap + PCI_EXP_DEVCAP);
-		devcap |= PCI_EXP_DEVCAP_RBER;
-		pci_write_config32(endp, endp_cap + PCI_EXP_DEVCAP, devcap);
 	}
 
 	printk(BIOS_INFO, "ASPM: Enabled %s\n", aspm_type_str[apmc]);

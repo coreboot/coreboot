@@ -1007,6 +1007,7 @@ sub add_referenced_symbol {
 {
     #create a non-global static variable by enclosing it and the subroutine
     my $help_whitespace = "";    #string to show length of the help whitespace
+    my $help_keyword_whitespace = "";
 
     sub handle_help {
         my ( $line, $inside_help, $inside_config, $inside_choice, $filename, $line_no ) = @_;
@@ -1018,15 +1019,20 @@ sub add_referenced_symbol {
                 $line =~ /^(\s+)/;    #find the indentation level.
                 $help_whitespace = $1;
                 if ( !$help_whitespace ) {
-                    show_warning("$filename:$line_no - help text starts with no whitespace.");
+                    show_error("$filename:$line_no - help text starts with no whitespace.");
+                    return $inside_help;
+                }
+                elsif ($help_keyword_whitespace eq $help_whitespace) {
+                    show_error("$filename:$line_no - help text needs additional indentation.");
                     return $inside_help;
                 }
             }
 
             #help ends at the first line which has a smaller indentation than the first line of the help text.
-            if ( ( $line !~ /$help_whitespace/ ) && ( $line !~ /^[\r\n]+/ ) ) {
+            if ( ( $line !~ /^$help_whitespace/ ) && ( $line !~ /^[\r\n]+/ ) ) {
                 $inside_help     = 0;
                 $help_whitespace = "";
+                $help_keyword_whitespace = "";
             }
             else {    #if it's not ended, add the line to the helptext array for the symbol's instance
                 if ($inside_config) {
@@ -1034,10 +1040,15 @@ sub add_referenced_symbol {
                     if ($help_whitespace) { $line =~ s/^$help_whitespace//; }
                     push( @{ $symbols{$inside_config}{$sym_num}{helptext} }, $line );
                 }
+                if ( ($help_keyword_whitespace eq $help_whitespace) && ( $line !~ /^[\r\n]+/ ) ) {
+                    show_error("$filename:$line_no - help text needs additional indentation.");
+                }
             }
         }
         elsif ( ( $line =~ /^(\s*)help/ ) || ( $line =~ /^(\s*)---help---/ ) ) {
             $inside_help = $line_no;
+            $line =~ /^(\s+)/;
+            $help_keyword_whitespace = $1;
             if ( ( !$inside_config ) && ( !$inside_choice ) ) {
                 if ($show_note_output) {
                     print "# Note: $filename:$line_no help is not inside a config or choice block.\n";

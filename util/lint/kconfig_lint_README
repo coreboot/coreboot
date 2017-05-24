@@ -45,7 +45,6 @@ Notes:
 Warnings in Kconfig files:
 - Any 'default' expressions that can never be reached.
 - Symbols that are defined but never used.
-- Help text starting with no whitespace.
 - Directories specified in a 'source' keyword do not exist.
 - A 'source' keyword loading a Kconfig file that has already been loaded.
 - A 'source' keyword loading a Kconfig file that doesn't exist. Note that
@@ -78,6 +77,8 @@ Errors in Kconfig files:
 - Lines not ending with a linefeed.  These can cause some keywords to not
   function properly ('source' keywords in particular).  It's also just
   generally good to end the file with a linefeed.
+- Help text starting with no whitespace.
+- Help text that starts at the same indentation level as the 'help' keyword.
 
 Errors in Kconfig that are also caught by Kconfig itself:
 - Invalid expressions.

@@ -20,28 +20,77 @@
 #include <stdlib.h>
 
 static const GPIO_CONTROL oem_kahlee_gpio[] = {
-	/* BT radio disable */
-	{14, Function1, FCH_GPIO_PULL_UP_ENABLE | FCH_GPIO_OUTPUT_VALUE
+	/* SER TX */
+	{8, Function1, FCH_GPIO_PULL_UP_ENABLE | FCH_GPIO_OUTPUT_VALUE
 						| FCH_GPIO_OUTPUT_ENABLE},
-	/* NFC PU */
-	{64, Function0, FCH_GPIO_PULL_UP_ENABLE | FCH_GPIO_OUTPUT_VALUE
+	/* SER RX */
+	{9, Function1, FCH_GPIO_PULL_UP_ENABLE },
+
+	/* AGPIO 12 */
+	{12, Function2, FCH_GPIO_PULL_UP_ENABLE },
+
+	/* TS_EN_SOC (TouchScreen enable GPIO) */
+	{13, Function1, FCH_GPIO_PULL_UP_ENABLE | FCH_GPIO_OUTPUT_VALUE
 						| FCH_GPIO_OUTPUT_ENABLE},
-	/* NFC wake */
-	{65, Function0, FCH_GPIO_PULL_UP_ENABLE | FCH_GPIO_OUTPUT_VALUE
+
+	/* CAM_PWRON (Camera enable GPIO) */
+	{14, Function1,  FCH_GPIO_PULL_UP_ENABLE | FCH_GPIO_OUTPUT_VALUE
 						| FCH_GPIO_OUTPUT_ENABLE},
-	/* Webcam */
-	{66, Function0, FCH_GPIO_PULL_UP_ENABLE | FCH_GPIO_OUTPUT_VALUE
+
+	/* EC_IN_RW */
+	{15, Function1, FCH_GPIO_PULL_UP_ENABLE | FCH_GPIO_OUTPUT_VALUE
 						| FCH_GPIO_OUTPUT_ENABLE},
-	/* PCIe presence detect */
-	{69, Function0, FCH_GPIO_PULL_UP_ENABLE},
-	/* GPS sleep */
-	{70, Function0, FCH_GPIO_PULL_UP_ENABLE | FCH_GPIO_OUTPUT_VALUE
+
+	/* APU_I2C_3_SCL */
+	{19, Function1, FCH_GPIO_PULL_UP_ENABLE },
+
+	/* APU_I2C_3_SDA */
+	{20, Function1, FCH_GPIO_PULL_UP_ENABLE },
+
+
+	/* APU_BT_ON# */
+	{24, Function1, FCH_GPIO_PULL_UP_ENABLE | FCH_GPIO_OUTPUT_VALUE
 						| FCH_GPIO_OUTPUT_ENABLE},
-	/* MUX for Power Express Eval */
-	{116, Function1, FCH_GPIO_PULL_DOWN_ENABLE},
-	/* SD power */
+
+	/* DEVSLP1_SSD */
+	{67, Function1, FCH_GPIO_PULL_UP_ENABLE},
+
+	/* DEVSLP1_EMMC */
+	/* No Connect for now.
+	 * {70, Function1, FCH_GPIO_PULL_UP_ENABLE},
+	 */
+
+	/* SPI_TPM_CS_L */
+	{76, Function1, FCH_GPIO_PULL_DOWN_ENABLE | FCH_GPIO_OUTPUT_VALUE
+						  | FCH_GPIO_OUTPUT_ENABLE},
+
+	/* CAM_LED# */
+	{84, Function1, FCH_GPIO_PULL_UP_ENABLE | FCH_GPIO_OUTPUT_VALUE
+						| FCH_GPIO_OUTPUT_ENABLE},
+
+	/* TS_RST#  (TouchScreen Reset) */
+	{85, Function1, FCH_GPIO_PULL_UP_ENABLE | FCH_GPIO_OUTPUT_VALUE
+						| FCH_GPIO_OUTPUT_ENABLE},
+
+	/* WLAN_RST#_AUX */
 	{119, Function2, FCH_GPIO_PULL_UP_ENABLE | FCH_GPIO_OUTPUT_VALUE
 						 | FCH_GPIO_OUTPUT_ENABLE},
+
+	/* BD_ID1 */
+	{135, Function1, 0 },
+
+	/* TPM_SERIRQ# */
+	{139, Function1, FCH_GPIO_PULL_UP_ENABLE },
+
+	/* BD_ID2 */
+	{140, Function1, 0 },
+
+	/* APU_SPI_WP */
+	{142, Function1, FCH_GPIO_PULL_UP_ENABLE },
+
+	/* BD_ID3 */
+	{144, Function1, 0 },
+
 	{-1}
 };
 

@@ -17,8 +17,10 @@
 #include <bootstate.h>
 #include <cbmem.h>
 #include <console/console.h>
+#include <device/pci_ops.h>
 #include <stdint.h>
 #include <elog.h>
+#include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/smbus.h>
 
@@ -32,6 +34,65 @@ static void pch_log_gpio_gpe(u32 gpe0_sts, u32 gpe0_en, int start)
 		if (gpe0_sts & (1 << i))
 			elog_add_event_wake(ELOG_WAKE_SOURCE_GPIO, i + start);
 	}
+}
+
+struct pme_status_info {
+	int devfn;
+	uint8_t reg_offset;
+	uint32_t elog_event;
+};
+
+#define PME_STS_BIT		(1 << 15)
+
+static void pch_log_pme_internal_wake_source(void)
+{
+	size_t i;
+	device_t dev;
+	uint16_t val;
+	bool dev_found = false;
+
+	static const struct pme_status_info pme_status_info[] = {
+		{ PCH_DEVFN_HDA, 0x54, ELOG_WAKE_SOURCE_PME_HDA },
+		{ PCH_DEVFN_GBE, 0xcc, ELOG_WAKE_SOURCE_PME_GBE },
+		{ PCH_DEVFN_EMMC, 0x84, ELOG_WAKE_SOURCE_PME_EMMC },
+		{ PCH_DEVFN_SDCARD, 0x84, ELOG_WAKE_SOURCE_PME_SDCARD },
+		{ PCH_DEVFN_PCIE1, 0xa4, ELOG_WAKE_SOURCE_PME_PCIE1 },
+		{ PCH_DEVFN_PCIE2, 0xa4, ELOG_WAKE_SOURCE_PME_PCIE2 },
+		{ PCH_DEVFN_PCIE3, 0xa4, ELOG_WAKE_SOURCE_PME_PCIE3 },
+		{ PCH_DEVFN_PCIE4, 0xa4, ELOG_WAKE_SOURCE_PME_PCIE4 },
+		{ PCH_DEVFN_PCIE5, 0xa4, ELOG_WAKE_SOURCE_PME_PCIE5 },
+		{ PCH_DEVFN_PCIE6, 0xa4, ELOG_WAKE_SOURCE_PME_PCIE6 },
+		{ PCH_DEVFN_PCIE7, 0xa4, ELOG_WAKE_SOURCE_PME_PCIE7 },
+		{ PCH_DEVFN_PCIE8, 0xa4, ELOG_WAKE_SOURCE_PME_PCIE8 },
+		{ PCH_DEVFN_PCIE9, 0xa4, ELOG_WAKE_SOURCE_PME_PCIE9 },
+		{ PCH_DEVFN_PCIE10, 0xa4, ELOG_WAKE_SOURCE_PME_PCIE10 },
+		{ PCH_DEVFN_PCIE11, 0xa4, ELOG_WAKE_SOURCE_PME_PCIE11 },
+		{ PCH_DEVFN_PCIE12, 0xa4, ELOG_WAKE_SOURCE_PME_PCIE12 },
+		{ PCH_DEVFN_SATA, 0x74, ELOG_WAKE_SOURCE_PME_SATA },
+		{ PCH_DEVFN_CSE, 0x54, ELOG_WAKE_SOURCE_PME_CSE },
+		{ PCH_DEVFN_CSE_2, 0x54, ELOG_WAKE_SOURCE_PME_CSE2 },
+		{ PCH_DEVFN_CSE_3, 0x54, ELOG_WAKE_SOURCE_PME_CSE3 },
+		{ PCH_DEVFN_XHCI, 0x74, ELOG_WAKE_SOURCE_PME_XHCI },
+		{ PCH_DEVFN_USBOTG, 0x84, ELOG_WAKE_SOURCE_PME_XDCI },
+	};
+
+	for (i = 0; i < ARRAY_SIZE(pme_status_info); i++) {
+		dev = dev_find_slot(0, pme_status_info[i].devfn);
+
+		if (!dev)
+			continue;
+
+		val = pci_read_config16(dev, pme_status_info[i].reg_offset);
+
+		if ((val == 0xFFFF) || !(val & PME_STS_BIT))
+			continue;
+
+		elog_add_event_wake(pme_status_info[i].elog_event, 0);
+		dev_found = true;
+	}
+
+	if (!dev_found)
+		elog_add_event_wake(ELOG_WAKE_SOURCE_PME_INTERNAL, 0);
 }
 
 static void pch_log_wake_source(struct chipset_power_state *ps)
@@ -54,7 +115,7 @@ static void pch_log_wake_source(struct chipset_power_state *ps)
 
 	/* Internal PME (TODO: determine wake device) */
 	if (ps->gpe0_sts[GPE_STD] & PME_B0_STS)
-		elog_add_event_wake(ELOG_WAKE_SOURCE_PME_INTERNAL, 0);
+		pch_log_pme_internal_wake_source();
 
 	/* SMBUS Wake */
 	if (ps->gpe0_sts[GPE_STD] & SMB_WAK_STS)

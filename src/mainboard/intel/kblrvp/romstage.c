@@ -50,7 +50,9 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 		/* Memory leak is ok since we have memory mapped boot media */
 		mem_cfg->MemorySpdPtr00 = (uintptr_t)rdev_mmap_full(&spd_rdev);
 	} else {  /* for CONFIG_BOARD_INTEL_KBLRVP7 */
-		struct spd_block blk;
+		struct spd_block blk = {
+			.addr_map = { 0xa0, 0xa2, 0xa4, 0xa6, },
+		};
 
 		mem_cfg->DqPinsInterleaved = 1;
 		get_spd_smbus(&blk);

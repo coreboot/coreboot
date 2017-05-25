@@ -43,6 +43,7 @@
 #define LPDDR4_SPD_PART_LEN	20
 
 struct spd_block {
+	u8 addr_map[CONFIG_DIMM_MAX];
 	u8 *spd_array[CONFIG_DIMM_MAX];
 	/* Length of each dimm */
 	u16 len;

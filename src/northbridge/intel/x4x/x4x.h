@@ -392,6 +392,7 @@ extern const struct dll_setting default_ddr3_800_dq[2][TOTAL_BYTELANES];
 extern const struct dll_setting default_ddr3_1067_dq[2][TOTAL_BYTELANES];
 extern const struct dll_setting default_ddr3_1333_dq[2][TOTAL_BYTELANES];
 extern const u8 ddr3_emrs1_rtt_nom_config[16][4];
+extern const u8 post_jedec_tab[3][4][2];
 extern const u32 ddr3_c2_tab[2][3][6][2];
 extern const u8 ddr3_c2_x264[3][6];
 extern const u16 ddr3_c2_x23c[3][6];

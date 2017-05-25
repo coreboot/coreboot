@@ -2109,10 +2109,21 @@ void do_raminit(struct sysinfo *s, int fast_boot)
 	// After JEDEC reset
 	MCHBAR8(0x40) = MCHBAR8(0x40) & ~0x2;
 	FOR_EACH_POPULATED_CHANNEL(s->dimms, ch) {
-		if (s->selected_timings.mem_clk == MEM_CLOCK_667MHz)
-			reg32 = (2 << 18) | (3 << 13) | (5 << 8);
-		else
-			reg32 = (2 << 18) | (3 << 13) | (4 << 8);
+		reg32 = (2 << 18);
+		reg32 |= post_jedec_tab[s->selected_timings.fsb_clk]
+			[s->selected_timings.mem_clk - MEM_CLOCK_667MHz][0]
+			<< 13;
+		if (s->selected_timings.mem_clk == MEM_CLOCK_667MHz &&
+			s->selected_timings.fsb_clk == FSB_CLOCK_1066MHz &&
+			ch == 1) {
+			reg32 |= (post_jedec_tab[s->selected_timings.fsb_clk]
+				[s->selected_timings.mem_clk - MEM_CLOCK_667MHz][1]
+				- 1) << 8;
+		} else {
+			reg32 |= post_jedec_tab[s->selected_timings.fsb_clk]
+				[s->selected_timings.mem_clk - MEM_CLOCK_667MHz][1]
+				<< 8;
+		}
 		MCHBAR32(0x400*ch + 0x274) = (MCHBAR32(0x400*ch + 0x274) & ~0xfff00) | reg32;
 		MCHBAR8(0x400*ch + 0x274) = MCHBAR8(0x400*ch + 0x274) & ~0x80;
 		MCHBAR8(0x400*ch + 0x26c) = MCHBAR8(0x400*ch + 0x26c) | 1;

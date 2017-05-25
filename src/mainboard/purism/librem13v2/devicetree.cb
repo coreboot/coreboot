@@ -147,12 +147,13 @@ chip soc/intel/skylake
 		.voltage_limit = 1520,
 	}"
 
-	# Enable Root port 1.
-	register "PcieRpEnable[0]" = "1"
-	# Enable CLKREQ#
-	register "PcieRpClkReqSupport[0]" = "1"
-	# RP 1 uses SRCCLKREQ1#
-	register "PcieRpClkReqNumber[0]" = "1"
+	# Enable Root Ports 5 and 9
+	register "PcieRpEnable[4]" = "1"
+	register "PcieRpEnable[8]" = "1"
+	# Enable CLKREQ# for RP9
+	register "PcieRpClkReqSupport[8]" = "1"
+	# ClkReq for NVMe - Bruteforced (no other value works)
+	register "PcieRpClkReqNumber[8]" = "2"
 
 	register "usb2_ports[0]" = "USB2_PORT_LONG(OC2)"	# Type-C Port 1
 	register "usb2_ports[1]" = "USB2_PORT_LONG(OC3)"	# Type-C Port 2
@@ -198,7 +199,7 @@ chip soc/intel/skylake
 		device pci 00.0 on  end # Host Bridge
 		device pci 02.0 on  end # Integrated Graphics Device
 		device pci 14.0 on  end # USB xHCI
-		device pci 14.1 off end # USB xDCI (OTG)
+		device pci 14.1 on  end # USB xDCI (OTG)
 		device pci 14.2 on  end # Thermal Subsystem
 		device pci 16.0 on  end # Management Engine Interface 1
 		device pci 16.1 off end # Management Engine Interface 2
@@ -206,12 +207,7 @@ chip soc/intel/skylake
 		device pci 16.3 off end # Management Engine KT Redirection
 		device pci 16.4 off end # Management Engine Interface 3
 		device pci 17.0 on  end # SATA
-		device pci 1c.0 on
-			chip drivers/intel/wifi
-				register "wake" = "GPE0_DW0_16"
-				device pci 00.0 on end
-			end
-		end # PCI Express Port 1
+		device pci 1c.0 on  end # PCI Express Port 1
 		device pci 1c.1 off end # PCI Express Port 2
 		device pci 1c.2 off end # PCI Express Port 3
 		device pci 1c.3 off end # PCI Express Port 4
@@ -219,7 +215,7 @@ chip soc/intel/skylake
 		device pci 1c.5 off end # PCI Express Port 6
 		device pci 1c.6 off end # PCI Express Port 7
 		device pci 1c.7 off end # PCI Express Port 8
-		device pci 1d.0 off end # PCI Express Port 9
+		device pci 1d.0 on  end # PCI Express Port 9
 		device pci 1d.1 off end # PCI Express Port 10
 		device pci 1d.2 off end # PCI Express Port 11
 		device pci 1d.3 off end # PCI Express Port 12
@@ -228,7 +224,7 @@ chip soc/intel/skylake
                                 device pnp 0c09.0 on end
                         end
 		end # LPC Interface
-		device pci 1f.1 off end # P2SB
+		device pci 1f.1 on  end # P2SB
 		device pci 1f.2 on  end # Power Management Controller
 		device pci 1f.3 on  end # Intel HDA
 		device pci 1f.4 on  end # SMBus

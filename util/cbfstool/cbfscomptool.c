@@ -81,7 +81,7 @@ int benchmark()
 		clock_gettime(CLOCK_MONOTONIC, &t_e);
 		printf("compressing %d bytes to %d took %ld seconds\n",
 			bufsize, outsize,
-			t_e.tv_sec - t_s.tv_sec);
+			(long)(t_e.tv_sec - t_s.tv_sec));
 	}
 	free(data);
 	free(compressed_data);

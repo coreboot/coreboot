@@ -46,4 +46,13 @@ config VGA_BIOS_ID
 	string
 	default "8086,1916"
 
+config DIMM_MAX
+	int
+	default 1
+
+config DIMM_SPD_SIZE
+	int
+	default 512
+
+
 endif

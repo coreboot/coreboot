@@ -105,7 +105,8 @@ static region_t get_region(frba_t *frba, int region_type)
 {
 	int base_mask;
 	int limit_mask;
-	uint32_t *flreg;
+	uint32_t flreg;
+	void *v;
 	region_t region;
 
 	if (ifd_version >= IFD_VERSION_2)
@@ -117,39 +118,40 @@ static region_t get_region(frba_t *frba, int region_type)
 
 	switch (region_type) {
 	case 0:
-		flreg = &frba->flreg0;
+		v = &frba->flreg0;
 		break;
 	case 1:
-		flreg = &frba->flreg1;
+		v = &frba->flreg1;
 		break;
 	case 2:
-		flreg = &frba->flreg2;
+		v = &frba->flreg2;
 		break;
 	case 3:
-		flreg = &frba->flreg3;
+		v = &frba->flreg3;
 		break;
 	case 4:
-		flreg = &frba->flreg4;
+		v = &frba->flreg4;
 		break;
 	case 5:
-		flreg = &frba->flreg5;
+		v = &frba->flreg5;
 		break;
 	case 6:
-		flreg = &frba->flreg6;
+		v = &frba->flreg6;
 		break;
 	case 7:
-		flreg = &frba->flreg7;
+		v = &frba->flreg7;
 		break;
 	case 8:
-		flreg = &frba->flreg8;
+		v = &frba->flreg8;
 		break;
 	default:
 		fprintf(stderr, "Invalid region type %d.\n", region_type);
 		exit (EXIT_FAILURE);
 	}
 
-	region.base = (*flreg & base_mask) << 12;
-	region.limit = ((*flreg & limit_mask) >> 4) | 0xfff;
+	memmove(&flreg, v, sizeof(flreg));
+	region.base = (flreg & base_mask) << 12;
+	region.limit = ((flreg & limit_mask) >> 4) | 0xfff;
 	region.size = region.limit - region.base + 1;
 
 	if (region.size < 0)

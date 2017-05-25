@@ -62,6 +62,7 @@ config CPU_SPECIFIC_OPTIONS
 	select SOC_INTEL_COMMON_BLOCK_SA
 	select SOC_INTEL_COMMON_BLOCK_SATA
 	select SOC_INTEL_COMMON_BLOCK_SMBUS
+	select SOC_INTEL_COMMON_BLOCK_TIMER
 	select SOC_INTEL_COMMON_BLOCK_UART
 	select SOC_INTEL_COMMON_BLOCK_XHCI
 	select SOC_INTEL_COMMON_NHLT
@@ -72,6 +73,7 @@ config CPU_SPECIFIC_OPTIONS
 	select SSE2
 	select SUPPORT_CPU_UCODE_IN_CBFS
 	select TSC_CONSTANT_RATE
+	select TSC_MONOTONIC_TIMER
 	select TSC_SYNC_MFENCE
 	select UDELAY_TSC
 	select ACPI_NHLT
@@ -157,12 +159,6 @@ config HEAP_SIZE
 config IED_REGION_SIZE
 	hex
 	default 0x400000
-
-config MONOTONIC_TIMER_MSR
-	def_bool y
-	select HAVE_MONOTONIC_TIMER
-	help
-	  Provide a monotonic timer using the 24MHz MSR counter.
 
 config PCR_BASE_ADDRESS
 	hex

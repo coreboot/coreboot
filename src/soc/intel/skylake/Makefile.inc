@@ -18,33 +18,27 @@ bootblock-$(CONFIG_UART_DEBUG) += bootblock/uart.c
 bootblock-$(CONFIG_UART_DEBUG) += uart_debug.c
 bootblock-y += gpio.c
 bootblock-y += gspi.c
-bootblock-y += monotonic_timer.c
 bootblock-y += pch.c
 bootblock-y += pmutil.c
 bootblock-y += spi.c
-bootblock-y += tsc_freq.c
 
 verstage-y += gspi.c
-verstage-y += monotonic_timer.c
 verstage-y += pch.c
 verstage-$(CONFIG_UART_DEBUG) += uart_debug.c
 verstage-y += pmutil.c
 verstage-y += i2c.c
 verstage-y += spi.c
-verstage-y += tsc_freq.c
 
 romstage-y += gpio.c
 romstage-y += gspi.c
 romstage-y += i2c.c
 romstage-y += memmap.c
-romstage-y += monotonic_timer.c
 romstage-y += me.c
 romstage-y += pch.c
 romstage-y += pei_data.c
 romstage-y += pmutil.c
 romstage-$(CONFIG_PLATFORM_USES_FSP2_0) += reset.c
 romstage-y += spi.c
-romstage-y += tsc_freq.c
 romstage-$(CONFIG_UART_DEBUG) += uart_debug.c
 
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
@@ -63,7 +57,6 @@ ramstage-y += irq.c
 ramstage-y += lpc.c
 ramstage-y += me.c
 ramstage-y += memmap.c
-ramstage-y += monotonic_timer.c
 ramstage-$(CONFIG_PLATFORM_USES_FSP1_1) += opregion.c
 ramstage-y += pch.c
 ramstage-y += pei_data.c
@@ -76,24 +69,19 @@ ramstage-y += smi.c
 ramstage-y += smmrelocate.c
 ramstage-y += spi.c
 ramstage-y += systemagent.c
-ramstage-y += tsc_freq.c
 ramstage-y += uart.c
 ramstage-$(CONFIG_UART_DEBUG) += uart_debug.c
 ramstage-y += vr_config.c
 
 smm-y += cpu_info.c
 smm-y += gpio.c
-smm-y += monotonic_timer.c
 smm-y += pch.c
 smm-y += pmutil.c
 smm-y += smihandler.c
 smm-$(CONFIG_SPI_FLASH_SMM) += spi.c
-smm-y += tsc_freq.c
 smm-$(CONFIG_UART_DEBUG) += uart_debug.c
 
 postcar-y += memmap.c
-postcar-y += monotonic_timer.c
-postcar-y += tsc_freq.c
 postcar-$(CONFIG_UART_DEBUG) += uart_debug.c
 
 # cpu_microcode_bins += ???

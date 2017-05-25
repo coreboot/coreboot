@@ -31,7 +31,9 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 	memcpy(&mem_cfg->RcompTarget, rcomp_target, sizeof(rcomp_target));
 
 	/* Read spd block to get memory config */
-	struct spd_block blk;
+	struct spd_block blk = {
+		.addr_map = { 0xa0, 0xa4, },
+	};
 	mem_cfg->DqPinsInterleaved = 1;
 	get_spd_smbus(&blk);
 	mem_cfg->MemorySpdDataLen = blk.len;

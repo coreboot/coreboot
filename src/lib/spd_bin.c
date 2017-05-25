@@ -159,7 +159,7 @@ void get_spd_smbus(struct spd_block *blk)
 
 	for (i = 0 ; i < CONFIG_DIMM_MAX; i++) {
 		get_spd(spd_data_ptr + i * CONFIG_DIMM_SPD_SIZE,
-			0xA0 + (i << 1));
+			blk->addr_map[i]);
 		blk->spd_array[i] = spd_data_ptr + i * CONFIG_DIMM_SPD_SIZE;
 	}
 

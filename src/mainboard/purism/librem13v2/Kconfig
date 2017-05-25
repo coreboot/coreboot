@@ -28,6 +28,10 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "Librem 13 v2"
 
+config MAINBOARD_VERSION
+	string
+	default "2.0"
+
 config MAINBOARD_DIR
 	string
 	default "purism/librem13v2"
@@ -61,5 +65,9 @@ config CPU_MICROCODE_CBFS_LEN
 config CPU_MICROCODE_CBFS_LOC
 	hex
 	default 0xFFE115A0
+
+config CBFS_SIZE
+	hex
+	default 0x5c0000
 
 endif

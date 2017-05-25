@@ -288,3 +288,84 @@ const u8 ddr3_emrs1_rtt_nom_config[16][4] = {  /* [Config][Rank] */
 	{0x81, 0x81, 0x81, 0x00},	/* 8D_16S */
 	{0x81, 0x00, 0x81, 0x00},	/* 16S_16S */
 };
+
+const u32 ddr3_c2_tab[2][3][6][2] = { /* [n-mode][ddr3 freq][CAS][reg] */
+		/* 115h[15:0]	117h[23:0] */
+	{ /* 1N mode */
+		{ /* DDR3 800MHz */
+			{0x0189, 0x000aaa}, /* CAS = 5 */
+			{0x0189, 0x101aaa}, /* CAS = 6 */
+		},
+		{ /* DDR3 1067MHz */
+			{0x0000, 0x000000}, /* CAS = 5 - Not supported */
+			{0x0089, 0x000bbb}, /* CAS = 6 */
+			{0x0099, 0x101bbb}, /* CAS = 7 */
+			{0x0099, 0x202bbb} /* CAS = 8 */
+		},{ /* DDR3 1333 */
+			{0x0000, 0x000000}, /* CAS = 5 - Not supported */
+			{0x0000, 0x000000}, /* CAS = 6 - Not supported */
+			{0x0000, 0x000000}, /* CAS = 7 - Not supported */
+			{0x129a, 0x0078dc}, /* CAS = 8 */
+			{0x028a, 0x0078dc}, /* CAS = 9 */
+			{0x028a, 0x1088dc}, /* CAS = 10 */
+		},
+	},
+	{ /* 2N mode */
+		{ /* DDR3 800MHz */
+			{0x0189, 0x000aaa}, /* CAS = 5 */
+			{0x0189, 0x101aaa}, /* CAS = 6 */
+			{0x0000, 0x000000}, /* CAS = 7 - Not supported */
+			{0x0000, 0x000000} /* CAS = 8 - Not suppported */
+		},
+		{ /* DDR3 1067 */
+			{0x0000, 0x000000}, /* CAS = 5 - Not supported */
+			{0x0089, 0x000bbb}, /* CAS = 6 */
+			{0x0099, 0x101bbb}, /* CAS = 7 */
+			{0x0099, 0x202bbb} /* CAS = 8 */
+		},{ /* DDR3 1333MHz */
+			{0x0000, 0x000000}, /* CAS = 5 - Not supported  */
+			{0x0000, 0x000000}, /* CAS = 6 - Not supported */
+			{0x0000, 0x000000}, /* CAS = 7 - Not supported */
+			{0x019a, 0x0078dc}, /* CAS = 8 */
+			{0x019a, 0x1088dc}, /* CAS = 9 */
+			{0x019a, 0x2098dc}, /* CAS = 10 */
+		},
+	}
+};
+
+const u8 ddr3_c2_x264[3][6] = { /* [freq][cas] */
+	/* DDR3 800MHz */
+	{0x78, /* CAS = 5  */
+	 0x89}, /* CAS = 6 */
+	/* DDR3 1066 */
+	{0x00, /* CAS = 5 - Not supported */
+	 0xff, /* CAS = 6 */
+	 0x8a, /* CAS = 7 */
+	 0x9a}, /* CAS = 8 */
+	/* DDR3 1333 */
+	{0x00, /* CAS = 5 - Not supported */
+	 0x00, /* CAS = 6 - Not supported */
+	 0xff, /* CAS = 7 - Not supported */
+	 0xff, /* CAS = 8 */
+	 0xff, /* CAS = 9 */
+	 0xff}, /* CAS = 10 */
+};
+
+const u16 ddr3_c2_x23c[3][6]={ /* [freq][cas] */
+	/* DDR3 800MHz */
+	{0x9bbb, /* CAS = 5 */
+	 0x8bbb}, /* CAS = 6 */
+	/* DDR3 1066MHz */
+	{0x0000, /* CAS = 5 - Not supported */
+	 0x9baa, /* CAS = 6 */
+	 0x8caa, /* CAS = 7 */
+	 0x7daa}, /* CAS = 8 */
+
+	/* DDR3 1333MHz */
+	{0x0000, /* CAS = 5 - Not supported */
+	 0x0000, /* CAS = 6 - Not supported */
+	 0x0000, /* CAS = 7 - Not supported */
+	 0xaecb, /* CAS = 8 */
+	 0x9fcb, /* CAS = 9 */
+	 0x8fcb}, /* CAS = 10 */
+};

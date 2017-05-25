@@ -1800,7 +1800,10 @@ static void set_enhanced_mode(struct sysinfo *s)
 	MCHBAR32(0xfc4) = 0xfe22244;
 	MCHBAR8(0x12f) = 0x5c;
 	MCHBAR8(0xfb0) = (MCHBAR8(0xfb0) & ~1) | 1;
-	MCHBAR8(0x12f) = MCHBAR8(0x12f) | 0x2;
+	if (s->selected_timings.mem_clk <= MEM_CLOCK_800MHz)
+		MCHBAR8(0x12f) = MCHBAR8(0x12f) | 0x2;
+	else
+		MCHBAR8(0x12f) = MCHBAR8(0x12f) & 0x2;
 	MCHBAR8(0x6c0) = (MCHBAR8(0x6c0) & ~0xf0) | 0xa0;
 	MCHBAR32(0xfa8) = 0x30d400;
 
@@ -1837,31 +1840,57 @@ static void power_settings(struct sysinfo *s)
 	u8 twl = 0;
 	u16 x264, x23c;
 
-	twl = s->selected_timings.CAS - 1;
-	x264 = 0x78;
-	switch (s->selected_timings.mem_clk) {
-	default:
-	case MEM_CLOCK_667MHz:
-		reg1 = 0x99;
-		reg2 = 0x1048a9;
-		clkgate = 0x230000;
-		x23c = 0x7a89;
-		break;
-	case MEM_CLOCK_800MHz:
-		if (s->selected_timings.CAS == 5) {
-			reg1 = 0x19a;
-			reg2 = 0x1048aa;
-		} else {
-			reg1 = 0x9a;
-			reg2 = 0x2158aa;
+	if (s->spd_type == DDR2) {
+		twl = s->selected_timings.CAS - 1;
+		x264 = 0x78;
+
+		switch (s->selected_timings.mem_clk) {
+		default:
+		case MEM_CLOCK_667MHz:
+			reg1 = 0x99;
+			reg2 = 0x1048a9;
+			clkgate = 0x230000;
+			x23c = 0x7a89;
+			break;
+		case MEM_CLOCK_800MHz:
+			if (s->selected_timings.CAS == 5) {
+				reg1 = 0x19a;
+				reg2 = 0x1048aa;
+			} else {
+				reg1 = 0x9a;
+				reg2 = 0x2158aa;
 			x264 = 0x89;
+			}
+			clkgate = 0x280000;
+			x23c = 0x7b89;
+			break;
 		}
-		clkgate = 0x280000;
-		x23c = 0x7b89;
-		break;
+		reg3 = 0x232;
+		reg4 = 0x2864;
+	} else { /* DDR3 */
+		int ddr3_idx = s->selected_timings.mem_clk - MEM_CLOCK_800MHz;
+		int cas_idx = s->selected_timings.CAS - 5;
+
+		twl = s->selected_timings.mem_clk - MEM_CLOCK_800MHz + 5;
+		reg1 = ddr3_c2_tab[s->nmode - 1][ddr3_idx][cas_idx][0];
+		reg2 = ddr3_c2_tab[s->nmode - 1][ddr3_idx][cas_idx][1];
+		reg3 = 0x764;
+		reg4 = 0x78c8;
+		x264 = ddr3_c2_x264[ddr3_idx][cas_idx];
+		x23c = ddr3_c2_x23c[ddr3_idx][cas_idx];
+		switch (s->selected_timings.mem_clk) {
+		case MEM_CLOCK_800MHz:
+		default:
+			clkgate = 0x280000;
+			break;
+		case MEM_CLOCK_1066MHz:
+			clkgate = 0x350000;
+			break;
+		case MEM_CLOCK_1333MHz:
+			clkgate = 0xff0000;
+			break;
+		}
 	}
-	reg3 = 0x232;
-	reg4 = 0x2864;
 
 	if (CHANNEL_IS_POPULATED(s->dimms, 0) && CHANNEL_IS_POPULATED(s->dimms, 1))
 		MCHBAR32(0x14) = 0x0010461f;
@@ -1918,10 +1947,6 @@ static void power_settings(struct sysinfo *s)
 		MCHBAR32(0x110c) = 0x100;
 	MCHBAR32(0x1110) = 0x10810350 & ~0x78;
 	MCHBAR32(0x1114) = 0;
-	if (s->selected_timings.mem_clk == MEM_CLOCK_667MHz)
-		twl = 5;
-	else
-		twl = 6;
 	x592 = 0xff;
 	if (pci_read_config8(PCI_DEV(0, 0, 0), 0x8) < 3)
 		x592 = ~0x4;

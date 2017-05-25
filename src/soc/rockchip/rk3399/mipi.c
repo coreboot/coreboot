@@ -95,7 +95,7 @@ static void rk_mipi_dsi_phy_write(struct rk_mipi_dsi *dsi,
 
 static int rk_mipi_dsi_phy_init(struct rk_mipi_dsi *dsi)
 {
-	int ret, testdin, vco;
+	int testdin, vco;
 
 	int lane_mbps = div_round_up(dsi->lane_bps, USECS_PER_SEC);
 	vco = (lane_mbps < 200) ? 0 : (lane_mbps + 100) / 200;
@@ -156,7 +156,7 @@ static int rk_mipi_dsi_phy_init(struct rk_mipi_dsi *dsi)
 
 	write32(&mipi_regs->dsi_phy_rstz, PHY_ENFORCEPLL | PHY_ENABLECLK |
 					  PHY_UNRSTZ | PHY_UNSHUTDOWNZ);
-	return ret;
+	return 0;
 }
 
 static inline int mipi_dsi_pixel_format_to_bpp(enum mipi_dsi_pixel_format fmt)
@@ -421,7 +421,8 @@ void rk_mipi_prepare(const struct edid *edid, u32 display_on_mdelay, u32 video_m
 	rk_mipi_dsi_dphy_timing_config(&rk_mipi);
 	rk_mipi_dsi_dphy_interface_config(&rk_mipi);
 	rk_mipi_dsi_clear_err(&rk_mipi);
-	rk_mipi_dsi_phy_init(&rk_mipi);
+	if (rk_mipi_dsi_phy_init(&rk_mipi) < 0)
+		return;
 	rk_mipi_dsi_wait_for_two_frames(&rk_mipi, edid);
 
 	rk_mipi_dsi_set_mode(&rk_mipi, MIPI_DSI_CMD_MODE);

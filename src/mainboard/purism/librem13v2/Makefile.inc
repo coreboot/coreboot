@@ -13,8 +13,6 @@
 ## GNU General Public License for more details.
 ##
 
-bootblock-y += bootblock_mainboard.c
-
 romstage-y += pei_data.c
 
 ramstage-y += mainboard.c

@@ -1,4 +1,4 @@
-if BOARD_PURISM_LIBREM13
+if BOARD_PURISM_LIBREM13_V1
 
 config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
@@ -31,11 +31,11 @@ config HAVE_ME_BIN
 
 config MAINBOARD_DIR
 	string
-	default purism/librem13
+	default purism/librem13v1
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "Librem 13"
+	default "Librem 13 v1"
 
 config MAX_CPUS
 	int

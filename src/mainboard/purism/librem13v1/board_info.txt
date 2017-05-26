@@ -1,6 +1,6 @@
 Category: laptop
 Vendor name: Purism
-Board name: Librem 13
+Board name: Librem 13 v1
 Board URL: https://puri.sm/librem-13/
 ROM package: SOIC8
 ROM protocol: SPI

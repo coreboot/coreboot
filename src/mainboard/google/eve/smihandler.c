@@ -29,7 +29,6 @@ void mainboard_smi_espi_handler(void)
 static void mainboard_gpio_smi_sleep(u8 slp_typ)
 {
 	/* Power down the rails on any sleep type */
-	gpio_set(EN_PP3300_DX_TOUCH, 0);
 	gpio_set(EN_PP3300_DX_CAM, 0);
 }
 

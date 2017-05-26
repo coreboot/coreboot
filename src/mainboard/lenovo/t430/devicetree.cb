@@ -47,7 +47,7 @@ chip northbridge/intel/sandybridge
 			register "gpi13_routing" = "2"
 			register "gpi1_routing" = "2"
 			register "p_cnt_throttling_supported" = "1"
-			register "pcie_hotplug_map" = "{ 1, 0, 1, 0, 0, 0, 0, 0 }"
+			register "pcie_hotplug_map" = "{ 0, 0, 1, 0, 0, 0, 0, 0 }"
 			register "pcie_port_coalesce" = "1"
 			register "sata_interface_speed_support" = "0x3"
 			register "sata_port_map" = "0x17"

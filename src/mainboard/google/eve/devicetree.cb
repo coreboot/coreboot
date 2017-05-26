@@ -233,6 +233,10 @@ chip soc/intel/skylake
 				register "generic.desc" = ""WCOM Digitizer""
 				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_E7_IRQ)"
 				register "generic.speed" = "I2C_SPEED_FAST_PLUS"
+				register "generic.has_power_resource" = "1"
+				register "generic.disable_gpio_export_in_crs" = "1"
+				register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_C22)"
+				register "generic.enable_delay_ms" = "250"
 				register "hid_desc_reg_offset" = "0x1"
 				device i2c 0a on end
 			end

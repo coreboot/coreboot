@@ -10,4 +10,4 @@ themes/hugo-material-docs:
 	git clone https://github.com/digitalcraftsman/hugo-material-docs.git themes/hugo-material-docs
 
 public: themes/hugo-material-docs
-	docker run --rm -it -v $$PWD:/src -v $$PWD/../../Documentation:/src/content -v /srv/www/vhosts/www.coreboot.org/Documentation:/src/public jguyomard/hugo-builder hugo --forceSyncStatic --cleanDestinationDir
+	docker run --rm -it -v $$PWD:/src:ro -v $$PWD/../../Documentation:/src/content:ro -v /srv/www/vhosts/www.coreboot.org/Documentation:/src/public jguyomard/hugo-builder hugo --forceSyncStatic --cleanDestinationDir

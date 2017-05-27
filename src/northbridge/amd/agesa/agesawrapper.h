@@ -51,8 +51,11 @@ struct OEM_HOOK
 extern const struct OEM_HOOK OemCustomize;
 
 /* For suspend-to-ram support. */
+#if !IS_ENABLED(CONFIG_CPU_AMD_PI)
+/* TODO: With binaryPI we need different interface. */
 AGESA_STATUS OemInitResume(AMD_S3_PARAMS *dataBlock);
 AGESA_STATUS OemS3LateRestore(AMD_S3_PARAMS *dataBlock);
 AGESA_STATUS OemS3Save(AMD_S3_PARAMS *dataBlock);
+#endif
 
 #endif /* _AGESAWRAPPER_H_ */

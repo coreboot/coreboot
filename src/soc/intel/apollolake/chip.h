@@ -19,7 +19,6 @@
 #define _SOC_APOLLOLAKE_CHIP_H_
 
 #include <soc/gpe.h>
-#include <soc/gpio_defs.h>
 #include <soc/gpio.h>
 #include <intelblocks/lpss_i2c.h>
 #include <device/i2c.h>

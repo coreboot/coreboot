@@ -14,7 +14,8 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
-#include <soc/gpio_defs.h>
+#include <soc/gpio.h>
+#include <intelblocks/pcr.h>
 #include <soc/pcr_ids.h>
 #include "gpiolib.asl"
 
@@ -23,9 +24,9 @@ scope (\_SB) {
 	Device (GPO0)
 	{
 		Name (_ADR, 0)
-		Name (_HID, "INT3452")
-		Name (_CID, "INT3452")
-		Name (_DDN, "General Purpose Input/Output (GPIO) Controller - North" )
+		Name (_HID, GPIO_COMM_NAME)
+		Name (_CID, GPIO_COMM_NAME)
+		Name (_DDN, GPIO_COMM_0_DESC)
 		Name (_UID, 1)
 
 		Name (RBUF, ResourceTemplate ()
@@ -40,7 +41,7 @@ scope (\_SB) {
 		Method (_CRS, 0x0, NotSerialized)
 		{
 			CreateDwordField (^RBUF, ^RMEM._BAS, RBAS)
-			ShiftLeft (PID_GPIO_N, PCR_PORTID_SHIFT, Local0)
+			ShiftLeft (GPIO_COMM0_PID, PCR_PORTID_SHIFT, Local0)
 			Or (CONFIG_PCR_BASE_ADDRESS, Local0, RBAS)
 			Return (^RBUF)
 		}
@@ -54,9 +55,9 @@ scope (\_SB) {
 	Device (GPO1)
 	{
 		Name (_ADR, 0)
-		Name (_HID, "INT3452")
-		Name (_CID, "INT3452")
-		Name (_DDN, "General Purpose Input/Output (GPIO) Controller - Northwest" )
+		Name (_HID, GPIO_COMM_NAME)
+		Name (_CID, GPIO_COMM_NAME)
+		Name (_DDN, GPIO_COMM_1_DESC)
 		Name (_UID, 2)
 
 		Name (RBUF, ResourceTemplate ()
@@ -71,7 +72,7 @@ scope (\_SB) {
 		Method (_CRS, 0x0, NotSerialized)
 		{
 			CreateDwordField (^RBUF, ^RMEM._BAS, RBAS)
-			ShiftLeft (PID_GPIO_NW, PCR_PORTID_SHIFT, Local0)
+			ShiftLeft (GPIO_COMM1_PID, PCR_PORTID_SHIFT, Local0)
 			Or (CONFIG_PCR_BASE_ADDRESS, Local0, RBAS)
 			Return (^RBUF)
 		}
@@ -85,9 +86,9 @@ scope (\_SB) {
 	Device (GPO2)
 	{
 		Name (_ADR, 0)
-		Name (_HID, "INT3452")
-		Name (_CID, "INT3452")
-		Name (_DDN, "General Purpose Input/Output (GPIO) Controller - West" )
+		Name (_HID, GPIO_COMM_NAME)
+		Name (_CID, GPIO_COMM_NAME)
+		Name (_DDN, GPIO_COMM_2_DESC)
 		Name (_UID, 3)
 
 		Name (RBUF, ResourceTemplate ()
@@ -102,7 +103,7 @@ scope (\_SB) {
 		Method (_CRS, 0x0, NotSerialized)
 		{
 			CreateDwordField (^RBUF, ^RMEM._BAS, RBAS)
-			ShiftLeft (PID_GPIO_W, PCR_PORTID_SHIFT, Local0)
+			ShiftLeft (GPIO_COMM2_PID, PCR_PORTID_SHIFT, Local0)
 			Or (CONFIG_PCR_BASE_ADDRESS, Local0, RBAS)
 			Return (^RBUF)
 		}
@@ -116,9 +117,9 @@ scope (\_SB) {
 	Device (GPO3)
 	{
 		Name (_ADR, 0)
-		Name (_HID, "INT3452")
-		Name (_CID, "INT3452")
-		Name (_DDN, "General Purpose Input/Output (GPIO) Controller - Southwest" )
+		Name (_HID, GPIO_COMM_NAME)
+		Name (_CID, GPIO_COMM_NAME)
+		Name (_DDN, GPIO_COMM_3_DESC)
 		Name (_UID, 4)
 
 		Name (RBUF, ResourceTemplate ()
@@ -133,7 +134,7 @@ scope (\_SB) {
 		Method (_CRS, 0x0, NotSerialized)
 		{
 			CreateDwordField (^RBUF, ^RMEM._BAS, RBAS)
-			ShiftLeft (PID_GPIO_SW, PCR_PORTID_SHIFT, Local0)
+			ShiftLeft (GPIO_COMM3_PID, PCR_PORTID_SHIFT, Local0)
 			Or (CONFIG_PCR_BASE_ADDRESS, Local0, RBAS)
 			Return (^RBUF)
 		}

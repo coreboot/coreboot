@@ -6,7 +6,7 @@
  *
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2015 Intel Corp.
+ * Copyright (C) 2015 - 2017 Intel Corp.
  * (Written by Alexandru Gagniuc <alexandrux.gagniuc@intel.com> for Intel Corp.)
  *
  * This program is free software; you can redistribute it and/or modify
@@ -20,8 +20,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef _SOC_APOLLOLAKE_GPIO_DEFS_H_
-#define _SOC_APOLLOLAKE_GPIO_DEFS_H_
+#ifndef _SOC_APOLLOLAKE_GPIO_H_
+#define _SOC_APOLLOLAKE_GPIO_H_
 
 /*
  * Miscellaneous Configuration register(MISCCFG).These are community specific
@@ -40,103 +40,19 @@
 
 #define GPIO_MAX_NUM_PER_GROUP	32
 
-#define MISCCFG_GPE0_DW0_SHIFT 8
-#define MISCCFG_GPE0_DW0_MASK (0xf << MISCCFG_GPE0_DW0_SHIFT)
-#define MISCCFG_GPE0_DW1_SHIFT 12
-#define MISCCFG_GPE0_DW1_MASK (0xf << MISCCFG_GPE0_DW1_SHIFT)
-#define MISCCFG_GPE0_DW2_SHIFT 16
-#define MISCCFG_GPE0_DW2_MASK (0xf << MISCCFG_GPE0_DW2_SHIFT)
 
 /* Host Software Pad Ownership Register.
  * The pins in the community are divided into 3 groups :
  * GPIO 0 ~ 31, GPIO 32 ~ 63, GPIO 64 ~ 95
  */
-#define HOSTSW_OWN_REG_BASE		0x80
-
-#define PAD_CFG0_TX_STATE		(1 << 0)
-#define PAD_CFG0_RX_STATE		(1 << 1)
-#define PAD_CFG0_TX_DISABLE		(1 << 8)
-#define PAD_CFG0_RX_DISABLE		(1 << 9)
-#define PAD_CFG0_MODE_MASK		(7 << 10)
-#define  PAD_CFG0_MODE_GPIO		(0 << 10)
-#define  PAD_CFG0_MODE_FUNC(x)		((x) << 10)
-#define  PAD_CFG0_MODE_NF1		(1 << 10)
-#define  PAD_CFG0_MODE_NF2		(2 << 10)
-#define  PAD_CFG0_MODE_NF3		(3 << 10)
-#define  PAD_CFG0_MODE_NF4		(4 << 10)
-#define  PAD_CFG0_MODE_NF5		(5 << 10)
-#define PAD_CFG0_ROUTE_NMI		(1 << 17)
-#define PAD_CFG0_ROUTE_SMI		(1 << 18)
-#define PAD_CFG0_ROUTE_SCI		(1 << 19)
-#define PAD_CFG0_ROUTE_IOAPIC		(1 << 20)
-#define PAD_CFG0_RX_POL_INVERT		(1 << 23)
-#define PAD_CFG0_RX_POL_NONE		(0 << 23)
-
-#define PAD_CFG0_TRIG_MASK		(3 << 25)
-#define  PAD_CFG0_TRIG_LEVEL		(0 << 25)
-#define  PAD_CFG0_TRIG_EDGE_SINGLE	(1 << 25) /* controlled by RX_INVERT*/
-#define  PAD_CFG0_TRIG_OFF		(2 << 25)
-#define  PAD_CFG0_TRIG_EDGE_BOTH	(3 << 25)
-#define PAD_CFG0_RESET_MASK		(3 << 30)
-#define  PAD_CFG0_RESET_PWROK		(0 << 30)
-#define  PAD_CFG0_RESET_DEEP		(1 << 30)
-#define  PAD_CFG0_RESET_PLTRST		(2 << 30)
-#define  PAD_CFG0_RESET_RSMRST		(3 << 30)
-
-/* Use the fourth bit in IntSel field to indicate gpio
- * ownership. This field is RO and hence not used during
- * gpio configuration.
- */
-#define PAD_CFG1_GPIO_DRIVER		(0x1 << 4)
-#define PAD_CFG1_IRQ_MASK		(0xff << 0)
-#define PAD_CFG1_PULL_MASK		(0xf << 10)
-#define  PAD_CFG1_PULL_NONE		(0x0 << 10)
-#define  PAD_CFG1_PULL_DN_5K		(0x2 << 10)
-#define  PAD_CFG1_PULL_DN_20K		(0x4 << 10)
-#define  PAD_CFG1_PULL_UP_1K		(0x9 << 10)
-#define  PAD_CFG1_PULL_UP_5K		(0xa << 10)
-#define  PAD_CFG1_PULL_UP_2K		(0xb << 10)
-#define  PAD_CFG1_PULL_UP_20K		(0xc << 10)
-#define  PAD_CFG1_PULL_UP_667		(0xd << 10)
-#define  PAD_CFG1_PULL_NATIVE		(0xf << 10)
-/* Tx enabled driving last value driven, Rx enabled */
-#define PAD_CFG1_IOSSTATE_TxLASTRxE	(0x0 << 0)
-/* Tx enabled driving 0, Rx disabled and Rx driving 0 back to its controller
- * internally */
-#define PAD_CFG1_IOSSTATE_Tx0RxDCRx0	(0x1 << 0)
-/* Tx enabled driving 0, Rx disabled and Rx driving 1 back to its controller
- * internally */
-#define PAD_CFG1_IOSSTATE_Tx0RXDCRx1	(0x2 << 0)
-/* Tx enabled driving 1, Rx disabled and Rx driving 0 back to its controller
- * internally */
-#define PAD_CFG1_IOSSTATE_Tx1RXDCRx0	(0x3 << 0)
-/* Tx enabled driving 1, Rx disabled and Rx driving 1 back to its controller
- * internally */
-#define PAD_CFG1_IOSSTATE_Tx1RxDCRx1	(0x4 << 0)
-/* Tx enabled driving 0, Rx enabled */
-#define PAD_CFG1_IOSSTATE_Tx0RxE	(0x5 << 0)
-/* Tx enabled driving 1, Rx enabled */
-#define PAD_CFG1_IOSSTATE_Tx1RxE	(0x6 << 0)
-/* Hi-Z, Rx driving 0 back to its controller internally */
-#define PAD_CFG1_IOSSTATE_HIZCRx0	(0x7 << 0)
-/* Hi-Z, Rx driving 1 back to its controller internally */
-#define PAD_CFG1_IOSSTATE_HIZCRx1	(0x8 << 0)
-#define PAD_CFG1_IOSSTATE_TxDRxE	(0x9 << 0) /* Tx disabled, Rx enabled */
-#define PAD_CFG1_IOSSTATE_IGNORE	(0xf << 0) /* Ignore Iostandby */
-#define PAD_CFG1_IOSSTATE_MASK		0xf /* mask to extract Iostandby bits */
-#define PAD_CFG1_IOSSTATE_SHIFT	14 /* set Iostandby bits [17:14] */
-#define PAD_CFG1_IOSTERM_SAME		(0x0 << 8) /* Same as functional mode */
-#define PAD_CFG1_IOSTERM_DISPUPD	(0x1 << 8) /* Disable Pull-up/Pull-down */
-#define PAD_CFG1_IOSTERM_ENPD		(0x2 << 8) /* Enable Pull-down */
-#define PAD_CFG1_IOSTERM_ENPU		(0x3 << 8) /* Enable Pull-up */
+#define HOSTSW_OWN_REG_0		0x80
 
 #define PAD_CFG_BASE			0x500
-#define PAD_CFG_OFFSET(pad)		(PAD_CFG_BASE + ((pad) * 8))
+
+#define GPI_INT_EN_0			0x110
 
 #define GPI_SMI_STS_0			0x140
 #define GPI_SMI_EN_0			0x150
-#define GPI_SMI_STS_OFFSET(group)	(GPI_SMI_STS_0 + ((group) * 4))
-#define GPI_SMI_EN_OFFSET(group)	(GPI_SMI_EN_0 + ((group) * 4))
 
 #define NUM_N_PADS			(PAD_N(SVID0_CLK) + 1)
 #define NUM_NW_PADS			(PAD_NW(GPIO_123) + 1)
@@ -432,13 +348,21 @@
 #define GPIO_COMM_W_NAME		"INT3452:02"
 #define GPIO_COMM_SW_NAME		"INT3452:03"
 
-/* Default configurations */
-#define PAD_CFG0_DEFAULT_FUNC(x)	(PAD_CFG0_RESET_DEEP \
-					| PAD_CFG0_MODE_FUNC(x))
-#define PAD_CFG0_DEFAULT_NATIVE		PAD_CFG0_DEFAULT_FUNC(1)
+/* Following is used in gpio asl */
+#define GPIO_COMM_NAME			"INT3452"
+#define GPIO_COMM_0_DESC	\
+	"General Purpose Input/Output (GPIO) Controller - North"
+#define GPIO_COMM_1_DESC	\
+	"General Purpose Input/Output (GPIO) Controller - Northwest"
+#define GPIO_COMM_2_DESC	\
+	"General Purpose Input/Output (GPIO) Controller - West"
+#define GPIO_COMM_3_DESC	\
+	"General Purpose Input/Output (GPIO) Controller - Southwest"
 
-#define PAD_CFG1_DEFAULT_PULLUP		PAD_CFG1_PULL_UP_20K
-#define PAD_CFG1_DEFAULT_NATIVE		PAD_CFG1_PULL_NATIVE
+#define GPIO_COMM0_PID			PID_GPIO_N
+#define GPIO_COMM1_PID			PID_GPIO_NW
+#define GPIO_COMM2_PID			PID_GPIO_W
+#define GPIO_COMM3_PID			PID_GPIO_SW
 
 /*
  * IOxAPIC IRQs for the GPIOs, overlap is expected as we encourage to use
@@ -554,4 +478,5 @@
 #define GPIO_72_IRQ			0x65
 #define GPIO_73_IRQ			0x66
 
-#endif /* _SOC_APOLLOLAKE_GPIO_DEFS_H_ */
+#define GPIO_NUM_PAD_CFG_REGS   2 /* DW0, DW1 */
+#endif /* _SOC_APOLLOLAKE_GPIO_H_ */

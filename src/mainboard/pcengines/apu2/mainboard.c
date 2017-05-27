@@ -19,7 +19,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_def.h>
-#include <northbridge/amd/pi/BiosCallOuts.h>
 #include <northbridge/amd/pi/agesawrapper.h>
 #include <southbridge/amd/pi/hudson/hudson.h>
 #include <southbridge/amd/pi/hudson/pci_devs.h>

@@ -20,11 +20,6 @@
 #include "Porting.h"
 #include "AGESA.h"
 
-/* TODO: Add a kconfig option to name the AGESA ROM file in CBFS */
-#ifndef CONFIG_CBFS_AGESA_NAME
-#define CONFIG_CBFS_AGESA_NAME "AGESA"
-#endif
-
 enum {
 	PICK_DMI,       /* DMI Interface */
 	PICK_PSTATE,    /* Acpi Pstate SSDT Table */

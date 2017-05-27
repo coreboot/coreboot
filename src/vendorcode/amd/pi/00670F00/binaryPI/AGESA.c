@@ -52,9 +52,6 @@
 #include <console/console.h>
 #include <commonlib/loglevel.h>
 
-// TODO Add a kconfig option to name the AGESA ROM file in CBFS
-#define CONFIG_CBFS_AGESA_NAME "AGESA"
-
 // TODO These need to be replaced with calls to CreateStruct()
 AGESA_STATUS
 HeapAllocateBuffer (

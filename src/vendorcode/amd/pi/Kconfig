@@ -53,6 +53,10 @@ config AGESA_BINARY_PI_FILE
 	help
 	  Specify the binary file to use for AMD platform initialization.
 
+config AGESA_CBFS_NAME
+	string
+	default "AGESA"
+
 config AGESA_BINARY_PI_LOCATION
 	hex "AGESA PI binary address in ROM"
 	default 0xFFE00000

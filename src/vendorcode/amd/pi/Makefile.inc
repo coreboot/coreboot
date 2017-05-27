@@ -151,9 +151,9 @@ ramstage-libs += $(obj)/agesa/libagesa.a
 
 #######################################################################
 
-cbfs-files-$(CONFIG_CPU_AMD_AGESA_BINARY_PI) += AGESA
-AGESA-file := $(CONFIG_AGESA_BINARY_PI_FILE)
-AGESA-type := raw
-AGESA-position := $(CONFIG_AGESA_BINARY_PI_LOCATION)
+cbfs-files-$(CONFIG_CPU_AMD_AGESA_BINARY_PI) += $(CONFIG_AGESA_CBFS_NAME)
+$(CONFIG_AGESA_CBFS_NAME)-file := $(CONFIG_AGESA_BINARY_PI_FILE)
+$(CONFIG_AGESA_CBFS_NAME)-type := raw
+$(CONFIG_AGESA_CBFS_NAME)-position := $(CONFIG_AGESA_BINARY_PI_LOCATION)
 
 endif

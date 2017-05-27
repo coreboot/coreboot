@@ -50,8 +50,6 @@
 #include <FchDef.h>
 #include <FieldAccessors.h>
 
-#define CONFIG_CBFS_AGESA_NAME "AGESA"
-
 AGESA_STATUS
 HeapAllocateBuffer (
   IN OUT   VOID *AllocateHeapParams,

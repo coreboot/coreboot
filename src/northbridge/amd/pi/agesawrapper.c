@@ -413,7 +413,7 @@ const void *agesawrapper_locate_module (const CHAR8 name[8])
 		agesa = (void *)CONFIG_AGESA_BINARY_PI_LOCATION;
 		file_size = 0x100000;
 	} else {
-		agesa = cbfs_boot_map_with_leak((const char *)CONFIG_CBFS_AGESA_NAME,
+		agesa = cbfs_boot_map_with_leak((const char *)CONFIG_AGESA_CBFS_NAME,
 					CBFS_TYPE_RAW, &file_size);
 	}
 

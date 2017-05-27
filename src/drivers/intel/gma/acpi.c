@@ -122,7 +122,7 @@ drivers_intel_gma_displays_ssdt_generate(const struct i915_gpu_controller_info *
 			^^XDSS(0x5a, Arg0)
 		}
 		*/
-		acpigen_write_method("_DSS", 0);
+		acpigen_write_method("_DSS", 1);
 		acpigen_emit_namestring("^^XDSS");
 		acpigen_write_byte(i);
 		acpigen_emit_byte(0x68); /* Arg0Op.  */

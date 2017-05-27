@@ -491,6 +491,12 @@ S:	Supported
 F:	.git*
 F:	/util/gitconfig
 
+SUPERIOS & SUPERIOTOOL
+M:	Felix Held <felix-coreboot@felixheld.de>
+S:	Maintained
+F:	src/superio/
+F:	util/superiotool/
+
 MISSING: TIMERS / DELAYS
 
 MISSING: TIMESTAMPS
@@ -502,8 +508,6 @@ MISSING: FMAP
 MISSING: GPIO
 
 MISSING: SMP
-
-MISSING: SUPERIOS
 
 MISSING: DMP / QEMU-X86
 

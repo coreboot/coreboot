@@ -13,5 +13,4 @@ sata_mode=AHCI
 fn_ctrl_swap=Disable
 sticky_fn=Disable
 trackpoint=Enable
-hyper_threading=Enable
 backlight=Both

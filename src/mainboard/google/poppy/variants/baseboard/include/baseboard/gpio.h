@@ -37,4 +37,8 @@
 /* eSPI virtual wire reporting */
 #define EC_SCI_GPI		GPE0_ESPI
 
+/* Power rail control signals */
+#define EN_PP3300_DX_CAM	GPP_C11
+#define EN_CAM_PMIC_RST_L	GPP_C10
+
 #endif /* BASEBOARD_GPIO_H */

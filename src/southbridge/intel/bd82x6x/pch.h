@@ -113,6 +113,10 @@ early_usb_init (const struct southbridge_usb_port *portmap);
 #define CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL MAINBOARD_POWER_ON
 #endif
 
+/* PM I/O Space */
+#define UPRWC			0x3c
+#define  UPRWC_WR_EN		(1 << 1) /* USB Per-Port Registers Write Enable */
+
 /* PCI Configuration Space (D30:F0): PCI2PCI */
 #define PSTS	0x06
 #define SMLT	0x1b

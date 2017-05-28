@@ -37,7 +37,9 @@ early_usb_init (const struct southbridge_usb_port *portmap)
 	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0x44 /* ACPI_CNTL */ , 0x80); /* Enable ACPI BAR */
 
 	/* Unlock registers.  */
-	outw (inw (DEFAULT_PMBASE | 0x003c) | 2, DEFAULT_PMBASE | 0x003c);
+	outw(inw(DEFAULT_PMBASE | UPRWC) | UPRWC_WR_EN,
+	     DEFAULT_PMBASE | UPRWC);
+
 	for (i = 0; i < 14; i++)
 		write32 (DEFAULT_RCBABASE + (0x3500 + 4 * i),
 			 currents[portmap[i].current]);
@@ -69,5 +71,5 @@ early_usb_init (const struct southbridge_usb_port *portmap)
 	pci_write_config32 (PCI_DEV (0, 0x14, 0), 0xe4, 0x00000000);
 
 	/* Relock registers.  */
-	outw (0x0000, DEFAULT_PMBASE | 0x003c);
+	outw(0, DEFAULT_PMBASE | UPRWC);
 }

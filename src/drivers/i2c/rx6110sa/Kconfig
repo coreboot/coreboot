@@ -3,3 +3,10 @@ config DRIVERS_I2C_RX6110SA
 	default n
 	help
 	  Enable support for external RTC chip RX6110 SA.
+
+config RX6110SA_USE_SMBUS
+	bool
+	default n
+	help
+	  Select this option if the RTC RX6110SA is connected to a SMBus controller.
+	  If not selected I2C controller is used instead.

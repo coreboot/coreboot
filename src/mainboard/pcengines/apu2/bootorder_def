@@ -5,4 +5,6 @@
 /pci@i0cf8/*@14,7
 /pci@i0cf8/*@11/drive@0/disk@0
 /pci@i0cf8/*@11/drive@1/disk@0
+/pci@i0cf8/pci-bridge@2,5/*@0/drive@0/disk@0
+/pci@i0cf8/pci-bridge@2,5/*@0/drive@1/disk@0
 /rom@genroms/pxe.rom

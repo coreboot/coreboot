@@ -14,6 +14,7 @@
  */
 
 #include <device/i2c.h>
+#include <device/smbus.h>
 #include <device/device.h>
 #include <version.h>
 #include <console/console.h>
@@ -24,17 +25,34 @@
 #define I2C_BUS_NUM	(dev->bus->secondary - 1)
 #define I2C_DEV_NUM	(dev->path.i2c.device)
 
+/* Function to write a register in the RTC with the given value. */
+static void rx6110sa_write(struct device *dev, uint8_t reg, uint8_t val)
+{
+	if (IS_ENABLED(CONFIG_RX6110SA_USE_SMBUS))
+		smbus_write_byte(dev, reg, val);
+	else
+		i2c_writeb(I2C_BUS_NUM, I2C_DEV_NUM, reg, val);
+}
+
+/* Function to read a register in the RTC. */
+static uint8_t rx6110sa_read(struct device *dev, uint8_t reg)
+{
+	uint8_t val = 0;
+
+	if (IS_ENABLED(CONFIG_RX6110SA_USE_SMBUS))
+		val = smbus_read_byte(dev, reg);
+	else
+		i2c_readb(I2C_BUS_NUM, I2C_DEV_NUM, reg, &val);
+	return val;
+}
+
 /* Set RTC date from coreboot build date. */
 static void rx6110sa_set_build_date(struct device *dev)
 {
-	i2c_writeb(I2C_BUS_NUM, I2C_DEV_NUM, YEAR_REG,
-			coreboot_build_date.year);
-	i2c_writeb(I2C_BUS_NUM, I2C_DEV_NUM, MONTH_REG,
-			coreboot_build_date.month);
-	i2c_writeb(I2C_BUS_NUM, I2C_DEV_NUM, DAY_REG,
-			coreboot_build_date.day);
-	i2c_writeb(I2C_BUS_NUM, I2C_DEV_NUM, WEEK_REG,
-			(1 << coreboot_build_date.weekday));
+	rx6110sa_write(dev, YEAR_REG, coreboot_build_date.year);
+	rx6110sa_write(dev, MONTH_REG, coreboot_build_date.month);
+	rx6110sa_write(dev, DAY_REG, coreboot_build_date.day);
+	rx6110sa_write(dev, WEEK_REG, (1 << coreboot_build_date.weekday));
 }
 
 /* Set RTC date from user defined date (available in e.g. device tree). */
@@ -42,14 +60,10 @@ static void rx6110sa_set_user_date(struct device *dev)
 {
 	struct drivers_i2c_rx6110sa_config *config = dev->chip_info;
 
-	i2c_writeb(I2C_BUS_NUM, I2C_DEV_NUM, YEAR_REG,
-			bin2bcd(config->user_year));
-	i2c_writeb(I2C_BUS_NUM, I2C_DEV_NUM, MONTH_REG,
-			bin2bcd(config->user_month));
-	i2c_writeb(I2C_BUS_NUM, I2C_DEV_NUM, DAY_REG,
-			bin2bcd(config->user_day));
-	i2c_writeb(I2C_BUS_NUM, I2C_DEV_NUM, WEEK_REG,
-			(1 << config->user_weekday));
+	rx6110sa_write(dev, YEAR_REG, bin2bcd(config->user_year));
+	rx6110sa_write(dev, MONTH_REG, bin2bcd(config->user_month));
+	rx6110sa_write(dev, DAY_REG, bin2bcd(config->user_day));
+	rx6110sa_write(dev, WEEK_REG, (1 << config->user_weekday));
 }
 
 static void rx6110sa_final(struct device *dev)
@@ -57,12 +71,12 @@ static void rx6110sa_final(struct device *dev)
 	uint8_t hour, minute, second, year, month, day;
 
 	/* Read back current RTC date and time and print it to the console. */
-	i2c_readb(I2C_BUS_NUM, I2C_DEV_NUM, HOUR_REG, &hour);
-	i2c_readb(I2C_BUS_NUM, I2C_DEV_NUM, MINUTE_REG, &minute);
-	i2c_readb(I2C_BUS_NUM, I2C_DEV_NUM, SECOND_REG, &second);
-	i2c_readb(I2C_BUS_NUM, I2C_DEV_NUM, YEAR_REG, &year);
-	i2c_readb(I2C_BUS_NUM, I2C_DEV_NUM, MONTH_REG, &month);
-	i2c_readb(I2C_BUS_NUM, I2C_DEV_NUM, DAY_REG, &day);
+	hour = rx6110sa_read(dev, HOUR_REG);
+	minute = rx6110sa_read(dev, MINUTE_REG);
+	second = rx6110sa_read(dev, SECOND_REG);
+	year = rx6110sa_read(dev, YEAR_REG);
+	month = rx6110sa_read(dev, MONTH_REG);
+	day = rx6110sa_read(dev, DAY_REG);
 
 	printk(BIOS_INFO, "%s: Current date %02d.%02d.%02d %02d:%02d:%02d\n",
 		dev->chip_ops->name, bcd2bin(month), bcd2bin(day),
@@ -75,13 +89,13 @@ static void rx6110sa_init(struct device *dev)
 	uint8_t reg;
 
 	/* Do a dummy read first. */
-	i2c_readb(I2C_BUS_NUM, I2C_DEV_NUM, SECOND_REG, &reg);
+	reg = rx6110sa_read(dev, SECOND_REG);
 
 	/*
 	 * Check VLF-bit which indicates the RTC data loss, such as due to a
 	 * supply voltage drop.
 	 */
-	i2c_readb(I2C_BUS_NUM, I2C_DEV_NUM, FLAG_REGISTER, &reg);
+	reg = rx6110sa_read(dev, FLAG_REGISTER);
 
 	if (!(reg & VLF_BIT))
 		/* No voltage low detected, everything is well. */
@@ -91,24 +105,26 @@ static void rx6110sa_init(struct device *dev)
 	 * Voltage low detected, initialize RX6110 SA again.
 	 * Set first some registers to known state.
 	 */
-	i2c_writeb(I2C_BUS_NUM, I2C_DEV_NUM, BATTERY_BACKUP_REG, 0x00);
-	i2c_writeb(I2C_BUS_NUM, I2C_DEV_NUM, RESERVED_BIT_REG, RTC_INIT_VALUE);
-	i2c_writeb(I2C_BUS_NUM, I2C_DEV_NUM, DIGITAL_REG, 0x00);
-	i2c_writeb(I2C_BUS_NUM, I2C_DEV_NUM, IRQ_CONTROL_REG, 0x00);
+	rx6110sa_write(dev, BATTERY_BACKUP_REG, 0x00);
+	rx6110sa_write(dev, RESERVED_BIT_REG, RTC_INIT_VALUE);
+	rx6110sa_write(dev, DIGITAL_REG, 0x00);
+	rx6110sa_write(dev, IRQ_CONTROL_REG, 0x00);
 
 	/* Clear timer enable bit and set frequency of clock output. */
-	i2c_readb(I2C_BUS_NUM, I2C_DEV_NUM, EXTENSION_REG, &reg);
+
+	reg = rx6110sa_read(dev, EXTENSION_REG);
 	reg &= ~(FSEL_MASK | TE_BIT);
 	reg |= (config->cof_selection << 6);
-	i2c_writeb(I2C_BUS_NUM, I2C_DEV_NUM, EXTENSION_REG, reg);
+	rx6110sa_write(dev, EXTENSION_REG, reg);
 
 	/* Clear voltage low detect bit. */
-	i2c_readb(I2C_BUS_NUM, I2C_DEV_NUM, FLAG_REGISTER, &reg);
+	reg = rx6110sa_read(dev, FLAG_REGISTER);
 	reg &= ~VLF_BIT;
-	i2c_writeb(I2C_BUS_NUM, I2C_DEV_NUM, FLAG_REGISTER, reg);
+	rx6110sa_write(dev, FLAG_REGISTER, reg);
 
 	/* Before setting the clock stop oscillator. */
-	i2c_writeb(I2C_BUS_NUM,	I2C_DEV_NUM, CTRL_REG, STOP_BIT);
+	rx6110sa_write(dev, CTRL_REG, STOP_BIT);
+
 	if (config->set_user_date) {
 		/* Set user date defined in device tree. */
 		printk(BIOS_DEBUG, "%s: Set to user date\n",
@@ -120,11 +136,11 @@ static void rx6110sa_init(struct device *dev)
 				dev->chip_ops->name);
 		rx6110sa_set_build_date(dev);
 	}
-	i2c_writeb(I2C_BUS_NUM, I2C_DEV_NUM, HOUR_REG, 1);
-	i2c_writeb(I2C_BUS_NUM, I2C_DEV_NUM, MINUTE_REG, 0);
-	i2c_writeb(I2C_BUS_NUM, I2C_DEV_NUM, SECOND_REG, 0);
+	rx6110sa_write(dev, HOUR_REG, 1);
+	rx6110sa_write(dev, MINUTE_REG, 0);
+	rx6110sa_write(dev, SECOND_REG, 0);
 	/* Start oscillator again as the RTC is set up now. */
-	i2c_writeb(I2C_BUS_NUM,	I2C_DEV_NUM, CTRL_REG, 0x00);
+	rx6110sa_write(dev, CTRL_REG, 0x00);
 }
 
 static struct device_operations rx6110sa_ops = {

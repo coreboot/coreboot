@@ -2,7 +2,8 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2007 Advanced Micro Devices, Inc.
- * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>,
+ *	Raptor Engineering
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,9 +35,9 @@ u32 get_core_num_in_bsp(u32 nodeid)
 		dword >>= 12;
 		/* Bit 15 is CmpCap[2] since Revision D. */
 		if ((cpuid_ecx(0x80000008) & 0xff) > 3)
-	    	dword = ((dword & 8) >> 1) | (dword & 3);
+			dword = ((dword & 8) >> 1) | (dword & 3);
 		else
-	    	dword &= 3;
+			dword &= 3;
 	}
 	return dword;
 }
@@ -57,7 +58,8 @@ void real_start_other_core(uint32_t nodeid, uint32_t cores)
 	ssize_t i;
 	uint32_t dword;
 
-	printk(BIOS_DEBUG, "Start other core - nodeid: %02x  cores: %02x\n", nodeid, cores);
+	printk(BIOS_DEBUG,
+		"Start other core - nodeid: %02x  cores: %02x\n", nodeid, cores);
 
 	/* set PCI_DEV(0, 0x18+nodeid, 3), 0x44 bit 27 to redirect all MC4
 	   accesses and error logging to core0 */
@@ -72,15 +74,16 @@ void real_start_other_core(uint32_t nodeid, uint32_t cores)
 		uint32_t core_activation_flags = 0;
 		uint32_t active_cores = 0;
 
-		/* Set PCI_DEV(0, 0x18+nodeid, 0), 0x1dc bits 7:1 to start cores */
+		/* Set PCI_DEV(0, 0x18+nodeid, 0),
+		 * 0x1dc bits 7:1 to start cores
+		 */
 		dword = pci_read_config32(NODE_PCI(nodeid, 0), 0x1dc);
-		for (i = 1; i < cores + 1; i++) {
+		for (i = 1; i < cores + 1; i++)
 			core_activation_flags |= 1 << i;
-		}
-
 		/* Start the first core of each compute unit */
 		active_cores |= core_activation_flags & 0x55;
-		pci_write_config32(NODE_PCI(nodeid, 0), 0x1dc, dword | active_cores);
+		pci_write_config32(NODE_PCI(nodeid, 0), 0x1dc, dword
+				  | active_cores);
 
 		/* Each core shares a single set of MTRR registers with
 		 * another core in the same compute unit, therefore, it
@@ -93,14 +96,17 @@ void real_start_other_core(uint32_t nodeid, uint32_t cores)
 		uint32_t timeout;
 		for (i = 1; i < cores + 1; i++) {
 			if (!(i & 0x1)) {
-				uint32_t ap_apicid = get_boot_apic_id(nodeid, i);
-				timeout = wait_cpu_state(ap_apicid, F10_APSTATE_ASLEEP, F10_APSTATE_ASLEEP);
+				uint32_t ap_apicid =
+				get_boot_apic_id(nodeid, i);
+				timeout = wait_cpu_state(ap_apicid,
+							F10_APSTATE_ASLEEP, F10_APSTATE_ASLEEP);
 			}
 		}
 
 		/* Start the second core of each compute unit */
 		active_cores |= core_activation_flags & 0xaa;
-		pci_write_config32(NODE_PCI(nodeid, 0), 0x1dc, dword | active_cores);
+		pci_write_config32(NODE_PCI(nodeid, 0), 0x1dc, dword |
+				   active_cores);
 	} else {
 		// set PCI_DEV(0, 0x18+nodeid, 0), 0x68 bit 5 to start core1
 		dword = pci_read_config32(NODE_PCI(nodeid, 0), 0x68);
@@ -109,9 +115,8 @@ void real_start_other_core(uint32_t nodeid, uint32_t cores)
 
 		if (cores > 1) {
 			dword = pci_read_config32(NODE_PCI(nodeid, 0), 0x168);
-			for (i = 0; i < cores - 1; i++) {
+			for (i = 0; i < cores - 1; i++)
 				dword |= 1 << i;
-			}
 			pci_write_config32(NODE_PCI(nodeid, 0), 0x168, dword);
 		}
 	}
@@ -134,10 +139,10 @@ static void start_other_cores(void)
 
 	for (nodeid = 0; nodeid < nodes; nodeid++) {
 		u32 cores = get_core_num_in_bsp(nodeid);
-		printk(BIOS_DEBUG, "init node: %02x  cores: %02x pass 1\n", nodeid, cores);
-		if (cores > 0) {
+		printk(BIOS_DEBUG, "init node: %02x  cores: %02x pass 1\n",
+			nodeid, cores);
+		if (cores > 0)
 			real_start_other_core(nodeid, cores);
-		}
 	}
 }
 #endif

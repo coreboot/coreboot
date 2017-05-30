@@ -1,7 +1,8 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>,
+ *		      Raptor Engineering
  * Copyright (C) 2007 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -26,12 +27,12 @@ u32 read_nb_cfg_54(void)
 {
 	msr_t msr;
 	msr = rdmsr(NB_CFG_MSR);
-	return ( ( msr.hi >> (54-32)) & 1);
+	return (msr.hi >> (54-32)) & 1;
 }
 
 u32 get_initial_apicid(void)
 {
-	return ((cpuid_ebx(1) >> 24) & 0xff);
+	return (cpuid_ebx(1) >> 24) & 0xff;
 }
 
 /* Called by amd_siblings (ramstage) as well */
@@ -75,7 +76,7 @@ struct node_core_id get_node_core_id(u32 nb_cfg_54)
 	 * The apicid format varies based on processor revision
 	 */
 	apicid = (cpuid_ebx(1) >> 24) & 0xff;
-	if ( nb_cfg_54) {
+	if (nb_cfg_54) {
 		if (fam15h && dual_node) {
 			id.coreid = apicid & 0x1f;
 			id.nodeid = (apicid & 0x60) >> 5;
@@ -105,8 +106,10 @@ struct node_core_id get_node_core_id(u32 nb_cfg_54)
 		}
 	}
 	if (fam15h && dual_node) {
-		/* coreboot expects each separate processor die to be on a different nodeid.
-		 * Since the code above returns nodeid 0 even on internal node 1 some fixup is needed...
+		/* coreboot expects each separate processor die to be on a
+		 * different nodeid.
+		 * Since the code above returns nodeid 0 even on
+		 * internal node 1 some fixup is needed...
 		 */
 		uint32_t f5x84;
 		uint8_t core_count;
@@ -123,10 +126,13 @@ struct node_core_id get_node_core_id(u32 nb_cfg_54)
 			id.coreid = id.coreid - core_count;
 		}
 	} else if (rev_gte_d && dual_node) {
-		/* coreboot expects each separate processor die to be on a different nodeid.
-		 * Since the code above returns nodeid 0 even on internal node 1 some fixup is needed...
+		/* coreboot expects each separate processor die to be on a
+		 * different nodeid.
+		 * Since the code above returns nodeid 0 even on
+		 * internal node 1 some fixup is needed...
 		 */
-		uint8_t core_count = (((f3xe8 & 0x00008000) >> 13) | ((f3xe8 & 0x00003000) >> 12)) + 1;
+		uint8_t core_count = (((f3xe8 & 0x00008000) >> 13) |
+				     ((f3xe8 & 0x00003000) >> 12)) + 1;
 
 		id.nodeid = id.nodeid * 2;
 		if (id.coreid >= core_count) {

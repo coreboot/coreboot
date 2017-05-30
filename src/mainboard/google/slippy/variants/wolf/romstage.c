@@ -76,6 +76,7 @@ static void copy_spd(struct pei_data *peid)
 	int spd_index = get_gpios(gpio_vector);
 	char *spd_file;
 	size_t spd_file_len;
+	size_t spd_len = sizeof(peid->spd_data[0]);
 
 	printk(BIOS_DEBUG, "SPD index %d\n", spd_index);
 	spd_file = cbfs_boot_map_with_leak("spd.bin", CBFS_TYPE_SPD,
@@ -83,27 +84,27 @@ static void copy_spd(struct pei_data *peid)
 	if (!spd_file)
 		die("SPD data not found.");
 
-	if (spd_file_len <
-	    ((spd_index + 1) * sizeof(peid->spd_data[0]))) {
+	if (spd_file_len < ((spd_index + 1) * spd_len)) {
 		printk(BIOS_ERR, "SPD index override to 0 - old hardware?\n");
 		spd_index = 0;
 	}
 
-	if (spd_file_len < sizeof(peid->spd_data[0]))
+	if (spd_file_len < spd_len)
 		die("Missing SPD data.");
+
+	memcpy(peid->spd_data[0], spd_file + (spd_index * spd_len), spd_len);
 
 	/* Index 0-2, are 4GB config with both CH0 and CH1
 	 * Index 3-5, are 2GB config with CH0 only
 	 */
 	switch (spd_index) {
+	case 0: case 1: case 2:
+		memcpy(peid->spd_data[1],
+			spd_file + (spd_index * spd_len), spd_len);
+		break;
 	case 3: case 4: case 5:
 		peid->dimm_channel1_disabled = 3;
 	}
-
-	memcpy(peid->spd_data[0],
-	       spd_file +
-	       spd_index * sizeof(peid->spd_data[0]),
-	       sizeof(peid->spd_data[0]));
 }
 
 void variant_romstage_entry(unsigned long bist)

@@ -29,9 +29,9 @@ typedef struct {
 #define SPIN_LOCK_UNLOCKED (spinlock_t) { 1 }
 #define DECLARE_SPIN_LOCK(x) static spinlock_t x = SPIN_LOCK_UNLOCKED;
 
-#define barrier() __asm__ __volatile__("": : :"memory")
+#define barrier() (__asm__ __volatile__("" : : : "memory"))
 #define spin_is_locked(x)	(*(volatile char *)(&(x)->lock) != 0)
-#define spin_unlock_wait(x)	do { barrier(); } while(spin_is_locked(x))
+#define spin_unlock_wait(x)	do { barrier(); } while (spin_is_locked(x))
 
 static inline __attribute__((always_inline)) void spin_lock(spinlock_t *lock)
 {

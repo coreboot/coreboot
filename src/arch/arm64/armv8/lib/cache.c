@@ -23,55 +23,55 @@
 
 void dccisw(uint64_t cisw)
 {
-	__asm__ __volatile__("dc cisw, %0\n\t" : : "r" (cisw) :"memory");
+	__asm__ __volatile__("dc cisw, %0\n\t" : : "r" (cisw) : "memory");
 }
 
 void dccivac(uint64_t civac)
 {
-	__asm__ __volatile__("dc civac, %0\n\t" : : "r" (civac) :"memory");
+	__asm__ __volatile__("dc civac, %0\n\t" : : "r" (civac) : "memory");
 }
 
 void dccsw(uint64_t csw)
 {
-	__asm__ __volatile__("dc csw, %0\n\t" : : "r" (csw) :"memory");
+	__asm__ __volatile__("dc csw, %0\n\t" : : "r" (csw) : "memory");
 }
 
 void dccvac(uint64_t cvac)
 {
-	__asm__ __volatile__("dc cvac, %0\n\t" : : "r" (cvac) :"memory");
+	__asm__ __volatile__("dc cvac, %0\n\t" : : "r" (cvac) : "memory");
 }
 
 void dccvau(uint64_t cvau)
 {
-	__asm__ __volatile__("dc cvau, %0\n\t" : : "r" (cvau) :"memory");
+	__asm__ __volatile__("dc cvau, %0\n\t" : : "r" (cvau) : "memory");
 }
 
 void dcisw(uint64_t isw)
 {
-	__asm__ __volatile__("dc isw, %0\n\t" : : "r" (isw) :"memory");
+	__asm__ __volatile__("dc isw, %0\n\t" : : "r" (isw) : "memory");
 }
 
 void dcivac(uint64_t ivac)
 {
-	__asm__ __volatile__("dc ivac, %0\n\t" : : "r" (ivac) :"memory");
+	__asm__ __volatile__("dc ivac, %0\n\t" : : "r" (ivac) : "memory");
 }
 
 void dczva(uint64_t zva)
 {
-	__asm__ __volatile__("dc zva, %0\n\t" : : "r" (zva) :"memory");
+	__asm__ __volatile__("dc zva, %0\n\t" : : "r" (zva) : "memory");
 }
 
 void iciallu(void)
 {
-	__asm__ __volatile__("ic iallu\n\t" : : :"memory");
+	__asm__ __volatile__("ic iallu\n\t" : : : "memory");
 }
 
 void icialluis(void)
 {
-	__asm__ __volatile__("ic ialluis\n\t" : : :"memory");
+	__asm__ __volatile__("ic ialluis\n\t" : : : "memory");
 }
 
 void icivau(uint64_t ivau)
 {
-	__asm__ __volatile__("ic ivau, %0\n\t" : : "r" (ivau) :"memory");
+	__asm__ __volatile__("ic ivau, %0\n\t" : : "r" (ivau) : "memory");
 }

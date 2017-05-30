@@ -20,8 +20,8 @@
 #include <console/console.h>
 
 /* FIXME(dhendrix): prototypes added for assembler */
-int raise (int signum) __attribute__((used));
-int raise (int signum)
+int raise(int signum) __attribute__((used));
+int raise(int signum)
 {
 	printk(BIOS_CRIT, "raise: Signal # %d caught\n", signum);
 	return 0;

@@ -5,4 +5,6 @@ a USB 1 / USB 2 SS and HS
 b SDCARD
 c mSATA
 d SATA
-e iPXE
+e mPCIe1 SATA1 and SATA2
+e mPCIe1 SATA1 and SATA2
+f iPXE

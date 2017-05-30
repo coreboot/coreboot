@@ -4,7 +4,8 @@
  * original idea yhlu 6.2005 (assembler code)
  *
  * Copyright (C) 2010 Rudolf Marek <r.marek@assembler.cz>
- * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>,
+ *		      Raptor Engineering
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +32,8 @@ static inline __attribute__((always_inline)) uint32_t amd_fam1x_cpu_family(void)
 	return family;
 }
 
-static inline __attribute__((always_inline)) void disable_cache_as_ram(uint8_t skip_sharedc_config)
+static inline __attribute__((always_inline))
+void disable_cache_as_ram(uint8_t skip_sharedc_config)
 {
 	msr_t msr;
 	uint32_t family;
@@ -52,12 +54,17 @@ static inline __attribute__((always_inline)) void disable_cache_as_ram(uint8_t s
 #if CONFIG_DCACHE_RAM_SIZE > 0x18000
 		wrmsr(MTRR_FIX_4K_D8000, msr);
 #endif
-		/* disable fixed mtrr from now on, it will be enabled by ramstage again */
+		/* disable fixed mtrr from now on,
+		 * it will be enabled by ramstage again
+		 */
 		msr = rdmsr(SYSCFG_MSR);
-		msr.lo &= ~(SYSCFG_MSR_MtrrFixDramEn | SYSCFG_MSR_MtrrFixDramModEn);
+		msr.lo &= ~(SYSCFG_MSR_MtrrFixDramEn
+			| SYSCFG_MSR_MtrrFixDramModEn);
 		wrmsr(SYSCFG_MSR, msr);
 
-		/* Set the default memory type and disable fixed and enable variable MTRRs */
+		/* Set the default memory type and
+		 * disable fixed and enable variable MTRRs
+		 */
 		msr.hi = 0;
 		msr.lo = (1 << 11);
 

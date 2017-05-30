@@ -48,20 +48,23 @@ static size_t backup_size(void)
 static void memcpy_(void *d, const void *s, size_t len)
 {
 	print_car_debug(" Copy [%08x-%08x] to [%08x - %08x] ...",
-		(uint32_t) s, (uint32_t) (s + len - 1), (uint32_t) d, (uint32_t) (d + len - 1));
+		(uint32_t) s, (uint32_t) (s + len - 1),
+		(uint32_t) d, (uint32_t) (d + len - 1));
 	memcpy(d, s, len);
 }
 
 static void memset_(void *d, int val, size_t len)
 {
-	print_car_debug(" Fill [%08x-%08x] ...", (uint32_t) d, (uint32_t) (d + len - 1));
+	print_car_debug(" Fill [%08x-%08x] ...",
+	(uint32_t) d, (uint32_t) (d + len - 1));
 	memset(d, val, len);
 }
 
 static int memcmp_(void *d, const void *s, size_t len)
 {
 	print_car_debug(" Compare [%08x-%08x] with [%08x - %08x] ...",
-		(uint32_t) s, (uint32_t) (s + len - 1), (uint32_t) d, (uint32_t) (d + len - 1));
+		(uint32_t) s, (uint32_t) (s + len - 1),
+		(uint32_t) d, (uint32_t) (d + len - 1));
 	return memcmp(d, s, len);
 }
 
@@ -71,10 +74,13 @@ static void prepare_romstage_ramstack(int s3resume)
 	print_car_debug("Prepare CAR migration and stack regions...");
 
 	if (s3resume) {
-		void *resume_backup_memory = acpi_backup_container(CONFIG_RAMBASE, HIGH_MEMORY_SAVE);
+		void *resume_backup_memory =
+		acpi_backup_container(CONFIG_RAMBASE, HIGH_MEMORY_SAVE);
 		if (resume_backup_memory)
-			memcpy_(resume_backup_memory + HIGH_MEMORY_SAVE - backup_top,
-				(void *)(CONFIG_RAMTOP - backup_top), backup_top);
+			memcpy_(resume_backup_memory
+			+ HIGH_MEMORY_SAVE - backup_top,
+				(void *)(CONFIG_RAMTOP - backup_top),
+				backup_top);
 	}
 	memset_((void *)(CONFIG_RAMTOP - backup_top), 0, backup_top);
 
@@ -87,7 +93,8 @@ static void prepare_ramstage_region(int s3resume)
 	print_car_debug("Prepare ramstage memory region...");
 
 	if (s3resume) {
-		void *resume_backup_memory = acpi_backup_container(CONFIG_RAMBASE, HIGH_MEMORY_SAVE);
+		void *resume_backup_memory =
+		acpi_backup_container(CONFIG_RAMBASE, HIGH_MEMORY_SAVE);
 		if (resume_backup_memory)
 			memcpy_(resume_backup_memory, (void *) CONFIG_RAMBASE,
 				HIGH_MEMORY_SAVE - backup_top);
@@ -118,7 +125,9 @@ void post_cache_as_ram(void)
 	 * boundary during romstage execution
 	 */
 	volatile uint32_t *lower_stack_boundary;
-	lower_stack_boundary = (void *)((CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE) - CONFIG_DCACHE_BSP_STACK_SIZE);
+	lower_stack_boundary =
+	(void *)((CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE)
+	- CONFIG_DCACHE_BSP_STACK_SIZE);
 	if ((*lower_stack_boundary) != 0xdeadbeef)
 		printk(BIOS_WARNING, "BSP overran lower stack boundary.  Undefined behaviour may result!\n");
 
@@ -159,7 +168,7 @@ void post_cache_as_ram(void)
 	/* We do not come back. */
 }
 
-void cache_as_ram_new_stack (void)
+void cache_as_ram_new_stack(void)
 {
 	print_car_debug("Disabling cache as RAM now\n");
 	disable_cache_as_ram_bsp();

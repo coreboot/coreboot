@@ -23,7 +23,6 @@
 #include <pc80/mc146818rtc.h>
 #include <soc/acpi.h>
 #include <soc/lpc.h>
-#include <soc/pci_ids.h>
 #include <soc/pm.h>
 #include <vboot/vbnv.h>
 
@@ -167,8 +166,14 @@ static struct device_operations device_ops = {
 	.scan_bus = scan_lpc_bus,
 };
 
+static const unsigned short pci_device_ids[] = {
+	PCI_DEVICE_ID_INTEL_APL_LPC,
+	PCI_DEVICE_ID_INTEL_GLK_LPC,
+	0,
+};
+
 static const struct pci_driver soc_lpc __pci_driver = {
 	.ops = &device_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = PCI_DEVICE_ID_APOLLOLAKE_LPC,
+	.devices = pci_device_ids,
 };

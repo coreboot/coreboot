@@ -17,7 +17,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <soc/pci_ids.h>
 #include <soc/pci_devs.h>
 #include <soc/iomap.h>
 
@@ -61,8 +60,14 @@ static const struct device_operations device_ops = {
 	.enable_resources	= pci_dev_enable_resources,
 };
 
+static const unsigned short pci_device_ids[] = {
+	PCI_DEVICE_ID_INTEL_APL_SRAM,
+	PCI_DEVICE_ID_INTEL_GLK_SRAM,
+	0,
+};
+
 static const struct pci_driver pmc __pci_driver = {
 	.ops	= &device_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= PCI_DEVICE_ID_APOLLOLAKE_SRAM,
+	.devices= pci_device_ids,
 };

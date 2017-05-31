@@ -21,7 +21,6 @@
 #include <rules.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
-#include <soc/pci_ids.h>
 #include <soc/p2sb.h>
 
 #define P2SB_E0 0xe0
@@ -67,8 +66,14 @@ static const struct device_operations device_ops = {
 	.set_resources		= DEVICE_NOOP,
 };
 
+static const unsigned short pci_device_ids[] = {
+	PCI_DEVICE_ID_INTEL_APL_P2SB,
+	PCI_DEVICE_ID_INTEL_GLK_P2SB,
+	0,
+};
+
 static const struct pci_driver pmc __pci_driver = {
 	.ops	= &device_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= PCI_DEVICE_ID_APOLLOLAKE_P2SB,
+	.devices = pci_device_ids,
 };

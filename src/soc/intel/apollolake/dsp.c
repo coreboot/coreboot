@@ -16,7 +16,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <soc/pci_ids.h>
 
 static struct device_operations dsp_dev_ops = {
 	.read_resources         = &pci_dev_read_resources,
@@ -25,8 +24,14 @@ static struct device_operations dsp_dev_ops = {
 	.scan_bus               = &scan_static_bus,
 };
 
+static const unsigned short pci_device_ids[] = {
+	PCI_DEVICE_ID_INTEL_APL_AUDIO,
+	PCI_DEVICE_ID_INTEL_GLK_AUDIO,
+	0,
+};
+
 static const struct pci_driver apollolake_dsp __pci_driver = {
 	.ops    = &dsp_dev_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = PCI_DEVICE_ID_APOLLOLAKE_AUDIO
+	.devices = pci_device_ids,
 };

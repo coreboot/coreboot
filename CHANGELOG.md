@@ -68,9 +68,9 @@ Releases 4.5.x are based on mainline support submitted in
 - enable power on after power failure
 
 [Unreleased]: https://github.com/pcengines/coreboot/compare/v4.5.6...coreboot-4.5.x
-[v4.5.6]: https://github.com/pcengines/coreboot/compare/v4.5.6...v4.5.5.2
-[v4.5.5.2]: https://github.com/pcengines/coreboot/compare/v4.5.5.2...v4.5.5.1
-[v4.5.5.1]: https://github.com/pcengines/coreboot/compare/v4.5.5.1...v4.5.5
-[v4.5.5]: https://github.com/pcengines/coreboot/compare/v4.5.5...v4.5.4
-[v4.5.4]: https://github.com/pcengines/coreboot/compare/v4.5.4...v4.5.3
-[v4.5.3]: https://github.com/pcengines/coreboot/compare/v4.5.3...v4.5.2
+[v4.5.6]: https://github.com/pcengines/coreboot/compare/v4.5.5.2...v4.5.6
+[v4.5.5.2]: https://github.com/pcengines/coreboot/compare/v4.5.5.1...v4.5.5.2
+[v4.5.5.1]: https://github.com/pcengines/coreboot/compare/v4.5.5...v4.5.5.1
+[v4.5.5]: https://github.com/pcengines/coreboot/compare/v4.5.4...v4.5.5
+[v4.5.4]: https://github.com/pcengines/coreboot/compare/v4.5.3...v4.5.4
+[v4.5.3]: https://github.com/pcengines/coreboot/compare/v4.5.2...v4.5.3

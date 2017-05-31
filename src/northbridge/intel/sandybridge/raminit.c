@@ -123,14 +123,17 @@ static void fill_smbios17(ramctr_timing *ctrl)
 static void report_memory_config(void)
 {
 	u32 addr_decoder_common, addr_decode_ch[NUM_CHANNELS];
-	int i;
+	int i, refclk;
 
 	addr_decoder_common = MCHBAR32(0x5000);
 	addr_decode_ch[0] = MCHBAR32(0x5004);
 	addr_decode_ch[1] = MCHBAR32(0x5008);
 
+	refclk = MCHBAR32(MC_BIOS_REQ) & 0x100 ? 100 : 133;
+
+	printk(BIOS_DEBUG, "memcfg DDR3 ref clock %d MHz\n", refclk);
 	printk(BIOS_DEBUG, "memcfg DDR3 clock %d MHz\n",
-	       (MCHBAR32(MC_BIOS_DATA) * 13333 * 2 + 50) / 100);
+	       (MCHBAR32(MC_BIOS_DATA) * refclk * 100 * 2 + 50) / 100);
 	printk(BIOS_DEBUG, "memcfg channel assignment: A: %d, B % d, C % d\n",
 	       addr_decoder_common & 3, (addr_decoder_common >> 2) & 3,
 	       (addr_decoder_common >> 4) & 3);

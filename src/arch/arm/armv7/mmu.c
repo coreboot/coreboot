@@ -46,10 +46,10 @@
 	0ULL << 54 |	/* XN. 0:Not restricted */ \
 	0ULL << 53 |	/* PXN. 0:Not restricted */ \
 	1 << 10 |	/* AF. 1:Accessed. This is to prevent access \
-	 	 	 * fault when accessed for the first time */ \
+			 * fault when accessed for the first time */ \
 	0 << 6 |	/* AP[2:1]. 0b00:full access from PL1 */ \
 	0 << 5 |	/* NS. 0:Output address is in Secure space */ \
-	0 << 1 | 	/* block/table. 0:block entry */ \
+	0 << 1 |	/* block/table. 0:block entry */ \
 	1 << 0		/* validity. 1:valid */ \
 	)
 #define ATTR_PAGE	(ATTR_BLOCK | 1 << 1)
@@ -280,12 +280,12 @@ void mmu_init(void)
 		table[0] = ATTR_UNUSED;
 
 	if (CONFIG_ARM_LPAE) {
-		pte_t *const pgd_buff = (pte_t*)(_ttb + 16*KiB);
+		pte_t *const pgd_buff = (pte_t *)(_ttb + 16*KiB);
 		pte_t *pmd = ttb_buff;
 		int i;
 
 		printk(BIOS_DEBUG, "LPAE Translation tables are @ %p\n",
-                		ttb_buff);
+			ttb_buff);
 		ASSERT((read_mmfr0() & 0xf) >= 5);
 
 		/*
@@ -308,7 +308,7 @@ void mmu_init(void)
 		 */
 		for (i = 0; i < 4; i++) {
 			pgd_buff[i] = ((uint32_t)pmd & NEXTLEVEL_MASK) |
-			        ATTR_NEXTLEVEL;
+				ATTR_NEXTLEVEL;
 			pmd += BLOCK_SIZE / PAGE_SIZE;
 		}
 

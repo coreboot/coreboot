@@ -84,7 +84,7 @@ static void dcache_op_mva(void const *addr, size_t len, enum dcache_op op)
 
 	dsb();
 	while ((void *)line < addr + len) {
-		switch(op) {
+		switch (op) {
 		case OP_DCCIMVAC:
 			dccimvac(line);
 			break;

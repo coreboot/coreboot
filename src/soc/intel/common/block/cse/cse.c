@@ -22,7 +22,6 @@
 #include <device/pci_ops.h>
 #include <intelblocks/cse.h>
 #include <soc/pci_devs.h>
-#include <soc/pci_ids.h>
 #include <string.h>
 #include <timer.h>
 

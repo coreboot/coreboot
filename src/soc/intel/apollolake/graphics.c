@@ -23,7 +23,6 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <soc/pci_devs.h>
-#include <soc/pci_ids.h>
 #include <soc/intel/common/opregion.h>
 
 uintptr_t fsp_soc_get_igd_bar(void)
@@ -91,8 +90,9 @@ static const struct device_operations igd_ops = {
 };
 
 static const unsigned short pci_device_ids[] = {
-	PCI_DEVICE_ID_APOLLOLAKE_IGD_HD_505,
-	PCI_DEVICE_ID_APOLLOLAKE_IGD_HD_500,
+	PCI_DEVICE_ID_INTEL_APL_IGD_HD_505,
+	PCI_DEVICE_ID_INTEL_APL_IGD_HD_500,
+	PCI_DEVICE_ID_INTEL_GLK_IGD,
 	0,
 };
 

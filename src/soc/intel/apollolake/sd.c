@@ -75,8 +75,14 @@ static struct device_operations dev_ops = {
 #endif
 };
 
+static const unsigned short pci_device_ids[] = {
+	PCI_DEVICE_ID_INTEL_APL_SD,
+	PCI_DEVICE_ID_INTEL_GLK_SD,
+	0,
+};
+
 static const struct pci_driver pch_sd __pci_driver = {
 	.ops	= &dev_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x5aca
+	.devices= pci_device_ids,
 };

@@ -18,6 +18,8 @@
 #ifndef SUPERIO_WINBOND_WPCD376I_WPCD376I_H
 #define SUPERIO_WINBOND_WPCD376I_WPCD376I_H
 
+#include <arch/io.h>
+
 /* Logical Device Numbers (LDN). */
 #define WPCD376I_FDC	0	/* Floppy */
 #define WPCD376I_LPT	1	/* Parallel port */

@@ -31,7 +31,7 @@ struct thread;
 struct cpu_info {
 	device_t cpu;
 	unsigned long index;
-#if CONFIG_COOP_MULTITASKING
+#if IS_ENABLED(CONFIG_COOP_MULTITASKING)
 	struct thread *thread;
 #endif
 };

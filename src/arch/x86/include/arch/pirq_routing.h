@@ -24,10 +24,9 @@
  * This tells us that in the PIRQ table, we are going to have 4 link-bitmap
  * entries per PCI device
  * It is fixed at 4: INTA, INTB, INTC, and INTD
- * CAUTION: If you change this, pirq_routing will not work correctly*/
+ * CAUTION: If you change this, pirq_routing will not work correctly */
 #define MAX_INTX_ENTRIES 4
 
-#if IS_ENABLED(CONFIG_GENERATE_PIRQ_TABLE)
 #include <stdint.h>
 
 #define PIRQ_SIGNATURE	(('$' << 0) + ('P' << 8) + ('I' << 16) + ('R' << 24))
@@ -60,13 +59,7 @@ unsigned long copy_pirq_routing_table(unsigned long addr,
 	const struct irq_routing_table *routing_table);
 unsigned long write_pirq_routing_table(unsigned long start);
 
-#if IS_ENABLED(CONFIG_PIRQ_ROUTE)
 void pirq_assign_irqs(const unsigned char pirq[CONFIG_MAX_PIRQ_LINKS]);
-#endif
-
-#else
-#define copy_pirq_routing_table(start) (start)
-#define write_pirq_routing_table(start) (start)
-#endif
 
 #endif /* ARCH_PIRQ_ROUTING_H */
+

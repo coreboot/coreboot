@@ -23,7 +23,7 @@
 _stack:
 .space CONFIG_MAX_CPUS*CONFIG_STACK_SIZE
 _estack:
-#if CONFIG_COOP_MULTITASKING
+#if IS_ENABLED(CONFIG_COOP_MULTITASKING)
 .global thread_stacks
 thread_stacks:
 .space CONFIG_STACK_SIZE*CONFIG_NUM_THREADS
@@ -73,7 +73,7 @@ _start:
 	/* set new stack */
 	movl	$_estack, %esp
 
-#if CONFIG_COOP_MULTITASKING
+#if IS_ENABLED(CONFIG_COOP_MULTITASKING)
 	/* Push the thread pointer. */
 	push	$0
 #endif
@@ -112,7 +112,7 @@ _start:
 
 	andl	$0xFFFFFFF0, %esp
 
-#if CONFIG_GDB_WAIT
+#if IS_ENABLED(CONFIG_GDB_WAIT)
 	call gdb_hw_init
 	call gdb_stub_breakpoint
 #endif
@@ -294,7 +294,7 @@ int_hand:
 
 	iret
 
-#if CONFIG_GDB_WAIT
+#if IS_ENABLED(CONFIG_GDB_WAIT)
 
 	.globl gdb_stub_breakpoint
 gdb_stub_breakpoint:

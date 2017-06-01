@@ -18,8 +18,12 @@
 #include <arch/pirq_routing.h>
 #include <string.h>
 #include <device/pci.h>
+#include <arch/pirq_routing.h>
 
-#if CONFIG_DEBUG_PIRQ
+void __attribute__((weak)) pirq_assign_irqs(const unsigned char pirq[CONFIG_MAX_PIRQ_LINKS])
+{
+}
+
 static void check_pirq_routing_table(struct irq_routing_table *rt)
 {
 	uint8_t *addr = (uint8_t *)rt;
@@ -97,9 +101,7 @@ static int verify_copy_pirq_routing_table(unsigned long addr,
 
 	return 0;
 }
-#endif
 
-#if CONFIG_PIRQ_ROUTE
 static u8 pirq_get_next_free_irq(u8 *pirq, u16 bitmap)
 {
 	int i, link;
@@ -185,7 +187,6 @@ static void pirq_route_irqs(unsigned long addr)
 
 	pirq_assign_irqs(pirq);
 }
-#endif
 
 unsigned long copy_pirq_routing_table(unsigned long addr,
 	const struct irq_routing_table *routing_table)
@@ -198,11 +199,10 @@ unsigned long copy_pirq_routing_table(unsigned long addr,
 		addr);
 	memcpy((void *)addr, routing_table, routing_table->size);
 	printk(BIOS_INFO, "done.\n");
-#if CONFIG_DEBUG_PIRQ
-	verify_copy_pirq_routing_table(addr, routing_table);
-#endif
-#if CONFIG_PIRQ_ROUTE
-	pirq_route_irqs(addr);
-#endif
+	if (IS_ENABLED(CONFIG_DEBUG_PIRQ))
+		verify_copy_pirq_routing_table(addr, routing_table);
+	if (IS_ENABLED(CONFIG_PIRQ_ROUTE))
+		pirq_route_irqs(addr);
+
 	return addr + routing_table->size;
 }

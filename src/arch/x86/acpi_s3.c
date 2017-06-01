@@ -247,16 +247,16 @@ void __attribute__((weak)) mainboard_suspend_resume(void)
 
 void acpi_resume(void *wake_vec)
 {
-#if CONFIG_HAVE_SMI_HANDLER
-	u32 *gnvs_address = cbmem_find(CBMEM_ID_ACPI_GNVS_PTR);
+	if (IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)) {
+		u32 *gnvs_address = cbmem_find(CBMEM_ID_ACPI_GNVS_PTR);
 
-	/* Restore GNVS pointer in SMM if found */
-	if (gnvs_address && *gnvs_address) {
-		printk(BIOS_DEBUG, "Restore GNVS pointer to 0x%08x\n",
-		       *gnvs_address);
-		smm_setup_structures((void *)*gnvs_address, NULL, NULL);
+		/* Restore GNVS pointer in SMM if found */
+		if (gnvs_address && *gnvs_address) {
+			printk(BIOS_DEBUG, "Restore GNVS pointer to 0x%08x\n",
+			       *gnvs_address);
+			smm_setup_structures((void *)*gnvs_address, NULL, NULL);
+		}
 	}
-#endif
 
 	/* Call mainboard resume handler first, if defined. */
 	mainboard_suspend_resume();

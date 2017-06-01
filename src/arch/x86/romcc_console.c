@@ -19,40 +19,40 @@
 #include <commonlib/loglevel.h>
 
 /* Include the sources. */
-#if CONFIG_CONSOLE_SERIAL && CONFIG_DRIVERS_UART_8250IO
+#if IS_ENABLED(CONFIG_CONSOLE_SERIAL) && IS_ENABLED(CONFIG_DRIVERS_UART_8250IO)
 #include "drivers/uart/util.c"
 #include "drivers/uart/uart8250io.c"
 #endif
-#if CONFIG_CONSOLE_NE2K
+#if IS_ENABLED(CONFIG_CONSOLE_NE2K)
 #include "drivers/net/ne2k.c"
 #endif
 
 void console_hw_init(void)
 {
-#if CONFIG_CONSOLE_SERIAL
+#if IS_ENABLED(CONFIG_CONSOLE_SERIAL)
 	uart_init(CONFIG_UART_FOR_CONSOLE);
 #endif
-#if CONFIG_CONSOLE_NE2K
+#if IS_ENABLED(CONFIG_CONSOLE_NE2K)
 	ne2k_init(CONFIG_CONSOLE_NE2K_IO_PORT);
 #endif
 }
 
 void console_tx_byte(unsigned char byte)
 {
-#if CONFIG_CONSOLE_SERIAL
+#if IS_ENABLED(CONFIG_CONSOLE_SERIAL)
 	uart_tx_byte(CONFIG_UART_FOR_CONSOLE, byte);
 #endif
-#if CONFIG_CONSOLE_NE2K
+#if IS_ENABLED(CONFIG_CONSOLE_NE2K)
 	ne2k_append_data_byte(byte, CONFIG_CONSOLE_NE2K_IO_PORT);
 #endif
 }
 
 void console_tx_flush(void)
 {
-#if CONFIG_CONSOLE_SERIAL
+#if IS_ENABLED(CONFIG_CONSOLE_SERIAL)
 	uart_tx_flush(CONFIG_UART_FOR_CONSOLE);
 #endif
-#if CONFIG_CONSOLE_NE2K
+#if IS_ENABLED(CONFIG_CONSOLE_NE2K)
 	ne2k_transmit(CONFIG_CONSOLE_NE2K_IO_PORT);
 #endif
 }

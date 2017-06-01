@@ -20,15 +20,15 @@ static void main(unsigned long bist)
 	if (boot_cpu()) {
 		bootblock_mainboard_init();
 
-#if CONFIG_USE_OPTION_TABLE
+#if IS_ENABLED(CONFIG_USE_OPTION_TABLE)
 		sanitize_cmos();
 #endif
-#if CONFIG_CMOS_POST
+#if IS_ENABLED(CONFIG_CMOS_POST)
 		cmos_post_init();
 #endif
 	}
 
-#if CONFIG_VBOOT_SEPARATE_VERSTAGE
+#if IS_ENABLED(CONFIG_VBOOT_SEPARATE_VERSTAGE)
 	const char *target1 = "fallback/verstage";
 #else
 	const char *target1 = "fallback/romstage";

@@ -32,7 +32,7 @@ static void main(unsigned long bist)
 	if (boot_cpu()) {
 		bootblock_mainboard_init();
 
-#if CONFIG_USE_OPTION_TABLE
+#if IS_ENABLED(CONFIG_USE_OPTION_TABLE)
 		sanitize_cmos();
 #endif
 		boot_mode = do_normal_boot();

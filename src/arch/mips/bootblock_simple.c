@@ -26,7 +26,7 @@ void main(void)
 	/* Mainboard basic init */
 	bootblock_mainboard_init();
 
-#if CONFIG_BOOTBLOCK_CONSOLE
+#if IS_ENABLED(CONFIG_BOOTBLOCK_CONSOLE)
 	console_init();
 #endif
 

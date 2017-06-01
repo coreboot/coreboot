@@ -39,7 +39,7 @@
 #include <arch/cache.h>
 #include <arch/io.h>
 
-#if CONFIG_ARM_LPAE
+#if IS_ENABLED(CONFIG_ARM_LPAE)
 /* See B3.6.2 of ARMv7 Architecture Reference Manual */
 /* TODO: Utilize the contiguous hint flag */
 #define ATTR_BLOCK (\

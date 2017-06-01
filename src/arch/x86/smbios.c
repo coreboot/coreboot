@@ -29,7 +29,7 @@
 #include <memory_info.h>
 #include <spd.h>
 #include <cbmem.h>
-#if CONFIG_CHROMEOS
+#if IS_ENABLED(CONFIG_CHROMEOS)
 #include <vendorcode/google/chromeos/gnvs.h>
 #endif
 
@@ -309,22 +309,22 @@ static int smbios_write_type0(unsigned long *current, int handle)
 	t->system_bios_major_release = 4;
 	t->bios_characteristics =
 		BIOS_CHARACTERISTICS_PCI_SUPPORTED |
-#if CONFIG_CARDBUS_PLUGIN_SUPPORT
-		BIOS_CHARACTERISTICS_PC_CARD |
-#endif
 		BIOS_CHARACTERISTICS_SELECTABLE_BOOT |
 		BIOS_CHARACTERISTICS_UPGRADEABLE;
 
-#if CONFIG_HAVE_ACPI_TABLES
-	t->bios_characteristics_ext1 = BIOS_EXT1_CHARACTERISTICS_ACPI;
-#endif
+	if (IS_ENABLED(CONFIG_CARDBUS_PLUGIN_SUPPORT))
+		t->bios_characteristics |= BIOS_CHARACTERISTICS_PC_CARD;
+
+	if (IS_ENABLED(CONFIG_HAVE_ACPI_TABLES))
+		t->bios_characteristics_ext1 = BIOS_EXT1_CHARACTERISTICS_ACPI;
+
 	t->bios_characteristics_ext2 = BIOS_EXT2_CHARACTERISTICS_TARGET;
 	len = t->length + smbios_string_table_len(t->eos);
 	*current += len;
 	return len;
 }
 
-#if !CONFIG_SMBIOS_PROVIDED_BY_MOBO
+#if !IS_ENABLED(CONFIG_SMBIOS_PROVIDED_BY_MOBO)
 
 const char *__attribute__((weak)) smbios_mainboard_serial_number(void)
 {
@@ -623,10 +623,9 @@ unsigned long smbios_write_tables(unsigned long current)
 		handle++));
 	update_max(len, max_struct_size, smbios_write_type11(&current,
 		&handle));
-#if CONFIG_ELOG
-	update_max(len, max_struct_size, elog_smbios_write_type15(&current,
-		handle++));
-#endif
+	if (IS_ENABLED(CONFIG_ELOG))
+		update_max(len, max_struct_size,
+			elog_smbios_write_type15(&current,handle++));
 	update_max(len, max_struct_size, smbios_write_type17(&current,
 		&handle));
 	update_max(len, max_struct_size, smbios_write_type32(&current,

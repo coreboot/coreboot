@@ -1,0 +1,180 @@
+#
+# This file is part of the coreboot project.
+#
+# Copyright (C) 2017 Arthur Heymans <arthur@aheymans.xyz>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+
+chip northbridge/intel/x4x		# Northbridge
+	device cpu_cluster 0 on		# APIC cluster
+		chip cpu/intel/socket_LGA775
+			device lapic 0 on end
+		end
+		chip cpu/intel/model_1067x		# CPU
+			device lapic 0xACAC off end
+		end
+	end
+	device domain 0 on		# PCI domain
+		subsystemid 0x1458 0x5000 inherit
+		device pci 0.0 on			# Host Bridge
+			subsystemid 0x8086 0x5756
+		end
+		device pci 1.0 on end			# PEG
+		device pci 2.0 on			# Integrated graphics controller
+			subsystemid 0x8086 0x5756
+		end
+		chip southbridge/intel/i82801gx	# Southbridge
+			register "pirqa_routing" = "0x0b"
+			register "pirqb_routing" = "0x0b"
+			register "pirqc_routing" = "0x0b"
+			register "pirqd_routing" = "0x0b"
+			register "pirqe_routing" = "0x80"
+			register "pirqf_routing" = "0x80"
+			register "pirqg_routing" = "0x80"
+			register "pirqh_routing" = "0x0b"
+			# GPI routing
+			#  0 No effect (default)
+			#  1 SMI# (if corresponding ALT_GPI_SMI_EN bit is also set)
+			#  2 SCI (if corresponding GPIO_EN bit is also set)
+			register "gpi0_routing" = "2"
+			register "gpi1_routing" = "2"
+			register "gpi2_routing" = "2"
+			register "gpi3_routing" = "2"
+			register "gpi4_routing" = "2"
+			register "gpi5_routing" = "2"
+			register "gpi6_routing" = "2"
+			register "gpi7_routing" = "2"
+			register "gpi8_routing" = "2"
+			register "gpi9_routing" = "2"
+			register "gpi10_routing" = "2"
+			register "gpi11_routing" = "2"
+			register "gpi12_routing" = "2"
+			register "gpi13_routing" = "2"
+			register "gpi14_routing" = "2"
+			register "gpi15_routing" = "2"
+
+			register "ide_enable_primary" = "0x1"
+			register "sata_ahci" = "0x0" # AHCI not supported on this ICH7 variant
+			register "gpe0_en" = "0x440"
+
+			device pci 1b.0 on		# Audio
+				subsystemid 0x8086 0x5756
+			end
+			device pci 1c.0 on end		# PCIe 1
+			device pci 1c.1 on		# PCIe 2: NIC
+				device pci 00.0 on
+					subsystemid 0x8086 0x5756
+				end
+			end
+			device pci 1c.2 off end		# PCIe 3
+			device pci 1c.3 off end		# PCIe 4
+			device pci 1c.4 off end		# PCIe 5
+			device pci 1c.5 off end		# PCIe 6
+			device pci 1d.0 on		# USB
+				subsystemid 0x8086 0x5756
+			end
+			device pci 1d.1 on		# USB
+				subsystemid 0x8086 0x5756
+			end
+			device pci 1d.2 on		# USB
+				subsystemid 0x8086 0x5756
+			end
+			device pci 1d.3 on		# USB
+				subsystemid 0x8086 0x5756
+			end
+			device pci 1d.7 on		# USB
+				subsystemid 0x8086 0x5756
+			end
+			device pci 1e.0 on end		# PCI bridge
+			device pci 1e.2 off end		# AC ’97 Audio Controller
+			device pci 1e.3 off end		# AC ’97 Modem Controller
+			device pci 1f.0 on		# ISA bridge
+				subsystemid 0x8086 0x5756
+				chip superio/winbond/w83627dhg
+					device pnp 2e.0 on		# Floppy
+						# global
+						irq 0x2c = 0x13
+						#floppy
+						io 0x60 = 0x3f0
+						irq 0x70 = 0x06
+						drq 0x74 = 0x02
+					end
+					device pnp 2e.1 on		# Parallel port
+						# parallel port
+						io 0x60 = 0x378
+						irq 0x70 = 5
+						drq 0x74 = 3
+					end
+					device pnp 2e.2 on		# COM1
+						io 0x60 = 0x3f8
+						irq 0x70 = 4
+					end
+					device pnp 2e.3 on		# COM2, IR
+						io 0x60 = 0x2f8
+						irq 0x70 = 3
+					end
+					device pnp 2e.5 on		# Keyboard, mouse
+						io 0x60 = 0x60
+						io 0x62 = 0x64
+						irq 0x70 = 1
+						irq 0x72 = 12
+					end
+					device pnp 2e.6 off end		# SPI
+					device pnp 2e.7 on end		# GPIO6 (all input)
+					device pnp 2e.8 off end		# WDT0#, PLED
+					device pnp 2e.9 off end		# GPIO2
+					device pnp 2e.109 off end	# GPIO3
+					device pnp 2e.209 off end	# GPIO4
+					device pnp 2e.309 on		# GPIO5
+						irq 0xe0 = 0xdf
+						irq 0xf3 = 0x09 # RSVD SUSLED settings
+					end
+					device pnp 2e.a on		# ACPI
+						irq 0xe0 = 0x10
+						irq 0xe1 = 0x0e
+						irq 0xe4 = 0x10 # Power dram during s3
+						irq 0xe6 = 0x8c
+					end
+					device pnp 2e.b on		# HWM, front pannel LED
+						io 0x60 = 0xa00
+						irq 0x70 = 0
+					end
+					device pnp 2e.c on		# PECI, SST
+						irq 0xe0 = 0x11
+						irq 0xe1 = 0x59
+					end
+				end
+			end
+			device pci 1f.1 off end 	# PATA/IDE
+			device pci 1f.2 on		# SATA
+				subsystemid 0x8086 0x5756
+			end
+			device pci 1f.3 on		# SMbus
+				subsystemid 0x8086 0x5756
+					chip drivers/i2c/ck505
+					register "mask" = "{ 0xff, 0xff, 0xff,
+						 0xff, 0xff, 0xff, 0xff, 0xff,
+						 0xff, 0xff, 0xff, 0xff, 0xff,
+						 0xff, 0xff, 0xff, 0xff, 0xff,
+						 0xff, 0xff, 0xff }"
+					register "regs" = "{ 0x41, 0x99, 0xff,
+						 0xff, 0xff, 0x00, 0x00, 0x06,
+						 0x03, 0x65, 0x83, 0x80, 0x15,
+						 0xc0, 0x09, 0x00, 0x00, 0x00,
+						 0x06, 0x00, 0xea }"
+					device i2c 69 on end
+				end
+
+			end
+		end
+	end
+end

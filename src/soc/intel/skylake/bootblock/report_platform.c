@@ -19,6 +19,7 @@
 #include <console/console.h>
 #include <cpu/x86/msr.h>
 #include <device/pci.h>
+#include <device/pci_ids.h>
 #include <soc/bootblock.h>
 #include <soc/cpu.h>
 #include <soc/pch.h>
@@ -30,62 +31,66 @@ static struct {
 	u32 cpuid;
 	const char *name;
 } cpu_table[] = {
-	{ CPUID_SKYLAKE_C0,	"Skylake C0" },
-	{ CPUID_SKYLAKE_D0,	"Skylake D0" },
-	{ CPUID_SKYLAKE_HQ0,    "Skylake H Q0" },
-	{ CPUID_SKYLAKE_HR0,    "Skylake H R0" },
-	{ CPUID_KABYLAKE_G0,	"Kabylake G0" },
-	{ CPUID_KABYLAKE_H0,	"Kabylake H0" },
-	{ CPUID_KABYLAKE_Y0,	"Kabylake Y0" },
-	{ CPUID_KABYLAKE_HA0,	"Kabylake H A0" },
-	{ CPUID_KABYLAKE_HB0,	"Kabylake H B0" },
+	{ CPUID_SKYLAKE_C0, "Skylake C0" },
+	{ CPUID_SKYLAKE_D0, "Skylake D0" },
+	{ CPUID_SKYLAKE_HQ0, "Skylake H Q0" },
+	{ CPUID_SKYLAKE_HR0, "Skylake H R0" },
+	{ CPUID_KABYLAKE_G0, "Kabylake G0" },
+	{ CPUID_KABYLAKE_H0, "Kabylake H0" },
+	{ CPUID_KABYLAKE_Y0, "Kabylake Y0" },
+	{ CPUID_KABYLAKE_HA0, "Kabylake H A0" },
+	{ CPUID_KABYLAKE_HB0, "Kabylake H B0" },
 };
 
 static struct {
 	u16 mchid;
 	const char *name;
 } mch_table[] = {
-	{ MCH_SKYLAKE_ID_U,	"Skylake-U" },
-	{ MCH_SKYLAKE_ID_Y,	"Skylake-Y" },
-	{ MCH_SKYLAKE_ID_ULX,	"Skylake-ULX" },
-	{ MCH_SKYLAKE_ID_H,	"Skylake-H" },
-	{ MCH_SKYLAKE_ID_H_EM,  "Skylake-H Embedded" },
-	{ MCH_KABYLAKE_ID_U,	"Kabylake-U" },
-	{ MCH_KABYLAKE_ID_U_R,	"Kabylake-R ULT"},
-	{ MCH_KABYLAKE_ID_Y,	"Kabylake-Y" },
-	{ MCH_KABYLAKE_ID_H,	"Kabylake-H" },
+	{ PCI_DEVICE_ID_INTEL_SKL_ID_U, "Skylake-U" },
+	{ PCI_DEVICE_ID_INTEL_SKL_ID_Y, "Skylake-Y" },
+	{ PCI_DEVICE_ID_INTEL_SKL_ID_ULX, "Skylake-ULX" },
+	{ PCI_DEVICE_ID_INTEL_SKL_ID_H, "Skylake-H" },
+	{ PCI_DEVICE_ID_INTEL_SKL_ID_H_EM, "Skylake-H Embedded" },
+	{ PCI_DEVICE_ID_INTEL_KBL_ID_U, "Kabylake-U" },
+	{ PCI_DEVICE_ID_INTEL_KBL_U_R, "Kabylake-R ULT"},
+	{ PCI_DEVICE_ID_INTEL_KBL_ID_Y, "Kabylake-Y" },
+	{ PCI_DEVICE_ID_INTEL_KBL_ID_H, "Kabylake-H" },
 };
 
 static struct {
 	u16 lpcid;
 	const char *name;
 } pch_table[] = {
-	{ PCH_SPT_LP_SAMPLE,		"Skylake LP Sample" },
-	{ PCH_SPT_LP_U_BASE,		"Skylake-U Base" },
-	{ PCH_SPT_LP_U_PREMIUM,		"Skylake-U Premium" },
-	{ PCH_SPT_LP_Y_PREMIUM,		"Skylake-Y Premium" },
-	{ PCH_SPT_H_PREMIUM,		"Skylake-H Premium" },
-	{ PCH_SPT_H_C236,		"Skylake-H C236" },
-	{ PCH_SPT_H_QM170,		"Skylake-H QM170" },
-	{ PCH_KBL_LP_U_PREMIUM,		"Kabylake-U Premium" },
-	{ PCH_KBL_LP_Y_PREMIUM,		"Kabylake-Y Premium" },
-	{ PCH_KBL_LP_Y_PREMIUM_HDCP22,	"Kabylake-Y iHDCP 2.2 Premium" },
+	{ PCI_DEVICE_ID_INTEL_SPT_LP_SAMPLE, "Skylake LP Sample" },
+	{ PCI_DEVICE_ID_INTEL_SPT_LP_U_BASE, "Skylake-U Base" },
+	{ PCI_DEVICE_ID_INTEL_SPT_LP_U_PREMIUM, "Skylake-U Premium" },
+	{ PCI_DEVICE_ID_INTEL_SPT_LP_Y_PREMIUM, "Skylake-Y Premium" },
+	{ PCI_DEVICE_ID_INTEL_KBP_H_PREMIUM, "Kabylake-H Premium" },
+	{ PCI_DEVICE_ID_INTEL_KBP_H_C236, "Kabylake-H C236" },
+	{ PCI_DEVICE_ID_INTEL_KBP_H_QM170, "Kabylake-H QM170" },
+	{ PCI_DEVICE_ID_INTEL_KBP_LP_U_PREMIUM, "Kabylake-U Premium" },
+	{ PCI_DEVICE_ID_INTEL_KBP_LP_Y_PREMIUM, "Kabylake-Y Premium" },
+	{ PCI_DEVICE_ID_INTEL_KBP_LP_SUPER_SKU, "Kabylake Super Sku" },
+	{ PCI_DEVICE_ID_INTEL_SPT_LP_Y_PREMIUM_HDCP22,
+			"Kabylake-Y iHDCP 2.2 Premium" },
+	{ PCI_DEVICE_ID_INTEL_SPT_LP_U_PREMIUM_HDCP22,
+			"Kabylake-U iHDCP 2.2 Premium" },
 };
 
 static struct {
 	u16 igdid;
 	const char *name;
 } igd_table[] = {
-	{ IGD_SKYLAKE_GT1_SULTM, "Skylake ULT GT1"},
-	{ IGD_SKYLAKE_GT2_SULXM, "Skylake ULX GT2" },
-	{ IGD_SKYLAKE_GT2_SULTM, "Skylake ULT GT2" },
-	{ IGD_SKYLAKE_GT2_SHALM, "Skylake HALO GT2" },
-	{ IGD_SKYLAKE_GT4_SHALM, "Skylake HALO GT4" },
-	{ IGD_KABYLAKE_GT1_SULTM, "Kabylake ULT GT1"},
-	{ IGD_KABYLAKE_GT2_SULXM, "Kabylake ULX GT2" },
-	{ IGD_KABYLAKE_GT2_SULTM, "Kabylake ULT GT2" },
-	{ IGD_KABYLAKE_GT2_SULTMR, "Kabylake-R ULT GT2"},
-	{ IGD_KABYLAKE_GT2_SHALM, "Kabylake HALO GT2" },
+	{ PCI_DEVICE_ID_INTEL_SKL_GT1_SULTM, "Skylake ULT GT1"},
+	{ PCI_DEVICE_ID_INTEL_SKL_GT2_SULXM, "Skylake ULX GT2" },
+	{ PCI_DEVICE_ID_INTEL_SKL_GT2_SULTM, "Skylake ULT GT2" },
+	{ PCI_DEVICE_ID_INTEL_SKL_GT2_SHALM, "Skylake HALO GT2" },
+	{ PCI_DEVICE_ID_INTEL_SKL_GT4_SHALM, "Skylake HALO GT4" },
+	{ PCI_DEVICE_ID_INTEL_KBL_GT1_SULTM, "Kabylake ULT GT1"},
+	{ PCI_DEVICE_ID_INTEL_KBL_GT2_SULXM, "Kabylake ULX GT2" },
+	{ PCI_DEVICE_ID_INTEL_KBL_GT2_SULTM, "Kabylake ULT GT2" },
+	{ PCI_DEVICE_ID_INTEL_KBL_GT2_SULTMR, "Kabylake-R ULT GT2"},
+	{ PCI_DEVICE_ID_INTEL_KBL_GT2_SHALM, "Kabylake HALO GT2" },
 };
 
 static void report_cpu_info(void)

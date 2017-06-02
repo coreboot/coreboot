@@ -23,7 +23,6 @@
 #include <console/console.h>
 #include <fmap.h>
 #include <intelblocks/fast_spi.h>
-#include <soc/mmap_boot.h>
 
 /*
  * BIOS region on the flash is mapped right below 4GiB in the address
@@ -133,9 +132,3 @@ const struct cbfs_locator cbfs_master_header_locator = {
 	.name = "IAFW Locator",
 	.locate = iafw_boot_region_properties,
 };
-
-size_t get_bios_size(void)
-{
-	bios_mmap_init();
-	return car_get_var(bios_size);
-}

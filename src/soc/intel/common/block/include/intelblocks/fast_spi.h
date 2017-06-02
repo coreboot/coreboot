@@ -57,6 +57,10 @@ void fast_spi_set_strap_msg_data(uint32_t soft_reset_data);
  */
 size_t fast_spi_get_bios_region(size_t *bios_size);
 /*
+ * Cache the memory-mapped BIOS region as write-protect type.
+ */
+void fast_spi_cache_bios_region(void);
+/*
  * Program temporary BAR for FAST_SPI in case any of the stages before ramstage
  * need to access FAST_SPI MMIO regs. Ramstage will assign a new BAR during PCI
  * enumeration. Also, Disable the BIOS write protect and Enable Prefetching and

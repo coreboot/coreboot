@@ -16,17 +16,14 @@
  */
 #include <arch/cpu.h>
 #include <bootblock_common.h>
-#include <cpu/x86/mtrr.h>
 #include <device/pci.h>
 #include <intelblocks/fast_spi.h>
 #include <intelblocks/pcr.h>
 #include <intelblocks/rtc.h>
 #include <intelblocks/systemagent.h>
-#include <lib.h>
 #include <soc/iomap.h>
 #include <soc/cpu.h>
 #include <soc/gpio.h>
-#include <soc/mmap_boot.h>
 #include <soc/systemagent.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
@@ -69,29 +66,6 @@ asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 	bootblock_main_with_timestamp(base_timestamp);
 }
 
-static void cache_bios_region(void)
-{
-	int mtrr;
-	size_t rom_size;
-	uint32_t alignment;
-
-	mtrr = get_free_var_mtrr();
-
-	if (mtrr == -1)
-		return;
-
-	/* Only the IFD BIOS region is memory mapped (at top of 4G) */
-	rom_size = get_bios_size();
-
-	if (!rom_size)
-		return;
-
-	/* Round to power of two */
-	alignment = 1 << (log2_ceil(rom_size));
-	rom_size = ALIGN_UP(rom_size, alignment);
-	set_var_mtrr(mtrr, 4ULL*GiB - rom_size, rom_size, MTRR_TYPE_WRPROT);
-}
-
 static void enable_pmcbar(void)
 {
 	device_t pmc = PCH_DEV_PMC;
@@ -125,7 +99,7 @@ void bootblock_soc_early_init(void)
 
 	fast_spi_early_init(PRERAM_SPI_BASE_ADDRESS);
 
-	cache_bios_region();
+	fast_spi_cache_bios_region();
 
 	/* Initialize GPE for use as interrupt status */
 	pmc_gpe_init();

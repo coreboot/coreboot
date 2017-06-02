@@ -323,4 +323,8 @@ config SOC_INTEL_COMMON_BLOCK_GSPI_MAX
 	int
 	default 2
 
+config CPU_BCLK_MHZ
+	int
+	default 100
+
 endif

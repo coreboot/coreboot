@@ -26,7 +26,7 @@ Scope (\_SB)
 	}
 }
 
-Scope (\_SB.I2C1)
+Scope (\_SB.PCI0.I2C1)
 {
 	Device (ATSB)
 	{
@@ -44,7 +44,7 @@ Scope (\_SB.I2C1)
 					ControllerInitiated,      /* SlaveMode */
 					400000,                   /* ConnectionSpeed */
 					AddressingMode7Bit,       /* AddressingMode */
-					"\\_SB.I2C1",             /* ResourceSource */
+					"\\_SB.PCI0.I2C1",        /* ResourceSource */
 				)
 				Interrupt (ResourceConsumer, Edge, ActiveLow)
 				{
@@ -83,7 +83,7 @@ Scope (\_SB.I2C1)
 					ControllerInitiated,      /* SlaveMode */
 					400000,                   /* ConnectionSpeed */
 					AddressingMode7Bit,       /* AddressingMode */
-					"\\_SB.I2C1",             /* ResourceSource */
+					"\\_SB.PCI0.I2C1",        /* ResourceSource */
 				)
 				Interrupt (ResourceConsumer, Edge, ActiveLow)
 				{
@@ -109,7 +109,7 @@ Scope (\_SB.I2C1)
 	}
 }
 
-Scope (\_SB.I2C5)
+Scope (\_SB.PCI0.I2C5)
 {
 	/* Realtek Audio Codec */
 	Device (RTEK)   /* Audio Codec driver I2C */
@@ -129,7 +129,7 @@ Scope (\_SB.I2C5)
 					ControllerInitiated,	/* SlaveMode: default to ControllerInitiated */
 					400000,			/* ConnectionSpeed: in Hz */
 					AddressingMode7Bit,	/* Addressing Mode: default to 7 bit */
-					"\\_SB.I2C5",		/* ResourceSource: I2C bus controller name */
+					"\\_SB.PCI0.I2C5"	/* ResourceSource: I2C bus controller name */
 				)
 
 			 /* Jack Detect (index 0) */
@@ -146,7 +146,7 @@ Scope (\_SB.I2C5)
 	}
 }
 
-Scope (\_SB.I2C6)
+Scope (\_SB.PCI0.I2C6)
 {
 	Device (ETPA)
 	{
@@ -162,7 +162,7 @@ Scope (\_SB.I2C6)
 				ControllerInitiated,      /* SlaveMode */
 				400000,                   /* ConnectionSpeed */
 				AddressingMode7Bit,       /* AddressingMode */
-				"\\_SB.I2C6",             /* ResourceSource */
+				"\\_SB.PCI0.I2C6",        /* ResourceSource */
 			)
 			GpioInt (Edge, ActiveLow, ExclusiveAndWake, PullNone,,
 				 "\\_SB.GPNC") { BOARD_TRACKPAD_GPIO_INDEX }
@@ -183,7 +183,7 @@ Scope (\_SB.I2C6)
 	}
 }
 
-Scope (\_SB.LPEA)
+Scope (\_SB.PCI0.LPEA)
 {
 	Name (GBUF, ResourceTemplate ()
 	{

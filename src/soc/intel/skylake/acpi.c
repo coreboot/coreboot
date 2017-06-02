@@ -410,7 +410,7 @@ static void generate_p_state_entries(int core, int cores_per_package)
 		/* Max Non-Turbo Ratio */
 		ratio_max = (msr.lo >> 8) & 0xff;
 	}
-	clock_max = ratio_max * CPU_BCLK;
+	clock_max = ratio_max * CONFIG_CPU_BCLK_MHZ;
 
 	/* Calculate CPU TDP in mW */
 	msr = rdmsr(MSR_PKG_POWER_SKU_UNIT);
@@ -474,7 +474,7 @@ static void generate_p_state_entries(int core, int cores_per_package)
 
 		/* Calculate power at this ratio */
 		power = calculate_power(power_max, ratio_max, ratio);
-		clock = ratio * CPU_BCLK;
+		clock = ratio * CONFIG_CPU_BCLK_MHZ;
 
 		acpigen_write_PSS_package(
 			clock,			/* MHz */

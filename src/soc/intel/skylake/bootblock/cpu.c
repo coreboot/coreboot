@@ -113,5 +113,5 @@ void set_max_freq(void)
 	wrmsr(MSR_IA32_PERF_CTL, perf_ctl);
 
 	printk(BIOS_DEBUG, "CPU: frequency set to %d MHz\n",
-		((perf_ctl.lo >> 8) & 0xff) * CPU_BCLK);
+		((perf_ctl.lo >> 8) & 0xff) * CONFIG_CPU_BCLK_MHZ);
 }

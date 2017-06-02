@@ -34,9 +34,6 @@
 #define CPUID_KABYLAKE_HA0	0x506e8
 #define CPUID_KABYLAKE_HB0	0x906e9
 
-/* CPU bus clock is fixed at 100MHz */
-#define CPU_BCLK		100
-
 /* Latency times in units of 1024ns. */
 #define C_STATE_LATENCY_CONTROL_0_LIMIT	0x4e
 #define C_STATE_LATENCY_CONTROL_1_LIMIT	0x76

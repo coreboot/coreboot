@@ -41,7 +41,8 @@ Method (APRT, 1, Serialized)
 	Name(ADBG, Buffer(256) {0})
 
 	If (LEqual(ObjectType(Arg0), 1)) { /* Integer */
-		ToHexString(Arg0, ADBG)
+		ToHexString(Arg0, Local0)
+		Store(Local0, ADBG)
 	} ElseIf (LEqual(ObjectType(Arg0), 2)) { /* String */
 		Store(Arg0, ADBG)
 	} ElseIf (LEqual(ObjectType(Arg0), 3)) { /* Buffer */
@@ -60,12 +61,18 @@ Method (APRT, 1, Serialized)
 	OperationRegion (UBAR, SystemMemory, UART_DEBUG_BASE_ADDRESS, 24)
 	Field (UBAR, AnyAcc, NoLock, Preserve)
 	{
-		TDR, 32,	/* Transmit Data Register BAR + 0x000 */
-		IER, 32,	/* Interrupt Enable Register BAR + 0x004 */
-		IIR, 32,	/* Interrupt Identification Register BAR + 0x008 */
-		LCR, 32,	/* Line Control Register BAR + 0x00C */
-		MCR, 32,	/* Modem Control Register BAR + 0x010 */
-		LSR, 32	/* Line Status Register BAR + 0x014 */
+		TDR, 8,	/* Transmit Data Register BAR + 0x000 */
+			, 24,
+		IER, 8,	/* Interrupt Enable Register BAR + 0x004 */
+			, 24,
+		IIR, 8,	/* Interrupt Identification Register BAR + 0x008 */
+			, 24,
+		LCR, 8,	/* Line Control Register BAR + 0x00C */
+			, 24,
+		MCR, 8,	/* Modem Control Register BAR + 0x010 */
+			, 24,
+		LSR, 8,	/* Line Status Register BAR + 0x014 */
+			, 24
 	}
 #else
 	OperationRegion (UBAR, SystemIO, LURT (CONFIG_UART_FOR_CONSOLE), 6)

@@ -57,6 +57,7 @@ config VARIANT_DIR
 	default "sand" if BOARD_GOOGLE_SAND
 	default "snappy" if BOARD_GOOGLE_SNAPPY
 	default "nasher" if BOARD_GOOGLE_NASHER
+	default "coral" if BOARD_GOOGLE_CORAL
 
 config DEVICETREE
 	string
@@ -72,6 +73,7 @@ config MAINBOARD_PART_NUMBER
 	default "Sand" if BOARD_GOOGLE_SAND
 	default "Snappy" if BOARD_GOOGLE_SNAPPY
 	default "Nasher" if BOARD_GOOGLE_NASHER
+	default "Coral" if BOARD_GOOGLE_CORAL
 
 config MAINBOARD_FAMILY
 	string
@@ -85,6 +87,7 @@ config GBB_HWID
 	default "SAND TEST 1904" if BOARD_GOOGLE_SAND
 	default "SNAPPY TEST 1088" if BOARD_GOOGLE_SNAPPY
 	default "NASHER TEST 4258" if BOARD_GOOGLE_NASHER
+	default "CORAL TEST 8594" if BOARD_GOOGLE_CORAL
 
 config MAX_CPUS
 	int

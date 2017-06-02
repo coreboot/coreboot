@@ -50,7 +50,7 @@ static void mainboard_init(void *chip_info)
  * a pulldown. This way we can generate 9 different values with the
  * 2 pins.
  */
-static int board_sku(void)
+uint8_t __attribute__((weak)) variant_board_sku(void)
 {
 	static int board_sku_num = -1;
 	gpio_t board_sku_gpios[] = {
@@ -66,9 +66,9 @@ static int board_sku(void)
 
 const char *smbios_mainboard_sku(void)
 {
-	static char sku_str[5]; /* sku[0-8] */
+	static char sku_str[7]; /* sku{0..255} */
 
-	snprintf(sku_str, sizeof(sku_str), "sku%d", board_sku());
+	snprintf(sku_str, sizeof(sku_str), "sku%d", variant_board_sku());
 
 	return sku_str;
 }
@@ -79,7 +79,7 @@ void __attribute__((weak)) variant_nhlt_oem_overrides(const char **oem_id,
 {
 	*oem_id = "reef";
 	*oem_table_id = CONFIG_VARIANT_DIR;
-	*oem_revision = board_sku();
+	*oem_revision = variant_board_sku();
 }
 
 static unsigned long mainboard_write_acpi_tables(

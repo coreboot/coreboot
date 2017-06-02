@@ -26,7 +26,7 @@ Scope (\_SB)
 	}
 }
 
-Scope (\_SB.I2C1)
+Scope (\_SB.PCI0.I2C1)
 {
 	Device (ETSA)
 	{
@@ -44,7 +44,7 @@ Scope (\_SB.I2C1)
 					ControllerInitiated,      /* SlaveMode */
 					400000,                   /* ConnectionSpeed */
 					AddressingMode7Bit,       /* AddressingMode */
-					"\\_SB.I2C1",             /* ResourceSource */
+					"\\_SB.PCI0.I2C1",        /* ResourceSource */
 				)
 				GpioInt (Edge, ActiveLow, ExclusiveAndWake, PullNone,,
 					 "\\_SB.GPSW") { BOARD_TOUCH_GPIO_INDEX }
@@ -57,7 +57,7 @@ Scope (\_SB.I2C1)
 					ControllerInitiated,      /* SlaveMode */
 					400000,                   /* ConnectionSpeed */
 					AddressingMode7Bit,       /* AddressingMode */
-					"\\_SB.I2C1",             /* ResourceSource */
+					"\\_SB.PCI0.I2C1",        /* ResourceSource */
 				)
 				GpioInt (Edge, ActiveLow, ExclusiveAndWake, PullNone,,
 					 "\\_SB.GPNC") { BOARD_EVT_TOUCH_GPIO_INDEX }
@@ -86,7 +86,7 @@ Scope (\_SB.I2C1)
 	}
 }
 
-Scope (\_SB.I2C2)
+Scope (\_SB.PCI0.I2C2)
 {
 	/* Maxim Audio Codec */
 	Device (MAXM)   /* Audio Codec driver I2C */
@@ -115,7 +115,7 @@ Scope (\_SB.I2C2)
 					ControllerInitiated,	/* SlaveMode: default to ControllerInitiated */
 					400000,			/* ConnectionSpeed: in Hz */
 					AddressingMode7Bit,	/* Addressing Mode: default to 7 bit */
-					"\\_SB.I2C2",		/* ResourceSource: I2C bus controller name */
+					"\\_SB.PCI0.I2C2",	/* ResourceSource: I2C bus controller name */
 				)
 
 				GpioInt (Edge, ActiveLow, ExclusiveAndWake, PullNone,,
@@ -159,7 +159,7 @@ Scope (\_SB.I2C2)
 					ControllerInitiated,	/* SlaveMode: default to ControllerInitiated */
 					400000,	/* ConnectionSpeed: in Hz */
 					AddressingMode7Bit,	/* Addressing Mode: default to 7 bit */
-					"\\_SB.I2C2",	/* ResourceSource: I2C bus controller name */
+					"\\_SB.PCI0.I2C2",	/* ResourceSource: I2C bus controller name */
 				)
 
 				GpioInt (Edge, ActiveLow, ExclusiveAndWake, PullNone,,
@@ -176,7 +176,7 @@ Scope (\_SB.I2C2)
 	}
 }
 
-Scope (\_SB.I2C6)
+Scope (\_SB.PCI0.I2C6)
 {
 	Device (ETPA)
 	{
@@ -192,7 +192,7 @@ Scope (\_SB.I2C6)
 				ControllerInitiated,      /* SlaveMode */
 				400000,                   /* ConnectionSpeed */
 				AddressingMode7Bit,       /* AddressingMode */
-				"\\_SB.I2C6",             /* ResourceSource */
+				"\\_SB.PCI0.I2C6",        /* ResourceSource */
 			)
 			GpioInt (Edge, ActiveLow, ExclusiveAndWake, PullNone,,
 				 "\\_SB.GPNC") { BOARD_TRACKPAD_GPIO_INDEX }
@@ -214,7 +214,7 @@ Scope (\_SB.I2C6)
 	}
 }
 
-Scope (\_SB.LPEA)
+Scope (\_SB.PCI0.LPEA)
 {
 	Name (GBUF, ResourceTemplate ()
 	{

@@ -253,7 +253,10 @@ Scope (\_SB)
 {
 	/* GPIO Devices */
 	#include "gpio.asl"
+}
 
+Scope (\_SB.PCI0)
+{
 	/* LPSS Devices */
 	#include "lpss.asl"
 

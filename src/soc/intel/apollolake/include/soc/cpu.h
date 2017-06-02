@@ -32,8 +32,6 @@ void enable_untrusted_mode(void);
 #define CPUID_APOLLOLAKE_A0	0x506c8
 #define CPUID_APOLLOLAKE_B0	0x506c9
 
-#define BASE_CLOCK_MHZ		100
-
 /* Common Timer Copy (CTC) frequency - 19.2MHz. */
 #define CTC_FREQ		19200000
 

@@ -322,4 +322,8 @@ config IFD_CHIPSET
 	string
 	default "aplk"
 
+config CPU_BCLK_MHZ
+	int
+	default 100
+
 endif

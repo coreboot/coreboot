@@ -26,7 +26,7 @@
 unsigned long tsc_freq_mhz(void)
 {
 	msr_t msr = rdmsr(MSR_PLATFORM_INFO);
-	return (BASE_CLOCK_MHZ * ((msr.lo >> 8) & 0xff));
+	return (CONFIG_CPU_BCLK_MHZ * ((msr.lo >> 8) & 0xff));
 }
 
 void set_max_freq(void)

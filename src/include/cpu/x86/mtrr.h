@@ -86,13 +86,10 @@ void x86_mtrr_check(void);
 void mtrr_use_temp_range(uintptr_t begin, size_t size, int type);
 #endif
 
-#if !defined(__ASSEMBLER__) && defined(__PRE_RAM__) && !defined(__ROMCC__)
+#if !defined(__ASSEMBLER__) && !defined(__ROMCC__)
 void set_var_mtrr(unsigned int reg, unsigned int base, unsigned int size,
 	unsigned int type);
 int get_free_var_mtrr(void);
-#endif
-
-#if !defined(__ASSEMBLER__) && !defined(__ROMCC__)
 
 /* fms: find most significant bit set, stolen from Linux Kernel Source. */
 static inline unsigned int fms(unsigned int x)

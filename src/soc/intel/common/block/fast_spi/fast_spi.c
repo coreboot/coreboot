@@ -18,8 +18,10 @@
 #include <device/pci_def.h>
 #include <commonlib/helpers.h>
 #include <console/console.h>
+#include <cpu/x86/mtrr.h>
 #include <fast_spi_def.h>
 #include <intelblocks/fast_spi.h>
+#include <lib.h>
 #include <soc/intel/common/spi_flash.h>
 #include <soc/pci_devs.h>
 #include <spi_flash.h>
@@ -173,6 +175,29 @@ size_t fast_spi_get_bios_region(size_t *bios_size)
 		     SPIBAR_BFPREG_PRL_SHIFT) + 1) * 4 * KiB;
 	*bios_size = bios_end - bios_start;
 	return bios_start;
+}
+
+void fast_spi_cache_bios_region(void)
+{
+	int mtrr;
+	size_t bios_size;
+	uint32_t alignment;
+
+	mtrr = get_free_var_mtrr();
+
+	if (mtrr == -1)
+		return;
+
+	/* Only the IFD BIOS region is memory mapped (at top of 4G) */
+	fast_spi_get_bios_region(&bios_size);
+
+	if (!bios_size)
+		return;
+
+	/* Round to power of two */
+	alignment = 1 << (log2_ceil(bios_size));
+	bios_size = ALIGN_UP(bios_size, alignment);
+	set_var_mtrr(mtrr, 4ULL*GiB - bios_size, bios_size, MTRR_TYPE_WRPROT);
 }
 
 /*

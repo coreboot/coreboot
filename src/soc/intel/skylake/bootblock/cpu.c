@@ -17,10 +17,8 @@
 #include <arch/io.h>
 #include <console/console.h>
 #include <cpu/intel/microcode/microcode.c>
-#include <cpu/x86/mtrr.h>
 #include <delay.h>
 #include <intelblocks/fast_spi.h>
-#include <lib.h>
 #include <reset.h>
 #include <soc/bootblock.h>
 #include <soc/cpu.h>
@@ -86,32 +84,9 @@ static void set_flex_ratio_to_tdp_nominal(void)
 	soft_reset();
 }
 
-static void cache_bios_region(void)
-{
-	int mtrr;
-	size_t rom_size;
-	uint32_t alignment;
-
-	mtrr = get_free_var_mtrr();
-
-	if (mtrr == -1)
-		return;
-
-	/* Only the IFD BIOS region is memory mapped (at top of 4G) */
-	rom_size = CONFIG_ROM_SIZE;
-
-	if (!rom_size)
-		return;
-
-	/* Round to power of two */
-	alignment = 1 << (log2_ceil(rom_size));
-	rom_size = ALIGN_UP(rom_size, alignment);
-	set_var_mtrr(mtrr, 4ULL*GiB - rom_size, rom_size, MTRR_TYPE_WRPROT);
-}
-
 void bootblock_cpu_init(void)
 {
-	cache_bios_region();
+	fast_spi_cache_bios_region();
 	/* Set flex ratio and reset if needed */
 	set_flex_ratio_to_tdp_nominal();
 	intel_update_microcode_from_cbfs();

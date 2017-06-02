@@ -187,8 +187,8 @@ Device (I2C2)
 		{
 			LPSS_I2C2_IRQ
 		}
-		FixedDMA (0x10, 0x0, Width32Bit, )
-		FixedDMA (0x11, 0x1, Width32Bit, )
+		FixedDMA (0x12, 0x2, Width32Bit, )
+		FixedDMA (0x13, 0x3, Width32Bit, )
 	})
 
 	Method (_CRS)
@@ -246,8 +246,8 @@ Device (I2C3)
 		{
 			LPSS_I2C3_IRQ
 		}
-		FixedDMA (0x10, 0x0, Width32Bit, )
-		FixedDMA (0x11, 0x1, Width32Bit, )
+		FixedDMA (0x14, 0x4, Width32Bit, )
+		FixedDMA (0x15, 0x5, Width32Bit, )
 	})
 
 	Method (_CRS)
@@ -305,8 +305,8 @@ Device (I2C4)
 		{
 			LPSS_I2C4_IRQ
 		}
-		FixedDMA (0x10, 0x0, Width32Bit, )
-		FixedDMA (0x11, 0x1, Width32Bit, )
+		FixedDMA (0x16, 0x6, Width32Bit, )
+		FixedDMA (0x17, 0x7, Width32Bit, )
 	})
 
 	Method (_CRS)
@@ -364,8 +364,8 @@ Device (I2C5)
 		{
 			LPSS_I2C5_IRQ
 		}
-		FixedDMA (0x10, 0x0, Width32Bit, )
-		FixedDMA (0x11, 0x1, Width32Bit, )
+		FixedDMA (0x18, 0x0, Width32Bit, )
+		FixedDMA (0x19, 0x1, Width32Bit, )
 	})
 
 	Method (_CRS)
@@ -423,8 +423,8 @@ Device (I2C6)
 		{
 			LPSS_I2C6_IRQ
 		}
-		FixedDMA (0x10, 0x0, Width32Bit, )
-		FixedDMA (0x11, 0x1, Width32Bit, )
+		FixedDMA (0x1A, 0x2, Width32Bit, )
+		FixedDMA (0x1B, 0x3, Width32Bit, )
 	})
 
 	Method (_CRS)
@@ -482,8 +482,8 @@ Device (I2C7)
 		{
 			LPSS_I2C7_IRQ
 		}
-		FixedDMA (0x10, 0x0, Width32Bit, )
-		FixedDMA (0x11, 0x1, Width32Bit, )
+		FixedDMA (0x1C, 0x4, Width32Bit, )
+		FixedDMA (0x1D, 0x5, Width32Bit, )
 	})
 
 	Method (_CRS)

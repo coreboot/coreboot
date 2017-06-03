@@ -25,7 +25,6 @@
 
 #include "chip.h"
 #include "it8728f.h"
-#include "it8728f_internal.h"
 
 static void it8728f_init(struct device *dev)
 {

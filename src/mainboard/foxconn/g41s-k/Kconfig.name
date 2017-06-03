@@ -1,0 +1,2 @@
+config BOARD_FOXCONN_G41S_K
+	bool "G41S-K"

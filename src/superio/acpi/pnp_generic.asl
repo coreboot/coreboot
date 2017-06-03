@@ -32,10 +32,13 @@
  * SUPERIO_PNP_PM_LDN	The logical device number to access the PM_REG
  *			bit (required if SUPERIO_PNP_PM_REG is defined)
  * SUPERIO_PNP_IO0	The alignment and length of the first PnP i/o
- *			resource (comma seperated, e.g. `0x02, 0x08`,
+ *			resource (comma separated, e.g. `0x02, 0x08`,
  *			optional)
  * SUPERIO_PNP_IO1	The alignment and length of the second PnP i/o
- *			resource (comma seperated, e.g. `0x02, 0x08`,
+ *			resource (comma separated, e.g. `0x02, 0x08`,
+ *			optional)
+ * SUPERIO_PNP_IO2	The alignment and length of the third PnP i/o
+ *			resource (comma separated, e.g. `0x02, 0x08`,
  *			optional)
  * SUPERIO_PNP_IRQ0	If defined, the first PnP IRQ register is enabled
  * SUPERIO_PNP_IRQ1	If defined, the second PnP IRQ register is enabled
@@ -96,6 +99,9 @@ Device (SUPERIO_ID(PN, SUPERIO_PNP_LDN)) {
 #ifdef SUPERIO_PNP_IO1
 			IO (Decode16, 0x0000, 0x0000, SUPERIO_PNP_IO1, IO1)
 #endif
+#ifdef SUPERIO_PNP_IO2
+			IO (Decode16, 0x0000, 0x0000, SUPERIO_PNP_IO2, IO2)
+#endif
 #ifdef SUPERIO_PNP_IRQ0
 			IRQNoFlags (IR0) {}
 #endif
@@ -112,6 +118,9 @@ Device (SUPERIO_ID(PN, SUPERIO_PNP_LDN)) {
 #endif
 #ifdef SUPERIO_PNP_IO1
 		  PNP_READ_IO(PNP_IO1, CRS, IO1)
+#endif
+#ifdef SUPERIO_PNP_IO2
+		  PNP_READ_IO(PNP_IO2, CRS, IO2)
 #endif
 #ifdef SUPERIO_PNP_IRQ0
 		  PNP_READ_IRQ(PNP_IRQ0, CRS, IR0)
@@ -135,6 +144,9 @@ Device (SUPERIO_ID(PN, SUPERIO_PNP_LDN)) {
 #ifdef SUPERIO_PNP_IO1
 			IO (Decode16, 0x0000, 0x0000, SUPERIO_PNP_IO1, IO1)
 #endif
+#ifdef SUPERIO_PNP_IO2
+			IO (Decode16, 0x0000, 0x0000, SUPERIO_PNP_IO2, IO2)
+#endif
 #ifdef SUPERIO_PNP_IRQ0
 			IRQNoFlags (IR0) {}
 #endif
@@ -151,6 +163,9 @@ Device (SUPERIO_ID(PN, SUPERIO_PNP_LDN)) {
 #endif
 #ifdef SUPERIO_PNP_IO1
 		  PNP_WRITE_IO(PNP_IO1, Arg0, IO1)
+#endif
+#ifdef SUPERIO_PNP_IO2
+		  PNP_WRITE_IO(PNP_IO2, Arg0, IO2)
 #endif
 #ifdef SUPERIO_PNP_IRQ0
 		  PNP_WRITE_IRQ(PNP_IRQ0, Arg0, IR0)

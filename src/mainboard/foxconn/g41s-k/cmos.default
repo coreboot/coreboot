@@ -1,0 +1,6 @@
+boot_option=Fallback
+baud_rate=115200
+debug_level=Spew
+power_on_after_fail=Disable
+nmi=Enable
+gfx_uma_size=64M

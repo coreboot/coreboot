@@ -23,6 +23,7 @@
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/smbus.h>
+#include <stdint.h>
 
 static void pch_log_gpio_gpe(u32 gpe0_sts, u32 gpe0_en, int start)
 {
@@ -36,6 +37,138 @@ static void pch_log_gpio_gpe(u32 gpe0_sts, u32 gpe0_en, int start)
 	}
 }
 
+#define XHCI_USB2_PORT_STATUS_REG	0x480
+#define XHCI_USB3_PORT_STATUS_REG	0x540
+#define XHCI_USB2_PORT_NUM		10
+#define XHCI_USB3_PORT_NUM		6
+/* Wake on disconnect enable */
+#define XHCI_STATUS_WDE			(1 << 26)
+/* Wake on connect enable */
+#define XHCI_STATUS_WCE			(1 << 25)
+/* Port link status change */
+#define XHCI_STATUS_PLC			(1 << 22)
+/* Connect status change */
+#define XHCI_STATUS_CSC			(1 << 17)
+/* Port link status */
+#define XHCI_STATUS_PLS_SHIFT		(5)
+#define XHCI_STATUS_PLS_MASK		(0xF << XHCI_STATUS_PLS_SHIFT)
+#define XHCI_STATUS_PLS_RESUME		(15 << XHCI_STATUS_PLS_SHIFT)
+
+static bool pch_xhci_csc_set(uint32_t port_status)
+{
+	return !!(port_status & XHCI_STATUS_CSC);
+}
+
+static bool pch_xhci_wake_capable(uint32_t port_status)
+{
+	return !!((port_status & XHCI_STATUS_WCE) |
+		  (port_status & XHCI_STATUS_WDE));
+}
+
+static bool pch_xhci_plc_set(uint32_t port_status)
+{
+	return !!(port_status & XHCI_STATUS_PLC);
+}
+
+static bool pch_xhci_resume(uint32_t port_status)
+{
+	return (port_status & XHCI_STATUS_PLS_MASK) == XHCI_STATUS_PLS_RESUME;
+}
+
+/*
+ * Check if a particular USB port caused wake by:
+ * 1. Change in connect/disconnect status (if enabled)
+ * 2. USB device activity
+ *
+ * Params:
+ * base  : MMIO address of first port.
+ * num   : Number of ports.
+ * event : Event that needs to be added in case wake source is found.
+ *
+ * Return value:
+ * true  : Wake source was found.
+ * false : Wake source was not found.
+ */
+static bool pch_xhci_port_wake_check(uintptr_t base, uint8_t num,
+					uint32_t event)
+{
+	uint8_t i;
+	uint32_t port_status;
+	bool found = false;
+
+	for (i = 0; i < num; i++, base += 0x10) {
+		/* Read port status and control register for the port. */
+		port_status = read32((void *)base);
+
+		/*
+		 * Check if CSC bit is set and port is capable of wake on
+		 * connect/disconnect to identify if the port caused wake
+		 * event for usb attach/detach.
+		 */
+		if (pch_xhci_csc_set(port_status) &&
+		    pch_xhci_wake_capable(port_status)) {
+			elog_add_event_wake(event, i + 1);
+			found = true;
+		}
+
+		/*
+		 * Check if PLC is set and PLS indicates resume to identify if
+		 * the port caused wake event for usb activity.
+		 */
+		if (pch_xhci_plc_set(port_status) &&
+		    pch_xhci_resume(port_status)) {
+			elog_add_event_wake(event, i + 1);
+			found = true;
+		}
+	}
+	return found;
+}
+
+/*
+ * Update elog event and instance depending upon the USB2 port that caused
+ * the wake event.
+ *
+ * Return value:
+ * true = Indicates that USB2 wake event was found.
+ * false = Indicates that USB2 wake event was not found.
+ */
+static inline bool pch_xhci_usb2_update_wake_event(uintptr_t mmio_base)
+{
+	return pch_xhci_port_wake_check(mmio_base + XHCI_USB2_PORT_STATUS_REG,
+					XHCI_USB2_PORT_NUM,
+					ELOG_WAKE_SOURCE_PME_XHCI_USB_2);
+}
+
+/*
+ * Update elog event and instance depending upon the USB3 port that caused
+ * the wake event.
+ *
+ * Return value:
+ * true = Indicates that USB3 wake event was found.
+ * false = Indicates that USB3 wake event was not found.
+ */
+static inline bool pch_xhci_usb3_update_wake_event(uintptr_t mmio_base)
+{
+	return pch_xhci_port_wake_check(mmio_base + XHCI_USB3_PORT_STATUS_REG,
+					XHCI_USB3_PORT_NUM,
+					ELOG_WAKE_SOURCE_PME_XHCI_USB_3);
+}
+
+static bool pch_xhci_update_wake_event(device_t dev)
+{
+	uintptr_t mmio_base;
+	bool event_found = false;
+	mmio_base = ALIGN_DOWN(pci_read_config32(dev, PCI_BASE_ADDRESS_0), 16);
+
+	if (pch_xhci_usb2_update_wake_event(mmio_base))
+		event_found = true;
+
+	if (pch_xhci_usb3_update_wake_event(mmio_base))
+		event_found = true;
+
+	return event_found;
+}
+
 struct pme_status_info {
 	int devfn;
 	uint8_t reg_offset;
@@ -43,6 +176,19 @@ struct pme_status_info {
 };
 
 #define PME_STS_BIT		(1 << 15)
+
+static void pch_log_add_elog_event(const struct pme_status_info *info,
+					device_t dev)
+{
+	/*
+	 * If wake source is XHCI, check for detailed wake source events on
+	 * USB2/3 ports.
+	 */
+	if ((info->devfn == PCH_DEVFN_XHCI) && pch_xhci_update_wake_event(dev))
+		return;
+
+	elog_add_event_wake(info->elog_event, 0);
+}
 
 static void pch_log_pme_internal_wake_source(void)
 {
@@ -87,7 +233,7 @@ static void pch_log_pme_internal_wake_source(void)
 		if ((val == 0xFFFF) || !(val & PME_STS_BIT))
 			continue;
 
-		elog_add_event_wake(pme_status_info[i].elog_event, 0);
+		pch_log_add_elog_event(&pme_status_info[i], dev);
 		dev_found = true;
 	}
 

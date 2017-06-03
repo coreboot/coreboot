@@ -394,7 +394,7 @@ chip soc/intel/skylake
 				register "pwdb[5].entry_type" = "INTEL_ACPI_CAMERA_REGULATOR"
 				register "pwdb[5].delay_usec" = "3000"
 
-				device i2c 10 on end
+				device i2c 36 on end
 			end
 		end # I2C #4
 		device pci 1c.0 on

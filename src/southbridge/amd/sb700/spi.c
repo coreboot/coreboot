@@ -35,11 +35,6 @@ static uint32_t get_spi_bar(void)
 	return pci_read_config32(dev, 0xa0) & ~0x1f;
 }
 
-void spi_init(void)
-{
-	/* Not needed */
-}
-
 static void reset_internal_fifo_pointer(void)
 {
 	uint32_t spibar = get_spi_bar();

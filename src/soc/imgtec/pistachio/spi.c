@@ -410,13 +410,6 @@ static int spim_io(const struct spi_slave *slave, struct spim_buffer *first,
 	return SPIM_OK;
 }
 
-/* Initialization, must be called once on start up */
-void spi_init(void)
-{
-	/* Clear everything just in case */
-	memset(img_spi_slaves, 0, sizeof(img_spi_slaves));
-}
-
 /* Claim the bus and prepare it for communication */
 static int spi_ctrlr_claim_bus(const struct spi_slave *slave)
 {

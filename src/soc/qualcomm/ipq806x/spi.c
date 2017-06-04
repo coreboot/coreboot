@@ -493,12 +493,6 @@ static const struct gsbi_spi spi_reg[] = {
 };
 static struct ipq_spi_slave spi_slave_pool[2];
 
-void spi_init()
-{
-	/* just in case */
-	memset(spi_slave_pool, 0, sizeof(spi_slave_pool));
-}
-
 static struct ipq_spi_slave *to_ipq_spi(const struct spi_slave *slave)
 {
 	struct ipq_spi_slave *ds;

@@ -95,10 +95,6 @@ static void spi_sw_reset(struct exynos_spi *regs, int word)
 	setbits_le32(&regs->ch_cfg, SPI_RX_CH_ON | SPI_TX_CH_ON);
 }
 
-void spi_init(void)
-{
-}
-
 static void exynos_spi_init(struct exynos_spi *regs)
 {
 	// Set FB_CLK_SEL.

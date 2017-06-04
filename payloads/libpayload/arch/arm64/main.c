@@ -64,7 +64,7 @@ static void pre_sysinfo_scan_mmu_setup(void)
 	mmu_presysinfo_memory_used(start, end - start);
 
 	/*
-	 * Memory range 2: Coreboot tables
+	 * Memory range 2: coreboot tables
 	 *
 	 * Maximum size is assumed 2 pages in case it crosses the GRANULE_SIZE
 	 * boundary

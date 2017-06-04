@@ -170,7 +170,7 @@ err_free:
 
 static int bootlog_module_redraw(WINDOW *win)
 {
-	print_module_title(win, "Coreboot Bootlog");
+	print_module_title(win, "coreboot Bootlog");
 
 	if (!g_buf) {
 		return -1;

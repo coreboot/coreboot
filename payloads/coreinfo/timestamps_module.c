@@ -228,7 +228,7 @@ static int timestamps_module_init(void)
 
 static int timestamps_module_redraw(WINDOW *win)
 {
-	print_module_title(win, "Coreboot Timestamps");
+	print_module_title(win, "coreboot Timestamps");
 
 	if (!g_buf)
 		return -1;

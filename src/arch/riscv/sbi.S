@@ -58,7 +58,7 @@ sbi_page:
 	.align 4
 
 	/* -1984: int sbi_console_getchar(void); */
-	li a0, -1	/* failure: Coreboot doesn't support console input */
+	li a0, -1	/* failure: coreboot doesn't support console input */
 	jr ra
 	.align 4
 

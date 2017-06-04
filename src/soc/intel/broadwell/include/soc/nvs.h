@@ -46,7 +46,7 @@ typedef struct {
 	u8	lids; /* 0x16 - LID State */
 	u8	pwrs; /* 0x17 - AC Power State */
 	u32	cmem; /* 0x18 - 0x1b - CBMEM TOC */
-	u32	cbmc; /* 0x1c - 0x1f - Coreboot Memory Console */
+	u32	cbmc; /* 0x1c - 0x1f - coreboot Memory Console */
 	u64	pm1i; /* 0x20 - 0x27 - PM1 wake status bit */
 	u64	gpei; /* 0x28 - 0x2f - GPE wake status bit */
 	u8	unused[208];

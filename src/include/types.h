@@ -26,7 +26,7 @@
 #define BIT(x)				(1ul << (x))
 
 /**
- * Coreboot error codes
+ * coreboot error codes
  *
  * When building functions that return a status or an error code, use cb_err as
  * the return type. When failure reason needs to be communicated by the return

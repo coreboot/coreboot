@@ -222,7 +222,7 @@ void  sbPowerOnInit (AMDSBCFG *pConfig){
   if (dbVar0 > 4) {
     dbVar0 = 0;
   }
-  //KZ [061811]-It's used wrong BIOS SIZE for Coreboot.  RWPCI((LPC_BUS_DEV_FUN << 16) + SB_LPC_REG6C, AccWidthUint8 | S3_SAVE, 0x00, 0xF8 << dbVar0);
+  //KZ [061811]-It's used wrong BIOS SIZE for coreboot.  RWPCI((LPC_BUS_DEV_FUN << 16) + SB_LPC_REG6C, AccWidthUint8 | S3_SAVE, 0x00, 0xF8 << dbVar0);
 
   if (pConfig->Spi33Mhz)
     //spi reg0c[13:12] to 01h  to run spi 33Mhz in system bios

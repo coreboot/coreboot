@@ -21,7 +21,7 @@
  * is exposed so that a memranges can be used on the stack if needed. */
 struct memranges {
 	struct range_entry *entries;
-	/* Coreboot doesn't have a free() function. Therefore, keep a cache of
+	/* coreboot doesn't have a free() function. Therefore, keep a cache of
 	 * free'd entries.  */
 	struct range_entry *free_list;
 };

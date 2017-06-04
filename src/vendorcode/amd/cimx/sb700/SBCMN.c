@@ -145,7 +145,7 @@ void    commonInitEarlyBoot(AMDSBCFG* pConfig) {
         RWPMIO(SB_PMIO_REG65, AccWidthUint8 | S3_SAVE, ~(UINT32)BIT4, BIT4);
 
 
-        #if 0 //KZ [083011]-It's used wrong BIOS SIZE for Coreboot.
+        #if 0 //KZ [083011]-It's used wrong BIOS SIZE for coreboot.
         //For being compatible with earlier revision, check whether ROM decoding is changed already outside CIMx before
         //changing it.
         ReadPCI((LPC_BUS_DEV_FUN << 16) + SB_LPC_REG68, AccWidthUint16 | S3_SAVE, &dwTempVar);

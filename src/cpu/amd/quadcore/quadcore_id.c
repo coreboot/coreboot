@@ -105,7 +105,7 @@ struct node_core_id get_node_core_id(u32 nb_cfg_54)
 		}
 	}
 	if (fam15h && dual_node) {
-		/* Coreboot expects each separate processor die to be on a different nodeid.
+		/* coreboot expects each separate processor die to be on a different nodeid.
 		 * Since the code above returns nodeid 0 even on internal node 1 some fixup is needed...
 		 */
 		uint32_t f5x84;
@@ -123,7 +123,7 @@ struct node_core_id get_node_core_id(u32 nb_cfg_54)
 			id.coreid = id.coreid - core_count;
 		}
 	} else if (rev_gte_d && dual_node) {
-		/* Coreboot expects each separate processor die to be on a different nodeid.
+		/* coreboot expects each separate processor die to be on a different nodeid.
 		 * Since the code above returns nodeid 0 even on internal node 1 some fixup is needed...
 		 */
 		uint8_t core_count = (((f3xe8 & 0x00008000) >> 13) | ((f3xe8 & 0x00003000) >> 12)) + 1;

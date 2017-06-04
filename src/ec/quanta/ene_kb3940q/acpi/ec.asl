@@ -63,7 +63,7 @@ Device (EC0)
 		BTBD, 1,        // Battery Malfunction                  ; 70h.3
 		ACMD, 1,        // ACPI Mode                            ; 70h.4
 		    , 1,        // Reserved                             ; 70h.5
-		SSBS, 1,        // 1=Standard BIOS, 0=Coreboot          ; 70h.6
+		SSBS, 1,        // 1=Standard BIOS, 0=coreboot          ; 70h.6
 		PSTH, 1,        // Passive Thermal Policy               ; 70h.7
 		BST0, 8,        // Battery Status                       ; 71h
 		                // Bit0 : Discharging

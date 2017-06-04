@@ -182,7 +182,7 @@ void soc_silicon_init_params(SILICON_INIT_UPD *params)
 	 * To disable Heci, the Psf needs to be left unlocked
 	 * by FSP after end of post sequence. Based on the devicetree
 	 * setting, we set the appropriate PsfUnlock policy in Fsp,
-	 * do the changes and then lock it back in Coreboot
+	 * do the changes and then lock it back in coreboot
 	 *
 	 */
 	if (config->HeciEnabled == 0)

@@ -45,7 +45,7 @@
  *   xmm2: Fam10h comparison value
  *   xmm3: Fam15h comparison value
  *   xmm4: Backup EBX
- *   xmm5: Coreboot init detect
+ *   xmm5: coreboot init detect
  */
 
 	/* Save the BIST result. */

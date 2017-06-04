@@ -329,7 +329,7 @@
 /**
  * \brief Elfload fail or die() called
  *
- * Coreboot was not able to load the payload, no payload was detected
+ * coreboot was not able to load the payload, no payload was detected
  * or die() was called.
  * \n
  * If this code appears before entering ramstage, then most likely

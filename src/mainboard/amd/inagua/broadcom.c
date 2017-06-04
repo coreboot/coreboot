@@ -26,7 +26,7 @@
 
 #include <types.h>
 #include <console/console.h>
-#include <device/device.h>	//Coreboot device access
+#include <device/device.h>	//coreboot device access
 #include <device/pci.h>
 #include <delay.h>
 #include <endian.h>

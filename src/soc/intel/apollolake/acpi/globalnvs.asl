@@ -33,7 +33,7 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	LIDS,	8,      // 0x02 - LID State
 	PWRS,	8,      // 0x03 - AC Power State
 	DPTE,	8,      // 0x04 - Enable DPTF
-	CBMC,	32,     // 0x05 - 0x08 - Coreboot Memory Console
+	CBMC,	32,     // 0x05 - 0x08 - coreboot Memory Console
 	PM1I,	64,     // 0x09 - 0x10 - System Wake Source - PM1 Index
 	GPEI,	64,     // 0x11 - 0x18 - GPE Wake Source
 	NHLA,	64,     // 0x19 - 0x20 - NHLT Address

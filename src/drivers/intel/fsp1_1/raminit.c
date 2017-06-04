@@ -277,7 +277,7 @@ void raminit(struct romstage_params *params)
 
 	/* Verify the FSP 1.1 HOB interface */
 	if (fsp_verification_failure)
-		die("ERROR - Coreboot's requirements not met by FSP binary!\n");
+		die("ERROR - coreboot's requirements not met by FSP binary!\n");
 
 	/* Display the memory configuration */
 	report_memory_config();

@@ -4,7 +4,7 @@
  * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  *
  * File taken from the Linux xgifb driver (v3.18.5)
- * Coreboot-specific includes added at top
+ * coreboot-specific includes added at top
  * XGINew_SetDRAMSize_340 slightly modified for coreboot text mode
  *
  * This program is free software; you can redistribute it and/or modify

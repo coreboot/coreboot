@@ -180,7 +180,7 @@ static void interrupt_handler(trapframe *tf)
 		break;
 	default:
 		printk(BIOS_EMERG, "======================================\n");
-		printk(BIOS_EMERG, "Coreboot: Unknown machine interrupt: 0x%llx\n",
+		printk(BIOS_EMERG, "coreboot: Unknown machine interrupt: 0x%llx\n",
 		       cause);
 		printk(BIOS_EMERG, "======================================\n");
 		print_trap_information(tf);
@@ -222,7 +222,7 @@ void trap_handler(trapframe *tf)
 			break;
 		default:
 			printk(BIOS_EMERG, "================================\n");
-			printk(BIOS_EMERG, "Coreboot: can not handle a trap:\n");
+			printk(BIOS_EMERG, "coreboot: can not handle a trap:\n");
 			printk(BIOS_EMERG, "================================\n");
 			print_trap_information(tf);
 			break;

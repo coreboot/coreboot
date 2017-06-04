@@ -6,7 +6,7 @@ metadataformat = "yaml"
 canonifyurls = true
 
 [params]
-  provider = "Coreboot"
+  provider = "coreboot"
   repo_url = "https://review.coreboot.org/cgit/coreboot.git"
   logo = "images/coreboot.svg"
   favicon = "images/favicon.png"

@@ -313,7 +313,7 @@ int parse_elf_to_stage(const struct buffer *input, struct buffer *output,
 	outheader.data = output->data;
 	outheader.size = 0;
 
-	/* Coreboot expects entry point to be physical address. Thus, adjust the
+	/* coreboot expects entry point to be physical address. Thus, adjust the
 	 * entry point accordingly.
 	 */
 	fill_cbfs_stage(&outheader, algo, ehdr->e_entry + virt_to_phys,

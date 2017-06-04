@@ -325,7 +325,7 @@ void dump_lbtable(void)
 	const struct lb_record *lbrec;
 
 	p = ((const char *)lbtable) + lbtable->header_bytes;
-	printf("Coreboot table at physical address 0x%lx:\n"
+	printf("coreboot table at physical address 0x%lx:\n"
 	       "    signature:       0x%x (ASCII: %c%c%c%c)\n"
 	       "    header_bytes:    0x%x (decimal: %d)\n"
 	       "    header_checksum: 0x%x (decimal: %d)\n"

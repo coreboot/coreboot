@@ -94,7 +94,7 @@ void init_dma_memory(void *start, u32 size)
 	}
 
 	/*
-	 * DMA memory might not be zeroed by Coreboot on stage loading, so make
+	 * DMA memory might not be zeroed by coreboot on stage loading, so make
 	 * sure we clear the magic cookie from last boot.
 	 */
 	*(hdrtype_t *)start = 0;

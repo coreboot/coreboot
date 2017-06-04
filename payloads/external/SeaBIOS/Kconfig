@@ -57,7 +57,7 @@ config SEABIOS_VGA_COREBOOT
 	depends on !VGA_BIOS && MAINBOARD_DO_NATIVE_VGA_INIT
 	bool
 	help
-	  Coreboot can initialize the GPU of some mainboards.
+	  coreboot can initialize the GPU of some mainboards.
 
 	  After initializing the GPU, the information about it can be passed to the payload.
 	  Provide an option rom that implements this legacy VGA BIOS compatibility requirement.

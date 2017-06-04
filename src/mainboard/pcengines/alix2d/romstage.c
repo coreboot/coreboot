@@ -105,7 +105,7 @@ static void mb_gpio_init(void)
 	 * Info: GPIO_IO_BASE, 0x6100, is only valid before PCI init, so it
 	 *       may be used here, but not after PCI Init.
 	 * Note: Prior to a certain release, Linux used a hardwired 0x6100 in the
-	 *       leds-alix2.c driver. Coreboot dynamically assigns this space,
+	 *       leds-alix2.c driver. coreboot dynamically assigns this space,
 	 *       so the driver does not work anymore.
 	 *       Good workaround: use the newer driver
 	 *       Ugly workaround: $ wrmsr 0x5140000C 0xf00100006100

@@ -60,7 +60,7 @@ Fam10 Bios and Kernel Development Guide #31116, rev 3.48, April 22, 2010
     by 2.4.2.6 after warm reset. But 2.4.2.15 states that it is not required
     if the warm reset is issued by coreboot to update NbFid. So it is required
     or not ? How can I tell who issued warm reset ?
-    Coreboot transitions to P0 instead, which is not recommended, and does
+    coreboot transitions to P0 instead, which is not recommended, and does
     not follow 2.4.2.15.2 to do so.
 
 9.- TODO Requires information on current delivery capability

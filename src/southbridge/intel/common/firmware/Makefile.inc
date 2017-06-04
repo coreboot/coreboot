@@ -41,7 +41,7 @@ endif
 add_intel_firmware: $(obj)/coreboot.pre $(IFDTOOL) $(IFDFAKE)
 ifeq ($(CONFIG_BUILD_WITH_FAKE_IFD),y)
 	printf "\n** WARNING **\n"
-	printf "Coreboot will be built with a fake Intel Firmware Descriptor (IFD).\n"
+	printf "coreboot will be built with a fake Intel Firmware Descriptor (IFD).\n"
 	printf "Never write a complete coreboot.rom with a fake IFD to your board's\n"
 	printf "flash ROM! Make sure that you only write valid flash regions.\n\n"
 	printf "    IFDFAKE    Building a fake Intel Firmware Descriptor\n"

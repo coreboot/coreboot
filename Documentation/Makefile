@@ -7,7 +7,7 @@ PDFLATEX=pdflatex -t a4
 
 FIGS=codeflow.pdf hypertransport.pdf
 
-all: CorebootPortingGuide.pdf Kconfig.pdf
+all: corebootPortingGuide.pdf Kconfig.pdf
 
 SVG2PDF=$(shell which svg2pdf)
 INKSCAPE=$(shell which inkscape)
@@ -31,13 +31,13 @@ else ifneq ($(strip $(CONVERT)),)
 	convert $< $@
 endif
 
-CorebootPortingGuide.toc: $(FIGS) CorebootBuildingGuide.tex
+corebootPortingGuide.toc: $(FIGS) corebootBuildingGuide.tex
 	# 2 times to make sure we have a current toc.
-	$(PDFLATEX) CorebootBuildingGuide.tex
-	$(PDFLATEX) CorebootBuildingGuide.tex
+	$(PDFLATEX) corebootBuildingGuide.tex
+	$(PDFLATEX) corebootBuildingGuide.tex
 
-CorebootPortingGuide.pdf: $(FIGS) CorebootBuildingGuide.tex CorebootPortingGuide.toc
-	$(PDFLATEX) CorebootBuildingGuide.tex
+corebootPortingGuide.pdf: $(FIGS) corebootBuildingGuide.tex corebootPortingGuide.toc
+	$(PDFLATEX) corebootBuildingGuide.tex
 
 Kconfig.pdf: Kconfig.tex mainboardkconfig.tex cpukconfig.tex socketfkconfig.tex
 	$(PDFLATEX) $<
@@ -67,4 +67,4 @@ clean:
 	rm -f *.aux *.idx *.log *.toc *.out $(FIGS) mainboardkconfig.tex skconfig.tex cpukconfig.tex socketfkconfig.tex
 
 distclean: clean
-	rm -f CorebootPortingGuide.pdf Kconfig.pdf
+	rm -f corebootPortingGuide.pdf Kconfig.pdf

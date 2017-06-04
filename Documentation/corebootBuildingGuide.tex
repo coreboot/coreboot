@@ -23,7 +23,7 @@
     colorlinks=false,
     % pdfpagemode=None,  % PDF-Viewer starts without TOC
     % pdfstartview=FitH,
-    pdftitle={Coreboot Porting Guide},
+    pdftitle={coreboot Porting Guide},
     pdfauthor={Zheng Bao},
     pdfsubject={coreboot configuration and build process},
     pdfkeywords={coreboot, AMD, configuration, Build}
@@ -32,7 +32,7 @@
 \setlength{\parindent}{0pt}
 \setlength{\hoffset}{0pt}
 
-\title{Coreboot from Scratch}
+\title{coreboot from Scratch}
 \author{Stefan Reinauer $<$stepan@coresystems.de$>$\and Zheng Bao $<$zheng.bao@amd.com$>$}
 \date{Dec 4th, 2013}
 
@@ -46,7 +46,7 @@
 
 \newpage
 
-\section{What is Coreboot}
+\section{What is coreboot}
 coreboot aims to replace the normal BIOS found on x86, AMD64, PPC,
 Alpha, and other machines with a Linux kernel that can boot Linux from a cold
 start. The startup code of an average coreboot port is about 500 lines of
@@ -60,7 +60,7 @@ people with varying backgrounds.  Nowadays a large and growing number of
 Systems can be booted with coreboot, including embedded systems,
 Desktop PCs and Servers.
 
-This document is used to build, modify, and port the CoreBoot code
+This document is used to build, modify, and port the coreboot code
 base on the AMD platform.
 
 
@@ -108,10 +108,10 @@ tools to build the source.
  \end{itemize}
 
 %
-% Getting Coreboot
+% Getting coreboot
 %
 
-\section{Getting Coreboot}
+\section{Getting coreboot}
 The latest coreboot sources are available via GIT.
 For users who doesn't need to change and commit the code:
 { \small
@@ -140,8 +140,8 @@ $ git submodule update --init --checkout
 %
 
 \section{Building the toolchain}
-Coreboot recommends and guarantees the toolchain integrated with Coreboot.
-Linux distributions usually modify their compilers in ways incompatible with Coreboot.
+coreboot recommends and guarantees the toolchain integrated with coreboot.
+Linux distributions usually modify their compilers in ways incompatible with coreboot.
 
 { \small
 \begin{verbatim}
@@ -236,11 +236,11 @@ Cleaning up... \textcolor {green}{ok}
 If you are lucky, you can get toolchains located in util/crossgcc/xgcc.
 
 %
-% Build Coreboot
+% Build coreboot
 %
 
-\section{Building Coreboot}
-\subsection{Build main module of Coreboot}
+\section{Building coreboot}
+\subsection{Build main module of coreboot}
 { \small
 \begin{verbatim}
 $ cd coreboot

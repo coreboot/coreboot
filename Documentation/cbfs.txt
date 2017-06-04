@@ -19,7 +19,7 @@ scheme.  Over time, the scheme evolved slightly, but I think you'll find
 that it remains true to the original idea.  Below is the beginnings of
 an architecture document - I did it in text form, but if met with
 aclaim, it should be wikified.  This presents what I call CBFS - the
-next generation LAR for next generation Coreboot.  Its easier to
+next generation LAR for next generation coreboot.  Its easier to
 describe what it is by describing what changed:
 
 A header has been added somewhere in the bootblock similar to Carl
@@ -73,7 +73,7 @@ bucks, will you?
 
 Jordan
 
-Coreboot CBFS Specification
+coreboot CBFS Specification
 Jordan Crouse <jordan@cosmicpenguin.net>
 
 = Introduction =
@@ -163,7 +163,7 @@ number is 0x4F524243, which is 'ORBC' in ASCII.
 'version' is a version number for CBFS header. cbfs_header structure may be
 different if version is not matched.
 
-'romsize' is the size of the ROM in bytes.  Coreboot will subtract 'size' from
+'romsize' is the size of the ROM in bytes.  coreboot will subtract 'size' from
 0xFFFFFFFF to locate the beginning of the ROM in memory.
 
 'bootblocksize' is the size of bootblock reserved in firmware image.

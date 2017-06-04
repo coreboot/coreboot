@@ -157,7 +157,7 @@ for the GPIO.
 
 
 These are reference implementations and the platforms are free to
-implement these functions in any way they like. Coreboot driver can
+implement these functions in any way they like. coreboot driver can
 then simply call into these functions to generate ACPI AML code to
 get/set/clear any GPIO. In order to decide whether GPIO operations are
 required, driver code can rely either on some config option or read

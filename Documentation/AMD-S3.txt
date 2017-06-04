@@ -13,7 +13,7 @@
  /_/    \_\_|  |_|_____/  |_____/  |____/
 
 
-               S3 in Coreboot (V 1.2)
+               S3 in coreboot (V 1.2)
 ----------------------------------------
                 Zheng Bao
             <zheng.bao@amd.com>
@@ -78,7 +78,7 @@ as reserved in e820, or BIOS saves the content into reserved space.
 Here is the address Map for S3 Resume. Assumingly the total memory is 1GB.
 00000000 --- 00100000      BIOS Reserved area.
 00100000 --- 00200000      Free
-00200000 --- 01000000      Coreboot ramstage area.
+00200000 --- 01000000      coreboot ramstage area.
 01000000 --- 2e160000      Free
 2e160000 --- 2e170000      ACPI table
 2e170000 --- 2ef70000      OSRAM
@@ -99,7 +99,7 @@ board.[2]
  Provided by Southbridge vendor code. Early is called before PCI
  enumeration, and Late is called after that.
 
-Lifecycle of booting, sleeping and waking Coreboot and Ubuntu
+Lifecycle of booting, sleeping and waking coreboot and Ubuntu
 =============================================================
 1. Cold boot.
 For a system with S3 feature, the BIOS needs to save some data to
@@ -130,7 +130,7 @@ when system wakeups.
 As we mentioned, Firmware detects the SLP_TYPx to find out if the board
 wakes up. In romstage.c, AmdInitReset and AmdInitEarly are called
 as they are during cold boot. AmdInitResume and AmdS3LateRestore are
-called only during resume. For whole ramstage, Coreboot goes through
+called only during resume. For whole ramstage, coreboot goes through
 almost the same way as cold boot, other than not calling the AmdInitMid,
 AmdInitLate and AmdS3Save, and restoring all the MTRRs.
 At last step of coreboot stage, coreboot finds out the wakeup vector in FADT,
@@ -141,13 +141,13 @@ When Linux resumes, all the sleeping scripts call their resume
 hooks. If we are more lucky, all the scripts can go through. More
 chances that the 99video hangs or fails to get the display
 back. Sometimes it can fixed if CONFIG_S3_VGA_ROM_RUN is unset in
-Coreboot/Kconfig. That needs more troubleshooting.
+coreboot/Kconfig. That needs more troubleshooting.
 
 
 Reference
 =========
 [1]   ACPI40a, http://www.acpi.info/spec40a.htm
-[2]   Coreboot Vendorcode, {top}/src/vendorcode/amd/agesa/{family}/Proc/Common/
-[3]   Coreboot AGESA wrapper, {top}/src/mainboard/amd/parmer/agesawrapper.c
-[4]   Coreboot AGESA wrapper, {top}/src/cpu/amd/agesa/s3_resume.c
-[5]   Coreboot Southbridge, {top}/src/southbridge/amd/agesa/hudson/spi.c
+[2]   coreboot Vendorcode, {top}/src/vendorcode/amd/agesa/{family}/Proc/Common/
+[3]   coreboot AGESA wrapper, {top}/src/mainboard/amd/parmer/agesawrapper.c
+[4]   coreboot AGESA wrapper, {top}/src/cpu/amd/agesa/s3_resume.c
+[5]   coreboot Southbridge, {top}/src/southbridge/amd/agesa/hudson/spi.c

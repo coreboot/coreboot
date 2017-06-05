@@ -135,7 +135,7 @@ void southbridge_smi_sleep(const struct smm_save_state_ops *save_state_ops)
 	/* First, disable further SMIs */
 	disable_smi(SLP_SMI_EN);
 	/* Figure out SLP_TYP */
-	reg32 = inl(ACPI_PMIO_BASE + PM1_CNT);
+	reg32 = inl(ACPI_BASE_ADDRESS + PM1_CNT);
 	printk(BIOS_SPEW, "SMI#: SLP = 0x%08x\n", reg32);
 	slp_typ = acpi_sleep_from_pm1(reg32);
 
@@ -198,7 +198,7 @@ void southbridge_smi_sleep(const struct smm_save_state_ops *save_state_ops)
 	 * the line above. However, if we entered sleep state S1 and wake
 	 * up again, we will continue to execute code in this function.
 	 */
-	reg32 = inl(ACPI_PMIO_BASE + PM1_CNT);
+	reg32 = inl(ACPI_BASE_ADDRESS + PM1_CNT);
 	if (reg32 & SCI_EN) {
 		/* The OS is not an ACPI OS, so we set the state to S0 */
 		disable_pm1_control(SLP_EN | SLP_TYP);

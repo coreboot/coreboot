@@ -101,8 +101,8 @@ static uint32_t print_smi_status(uint32_t smi_sts)
 
 static uint32_t reset_smi_status(void)
 {
-	uint32_t smi_sts = inl(ACPI_PMIO_BASE + SMI_STS);
-	outl(smi_sts, ACPI_PMIO_BASE + SMI_STS);
+	uint32_t smi_sts = inl(ACPI_BASE_ADDRESS + SMI_STS);
+	outl(smi_sts, ACPI_BASE_ADDRESS + SMI_STS);
 	return smi_sts;
 }
 
@@ -116,8 +116,8 @@ uint32_t clear_smi_status(void)
 	 * bit in the SMI status register.  That makes things difficult for
 	 * determining if the power button caused an SMI.
 	 */
-	if (sts == 0 && !(inl(ACPI_PMIO_BASE + PM1_CNT) & SCI_EN)) {
-		uint16_t pm1_sts = inw(ACPI_PMIO_BASE + PM1_STS);
+	if (sts == 0 && !(inl(ACPI_BASE_ADDRESS + PM1_CNT) & SCI_EN)) {
+		uint16_t pm1_sts = inw(ACPI_BASE_ADDRESS + PM1_STS);
 
 		/* Fake PM1 status bit if power button pressed. */
 		if (pm1_sts & PWRBTN_STS)
@@ -129,41 +129,41 @@ uint32_t clear_smi_status(void)
 
 uint32_t get_smi_en(void)
 {
-	return inl(ACPI_PMIO_BASE + SMI_EN);
+	return inl(ACPI_BASE_ADDRESS + SMI_EN);
 }
 
 void enable_smi(uint32_t mask)
 {
-	uint32_t smi_en = inl(ACPI_PMIO_BASE + SMI_EN);
+	uint32_t smi_en = inl(ACPI_BASE_ADDRESS + SMI_EN);
 	smi_en |= mask;
-	outl(smi_en, ACPI_PMIO_BASE + SMI_EN);
+	outl(smi_en, ACPI_BASE_ADDRESS + SMI_EN);
 }
 
 void disable_smi(uint32_t mask)
 {
-	uint32_t smi_en = inl(ACPI_PMIO_BASE + SMI_EN);
+	uint32_t smi_en = inl(ACPI_BASE_ADDRESS + SMI_EN);
 	smi_en &= ~mask;
-	outl(smi_en, ACPI_PMIO_BASE + SMI_EN);
+	outl(smi_en, ACPI_BASE_ADDRESS + SMI_EN);
 }
 
 void enable_pm1_control(uint32_t mask)
 {
-	uint32_t pm1_cnt = inl(ACPI_PMIO_BASE + PM1_CNT);
+	uint32_t pm1_cnt = inl(ACPI_BASE_ADDRESS + PM1_CNT);
 	pm1_cnt |= mask;
-	outl(pm1_cnt, ACPI_PMIO_BASE + PM1_CNT);
+	outl(pm1_cnt, ACPI_BASE_ADDRESS + PM1_CNT);
 }
 
 void disable_pm1_control(uint32_t mask)
 {
-	uint32_t pm1_cnt = inl(ACPI_PMIO_BASE + PM1_CNT);
+	uint32_t pm1_cnt = inl(ACPI_BASE_ADDRESS + PM1_CNT);
 	pm1_cnt &= ~mask;
-	outl(pm1_cnt, ACPI_PMIO_BASE + PM1_CNT);
+	outl(pm1_cnt, ACPI_BASE_ADDRESS + PM1_CNT);
 }
 
 static uint16_t reset_pm1_status(void)
 {
-	uint16_t pm1_sts = inw(ACPI_PMIO_BASE + PM1_STS);
-	outw(pm1_sts, ACPI_PMIO_BASE + PM1_STS);
+	uint16_t pm1_sts = inw(ACPI_BASE_ADDRESS + PM1_STS);
+	outw(pm1_sts, ACPI_BASE_ADDRESS + PM1_STS);
 	return pm1_sts;
 }
 
@@ -197,7 +197,7 @@ uint16_t clear_pm1_status(void)
 
 void enable_pm1(uint16_t events)
 {
-	outw(events, ACPI_PMIO_BASE + PM1_EN);
+	outw(events, ACPI_BASE_ADDRESS + PM1_EN);
 }
 
 static uint32_t print_tco_status(uint32_t tco_sts)
@@ -219,10 +219,10 @@ static uint32_t print_tco_status(uint32_t tco_sts)
 
 static uint32_t reset_tco_status(void)
 {
-	uint32_t tco_sts = inl(ACPI_PMIO_BASE + TCO_STS);
-	uint32_t tco_en = inl(ACPI_PMIO_BASE + TCO1_CNT);
+	uint32_t tco_sts = inl(ACPI_BASE_ADDRESS + TCO_STS);
+	uint32_t tco_en = inl(ACPI_BASE_ADDRESS + TCO1_CNT);
 
-	outl(tco_sts, ACPI_PMIO_BASE + TCO_STS);
+	outl(tco_sts, ACPI_BASE_ADDRESS + TCO_STS);
 	return tco_sts & tco_en;
 }
 
@@ -233,16 +233,16 @@ uint32_t clear_tco_status(void)
 
 void enable_gpe(uint32_t mask)
 {
-	uint32_t gpe0a_en = inl(ACPI_PMIO_BASE + GPE0_EN(0));
+	uint32_t gpe0a_en = inl(ACPI_BASE_ADDRESS + GPE0_EN(0));
 	gpe0a_en |= mask;
-	outl(gpe0a_en, ACPI_PMIO_BASE + GPE0_EN(0));
+	outl(gpe0a_en, ACPI_BASE_ADDRESS + GPE0_EN(0));
 }
 
 void disable_gpe(uint32_t mask)
 {
-	uint32_t gpe0a_en = inl(ACPI_PMIO_BASE + GPE0_EN(0));
+	uint32_t gpe0a_en = inl(ACPI_BASE_ADDRESS + GPE0_EN(0));
 	gpe0a_en &= ~mask;
-	outl(gpe0a_en, ACPI_PMIO_BASE + GPE0_EN(0));
+	outl(gpe0a_en, ACPI_BASE_ADDRESS + GPE0_EN(0));
 }
 
 void disable_all_gpe(void)
@@ -256,15 +256,15 @@ void clear_gpi_gpe_sts(void)
 	int i;
 
 	for (i = 1; i < GPE0_REG_MAX; i++) {
-		uint32_t gpe_sts = inl(ACPI_PMIO_BASE + GPE0_STS(i));
-		outl(gpe_sts, ACPI_PMIO_BASE + GPE0_STS(i));
+		uint32_t gpe_sts = inl(ACPI_BASE_ADDRESS + GPE0_STS(i));
+		outl(gpe_sts, ACPI_BASE_ADDRESS + GPE0_STS(i));
 	}
 }
 
 static uint32_t reset_gpe_status(void)
 {
-	uint32_t gpe_sts = inl(ACPI_PMIO_BASE + GPE0_STS(0));
-	outl(gpe_sts, ACPI_PMIO_BASE + GPE0_STS(0));
+	uint32_t gpe_sts = inl(ACPI_BASE_ADDRESS + GPE0_STS(0));
+	outl(gpe_sts, ACPI_BASE_ADDRESS + GPE0_STS(0));
 	return gpe_sts;
 }
 
@@ -324,9 +324,9 @@ int acpi_get_gpe(int gpe)
 		if (stopwatch_expired(&sw))
 			return rc;
 
-		sts = inl(ACPI_PMIO_BASE + GPE0_STS(bank));
+		sts = inl(ACPI_BASE_ADDRESS + GPE0_STS(bank));
 		if (sts & mask) {
-			outl(mask, ACPI_PMIO_BASE + GPE0_STS(bank));
+			outl(mask, ACPI_BASE_ADDRESS + GPE0_STS(bank));
 			rc = 1;
 		}
 	} while (sts & mask);
@@ -367,7 +367,7 @@ int chipset_prev_sleep_state(struct chipset_power_state *ps)
 		}
 
 		/* Clear SLP_TYP. */
-		outl(ps->pm1_cnt & ~(SLP_TYP), ACPI_PMIO_BASE + PM1_CNT);
+		outl(ps->pm1_cnt & ~(SLP_TYP), ACPI_BASE_ADDRESS + PM1_CNT);
 	}
 	return prev_sleep_state;
 }
@@ -389,8 +389,8 @@ void fixup_power_state(void)
 		return;
 
 	for (i = 0; i < GPE0_REG_MAX; i++) {
-		ps->gpe0_sts[i] = inl(ACPI_PMIO_BASE + GPE0_STS(i));
-		ps->gpe0_en[i] = inl(ACPI_PMIO_BASE + GPE0_EN(i));
+		ps->gpe0_sts[i] = inl(ACPI_BASE_ADDRESS + GPE0_STS(i));
+		ps->gpe0_en[i] = inl(ACPI_BASE_ADDRESS + GPE0_EN(i));
 		printk(BIOS_DEBUG, "gpe0_sts[%d]: %08x gpe0_en[%d]: %08x\n",
 					i, ps->gpe0_sts[i], i, ps->gpe0_en[i]);
 	}
@@ -402,10 +402,10 @@ int fill_power_state(struct chipset_power_state *ps)
 	int i;
 	uintptr_t pmc_bar0 = read_pmc_mmio_bar();
 
-	ps->pm1_sts = inw(ACPI_PMIO_BASE + PM1_STS);
-	ps->pm1_en = inw(ACPI_PMIO_BASE + PM1_EN);
-	ps->pm1_cnt = inl(ACPI_PMIO_BASE + PM1_CNT);
-	ps->tco_sts = inl(ACPI_PMIO_BASE + TCO_STS);
+	ps->pm1_sts = inw(ACPI_BASE_ADDRESS + PM1_STS);
+	ps->pm1_en = inw(ACPI_BASE_ADDRESS + PM1_EN);
+	ps->pm1_cnt = inl(ACPI_BASE_ADDRESS + PM1_CNT);
+	ps->tco_sts = inl(ACPI_BASE_ADDRESS + TCO_STS);
 	ps->prsts = read32((void *)(pmc_bar0 + PRSTS));
 	ps->gen_pmcon1 = read32((void *)(pmc_bar0 + GEN_PMCON1));
 	ps->gen_pmcon2 = read32((void *)(pmc_bar0 + GEN_PMCON2));
@@ -421,10 +421,10 @@ int fill_power_state(struct chipset_power_state *ps)
 		 "gen_pmcon1: %08x gen_pmcon2: %08x gen_pmcon3: %08x\n",
 		ps->gen_pmcon1, ps->gen_pmcon2, ps->gen_pmcon3);
 	printk(BIOS_DEBUG, "smi_en: %08x smi_sts: %08x\n",
-		inl(ACPI_PMIO_BASE + SMI_EN), inl(ACPI_PMIO_BASE + SMI_STS));
+		inl(ACPI_BASE_ADDRESS + SMI_EN), inl(ACPI_BASE_ADDRESS + SMI_STS));
 	for (i = 0; i < GPE0_REG_MAX; i++) {
-		ps->gpe0_sts[i] = inl(ACPI_PMIO_BASE + GPE0_STS(i));
-		ps->gpe0_en[i] = inl(ACPI_PMIO_BASE + GPE0_EN(i));
+		ps->gpe0_sts[i] = inl(ACPI_BASE_ADDRESS + GPE0_STS(i));
+		ps->gpe0_en[i] = inl(ACPI_BASE_ADDRESS + GPE0_EN(i));
 		printk(BIOS_DEBUG, "gpe0_sts[%d]: %08x gpe0_en[%d]: %08x\n",
 			i, ps->gpe0_sts[i], i, ps->gpe0_en[i]);
 	}
@@ -434,10 +434,10 @@ int fill_power_state(struct chipset_power_state *ps)
 
 int vboot_platform_is_resuming(void)
 {
-	if (!(inw(ACPI_PMIO_BASE + PM1_STS) & WAK_STS))
+	if (!(inw(ACPI_BASE_ADDRESS + PM1_STS) & WAK_STS))
 		return 0;
 
-	return acpi_sleep_from_pm1(inl(ACPI_PMIO_BASE + PM1_CNT)) == ACPI_S3;
+	return acpi_sleep_from_pm1(inl(ACPI_BASE_ADDRESS + PM1_CNT)) == ACPI_S3;
 }
 
 /*
@@ -480,7 +480,7 @@ void global_reset_enable(bool enable)
  */
 void vboot_platform_prepare_reboot(void)
 {
-	const uint16_t port = ACPI_PMIO_BASE + PM1_CNT;
+	const uint16_t port = ACPI_BASE_ADDRESS + PM1_CNT;
 	outl((inl(port) & ~(SLP_TYP)) | (SLP_TYP_S5 << SLP_TYP_SHIFT), port);
 }
 
@@ -566,6 +566,6 @@ void enable_pm_timer_emulation(void)
 	 */
 	msr.hi = (3579545ULL << 32) / CTC_FREQ;
 	/* Set PM1 timer IO port and enable*/
-	msr.lo = EMULATE_PM_TMR_EN | (ACPI_PMIO_BASE + R_ACPI_PM1_TMR);
+	msr.lo = EMULATE_PM_TMR_EN | (ACPI_BASE_ADDRESS + R_ACPI_PM1_TMR);
 	wrmsr(MSR_EMULATE_PM_TMR, msr);
 }

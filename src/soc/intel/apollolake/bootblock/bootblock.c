@@ -56,7 +56,7 @@ asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 
 	/* Decode the ACPI I/O port range for early firmware verification.*/
 	dev = PCH_DEV_PMC;
-	pci_write_config16(dev, PCI_BASE_ADDRESS_4, ACPI_PMIO_BASE);
+	pci_write_config16(dev, PCI_BASE_ADDRESS_4, ACPI_BASE_ADDRESS);
 	pci_write_config16(dev, PCI_COMMAND,
 				PCI_COMMAND_IO | PCI_COMMAND_MASTER);
 
@@ -75,7 +75,7 @@ static void enable_pmcbar(void)
 	pci_write_config32(pmc, PCI_BASE_ADDRESS_1, 0);	/* 64-bit BAR */
 	pci_write_config32(pmc, PCI_BASE_ADDRESS_2, PMC_BAR1);
 	pci_write_config32(pmc, PCI_BASE_ADDRESS_3, 0);	/* 64-bit BAR */
-	pci_write_config16(pmc, PCI_BASE_ADDRESS_4, ACPI_PMIO_BASE);
+	pci_write_config16(pmc, PCI_BASE_ADDRESS_4, ACPI_BASE_ADDRESS);
 	pci_write_config16(pmc, PCI_COMMAND,
 				PCI_COMMAND_IO | PCI_COMMAND_MEMORY |
 				PCI_COMMAND_MASTER);

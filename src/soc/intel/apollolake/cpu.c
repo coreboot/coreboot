@@ -71,7 +71,7 @@ static void soc_core_init(device_t cpu)
 	reg_script_run(core_msr_script);
 	/*
 	 * Enable ACPI PM timer emulation, which also lets microcode know
-	 * location of ACPI_PMIO_BASE. This also enables other features
+	 * location of ACPI_BASE_ADDRESS. This also enables other features
 	 * implemented in microcode.
 	*/
 	enable_pm_timer_emulation();

@@ -479,7 +479,7 @@ ROMCC?=$(ROMCC_BIN)
 $(ROMCC_BIN): $(top)/util/romcc/romcc.c
 	@printf "    HOSTCC     $(subst $(obj)/,,$(@)) (this may take a while)\n"
 	@# Note: Adding -O2 here might cause problems. For details see:
-	@# http://www.coreboot.org/pipermail/coreboot/2010-February/055825.html
+	@# https://www.coreboot.org/pipermail/coreboot/2010-February/055825.html
 	$(HOSTCC) -g $(STACK) -Wall -o $@ $<
 
 IFDTOOL:=$(objutil)/ifdtool/ifdtool

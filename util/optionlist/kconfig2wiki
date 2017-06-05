@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # kconfig2wiki - Kconfig to MediaWiki converter for
-# http://www.coreboot.org/Coreboot_Options
+# https://www.coreboot.org/Coreboot_Options
 #
 # Copyright (C) 2010 coresystems GmbH
 # based on http://landley.net/kdocs/make/menuconfig2html.py

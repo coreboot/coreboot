@@ -8,13 +8,13 @@ code, and provides common C library symbols such as malloc() and printf().
 
 Note: This is _not_ a standard library for use with an operating system,
 rather it's only useful for coreboot payload development!
-See http://coreboot.org for details on coreboot.
+See https://coreboot.org for details on coreboot.
 
 
 Installation
 ------------
 
- $ git clone http://review.coreboot.org/p/coreboot.git
+ $ git clone https://review.coreboot.org/p/coreboot.git
 
  $ cd coreboot/payloads/libpayload
 
@@ -52,10 +52,10 @@ Please see the sample/ directory for details.
 Website and Mailing List
 ------------------------
 
-The main website is http://www.coreboot.org/Libpayload.
+The main website is https://www.coreboot.org/Libpayload.
 
 For additional information, patches, and discussions, please join the
-coreboot mailing list at http://coreboot.org/Mailinglist, where most
+coreboot mailing list at https://coreboot.org/Mailinglist, where most
 libpayload developers are subscribed.
 
 

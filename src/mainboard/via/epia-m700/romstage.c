@@ -46,7 +46,7 @@
 
 /*
  * This acpi_is_wakeup_early_via_VX800 is from Rudolf's patch on the list:
- * http://www.coreboot.org/pipermail/coreboot/2008-January/028787.html.
+ * https://www.coreboot.org/pipermail/coreboot/2008-January/028787.html.
  */
 static int acpi_is_wakeup_early_via_vx800(void)
 {
@@ -527,7 +527,7 @@ void main(unsigned long bist)
 #if PAYLOAD_IS_SEABIOS == 1
 	if (boot_mode == 3) {
 		/* An idea of Libo.Feng at amd.com in
-		 * http://www.coreboot.org/pipermail/coreboot/2008-December/043111.html
+		 * https://www.coreboot.org/pipermail/coreboot/2008-December/043111.html
 		 *
 		 * I want move the 1M data, I have to set some MTRRs myself.
 		 * Setting MTRR before back memory save s3 resume time about

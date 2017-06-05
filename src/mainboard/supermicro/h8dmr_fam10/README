@@ -17,6 +17,6 @@ while. Again, not an issue specific to this port.
 * to avoid very slow LZMA decompression I use this port with LZMA compression
 disabled in CBFS. I'm not sure what's causing this particular slowness.
 
-See also this thread: http://www.coreboot.org/pipermail/coreboot/2009-September/052107.html
+See also this thread: https://www.coreboot.org/pipermail/coreboot/2009-September/052107.html
 
 Ward, 2009-09-22

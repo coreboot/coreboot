@@ -24,7 +24,7 @@ Payloads
 After the basic initialization of the hardware has been performed, any
 desired "payload" can be started by coreboot.
 
-See http://www.coreboot.org/Payloads for a list of supported payloads.
+See https://www.coreboot.org/Payloads for a list of supported payloads.
 
 
 Supported Hardware
@@ -34,8 +34,8 @@ coreboot supports a wide range of chipsets, devices, and mainboards.
 
 For details please consult:
 
- * http://www.coreboot.org/Supported_Motherboards
- * http://www.coreboot.org/Supported_Chipsets_and_Devices
+ * https://www.coreboot.org/Supported_Motherboards
+ * https://www.coreboot.org/Supported_Chipsets_and_Devices
 
 
 Build Requirements
@@ -63,7 +63,7 @@ Optional:
 Building coreboot
 -----------------
 
-Please consult http://www.coreboot.org/Build_HOWTO for details.
+Please consult https://www.coreboot.org/Build_HOWTO for details.
 
 
 Testing coreboot Without Modifying Your Hardware
@@ -73,7 +73,7 @@ If you want to test coreboot without any risks before you really decide
 to use it on your hardware, you can use the QEMU system emulator to run
 coreboot virtually in QEMU.
 
-Please see http://www.coreboot.org/QEMU for details.
+Please see https://www.coreboot.org/QEMU for details.
 
 
 Website and Mailing List
@@ -82,11 +82,11 @@ Website and Mailing List
 Further details on the project, a FAQ, many HOWTOs, news, development
 guidelines and more can be found on the coreboot website:
 
-  http://www.coreboot.org
+  https://www.coreboot.org
 
 You can contact us directly on the coreboot mailing list:
 
-  http://www.coreboot.org/Mailinglist
+  https://www.coreboot.org/Mailinglist
 
 
 Copyright and License

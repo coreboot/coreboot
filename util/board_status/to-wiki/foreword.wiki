@@ -30,7 +30,7 @@ list all known names but some names might be missing.
 If the board is not found in the corebootv4's source code, there might
 be some form of support that is not ready yet for inclusion in coreboot,
 usually people willing to send their patches to coreboot goes through
-[http://review.coreboot.org gerrit], so looking there could find some
+[https://review.coreboot.org gerrit], so looking there could find some
 code for boards that are not yet merged.
 
 = Vendor trees =

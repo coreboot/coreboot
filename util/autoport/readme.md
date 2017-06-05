@@ -261,7 +261,7 @@ categories from inside the computer. Valid categories are:
 
 Which controller the most easily accessible USB debug port is. On intel
 1 is for `00:1d.0` and 2 is `00:1a.0` (yes, it's reversed). See
-<http://www.coreboot.org/EHCI_Debug_Port> for more info.
+<https://www.coreboot.org/EHCI_Debug_Port> for more info.
 
 If you're able to use EHCI debug port without setting HCD index manually
 in config this is correct.

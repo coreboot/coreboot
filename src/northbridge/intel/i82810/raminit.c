@@ -313,7 +313,7 @@ static void set_dram_timing(void)
  * 0x0001   512MB   0xff   256MB dual-sided     256MB dual-sided
  *
  * See also:
- * http://www.coreboot.org/pipermail/coreboot/2009-May/047966.html
+ * https://www.coreboot.org/pipermail/coreboot/2009-May/047966.html
  */
 static void set_dram_buffer_strength(void)
 {

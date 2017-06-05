@@ -11,6 +11,7 @@ config CPU_SPECIFIC_OPTIONS
 	select ARCH_VERSTAGE_X86_32
 	select ARCH_RAMSTAGE_X86_32
 	select ARCH_ROMSTAGE_X86_32
+	select SOC_INTEL_COMMON_BLOCK_TIMER
 	select HAVE_MONOTONIC_TIMER
 	select TSC_CONSTANT_RATE
 	select TSC_MONOTONIC_TIMER
@@ -25,6 +26,7 @@ config CPU_SPECIFIC_OPTIONS
 	select SOC_INTEL_COMMON_BLOCK_SA
 	select SOC_INTEL_COMMON_BLOCK
 	select SOC_INTEL_COMMON_BLOCK_CAR
+	select SOC_INTEL_COMMON_BLOCK_CPU
 	select SOC_INTEL_COMMON_RESET
 	select SOC_INTEL_COMMON_BLOCK_LPSS
 	select SOC_INTEL_COMMON_BLOCK_UART
@@ -63,5 +65,9 @@ config PCR_BASE_ADDRESS
 	default 0xfd000000
 	help
 	  This option allows you to select MMIO Base Address of sideband bus.
+
+config CPU_BCLK_MHZ
+	int
+	default 100
 
 endif

@@ -30,7 +30,7 @@
 /* calling syntax:  i386_do_exec(long addr, int argc, char **argv, int *ret) */
 
 /* This implements the payload API detailed here:
- * http://www.coreboot.org/Payload_API
+ * https://www.coreboot.org/Payload_API
  */
 
 .align 4

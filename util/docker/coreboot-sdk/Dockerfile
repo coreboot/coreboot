@@ -30,7 +30,7 @@ RUN \
 
 RUN \
 	cd /root && \
-	git clone http://review.coreboot.org/coreboot && \
+	git clone https://review.coreboot.org/coreboot && \
 	cd coreboot/util/crossgcc && \
 	git checkout {{DOCKER_COMMIT}} && \
 	make all_without_gdb \

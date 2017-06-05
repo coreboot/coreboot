@@ -25,7 +25,7 @@ config USBDEBUG
 	  It also requires a USB2 controller which supports the EHCI
 	  Debug Port capability.
 
-	  See http://www.coreboot.org/EHCI_Debug_Port for an up-to-date list
+	  See https://www.coreboot.org/EHCI_Debug_Port for an up-to-date list
 	  of supported controllers.
 
 	  If unsure, say N.

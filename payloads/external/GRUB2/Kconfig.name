@@ -5,4 +5,4 @@ config PAYLOAD_GRUB2
 	  with a GRUB2 payload. If you don't know what this is
 	  about, just leave it enabled.
 
-	  See http://coreboot.org/Payloads for more information.
+	  See https://coreboot.org/Payloads for more information.

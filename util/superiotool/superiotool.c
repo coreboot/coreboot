@@ -275,7 +275,7 @@ void print_list_of_supported_chips(void)
 	for (i = 0; i < ARRAY_SIZE(vendor_print_functions); i++)
 		vendor_print_functions[i].print_list();
 
-	printf("See <http://coreboot.org/Superiotool#Supported_devices> "
+	printf("See <https://coreboot.org/Superiotool#Supported_devices> "
 	       "for more information.\n");
 }
 

@@ -6,7 +6,7 @@ my $DATE = '2009-09-04';
 my $AUTHOR = "Ward Vandewege <ward\@jhvc.com>";
 my $COPYRIGHT = "2009";
 my $LICENSE = "GPL v3 - http://www.fsf.org/licenses/gpl.txt";
-my $URL = "http://coreboot.org";
+my $URL = "https://coreboot.org";
 
 my $DEBUG = 0;
 

@@ -18,7 +18,7 @@ for details on coreboot), but it may also be useful for other things.
 Installation
 ------------
 
- $ git clone http://review.coreboot.org/p/coreboot.git
+ $ git clone https://review.coreboot.org/p/coreboot.git
 
  $ cd coreboot/util/superiotool
 
@@ -53,23 +53,23 @@ Typical usage of superiotool:
 Supported Super I/O Chips
 -------------------------
 
-Please see http://coreboot.org/Superiotool#Supported_devices, or type
+Please see https://coreboot.org/Superiotool#Supported_devices, or type
 
  $ superiotool -l
 
 There's also a collection of sample register dumps from various Super I/O
 chips on that web page. Please send further register dumps (either from a
 proprietary BIOS and/or from coreboot) to the coreboot mailing list
-(http://coreboot.org/Mailinglist).
+(https://coreboot.org/Mailinglist).
 
 
 Website and Mailing List
 ------------------------
 
-The main website is http://coreboot.org/Superiotool.
+The main website is https://coreboot.org/Superiotool.
 
 For additional information, patches, and discussions, please join the
-coreboot mailing list at http://coreboot.org/Mailinglist, where most
+coreboot mailing list at https://coreboot.org/Mailinglist, where most
 superiotool developers are subscribed.
 
 

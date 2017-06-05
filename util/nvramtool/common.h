@@ -9,7 +9,7 @@
  *
  *  This file is part of nvramtool, a utility for reading/writing coreboot
  *  parameters and displaying information from the coreboot table.
- *  For details, see http://coreboot.org/nvramtool.
+ *  For details, see https://coreboot.org/nvramtool.
  *
  *  Please also read the file DISCLAIMER which is included in this software
  *  distribution.

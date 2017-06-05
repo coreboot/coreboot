@@ -108,11 +108,11 @@ mv build/coreboot.rom.new build/coreboot.rom
   When the reset vector is successfully invoked, port 0x80 will output the following value:
 </p>
 <ul>
-  <li>0x01: <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/include/console/post_codes.h;hb=HEAD#l45">POST_RESET_VECTOR_CORRECT</a>
+  <li>0x01: <a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/include/console/post_codes.h;hb=HEAD#l45">POST_RESET_VECTOR_CORRECT</a>
     - Bootblock successfully executed the
-    <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/cpu/x86/16bit/reset16.inc;hb=HEAD#l4">reset vector</a>
+    <a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/cpu/x86/16bit/reset16.inc;hb=HEAD#l4">reset vector</a>
     and entered the 16-bit code at
-    <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/cpu/x86/16bit/entry16.inc;hb=HEAD#l35">_start</a>
+    <a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/cpu/x86/16bit/entry16.inc;hb=HEAD#l35">_start</a>
   </li>
 </ul>
 
@@ -154,15 +154,15 @@ mv build/coreboot.rom.new build/coreboot.rom
   <li>Add the necessary .h files to define the necessary values and structures</li>
   <li>When successful port 0x80 will output the following values:
     <ol type="A">
-      <li>0x01: <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/include/console/post_codes.h;hb=HEAD#l45">POST_RESET_VECTOR_CORRECT</a>
+      <li>0x01: <a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/include/console/post_codes.h;hb=HEAD#l45">POST_RESET_VECTOR_CORRECT</a>
         - Bootblock successfully executed the
-        <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/cpu/x86/16bit/reset16.inc;hb=HEAD#l4">reset vector</a>
+        <a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/cpu/x86/16bit/reset16.inc;hb=HEAD#l4">reset vector</a>
         and entered the 16-bit code at
-        <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/cpu/x86/16bit/entry16.inc;hb=HEAD#l35">_start</a>
+        <a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/cpu/x86/16bit/entry16.inc;hb=HEAD#l35">_start</a>
       </li>
-      <li>0x10: <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/include/console/post_codes.h;hb=HEAD#l53">POST_ENTER_PROTECTED_MODE</a>
+      <li>0x10: <a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/include/console/post_codes.h;hb=HEAD#l53">POST_ENTER_PROTECTED_MODE</a>
         - Bootblock executing in
-        <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/cpu/x86/32bit/entry32.inc;hb=HEAD#l55">32-bit mode</a>
+        <a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/cpu/x86/32bit/entry32.inc;hb=HEAD#l55">32-bit mode</a>
       </li>
       <li>0x10 - Verstage/romstage reached 32-bit mode</li>
     </ol>
@@ -173,26 +173,26 @@ mv build/coreboot.rom.new build/coreboot.rom
   <b>Build Note:</b> The following files are included into the default bootblock image:
 </p>
 <ul>
-  <li><a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/arch/x86/bootblock_romcc.S;hb=HEAD">src/arch/x86/bootblock_romcc.S</a>
-    added by   <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/arch/x86/Makefile.inc;hb=HEAD#l133">src/arch/x86/Makefile.inc</a>
+  <li><a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/arch/x86/bootblock_romcc.S;hb=HEAD">src/arch/x86/bootblock_romcc.S</a>
+    added by   <a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/arch/x86/Makefile.inc;hb=HEAD#l133">src/arch/x86/Makefile.inc</a>
     and includes the following files:
     <ul>
-      <li><a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/arch/x86/prologue.inc">src/arch/x86/prologue.inc</a></li>
-      <li><a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/cpu/x86/16bit/reset16.inc">src/cpu/x86/16bit/reset16.inc</a></li>
-      <li><a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/cpu/x86/16bit/entry16.inc">src/cpu/x86/16bit/entry16.inc</a></li>
-      <li><a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/cpu/x86/32bit/entry32.inc">src/cpu/x86/32bit/entry32.inc</a></li>
+      <li><a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/arch/x86/prologue.inc">src/arch/x86/prologue.inc</a></li>
+      <li><a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/cpu/x86/16bit/reset16.inc">src/cpu/x86/16bit/reset16.inc</a></li>
+      <li><a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/cpu/x86/16bit/entry16.inc">src/cpu/x86/16bit/entry16.inc</a></li>
+      <li><a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/cpu/x86/32bit/entry32.inc">src/cpu/x86/32bit/entry32.inc</a></li>
       <li>The code in
-        <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/arch/x86/bootblock_romcc.S">src/arch/x86/bootblock_romcc.S</a>
+        <a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/arch/x86/bootblock_romcc.S">src/arch/x86/bootblock_romcc.S</a>
         includes src/soc/&lt;Vendor&gt;/&lt;Chip Family&gt;/bootblock/timestamp.inc using the
         CONFIG_CHIPSET_BOOTBLOCK_INCLUDE value set above
       </li>
-      <li><a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/cpu/x86/sse_enable.inc">src/cpu/x86/sse_enable.inc</a></li>
+      <li><a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/cpu/x86/sse_enable.inc">src/cpu/x86/sse_enable.inc</a></li>
       <li>The code in
-        <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/arch/x86/Makefile.inc;hb=HEAD#l156">src/arch/x86/Makefile.inc</a>
+        <a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/arch/x86/Makefile.inc;hb=HEAD#l156">src/arch/x86/Makefile.inc</a>
         invokes the ROMCC tool to convert the following "C" code into assembler as bootblock.inc:
         <ul>
-          <li><a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/arch/x86/include/arch/bootblock_romcc.h">src/arch/x86/include/arch/bootblock_romcc.h</a></li>
-          <li><a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/cpu/x86/lapic/boot_cpu.c">src/cpu/x86/lapic/boot_cpu.c</a></li>
+          <li><a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/arch/x86/include/arch/bootblock_romcc.h">src/arch/x86/include/arch/bootblock_romcc.h</a></li>
+          <li><a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/cpu/x86/lapic/boot_cpu.c">src/cpu/x86/lapic/boot_cpu.c</a></li>
           <li>The CONFIG_BOOTBLOCK_CPU_INIT value set above typically points to the code in
             src/soc/&lt;Vendor&gt;/&lt;Chip Family&gt;/bootblock/bootblock.c
           </li>
@@ -200,14 +200,14 @@ mv build/coreboot.rom.new build/coreboot.rom
       </li>
     </ul>
   </li>
-  <li><a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/arch/x86/id.S">src/arch/x86/id.S</a>
-    added by <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/arch/x86/Makefile.inc;hb=HEAD#l110">src/arch/x86/Makefile.inc</a>
+  <li><a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/arch/x86/id.S">src/arch/x86/id.S</a>
+    added by <a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/arch/x86/Makefile.inc;hb=HEAD#l110">src/arch/x86/Makefile.inc</a>
   </li>
-  <li><a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/cpu/intel/fit/fit.S">src/cpu/intel/fit/fit.S</a>
-    added by <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/cpu/intel/fit/Makefile.inc;hb=HEAD">src/cpu/intel/fit/Makefile.inc</a>
+  <li><a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/cpu/intel/fit/fit.S">src/cpu/intel/fit/fit.S</a>
+    added by <a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/cpu/intel/fit/Makefile.inc;hb=HEAD">src/cpu/intel/fit/Makefile.inc</a>
   </li>
-  <li><a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/arch/x86/walkcbfs.S">src/arch/x86/walkcbfs.S</a>
-    added by <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/arch/x86/Makefile.inc;hb=HEAD#l137">src/arch/x86/Makefile.inc</a>
+  <li><a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/arch/x86/walkcbfs.S">src/arch/x86/walkcbfs.S</a>
+    added by <a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/arch/x86/Makefile.inc;hb=HEAD#l137">src/arch/x86/Makefile.inc</a>
   </li>
 </ul>
 
@@ -231,19 +231,19 @@ Use the following steps to locate the FSP binary:
   <li>Edit the src/soc/&lt;Vendor&gt;/&lt;Chip Family&gt;/Kconfig file
     <ol type="A">
       <li>Add "select USE_GENERIC_FSP_CAR_INC" to enable the use of
-        <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/drivers/intel/fsp1_1/cache_as_ram.inc">src/drivers/intel/fsp1_1/cache_as_ram.inc</a>
+        <a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/drivers/intel/fsp1_1/cache_as_ram.inc">src/drivers/intel/fsp1_1/cache_as_ram.inc</a>
       </li>
       <li>Add "select SOC_INTEL_COMMON" to enable the use of the files from src/soc/intel/common
         specifically building
-        <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/soc/intel/common/util.c">util.c</a>
+        <a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/soc/intel/common/util.c">util.c</a>
       </li>
     </ol>
   </li>
   <li>Debug the result until port 0x80 outputs
     <ol type="A">
-      <li>0x90: <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/include/console/post_codes.h;hb=HEAD#l205">POST_FSP_TEMP_RAM_INIT</a>
+      <li>0x90: <a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/include/console/post_codes.h;hb=HEAD#l205">POST_FSP_TEMP_RAM_INIT</a>
         - Just before calling
-        <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/drivers/intel/fsp1_1/cache_as_ram.inc;hb=HEAD#l73">TempRamInit</a>
+        <a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/drivers/intel/fsp1_1/cache_as_ram.inc;hb=HEAD#l73">TempRamInit</a>
       </li>
       <li>Alternating 0xba and 0x01 - The FSP image was not found</li>
     </ol>
@@ -257,9 +257,9 @@ Use the following steps to locate the FSP binary:
   </li>
   <li>Debug the result until port 0x80 outputs
     <ol type="A">
-      <li>0x90: <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/include/console/post_codes.h;hb=HEAD#l205">POST_FSP_TEMP_RAM_INIT</a>
+      <li>0x90: <a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/include/console/post_codes.h;hb=HEAD#l205">POST_FSP_TEMP_RAM_INIT</a>
         - Just before calling
-        <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/drivers/intel/fsp1_1/cache_as_ram.inc;hb=HEAD#l73">TempRamInit</a>
+        <a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/drivers/intel/fsp1_1/cache_as_ram.inc;hb=HEAD#l73">TempRamInit</a>
       </li>
       <li>Alternating 0xbb and 0x02 - TempRamInit executed, no CPU microcode update found</li>
     </ol>
@@ -287,12 +287,12 @@ Use the following steps to debug the call to TempRamInit:
   </li>
   <li>Debug the result until port 0x80 outputs
     <ol type="A">
-      <li>0x90: <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/include/console/post_codes.h;hb=HEAD#l205">POST_FSP_TEMP_RAM_INIT</a>
+      <li>0x90: <a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/include/console/post_codes.h;hb=HEAD#l205">POST_FSP_TEMP_RAM_INIT</a>
         - Just before calling
-        <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/drivers/intel/fsp1_1/cache_as_ram.inc;hb=HEAD#l73">TempRamInit</a>
+        <a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/drivers/intel/fsp1_1/cache_as_ram.inc;hb=HEAD#l73">TempRamInit</a>
       </li>
       <li>0x2A - Just before calling
-        <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/drivers/intel/fsp1_1/cache_as_ram.inc;hb=HEAD#l151">cache_as_ram_main</a>
+        <a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/drivers/intel/fsp1_1/cache_as_ram.inc;hb=HEAD#l151">cache_as_ram_main</a>
         which is the start of the verstage code which may be part of romstage
       </li>
     </ol>
@@ -349,14 +349,14 @@ Use the following steps to debug the call to TempRamInit:
     <ol type="A">
       <li>0x32:
         - Just after entering
-        <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/drivers/intel/fsp1_1/romstage.c;hb=HEAD#l99">romstage_common</a>
+        <a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/drivers/intel/fsp1_1/romstage.c;hb=HEAD#l99">romstage_common</a>
       </li>
       <li>0x33 - Just after calling
-        <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/drivers/intel/fsp1_1/romstage.c;hb=HEAD#l113">soc_pre_ram_init</a>
+        <a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/drivers/intel/fsp1_1/romstage.c;hb=HEAD#l113">soc_pre_ram_init</a>
       </li>
       <li>0x34:
         - Just after entering
-        <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/drivers/intel/fsp1_1/raminit.c;hb=HEAD#l67">raminit</a>
+        <a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/drivers/intel/fsp1_1/raminit.c;hb=HEAD#l67">raminit</a>
       </li>
     </ol>
 </ol>
@@ -410,7 +410,7 @@ Use the following steps to debug the call to TempRamInit:
   execution during ramstage.  This file is processed by the util/sconfig utility
   to generate build/mainboard/&lt;Vendor&gt;/&lt;Board&gt;/static.c.  The various
   state routines in
-  src/lib/<a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/lib/hardwaremain.c;hb=HEAD#l128">hardwaremain.c</a>
+  src/lib/<a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/lib/hardwaremain.c;hb=HEAD#l128">hardwaremain.c</a>
   call dev_* routines which use the tables in static.c to locate operation tables
   associated with the various chips and devices.  After location the operation
   tables, the state routines call one or more functions depending upon the
@@ -540,7 +540,7 @@ Use the following steps to debug the call to TempRamInit:
   BS_DEV_RESOURCES state of ramstage.  The northcluster driver will typically
   specify the DRAM resources while the other drivers will typically specify
   the IO resources.  These resources are hung off the device_t data structure by
-  src/device/device_util.c/<a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/device/device_util.c;hb=HEAD#l448">new_resource</a>.
+  src/device/device_util.c/<a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/device/device_util.c;hb=HEAD#l448">new_resource</a>.
 </p>
 <p>
   During the BS_WRITE_TABLES state, coreboot collects these resources and
@@ -552,7 +552,7 @@ Use the following steps to debug the call to TempRamInit:
 <ol>
   <li>
     Implement a read_resources routine which calls macros defined in
-    src/include/device/<a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/include/device/device.h;hb=HEAD#l237">device.h</a>
+    src/include/device/<a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/include/device/device.h;hb=HEAD#l237">device.h</a>
     like:
     <ul>
       <li>ram_resource</li>
@@ -661,7 +661,7 @@ Use the following steps to debug the call to TempRamInit:
   The EDK2 data structure is defined in
   MdeModulePkg/Include/IndustryStandard/<a target="_blank" href="https://github.com/tianocore/edk2/blob/master/MdePkg/Include/IndustryStandard/Acpi61.h#l111">Acpi61.h</a>
   The coreboot data structure is defined in
-  src/arch/x86/include/arch/<a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/arch/x86/include/arch/acpi.h;hb=HEAD#l237">acpi.h</a>
+  src/arch/x86/include/arch/<a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/arch/x86/include/arch/acpi.h;hb=HEAD#l237">acpi.h</a>
 </p>
 
 <ol>

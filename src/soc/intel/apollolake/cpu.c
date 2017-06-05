@@ -16,6 +16,8 @@
  * GNU General Public License for more details.
  */
 
+#include <assert.h>
+#include <bootstate.h>
 #include <console/console.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/cache.h>
@@ -25,8 +27,10 @@
 #include <cpu/x86/mtrr.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <fsp/api.h>
 #include <intelblocks/fast_spi.h>
 #include <reg_script.h>
+#include <romstage_handoff.h>
 #include <soc/cpu.h>
 #include <soc/iomap.h>
 #include <soc/pm.h>
@@ -108,16 +112,19 @@ static void read_cpu_topology(unsigned int *num_phys, unsigned int *num_virt)
 }
 
 /*
- * Do essential initialization tasks before APs can be fired up
+ * Do essential initialization tasks before APs can be fired up -
  *
- * 1. Prevent race condition in MTRR solution. Enable MTRRs on the BSP. This
- * creates the MTRR solution that the APs will use. Otherwise APs will try to
- * apply the incomplete solution as the BSP is calculating it.
+ * Skip Pre MP init MTRR programming, as MTRRs are mirrored from BSP,
+ * that are set prior to ramstage.
+ * Real MTRRs programming are being done after resource allocation.
+ *
+ * Do, FSP loading before MP Init to ensure that the FSP cmponent stored in
+ * external stage cache in TSEG does not flush off due to SMM relocation
+ * during MP Init stage.
  */
 static void pre_mp_init(void)
 {
-	x86_setup_mtrrs_with_detect();
-	x86_mtrr_check();
+	fsps_load(romstage_handoff_is_resume());
 }
 
 /* Find CPU topology */
@@ -199,14 +206,32 @@ static const struct mp_ops mp_ops = {
 	.post_mp_init = southbridge_smm_enable_smi,
 };
 
-void apollolake_init_cpus(device_t dev)
+static void soc_init_cpus(void *unused)
 {
+	device_t dev = dev_find_path(NULL, DEVICE_PATH_CPU_CLUSTER);
+	assert(dev != NULL);
+
 	/* Clear for take-off */
 	if (mp_init_with_smm(dev->link_list, &mp_ops) < 0)
 		printk(BIOS_ERR, "MP initialization failure.\n");
+}
+
+/* Ensure to re-program all MTRRs based on DRAM resource settings */
+static void soc_post_cpus_init(void *unused)
+{
+	if (mp_run_on_all_cpus(&x86_setup_mtrrs_with_detect, 1000) < 0)
+		printk(BIOS_ERR, "MTRR programming failure\n");
 
 	/* Temporarily cache the memory-mapped boot media. */
 	if (IS_ENABLED(CONFIG_BOOT_DEVICE_MEMORY_MAPPED) &&
 		IS_ENABLED(CONFIG_BOOT_DEVICE_SPI_FLASH))
 		fast_spi_cache_bios_region();
+
+	x86_mtrr_check();
 }
+
+/*
+ * Do CPU MP Init before FSP Silicon Init
+ */
+BOOT_STATE_INIT_ENTRY(BS_DEV_INIT_CHIPS, BS_ON_ENTRY, soc_init_cpus, NULL);
+BOOT_STATE_INIT_ENTRY(BS_DEV_INIT, BS_ON_EXIT, soc_post_cpus_init, NULL);

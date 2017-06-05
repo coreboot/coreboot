@@ -8,7 +8,7 @@ code, and provides common C library symbols such as malloc() and printf().
 
 Note: This is _not_ a standard library for use with an operating system,
 rather it's only useful for coreboot payload development!
-See https://coreboot.org for details on coreboot.
+See https://www.coreboot.org for details on coreboot.
 
 
 Installation
@@ -55,7 +55,7 @@ Website and Mailing List
 The main website is https://www.coreboot.org/Libpayload.
 
 For additional information, patches, and discussions, please join the
-coreboot mailing list at https://coreboot.org/Mailinglist, where most
+coreboot mailing list at https://www.coreboot.org/Mailinglist, where most
 libpayload developers are subscribed.
 
 

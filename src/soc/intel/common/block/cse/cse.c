@@ -468,6 +468,7 @@ static struct device_operations cse_ops = {
 static const unsigned short pci_device_ids[] = {
 	PCI_DEVICE_ID_INTEL_APL_CSE0,
 	PCI_DEVICE_ID_INTEL_GLK_CSE0,
+	PCI_DEVICE_ID_INTEL_CNL_CSE0,
 	0,
 };
 
@@ -475,7 +476,7 @@ static const struct pci_driver cse_driver __pci_driver = {
 	.ops			= &cse_ops,
 	.vendor			= PCI_VENDOR_ID_INTEL,
 	/* SoC/chipset needs to provide PCI device ID */
-	.devices		= pci_device_ids,
+	.devices		= pci_device_ids
 };
 
 #endif

@@ -32,7 +32,7 @@ scope (\_SB) {
 			Memory32Fixed (ReadWrite, 0x0, 0x2000, IBAR)
 			Memory32Fixed (ReadWrite, 0x0, 0x4, MDAT)
 			Memory32Fixed (ReadWrite, 0x0, 0x4, MINF)
-			IO (Decode16, ACPI_PMIO_BASE, PMIO_LIMIT,
+			IO (Decode16, ACPI_BASE_ADDRESS, PMIO_LIMIT,
 			      0x04, PMIO_LENGTH)
 			Memory32Fixed (ReadWrite, 0x0, 0x2000, SBAR)
 			Interrupt (ResourceConsumer, Level, ActiveLow, Exclusive, , , )

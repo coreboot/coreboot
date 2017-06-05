@@ -85,7 +85,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 
 void acpi_fill_fadt(acpi_fadt_t *fadt)
 {
-	const uint16_t pmbase = ACPI_PMIO_BASE;
+	const uint16_t pmbase = ACPI_BASE_ADDRESS;
 
 	/* Use ACPI 3.0 revision. */
 	fadt->header.revision = ACPI_FADT_REV_ACPI_3_0;
@@ -275,7 +275,7 @@ acpi_cstate_t *soc_get_cstate_map(int *entries)
 
 uint16_t soc_get_acpi_base_address(void)
 {
-	return ACPI_PMIO_BASE;
+	return ACPI_BASE_ADDRESS;
 }
 
 static void acpigen_soc_get_dw0_in_local5(uintptr_t addr)

@@ -44,8 +44,8 @@ static void read_resources(device_t dev)
 	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 
 	res = new_resource(dev, PCI_BASE_ADDRESS_4);
-	res->base = ACPI_PMIO_BASE;
-	res->size = ACPI_PMIO_SIZE;
+	res->base = ACPI_BASE_ADDRESS;
+	res->size = ACPI_BASE_SIZE;
 	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 }
 

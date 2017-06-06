@@ -368,6 +368,11 @@ $(obj)/project_filelist.txt: all
 	  sed 's/[:\\]/ /g' | sed 's/ /\n/g' | sort | uniq | \
 	  grep -v '\.o$$' > $(obj)/project_filelist.txt
 
+filelist: clean
+	$(MAKE) $(obj)/project_filelist.txt
+	printf "\nFiles used in build:\n"
+	cat $(obj)/project_filelist.txt
+
 #works with either exuberant ctags or ctags.emacs
 ctags-project: clean-ctags $(obj)/project_filelist.txt
 	cat $(obj)/project_filelist.txt | \

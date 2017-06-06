@@ -16,7 +16,7 @@
 
 #include <arch/io.h>
 #include <console/console.h>
-#include <cpu/intel/microcode/microcode.c>
+#include <cpu/x86/msr.h>
 #include <delay.h>
 #include <intelblocks/fast_spi.h>
 #include <reset.h>
@@ -89,7 +89,6 @@ void bootblock_cpu_init(void)
 	fast_spi_cache_bios_region();
 	/* Set flex ratio and reset if needed */
 	set_flex_ratio_to_tdp_nominal();
-	intel_update_microcode_from_cbfs();
 }
 
 void set_max_freq(void)

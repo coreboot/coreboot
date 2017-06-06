@@ -480,6 +480,7 @@ static void get_microcode_info(const void **microcode, int *parallel)
 	microcode_patch = intel_microcode_find();
 	*microcode = microcode_patch;
 	*parallel = 1;
+	intel_microcode_load_unlocked(microcode_patch);
 }
 
 static int adjust_apic_id(int index, int apic_id)

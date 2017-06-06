@@ -25,6 +25,8 @@
 #include <device/pci_ops.h>
 #include <string.h>
 #include <cbfs.h>
+#include <cbmem.h>
+#include <arch/acpigen.h>
 
 /* Rmodules don't like weak symbols. */
 u32 __attribute__((weak)) map_oprom_vendev(u32 vendev) { return vendev; }
@@ -266,5 +268,62 @@ pci_rom_write_acpi_tables(struct device *device,
 	}
 
 	return current;
+}
+
+void pci_rom_ssdt(struct device *device)
+{
+	static size_t ngfx;
+
+	/* Only handle VGA devices */
+	if ((device->class >> 8) != PCI_CLASS_DISPLAY_VGA)
+		return;
+
+	/* Only handle enabled devices */
+	if (!device->enabled)
+		return;
+
+	/* Probe for option rom */
+	const struct rom_header *rom = pci_rom_probe(device);
+	if (!rom || !rom->size) {
+		printk(BIOS_WARNING, "%s: Missing PCI Option ROM\n",
+		       dev_path(device));
+		return;
+	}
+
+	const char *scope = acpi_device_path(device);
+	if (!scope) {
+		printk(BIOS_ERR, "%s: Missing ACPI scope\n", dev_path(device));
+		return;
+	}
+
+	/* Supports up to four devices. */
+	if ((CBMEM_ID_ROM0 + ngfx) > CBMEM_ID_ROM3) {
+		printk(BIOS_ERR, "%s: Out of CBMEM IDs.\n", dev_path(device));
+		return;
+	}
+
+	/* Prepare memory */
+	const size_t cbrom_length = rom->size * 512;
+	if (!cbrom_length) {
+		printk(BIOS_ERR, "%s: ROM has zero length!\n",
+		       dev_path(device));
+		return;
+	}
+
+	void *cbrom = cbmem_add(CBMEM_ID_ROM0 + ngfx, cbrom_length);
+	if (!cbrom) {
+		printk(BIOS_ERR, "%s: Failed to allocate CBMEM.\n",
+		       dev_path(device));
+		return;
+	}
+	/* Increment CBMEM id for next device */
+	ngfx++;
+
+	memcpy(cbrom, rom, cbrom_length);
+
+	/* write _ROM method */
+	acpigen_write_scope(scope);
+	acpigen_write_rom(cbrom, cbrom_length);
+	acpigen_pop_len(); /* pop scope */
 }
 #endif

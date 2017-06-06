@@ -50,6 +50,7 @@ DefinitionBlock(
 	}
 
 	/* MIPI camera */
+	#include "acpi/ipu_mainboard.asl"
 	#include "acpi/mipi_camera.asl"
 
 	/* Chrome OS specific */

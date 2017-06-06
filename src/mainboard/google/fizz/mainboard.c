@@ -18,11 +18,41 @@
 #include <device/device.h>
 #include <ec/ec.h>
 #include <soc/pci_devs.h>
+#include <soc/nhlt.h>
 #include <vendorcode/google/chromeos/chromeos.h>
+
+static const char *oem_id = "GOOGLE";
+static const char *oem_table_id = "FIZZ";
 
 static void mainboard_init(device_t dev)
 {
 	mainboard_ec_init();
+}
+
+static unsigned long mainboard_write_acpi_tables(
+	device_t device, unsigned long current, acpi_rsdp_t *rsdp)
+{
+	uintptr_t start_addr;
+	uintptr_t end_addr;
+	struct nhlt *nhlt;
+
+	start_addr = current;
+
+	nhlt = nhlt_init();
+	if (!nhlt)
+		return start_addr;
+
+	/* RT5663 Headset codec */
+	if (nhlt_soc_add_rt5663(nhlt, AUDIO_LINK_SSP1))
+		printk(BIOS_ERR, "Couldn't add headset codec.\n");
+
+	end_addr = nhlt_soc_serialize_oem_overrides(nhlt, start_addr,
+				oem_id, oem_table_id, 0);
+
+	if (end_addr != start_addr)
+		acpi_add_table(rsdp, (void *)start_addr);
+
+	return end_addr;
 }
 
 static void mainboard_enable(device_t dev)
@@ -44,6 +74,8 @@ static void mainboard_enable(device_t dev)
 		if (tpm)
 			tpm->enabled = 0;
 	}
+
+	dev->ops->write_acpi_tables = mainboard_write_acpi_tables;
 }
 
 struct chip_operations mainboard_ops = {

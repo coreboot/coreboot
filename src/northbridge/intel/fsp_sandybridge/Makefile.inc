@@ -29,7 +29,6 @@ romstage-y += early_init.c
 romstage-y += report_platform.c
 romstage-y += ../../../arch/x86/walkcbfs.S
 
-smm-$(CONFIG_HAVE_SMI_HANDLER) += udelay.c
 smm-$(CONFIG_HAVE_SMI_HANDLER) += finalize.c
 
 CPPFLAGS_common += -I$(src)/northbridge/intel/fsp_sandybridge/fsp

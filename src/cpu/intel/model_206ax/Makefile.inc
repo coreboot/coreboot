@@ -5,6 +5,10 @@ subdirs-y += ../common
 
 ramstage-y += acpi.c
 
+ramstage-y += tsc_freq.c
+romstage-y += tsc_freq.c
+smm-$(CONFIG_HAVE_SMI_HANDLER) += tsc_freq.c
+
 smm-$(CONFIG_HAVE_SMI_HANDLER) += finalize.c
 
 cpu_microcode_bins += 3rdparty/blobs/cpu/intel/model_206ax/microcode.bin

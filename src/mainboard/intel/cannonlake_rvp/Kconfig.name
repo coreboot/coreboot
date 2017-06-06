@@ -1,0 +1,2 @@
+config BOARD_INTEL_CANNONLAKE_RVP
+	bool "Cannonlake DDR4 RVP"

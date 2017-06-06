@@ -75,7 +75,7 @@ enum spd_dimm_type {
 	SPD_DIMM_TYPE_72B_SO_CDIMM		= 0x06,
 	SPD_DIMM_TYPE_72B_SO_RDIMM		= 0x07,
 	SPD_DIMM_TYPE_MICRO_DIMM		= 0x08,
-	SPD_DIMM_TYPE_MINI_DIMM			= 0x10,
+	SPD_DIMM_TYPE_MINI_RDIMM		= 0x10,
 	SPD_DIMM_TYPE_MINI_UDIMM		= 0x20,
 	/* Masks to bits 5:0 to give the dimm type */
 	SPD_DIMM_TYPE_MASK			= 0x3f,

@@ -39,7 +39,8 @@
 int spd_dimm_is_registered_ddr2(enum spd_dimm_type type)
 {
 	if ((type == SPD_DIMM_TYPE_RDIMM)
-	    | (type == SPD_DIMM_TYPE_72B_SO_RDIMM))
+			|| (type == SPD_DIMM_TYPE_72B_SO_RDIMM)
+			|| (type == SPD_DIMM_TYPE_MINI_RDIMM))
 		return 1;
 
 	return 0;

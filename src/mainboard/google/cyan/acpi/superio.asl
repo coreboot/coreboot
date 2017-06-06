@@ -23,8 +23,8 @@
 #define SIO_EC_ENABLE_PS2K       /* Enable PS/2 Keyboard */
 
 /* Override default IRQ settings */
-#define SIO_EC_PS2K_IRQ Interrupt(ResourceConsumer, Edge, ActiveLow){\
-                                                     BOARD_I8042_IRQ}
+#define SIO_EC_PS2K_IRQ GpioInt (Edge, ActiveLow, ExclusiveAndWake, PullNone,,\
+				 "\\_SB.GPNC") { BOARD_I8042_GPIO_INDEX }
 
 /* ACPI code for EC SuperIO functions */
 #include <ec/google/chromeec/acpi/superio.asl>

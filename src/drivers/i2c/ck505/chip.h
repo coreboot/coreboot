@@ -14,17 +14,13 @@
  * GNU General Public License for more details.
  */
 
-struct drivers_ics_954309_config {
-	u8 reg0;
-	u8 reg1;
-	u8 reg2;
-	u8 reg3;
-	u8 reg4;
-	u8 reg5;
-	u8 reg6;
-	u8 reg7;
-	u8 reg8;
-	u8 reg9;
-	u8 reg10;
-	u8 reg11;
+#ifndef DRIVERS_CK505_CHIP_H
+#define DRIVERS_CK505_CHIP_H
+
+struct drivers_i2c_ck505_config {
+	const int nregs;
+	const u8 regs[32];
+	const u8 mask[32];
 };
+
+#endif

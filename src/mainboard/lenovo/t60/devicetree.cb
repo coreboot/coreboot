@@ -209,19 +209,13 @@ chip northbridge/intel/i945
 			end
 			device pci 1f.3 on # SMBUS
 				subsystemid 0x17aa 0x200f
-				chip drivers/ics/954309
-					register "reg0" = "0x2e"
-					register "reg1" = "0xf7"
-					register "reg2" = "0x3c"
-					register "reg3" = "0x20"
-					register "reg4" = "0x01"
-					register "reg5" = "0x00"
-					register "reg6" = "0x1b"
-					register "reg7" = "0x01"
-					register "reg8" = "0x54"
-					register "reg9" = "0xff"
-					register "reg10" = "0xff"
-					register "reg11" = "0x07"
+				chip drivers/i2c/ck505
+					register "mask" = "{ 0xff, 0xff, 0xff,
+						 0xff, 0xff, 0xff, 0xff, 0xff,
+						 0xff, 0xff, 0xff, 0xff }"
+					register "regs" = "{ 0x2e, 0xf7, 0x3c,
+						 0x20, 0x01, 0x00, 0x1b, 0x01,
+						 0x54, 0xff, 0xff, 0x07 }"
 					device i2c 69 on end
 				end
 			        # eeprom, 8 virtual devices, same chip

@@ -14,7 +14,7 @@
 # GNU General Public License for more details.
 #
 
-if BOARD_ASROCK_G41C_GS
+if BOARD_ASROCK_G41C_GS_R2_0
 
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
@@ -40,10 +40,10 @@ config MAINBOARD_DIR
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "G41C-GS"
+	default "G41C-GS R2.0"
 
 config MAX_CPUS
 	int
 	default 4
 
-endif # BOARD_ASROCK_G41C_GS
+endif # BOARD_ASROCK_G41C_GS_R2_0

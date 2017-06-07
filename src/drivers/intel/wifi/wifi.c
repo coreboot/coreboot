@@ -145,7 +145,8 @@ static void intel_wifi_fill_ssdt(struct device *dev)
 	acpigen_write_scope(path);
 	acpigen_write_device(acpi_device_name(dev));
 	acpigen_write_name_integer("_UID", 0);
-	acpigen_write_name_string("_DDN", dev->chip_ops->name);
+	if (dev->chip_ops)
+		acpigen_write_name_string("_DDN", dev->chip_ops->name);
 
 	/* Address */
 	address = PCI_SLOT(dev->path.pci.devfn) & 0xffff;
@@ -186,7 +187,7 @@ static void intel_wifi_fill_ssdt(struct device *dev)
 	acpigen_pop_len(); /* Scope */
 
 	printk(BIOS_INFO, "%s.%s: %s %s\n", path, acpi_device_name(dev),
-	       dev->chip_ops->name, dev_path(dev));
+	       dev->chip_ops ? dev->chip_ops->name : "", dev_path(dev));
 }
 
 static const char *intel_wifi_acpi_name(struct device *dev)

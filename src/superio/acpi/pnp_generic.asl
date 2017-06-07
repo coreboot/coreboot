@@ -21,6 +21,7 @@
  * Controlled by the following preprocessor defines:
  *
  * SUPERIO_CHIP_NAME	The name of the super i/o chip (unique, required)
+ * SUPERIO_PNP_HID	The EisaId string that identifies this device (optional)
  * SUPERIO_PNP_LDN	The logical device number on the super i/o
  *			chip for this device (required)
  * SUPERIO_PNP_DDN	A string literal that identifies the dos device
@@ -56,7 +57,11 @@
 #endif
 
 Device (SUPERIO_ID(PN, SUPERIO_PNP_LDN)) {
+	#ifdef SUPERIO_PNP_HID
+	Name (_HID, EisaId (SUPERIO_PNP_HID))
+	#else
 	Name (_HID, EisaId ("PNP0c02")) /* TODO: Better fitting EisaId? */
+	#endif
 	Name (_UID, SUPERIO_UID(PN, SUPERIO_PNP_LDN))
 	#ifdef SUPERIO_PNP_DDN
 	Name (_DDN, SUPERIO_PNP_DDN)

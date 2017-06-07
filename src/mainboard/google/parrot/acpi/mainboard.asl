@@ -58,24 +58,36 @@ Scope (\_SB) {
 		// Trackpad Wake is GPIO12, wake from S3
 		Name(_PRW, Package() { BOARD_TRACKPAD_WAKE_GPIO, 0x03 })
 
-		Name(_CRS, ResourceTemplate()
+		Name (DCRS, ResourceTemplate ()
 		{
-
 			// PIRQA -> GSI16
-			Interrupt (ResourceConsumer, Level, ActiveLow)
+			Interrupt (ResourceConsumer, Level, ActiveLow, Exclusive, ,, )
 			{
-				BOARD_TRACKPAD_IRQ_DVT
+				BOARD_TRACKPAD_IRQ_DVT,
 			}
-
-			// PIRQE -> GSI20
-			Interrupt (ResourceConsumer, Edge, ActiveLow)
-			{
-				BOARD_TRACKPAD_IRQ_PVT
-			}
-
 			// SMBUS Address 0x67
 			VendorShort (ADDR) { BOARD_TRACKPAD_I2C_ADDR }
 		})
+
+		Name (PCRS, ResourceTemplate ()
+		{
+			// PIRQE -> GSI20
+			Interrupt (ResourceConsumer, Level, ActiveLow, Exclusive, ,, )
+			{
+				BOARD_TRACKPAD_IRQ_PVT,
+			}
+			// SMBUS Address 0x67
+			VendorShort (ADDR) { BOARD_TRACKPAD_I2C_ADDR }
+		})
+
+		Method (_CRS, 0, NotSerialized)
+		{
+			If (\TPIQ == BOARD_TRACKPAD_IRQ_DVT){
+				Return (DCRS)
+			} Else {
+				Return (PCRS)
+			}
+		}
 	}
 
 	Device (MB) {

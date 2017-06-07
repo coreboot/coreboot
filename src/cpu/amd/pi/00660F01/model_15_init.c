@@ -40,11 +40,11 @@ void PSPProgBar3Msr(void *Buffer)
 	u32 Bar3Addr;
 	u64 Tmp64;
 	/* Get Bar3 Addr */
-	Bar3Addr = PspLibPciReadPspConfig (0x20);
+	Bar3Addr = PspLibPciReadPspConfig(0x20);
 	Tmp64 = Bar3Addr;
 	printk(BIOS_DEBUG, "Bar3=%llx\n", Tmp64);
-	LibAmdMsrWrite (0xC00110A2, &Tmp64, NULL);
-	LibAmdMsrRead (0xC00110A2, &Tmp64, NULL);
+	LibAmdMsrWrite(0xC00110A2, &Tmp64, NULL);
+	LibAmdMsrRead(0xC00110A2, &Tmp64, NULL);
 }
 
 static void model_15_init(device_t dev)
@@ -58,7 +58,7 @@ static void model_15_init(device_t dev)
 	u32 siblings;
 #endif
 
-	disable_cache ();
+	disable_cache();
 	/* Enable access to AMD RdDram and WrDram extension bits */
 	msr = rdmsr(SYSCFG_MSR);
 	msr.lo |= SYSCFG_MSR_MtrrFixDramModEn;
@@ -67,12 +67,12 @@ static void model_15_init(device_t dev)
 
 	// BSP: make a0000-bffff UC, c0000-fffff WB
 	msr.lo = msr.hi = 0;
-	wrmsr (0x259, msr);
+	wrmsr(0x259, msr);
 	msr.lo = msr.hi = 0x1e1e1e1e;
 	wrmsr(0x250, msr);
 	wrmsr(0x258, msr);
 	for (msrno = 0x268; msrno <= 0x26f; msrno++)
-		wrmsr (msrno, msr);
+		wrmsr(msrno, msr);
 
 	msr = rdmsr(SYSCFG_MSR);
 	msr.lo &= ~SYSCFG_MSR_MtrrFixDramModEn;
@@ -85,9 +85,8 @@ static void model_15_init(device_t dev)
 	/* zero the machine check error status registers */
 	msr.lo = 0;
 	msr.hi = 0;
-	for (i = 0; i < 6; i++) {
+	for (i = 0; i < 6; i++)
 		wrmsr(MCI_STATUS + (i * 4), msr);
-	}
 
 
 	/* Enable the local CPU APICs */

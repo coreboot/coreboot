@@ -84,7 +84,7 @@ void amd_initmmio(void)
 	MsrReg = ((1ULL << CONFIG_CPU_ADDR_BITS) - CACHE_ROM_SIZE) | 0x800ull;
 	LibAmdMsrWrite(0x20D, &MsrReg, &StdHeader);
 
-	if (IS_ENABLED(CONFIG_UDELAY_LAPIC)) {
+	if (IS_ENABLED(CONFIG_UDELAY_LAPIC)){
 		LibAmdMsrRead(0x1B, &MsrReg, &StdHeader);
 		MsrReg |= 1 << 11;
 		LibAmdMsrWrite(0x1B, &MsrReg, &StdHeader);

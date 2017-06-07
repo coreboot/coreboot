@@ -41,21 +41,23 @@ static void model_16_init(device_t dev)
 	u32 siblings;
 #endif
 
-	disable_cache ();
+	disable_cache();
 	/* Enable access to AMD RdDram and WrDram extension bits */
 	msr = rdmsr(SYSCFG_MSR);
 	msr.lo |= SYSCFG_MSR_MtrrFixDramModEn;
 	msr.lo &= ~SYSCFG_MSR_MtrrFixDramEn;
 	wrmsr(SYSCFG_MSR, msr);
 
-	// BSP: make a0000-bffff UC, c0000-fffff WB, same as OntarioApMtrrSettingsList for APs
+	/* BSP: make a0000-bffff UC, c0000-fffff WB,
+	 * same as OntarioApMtrrSettingsList for APs
+	 */
 	msr.lo = msr.hi = 0;
-	wrmsr (0x259, msr);
+	wrmsr(0x259, msr);
 	msr.lo = msr.hi = 0x1e1e1e1e;
 	wrmsr(0x250, msr);
 	wrmsr(0x258, msr);
 	for (msrno = 0x268; msrno <= 0x26f; msrno++)
-		wrmsr (msrno, msr);
+		wrmsr(msrno, msr);
 
 	msr = rdmsr(SYSCFG_MSR);
 	msr.lo &= ~SYSCFG_MSR_MtrrFixDramModEn;
@@ -68,9 +70,8 @@ static void model_16_init(device_t dev)
 	/* zero the machine check error status registers */
 	msr.lo = 0;
 	msr.hi = 0;
-	for (i = 0; i < 6; i++) {
+	for (i = 0; i < 6; i++)
 		wrmsr(MCI_STATUS + (i * 4), msr);
-	}
 
 
 	/* Enable the local CPU APICs */

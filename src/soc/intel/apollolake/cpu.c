@@ -118,9 +118,6 @@ static void pre_mp_init(void)
 {
 	x86_setup_mtrrs_with_detect();
 	x86_mtrr_check();
-
-	/* Make sure BSP is using the microcode from cbfs */
-	intel_update_microcode_from_cbfs();
 }
 
 /* Find CPU topology */
@@ -140,6 +137,9 @@ static void get_microcode_info(const void **microcode, int *parallel)
 {
 	*microcode = intel_microcode_find();
 	*parallel = 1;
+
+	/* Make sure BSP is using the microcode from cbfs */
+	intel_microcode_load_unlocked(*microcode);
 }
 
 static void get_smm_info(uintptr_t *perm_smbase, size_t *perm_smsize,

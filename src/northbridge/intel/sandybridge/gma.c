@@ -700,6 +700,11 @@ gma_write_acpi_tables(struct device *const dev,
 	return current;
 }
 
+static const char *gma_acpi_name(device_t dev)
+{
+	return "GFX0";
+}
+
 /* called by pci set_vga_bridge function */
 static void gma_func0_disable(struct device *dev)
 {
@@ -727,6 +732,7 @@ static struct device_operations gma_func0_ops = {
 	.enable			= 0,
 	.disable		= gma_func0_disable,
 	.ops_pci		= &gma_pci_ops,
+	.acpi_name		= gma_acpi_name,
 	.write_acpi_tables	= gma_write_acpi_tables,
 };
 

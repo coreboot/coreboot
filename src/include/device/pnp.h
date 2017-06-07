@@ -30,10 +30,6 @@ extern struct device_operations pnp_ops;
 
 /* PNP helper operations */
 
-struct io_info {
-	unsigned int mask, set;
-};
-
 struct pnp_info {
 	struct device_operations *ops;
 	unsigned int function; /* Must be at least 16 bits (virtual LDNs)! */
@@ -62,7 +58,7 @@ struct pnp_info {
 #define PNP_MSCC 0x200000
 #define PNP_MSCD 0x400000
 #define PNP_MSCE 0x800000
-	struct io_info io0, io1, io2, io3;
+	u16 io0, io1, io2, io3;
 };
 struct resource *pnp_get_resource(device_t dev, unsigned int index);
 void pnp_enable_devices(struct device *dev, struct device_operations *ops,

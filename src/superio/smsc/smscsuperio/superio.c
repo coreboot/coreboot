@@ -194,19 +194,19 @@ static struct device_operations ops = {
  * TODO: FDC, PP, SP1, SP2, and KBC should work, the rest probably not (yet).
  */
 static struct pnp_info pnp_dev_info[] = {
-	{ &ops, LD_FDC, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x07f8, 0}, },
-	{ &ops, LD_PP,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x07f8, 0}, },
-	{ &ops, LD_SP1, PNP_IO0 | PNP_IRQ0, {0x07f8, 0}, },
-	{ &ops, LD_SP2, PNP_IO0 | PNP_IRQ0, {0x07f8, 0}, },
+	{ &ops, LD_FDC, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, 0x07f8, },
+	{ &ops, LD_PP,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, 0x07f8, },
+	{ &ops, LD_SP1, PNP_IO0 | PNP_IRQ0, 0x07f8, },
+	{ &ops, LD_SP2, PNP_IO0 | PNP_IRQ0, 0x07f8, },
 	{ &ops, LD_RTC, },
-	{ &ops, LD_KBC, PNP_IO0 | PNP_IO1 | PNP_IRQ0 | PNP_IRQ1, {0x07ff, 0}, {0x07ff, 4}, },
+	{ &ops, LD_KBC, PNP_IO0 | PNP_IO1 | PNP_IRQ0 | PNP_IRQ1, 0x07ff, 0x07ff, },
 	{ &ops, LD_AUX, },
 	{ &ops, LD_XBUS, },
-	{ &ops, LD_HWM, PNP_IO0, {0x07f0, 0}, },
+	{ &ops, LD_HWM, PNP_IO0, 0x07f0, },
 	{ &ops, LD_GAME, },
 	{ &ops, LD_PME, },
 	{ &ops, LD_MPU401, },
-	{ &ops, LD_RT,  PNP_IO0, {0x0780, 0}, },
+	{ &ops, LD_RT,  PNP_IO0, 0x0780, },
 	{ &ops, LD_ACPI, },
 	{ &ops, LD_SMB, },
 };

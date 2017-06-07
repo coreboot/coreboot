@@ -94,15 +94,15 @@ static struct device_operations ops = {
 };
 
 static struct pnp_info pnp_dev_info[] = {
-	{ &ops, W83667HG_A_FDC, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x0ff8, 0}, },
-	{ &ops, W83667HG_A_PP, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x0ff8, 0}, },
-	{ &ops, W83667HG_A_SP1, PNP_IO0 | PNP_IRQ0, {0x0ff8, 0}, },
-	{ &ops, W83667HG_A_SP2, PNP_IO0 | PNP_IRQ0, {0x0ff8, 0}, },
-	{ &ops, W83667HG_A_KBC, PNP_IO0 | PNP_IO1 | PNP_IRQ0 | PNP_IRQ1, {0x0fff, 0}, {0x0fff, 4}, },
-	{ &ops, W83667HG_A_SPI1, PNP_IO1, {}, {0x0ff8, 0}},
+	{ &ops, W83667HG_A_FDC, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, 0x0ff8, },
+	{ &ops, W83667HG_A_PP, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, 0x0ff8, },
+	{ &ops, W83667HG_A_SP1, PNP_IO0 | PNP_IRQ0, 0x0ff8, },
+	{ &ops, W83667HG_A_SP2, PNP_IO0 | PNP_IRQ0, 0x0ff8, },
+	{ &ops, W83667HG_A_KBC, PNP_IO0 | PNP_IO1 | PNP_IRQ0 | PNP_IRQ1, 0x0fff, 0x0fff, },
+	{ &ops, W83667HG_A_SPI1, PNP_IO1, 0, 0x0ff8},
 	{ &ops, W83667HG_A_WDT1},
 	{ &ops, W83667HG_A_ACPI},
-	{ &ops, W83667HG_A_HWM_TSI, PNP_IO0 | PNP_IRQ0, {0x0ffe, 0}, },
+	{ &ops, W83667HG_A_HWM_TSI, PNP_IO0 | PNP_IRQ0, 0x0ffe, },
 	{ &ops, W83667HG_A_PECI},
 	{ &ops, W83667HG_A_VID_BUSSEL},
 	{ &ops, W83667HG_A_GPIO_PP_OD},

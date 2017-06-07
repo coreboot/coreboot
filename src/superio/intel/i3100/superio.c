@@ -53,8 +53,8 @@ static struct device_operations ops = {
 };
 
 static struct pnp_info pnp_dev_info[] = {
-	{ &ops, I3100_SP1, PNP_IO0 | PNP_IRQ0, {0x07f8, 0}, },
-	{ &ops, I3100_SP2, PNP_IO0 | PNP_IRQ0, {0x07f8, 0}, },
+	{ &ops, I3100_SP1, PNP_IO0 | PNP_IRQ0, 0x07f8, },
+	{ &ops, I3100_SP2, PNP_IO0 | PNP_IRQ0, 0x07f8, },
 };
 
 static void enable_dev(struct device *dev)

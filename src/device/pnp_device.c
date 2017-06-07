@@ -191,12 +191,12 @@ struct device_operations pnp_ops = {
 
 /* PNP chip operations */
 
-static void pnp_get_ioresource(device_t dev, u8 index, struct io_info *info)
+static void pnp_get_ioresource(device_t dev, u8 index, u16 mask)
 {
 	struct resource *resource;
 	unsigned moving, gran, step;
 
-	if (!info->mask) {
+	if (!mask) {
 		printk(BIOS_ERR, "ERROR: device %s index %d has no mask.\n",
 				dev_path(dev), index);
 		return;
@@ -210,7 +210,7 @@ static void pnp_get_ioresource(device_t dev, u8 index, struct io_info *info)
 
 	/* Get the resource size... */
 
-	moving = info->mask;
+	moving = mask;
 	gran = 15;
 	step = 1 << gran;
 
@@ -238,7 +238,7 @@ static void pnp_get_ioresource(device_t dev, u8 index, struct io_info *info)
 	/* Set the resource size and alignment. */
 	resource->gran  = gran;
 	resource->align = gran;
-	resource->limit = info->mask | (step - 1);
+	resource->limit = mask | (step - 1);
 	resource->size  = 1 << gran;
 }
 
@@ -247,13 +247,13 @@ static void get_resources(device_t dev, struct pnp_info *info)
 	struct resource *resource;
 
 	if (info->flags & PNP_IO0)
-		pnp_get_ioresource(dev, PNP_IDX_IO0, &info->io0);
+		pnp_get_ioresource(dev, PNP_IDX_IO0, info->io0);
 	if (info->flags & PNP_IO1)
-		pnp_get_ioresource(dev, PNP_IDX_IO1, &info->io1);
+		pnp_get_ioresource(dev, PNP_IDX_IO1, info->io1);
 	if (info->flags & PNP_IO2)
-		pnp_get_ioresource(dev, PNP_IDX_IO2, &info->io2);
+		pnp_get_ioresource(dev, PNP_IDX_IO2, info->io2);
 	if (info->flags & PNP_IO3)
-		pnp_get_ioresource(dev, PNP_IDX_IO3, &info->io3);
+		pnp_get_ioresource(dev, PNP_IDX_IO3, info->io3);
 
 	if (info->flags & PNP_IRQ0) {
 		resource = new_resource(dev, PNP_IDX_IRQ0);

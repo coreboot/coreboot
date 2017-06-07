@@ -45,17 +45,17 @@ static struct device_operations ops = {
 };
 
 static struct pnp_info pnp_dev_info[] = {
-	{ &ops, PC87360_FDC,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x07fa, 0}, },
-	{ &ops, PC87360_PP,   PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x04f8, 0}, },
-	{ &ops, PC87360_SP2,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0 | PNP_DRQ1, {0x07f8, 0}, },
-	{ &ops, PC87360_SP1,  PNP_IO0 | PNP_IRQ0, {0x07f8, 0}, },
-	{ &ops, PC87360_SWC,  PNP_IO0 | PNP_IRQ0, {0xfff0, 0}, },
+	{ &ops, PC87360_FDC,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, 0x07fa, },
+	{ &ops, PC87360_PP,   PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, 0x04f8, },
+	{ &ops, PC87360_SP2,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0 | PNP_DRQ1, 0x07f8, },
+	{ &ops, PC87360_SP1,  PNP_IO0 | PNP_IRQ0, 0x07f8, },
+	{ &ops, PC87360_SWC,  PNP_IO0 | PNP_IRQ0, 0xfff0, },
 	{ &ops, PC87360_KBCM, PNP_IRQ0, },
-	{ &ops, PC87360_KBCK, PNP_IO0 | PNP_IO1 | PNP_IRQ0, {0x07f8, 0}, {0x07f8, 4}, },
-	{ &ops, PC87360_GPIO, PNP_IO0 | PNP_IRQ0, {0xfff8, 0}, },
-	{ &ops, PC87360_ACB,  PNP_IO0 | PNP_IRQ0, {0xfff8, 0}, },
-	{ &ops, PC87360_FSCM, PNP_IO0 | PNP_IRQ0, {0xfff8, 0}, },
-	{ &ops, PC87360_WDT,  PNP_IO0 | PNP_IRQ0, {0xfffc, 0}, },
+	{ &ops, PC87360_KBCK, PNP_IO0 | PNP_IO1 | PNP_IRQ0, 0x07f8, 0x07f8, },
+	{ &ops, PC87360_GPIO, PNP_IO0 | PNP_IRQ0, 0xfff8, },
+	{ &ops, PC87360_ACB,  PNP_IO0 | PNP_IRQ0, 0xfff8, },
+	{ &ops, PC87360_FSCM, PNP_IO0 | PNP_IRQ0, 0xfff8, },
+	{ &ops, PC87360_WDT,  PNP_IO0 | PNP_IRQ0, 0xfffc, },
 };
 
 static void enable_dev(struct device *dev)

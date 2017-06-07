@@ -814,6 +814,11 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->x_gpe1_blk.addrh = 0x0;
 }
 
+static const char *lpc_acpi_name(device_t dev)
+{
+	return "LPCB";
+}
+
 static void southbridge_fill_ssdt(device_t device)
 {
 	device_t dev = dev_find_slot(0, PCI_DEVFN(0x1f,0));
@@ -841,6 +846,7 @@ static struct device_operations device_ops = {
 	.write_acpi_tables      = acpi_write_hpet,
 	.acpi_inject_dsdt_generator = southbridge_inject_dsdt,
 	.acpi_fill_ssdt_generator = southbridge_fill_ssdt,
+	.acpi_name		= lpc_acpi_name,
 	.init			= lpc_init,
 	.final			= lpc_final,
 	.enable			= pch_lpc_enable,

@@ -51,6 +51,11 @@ static void usb_xhci_init(struct device *dev)
 	printk(BIOS_DEBUG, "done.\n");
 }
 
+static const char *xhci_acpi_name(device_t dev)
+{
+	return "XHC";
+}
+
 static void xhci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 {
 	if (!vendor || !device) {
@@ -73,6 +78,7 @@ static struct device_operations usb_xhci_ops = {
 	.init			= usb_xhci_init,
 	.scan_bus		= 0,
 	.ops_pci		= &xhci_pci_ops,
+	.acpi_name		= xhci_acpi_name,
 };
 
 static const unsigned short pci_device_ids[] = { 0x1e31, 0 };

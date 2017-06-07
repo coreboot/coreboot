@@ -143,6 +143,11 @@ static void smbus_read_resources(device_t dev)
 	res = pci_get_resource(dev, PCI_BASE_ADDRESS_0);
 }
 
+static const char *smbus_acpi_name(device_t dev)
+{
+	return "SBUS";
+}
+
 static struct device_operations smbus_ops = {
 	.read_resources		= smbus_read_resources,
 	.set_resources		= pci_dev_set_resources,
@@ -151,6 +156,7 @@ static struct device_operations smbus_ops = {
 	.init			= pch_smbus_init,
 	.ops_smbus_bus		= &lops_smbus_bus,
 	.ops_pci		= &smbus_pci_ops,
+	.acpi_name		= smbus_acpi_name,
 };
 
 static const unsigned short pci_device_ids[] = { 0x1c22, 0x1e22, 0 };

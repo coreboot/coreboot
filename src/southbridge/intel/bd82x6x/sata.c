@@ -244,6 +244,11 @@ static void sata_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 	}
 }
 
+static const char *sata_acpi_name(device_t dev)
+{
+	return "SATA";
+}
+
 static void sata_fill_ssdt(device_t dev)
 {
 	config_t *config = dev->chip_info;
@@ -264,6 +269,7 @@ static struct device_operations sata_ops = {
 	.enable			= sata_enable,
 	.scan_bus		= 0,
 	.ops_pci		= &sata_pci_ops,
+	.acpi_name		= sata_acpi_name,
 };
 
 static const unsigned short pci_device_ids[] = { 0x1c00, 0x1c01, 0x1c02, 0x1c03,

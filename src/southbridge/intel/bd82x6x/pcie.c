@@ -20,6 +20,7 @@
 #include <device/pciexp.h>
 #include <device/pci_ids.h>
 #include <southbridge/intel/common/pciehp.h>
+#include <assert.h>
 #include "pch.h"
 
 static void pch_pcie_pm_early(struct device *dev)
@@ -284,6 +285,26 @@ static void pch_pciexp_scan_bridge(device_t dev)
 	pch_pcie_pm_late(dev);
 }
 
+static const char *pch_pcie_acpi_name(device_t dev)
+{
+	ASSERT(dev);
+
+	if (PCI_SLOT(dev->path.pci.devfn) == 0x1c) {
+		static const char *names[] = { "RP01",
+				"RP02",
+				"RP03",
+				"RP04",
+				"RP05",
+				"RP06",
+				"RP07",
+				"RP08"};
+
+		return names[PCI_FUNC(dev->path.pci.devfn)];
+	}
+
+	return NULL;
+}
+
 static void pcie_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 {
 	/* NOTE: This is not the default position! */
@@ -307,6 +328,7 @@ static struct device_operations device_ops = {
 	.init			= pci_init,
 	.enable			= pch_pcie_enable,
 	.scan_bus		= pch_pciexp_scan_bridge,
+	.acpi_name		= pch_pcie_acpi_name,
 	.ops_pci		= &pci_ops,
 };
 

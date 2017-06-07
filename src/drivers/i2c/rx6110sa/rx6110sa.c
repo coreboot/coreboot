@@ -88,33 +88,54 @@ static void rx6110sa_init(struct device *dev)
 	struct drivers_i2c_rx6110sa_config *config = dev->chip_info;
 	uint8_t reg;
 
-	/* Do a dummy read first. */
-	reg = rx6110sa_read(dev, SECOND_REG);
-
+	/* Do a dummy read first as requested in the datasheet. */
+	rx6110sa_read(dev, SECOND_REG);
+	/*
+	 * Set battery backup mode and power monitor sampling time even if there
+	 * was no power loss to make sure that the right mode is used as it
+	 * directly influences the backup current consumption and therefore the
+	 * backup time.
+	 */
+	reg = (config->pmon_sampling & PMON_SAMPL_MASK) |
+		(!!config->bks_off << 2) | (!!config->bks_on << 3) |
+		(!!config->iocut_en << 4);
+	rx6110sa_write(dev, BATTERY_BACKUP_REG, reg);
 	/*
 	 * Check VLF-bit which indicates the RTC data loss, such as due to a
 	 * supply voltage drop.
 	 */
 	reg = rx6110sa_read(dev, FLAG_REGISTER);
-
 	if (!(reg & VLF_BIT))
 		/* No voltage low detected, everything is well. */
 		return;
-
 	/*
 	 * Voltage low detected, initialize RX6110 SA again.
 	 * Set first some registers to known state.
 	 */
-	rx6110sa_write(dev, BATTERY_BACKUP_REG, 0x00);
 	rx6110sa_write(dev, RESERVED_BIT_REG, RTC_INIT_VALUE);
 	rx6110sa_write(dev, DIGITAL_REG, 0x00);
-	rx6110sa_write(dev, IRQ_CONTROL_REG, 0x00);
+	reg = (!!config->enable_1hz_out << 4) |
+		(!!config->irq_output_pin << 2) |
+		(config->fout_output_pin & FOUT_OUTPUT_PIN_MASK);
+	rx6110sa_write(dev, IRQ_CONTROL_REG, reg);
 
 	/* Clear timer enable bit and set frequency of clock output. */
-
 	reg = rx6110sa_read(dev, EXTENSION_REG);
 	reg &= ~(FSEL_MASK | TE_BIT);
 	reg |= (config->cof_selection << 6);
+	if (config->timer_preset) {
+		/* Timer needs to be in stop mode prior to programming it. */
+		rx6110sa_write(dev, EXTENSION_REG, reg);
+		reg &= ~TSEL_MASK;
+		/* Program the timer preset value. */
+		rx6110sa_write(dev, TMR_COUNTER_0_REG,
+				config->timer_preset & 0xff);
+		rx6110sa_write(dev, TMR_COUNTER_1_REG,
+				(config->timer_preset >> 8) & 0xff);
+		/* Set Timer Enable bit and the timer clock value. */
+		reg |= ((!!config->timer_en << 4) |
+			(config->timer_clk & TSEL_MASK));
+	}
 	rx6110sa_write(dev, EXTENSION_REG, reg);
 
 	/* Clear voltage low detect bit. */
@@ -140,7 +161,9 @@ static void rx6110sa_init(struct device *dev)
 	rx6110sa_write(dev, MINUTE_REG, 0);
 	rx6110sa_write(dev, SECOND_REG, 0);
 	/* Start oscillator again as the RTC is set up now. */
-	rx6110sa_write(dev, CTRL_REG, 0x00);
+	reg = (!!config->timer_irq_en << 4) |
+		(config->timer_mode & TMR_MODE_MASK);
+	rx6110sa_write(dev, CTRL_REG, reg);
 }
 
 static struct device_operations rx6110sa_ops = {

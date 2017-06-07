@@ -103,9 +103,12 @@ void amd_setup_mtrrs(void)
 	const int cpu_id = cpuid_eax(0x80000001);
 	printk(BIOS_SPEW, "CPU ID 0x80000001: %x\n", cpu_id);
 	const int has_tom2wb =
-		 (((cpu_id>>20 )&0xf) > 0) || // ExtendedFamily > 0
-		((((cpu_id>>8 )&0xf) == 0xf) && // Family == 0F
-		 (((cpu_id>>16)&0xf) >= 0x4));  // Rev>=F deduced from rev tables
+		// ExtendedFamily > 0
+		 (((cpu_id>>20)&0xf) > 0) ||
+		// Family == 0F
+		((((cpu_id>>8)&0xf) == 0xf) &&
+		// Rev>=F deduced from rev tables
+		 (((cpu_id>>16)&0xf) >= 0x4));
 	if (has_tom2wb)
 		printk(BIOS_DEBUG, "CPU is Fam 0Fh rev.F or later. We can use TOM2WB for any memory above 4GB\n");
 
@@ -135,9 +138,8 @@ void amd_setup_mtrrs(void)
 	 * undefined side effects.
 	 */
 	msr.lo = msr.hi = 0;
-	for (i = IORR_FIRST; i <= IORR_LAST; i++) {
+	for (i = IORR_FIRST; i <= IORR_LAST; i++)
 		wrmsr(i, msr);
-	}
 
 	/* Enable Variable Mtrrs
 	 * Enable the RdMem and WrMem bits in the fixed mtrrs.
@@ -151,12 +153,12 @@ void amd_setup_mtrrs(void)
 
 	enable_cache();
 
-	address_bits = CONFIG_CPU_ADDR_BITS; //K8 could be 40, and GH could be 48
+	//K8 could be 40, and GH could be 48
+	address_bits = CONFIG_CPU_ADDR_BITS;
 
 	/* AMD specific cpuid function to query number of address bits */
-	if (cpuid_eax(0x80000000) >= 0x80000008) {
+	if (cpuid_eax(0x80000000) >= 0x80000008)
 		address_bits = cpuid_eax(0x80000008) & 0xff;
-	}
 
 	/* Now that I have mapped what is memory and what is not
 	 * Set up the mtrrs so we can cache the memory.

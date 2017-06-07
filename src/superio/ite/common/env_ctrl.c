@@ -98,7 +98,7 @@ static void enable_peci(const u16 base, const u8 tmpin)
  * Set up External Temperature to read via thermal diode/resistor
  * into TMPINx register
  */
-static void enable_tmpin(const u16 base, const int tmpin,
+static void enable_tmpin(const u16 base, const u8 tmpin,
 			 const enum ite_ec_thermal_mode mode)
 {
 	u8 reg;

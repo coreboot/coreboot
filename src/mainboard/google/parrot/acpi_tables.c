@@ -31,6 +31,7 @@
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/bd82x6x/nvs.h>
 #include "thermal.h"
+#include "onboard.h"
 
 static void acpi_update_thermal_table(global_nvs_t *gnvs)
 {
@@ -59,4 +60,11 @@ void acpi_create_gnvs(global_nvs_t *gnvs)
 
 	// the lid is open by default.
 	gnvs->lids = 1;
+
+	// set trackpad IRQ
+	if (parrot_rev() < 0x2) {		/* DVT vs PVT */
+		gnvs->tpiq = BOARD_TRACKPAD_IRQ_DVT;
+	} else {
+		gnvs->tpiq = BOARD_TRACKPAD_IRQ_PVT;
+	}
 }

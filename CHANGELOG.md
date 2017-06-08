@@ -14,6 +14,14 @@ Releases 4.5.x are based on mainline support submitted in
 
 ## [Unreleased]
 
+## [v4.5.7] - 2017-06-08
+### Added
+- print BIOS version on startup
+- correct BIOS version in `SMBIOS`
+
+### Changed
+- set board names prefix to "PC Engines" (Kconfig)
+
 ## [v4.5.6] - 2017-05-30
 ### Changed
 - updated sortbootorder to v4.5.5
@@ -67,7 +75,8 @@ Releases 4.5.x are based on mainline support submitted in
 - turn off D4 and D5 leds on boot
 - enable power on after power failure
 
-[Unreleased]: https://github.com/pcengines/coreboot/compare/v4.5.6...coreboot-4.5.x
+[Unreleased]: https://github.com/pcengines/coreboot/compare/v4.5.7...coreboot-4.5.x
+[v4.5.7]: https://github.com/pcengines/coreboot/compare/v4.5.6...v4.5.7
 [v4.5.6]: https://github.com/pcengines/coreboot/compare/v4.5.5.2...v4.5.6
 [v4.5.5.2]: https://github.com/pcengines/coreboot/compare/v4.5.5.1...v4.5.5.2
 [v4.5.5.1]: https://github.com/pcengines/coreboot/compare/v4.5.5...v4.5.5.1

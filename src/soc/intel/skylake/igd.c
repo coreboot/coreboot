@@ -105,20 +105,6 @@ static void igd_init(struct device *dev)
 
 	/* Initialize PCI device, load/execute BIOS Option ROM */
 	pci_dev_init(dev);
-
-#if IS_ENABLED(CONFIG_CHROMEOS)
-	if (!gfx_get_init_done() && !acpi_is_wakeup_s3()) {
-		/*
-		 * Enable DDI-A if the Option ROM did not execute:
-		 *
-		 * bit 0: Display detected (RO)
-		 * bit 4: DDI A supports 4 lanes and DDI E is not used
-		 * bit 7: DDI buffer is idle
-		 */
-		gtt_write(DDI_BUF_CTL_A, DDI_BUF_IS_IDLE | DDI_A_4_LANES |
-			  DDI_INIT_DISPLAY_DETECTED);
-	}
-#endif
 }
 
 /* Initialize IGD OpRegion, called from ACPI code */

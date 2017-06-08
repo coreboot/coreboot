@@ -169,15 +169,6 @@ config PCR_BASE_ADDRESS
 	help
 	  This option allows you to select MMIO Base Address of sideband bus.
 
-config PRE_GRAPHICS_DELAY
-	int "Graphics initialization delay in ms"
-	default 0
-	help
-	  On some systems, coreboot boots so fast that connected monitors
-	  (mostly TVs) won't be able to wake up fast enough to talk to the
-	  VBIOS. On those systems we need to wait for a bit before executing
-	  the VBIOS.
-
 config SERIAL_CPU_INIT
 	bool
 	default n

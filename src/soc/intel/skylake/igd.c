@@ -93,16 +93,6 @@ static void igd_init(struct device *dev)
 	reg32 |= PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY | PCI_COMMAND_IO;
 	pci_write_config32(dev, PCI_COMMAND, reg32);
 
-	/* Wait for any configured pre-graphics delay */
-	if (!acpi_is_wakeup_s3()) {
-#if IS_ENABLED(CONFIG_CHROMEOS)
-		if (display_init_required() || vboot_wants_oprom())
-			mdelay(CONFIG_PRE_GRAPHICS_DELAY);
-#else
-		mdelay(CONFIG_PRE_GRAPHICS_DELAY);
-#endif
-	}
-
 	/* Initialize PCI device, load/execute BIOS Option ROM */
 	pci_dev_init(dev);
 }

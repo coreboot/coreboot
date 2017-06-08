@@ -179,14 +179,10 @@ size_t fast_spi_get_bios_region(size_t *bios_size)
 
 void fast_spi_cache_bios_region(void)
 {
-	int mtrr;
 	size_t bios_size;
 	uint32_t alignment;
-
-	mtrr = get_free_var_mtrr();
-
-	if (mtrr == -1)
-		return;
+	const int type = MTRR_TYPE_WRPROT;
+	uintptr_t base;
 
 	/* Only the IFD BIOS region is memory mapped (at top of 4G) */
 	fast_spi_get_bios_region(&bios_size);
@@ -197,7 +193,18 @@ void fast_spi_cache_bios_region(void)
 	/* Round to power of two */
 	alignment = 1 << (log2_ceil(bios_size));
 	bios_size = ALIGN_UP(bios_size, alignment);
-	set_var_mtrr(mtrr, 4ULL*GiB - bios_size, bios_size, MTRR_TYPE_WRPROT);
+	base = 4ULL*GiB - bios_size;
+
+	if (ENV_RAMSTAGE) {
+		mtrr_use_temp_range(base, bios_size, type);
+	} else {
+		int mtrr = get_free_var_mtrr();
+
+		if (mtrr == -1)
+			return;
+
+		set_var_mtrr(mtrr, base, bios_size, type);
+	}
 }
 
 /*

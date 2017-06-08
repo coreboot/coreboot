@@ -57,7 +57,9 @@ void fast_spi_set_strap_msg_data(uint32_t soft_reset_data);
  */
 size_t fast_spi_get_bios_region(size_t *bios_size);
 /*
- * Cache the memory-mapped BIOS region as write-protect type.
+ * Cache the memory-mapped BIOS region as write-protect type. In ramstage
+ * this function needs to be called after the final MTRR solution has been
+ * calculated.
  */
 void fast_spi_cache_bios_region(void);
 /*

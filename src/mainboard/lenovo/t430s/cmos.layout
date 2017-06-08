@@ -67,7 +67,7 @@ entries
 416          1       e       1        trackpoint
 417          1       e       1        fn_ctrl_swap
 418          1       e       1        sticky_fn
-#419          2       r       0        unused
+419          2       e       12       usb_always_on
 421          1       e       9        sata_mode
 422          2       e       10       backlight
 
@@ -133,6 +133,9 @@ enumerations
 11    4     160M
 11    5     192M
 11    6     224M
+12    0     Disable
+12    1     AC and battery
+12    2     AC only
 
 # -----------------------------------------------------------------
 checksums

@@ -69,7 +69,7 @@ entries
 418          1       e       1        sticky_fn
 419          1       e       1        power_management_beeps
 421          1       e       9        sata_mode
-#422          2       r       1        unused
+422          2       e       13       usb_always_on
 
 # coreboot config options: cpu
 #424          8       r       0        unused
@@ -137,6 +137,9 @@ enumerations
 11    6     224M
 12    0     Integrated Only
 12    1     Discrete Only
+13    0     Disable
+13    1     AC and battery
+13    2     AC only
 
 # -----------------------------------------------------------------
 checksums

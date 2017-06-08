@@ -29,7 +29,7 @@ void dump_spd_info(struct spd_block *blk)
 
 	for (i = 0; i < CONFIG_DIMM_MAX; i++)
 		if (blk->spd_array[i] != NULL && blk->spd_array[i][0] != 0) {
-			printk(BIOS_DEBUG, "SPD @ 0x%02X\n", 0xA0|(i << 1));
+			printk(BIOS_DEBUG, "SPD @ 0x%02X\n", blk->addr_map[i]);
 			print_spd_info(blk->spd_array[i]);
 		}
 }

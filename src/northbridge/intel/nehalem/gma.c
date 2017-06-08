@@ -27,6 +27,7 @@
 #include <drivers/intel/gma/edid.h>
 #include <drivers/intel/gma/i915.h>
 #include <drivers/intel/gma/intel_bios.h>
+#include <drivers/intel/gma/libgfxinit.h>
 #include <pc80/vga.h>
 #include <pc80/vga_io.h>
 #include <southbridge/intel/ibexpeak/nvs.h>

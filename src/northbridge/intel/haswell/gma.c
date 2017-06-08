@@ -23,6 +23,7 @@
 #include <device/pci_ids.h>
 #include <drivers/intel/gma/i915_reg.h>
 #include <drivers/intel/gma/i915.h>
+#include <drivers/intel/gma/libgfxinit.h>
 #include <cpu/intel/haswell/haswell.h>
 #include <drivers/intel/gma/opregion.h>
 #include <southbridge/intel/lynxpoint/nvs.h>

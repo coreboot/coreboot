@@ -37,7 +37,7 @@ config MAINBOARD_DIR
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "PCEngines apu3"
+	default "PC Engines apu3"
 
 config MAX_CPUS
 	int

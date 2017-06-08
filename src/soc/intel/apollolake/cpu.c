@@ -25,6 +25,7 @@
 #include <cpu/x86/mtrr.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <intelblocks/fast_spi.h>
 #include <reg_script.h>
 #include <soc/cpu.h>
 #include <soc/iomap.h>
@@ -205,7 +206,7 @@ void apollolake_init_cpus(device_t dev)
 		printk(BIOS_ERR, "MP initialization failure.\n");
 
 	/* Temporarily cache the memory-mapped boot media. */
-	if (IS_ENABLED(CONFIG_BOOT_DEVICE_MEMORY_MAPPED))
-		mtrr_use_temp_range(-CONFIG_ROM_SIZE, CONFIG_ROM_SIZE,
-					MTRR_TYPE_WRPROT);
+	if (IS_ENABLED(CONFIG_BOOT_DEVICE_MEMORY_MAPPED) &&
+		IS_ENABLED(CONFIG_BOOT_DEVICE_SPI_FLASH))
+		fast_spi_cache_bios_region();
 }

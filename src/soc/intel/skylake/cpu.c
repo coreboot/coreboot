@@ -34,6 +34,7 @@
 #include <cpu/x86/name.h>
 #include <cpu/x86/smm.h>
 #include <delay.h>
+#include <intelblocks/fast_spi.h>
 #include <pc80/mc146818rtc.h>
 #include <soc/cpu.h>
 #include <soc/msr.h>
@@ -569,6 +570,12 @@ static void soc_post_cpus_init(void *unused)
 {
 	if (mp_run_on_all_cpus(&x86_setup_mtrrs_with_detect, 1000) < 0)
 		printk(BIOS_ERR, "MTRR programming failure\n");
+
+	/* Temporarily cache the memory-mapped boot media. */
+	if (IS_ENABLED(CONFIG_BOOT_DEVICE_MEMORY_MAPPED) &&
+		IS_ENABLED(CONFIG_BOOT_DEVICE_SPI_FLASH))
+		fast_spi_cache_bios_region();
+
 	x86_mtrr_check();
 }
 

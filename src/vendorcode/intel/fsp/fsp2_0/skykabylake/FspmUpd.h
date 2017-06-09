@@ -840,7 +840,14 @@ typedef struct {
 /** Offset 0x02E2 - Core PLL voltage offset
   Core PLL voltage offset. <b>0: No offset</b>. Range 0-63
 **/
-  UINT16                      CorePllVoltageOffset;
+  UINT8                       CorePllVoltageOffset;
+
+/** Offset 0x02E3 - Ring Downbin
+  Ring Downbin enable/disable. When enabled, CPU will ensure the ring ratio is always
+  lower than the core ratio.<b>0: Disable</b>; 1: Enable.
+  $EN_DIS
+**/
+  UINT8                       RingDownBin;
 
 /** Offset 0x02E4 - BCLK Adaptive Voltage Enable
   When enabled, the CPU V/F curves are aware of BCLK frequency when calculated. </b>0:
@@ -1154,11 +1161,11 @@ typedef struct {
 **/
   UINT32                      PcieRpEnableMask;
 
-/** Offset 0x050C - SerialIo Uart Debug
-  Enable SerialIo Uart debug.
-  0:Disable, 1:Enable
+/** Offset 0x050C - Debug Interfaces
+  Debug Interfaces. BIT0-RAM, BIT1-UART, BIT3-USB3, BIT4-Serial IO, BIT5-TraceHub,
+  BIT2 - Not used.
 **/
-  UINT8                       PcdSerialDebugEnable;
+  UINT8                       PcdDebugInterfaceFlags;
 
 /** Offset 0x050D - SerialIo Uart Number Selection
   Select SerialIo Uart Controller for debug.
@@ -1190,9 +1197,67 @@ typedef struct {
 **/
   UINT8                       PeciSxReset;
 
-/** Offset 0x0512
+/** Offset 0x0512 - PcdSerialDebugBaudRate
+  Baud Rate for Serial Debug Messages. 3:9600, 4:19200, 6:56700, 7:115200.
+  3:9600, 4:19200, 6:56700, 7:115200
 **/
-  UINT8                       ReservedFspmUpd[14];
+  UINT8                       PcdSerialDebugBaudRate;
+
+/** Offset 0x0513 - PcdSerialDebugLevel
+  Serial Debug Message Level. 0:Disable, 1:Error Only, 2:Error & Warnings, 3:Load,
+  Error, Warnings & Info, 4:Load, Error, Warnings, Info & Event, 5:Load, Error, Warnings,
+  Info & Verbose
+  0:Disable, 1:Error Only, 2:Error and Warnings, 3:Load Error Warnings and Info, 4:Load
+  Error Warnings and Info, 5:Load Error Warnings Info and Verbose
+**/
+  UINT8                       PcdSerialDebugLevel;
+
+/** Offset 0x0514 - Enable or Disable EV Loader
+  Enable or Disable EV Loader; <b>0: Disable;</b> 1: Enable.
+  $EN_DIS
+**/
+  UINT8                       EvLoader;
+
+/** Offset 0x0515 - GT PLL voltage offset
+  Core PLL voltage offset. <b>0: No offset</b>. Range 0-63
+  0x0:0xFF
+**/
+  UINT8                       GtPllVoltageOffset;
+
+/** Offset 0x0516 - Ring PLL voltage offset
+  Core PLL voltage offset. <b>0: No offset</b>. Range 0-63
+  0x0:0xFF
+**/
+  UINT8                       RingPllVoltageOffset;
+
+/** Offset 0x0517 - System Agent PLL voltage offset
+  Core PLL voltage offset. <b>0: No offset</b>. Range 0-63
+  0x0:0xFF
+**/
+  UINT8                       SaPllVoltageOffset;
+
+/** Offset 0x0518 - Memory Controller PLL voltage offset
+  Core PLL voltage offset. <b>0: No offset</b>. Range 0-63
+  0x0:0xFF
+**/
+  UINT8                       McPllVoltageOffset;
+
+/** Offset 0x0519 - Realtime Memory Timing
+  0(Default): Disabled, 1: Enabled. When enabled, it will allow the system to perform
+  realtime memory timing changes after MRC_DONE.
+  0: Disabled, 1: Enabled
+**/
+  UINT8                       RealtimeMemoryTiming;
+
+/** Offset 0x051A - AVX3 Ratio Offset
+  0(Default)= No Offset. Range 0 - 31. Specifies number of bins to decrease AVX ratio
+  vs. Core Ratio. Uses Mailbox MSR 0x150, cmd 0x1B.
+**/
+  UINT8                       Avx3RatioOffset;
+
+/** Offset 0x051B
+**/
+  UINT8                       ReservedFspmUpd[5];
 } FSP_M_CONFIG;
 
 /** Fsp M Test Configuration

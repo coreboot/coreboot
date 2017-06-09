@@ -221,7 +221,7 @@ typedef struct {
 **/
   UINT8                       XdciEnable;
 
-/** Offset 0x006D - Enable XHCI SSIC Eanble
+/** Offset 0x006D - Enable XHCI SSIC Enable
   Enable/disable XHCI SSIC port.
   $EN_DIS
 **/
@@ -1520,8 +1520,9 @@ typedef struct {
 **/
   UINT8                       UnusedUpdSpace18;
 
-/** Offset 0x065C - PCH Pm WOL_OVR_WK_STS
-  Clear the WOL_OVR_WK_STS bit in the Power and Reset Status (PRSTS) register.
+/** Offset 0x065C - PCH Port 61h Config Enable/Disable
+  Used for the emulation feature for Port61h read. The port is trapped and the SMI
+  handler will toggle bit4 according to the handler's internal state.
   $EN_DIS
 **/
   UINT8                       PchPort61hEnable;
@@ -1959,9 +1960,15 @@ typedef struct {
 **/
   UINT8                       Early8254ClockGatingEnable;
 
-/** Offset 0x0720
+/** Offset 0x0720 - PCH Sata Rst Optane Memory
+  Optane Memory
+  $EN_DIS
 **/
-  UINT8                       UnusedUpdSpace19[4];
+  UINT8                       SataRstOptaneMemory;
+
+/** Offset 0x0721
+**/
+  UINT8                       UnusedUpdSpace19[3];
 
 /** Offset 0x0724 - Pch PCIE device override table pointer
   The PCIe device table is being used to override PCIe device ASPM settings. This
@@ -2065,7 +2072,7 @@ typedef struct {
 **/
   UINT8                       ChapDeviceEnable;
 
-/** Offset 0x0785 - Skip PAM regsiter lock
+/** Offset 0x0785 - Skip PAM register lock
   Enable: PAM register will not be locked by RC, platform code should lock it, Disable(Default):
   PAM registers will be locked by RC
   $EN_DIS
@@ -2145,7 +2152,8 @@ typedef struct {
 /** Offset 0x079C - 1-Core Ratio Limit
   1-Core Ratio Limit: For XE part: LFM to 255, For overclocking part: LFM to Fused
   1-Core Ratio Limit + OC Bins.This 1-Core Ratio Limit Must be greater than or equal
-  to 2-Core Ratio Limit, 3-Core Ratio Limit, 4-Core Ratio Limit. Range is 0 to 83
+  to 2-Core Ratio Limit, 3-Core Ratio Limit, 4-Core Ratio Limit, 5-Core Ratio Limit,
+  6-Core Ratio Limit, 7-Core Ratio Limit, 8-Core Ratio Limit. Range is 0 to 83
 **/
   UINT8                       OneCoreRatioLimit;
 
@@ -2740,11 +2748,39 @@ typedef struct {
 **/
   UINT32                      CpuS3ResumeData;
 
-/** Offset 0x0884 - ReservedCpuPostMemTest
+/** Offset 0x0884 - 5-Core Ratio Limit
+  5-Core Ratio Limit: For XE part: LFM to 255, For overclocking part: LFM to Fused
+  5-Core Ratio Limit + OC Bins.This 5-Core Ratio Limit Must be Less than or equal
+  to 1-Core Ratio Limit.Range is 0 to 83
+**/
+  UINT8                       FiveCoreRatioLimit;
+
+/** Offset 0x0885 - 6-Core Ratio Limit
+  6-Core Ratio Limit: For XE part: LFM to 255, For overclocking part: LFM to Fused
+  6-Core Ratio Limit + OC Bins.This 6-Core Ratio Limit Must be Less than or equal
+  to 1-Core Ratio Limit.Range is 0 to 83
+**/
+  UINT8                       SixCoreRatioLimit;
+
+/** Offset 0x0886 - 7-Core Ratio Limit
+  7-Core Ratio Limit: For XE part: LFM to 255, For overclocking part: LFM to Fused
+  7-Core Ratio Limit + OC Bins.This 7-Core Ratio Limit Must be Less than or equal
+  to 1-Core Ratio Limit.Range is 0 to 83
+**/
+  UINT8                       SevenCoreRatioLimit;
+
+/** Offset 0x0887 - 8-Core Ratio Limit
+  8-Core Ratio Limit: For XE part: LFM to 255, For overclocking part: LFM to Fused
+  8-Core Ratio Limit + OC Bins.This 8-Core Ratio Limit Must be Less than or equal
+  to 1-Core Ratio Limit.Range is 0 to 83
+**/
+  UINT8                       EightCoreRatioLimit;
+
+/** Offset 0x0888 - ReservedCpuPostMemTest
   Reserved for CPU Post-Mem Test
   $EN_DIS
 **/
-  UINT8                       ReservedCpuPostMemTest[6];
+  UINT8                       ReservedCpuPostMemTest[2];
 
 /** Offset 0x088A - SgxSinitDataFromTpm
   SgxSinitDataFromTpm default values

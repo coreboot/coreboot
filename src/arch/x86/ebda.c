@@ -22,6 +22,10 @@
 
 void setup_ebda(u32 low_memory_size, u16 ebda_segment, u16 ebda_size)
 {
+	u16 low_memory_kb;
+	u16 ebda_kb;
+	void *ebda;
+
 	/* Skip in S3 resume path */
 	if (acpi_is_wakeup_s3())
 		return;
@@ -29,15 +33,20 @@ void setup_ebda(u32 low_memory_size, u16 ebda_segment, u16 ebda_size)
 	if (!low_memory_size || !ebda_segment || !ebda_size)
 		return;
 
-	/* clear BIOS DATA AREA */
-	memset((void *)X86_BDA_BASE, 0, X86_BDA_SIZE);
+	low_memory_kb = low_memory_size >> 10;
+	ebda_kb = ebda_size >> 10;
+	ebda = (void *)((uintptr_t)ebda_segment << 4);
 
-	write16(X86_EBDA_LOWMEM, (low_memory_size >> 10));
-	write16(X86_EBDA_SEGMENT, ebda_segment);
+	/* clear BIOS DATA AREA */
+	memset(X86_BDA_BASE, 0, X86_BDA_SIZE);
+
+	/* Avoid unaligned write16() since it's undefined behavior */
+	memcpy(X86_EBDA_LOWMEM, &low_memory_kb, sizeof(low_memory_kb));
+	memcpy(X86_EBDA_SEGMENT, &ebda_segment, sizeof(ebda_segment));
 
 	/* Set up EBDA */
-	memset((void *)((uintptr_t)ebda_segment << 4), 0, ebda_size);
-	write16((void *)((uintptr_t)ebda_segment << 4), (ebda_size >> 10));
+	memset(ebda, 0, ebda_size);
+	memcpy(ebda, &ebda_kb, sizeof(ebda_kb));
 }
 
 void setup_default_ebda(void)

@@ -40,12 +40,14 @@ static void xgi_z9s_init(struct device *dev)
 	u8 ret;
 	struct xgifb_video_info *xgifb_info;
 
-	printk(BIOS_INFO, "XGI Z9s: initializing video device\n");
-	xgifb_info = malloc(sizeof(*xgifb_info));
-	ret = xgifb_probe(dev, xgifb_info);
-	if (!ret)
-		xgifb_modeset(dev, xgifb_info);
-	free(xgifb_info);
+	if (IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT)) {
+		printk(BIOS_INFO, "XGI Z9s: initializing video device\n");
+		xgifb_info = malloc(sizeof(*xgifb_info));
+		ret = xgifb_probe(dev, xgifb_info);
+		if (!ret)
+			xgifb_modeset(dev, xgifb_info);
+		free(xgifb_info);
+	}
 }
 
 static struct device_operations xgi_z9s_ops  = {

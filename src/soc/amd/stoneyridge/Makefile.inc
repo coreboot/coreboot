@@ -55,6 +55,10 @@ romstage-y += ramtop.c
 romstage-$(CONFIG_STONEYRIDGE_UART) += uart.c
 romstage-y += tsc_freq.c
 
+verstage-y += reset.c
+verstage-$(CONFIG_STONEYRIDGE_UART) += uart.c
+verstage-y += tsc_freq.c
+
 ramstage-y += chip.c
 ramstage-$(CONFIG_USBDEBUG) += enable_usbdebug.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += fadt.c

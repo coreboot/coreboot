@@ -17,6 +17,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <ec/ec.h>
+#include <soc/pci_devs.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
 static void mainboard_init(device_t dev)
@@ -26,8 +27,17 @@ static void mainboard_init(device_t dev)
 
 static void mainboard_enable(device_t dev)
 {
+	device_t tpm;
+
 	dev->ops->init = mainboard_init;
 	dev->ops->acpi_inject_dsdt_generator = chromeos_dsdt_generator;
+
+	/* Disable unused interface for TPM. */
+	if (!IS_ENABLED(CONFIG_FIZZ_USE_I2C_TPM)) {
+		tpm = PCH_DEV_I2C1;
+		if (tpm)
+			tpm->enabled = 0;
+	}
 }
 
 struct chip_operations mainboard_ops = {

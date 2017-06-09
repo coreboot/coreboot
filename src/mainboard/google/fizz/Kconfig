@@ -13,11 +13,20 @@ config BOARD_SPECIFIC_OPTIONS
 	select MAINBOARD_USES_FSP2_0
 	select NO_FADT_8042
 	select SOC_INTEL_KABYLAKE
+	select FIZZ_USE_I2C_TPM
 	select GENERIC_SPD_BIN
 
 config VBOOT
 	select EC_GOOGLE_CHROMEEC_SWITCHES
 	select GBB_FLAG_DISABLE_EC_SOFTWARE_SYNC
+
+config DRIVER_TPM_I2C_BUS
+	depends on FIZZ_USE_I2C_TPM
+	default 0x1
+
+config DRIVER_TPM_I2C_ADDR
+	depends on FIZZ_USE_I2C_TPM
+	default 0x50
 
 config GBB_HWID
 	string
@@ -47,4 +56,17 @@ config DIMM_MAX
 config DIMM_SPD_SIZE
 	int
 	default 512
+
+# Select this option to enable use of cr50 I2C TPM on fizz.
+config FIZZ_USE_I2C_TPM
+	bool
+	default n
+	select I2C_TPM
+	select MAINBOARD_HAS_I2C_TPM_CR50
+	select TPM2
+
+config TPM_TIS_ACPI_INTERRUPT
+	int
+	default 64  # GPE0_DW2_00 (GPP_E0)
+
 endif

@@ -108,8 +108,15 @@ static const struct pad_config gpio_table[] = {
 /* UART1_CTS# */	PAD_CFG_GPI(GPP_C15, NONE, DEEP), /* SKU_ID3 */
 /* I2C0_SDA */		PAD_CFG_NF(GPP_C16, NONE, DEEP, NF1),
 /* I2C0_SCL */		PAD_CFG_NF(GPP_C17, NONE, DEEP, NF1),
-/* I2C1_SDA */		PAD_CFG_NF(GPP_C18, NONE, DEEP, NF1),
-/* I2C1_SCL */		PAD_CFG_NF(GPP_C19, NONE, DEEP, NF1),
+#if IS_ENABLED(CONFIG_FIZZ_USE_I2C_TPM)
+/* I2C1_SDA */		PAD_CFG_NF(GPP_C18, NONE, DEEP,
+				   NF1), /* PCH_I2C1_H1_3V3_SDA */
+/* I2C1_SCL */		PAD_CFG_NF(GPP_C19, NONE, DEEP,
+				   NF1), /* PCH_I2C1_H1_3V3_SCL */
+#else
+/* I2C1_SDA */		PAD_CFG_NC(GPP_C18),
+/* I2C1_SCL */		PAD_CFG_NC(GPP_C19),
+#endif
 /* UART2_RXD */		PAD_CFG_NF(GPP_C20, NONE, DEEP, NF1), /* SERVO */
 /* UART2_TXD */		PAD_CFG_NF(GPP_C21, NONE, DEEP, NF1), /* SERVO */
 /* UART2_RTS# */	PAD_CFG_NC(GPP_C22), /* TP309 */
@@ -231,10 +238,12 @@ static const struct pad_config gpio_table[] = {
 
 /* Early pad configuration in bootblock */
 static const struct pad_config early_gpio_table[] = {
-/* I2C2_SDA */		PAD_CFG_NF(GPP_F4, NONE, DEEP,
-				   NF1), /* PCH_I2C2_H1_3V3_SDA */
-/* I2C2_SCL */		PAD_CFG_NF(GPP_F5, NONE, DEEP,
-				   NF1), /* PCH_I2C2_H1_3V3_SCL */
+#if IS_ENABLED(CONFIG_FIZZ_USE_I2C_TPM)
+/* I2C1_SDA */		PAD_CFG_NF(GPP_C18, NONE, DEEP,
+				   NF1), /* PCH_I2C1_H1_3V3_SDA */
+/* I2C1_SCL */		PAD_CFG_NF(GPP_C19, NONE, DEEP,
+				   NF1), /* PCH_I2C1_H1_3V3_SCL */
+#endif
 /* SATAXPCI0 */		PAD_CFG_GPI_APIC_INVERT(GPP_E0, NONE,
 						PLTRST), /* H1_PCH_INT_ODL */
 /* Ensure UART pins are in native mode for H1. */

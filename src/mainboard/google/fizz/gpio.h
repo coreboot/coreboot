@@ -80,10 +80,21 @@ static const struct pad_config gpio_table[] = {
 /* SLP_S0# */		PAD_CFG_NF(GPP_B12, NONE, DEEP, NF1), /* PM_SLP_S0# */
 /* PLTRST# */		PAD_CFG_NF(GPP_B13, NONE, DEEP, NF1), /* PCI_PLTRST# */
 /* SPKR */		PAD_CFG_NF(GPP_B14, NONE, DEEP, NF1), /* SPKR */
-/* GSPI0_CS# */		PAD_CFG_NC(GPP_B15), /* PCH_SPI_H1_3V3_CS_L */
-/* GSPI0_CLK */		PAD_CFG_NC(GPP_B16), /* PCH_SPI_H1_3V3_CLK */
-/* GSPI0_MISO */	PAD_CFG_NC(GPP_B17), /* PCH_SPI_H1_3V3_MISO */
-/* GSPI0_MOSI */	PAD_CFG_NC(GPP_B18), /* PCH_SPI_H1_3V3_MOSI */
+#if IS_ENABLED(CONFIG_FIZZ_USE_SPI_TPM)
+/* GSPI0_CS# */		PAD_CFG_NF(GPP_B15, NONE, DEEP,
+				   NF1), /* PCH_SPI_H1_3V3_CS_L */
+/* GSPI0_CLK */		PAD_CFG_NF(GPP_B16, NONE, DEEP,
+				   NF1), /* PCH_SPI_H1_3V3_CLK */
+/* GSPI0_MISO */	PAD_CFG_NF(GPP_B17, NONE, DEEP,
+				   NF1), /* PCH_SPI_H1_3V3_MISO */
+/* GSPI0_MOSI */	PAD_CFG_NF(GPP_B18, NONE, DEEP,
+				   NF1), /* PCH_SPI_H1_3V3_MOSI */
+#else
+/* GSPI0_CS# */		PAD_CFG_NC(GPP_B15),
+/* GSPI0_CLK */		PAD_CFG_NC(GPP_B16),
+/* GSPI0_MISO */	PAD_CFG_NC(GPP_B17),
+/* GSPI0_MOSI */	PAD_CFG_NC(GPP_B18),
+#endif
 /* GSPI1_CS# */		PAD_CFG_NC(GPP_B19), /* TP111 */
 /* GSPI1_CLK */		PAD_CFG_GPI(GPP_B20, 20K_PU, DEEP), /* VR_DISABLE_L */
 /* GSPI1_MISO */	PAD_CFG_GPI(GPP_B21, 20K_PU, DEEP), /* HWA_TRST_N */
@@ -238,6 +249,16 @@ static const struct pad_config gpio_table[] = {
 
 /* Early pad configuration in bootblock */
 static const struct pad_config early_gpio_table[] = {
+#if IS_ENABLED(CONFIG_FIZZ_USE_SPI_TPM)
+/* GSPI0_CS# */		PAD_CFG_NF(GPP_B15, NONE, DEEP,
+				   NF1), /* PCH_SPI_H1_3V3_CS_L */
+/* GSPI0_CLK */		PAD_CFG_NF(GPP_B16, NONE, DEEP,
+				   NF1), /* PCH_SPI_H1_3V3_CLK */
+/* GSPI0_MISO */	PAD_CFG_NF(GPP_B17, NONE, DEEP,
+				   NF1), /* PCH_SPI_H1_3V3_MISO */
+/* GSPI0_MOSI */	PAD_CFG_NF(GPP_B18, NONE, DEEP,
+				   NF1), /* PCH_SPI_H1_3V3_MOSI */
+#endif
 #if IS_ENABLED(CONFIG_FIZZ_USE_I2C_TPM)
 /* I2C1_SDA */		PAD_CFG_NF(GPP_C18, NONE, DEEP,
 				   NF1), /* PCH_I2C1_H1_3V3_SDA */

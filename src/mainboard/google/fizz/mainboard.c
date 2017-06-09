@@ -33,6 +33,12 @@ static void mainboard_enable(device_t dev)
 	dev->ops->acpi_inject_dsdt_generator = chromeos_dsdt_generator;
 
 	/* Disable unused interface for TPM. */
+	if (!IS_ENABLED(CONFIG_FIZZ_USE_SPI_TPM)) {
+		tpm = PCH_DEV_GSPI0;
+		if (tpm)
+			tpm->enabled = 0;
+	}
+
 	if (!IS_ENABLED(CONFIG_FIZZ_USE_I2C_TPM)) {
 		tpm = PCH_DEV_I2C1;
 		if (tpm)

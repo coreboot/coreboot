@@ -21,6 +21,7 @@
 #include <cpu/x86/smm.h>
 #include <device/pci_def.h>
 #include <elog.h>
+#include <intelblocks/smihandler.h>
 #include <soc/nvs.h>
 #include <soc/pm.h>
 #include <soc/gpio.h>
@@ -28,18 +29,17 @@
 #include <spi-generic.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include "smi.h"
 
 /* GNVS needs to be set by coreboot initiating a software SMI. */
 static struct global_nvs_t *gnvs;
 
-__attribute__((weak)) int smm_disable_busmaster(device_t dev)
+__attribute__((weak)) int smihandler_disable_busmaster(device_t dev)
 {
 	return 1;
 }
 
 static void *find_save_state(const struct smm_save_state_ops *save_state_ops,
-		int cmd)
+	int cmd)
 {
 	int node;
 	void *state = NULL;
@@ -70,6 +70,7 @@ static void *find_save_state(const struct smm_save_state_ops *save_state_ops,
 	return state;
 }
 
+/* Inherited from cpu/x86/smm.h resulting in a different signature */
 void southbridge_smi_set_eos(void)
 {
 	enable_smi(EOS);
@@ -91,7 +92,7 @@ static void busmaster_disable_on_bus(int bus)
 			u32 reg32;
 			device_t dev = PCI_DEV(bus, slot, func);
 
-			if (!smm_disable_busmaster(dev))
+			if (!smihandler_disable_busmaster(dev))
 				continue;
 			val = pci_read_config32(dev, PCI_VENDOR_ID);
 
@@ -127,7 +128,8 @@ static void busmaster_disable_on_bus(int bus)
 }
 
 
-void southbridge_smi_sleep(const struct smm_save_state_ops *save_state_ops)
+void smihandler_southbridge_sleep(
+	const struct smm_save_state_ops *save_state_ops)
 {
 	uint32_t reg32;
 	uint8_t slp_typ;
@@ -205,8 +207,8 @@ void southbridge_smi_sleep(const struct smm_save_state_ops *save_state_ops)
 	}
 }
 
-static void southbridge_smi_gsmi(const struct
-			smm_save_state_ops *save_state_ops)
+static void southbridge_smi_gsmi(
+	const struct smm_save_state_ops *save_state_ops)
 {
 	u8 sub_command, ret;
 	void *io_smi = NULL;
@@ -239,7 +241,8 @@ static void finalize(void)
 
 }
 
-void southbridge_smi_apmc(const struct smm_save_state_ops *save_state_ops)
+void smihandler_southbridge_apmc(
+	const struct smm_save_state_ops *save_state_ops)
 {
 	uint8_t reg8;
 	void *state = NULL;
@@ -300,7 +303,8 @@ void southbridge_smi_apmc(const struct smm_save_state_ops *save_state_ops)
 	mainboard_smi_apmc(reg8);
 }
 
-void southbridge_smi_pm1(const struct smm_save_state_ops *save_state_ops)
+void smihandler_southbridge_pm1(
+	const struct smm_save_state_ops *save_state_ops)
 {
 	uint16_t pm1_sts = clear_pm1_status();
 
@@ -317,12 +321,14 @@ void southbridge_smi_pm1(const struct smm_save_state_ops *save_state_ops)
 	}
 }
 
-void southbridge_smi_gpe0(const struct smm_save_state_ops *save_state_ops)
+void smihandler_southbridge_gpe0(
+	const struct smm_save_state_ops *save_state_ops)
 {
 	clear_gpe_status();
 }
 
-void southbridge_smi_tco(const struct smm_save_state_ops *save_state_ops)
+void smihandler_southbridge_tco(
+	const struct smm_save_state_ops *save_state_ops)
 {
 	uint32_t tco_sts = clear_tco_status();
 
@@ -336,7 +342,8 @@ void southbridge_smi_tco(const struct smm_save_state_ops *save_state_ops)
 	}
 }
 
-void southbridge_smi_periodic(const struct smm_save_state_ops *save_state_ops)
+void smihandler_southbridge_periodic(
+	const struct smm_save_state_ops *save_state_ops)
 {
 	uint32_t reg32;
 

@@ -25,14 +25,15 @@
 #include <cpu/x86/mtrr.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <fsp/memmap.h>
 #include <intelblocks/cpulib.h>
 #include <intelblocks/fast_spi.h>
 #include <intelblocks/msr.h>
+#include <intelblocks/smm.h>
 #include <reg_script.h>
 #include <soc/cpu.h>
 #include <soc/iomap.h>
 #include <soc/pm.h>
-#include <soc/smm.h>
 #include <cpu/intel/turbo.h>
 
 static const struct reg_script core_msr_script[] = {
@@ -189,9 +190,9 @@ static const struct mp_ops mp_ops = {
 	.get_cpu_count = get_cpu_count,
 	.get_smm_info = get_smm_info,
 	.get_microcode_info = get_microcode_info,
-	.pre_mp_smm_init = southbridge_smm_clear_state,
+	.pre_mp_smm_init = smm_southbridge_clear_state,
 	.relocation_handler = relocation_handler,
-	.post_mp_init = southbridge_smm_enable_smi,
+	.post_mp_init = smm_southbridge_enable,
 };
 
 void apollolake_init_cpus(struct device *dev)

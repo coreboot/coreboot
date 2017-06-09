@@ -65,7 +65,6 @@ ramstage-y += spi.c
 ramstage-y += pmutil.c
 ramstage-y += pmc.c
 ramstage-y += reset.c
-ramstage-y += smi.c
 ramstage-y += sram.c
 ramstage-y += spi.c
 ramstage-y += xdci.c

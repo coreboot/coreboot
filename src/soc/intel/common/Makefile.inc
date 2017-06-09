@@ -31,8 +31,6 @@ ramstage-$(CONFIG_SOC_INTEL_COMMON_GFX_OPREGION) += opregion.c
 ramstage-$(CONFIG_SOC_INTEL_COMMON_ACPI) += ./acpi/acpi.c
 ramstage-$(CONFIG_SOC_INTEL_COMMON_NHLT) += nhlt.c
 
-smm-$(CONFIG_SOC_INTEL_COMMON_SMI) += smihandler.c
-
 bootblock-$(CONFIG_MAINBOARD_HAS_TPM_CR50) += tpm_tis.c
 verstage-$(CONFIG_MAINBOARD_HAS_TPM_CR50) += tpm_tis.c
 romstage-$(CONFIG_MAINBOARD_HAS_TPM_CR50) += tpm_tis.c

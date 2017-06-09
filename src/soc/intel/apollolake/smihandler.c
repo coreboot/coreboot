@@ -14,25 +14,15 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/hlt.h>
 #include <arch/io.h>
-#include <console/console.h>
-#include <cpu/x86/cache.h>
 #include <cpu/x86/smm.h>
-#include <device/pci_def.h>
-#include <elog.h>
-#include <soc/nvs.h>
-#include <soc/pm.h>
+#include <intelblocks/smihandler.h>
 #include <soc/gpio.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
-#include <soc/intel/common/smi.h>
-#include <spi-generic.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <soc/smm.h>
+#include <soc/pm.h>
 
-int smm_disable_busmaster(device_t dev)
+int smihandler_disable_busmaster(device_t dev)
 {
 	if (dev == PCH_DEV_PMC)
 		return 0;
@@ -47,7 +37,8 @@ const struct smm_save_state_ops *get_smm_save_state_ops(void)
 void __attribute__((weak))
 mainboard_smi_gpi_handler(const struct gpi_status *sts) { }
 
-static void southbridge_smi_gpi(const struct smm_save_state_ops *save_state_ops)
+static void southbridge_smi_gpi(
+	const struct smm_save_state_ops *save_state_ops)
 {
 	struct gpi_status smi_sts;
 
@@ -59,10 +50,10 @@ static void southbridge_smi_gpi(const struct smm_save_state_ops *save_state_ops)
 }
 
 const smi_handler_t southbridge_smi[32] = {
-	[SLP_SMI_STS] = southbridge_smi_sleep,
-	[APM_SMI_STS] = southbridge_smi_apmc,
-	[FAKE_PM1_SMI_STS] = southbridge_smi_pm1,
+	[SLP_SMI_STS] = smihandler_southbridge_sleep,
+	[APM_SMI_STS] = smihandler_southbridge_apmc,
+	[FAKE_PM1_SMI_STS] = smihandler_southbridge_pm1,
 	[GPIO_SMI_STS] = southbridge_smi_gpi,
-	[TCO_SMI_STS] = southbridge_smi_tco,
-	[PERIODIC_SMI_STS] = southbridge_smi_periodic,
+	[TCO_SMI_STS] = smihandler_southbridge_tco,
+	[PERIODIC_SMI_STS] = smihandler_southbridge_periodic,
 };

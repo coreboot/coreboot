@@ -82,6 +82,20 @@
 #define   EOS		(1 << SMI_EOS) /* End of SMI (deassert SMI#) */
 #define   GBL_SMI_EN	(1 << SMI_GBL) /* Global SMI Enable */
 
+/* SMI_EN Params for this platform to pass to enable_smi
+ *
+ * Enable SMI generation:
+ *  - on APMC writes (io 0xb2)
+ *  - on writes to SLP_EN (sleep states)
+ *  - on writes to GBL_RLS (bios commands)
+ *  - on eSPI events (does nothing on LPC systems)
+ * No SMIs:
+ *  - on microcontroller writes (io 0x62/0x66)
+ *  - on TCO events
+ */
+#define   ENABLE_SMI_PARAMS \
+	(APMC_EN | SLP_SMI_EN | GBL_SMI_EN | EOS | GPIO_EN)
+
 #define SMI_STS			0x44
 /* Bits for SMI status */
 #define  PMC_OCP_SMI_STS	27

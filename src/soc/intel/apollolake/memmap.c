@@ -27,9 +27,9 @@
 #include <assert.h>
 #include <cbmem.h>
 #include <device/pci.h>
+#include <fsp/memmap.h>
 #include <soc/systemagent.h>
 #include <soc/pci_devs.h>
-#include <soc/smm.h>
 
 static uintptr_t smm_region_start(void)
 {

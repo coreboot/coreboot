@@ -1,0 +1,4 @@
+config SOC_INTEL_COMMON_BLOCK_SMM
+	bool
+	help
+	  Intel Processor common SMM support

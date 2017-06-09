@@ -65,9 +65,7 @@ static int XGIfb_crt1off;
 static int XGIfb_forcecrt1 = -1;
 
 /* global flags */
-#if IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT)
 static int XGIfb_tvmode;
-#endif
 static int enable_dstn;
 // static int XGIfb_ypan = -1;
 
@@ -384,8 +382,6 @@ static const struct _XGI_TV_filter {
 	    {0xFF, 0xFF, 0xFF, 0xFF} } }
 };
 
-#if IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT)
 static int           filter = -1;
-#endif
 
 #endif

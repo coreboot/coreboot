@@ -853,7 +853,7 @@ static void XGINew_SetDRAMSize_340(struct xgifb_video_info *xgifb_info,
 
 	pVBInfo->FBAddr = HwDeviceExtension->pjVideoMemoryAddress;
 
-	if (IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT))
+	if (IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER))
 		XGISetModeNew(xgifb_info, HwDeviceExtension, 0x2e);
 
 	data = xgifb_reg_get(pVBInfo->P3c4, 0x21);

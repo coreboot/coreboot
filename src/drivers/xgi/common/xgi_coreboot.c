@@ -119,7 +119,7 @@ int xgifb_probe(struct pci_dev *pdev, struct xgifb_video_info *xgifb_info)
 		xgifb_info->video_size = video_size_max;
 	}
 
-	if (IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT)) {
+	if (IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER)) {
 		/* Enable PCI_LINEAR_ADDRESSING and MMIO_ENABLE  */
 		xgifb_reg_or(XGISR,
 			     IND_SIS_PCI_ADDRESS_SET,
@@ -263,7 +263,7 @@ int xgifb_probe(struct pci_dev *pdev, struct xgifb_video_info *xgifb_info)
 			xgifb_info->mode_idx =
 				XGIfb_GetXG21DefaultLVDSModeIdx(xgifb_info);
 		else
-			if (IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT))
+			if (IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER))
 				xgifb_info->mode_idx = DEFAULT_MODE;
 			else
 				xgifb_info->mode_idx = DEFAULT_TEXT_MODE;
@@ -338,85 +338,88 @@ int xgifb_modeset(struct pci_dev *pdev, struct xgifb_video_info *xgifb_info)
 
 	hw_info = &xgifb_info->hw_info;
 
-#if IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT)
-	/* Set mode */
-	XGIfb_pre_setmode(xgifb_info);
-	if (XGISetModeNew(xgifb_info, hw_info,
-			XGIbios_mode[xgifb_info->mode_idx].mode_no)
-				== 0) {
-		pr_err("Setting mode[0x%x] failed\n",
-		XGIbios_mode[xgifb_info->mode_idx].mode_no);
-		return -22;
+	if (IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER)) {
+		/* Set mode */
+		XGIfb_pre_setmode(xgifb_info);
+		if (XGISetModeNew(xgifb_info, hw_info,
+				XGIbios_mode[xgifb_info->mode_idx].mode_no)
+					== 0) {
+			pr_err("Setting mode[0x%x] failed\n",
+			XGIbios_mode[xgifb_info->mode_idx].mode_no);
+			return -22;
+		}
+		xgifb_info->video_linelength =
+				xgifb_info->video_width *
+				(xgifb_info->video_bpp >> 3);
+
+		xgifb_reg_set(XGISR, IND_SIS_PASSWORD, SIS_PASSWORD);
+
+		xgifb_reg_set(XGICR, 0x13,
+			(xgifb_info->video_linelength & 0x00ff));
+		xgifb_reg_set(XGISR, 0x0e,
+			(xgifb_info->video_linelength & 0xff00) >> 8);
+
+		XGIfb_post_setmode(xgifb_info);
+
+		pr_debug("Set new mode: %dx%dx%d-%d\n",
+			XGIbios_mode[xgifb_info->mode_idx].xres,
+			XGIbios_mode[xgifb_info->mode_idx].yres,
+			XGIbios_mode[xgifb_info->mode_idx].bpp,
+			xgifb_info->refresh_rate);
+
+		/* Set LinuxBIOS framebuffer information */
+		xgi_vbe_valid = 1;
+		xgi_fb.physical_address = xgifb_info->video_base;
+		xgi_fb.x_resolution = xgifb_info->video_width;
+		xgi_fb.y_resolution = xgifb_info->video_height;
+		xgi_fb.bytes_per_line =
+			xgifb_info->video_width * xgifb_info->video_bpp;
+		xgi_fb.bits_per_pixel = xgifb_info->video_bpp;
+
+		xgi_fb.reserved_mask_pos = 0;
+		xgi_fb.reserved_mask_size = 0;
+		switch(xgifb_info->video_bpp){
+		case 32:
+		case 24:
+			/* packed into 4-byte words */
+			xgi_fb.reserved_mask_pos = 24;
+			xgi_fb.reserved_mask_size = 8;
+			xgi_fb.red_mask_pos = 16;
+			xgi_fb.red_mask_size = 8;
+			xgi_fb.green_mask_pos = 8;
+			xgi_fb.green_mask_size = 8;
+			xgi_fb.blue_mask_pos = 0;
+			xgi_fb.blue_mask_size = 8;
+			break;
+		case 16:
+			/* packed into 2-byte words */
+			xgi_fb.red_mask_pos = 11;
+			xgi_fb.red_mask_size = 5;
+			xgi_fb.green_mask_pos = 5;
+			xgi_fb.green_mask_size = 6;
+			xgi_fb.blue_mask_pos = 0;
+			xgi_fb.blue_mask_size = 5;
+			break;
+		default:
+			printk(BIOS_SPEW, "%s: unsupported BPP %d\n", __func__,
+			       xgifb_info->video_bpp);
+			xgi_vbe_valid = 0;
+		}
+	} else {
+		/*
+		 * FIXME
+		 * Text mode is slightly unstable/jittery
+		 * (bad/incomplete DDR init?)
+		 */
+
+		/* Initialize standard VGA text mode */
+		vga_io_init();
+		vga_textmode_init();
+		printk(BIOS_INFO, "XGI VGA text mode initialized\n");
+
+		/* if we don't have console, at least print something... */
+		vga_line_write(0, "XGI VGA text mode initialized");
 	}
-	xgifb_info->video_linelength =
-			xgifb_info->video_width *
-			(xgifb_info->video_bpp >> 3);
-
-	xgifb_reg_set(XGISR, IND_SIS_PASSWORD, SIS_PASSWORD);
-
-	xgifb_reg_set(XGICR, 0x13, (xgifb_info->video_linelength & 0x00ff));
-	xgifb_reg_set(XGISR,
-		0x0E,
-		(xgifb_info->video_linelength & 0xff00) >> 8);
-
-	XGIfb_post_setmode(xgifb_info);
-
-	pr_debug("Set new mode: %dx%dx%d-%d\n",
-		XGIbios_mode[xgifb_info->mode_idx].xres,
-		XGIbios_mode[xgifb_info->mode_idx].yres,
-		XGIbios_mode[xgifb_info->mode_idx].bpp,
-		xgifb_info->refresh_rate);
-
-	/* Set LinuxBIOS framebuffer information */
-	xgi_vbe_valid = 1;
-	xgi_fb.physical_address = xgifb_info->video_base;
-	xgi_fb.x_resolution = xgifb_info->video_width;
-	xgi_fb.y_resolution = xgifb_info->video_height;
-	xgi_fb.bytes_per_line = xgifb_info->video_width * xgifb_info->video_bpp;
-	xgi_fb.bits_per_pixel = xgifb_info->video_bpp;
-
-	xgi_fb.reserved_mask_pos = 0;
-	xgi_fb.reserved_mask_size = 0;
-	switch(xgifb_info->video_bpp){
-	case 32:
-	case 24:
-		/* packed into 4-byte words */
-		xgi_fb.reserved_mask_pos = 24;
-		xgi_fb.reserved_mask_size = 8;
-		xgi_fb.red_mask_pos = 16;
-		xgi_fb.red_mask_size = 8;
-		xgi_fb.green_mask_pos = 8;
-		xgi_fb.green_mask_size = 8;
-		xgi_fb.blue_mask_pos = 0;
-		xgi_fb.blue_mask_size = 8;
-		break;
-	case 16:
-		/* packed into 2-byte words */
-		xgi_fb.red_mask_pos = 11;
-		xgi_fb.red_mask_size = 5;
-		xgi_fb.green_mask_pos = 5;
-		xgi_fb.green_mask_size = 6;
-		xgi_fb.blue_mask_pos = 0;
-		xgi_fb.blue_mask_size = 5;
-		break;
-	default:
-		printk(BIOS_SPEW, "%s: unsupported BPP %d\n", __func__,
-		       xgifb_info->video_bpp);
-		xgi_vbe_valid = 0;
-	}
-#else
-	/* FIXME
-	 * Text mode is slightly unstable/jittery (bad/incomplete DDR init?)
-	 */
-
-	/* Initialize standard VGA text mode */
-	vga_io_init();
-	vga_textmode_init();
-        printk(BIOS_INFO, "XGI VGA text mode initialized\n");
-
-	/* if we don't have console, at least print something... */
-	vga_line_write(0, "XGI VGA text mode initialized");
-#endif
 
 	return 0;
 }

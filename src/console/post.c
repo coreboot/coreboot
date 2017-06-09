@@ -38,7 +38,7 @@ void __attribute__((weak)) mainboard_post(uint8_t value)
 #define mainboard_post(x)
 #endif
 
-#if CONFIG_CMOS_POST
+#if IS_ENABLED(CONFIG_CMOS_POST)
 
 DECLARE_SPIN_LOCK(cmos_post_lock)
 
@@ -46,7 +46,7 @@ DECLARE_SPIN_LOCK(cmos_post_lock)
 void cmos_post_log(void)
 {
 	u8 code = 0;
-#if CONFIG_CMOS_POST_EXTRA
+#if IS_ENABLED(CONFIG_CMOS_POST_EXTRA)
 	u32 extra = 0;
 #endif
 
@@ -56,13 +56,13 @@ void cmos_post_log(void)
 	switch (cmos_read(CMOS_POST_BANK_OFFSET)) {
 	case CMOS_POST_BANK_0_MAGIC:
 		code = cmos_read(CMOS_POST_BANK_1_OFFSET);
-#if CONFIG_CMOS_POST_EXTRA
+#if IS_ENABLED(CONFIG_CMOS_POST_EXTRA)
 		extra = cmos_read32(CMOS_POST_BANK_1_EXTRA);
 #endif
 		break;
 	case CMOS_POST_BANK_1_MAGIC:
 		code = cmos_read(CMOS_POST_BANK_0_OFFSET);
-#if CONFIG_CMOS_POST_EXTRA
+#if IS_ENABLED(CONFIG_CMOS_POST_EXTRA)
 		extra = cmos_read32(CMOS_POST_BANK_0_EXTRA);
 #endif
 		break;
@@ -80,9 +80,9 @@ void cmos_post_log(void)
 	default:
 		printk(BIOS_WARNING, "POST: Unexpected post code "
 		       "in previous boot: 0x%02x\n", code);
-#if CONFIG_ELOG
+#if IS_ENABLED(CONFIG_ELOG)
 		elog_add_event_word(ELOG_TYPE_LAST_POST_CODE, code);
-#if CONFIG_CMOS_POST_EXTRA
+#if IS_ENABLED(CONFIG_CMOS_POST_EXTRA)
 		if (extra)
 			elog_add_event_dword(ELOG_TYPE_POST_EXTRA, extra);
 #endif
@@ -90,7 +90,7 @@ void cmos_post_log(void)
 	}
 }
 
-#if CONFIG_CMOS_POST_EXTRA
+#if IS_ENABLED(CONFIG_CMOS_POST_EXTRA)
 void post_log_extra(u32 value)
 {
 	spin_lock(&cmos_post_lock);
@@ -144,14 +144,14 @@ static void cmos_post_code(u8 value)
 
 void post_code(uint8_t value)
 {
-#if !CONFIG_NO_POST
-#if CONFIG_CONSOLE_POST
+#if !IS_ENABLED(CONFIG_NO_POST)
+#if IS_ENABLED(CONFIG_CONSOLE_POST)
 	printk(BIOS_EMERG, "POST: 0x%02x\n", value);
 #endif
-#if CONFIG_CMOS_POST
+#if IS_ENABLED(CONFIG_CMOS_POST)
 	cmos_post_code(value);
 #endif
-#if CONFIG_POST_IO
+#if IS_ENABLED(CONFIG_POST_IO)
 	outb(value, CONFIG_POST_IO_PORT);
 #endif
 #endif

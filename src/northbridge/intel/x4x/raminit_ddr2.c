@@ -399,92 +399,61 @@ static void cmdset(u8 ch, const struct dll_setting *setting)
 		setting->tap;
 }
 
+/**
+ * All finer DQ and DQS DLL settings are set to the same value
+ * for each rank in a channel, while coarse is common.
+ */
 static void dqsset(u8 ch, u8 lane, const struct dll_setting *setting)
 {
-	MCHBAR32(0x400*ch + 0x5fc) = MCHBAR32(0x400*ch + 0x5fc) & ~(2 << (lane*4));
+	int rank;
 
-	MCHBAR32(0x400*ch + 0x5b4) = (MCHBAR32(0x400*ch + 0x5b4) & ~(0x201 << lane)) |
-		(setting->db_en << (9 + lane)) |
-		(setting->db_sel << lane);
-	MCHBAR32(0x400*ch + 0x5b8) = (MCHBAR32(0x400*ch + 0x5b8) & ~(0x201 << lane)) |
-		(setting->db_en << (9 + lane)) |
-		(setting->db_sel << lane);
-	MCHBAR32(0x400*ch + 0x5bc) = (MCHBAR32(0x400*ch + 0x5bc) & ~(0x201 << lane)) |
-		(setting->db_en << (9 + lane)) |
-		(setting->db_sel << lane);
-	MCHBAR32(0x400*ch + 0x5c0) = (MCHBAR32(0x400*ch + 0x5c0) & ~(0x201 << lane)) |
-		(setting->db_en << (9 + lane)) |
-		(setting->db_sel << lane);
+	MCHBAR32(0x400 * ch + 0x5fc) = (MCHBAR32(0x400 * ch + 0x5fc)
+			& ~(1 << (lane * 4 + 1)))
+		| (setting->coarse << (lane * 4 + 1));
 
-	MCHBAR32(0x400*ch + 0x5c8) = (MCHBAR32(0x400*ch + 0x5c8) & ~(0x3 << (16+lane*2))) |
-		(setting->clk_delay << (16+lane*2));
-	MCHBAR32(0x400*ch + 0x5cc) = (MCHBAR32(0x400*ch + 0x5cc) & ~(0x3 << (16+lane*2))) |
-		(setting->clk_delay << (16+lane*2));
-	MCHBAR32(0x400*ch + 0x5d0) = (MCHBAR32(0x400*ch + 0x5d0) & ~(0x3 << (16+lane*2))) |
-		(setting->clk_delay << (16+lane*2));
-	MCHBAR32(0x400*ch + 0x5d4) = (MCHBAR32(0x400*ch + 0x5d4) & ~(0x3 << (16+lane*2))) |
-		(setting->clk_delay << (16+lane*2));
+	for (rank = 0; rank < 4; rank++) {
+		MCHBAR32(0x400 * ch + 0x5b4 + rank * 4) =
+			(MCHBAR32(0x400 * ch + 0x5b4 + rank * 4)
+				& ~(0x201 << lane))
+			| (setting->db_en << (9 + lane))
+			| (setting->db_sel << lane);
 
-	MCHBAR8(0x400*ch + 0x520 + lane*4) = (MCHBAR8(0x400*ch + 0x520 + lane*4) & ~0x70) |
-		(setting->pi << 4);
-	MCHBAR8(0x400*ch + 0x520 + lane*4) = (MCHBAR8(0x400*ch + 0x520 + lane*4) & ~0xf) |
-		setting->tap;
-	MCHBAR8(0x400*ch + 0x521 + lane*4) = (MCHBAR8(0x400*ch + 0x521 + lane*4) & ~0x70) |
-		(setting->pi << 4);
-	MCHBAR8(0x400*ch + 0x521 + lane*4) = (MCHBAR8(0x400*ch + 0x521 + lane*4) & ~0xf) |
-		setting->tap;
-	MCHBAR8(0x400*ch + 0x522 + lane*4) = (MCHBAR8(0x400*ch + 0x522 + lane*4) & ~0x70) |
-		(setting->pi << 4);
-	MCHBAR8(0x400*ch + 0x522 + lane*4) = (MCHBAR8(0x400*ch + 0x522 + lane*4) & ~0xf) |
-		setting->tap;
-	MCHBAR8(0x400*ch + 0x523 + lane*4) = (MCHBAR8(0x400*ch + 0x523 + lane*4) & ~0x70) |
-		(setting->pi << 4);
-	MCHBAR8(0x400*ch + 0x523 + lane*4) = (MCHBAR8(0x400*ch + 0x523 + lane*4) & ~0xf) |
-		setting->tap;
+		MCHBAR32(0x400*ch + 0x5c8 + rank * 4) =
+			(MCHBAR32(0x400 * ch + 0x5c8 + rank * 4)
+				& ~(0x3 << (16 + lane * 2)))
+			| (setting->clk_delay << (16+lane * 2));
+
+		MCHBAR8(0x400*ch + 0x520 + lane * 4 + rank) =
+			(MCHBAR8(0x400*ch + 0x520 + lane*4) & ~0x7f)
+			| (setting->pi << 4)
+			| setting->tap;
+	}
 }
 
 static void dqset(u8 ch, u8 lane, const struct dll_setting *setting)
 {
-	MCHBAR32(0x400*ch + 0x5fc) = MCHBAR32(0x400*ch + 0x5fc) & ~(1 << (lane*4));
+	int rank;
+	MCHBAR32(0x400 * ch + 0x5fc) = (MCHBAR32(0x400 * ch + 0x5fc)
+			& ~(1 << (lane * 4)))
+		| (setting->coarse << (lane * 4));
 
-	MCHBAR32(0x400*ch + 0x5a4) = (MCHBAR32(0x400*ch + 0x5a4) & ~(0x201 << lane)) |
-		(setting->db_en << (9 + lane)) |
-		(setting->db_sel << lane);
-	MCHBAR32(0x400*ch + 0x5a8) = (MCHBAR32(0x400*ch + 0x5a8) & ~(0x201 << lane)) |
-		(setting->db_en << (9 + lane)) |
-		(setting->db_sel << lane);
-	MCHBAR32(0x400*ch + 0x5ac) = (MCHBAR32(0x400*ch + 0x5ac) & ~(0x201 << lane)) |
-		(setting->db_en << (9 + lane)) |
-		(setting->db_sel << lane);
-	MCHBAR32(0x400*ch + 0x5b0) = (MCHBAR32(0x400*ch + 0x5b0) & ~(0x201 << lane)) |
-		(setting->db_en << (9 + lane)) |
-		(setting->db_sel << lane);
+	for (rank = 0; rank < 4; rank++) {
+		MCHBAR32(0x400 * ch + 0x5a4 + rank * 4) =
+			(MCHBAR32(0x400 * ch + 0x5a4 + rank * 4)
+				& ~(0x201 << lane))
+			| (setting->db_en << (9 + lane))
+			| (setting->db_sel << lane);
 
-	MCHBAR32(0x400*ch + 0x5c8) = (MCHBAR32(0x400*ch + 0x5c8) & ~(0x3 << (lane*2))) |
-		(setting->clk_delay << (2 * lane));
-	MCHBAR32(0x400*ch + 0x5cc) = (MCHBAR32(0x400*ch + 0x5cc) & ~(0x3 << (lane*2))) |
-		(setting->clk_delay << (2 * lane));
-	MCHBAR32(0x400*ch + 0x5d0) = (MCHBAR32(0x400*ch + 0x5d0) & ~(0x3 << (lane*2))) |
-		(setting->clk_delay << (2 * lane));
-	MCHBAR32(0x400*ch + 0x5d4) = (MCHBAR32(0x400*ch + 0x5d4) & ~(0x3 << (lane*2))) |
-		(setting->clk_delay << (2 * lane));
+		MCHBAR32(0x400 * ch + 0x5c8 + rank * 4) =
+			(MCHBAR32(0x400 * ch + 0x5c8 + rank * 4)
+				& ~(0x3 << (lane * 2)))
+			| (setting->clk_delay << (2 * lane));
 
-	MCHBAR8(0x400*ch + 0x500 + lane*4) = (MCHBAR8(0x400*ch + 0x500 + lane*4) & ~0x70) |
-		(setting->pi << 4);
-	MCHBAR8(0x400*ch + 0x500 + lane*4) = (MCHBAR8(0x400*ch + 0x500 + lane*4) & ~0xf) |
-		setting->tap;
-	MCHBAR8(0x400*ch + 0x501 + lane*4) = (MCHBAR8(0x400*ch + 0x501 + lane*4) & ~0x70) |
-		(setting->pi << 4);
-	MCHBAR8(0x400*ch + 0x501 + lane*4) = (MCHBAR8(0x400*ch + 0x501 + lane*4) & ~0xf) |
-		setting->tap;
-	MCHBAR8(0x400*ch + 0x502 + lane*4) = (MCHBAR8(0x400*ch + 0x502 + lane*4) & ~0x70) |
-		(setting->pi << 4);
-	MCHBAR8(0x400*ch + 0x502 + lane*4) = (MCHBAR8(0x400*ch + 0x502 + lane*4) & ~0xf) |
-		setting->tap;
-	MCHBAR8(0x400*ch + 0x503 + lane*4) = (MCHBAR8(0x400*ch + 0x503 + lane*4) & ~0x70) |
-		(setting->pi << 4);
-	MCHBAR8(0x400*ch + 0x503 + lane*4) = (MCHBAR8(0x400*ch + 0x503 + lane*4) & ~0xf) |
-		setting->tap;
+		MCHBAR8(0x400*ch + 0x500 + lane * 4 + rank) =
+			(MCHBAR8(0x400 * ch + 0x500 + lane * 4 + rank) & ~0x7f)
+			| (setting->pi << 4)
+			| setting->tap;
+	}
 }
 
 static void timings_ddr2(struct sysinfo *s)
@@ -804,7 +773,7 @@ static void dll_ddr2(struct sysinfo *s)
 	MCHBAR8(0x1a4) = MCHBAR8(0x1a4) | 0x40;
 	MCHBAR16(0x5f0) = (MCHBAR16(0x5f0) & ~0x400) | 0x400;
 
-	const struct dll_setting dll_setting_667[23] = {
+	static const struct dll_setting dll_setting_667[23] = {
 	//	tap  pi db  delay
 		{13, 0, 1, 0, 0},
 		{4,  1, 0, 0, 0},
@@ -831,7 +800,7 @@ static void dll_ddr2(struct sysinfo *s)
 		{5,  4, 0, 0, 1}
 	};
 
-	const struct dll_setting dll_setting_800[23] = {
+	static const struct dll_setting dll_setting_800[23] = {
 	//	tap  pi db  delay
 		{11, 5, 1, 0, 0},
 		{0,  5, 1, 1, 0},

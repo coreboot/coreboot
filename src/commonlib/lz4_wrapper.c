@@ -67,7 +67,7 @@ static void LZ4_copy8(void *dst, const void *src)
 			: "=m"(*(uint32_t *)(dst + 4))
 			: [x1]"r"(x1), [dst]"r"(dst));
 	#endif
-#elif defined(__riscv__)
+#elif defined(__riscv)
 	/* RISC-V implementations may trap on any unaligned access. */
 	int i;
 	for (i = 0; i < 8; i++)

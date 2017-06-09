@@ -316,24 +316,29 @@ F:	src/arch/x86/acpi/
 F:	util/acpi/
 
 ARM ARCHITECTURE
+M:	Julius Werner <jwerner@chromium.org>
+S:	Supported
 F:	src/arch/arm/
-F:	src/arch/arm64
+F:	src/arch/arm64/
+F:	src/soc/mediatek/
+F:	src/soc/nvidia/
+F:	src/soc/rockchip/
+F:	util/nvidia/
+F:	util/rockchip/
+
+ORPHANED ARM SOCS
+S:	Orphaned
 F:	src/cpu/allwinner/
 F:	src/cpu/armltd/
-F:	src/cpu/samsung/
 F:	src/cpu/ti/
 F:	src/soc/broadcom/
 F:	src/soc/marvell/
-F:	src/soc/nvidia/
 F:	src/soc/qualcomm/
-F:	src/soc/rockchip/
 F:	src/soc/samsung/
 F:	util/arm_boot_tools/
 F:	util/broadcom/
 F:	util/exynos/
 F:	util/ipqheader/
-F:	util/nvidia/
-F:	util/rockchip/
 
 MIPS ARCHITECTURE
 F:	src/arch/mips/
@@ -497,11 +502,15 @@ S:	Maintained
 F:	src/superio/
 F:	util/superiotool/
 
+MEMLAYOUT
+M:	Julius Werner <jwerner@chromium.org>
+S:	Supported
+F:	*/memlayout.h
+F:	*.ld
+
 MISSING: TIMERS / DELAYS
 
 MISSING: TIMESTAMPS
-
-MISSING: MEMLAYOUT
 
 MISSING: FMAP
 

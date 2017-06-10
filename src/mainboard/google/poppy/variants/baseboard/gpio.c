@@ -111,14 +111,14 @@ static const struct pad_config gpio_table[] = {
 	/* B18 : GSPI0_MOSI ==> NC */
 	PAD_CFG_NC(GPP_B18),
 #endif
-	/* B19 : GSPI1_CS# ==> PCH_SPI_FP_CS_L */
-	PAD_CFG_NF(GPP_B19, NONE, DEEP, NF1),
-	/* B20 : GSPI1_CLK ==> PCH_SPI_FP_CLK */
-	PAD_CFG_NF(GPP_B20, NONE, DEEP, NF1),
-	/* B21 : GSPI1_MISO ==> PCH_SPI_FP_MISO */
-	PAD_CFG_NF(GPP_B21, NONE, DEEP, NF1),
-	/* B22 : GSPI1_MOSI ==> PCH_SPI_FP_MOSI */
-	PAD_CFG_NF(GPP_B22, NONE, DEEP, NF1),
+	/* B19 : GSPI1_CS# ==> NC */
+	PAD_CFG_NC(GPP_B19),
+	/* B20 : GSPI1_CLK ==> NC */
+	PAD_CFG_NC(GPP_B20),
+	/* B21 : GSPI1_MISO ==> NC */
+	PAD_CFG_NC(GPP_B21),
+	/* B22 : GSPI1_MOSI ==> NC */
+	PAD_CFG_NC(GPP_B22),
 	/* B23 : SM1ALERT# ==> NC */
 	PAD_CFG_NC(GPP_B23),
 

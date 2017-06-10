@@ -41,7 +41,7 @@ uintptr_t lpss_i2c_base_address(unsigned int bus)
 
 	/* devfn -> dev */
 	dev = dev_find_slot(0, devfn);
-	if (!dev)
+	if (!dev || !dev->enabled)
 		return (uintptr_t)NULL;
 
 	/* dev -> bar0 */
@@ -119,7 +119,12 @@ static void lpss_i2c_acpi_fill_ssdt(struct device *dev)
 		I2C_SPEED_FAST_PLUS,
 		I2C_SPEED_HIGH,
 	};
-	int i, bus = lpss_i2c_dev_to_bus(dev);
+	int i, bus;
+
+	if (!dev->enabled)
+		return;
+
+	bus = lpss_i2c_dev_to_bus(dev);
 
 	bcfg = i2c_get_soc_cfg(bus, dev);
 

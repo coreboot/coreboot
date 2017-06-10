@@ -32,6 +32,11 @@
 #define SMM_ENTRY_OFFSET 0x8000
 #define SMM_SAVE_STATE_BEGIN(x) (SMM_ENTRY_OFFSET + (x))
 
+/* AMD64 x86 SMM State-Save Area
+ * starts @ 0x7e00
+ */
+#define SMM_AMD64_ARCH_OFFSET 0x7e00
+
 typedef struct {
 	u16	es_selector;
 	u16	es_attributes;
@@ -128,16 +133,20 @@ typedef struct {
 
 
 /* Intel Core 2 (EM64T) SMM State-Save Area
- * starts @ 0x7d00
+ * starts @ 0x7c00
  */
+#define SMM_EM64T_ARCH_OFFSET 0x7c00
+#define SMM_EM64T_SAVE_STATE_OFFSET \
+	SMM_SAVE_STATE_BEGIN(SMM_EM64T_ARCH_OFFSET)
 typedef struct {
-	u8	reserved0[208];
+	u8	reserved0[256];
+	u8	reserved1[208];
 
 	u32	gdtr_upper_base;
 	u32	ldtr_upper_base;
 	u32	idtr_upper_base;
 
-	u8	reserved1[4];
+	u8	reserved2[4];
 
 	u64	io_rdi;
 	u64	io_rip;
@@ -145,13 +154,13 @@ typedef struct {
 	u64	io_rsi;
 	u64	cr4;
 
-	u8	reserved2[68];
+	u8	reserved3[68];
 
 	u64	gdtr_base;
 	u64	idtr_base;
 	u64	ldtr_base;
 
-	u8	reserved3[84];
+	u8	reserved4[84];
 
 	u32	smm_revision;
 	u32	smbase;
@@ -159,7 +168,7 @@ typedef struct {
 	u16	io_restart;
 	u16	autohalt_restart;
 
-	u8	reserved4[24];
+	u8	reserved5[24];
 
 	u64	r15;
 	u64	r14;
@@ -394,6 +403,7 @@ typedef struct {
 /* Legacy x86 SMM State-Save Area
  * starts @ 0x7e00
  */
+#define SMM_LEGACY_ARCH_OFFSET 0x7e00
 
 typedef struct {
 	u8	reserved0[248];

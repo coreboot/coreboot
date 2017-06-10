@@ -416,7 +416,14 @@ chip soc/intel/skylake
 		device pci 1d.3 off end # PCI Express Port 12
 		device pci 1e.0 on  end # UART #0
 		device pci 1e.1 off end # UART #1
-		device pci 1e.2 on  end # GSPI #0
+		device pci 1e.2 on
+			chip drivers/spi/acpi
+				 register "hid" = "ACPI_DT_NAMESPACE_HID"
+				 register "compat_string" = ""google,cr50""
+				 register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_E0_IRQ)"
+				 device spi 0 on end
+			end
+		end # GSPI #0
 		device pci 1e.3 on  end # GSPI #1
 		device pci 1e.4 on  end # eMMC
 		device pci 1e.5 off end # SDIO

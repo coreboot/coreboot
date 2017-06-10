@@ -47,7 +47,7 @@ struct cbmem_console {
 
 #define MAX_SIZE (1 << 28)	/* can't be changed without breaking readers! */
 #define CURSOR_MASK (MAX_SIZE - 1)	/* bits 31-28 are reserved for flags */
-#define OVERFLOW (1 << 31)		/* set if in ring-buffer mode */
+#define OVERFLOW (1UL << 31)		/* set if in ring-buffer mode */
 _Static_assert(CONFIG_CONSOLE_CBMEM_BUFFER_SIZE <= MAX_SIZE,
 	"cbmem_console format cannot support buffers larger than 256MB!");
 

@@ -182,7 +182,7 @@ chip soc/intel/skylake
 		[PchSerialIoIndexI2C4]  = PchSerialIoPci,
 		[PchSerialIoIndexI2C5]  = PchSerialIoPci,
 		[PchSerialIoIndexSpi0]  = PchSerialIoPci,
-		[PchSerialIoIndexSpi1]  = PchSerialIoPci,
+		[PchSerialIoIndexSpi1]  = PchSerialIoDisabled,
 		[PchSerialIoIndexUart0] = PchSerialIoPci,
 		[PchSerialIoIndexUart1] = PchSerialIoDisabled,
 		[PchSerialIoIndexUart2] = PchSerialIoSkipInit,
@@ -436,7 +436,7 @@ chip soc/intel/skylake
 				 device spi 0 on end
 			end
 		end # GSPI #0
-		device pci 1e.3 on  end # GSPI #1
+		device pci 1e.3 off end # GSPI #1
 		device pci 1e.4 on  end # eMMC
 		device pci 1e.5 off end # SDIO
 		device pci 1e.6 on end # SDCard

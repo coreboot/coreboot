@@ -17,6 +17,7 @@
 #include <baseboard/variants.h>
 #include <device/device.h>
 #include <ec/ec.h>
+#include <soc/pci_devs.h>
 #include <soc/nhlt.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
@@ -56,9 +57,24 @@ static unsigned long mainboard_write_acpi_tables(device_t device,
 
 static void mainboard_enable(device_t dev)
 {
+	device_t tpm;
+
 	dev->ops->init = mainboard_init;
 	dev->ops->acpi_inject_dsdt_generator = chromeos_dsdt_generator;
 	dev->ops->write_acpi_tables = mainboard_write_acpi_tables;
+
+	/* Disable unused interface(s) for TPM. */
+	if (!IS_ENABLED(CONFIG_POPPY_USE_SPI_TPM)) {
+		tpm = PCH_DEV_GSPI0;
+		if (tpm)
+			tpm->enabled = 0;
+	}
+
+	if (!IS_ENABLED(CONFIG_POPPY_USE_I2C_TPM)) {
+		tpm = PCH_DEV_I2C1;
+		if (tpm)
+			tpm->enabled = 0;
+	}
 }
 
 struct chip_operations mainboard_ops = {

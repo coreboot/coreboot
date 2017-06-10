@@ -153,12 +153,14 @@ void smi_handler(u32 smm_revision)
 	case 0x00030007:
 		state_save.type = LEGACY;
 		state_save.legacy_state_save =
-			smm_save_state(smm_base, 0x7e00, node);
+			smm_save_state(smm_base,
+				       SMM_LEGACY_ARCH_OFFSET, node);
 		break;
 	case 0x00030100:
 		state_save.type = EM64T;
 		state_save.em64t_state_save =
-			smm_save_state(smm_base, 0x7d00, node);
+			smm_save_state(smm_base,
+				       SMM_EM64T_ARCH_OFFSET, node);
 		break;
 	case 0x00030101: /* SandyBridge, IvyBridge, and Haswell */
 		state_save.type = EM64T101;
@@ -169,7 +171,8 @@ void smi_handler(u32 smm_revision)
 	case 0x00030064:
 		state_save.type = AMD64;
 		state_save.amd64_state_save =
-			smm_save_state(smm_base, 0x7e00, node);
+			smm_save_state(smm_base,
+				       SMM_AMD64_ARCH_OFFSET, node);
 		break;
 	default:
 		printk(BIOS_DEBUG, "smm_revision: 0x%08x\n", smm_revision);

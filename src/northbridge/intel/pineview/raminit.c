@@ -350,7 +350,7 @@ static u8 msbpos(u8 val) //Reverse
 
 static void sdram_detect_smallest_params(struct sysinfo *s)
 {
-	u16 mult[6] = {
+	static const u16 mult[6] = {
 		3000, // 667
 		2500, // 800
 	};
@@ -611,7 +611,7 @@ static void enable_hpet(void)
 static void sdram_clk_crossing(struct sysinfo *s)
 {
 	u8 clk_idx, fsb_idx;
-	const u32 clkcross[2][2][4] = {
+	static const u32 clkcross[2][2][4] = {
 	{
 		{0xFFFFFFFF, 0x05030305, 0x0000FFFF, 0x00000000},  //667  667
 		{0x1F1F1F1F, 0x2A1F1FA5, 0x00000000, 0x05000002},  //667  800
@@ -637,7 +637,7 @@ static void sdram_clk_crossing(struct sysinfo *s)
 		MCHBAR32(0x704) = 0;
 	}
 
-	const u32 clkcross2[2][2][8] = {
+	static const u32 clkcross2[2][2][8] = {
 	{
 		{  0,  0x08010204,  0,  0x08010204, 0, 0,  0,  0x04080102},  //  667  667
 		{  0x04080000,  0x10010002,  0x10000000,  0x20010208,  0, 0x00000004,  0x02040000,  0x08100102},  //  667  800
@@ -697,7 +697,7 @@ static void sdram_timings(struct sysinfo *s)
 	u8 reg8, wl;
 	u16 reg16;
 	u32 reg32, reg2;
-	u8 pagetab[2][2] = {{0xe, 0x12}, {0x10, 0x14}};
+	static const u8 pagetab[2][2] = {{0xe, 0x12}, {0x10, 0x14}};
 
 	// Only consider DDR2
 	wl = s->selected_timings.CAS - 1;
@@ -872,7 +872,7 @@ static void sdram_timings(struct sysinfo *s)
 	MCHBAR32(0x594) = MCHBAR32(0x594) | (1 << 31);
 }
 
-static void sdram_p_clkset0(struct pllparam *pll, u8 f, u8 i)
+static void sdram_p_clkset0(const struct pllparam *pll, u8 f, u8 i)
 {
 	MCHBAR16(0x5a0) = (MCHBAR16(0x5a0) & ~0xc440) |
 			(pll->clkdelay[f][i] << 14) |
@@ -881,7 +881,7 @@ static void sdram_p_clkset0(struct pllparam *pll, u8 f, u8 i)
 	MCHBAR8(0x581) = (MCHBAR8(0x581) & ~0x3f) | pll->pi[f][i];
 }
 
-static void sdram_p_clkset1(struct pllparam *pll, u8 f, u8 i)
+static void sdram_p_clkset1(const struct pllparam *pll, u8 f, u8 i)
 {
 	MCHBAR16(0x5a0) = (MCHBAR16(0x5a0) & ~0x30880) |
 			(pll->clkdelay[f][i] << 16) |
@@ -890,7 +890,7 @@ static void sdram_p_clkset1(struct pllparam *pll, u8 f, u8 i)
 	MCHBAR8(0x582) = (MCHBAR8(0x582) & ~0x3f) | pll->pi[f][i];
 }
 
-static void sdram_p_cmd(struct pllparam *pll, u8 f, u8 i)
+static void sdram_p_cmd(const struct pllparam *pll, u8 f, u8 i)
 {
 	u8 reg8;
 	reg8 = pll->dbsel[f][i] << 5;
@@ -905,7 +905,7 @@ static void sdram_p_cmd(struct pllparam *pll, u8 f, u8 i)
 	MCHBAR8(0x583) = (MCHBAR8(0x583) & ~0x3f) | reg8;
 }
 
-static void sdram_p_ctrl(struct pllparam *pll, u8 f, u8 i)
+static void sdram_p_ctrl(const struct pllparam *pll, u8 f, u8 i)
 {
 	u8 reg8;
 	u32 reg32;
@@ -1211,20 +1211,22 @@ static void sdram_rcomp(struct sysinfo *s)
 	u16 reg16;
 	u32 reg32, rcomp1, rcomp2;
 
-	u8 rcompupdate[7] = { 0, 0, 0, 1, 1, 0, 0 };
-	u8 rcompslew = 0xa;
-	u8 rcompstr[7] = { 0x66, 0, 0xaa, 0x55, 0x55, 0x77, 0x77 };
-	u16 rcompscomp[7] = { 0xa22a, 0, 0xe22e, 0xe22e, 0xe22e, 0xa22a, 0xa22a };
-	u8 rcompdelay[7] = { 1, 0, 0, 0, 0, 1, 1 };
-	u16 rcompctl[7] = { 0x31c, 0, 0x374, 0x3a2, 0x3d0, 0x3fe, 0x42c };
-	u16 rcompf[7] = { 0x1114, 0, 0x0505, 0x0909, 0x0909, 0x0a0a, 0x0a0a };
+	static const u8 rcompupdate[7] = { 0, 0, 0, 1, 1, 0, 0 };
+	static const u8 rcompslew = 0xa;
+	static const u8 rcompstr[7] = { 0x66, 0, 0xaa, 0x55, 0x55, 0x77, 0x77 };
+	static const u16 rcompscomp[7] = { 0xa22a, 0, 0xe22e, 0xe22e, 0xe22e, 0xa22a, 0xa22a };
+	static const u8 rcompdelay[7] = { 1, 0, 0, 0, 0, 1, 1 };
+	static const u16 rcompctl[7] = { 0x31c, 0, 0x374, 0x3a2, 0x3d0, 0x3fe, 0x42c };
+	static const u16 rcompf[7] = { 0x1114, 0, 0x0505, 0x0909, 0x0909, 0x0a0a, 0x0a0a };
 
 	//                   NC-NC   x16SS   x16DS  x16SS2  x16DS2 x8DS, x8DS2
-	u8 rcompstr2[7]    = {   0x00,   0x55,   0x55,   0xaa,   0xaa , 0x55,   0xaa};
-	u16 rcompscomp2[7] = { 0x0000, 0xe22e, 0xe22e, 0xe22e, 0x8228 , 0xe22e, 0x8228 };
-	u8 rcompdelay2[7]  = {      0,      0,      0,      0,      2 , 0,      2};
+	static const u8 rcompstr2[7]    = {   0x00,   0x55,   0x55,   0xaa,
+					      0xaa , 0x55,   0xaa};
+	static const u16 rcompscomp2[7] = { 0x0000, 0xe22e, 0xe22e, 0xe22e,
+					    0x8228 , 0xe22e, 0x8228 };
+	static const u8 rcompdelay2[7]  = {      0,      0,      0,      0,      2 , 0,      2};
 
-	u8 rcomplut[64][12] = {
+	static const u8 rcomplut[64][12] = {
 		{ 9, 9,11,11, 2, 2, 5,5, 6, 6,5, 5},
 		{ 9, 9,11, 11, 2, 2, 5,5, 6, 6,5, 5},
 		{ 9, 9,11, 11, 2, 2, 5,5, 6, 6,5, 5},
@@ -1478,13 +1480,13 @@ static void sdram_odt(struct sysinfo *s)
 {
 	u8 rankindex = 0;
 
-	u16 odt294[16] = {
+	static const u16 odt294[16] = {
 			0x0000, 0x0000, 0x0000, 0x0000,
 			0x0044, 0x1111, 0x0000, 0x1111,
 			0x0000, 0x0000, 0x0000, 0x0000,
 			0x0044, 0x1111, 0x0000, 0x1111
 			};
-	u16 odt298[16] = {
+	static const u16 odt298[16] = {
 			0x0000, 0x0011, 0x0000, 0x0011,
 			0x0000, 0x4444, 0x0000, 0x4444,
 			0x0000, 0x0000, 0x0000, 0x0000,
@@ -1527,17 +1529,26 @@ static void sdram_odt(struct sysinfo *s)
 
 static void sdram_mmap(struct sysinfo *s)
 {
-	u32 w260[7] = {0, 0x400001, 0xc00001, 0x500000, 0xf00000, 0xc00001, 0xf00000};
-	u32 w208[7] = {0, 0x10000, 0x1010000, 0x10001, 0x1010101, 0x1010000, 0x1010101};
-	u32 w200[7] = {0, 0, 0, 0x20002, 0x40002, 0, 0x40002};
-	u32 w204[7] = {0, 0x20002, 0x40002, 0x40004, 0x80006, 0x40002, 0x80006};
+	static const u32 w260[7] = {0, 0x400001, 0xc00001, 0x500000, 0xf00000,
+				    0xc00001, 0xf00000};
+	static const u32 w208[7] = {0, 0x10000, 0x1010000, 0x10001, 0x1010101,
+				    0x1010000, 0x1010101};
+	static const u32 w200[7] = {0, 0, 0, 0x20002, 0x40002, 0, 0x40002};
+	static const u32 w204[7] = {0, 0x20002, 0x40002, 0x40004, 0x80006,
+				    0x40002, 0x80006};
 
-	u16 tolud[7] = {0x800, 0x800, 0x1000, 0x1000, 0x2000, 0x1000, 0x2000};
-	u16 tom[7] = {0x2, 0x2, 0x4, 0x4, 0x8, 0x4, 0x8};
-	u16 touud[7] = {0x80, 0x80, 0x100, 0x100, 0x200, 0x100, 0x200};
-	u32 gbsm[7] = {0x8000000, 0x8000000, 0x10000000, 0x8000000, 0x20000000, 0x10000000, 0x20000000};
-	u32 bgsm[7] = {0x8000000, 0x8000000, 0x10000000, 0x8000000, 0x20000000, 0x10000000, 0x20000000};
-	u32 tsegmb[7] = {0x8000000, 0x8000000, 0x10000000, 0x8000000, 0x20000000, 0x10000000, 0x20000000};
+	static const u16 tolud[7] = {0x800, 0x800, 0x1000, 0x1000, 0x2000,
+				     0x1000, 0x2000};
+	static const u16 tom[7] = {0x2, 0x2, 0x4, 0x4, 0x8, 0x4, 0x8};
+	static const u16 touud[7] = {0x80, 0x80, 0x100, 0x100, 0x200, 0x100,
+				     0x200};
+	static const u32 gbsm[7] = {0x8000000, 0x8000000, 0x10000000, 0x8000000,
+				    0x20000000, 0x10000000, 0x20000000};
+	static const u32 bgsm[7] = {0x8000000, 0x8000000, 0x10000000, 0x8000000,
+				    0x20000000, 0x10000000, 0x20000000};
+	static const u32 tsegmb[7] = {0x8000000, 0x8000000, 0x10000000,
+				      0x8000000, 0x20000000, 0x10000000,
+				      0x20000000};
 
 	if ((s->dimm_config[0] < 3) && rank_is_populated(s->dimms, 0, 0)) {
 		if (s->dimms[0].sides > 1) {
@@ -1686,7 +1697,7 @@ static void sdram_jedecinit(struct sysinfo *s)
 		u16 val;
 	};
 
-	struct jedeclist jedec[12] = {
+	static const struct jedeclist jedec[12] = {
 			{ "   NOP        ", NOP_CMD, 0 },
 			{ "   PRE CHARGE ", PRE_CHARGE_CMD, 0 },
 			{ "   EMRS2      ", EMRS2_CMD, 0 },
@@ -1781,7 +1792,7 @@ static void sdram_dradrb(struct sysinfo *s)
 	u32 reg32, ind, c0dra, c0drb, dra;
 	u16 addr;
 	i = 0;
-	u8 dratab[2][2][2][4] =
+	static const u8 dratab[2][2][2][4] =
 	{{
 		{
 		 {0xff, 0xff, 0xff, 0xff},
@@ -1803,7 +1814,7 @@ static void sdram_dradrb(struct sysinfo *s)
 		}
 	}};
 
-	u8 dradrb[10][6]  =  {
+	static const u8 dradrb[10][6]  =  {
 		//Row   Col   Bank  Width         DRB
 		{0x01,  0x01,  0x00,  0x08,  0,  0x04},
 		{0x01,  0x00,  0x00,  0x10,  0,  0x02},
@@ -2141,7 +2152,8 @@ static void sdram_enhancedmode(struct sysinfo *s)
 
 	u32 nranks, curranksize, maxranksize, maxdra, dra;
 	u8 rankmismatch, dramismatch;
-	u8 drbtab[10] = { 0x4, 0x2, 0x8, 0x4, 0x8, 0x4, 0x10, 0x8, 0x20, 0x10 };
+	static const u8 drbtab[10] = { 0x4, 0x2, 0x8, 0x4, 0x8, 0x4, 0x10, 0x8,
+				       0x20, 0x10 };
 
 	nranks = 0;
 	curranksize = 0;
@@ -2236,8 +2248,8 @@ static void sdram_new_trd(struct sysinfo *s)
 	u8 bypass, freqgb, trd, reg8, txfifo, cas;
 	u32 reg32, datadelay, tio, rcvendelay, maxrcvendelay;
 	u16 tmclk, thclk, buffertocore, postcalib;
-	u8 txfifo_lut[8] = { 0, 7, 6, 5, 2, 1, 4, 3 };
-	u16 trd_adjust[2][2][5] = {
+	static const u8 txfifo_lut[8] = { 0, 7, 6, 5, 2, 1, 4, 3 };
+	static const u16 trd_adjust[2][2][5] = {
 			{
 				{3000, 3000, 0,0,0},
 				{1000,2000,3000,1500,2500}
@@ -2367,7 +2379,7 @@ static void sdram_powersettings(struct sysinfo *s)
 	MCHBAR8(0x1114) = (MCHBAR8(0x1114) & ~0x07) | 1;
 	MCHBAR8(0x1124) = MCHBAR8(0x1124) & ~0x02;
 
-	u16 ddr2lut[2][4][2] = {{
+	static const u16 ddr2lut[2][4][2] = {{
 					{0x0000,  0x0000},
 					{0x019A,  0x0039},
 					{0x0099,  0x1049},
@@ -2464,7 +2476,7 @@ static void sdram_programdqdqs(struct sysinfo *s)
 	u8 repeat, halfclk, feature, reg8, push;
 	u16 cwb, pimdclk;
 	u32 reg32;
-	u8 txfifotab[8] = { 0, 7, 6, 5, 2, 1, 4, 3 };
+	static const u8 txfifotab[8] = { 0, 7, 6, 5, 2, 1, 4, 3 };
 
 	tpi = 3000;
 	dqdqs_out = 4382;

@@ -34,9 +34,28 @@ Scope(\_TZ)
 
 	ThermalZone(THM0)
 	{
+		/* Thermal zone polling frequency: 10 seconds */
+		Name (_TZP, 100)
+
+		/* Thermal sampling period for passive cooling: 10 seconds */
+		Name (_TSP, 100)
+
 		Method(_CRT, 0, NotSerialized) {
+			Store (\TCRT, Local0)
+			if (LGreater(Local0, Zero)) {
+				Return (C2K(Local0))
+			}
 			Return (C2K(127))
 		}
+
+		Method(_PSV, 0, NotSerialized) {
+			Store (\TPSV, Local0)
+			if (LGreater(Local0, Zero)) {
+				Return (C2K(Local0))
+			}
+			Return (C2K(95))
+		}
+
 		Method(_TMP) {
 #if defined (EC_LENOVO_H8_ME_WORKAROUND)
 			/* Avoid tripping alarm if ME isn't booted at all yet */
@@ -51,6 +70,12 @@ Scope(\_TZ)
 
 	ThermalZone(THM1)
 	{
+		/* Thermal zone polling frequency: 10 seconds */
+		Name (_TZP, 100)
+
+		/* Thermal sampling period for passive cooling: 10 seconds */
+		Name (_TSP, 100)
+
 		Method(_CRT, 0, NotSerialized) {
 			Return (C2K(99))
 		}

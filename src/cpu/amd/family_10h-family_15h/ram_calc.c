@@ -26,7 +26,6 @@
 
 #include "ram_calc.h"
 
-#if !IS_ENABLED(CONFIG_LATE_CBMEM_INIT)
 static inline uint8_t is_fam15h(void)
 {
 	uint8_t fam15h = 0;
@@ -96,4 +95,3 @@ void *cbmem_top(void)
 
 	return (void *) topmem - get_uma_memory_size(topmem) - get_cc6_memory_size();
 }
-#endif

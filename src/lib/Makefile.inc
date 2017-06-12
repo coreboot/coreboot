@@ -15,6 +15,10 @@
 subdirs-y += loaders
 subdirs-y += gnat
 
+ifeq ($(CONFIG_UBSAN),y)
+ramstage-y += ubsan.c
+CFLAGS_ramstage += -fsanitize=undefined
+endif
 
 ifneq ($(CONFIG_BOOTBLOCK_CUSTOM),y)
 bootblock-y += bootblock.c

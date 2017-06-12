@@ -751,9 +751,15 @@ static void prepare_var_mtrrs(struct memranges *addr_space, int def_type,
 	sol->num_used = var_state.mtrr_index;
 }
 
-static void commit_var_mtrrs(const struct var_mtrr_solution *sol)
+static int commit_var_mtrrs(const struct var_mtrr_solution *sol)
 {
 	int i;
+
+	if (sol->num_used > total_mtrrs) {
+		printk(BIOS_WARNING, "Not enough MTRRs: %d vs %d\n",
+			sol->num_used, total_mtrrs);
+		return -1;
+	}
 
 	/* Write out the variable MTRRs. */
 	disable_cache();
@@ -767,6 +773,7 @@ static void commit_var_mtrrs(const struct var_mtrr_solution *sol)
 	enable_var_mtrr(sol->mtrr_default_type);
 	enable_cache();
 
+	return 0;
 }
 
 void x86_setup_var_mtrrs(unsigned int address_bits, unsigned int above4gb)
@@ -872,10 +879,15 @@ void mtrr_use_temp_range(uintptr_t begin, size_t size, int type)
 		calc_var_mtrrs(&addr_space, above4gb, address_bits);
 	prepare_var_mtrrs(&addr_space, sol.mtrr_default_type,
 				above4gb, address_bits, &sol);
-	commit_var_mtrrs(&sol);
+
+	if (commit_var_mtrrs(&sol) < 0)
+		printk(BIOS_WARNING, "Unable to insert temporary MTRR range: 0x%016llx - 0x%016llx size 0x%08llx type %d\n",
+			(long long)begin, (long long)begin + size,
+			(long long)size, type);
+	else
+		put_back_original_solution = true;
 
 	memranges_teardown(&addr_space);
-	put_back_original_solution = true;
 }
 
 static void remove_temp_solution(void *unused)

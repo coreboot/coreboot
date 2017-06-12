@@ -17,6 +17,7 @@
 #include <device/pci.h>
 #include <device/device.h>
 #include <console/console.h>
+#include <soc/lpc.h>
 #include <soc/pci_devs.h>
 #include <string.h>
 #include <hwilib.h>
@@ -109,6 +110,9 @@ static void mainboard_init(void *chip_info)
 
 	pads = brd_gpio_table(&num);
 	gpio_configure_pads(pads, num);
+
+	/* Enable additional I/O decoding range on LPC for COM 3 */
+	lpc_open_pmio_window(0x3e8, 8);
 }
 
 static void mainboard_final(void *chip_info)

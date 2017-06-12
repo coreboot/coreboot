@@ -17,6 +17,7 @@
 #include <console/console.h>
 #include <arch/io.h>
 #include <arch/acpigen.h>
+#include <commonlib/endian.h>
 
 #include "fw_cfg.h"
 #include "fw_cfg_if.h"
@@ -203,8 +204,7 @@ unsigned long fw_cfg_acpi_tables(unsigned long start)
 {
 	BiosLinkerLoaderEntry *s;
 	unsigned long *addrs, current;
-	uint32_t *ptr4;
-	uint64_t *ptr8;
+	uint8_t *ptr;
 	int rc, i, j, src, dst, max;
 
 	rc = fw_cfg_check_file("etc/table-loader");
@@ -220,6 +220,10 @@ unsigned long fw_cfg_acpi_tables(unsigned long start)
 
 	current = start;
 	for (i = 0; i < max && s[i].command != 0; i++) {
+		void *cksum_data;
+		uint32_t cksum;
+		uint32_t addr4;
+		uint64_t addr8;
 		switch (s[i].command) {
 		case BIOS_LINKER_LOADER_COMMAND_ALLOCATE:
 			current = ALIGN(current, s[i].alloc.align);
@@ -248,13 +252,19 @@ unsigned long fw_cfg_acpi_tables(unsigned long start)
 
 			switch (s[i].pointer.size) {
 			case 4:
-				ptr4 = (uint32_t*)(addrs[dst] + s[i].pointer.offset);
-				*ptr4 += addrs[src];
+				ptr = (uint8_t *)addrs[dst];
+				ptr += s[i].pointer.offset;
+				addr4 = read_le32(ptr);
+				addr4 += addrs[src];
+				write_le32(ptr, addr4);
 				break;
 
 			case 8:
-				ptr8 = (uint64_t*)(addrs[dst] + s[i].pointer.offset);
-				*ptr8 += addrs[src];
+				ptr = (uint8_t *)addrs[dst];
+				ptr += s[i].pointer.offset;
+				addr8 = read_le64(ptr);
+				addr8 += addrs[src];
+				write_le64(ptr, addr8);
 				break;
 
 			default:
@@ -280,10 +290,10 @@ unsigned long fw_cfg_acpi_tables(unsigned long start)
 			if (dst == -1)
 				goto err;
 
-			ptr4 = (uint32_t*)(addrs[dst] + s[i].cksum.offset);
-			*ptr4 = 0;
-			*ptr4 = acpi_checksum((void *)(addrs[dst] + s[i].cksum.start),
-					      s[i].cksum.length);
+			ptr = (uint8_t *)(addrs[dst] + s[i].cksum.offset);
+			cksum_data = (void *)(addrs[dst] + s[i].cksum.start);
+			cksum = acpi_checksum(cksum_data, s[i].cksum.length);
+			write_le32(ptr, cksum);
 			break;
 
 		default:

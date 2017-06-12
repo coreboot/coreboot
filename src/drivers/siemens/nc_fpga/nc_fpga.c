@@ -119,6 +119,17 @@ static void nc_fpga_init(struct device *dev)
 		init_temp_mon(bar0_ptr + NC_FANMON_CTRL_OFFSET);
 	if (cap & NC_CAP1_FAN_CTRL)
 		init_fan_ctrl(bar0_ptr + NC_FANMON_CTRL_OFFSET);
+	if (cap & NC_CAP1_DSAVE_NMI_DELAY) {
+		uint16_t *dsave_ptr = (uint16_t *)(bar0_ptr + NC_DSAVE_OFFSET);
+		FPGA_SET_PARAM(NvramVirtTimeDsaveReset, *dsave_ptr);
+	}
+	if (cap & NC_CAP1_BL_BRIGHTNESS_CTRL) {
+		uint8_t *bl_bn_ptr =
+				(uint8_t *)(bar0_ptr + NC_BL_BRIGHTNESS_OFFSET);
+		uint8_t *bl_pwm_ptr = (uint8_t *)(bar0_ptr + NC_BL_PWM_OFFSET);
+		FPGA_SET_PARAM(BL_Brightness, *bl_bn_ptr);
+		FPGA_SET_PARAM(PF_PwmFreq, *bl_pwm_ptr);
+	}
 }
 
 static struct device_operations nc_fpga_ops  = {
@@ -130,10 +141,10 @@ static struct device_operations nc_fpga_ops  = {
 	.ops_pci          = 0,
 };
 
-static const unsigned short nc_fpga_device_ids[] = { 0x4091, 0 };
+static const unsigned short nc_fpga_device_ids[] = { 0x4080, 0x4091, 0 };
 
 static const struct pci_driver nc_fpga_driver __pci_driver = {
 	.ops    = &nc_fpga_ops,
-	.vendor = 0x110A,
+	.vendor = PCI_VENDOR_ID_SIEMENS,
 	.devices = nc_fpga_device_ids,
 };

@@ -152,6 +152,9 @@ static const struct param_info params[] = {
 		.mask = 0x400,
 		.mask_offset = 10,
 		.get_field = hwilib_read_bytes },
+	[NvramVirtTimeDsaveReset] = {
+		.pos[0] = {.blk_type = BLK_HIB, .offset = 0x1be, .len = 2},
+		.get_field = hwilib_read_bytes },
 	[BiosFlags] = {
 		.pos[0] = {.blk_type = BLK_HIB, .offset = 0x1c0, .len = 4},
 		.get_field = hwilib_read_bytes },
@@ -169,6 +172,12 @@ static const struct param_info params[] = {
 		.get_field = hwilib_read_bytes },
 	[RTCType] = {
 		.pos[0] = {.blk_type = BLK_HIB, .offset = 0x1e8, .len = 1},
+		.get_field = hwilib_read_bytes },
+	[BL_Brightness] = {
+		.pos[0] = {.blk_type = BLK_SIB, .offset = 0xd8, .len = 1},
+		.get_field = hwilib_read_bytes },
+	[PF_PwmFreq] = {
+		.pos[0] = {.blk_type = BLK_SIB, .offset = 0xe7, .len = 1},
 		.get_field = hwilib_read_bytes },
 	[PF_Color_Depth] = {
 		.pos[0] = {.blk_type = BLK_SIB, .offset = 0xea, .len = 1},

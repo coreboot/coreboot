@@ -86,42 +86,40 @@ int smbios_string_table_len(char *start)
 
 static int smbios_cpu_vendor(char *start)
 {
-	char tmp[13] = "Unknown";
-	u32 *_tmp = (u32 *)tmp;
-	struct cpuid_result res;
-
 	if (cpu_have_cpuid()) {
-		res = cpuid(0);
-		_tmp[0] = res.ebx;
-		_tmp[1] = res.edx;
-		_tmp[2] = res.ecx;
-		tmp[12] = '\0';
+		u32 tmp[4];
+		const struct cpuid_result res = cpuid(0);
+		tmp[0] = res.ebx;
+		tmp[1] = res.edx;
+		tmp[2] = res.ecx;
+		tmp[3] = 0;
+		return smbios_add_string(start, (const char *)tmp);
+	} else {
+		return smbios_add_string(start, "Unknown");
 	}
-
-	return smbios_add_string(start, tmp);
 }
 
 static int smbios_processor_name(char *start)
 {
-	char tmp[49] = "Unknown Processor Name";
-	u32  *_tmp = (u32 *)tmp;
-	struct cpuid_result res;
-	int i;
-
+	const char *str = "Unknown Processor Name";
 	if (cpu_have_cpuid()) {
-		res = cpuid(0x80000000);
+		int i;
+		struct cpuid_result res = cpuid(0x80000000);
 		if (res.eax >= 0x80000004) {
+			u32 tmp[13];
+			int j = 0;
 			for (i = 0; i < 3; i++) {
 				res = cpuid(0x80000002 + i);
-				_tmp[i * 4 + 0] = res.eax;
-				_tmp[i * 4 + 1] = res.ebx;
-				_tmp[i * 4 + 2] = res.ecx;
-				_tmp[i * 4 + 3] = res.edx;
+				tmp[j++] = res.eax;
+				tmp[j++] = res.ebx;
+				tmp[j++] = res.ecx;
+				tmp[j++] = res.edx;
 			}
-			tmp[48] = 0;
+			tmp[12] = 0;
+			str = (const char *)tmp;
 		}
 	}
-	return smbios_add_string(start, tmp);
+	return smbios_add_string(start, str);
 }
 
 /* this function will fill the corresponding manufacturer */

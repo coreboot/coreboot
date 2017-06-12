@@ -200,6 +200,14 @@ config COVERAGE
 	  coverage information in CBMEM for extraction from user space.
 	  If unsure, say N.
 
+config UBSAN
+	bool "Undefined behavior sanitizer support"
+	default n
+	help
+	  Instrument the code with checks for undefined behavior. If unsure,
+	  say N because it adds a small performance penalty and may abort
+	  on code that happens to work in spite of the UB.
+
 config RELOCATABLE_RAMSTAGE
 	depends on EARLY_CBMEM_INIT
 	bool "Build the ramstage to be relocatable in 32-bit address space."

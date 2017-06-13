@@ -52,6 +52,7 @@
 
 #define PCH_DEV_SLOT_ISH	0x13
 #define  PCH_DEVFN_ISH		_PCH_DEVFN(ISH, 0)
+#define  PCH_DEV_ISH		_PCH_DEV(ISH, 0)
 
 #define PCH_DEV_SLOT_XHCI	0x14
 #define  PCH_DEVFN_XHCI		_PCH_DEVFN(XHCI, 0)
@@ -61,6 +62,7 @@
 #define  PCH_DEV_XHCI		_PCH_DEV(XHCI, 0)
 #define  PCH_DEV_USBOTG		_PCH_DEV(XHCI, 1)
 #define  PCH_DEV_THERMAL	_PCH_DEV(XHCI, 2)
+#define  PCH_DEV_CIO		_PCH_DEV(XHCI, 3)
 
 #define PCH_DEV_SLOT_SIO1	0x15
 #define  PCH_DEVFN_I2C0		_PCH_DEVFN(SIO1, 0)
@@ -134,7 +136,10 @@
 #define  PCH_DEVFN_SDCARD	_PCH_DEVFN(STORAGE, 6)
 #define  PCH_DEV_UART0		_PCH_DEV(STORAGE, 0)
 #define  PCH_DEV_UART1		_PCH_DEV(STORAGE, 1)
+#define  PCH_DEV_GSPI0		_PCH_DEV(STORAGE, 2)
+#define  PCH_DEV_GSPI1		_PCH_DEV(STORAGE, 3)
 #define  PCH_DEV_EMMC		_PCH_DEV(STORAGE, 4)
+#define  PCH_DEV_SDIO		_PCH_DEV(STORAGE, 5)
 #define  PCH_DEV_SDCARD		_PCH_DEV(STORAGE, 6)
 
 #define PCH_DEV_SLOT_LPC	0x1f
@@ -153,6 +158,7 @@
 #define  PCH_DEV_SMBUS		_PCH_DEV(LPC, 4)
 #define  PCH_DEV_SPI		_PCH_DEV(LPC, 5)
 #define  PCH_DEV_GBE		_PCH_DEV(LPC, 6)
+#define  PCH_DEV_TRACEHUB	_PCH_DEV(LPC, 7)
 
 static inline int spi_devfn_to_bus(unsigned int devfn)
 {

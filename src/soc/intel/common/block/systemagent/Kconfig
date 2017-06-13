@@ -4,7 +4,7 @@ config SOC_INTEL_COMMON_BLOCK_SA
 	  Intel Processor common System Agent support
 
 config MMCONF_BASE_ADDRESS
-	hex "PCI MMIO Base Address"
+	hex
 	default 0xe0000000
 
 config SA_PCIEX_LENGTH

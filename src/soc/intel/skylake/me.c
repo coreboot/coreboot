@@ -251,8 +251,6 @@ void intel_me_status(void)
 	       hfs.fields.d0i3_support_valid ? "YES" : "NO");
 	printk(BIOS_DEBUG, "ME: Low Power State Enabled : %s\n",
 	       hfs2.fields.low_power_state ? "YES" : "NO");
-	printk(BIOS_DEBUG, "ME: Power Gated             : %s\n",
-	       hfs2.fields.power_gating_ind ? "YES" : "NO");
 	printk(BIOS_DEBUG, "ME: CPU Replaced            : %s\n",
 	       hfs2.fields.cpu_replaced_sts  ? "YES" : "NO");
 	printk(BIOS_DEBUG, "ME: CPU Replacement Valid   : %s\n",

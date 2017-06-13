@@ -38,7 +38,7 @@ ramstage-y += fsp_util.c
 ramstage-y += hob.c
 ramstage-y += ramstage.c
 ramstage-y += stage_cache.c
-ramstage-$(CONFIG_RUN_FSP_GOP) += vbt.c
+ramstage-$(CONFIG_ADD_VBT_DATA_FILE) += vbt.c
 ramstage-$(CONFIG_MMA) += mma_core.c
 
 CPPFLAGS_common += -Isrc/drivers/intel/fsp1_1/include

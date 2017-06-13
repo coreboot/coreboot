@@ -17,13 +17,13 @@ config SA_PCIEX_LENGTH
 	  This option allows you to select length of PCIEX region.
 
 config PCIEX_LENGTH_256MB
-	bool "256MB"
+	bool
 
 config PCIEX_LENGTH_128MB
-	bool "128MB"
+	bool
 
 config PCIEX_LENGTH_64MB
-	bool "64MB"
+	bool
 
 config SA_ENABLE_IMR
 	bool

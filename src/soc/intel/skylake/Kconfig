@@ -127,11 +127,11 @@ config CPU_ADDR_BITS
 	default 36
 
 config DCACHE_RAM_BASE
-	hex "Base address of cache-as-RAM"
+	hex
 	default 0xfef00000
 
 config DCACHE_RAM_SIZE
-	hex "Length in bytes of cache-as-RAM"
+	hex
 	default 0x40000
 	help
 	  The size of the cache-as-ram region required during bootblock

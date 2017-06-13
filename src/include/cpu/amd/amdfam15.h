@@ -24,6 +24,8 @@
 #define HWCR_MSR			0xC0010015
 #define NB_CFG_MSR			0xC001001f
 
+#define PSTATE_0_MSR			0xC0010064
+
 #define LS_CFG_MSR			0xC0011020
 #define IC_CFG_MSR			0xC0011021
 #define DC_CFG_MSR			0xC0011022
@@ -32,6 +34,8 @@
 
 #define CPU_ID_FEATURES_MSR		0xC0011004
 #define CPU_ID_EXT_FEATURES_MSR		0xC0011005
+
+#define CORE_PERF_BOOST_CTRL		0x15C
 
 #if defined(__PRE_RAM__)
 void wait_all_core0_started(void);

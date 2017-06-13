@@ -226,3 +226,17 @@ void cpu_enable_untrusted_mode(void)
 	msr.lo |= ENABLE_IA_UNTRUSTED;
 	wrmsr(MSR_POWER_MISC, msr);
 }
+
+/*
+ * This function fills in the number of Cores(physical) and Threads(virtual)
+ * of the CPU in the function arguments. It also returns if the number of cores
+ * and number of threads are equal.
+ */
+int cpu_read_topology(unsigned int *num_phys, unsigned int *num_virt)
+{
+	msr_t msr;
+	msr = rdmsr(MSR_CORE_THREAD_COUNT);
+	*num_virt = (msr.lo >> 0) & 0xffff;
+	*num_phys = (msr.lo >> 16) & 0xffff;
+	return (*num_virt  == *num_phys);
+}

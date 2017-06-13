@@ -114,4 +114,11 @@ void cpu_disable_eist(void);
  */
 void cpu_enable_untrusted_mode(void);
 
+/*
+ * This function fills in the number of Cores(physical) and Threads(virtual)
+ * of the CPU in the function arguments. It also returns if the number of cores
+ * and number of threads are equal.
+ */
+int cpu_read_topology(unsigned int *num_phys, unsigned int *num_virt);
+
 #endif	/* SOC_INTEL_COMMON_BLOCK_CPULIB_H */

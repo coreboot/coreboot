@@ -2,10 +2,21 @@ config SOC_INTEL_COMMON_BLOCK_CPU
 	bool
 	default n
 	help
-	  This option helps to select Intel Common CPU Model support code
+	  This option selects Intel Common CPU Model support code
 	  which provides various CPU related APIs which are common
 	  between all Intel Processor families. Common CPU code is supported
 	  for SOCs starting from SKL,KBL,APL, and future.
+
+config SOC_INTEL_COMMON_BLOCK_CPU_MPINIT
+	bool
+	default n
+	help
+	  This option selects Intel Common CPU MP Init code. In
+	  this common MP Init mechanism, the MP Init is occurring before
+	  calling FSP Silicon Init. Hence, MP Init will be pulled to
+	  BS_DEV_INIT_CHIPS Entry. And on Exit of BS_DEV_INIT, it is
+	  ensured that all MTRRs are re-programmed based on the DRAM
+	  resource settings.
 
 config SOC_INTEL_COMMON_BLOCK_CAR
 	bool

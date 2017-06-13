@@ -90,12 +90,6 @@
 #define LPC_DEVID		0x780e
 #define LPC_DEVFN		PCI_DEVFN(LPC_DEV, LPC_FUNC)
 
-/* PCI Ports */
-#define SB_PCI_PORT_DEV		0x14
-#define SB_PCI_PORT_FUNC	4
-#define SB_PCI_PORT_DEVID	0x780f
-#define SB_PCI_PORT_DEVFN	PCI_DEVFN(SB_PCI_PORT_DEV, SB_PCI_PORT_FUNC)
-
 /* SD Controller */
 #define SD_DEV			0x14
 #define SD_FUNC			7

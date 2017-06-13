@@ -55,39 +55,6 @@ void hudson_pci_port80(void)
 	u8 byte;
 	pci_devfn_t dev;
 
-	/* P2P Bridge */
-	dev = PCI_DEV(0, SB_PCI_PORT_DEV, SB_PCI_PORT_FUNC);
-
-	/* Chip Control: Enable subtractive decoding */
-	byte = pci_read_config8(dev, 0x40);
-	byte |= 1 << 5;
-	pci_write_config8(dev, 0x40, byte);
-
-	/* Misc Control: Enable subtractive decoding if 0x40 bit 5 is set */
-	byte = pci_read_config8(dev, 0x4b);
-	byte |= 1 << 7;
-	pci_write_config8(dev, 0x4b, byte);
-
-	/* The same IO Base and IO Limit here is meaningful because we set the
-	 * bridge to be subtractive. During early setup stage, we have to make
-	 * sure that data can go through port 0x80.
-	 */
-	/* IO Base: 0xf000 */
-	byte = pci_read_config8(dev, 0x1c);
-	byte |= 0xf << 4;
-	pci_write_config8(dev, 0x1c, byte);
-
-	/* IO Limit: 0xf000 */
-	byte = pci_read_config8(dev, 0x1d);
-	byte |= 0xf << 4;
-	pci_write_config8(dev, 0x1d, byte);
-
-	/* PCI Command: Enable IO response */
-	byte = pci_read_config8(dev, 0x04);
-	byte |= 1 << 0;
-	pci_write_config8(dev, 0x04, byte);
-
-	/* LPC controller */
 	dev = PCI_DEV(0, PCU_DEV, LPC_FUNC);
 
 	byte = pci_read_config8(dev, 0x4a);

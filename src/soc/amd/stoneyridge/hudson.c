@@ -17,12 +17,14 @@
 
 #include <arch/io.h>
 #include <arch/acpi.h>
+#include <bootstate.h>
 
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <cbmem.h>
+#include <amd_pci_util.h>
 #include <soc/hudson.h>
 #include <soc/smbus.h>
 #include <soc/smi.h>
@@ -130,3 +132,22 @@ void hudson_final(void *chip_info)
 #endif
 #endif
 }
+
+/*
+ * Update the PCI devices with a valid IRQ number
+ * that is set in the mainboard PCI_IRQ structures.
+ */
+static void set_pci_irqs(void *unused)
+{
+	/* Write PCI_INTR regs 0xC00/0xC01 */
+	write_pci_int_table();
+
+	/* Write IRQs for all devicetree enabled devices */
+	write_pci_cfg_irqs();
+}
+
+/*
+ * Hook this function into the PCI state machine
+ * on entry into BS_DEV_ENABLE.
+ */
+BOOT_STATE_INIT_ENTRY(BS_DEV_ENABLE, BS_ON_ENTRY, set_pci_irqs, NULL);

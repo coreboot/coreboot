@@ -59,7 +59,6 @@ ramstage-$(CONFIG_STONEYRIDGE_IMC_FWM) += imc.c
 ramstage-y += lpc.c
 ramstage-y += model_15_init.c
 ramstage-y += northbridge.c
-ramstage-y += pci.c
 ramstage-y += pcie.c
 ramstage-y += reset.c
 ramstage-y += sata.c

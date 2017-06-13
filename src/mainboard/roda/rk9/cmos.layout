@@ -112,10 +112,6 @@ enumerations
 8     1     Yes
 9     0     AHCI
 9     1     Compatible
-11    0     1M
-11    1     4M
-11    2     8M
-11    3     16M
 11    4     32M
 11    5     48M
 11    6     64M

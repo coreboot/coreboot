@@ -153,17 +153,16 @@ void igd_compute_ggc(sysinfo_t *const sysinfo)
 	if (!sysinfo->enable_igd || (capid & (1 << (33 - 32))))
 		sysinfo->ggc = 0x0002;
 	else {
-		u8 gfxsize;
+		/* 4 for 32MB, default if not set in cmos */
+		u8 gfxsize = 4;
 
 		/* Graphics Stolen Memory: 2MB GTT (0x0300) when VT-d disabled,
 		   2MB GTT + 2MB shadow GTT (0x0b00) else. */
-		if (get_option(&gfxsize, "gfx_uma_size") != CB_SUCCESS) {
-			/* 4 for 32MB, default if not set in cmos */
-			gfxsize = 4;
-		}
+		get_option(&gfxsize, "gfx_uma_size");
 		/* Handle invalid cmos settings */
-		if (gfxsize > 12)
-			gfxsize = 4;
+		/* Only allow settings between 32MB and 352MB */
+		gfxsize = MIN(MAX(gfxsize, 4), 12);
+
 		sysinfo->ggc = 0x0300 | ((gfxsize + 1) << 4);
 		if (!(capid & (1 << (48 - 32))))
 			sysinfo->ggc |= 0x0800;

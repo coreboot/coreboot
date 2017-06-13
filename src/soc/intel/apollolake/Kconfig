@@ -113,11 +113,11 @@ config PCR_BASE_ADDRESS
 	  This option allows you to select MMIO Base Address of sideband bus.
 
 config DCACHE_RAM_BASE
-	hex "Base address of cache-as-RAM"
+	hex
 	default 0xfef00000
 
 config DCACHE_RAM_SIZE
-	hex "Length in bytes of cache-as-RAM"
+	hex
 	default 0xc0000
 	help
 	  The size of the cache-as-ram region required during bootblock
@@ -140,7 +140,7 @@ config SOC_INTEL_COMMON_LPSS_CLOCK_MHZ
 
 config CONSOLE_UART_BASE_ADDRESS
 	depends on CONSOLE_SERIAL
-	hex "MMIO base address for UART"
+	hex
 	default 0xde000000
 
 config SOC_UART_DEBUG

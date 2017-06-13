@@ -24,12 +24,13 @@
 #include <cbfs.h>
 #include <string.h>
 #include <arch/io.h>
+#include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ops.h>
 #include <device/pci_def.h>
 #include <delay.h>
-#include <console/console.h>
+#include <fmap.h>
 
 #define NIC_TIMEOUT		1000
 
@@ -39,6 +40,32 @@
 #define CFG_9346		0x50
 #define  CFG_9346_LOCK		0x00
 #define  CFG_9346_UNLOCK	0xc0
+
+/**
+ * search: Find first instance of string in a given region
+ * @param p       string to find
+ * @param a       start address of region to search
+ * @param lengthp length of string to search for
+ * @param lengtha length of region to search in
+ * @return offset offset from start address a where string was found.
+ *                If string not found, return lengtha.
+ */
+static size_t search(const char *p, const u8 *a, size_t lengthp,
+		     size_t lengtha)
+{
+	size_t i, j;
+
+	if (lengtha < lengthp)
+		return lengtha;
+	/* Searching */
+	for (j = 0; j <= lengtha - lengthp; j++) {
+		for (i = 0; i < lengthp && p[i] == a[i + j]; i++)
+			;
+		if (i >= lengthp)
+			return j;
+	}
+	return lengtha;
+}
 
 static u8 get_hex_digit(const u8 c)
 {
@@ -51,11 +78,68 @@ static u8 get_hex_digit(const u8 c)
 			ret = c - 'a' + 0x0a;
 	}
 	if (ret > 0x0f) {
-		printk(BIOS_DEBUG, "Error: Invalid hex digit found: "
-				   "%c - 0x%02x\n", (char)c, c);
+		printk(BIOS_ERR, "Error: Invalid hex digit found: "
+				 "%c - 0x%02x\n", (char)c, c);
 		ret = 0;
 	}
 	return ret;
+}
+
+#define MACLEN 17
+
+static enum cb_err fetch_mac_string_vpd(u8 *macstrbuf)
+{
+	struct region_device rdev;
+	void *search_address;
+	size_t search_length;
+	size_t offset;
+	char key[] = "ethernet_mac";
+
+	if (fmap_locate_area_as_rdev("RO_VPD", &rdev)) {
+		printk(BIOS_ERR, "Error: Couldn't find RO_VPD region.");
+		return CB_ERR;
+	}
+	search_address = rdev_mmap_full(&rdev);
+	if (search_address == NULL) {
+		printk(BIOS_ERR, "LAN: VPD not found.\n");
+		return CB_ERR;
+	}
+
+	search_length = region_device_sz(&rdev);
+	offset = search(key, search_address, strlen(key),
+			search_length);
+	if (offset == search_length) {
+		printk(BIOS_ERR,
+		       "Error: Could not locate '%s' in VPD\n", key);
+		return CB_ERR;
+	}
+	printk(BIOS_DEBUG, "Located '%s' in VPD\n", key);
+
+	offset += sizeof(key);	/* move to next character */
+
+	if (offset + MACLEN > search_length) {
+		printk(BIOS_ERR, "Search result too small!\n");
+		return CB_ERR;
+	}
+	memcpy(macstrbuf, search_address + offset, MACLEN);
+
+	return CB_SUCCESS;
+}
+
+static enum cb_err fetch_mac_string_cbfs(u8 *macstrbuf)
+{
+	struct cbfsf fh;
+	uint32_t matchraw = CBFS_TYPE_RAW;
+
+	if (!cbfs_boot_locate(&fh, "rt8168-macaddress", &matchraw)) {
+		/* check the cbfs for the mac address */
+		if (rdev_readat(&fh.data, macstrbuf, 0, MACLEN) != MACLEN) {
+			printk(BIOS_ERR, "r8168: Error reading MAC from CBFS\n");
+			return CB_ERR;
+		}
+		return CB_SUCCESS;
+	}
+	return CB_ERR;
 }
 
 static void get_mac_address(u8 *macaddr, const u8 *strbuf)
@@ -63,9 +147,9 @@ static void get_mac_address(u8 *macaddr, const u8 *strbuf)
 	size_t offset = 0;
 	int i;
 
-	if ( (strbuf[2] != ':') || (strbuf[5] != ':') ||
-	     (strbuf[8] != ':') || (strbuf[11] != ':') ||
-	     (strbuf[14] != ':') ) {
+	if ((strbuf[2] != ':') || (strbuf[5] != ':') ||
+	    (strbuf[8] != ':') || (strbuf[11] != ':') ||
+	    (strbuf[14] != ':')) {
 		printk(BIOS_ERR, "r8168: ignore invalid MAC address in cbfs\n");
 		return;
 	}
@@ -78,25 +162,24 @@ static void get_mac_address(u8 *macaddr, const u8 *strbuf)
 	}
 }
 
-#define MACLEN 17
-
 static void program_mac_address(struct device *dev, u16 io_base)
 {
-	struct cbfsf fh;
-	uint32_t matchraw = CBFS_TYPE_RAW;
 	u8 macstrbuf[MACLEN] = { 0 };
 	int i = 0;
+	/* Default MAC Address of 00:E0:4C:00:C0:B0 */
 	u8 mac[6] = { 0x00, 0xe0, 0x4c, 0x00, 0xc0, 0xb0 };
 
-	if (!cbfs_boot_locate(&fh, "rt8168-macaddress", &matchraw)) {
-		if (rdev_readat(&fh.data, macstrbuf, 0, MACLEN) == MACLEN)
-			get_mac_address(mac, macstrbuf);
-		else
-			printk(BIOS_ERR, "r8168: Error reading MAC from CBFS\n");
+	/* check the VPD for the mac address */
+	if (IS_ENABLED(CONFIG_RT8168_GET_MAC_FROM_VPD)) {
+		if (fetch_mac_string_vpd(macstrbuf) != CB_SUCCESS)
+			printk(BIOS_ERR, "r8168: mac address not found in VPD,"
+					 " using default 00:e0:4c:00:c0:b0\n");
 	} else {
-		printk(BIOS_ERR, "r8168: 'rt8168-macaddress' not found in CBFS,"
-				 " using default 00:e0:4c:00:c0:b0\n");
+		if (fetch_mac_string_cbfs(macstrbuf) != CB_SUCCESS)
+			printk(BIOS_ERR, "r8168: Error reading MAC from CBFS,"
+					 " using default 00:e0:4c:00:c0:b0\n");
 	}
+	get_mac_address(mac, macstrbuf);
 
 	/* Reset NIC */
 	printk(BIOS_DEBUG, "r8168: Resetting NIC...");
@@ -106,7 +189,7 @@ static void program_mac_address(struct device *dev, u16 io_base)
 	while (i < NIC_TIMEOUT && (inb(io_base + CMD_REG) & CMD_REG_RESET)) {
 		udelay(1000);
 		if (++i >= NIC_TIMEOUT)
-			printk(BIOS_DEBUG, "timeout waiting for nic to reset\n");
+			printk(BIOS_ERR, "timeout waiting for nic to reset\n");
 	}
 	if (i < NIC_TIMEOUT)
 		printk(BIOS_DEBUG, "done\n");
@@ -143,7 +226,7 @@ static void r8168_init(struct device *dev)
 	if (io_base)
 		program_mac_address(dev, io_base);
 	else
-		printk(BIOS_DEBUG, "r8168: Error cant find MMIO resource\n");
+		printk(BIOS_ERR, "r8168: Error cant find MMIO resource\n");
 }
 
 static struct device_operations r8168_ops  = {

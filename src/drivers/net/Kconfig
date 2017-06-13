@@ -6,10 +6,15 @@ config REALTEK_8168_RESET
 
 config REALTEK_8168_MACADDRESS
 	string "Realtek rt8168 mac address"
-	depends on REALTEK_8168_RESET
+	depends on REALTEK_8168_RESET && !RT8168_GET_MAC_FROM_VPD
 	default "00:e0:4c:00:c0:b0"
 	help
 	  This is a string to set the mac address on a Realtek rt8168 card.
 	  It must be in the form  of "xx:xx:xx:xx:xx:xx", where x is a
 	  hexadecimal number for it to be valid. Failing to do so will
 	  result in the default macaddress being used.
+
+config RT8168_GET_MAC_FROM_VPD
+	bool
+	default n
+	select REALTEK_8168_RESET

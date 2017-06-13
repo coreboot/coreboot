@@ -36,6 +36,7 @@
 #include <delay.h>
 #include <intelblocks/cpulib.h>
 #include <intelblocks/fast_spi.h>
+#include <intelblocks/mp_init.h>
 #include <pc80/mc146818rtc.h>
 #include <soc/cpu.h>
 #include <soc/msr.h>
@@ -45,9 +46,19 @@
 #include <soc/smm.h>
 #include <soc/systemagent.h>
 
-/* MP initialization support. */
+/*
+ * TODO: This Global variable must be removed once the following
+ * two cases are resolved -
+ *
+ * 1) SGX enabling for the BSP issue gets solved, due to which
+ * configure_sgx() function is kept inside soc_init_cpus().
+ * 2) uCode loading after SMM relocation is deleted inside
+ * per_cpu_smm_trigger() function, since as per
+ * current BWG, uCode loading can be done after all feature
+ * programmings are done. There is no specific recommendation
+ * to do it after SMM Relocation.
+ */
 static const void *microcode_patch;
-static int ht_disabled;
 
 /* Convert time in seconds to POWER_LIMIT_1_TIME MSR value */
 static const u8 power_limit_time_sec_to_msr[] = {
@@ -394,7 +405,7 @@ static void enable_pm_timer_emulation(void)
 }
 
 /* All CPUs including BSP will run the following function. */
-static void cpu_core_init(device_t cpu)
+void soc_core_init(device_t cpu, const void *microcode)
 {
 	/* Clear out pending MCEs */
 	configure_mca();
@@ -425,73 +436,17 @@ static void cpu_core_init(device_t cpu)
 	enable_turbo();
 
 	/* Configure SGX */
-	configure_sgx(microcode_patch);
-}
-
-static struct device_operations cpu_dev_ops = {
-	.init = cpu_core_init,
-};
-
-static struct cpu_device_id cpu_table[] = {
-	{ X86_VENDOR_INTEL, CPUID_SKYLAKE_C0 },
-	{ X86_VENDOR_INTEL, CPUID_SKYLAKE_D0 },
-	{ X86_VENDOR_INTEL, CPUID_SKYLAKE_HQ0 },
-	{ X86_VENDOR_INTEL, CPUID_SKYLAKE_HR0 },
-	{ X86_VENDOR_INTEL, CPUID_KABYLAKE_G0 },
-	{ X86_VENDOR_INTEL, CPUID_KABYLAKE_H0 },
-	{ X86_VENDOR_INTEL, CPUID_KABYLAKE_Y0 },
-	{ X86_VENDOR_INTEL, CPUID_KABYLAKE_HA0 },
-	{ X86_VENDOR_INTEL, CPUID_KABYLAKE_HB0 },
-	{ 0, 0 },
-};
-
-static const struct cpu_driver driver __cpu_driver = {
-	.ops      = &cpu_dev_ops,
-	.id_table = cpu_table,
-};
-
-static int get_cpu_count(void)
-{
-	msr_t msr;
-	int num_threads;
-	int num_cores;
-
-	msr = rdmsr(MSR_CORE_THREAD_COUNT);
-	num_threads = (msr.lo >> 0) & 0xffff;
-	num_cores = (msr.lo >> 16) & 0xffff;
-	printk(BIOS_DEBUG, "CPU has %u cores, %u threads enabled.\n",
-	       num_cores, num_threads);
-
-	ht_disabled = num_threads == num_cores;
-
-	return num_threads;
-}
-
-static void get_microcode_info(const void **microcode, int *parallel)
-{
-	microcode_patch = intel_microcode_find();
-	*microcode = microcode_patch;
-	*parallel = 1;
-	intel_microcode_load_unlocked(microcode_patch);
+	configure_sgx(microcode);
 }
 
 static int adjust_apic_id(int index, int apic_id)
 {
-	if (ht_disabled)
+	unsigned int num_cores, num_threads;
+
+	if (cpu_read_topology(&num_cores, &num_threads))
 		return 2 * index;
 	else
 		return index;
-}
-
-/* Check whether the current CPU is the sibling hyperthread. */
-int is_secondary_thread(void)
-{
-	int apic_id;
-	apic_id = lapicid();
-
-	if (!ht_disabled && (apic_id & 1))
-		return 1;
-	return 0;
 }
 
 static void per_cpu_smm_trigger(void)
@@ -537,11 +492,9 @@ static const struct mp_ops mp_ops = {
 	.post_mp_init = post_mp_init,
 };
 
-static void soc_init_cpus(void *unused)
+void soc_init_cpus(struct bus *cpu_bus, const void *microcode)
 {
-	device_t dev = dev_find_path(NULL, DEVICE_PATH_CPU_CLUSTER);
-	assert(dev != NULL);
-	struct bus *cpu_bus = dev->link_list;
+	microcode_patch = microcode;
 
 	if (mp_init_with_smm(cpu_bus, &mp_ops))
 		printk(BIOS_ERR, "MP initialization failure.\n");
@@ -556,20 +509,6 @@ static void soc_init_cpus(void *unused)
 	 * and we shall not have this redundant call.
 	 */
 	configure_sgx(microcode_patch);
-}
-
-/* Ensure to re-program all MTRRs based on DRAM resource settings */
-static void soc_post_cpus_init(void *unused)
-{
-	if (mp_run_on_all_cpus(&x86_setup_mtrrs_with_detect, 1000) < 0)
-		printk(BIOS_ERR, "MTRR programming failure\n");
-
-	/* Temporarily cache the memory-mapped boot media. */
-	if (IS_ENABLED(CONFIG_BOOT_DEVICE_MEMORY_MAPPED) &&
-		IS_ENABLED(CONFIG_BOOT_DEVICE_SPI_FLASH))
-		fast_spi_cache_bios_region();
-
-	x86_mtrr_check();
 }
 
 int soc_skip_ucode_update(u32 current_patch_id, u32 new_patch_id)
@@ -594,7 +533,3 @@ int soc_skip_ucode_update(u32 current_patch_id, u32 new_patch_id)
 		return (msr1.lo & PRMRR_SUPPORTED) &&
 			(current_patch_id == new_patch_id - 1);
 }
-
-/* Do CPU MP Init before FSP Silicon Init */
-BOOT_STATE_INIT_ENTRY(BS_DEV_INIT_CHIPS, BS_ON_ENTRY, soc_init_cpus, NULL);
-BOOT_STATE_INIT_ENTRY(BS_DEV_INIT, BS_ON_EXIT, soc_post_cpus_init, NULL);

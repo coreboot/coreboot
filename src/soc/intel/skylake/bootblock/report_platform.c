@@ -20,6 +20,7 @@
 #include <cpu/x86/msr.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <intelblocks/mp_init.h>
 #include <soc/bootblock.h>
 #include <soc/cpu.h>
 #include <soc/pch.h>

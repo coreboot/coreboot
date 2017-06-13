@@ -56,6 +56,5 @@ void set_power_limits(u8 power_limit_1_time);
 u32 cpu_family_model(void);
 u32 cpu_stepping(void);
 int cpu_is_ult(void);
-void configure_sgx(const void *microcode_patch);
 
 #endif

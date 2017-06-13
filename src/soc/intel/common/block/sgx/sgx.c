@@ -18,6 +18,7 @@
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/intel/microcode.h>
+#include <intelblocks/sgx.h>
 #include <soc/cpu.h>
 #include <soc/msr.h>
 #include <soc/pci_devs.h>
@@ -29,7 +30,7 @@ static int is_sgx_supported(void)
 
 	cpuid_regs = cpuid_ext(0x7, 0x0); /* EBX[2] is feature capability */
 	msr = rdmsr(MTRR_CAP_MSR); /* Bit 12 is PRMRR enablement */
-	return ((cpuid_regs.ebx & 0x4) && (msr.lo & PRMRR_SUPPORTED));
+	return ((cpuid_regs.ebx & SGX_SUPPORTED) && (msr.lo & PRMRR_SUPPORTED));
 }
 
 static int configure_core_prmrr(void)
@@ -55,7 +56,7 @@ static int configure_core_prmrr(void)
 		return 0;
 
 	/* Program core PRMRR MSRs */
-	prmrr_base.lo |= 0x6; /* Set memory attribute to cache writeback */
+	prmrr_base.lo |= MTRR_TYPE_WRBACK; /* cache writeback mem attrib */
 	wrmsr(PRMRR_PHYS_BASE_MSR, prmrr_base);
 	prmrr_mask.lo &= ~PRMRR_PHYS_MASK_VALID; /* Do not set the valid bit */
 	prmrr_mask.lo |= PRMRR_PHYS_MASK_LOCK; /* Lock it */
@@ -69,8 +70,8 @@ static void enable_sgx(void)
 
 	msr = rdmsr(IA32_FEATURE_CONTROL);
 	/* Only enable it when it is not locked */
-	if ((msr.lo & 1) == 0) {
-		msr.lo |= (1 << 18); /* Enable it */
+	if ((msr.lo & FEATURE_CONTROL_LOCK) == 0) {
+		msr.lo |= SGX_GLOBAL_ENABLE; /* Enable it */
 		wrmsr(IA32_FEATURE_CONTROL, msr);
 	}
 }
@@ -110,11 +111,12 @@ static void activate_sgx(void)
 	 * back and verify the bit is cleared to confirm SGX activation.
 	 */
 	msr = rdmsr(MSR_BIOS_UPGD_TRIG);
-	if (msr.lo & 0x1) {
-		wrmsr(MSR_BIOS_UPGD_TRIG, (msr_t) {.lo = 0x1, .hi = 0});
+	if (msr.lo & SGX_ACTIVATE_BIT) {
+		wrmsr(MSR_BIOS_UPGD_TRIG,
+			(msr_t) {.lo = SGX_ACTIVATE_BIT, .hi = 0});
 		/* Read back to verify it is activated */
 		msr = rdmsr(MSR_BIOS_UPGD_TRIG);
-		if (msr.lo & 0x1)
+		if (msr.lo & SGX_ACTIVATE_BIT)
 			printk(BIOS_ERR, "SGX activation failed.\n");
 		else
 			printk(BIOS_INFO, "SGX activation was successful.\n");
@@ -123,11 +125,10 @@ static void activate_sgx(void)
 	}
 }
 
-void configure_sgx(const void *microcode_patch)
+void sgx_configure(const void *microcode_patch)
 {
 	device_t dev = SA_DEV_ROOT;
 	config_t *conf = dev->chip_info;
-	msr_t msr;
 
 	if (!conf->sgx_enable || !is_sgx_supported())
 		return;
@@ -144,11 +145,7 @@ void configure_sgx(const void *microcode_patch)
 		return;
 
 	/* Ensure to lock memory before reload microcode patch */
-	msr = rdmsr(MSR_LT_LOCK_MEMORY);
-	if ((msr.lo & 1) == 0) {
-		msr.lo |= 1; /* Lock it */
-		wrmsr(MSR_LT_LOCK_MEMORY, msr);
-	}
+	cpu_lock_sgx_memory();
 
 	/* Reload the microcode patch */
 	intel_microcode_load_unlocked(microcode_patch);

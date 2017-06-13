@@ -37,6 +37,7 @@
 #include <intelblocks/cpulib.h>
 #include <intelblocks/fast_spi.h>
 #include <intelblocks/mp_init.h>
+#include <intelblocks/sgx.h>
 #include <pc80/mc146818rtc.h>
 #include <soc/cpu.h>
 #include <soc/msr.h>
@@ -422,7 +423,7 @@ void soc_core_init(device_t cpu, const void *microcode)
 	enable_turbo();
 
 	/* Configure SGX */
-	configure_sgx(microcode);
+	sgx_configure(microcode);
 }
 
 static int adjust_apic_id(int index, int apic_id)
@@ -489,7 +490,7 @@ void soc_init_cpus(struct bus *cpu_bus, const void *microcode)
 	 * here to get SGX enabled on BSP. This behavior needs to root-caused
 	 * and we shall not have this redundant call.
 	 */
-	configure_sgx(microcode);
+	sgx_configure(microcode);
 }
 
 int soc_skip_ucode_update(u32 current_patch_id, u32 new_patch_id)
@@ -513,4 +514,15 @@ int soc_skip_ucode_update(u32 current_patch_id, u32 new_patch_id)
 	else
 		return (msr1.lo & PRMRR_SUPPORTED) &&
 			(current_patch_id == new_patch_id - 1);
+}
+
+void cpu_lock_sgx_memory(void)
+{
+	msr_t msr;
+
+	msr = rdmsr(MSR_LT_LOCK_MEMORY);
+	if ((msr.lo & 1) == 0) {
+		msr.lo |= 1; /* Lock it */
+		wrmsr(MSR_LT_LOCK_MEMORY, msr);
+	}
 }

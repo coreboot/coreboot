@@ -125,10 +125,6 @@ enumerations
 9     1     Primary
 10    0     AHCI
 10    1     Compatible
-11    0     1M
-11    1     4M
-11    2     8M
-11    3     16M
 11    4     32M
 11    5     48M
 11    6     64M

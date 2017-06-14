@@ -269,14 +269,6 @@ static void pch_pcie_enable(device_t dev)
 	pch_pcie_pm_early(dev);
 }
 
-static void pch_pcie_disable(device_t dev)
-{
-	dev->enabled = 0;
-
-	/* Let PCH hide the device */
-	pch_enable(dev);
-}
-
 static void pch_pciexp_scan_bridge(device_t dev)
 {
 	struct southbridge_intel_bd82x6x_config *config = dev->chip_info;
@@ -286,11 +278,6 @@ static void pch_pciexp_scan_bridge(device_t dev)
 
 	if (config->pcie_hotplug_map[PCI_FUNC(dev->path.pci.devfn)]) {
 		intel_acpi_pcie_hotplug_scan_slot(dev->link_list);
-	} else {
-		if (!dev_is_active_bridge(dev)) {
-			dev->ops->disable(dev);
-			return;
-		}
 	}
 
 	/* Late Power Management init after bridge device enumeration */
@@ -318,7 +305,6 @@ static struct device_operations device_ops = {
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_bus_enable_resources,
 	.init			= pci_init,
-	.disable		= pch_pcie_disable,
 	.enable			= pch_pcie_enable,
 	.scan_bus		= pch_pciexp_scan_bridge,
 	.ops_pci		= &pci_ops,

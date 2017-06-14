@@ -23,32 +23,33 @@
 #include <agesawrapper.h>
 #include <BiosCallOuts.h>
 #include <dimmSpd.h>
+#include <soc/hudson.h>
 
-AGESA_STATUS GetBiosCallout (UINT32 Func, UINTN Data, VOID *ConfigPtr)
+AGESA_STATUS GetBiosCallout(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {
 	UINTN i;
 
-	for (i = 0; i < BiosCalloutsLen; i++) {
+	for (i = 0 ; i < BiosCalloutsLen ; i++) {
 		if (BiosCallouts[i].CalloutName == Func)
 			break;
 	}
 	if (i >= BiosCalloutsLen)
 		return AGESA_UNSUPPORTED;
 
-	return BiosCallouts[i].CalloutPtr (Func, Data, ConfigPtr);
+	return BiosCallouts[i].CalloutPtr(Func, Data, ConfigPtr);
 }
 
-AGESA_STATUS agesa_NoopUnsupported (UINT32 Func, UINTN Data, VOID *ConfigPtr)
+AGESA_STATUS agesa_NoopUnsupported(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {
 	return AGESA_UNSUPPORTED;
 }
 
-AGESA_STATUS agesa_NoopSuccess (UINT32 Func, UINTN Data, VOID *ConfigPtr)
+AGESA_STATUS agesa_NoopSuccess(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {
 	return AGESA_SUCCESS;
 }
 
-AGESA_STATUS agesa_EmptyIdsInitData (UINT32 Func, UINTN Data, VOID *ConfigPtr)
+AGESA_STATUS agesa_EmptyIdsInitData(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {
 	IDS_NV_ITEM *IdsPtr = ((IDS_CALLOUT_STRUCT *) ConfigPtr)->IdsNvPtr;
 	if (Data == IDS_CALLOUT_INIT)
@@ -56,23 +57,22 @@ AGESA_STATUS agesa_EmptyIdsInitData (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 	return AGESA_SUCCESS;
 }
 
-AGESA_STATUS agesa_Reset (UINT32 Func, UINTN Data, VOID *ConfigPtr)
+AGESA_STATUS agesa_Reset(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {
-	AGESA_STATUS        Status;
-	UINT8                 Value;
-	UINTN               ResetType;
-	AMD_CONFIG_PARAMS   *StdHeader;
+	AGESA_STATUS Status;
+	UINT8 Value;
+	UINTN ResetType;
+	AMD_CONFIG_PARAMS *StdHeader;
 
 	ResetType = Data;
 	StdHeader = ConfigPtr;
 
-	//
-	// Perform the RESET based upon the ResetType. In case of
-	// WARM_RESET_WHENVER and COLD_RESET_WHENEVER, the request will go to
-	// AmdResetManager. During the critical condition, where reset is required
-	// immediately, the reset will be invoked directly by writing 0x04 to port
-	// 0xCF9 (Reset Port).
-	//
+	/* Perform the RESET based upon the ResetType. In case of
+	 * WARM_RESET_WHENEVER and COLD_RESET_WHENEVER, the request will go to
+	 * AmdResetManager. During the critical condition, where reset is
+	 * required immediately, the reset will be invoked directly by writing
+	 * 0x04 to port 0xCF9 (Reset Port).
+	 */
 	switch (ResetType) {
 	case WARM_RESET_WHENEVER:
 	case COLD_RESET_WHENEVER:
@@ -81,7 +81,7 @@ AGESA_STATUS agesa_Reset (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 	case WARM_RESET_IMMEDIATELY:
 	case COLD_RESET_IMMEDIATELY:
 		Value = 0x06;
-		LibAmdIoWrite (AccessWidth8, 0xCf9, &Value, StdHeader);
+		LibAmdIoWrite(AccessWidth8, SYS_RESET, &Value, StdHeader);
 		break;
 
 	default:
@@ -92,29 +92,33 @@ AGESA_STATUS agesa_Reset (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 	return Status;
 }
 
-AGESA_STATUS agesa_RunFuncOnAp (UINT32 Func, UINTN Data, VOID *ConfigPtr)
+AGESA_STATUS agesa_RunFuncOnAp(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {
-	AGESA_STATUS        Status;
+	AGESA_STATUS Status;
 
-	Status = agesawrapper_amdlaterunaptask (Func, Data, ConfigPtr);
+	Status = agesawrapper_amdlaterunaptask(Func, Data, ConfigPtr);
 	return Status;
 }
 
-AGESA_STATUS agesa_GfxGetVbiosImage(UINT32 Func, UINTN FchData, VOID *ConfigPrt)
+AGESA_STATUS agesa_GfxGetVbiosImage(UINT32 Func, UINTN FchData,
+							VOID *ConfigPrt)
 {
-	GFX_VBIOS_IMAGE_INFO  *pVbiosImageInfo = (GFX_VBIOS_IMAGE_INFO *)ConfigPrt;
+	GFX_VBIOS_IMAGE_INFO *pVbiosImageInfo;
+
+	pVbiosImageInfo = (GFX_VBIOS_IMAGE_INFO *)ConfigPrt;
 	pVbiosImageInfo->ImagePtr = cbfs_boot_map_with_leak(
 			"pci"CONFIG_VGA_BIOS_ID".rom",
 			CBFS_TYPE_OPTIONROM, NULL);
-	printk(BIOS_DEBUG, "agesa_GfxGetVbiosImage: IMGptr=%p\n", pVbiosImageInfo->ImagePtr);
-	return (pVbiosImageInfo->ImagePtr ? AGESA_SUCCESS : AGESA_WARNING);
+	printk(BIOS_DEBUG, "agesa_GfxGetVbiosImage: IMGptr=%p\n",
+						pVbiosImageInfo->ImagePtr);
+	return pVbiosImageInfo->ImagePtr ? AGESA_SUCCESS : AGESA_WARNING;
 }
 
-AGESA_STATUS agesa_ReadSpd (UINT32 Func, UINTN Data, VOID *ConfigPtr)
+AGESA_STATUS agesa_ReadSpd(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {
 	AGESA_STATUS Status = AGESA_UNSUPPORTED;
 #ifdef __PRE_RAM__
-	Status = AmdMemoryReadSPD (Func, Data, ConfigPtr);
+	Status = AmdMemoryReadSPD(Func, Data, ConfigPtr);
 #endif
 	return Status;
 }
@@ -122,6 +126,7 @@ AGESA_STATUS agesa_ReadSpd (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 AGESA_STATUS agesa_ReadSpd_from_cbfs(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {
 	AGESA_STATUS Status = AGESA_UNSUPPORTED;
+
 #ifdef __PRE_RAM__
 	AGESA_READ_SPD_PARAMS *info = ConfigPtr;
 	if (info->MemChannelId > 0)
@@ -132,7 +137,7 @@ AGESA_STATUS agesa_ReadSpd_from_cbfs(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 		return AGESA_UNSUPPORTED;
 
 	/* Read index 0, first SPD_SIZE bytes of spd.bin file. */
-	if (read_ddr3_spd_from_cbfs((u8*)info->Buffer, 0) < 0)
+	if (read_ddr3_spd_from_cbfs((u8 *)info->Buffer, 0) < 0)
 		die("No SPD data\n");
 
 	Status = AGESA_SUCCESS;

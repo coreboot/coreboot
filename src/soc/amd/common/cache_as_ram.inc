@@ -64,7 +64,7 @@ cache_as_ram_setup:
   AMD_ENABLE_STACK
 
   /* Align the stack. */
-  and     $0xFFFFFFF0, %esp
+  and     $0xfffffff0, %esp
 
 #ifdef __x86_64__
   /* switch to 64 bit long mode */

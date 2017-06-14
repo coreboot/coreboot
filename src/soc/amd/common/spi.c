@@ -36,6 +36,4 @@ void spi_SaveS3info(u32 pos, u32 size, u8 *buf, u32 len)
 	spi_flash_write(flash, pos + sizeof(len), len, buf);
 
 	spi_flash_volatile_group_end(flash);
-
-	return;
 }

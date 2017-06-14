@@ -33,7 +33,7 @@ enum {
 	PICK_WHEA_MCE,  /* WHEA MCE table */
 	PICK_WHEA_CMC,  /* WHEA CMV table */
 	PICK_ALIB,      /* SACPI SSDT table with ALIB implementation */
-	PICK_IVRS,      /* IOMMU ACPI IVRS(I/O Virtualization Reporting Structure) table */
+	PICK_IVRS,      /* IOMMU ACPI IVRS (I/O Virt. Reporting Structure) */
 	PICK_CRAT,
 };
 
@@ -45,7 +45,8 @@ AGESA_STATUS agesawrapper_amdinitpost(void);
 AGESA_STATUS agesawrapper_amdinitmid(void);
 AGESA_STATUS agesawrapper_amdreadeventlog(UINT8 HeapStatus);
 void *agesawrapper_getlateinitptr(int pick);
-AGESA_STATUS agesawrapper_amdlaterunaptask(UINT32 Func, UINTN Data, void *ConfigPtr);
+AGESA_STATUS agesawrapper_amdlaterunaptask(UINT32 Func, UINTN Data,
+							void *ConfigPtr);
 AGESA_STATUS agesawrapper_amdS3Save(void);
 AGESA_STATUS agesawrapper_amdinitresume(void);
 AGESA_STATUS agesawrapper_amds3laterestore(void);
@@ -53,10 +54,10 @@ AGESA_STATUS agesawrapper_amds3laterestore(void);
 AGESA_STATUS agesawrapper_fchs3earlyrestore(void);
 AGESA_STATUS agesawrapper_fchs3laterestore(void);
 
-VOID OemCustomizeInitEarly (IN	OUT AMD_EARLY_PARAMS *InitEarly);
+VOID OemCustomizeInitEarly(IN OUT AMD_EARLY_PARAMS *InitEarly);
 VOID amd_initcpuio(void);
 VOID amd_initmmio(void);
-const void *agesawrapper_locate_module (const CHAR8 name[8]);
+const void *agesawrapper_locate_module(const CHAR8 name[8]);
 
 void OemPostParams(AMD_POST_PARAMS *PostParams);
 

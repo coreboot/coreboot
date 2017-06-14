@@ -14,7 +14,7 @@
  */
 
 	/* PCI IRQ mapping registers, C00h-C01h. */
-	OperationRegion(PRQM, SystemIO, 0x00000C00, 0x00000002)
+	OperationRegion(PRQM, SystemIO, 0x00000c00, 0x00000002)
 		Field(PRQM, ByteAcc, NoLock, Preserve) {
 		PRQI, 0x00000008,
 		PRQD, 0x00000008,  /* Offset: 1h */
@@ -31,7 +31,7 @@
 	}
 
 	/* PCI Error control register */
-	OperationRegion(PERC, SystemIO, 0x00000C14, 0x00000001)
+	OperationRegion(PERC, SystemIO, 0x00000c14, 0x00000001)
 		Field(PERC, ByteAcc, NoLock, Preserve) {
 		SENS, 0x00000001,
 		PENS, 0x00000001,
@@ -40,7 +40,7 @@
 	}
 
 	/* Client Management index/data registers */
-	OperationRegion(CMT, SystemIO, 0x00000C50, 0x00000002)
+	OperationRegion(CMT, SystemIO, 0x00000c50, 0x00000002)
 		Field(CMT, ByteAcc, NoLock, Preserve) {
 		CMTI,	8,
 		/* Client Management Data register */
@@ -52,7 +52,7 @@
 	}
 
 	/* GPM Port register */
-	OperationRegion(GPT, SystemIO, 0x00000C52, 0x00000001)
+	OperationRegion(GPT, SystemIO, 0x00000c52, 0x00000001)
 		Field(GPT, ByteAcc, NoLock, Preserve) {
 		GPB0,1,
 		GPB1,1,
@@ -65,21 +65,21 @@
 	}
 
 	/* Flash ROM program enable register */
-	OperationRegion(FRE, SystemIO, 0x00000C6F, 0x00000001)
+	OperationRegion(FRE, SystemIO, 0x00000c6F, 0x00000001)
 		Field(FRE, ByteAcc, NoLock, Preserve) {
 		,     0x00000006,
 		FLRE, 0x00000001,
 	}
 
 	/* PM2 index/data registers */
-	OperationRegion(PM2R, SystemIO, 0x00000CD0, 0x00000002)
+	OperationRegion(PM2R, SystemIO, 0x00000Cd0, 0x00000002)
 		Field(PM2R, ByteAcc, NoLock, Preserve) {
 		PM2I, 0x00000008,
 		PM2D, 0x00000008,
 	}
 
 	/* Power Management I/O registers, TODO:PMIO is quite different in SB800. */
-	OperationRegion(PIOR, SystemIO, 0x00000CD6, 0x00000002)
+	OperationRegion(PIOR, SystemIO, 0x00000Cd6, 0x00000002)
 		Field(PIOR, ByteAcc, NoLock, Preserve) {
 		PIOI, 0x00000008,
 		PIOD, 0x00000008,
@@ -88,7 +88,7 @@
 	IndexField (PIOI, PIOD, ByteAcc, NoLock, Preserve) {
 		Offset(0x60),		/* AcpiPm1EvgBlk */
 		P1EB, 16,
-		Offset(0xEE),
+		Offset(0xee),
 		UPWS, 3,
 	}
 	OperationRegion (P1E0, SystemIO, P1EB, 0x04)

@@ -76,7 +76,7 @@ Device(LIBR) {
 		Name(_CRS, ResourceTemplate() {
 			IRQNoFlags(){2}
 			IO(Decode16,0x0020, 0x0020, 0, 2)
-			IO(Decode16,0x00A0, 0x00A0, 0, 2)
+			IO(Decode16,0x00a0, 0x00a0, 0, 2)
 		})
 	} /* End Device(_SB.PCI0.LpcIsaBr.PIC) */
 
@@ -88,15 +88,15 @@ Device(LIBR) {
 			IO(Decode16, 0x0081, 0x0081, 0x01, 0x03)
 			IO(Decode16, 0x0087, 0x0087, 0x01, 0x01)
 			IO(Decode16, 0x0089, 0x0089, 0x01, 0x03)
-			IO(Decode16, 0x008F, 0x008F, 0x01, 0x01)
-			IO(Decode16, 0x00C0, 0x00C0, 0x10, 0x20)
+			IO(Decode16, 0x008f, 0x008f, 0x01, 0x01)
+			IO(Decode16, 0x00c0, 0x00c0, 0x10, 0x20)
 		}) /* End Name(_SB.PCI0.LpcIsaBr.MAD._CRS) */
 	} /* End Device(_SB.PCI0.LpcIsaBr.MAD) */
 
 	Device(COPR) {
 		Name(_HID,EISAID("PNP0C04"))	/* Math Coprocessor */
 		Name(_CRS, ResourceTemplate() {
-			IO(Decode16, 0x00F0, 0x00F0, 0, 0x10)
+			IO(Decode16, 0x00f0, 0x00f0, 0, 0x10)
 			IRQNoFlags(){13}
 		})
 	} /* End Device(_SB.PCI0.LpcIsaBr.COPR) */

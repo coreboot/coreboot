@@ -33,14 +33,14 @@
 		PT7D, 1,
 		PT8D, 1,
 		PT9D, 1,
-		Offset(0x000A0004),	/* Byte offset to SMBUS register 4h - Bus 0, Device 20, Function 0 */
+		Offset(0x000a0004),	/* Byte offset to SMBUS register 4h - Bus 0, Device 20, Function 0 */
 		SBIE, 1,
 		SBME, 1,
-		Offset(0x000A0008),	/* Byte offset to SMBUS register 8h - Bus 0, Device 20, Function 0 */
+		Offset(0x000a0008),	/* Byte offset to SMBUS register 8h - Bus 0, Device 20, Function 0 */
 		SBRI, 8,
-		Offset(0x000A0014),	/* Byte offset to SMBUS register 14h - Bus 0, Device 20, Function 0 */
+		Offset(0x000a0014),	/* Byte offset to SMBUS register 14h - Bus 0, Device 20, Function 0 */
 		SBB1, 32,
-		Offset(0x000A0078),	/* Byte offset to SMBUS register 78h - Bus 0, Device 20, Function 0 */
+		Offset(0x000a0078),	/* Byte offset to SMBUS register 78h - Bus 0, Device 20, Function 0 */
 		,14,
 		P92E, 1,		/* Port92 decode enable */
 	}
@@ -58,26 +58,26 @@
 		P0DD, 4,
 		, 4,
 		P0IS, 4,
-		Offset(0x12C),		/* Port 0 Serial ATA control */
+		Offset(0x12c),		/* Port 0 Serial ATA control */
 		P0DI, 4,
 		Offset(0x130),		/* Port 0 Serial ATA error */
 		, 16,
 		P0PR, 1,
 
 		/* Port 1 */
-		offset(0x1A0),		/* Port 1 Task file status */
+		offset(0x1a0),		/* Port 1 Task file status */
 		P1ER, 1,
 		, 2,
 		P1DQ, 1,
 		, 3,
 		P1BY, 1,
-		Offset(0x1A8),		/* Port 1 Serial ATA status */
+		Offset(0x1a8),		/* Port 1 Serial ATA status */
 		P1DD, 4,
 		, 4,
 		P1IS, 4,
-		Offset(0x1AC),		/* Port 1 Serial ATA control */
+		Offset(0x1ac),		/* Port 1 Serial ATA control */
 		P1DI, 4,
-		Offset(0x1B0),		/* Port 1 Serial ATA error */
+		Offset(0x1b0),		/* Port 1 Serial ATA error */
 		, 16,
 		P1PR, 1,
 
@@ -92,26 +92,26 @@
 		P2DD, 4,
 		, 4,
 		P2IS, 4,
-		Offset(0x22C),		/* Port 2 Serial ATA control */
+		Offset(0x22c),		/* Port 2 Serial ATA control */
 		P2DI, 4,
 		Offset(0x230),		/* Port 2 Serial ATA error */
 		, 16,
 		P2PR, 1,
 
 		/* Port 3 */
-		Offset(0x2A0),		/* Port 3 Task file status */
+		Offset(0x2a0),		/* Port 3 Task file status */
 		P3ER, 1,
 		, 2,
 		P3DQ, 1,
 		, 3,
 		P3BY, 1,
-		Offset(0x2A8),		/* Port 3 Serial ATA status */
+		Offset(0x2a8),		/* Port 3 Serial ATA status */
 		P3DD, 4,
 		, 4,
 		P3IS, 4,
-		Offset(0x2AC),		/* Port 3 Serial ATA control */
+		Offset(0x2aC),		/* Port 3 Serial ATA control */
 		P3DI, 4,
-		Offset(0x2B0),		/* Port 3 Serial ATA error */
+		Offset(0x2b0),		/* Port 3 Serial ATA error */
 		, 16,
 		P3PR, 1,
 	}
@@ -146,7 +146,7 @@
 
 		Method(_STA, 0) {
 			if (PIRA) {
-				Return(0x0B) /* sata is invisible */
+				Return(0x0b) /* sata is invisible */
 			} else {
 				Return(0x09) /* sata is disabled */
 			}
@@ -187,7 +187,7 @@
 
 		Method(_STA, 0) {
 			if (PIRB) {
-				Return(0x0B) /* sata is invisible */
+				Return(0x0b) /* sata is invisible */
 			} else {
 				Return(0x09) /* sata is disabled */
 			}
@@ -228,7 +228,7 @@
 
 		Method(_STA, 0) {
 			if (PIRC) {
-				Return(0x0B) /* sata is invisible */
+				Return(0x0b) /* sata is invisible */
 			} else {
 				Return(0x09) /* sata is disabled */
 			}
@@ -269,7 +269,7 @@
 
 		Method(_STA, 0) {
 			if (PIRD) {
-				Return(0x0B) /* sata is invisible */
+				Return(0x0b) /* sata is invisible */
 			} else {
 				Return(0x09) /* sata is disabled */
 			}
@@ -310,7 +310,7 @@
 
 		Method(_STA, 0) {
 			if (PIRE) {
-				Return(0x0B) /* sata is invisible */
+				Return(0x0b) /* sata is invisible */
 			} else {
 				Return(0x09) /* sata is disabled */
 			}
@@ -351,7 +351,7 @@
 
 		Method(_STA, 0) {
 			if (PIRF) {
-				Return(0x0B) /* sata is invisible */
+				Return(0x0b) /* sata is invisible */
 			} else {
 				Return(0x09) /* sata is disabled */
 			}
@@ -392,7 +392,7 @@
 
 		Method(_STA, 0) {
 			if (PIRG) {
-				Return(0x0B) /* sata is invisible */
+				Return(0x0b) /* sata is invisible */
 			} else {
 				Return(0x09) /* sata is disabled */
 			}
@@ -433,7 +433,7 @@
 
 		Method(_STA, 0) {
 			if (PIRH) {
-				Return(0x0B) /* sata is invisible */
+				Return(0x0b) /* sata is invisible */
 			} else {
 				Return(0x09) /* sata is disabled */
 			}

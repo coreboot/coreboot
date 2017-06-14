@@ -118,7 +118,7 @@ Device(AZHD) {	/* 0:9.2 - HD Audio */
 		MMLA, 32,
 		offset (0x68),
 		MMHA, 32,
-		offset (0x6C),
+		offset (0x6c),
 		MMDT, 16,
 	}
 

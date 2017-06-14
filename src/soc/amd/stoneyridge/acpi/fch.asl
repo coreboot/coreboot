@@ -72,38 +72,38 @@ Name(CRES, ResourceTemplate() {
 	WordBusNumber (ResourceProducer, MinFixed, MaxFixed, PosDecode,
 		0x0000,		/* address granularity */
 		0x0000,		/* range minimum */
-		0x00FF,		/* range maximum */
+		0x00ff,		/* range maximum */
 		0x0000,		/* translation */
 		0x0100,		/* length */
 		,, PSB0)		/* ResourceSourceIndex, ResourceSource, DescriptorName */
 
-	IO(Decode16, 0x0CF8, 0x0CF8, 1,	8)
+	IO(Decode16, 0x0cf8, 0x0cf8, 1,	8)
 
 	WORDIO(ResourceProducer, MinFixed, MaxFixed, PosDecode, EntireRange,
 		0x0000,		/* address granularity */
 		0x0000,		/* range minimum */
-		0x0CF7,		/* range maximum */
+		0x0cf7,		/* range maximum */
 		0x0000,		/* translation */
-		0x0CF8		/* length */
+		0x0cf8		/* length */
 	)
 	WORDIO(ResourceProducer, MinFixed, MaxFixed, PosDecode, EntireRange,
 		0x0000,		/* address granularity */
-		0x03B0,		/* range minimum */
-		0x03DF,		/* range maximum */
+		0x03b0,		/* range minimum */
+		0x03df,		/* range maximum */
 		0x0000,		/* translation */
 		0x0030		/* length */
 	)
 
 	WORDIO(ResourceProducer, MinFixed, MaxFixed, PosDecode, EntireRange,
 		0x0000,		/* address granularity */
-		0x0D00,		/* range minimum */
-		0xFFFF,		/* range maximum */
+		0x0d00,		/* range minimum */
+		0xffff,		/* range maximum */
 		0x0000,		/* translation */
-		0xF300		/* length */
+		0xf300		/* length */
 	)
 
-	Memory32Fixed(READONLY, 0x000A0000, 0x00020000, VGAM)	/* VGA memory space */
-	Memory32Fixed(READONLY, 0x000C0000, 0x00020000, EMM1)	/* Assume C0000-E0000 empty */
+	Memory32Fixed(READONLY, 0x000a0000, 0x00020000, VGAM)	/* VGA memory space */
+	Memory32Fixed(READONLY, 0x000c0000, 0x00020000, EMM1)	/* Assume C0000-E0000 empty */
 
 	/* memory space for PCI BARs below 4GB */
 	Memory32Fixed(ReadOnly, 0x00000000, 0x00000000, MMIO)

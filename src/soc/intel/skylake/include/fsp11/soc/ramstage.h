@@ -19,7 +19,6 @@
 
 #include <chip.h>
 #include <device/device.h>
-#include <fsp/gop.h>
 #include <fsp/ramstage.h>
 #include <fsp/soc_binding.h>
 
@@ -31,7 +30,6 @@ void pch_enable_dev(device_t dev);
 void soc_init_pre_device(void *chip_info);
 void soc_fsp_load(void);
 const char *soc_acpi_name(struct device *dev);
-int init_igd_opregion(igd_opregion_t *igd_opregion);
 extern struct pci_operations soc_pci_ops;
 
 /* Get igd framebuffer bar */

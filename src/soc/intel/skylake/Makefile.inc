@@ -56,7 +56,6 @@ ramstage-y += irq.c
 ramstage-y += lpc.c
 ramstage-y += me.c
 ramstage-y += memmap.c
-ramstage-$(CONFIG_PLATFORM_USES_FSP1_1) += opregion.c
 ramstage-y += pch.c
 ramstage-y += pei_data.c
 ramstage-y += pmc.c

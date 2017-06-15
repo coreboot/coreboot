@@ -24,7 +24,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <drivers/intel/gma/i915_reg.h>
-#include <fsp/util.h>
+#include <soc/intel/common/opregion.h>
 #include <soc/acpi.h>
 #include <soc/cpu.h>
 #include <soc/pm.h>

@@ -14,6 +14,7 @@
  */
 
 #include <cpu/x86/mtrr.h>
+#include <soc/pci_devs.h>
 #include <agesawrapper.h>
 #include <amdlib.h>
 
@@ -25,7 +26,7 @@ void amd_initcpuio(void)
 	AMD_CONFIG_PARAMS             StdHeader;
 
 	/* Enable legacy video routing: D18F1xF4 VGA Enable */
-	PciAddress.AddressValue = MAKE_SBDFO(0, 0, 0x18, 1, 0xF4);
+	PciAddress.AddressValue = MAKE_SBDFO(0, 0, 0x18, 1, 0xf4);
 	PciData = 1;
 	LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
 
@@ -35,29 +36,29 @@ void amd_initcpuio(void)
 	 */
 	PciAddress.AddressValue = MAKE_SBDFO(0, 0, 0x18, 1, 0x84);
 	/* last address before processor local APIC at FEE00000 */
-	PciData = 0x00FEDF00;
+	PciData = 0x00fedf00;
 	PciData |= 1 << 7;    /* set NP (non-posted) bit */
 	LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
 	PciAddress.AddressValue = MAKE_SBDFO(0, 0, 0x18, 1, 0x80);
 	/* lowest NP address is HPET at FED00000 */
-	PciData = (0xFED00000 >> 8) | 3;
+	PciData = (0xfed00000 >> 8) | 3;
 	LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
 
 	/* Map the remaining PCI hole as posted MMIO */
-	PciAddress.AddressValue = MAKE_SBDFO(0, 0, 0x18, 1, 0x8C);
-	PciData = 0x00FECF00; /* last address before non-posted range */
+	PciAddress.AddressValue = MAKE_SBDFO(0, 0, 0x18, 1, 0x8c);
+	PciData = 0x00fecf00; /* last address before non-posted range */
 	LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
-	LibAmdMsrRead (0xC001001A, &MsrReg, &StdHeader);
+	LibAmdMsrRead(TOP_MEM, &MsrReg, &StdHeader);
 	MsrReg = (MsrReg >> 8) | 3;
 	PciAddress.AddressValue = MAKE_SBDFO(0, 0, 0x18, 1, 0x88);
 	PciData = (UINT32)MsrReg;
 	LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
 
 	/* Send all IO (0000-FFFF) to southbridge. */
-	PciAddress.AddressValue = MAKE_SBDFO(0, 0, 0x18, 1, 0xC4);
-	PciData = 0x0000F000;
+	PciAddress.AddressValue = MAKE_SBDFO(0, 0, 0x18, 1, 0xc4);
+	PciData = 0x0000f000;
 	LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
-	PciAddress.AddressValue = MAKE_SBDFO(0, 0, 0x18, 1, 0xC0);
+	PciAddress.AddressValue = MAKE_SBDFO(0, 0, 0x18, 1, 0xc0);
 	PciData = 0x00000003;
 	LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
 }
@@ -73,25 +74,25 @@ void amd_initmmio(void)
 	  Set the MMIO Configuration Base Address and Bus Range onto MMIO
 	  configuration base Address MSR register.
 	*/
-	MsrReg = CONFIG_MMCONF_BASE_ADDRESS | \
-		(LibAmdBitScanReverse (CONFIG_MMCONF_BUS_NUMBER) << 2) | 1;
-	LibAmdMsrWrite(0xC0010058, &MsrReg, &StdHeader);
+	MsrReg = CONFIG_MMCONF_BASE_ADDRESS |
+			(LibAmdBitScanReverse(CONFIG_MMCONF_BUS_NUMBER) << 2)
+			| 1;
+	LibAmdMsrWrite(0xc0010058, &MsrReg, &StdHeader);
 
 	/* For serial port */
-	PciData = 0xFF03FFD5;
-	PciAddress.AddressValue = MAKE_SBDFO(0, 0, 0x14, 0x3, 0x44);
+	PciData = 0xff03ffd5;
+	PciAddress.AddressValue = MAKE_SBDFO(0, 0, PCU_DEV, LPC_FUNC, 0x44);
 	LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
 
 	/* Set ROM cache onto WP to decrease post time */
 	MsrReg = (0x0100000000ull - CACHE_ROM_SIZE) | 5ull;
-	LibAmdMsrWrite(0x20C, &MsrReg, &StdHeader);
-	MsrReg = ((1ULL << CONFIG_CPU_ADDR_BITS) - CACHE_ROM_SIZE) | \
-		0x800ull;
-	LibAmdMsrWrite(0x20D, &MsrReg, &StdHeader);
+	LibAmdMsrWrite(0x20c, &MsrReg, &StdHeader);
+	MsrReg = ((1ULL << CONFIG_CPU_ADDR_BITS) - CACHE_ROM_SIZE) | 0x800ull;
+	LibAmdMsrWrite(0x20d, &MsrReg, &StdHeader);
 
-	if (IS_ENABLED(CONFIG_UDELAY_LAPIC)){
-		LibAmdMsrRead(0x1B, &MsrReg, &StdHeader);
+	if (IS_ENABLED(CONFIG_UDELAY_LAPIC)) {
+		LibAmdMsrRead(0x1b, &MsrReg, &StdHeader);
 		MsrReg |= 1 << 11;
-		LibAmdMsrWrite(0x1B, &MsrReg, &StdHeader);
+		LibAmdMsrWrite(0x1b, &MsrReg, &StdHeader);
 	}
 }

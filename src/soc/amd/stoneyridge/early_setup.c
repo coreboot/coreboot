@@ -13,9 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#ifndef _STONEYRIDGE_EARLY_SETUP_C_
-#define _STONEYRIDGE_EARLY_SETUP_C_
-
 #include <assert.h>
 #include <stdint.h>
 #include <arch/io.h>
@@ -34,9 +31,11 @@ void configure_hudson_uart(void)
 {
 	u8 byte;
 
-	byte = read8((void *)ACPI_MMIO_BASE + AOAC_BASE + FCH_AOAC_REG56 + CONFIG_UART_FOR_CONSOLE * 2);
+	byte = read8((void *)ACPI_MMIO_BASE + AOAC_BASE + FCH_AOAC_REG56
+					+ CONFIG_UART_FOR_CONSOLE * 2);
 	byte |= 1 << 3;
-	write8((void *)ACPI_MMIO_BASE + AOAC_BASE + FCH_AOAC_REG56 + CONFIG_UART_FOR_CONSOLE * 2, byte);
+	write8((void *)ACPI_MMIO_BASE + AOAC_BASE + FCH_AOAC_REG56
+					+ CONFIG_UART_FOR_CONSOLE * 2, byte);
 	byte = read8((void *)ACPI_MMIO_BASE + AOAC_BASE + FCH_AOAC_REG62);
 	byte |= 1 << 3;
 	write8((void *)ACPI_MMIO_BASE + AOAC_BASE + FCH_AOAC_REG62, byte);
@@ -46,7 +45,9 @@ void configure_hudson_uart(void)
 	write8((void *)FCH_IOMUXx8F_UART1_TXD_EGPIO143, 0);
 
 	udelay(2000);
-	write8((void *)0xFEDC6000 + 0x2000 * CONFIG_UART_FOR_CONSOLE + 0x88, 0x01); /* reset UART */
+	/* reset UART */
+	write8((void *)APU_UART0_BASE + (0x2000 * CONFIG_UART_FOR_CONSOLE)
+					+ 0x88, 0x01);
 }
 
 void hudson_pci_port80(void)
@@ -55,7 +56,7 @@ void hudson_pci_port80(void)
 	pci_devfn_t dev;
 
 	/* P2P Bridge */
-	dev = PCI_DEV(0, 0x14, 4);
+	dev = PCI_DEV(0, SB_PCI_PORT_DEV, SB_PCI_PORT_FUNC);
 
 	/* Chip Control: Enable subtractive decoding */
 	byte = pci_read_config8(dev, 0x40);
@@ -63,23 +64,23 @@ void hudson_pci_port80(void)
 	pci_write_config8(dev, 0x40, byte);
 
 	/* Misc Control: Enable subtractive decoding if 0x40 bit 5 is set */
-	byte = pci_read_config8(dev, 0x4B);
+	byte = pci_read_config8(dev, 0x4b);
 	byte |= 1 << 7;
-	pci_write_config8(dev, 0x4B, byte);
+	pci_write_config8(dev, 0x4b, byte);
 
 	/* The same IO Base and IO Limit here is meaningful because we set the
 	 * bridge to be subtractive. During early setup stage, we have to make
 	 * sure that data can go through port 0x80.
 	 */
 	/* IO Base: 0xf000 */
-	byte = pci_read_config8(dev, 0x1C);
-	byte |= 0xF << 4;
-	pci_write_config8(dev, 0x1C, byte);
+	byte = pci_read_config8(dev, 0x1c);
+	byte |= 0xf << 4;
+	pci_write_config8(dev, 0x1c, byte);
 
 	/* IO Limit: 0xf000 */
-	byte = pci_read_config8(dev, 0x1D);
-	byte |= 0xF << 4;
-	pci_write_config8(dev, 0x1D, byte);
+	byte = pci_read_config8(dev, 0x1d);
+	byte |= 0xf << 4;
+	pci_write_config8(dev, 0x1d, byte);
 
 	/* PCI Command: Enable IO response */
 	byte = pci_read_config8(dev, 0x04);
@@ -87,11 +88,11 @@ void hudson_pci_port80(void)
 	pci_write_config8(dev, 0x04, byte);
 
 	/* LPC controller */
-	dev = PCI_DEV(0, 0x14, 3);
+	dev = PCI_DEV(0, PCU_DEV, LPC_FUNC);
 
-	byte = pci_read_config8(dev, 0x4A);
+	byte = pci_read_config8(dev, 0x4a);
 	byte &= ~(1 << 5); /* disable lpc port 80 */
-	pci_write_config8(dev, 0x4A, byte);
+	pci_write_config8(dev, 0x4a, byte);
 }
 
 void hudson_lpc_port80(void)
@@ -100,14 +101,14 @@ void hudson_lpc_port80(void)
 	pci_devfn_t dev;
 
 	/* Enable LPC controller */
-	outb(0xEC, 0xCD6);
-	byte = inb(0xCD7);
+	outb(0xec, PM_INDEX);
+	byte = inb(PM_DATA);
 	byte |= 1;
-	outb(0xEC, 0xCD6);
-	outb(byte, 0xCD7);
+	outb(0xec, PM_INDEX);
+	outb(byte, PM_DATA);
 
 	/* Enable port 80 LPC decode in pci function 3 configuration space. */
-	dev = PCI_DEV(0, 0x14, 3);
+	dev = PCI_DEV(0, PCU_DEV, LPC_FUNC);
 	byte = pci_read_config8(dev, 0x4a);
 	byte |= 1 << 5; /* enable port 80 */
 	pci_write_config8(dev, 0x4a, byte);
@@ -191,17 +192,17 @@ static void lpc_wideio_window(uint16_t base, uint16_t size)
 	/* Find and open Base Register and program it */
 	tmp = pci_read_config32(dev, LPC_WIDEIO_GENERIC_PORT);
 
-	if ((tmp & 0xFFFF) == 0) {	/* WIDEIO0 */
+	if ((tmp & 0xffff) == 0) {	/* WIDEIO0 */
 		tmp |= base;
 		pci_write_config32(dev, LPC_WIDEIO_GENERIC_PORT, tmp);
 		enable_wideio(0, size);
-	} else if ((tmp & 0xFFFF0000) == 0) {	/* WIDEIO1 */
+	} else if ((tmp & 0xffff0000) == 0) {	/* WIDEIO1 */
 		tmp |= (base << 16);
 		pci_write_config32(dev, LPC_WIDEIO_GENERIC_PORT, tmp);
 		enable_wideio(1, size);
 	} else { /* Check WIDEIO2 register */
 		tmp = pci_read_config32(dev, LPC_WIDEIO2_GENERIC_PORT);
-		if ((tmp & 0xFFFF) == 0) {	/* WIDEIO2 */
+		if ((tmp & 0xffff) == 0) {	/* WIDEIO2 */
 			tmp |= base;
 			pci_write_config32(dev, LPC_WIDEIO2_GENERIC_PORT, tmp);
 			enable_wideio(2, size);
@@ -226,11 +227,12 @@ void lpc_wideio_16_window(uint16_t base)
 int s3_save_nvram_early(u32 dword, int size, int  nvram_pos)
 {
 	int i;
-	printk(BIOS_DEBUG, "Writing %x of size %d to nvram pos: %d\n", dword, size, nvram_pos);
+	printk(BIOS_DEBUG, "Writing %x of size %d to nvram pos: %d\n",
+					dword, size, nvram_pos);
 
-	for (i = 0; i < size; i++) {
+	for (i = 0 ; i < size ; i++) {
 		outb(nvram_pos, BIOSRAM_INDEX);
-		outb((dword >>(8 * i)) & 0xff , BIOSRAM_DATA);
+		outb((dword >> (8 * i)) & 0xff, BIOSRAM_DATA);
 		nvram_pos++;
 	}
 
@@ -241,15 +243,15 @@ int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos)
 {
 	u32 data = *old_dword;
 	int i;
-	for (i = 0; i < size; i++) {
+	for (i = 0 ; i < size ; i++) {
 		outb(nvram_pos, BIOSRAM_INDEX);
 		data &= ~(0xff << (i * 8));
-		data |= inb(BIOSRAM_DATA) << (i *8);
+		data |= inb(BIOSRAM_DATA) << (i * 8);
 		nvram_pos++;
 	}
 	*old_dword = data;
-	printk(BIOS_DEBUG, "Loading %x of size %d to nvram pos:%d\n", *old_dword, size,
-		nvram_pos-size);
+	printk(BIOS_DEBUG, "Loading %x of size %d to nvram pos:%d\n",
+					*old_dword, size, nvram_pos-size);
 	return nvram_pos;
 }
 
@@ -261,7 +263,7 @@ void hudson_clk_output_48Mhz(void)
 	 * Enable the X14M_25M_48M_OSC pin and leaving it at it's default so
 	 * 48Mhz will be on ball AP13 (FT3b package)
 	 */
-	memptr = (u32 *)(ACPI_MMIO_BASE + MISC_BASE + FCH_MISC_REG40 );
+	memptr = (u32 *)(ACPI_MMIO_BASE + MISC_BASE + FCH_MISC_REG40);
 	data = *memptr;
 
 	/* clear the OSCOUT1_ClkOutputEnb to enable the 48 Mhz clock */
@@ -272,11 +274,11 @@ void hudson_clk_output_48Mhz(void)
 static uintptr_t hudson_spibase(void)
 {
 	/* Make sure the base address is predictable */
-	device_t dev = PCI_DEV(0, 0x14, 3);
+	device_t dev = PCI_DEV(0, PCU_DEV, LPC_FUNC);
 
 	u32 base = pci_read_config32(dev, SPIROM_BASE_ADDRESS_REGISTER)
 							& 0xfffffff0;
-	if (!base){
+	if (!base) {
 		base = SPI_BASE_ADDRESS;
 		pci_write_config32(dev, SPIROM_BASE_ADDRESS_REGISTER, base
 							| SPI_ROM_ENABLE);
@@ -324,11 +326,9 @@ void hudson_read_mode(u32 mode)
 
 void hudson_tpm_decode_spi(void)
 {
-	device_t dev = PCI_DEV(0, 0x14, 3);	/* LPC device */
+	device_t dev = PCI_DEV(0, PCU_DEV, LPC_FUNC);	/* LPC device */
 
 	u32 spibase = pci_read_config32(dev, SPIROM_BASE_ADDRESS_REGISTER);
 	pci_write_config32(dev, SPIROM_BASE_ADDRESS_REGISTER, spibase
 							| ROUTE_TPM_2_SPI);
 }
-
-#endif

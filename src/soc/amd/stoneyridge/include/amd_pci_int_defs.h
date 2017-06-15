@@ -22,7 +22,7 @@
  * routing table
  */
 
-#define PIRQ_NC		0x1F	/* Not Used */
+#define PIRQ_NC		0x1f	/* Not Used */
 #define PIRQ_A		0x00	/* INT A */
 #define PIRQ_B		0x01	/* INT B */
 #define PIRQ_C		0x02	/* INT C */
@@ -33,12 +33,12 @@
 #define PIRQ_H		0x07	/* INT H */
 #define PIRQ_MISC	0x08	/* Miscellaneous IRQ Settings - See FCH Spec */
 #define PIRQ_MISC0	0x09	/* Miscellaneous0 IRQ Settings */
-#define PIRQ_MISC1	0x0A	/* Miscellaneous1 IRQ Settings */
-#define PIRQ_MISC2	0x0B	/* Miscellaneous2 IRQ Settings */
-#define PIRQ_SIRQA	0x0C	/* Serial IRQ INTA */
-#define PIRQ_SIRQB	0x0D	/* Serial IRQ INTB */
-#define PIRQ_SIRQC	0x0E	/* Serial IRQ INTC */
-#define PIRQ_SIRQD	0x0F	/* Serial IRQ INTD */
+#define PIRQ_MISC1	0x0a	/* Miscellaneous1 IRQ Settings */
+#define PIRQ_MISC2	0x0b	/* Miscellaneous2 IRQ Settings */
+#define PIRQ_SIRQA	0x0c	/* Serial IRQ INTA */
+#define PIRQ_SIRQB	0x0d	/* Serial IRQ INTB */
+#define PIRQ_SIRQC	0x0e	/* Serial IRQ INTC */
+#define PIRQ_SIRQD	0x0f	/* Serial IRQ INTD */
 #define PIRQ_SCI	0x10	/* SCI IRQ */
 #define PIRQ_SMBUS	0x11	/* SMBUS	14h.0 */
 #define PIRQ_ASF	0x12	/* ASF */
@@ -46,7 +46,7 @@
 #define PIRQ_FC		0x14	/* FC */
 #define PIRQ_GEC	0x15	/* GEC */
 #define PIRQ_PMON	0x16	/* Performance Monitor */
-#define PIRQ_SD 	0x17	/* SD */
+#define PIRQ_SD		0x17	/* SD */
 #define PIRQ_IMC0	0x20	/* IMC INT0 */
 #define PIRQ_IMC1	0x21	/* IMC INT1 */
 #define PIRQ_IMC2	0x22	/* IMC INT2 */

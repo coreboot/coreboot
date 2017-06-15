@@ -18,8 +18,9 @@
 
 #include <arch/io.h>
 #include <reset.h>
+#include <soc/hudson.h>
 
-#define HT_INIT_CONTROL			0x6C
+#define HT_INIT_CONTROL			0x6c
  #define HTIC_BIOSR_Detect		(1 << 5)
 
 
@@ -40,6 +41,6 @@ void do_hard_reset(void)
 	 *  --- it only reset coherent link table,
 	 *  but not reset link freq and width
 	 */
-	outb((0 << 3) | (0 << 2) | (1 << 1), 0xcf9);
-	outb((0 << 3) | (1 << 2) | (1 << 1), 0xcf9);
+	outb((0 << 3) | (0 << 2) | (1 << 1), SYS_RESET);
+	outb((0 << 3) | (1 << 2) | (1 << 1), SYS_RESET);
 }

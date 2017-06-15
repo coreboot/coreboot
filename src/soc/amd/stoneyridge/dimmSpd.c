@@ -24,25 +24,26 @@
 #include "chip.h"
 #include <dimmSpd.h>
 
-AGESA_STATUS AmdMemoryReadSPD (UINT32 unused1, UINTN unused2, AGESA_READ_SPD_PARAMS *info)
+AGESA_STATUS AmdMemoryReadSPD(UINT32 unused1, UINTN unused2,
+						AGESA_READ_SPD_PARAMS *info)
 {
 	int spdAddress;
 	DEVTREE_CONST struct device *dev = dev_find_slot(0, PCI_DEVFN(0x18, 2));
-	DEVTREE_CONST struct soc_amd_stoneyridge_config *config = dev->chip_info;
+	DEVTREE_CONST struct soc_amd_stoneyridge_config *conf = dev->chip_info;
 
-	if ((dev == 0) || (config == 0))
+	if ((dev == 0) || (conf == 0))
 		return AGESA_ERROR;
-	if (info->SocketId >= ARRAY_SIZE(config->spdAddrLookup))
+	if (info->SocketId >= ARRAY_SIZE(conf->spdAddrLookup))
 		return AGESA_ERROR;
-	if (info->MemChannelId >= ARRAY_SIZE(config->spdAddrLookup[0]))
+	if (info->MemChannelId >= ARRAY_SIZE(conf->spdAddrLookup[0]))
 		return AGESA_ERROR;
-	if (info->DimmId >= ARRAY_SIZE(config->spdAddrLookup[0][0]))
+	if (info->DimmId >= ARRAY_SIZE(conf->spdAddrLookup[0][0]))
 		return AGESA_ERROR;
-	spdAddress = config->spdAddrLookup
-		[info->SocketId] [info->MemChannelId] [info->DimmId];
+	spdAddress = conf->spdAddrLookup
+		[info->SocketId][info->MemChannelId][info->DimmId];
 	if (spdAddress == 0)
 		return AGESA_ERROR;
-	int err = hudson_readSpd(spdAddress, (void *) info->Buffer, 128);
+	int err = hudson_readSpd(spdAddress, (void *)info->Buffer, 128);
 	if (err)
 		return AGESA_ERROR;
 	return AGESA_SUCCESS;

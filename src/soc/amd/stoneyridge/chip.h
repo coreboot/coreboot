@@ -18,8 +18,7 @@
 
 #include <stdint.h>
 
-struct soc_amd_stoneyridge_config
-{
+struct soc_amd_stoneyridge_config {
 	u8 spdAddrLookup[1][1][2];
 	u32 ide0_enable : 1;
 	u32 sata0_enable : 1;

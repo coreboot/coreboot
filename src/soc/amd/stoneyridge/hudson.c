@@ -65,16 +65,16 @@ void hudson_enable(device_t dev)
 	case (0x14 << 3) | 7: /* 0:14.7  SD */
 		if (dev->enabled == 0) {
 			// read the VENDEV ID
-			device_t sd_dev = dev_find_slot( 0, PCI_DEVFN( 0x14, 7));
-			u32 sd_device_id = pci_read_config32( sd_dev, 0) >> 16;
+			device_t sd_dev = dev_find_slot(0, PCI_DEVFN(0x14, 7));
+			u32 sd_device_id = pci_read_config32(sd_dev, 0) >> 16;
 			/* turn off the SDHC controller in the PM reg */
 			u8 reg8;
 			if (sd_device_id == PCI_DEVICE_ID_AMD_HUDSON_SD) {
 				reg8 = pm_read8(PM_HUD_SD_FLASH_CTRL);
 				reg8 &= ~BIT(0);
 				pm_write8(PM_HUD_SD_FLASH_CTRL, reg8);
-			}
-			else if (sd_device_id == PCI_DEVICE_ID_AMD_YANGTZE_SD) {
+			} else if (sd_device_id
+					== PCI_DEVICE_ID_AMD_YANGTZE_SD) {
 				reg8 = pm_read8(PM_YANG_SD_FLASH_CTRL);
 				reg8 &= ~BIT(0);
 				pm_write8(PM_YANG_SD_FLASH_CTRL, reg8);

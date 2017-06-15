@@ -28,6 +28,7 @@
 #include <arch/acpi.h>
 #include <pc80/i8254.h>
 #include <pc80/i8259.h>
+#include <soc/pci_devs.h>
 #include <soc/hudson.h>
 #include <vboot/vbnv.h>
 
@@ -38,7 +39,7 @@ static void lpc_init(device_t dev)
 	device_t sm_dev;
 
 	/* Enable the LPC Controller */
-	sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
+	sm_dev = dev_find_slot(0, PCI_DEVFN(SMBUS_DEV, SMBUS_FUNC));
 	dword = pci_read_config32(sm_dev, 0x64);
 	dword |= 1 << 20;
 	pci_write_config32(sm_dev, 0x64, dword);
@@ -59,16 +60,21 @@ static void lpc_init(device_t dev)
 	/* Disable LPC MSI Capability */
 	byte = pci_read_config8(dev, 0x78);
 	byte &= ~(1 << 1);
-	byte &= ~(1 << 0);	/* Keep the old way. i.e., when bus master/DMA cycle is going
-				   on on LPC, it holds PCI grant, so no LPC slave cycle can
-				   interrupt and visit LPC. */
+	/* Keep the old way. i.e., when bus master/DMA cycle is going
+	 * on on LPC, it holds PCI grant, so no LPC slave cycle can
+	 * interrupt and visit LPC.
+	 */
+	byte &= ~(1 << 0);
 	pci_write_config8(dev, 0x78, byte);
 
-	/* bit0: Enable prefetch a cacheline (64 bytes) when Host reads code from SPI ROM */
-	/* bit3: Fix SPI_CS# timing issue when running at 66M. TODO:A12. */
-	byte = pci_read_config8(dev, 0xBB);
+	/* bit0: Enable prefetch a cacheline (64 bytes) when Host reads
+	 *       code from SPI ROM
+	 * bit3: Fix SPI_CS# timing issue when running at 66M. TODO:A12.
+	 * todo: verify both these against BKDG
+	 */
+	byte = pci_read_config8(dev, 0xbb);
 	byte |= 1 << 0 | 1 << 3;
-	pci_write_config8(dev, 0xBB, byte);
+	pci_write_config8(dev, 0xbb, byte);
 
 	cmos_check_update_date();
 
@@ -83,10 +89,10 @@ static void lpc_init(device_t dev)
 		cmos_init(0);
 
 	/* Initialize i8259 pic */
-	setup_i8259 ();
+	setup_i8259();
 
 	/* Initialize i8254 timers */
-	setup_i8254 ();
+	setup_i8254();
 
 	/* Set up SERIRQ, enable continuous mode */
 	byte = (BIT(4) | BIT(7));
@@ -101,7 +107,7 @@ static void hudson_lpc_read_resources(device_t dev)
 	struct resource *res;
 
 	/* Get the normal pci resources of this device */
-	pci_dev_read_resources(dev);	/* We got one for APIC, or one more for TRAP */
+	pci_dev_read_resources(dev);
 
 	/* Add an extra subtractive resource for both memory and I/O. */
 	res = new_resource(dev, IOINDEX_SUBTRACTIVE(0, 0));
@@ -117,7 +123,8 @@ static void hudson_lpc_read_resources(device_t dev)
 		     IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 
 	/* Add a memory resource for the SPI BAR. */
-	fixed_mem_resource(dev, 2, SPI_BASE_ADDRESS / 1024, 1, IORESOURCE_SUBTRACTIVE);
+	fixed_mem_resource(dev, 2, SPI_BASE_ADDRESS / 1024, 1,
+			IORESOURCE_SUBTRACTIVE);
 
 	res = new_resource(dev, 3); /* IOAPIC */
 	res->base = IO_APIC_ADDR;
@@ -135,8 +142,9 @@ static void hudson_lpc_set_resources(struct device *dev)
 	/* Special case. The SpiRomEnable and other enables should STAY set. */
 	res = find_resource(dev, 2);
 	spi_enable_bits = pci_read_config32(dev, SPIROM_BASE_ADDRESS_REGISTER);
-	spi_enable_bits &= 0xF;
-	pci_write_config32(dev, SPIROM_BASE_ADDRESS_REGISTER, res->base | spi_enable_bits);
+	spi_enable_bits &= 0xf;
+	pci_write_config32(dev, SPIROM_BASE_ADDRESS_REGISTER,
+			res->base | spi_enable_bits);
 
 	pci_dev_set_resources(dev);
 }
@@ -153,25 +161,26 @@ static void hudson_lpc_enable_childrens_resources(device_t dev)
 	u32 reg, reg_x;
 	int var_num = 0;
 	u16 reg_var[3];
-	u16 reg_size[1] =  {512};
+	u16 reg_size[1] = {512};
 	u8 wiosize = pci_read_config8(dev, 0x74);
 
-	/* Be bit relaxed, tolerate that LPC region might be bigger than resource we try to fit,
-	 * do it like this for all regions < 16 bytes. If there is a resource > 16 bytes
-	 * it must be 512 bytes to be able to allocate the fresh LPC window.
+	/* Be a bit relaxed, tolerate that LPC region might be bigger than
+	 * resource we try to fit, do it like this for all regions < 16 bytes.
+	 * If there is a resource > 16 bytes it must be 512 bytes to be able
+	 * to allocate the fresh LPC window.
 	 *
-	 * AGESA likes to enable already one LPC region in wide port base 0x64-0x65,
-	 * using DFLT_SIO_PME_BASE_ADDRESS, 512 bytes size
-	 * The code tries to check if resource can fit into this region
+	 * AGESA likes to enable already one LPC region in wide port base
+	 * 0x64-0x65, using DFLT_SIO_PME_BASE_ADDRESS, 512 bytes size
+	 * The code tries to check if resource can fit into this region.
 	 */
 
 	reg = pci_read_config32(dev, 0x44);
 	reg_x = pci_read_config32(dev, 0x48);
 
-	/* check if ranges are free and not use them if entry is just already taken */
+	/* check if ranges are free and don't use them if already taken */
 	if (reg_x & (1 << 2))
 		var_num = 1;
-	/* just in case check if someone did not manually set other ranges too */
+	/* just in case check if someone did not manually set other ranges */
 	if (reg_x & (1 << 24))
 		var_num = 2;
 
@@ -186,14 +195,15 @@ static void hudson_lpc_enable_childrens_resources(device_t dev)
 	reg_var[1] = pci_read_config16(dev, 0x66);
 	reg_var[0] = pci_read_config16(dev, 0x64);
 
-	for (link = dev->link_list; link; link = link->next) {
+	/* todo: clean up the code style here */
+	for (link = dev->link_list ; link ; link = link->next) {
 		device_t child;
 		for (child = link->children; child;
 		     child = child->sibling) {
 			if (child->enabled
 			    && (child->path.type == DEVICE_PATH_PNP)) {
 				struct resource *res;
-				for (res = child->resource_list; res; res = res->next) {
+				for (res = child->resource_list ; res ; res = res->next) {
 					u32 base, end;	/*  don't need long long */
 					u32 rsize, set = 0, set_x = 0;
 					if (!(res->flags & IORESOURCE_IO))
@@ -238,7 +248,7 @@ static void hudson_lpc_enable_childrens_resources(device_t dev)
 						set |= (1 << 10);
 						rsize = 8;
 						break;
-					case 0x300:	/*  0x300 -0x301 */
+					case 0x300:	/*  0x300 - 0x301 */
 						set |= (1 << 18);
 						rsize = 2;
 						break;
@@ -269,7 +279,7 @@ static void hudson_lpc_enable_childrens_resources(device_t dev)
 					default:
 						rsize = 0;
 						/* try AGESA allocated region in region 0 */
-						if ((var_num > 0) && ((base >=reg_var[0]) &&
+						if ((var_num > 0) && ((base >= reg_var[0]) &&
 								((base + res->size) <= (reg_var[0] + reg_size[0]))))
 							rsize = reg_size[0];
 					}
@@ -284,9 +294,8 @@ static void hudson_lpc_enable_childrens_resources(device_t dev)
 						switch (var_num) {
 						case 0:
 							reg_x |= (1 << 2);
-							if (res->size <= 16) {
+							if (res->size <= 16)
 								wiosize |= (1 << 0);
-							}
 							break;
 						case 1:
 							reg_x |= (1 << 24);

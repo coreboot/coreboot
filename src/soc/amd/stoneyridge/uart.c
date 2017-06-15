@@ -14,10 +14,11 @@
  */
 
 #include <console/uart.h>
+#include <soc/hudson.h>
 
 uintptr_t uart_platform_base(int idx)
 {
-	return (uintptr_t)(0xFEDC6000 + 0x2000 * (idx & 1));
+	return (uintptr_t)(APU_UART0_BASE + 0x2000 * (idx & 1));
 }
 
 unsigned int uart_platform_refclk(void)

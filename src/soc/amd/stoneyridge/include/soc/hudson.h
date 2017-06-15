@@ -29,6 +29,9 @@
  */
 #define PM_MMIO_BASE			0xfed80300
 
+#define APU_UART0_BASE			0xfedc6000
+#define APU_UART1_BASE			0xfedc8000
+
 /* Power management index/data registers */
 #define BIOSRAM_INDEX			0xcd4
 #define BIOSRAM_DATA			0xcd5
@@ -44,15 +47,17 @@
 #define PM_TMR_BLK			0x64
 #define PM_CPU_CTRL			0x66
 #define PM_GPE0_BLK			0x68
-#define PM_ACPI_SMI_CMD			0x6A
+#define PM_ACPI_SMI_CMD			0x6a
 #define PM_ACPI_CONF			0x74
-#define PM_PMIO_DEBUG			0xD2
-#define PM_MANUAL_RESET			0xD3
-#define PM_HUD_SD_FLASH_CTRL		0xE7
-#define PM_YANG_SD_FLASH_CTRL		0xE8
-#define PM_PCIB_CFG			0xEA
+#define PM_PMIO_DEBUG			0xd2
+#define PM_MANUAL_RESET			0xd3
+#define PM_HUD_SD_FLASH_CTRL		0xe7
+#define PM_YANG_SD_FLASH_CTRL		0xe8
+#define PM_PCIB_CFG			0xea
 
-#define STONEYRIDGE_ACPI_IO_BASE		CONFIG_STONEYRIDGE_ACPI_IO_BASE
+#define SYS_RESET			0xcf9
+
+#define STONEYRIDGE_ACPI_IO_BASE	CONFIG_STONEYRIDGE_ACPI_IO_BASE
 #define ACPI_PM_EVT_BLK		(STONEYRIDGE_ACPI_IO_BASE + 0x00) /* 4 bytes */
 #define ACPI_PM1_CNT_BLK	(STONEYRIDGE_ACPI_IO_BASE + 0x04) /* 2 bytes */
 #define ACPI_PM_TMR_BLK		(STONEYRIDGE_ACPI_IO_BASE + 0x18) /* 4 bytes */
@@ -69,10 +74,10 @@
 #define REV_STONEYRIDGE_A11			0x11
 #define REV_STONEYRIDGE_A12			0x12
 
-#define SPIROM_BASE_ADDRESS_REGISTER	0xA0
+#define SPIROM_BASE_ADDRESS_REGISTER	0xa0
 #define   ROUTE_TPM_2_SPI		BIT(3)
 #define   SPI_ROM_ENABLE		0x02
-#define   SPI_BASE_ADDRESS		0xFEC10000
+#define   SPI_BASE_ADDRESS		0xfec10000
 
 #define LPC_IO_PORT_DECODE_ENABLE	0x44
 #define   DECODE_ENABLE_PARALLEL_PORT0	BIT(0)
@@ -122,7 +127,7 @@
 
 #define LPC_WIDEIO2_GENERIC_PORT	0x90
 
-#define SPI_CNTRL0 			0x00
+#define SPI_CNTRL0			0x00
 #define   SPI_READ_MODE_MASK		(BIT(30) | BIT(29) | BIT(18))
 /* Nominal is 16.7MHz on older devices, 33MHz on newer */
 #define   SPI_READ_MODE_NOM		0x00000000
@@ -138,7 +143,7 @@
 
 #define SPI_CNTRL1			0x0c
 /* Use SPI_SPEED_16M-SPI_SPEED_66M below for hudson and bolton */
-#define   SPI_CNTRL1_SPEED_MASK 	(BIT(15) | BIT(14) | BIT(13) | BIT(12))
+#define   SPI_CNTRL1_SPEED_MASK		(BIT(15) | BIT(14) | BIT(13) | BIT(12))
 #define   SPI_NORM_SPEED_SH		12
 #define   SPI_FAST_SPEED_SH		8
 
@@ -154,22 +159,24 @@
 #define   SPI_SPEED_800K		(BIT(2) |          BIT(0))
 #define   SPI_NORM_SPEED_NEW_SH		12
 #define   SPI_FAST_SPEED_NEW_SH		8
-#define   SPI_ALT_SPEED_NEW_SH 		4
+#define   SPI_ALT_SPEED_NEW_SH		4
 #define   SPI_TPM_SPEED_NEW_SH		0
 
-#define SPI100_HOST_PREF_CONFIG 	0x2c
+#define SPI100_HOST_PREF_CONFIG		0x2c
 #define   SPI_RD4DW_EN_HOST		BIT(15)
 
 static inline int hudson_sata_enable(void)
 {
 	/* True if IDE or AHCI. */
-	return (CONFIG_STONEYRIDGE_SATA_MODE == 0) || (CONFIG_STONEYRIDGE_SATA_MODE == 2);
+	return (CONFIG_STONEYRIDGE_SATA_MODE == 0) ||
+					(CONFIG_STONEYRIDGE_SATA_MODE == 2);
 }
 
 static inline int hudson_ide_enable(void)
 {
 	/* True if IDE or LEGACY IDE. */
-	return (CONFIG_STONEYRIDGE_SATA_MODE == 0) || (CONFIG_STONEYRIDGE_SATA_MODE == 3);
+	return (CONFIG_STONEYRIDGE_SATA_MODE == 0) ||
+					(CONFIG_STONEYRIDGE_SATA_MODE == 3);
 }
 
 void configure_hudson_uart(void);

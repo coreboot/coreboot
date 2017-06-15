@@ -38,7 +38,7 @@
 #define RC_INDXC		1
 #define RC_INDXP		3
 
-#define AB_INDX			0xCD8
+#define AB_INDX			0xcd8
 #define AB_DATA			(AB_INDX+4)
 
 /* Between 1-10 seconds, We should never timeout normally
@@ -65,6 +65,6 @@ int do_smbus_recv_byte(u32 smbus_io_base, u32 device);
 int do_smbus_send_byte(u32 smbus_io_base, u32 device, u8 val);
 void alink_rc_indx(u32 reg_space, u32 reg_addr, u32 port, u32 mask, u32 val);
 void alink_ab_indx(u32 reg_space, u32 reg_addr, u32 mask, u32 val);
-void alink_ax_indx(u32 space /*c or p? */ , u32 axindc, u32 mask, u32 val);
+void alink_ax_indx(u32 space /*c or p? */, u32 axindc, u32 mask, u32 val);
 
 #endif	/* STONEYRIDGE_SMBUS_H */

@@ -39,7 +39,7 @@
  * Reference section 5.2.9 Fixed ACPI Description Table (FADT)
  * in the ACPI 3.0b specification.
  */
-void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
+void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 {
 	acpi_header_t *header = &(fadt->header);
 
@@ -125,7 +125,7 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	fadt->reset_reg.bit_width = 8;
 	fadt->reset_reg.bit_offset = 0;
 	fadt->reset_reg.access_size = ACPI_ACCESS_SIZE_BYTE_ACCESS;
-	fadt->reset_reg.addrl = 0xcf9;
+	fadt->reset_reg.addrl = SYS_RESET;
 	fadt->reset_reg.addrh = 0x0;
 
 	fadt->reset_value = 6;
@@ -169,8 +169,8 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	fadt->x_pm1b_cnt_blk.addrh = 0x0;
 
 	/*
-	 * Note: Under this current AMD C state implementation, this is no longer
-	 *       used and should not be reported to OS.
+	 * Note: Under this current AMD C state implementation, this is no
+	 *       longer used and should not be reported to OS.
 	 */
 	fadt->x_pm2_cnt_blk.space_id = ACPI_ADDRESS_SPACE_IO;
 	fadt->x_pm2_cnt_blk.bit_width = 0;

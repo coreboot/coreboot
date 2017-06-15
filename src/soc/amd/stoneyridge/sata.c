@@ -32,11 +32,11 @@ static void sata_init(struct device *dev)
 	#define AHCI_BASE_ADDRESS_REG 0x24
 	#define MISC_CONTROL_REG 0x40
 	#define UNLOCK_BIT (1<<0)
-	#define SATA_CAPABILITIES_REG 0xFC
+	#define SATA_CAPABILITIES_REG 0xfc
 	#define CFG_CAP_SPM (1<<12)
 
-	volatile u32 *ahci_ptr =
-		(u32*)(pci_read_config32(dev, AHCI_BASE_ADDRESS_REG) & 0xFFFFFF00);
+	volatile u32 *ahci_ptr = (u32 *)(pci_read_config32(dev,
+				AHCI_BASE_ADDRESS_REG) & 0xffffff00);
 	u32 temp;
 
 	/* unlock the write-protect */
@@ -45,7 +45,8 @@ static void sata_init(struct device *dev)
 	pci_write_config32(dev, MISC_CONTROL_REG, temp);
 
 	/* set the SATA AHCI mode to allow port expanders */
-	*(ahci_ptr + BYTE_TO_DWORD_OFFSET(SATA_CAPABILITIES_REG)) |= CFG_CAP_SPM;
+	*(ahci_ptr + BYTE_TO_DWORD_OFFSET(SATA_CAPABILITIES_REG))
+							|= CFG_CAP_SPM;
 
 	/* lock the write-protect */
 	temp = pci_read_config32(dev, MISC_CONTROL_REG);

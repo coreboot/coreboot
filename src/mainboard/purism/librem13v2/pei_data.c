@@ -29,14 +29,14 @@ void mainboard_fill_pei_data(struct pei_data *pei_data)
 		    0x33, 0x00, 0xFF, 0x00, 0xFF, 0x00 } };
 	/* DQS CPU<>DRAM map */
 	const u8 dqs_map[2][8] = {
-		{ 0, 3, 1, 2, 4, 5, 6, 7 },
+		{ 0, 1, 3, 2, 4, 5, 6, 7 },
 		{ 1, 0, 4, 5, 2, 3, 6, 7 } };
 
 	/* Rcomp resistor */
-	const u16 RcompResistor[3] = { 200, 81, 162 };
+	const u16 RcompResistor[3] = { 121, 81, 100 };
 
 	/* Rcomp target */
-	const u16 RcompTarget[5] = { 100, 40, 40, 23, 40 };
+	const u16 RcompTarget[5] = { 100, 40, 20, 20, 26 };
 
 	memcpy(pei_data->dq_map, dq_map, sizeof(dq_map));
 	memcpy(pei_data->dqs_map, dqs_map, sizeof(dqs_map));

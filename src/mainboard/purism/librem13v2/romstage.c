@@ -38,11 +38,11 @@ void mainboard_memory_init_params(struct romstage_params *params,
 		.addr_map = { 0x50 },
 	};
 
-	memory_params->DqPinsInterleaved = 1;
 	get_spd_smbus(&blk);
 	dump_spd_info(&blk);
-	memory_params->MemorySpdDataLen = blk.len;
 	assert(blk.spd_array[0][0] != 0);
+
+	memory_params->MemorySpdDataLen = blk.len;
 	memory_params->MemorySpdPtr00 = (uintptr_t) blk.spd_array[0];
 	memory_params->MemorySpdPtr01 = 0;
 	memory_params->MemorySpdPtr10 = 0;
@@ -60,5 +60,6 @@ void mainboard_memory_init_params(struct romstage_params *params,
 		sizeof(params->pei_data->RcompResistor));
 	memcpy(memory_params->RcompTarget, params->pei_data->RcompTarget,
 		sizeof(params->pei_data->RcompTarget));
+	memory_params->DqPinsInterleaved = TRUE;
 
 }

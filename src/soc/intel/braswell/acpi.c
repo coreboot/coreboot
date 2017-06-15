@@ -31,7 +31,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <ec/google/chromeec/ec.h>
-#include <fsp/gop.h>
+#include <soc/intel/common/opregion.h>
 #include <rules.h>
 #include <soc/acpi.h>
 #include <soc/gfx.h>
@@ -473,6 +473,46 @@ unsigned long acpi_madt_irq_overrides(unsigned long current)
 	return current;
 }
 
+/* Initialize IGD OpRegion, called from ACPI code */
+static int update_igd_opregion(igd_opregion_t *opregion)
+{
+	u16 reg16;
+	struct device *igd;
+
+	/* TODO Initialize Mailbox 1 */
+
+	/* TODO Initialize Mailbox 3 */
+	opregion->mailbox3.bclp = IGD_BACKLIGHT_BRIGHTNESS;
+	opregion->mailbox3.pfit = IGD_FIELD_VALID | IGD_PFIT_STRETCH;
+	opregion->mailbox3.pcft = 0; /* should be (IMON << 1) & 0x3e */
+	opregion->mailbox3.cblv = IGD_FIELD_VALID | IGD_INITIAL_BRIGHTNESS;
+	opregion->mailbox3.bclm[0] = IGD_WORD_FIELD_VALID + 0x0000;
+	opregion->mailbox3.bclm[1] = IGD_WORD_FIELD_VALID + 0x0a19;
+	opregion->mailbox3.bclm[2] = IGD_WORD_FIELD_VALID + 0x1433;
+	opregion->mailbox3.bclm[3] = IGD_WORD_FIELD_VALID + 0x1e4c;
+	opregion->mailbox3.bclm[4] = IGD_WORD_FIELD_VALID + 0x2866;
+	opregion->mailbox3.bclm[5] = IGD_WORD_FIELD_VALID + 0x327f;
+	opregion->mailbox3.bclm[6] = IGD_WORD_FIELD_VALID + 0x3c99;
+	opregion->mailbox3.bclm[7] = IGD_WORD_FIELD_VALID + 0x46b2;
+	opregion->mailbox3.bclm[8] = IGD_WORD_FIELD_VALID + 0x50cc;
+	opregion->mailbox3.bclm[9] = IGD_WORD_FIELD_VALID + 0x5ae5;
+	opregion->mailbox3.bclm[10] = IGD_WORD_FIELD_VALID + 0x64ff;
+
+	/*
+	 * TODO This needs to happen in S3 resume, too.
+	 * Maybe it should move to the finalize handler
+	 */
+	igd = dev_find_slot(0, PCI_DEVFN(GFX_DEV, GFX_FUNC));
+
+	pci_write_config32(igd, ASLS, (u32)opregion);
+	reg16 = pci_read_config16(igd, SWSCI);
+	reg16 &= ~(1 << 0);
+	reg16 |= (1 << 15);
+	pci_write_config16(igd, SWSCI, reg16);
+
+	return 0;
+}
+
 unsigned long southcluster_write_acpi_tables(device_t device,
 					     unsigned long current,
 					     struct acpi_rsdp *rsdp)
@@ -482,12 +522,13 @@ unsigned long southcluster_write_acpi_tables(device_t device,
 	current = acpi_write_hpet(device, current, rsdp);
 	current = acpi_align_current(current);
 
-	if (IS_ENABLED(CONFIG_RUN_FSP_GOP)) {
+	if (IS_ENABLED(CONFIG_INTEL_GMA_ADD_VBT_DATA_FILE)) {
 		igd_opregion_t *opregion;
 
 		printk(BIOS_DEBUG, "ACPI:    * IGD OpRegion\n");
 		opregion = (igd_opregion_t *)current;
 		init_igd_opregion(opregion);
+		update_igd_opregion(opregion);
 		current += sizeof(igd_opregion_t);
 		current = acpi_align_current(current);
 	}
@@ -542,75 +583,4 @@ void southcluster_inject_dsdt(device_t device)
 
 __attribute__((weak)) void acpi_create_serialio_ssdt(acpi_header_t *ssdt)
 {
-}
-
-/* Reading VBT table from flash */
-static void get_fsp_vbt(igd_opregion_t *opregion)
-{
-	const optionrom_vbt_t *vbt;
-	uint32_t vbt_len;
-
-	vbt = fsp_get_vbt(&vbt_len);
-	if (!vbt)
-		die("vbt data not found");
-	memcpy(opregion->header.vbios_version, vbt->coreblock_biosbuild, 4);
-	memcpy(opregion->vbt.gvd1, vbt, vbt->hdr_vbt_size <
-		sizeof(opregion->vbt.gvd1) ? vbt->hdr_vbt_size :
-		sizeof(opregion->vbt.gvd1));
-}
-
-/* Initialize IGD OpRegion, called from ACPI code */
-int init_igd_opregion(igd_opregion_t *opregion)
-{
-	device_t igd;
-	u16 reg16;
-
-	memset(opregion, 0, sizeof(igd_opregion_t));
-
-	/* FIXME if IGD is disabled, we should exit here. */
-
-	memcpy(&opregion->header.signature, IGD_OPREGION_SIGNATURE,
-		sizeof(IGD_OPREGION_SIGNATURE));
-
-	/* 8kb */
-	opregion->header.size = sizeof(igd_opregion_t) / 1024;
-	opregion->header.version = IGD_OPREGION_VERSION;
-
-	/* FIXME We just assume we're mobile for now */
-	opregion->header.mailboxes = MAILBOXES_MOBILE;
-
-	/* TODO Initialize Mailbox 1 */
-
-	/* TODO Initialize Mailbox 3 */
-	opregion->mailbox3.bclp = IGD_BACKLIGHT_BRIGHTNESS;
-	opregion->mailbox3.pfit = IGD_FIELD_VALID | IGD_PFIT_STRETCH;
-	opregion->mailbox3.pcft = 0; /* should be (IMON << 1) & 0x3e */
-	opregion->mailbox3.cblv = IGD_FIELD_VALID | IGD_INITIAL_BRIGHTNESS;
-	opregion->mailbox3.bclm[0] = IGD_WORD_FIELD_VALID + 0x0000;
-	opregion->mailbox3.bclm[1] = IGD_WORD_FIELD_VALID + 0x0a19;
-	opregion->mailbox3.bclm[2] = IGD_WORD_FIELD_VALID + 0x1433;
-	opregion->mailbox3.bclm[3] = IGD_WORD_FIELD_VALID + 0x1e4c;
-	opregion->mailbox3.bclm[4] = IGD_WORD_FIELD_VALID + 0x2866;
-	opregion->mailbox3.bclm[5] = IGD_WORD_FIELD_VALID + 0x327f;
-	opregion->mailbox3.bclm[6] = IGD_WORD_FIELD_VALID + 0x3c99;
-	opregion->mailbox3.bclm[7] = IGD_WORD_FIELD_VALID + 0x46b2;
-	opregion->mailbox3.bclm[8] = IGD_WORD_FIELD_VALID + 0x50cc;
-	opregion->mailbox3.bclm[9] = IGD_WORD_FIELD_VALID + 0x5ae5;
-	opregion->mailbox3.bclm[10] = IGD_WORD_FIELD_VALID + 0x64ff;
-
-	get_fsp_vbt(opregion);
-
-	/*
-	 * TODO This needs to happen in S3 resume, too.
-	 * Maybe it should move to the finalize handler
-	 */
-	igd = dev_find_slot(0, PCI_DEVFN(GFX_DEV, GFX_FUNC));
-
-	pci_write_config32(igd, ASLS, (u32)opregion);
-	reg16 = pci_read_config16(igd, SWSCI);
-	reg16 &= ~(1 << 0);
-	reg16 |= (1 << 15);
-	pci_write_config16(igd, SWSCI, reg16);
-
-	return 0;
 }

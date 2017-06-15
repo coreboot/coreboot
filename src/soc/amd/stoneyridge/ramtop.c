@@ -15,6 +15,8 @@
 
 #include <stdint.h>
 #include <arch/io.h>
+#include <cpu/x86/msr.h>
+#include <cpu/amd/mtrr.h>
 #include <cbmem.h>
 
 #define CBMEM_TOP_SCRATCHPAD 0x78
@@ -30,4 +32,14 @@ uintptr_t restore_top_of_low_cacheable(void)
 	uint16_t top_cache;
 	top_cache = pci_read_config16(PCI_DEV(0,0,0), CBMEM_TOP_SCRATCHPAD);
 	return (top_cache << 16);
+}
+
+void *cbmem_top(void)
+{
+	msr_t tom = rdmsr(TOP_MEM);
+
+	if (!tom.lo)
+		return 0;
+	else
+		return (void *)restore_top_of_low_cacheable();
 }

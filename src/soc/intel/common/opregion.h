@@ -19,6 +19,6 @@
 #include <drivers/intel/gma/opregion.h>
 
 /* Loads vbt and initializes opregion. Returns non-zero on success */
-int init_igd_opregion(igd_opregion_t *opregion);
+enum cb_err init_igd_opregion(igd_opregion_t *opregion);
 
 #endif /* _COMMON_OPREGION_H_ */

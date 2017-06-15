@@ -21,7 +21,7 @@
 #include "opregion.h"
 #include "vbt.h"
 
-int init_igd_opregion(igd_opregion_t *opregion)
+enum cb_err init_igd_opregion(igd_opregion_t *opregion)
 {
 	struct region_device vbt_rdev;
 	optionrom_vbt_t *vbt;
@@ -29,14 +29,14 @@ int init_igd_opregion(igd_opregion_t *opregion)
 
 	if (locate_vbt(&vbt_rdev) == CB_ERR) {
 		printk(BIOS_ERR, "VBT not found\n");
-		return 0;
+		return CB_ERR;
 	};
 
 	vbt = rdev_mmap_full(&vbt_rdev);
 
 	if (!vbt) {
 		printk(BIOS_ERR, "VBT couldn't be read\n");
-		return 0;
+		return CB_ERR;
 	}
 
 	memset(opregion, 0, sizeof(igd_opregion_t));
@@ -51,7 +51,7 @@ int init_igd_opregion(igd_opregion_t *opregion)
 
 		if (ext_vbt == NULL) {
 			printk(BIOS_ERR, "Unable to add Ext VBT to cbmem!\n");
-			return 0;
+			return CB_ERR;
 		}
 
 		memcpy(ext_vbt, vbt, vbt->hdr_vbt_size);
@@ -71,5 +71,5 @@ int init_igd_opregion(igd_opregion_t *opregion)
 
 	rdev_munmap(&vbt_rdev, vbt);
 
-	return 1;
+	return CB_SUCCESS;
 }

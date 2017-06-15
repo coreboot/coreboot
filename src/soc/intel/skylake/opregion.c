@@ -19,7 +19,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-int init_igd_opregion(igd_opregion_t *opregion)
+enum cb_err init_igd_opregion(igd_opregion_t *opregion)
 {
 	const optionrom_vbt_t *vbt;
 	uint32_t vbt_len;
@@ -46,5 +46,5 @@ int init_igd_opregion(igd_opregion_t *opregion)
 	/* We just assume we're mobile for now */
 	opregion->header.mailboxes = MAILBOXES_MOBILE;
 
-	return 0;
+	return CB_SUCCESS;
 }

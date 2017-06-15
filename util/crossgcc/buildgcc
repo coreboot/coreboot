@@ -152,7 +152,7 @@ searchtool()
 		search="$2"
 	fi
 	for i in "$1" "g$1" "gnu$1"; do
-		if [ -x "$(which $i 2>/dev/null)" ]; then
+		if [ -x "$(command -v $i 2>/dev/null)" ]; then
 			if [ "$(cat /dev/null | $i --version 2>&1 | grep -c "$search")" \
 			    -gt 0 ]; then
 				echo $i
@@ -164,7 +164,7 @@ searchtool()
 	# patch and tar also work.
 	if [ $UNAME = "Darwin" -o $UNAME = "FreeBSD" -o $UNAME = "NetBSD" -o $UNAME = "OpenBSD" ]; then
 		if [ "$1" = "patch" -o "$1" = "tar" ]; then
-			if [ -x "$(which $1 2>/dev/null)" ]; then
+			if [ -x "$(command -v $1 2>/dev/null)" ]; then
 				echo $1
 				return
 			fi
@@ -172,19 +172,19 @@ searchtool()
 	fi
 	if echo $1 | grep -q "sum" ; then
 		algor=$(echo $1 | sed -e 's,sum,,')
-		if [ -x "$(which $1 2>/dev/null)" ]; then
+		if [ -x "$(command -v $1 2>/dev/null)" ]; then
 			#xxxsum [file]
 			echo $1
 			return
-		elif [ -x "$(which $algor 2>/dev/null)" ]; then
+		elif [ -x "$(command -v $algor 2>/dev/null)" ]; then
 			#xxx [file]
 			echo $algor
 			return
-		elif [ -x "$(which openssl 2>/dev/null)" ]; then
+		elif [ -x "$(command -v openssl 2>/dev/null)" ]; then
 			#openssl xxx [file]
 			echo openssl $algor
 			return
-		elif [ -x "$(which cksum 2>/dev/null)" ]; then
+		elif [ -x "$(command -v cksum 2>/dev/null)" ]; then
 			#cksum -a xxx [file]
 			#cksum has special options in NetBSD. Actually, NetBSD will use the second case above.
 			echo "buildgcc" | cksum -a $algor > /dev/null 2>/dev/null && \

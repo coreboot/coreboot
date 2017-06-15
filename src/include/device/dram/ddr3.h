@@ -52,7 +52,7 @@
  * These values are in 1/256 ns units.
  * @{
  */
-#define NS2MHZ_DIV256 1000 << 8
+#define NS2MHZ_DIV256	(1000 << 8)
 
 #define TCK_1333MHZ     192
 #define TCK_1200MHZ     212

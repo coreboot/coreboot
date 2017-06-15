@@ -891,15 +891,21 @@ static int run_ap_work(mp_callback_t func, long expire_us)
 
 	/* Wait for all the APs to signal back that call has been accepted. */
 	stopwatch_init_usecs_expire(&sw, expire_us);
-	for (cpus_accepted = 0; !stopwatch_expired(&sw); cpus_accepted = 0) {
+	while (1) {
+		cpus_accepted = 0;
+
 		for (i = 0; i < ARRAY_SIZE(ap_callbacks); i++) {
 			if (cur_cpu == i)
 				continue;
 			if (read_callback(&ap_callbacks[i]) == NULL)
 				cpus_accepted++;
 		}
+
 		if (cpus_accepted == global_num_aps)
 			return 0;
+
+		if (stopwatch_expired(&sw))
+			break;
 	}
 
 	printk(BIOS_ERR, "AP call expired. %d/%d CPUs accepted.\n",

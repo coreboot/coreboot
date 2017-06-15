@@ -13,4 +13,6 @@ ramstage-y += def_callouts.c
 ramstage-y += heapmanager.c
 ramstage-$(CONFIG_SPI_FLASH) += spi.c
 
+subdirs-$(CONFIG_SOC_AMD_COMMON_BLOCK) += block
+
 endif

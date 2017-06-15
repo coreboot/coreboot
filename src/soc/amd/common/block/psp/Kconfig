@@ -1,0 +1,6 @@
+config SOC_AMD_COMMON_BLOCK_PSP
+	bool
+	default n
+	help
+	  This option builds in the Platform Security Processor initialization
+	  functions.

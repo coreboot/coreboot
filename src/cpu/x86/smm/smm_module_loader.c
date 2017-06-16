@@ -64,10 +64,10 @@ struct smm_entry_ins {
  * a given stride. The entry_start is the highest entry point's address. All
  * other entry points are stride size below the previous.
  */
-static void smm_place_jmp_instructions(void *entry_start, int stride, int num,
-				       void *jmp_target)
+static void smm_place_jmp_instructions(void *entry_start, size_t stride,
+		size_t num, void *jmp_target)
 {
-	int i;
+	size_t i;
 	char *cur;
 	struct smm_entry_ins entry = { .jmp_rel = 0xe9 };
 
@@ -80,9 +80,9 @@ static void smm_place_jmp_instructions(void *entry_start, int stride, int num,
 	 * the jmp instruction needs to be taken into account. */
 	cur = entry_start;
 	for (i = 0; i < num; i++) {
-		uint32_t disp = (uint32_t)jmp_target;
+		uint32_t disp = (uintptr_t)jmp_target;
 
-		disp -= sizeof(entry) + (uint32_t)cur;
+		disp -= sizeof(entry) + (uintptr_t)cur;
 		printk(BIOS_DEBUG,
 		       "SMM Module: placing jmp sequence at %p rel16 0x%04x\n",
 		       cur, disp);
@@ -94,10 +94,10 @@ static void smm_place_jmp_instructions(void *entry_start, int stride, int num,
 
 /* Place stacks in base -> base + size region, but ensure the stacks don't
  * overlap the staggered entry points. */
-static void *smm_stub_place_stacks(char *base, int size,
+static void *smm_stub_place_stacks(char *base, size_t size,
 				   struct smm_loader_params *params)
 {
-	int total_stack_size;
+	size_t total_stack_size;
 	char *stacks_top;
 
 	if (params->stack_top != NULL)
@@ -128,14 +128,14 @@ static void *smm_stub_place_stacks(char *base, int size,
 static void smm_stub_place_staggered_entry_points(char *base,
 	const struct smm_loader_params *params, const struct rmodule *smm_stub)
 {
-	int stub_entry_offset;
+	size_t stub_entry_offset;
 
 	stub_entry_offset = rmodule_entry_offset(smm_stub);
 
 	/* If there are staggered entry points or the stub is not located
 	 * at the SMM entry point then jmp instructions need to be placed. */
 	if (params->num_concurrent_save_states > 1 || stub_entry_offset != 0) {
-		int num_entries;
+		size_t num_entries;
 
 		base += SMM_ENTRY_OFFSET;
 		num_entries = params->num_concurrent_save_states;
@@ -166,12 +166,12 @@ static void smm_stub_place_staggered_entry_points(char *base,
  */
 static int smm_module_setup_stub(void *smbase, struct smm_loader_params *params)
 {
-	int total_save_state_size;
-	int smm_stub_size;
-	int stub_entry_offset;
+	size_t total_save_state_size;
+	size_t smm_stub_size;
+	size_t stub_entry_offset;
 	char *smm_stub_loc;
 	void *stacks_top;
-	int size;
+	size_t size;
 	char *base;
 	int i;
 	struct smm_stub_params *stub_params;
@@ -212,10 +212,9 @@ static int smm_module_setup_stub(void *smbase, struct smm_loader_params *params)
 
 	/* Adjust for jmp instruction sequence. */
 	if (stub_entry_offset != 0) {
-		int entry_sequence_size = sizeof(struct smm_entry_ins);
+		size_t entry_sequence_size = sizeof(struct smm_entry_ins);
 		/* Align up to 16 bytes. */
-		entry_sequence_size += 15;
-		entry_sequence_size &= ~15;
+		entry_sequence_size = ALIGN_UP(entry_sequence_size, 16);
 		smm_stub_loc += entry_sequence_size;
 		smm_stub_size += entry_sequence_size;
 	}
@@ -250,11 +249,11 @@ static int smm_module_setup_stub(void *smbase, struct smm_loader_params *params)
 
 	/* Setup the parameters for the stub code. */
 	stub_params = rmodule_parameters(&smm_stub);
-	stub_params->stack_top = (u32)stacks_top;
+	stub_params->stack_top = (uintptr_t)stacks_top;
 	stub_params->stack_size = params->per_cpu_stack_size;
-	stub_params->c_handler = (u32)params->handler;
-	stub_params->c_handler_arg = (u32)params->handler_arg;
-	stub_params->runtime.smbase = (u32)smbase;
+	stub_params->c_handler = (uintptr_t)params->handler;
+	stub_params->c_handler_arg = (uintptr_t)params->handler_arg;
+	stub_params->runtime.smbase = (uintptr_t)smbase;
 	stub_params->runtime.save_state_size = params->per_cpu_save_state_size;
 
 	/* Initialize the APIC id to CPU number table to be 1:1 */
@@ -314,13 +313,13 @@ int smm_setup_relocation_handler(struct smm_loader_params *params)
  * expects a region large enough to encompass the handler and stacks
  * as well as the SMM_DEFAULT_SIZE.
  */
-int smm_load_module(void *smram, int size, struct smm_loader_params *params)
+int smm_load_module(void *smram, size_t size, struct smm_loader_params *params)
 {
 	struct rmodule smm_mod;
-	int total_stack_size;
-	int handler_size;
-	int module_alignment;
-	int alignment_size;
+	size_t total_stack_size;
+	size_t handler_size;
+	size_t module_alignment;
+	size_t alignment_size;
 	char *base;
 
 	if (size <= SMM_DEFAULT_SIZE)
@@ -344,7 +343,8 @@ int smm_load_module(void *smram, int size, struct smm_loader_params *params)
 	base += SMM_DEFAULT_SIZE;
 	handler_size = rmodule_memory_size(&smm_mod);
 	module_alignment = rmodule_load_alignment(&smm_mod);
-	alignment_size = module_alignment - ((u32)base % module_alignment);
+	alignment_size = module_alignment -
+				((uintptr_t)base % module_alignment);
 	if (alignment_size != module_alignment) {
 		handler_size += alignment_size;
 		base += alignment_size;

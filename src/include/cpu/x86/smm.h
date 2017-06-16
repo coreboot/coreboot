@@ -558,11 +558,11 @@ void *smm_get_save_state(int cpu);
  */
 struct smm_loader_params {
 	void *stack_top;
-	int per_cpu_stack_size;
-	int num_concurrent_stacks;
+	size_t per_cpu_stack_size;
+	size_t num_concurrent_stacks;
 
-	int per_cpu_save_state_size;
-	int num_concurrent_save_states;
+	size_t per_cpu_save_state_size;
+	size_t num_concurrent_save_states;
 
 	smm_handler_t handler;
 	void *handler_arg;
@@ -572,7 +572,7 @@ struct smm_loader_params {
 
 /* Both of these return 0 on success, < 0 on failure. */
 int smm_setup_relocation_handler(struct smm_loader_params *params);
-int smm_load_module(void *smram, int size, struct smm_loader_params *params);
+int smm_load_module(void *smram, size_t size, struct smm_loader_params *params);
 
 /* Backup and restore default SMM region. */
 void *backup_default_smm_area(void);

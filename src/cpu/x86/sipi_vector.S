@@ -14,6 +14,8 @@
  * GNU General Public License for more details.
  */
 
+#include <cpu/x86/cr.h>
+
 /* The SIPI vector is responsible for initializing the APs in the sytem. It
  * loads microcode, sets up MSRs, and enables caching before calling into
  * C code. */
@@ -50,6 +52,11 @@ c_handler:
 ap_count:
 .long 0
 
+#define CR0_CLEAR_FLAGS_CACHE_ENABLE (CR0_CD | CR0_NW)
+#define CR0_SET_FLAGS (CR0_CLEAR_FLAGS_CACHE_ENABLE | CR0_PE)
+#define CR0_CLEAR_FLAGS \
+	(CR0_PG | CR0_AM | CR0_WP | CR0_NE | CR0_TS | CR0_EM | CR0_MP)
+
 .text
 .code16
 .global _start
@@ -75,8 +82,8 @@ _start:
 	data32 lgdt (%ebx)
 
 	movl	%cr0, %eax
-	andl	$0x7FFAFFD1, %eax /* PG,AM,WP,NE,TS,EM,MP = 0 */
-	orl	$0x60000001, %eax /* CD, NW, PE = 1 */
+	andl	$~CR0_CLEAR_FLAGS, %eax
+	orl	$CR0_SET_FLAGS, %eax
 	movl	%eax, %cr0
 
 	ljmpl	$CODE_SEG, $1f
@@ -175,7 +182,7 @@ load_msr:
 1:
 	/* Enable caching. */
 	mov	%cr0, %eax
-	and	$0x9fffffff, %eax /* CD, NW = 0 */
+	and	$~(CR0_CLEAR_FLAGS_CACHE_ENABLE), %eax
 	mov	%eax, %cr0
 
 	/* c_handler(cpu_num) */

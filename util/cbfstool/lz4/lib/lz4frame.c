@@ -1091,7 +1091,7 @@ size_t LZ4F_decompress(LZ4F_decompressionContext_t decompressionContext,
                 dctxPtr->tmpInTarget = minFHSize;   /* minimum to attempt decode */
                 dctxPtr->dStage = dstage_storeHeader;
             }
-	    /* Falls through. */
+            __attribute__ ((fallthrough));
         case dstage_storeHeader:
             {
                 size_t sizeToCopy = dctxPtr->tmpInTarget - dctxPtr->tmpInSize;

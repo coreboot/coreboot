@@ -562,7 +562,7 @@ build_MPC() {
 
 build_LIBELF() {
 	CC="$CC" CFLAGS="$HOSTCFLAGS" libelf_cv_elf_h_works=no \
-	../${LIBELF_DIR}/configure --disable-shared --prefix=$TARGETDIR \
+	../${LIBELF_DIR}/configure --disable-shared --disable-nls --prefix=$TARGETDIR \
 		--infodir=$TARGETDIR/info CFLAGS="$HOSTCFLAGS" || touch .failed
 	$MAKE $JOBS || touch .failed
 	$MAKE install prefix=$DESTDIR$TARGETDIR || touch .failed

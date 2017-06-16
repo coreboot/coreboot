@@ -23,6 +23,8 @@
  * found in smm.h.
  */
 
+#include <cpu/x86/cr.h>
+
 .code32
 .section ".module_parameters", "aw", @progbits
 stub_entry_params:
@@ -53,6 +55,10 @@ fallback_stack_bottom:
 .skip 128
 fallback_stack_top:
 
+#define CR0_CLEAR_FLAGS \
+	(CR0_CD | CR0_NW | CR0_PG | CR0_AM | CR0_WP | \
+	 CR0_NE | CR0_TS | CR0_EM | CR0_MP)
+
 .text
 .code16
 .global _start
@@ -61,8 +67,8 @@ _start:
 	data32	lgdt (%ebx)
 
 	movl	%cr0, %eax
-	andl	$0x1FFAFFD1, %eax /* CD,NW,PG,AM,WP,NE,TS,EM,MP = 0 */
-	orl	$0x1, %eax        /* PE = 1 */
+	andl	$~CR0_CLEAR_FLAGS, %eax
+	orl	$CR0_PE, %eax
 	movl	%eax, %cr0
 
 	/* Enable protected mode */

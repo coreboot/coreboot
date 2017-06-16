@@ -19,6 +19,14 @@
 #include <cpu/x86/cache.h>
 #include <console/console.h>
 
+#define FXSAVE_SIZE 512
+
+/* FXSAVE area during relocation. While it may not be strictly needed the
+   SMM stub code relies on the FXSAVE area being non-zero to enable SSE
+   instructions within SMM mode. */
+static uint8_t fxsave_area_relocation[CONFIG_MAX_CPUS][FXSAVE_SIZE]
+__attribute__((aligned(16)));
+
 /*
  * Components that make up the SMRAM:
  * 1. Save state - the total save state memory used
@@ -36,6 +44,8 @@ struct smm_stub_params {
 	u32 stack_top;
 	u32 c_handler;
 	u32 c_handler_arg;
+	u32 fxsave_area;
+	u32 fxsave_area_size;
 	struct smm_runtime runtime;
 } __attribute__ ((packed));
 
@@ -164,7 +174,8 @@ static void smm_stub_place_staggered_entry_points(char *base,
  * concurrent areas requested. The save state always lives at the top of SMRAM
  * space, and the entry point is at offset 0x8000.
  */
-static int smm_module_setup_stub(void *smbase, struct smm_loader_params *params)
+static int smm_module_setup_stub(void *smbase, struct smm_loader_params *params,
+		void *fxsave_area)
 {
 	size_t total_save_state_size;
 	size_t smm_stub_size;
@@ -253,6 +264,8 @@ static int smm_module_setup_stub(void *smbase, struct smm_loader_params *params)
 	stub_params->stack_size = params->per_cpu_stack_size;
 	stub_params->c_handler = (uintptr_t)params->handler;
 	stub_params->c_handler_arg = (uintptr_t)params->handler_arg;
+	stub_params->fxsave_area = (uintptr_t)fxsave_area;
+	stub_params->fxsave_area_size = FXSAVE_SIZE;
 	stub_params->runtime.smbase = (uintptr_t)smbase;
 	stub_params->runtime.save_state_size = params->per_cpu_save_state_size;
 
@@ -293,7 +306,7 @@ int smm_setup_relocation_handler(struct smm_loader_params *params)
 	if (params->num_concurrent_stacks == 0)
 		params->num_concurrent_stacks = CONFIG_MAX_CPUS;
 
-	return smm_module_setup_stub(smram, params);
+	return smm_module_setup_stub(smram, params, fxsave_area_relocation);
 }
 
 /* The SMM module is placed within the provided region in the following
@@ -320,6 +333,9 @@ int smm_load_module(void *smram, size_t size, struct smm_loader_params *params)
 	size_t handler_size;
 	size_t module_alignment;
 	size_t alignment_size;
+	size_t fxsave_size;
+	void *fxsave_area;
+	size_t total_size;
 	char *base;
 
 	if (size <= SMM_DEFAULT_SIZE)
@@ -350,8 +366,19 @@ int smm_load_module(void *smram, size_t size, struct smm_loader_params *params)
 		base += alignment_size;
 	}
 
+	fxsave_size = 0;
+	fxsave_area = NULL;
+	if (IS_ENABLED(CONFIG_SSE)) {
+		fxsave_size = FXSAVE_SIZE * params->num_concurrent_stacks;
+		/* FXSAVE area below all the stacks stack. */
+		fxsave_area = params->stack_top;
+		fxsave_area -= total_stack_size + fxsave_size;
+	}
+
 	/* Does the required amount of memory exceed the SMRAM region size? */
-	if ((total_stack_size + handler_size + SMM_DEFAULT_SIZE) > size)
+	total_size = total_stack_size + handler_size;
+	total_size += fxsave_size + SMM_DEFAULT_SIZE;
+	if (total_size > size)
 		return -1;
 
 	if (rmodule_load(base, &smm_mod))
@@ -360,5 +387,5 @@ int smm_load_module(void *smram, size_t size, struct smm_loader_params *params)
 	params->handler = rmodule_entry(&smm_mod);
 	params->handler_arg = rmodule_parameters(&smm_mod);
 
-	return smm_module_setup_stub(smram, params);
+	return smm_module_setup_stub(smram, params, fxsave_area);
 }

@@ -36,6 +36,10 @@ c_handler:
 .long 0
 c_handler_arg:
 .long 0
+fxsave_area:
+.long 0
+fxsave_area_size:
+.long 0
 /* struct smm_runtime begins here. */
 smm_runtime:
 smbase:
@@ -122,6 +126,8 @@ smm_trampoline32:
 	 * not be assigned. Use the fallback stack and check this condition in
 	 * C handler. */
 	movl	$(fallback_stack_top), %esp
+	/* Clear fxsave location as there will be no saving/restoring. */
+	xor	%edi, %edi
 	jmp	2f
 1:
 	movl	stack_size, %eax
@@ -130,7 +136,33 @@ smm_trampoline32:
 	subl	%eax, %edx
 	mov	%edx, %esp
 
+	/* calculate fxsave location */
+	mov	fxsave_area, %edi
+	test	%edi, %edi
+	jz	2f
+	movl	fxsave_area_size, %eax
+	mul	%ecx
+	add	%eax, %edi
+
 2:
+	/* Save location of fxsave area. */
+	push	%edi
+	mov	%esp, %ebp
+	test	%edi, %edi
+	jz	1f
+
+	/* Enable sse instructions. */
+	mov	%cr4, %eax
+	orl	$(CR4_OSFXSR | CR4_OSXMMEXCPT), %eax
+	mov	%eax, %cr4
+
+	/* Save FP state. */
+	fxsave	(%edi)
+
+1:
+	/* Align stack to 16 bytes. Another 16 bytes are pushed below. */
+	andl	$0xfffffff0, %esp
+
 	/* Call into the c-based SMM relocation function with the platform
 	 * parameters. Equivalent to:
 	 *   struct arg = { c_handler_params, cpu_num, smm_runtime {;
@@ -143,5 +175,16 @@ smm_trampoline32:
 	mov	c_handler, %eax
 	call	*%eax
 
+	/* Restore stack from call frame */
+	mov	%ebp, %esp
+	/* Retrieve fxsave location. */
+	pop	%edi
+	test	%edi, %edi
+	jz	1f
+
+	/* Restore FP state. */
+	fxrstor	(%edi)
+
+1:
 	/* Exit from SM mode. */
 	rsm

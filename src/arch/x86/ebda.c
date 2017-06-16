@@ -19,6 +19,7 @@
 #include <arch/io.h>
 #include <arch/ebda.h>
 #include <arch/acpi.h>
+#include <commonlib/endian.h>
 
 void setup_ebda(u32 low_memory_size, u16 ebda_segment, u16 ebda_size)
 {
@@ -38,15 +39,15 @@ void setup_ebda(u32 low_memory_size, u16 ebda_segment, u16 ebda_size)
 	ebda = (void *)((uintptr_t)ebda_segment << 4);
 
 	/* clear BIOS DATA AREA */
-	memset(X86_BDA_BASE, 0, X86_BDA_SIZE);
+	zero_n(X86_BDA_BASE, X86_BDA_SIZE);
 
 	/* Avoid unaligned write16() since it's undefined behavior */
-	memcpy(X86_EBDA_LOWMEM, &low_memory_kb, sizeof(low_memory_kb));
-	memcpy(X86_EBDA_SEGMENT, &ebda_segment, sizeof(ebda_segment));
+	write_le16(X86_EBDA_LOWMEM, low_memory_kb);
+	write_le16(X86_EBDA_SEGMENT, ebda_segment);
 
 	/* Set up EBDA */
-	memset(ebda, 0, ebda_size);
-	memcpy(ebda, &ebda_kb, sizeof(ebda_kb));
+	zero_n(ebda, ebda_size);
+	write_le16(ebda, ebda_kb);
 }
 
 void setup_default_ebda(void)

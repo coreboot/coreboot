@@ -18,6 +18,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <string.h>
 
 /* Endian agnostic functions working on single byte. */
 
@@ -252,6 +253,11 @@ static inline void write_at_le64(void *dest, uint64_t val, size_t offset)
 	uint8_t *d = dest;
 	d += offset;
 	write_le64(d, val);
+}
+
+static inline void zero_n(void *dest, size_t n)
+{
+	memset(dest, 0, n);
 }
 
 #endif

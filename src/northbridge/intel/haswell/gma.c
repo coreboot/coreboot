@@ -14,6 +14,7 @@
  */
 
 #include <arch/io.h>
+#include <cbmem.h>
 #include <console/console.h>
 #include <bootmode.h>
 #include <delay.h>
@@ -24,6 +25,7 @@
 #include <drivers/intel/gma/i915.h>
 #include <cpu/intel/haswell/haswell.h>
 #include <northbridge/intel/common/gma_opregion.h>
+#include <southbridge/intel/lynxpoint/nvs.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -514,11 +516,21 @@ gma_write_acpi_tables(struct device *const dev,
 		      struct acpi_rsdp *const rsdp)
 {
 	igd_opregion_t *opregion = (igd_opregion_t *)current;
+	global_nvs_t *gnvs;
 
 	if (init_igd_opregion(opregion) != CB_SUCCESS)
 		return current;
 
 	current += sizeof(igd_opregion_t);
+
+	/* GNVS has been already set up */
+	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
+	if (gnvs) {
+		/* IGD OpRegion Base Address */
+		gnvs->aslb = (u32)(uintptr_t)opregion;
+	} else {
+		printk(BIOS_ERR, "Error: GNVS table not found.\n");
+	}
 
 	gma_enable_swsci();
 

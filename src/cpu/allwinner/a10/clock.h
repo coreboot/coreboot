@@ -51,7 +51,7 @@
 #define  APB1_CLK_SRC_32K		(2 << 24)
 #define APB1_RAT_N_MASK			(3 << 16)
 #define  APB1_RAT_N(m)			(((m) & 0x3) << 16)
-#define APB1_RAT_M_MASK			0x1f << 0)
+#define APB1_RAT_M_MASK			(0x1f << 0)
 #define  APB1_RAT_M(n)			(((n) & 0x1f) << 0)
 
 /* PLL5_CFG values */

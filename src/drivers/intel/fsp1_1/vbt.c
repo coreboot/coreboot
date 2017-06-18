@@ -17,6 +17,7 @@
 #include <bootmode.h>
 #include <cbfs.h>
 #include <console/console.h>
+#include <fsp/gop.h>
 #include <fsp/ramstage.h>
 #include <fsp/util.h>
 

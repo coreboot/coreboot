@@ -21,7 +21,6 @@
 #include <fsp/api.h>
 /* Current users expect to get the SoC's FSP definitions by including util.h. */
 #include <fsp/soc_binding.h>
-#include <fsp/gop.h>
 #include <program_loading.h>
 #include <commonlib/region.h>
 

@@ -61,7 +61,7 @@ verstage-y += tsc_freq.c
 
 ramstage-y += chip.c
 ramstage-$(CONFIG_USBDEBUG) += enable_usbdebug.c
-ramstage-$(CONFIG_HAVE_ACPI_TABLES) += fadt.c
+ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
 ramstage-y += fixme.c
 ramstage-y += gpio.c
 ramstage-y += hda.c

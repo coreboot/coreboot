@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#include <cbmem.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -28,8 +29,10 @@
 #include <arch/acpi.h>
 #include <pc80/i8254.h>
 #include <pc80/i8259.h>
+#include <soc/acpi.h>
 #include <soc/pci_devs.h>
 #include <soc/hudson.h>
+#include <soc/nvs.h>
 #include <vboot/vbnv.h>
 
 static void lpc_init(device_t dev)
@@ -105,6 +108,7 @@ static void lpc_init(device_t dev)
 static void hudson_lpc_read_resources(device_t dev)
 {
 	struct resource *res;
+	global_nvs_t *gnvs;
 
 	/* Get the normal pci resources of this device */
 	pci_dev_read_resources(dev);
@@ -132,6 +136,9 @@ static void hudson_lpc_read_resources(device_t dev)
 	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 
 	compact_resources(dev);
+
+	/* Allocate ACPI NVS in CBMEM */
+	gnvs = cbmem_add(CBMEM_ID_ACPI_GNVS, sizeof(global_nvs_t));
 }
 
 static void hudson_lpc_set_resources(struct device *dev)
@@ -355,9 +362,8 @@ static struct device_operations lpc_ops = {
 	.read_resources = hudson_lpc_read_resources,
 	.set_resources = hudson_lpc_set_resources,
 	.enable_resources = hudson_lpc_enable_resources,
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
-	.write_acpi_tables = acpi_write_hpet,
-#endif
+	.acpi_inject_dsdt_generator = southbridge_inject_dsdt,
+	.write_acpi_tables = southbridge_write_acpi_tables,
 	.init = lpc_init,
 	.scan_bus = scan_lpc_bus,
 	.ops_pci = &lops_pci,

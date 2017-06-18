@@ -14,8 +14,9 @@
  */
 
 /* 0:14.3 - LPC */
-Device(LIBR) {
+Device(LPCB) {
 	Name(_ADR, 0x00140003)
+
 	/* Method(_INI) {
 	*	DBGO("\\_SB\\PCI0\\LpcIsaBr\\_INI\n")
 	} */ /* End Method(_SB.SBRDG._INI) */
@@ -37,7 +38,7 @@ Device(LIBR) {
 			)
 		})
 
-		Method(_CRS,0,NotSerialized)
+		Method(_CRS,0,Serialized)
 		{
 			CreateDwordField(^CRS,^BAR0._BAS,SPIB)	// Field to hold SPI base address
 			CreateDwordField(^CRS,^BAR0._LEN,SPIL)	// Field to hold SPI address length
@@ -100,4 +101,4 @@ Device(LIBR) {
 			IRQNoFlags(){13}
 		})
 	} /* End Device(_SB.PCI0.LpcIsaBr.COPR) */
-} /* end LIBR */
+} /* end LPCB */

@@ -1,7 +1,8 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2012 Advanced Micro Devices, Inc.
+ * Copyright (C) 2012, 2017 Advanced Micro Devices, Inc.
+ * Copyright (C) 2014 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,20 +21,14 @@
 #include <string.h>
 #include <console/console.h>
 #include <arch/acpi.h>
+#include <arch/acpigen.h>
 #include <arch/io.h>
+#include <cbmem.h>
 #include <device/device.h>
+#include <soc/acpi.h>
 #include <soc/hudson.h>
+#include <soc/nvs.h>
 #include <soc/smi.h>
-
-#if IS_ENABLED(CONFIG_STONEYRIDGE_LEGACY_FREE)
-	#define FADT_BOOT_ARCH ACPI_FADT_LEGACY_FREE
-#else
-	#define FADT_BOOT_ARCH (ACPI_FADT_LEGACY_DEVICES | ACPI_FADT_8042)
-#endif
-
-#ifndef FADT_PM_PROFILE
-	#define FADT_PM_PROFILE PM_UNSPECIFIED
-#endif
 
 /*
  * Reference section 5.2.9 Fixed ACPI Description Table (FADT)
@@ -204,4 +199,49 @@ void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 	fadt->x_gpe1_blk.addrh = 0x0;
 
 	header->checksum = acpi_checksum((void *)fadt, sizeof(acpi_fadt_t));
+}
+
+unsigned long southbridge_write_acpi_tables(device_t device,
+		unsigned long current,
+		struct acpi_rsdp *rsdp)
+{
+	return acpi_write_hpet(device, current, rsdp);
+}
+
+static void acpi_create_gnvs(struct global_nvs_t *gnvs)
+{
+	/* Clear out GNVS. */
+	memset(gnvs, 0, sizeof(*gnvs));
+
+	if (IS_ENABLED(CONFIG_CONSOLE_CBMEM))
+		gnvs->cbmc = (uintptr_t)cbmem_find(CBMEM_ID_CONSOLE);
+
+	if (IS_ENABLED(CONFIG_CHROMEOS)) {
+		/* Initialize Verified Boot data */
+		chromeos_init_vboot(&gnvs->chromeos);
+		gnvs->chromeos.vbt2 = ACTIVE_ECFW_RO;
+	}
+
+	/* Set unknown wake source */
+	gnvs->pm1i = ~0ULL;
+
+	/* CPU core count */
+	gnvs->pcnt = dev_count_cpu();
+}
+
+void southbridge_inject_dsdt(device_t device)
+{
+	struct global_nvs_t *gnvs;
+
+	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
+
+	if (gnvs) {
+		acpi_create_gnvs(gnvs);
+		acpi_save_gnvs((uintptr_t)gnvs);
+
+		/* Add it to DSDT */
+		acpigen_write_scope("\\");
+		acpigen_write_name_dword("NVSA", (uintptr_t)gnvs);
+		acpigen_pop_len();
+	}
 }

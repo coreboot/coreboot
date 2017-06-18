@@ -17,7 +17,6 @@
 #define MAINBOARD_EC_H
 
 #include <ec/ec.h>
-#include <ec/google/chromeec/ec.h>
 #include <ec/google/chromeec/ec_commands.h>
 
 /* GPIO_S0_000 is EC_SCI#, but it is bit 24 in GPE_STS */
@@ -58,5 +57,13 @@
 	(EC_HOST_EVENT_MASK(EC_HOST_EVENT_THERMAL_SHUTDOWN) |\
 	 EC_HOST_EVENT_MASK(EC_HOST_EVENT_BATTERY_SHUTDOWN) |\
 	 EC_HOST_EVENT_MASK(EC_HOST_EVENT_PANIC))
+
+/* Enable LID switch */
+#define EC_ENABLE_LID_SWITCH
+
+#define SIO_EC_MEMMAP_ENABLE	/* EC Memory Map Resources */
+#define SIO_EC_HOST_ENABLE	/* EC Host Interface Resources */
+#define SIO_EC_ENABLE_PS2K	/* Enable PS/2 Keyboard */
+#define SIO_EC_ENABLE_COM1	/* Enable Serial Port 1 */
 
 #endif

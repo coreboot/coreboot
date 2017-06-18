@@ -13,6 +13,8 @@
  * GNU General Public License for more details.
  */
 
+#include "ec.h"
+
 /* DefinitionBlock Statement */
 DefinitionBlock (
 	"DSDT.AML",	/* Output filename */
@@ -24,6 +26,9 @@ DefinitionBlock (
 	)
 {	/* Start of ASL file */
 	/* #include <arch/x86/acpi/debug.asl> */	/* as needed */
+
+	/* global NVS and variables */
+	#include <globalnvs.asl>
 
 	/* Globals for the platform */
 	#include "acpi/mainboard.asl"
@@ -73,6 +78,18 @@ DefinitionBlock (
 		#include "acpi/carrizo_fch.asl"
 
 	} /* End \_SB scope */
+
+	/* Chrome OS specific */
+	#include <vendorcode/google/chromeos/acpi/chromeos.asl>
+
+	/* Chrome OS Embedded Controller */
+	Scope (\_SB.PCI0.LPCB)
+	{
+		/* ACPI code for EC SuperIO functions */
+		#include <ec/google/chromeec/acpi/superio.asl>
+		/* ACPI code for EC functions */
+		#include <ec/google/chromeec/acpi/ec.asl>
+	}
 
 	/* Describe SMBUS for the Southbridge */
 	#include <smbus.asl>

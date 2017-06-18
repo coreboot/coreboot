@@ -1,6 +1,0 @@
-chip soc/rdc/r8610
-	device domain 0 on
-		device pci 0.0 on end
-		device pci 7.0 on end			# SB
-	end
-end

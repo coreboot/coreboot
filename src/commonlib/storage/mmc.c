@@ -21,11 +21,13 @@
 
 #include <commonlib/storage.h>
 #include <console/console.h>
+#include <delay.h>
 #include "sd_mmc.h"
 #include "mmc.h"
 #include "sd_mmc.h"
 #include "storage.h"
 #include <string.h>
+#include <timer.h>
 
 /* We pass in the cmd since otherwise the init seems to fail */
 static int mmc_send_op_cond_iter(struct storage_media *media,

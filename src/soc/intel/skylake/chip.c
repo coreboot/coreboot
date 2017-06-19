@@ -132,7 +132,10 @@ void soc_silicon_init_params(SILICON_INIT_UPD *params)
 	params->EnableLan = config->EnableLan;
 	params->Cio2Enable = config->Cio2Enable;
 	params->SataSalpSupport = config->SataSalpSupport;
-	params->SataPortsEnable[0] = config->SataPortsEnable[0];
+	memcpy(params->SataPortsEnable, config->SataPortsEnable,
+			sizeof(params->SataPortsEnable));
+	memcpy(params->SataPortsDevSlp, config->SataPortsDevSlp,
+			sizeof(params->SataPortsDevSlp));
 	params->SsicPortEnable = config->SsicPortEnable;
 	params->SmbusEnable = config->SmbusEnable;
 	params->ScsEmmcEnabled = config->ScsEmmcEnabled;

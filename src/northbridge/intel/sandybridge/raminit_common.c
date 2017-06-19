@@ -2342,7 +2342,6 @@ static int try_cmd_stretch(ramctr_timing *ctrl, int channel, int cmd_stretch)
 int command_training(ramctr_timing *ctrl)
 {
 	int channel;
-	int err;
 
 	FOR_ALL_POPULATED_CHANNELS {
 		fill_pattern5(ctrl, channel, 0);
@@ -2350,17 +2349,35 @@ int command_training(ramctr_timing *ctrl)
 	}
 
 	FOR_ALL_POPULATED_CHANNELS {
-		/* try command rate 1T and 2T */
-		err = try_cmd_stretch(ctrl, channel, 0);
+		int cmdrate, err;
+
+		/*
+		 * Dual DIMM per channel:
+		 * Issue:      While c320c discovery seems to succeed raminit
+		 *             will fail in write training.
+		 * Workaround: Skip 1T in dual DIMM mode, that's only
+		 *             supported by a few DIMMs.
+		 * TODO: How to detect "1T" DIMMs ?
+		 *
+		 * Single DIMM per channel:
+		 * Try command rate 1T and 2T
+		 */
+		cmdrate = ((ctrl->rankmap[channel] & 0x5) == 0x5);
+
+		for(; cmdrate < 2; cmdrate++) {
+			err = try_cmd_stretch(ctrl, channel, cmdrate << 1);
+
+			if (!err)
+				break;
+		}
+
 		if (err) {
-			err = try_cmd_stretch(ctrl, channel, 2);
-			if (err) {
-				printk(BIOS_EMERG, "c320c discovery failed\n");
-				return err;
-			}
-			printram("Using CMD rate 2T on channel %u\n", channel);
-		} else
-			printram("Using CMD rate 1T on channel %u\n", channel);
+			printk(BIOS_EMERG, "c320c discovery failed\n");
+			return err;
+		}
+
+		printram("Using CMD rate %uT on channel %u\n",
+			 cmdrate + 1, channel);
 	}
 
 	FOR_ALL_POPULATED_CHANNELS

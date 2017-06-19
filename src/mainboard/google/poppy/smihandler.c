@@ -29,8 +29,7 @@ void mainboard_smi_espi_handler(void)
 
 static void mainboard_gpio_smi_sleep(void)
 {
-	/* Hold camera device in reset and then power it down. */
-	gpio_set(EN_CAM_PMIC_RST_L, 0);
+	/* Power down camera PMIC */
 	gpio_set(EN_PP3300_DX_CAM, 0);
 }
 

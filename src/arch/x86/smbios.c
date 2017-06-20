@@ -101,12 +101,12 @@ static int smbios_cpu_vendor(char *start)
 
 static int smbios_processor_name(char *start)
 {
+	u32 tmp[13];
 	const char *str = "Unknown Processor Name";
 	if (cpu_have_cpuid()) {
 		int i;
 		struct cpuid_result res = cpuid(0x80000000);
 		if (res.eax >= 0x80000004) {
-			u32 tmp[13];
 			int j = 0;
 			for (i = 0; i < 3; i++) {
 				res = cpuid(0x80000002 + i);

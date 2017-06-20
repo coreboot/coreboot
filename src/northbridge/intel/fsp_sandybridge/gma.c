@@ -117,6 +117,14 @@ static void gma_enable_swsci(void)
 	outw(DEFAULT_PMBASE + GPE0_EN, reg16);
 }
 
+static void gma_init(struct device *dev)
+{
+	pci_dev_init(dev);
+
+	gma_enable_swsci();
+	intel_gma_restore_opregion();
+}
+
 static unsigned long
 gma_write_acpi_tables(struct device *const dev,
 		      unsigned long current,
@@ -139,8 +147,6 @@ gma_write_acpi_tables(struct device *const dev,
 		printk(BIOS_ERR, "Error: GNVS table not found.\n");
 	}
 
-	gma_enable_swsci();
-
 	current = acpi_align_current(current);
 	return current;
 }
@@ -154,7 +160,7 @@ static struct device_operations gma_func0_ops = {
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.acpi_fill_ssdt_generator = gma_ssdt,
-	.init			= pci_dev_init,
+	.init			= gma_init,
 	.scan_bus		= 0,
 	.enable			= 0,
 	.ops_pci		= &gma_pci_ops,

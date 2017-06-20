@@ -23,6 +23,8 @@
 #include <device/device.h>
 #include "chip.h"
 
+#define IO_APIC2_ADDR			0xfec20000
+
 /* Offsets from ACPI_MMIO_BASE
  * This is defined by AGESA, but we don't include AGESA headers to avoid
  * polluting the namespace.

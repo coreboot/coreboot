@@ -437,6 +437,20 @@ static void gma_pm_init_post_vbios(struct device *dev)
 	gtt_write(0x0a188, 0x00000001);
 }
 
+/* Enable SCI to ACPI _GPE._L06 */
+static void gma_enable_swsci(void)
+{
+	u16 reg16;
+
+	/* clear DMISCI status */
+	reg16 = inw(get_pmbase() + TCO1_STS);
+	reg16 &= DMISCI_STS;
+	outw(get_pmbase() + TCO1_STS, reg16);
+
+	/* clear and enable ACPI TCO SCI */
+	enable_tco_sci();
+}
+
 static void gma_func0_init(struct device *dev)
 {
 	int lightup_ok = 0;
@@ -475,6 +489,9 @@ static void gma_func0_init(struct device *dev)
 
 	/* Post panel init */
 	gma_pm_init_post_vbios(dev);
+
+	gma_enable_swsci();
+	intel_gma_restore_opregion();
 }
 
 static void gma_set_subsystem(device_t dev, unsigned vendor, unsigned device)
@@ -509,20 +526,6 @@ static void gma_ssdt(device_t device)
 	drivers_intel_gma_displays_ssdt_generate(gfx);
 }
 
-/* Enable SCI to ACPI _GPE._L06 */
-static void gma_enable_swsci(void)
-{
-	u16 reg16;
-
-	/* clear DMISCI status */
-	reg16 = inw(get_pmbase() + TCO1_STS);
-	reg16 &= DMISCI_STS;
-	outw(get_pmbase() + TCO1_STS, reg16);
-
-	/* clear and enable ACPI TCO SCI */
-	enable_tco_sci();
-}
-
 static unsigned long
 gma_write_acpi_tables(struct device *const dev,
 		      unsigned long current,
@@ -544,8 +547,6 @@ gma_write_acpi_tables(struct device *const dev,
 	} else {
 		printk(BIOS_ERR, "Error: GNVS table not found.\n");
 	}
-
-	gma_enable_swsci();
 
 	current = acpi_align_current(current);
 	return current;

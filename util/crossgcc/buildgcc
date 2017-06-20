@@ -47,7 +47,7 @@ IASL_VERSION=20161222
 PYTHON_VERSION=3.5.1
 EXPAT_VERSION=2.1.1
 # CLANG version number
-CLANG_VERSION=3.9.1
+CLANG_VERSION=4.0.0
 MAKE_VERSION=4.2.1
 CMAKE_VERSION=3.9.0-rc3
 
@@ -868,8 +868,8 @@ case "$PACKAGE" in
 		;;
 	CLANG|clang)
 		NAME=clang
-		PACKAGES="LLVM CFE CRT CTE"
-		CMAKE=$(searchtool cmake "cmake") || exit $?
+		PACKAGES="CMAKE LLVM CFE CRT CTE"
+		CMAKE=${DESTDIR}${TARGETDIR}/bin/cmake
 		;;
 	IASL|iasl)
 		NAME="IASL ACPI compiler"

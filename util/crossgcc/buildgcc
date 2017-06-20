@@ -18,8 +18,8 @@
 
 cd $(dirname $0)
 
-CROSSGCC_DATE="March 3rd, 2017"
-CROSSGCC_VERSION="1.44"
+CROSSGCC_DATE="June 13th, 2017"
+CROSSGCC_VERSION="1.45"
 CROSSGCC_COMMIT=$( git describe )
 
 # default settings
@@ -49,6 +49,7 @@ EXPAT_VERSION=2.1.1
 # CLANG version number
 CLANG_VERSION=3.9.1
 MAKE_VERSION=4.2.1
+CMAKE_VERSION=3.9.0-rc3
 
 # GCC toolchain archive locations
 # These are sanitized by the jenkins toolchain test builder, so if
@@ -70,11 +71,12 @@ CFE_ARCHIVE="http://llvm.org/releases/${CLANG_VERSION}/cfe-${CLANG_VERSION}.src.
 CRT_ARCHIVE="http://llvm.org/releases/${CLANG_VERSION}/compiler-rt-${CLANG_VERSION}.src.tar.xz"
 CTE_ARCHIVE="http://llvm.org/releases/${CLANG_VERSION}/clang-tools-extra-${CLANG_VERSION}.src.tar.xz"
 MAKE_ARCHIVE="http://ftpmirror.gnu.org/make/make-${MAKE_VERSION}.tar.bz2"
+CMAKE_ARCHIVE="https://cmake.org/files/v3.9/cmake-${CMAKE_VERSION}.tar.gz"
 
 ALL_ARCHIVES="$GMP_ARCHIVE $MPFR_ARCHIVE $MPC_ARCHIVE $LIBELF_ARCHIVE \
 	$GCC_ARCHIVE $BINUTILS_ARCHIVE $GDB_ARCHIVE $IASL_ARCHIVE \
 	$PYTHON_ARCHIVE $EXPAT_ARCHIVE $LLVM_ARCHIVE $CFE_ARCHIVE \
-	$CRT_ARCHIVE $CTE_ARCHIVE $MAKE_ARCHIVE"
+	$CRT_ARCHIVE $CTE_ARCHIVE $MAKE_ARCHIVE $CMAKE_ARCHIVE"
 
 # GCC toolchain directories
 GMP_DIR="gmp-${GMP_VERSION}"
@@ -93,6 +95,7 @@ CFE_DIR="cfe-${CLANG_VERSION}.src"
 CRT_DIR="compiler-rt-${CLANG_VERSION}.src"
 CTE_DIR="clang-tools-extra-${CLANG_VERSION}.src"
 MAKE_DIR="make-${MAKE_VERSION}"
+CMAKE_DIR="cmake-${CMAKE_VERSION}"
 
 unset MAKELEVEL MAKEFLAGS
 
@@ -739,6 +742,15 @@ build_MAKE() {
 	normalize_dirs
 }
 
+build_CMAKE() {
+	CC="$CC" CFLAGS="$HOSTCFLAGS" ../${CMAKE_DIR}/configure --prefix=$TARGETDIR \
+		 || touch .failed
+	$MAKE $JOBS || touch .failed
+	$MAKE install DESTDIR=$DESTDIR || touch .failed
+
+	normalize_dirs
+}
+
 print_stable() {
 	case "$PRINTSTABLE" in
 		AUTOCONF|autoconf)  printf "%s\n" "$GCC_AUTOCONF_VERSION";;
@@ -866,6 +878,10 @@ case "$PACKAGE" in
 	MAKE|make)
 		NAME="GNU Make"
 		PACKAGES=MAKE
+		;;
+	CMAKE|cmake)
+		NAME="CMake"
+		PACKAGES=CMAKE
 		;;
 	*)
 		printf "${red}ERROR: Unsupported package $PACKAGE. (Supported packages are GCC, GDB, CLANG, IASL, MAKE)${NC}\n\n";

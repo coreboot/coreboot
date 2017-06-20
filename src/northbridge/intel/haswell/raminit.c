@@ -187,6 +187,8 @@ void setup_sdram_meminfo(struct pei_data *pei_data)
 	int dimm_cnt = 0;
 
 	mem_info = cbmem_add(CBMEM_ID_MEMINFO, sizeof(struct memory_info));
+	if (!mem_info)
+		die("Failed to add memory info to CBMEM.\n");
 	memset(mem_info, 0, sizeof(struct memory_info));
 
 	addr_decoder_common = MCHBAR32(0x5000);

@@ -239,7 +239,7 @@ EOF
 if [ "${TARCH}" = "x86_64" ] || [ "${TARCH}" = "x86_32" ]; then
 cat <<EOF
 
-ifeq (\$(CONFIG_USE_MARCH_586),y)
+ifneq (\$(CONFIG_USE_MARCH_586)\$(CONFIG_LP_USE_MARCH_586),)
 	GCC_CFLAGS_${TARCH} += -march=i586
 else
 	GCC_CFLAGS_${TARCH} += -march=i686

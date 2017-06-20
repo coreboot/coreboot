@@ -245,4 +245,6 @@ typedef struct {
 	u8	coreblock_biossignon[155];
 } __attribute__((packed)) optionrom_vbt_t;
 
+void intel_gma_opregion_register(uintptr_t opregion);
+
 #endif /* _COMMON_GMA_H_ */

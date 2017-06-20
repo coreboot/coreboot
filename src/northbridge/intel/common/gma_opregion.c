@@ -79,8 +79,6 @@ static enum cb_err init_opregion_vbt(igd_opregion_t *opregion)
 enum cb_err init_igd_opregion(igd_opregion_t *opregion)
 {
 	enum cb_err ret;
-	device_t igd;
-	u16 reg16;
 
 	memset((void *)opregion, 0, sizeof(igd_opregion_t));
 
@@ -119,17 +117,8 @@ enum cb_err init_igd_opregion(igd_opregion_t *opregion)
 	if (ret != CB_SUCCESS)
 		return ret;
 
-	/* TODO This needs to happen in S3 resume, too.
-	 * Maybe it should move to the finalize handler
-	 */
-	igd = dev_find_slot(0, PCI_DEVFN(0x2, 0));
-	pci_write_config32(igd, ASLS, (u32)opregion);
-
-	/* Intel's Windows driver relies on this: */
-	reg16 = pci_read_config16(igd, SWSCI);
-	reg16 &= ~GSSCIE;
-	reg16 |= SMISCISEL;
-	pci_write_config16(igd, SWSCI, reg16);
+	/* Write ASLS PCI register and prepare SWSCI register. */
+	intel_gma_opregion_register((uintptr_t)opregion);
 
 	return CB_SUCCESS;
 }

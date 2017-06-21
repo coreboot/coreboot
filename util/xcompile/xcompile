@@ -206,10 +206,14 @@ detect_special_flags() {
 }
 
 detect_compiler_runtime() {
-	test -z "$CLANG" || \
-	CC_RT_CLANG="$(${CLANG} -print-libgcc-file-name 2>/dev/null)"
 	test -z "$GCC" || \
 	CC_RT_GCC="$(${GCC} ${CFLAGS_GCC} -print-libgcc-file-name)"
+	if [ ${CLANG_RUNTIME} = "libgcc" ]; then
+		CC_RT_CLANG=${CC_RT_GCC}
+	else
+		test -z "$CLANG" || \
+		  CC_RT_CLANG="$(${CLANG} ${CFLAGS_CLANG} -print-libgcc-file-name 2>/dev/null)"
+	fi
 }
 
 report_arch_toolchain() {
@@ -371,6 +375,14 @@ arch_config_power8() {
 	CC_RT_EXTRA_GCC="-mcpu=power8 -mbig-endian"
 }
 
+# Right now, the clang reference toolchain is not building compiler-rt builtins
+# for any of the cross compile architectures. Hence we use libgcc for now,
+# because that is available and lets us proceed with getting coreboot clang
+# ready. Toggle CLANG_RUNTIME if you want to experiment with compiler-rt.
+
+CLANG_RUNTIME="libgcc"
+# CLANG_RUNTIME="compiler-rt"
+
 test_architecture() {
 	local architecture=$1
 	local endian gccprefix search
@@ -431,7 +443,7 @@ test_architecture() {
 		# but that's more of a clang limitation. Let's be optimistic
 		# that this will change in the future.
 		CLANG="${XGCCPATH}clang"
-		CFLAGS_CLANG="-target ${clang_arch}-${TABI} $CFLAGS_CLANG -ccc-gcc-name ${GCC}"
+		CFLAGS_CLANG="-target ${clang_arch}-${TABI} --rtlib=${CLANG_RUNTIME} $CFLAGS_CLANG -ccc-gcc-name ${GCC}"
 	fi
 }
 

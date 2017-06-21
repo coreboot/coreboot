@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#include <boardid.h>
 #include <string.h>
 #include <stddef.h>
 #include <fsp/soc_binding.h>
@@ -49,7 +50,7 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 	mem_cfg->MemorySpdDataLen = SPD_LEN;
 
 	/* Limit K4EBE304EB-EGCF memory to 1600MHz for stability */
-	if (mainboard_get_spd_index() == 5) {
+	if (board_id() < 6 && mainboard_get_spd_index() == 5) {
 		printk(BIOS_WARNING, "Limiting memory to 1600MHz\n");
 		mem_cfg->DdrFreqLimit = 1600;
 	}

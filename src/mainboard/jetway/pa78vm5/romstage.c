@@ -47,7 +47,7 @@
 #include <cpu/amd/family_10h-family_15h/init_cpus.h>
 #include <arch/early_variables.h>
 #include <cbmem.h>
-#include "southbridge/amd/rs780/early_setup.c"
+#include <southbridge/amd/rs780/rs780.h>
 
 #include "resourcemap.c"
 #include "cpu/amd/quadcore/quadcore.c"
@@ -219,7 +219,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 //	die("After MCT init before CAR disabled.");
 
-	rs780_before_pci_init();
 	sb7xx_51xx_before_pci_init();
 
 	post_code(0x42);

@@ -49,7 +49,7 @@ int spd_read_byte(u32 device, u32 address)
 	return do_smbus_read_byte(SMBUS_IO_BASE, device, address);
 }
 
-#include "southbridge/amd/rs780/early_setup.c"
+#include <southbridge/amd/rs780/rs780.h>
 #include <northbridge/amd/amdk8/amdk8.h>
 #include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "northbridge/amd/amdk8/raminit.c"
@@ -208,6 +208,5 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	fill_mem_ctrl(sysinfo->nodes, sysinfo->ctrl, spd_addr);
 	sdram_initialize(sysinfo->nodes, sysinfo->ctrl, sysinfo);
 
-	rs780_before_pci_init();
 	sb7xx_51xx_before_pci_init();
 }

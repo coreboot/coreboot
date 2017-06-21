@@ -13,7 +13,14 @@
  * GNU General Public License for more details.
  */
 
+#include <types.h>
+#include <arch/io.h>
+#include <northbridge/amd/amdmct/mct/mct_d.h>
+#include <console/console.h>
+#include <cpu/x86/msr.h>
+
 #include "rev.h"
+#include "rs780.h"
 
 #define NBHTIU_INDEX		0x94 /* Note: It is different with RS690, whose HTIU index is 0xA8 */
 #define NBMISC_INDEX		0x60
@@ -31,37 +38,37 @@ static void nb_write_index(pci_devfn_t dev, u32 index_reg, u32 index, u32 data)
 	pci_write_config32(dev, index_reg + 0x4, data);
 }
 
-static u32 nbmisc_read_index(pci_devfn_t nb_dev, u32 index)
+u32 nbmisc_read_index(pci_devfn_t nb_dev, u32 index)
 {
 	return nb_read_index((nb_dev), NBMISC_INDEX, (index));
 }
 
-static void nbmisc_write_index(pci_devfn_t nb_dev, u32 index, u32 data)
+void nbmisc_write_index(pci_devfn_t nb_dev, u32 index, u32 data)
 {
 	nb_write_index((nb_dev), NBMISC_INDEX, ((index) | 0x80), (data));
 }
 
-static u32 htiu_read_index(pci_devfn_t nb_dev, u32 index)
+u32 htiu_read_index(pci_devfn_t nb_dev, u32 index)
 {
 	return nb_read_index((nb_dev), NBHTIU_INDEX, (index));
 }
 
-static void htiu_write_index(pci_devfn_t nb_dev, u32 index, u32 data)
+void htiu_write_index(pci_devfn_t nb_dev, u32 index, u32 data)
 {
 	nb_write_index((nb_dev), NBHTIU_INDEX, ((index) | 0x100), (data));
 }
 
-static u32 nbmc_read_index(pci_devfn_t nb_dev, u32 index)
+u32 nbmc_read_index(pci_devfn_t nb_dev, u32 index)
 {
 	return nb_read_index((nb_dev), NBMC_INDEX, (index));
 }
 
-static void nbmc_write_index(pci_devfn_t nb_dev, u32 index, u32 data)
+void nbmc_write_index(pci_devfn_t nb_dev, u32 index, u32 data)
 {
 	nb_write_index((nb_dev), NBMC_INDEX, ((index) | 1 << 9), (data));
 }
 
-static void set_htiu_enable_bits(pci_devfn_t nb_dev, u32 reg_pos, u32 mask,
+void set_htiu_enable_bits(pci_devfn_t nb_dev, u32 reg_pos, u32 mask,
 				 u32 val)
 {
 	u32 reg_old, reg;
@@ -73,7 +80,7 @@ static void set_htiu_enable_bits(pci_devfn_t nb_dev, u32 reg_pos, u32 mask,
 	}
 }
 
-static void set_nbmisc_enable_bits(pci_devfn_t nb_dev, u32 reg_pos, u32 mask,
+void set_nbmisc_enable_bits(pci_devfn_t nb_dev, u32 reg_pos, u32 mask,
 				   u32 val)
 {
 	u32 reg_old, reg;
@@ -85,7 +92,7 @@ static void set_nbmisc_enable_bits(pci_devfn_t nb_dev, u32 reg_pos, u32 mask,
 	}
 }
 
-static void set_nbcfg_enable_bits(pci_devfn_t nb_dev, u32 reg_pos, u32 mask,
+void set_nbcfg_enable_bits(pci_devfn_t nb_dev, u32 reg_pos, u32 mask,
 				  u32 val)
 {
 	u32 reg_old, reg;
@@ -114,7 +121,7 @@ static void set_fam10_ext_cfg_enable_bits(pci_devfn_t fam10_dev, u32 reg_pos,
 #endif
 
 
-static void set_nbcfg_enable_bits_8(pci_devfn_t nb_dev, u32 reg_pos, u8 mask,
+void set_nbcfg_enable_bits_8(pci_devfn_t nb_dev, u32 reg_pos, u8 mask,
 				    u8 val)
 {
 	u8 reg_old, reg;
@@ -126,7 +133,7 @@ static void set_nbcfg_enable_bits_8(pci_devfn_t nb_dev, u32 reg_pos, u8 mask,
 	}
 }
 
-static void set_nbmc_enable_bits(pci_devfn_t nb_dev, u32 reg_pos, u32 mask,
+void set_nbmc_enable_bits(pci_devfn_t nb_dev, u32 reg_pos, u32 mask,
 				 u32 val)
 {
 	u32 reg_old, reg;
@@ -155,25 +162,6 @@ static u8 cpu_core_number(void)
 }
 #endif
 
-static u8 get_nb_rev(pci_devfn_t nb_dev)
-{
-	u8 reg;
-	reg = pci_read_config8(nb_dev, 0x89);	/* copy from CIM, can't find in doc */
-	switch(reg & 3)
-	{
-	case 0x01:
-		reg = REV_RS780_A12;
-		break;
-	case 0x02:
-		reg = REV_RS780_A13;
-		break;
-	default:
-		reg = REV_RS780_A11;
-		break;
-	}
-	return reg;
-}
-
 /*****************************************
  * Init HT link speed/width for rs780 -- k8 link
  * 1: Check CPU Family, Family10?
@@ -198,7 +186,7 @@ static const u8 rs780_ibias[] = {
 	[0xe] = 0xC6,		/* 2.6GHz HyperTransport 3 only */
 };
 
-static void rs780_htinit(void)
+void rs780_htinit(void)
 {
 	/*
 	 * About HT, it has been done in enumerate_ht_chain().
@@ -610,16 +598,12 @@ static void rs780_por_init(pci_devfn_t nb_dev)
 }
 
 /* enable CFG access to Dev8, which is the SB P2P Bridge */
-static void enable_rs780_dev8(void)
+void enable_rs780_dev8(void)
 {
 	set_nbmisc_enable_bits(PCI_DEV(0, 0, 0), 0x00, 1 << 6, 1 << 6);
 }
 
-static void rs780_before_pci_init(void)
-{
-}
-
-static void rs780_early_setup(void)
+void rs780_early_setup(void)
 {
 	pci_devfn_t nb_dev = PCI_DEV(0, 0, 0);
 	printk(BIOS_INFO, "rs780_early_setup()\n");

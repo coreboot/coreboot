@@ -41,7 +41,7 @@
 #include <cpu/amd/family_10h-family_15h/init_cpus.h>
 #include <arch/early_variables.h>
 #include <cbmem.h>
-#include "southbridge/amd/rs780/early_setup.c"
+#include <southbridge/amd/rs780/rs780.h>
 #include "southbridge/amd/sb800/early_setup.c"
 #include <spd.h>
 
@@ -200,7 +200,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	amdmct_cbmem_store_info(sysinfo);
 
-	rs780_before_pci_init();
 	sb800_before_pci_init();
 
 	post_code(0x42);

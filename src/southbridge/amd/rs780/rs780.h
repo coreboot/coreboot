@@ -210,4 +210,7 @@ int cpuidFamily(void);
 int is_family0Fh(void);
 int is_family10h(void);
 void pcie_hide_unused_ports(device_t nb_dev);
+void enable_rs780_dev8(void);
+void rs780_early_setup(void);
+void rs780_htinit(void);
 #endif /* __RS780_H__ */

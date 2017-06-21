@@ -331,6 +331,7 @@ Scope (\_SB.PCI0.I2C2)
 						}
 						Sleep(3)
 						\_SB.PCI0.I2C2.CAM0.CRST(1)
+						Sleep(5)
 
 						STA = 1
 					}
@@ -483,9 +484,9 @@ Scope (\_SB.PCI0.I2C2)
 
 	Device (CAM0)
 	{
-		Name (_HID, "OVTID850")  /* _HID: Hardware ID */
+		Name (_HID, "OVTID858")  /* _HID: Hardware ID */
 		Name (_UID, Zero)  /* _UID: Unique ID */
-		Name (_DDN, "OV 13850 Camera") /* _DDN: DOS Device Name */
+		Name (_DDN, "OV 13858 Camera") /* _DDN: DOS Device Name */
 		Name (CAMD, 0x02)
 
 		Method (_STA, 0, NotSerialized)  /* _STA: Status */

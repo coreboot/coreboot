@@ -121,8 +121,18 @@ struct tpm_header {
 #define TPM_ST_NO_SESSIONS 0x8001
 #define TPM_ST_SESSIONS    0x8002
 
+/* Values copied from tpm2/tpm_types.h */
 #define RC_VER1                                         0x100
 #define TPM_RC_INITIALIZE         ((TPM_RC)(RC_VER1 + 0x000))
+#define TPM_RC_NV_UNINITIALIZED	  ((TPM_RC)(RC_VER1 + 0x04A))
+
+/*
+ * Cr50 returns this code when an attempt is made to read an NV location which
+ * has not yet been defined. This is an aggregation of various return code
+ * extensions which may or may not match if a different TPM2 device is
+ * used.
+ */
+#define TPM_RC_CR50_NV_UNDEFINED  0x28b
 
 /* TPM command structures. */
 

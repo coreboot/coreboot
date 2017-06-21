@@ -210,7 +210,13 @@ uint32_t tlcl_read(uint32_t index, void *data, uint32_t length)
 	case 0:
 		break;
 
-	case 0x28b:
+		/* Uninitialized, returned if the space hasn't been written. */
+	case TPM_RC_NV_UNINITIALIZED:
+		/*
+		 * Bad index, cr50 specific value, returned if the space
+		 * hasn't been defined.
+		 */
+	case TPM_RC_CR50_NV_UNDEFINED:
 		return TPM_E_BADINDEX;
 
 	default:

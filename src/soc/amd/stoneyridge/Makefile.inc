@@ -54,7 +54,6 @@ ramstage-y += fixme.c
 ramstage-y += gpio.c
 ramstage-y += hda.c
 ramstage-y += hudson.c
-ramstage-y += ide.c
 ramstage-$(CONFIG_STONEYRIDGE_IMC_FWM) += imc.c
 ramstage-y += lpc.c
 ramstage-y += model_15_init.c

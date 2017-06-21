@@ -751,8 +751,8 @@ build_CMAKE() {
 	normalize_dirs
 }
 
-print_stable() {
-	case "$PRINTSTABLE" in
+print_supported() {
+	case "$PRINTSUPPORTED" in
 		AUTOCONF|autoconf)  printf "%s\n" "$GCC_AUTOCONF_VERSION";;
 		BINUTILS|binutils)  printf "%s\n" "$BINUTILS_VERSION";;
 		CLANG|clang)  printf "%s\n" "$CLANG_VERSION";;
@@ -766,7 +766,7 @@ print_stable() {
 		MPFR|mpfr)  printf "%s\n" "$MPFR_VERSION";;
 		PYTHON|python)  printf "%s\n" "$PYTHON_VERSION";;
 		MAKE|make)  printf "%s\n" "$MAKE_VERSION";;
-		*) printf "Unknown tool %s\n" "$PRINTSTABLE";;
+		*) printf "Unknown tool %s\n" "$PRINTSUPPORTED";;
 	esac
 }
 
@@ -810,7 +810,7 @@ while true ; do
 		-P|--package)   shift; PACKAGE="$1"; shift;;
 		-S|--scripting) shift; SKIPPYTHON=0;;
 		-y|--ccache)	shift; USECCACHE=1;;
-		-s|--supported) shift; PRINTSTABLE="$1"; shift;;
+		-s|--supported) shift; PRINTSUPPORTED="$1"; shift;;
 		-u|--urls)	shift; printf "%s\n" "$ALL_ARCHIVES"; exit 0;;
 		-n|--nocolor)	shift; \
 			unset red RED green GREEN blue BLUE cyan CYAN NC;;
@@ -825,8 +825,8 @@ if [ $# -gt 0 ]; then
 	exit 1
 fi
 
-if [ -n "$PRINTSTABLE" ]; then
-	print_stable
+if [ -n "$PRINTSUPPORTED" ]; then
+	print_supported
 	exit 0
 fi
 

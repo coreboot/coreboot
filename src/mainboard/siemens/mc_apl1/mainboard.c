@@ -110,9 +110,6 @@ static void mainboard_init(void *chip_info)
 
 	pads = brd_gpio_table(&num);
 	gpio_configure_pads(pads, num);
-
-	/* Enable additional I/O decoding range on LPC for COM 3 */
-	lpc_open_pmio_window(0x3e8, 8);
 }
 
 static void mainboard_final(void *chip_info)
@@ -128,6 +125,9 @@ static void mainboard_final(void *chip_info)
 		printk(BIOS_ERR, "LCD: Set up PTN with status 0x%x\n", status);
 	else
 		printk(BIOS_INFO, "LCD: Set up PTN was successful.\n");
+
+	/* Enable additional I/O decoding range on LPC for COM 3 */
+	lpc_open_pmio_window(0x3e8, 8);
 }
 
 struct chip_operations mainboard_ops = {

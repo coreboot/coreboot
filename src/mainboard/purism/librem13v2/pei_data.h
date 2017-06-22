@@ -1,8 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2015 Intel Corporation
- * Copyright (C) 2015 Google Inc.
+ * Copyright (C) 2017 Purism SPC.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,12 +13,12 @@
  * GNU General Public License for more details.
  */
 
-#include <soc/ramstage.h>
-#include "gpio.h"
+#ifndef _MAINBOARD_PEI_DATA_H_
+#define _MAINBOARD_PEI_DATA_H_
 
-void mainboard_silicon_init_params(FSP_SIL_UPD *params)
-{
-	/* Configure pads prior to SiliconInit() in case there's any
-	 * dependencies during hardware initialization. */
-	gpio_configure_pads(gpio_table, ARRAY_SIZE(gpio_table));
-}
+void mainboard_fill_dq_map_data(void *dq_map_ptr);
+void mainboard_fill_dqs_map_data(void *dqs_map_ptr);
+void mainboard_fill_rcomp_res_data(void *rcomp_ptr);
+void mainboard_fill_rcomp_strength_data(void *rcomp_strength_ptr);
+
+#endif

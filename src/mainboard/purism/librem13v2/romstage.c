@@ -4,6 +4,7 @@
  * Copyright (C) 2007-2010 coresystems GmbH
  * Copyright (C) 2015 Google Inc.
  * Copyright (C) 2015 Intel Corporation
+ * Copyright (C) 2017 Purism SPC.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,49 +18,29 @@
 
 #include <string.h>
 #include <assert.h>
-#include <arch/acpi.h>
-#include <soc/pei_data.h>
-#include <soc/pei_wrapper.h>
 #include <soc/romstage.h>
 #include <spd_bin.h>
+#include "pei_data.h"
 
-void mainboard_romstage_entry(struct romstage_params *params)
+void mainboard_memory_init_params(FSPM_UPD *mupd)
 {
-	/* Fill out PEI DATA */
-	mainboard_fill_pei_data(params->pei_data);
-	/* Initliaze memory */
-	romstage_common(params);
-}
-
-void mainboard_memory_init_params(struct romstage_params *params,
-	MEMORY_INIT_UPD *memory_params)
-{
+	FSP_M_CONFIG *mem_cfg;
 	struct spd_block blk = {
 		.addr_map = { 0x50 },
 	};
+
+	mem_cfg = &mupd->FspmConfig;
 
 	get_spd_smbus(&blk);
 	dump_spd_info(&blk);
 	assert(blk.spd_array[0][0] != 0);
 
-	memory_params->MemorySpdDataLen = blk.len;
-	memory_params->MemorySpdPtr00 = (uintptr_t) blk.spd_array[0];
-	memory_params->MemorySpdPtr01 = 0;
-	memory_params->MemorySpdPtr10 = 0;
-	memory_params->MemorySpdPtr11 = 0;
+	mainboard_fill_dq_map_data(&mem_cfg->DqByteMapCh0);
+	mainboard_fill_dqs_map_data(&mem_cfg->DqsMapCpu2DramCh0);
+	mainboard_fill_rcomp_res_data(&mem_cfg->RcompResistor);
+	mainboard_fill_rcomp_strength_data(&mem_cfg->RcompTarget);
 
-	memcpy(memory_params->DqByteMapCh0, params->pei_data->dq_map[0],
-		sizeof(params->pei_data->dq_map[0]));
-	memcpy(memory_params->DqByteMapCh1, params->pei_data->dq_map[1],
-		sizeof(params->pei_data->dq_map[1]));
-	memcpy(memory_params->DqsMapCpu2DramCh0, params->pei_data->dqs_map[0],
-		sizeof(params->pei_data->dqs_map[0]));
-	memcpy(memory_params->DqsMapCpu2DramCh1, params->pei_data->dqs_map[1],
-		sizeof(params->pei_data->dqs_map[1]));
-	memcpy(memory_params->RcompResistor, params->pei_data->RcompResistor,
-		sizeof(params->pei_data->RcompResistor));
-	memcpy(memory_params->RcompTarget, params->pei_data->RcompTarget,
-		sizeof(params->pei_data->RcompTarget));
-	memory_params->DqPinsInterleaved = TRUE;
-
+	mem_cfg->DqPinsInterleaved = TRUE;
+	mem_cfg->MemorySpdDataLen = blk.len;
+	mem_cfg->MemorySpdPtr00 = (uintptr_t) blk.spd_array[0];
 }

@@ -636,7 +636,7 @@ void rkclk_configure_ddr(unsigned int hz)
 	switch (hz) {
 	case 200*MHz:
 		dpll_cfg = (struct pll_div)
-		{.refdiv = 1, .fbdiv = 50, .postdiv1 = 6, .postdiv2 = 1};
+		{.refdiv = 1, .fbdiv = 50, .postdiv1 = 3, .postdiv2 = 2};
 		break;
 	case 300*MHz:
 		dpll_cfg = (struct pll_div)

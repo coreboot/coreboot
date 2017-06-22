@@ -11,6 +11,7 @@ ifeq ($(CONFIG_CONSOLE_SPI_FLASH),y)
 bootblock-y += flashconsole.c
 romstage-y += flashconsole.c
 ramstage-y += flashconsole.c
+postcar-y += flashconsole.c
 smm-$(CONFIG_DEBUG_SMI) += flashconsole.c
 
 endif
@@ -98,3 +99,7 @@ smm-$(CONFIG_SPI_FLASH_STMICRO) += stmicro.c
 smm-$(CONFIG_SPI_FLASH_WINBOND) += winbond.c
 smm-$(CONFIG_SPI_FRAM_RAMTRON) += ramtron.c
 endif
+
+postcar-y += spi-generic.c
+postcar-$(CONFIG_BOOT_DEVICE_SPI_FLASH_RW_NOMMAP_EARLY) += boot_device_rw_nommap.c
+postcar-$(CONFIG_SPI_FLASH) += spi_flash.c

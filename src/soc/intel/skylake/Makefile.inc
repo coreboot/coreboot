@@ -82,6 +82,8 @@ smm-y += uart.c
 
 postcar-y += memmap.c
 postcar-$(CONFIG_UART_DEBUG) += uart_debug.c
+postcar-y += gspi.c
+postcar-y += spi.c
 
 # cpu_microcode_bins += ???
 

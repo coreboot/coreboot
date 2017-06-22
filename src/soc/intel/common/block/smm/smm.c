@@ -17,6 +17,7 @@
 
 #include <console/console.h>
 #include <cpu/x86/smm.h>
+#include <intelblocks/pmclib.h>
 #include <intelblocks/smm.h>
 #include <soc/pm.h>
 
@@ -24,24 +25,24 @@ void smm_southbridge_clear_state(void)
 {
 	printk(BIOS_DEBUG, "Clearing SMI status registers\n");
 
-	if (get_smi_en() & APMC_EN) {
+	if (pmc_get_smi_en() & APMC_EN) {
 		printk(BIOS_INFO, "SMI# handler already enabled?\n");
 		return;
 	}
 
 	/* Dump and clear status registers */
-	clear_smi_status();
-	clear_pm1_status();
-	clear_tco_status();
-	clear_gpe_status();
+	pmc_clear_smi_status();
+	pmc_clear_pm1_status();
+	pmc_clear_tco_status();
+	pmc_clear_gpe_status();
 }
 
 void smm_southbridge_enable(void)
 {
 	printk(BIOS_DEBUG, "Enabling SMIs.\n");
 	/* Configure events */
-	enable_pm1(PWRBTN_EN | GBL_EN);
-	disable_gpe(PME_B0_EN);
+	pmc_enable_pm1(PWRBTN_EN | GBL_EN);
+	pmc_disable_gpe(PME_B0_EN);
 
 	/*
 	 * Enable SMI generation:
@@ -55,7 +56,7 @@ void smm_southbridge_enable(void)
 	 */
 
 	/* Enable SMI generation: */
-	enable_smi(ENABLE_SMI_PARAMS);
+	pmc_enable_smi(ENABLE_SMI_PARAMS);
 }
 
 void smm_setup_structures(void *gnvs, void *tcg, void *smi1)

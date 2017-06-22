@@ -21,6 +21,7 @@
 #include <cpu/x86/smm.h>
 #include <device/pci_def.h>
 #include <elog.h>
+#include <intelblocks/pmclib.h>
 #include <intelblocks/smihandler.h>
 #include <soc/nvs.h>
 #include <soc/pm.h>
@@ -73,7 +74,7 @@ static void *find_save_state(const struct smm_save_state_ops *save_state_ops,
 /* Inherited from cpu/x86/smm.h resulting in a different signature */
 void southbridge_smi_set_eos(void)
 {
-	enable_smi(EOS);
+	pmc_enable_smi(EOS);
 }
 
 struct global_nvs_t *smm_get_gnvs(void)
@@ -135,7 +136,7 @@ void smihandler_southbridge_sleep(
 	uint8_t slp_typ;
 
 	/* First, disable further SMIs */
-	disable_smi(SLP_SMI_EN);
+	pmc_disable_smi(SLP_SMI_EN);
 	/* Figure out SLP_TYP */
 	reg32 = inl(ACPI_BASE_ADDRESS + PM1_CNT);
 	printk(BIOS_SPEW, "SMI#: SLP = 0x%08x\n", reg32);
@@ -149,7 +150,7 @@ void smihandler_southbridge_sleep(
 		elog_add_event_byte(ELOG_TYPE_ACPI_ENTER, slp_typ);
 
 	/* Clear pending GPE events */
-	clear_gpe_status();
+	pmc_clear_gpe_status();
 
 	/* Next, do the deed. */
 
@@ -170,7 +171,7 @@ void smihandler_southbridge_sleep(
 		printk(BIOS_DEBUG, "SMI#: Entering S5 (Soft Power off)\n");
 
 		/* Disable all GPE */
-		disable_all_gpe();
+		pmc_disable_all_gpe();
 		/* also iterates over all bridges on bus 0 */
 		busmaster_disable_on_bus(0);
 		break;
@@ -180,7 +181,7 @@ void smihandler_southbridge_sleep(
 	}
 
 	/* Clear the gpio gpe0 status bits in ACPI registers */
-	clear_gpi_gpe_sts();
+	pmc_clear_gpi_gpe_sts();
 
 	/* Tri-state specific GPIOS to avoid leakage during S3/S5 */
 
@@ -189,7 +190,7 @@ void smihandler_southbridge_sleep(
 	 * event again. We need to set BIT13 (SLP_EN) though to make the
 	 * sleep happen.
 	 */
-	enable_pm1_control(SLP_EN);
+	pmc_enable_pm1_control(SLP_EN);
 
 	/* Make sure to stop executing code here for S3/S4/S5 */
 	if (slp_typ >= ACPI_S3)
@@ -203,7 +204,7 @@ void smihandler_southbridge_sleep(
 	reg32 = inl(ACPI_BASE_ADDRESS + PM1_CNT);
 	if (reg32 & SCI_EN) {
 		/* The OS is not an ACPI OS, so we set the state to S0 */
-		disable_pm1_control(SLP_EN | SLP_TYP);
+		pmc_disable_pm1_control(SLP_EN | SLP_TYP);
 	}
 }
 
@@ -269,11 +270,11 @@ void smihandler_southbridge_apmc(
 		printk(BIOS_DEBUG, "P-state control\n");
 		break;
 	case APM_CNT_ACPI_DISABLE:
-		disable_pm1_control(SCI_EN);
+		pmc_disable_pm1_control(SCI_EN);
 		printk(BIOS_DEBUG, "SMI#: ACPI disabled.\n");
 		break;
 	case APM_CNT_ACPI_ENABLE:
-		enable_pm1_control(SCI_EN);
+		pmc_enable_pm1_control(SCI_EN);
 		printk(BIOS_DEBUG, "SMI#: ACPI enabled.\n");
 		break;
 	case APM_CNT_GNVS_UPDATE:
@@ -306,7 +307,7 @@ void smihandler_southbridge_apmc(
 void smihandler_southbridge_pm1(
 	const struct smm_save_state_ops *save_state_ops)
 {
-	uint16_t pm1_sts = clear_pm1_status();
+	uint16_t pm1_sts = pmc_clear_pm1_status();
 
 	/*
 	 * While OSPM is not active, poweroff immediately
@@ -316,21 +317,21 @@ void smihandler_southbridge_pm1(
 		/* power button pressed */
 		if (IS_ENABLED(CONFIG_ELOG_GSMI))
 			elog_add_event(ELOG_TYPE_POWER_BUTTON);
-		disable_pm1_control(-1UL);
-		enable_pm1_control(SLP_EN | (SLP_TYP_S5 << SLP_TYP_SHIFT));
+		pmc_disable_pm1_control(-1UL);
+		pmc_enable_pm1_control(SLP_EN | (SLP_TYP_S5 << SLP_TYP_SHIFT));
 	}
 }
 
 void smihandler_southbridge_gpe0(
 	const struct smm_save_state_ops *save_state_ops)
 {
-	clear_gpe_status();
+	pmc_clear_gpe_status();
 }
 
 void smihandler_southbridge_tco(
 	const struct smm_save_state_ops *save_state_ops)
 {
-	uint32_t tco_sts = clear_tco_status();
+	uint32_t tco_sts = pmc_clear_tco_status();
 
 	/* Any TCO event? */
 	if (!tco_sts)
@@ -347,7 +348,7 @@ void smihandler_southbridge_periodic(
 {
 	uint32_t reg32;
 
-	reg32 = get_smi_en();
+	reg32 = pmc_get_smi_en();
 
 	/* Are periodic SMIs enabled? */
 	if ((reg32 & PERIODIC_EN) == 0)
@@ -365,7 +366,7 @@ void southbridge_smi_handler(void)
 	 * We need to clear the SMI status registers, or we won't see what's
 	 * happening in the following calls.
 	 */
-	smi_sts = clear_smi_status();
+	smi_sts = pmc_clear_smi_status();
 
 	save_state_ops = get_smm_save_state_ops();
 

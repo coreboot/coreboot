@@ -46,20 +46,6 @@
 #include <soc/smm.h>
 #include <soc/systemagent.h>
 
-/*
- * TODO: This Global variable must be removed once the following
- * two cases are resolved -
- *
- * 1) SGX enabling for the BSP issue gets solved, due to which
- * configure_sgx() function is kept inside soc_init_cpus().
- * 2) uCode loading after SMM relocation is deleted inside
- * per_cpu_smm_trigger() function, since as per
- * current BWG, uCode loading can be done after all feature
- * programmings are done. There is no specific recommendation
- * to do it after SMM Relocation.
- */
-static const void *microcode_patch;
-
 /* Convert time in seconds to POWER_LIMIT_1_TIME MSR value */
 static const u8 power_limit_time_sec_to_msr[] = {
 	[0]   = 0x00,
@@ -453,9 +439,6 @@ static void per_cpu_smm_trigger(void)
 {
 	/* Relocate the SMM handler. */
 	smm_relocate();
-
-	/* After SMM relocation a 2nd microcode load is required. */
-	intel_microcode_load_unlocked(microcode_patch);
 }
 
 static void post_mp_init(void)
@@ -494,8 +477,6 @@ static const struct mp_ops mp_ops = {
 
 void soc_init_cpus(struct bus *cpu_bus, const void *microcode)
 {
-	microcode_patch = microcode;
-
 	if (mp_init_with_smm(cpu_bus, &mp_ops))
 		printk(BIOS_ERR, "MP initialization failure.\n");
 
@@ -508,7 +489,7 @@ void soc_init_cpus(struct bus *cpu_bus, const void *microcode)
 	 * here to get SGX enabled on BSP. This behavior needs to root-caused
 	 * and we shall not have this redundant call.
 	 */
-	configure_sgx(microcode_patch);
+	configure_sgx(microcode);
 }
 
 int soc_skip_ucode_update(u32 current_patch_id, u32 new_patch_id)

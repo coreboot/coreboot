@@ -76,7 +76,10 @@ static void pirq_setup(void)
 	picr_data_ptr = mainboard_picr_data;
 }
 
-
+static void mainboard_init(void *chip_info)
+{
+	mainboard_ec_init();
+}
 
 /*************************************************
  * Dedicated mainboard function
@@ -88,10 +91,9 @@ static void kahlee_enable(device_t dev)
 
 	/* Initialize the PIRQ data structures for consumption */
 	pirq_setup();
-
-	mainboard_ec_init();
 }
 
 struct chip_operations mainboard_ops = {
+	.init = mainboard_init,
 	.enable_dev = kahlee_enable,
 };

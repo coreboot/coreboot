@@ -23,7 +23,7 @@ DefinitionBlock (
 	0x00010001	/* OEM Revision */
 	)
 {	/* Start of ASL file */
-	/* #include <arch/x86/acpi/debug.asl> */	/* Include global debug methods if needed */
+	/* #include <arch/x86/acpi/debug.asl> */	/* as needed */
 
 	/* Globals for the platform */
 	#include "acpi/mainboard.asl"
@@ -48,7 +48,7 @@ DefinitionBlock (
 		/* global utility methods expected within the \_SB scope */
 		#include <arch/x86/acpi/globutil.asl>
 
-		/* Describe IRQ Routing mapping for this platform (within the \_SB scope) */
+		/* IRQ Routing mapping for this platform (in \_SB scope) */
 		#include "acpi/routing.asl"
 
 		Device(PWRB) {

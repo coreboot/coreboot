@@ -28,10 +28,10 @@
 #include <dimmSpd.h>
 #include <agesawrapper.h>
 
-static AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr);
+static AGESA_STATUS Fch_Oem_config(UINT32 Func,
+					UINT32 FchData, VOID *ConfigPtr);
 
-const BIOS_CALLOUT_STRUCT BiosCallouts[] =
-{
+const BIOS_CALLOUT_STRUCT BiosCallouts[] = {
 	{AGESA_ALLOCATE_BUFFER,          agesa_AllocateBuffer },
 	{AGESA_DEALLOCATE_BUFFER,        agesa_DeallocateBuffer },
 	{AGESA_LOCATE_BUFFER,            agesa_LocateBuffer },
@@ -83,7 +83,8 @@ AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr)
 	AMD_CONFIG_PARAMS *StdHeader = ConfigPtr;
 
 	if (StdHeader->Func == AMD_INIT_RESET) {
-		FCH_RESET_DATA_BLOCK *FchParams_reset = (FCH_RESET_DATA_BLOCK *)FchData;
+		FCH_RESET_DATA_BLOCK *FchParams_reset =
+					(FCH_RESET_DATA_BLOCK *)FchData;
 		printk(BIOS_DEBUG, "Fch OEM config in INIT RESET ");
 		FchParams_reset->FchReset.SataEnable = hudson_sata_enable();
 		FchParams_reset->FchReset.IdeEnable = hudson_ide_enable();
@@ -102,7 +103,8 @@ AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr)
 		FchParams_env->Usb.Xhci0Enable = FALSE;
 #endif
 		FchParams_env->Usb.Xhci1Enable = FALSE;
-		FchParams_env->Usb.USB30PortInit = 8; /* 8: If USB3 port is unremoveable. */
+		/* 8: If USB3 port is unremoveable. */
+		FchParams_env->Usb.USB30PortInit = 8;
 
 		/* SATA configuration */
 		FchParams_env->Sata.SataClass = CONFIG_STONEYRIDGE_SATA_MODE;

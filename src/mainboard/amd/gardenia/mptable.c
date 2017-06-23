@@ -26,7 +26,7 @@
 #include <soc/hudson.h>
 #include <amd_pci_util.h>
 
-static void smp_add_mpc_entry(struct mp_config_table *mc, unsigned length)
+static void smp_add_mpc_entry(struct mp_config_table *mc, unsigned int length)
 {
 	mc->mpc_length += length;
 	mc->mpc_entry_count++;
@@ -75,16 +75,20 @@ static void *smp_write_config_table(void *v)
 
 	smp_write_ioapic(mc, ioapic_id+1, 0x21, (void *)0xFEC20000);
 
-	/* I/O Ints:    Type    Polarity    Trigger     Bus ID   IRQ    APIC ID PIN# */
+	/* I/O Ints:  Type  Polarity  Trigger   Bus ID  IRQ   APIC ID PIN# */
 #define IO_LOCAL_INT(type, intr, apicid, pin)				\
-	smp_write_lintsrc(mc, (type), MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH, bus_isa, (intr), (apicid), (pin));
+		smp_write_lintsrc(mc, (type),				\
+		MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH, bus_isa,	\
+		(intr), (apicid), (pin))
 	mptable_add_isa_interrupts(mc, bus_isa, ioapic_id, 0);
 
 	/* PCI interrupts are level triggered, and are
 	 * associated with a specific bus/device/function tuple.
 	 */
 #define PCI_INT(bus, dev, int_sign, pin)				\
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, (bus), (((dev)<<2)|(int_sign)), ioapic_id, (pin))
+		smp_write_intsrc(mc, mp_INT,				\
+		MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, (bus),	\
+		(((dev)<<2)|(int_sign)), ioapic_id, (pin))
 
 	/* Internal VGA */
 	PCI_INT(0x0, 0x01, 0x0, intr_data_ptr[0x02]);
@@ -146,7 +150,7 @@ static void *smp_write_config_table(void *v)
 	/* FCH PCIe PortD */
 	PCI_INT(0x0, 0x15, 0x3, 0x13);
 
-	/*Local Ints:   Type    Polarity    Trigger     Bus ID   IRQ    APIC ID PIN# */
+	/*Local Ints: Type  Polarity  Trigger   Bus ID  IRQ  APIC ID PIN# */
 	IO_LOCAL_INT(mp_ExtINT, 0, MP_APIC_ALL, 0x0);
 	IO_LOCAL_INT(mp_NMI, 0, MP_APIC_ALL, 0x1);
 	/* There is no extension information... */

@@ -17,12 +17,13 @@
 #include <PlatformMemoryConfiguration.h>
 
 #define FILECODE PROC_GNB_PCIE_FAMILY_0X15_F15PCIECOMPLEXCONFIG_FILECODE
-static const PCIe_PORT_DESCRIPTOR PortList [] = {
-	/* Initialize Port descriptor (PCIe port, Lanes 7:4, D2F1) for x4 slot */
+static const PCIe_PORT_DESCRIPTOR PortList[] = {
+	/* Init port descriptor (PCIe port, Lanes 7:4, D2F1) for x4 slot */
 	{
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER (PcieUnusedEngine, 4, 7),
-		PCIE_PORT_DATA_INITIALIZER_V2 (PortEnabled, ChannelTypeExt6db, 2, 1,
+		PCIE_ENGINE_DATA_INITIALIZER(PcieUnusedEngine, 4, 7),
+		PCIE_PORT_DATA_INITIALIZER_V2(PortEnabled, ChannelTypeExt6db,
+				2, 1,
 				HotplugDisabled,
 				PcieGenMaxSupported,
 				PcieGenMaxSupported,
@@ -31,8 +32,9 @@ static const PCIe_PORT_DESCRIPTOR PortList [] = {
 	/* Initialize Port descriptor (PCIe port, Lanes 1:0, D2F2) for M.2 */
 	{
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER (PcieUnusedEngine, 0, 1),
-		PCIE_PORT_DATA_INITIALIZER_V2 (PortDisabled, ChannelTypeExt6db, 2, 2,
+		PCIE_ENGINE_DATA_INITIALIZER(PcieUnusedEngine, 0, 1),
+		PCIE_PORT_DATA_INITIALIZER_V2(PortDisabled, ChannelTypeExt6db,
+				2, 2,
 				HotplugDisabled,
 				PcieGenMaxSupported,
 				PcieGenMaxSupported,
@@ -40,8 +42,9 @@ static const PCIe_PORT_DESCRIPTOR PortList [] = {
 	},
 	{
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER (PcieUnusedEngine, 1, 1),
-		PCIE_PORT_DATA_INITIALIZER_V2 (PortDisabled, ChannelTypeExt6db, 2, 3,
+		PCIE_ENGINE_DATA_INITIALIZER(PcieUnusedEngine, 1, 1),
+		PCIE_PORT_DATA_INITIALIZER_V2(PortDisabled, ChannelTypeExt6db,
+				2, 3,
 				HotplugDisabled,
 				PcieGenMaxSupported,
 				PcieGenMaxSupported,
@@ -50,8 +53,9 @@ static const PCIe_PORT_DESCRIPTOR PortList [] = {
 	/* Initialize Port descriptor (PCIe port, Lane 2, D2F4) for x1 slot */
 	{
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 2, 2),
-		PCIE_PORT_DATA_INITIALIZER_V2 (PortEnabled, ChannelTypeExt6db, 2, 4,
+		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 2, 2),
+		PCIE_PORT_DATA_INITIALIZER_V2(PortEnabled, ChannelTypeExt6db,
+				2, 4,
 				HotplugDisabled,
 				PcieGenMaxSupported,
 				PcieGenMaxSupported,
@@ -60,8 +64,9 @@ static const PCIe_PORT_DESCRIPTOR PortList [] = {
 	/* Initialize Port descriptor (PCIe port, Lane3, D2F5) for SD */
 	{
 		DESCRIPTOR_TERMINATE_LIST,
-		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 3, 3),
-		PCIE_PORT_DATA_INITIALIZER_V2 (PortEnabled, ChannelTypeExt6db, 2, 5,
+		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 3, 3),
+		PCIE_PORT_DATA_INITIALIZER_V2(PortEnabled, ChannelTypeExt6db,
+				2, 5,
 				HotplugDisabled,
 				PcieGenMaxSupported,
 				PcieGenMaxSupported,
@@ -70,24 +75,24 @@ static const PCIe_PORT_DESCRIPTOR PortList [] = {
 	/* Initialize Port descriptor (PCIe port, Lane 1, D2F3) for M.2 */
 };
 
-static const PCIe_DDI_DESCRIPTOR DdiList [] = {
+static const PCIe_DDI_DESCRIPTOR DdiList[] = {
 	/* DDI0 - eDP */
 	{
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 8, 11),
-		PCIE_DDI_DATA_INITIALIZER (ConnectorTypeEDP, Aux1, Hdp1)
+		PCIE_ENGINE_DATA_INITIALIZER(PcieDdiEngine, 8, 11),
+		PCIE_DDI_DATA_INITIALIZER(ConnectorTypeEDP, Aux1, Hdp1)
 	},
 	/* DDI1 - DP */
 	{
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 12, 15),
-		PCIE_DDI_DATA_INITIALIZER (ConnectorTypeDP, Aux2, Hdp2)
+		PCIE_ENGINE_DATA_INITIALIZER(PcieDdiEngine, 12, 15),
+		PCIE_DDI_DATA_INITIALIZER(ConnectorTypeDP, Aux2, Hdp2)
 	},
 	/* DDI2 - HDMI */
 	{
 		DESCRIPTOR_TERMINATE_LIST,
-		PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 16, 19),
-		PCIE_DDI_DATA_INITIALIZER (ConnectorTypeHDMI, Aux3, Hdp3)
+		PCIE_ENGINE_DATA_INITIALIZER(PcieDdiEngine, 16, 19),
+		PCIE_DDI_DATA_INITIALIZER(ConnectorTypeHDMI, Aux3, Hdp3)
 	},
 };
 
@@ -98,8 +103,7 @@ static const PCIe_COMPLEX_DESCRIPTOR PcieComplex = {
 	.DdiLinkList  = DdiList
 };
 
-static const UINT32 AzaliaCodecAlc286Table[] =
-{
+static const UINT32 AzaliaCodecAlc286Table[] = {
 	0x00172051, 0x001721C7, 0x00172222, 0x00172310,
 	0x0017FF00, 0x0017FF00, 0x0017FF00, 0x0017FF00,
 	0x01271C50, 0x01271D01, 0x01271EA6, 0x01271FB7,
@@ -120,19 +124,18 @@ static const UINT32 AzaliaCodecAlc286Table[] =
 	0xffffffff
 };
 
-CONST CODEC_VERB_TABLE_LIST CodecTableList[] =
-{
+CONST CODEC_VERB_TABLE_LIST CodecTableList[] = {
 	{ (UINT32) 0x10ec0286, AzaliaCodecAlc286Table},
 	{ (UINT32) 0x0FFFFFFFF, (UINT32 *)0x0FFFFFFFF}
 };
 
-/*---------------------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*/
 /**
  *  OemCustomizeInitEarly
  *
  *  Description:
- *    This is the stub function will call the host environment through the binary block
- *    interface (call-out port) to provide a user hook opportunity
+ *    This is the stub function will call the host environment through the
+ *    binary block interface (call-out port) to provide a user hook opportunity
  *
  *  Parameters:
  *    @param[in]      **PeiServices
@@ -141,28 +144,30 @@ CONST CODEC_VERB_TABLE_LIST CodecTableList[] =
  *    @retval         VOID
  *
  **/
-/*---------------------------------------------------------------------------------------*/
-VOID OemCustomizeInitEarly (
-	IN  OUT AMD_EARLY_PARAMS    *InitEarly
-	)
+/*---------------------------------------------------------------------------*/
+VOID OemCustomizeInitEarly(IN OUT AMD_EARLY_PARAMS *InitEarly)
 {
 	InitEarly->GnbConfig.PcieComplexList = &PcieComplex;
-	InitEarly->PlatformConfig.AzaliaCodecVerbTable = (UINT64)(UINTN)CodecTableList;
+	InitEarly->PlatformConfig.AzaliaCodecVerbTable =
+					(UINT64)(UINTN)CodecTableList;
 }
 
 static const PSO_ENTRY DDR4PlatformMemoryConfiguration[] = {
 	DRAM_TECHNOLOGY(ANY_SOCKET, DDR4_TECHNOLOGY),
-	NUMBER_OF_DIMMS_SUPPORTED (ANY_SOCKET, ANY_CHANNEL, 2),
-	NUMBER_OF_CHANNELS_SUPPORTED (ANY_SOCKET, 2),
-	MOTHER_BOARD_LAYERS (LAYERS_6),
-	MEMCLK_DIS_MAP (ANY_SOCKET, ANY_CHANNEL, 0xff, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00),
-	CKE_TRI_MAP (ANY_SOCKET, ANY_CHANNEL, 0xff, 0xff, 0xff, 0xff),
-	ODT_TRI_MAP (ANY_SOCKET, ANY_CHANNEL, 0xff, 0xff, 0xff, 0xff),
-	CS_TRI_MAP (ANY_SOCKET, ANY_CHANNEL, 0xff, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00),
+	NUMBER_OF_DIMMS_SUPPORTED(ANY_SOCKET, ANY_CHANNEL, 2),
+	NUMBER_OF_CHANNELS_SUPPORTED(ANY_SOCKET, 2),
+	MOTHER_BOARD_LAYERS(LAYERS_6),
+	MEMCLK_DIS_MAP(ANY_SOCKET, ANY_CHANNEL,
+				0xff, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00),
+	CKE_TRI_MAP(ANY_SOCKET, ANY_CHANNEL, 0xff, 0xff, 0xff, 0xff),
+	ODT_TRI_MAP(ANY_SOCKET, ANY_CHANNEL, 0xff, 0xff, 0xff, 0xff),
+	CS_TRI_MAP(ANY_SOCKET, ANY_CHANNEL,
+				0xff, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00),
 	PSO_END
 };
 
 void OemPostParams(AMD_POST_PARAMS *PostParams)
 {
-	PostParams->MemConfig.PlatformMemoryConfiguration = (PSO_ENTRY *)DDR4PlatformMemoryConfiguration;
+	PostParams->MemConfig.PlatformMemoryConfiguration =
+				(PSO_ENTRY *)DDR4PlatformMemoryConfiguration;
 }

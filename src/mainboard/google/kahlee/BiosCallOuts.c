@@ -16,7 +16,6 @@
 #include <AGESA.h>
 #include <BiosCallOuts.h>
 #include <FchPlatform.h>
-#include <soc/imc.h>
 #include <soc/hudson.h>
 #include <stdlib.h>
 
@@ -27,8 +26,6 @@ static AGESA_STATUS fch_initenv(UINT32 Func, UINTN FchData, VOID *ConfigPtr)
 	if (StdHeader->Func == AMD_INIT_ENV) {
 		FCH_DATA_BLOCK *FchParams_env = (FCH_DATA_BLOCK *)FchData;
 		printk(BIOS_DEBUG, "Fch OEM config in INIT ENV ");
-		if (IS_ENABLED(CONFIG_STONEYRIDGE_IMC_FWM))
-			oem_fan_control(FchParams_env);
 
 		/* XHCI configuration */
 		if (IS_ENABLED(CONFIG_STONEYRIDGE_XHCI_ENABLE))

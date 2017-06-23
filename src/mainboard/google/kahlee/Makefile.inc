@@ -21,4 +21,3 @@ romstage-y += OemCustomize.c
 
 ramstage-y += BiosCallOuts.c
 ramstage-y += OemCustomize.c
-ramstage-$(CONFIG_STONEYRIDGE_IMC_FWM) += fchec.c

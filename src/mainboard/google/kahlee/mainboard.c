@@ -19,6 +19,7 @@
 #include <agesawrapper.h>
 #include <amd_pci_util.h>
 #include <ec.h>
+#include <vendorcode/google/chromeos/chromeos.h>
 
 /***********************************************************
  * These arrays set up the FCH PCI_INTR registers 0xC00/0xC01.
@@ -91,6 +92,8 @@ static void kahlee_enable(device_t dev)
 
 	/* Initialize the PIRQ data structures for consumption */
 	pirq_setup();
+
+	dev->ops->acpi_inject_dsdt_generator = chromeos_dsdt_generator;
 }
 
 struct chip_operations mainboard_ops = {

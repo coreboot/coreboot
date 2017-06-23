@@ -18,7 +18,10 @@
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <boot/coreboot_tables.h>
 #include <console/console.h>
+#include <soc/gpio.h>
 
+/* SPI Write protect */
+#define CROS_WP_GPIO	GPIO_122
 
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
@@ -33,5 +36,15 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 
 int get_write_protect_state(void)
 {
-	return 0;
+	return gpio_get(CROS_WP_GPIO);
+}
+
+static const struct cros_gpio cros_gpios[] = {
+	CROS_GPIO_REC_AL(CROS_GPIO_VIRTUAL, CROS_GPIO_DEVICE_NAME),
+	CROS_GPIO_WP_AH(CROS_WP_GPIO, CROS_GPIO_DEVICE_NAME),
+};
+
+void mainboard_chromeos_acpi_generate(void)
+{
+	chromeos_acpi_gpio_generate(cros_gpios, ARRAY_SIZE(cros_gpios));
 }

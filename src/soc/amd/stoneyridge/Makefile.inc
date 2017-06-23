@@ -48,6 +48,7 @@ romstage-y += early_setup.c
 romstage-y += dimmSpd.c
 romstage-$(CONFIG_USBDEBUG_IN_ROMSTAGE) += enable_usbdebug.c
 romstage-y += fixme.c
+romstage-y += gpio.c
 romstage-$(CONFIG_STONEYRIDGE_IMC_FWM) += imc.c
 romstage-y += smbus.c
 romstage-y += smbus_spd.c

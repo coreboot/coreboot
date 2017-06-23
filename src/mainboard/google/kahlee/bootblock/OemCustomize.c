@@ -89,11 +89,11 @@ static const PCIe_DDI_DESCRIPTOR DdiList[] = {
 		PCIE_ENGINE_DATA_INITIALIZER(PcieDdiEngine, 12, 15),
 		PCIE_DDI_DATA_INITIALIZER(ConnectorTypeDP, Aux2, Hdp2)
 	},
-	/* DDI2 - HDMI */
+	/* DDI2 - DP */
 	{
 		DESCRIPTOR_TERMINATE_LIST,
 		PCIE_ENGINE_DATA_INITIALIZER(PcieDdiEngine, 16, 19),
-		PCIE_DDI_DATA_INITIALIZER(ConnectorTypeHDMI, Aux3, Hdp3)
+		PCIE_DDI_DATA_INITIALIZER(ConnectorTypeDP, Aux3, Hdp3)
 	},
 };
 

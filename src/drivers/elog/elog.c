@@ -13,13 +13,13 @@
  * GNU General Public License for more details.
  */
 
-#if CONFIG_HAVE_ACPI_RESUME == 1
+#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
 #include <arch/acpi.h>
 #endif
 #include <bootstate.h>
 #include <cbmem.h>
 #include <console/console.h>
-#if CONFIG_ARCH_X86
+#if IS_ENABLED(CONFIG_ARCH_X86)
 #include <pc80/mc146818rtc.h>
 #endif
 #include <bcd.h>
@@ -786,8 +786,8 @@ int elog_init(void)
 
 #if !defined(__SMM__)
 	/* Log boot count event except in S3 resume */
-#if CONFIG_ELOG_BOOT_COUNT == 1
-#if CONFIG_HAVE_ACPI_RESUME == 1
+#if IS_ENABLED(CONFIG_ELOG_BOOT_COUNT)
+#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
 		if (!acpi_is_wakeup_s3())
 #endif
 		elog_add_event_dword(ELOG_TYPE_BOOT, boot_count_read());
@@ -796,9 +796,9 @@ int elog_init(void)
 		elog_add_event_dword(ELOG_TYPE_BOOT, 0);
 #endif
 
-#if CONFIG_ARCH_X86
+#if IS_ENABLED(CONFIG_ARCH_X86)
 	/* Check and log POST codes from previous boot */
-	if (CONFIG_CMOS_POST)
+	if (IS_ENABLED(CONFIG_CMOS_POST))
 		cmos_post_log();
 #endif
 #endif

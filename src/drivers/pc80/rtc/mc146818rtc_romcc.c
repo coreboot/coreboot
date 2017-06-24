@@ -1,7 +1,7 @@
 #include <stdint.h>
 #include <pc80/mc146818rtc.h>
 #include <fallback.h>
-#if CONFIG_USE_OPTION_TABLE
+#if IS_ENABLED(CONFIG_USE_OPTION_TABLE)
 #include "option_table.h"
 #endif
 
@@ -19,7 +19,7 @@ static int cmos_error(void)
 
 static int cmos_chksum_valid(void)
 {
-#if CONFIG_USE_OPTION_TABLE
+#if IS_ENABLED(CONFIG_USE_OPTION_TABLE)
 	unsigned char addr;
 	u16 sum, old_sum;
 
@@ -93,7 +93,7 @@ static inline __attribute__((unused)) int do_normal_boot(void)
 
 unsigned read_option_lowlevel(unsigned start, unsigned size, unsigned def)
 {
-#if CONFIG_USE_OPTION_TABLE
+#if IS_ENABLED(CONFIG_USE_OPTION_TABLE)
 	unsigned byte;
 
 	byte = cmos_read(start/8);

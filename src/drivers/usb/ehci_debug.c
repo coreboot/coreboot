@@ -33,7 +33,7 @@ struct ehci_debug_info {
 	struct dbgp_pipe ep_pipe[DBGP_MAX_ENDPOINTS];
 };
 
-#if CONFIG_DEBUG_USBDEBUG
+#if IS_ENABLED(CONFIG_DEBUG_USBDEBUG)
 static void dbgp_print_data(struct ehci_dbg_port *ehci_debug);
 static int dbgp_enabled(void);
 # define dprintk(LEVEL, args...) \
@@ -197,7 +197,7 @@ static void dbgp_get_data(struct ehci_dbg_port *ehci_debug, void *buf, int size)
 		bytes[i] = (hi >> (8*(i - 4))) & 0xff;
 }
 
-#if CONFIG_DEBUG_USBDEBUG
+#if IS_ENABLED(CONFIG_DEBUG_USBDEBUG)
 static void dbgp_print_data(struct ehci_dbg_port *ehci_debug)
 {
 	u32 ctrl = read32(&ehci_debug->control);
@@ -578,7 +578,7 @@ err:
 	//return ret;
 
 next_debug_port:
-#if CONFIG_USBDEBUG_DEFAULT_PORT==0
+#if CONFIG_USBDEBUG_DEFAULT_PORT == 0
 	port_map_tried |= (1 << (debug_port - 1));
 	new_debug_port = ((debug_port-1 + 1) % n_ports) + 1;
 	if (port_map_tried != ((1 << n_ports) - 1)) {
@@ -599,7 +599,7 @@ next_debug_port:
 	return -10;
 }
 
-#if CONFIG_DEBUG_USBDEBUG
+#if IS_ENABLED(CONFIG_DEBUG_USBDEBUG)
 static int dbgp_enabled(void)
 {
 	struct dbgp_pipe *globals = &dbgp_ehci_info()->ep_pipe[DBGP_SETUP_EP0];

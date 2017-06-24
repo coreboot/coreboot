@@ -27,7 +27,7 @@
  * This can either be declared as part of the option
  * table or statically defined in the board config.
  */
-#if CONFIG_USE_OPTION_TABLE
+#if IS_ENABLED(CONFIG_USE_OPTION_TABLE)
 # include "option_table.h"
 # define BOOT_COUNT_CMOS_OFFSET (CMOS_VSTART_boot_count_offset >> 3)
 #else

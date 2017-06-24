@@ -431,7 +431,7 @@ build()
 	fi
 }
 
-quit()
+exit_handler()
 {
 	printf "${NC}Stop\n"
 	exit 1
@@ -807,7 +807,7 @@ print_supported() {
 	esac
 }
 
-trap quit 1 2 3 15
+trap exit_handler 1 2 3 15
 
 # Look if we have getopt. If not, build it.
 export PATH=$PATH:.

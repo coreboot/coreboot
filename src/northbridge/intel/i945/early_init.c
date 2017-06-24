@@ -944,9 +944,9 @@ void i945_late_initialization(int s3resume)
 
 	i945_setup_root_complex_topology();
 
-#if !CONFIG_HAVE_ACPI_RESUME
+#if !IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
 #if CONFIG_DEFAULT_CONSOLE_LOGLEVEL > 8
-#if CONFIG_DEBUG_RAM_SETUP
+#if IS_ENABLED(CONFIG_DEBUG_RAM_SETUP)
 	sdram_dump_mchbar_registers();
 
 	{

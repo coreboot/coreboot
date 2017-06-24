@@ -368,7 +368,7 @@ static void mc_add_dram_resources(device_t dev)
 	mmio_resource(dev, index++, (0xa0000 >> 10), (0xc0000 - 0xa0000) >> 10);
 	reserved_ram_resource(dev, index++, (0xc0000 >> 10),
 			      (0x100000 - 0xc0000) >> 10);
-#if CONFIG_CHROMEOS_RAMOOPS
+#if IS_ENABLED(CONFIG_CHROMEOS_RAMOOPS)
 	reserved_ram_resource(dev, index++,
 			CONFIG_CHROMEOS_RAMOOPS_RAM_START >> 10,
 			CONFIG_CHROMEOS_RAMOOPS_RAM_SIZE >> 10);

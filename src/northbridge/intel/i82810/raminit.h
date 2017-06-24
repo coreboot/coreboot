@@ -26,7 +26,7 @@ void sdram_set_spd_registers(void);
 void sdram_enable(void);
 
 /* Debug */
-#if CONFIG_DEBUG_RAM_SETUP
+#if IS_ENABLED(CONFIG_DEBUG_RAM_SETUP)
 void dump_spd_registers(void);
 void dump_pci_device(unsigned dev);
 #else

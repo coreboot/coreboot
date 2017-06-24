@@ -25,7 +25,7 @@ Macros and definitions.
 -----------------------------------------------------------------------------*/
 
 /* Debugging macros. */
-#if CONFIG_DEBUG_RAM_SETUP
+#if IS_ENABLED(CONFIG_DEBUG_RAM_SETUP)
 #define PRINTK_DEBUG(x...)	printk(BIOS_DEBUG, x)
 #define DUMPNORTH()		dump_pci_device(PCI_DEV(0, 0, 0))
 #else

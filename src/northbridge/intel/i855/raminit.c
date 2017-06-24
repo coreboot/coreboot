@@ -29,7 +29,7 @@ Macros and definitions:
 #define VALIDATE_DIMM_COMPATIBILITY
 
 /* Debugging macros. */
-#if CONFIG_DEBUG_RAM_SETUP
+#if IS_ENABLED(CONFIG_DEBUG_RAM_SETUP)
 #define PRINTK_DEBUG(x...)      printk(BIOS_DEBUG, x)
 #define DUMPNORTH()             dump_pci_device(NORTHBRIDGE_MMC)
 #else
@@ -868,11 +868,11 @@ static void spd_set_dram_throttle_control(void)
 
 static void spd_update(u8 reg, u32 new_value)
 {
-#if CONFIG_DEBUG_RAM_SETUP
+#if IS_ENABLED(CONFIG_DEBUG_RAM_SETUP)
 	u32 value1 = pci_read_config32(NORTHBRIDGE_MMC, reg);
 #endif
 	pci_write_config32(NORTHBRIDGE_MMC, reg, new_value);
-#if CONFIG_DEBUG_RAM_SETUP
+#if IS_ENABLED(CONFIG_DEBUG_RAM_SETUP)
 	u32 value2 = pci_read_config32(NORTHBRIDGE_MMC, reg);
 	PRINTK_DEBUG("update reg %02x, old: %08x, new: %08x, read back: %08x\n", reg, value1, new_value, value2);
 #endif

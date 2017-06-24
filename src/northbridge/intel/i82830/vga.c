@@ -43,7 +43,7 @@ static void vga_init(device_t dev)
 	printk(BIOS_INFO, "Graphics Initialization Complete\n");
 
 	/* Enable TV-Out */
-#if CONFIG_PCI_OPTION_ROM_RUN_YABEL
+#if IS_ENABLED(CONFIG_PCI_OPTION_ROM_RUN_YABEL)
 #define PIPE_A_CRT	(1 << 0)
 #define PIPE_A_LFP	(1 << 1)
 #define PIPE_A_TV	(1 << 3)

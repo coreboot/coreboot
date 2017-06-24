@@ -30,7 +30,7 @@
 #include <cbmem.h>
 
 /* Debugging macros. */
-#if CONFIG_DEBUG_RAM_SETUP
+#if IS_ENABLED(CONFIG_DEBUG_RAM_SETUP)
 #define PRINTK_DEBUG(x...)	printk(BIOS_DEBUG, x)
 #else
 #define PRINTK_DEBUG(x...)
@@ -93,7 +93,7 @@ static void ram_read32(u32 offset)
 	read32((void *)offset);
 }
 
-#if CONFIG_DEBUG_RAM_SETUP
+#if IS_ENABLED(CONFIG_DEBUG_RAM_SETUP)
 void sdram_dump_mchbar_registers(void)
 {
 	int i;
@@ -1075,7 +1075,7 @@ static const u32 *slew_group_lookup(int dual_channel, int index)
 	return nc;
 }
 
-#if CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GM
+#if IS_ENABLED(CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GM)
 /* Strength multiplier tables */
 static const u8 dual_channel_strength_multiplier[] = {
 	0x44, 0x11, 0x11, 0x11, 0x44, 0x44, 0x44, 0x11,
@@ -1130,7 +1130,7 @@ static const u8 single_channel_strength_multiplier[] = {
 	0x33, 0x00, 0x00, 0x11, 0x00, 0x44, 0x33, 0x11,
 	0x33, 0x00, 0x11, 0x00, 0x44, 0x44, 0x33, 0x11
 };
-#elif CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GC
+#elif IS_ENABLED(CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GC)
 static const u8 dual_channel_strength_multiplier[] = {
 	0x44, 0x22, 0x00, 0x00, 0x44, 0x44, 0x44, 0x22,
 	0x44, 0x22, 0x00, 0x00, 0x44, 0x44, 0x44, 0x22,
@@ -2255,7 +2255,7 @@ static void sdram_program_clock_crossing(void)
 	/**
 	 * We add the indices according to our clocks from CLKCFG.
 	 */
-#if CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GM
+#if IS_ENABLED(CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GM)
 	static const u32 data_clock_crossing[] = {
 		0x00100401, 0x00000000, /* DDR400 FSB400 */
 		0xffffffff, 0xffffffff, /*  nonexistent  */
@@ -2300,7 +2300,7 @@ static void sdram_program_clock_crossing(void)
 		0xffffffff, 0xffffffff, /*  nonexistent  */
 	};
 
-#elif CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GC
+#elif IS_ENABLED(CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GC)
 	/* i945 G/P */
 	static const u32 data_clock_crossing[] = {
 		0xffffffff, 0xffffffff, /*  nonexistent  */
@@ -2520,7 +2520,7 @@ static void sdram_post_jedec_initialization(struct sys_info *sysinfo)
 	if (sysinfo->interleaved) {
 
 		reg32 = MCHBAR32(DCC);
-#if CONFIG_CHANNEL_XOR_RANDOMIZATION
+#if IS_ENABLED(CONFIG_CHANNEL_XOR_RANDOMIZATION)
 		reg32 &= ~(1 << 10);
 		reg32 |= (1 << 9);
 #else
@@ -2897,9 +2897,9 @@ static void sdram_enable_memory_clocks(struct sys_info *sysinfo)
 {
 	u8 clocks[2] = { 0, 0 };
 
-#if CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GM
+#if IS_ENABLED(CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GM)
 #define CLOCKS_WIDTH 2
-#elif CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GC
+#elif IS_ENABLED(CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GC)
 #define CLOCKS_WIDTH 3
 #endif
 	if (sysinfo->dimm[0] != SYSINFO_DIMM_NOT_POPULATED)
@@ -2914,7 +2914,7 @@ static void sdram_enable_memory_clocks(struct sys_info *sysinfo)
 	if (sysinfo->dimm[3] != SYSINFO_DIMM_NOT_POPULATED)
 		clocks[1] |= ((1 << CLOCKS_WIDTH)-1) << CLOCKS_WIDTH;
 
-#if CONFIG_OVERRIDE_CLOCK_DISABLE
+#if IS_ENABLED(CONFIG_OVERRIDE_CLOCK_DISABLE)
 	/* Usually system firmware turns off system memory clock signals
 	 * to unused SO-DIMM slots to reduce EMI and power consumption.
 	 * However, the Kontron 986LCD-M does not like unused clock

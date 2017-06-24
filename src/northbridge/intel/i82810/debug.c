@@ -5,7 +5,7 @@
 #include <spd.h>
 #include <console/console.h>
 
-#if CONFIG_DEBUG_RAM_SETUP
+#if IS_ENABLED(CONFIG_DEBUG_RAM_SETUP)
 void dump_spd_registers(void)
 {
 	int i;

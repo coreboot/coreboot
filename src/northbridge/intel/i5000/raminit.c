@@ -1752,7 +1752,7 @@ void i5000_fbdimm_init(void)
 	if (setup.branch[1].used)
 		i5000_fbd_next_state(&setup.branch[1], I5000_FBDHPC_STATE_ACTIVE);
 
-#if CONFIG_NORTHBRIDGE_INTEL_I5000_RAM_CHECK
+#if IS_ENABLED(CONFIG_NORTHBRIDGE_INTEL_I5000_RAM_CHECK)
 	if (ram_check_nodie(0x000000, 0x0a0000) ||
 	    ram_check_nodie(0x100000, MIN(setup.totalmem * 1048576, 0xd0000000))) {
 		i5000_try_restart("RAM verification failed");

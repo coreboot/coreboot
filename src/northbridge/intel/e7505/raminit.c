@@ -41,7 +41,7 @@ Definitions:
 // Unfortunately the code seems to chew up several K of space.
 //#define VALIDATE_DIMM_COMPATIBILITY
 
-#if CONFIG_DEBUG_RAM_SETUP
+#if IS_ENABLED(CONFIG_DEBUG_RAM_SETUP)
 #define RAM_DEBUG_MESSAGE(x)	printk(BIOS_DEBUG, x)
 #define RAM_DEBUG_HEX32(x)	printk(BIOS_DEBUG, "%08x", x)
 #define RAM_DEBUG_HEX8(x)	printk(BIOS_DEBUG, "%02x", x)
@@ -1003,7 +1003,7 @@ static inline void __attribute__((always_inline))
 			 ::: "edi"
 		);
 
-#if CONFIG_DEBUG_RAM_SETUP
+#if IS_ENABLED(CONFIG_DEBUG_RAM_SETUP)
 		unsigned int a1, a2;
 		asm volatile("movd %%xmm2, %%eax;" : "=a" (a1) ::);
 		asm volatile("movd %%xmm3, %%eax;" : "=a" (a2) ::);

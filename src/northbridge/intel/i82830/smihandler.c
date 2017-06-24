@@ -31,7 +31,7 @@ extern u32 mbi_len;
 /* If YABEL is enabled and it's not running at 0x00000000, we have to add some
  * offset to all our mbi object memory accesses
  */
-#if CONFIG_PCI_OPTION_ROM_RUN_YABEL && !CONFIG_YABEL_DIRECTHW
+#if IS_ENABLED(CONFIG_PCI_OPTION_ROM_RUN_YABEL) && !CONFIG_YABEL_DIRECTHW
 #define OBJ_OFFSET CONFIG_YABEL_VIRTMEM_LOCATION
 #else
 #define OBJ_OFFSET 0x00000

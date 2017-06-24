@@ -39,7 +39,7 @@
  * MRC scrambler seed offsets should be reserved in
  * mainboard cmos.layout and not covered by checksum.
  */
-#if CONFIG_USE_OPTION_TABLE
+#if IS_ENABLED(CONFIG_USE_OPTION_TABLE)
 #include "option_table.h"
 #define CMOS_OFFSET_MRC_SEED     (CMOS_VSTART_mrc_scrambler_seed >> 3)
 #define CMOS_OFFSET_MRC_SEED_S3  (CMOS_VSTART_mrc_scrambler_seed_s3 >> 3)
@@ -236,7 +236,7 @@ void sdram_initialize(struct pei_data *pei_data)
 		die("UEFI PEI System Agent not found.\n");
 	}
 
-#if CONFIG_USBDEBUG_IN_ROMSTAGE
+#if IS_ENABLED(CONFIG_USBDEBUG_IN_ROMSTAGE)
 	/* mrc.bin reconfigures USB, so reinit it to have debug */
 	usbdebug_init();
 #endif

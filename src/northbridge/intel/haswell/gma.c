@@ -30,7 +30,7 @@
 #include "chip.h"
 #include "haswell.h"
 
-#if CONFIG_CHROMEOS
+#if IS_ENABLED(CONFIG_CHROMEOS)
 #include <vendorcode/google/chromeos/chromeos.h>
 #endif
 

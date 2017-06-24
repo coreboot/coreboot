@@ -41,7 +41,7 @@ static FILE *previous_file = NULL;
 
 static FILE *fopen(const char *path, const char *mode)
 {
-#if CONFIG_DEBUG_COVERAGE
+#if IS_ENABLED(CONFIG_DEBUG_COVERAGE)
 	printk(BIOS_DEBUG, "fopen %s with mode %s\n",
 		path, mode);
 #endif
@@ -74,7 +74,7 @@ static FILE *fopen(const char *path, const char *mode)
 
 static int fclose(FILE *stream)
 {
-#if CONFIG_DEBUG_COVERAGE
+#if IS_ENABLED(CONFIG_DEBUG_COVERAGE)
 	printk(BIOS_DEBUG, "fclose %s\n", stream->filename);
 #endif
 	return 0;
@@ -85,7 +85,7 @@ static int fseek(FILE *stream, long offset, int whence)
 	/* fseek should only be called with offset==0 and whence==SEEK_SET
 	 * to a freshly opened file. */
 	gcc_assert(offset == 0 && whence == SEEK_SET);
-#if CONFIG_DEBUG_COVERAGE
+#if IS_ENABLED(CONFIG_DEBUG_COVERAGE)
 	printk(BIOS_DEBUG, "fseek %s offset=%ld whence=%d\n",
 		stream->filename, offset, whence);
 #endif
@@ -96,7 +96,7 @@ static long ftell(FILE *stream)
 {
 	/* ftell should currently not be called */
 	gcc_assert(0);
-#if CONFIG_DEBUG_COVERAGE
+#if IS_ENABLED(CONFIG_DEBUG_COVERAGE)
 	printk(BIOS_DEBUG, "ftell %s\n", stream->filename);
 #endif
 	return 0;
@@ -104,7 +104,7 @@ static long ftell(FILE *stream)
 
 static size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream)
 {
-#if CONFIG_DEBUG_COVERAGE
+#if IS_ENABLED(CONFIG_DEBUG_COVERAGE)
 	printk(BIOS_DEBUG, "fread: ptr=%p size=%zd nmemb=%zd FILE*=%p\n",
 		ptr, size, nmemb, stream);
 #endif
@@ -113,7 +113,7 @@ static size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream)
 
 static size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream)
 {
-#if CONFIG_DEBUG_COVERAGE
+#if IS_ENABLED(CONFIG_DEBUG_COVERAGE)
 	printk(BIOS_DEBUG, "fwrite: %zd * %zd bytes to file %s\n",
 		nmemb, size, stream->filename);
 #endif
@@ -145,7 +145,7 @@ static void coverage_init(void *unused)
 void __gcov_flush(void);
 static void coverage_exit(void *unused)
 {
-#if CONFIG_DEBUG_COVERAGE
+#if IS_ENABLED(CONFIG_DEBUG_COVERAGE)
 	printk(BIOS_DEBUG, "Syncing coverage data.\n");
 #endif
 	__gcov_flush();

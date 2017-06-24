@@ -33,17 +33,17 @@
 #include <bootmem.h>
 #include <spi_flash.h>
 #include <vboot/vbnv_layout.h>
-#if CONFIG_USE_OPTION_TABLE
+#if IS_ENABLED(CONFIG_USE_OPTION_TABLE)
 #include <option_table.h>
 #endif
-#if CONFIG_CHROMEOS
-#if CONFIG_HAVE_ACPI_TABLES
+#if IS_ENABLED(CONFIG_CHROMEOS)
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
 #include <arch/acpi.h>
 #endif
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <vendorcode/google/chromeos/gnvs.h>
 #endif
-#if CONFIG_ARCH_X86
+#if IS_ENABLED(CONFIG_ARCH_X86)
 #include <cpu/x86/mtrr.h>
 #endif
 #include <commonlib/helpers.h>
@@ -159,7 +159,7 @@ void lb_add_gpios(struct lb_gpios *gpios, const struct lb_gpio *gpio_table,
 	gpios->size += table_size;
 }
 
-#if CONFIG_CHROMEOS
+#if IS_ENABLED(CONFIG_CHROMEOS)
 static void lb_gpios(struct lb_header *header)
 {
 	struct lb_gpios *gpios;
@@ -200,7 +200,7 @@ static void lb_gpios(struct lb_header *header)
 
 static void lb_vdat(struct lb_header *header)
 {
-#if CONFIG_HAVE_ACPI_TABLES
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
 	struct lb_range *vdat;
 
 	vdat = (struct lb_range *)lb_new_record(header);
@@ -212,7 +212,7 @@ static void lb_vdat(struct lb_header *header)
 
 static void lb_vbnv(struct lb_header *header)
 {
-#if CONFIG_PC80_SYSTEM
+#if IS_ENABLED(CONFIG_PC80_SYSTEM)
 	struct lb_range *vbnv;
 
 	vbnv = (struct lb_range *)lb_new_record(header);
@@ -223,7 +223,7 @@ static void lb_vbnv(struct lb_header *header)
 #endif
 }
 
-#if CONFIG_VBOOT
+#if IS_ENABLED(CONFIG_VBOOT)
 static void lb_vboot_handoff(struct lb_header *header)
 {
 	void *addr;
@@ -246,7 +246,7 @@ static inline void lb_vboot_handoff(struct lb_header *header) {}
 
 static void lb_board_id(struct lb_header *header)
 {
-#if CONFIG_BOARD_ID_AUTO || CONFIG_BOARD_ID_MANUAL
+#if IS_ENABLED(CONFIG_BOARD_ID_AUTO) || IS_ENABLED(CONFIG_BOARD_ID_MANUAL)
 	struct lb_board_id  *bid;
 
 	bid = (struct lb_board_id *)lb_new_record(header);
@@ -359,7 +359,7 @@ static struct lb_mainboard *lb_mainboard(struct lb_header *header)
 	return mainboard;
 }
 
-#if CONFIG_USE_OPTION_TABLE
+#if IS_ENABLED(CONFIG_USE_OPTION_TABLE)
 static struct cmos_checksum *lb_cmos_checksum(struct lb_header *header)
 {
 	struct lb_record *rec;
@@ -475,7 +475,7 @@ static uintptr_t write_coreboot_table(uintptr_t rom_table_end)
 
 	head = lb_table_init(rom_table_end);
 
-#if CONFIG_USE_OPTION_TABLE
+#if IS_ENABLED(CONFIG_USE_OPTION_TABLE)
 	{
 		struct cmos_option_table *option_table =
 			cbfs_boot_map_with_leak("cmos_layout.bin",
@@ -506,10 +506,10 @@ static uintptr_t write_coreboot_table(uintptr_t rom_table_end)
 	lb_mainboard(head);
 
 	/* Record the serial ports and consoles */
-#if CONFIG_CONSOLE_SERIAL
+#if IS_ENABLED(CONFIG_CONSOLE_SERIAL)
 	uart_fill_lb(head);
 #endif
-#if CONFIG_CONSOLE_USB
+#if IS_ENABLED(CONFIG_CONSOLE_USB)
 	lb_add_console(LB_TAG_CONSOLE_EHCI, head);
 #endif
 
@@ -519,7 +519,7 @@ static uintptr_t write_coreboot_table(uintptr_t rom_table_end)
 	/* Record our framebuffer */
 	lb_framebuffer(head);
 
-#if CONFIG_CHROMEOS
+#if IS_ENABLED(CONFIG_CHROMEOS)
 	/* Record our GPIO settings (ChromeOS specific) */
 	lb_gpios(head);
 

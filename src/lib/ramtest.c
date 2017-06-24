@@ -6,7 +6,7 @@ static void write_phys(unsigned long addr, u32 value)
 {
 	// Assembler in lib/ is very ugly. But we properly guarded
 	// it so let's obey this one for now
-#if CONFIG_SSE2
+#if IS_ENABLED(CONFIG_SSE2)
 	asm volatile(
 		"movnti %1, (%0)"
 		: /* outputs */
@@ -31,7 +31,7 @@ static u32 read_phys(unsigned long addr)
 
 static void phys_memory_barrier(void)
 {
-#if CONFIG_SSE2
+#if IS_ENABLED(CONFIG_SSE2)
 	// Needed for movnti
 	asm volatile (
 		"sfence"

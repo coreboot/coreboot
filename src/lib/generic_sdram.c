@@ -1,7 +1,7 @@
 #include <lib.h> /* Prototypes */
 
 /* Setup SDRAM */
-#if CONFIG_RAMINIT_SYSINFO
+#if IS_ENABLED(CONFIG_RAMINIT_SYSINFO)
 void sdram_initialize(int controllers, const struct mem_controller *ctrl,
 	void *sysinfo)
 #else
@@ -13,7 +13,7 @@ void sdram_initialize(int controllers, const struct mem_controller *ctrl)
 	for (i = 0; i < controllers; i++) {
 		printk(BIOS_DEBUG, "Ram1.%02x\n", i);
 
-	#if CONFIG_RAMINIT_SYSINFO
+	#if IS_ENABLED(CONFIG_RAMINIT_SYSINFO)
 		sdram_set_registers(ctrl + i, sysinfo);
 	#else
 		sdram_set_registers(ctrl + i);
@@ -24,7 +24,7 @@ void sdram_initialize(int controllers, const struct mem_controller *ctrl)
 	for (i = 0; i < controllers; i++) {
 		printk(BIOS_DEBUG, "Ram2.%02x\n", i);
 
-	#if CONFIG_RAMINIT_SYSINFO
+	#if IS_ENABLED(CONFIG_RAMINIT_SYSINFO)
 		sdram_set_spd_registers(ctrl + i, sysinfo);
 	#else
 		sdram_set_spd_registers(ctrl + i);
@@ -38,7 +38,7 @@ void sdram_initialize(int controllers, const struct mem_controller *ctrl)
 	 */
 	printk(BIOS_DEBUG, "Ram3\n");
 
-	#if CONFIG_RAMINIT_SYSINFO
+	#if IS_ENABLED(CONFIG_RAMINIT_SYSINFO)
 	sdram_enable(controllers, ctrl, sysinfo);
 	#else
 	sdram_enable(controllers, ctrl);

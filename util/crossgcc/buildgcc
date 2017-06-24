@@ -143,6 +143,43 @@ normalize_dirs()
 	perl -pi -e "s,/lib64,/lib," $DESTDIR$TARGETDIR/lib/*.la
 }
 
+countdown()
+{
+	tout=${1:-10}
+
+	printf "\nPress Ctrl-C to abort, Enter to continue... %2ds" $tout
+	while [ $tout -gt 0 ]; do
+		sleep 1
+		tout=$((tout - 1))
+		printf "\b\b\b%2ds" $tout
+	done
+	printf "\n"
+}
+
+timeout()
+{
+	tout=${1:-10}
+
+	# Ignore SIGUSR1, should interrupt `read` though.
+	trap false USR1
+	# Clean up in case the user aborts.
+	trap 'kill $counter > /dev/null 2>&1' EXIT
+
+	(countdown $tout; kill -USR1 $$)&
+	counter=$!
+
+	# Some shells with sh compatibility mode (e.g. zsh, mksh) only
+	# let us interrupt `read` if a non-standard -t parameter is given.
+	if echo | read -t 1 foo 2>/dev/null; then
+		read -t $((tout + 1)) foo
+	else
+		read foo
+	fi
+
+	kill $counter > /dev/null 2>&1
+	trap - USR1 EXIT
+}
+
 please_install()
 {
 	HALT_FOR_TOOLS=1
@@ -258,37 +295,13 @@ hostcc_has_gnat1() {
 	[ -x "$(${CC} -print-prog-name=gnat1)" ]
 }
 
+have_gnat() {
+	hostcc_has_gnat1 && \
+	searchtool gnatbind "Free Software Foundation" nofail > /dev/null
+}
+
 ada_requested() {
 	echo "${LANGUAGES}" | grep -q '\<ada\>'
-}
-
-check_gnat() {
-	if hostcc_has_gnat1; then
-		if [ \( "$(hostcc_major)" -lt 4 -o \
-			\( "$(hostcc_major)" -eq 4 -a "$(hostcc_minor)" -lt 9 \) \) -a \
-		     "${BOOTSTRAP}" != "1" ];
-		then
-			printf "\n${RED}ERROR:${red} Building the Ada compiler (gnat $(buildcc_version)) "
-			printf "with a host compiler older\n       than 4.9.x (yours $(hostcc_version)) "
-			printf "requires bootstrapping (-b).${NC}\n\n"
-			HALT_FOR_TOOLS=1
-		fi
-	else
-		please_install gnat
-	fi
-}
-
-check_cc() {
-	if is_package_enabled "GCC"; then
-		if [ "$(hostcc_major)" != "$(buildcc_major)" -a "${BOOTSTRAP}" != "1" ]; then
-			printf "\n${red}warning: Building GCC $(buildcc_version) with a different major "
-			printf "version ($(hostcc_version)).\n"
-			printf "         Bootstrapping (-b) is recommended.${NC}\n\n"
-		fi
-		if ada_requested; then
-			check_gnat
-		fi
-	fi
 }
 
 check_sum() {
@@ -1040,15 +1053,56 @@ elif [ $UNAME = "NetBSD" ]; then
 	fi
 fi
 if [ -z "${LANGUAGES}" ]; then
-	if hostcc_has_gnat1 && \
-		[ "$(hostcc_major)" -ge 5 -o \
-		  \( "$(hostcc_major)" -eq 4 -a "$(hostcc_minor)" -ge 9 \) -o \
-		  "${BOOTSTRAP}" = "1" ];
-	then
+	if have_gnat; then
 		printf "\nFound compatible Ada compiler, enabling Ada support by default.\n\n"
 		LANGUAGES="ada,${DEFAULT_LANGUAGES}"
 	else
+		printf "\n${red}WARNING${NC}\n"
+		printf "No compatible Ada compiler (GNAT) found. You can continue without\n"
+		printf "Ada support, but this will limit the features of ${blue}coreboot${NC} (e.g.\n"
+		printf "native graphics initialization won't be available on most Intel\n"
+		printf "boards).\n\n"
+
+		printf "Usually, you can install GNAT with your package management system\n"
+		printf "(the package is called \`gnat\` or \`gcc-ada\`). It has to match the\n"
+		printf "\`gcc\` package in version. If there are multiple versions of GCC in-\n"
+		printf "stalled, you can point this script to the matching version through\n"
+		printf "the \`CC\` and \`CXX\` environment variables.\n\n"
+
+		printf "e.g. on Ubuntu 14.04, if \`gcc\` is \`gcc-4.8\`:\n"
+		printf "    apt-get install gnat-4.8 && make crossgcc\n\n"
+
+		printf "on Ubuntu 16.04, if \`gcc\` is \`gcc-5\`:\n"
+		printf "    apt-get install gnat-5 && make crossgcc\n"
+		timeout 30
 		LANGUAGES="${DEFAULT_LANGUAGES}"
+	fi
+fi
+if ada_requested; then
+	if have_gnat; then
+		if [ "$BOOTSTRAP" != 1 -a \
+		     \( "$(hostcc_major)" -lt 4 -o \
+		        \( "$(hostcc_major)" -eq 4 -a "$(hostcc_minor)" -lt 9 \) \) ]
+		then
+			printf "\n${red}WARNING${NC}\n"
+			printf "Building the Ada compiler (GNAT $(buildcc_version)) with a host compiler older\n"
+			printf "than 4.9.x (yours $(hostcc_version)) requires bootstrapping. This will take\n"
+			printf "significantly longer than a usual build. You can abort and update\n"
+			printf "your host GNAT or disable Ada support with BUILD_LANGUAGES=c (or\n"
+			printf "\`-l c\` in case you invoke \`buildgcc\` directly).\n"
+			timeout 15
+			BOOTSTRAP=1
+		fi
+	else
+		please_install gnat gcc-ada
+		exit 1
+	fi
+else
+	if [ "$(hostcc_major)" -lt 4 -a "$BOOTSTRAP" != 1 ]; then
+		printf "\n${red}WARNING${NC}\n"
+		printf "Building GCC $(buildcc_version) with a very old host compiler ($(hostcc_version)).\n"
+		printf "Bootstrapping (-b) is recommended.\n"
+		timeout 10
 	fi
 fi
 fi # GCC

@@ -26,7 +26,7 @@ void set_sysinfo_in_ram(unsigned int val);
 
 #define TIMEOUT_LOOPS 300000
 
-#if defined(__PRE_RAM__) && CONFIG_RAMINIT_SYSINFO
+#if defined(__PRE_RAM__) && IS_ENABLED(CONFIG_RAMINIT_SYSINFO)
 void sdram_initialize(int controllers, const struct mem_controller *ctrl, void *sysinfo);
 void sdram_enable(int controllers, const struct mem_controller *ctrl,
 		struct sys_info *sysinfo);

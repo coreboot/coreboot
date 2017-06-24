@@ -20,7 +20,7 @@ romstage-y += coherent_ht.c
 
 # Not sure what to do with these yet. How did raminit_test even work?
 # Should be a target in -y form.
-#if CONFIG_K8_REV_F_SUPPORT
+#if IS_ENABLED(CONFIG_K8_REV_F_SUPPORT)
 #
 #makerule raminit_test
 #	depends "$(TOP)/src/northbridge/amd/amdk8/raminit_test.c"

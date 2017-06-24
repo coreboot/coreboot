@@ -15,7 +15,7 @@
 #include <reset.h>
 #include "raminit.h"
 #include "amdk8.h"
-#if CONFIG_HAVE_OPTION_TABLE
+#if IS_ENABLED(CONFIG_HAVE_OPTION_TABLE)
 #include "option_table.h"
 #endif
 
@@ -43,7 +43,7 @@ static int controller_present(const struct mem_controller *ctrl)
 	return pci_read_config32(ctrl->f0, 0) == 0x11001022;
 }
 
-#if CONFIG_RAMINIT_SYSINFO
+#if IS_ENABLED(CONFIG_RAMINIT_SYSINFO)
 void sdram_set_registers(const struct mem_controller *ctrl, struct sys_info *sysinfo)
 #else
 void sdram_set_registers(const struct mem_controller *ctrl)
@@ -592,7 +592,7 @@ struct dimm_size {
 	unsigned long side2;
 	unsigned long rows;
 	unsigned long col;
-#if CONFIG_QRANK_DIMM_SUPPORT
+#if IS_ENABLED(CONFIG_QRANK_DIMM_SUPPORT)
 	unsigned long rank;
 #endif
 };
@@ -606,7 +606,7 @@ static struct dimm_size spd_get_dimm_size(unsigned device)
 	sz.side2 = 0;
 	sz.rows = 0;
 	sz.col = 0;
-#if CONFIG_QRANK_DIMM_SUPPORT
+#if IS_ENABLED(CONFIG_QRANK_DIMM_SUPPORT)
 	sz.rank = 0;
 #endif
 
@@ -650,7 +650,7 @@ static struct dimm_size spd_get_dimm_size(unsigned device)
 	if ((value != 2) && (value != 4)) {
 		goto val_err;
 	}
-#if CONFIG_QRANK_DIMM_SUPPORT
+#if IS_ENABLED(CONFIG_QRANK_DIMM_SUPPORT)
 	sz.rank = value;
 #endif
 
@@ -679,7 +679,7 @@ hw_err:
 	sz.side2 = 0;
 	sz.rows = 0;
 	sz.col = 0;
-#if CONFIG_QRANK_DIMM_SUPPORT
+#if IS_ENABLED(CONFIG_QRANK_DIMM_SUPPORT)
 	sz.rank = 0;
 #endif
 out:
@@ -727,7 +727,7 @@ static void set_dimm_size(const struct mem_controller *ctrl, struct dimm_size sz
 	/* Set the appropriate DIMM base address register */
 	pci_write_config32(ctrl->f2, DRAM_CSBASE + (((index << 1)+0)<<2), base0);
 	pci_write_config32(ctrl->f2, DRAM_CSBASE + (((index << 1)+1)<<2), base1);
-#if CONFIG_QRANK_DIMM_SUPPORT
+#if IS_ENABLED(CONFIG_QRANK_DIMM_SUPPORT)
 	if (sz.rank == 4) {
 		pci_write_config32(ctrl->f2, DRAM_CSBASE + (((index << 1)+4)<<2), base0);
 		pci_write_config32(ctrl->f2, DRAM_CSBASE + (((index << 1)+5)<<2), base1);
@@ -738,7 +738,7 @@ static void set_dimm_size(const struct mem_controller *ctrl, struct dimm_size sz
 	if (base0) {
 		dch = pci_read_config32(ctrl->f2, DRAM_CONFIG_HIGH);
 		dch |= DCH_MEMCLK_EN0 << index;
-#if CONFIG_QRANK_DIMM_SUPPORT
+#if IS_ENABLED(CONFIG_QRANK_DIMM_SUPPORT)
 		if (sz.rank == 4) {
 			dch |= DCH_MEMCLK_EN0 << (index + 2);
 		}
@@ -760,7 +760,7 @@ static void set_dimm_map(const struct mem_controller *ctrl, struct dimm_size sz,
 
 	map = pci_read_config32(ctrl->f2, DRAM_BANK_ADDR_MAP);
 	map &= ~(0xf << (index * 4));
-#if CONFIG_QRANK_DIMM_SUPPORT
+#if IS_ENABLED(CONFIG_QRANK_DIMM_SUPPORT)
 	if (sz.rank == 4) {
 		map &= ~(0xf << ((index + 2) * 4));
 	}
@@ -771,7 +771,7 @@ static void set_dimm_map(const struct mem_controller *ctrl, struct dimm_size sz,
 	if (sz.side1 >= (25 +3)) {
 		if (is_cpu_pre_d0()) {
 			map |= (sz.side1 - (25 + 3)) << (index *4);
-#if CONFIG_QRANK_DIMM_SUPPORT
+#if IS_ENABLED(CONFIG_QRANK_DIMM_SUPPORT)
 			if (sz.rank == 4) {
 				map |= (sz.side1 - (25 + 3)) << ((index + 2) * 4);
 			}
@@ -779,7 +779,7 @@ static void set_dimm_map(const struct mem_controller *ctrl, struct dimm_size sz,
 		}
 		else {
 			map |= cs_map_aa[(sz.rows - 12) * 5 + (sz.col - 8) ] << (index*4);
-#if CONFIG_QRANK_DIMM_SUPPORT
+#if IS_ENABLED(CONFIG_QRANK_DIMM_SUPPORT)
 			if (sz.rank == 4) {
 				map |=  cs_map_aa[(sz.rows - 12) * 5 + (sz.col - 8) ] << ((index + 2) * 4);
 			}
@@ -1164,7 +1164,7 @@ static long spd_handle_unbuffered_dimms(const struct mem_controller *ctrl,
 	if (unbuffered) {
 		if ((has_dualch) && (!is_cpu_pre_d0())) {
 			dcl |= DCL_UnBuffDimm;
-#if CONFIG_CPU_AMD_SOCKET_939
+#if IS_ENABLED(CONFIG_CPU_AMD_SOCKET_939)
 			if ((cpuid_eax(1) & 0x30) == 0x30) {
 				/* CS[7:4] is copy of CS[3:0], should be set for 939 socket */
 				dcl |= DCL_UpperCSMap;
@@ -1375,7 +1375,7 @@ struct spd_set_memclk_result {
 static int spd_dimm_loading_socket(const struct mem_controller *ctrl, long dimm_mask, int *freq_1t)
 {
 
-#if CONFIG_CPU_AMD_SOCKET_939
+#if IS_ENABLED(CONFIG_CPU_AMD_SOCKET_939)
 
 /* + 1 raise so we detect 0 as bad field */
 #define DDR200 (NBCAP_MEMCLK_100MHZ + 1)
@@ -1488,7 +1488,7 @@ hw_error:
 		return NBCAP_MEMCLK_200MHZ;
 	}
 
-#elif CONFIG_CPU_AMD_SOCKET_754
+#elif IS_ENABLED(CONFIG_CPU_AMD_SOCKET_754)
 
 #define CFGIDX(DIMM1,DIMM2,DIMM3) ((DIMM3)*9+(DIMM2)*3+(DIMM1))
 
@@ -1657,7 +1657,7 @@ static struct spd_set_memclk_result spd_set_memclk(const struct mem_controller *
 	if (freq == sizeof(cl_at_freq))
 		goto hw_error;
 
-#if CONFIG_CPU_AMD_SOCKET_754
+#if IS_ENABLED(CONFIG_CPU_AMD_SOCKET_754)
 	if (freq < max_freq_1t || CONFIG_K8_FORCE_2T_DRAM_TIMING) {
 		pci_write_config32(ctrl->f2, DRAM_CONFIG_LOW,
 			pci_read_config32(ctrl->f2, DRAM_CONFIG_LOW) | DCL_En2T);
@@ -1899,7 +1899,7 @@ static int update_dimm_x4(const struct mem_controller *ctrl, const struct mem_pa
 {
 	uint32_t dcl;
 	int value;
-#if CONFIG_QRANK_DIMM_SUPPORT
+#if IS_ENABLED(CONFIG_QRANK_DIMM_SUPPORT)
 	int rank;
 #endif
 	int dimm;
@@ -1908,7 +1908,7 @@ static int update_dimm_x4(const struct mem_controller *ctrl, const struct mem_pa
 		return -1;
 	}
 
-#if CONFIG_QRANK_DIMM_SUPPORT
+#if IS_ENABLED(CONFIG_QRANK_DIMM_SUPPORT)
 	rank = spd_read_byte(ctrl->channel0[i], 5);	/* number of physical banks */
 	if (rank < 0) {
 		return -1;
@@ -1916,7 +1916,7 @@ static int update_dimm_x4(const struct mem_controller *ctrl, const struct mem_pa
 #endif
 
 	dimm = 1<<(DCL_x4DIMM_SHIFT+i);
-#if CONFIG_QRANK_DIMM_SUPPORT
+#if IS_ENABLED(CONFIG_QRANK_DIMM_SUPPORT)
 	if (rank == 4) {
 		dimm |= 1<<(DCL_x4DIMM_SHIFT+i+2);
 	}
@@ -2168,7 +2168,7 @@ static long spd_set_dram_timing(const struct mem_controller *ctrl, const struct 
 	return dimm_mask;
 }
 
-#if CONFIG_RAMINIT_SYSINFO
+#if IS_ENABLED(CONFIG_RAMINIT_SYSINFO)
 void sdram_set_spd_registers(const struct mem_controller *ctrl, struct sys_info *sysinfo)
 #else
 void sdram_set_spd_registers(const struct mem_controller *ctrl)
@@ -2277,7 +2277,7 @@ void set_hw_mem_hole(int controllers, const struct mem_controller *ctrl)
 	hole_startk = 4*1024*1024 - CONFIG_HW_MEM_HOLE_SIZEK;
 
 	printk(BIOS_SPEW, "Handling memory hole at 0x%08x (default)\n", hole_startk);
-#if CONFIG_HW_MEM_HOLE_SIZE_AUTO_INC
+#if IS_ENABLED(CONFIG_HW_MEM_HOLE_SIZE_AUTO_INC)
 	/* We need to double check if hole_startk is valid.
 	 * If it is equal to the dram base address in K (base_k),
 	 * we need to decrease it.
@@ -2327,7 +2327,7 @@ void set_hw_mem_hole(int controllers, const struct mem_controller *ctrl)
 
 #endif
 
-#if CONFIG_RAMINIT_SYSINFO
+#if IS_ENABLED(CONFIG_RAMINIT_SYSINFO)
 void sdram_enable(int controllers, const struct mem_controller *ctrl, struct sys_info *sysinfo)
 #else
 void sdram_enable(int controllers, const struct mem_controller *ctrl)

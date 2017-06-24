@@ -128,16 +128,16 @@ u16 mctGet_NVbits(u8 index)
 		//val = 2;	/* S4 (Unbuffered SO-DIMMS) */
 		break;
 	case NV_BYPMAX:
-#if !CONFIG_GFXUMA
+#if !IS_ENABLED(CONFIG_GFXUMA)
 		val = 4;
-#elif  CONFIG_GFXUMA
+#elif  IS_ENABLED(CONFIG_GFXUMA)
 		val = 7;
 #endif
 		break;
 	case NV_RDWRQBYP:
-#if !CONFIG_GFXUMA
+#if !IS_ENABLED(CONFIG_GFXUMA)
 		val = 2;
-#elif CONFIG_GFXUMA
+#elif IS_ENABLED(CONFIG_GFXUMA)
 		val = 3;
 #endif
 		break;
@@ -191,9 +191,9 @@ u16 mctGet_NVbits(u8 index)
 			val = !!nvram;
 		break;
 	case NV_BurstLen32:
-#if !CONFIG_GFXUMA
+#if !IS_ENABLED(CONFIG_GFXUMA)
 		val = 0;	/* 64 byte mode */
-#elif CONFIG_GFXUMA
+#elif IS_ENABLED(CONFIG_GFXUMA)
 		val = 1;	/* 32 byte mode */
 #endif
 		break;
@@ -212,9 +212,9 @@ u16 mctGet_NVbits(u8 index)
 	case NV_BottomIO:
 	case NV_BottomUMA:
 		/* address bits [31:24] */
-#if !CONFIG_GFXUMA
+#if !IS_ENABLED(CONFIG_GFXUMA)
 		val = (CONFIG_MMCONF_BASE_ADDRESS >> 24);
-#elif CONFIG_GFXUMA
+#elif IS_ENABLED(CONFIG_GFXUMA)
   #if (CONFIG_MMCONF_BASE_ADDRESS < (MAXIMUM_GFXUMA_SIZE + MINIMUM_DRAM_BELOW_4G))
   #error "MMCONF_BASE_ADDRESS is too small"
   #endif

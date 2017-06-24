@@ -12,7 +12,7 @@
 
 void print_debug_addr(const char *str, void *val)
 {
-#if CONFIG_DEBUG_CAR
+#if IS_ENABLED(CONFIG_DEBUG_CAR)
 	printk(BIOS_DEBUG, "------Address debug: %s%p------\n", str, val);
 #endif
 }
@@ -64,7 +64,7 @@ void dump_pci_device(unsigned dev)
 	printk(BIOS_DEBUG, "\n");
 }
 
-#if CONFIG_K8_REV_F_SUPPORT
+#if IS_ENABLED(CONFIG_K8_REV_F_SUPPORT)
 void dump_pci_device_index_wait(unsigned dev, uint32_t index_reg)
 {
 	int i;
@@ -136,7 +136,7 @@ void dump_pci_devices_on_bus(unsigned busn)
 	}
 }
 
-#if CONFIG_DEBUG_SMBUS
+#if IS_ENABLED(CONFIG_DEBUG_SMBUS)
 
 void dump_spd_registers(const struct mem_controller *ctrl)
 {

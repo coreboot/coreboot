@@ -353,7 +353,7 @@ static void set_resource(device_t dev, struct resource *resource, u32 nodeid)
 	report_resource_stored(dev, resource, buf);
 }
 
-#if CONFIG_CONSOLE_VGA_MULTI
+#if IS_ENABLED(CONFIG_CONSOLE_VGA_MULTI)
 extern device_t vga_pri;	// the primary vga device, defined in device.c
 #endif
 
@@ -367,7 +367,7 @@ static void create_vga_resource(device_t dev, unsigned nodeid)
 	 * we only deal with the 'first' vga card */
 	for (link = dev->link_list; link; link = link->next) {
 		if (link->bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
-#if CONFIG_CONSOLE_VGA_MULTI
+#if IS_ENABLED(CONFIG_CONSOLE_VGA_MULTI)
 			printk(BIOS_DEBUG,
 				"VGA: vga_pri bus num = %d bus range [%d,%d]\n",
 				 vga_pri->bus->secondary, link->secondary,
@@ -581,7 +581,7 @@ static void domain_set_resources(device_t dev)
 
 static void domain_enable_resources(device_t dev)
 {
-#if CONFIG_AMD_SB_CIMX
+#if IS_ENABLED(CONFIG_AMD_SB_CIMX)
 	if (!acpi_is_wakeup_s3()) {
 		sb_After_Pci_Init();
 		sb_Mid_Post_Init();

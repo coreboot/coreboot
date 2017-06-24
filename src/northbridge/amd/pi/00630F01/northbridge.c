@@ -46,7 +46,7 @@
 
 #define MAX_NODE_NUMS (MAX_NODES * MAX_DIES)
 
-#if (defined CONFIG_EXT_CONF_SUPPORT) && CONFIG_EXT_CONF_SUPPORT == 1
+#if IS_ENABLED(CONFIG_EXT_CONF_SUPPORT)
 #error CONFIG_EXT_CONF_SUPPORT == 1 not support anymore!
 #endif
 

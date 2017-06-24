@@ -131,8 +131,8 @@ static uint16_t ht_read_freq_cap(pci_devfn_t dev, uint8_t pos)
 
 	/* AMD K8 Unsupported 1GHz? */
 	if (id == (PCI_VENDOR_ID_AMD | (0x1100 << 16))) {
-	#if CONFIG_K8_HT_FREQ_1G_SUPPORT
-		#if !CONFIG_K8_REV_F_SUPPORT
+	#if IS_ENABLED(CONFIG_K8_HT_FREQ_1G_SUPPORT)
+		#if !IS_ENABLED(CONFIG_K8_REV_F_SUPPORT)
 		if (is_cpu_pre_e0()) {  // only E0 later support 1GHz
 			freq_cap &= ~(1 << HT_FREQ_1000Mhz);
 		}
@@ -144,7 +144,7 @@ static uint16_t ht_read_freq_cap(pci_devfn_t dev, uint8_t pos)
 
 	printk(BIOS_SPEW, "pos=0x%x, filtered freq_cap=0x%x\n", pos, freq_cap);
 
-#if CONFIG_SOUTHBRIDGE_VIA_SUBTYPE_K8M890
+#if IS_ENABLED(CONFIG_SOUTHBRIDGE_VIA_SUBTYPE_K8M890)
 	freq_cap &= 0x3f;
 	printk(BIOS_INFO, "Limiting HT to 800/600/400/200 MHz until K8M890 HT1000 is fixed.\n");
 #endif
@@ -283,7 +283,7 @@ static int ht_optimize_link(
 	return needs_reset;
 }
 
-#if CONFIG_RAMINIT_SYSINFO
+#if IS_ENABLED(CONFIG_RAMINIT_SYSINFO)
 static void ht_setup_chainx(pci_devfn_t udev, uint8_t upos, uint8_t bus,
 		unsigned offset_unitid, struct sys_info *sysinfo)
 #else
@@ -296,7 +296,7 @@ static int ht_setup_chainx(pci_devfn_t udev, uint8_t upos, uint8_t bus,
 	uint8_t next_unitid, last_unitid;
 	unsigned uoffs;
 
-#if !CONFIG_RAMINIT_SYSINFO
+#if !IS_ENABLED(CONFIG_RAMINIT_SYSINFO)
 	int reset_needed = 0;
 #endif
 
@@ -403,7 +403,7 @@ static int ht_setup_chainx(pci_devfn_t udev, uint8_t upos, uint8_t bus,
 		flags = pci_read_config16(dev, pos + PCI_CAP_FLAGS);
 		offs = ((flags>>10) & 1) ? PCI_HT_SLAVE1_OFFS : PCI_HT_SLAVE0_OFFS;
 
-		#if CONFIG_RAMINIT_SYSINFO
+		#if IS_ENABLED(CONFIG_RAMINIT_SYSINFO)
 		/* store the link pair here and we will Setup the Hypertransport link later, after we get final FID/VID */
 		{
 			struct link_pair_st *link_pair = &sysinfo->link_pair[sysinfo->link_pair_num];
@@ -439,7 +439,7 @@ end_of_chain:;
 		flags |= CONFIG_HT_CHAIN_END_UNITID_BASE & 0x1f;
 		pci_write_config16(PCI_DEV(bus, real_last_unitid, 0), real_last_pos + PCI_CAP_FLAGS, flags);
 
-		#if CONFIG_RAMINIT_SYSINFO
+		#if IS_ENABLED(CONFIG_RAMINIT_SYSINFO)
 		// Here need to change the dev in the array
 		int i;
 		for (i = 0; i < sysinfo->link_pair_num; i++)
@@ -458,7 +458,7 @@ end_of_chain:;
 	}
 #endif
 
-#if !CONFIG_RAMINIT_SYSINFO
+#if !IS_ENABLED(CONFIG_RAMINIT_SYSINFO)
 	return reset_needed;
 #endif
 
@@ -527,7 +527,7 @@ static int optimize_link_read_pointers_chain(uint8_t ht_c_num)
 	return reset_needed;
 }
 
-#if CONFIG_SOUTHBRIDGE_NVIDIA_CK804 // || CONFIG_SOUTHBRIDGE_NVIDIA_MCP55
+#if IS_ENABLED(CONFIG_SOUTHBRIDGE_NVIDIA_CK804)
 static int set_ht_link_buffer_count(uint8_t node, uint8_t linkn, uint8_t linkt, unsigned val)
 {
 	uint32_t dword;
@@ -587,7 +587,7 @@ static int set_ht_link_buffer_counts_chain(uint8_t ht_c_num, unsigned vendorid, 
 }
 #endif
 
-#if CONFIG_RAMINIT_SYSINFO
+#if IS_ENABLED(CONFIG_RAMINIT_SYSINFO)
 static void ht_setup_chains(uint8_t ht_c_num, struct sys_info *sysinfo)
 #else
 static int ht_setup_chains(uint8_t ht_c_num)
@@ -602,7 +602,7 @@ static int ht_setup_chains(uint8_t ht_c_num)
 	pci_devfn_t udev;
 	uint8_t i;
 
-#if !CONFIG_RAMINIT_SYSINFO
+#if !IS_ENABLED(CONFIG_RAMINIT_SYSINFO)
 	int reset_needed = 0;
 #else
 	sysinfo->link_pair_num = 0;
@@ -634,7 +634,7 @@ static int ht_setup_chains(uint8_t ht_c_num)
 		upos = ((reg & 0xf00)>>8) * 0x20 + 0x80;
 		udev =  PCI_DEV(0, devpos, 0);
 
-#if CONFIG_RAMINIT_SYSINFO
+#if IS_ENABLED(CONFIG_RAMINIT_SYSINFO)
 		ht_setup_chainx(udev,upos,busn, offset_unit_id(i == 0), sysinfo); // all not
 #else
 		reset_needed |= ht_setup_chainx(udev,upos,busn, offset_unit_id(i == 0)); //all not
@@ -642,7 +642,7 @@ static int ht_setup_chains(uint8_t ht_c_num)
 
 	}
 
-#if !CONFIG_RAMINIT_SYSINFO
+#if !IS_ENABLED(CONFIG_RAMINIT_SYSINFO)
 	reset_needed |= optimize_link_read_pointers_chain(ht_c_num);
 
 	return reset_needed;
@@ -650,7 +650,7 @@ static int ht_setup_chains(uint8_t ht_c_num)
 
 }
 
-#if CONFIG_RAMINIT_SYSINFO
+#if IS_ENABLED(CONFIG_RAMINIT_SYSINFO)
 static void ht_setup_chains_x(struct sys_info *sysinfo)
 #else
 static int ht_setup_chains_x(void)
@@ -662,7 +662,7 @@ static int ht_setup_chains_x(void)
 	uint8_t next_busn;
 	uint8_t ht_c_num;
 	uint8_t nodes;
-#if CONFIG_K8_ALLOCATE_IO_RANGE
+#if IS_ENABLED(CONFIG_K8_ALLOCATE_IO_RANGE)
 	unsigned next_io_base;
 #endif
 
@@ -672,7 +672,7 @@ static int ht_setup_chains_x(void)
 	reg = pci_read_config32(PCI_DEV(0, 0x18, 0), 0x64);
 	/* update PCI_DEV(0, 0x18, 1) 0xe0 to 0x05000m03, and next_busn = 0x3f+1 */
 	print_linkn_in("SBLink=", ((reg>>8) & 3));
-#if CONFIG_RAMINIT_SYSINFO
+#if IS_ENABLED(CONFIG_RAMINIT_SYSINFO)
 	sysinfo->sblk = (reg>>8) & 3;
 	sysinfo->sbbusn = 0;
 	sysinfo->nodes = nodes;
@@ -682,7 +682,7 @@ static int ht_setup_chains_x(void)
 
 	next_busn = 0x3f+1; /* 0 will be used ht chain with SB we need to keep SB in bus0 in auto stage*/
 
-#if CONFIG_K8_ALLOCATE_IO_RANGE
+#if IS_ENABLED(CONFIG_K8_ALLOCATE_IO_RANGE)
 	/* io range allocation */
 	tempreg = 0 | (((reg>>8) & 0x3) << 4)|  (0x3<<12); //limit
 	pci_write_config32(PCI_DEV(0, 0x18, 1), 0xC4, tempreg);
@@ -695,7 +695,7 @@ static int ht_setup_chains_x(void)
 	for (ht_c_num = 1;ht_c_num < 4; ht_c_num++) {
 		pci_write_config32(PCI_DEV(0, 0x18, 1), 0xe0 + ht_c_num * 4, 0);
 
-#if CONFIG_K8_ALLOCATE_IO_RANGE
+#if IS_ENABLED(CONFIG_K8_ALLOCATE_IO_RANGE)
 		/* io range allocation */
 		pci_write_config32(PCI_DEV(0, 0x18, 1), 0xc4 + ht_c_num * 8, 0);
 		pci_write_config32(PCI_DEV(0, 0x18, 1), 0xc0 + ht_c_num * 8, 0);
@@ -728,7 +728,7 @@ static int ht_setup_chains_x(void)
 			pci_write_config32(PCI_DEV(0, 0x18, 1), 0xe0 + ht_c_num * 4, tempreg);
 			next_busn+=0x3f+1;
 
-#if CONFIG_K8_ALLOCATE_IO_RANGE
+#if IS_ENABLED(CONFIG_K8_ALLOCATE_IO_RANGE)
 			/* io range allocation */
 			tempreg = nodeid | (linkn<<4) |  ((next_io_base+0x3)<<12); //limit
 			pci_write_config32(PCI_DEV(0, 0x18, 1), 0xC4 + ht_c_num * 8, tempreg);
@@ -752,7 +752,7 @@ static int ht_setup_chains_x(void)
 			pci_write_config32(dev, regpos, reg);
 		}
 
-#if CONFIG_K8_ALLOCATE_IO_RANGE
+#if IS_ENABLED(CONFIG_K8_ALLOCATE_IO_RANGE)
 		/* io range allocation */
 		for (i = 0; i < 4; i++) {
 			unsigned regpos;
@@ -778,7 +778,7 @@ static int ht_setup_chains_x(void)
 		}
 	}
 
-#if CONFIG_RAMINIT_SYSINFO
+#if IS_ENABLED(CONFIG_RAMINIT_SYSINFO)
 	sysinfo->ht_c_num = i;
 	ht_setup_chains(i, sysinfo);
 	sysinfo->sbdn = get_sbdn(sysinfo->sbbusn);
@@ -788,7 +788,7 @@ static int ht_setup_chains_x(void)
 
 }
 
-#if CONFIG_RAMINIT_SYSINFO
+#if IS_ENABLED(CONFIG_RAMINIT_SYSINFO)
 static int optimize_link_incoherent_ht(struct sys_info *sysinfo)
 {
 	// We need to use recorded link pair info to optimize the link

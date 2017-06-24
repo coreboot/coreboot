@@ -26,7 +26,7 @@
 
 #ifdef  CIMX_TRACE_SUPPORT
 	#define CIMX_INIT_TRACE(Arguments)
-	#if CONFIG_REDIRECT_NBCIMX_TRACE_TO_SERIAL
+	#if IS_ENABLED(CONFIG_REDIRECT_NBCIMX_TRACE_TO_SERIAL)
 		#define TRACE_DATA(Ptr, Level) BIOS_DEBUG //always enable
 		#define CIMX_TRACE(Argument) do {do_printk Argument;} while (0)
 	#else

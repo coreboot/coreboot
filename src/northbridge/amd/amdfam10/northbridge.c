@@ -36,7 +36,7 @@
 #include <cpu/amd/msr.h>
 #include <cpu/amd/family_10h-family_15h/ram_calc.h>
 
-#if CONFIG_LOGICAL_CPUS
+#if IS_ENABLED(CONFIG_LOGICAL_CPUS)
 #include <cpu/amd/multicore.h>
 #include <pc80/mc146818rtc.h>
 #endif
@@ -50,7 +50,7 @@
 #include <cpu/amd/model_10xxx_rev.h>
 #endif
 
-#if CONFIG_AMD_SB_CIMX
+#if IS_ENABLED(CONFIG_AMD_SB_CIMX)
 #include <sb_cimx.h>
 #endif
 
@@ -320,7 +320,7 @@ static void amdfam10_scan_chains(device_t dev)
 {
 	struct bus *link;
 
-#if CONFIG_CPU_AMD_SOCKET_G34_NON_AGESA
+#if IS_ENABLED(CONFIG_CPU_AMD_SOCKET_G34_NON_AGESA)
 	if (is_fam15h()) {
 		uint8_t current_link_number = 0;
 
@@ -585,7 +585,7 @@ static void amdfam10_create_vga_resource(device_t dev, unsigned nodeid)
 	 * we only deal with the 'first' vga card */
 	for (link = dev->link_list; link; link = link->next) {
 		if (link->bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
-#if CONFIG_MULTIPLE_VGA_ADAPTERS
+#if IS_ENABLED(CONFIG_MULTIPLE_VGA_ADAPTERS)
 			extern device_t vga_pri; // the primary vga device, defined in device.c
 			printk(BIOS_DEBUG, "VGA: vga_pri bus num = %d bus range [%d,%d]\n", vga_pri->bus->secondary,
 				link->secondary,link->subordinate);
@@ -890,7 +890,7 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 
 static void setup_uma_memory(void)
 {
-#if CONFIG_GFXUMA
+#if IS_ENABLED(CONFIG_GFXUMA)
 	uint32_t topmem = (uint32_t) bsp_topmem();
 	uma_memory_size = get_uma_memory_size(topmem);
 	uma_memory_base = topmem - uma_memory_size;	/* TOP_MEM1 */
@@ -989,7 +989,7 @@ static void amdfam10_domain_set_resources(device_t dev)
 			     i, mmio_basek, basek, limitk);
 	}
 
-#if CONFIG_GFXUMA
+#if IS_ENABLED(CONFIG_GFXUMA)
 	uma_resource(dev, 7, uma_memory_base >> 10, uma_memory_size >> 10);
 #endif
 
@@ -1330,7 +1330,7 @@ static struct device_operations pci_domain_ops = {
 #if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
 	.acpi_name	  = amdfam10_domain_acpi_name,
 #endif
-#if CONFIG_GENERATE_SMBIOS_TABLES
+#if IS_ENABLED(CONFIG_GENERATE_SMBIOS_TABLES)
 	.get_smbios_data  = amdfam10_get_smbios_data,
 #endif
 };
@@ -1359,7 +1359,7 @@ static void sysconf_init(device_t dev) // first node
 	sysconf.bsp_apicid = lapicid();
 	sysconf.apicid_offset = sysconf.bsp_apicid;
 
-#if CONFIG_ENABLE_APIC_EXT_ID
+#if IS_ENABLED(CONFIG_ENABLE_APIC_EXT_ID)
 	if (pci_read_config32(dev, 0x68) & (HTTC_APIC_EXT_ID|HTTC_APIC_EXT_BRD_CST))
 	{
 		sysconf.enabled_apic_ext_id = 1;
@@ -1454,7 +1454,7 @@ static void cpu_bus_scan(device_t dev)
 	}
 
 	disable_siblings = !CONFIG_LOGICAL_CPUS;
-#if CONFIG_LOGICAL_CPUS
+#if IS_ENABLED(CONFIG_LOGICAL_CPUS)
 	get_option(&disable_siblings, "multi_core");
 #endif
 
@@ -1659,7 +1659,7 @@ static void cpu_bus_scan(device_t dev)
 				}
 			}
 
-#if CONFIG_ENABLE_APIC_EXT_ID && (CONFIG_APIC_ID_OFFSET > 0)
+#if IS_ENABLED(CONFIG_ENABLE_APIC_EXT_ID) && (CONFIG_APIC_ID_OFFSET > 0)
 			if (sysconf.enabled_apic_ext_id) {
 				if (apic_id != 0 || sysconf.lift_bsp_apicid) {
 					apic_id += sysconf.apicid_offset;
@@ -1948,7 +1948,7 @@ static void cpu_bus_init(device_t dev)
 	detect_and_enable_probe_filter(dev);
 	detect_and_enable_cache_partitioning(dev);
 	initialize_cpus(dev->link_list);
-#if CONFIG_AMD_SB_CIMX
+#if IS_ENABLED(CONFIG_AMD_SB_CIMX)
 	sb_After_Pci_Init();
 	sb_Mid_Post_Init();
 #endif

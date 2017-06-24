@@ -25,7 +25,7 @@
 #include <cpu/amd/mtrr.h>
 
 #include <cpu/amd/multicore.h>
-#if CONFIG_LOGICAL_CPUS
+#if IS_ENABLED(CONFIG_LOGICAL_CPUS)
 #include <pc80/mc146818rtc.h>
 #endif
 
@@ -484,7 +484,7 @@ static void amdk8_create_vga_resource(device_t dev, unsigned nodeid)
 	 * we only deal with the 'first' vga card */
 	for (link = dev->link_list; link; link = link->next) {
 		if (link->bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
-#if CONFIG_MULTIPLE_VGA_ADAPTERS
+#if IS_ENABLED(CONFIG_MULTIPLE_VGA_ADAPTERS)
 			extern device_t vga_pri; // the primary vga device, defined in device.c
 			printk(BIOS_DEBUG, "VGA: vga_pri bus num = %d link bus range [%d,%d]\n", vga_pri->bus->secondary,
 				link->secondary,link->subordinate);
@@ -811,10 +811,11 @@ static u32 hoist_memory(unsigned long hole_startk, int node_id)
 
 static void setup_uma_memory(void)
 {
-#if CONFIG_GFXUMA
+#if IS_ENABLED(CONFIG_GFXUMA)
 	uint32_t topmem = (uint32_t) bsp_topmem();
 
-#if !CONFIG_BOARD_ASROCK_939A785GMH && !CONFIG_BOARD_AMD_MAHOGANY
+#if !IS_ENABLED(CONFIG_BOARD_ASROCK_939A785GMH) && \
+	!IS_ENABLED(CONFIG_BOARD_AMD_MAHOGANY)
 
 	switch (topmem) {
 	case 0x10000000:	/* 256M system memory */
@@ -885,7 +886,7 @@ static void amdk8_domain_set_resources(device_t dev)
 	 * if mmio_basek is bigger that hole_basek and will use hole_basek as mmio_basek and we don't need to reset hole.
 	 * otherwise We reset the hole to the mmio_basek
 	 */
-	#if !CONFIG_K8_REV_F_SUPPORT
+	#if !IS_ENABLED(CONFIG_K8_REV_F_SUPPORT)
 		if (!is_cpu_pre_e0()) {
 	#endif
 
@@ -903,7 +904,7 @@ static void amdk8_domain_set_resources(device_t dev)
 				disable_hoist_memory(mem_hole.hole_startk, mem_hole.node_id);
 			}
 
-		#if CONFIG_HW_MEM_HOLE_SIZE_AUTO_INC
+		#if IS_ENABLED(CONFIG_HW_MEM_HOLE_SIZE_AUTO_INC)
 			//We need to double check if the mmio_basek is valid for hole setting, if it is equal to basek, we need to decrease it some
 			u32 basek_pri;
 			for (i = 0; i < fx_devs; i++) {
@@ -924,7 +925,7 @@ static void amdk8_domain_set_resources(device_t dev)
 		#endif
 		}
 
-#if !CONFIG_K8_REV_F_SUPPORT
+#if !IS_ENABLED(CONFIG_K8_REV_F_SUPPORT)
 	} // is_cpu_pre_e0
 #endif
 
@@ -953,7 +954,7 @@ static void amdk8_domain_set_resources(device_t dev)
 		}
 
 
-#if CONFIG_GFXUMA
+#if IS_ENABLED(CONFIG_GFXUMA)
 		printk(BIOS_DEBUG, "node %d : uma_memory_base/1024=0x%08llx, mmio_basek=0x%08lx, basek=0x%08x, limitk=0x%08x\n", i, uma_memory_base >> 10, mmio_basek, basek, limitk);
 		if ((uma_memory_base >> 10) < mmio_basek)
 			printk(BIOS_ALERT, "node %d: UMA memory starts below mmio_basek\n", i);
@@ -973,7 +974,7 @@ static void amdk8_domain_set_resources(device_t dev)
 				}
 				#if CONFIG_HW_MEM_HOLE_SIZEK != 0
 				if (reset_memhole)
-					#if !CONFIG_K8_REV_F_SUPPORT
+					#if !IS_ENABLED(CONFIG_K8_REV_F_SUPPORT)
 					if (!is_cpu_pre_e0())
 					#endif
 		       				 sizek += hoist_memory(mmio_basek,i);
@@ -998,7 +999,7 @@ static void amdk8_domain_set_resources(device_t dev)
 			ramtop = limitk * 1024;
 	}
 
-#if CONFIG_GFXUMA
+#if IS_ENABLED(CONFIG_GFXUMA)
 	set_late_cbmem_top(uma_memory_base);
 	uma_resource(dev, 7, uma_memory_base >> 10, uma_memory_size >> 10);
 #else
@@ -1128,7 +1129,7 @@ static void cpu_bus_scan(device_t dev)
 	sysconf.apicid_offset = bsp_apicid;
 
 	disable_siblings = !CONFIG_LOGICAL_CPUS;
-#if CONFIG_LOGICAL_CPUS
+#if IS_ENABLED(CONFIG_LOGICAL_CPUS)
 	get_option(&disable_siblings, "multi_core");
 #endif
 
@@ -1201,7 +1202,7 @@ static void cpu_bus_scan(device_t dev)
 				// That is the typical case
 
 				if (j == 0) {
-				       #if !CONFIG_K8_REV_F_SUPPORT
+				       #if !IS_ENABLED(CONFIG_K8_REV_F_SUPPORT)
 		 		       	e0_later_single_core = is_e0_later_in_bsp(i);  // single core
 				       #else
 				       	e0_later_single_core = is_cpu_f0_in_bsp(i);  // We can read cpuid(1) from Func3
@@ -1250,7 +1251,7 @@ static void cpu_bus_scan(device_t dev)
 
 static void cpu_bus_init(device_t dev)
 {
-#if CONFIG_WAIT_BEFORE_CPUS_INIT
+#if IS_ENABLED(CONFIG_WAIT_BEFORE_CPUS_INIT)
 	cpus_ready_for_init();
 #endif
 	initialize_cpus(dev->link_list);

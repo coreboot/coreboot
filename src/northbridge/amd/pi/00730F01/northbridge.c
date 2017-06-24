@@ -391,7 +391,7 @@ static void create_vga_resource(device_t dev, unsigned nodeid)
 	 * we only deal with the 'first' vga card */
 	for (link = dev->link_list; link; link = link->next) {
 		if (link->bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
-#if CONFIG_MULTIPLE_VGA_ADAPTERS
+#if IS_ENABLED(CONFIG_MULTIPLE_VGA_ADAPTERS)
 			extern device_t vga_pri; // the primary vga device, defined in device.c
 			printk(BIOS_DEBUG, "VGA: vga_pri bus num = %d bus range [%d,%d]\n", vga_pri->bus->secondary,
 					link->secondary,link->subordinate);

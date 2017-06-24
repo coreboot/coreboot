@@ -32,7 +32,7 @@ void dump_pci_device_index(u32 dev, u32 index_reg, u32 type, u32 length);
 void dump_pci_devices(void);
 void dump_pci_devices_on_bus(u32 busn);
 
-#if CONFIG_DEBUG_SMBUS
+#if IS_ENABLED(CONFIG_DEBUG_SMBUS)
 void dump_spd_registers(const struct mem_controller *ctrl);
 void dump_smbus_registers(void);
 #endif

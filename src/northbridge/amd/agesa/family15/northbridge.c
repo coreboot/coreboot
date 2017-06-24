@@ -391,7 +391,7 @@ static void create_vga_resource(device_t dev, unsigned nodeid)
 	 * we only deal with the 'first' vga card */
 	for (link = dev->link_list; link; link = link->next) {
 		if (link->bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
-#if CONFIG_MULTIPLE_VGA_ADAPTERS
+#if IS_ENABLED(CONFIG_MULTIPLE_VGA_ADAPTERS)
 			extern device_t vga_pri; // the primary vga device, defined in device.c
 			printk(BIOS_DEBUG, "VGA: vga_pri bus num = %d bus range [%d,%d]\n", vga_pri->bus->secondary,
 					link->secondary,link->subordinate);
@@ -640,7 +640,7 @@ static void domain_enable_resources(device_t dev)
 	/* Must be called after PCI enumeration and resource allocation */
 	printk(BIOS_DEBUG, "\nFam15 - %s: AmdInitMid.\n", __func__);
 
-#if CONFIG_AMD_SB_CIMX
+#if IS_ENABLED(CONFIG_AMD_SB_CIMX)
 	sb_After_Pci_Init();
 #endif
 	/* Enable MMIO on AMD CPU Address Map Controller */
@@ -1021,7 +1021,7 @@ static void cpu_bus_scan(device_t dev)
 				lapicid_start = (lapicid_start + 1) * core_max;
 				printk(BIOS_SPEW, "lpaicid_start = 0x%x ", lapicid_start);
 			}
-#if CONFIG_CPU_AMD_SOCKET_G34
+#if IS_ENABLED(CONFIG_CPU_AMD_SOCKET_G34)
 			u32 apic_id = (i / 2 * core_max) + j + lapicid_start + (i % 2 ? siblings + 1 : 0);
 #else
 			u32 apic_id = (i  * core_max) + j + lapicid_start;

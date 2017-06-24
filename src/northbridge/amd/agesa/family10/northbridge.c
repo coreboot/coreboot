@@ -27,7 +27,7 @@
 #include <cpu/x86/lapic.h>
 #include <cbmem.h>
 
-#if CONFIG_LOGICAL_CPUS
+#if IS_ENABLED(CONFIG_LOGICAL_CPUS)
 #include <pc80/mc146818rtc.h>
 #endif
 
@@ -496,7 +496,7 @@ static void amdfam10_create_vga_resource(device_t dev, unsigned nodeid)
 	 * we only deal with the 'first' vga card */
 	for (link = dev->link_list; link; link = link->next) {
 		if (link->bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
-#if CONFIG_MULTIPLE_VGA_ADAPTERS
+#if IS_ENABLED(CONFIG_MULTIPLE_VGA_ADAPTERS)
 			extern device_t vga_pri; // the primary vga device, defined in device.c
 			printk(BIOS_DEBUG, "VGA: vga_pri bus num = %d bus range [%d,%d]\n", vga_pri->bus->secondary,
 					link->secondary,link->subordinate);
@@ -800,7 +800,7 @@ static void amdfam10_domain_set_resources(device_t dev)
 			ramtop = limitk * 1024;
 	}
 
-#if CONFIG_GFXUMA
+#if IS_ENABLED(CONFIG_GFXUMA)
 	set_top_of_ram(uma_memory_base);
 	uma_resource(dev, 7, uma_memory_base >> 10, uma_memory_size >> 10);
 #else
@@ -942,7 +942,7 @@ static void cpu_bus_scan(device_t dev)
 	}
 
 	disable_siblings = !CONFIG_LOGICAL_CPUS;
-#if CONFIG_LOGICAL_CPUS
+#if IS_ENABLED(CONFIG_LOGICAL_CPUS)
 	get_option(&disable_siblings, "multi_core");
 #endif
 
@@ -1117,7 +1117,7 @@ static void root_complex_enable_dev(struct device *dev)
 	   the global uma_memory variables already in its enable function. */
 	if (!done) {
 		setup_bsp_ramtop();
-#if CONFIG_GFXUMA
+#if IS_ENABLED(CONFIG_GFXUMA)
 #error Northbridge does not set uma_memory_base or uma_memory_size.
 		setup_uma_memory();
 #endif

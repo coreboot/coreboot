@@ -136,7 +136,7 @@ static int gigadevice_write(const struct spi_flash *flash, u32 offset,
 		cmd[1] = (offset >> 16) & 0xff;
 		cmd[2] = (offset >> 8) & 0xff;
 		cmd[3] = offset & 0xff;
-#if CONFIG_DEBUG_SPI_FLASH
+#if IS_ENABLED(CONFIG_DEBUG_SPI_FLASH)
 		printk(BIOS_SPEW,
 		       "PP gigadevice.c: 0x%p => cmd = { 0x%02x 0x%02x%02x%02x }"
 		       " chunk_len = %zu\n", buf + actual,
@@ -158,7 +158,7 @@ static int gigadevice_write(const struct spi_flash *flash, u32 offset,
 		offset += chunk_len;
 	}
 
-#if CONFIG_DEBUG_SPI_FLASH
+#if IS_ENABLED(CONFIG_DEBUG_SPI_FLASH)
 	printk(BIOS_SPEW,
 	       "SF gigadevice.c: Successfully programmed %zu bytes @ %#x\n",
 	       len, (unsigned int)(offset - len));

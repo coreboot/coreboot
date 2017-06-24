@@ -186,7 +186,7 @@ static int stmicro_write(const struct spi_flash *flash,
 		cmd[1] = (offset >> 16) & 0xff;
 		cmd[2] = (offset >> 8) & 0xff;
 		cmd[3] = offset & 0xff;
-#if CONFIG_DEBUG_SPI_FLASH
+#if IS_ENABLED(CONFIG_DEBUG_SPI_FLASH)
 		printk(BIOS_SPEW, "PP: 0x%p => cmd = { 0x%02x 0x%02x%02x%02x }"
 		     " chunk_len = %zu\n",
 		     buf + actual, cmd[0], cmd[1], cmd[2], cmd[3], chunk_len);
@@ -212,7 +212,7 @@ static int stmicro_write(const struct spi_flash *flash,
 		offset += chunk_len;
 	}
 
-#if CONFIG_DEBUG_SPI_FLASH
+#if IS_ENABLED(CONFIG_DEBUG_SPI_FLASH)
 	printk(BIOS_SPEW, "SF: STMicro: Successfully programmed %zu bytes @"
 			" 0x%lx\n", len, (unsigned long)(offset - len));
 #endif

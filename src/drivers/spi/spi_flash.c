@@ -187,7 +187,7 @@ int spi_flash_cmd_erase(const struct spi_flash *flash, u32 offset, size_t len)
 		spi_flash_addr(offset, cmd);
 		offset += erase_size;
 
-#if CONFIG_DEBUG_SPI_FLASH
+#if IS_ENABLED(CONFIG_DEBUG_SPI_FLASH)
 		printk(BIOS_SPEW, "SF: erase %2x %2x %2x %2x (%x)\n", cmd[0], cmd[1],
 		      cmd[2], cmd[3], offset);
 #endif
@@ -246,38 +246,38 @@ static struct {
 		      struct spi_flash *flash);
 } flashes[] = {
 	/* Keep it sorted by define name */
-#if CONFIG_SPI_FLASH_AMIC
+#if IS_ENABLED(CONFIG_SPI_FLASH_AMIC)
 	{ 0, 0x37, spi_flash_probe_amic, },
 #endif
-#if CONFIG_SPI_FLASH_ATMEL
+#if IS_ENABLED(CONFIG_SPI_FLASH_ATMEL)
 	{ 0, 0x1f, spi_flash_probe_atmel, },
 #endif
-#if CONFIG_SPI_FLASH_EON
+#if IS_ENABLED(CONFIG_SPI_FLASH_EON)
 	{ 0, 0x1c, spi_flash_probe_eon, },
 #endif
-#if CONFIG_SPI_FLASH_GIGADEVICE
+#if IS_ENABLED(CONFIG_SPI_FLASH_GIGADEVICE)
 	{ 0, 0xc8, spi_flash_probe_gigadevice, },
 #endif
-#if CONFIG_SPI_FLASH_MACRONIX
+#if IS_ENABLED(CONFIG_SPI_FLASH_MACRONIX)
 	{ 0, 0xc2, spi_flash_probe_macronix, },
 #endif
-#if CONFIG_SPI_FLASH_SPANSION
+#if IS_ENABLED(CONFIG_SPI_FLASH_SPANSION)
 	{ 0, 0x01, spi_flash_probe_spansion, },
 #endif
-#if CONFIG_SPI_FLASH_SST
+#if IS_ENABLED(CONFIG_SPI_FLASH_SST)
 	{ 0, 0xbf, spi_flash_probe_sst, },
 #endif
-#if CONFIG_SPI_FLASH_STMICRO
+#if IS_ENABLED(CONFIG_SPI_FLASH_STMICRO)
 	{ 0, 0x20, spi_flash_probe_stmicro, },
 #endif
-#if CONFIG_SPI_FLASH_WINBOND
+#if IS_ENABLED(CONFIG_SPI_FLASH_WINBOND)
 	{ 0, 0xef, spi_flash_probe_winbond, },
 #endif
 	/* Keep it sorted by best detection */
-#if CONFIG_SPI_FLASH_STMICRO
+#if IS_ENABLED(CONFIG_SPI_FLASH_STMICRO)
 	{ 0, 0xff, spi_flash_probe_stmicro, },
 #endif
-#if CONFIG_SPI_FLASH_ADESTO
+#if IS_ENABLED(CONFIG_SPI_FLASH_ADESTO)
 	{ 0, 0x1f, spi_flash_probe_adesto, },
 #endif
 };

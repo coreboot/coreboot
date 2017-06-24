@@ -212,7 +212,7 @@ static int spansion_write(const struct spi_flash *flash, u32 offset, size_t len,
 		cmd[2] = (offset >> 8) & 0xff;
 		cmd[3] = offset & 0xff;
 
-#if CONFIG_DEBUG_SPI_FLASH
+#if IS_ENABLED(CONFIG_DEBUG_SPI_FLASH)
 		printk(BIOS_SPEW, "PP: 0x%p => cmd = { 0x%02x 0x%02x%02x%02x }"
 		     " chunk_len = %zu\n",
 		     buf + actual, cmd[0], cmd[1], cmd[2], cmd[3], chunk_len);
@@ -238,7 +238,7 @@ static int spansion_write(const struct spi_flash *flash, u32 offset, size_t len,
 		offset += chunk_len;
 	}
 
-#if CONFIG_DEBUG_SPI_FLASH
+#if IS_ENABLED(CONFIG_DEBUG_SPI_FLASH)
 	printk(BIOS_SPEW, "SF: SPANSION: Successfully programmed %zu bytes @ 0x%x\n",
 	      len, offset);
 #endif

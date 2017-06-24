@@ -1,7 +1,7 @@
 #ifndef PC80_MC146818RTC_H
 #define PC80_MC146818RTC_H
 
-#if CONFIG_ARCH_X86
+#if IS_ENABLED(CONFIG_ARCH_X86)
 
 #include <arch/io.h>
 #include <types.h>
@@ -193,8 +193,8 @@ unsigned int read_option_lowlevel(unsigned int start, unsigned int size,
 #define read_option(name, default) read_option_lowlevel(CMOS_VSTART_ ##name, \
 	CMOS_VLEN_ ##name, (default))
 
-#if CONFIG_CMOS_POST
-#if CONFIG_USE_OPTION_TABLE
+#if IS_ENABLED(CONFIG_CMOS_POST)
+#if IS_ENABLED(CONFIG_USE_OPTION_TABLE)
 # include "option_table.h"
 # define CMOS_POST_OFFSET (CMOS_VSTART_cmos_post_offset >> 3)
 #else
@@ -241,7 +241,7 @@ static inline void cmos_post_init(void)
 		/* Initialize to zero */
 		cmos_write(0, CMOS_POST_BANK_0_OFFSET);
 		cmos_write(0, CMOS_POST_BANK_1_OFFSET);
-#if CONFIG_CMOS_POST_EXTRA
+#if IS_ENABLED(CONFIG_CMOS_POST_EXTRA)
 		cmos_write32(CMOS_POST_BANK_0_EXTRA, 0);
 		cmos_write32(CMOS_POST_BANK_1_EXTRA, 0);
 #endif

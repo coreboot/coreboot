@@ -7,7 +7,7 @@
 #include <smp/node.h>
 
 /* See if I need to initialize the local APIC */
-#if CONFIG_SMP || CONFIG_IOAPIC
+#if IS_ENABLED(CONFIG_SMP) || IS_ENABLED(CONFIG_IOAPIC)
 #  define NEED_LAPIC 1
 #else
 #  define NEED_LAPIC 0
@@ -54,7 +54,7 @@ static inline __attribute__((always_inline)) unsigned long lapicid(void)
 	return lapic_read(LAPIC_ID) >> 24;
 }
 
-#if !CONFIG_AP_IN_SIPI_WAIT
+#if !IS_ENABLED(CONFIG_AP_IN_SIPI_WAIT)
 /* If we need to go back to sipi wait, we use the long non-inlined version of
  * this function in lapic_cpu_init.c
  */
@@ -149,7 +149,7 @@ static inline int lapic_remote_read(int apicid, int reg, unsigned long *pvalue)
 
 void setup_lapic(void);
 
-#if CONFIG_SMP
+#if IS_ENABLED(CONFIG_SMP)
 struct device;
 int start_cpu(struct device *cpu);
 #endif /* CONFIG_SMP */

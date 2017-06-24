@@ -25,7 +25,7 @@
 
 #else /* !__PRE_RAM__ */
 
-#if CONFIG_TRACE && !defined(__SMM__)
+#if IS_ENABLED(CONFIG_TRACE) && !defined(__SMM__)
 
 void __cyg_profile_func_enter(void *, void *)
 				 __attribute__((no_instrument_function));

@@ -214,7 +214,7 @@ struct elog_event_mem_cache_update {
 #define ELOG_EC_DEVICE_EVENT_DSP            0x02
 #define ELOG_EC_DEVICE_EVENT_WIFI           0x03
 
-#if CONFIG_ELOG
+#if IS_ENABLED(CONFIG_ELOG)
 /* Eventlog backing storage must be initialized before calling elog_init(). */
 extern int elog_init(void);
 extern int elog_clear(void);

@@ -53,7 +53,7 @@ struct device_operations {
 	void (*disable)(device_t dev);
 	void (*set_link)(device_t dev, unsigned int link);
 	void (*reset_bus)(struct bus *bus);
-#if CONFIG_GENERATE_SMBIOS_TABLES
+#if IS_ENABLED(CONFIG_GENERATE_SMBIOS_TABLES)
 	int (*get_smbios_data)(device_t dev, int *handle,
 		unsigned long *current);
 	void (*get_smbios_strings)(device_t dev, struct smbios_type11 *t);
@@ -163,7 +163,7 @@ extern struct bus	*free_links;
 
 extern const char mainboard_name[];
 
-#if CONFIG_GFXUMA
+#if IS_ENABLED(CONFIG_GFXUMA)
 /* IGD UMA memory */
 extern uint64_t uma_memory_base;
 extern uint64_t uma_memory_size;

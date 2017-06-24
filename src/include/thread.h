@@ -21,7 +21,7 @@
 #include <timer.h>
 #include <arch/cpu.h>
 
-#if CONFIG_COOP_MULTITASKING && !defined(__SMM__) && !defined(__PRE_RAM__)
+#if IS_ENABLED(CONFIG_COOP_MULTITASKING) && !defined(__SMM__) && !defined(__PRE_RAM__)
 
 struct thread {
 	int id;

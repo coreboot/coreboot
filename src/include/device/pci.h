@@ -15,7 +15,7 @@
 #ifndef PCI_H
 #define PCI_H
 
-#if CONFIG_PCI
+#if IS_ENABLED(CONFIG_PCI)
 
 #include <stdint.h>
 #include <stddef.h>

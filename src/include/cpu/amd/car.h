@@ -10,7 +10,8 @@ void post_cache_as_ram(void);
 void cache_as_ram_switch_stack(void *stacktop);
 void cache_as_ram_new_stack(void);
 
-#if CONFIG_CPU_AMD_AGESA || CONFIG_CPU_AMD_PI || CONFIG_SOC_AMD_PI
+#if IS_ENABLED(CONFIG_CPU_AMD_AGESA) || IS_ENABLED(CONFIG_CPU_AMD_PI) || \
+	IS_ENABLED(CONFIG_SOC_AMD_PI)
 void disable_cache_as_ram(void);
 #endif
 

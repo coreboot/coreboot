@@ -34,7 +34,7 @@
 
 #include <string.h>
 #include <types.h>
-#if CONFIG_FRAMEBUFFER_SET_VESA_MODE
+#if IS_ENABLED(CONFIG_FRAMEBUFFER_SET_VESA_MODE)
 #include <boot/coreboot_tables.h>
 #endif
 
@@ -66,7 +66,7 @@ u8 *vbe_info_buffer = 0;
 u8 *biosmem;
 u32 biosmem_size;
 
-#if CONFIG_FRAMEBUFFER_SET_VESA_MODE
+#if IS_ENABLED(CONFIG_FRAMEBUFFER_SET_VESA_MODE)
 static inline u8
 vbe_prepare(void)
 {
@@ -734,7 +734,7 @@ void vbe_set_graphics(void)
 	vbe_get_mode_info(&mode_info);
 	vbe_set_mode(&mode_info);
 
-#if CONFIG_BOOTSPLASH
+#if IS_ENABLED(CONFIG_BOOTSPLASH)
 	unsigned char *framebuffer =
 		(unsigned char *) le32_to_cpu(mode_info.vesa.phys_base_ptr);
 	DEBUG_PRINTF_VBE("FRAMEBUFFER: 0x%p\n", framebuffer);

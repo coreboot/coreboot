@@ -45,7 +45,7 @@
 
 #define VMEM_SIZE (1024 * 1024) /* 1 MB */
 
-#if !CONFIG_YABEL_DIRECTHW
+#if !IS_ENABLED(CONFIG_YABEL_DIRECTHW)
 #if CONFIG_YABEL_VIRTMEM_LOCATION
 u8* vmem = (u8 *) CONFIG_YABEL_VIRTMEM_LOCATION;
 #else
@@ -63,7 +63,7 @@ void run_bios(struct device * dev, unsigned long addr)
 
 	biosemu(vmem, VMEM_SIZE, dev, addr);
 
-#if CONFIG_FRAMEBUFFER_SET_VESA_MODE
+#if IS_ENABLED(CONFIG_FRAMEBUFFER_SET_VESA_MODE)
 	vbe_set_graphics();
 #endif
 }
@@ -73,7 +73,7 @@ unsigned long tb_freq = 0;
 u64 get_time(void)
 {
     u64 act = 0;
-#if CONFIG_ARCH_X86
+#if IS_ENABLED(CONFIG_ARCH_X86)
     u32 eax, edx;
 
     __asm__ __volatile__(

@@ -58,7 +58,7 @@ typedef struct {
 	u64 size;
 } __attribute__ ((__packed__)) assigned_address_t;
 
-#if CONFIG_PCI_OPTION_ROM_RUN_YABEL
+#if IS_ENABLED(CONFIG_PCI_OPTION_ROM_RUN_YABEL)
 /* coreboot version */
 
 static void
@@ -131,7 +131,7 @@ biosemu_dev_get_addr_info(void)
 	}
 	// store last entry index of translate_address_array
 	taa_last_entry = taa_index - 1;
-#if CONFIG_X86EMU_DEBUG
+#if IS_ENABLED(CONFIG_X86EMU_DEBUG)
 	//dump translate_address_array
 	printf("translate_address_array:\n");
 	translate_address_t ta;
@@ -215,7 +215,7 @@ biosemu_dev_get_addr_info(void)
 	}
 	// store last entry index of translate_address_array
 	taa_last_entry = taa_index - 1;
-#if CONFIG_X86EMU_DEBUG
+#if IS_ENABLED(CONFIG_X86EMU_DEBUG)
 	//dump translate_address_array
 	printf("translate_address_array:\n");
 	translate_address_t ta;
@@ -247,7 +247,7 @@ biosemu_add_special_memory(u32 start, u32 size)
 	translate_address_array[taa_index].address_offset = 0;
 }
 
-#if !CONFIG_PCI_OPTION_ROM_RUN_YABEL
+#if !IS_ENABLED(CONFIG_PCI_OPTION_ROM_RUN_YABEL)
 // to simulate accesses to legacy VGA Memory (0xA0000-0xBFFFF)
 // we look for the first prefetchable memory BAR, if no prefetchable BAR found,
 // we use the first memory BAR
@@ -309,7 +309,7 @@ biosemu_dev_get_device_vendor_id(void)
 {
 
 	u32 pci_config_0;
-#if CONFIG_PCI_OPTION_ROM_RUN_YABEL
+#if IS_ENABLED(CONFIG_PCI_OPTION_ROM_RUN_YABEL)
 	pci_config_0 = pci_read_config32(bios_device.dev, 0x0);
 #else
 	pci_config_0 =
@@ -371,7 +371,7 @@ biosemu_dev_check_exprom(unsigned long rom_base_addr)
 		memcpy(&pci_ds, (void *) (rom_base_addr + pci_ds_offset),
 		       sizeof(pci_ds));
 		clr_ci();
-#if CONFIG_X86EMU_DEBUG
+#if IS_ENABLED(CONFIG_X86EMU_DEBUG)
 		DEBUG_PRINTF("PCI Data Structure @%lx:\n",
 			     rom_base_addr + pci_ds_offset);
 		dump((void *) &pci_ds, sizeof(pci_ds));
@@ -435,7 +435,7 @@ biosemu_dev_init(struct device * device)
 	DEBUG_PRINTF("%s\n", __func__);
 	memset(&bios_device, 0, sizeof(bios_device));
 
-#if !CONFIG_PCI_OPTION_ROM_RUN_YABEL
+#if !IS_ENABLED(CONFIG_PCI_OPTION_ROM_RUN_YABEL)
 	bios_device.ihandle = of_open(device_name);
 	if (bios_device.ihandle == 0) {
 		DEBUG_PRINTF("%s is no valid device!\n", device_name);
@@ -446,7 +446,7 @@ biosemu_dev_init(struct device * device)
 	bios_device.dev = device;
 #endif
 	biosemu_dev_get_addr_info();
-#if !CONFIG_PCI_OPTION_ROM_RUN_YABEL
+#if !IS_ENABLED(CONFIG_PCI_OPTION_ROM_RUN_YABEL)
 	biosemu_dev_find_vmem_addr();
 	biosemu_dev_get_puid();
 #endif
@@ -463,7 +463,7 @@ biosemu_dev_translate_address(int type, unsigned long * addr)
 {
 	int i = 0;
 	translate_address_t ta;
-#if !CONFIG_PCI_OPTION_ROM_RUN_YABEL
+#if !IS_ENABLED(CONFIG_PCI_OPTION_ROM_RUN_YABEL)
 	/* we don't need this hack for coreboot... we can access legacy areas */
 	//check if it is an access to legacy VGA Mem... if it is, map the address
 	//to the vmem BAR and then translate it...

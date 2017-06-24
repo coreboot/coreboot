@@ -362,7 +362,7 @@ handleInt1a(void)
 		DEBUG_PRINTF_INTR("%s(): function: %x: PCI Find Device\n",
 				  __func__, M.x86.R_AX);
 		/* FixME: support SI != 0 */
-#if CONFIG_YABEL_PCI_ACCESS_OTHER_DEVICES
+#if IS_ENABLED(CONFIG_YABEL_PCI_ACCESS_OTHER_DEVICES)
 		dev = dev_find_device(M.x86.R_DX, M.x86.R_CX, 0);
 		if (dev != 0) {
 			DEBUG_PRINTF_INTR
@@ -403,7 +403,7 @@ handleInt1a(void)
 		offs = M.x86.R_DI;
 		DEBUG_PRINTF_INTR("%s(): function: %x: PCI Config Read from device: bus: %02x, devfn: %02x, offset: %02x\n",
 				  __func__, M.x86.R_AX, bus, devfn, offs);
-#if CONFIG_YABEL_PCI_ACCESS_OTHER_DEVICES
+#if IS_ENABLED(CONFIG_YABEL_PCI_ACCESS_OTHER_DEVICES)
 		dev = dev_find_slot(bus, devfn);
 		DEBUG_PRINTF_INTR("%s(): function: %x: dev_find_slot() returned: %s\n",
 				  __func__, M.x86.R_AX, dev_path(dev));
@@ -427,7 +427,7 @@ handleInt1a(void)
 			switch (M.x86.R_AX) {
 			case 0xb108:
 				M.x86.R_CL =
-#if CONFIG_PCI_OPTION_ROM_RUN_YABEL
+#if IS_ENABLED(CONFIG_PCI_OPTION_ROM_RUN_YABEL)
 					pci_read_config8(dev, offs);
 #else
 				    (u8) rtas_pci_config_read(bios_device.
@@ -442,7 +442,7 @@ handleInt1a(void)
 				break;
 			case 0xb109:
 				M.x86.R_CX =
-#if CONFIG_PCI_OPTION_ROM_RUN_YABEL
+#if IS_ENABLED(CONFIG_PCI_OPTION_ROM_RUN_YABEL)
 					pci_read_config16(dev, offs);
 #else
 				    (u16) rtas_pci_config_read(bios_device.
@@ -457,7 +457,7 @@ handleInt1a(void)
 				break;
 			case 0xb10a:
 				M.x86.R_ECX =
-#if CONFIG_PCI_OPTION_ROM_RUN_YABEL
+#if IS_ENABLED(CONFIG_PCI_OPTION_ROM_RUN_YABEL)
 					pci_read_config32(dev, offs);
 #else
 				    (u32) rtas_pci_config_read(bios_device.
@@ -495,7 +495,7 @@ handleInt1a(void)
 		} else {
 			switch (M.x86.R_AX) {
 			case 0xb10b:
-#if CONFIG_PCI_OPTION_ROM_RUN_YABEL
+#if IS_ENABLED(CONFIG_PCI_OPTION_ROM_RUN_YABEL)
 					pci_write_config8(bios_device.dev, offs, M.x86.R_CL);
 #else
 				rtas_pci_config_write(bios_device.puid, 1, bus,
@@ -507,7 +507,7 @@ handleInt1a(void)
 				     M.x86.R_CL);
 				break;
 			case 0xb10c:
-#if CONFIG_PCI_OPTION_ROM_RUN_YABEL
+#if IS_ENABLED(CONFIG_PCI_OPTION_ROM_RUN_YABEL)
 					pci_write_config16(bios_device.dev, offs, M.x86.R_CX);
 #else
 				rtas_pci_config_write(bios_device.puid, 2, bus,
@@ -519,7 +519,7 @@ handleInt1a(void)
 				     M.x86.R_CX);
 				break;
 			case 0xb10d:
-#if CONFIG_PCI_OPTION_ROM_RUN_YABEL
+#if IS_ENABLED(CONFIG_PCI_OPTION_ROM_RUN_YABEL)
 					pci_write_config32(bios_device.dev, offs, M.x86.R_ECX);
 #else
 				rtas_pci_config_write(bios_device.puid, 4, bus,

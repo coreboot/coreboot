@@ -112,6 +112,26 @@ NC='\033[0m' # No Color
 UNAME=$(uname | grep -iq cygwin && echo Cygwin || uname)
 HALT_FOR_TOOLS=0
 
+hostcc()
+{
+	# $1 "host" or "target"
+	if [ "$BOOTSTRAP" = 1 -a "$1" = target ]; then
+		echo $DESTDIR$TARGETDIR/bin/gcc
+	else
+		echo $CC
+	fi
+}
+
+hostcxx()
+{
+	# $1 "host" or "target"
+	if [ "$BOOTSTRAP" = 1 -a "$1" = target ]; then
+		echo $DESTDIR$TARGETDIR/bin/g++
+	else
+		echo $CXX
+	fi
+}
+
 normalize_dirs()
 {
 	mkdir -p $DESTDIR$TARGETDIR/lib
@@ -205,7 +225,7 @@ check_for_library() {
 
 	echo "int main(int argc, char **argv) { (void) argc; (void) argv; return 0; }" > "${LIBTEST_FILE}.c"
 
-	cc $CFLAGS $LIBRARY_FLAGS "${LIBTEST_FILE}.c" -o "${LIBTEST_FILE}" >/dev/null 2>&1 || \
+	"$CC" $CFLAGS $LIBRARY_FLAGS "${LIBTEST_FILE}.c" -o "${LIBTEST_FILE}" >/dev/null 2>&1 || \
 		please_install "$LIBRARY_PACKAGES"
 	rm -rf "${LIBTEST_FILE}.c" "${LIBTEST_FILE}"
 }
@@ -513,7 +533,8 @@ build_GMP() {
 		OPTIONS="$OPTIONS --with-pic"
 	fi
 
-	CC="$CC" ../${GMP_DIR}/configure --disable-shared --enable-fat \
+	CC="$(hostcc host)" CXX="$(hostcxx host)" \
+	../${GMP_DIR}/configure --disable-shared --enable-fat \
 		--prefix=$TARGETDIR $OPTIONS \
 		|| touch .failed
 	$MAKE $JOBS || touch .failed
@@ -526,7 +547,8 @@ build_GMP() {
 
 build_MPFR() {
 	test $UNAME = "Darwin" && CFLAGS="$CFLAGS -force_cpusubtype_ALL"
-	CC="$CC" ../${MPFR_DIR}/configure --disable-shared --prefix=$TARGETDIR \
+	CC="$(hostcc host)" CXX="$(hostcxx host)" \
+	../${MPFR_DIR}/configure --disable-shared --prefix=$TARGETDIR \
 		--infodir=$TARGETDIR/info \
 		--with-gmp=$DESTDIR$TARGETDIR CFLAGS="$HOSTCFLAGS" || \
 		touch .failed
@@ -542,7 +564,8 @@ build_MPFR() {
 }
 
 build_MPC() {
-	CC="$CC" ../${MPC_DIR}/configure --disable-shared --prefix=$TARGETDIR \
+	CC="$(hostcc host)" CXX="$(hostcxx host)" \
+	../${MPC_DIR}/configure --disable-shared --prefix=$TARGETDIR \
 		--infodir=$TARGETDIR/info --with-mpfr=$DESTDIR$TARGETDIR \
 		--with-gmp=$DESTDIR$TARGETDIR CFLAGS="$HOSTCFLAGS" || \
 		touch .failed
@@ -564,7 +587,8 @@ build_MPC() {
 }
 
 build_LIBELF() {
-	CC="$CC" CFLAGS="$HOSTCFLAGS" libelf_cv_elf_h_works=no \
+	CC="$(hostcc host)" CXX="$(hostcxx host)" \
+	CFLAGS="$HOSTCFLAGS" libelf_cv_elf_h_works=no \
 	../${LIBELF_DIR}/configure --disable-shared --disable-nls --prefix=$TARGETDIR \
 		--infodir=$TARGETDIR/info CFLAGS="$HOSTCFLAGS" || touch .failed
 	$MAKE $JOBS || touch .failed
@@ -577,7 +601,8 @@ build_BINUTILS() {
 	if [ $TARGETARCH = "x86_64-elf" ]; then
 		ADDITIONALTARGET=",i386-elf"
 	fi
-	CC="$CC" ../binutils-${BINUTILS_VERSION}/configure --prefix=$TARGETDIR \
+	CC="$(hostcc target)" CXX="$(hostcxx target)" \
+	../binutils-${BINUTILS_VERSION}/configure --prefix=$TARGETDIR \
 		--target=${TARGETARCH} --enable-targets=${TARGETARCH}${ADDITIONALTARGET} \
 		--disable-werror --disable-nls --enable-lto --enable-gold \
 		--enable-interwork --enable-multilib \
@@ -590,7 +615,7 @@ build_BINUTILS() {
 }
 
 bootstrap_GCC() {
-	CC="$CC" \
+	CC="$(hostcc host)" CXX="$(hostcxx host)" \
 		CFLAGS="$HOSTCFLAGS" \
 		CFLAGS_FOR_BUILD="$HOSTCFLAGS" \
 		CFLAGS_FOR_TARGET="$HOSTCFLAGS -fPIC" \
@@ -614,8 +639,7 @@ bootstrap_GCC() {
 		install-target-libgcc \
 		maybe-install-target-libada \
 		maybe-install-target-libstdc++-v3 \
-		DESTDIR=$DESTDIR && \
-	ln -s gcc $DESTDIR$TARGETDIR/bin/cc || touch .failed
+		DESTDIR=$DESTDIR || touch .failed
 }
 
 build_cross_GCC() {
@@ -630,7 +654,8 @@ build_cross_GCC() {
 	# libiberty is not compiled with CFLAGS_FOR_BUILD.
 	# Also set the CXX version of the flags because GCC is now compiled
 	# using C++.
-	CC="$CC" CFLAGS_FOR_TARGET="-O2 -Dinhibit_libc" CFLAGS="$HOSTCFLAGS" \
+	CC="$(hostcc target)" CXX="$(hostcxx target)" \
+		CFLAGS_FOR_TARGET="-O2 -Dinhibit_libc" CFLAGS="$HOSTCFLAGS" \
 		CFLAGS_FOR_BUILD="$HOSTCFLAGS" CXXFLAGS="$HOSTCFLAGS" \
 		CXXFLAGS_FOR_BUILD="$HOSTCFLAGS" ../gcc-${GCC_VERSION}/configure \
 		--prefix=$TARGETDIR --libexecdir=$TARGETDIR/lib \
@@ -658,15 +683,16 @@ build_cross_GCC() {
 
 build_GCC() {
 	if [ "$1" = host ]; then
-		bootstrap_GCC
+		bootstrap_GCC $1
 	else
-		build_cross_GCC
+		build_cross_GCC $1
 	fi
 }
 
 build_EXPAT() {
-	CC="$CC" CFLAGS="$HOSTCFLAGS" ../${EXPAT_DIR}/configure --disable-shared \
-		--prefix=$TARGETDIR || touch .failed
+	CC="$(hostcc host)" CXX="$(hostcxx host)" CFLAGS="$HOSTCFLAGS"
+	../${EXPAT_DIR}/configure --disable-shared --prefix=$TARGETDIR \
+		|| touch .failed
 	$MAKE || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
 
@@ -674,7 +700,8 @@ build_EXPAT() {
 }
 
 build_PYTHON() {
-	CC="$CC" CFLAGS="$HOSTCFLAGS" ../${PYTHON_DIR}/configure --prefix=$TARGETDIR \
+	CC="$(hostcc host)" CXX="$(hostcxx host)" CFLAGS="$HOSTCFLAGS"
+	../${PYTHON_DIR}/configure --prefix=$TARGETDIR \
 		|| touch .failed
 	$MAKE $JOBS || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
@@ -689,7 +716,8 @@ build_GDB() {
 	fi
 	LDFLAGS="-Wl,-rpath,\$\$ORIGIN/../lib/ -L$DESTDIR$TARGETDIR/lib \
 		 -lpthread $LIBDL -lutil" \
-	CC="$CC" CFLAGS="$HOSTCFLAGS -I$DESTDIR$TARGETDIR/include" \
+	CC="$(hostcc target)" CXX="$(hostcxx target)" \
+	CFLAGS="$HOSTCFLAGS -I$DESTDIR$TARGETDIR/include" \
 	../${GDB_DIR}/configure --prefix=$TARGETDIR \
 		--target=${TARGETARCH} --disable-werror --disable-nls
 	$MAKE $JOBS || touch .failed
@@ -704,7 +732,9 @@ build_IASL() {
 	test $UNAME = "Darwin" && HOST="_APPLE"
 	test $UNAME = "FreeBSD" && HOST="_FreeBSD"
 	test $UNAME = "Cygwin" && HOST="_CYGWIN"
-	HOST="$HOST" OPT_CFLAGS="-O -D_FORTIFY_SOURCE=2 -D COREBOOT_TOOLCHAIN_VERSION='\"coreboot toolchain v$CROSSGCC_VERSION $CROSSGCC_DATE\"' " CFLAGS="$CFLAGS" $MAKE CC="$CC" iasl || touch $RDIR/.failed
+	HOST="$HOST" CFLAGS="$CFLAGS" \
+	OPT_CFLAGS="-O -D_FORTIFY_SOURCE=2 -D COREBOOT_TOOLCHAIN_VERSION='\"coreboot toolchain v$CROSSGCC_VERSION $CROSSGCC_DATE\"' " \
+	$MAKE CC="$(hostcc host)" iasl || touch $RDIR/.failed
 	rm -f $DESTDIR$TARGETDIR/bin/iasl || touch $RDIR/.failed
 	cp bin/iasl $DESTDIR$TARGETDIR/bin || touch $RDIR/.failed
 }
@@ -734,8 +764,9 @@ build_LLVM() {
 }
 
 build_MAKE() {
-	CC="$CC" CFLAGS="$HOSTCFLAGS" ../${MAKE_DIR}/configure --prefix=$TARGETDIR \
-		--disable-nls || touch .failed
+	CC="$(hostcc host)" CXX="$(hostcxx host)" CFLAGS="$HOSTCFLAGS" \
+	../${MAKE_DIR}/configure --prefix=$TARGETDIR --disable-nls \
+		|| touch .failed
 	$MAKE $JOBS || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
 
@@ -743,7 +774,8 @@ build_MAKE() {
 }
 
 build_CMAKE() {
-	CC="$CC" CFLAGS="$HOSTCFLAGS" ../${CMAKE_DIR}/configure --prefix=$TARGETDIR \
+	CC="$(hostcc host)" CXX="$(hostcxx host)" CFLAGS="$HOSTCFLAGS" \
+	../${CMAKE_DIR}/configure --prefix=$TARGETDIR \
 		 || touch .failed
 	$MAKE $JOBS || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
@@ -905,9 +937,6 @@ PIGZ=$(searchtool pigz "" nofail)
 searchtool m4 > /dev/null
 searchtool bison > /dev/null
 searchtool flex flex > /dev/null
-searchtool g++ "Free Software Foundation" nofail > /dev/null || \
-searchtool clang "clang version" nofail > /dev/null || \
-searchtool clang "LLVM" "" "g++" > /dev/null
 searchtool bzip2 "bzip2," > /dev/null
 searchtool xz "XZ Utils" "" "xz-utils" > /dev/null
 
@@ -928,10 +957,37 @@ elif searchtool curl "^curl " > /dev/null; then
 	}
 fi
 
-check_for_library "-lz" "zlib (zlib1g-dev or zlib-devel)"
+# Allow $CC override from the environment.
+if [ -n "$CC" ]; then
+	if [ ! -x "$(command -v "$CC" 2>/dev/null)" ]; then
+		printf "${RED}ERROR:${red} CC is set to '%s' but wasn't found.${NC}\n" "$CC"
+		HALT_FOR_TOOLS=1
+	fi
+else
+	if searchtool gcc "Free Software Foundation" nofail > /dev/null; then
+		CC=gcc
+	else
+		searchtool cc '^' nofail > /dev/null || please_install gcc
+		CC=cc
+	fi
+fi
 
-CC=cc
-check_cc
+# We can leave $CXX empty if it's not set since *buildgcc* never
+# calls it directly. This way configure scripts can search for
+# themselves and we still override it when a bootstrapped g++ is
+# to be used (cf. hostcxx()).
+if [ -n "$CXX" ]; then
+	if [ ! -x "$(command -v "$CXX" 2>/dev/null)" ]; then
+		printf "${RED}ERROR:${red} CXX is set to '%s' but wasn't found.${NC}\n" "$CXX"
+		HALT_FOR_TOOLS=1
+	fi
+else
+	searchtool g++ "Free Software Foundation" nofail > /dev/null || \
+	searchtool clang "clang version" nofail > /dev/null || \
+	searchtool clang "LLVM" "" "g++" > /dev/null
+fi
+
+check_for_library "-lz" "zlib (zlib1g-dev or zlib-devel)"
 
 if [ "$HALT_FOR_TOOLS" -ne 0 ]; then
 	exit 1

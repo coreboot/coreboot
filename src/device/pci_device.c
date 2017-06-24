@@ -664,7 +664,7 @@ void pci_dev_set_subsystem(struct device *dev, unsigned vendor, unsigned device)
 			   ((device & 0xffff) << 16) | (vendor & 0xffff));
 }
 
-#if CONFIG_VGA_ROM_RUN
+#if IS_ENABLED(CONFIG_VGA_ROM_RUN)
 static int should_run_oprom(struct device *dev)
 {
 	static int should_run = -1;
@@ -677,7 +677,7 @@ static int should_run_oprom(struct device *dev)
 	 */
 	should_run = display_init_required();
 
-#if CONFIG_CHROMEOS
+#if IS_ENABLED(CONFIG_CHROMEOS)
 	if (!should_run)
 		should_run = vboot_wants_oprom();
 #endif
@@ -706,7 +706,7 @@ static int should_load_oprom(struct device *dev)
 /** Default handler: only runs the relevant PCI BIOS. */
 void pci_dev_init(struct device *dev)
 {
-#if CONFIG_VGA_ROM_RUN
+#if IS_ENABLED(CONFIG_VGA_ROM_RUN)
 	struct rom_header *rom, *ram;
 
 	/* Only execute VGA ROMs. */
@@ -783,7 +783,7 @@ struct device_operations default_pci_ops_bus = {
  */
 static struct device_operations *get_pci_bridge_ops(device_t dev)
 {
-#if CONFIG_PCIX_PLUGIN_SUPPORT
+#if IS_ENABLED(CONFIG_PCIX_PLUGIN_SUPPORT)
 	unsigned int pcixpos;
 	pcixpos = pci_find_capability(dev, PCI_CAP_ID_PCIX);
 	if (pcixpos) {
@@ -791,7 +791,7 @@ static struct device_operations *get_pci_bridge_ops(device_t dev)
 		return &default_pcix_ops_bus;
 	}
 #endif
-#if CONFIG_HYPERTRANSPORT_PLUGIN_SUPPORT
+#if IS_ENABLED(CONFIG_HYPERTRANSPORT_PLUGIN_SUPPORT)
 	unsigned int htpos = 0;
 	while ((htpos = pci_find_next_capability(dev, PCI_CAP_ID_HT, htpos))) {
 		u16 flags;
@@ -804,7 +804,7 @@ static struct device_operations *get_pci_bridge_ops(device_t dev)
 		}
 	}
 #endif
-#if CONFIG_PCIEXP_PLUGIN_SUPPORT
+#if IS_ENABLED(CONFIG_PCIEXP_PLUGIN_SUPPORT)
 	unsigned int pciexpos;
 	pciexpos = pci_find_capability(dev, PCI_CAP_ID_PCIE);
 	if (pciexpos) {
@@ -894,7 +894,7 @@ static void set_pci_ops(struct device *dev)
 			goto bad;
 		dev->ops = get_pci_bridge_ops(dev);
 		break;
-#if CONFIG_CARDBUS_PLUGIN_SUPPORT
+#if IS_ENABLED(CONFIG_CARDBUS_PLUGIN_SUPPORT)
 	case PCI_HEADER_TYPE_CARDBUS:
 		dev->ops = &default_cardbus_ops_bus;
 		break;
@@ -1445,7 +1445,7 @@ int get_pci_irq_pins(device_t dev, device_t *parent_bdg)
 	return target_pin;
 }
 
-#if CONFIG_PC80_SYSTEM
+#if IS_ENABLED(CONFIG_PC80_SYSTEM)
 /**
  * Assign IRQ numbers.
  *
@@ -1494,7 +1494,7 @@ void pci_assign_irqs(unsigned bus, unsigned slot,
 		printk(BIOS_DEBUG, "  Readback = %d\n", irq);
 #endif
 
-#if CONFIG_PC80_SYSTEM
+#if IS_ENABLED(CONFIG_PC80_SYSTEM)
 		/* Change to level triggered. */
 		i8259_configure_irq_trigger(pIntAtoD[line - 1],
 					    IRQ_LEVEL_TRIGGERED);

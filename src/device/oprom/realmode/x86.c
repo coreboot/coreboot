@@ -212,7 +212,7 @@ static void setup_realmode_idt(void)
 	write_idt_stub((void *)0xffe6e, 0x1a);
 }
 
-#if CONFIG_FRAMEBUFFER_SET_VESA_MODE
+#if IS_ENABLED(CONFIG_FRAMEBUFFER_SET_VESA_MODE)
 vbe_mode_info_t mode_info;
 static int mode_info_valid;
 
@@ -268,7 +268,7 @@ void vbe_set_graphics(void)
 	}
 
 	vbe_set_mode(&mode_info);
-#if CONFIG_BOOTSPLASH
+#if IS_ENABLED(CONFIG_BOOTSPLASH)
 	struct jpeg_decdata *decdata;
 	unsigned char *jpeg = cbfs_boot_map_with_leak("bootsplash.jpg",
 							CBFS_TYPE_BOOTSPLASH,
@@ -349,13 +349,13 @@ void run_bios(struct device *dev, unsigned long addr)
 	realmode_call(addr + 0x0003, num_dev, 0xffff, 0x0000, 0xffff, 0x0, 0x0);
 	printk(BIOS_DEBUG, "... Option ROM returned.\n");
 
-#if CONFIG_FRAMEBUFFER_SET_VESA_MODE
+#if IS_ENABLED(CONFIG_FRAMEBUFFER_SET_VESA_MODE)
 	if ((dev->class >> 8)== PCI_CLASS_DISPLAY_VGA)
 		vbe_set_graphics();
 #endif
 }
 
-#if CONFIG_GEODE_VSA
+#if IS_ENABLED(CONFIG_GEODE_VSA)
 
 #define VSA2_BUFFER		0x60000
 #define VSA2_ENTRY_POINT	0x60020
@@ -459,7 +459,7 @@ int asmlinkage interrupt_handler(u32 intnumber,
 	cs = cs_ip >> 16;
 	flags = stackflags;
 
-#if CONFIG_REALMODE_DEBUG
+#if IS_ENABLED(CONFIG_REALMODE_DEBUG)
 	printk(BIOS_DEBUG, "oprom: INT# 0x%x\n", intnumber);
 	printk(BIOS_DEBUG, "oprom: eax: %08x ebx: %08x ecx: %08x edx: %08x\n",
 		      eax, ebx, ecx, edx);

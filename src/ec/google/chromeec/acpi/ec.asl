@@ -56,7 +56,7 @@ Device (EC0)
 		TBMD, 1,	// Tablet mode
 	}
 
-#if CONFIG_EC_GOOGLE_CHROMEEC_ACPI_MEMMAP
+#if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC_ACPI_MEMMAP)
 	OperationRegion (EMEM, EmbeddedControl,
 			 EC_ACPI_MEM_MAPPED_BEGIN, EC_ACPI_MEM_MAPPED_SIZE)
 	Field (EMEM, ByteAcc, Lock, Preserve)

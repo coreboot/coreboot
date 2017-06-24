@@ -466,7 +466,7 @@ u32 google_chromeec_get_wake_mask(void)
 
 void google_chromeec_log_events(u32 mask)
 {
-#if CONFIG_ELOG
+#if IS_ENABLED(CONFIG_ELOG)
 	u8 event;
 	u32 wake_mask;
 

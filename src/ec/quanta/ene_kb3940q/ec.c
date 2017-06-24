@@ -129,7 +129,7 @@ void ec_mem_write(u8 addr, u8 data)
 #ifndef __SMM__
 static void ene_kb3940q_log_events(void)
 {
-#if CONFIG_ELOG
+#if IS_ENABLED(CONFIG_ELOG)
 	u8 reason = ec_mem_read(EC_SHUTDOWN_REASON);
 	if (reason)
 		elog_add_event_byte(ELOG_TYPE_EC_SHUTDOWN, reason);

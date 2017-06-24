@@ -45,7 +45,7 @@
 
 #define SMBUS_DELAY()		outb(0x80, 0x80)
 
-#if CONFIG_DEBUG_SMBUS
+#if IS_ENABLED(CONFIG_DEBUG_SMBUS)
 #define DEBUG(x...)		printk(BIOS_DEBUG, x)
 #else
 #define DEBUG(x...)		while (0) { }
@@ -208,7 +208,7 @@ void smbus_fixup(const struct mem_controller *mem_ctrl)
 }
 
 /* Debugging Function */
-#if CONFIG_DEBUG_SMBUS
+#if IS_ENABLED(CONFIG_DEBUG_SMBUS)
 static void dump_spd_data(void)
 {
 	int dimm, offset, regs;

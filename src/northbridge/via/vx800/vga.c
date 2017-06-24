@@ -29,9 +29,7 @@
 #include <cpu/x86/msr.h>
 #include <arch/interrupt.h>
 #include <x86emu/regs.h>
-#if CONFIG_PCI_OPTION_ROM_RUN_REALMODE
 #include <device/oprom/realmode/x86.h>
-#endif
 
 /* PCI Domain 1 Device 0 Function 0 */
 
@@ -139,7 +137,7 @@ static void write_protect_vgabios(void)
 
 static void vga_enable_console(void)
 {
-#if CONFIG_PCI_OPTION_ROM_RUN_REALMODE
+#if IS_ENABLED(CONFIG_PCI_OPTION_ROM_RUN_REALMODE)
 	/* Call VGA BIOS int10 function 0x4f14 to enable main console
 	 * Epia-M does not always autosense the main console so forcing
 	 * it on is good.

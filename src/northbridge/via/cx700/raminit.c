@@ -20,7 +20,7 @@
 #include "registers.h"
 
 /* Debugging macros. */
-#if CONFIG_DEBUG_RAM_SETUP
+#if IS_ENABLED(CONFIG_DEBUG_RAM_SETUP)
 #define PRINTK_DEBUG(x...)      printk(BIOS_DEBUG, x)
 #else
 #define PRINTK_DEBUG(x...)

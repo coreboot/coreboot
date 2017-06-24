@@ -198,7 +198,7 @@ static const struct pci_driver lpc_driver __pci_driver = {
 	.device = PCI_DEVICE_ID_VIA_VX900_LPC,
 };
 
-#if CONFIG_PIRQ_ROUTE
+#if IS_ENABLED(CONFIG_PIRQ_ROUTE)
 void pirq_assign_irqs(const u8 * pirq)
 {
 	device_t lpc;

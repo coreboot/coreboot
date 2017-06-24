@@ -24,7 +24,7 @@
 #include <delay.h>
 #include "cn700.h"
 
-#if CONFIG_DEBUG_RAM_SETUP
+#if IS_ENABLED(CONFIG_DEBUG_RAM_SETUP)
 #define PRINT_DEBUG_MEM(x)		printk(BIOS_DEBUG, x)
 #define PRINT_DEBUG_MEM_HEX8(x)		printk(BIOS_DEBUG, "%02x", x)
 #define PRINT_DEBUG_MEM_HEX16(x)	printk(BIOS_DEBUG, "%04x", x)

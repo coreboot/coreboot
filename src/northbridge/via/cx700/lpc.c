@@ -266,7 +266,7 @@ static void cx700_lpc_init(struct device *dev)
 {
 	cx700_set_lpc_registers(dev);
 
-#if CONFIG_IOAPIC
+#if IS_ENABLED(CONFIG_IOAPIC)
 #define IO_APIC_ID 2
 	setup_ioapic(VIO_APIC_VADDR, IO_APIC_ID);
 #endif

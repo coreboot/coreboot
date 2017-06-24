@@ -36,6 +36,8 @@
 #define SMBUS_INT	20	/* PIRQE */
 #define CSE_INT		20	/* PIRQE */
 #define IUNIT_INT	21	/* PIRQF */
+#define PIRQF_INT	21
+#define PIRQG_INT	22
 #define PUNIT_INT	24
 #define AUDIO_INT	25
 #define ISH_INT		26
@@ -54,5 +56,6 @@
 #define EMMC_INT	39
 #define PMC_INT		40
 #define SDIO_INT	42
+#define CNVI_INT	44
 
 #endif	/* _SOC_INT_DEFINE_ASL_ */

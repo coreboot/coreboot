@@ -612,40 +612,4 @@ static __inline __attribute__(( __always_inline__)) void _mm_sfence (void)
 }
 #endif /* __SSE3__ */
 
-static __inline__ __attribute__((always_inline)) void __stosb(unsigned char *dest, unsigned char data, size_t count)
-{
-   __asm__ __volatile__ (
-    "rep ; stosb "
-    : "+D" (dest), "+c" (count)
-    : "a"(data)
-  );
-}
-
-static __inline__ __attribute__((always_inline)) void __movsb(unsigned char *dest, unsigned char *data, size_t count)
-{
-   __asm__ __volatile__ (
-    "movsb "
-    : "+D" (dest), "+S"(data), "+c" (count)
-  );
-}
-
-static __inline__ __attribute__((always_inline))
-void debug_point ( unsigned short Port,  unsigned long Data )
-{
-   __outdword (Port, Data);
-   __asm__ __volatile__ (".word 0xfeeb");
-
-}
-
-static __inline__ __attribute__((always_inline))
-void delay_point ( unsigned short Port, unsigned long Data, unsigned long delayTime )
-{
-  UINTN  Index;
-  Index = 0;
-  __outdword (Port, Data);
-  while (Index < delayTime * 600000) {
-    __outdword (0xE0, 0);
-    Index ++;
-  }
-}
 #endif /* defined (__GNUC__) */

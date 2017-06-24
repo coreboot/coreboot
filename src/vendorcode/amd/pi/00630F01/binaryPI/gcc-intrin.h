@@ -1,46 +1,37 @@
 /*
-  Compatibility <intrin_x86.h> header for GCC -- GCC equivalents of intrinsic
-  Microsoft Visual C++ functions. Originally developed for the ReactOS
-  (<http://www.reactos.org/>) and TinyKrnl (<http://www.tinykrnl.org/>)
-  projects.
-
-  Copyright (c) 2006 KJK::Hyperion <hackbunny@reactos.com>
-                2014 Edward O'Callaghan <eocallaghan@alterapraxis.com>
-                2014 Sage Electronic Engineering, LLC
-  All rights reserved.
-
-  Permission is hereby granted, free of charge, to any person obtaining a
-  copy of this software and associated documentation files (the "Software"),
-  to deal in the Software without restriction, including without limitation
-  the rights to use, copy, modify, merge, publish, distribute, sublicense,
-  and/or sell copies of the Software, and to permit persons to whom the
-  Software is furnished to do so, subject to the following conditions:
-
-  The above copyright notice and this permission notice shall be included in
-  all copies or substantial portions of the Software.
-
-  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-  DEALINGS IN THE SOFTWARE.
-*/
+ * Copyright (c) 2011, Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (c) 2014, Edward O'Callaghan <eocallaghan@alterapraxis.com>
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of Advanced Micro Devices, Inc. nor the names of
+ *       its contributors may be used to endorse or promote products derived
+ *       from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL ADVANCED MICRO DEVICES, INC. BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
 
 #if defined (__GNUC__)
-
-#if !defined(AMDLIB_OPTIMIZE)
-	#define AMDLIB_OPTIMIZE
-#endif
-
+#include <stdint.h>
 /* I/O intrin functions.  */
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-unsigned char __inbyte(unsigned short Port)
+static __inline__ __attribute__((always_inline)) uint8_t __inbyte(uint16_t Port)
 {
-  unsigned char value;
+  uint8_t value;
 
   __asm__ __volatile__ (
     "in  %1, %0"
@@ -51,12 +42,9 @@ unsigned char __inbyte(unsigned short Port)
   return value;
 }
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-unsigned short __inword(unsigned short Port)
+static __inline__ __attribute__((always_inline)) uint16_t __inword(uint16_t Port)
 {
-  unsigned short value;
+  uint16_t value;
 
   __asm__ __volatile__ (
     "in  %1, %0"
@@ -67,12 +55,9 @@ unsigned short __inword(unsigned short Port)
   return value;
 }
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-unsigned long __indword(unsigned short Port)
+static __inline__ __attribute__((always_inline)) uint32_t __indword(uint16_t Port)
 {
-  unsigned long value;
+  uint32_t value;
 
   __asm__ __volatile__ (
     "in  %1, %0"
@@ -83,10 +68,7 @@ unsigned long __indword(unsigned short Port)
 
 }
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-void __outbyte(unsigned short Port,unsigned char Data)
+static __inline__ __attribute__((always_inline)) void __outbyte(uint16_t Port,uint8_t Data)
 {
   __asm__ __volatile__ (
     "out  %0, %1"
@@ -95,10 +77,7 @@ void __outbyte(unsigned short Port,unsigned char Data)
     );
 }
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-void __outword(unsigned short Port,unsigned short Data)
+static __inline__ __attribute__((always_inline)) void __outword(uint16_t Port,uint16_t Data)
 {
   __asm__ __volatile__ (
     "out  %0, %1"
@@ -107,10 +86,7 @@ void __outword(unsigned short Port,unsigned short Data)
     );
 }
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-void __outdword(unsigned short Port,unsigned long Data)
+static __inline__ __attribute__((always_inline)) void __outdword(uint16_t Port,uint32_t Data)
 {
   __asm__ __volatile__ (
     "out  %0, %1"
@@ -119,10 +95,7 @@ void __outdword(unsigned short Port,unsigned long Data)
     );
 }
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-void __inbytestring(unsigned short Port,unsigned char *Buffer,unsigned long Count)
+static __inline__ __attribute__((always_inline)) void __inbytestring(uint16_t Port,uint8_t *Buffer,unsigned long Count)
 {
   __asm__ __volatile__ (
     "rep ; insb"
@@ -131,10 +104,7 @@ void __inbytestring(unsigned short Port,unsigned char *Buffer,unsigned long Coun
     );
 }
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-void __inwordstring(unsigned short Port,unsigned short *Buffer,unsigned long Count)
+static __inline__ __attribute__((always_inline)) void __inwordstring(uint16_t Port,uint16_t *Buffer,unsigned long Count)
 {
   __asm__ __volatile__ (
     "rep ; insw"
@@ -143,10 +113,7 @@ void __inwordstring(unsigned short Port,unsigned short *Buffer,unsigned long Cou
     );
 }
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-void __indwordstring(unsigned short Port,unsigned long *Buffer,unsigned long Count)
+static __inline__ __attribute__((always_inline)) void __indwordstring(uint16_t Port,unsigned long *Buffer,unsigned long Count)
 {
   __asm__ __volatile__ (
     "rep ; insl"
@@ -155,10 +122,7 @@ void __indwordstring(unsigned short Port,unsigned long *Buffer,unsigned long Cou
     );
 }
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-void __outbytestring(unsigned short Port,unsigned char *Buffer,unsigned long Count)
+static __inline__ __attribute__((always_inline)) void __outbytestring(uint16_t Port,uint8_t *Buffer,unsigned long Count)
 {
   __asm__ __volatile__ (
     "rep ; outsb"
@@ -167,10 +131,7 @@ void __outbytestring(unsigned short Port,unsigned char *Buffer,unsigned long Cou
     );
 }
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-void __outwordstring(unsigned short Port,unsigned short *Buffer,unsigned long Count)
+static __inline__ __attribute__((always_inline)) void __outwordstring(uint16_t Port,uint16_t *Buffer,unsigned long Count)
 {
   __asm__ __volatile__ (
     "rep ; outsw"
@@ -179,10 +140,7 @@ void __outwordstring(unsigned short Port,unsigned short *Buffer,unsigned long Co
   );
 }
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-void __outdwordstring(unsigned short Port,unsigned long *Buffer,unsigned long Count)
+static __inline__ __attribute__((always_inline)) void __outdwordstring(uint16_t Port,unsigned long *Buffer,unsigned long Count)
 {
   __asm__ __volatile__ (
    "rep ; outsl"
@@ -191,10 +149,7 @@ void __outdwordstring(unsigned short Port,unsigned long *Buffer,unsigned long Co
    );
 }
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-unsigned long __readdr0(void)
+static __inline__ __attribute__((always_inline)) unsigned long __readdr0(void)
 {
   unsigned long value;
   __asm__ __volatile__ (
@@ -204,10 +159,7 @@ unsigned long __readdr0(void)
   return value;
 }
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-unsigned long __readdr1(void)
+static __inline__ __attribute__((always_inline)) unsigned long __readdr1(void)
 {
   unsigned long value;
   __asm__ __volatile__ (
@@ -217,10 +169,7 @@ unsigned long __readdr1(void)
   return value;
 }
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-unsigned long __readdr2(void)
+static __inline__ __attribute__((always_inline)) unsigned long __readdr2(void)
 {
   unsigned long value;
   __asm__ __volatile__ (
@@ -230,10 +179,7 @@ unsigned long __readdr2(void)
   return value;
 }
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-unsigned long __readdr3(void)
+static __inline__ __attribute__((always_inline)) unsigned long __readdr3(void)
 {
   unsigned long value;
   __asm__ __volatile__ (
@@ -243,10 +189,7 @@ unsigned long __readdr3(void)
   return value;
 }
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-unsigned long __readdr7(void)
+static __inline__ __attribute__((always_inline)) unsigned long __readdr7(void)
 {
   unsigned long value;
   __asm__ __volatile__ (
@@ -256,10 +199,7 @@ unsigned long __readdr7(void)
   return value;
 }
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-unsigned long __readdr(unsigned long reg)
+static __inline__ __attribute__((always_inline)) unsigned long __readdr(unsigned long reg)
 {
   switch (reg){
     case 0:
@@ -284,14 +224,10 @@ unsigned long __readdr(unsigned long reg)
 
     default:
       return -1;
-      break;
   }
 }
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-void __writedr0(unsigned long Data)
+static __inline__ __attribute__((always_inline)) void __writedr0(unsigned long Data)
 {
   __asm__ __volatile__ (
     "mov %0, %%dr0"
@@ -300,10 +236,7 @@ void __writedr0(unsigned long Data)
     );
 }
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-void __writedr1(unsigned long Data)
+static __inline__ __attribute__((always_inline)) void __writedr1(unsigned long Data)
 {
   __asm__ __volatile__ (
     "mov %0, %%dr1"
@@ -312,10 +245,7 @@ void __writedr1(unsigned long Data)
     );
 }
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-void __writedr2(unsigned long Data)
+static __inline__ __attribute__((always_inline)) void __writedr2(unsigned long Data)
 {
   __asm__ __volatile__ (
     "mov %0, %%dr2"
@@ -324,10 +254,7 @@ void __writedr2(unsigned long Data)
     );
 }
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-void __writedr3(unsigned long Data)
+static __inline__ __attribute__((always_inline)) void __writedr3(unsigned long Data)
 {
   __asm__ __volatile__ (
     "mov %0, %%dr3"
@@ -336,10 +263,7 @@ void __writedr3(unsigned long Data)
     );
 }
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-void __writedr7(unsigned long Data)
+static __inline__ __attribute__((always_inline)) void __writedr7(unsigned long Data)
 {
   __asm__ __volatile__ (
     "mov %0, %%dr7"
@@ -348,10 +272,7 @@ void __writedr7(unsigned long Data)
     );
 }
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-void __writedr(unsigned long reg, unsigned long Data)
+static __inline__ __attribute__((always_inline)) void __writedr(unsigned long reg, unsigned long Data)
 {
   switch (reg){
     case 0:
@@ -375,14 +296,11 @@ void __writedr(unsigned long reg, unsigned long Data)
       break;
 
     default:
-      break;
+      ;
   }
 }
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-unsigned long __readcr0(void)
+static __inline__ __attribute__((always_inline)) unsigned long __readcr0(void)
 {
   unsigned long value;
   __asm__ __volatile__ (
@@ -391,10 +309,7 @@ unsigned long __readcr0(void)
   return value;
 }
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-unsigned long __readcr2(void)
+static __inline__ __attribute__((always_inline)) unsigned long __readcr2(void)
 {
   unsigned long value;
   __asm__ __volatile__ (
@@ -403,10 +318,7 @@ unsigned long __readcr2(void)
   return value;
 }
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-unsigned long __readcr3(void)
+static __inline__ __attribute__((always_inline)) unsigned long __readcr3(void)
 {
   unsigned long value;
   __asm__ __volatile__ (
@@ -415,10 +327,7 @@ unsigned long __readcr3(void)
   return value;
 }
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-unsigned long __readcr4(void)
+static __inline__ __attribute__((always_inline)) unsigned long __readcr4(void)
 {
   unsigned long value;
   __asm__ __volatile__ (
@@ -427,10 +336,7 @@ unsigned long __readcr4(void)
   return value;
 }
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-unsigned long __readcr8(void)
+static __inline__ __attribute__((always_inline)) unsigned long __readcr8(void)
 {
   unsigned long value;
   __asm__ __volatile__ (
@@ -439,10 +345,7 @@ unsigned long __readcr8(void)
   return value;
 }
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-unsigned long __readcr(unsigned long reg)
+static __inline__ __attribute__((always_inline)) unsigned long __readcr(unsigned long reg)
 {
   switch (reg){
     case 0:
@@ -467,14 +370,10 @@ unsigned long __readcr(unsigned long reg)
 
     default:
       return -1;
-      break;
   }
 }
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-void __writecr0(unsigned long Data)
+static __inline__ __attribute__((always_inline)) void __writecr0(unsigned long Data)
 {
   __asm__ __volatile__ (
     "mov %0, %%cr0"
@@ -484,10 +383,7 @@ void __writecr0(unsigned long Data)
     );
 }
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-void __writecr2(unsigned long Data)
+static __inline__ __attribute__((always_inline)) void __writecr2(unsigned long Data)
 {
   __asm__ __volatile__ (
     "mov %0, %%cr2"
@@ -496,10 +392,7 @@ void __writecr2(unsigned long Data)
     );
 }
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-void __writecr3(unsigned long Data)
+static __inline__ __attribute__((always_inline)) void __writecr3(unsigned long Data)
 {
   __asm__ __volatile__ (
     "mov %0, %%cr3"
@@ -508,10 +401,7 @@ void __writecr3(unsigned long Data)
     );
 }
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-void __writecr4(unsigned long Data)
+static __inline__ __attribute__((always_inline)) void __writecr4(unsigned long Data)
 {
   __asm__ __volatile__ (
     "mov %0, %%cr4"
@@ -520,10 +410,7 @@ void __writecr4(unsigned long Data)
     );
 }
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-void __writecr8(unsigned long Data)
+static __inline__ __attribute__((always_inline)) void __writecr8(unsigned long Data)
 {
   __asm__ __volatile__ (
     "mov %0, %%cr8"
@@ -532,10 +419,7 @@ void __writecr8(unsigned long Data)
     );
 }
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-void __writecr(unsigned long reg, unsigned long Data)
+static __inline__ __attribute__((always_inline)) void __writecr(unsigned long reg, unsigned long Data)
 {
   switch (reg){
     case 0:
@@ -559,14 +443,11 @@ void __writecr(unsigned long reg, unsigned long Data)
       break;
 
     default:
-      break;
+      ;
   }
 }
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-UINT64 __readmsr(UINT32 msr)
+static __inline__ __attribute__((always_inline)) UINT64 __readmsr(UINT32 msr)
 {
   UINT64 retval;
   __asm__ __volatile__(
@@ -577,10 +458,7 @@ UINT64 __readmsr(UINT32 msr)
    return retval;
 }
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-void __writemsr (UINT32 msr, UINT64 Value)
+static __inline__ __attribute__((always_inline)) void __writemsr (UINT32 msr, UINT64 Value)
 {
   __asm__ __volatile__ (
      "wrmsr"
@@ -589,10 +467,7 @@ void __writemsr (UINT32 msr, UINT64 Value)
      );
 }
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-UINT64 __rdtsc(void)
+static __inline__ __attribute__((always_inline)) UINT64 __rdtsc(void)
 {
   UINT64 retval;
   __asm__ __volatile__ (
@@ -601,10 +476,7 @@ UINT64 __rdtsc(void)
   return retval;
 }
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-void __cpuid(int CPUInfo[], const int InfoType)
+static __inline__ __attribute__((always_inline)) void __cpuid(int CPUInfo[], const int InfoType)
 {
    __asm__ __volatile__(
      "cpuid"
@@ -613,96 +485,71 @@ void __cpuid(int CPUInfo[], const int InfoType)
      );
 }
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-void _disable(void)
+
+static __inline__ __attribute__((always_inline)) void _disable(void)
 {
   __asm__ __volatile__ ("cli");
 }
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-void _enable(void)
+
+static __inline__ __attribute__((always_inline)) void _enable(void)
 {
   __asm__ __volatile__ ("sti");
 }
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-void __halt(void)
+
+static __inline__ __attribute__((always_inline)) void __halt(void)
 {
   __asm__ __volatile__ ("hlt");
 }
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-void __debugbreak(void)
+
+static __inline__ __attribute__((always_inline)) void __debugbreak(void)
 {
   __asm__ __volatile__ ("int3");
 }
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-void __invd(void)
+static __inline__ __attribute__((always_inline)) void __invd(void)
 {
   __asm__ __volatile__ ("invd");
 }
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-void __wbinvd(void)
+static __inline__ __attribute__((always_inline)) void __wbinvd(void)
 {
   __asm__ __volatile__ ("wbinvd");
 }
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-void __lidt(void *Source)
+static __inline__ __attribute__((always_inline)) void __lidt(void *Source)
 {
   __asm__ __volatile__("lidt %0" : : "m"(*(short*)Source));
 }
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-void __writefsbyte(const unsigned long Offset, const unsigned char Data)
+static __inline__ __attribute__((always_inline)) void
+__writefsbyte(const unsigned long Offset, const uint8_t Data)
 {
   __asm__ ("movb %[Data], %%fs:%a[Offset]"
           :
           : [Offset] "ir" (Offset), [Data] "iq" (Data));
 }
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-void __writefsword(const unsigned long Offset, const unsigned short Data)
+static __inline__ __attribute__((always_inline)) void
+__writefsword(const unsigned long Offset, const uint16_t Data)
 {
   __asm__ ("movw %[Data], %%fs:%a[Offset]"
           :
           : [Offset] "ir" (Offset), [Data] "ir" (Data));
 }
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-void __writefsdword(const unsigned long Offset, const unsigned long Data)
+static __inline__ __attribute__((always_inline)) void
+__writefsdword(const unsigned long Offset, const uint32_t Data)
 {
   __asm__ ("movl %[Data], %%fs:%a[Offset]"
            :
            : [Offset] "ir" (Offset), [Data] "ir" (Data));
 }
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-unsigned char __readfsbyte(const unsigned long Offset)
+static __inline__ __attribute__((always_inline)) uint8_t
+__readfsbyte(const unsigned long Offset)
 {
   unsigned char value;
   __asm__ ("movb %%fs:%a[Offset], %[value]"
@@ -711,10 +558,8 @@ unsigned char __readfsbyte(const unsigned long Offset)
   return value;
 }
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-unsigned short __readfsword(const unsigned long Offset)
+static __inline__ __attribute__((always_inline)) uint16_t
+__readfsword(const unsigned long Offset)
 {
   unsigned short value;
   __asm__ ("movw %%fs:%a[Offset], %[value]"
@@ -723,13 +568,11 @@ unsigned short __readfsword(const unsigned long Offset)
   return value;
 }
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-unsigned long __readfsdword(unsigned long Offset)
+static __inline__ __attribute__((always_inline)) uint32_t
+__readfsdword(unsigned long Offset)
 {
   unsigned long value;
-  __asm__ ("movl %%fs:%a[Offset], %[value]"
+  __asm__ ("mov %%fs:%a[Offset], %[value]"
            : [value] "=r" (value)
            : [Offset] "ir" (Offset));
   return value;
@@ -739,95 +582,34 @@ unsigned long __readfsdword(unsigned long Offset)
 typedef long long __v2di __attribute__ ((__vector_size__ (16)));
 typedef long long __m128i __attribute__ ((__vector_size__ (16), __may_alias__));
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-void _mm_stream_si128_fs2 (void *__A, __m128i __B)
+static __inline__ __attribute__((always_inline)) void _mm_stream_si128_fs2 (void *__A, __m128i __B)
 {
   __asm__(".byte 0x64"); // fs prefix
   __builtin_ia32_movntdq ((__v2di *)__A, (__v2di)__B);
 }
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-void _mm_stream_si128_fs (void *__A, void *__B)
+static __inline__ __attribute__((always_inline)) void _mm_stream_si128_fs (void *__A, void *__B)
 {
   __m128i data;
   data = (__m128i) __builtin_ia32_lddqu ((char const *)__B);
   _mm_stream_si128_fs2 (__A, data);
 }
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-void _mm_clflush_fs (void *__A)
+static __inline__ __attribute__((always_inline)) void _mm_clflush_fs (void *__A)
 {
   __asm__(".byte 0x64"); // fs prefix
   __builtin_ia32_clflush (__A);
 }
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-void _mm_mfence (void)
+static __inline __attribute__(( __always_inline__)) void _mm_mfence (void)
 {
   __builtin_ia32_mfence ();
 }
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-void _mm_sfence (void)
+static __inline __attribute__(( __always_inline__)) void _mm_sfence (void)
 {
   __builtin_ia32_sfence ();
 }
 #endif /* __SSE3__ */
 
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-void __stosb(unsigned char *dest, unsigned char data, size_t count)
-{
-   __asm__ __volatile__ (
-    "rep ; stosb "
-    : "+D" (dest), "+c" (count)
-    : "a"(data)
-  );
-}
-
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-void __movsb(unsigned char *dest, unsigned char *data, size_t count)
-{
-   __asm__ __volatile__ (
-    "movsb "
-    : "+D" (dest), "+S"(data), "+c" (count)
-  );
-}
-
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-void debug_point ( unsigned short Port,  unsigned long Data )
-{
-   __outdword (Port, Data);
-   __asm__ __volatile__ (".word 0xfeeb");
-
-}
-
-static
-AMDLIB_OPTIMIZE
-__inline__ __attribute__((always_inline))
-void delay_point ( unsigned short Port, unsigned long Data, unsigned long delayTime )
-{
-  UINTN  Index;
-  Index = 0;
-  __outdword (Port, Data);
-  while (Index < delayTime * 600000) {
-    __outdword (0xE0, 0);
-    Index ++;
-  }
-}
 #endif /* defined (__GNUC__) */

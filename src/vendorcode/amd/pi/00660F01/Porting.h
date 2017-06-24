@@ -255,7 +255,7 @@
 #define FUNC_ATTRIBUTE(arg) __attribute__((arg))
 #define MAKE_AS_A_STRING(arg) #arg
 #include <stddef.h>
-#include "gcc-intrin.h"
+#include <gcc-intrin.h>
 
 #include <assert.h>
 #include <console/console.h>

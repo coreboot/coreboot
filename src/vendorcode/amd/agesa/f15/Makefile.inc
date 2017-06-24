@@ -19,7 +19,7 @@
 AGESA_ROOT ?= $(PWD)
 AGESA_ROOT = src/vendorcode/amd/agesa/f15
 
-AGESA_INC  = -I$(src)/mainboard/$(MAINBOARDDIR)
+AGESA_INC  = -I$(src)/vendorcode/amd/include -I$(src)/mainboard/$(MAINBOARDDIR)
 AGESA_INC += -I$(AGESA_ROOT)
 AGESA_INC += -I$(AGESA_ROOT)/../common
 AGESA_INC += -I$(AGESA_ROOT)/Include

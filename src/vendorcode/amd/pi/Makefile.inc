@@ -33,7 +33,7 @@ ifeq ($(CONFIG_CPU_AMD_PI_00630F01)$(CONFIG_CPU_AMD_PI_00730F01)$(CONFIG_CPU_AMD
 
 AGESA_ROOT = $(call strip_quotes,$(CONFIG_AGESA_BINARY_PI_VENDORCODE_PATH))
 
-AGESA_INC = -I$(obj)
+AGESA_INC = -I$(obj) -I$(src)/vendorcode/amd/include
 
 AGESA_INC += -I$(src)/mainboard/$(MAINBOARDDIR)
 AGESA_INC += -I$(AGESA_ROOT)/binaryPI

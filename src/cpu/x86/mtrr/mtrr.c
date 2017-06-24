@@ -36,7 +36,7 @@
 #include <arch/cpu.h>
 #include <arch/acpi.h>
 #include <memrange.h>
-#if CONFIG_X86_AMD_FIXED_MTRRS
+#if IS_ENABLED(CONFIG_X86_AMD_FIXED_MTRRS)
 #include <cpu/amd/mtrr.h>
 #define MTRR_FIXED_WRBACK_BITS (MTRR_READ_MEM | MTRR_WRITE_MEM)
 #else

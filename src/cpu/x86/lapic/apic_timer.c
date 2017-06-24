@@ -29,7 +29,7 @@
  * memory init.
  */
 
-#if CONFIG_UDELAY_LAPIC_FIXED_FSB
+#if CONFIG_UDELAY_LAPIC_FIXED_FSB != 0
 static inline u32 get_timer_fsb(void)
 {
 	return CONFIG_UDELAY_LAPIC_FIXED_FSB;
@@ -136,7 +136,7 @@ void udelay(u32 usecs)
 	} while ((start - value) < ticks);
 }
 
-#if CONFIG_LAPIC_MONOTONIC_TIMER && !defined(__PRE_RAM__)
+#if IS_ENABLED(CONFIG_LAPIC_MONOTONIC_TIMER) && !defined(__PRE_RAM__)
 #include <timer.h>
 
 static struct monotonic_counter {

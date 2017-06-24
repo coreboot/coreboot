@@ -18,7 +18,7 @@
 #include <cpu/x86/smm.h>
 #include <rmodule.h>
 
-#if CONFIG_SPI_FLASH_SMM
+#if IS_ENABLED(CONFIG_SPI_FLASH_SMM)
 #include <spi-generic.h>
 #endif
 
@@ -158,7 +158,7 @@ asmlinkage void smm_handler_start(void *arg)
 
 	/* Allow drivers to initialize variables in SMM context. */
 	if (do_driver_init) {
-#if CONFIG_SPI_FLASH_SMM
+#if IS_ENABLED(CONFIG_SPI_FLASH_SMM)
 		spi_init();
 #endif
 		do_driver_init = 0;

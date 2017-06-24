@@ -36,7 +36,7 @@
 #include <cpu/intel/speedstep.h>
 #include <thread.h>
 
-#if CONFIG_SMP && CONFIG_MAX_CPUS > 1
+#if IS_ENABLED(CONFIG_SMP) && CONFIG_MAX_CPUS > 1
 /* This is a lot more paranoid now, since Linux can NOT handle
  * being told there is a CPU when none exists. So any errors
  * will return 0, meaning no CPU.
@@ -148,8 +148,9 @@ static int lapic_start_cpu(unsigned long apicid)
 		}
 		return 0;
 	}
-#if !CONFIG_CPU_AMD_MODEL_10XXX && !CONFIG_CPU_INTEL_MODEL_206AX \
-	&& !CONFIG_CPU_INTEL_MODEL_2065X
+#if !IS_ENABLED(CONFIG_CPU_AMD_MODEL_10XXX) \
+	&& !IS_ENABLED(CONFIG_CPU_INTEL_MODEL_206AX) \
+	&& !IS_ENABLED(CONFIG_CPU_INTEL_MODEL_2065X)
 	mdelay(10);
 #endif
 
@@ -324,7 +325,7 @@ int start_cpu(struct device *cpu)
 	return result;
 }
 
-#if CONFIG_AP_IN_SIPI_WAIT
+#if IS_ENABLED(CONFIG_AP_IN_SIPI_WAIT)
 
 /**
  * Sending INIT IPI to self is equivalent of asserting #INIT with a bit of
@@ -556,17 +557,17 @@ void initialize_cpus(struct bus *cpu_bus)
 	/* Find the device structure for the boot CPU */
 	info->cpu = alloc_find_dev(cpu_bus, &cpu_path);
 
-#if CONFIG_SMP && CONFIG_MAX_CPUS > 1
+#if IS_ENABLED(CONFIG_SMP) && CONFIG_MAX_CPUS > 1
 	// why here? In case some day we can start core1 in amd_sibling_init
 	copy_secondary_start_to_lowest_1M();
 #endif
 
-#if CONFIG_HAVE_SMI_HANDLER
+#if IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)
 	if (!IS_ENABLED(CONFIG_SERIALIZED_SMM_INITIALIZATION))
 		smm_init();
 #endif
 
-#if CONFIG_SMP && CONFIG_MAX_CPUS > 1
+#if IS_ENABLED(CONFIG_SMP) && CONFIG_MAX_CPUS > 1
 	/* start all aps at first, so we can init ECC all together */
 	if (IS_ENABLED(CONFIG_PARALLEL_CPU_INIT))
 		start_other_cpus(cpu_bus, info->cpu);
@@ -575,7 +576,7 @@ void initialize_cpus(struct bus *cpu_bus)
 	/* Initialize the bootstrap processor */
 	cpu_initialize(0);
 
-#if CONFIG_SMP && CONFIG_MAX_CPUS > 1
+#if IS_ENABLED(CONFIG_SMP) && CONFIG_MAX_CPUS > 1
 	if (!IS_ENABLED(CONFIG_PARALLEL_CPU_INIT))
 		start_other_cpus(cpu_bus, info->cpu);
 
@@ -588,13 +589,13 @@ void initialize_cpus(struct bus *cpu_bus)
 		 * smm_init() will queue a pending SMI on all cpus
 		 * and smm_other_cpus() will start them one by one */
 		smm_init();
-#if CONFIG_SMP && CONFIG_MAX_CPUS > 1
+#if IS_ENABLED(CONFIG_SMP) && CONFIG_MAX_CPUS > 1
 		last_cpu_index = 0;
 		smm_other_cpus(cpu_bus, info->cpu);
 #endif
 	}
 
-#if CONFIG_SMP && CONFIG_MAX_CPUS > 1
+#if IS_ENABLED(CONFIG_SMP) && CONFIG_MAX_CPUS > 1
 	recover_lowest_1M();
 #endif
 }

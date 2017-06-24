@@ -38,7 +38,7 @@ CPU/DRAM/PCI            B6 B7 BB BC BD BF
 500/375/33              B4 53 0F 02 AF 09
 */
 
-#if CONFIG_PLL_200_200_33
+#if IS_ENABLED(CONFIG_PLL_200_200_33)
 	// 200/200/33              30 03 0F 02 8F 07
 	byte_fffb6 = 0x30
 	byte_fffb7 = 0x03
@@ -46,7 +46,7 @@ CPU/DRAM/PCI            B6 B7 BB BC BD BF
 	byte_fffbc = 0x02
 	byte_fffbe = 0xff
 	byte_fffbf = 0x07
-#elif CONFIG_PLL_300_300_33
+#elif IS_ENABLED(CONFIG_PLL_300_300_33)
 	// 300/300/33              48 03 0F 02 1F 07
 	byte_fffb6 = 0x48
 	byte_fffb7 = 0x03
@@ -54,7 +54,7 @@ CPU/DRAM/PCI            B6 B7 BB BC BD BF
 	byte_fffbc = 0x02
 	byte_fffbe = 0xff
 	byte_fffbf = 0x07
-#elif CONFIG_PLL_300_300_100
+#elif IS_ENABLED(CONFIG_PLL_300_300_100)
 	// 300/300/100             48 03 23 02 7F 07
 	byte_fffb6 = 0x48
 	byte_fffb7 = 0x03
@@ -62,7 +62,7 @@ CPU/DRAM/PCI            B6 B7 BB BC BD BF
 	byte_fffbc = 0x02
 	byte_fffbe = 0xff
 	byte_fffbf = 0x07
-#elif CONFIG_PLL_400_200_33
+#elif IS_ENABLED(CONFIG_PLL_400_200_33)
 	// 400/200/33              60 43 0F 02 3F 07          ; without 200MHz timing, so set 300MHz timing
 	byte_fffb6 = 0x60
 	byte_fffb7 = 0x43
@@ -70,7 +70,7 @@ CPU/DRAM/PCI            B6 B7 BB BC BD BF
 	byte_fffbc = 0x02
 	byte_fffbe = 0xff
 	byte_fffbf = 0x07
-#elif CONFIG_PLL_400_200_100
+#elif IS_ENABLED(CONFIG_PLL_400_200_100)
 	// 400/200/100             60 43 23 02 4F 07
 	byte_fffb6 = 0x60
 	byte_fffb7 = 0x43
@@ -78,7 +78,7 @@ CPU/DRAM/PCI            B6 B7 BB BC BD BF
 	byte_fffbc = 0x02
 	byte_fffbe = 0xff
 	byte_fffbf = 0x07
-#elif CONFIG_PLL_400_400_33
+#elif IS_ENABLED(CONFIG_PLL_400_400_33)
 	// 400/400/33              60 03 0F 02 BF 09
 	byte_fffb6 = 0x60
 	byte_fffb7 = 0x03
@@ -86,7 +86,7 @@ CPU/DRAM/PCI            B6 B7 BB BC BD BF
 	byte_fffbc = 0x02
 	byte_fffbe = 0xff
 	byte_fffbf = 0x09
-#elif CONFIG_PLL_500_250_33
+#elif IS_ENABLED(CONFIG_PLL_500_250_33)
 	// 500/250/33              50 42 0F 02 DF 07
 	byte_fffb6 = 0x50
 	byte_fffb7 = 0x42
@@ -94,7 +94,7 @@ CPU/DRAM/PCI            B6 B7 BB BC BD BF
 	byte_fffbc = 0x02
 	byte_fffbe = 0xff
 	byte_fffbf = 0x07
-#elif CONFIG_PLL_500_500_33
+#elif IS_ENABLED(CONFIG_PLL_500_500_33)
 	// 500/500/33              78 03 0F 02 4F 09
 	byte_fffb6 = 0x78
 	byte_fffb7 = 0x03
@@ -102,7 +102,7 @@ CPU/DRAM/PCI            B6 B7 BB BC BD BF
 	byte_fffbc = 0x02
 	byte_fffbe = 0xff
 	byte_fffbf = 0x09
-#elif CONFIG_PLL_400_300_33
+#elif IS_ENABLED(CONFIG_PLL_400_300_33)
 	// 400/300/33              90 53 0F 02 3F 07
 	byte_fffb6 = 0x90
 	byte_fffb7 = 0x53
@@ -110,7 +110,7 @@ CPU/DRAM/PCI            B6 B7 BB BC BD BF
 	byte_fffbc = 0x02
 	byte_fffbe = 0xff
 	byte_fffbf = 0x07
-#elif CONFIG_PLL_400_300_100
+#elif IS_ENABLED(CONFIG_PLL_400_300_100)
 	// 400/300/100             90 53 23 02 9F 07
 	byte_fffb6 = 0x90
 	byte_fffb7 = 0x53
@@ -118,7 +118,7 @@ CPU/DRAM/PCI            B6 B7 BB BC BD BF
 	byte_fffbc = 0x02
 	byte_fffbe = 0xff
 	byte_fffbf = 0x07
-#elif CONFIG_PLL_444_333_33
+#elif IS_ENABLED(CONFIG_PLL_444_333_33)
 	// 444/333/33              A0 53 0F 02 5F 08
 	byte_fffb6 = 0xa0
 	byte_fffb7 = 0x53
@@ -126,7 +126,7 @@ CPU/DRAM/PCI            B6 B7 BB BC BD BF
 	byte_fffbc = 0x02
 	byte_fffbe = 0xff
 	byte_fffbf = 0x08
-#elif CONFIG_PLL_466_350_33
+#elif IS_ENABLED(CONFIG_PLL_466_350_33)
 	// 466/350/33              A8 53 0F 02 DF 09
 	byte_fffb6 = 0xa8
 	byte_fffb7 = 0x53
@@ -134,7 +134,7 @@ CPU/DRAM/PCI            B6 B7 BB BC BD BF
 	byte_fffbc = 0x02
 	byte_fffbe = 0xff
 	byte_fffbf = 0x09
-#elif CONFIG_PLL_500_375_33
+#elif IS_ENABLED(CONFIG_PLL_500_375_33)
 	// 500/375/33              B4 53 0F 02 AF 09
 	byte_fffb6 = 0xb4
 	byte_fffb7 = 0x53

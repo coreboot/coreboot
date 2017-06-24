@@ -14,7 +14,7 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/lapic_def.h>
 
-#if CONFIG_SMP && CONFIG_MAX_CPUS > 1
+#if IS_ENABLED(CONFIG_SMP) && CONFIG_MAX_CPUS > 1
 	.text
 	.globl _secondary_start, _secondary_start_end, _secondary_gdt_addr
 	.balign 4096

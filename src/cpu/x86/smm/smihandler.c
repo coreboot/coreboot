@@ -19,7 +19,7 @@
 #include <cpu/x86/cache.h>
 #include <cpu/x86/smm.h>
 
-#if CONFIG_SPI_FLASH_SMM
+#if IS_ENABLED(CONFIG_SPI_FLASH_SMM)
 #include <spi-generic.h>
 #endif
 
@@ -185,7 +185,7 @@ void smi_handler(u32 smm_revision)
 
 	/* Allow drivers to initialize variables in SMM context. */
 	if (do_driver_init) {
-#if CONFIG_SPI_FLASH_SMM
+#if IS_ENABLED(CONFIG_SPI_FLASH_SMM)
 		spi_init();
 #endif
 		do_driver_init = 0;

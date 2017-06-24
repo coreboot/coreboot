@@ -24,7 +24,8 @@
 #include <cpu/intel/microcode/microcode.c>
 #include "model_206ax.h"
 
-#if CONFIG_SOUTHBRIDGE_INTEL_BD82X6X || CONFIG_SOUTHBRIDGE_INTEL_C216
+#if IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_BD82X6X) || \
+	IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_C216)
 /* Needed for RCBA access to set Soft Reset Data register */
 #include <southbridge/intel/bd82x6x/pch.h>
 #else

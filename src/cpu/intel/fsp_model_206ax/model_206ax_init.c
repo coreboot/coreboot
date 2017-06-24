@@ -316,7 +316,7 @@ static void intel_cores_init(struct device *cpu)
 		       cpu->path.apic.apic_id,
 		       new->path.apic.apic_id);
 
-#if CONFIG_SMP && CONFIG_MAX_CPUS > 1
+#if IS_ENABLED(CONFIG_SMP) && CONFIG_MAX_CPUS > 1
 		/* Start the new CPU */
 		if (!start_cpu(new)) {
 			/* Record the error in cpu? */

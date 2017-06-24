@@ -23,7 +23,7 @@
 
 #include <cpu/intel/microcode/microcode.c>
 
-#if CONFIG_SOUTHBRIDGE_INTEL_IBEXPEAK
+#if IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_IBEXPEAK)
 #include <southbridge/intel/ibexpeak/pch.h>
 #include "model_2065x.h"
 #else

@@ -19,7 +19,7 @@
 #include <cpu/x86/msr.h>
 #include <arch/cpu.h>
 
-#if CONFIG_CPU_INTEL_TURBO_NOT_PACKAGE_SCOPED
+#if IS_ENABLED(CONFIG_CPU_INTEL_TURBO_NOT_PACKAGE_SCOPED)
 static inline int get_global_turbo_state(void)
 {
 	return TURBO_UNKNOWN;

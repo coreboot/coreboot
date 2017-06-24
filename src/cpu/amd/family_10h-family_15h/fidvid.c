@@ -94,21 +94,21 @@ b.-  prep_fid_change(...)
 
 static inline void print_debug_fv(const char *str, u32 val)
 {
-#if CONFIG_SET_FIDVID_DEBUG
+#if IS_ENABLED(CONFIG_SET_FIDVID_DEBUG)
 	printk(BIOS_DEBUG, "%s%x\n", str, val);
 #endif
 }
 
 static inline void print_debug_fv_8(const char *str, u8 val)
 {
-#if CONFIG_SET_FIDVID_DEBUG
+#if IS_ENABLED(CONFIG_SET_FIDVID_DEBUG)
 	printk(BIOS_DEBUG, "%s%02x\n", str, val);
 #endif
 }
 
 static inline void print_debug_fv_64(const char *str, u32 val, u32 val2)
 {
-#if CONFIG_SET_FIDVID_DEBUG
+#if IS_ENABLED(CONFIG_SET_FIDVID_DEBUG)
 	printk(BIOS_DEBUG, "%s%x%x\n", str, val, val2);
 #endif
 }
@@ -503,7 +503,7 @@ static void config_power_ctrl_misc_reg(pci_devfn_t dev, uint64_t cpuRev,
 	}
 
 	   /* TODO: look into C1E state and F3xA0[IdleExitEn]*/
-	#if CONFIG_SVI_HIGH_FREQ
+	#if IS_ENABLED(CONFIG_SVI_HIGH_FREQ)
 	if (cpuRev & AMD_FAM10_C3) {
 		dword |= SVI_HIGH_FREQ_ON;
 	}
@@ -583,7 +583,7 @@ static void config_acpi_pwr_state_ctrl_regs(pci_devfn_t dev, uint64_t cpuRev,
 		if (cpuRev & AMD_DR_Bx ) {
 			smaf001 = 0xA6;
 		} else {
-		#if CONFIG_SVI_HIGH_FREQ
+		#if IS_ENABLED(CONFIG_SVI_HIGH_FREQ)
 			if (cpuRev & (AMD_RB_C3 | AMD_DA_C3)) {
 				smaf001 = 0xF6;
 			}
@@ -1034,7 +1034,7 @@ void init_fidvid_stage2(u32 apicid, u32 nodeid)
 }
 
 
-#if CONFIG_SET_FIDVID_STORE_AP_APICID_AT_FIRST
+#if IS_ENABLED(CONFIG_SET_FIDVID_STORE_AP_APICID_AT_FIRST)
 struct ap_apicid_st {
 	u32 num;
 	// it could use 256 bytes for 64 node quad core system
@@ -1053,7 +1053,7 @@ static void store_ap_apicid(unsigned ap_apicid, void *gp)
 
 int init_fidvid_bsp(u32 bsp_apicid, u32 nodes)
 {
-#if CONFIG_SET_FIDVID_STORE_AP_APICID_AT_FIRST
+#if IS_ENABLED(CONFIG_SET_FIDVID_STORE_AP_APICID_AT_FIRST)
 	struct ap_apicid_st ap_apicidx;
 	u32 i;
 #endif
@@ -1068,7 +1068,8 @@ int init_fidvid_bsp(u32 bsp_apicid, u32 nodes)
 
 	print_debug_fv("BSP fid = ", fv.common_fid);
 
-#if CONFIG_SET_FIDVID_STORE_AP_APICID_AT_FIRST && !CONFIG_SET_FIDVID_CORE0_ONLY
+#if IS_ENABLED(CONFIG_SET_FIDVID_STORE_AP_APICID_AT_FIRST) && \
+	!IS_ENABLED(CONFIG_SET_FIDVID_CORE0_ONLY)
 	/* For all APs (We know the APIC ID of all APs even when the APIC ID
 	   is lifted) remote read from AP LAPIC_MSG_REG about max fid.
 	   Then calculate the common max fid that can be used for all

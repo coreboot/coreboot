@@ -18,7 +18,7 @@
 
 #include <northbridge/amd/agesa/agesawrapper.h>
 
-#if CONFIG_AMD_SB_CIMX
+#if IS_ENABLED(CONFIG_AMD_SB_CIMX)
 #include <sb_cimx.h>
 #endif
 
@@ -29,7 +29,7 @@ static void agesawrapper_post_device(void *unused)
 
 	agesawrapper_amdinitlate();
 
-#if CONFIG_AMD_SB_CIMX
+#if IS_ENABLED(CONFIG_AMD_SB_CIMX)
 	sb_Late_Post();
 #endif
 	if (!acpi_s3_resume_allowed())

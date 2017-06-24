@@ -69,7 +69,7 @@ static void write_pstates_for_core(u8 pstate_num, u16 *pstate_feq,
 	acpigen_pop_len();
 }
 
-#if CONFIG_K8_REV_F_SUPPORT
+#if IS_ENABLED(CONFIG_K8_REV_F_SUPPORT)
 /*
 * Details about this algorithm , refer to BDKG 10.5.1
 * Two parts are included, the another is the DSDT reconstruction process

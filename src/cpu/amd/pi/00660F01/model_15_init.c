@@ -54,7 +54,7 @@ static void model_15_init(device_t dev)
 	u8 i;
 	msr_t msr;
 	int msrno;
-#if CONFIG_LOGICAL_CPUS
+#if IS_ENABLED(CONFIG_LOGICAL_CPUS)
 	u32 siblings;
 #endif
 
@@ -93,7 +93,7 @@ static void model_15_init(device_t dev)
 	/* Enable the local CPU APICs */
 	setup_lapic();
 
-#if CONFIG_LOGICAL_CPUS
+#if IS_ENABLED(CONFIG_LOGICAL_CPUS)
 	siblings = cpuid_ecx(0x80000008) & 0xff;
 
 	if (siblings > 0) {

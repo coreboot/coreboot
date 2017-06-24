@@ -15,7 +15,7 @@
 #include <northbridge/amd/amdk8/amdk8.h>
 #include "cpu/amd/car/post_cache_as_ram.c"
 
-#if CONFIG_HAVE_OPTION_TABLE
+#if IS_ENABLED(CONFIG_HAVE_OPTION_TABLE)
 #include "option_table.h"
 #endif
 
@@ -61,7 +61,7 @@ static void for_each_ap(u32 bsp_apicid, u32 core_range, process_ap_t process_ap,
 		     3);
 		if (nb_cfg_54) {
 			if (j == 0) {	// if it is single core, we need to increase siblings for APIC calculation
-#if !CONFIG_K8_REV_F_SUPPORT
+#if !IS_ENABLED(CONFIG_K8_REV_F_SUPPORT)
 				e0_later_single_core = is_e0_later_in_bsp(i);	// single core
 #else
 				e0_later_single_core = is_cpu_f0_in_bsp(i);	// We can read cpuid(1) from Func3
@@ -93,8 +93,8 @@ static void for_each_ap(u32 bsp_apicid, u32 core_range, process_ap_t process_ap,
 			    i * (nb_cfg_54 ? (siblings + 1) : 1) +
 			    j * (nb_cfg_54 ? 1 : 8);
 
-#if CONFIG_ENABLE_APIC_EXT_ID
-#if !CONFIG_LIFT_BSP_APIC_ID
+#if IS_ENABLED(CONFIG_ENABLE_APIC_EXT_ID)
+#if !IS_ENABLED(CONFIG_LIFT_BSP_APIC_ID)
 			if ((i != 0) || (j != 0))	/* except bsp */
 #endif
 				ap_apicid += CONFIG_APIC_ID_OFFSET;
@@ -140,7 +140,7 @@ static inline int lapic_remote_read(int apicid, int reg, u32 *pvalue)
 
 #define LAPIC_MSG_REG 0x380
 
-#if CONFIG_SET_FIDVID
+#if IS_ENABLED(CONFIG_SET_FIDVID)
 static void init_fidvid_ap(u32 bsp_apicid, u32 apicid);
 #endif
 
@@ -223,7 +223,7 @@ static void STOP_CAR_AND_CPU(void)
 	stop_this_cpu();
 }
 
-#if CONFIG_RAMINIT_SYSINFO
+#if IS_ENABLED(CONFIG_RAMINIT_SYSINFO)
 static u32 init_cpus(u32 cpu_init_detectedx, struct sys_info *sysinfo)
 #else
 static u32 init_cpus(u32 cpu_init_detectedx)
@@ -265,10 +265,10 @@ static u32 init_cpus(u32 cpu_init_detectedx)
 	enable_lapic();
 	//      init_timer(); // We need TMICT to pass msg for FID/VID change
 
-#if CONFIG_ENABLE_APIC_EXT_ID
+#if IS_ENABLED(CONFIG_ENABLE_APIC_EXT_ID)
 	u32 initial_apicid = get_initial_apicid();
 
-#if !CONFIG_LIFT_BSP_APIC_ID
+#if !IS_ENABLED(CONFIG_LIFT_BSP_APIC_ID)
 	if (initial_apicid != 0)	// other than bsp
 #endif
 	{
@@ -280,7 +280,7 @@ static u32 init_cpus(u32 cpu_init_detectedx)
 
 		lapic_write(LAPIC_ID, dword);
 	}
-#if CONFIG_LIFT_BSP_APIC_ID
+#if IS_ENABLED(CONFIG_LIFT_BSP_APIC_ID)
 	bsp_apicid += CONFIG_APIC_ID_OFFSET;
 #endif
 
@@ -315,8 +315,8 @@ static u32 init_cpus(u32 cpu_init_detectedx)
 		u32 timeout = 1;
 		u32 loop = 100;
 
-#if CONFIG_SET_FIDVID
-#if CONFIG_LOGICAL_CPUS && CONFIG_SET_FIDVID_CORE0_ONLY
+#if IS_ENABLED(CONFIG_SET_FIDVID)
+#if IS_ENABLED(CONFIG_LOGICAL_CPUS) && IS_ENABLED(CONFIG_SET_FIDVID_CORE0_ONLY)
 		if (id.coreid == 0)	// only need set fid for core0
 #endif
 			init_fidvid_ap(bsp_apicid, apicid);
@@ -333,7 +333,7 @@ static u32 init_cpus(u32 cpu_init_detectedx)
 		}
 		lapic_write(LAPIC_MSG_REG, (apicid << 24) | 0x44);	// bsp can not check it before stop_this_cpu
 		set_var_mtrr(0, 0x00000000, CACHE_TMP_RAMTOP, MTRR_TYPE_WRBACK);
-#if CONFIG_K8_REV_F_SUPPORT
+#if IS_ENABLED(CONFIG_K8_REV_F_SUPPORT)
 #if CONFIG_MEM_TRAIN_SEQ == 1
 		train_ram_on_node(id.nodeid, id.coreid, sysinfo,
 				  (unsigned)STOP_CAR_AND_CPU);

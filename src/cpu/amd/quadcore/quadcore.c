@@ -16,7 +16,7 @@
 
 #include <console/console.h>
 #include <pc80/mc146818rtc.h>
-#if CONFIG_HAVE_OPTION_TABLE
+#if IS_ENABLED(CONFIG_HAVE_OPTION_TABLE)
 #include "option_table.h"
 #endif
 

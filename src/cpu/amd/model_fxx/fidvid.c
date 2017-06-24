@@ -11,7 +11,7 @@
  * GNU General Public License for more details.
  */
 
-#if CONFIG_SET_FIDVID
+#if IS_ENABLED(CONFIG_SET_FIDVID)
 
 #ifndef SB_VFSMAF
 #define SB_VFSMAF 1
@@ -21,21 +21,21 @@
 
 static inline void print_debug_fv(const char *str, u32 val)
 {
-#if CONFIG_SET_FIDVID_DEBUG
+#if IS_ENABLED(CONFIG_SET_FIDVID_DEBUG)
 	printk(BIOS_DEBUG, "%s%x\n", str, val);
 #endif
 }
 
 static inline void print_debug_fv_8(const char *str, u8 val)
 {
-#if CONFIG_SET_FIDVID_DEBUG
+#if IS_ENABLED(CONFIG_SET_FIDVID_DEBUG)
 	printk(BIOS_DEBUG, "%s%02x\n", str, val);
 #endif
 }
 
 static inline void print_debug_fv_64(const char *str, u32 val, u32 val2)
 {
-#if CONFIG_SET_FIDVID_DEBUG
+#if IS_ENABLED(CONFIG_SET_FIDVID_DEBUG)
 	printk(BIOS_DEBUG, "%s%x%x\n", str, val, val2);
 #endif
 }
@@ -59,7 +59,7 @@ static void enable_fid_change(void)
 
 		/* disable the DRAM interface at first, it will be enabled
 		 * by raminit again (see also erratum #181) */
-#if CONFIG_K8_REV_F_SUPPORT
+#if IS_ENABLED(CONFIG_K8_REV_F_SUPPORT)
 		dword = pci_read_config32(PCI_DEV(0, 0x18 + i, 2), 0x94);
 		dword |= (1 << 14);
 		pci_write_config32(PCI_DEV(0, 0x18 + i, 2), 0x94, dword);
@@ -76,7 +76,7 @@ static void enable_fid_change(void)
 //              dword = 0x00070000; /* enable FID/VID change */
 		pci_write_config32(PCI_DEV(0, 0x18 + i, 3), 0x80, dword);
 
-#if CONFIG_HAVE_ACPI_RESUME
+#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
 		dword = 0x21132113;
 #else
 		dword = 0x00132113;
@@ -86,7 +86,7 @@ static void enable_fid_change(void)
 	}
 }
 
-#if !CONFIG_SET_FIDVID_ONE_BY_ONE
+#if !IS_ENABLED(CONFIG_SET_FIDVID_ONE_BY_ONE)
 static unsigned set_fidvid_without_init(unsigned fidvid)
 {
 	msr_t msr;
@@ -292,7 +292,7 @@ static u32 set_fidvid(unsigned apicid, unsigned fidvid, int showmessage)
 		ldtstop_sb();
 #endif
 
-#if CONFIG_SET_FIDVID_DEBUG
+#if IS_ENABLED(CONFIG_SET_FIDVID_DEBUG)
 		if (showmessage) {
 			print_debug_fv_8("set_fidvid APICID = ", apicid);
 			print_debug_fv_64("fidvid ctrl msr ", msr.hi, msr.lo);
@@ -306,7 +306,7 @@ static u32 set_fidvid(unsigned apicid, unsigned fidvid, int showmessage)
 		}
 		fid_cur = msr.lo & 0x3f;
 
-#if CONFIG_SET_FIDVID_DEBUG
+#if IS_ENABLED(CONFIG_SET_FIDVID_DEBUG)
 		if (showmessage) {
 			print_debug_fv_64("fidvid status msr ", msr.hi, msr.lo);
 		}
@@ -387,7 +387,7 @@ static void init_fidvid_ap(unsigned bsp_apicid, unsigned apicid)
 	send |= ((msr.hi >> (48 - 32)) & 0x3f) << 16;	/* max vid */
 	send |= (apicid << 24);	/* ap apicid */
 
-#if CONFIG_SET_FIDVID_ONE_BY_ONE
+#if IS_ENABLED(CONFIG_SET_FIDVID_ONE_BY_ONE)
 	vid_cur = msr.hi & 0x3f;
 	fid_cur = msr.lo & 0x3f;
 
@@ -418,7 +418,7 @@ static void init_fidvid_ap(unsigned bsp_apicid, unsigned apicid)
 	}
 
 	if (loop > 0) {
-#if CONFIG_SET_FIDVID_ONE_BY_ONE
+#if IS_ENABLED(CONFIG_SET_FIDVID_ONE_BY_ONE)
 		readback = set_fidvid(apicid, readback & 0xffff00, 1);	// this AP
 #else
 		readback = set_fidvid_without_init(readback & 0xffff00);	// this AP
@@ -521,7 +521,7 @@ static void init_fidvid_bsp_stage2(unsigned ap_apicid, void *gp)
 	print_debug_fv("\treadback=", readback);
 }
 
-#if CONFIG_SET_FIDVID_STORE_AP_APICID_AT_FIRST
+#if IS_ENABLED(CONFIG_SET_FIDVID_STORE_AP_APICID_AT_FIRST)
 struct ap_apicid_st {
 	u32 num;
 	unsigned apicid[16];	/* 8 way dual core need 16 */
@@ -543,7 +543,7 @@ static void init_fidvid_bsp(unsigned bsp_apicid)
 
 	struct fidvid_st fv;
 
-#if CONFIG_SET_FIDVID_STORE_AP_APICID_AT_FIRST
+#if IS_ENABLED(CONFIG_SET_FIDVID_STORE_AP_APICID_AT_FIRST)
 	struct ap_apicid_st ap_apicidx;
 	unsigned i;
 #endif
@@ -573,7 +573,7 @@ static void init_fidvid_bsp(unsigned bsp_apicid)
 
 	/* calculate the common max fid/vid that could be used for
 	 * all APs and BSP */
-#if CONFIG_SET_FIDVID_STORE_AP_APICID_AT_FIRST
+#if IS_ENABLED(CONFIG_SET_FIDVID_STORE_AP_APICID_AT_FIRST)
 	ap_apicidx.num = 0;
 
 	for_each_ap(bsp_apicid, CONFIG_SET_FIDVID_CORE0_ONLY, store_ap_apicid, &ap_apicidx);
@@ -609,7 +609,7 @@ static void init_fidvid_bsp(unsigned bsp_apicid)
 
 #endif
 
-#if CONFIG_SET_FIDVID_ONE_BY_ONE
+#if IS_ENABLED(CONFIG_SET_FIDVID_ONE_BY_ONE)
 	/* set BSP fid and vid */
 	print_debug_fv("bsp apicid=", bsp_apicid);
 	fv.common_fidvid = set_fidvid(bsp_apicid, fv.common_fidvid, 1);
@@ -623,7 +623,7 @@ static void init_fidvid_bsp(unsigned bsp_apicid)
 	fv.common_fidvid &= 0xffff00;
 
 	/* set state 2 allow is in init_fidvid_bsp_stage2 */
-#if CONFIG_SET_FIDVID_STORE_AP_APICID_AT_FIRST
+#if IS_ENABLED(CONFIG_SET_FIDVID_STORE_AP_APICID_AT_FIRST)
 	for (i = 0; i < ap_apicidx.num; i++) {
 		init_fidvid_bsp_stage2(ap_apicidx.apicid[i], &fv);
 	}
@@ -631,7 +631,7 @@ static void init_fidvid_bsp(unsigned bsp_apicid)
 	for_each_ap(bsp_apicid, CONFIG_SET_FIDVID_CORE0_ONLY, init_fidvid_bsp_stage2, &fv);
 #endif
 
-#if !CONFIG_SET_FIDVID_ONE_BY_ONE
+#if !IS_ENABLED(CONFIG_SET_FIDVID_ONE_BY_ONE)
 	/* set BSP fid and vid */
 	print_debug_fv("bsp apicid=", bsp_apicid);
 	fv.common_fidvid = set_fidvid(bsp_apicid, fv.common_fidvid, 1);

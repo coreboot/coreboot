@@ -16,7 +16,7 @@
 
 #include "init_cpus.h"
 
-#if CONFIG_HAVE_OPTION_TABLE
+#if IS_ENABLED(CONFIG_HAVE_OPTION_TABLE)
 #include "option_table.h"
 #endif
 #include <pc80/mc146818rtc.h>
@@ -36,7 +36,7 @@
 
 #include "cpu/amd/car/post_cache_as_ram.c"
 
-#if CONFIG_PCI_IO_CFG_EXT
+#if IS_ENABLED(CONFIG_PCI_IO_CFG_EXT)
 static void set_EnableCf8ExtCfg(void)
 {
 	// set the NB_CFG[46]=1;
@@ -152,7 +152,7 @@ static void for_each_ap(uint32_t bsp_apicid, uint32_t core_range, int8_t node,
 	/* get_nodes define in ht_wrapper.c */
 	nodes = get_nodes();
 
-	if (!CONFIG_LOGICAL_CPUS ||
+	if (!IS_ENABLED(CONFIG_LOGICAL_CPUS) ||
 	    read_option(multi_core, 0) != 0) {	// 0 means multi core
 		disable_siblings = 1;
 	} else {
@@ -182,8 +182,8 @@ static void for_each_ap(uint32_t bsp_apicid, uint32_t core_range, int8_t node,
 		for (j = jstart; j <= jend; j++) {
 			ap_apicid = get_boot_apic_id(i, j);
 
-#if CONFIG_ENABLE_APIC_EXT_ID && (CONFIG_APIC_ID_OFFSET > 0)
-#if !CONFIG_LIFT_BSP_APIC_ID
+#if IS_ENABLED(CONFIG_ENABLE_APIC_EXT_ID) && (CONFIG_APIC_ID_OFFSET > 0)
+#if !IS_ENABLED(CONFIG_LIFT_BSP_APIC_ID)
 			if ((i != 0) || (j != 0))	/* except bsp */
 #endif
 				ap_apicid += CONFIG_APIC_ID_OFFSET;
@@ -227,7 +227,7 @@ static inline int lapic_remote_read(int apicid, int reg, u32 *pvalue)
 	return result;
 }
 
-#if CONFIG_SET_FIDVID
+#if IS_ENABLED(CONFIG_SET_FIDVID)
 static void init_fidvid_ap(u32 apicid, u32 nodeid, u32 coreid);
 #endif
 
@@ -398,17 +398,17 @@ u32 init_cpus(u32 cpu_init_detectedx, struct sys_info *sysinfo)
 		if (!is_fam15h())
 			set_apicid_cpuid_lo();
 		set_EnableCf8ExtCfg();
-#if CONFIG_ENABLE_APIC_EXT_ID
+#if IS_ENABLED(CONFIG_ENABLE_APIC_EXT_ID)
 		enable_apic_ext_id(id.nodeid);
 #endif
 	}
 
 	enable_lapic();
 
-#if CONFIG_ENABLE_APIC_EXT_ID && (CONFIG_APIC_ID_OFFSET > 0)
+#if IS_ENABLED(CONFIG_ENABLE_APIC_EXT_ID) && (CONFIG_APIC_ID_OFFSET > 0)
 	u32 initial_apicid = get_initial_apicid();
 
-#if !CONFIG_LIFT_BSP_APIC_ID
+#if !IS_ENABLED(CONFIG_LIFT_BSP_APIC_ID)
 	if (initial_apicid != 0)	// other than bsp
 #endif
 	{
@@ -420,7 +420,7 @@ u32 init_cpus(u32 cpu_init_detectedx, struct sys_info *sysinfo)
 
 		lapic_write(LAPIC_ID, dword);
 	}
-#if CONFIG_LIFT_BSP_APIC_ID
+#if IS_ENABLED(CONFIG_LIFT_BSP_APIC_ID)
 	bsp_apicid += CONFIG_APIC_ID_OFFSET;
 #endif
 
@@ -473,8 +473,8 @@ u32 init_cpus(u32 cpu_init_detectedx, struct sys_info *sysinfo)
 			}
 		}
 
-#if CONFIG_SET_FIDVID
-#if CONFIG_LOGICAL_CPUS && CONFIG_SET_FIDVID_CORE0_ONLY
+#if IS_ENABLED(CONFIG_SET_FIDVID)
+#if IS_ENABLED(CONFIG_LOGICAL_CPUS) && IS_ENABLED(CONFIG_SET_FIDVID_CORE0_ONLY)
 		// Run on all AP for proper FID/VID setup.
 		if (id.coreid == 0)	// only need set fid for core0
 #endif
@@ -574,7 +574,7 @@ static void start_node(u8 node)
 	/* Enable routing table */
 	printk(BIOS_DEBUG, "Start node %02x", node);
 
-#if CONFIG_NORTHBRIDGE_AMD_AMDFAM10
+#if IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AMDFAM10)
 	/* For FAM10 support, we need to set Dram base/limit for the new node */
 	pci_write_config32(NODE_MP(node), 0x44, 0);
 	pci_write_config32(NODE_MP(node), 0x40, 3);
@@ -1865,7 +1865,7 @@ void finalize_node_setup(struct sys_info *sysinfo)
 		cpuSetAMDPCI(i);
 	}
 
-#if CONFIG_SET_FIDVID
+#if IS_ENABLED(CONFIG_SET_FIDVID)
 	// Prep each node for FID/VID setup.
 	prep_fid_change();
 #endif

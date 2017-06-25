@@ -80,20 +80,20 @@ static void init_ide_ata_timing(struct device *dev)
 	u16 ata_timing_pri, ata_timing_sec;
 	u32 ata_timing_reg32;
 	/* Primary channel is SD. */
-#if CONFIG_IDE1_ENABLE
+#if IS_ENABLED(CONFIG_IDE1_ENABLE)
 	ata_timing_pri = 0x8000;
 #else
 	ata_timing_pri = 0x0000;	// Disable this channel.
 #endif
 	/* Secondary channel is SATA. */
-#if CONFIG_IDE2_ENABLE
+#if IS_ENABLED(CONFIG_IDE2_ENABLE)
 	ata_timing_sec = 0xa30f;	// This setting value works well.
 #else
 	ata_timing_sec = 0x0000;	// Disable this channel.
 #endif
 	ata_timing_reg32 = (ata_timing_sec << 16) | ata_timing_pri;
 	pci_write_config32(dev, 0x40, ata_timing_reg32);
-#if CONFIG_IDE_NATIVE_MODE
+#if IS_ENABLED(CONFIG_IDE_NATIVE_MODE)
 	/* Set both IDE channels to native mode. */
 	u8 prog_if;
 	prog_if = pci_read_config8(dev, 0x09);
@@ -110,7 +110,7 @@ static void init_ide_ata_timing(struct device *dev)
 
 static void setup_std_ide_compatible(struct device *dev)
 {
-#if CONFIG_IDE_STANDARD_COMPATIBLE
+#if IS_ENABLED(CONFIG_IDE_STANDARD_COMPATIBLE)
 	// Misc Control Register (MCR) Offset 90h
 	// bit 0 = Vendor ID Access, bit 1 = Device ID Access.
 	u8 mcr;

@@ -475,7 +475,7 @@ int is_ddr_32bit(void)
 {
 	int ddr32 = 0;
 
-#if (CONFIG_CYGNUS_SHMOO_REUSE_DDR_32BIT)
+#if IS_ENABLED(CONFIG_CYGNUS_SHMOO_REUSE_DDR_32BIT)
 	ddr32=1;
 #endif /* (CONFIG_CYGNUS_SHMOO_REUSE_DDR_32BIT) */
 
@@ -966,7 +966,7 @@ static int try_restore_shmoo(void)
         reg = (uint32_t *)(*flptr++);
         val = (uint32_t *)(*flptr++);
 	if ( (((uint32_t)reg >= DDR_PHY_WORD_LANE_0_VDL_OVRIDE_BYTE_RD_EN) && ((uint32_t)reg <= (DDR_PHY_WORD_LANE_0_VDL_OVRIDE_BYTE_RD_EN + 0x114)))
-#if (CONFIG_CYGNUS_SHMOO_REUSE_DDR_32BIT || defined(CONFIG_NS_PLUS))
+#if IS_ENABLED(CONFIG_CYGNUS_SHMOO_REUSE_DDR_32BIT) || defined(CONFIG_NS_PLUS)
 		|| (((uint32_t)reg >= DDR_PHY_WORD_LANE_1_VDL_OVRIDE_BYTE_RD_EN) && ((uint32_t)reg <= (DDR_PHY_WORD_LANE_1_VDL_OVRIDE_BYTE_RD_EN + 0x114)))
 #endif
 #ifdef CONFIG_IPROC_DDR_ECC
@@ -1068,7 +1068,7 @@ void iproc_save_shmoo_values(void)
 	*ptr++ = val;
         chksum += val;
     }
-#if (CONFIG_CYGNUS_SHMOO_REUSE_DDR_32BIT || defined(CONFIG_NS_PLUS))
+#if IS_ENABLED(CONFIG_CYGNUS_SHMOO_REUSE_DDR_32BIT) || defined(CONFIG_NS_PLUS)
 	if (is_ddr_32bit()) {
 	    for (i=0; i<sizeof(ddr_phy_wl_regs) / sizeof(ddr_phy_wl_regs[0]); i++) {
 	        reg = (uint32_t)DDR_PHY_WORD_LANE_1_VDL_OVRIDE_BYTE_RD_EN + ddr_phy_wl_regs[i];
@@ -1479,7 +1479,7 @@ void ddr_init2(void)
 		}
 	}
 
-#if CONFIG_CYGNUS_DDR_AUTO_SELF_REFRESH_ENABLE
+#if IS_ENABLED(CONFIG_CYGNUS_DDR_AUTO_SELF_REFRESH_ENABLE)
 #if (DDR_AUTO_SELF_REFRESH_IDLE_COUNT > 0) & (DDR_AUTO_SELF_REFRESH_IDLE_COUNT <= 0xff)
 	/* Enable auto self-refresh */
 	reg32_set_bits((unsigned int *)DDR_DENALI_CTL_57,

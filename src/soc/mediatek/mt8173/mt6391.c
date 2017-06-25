@@ -21,7 +21,7 @@
 #include <soc/pmic_wrap.h>
 #include <types.h>
 
-#if CONFIG_DEBUG_PMIC
+#if IS_ENABLED(CONFIG_DEBUG_PMIC)
 #define DEBUG_PMIC(level, x...)		printk(level, x)
 #else
 #define DEBUG_PMIC(level, x...)

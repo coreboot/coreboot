@@ -253,7 +253,7 @@ static u8 detect_ddr3_dram_size(void)
 
 static void print_ddr3_memory_setup(void)
 {
-#if CONFIG_DEBUG_RAM_SETUP
+#if IS_ENABLED(CONFIG_DEBUG_RAM_SETUP)
 	printk(BIOS_DEBUG, "DDR3 Timing Reg 0-3:\n");
 	printk(BIOS_DEBUG, "NB 6e : ");
 	print_debug_hex16(pci_read_config16(NB, 0x6e));

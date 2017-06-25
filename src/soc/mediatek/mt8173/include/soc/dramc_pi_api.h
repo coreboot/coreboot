@@ -178,7 +178,7 @@ void dramk_check_dq_win(struct dqs_perbit_dly *p, u8 dly_step, u8 last_step, u32
 void tx_delay_for_wrleveling(u32 channel, struct dqs_perbit_dly *dqdqs_perbit_dly,
 			     u8 *ave_dqdly_byte, u8 *max_dqsdly_byte);
 
-#if CONFIG_DEBUG_DRAM
+#if IS_ENABLED(CONFIG_DEBUG_DRAM)
 #define dramc_dbg_msg(_x_...) printk(BIOS_DEBUG, _x_)
 #else
 #define dramc_dbg_msg(_x_...)

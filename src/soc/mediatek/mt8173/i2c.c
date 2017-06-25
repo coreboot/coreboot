@@ -70,7 +70,7 @@ static struct mtk_i2c i2c[7] = {
 
 #define I2CTAG                "[I2C][PL] "
 
-#if CONFIG_DEBUG_I2C
+#if IS_ENABLED(CONFIG_DEBUG_I2C)
 #define I2CLOG(fmt, arg...)   printk(BIOS_INFO, I2CTAG fmt, ##arg)
 #else
 #define I2CLOG(fmt, arg...)

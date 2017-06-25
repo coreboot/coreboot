@@ -169,15 +169,15 @@ void acpi_init_gnvs(global_nvs_t *gnvs)
 	/* CPU core count */
 	gnvs->pcnt = dev_count_cpu();
 
-#if CONFIG_CONSOLE_CBMEM
+#if IS_ENABLED(CONFIG_CONSOLE_CBMEM)
 	/* Update the mem console pointer. */
 	gnvs->cbmc = (u32)cbmem_find(CBMEM_ID_CONSOLE);
 #endif
 
-#if CONFIG_CHROMEOS
+#if IS_ENABLED(CONFIG_CHROMEOS)
 	/* Initialize Verified Boot data */
 	chromeos_init_vboot(&(gnvs->chromeos));
-#if CONFIG_EC_GOOGLE_CHROMEEC
+#if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC)
 	gnvs->chromeos.vbt2 = google_ec_running_ro() ?
 		ACTIVE_ECFW_RO : ACTIVE_ECFW_RW;
 #endif

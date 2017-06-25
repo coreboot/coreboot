@@ -22,7 +22,7 @@
 #include <device/pci_def.h>
 #include <lib.h>
 #include <string.h>
-#if CONFIG_EC_GOOGLE_CHROMEEC
+#if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC)
 #include <ec/google/chromeec/ec.h>
 #include <ec/google/chromeec/ec_commands.h>
 #endif
@@ -65,7 +65,7 @@ void raminit(struct pei_data *pei_data)
 		reset_system();
 	} else {
 		printk(BIOS_DEBUG, "No MRC cache found.\n");
-#if CONFIG_EC_GOOGLE_CHROMEEC
+#if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC)
 		if (pei_data->boot_mode == ACPI_S0) {
 			/* Ensure EC is running RO firmware. */
 			google_chromeec_check_ec_image(EC_IMAGE_RO);
@@ -110,7 +110,7 @@ void raminit(struct pei_data *pei_data)
 	if (pei_data->boot_mode != ACPI_S3) {
 		cbmem_initialize_empty();
 	} else if (cbmem_initialize()) {
-#if CONFIG_HAVE_ACPI_RESUME
+#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
 		printk(BIOS_DEBUG, "Failed to recover CBMEM in S3 resume.\n");
 		/* Failed S3 resume, reset to come up cleanly */
 		reset_system();

@@ -57,7 +57,7 @@ Method (APRT, 1, Serialized)
 	}
 	Store (INDX, LENG) /* Length of the String */
 
-#if CONFIG_DRIVERS_UART_8250MEM_32
+#if IS_ENABLED(CONFIG_DRIVERS_UART_8250MEM_32)
 	OperationRegion (UBAR, SystemMemory, UART_DEBUG_BASE_ADDRESS, 24)
 	Field (UBAR, AnyAcc, NoLock, Preserve)
 	{

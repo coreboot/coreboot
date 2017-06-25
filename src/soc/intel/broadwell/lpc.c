@@ -221,7 +221,7 @@ static const struct reg_script pch_misc_init_script[] = {
 	REG_MMIO_OR32(RCBA_BASE_ADDRESS + 0x1114, (1 << 15) | (1 << 14)),
 	/* Setup SERIRQ, enable continuous mode */
 	REG_PCI_OR8(SERIRQ_CNTL, (1 << 7) | (1 << 6)),
-#if !CONFIG_SERIRQ_CONTINUOUS_MODE
+#if !IS_ENABLED(CONFIG_SERIRQ_CONTINUOUS_MODE)
 	REG_PCI_RMW8(SERIRQ_CNTL, ~(1 << 6), 0),
 #endif
 	REG_SCRIPT_END
@@ -431,7 +431,7 @@ static void pch_cg_init(device_t dev)
 
 static void pch_set_acpi_mode(void)
 {
-#if CONFIG_HAVE_SMI_HANDLER
+#if IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)
 	if (!acpi_is_wakeup_s3()) {
 		printk(BIOS_DEBUG, "Disabling ACPI via APMC:\n");
 		outb(APM_CNT_ACPI_DISABLE, APM_CNT);

@@ -282,7 +282,7 @@ void enable_gpe(uint32_t mask);
 void disable_gpe(uint32_t mask);
 void disable_all_gpe(void);
 
-#if CONFIG_ELOG
+#if IS_ENABLED(CONFIG_ELOG)
 void southcluster_log_state(void);
 #else
 static inline void southcluster_log_state(void) {}

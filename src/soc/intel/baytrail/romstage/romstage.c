@@ -21,7 +21,7 @@
 #include <cbfs.h>
 #include <cbmem.h>
 #include <cpu/x86/mtrr.h>
-#if CONFIG_EC_GOOGLE_CHROMEEC
+#if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC)
 #include <ec/google/chromeec/ec.h>
 #endif
 #include <elog.h>
@@ -128,7 +128,7 @@ void * asmlinkage romstage_main(unsigned long bist,
 
 	gfx_init();
 
-#if CONFIG_EC_GOOGLE_CHROMEEC
+#if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC)
 	/* Ensure the EC is in the right mode for recovery */
 	google_chromeec_early_init();
 #endif
@@ -221,7 +221,7 @@ void romstage_common(struct romstage_params *params)
 
 	printk(BIOS_DEBUG, "prev_sleep_state = S%d\n", prev_sleep_state);
 
-#if CONFIG_ELOG_BOOT_COUNT
+#if IS_ENABLED(CONFIG_ELOG_BOOT_COUNT)
 	if (prev_sleep_state != ACPI_S3)
 		boot_count_increment();
 #endif

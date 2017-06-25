@@ -250,7 +250,7 @@ static void mcp55_early_setup(unsigned mcp55_num, unsigned *busn,
 	RES_PCI_IO, PCI_ADDR(0, 1, 0, 0x78), 0xC0FFFFFF, 0x19000000,
 #endif
 
-#if CONFIG_MCP55_USE_AZA
+#if IS_ENABLED(CONFIG_MCP55_USE_AZA)
 	RES_PCI_IO, PCI_ADDR(0, 6, 1, 0x40), 0x00000000, 0xCB8410DE,
 
 #endif
@@ -260,7 +260,7 @@ static void mcp55_early_setup(unsigned mcp55_num, unsigned *busn,
 	MCP55_MB_SETUP
 #endif
 
-#if CONFIG_MCP55_USE_AZA
+#if IS_ENABLED(CONFIG_MCP55_USE_AZA)
 	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+ 21, ~(3 << 2), (2 << 2),
 	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+ 22, ~(3 << 2), (2 << 2),
 	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+ 46, ~(3 << 2), (2 << 2),
@@ -284,7 +284,7 @@ static void mcp55_early_setup(unsigned mcp55_num, unsigned *busn,
 
 	RES_PORT_IO_32, ANACTRL_IO_BASE + 0x60, 0xFFFFFF00, 0x00000012,
 
-#if CONFIG_MCP55_USE_NIC
+#if IS_ENABLED(CONFIG_MCP55_USE_NIC)
 	RES_PCI_IO, PCI_ADDR(0, 1, 1, 0xe4), ~((1 << 22) | (1 << 20)), (1 << 22) | (1 << 20),
 
 	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+ 4, ~(0xff), ((0 << 4) | (1 << 2) | (0 << 0)),

@@ -91,7 +91,7 @@
 #define I2C_TRANS_CMD			0x40
 #define CLOCK_SLAVE_ADDRESS		0x69
 
-#if CONFIG_DEBUG_SMBUS
+#if IS_ENABLED(CONFIG_DEBUG_SMBUS)
 #define PRINT_DEBUG(x)		printk(BIOS_DEBUG, x)
 #define PRINT_DEBUG_HEX16(x)	printk(BIOS_DEBUG, "%04x", x)
 #else

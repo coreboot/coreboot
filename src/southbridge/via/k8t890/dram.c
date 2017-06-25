@@ -69,7 +69,7 @@ static void dram_enable(struct device *dev)
 
 static void dram_enable_k8m890(struct device *dev)
 {
-#if CONFIG_GFXUMA
+#if IS_ENABLED(CONFIG_GFXUMA)
 	msr_t msr;
 	int ret;
 	unsigned int fbbits;
@@ -121,7 +121,7 @@ k8m890_host_fb_size_get(void)
 
 static void dram_init_fb(struct device *dev)
 {
-#if CONFIG_GFXUMA
+#if IS_ENABLED(CONFIG_GFXUMA)
 	/* Important bits:
 	 * Enable the internal GFX bit 7 of reg 0xa1 plus in same reg:
 	 * bits 6:4 X fbuffer size will be  2^(X+2) or 100 = 64MB, 101 = 128MB

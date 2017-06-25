@@ -47,11 +47,11 @@ void k8x8xx_vt8237r_cfg(struct device *dev, struct device *devsb)
 	pci_write_config8(dev, 0x70, 0xc2);
 
 	/* PCI Control */
-#if !CONFIG_SOUTHBRIDGE_VIA_SUBTYPE_K8T800_OLD
+#if !IS_ENABLED(CONFIG_SOUTHBRIDGE_VIA_SUBTYPE_K8T800_OLD)
 	pci_write_config8(dev, 0x72, 0xee);
 #endif
 	pci_write_config8(dev, 0x73, 0x01);
-#if CONFIG_SOUTHBRIDGE_VIA_SUBTYPE_K8T800_OLD
+#if IS_ENABLED(CONFIG_SOUTHBRIDGE_VIA_SUBTYPE_K8T800_OLD)
 	pci_write_config8(dev, 0x74, 0x64);
 	pci_write_config8(dev, 0x75, 0x3f);
 #else
@@ -59,7 +59,7 @@ void k8x8xx_vt8237r_cfg(struct device *dev, struct device *devsb)
 	pci_write_config8(dev, 0x75, 0x0f);
 #endif
 	pci_write_config8(dev, 0x76, 0x50);
-#if !CONFIG_SOUTHBRIDGE_VIA_SUBTYPE_K8T800_OLD
+#if !IS_ENABLED(CONFIG_SOUTHBRIDGE_VIA_SUBTYPE_K8T800_OLD)
 	pci_write_config8(dev, 0x77, 0x08);
 #endif
 	pci_write_config8(dev, 0x78, 0x01);
@@ -156,7 +156,7 @@ static void ctrl_init(struct device *dev)
 	/* PCI CFG Address bits[27:24] are used as extended register address
 	   bit[11:8] */
 
-#if !CONFIG_SOUTHBRIDGE_VIA_SUBTYPE_K8T800_OLD
+#if !IS_ENABLED(CONFIG_SOUTHBRIDGE_VIA_SUBTYPE_K8T800_OLD)
 	pci_write_config8(dev, 0x47, 0x30);
 #endif
 

@@ -29,7 +29,7 @@ static void bridge_enable(struct device *dev)
 	writeback(dev, 0x40, 0x91);
 	writeback(dev, 0x41, 0x40);
 	writeback(dev, 0x43, 0x44);
-#if CONFIG_SOUTHBRIDGE_VIA_SUBTYPE_K8T800_OLD
+#if IS_ENABLED(CONFIG_SOUTHBRIDGE_VIA_SUBTYPE_K8T800_OLD)
 	writeback(dev, 0x42, 0x80);
 	writeback(dev, 0x44, 0x35);
 #else
@@ -45,7 +45,7 @@ static void bridge_enable(struct device *dev)
 	 * (Forward VGA compatible memory and I/O cycles )
 	 */
 
-#if CONFIG_SOUTHBRIDGE_VIA_SUBTYPE_K8T800_OLD
+#if IS_ENABLED(CONFIG_SOUTHBRIDGE_VIA_SUBTYPE_K8T800_OLD)
 	writeback(dev, 0x3e, 0x0a);
 #else
 	writeback(dev, 0x3e, 0x16);

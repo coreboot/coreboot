@@ -24,7 +24,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <stdlib.h>
-#if CONFIG_LOGICAL_CPUS
+#if IS_ENABLED(CONFIG_LOGICAL_CPUS)
 #include <cpu/amd/multicore.h>
 #endif
 #include <stdlib.h>

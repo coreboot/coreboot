@@ -72,25 +72,25 @@ void set_ex_powerdown_control(void)
 {
 	u32 powerdown_ctrl;
 	powerdown_ctrl = pci_read_config32(SB, 0xbc);
-#if CONFIG_TEMP_POWERDOWN
+#if IS_ENABLED(CONFIG_TEMP_POWERDOWN)
 	powerdown_ctrl |= (1 << 31);
 #endif
-#if CONFIG_SATA_POWERDOWN
+#if IS_ENABLED(CONFIG_SATA_POWERDOWN)
 	powerdown_ctrl |= (1 << 30);
 #endif
-#if CONFIG_ADC_POWERDOWN
+#if IS_ENABLED(CONFIG_ADC_POWERDOWN)
 	powerdown_ctrl |= (1 << 28);
 #endif
-#if CONFIG_PCIE0_POWERDOWN
+#if IS_ENABLED(CONFIG_PCIE0_POWERDOWN)
 	powerdown_ctrl |= (1 << 13);
 #endif
-#if CONFIG_MAC_POWERDOWN
+#if IS_ENABLED(CONFIG_MAC_POWERDOWN)
 	powerdown_ctrl |= (1 << 3);
 #endif
-#if CONFIG_USB1_POWERDOWN
+#if IS_ENABLED(CONFIG_USB1_POWERDOWN)
 	powerdown_ctrl |= (1 << 1);
 #endif
-#if CONFIG_IDE_POWERDOWN
+#if IS_ENABLED(CONFIG_IDE_POWERDOWN)
 	powerdown_ctrl |= (1 << 0);
 #endif
 	pci_write_config32(SB, 0xbc, powerdown_ctrl);
@@ -169,16 +169,16 @@ static void ex_uart_early_init(void)
 
 static void init_wdt1(void)
 {
-#if CONFIG_WDT1_INITIALIZE
-#if CONFIG_WDT1_ENABLE
+#if IS_ENABLED(CONFIG_WDT1_INITIALIZE)
+#if IS_ENABLED(CONFIG_WDT1_ENABLE)
 	outb(0x1 << 6, 0xa8);
 #endif
 	u8 wdt1_signal_reg = 0;
-#if CONFIG_WDT1_SINGAL_NMI
+#if IS_ENABLED(CONFIG_WDT1_SINGAL_NMI)
 	wdt1_signal_reg = 0x0c << 4;
-#elif CONFIG_WDT1_SIGNAL_RESET
+#elif IS_ENABLED(CONFIG_WDT1_SIGNAL_RESET)
 	wdt1_signal_reg = 0x0d << 4;
-#elif CONFIG_WDT1_SIGNAL_SMI
+#elif IS_ENABLED(CONFIG_WDT1_SIGNAL_SMI)
 	wdt1_signal_reg = 0x0e << 4;
 #endif
 	outb(wdt1_signal_reg, 0xa9);

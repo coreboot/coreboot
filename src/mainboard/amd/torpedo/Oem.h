@@ -16,7 +16,7 @@
 	#define BIOS_SIZE                      0x04   //04 - 1MB
 #endif
 #define LEGACY_FREE                    0x00
-#if !CONFIG_ONBOARD_USB30
+#if !IS_ENABLED(CONFIG_ONBOARD_USB30)
   #define XHCI_SUPPORT                 0x01
 #endif
 

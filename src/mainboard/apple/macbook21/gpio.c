@@ -56,7 +56,8 @@ static const struct pch_gpio_set1 pch_gpio_set1_direction = {
 };
 
 static const struct pch_gpio_set1 pch_gpio_set1_level = {
-#if (CONFIG_BOARD_APPLE_MACBOOK11 || CONFIG_BOARD_APPLE_MACBOOK21)
+#if IS_ENABLED(CONFIG_BOARD_APPLE_MACBOOK11) || \
+	IS_ENABLED(CONFIG_BOARD_APPLE_MACBOOK21)
 	.gpio5 = GPIO_LEVEL_LOW,
 #else /* CONFIG_BOARD_APPLE_IMAC52 */
 	.gpio5 = GPIO_LEVEL_HIGH,
@@ -71,7 +72,8 @@ static const struct pch_gpio_set1 pch_gpio_set1_level = {
 static const struct pch_gpio_set1 pch_gpio_set1_invert = {
 	.gpio1 = GPIO_INVERT,
 	.gpio7 = GPIO_INVERT,
-#if (CONFIG_BOARD_APPLE_MACBOOK11 || CONFIG_BOARD_APPLE_MACBOOK21)
+#if IS_ENABLED(CONFIG_BOARD_APPLE_MACBOOK11) || \
+	IS_ENABLED(CONFIG_BOARD_APPLE_MACBOOK21)
 	.gpio13 = GPIO_INVERT,
 #endif
 };
@@ -80,7 +82,7 @@ static const struct pch_gpio_set1 pch_gpio_set1_blink = {
 };
 
 static const struct pch_gpio_set2 pch_gpio_set2_mode = {
-#if CONFIG_BOARD_APPLE_IMAC52
+#if IS_ENABLED(CONFIG_BOARD_APPLE_IMAC52)
 	.gpio35 = GPIO_MODE_GPIO,
 #endif
 	.gpio38 = GPIO_MODE_GPIO,
@@ -89,7 +91,7 @@ static const struct pch_gpio_set2 pch_gpio_set2_mode = {
 };
 
 static const struct pch_gpio_set2 pch_gpio_set2_direction = {
-#if CONFIG_BOARD_APPLE_IMAC52
+#if IS_ENABLED(CONFIG_BOARD_APPLE_IMAC52)
 	.gpio35 = GPIO_DIR_OUTPUT,
 #endif
 	.gpio38 = GPIO_DIR_OUTPUT,
@@ -98,7 +100,7 @@ static const struct pch_gpio_set2 pch_gpio_set2_direction = {
 };
 
 static const struct pch_gpio_set2 pch_gpio_set2_level = {
-#if CONFIG_BOARD_APPLE_IMAC52
+#if IS_ENABLED(CONFIG_BOARD_APPLE_IMAC52)
 	.gpio35 = GPIO_LEVEL_LOW,
 #endif
 	.gpio38 = GPIO_LEVEL_HIGH,

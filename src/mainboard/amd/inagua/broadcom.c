@@ -37,7 +37,7 @@ void broadcom_init(void);
 #define be(x)		cpu_to_be32(x)	//this is used a lot!
 
 /* C forces us to specify these before defining struct selfboot_patch  :-( */
-#if !CONFIG_BOARD_LIPPERT_FRONTRUNNER_AF
+#if !IS_ENABLED(CONFIG_BOARD_LIPPERT_FRONTRUNNER_AF)
 #define INIT1_LENGTH		9
 #define INIT2_LENGTH		10
 #define INIT3_LENGTH		3
@@ -179,7 +179,7 @@ static struct selfboot_patch {		//Watch out: all values are *BIG-ENDIAN*!
 	.powerdown.padding = be16(0x0000),
 
 /* Only the lines below may be adapted to your needs ... */
-#if !CONFIG_BOARD_LIPPERT_FRONTRUNNER_AF
+#if !IS_ENABLED(CONFIG_BOARD_LIPPERT_FRONTRUNNER_AF)
 	.header.mac_addr = { 0x00, 0x10, 0x18, 0x00, 0x00, 0x00 }, //Broadcom
 	.header.subsys_device = be16(0x1699),	//same as pci_device
 	.header.subsys_vendor = be16(0x14E4),	//Broadcom
@@ -189,7 +189,7 @@ static struct selfboot_patch {		//Watch out: all values are *BIG-ENDIAN*!
 	.header.subsys_vendor = be16(0x121D),	//LiPPERT
 #endif
 	.header.pci_device = be16(0x1699),	//Broadcom 5785 with GbE PHY
-#if !CONFIG_BOARD_LIPPERT_FRONTRUNNER_AF
+#if !IS_ENABLED(CONFIG_BOARD_LIPPERT_FRONTRUNNER_AF)
 	.header.patch_version = be16(0x010B),	//1.11 (Broadcom's sb5785m1.11)
 #else
 	.header.patch_version = be16(0x110B),	//1.11b, i.e. hacked  :-)
@@ -208,7 +208,7 @@ static struct selfboot_patch {		//Watch out: all values are *BIG-ENDIAN*!
 	 *  1 X 0 | 0x330C5180      -            -                -
 	 *  1 X 1 | 0x391C6140      -            -                -
 	 */
-#if !CONFIG_BOARD_LIPPERT_FRONTRUNNER_AF
+#if !IS_ENABLED(CONFIG_BOARD_LIPPERT_FRONTRUNNER_AF)
 	.header.basic_config = be16(0x0404),	//original for B50610
 #else
 	.header.basic_config = be16(0x0604),	//bit 9 set so not to mess up PHY regs, kept other bits unchanged
@@ -244,7 +244,7 @@ static struct selfboot_patch {		//Watch out: all values are *BIG-ENDIAN*!
 	 * was added, for reference see Broadcom's changelog.
 	 */
 	.init.hunk1_code = {
-#if CONFIG_BOARD_LIPPERT_FRONTRUNNER_AF
+#if IS_ENABLED(CONFIG_BOARD_LIPPERT_FRONTRUNNER_AF)
 		be(0x082B8104),					//CFR-AF: PHY0B: KSZ9021 select PHY104
 		be(0x082CF0F0),					//CFR-AF: PHY0C: KSZ9021 clk/ctl skew (advised by Micrel)
 		be(0x082B8105),					//CFR-AF: PHY0B: KSZ9021 select PHY105
@@ -258,7 +258,7 @@ static struct selfboot_patch {		//Watch out: all values are *BIG-ENDIAN*!
 
 	.init.hunk2_when = 0x30,	//after global reset, PHY reset
 	.init.hunk2_code = {
-#if !CONFIG_BOARD_LIPPERT_FRONTRUNNER_AF
+#if !IS_ENABLED(CONFIG_BOARD_LIPPERT_FRONTRUNNER_AF)
 		be(0x08370F08),					//v1.06 : PHY17: B50610 select reg. 08
 		be(0x08350001),					//v1.06 : PHY15: B50610 slow link fix
 		be(0x08370F00),					//v1.06 : PHY17: B50610 disable reg. 08
@@ -275,20 +275,20 @@ static struct selfboot_patch {		//Watch out: all values are *BIG-ENDIAN*!
 		be(0xC1F03604), be(0xFFE0FFFF), be(0x00110000),	//v1.08 : 3604.20-16: 10Mb clock = 12.5MHz
 	}, //-->INIT3_LENGTH!
 
-#if !CONFIG_BOARD_LIPPERT_FRONTRUNNER_AF
+#if !IS_ENABLED(CONFIG_BOARD_LIPPERT_FRONTRUNNER_AF)
 	.init.hunk4_when = 0xD8,	//original for B50610
 #else
 	.init.hunk4_when = 0x80,	//run last, after Linux' "ifconfig up"
 #endif
 	.init.hunk4_code = {
-#if CONFIG_BOARD_LIPPERT_FRONTRUNNER_AF
+#if IS_ENABLED(CONFIG_BOARD_LIPPERT_FRONTRUNNER_AF)
 		be(0x083F4300),					//CFR-AF: PHY1F: IRQ active high
 		be(0x083C0000),					//CFR-AF: PHY1C: revert driver writes
 		be(0x08380000),					//CFR-AF: PHY18|
 		be(0x083C0000),					//CFR-AF: PHY1C|
 #endif
 		be(0xCB0005A4), be(0xF7F0000C),			//v1.01 : if 5A4.0 == 1 -->skip next 12 bytes
-#if !CONFIG_BOARD_LIPPERT_FRONTRUNNER_AF
+#if !IS_ENABLED(CONFIG_BOARD_LIPPERT_FRONTRUNNER_AF)
 		be(0xC61005A4), be(0x3210C500),			//v1.01 : 5A4: PHY LED mode
 #else
 		be(0xC61005A4), be(0x331C71CE),			//CFR-AF: 5A4: fake LED mode
@@ -300,7 +300,7 @@ static struct selfboot_patch {		//Watch out: all values are *BIG-ENDIAN*!
 
 	.powerdown.hunk1_when = 0x50,	//prior to IDDQ MAC
 	.powerdown.hunk1_code = {
-#if !CONFIG_BOARD_LIPPERT_FRONTRUNNER_AF
+#if !IS_ENABLED(CONFIG_BOARD_LIPPERT_FRONTRUNNER_AF)
 		be(0x083CB001),					//v1.10 : PHY1C: IDDQ B50610 PHY
 #endif
 		be(0xF7F30116),					//        IDDQ PHY

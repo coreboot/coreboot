@@ -19,7 +19,8 @@
 const u32 cim_verb_data[] = {
 	/* coreboot specific header */
 	0x83847680,	/* Codec Vendor / Device ID: SigmaTel STAC9221 A1 */
-#if CONFIG_BOARD_APPLE_MACBOOK11 || CONFIG_BOARD_APPLE_MACBOOK21
+#if IS_ENABLED(CONFIG_BOARD_APPLE_MACBOOK11) || \
+	IS_ENABLED(CONFIG_BOARD_APPLE_MACBOOK21)
 	0x106b2200,	/* Subsystem ID  */
 	0x0000000B,	/* Number of 4 dword sets */
 

@@ -142,7 +142,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	 */
 	wait_all_core0_started();
 
- #if CONFIG_LOGICAL_CPUS
+ #if IS_ENABLED(CONFIG_LOGICAL_CPUS)
 	/* Core0 on each node is configured. Now setup any additional cores. */
 	printk(BIOS_DEBUG, "start_other_cores()\n");
 	start_other_cores(bsp_apicid);
@@ -156,7 +156,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	rs780_early_setup();
 	sb7xx_51xx_early_setup();
 
- #if CONFIG_SET_FIDVID
+ #if IS_ENABLED(CONFIG_SET_FIDVID)
 	msr = rdmsr(0xc0010071);
 	printk(BIOS_DEBUG, "\nBegin FIDVID MSR 0xc0010071 0x%08x 0x%08x\n", msr.hi, msr.lo);
 
@@ -244,7 +244,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
  */
 BOOL AMD_CB_ManualBUIDSwapList (u8 node, u8 link, const u8 **List)
 {
-#if !CONFIG_BOARD_ASUS_M4A785TM
+#if !IS_ENABLED(CONFIG_BOARD_ASUS_M4A785TM)
 	static const u8 swaplist[] = { 0xFF, CONFIG_HT_CHAIN_UNITID_BASE, CONFIG_HT_CHAIN_END_UNITID_BASE, 0xFF };
 	/* If the BUID was adjusted in early_ht we need to do the manual override */
 	if ((CONFIG_HT_CHAIN_UNITID_BASE != 0) && (CONFIG_HT_CHAIN_END_UNITID_BASE != 0)) {

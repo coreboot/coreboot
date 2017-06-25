@@ -167,7 +167,7 @@ static void cpu_pci_domain_read_resources(struct device *dev)
 		     IORESOURCE_ASSIGNED;
 }
 
-#if CONFIG_GENERATE_SMBIOS_TABLES
+#if IS_ENABLED(CONFIG_GENERATE_SMBIOS_TABLES)
 static int qemu_get_smbios_data16(int handle, unsigned long *current)
 {
 	struct smbios_type16 *t = (struct smbios_type16 *)*current;
@@ -231,7 +231,7 @@ static struct device_operations pci_domain_ops = {
 	.init			= NULL,
 	.scan_bus		= pci_domain_scan_bus,
 	.ops_pci_bus	= pci_bus_default_ops,
-#if CONFIG_GENERATE_SMBIOS_TABLES
+#if IS_ENABLED(CONFIG_GENERATE_SMBIOS_TABLES)
 	.get_smbios_data	= qemu_get_smbios_data,
 #endif
 };

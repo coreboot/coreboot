@@ -83,7 +83,7 @@ AGESA_STATUS Fch_Oem_config(UINT32 Func, UINTN FchData, VOID *ConfigPtr)
 #endif
 
 		/* XHCI configuration */
-#if CONFIG_HUDSON_XHCI_ENABLE
+#if IS_ENABLED(CONFIG_HUDSON_XHCI_ENABLE)
 		FchParams_env->Usb.Xhci0Enable = TRUE;
 #else
 		FchParams_env->Usb.Xhci0Enable = FALSE;

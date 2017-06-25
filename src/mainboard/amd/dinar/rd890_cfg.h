@@ -28,10 +28,10 @@
  * [12..15] - Sublink (1..2), If NB connected to full link than Sublink should be set to 0.
  */
 #ifndef DEFAULT_HT_PATH
-#if CONFIG_CPU_AMD_AGESA_FAMILY10
+#if IS_ENABLED(CONFIG_CPU_AMD_AGESA_FAMILY10)
 #define DEFAULT_HT_PATH		{0x0, 0x3}
 #endif
-#if CONFIG_CPU_AMD_AGESA_FAMILY15
+#if IS_ENABLED(CONFIG_CPU_AMD_AGESA_FAMILY15)
 #define DEFAULT_HT_PATH		{0x0, 0x1}
 #endif
 #endif

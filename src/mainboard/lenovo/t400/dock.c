@@ -236,11 +236,21 @@ void dock_connect(void)
 		return;
 	}
 	pc87384_init();
+
+	ec_write(H8_LED_CONTROL,
+		 H8_LED_CONTROL_OFF | H8_LED_CONTROL_DOCK_LED1);
+	ec_write(H8_LED_CONTROL,
+		 H8_LED_CONTROL_ON  | H8_LED_CONTROL_DOCK_LED2);
 }
 
 void dock_disconnect(void)
 {
 	pc87382_disconnect();
+
+	ec_write(H8_LED_CONTROL,
+		 H8_LED_CONTROL_OFF | H8_LED_CONTROL_DOCK_LED1);
+	ec_write(H8_LED_CONTROL,
+		 H8_LED_CONTROL_OFF | H8_LED_CONTROL_DOCK_LED2);
 }
 
 void h8_mainboard_init_dock(void)

@@ -53,7 +53,7 @@ void acpi_create_gnvs(global_nvs_t *gnvs)
 	gnvs->s5u1 = 0;
 
 
-#if CONFIG_CHROMEOS
+#if IS_ENABLED(CONFIG_CHROMEOS)
 	gnvs->chromeos.vbt2 = get_recovery_mode_switch() ?
 			ACTIVE_ECFW_RO : ACTIVE_ECFW_RW;
 #endif

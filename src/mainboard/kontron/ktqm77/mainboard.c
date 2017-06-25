@@ -21,7 +21,7 @@
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <console/console.h>
-#if CONFIG_VGA_ROM_RUN
+#if IS_ENABLED(CONFIG_VGA_ROM_RUN)
 #include <x86emu/x86emu.h>
 #endif
 #include <pc80/mc146818rtc.h>
@@ -31,7 +31,7 @@
 #include <boot/coreboot_tables.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 
-#if CONFIG_VGA_ROM_RUN
+#if IS_ENABLED(CONFIG_VGA_ROM_RUN)
 static int int15_handler(void)
 {
 	int res = 0;
@@ -164,7 +164,8 @@ static int int15_handler(void)
 
 static void mainboard_enable(device_t dev)
 {
-#if CONFIG_PCI_OPTION_ROM_RUN_YABEL || CONFIG_PCI_OPTION_ROM_RUN_REALMODE
+#if IS_ENABLED(CONFIG_PCI_OPTION_ROM_RUN_YABEL) || \
+	IS_ENABLED(CONFIG_PCI_OPTION_ROM_RUN_REALMODE)
 	/* Install custom int15 handler for VGA OPROM */
 	mainboard_interrupt_handlers(0x15, &int15_handler);
 #endif

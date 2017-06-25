@@ -55,7 +55,7 @@ static const u16 sio_init_table[] = {	// hi = data, lo = index
 	0x1E2C,		// disable ATXPG; VIN6,FAN4/5,VIN3 enabled, VIN7 internal
 	0x1423,		// don't delay PoWeROK1/2 - triggers 2nd reset
 	0x9072,		// watchdog triggers PWROK, counts seconds
-#if !CONFIG_USE_WATCHDOG_ON_BOOT
+#if !IS_ENABLED(CONFIG_USE_WATCHDOG_ON_BOOT)
 	0x0073, 0x0074,	// disarm watchdog by changing 56 s timeout to 0
 #endif
 	0xBF25, 0x372A, 0xF326, // select GPIO function for most pins

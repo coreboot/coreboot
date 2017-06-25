@@ -21,7 +21,7 @@
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <console/console.h>
-#if CONFIG_VGA_ROM_RUN
+#if IS_ENABLED(CONFIG_VGA_ROM_RUN)
 #include <x86emu/x86emu.h>
 #endif
 #include <pc80/mc146818rtc.h>
@@ -52,7 +52,7 @@ void mainboard_post(u8 value)
 	 */
 }
 
-#if CONFIG_VGA_ROM_RUN
+#if IS_ENABLED(CONFIG_VGA_ROM_RUN)
 static int int15_handler(void)
 {
 	int res = 0;
@@ -201,7 +201,7 @@ static void mainboard_enable(device_t dev)
 	dev->ops->init = mainboard_init;
 	dev->ops->get_smbios_data = link_onboard_smbios_data;
 	dev->ops->acpi_inject_dsdt_generator = chromeos_dsdt_generator;
-#if CONFIG_VGA_ROM_RUN
+#if IS_ENABLED(CONFIG_VGA_ROM_RUN)
 	/* Install custom int15 handler for VGA OPROM */
 	mainboard_interrupt_handlers(0x15, &int15_handler);
 #endif

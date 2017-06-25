@@ -25,7 +25,7 @@
 #include <device/pci_ids.h>
 
 /* Bit1 switches Com1 to RS485, bit2 same for Com2. */
-#if CONFIG_ONBOARD_UARTS_RS485
+#if IS_ENABLED(CONFIG_ONBOARD_UARTS_RS485)
 	#define SIO_GP1X_CONFIG 0x06
 #else
 	#define SIO_GP1X_CONFIG 0x00
@@ -54,7 +54,7 @@ static void init(struct device *dev)
 	outl(0x00000040, gpio_base + 0x04); // GPIO6  output     1 - LAN_PD#
 	outl(0x00000400, gpio_base + 0x34); // GPIO10 in aux1    1 - THRM_ALRM#
 	outl(0x00000400, gpio_base + 0x20); // GPIO10 input      1 - THRM_ALRM#
-#if !CONFIG_BOARD_OLD_REVISION
+#if !IS_ENABLED(CONFIG_BOARD_OLD_REVISION)
 	outl(0x00000800, gpio_base + 0x94); // GPIO27 out aux2   1 - 32kHz
 	outl(0x00000800, gpio_base + 0x84); // GPIO27 output     1 - 32kHz
 #endif

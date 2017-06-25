@@ -88,7 +88,7 @@ int spd_read_byte(unsigned device, unsigned address)
 #include "cpu/amd/dualcore/dualcore.c"
 #include <spd.h>
 #include "cpu/amd/model_fxx/init_cpus.c"
-#if CONFIG_SET_FIDVID
+#if IS_ENABLED(CONFIG_SET_FIDVID)
 #include "cpu/amd/model_fxx/fidvid.c"
 #endif
 
@@ -128,14 +128,14 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	setup_coherent_ht_domain();
 	wait_all_core0_started();
-#if CONFIG_LOGICAL_CPUS
+#if IS_ENABLED(CONFIG_LOGICAL_CPUS)
 	// It is said that we should start core1 after all core0 launched
 	start_other_cores();
 	wait_all_other_cores_started(bsp_apicid);
 #endif
 
 	ht_setup_chains_x(sysinfo);
-#if CONFIG_SET_FIDVID
+#if IS_ENABLED(CONFIG_SET_FIDVID)
 	/* Check to see if processor is capable of changing FIDVID */
 	/* otherwise it will throw a GP# when reading FIDVID_STATUS */
 	struct cpuid_result cpuid1 = cpuid(0x80000007);
@@ -191,7 +191,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	fill_mem_ctrl(sysinfo->nodes, sysinfo->ctrl, spd_addr);
 
 	memreset_setup();
-#if CONFIG_SET_FIDVID
+#if IS_ENABLED(CONFIG_SET_FIDVID)
 	init_timer(); // Need to use TMICT to synchronize FID/VID
 #endif
 	sdram_initialize(sysinfo->nodes, sysinfo->ctrl, sysinfo);

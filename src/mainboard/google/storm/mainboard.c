@@ -31,7 +31,7 @@
 
 static void setup_usb(void)
 {
-#if !CONFIG_BOARD_VARIANT_AP148
+#if !IS_ENABLED(CONFIG_BOARD_VARIANT_AP148)
 	gpio_tlmm_config_set(USB_ENABLE_GPIO, FUNC_SEL_GPIO,
 			     GPIO_PULL_UP, GPIO_10MA, GPIO_ENABLE);
 	gpio_set(USB_ENABLE_GPIO, 1);

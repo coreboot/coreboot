@@ -33,7 +33,7 @@ static u8 mainboard_smi_ec(void)
 	u8 cmd = google_chromeec_get_event();
 	u32 pm1_cnt;
 
-#if CONFIG_ELOG_GSMI
+#if IS_ENABLED(CONFIG_ELOG_GSMI)
 	/* Log this event */
 	if (cmd)
 		elog_add_event_byte(ELOG_TYPE_EC_EVENT, cmd);

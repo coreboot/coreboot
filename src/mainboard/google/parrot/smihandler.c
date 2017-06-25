@@ -29,7 +29,7 @@ static u8 mainboard_smi_ec(void)
 {
 	u8 src;
 	u32 pm1_cnt;
-#if CONFIG_ELOG_GSMI
+#if IS_ENABLED(CONFIG_ELOG_GSMI)
 	static int battery_critical_logged;
 #endif
 
@@ -39,7 +39,7 @@ static u8 mainboard_smi_ec(void)
 
 	switch (src) {
 	case EC_BATTERY_CRITICAL:
-#if CONFIG_ELOG_GSMI
+#if IS_ENABLED(CONFIG_ELOG_GSMI)
 		if (!battery_critical_logged)
 			elog_add_event_byte(ELOG_TYPE_EC_EVENT,
 					    EC_EVENT_BATTERY_CRITICAL);
@@ -49,7 +49,7 @@ static u8 mainboard_smi_ec(void)
 	case EC_LID_CLOSE:
 		printk(BIOS_DEBUG, "LID CLOSED, SHUTDOWN\n");
 
-#if CONFIG_ELOG_GSMI
+#if IS_ENABLED(CONFIG_ELOG_GSMI)
 		elog_add_event_byte(ELOG_TYPE_EC_EVENT, EC_EVENT_LID_CLOSED);
 #endif
 		/* Go to S5 */
@@ -74,7 +74,7 @@ void mainboard_smi_gpi(u32 gpi_sts)
 	else if (gpi_sts & (1 << EC_LID_GPI)) {
 		printk(BIOS_DEBUG, "LID CLOSED, SHUTDOWN\n");
 
-#if CONFIG_ELOG_GSMI
+#if IS_ENABLED(CONFIG_ELOG_GSMI)
 		elog_add_event_byte(ELOG_TYPE_EC_EVENT, EC_EVENT_LID_CLOSED);
 #endif
 		/* Go to S5 */

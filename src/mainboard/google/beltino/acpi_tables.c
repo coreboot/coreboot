@@ -72,7 +72,7 @@ void acpi_create_gnvs(global_nvs_t *gnvs)
 	gnvs->tpmp = 1;
 
 
-#if CONFIG_CHROMEOS
+#if IS_ENABLED(CONFIG_CHROMEOS)
 	// SuperIO is always RO
 	gnvs->chromeos.vbt2 = ACTIVE_ECFW_RO;
 #endif

@@ -38,7 +38,7 @@
 #define GPIO_DEV PNP_DEV(0x2e, IT8712F_GPIO)
 
 /* Bit0 enables Spread Spectrum, bit1 makes on-board CF slot act as IDE slave. */
-#if CONFIG_ONBOARD_IDE_SLAVE
+#if IS_ENABLED(CONFIG_ONBOARD_IDE_SLAVE)
 	#define SMC_CONFIG	0x03
 #else
 	#define SMC_CONFIG	0x01
@@ -79,7 +79,7 @@ int spd_read_byte(unsigned int device, unsigned int address)
 	if (device != DIMM0)
 		return 0xFF;	/* No DIMM1, don't even try. */
 
-#if CONFIG_DEBUG_SMBUS
+#if IS_ENABLED(CONFIG_DEBUG_SMBUS)
 	if (address >= sizeof(spdbytes) || spdbytes[address] == 0xFF)
 		printk(BIOS_ERR, "ERROR: spd_read_byte(DIMM0, 0x%02x) "
 			"returns 0xff\n", address);
@@ -118,7 +118,7 @@ static const u16 sio_init_table[] = { // hi = data, lo = index
 	0x072C,		// VIN6 enabled, FAN4/5 disabled, VIN7,VIN3 internal
 	0x1423,		// don't delay PoWeROK1/2
 	0x9072,		// watchdog triggers PWROK, counts seconds
-#if !CONFIG_USE_WATCHDOG_ON_BOOT
+#if !IS_ENABLED(CONFIG_USE_WATCHDOG_ON_BOOT)
 	0x0073, 0x0074,	// disarm watchdog by changing 56 s timeout to 0
 #endif
 	0xBF25, 0x172A, 0xF326,	// select GPIO function for most pins

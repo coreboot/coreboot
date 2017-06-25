@@ -48,7 +48,7 @@ int spd_read_byte(unsigned int device, unsigned int address)
 	return smbus_read_byte(device, address);
 }
 
-#if !CONFIG_BOARD_OLD_REVISION
+#if !IS_ENABLED(CONFIG_BOARD_OLD_REVISION)
 /* Send config data to System Management Controller via SMB. */
 static int smc_send_config(unsigned char config_data)
 {
@@ -79,7 +79,7 @@ static const u16 sio_init_table[] = { // hi = data, lo = index
 	0x042C,		// disable ATXPG; VIN6 enabled, FAN4/5 disabled, VIN7,VIN3 enabled
 	0x1423,		// don't delay PoWeROK1/2
 	0x9072,		// watchdog triggers PWROK, counts seconds
-#if !CONFIG_USE_WATCHDOG_ON_BOOT
+#if !IS_ENABLED(CONFIG_USE_WATCHDOG_ON_BOOT)
 	0x0073, 0x0074,	// disarm watchdog by changing 56 s timeout to 0
 #endif
 	0xBF25, 0x172A, 0xF326,	// select GPIO function for most pins
@@ -88,7 +88,7 @@ static const u16 sio_init_table[] = { // hi = data, lo = index
 	0x07C0,		// enable Simple-I/O for GP12-10= RS485_EN2,1, WD_ACTIVE
 	0x06C8,		// config GP12,11 as output, GP10 as input
 	0x2DF5,		// map Hw Monitor Thermal Output to GP55
-#if CONFIG_BOARD_OLD_REVISION
+#if IS_ENABLED(CONFIG_BOARD_OLD_REVISION)
 	0x1F2A, 0xC072,	// switch GP13 to GPIO, WDT output from PWROK to KRST
 #endif
 };
@@ -132,7 +132,7 @@ void asmlinkage mainboard_romstage_entry(unsigned long bist)
 
 	cpuRegInit(0, DIMM0, DIMM1, DRAM_TERMINATED);
 
-#if !CONFIG_BOARD_OLD_REVISION
+#if !IS_ENABLED(CONFIG_BOARD_OLD_REVISION)
 	int err;
 	/* bit0 = Spread Spectrum */
 	if ((err = smc_send_config(SMC_CONFIG))) {

@@ -286,7 +286,7 @@ void mainboard_romstage_entry(unsigned long bist)
 	else
 		quick_ram_check();
 
-#if CONFIG_LPC_TPM
+#if IS_ENABLED(CONFIG_LPC_TPM)
 	init_tpm(s3resume);
 #endif
 }

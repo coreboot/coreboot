@@ -50,7 +50,7 @@ static inline int spd_read_byte(unsigned int device, unsigned int address)
 	if (device != DIMM0)
 		return 0xFF;	/* No DIMM1, don't even try. */
 
-#if CONFIG_DEBUG_SMBUS
+#if IS_ENABLED(CONFIG_DEBUG_SMBUS)
 	if (address >= sizeof(spdbytes) || spdbytes[address] == 0xFF) {
 		printk(BIOS_ERR, "ERROR: spd_read_byte(DIMM0, 0x%02x) "
 			"returns 0xff\n", address);

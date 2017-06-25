@@ -24,7 +24,7 @@
 #include <vboot/misc.h>
 #include <vboot/vboot_common.h>
 
-#if CONFIG_CHROMEOS
+#if IS_ENABLED(CONFIG_CHROMEOS)
 /* functions implemented in watchdog.c */
 void mark_watchdog_tombstone(void);
 void reboot_from_watchdog(void);
@@ -38,9 +38,9 @@ struct romstage_handoff;
 #include "gnvs.h"
 struct device;
 
-#if CONFIG_CHROMEOS_RAMOOPS
+#if IS_ENABLED(CONFIG_CHROMEOS_RAMOOPS)
 void chromeos_ram_oops_init(chromeos_acpi_t *chromeos);
-#if CONFIG_CHROMEOS_RAMOOPS_DYNAMIC
+#if IS_ENABLED(CONFIG_CHROMEOS_RAMOOPS_DYNAMIC)
 static inline void chromeos_reserve_ram_oops(struct device *dev, int idx) {}
 #else /* CONFIG_CHROMEOS_RAMOOPS_DYNAMIC */
 void chromeos_reserve_ram_oops(struct device *dev, int idx);

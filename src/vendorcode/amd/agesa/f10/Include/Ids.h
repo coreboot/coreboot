@@ -400,7 +400,7 @@ typedef enum {                        //vv- for debug reference only
     #define IDS_HDT_CONSOLE_INIT(x)
     #define IDS_HDT_CONSOLE_EXIT(x)
     #ifdef __GNUC__
-      #if CONFIG_REDIRECT_IDS_HDT_CONSOLE_TO_SERIAL
+      #if IS_ENABLED(CONFIG_REDIRECT_IDS_HDT_CONSOLE_TO_SERIAL)
         #define IDS_HDT_CONSOLE(s, args...) do_printk(BIOS_DEBUG, s, ##args)
         ///#define IDS_HDT_CONSOLE(f, s, args...) printk(((MEM_FLOW) - (f) + (BIOS_DEBUG)), s, ##args)
       #else

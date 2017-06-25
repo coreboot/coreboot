@@ -467,6 +467,7 @@ static __inline__ __attribute__((always_inline)) void __writemsr (UINT32 msr, UI
      );
 }
 
+#if !defined(__clang__)
 static __inline__ __attribute__((always_inline)) UINT64 __rdtsc(void)
 {
   UINT64 retval;
@@ -475,6 +476,7 @@ static __inline__ __attribute__((always_inline)) UINT64 __rdtsc(void)
      : "=A" (retval));
   return retval;
 }
+#endif
 
 static __inline__ __attribute__((always_inline)) void __cpuid(int CPUInfo[], const int InfoType)
 {
@@ -585,7 +587,11 @@ typedef long long __m128i __attribute__ ((__vector_size__ (16), __may_alias__));
 static __inline__ __attribute__((always_inline)) void _mm_stream_si128_fs2 (void *__A, __m128i __B)
 {
   __asm__(".byte 0x64"); // fs prefix
+#if defined(__clang__)
+  __builtin_nontemporal_store((__v2di)__B, (__v2di *)__A);
+#else
   __builtin_ia32_movntdq ((__v2di *)__A, (__v2di)__B);
+#endif
 }
 
 static __inline__ __attribute__((always_inline)) void _mm_stream_si128_fs (void *__A, void *__B)
@@ -601,15 +607,23 @@ static __inline__ __attribute__((always_inline)) void _mm_clflush_fs (void *__A)
   __builtin_ia32_clflush (__A);
 }
 
+#if !defined(__clang__)
 static __inline __attribute__(( __always_inline__)) void _mm_mfence (void)
 {
   __builtin_ia32_mfence ();
 }
+#else
+void _mm_mfence(void);
+#endif
 
+#if !defined(__clang__)
 static __inline __attribute__(( __always_inline__)) void _mm_sfence (void)
 {
   __builtin_ia32_sfence ();
 }
+#else
+void _mm_sfence(void);
+#endif
 #endif /* __SSE3__ */
 
 #endif /* defined (__GNUC__) */

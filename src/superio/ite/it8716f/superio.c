@@ -27,7 +27,7 @@
 
 #include "it8716f.h"
 
-#if !CONFIG_SUPERIO_ITE_IT8716F_OVERRIDE_FANCTL
+#if !IS_ENABLED(CONFIG_SUPERIO_ITE_IT8716F_OVERRIDE_FANCTL)
 
 static void init_ec(u16 base)
 {

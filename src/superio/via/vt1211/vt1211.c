@@ -112,7 +112,7 @@ static void vt1211_pnp_set_resources(struct device *dev)
 {
 	struct resource *res;
 
-#if CONFIG_CONSOLE_SERIAL && CONFIG_DRIVERS_UART_8250IO
+#if IS_ENABLED(CONFIG_CONSOLE_SERIAL) && IS_ENABLED(CONFIG_DRIVERS_UART_8250IO)
 	/* TODO: Do the same for SP2? */
 	if (dev->path.pnp.device == VT1211_SP1) {
 		for (res = dev->resource_list; res; res = res->next) {

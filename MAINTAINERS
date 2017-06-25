@@ -150,22 +150,22 @@ F:	src/mainboard/lenovo/
 
 INTEL PINEVIEW CHIPSET
 M:	Damien Zammit <damien@zamaudio.com>
-S:	Maintained
+S:	Odd Fixes
 F:	src/northbridge/intel/pineview/
 
 INTEL D510MO MAINBOARD
 M:	Damien Zammit <damien@zamaudio.com>
-S:	Maintained
+S:	Odd Fixes
 F:	src/mainboard/intel/d510mo
 
 INTEL X4X CHIPSET
 M:	Damien Zammit <damien@zamaudio.com>
-S:	Maintained
+S:	Odd Fixes
 F:	src/northbridge/intel/x4x/
 
 GIGABYTE GA-G41M-ES2L MAINBOARD
 M:	Damien Zammit <damien@zamaudio.com>
-S:	Maintained
+S:	Odd Fixes
 F:	src/mainboard/gigabyte/ga-g41m-es2l
 
 GOOGLE PANTHER MAINBOARD
@@ -176,14 +176,12 @@ F:	src/mainboard/google/panther/
 INTEL MINNOWBOARD MAX MAINBOARD
 M:	Huang Jin <huang.jin@intel.com>
 M:	York Yang <york.yang@intel.com>
-M:	Martin Roth <gaumless@gmail.com>
 S:	Supported
 F:	src/mainboard/intel/minnowmax/
 
 INTEL FSP BAYTRAIL CHIP & CRBs
 M:	Huang Jin <huang.jin@intel.com>
 M:	York Yang <york.yang@intel.com>
-M:	Martin Roth <gaumless@gmail.com>
 S:	Supported
 F:	src/soc/intel/fsp_baytrail/
 F:	src/vendorcode/intel/fsp1_0/baytrail/
@@ -219,15 +217,9 @@ F:	src/southbridge/intel/fsp_rangeley/
 F:	src/vendorcode/intel/fsp1_0/rangeley/
 F:	src/mainboard/intel/mohonpeak/
 
-INTEL LITTLE PLAINS MAINBOARD
-M:	Marcin Wojciechowski <marcin.wojciechowski@intel.com>
-S:	Supported
-F:	src/mainboard/intel/littleplains/
-
 INTEL FSP 1.0
 M:	Huang Jin <huang.jin@intel.com>
 M:	York Yang <york.yang@intel.com>
-M:	Martin Roth <gaumless@gmail.com>
 S:	Supported
 F:	src/drivers/intel/fsp1_0/
 
@@ -413,8 +405,6 @@ F:	util/xcompile/
 F:	util/genbuild_h/
 
 BOARD STATUS
-M:	Martin Roth <gaumless@gmail.com>
-S:	Supported
 F:	util/board_status/
 
 BINARY OBJECTS
@@ -485,13 +475,9 @@ S:	Supported
 F:	util/docker/
 
 TOOLCHAIN
-M:	Martin Roth <gaumless@gmail.com>
-S:	Supported
 F:	util/crossgcc/
 
 GIT
-M:	Martin Roth <gaumless@gmail.com>
-S:	Supported
 F:	.git*
 F:	/util/gitconfig
 
@@ -529,3 +515,45 @@ T:	git https://review.coreboot.org/coreboot
 S:	Buried alive in mainboards
 F:	*
 F:	*/
+
+# *** Infrastructure Owners***
+# This is intended to let people know who they should contact for issues with various infrastructure pieces.
+# Hardware
+#	Owners: Stefan, Patrick
+#	Backups: 
+
+# Web Server
+#	Owners: Stefan, Patrick
+#	Backups:
+
+# Website
+#	Owners: Martin, Philipp 
+#	Backups: Patrick, Stefan
+
+# Documentation Website
+#	Owners: Patrick, Philipp
+#	Backups:
+
+# Wiki
+#	Owners: Stefan, Patrick
+#	Backups:
+
+# Gerrit
+#	Owners: Stefan, Patrick
+#	Backups: Martin
+
+# Jenkins
+#	Owners: Patrick, Martin
+#	Backups:
+
+# Bug Tracker
+#	Owners: Lynxis,
+#	Backups: Martin,
+
+# Mailing List
+#	Owners: Stefan, Patrick
+#	Backups: Martin,
+
+# Software Freedom Conservancy
+#	Main contact: Martin
+#	“Official” contact: Stefan

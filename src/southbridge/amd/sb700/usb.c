@@ -181,7 +181,7 @@ static void usb_init2(struct device *dev)
 		dword |= 1 << 8;
 		dword &= ~(1 << 27); /* 6.23 */
 	}
-#if CONFIG_SOUTHBRIDGE_AMD_SUBTYPE_SP5100
+#if IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_SUBTYPE_SP5100)
 	/* SP5100 Erratum 36 */
 	dword &= ~(1 << 26);
 	if (!ehci_async_data_cache)

@@ -51,7 +51,7 @@ Device(SBUS) {
 #include "usb.asl"
 
 /* 0:14.2 - HD Audio */
-#if !CONFIG_SOUTHBRIDGE_AMD_PI_KERN
+#if !IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_PI_KERN)
 #include "audio.asl"
 #endif
 

@@ -50,7 +50,8 @@ static void alink_ax_indx(u32 space, u32 axindc, u32 mask, u32 val)
 
 
 /* family 10 only, for reg > 0xFF */
-#if CONFIG_NORTHBRIDGE_AMD_AMDFAM10 || CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY10
+#if IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AMDFAM10) || \
+	IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY10)
 static void set_fam10_ext_cfg_enable_bits(device_t fam10_dev, u32 reg_pos, u32 mask,
 				  u32 val)
 {
@@ -221,7 +222,8 @@ void sr5650_htinit(void)
 		/* Enable Protocol checker */
 		set_htiu_enable_bits(sr5650_f0, 0x1E, 0xFFFFFFFF, 0x7FFFFFFC);
 
-#if CONFIG_NORTHBRIDGE_AMD_AMDFAM10 || CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY10 /* save some spaces */
+#if IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AMDFAM10) || \
+	IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY10)
 		/* HT3 mode, RPR 5.4.3 */
 		set_nbcfg_enable_bits(sr5650_f0, 0x9c, 0x3 << 16, 0);
 
@@ -299,7 +301,8 @@ void sr5650_htinit_dect_and_enable_isochronous_link(void)
 	}
 }
 
-#if CONFIG_NORTHBRIDGE_AMD_AMDFAM10 || CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY10 /* save some spaces */
+#if IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AMDFAM10) || \
+	IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY10)
 void fam10_optimization(void)
 {
 	device_t cpu_f0, cpu_f2, cpu_f3;

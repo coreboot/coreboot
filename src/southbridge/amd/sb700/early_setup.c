@@ -152,7 +152,7 @@ void sb7xx_51xx_lpc_init(void)
 	reg32 |= 1 << 20;
 	pci_write_config32(dev, 0x64, reg32);
 
-#if CONFIG_SOUTHBRIDGE_AMD_SUBTYPE_SP5100
+#if IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_SUBTYPE_SP5100)
 	post_code(0x66);
 	dev = pci_locate_device(PCI_ID(0x1002, 0x439d), 0);     /* LPC Controller */
 	reg8 = pci_read_config8(dev, 0xBB);
@@ -166,7 +166,7 @@ void sb7xx_51xx_lpc_init(void)
 	// XXX Serial port decode on LPC is hardcoded to 0x3f8
 	reg8 = pci_read_config8(dev, 0x44);
 	reg8 |= 1 << 6;
-#if CONFIG_SOUTHBRIDGE_AMD_SUBTYPE_SP5100
+#if IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_SUBTYPE_SP5100)
 #if CONFIG_TTYS0_BASE == 0x2f8
 	reg8 |= 1 << 7;
 #endif
@@ -532,7 +532,7 @@ static void sb700_devices_por_init(void)
 	pci_write_config8(dev, 0x50, 0x01);
 
 	if (!sata_ahci_mode){
-#if CONFIG_SOUTHBRIDGE_AMD_SUBTYPE_SP5100
+#if IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_SUBTYPE_SP5100)
 		/* SP5100 default SATA mode is RAID5 MODE */
 		dev = pci_locate_device(PCI_ID(0x1002, 0x4392), 0);
 
@@ -688,7 +688,7 @@ static void sb700_pmio_por_init(void)
 	byte |= 0xc0;
 	pmio_write(0xbb, byte);
 
-#if CONFIG_SOUTHBRIDGE_AMD_SUBTYPE_SP5100
+#if IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_SUBTYPE_SP5100)
 	/* RPR 2.26 Alter CPU reset timing */
 	byte = pmio_read(0xb2);
 	byte |= 0x1 << 2;	/* Enable CPU reset timing option */

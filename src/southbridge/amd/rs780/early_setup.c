@@ -97,7 +97,7 @@ static void set_nbcfg_enable_bits(pci_devfn_t nb_dev, u32 reg_pos, u32 mask,
 	}
 }
 /* family 10 only, for reg > 0xFF */
-#if CONFIG_NORTHBRIDGE_AMD_AMDFAM10
+#if IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AMDFAM10)
 static void set_fam10_ext_cfg_enable_bits(pci_devfn_t fam10_dev, u32 reg_pos,
 		u32 mask, u32 val)
 {
@@ -143,7 +143,7 @@ static u8 is_famly10(void)
 	return (cpuid_eax(1) & 0xff00000) != 0;
 }
 
-#if CONFIG_NORTHBRIDGE_AMD_AMDFAM10
+#if IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AMDFAM10)
 static u8 l3_cache(void)
 {
 	return (cpuid_edx(0x80000006) & (0x3FFF << 18)) != 0;
@@ -242,7 +242,7 @@ static void rs780_htinit(void)
 	} else if ((cpu_ht_freq > 0x6) && (cpu_ht_freq < 0xf)) {
 		printk(BIOS_INFO, "rs780_htinit: HT3 mode\n");
 
-		#if CONFIG_NORTHBRIDGE_AMD_AMDFAM10
+		#if IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AMDFAM10)
 		/* HT3 mode, RPR 8.4.3 */
 		set_nbcfg_enable_bits(rs780_f0, 0x9c, 0x3 << 16, 0);
 
@@ -282,7 +282,7 @@ static void rs780_htinit(void)
 	}
 }
 
-#if !CONFIG_NORTHBRIDGE_AMD_AMDFAM10
+#if !IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AMDFAM10)
 /*******************************************************
 * Optimize k8 with UMA.
 * See BKDG_NPT_0F guide for details.
@@ -338,7 +338,7 @@ static void k8_optimization(void)
 #define k8_optimization() do {} while (0)
 #endif	/* !CONFIG_NORTHBRIDGE_AMD_AMDFAM10 */
 
-#if CONFIG_NORTHBRIDGE_AMD_AMDFAM10
+#if IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AMDFAM10)
 static void fam10_optimization(void)
 {
 	pci_devfn_t cpu_f0, cpu_f2, cpu_f3;

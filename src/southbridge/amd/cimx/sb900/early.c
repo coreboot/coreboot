@@ -96,7 +96,7 @@ void sb_before_pci_init(void)
 
 void sb_After_Pci_Init(void)
 {
-#if !CONFIG_BOARD_AMD_DINAR
+#if !IS_ENABLED(CONFIG_BOARD_AMD_DINAR)
 	AMDSBCFG sb_early_cfg;
 
 	printk(BIOS_SPEW, "SB900 - Early.c - sb_After_Pci_Init - Start.\n");
@@ -128,7 +128,7 @@ void sb_Mid_Post_Init(void)
 
 void sb_Late_Post(void)
 {
-#if !CONFIG_BOARD_AMD_DINAR
+#if !IS_ENABLED(CONFIG_BOARD_AMD_DINAR)
 	AMDSBCFG sb_early_cfg;
 	u8 data;
 

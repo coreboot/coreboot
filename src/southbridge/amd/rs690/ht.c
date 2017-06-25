@@ -24,7 +24,7 @@
 
 static void ht_dev_set_resources(device_t dev)
 {
-#if CONFIG_EXT_CONF_SUPPORT
+#if IS_ENABLED(CONFIG_EXT_CONF_SUPPORT)
 	unsigned reg;
 	device_t k8_f1;
 	resource_t rbase, rend;
@@ -83,7 +83,7 @@ static void ht_dev_set_resources(device_t dev)
 
 unsigned long acpi_fill_mcfg(unsigned long current)
 {
-#if CONFIG_EXT_CONF_SUPPORT
+#if IS_ENABLED(CONFIG_EXT_CONF_SUPPORT)
 	struct resource *res;
 	resource_t mmconf_base = EXT_CONF_BASE_ADDRESS; // default
 
@@ -100,7 +100,7 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 
 static void ht_dev_read_resources(device_t dev)
 {
-#if CONFIG_EXT_CONF_SUPPORT
+#if IS_ENABLED(CONFIG_EXT_CONF_SUPPORT)
 	struct resource *res;
 
 	printk(BIOS_DEBUG,"%s %s\n", dev_path(dev), __func__);
@@ -109,7 +109,7 @@ static void ht_dev_read_resources(device_t dev)
 
 	pci_dev_read_resources(dev);
 
-#if CONFIG_EXT_CONF_SUPPORT
+#if IS_ENABLED(CONFIG_EXT_CONF_SUPPORT)
 	/* Add an MMCONFIG resource. */
 	res = new_resource(dev, 0x1C);
 	res->base = EXT_CONF_BASE_ADDRESS;

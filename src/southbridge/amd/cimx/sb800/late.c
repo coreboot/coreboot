@@ -372,7 +372,7 @@ static void sb800_enable(device_t dev)
 
 	case (0x14 << 3) | 0: /* 0:14:0 SMBUS */
 		clear_ioapic(VIO_APIC_VADDR);
-#if CONFIG_CPU_AMD_AGESA
+#if IS_ENABLED(CONFIG_CPU_AMD_AGESA)
 		/* Assign the ioapic ID the next available number after the processor core local APIC IDs */
 		setup_ioapic(VIO_APIC_VADDR, CONFIG_MAX_CPUS);
 #else
@@ -406,9 +406,9 @@ static void sb800_enable(device_t dev)
 
 	case (0x14 << 3) | 3: /* 0:14:3 LPC */
 		/* Initialize the fans */
-#if CONFIG_SB800_IMC_FAN_CONTROL
+#if IS_ENABLED(CONFIG_SB800_IMC_FAN_CONTROL)
 		init_sb800_IMC_fans(dev);
-#elif CONFIG_SB800_MANUAL_FAN_CONTROL
+#elif IS_ENABLED(CONFIG_SB800_MANUAL_FAN_CONTROL)
 		init_sb800_MANUAL_fans(dev);
 #endif
 		break;

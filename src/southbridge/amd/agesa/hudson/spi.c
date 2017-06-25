@@ -110,7 +110,7 @@ static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 
 	readoffby1 = bytesout ? 0 : 1;
 
-#if CONFIG_SOUTHBRIDGE_AMD_AGESA_YANGTZE
+#if IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_AGESA_YANGTZE)
 	spi_write(0x1E, 5);
 	spi_write(0x1F, bytesout); /* SpiExtRegIndx [5] - TxByteCount */
 	spi_write(0x1E, 6);

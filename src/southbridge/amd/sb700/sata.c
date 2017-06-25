@@ -350,7 +350,7 @@ static void sata_init(struct device *dev)
 	byte |= 7 << 0;
 	pci_write_config8(dev, 0x4, byte);
 
-#if CONFIG_SOUTHBRIDGE_AMD_SUBTYPE_SP5100
+#if IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_SUBTYPE_SP5100)
 	/* Master Latency Timer */
 	pci_write_config32(dev, 0xC, 0x00004000);
 #endif

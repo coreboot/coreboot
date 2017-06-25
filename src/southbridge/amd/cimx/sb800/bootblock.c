@@ -99,7 +99,7 @@ static void enable_clocks(void)
 	// change twice.
 	reg32 = *acpi_mmio;
 	reg32 &= ~((1 << 2) | (3 << 0)); // enable, 14 MHz (power up default)
-#if !CONFIG_SUPERIO_WANTS_14MHZ_CLOCK
+#if !IS_ENABLED(CONFIG_SUPERIO_WANTS_14MHZ_CLOCK)
 	reg32 |= 2 << 0; // Device_CLK1_sel = 48 MHz
 #endif
 	*acpi_mmio = reg32;

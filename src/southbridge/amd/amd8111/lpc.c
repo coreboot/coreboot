@@ -129,7 +129,7 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 }
 
 static void southbridge_acpi_fill_ssdt_generator(device_t device) {
-#if CONFIG_SET_FIDVID
+#if IS_ENABLED(CONFIG_SET_FIDVID)
 	amd_generate_powernow(pm_base + 0x10, 6, 1);
 	acpigen_write_mainboard_resources("\\_SB.PCI0.MBRS", "_CRS");
 #endif

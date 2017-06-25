@@ -88,7 +88,7 @@ static void cs5536_setup_iobase(void)
 
 static void cs5536_setup_power_button(void)
 {
-#if CONFIG_ENABLE_POWER_BUTTON
+#if IS_ENABLED(CONFIG_ENABLE_POWER_BUTTON)
 	outl(0x40020000, PMS_IO_BASE + 0x40);
 #endif
 

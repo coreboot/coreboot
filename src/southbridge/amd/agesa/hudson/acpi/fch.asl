@@ -62,7 +62,7 @@ Device(SDCN) {
 	Name(_ADR, 0x00140007)
 } /* end SDCN */
 
-#if !CONFIG_SOUTHBRIDGE_AMD_AGESA_YANGTZE
+#if !IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_AGESA_YANGTZE)
 
 /* 0:14.4 - PCI slot 1, 2, 3 */
 Device(PIBR) {
@@ -175,7 +175,7 @@ Method(_INI, 0) {
 	/* Determine the OS we're running on */
 	OSFL()
 
-#if defined(CONFIG_HUDSON_IMC_FWM) && CONFIG_HUDSON_IMC_FWM
+#if IS_ENABLED(CONFIG_HUDSON_IMC_FWM)
 	#include "acpi/AmdImc.asl" /* Hudson IMC function */
 	ITZE() /* enable IMC Fan Control*/
 #endif

@@ -181,7 +181,7 @@ static void hudson_init(void *chip_info)
 
 static void hudson_final(void *chip_info)
 {
-#if !CONFIG_ACPI_ENABLE_THERMAL_ZONE
+#if !IS_ENABLED(CONFIG_ACPI_ENABLE_THERMAL_ZONE)
 #if IS_ENABLED(CONFIG_HUDSON_IMC_FWM)
 	/* AMD AGESA does not enable thermal zone, so we enable it here. */
 	enable_imc_thermal_zone();

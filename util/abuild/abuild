@@ -274,9 +274,13 @@ function update_config
 	# shellcheck disable=SC2059
 	printf "$configoptions" >> "${config_file}"
 
+	# shellcheck disable=SC2086
+	# Disabling SC2086 for "$silent" only
 	yes "" 2>/dev/null | $MAKE oldconfig $silent "DOTCONFIG=${config_file}" "obj=${build_dir}" "objutil=$TARGET/sharedutils" &> "${build_dir}/config.log" ; \
 		CONFIG_OK=$?
 	if [ $CONFIG_OK -eq 0 ]; then
+		# shellcheck disable=SC2086
+		# Disabling SC2086 for "$silent" only
 		$MAKE savedefconfig $silent DEFCONFIG="${defconfig_file}" DOTCONFIG="${config_file}" obj="${build_dir}" objutil="$TARGET/sharedutils" &>> "${build_dir}/config.log"
 		return $?
 	else
@@ -361,6 +365,7 @@ function compile_target
 		junit "</system-out>"
 		printf "ok\n" > compile.status
 		printf "%s built successfully. (took %ss)\n" "$BUILD_NAME" "${duration}"
+		echo "$BUILD_NAME" >> "$PASSED_BOARDS"
 	else
 		junit "<failure type='BuildFailed'>"
 		junitfile make.log
@@ -368,7 +373,7 @@ function compile_target
 		printf "failed\n" > compile.status
 		printf "%s build FAILED after %ss!\nLog excerpt:\n" "$BUILD_NAME" "${duration}"
 		tail -n $CONTEXT make.log 2> /dev/null || tail -$CONTEXT make.log
-		echo "$BUILD_NAME" >> "$FAILED_BOARDS"
+		echo "$BUILD_NAME - Log: ${TOP}/${build_dir}/make.log" >> "$FAILED_BOARDS"
 		failed=1
 	fi
 	cd "$CURR" || return $?
@@ -440,10 +445,9 @@ function build_config
 		tail -n $CONTEXT "$build_dir/config.log" 2> /dev/null || tail -$CONTEXT "$build_dir/config.log"
 
 		junit "</testcase>"
-		echo "$BUILD_NAME" >> "$FAILED_BOARDS"
+		echo "$BUILD_NAME - Log: ${TOP}/$build_dir/config.log" >> "$FAILED_BOARDS"
 		return
 	fi
-
 
 	required_arches=$(egrep "^CONFIG_ARCH_(BOOTBLOCK|R.MSTAGE|VERSTAGE)" "$TARGET/${BUILD_NAME}/config.build" | \
 			sed "s,^CONFIG_ARCH_[^_]*_\([^=]*\)=.*$,\1," |sort -u |tr 'A-Z\n\r' 'a-z  ')
@@ -718,9 +722,10 @@ if [ "$customizing" = "" ]; then
 fi
 
 FAILED_BOARDS="$TOP/$TARGET/failed_boards"
+PASSED_BOARDS="$TOP/$TARGET/passing_boards"
 
 if [ "$recursive" = "false" ]; then
-	rm -f "$FAILED_BOARDS"
+	rm -f "$FAILED_BOARDS" "$PASSED_BOARDS"
 fi
 
 USE_XARGS=0
@@ -788,9 +793,7 @@ build_targets()
 		junitfile "$TARGET/sharedutils/make.log"
 		junit "</failure>"
 		junit "</testcase>"
-		return
-	fi
-	if [ $ret -eq 1 ]; then
+		echo "Shared Utilities - Log: ${TOP}/$TARGET/sharedutils/make.log" >> "$FAILED_BOARDS"
 		return
 	fi
 
@@ -847,12 +850,13 @@ junit '</testsuite>'
 
 if [ "$recursive" = "false" ]; then
 
-	# Print the list of failed boards
+	# Print the list of failed configurations
 	if [ -f "$FAILED_BOARDS" ]; then
-		printf "%s build(s) failed:\n" "$( wc -l < "$FAILED_BOARDS" )"
+		printf "%s configuration(s) failed:\n" "$( wc -l < "$FAILED_BOARDS" )"
 		cat "$FAILED_BOARDS"
+		echo
 	else
-		echo "All tested boards passed."
+		printf "All %s tested configurations passed.\n" "$( wc -l < "$PASSED_BOARDS" )"
 	fi
 fi
 

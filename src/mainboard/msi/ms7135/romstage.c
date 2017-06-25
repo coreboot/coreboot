@@ -41,7 +41,7 @@
 #include <spd.h>
 #include <northbridge/amd/amdk8/pre_f.h>
 
-#if CONFIG_HAVE_OPTION_TABLE
+#if IS_ENABLED(CONFIG_HAVE_OPTION_TABLE)
 #include "option_table.h"
 #endif
 
@@ -132,7 +132,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	needs_reset = setup_coherent_ht_domain();
 
 	wait_all_core0_started();
-#if CONFIG_LOGICAL_CPUS
+#if IS_ENABLED(CONFIG_LOGICAL_CPUS)
 	// It is said that we should start core1 after all core0 launched
 	start_other_cores();
 	wait_all_other_cores_started(bsp_apicid);
@@ -156,7 +156,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	ms7135_set_nf4_voltage();
 	ms7135_set_ram_voltage();
 
-#if CONFIG_DEBUG_SMBUS
+#if IS_ENABLED(CONFIG_DEBUG_SMBUS)
 	dump_spd_registers(&ctrl[0]);
 	dump_smbus_registers();
 #endif

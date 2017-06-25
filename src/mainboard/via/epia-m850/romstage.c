@@ -90,7 +90,7 @@ void main(unsigned long bist)
 	printk(BIOS_DEBUG, "We passed RAM verify\n");
 
 	/* We got RAM working, now we can write the timestamps to RAM */
-#if CONFIG_EARLY_CBMEM_INIT
+#if IS_ENABLED(CONFIG_EARLY_CBMEM_INIT)
 	cbmem_recovery(0);
 #endif
 	/* FIXME: See if this is needed or take this out please */

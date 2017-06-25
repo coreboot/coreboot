@@ -144,7 +144,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	setup_coherent_ht_domain(); /* Routing table and start other core0. */
 	wait_all_core0_started();
 
-#if CONFIG_LOGICAL_CPUS
+#if IS_ENABLED(CONFIG_LOGICAL_CPUS)
 	/* It is said that we should start core1 after all core0 launched
 	 * becase optimize_link_coherent_ht is moved out from
 	 * setup_coherent_ht_domain, so here need to make sure last core0 is
@@ -158,7 +158,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	/* Set up chains and store link pair for optimization later. */
 	ht_setup_chains_x(sysinfo); /* Init sblnk and sbbusn, nodes, sbdn. */
 
-#if CONFIG_SET_FIDVID
+#if IS_ENABLED(CONFIG_SET_FIDVID)
 	{
 		msr_t msr = rdmsr(0xc0010042);
 		printk(BIOS_DEBUG, "begin msr fid, vid %08x%08x\n", msr.hi, msr.lo);

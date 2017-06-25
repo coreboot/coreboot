@@ -30,7 +30,7 @@
 #include <southbridge/amd/rs690/chip.h>
 #include <southbridge/amd/rs690/rs690.h>
 #include <superio/ite/it8712f/it8712f.h>
-#if CONFIG_PCI_OPTION_ROM_RUN_YABEL
+#if IS_ENABLED(CONFIG_PCI_OPTION_ROM_RUN_YABEL)
 #include <x86emu/x86emu.h>
 #endif
 #include "int15_func.h"
@@ -215,7 +215,7 @@ struct fan_control {
 		u8 t_range;
 };
 /* ############################################################################################# */
-#if CONFIG_PCI_OPTION_ROM_RUN_YABEL
+#if IS_ENABLED(CONFIG_PCI_OPTION_ROM_RUN_YABEL)
 static int int15_handler(void)
 {
 #define BOOT_DISPLAY_DEFAULT	0
@@ -779,14 +779,14 @@ void smm_lock(void)
 
 static void mainboard_init(device_t dev)
 {
-#if CONFIG_PCI_OPTION_ROM_RUN_REALMODE
+#if IS_ENABLED(CONFIG_PCI_OPTION_ROM_RUN_REALMODE)
 	INT15_function_extensions int15_func;
 #endif
 
 	printk(BIOS_DEBUG, "%s %s[%x/%x] %s\n",
 		dev_name(dev), dev_path(dev), dev->subsystem_vendor, dev->subsystem_device, __func__);
 
-#if CONFIG_PCI_OPTION_ROM_RUN_REALMODE
+#if IS_ENABLED(CONFIG_PCI_OPTION_ROM_RUN_REALMODE)
 	if (get_option(&int15_func.regs.func00_LCD_panel_id, "lcd_panel_id") != CB_SUCCESS)
 		int15_func.regs.func00_LCD_panel_id = PANEL_TABLE_ID_NO;
 	int15_func.regs.func05_TV_standard = TV_MODE_NO;
@@ -808,7 +808,7 @@ static void mainboard_enable(device_t dev)
 
 	printk(BIOS_INFO, "%s %s[%x/%x] %s\n",
 		dev_name(dev), dev_path(dev), dev->subsystem_vendor, dev->subsystem_device, __func__);
-#if CONFIG_PCI_OPTION_ROM_RUN_YABEL
+#if IS_ENABLED(CONFIG_PCI_OPTION_ROM_RUN_YABEL)
 	/* Install custom int15 handler for VGA OPROM */
 	mainboard_interrupt_handlers(0x15, &int15_handler);
 #endif

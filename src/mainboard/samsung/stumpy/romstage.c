@@ -38,12 +38,12 @@
 #include <cpu/x86/msr.h>
 #include <halt.h>
 #include <tpm.h>
-#if CONFIG_DRIVERS_UART_8250IO
+#if IS_ENABLED(CONFIG_DRIVERS_UART_8250IO)
 #include <superio/smsc/lpc47n207/lpc47n207.h>
 #endif
 
 /* Stumpy USB Reset Disable defined in cmos.layout */
-#if CONFIG_USE_OPTION_TABLE
+#if IS_ENABLED(CONFIG_USE_OPTION_TABLE)
 #include "option_table.h"
 #define CMOS_USB_RESET_DISABLE  (CMOS_VSTART_stumpy_usb_reset_disable >> 3)
 #else
@@ -60,7 +60,7 @@ void pch_enable_lpc(void)
 	/* Set COM1/COM2 decode range */
 	pci_write_config16(PCH_LPC_DEV, LPC_IO_DEC, 0x0010);
 
-#if CONFIG_DRIVERS_UART_8250IO
+#if IS_ENABLED(CONFIG_DRIVERS_UART_8250IO)
 	/* Enable SuperIO + PS/2 Keyboard/Mouse + COM1 + lpc47n207 config*/
 	pci_write_config16(PCH_LPC_DEV, LPC_EN, CNF1_LPC_EN | KBC_LPC_EN |\
 			   CNF2_LPC_EN | COMA_LPC_EN);

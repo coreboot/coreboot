@@ -65,7 +65,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 	/* Write SB600 IOAPIC, only one */
 	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *) current, 2,
 					   IO_APIC_ADDR, 0);
-#if !CONFIG_LINT01_CONVERSION
+#if !IS_ENABLED(CONFIG_LINT01_CONVERSION)
 	current += acpi_create_madt_irqoverride((acpi_madt_irqoverride_t *)
 						current, 0, 0, 2, 0);
 

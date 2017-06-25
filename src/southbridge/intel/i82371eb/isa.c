@@ -28,7 +28,7 @@
 #endif
 #include "i82371eb.h"
 
-#if CONFIG_IOAPIC
+#if IS_ENABLED(CONFIG_IOAPIC)
 static void enable_intel_82093aa_ioapic(void)
 {
 	u16 reg16;
@@ -84,7 +84,7 @@ static void isa_init(struct device *dev)
 	/* Initialize ISA DMA. */
 	isa_dma_init();
 
-#if CONFIG_IOAPIC
+#if IS_ENABLED(CONFIG_IOAPIC)
 	/*
 	 * Unlike most other southbridges the 82371EB doesn't have a built-in
 	 * IOAPIC. Instead, 82371EB-based boards that support multiple CPUs
@@ -115,7 +115,7 @@ static void sb_read_resources(struct device *dev)
 	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED |
 		IORESOURCE_RESERVE;
 
-#if CONFIG_IOAPIC
+#if IS_ENABLED(CONFIG_IOAPIC)
 	res = new_resource(dev, 3); /* IOAPIC */
 	res->base = IO_APIC_ADDR;
 	res->size = 0x00001000;

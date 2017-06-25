@@ -70,7 +70,7 @@ int pch_silicon_type(void);
 int pch_silicon_supported(int type, int rev);
 void pch_iobp_update(u32 address, u32 andvalue, u32 orvalue);
 void gpi_route_interrupt(u8 gpi, u8 mode);
-#if CONFIG_ELOG
+#if IS_ENABLED(CONFIG_ELOG)
 void pch_log_state(void);
 #endif
 #else /* __PRE_RAM__ */

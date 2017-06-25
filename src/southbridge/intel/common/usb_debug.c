@@ -27,7 +27,7 @@ pci_devfn_t pci_ehci_dbg_dev(unsigned int hcd_idx)
 	u32 class;
 	pci_devfn_t dev;
 
-#if CONFIG_HAVE_USBDEBUG_OPTIONS
+#if IS_ENABLED(CONFIG_HAVE_USBDEBUG_OPTIONS)
 	if (hcd_idx==2)
 		dev = PCI_DEV(0, 0x1a, 0);
 	else
@@ -37,7 +37,7 @@ pci_devfn_t pci_ehci_dbg_dev(unsigned int hcd_idx)
 #endif
 
 	class = pci_read_config32(dev, PCI_CLASS_REVISION) >> 8;
-#if CONFIG_HAVE_USBDEBUG_OPTIONS
+#if IS_ENABLED(CONFIG_HAVE_USBDEBUG_OPTIONS)
 	if (class != PCI_EHCI_CLASSCODE) {
 		/* If we enter here before RCBA programming, EHCI function may
 		 * appear with the highest function number instead.

@@ -94,7 +94,7 @@ static void soc_enable_serial_irqs(struct device *dev)
 	/* Set packet length and toggle silent mode bit for one frame. */
 	write8(ibase + ILB_SERIRQ_CNTL, (1 << 7));
 
-#if !CONFIG_SERIRQ_CONTINUOUS_MODE
+#if !IS_ENABLED(CONFIG_SERIRQ_CONTINUOUS_MODE)
 	write8(ibase + ILB_SERIRQ_CNTL, 0);
 #endif
 }
@@ -435,7 +435,7 @@ static void southbridge_inject_dsdt(device_t dev)
 		memset(gnvs, 0, sizeof(*gnvs));
 		acpi_create_gnvs(gnvs);
 		acpi_save_gnvs((unsigned long)gnvs);
-#if CONFIG_HAVE_SMI_HANDLER
+#if IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)
 		/* And tell SMI about it */
 		smm_setup_structures(gnvs, NULL, NULL);
 #endif

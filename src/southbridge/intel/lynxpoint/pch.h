@@ -72,7 +72,7 @@
 #define SMBUS_IO_BASE		0x0400
 #define SMBUS_SLAVE_ADDR	0x24
 
-#if CONFIG_INTEL_LYNXPOINT_LP
+#if IS_ENABLED(CONFIG_INTEL_LYNXPOINT_LP)
 #define DEFAULT_PMBASE		0x1000
 #define DEFAULT_GPIOBASE	0x1400
 #define DEFAULT_GPIOSIZE	0x400
@@ -181,7 +181,7 @@ void pch_disable_devfn(device_t dev);
 u32 pch_iobp_read(u32 address);
 void pch_iobp_write(u32 address, u32 data);
 void pch_iobp_update(u32 address, u32 andvalue, u32 orvalue);
-#if CONFIG_ELOG
+#if IS_ENABLED(CONFIG_ELOG)
 void pch_log_state(void);
 #endif
 void acpi_create_intel_hpet(acpi_hpet_t * hpet);

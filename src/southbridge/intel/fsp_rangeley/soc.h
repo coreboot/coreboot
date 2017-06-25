@@ -65,7 +65,7 @@ void soc_enable(device_t dev);
 #include <arch/acpi.h>
 void acpi_fill_in_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt);
 
-#if CONFIG_ELOG
+#if IS_ENABLED(CONFIG_ELOG)
 void soc_log_state(void);
 #endif
 #else

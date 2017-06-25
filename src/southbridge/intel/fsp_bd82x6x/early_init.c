@@ -151,7 +151,7 @@ static void sandybridge_setup_bars(void)
 	outw((1 << 11), DEFAULT_PMBASE | 0x60 | 0x08);	/* halt timer */
 	printk(BIOS_DEBUG, " done.\n");
 
-#if CONFIG_ELOG_BOOT_COUNT
+#if IS_ENABLED(CONFIG_ELOG_BOOT_COUNT)
 	/* Increment Boot Counter for non-S3 resume */
 	if ((inw(DEFAULT_PMBASE + PM1_STS) & WAK_STS) &&
 	    ((inl(DEFAULT_PMBASE + PM1_CNT) >> 10) & 7) != SLP_TYP_S3)
@@ -160,7 +160,7 @@ static void sandybridge_setup_bars(void)
 
 	printk(BIOS_DEBUG, " done.\n");
 
-#if CONFIG_ELOG_BOOT_COUNT
+#if IS_ENABLED(CONFIG_ELOG_BOOT_COUNT)
 	/* Increment Boot Counter except when resuming from S3 */
 	if ((inw(DEFAULT_PMBASE + PM1_STS) & WAK_STS) &&
 	    ((inl(DEFAULT_PMBASE + PM1_CNT) >> 10) & 7) == SLP_TYP_S3)

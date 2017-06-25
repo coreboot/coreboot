@@ -137,7 +137,7 @@ void main(FSP_INFO_HEADER *fsp_info_header)
 	pm1_cnt = inl(DEFAULT_PMBASE + PM1_CNT);
 	post_code(0x46);
 	if ((pm1_sts & WAK_STS) && ((pm1_cnt >> 10) & 7) == 5) {
-#if CONFIG_HAVE_ACPI_RESUME
+#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
 		printk(BIOS_DEBUG, "Resume from S3 detected.\n");
 		boot_mode = 2;
 		/* Clear SLP_TYPE. This will break stage2 but

@@ -3921,7 +3921,7 @@ BOOLEAN MemFS3DefConstructorRet (
       0
     };
     MEM_FEAT_TRAIN_SEQ memTrainSequenceDDR2[] = {
-      0
+      { 0 }
     };
   #endif
   #if OPTION_DDR3
@@ -3929,7 +3929,7 @@ BOOLEAN MemFS3DefConstructorRet (
       0
     };
     MEM_FEAT_TRAIN_SEQ memTrainSequenceDDR3[] = {
-      0
+      { 0 }
     };
   #endif
     /*---------------------------------------------------------------------------------------------------

@@ -645,7 +645,9 @@ bootstrap_GCC() {
 build_cross_GCC() {
 	# Work around crazy code generator in GCC that confuses CLANG.
 	$CC --version | grep clang >/dev/null 2>&1 && \
-		HOSTCFLAGS="$HOSTCFLAGS -fbracket-depth=1024"
+		CLANGFLAGS="-fbracket-depth=1024"
+	$CXX --version | grep clang >/dev/null 2>&1 && \
+		CLANGCXXFLAGS="-fbracket-depth=1024"
 
 	# GCC does not honor HOSTCFLAGS at all. CFLAGS are used for
 	# both target and host object files.
@@ -655,9 +657,12 @@ build_cross_GCC() {
 	# Also set the CXX version of the flags because GCC is now compiled
 	# using C++.
 	CC="$(hostcc target)" CXX="$(hostcxx target)" \
-		CFLAGS_FOR_TARGET="-O2 -Dinhibit_libc" CFLAGS="$HOSTCFLAGS" \
-		CFLAGS_FOR_BUILD="$HOSTCFLAGS" CXXFLAGS="$HOSTCFLAGS" \
-		CXXFLAGS_FOR_BUILD="$HOSTCFLAGS" ../gcc-${GCC_VERSION}/configure \
+		CFLAGS_FOR_TARGET="-O2 -Dinhibit_libc"
+		CFLAGS="$HOSTCFLAGS $CLANGFLAGS" \
+		CFLAGS_FOR_BUILD="$HOSTCFLAGS $CLANGFLAGS" \
+		CXXFLAGS="$HOSTCFLAGS $CLANGCXXFLAGS" \
+		CXXFLAGS_FOR_BUILD="$HOSTCFLAGS $CLANGCXXFLAGS" \
+		../gcc-${GCC_VERSION}/configure \
 		--prefix=$TARGETDIR --libexecdir=$TARGETDIR/lib \
 		--target=${TARGETARCH} --disable-werror --disable-shared \
 		--enable-lto --enable-plugins --enable-gold --enable-ld=default \

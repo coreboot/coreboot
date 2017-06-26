@@ -21,7 +21,7 @@
 /* XHCI */
 #define XHCI_DEV		0x10
 #define XHCI_FUNC		0
-#define XHCI_DEVID		0x7814
+#define XHCI_DEVID		0x7914
 #define XHCI_DEVFN		PCI_DEVFN(XHCI_DEV, XHCI_FUNC)
 
 #define XHCI2_DEV		0x10
@@ -32,9 +32,9 @@
 /* SATA */
 #define SATA_DEV		0x11
 #define SATA_FUNC		0
-#define SATA_IDE_DEVID		0x7800
-#define AHCI_DEVID_MS		0x7801
-#define AHCI_DEVID_AMD		0x7804
+#define SATA_IDE_DEVID		0x7900
+#define AHCI_DEVID_MS		0x7901
+#define AHCI_DEVID_AMD		0x7904
 #define SATA_DEVFN		PCI_DEVFN(SATA_DEV, SATA_FUNC)
 
 /* OHCI */
@@ -53,13 +53,13 @@
 #define OHCI4_DEVFN		PCI_DEVFN(OHCI4_DEV, OHCI4_FUNC)
 
 /* EHCI */
-#define EHCI1_DEV		0x12
-#define EHCI1_FUNC		2
+#define EHCI_DEV		0x12
+#define EHCI_FUNC		0
 #define EHCI2_DEV		0x13
 #define EHCI2_FUNC		2
 #define EHCI3_DEV		0x16
 #define EHCI3_FUNC		2
-#define EHCI_DEVID		0x7808
+#define EHCI_DEVID		0x7908
 #define EHCI1_DEVFN		PCI_DEVFN(EHCI1_DEV, EHCI1_FUNC)
 #define EHCI2_DEVFN		PCI_DEVFN(EHCI2_DEV, EHCI2_FUNC)
 #define EHCI3_DEVFN		PCI_DEVFN(EHCI3_DEV, EHCI3_FUNC)
@@ -67,7 +67,7 @@
 /* SMBUS */
 #define SMBUS_DEV		0x14
 #define SMBUS_FUNC		0
-#define SMBUS_DEVID		0x780b
+#define SMBUS_DEVID		0x790b
 #define SMBUS_DEVFN		PCI_DEVFN(SMBUS_DEV, SMBUS_FUNC)
 
 /* IDE */
@@ -87,13 +87,13 @@
 /* LPC BUS */
 #define PCU_DEV			0x14
 #define LPC_FUNC		3
-#define LPC_DEVID		0x780e
-#define LPC_DEVFN		PCI_DEVFN(LPC_DEV, LPC_FUNC)
+#define LPC_DEVID		0x790e
+#define LPC_DEVFN		PCI_DEVFN(PCU_DEV, LPC_FUNC)
 
 /* SD Controller */
 #define SD_DEV			0x14
 #define SD_FUNC			7
-#define SD_DEVID		0x7806
+#define SD_DEVID		0x7906
 #define SD_DEVFN		PCI_DEVFN(SD_DEV, SD_FUNC)
 
 /* PCIe Ports */

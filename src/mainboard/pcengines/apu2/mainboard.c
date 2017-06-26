@@ -50,9 +50,7 @@
  * MP Tables.  TODO: Make ACPI use these values too.
  */
 static const u8 mainboard_picr_data[FCH_INT_TABLE_SIZE] = {
-#if defined(__GNUC__)
 	[0 ... FCH_INT_TABLE_SIZE-1] = 0x1F,
-#endif
 	/* INTA# - INTH# */
 	[0x00] = 0x03,0x03,0x05,0x07,0x0B,0x0A,0x1F,0x1F,
 	/* Misc-nil,0,1,2, INT from Serial irq */
@@ -75,9 +73,7 @@ static const u8 mainboard_picr_data[FCH_INT_TABLE_SIZE] = {
 };
 
 static const u8 mainboard_intr_data[FCH_INT_TABLE_SIZE] = {
-#if defined(__GNUC__)
 	[0 ... FCH_INT_TABLE_SIZE-1] = 0x1F,
-#endif
 	/* INTA# - INTH# */
 	[0x00] = 0x10,0x10,0x12,0x13,0x14,0x15,0x1F,0x1F,
 	/* Misc-nil,0,1,2, INT from Serial irq */

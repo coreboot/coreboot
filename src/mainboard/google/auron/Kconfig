@@ -61,11 +61,8 @@ config DEVICETREE
 
 config EC_GOOGLE_CHROMEEC_BOARDNAME
 	string
-	default "auron" if BOARD_GOOGLE_AURON_PAINE
-	default "auron" if BOARD_GOOGLE_AURON_YUNA
-	default "" if BOARD_GOOGLE_GANDOF
-	default "" if BOARD_GOOGLE_LULU
 	default "samus" if BOARD_GOOGLE_SAMUS
+	default ""
 
 config MAX_CPUS
 	int

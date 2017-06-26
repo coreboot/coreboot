@@ -101,7 +101,6 @@ config DEVICETREE
 
 config EC_GOOGLE_CHROMEEC_BOARDNAME
 	string
-	default "rambi" if BOARD_GOOGLE_RAMBI
 	default ""
 
 config VGA_BIOS_FILE

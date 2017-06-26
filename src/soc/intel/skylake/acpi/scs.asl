@@ -21,12 +21,13 @@ Device (EMMC)
 	Name (_ADR, 0x001E0004)
 	Name (_DDN, "eMMC Controller")
 	Name (UUID, ToUUID ("E5C937D0-3553-4D7A-9117-EA4D19C3434D"))
+	Name (TEMP, 0)
 
 	OperationRegion (EMCR, PCI_Config, 0x00, 0x100)
-	Field (EMCR, DWordAcc, NoLock, Preserve)
+	Field (EMCR, WordAcc, NoLock, Preserve)
 	{
 		Offset (0x84),	/* PMECTRLSTATUS */
-		D0D3, 2,	/* POWERSTATE */
+		PMCR, 16,
 		Offset (0xa2),	/* PG_CONFIG */
 		, 2,
 		PGEN, 1,	/* PG_ENABLE */
@@ -88,9 +89,8 @@ Device (EMMC)
 		Sleep (2)
 
 		/* Set Power State to D0 */
-		Store (Zero, Local0)
-		Store (Local0, ^D0D3)
-		Store (^D0D3, Local0)
+		And (PMCR, 0xFFFC, PMCR)
+		Store (PMCR, ^TEMP)
 	}
 
 	Method (_PS3, 0, Serialized)
@@ -98,10 +98,9 @@ Device (EMMC)
 		/* Enable Power Gate */
 		Store (1, ^PGEN)
 
-		/* Set Power State to D0 */
-		Store (3, Local0)
-		Store (Local0, ^D0D3)
-		Store (^D0D3, Local0)
+		/* Set Power State to D3 */
+		Or (PMCR, 0x0003, PMCR)
+		Store (PMCR, ^TEMP)
 	}
 }
 
@@ -110,12 +109,13 @@ Device (SDXC)
 {
 	Name (_ADR, 0x001E0006)
 	Name (_DDN, "SD Controller")
+	Name (TEMP, 0)
 
 	OperationRegion (SDCR, PCI_Config, 0x00, 0x100)
-	Field (SDCR, DWordAcc, NoLock, Preserve)
+	Field (SDCR, WordAcc, NoLock, Preserve)
 	{
 		Offset (0x84),	/* PMECTRLSTATUS */
-		D0D3, 2,	/* POWERSTATE */
+		PMCR, 16,
 		Offset (0xa2),	/* PG_CONFIG */
 		, 2,
 		PGEN, 1,	/* PG_ENABLE */
@@ -138,14 +138,13 @@ Device (SDXC)
 		^^PCRA (PID_SCS, 0x600, 0xFFFFFE7A)
 		Sleep (2)
 
-		/* Set bits 31, 6, 2, 0 */
+		/* Set bits 8, 7, 2, 0 */
 		^^PCRO (PID_SCS, 0x600, 0x00000185)
 		Sleep (2)
 
 		/* Set Power State to D0 */
-		Store (Zero, Local0)
-		Store (Local0, ^D0D3)
-		Store (^D0D3, Local0)
+		And (PMCR, 0xFFFC, PMCR)
+		Store (PMCR, ^TEMP)
 	}
 
 	Method (_PS3, 0, Serialized)
@@ -153,10 +152,9 @@ Device (SDXC)
 		/* Enable Power Gate */
 		Store (1, ^PGEN)
 
-		/* Set Power State to D0 */
-		Store (3, Local0)
-		Store (Local0, ^D0D3)
-		Store (^D0D3, Local0)
+		/* Set Power State to D3 */
+		Or (PMCR, 0x0003, PMCR)
+		Store (PMCR, ^TEMP)
 
 		/* Enable 20K pull-down on CLK, CMD and DAT lines */
 		^^PCRO (PID_GPIOCOM3, 0x4c4, 0x00001000)

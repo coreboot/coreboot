@@ -335,7 +335,7 @@ void *agesawrapper_getlateinitptr(int pick)
 
 #endif /* __PRE_RAM__ */
 
-AGESA_STATUS agesawrapper_amdlaterunaptask(UINT32 Func, UINT32 Data, VOID * ConfigPtr)
+AGESA_STATUS agesawrapper_amdlaterunaptask(UINT32 Func, UINTN Data, VOID * ConfigPtr)
 {
 	AGESA_STATUS status;
 	AP_EXE_PARAMS ApExeParams;

@@ -54,7 +54,7 @@ STATIC CONST DIMM_INFO_SMBUS SpdAddrLookup [] =
 AGESA_STATUS
 AmdMemoryReadSPD (
   IN UINT32 Func,
-  IN UINT32 Data,
+  IN UINTN Data,
   IN OUT AGESA_READ_SPD_PARAMS *SpdData
   )
 {

@@ -19,7 +19,7 @@
 #include <string.h>
 #include <cbfs.h>
 
-AGESA_STATUS common_ReadCbfsSpd (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
+AGESA_STATUS common_ReadCbfsSpd (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {
 #ifdef __PRE_RAM__
 	AGESA_READ_SPD_PARAMS *info = ConfigPtr;

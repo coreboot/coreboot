@@ -25,6 +25,6 @@ struct  multi_spd_info {
 };
 
 AGESA_STATUS
-common_ReadCbfsSpd (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
+common_ReadCbfsSpd (UINT32 Func, UINTN Data, VOID *ConfigPtr);
 
 #endif

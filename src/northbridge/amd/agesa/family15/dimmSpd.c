@@ -30,7 +30,7 @@
  * Gets the SMBus address for an SPD from the array in devicetree.cb
  * then read the SPD into the supplied buffer.
  */
-AGESA_STATUS AmdMemoryReadSPD (UINT32 unused1, UINT32 unused2, AGESA_READ_SPD_PARAMS *info)
+AGESA_STATUS AmdMemoryReadSPD (UINT32 unused1, UINTN unused2, AGESA_READ_SPD_PARAMS *info)
 {
 	UINT8 spdAddress;
 

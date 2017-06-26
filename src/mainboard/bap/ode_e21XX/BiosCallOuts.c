@@ -27,7 +27,7 @@
 #include <stdlib.h>
 #include <spd_bin.h>
 
-static AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr);
+static AGESA_STATUS Fch_Oem_config(UINT32 Func, UINTN FchData, VOID *ConfigPtr);
 static AGESA_STATUS board_ReadSpd_from_cbfs(UINT32 Func, UINTN Data, VOID *ConfigPtr);
 
 const BIOS_CALLOUT_STRUCT BiosCallouts[] =
@@ -258,7 +258,7 @@ static void oem_fan_control(FCH_DATA_BLOCK *FchParams)
  *  Configure platform specific Hudson device,
  *   such Azalia, SATA, IMC etc.
  */
-static AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr)
+static AGESA_STATUS Fch_Oem_config(UINT32 Func, UINTN FchData, VOID *ConfigPtr)
 {
 	AMD_CONFIG_PARAMS *StdHeader = (AMD_CONFIG_PARAMS *)ConfigPtr;
 	if (StdHeader->Func == AMD_INIT_RESET) {

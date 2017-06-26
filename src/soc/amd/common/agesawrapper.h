@@ -45,7 +45,7 @@ AGESA_STATUS agesawrapper_amdinitpost(void);
 AGESA_STATUS agesawrapper_amdinitmid(void);
 AGESA_STATUS agesawrapper_amdreadeventlog(UINT8 HeapStatus);
 void *agesawrapper_getlateinitptr(int pick);
-AGESA_STATUS agesawrapper_amdlaterunaptask(UINT32 Func, UINT32 Data, void *ConfigPtr);
+AGESA_STATUS agesawrapper_amdlaterunaptask(UINT32 Func, UINTN Data, void *ConfigPtr);
 AGESA_STATUS agesawrapper_amdS3Save(void);
 AGESA_STATUS agesawrapper_amdinitresume(void);
 AGESA_STATUS agesawrapper_amds3laterestore(void);

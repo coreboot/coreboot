@@ -30,7 +30,7 @@ AGESA_STATUS agesawrapper_amdinitmid(void);
 AGESA_STATUS agesawrapper_amdinitresume(void);
 AGESA_STATUS agesawrapper_amdS3Save(void);
 AGESA_STATUS agesawrapper_amds3laterestore(void);
-AGESA_STATUS agesawrapper_amdlaterunaptask (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
+AGESA_STATUS agesawrapper_amdlaterunaptask (UINT32 Func, UINTN Data, VOID *ConfigPtr);
 
 AGESA_STATUS agesawrapper_fchs3earlyrestore(void);
 AGESA_STATUS agesawrapper_fchs3laterestore(void);

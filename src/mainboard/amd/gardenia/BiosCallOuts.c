@@ -29,7 +29,7 @@
 #include <agesawrapper.h>
 
 static AGESA_STATUS Fch_Oem_config(UINT32 Func,
-					UINT32 FchData, VOID *ConfigPtr);
+					UINTN FchData, VOID *ConfigPtr);
 
 const BIOS_CALLOUT_STRUCT BiosCallouts[] = {
 	{AGESA_ALLOCATE_BUFFER,          agesa_AllocateBuffer },
@@ -78,7 +78,7 @@ static const GPIO_CONTROL oem_gardenia_gpio[] = {
  *  Configure platform specific Hudson device,
  *   such as Azalia, SATA, IMC etc.
  */
-AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr)
+AGESA_STATUS Fch_Oem_config(UINT32 Func, UINTN FchData, VOID *ConfigPtr)
 {
 	AMD_CONFIG_PARAMS *StdHeader = ConfigPtr;
 

@@ -123,7 +123,7 @@ AGESA_STATUS
 CALLCONV
 AmdAgesaCallout (
   IN       UINT32  Func,
-  IN       UINT32  Data,
+  IN       UINTN   Data,
   IN OUT   VOID    *ConfigPtr
   )
 {

@@ -36,7 +36,7 @@ void EmptyHeap(void)
 	memset(BiosManagerPtr, 0, BIOS_HEAP_SIZE);
 }
 
-AGESA_STATUS agesa_AllocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
+AGESA_STATUS agesa_AllocateBuffer (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {
 	UINT32              AvailableHeapSize;
 	UINT8               *BiosHeapBaseAddr;
@@ -165,7 +165,7 @@ AGESA_STATUS agesa_AllocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 	return AGESA_SUCCESS;
 }
 
-AGESA_STATUS agesa_DeallocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
+AGESA_STATUS agesa_DeallocateBuffer (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {
 
 	UINT8               *BiosHeapBaseAddr;
@@ -284,7 +284,7 @@ AGESA_STATUS agesa_DeallocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 	return AGESA_SUCCESS;
 }
 
-AGESA_STATUS agesa_LocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
+AGESA_STATUS agesa_LocateBuffer (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {
 	UINT32              AllocNodeOffset;
 	UINT8               *BiosHeapBaseAddr;

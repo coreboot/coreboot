@@ -337,7 +337,7 @@ AGESA_STATUS agesawrapper_amdinitlate(void)
 
 AGESA_STATUS agesawrapper_amdlaterunaptask (
 	UINT32 Func,
-	UINT32 Data,
+	UINTN Data,
 	VOID *ConfigPtr
 	)
 {

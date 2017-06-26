@@ -24,7 +24,7 @@
 #include "BiosCallOuts.h"
 #include "dimmSpd.h"
 
-AGESA_STATUS GetBiosCallout (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
+AGESA_STATUS GetBiosCallout (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {
 	UINTN i;
 
@@ -38,17 +38,17 @@ AGESA_STATUS GetBiosCallout (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 	return BiosCallouts[i].CalloutPtr (Func, Data, ConfigPtr);
 }
 
-AGESA_STATUS agesa_NoopUnsupported (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
+AGESA_STATUS agesa_NoopUnsupported (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {
 	return AGESA_UNSUPPORTED;
 }
 
-AGESA_STATUS agesa_NoopSuccess (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
+AGESA_STATUS agesa_NoopSuccess (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {
 	return AGESA_SUCCESS;
 }
 
-AGESA_STATUS agesa_EmptyIdsInitData (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
+AGESA_STATUS agesa_EmptyIdsInitData (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {
 	IDS_NV_ITEM *IdsPtr = ((IDS_CALLOUT_STRUCT *) ConfigPtr)->IdsNvPtr;
 	if (Data == IDS_CALLOUT_INIT)
@@ -56,7 +56,7 @@ AGESA_STATUS agesa_EmptyIdsInitData (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 	return AGESA_SUCCESS;
 }
 
-AGESA_STATUS agesa_Reset (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
+AGESA_STATUS agesa_Reset (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {
 	AGESA_STATUS        Status;
 	UINT8                 Value;
@@ -92,7 +92,7 @@ AGESA_STATUS agesa_Reset (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 	return Status;
 }
 
-AGESA_STATUS agesa_RunFuncOnAp (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
+AGESA_STATUS agesa_RunFuncOnAp (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {
 	AGESA_STATUS        Status;
 
@@ -100,7 +100,7 @@ AGESA_STATUS agesa_RunFuncOnAp (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 	return Status;
 }
 
-AGESA_STATUS agesa_GfxGetVbiosImage(UINT32 Func, UINT32 FchData, VOID *ConfigPrt)
+AGESA_STATUS agesa_GfxGetVbiosImage(UINT32 Func, UINTN FchData, VOID *ConfigPrt)
 {
 	GFX_VBIOS_IMAGE_INFO  *pVbiosImageInfo = (GFX_VBIOS_IMAGE_INFO *)ConfigPrt;
 	pVbiosImageInfo->ImagePtr = cbfs_boot_map_with_leak(
@@ -110,7 +110,7 @@ AGESA_STATUS agesa_GfxGetVbiosImage(UINT32 Func, UINT32 FchData, VOID *ConfigPrt
 	return (pVbiosImageInfo->ImagePtr ? AGESA_SUCCESS : AGESA_WARNING);
 }
 
-AGESA_STATUS agesa_ReadSpd (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
+AGESA_STATUS agesa_ReadSpd (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {
 	AGESA_STATUS Status = AGESA_UNSUPPORTED;
 #ifdef __PRE_RAM__
@@ -119,7 +119,7 @@ AGESA_STATUS agesa_ReadSpd (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 	return Status;
 }
 
-AGESA_STATUS agesa_ReadSpd_from_cbfs(UINT32 Func, UINT32 Data, VOID *ConfigPtr)
+AGESA_STATUS agesa_ReadSpd_from_cbfs(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {
 	AGESA_STATUS Status = AGESA_UNSUPPORTED;
 #ifdef __PRE_RAM__

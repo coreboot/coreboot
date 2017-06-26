@@ -33,7 +33,7 @@
 #include "northbridge/amd/pi/agesawrapper.h"
 #include <boardid.h>
 
-static AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr);
+static AGESA_STATUS Fch_Oem_config(UINT32 Func, UINTN FchData, VOID *ConfigPtr);
 static AGESA_STATUS board_ReadSpd(UINT32 Func, UINTN Data, VOID *ConfigPtr);
 
 const BIOS_CALLOUT_STRUCT BiosCallouts[] =
@@ -64,7 +64,7 @@ static const GPIO_CONTROL oem_bettong_gpio[] = {
  *  Configure platform specific Hudson device,
  *   such as Azalia, SATA, IMC etc.
  */
-AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr)
+AGESA_STATUS Fch_Oem_config(UINT32 Func, UINTN FchData, VOID *ConfigPtr)
 {
 	AMD_CONFIG_PARAMS *StdHeader = ConfigPtr;
 

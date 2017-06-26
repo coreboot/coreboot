@@ -49,6 +49,6 @@
 
 // AGESA function prototypes
 AGESA_STATUS CALLCONV AmdAgesaDispatcher ( IN OUT VOID *ConfigPtr );
-AGESA_STATUS CALLCONV AmdAgesaCallout ( IN UINT32 Func, IN UINT32 Data, IN OUT VOID *ConfigPtr );
+AGESA_STATUS CALLCONV AmdAgesaCallout ( IN UINT32 Func, IN UINTN Data, IN OUT VOID *ConfigPtr );
 
 #endif // _DISPATCHER_H_

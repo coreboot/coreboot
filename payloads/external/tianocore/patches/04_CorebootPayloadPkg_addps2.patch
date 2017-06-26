@@ -1,0 +1,56 @@
+From 77c5dfcce842819215490fe63c481860fa7d752d Mon Sep 17 00:00:00 2001
+From: CoolStar <coolstarorganization@gmail.com>
+Date: Sun, 4 Dec 2016 11:50:00 -0800
+Subject: [PATCH] CorebootPayloadPkg: Add PS/2 keyboard drivers.
+
+---
+ CorebootPayloadPkg/CorebootPayloadPkg.fdf        | 3 +++
+ CorebootPayloadPkg/CorebootPayloadPkgIa32.dsc    | 3 +++
+ CorebootPayloadPkg/CorebootPayloadPkgIa32X64.dsc | 3 +++
+ 3 files changed, 9 insertions(+)
+
+diff --git a/CorebootPayloadPkg/CorebootPayloadPkg.fdf b/CorebootPayloadPkg/CorebootPayloadPkg.fdf
+index 347e9c75ce..a347af0c9a 100644
+--- a/CorebootPayloadPkg/CorebootPayloadPkg.fdf
++++ b/CorebootPayloadPkg/CorebootPayloadPkg.fdf
+@@ -132,6 +132,9 @@ INF DuetPkg/PciBusNoEnumerationDxe/PciBusNoEnumeration.inf
+ # ISA Support
+ #
+ INF MdeModulePkg/Universal/SerialDxe/SerialDxe.inf
++INF  PcAtChipsetPkg/IsaAcpiDxe/IsaAcpi.inf
++INF  IntelFrameworkModulePkg/Bus/Isa/IsaBusDxe/IsaBusDxe.inf
++INF  IntelFrameworkModulePkg/Bus/Isa/Ps2KeyboardDxe/Ps2keyboardDxe.inf
+ 
+ #
+ # Console Support
+diff --git a/CorebootPayloadPkg/CorebootPayloadPkgIa32.dsc b/CorebootPayloadPkg/CorebootPayloadPkgIa32.dsc
+index 5ce823bb95..60ee064c59 100644
+--- a/CorebootPayloadPkg/CorebootPayloadPkgIa32.dsc
++++ b/CorebootPayloadPkg/CorebootPayloadPkgIa32.dsc
+@@ -492,6 +492,9 @@
+   # ISA Support
+   #
+   MdeModulePkg/Universal/SerialDxe/SerialDxe.inf
++  PcAtChipsetPkg/IsaAcpiDxe/IsaAcpi.inf
++  IntelFrameworkModulePkg/Bus/Isa/IsaBusDxe/IsaBusDxe.inf
++  IntelFrameworkModulePkg/Bus/Isa/Ps2KeyboardDxe/Ps2keyboardDxe.inf
+ 
+   #
+   # Console Support
+diff --git a/CorebootPayloadPkg/CorebootPayloadPkgIa32X64.dsc b/CorebootPayloadPkg/CorebootPayloadPkgIa32X64.dsc
+index fea297a77a..167329c897 100644
+--- a/CorebootPayloadPkg/CorebootPayloadPkgIa32X64.dsc
++++ b/CorebootPayloadPkg/CorebootPayloadPkgIa32X64.dsc
+@@ -493,6 +493,9 @@
+   # ISA Support
+   #
+   MdeModulePkg/Universal/SerialDxe/SerialDxe.inf
++  PcAtChipsetPkg/IsaAcpiDxe/IsaAcpi.inf
++  IntelFrameworkModulePkg/Bus/Isa/IsaBusDxe/IsaBusDxe.inf
++  IntelFrameworkModulePkg/Bus/Isa/Ps2KeyboardDxe/Ps2keyboardDxe.inf
+ 
+   #
+   # Console Support
+-- 
+2.13.2.725.g09c95d1e9-goog
+

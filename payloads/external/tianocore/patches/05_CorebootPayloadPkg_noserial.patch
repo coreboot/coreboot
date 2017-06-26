@@ -1,0 +1,39 @@
+From 77f75370d6fbfefb04456f6e1c32c85d4bac8bf5 Mon Sep 17 00:00:00 2001
+From: Matt Devo <matt.devillier@gmail.com>
+Date: Thu, 23 Feb 2017 14:11:14 -0600
+Subject: [PATCH] CorebootPayloadPkg: don't use serial output
+
+---
+ CorebootPayloadPkg/CorebootPayloadPkgIa32.dsc    | 2 +-
+ CorebootPayloadPkg/CorebootPayloadPkgIa32X64.dsc | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/CorebootPayloadPkg/CorebootPayloadPkgIa32.dsc b/CorebootPayloadPkg/CorebootPayloadPkgIa32.dsc
+index 1d80fc4f5c..ce360c9e9e 100644
+--- a/CorebootPayloadPkg/CorebootPayloadPkgIa32.dsc
++++ b/CorebootPayloadPkg/CorebootPayloadPkgIa32.dsc
+@@ -261,7 +261,7 @@
+ #
+ ################################################################################
+ [PcdsFeatureFlag]
+-  gEfiMdeModulePkgTokenSpaceGuid.PcdStatusCodeUseSerial|TRUE
++  gEfiMdeModulePkgTokenSpaceGuid.PcdStatusCodeUseSerial|FALSE
+   gEfiMdeModulePkgTokenSpaceGuid.PcdStatusCodeUseMemory|FALSE
+   gEfiMdeModulePkgTokenSpaceGuid.PcdDxeIplSwitchToLongMode|FALSE
+   gEfiMdeModulePkgTokenSpaceGuid.PcdConOutGopSupport|TRUE
+diff --git a/CorebootPayloadPkg/CorebootPayloadPkgIa32X64.dsc b/CorebootPayloadPkg/CorebootPayloadPkgIa32X64.dsc
+index 52b26eb3d0..a27b0873a1 100644
+--- a/CorebootPayloadPkg/CorebootPayloadPkgIa32X64.dsc
++++ b/CorebootPayloadPkg/CorebootPayloadPkgIa32X64.dsc
+@@ -261,7 +261,7 @@
+ #
+ ################################################################################
+ [PcdsFeatureFlag]
+-  gEfiMdeModulePkgTokenSpaceGuid.PcdStatusCodeUseSerial|TRUE
++  gEfiMdeModulePkgTokenSpaceGuid.PcdStatusCodeUseSerial|FALSE
+   gEfiMdeModulePkgTokenSpaceGuid.PcdStatusCodeUseMemory|FALSE
+   gEfiMdeModulePkgTokenSpaceGuid.PcdDxeIplSwitchToLongMode|TRUE
+   gEfiMdeModulePkgTokenSpaceGuid.PcdConOutGopSupport|TRUE
+-- 
+2.13.2.725.g09c95d1e9-goog
+

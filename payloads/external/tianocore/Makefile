@@ -61,6 +61,12 @@ $(project_dir)/.version_$(TAG-y): fetch
 			git checkout master; \
 			git branch -D coreboot 2>/dev/null; \
 			git checkout -b coreboot $(TAG-y); \
+		for patch in $(CURDIR)/patches/*.patch; do \
+			echo "Applying $$patch"; \
+			cd $(project_dir); \
+			git am --keep-cr $$patch || \
+				( echo " Error when applying patches.\n"; git am --abort; exit 1; ); \
+		done; \
 		if ! [ "$(TAG-y)" = "origin/master" ] ; then \
 			touch $(project_dir)/.version_$(STABLE_COMMIT_ID); \
 		fi; \

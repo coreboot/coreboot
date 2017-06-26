@@ -84,7 +84,9 @@ static int spi_flash_cmd_read(const struct spi_slave *spi, const u8 *cmd,
 
 /* TODO: This code is quite possibly broken and overflowing stacks. Fix ASAP! */
 #pragma GCC diagnostic push
+#if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic ignored "-Wstack-usage="
+#endif
 int spi_flash_cmd_write(const struct spi_slave *spi, const u8 *cmd,
 			size_t cmd_len, const void *data, size_t data_len)
 {

@@ -1693,9 +1693,7 @@ static void detect_and_enable_probe_filter(device_t dev)
 
 	uint8_t fam15h = 0;
 	uint8_t rev_gte_d = 0;
-	uint8_t dual_node = 0;
 	unsigned nb_cfg_54;
-	uint32_t f3xe8;
 	uint32_t family;
 	uint32_t model;
 
@@ -1711,11 +1709,6 @@ static void detect_and_enable_probe_filter(device_t dev)
 	if ((model >= 0x8) || fam15h)
 		/* Revision D or later */
 		rev_gte_d = 1;
-
-	if (rev_gte_d)
-		/* Check for dual node capability */
-		if (f3xe8 & 0x20000000)
-			dual_node = 1;
 
 	if (rev_gte_d && (sysconf.nodes > 1)) {
 		/* Enable the probe filter */

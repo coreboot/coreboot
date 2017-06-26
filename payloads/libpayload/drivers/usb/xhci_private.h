@@ -387,25 +387,25 @@ typedef struct xhci {
 	   making bitfields unusable for MMIO register blocks. Yay C :-( */
 	volatile struct opreg {
 		u32 usbcmd;
-#define USBCMD_RS 1<<0
-#define USBCMD_HCRST 1<<1
-#define USBCMD_INTE 1<<2
+#define USBCMD_RS (1 << 0)
+#define USBCMD_HCRST (1 << 1)
+#define USBCMD_INTE (1 << 2)
 		u32 usbsts;
-#define USBSTS_HCH 1<<0
-#define USBSTS_HSE 1<<2
-#define USBSTS_EINT 1<<3
-#define USBSTS_PCD 1<<4
-#define USBSTS_CNR 1<<11
+#define USBSTS_HCH (1 << 0)
+#define USBSTS_HSE (1 << 2)
+#define USBSTS_EINT (1 << 3)
+#define USBSTS_PCD (1 << 4)
+#define USBSTS_CNR (1 << 11)
 #define USBSTS_PRSRV_MASK ((1 << 1) | 0xffffe000)
 		u32 pagesize;
 		u8 res1[0x13-0x0c+1];
 		u32 dnctrl;
 		u32 crcr_lo;
 		u32 crcr_hi;
-#define CRCR_RCS 1<<0
-#define CRCR_CS 1<<1
-#define CRCR_CA 1<<2
-#define CRCR_CRR 1<<3
+#define CRCR_RCS (1 << 0)
+#define CRCR_CS (1 << 1)
+#define CRCR_CA (1 << 2)
+#define CRCR_CRR (1 << 3)
 		u8 res2[0x2f-0x20+1];
 		u32 dcbaap_lo;
 		u32 dcbaap_hi;

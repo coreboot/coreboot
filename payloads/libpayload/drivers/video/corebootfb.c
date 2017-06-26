@@ -237,6 +237,8 @@ static int corebootfb_init(void)
 	fbinfo = virt_to_phys(lib_sysinfo.framebuffer);
 
 	fbaddr = FI->physical_address;
+	if (fbaddr == 0)
+		return -1;
 
 	coreboot_video_console.columns = FI->x_resolution / FONT_WIDTH;
 	coreboot_video_console.rows = FI->y_resolution / FONT_HEIGHT;

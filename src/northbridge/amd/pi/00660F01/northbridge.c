@@ -869,7 +869,7 @@ static void cpu_bus_scan(device_t dev)
 
 	AmdGetValue(AMD_GLOBAL_USER_OPTIONS, (VOID**)&options, sizeof(options));
 	AmdGetValue(AMD_GLOBAL_NUM_MODULES, &modules_ptr, sizeof(modules));
-	modules = (*(u32*)modules_ptr) && ((1ull << (sizeof(modules) * 8)) - 1);
+	modules = (*(u32 *)modules_ptr) & ((1ull << (sizeof(modules) * 8)) - 1);
 	ASSERT(modules > 0);
 	ASSERT(options);
 	ioapic_count = (int)options->CfgPlatNumIoApics;

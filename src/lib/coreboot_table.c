@@ -138,7 +138,7 @@ void lb_add_console(uint16_t consoletype, void *data)
 static void lb_framebuffer(struct lb_header *header)
 {
 	struct lb_framebuffer *framebuffer;
-	struct lb_framebuffer fb;
+	struct lb_framebuffer fb = {0};
 
 	if (!IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER) || fill_lb_framebuffer(&fb))
 		return;

@@ -16,18 +16,242 @@
 #ifndef _PI_STONEYRIDGE_PCI_DEVS_H_
 #define _PI_STONEYRIDGE_PCI_DEVS_H_
 
-#define BUS0			0
+#include <device/pci_def.h>
+#include <rules.h>
+
+/* HT Configuration */
+#define HT_DEV			0x18
+#define HT_FUNC			0
+#define HT_DEVID		0x15b0
+#define HT_DEVFN		PCI_DEVFN(HT_DEV, HT_FUNC)
+
+/* Address Maps */
+#define ADDR_DEV		0x18
+#define ADDR_FUNC		1
+#define ADDR_DEVID		0x15b1
+#define ADDR_DEVFN		PCI_DEVFN(ADDR_DEV, ADDR_FUNC)
+
+/* DRAM Configuration */
+#define DCT_DEV			0x18
+#define DCT_FUNC		2
+#define DCT_DEVID		0x15b2
+#define DCT_DEVFN		PCI_DEVFN(DCT_DEV, DCT_FUNC)
+
+/* Misc. Configuration */
+#define MISC_DEV		0x18
+#define MISC_FUNC		3
+#define MISC_DEVID		0x15b3
+#define MISC_DEVFN		PCI_DEVFN(MISC_DEV, MISC_FUNC)
+
+/* PM Configuration */
+#define PM_DEV			0x18
+#define PM_FUNC			4
+#define PM_DEVID		0x15b4
+#define PM_DEVFN		PCI_DEVFN(PM_DEV, PM_FUNC)
+#if !defined(__SIMPLE_DEVICE__)
+ #include <device/device.h>
+ #define DEV_D18F4 dev_find_slot(0, PM_DEVFN)
+#else
+ #define DEV_D18F4 PCI_DEV(0, PM_DEV, PM_FUNC)
+#endif
+
+/* Northbridge Configuration */
+#define NB_DEV			0x18
+#define NB_FUNC			5
+#define NB_DEVID		0x15b5
+#define NB_DEVFN		PCI_DEVFN(NB_DEV, NB_FUNC)
+
+/* GNB Root Complex */
+#define GNB_DEV			0x0
+#define GNB_FUNC		0
+#define GNB_DEVID		0x1576
+#define GNB_DEVFN		PCI_DEVFN(GNB_DEV, GNB_FUNC)
+
+/* IOMMU */
+#define IOMMU_DEV		0x0
+#define IOMMU_FUNC		2
+#define IOMMU_DEVID		0x1577
+#define IOMMU_DEVFN		PCI_DEVFN(IOMMU_DEV, IOMMU_FUNC)
+
+/* Internal Graphics */
+#define GFX_DEV			0x1
+#define GFX_FUNC		0
+#define GFX_DEVID		098e4 /* subject to SKU/OPN variation */
+#define GFX_DEVFN		PCI_DEVFN(GFX_DEV, GFX_FUNC)
+
+/* HD Audio 0 */
+#define HDA0_DEV		0x1
+#define HDA0_FUNC		1
+#define HDA0_DEVID		015b3
+#define HDA0_DEVFN		PCI_DEVFN(HDA_DEV, HDA_FUNC)
+
+/* Host Bridge */
+#define HOST_DEV		0x2
+#define HOST_FUNC		0
+#define HOST_DEVID		0x157b
+#define HOST_DEVFN		PCI_DEVFN(HOST_DEV, HOST_FUNC)
+
+/* PCIe GPP Bridge 0 */
+#define PCIE0_DEV		0x2
+#define PCIE0_FUNC		1
+#define PCIE0_DEVID		0x157c
+#define PCIE0_DEVFN		PCI_DEVFN(PCIE0_DEV, PCIE0_FUNC)
+
+/* PCIe GPP Bridge 1 */
+#define PCIE1_DEV		0x2
+#define PCIE1_FUNC		2
+#define PCIE1_DEVID		0x157c
+#define PCIE1_DEVFN		PCI_DEVFN(PCIE1_DEV, PCIE1_FUNC)
+
+/* PCIe GPP Bridge 2 */
+#define PCIE2_DEV		0x2
+#define PCIE2_FUNC		3
+#define PCIE2_DEVID		0x157c
+#define PCIE2_DEVFN		PCI_DEVFN(PCIE2_DEV, PCIE2_FUNC)
+
+/* PCIe GPP Bridge 3 */
+#define PCIE3_DEV		0x2
+#define PCIE3_FUNC		4
+#define PCIE3_DEVID		0x157c
+#define PCIE3_DEVFN		PCI_DEVFN(PCIE3_DEV, PCIE3_FUNC)
+
+/* PCIe GPP Bridge 4 */
+#define PCIE4_DEV		0x2
+#define PCIE4_FUNC		5
+#define PCIE4_DEVID		0x157c
+#define PCIE4_DEVFN		PCI_DEVFN(PCIE4_DEV, PCIE4_FUNC)
+
+/* Platform Security Processor */
+#define PSP_DEV			0x8
+#define PSP_FUNC		0
+#define PSP_DEVID		0x1578
+#define PSP_DEVFN		PCI_DEVFN(PSP_DEV, PSP_FUNC)
+
+/* HD Audio 1 */
+#define HDA1_DEV		0x9
+#define HDA1_FUNC		2
+#define HDA1_DEVID		0x157a
+#define HDA1_DEVFN		PCI_DEVFN(HDA1_DEV, HDA1_FUNC)
+
+/* HT Configuration */
+#define HT_DEV			0x18
+#define HT_FUNC			0
+#define HT_DEVID		0x15b0
+#define HT_DEVFN		PCI_DEVFN(HT_DEV, HT_FUNC)
+
+/* Address Maps */
+#define ADDR_DEV		0x18
+#define ADDR_FUNC		1
+#define ADDR_DEVID		0x15b1
+#define ADDR_DEVFN		PCI_DEVFN(ADDR_DEV, ADDR_FUNC)
+
+/* DRAM Configuration */
+#define DCT_DEV			0x18
+#define DCT_FUNC		2
+#define DCT_DEVID		0x15b2
+#define DCT_DEVFN		PCI_DEVFN(DCT_DEV, DCT_FUNC)
+
+/* Misc. Configuration */
+#define MISC_DEV		0x18
+#define MISC_FUNC		3
+#define MISC_DEVID		0x15b3
+#define MISC_DEVFN		PCI_DEVFN(MISC_DEV, MISC_FUNC)
+
+/* PM Configuration */
+#define PM_DEV			0x18
+#define PM_FUNC			4
+#define PM_DEVID		0x15b4
+#define PM_DEVFN		PCI_DEVFN(PM_DEV, PM_FUNC)
+#if !defined(__SIMPLE_DEVICE__)
+ #include <device/device.h>
+ #define DEV_D18F4 dev_find_slot(0, PM_DEVFN)
+#else
+ #define DEV_D18F4 PCI_DEV(0, PM_DEV, PM_FUNC)
+#endif
+
+/* Northbridge Configuration */
+#define NB_DEV			0x18
+#define NB_FUNC			5
+#define NB_DEVID		0x15b5
+#define NB_DEVFN		PCI_DEVFN(NB_DEV, NB_FUNC)
+
+/* GNB Root Complex */
+#define GNB_DEV			0x0
+#define GNB_FUNC		0
+#define GNB_DEVID		0x1576
+#define GNB_DEVFN		PCI_DEVFN(GNB_DEV, GNB_FUNC)
+
+/* IOMMU */
+#define IOMMU_DEV		0x0
+#define IOMMU_FUNC		2
+#define IOMMU_DEVID		0x1577
+#define IOMMU_DEVFN		PCI_DEVFN(IOMMU_DEV, IOMMU_FUNC)
+
+/* Internal Graphics */
+#define GFX_DEV			0x1
+#define GFX_FUNC		0
+#define GFX_DEVID		098e4 /* subject to SKU/OPN variation */
+#define GFX_DEVFN		PCI_DEVFN(GFX_DEV, GFX_FUNC)
+
+/* HD Audio 0 */
+#define HDA0_DEV		0x1
+#define HDA0_FUNC		1
+#define HDA0_DEVID		015b3
+#define HDA0_DEVFN		PCI_DEVFN(HDA_DEV, HDA_FUNC)
+
+/* Host Bridge */
+#define HOST_DEV		0x2
+#define HOST_FUNC		0
+#define HOST_DEVID		0x157b
+#define HOST_DEVFN		PCI_DEVFN(HOST_DEV, HOST_FUNC)
+
+/* PCIe GPP Bridge 0 */
+#define PCIE0_DEV		0x2
+#define PCIE0_FUNC		1
+#define PCIE0_DEVID		0x157c
+#define PCIE0_DEVFN		PCI_DEVFN(PCIE0_DEV, PCIE0_FUNC)
+
+/* PCIe GPP Bridge 1 */
+#define PCIE1_DEV		0x2
+#define PCIE1_FUNC		2
+#define PCIE1_DEVID		0x157c
+#define PCIE1_DEVFN		PCI_DEVFN(PCIE1_DEV, PCIE1_FUNC)
+
+/* PCIe GPP Bridge 2 */
+#define PCIE2_DEV		0x2
+#define PCIE2_FUNC		3
+#define PCIE2_DEVID		0x157c
+#define PCIE2_DEVFN		PCI_DEVFN(PCIE2_DEV, PCIE2_FUNC)
+
+/* PCIe GPP Bridge 3 */
+#define PCIE3_DEV		0x2
+#define PCIE3_FUNC		4
+#define PCIE3_DEVID		0x157c
+#define PCIE3_DEVFN		PCI_DEVFN(PCIE3_DEV, PCIE3_FUNC)
+
+/* PCIe GPP Bridge 4 */
+#define PCIE4_DEV		0x2
+#define PCIE4_FUNC		5
+#define PCIE4_DEVID		0x157c
+#define PCIE4_DEVFN		PCI_DEVFN(PCIE4_DEV, PCIE4_FUNC)
+
+/* Platform Security Processor */
+#define PSP_DEV			0x8
+#define PSP_FUNC		0
+#define PSP_DEVID		0x1578
+#define PSP_DEVFN		PCI_DEVFN(PSP_DEV, PSP_FUNC)
+
+/* HD Audio 1 */
+#define HDA1_DEV		0x9
+#define HDA1_FUNC		2
+#define HDA1_DEVID		0x157a
+#define HDA1_DEVFN		PCI_DEVFN(HDA1_DEV, HDA1_FUNC)
 
 /* XHCI */
 #define XHCI_DEV		0x10
 #define XHCI_FUNC		0
 #define XHCI_DEVID		0x7914
 #define XHCI_DEVFN		PCI_DEVFN(XHCI_DEV, XHCI_FUNC)
-
-#define XHCI2_DEV		0x10
-#define XHCI2_FUNC		1
-#define XHCI2_DEVID		0x7814
-#define XHCI2_DEVFN		PCI_DEVFN(XHCI2_DEV, XHCI2_FUNC)
 
 /* SATA */
 #define SATA_DEV		0x11
@@ -37,52 +261,17 @@
 #define AHCI_DEVID_AMD		0x7904
 #define SATA_DEVFN		PCI_DEVFN(SATA_DEV, SATA_FUNC)
 
-/* OHCI */
-#define OHCI1_DEV		0x12
-#define OHCI1_FUNC		0
-#define OHCI2_DEV		0x13
-#define OHCI2_FUNC		0
-#define OHCI3_DEV		0x16
-#define OHCI3_FUNC		0
-#define OHCI4_DEV		0x14
-#define OHCI4_FUNC		5
-#define OHCI_DEVID		0x7807
-#define OHCI1_DEVFN		PCI_DEVFN(OHCI1_DEV, OHCI1_FUNC)
-#define OHCI2_DEVFN		PCI_DEVFN(OHCI2_DEV, OHCI2_FUNC)
-#define OHCI3_DEVFN		PCI_DEVFN(OHCI3_DEV, OHCI3_FUNC)
-#define OHCI4_DEVFN		PCI_DEVFN(OHCI4_DEV, OHCI4_FUNC)
-
 /* EHCI */
 #define EHCI_DEV		0x12
 #define EHCI_FUNC		0
-#define EHCI2_DEV		0x13
-#define EHCI2_FUNC		2
-#define EHCI3_DEV		0x16
-#define EHCI3_FUNC		2
 #define EHCI_DEVID		0x7908
-#define EHCI1_DEVFN		PCI_DEVFN(EHCI1_DEV, EHCI1_FUNC)
-#define EHCI2_DEVFN		PCI_DEVFN(EHCI2_DEV, EHCI2_FUNC)
-#define EHCI3_DEVFN		PCI_DEVFN(EHCI3_DEV, EHCI3_FUNC)
+#define EHCI1_DEVFN		PCI_DEVFN(EHCI_DEV, EHCI_FUNC)
 
 /* SMBUS */
 #define SMBUS_DEV		0x14
 #define SMBUS_FUNC		0
 #define SMBUS_DEVID		0x790b
 #define SMBUS_DEVFN		PCI_DEVFN(SMBUS_DEV, SMBUS_FUNC)
-
-/* IDE */
-#if IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_PI_BOLTON)
-#define IDE_DEV			0x14
-#define IDE_FUNC		1
-#define IDE_DEVID		0x780c
-#define IDE_DEVFN		PCI_DEVFN(IDE_DEV, IDE_FUNC)
-#endif
-
-/* HD Audio */
-#define HDA_DEV			0x14
-#define HDA_FUNC		2
-#define HDA_DEVID		0x780d
-#define HDA_DEVFN		PCI_DEVFN(HDA_DEV, HDA_FUNC)
 
 /* LPC BUS */
 #define PCU_DEV			0x14
@@ -95,22 +284,5 @@
 #define SD_FUNC			7
 #define SD_DEVID		0x7906
 #define SD_DEVFN		PCI_DEVFN(SD_DEV, SD_FUNC)
-
-/* PCIe Ports */
-#if IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_PI_BOLTON)
-#define SB_PCIE_DEV		0x15
-#define SB_PCIE_PORT1_FUNC	0
-#define SB_PCIE_PORT2_FUNC	1
-#define SB_PCIE_PORT3_FUNC	2
-#define SB_PCIE_PORT4_FUNC	3
-#define SB_PCIE_PORT1_DEVID	0x7820
-#define SB_PCIE_PORT2_DEVID	0x7821
-#define SB_PCIE_PORT3_DEVID	0x7822
-#define SB_PCIE_PORT4_DEVID	0x7823
-#define SB_PCIE_PORT1_DEVFN	PCI_DEVFN(SB_PCIE_DEV, SB_PCIE_PORT1_FUNC)
-#define SB_PCIE_PORT2_DEVFN	PCI_DEVFN(SB_PCIE_DEV, SB_PCIE_PORT2_FUNC)
-#define SB_PCIE_PORT3_DEVFN	PCI_DEVFN(SB_PCIE_DEV, SB_PCIE_PORT3_FUNC)
-#define SB_PCIE_PORT4_DEVFN	PCI_DEVFN(SB_PCIE_DEV, SB_PCIE_PORT4_FUNC)
-#endif
 
 #endif /* _PI_STONEYRIDGE_PCI_DEVS_H_ */

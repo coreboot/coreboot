@@ -143,7 +143,7 @@ typedef struct ehci {
 } ehci_t;
 
 #define PS_TERMINATE 1
-#define PS_TYPE_QH 1 << 1
+#define PS_TYPE_QH (1 << 1)
 #define PS_PTR_MASK ~0x1f
 
 #define EHCI_INST(controller) ((ehci_t*)((controller)->instance))

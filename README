@@ -51,6 +51,8 @@ Build Requirements
    ANY_TOOLCHAIN Kconfig option if you're feeling lucky (no support in this
    case).
  * iasl (for targets with ACPI support)
+ * pkg-config
+ * libssl-dev (openssl)
 
 Optional:
 

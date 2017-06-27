@@ -108,7 +108,7 @@ static void set_vga_enable_reg(u32 nodeid, u32 linkn)
 	u32 val;
 
 	printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
-	val =  1 | (nodeid<<4) | (linkn<<12);
+	val =  1 | (nodeid << 4) | (linkn << 12);
 	/* it will routing (1)mmio  0xa0000:0xbffff (2) io 0x3b0:0x3bb,
 	   0x3c0:0x3df */
 	f1_write_config32(0xf4, val);
@@ -162,7 +162,7 @@ static struct resource *amdfam12_find_iopair(device_t dev, unsigned nodeid, unsi
 	if (!reg) {
 		//because of Extend conf space, we will never run out of reg, but we need one index to differ them. so same node and same link can have multi range
 		u32 index = get_io_addr_index(nodeid, link);
-		reg = 0x110+ (index<<24) + (4<<20); // index could be 0, 255
+		reg = 0x110+ (index << 24) + (4 << 20); // index could be 0, 255
 	}
 
 	resource = new_resource(dev, IOINDEX(0x1000 + reg, link));
@@ -198,7 +198,7 @@ static struct resource *amdfam12_find_mempair(device_t dev, u32 nodeid, u32 link
 		// but we need one index to differ them. so same node and
 		// same link can have multi range
 		u32 index = get_mmio_addr_index(nodeid, link);
-		reg = 0x110+ (index<<24) + (6<<20); // index could be 0, 63
+		reg = 0x110+ (index << 24) + (6 << 20); // index could be 0, 63
 	}
 
 	resource = new_resource(dev, IOINDEX(0x1000 + reg, link));
@@ -280,7 +280,7 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 	if (d.mask & 1) {
 		hole = pci_read_config32(__f1_dev[0], 0xf0);
 		if (hole & 1) { // we find the hole
-			mem_hole.hole_startk = (hole & (0xff<<24)) >> 10;
+			mem_hole.hole_startk = (hole & (0xff << 24)) >> 10;
 			mem_hole.node_id = 0; // record the node No with hole
 		}
 	}

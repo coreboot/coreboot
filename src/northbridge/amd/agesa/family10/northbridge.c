@@ -63,14 +63,14 @@ static dram_base_mask_t get_dram_base_mask(u32 nodeid)
 	temp = pci_read_config32(dev, 0x44 + (nodeid << 3)); //[39:24] at [31:16]
 	d.mask = ((temp & 0xfff80000)>>(8+3)); // mask out  DramMask [26:24] too
 	temp = pci_read_config32(dev, 0x144 + (nodeid <<3)) & 0xff; //[47:40] at [7:0]
-	d.mask |= temp<<21;
+	d.mask |= temp << 21;
 
 	temp = pci_read_config32(dev, 0x40 + (nodeid << 3)); //[39:24] at [31:16]
 	d.mask |= (temp & 1); // enable bit
 
 	d.base = ((temp & 0xfff80000)>>(8+3)); // mask out DramBase [26:24) too
 	temp = pci_read_config32(dev, 0x140 + (nodeid <<3)) & 0xff; //[47:40] at [7:0]
-	d.base |= temp<<21;
+	d.base |= temp << 21;
 	return d;
 }
 
@@ -82,12 +82,12 @@ static u32 check_segn(device_t dev, u32 segbusn, u32 nodes,
 	if ((segbusn & 0xff)>(0xe0-1)) {// use next segn
 		u32 segn = (segbusn >> 8) & 0x0f;
 		segn++;
-		segbusn = segn<<8;
+		segbusn = segn << 8;
 	}
 	if (segbusn>>8) {
 		u32 val;
 		val = pci_read_config32(dev, 0x160);
-		val &= ~(0xf<<25);
+		val &= ~(0xf << 25);
 		val |= (segbusn & 0xf00)<<(25-8);
 		pci_write_config32(dev, 0x160, val);
 	}
@@ -135,9 +135,9 @@ static void store_conf_io_addr(u32 nodeid, u32 linkn, u32 reg, u32 index,
 	index = (reg-0xc0)>>3;
 
 	val = (nodeid & 0x3f); // 6 bits used
-	sysconf.conf_io_addr[index] = val | ((io_max<<8) & 0xfffff000); //limit : with nodeid
+	sysconf.conf_io_addr[index] = val | ((io_max << 8) & 0xfffff000); //limit : with nodeid
 	val = 3 | ((linkn & 0x7)<<4); // 8 bits used
-	sysconf.conf_io_addrx[index] = val | ((io_min<<8) & 0xfffff000); // base : with enable bit
+	sysconf.conf_io_addrx[index] = val | ((io_min << 8) & 0xfffff000); // base : with enable bit
 
 	if (sysconf.io_addr_num<(index+1))
 		sysconf.io_addr_num = index+1;
@@ -166,11 +166,11 @@ static void set_io_addr_reg(device_t dev, u32 nodeid, u32 linkn, u32 reg,
 	u32 tempreg;
 
 	/* io range allocation */
-	tempreg = (nodeid&0xf) | ((nodeid & 0x30)<<(8-4)) | (linkn<<4) |  ((io_max&0xf0)<<(12-4)); //limit
+	tempreg = (nodeid&0xf) | ((nodeid & 0x30)<<(8-4)) | (linkn << 4) |  ((io_max&0xf0)<<(12-4)); //limit
 	for (i = 0; i < sysconf.nodes; i++)
 		pci_write_config32(__f1_dev[i], reg+4, tempreg);
 
-	tempreg = 3 /*| (3<<4)*/ | ((io_min&0xf0)<<(12-4));	      //base :ISA and VGA ?
+	tempreg = 3 /*| (3 << 4)*/ | ((io_min&0xf0)<<(12-4));	      //base :ISA and VGA ?
 	for (i = 0; i < sysconf.nodes; i++)
 		pci_write_config32(__f1_dev[i], reg, tempreg);
 }
@@ -181,7 +181,7 @@ static void set_mmio_addr_reg(u32 nodeid, u32 linkn, u32 reg, u32 index, u32 mmi
 	u32 tempreg;
 
 	/* io range allocation */
-	tempreg = (nodeid&0xf) | (linkn<<4) |	 (mmio_max&0xffffff00); //limit
+	tempreg = (nodeid&0xf) | (linkn << 4) |	 (mmio_max&0xffffff00); //limit
 	for (i = 0; i < nodes; i++)
 		pci_write_config32(__f1_dev[i], reg+4, tempreg);
 	tempreg = 3 | (nodeid & 0x30) | (mmio_min&0xffffff00);
@@ -267,7 +267,7 @@ static void set_vga_enable_reg(u32 nodeid, u32 linkn)
 {
 	u32 val;
 
-	val =  1 | (nodeid<<4) | (linkn<<12);
+	val =  1 | (nodeid << 4) | (linkn << 12);
 	/* it will routing (1)mmio  0xa0000:0xbffff (2) io 0x3b0:0x3bb,
 	 0x3c0:0x3df */
 	f1_write_config32(0xf4, val);
@@ -329,7 +329,7 @@ static struct resource *amdfam10_find_iopair(device_t dev, unsigned nodeid, unsi
 	if (!reg) {
 		//because of Extend conf space, we will never run out of reg, but we need one index to differ them. so same node and same link can have multi range
 		u32 index = get_io_addr_index(nodeid, link);
-		reg = 0x110+ (index<<24) + (4<<20); // index could be 0, 255
+		reg = 0x110+ (index << 24) + (4 << 20); // index could be 0, 255
 	}
 
 	resource = new_resource(dev, IOINDEX(0x1000 + reg, link));
@@ -366,7 +366,7 @@ static struct resource *amdfam10_find_mempair(device_t dev, u32 nodeid, u32 link
 		// but we need one index to differ them. so same node and
 		// same link can have multi range
 		u32 index = get_mmio_addr_index(nodeid, link);
-		reg = 0x110+ (index<<24) + (6<<20); // index could be 0, 63
+		reg = 0x110+ (index << 24) + (6 << 20); // index could be 0, 63
 
 	}
 	resource = new_resource(dev, IOINDEX(0x1000 + reg, link));
@@ -669,7 +669,7 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 
 		hole = pci_read_config32(__f1_dev[i], 0xf0);
 		if (hole & 1) { // we find the hole
-			mem_hole.hole_startk = (hole & (0xff<<24)) >> 10;
+			mem_hole.hole_startk = (hole & (0xff << 24)) >> 10;
 			mem_hole.node_id = i; // record the node No with hole
 			break; // only one hole
 		}
@@ -936,7 +936,7 @@ static void cpu_bus_scan(device_t dev)
 	nb_cfg_54 = 0;
 	ApicIdCoreIdSize = (cpuid_ecx(0x80000008)>>12 & 0xf);
 	if (ApicIdCoreIdSize) {
-		siblings = (1<<ApicIdCoreIdSize)-1;
+		siblings = (1 << ApicIdCoreIdSize)-1;
 	} else {
 		siblings = 3; //quad core
 	}

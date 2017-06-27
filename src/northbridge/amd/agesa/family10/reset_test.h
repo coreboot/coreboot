@@ -23,9 +23,9 @@
 
 #define NODE_ID			0x60
 #define HT_INIT_CONTROL		0x6c
-#define HTIC_ColdR_Detect	(1<<4)
-#define HTIC_BIOSR_Detect	(1<<5)
-#define HTIC_INIT_Detect	(1<<6)
+#define HTIC_ColdR_Detect	(1 << 4)
+#define HTIC_BIOSR_Detect	(1 << 5)
+#define HTIC_INIT_Detect	(1 << 6)
 
 static inline u32 warm_reset_detect(u8 nodeid)
 {

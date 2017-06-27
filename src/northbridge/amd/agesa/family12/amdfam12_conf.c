@@ -53,12 +53,12 @@ static void set_ht_c_io_addr_reg(u32 nodeid, u32 linkn, u32 ht_c_index,
 	device_t dev;
 
 	/* io range allocation */
-	tempreg = (nodeid&0xf) | ((nodeid & 0x30)<<(8-4)) | (linkn<<4) |  ((io_max&0xf0)<<(12-4)); //limit
+	tempreg = (nodeid&0xf) | ((nodeid & 0x30)<<(8-4)) | (linkn << 4) |  ((io_max&0xf0)<<(12-4)); //limit
 	for (i = 0; i < nodes; i++) {
 		dev = NODE_PCI(i, 1);
 		pci_write_config32(dev, 0xC4 + ht_c_index * 8, tempreg);
 	}
-	tempreg = 3 /*| (3<<4)*/ | ((io_min&0xf0)<<(12-4));	     //base :ISA and VGA ?
+	tempreg = 3 /*| (3 << 4)*/ | ((io_min&0xf0)<<(12-4));	     //base :ISA and VGA ?
 	for (i = 0; i < nodes; i++) {
 		dev = NODE_PCI(i, 1);
 		pci_write_config32(dev, 0xC0 + ht_c_index * 8, tempreg);
@@ -98,10 +98,10 @@ static void set_io_addr_reg(device_t dev, u32 nodeid, u32 linkn, u32 reg,
 
 	u32 tempreg;
 	/* io range allocation */
-	tempreg = (nodeid&0xf) | ((nodeid & 0x30)<<(8-4)) | (linkn<<4) |  ((io_max&0xf0)<<(12-4)); //limit
+	tempreg = (nodeid&0xf) | ((nodeid & 0x30)<<(8-4)) | (linkn << 4) |  ((io_max&0xf0)<<(12-4)); //limit
 	pci_write_config32(__f1_dev[0], reg+4, tempreg);
 
-	tempreg = 3 /*| (3<<4)*/ | ((io_min&0xf0)<<(12-4));	      //base :ISA and VGA ?
+	tempreg = 3 /*| (3 << 4)*/ | ((io_min&0xf0)<<(12-4));	      //base :ISA and VGA ?
 	pci_write_config32(__f1_dev[0], reg, tempreg);
 }
 
@@ -111,7 +111,7 @@ static void set_mmio_addr_reg(u32 nodeid, u32 linkn, u32 reg, u32 index, u32 mmi
 
 	u32 tempreg;
 	/* io range allocation */
-	tempreg = (nodeid&0xf) | (linkn<<4) |	 (mmio_max&0xffffff00); //limit
+	tempreg = (nodeid&0xf) | (linkn << 4) |	 (mmio_max&0xffffff00); //limit
 	pci_write_config32(__f1_dev[0], reg+4, tempreg);
 	tempreg = 3 | (nodeid & 0x30) | (mmio_min&0xffffff00);
 	pci_write_config32(__f1_dev[0], reg, tempreg);

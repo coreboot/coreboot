@@ -66,12 +66,12 @@ static dram_base_mask_t get_dram_base_mask(u32 nodeid)
 	temp = pci_read_config32(dev, 0x44 + (nodeid << 3)); //[39:24] at [31:16]
 	d.mask = ((temp & 0xfff80000)>>(8+3)); // mask out  DramMask [26:24] too
 	temp = pci_read_config32(dev, 0x144 + (nodeid <<3)) & 0xff; //[47:40] at [7:0]
-	d.mask |= temp<<21;
+	d.mask |= temp << 21;
 	temp = pci_read_config32(dev, 0x40 + (nodeid << 3)); //[39:24] at [31:16]
 	d.mask |= (temp & 1); // enable bit
 	d.base = ((temp & 0xfff80000)>>(8+3)); // mask out DramBase [26:24) too
 	temp = pci_read_config32(dev, 0x140 + (nodeid <<3)) & 0xff; //[47:40] at [7:0]
-	d.base |= temp<<21;
+	d.base |= temp << 21;
 	return d;
 }
 
@@ -81,10 +81,10 @@ static void set_io_addr_reg(device_t dev, u32 nodeid, u32 linkn, u32 reg,
 	u32 i;
 	u32 tempreg;
 	/* io range allocation */
-	tempreg = (nodeid&0xf) | ((nodeid & 0x30)<<(8-4)) | (linkn<<4) | ((io_max&0xf0)<<(12-4)); //limit
+	tempreg = (nodeid&0xf) | ((nodeid & 0x30)<<(8-4)) | (linkn << 4) | ((io_max&0xf0)<<(12-4)); //limit
 	for (i = 0; i < node_nums; i++)
 		pci_write_config32(__f1_dev[i], reg+4, tempreg);
-	tempreg = 3 /*| (3<<4)*/ | ((io_min&0xf0)<<(12-4));	      //base :ISA and VGA ?
+	tempreg = 3 /*| (3 << 4)*/ | ((io_min&0xf0)<<(12-4));	      //base :ISA and VGA ?
 	for (i = 0; i < node_nums; i++)
 		pci_write_config32(__f1_dev[i], reg, tempreg);
 }
@@ -94,7 +94,7 @@ static void set_mmio_addr_reg(u32 nodeid, u32 linkn, u32 reg, u32 index, u32 mmi
 	u32 i;
 	u32 tempreg;
 	/* io range allocation */
-	tempreg = (nodeid&0xf) | (linkn<<4) |	 (mmio_max&0xffffff00); //limit
+	tempreg = (nodeid&0xf) | (linkn << 4) |	 (mmio_max&0xffffff00); //limit
 	for (i = 0; i < nodes; i++)
 		pci_write_config32(__f1_dev[i], reg+4, tempreg);
 	tempreg = 3 | (nodeid & 0x30) | (mmio_min&0xffffff00);
@@ -173,7 +173,7 @@ static void set_vga_enable_reg(u32 nodeid, u32 linkn)
 {
 	u32 val;
 
-	val =  1 | (nodeid<<4) | (linkn<<12);
+	val =  1 | (nodeid << 4) | (linkn << 12);
 	/* it will routing
 	 * (1)mmio 0xa0000:0xbffff
 	 * (2)io   0x3b0:0x3bb, 0x3c0:0x3df
@@ -664,7 +664,7 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 		if (!(d.mask & 1)) continue; // no memory on this node
 		hole = pci_read_config32(__f1_dev[i], 0xf0);
 		if (hole & 1) { // we find the hole
-			mem_hole.hole_startk = (hole & (0xff<<24)) >> 10;
+			mem_hole.hole_startk = (hole & (0xff << 24)) >> 10;
 			mem_hole.node_id = i; // record the node No with hole
 			break; // only one hole
 		}

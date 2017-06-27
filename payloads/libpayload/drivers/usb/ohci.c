@@ -232,8 +232,8 @@ ohci_init (unsigned long physical_bar)
 	OHCI_INST (controller)->opreg->HcControl |= PeriodicListEnable;
 	OHCI_INST (controller)->opreg->HcControl &= ~IsochronousEnable; // unused by this driver
 	// disable everything, contrary to what OHCI spec says in 5.1.1.4, as we don't need IRQs
-	OHCI_INST (controller)->opreg->HcInterruptEnable = 1<<31;
-	OHCI_INST (controller)->opreg->HcInterruptDisable = ~(1<<31);
+	OHCI_INST (controller)->opreg->HcInterruptEnable = 1 << 31;
+	OHCI_INST (controller)->opreg->HcInterruptDisable = ~(1 << 31);
 	OHCI_INST (controller)->opreg->HcInterruptStatus = ~0;
 	OHCI_INST (controller)->opreg->HcPeriodicStart = (((OHCI_INST (controller)->opreg->HcFmInterval & FrameIntervalMask) / 10) * 9);
 	OHCI_INST (controller)->opreg->HcControl = (OHCI_INST (controller)->opreg->HcControl & ~HostControllerFunctionalStateMask) | USBOperational;

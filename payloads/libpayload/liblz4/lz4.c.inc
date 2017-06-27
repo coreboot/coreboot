@@ -64,17 +64,17 @@ static void LZ4_wildCopy(void* dstPtr, const void* srcPtr, void* dstEnd)
 #define MFLIMIT (WILDCOPYLENGTH+MINMATCH)
 static const int LZ4_minLength = (MFLIMIT+1);
 
-#define KB *(1 <<10)
-#define MB *(1 <<20)
-#define GB *(1U<<30)
+#define KB *(1 << 10)
+#define MB *(1 << 20)
+#define GB *(1U << 30)
 
 #define MAXD_LOG 16
 #define MAX_DISTANCE ((1 << MAXD_LOG) - 1)
 
 #define ML_BITS  4
-#define ML_MASK  ((1U<<ML_BITS)-1)
+#define ML_MASK  ((1U << ML_BITS)-1)
 #define RUN_BITS (8-ML_BITS)
-#define RUN_MASK ((1U<<RUN_BITS)-1)
+#define RUN_MASK ((1U << RUN_BITS)-1)
 
 
 /**************************************

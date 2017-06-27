@@ -192,7 +192,7 @@ static void corebootfb_update_cursor(void)
 	int ch, paint;
 	if(cursor_en) {
 		ch = CHARS[cursor_y * coreboot_video_console.columns + cursor_x];
-		paint = (ch & 0xff) | ((ch<<4) & 0xf000) | ((ch >> 4) & 0x0f00);
+		paint = (ch & 0xff) | ((ch << 4) & 0xf000) | ((ch >> 4) & 0x0f00);
 	} else {
 		paint = CHARS[cursor_y * coreboot_video_console.columns + cursor_x];
 	}

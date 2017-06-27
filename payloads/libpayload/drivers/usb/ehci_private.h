@@ -101,7 +101,7 @@ typedef volatile struct {
 #define QTD_CPAGE_SHIFT 12
 #define QTD_CPAGE_MASK (7 << QTD_CPAGE_SHIFT)
 #define QTD_TOTAL_LEN_SHIFT 16
-#define QTD_TOTAL_LEN_MASK (((1<<15)-1) << QTD_TOTAL_LEN_SHIFT)
+#define QTD_TOTAL_LEN_MASK (((1 << 15)-1) << QTD_TOTAL_LEN_SHIFT)
 #define QTD_TOGGLE_SHIFT 31
 #define QTD_TOGGLE_MASK (1 << 31)
 #define QTD_TOGGLE_DATA0 0
@@ -113,10 +113,10 @@ typedef volatile struct {
 typedef volatile struct {
 	u32 horiz_link_ptr;
 #define QH_TERMINATE 1
-#define QH_iTD (0<<1)
-#define QH_QH (1<<1)
-#define QH_siTD (2<<1)
-#define QH_FSTN (3<<1)
+#define QH_iTD (0 << 1)
+#define QH_QH (1 << 1)
+#define QH_siTD (2 << 1)
+#define QH_FSTN (3 << 1)
 	u32 epchar;
 #define QH_EP_SHIFT 8
 #define QH_EPS_SHIFT 12

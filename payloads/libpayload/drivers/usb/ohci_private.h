@@ -38,13 +38,13 @@
 	typedef enum { CMD} reg;
 
 	enum {
-		NumberDownstreamPorts = 1<<0,
-		PowerSwitchingMode = 1<<8,
-		NoPowerSwitching = 1<<9,
-		DeviceType = 1<<10,
-		OverCurrentProtectionMode = 1<<11,
-		NoOverCurrentProtection = 1<<12,
-		PowerOnToPowerGoodTime = 1<<24
+		NumberDownstreamPorts = 1 << 0,
+		PowerSwitchingMode = 1 << 8,
+		NoPowerSwitching = 1 << 9,
+		DeviceType = 1 << 10,
+		OverCurrentProtectionMode = 1 << 11,
+		NoOverCurrentProtection = 1 << 12,
+		PowerOnToPowerGoodTime = 1 << 24
 	} HcRhDescriptorAReg;
 
 	enum {
@@ -53,47 +53,47 @@
 	} HcRhDescriptorAMask;
 
 	enum {
-		DeviceRemovable = 1<<0,
-		PortPowerControlMask = 1<<16
+		DeviceRemovable = 1 << 0,
+		PortPowerControlMask = 1 << 16
 	} HcRhDescriptorBReg;
 
 	enum {
-		CurrentConnectStatus		= 1<<0,
-		PortEnableStatus		= 1<<1,
-		PortSuspendStatus		= 1<<2,
-		PortOverCurrentIndicator	= 1<<3,
-		PortResetStatus			= 1<<4,
-		PortPowerStatus			= 1<<8,
-		LowSpeedDeviceAttached		= 1<<9,
-		ConnectStatusChange		= 1<<16,
-		PortEnableStatusChange		= 1<<17,
-		PortSuspendStatusChange		= 1<<18,
-		PortOverCurrentIndicatorChange	= 1<<19,
-		PortResetStatusChange		= 1<<20
+		CurrentConnectStatus		= 1 << 0,
+		PortEnableStatus		= 1 << 1,
+		PortSuspendStatus		= 1 << 2,
+		PortOverCurrentIndicator	= 1 << 3,
+		PortResetStatus			= 1 << 4,
+		PortPowerStatus			= 1 << 8,
+		LowSpeedDeviceAttached		= 1 << 9,
+		ConnectStatusChange		= 1 << 16,
+		PortEnableStatusChange		= 1 << 17,
+		PortSuspendStatusChange		= 1 << 18,
+		PortOverCurrentIndicatorChange	= 1 << 19,
+		PortResetStatusChange		= 1 << 20
 	} HcRhPortStatusRead;
 	enum {
-		ClearPortEnable			= 1<<0,
-		SetPortEnable			= 1<<1,
-		SetPortSuspend			= 1<<2,
-		ClearSuspendStatus		= 1<<3,
-		SetPortReset			= 1<<4,
-		SetPortPower			= 1<<8,
-		ClearPortPower			= 1<<9,
+		ClearPortEnable			= 1 << 0,
+		SetPortEnable			= 1 << 1,
+		SetPortSuspend			= 1 << 2,
+		ClearSuspendStatus		= 1 << 3,
+		SetPortReset			= 1 << 4,
+		SetPortPower			= 1 << 8,
+		ClearPortPower			= 1 << 9,
 	} HcRhPortStatusSet;
 
 	enum {
-		LocalPowerStatus = 1<<0,
-		OverCurrentIndicator = 1<<1,
-		DeviceRemoteWakeupEnable = 1<<15,
-		LocalPowerStatusChange = 1<<16,
-		OverCurrentIndicatorChange = 1<<17,
-		ClearRemoteWakeupEnable = 1<<31
+		LocalPowerStatus = 1 << 0,
+		OverCurrentIndicator = 1 << 1,
+		DeviceRemoteWakeupEnable = 1 << 15,
+		LocalPowerStatusChange = 1 << 16,
+		OverCurrentIndicatorChange = 1 << 17,
+		ClearRemoteWakeupEnable = 1 << 31
 	} HcRhStatusReg;
 
 	enum {
-		FrameInterval = 1<<0,
-		FSLargestDataPacket = 1<<16,
-		FrameIntervalToggle = 1<<31
+		FrameInterval = 1 << 0,
+		FSLargestDataPacket = 1 << 16,
+		FrameIntervalToggle = 1 << 31
 	} HcFmIntervalOffset;
 	enum {
 		FrameIntervalMask = MASK(0, 14),
@@ -102,15 +102,15 @@
 	} HcFmIntervalMask;
 
 	enum {
-		ControlBulkServiceRatio = 1<<0,
-		PeriodicListEnable = 1<<2,
-		IsochronousEnable = 1<<3,
-		ControlListEnable = 1<<4,
-		BulkListEnable = 1<<5,
-		HostControllerFunctionalState = 1<<6,
-		InterruptRouting = 1<<8,
-		RemoteWakeupConnected = 1<<9,
-		RemoteWakeupEnable = 1<<10
+		ControlBulkServiceRatio = 1 << 0,
+		PeriodicListEnable = 1 << 2,
+		IsochronousEnable = 1 << 3,
+		ControlListEnable = 1 << 4,
+		BulkListEnable = 1 << 5,
+		HostControllerFunctionalState = 1 << 6,
+		InterruptRouting = 1 << 8,
+		RemoteWakeupConnected = 1 << 9,
+		RemoteWakeupEnable = 1 << 10
 	} HcControlReg;
 
 	enum {
@@ -126,11 +126,11 @@
 	};
 
 	enum {
-		HostControllerReset = 1<<0,
-		ControlListFilled = 1<<1,
-		BulkListFilled = 1<<2,
-		OwnershipChangeRequest = 1<<3,
-		SchedulingOverrunCount = 1<<16
+		HostControllerReset = 1 << 0,
+		ControlListFilled = 1 << 1,
+		BulkListFilled = 1 << 2,
+		OwnershipChangeRequest = 1 << 3,
+		SchedulingOverrunCount = 1 << 16
 	} HcCommandStatusReg;
 
 	enum {
@@ -138,19 +138,19 @@
 	} HcCommandStatusMask;
 
 	enum {
-		FrameRemaining = 1<<0,
-		FrameRemainingToggle = 1<<31
+		FrameRemaining = 1 << 0,
+		FrameRemainingToggle = 1 << 31
 	} HcFmRemainingReg;
 
 	enum {
-		SchedulingOverrung = 1<<0,
-		WritebackDoneHead = 1<<1,
-		StartofFrame = 1<<2,
-		ResumeDetected = 1<<3,
-		UnrecoverableError = 1<<4,
-		FrameNumberOverflow = 1<<5,
-		RootHubStatusChange = 1<<6,
-		OwnershipChange = 1<<30
+		SchedulingOverrung = 1 << 0,
+		WritebackDoneHead = 1 << 1,
+		StartofFrame = 1 << 2,
+		ResumeDetected = 1 << 3,
+		UnrecoverableError = 1 << 4,
+		FrameNumberOverflow = 1 << 5,
+		RootHubStatusChange = 1 << 6,
+		OwnershipChange = 1 << 30
 	} HcInterruptStatusReg;
 
      typedef struct {

@@ -21,9 +21,9 @@ typedef __SIZE_TYPE__ ssize_t;
 	"`struct " #structure "` offset for `" #member "` is not " #offset)
 
 /* Standard units. */
-#define KiB (1<<10)
-#define MiB (1<<20)
-#define GiB (1<<30)
+#define KiB (1 << 10)
+#define MiB (1 << 20)
+#define GiB (1 << 30)
 
 #define KHz (1000)
 #define MHz (1000*KHz)

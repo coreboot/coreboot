@@ -98,10 +98,10 @@
 
 #include <stdint.h>
 
-#define DAIF_DBG_BIT      (1<<3)
-#define DAIF_ABT_BIT      (1<<2)
-#define DAIF_IRQ_BIT      (1<<1)
-#define DAIF_FIQ_BIT      (1<<0)
+#define DAIF_DBG_BIT      (1 << 3)
+#define DAIF_ABT_BIT      (1 << 2)
+#define DAIF_IRQ_BIT      (1 << 1)
+#define DAIF_FIQ_BIT      (1 << 0)
 
 #define SWITCH_CASE_READ(func, var, type, el)	 do {	\
 	type var = -1;					\

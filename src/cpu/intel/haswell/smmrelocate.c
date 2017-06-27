@@ -42,8 +42,8 @@
 #define SMBASE_MSR 0xc20
 #define IEDBASE_MSR 0xc22
 
-#define SMRR_SUPPORTED (1<<11)
-#define EMRR_SUPPORTED (1<<12)
+#define SMRR_SUPPORTED (1 << 11)
+#define EMRR_SUPPORTED (1 << 12)
 
 struct smm_relocation_params {
 	u32 smram_base;

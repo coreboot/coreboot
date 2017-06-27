@@ -64,7 +64,7 @@ static void enable_apic_ext_id(u32 nodes)
 		u32 val;
 		dev = get_node_pci(nodeid, 0);
 		val = pci_read_config32(dev, 0x68);
-		val |= (1<<17)|(1<<18);
+		val |= (1 << 17)|(1 << 18);
 		pci_write_config32(dev, 0x68, val);
 	}
 }

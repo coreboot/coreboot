@@ -190,7 +190,7 @@ static void c7_init(struct device *dev)
 
 	/* Enable APIC */
 	msr = rdmsr(0x1107);
-	msr.lo |= 1<<24;
+	msr.lo |= 1 << 24;
 	wrmsr(0x1107, msr);
 
 	/* Turn on cache */

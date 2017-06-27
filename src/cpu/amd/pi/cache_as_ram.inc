@@ -43,7 +43,7 @@ cache_as_ram_setup:
   /* Turn on OSFXSR [BIT9] and OSXMMEXCPT [BIT10] onto CR4 register */
 
   movl %cr4, %eax
-  orl $(3<<9), %eax
+  orl $(3 << 9), %eax
   movl %eax, %cr4
 
   /* Get the cpu_init_detected */

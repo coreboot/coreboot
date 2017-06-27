@@ -54,8 +54,8 @@ void setup_bsp_ramtop(void)
 	    "%s, TOP MEM2: msr.lo = 0x%08x, msr.hi = 0x%08x\n",
 	     __func__, msr2.lo, msr2.hi);
 
-	amd_topmem = (uint64_t) msr.hi<<32 | msr.lo;
-	amd_topmem2 = (uint64_t) msr2.hi<<32 | msr2.lo;
+	amd_topmem = (uint64_t) msr.hi << 32 | msr.lo;
+	amd_topmem2 = (uint64_t) msr2.hi << 32 | msr2.lo;
 }
 
 static void setup_ap_ramtop(void)
@@ -128,7 +128,7 @@ void amd_setup_mtrrs(void)
 
 	/* if DRAM above 4GB: set SYSCFG_MSR_TOM2En and SYSCFG_MSR_TOM2WB */
 	sys_cfg.lo &= ~(SYSCFG_MSR_TOM2En | SYSCFG_MSR_TOM2WB);
-	if (bsp_topmem2() > (uint64_t)1<<32) {
+	if (bsp_topmem2() > (uint64_t)1 << 32) {
 		sys_cfg.lo |= SYSCFG_MSR_TOM2En;
 		if (has_tom2wb)
 			sys_cfg.lo |= SYSCFG_MSR_TOM2WB;

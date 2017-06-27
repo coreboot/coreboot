@@ -28,7 +28,7 @@
 #include <console/console.h>
 #include "smi.h"
 
-#define SMRR_SUPPORTED (1<<11)
+#define SMRR_SUPPORTED (1 << 11)
 
 #define  D_OPEN		(1 << 6)
 #define  D_CLS		(1 << 5)

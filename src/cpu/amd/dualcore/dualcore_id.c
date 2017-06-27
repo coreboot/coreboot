@@ -43,14 +43,14 @@ struct node_core_id get_node_core_id(unsigned nb_cfg_54)
 		//   when NB_CFG[54] is set, nodeid = ebx[27:25], coreid = ebx[24]
 		id.coreid = (cpuid_ebx(1) >> 24) & 0xf;
 		id.nodeid = (id.coreid>>CORE_ID_BIT);
-		id.coreid &= ((1<<CORE_ID_BIT)-1);
+		id.coreid &= ((1 << CORE_ID_BIT)-1);
 	}
 	else
 	{
 		// when NB_CFG[54] is clear, nodeid = ebx[26:24], coreid = ebx[27]
 		id.nodeid = (cpuid_ebx(1) >> 24) & 0xf;
 		id.coreid = (id.nodeid>>NODE_ID_BIT);
-		id.nodeid &= ((1<<NODE_ID_BIT)-1);
+		id.nodeid &= ((1 << NODE_ID_BIT)-1);
 	}
 	return id;
 }

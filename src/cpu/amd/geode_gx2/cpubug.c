@@ -54,8 +54,8 @@ static void pcideadlock(void)
 	 * for PCI writes to complete.
 	 */
 	msr = rdmsr(CPU_DM_CONFIG0);
-	msr.hi &= ~(7<<DM_CONFIG0_UPPER_WSREQ_SHIFT);
-	msr.hi |= (2<<DM_CONFIG0_UPPER_WSREQ_SHIFT);
+	msr.hi &= ~(7 << DM_CONFIG0_UPPER_WSREQ_SHIFT);
+	msr.hi |= (2 << DM_CONFIG0_UPPER_WSREQ_SHIFT);
 	msr.lo |= DM_CONFIG0_LOWER_MISSER_SET;
 	wrmsr(CPU_DM_CONFIG0, msr);
 
@@ -126,7 +126,7 @@ static void eng1398(void)
 	msr = rdmsr(MSR_GLCP+0x17);
 	if ((msr.lo & 0xff) <= CPU_REV_2_0) {
 		msr = rdmsr(GLCP_SYS_RSTPLL);
-		if (msr.lo & (1<<RSTPPL_LOWER_SDRMODE_SHIFT))
+		if (msr.lo & (1 << RSTPPL_LOWER_SDRMODE_SHIFT))
 			return;
 	}
 

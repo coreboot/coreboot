@@ -104,12 +104,12 @@ static void nano_power(void)
 	 * This MSR is not documented by VIA docs, other than setting these
 	 * bits */
 	msr = rdmsr(NANO_MYSTERIOUS_MSR);
-	msr.lo |= ( (1<<7) | (1<<4) );
+	msr.lo |= ( (1 << 7) | (1 << 4) );
 	/* FIXME: Do we have a 6-bit or 7-bit VRM?
 	 * set bit [5] for 7-bit, or don't set it for 6 bit VRM
 	 * This will probably require a Kconfig option
 	 * My board has a 7-bit VRM, so I can't test the 6-bit VRM stuff */
-	msr.lo |= (1<<5);
+	msr.lo |= (1 << 5);
 	wrmsr(NANO_MYSTERIOUS_MSR, msr);
 
 	/* Set the maximum frequency and voltage */
@@ -117,7 +117,7 @@ static void nano_power(void)
 
 	/* Enable TM3 */
 	msr = rdmsr(MSR_IA32_MISC_ENABLE);
-	msr.lo |= ( (1<<3) | (1<<13) );
+	msr.lo |= ( (1 << 3) | (1 << 13) );
 	wrmsr(MSR_IA32_MISC_ENABLE, msr);
 
 	u8 stepping = ( cpuid_eax(0x1) ) &0xf;
@@ -125,14 +125,14 @@ static void nano_power(void)
 		/* Hello Nano 3000. The Terminator needs a CPU upgrade */
 		/* Enable C1e, C2e, C3e, and C4e states */
 		msr = rdmsr(MSR_IA32_MISC_ENABLE);
-		msr.lo |= ( (1<<25) | (1<<26) | (1<<31)); /* C1e, C2e, C3e */
-		msr.hi |= (1<<0); /* C4e */
+		msr.lo |= ( (1 << 25) | (1 << 26) | (1 << 31)); /* C1e, C2e, C3e */
+		msr.hi |= (1 << 0); /* C4e */
 		wrmsr(MSR_IA32_MISC_ENABLE, msr);
 	}
 
 	/* Lock on Powersaver */
 	msr = rdmsr(MSR_IA32_MISC_ENABLE);
-	msr.lo |= (1<<20);
+	msr.lo |= (1 << 20);
 	wrmsr(MSR_IA32_MISC_ENABLE, msr);
 }
 

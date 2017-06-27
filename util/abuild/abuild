@@ -75,10 +75,6 @@ MAKE=$i
 # this can be changed to junit by -J
 mode=text
 
-# silent mode.. no compiler calls, only warnings in the log files.
-# this is disabled per default but can be enabled with -s
-silent=
-
 # quiet mode: only print pass, failure, and 'skipped' messages
 quiet=false
 
@@ -274,14 +270,10 @@ function update_config
 	# shellcheck disable=SC2059
 	printf "$configoptions" >> "${config_file}"
 
-	# shellcheck disable=SC2086
-	# Disabling SC2086 for "$silent" only
-	yes "" 2>/dev/null | $MAKE oldconfig $silent "DOTCONFIG=${config_file}" "obj=${build_dir}" "objutil=$TARGET/sharedutils" &> "${build_dir}/config.log" ; \
+	yes "" 2>/dev/null | $MAKE oldconfig "$verboseopt" "DOTCONFIG=${config_file}" "obj=${build_dir}" "objutil=$TARGET/sharedutils" &> "${build_dir}/config.log" ; \
 		CONFIG_OK=$?
 	if [ $CONFIG_OK -eq 0 ]; then
-		# shellcheck disable=SC2086
-		# Disabling SC2086 for "$silent" only
-		$MAKE savedefconfig $silent DEFCONFIG="${defconfig_file}" DOTCONFIG="${config_file}" obj="${build_dir}" objutil="$TARGET/sharedutils" &>> "${build_dir}/config.log"
+		$MAKE savedefconfig "$verboseopt" DEFCONFIG="${defconfig_file}" DOTCONFIG="${config_file}" obj="${build_dir}" objutil="$TARGET/sharedutils" &>> "${build_dir}/config.log"
 		return $?
 	else
 		return 1
@@ -348,8 +340,7 @@ function compile_target
 
 	CURR=$( pwd )
 	#stime=`perl -e 'print time();' 2>/dev/null || date +%s`
-	# shellcheck disable=SC2086
-	eval $BUILDPREFIX $MAKE $silent DOTCONFIG="${build_dir}/config.build" obj="${build_dir}" objutil="$TARGET/sharedutils" BUILD_TIMELESS=$TIMELESS \
+	eval $BUILDPREFIX $MAKE "$verboseopt" DOTCONFIG="${build_dir}/config.build" obj="${build_dir}" objutil="$TARGET/sharedutils" BUILD_TIMELESS=$TIMELESS \
 		&> "${build_dir}/make.log" ; \
 		MAKE_FAILED=$?
 	cp .xcompile "${build_dir}/xcompile.build"
@@ -551,7 +542,6 @@ Options:\n"
     [-R|--root <path>]            Absolute path to coreboot sources
                                   (defaults to $ROOT)
     [--scan-build]                Use clang's static analyzer
-    [-s|--silent]                 Omit compiler calls in logs
     [--timeless]                  Generate timeless builds
     [-t|--target <vendor/board>]  Attempt to build target vendor/board only
     [-T|--test]                   Submit image(s) to automated test system
@@ -567,6 +557,7 @@ Options:\n"
     [-V|--version]                Print version number and exit
     [-h|--help]                   Print this help and exit
 
+    [-s|--silent]                 obsolete
 __END_OF_HELP
 }
 
@@ -625,6 +616,7 @@ fi
 
 chromeos=false
 clean_work=false
+verboseopt='V=0'
 customizing=""
 configoptions=""
 # testclass needs to be undefined if not used for variable expansion to work
@@ -636,7 +628,7 @@ while true ; do
 		-a|--all)	shift; buildall=true;;
 		-d|--dir)	shift; configdir="$1"; shift;;
 		-r|--remove)	shift; remove=true;;
-		-v|--verbose)	shift; verbose=true; silent='V=1';;
+		-v|--verbose)	shift; verbose=true; verboseopt='V=1';;
 		-q|--quiet)	shift; quiet=true;;
 		-V|--version)	shift; myversion; exit 0;;
 		-h|--help)	shift; myversion; myhelp; exit 0;;
@@ -649,7 +641,8 @@ while true ; do
 			test "$1" == "1" && cpuconfig=" on 1 cpu"
 			expr "$1" : '-\?[0-9]\+$' > /dev/null && test "0$1" -gt 1 && cpuconfig=" on $1 cpus in parallel"
 			shift;;
-		-s|--silent)    shift; silent="-s";;
+		# obsolete option
+		-s|--silent)    shift;;
 		--scan-build)   shift
 			scanbuild=true
 			customizing="${customizing}, scan-build"

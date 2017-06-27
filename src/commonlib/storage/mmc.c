@@ -433,7 +433,7 @@ int mmc_update_capacity(struct storage_media *media)
 	 * ext_csd's capacity is valid if the value is
 	 * more than 2GB
 	 */
-	capacity = (ext_csd[EXT_CSD_SEC_CNT + 0] << 0 |
+	capacity = (uint32_t)(ext_csd[EXT_CSD_SEC_CNT + 0] << 0 |
 		    ext_csd[EXT_CSD_SEC_CNT + 1] << 8 |
 		    ext_csd[EXT_CSD_SEC_CNT + 2] << 16 |
 		    ext_csd[EXT_CSD_SEC_CNT + 3] << 24);

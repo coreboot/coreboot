@@ -17,6 +17,7 @@
 #include <arch/acpi.h>
 #include <types.h>
 #include <string.h>
+#include <cbfs.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
@@ -67,70 +68,195 @@ void intel_gma_restore_opregion(void)
 	}
 }
 
-static void *get_intel_vbios(void)
+static enum cb_err vbt_validate(struct region_device *rdev)
 {
-	/* This should probably be looking at CBFS or we should always
-	 * deploy the VBIOS on Intel systems, even if we don't run it
-	 * in coreboot (e.g. SeaBIOS only scenarios).
-	 */
-	u8 *vbios = (u8 *)0xc0000;
+	uint32_t sig;
 
-	optionrom_header_t *oprom = (optionrom_header_t *)vbios;
-	optionrom_pcir_t *pcir = (optionrom_pcir_t *)(vbios +
-						oprom->pcir_offset);
-
-	printk(BIOS_DEBUG, "GET_VBIOS: %x %x %x %x %x\n",
-		oprom->signature, pcir->vendor, pcir->classcode[0],
-		pcir->classcode[1], pcir->classcode[2]);
-
-
-	if ((oprom->signature == OPROM_SIGNATURE) &&
-		(pcir->vendor == PCI_VENDOR_ID_INTEL) &&
-		(pcir->classcode[0] == 0x00) &&
-		(pcir->classcode[1] == 0x00) &&
-		(pcir->classcode[2] == 0x03))
-		return (void *)vbios;
-
-	return NULL;
-}
-
-static enum cb_err init_opregion_vbt(igd_opregion_t *opregion)
-{
-	void *vbios;
-	vbios = get_intel_vbios();
-	if (!vbios) {
-		printk(BIOS_DEBUG, "VBIOS not found.\n");
+	if (rdev_readat(rdev, &sig, 0, sizeof(sig)) != sizeof(sig))
 		return CB_ERR;
-	}
 
-	printk(BIOS_DEBUG, " ... VBIOS found at %p\n", vbios);
-	optionrom_header_t *oprom = (optionrom_header_t *)vbios;
-	optionrom_vbt_t *vbt = (optionrom_vbt_t *)(vbios +
-						oprom->vbt_offset);
-
-	if (read32(vbt->hdr_signature) != VBT_SIGNATURE) {
-		printk(BIOS_DEBUG, "VBT not found!\n");
+	if (sig != VBT_SIGNATURE)
 		return CB_ERR;
-	}
-
-	memcpy(opregion->header.vbios_version, vbt->coreblock_biosbuild, 4);
-	memcpy(opregion->vbt.gvd1, vbt, vbt->hdr_vbt_size < 7168 ?
-						vbt->hdr_vbt_size : 7168);
 
 	return CB_SUCCESS;
 }
 
-/* Initialize IGD OpRegion, called from ACPI code and OS drivers */
-enum cb_err intel_gma_init_igd_opregion(igd_opregion_t *opregion)
+static enum cb_err locate_vbt_vbios(const u8 *vbios, struct region_device *rdev)
 {
+	const optionrom_header_t *oprom;
+	const optionrom_pcir_t *pcir;
+	struct region_device rd;
 	enum cb_err ret;
+	u8 opromsize;
+	size_t offset;
 
-	memset((void *)opregion, 0, sizeof(igd_opregion_t));
+	// FIXME: caller should supply a region_device instead of vbios pointer
+	if (rdev_chain(&rd, &addrspace_32bit.rdev, (uintptr_t)vbios,
+	    sizeof(*oprom)))
+		return CB_ERR;
 
-	// FIXME if IGD is disabled, we should exit here.
+	if (rdev_readat(&rd, &opromsize, offsetof(optionrom_header_t, size),
+	    sizeof(opromsize)) != sizeof(opromsize) || !opromsize)
+		return CB_ERR;
+
+	if (rdev_chain(&rd, &addrspace_32bit.rdev, (uintptr_t)vbios,
+	    opromsize * 512))
+		return CB_ERR;
+
+	oprom = rdev_mmap(&rd, 0, sizeof(*oprom));
+	if (!oprom)
+		return CB_ERR;
+
+	if (!oprom->pcir_offset || !oprom->vbt_offset) {
+		rdev_munmap(&rd, (void *)oprom);
+		return CB_ERR;
+	}
+
+	pcir = rdev_mmap(&rd, oprom->pcir_offset, sizeof(*pcir));
+	if (pcir == NULL) {
+		rdev_munmap(&rd, (void *)oprom);
+		return CB_ERR;
+	}
+
+	printk(BIOS_DEBUG, "GMA: locate_vbt_vbios: %x %x %x %x %x\n",
+		oprom->signature, pcir->vendor, pcir->classcode[0],
+		pcir->classcode[1], pcir->classcode[2]);
+
+	/* Make sure we got an Intel VGA option rom */
+	if ((oprom->signature != OPROM_SIGNATURE) ||
+	    (pcir->vendor != PCI_VENDOR_ID_INTEL) ||
+	    (pcir->signature != 0x52494350) ||
+	    (pcir->classcode[0] != 0x00) ||
+	    (pcir->classcode[1] != 0x00) ||
+	    (pcir->classcode[2] != 0x03)) {
+		rdev_munmap(&rd, (void *)oprom);
+		rdev_munmap(&rd, (void *)pcir);
+		return CB_ERR;
+	}
+
+	rdev_munmap(&rd, (void *)pcir);
+
+	/* Search for $VBT as some VBIOS are broken... */
+	offset = oprom->vbt_offset;
+	do {
+		ret = rdev_chain(rdev, &rd, offset,
+				 (opromsize * 512) - offset);
+		offset++;
+	} while (ret == CB_SUCCESS && vbt_validate(rdev) != CB_SUCCESS);
+
+	offset--;
+
+	if (ret == CB_SUCCESS && offset != oprom->vbt_offset)
+		printk(BIOS_WARNING, "GMA: Buggy VBIOS found\n");
+	else if (ret != CB_SUCCESS)
+		printk(BIOS_ERR, "GMA: Broken VBIOS found\n");
+
+	rdev_munmap(&rd, (void *)oprom);
+	return ret;
+}
+
+static enum cb_err locate_vbt_cbfs(struct region_device *rdev)
+{
+	struct cbfsf file_desc;
+
+	/* try to locate vbt.bin in CBFS */
+	if (cbfs_boot_locate(&file_desc, "vbt.bin", NULL) == CB_SUCCESS) {
+		cbfs_file_data(rdev, &file_desc);
+		printk(BIOS_INFO, "GMA: Found VBT in CBFS\n");
+		return CB_SUCCESS;
+	}
+
+	return CB_ERR;
+}
+
+static enum cb_err locate_vbt_vbios_cbfs(struct region_device *rdev)
+{
+	const u8 *oprom =
+		(const u8 *)pci_rom_probe(dev_find_slot(0, PCI_DEVFN(0x2, 0)));
+	if (oprom == NULL)
+		return CB_ERR;
+
+	printk(BIOS_INFO, "GMA: Found VBIOS in CBFS\n");
+
+	return locate_vbt_vbios(oprom, rdev);
+}
+
+/* Initialize IGD OpRegion, called from ACPI code and OS drivers */
+enum cb_err
+intel_gma_init_igd_opregion(igd_opregion_t *opregion)
+{
+	struct region_device rdev;
+	optionrom_vbt_t *vbt = NULL;
+	optionrom_vbt_t *ext_vbt;
+	bool found = false;
+
+	/* Search for vbt.bin in CBFS. */
+	if (locate_vbt_cbfs(&rdev) == CB_SUCCESS &&
+	    vbt_validate(&rdev) == CB_SUCCESS) {
+		found = true;
+		printk(BIOS_INFO, "GMA: Found valid VBT in CBFS\n");
+	}
+	/* Search for pci8086,XXXX.rom in CBFS. */
+	else if (locate_vbt_vbios_cbfs(&rdev) == CB_SUCCESS &&
+		 vbt_validate(&rdev) == CB_SUCCESS) {
+		found = true;
+		printk(BIOS_INFO, "GMA: Found valid VBT in VBIOS\n");
+	}
+	/*
+	 * Try to locate Intel VBIOS at 0xc0000. It might have been placed by
+	 * Native Graphics Init as fake Option ROM or when coreboot did run the
+	 * VBIOS on legacy platforms.
+	 * TODO: Place generated fake VBT in CBMEM and get rid of this.
+	 */
+	else if (locate_vbt_vbios((u8 *)0xc0000, &rdev) == CB_SUCCESS &&
+		 vbt_validate(&rdev) == CB_SUCCESS) {
+		found = true;
+		printk(BIOS_INFO, "GMA: Found valid VBT in legacy area\n");
+	}
+
+	if (!found) {
+		printk(BIOS_ERR, "GMA: VBT couldn't be found\n");
+		return CB_ERR;
+	}
+
+	vbt = rdev_mmap_full(&rdev);
+	if (!vbt) {
+		printk(BIOS_ERR, "GMA: Error mapping VBT\n");
+		return CB_ERR;
+	}
+
+	if (vbt->hdr_vbt_size > region_device_sz(&rdev)) {
+		printk(BIOS_ERR, "GMA: Error mapped only a partial VBT\n");
+		rdev_munmap(&rdev, vbt);
+		return CB_ERR;
+	}
+
+	memset(opregion, 0, sizeof(igd_opregion_t));
 
 	memcpy(&opregion->header.signature, IGD_OPREGION_SIGNATURE,
 		sizeof(opregion->header.signature));
+	memcpy(opregion->header.vbios_version, vbt->coreblock_biosbuild,
+					ARRAY_SIZE(vbt->coreblock_biosbuild));
+	/* Extended VBT support */
+	if (vbt->hdr_vbt_size > sizeof(opregion->vbt.gvd1)) {
+		ext_vbt = cbmem_add(CBMEM_ID_EXT_VBT, vbt->hdr_vbt_size);
+
+		if (ext_vbt == NULL) {
+			printk(BIOS_ERR,
+			       "GMA: Unable to add Ext VBT to cbmem!\n");
+			rdev_munmap(&rdev, vbt);
+			return CB_ERR;
+		}
+
+		memcpy(ext_vbt, vbt, vbt->hdr_vbt_size);
+		opregion->mailbox3.rvda = (uintptr_t)ext_vbt;
+		opregion->mailbox3.rvds = vbt->hdr_vbt_size;
+	} else {
+		/* Raw VBT size which can fit in gvd1 */
+		memcpy(opregion->vbt.gvd1, vbt, vbt->hdr_vbt_size);
+	}
+
+	rdev_munmap(&rdev, vbt);
 
 	/* 8kb */
 	opregion->header.size = sizeof(igd_opregion_t) / 1024;
@@ -157,10 +283,6 @@ enum cb_err intel_gma_init_igd_opregion(igd_opregion_t *opregion)
 	opregion->mailbox3.bclm[8] = IGD_WORD_FIELD_VALID + 0x50cc;
 	opregion->mailbox3.bclm[9] = IGD_WORD_FIELD_VALID + 0x5ae5;
 	opregion->mailbox3.bclm[10] = IGD_WORD_FIELD_VALID + 0x64ff;
-
-	ret = init_opregion_vbt(opregion);
-	if (ret != CB_SUCCESS)
-		return ret;
 
 	/* Write ASLS PCI register and prepare SWSCI register. */
 	intel_gma_opregion_register((uintptr_t)opregion);

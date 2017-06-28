@@ -35,7 +35,7 @@ void mainboard_memory_init_params(struct romstage_params *params,
 	MEMORY_INIT_UPD *memory_params)
 {
 	struct spd_block blk = {
-		.addr_map = { 0xa0 },
+		.addr_map = { 0x50 },
 	};
 
 	memory_params->DqPinsInterleaved = 1;

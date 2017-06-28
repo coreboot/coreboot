@@ -128,8 +128,6 @@ int get_spd_cbfs_rdev(struct region_device *spd_rdev, u8 spd_index)
 static void get_spd(u8 *spd, u8 addr)
 {
 	u16 i;
-	/* Assuming addr is 8 bit address, make it 7 bit */
-	addr = addr >> 1;
 	if (smbus_read_byte(0, addr, 0)  == 0xff) {
 		printk(BIOS_INFO, "No memory dimm at address %02X\n",
 			addr << 1);

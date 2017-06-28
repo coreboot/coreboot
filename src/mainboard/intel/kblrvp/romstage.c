@@ -51,7 +51,7 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 		mem_cfg->MemorySpdPtr00 = (uintptr_t)rdev_mmap_full(&spd_rdev);
 	} else {  /* for CONFIG_BOARD_INTEL_KBLRVP7 */
 		struct spd_block blk = {
-			.addr_map = { 0xa0, 0xa2, 0xa4, 0xa6, },
+			.addr_map = { 0x50, 0x51, 0x52, 0x53, },
 		};
 
 		mem_cfg->DqPinsInterleaved = 1;

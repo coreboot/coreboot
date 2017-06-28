@@ -32,7 +32,7 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 
 	/* Read spd block to get memory config */
 	struct spd_block blk = {
-		.addr_map = { 0xa0, 0xa4, },
+		.addr_map = { 0x50, 0x52, },
 	};
 	mem_cfg->DqPinsInterleaved = 1;
 	get_spd_smbus(&blk);

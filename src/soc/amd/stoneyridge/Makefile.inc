@@ -72,7 +72,6 @@ ramstage-y += model_15_init.c
 ramstage-y += northbridge.c
 ramstage-y += reset.c
 ramstage-y += sata.c
-ramstage-y += sd.c
 ramstage-y += sm.c
 ramstage-y += smbus.c
 ramstage-y += ramtop.c

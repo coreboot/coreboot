@@ -88,9 +88,8 @@ config MAINBOARD_USES_FSP2_0
 	default n
 
 config USE_FSP2_0_DRIVER
-	bool "Build with FSP 2.0"
+	def_bool y
 	depends on MAINBOARD_USES_FSP2_0
-	default y if MAINBOARD_USES_FSP2_0
 	select PLATFORM_USES_FSP2_0
 	select ADD_VBT_DATA_FILE if RUN_FSP_GOP
 	select SOC_INTEL_COMMON_GFX_OPREGION
@@ -98,9 +97,8 @@ config USE_FSP2_0_DRIVER
 	select POSTCAR_STAGE
 
 config USE_FSP1_1_DRIVER
-	bool "Build with FSP 1.1"
+	def_bool y
 	depends on !MAINBOARD_USES_FSP2_0
-	default y if !MAINBOARD_USES_FSP2_0
 	select PLATFORM_USES_FSP1_1
 	select DISPLAY_FSP_ENTRY_POINTS
 

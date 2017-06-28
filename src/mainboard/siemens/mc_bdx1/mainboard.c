@@ -20,6 +20,7 @@
 #include <device/device.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
+#include <device/pci_ids.h>
 #include <console/console.h>
 #if CONFIG_VGA_ROM_RUN
 #include <x86emu/x86emu.h>
@@ -125,6 +126,20 @@ static void mainboard_final(void *chip_info)
 	write16((spi_base + SPI_REG_OPTYPE), SPI_OPTYPE);
 	write32((spi_base + SPI_REG_OPMENU_L), SPI_OPMENU_LOWER);
 	write32((spi_base + SPI_REG_OPMENU_H), SPI_OPMENU_UPPER);
+
+	/* Set Master Enable for on-board PCI devices. */
+	dev = dev_find_device(PCI_VENDOR_ID_SIEMENS, 0x403e, 0);
+	if (dev) {
+		uint16_t cmd = pci_read_config16(dev, PCI_COMMAND);
+		cmd |= PCI_COMMAND_MASTER;
+		pci_write_config16(dev, PCI_COMMAND, cmd);
+	}
+	dev = dev_find_device(PCI_VENDOR_ID_SIEMENS, 0x403f, 0);
+	if (dev) {
+		uint16_t cmd = pci_read_config16(dev, PCI_COMMAND);
+		cmd |= PCI_COMMAND_MASTER;
+		pci_write_config16(dev, PCI_COMMAND, cmd);
+	}
 }
 
 /** \brief This function can decide if a given MAC address is valid or not.

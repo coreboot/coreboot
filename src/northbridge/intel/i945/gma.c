@@ -37,7 +37,7 @@
 #define  LVDS_CLOCK_A_POWERUP_ALL	(3 << 8)
 #define  LVDS_CLOCK_B_POWERUP_ALL	(3 << 4)
 #define  LVDS_CLOCK_BOTH_POWERUP_ALL	(3 << 2)
-#define   DISPPLANE_BGRX888			(0x6<<26)
+
 #define   DPLLB_LVDS_P2_CLOCK_DIV_7	(1 << 24) /* i915 */
 
 #define   DPLL_INTEGRATED_CRI_CLK_VLV	(1 << 14)

@@ -7,6 +7,32 @@ chip soc/intel/skylake
 	register "deep_s5_enable_dc" = "1"
 	register "deep_sx_config" = "DSX_EN_LAN_WAKE_PIN | DSX_EN_WAKE_PIN"
 
+	# Mapping of USB port # to device
+	#+----------------+-------+-----------------------------------+
+	#| Device         | Port# | Rev                               |
+	#+----------------+-------+-----------------------------------+
+	#| USB C          |   1   | 2/3                               |
+	#| USB A Rear     |   2   | 2/3                               |
+	#| USB A Front    |   3   | 2/3                               |
+	#| USB A Front    |   4   | 2/3                               |
+	#| USB A Rear     |   5   | 2 on base celeron, 2/3 all others |
+	#| USB A Rear     |   6   | 2 on base celeron, 2/3 all others |
+	#| Bluetooth      |   7   |                                   |
+	#| Daughter Board |   8   |                                   |
+	#+----------------+-------+-----------------------------------+
+
+	# Bitmap for Wake Enable on USB attach/detach
+	register "usb2_wake_enable_bitmap" = "USB_PORT_WAKE_ENABLE(2) | \
+					      USB_PORT_WAKE_ENABLE(3) | \
+					      USB_PORT_WAKE_ENABLE(4) | \
+					      USB_PORT_WAKE_ENABLE(5) | \
+					      USB_PORT_WAKE_ENABLE(6)"
+	register "usb3_wake_enable_bitmap" = "USB_PORT_WAKE_ENABLE(2) | \
+					      USB_PORT_WAKE_ENABLE(3) | \
+					      USB_PORT_WAKE_ENABLE(4) | \
+					      USB_PORT_WAKE_ENABLE(5) | \
+					      USB_PORT_WAKE_ENABLE(6)"
+
 	# GPE configuration
 	# Note that GPE events called out in ASL code rely on this
 	# route. i.e. If this route changes then the affected GPE

@@ -160,10 +160,11 @@ void set_power_limits(u8 power_limit_1_time)
 	limit.lo |= (power_limit_1_val & PKG_POWER_LIMIT_TIME_MASK) <<
 		PKG_POWER_LIMIT_TIME_SHIFT;
 
-	/* Set short term power limit to 1.25 * TDP */
+	/* Set short term power limit to 1.25 * TDP if no config given */
 	limit.hi = 0;
 	tdp_pl2 = (conf->tdp_pl2_override == 0) ?
 		(tdp * 125) / 100 : (conf->tdp_pl2_override * power_unit);
+	printk(BIOS_DEBUG, "CPU PL2 = %u Watts\n", tdp_pl2 / power_unit);
 	limit.hi |= (tdp_pl2) & PKG_POWER_LIMIT_MASK;
 	limit.hi |= PKG_POWER_LIMIT_CLAMP;
 	limit.hi |= PKG_POWER_LIMIT_EN;
@@ -174,6 +175,20 @@ void set_power_limits(u8 power_limit_1_time)
 	/* Set PL2 power limit values in MCHBAR and disable PL1 */
 	MCHBAR32(MCH_PKG_POWER_LIMIT_LO) = limit.lo & (~(PKG_POWER_LIMIT_EN));
 	MCHBAR32(MCH_PKG_POWER_LIMIT_HI) = limit.hi;
+
+	/* Set PsysPl2 */
+	if (conf->tdp_psyspl2) {
+		limit = rdmsr(MSR_PLATFORM_POWER_LIMIT);
+		limit.hi = 0;
+		printk(BIOS_DEBUG, "CPU PsysPL2 = %u Watts\n",
+			conf->tdp_psyspl2);
+		limit.hi |= (conf->tdp_psyspl2 * power_unit) &
+			PKG_POWER_LIMIT_MASK;
+		limit.hi |= PKG_POWER_LIMIT_CLAMP;
+		limit.hi |= PKG_POWER_LIMIT_EN;
+
+		wrmsr(MSR_PLATFORM_POWER_LIMIT, limit);
+	}
 
 	/* Set DDR RAPL power limit by copying from MMIO to MSR */
 	msr.lo = MCHBAR32(MCH_DDR_POWER_LIMIT_LO);

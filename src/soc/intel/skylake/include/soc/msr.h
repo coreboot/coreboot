@@ -37,5 +37,6 @@
 #define MSR_VR_MISC_CONFIG2		0x636
 #define MSR_PP0_POWER_LIMIT		0x638
 #define MSR_PP1_POWER_LIMIT		0x640
+#define MSR_PLATFORM_POWER_LIMIT        0x65c
 
 #endif

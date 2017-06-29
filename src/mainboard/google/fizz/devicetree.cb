@@ -210,7 +210,7 @@ chip soc/intel/skylake
 	}"
 
 	register "speed_shift_enable" = "1"
-	register "tdp_pl2_override" = "7"
+	register "tdp_psyspl2" = "90"
 	register "tcc_offset" = "10"     # TCC of 90C
 
 	# Use default SD card detect GPIO configuration

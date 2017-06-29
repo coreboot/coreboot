@@ -15,14 +15,38 @@
 
 #include <arch/acpi.h>
 #include <console/console.h>
+#include <chip.h>
 #include <device/device.h>
 #include <ec/ec.h>
+#include <intelblocks/mp_init.h>
 #include <soc/pci_devs.h>
 #include <soc/nhlt.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
 static const char *oem_id = "GOOGLE";
 static const char *oem_table_id = "FIZZ";
+
+/*
+ * mainboard_get_pl2
+ *
+ * @return value Pl2 should be set to based on cpu id
+ *
+ * TODO: This is purely based on cpu id, which only works for the
+ * current build because we have a different cpu id per sku.  However,
+ * on the next build, we'll have distinct board ids per sku.  We'll
+ * need to modify that at this point.
+ */
+static u32 mainboard_get_pl2(void)
+{
+	struct cpuid_result cpuidr;
+
+	cpuidr = cpuid(1);
+	if (cpuidr.eax == CPUID_KABYLAKE_Y0) {
+		/* i7 needs higher pl2 */
+		return 44;
+	}
+	return 29;
+}
 
 static void mainboard_init(device_t dev)
 {
@@ -58,6 +82,10 @@ static unsigned long mainboard_write_acpi_tables(
 static void mainboard_enable(device_t dev)
 {
 	device_t tpm;
+	device_t root = SA_DEV_ROOT;
+	config_t *conf = root->chip_info;
+
+	conf->tdp_pl2_override = mainboard_get_pl2();
 
 	dev->ops->init = mainboard_init;
 	dev->ops->acpi_inject_dsdt_generator = chromeos_dsdt_generator;

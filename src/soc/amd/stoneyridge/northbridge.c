@@ -676,7 +676,7 @@ void cpu_bus_scan(device_t dev)
 	  */
 
 	lapicid_start = 0x10; /* Get this from devicetree? see comment above. */
-	enable_node = cdb_dev && cdb_dev->enabled;
+	enable_node = cdb_dev->enabled;
 	cpu_bus = dev->link_list;
 
 	for (j = 0 ; j <= siblings ; j++) {

@@ -30,7 +30,6 @@
 #include <superio/nuvoton/nct5104d/nct5104d.h>
 #include <smbios.h>
 #include <string.h>
-#include <build.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
 #include <spd_bin.h>
@@ -178,9 +177,6 @@ static void mainboard_enable(device_t dev)
 	if (bsp_topmem2() > 0)
 		total_mem += (bsp_topmem2() / (1024 * 1024)) - 4 * 1024;
 
-	printk(BIOS_ALERT, CONFIG_MAINBOARD_PART_NUMBER "\n");
-	printk(BIOS_ALERT, "coreboot build %s\n", COREBOOT_DMI_DATE);
-	printk(BIOS_ALERT, "BIOS version %s\n", COREBOOT_ORIGIN_GIT_TAG);
 	printk(BIOS_ALERT, "%d MB", total_mem);
 
 	//

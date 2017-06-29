@@ -34,6 +34,7 @@
 #include <cpu/amd/pi/s3_resume.h>
 #include <Fch/Fch.h>
 #include "gpio_ftns.h"
+#include <build.h>
 
 static void early_lpc_init(void);
 
@@ -76,6 +77,11 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		memptr = (u32 *)(ACPI_MMIO_BASE + MISC_BASE + FCH_MISC_REG40 );
 		data = *memptr;
 		printk(BIOS_INFO, "FCH_MISC_REG40 is 0x%08x \n", data);
+
+		// sign of life strings
+		printk(BIOS_ALERT, CONFIG_MAINBOARD_PART_NUMBER "\n");
+		printk(BIOS_ALERT, "coreboot build %s\n", COREBOOT_DMI_DATE);
+		printk(BIOS_ALERT, "BIOS version %s\n", COREBOOT_ORIGIN_GIT_TAG);
 
 		//
 		// Configure clock request

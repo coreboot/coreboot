@@ -19,6 +19,7 @@
 #include <version.h>
 #include <console/console.h>
 #include <bcd.h>
+#include <timer.h>
 #include "chip.h"
 #include "rx6110sa.h"
 
@@ -86,62 +87,84 @@ static void rx6110sa_final(struct device *dev)
 static void rx6110sa_init(struct device *dev)
 {
 	struct drivers_i2c_rx6110sa_config *config = dev->chip_info;
-	uint8_t reg;
+	uint8_t reg, flags;
+	struct stopwatch sw;
 
 	/* Do a dummy read first as requested in the datasheet. */
 	rx6110sa_read(dev, SECOND_REG);
+	/* Check power loss status by reading the VLF-bit. */
+	flags = rx6110sa_read(dev, FLAG_REGISTER);
+	if (flags & VLF_BIT) {
+		/*
+		 * Voltage low detected, perform RX6110 SA reset sequence as
+		 * requested in the datasheet. The meaning of the registers 0x60
+		 * and above is not documented in the datasheet, they have to be
+		 * used as requested according to Epson.
+		 */
+		rx6110sa_write(dev, BATTERY_BACKUP_REG, 0x00);
+		rx6110sa_write(dev, CTRL_REG, 0x00);
+		rx6110sa_write(dev, CTRL_REG, TEST_BIT);
+		rx6110sa_write(dev, 0x60, 0xd3);
+		rx6110sa_write(dev, 0x66, 0x03);
+		rx6110sa_write(dev, 0x6b, 0x02);
+		rx6110sa_write(dev, 0x6b, 0x01);
+		/* According to the datasheet one have to wait for at least 2 ms
+		 * before the VLF bit can be cleared in the flag register after
+		 * this reset sequence. As the other registers are still
+		 * accessible use the stopwatch to parallel the flow.
+		 */
+		stopwatch_init_msecs_expire(&sw, AFTER_RESET_DELAY_MS);
+	}
 	/*
-	 * Set battery backup mode and power monitor sampling time even if there
-	 * was no power loss to make sure that the right mode is used as it
-	 * directly influences the backup current consumption and therefore the
-	 * backup time.
+	 * Set up important registers even if there was no power loss to make
+	 * sure that the right mode is used as it directly influences the
+	 * backup current consumption and therefore the backup time. These
+	 * settings do not change current date and time and the RTC will not
+	 * be stopped while the registers are set up.
 	 */
 	reg = (config->pmon_sampling & PMON_SAMPL_MASK) |
 		(!!config->bks_off << 2) | (!!config->bks_on << 3) |
 		(!!config->iocut_en << 4);
 	rx6110sa_write(dev, BATTERY_BACKUP_REG, reg);
-	/*
-	 * Check VLF-bit which indicates the RTC data loss, such as due to a
-	 * supply voltage drop.
-	 */
-	reg = rx6110sa_read(dev, FLAG_REGISTER);
-	if (!(reg & VLF_BIT))
-		/* No voltage low detected, everything is well. */
-		return;
-	/*
-	 * Voltage low detected, initialize RX6110 SA again.
-	 * Set first some registers to known state.
-	 */
-	rx6110sa_write(dev, RESERVED_BIT_REG, RTC_INIT_VALUE);
-	rx6110sa_write(dev, DIGITAL_REG, 0x00);
-	reg = (!!config->enable_1hz_out << 4) |
-		(!!config->irq_output_pin << 2) |
-		(config->fout_output_pin & FOUT_OUTPUT_PIN_MASK);
-	rx6110sa_write(dev, IRQ_CONTROL_REG, reg);
 
 	/* Clear timer enable bit and set frequency of clock output. */
 	reg = rx6110sa_read(dev, EXTENSION_REG);
-	reg &= ~(FSEL_MASK | TE_BIT);
-	reg |= (config->cof_selection << 6);
+	reg &= ~(FSEL_MASK);
+	reg |= ((config->cof_selection << 6) & FSEL_MASK);
 	if (config->timer_preset) {
 		/* Timer needs to be in stop mode prior to programming it. */
-		rx6110sa_write(dev, EXTENSION_REG, reg);
-		reg &= ~TSEL_MASK;
+		if (reg & TE_BIT) {
+			reg &= ~TE_BIT;
+			rx6110sa_write(dev, EXTENSION_REG, reg);
+		}
 		/* Program the timer preset value. */
 		rx6110sa_write(dev, TMR_COUNTER_0_REG,
 				config->timer_preset & 0xff);
 		rx6110sa_write(dev, TMR_COUNTER_1_REG,
 				(config->timer_preset >> 8) & 0xff);
 		/* Set Timer Enable bit and the timer clock value. */
+		reg &= ~TSEL_MASK;
 		reg |= ((!!config->timer_en << 4) |
 			(config->timer_clk & TSEL_MASK));
 	}
 	rx6110sa_write(dev, EXTENSION_REG, reg);
-
-	/* Clear voltage low detect bit. */
-	reg = rx6110sa_read(dev, FLAG_REGISTER);
-	reg &= ~VLF_BIT;
-	rx6110sa_write(dev, FLAG_REGISTER, reg);
+	rx6110sa_write(dev, CTRL_REG, 0x00);
+	rx6110sa_write(dev, DIGITAL_REG, 0x00);
+	rx6110sa_write(dev, RESERVED_BIT_REG, RTC_INIT_VALUE);
+	reg = (!!config->enable_1hz_out << 4) |
+		(!!config->irq_output_pin << 2) |
+		(config->fout_output_pin & FOUT_OUTPUT_PIN_MASK);
+	rx6110sa_write(dev, IRQ_CONTROL_REG, reg);
+	/* If there was no power loss event no further steps are needed. */
+	if (!(flags & VLF_BIT))
+		return;
+	/* There was a power loss event, clear voltage low detect bit.
+	 * Take the needed delay after a reset sequence into account before the
+	 * VLF-bit can be cleared.
+	 */
+	while (!stopwatch_expired(&sw))
+		flags &= ~VLF_BIT;
+	rx6110sa_write(dev, FLAG_REGISTER, flags);
 
 	/* Before setting the clock stop oscillator. */
 	rx6110sa_write(dev, CTRL_REG, STOP_BIT);

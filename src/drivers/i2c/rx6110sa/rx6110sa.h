@@ -29,7 +29,7 @@
 #define MONTH_REG			0x15
 #define YEAR_REG			0x16
 #define RESERVED_BIT_REG		0x17
-#define  RTC_INIT_VALUE			0x28
+#define  RTC_INIT_VALUE			0xA8
 #define ALARM_MINUTE_REG		0x18
 #define ALARM_HOUR_REG			0x19
 #define ALARM_WEEKDAY_REG		0x1A
@@ -81,8 +81,10 @@
 #define PMON_SAMPL_256_MS		0x03
 
 /* Define on which pin of the RTC the generated square wave will be driven. */
-#define  FOUT_IRQ2			0x00	/* IRQ2 pin used for Fout */
-#define  FOUT_IRQ1			0x01	/* IRQ1 pin used for Fout */
-#define  FOUT_DO_FOUT			0x02	/* DO/FOUT pin used for Fout */
+#define FOUT_IRQ2			0x00	/* IRQ2 pin used for Fout */
+#define FOUT_IRQ1			0x01	/* IRQ1 pin used for Fout */
+#define FOUT_DO_FOUT			0x02	/* DO/FOUT pin used for Fout */
+
+#define AFTER_RESET_DELAY_MS		2	/* Delay after reset sequence */
 
 #endif /* _I2C_RX6110SA_H_ */

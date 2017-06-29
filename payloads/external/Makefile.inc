@@ -225,6 +225,7 @@ payloads/external/sortbootorder/sortbootorder/sortbootorder.elf sortbootorder:
 cbfs-files-$(CONFIG_SORTBOOTORDER_SECONDARY_PAYLOAD) += img/setup
 img/setup-file := payloads/external/sortbootorder/sortbootorder/sortbootorder.elf
 img/setup-type := payload
+img/setup-compression := $(CBFS_PAYLOAD_COMPRESS_FLAG)
 
 # sgabios
 

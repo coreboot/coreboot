@@ -65,7 +65,10 @@ chip soc/intel/apollolake
 		device pci 16.0 on	# - I2C 0
 			# Enable external RTC chip
 			chip drivers/i2c/rx6110sa
-				register "cof_selection" = "0"
+				register "pmon_sampling" = "PMON_SAMPL_256_MS"
+				register "bks_on" = "0"
+				register "bks_off" = "1"
+				register "iocut_en" = "1"
 				register "set_user_date" = "1"
 				register "user_year" = "04"
 				register "user_month" = "07"

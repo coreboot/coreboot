@@ -143,14 +143,14 @@ static const struct param_info params[] = {
 		.pos[0] = {.blk_type = BLK_HIB, .offset = 0xe0, .len = 0x80},
 		.get_field = hwilib_read_bytes },
 	[FF_FreezeDis] = {
-		.pos[0] = {.blk_type = BLK_HIB, .offset = 0x1b8, .len = 4},
+		.pos[0] = {.blk_type = BLK_HIB, .offset = 0x1b8, .len = 1},
 		.mask = 0x10,
 		.mask_offset = 4,
 		.get_field = hwilib_read_bytes },
 	[FF_FanReq] = {
-		.pos[0] = {.blk_type = BLK_HIB, .offset = 0x1b8, .len = 4},
-		.mask = 0x400,
-		.mask_offset = 10,
+		.pos[0] = {.blk_type = BLK_HIB, .offset = 0x1b9, .len = 1},
+		.mask = 0x04,
+		.mask_offset = 2,
 		.get_field = hwilib_read_bytes },
 	[NvramVirtTimeDsaveReset] = {
 		.pos[0] = {.blk_type = BLK_HIB, .offset = 0x1be, .len = 2},

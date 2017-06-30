@@ -58,7 +58,7 @@ static void init_temp_mon (void *base_adr)
 
 static void init_fan_ctrl (void *base_adr)
 {
-	uint8_t mask = 0, freeze_mode = 0, fan_req = 0;
+	uint8_t mask = 0, freeze_disable = 0, fan_req = 0;
 	volatile fan_ctrl_t *ctrl = (fan_ctrl_t *)base_adr;
 
 	/* Program all needed fields of FAN controller. */
@@ -76,10 +76,10 @@ static void init_fan_ctrl (void *base_adr)
 	FPGA_SET_PARAM(FANMaxSpeed, ctrl->fanmax);
 	/* Set freeze and FAN configuration. */
 	if ((hwilib_get_field(FF_FanReq, &fan_req, 1) == 1) &&
-	    (hwilib_get_field(FF_FreezeDis, &freeze_mode, 1) == 1)) {
+	    (hwilib_get_field(FF_FreezeDis, &freeze_disable, 1) == 1)) {
 		if (!fan_req)
 			mask = 1;
-		else if  (fan_req && freeze_mode)
+		else if  (fan_req && !freeze_disable)
 			mask = 2;
 		else
 			mask = 3;

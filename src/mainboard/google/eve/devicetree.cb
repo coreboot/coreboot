@@ -323,7 +323,7 @@ chip soc/intel/skylake
 			chip drivers/spi/acpi
 				register "hid" = "ACPI_DT_NAMESPACE_HID"
 				register "compat_string" = ""realtek,rt5514""
-				register "irq" = "ACPI_IRQ_LEVEL_HIGH(GPP_F10_IRQ)"
+				register "irq" = "ACPI_IRQ_EDGE_HIGH(GPP_F10_IRQ)"
 				device spi 0 on end
 			end
 		end # GSPI #0

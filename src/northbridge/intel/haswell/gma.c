@@ -215,6 +215,19 @@ int gtt_poll(u32 reg, u32 mask, u32 value)
 	return 0;
 }
 
+uintptr_t gma_get_gnvs_aslb(const void *gnvs)
+{
+	const global_nvs_t *gnvs_ptr = gnvs;
+	return (uintptr_t)(gnvs_ptr ? gnvs_ptr->aslb : 0);
+}
+
+void gma_set_gnvs_aslb(void *gnvs, uintptr_t aslb)
+{
+	global_nvs_t *gnvs_ptr = gnvs;
+	if (gnvs_ptr)
+		gnvs_ptr->aslb = aslb;
+}
+
 static void power_well_enable(void)
 {
 	gtt_write(HSW_PWR_WELL_CTL1, HSW_PWR_WELL_ENABLE);
@@ -527,7 +540,7 @@ gma_write_acpi_tables(struct device *const dev,
 	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
 	if (gnvs) {
 		/* IGD OpRegion Base Address */
-		gnvs->aslb = (u32)(uintptr_t)opregion;
+		gma_set_gnvs_aslb(gnvs, (uintptr_t)opregion);
 	} else {
 		printk(BIOS_ERR, "Error: GNVS table not found.\n");
 	}

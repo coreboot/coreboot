@@ -316,4 +316,14 @@ config STORAGE_LOG
 	default n
 	depends on STORAGE_TEST
 
+#####
+# I2C debug support
+#####
+
+config I2C_DEBUG
+	bool "Enable I2C debugging"
+	default n
+	help
+	  Display the I2C segments and controller errors
+
 endif # SOC_INTEL_QUARK

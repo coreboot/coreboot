@@ -166,7 +166,10 @@ static int xfer(const struct spi_slave *slave, const void *dout,
 		ctrlr->address = (data[0] << 16)
 			       | (data[1] << 8)
 			       |  data[2];
+
+		/* read in order to flush the write buffer */
 		status = ctrlr->address;
+
 		data += 3;
 		bytesout -= 3;
 	}

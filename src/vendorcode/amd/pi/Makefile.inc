@@ -74,7 +74,8 @@ AGESA_INC += -I$(src)/include
 AGESA_INC += -I$(src)/commonlib/include
 AGESA_INC += -I$(VBOOT_SOURCE)/firmware/include
 
-AGESA_CFLAGS += -march=amdfam10 -mno-3dnow -fno-zero-initialized-in-bss -fno-strict-aliasing
+AGESA_CFLAGS += -march=amdfam10 -mno-3dnow -fno-zero-initialized-in-bss
+AGESA_CFLAGS += -fno-strict-aliasing -D__LIBAGESA__
 CFLAGS_x86_32 += $(AGESA_CFLAGS)
 CFLAGS_x86_64 += $(AGESA_CFLAGS)
 

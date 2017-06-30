@@ -14,10 +14,15 @@ Releases 4.5.x are based on mainline support submitted in
 
 ## [v4.5.8] - 2017-06-30
 ### Changed
-- Move sign of life strings (except from memory information) from `mainboard.c`
+- Moved sign of life strings (except for memory information) from `mainboard.c`
   to `romstage.c`. They are printed ~0.3s after power on, instead of over 2s.
 - Update sortbootorder to v4.5.6
 - Use the same sortbootorder for both mainline and legacy
+- Enabled sortbootorder payload compression
+- Update SeaBIOS to rel-1.10.2.1
+
+### Fixed
+- Fixed SeaBIOS debug level option in Kconfig
 
 ## [v4.5.7] - 2017-06-08
 ### Added

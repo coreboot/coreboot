@@ -12,6 +12,8 @@ Releases 4.5.x are based on mainline support submitted in
   * `Mainboard/Mainboard model` → `APU2` or `APU3`
 3. `make`
 
+## [Unreleased]
+
 ## [v4.5.8] - 2017-06-30
 ### Changed
 - Moved sign of life strings (except for memory information) from `mainboard.c`

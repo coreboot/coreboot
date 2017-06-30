@@ -12,12 +12,12 @@ Releases 4.5.x are based on mainline support submitted in
   * `Mainboard/Mainboard model` → `APU2` or `APU3`
 3. `make`
 
-## [Unreleased]
-###Added
-
+## [v4.5.8] - 2017-06-30
 ### Changed
 - Move sign of life strings (except from memory information) from `mainboard.c`
   to `romstage.c`. They are printed ~0.3s after power on, instead of over 2s.
+- Update sortbootorder to v4.5.6
+- Use the same sortbootorder for both mainline and legacy
 
 ## [v4.5.7] - 2017-06-08
 ### Added
@@ -80,7 +80,8 @@ Releases 4.5.x are based on mainline support submitted in
 - turn off D4 and D5 leds on boot
 - enable power on after power failure
 
-[Unreleased]: https://github.com/pcengines/coreboot/compare/v4.5.7...coreboot-4.5.x
+[Unreleased]: https://github.com/pcengines/coreboot/compare/v4.5.8...coreboot-4.5.x
+[v4.5.8]: https://github.com/pcengines/coreboot/compare/v4.5.7...v4.5.8
 [v4.5.7]: https://github.com/pcengines/coreboot/compare/v4.5.6...v4.5.7
 [v4.5.6]: https://github.com/pcengines/coreboot/compare/v4.5.5.2...v4.5.6
 [v4.5.5.2]: https://github.com/pcengines/coreboot/compare/v4.5.5.1...v4.5.5.2

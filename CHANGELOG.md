@@ -13,6 +13,11 @@ Releases 4.5.x are based on mainline support submitted in
 3. `make`
 
 ## [Unreleased]
+###Added
+
+### Changed
+- Move sign of life strings (except from memory information) from `mainboard.c`
+  to `romstage.c`. They are printed ~0.3s after power on, instead of over 2s.
 
 ## [v4.5.7] - 2017-06-08
 ### Added

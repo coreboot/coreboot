@@ -18,6 +18,8 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
+#include <console/console.h>
+#include <cbmem.h>
 #include "opregion.h"
 
 /* Write ASLS PCI register and prepare SWSCI register. */
@@ -45,4 +47,18 @@ void intel_gma_opregion_register(uintptr_t opregion)
 	reg16 &= ~GSSCIE;
 	reg16 |= SMISCISEL;
 	pci_write_config16(igd, SWSCI, reg16);
+}
+
+/* Restore ASLS register on S3 resume and prepare SWSCI. */
+void intel_gma_restore_opregion(void)
+{
+	if (acpi_is_wakeup_s3()) {
+		const void *const gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
+		uintptr_t aslb;
+
+		if (gnvs && (aslb = gma_get_gnvs_aslb(gnvs)))
+			intel_gma_opregion_register(aslb);
+		else
+			printk(BIOS_ERR, "Error: GNVS or ASLB not set.\n");
+	}
 }

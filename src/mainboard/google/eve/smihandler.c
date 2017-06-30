@@ -36,6 +36,8 @@ void mainboard_smi_sleep(u8 slp_typ)
 {
 	chromeec_smi_sleep(slp_typ, MAINBOARD_EC_S3_WAKE_EVENTS,
 			   MAINBOARD_EC_S5_WAKE_EVENTS);
+	chromeec_smi_device_event_sleep(slp_typ,
+					MAINBOARD_EC_S3_DEVICE_EVENTS, 0);
 	mainboard_gpio_smi_sleep(slp_typ);
 }
 

@@ -24,6 +24,10 @@ void mainboard_ec_init(void)
 		google_chromeec_log_events(MAINBOARD_EC_LOG_EVENTS |
 					   MAINBOARD_EC_S3_WAKE_EVENTS);
 
+		/* Log and clear device events that may wake the system */
+		google_chromeec_log_device_events(
+			MAINBOARD_EC_S3_DEVICE_EVENTS);
+
 		/* Disable SMI and wake events */
 		google_chromeec_set_smi_mask(0);
 

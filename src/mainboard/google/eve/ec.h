@@ -48,6 +48,7 @@
 /* EC can wake from S3 with lid or power button or key press */
 #define MAINBOARD_EC_S3_WAKE_EVENTS \
 	(MAINBOARD_EC_S5_WAKE_EVENTS |\
+	 EC_HOST_EVENT_MASK(EC_HOST_EVENT_DEVICE) |\
 	 EC_HOST_EVENT_MASK(EC_HOST_EVENT_KEY_PRESSED))
 
 /* Log EC wake events plus EC shutdown events */
@@ -55,6 +56,11 @@
 	(EC_HOST_EVENT_MASK(EC_HOST_EVENT_THERMAL_SHUTDOWN) |\
 	 EC_HOST_EVENT_MASK(EC_HOST_EVENT_BATTERY_SHUTDOWN) |\
 	 EC_HOST_EVENT_MASK(EC_HOST_EVENT_PANIC))
+
+/* EC device events to enable and log in S3 */
+#define MAINBOARD_EC_S3_DEVICE_EVENTS \
+	(EC_DEVICE_EVENT_MASK(EC_DEVICE_EVENT_TRACKPAD) |\
+	 EC_DEVICE_EVENT_MASK(EC_DEVICE_EVENT_DSP))
 
 /*
  * ACPI related definitions for ASL code.

@@ -73,6 +73,24 @@ void chromeec_smi_sleep(int slp_type, uint32_t s3_mask, uint32_t s5_mask)
 	clear_pending_events();
 }
 
+void chromeec_smi_device_event_sleep(int slp_type, uint32_t s3_mask,
+				     uint32_t s5_mask)
+{
+	switch (slp_type) {
+	case ACPI_S3:
+		/* Enable device wake events */
+		google_chromeec_set_device_enabled_events(s3_mask);
+		break;
+	case ACPI_S5:
+		/* Enable device wake events */
+		google_chromeec_set_device_enabled_events(s5_mask);
+		break;
+	}
+
+	/* Read and clear pending events that may trigger immediate wake */
+	google_chromeec_get_device_current_events();
+}
+
 void chromeec_smi_apmc(int apmc, uint32_t sci_mask, uint32_t smi_mask)
 {
 	switch (apmc) {

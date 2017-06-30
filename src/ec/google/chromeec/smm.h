@@ -28,6 +28,13 @@ void chromeec_smi_process_events(void);
 void chromeec_smi_sleep(int slp_type, uint32_t s3_mask, uint32_t s5_mask);
 
 /*
+ * Set device event masks according to sleep type,
+ * and clear any pending device events.
+ */
+void chromeec_smi_device_event_sleep(int slp_type, uint32_t s3_mask,
+				     uint32_t s5_mask);
+
+/*
  * Provided the APMC command do the following while clearing pending events.
  * APM_CNT_ACPI_ENABLE: clear SMI mask. set SCI mask.
  * APM_CNT_ACPI_DISABLE: clear SCI mask. set SMI mask.

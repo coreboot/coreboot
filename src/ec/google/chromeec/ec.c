@@ -24,7 +24,6 @@
 #include <elog.h>
 #include <halt.h>
 #include <reset.h>
-#include <elog.h>
 #include <rtc.h>
 #include <stdlib.h>
 #include <vboot/vboot_common.h>
@@ -159,6 +158,88 @@ int google_chromeec_clear_events_b(u32 mask)
 	printk(BIOS_DEBUG, "Chrome EC: clear events_b mask to 0x%08x\n", mask);
 	return google_chromeec_set_mask(
 		EC_CMD_HOST_EVENT_CLEAR_B, mask);
+}
+
+/* Get the current device event mask */
+uint32_t google_chromeec_get_device_enabled_events(void)
+{
+	struct ec_params_device_event req;
+	struct ec_response_device_event rsp;
+	struct chromeec_command cmd;
+
+	req.param = EC_DEVICE_EVENT_PARAM_GET_ENABLED_EVENTS;
+	cmd.cmd_code = EC_CMD_DEVICE_EVENT;
+	cmd.cmd_version = 0;
+	cmd.cmd_data_in = &req;
+	cmd.cmd_size_in = sizeof(req);
+	cmd.cmd_data_out = &rsp;
+	cmd.cmd_size_out = sizeof(rsp);
+	cmd.cmd_dev_index = 0;
+
+	if (google_chromeec_command(&cmd) == 0)
+		return rsp.event_mask;
+	return 0;
+}
+
+/* Set the current device event mask */
+int google_chromeec_set_device_enabled_events(uint32_t mask)
+{
+	struct ec_params_device_event req;
+	struct ec_response_device_event rsp;
+	struct chromeec_command cmd;
+
+	req.event_mask = mask;
+	req.param = EC_DEVICE_EVENT_PARAM_SET_ENABLED_EVENTS;
+	cmd.cmd_code = EC_CMD_DEVICE_EVENT;
+	cmd.cmd_version = 0;
+	cmd.cmd_data_in = &req;
+	cmd.cmd_size_in = sizeof(req);
+	cmd.cmd_data_out = &rsp;
+	cmd.cmd_size_out = sizeof(rsp);
+	cmd.cmd_dev_index = 0;
+
+	return google_chromeec_command(&cmd);
+}
+
+/* Read and clear pending device events */
+uint32_t google_chromeec_get_device_current_events(void)
+{
+	struct ec_params_device_event req;
+	struct ec_response_device_event rsp;
+	struct chromeec_command cmd;
+
+	req.param = EC_DEVICE_EVENT_PARAM_GET_CURRENT_EVENTS;
+	cmd.cmd_code = EC_CMD_DEVICE_EVENT;
+	cmd.cmd_version = 0;
+	cmd.cmd_data_in = &req;
+	cmd.cmd_size_in = sizeof(req);
+	cmd.cmd_data_out = &rsp;
+	cmd.cmd_size_out = sizeof(rsp);
+	cmd.cmd_dev_index = 0;
+
+	if (google_chromeec_command(&cmd) == 0)
+		return rsp.event_mask;
+	return 0;
+}
+
+void google_chromeec_log_device_events(uint32_t mask)
+{
+	uint32_t events;
+	int i;
+
+	if (!IS_ENABLED(CONFIG_ELOG))
+		return;
+
+	if (google_chromeec_check_feature(EC_FEATURE_DEVICE_EVENT) != 1)
+		return;
+
+	events = google_chromeec_get_device_current_events() & mask;
+	printk(BIOS_INFO, "EC Device Events: 0x%08x\n", events);
+
+	for (i = 0; i < sizeof(events) * 8; i++) {
+		if (EC_DEVICE_EVENT_MASK(i) & events)
+			elog_add_event_byte(ELOG_TYPE_EC_DEVICE_EVENT, i);
+	}
 }
 
 int google_chromeec_check_feature(int feature)

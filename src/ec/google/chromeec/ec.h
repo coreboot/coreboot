@@ -34,6 +34,12 @@ u8 google_chromeec_get_event(void);
 int google_ec_running_ro(void);
 void google_chromeec_init(void);
 
+/* Device events */
+uint32_t google_chromeec_get_device_enabled_events(void);
+int google_chromeec_set_device_enabled_events(uint32_t mask);
+uint32_t google_chromeec_get_device_current_events(void);
+void google_chromeec_log_device_events(uint32_t mask);
+
 /* If recovery mode is enabled and EC is not running RO firmware reboot. */
 void google_chromeec_early_init(void);
 /* Reboot if EC firmware is not expected type. */

@@ -2979,7 +2979,7 @@
 /* Ironlake */
 
 #define CPU_VGACNTRL	0x41000
-#define  CPU_VGA_DISABLE     (1<<31)
+#define  CPU_VGA_DISABLE     (1UL<<31)
 
 #define DIGITAL_PORT_HOTPLUG_CNTRL      0x44030
 #define  DIGITAL_PORTA_HOTPLUG_ENABLE           (1 << 4)
@@ -4177,7 +4177,7 @@
 #define HSW_PWR_WELL_CTL2			0x45404 /* Driver */
 #define HSW_PWR_WELL_CTL3			0x45408 /* KVMR */
 #define HSW_PWR_WELL_CTL4			0x4540C /* Debug */
-#define   HSW_PWR_WELL_ENABLE			(1<<31)
+#define   HSW_PWR_WELL_ENABLE			(1UL<<31)
 #define   HSW_PWR_WELL_STATE			(1<<30)
 #define HSW_PWR_WELL_CTL5			0x45410
 #define   HSW_PWR_WELL_ENABLE_SINGLE_STEP	(1<<31)

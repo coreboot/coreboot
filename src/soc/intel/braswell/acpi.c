@@ -486,6 +486,7 @@ unsigned long southcluster_write_acpi_tables(device_t device,
 					     struct acpi_rsdp *rsdp)
 {
 	acpi_header_t *ssdt2;
+	global_nvs_t *gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
 
 	current = acpi_write_hpet(device, current, rsdp);
 	current = acpi_align_current(current);
@@ -496,6 +497,8 @@ unsigned long southcluster_write_acpi_tables(device_t device,
 		printk(BIOS_DEBUG, "ACPI:    * IGD OpRegion\n");
 		opregion = (igd_opregion_t *)current;
 		intel_gma_init_igd_opregion(opregion);
+		if (gnvs)
+			gnvs->aslb = (u32)opregion;
 		update_igd_opregion(opregion);
 		current += sizeof(igd_opregion_t);
 		current = acpi_align_current(current);

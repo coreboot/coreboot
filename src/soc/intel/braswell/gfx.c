@@ -20,8 +20,10 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <drivers/intel/gma/opregion.h>
 #include <reg_script.h>
 #include <soc/gfx.h>
+#include <soc/nvs.h>
 #include <soc/pci_devs.h>
 #include <soc/ramstage.h>
 
@@ -73,6 +75,21 @@ static void gfx_init(device_t dev)
 
 	/* Post VBIOS Init */
 	gfx_post_vbios_init(dev);
+
+	intel_gma_restore_opregion();
+}
+
+uintptr_t gma_get_gnvs_aslb(const void *gnvs)
+{
+	const global_nvs_t *gnvs_ptr = gnvs;
+	return (uintptr_t)(gnvs_ptr ? gnvs_ptr->aslb : 0);
+}
+
+void gma_set_gnvs_aslb(void *gnvs, uintptr_t aslb)
+{
+	global_nvs_t *gnvs_ptr = gnvs;
+	if (gnvs_ptr)
+		gnvs_ptr->aslb = aslb;
 }
 
 static struct device_operations gfx_device_ops = {

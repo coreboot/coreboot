@@ -605,9 +605,9 @@ LibAmdIoRMW (
   UINT32  TempMask;
   UINT32  Value;
   LibAmdGetDataFromPtr (AccessWidth, Data,  DataMask, &TempData, &TempMask);
-  LibAmdIoRead (AccessWidth, IoAddress, &Value, StdHeader);
+  LibAmdIoRead (AccessWidth, IoAddress, &Value, NULL);
   Value = (Value & (~TempMask)) | TempData;
-  LibAmdIoWrite (AccessWidth, IoAddress, &Value, StdHeader);
+  LibAmdIoWrite (AccessWidth, IoAddress, &Value, NULL);
 }
 
 /*---------------------------------------------------------------------------------------*/
@@ -639,7 +639,7 @@ LibAmdIoPoll (
   UINT32  Value;
   LibAmdGetDataFromPtr (AccessWidth, Data,  DataMask, &TempData, &TempMask);
   do {
-    LibAmdIoRead (AccessWidth, IoAddress, &Value, StdHeader);
+    LibAmdIoRead (AccessWidth, IoAddress, &Value, NULL);
   } while (TempData != (Value & TempMask));
 }
 
@@ -744,9 +744,9 @@ LibAmdMemRMW (
   UINT32  TempMask;
   UINT32  Value;
   LibAmdGetDataFromPtr (AccessWidth, Data,  DataMask, &TempData, &TempMask);
-  LibAmdMemRead (AccessWidth, MemAddress, &Value, StdHeader);
+  LibAmdMemRead (AccessWidth, MemAddress, &Value, NULL);
   Value = (Value & (~TempMask)) | TempData;
-  LibAmdMemWrite (AccessWidth, MemAddress, &Value, StdHeader);
+  LibAmdMemWrite (AccessWidth, MemAddress, &Value, NULL);
 }
 
 /*---------------------------------------------------------------------------------------*/
@@ -778,7 +778,7 @@ LibAmdMemPoll (
   UINT32  Value;
   LibAmdGetDataFromPtr (AccessWidth, Data,  DataMask, &TempData, &TempMask);
   do {
-    LibAmdMemRead (AccessWidth, MemAddress, &Value, StdHeader);
+    LibAmdMemRead (AccessWidth, MemAddress, &Value, NULL);
   } while (TempData != (Value & TempMask));
 }
 
@@ -807,28 +807,28 @@ LibAmdPciRead (
   UINT64 RMWritePrevious;
   UINT64 MMIOAddress;
 
-  ASSERT (StdHeader != NULL);
+
   ASSERT (PciAddress.AddressValue != ILLEGAL_SBDFO);
-  if (!GetPciMmioAddress (&MMIOAddress, &MMIOSize, StdHeader)) {
+  if (!GetPciMmioAddress (&MMIOAddress, &MMIOSize, NULL)) {
     // We need to convert our "portable" PCI address into a "real" PCI access
     LegacyPciAccess = ((1 << 31) + (PciAddress.Address.Register & 0xFC) + (PciAddress.Address.Function << 8) + (PciAddress.Address.Device << 11) + (PciAddress.Address.Bus << 16) + ((PciAddress.Address.Register & 0xF00) << (24 - 8)));
     if (PciAddress.Address.Register <= 0xFF) {
-      LibAmdIoWrite (AccessWidth32, IOCF8, &LegacyPciAccess, StdHeader);
-      LibAmdIoRead (AccessWidth, IOCFC + (UINT16) (PciAddress.Address.Register & 0x3), Value, StdHeader);
+      LibAmdIoWrite (AccessWidth32, IOCF8, &LegacyPciAccess, NULL);
+      LibAmdIoRead (AccessWidth, IOCFC + (UINT16) (PciAddress.Address.Register & 0x3), Value, NULL);
     } else {
-      LibAmdMsrRead  (NB_CFG, &RMWritePrevious, StdHeader);
+      LibAmdMsrRead  (NB_CFG, &RMWritePrevious, NULL);
       RMWrite = RMWritePrevious | 0x0000400000000000;
-      LibAmdMsrWrite (NB_CFG, &RMWrite, StdHeader);
-      LibAmdIoWrite (AccessWidth32, IOCF8, &LegacyPciAccess, StdHeader);
-      LibAmdIoRead (AccessWidth, IOCFC + (UINT16) (PciAddress.Address.Register & 0x3), Value, StdHeader);
-      LibAmdMsrWrite (NB_CFG, &RMWritePrevious, StdHeader);
+      LibAmdMsrWrite (NB_CFG, &RMWrite, NULL);
+      LibAmdIoWrite (AccessWidth32, IOCF8, &LegacyPciAccess, NULL);
+      LibAmdIoRead (AccessWidth, IOCFC + (UINT16) (PciAddress.Address.Register & 0x3), Value, NULL);
+      LibAmdMsrWrite (NB_CFG, &RMWritePrevious, NULL);
     }
     //IDS_HDT_CONSOLE (LIB_PCI_RD, "~PCI RD %08x = %08x\n", LegacyPciAccess, *(UINT32 *)Value);
   } else {
     // Setup the MMIO address
     ASSERT ((MMIOAddress + MMIOSize) > (MMIOAddress + (PciAddress.AddressValue & 0x0FFFFFFF)));
     MMIOAddress += (PciAddress.AddressValue & 0x0FFFFFFF);
-    LibAmdMemRead (AccessWidth, MMIOAddress, Value, StdHeader);
+    LibAmdMemRead (AccessWidth, MMIOAddress, Value, NULL);
     //IDS_HDT_CONSOLE (LIB_PCI_RD, "~MMIO RD %08x = %08x\n", (UINT32) MMIOAddress, *(UINT32 *)Value);
   }
 }
@@ -858,21 +858,21 @@ LibAmdPciWrite (
   UINT64 RMWritePrevious;
   UINT64 MMIOAddress;
 
-  ASSERT (StdHeader != NULL);
+
   ASSERT (PciAddress.AddressValue != ILLEGAL_SBDFO);
-  if (!GetPciMmioAddress (&MMIOAddress, &MMIOSize, StdHeader)) {
+  if (!GetPciMmioAddress (&MMIOAddress, &MMIOSize, NULL)) {
     // We need to convert our "portable" PCI address into a "real" PCI access
     LegacyPciAccess = ((1 << 31) + (PciAddress.Address.Register & 0xFC) + (PciAddress.Address.Function << 8) + (PciAddress.Address.Device << 11) + (PciAddress.Address.Bus << 16) + ((PciAddress.Address.Register & 0xF00) << (24 - 8)));
     if (PciAddress.Address.Register <= 0xFF) {
-      LibAmdIoWrite (AccessWidth32, IOCF8, &LegacyPciAccess, StdHeader);
-      LibAmdIoWrite (AccessWidth, IOCFC + (UINT16) (PciAddress.Address.Register & 0x3), Value, StdHeader);
+      LibAmdIoWrite (AccessWidth32, IOCF8, &LegacyPciAccess, NULL);
+      LibAmdIoWrite (AccessWidth, IOCFC + (UINT16) (PciAddress.Address.Register & 0x3), Value, NULL);
     } else {
-      LibAmdMsrRead  (NB_CFG, &RMWritePrevious, StdHeader);
+      LibAmdMsrRead  (NB_CFG, &RMWritePrevious, NULL);
       RMWrite = RMWritePrevious | 0x0000400000000000;
-      LibAmdMsrWrite (NB_CFG, &RMWrite, StdHeader);
-      LibAmdIoWrite (AccessWidth32, IOCF8, &LegacyPciAccess, StdHeader);
-      LibAmdIoWrite (AccessWidth, IOCFC + (UINT16) (PciAddress.Address.Register & 0x3), Value, StdHeader);
-      LibAmdMsrWrite (NB_CFG, &RMWritePrevious, StdHeader);
+      LibAmdMsrWrite (NB_CFG, &RMWrite, NULL);
+      LibAmdIoWrite (AccessWidth32, IOCF8, &LegacyPciAccess, NULL);
+      LibAmdIoWrite (AccessWidth, IOCFC + (UINT16) (PciAddress.Address.Register & 0x3), Value, NULL);
+      LibAmdMsrWrite (NB_CFG, &RMWritePrevious, NULL);
     }
     //IDS_HDT_CONSOLE (LIB_PCI_WR, "~PCI WR %08x = %08x\n", LegacyPciAccess, *(UINT32 *)Value);
     //printk(BIOS_DEBUG, "~PCI WR %08x = %08x\n", LegacyPciAccess, *(UINT32 *)Value);
@@ -881,7 +881,7 @@ LibAmdPciWrite (
     // Setup the MMIO address
     ASSERT ((MMIOAddress + MMIOSize) > (MMIOAddress + (PciAddress.AddressValue & 0x0FFFFFFF)));
     MMIOAddress += (PciAddress.AddressValue & 0x0FFFFFFF);
-    LibAmdMemWrite (AccessWidth, MMIOAddress, Value, StdHeader);
+    LibAmdMemWrite (AccessWidth, MMIOAddress, Value, NULL);
     //IDS_HDT_CONSOLE (LIB_PCI_WR, "~MMIO WR %08x = %08x\n", (UINT32) MMIOAddress, *(UINT32 *)Value);
     //printk(BIOS_DEBUG, "~MMIO WR %08x = %08x\n", (UINT32) MMIOAddress, *(UINT32 *)Value);
     //printk(BIOS_DEBUG, "LibAmdPciWrite mmio\n");
@@ -913,9 +913,9 @@ LibAmdPciRMW (
   UINT32  TempMask = 0;
   UINT32  Value;
   LibAmdGetDataFromPtr (AccessWidth, Data,  DataMask, &TempData, &TempMask);
-  LibAmdPciRead (AccessWidth, PciAddress, &Value, StdHeader);
+  LibAmdPciRead (AccessWidth, PciAddress, &Value, NULL);
   Value = (Value & (~TempMask)) | TempData;
-  LibAmdPciWrite (AccessWidth, PciAddress, &Value, StdHeader);
+  LibAmdPciWrite (AccessWidth, PciAddress, &Value, NULL);
 }
 
 /*---------------------------------------------------------------------------------------*/
@@ -947,7 +947,7 @@ LibAmdPciPoll (
   UINT32  Value;
   LibAmdGetDataFromPtr (AccessWidth, Data,  DataMask, &TempData, &TempMask);
   do {
-    LibAmdPciRead (AccessWidth, PciAddress, &Value, StdHeader);
+    LibAmdPciRead (AccessWidth, PciAddress, &Value, NULL);
   } while (TempData != (Value & TempMask));
 }
 
@@ -973,10 +973,8 @@ GetPciMmioAddress (
   UINT32  EncodedSize;
   UINT64  LocalMsrRegister;
 
-  ASSERT (StdHeader != NULL);
-
   MmioIsEnabled = FALSE;
-  LibAmdMsrRead (MSR_MMIO_Cfg_Base, &LocalMsrRegister, StdHeader);
+  LibAmdMsrRead (MSR_MMIO_Cfg_Base, &LocalMsrRegister, NULL);
   if ((LocalMsrRegister & BIT0) != 0) {
     *MmioAddress = LocalMsrRegister & 0xFFFFFFFFFFF00000;
     EncodedSize = (UINT32) ((LocalMsrRegister & 0x3C) >> 2);
@@ -1009,7 +1007,7 @@ LibAmdPciReadBits (
 {
   ASSERT (Highbit < 32 && Lowbit < 32 && Highbit >= Lowbit && (Address.AddressValue & 3) == 0);
 
-  LibAmdPciRead (AccessWidth32, Address, Value, StdHeader);
+  LibAmdPciRead (AccessWidth32, Address, Value, NULL);
   *Value >>= Lowbit;  // Shift
 
   // A 1 << 32 == 1 << 0 due to x86 SHL instruction, so skip if that is the case
@@ -1053,10 +1051,10 @@ LibAmdPciWriteBits (
     Mask = (UINT32) 0xFFFFFFFF;
   }
 
-  LibAmdPciRead (AccessWidth32, Address, &Temp, StdHeader);
+  LibAmdPciRead (AccessWidth32, Address, &Temp, NULL);
   Temp &= ~(Mask << Lowbit);
   Temp |= (*Value & Mask) << Lowbit;
-  LibAmdPciWrite (AccessWidth32, Address, &Temp, StdHeader);
+  LibAmdPciWrite (AccessWidth32, Address, &Temp, NULL);
 }
 
 /*---------------------------------------------------------------------------------------*/
@@ -1093,7 +1091,7 @@ LibAmdPciFindNextCap (
   Address->AddressValue = (UINT32) ILLEGAL_SBDFO;
 
   // Verify that the SBDFO points to a valid PCI device SANITY CHECK
-  LibAmdPciRead (AccessWidth32, Base, &Temp, StdHeader);
+  LibAmdPciRead (AccessWidth32, Base, &Temp, NULL);
   if (Temp == 0xFFFFFFFF) {
     ASSERT (FALSE);
     return; // There is no device at this address
@@ -1101,7 +1099,7 @@ LibAmdPciFindNextCap (
 
   // Verify that the device supports a capability list
   TempAddress.AddressValue = Base.AddressValue + 0x04;
-  LibAmdPciReadBits (TempAddress, 20, 20, &Temp, StdHeader);
+  LibAmdPciReadBits (TempAddress, 20, 20, &Temp, NULL);
   if (Temp == 0) {
     return; // This PCI device does not support capability lists
   }
@@ -1109,11 +1107,11 @@ LibAmdPciFindNextCap (
   if (Offset != 0) {
     // If we are continuing on an existing list
     TempAddress.AddressValue = Base.AddressValue + Offset;
-    LibAmdPciReadBits (TempAddress, 15, 8, &Temp, StdHeader);
+    LibAmdPciReadBits (TempAddress, 15, 8, &Temp, NULL);
   } else {
     // We are starting on a new list
     TempAddress.AddressValue = Base.AddressValue + 0x34;
-    LibAmdPciReadBits (TempAddress, 7, 0, &Temp, StdHeader);
+    LibAmdPciReadBits (TempAddress, 7, 0, &Temp, NULL);
   }
 
   if (Temp == 0) {
@@ -1152,7 +1150,6 @@ LibAmdMemFill (
   )
 {
   UINT8 *Dest;
-  ASSERT (StdHeader != NULL);
   Dest = Destination;
   while ((FillLength--) != 0) {
     *Dest++ = Value;
@@ -1179,7 +1176,6 @@ LibAmdMemCopy (
 {
   UINT8 *Dest;
   CONST UINT8 *SourcePtr;
-  ASSERT (StdHeader != NULL);
   Dest = Destination;
   SourcePtr = Source;
   while ((CopyLength--) != 0) {
@@ -1287,7 +1283,7 @@ LibAmdGetPackageType (
   UINT32      ProcessorPackageType;
   CPUID_DATA  CpuId;
 
-  LibAmdCpuidRead (0x80000001, &CpuId, StdHeader);
+  LibAmdCpuidRead (0x80000001, &CpuId, NULL);
   ProcessorPackageType = (UINT32) (CpuId.EBX_Reg >> 28) & 0xF; // bit 31:28
   return (UINT32) (1 << ProcessorPackageType);
 }

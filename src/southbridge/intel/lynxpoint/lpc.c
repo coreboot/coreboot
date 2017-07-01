@@ -277,9 +277,9 @@ static void pch_power_options(device_t dev)
 	reg32 |= (1 << 4)|(1 << 5)|(1 << 0);
 	RCBA32(0x3310) = reg32;
 
-	reg32 = RCBA32(0x3f02);
-	reg32 &= ~0xf;
-	RCBA32(0x3f02) = reg32;
+	reg16 = RCBA16(0x3f02);
+	reg16 &= ~0xf;
+	RCBA16(0x3f02) = reg16;
 }
 
 static void pch_rtc_init(struct device *dev)

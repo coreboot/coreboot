@@ -45,7 +45,7 @@ static void print_status_bits(u32 status, const char *bit_names[])
 		return;
 
 	for (i=31; i>=0; i--) {
-		if (status & (1 << i)) {
+		if (status & (1UL << i)) {
 			if (bit_names[i])
 				printk(BIOS_DEBUG, "%s ", bit_names[i]);
 			else

@@ -429,7 +429,7 @@ static void enable_clock_gating(device_t dev)
 
 	reg32 = RCBA32(CG);
 	reg32 |= (1 << 22); // HDA Dynamic
-	reg32 |= (1 << 31); // LPC Dynamic
+	reg32 |= (1UL << 31); // LPC Dynamic
 	reg32 |= (1 << 16); // PCIe Dynamic
 	reg32 |= (1 << 27); // HPET Dynamic
 	reg32 |= (1 << 28); // GPIO Dynamic

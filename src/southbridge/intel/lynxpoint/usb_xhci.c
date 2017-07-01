@@ -342,13 +342,13 @@ static void usb_xhci_init(device_t dev)
 
 	/* D20:F0:44h[31] = 1 (Access Control Bit) */
 	reg32 = pci_read_config32(dev, 0x44);
-	reg32 |= (1 << 31);
+	reg32 |= (1UL << 31);
 	pci_write_config32(dev, 0x44, reg32);
 
 	/* D20:F0:40h[31,23] = 10b (OC Configuration Done) */
 	reg32 = pci_read_config32(dev, 0x40);
 	reg32 &= ~(1 << 23); /* unsupported request */
-	reg32 |= (1 << 31);
+	reg32 |= (1UL << 31);
 	pci_write_config32(dev, 0x40, reg32);
 
 	if (acpi_is_wakeup_s3()) {

@@ -48,7 +48,7 @@ static void azalia_pch_init(struct device *dev, u8 *base)
 	u16 reg16;
 	u32 reg32;
 
-	if (RCBA32(0x2030) & (1 << 31)) {
+	if (RCBA32(0x2030) & (1UL << 31)) {
 		reg32 = pci_read_config32(dev, 0x120);
 		reg32 &= 0xf8ffff01;
 		reg32 |= (1 << 25);
@@ -72,9 +72,9 @@ static void azalia_pch_init(struct device *dev, u8 *base)
 						(1 << 25) | (1 << 26))) {
 		reg32 = pci_read_config32(dev, 0x120);
 		if (pch_is_lp())
-			reg32 &= ~(1 << 31);
+			reg32 &= ~(1UL << 31);
 		else
-			reg32 |= (1 << 31);
+			reg32 |= (1UL << 31);
 		pci_write_config32(dev, 0x120, reg32);
 	}
 
@@ -101,7 +101,7 @@ static void azalia_pch_init(struct device *dev, u8 *base)
 
 	if (!pch_is_lp()) {
 		reg32 = pci_read_config32(dev, 0xd0);
-		reg32 &= ~(1 << 31);
+		reg32 &= ~(1UL << 31);
 		pci_write_config32(dev, 0xd0, reg32);
 	}
 

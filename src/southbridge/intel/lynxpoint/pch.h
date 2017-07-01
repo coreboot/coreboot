@@ -547,7 +547,7 @@ void pch_enable_lpc(void);
 #define RPFN		0x0404	/* 32bit */
 
 /* Root Port configuratinon space hide */
-#define RPFN_HIDE(port)         (1 << (((port) * 4) + 3))
+#define RPFN_HIDE(port)         (1UL << (((port) * 4) + 3))
 /* Get the function number assigned to a Root Port */
 #define RPFN_FNGET(reg,port)    (((reg) >> ((port) * 4)) & 7)
 /* Set the function number for a Root Port */

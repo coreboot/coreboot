@@ -104,7 +104,7 @@ static void report_memory_config(void)
 		       ((ch_conf >> 16) & 1) ? "" : ", selected");
 		printk(BIOS_DEBUG, "   DIMMB %d MB width %s %s rank%s\n",
 		       ((ch_conf >> 8) & 0xff) * 256,
-		       ((ch_conf >> 19) & 1) ? "x16" : "x8 or x32",
+		       ((ch_conf >> 20) & 1) ? "x16" : "x8 or x32",
 		       ((ch_conf >> 18) & 1) ? "dual" : "single",
 		       ((ch_conf >> 16) & 1) ? ", selected" : "");
 	}

@@ -373,12 +373,34 @@ void acpigen_write_opregion(struct opregion *opreg)
 	acpigen_write_integer(opreg->regionlen);
 }
 
+static void acpigen_write_field_length(uint32_t len)
+{
+	uint8_t i, j;
+	uint8_t emit[4];
+
+	i = 1;
+	if (len < 0x40) {
+		emit[0] = len & 0x3F;
+	} else {
+		emit[0] = len & 0xF;
+		len >>= 4;
+		while (len) {
+			emit[i] = len & 0xFF;
+			i++;
+			len >>= 8;
+		}
+	}
+	/* Update bit 7:6 : Number of bytes followed by emit[0] */
+	emit[0] |= (i - 1) << 6;
+
+	for (j = 0; j < i; j++)
+		acpigen_emit_byte(emit[j]);
+}
+
 static void acpigen_write_field_offset(uint32_t offset,
 				       uint32_t current_bit_pos)
 {
 	uint32_t diff_bits;
-	uint8_t i, j;
-	uint8_t emit[4];
 
 	if (offset < current_bit_pos) {
 		printk(BIOS_WARNING, "%s: Cannot move offset backward",
@@ -394,24 +416,14 @@ static void acpigen_write_field_offset(uint32_t offset,
 		return;
 	}
 
-	i = 1;
-	if (diff_bits < 0x40) {
-		emit[0] = diff_bits & 0x3F;
-	} else {
-		emit[0] = diff_bits & 0xF;
-		diff_bits >>= 4;
-		while (diff_bits) {
-			emit[i] = diff_bits & 0xFF;
-			i++;
-			diff_bits >>= 8;
-		}
-	}
-	/* Update bit 7:6 : Number of bytes followed by emit[0] */
-	emit[0] |= (i - 1) << 6;
-
 	acpigen_emit_byte(0);
-	for (j = 0; j < i; j++)
-		acpigen_emit_byte(emit[j]);
+	acpigen_write_field_length(diff_bits);
+}
+
+static void acpigen_write_field_name(const char *name, uint32_t size)
+{
+	acpigen_emit_simple_namestring(name);
+	acpigen_write_field_length(size);
 }
 
 /*
@@ -452,8 +464,7 @@ void acpigen_write_field(const char *name, struct fieldlist *l, size_t count,
 	for (i = 0; i < count; i++) {
 		switch (l[i].type) {
 		case NAME_STRING:
-			acpigen_emit_simple_namestring(l[i].name);
-			acpigen_emit_byte(l[i].bits);
+			acpigen_write_field_name(l[i].name, l[i].bits);
 			current_bit_pos += l[i].bits;
 			break;
 		case OFFSET:

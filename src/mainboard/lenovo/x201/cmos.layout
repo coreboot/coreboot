@@ -125,6 +125,7 @@ enumerations
 10    6     160M
 11    0     Disable
 11    1     AC and battery
+11    2     AC only
 
 # -----------------------------------------------------------------
 checksums

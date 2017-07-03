@@ -149,6 +149,7 @@
 #define  ELOG_WAKE_SOURCE_PME_XDCI         0x1c
 #define  ELOG_WAKE_SOURCE_PME_XHCI_USB_2   0x1d
 #define  ELOG_WAKE_SOURCE_PME_XHCI_USB_3   0x1e
+#define  ELOG_WAKE_SOURCE_PME_WIFI         0x1f
 
 struct elog_event_data_wake {
 	u8 source;

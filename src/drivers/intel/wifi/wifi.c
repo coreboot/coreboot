@@ -21,11 +21,15 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <elog.h>
 #include <sar.h>
 #include <smbios.h>
 #include <string.h>
 #include <wrdd.h>
 #include "chip.h"
+
+#define PMCS_DR 0xcc
+#define PME_STS (1 << 15)
 
 #if IS_ENABLED(CONFIG_GENERATE_SMBIOS_TABLES)
 static int smbios_write_wifi(struct device *dev, int *handle,
@@ -197,6 +201,18 @@ static const char *intel_wifi_acpi_name(struct device *dev)
 }
 #endif
 
+static void wifi_pci_dev_init(struct device *dev)
+{
+	pci_dev_init(dev);
+
+	if (IS_ENABLED(CONFIG_ELOG)) {
+		uint32_t val;
+		val = pci_read_config16(dev, PMCS_DR);
+		if (val & PME_STS)
+			elog_add_event_wake(ELOG_WAKE_SOURCE_PME_WIFI, 0);
+        }
+}
+
 static struct pci_operations pci_ops = {
 	.set_subsystem = pci_dev_set_subsystem,
 };
@@ -205,7 +221,7 @@ struct device_operations device_ops = {
 	.read_resources           = pci_dev_read_resources,
 	.set_resources            = pci_dev_set_resources,
 	.enable_resources         = pci_dev_enable_resources,
-	.init                     = pci_dev_init,
+	.init                     = wifi_pci_dev_init,
 #if IS_ENABLED(CONFIG_GENERATE_SMBIOS_TABLES)
 	.get_smbios_data          = smbios_write_wifi,
 #endif

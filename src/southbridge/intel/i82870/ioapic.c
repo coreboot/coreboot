@@ -68,9 +68,9 @@ static void p64h2_ioapic_init(device_t dev)
 	apic_id <<= 24;             // Convert ID to bitmask
 
 	*pIndexRegister = 0;        // Select APIC ID register
-	*pWindowRegister = (*pWindowRegister & ~(0xF<<24)) | apic_id;   // Set the ID
+	*pWindowRegister = (*pWindowRegister & ~(0x0f << 24)) | apic_id;   // Set the ID
 
-	if ((*pWindowRegister & (0xF<<24)) != apic_id)
+	if ((*pWindowRegister & (0x0f << 24)) != apic_id)
 		die("p64h2_ioapic_init failed");
 
 	*pIndexRegister  = 3;   // Select Boot Configuration register

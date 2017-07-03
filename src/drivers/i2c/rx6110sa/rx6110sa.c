@@ -13,8 +13,7 @@
  * GNU General Public License for more details.
  */
 
-#include <device/i2c_simple.h>
-#include <device/smbus.h>
+#include <device/i2c_bus.h>
 #include <device/device.h>
 #include <version.h>
 #include <console/console.h>
@@ -23,28 +22,16 @@
 #include "chip.h"
 #include "rx6110sa.h"
 
-#define I2C_BUS_NUM	(dev->bus->secondary - 1)
-#define I2C_DEV_NUM	(dev->path.i2c.device)
-
 /* Function to write a register in the RTC with the given value. */
 static void rx6110sa_write(struct device *dev, uint8_t reg, uint8_t val)
 {
-	if (IS_ENABLED(CONFIG_RX6110SA_USE_SMBUS))
-		smbus_write_byte(dev, reg, val);
-	else
-		i2c_writeb(I2C_BUS_NUM, I2C_DEV_NUM, reg, val);
+	i2c_writeb_at(dev, reg, val);
 }
 
 /* Function to read a register in the RTC. */
 static uint8_t rx6110sa_read(struct device *dev, uint8_t reg)
 {
-	uint8_t val = 0;
-
-	if (IS_ENABLED(CONFIG_RX6110SA_USE_SMBUS))
-		val = smbus_read_byte(dev, reg);
-	else
-		i2c_readb(I2C_BUS_NUM, I2C_DEV_NUM, reg, &val);
-	return val;
+	return (uint8_t)i2c_readb_at(dev, reg);
 }
 
 /* Set RTC date from coreboot build date. */

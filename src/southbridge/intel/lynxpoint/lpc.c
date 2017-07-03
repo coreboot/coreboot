@@ -371,7 +371,7 @@ static void lpt_lp_pm_init(struct device *dev)
 	pci_write_config32(dev, 0xac,
 		pci_read_config32(dev, 0xac) | (1 << 21));
 
-	pch_iobp_update(0xED00015C, ~(1<<11), 0x00003700);
+	pch_iobp_update(0xED00015C, ~(1 << 11), 0x00003700);
 	pch_iobp_update(0xED000118, ~0UL, 0x00c00000);
 	pch_iobp_update(0xED000120, ~0UL, 0x00240000);
 	pch_iobp_update(0xCA000000, ~0UL, 0x00000009);
@@ -466,7 +466,7 @@ static void enable_lp_clock_gating(device_t dev)
 
 	/* Check for LPT-LP B2 stepping and 0:31.0@0xFA > 4 */
 	if (pci_read_config8(dev_find_slot(0, PCI_DEVFN(2, 0)), 0x8) >= 0x0b)
-		RCBA32_OR(0x2614, (1<<26));
+		RCBA32_OR(0x2614, (1 << 26));
 
 	RCBA32_OR(0x900, 0x0000031f);
 

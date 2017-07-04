@@ -193,6 +193,8 @@ static void pcie_enable_clock_gating(void)
 		rp = root_port_number(dev);
 
 		if (!dev->enabled) {
+			static const uint32_t high_bit = (1UL << 31);
+
 			/* Configure shared resource clock gating. */
 			if (rp == 1 || rp == 5 || (rp == 6 && is_lp))
 				pci_update_config8(dev, 0xe1, 0xc3, 0x3c);
@@ -214,7 +216,7 @@ static void pcie_enable_clock_gating(void)
 			}
 
 			pci_update_config8(dev, 0xe2, ~(3 << 4), (3 << 4));
-			pci_update_config32(dev, 0x420, ~(1 << 31), (1 << 31));
+			pci_update_config32(dev, 0x420, ~high_bit, high_bit);
 
 			/* Per-Port CLKREQ# handling. */
 			if (is_lp && gpio_is_native(18 + rp - 1))

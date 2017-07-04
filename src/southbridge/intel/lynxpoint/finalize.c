@@ -40,7 +40,7 @@ void intel_pch_finalize_smm(void)
 #endif
 
 	/* TCLOCKDN: TC Lockdown */
-	RCBA32_OR(0x0050, (1 << 31));
+	RCBA32_OR(0x0050, (1UL << 31));
 
 	/* BIOS Interface Lockdown */
 	RCBA32_OR(0x3410, (1 << 0));
@@ -55,7 +55,7 @@ void intel_pch_finalize_smm(void)
 	pci_or_config8(PCH_LPC_DEV, 0xa6, (1 << 1) | (1 << 2));
 
 	/* PMSYNC */
-	RCBA32_OR(PMSYNC_CONFIG, (1 << 31));
+	RCBA32_OR(PMSYNC_CONFIG, (1UL << 31));
 
 	/* R/WO registers */
 	RCBA32(0x21a4) = RCBA32(0x21a4);

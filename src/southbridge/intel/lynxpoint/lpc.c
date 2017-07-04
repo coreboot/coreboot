@@ -475,7 +475,7 @@ static void enable_lp_clock_gating(device_t dev)
 		reg32 &= ~(1 << 29); // LPC Dynamic
 	else
 		reg32 |= (1 << 29); // LPC Dynamic
-	reg32 |= (1 << 31); // LP LPC
+	reg32 |= (1UL << 31); // LP LPC
 	reg32 |= (1 << 30); // LP BLA
 	reg32 |= (1 << 28); // GPIO Dynamic
 	reg32 |= (1 << 27); // HPET Dynamic

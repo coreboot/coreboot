@@ -134,7 +134,7 @@ static void sata_init(struct device *dev)
 		reg32 |= 1 << 18;    /* BWG step 10 */
 		reg32 |= 1 << 29;    /* BWG step 11 */
 		if (pch_is_lp()) {
-			reg32 &= ~((1 << 31) | (1 << 30));
+			reg32 &= ~((1UL << 31) | (1 << 30));
 			reg32 |= 1 << 23;
 			reg32 |= 1 << 24; /* Disable listen mode (hotplug) */
 		}

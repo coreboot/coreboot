@@ -35,11 +35,11 @@ void intel_northbridge_haswell_finalize_smm(void)
 	pci_or_config32(PCI_DEV_HSW, 0xbc, 1 << 0);	/* TOLUD */
 
 	MCHBAR32_OR(0x5500, 1 << 0);	/* PAVP */
-	MCHBAR32_OR(0x5f00, 1 << 31);	/* SA PM */
+	MCHBAR32_OR(0x5f00, 1UL << 31);	/* SA PM */
 	MCHBAR32_OR(0x6020, 1 << 0);	/* UMA GFX */
 	MCHBAR32_OR(0x63fc, 1 << 0);	/* VTDTRK */
-	MCHBAR32_OR(0x6800, 1 << 31);
-	MCHBAR32_OR(0x7000, 1 << 31);
+	MCHBAR32_OR(0x6800, 1UL << 31);
+	MCHBAR32_OR(0x7000, 1UL << 31);
 	MCHBAR32_OR(0x77fc, 1 << 0);
 
 	/* Memory Controller Lockdown */

@@ -81,7 +81,7 @@ static void haswell_setup_graphics(void)
 
 	/* GPU RC6 workaround for sighting 366252 */
 	reg32 = MCHBAR32(0x5d14);
-	reg32 |= (1 << 31);
+	reg32 |= (1UL << 31);
 	MCHBAR32(0x5d14) = reg32;
 
 	/* VLW */

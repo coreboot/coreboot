@@ -29,6 +29,7 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 	u32 pciexbar = 0;
 	u32 pciexbar_reg;
 	int max_buses;
+	u32 mask;
 
 	dev = dev_find_slot(0, PCI_DEVFN(0, 0));
 	if (!dev)
@@ -40,17 +41,20 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 	if (!(pciexbar_reg & (1 << 0)))
 		return current;
 
+	mask = (1UL << 31) | (1 << 30) | (1 << 29) | (1 << 28);
 	switch ((pciexbar_reg >> 1) & 3) {
 	case 0: // 256MB
-		pciexbar = pciexbar_reg & ((1 << 31)|(1 << 30)|(1 << 29)|(1 << 28));
+		pciexbar = pciexbar_reg & mask;
 		max_buses = 256;
 		break;
 	case 1: // 128M
-		pciexbar = pciexbar_reg & ((1 << 31)|(1 << 30)|(1 << 29)|(1 << 28)|(1 << 27));
+		mask |= (1 << 27);
+		pciexbar = pciexbar_reg & mask;
 		max_buses = 128;
 		break;
 	case 2: // 64M
-		pciexbar = pciexbar_reg & ((1 << 31)|(1 << 30)|(1 << 29)|(1 << 28)|(1 << 27)|(1 << 26));
+		mask |= (1 << 27) | (1 << 26);
+		pciexbar = pciexbar_reg & mask;
 		max_buses = 64;
 		break;
 	default: // RSVD

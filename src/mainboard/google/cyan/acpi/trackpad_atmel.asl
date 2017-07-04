@@ -8,8 +8,9 @@ Scope (\_SB.PCI0.I2C6)
 		Name (_DDN, "Atmel Touchpad")
 		Name (_UID, 2)
 		Name (ISTP, 1) /* Touchpad */
+#if CONFIG(CHROMEOS)
 		Name (_PRW, Package() { BOARD_TRACKPAD_WAKE_GPIO, 0x3 })
-
+#endif
 		Name (_CRS, ResourceTemplate()
 		{
 			I2cSerialBus (

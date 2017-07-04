@@ -30,9 +30,9 @@ Scope (\_SB.PCI0.I2C6)
 				Return (0x0)
 			}
 		}
-
+#if CONFIG(CHROMEOS)
 		Name (_PRW, Package() { BOARD_TRACKPAD_WAKE_GPIO, 0x3 })
-
+#endif
 		/* Allow device to power off in S0 */
 		Name (_S0W, 4)
 	}

@@ -53,6 +53,14 @@ Method (PCRA, 3, Serialized)
 		DATA, 32
 	}
 	And (DATA, Arg2, DATA)
+
+	/*
+	 * After every write one needs to read an innocuous register
+	 * to ensure the writes are completed for certain ports. This is done
+	 * for all ports so that the callers don't need the per-port knowledge
+	 * for each transaction.
+	 */
+	PCRR (Arg0, Arg1)
 }
 
 /*
@@ -69,4 +77,12 @@ Method (PCRO, 3, Serialized)
 		DATA, 32
 	}
 	Or (DATA, Arg2, DATA)
+
+	/*
+	 * After every write one needs to read an innocuous register
+	 * to ensure the writes are completed for certain ports. This is done
+	 * for all ports so that the callers don't need the per-port knowledge
+	 * for each transaction.
+	 */
+	PCRR (Arg0, Arg1)
 }

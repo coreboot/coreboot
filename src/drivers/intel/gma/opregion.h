@@ -168,7 +168,7 @@ typedef struct {
 #define IGD_BACKLIGHT_BRIGHTNESS 0xff
 #define IGD_INITIAL_BRIGHTNESS 0x64
 
-#define IGD_FIELD_VALID	(1 << 31)
+#define IGD_FIELD_VALID	(1UL << 31)
 #define IGD_WORD_FIELD_VALID (1 << 15)
 #define IGD_PFIT_STRETCH 6
 

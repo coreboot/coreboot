@@ -33,7 +33,7 @@
 
 /* things that are, strangely, not defined anywhere? */
 #define PCH_PP_UNLOCK	0xabcd0000
-#define WMx_LP_SR_EN	(1<<31)
+#define WMx_LP_SR_EN	(1UL<<31)
 #define PRB0_TAIL	0x02030
 #define PRB0_HEAD	0x02034
 #define PRB0_START	0x02038

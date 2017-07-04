@@ -584,7 +584,7 @@ struct bdb_edp {
 #define   SWF11_DPMS_STANDBY	(1<<0)
 #define   SWF11_DPMS_ON		0
 
-#define SWF14_GFX_PFIT_EN	(1<<31)
+#define SWF14_GFX_PFIT_EN	(1UL<<31)
 #define SWF14_TEXT_PFIT_EN	(1<<30)
 #define SWF14_LID_STATUS_CLOSED	(1<<29) /* 0 here means open */
 #define SWF14_POPUP_EN		(1<<28)

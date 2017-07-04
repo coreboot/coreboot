@@ -86,7 +86,6 @@ Device (EMMC)
 
 		/* Set bits 31, 6, 2, 0 */
 		^^PCRO (PID_SCS, 0x600, 0x80000045)
-		Sleep (2)
 
 		/* Set Power State to D0 */
 		And (PMCR, 0xFFFC, PMCR)
@@ -140,7 +139,6 @@ Device (SDXC)
 
 		/* Set bits 8, 7, 2, 0 */
 		^^PCRO (PID_SCS, 0x600, 0x00000185)
-		Sleep (2)
 
 		/* Set Power State to D0 */
 		And (PMCR, 0xFFFC, PMCR)

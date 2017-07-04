@@ -426,7 +426,7 @@ static int smbios_write_type3(unsigned long *current, int handle)
 	t->power_supply_state = SMBIOS_STATE_SAFE;
 	t->thermal_state = SMBIOS_STATE_SAFE;
 	if (IS_ENABLED(CONFIG_SYSTEM_TYPE_LAPTOP))
-		t->_type = SMBIOS_ENCLOSURE_NOTEBOOK;
+		t->_type = SMBIOS_ENCLOSURE_LAPTOP;
 	else
 		t->_type = SMBIOS_ENCLOSURE_DESKTOP;
 	t->security_status = SMBIOS_STATE_SAFE;

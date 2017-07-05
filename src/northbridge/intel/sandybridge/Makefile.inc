@@ -17,6 +17,7 @@ ifeq ($(CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE)$(CONFIG_NORTHBRIDGE_INTEL_IVYBRIDG
 
 ramstage-y += ram_calc.c
 ramstage-y += northbridge.c
+ramstage-y += pcie.c
 ramstage-y += gma.c
 ramstage-$(CONFIG_SANDYBRIDGE_IVYBRIDGE_LVDS) += gma_sandybridge_lvds.c
 ramstage-$(CONFIG_SANDYBRIDGE_IVYBRIDGE_LVDS) += gma_ivybridge_lvds.c

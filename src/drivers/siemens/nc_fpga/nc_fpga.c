@@ -26,10 +26,9 @@
 
 #define FPGA_SET_PARAM(src, dst) \
 { \
-	typeof(dst) var; \
-	size_t len = sizeof(var); \
-	if (hwilib_get_field(src, (uint8_t *)&var, len) == len) \
-		dst = (typeof(dst))(var); \
+	uint32_t var; \
+	if (hwilib_get_field(src, (uint8_t *)&var, sizeof(var))) \
+		dst = *((typeof(dst) *)var); \
 }
 
 static void init_temp_mon (void *base_adr)
@@ -41,7 +40,7 @@ static void init_temp_mon (void *base_adr)
 	/* Program sensor delay first. */
 	FPGA_SET_PARAM(FANSensorDelay, ctrl->sensordelay);
 	/* Program correction curve for every used sensor. */
-	if (hwilib_get_field(FANSensorNum, &num, sizeof(num) != sizeof(num)) ||
+	if ((hwilib_get_field(FANSensorNum, &num, 1) != 1) ||
 	    (num == 0) || (num > MAX_NUM_SENSORS))
 		return;
 	for (i = 0; i < num; i ++) {

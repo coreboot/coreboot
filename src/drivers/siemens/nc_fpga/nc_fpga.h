@@ -28,7 +28,7 @@
 #define NC_BL_PWM_OFFSET		0x8C
 #define NC_FANMON_CTRL_OFFSET		0x400
 
-#define MAX_NUM_SENSORS		4
+#define MAX_NUM_SENSORS			8
 
 typedef struct {
 	uint16_t	rmin;

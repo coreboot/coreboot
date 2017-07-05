@@ -503,7 +503,7 @@ int parse_elf(const struct buffer *pinput, struct parsed_elf *pelf, int flags)
 	memset(pelf, 0, sizeof(*pelf));
 
 	if (!iself(buffer_get(pinput))) {
-		ERROR("The stage file is not in ELF format!\n");
+		DEBUG("The stage file is not in ELF format!\n");
 		return -1;
 	}
 

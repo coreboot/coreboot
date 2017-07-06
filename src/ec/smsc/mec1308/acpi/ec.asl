@@ -58,7 +58,7 @@ Device (EC0)
 		FCOS, 1,		// Fan Speed OS Control
 	}
 
-	Method (_CRS, 0, NotSerialized)
+	Method (_CRS, 0, Serialized)
 	{
 		Name (ECMD, ResourceTemplate()
 		{
@@ -87,7 +87,13 @@ Device (EC0)
 
 	PowerResource (FNP0, 0, 0)
 	{
-		Method (_STA) { Return (FSL0) }
+		Method (_STA) {
+			If (LLessEqual (\FLVL, 0)) {
+				Return (One)
+			} Else {
+				Return (Zero)
+			}
+		}
 		Method (_ON)  {
 			If (FCOS) {
 				Store (One, FSL0)
@@ -106,7 +112,13 @@ Device (EC0)
 
 	PowerResource (FNP1, 0, 0)
 	{
-		Method (_STA) { Return (FSL1) }
+		Method (_STA) {
+			If (LLessEqual (\FLVL, 1)) {
+				Return (One)
+			} Else {
+				Return (Zero)
+			}
+		}
 		Method (_ON)  {
 			If (FCOS) {
 				Store (One, FSL1)
@@ -125,7 +137,13 @@ Device (EC0)
 
 	PowerResource (FNP2, 0, 0)
 	{
-		Method (_STA) { Return (FSL2) }
+		Method (_STA) {
+			If (LLessEqual (\FLVL, 2)) {
+				Return (One)
+			} Else {
+				Return (Zero)
+			}
+		}
 		Method (_ON)  {
 			If (FCOS) {
 				Store (One, FSL2)
@@ -144,7 +162,13 @@ Device (EC0)
 
 	PowerResource (FNP3, 0, 0)
 	{
-		Method (_STA) { Return (FSL3) }
+		Method (_STA) {
+			If (LLessEqual (\FLVL, 3)) {
+				Return (One)
+			} Else {
+				Return (Zero)
+			}
+		}
 		Method (_ON)  {
 			If (FCOS) {
 				Store (One, FSL3)
@@ -163,7 +187,13 @@ Device (EC0)
 
 	PowerResource (FNP4, 0, 0)
 	{
-		Method (_STA) { Return (FSL4) }
+		Method (_STA) {
+			If (LLessEqual (\FLVL, 4)) {
+				Return (One)
+			} Else {
+				Return (Zero)
+			}
+                }
 		Method (_ON)  {
 			If (FCOS) {
 				Store (One, FSL4)

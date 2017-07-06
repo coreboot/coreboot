@@ -1,5 +1,6 @@
 ifeq ($(CONFIG_SOC_INTEL_CANNONLAKE),y)
 
+subdirs-y += ../../../cpu/intel/microcode
 subdirs-y += ../../../cpu/x86/mtrr
 subdirs-y += ../../../cpu/x86/tsc
 

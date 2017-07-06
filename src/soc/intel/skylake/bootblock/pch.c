@@ -241,6 +241,9 @@ void pch_early_iorange_init(void)
 	lpc_en = CNF1_LPC_EN | COMA_LPC_EN | KBC_LPC_EN | MC_LPC_EN;
 	pci_write_config16(PCH_DEV_LPC, LPC_EN, lpc_en);
 	pcr_write16(PID_DMI, PCR_DMI_LPCIOE, lpc_en);
+
+	/* Program generic IO Decode Range */
+	pch_enable_lpc();
 }
 
 void pch_early_init(void)
@@ -265,9 +268,6 @@ void pch_early_init(void)
 	 * PIRQx to IRQ Programming
 	 */
 	pch_interrupt_init();
-
-	/* Program generic IO Decode Range */
-	pch_enable_lpc();
 
 	/* Program SMBUS_BASE_ADDRESS and Enable it */
 	smbus_common_init();

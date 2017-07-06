@@ -214,6 +214,20 @@ chip soc/intel/skylake
 		device pci 14.1 off end # USB xDCI (OTG)
 		device pci 14.2 on  end # Thermal Subsystem
 		device pci 15.0 on
+			chip drivers/i2c/hid
+				register "generic.hid" = ""WCOMCOHO""
+				register "generic.desc" = ""WCOM Touchscreen""
+				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_E7_IRQ)"
+				register "generic.probed" = "1"
+				register "generic.reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_E3)"
+				register "generic.reset_delay_ms" = "110"
+				register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_C22)"
+				register "generic.enable_delay_ms" = "1"
+				register "generic.has_power_resource" = "1"
+				register "generic.disable_gpio_export_in_crs" = "1"
+				register "hid_desc_reg_offset" = "0x1"
+				device i2c 0xA on end
+			end
 			chip drivers/i2c/generic
 				register "hid" = ""ATML0001""
 				register "desc" = ""Atmel Touchscreen""

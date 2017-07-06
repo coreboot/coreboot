@@ -289,14 +289,27 @@ Scope (\_SB.PCI0.I2C2)
 						Decrement (VSIC)
 						If (LEqual (VSIC, Zero)) {
 							VSIO = 0
+							Sleep(1)
 						}
 					}
 				} ElseIf (LEqual (Arg0, 1)) {
-					/* Increment only if VSIC < 3 */
-					If (LLess (VSIC, 3)) {
+					/* Increment only if VSIC < 4 */
+					If (LLess (VSIC, 4)) {
 						/* Turn on VSIO */
 						If (LEqual (VSIC, Zero)) {
 							VSIO = 3
+
+							if (LNotEqual (IOVA, 52)) {
+								/* Set VSIO value as
+								1.8006 V */
+								IOVA = 52
+							}
+							if (LNotEqual (SIOV, 52)) {
+								/* Set VSIO value as
+								1.8006 V */
+								SIOV = 52
+							}
+							Sleep(3)
 						}
 						Increment (VSIC)
 					}
@@ -325,18 +338,6 @@ Scope (\_SB.PCI0.I2C2)
 						/* Enable VSIO regulator +
 						daisy chain */
 						DOVD(1)
-
-						if (LNotEqual (IOVA, 52)) {
-							/* Set VSIO value as
-							1.8006 V */
-							IOVA = 52
-						}
-						if (LNotEqual (SIOV, 52)) {
-							/* Set VSIO value as
-							1.8006 V */
-							SIOV = 52
-						}
-						Sleep(3)
 
 						VACT = 1
 						if (LNotEqual (ACVA, 109)) {
@@ -376,7 +377,6 @@ Scope (\_SB.PCI0.I2C2)
 						VACT = 0
 						Sleep(1)
 						DOVD(0)
-						Sleep(1)
 					}
 				}
 				STA = 0
@@ -441,8 +441,6 @@ Scope (\_SB.PCI0.I2C2)
 						VAX2 = 0
 						Sleep(1)
 						DOVD(0)
-						Sleep(1)
-
 					}
 					STA = 0
 				}
@@ -462,17 +460,6 @@ Scope (\_SB.PCI0.I2C2)
 						/* Enable VSIO regulator +
 						daisy chain */
 						DOVD(1)
-						if (LNotEqual (IOVA, 52)) {
-							/* Set VSIO value as
-							1.8006 V */
-							IOVA = 52
-						}
-						if (LNotEqual (SIOV, 52)) {
-							/* Set VSIO value as
-							1.8006 V */
-							SIOV = 52
-						}
-						Sleep(3)
 
 						/* Enable VCM regulator */
 						VCMC = 1
@@ -494,7 +481,34 @@ Scope (\_SB.PCI0.I2C2)
 						VCMC = 0 /* Disable regulator */
 						Sleep(1)
 						DOVD(0) /* Disable regulator */
-						Sleep(1)
+						STA = 0
+					}
+				}
+			}
+
+			Method (_STA, 0, NotSerialized) {
+				Return (STA)
+			}
+		}
+
+		/* Power resource methods for NVM */
+		PowerResource (NVMP, 0, 0) {
+			Name (STA, 0)
+			Method (_ON, 0, Serialized) {
+				If (LEqual (AVBL, 1)) {
+					If (LEqual (STA, 0)) {
+						/* Enable VSIO regulator +
+						daisy chain */
+						DOVD(1)
+						STA = 1
+					}
+				}
+			}
+
+			Method (_OFF, 0, Serialized) {
+				If (LEqual (AVBL, 1)) {
+					If (LEqual (STA, 1)) {
+						DOVD(0) /* Disable regulator */
 						STA = 0
 					}
 				}
@@ -518,7 +532,7 @@ Scope (\_SB.PCI0.I2C2)
 			Return (0x0F)
 		}
 
-		Name (_DEP, Package() {\_SB.PCI0.I2C2.PMIC})
+		Name (_DEP, Package() { \_SB.PCI0.I2C2.PMIC })
 		Name (_CRS, ResourceTemplate ()
 		{
 			I2cSerialBus (0x0010, ControllerInitiated, 0x00061A80,
@@ -656,7 +670,7 @@ Scope (\_SB.PCI0.I2C2)
 			Return (0x0F)
 		}
 
-		Name (_DEP, Package() {\_SB.PCI0.I2C2.PMIC})
+		Name (_DEP, Package() { \_SB.PCI0.I2C2.PMIC })
 		Name (_CRS, ResourceTemplate ()
 		{
 			I2cSerialBus (0x000C, ControllerInitiated, 0x00061A80,
@@ -667,6 +681,39 @@ Scope (\_SB.PCI0.I2C2)
 
 		Name (_PR0, Package () { ^PMIC.VCMP })
 		Name (_PR3, Package () { ^PMIC.VCMP })
+	}
+
+	Device (NVM0)
+	{
+		Name (_HID, "INT3499") /* _HID: Hardware ID */
+		Name (_UID, Zero)  /* _UID: Unique ID */
+		Name (_DDN, "GT24C16S/CAT24C16")  /* _DDN: DOS Device Name */
+
+		Method (_STA, 0, NotSerialized)  /* _STA: Status */
+		{
+			Return (0x0F)
+		}
+
+		Name (_DEP, Package() { \_SB.PCI0.I2C2.PMIC })
+		Name (_CRS, ResourceTemplate ()
+		{
+			I2cSerialBus (0x0050, ControllerInitiated, 0x00061A80,
+				AddressingMode7Bit, "\\_SB.PCI0.I2C2",
+				0x00, ResourceConsumer, ,)
+		})
+
+		Name (_PR0, Package () { ^PMIC.NVMP })
+		Name (_PR3, Package () { ^PMIC.NVMP })
+
+		Name (_DSD, Package ()
+		{
+			ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+			Package () {
+				Package () { "size", 2048 },
+				Package () { "pagesize", 1 },
+				Package () { "read-only", 1 },
+			}
+		})
 	}
 }
 
@@ -684,7 +731,7 @@ Scope (\_SB.PCI0.I2C4)
 			Return (0x0F)
 		}
 
-		Name (_DEP, Package() {\_SB.PCI0.I2C2.PMIC})
+		Name (_DEP, Package() { \_SB.PCI0.I2C2.PMIC })
 		Name (_CRS, ResourceTemplate ()
 		{
 			I2cSerialBus (0x0036, ControllerInitiated, 0x00061A80,

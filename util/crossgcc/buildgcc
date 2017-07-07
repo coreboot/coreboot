@@ -1147,7 +1147,7 @@ printf "Packages built ... ${green}ok${NC}\n"
 # for reproducibility
 PROGNAME=$(basename "$0")
 rm -f "$DESTDIR$TARGETDIR/share/$PROGNAME-*"
-cp "$PROGNAME" "$DESTDIR$TARGETDIR/share/$PROGNAME-$CROSSGCC_VERSION-$CROSGCC_COMMIT"
+cp "$PROGNAME" "$DESTDIR$TARGETDIR/share/$PROGNAME-$CROSSGCC_VERSION-$CROSSGCC_COMMIT"
 
 cleanup
 

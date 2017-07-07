@@ -29,7 +29,7 @@
 
 #if !IS_ENABLED(CONFIG_SUPERIO_ITE_IT8716F_OVERRIDE_FANCTL)
 
-static void init_ec(u16 base)
+void init_ec(u16 base)
 {
 	u8 value;
 

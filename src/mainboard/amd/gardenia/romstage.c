@@ -21,8 +21,8 @@
 #include <cpu/x86/lapic.h>
 #include <cpu/x86/bist.h>
 #include <cpu/amd/car.h>
-#include <northbridge/amd/pi/agesawrapper.h>
-#include <northbridge/amd/pi/agesawrapper_call.h>
+#include <agesawrapper.h>
+#include <agesawrapper_call.h>
 #include <soc/hudson.h>
 #include <amdblocks/psp.h>
 

@@ -1,0 +1,7 @@
+Category: laptop
+Board URL: https://support.hp.com/us-en/product/HP-EliteBook-8460p-Notebook-PC/5056942
+ROM package: SOIC-8
+ROM protocol: SPI
+ROM socketed: n
+Flashrom support: n
+Release year: 2011

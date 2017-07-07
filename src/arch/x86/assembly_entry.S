@@ -63,7 +63,8 @@ debug_spinloop:
 	jz	debug_spinloop
 #endif
 
-	jmp	car_stage_entry
+	andl	$0xfffffff0, %esp
+	call	car_stage_entry
 
 /* This is here for linking purposes. */
 .weak car_stage_entry

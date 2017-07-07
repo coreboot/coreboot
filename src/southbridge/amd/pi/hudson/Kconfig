@@ -80,7 +80,7 @@ config HUDSON_GEC_FWM
 
 config HUDSON_PSP
 	bool
-	default y if CPU_AMD_PI_00730F01 || CPU_AMD_PI_00670F00_FP4 || CPU_AMD_PI_00670F00_FT4 || CPU_AMD_PI_00660F01
+	default y if CPU_AMD_PI_00730F01 || CPU_AMD_PI_00660F01
 
 config HUDSON_XHCI_FWM_FILE
 	string "XHCI firmware path and filename"
@@ -107,8 +107,6 @@ config AMD_PUBKEY_FILE
 	depends on HUDSON_PSP
 	string "AMD public Key"
 	default "3rdparty/blobs/southbridge/amd/avalon/PSP/AmdPubKey.bin" if CPU_AMD_PI_00730F01
-	default "3rdparty/blobs/southbridge/amd/kern/PSP/AmdPubKeyST.bin" if CPU_AMD_PI_00670F00_FP4
-	default "3rdparty/blobs/southbridge/amd/kern/PSP/AmdPubKeyST.bin" if CPU_AMD_PI_00670F00_FT4
 	default "3rdparty/blobs/southbridge/amd/kern/PSP/AmdPubKeyCZ.bin" if CPU_AMD_PI_00660F01
 
 config HUDSON_SATA_MODE
@@ -222,7 +220,6 @@ config SERIRQ_CONTINUOUS_MODE
 
 config HUDSON_ACPI_IO_BASE
 	hex
-	default 0x400 if CPU_AMD_PI_00670F00_FP4 || CPU_AMD_PI_00670F00_FT4
 	default 0x800
 	help
 	  Base address for the ACPI registers.

@@ -417,10 +417,12 @@ clean-ctags:
 	rm -f tags
 
 clean-utils:
-	$(foreach tool, $(TOOLLIST), $(MAKE) -C util/$(tool) clean MFLAGS= MAKEFLAGS= ;)
+	$(foreach tool, $(TOOLLIST), \
+		$(MAKE) -C util/$(tool) clean MFLAGS= MAKEFLAGS= ;)
 
 distclean-utils:
-	$(foreach tool, $(TOOLLIST), $(MAKE) -C util/$(tool) distclean MFLAGS= MAKEFLAGS= ;
+	$(foreach tool, $(TOOLLIST), \
+		$(MAKE) -C util/$(tool) distclean MFLAGS= MAKEFLAGS= ; \
 		rm -f /util/$(tool)/junit.xml;)
 
 distclean: clean clean-ctags clean-cscope distclean-payloads distclean-utils

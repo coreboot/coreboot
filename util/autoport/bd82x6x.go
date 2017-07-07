@@ -205,10 +205,6 @@ func (b bd82x6x) Scan(ctx Context, addr PCIDevData) {
 
 	/* SPI init */
 	MainboardIncludes = append(MainboardIncludes, "southbridge/intel/bd82x6x/pch.h")
-	/* FIXME:XX Move this to runtime.  */
-	for _, addr := range []uint16{0x38c8, 0x38c4} {
-		MainboardInit += fmt.Sprintf("\tRCBA32(0x%04x) = 0x%08x;\n", addr, inteltool.RCBA[addr])
-	}
 
 	FADT := ctx.InfoSource.GetACPI()["FACP"]
 
@@ -246,6 +242,8 @@ func (b bd82x6x) Scan(ctx Context, addr PCIDevData) {
 			"p_cnt_throttling_supported": (FormatBool(FADT[104] == 1 && FADT[105] == 3)),
 			"c2_latency":                 FormatHexLE16(FADT[96:98]),
 			"docking_supported":          (FormatBool((FADT[113] & (1 << 1)) != 0)),
+			"spi_uvscc": fmt.Sprintf("0x%x", inteltool.RCBA[0x38c8]),
+			"spi_lvscc": fmt.Sprintf("0x%x", inteltool.RCBA[0x38c4] &^ (1 << 23)),
 		},
 		PCISlots: []PCISlot{
 			PCISlot{PCIAddr: PCIAddr{Dev: 0x14, Func: 0}, writeEmpty: false, additionalComment: "USB 3.0 Controller"},

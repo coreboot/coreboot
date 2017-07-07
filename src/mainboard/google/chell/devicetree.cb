@@ -199,14 +199,7 @@ chip soc/intel/skylake
 		device pci 14.0 on  end # USB xHCI
 		device pci 14.1 off end # USB xDCI (OTG)
 		device pci 14.2 on  end # Thermal Subsystem
-		device pci 15.0 on
-			chip drivers/i2c/generic
-				register "hid" = ""ELAN0001""
-				register "desc" = ""ELAN Touchscreen""
-				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_E7_IRQ)"
-				device i2c 10 on end
-			end
-		end # I2C #0
+		device pci 15.0 on  end # I2C #0
 		device pci 15.1 on
 			chip drivers/i2c/generic
 				register "hid" = ""ELAN0000""

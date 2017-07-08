@@ -29,6 +29,7 @@
 #include <device/pci_def.h>
 #include <elog.h>
 #include <intelblocks/fast_spi.h>
+#include <intelblocks/pmclib.h>
 #include <reset.h>
 #include <romstage_handoff.h>
 #include <soc/pci_devs.h>
@@ -255,4 +256,14 @@ void soc_after_ram_init(struct romstage_params *params)
 	 * init and MRC cache is saved.
 	 */
 	pmc_set_disb();
+}
+
+struct chipset_power_state *fill_power_state(void)
+{
+	struct chipset_power_state *ps;
+
+	ps = pmc_get_power_state();
+	pmc_fill_power_state(ps);
+
+	return ps;
 }

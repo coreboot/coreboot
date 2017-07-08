@@ -15,6 +15,7 @@
 
 #include <console/console.h>
 #include <fsp/util.h>
+#include <intelblocks/pmclib.h>
 #include <reset.h>
 #include <soc/me.h>
 #include <soc/pm.h>
@@ -22,19 +23,12 @@
 
 static void do_force_global_reset(void)
 {
-	u32 reg32;
-	/*PMC Controller Device 0x1F, Func 02*/
-	uint8_t *pmc_regs;
-
 	/*
 	 * BIOS should ensure it does a global reset
 	 * to reset both host and Intel ME by setting
 	 * PCH PMC [B0:D31:F2 register offset 0x1048 bit 20]
 	 */
-	pmc_regs = pmc_mmio_regs();
-	reg32 = read32(pmc_regs + ETR3);
-	reg32 |= ETR3_CF9GR;
-	write32(pmc_regs + ETR3, reg32);
+	pmc_global_reset_enable(true);
 
 	/* Now BIOS can write 0x06 or 0x0E to 0xCF9 port
 	 * to global reset platform */

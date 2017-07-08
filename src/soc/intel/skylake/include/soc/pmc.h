@@ -91,11 +91,9 @@
 #define  DSX_EN_LAN_WAKE_PIN	(1 << 0)
 #define PMSYNC_TPR_CFG		0xc4
 #define  PMSYNC_LOCK		(1 << 31)
-#define GPIO_CFG		0x120
+#define GPIO_GPE_CFG		0x120
 #define  GPE0_DWX_MASK		0xf
-#define  GPE0_DW0_SHIFT		0
-#define  GPE0_DW1_SHIFT		4
-#define  GPE0_DW2_SHIFT		8
+#define GPE0_DW_SHIFT(x)	(4*(x))
 #define GBLRST_CAUSE0		0x124
 #define GBLRST_CAUSE1		0x128
 #define CIR31C			0x31c

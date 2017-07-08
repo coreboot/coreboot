@@ -23,6 +23,7 @@
 #include <intelblocks/lpc_lib.h>
 #include <intelblocks/pcr.h>
 #include <intelblocks/rtc.h>
+#include <intelblocks/pmclib.h>
 #include <intelblocks/smbus.h>
 #include <soc/bootblock.h>
 #include <soc/iomap.h>

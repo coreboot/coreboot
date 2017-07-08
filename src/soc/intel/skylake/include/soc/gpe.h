@@ -130,4 +130,6 @@
 #define GPE0_LAN_WAK		112
 #define GPE0_WADT		114
 
+#define GPE_MAX			GPE0_WADT
+
 #endif /* _SOC_GPE_H_ */

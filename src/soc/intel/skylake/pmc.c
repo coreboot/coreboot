@@ -25,14 +25,15 @@
 #include <arch/acpi.h>
 #include <cpu/cpu.h>
 #include <intelblocks/pcr.h>
+#include <intelblocks/pmclib.h>
 #include <pc80/mc146818rtc.h>
 #include <reg_script.h>
 #include <string.h>
 #include <soc/gpio.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
-#include <soc/pmc.h>
 #include <soc/pm.h>
+#include <soc/pmc.h>
 #include <cpu/x86/smm.h>
 #include <soc/pcr_ids.h>
 #include <soc/ramstage.h>

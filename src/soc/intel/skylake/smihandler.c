@@ -25,6 +25,7 @@
 #include <intelblocks/fast_spi.h>
 #include <intelblocks/pcr.h>
 #include <intelblocks/uart.h>
+#include <intelblocks/pmclib.h>
 #include <delay.h>
 #include <device/pci_def.h>
 #include <elog.h>
@@ -81,7 +82,7 @@ int southbridge_io_trap_handler(int smif)
 /* Set the EOS bit */
 void southbridge_smi_set_eos(void)
 {
-	enable_smi(EOS);
+	pmc_enable_smi(EOS);
 }
 
 static void busmaster_disable_on_bus(int bus)
@@ -136,7 +137,7 @@ static void southbridge_smi_sleep(void)
 	outb(tmp72, 0x72);
 
 	/* First, disable further SMIs */
-	disable_smi(SLP_SMI_EN);
+	pmc_disable_smi(SLP_SMI_EN);
 
 	/* Figure out SLP_TYP */
 	reg32 = inl(ACPI_BASE_ADDRESS + PM1_CNT);
@@ -152,7 +153,7 @@ static void southbridge_smi_sleep(void)
 			elog_add_event_byte(ELOG_TYPE_ACPI_ENTER, slp_typ);
 
 	/* Clear pending GPE events */
-	clear_gpe_status();
+	pmc_clear_gpe_status();
 
 	/* Next, do the deed. */
 	switch (slp_typ) {
@@ -175,7 +176,7 @@ static void southbridge_smi_sleep(void)
 		/*TODO: cmos_layout.bin need to verify; cause wrong CMOS setup*/
 		s5pwr = MAINBOARD_POWER_ON;
 		/* Disable all GPE */
-		disable_all_gpe();
+		pmc_disable_all_gpe();
 
 		/*
 		 * Always set the flag in case CMOS was changed on runtime. For
@@ -201,7 +202,7 @@ static void southbridge_smi_sleep(void)
 	 * event again. We need to set BIT13 (SLP_EN) though to make the
 	 * sleep happen.
 	 */
-	enable_pm1_control(SLP_EN);
+	pmc_enable_pm1_control(SLP_EN);
 
 	/* Make sure to stop executing code here for S3/S4/S5 */
 	if (slp_typ >= ACPI_S3)
@@ -215,7 +216,7 @@ static void southbridge_smi_sleep(void)
 	reg32 = inl(ACPI_BASE_ADDRESS + PM1_CNT);
 	if (reg32 & SCI_EN) {
 		/* The OS is not an ACPI OS, so we set the state to S0 */
-		disable_pm1_control(SLP_EN | SLP_TYP);
+		pmc_disable_pm1_control(SLP_EN | SLP_TYP);
 	}
 }
 
@@ -306,11 +307,11 @@ static void southbridge_smi_apmc(void)
 		printk(BIOS_DEBUG, "P-state control\n");
 		break;
 	case APM_CNT_ACPI_DISABLE:
-		disable_pm1_control(SCI_EN);
+		pmc_disable_pm1_control(SCI_EN);
 		printk(BIOS_DEBUG, "SMI#: ACPI disabled.\n");
 		break;
 	case APM_CNT_ACPI_ENABLE:
-		enable_pm1_control(SCI_EN);
+		pmc_enable_pm1_control(SCI_EN);
 		printk(BIOS_DEBUG, "SMI#: ACPI enabled.\n");
 		break;
 	case APM_CNT_FINALIZE:
@@ -341,8 +342,8 @@ static void southbridge_smi_apmc(void)
 
 static void southbridge_smi_pm1(void)
 {
-	u16 pm1_sts = clear_pm1_status();
-	u16 pm1_en = read_pm1_enable();
+	u16 pm1_sts = pmc_clear_pm1_status();
+	u16 pm1_en = pmc_read_pm1_enable();
 
 	/*
 	 * While OSPM is not active, poweroff immediately on a power button
@@ -352,14 +353,14 @@ static void southbridge_smi_pm1(void)
 		/* power button pressed */
 		if (IS_ENABLED(CONFIG_ELOG_GSMI))
 			elog_add_event(ELOG_TYPE_POWER_BUTTON);
-		disable_pm1_control(-1UL);
-		enable_pm1_control(SLP_EN | (SLP_TYP_S5 << 10));
+		pmc_disable_pm1_control(-1UL);
+		pmc_enable_pm1_control(SLP_EN | (SLP_TYP_S5 << 10));
 	}
 }
 
 static void southbridge_smi_gpe0(void)
 {
-	clear_gpe_status();
+	pmc_clear_gpe_status();
 }
 
 void __attribute__((weak))
@@ -395,7 +396,7 @@ static void southbridge_smi_mc(void)
 
 static void southbridge_smi_tco(void)
 {
-	u32 tco_sts = clear_tco_status();
+	u32 tco_sts = pmc_clear_tco_status();
 
 	/* Any TCO event? */
 	if (!tco_sts)
@@ -522,7 +523,7 @@ void southbridge_smi_handler(void)
 	 * We need to clear the SMI status registers, or we won't see what's
 	 * happening in the following calls.
 	 */
-	smi_sts = clear_smi_status();
+	smi_sts = pmc_clear_smi_status();
 
 	/* Call SMI sub handler for each of the status bits */
 	for (i = 0; i < ARRAY_SIZE(southbridge_smi); i++) {

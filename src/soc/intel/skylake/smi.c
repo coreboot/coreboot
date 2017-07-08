@@ -23,6 +23,7 @@
 #include <cpu/cpu.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/smm.h>
+#include <intelblocks/pmclib.h>
 #include <string.h>
 #include <soc/iomap.h>
 #include <soc/pch.h>
@@ -45,18 +46,18 @@ void southbridge_smm_clear_state(void)
 	printk(BIOS_DEBUG, "\n");
 
 	/* Dump and clear status registers */
-	clear_smi_status();
-	clear_pm1_status();
-	clear_tco_status();
-	clear_gpe_status();
+	pmc_clear_smi_status();
+	pmc_clear_pm1_status();
+	pmc_clear_tco_status();
+	pmc_clear_gpe_status();
 }
 
 void southbridge_smm_enable_smi(void)
 {
 	printk(BIOS_DEBUG, "Enabling SMIs.\n");
 	/* Configure events */
-	enable_pm1(GBL_EN);
-	disable_gpe(PME_B0_EN);
+	pmc_enable_pm1(GBL_EN);
+	pmc_disable_gpe(PME_B0_EN);
 
 	/*
 	 * Enable SMI generation:
@@ -68,7 +69,7 @@ void southbridge_smm_enable_smi(void)
 	 *  - on microcontroller writes (io 0x62/0x66)
 	 *  - on TCO events
 	 */
-	enable_smi(APMC_EN | SLP_SMI_EN | GBL_SMI_EN | ESPI_SMI_EN | EOS);
+	pmc_enable_smi(APMC_EN | SLP_SMI_EN | GBL_SMI_EN | ESPI_SMI_EN | EOS);
 }
 
 void smm_setup_structures(void *gnvs, void *tcg, void *smi1)
@@ -100,7 +101,7 @@ static void pm1_enable_pwrbtn_smi(void *unused)
 	 * any shutdowns because of power button presses due to power button
 	 * press in resume path.
 	 */
-	update_pm1_enable(PWRBTN_EN);
+	pmc_update_pm1_enable(PWRBTN_EN);
 }
 
 BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_LOAD, BS_ON_EXIT, pm1_enable_pwrbtn_smi, NULL);

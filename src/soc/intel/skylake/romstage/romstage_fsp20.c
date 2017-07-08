@@ -26,6 +26,7 @@
 #include <device/pci_def.h>
 #include <fsp/util.h>
 #include <fsp/memmap.h>
+#include <intelblocks/pmclib.h>
 #include <memory_info.h>
 #include <soc/intel/common/smbios.h>
 #include <soc/msr.h>
@@ -119,9 +120,9 @@ asmlinkage void car_stage_entry(void)
 	/* Program MCHBAR, DMIBAR, GDXBAR and EDRAMBAR */
 	systemagent_early_init();
 
-	ps = fill_power_state();
+	ps = pmc_get_power_state();
 	timestamp_add_now(TS_START_ROMSTAGE);
-	s3wake = ps->prev_sleep_state == ACPI_S3;
+	s3wake = pmc_fill_power_state(ps) == ACPI_S3;
 	fsp_memory_init(s3wake);
 	pmc_set_disb();
 	if (!s3wake)

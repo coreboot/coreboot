@@ -34,9 +34,6 @@ DefinitionBlock(
 	// General Purpose Events
 	//#include "acpi/gpe.asl"
 
-	// mainboard specific devices
-	#include "acpi/mainboard.asl"
-
 	#include <cpu/intel/model_206ax/acpi/cpu.asl>
 
 	#include "acpi/thermal.asl"
@@ -51,6 +48,9 @@ DefinitionBlock(
 			#include <drivers/intel/gma/acpi/default_brightness_levels.asl>
 		}
 	}
+
+	// mainboard specific devices
+	#include "acpi/mainboard.asl"
 
 	#include <vendorcode/google/chromeos/acpi/chromeos.asl>
 

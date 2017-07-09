@@ -80,3 +80,6 @@ Scope (\_SB) {
 Name (BATV, "SAMSUNG")
 Name (BATM, "LUMPY")
 Name (BATS, "BATTERY")
+
+/* USB port entries */
+#include "acpi/usb.asl"

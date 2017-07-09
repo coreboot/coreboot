@@ -1,7 +1,7 @@
 ##
 ## This file is part of the coreboot project.
 ##
-## Copyright (C) 2013 Google Inc.
+## Copyright (C) 2014 Google Inc.
 ## Copyright (C) 2017 Intel Corporation.
 ##
 ## This program is free software; you can redistribute it and/or modify
@@ -14,7 +14,15 @@
 ## GNU General Public License for more details.
 ##
 
-subdirs-y += spd
+romstage-y += spd_util.c
 
-subdirs-y += variants/$(VARIANT_DIR)
-CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/variants/$(VARIANT_DIR)/include
+SPD_BIN = $(obj)/spd.bin
+
+SPD_SOURCES = empty				# 0b000
+SPD_SOURCES += samsung_ddr4_4GB			# 1b001 Dual Channel 4GB
+SPD_SOURCES += samsung_lpddr4_8GB		# 2b001 Dual Channel 8GB
+SPD_SOURCES += empty				# 3b011
+SPD_SOURCES += empty				# 4b100
+SPD_SOURCES += empty				# 5b101
+SPD_SOURCES += empty				# 6b110
+SPD_SOURCES += empty				# 7b111

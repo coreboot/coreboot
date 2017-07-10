@@ -94,6 +94,7 @@ config MAINBOARD_PART_NUMBER
 	default "Bob" if BOARD_GOOGLE_BOB
 	default "Gru" if BOARD_GOOGLE_GRU
 	default "Kevin" if BOARD_GOOGLE_KEVIN
+	default "Nefario" if BOARD_GOOGLE_NEFARIO
 
 config GBB_HWID
 	string
@@ -102,5 +103,6 @@ config GBB_HWID
 	default "BOB TEST 7422" if BOARD_GOOGLE_BOB
 	default "GRU TEST 5431" if BOARD_GOOGLE_GRU
 	default "KEVIN TEST 1422" if BOARD_GOOGLE_KEVIN
+	default "NEFARIO TEST 3735" if BOARD_GOOGLE_NEFARIO
 
 endif # BOARD_GOOGLE_GRU_COMMON

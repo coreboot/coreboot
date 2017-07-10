@@ -203,10 +203,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->TsegSize = CONFIG_SMM_TSEG_SIZE;
 	m_cfg->IedSize = CONFIG_IED_REGION_SIZE;
 	m_cfg->ProbelessTrace = config->ProbelessTrace;
-	if (vboot_recovery_mode_enabled())
-		m_cfg->SaGv = 0; /* Disable SaGv in recovery mode. */
-	else
-		m_cfg->SaGv = config->SaGv;
+	m_cfg->SaGv = config->SaGv;
 	m_cfg->UserBd = BOARD_TYPE_ULT_ULX;
 	m_cfg->RMT = config->Rmt;
 	m_cfg->DdrFreqLimit = config->DdrFreqLimit;

@@ -982,7 +982,9 @@ if [ -n "$CC" ]; then
 		HALT_FOR_TOOLS=1
 	fi
 else
-	if searchtool gcc "Free Software Foundation" nofail > /dev/null; then
+	if searchtool gnatgcc "Free Software Foundation" nofail > /dev/null; then
+		CC=gnatgcc
+	elif searchtool gcc "Free Software Foundation" nofail > /dev/null; then
 		CC=gcc
 	else
 		searchtool cc '^' nofail > /dev/null || please_install gcc

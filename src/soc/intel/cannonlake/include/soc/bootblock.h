@@ -27,4 +27,6 @@ void pch_early_init(void);
 void pch_early_iorange_init(void);
 void report_platform_info(void);
 
+void clear_cbmem_top(void);
+
 #endif

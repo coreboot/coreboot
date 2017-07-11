@@ -11,8 +11,9 @@ bootblock-y += bootblock/cpu.c
 bootblock-y += bootblock/pch.c
 bootblock-y += bootblock/report_platform.c
 bootblock-y += gpio.c
+bootblock-y += memmap.c
 
-romstage-y += cbmem.c
+romstage-y += memmap.c
 romstage-y += reset.c
 romstage-$(CONFIG_DRIVERS_UART_8250MEM) += uart.c
 

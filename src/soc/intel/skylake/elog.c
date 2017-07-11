@@ -200,20 +200,6 @@ static void pch_log_pme_internal_wake_source(void)
 	static const struct pme_status_info pme_status_info[] = {
 		{ PCH_DEVFN_HDA, 0x54, ELOG_WAKE_SOURCE_PME_HDA },
 		{ PCH_DEVFN_GBE, 0xcc, ELOG_WAKE_SOURCE_PME_GBE },
-		{ PCH_DEVFN_EMMC, 0x84, ELOG_WAKE_SOURCE_PME_EMMC },
-		{ PCH_DEVFN_SDCARD, 0x84, ELOG_WAKE_SOURCE_PME_SDCARD },
-		{ PCH_DEVFN_PCIE1, 0xa4, ELOG_WAKE_SOURCE_PME_PCIE1 },
-		{ PCH_DEVFN_PCIE2, 0xa4, ELOG_WAKE_SOURCE_PME_PCIE2 },
-		{ PCH_DEVFN_PCIE3, 0xa4, ELOG_WAKE_SOURCE_PME_PCIE3 },
-		{ PCH_DEVFN_PCIE4, 0xa4, ELOG_WAKE_SOURCE_PME_PCIE4 },
-		{ PCH_DEVFN_PCIE5, 0xa4, ELOG_WAKE_SOURCE_PME_PCIE5 },
-		{ PCH_DEVFN_PCIE6, 0xa4, ELOG_WAKE_SOURCE_PME_PCIE6 },
-		{ PCH_DEVFN_PCIE7, 0xa4, ELOG_WAKE_SOURCE_PME_PCIE7 },
-		{ PCH_DEVFN_PCIE8, 0xa4, ELOG_WAKE_SOURCE_PME_PCIE8 },
-		{ PCH_DEVFN_PCIE9, 0xa4, ELOG_WAKE_SOURCE_PME_PCIE9 },
-		{ PCH_DEVFN_PCIE10, 0xa4, ELOG_WAKE_SOURCE_PME_PCIE10 },
-		{ PCH_DEVFN_PCIE11, 0xa4, ELOG_WAKE_SOURCE_PME_PCIE11 },
-		{ PCH_DEVFN_PCIE12, 0xa4, ELOG_WAKE_SOURCE_PME_PCIE12 },
 		{ PCH_DEVFN_SATA, 0x74, ELOG_WAKE_SOURCE_PME_SATA },
 		{ PCH_DEVFN_CSE, 0x54, ELOG_WAKE_SOURCE_PME_CSE },
 		{ PCH_DEVFN_XHCI, 0x74, ELOG_WAKE_SOURCE_PME_XHCI },
@@ -239,6 +225,47 @@ static void pch_log_pme_internal_wake_source(void)
 		elog_add_event_wake(ELOG_WAKE_SOURCE_PME_INTERNAL, 0);
 }
 
+#define RP_PME_STS_BIT		(1 << 16)
+static void pch_log_rp_wake_source(void)
+{
+	size_t i;
+	device_t dev;
+	uint32_t val;
+
+	static const struct pme_status_info pme_status_info[] = {
+		{ PCH_DEVFN_PCIE1, 0x60, ELOG_WAKE_SOURCE_PME_PCIE1 },
+		{ PCH_DEVFN_PCIE2, 0x60, ELOG_WAKE_SOURCE_PME_PCIE2 },
+		{ PCH_DEVFN_PCIE3, 0x60, ELOG_WAKE_SOURCE_PME_PCIE3 },
+		{ PCH_DEVFN_PCIE4, 0x60, ELOG_WAKE_SOURCE_PME_PCIE4 },
+		{ PCH_DEVFN_PCIE5, 0x60, ELOG_WAKE_SOURCE_PME_PCIE5 },
+		{ PCH_DEVFN_PCIE6, 0x60, ELOG_WAKE_SOURCE_PME_PCIE6 },
+		{ PCH_DEVFN_PCIE7, 0x60, ELOG_WAKE_SOURCE_PME_PCIE7 },
+		{ PCH_DEVFN_PCIE8, 0x60, ELOG_WAKE_SOURCE_PME_PCIE8 },
+		{ PCH_DEVFN_PCIE9, 0x60, ELOG_WAKE_SOURCE_PME_PCIE9 },
+		{ PCH_DEVFN_PCIE10, 0x60, ELOG_WAKE_SOURCE_PME_PCIE10 },
+		{ PCH_DEVFN_PCIE11, 0x60, ELOG_WAKE_SOURCE_PME_PCIE11 },
+		{ PCH_DEVFN_PCIE12, 0x60, ELOG_WAKE_SOURCE_PME_PCIE12 },
+	};
+
+	for (i = 0; i < ARRAY_SIZE(pme_status_info); i++) {
+		dev = dev_find_slot(0, pme_status_info[i].devfn);
+
+		if (!dev)
+			continue;
+
+		val = pci_read_config32(dev, pme_status_info[i].reg_offset);
+
+		if ((val == 0xFFFFFFFF) || !(val & RP_PME_STS_BIT))
+			continue;
+
+		/*
+		 * Linux kernel uses PME STS bit information. So do not clear
+		 * this bit.
+		 */
+		pch_log_add_elog_event(&pme_status_info[i], dev);
+	}
+}
+
 static void pch_log_wake_source(struct chipset_power_state *ps)
 {
 	/* Power Button */
@@ -252,6 +279,14 @@ static void pch_log_wake_source(struct chipset_power_state *ps)
 	/* PCI Express (TODO: determine wake device) */
 	if (ps->pm1_sts & PCIEXPWAK_STS)
 		elog_add_event_wake(ELOG_WAKE_SOURCE_PCIE, 0);
+
+	/*
+	 * PCIE Root Port .
+	 * This should be done when PCIEXPWAK_STS bit is set.
+	 * In SPT, this bit isn't getting set due to known bug.
+	 * So scan all PCIe RP for PME status bit.
+	 */
+	pch_log_rp_wake_source();
 
 	/* PME (TODO: determine wake device) */
 	if (ps->gpe0_sts[GPE_STD] & PME_STS)

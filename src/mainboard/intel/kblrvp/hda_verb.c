@@ -63,7 +63,7 @@ static void mb_hda_codec_init(void *unused)
 
 	/* Find base address */
 	dev = dev_find_slot(0, PCH_DEVFN_HDA);
-	if (dev == NULL)
+	if (dev == NULL || dev->enabled == 0)
 		return;
 	res = find_resource(dev, PCI_BASE_ADDRESS_0);
 	if (!res)

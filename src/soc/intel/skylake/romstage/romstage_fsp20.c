@@ -36,12 +36,6 @@
 #include <timestamp.h>
 #include <vboot/vboot_common.h>
 
-/*
- * Romstage needs some stack for decompressing ramstage images, since the lzma
- * lib keeps its state on the stack during romstage.
- */
-#define ROMSTAGE_RAM_STACK_SIZE 0x5000
-
 #define FSP_SMBIOS_MEMORY_INFO_GUID	\
 {	\
 	0xd4, 0x71, 0x20, 0x9b, 0x54, 0xb0, 0x0c, 0x4e,	\
@@ -134,7 +128,7 @@ asmlinkage void car_stage_entry(void)
 	pmc_set_disb();
 	if (!s3wake)
 		save_dimm_info();
-	if (postcar_frame_init(&pcf, ROMSTAGE_RAM_STACK_SIZE))
+	if (postcar_frame_init(&pcf, 1*KiB))
 		die("Unable to initialize postcar frame.\n");
 
 	/*

@@ -38,6 +38,11 @@ static void *default_memset(void *s, int c, size_t n)
 	size_t i;
 	void *ret = s;
 	unsigned long w = c & 0xff;
+	u8 *p = s;
+
+	s = (void *)ALIGN_UP((uintptr_t)s, sizeof(unsigned long));
+	while (p != (u8 *)s && n--)
+		*p++ = c;
 
 	for (i = 1; i < sizeof(unsigned long); i <<= 1)
 		w = (w << (i * 8)) | w;

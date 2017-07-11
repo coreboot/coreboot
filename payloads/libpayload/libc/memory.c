@@ -66,13 +66,17 @@ static void *default_memcpy(void *dst, const void *src, size_t n)
 	size_t i;
 	void *ret = dst;
 
-	for(i = 0; i < n / sizeof(unsigned long); i++)
-		((unsigned long *)dst)[i] = ((unsigned long *)src)[i];
+	if (IS_ALIGNED((uintptr_t)dst, sizeof(unsigned long)) &&
+	    IS_ALIGNED((uintptr_t)src, sizeof(unsigned long))) {
+		for (i = 0; i < n / sizeof(unsigned long); i++)
+			((unsigned long *)dst)[i] = ((unsigned long *)src)[i];
 
-	src += i * sizeof(unsigned long);
-	dst += i * sizeof(unsigned long);
+		src += i * sizeof(unsigned long);
+		dst += i * sizeof(unsigned long);
+		n -= i * sizeof(unsigned long);
+	}
 
-	for(i = 0; i < n % sizeof(unsigned long); i++)
+	for (i = 0; i < n; i++)
 		((u8 *)dst)[i] = ((u8 *)src)[i];
 
 	return ret;
@@ -88,6 +92,13 @@ static void *default_memmove(void *dst, const void *src, size_t n)
 
 	if (src > dst)
 		return memcpy(dst, src, n);
+
+	if (!IS_ALIGNED((uintptr_t)dst, sizeof(unsigned long)) ||
+	    !IS_ALIGNED((uintptr_t)src, sizeof(unsigned long))) {
+		for (i = n - 1; i >= 0; i--)
+			((u8 *)dst)[i] = ((u8 *)src)[i];
+		return dst;
+	}
 
 	offs = n - (n % sizeof(unsigned long));
 
@@ -116,11 +127,14 @@ void *memmove(void *dst, const void *src, size_t n)
 
 static int default_memcmp(const void *s1, const void *s2, size_t n)
 {
-	size_t i;
+	size_t i = 0;
+	const unsigned long *w1 = s1, *w2 = s2;
 
-	for (i = 0; i < n / sizeof(unsigned long); i++)
-		if (((unsigned long *)s1)[i] != ((unsigned long *)s2)[i])
-			break;	/* fall through to find differing byte */
+	if (IS_ALIGNED((uintptr_t)s1, sizeof(unsigned long)) &&
+	    IS_ALIGNED((uintptr_t)s2, sizeof(unsigned long)))
+		for (; i < n / sizeof(unsigned long); i++)
+			if (w1[i] != w2[i])
+				break; /* fall through to find differing byte */
 
 	for (i *= sizeof(unsigned long); i < n; i++)
 		if (((u8 *)s1)[i] != ((u8 *)s2)[i])

@@ -12,15 +12,19 @@ bootblock-y += bootblock/pch.c
 bootblock-y += bootblock/report_platform.c
 bootblock-y += gpio.c
 bootblock-y += memmap.c
+bootblock-$(CONFIG_UART_DEBUG) += uart.c
 
 romstage-y += memmap.c
 romstage-y += reset.c
-romstage-$(CONFIG_DRIVERS_UART_8250MEM) += uart.c
+romstage-$(CONFIG_UART_DEBUG) += uart.c
 
 ramstage-y += cbmem.c
 ramstage-$(CONFIG_PLATFORM_USES_FSP2_0) += reset.c
 ramstage-y += systemagent.c
-ramstage-$(CONFIG_DRIVERS_UART_8250MEM) += uart.c
+ramstage-$(CONFIG_UART_DEBUG) += uart.c
+
+postcar-y += memmap.c
+postcar-$(CONFIG_UART_DEBUG) += uart.c
 
 CPPFLAGS_common += -I$(src)/soc/intel/cannonlake/include/fsp20
 CPPFLAGS_common += -I$(src)/vendorcode/intel/fsp/fsp2_0/cannonlake

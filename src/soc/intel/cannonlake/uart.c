@@ -13,6 +13,8 @@
  * GNU General Public License for more details.
  */
 
+#define __SIMPLE_DEVICE__
+
 #include <assert.h>
 #include <console/uart.h>
 #include <device/pci_def.h>
@@ -24,10 +26,6 @@
 #include <soc/pci_devs.h>
 #include <soc/pcr_ids.h>
 #include <soc/iomap.h>
-
-/* Clock divider parameters for 115200 baud rate */
-#define CLK_M_VAL	0x30
-#define CLK_N_VAL	0xc35
 
 static const struct port {
 	struct pad_config pads[2]; /* just TX and RX */
@@ -56,12 +54,14 @@ void pch_uart_init(void)
 	p = &uart_ports[CONFIG_UART_FOR_CONSOLE];
 	base = uart_platform_base(CONFIG_UART_FOR_CONSOLE);
 
-	uart_common_init(p->dev, base, CLK_M_VAL, CLK_N_VAL);
+	uart_common_init(p->dev, base);
 	gpio_configure_pads(p->pads, ARRAY_SIZE(p->pads));
 }
 
+#if IS_ENABLED(CONFIG_DRIVERS_UART_8250MEM)
 uintptr_t uart_platform_base(int idx)
 {
 	/* We can only have one serial console at a time */
 	return UART_DEBUG_BASE_ADDRESS;
 }
+#endif

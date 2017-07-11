@@ -69,6 +69,8 @@ __ap_protected_start:
 	/* Set the stack pointer, and flag that we are done */
 	xorl	%eax, %eax
 	movl	secondary_stack, %esp
+	andl	$0xfffffff0, %esp
+	sub	$12, %esp /* maintain 16-byte alignment for the call below */
 	movl	secondary_cpu_index, %edi
 	pushl	%edi
 	movl	%eax, secondary_stack

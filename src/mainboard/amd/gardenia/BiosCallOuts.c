@@ -92,9 +92,8 @@ AGESA_STATUS Fch_Oem_config(UINT32 Func, UINTN FchData, VOID *ConfigPtr)
 	} else if (StdHeader->Func == AMD_INIT_ENV) {
 		FCH_DATA_BLOCK *FchParams_env = (FCH_DATA_BLOCK *)FchData;
 		printk(BIOS_DEBUG, "Fch OEM config in INIT ENV ");
-#if IS_ENABLED(CONFIG_STONEYRIDGE_IMC_FWM)
-		oem_fan_control(FchParams_env);
-#endif
+		if (IS_ENABLED(CONFIG_STONEYRIDGE_IMC_FWM))
+			oem_fan_control(FchParams_env);
 
 		/* XHCI configuration */
 		if (IS_ENABLED(CONFIG_STONEYRIDGE_XHCI_ENABLE))

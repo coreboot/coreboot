@@ -13,6 +13,8 @@
  * GNU General Public License for more details.
  */
 
+#define __SIMPLE_DEVICE__
+
 #include <assert.h>
 #include <console/uart.h>
 #include <device/pci_def.h>
@@ -60,8 +62,10 @@ void pch_uart_init(void)
 	gpio_configure_pads(p->pads, ARRAY_SIZE(p->pads));
 }
 
+#if IS_ENABLED(CONFIG_DRIVERS_UART_8250MEM)
 uintptr_t uart_platform_base(int idx)
 {
 	/* We can only have one serial console at a time */
 	return UART_DEBUG_BASE_ADDRESS;
 }
+#endif

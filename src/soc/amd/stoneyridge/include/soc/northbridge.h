@@ -13,8 +13,11 @@
  * GNU General Public License for more details.
  */
 
-#ifndef NORTHBRIDGE_AMD_AGESA_FAM15H_H
-#define NORTHBRIDGE_AMD_AGESA_FAM15H_H
+#ifndef PI_STONEYRIDGE_NORTHBRIDGE_H
+#define PI_STONEYRIDGE_NORTHBRIDGE_H
+
+#include <arch/io.h>
+#include <device/device.h>
 
 void cpu_bus_scan(device_t dev);
 void domain_enable_resources(device_t dev);
@@ -23,4 +26,4 @@ void domain_set_resources(device_t dev);
 void fam15_finalize(void *chip_info);
 void setup_uma_memory(void);
 
-#endif /* NORTHBRIDGE_AMD_AGESA_FAM15H_H */
+#endif /* PI_STONEYRIDGE_NORTHBRIDGE_H */

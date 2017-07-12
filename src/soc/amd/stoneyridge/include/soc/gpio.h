@@ -22,7 +22,10 @@
 #define CROS_GPIO_DEVICE_NAME	"AmdKern"
 
 #define GPIO_PIN_STS		(1 << 16)
-#define GPIO_OUTPUT_VALUE	(1 << 22)
+#define GPIO_PULLUP_ENABLE	(1 << 20)
+#define GPIO_PULLDOWN_ENABLE	(1 << 21)
+#define GPIO_OUTPUT_SHIFT	22
+#define GPIO_OUTPUT_MASK	(1 << GPIO_OUTPUT_SHIFT)
 #define GPIO_OUTPUT_ENABLE	(1 << 23)
 
 /* GPIO_0 - GPIO_62 */
@@ -125,7 +128,5 @@
 #define   GPIO_148	(GPIO_BANK2_CONTROL + 0x50)
 
 typedef uint32_t gpio_t;
-
-int gpio_get(gpio_t gpio_num);
 
 #endif	/* _STONEYRIDGE_GPIO_H_ */

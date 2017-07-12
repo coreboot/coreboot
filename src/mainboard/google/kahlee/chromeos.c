@@ -18,7 +18,7 @@
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <boot/coreboot_tables.h>
 #include <console/console.h>
-#include <soc/gpio.h>
+#include <gpio.h>
 
 /* SPI Write protect */
 #define CROS_WP_GPIO	GPIO_122

@@ -52,7 +52,7 @@ scope (\_SB) {
 			Store (MCH_BASE_ADDRESS + MAILBOX_INTF, MIBA)
 
 			CreateDwordField (^RBUF, ^SBAR._BAS, SBAS)
-			Store (PMC_SRAM_BASE_0, SBAS)
+			Store (SRAM_BASE_0, SBAS)
 
 			Return (^RBUF)
 		}

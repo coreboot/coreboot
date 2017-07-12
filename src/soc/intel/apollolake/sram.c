@@ -26,13 +26,13 @@ static void read_resources(device_t dev)
 	pci_dev_read_resources(dev);
 
 	res = new_resource(dev, PCI_BASE_ADDRESS_0);
-	res->base = PMC_SRAM_BASE_0;
-	res->size = PMC_SRAM_SIZE_0;
+	res->base = SRAM_BASE_0;
+	res->size = SRAM_SIZE_0;
 	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 
 	res = new_resource(dev, PCI_BASE_ADDRESS_2);
-	res->base = PMC_SRAM_BASE_1;
-	res->size = PMC_SRAM_SIZE_1;
+	res->base = SRAM_BASE_2;
+	res->size = SRAM_SIZE_2;
 	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 }
 
@@ -51,7 +51,7 @@ static void set_resources(device_t dev)
 	pci_write_config32(dev, res->index, res->base);
 	dev->command |= PCI_COMMAND_MEMORY;
 	res->flags |= IORESOURCE_STORED;
-	report_resource_stored(dev, res, " SRAM BAR 1");
+	report_resource_stored(dev, res, " SRAM BAR 2");
 }
 
 static const struct device_operations device_ops = {

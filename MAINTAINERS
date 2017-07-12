@@ -233,15 +233,14 @@ F:	src/drivers/intel/fsp1_0/
 
 INTEL FSP 1.1
 M:	Lee Leahy <leroy.p.leahy@intel.com>
-M:	Andrey Petrov <andrey.petrov@intel.com>
 M:	Huang Jin <huang.jin@intel.com>
 M:	York Yang <york.yang@intel.com>
 S:	Supported
 F:	src/drivers/intel/fsp1_1/
 
 INTEL FSP 2.0
-M:	Andrey Petrov <andrey.petrov@intel.com>
-S:	Supported
+M:	Andrey Petrov <andrey.petrov@gmail.com>
+S:	Maintained
 F:	src/drivers/intel/fsp2_0/
 
 INTEL STRAGO MAINBOARD
@@ -256,8 +255,8 @@ F:	/src/soc/intel/braswell
 F:	/src/vendorcode/intel/fsp/fsp1_1/braswell
 
 INTEL APOLLOLAKE_SOC
-M:	Andrey Petrov <andrey.petrov@intel.com>
-S:	Supported
+M:	Andrey Petrov <andrey.petrov@gmail.com>
+S:	Maintained
 F:	src/soc/intel/apollolake/
 
 ASUS KFSN4-DRE & KFSN4-DRE_K8 MAINBOARDS

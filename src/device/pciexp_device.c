@@ -132,7 +132,7 @@ static void pciexp_enable_clock_power_pm(device_t endp, unsigned endp_cap)
 	u16 lnkctl;
 	endp_ca = pci_read_config32(endp, endp_cap + PCI_EXP_LNKCAP);
 	if ((endp_ca & PCI_EXP_CLK_PM) == 0) {
-		printk(BIOS_INFO, "PCIE CLK PM is not supported by endpoint");
+		printk(BIOS_INFO, "PCIE CLK PM is not supported by endpoint\n");
 		return;
 	}
 	lnkctl = pci_read_config16(endp, endp_cap + PCI_EXP_LNKCTL);

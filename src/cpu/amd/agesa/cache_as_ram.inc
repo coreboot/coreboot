@@ -32,7 +32,7 @@
 cache_as_ram_setup:
 
   /* Preserve BIST. */
-  movl %eax, %ebp
+  movd %eax, %mm0
 
   post_code(0xa0)
 
@@ -45,7 +45,6 @@ cache_as_ram_setup:
 
   post_code(0xa1)
 
-  /* NOTE: %ebx, %ebp are preserved in AMD_ENABLE_STACK. */
   AMD_ENABLE_STACK
 
   /* Align the stack. */
@@ -96,19 +95,18 @@ cache_as_ram_setup:
 
 #endif
 
-  /* Calling conventions preserve BIST in %ebp. */
-
   call early_all_cores
 
   /* Must maintain 16-byte stack alignment here. */
   pushl $0x0
   pushl $0x0
   pushl $0x0
-  pushl %ebp
+  movd  %mm0, %eax		/* bist */
+  pushl %eax
   call  romstage_main
-  movl  %eax, %ebx
+  movl  %eax, %esp
 
-/* Register %ebx is new stacktop for remaining of romstage.
+/* Register %esp is new stacktop for remaining of romstage.
  * It is the only register preserved in AMD_DISABLE_STACK.
  */
 
@@ -125,7 +123,6 @@ disable_cache_as_ram:
   andl $0x9fffffff, %eax
   movl %eax, %cr0
 
-  movl  %ebx, %esp
   call  romstage_after_car
 
   /* Should never see this postcode */

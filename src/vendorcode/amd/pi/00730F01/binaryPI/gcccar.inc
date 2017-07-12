@@ -879,7 +879,7 @@ node_core_f16_exit:
 * AMD_ENABLE_STACK:  Setup a stack
 *
 *   In:
-*       EBX  = Return address (preserved)
+*       No inputs
 *
 *   Out:
 *       SS:ESP - Our new private stack location
@@ -890,11 +890,8 @@ node_core_f16_exit:
 *
 *   Requirements:
 *       * This routine presently is limited to a max of 64 processor cores
-*   Preserved:
-*       ebx ebp
 *   Destroyed:
-*       eax, ecx, edx, edi, esi, ds, es, ss, esp
-*       mmx0, mmx1
+*       EBX, EDX, EDI, ESI, EBP, DS, ES
 *
 *   Description:
 * Fixed MTRR address allocation to cores:
@@ -954,8 +951,6 @@ node_core_f16_exit:
 #   Note that SS:ESP will be default stack.  Note that this stack
 #   routine will not be used after memory has been initialized.  Because
 #   of its limited lifetime, it will not conflict with typical PCI devices.
-    movd    %ebx, %mm0                    # Put return address in a safe place
-    movd    %ebp, %mm1                    # Save some other user registers
 
     # get node id and core id of current executing core
     GET_NODE_ID_CORE_ID                 # Sets ESI[23:16]=Shared core## SI[15,8]= Node## SI[7,0]= core# (relative to node)
@@ -1267,9 +1262,6 @@ ClearTheStack:                          # Stack base is in SS, stack pointer is 
         or      $0x40000000, %eax          # eax = AGESA_WARNING (Stack has already been set up)
     #.endif
     0:
-
-    movd        %mm0, %ebx                # Restore return address
-    movd        %mm1, %ebp
 .endm
 
 /*****************************************************************************
@@ -1289,16 +1281,14 @@ ClearTheStack:                          # Stack base is in SS, stack pointer is 
 *       none
 *
 *   Out:
-*       EAX = AGESA_SUCCESS
+*       none
 *
 *   Preserved:
-*       ebx
+*       ESP
 *   Destroyed:
-*       eax, ecx, edx, esp
+*       EAX, EBX, ECX, EDX, EDI, ESI
 *****************************************************************************/
 .macro  AMD_DISABLE_STACK
-
-    mov     %ebx, %esp                    # Save return address
 
     # get node/core/flags of current executing core
     GET_NODE_ID_CORE_ID                 # Sets ESI[15,8]= Node#; ESI[7,0]= core# (relative to node)
@@ -1324,9 +1314,6 @@ ClearTheStack:                          # Stack base is in SS, stack pointer is 
     _WRMSR
 
     AMD_DISABLE_STACK_FAMILY_HOOK       # Re-Enable 'normal' cache operations
-
-    mov     %esp, %ebx
-    xor     %eax, %eax
 
 .endm
 

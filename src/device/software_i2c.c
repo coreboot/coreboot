@@ -238,19 +238,20 @@ static int in_byte(unsigned bus, int ack)
 	return byte;
 }
 
-int software_i2c_transfer(unsigned bus, struct i2c_seg *segments, int count)
+int software_i2c_transfer(unsigned bus, struct i2c_msg *segments, int count)
 {
 	int i;
-	struct i2c_seg *seg;
+	struct i2c_msg *seg;
 
 	for (seg = segments; seg - segments < count; seg++) {
 		if (start_cond(bus) < 0)
 			return -1;
-		if (out_byte(bus, seg->chip << 1 | !!seg->read) < 0)
+		const u8 addr_dir = seg->slave << 1 | !!(seg->flags & I2C_M_RD);
+		if (out_byte(bus, addr_dir) < 0)
 			return -1;
 		for (i = 0; i < seg->len; i++) {
 			int ret;
-			if (seg->read) {
+			if (seg->flags & I2C_M_RD) {
 				ret = in_byte(bus, i < seg->len - 1);
 				seg->buf[i] = (u8)ret;
 			} else {

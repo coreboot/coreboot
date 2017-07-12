@@ -187,9 +187,9 @@ static int i2c_transfer_segment(unsigned bus, unsigned chip, int restart,
 	return 0;
 }
 
-int platform_i2c_transfer(unsigned bus, struct i2c_seg *segments, int count)
+int platform_i2c_transfer(unsigned bus, struct i2c_msg *segments, int count)
 {
-	struct i2c_seg *seg = segments;
+	struct i2c_msg *seg = segments;
 	int i;
 
 	if (bus >= g_num_i2c_buses) {
@@ -199,8 +199,9 @@ int platform_i2c_transfer(unsigned bus, struct i2c_seg *segments, int count)
 	}
 
 	for (i = 0; i < count; seg++, i++) {
-		if (i2c_transfer_segment(bus, seg->chip, i < count - 1,
-					 seg->read, seg->buf, seg->len))
+		if (i2c_transfer_segment(bus, seg->slave, i < count - 1,
+					 seg->flags & I2C_M_RD,
+					 seg->buf, seg->len))
 			return -1;
 	}
 	return 0;

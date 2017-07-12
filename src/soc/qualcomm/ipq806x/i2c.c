@@ -142,19 +142,20 @@ static int i2c_init(unsigned bus)
 	return 0;
 }
 
-int platform_i2c_transfer(unsigned bus, struct i2c_seg *segments, int seg_count)
+int platform_i2c_transfer(unsigned bus, struct i2c_msg *segments,
+			  int seg_count)
 {
-	struct i2c_seg *seg = segments;
+	struct i2c_msg *seg = segments;
 	int ret = 0;
 
 	if (i2c_init(bus))
 		return 1;
 
 	while (!ret && seg_count--) {
-		if (seg->read)
-			ret = i2c_read(bus, seg->chip, seg->buf, seg->len);
+		if (seg->flags & I2C_M_RD)
+			ret = i2c_read(bus, seg->slave, seg->buf, seg->len);
 		else
-			ret = i2c_write(bus, seg->chip, seg->buf, seg->len,
+			ret = i2c_write(bus, seg->slave, seg->buf, seg->len,
 					(seg_count ? 0 : 1));
 		seg++;
 	}

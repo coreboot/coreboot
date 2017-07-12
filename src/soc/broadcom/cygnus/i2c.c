@@ -103,13 +103,14 @@ static void i2c_flush_fifo(struct cygnus_i2c_regs *reg_addr)
 		I2C_MASTER_RX_FIFO_FLUSH | I2C_MASTER_TX_FIFO_FLUSH);
 }
 
-static int i2c_write(struct cygnus_i2c_regs *reg_addr, struct i2c_seg *segment)
+static int i2c_write(struct cygnus_i2c_regs *reg_addr,
+		     struct i2c_msg *segment)
 {
 	uint8_t *data = segment->buf;
 	unsigned int val, status;
 	int i, ret;
 
-	write32(&reg_addr->i2c_master_data_wr, segment->chip << 1);
+	write32(&reg_addr->i2c_master_data_wr, segment->slave << 1);
 
 	for (i = 0; i < segment->len; i++) {
 		val = data[i];
@@ -150,13 +151,13 @@ flush_fifo:
 	return ret;
 }
 
-static int i2c_read(struct cygnus_i2c_regs *reg_addr, struct i2c_seg *segment)
+static int i2c_read(struct cygnus_i2c_regs *reg_addr, struct i2c_msg *segment)
 {
 	uint8_t *data = segment->buf;
 	int i, ret;
 	unsigned int status;
 
-	write32(&reg_addr->i2c_master_data_wr, segment->chip << 1 | 1);
+	write32(&reg_addr->i2c_master_data_wr, segment->slave << 1 | 1);
 
 	/*
 	 * Now we can activate the transfer. Specify the number of bytes to read
@@ -190,7 +191,7 @@ flush_fifo:
 }
 
 static int i2c_do_xfer(struct cygnus_i2c_regs *reg_addr,
-	struct i2c_seg *segment)
+	struct i2c_msg *segment)
 {
 	int ret;
 
@@ -206,7 +207,7 @@ static int i2c_do_xfer(struct cygnus_i2c_regs *reg_addr,
 		return EBUSY;
 	}
 
-	if (segment->read)
+	if (segment->flags & I2C_M_RD)
 		ret = i2c_read(reg_addr, segment);
 	else
 		ret = i2c_write(reg_addr, segment);
@@ -214,12 +215,13 @@ static int i2c_do_xfer(struct cygnus_i2c_regs *reg_addr,
 	return ret;
 }
 
-int platform_i2c_transfer(unsigned bus, struct i2c_seg *segments, int seg_count)
+int platform_i2c_transfer(unsigned bus, struct i2c_msg *segments,
+			  int seg_count)
 {
 	int i;
 	int res = 0;
 	struct cygnus_i2c_regs *regs = i2c_bus[bus];
-	struct i2c_seg *seg = segments;
+	struct i2c_msg *seg = segments;
 
 	for (i = 0; i < seg_count; i++, seg++) {
 		res = i2c_do_xfer(regs, seg);

@@ -186,8 +186,8 @@ static int platform_i2c_read(uint32_t restart, uint8_t *rx_buffer, int length,
 	return bytes_transferred;
 }
 
-int platform_i2c_transfer(unsigned int bus, struct i2c_seg *segment,
-	int seg_count)
+int platform_i2c_transfer(unsigned int bus, struct i2c_msg *segment,
+			  int seg_count)
 {
 	int bytes_transferred;
 	uint8_t chip;
@@ -212,9 +212,9 @@ int platform_i2c_transfer(unsigned int bus, struct i2c_seg *segment,
 			printk(BIOS_ERR,
 				"I2C segment[%d]: %s 0x%02x %s 0x%p, 0x%08x bytes\n",
 				index,
-				segment[index].read ? "Read from" : "Write to",
-				segment[index].chip,
-				segment[index].read ? "to " : "from",
+				(segment[index].flags & I2C_M_RD) ? "Read from" : "Write to",
+				segment[index].slave,
+				(segment[index].flags & I2C_M_RD) ? "to " : "from",
 				segment[index].buf,
 				segment[index].len);
 			printk(BIOS_ERR, "I2C %s\n",
@@ -243,7 +243,7 @@ int platform_i2c_transfer(unsigned int bus, struct i2c_seg *segment,
 	regs->ic_con = cmd;
 
 	/* Set the target chip address */
-	chip = segment->chip;
+	chip = segment->slave;
 	regs->ic_tar = chip;
 
 	/* Enable the I2C controller */
@@ -270,13 +270,13 @@ int platform_i2c_transfer(unsigned int bus, struct i2c_seg *segment,
 		total_bytes += length;
 		ASSERT(segment->buf != NULL);
 		ASSERT(length >= 1);
-		ASSERT(segment->chip == chip);
+		ASSERT(segment->slave == chip);
 
 		/* Determine if this is the last segment of the transaction */
 		stop = (index == seg_count) ? IC_DATA_CMD_STOP : 0;
 
 		/* Fill the FIFO with the necessary command bytes */
-		if (segment->read) {
+		if (segment->flags & I2C_M_RD) {
 			/* Place read commands into the FIFO */
 			rx_buffer = segment->buf;
 			data_bytes = platform_i2c_read(restart, rx_buffer,

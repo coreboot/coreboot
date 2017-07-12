@@ -258,7 +258,7 @@ static int lpss_i2c_wait_for_bus_idle(struct lpss_i2c_regs *regs)
 
 /* Transfer one byte of one segment, sending stop bit if requested */
 static int lpss_i2c_transfer_byte(struct lpss_i2c_regs *regs,
-				  struct i2c_seg *segment,
+				  struct i2c_msg *segment,
 				  size_t byte, int send_stop)
 {
 	struct stopwatch sw;
@@ -266,7 +266,7 @@ static int lpss_i2c_transfer_byte(struct lpss_i2c_regs *regs,
 
 	stopwatch_init_usecs_expire(&sw, LPSS_I2C_TIMEOUT_US);
 
-	if (!segment->read) {
+	if (!(segment->flags & I2C_M_RD)) {
 		/* Write op only: Wait for FIFO not full */
 		while (!(read32(&regs->status) & STATUS_TX_FIFO_NOT_FULL)) {
 			if (stopwatch_expired(&sw)) {
@@ -283,7 +283,7 @@ static int lpss_i2c_transfer_byte(struct lpss_i2c_regs *regs,
 
 	write32(&regs->cmd_data, cmd);
 
-	if (segment->read) {
+	if (segment->flags & I2C_M_RD) {
 		/* Read op only: Wait for FIFO data and store it */
 		while (!(read32(&regs->status) & STATUS_RX_FIFO_NOT_EMPTY)) {
 			if (stopwatch_expired(&sw)) {
@@ -298,7 +298,8 @@ static int lpss_i2c_transfer_byte(struct lpss_i2c_regs *regs,
 }
 
 /* Global I2C bus handler, defined in include/i2c.h */
-int platform_i2c_transfer(unsigned int bus, struct i2c_seg *segments, int count)
+int platform_i2c_transfer(unsigned int bus, struct i2c_msg *segments,
+			  int count)
 {
 	struct stopwatch sw;
 	struct lpss_i2c_regs *regs;
@@ -325,11 +326,12 @@ int platform_i2c_transfer(unsigned int bus, struct i2c_seg *segments, int count)
 	while (count--) {
 		if (CONFIG_SOC_INTEL_COMMON_LPSS_I2C_DEBUG)
 			printk(BIOS_DEBUG, "i2c %u:%02x %s %d bytes : ",
-			       bus, segments->chip, segments->read ? "R" : "W",
+			       bus, segments->slave,
+			       (segments->flags & I2C_M_RD) ? "R" : "W",
 			       segments->len);
 
 		/* Set target slave address */
-		write32(&regs->target_addr, segments->chip);
+		write32(&regs->target_addr, segments->slave);
 
 		/* Read or write each byte in segment */
 		for (byte = 0; byte < segments->len; byte++) {
@@ -341,8 +343,9 @@ int platform_i2c_transfer(unsigned int bus, struct i2c_seg *segments, int count)
 			if (lpss_i2c_transfer_byte(regs, segments, byte,
 						   count == 0) < 0) {
 				printk(BIOS_ERR, "I2C %s failed: bus %u "
-				       "addr 0x%02x\n", segments->read ?
-				       "read" : "write", bus, segments->chip);
+				       "addr 0x%02x\n",
+				       (segments->flags & I2C_M_RD) ?
+				       "read" : "write", bus, segments->slave);
 				goto out;
 			}
 		}

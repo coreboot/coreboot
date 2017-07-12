@@ -445,11 +445,12 @@ static int hsi2c_recvdata(struct hsi2c_regs *regs, uint8_t *data, int len)
 	return len ? -1 : 0;
 }
 
-static int hsi2c_segment(struct i2c_seg *seg, struct hsi2c_regs *regs, int stop)
+static int hsi2c_segment(struct i2c_msg *seg, struct hsi2c_regs *regs,
+			 int stop)
 {
 	const uint32_t usi_ctl = Hsi2cFuncModeI2c | Hsi2cMaster;
 
-	write32(&regs->i2c_addr, HSI2C_SLV_ADDR_MAS(seg->chip));
+	write32(&regs->i2c_addr, HSI2C_SLV_ADDR_MAS(seg->slave));
 
 	/*
 	 * We really only want to stop after this transaction (I think) if the
@@ -461,7 +462,7 @@ static int hsi2c_segment(struct i2c_seg *seg, struct hsi2c_regs *regs, int stop)
 	uint32_t autoconf =
 		seg->len | Hsi2cMasterRun | Hsi2cStopAfterTrans;
 
-	if (seg->read) {
+	if (seg->flags & I2C_M_RD) {
 		write32(&regs->usi_ctl, usi_ctl | Hsi2cRxchon);
 		write32(&regs->i2c_auto_conf, autoconf | Hsi2cReadWrite);
 
@@ -482,7 +483,7 @@ static int hsi2c_segment(struct i2c_seg *seg, struct hsi2c_regs *regs, int stop)
 	return 0;
 }
 
-static int hsi2c_transfer(struct i2c_bus *i2c, struct i2c_seg *segments,
+static int hsi2c_transfer(struct i2c_bus *i2c, struct i2c_msg *segments,
 			  int count)
 {
 	struct hsi2c_regs *regs = i2c->hsregs;
@@ -627,7 +628,7 @@ static int i2c_recv_buf(struct i2c_regs *regs, uint8_t *data, int len)
 	return 0;
 }
 
-int platform_i2c_transfer(unsigned bus, struct i2c_seg *segments, int count)
+int platform_i2c_transfer(unsigned bus, struct i2c_msg *segments, int count)
 {
 	struct i2c_bus *i2c = &i2c_busses[bus];
 	if (i2c->is_highspeed)
@@ -643,12 +644,12 @@ int platform_i2c_transfer(unsigned bus, struct i2c_seg *segments, int count)
 
 	int i;
 	for (i = 0; i < count; i++) {
-		struct i2c_seg *seg = &segments[i];
+		struct i2c_msg *seg = &segments[i];
 
-		res = i2c_send_start(regs, seg->read, seg->chip);
+		res = i2c_send_start(regs, seg->flags & I2C_M_RD, seg->slave);
 		if (res)
 			break;
-		if (seg->read)
+		if (seg->flags & I2C_M_RD)
 			res = i2c_recv_buf(regs, seg->buf, seg->len);
 		else
 			res = i2c_xmit_buf(regs, seg->buf, seg->len);

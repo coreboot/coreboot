@@ -185,10 +185,10 @@ static int i2c_write(struct a1x_twi *twi, uint8_t chip,
 	return len;
 }
 
-int platform_i2c_transfer(unsigned bus, struct i2c_seg *segments, int count)
+int platform_i2c_transfer(unsigned bus, struct i2c_msg *segments, int count)
 {
 	int i, ret = CB_SUCCESS;
-	struct i2c_seg *seg = segments;
+	struct i2c_msg *seg = segments;
 	struct a1x_twi *twi = (void *)TWI_BASE(bus);
 
 
@@ -198,12 +198,12 @@ int platform_i2c_transfer(unsigned bus, struct i2c_seg *segments, int count)
 	for (i = 0; i < count; i++) {
 		seg = segments + i;
 
-		if (seg->read) {
-			ret = i2c_read(twi, seg->chip, seg->buf, seg->len);
+		if (seg->flags & I2C_M_RD) {
+			ret = i2c_read(twi, seg->slave, seg->buf, seg->len);
 			if (ret < 0)
 				break;
 		} else {
-			ret = i2c_write(twi, seg->chip, seg->buf, seg->len);
+			ret = i2c_write(twi, seg->slave, seg->buf, seg->len);
 			if (ret < 0)
 				break;
 		}

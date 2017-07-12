@@ -136,7 +136,7 @@ static inline void mtk_i2c_dump_info(uint8_t bus)
 	I2CLOG("addr address %x\n", (uint32_t)regs);
 }
 
-static uint32_t mtk_i2c_transfer(uint8_t bus, struct i2c_seg *seg,
+static uint32_t mtk_i2c_transfer(uint8_t bus, struct i2c_msg *seg,
 				 enum i2c_modes read)
 {
 	uint32_t ret_code = I2C_OK;
@@ -154,7 +154,7 @@ static uint32_t mtk_i2c_transfer(uint8_t bus, struct i2c_seg *seg,
 	regs = i2c[bus].i2c_regs;
 	dma_regs = i2c[bus].i2c_dma_regs;
 
-	addr = seg[0].chip;
+	addr = seg[0].slave;
 
 	switch (read) {
 	case I2C_WRITE_MODE:
@@ -305,26 +305,31 @@ static uint32_t mtk_i2c_transfer(uint8_t bus, struct i2c_seg *seg,
 	return ret_code;
 }
 
-static uint8_t mtk_i2c_should_combine(struct i2c_seg *seg, int left_count)
+static uint8_t mtk_i2c_should_combine(struct i2c_msg *seg, int left_count)
 {
-	if (left_count >= 2 && seg[0].read == 0 && seg[1].read == 1 &&
-	    seg[0].chip == seg[1].chip)
+	if (left_count >= 2 &&
+	    !(seg[0].flags & I2C_M_RD) &&
+	    (seg[1].flags & I2C_M_RD) &&
+	    seg[0].slave == seg[1].slave)
 		return 1;
 	else
 		return 0;
 }
 
-int platform_i2c_transfer(unsigned bus, struct i2c_seg *segments, int seg_count)
+int platform_i2c_transfer(unsigned bus, struct i2c_msg *segments,
+			  int seg_count)
 {
 	int ret = 0;
 	int i;
 	int read;
 
 	for (i = 0; i < seg_count; i++) {
-		if (mtk_i2c_should_combine(&segments[i], seg_count - i))
+		if (mtk_i2c_should_combine(&segments[i], seg_count - i)) {
 			read = I2C_WRITE_READ_MODE;
-		else
-			read = segments[i].read;
+		} else {
+			read = (segments[i].flags & I2C_M_RD) ?
+				I2C_READ_MODE : I2C_WRITE_MODE;
+		}
 
 		ret = mtk_i2c_transfer(bus, &segments[i], read);
 

@@ -49,7 +49,7 @@ int i2c_dev_find_bus(struct device *dev)
 	return ops->dev_to_bus(pbus->dev);
 }
 
-int i2c_dev_transfer(struct device *dev, struct i2c_seg *segments, int count)
+int i2c_dev_transfer(struct device *dev, struct i2c_msg *segments, int count)
 {
 	int bus = i2c_dev_find_bus(dev);
 	if (bus < 0)

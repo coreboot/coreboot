@@ -45,20 +45,20 @@ enum {
 
 struct i2c_ec {
 	int bus;
-	struct i2c_seg segs[SEGS_PER_CMD];
+	struct i2c_msg segs[SEGS_PER_CMD];
 };
 
 static struct i2c_ec ec_dev = {
 	.bus = CONFIG_EC_GOOGLE_CHROMEEC_I2C_BUS,
 	.segs[CMD_INDEX] = {
-		.read = 0,
-		.chip = CONFIG_EC_GOOGLE_CHROMEEC_I2C_CHIP,
+		.flags = 0,
+		.slave = CONFIG_EC_GOOGLE_CHROMEEC_I2C_CHIP,
 		/* Framing byte to be transferred prior to request. */
 		.buf = &req_buf.framing_bytes[3],
 	},
 	.segs[RESP_INDEX] = {
-		.read = 1,
-		.chip = CONFIG_EC_GOOGLE_CHROMEEC_I2C_CHIP,
+		.flags = I2C_M_RD,
+		.slave = CONFIG_EC_GOOGLE_CHROMEEC_I2C_CHIP,
 		/* return code and total length before full response. */
 		.buf = &resp_buf.framing_bytes[2],
 	},
@@ -100,7 +100,7 @@ static int crosec_i2c_io(size_t req_size, size_t resp_size, void *context)
 
 	if (i2c_transfer(ec->bus, ec->segs, ARRAY_SIZE(ec->segs)) != 0) {
 		printk(BIOS_ERR, "%s: Cannot complete read from i2c-%d:%#x\n",
-		       __func__, ec->bus, ec->segs[0].chip);
+		       __func__, ec->bus, ec->segs[0].slave);
 		return -1;
 	}
 

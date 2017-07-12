@@ -111,7 +111,7 @@ static TiLp55231 lp55231s[WW_RING_NUM_LED_CONTROLLERS];
  * the transfer function ignores errors when accessing the reset register.
  */
 
-static int ledc_transfer(TiLp55231 *ledc, struct i2c_seg *segs,
+static int ledc_transfer(TiLp55231 *ledc, struct i2c_msg *segs,
 			 int seg_count, int reset)
 {
 	int rv, max_attempts = 2;
@@ -128,7 +128,7 @@ static int ledc_transfer(TiLp55231 *ledc, struct i2c_seg *segs,
 		if (!reset)
 			printk(BIOS_WARNING,
 			       "%s: dev %#x, reg %#x, %s transaction error.\n",
-			       __func__, segs->chip, segs->buf[0],
+			       __func__, segs->slave, segs->buf[0],
 			       seg_count == 1 ? "write" : "read");
 		else
 			rv = 0;
@@ -144,7 +144,7 @@ static int ledc_transfer(TiLp55231 *ledc, struct i2c_seg *segs,
 static int ledc_write(TiLp55231 *ledc, uint8_t start_addr,
 		      const uint8_t *data, unsigned count)
 {
-	struct i2c_seg seg;
+	struct i2c_msg seg;
 
 	if (count > (sizeof(ledc->data_buffer) - 1)) {
 		printk(BIOS_WARNING, "%s: transfer size too large (%d bytes)\n",
@@ -155,8 +155,8 @@ static int ledc_write(TiLp55231 *ledc, uint8_t start_addr,
 	memcpy(ledc->data_buffer + 1, data, count);
 	ledc->data_buffer[0] = start_addr;
 
-	seg.read = 0;
-	seg.chip = ledc->dev_addr;
+	seg.flags = 0;
+	seg.slave = ledc->dev_addr;
 	seg.buf = ledc->data_buffer;
 	seg.len = count + 1;
 
@@ -166,15 +166,15 @@ static int ledc_write(TiLp55231 *ledc, uint8_t start_addr,
 /* To keep things simple, read is limited to one byte at a time. */
 static int ledc_read(TiLp55231 *ledc, uint8_t addr, uint8_t *data)
 {
-	struct i2c_seg seg[2];
+	struct i2c_msg seg[2];
 
-	seg[0].read = 0;
-	seg[0].chip = ledc->dev_addr;
+	seg[0].flags = 0;
+	seg[0].slave = ledc->dev_addr;
 	seg[0].buf = &addr;
 	seg[0].len = 1;
 
-	seg[1].read = 1;
-	seg[1].chip = ledc->dev_addr;
+	seg[1].flags = I2C_M_RD;
+	seg[1].slave = ledc->dev_addr;
 	seg[1].buf = data;
 	seg[1].len = 1;
 

@@ -273,6 +273,20 @@
 #define POST_OS_ENTER_WAKE			0x97
 
 /**
+ * \brief After calling FSP MemoryInit
+ *
+ * FSP binary returned from MemoryInit phase
+ */
+#define POST_FSP_MEMORY_EXIT			0x98
+
+/**
+ * \brief After calling FSP SiliconInit
+ *
+ * FSP binary returned from SiliconInit phase
+ */
+#define POST_FSP_SILICON_EXIT			0x99
+
+/**
  * \brief Entry into elf boot
  *
  * This POST code is called right before invoking jmp_to_elf_entry()

@@ -49,7 +49,7 @@ static void do_silicon_init(struct fsp_header *hdr)
 	post_code(POST_FSP_SILICON_INIT);
 	status = silicon_init(&upd);
 	timestamp_add_now(TS_FSP_SILICON_INIT_END);
-	post_code(POST_FSP_SILICON_INIT);
+	post_code(POST_FSP_SILICON_EXIT);
 
 	fsp_debug_after_silicon_init(status);
 

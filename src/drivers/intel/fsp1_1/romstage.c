@@ -101,6 +101,7 @@ void *cache_as_ram_stage_main(FSP_INFO_HEADER *fih)
 /* Entry from the mainboard. */
 void romstage_common(struct romstage_params *params)
 {
+	bool s3wake;
 	struct region_device rdev;
 	struct pei_data *pei_data;
 
@@ -110,11 +111,10 @@ void romstage_common(struct romstage_params *params)
 
 	pei_data = params->pei_data;
 	pei_data->boot_mode = params->power_state->prev_sleep_state;
+	s3wake = params->power_state->prev_sleep_state == ACPI_S3;
 
-#if IS_ENABLED(CONFIG_ELOG_BOOT_COUNT)
-	if (params->power_state->prev_sleep_state != ACPI_S3)
+	if (IS_ENABLED(CONFIG_ELOG_BOOT_COUNT) && !s3wake)
 		boot_count_increment();
-#endif
 
 	/* Perform remaining SOC initialization */
 	soc_pre_ram_init(params);
@@ -168,7 +168,8 @@ void romstage_common(struct romstage_params *params)
 	}
 
 	/* Save DIMM information */
-	mainboard_save_dimm_info(params);
+	if (!s3wake)
+		mainboard_save_dimm_info(params);
 
 	/* Create romstage handof information */
 	if (romstage_handoff_init(

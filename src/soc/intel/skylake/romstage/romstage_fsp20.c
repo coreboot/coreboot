@@ -237,6 +237,9 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	m_cfg->TraceHubMemReg0Size = config->TraceHubMemReg0Size;
 	m_cfg->TraceHubMemReg1Size = config->TraceHubMemReg1Size;
 
+	/* Enable SMBus controller based on config */
+	m_cfg->SmbusEnable = config->SmbusEnable;
+
 	mainboard_memory_init_params(mupd);
 }
 

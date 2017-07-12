@@ -101,8 +101,6 @@ drivers_intel_gma_displays_ssdt_generate(const struct i915_gpu_controller_info *
 const struct i915_gpu_controller_info *
 intel_gma_get_controller_info(void);
 
-void *igd_make_opregion(void);
-
 /* vbt.c */
 struct device;
 void

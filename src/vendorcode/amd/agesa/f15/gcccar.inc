@@ -42,7 +42,12 @@ BSP_STACK_SIZE          =       0x10000         /* 64KB for BSP core            
 CORE0_STACK_BASE_ADDR   =       0x80000         /* Base address for primary cores stack   */
 CORE0_STACK_SIZE        =       0x4000          /* 16KB for primary cores                 */
 CORE1_STACK_BASE_ADDR   =       0x40000         /* Base address for AP cores              */
+
+#ifdef __x86_64__
+CORE1_STACK_SIZE        =       0x2000          /* 8KB for each AP cores                  */
+#else
 CORE1_STACK_SIZE        =       0x1000          /* 4KB for each AP cores                  */
+#endif
 
 APIC_BASE_ADDRESS       =       0x0000001B
   APIC_BSC              =       8               /* Boot Strap Core  */

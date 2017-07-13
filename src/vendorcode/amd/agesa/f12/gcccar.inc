@@ -42,7 +42,12 @@ BSP_STACK_SIZE          =       0x10000         /* 64KB for BSP core            
 CORE0_STACK_BASE_ADDR   =       0x80000         /* Base address for primary cores stack   */
 CORE0_STACK_SIZE        =       0x4000          /* 16KB for primary cores                 */
 CORE1_STACK_BASE_ADDR   =       0x40000         /* Base address for AP cores              */
+
+#ifdef __x86_64__
+CORE1_STACK_SIZE        =       0x2000          /* 8KB for each AP cores                  */
+#else
 CORE1_STACK_SIZE        =       0x1000          /* 4KB for each AP cores                  */
+#endif
 
 APIC_BASE_ADDRESS       =       0x0000001B
   APIC_BSC              =       8               /* Boot Strap Core  */
@@ -60,6 +65,20 @@ AMD_MTRR_FIX4k_E0000     =      0x026C
 AMD_MTRR_FIX4k_E8000     =      0x026D
 AMD_MTRR_FIX4k_F0000     =      0x026E
 AMD_MTRR_FIX4k_F8000     =      0x026F
+
+/* Reproduced from AGESA.h */
+AMD_AP_MTRR_FIX64k_00000  =  0x00000250
+AMD_AP_MTRR_FIX16k_80000  =  0x00000258
+AMD_AP_MTRR_FIX16k_A0000  =  0x00000259
+AMD_AP_MTRR_FIX4k_C0000   =  0x00000268
+AMD_AP_MTRR_FIX4k_C8000   =  0x00000269
+AMD_AP_MTRR_FIX4k_D0000   =  0x0000026A
+AMD_AP_MTRR_FIX4k_D8000   =  0x0000026B
+AMD_AP_MTRR_FIX4k_E0000   =  0x0000026C
+AMD_AP_MTRR_FIX4k_E8000   =  0x0000026D
+AMD_AP_MTRR_FIX4k_F0000   =  0x0000026E
+AMD_AP_MTRR_FIX4k_F8000   =  0x0000026F
+CPU_LIST_TERMINAL         =  0xFFFFFFFF
 
 AMD_MTRR_DEFTYPE         =      0x02FF
     WB_DRAM_TYPE         =      0x1E             /* MemType - memory type */
@@ -1603,4 +1622,3 @@ ClearTheStack:                          # Stack base is in SS, stack pointer is 
     xor     %eax, %eax
 
 .endm
-

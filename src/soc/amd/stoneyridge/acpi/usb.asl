@@ -55,11 +55,3 @@ Device(XHC0) {
 	Name(_ADR, 0x00100000)
 	Name(_PRW, Package() {0x0b, 4})
 } /* end XHC0 */
-
-#if !CONFIG_SOUTHBRIDGE_AMD_PI_AVALON && !CONFIG_SOUTHBRIDGE_AMD_PI_KERN
-/* 0:10.1 - XHCI 1*/
-Device(XHC1) {
-	Name(_ADR, 0x00100001)
-	Name(_PRW, Package() {0x0b, 4})
-} /* end XHC1 */
-#endif

@@ -23,7 +23,7 @@ If (LAnd(SSFG, 0x01)) {
 If (LAnd(SSFG, 0x02)) {
 	Name(\_S2, Package () {0x02, 0x02, 0x00, 0x00} )	/* (S2) - "light" Suspend to RAM */
 }
-#if CONFIG_HAVE_ACPI_RESUME
+#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
 If (LAnd(SSFG, 0x04)) {
 	Name(\_S3, Package () {0x03, 0x03, 0x00, 0x00} )	/* (S3) - Suspend to RAM */
 }

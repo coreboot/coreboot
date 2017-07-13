@@ -4,7 +4,6 @@
 #include <arch/cpu.h>
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx);
-void done_cache_as_ram_main(void);
 void post_cache_as_ram(void);
 
 void cache_as_ram_switch_stack(void *stacktop);

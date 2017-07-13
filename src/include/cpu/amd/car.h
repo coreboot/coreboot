@@ -9,10 +9,7 @@ void post_cache_as_ram(void);
 void cache_as_ram_switch_stack(void *stacktop);
 void cache_as_ram_new_stack(void);
 
-#if IS_ENABLED(CONFIG_CPU_AMD_AGESA) || IS_ENABLED(CONFIG_CPU_AMD_PI) || \
-	IS_ENABLED(CONFIG_SOC_AMD_PI)
 void disable_cache_as_ram(void);
-#endif
 
 void asmlinkage early_all_cores(void);
 

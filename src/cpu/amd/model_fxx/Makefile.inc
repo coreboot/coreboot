@@ -1,4 +1,5 @@
 romstage-y += ../../x86/mtrr/earlymtrr.c
+romstage-y += ../car/post_cache_as_ram.c
 
 # no conditionals here. If you include this file from a socket, then you get all the binaries.
 ramstage-y += model_fxx_init.c

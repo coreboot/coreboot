@@ -1,6 +1,8 @@
 #ifndef RAMINIT_H
 #define RAMINIT_H
 
+#include <arch/io.h>
+
 #define NODE_ID		0x60
 #define HT_INIT_CONTROL	0x6c
 

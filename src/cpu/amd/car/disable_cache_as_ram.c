@@ -33,7 +33,7 @@ static inline __attribute__((always_inline)) uint32_t amd_fam1x_cpu_family(void)
 }
 
 static inline __attribute__((always_inline))
-void disable_cache_as_ram(uint8_t skip_sharedc_config)
+void disable_cache_as_ram_real(uint8_t skip_sharedc_config)
 {
 	msr_t msr;
 	uint32_t family;
@@ -45,15 +45,13 @@ void disable_cache_as_ram(uint8_t skip_sharedc_config)
 		msr.lo = 0;
 		msr.hi = 0;
 		wrmsr(MTRR_FIX_4K_C8000, msr);
-#if CONFIG_DCACHE_RAM_SIZE > 0x8000
-		wrmsr(MTRR_FIX_4K_C0000, msr);
-#endif
-#if CONFIG_DCACHE_RAM_SIZE > 0x10000
-		wrmsr(MTRR_FIX_4K_D0000, msr);
-#endif
-#if CONFIG_DCACHE_RAM_SIZE > 0x18000
-		wrmsr(MTRR_FIX_4K_D8000, msr);
-#endif
+		if (CONFIG_DCACHE_RAM_SIZE > 0x8000)
+			wrmsr(MTRR_FIX_4K_C0000, msr);
+		if (CONFIG_DCACHE_RAM_SIZE > 0x10000)
+			wrmsr(MTRR_FIX_4K_D0000, msr);
+		if (CONFIG_DCACHE_RAM_SIZE > 0x18000)
+			wrmsr(MTRR_FIX_4K_D8000, msr);
+
 		/* disable fixed mtrr from now on,
 		 * it will be enabled by ramstage again
 		 */
@@ -109,9 +107,4 @@ void disable_cache_as_ram(uint8_t skip_sharedc_config)
 		wrmsr(0xc0011022, msr);
 	}
 #endif
-}
-
-static void disable_cache_as_ram_bsp(void)
-{
-	disable_cache_as_ram(0);
 }

@@ -27,6 +27,7 @@ struct MCTStatStruc;
 int mctRead_SPD(u32 smaddr, u32 reg);
 void mctSMBhub_Init(u32 node);
 void mctGet_DIMMAddr(struct DCTStatStruc *pDCTstat, u32 node);
+void set_sysinfo_in_ram(u32 val);
 void raminit_amdmct(struct sys_info *sysinfo);
 void amdmct_cbmem_store_info(struct sys_info *sysinfo);
 void fill_mem_ctrl(u32 controllers, struct mem_controller *ctrl_a, const u8 *spd_addr);

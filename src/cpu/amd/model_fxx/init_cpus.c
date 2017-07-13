@@ -15,7 +15,7 @@
 #include <cpu/x86/lapic.h>
 #include <cpu/x86/mtrr.h>
 #include <northbridge/amd/amdk8/amdk8.h>
-#include "cpu/amd/car/post_cache_as_ram.c"
+#include "cpu/amd/car/disable_cache_as_ram.c"
 
 #if IS_ENABLED(CONFIG_HAVE_OPTION_TABLE)
 #include "option_table.h"
@@ -220,7 +220,7 @@ static void enable_apic_ext_id(u32 node)
 
 static void STOP_CAR_AND_CPU(void)
 {
-	disable_cache_as_ram(0);	// inline
+	disable_cache_as_ram_real(0);	// inline
 	/* stop all cores except node0/core0 the bsp .... */
 	stop_this_cpu();
 }

@@ -1027,6 +1027,4 @@ unsigned long northbridge_write_acpi_tables(device_t device,
 void northbridge_acpi_write_vars(device_t device);
 #endif
 
-void set_sysinfo_in_ram(u32 val);
-
 #endif /* AMDFAM10_H */

@@ -26,8 +26,16 @@
 #include <cpu/amd/msr.h>
 #include <arch/acpi.h>
 #include <romstage_handoff.h>
-#include "cbmem.h"
+#include <cbmem.h>
+
 #include "cpu/amd/car/disable_cache_as_ram.c"
+
+// For set_sysinfo_in_ram()
+#if IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AMDK8)
+#include "northbridge/amd/amdk8/raminit.h"
+#else
+#include "northbridge/amd/amdfam10/raminit.h"
+#endif
 
 #if CONFIG_RAMTOP <= 0x100000
 	#error "You need to set CONFIG_RAMTOP greater than 1M"
@@ -171,7 +179,7 @@ void post_cache_as_ram(void)
 void cache_as_ram_new_stack(void)
 {
 	print_car_debug("Disabling cache as RAM now\n");
-	disable_cache_as_ram_bsp();
+	disable_cache_as_ram_real(0);	// inline
 
 	disable_cache();
 	/* Enable cached access to RAM in the range 0M to CACHE_TMP_RAMTOP */

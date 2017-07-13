@@ -34,7 +34,7 @@
 #include <southbridge/amd/sb800/sb800.h>
 #endif
 
-#include "cpu/amd/car/post_cache_as_ram.c"
+#include "cpu/amd/car/disable_cache_as_ram.c"
 
 #if IS_ENABLED(CONFIG_PCI_IO_CFG_EXT)
 static void set_EnableCf8ExtCfg(void)
@@ -353,7 +353,7 @@ static void STOP_CAR_AND_CPU(uint8_t skip_sharedc_config, uint32_t apicid)
 		}
 	}
 
-	disable_cache_as_ram(skip_sharedc_config);	// inline
+	disable_cache_as_ram_real(skip_sharedc_config);	// inline
 
 	/* Mark the core as sleeping */
 	lapic_write(LAPIC_MSG_REG, (apicid << 24) | F10_APSTATE_ASLEEP);

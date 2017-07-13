@@ -15,6 +15,7 @@
  * GNU General Public License for more details.
  */
 
+#include <compiler.h>
 #include <console/console.h>
 #include <string.h>
 #include <arch/acpi.h>
@@ -39,7 +40,7 @@ typedef struct {
 	u32	pcba;
 	u8  mpen;
 	u8 reserv[247];
-} __attribute__((packed)) global_vars_t;
+} __packed global_vars_t;
 
 static void acpi_write_gvars(global_vars_t *gvars)
 {

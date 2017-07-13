@@ -15,9 +15,10 @@
 #define _TEGRA210_CLK_RST_H_
 #include <stdint.h>
 #include <stddef.h>
+#include <compiler.h>
 
 /* Clock/Reset Controller (CLK_RST_CONTROLLER_) regs */
-struct  __attribute__ ((__packed__)) clk_rst_ctlr {
+struct  __packed clk_rst_ctlr {
 	u32 rst_src;			/* _RST_SOURCE,             0x000 */
 	u32 rst_dev_l;			/* _RST_DEVICES_L,          0x004 */
 	u32 rst_dev_h;			/* _RST_DEVICES_H,          0x008 */

@@ -16,6 +16,7 @@
 #include <assert.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <cbmem.h>
 #include <symbols.h>
@@ -30,7 +31,7 @@
 /* When changing this number, adjust TIMESTAMP() size ASSERT() in memlayout.h */
 #define MAX_BSS_TIMESTAMP_CACHE 16
 
-struct __attribute__((__packed__)) timestamp_cache {
+struct __packed timestamp_cache {
 	uint32_t cache_state;
 	struct timestamp_table table;
 	/* The struct timestamp_table has a 0 length array as its last field.

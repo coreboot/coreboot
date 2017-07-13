@@ -17,11 +17,12 @@
 #define __TIMESTAMP_SERIALIZED_H__
 
 #include <stdint.h>
+#include <compiler.h>
 
 struct timestamp_entry {
 	uint32_t	entry_id;
 	uint64_t	entry_stamp;
-} __attribute__((packed));
+} __packed;
 
 struct timestamp_table {
 	uint64_t	base_time;
@@ -29,7 +30,7 @@ struct timestamp_table {
 	uint16_t	tick_freq_mhz;
 	uint32_t	num_entries;
 	struct timestamp_entry entries[0]; /* Variable number of entries */
-} __attribute__((packed));
+} __packed;
 
 enum timestamp_id {
 	TS_START_ROMSTAGE = 1,

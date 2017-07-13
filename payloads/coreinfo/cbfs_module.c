@@ -44,7 +44,7 @@ struct cbheader {
 	u32 offset;
 	u32 architecture;
 	u32 pad[1];
-} __attribute__ ((packed));
+} __packed;
 
 struct cbfile {
 	u64 magic;
@@ -53,7 +53,7 @@ struct cbfile {
 	u32 checksum;
 	u32 offset;
 	char filename[0];
-} __attribute__ ((packed));
+} __packed;
 
 static int filecount = 0, selected = 0, start_row = 0;
 static char **filenames;

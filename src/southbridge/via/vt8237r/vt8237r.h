@@ -16,6 +16,8 @@
 #ifndef SOUTHBRIDGE_VIA_VT8237R_VT8237R_H
 #define SOUTHBRIDGE_VIA_VT8237R_VT8237R_H
 
+#include <compiler.h>
+
 /* Static resources for the VT8237R southbridge */
 
 #define VT8237R_APIC_ID			0x2
@@ -121,7 +123,7 @@ struct vt8237_network_rom {
 	u8 cfg_c;
 	u8 cfg_d;
 	u8 checksum;
-} __attribute__ ((packed));
+} __packed;
 
 #define MAINBOARD_POWER_OFF	0
 #define MAINBOARD_POWER_ON	1

@@ -17,6 +17,7 @@
 #define __INTEL_MIPI_CAMERA_CHIP_H__
 
 #include <stdint.h>
+#include <compiler.h>
 
 #define MAX_PWDB_ENTRIES 12
 
@@ -83,7 +84,7 @@ struct intel_ssdb {
 	uint8_t mipi_data_format;		/* MIPI data format */
 	uint8_t silicon_version;		/* Silicon version */
 	uint8_t customer_id;			/* Customer ID */
-} __attribute__((packed));
+} __packed;
 
 struct intel_pwdb {
 	char name[32];		/* Name of the resource required by the power
@@ -92,7 +93,7 @@ struct intel_pwdb {
 	uint32_t entry_type;	/* The type of the current power action */
 	uint32_t delay_usec;	/* The delay time after which power action is
 				performed and this is in unit of usec */
-} __attribute__((packed));
+} __packed;
 
 struct drivers_intel_mipi_camera_config {
 	struct intel_ssdb ssdb;

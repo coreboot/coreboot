@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <compiler.h>
 #include <string.h>
 #include <rmodule.h>
 #include <cpu/x86/smm.h>
@@ -47,7 +48,7 @@ struct smm_stub_params {
 	u32 fxsave_area;
 	u32 fxsave_area_size;
 	struct smm_runtime runtime;
-} __attribute__ ((packed));
+} __packed;
 
 /*
  * The stub is the entry point that sets up protected mode and stacks for each
@@ -67,7 +68,7 @@ extern unsigned char _binary_smmstub_start[];
 struct smm_entry_ins {
 	char jmp_rel;
 	uint16_t rel16;
-} __attribute__ ((packed));
+} __packed;
 
 /*
  * Place the entry instructions for num entries beginning at entry_start with

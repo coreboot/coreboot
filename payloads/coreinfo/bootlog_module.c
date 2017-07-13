@@ -33,7 +33,7 @@ struct cbmem_console {
 	u32 size;
 	u32 cursor;
 	u8 body[0];
-} __attribute__ ((__packed__));
+} __packed;
 
 #define CURSOR_MASK ((1 << 28) - 1)
 #define OVERFLOW (1 << 31)

@@ -89,7 +89,7 @@ struct linux_header {
 	/* 2.10+ */
 	u64 pref_address;	/* 0x258 */
 	u32 init_size;		/* 0x260 */
-} __attribute__ ((packed));
+} __packed;
 
 /* Paramters passed to 32-bit part of Linux
  * This is another view of the structure above.. */

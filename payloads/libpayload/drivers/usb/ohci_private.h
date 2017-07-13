@@ -186,7 +186,7 @@
 	   _DO NOT_ use |= to set the bits,
 	   this clears the entire state */
 	volatile u32 HcRhPortStatus[];
-     } __attribute__ ((packed)) opreg_t;
+     } __packed opreg_t;
 
 	typedef struct { /* should be 256 bytes according to spec */
 		u32 HccaInterruptTable[32];
@@ -195,14 +195,14 @@
 		volatile u32 HccaDoneHead;
 		u8 reserved[116]; /* pad according to spec */
 		u8 what[4]; /* really pad to 256 as spec only covers 252 */
-	} __attribute__ ((packed)) hcca_t;
+	} __packed hcca_t;
 
 	typedef volatile struct {
 		u32 config;
 		u32 tail_pointer;
 		u32 head_pointer;
 		u32 next_ed;
-	} __attribute__ ((packed)) ed_t;
+	} __packed ed_t;
 #define ED_HALTED 1
 #define ED_TOGGLE 2
 
@@ -220,7 +220,7 @@
 		u32 current_buffer_pointer;
 		u32 next_td;
 		u32 buffer_end;
-	} __attribute__ ((packed)) td_t;
+	} __packed td_t;
 /*
  * Bits 0 through 17 of .config won't be interpreted by the host controller
  * (HC) and, after processing the TD, the HC has to ensure those bits have

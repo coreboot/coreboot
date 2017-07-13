@@ -39,7 +39,7 @@ struct exception_state
 {
 	u32 regs[16];
 	u32 cpsr;
-} __attribute__((packed));
+} __packed;
 extern struct exception_state exception_state;
 
 extern u32 exception_stack[];

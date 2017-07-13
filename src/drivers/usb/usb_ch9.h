@@ -17,6 +17,8 @@
 #ifndef USB_CH9_H
 #define USB_CH9_H
 
+#include <compiler.h>
+
 #define USB_DIR_OUT                     0               /* to device */
 #define USB_DIR_IN                      0x80            /* to host */
 
@@ -111,7 +113,7 @@ struct usb_ctrlrequest {
         u16 wValue;
         u16 wIndex;
         u16 wLength;
-} __attribute__ ((packed));
+} __packed;
 
 struct usb_debug_descriptor {
         u8  bLength;

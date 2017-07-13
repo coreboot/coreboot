@@ -855,7 +855,7 @@ void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 }
 #endif
 
-unsigned long __attribute__ ((weak)) fw_cfg_acpi_tables(unsigned long start)
+unsigned long __attribute__((weak)) fw_cfg_acpi_tables(unsigned long start)
 {
 	return 0;
 }
@@ -1122,7 +1122,7 @@ void acpi_save_gnvs(u32 gnvs_address)
 		*gnvs = gnvs_address;
 }
 
-__attribute__ ((weak)) int acpi_get_gpe(int gpe)
+__attribute__((weak)) int acpi_get_gpe(int gpe)
 {
 	return -1; /* implemented by SOC */
 }

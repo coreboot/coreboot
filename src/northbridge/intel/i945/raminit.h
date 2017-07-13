@@ -16,6 +16,8 @@
 #ifndef RAMINIT_H
 #define RAMINIT_H
 
+#include <compiler.h>
+
 #define DIMM_SOCKETS 2
 
 #define DIMM_TCO_BASE 0x30
@@ -61,7 +63,7 @@ struct sys_info {
 	u8 banksize[2 * 2 * DIMM_SOCKETS];
 	const u8 *spd_addresses;
 
-} __attribute__ ((packed));
+} __packed;
 
 void receive_enable_adjust(struct sys_info *sysinfo);
 void sdram_initialize(int boot_path, const u8 *sdram_addresses);

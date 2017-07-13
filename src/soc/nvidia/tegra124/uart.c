@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <compiler.h>
 #include <arch/io.h>
 #include <boot/coreboot_tables.h>
 #include <console/console.h>	/* for __console definition */
@@ -38,7 +39,7 @@ struct tegra124_uart {
 	uint32_t mcr; // Modem control register.
 	uint32_t lsr; // Line status register.
 	uint32_t msr; // Modem status register.
-} __attribute__ ((packed));
+} __packed;
 
 static void tegra124_uart_tx_flush(struct tegra124_uart *uart_ptr);
 static int tegra124_uart_tst_byte(struct tegra124_uart *uart_ptr);

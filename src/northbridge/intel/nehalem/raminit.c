@@ -22,6 +22,7 @@
 
 #if REAL
 #include <stdlib.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <string.h>
 #include <arch/io.h>
@@ -1906,7 +1907,7 @@ static void send_heci_uma_message(struct raminfo *info)
 		u8 result;
 		u8 field2;
 		u8 unk3[0x48 - 4 - 1];
-	} __attribute__ ((packed)) reply;
+	} __packed reply;
 	struct uma_message {
 		u8 group_id;
 		u8 cmd;
@@ -1916,7 +1917,7 @@ static void send_heci_uma_message(struct raminfo *info)
 		u64 heci_uma_addr;
 		u32 memory_reserved_for_heci_mb;
 		u16 c3;
-	} __attribute__ ((packed)) msg = {
+	} __packed msg = {
 	0, MKHI_SET_UMA, 0, 0,
 		    0x82,
 		    info->heci_uma_addr, info->memory_reserved_for_heci_mb, 0};

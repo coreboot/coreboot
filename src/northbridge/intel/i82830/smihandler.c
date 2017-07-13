@@ -15,6 +15,7 @@
  */
 
 #include <types.h>
+#include <compiler.h>
 #include <string.h>
 #include <arch/io.h>
 #include <console/console.h>
@@ -51,7 +52,7 @@ typedef struct {
 	u32 function;
 	u32 retsts;
 	u32 rfu;
-} __attribute__((packed)) banner_id_t;
+} __packed banner_id_t;
 
 #define MSH_OK			0x0000
 #define MSH_OK_RESTART		0x0001
@@ -111,7 +112,7 @@ typedef struct {
 	u16 versionmajor;
 	u16 versionminor;
 	u32 smicombuffersize;
-} __attribute__((packed)) version_t;
+} __packed version_t;
 
 typedef struct {
 	u16 header_id;
@@ -122,14 +123,14 @@ typedef struct {
 	u32 type;
 	u32 header_ext;
 	u8 name[0];
-} __attribute__((packed)) mbi_header_t;
+} __packed mbi_header_t;
 
 typedef struct {
 	banner_id_t banner;
 	u64 handle;
 	u32 objnum;
 	mbi_header_t header;
-} __attribute__((packed)) obj_header_t;
+} __packed obj_header_t;
 
 typedef struct {
 	banner_id_t banner;
@@ -139,7 +140,7 @@ typedef struct {
 	u32 numbytes;
 	u32 buflen;
 	u32 buffer;
-} __attribute__((packed)) get_object_t;
+} __packed get_object_t;
 
 static void mbi_call(u8 subf, banner_id_t *banner_id)
 {

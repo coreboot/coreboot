@@ -14,6 +14,7 @@
 
 /* This file is derived from the flashrom project. */
 #include <stdint.h>
+#include <compiler.h>
 #include <stdlib.h>
 #include <string.h>
 #include <bootstate.h>
@@ -93,7 +94,7 @@ typedef struct ich9_spi_regs {
 	uint32_t srdl;
 	uint32_t srdc;
 	uint32_t srd;
-} __attribute__((packed)) ich9_spi_regs;
+} __packed ich9_spi_regs;
 
 typedef struct ich_spi_controller {
 	int locked;

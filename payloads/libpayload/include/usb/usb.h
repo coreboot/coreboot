@@ -83,13 +83,13 @@ typedef struct {
 			unsigned long ttThinkTime:2;
 			unsigned long arePortIndicatorsSupported:1;
 			unsigned long:8;
-		} __attribute__ ((packed));
+		} __packed;
 		unsigned short wHubCharacteristics;
-	} __attribute__ ((packed));
+	} __packed;
 	unsigned char bPowerOn2PwrGood;
 	unsigned char bHubContrCurrent;
 	char DeviceRemovable[];
-} __attribute__ ((packed)) hub_descriptor_t;
+} __packed hub_descriptor_t;
 
 typedef struct {
 	unsigned char bLength;
@@ -106,7 +106,7 @@ typedef struct {
 	unsigned char iProduct;
 	unsigned char iSerialNumber;
 	unsigned char bNumConfigurations;
-} __attribute__ ((packed)) device_descriptor_t;
+} __packed device_descriptor_t;
 
 typedef struct {
 	unsigned char bLength;
@@ -117,7 +117,7 @@ typedef struct {
 	unsigned char iConfiguration;
 	unsigned char bmAttributes;
 	unsigned char bMaxPower;
-} __attribute__ ((packed)) configuration_descriptor_t;
+} __packed configuration_descriptor_t;
 
 typedef struct {
 	unsigned char bLength;
@@ -129,7 +129,7 @@ typedef struct {
 	unsigned char bInterfaceSubClass;
 	unsigned char bInterfaceProtocol;
 	unsigned char iInterface;
-} __attribute__ ((packed)) interface_descriptor_t;
+} __packed interface_descriptor_t;
 
 typedef struct {
 	unsigned char bLength;
@@ -138,7 +138,7 @@ typedef struct {
 	unsigned char bmAttributes;
 	unsigned short wMaxPacketSize;
 	unsigned char bInterval;
-} __attribute__ ((packed)) endpoint_descriptor_t;
+} __packed endpoint_descriptor_t;
 
 typedef struct {
 	unsigned char bLength;
@@ -148,7 +148,7 @@ typedef struct {
 	unsigned char bNumDescriptors;
 	unsigned char bReportDescriptorType;
 	unsigned short wReportDescriptorLength;
-} __attribute__ ((packed)) hid_descriptor_t;
+} __packed hid_descriptor_t;
 
 typedef struct {
 	union {
@@ -156,14 +156,14 @@ typedef struct {
 			dev_req_recp req_recp:5;
 			dev_req_type req_type:2;
 			dev_req_dir data_dir:1;
-		} __attribute__ ((packed));
+		} __packed;
 		unsigned char bmRequestType;
-	} __attribute__ ((packed));
+	} __packed;
 	unsigned char bRequest;
 	unsigned short wValue;
 	unsigned short wIndex;
 	unsigned short wLength;
-} __attribute__ ((packed)) dev_req_t;
+} __packed dev_req_t;
 
 struct usbdev_hc;
 typedef struct usbdev_hc hci_t;

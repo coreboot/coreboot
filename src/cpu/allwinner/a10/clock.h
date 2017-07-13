@@ -23,6 +23,7 @@
 
 #include "memmap.h"
 #include <types.h>
+#include <compiler.h>
 
 /* CPU_AHB_APB0 config values */
 #define CPU_CLK_SRC_MASK		(3 << 16)
@@ -267,7 +268,7 @@ struct a10_ccm {
 	u32 mali_clk_cfg;	/* 0x154 */
 	u8 res7[0x4];
 	u32 mbus_clk_cfg;	/* 0x15c */
-} __attribute__ ((packed));
+} __packed;
 
 void a1x_periph_clock_enable(enum a1x_clken periph);
 void a1x_periph_clock_disable(enum a1x_clken periph);

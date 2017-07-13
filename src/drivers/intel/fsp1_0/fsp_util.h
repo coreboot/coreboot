@@ -16,6 +16,7 @@
 #ifndef FSP_UTIL_H
 #define FSP_UTIL_H
 
+#include <compiler.h>
 #include <chipset_fsp_util.h>
 #include "fsp_values.h"
 
@@ -71,7 +72,7 @@ struct mrc_data_container {
 	u32	mrc_checksum;	// IP style checksum
 	u32	reserved;		// For header alignment
 	u8	mrc_data[0];	// Variable size, platform/run time dependent.
-} __attribute__ ((packed));
+} __packed;
 
 struct mrc_data_container *find_current_mrc_cache(void);
 

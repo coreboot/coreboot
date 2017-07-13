@@ -58,7 +58,7 @@ struct exception_state
 	} regs;
 	u32 error_code;
 	u32 vector;
-} __attribute__((packed));
+} __packed;
 extern struct exception_state *exception_state;
 
 extern u32 exception_stack[];

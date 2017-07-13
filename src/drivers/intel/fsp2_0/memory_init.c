@@ -11,6 +11,7 @@
  * (at your option) any later version.
  */
 
+#include <compiler.h>
 #include <antirollback.h>
 #include <arch/io.h>
 #include <arch/cpu.h>
@@ -281,13 +282,13 @@ static enum cb_err fsp_fill_common_arch_params(FSPM_ARCH_UPD *arch_upd,
 	return CB_SUCCESS;
 }
 
-__attribute__ ((weak))
+__attribute__((weak))
 uint8_t fsp_memory_mainboard_version(void)
 {
 	return 0;
 }
 
-__attribute__ ((weak))
+__attribute__((weak))
 uint8_t fsp_memory_soc_version(void)
 {
 	return 0;

@@ -581,8 +581,8 @@ __readfsdword(unsigned long Offset)
 }
 
 #ifdef __SSE3__
-typedef long long __v2di __attribute__ ((__vector_size__ (16)));
-typedef long long __m128i __attribute__ ((__vector_size__ (16), __may_alias__));
+typedef long long __v2di __attribute__((__vector_size__ (16)));
+typedef long long __m128i __attribute__((__vector_size__ (16), __may_alias__));
 
 static __inline__ __attribute__((always_inline)) void _mm_stream_si128_fs2 (void *__A, __m128i __B)
 {

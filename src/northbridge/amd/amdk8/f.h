@@ -1,6 +1,8 @@
 #ifndef AMDK8_F_H
 #define AMDK8_F_H
 
+#include <compiler.h>
+
 /* Definitions of various K8 registers */
 /* Function 0 */
 #define HT_TRANSACTION_CONTROL 0x68
@@ -465,7 +467,7 @@ struct dimm_size {
 	uint8_t col;
 	uint8_t bank; //1, 2, 3 mean 2, 4, 8
 	uint8_t rank;
-} __attribute__((packed));
+} __packed;
 
 struct mem_info { // pernode
 	uint32_t dimm_mask;
@@ -483,7 +485,7 @@ struct mem_info { // pernode
 	uint8_t is_64MuxMode;
 	uint8_t memclk_set; // we need to use this to retrieve the mem param
 	uint8_t rsv[2];
-} __attribute__((packed));
+} __packed;
 
 struct link_pair_st {
 	pci_devfn_t udev;
@@ -493,7 +495,7 @@ struct link_pair_st {
 	uint32_t pos;
 	uint32_t offs;
 
-} __attribute__((packed));
+} __packed;
 
 struct sys_info {
 	uint8_t ctrl_present[NODE_NUMS];
@@ -516,7 +518,7 @@ struct sys_info {
 	uint32_t sbdn;
 	uint32_t sblk;
 	uint32_t sbbusn;
-} __attribute__((packed));
+} __packed;
 
 #ifdef __PRE_RAM__
 #include <arch/early_variables.h>

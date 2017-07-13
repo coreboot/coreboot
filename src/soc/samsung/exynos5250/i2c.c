@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#include <compiler.h>
 #include <arch/io.h>
 #include <assert.h>
 #include <console/console.h>
@@ -23,7 +24,7 @@
 #include <soc/i2c.h>
 #include <soc/periph.h>
 
-struct __attribute__ ((packed)) i2c_regs
+struct __packed i2c_regs
 {
 	uint8_t con;
 	uint8_t _1[3];

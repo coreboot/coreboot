@@ -17,6 +17,7 @@
 #define PTN3460_H_
 
 #include <stdint.h>
+#include <compiler.h>
 
 #define PTN_SLAVE_ADR		0x20
 #define PTN_I2C_CONTROLLER	0
@@ -74,7 +75,7 @@ struct ptn_3460_config {
 	uint8_t t4_timing;
 	/* Panel T5 delay. */
 	uint8_t t5_delay;
-} __attribute__((packed));
+} __packed;
 
 struct ptn_3460_flash {
 	/* Flash command (erase or erase and flash). */
@@ -83,7 +84,7 @@ struct ptn_3460_flash {
 	uint16_t magic;
 	/* Trigger for starting flash operation. */
 	uint8_t trigger;
-} __attribute__((packed));
+} __packed;
 
 int ptn3460_init(const char *hwi_block);
 int ptn3460_write_edid(uint8_t edid_num, const uint8_t data[PTN_EDID_LEN]);

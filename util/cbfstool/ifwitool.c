@@ -17,6 +17,7 @@
 #include <getopt.h>
 #include <stdlib.h>
 #include <time.h>
+#include <compiler.h>
 
 #include "common.h"
 
@@ -59,7 +60,7 @@ struct bpdt_header {
 	uint32_t ifwi_version;
 	/* Version of FIT tool used to create IFWI. */
 	uint64_t fit_tool_version;
-} __attribute__((packed));
+} __packed;
 #define BPDT_HEADER_SIZE			(sizeof(struct bpdt_header))
 
 struct bpdt_entry {
@@ -71,14 +72,14 @@ struct bpdt_entry {
 	uint32_t offset;
 	/* Size in bytes of sub-partition. */
 	uint32_t size;
-} __attribute__((packed));
+} __packed;
 #define BPDT_ENTRY_SIZE			(sizeof(struct bpdt_entry))
 
 struct bpdt {
 	struct bpdt_header h;
 	/* In practice, this could be an array of 0 to n entries. */
 	struct bpdt_entry e[0];
-} __attribute__((packed));
+} __packed;
 
 static inline size_t get_bpdt_size(struct bpdt_header *h)
 {
@@ -107,7 +108,7 @@ struct subpart_dir_header {
 	uint8_t checksum;
 	/* ASCII short name of sub-partition. */
 	uint8_t name[4];
-} __attribute__((packed));
+} __packed;
 #define SUBPART_DIR_HEADER_SIZE			\
 					(sizeof(struct subpart_dir_header))
 #define SUBPART_DIR_MARKER				0x44504324
@@ -124,7 +125,7 @@ struct subpart_dir_entry {
 	uint32_t length;
 	/* Must be zero. */
 	uint32_t rsvd;
-} __attribute__((packed));
+} __packed;
 #define SUBPART_DIR_ENTRY_SIZE			\
 					(sizeof(struct subpart_dir_entry))
 
@@ -132,7 +133,7 @@ struct subpart_dir {
 	struct subpart_dir_header h;
 	/* In practice, this could be an array of 0 to n entries. */
 	struct subpart_dir_entry e[0];
-} __attribute__((packed));
+} __packed;
 
 static inline size_t subpart_dir_size(struct subpart_dir_header *h)
 {
@@ -158,7 +159,7 @@ struct manifest_header {
 	uint8_t public_key[256];
 	uint32_t exponent;
 	uint8_t signature[256];
-} __attribute__((packed));
+} __packed;
 
 #define DWORD_SIZE				4
 #define MANIFEST_HDR_SIZE			(sizeof(struct manifest_header))
@@ -171,7 +172,7 @@ struct module {
 	uint16_t hash_size;
 	uint32_t metadata_size;
 	uint8_t metadata_hash[32];
-} __attribute__((packed));
+} __packed;
 
 #define MODULE_SIZE				(sizeof(struct module))
 
@@ -183,7 +184,7 @@ struct signed_pkg_info_ext {
 	uint8_t bitmap[16];
 	uint32_t svn;
 	uint8_t rsvd[16];
-} __attribute__((packed));
+} __packed;
 
 #define SIGNED_PKG_INFO_EXT_TYPE		0x15
 #define SIGNED_PKG_INFO_EXT_SIZE		\

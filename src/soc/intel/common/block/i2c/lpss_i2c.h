@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <compiler.h>
 #include <intelblocks/lpss_i2c.h>
 
 #define LPSS_DEBUG BIOS_NEVER
@@ -65,7 +66,7 @@ struct lpss_i2c_regs {
 	uint32_t comp_param1;
 	uint32_t comp_version;
 	uint32_t comp_type;
-} __attribute__((packed));
+} __packed;
 
 /* Get I2C controller base address */
 uintptr_t lpss_i2c_base_address(unsigned int bus);

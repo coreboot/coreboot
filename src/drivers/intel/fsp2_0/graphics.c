@@ -10,6 +10,7 @@
  * (at your option) any later version.
  */
 
+#include <compiler.h>
 #include <cbfs.h>
 #include <console/console.h>
 #include <fsp/util.h>
@@ -37,7 +38,7 @@ struct hob_graphics_info {
 	uint32_t blue_mask;
 	uint32_t reserved_mask;
 	uint32_t pixels_per_scanline;
-} __attribute__((packed));
+} __packed;
 
 struct pixel {
 	uint8_t pos;

@@ -16,6 +16,7 @@
 #ifndef _BAYTRAIL_PMC_H_
 #define _BAYTRAIL_PMC_H_
 
+#include <compiler.h>
 #include <arch/acpi.h>
 
 #define IOCOM1		0x3f8
@@ -262,7 +263,7 @@ struct chipset_power_state {
 	uint32_t prsts;
 	uint32_t gen_pmcon1;
 	uint32_t gen_pmcon2;
-} __attribute__((packed));
+} __packed;
 
 /* Power Management Utility Functions. */
 uint16_t get_pmbase(void);

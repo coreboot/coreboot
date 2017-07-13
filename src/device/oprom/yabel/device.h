@@ -36,6 +36,7 @@
 #define DEVICE_LIB_H
 
 #include <types.h>
+#include <compiler.h>
 #include <endian.h>
 #include "compat/of.h"
 #include "debug.h"
@@ -62,7 +63,7 @@ typedef struct {
 	u16 bev;		// Bootstrap Entry Vector
 	u16 reserved_2;
 	u16 sriv;		// Static Resource Information Vector
-} __attribute__ ((__packed__)) exp_header_struct_t;
+} __packed exp_header_struct_t;
 
 // a PCI Data Struct as defined in PCI 2.3 Spec Chapter 6.3.1.2
 typedef struct {
@@ -78,7 +79,7 @@ typedef struct {
 	u8 code_type;
 	u8 indicator;
 	u16 reserved_2;
-} __attribute__ ((__packed__)) pci_data_struct_t;
+} __packed pci_data_struct_t;
 
 typedef struct {
 	u8 bus;
@@ -116,7 +117,7 @@ typedef struct {
 	u64 address;
 	u64 address_offset;
 	u64 size;
-} __attribute__ ((__packed__)) translate_address_t;
+} __packed translate_address_t;
 
 // array to store address translations for this
 // device. Needed for faster address translation, so

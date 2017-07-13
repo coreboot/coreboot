@@ -14,6 +14,8 @@
 #ifndef CPU_SAMSUNG_EXYNOS5420_DMC_H
 #define CPU_SAMSUNG_EXYNOS5420_DMC_H
 
+#include <compiler.h>
+
 #define DMC_INTERLEAVE_SIZE		0x1f
 
 #define PAD_RETENTION_DRAM_COREBLK_VAL	0x10000000
@@ -201,7 +203,7 @@ struct exynos5_dmc {
 	uint32_t pmcnt2_ppc;
 	uint8_t res41[0xc];
 	uint32_t pmcnt3_ppc;	/* 0xe140 */
-} __attribute__((packed));
+} __packed;
 check_member(exynos5_dmc, pmcnt3_ppc, 0xe140);
 
 static struct exynos5_dmc * const exynos_drex0 = (void *)EXYNOS5420_DMC_DREXI_0;
@@ -252,7 +254,7 @@ struct exynos5_phy_control {
 	uint32_t phy_con40;
 	uint32_t phy_con41;
 	uint32_t phy_con42;
-} __attribute__((packed));
+} __packed;
 check_member(exynos5_phy_control, phy_con42, 0xac);
 
 static struct exynos5_phy_control * const exynos_phy0_control =
@@ -267,7 +269,7 @@ struct exynos5_tzasc {
 	uint8_t res2[0x8];
 	uint32_t memconfig0;
 	uint32_t memconfig1;
-} __attribute__((packed));
+} __packed;
 
 static struct exynos5_tzasc * const exynos_tzasc0 =
 		(void *)EXYNOS5420_DMC_TZASC_0;

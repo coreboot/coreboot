@@ -18,6 +18,7 @@
 
 #include "common.h"
 #include <stdint.h>
+#include <compiler.h>
 
 #include <vb2_api.h>
 
@@ -35,12 +36,6 @@
 
 #define makemagic(b3, b2, b1, b0)\
 	(((b3)<<24) | ((b2) << 16) | ((b1) << 8) | (b0))
-
-#if defined(__WIN32) || defined(__WIN64)
-#define __PACKED __attribute__((gcc_struct, packed))
-#else
-#define __PACKED __attribute__((packed))
-#endif
 
 /* To make CBFS more friendly to ROM, fill -1 (0xFF) instead of zero. */
 #define CBFS_CONTENT_DEFAULT_VALUE	(-1)
@@ -65,7 +60,7 @@ struct cbfs_header {
 	uint32_t offset;
 	uint32_t architecture;	/* Version 2 */
 	uint32_t pad[1];
-} __PACKED;
+} __packed;
 
 #define CBFS_ARCHITECTURE_UNKNOWN  0xFFFFFFFF
 #define CBFS_ARCHITECTURE_X86      0x00000001
@@ -87,7 +82,7 @@ struct cbfs_file {
 	/* length of header incl. variable data */
 	uint32_t offset;
 	char filename[];
-} __PACKED;
+} __packed;
 
 #if defined __GNUC__ && (__GNUC__ * 100 + __GNUC_MINOR__) >= 406
 _Static_assert(sizeof(struct cbfs_file) == 24, "cbfs_file size mismatch");
@@ -101,7 +96,7 @@ struct cbfs_file_attribute {
 	/* len covers the whole structure, incl. tag and len */
 	uint32_t len;
 	uint8_t data[0];
-} __PACKED;
+} __packed;
 
 /* Depending on how the header was initialized, it may be backed with 0x00 or
  * 0xff. Support both. */
@@ -118,7 +113,7 @@ struct cbfs_file_attr_compression {
 	/* whole file compression format. 0 if no compression. */
 	uint32_t compression;
 	uint32_t decompressed_size;
-} __PACKED;
+} __packed;
 
 struct cbfs_file_attr_hash {
 	uint32_t tag;
@@ -126,19 +121,19 @@ struct cbfs_file_attr_hash {
 	uint32_t hash_type;
 	/* hash_data is len - sizeof(struct) bytes */
 	uint8_t  hash_data[];
-} __PACKED;
+} __packed;
 
 struct cbfs_file_attr_position {
 	uint32_t tag;
 	uint32_t len;
 	uint32_t position;
-} __PACKED;
+} __packed;
 
 struct cbfs_file_attr_align {
 	uint32_t tag;
 	uint32_t len;
 	uint32_t alignment;
-} __PACKED;
+} __packed;
 
 struct cbfs_stage {
 	uint32_t compression;
@@ -146,7 +141,7 @@ struct cbfs_stage {
 	uint64_t load;
 	uint32_t len;
 	uint32_t memlen;
-} __PACKED;
+} __packed;
 
 #define PAYLOAD_SEGMENT_CODE	makemagic('C', 'O', 'D', 'E')
 #define PAYLOAD_SEGMENT_DATA	makemagic('D', 'A', 'T', 'A')
@@ -161,11 +156,11 @@ struct cbfs_payload_segment {
 	uint64_t load_addr;
 	uint32_t len;
 	uint32_t mem_len;
-} __PACKED;
+} __packed;
 
 struct cbfs_payload {
 	struct cbfs_payload_segment segments;
-} __PACKED;
+} __packed;
 
 /** These are standard component types for well known
     components (i.e - those that coreboot needs to consume.

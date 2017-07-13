@@ -18,6 +18,8 @@
 #ifndef _SKYLAKE_ME_H_
 #define _SKYLAKE_ME_H_
 
+#include <compiler.h>
+
 /*
  * Management Engine PCI registers
  */
@@ -68,7 +70,7 @@ union me_hfs {
 	u32 current_power_source: 2;
 	u32 d3_support_valid: 1;
 	u32 d0i3_support_valid: 1;
-	} __attribute__ ((packed)) fields;
+	} __packed fields;
 };
 
 #define PCI_ME_HFSTS2		0x48
@@ -166,7 +168,7 @@ union me_hfs2 {
 	u32 current_state: 8;
 	u32 current_pmevent: 4;
 	u32 progress_code: 4;
-	} __attribute__ ((packed)) fields;
+	} __packed fields;
 };
 
 #define PCI_ME_HFSTS3			0x60
@@ -183,7 +185,7 @@ union me_hfs3 {
 	u32 reserved2: 21;
 	u32 encrypt_key_override: 1;
 	u32 power_down_mitigation: 1;
-	} __attribute__ ((packed)) fields;
+	} __packed fields;
 };
 
 #define PCI_ME_HFSTS6			0x6c
@@ -195,7 +197,7 @@ union me_hfs6 {
 	struct {
 		u32 reserved1: 30;
 		u32 fpf_nvars: 2;
-	} __attribute__ ((packed)) fields;
+	} __packed fields;
 };
 
 /*
@@ -216,7 +218,7 @@ union host_csr {
 	u32 host_read_offset: 8;
 	u32 host_write_offset: 8;
 	u32 me_cir_depth: 8;
-	} __attribute__ ((packed)) fields;
+	} __packed fields;
 };
 
 #define MMIO_ME_CB_RW	0x08
@@ -234,7 +236,7 @@ union me_csr {
 	u32 me_read_offset: 8;
 	u32 me_write_offset: 8;
 	u32 me_cir_buff: 8;
-	} __attribute__ ((packed)) fields;
+	} __packed fields;
 };
 
 #define MMIO_ME_D0I3	0x800
@@ -265,7 +267,7 @@ union mei_header {
 	u32 length: 9;
 	u32 reserved: 6;
 	u32 is_complete: 1;
-	} __attribute__ ((packed)) fields;
+	} __packed fields;
 };
 
 void intel_me_status(void);

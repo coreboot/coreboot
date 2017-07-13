@@ -33,6 +33,7 @@
  *****************************************************************************/
 
 
+#include <compiler.h>
 #include "device.h"
 #include "compat/rtas.h"
 #include <string.h>
@@ -56,7 +57,7 @@ typedef struct {
 	u8 cfg_space_offset;
 	u64 address;
 	u64 size;
-} __attribute__ ((__packed__)) assigned_address_t;
+} __packed assigned_address_t;
 
 #if IS_ENABLED(CONFIG_PCI_OPTION_ROM_RUN_YABEL)
 /* coreboot version */

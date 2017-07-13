@@ -22,6 +22,7 @@
 
 #include <arch/cpu.h>
 #include <types.h>
+#include <compiler.h>
 
 #define SMM_DEFAULT_BASE 0x30000
 #define SMM_DEFAULT_SIZE 0x10000
@@ -129,7 +130,7 @@ typedef struct {
 	u64	rdx;
 	u64	rcx;
 	u64	rax;
-} __attribute__((packed)) amd64_smm_state_save_area_t;
+} __packed amd64_smm_state_save_area_t;
 
 
 /* Intel Core 2 (EM64T) SMM State-Save Area
@@ -211,7 +212,7 @@ typedef struct {
 
 	u64	cr3;
 	u64	cr0;
-} __attribute__((packed)) em64t_smm_state_save_area_t;
+} __packed em64t_smm_state_save_area_t;
 
 
 /* Intel Revision 30100 SMM State-Save Area
@@ -298,7 +299,7 @@ typedef struct {
 
 	u64	cr3;
 	u64	cr0;
-} __attribute__((packed)) em64t100_smm_state_save_area_t;
+} __packed em64t100_smm_state_save_area_t;
 
 /* Intel Revision 30101 SMM State-Save Area
  * The following processor architectures use this:
@@ -397,7 +398,7 @@ typedef struct {
 
 	u64	cr3;
 	u64	cr0;
-} __attribute__((packed)) em64t101_smm_state_save_area_t;
+} __packed em64t101_smm_state_save_area_t;
 
 
 /* Legacy x86 SMM State-Save Area
@@ -438,7 +439,7 @@ typedef struct {
 	u32	eflags;
 	u32	cr3;
 	u32	cr0;
-} __attribute__((packed)) legacy_smm_state_save_area_t;
+} __packed legacy_smm_state_save_area_t;
 
 typedef enum {
 	AMD64,
@@ -514,7 +515,7 @@ struct smm_runtime {
 	 * contiguous like the 1:1 mapping it is up to the caller of the stub
 	 * loader to adjust this mapping. */
 	u8 apic_id_to_cpu[CONFIG_MAX_CPUS];
-} __attribute__ ((packed));
+} __packed;
 
 struct smm_module_params {
 	void *arg;

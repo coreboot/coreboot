@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <compiler.h>
 #include <arch/io.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
@@ -33,17 +34,17 @@ struct gsmi_set_eventlog_param {
 	u32 data_ptr;
 	u32 data_len;
 	u32 type;
-} __attribute__ ((packed));
+} __packed;
 
 struct gsmi_set_eventlog_type1 {
 	u16 type;
 	u32 instance;
-} __attribute__ ((packed));
+} __packed;
 
 struct gsmi_clear_eventlog_param {
 	u32 percentage;
 	u32 data_type;
-} __attribute__ ((packed));
+} __packed;
 
 /* Param is usually EBX, ret in EAX */
 u32 gsmi_exec(u8 command, u32 *param)

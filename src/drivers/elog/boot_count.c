@@ -18,6 +18,7 @@
 #include <pc80/mc146818rtc.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <compiler.h>
 #include <elog.h>
 
 /*
@@ -43,7 +44,7 @@ struct boot_count {
 	u16 signature;
 	u32 count;
 	u16 checksum;
-} __attribute__ ((packed));
+} __packed;
 
 /* Read and validate boot count structure from CMOS */
 static int boot_count_cmos_read(struct boot_count *bc)

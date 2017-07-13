@@ -16,6 +16,8 @@
 #ifndef _SIEMENS_NC_FPGA_H_
 #define _SIEMENS_NC_FPGA_H_
 
+#include <compiler.h>
+
 #define NC_MAGIC_OFFSET			0x020
 #define  NC_FPGA_MAGIC			0x4E433746
 #define NC_CAP1_OFFSET			0x080
@@ -64,6 +66,6 @@ typedef struct {
 	uint16_t	hystthreshold;
 	uint16_t	res9[4];
 	uint32_t	fanmon;
-} __attribute__ ((packed)) fan_ctrl_t;
+} __packed fan_ctrl_t;
 
 #endif /* _SIEMENS_NC_FPGA_H_ */

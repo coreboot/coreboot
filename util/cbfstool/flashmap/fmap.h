@@ -37,7 +37,7 @@
 #define FLASHMAP_LIB_FMAP_H__
 
 #include <inttypes.h>
-
+#include <compiler.h>
 #include <valstr.h>
 
 #define FMAP_SIGNATURE		"__FMAP__"
@@ -58,7 +58,7 @@ struct fmap_area {
 	uint32_t size;			/* size in bytes */
 	uint8_t  name[FMAP_STRLEN];	/* descriptive name */
 	uint16_t flags;			/* flags for this area */
-}  __attribute__((packed));
+}  __packed;
 
 struct fmap {
 	uint8_t  signature[8];		/* "__FMAP__" (0x5F5F464D41505F5F) */
@@ -70,7 +70,7 @@ struct fmap {
 	uint16_t nareas;		/* number of areas described by
 					   fmap_areas[] below */
 	struct fmap_area areas[];
-} __attribute__((packed));
+} __packed;
 
 /*
  * fmap_find - find FMAP signature in a binary image

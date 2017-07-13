@@ -16,7 +16,7 @@
 #ifndef __ARCH_REGISTERS_H
 #define __ARCH_REGISTERS_H
 
-#define __PACKED __attribute__((packed))
+#include <compiler.h>
 
 #define DOWNTO8(A) \
 	union { \
@@ -25,22 +25,22 @@
 				struct { \
 					uint8_t A##l; \
 					uint8_t A##h; \
-				} __PACKED; \
+				} __packed; \
 				uint16_t A##x; \
-			} __PACKED; \
+			} __packed; \
 			uint16_t h##A##x; \
-		} __PACKED; \
+		} __packed; \
 		uint32_t e##A##x; \
-	} __PACKED;
+	} __packed;
 
 #define DOWNTO16(A) \
 	union { \
 		struct { \
 			uint16_t A; \
 			uint16_t h##A; \
-		} __PACKED; \
+		} __packed; \
 		uint32_t e##A; \
-	} __PACKED;
+	} __packed;
 
 struct eregs {
 	DOWNTO8(a);

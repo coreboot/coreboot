@@ -32,6 +32,7 @@
 #define _IPQ40XX_CDP_H_
 
 #include <types.h>
+#include <compiler.h>
 
 unsigned smem_get_board_machtype(void);
 
@@ -150,7 +151,7 @@ typedef struct {
 	flash_desc flashdesc;
 	spinorflash_params_t flash_param;
 #endif
-} __attribute__ ((__packed__)) board_ipq40xx_params_t;
+} __packed board_ipq40xx_params_t;
 
 extern board_ipq40xx_params_t *gboard_param;
 

@@ -19,6 +19,7 @@
 #include <console/uart.h>
 #include <drivers/uart/uart8250reg.h>
 #include <stdint.h>
+#include <compiler.h>
 
 struct tegra210_uart {
 	union {
@@ -38,7 +39,7 @@ struct tegra210_uart {
 	uint32_t mcr; // Modem control register.
 	uint32_t lsr; // Line status register.
 	uint32_t msr; // Modem status register.
-} __attribute__ ((packed));
+} __packed;
 
 
 static struct tegra210_uart * const uart_ptr =

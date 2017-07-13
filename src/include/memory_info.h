@@ -17,6 +17,7 @@
 #define _MEMORY_INFO_H_
 
 #include <stdint.h>
+#include <compiler.h>
 
 /*
  * If this table is filled and put in CBMEM,
@@ -37,12 +38,12 @@ struct dimm_info {
 	uint16_t mod_id;
 	uint8_t mod_type;
 	uint8_t bus_width;
-} __attribute__((packed));
+} __packed;
 
 struct memory_info {
 	uint8_t dimm_cnt;
 	/* Maximum num of dimm is 8 */
 	struct dimm_info dimm[8];
-} __attribute__((packed));
+} __packed;
 
 #endif

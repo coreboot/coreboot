@@ -19,6 +19,7 @@
 #define __CPU_ALLWINNER_A10_PINMUX_H
 
 #include <types.h>
+#include <compiler.h>
 
 #define GPIO_BASE		 0x01C20800
 
@@ -42,7 +43,7 @@ struct a10_gpio_port {
 	u32 dat;
 	u32 drv[2];
 	u32 pul[2];
-} __attribute__ ((packed));
+} __packed;
 
 struct a10_gpio {
 	struct a10_gpio_port port[10];
@@ -58,7 +59,7 @@ struct a10_gpio {
 
 	u32 sdr_pad_drv;
 	u32 sdr_pad_pul;
-} __attribute__ ((packed));
+} __packed;
 
 /* gpio.c */
 void gpio_set(u8 port, u8 pin);

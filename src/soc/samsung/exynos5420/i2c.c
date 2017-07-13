@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#include <compiler.h>
 #include <arch/io.h>
 #include <assert.h>
 #include <console/console.h>
@@ -26,7 +27,7 @@
 #include <stddef.h>
 #include <timer.h>
 
-struct __attribute__ ((packed)) i2c_regs
+struct __packed i2c_regs
 {
 	uint8_t con;
 	uint8_t _1[3];
@@ -40,7 +41,7 @@ struct __attribute__ ((packed)) i2c_regs
 	uint8_t _5[3];
 };
 
-struct __attribute__ ((packed)) hsi2c_regs
+struct __packed hsi2c_regs
 {
 	uint32_t usi_ctl;
 	uint32_t usi_fifo_ctl;

@@ -17,6 +17,7 @@
 #define AMD_PSP_H
 
 #include <stdint.h>
+#include <compiler.h>
 #include <Porting.h>
 #include <Proc/Psp/PspBaseLib/PspBaseLib.h>
 
@@ -48,7 +49,7 @@ struct psp_mbox {
 	u32 mbox_command;
 	u32 mbox_status;
 	u64 cmd_response; /* definition conflicts w/BKDG but matches agesa */
-} __attribute__ ((packed));
+} __packed;
 
 /* command/response format, BIOS builds this in memory
  *   mbox_buffer_header: generic header
@@ -59,7 +60,7 @@ struct psp_mbox {
 struct mbox_buffer_header {
 	u32 size;	/* total size of buffer */
 	u32 status;	/* command status, filled by PSP if applicable */
-} __attribute__ ((packed));
+} __packed;
 
 /* command-specific buffer definitions:  see NDA document #54267
  *   todo: create new definitions here for additional c2p_mbox_command commands
@@ -67,7 +68,7 @@ struct mbox_buffer_header {
 
 struct mbox_default_buffer {	/* command-response buffer unused by command */
 	struct mbox_buffer_header header;
-} __attribute__ ((packed,aligned(32)));
+} __attribute__((packed,aligned(32)));
 
 /* send_psp_command() error codes */
 #define PSPSTS_SUCCESS      0

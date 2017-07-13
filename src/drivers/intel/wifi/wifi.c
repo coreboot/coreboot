@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#include <compiler.h>
 #include <arch/acpi_device.h>
 #include <arch/acpigen.h>
 #include <console/console.h>
@@ -36,7 +37,7 @@ static int smbios_write_wifi(struct device *dev, int *handle,
 		u16 handle;
 		u8 str;
 		char eos[2];
-	} __attribute__((packed));
+	} __packed;
 
 	struct smbios_type_intel_wifi *t =
 		(struct smbios_type_intel_wifi *)*current;

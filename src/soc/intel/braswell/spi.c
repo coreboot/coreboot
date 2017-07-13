@@ -26,6 +26,7 @@
 #include <spi_flash.h>
 #include <spi-generic.h>
 #include <stdint.h>
+#include <compiler.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -80,7 +81,7 @@ typedef struct ich9_spi_regs {
 	uint16_t preop;
 	uint16_t optype;
 	uint8_t opmenu[8];
-} __attribute__((packed)) ich9_spi_regs;
+} __packed ich9_spi_regs;
 
 typedef struct ich_spi_controller {
 	int locked;

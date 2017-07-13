@@ -17,6 +17,7 @@
 #ifndef _SOC_PM_H_
 #define _SOC_PM_H_
 
+#include <compiler.h>
 #include <arch/acpi.h>
 
 #define IOCOM1		0x3f8
@@ -221,7 +222,7 @@ struct chipset_power_state {
 	uint32_t gen_pmcon1;
 	uint32_t gen_pmcon2;
 	int prev_sleep_state;
-} __attribute__((packed));
+} __packed;
 
 struct chipset_power_state *fill_power_state(void);
 

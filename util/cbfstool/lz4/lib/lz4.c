@@ -176,7 +176,7 @@ static void LZ4_write16(void* memPtr, U16 value) { *(U16*)memPtr = value; }
 
 /* __pack instructions are safer, but compiler specific, hence potentially problematic for some compilers */
 /* currently only defined for gcc and icc */
-typedef union { U16 u16; U32 u32; size_t uArch; } __attribute__((packed)) unalign;
+typedef union { U16 u16; U32 u32; size_t uArch; } __packed unalign;
 
 static U16 LZ4_read16(const void* ptr) { return ((const unalign*)ptr)->u16; }
 static U32 LZ4_read32(const void* ptr) { return ((const unalign*)ptr)->u32; }

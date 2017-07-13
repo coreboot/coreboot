@@ -18,11 +18,12 @@
 #define _SOC_PM_H_
 
 #include <stdint.h>
+#include <compiler.h>
 #include <arch/acpi.h>
 
 struct chipset_power_state {
 	uint32_t prev_sleep_state;
-} __attribute__ ((packed));
+} __packed;
 
 struct chipset_power_state *get_power_state(void);
 #if IS_ENABLED(CONFIG_PLATFORM_USES_FSP1_1)

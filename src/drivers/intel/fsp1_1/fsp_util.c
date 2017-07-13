@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#include <compiler.h>
 #include <bootstate.h>
 #include <cbmem.h>
 #include <console/console.h>
@@ -185,7 +186,7 @@ BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY,
 struct fsp_runtime {
 	uint32_t fih;
 	uint32_t hob_list;
-} __attribute__((packed));
+} __packed;
 
 
 void fsp_set_runtime(FSP_INFO_HEADER *fih, void *hob_list)

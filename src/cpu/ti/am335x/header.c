@@ -15,6 +15,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <symbols.h>
+#include <compiler.h>
 
 #include "header.h"
 
@@ -25,7 +26,7 @@ struct config_headers {
 
 	// An inert instance of chsettings.
 	struct configuration_header_settings chsettings;
-} __attribute__((packed));
+} __packed;
 
 struct omap_image_headers {
 	union {

@@ -40,7 +40,7 @@ void post_log_clear(void);
 #endif
 /* this function is weak and can be overridden by a mainboard function. */
 void mainboard_post(u8 value);
-void __attribute__ ((noreturn)) die(const char *msg);
+void __attribute__((noreturn)) die(const char *msg);
 
 #define __CONSOLE_ENABLE__ \
 	((ENV_BOOTBLOCK && IS_ENABLED(CONFIG_BOOTBLOCK_CONSOLE)) || \

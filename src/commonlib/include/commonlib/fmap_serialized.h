@@ -37,6 +37,7 @@
 #define FLASHMAP_SERIALIZED_H__
 
 #include <stdint.h>
+#include <compiler.h>
 
 #define FMAP_SIGNATURE		"__FMAP__"
 #define FMAP_VER_MAJOR		1	/* this header's FMAP minor version */
@@ -56,7 +57,7 @@ struct fmap_area {
 	uint32_t size;                  /* size in bytes */
 	uint8_t  name[FMAP_STRLEN];     /* descriptive name */
 	uint16_t flags;                 /* flags for this area */
-}  __attribute__((packed));
+}  __packed;
 
 struct fmap {
 	uint8_t  signature[8];		/* "__FMAP__" (0x5F5F464D41505F5F) */
@@ -68,6 +69,6 @@ struct fmap {
 	uint16_t nareas;		/* number of areas described by
 					   fmap_areas[] below */
 	struct fmap_area areas[];
-} __attribute__((packed));
+} __packed;
 
 #endif	/* FLASHMAP_SERIALIZED_H__ */

@@ -432,28 +432,28 @@ void pnp_set_drq(pnp_devfn_t dev, unsigned int index, unsigned int drq)
 #include <device/pci_ops.h>
 #endif
 
-static inline __attribute__ ((always_inline))
+static inline __attribute__((always_inline))
 void pci_or_config8(device_t dev, unsigned int where, u8 ormask)
 {
 	u8 value = pci_read_config8(dev, where);
 	pci_write_config8(dev, where, value | ormask);
 }
 
-static inline __attribute__ ((always_inline))
+static inline __attribute__((always_inline))
 void pci_or_config16(device_t dev, unsigned int where, u16 ormask)
 {
 	u16 value = pci_read_config16(dev, where);
 	pci_write_config16(dev, where, value | ormask);
 }
 
-static inline __attribute__ ((always_inline))
+static inline __attribute__((always_inline))
 void pci_or_config32(device_t dev, unsigned int where, u32 ormask)
 {
 	u32 value = pci_read_config32(dev, where);
 	pci_write_config32(dev, where, value | ormask);
 }
 
-static inline __attribute__ ((always_inline))
+static inline __attribute__((always_inline))
 void pci_update_config8(device_t dev, int reg, u8 mask, u8 or)
 {
 	u8 reg8;
@@ -464,7 +464,7 @@ void pci_update_config8(device_t dev, int reg, u8 mask, u8 or)
 	pci_write_config8(dev, reg, reg8);
 }
 
-static inline __attribute__ ((always_inline))
+static inline __attribute__((always_inline))
 void pci_update_config16(device_t dev, int reg, u16 mask, u16 or)
 {
 	u16 reg16;
@@ -475,7 +475,7 @@ void pci_update_config16(device_t dev, int reg, u16 mask, u16 or)
 	pci_write_config16(dev, reg, reg16);
 }
 
-static inline __attribute__ ((always_inline))
+static inline __attribute__((always_inline))
 void pci_update_config32(device_t dev, int reg, u32 mask, u32 or)
 {
 	u32 reg32;

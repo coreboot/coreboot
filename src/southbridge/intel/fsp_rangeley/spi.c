@@ -17,6 +17,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <compiler.h>
 #include <commonlib/helpers.h>
 #include <delay.h>
 #include <arch/io.h>
@@ -73,7 +74,7 @@ typedef struct ich7_spi_regs {
 	uint16_t preop;
 	uint16_t optype;
 	uint8_t opmenu[8];
-} __attribute__((packed)) ich7_spi_regs;
+} __packed ich7_spi_regs;
 
 typedef struct ich9_spi_regs {
 	uint32_t bfpr;                  // 0
@@ -106,7 +107,7 @@ typedef struct ich9_spi_regs {
 	uint32_t srdl;
 	uint32_t srdc;
 	uint32_t srd;
-} __attribute__((packed)) ich9_spi_regs;
+} __packed ich9_spi_regs;
 
 typedef struct ich10_spi_regs {
 	uint32_t bfpr;
@@ -138,7 +139,7 @@ typedef struct ich10_spi_regs {
 	uint32_t scs;
 	uint32_t bcr;
 	uint32_t tcgc;
-} __attribute__((packed)) ich10_spi_regs;
+} __packed ich10_spi_regs;
 
 typedef struct ich_spi_controller {
 	int locked;

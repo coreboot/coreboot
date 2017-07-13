@@ -16,13 +16,14 @@
 #ifndef ELOG_INTERNAL_H_
 #define ELOG_INTERNAL_H_
 
+#include <compiler.h>
 /* ELOG header */
 struct elog_header {
 	u32 magic;
 	u8 version;
 	u8 header_size;
 	u8 reserved[2];
-} __attribute__ ((packed));
+} __packed;
 
 /* ELOG related constants */
 #define ELOG_SIGNATURE			0x474f4c45  /* 'ELOG' */
@@ -40,7 +41,7 @@ struct event_header {
 	u8 hour;
 	u8 minute;
 	u8 second;
-} __attribute__ ((packed));
+} __packed;
 
 /* SMBIOS Type 15 related constants */
 #define ELOG_HEADER_TYPE_OEM		0x88

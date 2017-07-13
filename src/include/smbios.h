@@ -19,6 +19,7 @@
 #define SMBIOS_H
 
 #include <types.h>
+#include <compiler.h>
 
 unsigned long smbios_write_tables(unsigned long start);
 int smbios_add_string(char *start, const char *str);
@@ -230,7 +231,7 @@ struct smbios_entry {
 	u32 struct_table_address;
 	u16 struct_count;
 	u8 smbios_bcd_revision;
-} __attribute__((packed));
+} __packed;
 
 struct smbios_type0 {
 	u8 type;
@@ -249,7 +250,7 @@ struct smbios_type0 {
 	u8 ec_major_release;
 	u8 ec_minor_release;
 	char eos[2];
-} __attribute__((packed));
+} __packed;
 
 struct smbios_type1 {
 	u8 type;
@@ -264,7 +265,7 @@ struct smbios_type1 {
 	u8 sku;
 	u8 family;
 	char eos[2];
-} __attribute__((packed));
+} __packed;
 
 struct smbios_type2 {
 	u8 type;
@@ -275,7 +276,7 @@ struct smbios_type2 {
 	u8 version;
 	u8 serial_number;
 	char eos[2];
-} __attribute__((packed));
+} __packed;
 
 enum {
 	SMBIOS_ENCLOSURE_OTHER = 0x01,
@@ -336,7 +337,7 @@ struct smbios_type3 {
 	u8 element_record_length;
 	u8 sku_number;
 	char eos[2];
-} __attribute__((packed));
+} __packed;
 
 struct smbios_type4 {
 	u8 type;
@@ -366,7 +367,7 @@ struct smbios_type4 {
 	u16 processor_characteristics;
 	u16 processor_family2;
 	char eos[2];
-} __attribute__((packed));
+} __packed;
 
 struct smbios_type11 {
 	u8 type;
@@ -374,7 +375,7 @@ struct smbios_type11 {
 	u16 handle;
 	u8 count;
 	char eos[2];
-} __attribute__((packed));
+} __packed;
 
 struct smbios_type15 {
 	u8 type;
@@ -391,7 +392,7 @@ struct smbios_type15 {
 	u8 log_type_descriptors;
 	u8 log_type_descriptor_length;
 	char eos[2];
-} __attribute__((packed));
+} __packed;
 
 enum {
 	SMBIOS_EVENTLOG_ACCESS_METHOD_IO8 = 0,
@@ -418,7 +419,7 @@ struct smbios_type16 {
 	u16 number_of_memory_devices;
 	u64 extended_maximum_capacity;
 	char eos[2];
-} __attribute__((packed));
+} __packed;
 
 struct smbios_type17 {
 	u8 type;
@@ -447,7 +448,7 @@ struct smbios_type17 {
 	u16 maximum_voltage;
 	u16 configured_voltage;
 	char eos[2];
-} __attribute__((packed));
+} __packed;
 
 struct smbios_type32 {
 	u8 type;
@@ -456,7 +457,7 @@ struct smbios_type32 {
 	u8 reserved[6];
 	u8 boot_status;
 	u8 eos[2];
-} __attribute__((packed));
+} __packed;
 
 struct smbios_type38 {
 	u8 type;
@@ -469,7 +470,7 @@ struct smbios_type38 {
 	u64 base_address;
 	u8 base_address_modifier;
 	u8 irq;
-} __attribute__((packed));
+} __packed;
 
 typedef enum {
 	SMBIOS_DEVICE_TYPE_OTHER = 0x01,
@@ -497,14 +498,14 @@ struct smbios_type41 {
 	u8 function_number: 3;
 	u8 device_number: 5;
 	char eos[2];
-} __attribute__((packed));
+} __packed;
 
 struct smbios_type127 {
 	u8 type;
 	u8 length;
 	u16 handle;
 	u8 eos[2];
-} __attribute__((packed));
+} __packed;
 
 void smbios_fill_dimm_manufacturer_from_id(uint16_t mod_id,
 	struct smbios_type17 *t);

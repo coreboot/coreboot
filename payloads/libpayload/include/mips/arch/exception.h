@@ -70,7 +70,7 @@ struct exception_state_t {
 		u32 ra;
 	} regs;
 	u32 vector;
-} __attribute__((packed));
+} __packed;
 
 extern struct exception_state_t *exception_state_ptr;
 extern u32 *exception_stack_end;

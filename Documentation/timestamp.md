@@ -65,7 +65,7 @@ After such a transition, timestamp_init() must not be run again.
 Data structures used
 ====================
 The main structure that maintains information about the timestamp cache is:
-struct __attribute__((__packed__)) timestamp_cache {
+struct __packed timestamp_cache {
         uint16_t cache_state;
         struct timestamp_table table;
         struct timestamp_entry entries[MAX_TIMESTAMP_CACHE];
@@ -109,7 +109,7 @@ struct timestamp_table {
         uint32_t        max_entries;
         uint32_t        num_entries;
         struct timestamp_entry entries[0]; /* Variable number of entries */
-} __attribute__((packed));
+} __packed;
 
 It indicates the base time for all timestamp entries, maximum number
 of entries that can be stored, total number of entries that currently
@@ -125,7 +125,7 @@ defined by:
 struct timestamp_entry {
         uint32_t        entry_id;
         uint64_t        entry_stamp;
-} __attribute__((packed));
+} __packed;
 
 entry_id holds the timestamp id corresponding to this entry and
 entry_stamp holds the actual timestamp.

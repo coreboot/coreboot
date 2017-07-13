@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <compiler.h>
 #include <assert.h>
 #include <cbmem.h>
 #include <console/console.h>
@@ -32,7 +33,7 @@ struct imd_root_pointer {
 	uint32_t magic;
 	/* Relative to upper limit/offset. */
 	int32_t root_offset;
-} __attribute__((packed));
+} __packed;
 
 struct imd_entry {
 	uint32_t magic;
@@ -40,7 +41,7 @@ struct imd_entry {
 	int32_t start_offset;
 	uint32_t size;
 	uint32_t id;
-} __attribute__((packed));
+} __packed;
 
 struct imd_root {
 	uint32_t max_entries;
@@ -50,7 +51,7 @@ struct imd_root {
 	/* Used for fixing the size of an imd. Relative to the root. */
 	int32_t max_offset;
 	struct imd_entry entries[0];
-} __attribute__((packed));
+} __packed;
 
 #define IMD_FLAG_LOCKED 1
 

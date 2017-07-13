@@ -9,13 +9,14 @@
  * (at your option) any later version.
  */
 
+#include <compiler.h>
 #include <console/console.h>
 #include <fsp/util.h>
 
 struct hob_type_name {
 	uint16_t type;
 	const char *name;
-} __attribute__((packed));
+} __packed;
 
 static const struct hob_type_name hob_type_names[] = {
 	{ HOB_TYPE_HANDOFF, "HOB_TYPE_HANDOFF" },

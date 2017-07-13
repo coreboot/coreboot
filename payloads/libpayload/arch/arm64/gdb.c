@@ -22,11 +22,11 @@ struct gdb_regs
 	struct fp_reg
 	{
 		u64 quad[2];
-	} __attribute__((packed)) f[32];
+	} __packed f[32];
 	u32 fpcr;
 	u32 fpsr;
 	u32 spsr;
-} __attribute__((packed));
+} __packed;
 
 static const u8 type_to_signal[] = {
 	[EXC_SYNC_SP0] = GDB_SIGTRAP,

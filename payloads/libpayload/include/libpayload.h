@@ -44,6 +44,7 @@
 #define _LIBPAYLOAD_H
 
 #include <libpayload-config.h>
+#include <compiler.h>
 #include <cbgfx.h>
 #include <ctype.h>
 #include <die.h>
@@ -361,7 +362,7 @@ long long int llabs(long long int j);
 u8 bin2hex(u8 b);
 u8 hex2bin(u8 h);
 void hexdump(const void *memory, size_t length);
-void fatal(const char *msg) __attribute__ ((noreturn));
+void fatal(const char *msg) __attribute__((noreturn));
 
 /* Count Leading Zeroes: clz(0) == 32, clz(0xf) == 28, clz(1 << 31) == 0 */
 static inline int clz(u32 x) { return x ? __builtin_clz(x) : sizeof(x) * 8; }

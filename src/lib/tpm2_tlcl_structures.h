@@ -12,6 +12,7 @@
  * constants and structures needed for functions used in coreboot.
  */
 #include <stdint.h>
+#include <compiler.h>
 #include <tpm_lite/tlcl.h>
 #include <types.h>
 
@@ -56,7 +57,7 @@ struct tpm_header {
 	uint16_t tpm_tag;
 	uint32_t tpm_size;
 	TPM_CC tpm_code;
-} __attribute__((packed));
+} __packed;
 
 /* TPM command codes. */
 #define TPM2_Hierarchy_Control ((TPM_CC)0x00000121)
@@ -318,7 +319,7 @@ struct tpm2_session_header {
 	union {
 		struct tpm2_session_attrs session_attr_bits;
 		uint8_t session_attrs;
-	}  __attribute__((packed));
+	}  __packed;
 	uint16_t auth_size;
 	uint8_t *auth;
 };

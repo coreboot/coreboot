@@ -17,6 +17,7 @@
 #ifndef _BROADWELL_NVS_H_
 #define _BROADWELL_NVS_H_
 
+#include <compiler.h>
 #include <vendorcode/google/chromeos/gnvs.h>
 #include <soc/device_nvs.h>
 
@@ -56,7 +57,7 @@ typedef struct {
 
 	/* Device specific (0x1000) */
 	device_nvs_t dev;
-} __attribute__((packed)) global_nvs_t;
+} __packed global_nvs_t;
 
 void acpi_create_gnvs(global_nvs_t *gnvs);
 #ifdef __SMM__

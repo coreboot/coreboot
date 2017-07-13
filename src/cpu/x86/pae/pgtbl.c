@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <compiler.h>
 #include <console/console.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/pae.h>
@@ -59,14 +60,14 @@ void *map_2M_page(unsigned long page)
 	struct pde {
 		uint32_t addr_lo;
 		uint32_t addr_hi;
-	} __attribute__ ((packed));
+	} __packed;
 	struct pg_table {
 		struct pde pd[2048];
 		struct pde pdp[512];
-	} __attribute__ ((packed));
+	} __packed;
 
 	static struct pg_table pgtbl[CONFIG_MAX_CPUS]
-		__attribute__ ((aligned(4096)));
+		__attribute__((aligned(4096)));
 	static unsigned long mapped_window[CONFIG_MAX_CPUS];
 	unsigned long index;
 	unsigned long window;

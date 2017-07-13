@@ -24,6 +24,7 @@
 #ifndef _SOC_APOLLOLAKE_NVS_H_
 #define _SOC_APOLLOLAKE_NVS_H_
 
+#include <compiler.h>
 #include <vendorcode/google/chromeos/gnvs.h>
 
 typedef struct global_nvs_t {
@@ -45,6 +46,6 @@ typedef struct global_nvs_t {
 
 	/* ChromeOS specific (0x100 - 0xfff) */
 	chromeos_acpi_t chromeos;
-} __attribute__((packed)) global_nvs_t;
+} __packed global_nvs_t;
 
 #endif	/* _SOC_APOLLOLAKE_NVS_H_ */

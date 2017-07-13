@@ -17,6 +17,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <compiler.h>
 
 enum {
 	EMC_PIN_RESET_MASK = 1 << 8,
@@ -465,7 +466,7 @@ struct tegra_emc_regs {
 	uint32_t pmacro_ib_rxrt;		/* 0xCF4 */
 	uint32_t pmacro_training_ctrl0;		/* 0xCF8 */
 	uint32_t pmacro_training_ctrl1;		/* 0xCFC */
-} __attribute__((packed));
+} __packed;
 
 check_member(tegra_emc_regs, pmacro_training_ctrl1, 0xCFC);
 

@@ -14,6 +14,7 @@
 
 #include <arch/early_variables.h>
 #include <stdint.h>
+#include <compiler.h>
 #include <string.h>
 #include <assert.h>
 #include <commonlib/endian.h>
@@ -33,7 +34,7 @@ struct tpm_output_header {
 	uint16_t tag;
 	uint32_t length;
 	uint32_t return_code;
-} __attribute__ ((packed));
+} __packed;
 
 int tis_open(void)
 {

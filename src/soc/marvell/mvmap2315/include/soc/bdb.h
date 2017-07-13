@@ -17,6 +17,7 @@
 #define __SOC_MARVELL_MVMAP2315_BDB_H__
 
 #include <stdint.h>
+#include <compiler.h>
 
 #define MVMAP2315_BDB_LCM_BASE		0xE0000000
 
@@ -41,7 +42,7 @@ struct bdb_header {
 	u32 signed_size;
 	u32 oem_area_0_size;
 	u8 reserved0[8];
-} __attribute__ ((packed));
+} __packed;
 
 struct bdb_key {
 	u32 struct_magic;
@@ -54,7 +55,7 @@ struct bdb_key {
 	u32 key_version;
 	char description[128];
 	u8 key_data[];
-} __attribute__ ((packed));
+} __packed;
 
 struct bdb_sig {
 	u32 struct_magic;
@@ -67,7 +68,7 @@ struct bdb_sig {
 	u32 signed_size;
 	char description[128];
 	u8 sig_SOC_MARVELL_MVMAP2315_data[];
-} __attribute__ ((packed));
+} __packed;
 
 struct bdb_data {
 	u32 struct_magic;
@@ -82,7 +83,7 @@ struct bdb_data {
 	u32 signed_size;
 	u8 reserved1[8];
 	char description[128];
-} __attribute__ ((packed));
+} __packed;
 
 struct bdb_hash {
 	u64 offset;
@@ -92,7 +93,7 @@ struct bdb_hash {
 	u8 reserved0[2];
 	u64 load_address;
 	u8 digest[32];
-} __attribute__ ((packed));
+} __packed;
 
 struct bdb_pointer {
 	struct bdb_header *bdb_h;
@@ -104,7 +105,7 @@ struct bdb_pointer {
 	u8 *oem_1;
 	struct bdb_hash *bdb_hash;
 	struct bdb_sig *bdb_s;
-} __attribute__ ((packed));
+} __packed;
 
 void set_bdb_pointers(u8 *start_addr, struct bdb_pointer *bdb_in);
 struct bdb_hash *find_bdb_image(struct bdb_pointer *bdb_info, u32 image_type);

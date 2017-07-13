@@ -16,6 +16,7 @@
 #define __CPU_TI_AM335X_CLOCK_H__
 
 #include <stdint.h>
+#include <compiler.h>
 
 enum {
 	CM_ST_NO_SLEEP = 0x0,
@@ -106,7 +107,7 @@ struct am335x_cm_per_regs {
 	uint32_t lcdc_st;		// 0x148
 	uint32_t clkdiv32k;		// 0x14c
 	uint32_t clk_24mhz_st;		// 0x150
-} __attribute__((packed));
+} __packed;
 static struct am335x_cm_per_regs * const am335x_cm_per = (void *)0x44e00000;
 
 /* Clock module wakeup registers */
@@ -166,7 +167,7 @@ struct am335x_cm_wkup_regs {
 	uint8_t _rsv0[4];		// 0xd0-0xd3
 	uint32_t wkup_wdt1;		// 0xd4
 	uint32_t div_m6_dpll_core;	// 0xd8
-} __attribute__((packed));
+} __packed;
 static struct am335x_cm_wkup_regs * const am335x_cm_wkup = (void *)0x44e00400;
 
 /* Clock module pll registers */
@@ -187,20 +188,20 @@ struct am335x_cm_dpll_regs {
 	uint32_t clksel_lcdc_pixel_clk;	// 0x34
 	uint32_t clksel_wdt1_clk;	// 0x38
 	uint32_t clksel_gpio0_dbclk;	// 0x3c
-} __attribute__((packed));
+} __packed;
 static struct am335x_cm_dpll_regs * const am335x_cm_dpll = (void *)0x44e00500;
 
 /* Clock module mpu registers */
 struct am335x_cm_mpu_regs {
 	uint32_t st;			// 0x0
 	uint32_t mpu;			// 0x4
-} __attribute__((packed));
+} __packed;
 static struct am335x_cm_mpu_regs * const am335x_cm_mpu = (void *)0x44e00600;
 
 /* Clock module device registers */
 struct am335x_cm_device_regs {
 	uint32_t cm_clkout_ctrl;	// 0x0
-} __attribute__((packed));
+} __packed;
 static struct am335x_cm_device_regs * const am335x_cm_device =
 		(void *)0x44e00700;
 
@@ -208,7 +209,7 @@ static struct am335x_cm_device_regs * const am335x_cm_device =
 struct am335x_cm_rtc_regs {
 	uint32_t rtc;			// 0x0
 	uint32_t st;			// 0x4
-} __attribute__((packed));
+} __packed;
 static struct am335x_cm_rtc_regs * const am335x_cm_rtc = (void *)0x44e00800;
 
 /* Clock module graphics controller registers */
@@ -219,7 +220,7 @@ struct am335x_cm_gfx_regs {
 	uint32_t l4ls_gfx_st;		// 0xc
 	uint32_t mmucfg;		// 0x10
 	uint32_t mmudata;		// 0x14
-} __attribute__((packed));
+} __packed;
 static struct am335x_cm_gfx_regs * const am335x_cm_gfx = (void *)0x44e00900;
 
 /* Clock module efuse registers */
@@ -227,7 +228,7 @@ struct am335x_cm_cefuse_regs {
 	uint32_t st;			// 0x0
 	uint8_t _rsv0[0x1c];		// 0x4-0x1f
 	uint32_t cefuse;		// 0x20
-} __attribute__((packed));
+} __packed;
 static struct am335x_cm_cefuse_regs * const am335x_cm_cefuse =
 		(void *)0x44e00a00;
 

@@ -16,6 +16,7 @@
 #ifndef PTN3460_H_
 #define PTN3460_H_
 
+#include <compiler.h>
 #include <delay.h>
 #include "lcd_panel.h"
 
@@ -56,13 +57,13 @@ struct ptn_3460_config{
 	u8	t2_delay;		/* Panel T2 delay */
 	u8	t4_timing;		/* Panel T4 timing value */
 	u8	t5_delay;		/* Panel T5 delay */
-}__attribute__((packed));
+} __packed;
 
 struct ptn_3460_flash{
 	u8	cmd;			/* Flash command (erase or erase and flash) */
 	u16	magic;			/* Magic number needed by the flash algorithm */
 	u8	trigger;		/* Trigger for starting flash operation */
-}__attribute__((packed));
+} __packed;
 
 
 int ptn3460_init(char *hwi_block);

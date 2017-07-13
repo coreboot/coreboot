@@ -19,6 +19,7 @@
 #define _SOC_APOLLOLAKE_PM_H_
 
 #include <stdint.h>
+#include <compiler.h>
 #include <arch/acpi.h>
 
 /* ACPI_BASE_ADDRESS */
@@ -201,7 +202,7 @@ struct chipset_power_state {
 	uint32_t gen_pmcon2;
 	uint32_t gen_pmcon3;
 	uint32_t prev_sleep_state;
-} __attribute__((packed));
+} __packed;
 
 int fill_power_state(struct chipset_power_state *ps);
 int chipset_prev_sleep_state(struct chipset_power_state *ps);

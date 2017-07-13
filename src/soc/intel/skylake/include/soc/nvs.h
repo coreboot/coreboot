@@ -19,6 +19,7 @@
 #define _SOC_NVS_H_
 
 #include <rules.h>
+#include <compiler.h>
 #include <vendorcode/google/chromeos/gnvs.h>
 
 typedef struct {
@@ -60,7 +61,7 @@ typedef struct {
 
 	/* ChromeOS specific (0x100 - 0xfff) */
 	chromeos_acpi_t chromeos;
-} __attribute__((packed)) global_nvs_t;
+} __packed global_nvs_t;
 
 #if ENV_SMM
 /* Used in SMM to find the ACPI GNVS address */

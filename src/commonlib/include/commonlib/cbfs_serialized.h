@@ -48,6 +48,7 @@
 #define _CBFS_SERIALIZED_H_
 
 #include <stdint.h>
+#include <compiler.h>
 
 /** These are standard values for the known compression
     algorithms that coreboot knows about for stages and
@@ -101,7 +102,7 @@ struct cbfs_header {
 	uint32_t offset;
 	uint32_t architecture;
 	uint32_t pad[1];
-} __attribute__((packed));
+} __packed;
 
 /* this used to be flexible, but wasn't ever set to something different. */
 #define CBFS_ALIGNMENT 64
@@ -136,7 +137,7 @@ struct cbfs_file {
 	uint32_t type;
 	uint32_t attributes_offset;
 	uint32_t offset;
-} __attribute__((packed));
+} __packed;
 
 /* The common fields of extended cbfs file attributes.
    Attributes are expected to start with tag/len, then append their
@@ -146,7 +147,7 @@ struct cbfs_file_attribute {
 	/* len covers the whole structure, incl. tag and len */
 	uint32_t len;
 	uint8_t data[0];
-} __attribute__((packed));
+} __packed;
 
 /* Depending on how the header was initialized, it may be backed with 0x00 or
  * 0xff. Support both. */
@@ -163,7 +164,7 @@ struct cbfs_file_attr_compression {
 	/* whole file compression format. 0 if no compression. */
 	uint32_t compression;
 	uint32_t decompressed_size;
-} __attribute__((packed));
+} __packed;
 
 struct cbfs_file_attr_hash {
 	uint32_t tag;
@@ -171,19 +172,19 @@ struct cbfs_file_attr_hash {
 	uint32_t hash_type;
 	/* hash_data is len - sizeof(struct) bytes */
 	uint8_t  hash_data[];
-} __attribute__((packed));
+} __packed;
 
 struct cbfs_file_attr_position {
 	uint32_t tag;
 	uint32_t len;
 	uint32_t position;
-} __attribute__((packed));
+} __packed;
 
 struct cbfs_file_attr_align {
 	uint32_t tag;
 	uint32_t len;
 	uint32_t alignment;
-} __attribute__((packed));
+} __packed;
 
 /*
  * ROMCC does not understand uint64_t, so we hide future definitions as they are
@@ -205,7 +206,7 @@ struct cbfs_stage {
 	uint64_t load;   /** Where to load in memory */
 	uint32_t len;          /** length of data to load */
 	uint32_t memlen;	   /** total length of object in memory */
-} __attribute__((packed));
+} __packed;
 
 /** this is the sub-header for payload components.  Payloads
     are loaded by coreboot at the end of the boot process */
@@ -217,7 +218,7 @@ struct cbfs_payload_segment {
 	uint64_t load_addr;
 	uint32_t len;
 	uint32_t mem_len;
-} __attribute__((packed));
+} __packed;
 
 struct cbfs_payload {
 	struct cbfs_payload_segment segments;
@@ -232,7 +233,7 @@ struct cbfs_payload {
 struct cbfs_optionrom {
 	uint32_t compression;
 	uint32_t len;
-} __attribute__((packed));
+} __packed;
 
 #endif /* __ROMCC__ */
 

@@ -16,6 +16,7 @@
 
 #include <console/console.h>
 #include <stdint.h>
+#include <compiler.h>
 #include <rmodule.h>
 #include <arch/cpu.h>
 #include <cpu/cpu.h>
@@ -103,14 +104,14 @@ struct sipi_params {
 	uint32_t msr_count;
 	uint32_t c_handler;
 	atomic_t ap_count;
-} __attribute__((packed));
+} __packed;
 
 /* This also needs to match the assembly code for saved MSR encoding. */
 struct saved_msr {
 	uint32_t index;
 	uint32_t lo;
 	uint32_t hi;
-} __attribute__((packed));
+} __packed;
 
 
 /* The sipi vector rmodule is included in the ramstage using 'objdump -B'. */

@@ -152,7 +152,7 @@ struct cbfs_header {
         u32 offset;
         u32 architecture;
         u32 pad[1];
-} __attribute__((packed));
+} __packed;
 
 The meaning of each member is as follows:
 

@@ -13,6 +13,7 @@
  */
 
 #include <stdint.h>
+#include <compiler.h>
 
 /* Function unit addresses. */
 enum {
@@ -642,7 +643,7 @@ struct lp0_header {
 	uint32_t destination;		// Where to load the blob in iRAM.
 	uint32_t entry_point;		// Entry point for the blob.
 	uint32_t code_length;		// Length of just the data.
-} __attribute__((packed));
+} __packed;
 
 struct lp0_header header __attribute__((section(".header"))) =
 {

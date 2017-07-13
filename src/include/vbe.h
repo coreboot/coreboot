@@ -13,6 +13,7 @@
 #ifndef VBE_H
 #define VBE_H
 
+#include <compiler.h>
 #include <boot/coreboot_tables.h>
 // these structs are for input from and output to OF
 typedef struct {
@@ -24,7 +25,7 @@ typedef struct {
 	u8 color_depth;	// color depth in bits per pixel
 	u32 framebuffer_address;
 	u8 edid_block_zero[128];
-} __attribute__ ((__packed__)) screen_info_t;
+} __packed screen_info_t;
 
 typedef struct {
 	u8 signature[4];
@@ -32,7 +33,7 @@ typedef struct {
 	u8 monitor_number;
 	u16 max_screen_width;
 	u8 color_depth;
-} __attribute__ ((__packed__)) screen_info_input_t;
+} __packed screen_info_input_t;
 
 // these structs only store a subset of the VBE defined fields
 // only those needed.
@@ -80,7 +81,7 @@ typedef struct {
 	u32 offscreen_mem_offset;
 	u16 offscreen_mem_size;
 	u8 reserved[206];
-} __attribute__ ((__packed__)) vesa_mode_info_t;
+} __packed vesa_mode_info_t;
 
 typedef struct {
 	u16 video_mode;

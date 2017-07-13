@@ -214,8 +214,8 @@ void srand(unsigned int seed);
 /**
  * Stop execution and halt the processor (this function does not return).
  */
-void halt(void) __attribute__ ((noreturn));
-void exit(int status) __attribute__ ((noreturn));
+void halt(void) __attribute__((noreturn));
+void exit(int status) __attribute__((noreturn));
 #define abort() halt()    /**< Alias for the halt() function */
 #if IS_ENABLED(CONFIG_LP_REMOTEGDB)
 /* Override abort()/halt() to trap into GDB if it is enabled. */

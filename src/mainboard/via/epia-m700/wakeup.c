@@ -26,6 +26,7 @@
  * acpi_jump_wake().
  */
 
+#include <compiler.h>
 #include <stdint.h>
 #include <string.h>
 #include <arch/io.h>
@@ -52,9 +53,9 @@ static unsigned long long real_mode_gdt_entries[3] = {
 
 struct Xgt_desc_struct {
 	unsigned short size;
-	unsigned long address __attribute__ ((packed));
+	unsigned long address __packed;
 	unsigned short pad;
-} __attribute__ ((packed));
+} __packed;
 
 static struct Xgt_desc_struct real_mode_gdt = {
 	sizeof(real_mode_gdt_entries) - 1,

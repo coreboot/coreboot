@@ -16,6 +16,8 @@
 #ifndef RAMINIT_H
 #define RAMINIT_H
 
+#include <compiler.h>
+
 /**
  * Bit Equates
  **/
@@ -171,7 +173,7 @@ struct sys_info {
 	u8 ram_param_source;    /*DRAM Parameter Source SPD/SoftStraps(R) Block (down memory) */
 	u8 boot_path;
 
-} __attribute__ ((packed));
+} __packed;
 
 void sdram_initialize(int boot_mode);
 

@@ -29,6 +29,7 @@
 
 #include <stdlib.h>
 #include <stdint.h>
+#include <compiler.h>
 #include <delay.h>
 #include <console/console.h>
 #include <soc/clock.h>
@@ -43,11 +44,11 @@ typedef struct {
 	void *lcc_pll_regs;
 } Ipq806xLccClocks;
 
-typedef struct __attribute__((packed)) {
+typedef struct __packed {
 	uint32_t apcs;
 } Ipq806xLccGccRegs;
 
-typedef struct __attribute__((packed)) {
+typedef struct __packed {
 	uint32_t mode;
 	uint32_t l_val;
 	uint32_t m_val;
@@ -57,20 +58,20 @@ typedef struct __attribute__((packed)) {
 	uint32_t status;
 } Ipq806xLccPll0Regs;
 
-typedef struct __attribute__((packed)) {
+typedef struct __packed {
 	uint32_t ns;
 	uint32_t md;
 	uint32_t UNUSED;
 	uint32_t status;
 } Ipq806xLccAhbixRegs;
 
-typedef struct __attribute__((packed)) {
+typedef struct __packed {
 	uint32_t ns;
 	uint32_t md;
 	uint32_t status;
 } Ipq806xLccMi2sRegs;
 
-typedef struct __attribute__((packed)) {
+typedef struct __packed {
 	uint32_t pri;
 	uint32_t sec;
 } Ipq806xLccPllRegs;

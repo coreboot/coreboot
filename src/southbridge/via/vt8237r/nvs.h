@@ -13,6 +13,8 @@
  * GNU General Public License for more details.
  */
 
+#include <compiler.h>
+
 typedef struct {
 	/* Miscellaneous */
 	u16	osys; /* 0x00 - Operating System */
@@ -38,4 +40,4 @@ typedef struct {
 	u8	pcp0; /* 0x2a - PDC CPU/CORE 0 */
 	u8	pcp1; /* 0x2b - PDC CPU/CORE 1 */
 	u8	ppcm; /* 0x2c - Max. PPC state */
-} __attribute__((packed)) global_nvs_t;
+} __packed global_nvs_t;

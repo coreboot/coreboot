@@ -48,6 +48,7 @@
 #include <timestamp.h>
 #include <timer.h>
 #include <delay.h>
+#include <compiler.h>
 #include "chip.h"
 
 static struct chipset_power_state power_state CAR_GLOBAL;
@@ -372,13 +373,13 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	car_set_var(fsp_version, version);
 }
 
-__attribute__ ((weak))
+__attribute__((weak))
 void mainboard_memory_init_params(FSPM_UPD *mupd)
 {
 	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
 }
 
-__attribute__ ((weak))
+__attribute__((weak))
 void mainboard_save_dimm_info(void)
 {
 	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);

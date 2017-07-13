@@ -57,7 +57,7 @@ struct tpm_inf_dev {
 
 static struct tpm_inf_dev g_tpm_dev CAR_GLOBAL;
 
-__attribute__ ((weak)) int tis_plat_irq_status(void)
+__attribute__((weak)) int tis_plat_irq_status(void)
 {
 	static int warning_displayed CAR_GLOBAL;
 

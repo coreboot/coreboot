@@ -15,6 +15,7 @@
 
 #include <types.h>
 #include <string.h>
+#include <compiler.h>
 #include <cbmem.h>
 #include <console/console.h>
 #include <cpu/x86/gdt.h>
@@ -27,7 +28,7 @@ struct gdtarg {
 #else
 	u32 base;
 #endif
-} __attribute__((packed));
+} __packed;
 
 /* Copy GDT to new location and reload it.
  * FIXME: We only do this for BSP CPU.

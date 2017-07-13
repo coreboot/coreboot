@@ -9,6 +9,7 @@
 #ifndef __LIB_VPD_TABLES_H__
 #define __LIB_VPD_TABLES_H__
 
+#include <compiler.h>
 #include <inttypes.h>
 
 #define VPD_ENTRY_MAGIC    "_SM_"
@@ -32,7 +33,7 @@ struct google_vpd_info {
     uint8_t magic[12];
   } header;
   uint32_t size;
-} __attribute__((packed));
+} __packed;
 
 /* Entry */
 struct vpd_entry {
@@ -50,14 +51,14 @@ struct vpd_entry {
   uint32_t table_address;
   uint16_t table_entry_count;
   uint8_t bcd_revision;
-} __attribute__ ((packed));
+} __packed;
 
 /* Header */
 struct vpd_header {
   uint8_t type;
   uint8_t length;
   uint16_t handle;
-} __attribute__ ((packed));
+} __packed;
 
 /* Type 0 - firmware information */
 struct vpd_table_firmware {
@@ -72,7 +73,7 @@ struct vpd_table_firmware {
   uint8_t minor_ver;     /* v2.4+ */
   uint8_t ec_major_ver;  /* v2.4+ */
   uint8_t ec_minor_ver;  /* v2.4+ */
-} __attribute__ ((packed));
+} __packed;
 
 /* Type 1 - system information */
 struct vpd_table_system {
@@ -84,12 +85,12 @@ struct vpd_table_system {
   uint8_t wakeup_type;
   uint8_t sku_number;  /* v2.4+ */
   uint8_t family;      /* v2.4+ */
-} __attribute__ ((packed));
+} __packed;
 
 /* Type 127 - end of table */
 struct vpd_table_eot {
   struct vpd_header header;
-} __attribute__ ((packed));
+} __packed;
 
 /* Type 241 - binary blob pointer */
 struct vpd_table_binary_blob_pointer {
@@ -104,7 +105,7 @@ struct vpd_table_binary_blob_pointer {
   uint8_t uuid[16];
   uint32_t offset;
   uint32_t size;
-} __attribute__ ((packed));
+} __packed;
 
 /* The length and number of strings defined here is not a limitation of VPD.
  * These numbers were deemed good enough during development. */

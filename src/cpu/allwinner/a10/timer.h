@@ -23,6 +23,7 @@
 
 #include "memmap.h"
 #include <types.h>
+#include <compiler.h>
 
 /* TMRx_CTRL values */
 #define TIMER_CTRL_MODE_SINGLE		(1 << 7)
@@ -48,7 +49,7 @@ struct a1x_timer {
 	u32 interval;
 	u32 val;
 	u8 res[4];
-} __attribute__ ((packed));
+} __packed;
 
 /* Audio video sync*/
 struct a1x_avs {
@@ -56,27 +57,27 @@ struct a1x_avs {
 	u32 cnt0;		/* 0x84 */
 	u32 cnt1;		/* 0x88 */
 	u32 div;		/* 0x8c */
-} __attribute__ ((packed));
+} __packed;
 
 /* Watchdog */
 struct a1x_wdog {
 	u32 ctrl;		/* 0x90 */
 	u32 mode;		/* 0x94 */
-} __attribute__ ((packed));
+} __packed;
 
 /* 64 bit counter */
 struct a1x_64cnt {
 	u32 ctrl;		/* 0xa0 */
 	u32 lo;			/* 0xa4 */
 	u32 hi;			/* 0xa8 */
-} __attribute__ ((packed));
+} __packed;
 
 /* Rtc */
 struct a1x_rtc {
 	u32 ctrl;		/* 0x100 */
 	u32 yymmdd;		/* 0x104 */
 	u32 hhmmss;		/* 0x108 */
-} __attribute__ ((packed));
+} __packed;
 
 /* Alarm */
 struct a1x_alarm {
@@ -85,7 +86,7 @@ struct a1x_alarm {
 	u32 en;			/* 0x114 */
 	u32 irq_en;		/* 0x118 */
 	u32 irq_sta;		/* 0x11c */
-} __attribute__ ((packed));
+} __packed;
 
 struct a1x_timer_module {
 	u32 irq_en;		/* 0x00 */
@@ -103,7 +104,7 @@ struct a1x_timer_module {
 	u32 gp_data[4];
 	u8 res5[8];
 	u32 cpu_cfg;
-} __attribute__ ((packed));
+} __packed;
 
 u8 a1x_get_cpu_chip_revision(void);
 

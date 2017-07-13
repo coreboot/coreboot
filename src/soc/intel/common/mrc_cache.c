@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <compiler.h>
 #include <string.h>
 #include <boot_device.h>
 #include <bootstate.h>
@@ -40,7 +41,7 @@ struct mrc_metadata {
 	uint16_t data_checksum;
 	uint16_t header_checksum;
 	uint32_t version;
-} __attribute__((packed));
+} __packed;
 
 enum result {
 	UPDATE_FAILURE		= -1,

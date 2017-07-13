@@ -67,13 +67,13 @@ typedef struct {
 
 	u32 bufptr;
 
-} __attribute__ ((packed))
+} __packed
      td_t;
 
      typedef struct {
 	     flistp_t headlinkptr;
 	     volatile flistp_t elementlinkptr;
-     } __attribute__ ((packed))
+     } __packed
      qh_t;
 
      typedef enum { USBCMD = 0, USBSTS = 2, USBINTR = 4, FRNUM =

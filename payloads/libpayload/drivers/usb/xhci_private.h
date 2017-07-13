@@ -165,7 +165,7 @@ typedef struct {
 	trb_t *ring;
 	trb_t *cur;
 	u8 pcs;
-} __attribute__ ((packed)) transfer_ring_t;
+} __packed transfer_ring_t;
 
 #define COMMAND_RING_SIZE 4
 typedef transfer_ring_t command_ring_t;
@@ -332,8 +332,8 @@ typedef struct xhci {
 			struct {
 				u8 hciver_lo;
 				u8 hciver_hi;
-			} __attribute__ ((packed));
-		} __attribute__ ((packed));
+			} __packed;
+		} __packed;
 		union {
 			u32 hcsparams1;
 			struct {
@@ -341,8 +341,8 @@ typedef struct xhci {
 				unsigned long MaxIntrs:11;
 				unsigned long:6;
 				unsigned long MaxPorts:8;
-			} __attribute__ ((packed));
-		} __attribute__ ((packed));
+			} __packed;
+		} __packed;
 		union {
 			u32 hcsparams2;
 			struct {
@@ -352,16 +352,16 @@ typedef struct xhci {
 				unsigned long Max_Scratchpad_Bufs_Hi:5;
 				unsigned long SPR:1;
 				unsigned long Max_Scratchpad_Bufs_Lo:5;
-			} __attribute__ ((packed));
-		} __attribute__ ((packed));
+			} __packed;
+		} __packed;
 		union {
 			u32 hcsparams3;
 			struct {
 				unsigned long u1latency:8;
 				unsigned long:8;
 				unsigned long u2latency:16;
-			} __attribute__ ((packed));
-		} __attribute__ ((packed));
+			} __packed;
+		} __packed;
 		union {
 			u32 hccparams;
 			struct {
@@ -376,11 +376,11 @@ typedef struct xhci {
 				unsigned long:4;
 				unsigned long MaxPSASize:4;
 				unsigned long xECP:16;
-			} __attribute__ ((packed));
-		} __attribute__ ((packed));
+			} __packed;
+		} __packed;
 		u32 dboff;
 		u32 rtsoff;
-	} __attribute__ ((packed)) *capreg;
+	} __packed *capreg;
 
 	/* opreg is R/W is most places, so volatile access is necessary.
 	   volatile means that the compiler seeks byte writes if possible,
@@ -446,8 +446,8 @@ typedef struct xhci {
 			u32 portpmsc;
 			u32 portli;
 			u32 res;
-		} __attribute__ ((packed)) prs[];
-	} __attribute__ ((packed)) *opreg;
+		} __packed prs[];
+	} __packed *opreg;
 
 	/* R/W, volatile, MMIO -> no bitfields */
 	volatile struct hcrreg {
@@ -462,8 +462,8 @@ typedef struct xhci {
 			u32 erstba_hi;
 			u32 erdp_lo;
 			u32 erdp_hi;
-		} __attribute__ ((packed)) intrrs[]; // up to 1024, but maximum host specific, given in capreg->MaxIntrs
-	} __attribute__ ((packed)) *hcrreg;
+		} __packed intrrs[]; // up to 1024, but maximum host specific, given in capreg->MaxIntrs
+	} __packed *hcrreg;
 
 	/* R/W, volatile, MMIO -> no bitfields */
 	volatile u32 *dbreg;

@@ -243,11 +243,11 @@
   #define CONST const
   #define ROMDATA
   #define CALLCONV
-  #define _16BYTE_ALIGN __attribute__ ((aligned (16)))
-  #define _8BYTE_ALIGN __attribute__ ((aligned (8)))
-  #define _4BYTE_ALIGN __attribute__ ((aligned (4)))
-  #define _2BYTE_ALIGN __attribute__ ((aligned (2)))
-  #define _1BYTE_ALIGN __attribute__ ((aligned (1)))
+  #define _16BYTE_ALIGN __attribute__((aligned (16)))
+  #define _8BYTE_ALIGN __attribute__((aligned (8)))
+  #define _4BYTE_ALIGN __attribute__((aligned (4)))
+  #define _2BYTE_ALIGN __attribute__((aligned (2)))
+  #define _1BYTE_ALIGN __attribute__((aligned (1)))
 
   typedef uintptr_t      UINTN;
   typedef int64_t        INT64;

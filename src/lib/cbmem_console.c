@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <compiler.h>
 #include <console/console.h>
 #include <console/cbmem_console.h>
 #include <console/uart.h>
@@ -43,7 +44,7 @@ struct cbmem_console {
 	u32 size;
 	u32 cursor;
 	u8  body[0];
-}  __attribute__ ((__packed__));
+}  __packed;
 
 #define MAX_SIZE (1 << 28)	/* can't be changed without breaking readers! */
 #define CURSOR_MASK (MAX_SIZE - 1)	/* bits 31-28 are reserved for flags */

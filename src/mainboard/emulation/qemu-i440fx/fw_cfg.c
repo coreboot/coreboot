@@ -11,6 +11,7 @@
  * GNU General Public License for more details.
  */
 
+#include <compiler.h>
 #include <string.h>
 #include <swab.h>
 #include <smbios.h>
@@ -186,7 +187,7 @@ struct BiosLinkerLoaderEntry {
 		/* padding */
 		char pad[124];
 	};
-} __attribute__((packed));
+} __packed;
 typedef struct BiosLinkerLoaderEntry BiosLinkerLoaderEntry;
 
 enum {

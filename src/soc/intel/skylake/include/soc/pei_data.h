@@ -31,6 +31,7 @@
 #define _PEI_DATA_H_
 
 #include <types.h>
+#include <compiler.h>
 
 #define PEI_VERSION 22
 
@@ -92,7 +93,7 @@ struct pei_data {
 	void *data_to_save;
 	int data_to_save_size;
 	int mem_cfg_id;
-} __attribute__((packed));
+} __packed;
 
 typedef struct pei_data PEI_DATA;
 

@@ -18,6 +18,7 @@
 
 #include <rules.h>
 #include <stdint.h>
+#include <compiler.h>
 
 void spiconsole_init(void);
 void spiconsole_tx_byte(unsigned char c);
@@ -59,12 +60,12 @@ struct em100_msg_header {
 	uint32_t	msg_signature;
 	uint8_t		msg_type;
 	uint8_t		msg_length;
-} __attribute__ ((packed));
+} __packed;
 
 struct em100_msg {
 	struct em100_msg_header header;
 	char data[MAX_MSG_LENGTH];
-} __attribute__ ((packed));
+} __packed;
 
 
 

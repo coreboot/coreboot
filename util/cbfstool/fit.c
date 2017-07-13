@@ -17,6 +17,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <compiler.h>
 
 #include "fit.h"
 
@@ -37,12 +38,12 @@ struct fit_entry {
 	uint16_t version;
 	uint8_t  type_checksum_valid;
 	uint8_t  checksum;
-} __attribute__ ((packed));
+} __packed;
 
 struct fit_table {
 	struct fit_entry header;
 	struct fit_entry entries[];
-} __attribute__ ((packed));
+} __packed;
 
 struct microcode_header {
 	uint32_t version;
@@ -55,7 +56,7 @@ struct microcode_header {
 	uint32_t data_size;
 	uint32_t total_size;
 	uint8_t  reserved[12];
-} __attribute__ ((packed));
+} __packed;
 
 struct microcode_entry {
 	int offset;

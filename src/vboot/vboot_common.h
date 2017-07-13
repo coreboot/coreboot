@@ -17,6 +17,7 @@
 
 #include <commonlib/region.h>
 #include <stdint.h>
+#include <compiler.h>
 #include <vboot_api.h>
 #include <vboot_struct.h>
 
@@ -42,7 +43,7 @@ struct vboot_handoff {
 	VbInitParams init_params;
 	uint32_t selected_firmware;
 	char shared_data[VB_SHARED_DATA_MIN_SIZE];
-} __attribute__((packed));
+} __packed;
 
 /*
  * vboot_get_handoff_info returns pointer to the vboot_handoff structure if

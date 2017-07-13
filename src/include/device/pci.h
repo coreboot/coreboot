@@ -57,7 +57,7 @@ struct pci_driver {
 	const unsigned short *devices;
 };
 
-#define __pci_driver __attribute__ ((used, __section__(".rodata.pci_driver")))
+#define __pci_driver __attribute__((used, __section__(".rodata.pci_driver")))
 /** start of compile time generated pci driver array */
 extern struct pci_driver _pci_drivers[];
 /** end of compile time generated pci driver array */

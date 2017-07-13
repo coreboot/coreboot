@@ -17,6 +17,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include <compiler.h>
 
 #define RMODULE_MAGIC 0xf8fe
 #define RMODULE_VERSION_1 1
@@ -54,6 +55,6 @@ struct rmodule_header {
 	uint32_t bss_end;
 	/* Add some room for growth. */
 	uint32_t padding[4];
-} __attribute__ ((packed));
+} __packed;
 
 #endif /* RMODULE_DEFS_H */

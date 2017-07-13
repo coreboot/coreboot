@@ -17,6 +17,7 @@
 #define _BAYTRAIL_GPIO_H_
 
 #include <stdint.h>
+#include <compiler.h>
 #include <arch/io.h>
 #include <soc/iomap.h>
 
@@ -328,7 +329,7 @@ struct soc_gpio_map {
 	u32 smi     : 1;
 	u32 is_gpio : 1;
 	u32 sci     : 1;
-} __attribute__ ((packed));
+} __packed;
 
 struct soc_gpio_config {
 	const struct soc_gpio_map *ncore;

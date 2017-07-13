@@ -20,6 +20,7 @@
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
 #include <stdint.h>
+#include <compiler.h>
 #include <stdlib.h>
 #include <string.h>
 #include <soc/iomap.h>
@@ -650,7 +651,7 @@ static int send_heci_reset_message(void)
 		u8 command;
 		u8 reserved;
 		u8 result;
-	} __attribute__ ((packed)) reply;
+	} __packed reply;
 	struct reset_message {
 		u8 group_id;
 		u8 cmd;
@@ -658,7 +659,7 @@ static int send_heci_reset_message(void)
 		u8 result;
 		u8 req_origin;
 		u8 reset_type;
-	} __attribute__ ((packed));
+	} __packed;
 	struct reset_message msg = {
 		.cmd = MKHI_GLOBAL_RESET,
 		.req_origin = GR_ORIGIN_BIOS_POST,

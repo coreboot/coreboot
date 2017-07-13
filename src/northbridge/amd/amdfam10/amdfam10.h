@@ -18,6 +18,7 @@
 #define AMDFAM10_H
 
 #include <inttypes.h>
+#include <compiler.h>
 #include <arch/io.h>
 #include <device/device.h>
 #include "early_ht.h"
@@ -934,14 +935,14 @@ struct link_pair_t {
 	u8 nodeid;
 	u8 linkn;
 	u8 rsv;
-} __attribute__((packed));
+} __packed;
 
 struct nodes_info_t {
 	u32 nodes_in_group; // could be 2, 3, 4, 5, 6, 7, 8
 	u32 groups_in_plane; // could be 1, 2, 3, 4, 5
 	u32 planes; // could be 1, 2
 	u32 up_planes; // down planes will be [up_planes, planes)
-} __attribute__((packed));
+} __packed;
 
 struct ht_link_config {
 	uint32_t ht_speed_limit; // Speed in MHz; 0 for autodetect (default)
@@ -977,7 +978,7 @@ struct sys_info {
 
 	struct MCTStatStruc MCTstat;
 	struct DCTStatStruc DCTstatA[NODE_NUMS];
-} __attribute__((packed));
+} __packed;
 
 
 /*

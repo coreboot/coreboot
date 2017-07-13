@@ -17,6 +17,8 @@
 #ifndef _INTEL_ME_H
 #define _INTEL_ME_H
 
+#include <compiler.h>
+
 #define ME_RETRY		100000	/* 1 second */
 #define ME_DELAY		10	/* 10 us */
 
@@ -75,7 +77,7 @@ struct me_hfs {
 	u32 boot_options_present: 1;
 	u32 ack_data: 3;
 	u32 bios_msg_ack: 4;
-} __attribute__ ((packed));
+} __packed;
 
 #define PCI_ME_UMA		0x44
 
@@ -85,7 +87,7 @@ struct me_uma {
 	u32 valid: 1;
 	u32 reserved_0: 14;
 	u32 set_to_one: 1;
-} __attribute__ ((packed));
+} __packed;
 
 #define PCI_ME_H_GS		0x4c
 #define  ME_INIT_DONE		1
@@ -98,7 +100,7 @@ struct me_did {
 	u32 reserved: 8;
 	u32 status: 4;
 	u32 init_done: 4;
-} __attribute__ ((packed));
+} __packed;
 
 #define PCI_ME_GMES		0x48
 #define  ME_GMES_PHASE_ROM	0
@@ -124,7 +126,7 @@ struct me_gmes {
 	u32 current_state: 8;
 	u32 current_pmevent: 4;
 	u32 progress_code: 4;
-} __attribute__ ((packed));
+} __packed;
 
 #define PCI_ME_HERES		0xbc
 #define  PCI_ME_EXT_SHA1	0x00
@@ -136,7 +138,7 @@ struct me_heres {
 	u32 reserved: 26;
 	u32 extend_feature_present: 1;
 	u32 extend_reg_valid: 1;
-} __attribute__ ((packed));
+} __packed;
 
 /*
  * Management Engine MEI registers
@@ -157,7 +159,7 @@ struct mei_csr {
 	u32 buffer_read_ptr: 8;
 	u32 buffer_write_ptr: 8;
 	u32 buffer_depth: 8;
-} __attribute__ ((packed));
+} __packed;
 
 #define MEI_ADDRESS_CORE	0x01
 #define MEI_ADDRESS_AMT		0x02
@@ -175,7 +177,7 @@ struct mei_header {
 	u32 length: 9;
 	u32 reserved: 6;
 	u32 is_complete: 1;
-} __attribute__ ((packed));
+} __packed;
 
 #define MKHI_GROUP_ID_CBM	0x00
 #define MKHI_GROUP_ID_FWCAPS	0x03
@@ -198,7 +200,7 @@ struct mkhi_header {
 	u32 is_response: 1;
 	u32 reserved: 8;
 	u32 result: 8;
-} __attribute__ ((packed));
+} __packed;
 
 struct me_fw_version {
 	u16 code_minor;
@@ -209,7 +211,7 @@ struct me_fw_version {
 	u16 recovery_major;
 	u16 recovery_build_number;
 	u16 recovery_hot_fix;
-} __attribute__ ((packed));
+} __packed;
 
 
 #define HECI_EOP_STATUS_SUCCESS       0x0
@@ -224,7 +226,7 @@ struct me_fw_version {
 struct me_global_reset {
 	u8 request_origin;
 	u8 reset_type;
-} __attribute__ ((packed));
+} __packed;
 
 typedef enum {
 	ME_NORMAL_BIOS_PATH,
@@ -254,7 +256,7 @@ typedef struct {
 	u32       minor_version  : 16;
 	u32       hotfix_version : 16;
 	u32       build_version  : 16;
-} __attribute__ ((packed)) mbp_fw_version_name;
+} __packed mbp_fw_version_name;
 
 typedef struct {
 	u8        num_icc_profiles;
@@ -262,7 +264,7 @@ typedef struct {
 	u8        icc_profile_index;
 	u8        reserved;
 	u32       register_lock_mask[3];
-} __attribute__ ((packed)) mbp_icc_profile;
+} __packed mbp_icc_profile;
 
 typedef struct {
 	u32  full_net		: 1;
@@ -285,7 +287,7 @@ typedef struct {
 	u32  reserved_4		: 1;
 	u32  wlan		: 1;
 	u32  reserved_5		: 8;
-} __attribute__ ((packed)) mefwcaps_sku;
+} __packed mefwcaps_sku;
 
 typedef struct {
 	u16  lock_state		     : 1;
@@ -296,13 +298,13 @@ typedef struct {
 	u16  wwan3gpresent	     : 1;
 	u16  wwan3goob		     : 1;
 	u16  reserved		     : 9;
-} __attribute__ ((packed)) tdt_state_flag;
+} __packed tdt_state_flag;
 
 typedef struct {
 	u8           state;
 	u8           last_theft_trigger;
 	tdt_state_flag  flags;
-}  __attribute__ ((packed)) tdt_state_info;
+}  __packed tdt_state_info;
 
 typedef struct {
 	u32  platform_target_usage_type	 : 4;
@@ -312,7 +314,7 @@ typedef struct {
 	u32  intel_me_fw_image_type	 : 4;
 	u32  platform_brand		 : 4;
 	u32  reserved_1			 : 16;
-}  __attribute__ ((packed)) platform_type_rule_data;
+}  __packed platform_type_rule_data;
 
 typedef struct {
 	mefwcaps_sku fw_capabilities;
@@ -323,7 +325,7 @@ typedef struct {
 	u16        device_id;
 	u16        fuse_test_flags;
 	u32        umchid[4];
-}  __attribute__ ((packed)) mbp_rom_bist_data;
+}  __packed mbp_rom_bist_data;
 
 typedef struct {
 	u32        key[8];
@@ -349,20 +351,20 @@ typedef  struct {
 	u32  mbp_size	 : 8;
 	u32  num_entries : 8;
 	u32  rsvd      	 : 16;
-} __attribute__ ((packed)) mbp_header;
+} __packed mbp_header;
 
 typedef struct {
 	u32  app_id  : 8;
 	u32  item_id : 8;
 	u32  length  : 8;
 	u32  rsvd    : 8;
-}  __attribute__ ((packed)) mbp_item_header;
+}  __packed mbp_item_header;
 
 struct me_fwcaps {
 	u32 id;
 	u8 length;
 	mefwcaps_sku caps_sku;
 	u8 reserved[3];
-} __attribute__ ((packed));
+} __packed;
 
 #endif /* _INTEL_ME_H */

@@ -16,6 +16,8 @@
 #ifndef INTEL_LYNXPOINT_LP_GPIO_H
 #define INTEL_LYNXPOINT_LP_GPIO_H
 
+#include <compiler.h>
+
 /* LynxPoint LP GPIOBASE Registers */
 #define GPIO_OWNER(set)		(0x00 + ((set) * 4))
 #define GPIO_PIRQ_APIC_EN	0x10
@@ -158,7 +160,7 @@ struct pch_lp_gpio_map {
 	u8 reset;
 	u8 blink;
 	u8 pirq;
-} __attribute__ ((packed));
+} __packed;
 
 /* Configure GPIOs with mainboard provided settings */
 void setup_pch_lp_gpios(const struct pch_lp_gpio_map map[]);

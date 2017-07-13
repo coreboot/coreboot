@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <compiler.h>
 #include <console/console.h>
 #include <console/usb.h>
 #include <bootmode.h>
@@ -183,7 +184,7 @@ static void report_memory_config(void)
 void sdram_initialize(struct pei_data *pei_data)
 {
 	struct sys_info sysinfo;
-	int (*entry) (struct pei_data *pei_data) __attribute__ ((regparm(1)));
+	int (*entry) (struct pei_data *pei_data) __attribute__((regparm(1)));
 
 	report_platform_info();
 

@@ -20,7 +20,7 @@ INSTALL  ?= /usr/bin/install
 PREFIX   ?= /usr/local
 CFLAGS   ?= -O2
 CFLAGS   += -Wall -Werror
-CPPFLAGS += -I $(ROOT)/commonlib/include
+CPPFLAGS += -I . -I $(ROOT)/commonlib/include
 
 OBJS = $(PROGRAM).o
 

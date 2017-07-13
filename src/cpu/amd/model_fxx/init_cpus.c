@@ -144,7 +144,7 @@ static inline int lapic_remote_read(int apicid, int reg, u32 *pvalue)
 static void init_fidvid_ap(u32 bsp_apicid, u32 apicid);
 #endif
 
-static inline __attribute__ ((always_inline))
+static inline __attribute__((always_inline))
 void print_apicid_nodeid_coreid(u32 apicid, struct node_core_id id,
 				const char *str)
 {

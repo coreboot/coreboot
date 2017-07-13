@@ -16,6 +16,7 @@
 #define __CPU_TI_AM335X_HEADER_H
 
 #include <stdint.h>
+#include <compiler.h>
 
 struct configuration_header_toc_item {
 	// Offset from the start address of the TOC to the actual address of
@@ -30,7 +31,7 @@ struct configuration_header_toc_item {
 
 	// 12-character name of a section, including the zero (\0) terminator.
 	char filename[12];
-} __attribute__((packed));
+} __packed;
 
 struct configuration_header_settings {
 	// Key used for section verification.
@@ -49,7 +50,7 @@ struct configuration_header_settings {
 
 	// Flags. It's not clear what this is used for.
 	uint32_t flags;
-} __attribute__((packed));
+} __packed;
 
 struct gp_device_header {
 	// Size of the image.
@@ -57,6 +58,6 @@ struct gp_device_header {
 
 	// Address to store the image/code entry point.
 	uint32_t destination;
-} __attribute__((packed));
+} __packed;
 
 #endif

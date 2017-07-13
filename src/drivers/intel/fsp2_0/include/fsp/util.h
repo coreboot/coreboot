@@ -13,6 +13,7 @@
 #ifndef _FSP2_0_UTIL_H_
 #define _FSP2_0_UTIL_H_
 
+#include <compiler.h>
 #include <boot/coreboot_tables.h>
 #include <commonlib/region.h>
 #include <arch/cpu.h>
@@ -23,7 +24,7 @@
 struct hob_header {
 	uint16_t type;
 	uint16_t length;
-} __attribute__((packed));
+} __packed;
 
 struct fsp_notify_params {
 	enum fsp_notify_phase phase;
@@ -35,7 +36,7 @@ struct hob_resource {
 	uint32_t attribute_type;
 	uint64_t addr;
 	uint64_t length;
-} __attribute__((packed));
+} __packed;
 
 enum resource_type {
 	EFI_RESOURCE_SYSTEM_MEMORY		= 0,

@@ -39,7 +39,7 @@ struct exception_state
 	uint64_t elr;
 	uint64_t esr;
 	uint64_t regs[31];
-} __attribute__((packed));
+} __packed;
 
 extern struct exception_state *exception_state;
 

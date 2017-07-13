@@ -125,7 +125,7 @@ static void vErrata343(void)
 	wrmsr(BU_CFG2_MSR, msr);
 }
 
-void post_cache_as_ram(void)
+asmlinkage void * post_cache_as_ram(void)
 {
 	uint32_t family = amd_fam1x_cpu_family();
 
@@ -171,12 +171,10 @@ void post_cache_as_ram(void)
 
 	/* New stack grows right below migrated_car. */
 	print_car_debug("Switching to use RAM as stack...");
-	cache_as_ram_switch_stack(migrated_car);
-
-	/* We do not come back. */
+	return migrated_car;
 }
 
-void cache_as_ram_new_stack(void)
+asmlinkage void cache_as_ram_new_stack(void)
 {
 	print_car_debug("Disabling cache as RAM now\n");
 	disable_cache_as_ram_real(0);	// inline

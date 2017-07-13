@@ -598,6 +598,8 @@ CAR_FAM10_ap_out:
 
 	call	cache_as_ram_main
 
+	call	post_cache_as_ram
+
 	/* We will not go back. */
 
 	post_code(0xaf)		/* Should never see this POST code. */

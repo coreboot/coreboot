@@ -212,8 +212,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	amdmct_cbmem_store_info(sysinfo);
 
 	bcm5785_early_setup();
-
-	post_cache_as_ram();
 }
 
 /**

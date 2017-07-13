@@ -355,9 +355,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	pnp_write_config(GPIO3_DEV, 0x2c, (cr2c & 0xf3) | 0x04);
 	/* Restore default SuperIO access */
 	outb(0xaa, port);
-
-	post_cache_as_ram();	// BSP switch stack to ram, copy then execute LB.
-	post_code(0x43);	// Should never see this post code.
 }
 
 /**

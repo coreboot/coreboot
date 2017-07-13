@@ -625,9 +625,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	if (IS_ENABLED(CONFIG_LPC_TPM))
 		init_tpm(s3resume);
-
-	post_cache_as_ram();	// BSP switch stack to ram, copy then execute LB.
-	post_code(0x43);	// Should never see this post code.
 }
 
 /**

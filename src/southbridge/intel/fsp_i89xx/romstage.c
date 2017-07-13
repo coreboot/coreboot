@@ -99,9 +99,9 @@ void main(FSP_INFO_HEADER *fsp_info_header)
 
 	post_code(0x40);
 
-#if IS_ENABLED(CONFIG_COLLECT_TIMESTAMPS)
-	save_timestamp_to_cmos(CMOS_MAIN_START_ADDR, rdtsc());
-#endif
+	timestamp_init(get_initial_timestamp());
+	timestamp_add_now(TS_START_ROMSTAGE);
+
 	pch_enable_lpc();
 
 	/* Enable GPIOs */
@@ -151,9 +151,7 @@ void main(FSP_INFO_HEADER *fsp_info_header)
 
 	post_code(0x48);
 
-#if IS_ENABLED(CONFIG_COLLECT_TIMESTAMPS)
-	save_timestamp_to_cmos(CMOS_PRE_INITRAM_ADDR, rdtsc());
-#endif
+	timestamp_add_now(TS_BEFORE_INITRAM);
 
   /*
    * Call early init to initialize memory and chipset. This function returns

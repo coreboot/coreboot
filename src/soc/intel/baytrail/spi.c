@@ -189,21 +189,21 @@ static u32 readl_(const void *addr)
 	return v;
 }
 
-static void writeb_(u8 b, const void *addr)
+static void writeb_(u8 b, void *addr)
 {
 	write8(addr, b);
 	printk(BIOS_DEBUG, "wrote %2.2x to %4.4x\n",
 	       b, ((unsigned) addr & 0xffff) - 0xf020);
 }
 
-static void writew_(u16 b, const void *addr)
+static void writew_(u16 b, void *addr)
 {
 	write16(addr, b);
 	printk(BIOS_DEBUG, "wrote %4.4x to %4.4x\n",
 	       b, ((unsigned) addr & 0xffff) - 0xf020);
 }
 
-static void writel_(u32 b, const void *addr)
+static void writel_(u32 b, void *addr)
 {
 	write32(addr, b);
 	printk(BIOS_DEBUG, "wrote %8.8x to %4.4x\n",

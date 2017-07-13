@@ -224,18 +224,17 @@ int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos)
 
 void hudson_clk_output_48Mhz(void)
 {
-	u32 data, *memptr;
+	u32 ctrl;
 
 	/*
 	 * Enable the X14M_25M_48M_OSC pin and leaving it at it's default so
 	 * 48Mhz will be on ball AP13 (FT3b package)
 	 */
-	memptr = (u32 *)(ACPI_MMIO_BASE + MISC_BASE + FCH_MISC_REG40);
-	data = *memptr;
+	ctrl = read32((void *)(ACPI_MMIO_BASE + MISC_BASE + FCH_MISC_REG40));
 
 	/* clear the OSCOUT1_ClkOutputEnb to enable the 48 Mhz clock */
-	data &= (u32)~(1<<2);
-	*memptr = data;
+	ctrl &= ~(1<<2);
+	write32((void *)(ACPI_MMIO_BASE + MISC_BASE + FCH_MISC_REG40), ctrl);
 }
 
 static uintptr_t hudson_spibase(void)

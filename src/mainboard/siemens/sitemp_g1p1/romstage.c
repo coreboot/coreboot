@@ -33,6 +33,7 @@
 #include <superio/ite/common/ite.h>
 #include <superio/ite/it8712f/it8712f.h>
 
+#include <cpu/amd/car.h>
 #include <cpu/x86/bist.h>
 
 #include "northbridge/amd/amdk8/setup_resource_map.c"

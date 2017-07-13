@@ -34,6 +34,7 @@
 #include <cpu/x86/lapic.h>
 #include <superio/ite/common/ite.h>
 #include <superio/ite/it8716f/it8716f.h>
+#include <cpu/amd/car.h>
 #include <cpu/x86/bist.h>
 
 #include "northbridge/amd/amdk8/setup_resource_map.c"

@@ -38,6 +38,7 @@
 #include <northbridge/amd/amdk8/raminit.h>
 #include <delay.h>
 
+#include <cpu/amd/car.h>
 #include <cpu/x86/bist.h>
 #include "northbridge/amd/amdk8/setup_resource_map.c"
 #include "cpu/amd/dualcore/dualcore.c"

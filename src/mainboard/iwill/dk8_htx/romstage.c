@@ -9,6 +9,7 @@
 #include <cpu/amd/model_fxx_rev.h>
 #include "southbridge/amd/amd8111/early_smbus.c"
 #include <northbridge/amd/amdk8/raminit.h>
+#include <cpu/amd/car.h>
 #include <cpu/x86/bist.h>
 #include <delay.h>
 

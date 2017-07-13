@@ -16,6 +16,7 @@
 #include <cpu/x86/lapic.h>
 
 #include <superio/smsc/lpc47b397/lpc47b397.h>
+#include <cpu/amd/car.h>
 #include <cpu/x86/bist.h>
 #include "superio/smsc/lpc47b397/early_gpio.c"
 #include "northbridge/amd/amdk8/setup_resource_map.c"

@@ -11,7 +11,9 @@
  * GNU General Public License for more details.
  */
 
+#include <cpu/amd/mtrr.h>
 #include <cpu/x86/lapic.h>
+#include <cpu/x86/mtrr.h>
 #include <northbridge/amd/amdk8/amdk8.h>
 #include "cpu/amd/car/post_cache_as_ram.c"
 

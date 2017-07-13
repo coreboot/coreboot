@@ -32,7 +32,9 @@ unsigned int get_sbdn(unsigned bus);
 #include "southbridge/nvidia/ck804/early_smbus.h"
 #include <reset.h>
 #include <northbridge/amd/amdk8/raminit.h>
+#include <cpu/amd/car.h>
 #include <cpu/x86/bist.h>
+#include <cbmem.h>
 #include <delay.h>
 
 #include <cpu/amd/mtrr.h>

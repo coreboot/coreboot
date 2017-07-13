@@ -26,6 +26,7 @@
 #include <delay.h>
 #include <cpu/x86/lapic.h>
 #include <spd.h>
+#include <cpu/amd/car.h>
 #include <cpu/x86/bist.h>
 #include "northbridge/amd/amdk8/setup_resource_map.c"
 #include "southbridge/amd/rs690/early_setup.c"

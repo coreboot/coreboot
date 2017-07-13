@@ -29,6 +29,7 @@
 #include <cpu/x86/lapic.h>
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627dhg/w83627dhg.h>
+#include <cpu/amd/car.h>
 #include <cpu/x86/bist.h>
 #include "northbridge/amd/amdk8/setup_resource_map.c"
 #include <southbridge/amd/sb700/sb700.h>

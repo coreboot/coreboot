@@ -306,7 +306,12 @@ void gpio_set(gpio_t gpio_num, int value)
 
 uint16_t gpio_acpi_pin(gpio_t gpio_num)
 {
-	const struct pad_community *comm = gpio_get_community(gpio_num);
+	const struct pad_community *comm;
+
+	if (!IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_GPIO_MULTI_ACPI_DEVICES))
+		return gpio_num;
+
+	comm = gpio_get_community(gpio_num);
 	return gpio_num - comm->first_pad;
 }
 

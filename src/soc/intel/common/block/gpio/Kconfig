@@ -34,3 +34,9 @@ config SOC_INTEL_COMMON_BLOCK_GPIO_LEGACY_MACROS
 	depends on SOC_INTEL_COMMON_BLOCK_GPIO
 	bool
 	default n
+
+# Indicate if multiple ACPI devices are used for each gpio community.
+config SOC_INTEL_COMMON_BLOCK_GPIO_MULTI_ACPI_DEVICES
+	depends on SOC_INTEL_COMMON_BLOCK_GPIO
+	bool
+	default n

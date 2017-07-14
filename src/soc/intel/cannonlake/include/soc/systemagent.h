@@ -98,7 +98,4 @@
 /* System Agent identification */
 u8 systemagent_revision(void);
 
-/* Top of 32bit usable memory */
-u32 top_of_32bit_ram(void);
-
 #endif

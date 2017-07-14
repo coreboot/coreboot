@@ -21,7 +21,6 @@ endif
 ramstage-$(CONFIG_INTEL_GMA_ACPI) += acpi.c
 ramstage-$(CONFIG_INTEL_GMA_ACPI) += opregion.c
 
-
 ifeq ($(CONFIG_MAINBOARD_USE_LIBGFXINIT),y)
 
 $(call add-special-class,gfxinit)

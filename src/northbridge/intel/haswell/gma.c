@@ -24,7 +24,7 @@
 #include <drivers/intel/gma/i915_reg.h>
 #include <drivers/intel/gma/i915.h>
 #include <cpu/intel/haswell/haswell.h>
-#include <northbridge/intel/common/gma_opregion.h>
+#include <drivers/intel/gma/opregion.h>
 #include <southbridge/intel/lynxpoint/nvs.h>
 #include <stdlib.h>
 #include <string.h>
@@ -534,7 +534,7 @@ gma_write_acpi_tables(struct device *const dev,
 	igd_opregion_t *opregion = (igd_opregion_t *)current;
 	global_nvs_t *gnvs;
 
-	if (init_igd_opregion(opregion) != CB_SUCCESS)
+	if (intel_gma_init_igd_opregion(opregion) != CB_SUCCESS)
 		return current;
 
 	current += sizeof(igd_opregion_t);

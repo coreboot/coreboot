@@ -250,5 +250,6 @@ void intel_gma_opregion_register(uintptr_t opregion);
 void intel_gma_restore_opregion(void);
 uintptr_t gma_get_gnvs_aslb(const void *gnvs);
 void gma_set_gnvs_aslb(void *gnvs, uintptr_t aslb);
+enum cb_err intel_gma_init_igd_opregion(igd_opregion_t *opregion);
 
 #endif /* _COMMON_GMA_H_ */

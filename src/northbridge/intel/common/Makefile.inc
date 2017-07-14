@@ -15,4 +15,3 @@
 
 romstage-$(CONFIG_NORTHBRIDGE_INTEL_COMMON_MRC_CACHE) += mrc_cache.c
 ramstage-$(CONFIG_NORTHBRIDGE_INTEL_COMMON_MRC_CACHE) += mrc_cache.c
-ramstage-$(CONFIG_NORTHBRIDGE_INTEL_COMMON_GMA_OPREGION) += gma_opregion.c

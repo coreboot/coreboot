@@ -25,7 +25,7 @@
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <southbridge/intel/bd82x6x/nvs.h>
-#include <northbridge/intel/common/gma_opregion.h>
+#include <drivers/intel/gma/opregion.h>
 #include <cbmem.h>
 
 #include "chip.h"
@@ -698,7 +698,7 @@ gma_write_acpi_tables(struct device *const dev,
 	igd_opregion_t *opregion = (igd_opregion_t *)current;
 	global_nvs_t *gnvs;
 
-	if (init_igd_opregion(opregion) != CB_SUCCESS)
+	if (intel_gma_init_igd_opregion(opregion) != CB_SUCCESS)
 		return current;
 
 	current += sizeof(igd_opregion_t);

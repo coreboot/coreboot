@@ -45,12 +45,14 @@ struct pad_config {
 };
 
 /*
- * Structure provides the logical to actual value for PADRSTCFG in DW0
+ * Structure provides the logical to actual value for PADRSTCFG in DW0. Note
+ * that the values are expected to be within the field placement of the register
+ * itself. i.e. if the reset field is at 31:30 then the values within logical
+ * and chipset should occupy 31:30.
  */
 struct reset_mapping {
-	int	logical;/* logical value defined in
-	include/intelblocks/gpio_defs.h - PAD_CFG0_RESET_xxx */
-	int	chipset;/* translation of logical to SOC PADRSTCFG */
+	uint32_t logical;
+	uint32_t chipset;
 };
 
 /* This structure will be used to describe a community or each group within a

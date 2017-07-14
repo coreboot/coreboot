@@ -50,14 +50,10 @@
 #define PAD_CFG0_RXRAW1_MASK		(1 << 28)
 #define PAD_CFG0_RXPADSTSEL_MASK	(1 << 29)
 #define PAD_CFG0_RESET_MASK		(3 << 30)
-#define  PAD_CFG0_RESET_PWROK		(0 << 30) /* Logical PADRSTCFG value */
-#define  PAD_CFG0_RESET_DEEP		(1 << 30) /* Logical PADRSTCFG value */
-#define  PAD_CFG0_RESET_PLTRST		(2 << 30) /* Logical PADRSTCFG value */
-#define  PAD_CFG0_RESET_RSMRST		(3 << 30) /* Logical PADRSTCFG value */
-/* The PAD_CFG0_RESET_xxx are logical values and the actual chipset values
-   corresponding to these will be replaced by code in
-   soc/intel/common/block/gpio
- */
+#define  PAD_CFG0_LOGICAL_RESET_PWROK		(0U << 30)
+#define  PAD_CFG0_LOGICAL_RESET_DEEP		(1U << 30)
+#define  PAD_CFG0_LOGICAL_RESET_PLTRST		(2U << 30)
+#define  PAD_CFG0_LOGICAL_RESET_RSMRST		(3U << 30)
 
 /* Use the fourth bit in IntSel field to indicate gpio
  * ownership. This field is RO and hence not used during
@@ -118,7 +114,7 @@
 #endif /* CONFIG_SOC_INTEL_COMMON_BLOCK_GPIO_PADCFG_PADTOL */
 
 #define PAD_FUNC(value)		PAD_CFG0_MODE_##value
-#define PAD_RESET(value)	PAD_CFG0_RESET_##value
+#define PAD_RESET(value)	PAD_CFG0_LOGICAL_RESET_##value
 #define PAD_PULL(value)		PAD_CFG1_PULL_##value
 
 #if IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_GPIO_IOSTANDBY)

@@ -22,9 +22,9 @@
 #include <soc/pm.h>
 
 static const struct reset_mapping rst_map[] = {
-	{ PAD_CFG0_RESET_PWROK, PAD_CFG0_RESET_PWROK },
-	{ PAD_CFG0_RESET_DEEP, PAD_CFG0_RESET_DEEP },
-	{ PAD_CFG0_RESET_PLTRST, PAD_CFG0_RESET_PLTRST },
+	{ .logical = PAD_CFG0_LOGICAL_RESET_PWROK, .chipset = 0U << 30 },
+	{ .logical = PAD_CFG0_LOGICAL_RESET_DEEP, .chipset = 1U << 30 },
+	{ .logical = PAD_CFG0_LOGICAL_RESET_PLTRST, .chipset = 2U << 30 },
 };
 
 static const struct pad_community apl_gpio_communities[] = {

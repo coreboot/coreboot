@@ -174,8 +174,7 @@ static uint32_t gpio_pad_reset_config_override(const struct pad_community *comm,
 		return config_value;/* Logical reset values equal chipset
 					values */
 	for (i = 0; i < comm->num_reset_vals; i++, rst_map++) {
-		if ((config_value & PAD_CFG0_RESET_MASK) ==
-				rst_map->logical) {
+		if ((config_value & PAD_CFG0_RESET_MASK) == rst_map->logical) {
 			config_value &= ~PAD_CFG0_RESET_MASK;
 			config_value |= rst_map->chipset;
 			return config_value;

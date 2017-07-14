@@ -42,7 +42,4 @@
 #define MCH_DDR_POWER_LIMIT_LO	0x58e0
 #define MCH_DDR_POWER_LIMIT_HI	0x58e4
 
-/* Top of 32bit usable memory */
-u32 top_of_32bit_ram(void);
-
 #endif

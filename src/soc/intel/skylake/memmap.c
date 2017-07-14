@@ -137,7 +137,7 @@ int smm_subregion(int sub, void **start, size_t *size)
  * other words, the memory map is in a fixed order no matter what.
  */
 
-u32 top_of_32bit_ram(void)
+static u32 top_of_32bit_ram(void)
 {
 	msr_t prmrr_base;
 	u32 top_of_ram;

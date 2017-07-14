@@ -75,6 +75,11 @@ config DRIVER_TPM_I2C_ADDR
 	hex
 	default 0x20
 
+config DRIVER_TPM_SPI_BUS
+	hex
+	default 0x2 if BOARD_GOOGLE_SCARLET
+	default 0x0
+
 config CONSOLE_SERIAL_UART_ADDRESS
 	hex
 	depends on DRIVERS_UART

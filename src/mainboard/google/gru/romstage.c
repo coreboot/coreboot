@@ -33,6 +33,7 @@
 #include <soc/usb.h>
 #include <stdlib.h>
 
+#include "board.h"
 #include "pwm_regulator.h"
 
 static void init_dvs_outputs(void)
@@ -40,10 +41,11 @@ static void init_dvs_outputs(void)
 	pwm_regulator_configure(PWM_REGULATOR_GPU, 900);
 	pwm_regulator_configure(PWM_REGULATOR_BIG, 900);
 
-	/* Kevin's logic rail has some ripple, so up the voltage a bit */
+	/* Kevin's logic rail has some ripple, so up the voltage a bit. Scarlet
+	   uses a fixed 900mV regulator for centerlogic. */
 	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_KEVIN))
 		pwm_regulator_configure(PWM_REGULATOR_CENTERLOG, 925);
-	else
+	else if (!IS_ENABLED(CONFIG_BOARD_GOOGLE_SCARLET))
 		pwm_regulator_configure(PWM_REGULATOR_CENTERLOG, 900);
 
 	/* Allow time for the regulators to settle */
@@ -52,9 +54,8 @@ static void init_dvs_outputs(void)
 
 static void prepare_sdmmc(void)
 {
-	/* Enable main SD rail early to allow ramp time before enabling SDIO
-	 * rail. */
-	gpio_output(GPIO(4, D, 5), 1);	/* SDMMC_PWR_EN */
+	/* Enable main SD rail early to allow ramp time before powering SDIO. */
+	gpio_output(GPIO_SDMMC_PWR, 1);
 }
 
 static void prepare_usb(void)

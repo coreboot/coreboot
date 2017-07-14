@@ -47,10 +47,23 @@ int pwm_design_voltage[][2] = {
 	[PWM_REGULATOR_CENTERLOG] = {7994, 10499}
 };
 
+int pwm_enum_to_pwm_number[] = {
+	[PWM_REGULATOR_GPU] = 0,
+	[PWM_REGULATOR_LIT] = 2,
+#if IS_ENABLED(CONFIG_BOARD_GOOGLE_SCARLET)
+	[PWM_REGULATOR_BIG] = 3,
+	[PWM_REGULATOR_CENTERLOG] = -1,	/* fixed regulator on Scarlet */
+#else
+	[PWM_REGULATOR_BIG] = 1,
+	[PWM_REGULATOR_CENTERLOG] = 3,
+#endif
+};
+
 void pwm_regulator_configure(enum pwm_regulator pwm, int millivolt)
 {
 	int duty_ns, voltage_max, voltage_min;
 	int voltage = millivolt * 10; /* for higer calculation accuracy */
+	int pwm_number = pwm_enum_to_pwm_number[pwm];
 
 	voltage_min = pwm_design_voltage[pwm][0];
 	voltage_max = pwm_design_voltage[pwm][1];
@@ -75,24 +88,26 @@ void pwm_regulator_configure(enum pwm_regulator pwm, int millivolt)
 	duty_ns = PWM_PERIOD * (voltage_max - voltage)
 			     / (voltage_max - voltage_min);
 
-	pwm_init(pwm, PWM_PERIOD, duty_ns);
+	pwm_init(pwm_number, PWM_PERIOD, duty_ns);
 
-	switch (pwm) {
-	case PWM_REGULATOR_GPU:
+	switch (pwm_number) {
+	case 0:
 		gpio_input(GPIO(4, C, 2));	/* PWM0 remove pull-down */
 		write32(&rk3399_grf->iomux_pwm_0, IOMUX_PWM_0);
 		break;
-	case PWM_REGULATOR_BIG:
+	case 1:
 		gpio_input(GPIO(4, C, 6));	/* PWM1 remove pull-down */
 		write32(&rk3399_grf->iomux_pwm_1, IOMUX_PWM_1);
 		break;
-	case PWM_REGULATOR_LIT:
+	case 2:
 		gpio_input(GPIO(1, C, 3));	/* PWM2 remove pull-down */
 		write32(&rk3399_pmugrf->iomux_pwm_2, IOMUX_PWM_2);
 		break;
-	case PWM_REGULATOR_CENTERLOG:
+	case 3:
 		gpio_input(GPIO(0, A, 6));	/* PWM3 remove pull-down */
 		write32(&rk3399_pmugrf->iomux_pwm_3a, IOMUX_PWM_3_A);
 		break;
+	default:
+		die("incorrect board configuration");
 	}
 }

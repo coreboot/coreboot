@@ -44,12 +44,12 @@ void bootblock_mainboard_early_init(void)
 	 */
 	write32(&rk3399_grf->io_vsel, RK_SETBITS(1 << 0));
 
-	/*
-	 * Let's enable these power rails here, we are already running the SPI
-	 * Flash based code.
-	 */
-	gpio_output(GPIO(0, B, 2), 1);  /* PP1500_EN */
-	gpio_output(GPIO(0, B, 4), 1);  /* PP3000_EN */
+	if (!IS_ENABLED(CONFIG_BOARD_GOOGLE_SCARLET)) {
+		/* Enable rails powering GPIO blocks, among other things.
+		   These are EC-controlled on Scarlet and already on. */
+		gpio_output(GPIO_P15V_EN, 1);
+		gpio_output(GPIO_P30V_EN, 1);
+	}
 
 #if IS_ENABLED(CONFIG_DRIVERS_UART)
 	_Static_assert(CONFIG_CONSOLE_SERIAL_UART_ADDRESS == UART2_BASE,
@@ -92,14 +92,21 @@ static void configure_ec(void)
 static void configure_tpm(void)
 {
 	if (IS_ENABLED(CONFIG_GRU_HAS_TPM2)) {
-		gpio_input(GPIO(3, A, 4));	/* SPI0_MISO remove pull-up */
-		gpio_input(GPIO(3, A, 5));	/* SPI0_MOSI remove pull-up */
-		gpio_input(GPIO(3, A, 6));	/* SPI0_CLK remove pull-up */
-		gpio_input_pullup(GPIO(3, A, 7));	/* SPI0_CS confirm */
-
 		rockchip_spi_init(CONFIG_DRIVER_TPM_SPI_BUS, 1500*KHz);
 
-		write32(&rk3399_grf->iomux_spi0, IOMUX_SPI0);
+		if (IS_ENABLED(CONFIG_BOARD_GOOGLE_SCARLET)) {
+			gpio_input(GPIO(2, B, 1));	/* SPI2_MISO no-pull */
+			gpio_input(GPIO(2, B, 2));	/* SPI2_MOSI no-pull */
+			gpio_input(GPIO(2, B, 3));	/* SPI2_CLK no-pull */
+			gpio_input_pullup(GPIO(2, B, 4));	/* SPI2_CS */
+			write32(&rk3399_grf->iomux_spi2, IOMUX_SPI2);
+		} else {
+			gpio_input(GPIO(3, A, 4));	/* SPI0_MISO no-pull */
+			gpio_input(GPIO(3, A, 5));	/* SPI0_MOSI no-pull */
+			gpio_input(GPIO(3, A, 6));	/* SPI0_CLK no-pull */
+			gpio_input_pullup(GPIO(3, A, 7));	/* SPI0_CS */
+			write32(&rk3399_grf->iomux_spi0, IOMUX_SPI0);
+		}
 
 		gpio_input_irq(GPIO_TPM_IRQ, IRQ_TYPE_EDGE_RISING);
 	} else {

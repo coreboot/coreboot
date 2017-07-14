@@ -34,21 +34,21 @@
 
 /*
  * We have to drive the stronger pull-up within 1 second of powering up the
- * touchpad to prevent its firmware from falling into recovery.
+ * touchpad to prevent its firmware from falling into recovery. Not on Scarlet.
  */
 static void configure_touchpad(void)
 {
-	gpio_output(GPIO(3, B, 4), 1); /* TP's I2C pull-up rail */
+	gpio_output(GPIO_TP_RST_L, 1); /* TP's I2C pull-up rail */
 }
 
 /*
  * Wifi's PDN/RST line is pulled down by its (unpowered) voltage rails, but
  * this reset pin is pulled up by default. Let's drive it low as early as we
- * can.
+ * can. Scarlet uses a different WiFi chip that doesn't have this pin anymore.
  */
-static void deassert_wifi_power(void)
+static void assert_wifi_reset(void)
 {
-	gpio_output(GPIO(1, B, 3), 0);  /* Assert WLAN_MODULE_RST# */
+	gpio_output(GPIO_WLAN_RST_L, 0);  /* Assert WLAN_MODULE_RST# */
 }
 
 static void configure_emmc(void)
@@ -234,11 +234,21 @@ static void configure_codec(void)
 
 static void configure_display(void)
 {
-	/* set pinmux for edp HPD*/
-	gpio_input_pulldown(GPIO(4, C, 7));
-	write32(&rk3399_grf->iomux_edp_hotplug, IOMUX_EDP_HOTPLUG);
+	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_SCARLET)) {
+		gpio_output(GPIO(4, D, 1), 0);	/* DISPLAY_RST_L */
+		gpio_output(GPIO(4, D, 3), 1);	/* PPVARP_LCD */
+		mdelay(10);
+		gpio_output(GPIO(4, D, 4), 1);	/* PPVARN_LCD */
+		mdelay(20 + 2);	/* add 2ms for bias rise time */
+		gpio_output(GPIO(4, D, 1), 1);	/* DISPLAY_RST_L */
+		mdelay(30);
+	} else {
+		/* set pinmux for edp HPD */
+		gpio_input_pulldown(GPIO(4, C, 7));
+		write32(&rk3399_grf->iomux_edp_hotplug, IOMUX_EDP_HOTPLUG);
 
-	gpio_output(GPIO(4, D, 3), 1); /* CPU3_EDP_VDDEN for P3.3V_DISP */
+		gpio_output(GPIO(4, D, 3), 1);	/* P3.3V_DISP */
+	}
 }
 
 static void usb_power_cycle(int port)
@@ -321,18 +331,20 @@ static void setup_usb(int port)
 
 static void mainboard_init(device_t dev)
 {
-	deassert_wifi_power();
-	configure_touchpad();
 	configure_sdmmc();
 	configure_emmc();
 	configure_codec();
-	configure_display();
+	if (display_init_required())
+		configure_display();
 	setup_usb(0);
-	if (!IS_ENABLED(CONFIG_BOARD_GOOGLE_SCARLET))
-		setup_usb(1);
+	if (!IS_ENABLED(CONFIG_BOARD_GOOGLE_SCARLET)) {
+		assert_wifi_reset();		/* Scarlet: no WIFI_PD# line */
+		configure_touchpad();		/* Scarlet: works differently */
+		setup_usb(1);			/* Scarlet: only one USB port */
+		register_gpio_suspend();	/* Scarlet: all EC-controlled */
+	}
 	register_reset_to_bl31();
 	register_poweroff_to_bl31();
-	register_gpio_suspend();
 	register_apio_suspend();
 }
 

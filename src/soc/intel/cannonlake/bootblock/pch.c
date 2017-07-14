@@ -139,7 +139,7 @@ static void soc_config_tco(void)
 
 	/* Disable TCO in SMBUS Device first before changing Base Address */
 	reg32 = pci_read_config32(PCH_DEV_SMBUS, TCOCTL);
-	reg32 &= ~TCO_EN;
+	reg32 &= ~TCO_BASE_EN;
 	pci_write_config32(PCH_DEV_SMBUS, TCOCTL, reg32);
 
 	/* Program TCO Base */

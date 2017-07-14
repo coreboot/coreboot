@@ -38,6 +38,5 @@ void bootblock_soc_early_init(void)
 void bootblock_soc_init(void)
 {
 	report_platform_info();
-	set_max_freq();
 	pch_early_init();
 }

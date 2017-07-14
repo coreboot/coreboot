@@ -228,14 +228,6 @@ typedef u64 phys_addr_t;
 #define pr_debug(format, arg...) printk(BIOS_INFO, "XGI VGA: " format, ##arg)
 #define pr_err(format, arg...) printk(BIOS_ERR, "XGI VGA: " format, ##arg)
 
-static inline void writel(u32 val, volatile void *addr) {
-	*(u32*)addr = val;
-}
-
-static inline u32 readl(const volatile void *addr) {
-	return *(u32*)addr;
-}
-
 static inline int pci_read_config_dword(struct pci_dev *dev, int where,
 	u32 *val)
 {

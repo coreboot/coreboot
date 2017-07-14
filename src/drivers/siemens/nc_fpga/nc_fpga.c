@@ -28,7 +28,7 @@
 { \
 	uint32_t var; \
 	if (hwilib_get_field(src, (uint8_t *)&var, sizeof(var))) \
-		dst = *((typeof(dst) *)var); \
+		dst = ((typeof(dst))var); \
 }
 
 static void init_temp_mon (void *base_adr)

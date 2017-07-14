@@ -99,7 +99,7 @@ static void register_gpio_suspend(void)
 			.polarity = BL31_GPIO_LEVEL_LOW,
 		},
 	};
-	param_p15_en.gpio.index = GET_GPIO_NUM(GPIO_P15V_EN);
+	param_p15_en.gpio.index = GPIO_P15V_EN.raw;
 	register_bl31_param(&param_p15_en.h);
 
 	static struct bl31_gpio_param param_p18_audio_en = {
@@ -110,7 +110,7 @@ static void register_gpio_suspend(void)
 			.polarity = BL31_GPIO_LEVEL_LOW,
 		},
 	};
-	param_p18_audio_en.gpio.index = GET_GPIO_NUM(GPIO_P18V_AUDIO_PWREN);
+	param_p18_audio_en.gpio.index = GPIO_P18V_AUDIO_PWREN.raw;
 	register_bl31_param(&param_p18_audio_en.h);
 
 	static struct bl31_gpio_param param_p30_en = {
@@ -121,7 +121,7 @@ static void register_gpio_suspend(void)
 			.polarity = BL31_GPIO_LEVEL_LOW,
 		},
 	};
-	param_p30_en.gpio.index = GET_GPIO_NUM(GPIO_P30V_EN);
+	param_p30_en.gpio.index = GPIO_P30V_EN.raw;
 	register_bl31_param(&param_p30_en.h);
 }
 
@@ -137,7 +137,7 @@ static void register_reset_to_bl31(void)
 	};
 
 	/* gru/kevin reset pin: gpio0b3 */
-	param_reset.gpio.index = GET_GPIO_NUM(GPIO_RESET),
+	param_reset.gpio.index = GPIO_RESET.raw,
 
 	register_bl31_param(&param_reset.h);
 }
@@ -158,7 +158,7 @@ static void register_poweroff_to_bl31(void)
 	 * reuse with tsadc int pin, so iomux need set back to
 	 * gpio in BL31 and depthcharge before you setting this gpio
 	 */
-	param_poweroff.gpio.index = GET_GPIO_NUM(GPIO_POWEROFF),
+	param_poweroff.gpio.index = GPIO_POWEROFF.raw,
 
 	register_bl31_param(&param_poweroff.h);
 }

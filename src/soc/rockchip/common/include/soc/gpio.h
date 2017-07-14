@@ -19,8 +19,6 @@
 #include <types.h>
 
 #define GPIO(p, b, i) ((gpio_t){.port = p, .bank = GPIO_##b, .idx = i})
-#define GET_GPIO_NUM(gpio)	(gpio.port * 32 + gpio.bank * 8 + gpio.idx)
-
 
 struct rockchip_gpio_regs {
 	u32 swporta_dr;
@@ -43,16 +41,16 @@ check_member(rockchip_gpio_regs, ls_sync, 0x60);
 typedef union {
 	u32 raw;
 	struct {
-		u16 port;
 		union {
 			struct {
-				u16 num : 5;
-				u16 reserved1 : 11;
+				u32 num : 5;
+				u32 reserved1 : 27;
 			};
 			struct {
-				u16 idx : 3;
-				u16 bank : 2;
-				u16 reserved2 : 11;
+				u32 idx : 3;
+				u32 bank : 2;
+				u32 port : 4;
+				u32 reserved2 : 23;
 			};
 		};
 	};

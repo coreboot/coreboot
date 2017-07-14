@@ -19,7 +19,6 @@
 #include <arch/io.h>
 #include <device/pci_def.h>
 #include <arch/acpi.h>
-#include <northbridge/amd/pi/agesawrapper.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
 #include <northbridge/amd/pi/00630F01/pci_devs.h>

@@ -19,4 +19,7 @@ ramstage-$(CONFIG_USBDEBUG) += enable_usbdebug.c
 romstage-y += early_setup.c
 romstage-y += smbus.c
 
+romstage-y += ramtop.c
+ramstage-y += ramtop.c
+
 endif

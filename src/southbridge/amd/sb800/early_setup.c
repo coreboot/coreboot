@@ -17,10 +17,8 @@
 #define _SB800_EARLY_SETUP_C_
 
 #include <reset.h>
-#include <arch/acpi.h>
 #include <arch/cpu.h>
 #include <southbridge/amd/common/amd_defs.h>
-#include <cbmem.h>
 #include "sb800.h"
 #include "smbus.c"
 
@@ -656,28 +654,6 @@ int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos)
 	printk(BIOS_DEBUG, "Loading %x of size %d to nvram pos:%d\n", *old_dword, size,
 		nvram_pos-size);
 	return nvram_pos;
-}
-
-int acpi_get_sleep_type(void)
-{
-	u16 tmp;
-	tmp = inw(ACPI_PM1_CNT_BLK);
-	return ((tmp & (7 << 10)) >> 10);
-}
-
-uintptr_t restore_top_of_low_cacheable(void)
-{
-	uint32_t xdata = 0;
-	int xnvram_pos = 0xfc, xi;
-	if (acpi_get_sleep_type() != 3)
-		return 0;
-	for (xi = 0; xi < 4; xi++) {
-		outb(xnvram_pos, BIOSRAM_INDEX);
-		xdata &= ~(0xff << (xi * 8));
-		xdata |= inb(BIOSRAM_DATA) << (xi *8);
-		xnvram_pos++;
-	}
-	return xdata;
 }
 
 #endif

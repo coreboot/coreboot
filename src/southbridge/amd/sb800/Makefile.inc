@@ -14,4 +14,7 @@ ramstage-y += reset.c
 romstage-$(CONFIG_USBDEBUG_IN_ROMSTAGE) += enable_usbdebug.c
 ramstage-$(CONFIG_USBDEBUG) += enable_usbdebug.c
 
+romstage-y += ramtop.c
+ramstage-y += ramtop.c
+
 endif

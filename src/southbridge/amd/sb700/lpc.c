@@ -82,25 +82,6 @@ static void lpc_init(device_t dev)
 	setup_i8254(); /* Initialize i8254 timers */
 }
 
-#if IS_ENABLED(CONFIG_LATE_CBMEM_INIT)
-int acpi_get_sleep_type(void)
-{
-	u16 tmp = inw(ACPI_PM1_CNT_BLK);
-	return ((tmp & (7 << 10)) >> 10);
-}
-
-void backup_top_of_low_cacheable(uintptr_t ramtop)
-{
-	u32 dword = (u32) ramtop;
-	int nvram_pos = 0xfc, i;
-	for (i = 0; i < 4; i++) {
-		outb(nvram_pos, BIOSRAM_INDEX);
-		outb((dword >>(8 * i)) & 0xff , BIOSRAM_DATA);
-		nvram_pos++;
-	}
-}
-#endif
-
 static void sb700_lpc_read_resources(device_t dev)
 {
 	struct resource *res;

@@ -34,6 +34,7 @@
 #include <Topology.h>
 #include <cpu/amd/amdfam16.h>
 #include <cpuRegisters.h>
+#include <northbridge/amd/agesa/agesa_helper.h>
 #include <northbridge/amd/pi/agesawrapper.h>
 #include <northbridge/amd/pi/agesawrapper_call.h>
 #include "northbridge.h"

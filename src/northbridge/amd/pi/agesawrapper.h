@@ -13,49 +13,5 @@
  * GNU General Public License for more details.
  */
 
-#ifndef _AGESAWRAPPER_H_
-#define _AGESAWRAPPER_H_
-
-#include <stdint.h>
-#include "Porting.h"
-#include "AGESA.h"
-
-enum {
-	PICK_DMI,       /* DMI Interface */
-	PICK_PSTATE,    /* Acpi Pstate SSDT Table */
-	PICK_SRAT,      /* SRAT Table */
-	PICK_SLIT,      /* SLIT Table */
-	PICK_WHEA_MCE,  /* WHEA MCE table */
-	PICK_WHEA_CMC,  /* WHEA CMV table */
-	PICK_ALIB,      /* SACPI SSDT table with ALIB implementation */
-	PICK_IVRS,      /* IOMMU ACPI IVRS(I/O Virtualization Reporting Structure) table */
-	PICK_CRAT,
-};
-
-AGESA_STATUS agesawrapper_amdinitreset(void);
-AGESA_STATUS agesawrapper_amdinitearly(void);
-AGESA_STATUS agesawrapper_amdinitenv(void);
-AGESA_STATUS agesawrapper_amdinitlate(void);
-AGESA_STATUS agesawrapper_amdinitpost(void);
-AGESA_STATUS agesawrapper_amdinitmid(void);
-void agesawrapper_setlateinitptr (void *Late);
-void *agesawrapper_getlateinitptr(int pick);
-AGESA_STATUS agesawrapper_amdS3Save(void);
-AGESA_STATUS agesawrapper_amdinitresume(void);
-AGESA_STATUS agesawrapper_amds3laterestore(void);
-
-AGESA_STATUS agesawrapper_fchs3earlyrestore(void);
-AGESA_STATUS agesawrapper_fchs3laterestore(void);
-
-VOID OemCustomizeInitEarly (IN	OUT AMD_EARLY_PARAMS *InitEarly);
-const void *agesawrapper_locate_module (const CHAR8 name[8]);
-
-void OemPostParams(AMD_POST_PARAMS *PostParams);
-
-/* TBD: use agesa_helper.h: */
-void amd_initcpuio(void);
-void amd_initmmio(void);
-void *GetHeapBase(void);
-void EmptyHeap(void);
-
-#endif /* _AGESAWRAPPER_H_ */
+/* Use a common header file until references get removed. */
+#include <../agesa/agesawrapper.h>

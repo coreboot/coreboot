@@ -16,7 +16,7 @@
 #ifndef _AGESAWRAPPER_H_
 #define _AGESAWRAPPER_H_
 
-#if IS_ENABLED(CONFIG_AGESA_LEGACY_WRAPPER)
+#if IS_ENABLED(CONFIG_AGESA_LEGACY_WRAPPER) || IS_ENABLED(CONFIG_CPU_AMD_PI)
 
 #include <stdint.h>
 #include "Porting.h"
@@ -39,6 +39,19 @@ AGESA_STATUS agesawrapper_fchs3laterestore(void);
 #define AGESA_EVENTLOG(status, stdheader) \
 	agesawrapper_trace(status, stdheader, __func__)
 
+#else
+
+/* Defined to make unused agesa_main() build. */
+static inline int agesawrapper_amdinitreset(void) { return -1; }
+static inline int agesawrapper_amdinitearly(void) { return -1; }
+static inline int agesawrapper_amdinitenv(void) { return -1; }
+static inline int agesawrapper_amdinitpost(void) { return -1; }
+static inline int agesawrapper_amdinitresume(void) { return -1; }
+static inline int agesawrapper_amds3laterestore(void) { return -1; }
+
+#endif
+
+#if IS_ENABLED(CONFIG_AGESA_LEGACY_WRAPPER)
 struct OEM_HOOK
 {
 	/* romstage */
@@ -50,17 +63,13 @@ struct OEM_HOOK
 };
 
 extern const struct OEM_HOOK OemCustomize;
+#endif
 
-#else
+#if IS_ENABLED(CONFIG_CPU_AMD_PI)
+const void *agesawrapper_locate_module (const CHAR8 name[8]);
 
-/* Defined to make unused agesa_main() build. */
-static inline int agesawrapper_amdinitreset(void) { return -1; }
-static inline int agesawrapper_amdinitearly(void) { return -1; }
-static inline int agesawrapper_amdinitenv(void) { return -1; }
-static inline int agesawrapper_amdinitpost(void) { return -1; }
-static inline int agesawrapper_amdinitresume(void) { return -1; }
-static inline int agesawrapper_amds3laterestore(void) { return -1; }
-
-#endif /* IS_ENABLED(CONFIG_AGESA_LEGACY_WRAPPER) */
+VOID OemCustomizeInitEarly (IN OUT AMD_EARLY_PARAMS *InitEarly);
+void OemPostParams(AMD_POST_PARAMS *PostParams);
+#endif
 
 #endif /* _AGESAWRAPPER_H_ */

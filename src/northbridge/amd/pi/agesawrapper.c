@@ -21,6 +21,7 @@
 #include <cpuRegisters.h>
 #include <FchPlatform.h>
 #include <heapManager.h>
+#include <northbridge/amd/agesa/agesa_helper.h>
 #include <northbridge/amd/agesa/state_machine.h>
 #include <northbridge/amd/pi/agesawrapper.h>
 #include <northbridge/amd/agesa/BiosCallOuts.h>

@@ -19,12 +19,16 @@
 #include <cbmem.h>
 #include "hudson.h"
 
+#if !ENV_RAMSTAGE || IS_ENABLED(CONFIG_LATE_CBMEM_INIT)
+
 int acpi_get_sleep_type(void)
 {
 	u16 tmp = inw(ACPI_PM1_CNT_BLK);
 	tmp = ((tmp & (7 << 10)) >> 10);
 	return (int)tmp;
 }
+
+#endif
 
 void backup_top_of_low_cacheable(uintptr_t ramtop)
 {

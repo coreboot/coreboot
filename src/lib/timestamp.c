@@ -299,6 +299,34 @@ static void timestamp_sync_cache_to_cbmem(int is_recovery)
 	ts_cache->cache_state = TIMESTAMP_CACHE_NOT_NEEDED;
 }
 
+void timestamp_rescale_table(uint16_t N, uint16_t M)
+{
+	uint32_t i;
+	struct timestamp_table *ts_table;
+
+	if (!timestamp_should_run())
+		return;
+
+	if (N == 0 || M == 0)
+		return;
+
+	ts_table = timestamp_table_get();
+
+	/* No timestamp table found */
+	if (ts_table == NULL) {
+		printk(BIOS_ERR, "ERROR: No timestamp table found\n");
+		return;
+	}
+
+	ts_table->base_time /= M;
+	ts_table->base_time *= N;
+	for (i = 0; i < ts_table->num_entries; i++) {
+		struct timestamp_entry *tse = &ts_table->entries[i];
+		tse->entry_stamp /= M;
+		tse->entry_stamp *= N;
+	}
+}
+
 ROMSTAGE_CBMEM_INIT_HOOK(timestamp_sync_cache_to_cbmem)
 RAMSTAGE_CBMEM_INIT_HOOK(timestamp_sync_cache_to_cbmem)
 

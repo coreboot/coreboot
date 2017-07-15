@@ -36,10 +36,15 @@ void timestamp_init(uint64_t base);
 void timestamp_add(enum timestamp_id id, uint64_t ts_time);
 /* Calls timestamp_add with current timestamp. */
 void timestamp_add_now(enum timestamp_id id);
+
+/* Apply a factor of N/M to all timestamps recorded so far. */
+void timestamp_rescale_table(uint16_t N, uint16_t M);
+
 #else
 #define timestamp_init(base)
 #define timestamp_add(id, time)
 #define timestamp_add_now(id)
+#define timestamp_rescale_table(N, M)
 #endif
 
 /* Implemented by the architecture code */

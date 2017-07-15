@@ -30,6 +30,12 @@ static void mainboard_gpio_smi_sleep(u8 slp_typ)
 {
 	/* Power down the rails on any sleep type */
 	gpio_set(EN_PP3300_DX_CAM, 0);
+
+	/* Assert TOUSHCREEN_STOP_L */
+	gpio_set(GPP_E11, 0);
+
+	/* Turn off touchscreen power */
+	gpio_set(GPP_C22, 0);
 }
 
 void mainboard_smi_sleep(u8 slp_typ)

@@ -45,6 +45,10 @@ void set_late_cbmem_top(uintptr_t ramtop)
 /* Top of CBMEM is at highest usable DRAM address below 4GiB. */
 uintptr_t __attribute__((weak)) restore_cbmem_top(void)
 {
+	if (IS_ENABLED(CONFIG_LATE_CBMEM_INIT) && ENV_ROMSTAGE)
+		if (!acpi_is_wakeup_s3())
+			return 0;
+
 	return restore_top_of_low_cacheable();
 }
 

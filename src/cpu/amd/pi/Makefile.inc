@@ -17,8 +17,6 @@ subdirs-$(CONFIG_CPU_AMD_PI_00630F01) += 00630F01
 subdirs-$(CONFIG_CPU_AMD_PI_00730F01) += 00730F01
 subdirs-$(CONFIG_CPU_AMD_PI_00660F01) += 00660F01
 
-ramstage-$(CONFIG_SPI_FLASH) += spi.c
-
 cpu_incs-y += $(src)/cpu/amd/agesa/cache_as_ram.inc
 
 romstage-y += romstage.c

@@ -629,9 +629,6 @@ static void domain_read_resources(device_t dev)
 
 static void domain_enable_resources(device_t dev)
 {
-	if (acpi_is_wakeup_s3())
-		agesawrapper_fchs3laterestore();
-
 	/* Must be called after PCI enumeration and resource allocation */
 	if (!acpi_is_wakeup_s3()) {
 		/* Enable MMIO on AMD CPU Address Map Controller */

@@ -1061,8 +1061,7 @@ static void gma_func0_init(struct device *dev)
 			       gtt_res->base);
 			if (IS_ENABLED(CONFIG_MAINBOARD_USE_LIBGFXINIT)) {
 				int lightup_ok;
-				gma_gfxinit(gtt_res->base, lfb_res->base,
-					    physbase, &lightup_ok);
+				gma_gfxinit(&lightup_ok);
 			} else {
 				intel_gma_init(conf, res2mmio(gtt_res, 0, 0),
 					physbase, pio_res->base, lfb_res->base);

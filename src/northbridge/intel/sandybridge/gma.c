@@ -648,8 +648,7 @@ static void gma_func0_init(struct device *dev)
 
 		int lightup_ok;
 		if (IS_ENABLED(CONFIG_MAINBOARD_USE_LIBGFXINIT)) {
-			gma_gfxinit((uintptr_t)mmiobase, graphics_base,
-				    physbase, &lightup_ok);
+			gma_gfxinit(&lightup_ok);
 		} else {
 			lightup_ok = i915lightup_sandy(&conf->gfx, physbase,
 					iobase, mmiobase, graphics_base);

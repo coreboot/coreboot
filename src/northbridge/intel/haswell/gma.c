@@ -456,12 +456,6 @@ static void gma_func0_init(struct device *dev)
 {
 	int lightup_ok = 0;
 	u32 reg32;
-	u64 physbase;
-	const struct resource *const linearfb_res =
-		find_resource(dev, PCI_BASE_ADDRESS_2);
-
-	if (!linearfb_res || !linearfb_res->base)
-		return;
 
 	/* IGD needs to be Bus Master */
 	reg32 = pci_read_config32(dev, PCI_COMMAND);
@@ -476,9 +470,7 @@ static void gma_func0_init(struct device *dev)
 
 	if (IS_ENABLED(CONFIG_MAINBOARD_USE_LIBGFXINIT)) {
 		printk(BIOS_SPEW, "NATIVE graphics, run native enable\n");
-		physbase = pci_read_config32(dev, 0x5c) & ~0xf;
-		gma_gfxinit(gtt_res->base, linearfb_res->base,
-			physbase, &lightup_ok);
+		gma_gfxinit(&lightup_ok);
 		gfx_set_init_done(1);
 	}
 

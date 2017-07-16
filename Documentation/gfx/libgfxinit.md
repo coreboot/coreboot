@@ -39,22 +39,13 @@ GMA: Hook-up in Chipset Initialization
 Both configurations described above implement a procedure
 `GMA.gfxinit()`:
 
-    procedure gfxinit
-      (mmio_base   : in     word64;
-       linear_fb   : in     word64;
-       phys_fb     : in     word32;
-       lightup_ok  :    out int);
+    procedure gfxinit (lightup_ok : out int);
 
 This procedure is exported as the C function `gma_gfxinit()` as
 follows:
 
-    void gma_gfxinit(uint64_t mmio_base, uint64_t linear_fb,
-                     uint32_t phys_fb, int *lightup_ok);
+    void gma_gfxinit(int *lightup_ok);
 
-* `mmio_base`:  the base address of the GMA's MMIO resource
-* `linear_fb`:  the base address of the GMA's GTT window resource
-* `phys_fb`:    the physical address where the framebuffer should be
-                stored (usually the GMA's stolen memory)
 * `lightup_ok`: returns whether the initialization succeeded `1` or
                 failed `0`. Currently, only the case that no display
                 could be found counts as failure. A failure at a la-

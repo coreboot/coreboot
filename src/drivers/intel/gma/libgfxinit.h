@@ -14,6 +14,6 @@
 #ifndef DRIVERS_INTEL_GMA_LIBGFXINIT_H
 #define DRIVERS_INTEL_GMA_LIBGFXINIT_H
 
-void gma_gfxinit(u64 mmio_base, u64 linear_fb, u32 phys_fb, int *success);
+void gma_gfxinit(int *lightup_ok);
 
 #endif

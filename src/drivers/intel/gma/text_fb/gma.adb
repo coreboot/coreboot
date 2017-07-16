@@ -22,11 +22,7 @@ is
 
    ----------------------------------------------------------------------------
 
-   procedure gfxinit
-     (mmio_base   : in     word64;
-      linear_fb   : in     word64;
-      phys_fb     : in     word32;
-      lightup_ok  :    out Interfaces.C.int)
+   procedure gfxinit (lightup_ok : out Interfaces.C.int)
    is
       ports : Port_List;
       configs : Pipe_Configs;
@@ -41,9 +37,7 @@ is
    begin
       lightup_ok := 0;
 
-      HW.GFX.GMA.Initialize
-        (MMIO_Base   => mmio_base,
-         Success     => success);
+      HW.GFX.GMA.Initialize (Success => success);
 
       if success then
          ports := Mainboard.ports;

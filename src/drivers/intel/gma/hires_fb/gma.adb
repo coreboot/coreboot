@@ -50,13 +50,10 @@ is
 
    ----------------------------------------------------------------------------
 
-   procedure gfxinit
-     (mmio_base   : in     word64;
-      linear_fb   : in     word64;
-      phys_fb     : in     word32;
-      lightup_ok  :    out Interfaces.C.int)
+   procedure gfxinit (lightup_ok : out Interfaces.C.int)
    is
       use type pos32;
+      use type word64;
 
       ports : Port_List;
       configs : Pipe_Configs;
@@ -68,9 +65,7 @@ is
    begin
       lightup_ok := 0;
 
-      HW.GFX.GMA.Initialize
-        (MMIO_Base   => mmio_base,
-         Success     => success);
+      HW.GFX.GMA.Initialize (Success => success);
 
       if success then
          ports := Mainboard.ports;
@@ -98,15 +93,19 @@ is
 
             HW.GFX.GMA.Dump_Configs (configs);
 
-            HW.GFX.GMA.Setup_Default_GTT (fb, phys_fb);
-            HW.GFX.Framebuffer_Filler.Fill (linear_fb, fb);
+            HW.GFX.GMA.Setup_Default_FB
+              (FB       => fb,
+               Clear    => true,
+               Success  => success);
 
-            HW.GFX.GMA.Update_Outputs (configs);
+            if success then
+               HW.GFX.GMA.Update_Outputs (configs);
 
-            linear_fb_addr := linear_fb;
-            fb_valid := true;
+               HW.GFX.GMA.Map_Linear_FB (linear_fb_addr, fb);
+               fb_valid := linear_fb_addr /= 0;
 
-            lightup_ok := 1;
+               lightup_ok := (if fb_valid then 1 else 0);
+            end if;
          end if;
       end if;
    end gfxinit;

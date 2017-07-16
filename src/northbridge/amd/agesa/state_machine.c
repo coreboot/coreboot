@@ -19,6 +19,7 @@
 
 #include <arch/acpi.h>
 #include <bootstate.h>
+#include <cbfs.h>
 #include <cbmem.h>
 
 #include <northbridge/amd/agesa/state_machine.h>
@@ -29,25 +30,64 @@
 
 #include "AMD.h"
 #include "heapManager.h"
-#include "Dispatcher.h"
 
+#if IS_ENABLED(CONFIG_CPU_AMD_AGESA_OPENSOURCE)
+#include "Dispatcher.h"
+#endif
 
 #if ENV_ROMSTAGE
 #include <PlatformMemoryConfiguration.h>
 CONST PSO_ENTRY ROMDATA DefaultPlatformMemoryConfiguration[] = {PSO_END};
 #endif
 
+static void agesa_locate_image(AMD_CONFIG_PARAMS *StdHeader)
+{
+#if IS_ENABLED(CONFIG_CPU_AMD_AGESA_BINARY_PI)
+	const char ModuleIdentifier[] = AGESA_ID;
+	const void *agesa, *image;
+	size_t file_size;
+
+	agesa = cbfs_boot_map_with_leak((const char *)CONFIG_AGESA_CBFS_NAME,
+			CBFS_TYPE_RAW, &file_size);
+	if (agesa == NULL)
+		return;
+
+	image = LibAmdLocateImage(agesa, agesa + file_size, 4096,
+		ModuleIdentifier);
+	StdHeader->ImageBasePtr = (void*) image;
+#endif
+}
+
 void agesa_set_interface(struct sysinfo *cb)
 {
 	memset(&cb->StdHeader, 0, sizeof(AMD_CONFIG_PARAMS));
 
 	cb->StdHeader.CalloutPtr = GetBiosCallout;
+
+	if (IS_ENABLED(CONFIG_CPU_AMD_AGESA_BINARY_PI)) {
+		agesa_locate_image(&cb->StdHeader);
+		AMD_IMAGE_HEADER *image =
+			(void*)(uintptr_t)cb->StdHeader.ImageBasePtr;
+		ASSERT(image);
+		AMD_MODULE_HEADER *module =
+			(void*)(uintptr_t)image->ModuleInfoOffset;
+		ASSERT(module && module->ModuleDispatcher);
+	}
 }
 
 AGESA_STATUS module_dispatch(AGESA_STRUCT_NAME func,
 	AMD_CONFIG_PARAMS *StdHeader)
 {
-	MODULE_ENTRY dispatcher = AmdAgesaDispatcher;
+	MODULE_ENTRY dispatcher;
+
+#if IS_ENABLED(CONFIG_CPU_AMD_AGESA_OPENSOURCE)
+	dispatcher = AmdAgesaDispatcher;
+#endif
+#if IS_ENABLED(CONFIG_CPU_AMD_AGESA_BINARY_PI)
+	AMD_IMAGE_HEADER *image = (void*)(uintptr_t)StdHeader->ImageBasePtr;
+	AMD_MODULE_HEADER *module = (void*)(uintptr_t)image->ModuleInfoOffset;
+	dispatcher = module->ModuleDispatcher;
+#endif
 
 	StdHeader->Func = func;
 	return dispatcher(StdHeader);

@@ -22,8 +22,7 @@
 #include <cpu/x86/msr.h>
 #include <cpu/amd/gx2def.h>
 #include <spd.h>
-#include "southbridge/amd/cs5536/early_smbus.c"
-#include "southbridge/amd/cs5536/early_setup.c"
+#include <southbridge/amd/cs5536/cs5536.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 

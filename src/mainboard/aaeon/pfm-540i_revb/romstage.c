@@ -28,8 +28,6 @@
 #include <cpu/amd/lxdef.h>
 #include <southbridge/amd/cs5536/cs5536.h>
 #include <spd.h>
-#include "southbridge/amd/cs5536/early_smbus.c"
-#include "southbridge/amd/cs5536/early_setup.c"
 #include <superio/smsc/smscsuperio/smscsuperio.h>
 #include <northbridge/amd/lx/raminit.h>
 

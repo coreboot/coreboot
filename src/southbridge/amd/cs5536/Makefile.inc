@@ -15,6 +15,9 @@
 
 ifeq ($(CONFIG_SOUTHBRIDGE_AMD_CS5536),y)
 
+romstage-y += early_smbus.c
+romstage-y += early_setup.c
+
 ramstage-y += cs5536.c
 ramstage-y += ide.c
 ramstage-y += pirq.c

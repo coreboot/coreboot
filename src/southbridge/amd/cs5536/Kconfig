@@ -16,3 +16,12 @@
 config SOUTHBRIDGE_AMD_CS5536
 	bool
 	select UDELAY_TSC
+
+if SOUTHBRIDGE_AMD_CS5536
+
+config NO_EARLY_SMBUS
+	def_bool n
+	help
+	  Skip the CS5536 early SMBUS initialization.
+
+endif

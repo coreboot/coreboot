@@ -442,6 +442,10 @@
 #if defined(__PRE_RAM__)
 void cs5536_setup_onchipuart(int uart);
 void cs5536_disable_internal_uart(void);
+void cs5536_early_setup(void);
+
+void cs5536_enable_smbus(void);
+int smbus_read_byte(unsigned device, unsigned address);
 #else
 void chipsetinit(void);
 #endif

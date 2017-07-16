@@ -27,8 +27,6 @@
 #include <cpu/amd/lxdef.h>
 #include <southbridge/amd/cs5536/cs5536.h>
 #include <spd.h>
-#include "southbridge/amd/cs5536/early_smbus.c"
-#include "southbridge/amd/cs5536/early_setup.c"
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627hf/w83627hf.h>
 #include <northbridge/amd/lx/raminit.h>

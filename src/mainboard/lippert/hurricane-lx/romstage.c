@@ -27,9 +27,8 @@
 #include <cpu/x86/msr.h>
 #include <cpu/amd/lxdef.h>
 #include <southbridge/amd/cs5536/cs5536.h>
+#include <southbridge/amd/cs5536/smbus.h>
 #include <spd.h>
-#include "southbridge/amd/cs5536/early_smbus.c"
-#include "southbridge/amd/cs5536/early_setup.c"
 #include <superio/ite/common/ite.h>
 #include <superio/ite/it8712f/it8712f.h>
 #include <northbridge/amd/lx/raminit.h>

@@ -21,11 +21,6 @@
 #include <northbridge/amd/agesa/state_machine.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
 
-void platform_once(struct sysinfo *cb)
-{
-	board_BeforeAgesa(cb);
-}
-
 void agesa_main(struct sysinfo *cb)
 {
 	post_code(0x37);

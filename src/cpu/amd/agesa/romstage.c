@@ -33,6 +33,11 @@ void asmlinkage early_all_cores(void)
 	amd_initmmio();
 }
 
+void __attribute__((weak)) platform_once(struct sysinfo *cb)
+{
+	board_BeforeAgesa(cb);
+}
+
 static void fill_sysinfo(struct sysinfo *cb)
 {
 	memset(cb, 0, sizeof(*cb));

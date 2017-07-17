@@ -22,6 +22,9 @@ DefinitionBlock(
 	0x20110725	// OEM revision
 )
 {
+	/* generic macros */
+	#include <soc/intel/apollolake/acpi/platform.asl>
+
 	/* global NVS and variables */
 	#include <soc/intel/apollolake/acpi/globalnvs.asl>
 

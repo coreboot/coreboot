@@ -63,8 +63,6 @@ void platform_BeforeS3LateRestore(struct sysinfo *cb, AMD_S3LATE_PARAMS *S3Late)
 void platform_AfterS3LateRestore(struct sysinfo *cb, AMD_S3LATE_PARAMS *S3Late)
 {
 	amd_initcpuio();
-
-	fchs3earlyrestore();
 }
 
 void platform_BeforeInitMid(struct sysinfo *cb, AMD_MID_PARAMS *Mid)
@@ -74,9 +72,6 @@ void platform_BeforeInitMid(struct sysinfo *cb, AMD_MID_PARAMS *Mid)
 
 void platform_AfterInitLate(struct sysinfo *cb, AMD_LATE_PARAMS *Late)
 {
-	/* FIXME: not reached S3 path */
-	if (cb->s3resume)
-		fchs3laterestore();
 }
 
 void platform_AfterS3Save(struct sysinfo *cb, AMD_S3SAVE_PARAMS *S3Save)

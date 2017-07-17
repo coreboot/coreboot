@@ -27,30 +27,6 @@
 #include "s3_resume.h"
 #include <northbridge/amd/agesa/agesa_helper.h>
 
-static void move_stack_high_mem(void)
-{
-	uintptr_t high_stack = romstage_ram_stack_base(HIGH_ROMSTAGE_STACK_SIZE,
-		ROMSTAGE_STACK_CBMEM);
-	if (!high_stack)
-		halt();
-
-	/* TODO: Make the switch with empty stack instead. */
-	memcpy((void*)high_stack, (void *)BSP_STACK_BASE_ADDR, HIGH_ROMSTAGE_STACK_SIZE);
-
-	/* TODO: We only switch stack on BSP. */
-#ifdef __x86_64__
-	__asm__
-	    volatile ("add	%0, %%rsp; add %0, %%rbp; invd"::"g"
-		      (high_stack - BSP_STACK_BASE_ADDR)
-		      :);
-#else
-	__asm__
-	    volatile ("add	%0, %%esp; add %0, %%ebp; invd"::"g"
-		      (high_stack - BSP_STACK_BASE_ADDR)
-		      :);
-#endif
-}
-
 void set_resume_cache(void)
 {
 	msr_t msr;
@@ -74,22 +50,4 @@ void set_resume_cache(void)
 	wrmsr(MTRR_DEF_TYPE_MSR, msr);
 
 	enable_cache();
-}
-
-void prepare_for_resume(void)
-{
-	if (cbmem_recovery(1)) {
-		printk(BIOS_EMERG, "Unable to recover CBMEM\n");
-		halt();
-	}
-
-	post_code(0x62);
-	printk(BIOS_DEBUG, "Move CAR stack.\n");
-	move_stack_high_mem();
-
-	post_code(0x63);
-	disable_cache_as_ram();
-	printk(BIOS_DEBUG, "CAR disabled.\n");
-	set_resume_cache();
-
 }

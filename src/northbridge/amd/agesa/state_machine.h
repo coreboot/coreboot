@@ -38,10 +38,6 @@ AGESA_STATUS OemS3LateRestore(AMD_S3_PARAMS *dataBlock);
 AGESA_STATUS OemS3Save(AMD_S3_PARAMS *dataBlock);
 #endif
 
-/* For FCH */
-static inline void fchs3earlyrestore(void) { }
-static inline void fchs3laterestore(void) { }
-
 struct sysinfo
 {
 	AMD_CONFIG_PARAMS StdHeader;

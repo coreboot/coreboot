@@ -91,7 +91,7 @@ static void igd_init(struct device *dev)
 		gtt_write(DDI_BUF_CTL_A, ddi_buf_ctl);
 	}
 
-	if (IS_ENABLED(CONFIG_ADD_VBT_DATA_FILE))
+	if (IS_ENABLED(CONFIG_INTEL_GMA_ADD_VBT_DATA_FILE))
 		return;
 
 	/* IGD needs to be Bus Master */
@@ -141,7 +141,7 @@ static unsigned long write_acpi_igd_opregion(device_t device,
 	igd_opregion_t *opregion;
 
 	/* If GOP is not used, exit here */
-	if (!IS_ENABLED(CONFIG_ADD_VBT_DATA_FILE))
+	if (!IS_ENABLED(CONFIG_INTEL_GMA_ADD_VBT_DATA_FILE))
 		return current;
 
 	/* If IGD is disabled, exit here */

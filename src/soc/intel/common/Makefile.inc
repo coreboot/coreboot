@@ -92,8 +92,4 @@ $(foreach mma_test, $(MMA_TEST_CONFIG_NAMES),\
 
 endif
 
-cbfs-files-$(CONFIG_ADD_VBT_DATA_FILE) += vbt.bin
-vbt.bin-file := $(call strip_quotes,$(CONFIG_VBT_FILE))
-vbt.bin-type := raw
-
 endif

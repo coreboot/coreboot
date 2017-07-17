@@ -21,6 +21,10 @@ endif
 ramstage-$(CONFIG_INTEL_GMA_ACPI) += acpi.c
 ramstage-$(CONFIG_INTEL_GMA_ACPI) += opregion.c
 
+cbfs-files-$(CONFIG_INTEL_GMA_ADD_VBT_DATA_FILE) += vbt.bin
+vbt.bin-file := $(call strip_quotes,$(CONFIG_INTEL_GMA_VBT_FILE))
+vbt.bin-type := raw
+
 ifeq ($(CONFIG_MAINBOARD_USE_LIBGFXINIT),y)
 
 $(call add-special-class,gfxinit)

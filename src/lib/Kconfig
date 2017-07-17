@@ -5,3 +5,21 @@ config NO_EDID_FILL_FB
 	  Don't include default fill_lb_framebuffer() implementation. Select
 	  this if your drivers uses MAINBOARD_DO_NATIVE_VGA_INIT but provides
 	  its own fill_lb_framebuffer() implementation.
+
+config RAMSTAGE_ADA
+	bool
+	help
+	  Selected by features that use Ada code in ramstage.
+
+config RAMSTAGE_LIBHWBASE
+	bool
+	select RAMSTAGE_ADA
+	help
+	  Selected by features that require `libhwbase` in ramstage.
+
+if RAMSTAGE_LIBHWBASE
+
+config HWBASE_DYNAMIC_MMIO
+	def_bool y
+
+endif

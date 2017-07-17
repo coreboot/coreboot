@@ -288,8 +288,21 @@ $(obj)/%.elf.rmod: $(obj)/%.elf | $(RMODTOOL)
 
 ifeq ($(CONFIG_RAMSTAGE_LIBHWBASE),y)
 
+to-ada-hex = $(eval $(1) := 16\\\#$(patsubst 0x%,%,$($(1)))\\\#)
+
+$(call to-ada-hex,CONFIG_HWBASE_DEFAULT_MMCONF)
+
 $(call add-special-class,hw)
 hw-handler = $(eval ramstage-srcs += $$(addprefix $(1),$(2)))
+
+$(call add-special-class,hw-gen)
+hw-gen-handler = \
+	$(eval additional-dirs += $(dir $(2))) \
+	$(eval ramstage-srcs += $(2)) \
+	$(eval ramstage-ads-deps += $(2)) \
+	$(eval ramstage-adb-deps += $(2)) \
+	$(eval $(2): $(obj)/config.h)
+
 subdirs-y += ../../3rdparty/libhwbase
 
 ramstage-$(CONFIG_HAVE_MONOTONIC_TIMER) += hw-time-timer.adb

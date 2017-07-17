@@ -714,8 +714,8 @@ if [ "$customizing" = "" ]; then
 	customizing="default configuration"
 fi
 
-FAILED_BOARDS="$TOP/$TARGET/failed_boards"
-PASSED_BOARDS="$TOP/$TARGET/passing_boards"
+FAILED_BOARDS="$TARGET/failed_boards"
+PASSED_BOARDS="$TARGET/passing_boards"
 
 if [ "$recursive" = "false" ]; then
 	rm -f "$FAILED_BOARDS" "$PASSED_BOARDS"
@@ -786,7 +786,7 @@ build_targets()
 		junitfile "$TARGET/sharedutils/make.log"
 		junit "</failure>"
 		junit "</testcase>"
-		echo "Shared Utilities - Log: ${TOP}/$TARGET/sharedutils/make.log" >> "$FAILED_BOARDS"
+		echo "Shared Utilities - Log: $TARGET/sharedutils/make.log" >> "$FAILED_BOARDS"
 		return
 	fi
 

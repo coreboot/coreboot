@@ -21,11 +21,6 @@
 #include <northbridge/amd/agesa/state_machine.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
 
-void asmlinkage early_all_cores(void)
-{
-	amd_initmmio();
-}
-
 void platform_once(struct sysinfo *cb)
 {
 	board_BeforeAgesa(cb);

@@ -25,11 +25,6 @@
 #include "SbPlatform.h"
 #include "platform_cfg.h"
 
-void asmlinkage early_all_cores(void)
-{
-	amd_initmmio();
-}
-
 void platform_once(struct sysinfo *cb)
 {
 	gpioEarlyInit();

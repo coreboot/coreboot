@@ -28,6 +28,11 @@
 #include <northbridge/amd/agesa/agesa_helper.h>
 #include <northbridge/amd/agesa/state_machine.h>
 
+void asmlinkage early_all_cores(void)
+{
+	amd_initmmio();
+}
+
 static void fill_sysinfo(struct sysinfo *cb)
 {
 	memset(cb, 0, sizeof(*cb));

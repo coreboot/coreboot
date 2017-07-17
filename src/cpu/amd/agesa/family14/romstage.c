@@ -23,11 +23,6 @@
 
 #include <sb_cimx.h>
 
-void asmlinkage early_all_cores(void)
-{
-	amd_initmmio();
-}
-
 void platform_once(struct sysinfo *cb)
 {
 	sb_Poweron_Init();

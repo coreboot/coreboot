@@ -26,6 +26,7 @@
 #include <romstage_handoff.h>
 #include <smp/node.h>
 #include <string.h>
+#include <timestamp.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
 #include <northbridge/amd/agesa/state_machine.h>
 
@@ -60,6 +61,9 @@ void * asmlinkage romstage_main(unsigned long bist)
 
 	if ((initial_apic_id == 0) && boot_cpu()) {
 
+		timestamp_init(timestamp_get());
+		timestamp_add_now(TS_START_ROMSTAGE);
+
 		platform_once(cb);
 
 		console_init();
@@ -77,10 +81,16 @@ void * asmlinkage romstage_main(unsigned long bist)
 
 		agesa_execute_state(cb, AMD_INIT_EARLY);
 
+		timestamp_add_now(TS_BEFORE_INITRAM);
+
 		if (!cb->s3resume)
 			agesa_execute_state(cb, AMD_INIT_POST);
 		else
 			agesa_execute_state(cb, AMD_INIT_RESUME);
+
+		/* FIXME: Detect if TSC frequency changed during raminit? */
+		timestamp_rescale_table(1, 4);
+		timestamp_add_now(TS_AFTER_INITRAM);
 
 	} else {
 

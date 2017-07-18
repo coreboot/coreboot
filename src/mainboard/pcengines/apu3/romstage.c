@@ -31,7 +31,6 @@
 #include <cpu/x86/bist.h>
 #include <cpu/x86/lapic.h>
 #include <southbridge/amd/pi/hudson/hudson.h>
-#include <cpu/amd/pi/s3_resume.h>
 #include <Fch/Fch.h>
 #include "gpio_ftns.h"
 #include <build.h>

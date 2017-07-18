@@ -16,7 +16,6 @@
 #include <arch/acpi.h>
 #include <arch/io.h>
 #include <console/console.h>
-#include <cpu/amd/pi/s3_resume.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_def.h>

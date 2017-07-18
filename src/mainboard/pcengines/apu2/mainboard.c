@@ -209,9 +209,6 @@ static void mainboard_enable(device_t dev)
 	//
 	pm_write8 ( PM_RTC_SHADOW, pm_read8( PM_RTC_SHADOW ) | (1 << 0));
 
-	if (acpi_is_wakeup_s3())
-		agesawrapper_fchs3earlyrestore();
-
 	/* Initialize the PIRQ data structures for consumption */
 	pirq_setup();
 }

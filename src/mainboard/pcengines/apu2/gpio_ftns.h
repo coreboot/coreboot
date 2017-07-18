@@ -41,10 +41,18 @@ int get_spd_offset(void);
 #define IOMUX_GPIO_68   0x48    // PE4_WDIS
 #define IOMUX_GPIO_71   0x4D    // PROCHOT
 
-#define GPIO_OUTPUT_ENABLE      BIT7
-#define GPIO_OUTPUT_VALUE       BIT6
-#define GPIO_PULL_DOWN_ENABLE   BIT5
-#define GPIO_PULL_UP_ENABLE     BIT4
+#define GPIO_32   0x164    // MODESW
+#define GPIO_49   0x100    // STRAP0
+#define GPIO_50   0x104    // STRAP1
+#define GPIO_51   0x108    // PE3 Reset
+#define GPIO_55   0x10C    // PE4 Reset
+#define GPIO_57   0x110    // LED1#
+#define GPIO_58   0x114    // LED2#
+#define GPIO_59   0x118    // LED3#
+#define GPIO_64   0x11C    // PE3_WDIS
+#define GPIO_66   0x16C    // SPKR
+#define GPIO_68   0x120    // PE4_WDIS
+#define GPIO_71   0x134    // PROCHOT
 
 #define GPIO_OUTPUT_ENABLE      BIT23
 #define GPIO_OUTPUT_VALUE       BIT22

@@ -17,11 +17,13 @@
 #include <PlatformMemoryConfiguration.h>
 
 #define FILECODE PROC_GNB_PCIE_FAMILY_0X15_F15PCIECOMPLEXCONFIG_FILECODE
+
+/* Port descriptor list for Gardenia Rev. B */
 static const PCIe_PORT_DESCRIPTOR PortList[] = {
 	/* Init port descriptor (PCIe port, Lanes 7:4, D2F1) for x4 slot */
 	{
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER(PcieUnusedEngine, 4, 7),
+		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 4, 7),
 		PCIE_PORT_DATA_INITIALIZER_V2(PortEnabled, ChannelTypeExt6db,
 				2, 1,
 				HotplugDisabled,
@@ -32,14 +34,15 @@ static const PCIe_PORT_DESCRIPTOR PortList[] = {
 	/* Initialize Port descriptor (PCIe port, Lanes 1:0, D2F2) for M.2 */
 	{
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER(PcieUnusedEngine, 0, 1),
-		PCIE_PORT_DATA_INITIALIZER_V2(PortDisabled, ChannelTypeExt6db,
+		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 0, 1),
+		PCIE_PORT_DATA_INITIALIZER_V2(PortEnabled, ChannelTypeExt6db,
 				2, 2,
 				HotplugDisabled,
 				PcieGenMaxSupported,
 				PcieGenMaxSupported,
 				AspmL0sL1, 0x17, 0)
 	},
+	/* Disable M.2 x1 on lane 1, D2F3 */
 	{
 		0,
 		PCIE_ENGINE_DATA_INITIALIZER(PcieUnusedEngine, 1, 1),
@@ -72,7 +75,6 @@ static const PCIe_PORT_DESCRIPTOR PortList[] = {
 				PcieGenMaxSupported,
 				AspmL0sL1, 0x16, 0)
 	},
-	/* Initialize Port descriptor (PCIe port, Lane 1, D2F3) for M.2 */
 };
 
 static const PCIe_DDI_DESCRIPTOR DdiList[] = {

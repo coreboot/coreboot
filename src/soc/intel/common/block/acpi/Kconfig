@@ -1,0 +1,6 @@
+config SOC_INTEL_COMMON_BLOCK_ACPI
+	depends on SOC_INTEL_COMMON_BLOCK_CPU
+	depends on SOC_INTEL_COMMON_BLOCK_PMC
+	bool
+	help
+	  Intel Processor common code for ACPI

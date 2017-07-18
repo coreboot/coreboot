@@ -17,8 +17,8 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <intelblocks/acpi.h>
 #include <intelblocks/lpc_lib.h>
-#include <soc/acpi.h>
 #include <soc/pm.h>
 
 /* Common weak definition, needs to be implemented in each soc LPC driver. */

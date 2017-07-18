@@ -17,13 +17,8 @@
 
 #include <arch/hlt.h>
 #include <arch/io.h>
+#include <cpu/intel/reset.h>
 #include <reset.h>
-
-/* Reset control port */
-#define RST_CNT			0xcf9
-#define FULL_RST		(1 << 3)
-#define RST_CPU			(1 << 2)
-#define SYS_RST			(1 << 1)
 
 #if IS_ENABLED(CONFIG_HAVE_HARD_RESET)
 void do_hard_reset(void)

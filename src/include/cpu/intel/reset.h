@@ -1,8 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2016 Intel Corp.
- * (Written by Lance Zhao <lijian.zhao@intel.com> for Intel Corp.)
+ * Copyright (C) 2017 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,14 +14,13 @@
  * GNU General Public License for more details.
  */
 
-#ifndef _SOC_APOLLOLAKE_ACPI_H_
-#define _SOC_APOLLOLAKE_ACPI_H_
+#ifndef CPU_INTEL_RESET_H
+#define CPU_INTEL_RESET_H
 
-#include <arch/acpi.h>
+/* Reset control port */
+#define RST_CNT			0xcf9
+#define FULL_RST		(1 << 3)
+#define RST_CPU			(1 << 2)
+#define SYS_RST			(1 << 1)
 
-unsigned long southbridge_write_acpi_tables(device_t device,
-		unsigned long current, struct acpi_rsdp *rsdp);
-
-void southbridge_inject_dsdt(device_t device);
-
-#endif	/* _SOC_APOLLOLAKE_ACPI_H_ */
+#endif	/* CPU_INTEL_RESET_H */

@@ -202,6 +202,23 @@
 #define  PMC_GPE_W_31_0		9
 #endif
 
+#define IRQ_REG			0x106C
+#define SCI_IRQ_ADJUST		24
+#define SCI_IRQ_SEL		(255 << SCI_IRQ_ADJUST)
+#define SCIS_IRQ9		9
+#define SCIS_IRQ10		10
+#define SCIS_IRQ11		11
+#define SCIS_IRQ20		20
+#define SCIS_IRQ21		21
+#define SCIS_IRQ22		22
+#define SCIS_IRQ23		23
+
+/* P-state configuration */
+#define PSS_MAX_ENTRIES		8
+#define PSS_RATIO_STEP		2
+#define PSS_LATENCY_TRANSITION	10
+#define PSS_LATENCY_BUSMASTER	10
+
 /* Track power state from reset to log events. */
 struct chipset_power_state {
 	uint16_t pm1_sts;

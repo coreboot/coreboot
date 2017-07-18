@@ -55,10 +55,8 @@ void write_gpio(u32 gpio, u8 value)
 int get_spd_offset(void)
 {
 	u8 index = 0;
-	/* One SPD file contains all 4 options, determine which
-	 * index to
-	 * read here, then call into the standard
-	 * routines.
+	/* One SPD file contains all 4 options, determine which index to
+	 * read here, then call into the standard routines.
 	 */
 
 	index = read_gpio(GPIO_49);

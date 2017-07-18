@@ -168,8 +168,8 @@ typedef enum {
   FCH_INIT_LATE              = 0x00043000,
   FCH_INIT_S3_EARLY_RESTORE  = 0x00044000,
   FCH_INIT_S3_LATE_RESTORE   = 0x00045000,
-  AMD_SET_VALUE              = 0x00081000,
-  AMD_GET_VALUE              = 0x00082000
+  AMD_SET_VALUE_invalid      = 0x00081000,
+  AMD_GET_VALUE_invalid      = 0x00082000
 } AGESA_STRUCT_NAME;
 
   /*  ResetType constant values */

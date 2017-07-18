@@ -57,6 +57,46 @@ Scope (\_SB.PCI0.I2C2)
 				)
 		})
 
+		/* Port0 of CAM0 is connected to port0 of CIO2 device */
+		Name (_DSD, Package () {
+			ToUUID ("dbb8e3e6-5886-4ba6-8795-1319f52a966b"),
+			Package () {
+				Package () { "port0", "PRT0" },
+			},
+			ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+			Package () {
+				Package () { "clock-frequency", 19200000 },
+			}
+		})
+
+		Name (PRT0, Package() {
+			ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+			Package () {
+				Package () { "port", 0 },
+			},
+			ToUUID ("dbb8e3e6-5886-4ba6-8795-1319f52a966b"),
+			Package () {
+				Package () { "endpoint0", "EP00" },
+			}
+		})
+
+		Name (EP00, Package() {
+			ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+			Package () {
+				Package () { "endpoint", 0 },
+				Package () { "clock-lanes", 0 },
+				Package () { "data-lanes",
+					Package () { 1, 2, 3, 4 }
+				},
+				Package () { "link-frequencies",
+					Package() { 1190400000, 640000000 }
+				},
+				Package () { "remote-endpoint",
+					Package() { \_SB.PCI0.CIO2, 0, 0 }
+				},
+			}
+		})
+
 		Method (SSDB, 0, Serialized)
 		{
 			Return (Buffer (0x5E)
@@ -142,6 +182,46 @@ Scope (\_SB.PCI0.I2C3)
 			AddressingMode7Bit, "\\_SB.PCI0.I2C3",
 			0x00, ResourceConsumer, ,
 			)
+		})
+
+		/* Port0 of CAM1 is connected to port1 of CIO2 device */
+		Name (_DSD, Package () {
+			ToUUID ("dbb8e3e6-5886-4ba6-8795-1319f52a966b"),
+			Package () {
+				Package () { "port0", "PRT0" },
+			},
+			ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+			Package () {
+				Package () { "clock-frequency", 19200000 },
+			}
+		})
+
+		Name (PRT0, Package() {
+			ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+			Package () {
+				Package () { "port", 0 },
+			},
+			ToUUID ("dbb8e3e6-5886-4ba6-8795-1319f52a966b"),
+			Package () {
+				Package () { "endpoint0", "EP00" },
+			}
+		})
+
+		Name (EP00, Package() {
+			ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+			Package () {
+				Package () { "endpoint", 0 },
+				Package () { "clock-lanes", 0 },
+				Package () { "data-lanes",
+					Package () { 1, 2 }
+				},
+				Package () { "link-frequencies",
+					Package() { 844800000 }
+				},
+				Package () { "remote-endpoint",
+					Package() { \_SB.PCI0.CIO2, 1, 0 }
+				},
+			}
 		})
 
 		Method (SSDB, 0, Serialized)

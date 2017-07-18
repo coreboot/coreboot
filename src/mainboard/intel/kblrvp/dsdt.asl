@@ -36,6 +36,8 @@ DefinitionBlock(
 	Scope (\_SB) {
 		Device (PCI0)
 		{
+                        /* Image processing unit */
+                        #include <soc/intel/skylake/acpi/ipu.asl>
 			#include <soc/intel/skylake/acpi/systemagent.asl>
 			#include <soc/intel/skylake/acpi/pch.asl>
 		}
@@ -45,6 +47,7 @@ DefinitionBlock(
 	}
 
 	/* MIPI camera */
+	#include "acpi/ipu_mainboard.asl"
 	#include "acpi/mipi_camera.asl"
 
 #if IS_ENABLED(CONFIG_CHROMEOS)

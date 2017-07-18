@@ -57,7 +57,7 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 	/* DRAM Config settings */
 	memupd->FspmConfig.Package = 0x1;
 	memupd->FspmConfig.Profile = 0x19;
-	memupd->FspmConfig.MemoryDown = 0x1;
+	memupd->FspmConfig.MemoryDown = 0x5;
 	memupd->FspmConfig.DDR3LPageSize = 0x2;
 	memupd->FspmConfig.DDR3LASR = 0x0;
 	memupd->FspmConfig.ScramblerSupport = 0x0;

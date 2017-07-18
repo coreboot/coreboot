@@ -44,6 +44,9 @@ DefinitionBlock(
 		#include "acpi/dptf.asl"
 	}
 
+	/* MIPI camera */
+	#include "acpi/mipi_camera.asl"
+
 #if IS_ENABLED(CONFIG_CHROMEOS)
 	// Chrome OS specific
 	#include <vendorcode/google/chromeos/acpi/chromeos.asl>

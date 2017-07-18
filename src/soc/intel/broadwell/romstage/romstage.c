@@ -123,11 +123,4 @@ asmlinkage void romstage_after_car(void)
 		;
 }
 
-int get_sw_write_protect_state(void)
-{
-	u8 status;
-	/* Return unprotected status if status read fails. */
-	return early_spi_read_wpsr(&status) ? 0 : !!(status & 0x80);
-}
-
 void __attribute__((weak)) mainboard_pre_console_init(void) {}

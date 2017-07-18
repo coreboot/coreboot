@@ -37,12 +37,6 @@ int get_recovery_mode_switch(void)
 	return 0;
 }
 
-int get_sw_write_protect_state(void)
-{
-	/* Not write protected */
-	return 0;
-}
-
 int get_write_protect_state(void)
 {
 	/* Not write protected */

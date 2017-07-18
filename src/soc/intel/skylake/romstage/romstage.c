@@ -53,14 +53,6 @@ void soc_pre_ram_init(struct romstage_params *params)
 	soc_fill_pei_data(params->pei_data);
 }
 
-int get_sw_write_protect_state(void)
-{
-	u8 status;
-
-	/* Return unprotected status if status read fails. */
-	return fast_spi_flash_read_wpsr(&status) ? 0 : !!(status & 0x80);
-}
-
 /* UPD parameters to be initialized before MemoryInit */
 void soc_memory_init_params(struct romstage_params *params,
 			    MEMORY_INIT_UPD *upd)

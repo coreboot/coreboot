@@ -326,10 +326,3 @@ static void *setup_stack_and_mttrs(void)
 
 	return slot;
 }
-
-int get_sw_write_protect_state(void)
-{
-	u8 status;
-	/* Return unprotected status if status read fails. */
-	return (early_spi_read_wpsr(&status) ? 0 : !!(status & 0x80));
-}

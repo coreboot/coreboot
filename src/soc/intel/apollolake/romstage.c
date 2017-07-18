@@ -384,16 +384,3 @@ void mainboard_save_dimm_info(void)
 {
 	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
 }
-
-int get_sw_write_protect_state(void)
-{
-	uint8_t status;
-	const struct spi_flash *flash;
-
-	flash = boot_device_spi_flash();
-	if (!flash)
-		return 0;
-
-	/* Return unprotected status if status read fails. */
-	return spi_flash_status(flash, &status) ? 0 : !!(status & 0x80);
-}

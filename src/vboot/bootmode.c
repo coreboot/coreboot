@@ -147,12 +147,6 @@ int __attribute__((weak)) clear_recovery_mode_switch(void)
 	return 0;
 }
 
-int __attribute__((weak)) get_sw_write_protect_state(void)
-{
-	// Can be implemented by a platform / mainboard
-	return 0;
-}
-
 void __attribute__((weak)) log_recovery_mode_switch(void)
 {
 	// Weak implementation. Nothing to do.

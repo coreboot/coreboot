@@ -1022,6 +1022,9 @@ fi
 # Set up host compiler and flags needed for various OSes
 
 if is_package_enabled "GCC"; then
+# sane preset: let the configure script figure out things by itself
+# more importantly, avoid any values that might already linger in the variable
+OPTIONS="ABI="
 if [ $UNAME = "Darwin" ]; then
 	#GCC_OPTIONS="$GCC_OPTIONS --enable-threads=posix"
 

@@ -1522,132 +1522,119 @@ typedef struct {
 **/
   UINT64                      SgxEpoch1;
 
-/** Offset 0x0343 - Selective enable SGX
-  Selective enable SGX. 0xFFFF(Default).
-**/
-  UINT16                      SelectiveEnableSgx;
-
-/** Offset 0x0345 - SGX debug mode
-  Select SGX mode. 0:Disable(default), 1:Enable
-  0:Disable(default), 1:Enable
-**/
-  UINT8                       SgxDebugMode;
-
-/** Offset 0x0346 - MicrocodePatchAddress
+/** Offset 0x0343 - MicrocodePatchAddress
   MicrocodePatchAddress. 0x0(Default).
 **/
   UINT64                      MicrocodePatchAddress;
 
-/** Offset 0x034E - SGX Launch Control Policy Mode
-  Select Launch Control Policy Mode. 0:Intel - Default, 1:Per-boot Select mode(default)
-  0:Intel - Default, 1:Per-boot Select mode(default)
-**/
-  UINT8                       LcpMode;
-
-/** Offset 0x034F - LE KeyHash0
-  LE KeyHash0. 0x0(Default).
-**/
-  UINT64                      SgxLeKeyHash0;
-
-/** Offset 0x0357 - LE KeyHash1
-  LE KeyHash1. 0x0(Default).
-**/
-  UINT64                      SgxLeKeyHash1;
-
-/** Offset 0x035F - LE KeyHash2
-  LE KeyHash2. 0x0(Default).
-**/
-  UINT64                      SgxLeKeyHash2;
-
-/** Offset 0x0367 - LE KeyHash3
-  LE KeyHash3. 0x0(Default).
-**/
-  UINT64                      SgxLeKeyHash3;
-
-/** Offset 0x036F - CNVi Mode
+/** Offset 0x034B - CNVi Mode
   Selects CNVi Mode. 0:Disable, 1:Auto(Default).
   $EN_DIS
 **/
   UINT8                       CnviMode;
 
-/** Offset 0x0370 - BT Interface
+/** Offset 0x034C - BT Interface
   CNVi BT interface. 0:UART, 1:USB(Default).
   $EN_DIS
 **/
   UINT8                       CnviBtInterface;
 
-/** Offset 0x0371 - Disable Sx Wake
+/** Offset 0x034D - Disable Sx Wake
   Enables/Disables wake from Sx . 0:No(Default), 1:Yes.
   $EN_DIS
 **/
-  UINT8                       PowerRailMerge;
+  UINT8                       DisableSxWake;
 
-/** Offset 0x0372 - ModifyCrfGpios
+/** Offset 0x034E - ModifyCrfGpios
   Feature to Configure CRF Gpios Conditionally upon platform requirement, configuration
   of GNSS and BtOnUart gpios will/will not be done based on this policy
   $EN_DIS
 **/
   UINT8                       ModifyCrfGpios;
 
-/** Offset 0x0373 -  dGPU Hold Reset
+/** Offset 0x034F -  dGPU Hold Reset
   dGPU Hold Reset GPIO information from GPIO community, Pin and Active
 **/
   UINT8                       HgDgpuHoldRst[8];
 
-/** Offset 0x037B - dGPU Power Enable
+/** Offset 0x0357 - dGPU Power Enable
   dGPU power enable GPIO information from GPIO community, Pin and Active
 **/
   UINT8                       HgDgpuPwrEnable[8];
 
-/** Offset 0x0383 - dGPU Delay after power enable
+/** Offset 0x035F - dGPU Delay after power enable
   Delay for DGPU after Hold Reset if HG is enable : 0 : Minimum , 1000 : Maximum ,
   300 : Default
   0 : Minimum , 1000 : Maximum , 300 : Default
 **/
   UINT16                      HgDelayAfterPwrEn;
 
-/** Offset 0x0385 -  dGPU Delay after hold reset
+/** Offset 0x0361 -  dGPU Delay after hold reset
   Delay for DGPU after Hold Reset if HG is enable : 0 : Minimum , 1000 : Maximum ,
   100 : Default
   0 : Minimum , 1000 : Maximum , 100 : Default
 **/
   UINT16                      HgDelayAfterHoldReset;
 
-/** Offset 0x0387 - HG Enable
+/** Offset 0x0363 - HG Enable
   Enables/Disables Hybrid Graphics . 0 : Disable(Default), 1 : Enable
   0x1:Enabled, 0x0:Disabled
 **/
   UINT8                       HgEnabled;
 
-/** Offset 0x0388 - PAVP ASMF
+/** Offset 0x0364 - PAVP ASMF
   Enable/Disable PAVP ASMF  0:Disable, 1:Enable(Default).
   $EN_DIS
 **/
   UINT8                       PavpAsmf;
 
-/** Offset 0x0389 - CpuS3ResumeMtrrDataSize
+/** Offset 0x0365 - CpuS3ResumeMtrrDataSize
   Size of S3 resume MTRR data.
 **/
   UINT16                      CpuS3ResumeMtrrDataSize;
 
-/** Offset 0x038B - CpuS3ResumeMtrrData
+/** Offset 0x0367 - CpuS3ResumeMtrrData
   Pointer CPU S3 Resume MTRR Data
 **/
   UINT32                      CpuS3ResumeMtrrData;
 
-/** Offset 0x038F - PAVP Auto TearDown Grace Period Enable
+/** Offset 0x036B - PAVP Auto TearDown Grace Period Enable
   Enable/Disable PAVP Auto TearDown Grace Period 0:Disable, 1:Enable(Default).
   $EN_DIS
 **/
   UINT8                       AutoTearDownGracePeriod;
 
-/** Offset 0x0390 - SeC EndOfPost EnableDisable
+/** Offset 0x036C - SeC EndOfPost EnableDisable
   Enable/Disable SeC EOPEnable  0:Disable, 1:Enable(Default).
   $EN_DIS
 **/
   UINT8                       EndOfPostEnabled;
 
-/** Offset 0x0391
+/** Offset 0x036D - EnableDigitalThermalSensor EnableDisable
+  Enable/Disable EnableDigitalThermalSensor  0:Disable(Default), 1:Enable.
+  $EN_DIS
+**/
+  UINT8                       EnableDigitalThermalSensor;
+
+/** Offset 0x036E - PNP Mode
+  Select PNP Mode. 0:Disable,1:Power,2:Performance,3:Power&Performance
+  0:Disable,1:Power,2:Performance,3:Power&Performance(default)
+**/
+  UINT8                       PnpSettings;
+
+/** Offset 0x036F - OsBoot EnableDisable
+  Select OsBoot. 1:EMMC boot, 0:HardDisk boot
+  1:EMMC boot, 1:HardDisk boot
+**/
+  UINT8                       OsBoot;
+
+/** Offset 0x0370 - AP threads Idle Manner
+  AP threads Idle Manner for waiting signal to run 1:HALT loop 2:MWAIT loop 3:RUN lOOP
+  $EN_DIS
+**/
+  UINT8                       ApIdleManner;
+
+/** Offset 0x0371
 **/
   UINT8                       ReservedFspsUpd[3];
 } FSP_S_CONFIG;
@@ -1656,11 +1643,11 @@ typedef struct {
 **/
 typedef struct {
 
-/** Offset 0x0394
+/** Offset 0x0374
 **/
   UINT32                      Signature;
 
-/** Offset 0x0398
+/** Offset 0x0378
 **/
   UINT8                       ReservedFspsTestUpd[12];
 } FSP_S_TEST_CONFIG;
@@ -1669,11 +1656,48 @@ typedef struct {
 **/
 typedef struct {
 
-/** Offset 0x03A4
+/** Offset 0x0384
 **/
   UINT32                      Signature;
 
-/** Offset 0x03A8
+/** Offset 0x0388 - Selective enable SGX
+  Selective enable SGX. 0xFFFF(Default).
+**/
+  UINT16                      SelectiveEnableSgx;
+
+/** Offset 0x038A - SGX debug mode
+  Select SGX mode. 0:Disable(default), 1:Enable
+  0:Disable(default), 1:Enable
+**/
+  UINT8                       SgxDebugMode;
+
+/** Offset 0x038B - SGX Launch Control Policy Mode
+  Select Launch Control Policy Mode. 0:Intel - Default, 1:Per-boot Select mode(default)
+  0:Intel locked , 1:Unlocked mode(default) , 2: Locked mode
+**/
+  UINT8                       SgxLcp;
+
+/** Offset 0x038C - LE KeyHash0
+  LE KeyHash0. 0x0(Default).
+**/
+  UINT64                      SgxLePubKeyHash0;
+
+/** Offset 0x0394 - LE KeyHash1
+  LE KeyHash1. 0x0(Default).
+**/
+  UINT64                      SgxLePubKeyHash1;
+
+/** Offset 0x039C - LE KeyHash2
+  LE KeyHash2. 0x0(Default).
+**/
+  UINT64                      SgxLePubKeyHash2;
+
+/** Offset 0x03A4 - LE KeyHash3
+  LE KeyHash3. 0x0(Default).
+**/
+  UINT64                      SgxLePubKeyHash3;
+
+/** Offset 0x03AC
 **/
   UINT8                       ReservedFspsRestrictedUpd[2];
 } FSP_S_RESTRICTED_CONFIG;
@@ -1690,15 +1714,15 @@ typedef struct {
 **/
   FSP_S_CONFIG                FspsConfig;
 
-/** Offset 0x0394
+/** Offset 0x0374
 **/
   FSP_S_TEST_CONFIG           FspsTestConfig;
 
-/** Offset 0x03A4
+/** Offset 0x0384
 **/
   FSP_S_RESTRICTED_CONFIG     FspsRestrictedConfig;
 
-/** Offset 0x03AA
+/** Offset 0x03AE
 **/
   UINT16                      UpdTerminator;
 } FSPS_UPD;

@@ -38,40 +38,169 @@ are permitted provided that the following conditions are met:
 #pragma pack(push, 1)
 
 
+#define MAX_NODE_NUM     1
 #define MAX_CHANNELS_NUM 4
 #define MAX_DIMMS_NUM    1
 
+#define MAX_PROFILE_NUM     4 // number of memory profiles supported
+#define MAX_XMP_PROFILE_NUM 2 // number of XMP profiles supported
+
+//
+// Matches MAX_SPD_SAVE define in MRC
+//
+#ifndef MAX_SPD_SAVE
+#define MAX_SPD_SAVE 29
+#endif
+
+//
+// MRC version description.
+//
 typedef struct {
-  UINT8         DimmId;
-  UINT32        SizeInMb;
-  UINT16        MfgId;
-  /** Module part number for DRR3 is 18 bytes
-  but DRR4 is 20 bytes as per JEDEC Spec, so
-  reserving 20 bytes **/
-  UINT8         ModulePartNum[20];
+  UINT8  Major;     ///< Major version number
+  UINT8  Minor;     ///< Minor version number
+  UINT8  Rev;       ///< Revision number
+  UINT8  Build;     ///< Build number
+} SiMrcVersion;
+
+//
+// DIMM timings
+//
+typedef struct {
+  UINT32 tCK;       ///< Memory cycle time, in femtoseconds.
+  UINT16 NMode;     ///< Number of tCK cycles for the channel DIMM's command rate mode.
+  UINT16 tCL;       ///< Number of tCK cycles for the channel DIMM's CAS latency.
+  UINT16 tCWL;      ///< Number of tCK cycles for the channel DIMM's minimum CAS write latency time.
+  UINT16 tFAW;      ///< Number of tCK cycles for the channel DIMM's minimum four activate window delay time.
+  UINT16 tRAS;      ///< Number of tCK cycles for the channel DIMM's minimum active to precharge delay time.
+  UINT16 tRCDtRP;   ///< Number of tCK cycles for the channel DIMM's minimum RAS# to CAS# delay time and Row Precharge delay time.
+  UINT16 tREFI;     ///< Number of tCK cycles for the channel DIMM's minimum Average Periodic Refresh Interval.
+  UINT16 tRFC;      ///< Number of tCK cycles for the channel DIMM's minimum refresh recovery delay time.
+  UINT16 tRFCpb;    ///< Number of tCK cycles for the channel DIMM's minimum per bank refresh recovery delay time.
+  UINT16 tRFC2;     ///< Number of tCK cycles for the channel DIMM's minimum refresh recovery delay time.
+  UINT16 tRFC4;     ///< Number of tCK cycles for the channel DIMM's minimum refresh recovery delay time.
+  UINT16 tRPab;     ///< Number of tCK cycles for the channel DIMM's minimum row precharge delay time for all banks.
+  UINT16 tRRD;      ///< Number of tCK cycles for the channel DIMM's minimum row active to row active delay time.
+  UINT16 tRRD_L;    ///< Number of tCK cycles for the channel DIMM's minimum row active to row active delay time for same bank groups.
+  UINT16 tRRD_S;    ///< Number of tCK cycles for the channel DIMM's minimum row active to row active delay time for different bank groups.
+  UINT16 tRTP;      ///< Number of tCK cycles for the channel DIMM's minimum internal read to precharge command delay time.
+  UINT16 tWR;       ///< Number of tCK cycles for the channel DIMM's minimum write recovery time.
+  UINT16 tWTR;      ///< Number of tCK cycles for the channel DIMM's minimum internal write to read command delay time.
+  UINT16 tWTR_L;    ///< Number of tCK cycles for the channel DIMM's minimum internal write to read command delay time for same bank groups.
+  UINT16 tWTR_S;    ///< Number of tCK cycles for the channel DIMM's minimum internal write to read command delay time for different bank groups.
+  UINT16 tCCD_L;  ///< Number of tCK cycles for the channel DIMM's minimum CAS-to-CAS delay for same bank group.
+} MRC_CH_TIMING;
+
+///
+/// Memory SMBIOS & OC Memory Data Hob
+///
+typedef struct {
+  UINT8             Status;                 ///< See MrcDimmStatus for the definition of this field.
+  UINT8             DimmId;
+  UINT32            DimmCapacity;           ///< DIMM size in MBytes.
+  UINT16            MfgId;
+  UINT8             ModulePartNum[20];      ///< Module part number for DDR3 is 18 bytes however for DRR4 20 bytes as per JEDEC Spec, so reserving 20 bytes
+  UINT8             RankInDimm;             ///< The number of ranks in this DIMM.
+  UINT8             SpdDramDeviceType;      ///< Save SPD DramDeviceType information needed for SMBIOS structure creation.
+  UINT8             SpdModuleType;          ///< Save SPD ModuleType information needed for SMBIOS structure creation.
+  UINT8             SpdModuleMemoryBusWidth;///< Save SPD ModuleMemoryBusWidth information needed for SMBIOS structure creation.
+  UINT8             SpdSave[MAX_SPD_SAVE];  ///< Save SPD Manufacturing information needed for SMBIOS structure creation.
 } DIMM_INFO;
 
 typedef struct {
-  UINT8         ChannelId;
-  UINT8         DimmCount;
-  DIMM_INFO     DimmInfo[MAX_DIMMS_NUM];
+  UINT8             Status;                  ///< Indicates whether this channel should be used.
+  UINT8             ChannelId;
+  UINT8             DimmCount;               ///< Number of valid DIMMs that exist in the channel.
+  MRC_CH_TIMING     Timing[MAX_PROFILE_NUM]; ///< The channel timing values.
+  DIMM_INFO         DimmInfo[MAX_DIMMS_NUM]; ///< Save the DIMM output characteristics.
 } CHANNEL_INFO;
 
 typedef struct {
-  UINT8         Revision;
-  UINT8         DataWidth;
+  UINT8             Status;                  ///< Indicates whether this controller should be used.
+  UINT16            DeviceId;                ///< The PCI device id of this memory controller.
+  UINT8             RevisionId;              ///< The PCI revision id of this memory controller.
+  UINT8             ChannelCount;            ///< Number of valid channels that exist on the controller.
+  CHANNEL_INFO      ChannelInfo[MAX_CHANNELS_NUM];     ///< The following are channel level definitions.
+} CONTROLLER_INFO;
+
+typedef struct {
+  UINT8             Revision;
+  UINT16            DataWidth;              ///< Data width, in bits, of this memory device
   /** As defined in SMBIOS 3.0 spec
     Section 7.18.2 and Table 75
   **/
-  UINT16         MemoryType;
-  UINT16        MemoryFrequencyInMHz;
+  UINT8             MemoryType;             ///< DDR type: DDR3, DDR4, or LPDDR3
+  UINT16            MaximumMemoryClockSpeed;///< The maximum capable speed of the device, in megahertz (MHz)
+  UINT16            ConfiguredMemoryClockSpeed; ///< The configured clock speed to the memory device, in megahertz (MHz)
   /** As defined in SMBIOS 3.0 spec
     Section 7.17.3 and Table 72
   **/
-  UINT8         ErrorCorrectionType;
-  UINT8         ChannelCount;
-  CHANNEL_INFO  ChannelInfo[MAX_CHANNELS_NUM];
+  UINT8             ErrorCorrectionType;
+
+  SiMrcVersion      Version;
+  BOOLEAN           EccSupport;
+  UINT8             MemoryProfile;
+  UINT32            TotalPhysicalMemorySize;
+  UINT32            DefaultXmptCK[MAX_XMP_PROFILE_NUM];///< Stores the tCK value read from SPD XMP profiles if they exist.
+  UINT8             XmpProfileEnable;                  ///< If XMP capable DIMMs are detected, this will indicate which XMP Profiles are common among all DIMMs.
+  UINT8             Ratio;
+  UINT8             RefClk;
+  UINT32            VddVoltage[MAX_PROFILE_NUM];
+  CONTROLLER_INFO   Controller[MAX_NODE_NUM];
 } FSP_SMBIOS_MEMORY_INFO;
+
+typedef struct {
+  UINT16     TotalNumberOfSockets;
+  UINT16     CurrentSocketNumber;
+  UINT8      ProcessorType;                 ///< ENUM defined in SMBIOS Spec v3.0 Section 7.5.1
+  /** This info is used for both ProcessorFamily and ProcessorFamily2 fields
+      See ENUM defined in SMBIOS Spec v3.0 Section 7.5.2
+  **/
+  UINT16     ProcessorFamily;
+  UINT8      ProcessorManufacturerStrIndex; ///< Index of the String in the String Buffer
+  UINT64     ProcessorId;                   ///< ENUM defined in SMBIOS Spec v3.0 Section 7.5.3
+  UINT8      ProcessorVersionStrIndex;      ///< Index of the String in the String Buffer
+  UINT8      Voltage;                       ///< Format defined in SMBIOS Spec v3.0 Section 7.5.4
+  UINT16     ExternalClockInMHz;            ///< External Clock Frequency. Set to 0 if unknown.
+  UINT16     CurrentSpeedInMHz;             ///< Snapshot of current processor speed during boot
+  UINT8      Status;                        ///< Format defined in the SMBIOS Spec v3.0 Table 21
+  UINT8      ProcessorUpgrade;              ///< ENUM defined in SMBIOS Spec v3.0 Section 7.5.5
+  /** This info is used for both CoreCount & CoreCount2 fields
+      See detailed description in SMBIOS Spec v3.0 Section 7.5.6
+  **/
+  UINT16     CoreCount;
+  /** This info is used for both CoreEnabled & CoreEnabled2 fields
+      See detailed description in SMBIOS Spec v3.0 Section 7.5.7
+  **/
+  UINT16     EnabledCoreCount;
+  /** This info is used for both ThreadCount & ThreadCount2 fields
+      See detailed description in SMBIOS Spec v3.0 Section 7.5.8
+  **/
+  UINT16     ThreadCount;
+  UINT16     ProcessorCharacteristics;      ///< Format defined in SMBIOS Spec v3.0 Section 7.5.9
+  /**
+  String Buffer - each string terminated by NULL "0x00"
+  String buffer terminated by double NULL "0x0000"
+  **/
+} FSP_SMBIOS_PROCESSOR_INFO;
+
+typedef struct {
+  UINT16     ProcessorSocketNumber;
+  UINT16     NumberOfCacheLevels;         ///< Based on Number of Cache Types L1/L2/L3
+  UINT8      SocketDesignationStrIndex;   ///< String Index in the string Buffer. Example "L1-CACHE"
+  UINT16     CacheConfiguration;          ///< Format defined in SMBIOS Spec v3.0 Section7.8 Table36
+  UINT16     MaxCacheSize;                ///< Format defined in SMBIOS Spec v3.0 Section7.8.1
+  UINT16     InstalledSize;               ///< Format defined in SMBIOS Spec v3.0 Section7.8.1
+  UINT16     SupportedSramType;           ///< Format defined in SMBIOS Spec v3.0 Section7.8.2
+  UINT16     CurrentSramType;             ///< Format defined in SMBIOS Spec v3.0 Section7.8.2
+  UINT8      CacheSpeed;                  ///< Cache Speed in nanoseconds. 0 if speed is unknown.
+  UINT8      ErrorCorrectionType;         ///< ENUM Format defined in SMBIOS Spec v3.0 Section 7.8.3
+  UINT8      SystemCacheType;             ///< ENUM Format defined in SMBIOS Spec v3.0 Section 7.8.4
+  UINT8      Associativity;               ///< ENUM Format defined in SMBIOS Spec v3.0 Section 7.8.5
+  /**
+  String Buffer - each string terminated by NULL "0x00"
+  String buffer terminated by double NULL "0x0000"
+  **/
+} FSP_SMBIOS_CACHE_INFO;
 
 
 /** Fsp M Configuration
@@ -157,25 +286,21 @@ typedef struct {
   UINT8                       Package;
 
 /** Offset 0x004E - Profile
-  Profile list. 0x19(Default).
-  0x1:WIO2_800_7_8_8, 0x2:WIO2_1066_9_10_10, 0x3:LPDDR3_1066_8_10_10, 0x4:LPDDR3_1333_10_12_12,
-  0x5:LPDDR3_1600_12_15_15, 0x6:LPDDR3_1866_14_17_17, 0x7:LPDDR3_2133_16_20_20, 0x8:LPDDR4_1066_10_10_10,
-  0x9:LPDDR4_1600_14_15_15, 0xA:LPDDR4_2133_20_20_20, 0xB:LPDDR4_2400_24_22_22, 0xC:LPDDR4_2666_24_24_24,
-  0xD:LPDDR4_2933_28_27_27, 0xE:LPDDR4_3200_28_29_29, 0xF:DDR3_1066_6_6_6, 0x10:DDR3_1066_7_7_7,
-  0x11:DDR3_1066_8_8_8, 0x12:DDR3_1333_7_7_7, 0x13:DDR3_1333_8_8_8, 0x14:DDR3_1333_9_9_9,
-  0x15:DDR3_1333_10_10_10, 0x16:DDR3_1600_8_8_8, 0x17:DDR3_1600_9_9_9, 0x18:DDR3_1600_10_10_10,
-  0x19:DDR3_1600_11_11_11, 0x1A:DDR3_1866_10_10_10, 0x1B:DDR3_1866_11_11_11, 0x1C:DDR3_1866_12_12_12,
-  0x1D:DDR3_1866_13_13_13, 0x1E:DDR3_2133_11_11_11, 0x1F:DDR3_2133_12_12_12, 0x20:DDR3_2133_13_13_13,
-  0x21:DDR3_2133_14_14_14, 0x22:DDR4_1333_10_10_10, 0x23:DDR4_1600_10_10_10, 0x24:DDR4_1600_11_11_11,
-  0x25:DDR4_1600_12_12_12, 0x26:DDR4_1866_12_12_12, 0x27:DDR4_1866_13_13_13, 0x28:DDR4_1866_14_14_14,
-  0x29:DDR4_2133_14_14_14, 0x2A:DDR4_2133_15_15_15, 0x2B:DDR4_2133_16_16_16, 0x2C:DDR4_2400_15_15_15,
-  0x2D:DDR4_2400_16_16_16, 0x2E:DDR4_2400_17_17_17, 0x2F:DDR4_2400_18_18_18
+  Profile list. 0x15(Default).
+  0x01:LPDDR3_1333_10_12_12, 0x02:LPDDR3_1600_12_15_15, 0x03:LPDDR3_1866_14_17_17,
+  0x04:LPDDR4_1600_14_15_15, 0x05:LPDDR4_1866_20_17_17, 0x06:LPDDR4_2133_20_20_20,
+  0x07:LPDDR4_2400_24_22_22, 0x08:LPDDR4_2666_24_24_24, 0x09:LPDDR4_3200_28_29_29,
+  0x0A:DDR4_1600_10_10_10, 0x0B:DDR4_1600_11_11_11, 0x0C:DDR4_1600_12_12_12, 0x0D:DDR4_1866_12_12_12,
+  0x0E:DDR4_1866_13_13_13, 0x0F:DDR4_1866_14_14_14, 0x10:DDR4_2133_14_14_14, 0x11:DDR4_2133_15_15_15,
+  0x12:DDR4_2133_16_16_16, 0x13:DDR4_2400_15_15_15, 0x14:DDR4_2400_16_16_16, 0x15:DDR4_2400_17_17_17,
+  0x16:DDR4_2400_18_18_18, 0x17:DDR4_2666_17_17_17, 0x18:DDR4_2666_18_18_18, 0x19:DDR4_2666_19_19_19,
+  0x1A:DDR4_2666_20_20_20
 **/
   UINT8                       Profile;
 
 /** Offset 0x004F - MemoryDown
   Memory Down. 0x0(Default).
-  0x0:No, 0x1:Yes, 0x2:1MD+SODIMM (for DDR3L only) ACRD, 0x3:1x32 LPDDR4
+  0x0:No, 0x1:Yes, 0x2:1MD+SODIMM (for DDR3L/4 only) ACRD, 0x3:1x32 LPDDR4
 **/
   UINT8                       MemoryDown;
 
@@ -302,7 +427,7 @@ typedef struct {
   (not to be confused with the SoC Memory Channel width which is always x32 for LPDDR3\LPDDR4
   and x64 for DDR3L). LPDDR4 devices typically have two channels per die and a x16
   device width: 00 - x8; 01 - x16; 10 - x32; 11 - x64
-  0b0000:x8, 0b0001:x16, 0b0010:x32, 0b0011:x64
+  0x00:x8, 0x01:x16, 0x02:x32, 0x03:x64
 **/
   UINT8                       Ch0_DeviceWidth;
 
@@ -314,7 +439,7 @@ typedef struct {
   8GB 2Rx8 configuration will utilize sixteen 4Gb density DRAMS. In this configuration,
   a 4Gb density setting would be selected in the MRC: 000 - 4Gb; 001 - 6Gb; 010 -
   8Gb; 011 - 12Gb; 100 - 16Gb; 101 - 2Gb; 110-111 - Reserved
-  0b0000:4Gb, 0b0001:6Gb, 0b0010:8Gb, 0b0011:12Gb, 0b0100:16Gb
+  0x00:4Gb, 0x01:6Gb, 0x02:8Gb, 0x03:12Gb, 0x04:16Gb
 **/
   UINT8                       Ch0_DramDensity;
 
@@ -383,7 +508,7 @@ typedef struct {
   (not to be confused with the SoC Memory Channel width which is always x32 for LPDDR3\LPDDR4
   and x64 for DDR3L). LPDDR4 devices typically have two channels per die and a x16
   device width: 00 - x8; 01 - x16; 10 - x32; 11 - x64
-  0b0000:x8, 0b0001:x16, 0b0010:x32, 0b0011:x64
+  0x00:x8, 0x01:x16, 0x02:x32, 0x03:x64
 **/
   UINT8                       Ch1_DeviceWidth;
 
@@ -395,7 +520,7 @@ typedef struct {
   8GB 2Rx8 configuration will utilize sixteen 4Gb density DRAMS. In this configuration,
   a 4Gb density setting would be selected in the MRC: 000 - 4Gb; 001 - 6Gb; 010 -
   8Gb; 011 - 12Gb; 100 - 16Gb; 101 - 2Gb; 110-111 - Reserved
-  0b0000:4Gb, 0b0001:6Gb, 0b0010:8Gb, 0b0011:12Gb, 0b0100:16Gb
+  0x00:4Gb, 0x01:6Gb, 0x02:8Gb, 0x03:12Gb, 0x04:16Gb
 **/
   UINT8                       Ch1_DramDensity;
 
@@ -453,7 +578,7 @@ typedef struct {
   (not to be confused with the SoC Memory Channel width which is always x32 for LPDDR3\LPDDR4
   and x64 for DDR3L). LPDDR4 devices typically have two channels per die and a x16
   device width: 00 - x8; 01 - x16; 10 - x32; 11 - x64
-  0b0000:x8, 0b0001:x16, 0b0010:x32, 0b0011:x64
+  0x00:x8, 0x01:x16, 0x02:x32, 0x03:x64
 **/
   UINT8                       Ch2_DeviceWidth;
 
@@ -465,7 +590,7 @@ typedef struct {
   8GB 2Rx8 configuration will utilize sixteen 4Gb density DRAMS. In this configuration,
   a 4Gb density setting would be selected in the MRC: 000 - 4Gb; 001 - 6Gb; 010 -
   8Gb; 011 - 12Gb; 100 - 16Gb; 101 - 2Gb; 110-111 - Reserved
-  0b0000:4Gb, 0b0001:6Gb, 0b0010:8Gb, 0b0011:12Gb, 0b0100:16Gb
+  0x00:4Gb, 0x01:6Gb, 0x02:8Gb, 0x03:12Gb, 0x04:16Gb
 **/
   UINT8                       Ch2_DramDensity;
 
@@ -523,7 +648,7 @@ typedef struct {
   (not to be confused with the SoC Memory Channel width which is always x32 for LPDDR3\LPDDR4
   and x64 for DDR3L). LPDDR4 devices typically have two channels per die and a x16
   device width: 00 - x8; 01 - x16; 10 - x32; 11 - x64
-  0b0000:x8, 0b0001:x16, 0b0010:x32, 0b0011:x64
+  0x00:x8, 0x01:x16, 0x02:x32, 0x03:x64
 **/
   UINT8                       Ch3_DeviceWidth;
 
@@ -535,7 +660,7 @@ typedef struct {
   8GB 2Rx8 configuration will utilize sixteen 4Gb density DRAMS. In this configuration,
   a 4Gb density setting would be selected in the MRC: 000 - 4Gb; 001 - 6Gb; 010 -
   8Gb; 011 - 12Gb; 100 - 16Gb; 101 - 2Gb; 110-111 - Reserved
-  0b0000:4Gb, 0b0001:6Gb, 0b0010:8Gb, 0b0011:12Gb, 0b0100:16Gb
+  0x00:4Gb, 0x01:6Gb, 0x02:8Gb, 0x03:12Gb, 0x04:16Gb
 **/
   UINT8                       Ch3_DramDensity;
 
@@ -820,33 +945,50 @@ typedef struct {
 **/
   UINT8                       EnableS3Heci2;
 
-/** Offset 0x0152
+/** Offset 0x0152 - PCI Express Root Port
+  Control the PCI Express Root Port . 0:Disable, 1:Enable, 2:Auto(Default).
 **/
-  UINT8                       ReservedFspmUpd[3];
+  UINT8                       PcieRootPortEn[6];
+
+/** Offset 0x0158 - PCIE SLOT Power Enable Assert Time - PFET.
+  ACPI Timer Ticker to measure when PCIE Slot Power is enabled through PFET. FSP will
+  wait for 100ms for the power to be stable, before de-asserting PERST bin. Customer
+  who designed the board PCIE slot Power automatically enabled, can pass value of
+  zero here.
+**/
+  UINT64                      StartTimerTickerOfPfetAssert;
+
+/** Offset 0x0160
+**/
+  VOID*                       VariableNvsBufferPtr;
+
+/** Offset 0x0164
+**/
+  UINT8                       ReservedFspmUpd[4];
 } FSP_M_CONFIG;
 
 /** Fsp M Test Configuration
 **/
 typedef struct {
 
-/** Offset 0x0155
+/** Offset 0x0168
 **/
   UINT32                      Signature;
 
-/** Offset 0x0159
+/** Offset 0x016C
 **/
-  UINT8                       ReservedFspmTestUpd[28];
+  UINT8                       ReservedFspmTestUpd[18];
 } FSP_M_TEST_CONFIG;
 
 /** Fsp M Restricted Configuration
 **/
 typedef struct {
 
-/** Offset 0x0175
+/** Offset 0x017E
 **/
   UINT32                      Signature;
 
-/** Offset 0x0179
+/** Offset 0x0182
 **/
   UINT8                       ReservedFspmRestrictedUpd[124];
 } FSP_M_RESTRICTED_CONFIG;
@@ -867,19 +1009,15 @@ typedef struct {
 **/
   FSP_M_CONFIG                FspmConfig;
 
-/** Offset 0x0155
+/** Offset 0x0168
 **/
   FSP_M_TEST_CONFIG           FspmTestConfig;
 
-/** Offset 0x0175
+/** Offset 0x017E
 **/
   FSP_M_RESTRICTED_CONFIG     FspmRestrictedConfig;
 
-/** Offset 0x01F5
-**/
-  UINT8                       UnusedUpdSpace1[14];
-
-/** Offset 0x0203
+/** Offset 0x01FE
 **/
   UINT16                      UpdTerminator;
 } FSPM_UPD;

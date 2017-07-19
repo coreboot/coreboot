@@ -384,7 +384,8 @@ int gpi_status_get(const struct gpi_status *sts, gpio_t pad)
 	const struct pad_community *comm = gpio_get_community(pad);
 
 	pad = pad - comm->first_pad;
-	sts_index = pad / comm->max_pads_per_group;
+	sts_index = comm->gpi_status_offset;
+	sts_index += pad / comm->max_pads_per_group;
 
 	return !!(sts->grp[sts_index] &
 		(1 << pad % comm->max_pads_per_group));

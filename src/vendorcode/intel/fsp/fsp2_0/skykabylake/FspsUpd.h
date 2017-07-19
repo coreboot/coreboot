@@ -165,9 +165,16 @@ typedef struct {
 **/
   UINT8                       ShowSpiController;
 
-/** Offset 0x0036
+/** Offset 0x0036 - Flash Configuration Lock Down
+  Enable/disable flash lock down. If platform decides to skip this programming, it
+  must lock SPI flash register before end of post.
+  $EN_DIS
 **/
-  UINT8                       UnusedUpdSpace0[2];
+  UINT8                       SpiFlashCfgLockDown;
+
+/** Offset 0x0037
+**/
+  UINT8                       UnusedUpdSpace0;
 
 /** Offset 0x0038 - MicrocodeRegionBase
   Memory Base of Microcode Updates

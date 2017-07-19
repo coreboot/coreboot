@@ -79,17 +79,15 @@ static void save_dimm_info(void)
 	index = 0;
 	dimm_max = ARRAY_SIZE(mem_info->dimm);
 	ctrlr_info = &memory_info_hob->Controller[0];
-	for (channel = 0; channel < ctrlr_info->ChannelCount; channel++) {
-		if (index >= dimm_max)
-			break;
+	for (channel = 0; channel < MAX_CH && index < dimm_max; channel++) {
 		channel_info = &ctrlr_info->Channel[channel];
-		for (dimm = 0; dimm < channel_info->DimmCount; dimm++) {
-			if (index >= dimm_max)
-				break;
+		if (channel_info->Status != 2)
+			continue;
+		for (dimm = 0; dimm < MAX_DIMM && index < dimm_max; dimm++) {
 			src_dimm = &channel_info->Dimm[dimm];
 			dest_dimm = &mem_info->dimm[index];
 
-			if (!src_dimm->DimmCapacity)
+			if (src_dimm->Status != DIMM_PRESENT)
 				continue;
 
 			/* Populate the DIMM information */

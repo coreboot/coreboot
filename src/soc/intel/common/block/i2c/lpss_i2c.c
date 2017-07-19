@@ -407,12 +407,12 @@ static int lpss_i2c_set_speed_config(unsigned int bus,
 	if (!config->scl_lcnt && !config->scl_hcnt && !config->sda_hold)
 		return 0;
 
-	if (config->speed >= I2C_SPEED_FAST_PLUS) {
-		/* Fast-Plus and High speed */
+	if (config->speed >= I2C_SPEED_HIGH) {
+		/* High and Fast Ultra speed */
 		hcnt_reg = &regs->hs_scl_hcnt;
 		lcnt_reg = &regs->hs_scl_lcnt;
 	} else if (config->speed >= I2C_SPEED_FAST) {
-		/* Fast speed */
+		/* Fast and Fast-Plus speed */
 		hcnt_reg = &regs->fs_scl_hcnt;
 		lcnt_reg = &regs->fs_scl_lcnt;
 	} else {
@@ -590,11 +590,11 @@ static int lpss_i2c_set_speed(unsigned int bus, enum i2c_speed speed,
 	control = read32(&regs->control);
 	control &= ~CONTROL_SPEED_MASK;
 
-	if (speed >= I2C_SPEED_FAST_PLUS) {
-		/* High and Fast-Plus speed share config registers */
+	if (speed >= I2C_SPEED_HIGH) {
+		/* High and Fast-Ultra speed share config registers */
 		control |= CONTROL_SPEED_HS;
 	} else if (speed >= I2C_SPEED_FAST) {
-		/* Fast speed */
+		/* Fast speed and Fast-Plus */
 		control |= CONTROL_SPEED_FS;
 	} else {
 		/* Standard speed */

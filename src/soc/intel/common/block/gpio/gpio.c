@@ -55,6 +55,37 @@
 #define GPI_SMI_EN_OFFSET(comm, group) ((comm)->gpi_smi_en_reg_0 +	\
 				((group) * sizeof(uint32_t)))
 
+static inline size_t relative_pad_in_comm(const struct pad_community *comm,
+						gpio_t gpio)
+{
+	return gpio - comm->first_pad;
+}
+
+static inline size_t gpio_group_index_scaled(const struct pad_community *comm,
+					unsigned int relative_pad, size_t scale)
+{
+	return (relative_pad / comm->max_pads_per_group) * scale;
+}
+
+static inline size_t gpio_group_index(const struct pad_community *comm,
+					unsigned int relative_pad)
+{
+	return gpio_group_index_scaled(comm, relative_pad, 1);
+}
+
+static inline size_t gpio_within_group(const struct pad_community *comm,
+						unsigned int relative_pad)
+{
+	return relative_pad % comm->max_pads_per_group;
+}
+
+static inline uint32_t gpio_bitmask_within_group(
+					const struct pad_community *comm,
+					unsigned int relative_pad)
+{
+	return 1U << gpio_within_group(comm, relative_pad);
+}
+
 static const struct pad_community *gpio_get_community(gpio_t pad)
 {
 	size_t gpio_communities;
@@ -76,7 +107,7 @@ static void gpio_configure_owner(const struct pad_config *cfg,
 	uint16_t hostsw_reg;
 	int pin;
 
-	pin = cfg->pad - comm->first_pad;
+	pin = relative_pad_in_comm(comm, cfg->pad);
 
 	/* The 4th bit in pad_config 1 (RO) is used to indicate if the pad
 	 * needs GPIO driver ownership.
@@ -87,10 +118,9 @@ static void gpio_configure_owner(const struct pad_config *cfg,
 	/* Based on the gpio pin number configure the corresponding bit in
 	 * HOSTSW_OWN register. Value of 0x1 indicates GPIO Driver onwership.
 	 */
-	hostsw_reg = comm->host_own_reg_0 + ((pin / comm->max_pads_per_group) *
-		sizeof(uint32_t));
-	pcr_or32(comm->port, hostsw_reg, (1 << (pin %
-			comm->max_pads_per_group)));
+	hostsw_reg = comm->host_own_reg_0;
+	hostsw_reg += gpio_group_index_scaled(comm, pin, sizeof(uint32_t));
+	pcr_or32(comm->port, hostsw_reg, gpio_bitmask_within_group(comm, pin));
 }
 
 static void gpi_enable_smi(const struct pad_config *cfg,
@@ -105,8 +135,8 @@ static void gpi_enable_smi(const struct pad_config *cfg,
 	if (((cfg->pad_config[0]) & PAD_CFG0_ROUTE_SMI) != PAD_CFG0_ROUTE_SMI)
 		return;
 
-	pin = cfg->pad - comm->first_pad;
-	group = pin / comm->max_pads_per_group;
+	pin = relative_pad_in_comm(comm, cfg->pad);
+	group = gpio_group_index(comm, pin);
 
 	sts_reg = GPI_SMI_STS_OFFSET(comm, group);
 	value = pcr_read32(comm->port, sts_reg);
@@ -115,7 +145,7 @@ static void gpi_enable_smi(const struct pad_config *cfg,
 
 	/* Set enable bits */
 	en_reg = GPI_SMI_EN_OFFSET(comm, group);
-	pcr_or32(comm->port, en_reg, (1 << (pin % comm->max_pads_per_group)));
+	pcr_or32(comm->port, en_reg, gpio_bitmask_within_group(comm, pin));
 }
 
 static void gpio_configure_itss(const struct pad_config *cfg, uint16_t port,
@@ -159,7 +189,7 @@ static uint16_t pad_config_offset(const struct pad_community *comm, gpio_t pad)
 {
 	size_t offset;
 
-	offset = pad - comm->first_pad;
+	offset = relative_pad_in_comm(comm, pad);
 	offset *= GPIO_DWx_SIZE(GPIO_NUM_PAD_CFG_REGS);
 	return offset + comm->pad_cfg_base;
 }
@@ -210,11 +240,9 @@ static void gpio_configure_pad(const struct pad_config *cfg)
 
 		if (IS_ENABLED(CONFIG_DEBUG_SOC_COMMON_BLOCK_GPIO))
 			printk(BIOS_DEBUG,
-			"gpio_padcfg [0x%02x, %02d] DW%d [0x%08x : 0x%08x"
+			"gpio_padcfg [0x%02x, %02zd] DW%d [0x%08x : 0x%08x"
 			" : 0x%08x]\n",
-			comm->port,
-			(cfg->pad - comm->first_pad),
-			i,
+			comm->port, relative_pad_in_comm(comm, cfg->pad), i,
 			pad_conf,/* old value */
 			cfg->pad_config[i],/* value passed from gpio table */
 			soc_pad_conf);/*new value*/
@@ -305,13 +333,10 @@ void gpio_set(gpio_t gpio_num, int value)
 
 uint16_t gpio_acpi_pin(gpio_t gpio_num)
 {
-	const struct pad_community *comm;
-
 	if (!IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_GPIO_MULTI_ACPI_DEVICES))
 		return gpio_num;
 
-	comm = gpio_get_community(gpio_num);
-	return gpio_num - comm->first_pad;
+	return relative_pad_in_comm(gpio_get_community(gpio_num), gpio_num);
 }
 
 static void print_gpi_status(const struct gpi_status *sts)
@@ -383,12 +408,11 @@ int gpi_status_get(const struct gpi_status *sts, gpio_t pad)
 	uint8_t sts_index;
 	const struct pad_community *comm = gpio_get_community(pad);
 
-	pad = pad - comm->first_pad;
+	pad = relative_pad_in_comm(comm, pad);
 	sts_index = comm->gpi_status_offset;
-	sts_index += pad / comm->max_pads_per_group;
+	sts_index += gpio_group_index(comm, pad);
 
-	return !!(sts->grp[sts_index] &
-		(1 << pad % comm->max_pads_per_group));
+	return !!(sts->grp[sts_index] & gpio_bitmask_within_group(comm, pad));
 }
 
 static int gpio_route_pmc_gpio_gpe(int pmc_gpe_num)

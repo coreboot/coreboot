@@ -134,15 +134,19 @@ void fast_spi_set_opcode_menu(void)
 
 /*
  * Lock FAST_SPIBAR.
+ * Use 16bit write to avoid touching two upper bytes what may cause the write
+ * cycle to fail in case a prior transaction has not completed.
+ * While WRSDIS is lockable with FLOCKDN, writing both in the same
+ * cycle is guaranteed to work by design.
+ *
+ * Avoid read->modify->write not to clear RW1C bits unintentionally.
  */
 void fast_spi_lock_bar(void)
 {
 	void *spibar = fast_spi_get_bar();
-	uint32_t hsfs;
+	const uint16_t hsfs = SPIBAR_HSFSTS_FLOCKDN | SPIBAR_HSFSTS_WRSDIS;
 
-	hsfs = read32(spibar + SPIBAR_HSFSTS_CTL);
-	hsfs |= SPIBAR_HSFSTS_FLOCKDN;
-	write32(spibar + SPIBAR_HSFSTS_CTL, hsfs);
+	write16(spibar + SPIBAR_HSFSTS_CTL, hsfs);
 }
 
 /*

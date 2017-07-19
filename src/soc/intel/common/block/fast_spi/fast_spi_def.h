@@ -70,6 +70,7 @@
 #define SPIBAR_HSFSTS_FLOCKDN		(1 << 15)
 #define SPIBAR_HSFSTS_FDV		(1 << 14)
 #define SPIBAR_HSFSTS_FDOPSS		(1 << 13)
+#define SPIBAR_HSFSTS_WRSDIS		(1 << 11)
 #define SPIBAR_HSFSTS_SAF_CE		(1 << 8)
 #define SPIBAR_HSFSTS_SAF_ACTIVE	(1 << 7)
 #define SPIBAR_HSFSTS_SAF_LE		(1 << 6)

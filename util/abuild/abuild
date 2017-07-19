@@ -50,6 +50,9 @@ configureonly=0
 # Did any board fail to build?
 failed=0
 
+# Exit with a non-zero errorlevel on failure
+exitcode=0
+
 # default: don't save checksums
 checksum_file=""
 
@@ -529,6 +532,7 @@ Options:\n"
     [-c|--cpus <numcpus>]         Build on <numcpus> at the same time
     [-C|--config]                 Configure-only mode
     [-d|--dir <dir>]              Directory containing config files
+    [-e|--exitcode]               Exit with a non-zero errorlevel on failure
     [-J|--junit]                  Write JUnit formatted xml log file
     [-K|--kconfig <name>]         Prepend file to generated Kconfig
     [-l|--loglevel <num>]         Set loglevel
@@ -599,12 +603,12 @@ getoptbrand="$(getopt -V)"
 # shellcheck disable=SC2086
 if [ "${getoptbrand:0:6}" == "getopt" ]; then
 	# Detected GNU getopt that supports long options.
-	args=$(getopt -l version,verbose,quiet,help,all,target:,payloads:,cpus:,silent,junit,config,loglevel:,remove,prefix:,update,scan-build,ccache,blobs,clang,clean,outdir:,chromeos,xmlfile:,kconfig:,dir:,root:,recursive,checksum:,timeless -o Vvqhat:p:c:sJCl:rP:uyBLzo:xX:K:d:R:I -- "$@") || exit 1
+	args=$(getopt -l version,verbose,quiet,help,all,target:,payloads:,cpus:,silent,junit,config,loglevel:,remove,prefix:,update,scan-build,ccache,blobs,clang,clean,outdir:,chromeos,xmlfile:,kconfig:,dir:,root:,recursive,checksum:,timeless,exitcode -o Vvqhat:p:c:sJCl:rP:uyBLzo:xX:K:d:R:Ie -- "$@") || exit 1
 	eval set -- $args
 	retval=$?
 else
 	# Detected non-GNU getopt
-	args=$(getopt Vvqhat:p:c:sJCl:rP:uyBLzo:xX:K:d:R:I "$@")
+	args=$(getopt Vvqhat:p:c:sJCl:rP:uyBLzo:xX:K:d:R:Ie "$@")
 	set -- $args
 	retval=$?
 fi
@@ -627,6 +631,7 @@ while true ; do
 		-t|--target)	shift; target="$1"; shift;;
 		-a|--all)	shift; buildall=true;;
 		-d|--dir)	shift; configdir="$1"; shift;;
+		-e|--exitcode)	shift; exitcode=1;;
 		-r|--remove)	shift; remove=true;;
 		-v|--verbose)	shift; verbose=true; verboseopt='V=1';;
 		-q|--quiet)	shift; quiet=true;;
@@ -848,6 +853,9 @@ if [ "$recursive" = "false" ]; then
 		printf "%s configuration(s) failed:\n" "$( wc -l < "$FAILED_BOARDS" )"
 		cat "$FAILED_BOARDS"
 		echo
+		if [ "$exitcode" != "0" ]; then
+			failed=1
+		fi
 	else
 		printf "All %s tested configurations passed.\n" "$( wc -l < "$PASSED_BOARDS" )"
 	fi

@@ -50,6 +50,7 @@ void dimm_info_fill(struct dimm_info *dimm, u32 dimm_capacity, u8 ddr_type,
 		dimm->bus_width = MEMORY_BUS_WIDTH_128;
 		break;
 	default:
-		printk(BIOS_ERR, "Incorrect DIMM Data width");
+		printk(BIOS_NOTICE, "Incorrect DIMM Data width: %u\n",
+		       (unsigned int)data_width);
 	}
 }

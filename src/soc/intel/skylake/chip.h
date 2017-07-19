@@ -487,6 +487,14 @@ struct soc_intel_skylake_config {
 	 * 0b - Disabled
 	 */
 	u8 eist_enable;
+	/*
+	 * Skip Spi Flash Lockdown from inside FSP.
+	 * Making this config "0" means FSP won't set the FLOCKDN bit of
+	 * SPIBAR + 0x04 (i.e., Bit 15 of BIOS_HSFSTS_CTL).
+	 * So, it becomes coreboot's responsibility to set this bit before
+	 * end of POST for security concerns.
+	 */
+	u8 SpiFlashCfgLockDown;
 };
 
 typedef struct soc_intel_skylake_config config_t;

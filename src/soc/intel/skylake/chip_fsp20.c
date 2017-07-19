@@ -240,6 +240,15 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->ShowSpiController = dev->enabled;
 
 	/*
+	 * Skip Spi Flash Lockdown from inside FSP.
+	 * Making this config "0" means FSP won't set the FLOCKDN bit of
+	 * SPIBAR + 0x04 (i.e., Bit 15 of BIOS_HSFSTS_CTL).
+	 * So, it becomes coreboot's responsibility to set this bit before
+	 * end of POST for security concerns.
+	 */
+	params->SpiFlashCfgLockDown = config->SpiFlashCfgLockDown;
+
+	/*
 	 * Send VR specific mailbox commands:
 	 * 000b - no VR specific command sent
 	 * 001b - VR mailbox command specifically for the MPS IMPV8 VR

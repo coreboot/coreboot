@@ -249,8 +249,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_E9, NONE, DEEP, NF1),
 	/* E10 : USB2_OC1# ==> USB_C1_OC_ODL */
 	PAD_CFG_NF(GPP_E10, NONE, DEEP, NF1),
-	/* E11 : USB2_OC2# ==> TOUCHSCREEN_RESET_L */
-	PAD_CFG_GPO(GPP_E11, 0, DEEP),
+	/* E11 : USB2_OC2# ==> TOUCHSCREEN_STOP_L */
+	PAD_CFG_GPO(GPP_E11, 1, DEEP),
 	/* E12 : USB2_OC3# ==> USB2_OC3_L */
 	PAD_CFG_NF(GPP_E12, NONE, DEEP, NF1),
 	/* E13 : DDPB_HPD0 ==> USB_C0_DP_HPD */

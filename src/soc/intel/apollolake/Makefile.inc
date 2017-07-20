@@ -27,6 +27,11 @@ romstage-$(CONFIG_SOC_UART_DEBUG) += uart_early.c
 romstage-y += lpc_lib.c
 romstage-y += memmap.c
 romstage-y += meminit.c
+ifeq ($(CONFIG_SOC_INTEL_GLK),y)
+romstage-y += meminit_util_glk.c
+else
+romstage-y += meminit_util_apl.c
+endif
 romstage-y += mmap_boot.c
 romstage-y += pmutil.c
 romstage-y += reset.c

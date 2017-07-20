@@ -86,6 +86,20 @@ Scope (\_SB.PCI0.I2C2)
 				AddressingMode7Bit, "\\_SB.PCI0.I2C2",
 				0x00, ResourceConsumer, ,
 			)
+			/* GPIO.1 is sensor SDA in daisy chain mode */
+			GpioIo (Exclusive, PullDefault, 0x0000, 0x0000,
+				IoRestrictionInputOnly, "\\_SB.PCI0.I2C2.PMIC",
+				0x00, ResourceConsumer,,)
+			{
+				1
+			}
+			/* GPIO.2 is sensor SCL in daisy chain mode */
+			GpioIo (Exclusive, PullDefault, 0x0000, 0x0000,
+				IoRestrictionInputOnly, "\\_SB.PCI0.I2C2.PMIC",
+				0x00, ResourceConsumer,,)
+			{
+				2
+			}
 			/* GPIO.4 is AVDD pin for user facing camera */
 			GpioIo (Exclusive, PullDefault, 0x0000, 0x0000,
 				IoRestrictionOutputOnly, "\\_SB.PCI0.I2C2.PMIC",
@@ -292,12 +306,22 @@ Scope (\_SB.PCI0.I2C2)
 			}
 		}
 
+		/* C0GP is used to indicate if CAM0
+		 * GPIOs are configured as input.
+		 */
+		Name (C0GP, 0)
 		/* Power resource methods for CAM0 */
 		PowerResource (OVTH, 0, 0) {
 			Name (STA, 0)
 			Method (_ON, 0, Serialized) {
 				If (LEqual (AVBL, 1)) {
 					If (LEqual (STA, 0)) {
+						If (LEqual (C0GP, 0)) {
+							\_SB.PCI0.I2C2.CAM0.CGP1()
+							\_SB.PCI0.I2C2.CAM0.CGP2()
+							C0GP = 1
+						}
+
 						/* Enable VSIO regulator +
 						daisy chain */
 						DOVD(1)
@@ -508,6 +532,26 @@ Scope (\_SB.PCI0.I2C2)
 			Connection
 			(
 				GpioIo (Exclusive, PullDefault, 0x0000, 0x0000,
+					IoRestrictionInputOnly, "\\_SB.PCI0.I2C2.PMIC",
+					0x00, ResourceConsumer,,)
+				{
+					1
+				}
+			),
+			GPO1, 1,
+			Connection
+			(
+				GpioIo (Exclusive, PullDefault, 0x0000, 0x0000,
+					IoRestrictionInputOnly, "\\_SB.PCI0.I2C2.PMIC",
+					0x00, ResourceConsumer,,)
+				{
+					2
+				}
+			),
+			GPO2, 1,
+			Connection
+			(
+				GpioIo (Exclusive, PullDefault, 0x0000, 0x0000,
 					IoRestrictionOutputOnly,
 					"\\_SB.PCI0.I2C2.PMIC", 0x00,
 					ResourceConsumer,,)
@@ -522,6 +566,18 @@ Scope (\_SB.PCI0.I2C2)
 		Method (CRST, 1, Serialized)
 		{
 			GRST = Arg0
+		}
+
+		/* Read GPO1 GPIO, to configure as input */
+		Method (CGP1, 0, Serialized)
+		{
+			Return (GPO1)
+		}
+
+		/* Read GPO2 GPIO, to configure as input */
+		Method (CGP2, 0, Serialized)
+		{
+			Return (GPO2)
 		}
 
 		Name (_PR0, Package () { ^^I2C2.PMIC.OVTH })

@@ -9,3 +9,5 @@ SPD_SOURCES += hynix_dimm_H9CCNNNFAGMLLR-NUD	# 0b0110
 SPD_SOURCES += samsung_dimm_K3QF3F30BM-AGCF	# 0b0111
 SPD_SOURCES += samsung_dimm_K3QF4F40BM-AGCF	# 0b1000
 SPD_SOURCES += samsung_dimm_K3QFAFA0CM-AGCF	# 0b1001
+
+ramstage-y += gpio.c

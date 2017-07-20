@@ -714,8 +714,8 @@ if [ "$customizing" = "" ]; then
 	customizing="default configuration"
 fi
 
-FAILED_BOARDS="$TARGET/failed_boards"
-PASSED_BOARDS="$TARGET/passing_boards"
+FAILED_BOARDS="${COREBOOT_BUILD_DIR:-${TOP}/coreboot-builds}/failed_boards"
+PASSED_BOARDS="${COREBOOT_BUILD_DIR:-${TOP}/coreboot-builds}/passing_boards"
 
 if [ "$recursive" = "false" ]; then
 	rm -f "$FAILED_BOARDS" "$PASSED_BOARDS"

@@ -26,6 +26,7 @@
 #include "imc.h"
 #include "hudson.h"
 #include <stdlib.h>
+#include <string.h>
 #include "northbridge/amd/pi/dimmSpd.h"
 #include "northbridge/amd/pi/agesawrapper.h"
 #include <boardid.h>
@@ -52,6 +53,25 @@ static const GPIO_CONTROL oem_bettong_gpio[] = {
 	{64, Function1, FCH_GPIO_PULL_UP_ENABLE | FCH_GPIO_OUTPUT_VALUE | FCH_GPIO_OUTPUT_ENABLE | DrvStrengthSel_12mA},
 	{-1}
 };
+
+/* Bettong Hardware Monitor Fan Control
+ * Hardware limitation:
+ *  HWM will fail to read the input temperature via I2C if other
+ *  software switches the I2C address.  AMD recommends using IMC
+ *  to control fans, instead of HWM.
+ */
+static void oem_fan_control(FCH_DATA_BLOCK *FchParams)
+{
+	/* Enable IMC fan control. the recommand way */
+	imc_reg_init();
+
+	FchParams->Imc.ImcEnable = TRUE;
+	FchParams->Hwm.HwmControl = 1; /* 1 IMC, 0 HWM */
+	FchParams->Imc.ImcEnableOverWrite = 1; /* 2 disable IMC, 1 enable IMC, 0 following hw strap setting */
+
+	memset(&FchParams->Imc.EcStruct, 0, sizeof(FCH_EC));
+}
+
 /**
  * Fch Oem setting callback
  *
@@ -72,6 +92,7 @@ AGESA_STATUS Fch_Oem_config(UINT32 Func, UINTN FchData, VOID *ConfigPtr)
 	} else if (StdHeader->Func == AMD_INIT_ENV) {
 		FCH_DATA_BLOCK *FchParams_env = (FCH_DATA_BLOCK *)FchData;
 		printk(BIOS_DEBUG, "Fch OEM config in INIT ENV ");
+
 		if (IS_ENABLED(CONFIG_HUDSON_IMC_FWM))
 			oem_fan_control(FchParams_env);
 

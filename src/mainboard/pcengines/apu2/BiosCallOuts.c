@@ -53,7 +53,7 @@ const int BiosCalloutsLen = ARRAY_SIZE(BiosCallouts);
  *  software switches the I2C address.  AMD recommends using IMC
  *  to control fans, instead of HWM.
  */
-void oem_fan_control(FCH_DATA_BLOCK *FchParams)
+static void oem_fan_control(FCH_DATA_BLOCK *FchParams)
 {
 	FchParams->Imc.ImcEnable = FALSE;
 	FchParams->Hwm.HwMonitorEnable = FALSE;

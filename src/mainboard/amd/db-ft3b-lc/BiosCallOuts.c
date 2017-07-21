@@ -123,7 +123,7 @@ static const CODEC_TBL_LIST CodecTableList[] =
  *  software switches the I2C address.  AMD recommends using IMC
  *  to control fans, instead of HWM.
  */
-void oem_fan_control(FCH_DATA_BLOCK *FchParams)
+static void oem_fan_control(FCH_DATA_BLOCK *FchParams)
 {
 	FCH_HWM_FAN_CTR oem_factl[5] = {
 		/*temperature input, fan mode, frequency, low_duty, med_duty, multiplier, lowtemp, medtemp, hightemp, LinearRange, LinearHoldCount */

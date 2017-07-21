@@ -25,6 +25,9 @@ int spd_read_byte(unsigned int device, unsigned int address);
 void sdram_set_registers(void);
 void sdram_set_spd_registers(void);
 void sdram_enable(void);
+/* A merger of above functions */
+void sdram_initialize(void);
+
 /* Debug */
 #if IS_ENABLED(CONFIG_DEBUG_RAM_SETUP)
 void dump_spd_registers(void);

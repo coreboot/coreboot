@@ -979,3 +979,11 @@ void sdram_enable(void)
 	PRINT_DEBUG("Northbridge following SDRAM init:\n");
 	DUMPNORTH();
 }
+
+void sdram_initialize(void)
+{
+	dump_spd_registers();
+	sdram_set_registers();
+	sdram_set_spd_registers();
+	sdram_enable();
+}

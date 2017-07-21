@@ -93,4 +93,10 @@ config DIMM_SPD_SIZE
 	int
 	default 128
 
+config FORCE_MPCIE2_CLK
+	bool "Force clock of mPCIe slot2 (GPP3 PCIe clock)  to be always on"
+	default n
+	help
+	  If no card is attached to mPCIe2 slot, say N.
+
 endif # BOARD_PCENGINES_APU3

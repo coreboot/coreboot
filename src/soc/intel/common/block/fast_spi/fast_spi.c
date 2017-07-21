@@ -67,7 +67,7 @@ void fast_spi_init(void)
 }
 
 /*
- * Set FAST_SPIBAR BIOS Control BILD bit.
+ * Set FAST_SPIBAR BIOS Control register based on input bit field.
  */
 static void fast_spi_set_bios_control_reg(uint8_t bios_cntl_bit)
 {
@@ -81,11 +81,21 @@ static void fast_spi_set_bios_control_reg(uint8_t bios_cntl_bit)
 }
 
 /*
+ * Ensure an additional read back after performing lock down
+ */
+static void fast_spi_read_post_write(uint8_t reg)
+{
+	pci_read_config8(PCH_DEV_SPI, reg);
+}
+
+/*
  * Set FAST_SPIBAR BIOS Control BILD bit.
  */
 void fast_spi_set_bios_interface_lock_down(void)
 {
 	fast_spi_set_bios_control_reg(SPIBAR_BIOS_CONTROL_BILD);
+
+	fast_spi_read_post_write(SPIBAR_BIOS_CONTROL);
 }
 
 /*
@@ -94,6 +104,9 @@ void fast_spi_set_bios_interface_lock_down(void)
 void fast_spi_set_lock_enable(void)
 {
 	fast_spi_set_bios_control_reg(SPIBAR_BIOS_CONTROL_LOCK_ENABLE);
+
+
+	fast_spi_read_post_write(SPIBAR_BIOS_CONTROL);
 }
 
 /*
@@ -102,6 +115,8 @@ void fast_spi_set_lock_enable(void)
 void fast_spi_set_eiss(void)
 {
 	fast_spi_set_bios_control_reg(SPIBAR_BIOS_CONTROL_EISS);
+
+	fast_spi_read_post_write(SPIBAR_BIOS_CONTROL);
 }
 
 /*

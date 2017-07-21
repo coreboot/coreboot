@@ -13,8 +13,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef AMD_GARDENIA_FCHEC
-#define AMD_GARDENIA_FCHEC
+#ifndef __AMD_STONEY_FCHEC__
+#define __AMD_STONEY_FCHEC__
 
 #include <soc/imc.h>
 #include "Porting.h"

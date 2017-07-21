@@ -13,8 +13,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef AMD_BETTONG_FCHEC
-#define AMD_BETTONG_FCHEC
+#ifndef __AMD_HUDSON_FCHEC__
+#define __AMD_HUDSON_FCHEC__
 
 #include "imc.h"
 #include "Porting.h"

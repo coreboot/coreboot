@@ -68,13 +68,13 @@ static void report_cpu_info(void)
 	msr_t microcode_ver;
 	static const char * const mode[] = {"NOT ", ""};
 	const char *cpu_type = "Unknown";
+	u32 p[13];
 
 	index = 0x80000000;
 	cpuidr = cpuid(index);
 	if (cpuidr.eax < 0x80000004) {
 		strcpy(cpu_string, "Platform info not available");
 	} else {
-		u32 p[13];
 		int j=0;
 
 		for (i = 2; i <= 4; i++) {

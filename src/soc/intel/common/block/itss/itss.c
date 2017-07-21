@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2017 Intel Corporation.
+ * Copyright (C) 2017 Siemens AG
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,18 +24,27 @@
 
 void itss_irq_init(uint8_t pch_interrupt_routing[MAX_PXRC_CONFIG])
 {
-	uint8_t index = 0;
+	uint32_t regs[MAX_PXRC_CONFIG/sizeof(uint32_t)] = {0};
+	uint8_t index, byte;
 
-	for (index = 0; index < MAX_PXRC_CONFIG; index++) {
-		uint8_t val = pch_interrupt_routing[index];
-		uint8_t irq = val & 0xf;
+	/* Fill in all the PIRx routes into one array. */
+	for (index = 0; index < ARRAY_SIZE(regs); index++) {
+		for (byte = 0; byte < sizeof(uint32_t); byte++) {
+			uint8_t val = pch_interrupt_routing[index *
+						    sizeof(uint32_t) + byte];
+			uint8_t irq = val & 0xf;
 
-		if (irq == 8 || irq == 13)
-			continue;
-		if (irq <= 2)
-			continue;
-
-		pcr_write8(PID_ITSS, PCR_ITSS_PIRQA_ROUT + index, val);
+			if ((irq <= 2) || (irq == 8) || (irq == 13))
+				regs[index] |= (0x80 << (8 * byte));
+			else
+				regs[index] |= (val << (8 * byte));
+		}
+		/* Access the routing register in 32 bit mode to make this
+		   function suitable for both IOSF 1.0 (where only 32 bit access
+		   is supported) and later versions of the interface. */
+		pcr_write32(PID_ITSS,
+			    PCR_ITSS_PIRQA_ROUT + (index * sizeof(uint32_t)),
+			    regs[index]);
 	}
 }
 

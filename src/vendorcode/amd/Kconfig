@@ -13,7 +13,7 @@
 # GNU General Public License for more details.
 #
 
-if CPU_AMD_PI || SOC_AMD_PI
+if CPU_AMD_AGESA || CPU_AMD_PI || SOC_AMD_PI
 
 menu "AMD Platform Initialization"
 
@@ -21,7 +21,7 @@ choice
 	prompt "AGESA source"
 	default CPU_AMD_AGESA_BINARY_PI if CPU_AMD_PI
 	default CPU_AMD_AGESA_BINARY_PI if SOC_AMD_PI
-	default CPU_AMD_AGESA_OPENSOURCE
+	default CPU_AMD_AGESA_OPENSOURCE if CPU_AMD_AGESA
 	help
 	  Select the method for including the AMD Platform Initialization
 	  code into coreboot.  Platform Initialization code is required for

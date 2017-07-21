@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2007-2008 Uwe Hermann <uwe@hermann-uwe.de>
- * Copyright (C) 2010 Keith Hui <buurin@gmail.com>
+ * Copyright (C) 2010,2017 Keith Hui <buurin@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,11 +25,9 @@
 #include "i440bx.h"
 #include "raminit.h"
 
-/*-----------------------------------------------------------------------------
-Macros and definitions.
------------------------------------------------------------------------------*/
-
-#define NB PCI_DEV(0, 0, 0)
+/*
+ * Macros and definitions
+ */
 
 /* Debugging macros. */
 #if IS_ENABLED(CONFIG_DEBUG_RAM_SETUP)

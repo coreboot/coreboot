@@ -185,6 +185,9 @@ static void soc_lockdown(void)
 				  pci_read_config8(PCH_DEV_LPC,
 						   BIOS_CNTL) | LPC_BC_LE);
 
+		/* Ensure an additional read back after performing lock down */
+		pci_read_config8(PCH_DEV_LPC, BIOS_CNTL);
+
 		fast_spi_set_lock_enable();
 	}
 
@@ -193,6 +196,9 @@ static void soc_lockdown(void)
 		pci_write_config8(PCH_DEV_LPC, BIOS_CNTL,
 				  pci_read_config8(PCH_DEV_LPC,
 						   BIOS_CNTL) | LPC_BC_EISS);
+
+		/* Ensure an additional read back after performing lock down */
+		pci_read_config8(PCH_DEV_LPC, BIOS_CNTL);
 
 		fast_spi_set_eiss();
 	}

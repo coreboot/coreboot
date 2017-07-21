@@ -43,7 +43,6 @@ postcar-$(CONFIG_CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM) += stage_cache.c
 postcar-$(CONFIG_FSP_CAR) += temp_ram_exit.c
 postcar-$(CONFIG_FSP_CAR) += util.c
 postcar-$(CONFIG_DISPLAY_FSP_HEADER) += header_display.c
-postcar-y += hand_off_block.c
 
 CPPFLAGS_common += -I$(src)/drivers/intel/fsp2_0/include
 

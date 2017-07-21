@@ -16,8 +16,7 @@ romstage-y += cbmem.c
 romstage-y += reset.c
 romstage-$(CONFIG_UART_DEBUG) += uart.c
 
-ramstage-y += chip.c
-ramstage-y += memmap.c
+ramstage-y += cbmem.c
 ramstage-$(CONFIG_PLATFORM_USES_FSP2_0) += reset.c
 ramstage-$(CONFIG_UART_DEBUG) += uart.c
 

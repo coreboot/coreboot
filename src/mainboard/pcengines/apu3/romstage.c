@@ -100,7 +100,13 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		data = *((u32 *)(ACPI_MMIO_BASE + MISC_BASE+FCH_MISC_REG04));
 
 		data &= 0xFFFFFF0F;
-		data |= 0xA << (1 * 4);	// CLKREQ GFX to GFXCLK
+#if IS_ENABLED(CONFIG_FORCE_MPCIE2_CLK)
+		// make GFXCLK to ignore CLKREQ# input
+		// force it to be always on
+		data |= 0xF << (1 * 4); // CLKREQ GFX to GFXCLK
+#else
+		data |= 0xA << (1 * 4); // CLKREQ GFX to GFXCLK
+#endif
 
 		*((u32 *)(ACPI_MMIO_BASE + MISC_BASE+FCH_MISC_REG04)) = data;
 	}

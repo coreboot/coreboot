@@ -45,7 +45,6 @@ chip northbridge/intel/i440bx		# Northbridge
       device pci 4.2 on	end		# USB
       device pci 4.3 on end		# ACPI
       device pci 6.0 on end             # Onboard SCSI
-      device pci 7.0 on end             # Onboard LAN
       register "ide0_enable" = "1"
       register "ide1_enable" = "1"
       register "ide_legacy_enable" = "1"

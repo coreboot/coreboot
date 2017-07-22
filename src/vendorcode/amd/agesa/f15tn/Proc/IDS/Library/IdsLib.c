@@ -698,7 +698,7 @@ IdsRunCodeOnCoreEarly (
   IDS_EARLY_AP_TASK IdsEarlyTask;
 
   IdentifyCore (StdHeader, &BscSocket, &IgnoredModule, &BscCoreNum, &IgnoredSts);
-  ASSERT (~((Socket == BscSocket) && (Core == BscCoreNum)));
+  ASSERT (!((Socket == BscSocket) && (Core == BscCoreNum)));
   if ((Socket == BscSocket) || (Core == 0)) {
     ApUtilRunCodeOnSocketCore (Socket, Core, ApTask, StdHeader);
   } else {

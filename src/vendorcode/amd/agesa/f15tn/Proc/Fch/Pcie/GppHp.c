@@ -85,7 +85,7 @@ FchGppHotPlugSmiProcess (
 
   FailedPort = (UINT8) (1 << HpPort);
   if (FchGpp->GppGen2 && FchGpp->GppGen2Strap) {
-    GppS3Data &= (UINT8) !(1 << HpPort);
+    GppS3Data &= (UINT8) ~(1 << HpPort);
     if (GppPortPollingLtssm (FchGpp, FailedPort, TRUE, StdHeader)) {
       FchGppForceGen1 (FchGpp, FailedPort, StdHeader);
       FailedPort = GppPortPollingLtssm (FchGpp, FailedPort, FALSE, StdHeader);
@@ -123,7 +123,7 @@ FchGppHotUnplugSmiProcess (
   GppS3Data = 0x00;
   ReadMem ( ACPI_MMIO_BASE + CMOS_RAM_BASE + 0x0D, AccessWidth8, &GppS3Data);
   FchGpp->PortCfg[HpPort].PortDetected = FALSE;
-  GppS3Data &= (UINT8) !(1 << (HpPort + 4));
+  GppS3Data &= (UINT8) ~(1 << (HpPort + 4));
 
   if (FchGpp->GppGen2 && FchGpp->GppGen2Strap) {
     FchGppForceGen2 (FchGpp, (UINT8) (1 << HpPort), StdHeader);

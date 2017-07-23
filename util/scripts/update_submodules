@@ -1,0 +1,73 @@
+#!/bin/bash
+
+# This file is part of the coreboot project.
+#
+# Copyright (C) 2017 Google Inc.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+
+# Description:
+# Check all submodules for updates.  If there are more than a minimum
+# number of changes, create a commit to update the submodule to the
+# new version.
+
+export LANG=C
+export LC_ALL=C
+export TZ=UTC
+
+min_commits=10
+
+TOP=${PWD}
+SUBMODULES_WITH_UPDATES=0
+submodule_dirs=$(git submodule foreach pwd | grep -v Entering)
+
+(
+echo "Checking submodules..."
+for submodule in $submodule_dirs; do
+	cd "$submodule" || exit 1
+	initial_commit_id="$(git log --pretty='%h' -n 1)"
+	initial_commit_description="$(git log --pretty='%ci - (%s)' -n 1)"
+	git fetch 2>/dev/null
+	updated_commit_id="$(git log --pretty='%h' -n 1 origin/master)"
+	updated_commit_description="$(git log --pretty='%ci - (%s)' -n 1 "${updated_commit_id}")"
+	if [ "${initial_commit_id}" = "${updated_commit_id}" ]; then
+		# echo "No updates for ${submodule}"
+		continue
+	fi
+	SUBMODULES_WITH_UPDATES+=1
+	update_count="$(git log --oneline "${initial_commit_id}..${updated_commit_id}" | wc -l)"
+	echo "${update_count} new commits for ${submodule}"
+	if [ "${update_count}" -ge "${min_commits}" ]; then
+		echo "Creating commit to update ${submodule##*/} submodule"
+		git checkout "${updated_commit_id}" > /dev/null 2>&1
+		cd "${TOP}" || exit 1
+		sleep 1
+		git add "${submodule}" > /dev/null 2>&1 || exit 1
+		sleep 1
+		git commit -s -F- > /dev/null 2>&1 <<EOF
+Update ${submodule##*/} submodule to upstream master
+
+Updating from commit id ${initial_commit_id}:
+$initial_commit_description
+
+to commit id ${updated_commit_id}:
+${updated_commit_description}
+
+This brings in ${update_count} new commits.
+EOF
+		sleep 1
+	fi
+done
+
+if [ "${SUBMODULES_WITH_UPDATES}" = "0" ]; then
+	echo "No submodules with any updates."
+fi
+)

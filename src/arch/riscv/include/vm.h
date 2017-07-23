@@ -41,9 +41,9 @@
 #define INSERT_FIELD(val, which, fieldval) (((val) & ~(which)) | ((fieldval) * ((which) & ~((which)-1))))
 
 #define supervisor_paddr_valid(start, length) \
-  ((uintptr_t)(start) >= current.first_user_vaddr + current.bias \
-   && (uintptr_t)(start) + (length) < mem_size \
-   && (uintptr_t)(start) + (length) >= (uintptr_t)(start))
+	((uintptr_t)(start) >= current.first_user_vaddr + current.bias \
+	 && (uintptr_t)(start) + (length) < mem_size \
+	 && (uintptr_t)(start) + (length) >= (uintptr_t)(start))
 
 typedef uintptr_t pte_t;
 extern pte_t* root_page_table;

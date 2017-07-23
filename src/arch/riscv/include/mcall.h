@@ -70,9 +70,9 @@ typedef struct {
 } hls_t;
 
 #define MACHINE_STACK_TOP() ({ \
-  /* coverity[uninit_use] : FALSE */ \
-  register uintptr_t sp asm ("sp"); \
-  (void*)((sp + RISCV_PGSIZE) & -RISCV_PGSIZE); })
+	/* coverity[uninit_use] : FALSE */ \
+	register uintptr_t sp asm ("sp"); \
+	(void*)((sp + RISCV_PGSIZE) & -RISCV_PGSIZE); })
 
 // hart-local storage, at top of stack
 #define HLS() ((hls_t*)(MACHINE_STACK_TOP() - HLS_SIZE))

@@ -27,14 +27,22 @@
  * SUCH DAMAGE.
  */
 
+#include <libpayload.h>
 #include "font8x16.h"
 #include "font.h"
 
+#define COLS_MIN	130
+
 int font_width;
 int font_height;
+int font_scale;
 
-void font_init(void)
+void font_init(int width)
 {
-	font_width = FONT_WIDTH;
-	font_height = FONT_HEIGHT;
+	font_scale = CONFIG_LP_FONT_SCALE_FACTOR;
+	if (!font_scale)
+		font_scale = MAX(width / (FONT_WIDTH * COLS_MIN), 1);
+
+	font_width = FONT_WIDTH * font_scale;
+	font_height = FONT_HEIGHT * font_scale;
 }

@@ -321,6 +321,14 @@ config COREBOOT_VIDEO_CONSOLE
 	  Say Y here if coreboot switched to a graphics mode and
 	  your payload wants to use it.
 
+config FONT_SCALE_FACTOR
+	int "Scale factor for the included font"
+	depends on GEODELX_VIDEO_CONSOLE || COREBOOT_VIDEO_CONSOLE
+	default 0
+	help
+	  By default (value of 0), the scale factor is automatically
+	  calculated to ensure at least 130 columns (when possible).
+
 config PC_KEYBOARD
 	bool "Allow input from a PC keyboard"
 	default y if ARCH_X86 # uses IO

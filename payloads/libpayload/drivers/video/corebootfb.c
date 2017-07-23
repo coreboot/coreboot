@@ -238,7 +238,7 @@ static int corebootfb_init(void)
 	if (fbaddr == 0)
 		return -1;
 
-	font_init();
+	font_init(FI->x_resolution);
 
 	coreboot_video_console.columns = FI->x_resolution / font_width;
 	coreboot_video_console.rows = FI->y_resolution / font_height;

@@ -268,7 +268,7 @@ static int geodelx_init(void)
 	dcaddr = pci_read_resource(dev, 2);
 	vgaddr = pci_read_resource(dev, 3);
 
-	font_init();
+	font_init(vga_mode.hactive);
 
 	init_video_mode();
 

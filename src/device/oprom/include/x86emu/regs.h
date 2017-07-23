@@ -61,7 +61,7 @@
 #ifdef	__BIG_ENDIAN__
 
 typedef struct {
-    u32 e_reg;
+	u32 e_reg;
 	} I32_reg_t;
 
 typedef struct {
@@ -75,7 +75,7 @@ typedef struct {
 #else /* !__BIG_ENDIAN__ */
 
 typedef struct {
-    u32 e_reg;
+	u32 e_reg;
 	} I32_reg_t;
 
 typedef struct {
@@ -111,7 +111,7 @@ struct i386_special_regs {
  */
 
 struct i386_segment_regs {
-    u16 CS, DS, SS, ES, FS, GS;
+	u16 CS, DS, SS, ES, FS, GS;
 	};
 
 /* 8 bit registers */
@@ -260,35 +260,35 @@ struct i386_segment_regs {
 #define  INTR_HALTED          0x4
 
 typedef struct {
-    struct i386_general_regs    gen;
-    struct i386_special_regs    spc;
-    struct i386_segment_regs    seg;
-    /*
-     * MODE contains information on:
-     *  REPE prefix             2 bits  repe,repne
-     *  SEGMENT overrides       5 bits  normal,DS,SS,CS,ES
-     *  Delayed flag set        3 bits  (zero, signed, parity)
-     *  reserved                6 bits
-     *  interrupt #             8 bits  instruction raised interrupt
-     *  BIOS video segregs      4 bits
-     *  Interrupt Pending       1 bits
-     *  Extern interrupt        1 bits
-     *  Halted                  1 bits
-     */
-    u32                         mode;
-    volatile int                intr;   /* mask of pending interrupts */
-    volatile int                         debug;
+	struct i386_general_regs    gen;
+	struct i386_special_regs    spc;
+	struct i386_segment_regs    seg;
+	/*
+	 * MODE contains information on:
+	 *  REPE prefix             2 bits  repe,repne
+	 *  SEGMENT overrides       5 bits  normal,DS,SS,CS,ES
+	 *  Delayed flag set        3 bits  (zero, signed, parity)
+	 *  reserved                6 bits
+	 *  interrupt #             8 bits  instruction raised interrupt
+	 *  BIOS video segregs      4 bits
+	 *  Interrupt Pending       1 bits
+	 *  Extern interrupt        1 bits
+	 *  Halted                  1 bits
+	 */
+	u32                         mode;
+	volatile int                intr;   /* mask of pending interrupts */
+	volatile int                         debug;
 #if IS_ENABLED(CONFIG_X86EMU_DEBUG)
-    int                         check;
-    u16                         saved_ip;
-    u16                         saved_cs;
-    int                         enc_pos;
-    int                         enc_str_pos;
-    char                        decode_buf[32]; /* encoded byte stream  */
-    char                        decoded_buf[256]; /* disassembled strings */
+	int                         check;
+	u16                         saved_ip;
+	u16                         saved_cs;
+	int                         enc_pos;
+	int                         enc_str_pos;
+	char                        decode_buf[32]; /* encoded byte stream  */
+	char                        decoded_buf[256]; /* disassembled strings */
 #endif
-    u8                          intno;
-    u8                          __pad[3];
+	u8                          intno;
+	u8                          __pad[3];
 	} X86EMU_regs;
 
 /****************************************************************************

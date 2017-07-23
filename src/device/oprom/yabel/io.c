@@ -101,47 +101,47 @@ void my_outl(X86EMU_pioAddr addr, u32 val)
 static unsigned int
 read_io(void *addr, size_t sz)
 {
-        unsigned int ret;
+	unsigned int ret;
 	/* since we are using inb instructions, we need the port number as 16bit value */
 	u16 port = (u16)(u32) addr;
 
-        switch (sz) {
-        case 1:
+	switch (sz) {
+	case 1:
 		ret = inb(port);
-                break;
-        case 2:
+		break;
+	case 2:
 		ret = inw(port);
-                break;
-        case 4:
+		break;
+	case 4:
 		ret = inl(port);
-                break;
-        default:
-                ret = 0;
-        }
+		break;
+	default:
+		ret = 0;
+	}
 
-        return ret;
+	return ret;
 }
 
 static int
 write_io(void *addr, unsigned int value, size_t sz)
 {
 	u16 port = (u16)(u32) addr;
-        switch (sz) {
+	switch (sz) {
 	/* since we are using inb instructions, we need the port number as 16bit value */
-        case 1:
+	case 1:
 		outb(value, port);
-                break;
-        case 2:
+		break;
+	case 2:
 		outw(value, port);
-                break;
-        case 4:
+		break;
+	case 4:
 		outl(value, port);
-                break;
-        default:
-                return -1;
-        }
+		break;
+	default:
+		return -1;
+	}
 
-        return 0;
+	return 0;
 }
 
 u32 pci_cfg_read(X86EMU_pioAddr addr, u8 size);

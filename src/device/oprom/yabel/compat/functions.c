@@ -72,15 +72,15 @@ unsigned long tb_freq = 0;
 
 u64 get_time(void)
 {
-    u64 act = 0;
+	u64 act = 0;
 #if IS_ENABLED(CONFIG_ARCH_X86)
-    u32 eax, edx;
+	u32 eax, edx;
 
-    __asm__ __volatile__(
-	"rdtsc"
-        : "=a"(eax), "=d"(edx)
-        : /* no inputs, no clobber */);
-    act = ((u64) edx << 32) | eax;
+	__asm__ __volatile__(
+		"rdtsc"
+		: "=a"(eax), "=d"(edx)
+		: /* no inputs, no clobber */);
+	act = ((u64) edx << 32) | eax;
 #endif
-    return act;
+	return act;
 }

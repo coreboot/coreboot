@@ -155,7 +155,7 @@ void 	X86EMU_halt_sys(void);
 
 #if IS_ENABLED(CONFIG_X86EMU_DEBUG)
 #define	HALT_SYS()	\
-    	printf("halt_sys: in %s\n", __func__);	\
+	printf("halt_sys: in %s\n", __func__);	\
 	X86EMU_halt_sys();
 #else
 #define	HALT_SYS()	X86EMU_halt_sys()

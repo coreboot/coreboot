@@ -46,11 +46,11 @@
 /* Basic 8087 register can hold any of the following values: */
 
 union x86_fpu_reg_u {
-    s8                  tenbytes[10];
-    double              dval;
-    float               fval;
-    s16                 sval;
-    s32                 lval;
+	s8                  tenbytes[10];
+	double              dval;
+	float               fval;
+	s16                 sval;
+	s32                 lval;
 	};
 
 struct x86_fpu_reg {
@@ -81,10 +81,10 @@ struct x86_fpu_reg {
 #define  X86_FPU_STKTOP  0
 
 struct x86_fpu_registers {
-    struct x86_fpu_reg  x86_fpu_stack[8];
-    int                 x86_fpu_flags;
-    int                 x86_fpu_config;         /* rounding modes, etc. */
-    short               x86_fpu_tos, x86_fpu_bos;
+	struct x86_fpu_reg  x86_fpu_stack[8];
+	int                 x86_fpu_flags;
+	int                 x86_fpu_config;         /* rounding modes, etc. */
+	short               x86_fpu_tos, x86_fpu_bos;
 	};
 
 #pragma	pack()

@@ -42,10 +42,10 @@
 
 typedef struct
 {
-    unsigned int serv;
-    int nargs;
-    int nrets;
-    unsigned int args[16];
+	unsigned int serv;
+	int nargs;
+	int nrets;
+	unsigned int args[16];
 } of_arg_t;
 
 

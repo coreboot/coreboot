@@ -812,11 +812,11 @@ static void resource_tree(struct device *root, int debug_level, int depth)
 		indent[i] = ' ';
 	indent[i] = '\0';
 
- 	do_printk(BIOS_DEBUG, "%s%s", indent, dev_path(root));
- 	if (root->link_list && root->link_list->children)
- 		do_printk(BIOS_DEBUG, " child on link 0 %s",
- 			  dev_path(root->link_list->children));
- 	do_printk(BIOS_DEBUG, "\n");
+	do_printk(BIOS_DEBUG, "%s%s", indent, dev_path(root));
+	if (root->link_list && root->link_list->children)
+		do_printk(BIOS_DEBUG, " child on link 0 %s",
+			  dev_path(root->link_list->children));
+	do_printk(BIOS_DEBUG, "\n");
 
 	for (res = root->resource_list; res; res = res->next) {
 		do_printk(debug_level, "%s%s resource base %llx size %llx "

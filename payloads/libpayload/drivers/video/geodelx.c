@@ -31,7 +31,7 @@
 #include <pci.h>
 #include <video_console.h>
 #include <arch/msr.h>
-#include "font8x16.h"
+#include "font.h"
 
 /* This is the video mode that we're going to use for our VGA screen */
 
@@ -206,10 +206,10 @@ static void geodelx_set_palette(int entry, unsigned int color)
 static void geodelx_scroll_up(void)
 {
 	unsigned char *dst = FB;
-	unsigned char *src = FB + FONT_HEIGHT * vga_mode.hactive;
+	unsigned char *src = FB + font_height * vga_mode.hactive;
 	int y;
 
-	for(y = 0; y < vga_mode.vactive - FONT_HEIGHT; y++) {
+	for(y = 0; y < vga_mode.vactive - font_height; y++) {
 		memcpy(dst, src, vga_mode.hactive);
 
 		dst += vga_mode.hactive;
@@ -236,24 +236,22 @@ static void geodelx_clear(void)
 static void geodelx_putc(u8 row, u8 col, unsigned int ch)
 {
 	unsigned char *dst;
-	unsigned char *glyph = font8x16 + ((ch & 0xFF) * FONT_HEIGHT);
 
 	unsigned char bg = (ch >> 12) & 0xF;
 	unsigned char fg = (ch >> 8) & 0xF;
 
 	int x, y;
 
-	dst = FB + ((row * FONT_HEIGHT) * vga_mode.hactive);
-	dst += (col * FONT_WIDTH);
+	dst = FB + ((row * font_height) * vga_mode.hactive);
+	dst += (col * font_width);
 
-	for(y = 0; y < FONT_HEIGHT; y++) {
+	for(y = 0; y < font_height; y++) {
 
-		for(x = FONT_WIDTH - 1; x >= 0; x--)
-			dst[FONT_WIDTH - x] = (*glyph & (1 << x)) ?
+		for(x = font_width - 1; x >= 0; x--)
+			dst[font_width - x] = font_glyph_filled(ch, x, y) ?
 				fg : bg;
 
 		dst += vga_mode.hactive;
-		glyph++;
 	}
 }
 
@@ -269,6 +267,8 @@ static int geodelx_init(void)
 	gpaddr = pci_read_resource(dev, 1);
 	dcaddr = pci_read_resource(dev, 2);
 	vgaddr = pci_read_resource(dev, 3);
+
+	font_init();
 
 	init_video_mode();
 

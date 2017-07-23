@@ -32,7 +32,7 @@
 #include <coreboot_tables.h>
 #include <pci.h>
 #include <video_console.h>
-#include "font8x16.h"
+#include "font.h"
 
 struct video_console coreboot_video_console;
 
@@ -73,11 +73,11 @@ static unsigned long chars;
 static void corebootfb_scroll_up(void)
 {
 	unsigned char *dst = FB;
-	unsigned char *src = FB + (FI->bytes_per_line * FONT_HEIGHT);
+	unsigned char *src = FB + (FI->bytes_per_line * font_height);
 	int y;
 
 	/* Scroll all lines up */
-	for(y = 0; y < FI->y_resolution - FONT_HEIGHT; y++) {
+	for(y = 0; y < FI->y_resolution - font_height; y++) {
 		memcpy(dst, src, FI->x_resolution * (FI->bits_per_pixel >> 3));
 
 		dst += FI->bytes_per_line;
@@ -85,7 +85,7 @@ static void corebootfb_scroll_up(void)
 	}
 
 	/* Erase last line */
-	dst = FB + (FI->y_resolution - FONT_HEIGHT) * FI->bytes_per_line;
+	dst = FB + (FI->y_resolution - font_height) * FI->bytes_per_line;
 
 	for(; y < FI->y_resolution; y++) {
 		memset(dst, 0, FI->x_resolution * (FI->bits_per_pixel >> 3));
@@ -124,7 +124,6 @@ static void corebootfb_clear(void)
 static void corebootfb_putchar(u8 row, u8 col, unsigned int ch)
 {
 	unsigned char *dst;
-	unsigned char *glyph = font8x16 + ((ch & 0xFF) * FONT_HEIGHT);
 
 	unsigned char bg = (ch >> 12) & 0xF;
 	unsigned char fg = (ch >> 8) & 0xF;
@@ -144,40 +143,39 @@ static void corebootfb_putchar(u8 row, u8 col, unsigned int ch)
 	}
 
 
-	dst = FB + ((row * FONT_HEIGHT) * FI->bytes_per_line);
-	dst += (col * FONT_WIDTH * (FI->bits_per_pixel >> 3));
+	dst = FB + ((row * font_height) * FI->bytes_per_line);
+	dst += (col * font_width * (FI->bits_per_pixel >> 3));
 
-	for(y = 0; y < FONT_HEIGHT; y++) {
-		for(x = FONT_WIDTH - 1; x >= 0; x--) {
+	for(y = 0; y < font_height; y++) {
+		for(x = font_width - 1; x >= 0; x--) {
 
 			switch (FI->bits_per_pixel) {
 			case 8: /* Indexed */
-				dst[(FONT_WIDTH - x) * (FI->bits_per_pixel >> 3)] = (*glyph & (1 << x)) ?  fg : bg;
+				dst[(font_width - x) * (FI->bits_per_pixel >> 3)] = font_glyph_filled(ch, x, y) ?  fg : bg;
 				break;
 			case 16: /* 16 bpp */
-				dst16 = (u16 *)(dst + (FONT_WIDTH - x) * (FI->bits_per_pixel >> 3));
-				*dst16 = (*glyph & (1 << x)) ? fgval : bgval;
+				dst16 = (u16 *)(dst + (font_width - x) * (FI->bits_per_pixel >> 3));
+				*dst16 = font_glyph_filled(ch, x, y) ? fgval : bgval;
 				break;
 			case 24: /* 24 bpp */
-				if (*glyph & (1 << x)) {
-					dst[(FONT_WIDTH - x) * (FI->bits_per_pixel >> 3) + 0] = fgval & 0xff;
-					dst[(FONT_WIDTH - x) * (FI->bits_per_pixel >> 3) + 1] = (fgval >> 8) & 0xff;
-					dst[(FONT_WIDTH - x) * (FI->bits_per_pixel >> 3) + 2] = (fgval >> 16) & 0xff;
+				if (font_glyph_filled(ch, x, y)) {
+					dst[(font_width - x) * (FI->bits_per_pixel >> 3) + 0] = fgval & 0xff;
+					dst[(font_width - x) * (FI->bits_per_pixel >> 3) + 1] = (fgval >> 8) & 0xff;
+					dst[(font_width - x) * (FI->bits_per_pixel >> 3) + 2] = (fgval >> 16) & 0xff;
 				} else {
-					dst[(FONT_WIDTH - x) * (FI->bits_per_pixel >> 3) + 0] = bgval & 0xff;
-					dst[(FONT_WIDTH - x) * (FI->bits_per_pixel >> 3) + 1] = (bgval >> 8) & 0xff;
-					dst[(FONT_WIDTH - x) * (FI->bits_per_pixel >> 3) + 2] = (bgval >> 16) & 0xff;
+					dst[(font_width - x) * (FI->bits_per_pixel >> 3) + 0] = bgval & 0xff;
+					dst[(font_width - x) * (FI->bits_per_pixel >> 3) + 1] = (bgval >> 8) & 0xff;
+					dst[(font_width - x) * (FI->bits_per_pixel >> 3) + 2] = (bgval >> 16) & 0xff;
 				}
 				break;
 			case 32: /* 32 bpp */
-				dst32 = (u32 *)(dst + (FONT_WIDTH - x) * (FI->bits_per_pixel >> 3));
-				*dst32 = (*glyph & (1 << x)) ? fgval : bgval;
+				dst32 = (u32 *)(dst + (font_width - x) * (FI->bits_per_pixel >> 3));
+				*dst32 = font_glyph_filled(ch, x, y) ? fgval : bgval;
 				break;
 			}
 		}
 
 		dst += FI->bytes_per_line;
-		glyph++;
 	}
 }
 
@@ -240,8 +238,10 @@ static int corebootfb_init(void)
 	if (fbaddr == 0)
 		return -1;
 
-	coreboot_video_console.columns = FI->x_resolution / FONT_WIDTH;
-	coreboot_video_console.rows = FI->y_resolution / FONT_HEIGHT;
+	font_init();
+
+	coreboot_video_console.columns = FI->x_resolution / font_width;
+	coreboot_video_console.rows = FI->y_resolution / font_height;
 
 	/* See setting of fbinfo above. */
 	chars = virt_to_phys(malloc(coreboot_video_console.rows *

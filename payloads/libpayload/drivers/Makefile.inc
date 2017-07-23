@@ -63,10 +63,12 @@ libc-$(CONFIG_LP_VGA_VIDEO_CONSOLE) += video/vga.c
 # Geode LX console drivers
 libc-$(CONFIG_LP_GEODELX_VIDEO_CONSOLE) += video/geodelx.c
 libc-$(CONFIG_LP_GEODELX_VIDEO_CONSOLE) += video/font8x16.c
+libc-$(CONFIG_LP_GEODELX_VIDEO_CONSOLE) += video/font.c
 
 # coreboot generic framebuffer driver
 libc-$(CONFIG_LP_COREBOOT_VIDEO_CONSOLE) += video/corebootfb.c
 libc-$(CONFIG_LP_COREBOOT_VIDEO_CONSOLE) += video/font8x16.c
+libc-$(CONFIG_LP_COREBOOT_VIDEO_CONSOLE) += video/font.c
 
 # cbgfx: coreboot graphics library
 libc-y += video/graphics.c

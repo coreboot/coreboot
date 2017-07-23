@@ -457,14 +457,14 @@ static void read_cmos_rtc(u8 rtc[7])
 {
 	/* Read RTC twice and check update-in-progress flag, to make
 	 * sure RTC is correct */
-	u8 rtc_old[7], rtc_new[7];
+	u8 rtc_new[7];
 	while (get_rtc_update_in_progress()) ;
 	unsafe_read_cmos_rtc(rtc_new);
 	do {
-		memcpy(rtc_old, rtc_new, 7);
+		memcpy(rtc, rtc_new, 7);
 		while (get_rtc_update_in_progress()) ;
 		unsafe_read_cmos_rtc(rtc_new);
-	} while (memcmp(rtc_new, rtc_old, 7) != 0);
+	} while (memcmp(rtc_new, rtc, 7) != 0);
 }
 
 /*

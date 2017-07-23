@@ -310,7 +310,7 @@ static void recalculateVsSlamTimeSettingOnCorePre(pci_devfn_t dev)
 	msr = rdmsr(0xC0010064);
 	highVoltageVid = (u8) ((msr.lo >> PS_CPU_VID_SHFT) & 0x7F);
 	if (!(msr.hi & 0x80000000)) {
-  	    printk(BIOS_ERR,"P-state info in MSRC001_0064 is invalid !!!\n");
+	    printk(BIOS_ERR,"P-state info in MSRC001_0064 is invalid !!!\n");
 	    highVoltageVid = (u8) ((pci_read_config32(dev, 0x1E0)
 				     >> PS_CPU_VID_SHFT) & 0x7F);
 	}
@@ -340,7 +340,7 @@ static void recalculateVsSlamTimeSettingOnCorePre(pci_devfn_t dev)
 	/* If SVI, we only care about CPU VID.
 	 * If PVI, determine the higher voltage b/t NB and CPU
 	 * BKDG 2.4.1.7 (a)
- 	 */
+	 */
 	if (pviModeFlag) {
 		bValue = (u8) ((msr.lo >> PS_NB_VID_SHFT) & 0x7F);
 		if (lowVoltageVid > bValue)
@@ -685,8 +685,8 @@ static void waitCurrentPstate(u32 target_pstate) {
 }
 
 static void set_pstate(u32 nonBoostedPState) {
-  	msr_t msr;
-  	uint8_t skip_wait;
+	msr_t msr;
+	uint8_t skip_wait;
 
 	// Transition P0 for calling core.
 	msr = rdmsr(0xC0010062);
@@ -735,23 +735,23 @@ static void UpdateSinglePlaneNbVid(void)
 }
 
 static void fixPsNbVidBeforeWR(u32 newNbVid, u32 coreid, u32 dev, u8 pviMode)
- {
- 	msr_t msr;
- 	u8 startup_pstate;
+{
+	msr_t msr;
+	u8 startup_pstate;
 
- 	/* This function sets NbVid before the warm reset.
- 	 *       Get StartupPstate from MSRC001_0071.
+	/* This function sets NbVid before the warm reset.
+	 *       Get StartupPstate from MSRC001_0071.
 	 *       Read Pstate register pointed by [StartupPstate].
- 	 *       and copy its content to P0 and P1 registers.
- 	 *       Copy newNbVid to P0[NbVid].
- 	 *       transition to P1 on all cores,
- 	 *       then transition to P0 on core 0.
- 	 *       Wait for MSRC001_0063[CurPstate] = 000b on core 0.
+	 *       and copy its content to P0 and P1 registers.
+	 *       Copy newNbVid to P0[NbVid].
+	 *       transition to P1 on all cores,
+	 *       then transition to P0 on core 0.
+	 *       Wait for MSRC001_0063[CurPstate] = 000b on core 0.
 	 * see BKDG rev 3.48  2.4.2.9.1 BIOS NB COF and VID Configuration
 	 *			      for SVI and Single-Plane PVI Systems
- 	 */
+	 */
 
- 	msr = rdmsr(0xc0010071);
+	msr = rdmsr(0xc0010071);
 	startup_pstate = (msr.hi >> (32 - 32)) & 0x07;
 
 	/* Copy startup pstate to P1 and P0 MSRs. Set the maxvid for
@@ -768,7 +768,7 @@ static void fixPsNbVidBeforeWR(u32 newNbVid, u32 coreid, u32 dev, u8 pviMode)
 	 * PstatMaxVal is going to be 0 on cold reset anyway ?
 	 */
 	if (!(pci_read_config32(dev, 0xdc) & (~PS_MAX_VAL_MASK))) {
-  	   printk(BIOS_ERR,"F3xDC[PstateMaxVal] is zero. Northbridge voltage setting will fail. fixPsNbVidBeforeWR in fidvid.c needs fixing. See AMD # 31116 rev 3.48 BKDG 2.4.2.9.1\n");
+	   printk(BIOS_ERR,"F3xDC[PstateMaxVal] is zero. Northbridge voltage setting will fail. fixPsNbVidBeforeWR in fidvid.c needs fixing. See AMD # 31116 rev 3.48 BKDG 2.4.2.9.1\n");
 	};
 
 	msr.lo &= ~0xFE000000;	// clear nbvid
@@ -784,7 +784,7 @@ static void fixPsNbVidBeforeWR(u32 newNbVid, u32 coreid, u32 dev, u8 pviMode)
 
 	if (coreid == 0) {
 	     set_pstate(0);
- 	}
+	}
 
 	/* missing step 7 (restore PstateMax to 0 if needed) because
 	 * we skipped step 2
@@ -1010,7 +1010,7 @@ void init_fidvid_stage2(u32 apicid, u32 nodeid)
 		}
 		/* write newNbVid to P-state Reg's NbVid if its NbDid=0 */
 		fixPsNbVidAfterWR(nbvid, NbVidUpdateAll,pvimode);
- 	} else {		/* !nb_cof_vid_update */
+	} else {		/* !nb_cof_vid_update */
 		if (pvimode)
 			UpdateSinglePlaneNbVid();
 	}

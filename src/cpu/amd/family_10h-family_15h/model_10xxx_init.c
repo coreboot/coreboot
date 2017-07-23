@@ -92,10 +92,10 @@ static void model_10xxx_init(device_t dev)
 		disable_cache();
 
 		for (i = 0x2; i < 0x10; i++) {
- 			wrmsr(0x00000200 | i, msr);
- 		}
+			wrmsr(0x00000200 | i, msr);
+		}
 
- 		enable_cache();
+		enable_cache();
 
 		/* Set up other MTRRs */
 		amd_setup_mtrrs();

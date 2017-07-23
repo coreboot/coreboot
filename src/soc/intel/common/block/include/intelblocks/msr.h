@@ -133,4 +133,3 @@
 
 #define SGX_SUPPORTED	(1<<2)
 #endif	/* SOC_INTEL_COMMON_MSR_H */
-

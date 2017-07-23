@@ -4,4 +4,3 @@ config SOC_INTEL_COMMON_BLOCK_CSE
 	help
 	  Driver for communication with Converged Security Engine (CSE)
 	  over Host Embedded Controller Interface (HECI)
-

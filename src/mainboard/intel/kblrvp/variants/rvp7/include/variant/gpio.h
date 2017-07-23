@@ -218,4 +218,3 @@ static const struct pad_config early_gpio_table[] = {
 #endif
 
 #endif
-

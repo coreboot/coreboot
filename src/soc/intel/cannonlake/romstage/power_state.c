@@ -29,4 +29,3 @@ struct chipset_power_state *fill_power_state(void)
 
 	return ps;
 }
-

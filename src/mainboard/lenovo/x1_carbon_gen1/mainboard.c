@@ -34,4 +34,3 @@ struct chip_operations mainboard_ops = {
 void h8_mainboard_init_dock (void)
 {
 }
-

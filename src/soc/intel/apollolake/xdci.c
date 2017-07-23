@@ -89,4 +89,3 @@ void soc_xdci_init(struct device *dev)
 {
 	configure_host_mode_port0(dev);
 }
-

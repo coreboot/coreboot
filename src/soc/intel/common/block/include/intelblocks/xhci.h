@@ -19,4 +19,3 @@
 void soc_xhci_init(struct device *dev);
 
 #endif	/* SOC_INTEL_COMMON_BLOCK_XHCI_H */
-

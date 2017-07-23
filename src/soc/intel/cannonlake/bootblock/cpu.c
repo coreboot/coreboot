@@ -25,4 +25,3 @@ void bootblock_cpu_init(void)
 		IS_ENABLED(CONFIG_BOOT_DEVICE_SPI_FLASH))
 		fast_spi_cache_bios_region();
 }
-

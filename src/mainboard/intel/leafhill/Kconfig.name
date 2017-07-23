@@ -1,3 +1,2 @@
 config BOARD_INTEL_LEAFHILL
 	bool "Leafhill"
-

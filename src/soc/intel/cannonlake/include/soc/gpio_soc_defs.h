@@ -249,4 +249,3 @@
 #define NUM_GPIO_COM2_PADS	(GPD11 - GPD0 + 1)
 
 #endif
-

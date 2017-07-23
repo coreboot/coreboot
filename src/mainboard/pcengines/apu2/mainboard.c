@@ -231,5 +231,3 @@ const char *smbios_mainboard_sku(void)
 struct chip_operations mainboard_ops = {
 	.enable_dev = mainboard_enable,
 };
-
-

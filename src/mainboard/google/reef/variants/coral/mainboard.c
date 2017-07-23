@@ -29,4 +29,3 @@ void variant_nhlt_oem_overrides(const char **oem_id,
 	*oem_table_id = CONFIG_VARIANT_DIR;
 	*oem_revision = variant_board_sku();
 }
-

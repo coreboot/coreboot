@@ -18,4 +18,3 @@ romstage-y += pei_data.c
 ramstage-y += pei_data.c
 ramstage-y += ramstage.c
 ramstage-y += hda_verb.c
-

@@ -464,7 +464,7 @@ static int fillbits(struct in *in, int le, unsigned int bi)
 						m = in->func(in->data);
 						if (m == 0)
 							continue;
-                                        }
+					}
 				}
 				in->marker = m;
 				if (le <= 16)

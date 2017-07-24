@@ -105,10 +105,14 @@ static void *fsp_hob_list_ptr CAR_GLOBAL;
 static void save_hob_list(int is_recovery)
 {
 	uint32_t *cbmem_loc;
+	const void *hob_list;
 	cbmem_loc = cbmem_add(CBMEM_ID_FSP_RUNTIME, sizeof(*cbmem_loc));
 	if (cbmem_loc == NULL)
 		die("Error: Could not add cbmem area for hob list.\n");
-	*cbmem_loc = (uintptr_t)fsp_get_hob_list();
+	hob_list = fsp_get_hob_list();
+	if (!hob_list)
+		die("Error: Could not locate hob list pointer.\n");
+	*cbmem_loc = (uintptr_t)hob_list;
 }
 
 ROMSTAGE_CBMEM_INIT_HOOK(save_hob_list);
@@ -166,6 +170,9 @@ int fsp_find_range_hob(struct range_entry *re, const uint8_t guid[16])
 {
 	const struct hob_resource *fsp_mem;
 	const void *hob_list = fsp_get_hob_list();
+
+	if (!hob_list)
+		return -1;
 
 	range_entry_init(re, 0, 0, 0);
 

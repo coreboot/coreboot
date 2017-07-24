@@ -34,6 +34,7 @@
 #include <string.h>
 #include <libpayload.h>
 #include <pci.h>
+#include <pci/pci.h>
 #include <storage/ata.h>
 #include <storage/ahci.h>
 
@@ -266,6 +267,10 @@ static void ahci_init_pci(pcidev_t dev)
 
 	/* Set AHCI access mode. */
 	ctrl->global_ctrl |= HBA_CTRL_AHCI_EN;
+
+	/* Enable bus mastering. */
+	const u16 command = pci_read_config16(dev, PCI_COMMAND);
+	pci_write_config16(dev, PCI_COMMAND, command | PCI_COMMAND_MASTER);
 
 	/* Probe for devices. */
 	for (i = 0; i < 32; ++i) {

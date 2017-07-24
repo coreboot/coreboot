@@ -150,7 +150,7 @@
 /* Programmable values of Bit0(SSMS) of Set STRAP MSG Control (0xF4) Register*/
 #define SPIBAR_RESET_CTRL_SSMC		1 /* Set_Strap Mux Select(SSMS) Bit=1*/
 
-#define SPIBAR_HWSEQ_XFER_TIMEOUT	15 /* 15ms*/
+#define SPIBAR_HWSEQ_XFER_TIMEOUT	5000 /* max 5s*/
 
 void *fast_spi_get_bar(void);
 

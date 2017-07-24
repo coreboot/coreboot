@@ -11,6 +11,9 @@
  * GNU General Public License for more details.
  */
 
+#ifndef __OPROM_IO_H__
+#define __OPROM_IO_H__
+
 #if IS_ENABLED(CONFIG_ARCH_X86)
 #include <arch/io.h>
 #else
@@ -22,3 +25,4 @@ u8 inb(u16 port);
 u16 inw(u16 port);
 u32 inl(u16 port);
 #endif
+#endif /* __OPROM_IO_H__ */

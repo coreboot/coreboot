@@ -33,31 +33,29 @@
 
 #include <libpayload.h>
 
-static void *default_memset(void *s, int c, size_t n)
+static void *default_memset(void *const s, const int c, size_t n)
 {
 	size_t i;
-	void *ret = s;
+	u8 *dst = s;
 	unsigned long w = c & 0xff;
-	u8 *p = s;
 
-	s = (void *)ALIGN_UP((uintptr_t)s, sizeof(unsigned long));
-	while (p != (u8 *)s && n) {
-		*p++ = c;
-		n--;
-	}
+	const u8 *const aligned_start =
+		(const u8 *)ALIGN_UP((uintptr_t)dst, sizeof(unsigned long));
+	for (; n > 0 && dst != aligned_start; --n, ++dst)
+		*dst = (u8)c;
 
 	for (i = 1; i < sizeof(unsigned long); i <<= 1)
 		w = (w << (i * 8)) | w;
 
 	for (i = 0; i < n / sizeof(unsigned long); i++)
-		((unsigned long *)s)[i] = w;
+		((unsigned long *)dst)[i] = w;
 
-	s += i * sizeof(unsigned long);
+	dst += i * sizeof(unsigned long);
 
 	for (i = 0; i < n % sizeof(unsigned long); i++)
-		((u8 *)s)[i] = (u8)c;
+		dst[i] = (u8)c;
 
-	return ret;
+	return s;
 }
 
 void *memset(void *s, int c, size_t n)

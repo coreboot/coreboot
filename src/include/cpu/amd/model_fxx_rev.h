@@ -1,3 +1,6 @@
+#ifndef __CPU_AMD_MODEL_FXX_REV_H__
+#define __CPU_AMD_MODEL_FXX_REV_H__
+
 #include <arch/cpu.h>
 #include <arch/io.h>
 
@@ -125,3 +128,4 @@ int is_e0_later_in_bsp(int nodeid);
 int is_cpu_f0_in_bsp(int nodeid);
 
 #endif
+#endif /* __CPU_AMD_MODEL_FXX_REV_H__ */

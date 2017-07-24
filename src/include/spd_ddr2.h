@@ -14,6 +14,9 @@
  * GNU General Public License for more details.
  */
 
+#ifndef __SPD_DDR2_H__
+#define __SPD_DDR2_H__
+
 /* SPDs for DDR2 SDRAM */
 #define SPD_MEM_TYPE	2
 	#define SPD_MEM_TYPE_SDRAM_DDR	0x07
@@ -111,3 +114,5 @@
 #define SPD_TRFC	42
 
 #define SPD_TREF	12
+
+#endif /* __SPD_DDR2_H__ */

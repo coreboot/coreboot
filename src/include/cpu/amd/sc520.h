@@ -1,4 +1,8 @@
+#ifndef __CPU_AMD_SC520_H__
+#define __CPU_AMD_SC520_H__
+
 /* handy dandy stuff for the sc520 MMCR */
+
 /* default location of the MMCR */
 #define MMCR 0xfffef000
 
@@ -309,3 +313,5 @@ struct mmcr {
 
 
 #define MMCRDEFAULT ((struct mmcr *) 0xfffef000)
+
+#endif /* __CPU_AMD_SC520_H__ */

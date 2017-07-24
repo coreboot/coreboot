@@ -1,3 +1,6 @@
+#ifndef __DEVICE_PCI_IDS_H__
+#define __DEVICE_PCI_IDS_H__
+
 /*
  *	PCI Class, Vendor and Device IDs
  *
@@ -3078,3 +3081,5 @@
 #define PCI_DEVICE_ID_AMD_VIPER_7412    0x7412
 
 /* END OLDER USAGE */
+
+#endif /* __DEVICE_PCI_IDS_H__ */

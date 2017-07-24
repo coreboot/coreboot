@@ -14,6 +14,9 @@
  * GNU General Public License for more details.
  */
 
+#ifndef __VIA_VX900_CHIP_H__
+#define __VIA_VX900_CHIP_H__
+
 struct northbridge_via_vx900_config {
 	/**
 	 * \brief PCIe Lane[3:0] Function Select
@@ -47,3 +50,5 @@ struct northbridge_via_vx900_config {
 	 */
 	char ext_int_route_to_pirq;
 };
+
+#endif

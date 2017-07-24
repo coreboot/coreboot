@@ -14,6 +14,9 @@
  * GNU General Public License for more details.
  */
 
+#ifndef __VIA_CN700_H__
+#define __VIA_CN700_H__
+
 /* VGA stuff */
 #define SR_INDEX		0x3c4
 #define SR_DATA			0x3c5
@@ -43,3 +46,5 @@
 #define RAM_COMMAND_PRECHARGE	0x2
 #define RAM_COMMAND_MRS		0x3
 #define RAM_COMMAND_CBR		0x4
+
+#endif

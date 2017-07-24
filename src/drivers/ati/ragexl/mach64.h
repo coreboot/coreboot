@@ -858,8 +858,8 @@
 #define GL_CHIP_ID	0x474c	/* RAGE XL, PQFP, PCI66 */
 
 #define IS_XL(id) ((id)==GR_CHIP_ID || (id)==GS_CHIP_ID || \
-                   (id)==GM_CHIP_ID || (id)==GN_CHIP_ID || \
-                   (id)==GO_CHIP_ID || (id)==GL_CHIP_ID)
+		   (id)==GM_CHIP_ID || (id)==GN_CHIP_ID || \
+		   (id)==GO_CHIP_ID || (id)==GL_CHIP_ID)
 
 #define GT_CHIP_ID	0x4754	/* RAGE (GT) */
 #define GU_CHIP_ID	0x4755	/* RAGE II/II+ (GTB) */

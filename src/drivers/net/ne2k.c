@@ -450,9 +450,9 @@ static struct device_operations ne2k_ops  = {
 };
 
 static const struct pci_driver ne2k_driver __pci_driver = {
-        .ops    = &ne2k_ops,
-        .vendor = 0x10ec,
-        .device = 0x8029,
+	.ops    = &ne2k_ops,
+	.vendor = 0x10ec,
+	.device = 0x8029,
 };
 
 #endif /* __PRE_RAM__ */

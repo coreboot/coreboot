@@ -108,20 +108,20 @@
 #define USB_PID_DATA_TOGGLE	0x88
 
 struct usb_ctrlrequest {
-        u8  bRequestType;
-        u8  bRequest;
-        u16 wValue;
-        u16 wIndex;
-        u16 wLength;
+	u8  bRequestType;
+	u8  bRequest;
+	u16 wValue;
+	u16 wIndex;
+	u16 wLength;
 } __packed;
 
 struct usb_debug_descriptor {
-        u8  bLength;
-        u8  bDescriptorType;
+	u8  bLength;
+	u8  bDescriptorType;
 
-        /* bulk endpoints with 8 byte maxpacket */
-        u8  bDebugInEndpoint;
-        u8  bDebugOutEndpoint;
+	/* bulk endpoints with 8 byte maxpacket */
+	u8  bDebugInEndpoint;
+	u8  bDebugOutEndpoint;
 };
 
 #endif

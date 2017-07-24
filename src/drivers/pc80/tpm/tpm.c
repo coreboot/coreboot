@@ -58,7 +58,7 @@
 
 /* the macro accepts the locality value, but only locality 0 is operational */
 #define TIS_REG(LOCALITY, REG) \
-    (void *)(CONFIG_TPM_TIS_BASE_ADDRESS + (LOCALITY << 12) + REG)
+	(void *)(CONFIG_TPM_TIS_BASE_ADDRESS + (LOCALITY << 12) + REG)
 
 /* hardware registers' offsets */
 #define TIS_REG_ACCESS                 0x0

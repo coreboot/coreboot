@@ -56,10 +56,10 @@ enum pipe {
 };
 
 enum transcoder {
-        TRANSCODER_A = 0,
-        TRANSCODER_B,
-        TRANSCODER_C,
-        TRANSCODER_EDP = 0xF,
+	TRANSCODER_A = 0,
+	TRANSCODER_B,
+	TRANSCODER_C,
+	TRANSCODER_EDP = 0xF,
 };
 
 enum plane {

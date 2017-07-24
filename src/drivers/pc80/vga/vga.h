@@ -5,9 +5,9 @@
  * Basic palette.
  */
 struct palette {
-        unsigned char red;
-        unsigned char green;
-        unsigned char blue;
+	unsigned char red;
+	unsigned char green;
+	unsigned char blue;
 };
 
 extern const struct palette default_vga_palette[0x100];

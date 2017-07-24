@@ -149,7 +149,7 @@ static void rtd2132_sscg(struct device *dev, struct drivers_i2c_rtd2132_config *
 }
 
 static void rtd2132_lvds_swap(struct device *dev,
-                              struct drivers_i2c_rtd2132_config *cfg)
+			      struct drivers_i2c_rtd2132_config *cfg)
 {
 	u8 swap_value = RTD2132_LVDS_SWAP_NORMAL;
 

@@ -59,7 +59,7 @@ static struct device_operations xgi_z9s_ops  = {
 };
 
 static const struct pci_driver xgi_z9s_driver __pci_driver = {
-        .ops    = &xgi_z9s_ops,
-        .vendor = PCI_VENDOR_ID_XGI,
-        .device = PCI_DEVICE_ID_XGI_20,
+	.ops    = &xgi_z9s_ops,
+	.vendor = PCI_VENDOR_ID_XGI,
+	.device = PCI_DEVICE_ID_XGI_20,
 };

@@ -455,10 +455,10 @@ try_next_port:
 	dprintk(BIOS_INFO, "debug_port: %d\n", debug_port);
 	dprintk(BIOS_INFO, "n_ports:    %d\n", n_ports);
 
-        for (i = 1; i <= n_ports; i++) {
-                portsc = read32(&ehci_regs->port_status[i-1]);
-                dprintk(BIOS_INFO, "PORTSC #%d: %08x\n", i, portsc);
-        }
+	for (i = 1; i <= n_ports; i++) {
+		portsc = read32(&ehci_regs->port_status[i-1]);
+		dprintk(BIOS_INFO, "PORTSC #%d: %08x\n", i, portsc);
+	}
 
 	if (port_map_tried && (new_debug_port != debug_port)) {
 		if (--playtimes) {

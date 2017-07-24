@@ -37,7 +37,7 @@ static int hub_port_status(const char * buf, int feature)
 /* After USB port reset, treat device number 0 as an USB hub. Assign it with
  * a device number hub_addr. Then apply enable and reset on downstream port.
  */
- static int dbgp_hub_enable(struct ehci_dbg_port *ehci_debug, unsigned char hub_addr,
+static int dbgp_hub_enable(struct ehci_dbg_port *ehci_debug, unsigned char hub_addr,
 	unsigned char port)
 {
 	char status[8];

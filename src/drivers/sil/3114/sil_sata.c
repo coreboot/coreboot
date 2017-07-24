@@ -51,9 +51,9 @@ static struct device_operations si_sata_ops  = {
 };
 
 static const struct pci_driver si_sata_driver __pci_driver = {
-        .ops    = &si_sata_ops,
-        .vendor = 0x1095,
-        .device = 0x3114,
+	.ops    = &si_sata_ops,
+	.vendor = 0x1095,
+	.device = 0x3114,
 };
 
 static const struct pci_driver si_sata_driver_2 __pci_driver = {

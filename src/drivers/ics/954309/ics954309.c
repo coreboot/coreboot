@@ -51,10 +51,10 @@ static void ics954309_init(struct device *dev)
 }
 
 static struct device_operations ics954309_operations = {
-        .read_resources   = DEVICE_NOOP,
-        .set_resources    = DEVICE_NOOP,
-        .enable_resources = DEVICE_NOOP,
-        .init             = ics954309_init,
+	.read_resources   = DEVICE_NOOP,
+	.set_resources    = DEVICE_NOOP,
+	.enable_resources = DEVICE_NOOP,
+	.init             = ics954309_init,
 };
 
 static void enable_dev(struct device *dev)

@@ -14,6 +14,16 @@ Releases 4.5.x are based on mainline support submitted in
 
 ## [Unreleased]
 
+## [v4.6.0] - 2017-07-21
+### Added
+- Allow to force GPP3 PCIe CLK attached to mPCIe2 slot based on Konfig option
+  This helps in some cases, one example could be
+  [mPCIe Ethernet extension card](https://github.com/pcengines/apu2-documentation/blob/master/docs/debug/mpcie_ethernet.md)
+
+### Changed
+- coreboot updated to [mainline 4.6 tag](https://github.com/coreboot/coreboot/tree/4.6)
+- Update sortbootorder to v4.5.7
+
 ## [v4.5.8] - 2017-06-30
 ### Changed
 - Moved sign of life strings (except for memory information) from `mainboard.c`
@@ -87,7 +97,8 @@ Releases 4.5.x are based on mainline support submitted in
 - turn off D4 and D5 leds on boot
 - enable power on after power failure
 
-[Unreleased]: https://github.com/pcengines/coreboot/compare/v4.5.8...coreboot-4.5.x
+[Unreleased]: https://github.com/pcengines/coreboot/compare/v4.6.0...coreboot-4.6.x
+[v4.6.0]: https://github.com/pcengines/coreboot/compare/v4.5.8...v4.6.0
 [v4.5.8]: https://github.com/pcengines/coreboot/compare/v4.5.7...v4.5.8
 [v4.5.7]: https://github.com/pcengines/coreboot/compare/v4.5.6...v4.5.7
 [v4.5.6]: https://github.com/pcengines/coreboot/compare/v4.5.5.2...v4.5.6

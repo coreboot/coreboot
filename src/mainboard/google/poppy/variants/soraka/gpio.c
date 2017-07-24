@@ -143,7 +143,7 @@ static const struct pad_config gpio_table[] = {
 	/* C10 : UART0_RTS# ==> EC_CAM_PMIC_RST_L */
 	PAD_CFG_GPO(GPP_C10, 1, DEEP),
 	/* C11 : UART0_CTS# ==> EN_PP3300_DX_CAM */
-	PAD_CFG_GPO(GPP_C11, 1, DEEP),
+	PAD_CFG_GPO(GPP_C11, 0, DEEP),
 	/* C12 : UART1_RXD ==> PCH_MEM_CONFIG[0] */
 	PAD_CFG_GPI(GPP_C12, NONE, DEEP),
 	/* C13 : UART1_TXD ==> PCH_MEM_CONFIG[1] */

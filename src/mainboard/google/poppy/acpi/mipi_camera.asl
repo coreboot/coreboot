@@ -27,6 +27,47 @@ Scope (\_SB.PCI0.I2C2)
 			Return (0x0F)
 		}
 
+		Method (PMON, 0, Serialized) {
+			/*
+			 * Turn on 3V3_VDD. It takes around 1 ms for voltage to
+			 * settle to 3.3 Volt. Provide additional 2 ms delay.
+			 */
+			STXS(EN_PP3300_DX_CAM)
+			Sleep (3)
+		}
+
+		Method (PMOF, 0, Serialized) {
+			/* Make Sure all PMIC outputs are off. */
+			If (LEqual (VSIC, Zero)) {
+				CTXS(EN_PP3300_DX_CAM)
+			}
+		}
+
+		Name (_PR0, Package (0x01) { CPMC })
+		Name (_PR3, Package (0x01) { CPMC })
+
+		/* Power resource methods for PMIC */
+		PowerResource (CPMC, 0, 0) {
+			Name (RSTO, 1)
+			Method (_ON, 0, Serialized) {
+				PMON()
+				/* Do not reset PMIC across S3 and S0ix cycle */
+				if (Lequal (RSTO, 1)) {
+					CTXS(EN_CAM_PMIC_RST_L)
+					Sleep(1)
+					STXS(EN_CAM_PMIC_RST_L)
+					Sleep (3)
+					RSTO = 0
+				}
+			}
+			Method (_OFF, 0, Serialized) {
+				PMOF()
+			}
+			Method (_STA, 0, Serialized) {
+				Return (GTXS(EN_PP3300_DX_CAM))
+			}
+		}
+
 		/* Marks the availability of all the operation regions */
 		Name (AVBL, Zero)
 		Name (AVGP, Zero)
@@ -290,6 +331,7 @@ Scope (\_SB.PCI0.I2C2)
 						If (LEqual (VSIC, Zero)) {
 							VSIO = 0
 							Sleep(1)
+							PMOF()
 						}
 					}
 				} ElseIf (LEqual (Arg0, 1)) {
@@ -297,6 +339,7 @@ Scope (\_SB.PCI0.I2C2)
 					If (LLess (VSIC, 4)) {
 						/* Turn on VSIO */
 						If (LEqual (VSIC, Zero)) {
+							PMON()
 							VSIO = 3
 
 							if (LNotEqual (IOVA, 52)) {

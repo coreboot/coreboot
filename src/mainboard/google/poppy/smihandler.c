@@ -27,17 +27,10 @@ void mainboard_smi_espi_handler(void)
 	chromeec_smi_process_events();
 }
 
-static void mainboard_gpio_smi_sleep(void)
-{
-	/* Power down camera PMIC */
-	gpio_set(EN_PP3300_DX_CAM, 0);
-}
-
 void mainboard_smi_sleep(u8 slp_typ)
 {
 	chromeec_smi_sleep(slp_typ, MAINBOARD_EC_S3_WAKE_EVENTS,
 			MAINBOARD_EC_S5_WAKE_EVENTS);
-	mainboard_gpio_smi_sleep();
 }
 
 int mainboard_smi_apmc(u8 apmc)

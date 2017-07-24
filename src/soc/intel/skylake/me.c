@@ -673,6 +673,7 @@ static int send_heci_reset_message(void)
 		return -1;
 
 	reply_size = sizeof(reply);
+	memset(&reply, 0, reply_size);
 	if (recv_heci_message(&reply, &reply_size) == -1)
 		return -1;
 	/* get reply result from HECI MSG  */

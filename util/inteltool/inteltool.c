@@ -244,7 +244,7 @@ void print_version(void)
 
 void print_usage(const char *name)
 {
-	printf("usage: %s [-vh?gGrpmedPMaAsfSR]\n", name);
+	printf("usage: %s [-vh?gGrpmedPMaAsfSRx]\n", name);
 	printf("\n"
 	     "   -v | --version:                   print the version\n"
 	     "   -h | --help:                      print this help\n\n"
@@ -262,6 +262,7 @@ void print_usage(const char *name)
 	     "   -P | --pciexpress:                dump northbridge PCIEXBAR registers\n\n"
 	     "   -M | --msrs:                      dump CPU MSRs\n"
 	     "   -A | --ambs:                      dump AMB registers\n"
+	     "   -x | --sgx:                       dump SGX status\n"
 	     "   -a | --all:                       dump all known (safe) registers\n"
 	     "\n");
 	exit(1);
@@ -280,7 +281,7 @@ int main(int argc, char *argv[])
 	int dump_gpios = 0, dump_mchbar = 0, dump_rcba = 0;
 	int dump_pmbase = 0, dump_epbar = 0, dump_dmibar = 0;
 	int dump_pciexbar = 0, dump_coremsrs = 0, dump_ambs = 0;
-	int dump_spi = 0, dump_gfx = 0, dump_ahci = 0;
+	int dump_spi = 0, dump_gfx = 0, dump_ahci = 0, dump_sgx = 0;
 	int show_gpio_diffs = 0;
 
 	static struct option long_options[] = {
@@ -301,10 +302,11 @@ int main(int argc, char *argv[])
 		{"all", 0, 0, 'a'},
 		{"gfx", 0, 0, 'f'},
 		{"ahci", 0, 0, 'R'},
+		{"sgx", 0, 0, 'x'},
 		{0, 0, 0, 0}
 	};
 
-	while ((opt = getopt_long(argc, argv, "vh?gGrpmedPMaAsfRS:",
+	while ((opt = getopt_long(argc, argv, "vh?gGrpmedPMaAsfRS:x",
                                   long_options, &option_index)) != EOF) {
 		switch (opt) {
 		case 'v':
@@ -361,12 +363,16 @@ int main(int argc, char *argv[])
 			dump_ambs = 1;
 			dump_spi = 1;
 			dump_ahci = 1;
+			dump_sgx = 1;
 			break;
 		case 'A':
 			dump_ambs = 1;
 			break;
 		case 's':
 			dump_spi = 1;
+			break;
+		case 'x':
+			dump_sgx = 1;
 			break;
 		case 'h':
 		case '?':
@@ -574,6 +580,9 @@ int main(int argc, char *argv[])
 	if (dump_ahci) {
 		print_ahci(ahci);
 	}
+
+	if (dump_sgx)
+		print_sgx();
 
 	/* Clean up */
 	if (ahci)

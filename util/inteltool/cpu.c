@@ -28,6 +28,13 @@
 # define BREG	"%%ebx"
 #endif
 
+#define IA32_FEATURE_CONTROL	0x3a
+#define SGX_GLOBAL_ENABLED	(1 << 18)
+#define FEATURE_CONTROL_LOCKED	(1)
+#define MTRR_CAP_MSR		0xfe
+#define PRMRR_SUPPORTED		(1 << 12)
+#define SGX_SUPPORTED		(1 << 2)
+
 int fd_msr;
 
 unsigned int cpuid(unsigned int op)
@@ -46,6 +53,26 @@ unsigned int cpuid(unsigned int op)
 #endif
 
 	return ret;
+}
+
+inline cpuid_result_t cpuid_ext(int op, unsigned int ecx)
+{
+	cpuid_result_t result;
+
+#ifndef __DARWIN__
+	asm volatile (
+			"mov %%ebx, %%edi;"
+			"cpuid;"
+			"mov %%ebx, %%esi;"
+			"mov %%edi, %%ebx;"
+			: "=a" (result.eax),
+			"=S" (result.ebx),
+			"=c" (result.ecx),
+			"=d" (result.edx)
+			: "0" (op), "2" (ecx)
+			: "edi");
+#endif
+	return result;
 }
 
 #ifndef __DARWIN__
@@ -80,7 +107,119 @@ msr_t rdmsr(int addr)
 
 	return msr;
 }
+
+static int open_and_seek(int cpu, unsigned long msr, int mode, int *fd)
+{
+	char dev[512];
+	char temp_string[50];
+
+	snprintf(dev, sizeof(dev), "/dev/cpu/%d/msr", cpu);
+	*fd = open(dev, mode);
+
+	if (*fd < 0) {
+		sprintf(temp_string,
+			"open(\"%s\"): %s\n", dev, strerror(errno));
+		perror(temp_string);
+		return -1;
+	}
+
+	if (lseek(*fd, msr, SEEK_SET) == (off_t)-1) {
+		sprintf(temp_string, "lseek(%lu): %s\n", msr, strerror(errno));
+		perror(temp_string);
+		close(*fd);
+		return -1;
+	}
+
+	return 0;
+}
+
+msr_t rdmsr_from_cpu(int cpu, unsigned long addr)
+{
+	int fd;
+	msr_t msr = { 0xffffffff, 0xffffffff };
+	uint32_t buf[2];
+	char temp_string[50];
+
+	if (open_and_seek(cpu, addr, O_RDONLY, &fd) < 0) {
+		sprintf(temp_string, "Could not read MSR for CPU#%d", cpu);
+		perror(temp_string);
+	}
+
+	if (read(fd, buf, 8) == 8) {
+		msr.lo = buf[0];
+		msr.hi = buf[1];
+	}
+
+	close(fd);
+
+	return msr;
+}
+
+int get_number_of_cpus(void)
+{
+	return sysconf(_SC_NPROCESSORS_ONLN);
+}
+
+int is_sgx_supported(int cpunum)
+{
+	cpuid_result_t cpuid_regs;
+	msr_t msr;
+
+	/* CPUID leaf 0x7 subleaf 0x0 to detect SGX support
+	details are mentioned in Intel SDM Chap.36- section 36.7 */
+	cpuid_regs = cpuid_ext(0x7, 0x0);
+	msr = rdmsr_from_cpu(cpunum, MTRR_CAP_MSR);
+	return ((cpuid_regs.ebx & SGX_SUPPORTED) && (msr.lo & PRMRR_SUPPORTED));
+}
+
+int is_sgx_enabled(int cpunum)
+{
+	msr_t data;
+	data = rdmsr_from_cpu(cpunum, IA32_FEATURE_CONTROL);
+	return (data.lo & SGX_GLOBAL_ENABLED);
+}
+
+int is_sgx_locked(int cpunum)
+{
+	msr_t data;
+	data = rdmsr_from_cpu(cpunum, IA32_FEATURE_CONTROL);
+	return (data.lo & FEATURE_CONTROL_LOCKED);
+}
+
 #endif
+
+int print_sgx(void)
+{
+	int error = -1;
+#ifndef __DARWIN__
+	int ncpus = get_number_of_cpus();
+	int i = 0;
+	char temp_string[50];
+
+	printf("\n============= Dumping INTEL SGX status =============");
+
+	if (ncpus < 1) {
+		sprintf(temp_string, "Failed to get number of CPUs\n");
+		perror(temp_string);
+		error = -1;
+	} else {
+		printf("\nNumber of CPUs = %d\n", ncpus);
+		for (i = 0; i < ncpus ; i++) {
+
+			printf("------------- CPU %d ----------------\n", i);
+			printf("SGX supported             : %s\n",
+					is_sgx_supported(i) ? "YES" : "NO");
+			printf("SGX enabled               : %s\n",
+					is_sgx_enabled(i) ? "YES" : "NO");
+			printf("Feature Control locked    : %s\n",
+					is_sgx_locked(i) ? "YES" : "NO");
+		}
+		error = 0;
+	}
+	printf("====================================================\n");
+#endif
+	return error;
+}
 
 int print_intel_core_msrs(void)
 {

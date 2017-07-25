@@ -258,7 +258,9 @@ static void ahci_init_pci(pcidev_t dev)
 	/* Reset host controller. */
 	ctrl->global_ctrl |= HBA_CTRL_RESET;
 	/* Reset has to be finished after 1s. */
-	delay(1);
+	int timeout = 10 * 1000; /* Time out after 10,000 * 100us == 1s. */
+	while (ctrl->global_ctrl & HBA_CTRL_RESET && timeout--)
+		udelay(100);
 	if (ctrl->global_ctrl & HBA_CTRL_RESET) {
 		printf("ahci: ERROR: "
 			"Controller reset didn't finish within 1s.\n");

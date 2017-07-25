@@ -330,6 +330,7 @@ static void amd_bs_ramstage_init(void *arg)
 		if (IS_ENABLED(CONFIG_LATE_CBMEM_INIT))
 			cbmem_initialize();
 		agesa_execute_state(cb, AMD_S3LATE_RESTORE);
+		fchs3earlyrestore(&cb->StdHeader);
 	}
 }
 
@@ -351,8 +352,10 @@ static void amd_bs_post_device(void *arg)
 {
 	struct sysinfo *cb = arg;
 
-	if (acpi_is_wakeup_s3())
+	if (acpi_is_wakeup_s3()) {
+		fchs3laterestore(&cb->StdHeader);
 		return;
+	}
 
 	agesa_execute_state(cb, AMD_INIT_LATE);
 
@@ -386,3 +389,15 @@ void __attribute__((weak))
 board_BeforeInitEnv(struct sysinfo *cb, AMD_ENV_PARAMS *Env) { }
 void __attribute__((weak))
 board_BeforeInitMid(struct sysinfo *cb, AMD_MID_PARAMS *Mid) { }
+
+AGESA_STATUS __attribute__((weak))
+fchs3earlyrestore(AMD_CONFIG_PARAMS *StdHeader)
+{
+	return AGESA_SUCCESS;
+}
+
+AGESA_STATUS __attribute__((weak))
+fchs3laterestore(AMD_CONFIG_PARAMS *StdHeader)
+{
+	return AGESA_SUCCESS;
+}

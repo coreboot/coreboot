@@ -20,6 +20,8 @@
 #include "hudson.h"
 #include "AGESA.h"
 
+#include <northbridge/amd/agesa/state_machine.h>
+
 extern FCH_DATA_BLOCK InitEnvCfgDefault;
 extern FCH_INTERFACE FchInterfaceDefault;
 extern FCH_RESET_DATA_BLOCK  InitResetCfgDefault;
@@ -27,13 +29,9 @@ extern FCH_RESET_INTERFACE FchResetInterfaceDefault;
 
 #define DUMP_FCH_SETTING 0
 
-void s3_resume_init_data(void *data)
+static void s3_resume_init_data(FCH_DATA_BLOCK *FchParams)
 {
-	FCH_DATA_BLOCK *FchParams = (FCH_DATA_BLOCK *)data;
-	AMD_CONFIG_PARAMS *StdHeader = FchParams->StdHeader;
-
 	*FchParams = InitEnvCfgDefault;
-	FchParams->StdHeader = StdHeader;
 
 	FchParams->Usb.Xhci0Enable              = InitResetCfgDefault.FchReset.Xhci0Enable;
 	FchParams->Usb.Xhci1Enable              = InitResetCfgDefault.FchReset.Xhci1Enable;
@@ -119,4 +117,29 @@ void s3_resume_init_data(void *data)
 			printk(BIOS_DEBUG, "\n");
 	}
 #endif
+}
+
+AGESA_STATUS fchs3earlyrestore(AMD_CONFIG_PARAMS *StdHeader)
+{
+	FCH_DATA_BLOCK      FchParams;
+
+	/* FIXME: Recover FCH_DATA_BLOCK from CBMEM. */
+	s3_resume_init_data(&FchParams);
+
+	FchParams.StdHeader = StdHeader;
+	FchInitS3EarlyRestore(&FchParams);
+	return AGESA_SUCCESS;
+}
+
+AGESA_STATUS fchs3laterestore(AMD_CONFIG_PARAMS *StdHeader)
+{
+	FCH_DATA_BLOCK      FchParams;
+
+	/* FIXME: Recover FCH_DATA_BLOCK from CBMEM. */
+	s3_resume_init_data(&FchParams);
+
+	FchParams.StdHeader = StdHeader;
+	FchInitS3LateRestore(&FchParams);
+
+	return AGESA_SUCCESS;
 }

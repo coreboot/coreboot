@@ -80,7 +80,6 @@ int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos);
 
 #else
 void hudson_enable(device_t dev);
-void s3_resume_init_data(void *FchParams);
 
 #endif /* __PRE_RAM__ */
 #endif /* __SMM__ */

@@ -17,5 +17,4 @@ romstage-y += dock.c
 
 ramstage-y += dock.c
 ramstage-y += cstates.c
-romstage-y += hybrid_graphics.c
 ramstage-y += blc.c

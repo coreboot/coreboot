@@ -112,14 +112,3 @@ static const struct pci_driver hybrid_peg_nvidia __pci_driver = {
 	.vendor	 = PCI_VENDOR_ID_NVIDIA,
 	.devices = pci_device_ids_nvidia,
 };
-
-static const unsigned short pci_device_ids_amd[] = {
-		0x9591, /* ATI Mobility Radeon HD 3650 Lenovo T500/W500 */
-		0x95c4, /* ATI Mobility Radeon HD 3470 Lenovo T400/R400 */
-		0 };
-
-static const struct pci_driver hybrid_peg_amd __pci_driver = {
-	.ops	 = &hybrid_graphics_ops,
-	.vendor	 = PCI_VENDOR_ID_ATI,
-	.devices = pci_device_ids_amd,
-};

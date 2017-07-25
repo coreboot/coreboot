@@ -31,6 +31,7 @@
 #include <console/console.h>
 #include <southbridge/intel/i82801ix/i82801ix.h>
 #include <northbridge/intel/gm45/gm45.h>
+#include <drivers/lenovo/hybrid_graphics/hybrid_graphics.h>
 #include <timestamp.h>
 #include "dock.h"
 #include "gpio.h"
@@ -38,7 +39,15 @@
 #define LPC_DEV PCI_DEV(0, 0x1f, 0)
 #define MCH_DEV PCI_DEV(0, 0, 0)
 
-void hybrid_graphics_init(sysinfo_t *sysinfo);
+static void hybrid_graphics_init(sysinfo_t *sysinfo)
+{
+	bool peg, igd;
+
+	early_hybrid_graphics(&igd, &peg);
+
+	sysinfo->enable_igd = igd;
+	sysinfo->enable_peg = peg;
+}
 
 static void early_lpc_setup(void)
 {

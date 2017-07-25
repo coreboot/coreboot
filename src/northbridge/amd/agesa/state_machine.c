@@ -79,14 +79,13 @@ static AGESA_STATUS amd_release_struct(AMD_INTERFACE_PARAMS *aip)
  * can be evaluated to apply correct typecast based on Func field.
  */
 
-static AGESA_STATUS amd_dispatch(struct sysinfo *cb,
+static AGESA_STATUS romstage_dispatch(struct sysinfo *cb,
 	AGESA_STRUCT_NAME func, AMD_CONFIG_PARAMS *StdHeader)
 {
 	AGESA_STATUS status = AGESA_UNSUPPORTED;
 
 	switch (func)
 	{
-#if ENV_ROMSTAGE
 		case AMD_INIT_RESET:
 		{
 			AMD_RESET_PARAMS *param = (void *)StdHeader;
@@ -123,9 +122,23 @@ static AGESA_STATUS amd_dispatch(struct sysinfo *cb,
 			platform_AfterInitResume(cb, param);
 			break;
 		}
-#endif
 
-#if ENV_RAMSTAGE
+		default:
+		{
+			break;
+		}
+
+	}
+	return status;
+}
+
+static AGESA_STATUS ramstage_dispatch(struct sysinfo *cb,
+	AGESA_STRUCT_NAME func, AMD_CONFIG_PARAMS *StdHeader)
+{
+	AGESA_STATUS status = AGESA_UNSUPPORTED;
+
+	switch (func)
+	{
 		case AMD_INIT_ENV:
 		{
 			AMD_ENV_PARAMS *param = (void *)StdHeader;
@@ -161,6 +174,7 @@ static AGESA_STATUS amd_dispatch(struct sysinfo *cb,
 			platform_AfterS3Save(cb, param);
 			break;
 		}
+
 		case AMD_INIT_LATE:
 		{
 			AMD_LATE_PARAMS *param = (void *)StdHeader;
@@ -169,7 +183,7 @@ static AGESA_STATUS amd_dispatch(struct sysinfo *cb,
 			completion_InitLate(cb, param);
 			break;
 		}
-#endif
+
 		default:
 		{
 			break;
@@ -244,7 +258,11 @@ int agesa_execute_state(struct sysinfo *cb, AGESA_STRUCT_NAME func)
 	AMD_CONFIG_PARAMS *StdHeader = aip.NewStructPtr;
 	ASSERT(StdHeader->Func == func);
 
-	final = amd_dispatch(cb, func, StdHeader);
+	if (ENV_ROMSTAGE)
+		final = romstage_dispatch(cb, func, StdHeader);
+
+	if (ENV_RAMSTAGE)
+		final = ramstage_dispatch(cb, func, StdHeader);
 
 	agesawrapper_trace(final, StdHeader, state_name);
 	ASSERT(final < AGESA_FATAL);

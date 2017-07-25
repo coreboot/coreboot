@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2012 Advanced Micro Devices, Inc.
+ * Copyright (C) 2014 Edward O'Callaghan <eocallaghan@alterapraxis.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -153,7 +154,7 @@ static void f1_write_config32(unsigned reg, u32 value)
 	}
 }
 
-static u32 amdfam15_nodeid(device_t dev)
+static u32 amdfam15_nodeid(struct device *dev)
 {
 #if MAX_NODE_NUMS == 64
 	unsigned busn;
@@ -188,7 +189,7 @@ static void set_vga_enable_reg(u32 nodeid, u32 linkn)
  *  @retval 0  resource exists, not usable
  *  @retval 1  resource exist, resource has been allocated before
  */
-static int reg_useable(unsigned reg, device_t goal_dev, unsigned goal_nodeid,
+static int reg_useable(unsigned reg, struct device *goal_dev, unsigned goal_nodeid,
 			unsigned goal_link)
 {
 	struct resource *res;
@@ -196,7 +197,7 @@ static int reg_useable(unsigned reg, device_t goal_dev, unsigned goal_nodeid,
 	int result;
 	res = 0;
 	for (nodeid = 0; !res && (nodeid < fx_devs); nodeid++) {
-		device_t dev;
+		struct device *dev;
 		dev = __f0_dev[nodeid];
 		if (!dev)
 			continue;
@@ -216,7 +217,7 @@ static int reg_useable(unsigned reg, device_t goal_dev, unsigned goal_nodeid,
 	return result;
 }
 
-static struct resource *amdfam15_find_iopair(device_t dev, unsigned nodeid, unsigned link)
+static struct resource *amdfam15_find_iopair(struct device *dev, unsigned nodeid, unsigned link)
 {
 	struct resource *resource;
 	u32 free_reg, reg;
@@ -243,7 +244,7 @@ static struct resource *amdfam15_find_iopair(device_t dev, unsigned nodeid, unsi
 	return resource;
 }
 
-static struct resource *amdfam15_find_mempair(device_t dev, u32 nodeid, u32 link)
+static struct resource *amdfam15_find_mempair(struct device *dev, u32 nodeid, u32 link)
 {
 	struct resource *resource;
 	u32 free_reg, reg;
@@ -269,7 +270,7 @@ static struct resource *amdfam15_find_mempair(device_t dev, u32 nodeid, u32 link
 	return resource;
 }
 
-static void amdfam15_link_read_bases(device_t dev, u32 nodeid, u32 link)
+static void amdfam15_link_read_bases(struct device *dev, u32 nodeid, u32 link)
 {
 	struct resource *resource;
 
@@ -311,7 +312,7 @@ static void amdfam15_link_read_bases(device_t dev, u32 nodeid, u32 link)
 
 }
 
-static void nb_read_resources(device_t dev)
+static void nb_read_resources(struct device *dev)
 {
 	u32 nodeid;
 	struct bus *link;
@@ -331,7 +332,7 @@ static void nb_read_resources(device_t dev)
 	mmconf_resource(dev, 0xc0010058);
 }
 
-static void set_resource(device_t dev, struct resource *resource, u32 nodeid)
+static void set_resource(struct device *dev, struct resource *resource, u32 nodeid)
 {
 	resource_t rbase, rend;
 	unsigned reg, link_num;
@@ -382,7 +383,7 @@ static void set_resource(device_t dev, struct resource *resource, u32 nodeid)
  * but it is too difficult to deal with the resource allocation magic.
  */
 
-static void create_vga_resource(device_t dev, unsigned nodeid)
+static void create_vga_resource(struct device *dev, unsigned nodeid)
 {
 	struct bus *link;
 
@@ -391,12 +392,12 @@ static void create_vga_resource(device_t dev, unsigned nodeid)
 	for (link = dev->link_list; link; link = link->next) {
 		if (link->bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
 #if IS_ENABLED(CONFIG_MULTIPLE_VGA_ADAPTERS)
-			extern device_t vga_pri; // the primary vga device, defined in device.c
+			extern struct device *vga_pri; // the primary vga device, defined in device.c
 			printk(BIOS_DEBUG, "VGA: vga_pri bus num = %d bus range [%d,%d]\n", vga_pri->bus->secondary,
 					link->secondary,link->subordinate);
 			/* We need to make sure the vga_pri is under the link */
 			if ((vga_pri->bus->secondary >= link->secondary) &&
-			   (vga_pri->bus->secondary <= link->subordinate))
+			    (vga_pri->bus->secondary <= link->subordinate))
 #endif
 				break;
 		}
@@ -410,7 +411,7 @@ static void create_vga_resource(device_t dev, unsigned nodeid)
 	set_vga_enable_reg(nodeid, sblink);
 }
 
-static void nb_set_resources(device_t dev)
+static void nb_set_resources(struct device *dev)
 {
 	unsigned nodeid;
 	struct bus *bus;
@@ -432,7 +433,6 @@ static void nb_set_resources(device_t dev)
 		}
 	}
 }
-
 
 static unsigned long acpi_fill_hest(acpi_hest_t *hest)
 {
@@ -594,7 +594,7 @@ struct chip_operations northbridge_amd_agesa_family15tn_ops = {
 	.enable_dev = 0,
 };
 
-static void domain_read_resources(device_t dev)
+static void domain_read_resources(struct device *dev)
 {
 	unsigned reg;
 
@@ -697,7 +697,7 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 }
 #endif
 
-static void domain_set_resources(device_t dev)
+static void domain_set_resources(struct device *dev)
 {
 	unsigned long mmio_basek;
 	u32 pci_tolm;
@@ -814,7 +814,7 @@ static void sysconf_init(device_t dev) // first node
 	node_nums = ((pci_read_config32(dev, 0x60)>>4) & 7) + 1; //NodeCnt[2:0]
 }
 
-static void add_more_links(device_t dev, unsigned total_links)
+static void add_more_links(struct device *dev, unsigned total_links)
 {
 	struct bus *link, *last = NULL;
 	int link_num;
@@ -1026,7 +1026,7 @@ static void cpu_bus_scan(device_t dev)
 	}
 }
 
-static void cpu_bus_init(device_t dev)
+static void cpu_bus_init(struct device *dev)
 {
 	initialize_cpus(dev->link_list);
 }
@@ -1057,7 +1057,7 @@ static void root_complex_enable_dev(struct device *dev)
 }
 
 struct chip_operations northbridge_amd_agesa_family15tn_root_complex_ops = {
-	CHIP_NAME("AMD FAM15tn Root Complex")
+	CHIP_NAME("AMD Family 15tn Root Complex")
 	.enable_dev = root_complex_enable_dev,
 };
 

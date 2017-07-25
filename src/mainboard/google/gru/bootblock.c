@@ -44,6 +44,10 @@ void bootblock_mainboard_early_init(void)
 	 */
 	write32(&rk3399_grf->io_vsel, RK_SETBITS(1 << 0));
 
+	/* Scarlet gpio4cd iodomain is 1.8V */
+	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_SCARLET))
+		write32(&rk3399_grf->io_vsel, RK_SETBITS(1 << 3));
+
 	if (!IS_ENABLED(CONFIG_BOARD_GOOGLE_SCARLET)) {
 		/* Enable rails powering GPIO blocks, among other things.
 		   These are EC-controlled on Scarlet and already on. */

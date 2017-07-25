@@ -13,6 +13,7 @@
 
 #include <smp/node.h>
 #include <arch/bootblock_romcc.h>
+#include <pc80/mc146818rtc.h>
 #include <halt.h>
 
 static void main(unsigned long bist)
@@ -20,9 +21,7 @@ static void main(unsigned long bist)
 	if (boot_cpu()) {
 		bootblock_mainboard_init();
 
-#if IS_ENABLED(CONFIG_USE_OPTION_TABLE)
 		sanitize_cmos();
-#endif
 #if IS_ENABLED(CONFIG_CMOS_POST)
 		cmos_post_init();
 #endif

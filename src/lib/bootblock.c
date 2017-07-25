@@ -36,6 +36,7 @@ asmlinkage void bootblock_main_with_timestamp(uint64_t base_timestamp)
 	if (IS_ENABLED(CONFIG_COLLECT_TIMESTAMPS) && _timestamp_size > 0)
 		timestamp_init(base_timestamp);
 
+	sanitize_cmos();
 	cmos_post_init();
 
 	bootblock_soc_early_init();

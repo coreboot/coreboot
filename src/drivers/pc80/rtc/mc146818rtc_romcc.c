@@ -1,42 +1,12 @@
 #include <stdint.h>
 #include <pc80/mc146818rtc.h>
 #include <fallback.h>
-#if IS_ENABLED(CONFIG_USE_OPTION_TABLE)
-#include "option_table.h"
-#endif
+
+#include "mc146818rtc_boot.c"
 
 #if  CONFIG_MAX_REBOOT_CNT > 15
 #error "CONFIG_MAX_REBOOT_CNT too high"
 #endif
-
-static int cmos_error(void)
-{
-	unsigned char reg_d;
-	/* See if the cmos error condition has been flagged */
-	reg_d = cmos_read(RTC_REG_D);
-	return (reg_d & RTC_VRT) == 0;
-}
-
-static int cmos_chksum_valid(void)
-{
-#if IS_ENABLED(CONFIG_USE_OPTION_TABLE)
-	unsigned char addr;
-	u16 sum, old_sum;
-
-	sum = 0;
-	/* Compute the cmos checksum */
-	for (addr = LB_CKS_RANGE_START; addr <= LB_CKS_RANGE_END; addr++)
-		sum += cmos_read(addr);
-
-	/* Read the stored checksum */
-	old_sum = cmos_read(LB_CKS_LOC) << 8;
-	old_sum |=  cmos_read(LB_CKS_LOC+1);
-
-	return sum == old_sum;
-#else
-	return 0;
-#endif
-}
 
 static inline __attribute__((unused)) int boot_count(uint8_t rtc_byte)
 {

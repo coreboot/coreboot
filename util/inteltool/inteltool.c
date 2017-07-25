@@ -515,10 +515,9 @@ int main(int argc, char *argv[])
 	printf("Southbridge: %04x:%04x (%s)\n",
 		sb->vendor_id, sb->device_id, sbname);
 
-	if (gfx) {
+	if (gfx)
 		printf("IGD: %04x:%04x (%s)\n",
 		       gfx->vendor_id, gfx->device_id, gfxname);
-	}
 
 	/* Now do the deed */
 
@@ -565,21 +564,17 @@ int main(int argc, char *argv[])
 		printf("\n\n");
 	}
 
-	if (dump_ambs) {
+	if (dump_ambs)
 		print_ambs(nb, pacc);
-	}
 
-	if (dump_spi) {
+	if (dump_spi)
 		print_spi(sb);
-	}
 
-	if (dump_gfx) {
+	if (dump_gfx)
 		print_gfx(gfx);
-	}
 
-	if (dump_ahci) {
+	if (dump_ahci)
 		print_ahci(ahci);
-	}
 
 	if (dump_sgx)
 		print_sgx();

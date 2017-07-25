@@ -144,7 +144,10 @@ static unsigned long write_acpi_igd_opregion(device_t device,
 
 	printk(BIOS_DEBUG, "ACPI: * IGD OpRegion\n");
 	opregion = (igd_opregion_t *)current;
-	init_igd_opregion(opregion);
+
+	if (init_igd_opregion(opregion) != CB_SUCCESS)
+		return current;
+
 	update_igd_opregion(opregion);
 	current += sizeof(igd_opregion_t);
 	current = acpi_align_current(current);

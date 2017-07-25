@@ -198,6 +198,7 @@ endif
 export UPDATED_SUBMODULES:=1
 endif
 
+postcar-c-deps:=$$(OPTION_TABLE_H)
 ramstage-c-deps:=$$(OPTION_TABLE_H)
 romstage-c-deps:=$$(OPTION_TABLE_H)
 verstage-c-deps:=$$(OPTION_TABLE_H)

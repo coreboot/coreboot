@@ -223,6 +223,11 @@ static void set_power_limits(void)
 	uint32_t tdp, min_power, max_power;
 	uint32_t pl2_val;
 
+	if (IS_ENABLED(CONFIG_APL_SKIP_SET_POWER_LIMITS)) {
+		printk(BIOS_INFO, "Skip the RAPL settings.\n");
+		return;
+	}
+
 	if (!dev || !dev->chip_info) {
 		printk(BIOS_ERR, "BUG! Could not find SOC devicetree config\n");
 		return;

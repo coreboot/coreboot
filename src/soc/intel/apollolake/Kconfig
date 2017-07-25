@@ -342,4 +342,12 @@ config CPU_BCLK_MHZ
 	int
 	default 100
 
+config APL_SKIP_SET_POWER_LIMITS
+	bool
+	default n
+	help
+	  Some Apollo Lake mainboards do not need the Running Average Power
+	  Limits (RAPL) algorithm for a constant power management.
+	  Set this config option to skip the RAPL configuration.
+
 endif

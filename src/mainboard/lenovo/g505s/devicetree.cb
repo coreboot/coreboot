@@ -12,19 +12,19 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
-chip northbridge/amd/agesa/family15rl/root_complex
+chip northbridge/amd/agesa/family15tn/root_complex
 
 	device cpu_cluster 0 on
-		chip cpu/amd/agesa/family15rl
+		chip cpu/amd/agesa/family15tn
 			device lapic 10 on end
 		end
 	end
 
 	device domain 0 on
 		subsystemid 0x1022 0x1410 inherit
-		chip northbridge/amd/agesa/family15rl # CPU side of HT root complex
+		chip northbridge/amd/agesa/family15tn # CPU side of HT root complex
 
-			chip northbridge/amd/agesa/family15rl # PCI side of HT root complex
+			chip northbridge/amd/agesa/family15tn # PCI side of HT root complex
 				device pci 0.0 on  end # Root Complex
 				device pci 0.2 on  end # IOMMU
 				device pci 1.0 on  end # Internal Graphics P2P bridge 0x99XX
@@ -37,7 +37,7 @@ chip northbridge/amd/agesa/family15rl/root_complex
 				device pci 7.0 off end #
 				device pci 8.0 off end # NB/SB Link P2P bridge ?
 				device pci 9.0 off end #
-			end	#chip northbridge/amd/agesa/family15rl # PCI side of HT root complex
+			end	#chip northbridge/amd/agesa/family15tn # PCI side of HT root complex
 
 			chip southbridge/amd/agesa/hudson # it is under NB/SB Link, but on the same pci bus
 				device pci 10.0 off  end # FCH USB XHCI Controller HC0 (N.B. breaks EHCI debug!!!)
@@ -84,6 +84,6 @@ chip northbridge/amd/agesa/family15rl/root_complex
 				{ {0x00, 0x00}, {0x00, 0x00}, }, // socket 1 - Channel 0 & 1 - 8-bit SPD addresses
 			}"
 
-		end	#chip northbridge/amd/agesa/family15rl # CPU side of HT root complex
+		end	#chip northbridge/amd/agesa/family15tn # CPU side of HT root complex
 	end	#domain
-end	#chip northbridge/amd/agesa/family15rl/root_complex
+end	#chip northbridge/amd/agesa/family15tn/root_complex

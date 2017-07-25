@@ -89,7 +89,7 @@ build: config
 		PATH="$(abspath ../../../build/util/cbfstool):$$PATH"
 
 clean:
-	test -d $(output_dir) && rm -rf $(output_dir)
+	rm -rf $(output_dir)
 
 distclean:
 	rm -rf $(project_dir)

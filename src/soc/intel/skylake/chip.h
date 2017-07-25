@@ -138,7 +138,13 @@ struct soc_intel_skylake_config {
 
 	/* SATA related */
 	u8 EnableSata;
-	u8 SataMode;
+	enum {
+		/* Documentation and header files of Skylake FSP disagree on
+		   the values, Kaby Lake FSP (KabylakeFsp0001 on github) uses
+		   these: */
+		KBLFSP_SATA_MODE_AHCI    = 0,
+		KBLFSP_SATA_MODE_RAID    = 1,
+	} SataMode;
 	u8 SataSalpSupport;
 	u8 SataPortsEnable[8];
 	u8 SataPortsDevSlp[8];

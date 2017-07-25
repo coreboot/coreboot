@@ -146,13 +146,19 @@ ifeq ($(V),1)
 BL31_MAKEARGS += V=1
 endif
 
-# Build ARM TF in debug mode (with serial output) if coreboot uses serial
-ifeq ($(CONFIG_CONSOLE_SERIAL),y)
+# Build ARM TF in debug mode (with assertions) if coreboot has hard assertions
+ifeq ($(CONFIG_FATAL_ASSERTS),y)
 BL31_MAKEARGS += DEBUG=1
-else
-# Turn off NOTICE messages from BL31 if coreboot does not use serial
-BL31_MAKEARGS += LOG_LEVEL=0
 endif # CONFIG_CONSOLE_SERIAL
+
+# ARM TF's VERBOSE (50) is *very* spammy, so default to INFO (40)
+BL31_MAKEARGS += LOG_LEVEL=40
+
+# Always enable crash reporting, even on a release build
+BL31_MAKEARGS += CRASH_REPORTING=1
+
+# Enable coreboot-specific features like CBMEM console support
+BL31_MAKEARGS += COREBOOT=1
 
 # Avoid build/release|build/debug distinction by overriding BUILD_PLAT directly
 BL31_MAKEARGS += BUILD_PLAT="$(BL31_BUILD)"

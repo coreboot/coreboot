@@ -81,11 +81,10 @@ void arm_tf_run_bl31(u64 payload_entry, u64 payload_arg0, u64 payload_spsr)
 	bl33_ep_info.spsr = payload_spsr;
 	bl33_ep_info.args.arg0 = payload_arg0;
 
-	/* May update bl31_params if necessary. Must flush all added structs. */
+	/* May update bl31_params if necessary. */
 	void *bl31_plat_params = soc_get_bl31_plat_params(&bl31_params);
 
-	dcache_clean_by_mva(&bl31_params, sizeof(bl31_params));
-	dcache_clean_by_mva(&bl33_ep_info, sizeof(bl33_ep_info));
+	/* MMU disable will flush cache, so passed params land in memory. */
 	raw_write_daif(SPSR_EXCEPTION_MASK);
 	mmu_disable();
 	bl31_entry(&bl31_params, bl31_plat_params);

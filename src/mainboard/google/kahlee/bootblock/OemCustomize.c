@@ -19,60 +19,60 @@
 #define FILECODE PROC_GNB_PCIE_FAMILY_0X15_F15PCIECOMPLEXCONFIG_FILECODE
 
 static const PCIe_PORT_DESCRIPTOR PortList[] = {
-	/* Init port descriptor (PCIe port, Lanes 7:4, D2F1) for x4 slot */
+	/* Initialize Port descriptor (PCIe port, Lanes 7:4, D2F1) for NC*/
 	{
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 4, 7),
-		PCIE_PORT_DATA_INITIALIZER_V2(PortEnabled, ChannelTypeExt6db,
+		PCIE_ENGINE_DATA_INITIALIZER(PcieUnusedEngine, 4, 7),
+		PCIE_PORT_DATA_INITIALIZER_V2(PortDisabled, ChannelTypeExt6db,
 				2, 1,
 				HotplugDisabled,
 				PcieGenMaxSupported,
 				PcieGenMaxSupported,
 				AspmL0sL1, 0x04, 0)
 	},
-	/* Initialize Port descriptor (PCIe port, Lanes 1:0, D2F2) for M.2 */
+	/* Initialize Port descriptor (PCIe port, Lanes 0:0, D2F2) for WLAN */
 	{
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 0, 1),
+		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 0, 0),
 		PCIE_PORT_DATA_INITIALIZER_V2(PortEnabled, ChannelTypeExt6db,
 				2, 2,
 				HotplugDisabled,
 				PcieGenMaxSupported,
 				PcieGenMaxSupported,
-				AspmL0sL1, 0x17, 0)
+				AspmL0sL1, 0x2, 0)
 	},
-	/* Disable M.2 x1 on lane 1, D2F3 */
+	/* Init Port descriptor (PCIe port, Lanes 1:1, D2F3) for Card Reader */
 	{
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER(PcieUnusedEngine, 1, 1),
-		PCIE_PORT_DATA_INITIALIZER_V2(PortDisabled, ChannelTypeExt6db,
+		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 1, 1),
+		PCIE_PORT_DATA_INITIALIZER_V2(PortEnabled, ChannelTypeExt6db,
 				2, 3,
 				HotplugDisabled,
 				PcieGenMaxSupported,
 				PcieGenMaxSupported,
-				AspmL0sL1, 0x17, 0)
+				AspmL0sL1, 0x3, 0)
 	},
-	/* Initialize Port descriptor (PCIe port, Lane 2, D2F4) for x1 slot */
+	/* Initialize Port descriptor (PCIe port, Lane 2, D2F4) for NC */
 	{
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 2, 2),
-		PCIE_PORT_DATA_INITIALIZER_V2(PortEnabled, ChannelTypeExt6db,
+		PCIE_ENGINE_DATA_INITIALIZER(PcieUnusedEngine, 2, 2),
+		PCIE_PORT_DATA_INITIALIZER_V2(PortDisabled, ChannelTypeExt6db,
 				2, 4,
 				HotplugDisabled,
 				PcieGenMaxSupported,
 				PcieGenMaxSupported,
-				AspmL0sL1, 0x13, 0)
+				AspmL0sL1, 0, 0)
 	},
-	/* Initialize Port descriptor (PCIe port, Lane3, D2F5) for SD */
+	/* Initialize Port descriptor (PCIe port, Lane3, D2F5) for NC */
 	{
 		DESCRIPTOR_TERMINATE_LIST,
-		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 3, 3),
-		PCIE_PORT_DATA_INITIALIZER_V2(PortEnabled, ChannelTypeExt6db,
+		PCIE_ENGINE_DATA_INITIALIZER(PcieUnusedEngine, 3, 3),
+		PCIE_PORT_DATA_INITIALIZER_V2(PortDisabled, ChannelTypeExt6db,
 				2, 5,
 				HotplugDisabled,
 				PcieGenMaxSupported,
 				PcieGenMaxSupported,
-				AspmL0sL1, 0x16, 0)
+				AspmL0sL1, 0, 0)
 	},
 };
 

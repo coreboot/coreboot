@@ -3291,6 +3291,8 @@ typedef struct {
      OUT   VOID                   *AcpiWheaCmc;           ///< WHEA CMC Table
      OUT   VOID                   *AcpiAlib;              ///< ACPI SSDT table with ALIB implementation
      OUT   VOID                   *AcpiIvrs;              ///< IOMMU ACPI IVRS(I/O Virtualization Reporting Structure) table
+     OUT   VOID                   *AcpiCrat;              ///< Component Resource Affinity Table table
+     OUT   VOID                   *AcpiCdit;              ///< Component Locality Distance Information table
 } AMD_LATE_PARAMS;
 
 AGESA_STATUS

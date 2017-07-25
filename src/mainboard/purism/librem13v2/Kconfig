@@ -54,7 +54,7 @@ config DIMM_SPD_SIZE
 
 config CPU_MICROCODE_CBFS_LEN
 	hex
-	default 0x17800
+	default 0x18000
 
 config CPU_MICROCODE_CBFS_LOC
 	hex

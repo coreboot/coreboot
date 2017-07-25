@@ -167,13 +167,25 @@ static void configure_sdmmc(void)
 {
 	gpio_output(GPIO(2, A, 2), 1);  /* SDMMC_SDIO_PWR_EN */
 
-	/* SDMMC_DET_L is different on Kevin board revision 0. */
-	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_KEVIN) && (board_id() == 0))
-		gpio_input(GPIO(4, D, 2));
+	/* set SDMMC_DET_L pin */
+	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_SCARLET))
+		/*
+		 * do not have external pull up, so need to
+		 * set this pin internal pull up
+		 */
+		gpio_input_pullup(GPIO(1, B, 3));
 	else
 		gpio_input(GPIO(4, D, 0));
 
-	gpio_output(GPIO(2, D, 4), 0);  /* Keep the max voltage */
+	/*
+	 * Keep sd card io domain 3v
+	 * In Scarlet this GPIO set to high will get 3v,
+	 * With other board variants setting this GPIO low results in 3V.
+	 */
+	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_SCARLET))
+		gpio_output(GPIO(2, D, 4), 1);
+	else
+		gpio_output(GPIO(2, D, 4), 0);
 
 	gpio_input(GPIO(4, B, 0));	/* SDMMC0_D0 remove pull-up */
 	gpio_input(GPIO(4, B, 1));	/* SDMMC0_D1 remove pull-up */

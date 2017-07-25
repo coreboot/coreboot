@@ -20,11 +20,13 @@ bootblock-y += ec.c
 bootblock-y += gpio.c
 
 romstage-y += BiosCallOuts.c
+romstage-y += boardid.c
 romstage-y += chromeos.c
 romstage-y += gpio.c
 romstage-y += OemCustomize.c
 
 ramstage-y += BiosCallOuts.c
+ramstage-y += boardid.c
 ramstage-y += chromeos.c
 ramstage-y += ec.c
 ramstage-y += gpio.c

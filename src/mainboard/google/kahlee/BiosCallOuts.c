@@ -19,6 +19,8 @@
 #include <soc/hudson.h>
 #include <stdlib.h>
 
+extern const GPIO_CONTROL oem_kahlee_gpio[];
+
 static AGESA_STATUS fch_initenv(UINT32 Func, UINTN FchData, VOID *ConfigPtr)
 {
 	AMD_CONFIG_PARAMS *StdHeader = ConfigPtr;
@@ -26,6 +28,7 @@ static AGESA_STATUS fch_initenv(UINT32 Func, UINTN FchData, VOID *ConfigPtr)
 	if (StdHeader->Func == AMD_INIT_ENV) {
 		FCH_DATA_BLOCK *FchParams_env = (FCH_DATA_BLOCK *)FchData;
 		printk(BIOS_DEBUG, "Fch OEM config in INIT ENV ");
+		FchParams_env->PostOemGpioTable = oem_kahlee_gpio;
 
 		/* XHCI configuration */
 		if (IS_ENABLED(CONFIG_STONEYRIDGE_XHCI_ENABLE))

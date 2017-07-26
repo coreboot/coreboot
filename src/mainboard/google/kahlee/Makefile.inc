@@ -17,14 +17,17 @@ bootblock-y += bootblock/bootblock.c
 bootblock-y += bootblock/BiosCallOuts.c
 bootblock-y += bootblock/OemCustomize.c
 bootblock-y += ec.c
+bootblock-y += gpio.c
 
 romstage-y += BiosCallOuts.c
 romstage-y += chromeos.c
+romstage-y += gpio.c
 romstage-y += OemCustomize.c
 
 ramstage-y += BiosCallOuts.c
 ramstage-y += chromeos.c
 ramstage-y += ec.c
+ramstage-y += gpio.c
 ramstage-y += OemCustomize.c
 
 verstage-y += chromeos.c

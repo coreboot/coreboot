@@ -219,3 +219,8 @@ struct pci_dev *pci_get_dev(struct pci_access* pacc, u16 domain, u8 bus, u8 dev,
 	cur->func = func;
 	return cur;
 }
+
+void pci_free_dev(struct pci_dev *const dev)
+{
+	free(dev);
+}

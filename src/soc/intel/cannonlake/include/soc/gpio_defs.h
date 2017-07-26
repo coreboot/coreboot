@@ -22,7 +22,7 @@
 #include <soc/gpio_soc_defs.h>
 
 
-#define GPIO_NUM_PAD_CFG_REGS   2 /* DW0, DW1 */
+#define GPIO_NUM_PAD_CFG_REGS   4 /* DW0, DW1, DW2, DW3 */
 
 #define NUM_GPIO_COMx_GPI_REGS(n)	\
 		(ALIGN_UP((n), GPIO_MAX_NUM_PER_GROUP) / GPIO_MAX_NUM_PER_GROUP)

@@ -75,7 +75,7 @@ static const struct pad_community cnl_communities[] = {
 		.reset_map = rst_map,
 		.num_reset_vals = ARRAY_SIZE(rst_map),
 	}, { /* GPP C, E */
-		.port = PID_GPIOCOM3,
+		.port = PID_GPIOCOM4,
 		.first_pad = GPP_C0,
 		.last_pad = GPP_E23,
 		.num_gpi_regs = NUM_GPIO_COM3_GPI_REGS,

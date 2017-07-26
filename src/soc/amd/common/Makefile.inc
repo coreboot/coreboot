@@ -1,6 +1,8 @@
 ifeq ($(CONFIG_SOC_AMD_COMMON),y)
 
-cpu_incs-y += $(src)/soc/amd/common/cache_as_ram.inc
+bootblock-y += agesawrapper.c
+bootblock-y += def_callouts.c
+bootblock-y += heapmanager.c
 
 romstage-y += agesawrapper.c
 romstage-y += def_callouts.c

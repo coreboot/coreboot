@@ -40,10 +40,14 @@ config CPU_SPECIFIC_OPTIONS
 	select TSC_CONSTANT_RATE
 	select SPI_FLASH if HAVE_ACPI_RESUME
 	select TSC_SYNC_LFENCE
+	select COLLECT_TIMESTAMPS
 	select SOC_AMD_PI
 	select SOC_AMD_COMMON
 	select SOC_AMD_COMMON_BLOCK
 	select SOC_AMD_COMMON_BLOCK_PSP
+	select SOC_AMD_COMMON_BLOCK_CAR
+	select C_ENVIRONMENT_BOOTBLOCK
+	select BOOTBLOCK_CONSOLE
 
 config UDELAY_LAPIC_FIXED_FSB
 	int
@@ -60,6 +64,14 @@ config DCACHE_RAM_BASE
 config DCACHE_RAM_SIZE
 	hex
 	default 0x10000
+
+config DCACHE_BSP_STACK_SIZE
+	depends on C_ENVIRONMENT_BOOTBLOCK
+	hex
+	default 0x4000
+	help
+	  The amount of anticipated stack usage in CAR by bootblock and
+	  other stages.
 
 config CPU_ADDR_BITS
 	int
@@ -123,10 +135,6 @@ config HEAP_SIZE
 config RAMBASE
 	hex
 	default 0x200000
-
-config BOOTBLOCK_SOUTHBRIDGE_INIT
-	string
-	default "soc/amd/stoneyridge/bootblock/bootblock.c"
 
 config SOUTHBRIDGE_AMD_STONEYRIDGE_SKIP_ISA_DMA_INIT
 	bool

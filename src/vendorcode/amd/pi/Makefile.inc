@@ -146,6 +146,7 @@ $(obj)/agesa/libagesa.a: $(call src-to-obj,libagesa,$(agesa_src_files))
 	@printf "    AGESA      $(subst $(obj)/,,$(@))\n"
 	ar rcs $@ $+
 
+bootblock-libs += $(obj)/agesa/libagesa.a
 romstage-libs += $(obj)/agesa/libagesa.a
 ramstage-libs += $(obj)/agesa/libagesa.a
 

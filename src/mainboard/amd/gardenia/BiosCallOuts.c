@@ -13,83 +13,18 @@
  * GNU General Public License for more details.
  */
 
-#include <device/pci_def.h>
-#include <device/device.h>
 #include <AGESA.h>
-#include <amdlib.h>
 #include <BiosCallOuts.h>
-#include <Ids.h>
-#include <heapManager.h>
 #include <FchPlatform.h>
-#include <cbfs.h>
 #include <soc/imc.h>
 #include <soc/hudson.h>
 #include <stdlib.h>
-#include <dimmSpd.h>
-#include <agesawrapper.h>
 
-static AGESA_STATUS Fch_Oem_config(UINT32 Func,
-					UINTN FchData, VOID *ConfigPtr);
-
-const BIOS_CALLOUT_STRUCT BiosCallouts[] = {
-	{AGESA_ALLOCATE_BUFFER,          agesa_AllocateBuffer },
-	{AGESA_DEALLOCATE_BUFFER,        agesa_DeallocateBuffer },
-	{AGESA_LOCATE_BUFFER,            agesa_LocateBuffer },
-	{AGESA_READ_SPD,                 agesa_ReadSpd },
-	{AGESA_DO_RESET,                 agesa_Reset },
-	{AGESA_READ_SPD_RECOVERY,        agesa_NoopUnsupported },
-	{AGESA_RUNFUNC_ONAP,             agesa_RunFuncOnAp },
-	{AGESA_GET_IDS_INIT_DATA,        agesa_EmptyIdsInitData },
-	{AGESA_HOOKBEFORE_DQS_TRAINING,  agesa_NoopSuccess },
-	{AGESA_HOOKBEFORE_EXIT_SELF_REF, agesa_NoopSuccess },
-	{AGESA_FCH_OEM_CALLOUT,          Fch_Oem_config },
-	{AGESA_GNB_GFX_GET_VBIOS_IMAGE,  agesa_GfxGetVbiosImage }
-};
-const int BiosCalloutsLen = ARRAY_SIZE(BiosCallouts);
-
-static const GPIO_CONTROL oem_gardenia_gpio[] = {
-	/* BT radio disable */
-	{14, Function1, FCH_GPIO_PULL_UP_ENABLE | FCH_GPIO_OUTPUT_VALUE
-						| FCH_GPIO_OUTPUT_ENABLE},
-	/* NFC PU */
-	{64, Function0, FCH_GPIO_PULL_UP_ENABLE | FCH_GPIO_OUTPUT_VALUE
-						| FCH_GPIO_OUTPUT_ENABLE},
-	/* NFC wake */
-	{65, Function0, FCH_GPIO_PULL_UP_ENABLE | FCH_GPIO_OUTPUT_VALUE
-						| FCH_GPIO_OUTPUT_ENABLE},
-	/* Webcam */
-	{66, Function0, FCH_GPIO_PULL_UP_ENABLE | FCH_GPIO_OUTPUT_VALUE
-						| FCH_GPIO_OUTPUT_ENABLE},
-	/* PCIe presence detect */
-	{69, Function0, FCH_GPIO_PULL_UP_ENABLE},
-	/* GPS sleep */
-	{70, Function0, FCH_GPIO_PULL_UP_ENABLE | FCH_GPIO_OUTPUT_VALUE
-						| FCH_GPIO_OUTPUT_ENABLE},
-	/* MUX for Power Express Eval */
-	{116, Function1, FCH_GPIO_PULL_DOWN_ENABLE},
-	/* SD power */
-	{119, Function2, FCH_GPIO_PULL_UP_ENABLE | FCH_GPIO_OUTPUT_VALUE
-						 | FCH_GPIO_OUTPUT_ENABLE},
-	{-1}
-};
-/**
- * Fch Oem setting callback
- *
- *  Configure platform specific Hudson device,
- *   such as Azalia, SATA, IMC etc.
- */
-AGESA_STATUS Fch_Oem_config(UINT32 Func, UINTN FchData, VOID *ConfigPtr)
+static AGESA_STATUS fch_initenv(UINT32 Func, UINTN FchData, VOID *ConfigPtr)
 {
 	AMD_CONFIG_PARAMS *StdHeader = ConfigPtr;
 
-	if (StdHeader->Func == AMD_INIT_RESET) {
-		FCH_RESET_DATA_BLOCK *FchParams_reset =
-					(FCH_RESET_DATA_BLOCK *)FchData;
-		printk(BIOS_DEBUG, "Fch OEM config in INIT RESET ");
-		FchParams_reset->FchReset.SataEnable = hudson_sata_enable();
-		FchParams_reset->FchReset.IdeEnable = hudson_ide_enable();
-		FchParams_reset->EarlyOemGpioTable = oem_gardenia_gpio;
-	} else if (StdHeader->Func == AMD_INIT_ENV) {
+	if (StdHeader->Func == AMD_INIT_ENV) {
 		FCH_DATA_BLOCK *FchParams_env = (FCH_DATA_BLOCK *)FchData;
 		printk(BIOS_DEBUG, "Fch OEM config in INIT ENV ");
 		if (IS_ENABLED(CONFIG_STONEYRIDGE_IMC_FWM))
@@ -119,8 +54,25 @@ AGESA_STATUS Fch_Oem_config(UINT32 Func, UINTN FchData, VOID *ConfigPtr)
 			FchParams_env->Sata.SataIdeMode = TRUE;
 			break;
 		}
+		printk(BIOS_DEBUG, "Done\n");
 	}
-	printk(BIOS_DEBUG, "Done\n");
 
 	return AGESA_SUCCESS;
 }
+
+const BIOS_CALLOUT_STRUCT BiosCallouts[] = {
+	{AGESA_ALLOCATE_BUFFER,          agesa_AllocateBuffer },
+	{AGESA_DEALLOCATE_BUFFER,        agesa_DeallocateBuffer },
+	{AGESA_LOCATE_BUFFER,            agesa_LocateBuffer },
+	{AGESA_READ_SPD,                 agesa_ReadSpd },
+	{AGESA_DO_RESET,                 agesa_Reset },
+	{AGESA_READ_SPD_RECOVERY,        agesa_NoopUnsupported },
+	{AGESA_RUNFUNC_ONAP,             agesa_RunFuncOnAp },
+	{AGESA_GET_IDS_INIT_DATA,        agesa_EmptyIdsInitData },
+	{AGESA_HOOKBEFORE_DQS_TRAINING,  agesa_NoopSuccess },
+	{AGESA_HOOKBEFORE_EXIT_SELF_REF, agesa_NoopSuccess },
+	{AGESA_FCH_OEM_CALLOUT,          fch_initenv },
+	{AGESA_GNB_GFX_GET_VBIOS_IMAGE,  agesa_GfxGetVbiosImage }
+};
+
+const int BiosCalloutsLen = ARRAY_SIZE(BiosCallouts);

@@ -13,6 +13,9 @@
 # GNU General Public License for more details.
 #
 
+bootblock-y += bootblock/BiosCallOuts.c
+bootblock-y += bootblock/OemCustomize.c
+
 romstage-y += BiosCallOuts.c
 romstage-y += OemCustomize.c
 

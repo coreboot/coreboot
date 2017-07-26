@@ -1,3 +1,9 @@
 #!/bin/sh
 %MAKE% lint-stable
-git diff --cached | util/lint/checkpatch.pl --no-signoff -q -
+
+PATCHDIFF=$(git diff --cached)
+if echo "$PATCHDIFF" | grep -q "@@"; then
+	echo
+	echo "Running checkpatch"
+	echo "$PATCHDIFF" | util/lint/checkpatch.pl --no-signoff -q -
+fi

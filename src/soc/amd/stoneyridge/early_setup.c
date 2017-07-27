@@ -242,13 +242,16 @@ static uintptr_t hudson_spibase(void)
 {
 	/* Make sure the base address is predictable */
 	device_t dev = PCI_DEV(0, PCU_DEV, LPC_FUNC);
+	u32 base, enables;
 
-	u32 base = pci_read_config32(dev, SPIROM_BASE_ADDRESS_REGISTER)
-							& 0xfffffff0;
+	base = pci_read_config32(dev, SPIROM_BASE_ADDRESS_REGISTER);
+	enables = base & 0xf;
+	base &= ~0x3f;
+
 	if (!base) {
 		base = SPI_BASE_ADDRESS;
 		pci_write_config32(dev, SPIROM_BASE_ADDRESS_REGISTER, base
-							| SPI_ROM_ENABLE);
+						| enables | SPI_ROM_ENABLE);
 		/* PCI_COMMAND_MEMORY is read-only and enabled. */
 	}
 	return (uintptr_t)base;

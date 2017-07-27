@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2016 Siemens AG.
+ * Copyright (C) 2016-2017 Siemens AG.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,6 +73,7 @@ static void init_fan_ctrl (void *base_adr)
 	FPGA_SET_PARAM(FANKi, ctrl->ki);
 	FPGA_SET_PARAM(FANKd, ctrl->kd);
 	FPGA_SET_PARAM(FANMaxSpeed, ctrl->fanmax);
+	FPGA_SET_PARAM(FANStartSpeed, ctrl->fanmin);
 	/* Set freeze and FAN configuration. */
 	if ((hwilib_get_field(FF_FanReq, &fan_req, 1) == 1) &&
 	    (hwilib_get_field(FF_FreezeDis, &freeze_disable, 1) == 1)) {

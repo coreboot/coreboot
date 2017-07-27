@@ -349,7 +349,7 @@ static const struct param_info params[] = {
 	[FANMaxSpeed] = {
 		.pos[0] = {.blk_type = BLK_XIB, .offset = 0x40, .len = 2},
 		.get_field = hwilib_read_bytes },
-	[FANStartpeed] = {
+	[FANStartSpeed] = {
 		.pos[0] = {.blk_type = BLK_XIB, .offset = 0x42, .len = 2},
 		.get_field = hwilib_read_bytes },
 	[FANSensorDelay] = {

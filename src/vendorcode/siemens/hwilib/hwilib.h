@@ -64,7 +64,7 @@ typedef enum {
 	FANHystThreshold,
 	FANHystCtrl,
 	FANMaxSpeed,
-	FANStartpeed,
+	FANStartSpeed,
 	FANSensorDelay,
 	FANSensorNum,
 	FANSensorSelect,

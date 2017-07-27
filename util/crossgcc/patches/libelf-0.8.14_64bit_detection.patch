@@ -1,0 +1,28 @@
+libelf-0.8.13: Fix libelf 64bit detection
+
+Taken from crosstool-ng and and re-applied to 0.8.13
+
+diff -urN libelf-0.8.13.orig/configure libelf-0.8.13/configure
+--- libelf-0.8.13.orig/configure	2008-05-23 01:18:03.000000000 -0700
++++ libelf-0.8.13/configure	2017-07-27 12:41:43.417835628 -0700
+@@ -1595,7 +1595,7 @@
+   echo $ac_n "(cached) $ac_c" 1>&6
+ else
+   if test "$cross_compiling" = yes; then
+-  ac_cv_sizeof_long_long=0
++  ac_cv_sizeof_long_long=8
+ else
+   cat > conftest.$ac_ext <<EOF
+ #line 1602 "configure"
+diff -urN libelf-0.8.13.orig/configure.in libelf-0.8.13/configure.in
+--- libelf-0.8.13.orig/configure.in	2008-05-23 01:17:56.000000000 -0700
++++ libelf-0.8.13/configure.in	2017-07-27 12:41:43.421835676 -0700
+@@ -90,7 +90,7 @@
+ AC_CHECK_SIZEOF(short,2)
+ AC_CHECK_SIZEOF(int,4)
+ AC_CHECK_SIZEOF(long,4)
+-AC_CHECK_SIZEOF(long long,0)
++AC_CHECK_SIZEOF(long long,8)
+ # Windows port
+ AC_CHECK_SIZEOF(__int64, 0)
+ 

@@ -133,6 +133,20 @@ chip northbridge/intel/sandybridge
 					register "eventd_enable" = "0xff"
 					register "evente_enable" = "0x0d"
 				end
+				chip drivers/lenovo/hybrid_graphics
+					device pnp ff.f on end # dummy
+
+					register "detect_gpio" = "21"
+
+					register "has_panel_hybrid_gpio" = "1"
+					register "panel_hybrid_gpio" = "52"
+					register "panel_integrated_lvl" = "1"
+
+					register "has_backlight_gpio" = "0"
+					register "has_dgpu_power_gpio" = "0"
+
+					register "has_thinker1" = "1"
+				end
 			end # LPC bridge
 			device pci 1f.2 on end # SATA Controller 1
 			device pci 1f.3 on # SMBUS controller

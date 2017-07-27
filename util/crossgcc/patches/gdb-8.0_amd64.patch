@@ -1,6 +1,6 @@
-diff -urN gdb-7.12.orig/gdb/configure.tgt gdb-7.12/gdb/configure.tgt
---- gdb-7.12.orig/gdb/configure.tgt	2016-02-09 19:19:39.000000000 -0800
-+++ gdb-7.12/gdb/configure.tgt	2016-04-21 17:42:32.628433139 -0700
+diff -urN gdb-8.0.orig/gdb/configure.tgt gdb-8.0/gdb/configure.tgt
+--- gdb-8.0.orig/gdb/configure.tgt	2016-02-09 19:19:39.000000000 -0800
++++ gdb-8.0/gdb/configure.tgt	2016-04-21 17:42:32.628433139 -0700
 @@ -681,6 +681,11 @@
  			i387-tdep.o i386bsd-tdep.o i386obsd-tdep.o \
  			obsd-tdep.o bsd-uthread.o solib-svr4.o"

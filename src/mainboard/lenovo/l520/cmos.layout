@@ -67,7 +67,7 @@ entries
 416         1       e       1        trackpoint
 417         1       e       1        fn_ctrl_swap
 418         1       e       1        sticky_fn
-419         2       e       13       usb_always_on
+419         2       e       12       usb_always_on
 421         1       e       9        sata_mode
 422         2       e       10       backlight
 
@@ -76,8 +76,7 @@ entries
 
 # coreboot config options: northbridge
 432         3        e      11        gfx_uma_size
-435         2        e       12       hybrid_graphics_mode
-#437        3        r       0        unused
+#435        5        r       0        unused
 440         8        h       0        volume
 
 # SandyBridge MRC Scrambler Seed values
@@ -134,11 +133,9 @@ enumerations
 11    4	    160M
 11    5	    192M
 11    6	    224M
-12    0     Integrated Only
-12    1     Discrete Only
-13    0     Disable
-13    1     AC and battery
-13    2     AC only
+12    0     Disable
+12    1     AC and battery
+12    2     AC only
 
 # -----------------------------------------------------------------
 checksums

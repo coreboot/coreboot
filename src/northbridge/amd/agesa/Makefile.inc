@@ -24,7 +24,7 @@ subdirs-$(CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY15_RL) += family15rl
 subdirs-$(CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY16_KB) += family16kb
 
 romstage-y += def_callouts.c agesawrapper.c eventlog.c
-ramstage-y += def_callouts.c agesawrapper.c eventlog.c
+ramstage-y += def_callouts.c agesawrapper.c eventlog.c acpi_tables.c
 
 romstage-y += oem_s3.c
 ramstage-y += oem_s3.c

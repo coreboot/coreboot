@@ -28,20 +28,6 @@ void __attribute__((weak)) OemPostParams(AMD_POST_PARAMS *PostParams) {}
 
 #define FILECODE UNASSIGNED_FILE_FILECODE
 
-#ifndef __PRE_RAM__
-/* ACPI table pointers returned by AmdInitLate */
-static void *DmiTable    = NULL;
-static void *AcpiPstate  = NULL;
-static void *AcpiSrat    = NULL;
-static void *AcpiSlit    = NULL;
-
-static void *AcpiWheaMce = NULL;
-static void *AcpiWheaCmc = NULL;
-static void *AcpiAlib    = NULL;
-static void *AcpiIvrs    = NULL;
-static void *AcpiCrat    = NULL;
-#endif /* #ifndef __PRE_RAM__ */
-
 AGESA_STATUS agesawrapper_amdinitreset(void)
 {
 	AGESA_STATUS status;
@@ -223,34 +209,6 @@ AGESA_STATUS agesawrapper_amdinitenv(void)
 	return status;
 }
 
-#ifndef __PRE_RAM__
-VOID* agesawrapper_getlateinitptr (int pick)
-{
-	switch (pick) {
-	case PICK_DMI:
-		return DmiTable;
-	case PICK_PSTATE:
-		return AcpiPstate;
-	case PICK_SRAT:
-		return AcpiSrat;
-	case PICK_SLIT:
-		return AcpiSlit;
-	case PICK_WHEA_MCE:
-		return AcpiWheaMce;
-	case PICK_WHEA_CMC:
-		return AcpiWheaCmc;
-	case PICK_ALIB:
-		return AcpiAlib;
-	case PICK_IVRS:
-		return AcpiIvrs;
-	case PICK_CRAT:
-		return AcpiCrat;
-	default:
-		return NULL;
-	}
-}
-#endif /* #ifndef __PRE_RAM__ */
-
 AGESA_STATUS agesawrapper_amdinitmid(void)
 {
 	AGESA_STATUS status;
@@ -320,27 +278,9 @@ AGESA_STATUS agesawrapper_amdinitlate(void)
 		ASSERT(Status == AGESA_SUCCESS);
 	}
 
-	DmiTable    = AmdLateParams->DmiTable;
-	AcpiPstate  = AmdLateParams->AcpiPState;
-#if IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_PI_00630F01) || IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_PI_00730F01)
-	AcpiSrat    = AmdLateParams->AcpiSrat;
-	AcpiSlit    = AmdLateParams->AcpiSlit;
-#endif
+	agesawrapper_setlateinitptr(AmdLateParams);
 
-	AcpiWheaMce = AmdLateParams->AcpiWheaMce;
-	AcpiWheaCmc = AmdLateParams->AcpiWheaCmc;
-	AcpiAlib    = AmdLateParams->AcpiAlib;
-	AcpiIvrs    = AmdLateParams->AcpiIvrs;
-	AcpiCrat    = AmdLateParams->AcpiCrat;
-
-	printk(BIOS_DEBUG, "DmiTable:%x, AcpiPstatein: %x, AcpiSrat:%x,"
-	       "AcpiSlit:%x, Mce:%x, Cmc:%x,"
-	       "Alib:%x, AcpiIvrs:%x in %s\n",
-	       (unsigned int)DmiTable, (unsigned int)AcpiPstate, (unsigned int)AcpiSrat,
-	       (unsigned int)AcpiSlit, (unsigned int)AcpiWheaMce, (unsigned int)AcpiWheaCmc,
-	       (unsigned int)AcpiAlib, (unsigned int)AcpiIvrs, __func__);
-
-	/* AmdReleaseStruct (&AmdParamStruct); */
+	/* No AmdReleaseStruct(&AmdParamStruct), we need AmdLateParams later. */
 	return Status;
 }
 #endif /* #ifndef __PRE_RAM__ */

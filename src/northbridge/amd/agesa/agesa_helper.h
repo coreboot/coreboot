@@ -27,8 +27,11 @@ enum {
 	PICK_WHEA_CMC,  /* WHEA CMV table */
 	PICK_ALIB,      /* SACPI SSDT table with ALIB implementation */
 	PICK_IVRS,      /* IOMMU ACPI IVRS(I/O Virtualization Reporting Structure) table */
+	PICK_CRAT,      /* Component Resource Affinity Table table */
+	PICK_CDIT,      /* Component Locality Distance Information table */
 };
 
+void agesawrapper_setlateinitptr (void *Late);
 void *agesawrapper_getlateinitptr (int pick);
 
 void amd_initcpuio(void);

@@ -23,7 +23,7 @@ romstage-y += agesawrapper.c
 ramstage-y += agesawrapper.c
 
 romstage-y += ../agesa/def_callouts.c
-ramstage-y += ../agesa/def_callouts.c
+ramstage-y += ../agesa/def_callouts.c ../agesa/acpi_tables.c
 
 romstage-y += ramtop.c
 ramstage-y += ramtop.c

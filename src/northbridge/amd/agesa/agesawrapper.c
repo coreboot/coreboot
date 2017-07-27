@@ -270,13 +270,11 @@ AGESA_STATUS agesawrapper_amdS3Save(void)
 	return status;
 }
 
-/* We will reference AmdLateParams later to copy ACPI tables. */
-static AMD_LATE_PARAMS *AmdLateParams = NULL;
-
 AGESA_STATUS agesawrapper_amdinitlate(void)
 {
 	AGESA_STATUS status;
 	AMD_INTERFACE_PARAMS AmdParamStruct;
+	AMD_LATE_PARAMS *AmdLateParams;
 
 	memset(&AmdParamStruct, 0, sizeof(AMD_INTERFACE_PARAMS));
 
@@ -298,39 +296,10 @@ AGESA_STATUS agesawrapper_amdinitlate(void)
 	AGESA_EVENTLOG(status, &AmdLateParams->StdHeader);
 	ASSERT(status == AGESA_SUCCESS);
 
+	agesawrapper_setlateinitptr(AmdLateParams);
+
 	/* No AmdReleaseStruct(&AmdParamStruct), we need AmdLateParams later. */
 	return status;
-}
-
-void *agesawrapper_getlateinitptr(int pick)
-{
-	ASSERT(AmdLateParams != NULL);
-
-	switch (pick) {
-	case PICK_DMI:
-		return AmdLateParams->DmiTable;
-	case PICK_PSTATE:
-		return AmdLateParams->AcpiPState;
-	case PICK_SRAT:
-		return AmdLateParams->AcpiSrat;
-	case PICK_SLIT:
-		return AmdLateParams->AcpiSlit;
-	case PICK_WHEA_MCE:
-		return AmdLateParams->AcpiWheaMce;
-	case PICK_WHEA_CMC:
-		return AmdLateParams->AcpiWheaCmc;
-	case PICK_ALIB:
-		return AmdLateParams->AcpiAlib;
-	case PICK_IVRS:
-#if IS_ENABLED(CONFIG_CPU_AMD_AGESA_FAMILY14)
-		return NULL;
-#else
-		return AmdLateParams->AcpiIvrs;
-#endif
-	default:
-		return NULL;
-	}
-	return NULL;
 }
 
 #endif /* __PRE_RAM__ */

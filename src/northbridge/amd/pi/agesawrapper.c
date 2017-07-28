@@ -286,36 +286,6 @@ AGESA_STATUS agesawrapper_amdinitlate(void)
 }
 #endif /* #ifndef __PRE_RAM__ */
 
-AGESA_STATUS agesawrapper_amdlaterunaptask (
-	UINT32 Func,
-	UINTN Data,
-	VOID *ConfigPtr
-	)
-{
-	AGESA_STATUS Status;
-	AP_EXE_PARAMS ApExeParams;
-
-	LibAmdMemFill (&ApExeParams,
-		       0,
-		       sizeof(AP_EXE_PARAMS),
-		       &(ApExeParams.StdHeader));
-
-	ApExeParams.StdHeader.AltImageBasePtr = 0;
-	ApExeParams.StdHeader.CalloutPtr = &GetBiosCallout;
-	ApExeParams.StdHeader.Func = 0;
-	ApExeParams.StdHeader.ImageBasePtr = 0;
-	ApExeParams.FunctionNumber = Func;
-	ApExeParams.RelatedDataBlock = ConfigPtr;
-
-	Status = AmdLateRunApTask (&ApExeParams);
-	if (Status != AGESA_SUCCESS) {
-		/* agesawrapper_amdreadeventlog(); */
-		ASSERT(Status == AGESA_SUCCESS);
-	}
-
-	return Status;
-}
-
 const void *agesawrapper_locate_module (const CHAR8 name[8])
 {
 	const void* agesa;

@@ -16,11 +16,12 @@
 
 #include <cbfs.h>
 #include <spd_bin.h>
+#include <string.h>
 
 #include "AGESA.h"
 #include "amdlib.h"
 #include "Ids.h"
-#include <northbridge/amd/agesa/agesawrapper.h>
+#include <northbridge/amd/agesa/state_machine.h>
 #include "BiosCallOuts.h"
 #include "dimmSpd.h"
 
@@ -107,10 +108,22 @@ AGESA_STATUS agesa_Reset (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 
 AGESA_STATUS agesa_RunFuncOnAp (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {
-	AGESA_STATUS        Status;
+	AGESA_STATUS status;
+	AP_EXE_PARAMS ApExeParams;
 
-	Status = agesawrapper_amdlaterunaptask (Func, Data, ConfigPtr);
-	return Status;
+	memset(&ApExeParams, 0, sizeof(AP_EXE_PARAMS));
+
+	ApExeParams.StdHeader.AltImageBasePtr = 0;
+	ApExeParams.StdHeader.CalloutPtr = &GetBiosCallout;
+	ApExeParams.StdHeader.Func = 0;
+	ApExeParams.StdHeader.ImageBasePtr = 0;
+	ApExeParams.FunctionNumber = Func;
+	ApExeParams.RelatedDataBlock = ConfigPtr;
+
+	status = AmdLateRunApTask(&ApExeParams);
+	ASSERT(status == AGESA_SUCCESS);
+
+	return status;
 }
 
 #if defined(AGESA_GNB_GFX_GET_VBIOS_IMAGE)

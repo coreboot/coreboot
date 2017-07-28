@@ -31,7 +31,7 @@
 #ifndef __CROS_EC_EC_COMMANDS_H
 #define __CROS_EC_EC_COMMANDS_H
 
-#ifndef __ACPI__
+#if !defined(__ACPI__) && !defined(__KERNEL__)
 #include <stdint.h>
 #endif
 
@@ -1121,6 +1121,14 @@ struct __ec_align4 ec_response_get_features {
 };
 
 /*****************************************************************************/
+/* Get the board's SKU ID from EC */
+#define EC_CMD_GET_SKU_ID 0x000E
+
+struct __ec_align4 ec_response_sku_id {
+	uint32_t sku_id;
+};
+
+/*****************************************************************************/
 /* Flash commands */
 
 /* Get flash info */
@@ -1151,6 +1159,13 @@ struct __ec_align4 ec_response_flash_info {
 /* Flags for version 1+ flash info command */
 /* EC flash erases bits to 0 instead of 1 */
 #define EC_FLASH_INFO_ERASE_TO_0 (1 << 0)
+
+/* Flash must be selected for read/write/erase operations to succeed.  This may
+ * be necessary on a chip where write/erase can be corrupted by other board
+ * activity, or where the chip needs to enable some sort of programming voltage,
+ * or where the read/write/erase operations require cleanly suspending other
+ * chip functionality. */
+#define EC_FLASH_INFO_SELECT_REQUIRED (1 << 1)
 
 /*
  * Version 1 returns the same initial fields as version 0, with additional
@@ -1421,6 +1436,16 @@ struct __ec_align1 ec_response_flash_spi_info {
 	/* Status registers from command 0x05 and 0x35 */
 	uint8_t sr1, sr2;
 };
+
+
+/* Select flash during flash operations */
+#define EC_CMD_FLASH_SELECT 0x0019
+
+struct __ec_align4 ec_params_flash_select {
+	/* 1 to select flash, 0 to deselect flash */
+	uint8_t select;
+};
+
 
 /*****************************************************************************/
 /* PWM commands */
@@ -2980,6 +3005,7 @@ struct __ec_align1 ec_response_get_next_event {
 #define EC_MKBP_POWER_BUTTON	0
 #define EC_MKBP_VOL_UP		1
 #define EC_MKBP_VOL_DOWN	2
+#define EC_MKBP_RECOVERY	3
 
 /* Switches */
 #define EC_MKBP_LID_OPEN	0
@@ -3935,6 +3961,9 @@ struct __ec_align1 ec_response_usb_pd_control_v1 {
 
 #define EC_CMD_USB_PD_PORTS 0x0102
 
+/* Maximum number of PD ports on a device, num_ports will be <= this */
+#define EC_USB_PD_MAX_PORTS 8
+
 struct __ec_align1 ec_response_usb_pd_ports {
 	uint8_t num_ports;
 };
@@ -4425,6 +4454,6 @@ struct __ec_align4 ec_params_tp_frame_get {
 #define EC_LPC_ADDR_OLD_PARAM   EC_HOST_CMD_REGION1
 #define EC_OLD_PARAM_SIZE       EC_HOST_CMD_REGION_SIZE
 
-#endif  /* !__ACPI__ */
+#endif  /* !__ACPI__ && !__KERNEL__ */
 
 #endif  /* __CROS_EC_EC_COMMANDS_H */

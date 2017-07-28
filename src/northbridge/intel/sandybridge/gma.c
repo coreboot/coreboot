@@ -258,18 +258,20 @@ static const struct gt_powermeter ivb_pm_gt2_35w[] = {
 
 u32 map_oprom_vendev(u32 vendev)
 {
-	u32 new_vendev=vendev;
+	u32 new_vendev = vendev;
 
 	switch (vendev) {
-	case 0x80860102:		/* GT1 Desktop */
-	case 0x8086010a:		/* GT1 Server */
-	case 0x80860112:		/* GT2 Desktop */
-	case 0x80860116:		/* GT2 Mobile */
-	case 0x80860122:		/* GT2 Desktop >=1.3GHz */
-	case 0x80860126:		/* GT2 Mobile >=1.3GHz */
-	case 0x80860156:                /* IVB */
-	case 0x80860166:                /* IVB */
-		new_vendev=0x80860106;	/* GT1 Mobile */
+	case 0x80860102:		/* SNB GT1 Desktop */
+	case 0x8086010a:		/* SNB GT1 Server */
+	case 0x80860112:		/* SNB GT2 Desktop */
+	case 0x80860116:		/* SNB GT2 Mobile */
+	case 0x80860122:		/* SNB GT2 Desktop >=1.3GHz */
+	case 0x80860126:		/* SNB GT2 Mobile >=1.3GHz */
+	case 0x80860152:		/* IVB GT1 Desktop */
+	case 0x80860156:		/* IVB GT1 Mobile */
+	case 0x80860162:		/* IVB GT2 Desktop */
+	case 0x80860166:		/* IVB GT2 Mobile */
+		new_vendev = 0x80860106;/* SNB GT1 Mobile */
 		break;
 	}
 

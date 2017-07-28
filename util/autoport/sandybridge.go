@@ -122,7 +122,6 @@ func (i sandybridgemc) Scan(ctx Context, addr PCIDevData) {
 	KconfigBool["HAVE_IFD_BIN"] = false
 	KconfigBool["HAVE_ME_BIN"] = false
 
-	KconfigHex["MMCONF_BASE_ADDRESS"] = 0xf0000000
 	KconfigInt["MAX_CPUS"] = 8
 
 	DSDTIncludes = append(DSDTIncludes, DSDTInclude{

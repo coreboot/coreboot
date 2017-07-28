@@ -78,6 +78,14 @@ config BOOTBLOCK_NORTHBRIDGE_INIT
 	string
 	default "northbridge/intel/sandybridge/bootblock.c"
 
+config MMCONF_BASE_ADDRESS
+	hex
+	default 0xf8000000 if USE_NATIVE_RAMINIT
+	default 0xf0000000
+	help
+	  We can optimize the native case but the MRC blob requires it
+	  to be at 0xf0000000.
+
 if USE_NATIVE_RAMINIT
 
 config DCACHE_RAM_BASE
@@ -114,10 +122,6 @@ config MRC_FILE
 	help
 	  The path and filename of the file to use as System Agent
 	  binary.
-
-config MMCONF_BASE_ADDRESS
-	hex
-	default 0xf0000000
 
 endif # !USE_NATIVE_RAMINIT
 

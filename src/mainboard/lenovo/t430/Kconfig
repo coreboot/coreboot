@@ -53,10 +53,6 @@ config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
 	hex
 	default 0x17aa
 
-config MMCONF_BASE_ADDRESS
-	hex
-	default 0xf8000000
-
 config DRAM_RESET_GATE_GPIO
 	int
 	default 10

@@ -41,10 +41,6 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "ThinkPad X230"
 
-config MMCONF_BASE_ADDRESS
-	hex
-	default 0xf8000000
-
 config MAX_CPUS
 	int
 	default 8

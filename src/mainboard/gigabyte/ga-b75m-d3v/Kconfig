@@ -17,10 +17,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select INTEL_INT15
 	select SERIRQ_CONTINUOUS_MODE
 
-config MMCONF_BASE_ADDRESS
-	hex
-	default 0xf8000000
-
 config DRAM_RESET_GATE_GPIO
 	int
 	default 25

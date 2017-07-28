@@ -485,18 +485,18 @@ static void setShadowRCONF(uint32_t shadowHi, uint32_t shadowLo)
 	shadowByte = (uint8_t) (shadowLo >> 16);
 
 	// load up D000 settings in edx.
-	for (bit = 8; (bit > 4); bit--) {
+	for (bit = 7; bit >= 4; bit--) {
 		msr.hi <<= 8;
 		msr.hi |= 1;	// cache disable PCI/Shadow memory
-		if (shadowByte && (1 << bit))
+		if (shadowByte & (1 << bit))
 			msr.hi |= 0x20;	// write serialize PCI memory
 	}
 
 	// load up C000 settings in eax.
-	for (; bit; bit--) {
+	for (; bit >= 0; bit--) {
 		msr.lo <<= 8;
 		msr.lo |= 1;	// cache disable PCI/Shadow memory
-		if (shadowByte && (1 << bit))
+		if (shadowByte & (1 << bit))
 			msr.lo |= 0x20;	// write serialize PCI memory
 	}
 
@@ -505,18 +505,18 @@ static void setShadowRCONF(uint32_t shadowHi, uint32_t shadowLo)
 	shadowByte = (uint8_t) (shadowLo >> 24);
 
 	// load up F000 settings in edx.
-	for (bit = 8; (bit > 4); bit--) {
+	for (bit = 7; bit >= 4; bit--) {
 		msr.hi <<= 8;
 		msr.hi |= 1;	// cache disable PCI/Shadow memory
-		if (shadowByte && (1 << bit))
+		if (shadowByte & (1 << bit))
 			msr.hi |= 0x20;	// write serialize PCI memory
 	}
 
 	// load up E000 settings in eax.
-	for (; bit; bit--) {
+	for (; bit >= 0; bit--) {
 		msr.lo <<= 8;
 		msr.lo |= 1;	// cache disable PCI/Shadow memory
-		if (shadowByte && (1 << bit))
+		if (shadowByte & (1 << bit))
 			msr.lo |= 0x20;	// write serialize PCI memory
 	}
 

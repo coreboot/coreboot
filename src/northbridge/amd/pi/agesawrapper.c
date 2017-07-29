@@ -21,6 +21,7 @@
 #include <cpuRegisters.h>
 #include <FchPlatform.h>
 #include <heapManager.h>
+#include <northbridge/amd/agesa/state_machine.h>
 #include <northbridge/amd/pi/agesawrapper.h>
 #include <northbridge/amd/agesa/BiosCallOuts.h>
 
@@ -310,32 +311,6 @@ AGESA_STATUS agesawrapper_amdlaterunaptask (
 	if (Status != AGESA_SUCCESS) {
 		/* agesawrapper_amdreadeventlog(); */
 		ASSERT(Status == AGESA_SUCCESS);
-	}
-
-	return Status;
-}
-
-AGESA_STATUS agesawrapper_amdreadeventlog (UINT8 HeapStatus)
-{
-	AGESA_STATUS Status;
-	EVENT_PARAMS AmdEventParams;
-
-	LibAmdMemFill (&AmdEventParams,
-		       0,
-		       sizeof(EVENT_PARAMS),
-		       &(AmdEventParams.StdHeader));
-
-	AmdEventParams.StdHeader.AltImageBasePtr = 0;
-	AmdEventParams.StdHeader.CalloutPtr = &GetBiosCallout;
-	AmdEventParams.StdHeader.Func = 0;
-	AmdEventParams.StdHeader.ImageBasePtr = 0;
-	AmdEventParams.StdHeader.HeapStatus = HeapStatus;
-	Status = AmdReadEventLog (&AmdEventParams);
-	while (AmdEventParams.EventClass != 0) {
-		printk(BIOS_DEBUG,"\nEventLog:  EventClass = %x, EventInfo = %x.\n", (unsigned int)AmdEventParams.EventClass,(unsigned int)AmdEventParams.EventInfo);
-		printk(BIOS_DEBUG,"  Param1 = %x, Param2 = %x.\n",(unsigned int)AmdEventParams.DataParam1, (unsigned int)AmdEventParams.DataParam2);
-		printk(BIOS_DEBUG,"  Param3 = %x, Param4 = %x.\n",(unsigned int)AmdEventParams.DataParam3, (unsigned int)AmdEventParams.DataParam4);
-		Status = AmdReadEventLog (&AmdEventParams);
 	}
 
 	return Status;

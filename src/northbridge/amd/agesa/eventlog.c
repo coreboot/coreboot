@@ -739,10 +739,43 @@ static void interpret_agesa_eventlog(EVENT_PARAMS *event)
 }
 #endif
 
-static void amd_readeventlog(AMD_CONFIG_PARAMS *StdHeader)
+static void show_event(EVENT_PARAMS *Event)
 {
-	AGESA_STATUS status;
+	printk(BIOS_DEBUG,"\nEventLog:  EventClass = %x, EventInfo = %x.\n",
+			(unsigned int)Event->EventClass,
+			(unsigned int)Event->EventInfo);
+	printk(BIOS_DEBUG,"  Param1 = %x, Param2 = %x.\n",
+			(unsigned int)Event->DataParam1,
+			(unsigned int)Event->DataParam2);
+	printk(BIOS_DEBUG,"  Param3 = %x, Param4 = %x.\n",
+			(unsigned int)Event->DataParam3,
+			(unsigned int)Event->DataParam4);
+}
+
+#define MAX_LOG_ENTRIES 100
+
+static void amd_flush_eventlog(EVENT_PARAMS *Event)
+{
+	int i = 0;
+
+	do {
+		AGESA_STATUS status = AmdReadEventLog(Event);
+		if (status != AGESA_SUCCESS)
+			return;
+		if (Event->EventClass == 0)
+			return;
+		show_event(Event);
+	} while (++i < MAX_LOG_ENTRIES);
+}
+
+void agesawrapper_trace(AGESA_STATUS ret, AMD_CONFIG_PARAMS *StdHeader,
+	const char *func)
+{
 	EVENT_PARAMS AmdEventParams;
+
+	printk(BIOS_DEBUG, "%s() returned %s\n", func, decodeAGESA_STATUS(ret));
+	if (ret == AGESA_SUCCESS)
+		return;
 
 	memset(&AmdEventParams, 0, sizeof(EVENT_PARAMS));
 
@@ -752,25 +785,22 @@ static void amd_readeventlog(AMD_CONFIG_PARAMS *StdHeader)
 	AmdEventParams.StdHeader.ImageBasePtr = 0;
 	AmdEventParams.StdHeader.HeapStatus = StdHeader->HeapStatus;
 
-	status = AmdReadEventLog(&AmdEventParams);
-	while ((status == AGESA_SUCCESS) && (AmdEventParams.EventClass != 0)) {
-		printk(BIOS_DEBUG,"\nEventLog:  EventClass = %x, EventInfo = %x.\n",
-				(unsigned int)AmdEventParams.EventClass,
-				(unsigned int)AmdEventParams.EventInfo);
-		printk(BIOS_DEBUG,"  Param1 = %x, Param2 = %x.\n",
-				(unsigned int)AmdEventParams.DataParam1,
-				(unsigned int)AmdEventParams.DataParam2);
-		printk(BIOS_DEBUG,"  Param3 = %x, Param4 = %x.\n",
-				(unsigned int)AmdEventParams.DataParam3,
-				(unsigned int)AmdEventParams.DataParam4);
-		status = AmdReadEventLog(&AmdEventParams);
-	}
+	amd_flush_eventlog(&AmdEventParams);
 }
 
-
-void agesawrapper_trace(AGESA_STATUS ret, AMD_CONFIG_PARAMS *StdHeader, const char *func)
+AGESA_STATUS agesawrapper_amdreadeventlog (UINT8 HeapStatus)
 {
-	printk(BIOS_DEBUG, "%s() returned %s\n", func, decodeAGESA_STATUS(ret));
-	if (ret != AGESA_SUCCESS)
-		amd_readeventlog(StdHeader);
+	EVENT_PARAMS AmdEventParams;
+
+	memset(&AmdEventParams, 0, sizeof(EVENT_PARAMS));
+
+	AmdEventParams.StdHeader.AltImageBasePtr = 0;
+	AmdEventParams.StdHeader.CalloutPtr = &GetBiosCallout;
+	AmdEventParams.StdHeader.Func = 0;
+	AmdEventParams.StdHeader.ImageBasePtr = 0;
+	AmdEventParams.StdHeader.HeapStatus = HeapStatus;
+
+	amd_flush_eventlog(&AmdEventParams);
+
+	return AGESA_SUCCESS;
 }

@@ -23,6 +23,7 @@
 const char *agesa_struct_name(int state);
 const char *heap_status_name(int status);
 void agesawrapper_trace(AGESA_STATUS ret, AMD_CONFIG_PARAMS *StdHeader, const char *func);
+AGESA_STATUS agesawrapper_amdreadeventlog(UINT8 HeapStatus);
 
 struct sysinfo
 {

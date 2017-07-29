@@ -31,39 +31,43 @@
 #define SOUTHBRIDGE PCI_DEV(0, 0x1f, 0)
 
 static void
-wait_2338 (void)
+wait_iobp(void)
 {
-	while (read8 (DEFAULT_RCBA + 0x2338) & 1);
+	while (read8(DEFAULT_RCBA + IOBPS) & 1)
+		; // implement timeout?
 }
 
 static u32
-read_2338 (u32 edx)
+read_iobp(u32 address)
 {
 	u32 ret;
 
-	write32 (DEFAULT_RCBA + 0x2330, edx);
-	write16 (DEFAULT_RCBA + 0x2338, (read16 (DEFAULT_RCBA + 0x2338)
+	write32(DEFAULT_RCBA + IOBPIRI, address);
+	write16(DEFAULT_RCBA + IOBPS, (read16(DEFAULT_RCBA + IOBPS)
 					 & 0x1ff) | 0x600);
-	wait_2338 ();
-	ret = read32 (DEFAULT_RCBA + 0x2334);
-	wait_2338 ();
-	read8 (DEFAULT_RCBA + 0x2338);
+	wait_iobp();
+	ret = read32(DEFAULT_RCBA + IOBPD);
+	wait_iobp();
+	read8(DEFAULT_RCBA + IOBPS); // call wait_iobp() instead here?
 	return ret;
 }
 
 static void
-write_2338 (u32 edx, u32 val)
+write_iobp(u32 address, u32 val)
 {
-	read_2338 (edx);
-	write16 (DEFAULT_RCBA + 0x2338, (read16 (DEFAULT_RCBA + 0x2338)
+	/* this function was probably pch_iobp_update with the andvalue
+	 * being 0. So either the IOBP read can be removed or this function
+	 * and the pch_iobp_update function in ramstage could be merged */
+	read_iobp(address);
+	write16(DEFAULT_RCBA + IOBPS, (read16(DEFAULT_RCBA + IOBPS)
 					 & 0x1ff) | 0x600);
-	wait_2338 ();
+	wait_iobp();
 
-	write32 (DEFAULT_RCBA + 0x2334, val);
-	wait_2338 ();
-	write16 (DEFAULT_RCBA + 0x2338,
-		 (read16 (DEFAULT_RCBA + 0x2338) & 0x1ff) | 0x600);
-	read8 (DEFAULT_RCBA + 0x2338);
+	write32(DEFAULT_RCBA + IOBPD, val);
+	wait_iobp();
+	write16(DEFAULT_RCBA + IOBPS,
+		 (read16(DEFAULT_RCBA + IOBPS) & 0x1ff) | 0x600);
+	read8(DEFAULT_RCBA + IOBPS); // call wait_iobp() instead here?
 }
 
 
@@ -304,67 +308,67 @@ early_pch_init_native (void)
 	read32 (DEFAULT_RCBA + 0x2310);	// !!! = 0xa809605b
 	write32 (DEFAULT_RCBA + 0x2310, 0xa809605b);
 
-	write_2338 (0xea007f62, 0x00590133);
-	write_2338 (0xec007f62, 0x00590133);
-	write_2338 (0xec007f64, 0x59555588);
-	write_2338 (0xea0040b9, 0x0001051c);
-	write_2338 (0xeb0040a1, 0x800084ff);
-	write_2338 (0xec0040a1, 0x800084ff);
-	write_2338 (0xea004001, 0x00008400);
-	write_2338 (0xeb004002, 0x40201758);
-	write_2338 (0xec004002, 0x40201758);
-	write_2338 (0xea004002, 0x00601758);
-	write_2338 (0xea0040a1, 0x810084ff);
-	write_2338 (0xeb0040b1, 0x0001c598);
-	write_2338 (0xec0040b1, 0x0001c598);
-	write_2338 (0xeb0040b6, 0x0001c598);
-	write_2338 (0xea0000a9, 0x80ff969f);
-	write_2338 (0xea0001a9, 0x80ff969f);
-	write_2338 (0xeb0040b2, 0x0001c396);
-	write_2338 (0xeb0040b3, 0x0001c396);
-	write_2338 (0xec0040b2, 0x0001c396);
-	write_2338 (0xea0001a9, 0x80ff94ff);
-	write_2338 (0xea000151, 0x0088037f);
-	write_2338 (0xea0000a9, 0x80ff94ff);
-	write_2338 (0xea000051, 0x0088037f);
+	write_iobp(0xea007f62, 0x00590133);
+	write_iobp(0xec007f62, 0x00590133);
+	write_iobp(0xec007f64, 0x59555588);
+	write_iobp(0xea0040b9, 0x0001051c);
+	write_iobp(0xeb0040a1, 0x800084ff);
+	write_iobp(0xec0040a1, 0x800084ff);
+	write_iobp(0xea004001, 0x00008400);
+	write_iobp(0xeb004002, 0x40201758);
+	write_iobp(0xec004002, 0x40201758);
+	write_iobp(0xea004002, 0x00601758);
+	write_iobp(0xea0040a1, 0x810084ff);
+	write_iobp(0xeb0040b1, 0x0001c598);
+	write_iobp(0xec0040b1, 0x0001c598);
+	write_iobp(0xeb0040b6, 0x0001c598);
+	write_iobp(0xea0000a9, 0x80ff969f);
+	write_iobp(0xea0001a9, 0x80ff969f);
+	write_iobp(0xeb0040b2, 0x0001c396);
+	write_iobp(0xeb0040b3, 0x0001c396);
+	write_iobp(0xec0040b2, 0x0001c396);
+	write_iobp(0xea0001a9, 0x80ff94ff);
+	write_iobp(SATA_IOBP_SP0G3IR, 0x0088037f);
+	write_iobp(0xea0000a9, 0x80ff94ff);
+	write_iobp(SATA_IOBP_SP1G3IR, 0x0088037f);
 
-	write_2338 (0xea007f05, 0x00010642);
-	write_2338 (0xea0040b7, 0x0001c91c);
-	write_2338 (0xea0040b8, 0x0001c91c);
-	write_2338 (0xeb0040a1, 0x820084ff);
-	write_2338 (0xec0040a1, 0x820084ff);
-	write_2338 (0xea007f0a, 0xc2480000);
+	write_iobp(0xea007f05, 0x00010642);
+	write_iobp(0xea0040b7, 0x0001c91c);
+	write_iobp(0xea0040b8, 0x0001c91c);
+	write_iobp(0xeb0040a1, 0x820084ff);
+	write_iobp(0xec0040a1, 0x820084ff);
+	write_iobp(0xea007f0a, 0xc2480000);
 
-	write_2338 (0xec00404d, 0x1ff177f);
-	write_2338 (0xec000084, 0x5a600000);
-	write_2338 (0xec000184, 0x5a600000);
-	write_2338 (0xec000284, 0x5a600000);
-	write_2338 (0xec000384, 0x5a600000);
-	write_2338 (0xec000094, 0x000f0501);
-	write_2338 (0xec000194, 0x000f0501);
-	write_2338 (0xec000294, 0x000f0501);
-	write_2338 (0xec000394, 0x000f0501);
-	write_2338 (0xec000096, 0x00000001);
-	write_2338 (0xec000196, 0x00000001);
-	write_2338 (0xec000296, 0x00000001);
-	write_2338 (0xec000396, 0x00000001);
-	write_2338 (0xec000001, 0x00008c08);
-	write_2338 (0xec000101, 0x00008c08);
-	write_2338 (0xec000201, 0x00008c08);
-	write_2338 (0xec000301, 0x00008c08);
-	write_2338 (0xec0040b5, 0x0001c518);
-	write_2338 (0xec000087, 0x06077597);
-	write_2338 (0xec000187, 0x06077597);
-	write_2338 (0xec000287, 0x06077597);
-	write_2338 (0xec000387, 0x06077597);
-	write_2338 (0xea000050, 0x00bb0157);
-	write_2338 (0xea000150, 0x00bb0157);
-	write_2338 (0xec007f60, 0x77777d77);
-	write_2338 (0xea00008d, 0x01320000);
-	write_2338 (0xea00018d, 0x01320000);
-	write_2338 (0xec0007b2, 0x04514b5e);
-	write_2338 (0xec00078c, 0x40000200);
-	write_2338 (0xec000780, 0x02000020);
+	write_iobp(0xec00404d, 0x1ff177f);
+	write_iobp(0xec000084, 0x5a600000);
+	write_iobp(0xec000184, 0x5a600000);
+	write_iobp(0xec000284, 0x5a600000);
+	write_iobp(0xec000384, 0x5a600000);
+	write_iobp(0xec000094, 0x000f0501);
+	write_iobp(0xec000194, 0x000f0501);
+	write_iobp(0xec000294, 0x000f0501);
+	write_iobp(0xec000394, 0x000f0501);
+	write_iobp(0xec000096, 0x00000001);
+	write_iobp(0xec000196, 0x00000001);
+	write_iobp(0xec000296, 0x00000001);
+	write_iobp(0xec000396, 0x00000001);
+	write_iobp(0xec000001, 0x00008c08);
+	write_iobp(0xec000101, 0x00008c08);
+	write_iobp(0xec000201, 0x00008c08);
+	write_iobp(0xec000301, 0x00008c08);
+	write_iobp(0xec0040b5, 0x0001c518);
+	write_iobp(0xec000087, 0x06077597);
+	write_iobp(0xec000187, 0x06077597);
+	write_iobp(0xec000287, 0x06077597);
+	write_iobp(0xec000387, 0x06077597);
+	write_iobp(0xea000050, 0x00bb0157);
+	write_iobp(0xea000150, 0x00bb0157);
+	write_iobp(0xec007f60, 0x77777d77);
+	write_iobp(0xea00008d, 0x01320000);
+	write_iobp(0xea00018d, 0x01320000);
+	write_iobp(0xec0007b2, 0x04514b5e);
+	write_iobp(0xec00078c, 0x40000200);
+	write_iobp(0xec000780, 0x02000020);
 
 	init_dmi();
 }

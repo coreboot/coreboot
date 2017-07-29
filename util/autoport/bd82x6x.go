@@ -309,8 +309,6 @@ void pch_enable_lpc(void)
 
 	RestorePCI16Simple(sb, addr, 0x80)
 
-	RestorePCI32Simple(sb, addr, 0xac)
-
 	sb.WriteString(`}
 
 void rcba_config(void)

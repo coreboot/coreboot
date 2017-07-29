@@ -65,6 +65,7 @@ static struct device_operations dev_ops = {
 
 static const unsigned short pci_device_ids[] = {
 	PCI_DEVICE_ID_INTEL_APL_SD,
+	PCI_DEVICE_ID_INTEL_CNL_SD,
 	PCI_DEVICE_ID_INTEL_GLK_SD,
 	PCI_DEVICE_ID_INTEL_SKL_SD,
 	0

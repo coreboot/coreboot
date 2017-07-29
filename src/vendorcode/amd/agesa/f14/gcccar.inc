@@ -770,6 +770,13 @@ fam14_enable_stack_hook_exit:
 *   Return any family specific controls to their 'standard'
 *   settings for using cache with main memory.
 *
+* Note: Customized for coreboot:
+*   A wbinvd is used to send cache to memory.  The existing stack is preserved
+*   at its original location and additional information is preserved (e.g.
+*   coreboot CAR globals, heap structures, etc.). This implementation should
+*   NOT be used with S3 resume IF the stack/cache area is not reserved and
+*   over system memory.
+*
 * Inputs:
 *       ESI - [31:24] flags; [15,8]= Node#; [7,0]= core#
 * Outputs:
@@ -813,7 +820,14 @@ fam14_enable_stack_hook_exit:
     _RDMSR
     btr     $INVD_WBINVD, %eax            # Disable INVD -> WBINVD conversion
     _WRMSR
-    invd                                # Clear the cache tag RAMs
+
+    #--------------------------------------------------------------------------
+    # Send cache to memory. Preserve stack and coreboot CAR globals.
+    # This shouldn't be used with S3 resume IF the stack/cache area is
+    # not reserved and over system memory.
+    #--------------------------------------------------------------------------
+    wbinvd
+
     bts     $INVD_WBINVD, %eax            # Turn on Conversion of INVD to WBINVD
     _WRMSR
 

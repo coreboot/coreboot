@@ -18,6 +18,8 @@
 #include "option_table.h"
 #endif
 
+#define DEFAULT_BAUDRATE	115200
+
 unsigned int default_baudrate(void)
 {
 #if !defined(__SMM__) && IS_ENABLED(CONFIG_USE_OPTION_TABLE)
@@ -33,7 +35,11 @@ unsigned int default_baudrate(void)
 	if (b_index < 8)
 		return baud[b_index];
 #endif
-	return CONFIG_TTYS0_BAUD;
+	/*
+	 * If TTYS0_BAUD is not configured, then by default use 115200 as the
+	 * baud rate.
+	 */
+	return CONFIG_TTYS0_BAUD ? CONFIG_TTYS0_BAUD : DEFAULT_BAUDRATE;
 }
 
 /* Calculate divisor. Do not floor but round to nearest integer. */

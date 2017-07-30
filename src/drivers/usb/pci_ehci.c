@@ -33,12 +33,16 @@ static struct device_operations ehci_dbg_ops;
 int ehci_debug_hw_enable(unsigned int *base, unsigned int *dbg_offset)
 {
 	pci_devfn_t dbg_dev = pci_ehci_dbg_dev(CONFIG_USBDEBUG_HCD_INDEX);
-	pci_ehci_dbg_enable(dbg_dev, CONFIG_EHCI_BAR);
+
 #ifdef __SIMPLE_DEVICE__
 	pci_devfn_t dev = dbg_dev;
 #else
 	device_t dev = dev_find_slot(PCI_DEV2SEGBUS(dbg_dev), PCI_DEV2DEVFN(dbg_dev));
 #endif
+
+	u32 class = pci_read_config32(dev, PCI_CLASS_REVISION) >> 8;
+	if (class != PCI_EHCI_CLASSCODE)
+		return -1;
 
 	u8 pos = pci_find_capability(dev, PCI_CAP_ID_EHCI_DEBUG);
 	if (!pos)

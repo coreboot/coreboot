@@ -32,7 +32,3 @@ void pci_ehci_dbg_set_port(pci_devfn_t dev, unsigned int port)
 {
 	/* TODO: Allow changing the physical USB port used as Debug Port. */
 }
-
-void pci_ehci_dbg_enable(pci_devfn_t dev, unsigned long base)
-{
-}

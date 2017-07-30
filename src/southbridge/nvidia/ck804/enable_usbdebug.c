@@ -41,7 +41,3 @@ void pci_ehci_dbg_set_port(pci_devfn_t dev, unsigned int port)
 	dword |= (port << 12);
 	pci_write_config32(dev, 0x74, dword);
 }
-
-void pci_ehci_dbg_enable(pci_devfn_t dev, unsigned long base)
-{
-}

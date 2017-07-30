@@ -26,6 +26,10 @@
 
 pci_devfn_t pci_ehci_dbg_dev(unsigned int hcd_idx)
 {
+	/* Enable all of the USB controllers */
+	outb(0xEF, PM_INDEX);
+	outb(0x7F, PM_DATA);
+
 	if (hcd_idx == 3)
 		return PCI_DEV(0, 0x16, 2);
 	else if (hcd_idx == 2)
@@ -45,12 +49,4 @@ void pci_ehci_dbg_set_port(pci_devfn_t dev, unsigned int port)
 	reg32 |= (port << 28);
 	reg32 |= (1 << 27); /* Enable Debug Port port number remapping. */
 	write32(base_regs + DEBUGPORT_MISC_CONTROL, reg32);
-}
-
-
-void pci_ehci_dbg_enable(pci_devfn_t dev, unsigned long base)
-{
-	/* Enable all of the USB controllers */
-	outb(0xEF, PM_INDEX);
-	outb(0x7F, PM_DATA);
 }

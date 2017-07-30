@@ -185,10 +185,6 @@ config EHCI_BAR
 	hex
 	default 0xd8000000
 
-config EHCI_DEBUG_OFFSET
-	hex
-	default 0xa0
-
 config SERIRQ_CONTINUOUS_MODE
 	bool
 	default y

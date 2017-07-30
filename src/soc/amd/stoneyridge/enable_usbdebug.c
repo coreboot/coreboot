@@ -53,8 +53,4 @@ void pci_ehci_dbg_enable(pci_devfn_t dev, unsigned long base)
 	/* Enable all of the USB controllers */
 	outb(0xEF, PM_INDEX);
 	outb(0x7F, PM_DATA);
-
-	pci_write_config32(dev, EHCI_BAR_INDEX, base);
-	pci_write_config8(dev, PCI_COMMAND, PCI_COMMAND_MEMORY
-						| PCI_COMMAND_MASTER);
 }

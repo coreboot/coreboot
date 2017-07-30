@@ -47,12 +47,18 @@ int ehci_debug_hw_enable(unsigned int *base, unsigned int *dbg_offset)
 	u32 cap = pci_read_config32(dev, pos);
 
 	/* FIXME: We should remove static EHCI_BAR_INDEX. */
-	u8 dbg_bar = 0x10 + 4 * ((cap >> 29) - 1);
-	if (dbg_bar != EHCI_BAR_INDEX)
+	u8 ehci_bar = 0x10 + 4 * ((cap >> 29) - 1);
+	if (ehci_bar != EHCI_BAR_INDEX)
 		return -1;
+
+	pci_write_config32(dev, ehci_bar, CONFIG_EHCI_BAR);
+
+	pci_write_config8(dev, PCI_COMMAND, PCI_COMMAND_MEMORY |
+		PCI_COMMAND_MASTER);
 
 	*base = CONFIG_EHCI_BAR;
 	*dbg_offset = (cap>>16) & 0x1ffc;
+
 	return 0;
 }
 

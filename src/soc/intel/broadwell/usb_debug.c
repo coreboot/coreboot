@@ -41,12 +41,4 @@ void pci_ehci_dbg_set_port(pci_devfn_t dev, unsigned int port)
 
 void pci_ehci_dbg_enable(pci_devfn_t dev, unsigned long base)
 {
-	if (!dev)
-		return;
-
-	/* Set the EHCI BAR address. */
-	pci_write_config32(dev, EHCI_BAR_INDEX, base);
-
-	/* Enable access to the EHCI memory space registers. */
-	pci_write_config8(dev, PCI_COMMAND, PCI_COMMAND_MEMORY);
 }

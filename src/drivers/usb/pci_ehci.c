@@ -44,6 +44,15 @@ int ehci_debug_hw_enable(unsigned int *base, unsigned int *dbg_offset)
 	if (class != PCI_EHCI_CLASSCODE)
 		return -1;
 
+	u8 pm_cap = pci_find_capability(dev, PCI_CAP_ID_PM);
+	if (pm_cap) {
+		u16 pm_ctrl = pci_read_config16(dev, pm_cap + PCI_PM_CTRL);
+		/* Set to D0 and disable PM events. */
+		pm_ctrl &= ~PCI_PM_CTRL_PME_ENABLE;
+		pm_ctrl &= ~PCI_PM_CTRL_STATE_MASK;
+		pci_write_config16(dev, pm_cap + PCI_PM_CTRL, pm_ctrl);
+	}
+
 	u8 pos = pci_find_capability(dev, PCI_CAP_ID_EHCI_DEBUG);
 	if (!pos)
 		return -1;

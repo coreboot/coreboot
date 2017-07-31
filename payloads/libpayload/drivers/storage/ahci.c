@@ -223,6 +223,7 @@ static u32 working_controllers[] = {
 	0x8086 | 0x2929 << 16, /* Mobile ICH9 */
 	0x8086 | 0x1c03 << 16, /* Mobile Cougar Point PCH */
 	0x8086 | 0x1e03 << 16, /* Mobile Panther Point PCH */
+	0x8086 | 0xa102 << 16, /* Desktop / Mobile-Wks  Sunrise Point PCH */
 };
 #endif
 static void ahci_init_pci(pcidev_t dev)

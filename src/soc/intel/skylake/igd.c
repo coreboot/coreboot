@@ -36,7 +36,13 @@
 
 uintptr_t fsp_soc_get_igd_bar(void)
 {
-	return find_resource(SA_DEV_IGD, PCI_BASE_ADDRESS_2)->base;
+	device_t dev = SA_DEV_IGD;
+
+	/* Check if IGD PCI device is disabled */
+	if (!dev->enabled)
+		return 0;
+
+	return find_resource(dev, PCI_BASE_ADDRESS_2)->base;
 }
 
 u32 map_oprom_vendev(u32 vendev)

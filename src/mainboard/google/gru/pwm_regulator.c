@@ -32,7 +32,7 @@
 #define PWM_DESIGN_VOLTAGE_MIN_OUTDATED	8000
 #define PWM_DESIGN_VOLTAGE_MAX_OUTDATED	15000
 
-/* Later boards (Kevin rev6+, Gru rev2+) use different regulator ranges. */
+/* Applies for Kevin rev6+ */
 int kevin6_pwm_design_voltage[][2] = {
 	[PWM_REGULATOR_GPU] = {7858, 12177},
 	[PWM_REGULATOR_BIG] = {7987, 13022},
@@ -40,11 +40,19 @@ int kevin6_pwm_design_voltage[][2] = {
 	[PWM_REGULATOR_CENTERLOG] = {8001, 10497}
 };
 
+/* Applies for Gru rev2+ and Bob. */
 int pwm_design_voltage[][2] = {
 	[PWM_REGULATOR_GPU] = {7864, 12177},
 	[PWM_REGULATOR_BIG] = {8001, 13022},
 	[PWM_REGULATOR_LIT] = {7977, 13078},
 	[PWM_REGULATOR_CENTERLOG] = {7994, 10499}
+};
+
+/* Applies for Scarlet */
+int scarlet_pwm_design_voltage[][2] = {
+	[PWM_REGULATOR_GPU] = {7996, 10990},
+	[PWM_REGULATOR_BIG] = {8000, 12992},
+	[PWM_REGULATOR_LIT] = {8021, 11996},
 };
 
 int pwm_enum_to_pwm_number[] = {
@@ -74,6 +82,9 @@ void pwm_regulator_configure(enum pwm_regulator pwm, int millivolt)
 	} else if (IS_ENABLED(CONFIG_BOARD_GOOGLE_KEVIN) && board_id() >= 6) {
 		voltage_min = kevin6_pwm_design_voltage[pwm][0];
 		voltage_max = kevin6_pwm_design_voltage[pwm][1];
+	} else if (IS_ENABLED(CONFIG_BOARD_GOOGLE_SCARLET)) {
+		voltage_min = scarlet_pwm_design_voltage[pwm][0];
+		voltage_max = scarlet_pwm_design_voltage[pwm][1];
 	}
 
 	assert(voltage <= voltage_max && voltage >= voltage_min);

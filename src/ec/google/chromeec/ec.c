@@ -386,6 +386,24 @@ u16 google_chromeec_get_board_version(void)
 	return board_v.board_version;
 }
 
+u32 google_chromeec_get_sku_id(void)
+{
+	struct chromeec_command cmd;
+	struct ec_response_sku_id sku_v;
+
+	cmd.cmd_code = EC_CMD_GET_SKU_ID;
+	cmd.cmd_version = 0;
+	cmd.cmd_size_in = 0;
+	cmd.cmd_size_out = sizeof(sku_v);
+	cmd.cmd_data_out = &sku_v;
+	cmd.cmd_dev_index = 0;
+
+	if (google_chromeec_command(&cmd) != 0)
+		return 0;
+
+	return sku_v.sku_id;
+}
+
 int google_chromeec_vbnv_context(int is_read, uint8_t *data, int len)
 {
 	struct chromeec_command cec_cmd;

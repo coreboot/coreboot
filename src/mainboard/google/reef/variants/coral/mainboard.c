@@ -14,11 +14,13 @@
  */
 
 #include <stdint.h>
+#include <ec/google/chromeec/ec.h>
 #include "baseboard/variants.h"
 
 uint8_t variant_board_sku(void)
 {
-	return 0;
+	// we know that the values are in 0..255
+	return google_chromeec_get_sku_id();
 }
 
 void variant_nhlt_oem_overrides(const char **oem_id,

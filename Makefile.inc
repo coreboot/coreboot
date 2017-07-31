@@ -93,7 +93,7 @@ subdirs-y += src/vboot
 subdirs-y += payloads payloads/external
 
 subdirs-y += site-local
-subdirs-y += util/checklist
+subdirs-y += util/checklist util/testing
 
 #######################################################################
 # Add source classes and their build options
@@ -1041,47 +1041,3 @@ check-ramstage-overlaps: $(obj)/coreboot.pre
 INTERMEDIATE+=check-ramstage-overlaps
 PHONY+=check-ramstage-overlaps
 endif
-
-junit.xml:
-	echo "Building $(BLD)"
-	echo '<?xml version="1.0" encoding="utf-8"?><testsuite>' > $@.tmp
-	echo "<testcase classname='$(BLD)' name='$(BLD)'>" >> $@.tmp
-	-$(MAKE) -j $(CPUS) -C "$(BLD_DIR)$(BLD)" clean distclean > $@.tmp.2 2>&1
-	$(MAKE) -j $(CPUS) -C "$(BLD_DIR)$(BLD)" $(MAKETARGET) >> $@.tmp.2 2>&1 && type="system-out" || type="failure"; \
-	cat $@.tmp.2; \
-	if [ "$$type" = "failure" ]; then \
-		echo "<failure type='buildFailed'>" >> $@.tmp; \
-		echo "Building $(BLD) Failed"; \
-	else \
-		echo "<$$type>" >> $@.tmp; \
-		echo "Building $(BLD) Succeeded"; \
-	fi; \
-	echo '<![CDATA[' >> $@.tmp; \
-	cat $@.tmp.2 >> $@.tmp; \
-	echo "]]></$$type>" >>$@.tmp
-	rm -f $@.tmp.2
-	echo "</testcase>" >> $@.tmp
-	echo "</testsuite>" >> $@.tmp
-	mv $@.tmp "$(BLD_DIR)$(BLD)/$@"
-	echo
-
-TOOLLIST= \
-	cbmem \
-	ectool \
-	futility \
-	inteltool \
-	intelvbttool \
-	nvramtool \
-	superiotool \
-	viatool
-JENKINS_PAYLOAD?=none
-CPUS?=4
-what-jenkins-does:
-	util/lint/lint lint-stable --junit
-	util/abuild/abuild -B -J $(if $(JENKINS_NOCCACHE),,-y) -c $(CPUS) -z -p $(JENKINS_PAYLOAD) -x -X $(top)/abuild-chromeos.xml
-	util/abuild/abuild -B -J $(if $(JENKINS_NOCCACHE),,-y) -c $(CPUS) -z -p $(JENKINS_PAYLOAD)
-	(cd payloads/libpayload; unset COREBOOT_BUILD_DIR; $(MAKE) $(if $(JENKINS_NOCCACHE),,CONFIG_LP_CCACHE=y) V=$(V) Q=$(Q) junit.xml)
-	$(foreach tool, $(TOOLLIST), $(MAKE) CPUS=$(CPUS) V=$(V) Q=$(Q) BLD_DIR=util/ BLD="$(tool)" MFLAGS= MAKEFLAGS= MAKETARGET= junit.xml; )
-	unset COREBOOT_BUILD_DIR;$(MAKE) CPUS=$(CPUS) V=$(V) Q=$(Q) BLD_DIR=payloads/ BLD=nvramcui MFLAGS= MAKEFLAGS= MAKETARGET=all junit.xml
-	unset COREBOOT_BUILD_DIR;$(MAKE) CPUS=$(CPUS) V=$(V) Q=$(Q) BLD_DIR=payloads/ BLD=coreinfo MFLAGS= MAKEFLAGS= MAKETARGET=defaultbuild junit.xml
-	$(MAKE) CPUS=$(CPUS) V=$(V) Q=$(Q) BLD_DIR=util/ BLD=romcc MFLAGS= MAKEFLAGS= MAKETARGET=test junit.xml

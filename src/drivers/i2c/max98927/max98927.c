@@ -17,7 +17,7 @@
 #include <arch/acpi_device.h>
 #include <arch/acpigen.h>
 #include <console/console.h>
-#include <device/i2c.h>
+#include <device/i2c_simple.h>
 #include <device/device.h>
 #include <device/path.h>
 #include <stdint.h>

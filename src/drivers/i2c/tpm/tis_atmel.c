@@ -20,7 +20,7 @@
 #include <commonlib/endian.h>
 #include <console/console.h>
 #include <delay.h>
-#include <device/i2c.h>
+#include <device/i2c_simple.h>
 #include <endian.h>
 #include <lib.h>
 #include <tpm.h>

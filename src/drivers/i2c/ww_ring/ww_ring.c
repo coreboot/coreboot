@@ -28,7 +28,7 @@
 
 #include <console/console.h>
 #include <delay.h>
-#include <device/i2c.h>
+#include <device/i2c_simple.h>
 #include <string.h>
 
 #include "drivers/i2c/ww_ring/ww_ring_programs.h"

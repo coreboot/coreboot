@@ -22,7 +22,7 @@
 #include <soc/gpio.h>
 #include <intelblocks/lpc_lib.h>
 #include <intelblocks/lpss_i2c.h>
-#include <device/i2c.h>
+#include <device/i2c_simple.h>
 #include <soc/pm.h>
 #include <soc/usb.h>
 

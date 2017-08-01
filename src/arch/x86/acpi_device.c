@@ -18,7 +18,6 @@
 #include <arch/acpi_device.h>
 #include <arch/acpigen.h>
 #include <device/device.h>
-#include <device/i2c.h>
 #include <device/path.h>
 #if IS_ENABLED(CONFIG_GENERIC_GPIO_LIB)
 #include <gpio.h>

@@ -16,7 +16,7 @@
 #include <bootmode.h>
 #include <console/console.h>
 #include <delay.h>
-#include <device/i2c.h>
+#include <device/i2c_simple.h>
 #include <lib.h>
 #include <soc/i2c.h>
 #include <soc/reg_access.h>

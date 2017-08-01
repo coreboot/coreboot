@@ -19,7 +19,7 @@
 #include <console/console.h>
 #include <delay.h>
 #include <device/device.h>
-#include <device/i2c.h>
+#include <device/i2c_simple.h>
 #include <ec/google/chromeec/ec.h>
 #include <gpio.h>
 #include <soc/bl31_plat_params.h>

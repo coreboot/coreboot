@@ -19,7 +19,7 @@
 #include <cbmem.h>
 #include <delay.h>
 #include <device/device.h>
-#include <device/i2c.h>
+#include <device/i2c_simple.h>
 #include <drivers/ti/tps65090/tps65090.h>
 #include <edid.h>
 #include <soc/clk.h>

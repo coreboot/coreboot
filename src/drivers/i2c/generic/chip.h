@@ -17,7 +17,7 @@
 #define __I2C_GENERIC_CHIP_H__
 
 #include <arch/acpi_device.h>
-#include <device/i2c.h>
+#include <device/i2c_simple.h>
 
 struct drivers_i2c_generic_config {
 	const char *hid;	/* ACPI _HID (required) */

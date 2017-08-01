@@ -35,7 +35,7 @@
 #include <types.h>
 #include <delay.h>
 #include <console/console.h>
-#include <device/i2c.h>
+#include <device/i2c_simple.h>
 #include <endian.h>
 #include <timer.h>
 #include <tpm.h>

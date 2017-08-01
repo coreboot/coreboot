@@ -15,7 +15,7 @@
 
 #include <assert.h>
 #include <delay.h>
-#include <device/i2c.h>
+#include <device/i2c_simple.h>
 #include <string.h>
 #include <symbols.h>
 #include <timer.h>

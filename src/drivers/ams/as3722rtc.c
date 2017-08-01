@@ -15,7 +15,7 @@
 
 #include <bcd.h>
 #include <console/console.h>
-#include <device/i2c.h>
+#include <device/i2c_simple.h>
 #include <rtc.h>
 #include <stdint.h>
 

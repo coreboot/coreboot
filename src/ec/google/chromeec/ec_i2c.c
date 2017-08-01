@@ -16,7 +16,7 @@
 #include <arch/io.h>
 #include <console/console.h>
 #include <delay.h>
-#include <device/i2c.h>
+#include <device/i2c_simple.h>
 #include <stdint.h>
 #include <string.h>
 

@@ -14,7 +14,7 @@
  */
 
 #include <arch/acpigen.h>
-#include <device/i2c.h>
+#include <device/i2c_bus.h>
 #include <device/pci.h>
 #include <device/pci_def.h>
 #include <device/pci_ids.h>

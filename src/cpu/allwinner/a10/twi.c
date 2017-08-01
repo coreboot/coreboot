@@ -25,7 +25,7 @@
 
 #include <arch/io.h>
 #include <delay.h>
-#include <device/i2c.h>
+#include <device/i2c_simple.h>
 
 #define TWI_BASE(n)			(A1X_TWI0_BASE + 0x400 * (n))
 

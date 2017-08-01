@@ -14,7 +14,8 @@
  */
 
 #include <device/device.h>
-#include <device/i2c.h>
+#include <device/i2c_bus.h>
+#include <device/i2c_simple.h>
 #include <stdint.h>
 
 #if ENV_RAMSTAGE

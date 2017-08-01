@@ -19,7 +19,7 @@
 #include <console/console.h>
 #include <delay.h>
 #include <device/device.h>
-#include <device/i2c.h>
+#include <device/i2c_simple.h>
 #include <edid.h>
 #include <soc/addressmap.h>
 #include <soc/nvidia/tegra/i2c.h>

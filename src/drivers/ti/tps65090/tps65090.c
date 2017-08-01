@@ -36,7 +36,7 @@
 #include <delay.h>
 #include <types.h>
 #include <console/console.h>
-#include <device/i2c.h>
+#include <device/i2c_simple.h>
 #include "tps65090.h"
 
 /* TPS65090 register addresses */

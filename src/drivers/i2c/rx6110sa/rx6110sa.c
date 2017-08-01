@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-#include <device/i2c.h>
+#include <device/i2c_simple.h>
 #include <device/smbus.h>
 #include <device/device.h>
 #include <version.h>

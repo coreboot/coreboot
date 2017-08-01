@@ -16,6 +16,7 @@
 #ifndef SOC_INTEL_COMMON_BLOCK_LPSS_I2C_H
 #define SOC_INTEL_COMMON_BLOCK_LPSS_I2C_H
 
+#include <device/device.h>
 #include <device/i2c.h>
 #include <stdint.h>
 

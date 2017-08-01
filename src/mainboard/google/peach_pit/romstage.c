@@ -22,7 +22,7 @@
 #include <cbmem.h>
 #include <commonlib/region.h>
 #include <console/console.h>
-#include <device/i2c.h>
+#include <device/i2c_simple.h>
 #include <drivers/maxim/max77802/max77802.h>
 #include <program_loading.h>
 #include <soc/clk.h>

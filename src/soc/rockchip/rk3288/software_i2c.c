@@ -15,7 +15,7 @@
 
 #include <arch/io.h>
 #include <console/console.h>
-#include <device/i2c.h>
+#include <device/i2c_simple.h>
 #include <gpio.h>
 #include <soc/grf.h>
 #include <soc/i2c.h>

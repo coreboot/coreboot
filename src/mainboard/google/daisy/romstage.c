@@ -21,7 +21,7 @@
 #include <cbmem.h>
 #include <console/console.h>
 #include <program_loading.h>
-#include <device/i2c.h>
+#include <device/i2c_simple.h>
 #include <drivers/maxim/max77686/max77686.h>
 #include <soc/clk.h>
 #include <soc/cpu.h>

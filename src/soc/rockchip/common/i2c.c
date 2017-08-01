@@ -18,7 +18,7 @@
 #include <cbfs.h>
 #include <console/console.h>
 #include <delay.h>
-#include <device/i2c.h>
+#include <device/i2c_simple.h>
 #include <soc/addressmap.h>
 #include <soc/grf.h>
 #include <soc/soc.h>

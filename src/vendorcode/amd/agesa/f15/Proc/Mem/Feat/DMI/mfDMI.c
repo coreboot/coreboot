@@ -315,7 +315,10 @@ MemFDMISupport3 (
             DmiTable[DimmIndex].Attributes = 4;             // Quad Rank Dimm
           }
 
-          DimmSize = (UINT32) (Capacity / 8 * BusWidth / Width * Rank);
+          if ((!BusWidth) || (!Width) || (!Rank))
+            DimmSize = 0xFFFF; // size is unknown
+          else
+            DimmSize = (UINT32) (Capacity / 8 * BusWidth / Width * Rank);
           if (DimmSize < 0x7FFF) {
             DmiTable[DimmIndex].MemorySize = (UINT16) DimmSize;
           } else {
@@ -335,21 +338,32 @@ MemFDMISupport3 (
           DmiTable[DimmIndex].DimmPresent = 1;
 
           // Speed (offset 15h)
-          MTB_ps = ((INT32) SpdDataStructure[DimmIndex].Data[10] * 1000) / SpdDataStructure[DimmIndex].Data[11];
-          FTB_ps = (SpdDataStructure[DimmIndex].Data[9] >> 4) / (SpdDataStructure[DimmIndex].Data[9] & 0xF);
-          Value32 = (MTB_ps * SpdDataStructure[DimmIndex].Data[12]) + (FTB_ps * (INT8) SpdDataStructure[DimmIndex].Data[34]) ;
-          if (Value32 <= 938) {
-            DmiTable[DimmIndex].Speed = 1067;              // DDR3-2133
-          } else if (Value32 <= 1071) {
-            DmiTable[DimmIndex].Speed = 933;               // DDR3-1866
-          } else if (Value32 <= 1250) {
-            DmiTable[DimmIndex].Speed = 800;               // DDR3-1600
-          } else if (Value32 <= 1500) {
-            DmiTable[DimmIndex].Speed = 667;               // DDR3-1333
-          } else if (Value32 <= 1875) {
-            DmiTable[DimmIndex].Speed = 533;               // DDR3-1066
-          } else if (Value32 <= 2500) {
-            DmiTable[DimmIndex].Speed = 400;               // DDR3-800
+
+          // If SPD is wrong, division by 0 in DIMM speed calculation could reboot CPU
+          // So avoid it by this check
+          if ((SpdDataStructure[DimmIndex].Data[11]==0) ||
+             ((SpdDataStructure[DimmIndex].Data[9] & 0xF) == 0)) {
+            DmiTable[DimmIndex].Speed = 0;                   // Unknown
+          } else {
+            MTB_ps = ((INT32) SpdDataStructure[DimmIndex].Data[10] * 1000) /
+              SpdDataStructure[DimmIndex].Data[11];
+            FTB_ps = (SpdDataStructure[DimmIndex].Data[9] >> 4) /
+              (SpdDataStructure[DimmIndex].Data[9] & 0xF);
+            Value32 = (MTB_ps * SpdDataStructure[DimmIndex].Data[12]) +
+              (FTB_ps * (INT8) SpdDataStructure[DimmIndex].Data[34]);
+            if (Value32 <= 938) {
+              DmiTable[DimmIndex].Speed = 1067;              // DDR3-2133
+            } else if (Value32 <= 1071) {
+              DmiTable[DimmIndex].Speed = 933;               // DDR3-1866
+            } else if (Value32 <= 1250) {
+              DmiTable[DimmIndex].Speed = 800;               // DDR3-1600
+            } else if (Value32 <= 1500) {
+              DmiTable[DimmIndex].Speed = 667;               // DDR3-1333
+            } else if (Value32 <= 1875) {
+              DmiTable[DimmIndex].Speed = 533;               // DDR3-1066
+            } else if (Value32 <= 2500) {
+              DmiTable[DimmIndex].Speed = 400;               // DDR3-800
+            }
           }
 
           // Manufacturer (offset 17h)

@@ -42,10 +42,10 @@ static u8 smbios_checksum(u8 *p, u32 length)
 }
 
 
-int smbios_add_string(char *start, const char *str)
+int smbios_add_string(u8 *start, const char *str)
 {
 	int i = 1;
-	char *p = start;
+	char *p = (char *)start;
 
 	/*
 	 * Return 0 as required for empty strings.
@@ -71,9 +71,9 @@ int smbios_add_string(char *start, const char *str)
 	}
 }
 
-int smbios_string_table_len(char *start)
+int smbios_string_table_len(u8 *start)
 {
-	char *p = start;
+	char *p = (char *)start;
 	int i, len = 0;
 
 	while (*p) {
@@ -81,10 +81,14 @@ int smbios_string_table_len(char *start)
 		p += i;
 		len += i;
 	}
+
+	if (!len)
+		return 2;
+
 	return len + 1;
 }
 
-static int smbios_cpu_vendor(char *start)
+static int smbios_cpu_vendor(u8 *start)
 {
 	if (cpu_have_cpuid()) {
 		u32 tmp[4];
@@ -99,7 +103,7 @@ static int smbios_cpu_vendor(char *start)
 	}
 }
 
-static int smbios_processor_name(char *start)
+static int smbios_processor_name(u8 *start)
 {
 	u32 tmp[13];
 	const char *str = "Unknown Processor Name";

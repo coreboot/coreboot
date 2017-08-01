@@ -40,7 +40,7 @@ static int smbios_write_wifi(struct device *dev, int *handle,
 		u8 length;
 		u16 handle;
 		u8 str;
-		char eos[2];
+		u8 eos[2];
 	} __packed;
 
 	struct smbios_type_intel_wifi *t =

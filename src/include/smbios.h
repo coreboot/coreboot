@@ -22,8 +22,8 @@
 #include <compiler.h>
 
 unsigned long smbios_write_tables(unsigned long start);
-int smbios_add_string(char *start, const char *str);
-int smbios_string_table_len(char *start);
+int smbios_add_string(u8 *start, const char *str);
+int smbios_string_table_len(u8 *start);
 
 /* Used by mainboard to add an on-board device */
 int smbios_write_type41(unsigned long *current, int *handle,
@@ -249,7 +249,7 @@ struct smbios_type0 {
 	u8 system_bios_minor_release;
 	u8 ec_major_release;
 	u8 ec_minor_release;
-	char eos[2];
+	u8 eos[2];
 } __packed;
 
 struct smbios_type1 {
@@ -264,7 +264,7 @@ struct smbios_type1 {
 	u8 wakeup_type;
 	u8 sku;
 	u8 family;
-	char eos[2];
+	u8 eos[2];
 } __packed;
 
 struct smbios_type2 {
@@ -275,7 +275,7 @@ struct smbios_type2 {
 	u8 product_name;
 	u8 version;
 	u8 serial_number;
-	char eos[2];
+	u8 eos[2];
 } __packed;
 
 enum {
@@ -336,7 +336,7 @@ struct smbios_type3 {
 	u8 element_count;
 	u8 element_record_length;
 	u8 sku_number;
-	char eos[2];
+	u8 eos[2];
 } __packed;
 
 struct smbios_type4 {
@@ -366,7 +366,7 @@ struct smbios_type4 {
 	u8 thread_count;
 	u16 processor_characteristics;
 	u16 processor_family2;
-	char eos[2];
+	u8 eos[2];
 } __packed;
 
 struct smbios_type11 {
@@ -374,7 +374,7 @@ struct smbios_type11 {
 	u8 length;
 	u16 handle;
 	u8 count;
-	char eos[2];
+	u8 eos[2];
 } __packed;
 
 struct smbios_type15 {
@@ -391,7 +391,7 @@ struct smbios_type15 {
 	u8 header_format;
 	u8 log_type_descriptors;
 	u8 log_type_descriptor_length;
-	char eos[2];
+	u8 eos[2];
 } __packed;
 
 enum {
@@ -418,7 +418,7 @@ struct smbios_type16 {
 	u16 memory_error_information_handle;
 	u16 number_of_memory_devices;
 	u64 extended_maximum_capacity;
-	char eos[2];
+	u8 eos[2];
 } __packed;
 
 struct smbios_type17 {
@@ -447,7 +447,7 @@ struct smbios_type17 {
 	u16 minimum_voltage;
 	u16 maximum_voltage;
 	u16 configured_voltage;
-	char eos[2];
+	u8 eos[2];
 } __packed;
 
 struct smbios_type32 {
@@ -497,7 +497,7 @@ struct smbios_type41 {
 	u8 bus_number;
 	u8 function_number: 3;
 	u8 device_number: 5;
-	char eos[2];
+	u8 eos[2];
 } __packed;
 
 struct smbios_type127 {

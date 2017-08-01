@@ -89,3 +89,11 @@ int lpss_i2c_gen_speed_config(struct lpss_i2c_regs *regs,
 					enum i2c_speed speed,
 					const struct lpss_i2c_bus_config *bcfg,
 					struct lpss_i2c_speed_config *config);
+
+/*
+ * Process given I2C segments in a single transfer
+ * Return value:
+ * -1 = failure
+ *  0 = success
+ */
+int lpss_i2c_transfer(unsigned int bus, const struct i2c_msg *, size_t count);

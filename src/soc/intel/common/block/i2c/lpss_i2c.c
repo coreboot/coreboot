@@ -258,7 +258,7 @@ static int lpss_i2c_wait_for_bus_idle(struct lpss_i2c_regs *regs)
 
 /* Transfer one byte of one segment, sending stop bit if requested */
 static int lpss_i2c_transfer_byte(struct lpss_i2c_regs *regs,
-				  struct i2c_msg *segment,
+				  const struct i2c_msg *segment,
 				  size_t byte, int send_stop)
 {
 	struct stopwatch sw;
@@ -297,16 +297,15 @@ static int lpss_i2c_transfer_byte(struct lpss_i2c_regs *regs,
 	return 0;
 }
 
-/* Global I2C bus handler, defined in include/i2c.h */
-int platform_i2c_transfer(unsigned int bus, struct i2c_msg *segments,
-			  int count)
+int lpss_i2c_transfer(unsigned int bus,
+		      const struct i2c_msg *segments, size_t count)
 {
 	struct stopwatch sw;
 	struct lpss_i2c_regs *regs;
 	size_t byte;
 	int ret = -1;
 
-	if (count <= 0 || !segments)
+	if (count == 0 || !segments)
 		return -1;
 
 	regs = (struct lpss_i2c_regs *)lpss_i2c_base_address(bus);
@@ -394,6 +393,12 @@ out:
 	read32(&regs->clear_intr);
 	lpss_i2c_disable(regs);
 	return ret;
+}
+
+/* Global I2C bus handler, defined in include/device/i2c_simple.h */
+int platform_i2c_transfer(unsigned int bus, struct i2c_msg *msg, int count)
+{
+	return lpss_i2c_transfer(bus, msg, count < 0 ? 0 : count);
 }
 
 static int lpss_i2c_set_speed_config(unsigned int bus,

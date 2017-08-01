@@ -150,8 +150,14 @@ static void lpss_i2c_acpi_fill_ssdt(struct device *dev)
 	acpigen_pop_len();
 }
 
-static struct i2c_bus_operations i2c_bus_ops = {
-	.dev_to_bus			= &lpss_i2c_dev_to_bus,
+static int lpss_i2c_dev_transfer(struct device *dev,
+				 const struct i2c_msg *msg, size_t count)
+{
+	return lpss_i2c_transfer(lpss_i2c_dev_to_bus(dev), msg, count);
+}
+
+static const struct i2c_bus_operations i2c_bus_ops = {
+	.transfer = lpss_i2c_dev_transfer,
 };
 
 static struct device_operations i2c_dev_ops = {

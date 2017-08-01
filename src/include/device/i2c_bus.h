@@ -1,8 +1,6 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2014 Google, Inc.
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 2 of the License.
@@ -16,29 +14,79 @@
 #ifndef _DEVICE_I2C_BUS_H_
 #define _DEVICE_I2C_BUS_H_
 
+#include <stdlib.h>
 #include <stdint.h>
 #include <device/i2c.h>
 #include <device/device.h>
 
 /* I2C bus operation for ramstage drivers */
 struct i2c_bus_operations {
-	/*
-	 * This is an SOC specific method that can be provided to translate the
-	 * 'struct device' for an I2C controller into a unique I2C bus number.
-	 * Returns -1 if the bus number for this device cannot be determined.
-	 */
-	int (*dev_to_bus)(struct device *dev);
+	int (*transfer)(struct device *, const struct i2c_msg *, size_t count);
 };
 
-/* Return I2C bus number for provided device, -1 if not found */
-int i2c_dev_find_bus(struct device *dev);
+/*
+ * Returns the first upstream facing link whose bus implements either
+ * `i2c_bus_operations` *or* `smbus_bus_operations`.
+ *
+ * If not NULL, guarantees that `->dev`, `->dev->ops` and either
+ * `->dev->ops->ops_i2c_bus` or `->dev->ops->ops_smbus_bus` are
+ * not NULL.
+ */
+struct bus *i2c_link(struct device *);
 
-/* Variants of I2C helper functions that take a device instead of bus number */
-int i2c_dev_transfer(struct device *dev, struct i2c_msg *segments, int count);
-int i2c_dev_readb(struct device *dev, uint8_t reg, uint8_t *data);
-int i2c_dev_writeb(struct device *dev, uint8_t reg, uint8_t data);
-int i2c_dev_read_bytes(struct device *dev, uint8_t reg, uint8_t *data, int len);
-int i2c_dev_read_raw(struct device *dev, uint8_t *data, int len);
-int i2c_dev_write_raw(struct device *dev, uint8_t *data, int len);
+/*
+ * Shorthand for `i2c_link(dev)->dev`.
+ *
+ * Returns NULL if i2c_link(dev) returns NULL.
+ */
+static inline struct device *i2c_busdev(struct device *dev)
+{
+	struct bus *const link = i2c_link(dev);
+	return link ? link->dev : NULL;
+}
+
+/*
+ * Slave driver interface functions. These will look for the next
+ * `i2c_bus_operations` *or* `smbus_bus_operations` and perform the
+ * respective transfers.
+ *
+ * The interface is limited to what current slave drivers demand.
+ * Extend as required.
+ *
+ * All functions return a negative `enum cb_err` value on error.
+ * Either CB_ERR, CB_ERR_ARG or any CB_I2C_* (cf. include/types.h).
+ */
+
+/*
+ * Reads one byte.
+ * Compatible to smbus_recv_byte().
+ *
+ * Returns the read byte on success, negative `enum cb_err` value on error.
+ */
+int i2c_readb(struct device *);
+
+/*
+ * Writes the byte `val`.
+ * Compatible to smbus_send_byte().
+ *
+ * Returns 0 on success, negative `enum cb_err` value on error.
+ */
+int i2c_writeb(struct device *, uint8_t val);
+
+/*
+ * Sends the register offset `off` and reads one byte.
+ * Compatible to smbus_read_byte().
+ *
+ * Returns the read byte on success, negative `enum cb_err` value on error.
+ */
+int i2c_readb_at(struct device *, uint8_t off);
+
+/*
+ * Sends the register offset `off` followed by the byte `val`.
+ * Compatible to smbus_write_byte().
+ *
+ * Returns 0 on success, negative `enum cb_err` value on error.
+ */
+int i2c_writeb_at(struct device *, uint8_t off, uint8_t val);
 
 #endif	/* _DEVICE_I2C_BUS_H_ */

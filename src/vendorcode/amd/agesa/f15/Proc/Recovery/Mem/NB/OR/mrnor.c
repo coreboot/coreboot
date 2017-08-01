@@ -548,7 +548,7 @@ MemRecNCmnGetSetFieldOr (
         LibAmdPciRead (AccessWidth32, PciAddr, &Value, &NBPtr->MemPtr->StdHeader);
         IDS_HDT_CONSOLE (MEM_GETREG, "~Dev%x Dct%d Fn%d_%03x = %x\n",
                          NBPtr->PciAddr.Address.Device, NBPtr->Dct,
-                         (Address >> 12) & 0xF, Address & 0xFFF, Value);
+                         (Address >> 12) & 0x7, Address & 0xFFF, Value);
       } else if (Type == DCT_PHY_ACCESS) {
         MemRecNSetBitFieldNb (NBPtr, BFDctAddlOffsetReg, Address);
         while (MemRecNGetBitFieldNb (NBPtr, BFDctAccessDone) == 0) {}
@@ -573,7 +573,7 @@ MemRecNCmnGetSetFieldOr (
           LibAmdPciWrite (AccessWidth32, PciAddr , &Value, &NBPtr->MemPtr->StdHeader);
           IDS_HDT_CONSOLE (MEM_SETREG, "~Dev%x Dct%d Fn%d_%03x [%d:%d] = %x\n",
                            NBPtr->PciAddr.Address.Device, NBPtr->Dct,
-                           (Address >> 12) & 0xF, Address & 0xFFF, Highbit, Lowbit, Field);
+                           (Address >> 12) & 0x7, Address & 0xFFF, Highbit, Lowbit, Field);
         } else if (Type == DCT_PHY_ACCESS) {
           MemRecNSetBitFieldNb (NBPtr, BFDctAddlDataReg, Value);
           Address |= DCT_ACCESS_WRITE;

@@ -67,6 +67,8 @@
 #define PCI_ROM_ADDRESS1	0x38 // on bridges
 #define PCI_ROM_ADDRESS_MASK	~0x7ff
 
+#define PCI_CLASS_MEMORY_OTHER	0x0580
+
 #define PCI_VENDOR_ID_INTEL 0x8086
 
 struct pci_dev {

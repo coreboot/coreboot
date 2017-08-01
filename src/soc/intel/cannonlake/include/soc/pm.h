@@ -20,6 +20,23 @@
 #include <arch/acpi.h>
 #include <soc/pmc.h>
 
+#define PM1_EN			0x02
+#define  PWRBTN_EN		(1 << 8)
+#define  GBL_EN			(1 << 5)
+#define SMI_EN			0x30
+#define  ESPI_SMI_EN		(1 << 28)
+#define  APMC_EN		(1 <<  5)
+#define  SLP_SMI_EN		(1 <<  4)
+#define  EOS			(1 <<  1)
+#define  GBL_SMI_EN		(1 <<  0)
+
+
+#define GPE0_EN(x)		(0x70 + ((x) * 4))
+#define  PME_B0_EN		(1 << 13)
+
+#define ENABLE_SMI_PARAMS \
+	(APMC_EN | SLP_SMI_EN | GBL_SMI_EN | ESPI_SMI_EN | EOS)
+
 struct chipset_power_state {
 	uint16_t pm1_sts;
 	uint16_t pm1_en;

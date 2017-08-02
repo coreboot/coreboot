@@ -1,0 +1,182 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2014 - 2017 Intel Corporation.
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+
+config SOC_INTEL_DENVERTON_NS
+	bool
+	help
+	  Intel Denverton-NS SoC support
+
+if SOC_INTEL_DENVERTON_NS
+
+config CPU_SPECIFIC_OPTIONS
+	def_bool y
+	select ARCH_BOOTBLOCK_X86_32
+	select ARCH_RAMSTAGE_X86_32
+	select ARCH_ROMSTAGE_X86_32
+	select ARCH_VERSTAGE_X86_32
+	select BOOTBLOCK_CONSOLE
+	select BOOT_DEVICE_SPI_FLASH_RW_NOMMAP_EARLY if BOOT_DEVICE_SPI_FLASH
+	select BOOT_DEVICE_SUPPORTS_WRITES
+	select POSTCAR_CONSOLE
+	select SOC_INTEL_COMMON
+	select SOC_INTEL_COMMON_RESET
+	select PLATFORM_USES_FSP2_0
+	select HAVE_HARD_RESET
+	select POSTCAR_STAGE
+	select C_ENVIRONMENT_BOOTBLOCK
+	select IOAPIC
+	select HAVE_SMI_HANDLER
+	select SMM_TSEG
+	select CACHE_MRC_SETTINGS
+	select RELOCATABLE_RAMSTAGE     # Build fails if this is not selected
+	select PARALLEL_MP
+	select SMP
+	select SOC_INTEL_COMMON_BLOCK
+#	select SOC_INTEL_COMMON_BLOCK_SA
+	select SOC_INTEL_COMMON_BLOCK_FAST_SPI
+	select TSC_CONSTANT_RATE
+	select TSC_MONOTONIC_TIMER
+	select TSC_SYNC_MFENCE
+	select UDELAY_TSC
+
+config FSP_T_ADDR
+	hex "Intel FSP-T (temp ram init) binary location"
+	depends on ADD_FSP_BINARIES && FSP_CAR
+	default 0xfff30000
+	help
+	  The memory location of the Intel FSP-T binary for this platform.
+
+config FSP_M_ADDR
+	hex "Intel FSP-M (memory init) binary location"
+	depends on ADD_FSP_BINARIES
+	default 0xfff32000
+	help
+	  The memory location of the Intel FSP-M binary for this platform.
+
+config FSP_S_ADDR
+	hex "Intel FSP-S (silicon init) binary location"
+	depends on ADD_FSP_BINARIES
+	default 0xfffc3000
+	help
+	  The memory location of the Intel FSP-S binary for this platform.
+
+# CAR memory layout on DENVERTON_NS hardware:
+## CAR base address - 0xfef00000
+## CAR size 1MB - 0x100 (0xfff00)
+## coreboot usage:
+## DCACHE base - 0xfef00000
+## DCACHE size - 0xb0000
+## FSP usage:
+## FSP base - 0xfefb0000
+## FSP size - 0x50000 - 0x100 (0x4ff00)
+config MAX_CPUS
+	int
+	default 16
+
+config DCACHE_RAM_BASE
+	hex
+	default 0xfef00000
+
+config DCACHE_RAM_SIZE
+	hex
+	default 0xb0000 if FSP_CAR
+	default 0x100000 if !FSP_CAR
+
+config DCACHE_BSP_STACK_SIZE
+	hex
+	default 0x10000
+
+config CPU_MICROCODE_CBFS_LOC
+	hex
+	default 0xfff20040
+
+config CPU_MICROCODE_CBFS_LEN
+	hex
+	default 0x0ff80
+
+config SMM_TSEG_SIZE
+	hex
+	default 0x200000
+
+config SMM_RESERVED_SIZE
+	hex
+	default 0x000000
+
+config IQAT_ENABLE
+	bool "Enable IQAT"
+	default y
+
+config IQAT_MEMORY_REGION_SIZE
+	depends on IQAT_ENABLE
+	hex
+	default 0x100000
+	help
+	  Do not change this value
+
+config HSUART_DEV
+	hex
+	default 0x1a
+
+config HSUART_FUNC
+	hex
+	default 0x0
+
+choice
+	prompt "UART mode selection"
+	default NON_LEGACY_UART_MODE
+
+config NON_LEGACY_UART_MODE
+	bool "Non Legacy Mode"
+	help
+	  Disable legacy UART mode
+
+config LEGACY_UART_MODE
+	bool "Legacy Mode"
+	help
+	  Enable legacy UART mode
+endchoice
+
+config ENABLE_HSUART
+	depends on (!DRIVERS_UART_8250IO && NON_LEGACY_UART_MODE)
+	bool "Enable High-speed UART debug port selected by UART_FOR_CONSOLE."
+	default n
+	select CONSOLE_SERIAL
+	select DRIVERS_UART
+	select DRIVERS_UART_8250MEM
+
+config CONSOLE_UART_BASE_ADDRESS
+	depends on ENABLE_HSUART
+	hex "MMIO base address for UART"
+	default 0xd4000000
+
+config C_ENV_BOOTBLOCK_SIZE
+	hex
+	default 0x8000
+
+config DENVERTON_NS_CAR_NEM_ENHANCED
+	bool "Enhanced Non-evict mode"
+	depends on !FSP_CAR
+	default y
+	select SOC_INTEL_COMMON_BLOCK_CAR
+	select INTEL_CAR_NEM_ENHANCED
+	help
+	  A current limitation of NEM (Non-Evict mode) is that code and data sizes
+	  are derived from the requirement to not write out any modified cache line.
+	  With NEM, if there is no physical memory behind the cached area,
+	  the modified data will be lost and NEM results will be inconsistent.
+	  ENHANCED NEM guarantees that modified data is always
+	  kept in cache while clean data is replaced.
+
+endif ## SOC_INTEL_DENVERTON_NS

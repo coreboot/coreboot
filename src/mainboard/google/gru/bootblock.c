@@ -112,7 +112,7 @@ static void configure_tpm(void)
 			write32(&rk3399_grf->iomux_spi0, IOMUX_SPI0);
 		}
 
-		gpio_input_irq(GPIO_TPM_IRQ, IRQ_TYPE_EDGE_RISING);
+		gpio_input_irq(GPIO_TPM_IRQ, IRQ_TYPE_EDGE_RISING, GPIO_PULLUP);
 	} else {
 		gpio_input(GPIO(1, B, 7));	/* I2C0_SDA remove pull-up */
 		gpio_input(GPIO(1, C, 0));	/* I2C0_SCL remove pull-up */

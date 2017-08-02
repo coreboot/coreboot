@@ -90,7 +90,7 @@ enum gpio_irq_type {
 };
 
 /* Setup and enable irq */
-void gpio_input_irq(gpio_t gpio, enum gpio_irq_type);
+void gpio_input_irq(gpio_t gpio, enum gpio_irq_type type, enum gpio_pull pull);
 
 /* Check and clear irq status */
 int gpio_irq_status(gpio_t gpio);

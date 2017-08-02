@@ -14,6 +14,7 @@
  */
 
 #include <arch/io.h>
+#include <assert.h>
 #include <console/console.h>
 #include <gpio.h>
 #include <soc/gpio.h>
@@ -56,12 +57,16 @@ void gpio_input_pullup(gpio_t gpio)
 	gpio_set_dir(gpio, GPIO_INPUT);
 }
 
-void gpio_input_irq(gpio_t gpio, enum gpio_irq_type type)
+void gpio_input_irq(gpio_t gpio, enum gpio_irq_type type, enum gpio_pull pull)
 {
 	uint32_t int_polarity, inttype_level;
 	uint32_t mask = BIT(gpio.num);
 
-	gpio_input(gpio);
+	/* gpio pull only PULLNONE, PULLUP, PULLDOWN status */
+	assert(pull <= GPIO_PULLDOWN);
+
+	gpio_set_dir(gpio, GPIO_INPUT);
+	gpio_set_pull(gpio, pull);
 
 	int_polarity = inttype_level = 0;
 	switch (type) {

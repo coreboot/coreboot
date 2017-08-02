@@ -15,35 +15,19 @@
  * GNU General Public License for more details.
  */
 
-#include <console/console.h>
 #include <stdint.h>
+#include <console/console.h>
 #include <device/device.h>
-#include <device/path.h>
 #include <device/smbus.h>
 
 struct bus *get_pbus_smbus(device_t dev)
 {
-	struct bus *pbus = dev->bus;
-
-	while (pbus && pbus->dev && !ops_smbus_bus(pbus)) {
-		if (pbus->dev->bus != pbus) {
-			pbus = pbus->dev->bus;
-		}
-		else {
-			printk(BIOS_WARNING,
-				"%s Find SMBus bus operations: unable to proceed\n",
-				dev_path(dev));
-			break;
-		}
-	}
-
-	if (!pbus || !pbus->dev || !pbus->dev->ops
-	    || !pbus->dev->ops->ops_smbus_bus) {
+	struct bus *const pbus = i2c_link(dev);
+	if (!pbus->dev->ops->ops_smbus_bus) {
 		printk(BIOS_ALERT, "%s Cannot find SMBus bus operations",
 		       dev_path(dev));
 		die("");
 	}
-
 	return pbus;
 }
 
@@ -90,35 +74,6 @@ int smbus_set_link(device_t dev)
 		       dev_path(dev));			       \
 		return -1;				       \
 	}
-
-
-int smbus_recv_byte(device_t dev)
-{
-	CHECK_PRESENCE(recv_byte);
-
-	return ops_smbus_bus(get_pbus_smbus(dev))->recv_byte(dev);
-}
-
-int smbus_send_byte(device_t dev, u8 byte)
-{
-	CHECK_PRESENCE(send_byte);
-
-	return ops_smbus_bus(get_pbus_smbus(dev))->send_byte(dev, byte);
-}
-
-int smbus_read_byte(device_t dev, u8 addr)
-{
-	CHECK_PRESENCE(read_byte);
-
-	return ops_smbus_bus(get_pbus_smbus(dev))->read_byte(dev, addr);
-}
-
-int smbus_write_byte(device_t dev, u8 addr, u8 val)
-{
-	CHECK_PRESENCE(write_byte);
-
-	return ops_smbus_bus(get_pbus_smbus(dev))->write_byte(dev, addr, val);
-}
 
 int smbus_block_read(device_t dev, u8 cmd, u8 bytes, u8 *buffer)
 {

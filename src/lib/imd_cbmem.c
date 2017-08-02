@@ -24,24 +24,30 @@
 #include <arch/early_variables.h>
 
 /*
- * We need special handling on x86 before ramstage because we cannot use global
- * variables (we're executing in-place from flash so we don't have a writable
- * data segment, and we cannot use CAR_GLOBAL here since that mechanism itself
- * is dependent on CBMEM). Therefore, we have to always try to partially recover
- * CBMEM from cbmem_top() whenever we try to access it. In other environments
- * we're not so constrained and just keep the backing imd struct in a global.
- * This also means that we can easily tell whether CBMEM has explicitly been
- * initialized or recovered yet on those platforms, and don't need to put the
- * burden on board or chipset code to tell us by returning NULL from cbmem_top()
- * before that point.
+ * We need special handling on x86 where CAR global migration is employed. One
+ * cannot use true globals in that circumstance because CAR is where the globals
+ * are backed -- creating a circular dependency. For non CAR platforms globals
+ * are free to be used as well as any stages that are purely executing out of
+ * RAM. For CAR platforms that don't migrate globals the as-linked globals can
+ * be used, but they need special decoration using CAR_GLOBAL. That ensures
+ * proper object placement in conjunction with the linker.
+ *
+ * For the CAR global migration platforms we have to always try to partially
+ * recover CBMEM from cbmem_top() whenever we try to access it. In other
+ * environments we're not so constrained and just keep the backing imd struct
+ * in a global. This also means that we can easily tell whether CBMEM has
+ * explicitly been initialized or recovered yet on those platforms, and don't
+ * need to put the burden on board or chipset code to tell us by returning
+ * NULL from cbmem_top() before that point.
  */
 #define CAN_USE_GLOBALS \
-	(!IS_ENABLED(CONFIG_ARCH_X86) || ENV_RAMSTAGE || ENV_POSTCAR)
+	(!IS_ENABLED(CONFIG_ARCH_X86) || ENV_RAMSTAGE || ENV_POSTCAR || \
+	 IS_ENABLED(CONFIG_NO_CAR_GLOBAL_MIGRATION))
 
 static inline struct imd *cbmem_get_imd(void)
 {
 	if (CAN_USE_GLOBALS) {
-		static struct imd imd_cbmem;
+		static struct imd imd_cbmem CAR_GLOBAL;
 		return &imd_cbmem;
 	}
 	return NULL;

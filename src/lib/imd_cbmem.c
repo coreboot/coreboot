@@ -22,9 +22,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <arch/early_variables.h>
-#if IS_ENABLED(CONFIG_ARCH_X86) && !IS_ENABLED(CONFIG_EARLY_CBMEM_INIT)
-#include <arch/acpi.h>
-#endif
 
 /*
  * We need special handling on x86 before ramstage because we cannot use global

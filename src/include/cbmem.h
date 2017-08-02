@@ -97,8 +97,6 @@ int cbmem_recovery(int s3resume);
 void *cbmem_add(u32 id, u64 size);
 /* Find a cbmem entry of a given id. These return NULL on failure. */
 void *cbmem_find(u32 id);
-/* Get location and size of CBMEM region in memory */
-void cbmem_region_used(uintptr_t *base, size_t *size);
 
 /* Indicate to each hook if cbmem is being recovered or not. */
 typedef void (* const cbmem_init_hook_t)(int is_recovery);

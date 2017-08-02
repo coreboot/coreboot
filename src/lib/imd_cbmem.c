@@ -131,13 +131,6 @@ void cbmem_initialize_empty_id_size(u32 id, u64 size)
 	cbmem_run_init_hooks(no_recovery);
 }
 
-static inline int cbmem_fail_recovery(void)
-{
-	cbmem_initialize_empty();
-	cbmem_fail_resume();
-	return 1;
-}
-
 int cbmem_initialize(void)
 {
 	return cbmem_initialize_id_size(0, 0);

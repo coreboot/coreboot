@@ -53,7 +53,6 @@ Device (TFN1)
 	Method (_FSL, 1, Serialized)
 	{
 		Store (Arg0, \_SB.PCI0.LPCB.EC0.FAND)
-		Notify (DPTF, 0x83)	// Re evaluate _ART
 	}
 
 	Method (_STA)

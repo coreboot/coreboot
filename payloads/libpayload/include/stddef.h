@@ -28,3 +28,7 @@ typedef __SIZE_TYPE__ ssize_t;
 #define KHz (1000)
 #define MHz (1000*KHz)
 #define GHz (1000*MHz)
+
+#define USECS_PER_SEC 1000000
+#define MSECS_PER_SEC 1000
+#define USECS_PER_MSEC (USECS_PER_SEC / MSECS_PER_SEC)

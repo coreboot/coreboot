@@ -210,8 +210,10 @@ static int timestamps_module_init(void)
 	g_max_cursor_line = MAX(g_lines_count - 1 - LINES_SHOWN, 0);
 
 	g_buf = malloc(chars_count);
-	if (!g_buf)
+	if (!g_buf) {
+		free(buffer);
 		return -3;
+	}
 
 	if (sanitize_buffer_for_display(buffer, buff_cur + 1, g_buf,
 				chars_count, SCREEN_X) < 0) {

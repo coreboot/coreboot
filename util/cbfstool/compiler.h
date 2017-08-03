@@ -24,5 +24,6 @@
 
 #define __aligned(x) __attribute__((aligned(x)))
 #define __always_unused __attribute__((unused))
+#define __must_check __attribute__((warn_unused_result))
 
 #endif

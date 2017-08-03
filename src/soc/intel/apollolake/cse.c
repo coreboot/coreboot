@@ -92,6 +92,10 @@ static int read_cse_file(const char *path, void *buff, size_t *size,
 		return 0;
 	}
 
+	if (strnlen(path, sizeof(msg.file_name)) >= sizeof(msg.file_name)) {
+		printk(BIOS_ERR, "path too big for msg.file_name buffer\n");
+		return 0;
+	}
 	strncpy(msg.file_name, path, sizeof(msg.file_name));
 	msg.mkhi_hdr.fields.group_id = MKHI_GROUP_ID_MCA;
 	msg.mkhi_hdr.fields.command = READ_FILE;

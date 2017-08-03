@@ -31,7 +31,7 @@ static void gpio_set_dir(gpio_t gpio, enum gpio_dir dir)
 static void gpio_set_pull(gpio_t gpio, enum gpio_pull pull)
 {
 	u32 pull_val = gpio_get_pull_val(gpio, pull);
-	if (is_pmu_gpio(gpio))
+	if (is_pmu_gpio(gpio) && IS_ENABLED(CONFIG_SOC_ROCKCHIP_RK3288))
 		clrsetbits_le32(gpio_grf_reg(gpio), 3 << (gpio.idx * 2),
 				pull_val << (gpio.idx * 2));
 	else

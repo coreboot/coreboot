@@ -10,4 +10,5 @@ SPD_SOURCES += samsung_dimm_K3QF3F30BM-AGCF	# 0b0111
 SPD_SOURCES += samsung_dimm_K3QF4F40BM-AGCF	# 0b1000
 SPD_SOURCES += samsung_dimm_K3QFAFA0CM-AGCF	# 0b1001
 
+bootblock-y += gpio.c
 ramstage-y += gpio.c

@@ -75,7 +75,7 @@ files_added:: build_complete
 
 #######################################################################
 # our phony targets
-PHONY+= clean-abuild coreboot lint lint-stable build-dirs build_complete
+PHONY+= clean-abuild coreboot build-dirs build_complete
 
 #######################################################################
 # root source directories of coreboot
@@ -555,9 +555,6 @@ printcrt0s:
 
 update:
 	dongle.py -c /dev/term/1 $(obj)/coreboot.rom EOF
-
-lint lint-stable:
-	util/lint/lint $@
 
 gitconfig:
 	[ -d .git ]

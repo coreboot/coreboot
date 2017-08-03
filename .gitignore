@@ -61,6 +61,7 @@ site-local
 *.pyc
 *.sw[po]
 /*.rom
+coreboot-builds*/
 
 # Development friendly files
 tags

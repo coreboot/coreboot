@@ -147,3 +147,12 @@ junit.xml:
 	done
 	echo "</testsuite>" >> $@.tmp
 	mv $@.tmp $@
+
+test-configs:
+	for config in $(filter-out %.old,$(wildcard configs/*)); do \
+		$(MAKE) clean; \
+		cp "$$config" test_config; \
+		echo "*** Making libpayload config $$config ***"; \
+		$(MAKE) olddefconfig DOTCONFIG=test_config V=$(V) Q=$(Q) ; \
+		$(MAKE) V=$(V) Q=$(Q) CONFIG_LP_CCACHE=$(CONFIG_LP_CCACHE) DOTCONFIG=test_config; \
+	done

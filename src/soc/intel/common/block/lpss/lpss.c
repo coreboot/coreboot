@@ -39,6 +39,17 @@
 /* DMA Software Reset Control */
 #define LPSS_DMA_RST_RELEASE	(1 << 2)
 
+bool lpss_is_controller_in_reset(uintptr_t base)
+{
+	uint8_t *addr = (void *)base;
+	uint32_t val = read32(addr + LPSS_RESET_CTL_REG);
+
+	if (val == 0xFFFFFFFF)
+		return true;
+
+	return !(val & LPSS_CNT_RST_RELEASE);
+}
+
 void lpss_reset_release(uintptr_t base)
 {
 	uint8_t *addr = (void *)base;

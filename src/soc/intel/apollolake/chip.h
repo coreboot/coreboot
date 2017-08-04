@@ -20,6 +20,7 @@
 
 #include <soc/gpe.h>
 #include <soc/gpio.h>
+#include <intelblocks/lpc_lib.h>
 #include <intelblocks/lpss_i2c.h>
 #include <device/i2c.h>
 #include <soc/pm.h>
@@ -27,13 +28,6 @@
 
 #define CLKREQ_DISABLED		0xf
 #define APOLLOLAKE_I2C_DEV_MAX	8
-
-/* Serial IRQ control. SERIRQ_QUIET is the default (0). */
-enum serirq_mode {
-	SERIRQ_QUIET,
-	SERIRQ_CONTINUOUS,
-	SERIRQ_OFF,
-};
 
 struct soc_intel_apollolake_config {
 	/*

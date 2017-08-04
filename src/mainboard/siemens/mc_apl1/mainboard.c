@@ -14,14 +14,14 @@
  * GNU General Public License for more details.
  */
 
+#include <console/console.h>
 #include <device/pci.h>
 #include <device/device.h>
-#include <console/console.h>
-#include <soc/lpc.h>
-#include <soc/pci_devs.h>
-#include <string.h>
 #include <hwilib.h>
 #include <i210.h>
+#include <intelblocks/lpc_lib.h>
+#include <soc/pci_devs.h>
+#include <string.h>
 #include "brd_gpio.h"
 #include "ptn3460.h"
 

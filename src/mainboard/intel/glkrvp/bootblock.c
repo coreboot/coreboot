@@ -16,7 +16,7 @@
 #include <baseboard/variants.h>
 #include <bootblock_common.h>
 #include <ec/ec.h>
-#include <soc/lpc.h>
+#include <intelblocks/lpc_lib.h>
 #include <soc/gpio.h>
 #include <variant/ec.h>
 

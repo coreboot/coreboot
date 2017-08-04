@@ -17,78 +17,21 @@
 
 #define __SIMPLE_DEVICE__
 
+#include <assert.h>
 #include <console/console.h>
 #include <device/pci.h>
+#include <intelblocks/lpc_lib.h>
 #include <lib.h>
-#include <soc/gpio.h>
-#include <soc/lpc.h>
+#include "lpc_def.h"
 #include <soc/pci_devs.h>
-
-/*
- * These are MMIO ranges that the silicon designers decided are always going to
- * be decoded to LPC.
- */
-static const struct lpc_mmio_range {
-	uintptr_t base;
-	size_t size;
-} lpc_fixed_mmio_ranges[] = {
-	{ 0xfed40000, 0x8000 },
-	{ 0xfedc0000, 0x4000 },
-	{ 0xfed20800, 16 },
-	{ 0xfed20880, 8 },
-	{ 0xfed208e0, 16 },
-	{ 0xfed208f0, 8 },
-	{ 0xfed30800, 16 },
-	{ 0xfed30880, 8 },
-	{ 0xfed308e0, 16 },
-	{ 0xfed308f0, 8 },
-	{ 0, 0 }
-};
-
-static const struct pad_config lpc_gpios[] = {
-#if IS_ENABLED(CONFIG_SOC_INTEL_GLK)
-	PAD_CFG_NF(GPIO_147, UP_20K, DEEP, NF1), /* LPC_ILB_SERIRQ */
-	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_148, UP_20K, DEEP, NF1, HIZCRx1,
-		DISPUPD), /* LPC_CLKOUT0 */
-	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_149, UP_20K, DEEP, NF1, HIZCRx1,
-		DISPUPD), /* LPC_CLKOUT1 */
-	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_150, UP_20K, DEEP, NF1, HIZCRx1,
-		DISPUPD), /* LPC_AD0 */
-	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_151, UP_20K, DEEP, NF1, HIZCRx1,
-		DISPUPD), /* LPC_AD1 */
-	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_152, UP_20K, DEEP, NF1, HIZCRx1,
-		DISPUPD), /* LPC_AD2 */
-	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_153, UP_20K, DEEP, NF1, HIZCRx1,
-		DISPUPD), /* LPC_AD3 */
-	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_154, UP_20K, DEEP, NF1, HIZCRx1,
-		DISPUPD), /* LPC_CLKRUNB */
-	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_155, UP_20K, DEEP, NF1, HIZCRx1,
-		DISPUPD), /* LPC_FRAMEB*/
-#else
-	PAD_CFG_NF(LPC_ILB_SERIRQ, UP_20K, DEEP, NF1),
-	PAD_CFG_NF(LPC_CLKRUNB, UP_20K, DEEP, NF1),
-	PAD_CFG_NF(LPC_AD0, UP_20K, DEEP, NF1),
-	PAD_CFG_NF(LPC_AD1, UP_20K, DEEP, NF1),
-	PAD_CFG_NF(LPC_AD2, UP_20K, DEEP, NF1),
-	PAD_CFG_NF(LPC_AD3, UP_20K, DEEP, NF1),
-	PAD_CFG_NF(LPC_FRAMEB, NATIVE, DEEP, NF1),
-	PAD_CFG_NF(LPC_CLKOUT0, UP_20K, DEEP, NF1),
-	PAD_CFG_NF(LPC_CLKOUT1, UP_20K, DEEP, NF1)
-#endif
-};
-
-void lpc_configure_pads(void)
-{
-	gpio_configure_pads(lpc_gpios, ARRAY_SIZE(lpc_gpios));
-}
 
 void lpc_enable_fixed_io_ranges(uint16_t io_enables)
 {
 	uint16_t reg_io_enables;
 
-	reg_io_enables = pci_read_config16(PCH_DEV_LPC, REG_IO_ENABLES);
+	reg_io_enables = pci_read_config16(PCH_DEV_LPC, LPC_IO_ENABLES);
 	io_enables |= reg_io_enables;
-	pci_write_config16(PCH_DEV_LPC, REG_IO_ENABLES, io_enables);
+	pci_write_config16(PCH_DEV_LPC, LPC_IO_ENABLES, io_enables);
 }
 
 /*
@@ -100,10 +43,10 @@ static int find_unused_pmio_window(void)
 	int i;
 	uint32_t lgir;
 
-	for (i = 0; i < NUM_GENERIC_IO_RANGES; i++) {
-		lgir = pci_read_config32(PCH_DEV_LPC, REG_GENERIC_IO_RANGE(i));
+	for (i = 0; i < LPC_NUM_GENERIC_IO_RANGES; i++) {
+		lgir = pci_read_config32(PCH_DEV_LPC, LPC_GENERIC_IO_RANGE(i));
 
-		if (!(lgir & LGIR_EN))
+		if (!(lgir & LPC_LGIR_EN))
 			return i;
 	}
 
@@ -114,8 +57,8 @@ void lpc_close_pmio_windows(void)
 {
 	size_t i;
 
-	for (i = 0; i < NUM_GENERIC_IO_RANGES; i++)
-		pci_write_config32(PCH_DEV_LPC, REG_GENERIC_IO_RANGE(i), 0);
+	for (i = 0; i < LPC_NUM_GENERIC_IO_RANGES; i++)
+		pci_write_config32(PCH_DEV_LPC, LPC_GENERIC_IO_RANGE(i), 0);
 }
 
 void lpc_open_pmio_window(uint16_t base, uint16_t size)
@@ -139,18 +82,18 @@ void lpc_open_pmio_window(uint16_t base, uint16_t size)
 			printk(BIOS_ERR, "No more IO windows\n");
 			return;
 		}
-		lgir_reg_offset = REG_GENERIC_IO_RANGE(lgir_reg_num);
+		lgir_reg_offset = LPC_GENERIC_IO_RANGE(lgir_reg_num);
 
 		/* Each IO range register can only open a 256-byte window. */
-		window_size = MIN(size, LGIR_MAX_WINDOW_SIZE);
+		window_size = MIN(size, LPC_LGIR_MAX_WINDOW_SIZE);
 
 		/* Window size must be a power of two for the AMASK to work. */
 		alignment = 1 << (log2_ceil(window_size));
 		window_size = ALIGN_UP(window_size, alignment);
 
 		/* Address[15:2] in LGIR[15:12] and Mask[7:2] in LGIR[23:18]. */
-		lgir = (bridge_base & LGIR_ADDR_MASK) | LGIR_EN;
-		lgir |= ((window_size - 1) << 16) & LGIR_AMASK_MASK;
+		lgir = (bridge_base & LPC_LGIR_ADDR_MASK) | LPC_LGIR_EN;
+		lgir |= ((window_size - 1) << 16) & LPC_LGIR_AMASK_MASK;
 
 		pci_write_config32(PCH_DEV_LPC, lgir_reg_offset, lgir);
 
@@ -167,9 +110,9 @@ void lpc_open_mmio_window(uintptr_t base, size_t size)
 {
 	uint32_t lgmr;
 
-	lgmr = pci_read_config32(PCH_DEV_LPC, REG_GENERIC_MEM_RANGE);
+	lgmr = pci_read_config32(PCH_DEV_LPC, LPC_GENERIC_MEM_RANGE);
 
-	if (lgmr & LGMR_EN) {
+	if (lgmr & LPC_LGMR_EN) {
 		printk(BIOS_ERR,
 		       "LPC: Cannot open window to resource %lx size %zx\n",
 		       base, size);
@@ -177,21 +120,23 @@ void lpc_open_mmio_window(uintptr_t base, size_t size)
 		return;
 	}
 
-	if (size > LGMR_WINDOW_SIZE) {
+	if (size > LPC_LGMR_WINDOW_SIZE) {
 		printk(BIOS_WARNING,
 		       "LPC:  Resource %lx size %zx larger than window(%x)\n",
-		       base, size, LGMR_WINDOW_SIZE);
+		       base, size, LPC_LGMR_WINDOW_SIZE);
 	}
 
-	lgmr = (base & LGMR_ADDR_MASK) | LGMR_EN;
+	lgmr = (base & LPC_LGMR_ADDR_MASK) | LPC_LGMR_EN;
 
-	pci_write_config32(PCH_DEV_LPC, REG_GENERIC_MEM_RANGE, lgmr);
+	pci_write_config32(PCH_DEV_LPC, LPC_GENERIC_MEM_RANGE, lgmr);
 }
 
 bool lpc_fits_fixed_mmio_window(uintptr_t base, size_t size)
 {
 	resource_t res_end, range_end;
 	const struct lpc_mmio_range *range;
+	const struct lpc_mmio_range *lpc_fixed_mmio_ranges =
+		soc_get_fixed_mmio_ranges();
 
 	for (range = lpc_fixed_mmio_ranges; range->size; range++) {
 		range_end = range->base + range->size;
@@ -206,4 +151,87 @@ bool lpc_fits_fixed_mmio_window(uintptr_t base, size_t size)
 		}
 	}
 	return false;
+}
+
+/*
+ * Set FAST_SPIBAR BIOS Control register based on input bit field.
+ */
+static void lpc_set_bios_control_reg(uint8_t bios_cntl_bit)
+{
+	device_t dev = PCH_DEV_LPC;
+	uint8_t bc_cntl;
+
+	assert((bios_cntl_bit & (bios_cntl_bit - 1)) == 0);
+	bc_cntl = pci_read_config8(dev, LPC_BIOS_CNTL);
+	bc_cntl |= bios_cntl_bit;
+	pci_write_config8(dev, LPC_BIOS_CNTL, bc_cntl);
+
+	/*
+	* Ensure an additional read back after performing lock down
+	*/
+	pci_read_config8(PCH_DEV_LPC, LPC_BIOS_CNTL);
+}
+
+/*
+* Set LPC BIOS Control BILD bit.
+*/
+void lpc_set_bios_interface_lock_down(void)
+{
+	lpc_set_bios_control_reg(LPC_BC_BILD);
+}
+
+/*
+* Set LPC BIOS Control LE bit.
+*/
+void lpc_set_lock_enable(void)
+{
+	lpc_set_bios_control_reg(LPC_BC_LE);
+}
+
+/*
+* Set LPC BIOS Control EISS bit.
+*/
+void lpc_set_eiss(void)
+{
+	lpc_set_bios_control_reg(LPC_BC_EISS);
+}
+
+/*
+* Set LPC Serial IRQ mode.
+*/
+void lpc_set_serirq_mode(enum serirq_mode mode)
+{
+	device_t dev = PCH_DEV_LPC;
+	uint8_t scnt;
+
+	scnt = pci_read_config8(dev, LPC_SERIRQ_CTL);
+	scnt &= ~(LPC_SCNT_EN | LPC_SCNT_MODE);
+
+	switch (mode) {
+	case SERIRQ_QUIET:
+		scnt |= LPC_SCNT_EN;
+		break;
+	case SERIRQ_CONTINUOUS:
+		scnt |= LPC_SCNT_EN | LPC_SCNT_MODE;
+		break;
+	case SERIRQ_OFF:
+	default:
+		break;
+	}
+
+	pci_write_config8(dev, LPC_SERIRQ_CTL, scnt);
+}
+
+
+void lpc_io_setup_comm_a_b(void)
+{
+	/*
+	* Setup I/O Decode Range Register for LPC
+	* ComA Range 3F8h-3FFh [2:0]
+	* ComB Range 2F8h-2FFh [6:4]
+	*/
+	pci_write_config16(PCH_DEV_LPC, LPC_IO_DECODE,
+			LPC_IOD_COMA_RANGE | LPC_IOD_COMB_RANGE);
+	/* Enable ComA and ComB Port */
+	lpc_enable_fixed_io_ranges(LPC_IOE_COMA_EN | LPC_IOE_COMB_EN);
 }

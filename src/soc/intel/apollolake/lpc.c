@@ -1,8 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2015-2016 Intel Corp.
- * (Written by Lance Zhao <lijian.zhao@intel.com> for Intel Corp.)
+ * Copyright (C) 2017 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,34 +16,72 @@
 
 #include <cbmem.h>
 #include <console/console.h>
-#include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <intelblocks/lpc_lib.h>
+#include <intelblocks/rtc.h>
 #include <pc80/mc146818rtc.h>
-#include <soc/acpi.h>
-#include <soc/lpc.h>
+#include <soc/gpio.h>
+#include <soc/pcr_ids.h>
 #include <soc/pm.h>
 #include <vboot/vbnv.h>
-
 #include "chip.h"
 
-/*
- * SCOPE:
- * The purpose of this driver is to eliminate manual resource allocation for
- * devices under the LPC bridge.
- *
- * BACKGROUND:
- * The resource allocator reserves IO and memory resources to devices on the
- * LPC bus, but it is up to the hardware driver to make sure that those
- * resources are decoded to the LPC bus. This is what this driver does.
- *
- * THEORY OF OPERATION:
- * The .scan_bus member of the driver's ops will scan the static device tree
- * (devicetree.cb) and invoke drivers of devices on the LPC bus. This creates
- * a list of child devices, along with their resources. set_child_resources()
- * parses that list and looks for resources needed by the child devices. It
- * opens up IO and memory windows as needed.
- */
+static const struct lpc_mmio_range apl_lpc_fixed_mmio_ranges[] = {
+	{ 0xfed40000, 0x8000 },
+	{ 0xfedc0000, 0x4000 },
+	{ 0xfed20800, 16 },
+	{ 0xfed20880, 8 },
+	{ 0xfed208e0, 16 },
+	{ 0xfed208f0, 8 },
+	{ 0xfed30800, 16 },
+	{ 0xfed30880, 8 },
+	{ 0xfed308e0, 16 },
+	{ 0xfed308f0, 8 },
+	{ 0, 0 }
+};
+
+const struct lpc_mmio_range *soc_get_fixed_mmio_ranges(void)
+{
+	return apl_lpc_fixed_mmio_ranges;
+}
+
+static const struct pad_config lpc_gpios[] = {
+#if IS_ENABLED(CONFIG_SOC_INTEL_GLK)
+	PAD_CFG_NF(GPIO_147, UP_20K, DEEP, NF1), /* LPC_ILB_SERIRQ */
+	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_148, UP_20K, DEEP, NF1, HIZCRx1,
+		DISPUPD), /* LPC_CLKOUT0 */
+	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_149, UP_20K, DEEP, NF1, HIZCRx1,
+		DISPUPD), /* LPC_CLKOUT1 */
+	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_150, UP_20K, DEEP, NF1, HIZCRx1,
+		DISPUPD), /* LPC_AD0 */
+	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_151, UP_20K, DEEP, NF1, HIZCRx1,
+		DISPUPD), /* LPC_AD1 */
+	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_152, UP_20K, DEEP, NF1, HIZCRx1,
+		DISPUPD), /* LPC_AD2 */
+	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_153, UP_20K, DEEP, NF1, HIZCRx1,
+		DISPUPD), /* LPC_AD3 */
+	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_154, UP_20K, DEEP, NF1, HIZCRx1,
+		DISPUPD), /* LPC_CLKRUNB */
+	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_155, UP_20K, DEEP, NF1, HIZCRx1,
+		DISPUPD), /* LPC_FRAMEB*/
+#else
+	PAD_CFG_NF(LPC_ILB_SERIRQ, UP_20K, DEEP, NF1),
+	PAD_CFG_NF(LPC_CLKRUNB, UP_20K, DEEP, NF1),
+	PAD_CFG_NF(LPC_AD0, UP_20K, DEEP, NF1),
+	PAD_CFG_NF(LPC_AD1, UP_20K, DEEP, NF1),
+	PAD_CFG_NF(LPC_AD2, UP_20K, DEEP, NF1),
+	PAD_CFG_NF(LPC_AD3, UP_20K, DEEP, NF1),
+	PAD_CFG_NF(LPC_FRAMEB, NATIVE, DEEP, NF1),
+	PAD_CFG_NF(LPC_CLKOUT0, UP_20K, DEEP, NF1),
+	PAD_CFG_NF(LPC_CLKOUT1, UP_20K, DEEP, NF1)
+#endif
+};
+
+void lpc_configure_pads(void)
+{
+	gpio_configure_pads(lpc_gpios, ARRAY_SIZE(lpc_gpios));
+}
 
 static void rtc_init(void)
 {
@@ -65,10 +102,9 @@ static void rtc_init(void)
 		cmos_init(rtc_fail);
 }
 
-static void lpc_init(struct device *dev)
+void lpc_init(struct device *dev)
 {
-	uint8_t scnt;
-	struct soc_intel_apollolake_config *cfg;
+	const struct soc_intel_apollolake_config *cfg;
 
 	cfg = dev->chip_info;
 	if (!cfg) {
@@ -76,104 +112,9 @@ static void lpc_init(struct device *dev)
 		return;
 	}
 
-	scnt = pci_read_config8(dev, REG_SERIRQ_CTL);
-	scnt &= ~(SCNT_EN | SCNT_MODE);
-	if (cfg->serirq_mode == SERIRQ_QUIET)
-		scnt |= SCNT_EN;
-	else if (cfg->serirq_mode == SERIRQ_CONTINUOUS)
-		scnt |= SCNT_EN | SCNT_MODE;
-	pci_write_config8(dev, REG_SERIRQ_CTL, scnt);
+	/* Set LPC Serial IRQ mode */
+	lpc_set_serirq_mode(cfg->serirq_mode);
 
 	/* Initialize RTC */
 	rtc_init();
 }
-
-static void soc_lpc_add_io_resources(device_t dev)
-{
-	struct resource *res;
-
-	/* Add the default claimed legacy IO range for the LPC device. */
-	res = new_resource(dev, 0);
-	res->base = 0;
-	res->size = 0x1000;
-	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
-}
-
-static void soc_lpc_read_resources(device_t dev)
-{
-	/* Get the PCI resources of this device. */
-	pci_dev_read_resources(dev);
-
-	/* Add IO resources to LPC. */
-	soc_lpc_add_io_resources(dev);
-}
-
-static void set_child_resources(struct device *dev);
-
-static void loop_resources(struct device *dev)
-{
-	struct resource *res;
-
-	for (res = dev->resource_list; res; res = res->next) {
-
-		if (res->flags & IORESOURCE_IO)
-			lpc_open_pmio_window(res->base, res->size);
-
-		if (res->flags & IORESOURCE_MEM) {
-			/* Check if this is already decoded. */
-			if (lpc_fits_fixed_mmio_window(res->base, res->size))
-				continue;
-
-			lpc_open_mmio_window(res->base, res->size);
-		}
-
-	}
-	set_child_resources(dev);
-}
-
-/*
- * Loop through all the child devices' resources, and open up windows to the
- * LPC bus, as appropriate.
- */
-static void set_child_resources(struct device *dev)
-{
-	struct bus *link;
-	struct device *child;
-
-	for (link = dev->link_list; link; link = link->next) {
-		for (child = link->children; child; child = child->sibling)
-			loop_resources(child);
-	}
-}
-
-static void set_resources(device_t dev)
-{
-	pci_dev_set_resources(dev);
-
-	/* Close all previously opened windows and allocate from scratch. */
-	lpc_close_pmio_windows();
-	/* Now open up windows to devices which have declared resources. */
-	set_child_resources(dev);
-}
-
-static struct device_operations device_ops = {
-	.read_resources = &soc_lpc_read_resources,
-	.set_resources = set_resources,
-	.enable_resources = &pci_dev_enable_resources,
-	.write_acpi_tables = southbridge_write_acpi_tables,
-	.acpi_inject_dsdt_generator = southbridge_inject_dsdt,
-	.init = lpc_init,
-	.scan_bus = scan_lpc_bus,
-};
-
-static const unsigned short pci_device_ids[] = {
-	PCI_DEVICE_ID_INTEL_APL_LPC,
-	PCI_DEVICE_ID_INTEL_GLK_LPC,
-	0,
-};
-
-static const struct pci_driver soc_lpc __pci_driver = {
-	.ops = &device_ops,
-	.vendor = PCI_VENDOR_ID_INTEL,
-	.devices = pci_device_ids,
-};

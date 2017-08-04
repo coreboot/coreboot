@@ -28,6 +28,7 @@
 #include <cpu/x86/mtrr.h>
 #include <device/pci_def.h>
 #include <device/resource.h>
+#include <intelblocks/lpc_lib.h>
 #include <fsp/api.h>
 #include <fsp/memmap.h>
 #include <fsp/util.h>
@@ -38,7 +39,6 @@
 #include <soc/cpu.h>
 #include <soc/intel/common/mrc_cache.h>
 #include <soc/iomap.h>
-#include <soc/lpc.h>
 #include <soc/systemagent.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
@@ -96,17 +96,8 @@ static void soc_early_romstage_init(void)
 	pci_write_config8(PCH_DEV_P2SB, P2SB_HPTC, P2SB_HPTC_ADDRESS_SELECT_0 |
 						P2SB_HPTC_ADDRESS_ENABLE);
 
-	if (IS_ENABLED(CONFIG_DRIVERS_UART_8250IO)) {
-		/*
-		 * I/O Decode Range Register for LPC
-		 * ComA Range 3F8h-3FFh [2:0]
-		 * ComB Range 2F8h-2FFh [6:4]
-		 */
-		pci_write_config16(PCH_DEV_LPC, REG_IO_DECODE,
-				IOD_COMA_RANGE | IOD_COMB_RANGE);
-		/* Enable ComA and ComB Port */
-		lpc_enable_fixed_io_ranges(IOE_COMA_EN | IOE_COMB_EN);
-	}
+	if (IS_ENABLED(CONFIG_DRIVERS_UART_8250IO))
+		lpc_io_setup_comm_a_b();
 }
 
 static void disable_watchdog(void)

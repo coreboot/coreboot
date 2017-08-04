@@ -18,8 +18,8 @@
 #include <console/console.h>
 #include <ec/ec.h>
 #include <ec/google/chromeec/ec.h>
+#include <intelblocks/lpc_lib.h>
 #include <rules.h>
-#include <soc/lpc.h>
 #include <variant/ec.h>
 
 static void ramstage_ec_init(void)
@@ -52,12 +52,14 @@ static void bootblock_ec_init(void)
 {
 	uint16_t ec_ioport_base;
 	size_t ec_ioport_size;
+
 	/*
 	 * Set up LPC decoding for the ChromeEC I/O port ranges:
 	 * - Ports 62/66, 60/64, and 200->208
 	 * - ChromeEC specific communication I/O ports.
 	 */
-	lpc_enable_fixed_io_ranges(IOE_EC_62_66 | IOE_KBC_60_64 | IOE_LGE_200);
+	lpc_enable_fixed_io_ranges(LPC_IOE_EC_62_66 | LPC_IOE_KBC_60_64
+		| LPC_IOE_LGE_200);
 	google_chromeec_ioport_range(&ec_ioport_base, &ec_ioport_size);
 	lpc_open_pmio_window(ec_ioport_base, ec_ioport_size);
 }
@@ -69,9 +71,15 @@ void mainboard_ec_init(void)
 			ramstage_ec_init();
 		else if (ENV_BOOTBLOCK)
 			bootblock_ec_init();
-	} else if (ENV_BOOTBLOCK)
-		lpc_enable_fixed_io_ranges(IOE_EC_62_66 | IOE_KBC_60_64 |
-			IOE_LGE_200);
+	} else if (ENV_BOOTBLOCK) {
+		/*
+		 * Set up LPC decoding for the ChromeEC I/O port ranges:
+		 * - Ports 62/66, 60/64, and 200->208
+		 * - ChromeEC specific communication I/O ports.
+		 */
+		lpc_enable_fixed_io_ranges(LPC_IOE_EC_62_66 | LPC_IOE_KBC_60_64
+			| LPC_IOE_LGE_200);
+	}
 
 	if (IS_ENABLED(CONFIG_GLK_INTEL_EC)) {
 		printk(BIOS_ERR, "S3 Hack Enable ACPI mode: outb(0xaa,0x66)\n");

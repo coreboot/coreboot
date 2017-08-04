@@ -1,0 +1,5 @@
+config SOC_INTEL_COMMON_BLOCK_LPC
+	bool
+	help
+	  Use common LPC code for platform. Only soc specific code needs to
+	  be implemented as per requirement.

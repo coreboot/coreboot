@@ -363,6 +363,7 @@ CFLAGS_common += -Wwrite-strings -Wredundant-decls -Wno-trigraphs
 CFLAGS_common += -Wstrict-aliasing -Wshadow -Wdate-time
 CFLAGS_common += -fno-common -ffreestanding -fno-builtin -fomit-frame-pointer
 CFLAGS_common += -ffunction-sections -fdata-sections -fno-pie
+CFLAGS_common += -fno-delete-null-pointer-checks -fconserve-stack
 
 ADAFLAGS_common += -gnatg -gnatp
 ADAFLAGS_common += -Wuninitialized -Wall -Werror

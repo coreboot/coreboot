@@ -19,8 +19,12 @@
 #include <arch/io.h>
 #include <device/device.h>
 
-void uart_common_init(device_t dev, uintptr_t baseaddr,
-		uint32_t clk_m_val, uint32_t clk_n_val);
+/*
+ * Common routine to initialize UART controller PCI config space, take it out of
+ * reset and configure M/N dividers.
+ */
+void uart_common_init(device_t dev, uintptr_t baseaddr);
+
 
 void pch_uart_read_resources(struct device *dev);
 

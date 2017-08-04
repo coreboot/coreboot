@@ -19,8 +19,17 @@
 #include <intelblocks/lpss.h>
 #include <intelblocks/uart.h>
 
-void uart_common_init(device_t dev, uintptr_t baseaddr, uint32_t clk_m_val,
-		uint32_t clk_n_val)
+static void uart_lpss_init(uintptr_t baseaddr)
+{
+	/* Take UART out of reset */
+	lpss_reset_release(baseaddr);
+
+	/* Set M and N divisor inputs and enable clock */
+	lpss_clk_update(baseaddr, CONFIG_SOC_INTEL_COMMON_LPSS_UART_CLK_M_VAL,
+			CONFIG_SOC_INTEL_COMMON_LPSS_UART_CLK_N_VAL);
+}
+
+void uart_common_init(device_t dev, uintptr_t baseaddr)
 {
 	/* Set UART base address */
 	pci_write_config32(dev, PCI_BASE_ADDRESS_0, baseaddr);
@@ -29,11 +38,8 @@ void uart_common_init(device_t dev, uintptr_t baseaddr, uint32_t clk_m_val,
 	pci_write_config32(dev, PCI_COMMAND,
 			PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER);
 
-	/* Take UART out of reset */
-	lpss_reset_release(baseaddr);
+	uart_lpss_init(baseaddr);
 
-	/* Set M and N divisor inputs and enable clock */
-	lpss_clk_update(baseaddr, clk_m_val, clk_n_val);
 }
 
 #if ENV_RAMSTAGE

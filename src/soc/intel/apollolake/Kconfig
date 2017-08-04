@@ -351,4 +351,14 @@ config APL_SKIP_SET_POWER_LIMITS
 	  Limits (RAPL) algorithm for a constant power management.
 	  Set this config option to skip the RAPL configuration.
 
+# M and N divisor values for clock frequency configuration.
+# These values get us a 1.836 MHz clock (ideally we want 1.843 MHz)
+config SOC_INTEL_COMMON_LPSS_UART_CLK_M_VAL
+	hex
+	default 0x25a
+
+config SOC_INTEL_COMMON_LPSS_UART_CLK_N_VAL
+	hex
+	default 0x7fff
+
 endif

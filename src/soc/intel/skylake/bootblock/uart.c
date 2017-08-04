@@ -31,10 +31,6 @@
 #define PCR_SIO_PCH_LEGACY_UART1	(1 << 1)
 #define PCR_SIO_PCH_LEGACY_UART2	(1 << 2)
 
-/* Clock divider parameters for 115200 baud rate */
-#define CLK_M_VAL	0x30
-#define CLK_N_VAL	0xc35
-
 /* UART2 pad configuration. Support RXD and TXD for now. */
 static const struct pad_config uart2_pads[] = {
 /* UART2_RXD */		PAD_CFG_NF(GPP_C20, NONE, DEEP, NF1),
@@ -45,7 +41,7 @@ void pch_uart_init(void)
 {
 	uintptr_t base = uart_platform_base(CONFIG_UART_FOR_CONSOLE);
 
-	uart_common_init(PCH_DEV_UART2, base, CLK_M_VAL, CLK_N_VAL);
+	uart_common_init(PCH_DEV_UART2, base);
 
 	/* Put UART2 in byte access mode for 16550 compatibility */
 	if (!IS_ENABLED(CONFIG_DRIVERS_UART_8250MEM_32))

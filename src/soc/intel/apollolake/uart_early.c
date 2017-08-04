@@ -69,6 +69,6 @@ void pch_uart_init(void)
 	gpio_configure_pads(&uart_gpios[pad_index * 2], 2);
 
 	/* Program UART2 BAR0, command, reset and clock register */
-	uart_common_init(uart, base, CLK_M_VAL, CLK_N_VAL);
+	uart_common_init(uart, base);
 
 }

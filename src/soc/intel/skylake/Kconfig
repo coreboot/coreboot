@@ -317,4 +317,13 @@ config CPU_BCLK_MHZ
 	int
 	default 100
 
+# Clock divider parameters for 115200 baud rate
+config SOC_INTEL_COMMON_LPSS_UART_CLK_M_VAL
+	hex
+	default 0x30
+
+config SOC_INTEL_COMMON_LPSS_UART_CLK_N_VAL
+	hex
+	default 0xc35
+
 endif

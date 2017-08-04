@@ -76,6 +76,7 @@ smm-y += pmutil.c
 smm-y += smihandler.c
 smm-$(CONFIG_SPI_FLASH_SMM) += spi.c
 smm-$(CONFIG_UART_DEBUG) += uart_debug.c
+smm-y += uart.c
 
 postcar-y += memmap.c
 postcar-$(CONFIG_UART_DEBUG) += uart_debug.c

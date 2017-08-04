@@ -24,6 +24,7 @@
 #include <elog.h>
 #include <intelblocks/fast_spi.h>
 #include <intelblocks/pcr.h>
+#include <intelblocks/uart.h>
 #include <delay.h>
 #include <device/pci_def.h>
 #include <elog.h>
@@ -164,6 +165,8 @@ static void southbridge_smi_sleep(void)
 		break;
 	case ACPI_S3:
 		printk(BIOS_DEBUG, "SMI#: Entering S3 (Suspend-To-RAM)\n");
+
+		gnvs->uior = uart_debug_controller_is_initialized();
 
 		/* Invalidate the cache before going to S3 */
 		wbinvd();

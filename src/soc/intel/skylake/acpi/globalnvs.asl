@@ -66,6 +66,7 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	CID1,	16,	// 0x3d - Wifi Country Identifier
 	U2WE,	16,	// 0x3f - USB2 Wake Enable Bitmap
 	U3WE,	8,	// 0x41 - USB3 Wake Enable Bitmap
+	UIOR,	8,	// 0x42 - UART debug controller init on S3 resume
 
 	/* ChromeOS specific */
 	Offset (0x100),

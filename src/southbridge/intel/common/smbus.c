@@ -17,6 +17,7 @@
 
 #include <arch/io.h>
 #include <device/smbus_def.h>
+#include <stdlib.h>
 #include "smbus.h"
 
 
@@ -193,13 +194,16 @@ int do_smbus_write_byte(unsigned int smbus_base, u8 device,
 }
 
 int do_smbus_block_read(unsigned int smbus_base, u8 device, u8 cmd,
-			unsigned int bytes, u8 *buf)
+			unsigned int max_bytes, u8 *buf)
 {
 	u8 status;
+	int slave_bytes;
 	int bytes_read = 0;
 	unsigned int loops = SMBUS_TIMEOUT;
 	if (smbus_wait_until_ready(smbus_base) < 0)
 		return SMBUS_WAIT_UNTIL_READY_TIMEOUT;
+
+	max_bytes = MIN(32, max_bytes);
 
 	/* Set up transaction */
 	/* Disable interrupts */
@@ -210,10 +214,14 @@ int do_smbus_block_read(unsigned int smbus_base, u8 device, u8 cmd,
 	/* Set the command/address... */
 	outb(cmd & 0xff, smbus_base + SMBHSTCMD);
 	/* Set up for a block data read */
-	outb((inb(smbus_base + SMBHSTCTL) & 0xe3) | I801_BLOCK_DATA,
+	outb((inb(smbus_base + SMBHSTCTL) & 0xc3) | I801_BLOCK_DATA,
 	     (smbus_base + SMBHSTCTL));
 	/* Clear any lingering errors, so the transaction will run */
 	outb(inb(smbus_base + SMBHSTSTAT), smbus_base + SMBHSTSTAT);
+
+	/* Reset number of bytes to transfer so we notice later it
+	 * was really updated with the transaction. */
+	outb(0, smbus_base + SMBHSTDAT0);
 
 	/* Start the command */
 	outb((inb(smbus_base + SMBHSTCTL) | SMBHSTCNT_START),
@@ -233,27 +241,38 @@ int do_smbus_block_read(unsigned int smbus_base, u8 device, u8 cmd,
 			return SMBUS_ERROR;
 
 		if (status & SMBHSTSTS_BYTE_DONE) { /* Byte done */
-			*buf = inb(smbus_base + SMBBLKDAT);
-			buf++;
-			bytes_read++;
-			if (--bytes == 1) {
-				/* indicate that next byte is the last one */
-				outb(inb(smbus_base + SMBHSTCTL)
-					| SMBHSTCNT_LAST_BYTE,
-					smbus_base + SMBHSTCTL);
+
+			if (bytes_read < max_bytes) {
+				*buf = inb(smbus_base + SMBBLKDAT);
+				buf++;
+				bytes_read++;
 			}
+
+			/* Engine internally completes the transaction
+			 * and clears HOST_BUSY flag once the byte count
+			 * from slave is reached.
+			 */
 			outb(status, smbus_base + SMBHSTSTAT);
 		}
 	} while ((status & SMBHSTSTS_HOST_BUSY) && loops);
+
+	/* Post-check we received complete message. */
+	slave_bytes = inb(smbus_base + SMBHSTDAT0);
+	if (bytes_read < slave_bytes)
+		return SMBUS_ERROR;
 
 	return bytes_read;
 }
 
 int do_smbus_block_write(unsigned int smbus_base, u8 device, u8 cmd,
-			unsigned int bytes, const u8 *buf)
+			const unsigned int bytes, const u8 *buf)
 {
 	u8 status;
+	int bytes_sent = 0;
 	unsigned int loops = SMBUS_TIMEOUT;
+
+	if (bytes > 32)
+		return SMBUS_ERROR;
 
 	if (smbus_wait_until_ready(smbus_base) < 0)
 		return SMBUS_WAIT_UNTIL_READY_TIMEOUT;
@@ -267,7 +286,7 @@ int do_smbus_block_write(unsigned int smbus_base, u8 device, u8 cmd,
 	/* Set the command/address... */
 	outb(cmd & 0xff, smbus_base + SMBHSTCMD);
 	/* Set up for a block data write */
-	outb((inb(smbus_base + SMBHSTCTL) & 0xe3) | I801_BLOCK_DATA,
+	outb((inb(smbus_base + SMBHSTCTL) & 0xc3) | I801_BLOCK_DATA,
 	     (smbus_base + SMBHSTCTL));
 	/* Clear any lingering errors, so the transaction will run */
 	outb(inb(smbus_base + SMBHSTSTAT), smbus_base + SMBHSTSTAT);
@@ -275,8 +294,10 @@ int do_smbus_block_write(unsigned int smbus_base, u8 device, u8 cmd,
 	/* set number of bytes to transfer */
 	outb(bytes, smbus_base + SMBHSTDAT0);
 
+	/* Send first byte from buffer, bytes_sent increments after
+	 * hardware acknowledges it.
+	 */
 	outb(*buf++, smbus_base + SMBBLKDAT);
-	bytes--;
 
 	/* Start the command */
 	outb((inb(smbus_base + SMBHSTCTL) | SMBHSTCNT_START),
@@ -296,12 +317,19 @@ int do_smbus_block_write(unsigned int smbus_base, u8 device, u8 cmd,
 			return SMBUS_ERROR;
 
 		if (status & SMBHSTSTS_BYTE_DONE) {
-			outb(*buf++, smbus_base + SMBBLKDAT);
+			bytes_sent++;
+			if (bytes_sent < bytes)
+				outb(*buf++, smbus_base + SMBBLKDAT);
+
+			/* Engine internally completes the transaction
+			 * and clears HOST_BUSY flag once the byte count
+			 * has been reached.
+			 */
 			outb(status, smbus_base + SMBHSTSTAT);
 		}
 	} while ((status & SMBHSTSTS_HOST_BUSY) && loops);
 
-	return 0;
+	return bytes_sent;
 }
 
 /* Only since ICH5 */

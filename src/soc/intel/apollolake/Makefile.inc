@@ -42,6 +42,7 @@ smm-y += pmutil.c
 smm-y += smihandler.c
 smm-y += spi.c
 smm-y += uart_early.c
+smm-y += uart.c
 
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
 ramstage-y += cpu.c

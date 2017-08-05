@@ -23,6 +23,7 @@
 #include <elog.h>
 #include <intelblocks/pmclib.h>
 #include <intelblocks/smihandler.h>
+#include <intelblocks/uart.h>
 #include <soc/nvs.h>
 #include <soc/pm.h>
 #include <soc/gpio.h>
@@ -160,6 +161,8 @@ void smihandler_southbridge_sleep(
 		break;
 	case ACPI_S3:
 		printk(BIOS_DEBUG, "SMI#: Entering S3 (Suspend-To-RAM)\n");
+
+		gnvs->uior = uart_debug_controller_is_initialized();
 
 		/* Invalidate the cache before going to S3 */
 		wbinvd();

@@ -41,6 +41,8 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	PRT0,	32,     // 0x25 - 0x28 - PERST_0 Address
 	SCDP,	8,      // 0x29 - SD_CD GPIO portid
 	SCDO,	8,      // 0x2A - GPIO pad offset relative to the community
+	UIOR,	8,      // 0x2B - UART debug controller init on S3 resume
+
 	/* ChromeOS stuff (0x100 -> 0xfff, size 0xeff) */
 	Offset (0x100),
 	#include <vendorcode/google/chromeos/acpi/gnvs.asl>

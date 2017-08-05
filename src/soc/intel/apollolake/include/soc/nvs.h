@@ -42,7 +42,9 @@ typedef struct global_nvs_t {
 	uint32_t	prt0; /* 0x25 - 0x28 - PERST_0 Address */
 	uint8_t		scdp; /* 0x29 - SD_CD GPIO portid */
 	uint8_t		scdo; /* 0x2A - GPIO pad offset relative to the community */
-	uint8_t		unused[213];
+	uint8_t		uior; /* 0x2B - UART debug controller init on S3
+					 resume */
+	uint8_t		unused[212];
 
 	/* ChromeOS specific (0x100 - 0xfff) */
 	chromeos_acpi_t chromeos;

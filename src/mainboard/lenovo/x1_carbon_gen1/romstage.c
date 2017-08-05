@@ -108,8 +108,9 @@ void mainboard_get_spd(spd_raw_data *spd, bool id_only)
 	 * 1      1       reserved
 	 */
 
-	/* we only support elpida. Because the spd data is missing */
-	if (spd_index != 0)
+	/* We only support elpida and samsung.
+           Because the spd data is missing. */
+	if (spd_index != 0 && spd_index != 2)
 		die("Unsupported Memory. Please add your SPD dump to coreboot.");
 
 	memory = get_spd_data(spd_index);

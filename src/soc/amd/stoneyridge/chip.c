@@ -32,6 +32,7 @@ struct device_operations cpu_bus_ops = {
 	.enable_resources = DEVICE_NOOP,
 	.init		  = &cpu_bus_init,
 	.scan_bus	  = cpu_bus_scan,
+	.acpi_fill_ssdt_generator = generate_cpu_entries,
 };
 
 struct device_operations pci_domain_ops = {

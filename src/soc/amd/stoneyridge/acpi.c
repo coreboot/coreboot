@@ -26,6 +26,7 @@
 #include <arch/ioapic.h>
 #include <cbmem.h>
 #include <device/device.h>
+#include <device/pci.h>
 #include <soc/acpi.h>
 #include <soc/southbridge.h>
 #include <soc/nvs.h>
@@ -229,6 +230,32 @@ void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 	fadt->x_gpe1_blk.addrh = 0x0;
 
 	header->checksum = acpi_checksum((void *)fadt, sizeof(acpi_fadt_t));
+}
+
+void generate_cpu_entries(device_t device)
+{
+	int cores, cpu, plen = 6;
+	u32 pcontrol_blk = ACPI_GPE0_BLK;
+	device_t cdb_dev;
+
+	/* Stoney Ridge is single node, just report # of cores */
+	cdb_dev = dev_find_slot(CONFIG_CBB, PCI_DEVFN(CONFIG_CDB, 5));
+	cores = (pci_read_config32(cdb_dev, 0x84) & 0xff) + 1;
+
+	printk(BIOS_DEBUG, "ACPI \\_PR report %d core(s)\n", cores);
+
+
+	/* Generate BSP \_PR.CPU0 */
+	acpigen_write_processor(0, pcontrol_blk, plen);
+	acpigen_pop_len();
+
+	/* Generate AP \_PR.CPUx */
+	pcontrol_blk = 0;
+	plen = 0;
+	for (cpu = 1; cpu < cores; cpu++) {
+		acpigen_write_processor(cpu, pcontrol_blk, 0);
+		acpigen_pop_len();
+	}
 }
 
 unsigned long southbridge_write_acpi_tables(device_t device,

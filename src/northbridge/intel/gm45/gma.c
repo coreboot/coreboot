@@ -588,8 +588,8 @@ static void gma_ngi(struct device *const dev, struct edid *edid_lvds)
 
 	mmio = res2mmio(gtt_res, 0, 0);
 	printk(BIOS_DEBUG, "VGA EDID\n");
-	intel_gmbus_read_edid(mmio + GMBUS0, 2, 0x50, edid_data_vga,
-			sizeof(edid_data_vga));
+	intel_gmbus_read_edid(mmio + GMBUS0, GMBUS_PORT_VGADDC, 0x50,
+			edid_data_vga, sizeof(edid_data_vga));
 	intel_gmbus_stop(mmio + GMBUS0);
 	vga_edid_status = decode_edid(edid_data_vga,
 				sizeof(edid_data_vga), &edid_vga);
@@ -748,8 +748,8 @@ static void gma_func0_init(struct device *dev)
 	}
 
 	printk(BIOS_DEBUG, "LVDS EDID\n");
-	intel_gmbus_read_edid(mmio + GMBUS0, 3, 0x50, edid_data_lvds,
-			sizeof(edid_data_lvds));
+	intel_gmbus_read_edid(mmio + GMBUS0, GMBUS_PORT_PANEL, 0x50,
+			edid_data_lvds, sizeof(edid_data_lvds));
 	intel_gmbus_stop(mmio + GMBUS0);
 	decode_edid(edid_data_lvds, sizeof(edid_data_lvds), &edid_lvds);
 

@@ -104,8 +104,8 @@ static int intel_gma_init_lvds(struct northbridge_intel_i945_config *conf,
 	       "i915lightup: graphics %p mmio %p addrport %04x physbase %08x\n",
 	       (void *)pgfx, mmiobase, piobase, pphysbase);
 
-	intel_gmbus_read_edid(mmiobase + GMBUS0, 3, 0x50, edid_data,
-			sizeof(edid_data));
+	intel_gmbus_read_edid(mmiobase + GMBUS0, GMBUS_PORT_PANEL, 0x50,
+			edid_data, sizeof(edid_data));
 	decode_edid(edid_data, sizeof(edid_data), &edid);
 	mode = &edid.mode;
 
@@ -663,7 +663,8 @@ static void gma_func0_init(struct device *dev)
 
 		/* probe if VGA is connected and always run */
 		/* VGA init if no LVDS is connected */
-		if (!probe_edid(mmiobase, 3) || probe_edid(mmiobase, 2))
+		if (!probe_edid(mmiobase, GMBUS_PORT_PANEL) ||
+				probe_edid(mmiobase, GMBUS_PORT_VGADDC))
 			err = intel_gma_init_vga(conf,
 				pci_read_config32(dev, 0x5c) & ~0xf,
 				iobase, mmiobase, graphics_base);

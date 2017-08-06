@@ -113,7 +113,7 @@ static void intel_gma_init(const struct northbridge_intel_x4x_config *info,
 
 	udelay(1);
 
-	intel_gmbus_read_edid(mmio + GMBUS0, 2, 0x50, edid_data,
+	intel_gmbus_read_edid(mmio + GMBUS0, GMBUS_PORT_VGADDC, 0x50, edid_data,
 			sizeof(edid_data));
 	intel_gmbus_stop(mmio + GMBUS0);
 	decode_edid(edid_data,

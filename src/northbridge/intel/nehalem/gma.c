@@ -712,8 +712,8 @@ static void intel_gma_init(const struct northbridge_intel_nehalem_config *info,
 
 	power_port(mmio);
 
-	intel_gmbus_read_edid(mmio + PCH_GMBUS0, 3, 0x50, edid_data,
-			sizeof(edid_data));
+	intel_gmbus_read_edid(mmio + PCH_GMBUS0, GMBUS_PORT_PANEL, 0x50,
+			edid_data, sizeof(edid_data));
 	intel_gmbus_stop(mmio + PCH_GMBUS0);
 	decode_edid(edid_data,
 		    sizeof(edid_data), &edid);

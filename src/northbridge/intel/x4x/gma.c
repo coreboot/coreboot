@@ -74,6 +74,15 @@ static void intel_gma_init(const struct northbridge_intel_x4x_config *info,
 	u32 pixel_m1 = 1;
 	u32 pixel_m2 = 1;
 
+	u8 vga_gmbus = GMBUS_PORT_VGADDC;
+
+	if (IS_ENABLED(CONFIG_GFX_GMA_ANALOG_I2C_HDMI_B))
+		vga_gmbus = GMBUS_PORT_DPB;
+	else if (IS_ENABLED(CONFIG_GFX_GMA_ANALOG_I2C_HDMI_C))
+		vga_gmbus = GMBUS_PORT_DPC;
+	else if (IS_ENABLED(CONFIG_GFX_GMA_ANALOG_I2C_HDMI_D))
+		vga_gmbus = GMBUS_PORT_DPD;
+
 	vga_gr_write(0x18, 0);
 
 	/* Set up GTT */
@@ -113,7 +122,11 @@ static void intel_gma_init(const struct northbridge_intel_x4x_config *info,
 
 	udelay(1);
 
-	intel_gmbus_read_edid(mmio + GMBUS0, GMBUS_PORT_VGADDC, 0x50, edid_data,
+	/*
+	 * TODO: check if it is actually an analog display.
+	 * No harm is done but the console output could be confusing.
+	 */
+	intel_gmbus_read_edid(mmio + GMBUS0, vga_gmbus, 0x50, edid_data,
 			sizeof(edid_data));
 	intel_gmbus_stop(mmio + GMBUS0);
 	decode_edid(edid_data,

@@ -36,7 +36,7 @@ extern int font_width;
 extern int font_height;
 extern int font_scale;
 
-inline int font_glyph_filled(unsigned int ch, int x, int y)
+static inline int font_glyph_filled(unsigned int ch, int x, int y)
 {
 	unsigned char *glyph = font8x16 + ((ch & 0xFF) * FONT_HEIGHT);
 	return glyph[y/font_scale] & (1 << x/font_scale);

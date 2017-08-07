@@ -50,13 +50,6 @@ DefinitionBlock (
 	/* HPET enable */
 	Name (HPTE, 0x1)
 
-	/* Define power states */
-	Name (\_S0, Package () { 0x00, 0x00, 0x00, 0x00 })	/* Normal operation */
-	Name (\_S1, Package () { 0x01, 0x01, 0x00, 0x00 })	/* Standby */
-	Name (\_S3, Package () { 0x03, 0x03, 0x00, 0x00 })	/* Suspend to RAM */
-	Name (\_S4, Package () { 0x04, 0x04, 0x00, 0x00 })	/* Suspend to disk */
-	Name (\_S5, Package () { 0x05, 0x05, 0x00, 0x00 })	/* Hard power off */
-
 	/* The _PIC method is called by the OS to choose between interrupt
 		* routing via the i8259 interrupt controller or the APIC.
 		*

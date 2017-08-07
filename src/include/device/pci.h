@@ -27,14 +27,13 @@
 #include <device/pci_ops.h>
 #include <device/pci_rom.h>
 
-#ifndef __SIMPLE_DEVICE__
 
 /* Common pci operations without a standard interface */
 struct pci_operations {
 	/* set the Subsystem IDs for the PCI device */
-	void (*set_subsystem)(device_t dev, unsigned int vendor,
+	void (*set_subsystem)(struct device *dev, unsigned int vendor,
 		unsigned int device);
-	void (*set_L1_ss_latency)(device_t dev, unsigned int off);
+	void (*set_L1_ss_latency)(struct device *dev, unsigned int off);
 };
 
 /* Common pci bus operations */
@@ -57,7 +56,11 @@ struct pci_driver {
 	const unsigned short *devices;
 };
 
+#ifdef __SIMPLE_DEVICE__
+#define __pci_driver __attribute__((unused))
+#else
 #define __pci_driver __attribute__((used, __section__(".rodata.pci_driver")))
+#endif
 /** start of compile time generated pci driver array */
 extern struct pci_driver _pci_drivers[];
 /** end of compile time generated pci driver array */
@@ -67,19 +70,20 @@ extern struct pci_driver _epci_drivers[];
 extern struct device_operations default_pci_ops_dev;
 extern struct device_operations default_pci_ops_bus;
 
-void pci_dev_read_resources(device_t dev);
-void pci_bus_read_resources(device_t dev);
-void pci_dev_set_resources(device_t dev);
-void pci_dev_enable_resources(device_t dev);
-void pci_bus_enable_resources(device_t dev);
+void pci_dev_read_resources(struct device *dev);
+void pci_bus_read_resources(struct device *dev);
+void pci_dev_set_resources(struct device *dev);
+void pci_dev_enable_resources(struct device *dev);
+void pci_bus_enable_resources(struct device *dev);
 void pci_bus_reset(struct bus *bus);
-device_t pci_probe_dev(device_t dev, struct bus *bus, unsigned int devfn);
+struct device *pci_probe_dev(struct device *dev, struct bus *bus,
+				unsigned int devfn);
 
 void do_pci_scan_bridge(device_t bus,
 	void (*do_scan_bus)(struct bus *bus,
 		unsigned int min_devfn, unsigned int max_devfn));
 
-void pci_scan_bridge(device_t bus);
+void pci_scan_bridge(struct device *bus);
 void pci_scan_bus(struct bus *bus, unsigned int min_devfn,
 	unsigned int max_devfn);
 
@@ -87,22 +91,22 @@ uint8_t pci_moving_config8(struct device *dev, unsigned int reg);
 uint16_t pci_moving_config16(struct device *dev, unsigned int reg);
 uint32_t pci_moving_config32(struct device *dev, unsigned int reg);
 struct resource *pci_get_resource(struct device *dev, unsigned long index);
-void pci_dev_set_subsystem(device_t dev, unsigned int vendor,
+void pci_dev_set_subsystem(struct device *dev, unsigned int vendor,
 	unsigned int device);
 void pci_dev_init(struct device *dev);
-unsigned int pci_match_simple_dev(device_t dev, pci_devfn_t sdev);
+unsigned int pci_match_simple_dev(struct device *dev, pci_devfn_t sdev);
 
 const char *pin_to_str(int pin);
-int get_pci_irq_pins(device_t dev, device_t *parent_bdg);
+int get_pci_irq_pins(struct device *dev, struct device **parent_bdg);
 void pci_assign_irqs(unsigned int bus, unsigned int slot,
 		     const unsigned char pIntAtoD[4]);
-const char *get_pci_class_name(device_t dev);
-const char *get_pci_subclass_name(device_t dev);
+const char *get_pci_class_name(struct device *dev);
+const char *get_pci_subclass_name(struct device *dev);
 
 #define PCI_IO_BRIDGE_ALIGN 4096
 #define PCI_MEM_BRIDGE_ALIGN (1024*1024)
 
-static inline const struct pci_operations *ops_pci(device_t dev)
+static inline const struct pci_operations *ops_pci(struct device *dev)
 {
 	const struct pci_operations *pops;
 	pops = 0;
@@ -111,16 +115,14 @@ static inline const struct pci_operations *ops_pci(device_t dev)
 	return pops;
 }
 
-#endif /* ! __SIMPLE_DEVICE__ */
-
 #ifdef __SIMPLE_DEVICE__
 unsigned int pci_find_next_capability(pci_devfn_t dev, unsigned int cap,
 	unsigned int last);
 unsigned int pci_find_capability(pci_devfn_t dev, unsigned int cap);
 #else /* !__SIMPLE_DEVICE__ */
-unsigned int pci_find_next_capability(device_t dev, unsigned int cap,
+unsigned int pci_find_next_capability(struct device *dev, unsigned int cap,
 	unsigned int last);
-unsigned int pci_find_capability(device_t dev, unsigned int cap);
+unsigned int pci_find_capability(struct device *dev, unsigned int cap);
 #endif /* __SIMPLE_DEVICE__ */
 
 void pci_early_bridge_init(void);

@@ -18,6 +18,8 @@ struct device;
 
 #ifndef __SIMPLE_DEVICE__
 typedef struct device *device_t;
+#endif
+
 struct pci_operations;
 struct pci_bus_operations;
 struct i2c_bus_operations;
@@ -43,33 +45,33 @@ struct smbios_type11;
 struct acpi_rsdp;
 
 struct device_operations {
-	void (*read_resources)(device_t dev);
-	void (*set_resources)(device_t dev);
-	void (*enable_resources)(device_t dev);
-	void (*init)(device_t dev);
-	void (*final)(device_t dev);
-	void (*scan_bus)(device_t bus);
-	void (*enable)(device_t dev);
-	void (*disable)(device_t dev);
-	void (*set_link)(device_t dev, unsigned int link);
+	void (*read_resources)(struct device *dev);
+	void (*set_resources)(struct device *dev);
+	void (*enable_resources)(struct device *dev);
+	void (*init)(struct device *dev);
+	void (*final)(struct device *dev);
+	void (*scan_bus)(struct device *bus);
+	void (*enable)(struct device *dev);
+	void (*disable)(struct device *dev);
+	void (*set_link)(struct device *dev, unsigned int link);
 	void (*reset_bus)(struct bus *bus);
 #if IS_ENABLED(CONFIG_GENERATE_SMBIOS_TABLES)
-	int (*get_smbios_data)(device_t dev, int *handle,
+	int (*get_smbios_data)(struct device *dev, int *handle,
 		unsigned long *current);
-	void (*get_smbios_strings)(device_t dev, struct smbios_type11 *t);
+	void (*get_smbios_strings)(struct device *dev, struct smbios_type11 *t);
 #endif
 #if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
-	unsigned long (*write_acpi_tables)(device_t dev, unsigned long start,
-		struct acpi_rsdp *rsdp);
-	void (*acpi_fill_ssdt_generator)(device_t dev);
-	void (*acpi_inject_dsdt_generator)(device_t dev);
-	const char *(*acpi_name)(device_t dev);
+	unsigned long (*write_acpi_tables)(struct device *dev,
+		unsigned long start, struct acpi_rsdp *rsdp);
+	void (*acpi_fill_ssdt_generator)(struct device *dev);
+	void (*acpi_inject_dsdt_generator)(struct device *dev);
+	const char *(*acpi_name)(struct device *dev);
 #endif
 	const struct pci_operations *ops_pci;
 	const struct i2c_bus_operations *ops_i2c_bus;
 	const struct spi_bus_operations *ops_spi_bus;
 	const struct smbus_bus_operations *ops_smbus_bus;
-	const struct pci_bus_operations * (*ops_pci_bus)(device_t dev);
+	const struct pci_bus_operations * (*ops_pci_bus)(struct device *dev);
 	const struct pnp_mode_ops *ops_pnp_mode;
 };
 
@@ -78,9 +80,6 @@ struct device_operations {
  */
 static inline void device_noop(struct device *dev) {}
 #define DEVICE_NOOP device_noop
-
-#endif /* ! __SIMPLE_DEVICE__ */
-
 
 struct bus {
 

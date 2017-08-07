@@ -162,7 +162,7 @@ unsigned pci_find_next_capability(struct device *dev, unsigned cap,
  * @param cap PCI_CAP_LIST_ID of the PCI capability we're looking for.
  * @return The next matching capability.
  */
-unsigned pci_find_capability(device_t dev, unsigned cap)
+unsigned int pci_find_capability(struct device *dev, unsigned int cap)
 {
 	return pci_find_next_capability(dev, cap, 0);
 }
@@ -781,7 +781,7 @@ struct device_operations default_pci_ops_bus = {
  * @param dev Pointer to the device structure of the bridge.
  * @return Appropriate bridge operations.
  */
-static struct device_operations *get_pci_bridge_ops(device_t dev)
+static struct device_operations *get_pci_bridge_ops(struct device *dev)
 {
 #if IS_ENABLED(CONFIG_PCIX_PLUGIN_SUPPORT)
 	unsigned int pcixpos;
@@ -976,7 +976,8 @@ static struct device *pci_scan_get_dev(struct device **list, unsigned int devfn)
  * @param devfn A device/function number to look at.
  * @return The device structure for the device (if found), NULL otherwise.
  */
-device_t pci_probe_dev(device_t dev, struct bus *bus, unsigned devfn)
+struct device *pci_probe_dev(struct device *dev, struct bus *bus,
+				unsigned int devfn)
 {
 	u32 id, class;
 	u8 hdr_type;
@@ -1083,7 +1084,7 @@ device_t pci_probe_dev(device_t dev, struct bus *bus, unsigned devfn)
  * @param sdev Simple device model identifier, created with PCI_DEV().
  * @return Non-zero if bus:dev.fn of device matches.
  */
-unsigned int pci_match_simple_dev(device_t dev, pci_devfn_t sdev)
+unsigned int pci_match_simple_dev(struct device *dev, pci_devfn_t sdev)
 {
 	return dev->bus->secondary == PCI_DEV2SEGBUS(sdev) &&
 			dev->path.pci.devfn == PCI_DEV2DEVFN(sdev);
@@ -1152,7 +1153,7 @@ void pci_scan_bus(struct bus *bus, unsigned min_devfn,
 	 * There's probably a problem in devicetree.cb.
 	 */
 	if (old_devices) {
-		device_t left;
+		struct device *left;
 		printk(BIOS_WARNING, "PCI: Left over static devices:\n");
 		for (left = old_devices; left; left = left->sibling)
 			printk(BIOS_WARNING, "%s\n", dev_path(left));
@@ -1289,7 +1290,7 @@ void pci_scan_bridge(struct device *dev)
  *
  * @param dev Pointer to the domain.
  */
-void pci_domain_scan_bus(device_t dev)
+void pci_domain_scan_bus(struct device *dev)
 {
 	struct bus *link = dev->link_list;
 	pci_scan_bus(link, PCI_DEVFN(0, 0), 0xff);
@@ -1335,10 +1336,10 @@ const char *pin_to_str(int pin)
  * @return The interrupt pin number (1 - 4) that 'dev' will
  *         trigger when generating an interrupt
  */
-static int swizzle_irq_pins(device_t dev, device_t *parent_bridge)
+static int swizzle_irq_pins(struct device *dev, struct device **parent_bridge)
 {
-	device_t parent;	/* Our current device's parent device */
-	device_t child;		/* The child device of the parent */
+	struct device *parent;	/* Our current device's parent device */
+	struct device *child;		/* The child device of the parent */
 	uint8_t parent_bus = 0;		/* Parent Bus number */
 	uint16_t parent_devfn = 0;	/* Parent Device and Function number */
 	uint16_t child_devfn = 0;	/* Child Device and Function number */
@@ -1403,7 +1404,7 @@ static int swizzle_irq_pins(device_t dev, device_t *parent_bridge)
  *         Errors: -1 is returned if the device is not enabled
  *                 -2 is returned if a parent bridge could not be found.
  */
-int get_pci_irq_pins(device_t dev, device_t *parent_bdg)
+int get_pci_irq_pins(struct device *dev, struct device **parent_bdg)
 {
 	uint8_t bus = 0;	/* The bus this device is on */
 	uint16_t devfn = 0;	/* This device's device and function numbers */
@@ -1465,7 +1466,7 @@ void pci_assign_irqs(unsigned bus, unsigned slot,
 		     const unsigned char pIntAtoD[4])
 {
 	unsigned int funct;
-	device_t pdev;
+	struct device *pdev;
 	u8 line, irq;
 
 	/* Each slot may contain up to eight functions. */

@@ -46,6 +46,10 @@ test_for_final_newline() {
 	done
 }
 
+if [ -n "${LINT_SKIP_NEWLINE_CHECK}" ]; then
+	exit 0
+fi
+
 ${FIND_FILES} | sed 's|^\./||' | sort | \
 	grep -v "$EXCLUDED_DIRS" | \
 	grep -v "$EXCLUDED_FILES" | \

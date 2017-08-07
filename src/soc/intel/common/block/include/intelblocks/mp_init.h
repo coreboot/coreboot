@@ -28,8 +28,13 @@
 #define CPUID_KABYLAKE_Y0	0x806ea
 #define CPUID_KABYLAKE_HA0	0x506e8
 #define CPUID_KABYLAKE_HB0	0x906e9
+#define CPUID_CANNONLAKE_A0	0x60660
+#define CPUID_CANNONLAKE_B0	0x60661
+#define CPUID_CANNONLAKE_C0	0x60662
 #define CPUID_APOLLOLAKE_A0	0x506c8
 #define CPUID_APOLLOLAKE_B0	0x506c9
+#define CPUID_GLK_A0		0x706a0
+#define CPUID_GLK_B0		0x706a1
 
 /*
  * MP Init callback function to Find CPU Topology. This function is common

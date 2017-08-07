@@ -49,7 +49,7 @@ DefinitionBlock (
 	#include "acpi/superio.asl"
 
 	/* Contains the supported sleep states for this chipset */
-	#include <southbridge/amd/cimx/sb800/acpi/sleepstates.asl>
+	#include <southbridge/amd/common/acpi/sleepstates.asl>
 
 	/* Contains the Sleep methods (WAK, PTS, GTS, etc.) */
 	#include "acpi/sleep.asl"

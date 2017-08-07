@@ -35,8 +35,6 @@ DefinitionBlock (
 	Name(PCBA, CONFIG_MMCONF_BASE_ADDRESS)	/* Base address of PCIe config space */
 	Name(HPBA, 0xFED00000)	/* Base address of HPET table */
 
-	Name(SSFG, 0x0D)		/* S1 support: bit 0, S2 Support: bit 1, etc. S0 & S5 assumed */
-
 	/* USB overcurrent mapping pins.   */
 	Name(UOM0, 0)
 	Name(UOM1, 2)
@@ -790,27 +788,8 @@ DefinitionBlock (
 
 	}   /* End Scope(_SB)  */
 
-
-	/* Supported sleep states: */
-	Name(\_S0, Package () {0x00, 0x00, 0x00, 0x00} )	/* (S0) - working state */
-
-	If (LAnd(SSFG, 0x01)) {
-		Name(\_S1, Package () {0x01, 0x01, 0x00, 0x00} )	/* (S1) - sleeping w/CPU context */
-	}
-	If (LAnd(SSFG, 0x02)) {
-		Name(\_S2, Package () {0x02, 0x02, 0x00, 0x00} )	/* (S2) - "light" Suspend to RAM */
-	}
-	If (LAnd(SSFG, 0x04)) {
-		Name(\_S3, Package () {0x03, 0x03, 0x00, 0x00} )	/* (S3) - Suspend to RAM */
-	}
-	If (LAnd(SSFG, 0x08)) {
-		Name(\_S4, Package () {0x04, 0x04, 0x00, 0x00} )	/* (S4) - Suspend to Disk */
-	}
-
-	Name(\_S5, Package () {0x05, 0x05, 0x00, 0x00} )	/* (S5) - Soft Off */
-
-	Name(\_SB.CSPS ,0)				/* Current Sleep State (S0, S1, S2, S3, S4, S5) */
-	Name(CSMS, 0)			/* Current System State */
+	/* Contains the supported sleep states for this chipset */
+	#include <southbridge/amd/common/acpi/sleepstates.asl>
 
 	/* Wake status package */
 	Name(WKST,Package(){Zero, Zero})

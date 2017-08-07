@@ -315,6 +315,27 @@ config USE_APOLLOLAKE_FSP_CAR
 
 endchoice
 
+choice
+	prompt "MPINIT code implementation"
+	default NO_COMMON_MPINIT if SOC_INTEL_APOLLOLAKE
+	default COMMON_MPINIT
+	help
+	  This option allows you to select MP Init Code path either
+	  from Intel Common Code implementation, or from SOC files.
+
+config NO_COMMON_MPINIT
+	bool "Not using Common MP Init code"
+	help
+	  Common code MP Init path is not used.
+
+config COMMON_MPINIT
+	bool "Using Common MP Init code"
+	select SOC_INTEL_COMMON_BLOCK_CPU_MPINIT
+	help
+	  Common code MP Init path is used.
+
+endchoice
+
 #
 # Each bit in QOS mask controls this many bytes. This is calculated as:
 # (CACHE_WAYS / CACHE_BITS_PER_MASK) * CACHE_LINE_SIZE * CACHE_SETS

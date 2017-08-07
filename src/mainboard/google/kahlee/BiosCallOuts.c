@@ -54,6 +54,10 @@ static AGESA_STATUS fch_initenv(UINT32 Func, UINTN FchData, VOID *ConfigPtr)
 			FchParams_env->Sata.SataIdeMode = TRUE;
 			break;
 		}
+
+		/* SDHCI/MMC configuration */
+		FchParams_env->Sd.SdSlotType = 1; /* eMMC */
+
 		printk(BIOS_DEBUG, "Done\n");
 	}
 

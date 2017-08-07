@@ -163,7 +163,8 @@ static void rx6110sa_init(struct device *dev)
 	 * VLF-bit can be cleared.
 	 */
 	while (!stopwatch_expired(&sw))
-		flags &= ~VLF_BIT;
+		;
+	flags &= ~VLF_BIT;
 	rx6110sa_write(dev, FLAG_REGISTER, flags);
 
 	/* Before setting the clock stop oscillator. */

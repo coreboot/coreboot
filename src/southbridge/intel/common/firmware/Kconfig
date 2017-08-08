@@ -91,10 +91,11 @@ config USE_ME_CLEANER
 	           only on reverse engineering and trial & error.
 
 	  See the project's page
-	  https://github.com/corna/me_cleaner
+	   https://github.com/corna/me_cleaner
 	  or the wiki
-	  https://github.com/corna/me_cleaner/wiki/How-does-it-work%3F
-	  https://github.com/corna/me_cleaner/wiki/me_cleaner-status
+	   https://github.com/corna/me_cleaner/wiki/How-to-apply-me_cleaner
+	   https://github.com/corna/me_cleaner/wiki/How-does-it-work%3F
+	   https://github.com/corna/me_cleaner/wiki/me_cleaner-status
 	  for more info about this tool
 
 	  If unsure, say N.

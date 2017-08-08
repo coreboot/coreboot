@@ -1,26 +1,44 @@
-# ME cleaner
+# me_cleaner
 
-A cleaner for Intel ME/TXE images.
+Intel ME is a coprocessor integrated in all post-2006 Intel boards, for which
+this [Libreboot page](https://libreboot.org/faq.html#intelme) has an excellent
+description. The main component of Intel ME is Intel AMT, and I suggest you to
+read [this Wikipedia page](https://en.wikipedia.org/wiki/Intel_Active_Management_Technology)
+for more information about it. In short, Intel ME is an irremovable environment
+with an obscure signed proprietary firmware, with full network and memory
+access, which poses a serious security threat.
+Even when disabled from the BIOS settings, Intel ME is active: the only way to
+be sure it is disabled is to remove its firmware from the flash chip.
 
-This tools removes any unnecessary partition from an Intel ME/TXE firmware, reducing
-its size and its ability to interact with the system.
-It should work both with coreboot and with the factory firmware.
+Before Nehalem (ME version 6, 2008/2009) the ME firmware could be removed
+completely from the flash chip by setting a couple of bits inside the flash
+descriptor, without the need to reverse-engineer the ME firmware.
 
-Currently this tool:
- * Scans the FPT (partition table) and checks that everything is correct
- * Removes any partition entry (except for FTPR) from FPT
- * Removes any partition except for the fundamental one (FTPR)
- * Removes the EFFS presence flag
- * Corrects the FPT checksum
- * Removes any non-essential LZMA or Huffman compressed module from the FTPR partition (pre-Skylake only)
- * Relocates the remaining parts of the FTPR partition to the top of the ME region (pre-Skylake only)
- * Checks the validity of the RSA signature of the FTPR partition
+Starting from Nehalem the Intel ME firmware can't be removed anymore: without a
+valid firmware the PC shuts off forcefully after 30 minutes. This project is an
+attempt to remove as much code as possible from such firmware without falling
+into the 30 minutes recovery mode.
 
-Don't forget to power cycle your PC after flashing the modified ME/TXE image
-(power off and power on, not just reboot).
+me_cleaner currently works on most architectures, see [me_cleaner status](https://github.com/corna/me_cleaner/wiki/me_cleaner-status) (or [its discussion](https://github.com/corna/me_cleaner/issues/3))
+for more info about them. me_cleaner works also on the TXE and SPS firmware.
 
-See the [current status](https://github.com/corna/me_cleaner/wiki/me_cleaner-status)
-or [a more detailed description](https://github.com/corna/me_cleaner/wiki/How-does-it-work%3F)
-of me_cleaner.
+If you want to understand how me_cleaner works, you can read the ["How does it work?" page](https://github.com/corna/me_cleaner/wiki/How-does-it-work%3F).
 
-Special thanks to Federico Amedeo Izzo for his help during the study of Intel ME.
+If you want to apply me_cleaner on your platform I suggest you to read the
+["How does it work?" page](https://github.com/corna/me_cleaner/wiki/How-does-it-work%3F)
+and then follow the guide ["How to apply me_cleaner"](https://github.com/corna/me_cleaner/wiki/How-to-apply-me_cleaner).
+
+For pre-Skylake firmware (ME version < 11) this tool removes almost everything,
+leaving only the two fundamental modules needed for the correct boot, ROMP and
+BUP. The code size is reduced from 1.5 MB (non-AMT firmware) or 5 MB (AMT
+firmware) to ~90 kB of compressed code.
+
+Starting from Skylake (ME version >= 11) the ME subsystem and the firmware
+structure have changed, requiring substantial changes in me_cleaner.
+The fundamental modules required for the correct boot are now four (rbe, kernel,
+syslib and bup) and the minimum code size is ~300 kB of compressed code (from
+the 2 MB of the non-AMT firmware and the 7 MB of the AMT one).
+
+This project is based on the work of the community; in particular I thank Igor
+Skochinsky, for the core information about Intel ME and its firmware structure,
+and Federico Amedeo Izzo, for its help during the study of Intel ME.

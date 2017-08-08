@@ -19,6 +19,7 @@ romstage-$(CONFIG_DRIVERS_UART_8250MEM) += uart.c
 
 ramstage-y += cbmem.c
 ramstage-$(CONFIG_PLATFORM_USES_FSP2_0) += reset.c
+ramstage-y += systemagent.c
 ramstage-$(CONFIG_DRIVERS_UART_8250MEM) += uart.c
 
 CPPFLAGS_common += -I$(src)/soc/intel/cannonlake/include/fsp20

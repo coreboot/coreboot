@@ -15,7 +15,7 @@
 
 #include <AGESA.h>
 #include <FchPlatform.h>
-#include <soc/hudson.h>
+#include <soc/southbridge.h>
 #include <stdlib.h>
 
 const GPIO_CONTROL oem_kahlee_gpio[] = {

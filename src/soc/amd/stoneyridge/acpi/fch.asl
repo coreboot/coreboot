@@ -157,7 +157,7 @@ Method(_INI, 0) {
 
 #if IS_ENABLED(CONFIG_ACPI_ENABLE_THERMAL_ZONE)
 	/* TODO: It is unstable. */
-	#include "acpi/AmdImc.asl" /* Hudson IMC function */
+	#include "acpi/AmdImc.asl"
 	ITZE() /* enable IMC Fan Control*/
 #endif
 } /* End Method(_SB._INI) */

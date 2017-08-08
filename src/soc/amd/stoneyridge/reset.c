@@ -18,7 +18,7 @@
 
 #include <arch/io.h>
 #include <reset.h>
-#include <soc/hudson.h>
+#include <soc/southbridge.h>
 
 #define HT_INIT_CONTROL			0x6c
  #define HTIC_BIOSR_Detect		(1 << 5)

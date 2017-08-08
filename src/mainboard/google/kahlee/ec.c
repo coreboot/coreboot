@@ -18,7 +18,7 @@
 #include <ec/google/chromeec/ec.h>
 #include "ec.h"
 #include <rules.h>
-#include <soc/hudson.h>
+#include <soc/southbridge.h>
 
 static void ramstage_ec_init(void)
 {

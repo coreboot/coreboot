@@ -31,7 +31,7 @@
 #include <pc80/i8259.h>
 #include <soc/acpi.h>
 #include <soc/pci_devs.h>
-#include <soc/hudson.h>
+#include <soc/southbridge.h>
 #include <soc/nvs.h>
 #include <vboot/vbnv.h>
 
@@ -105,7 +105,7 @@ static void lpc_init(device_t dev)
 	pm_write8(PM_SERIRQ_CONF, byte);
 }
 
-static void hudson_lpc_read_resources(device_t dev)
+static void lpc_read_resources(device_t dev)
 {
 	struct resource *res;
 	global_nvs_t *gnvs;
@@ -141,7 +141,7 @@ static void hudson_lpc_read_resources(device_t dev)
 	gnvs = cbmem_add(CBMEM_ID_ACPI_GNVS, sizeof(global_nvs_t));
 }
 
-static void hudson_lpc_set_resources(struct device *dev)
+static void lpc_set_resources(struct device *dev)
 {
 	struct resource *res;
 	u32 spi_enable_bits;
@@ -162,7 +162,7 @@ static void hudson_lpc_set_resources(struct device *dev)
  * @param dev the device whose children's resources are to be enabled
  *
  */
-static void hudson_lpc_enable_childrens_resources(device_t dev)
+static void lpc_enable_childrens_resources(device_t dev)
 {
 	struct bus *link;
 	u32 reg, reg_x;
@@ -218,7 +218,7 @@ static void hudson_lpc_enable_childrens_resources(device_t dev)
 					base = res->base;
 					end = resource_end(res);
 					/* find a resource size */
-					printk(BIOS_DEBUG, "hudson lpc decode:%s, base=0x%08x, end=0x%08x\n",
+					printk(BIOS_DEBUG, "Southbridge LPC decode:%s, base=0x%08x, end=0x%08x\n",
 					     dev_path(child), base, end);
 					switch (base) {
 					case 0x60:	/*  KB */
@@ -342,10 +342,10 @@ static void hudson_lpc_enable_childrens_resources(device_t dev)
 	pci_write_config8(dev, 0x74, wiosize);
 }
 
-static void hudson_lpc_enable_resources(device_t dev)
+static void lpc_enable_resources(device_t dev)
 {
 	pci_dev_enable_resources(dev);
-	hudson_lpc_enable_childrens_resources(dev);
+	lpc_enable_childrens_resources(dev);
 }
 
 unsigned long acpi_fill_mcfg(unsigned long current)
@@ -359,9 +359,9 @@ static struct pci_operations lops_pci = {
 };
 
 static struct device_operations lpc_ops = {
-	.read_resources = hudson_lpc_read_resources,
-	.set_resources = hudson_lpc_set_resources,
-	.enable_resources = hudson_lpc_enable_resources,
+	.read_resources = lpc_read_resources,
+	.set_resources = lpc_set_resources,
+	.enable_resources = lpc_enable_resources,
 	.acpi_inject_dsdt_generator = southbridge_inject_dsdt,
 	.write_acpi_tables = southbridge_write_acpi_tables,
 	.init = lpc_init,

@@ -25,7 +25,7 @@
 #include <device/pci_ops.h>
 #include <cbmem.h>
 #include <amd_pci_util.h>
-#include <soc/hudson.h>
+#include <soc/southbridge.h>
 #include <soc/smbus.h>
 #include <soc/smi.h>
 #if IS_ENABLED(CONFIG_STONEYRIDGE_IMC_FWM)
@@ -60,12 +60,12 @@ u16 pm_read16(u16 reg)
 	return read16((void *)(PM_MMIO_BASE + reg));
 }
 
-void hudson_enable(device_t dev)
+void sb_enable(device_t dev)
 {
-	printk(BIOS_DEBUG, "hudson_enable()\n");
+	printk(BIOS_DEBUG, "%s\n", __func__);
 }
 
-static void hudson_init_acpi_ports(void)
+static void sb_init_acpi_ports(void)
 {
 	/* We use some of these ports in SMM regardless of whether or not
 	 * ACPI tables are generated. Enable these ports indiscriminately.
@@ -80,7 +80,7 @@ static void hudson_init_acpi_ports(void)
 
 	if (IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)) {
 		pm_write16(PM_ACPI_SMI_CMD, ACPI_SMI_CTL_PORT);
-		hudson_enable_acpi_cmd_smi();
+		enable_acpi_cmd_smi();
 	} else {
 		pm_write16(PM_ACPI_SMI_CMD, 0);
 	}
@@ -91,12 +91,12 @@ static void hudson_init_acpi_ports(void)
 	pm_write8(PM_ACPI_CONF, BIT(0) | BIT(1) | BIT(4) | BIT(2));
 }
 
-void hudson_init(void *chip_info)
+void southbridge_init(void *chip_info)
 {
-	hudson_init_acpi_ports();
+	sb_init_acpi_ports();
 }
 
-void hudson_final(void *chip_info)
+void southbridge_final(void *chip_info)
 {
 #if IS_ENABLED(CONFIG_STONEYRIDGE_IMC_FWM)
 	agesawrapper_fchecfancontrolservice();

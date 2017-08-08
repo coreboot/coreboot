@@ -20,7 +20,7 @@
 #include <device/pci_ops.h>
 #include <device/pci_ehci.h>
 #include <arch/io.h>
-#include <soc/hudson.h>
+#include <soc/southbridge.h>
 
 static struct pci_operations lops_pci = {
 	.set_subsystem = pci_dev_set_subsystem,

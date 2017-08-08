@@ -15,7 +15,7 @@
 
 #include <bootblock_common.h>
 #include <ec.h>
-#include <soc/hudson.h>
+#include <soc/southbridge.h>
 
 void bootblock_mainboard_init(void)
 {
@@ -23,5 +23,5 @@ void bootblock_mainboard_init(void)
 	mainboard_ec_init();
 
 	/* Setup TPM decode before verstage */
-	hudson_tpm_decode_spi();
+	sb_tpm_decode_spi();
 }

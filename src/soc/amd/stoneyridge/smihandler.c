@@ -9,9 +9,8 @@
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <delay.h>
-#include <soc/hudson.h>
 #include <soc/smi.h>
-
+#include <soc/southbridge.h>
 
 
 #define SMI_0x88_ACPI_COMMAND		(1 << 11)
@@ -25,7 +24,7 @@ enum smi_source {
 	SMI_SOURCE_0x90 = (1 << 5)
 };
 
-static void hudson_apmc_smi_handler(void)
+static void sb_apmc_smi_handler(void)
 {
 	u32 reg32;
 	const uint8_t cmd = inb(ACPI_SMI_CTL_PORT);
@@ -88,7 +87,7 @@ static void process_smi_0x88(void)
 
 	if (status & SMI_0x88_ACPI_COMMAND) {
 		/* Command received via ACPI SMI command port */
-		hudson_apmc_smi_handler();
+		sb_apmc_smi_handler();
 	}
 	/* Clear events to prevent re-entering SMI if event isn't handled */
 	smi_write32(0x88, status);

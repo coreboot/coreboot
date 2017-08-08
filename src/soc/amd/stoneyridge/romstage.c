@@ -19,7 +19,7 @@
 #include <agesawrapper.h>
 #include <agesawrapper_call.h>
 #include <soc/northbridge.h>
-#include <soc/hudson.h>
+#include <soc/southbridge.h>
 #include <amdblocks/psp.h>
 
 asmlinkage void car_stage_entry(void)

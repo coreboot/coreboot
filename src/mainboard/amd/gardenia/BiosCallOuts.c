@@ -17,7 +17,7 @@
 #include <BiosCallOuts.h>
 #include <FchPlatform.h>
 #include <soc/imc.h>
-#include <soc/hudson.h>
+#include <soc/southbridge.h>
 #include <stdlib.h>
 
 static AGESA_STATUS fch_initenv(UINT32 Func, UINTN FchData, VOID *ConfigPtr)

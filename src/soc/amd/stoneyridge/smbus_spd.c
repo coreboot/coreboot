@@ -20,7 +20,7 @@
 #include <Porting.h>
 #include <AGESA.h>
 #include <amdlib.h>
-#include <soc/hudson.h>
+#include <soc/southbridge.h>
 #include <dimmSpd.h>
 
 /*-----------------------------------------------------------------------------
@@ -144,7 +144,7 @@ static void setupFch(int ioBase)
 	__outbyte(ioBase + 0x0e, 66000000 / 400000 / 4);
 }
 
-int hudson_readSpd(int spdAddress, char *buf, size_t len)
+int sb_readSpd(int spdAddress, char *buf, size_t len)
 {
 	int ioBase = 0xb00;
 	setupFch(ioBase);

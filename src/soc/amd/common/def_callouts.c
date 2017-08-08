@@ -23,7 +23,7 @@
 #include <agesawrapper.h>
 #include <BiosCallOuts.h>
 #include <dimmSpd.h>
-#include <soc/hudson.h>
+#include <soc/southbridge.h>
 
 AGESA_STATUS GetBiosCallout(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {

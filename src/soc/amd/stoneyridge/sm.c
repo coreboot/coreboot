@@ -24,7 +24,7 @@
 #include <cpu/x86/lapic.h>
 #include <arch/ioapic.h>
 #include <stdlib.h>
-#include <soc/hudson.h>
+#include <soc/southbridge.h>
 #include <soc/smbus.h>
 
 #define NMI_OFF 0
@@ -37,8 +37,8 @@
 #endif
 
 /*
-* HUDSON enables all USB controllers by default in SMBUS Control.
-* HUDSON enables SATA by default in SMBUS Control.
+* The southbridge enables all USB controllers by default in SMBUS Control.
+* The southbridge enables SATA by default in SMBUS Control.
 */
 
 static void sm_init(device_t dev)
@@ -108,11 +108,11 @@ static struct smbus_bus_operations lops_smbus_bus = {
 	.write_byte = lsmbus_write_byte,
 };
 
-static void hudson_sm_read_resources(device_t dev)
+static void sm_read_resources(device_t dev)
 {
 }
 
-static void hudson_sm_set_resources(struct device *dev)
+static void sm_set_resources(struct device *dev)
 {
 }
 
@@ -120,8 +120,8 @@ static struct pci_operations lops_pci = {
 	.set_subsystem = pci_dev_set_subsystem,
 };
 static struct device_operations smbus_ops = {
-	.read_resources = hudson_sm_read_resources,
-	.set_resources = hudson_sm_set_resources,
+	.read_resources = sm_read_resources,
+	.set_resources = sm_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init = sm_init,
 	.scan_bus = scan_smbus,

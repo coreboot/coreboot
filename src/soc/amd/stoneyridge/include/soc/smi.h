@@ -54,12 +54,12 @@ static inline void smi_write16(uint8_t offset, uint16_t value)
 	write16((void *)(SMI_BASE + offset), value);
 }
 
-void hudson_configure_gevent_smi(uint8_t gevent, uint8_t mode, uint8_t level);
-void hudson_disable_gevent_smi(uint8_t gevent);
-void hudson_enable_acpi_cmd_smi(void);
+void configure_gevent_smi(uint8_t gevent, uint8_t mode, uint8_t level);
+void disable_gevent_smi(uint8_t gevent);
+void enable_acpi_cmd_smi(void);
 
 #ifndef __SMM__
-void hudson_enable_smi_generation(void);
+void enable_smi_generation(void);
 #endif
 
 #endif /* _SOUTHBRIDGE_AMD_PI_STONEYRIDGE_SMI_H */

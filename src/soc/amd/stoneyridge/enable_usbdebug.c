@@ -20,7 +20,7 @@
 #include <arch/io.h>
 #include <device/pci_ehci.h>
 #include <device/pci_def.h>
-#include <soc/hudson.h>
+#include <soc/southbridge.h>
 
 #define DEBUGPORT_MISC_CONTROL		0x80
 

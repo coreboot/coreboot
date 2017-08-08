@@ -20,7 +20,7 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <arch/io.h>
-#include <soc/hudson.h>
+#include <soc/southbridge.h>
 
 
 static void sata_init(struct device *dev)

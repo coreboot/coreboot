@@ -16,7 +16,7 @@
 #include <AGESA.h>
 #include <BiosCallOuts.h>
 #include <FchPlatform.h>
-#include <soc/hudson.h>
+#include <soc/southbridge.h>
 #include <stdlib.h>
 
 extern const GPIO_CONTROL oem_kahlee_gpio[];

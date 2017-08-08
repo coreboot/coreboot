@@ -18,7 +18,7 @@
 #include <cpu/cpu.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <soc/hudson.h>
+#include <soc/southbridge.h>
 #include <soc/northbridge.h>
 
 static void cpu_bus_init(device_t dev)
@@ -58,17 +58,17 @@ static void enable_dev(device_t dev)
 	else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER)
 		dev->ops = &cpu_bus_ops;
 	else if (dev->path.type == DEVICE_PATH_PCI)
-		hudson_enable(dev);
+		sb_enable(dev);
 }
 
 static void soc_init(void *chip_info)
 {
-	hudson_init(chip_info);
+	southbridge_init(chip_info);
 }
 
 static void soc_final(void *chip_info)
 {
-	hudson_final(chip_info);
+	southbridge_final(chip_info);
 	fam15_finalize(chip_info);
 }
 

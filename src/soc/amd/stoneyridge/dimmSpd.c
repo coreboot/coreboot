@@ -43,7 +43,7 @@ AGESA_STATUS AmdMemoryReadSPD(UINT32 unused1, UINTN unused2,
 		[info->SocketId][info->MemChannelId][info->DimmId];
 	if (spdAddress == 0)
 		return AGESA_ERROR;
-	int err = hudson_readSpd(spdAddress, (void *)info->Buffer, 128);
+	int err = sb_readSpd(spdAddress, (void *)info->Buffer, 128);
 	if (err)
 		return AGESA_ERROR;
 	return AGESA_SUCCESS;

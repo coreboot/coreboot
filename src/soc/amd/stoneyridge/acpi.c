@@ -27,7 +27,7 @@
 #include <cbmem.h>
 #include <device/device.h>
 #include <soc/acpi.h>
-#include <soc/hudson.h>
+#include <soc/southbridge.h>
 #include <soc/nvs.h>
 #include <soc/smi.h>
 
@@ -84,7 +84,7 @@ void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 	fadt->dsdt = (u32) dsdt;
 	fadt->model = 0;		/* reserved, should be 0 ACPI 3.0 */
 	fadt->preferred_pm_profile = FADT_PM_PROFILE;
-	fadt->sci_int = 9;		/* HUDSON - IRQ 09 - ACPI SCI */
+	fadt->sci_int = 9;		/* IRQ 09 - ACPI SCI */
 
 	if (IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)) {
 		fadt->smi_cmd = ACPI_SMI_CTL_PORT;
@@ -111,7 +111,7 @@ void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 	fadt->pm2_cnt_blk = 0x0000;
 	fadt->pm_tmr_blk = ACPI_PM_TMR_BLK;
 	fadt->gpe0_blk = ACPI_GPE0_BLK;
-	fadt->gpe1_blk = 0x0000;		/* No gpe1 block in hudson */
+	fadt->gpe1_blk = 0x0000;		/* No gpe1 block  */
 
 	fadt->pm1_evt_len = 4;	/* 32 bits */
 	fadt->pm1_cnt_len = 2;	/* 16 bits */

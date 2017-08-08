@@ -14,7 +14,7 @@
  */
 
 #include <console/uart.h>
-#include <soc/hudson.h>
+#include <soc/southbridge.h>
 
 uintptr_t uart_platform_base(int idx)
 {

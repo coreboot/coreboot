@@ -39,7 +39,7 @@ static void configure_smi(uint8_t smi_num, uint8_t mode)
  *	       SMI_MODE_SMI generates an SMI. SMI_MODE_DISABLE disables events.
  * @param level SMI_LVL_LOW or SMI_LVL_HIGH
  */
-void hudson_configure_gevent_smi(uint8_t gevent, uint8_t mode, uint8_t level)
+void configure_gevent_smi(uint8_t gevent, uint8_t mode, uint8_t level)
 {
 	uint32_t reg32;
 	/* GEVENT pins range from [0:23] */
@@ -59,7 +59,7 @@ void hudson_configure_gevent_smi(uint8_t gevent, uint8_t mode, uint8_t level)
 }
 
 /** Disable events from given GEVENT pin */
-void hudson_disable_gevent_smi(uint8_t gevent)
+void disable_gevent_smi(uint8_t gevent)
 {
 	/* GEVENT pins range from [0:23] */
 	if (gevent > 23) {
@@ -72,7 +72,7 @@ void hudson_disable_gevent_smi(uint8_t gevent)
 }
 
 /** Enable SMIs on writes to ACPI SMI command port */
-void hudson_enable_acpi_cmd_smi(void)
+void enable_acpi_cmd_smi(void)
 {
 	configure_smi(STONEYRIDGE_SMI_ACPI_COMMAND, SMI_MODE_SMI);
 }

@@ -20,7 +20,7 @@
 #include <device/pci_ops.h>
 #include <arch/io.h>
 #include <delay.h>
-#include <soc/hudson.h>
+#include <soc/southbridge.h>
 
 static const unsigned short pci_device_ids[] = {
 	PCI_DEVICE_ID_AMD_SB900_HDA,

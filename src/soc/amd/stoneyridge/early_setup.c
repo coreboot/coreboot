@@ -21,13 +21,13 @@
 #include <reset.h>
 #include <arch/cpu.h>
 #include <cbmem.h>
-#include <soc/hudson.h>
+#include <soc/southbridge.h>
 #include <soc/pci_devs.h>
 #include <Fch/Fch.h>
 #include <cpu/x86/msr.h>
 #include <delay.h>
 
-void configure_hudson_uart(void)
+void configure_stoneyridge_uart(void)
 {
 	u8 byte;
 
@@ -50,7 +50,7 @@ void configure_hudson_uart(void)
 					+ 0x88, 0x01);
 }
 
-void hudson_pci_port80(void)
+void sb_pci_port80(void)
 {
 	u8 byte;
 	pci_devfn_t dev;
@@ -62,7 +62,7 @@ void hudson_pci_port80(void)
 	pci_write_config8(dev, 0x4a, byte);
 }
 
-void hudson_lpc_port80(void)
+void sb_lpc_port80(void)
 {
 	u8 byte;
 	pci_devfn_t dev;
@@ -81,7 +81,7 @@ void hudson_lpc_port80(void)
 	pci_write_config8(dev, 0x4a, byte);
 }
 
-void hudson_lpc_decode(void)
+void sb_lpc_decode(void)
 {
 	pci_devfn_t dev;
 	u32 tmp = 0;
@@ -222,7 +222,7 @@ int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos)
 	return nvram_pos;
 }
 
-void hudson_clk_output_48Mhz(void)
+void sb_clk_output_48Mhz(void)
 {
 	u32 ctrl;
 
@@ -237,7 +237,7 @@ void hudson_clk_output_48Mhz(void)
 	write32((void *)(ACPI_MMIO_BASE + MISC_BASE + FCH_MISC_REG40), ctrl);
 }
 
-static uintptr_t hudson_spibase(void)
+static uintptr_t sb_spibase(void)
 {
 	/* Make sure the base address is predictable */
 	device_t dev = PCI_DEV(0, PCU_DEV, LPC_FUNC);
@@ -256,9 +256,9 @@ static uintptr_t hudson_spibase(void)
 	return (uintptr_t)base;
 }
 
-void hudson_set_spi100(u16 norm, u16 fast, u16 alt, u16 tpm)
+void sb_set_spi100(u16 norm, u16 fast, u16 alt, u16 tpm)
 {
-	uintptr_t base = hudson_spibase();
+	uintptr_t base = sb_spibase();
 	write16((void *)base + SPI100_SPEED_CONFIG,
 				(norm << SPI_NORM_SPEED_NEW_SH) |
 				(fast << SPI_FAST_SPEED_NEW_SH) |
@@ -267,33 +267,32 @@ void hudson_set_spi100(u16 norm, u16 fast, u16 alt, u16 tpm)
 	write16((void *)base + SPI100_ENABLE, SPI_USE_SPI100);
 }
 
-void hudson_disable_4dw_burst(void)
+void sb_disable_4dw_burst(void)
 {
-	uintptr_t base = hudson_spibase();
+	uintptr_t base = sb_spibase();
 	write16((void *)base + SPI100_HOST_PREF_CONFIG,
 			read16((void *)base + SPI100_HOST_PREF_CONFIG)
 					& ~SPI_RD4DW_EN_HOST);
 }
 
-/* Hudson 1-3 only.  For Hudson 1, call with fast=1 */
-void hudson_set_readspeed(u16 norm, u16 fast)
+void sb_set_readspeed(u16 norm, u16 fast)
 {
-	uintptr_t base = hudson_spibase();
+	uintptr_t base = sb_spibase();
 	write16((void *)base + SPI_CNTRL1, (read16((void *)base + SPI_CNTRL1)
 					& ~SPI_CNTRL1_SPEED_MASK)
 					| (norm << SPI_NORM_SPEED_SH)
 					| (fast << SPI_FAST_SPEED_SH));
 }
 
-void hudson_read_mode(u32 mode)
+void sb_read_mode(u32 mode)
 {
-	uintptr_t base = hudson_spibase();
+	uintptr_t base = sb_spibase();
 	write32((void *)base + SPI_CNTRL0,
 			(read32((void *)base + SPI_CNTRL0)
 					& ~SPI_READ_MODE_MASK) | mode);
 }
 
-void hudson_tpm_decode_spi(void)
+void sb_tpm_decode_spi(void)
 {
 	device_t dev = PCI_DEV(0, PCU_DEV, LPC_FUNC);	/* LPC device */
 
@@ -308,10 +307,10 @@ void hudson_tpm_decode_spi(void)
  * Hardware should enable LPC ROM by pin straps. This function does not
  * handle the theoretically possible PCI ROM, FWH, or SPI ROM configurations.
  *
- * The HUDSON power-on default is to map 512K ROM space.
+ * The southbridge power-on default is to map 512K ROM space.
  *
  */
-void hudson_enable_rom(void)
+void sb_enable_rom(void)
 {
 	u8 reg8;
 	pci_devfn_t dev;
@@ -345,7 +344,7 @@ void hudson_enable_rom(void)
 
 void bootblock_fch_early_init(void)
 {
-	hudson_enable_rom();
-	hudson_lpc_port80();
-	hudson_lpc_decode();
+	sb_enable_rom();
+	sb_lpc_port80();
+	sb_lpc_decode();
 }

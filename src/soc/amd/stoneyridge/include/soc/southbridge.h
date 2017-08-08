@@ -138,13 +138,11 @@
 #define   SPI_READ_MODE_DUAL122		(BIT(30)                    )
 #define   SPI_READ_MODE_QUAD144		(BIT(30) |           BIT(18))
 #define   SPI_READ_MODE_NORMAL66	(BIT(30) | BIT(29)          )
-/* Nominal and SPI_READ_MODE_FAST_HUDSON1 are the only valid choices for H1 */
-#define   SPI_READ_MODE_FAST_HUDSON1	(                    BIT(18))
 #define   SPI_READ_MODE_FAST		(BIT(30) | BIT(29) | BIT(18))
 #define   SPI_ARB_ENABLE		BIT(19)
 
 #define SPI_CNTRL1			0x0c
-/* Use SPI_SPEED_16M-SPI_SPEED_66M below for hudson and bolton */
+/* Use SPI_SPEED_16M-SPI_SPEED_66M below for the southbridge */
 #define   SPI_CNTRL1_SPEED_MASK		(BIT(15) | BIT(14) | BIT(13) | BIT(12))
 #define   SPI_NORM_SPEED_SH		12
 #define   SPI_FAST_SPEED_SH		8
@@ -167,34 +165,34 @@
 #define SPI100_HOST_PREF_CONFIG		0x2c
 #define   SPI_RD4DW_EN_HOST		BIT(15)
 
-static inline int hudson_sata_enable(void)
+static inline int sb_sata_enable(void)
 {
 	/* True if IDE or AHCI. */
 	return (CONFIG_STONEYRIDGE_SATA_MODE == 0) ||
 					(CONFIG_STONEYRIDGE_SATA_MODE == 2);
 }
 
-static inline int hudson_ide_enable(void)
+static inline int sb_ide_enable(void)
 {
 	/* True if IDE or LEGACY IDE. */
 	return (CONFIG_STONEYRIDGE_SATA_MODE == 0) ||
 					(CONFIG_STONEYRIDGE_SATA_MODE == 3);
 }
 
-void hudson_enable_rom(void);
-void configure_hudson_uart(void);
-void hudson_clk_output_48Mhz(void);
-void hudson_disable_4dw_burst(void);
-void hudson_enable(device_t dev);
-void hudson_final(void *chip_info);
-void hudson_init(void *chip_info);
-void hudson_lpc_port80(void);
-void hudson_lpc_decode(void);
-void hudson_pci_port80(void);
-void hudson_read_mode(u32 mode);
-void hudson_set_spi100(u16 norm, u16 fast, u16 alt, u16 tpm);
-void hudson_set_readspeed(u16 norm, u16 fast);
-void hudson_tpm_decode_spi(void);
+void sb_enable_rom(void);
+void configure_stoneyridge_uart(void);
+void sb_clk_output_48Mhz(void);
+void sb_disable_4dw_burst(void);
+void sb_enable(device_t dev);
+void southbridge_final(void *chip_info);
+void southbridge_init(void *chip_info);
+void sb_lpc_port80(void);
+void sb_lpc_decode(void);
+void sb_pci_port80(void);
+void sb_read_mode(u32 mode);
+void sb_set_spi100(u16 norm, u16 fast, u16 alt, u16 tpm);
+void sb_set_readspeed(u16 norm, u16 fast);
+void sb_tpm_decode_spi(void);
 void lpc_wideio_512_window(uint16_t base);
 void lpc_wideio_16_window(uint16_t base);
 u8 pm_read8(u8 reg);

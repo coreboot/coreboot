@@ -20,7 +20,7 @@
 #include <bootblock_common.h>
 #include <agesawrapper.h>
 #include <agesawrapper_call.h>
-#include <soc/hudson.h>
+#include <soc/southbridge.h>
 
 asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 {
@@ -47,7 +47,7 @@ void bootblock_soc_early_init(void)
 
 	post_code(0x90);
 	if (CONFIG_STONEYRIDGE_UART)
-		configure_hudson_uart();
+		configure_stoneyridge_uart();
 }
 
 void bootblock_soc_init(void)

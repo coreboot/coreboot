@@ -16,7 +16,7 @@
 #include <AGESA.h>
 #include <BiosCallOuts.h>
 #include <FchPlatform.h>
-#include <soc/hudson.h>
+#include <soc/southbridge.h>
 #include <stdlib.h>
 
 static const GPIO_CONTROL oem_gardenia_gpio[] = {
@@ -53,8 +53,8 @@ static AGESA_STATUS fch_initreset(UINT32 Func, UINTN FchData, VOID *ConfigPtr)
 		FCH_RESET_DATA_BLOCK *FchParams_reset;
 		FchParams_reset = (FCH_RESET_DATA_BLOCK *)FchData;
 		printk(BIOS_DEBUG, "Fch OEM config in INIT RESET ");
-		FchParams_reset->FchReset.SataEnable = hudson_sata_enable();
-		FchParams_reset->FchReset.IdeEnable = hudson_ide_enable();
+		FchParams_reset->FchReset.SataEnable = sb_sata_enable();
+		FchParams_reset->FchReset.IdeEnable = sb_ide_enable();
 		FchParams_reset->EarlyOemGpioTable = oem_gardenia_gpio;
 		printk(BIOS_DEBUG, "Done\n");
 	}

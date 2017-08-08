@@ -402,6 +402,9 @@ unsigned int get_mem_min_tck(void)
 
 	/* If this is zero, it just means devicetree.cb didn't set it */
 	if (!cfg || cfg->max_mem_clock_mhz == 0) {
+		if (IS_ENABLED(CONFIG_NATIVE_RAMINIT_IGNORE_MAX_MEM_FUSES))
+			return TCK_1333MHZ;
+
 		rev = pci_read_config8(PCI_DEV(0, 0, 0), PCI_DEVICE_ID);
 
 		if ((rev & BASE_REV_MASK) == BASE_REV_SNB) {

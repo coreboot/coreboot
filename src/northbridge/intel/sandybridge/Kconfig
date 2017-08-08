@@ -44,6 +44,18 @@ config USE_NATIVE_RAMINIT
 	  Select if you want to use coreboot implementation of raminit rather than
 	  System Agent/MRC.bin. You should answer Y.
 
+config NATIVE_RAMINIT_IGNORE_MAX_MEM_FUSES
+	bool "Ignore vendor programmed fuses that limit max. DRAM frequency"
+	default n
+	depends on USE_NATIVE_RAMINIT
+	help
+	  Ignore the mainboard's vendor programmed fuses that might limit the
+	  maximum DRAM frequency. By selecting this option the fuses will be
+	  ignored and the only limits on DRAM frequency are set by RAM's SPD and
+	  hard fuses in southbridge's clockgen.
+	  Disabled by default as it might causes system instability.
+	  Handle with care!
+
 config CBFS_SIZE
 	hex
 	default 0x100000

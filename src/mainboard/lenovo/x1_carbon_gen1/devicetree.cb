@@ -15,9 +15,6 @@ chip northbridge/intel/sandybridge
 	register "gpu_panel_power_up_delay" = "300"
 	register "gpu_pch_backlight" = "0x11551155"
 
-	# Override fuse bits that hard-code the value to 666 Mhz
-	register "max_mem_clock_mhz" = "933"
-
 	device cpu_cluster 0 on
 		chip cpu/intel/socket_rPGA989
 			device lapic 0 on end

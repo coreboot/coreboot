@@ -2,3 +2,8 @@ config SOC_INTEL_COMMON_BLOCK_SMM
 	bool
 	help
 	  Intel Processor common SMM support
+
+config SOC_INTEL_COMMON_BLOCK_SMM_IO_TRAP
+	bool
+	help
+	  Intel Processor trap flag if it is supported

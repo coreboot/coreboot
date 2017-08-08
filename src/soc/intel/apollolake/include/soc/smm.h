@@ -30,7 +30,4 @@
 void southbridge_smm_clear_state(void);
 void southbridge_smm_enable_smi(void);
 
-/* Mainboard handler for GPI SMIs*/
-void mainboard_smi_gpi_handler(const struct gpi_status *sts);
-
 #endif

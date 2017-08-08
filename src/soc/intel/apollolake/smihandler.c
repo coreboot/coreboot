@@ -34,26 +34,11 @@ const struct smm_save_state_ops *get_smm_save_state_ops(void)
 	return &em64t100_smm_ops;
 }
 
-void __attribute__((weak))
-mainboard_smi_gpi_handler(const struct gpi_status *sts) { }
-
-static void southbridge_smi_gpi(
-	const struct smm_save_state_ops *save_state_ops)
-{
-	struct gpi_status smi_sts;
-
-	gpi_clear_get_smi_status(&smi_sts);
-	mainboard_smi_gpi_handler(&smi_sts);
-
-	/* Clear again after mainboard handler */
-	gpi_clear_get_smi_status(&smi_sts);
-}
-
 const smi_handler_t southbridge_smi[32] = {
 	[SLP_SMI_STS] = smihandler_southbridge_sleep,
 	[APM_SMI_STS] = smihandler_southbridge_apmc,
 	[FAKE_PM1_SMI_STS] = smihandler_southbridge_pm1,
-	[GPIO_SMI_STS] = southbridge_smi_gpi,
+	[GPIO_SMI_STS] = smihandler_southbridge_gpi,
 	[TCO_SMI_STS] = smihandler_southbridge_tco,
 	[PERIODIC_SMI_STS] = smihandler_southbridge_periodic,
 };

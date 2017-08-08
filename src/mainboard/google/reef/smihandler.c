@@ -18,8 +18,8 @@
 #include <baseboard/variants.h>
 #include <cpu/x86/smm.h>
 #include <ec/google/chromeec/smm.h>
+#include <intelblocks/smihandler.h>
 #include <soc/pm.h>
-#include <soc/smm.h>
 #include <soc/gpio.h>
 #include <variant/ec.h>
 #include <variant/gpio.h>

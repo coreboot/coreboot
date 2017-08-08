@@ -109,6 +109,21 @@ void smihandler_southbridge_periodic(
 	const struct smm_save_state_ops *save_state_ops);
 
 /*
+ * This function should be implemented in SOC specific code to handle
+ * SMI GPIO_STS event. The default functionality is provided in
+ * soc/intel/common/block/smm/smihandler.c
+ */
+void smihandler_southbridge_gpi(
+	const struct smm_save_state_ops *save_state_ops);
+
+/*
+ * This function should be implemented in SOC specific code to handle
+ * SMI ESPI_STS event. The default functionality is provided in
+ * soc/intel/common/block/smm/smihandler.c
+ */
+void smihandler_southbridge_espi(
+	const struct smm_save_state_ops *save_state_ops);
+/*
  * This function returns a 1 or 0 depending on whether disable_busmaster
  * needs to be done for the specified device on S5 entry
  */
@@ -121,6 +136,9 @@ struct global_nvs_t *smm_get_gnvs(void);
 
 /* Mainboard handler for GPI SMIs */
 void mainboard_smi_gpi_handler(const struct gpi_status *sts);
+
+/* Mainboard handler for ESPI EMIs */
+void mainboard_smi_espi_handler(void);
 
 extern const struct smm_save_state_ops em64t100_smm_ops;
 

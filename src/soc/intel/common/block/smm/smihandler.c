@@ -356,6 +356,29 @@ void smihandler_southbridge_periodic(
 	printk(BIOS_DEBUG, "Periodic SMI.\n");
 }
 
+void __attribute__((weak))
+mainboard_smi_gpi_handler(const struct gpi_status *sts) { }
+
+void smihandler_southbridge_gpi(
+	const struct smm_save_state_ops *save_state_ops)
+{
+	struct gpi_status smi_sts;
+
+	gpi_clear_get_smi_status(&smi_sts);
+	mainboard_smi_gpi_handler(&smi_sts);
+
+	/* Clear again after mainboard handler */
+	gpi_clear_get_smi_status(&smi_sts);
+}
+
+void __attribute__((weak)) mainboard_smi_espi_handler(void) { }
+
+void smihandler_southbridge_espi(
+	const struct smm_save_state_ops *save_state_ops)
+{
+	mainboard_smi_espi_handler();
+}
+
 void southbridge_smi_handler(void)
 {
 	int i;

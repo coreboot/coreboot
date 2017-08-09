@@ -273,8 +273,8 @@ int main(int argc, char *argv[])
 	struct pci_access *pacc;
 	struct pci_dev *sb = NULL, *nb, *gfx = NULL, *ahci = NULL, *dev;
 	const char *dump_spd_file = NULL;
-	int i, opt, option_index = 0;
-	unsigned int id;
+	int opt, option_index = 0;
+	unsigned int id, i;
 
 	char *sbname = "unknown", *nbname = "unknown", *gfxname = "unknown";
 

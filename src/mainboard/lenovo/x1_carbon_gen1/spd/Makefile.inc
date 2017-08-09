@@ -16,8 +16,8 @@
 SPD_BIN = $(obj)/spd.bin
 
 SPD_SOURCES  = elpida.hex    # 0b0000 Single Channel 2GB
-SPD_SOURCES  = samsung.hex   # 0b0001 placeholder
-SPD_SOURCES  = samsung.hex   # 0b0010 4GiB
+SPD_SOURCES  += samsung.hex  # 0b0001 placeholder
+SPD_SOURCES  += samsung.hex  # 0b0010 4GiB
 SPD_DEPS := $(foreach f, $(SPD_SOURCES), src/mainboard/$(MAINBOARDDIR)/spd/$(f))
 
 # Include spd ROM data

@@ -117,14 +117,13 @@ static int open_and_seek(int cpu, unsigned long msr, int mode, int *fd)
 	*fd = open(dev, mode);
 
 	if (*fd < 0) {
-		sprintf(temp_string,
-			"open(\"%s\"): %s\n", dev, strerror(errno));
+		snprintf(temp_string, sizeof(temp_string), "open(\"%s\")", dev);
 		perror(temp_string);
 		return -1;
 	}
 
 	if (lseek(*fd, msr, SEEK_SET) == (off_t)-1) {
-		sprintf(temp_string, "lseek(%lu): %s\n", msr, strerror(errno));
+		snprintf(temp_string, sizeof(temp_string), "lseek(%lu)", msr);
 		perror(temp_string);
 		close(*fd);
 		return -1;
@@ -141,7 +140,8 @@ msr_t rdmsr_from_cpu(int cpu, unsigned long addr)
 	char temp_string[50];
 
 	if (open_and_seek(cpu, addr, O_RDONLY, &fd) < 0) {
-		sprintf(temp_string, "Could not read MSR for CPU#%d", cpu);
+		snprintf(temp_string, sizeof(temp_string),
+			"Could not read MSR for CPU#%d", cpu);
 		perror(temp_string);
 	}
 
@@ -194,13 +194,11 @@ int print_sgx(void)
 #ifndef __DARWIN__
 	int ncpus = get_number_of_cpus();
 	int i = 0;
-	char temp_string[50];
 
 	printf("\n============= Dumping INTEL SGX status =============");
 
 	if (ncpus < 1) {
-		sprintf(temp_string, "Failed to get number of CPUs\n");
-		perror(temp_string);
+		perror("Failed to get number of CPUs");
 		error = -1;
 	} else {
 		printf("\nNumber of CPUs = %d\n", ncpus);

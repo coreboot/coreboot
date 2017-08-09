@@ -417,7 +417,7 @@ int main(int argc, char *argv[]) {
 	if (optind == argc) {
 		syntax(argv);
 		printf("\nNo mode or address(es) specified!\n");
-		goto done;
+		return 1;
 	}
 
 	if (!found_system())

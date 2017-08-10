@@ -65,7 +65,16 @@ void lpss_clk_update(uintptr_t base, uint32_t clk_m_val, uint32_t clk_n_val)
 
 	addr += LPSS_CLOCK_CTL_REG;
 	clk_sel = LPSS_CLOCK_DIV_N(clk_n_val) | LPSS_CLOCK_DIV_M(clk_m_val);
+	clk_sel |= LPSS_CNT_CLK_UPDATE | LPSS_CNT_CLOCK_EN;
 
-	write32(addr, clk_sel | LPSS_CNT_CLK_UPDATE);
-	write32(addr, clk_sel | LPSS_CNT_CLOCK_EN);
+	write32(addr, clk_sel);
+}
+
+uint32_t lpss_clk_read(uintptr_t base)
+{
+	uint8_t *addr = (void *)base;
+
+	addr += LPSS_CLOCK_CTL_REG;
+
+	return read32(addr);
 }

@@ -17,6 +17,7 @@
 #include <intelblocks/cse.h>
 #include <fsp/util.h>
 #include <reset.h>
+#include <string.h>
 #include <timer.h>
 
 /* Reset Request  */
@@ -65,6 +66,7 @@ static int send_heci_reset_message(void)
 		return -1;
 
 	reply_size = sizeof(reply);
+	memset(&reply, 0, reply_size);
 	heci_receive(&reply, &reply_size);
 	/* get reply result from HECI MSG  */
 	if (reply.result != 0) {

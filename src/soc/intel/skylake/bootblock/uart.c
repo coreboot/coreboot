@@ -27,9 +27,7 @@
 
 /* Serial IO UART controller legacy mode */
 #define PCR_SERIAL_IO_GPPRVRW7		0x618
-#define PCR_SIO_PCH_LEGACY_UART0	(1 << 0)
-#define PCR_SIO_PCH_LEGACY_UART1	(1 << 1)
-#define PCR_SIO_PCH_LEGACY_UART2	(1 << 2)
+#define PCR_SIO_PCH_LEGACY_UART(idx)	(1 << (idx))
 
 /* UART2 pad configuration. Support RXD and TXD for now. */
 static const struct pad_config uart2_pads[] = {
@@ -44,9 +42,16 @@ void pch_uart_init(void)
 	uart_common_init(PCH_DEV_UART2, base);
 
 	/* Put UART2 in byte access mode for 16550 compatibility */
-	if (!IS_ENABLED(CONFIG_DRIVERS_UART_8250MEM_32))
+	if (!IS_ENABLED(CONFIG_DRIVERS_UART_8250MEM_32)) {
 		pcr_write32(PID_SERIALIO, PCR_SERIAL_IO_GPPRVRW7,
-			PCR_SIO_PCH_LEGACY_UART2);
+			PCR_SIO_PCH_LEGACY_UART(CONFIG_UART_FOR_CONSOLE));
+
+		/*
+		 * Dummy read after setting any of GPPRVRW7.
+		 * Required for UART 16550 8-bit Legacy mode to become active
+		 */
+		lpss_clk_read(base);
+	}
 
 	gpio_configure_pads(uart2_pads, ARRAY_SIZE(uart2_pads));
 }

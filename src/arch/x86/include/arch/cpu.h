@@ -297,6 +297,13 @@ void *postcar_commit_mtrrs(struct postcar_frame *pcf);
  * utilizes prog_run() internally.
  */
 void run_postcar_phase(struct postcar_frame *pcf);
+
+/*
+ * Systems without a native coreboot cache-as-ram teardown may implement
+ * this to use an alternate method.
+ */
+void late_car_teardown(void);
+
 #endif
 
 #endif /* ARCH_CPU_H */

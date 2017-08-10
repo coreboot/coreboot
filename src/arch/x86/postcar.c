@@ -13,18 +13,22 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/cpu.h>
 #include <cbmem.h>
 #include <console/console.h>
 #include <main_decl.h>
 #include <program_loading.h>
 #include <soc/intel/common/util.h>
-#include <fsp/util.h>
+
+/*
+ * Systems without a native coreboot cache-as-ram teardown may implement
+ * this to use an alternate method.
+ */
+__attribute__((weak)) void late_car_teardown(void) { /* do nothing */ }
 
 void main(void)
 {
-	/* Call TempRamExit FSP API if enabled. */
-	if (IS_ENABLED(CONFIG_FSP_CAR))
-		fsp_temp_ram_exit();
+	late_car_teardown();
 
 	console_init();
 

@@ -20,6 +20,7 @@
 .globl chipset_teardown_car
 
 chipset_teardown_car:
+	pop	%esp
 
 	/* Disable cache */
 	movl	%cr0, %eax
@@ -33,4 +34,4 @@ chipset_teardown_car:
 	andl	$(~(CR0_CD | CR0_NW)), %eax
 	movl	%eax, %cr0
 
-	ret
+	jmp	*%esp

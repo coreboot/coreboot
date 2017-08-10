@@ -252,3 +252,30 @@ on https://github.com/magicmonty/bash-git-prompt. Listed in that section are
 various lines that you can copy, uncomment and add to your .bashrc file to
 change the configurations. Example configurations include avoid fetching remote
 status, and supporting versions of Git older than 1.7.10.
+
+## Appendix: Miscellaneous Advice
+
+### Updating a commit after running git push:
+
+Suppose you would like to update a commit that has already been pushed to the
+remote repository. If the commit you wish to update is the most recent
+commit you have made, after making your desired changes, stage the files
+(either using git add or in git cola), and amend the commit. To do so,
+if you are using the command line, run "git commit --amend." If you are
+using git cola, click on the gear icon located on the upper left side under
+**Commit** and select **Amend Last Commit** in the drop down menu. Then, stage
+the files you have changed, commit the changes, and run git push to push the
+changes to the remote repository. Your change should be reflected in Gerrit as
+a new patch set.
+
+If, however, the commit you wish to update is not the most recent commit you
+have made, you will first need to checkout that commit. To do so, find the
+URL of the commit on <https://review.coreboot.org> and go to that page; if
+the commit is one that you previously pushed, it can be found by selecting
+**My** and then **Changes** in the upper left corner. To checkout this commit,
+in the upper right corner, click on **Download**, and copy the command listed
+next to checkout by clicking **Copy to clipboard**. Then, run the copied
+command in your coreboot repository. Now, the last commit should be the most
+recent commit to that patch; to update it, make your desired changes, stage
+the files, then amend and push the commit using the instructions in the above
+paragraph.

@@ -222,6 +222,9 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 
 	soc_memory_init_params(m_cfg, config);
 
+	/* Skip creating Management Engine MBP HOB */
+	m_t_cfg->SkipMbpHob = 0x01;
+
 	/* Enable DMI Virtual Channel for ME */
 	m_t_cfg->DmiVcm = 0x01;
 

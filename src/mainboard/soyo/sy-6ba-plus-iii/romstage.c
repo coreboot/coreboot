@@ -14,7 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include <stdint.h>
 #include <device/pci_def.h>
 #include <device/pnp_def.h>
 #include <console/console.h>

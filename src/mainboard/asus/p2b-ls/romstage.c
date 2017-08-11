@@ -40,8 +40,5 @@ void mainboard_romstage_entry(unsigned long bist)
 	report_bist_failure(bist);
 
 	enable_smbus();
-	dump_spd_registers();
-	sdram_set_registers();
-	sdram_set_spd_registers();
-	sdram_enable();
+	sdram_initialize();
 }

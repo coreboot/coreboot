@@ -11,7 +11,9 @@ config USE_SAR
 	default n
 	help
 	  Enable it when wifi driver uses SAR configuration feature.
-	  VPD entry "wifi_sar" is required to support it.
+	  VPD entry "wifi_sar" is read to get SAR settings, if its
+	  not found driver may look into CBFS for default settigs.
+	  WIFI_SAR_CBFS is option to enable CBFS lookup.
 
 config SAR_ENABLE
 	bool
@@ -22,6 +24,26 @@ config DSAR_ENABLE
 	bool
 	default n
 	depends on USE_SAR
+
+config GEO_SAR_ENABLE
+	bool
+	default n
+	depends on USE_SAR
+
+config WIFI_SAR_CBFS
+	bool
+	default n
+	depends on USE_SAR
+	help
+	 wifi driver would look for "wifi_sar" vpd key and load SAR settings from
+	 it, if the vpd key is not found then the driver tries to look for sar
+	 settings from CBFS with file name wifi_sar_defaults.hex.
+	 So OEM/ODM can override wifi sar with VPD.
+
+config WIFI_SAR_CBFS_FILEPATH
+	string "The cbfs file which has WIFI SAR defaults"
+	depends on WIFI_SAR_CBFS
+	default "src/mainboard/$(MAINBOARDDIR)/wifi_sar_defaults.hex"
 
 config DSAR_SET_NUM
 	hex "Number of SAR sets when D-SAR is enabled"

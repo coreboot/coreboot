@@ -28,6 +28,9 @@
 /* EWRD Domain type */
 #define EWRD_DOMAIN_TYPE_WIFI 0x7
 
+/* WGDS Domain type */
+#define WGDS_DOMAIN_TYPE_WIFI 0x7
+
 struct drivers_intel_wifi_config {
 	unsigned wake; /* Wake pin for ACPI _PRW */
 };

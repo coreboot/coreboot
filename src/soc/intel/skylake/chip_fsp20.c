@@ -203,6 +203,14 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	tconfig->PchLockDownGlobalSmi = config->LockDownConfigGlobalSmi;
 	tconfig->PchLockDownBiosInterface = config->LockDownConfigBiosInterface;
 	tconfig->PchLockDownRtcLock = config->LockDownConfigRtcLock;
+	/*
+	 * To disable HECI, the Psf needs to be left unlocked
+	 * by FSP till end of post sequence. Based on the devicetree
+	 * setting, we set the appropriate PsfUnlock policy in FSP,
+	 * do the changes and then lock it back in coreboot during finalize.
+	 */
+	tconfig->PchSbAccessUnlock = (config->HeciEnabled == 0) ? 1 : 0;
+
 	params->PchLockDownBiosLock = config->LockDownConfigBiosLock;
 	params->PchLockDownSpiEiss = config->LockDownConfigSpiEiss;
 	params->PchSubSystemVendorId = config->PchConfigSubSystemVendorId;

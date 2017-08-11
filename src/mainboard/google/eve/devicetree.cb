@@ -289,11 +289,12 @@ chip soc/intel/skylake
 				register "name" = ""MAXL""
 				device i2c 3a on end
 			end
-			chip drivers/i2c/generic
-				register "hid" = ""10EC5663""
-				register "name" = ""RT53""
-				register "desc" = ""Realtek RT5663""
+			chip drivers/i2c/rt5663
 				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPP_D9)"
+				register "dc_offset_l_manual" = "0xffd160"
+				register "dc_offset_r_manual" = "0xffd1c0"
+				register "dc_offset_l_manual_mic" = "0xff8a10"
+				register "dc_offset_r_manual_mic" = "0xff8ab0"
 				device i2c 13 on end
 			end
 			chip drivers/i2c/generic

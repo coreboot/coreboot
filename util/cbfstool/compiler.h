@@ -16,6 +16,8 @@
 #ifndef __COMPILER_H__
 #define __COMPILER_H__
 
+#if !defined(__FreeBSD__)
+
 #if defined(__WIN32) || defined(__WIN64)
 #define __packed __attribute__((gcc_struct, packed))
 #else
@@ -23,6 +25,8 @@
 #endif
 
 #define __aligned(x) __attribute__((aligned(x)))
+#endif
+
 #define __always_unused __attribute__((unused))
 #define __must_check __attribute__((warn_unused_result))
 

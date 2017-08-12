@@ -1,0 +1,52 @@
+From 07742664925f8d055505220258f2589a9c73a80b Mon Sep 17 00:00:00 2001
+From: ReddestDream <reddestdream@gmail.com>
+Date: Wed, 3 May 2017 00:13:28 -0400
+Subject: [PATCH] CbSupportPei: prevent lower coreboot table from being
+ overwritten
+
+Exclude the bottom 4kb from being included in System Memory HoB
+
+diff --git a/CorebootModulePkg/CbSupportPei/CbSupportPei.c b/CorebootModulePkg/CbSupportPei/CbSupportPei.c
+index 262e6b9d7d..da8f060783 100755
+--- a/CorebootModulePkg/CbSupportPei/CbSupportPei.c
++++ b/CorebootModulePkg/CbSupportPei/CbSupportPei.c
+@@ -246,23 +246,20 @@ CbPeiEntryPoint (
+   UINTN                PmGpeEnBase;
+   CB_MEM_INFO          CbMemInfo;
+ 
+-  //
+-  // Report lower 640KB of RAM. Attribute EFI_RESOURCE_ATTRIBUTE_TESTED  
+-  // is intentionally omitted to prevent erasing of the coreboot header  
+-  // record before it is processed by CbParseMemoryInfo.
+-  //
+   BuildResourceDescriptorHob (
+     EFI_RESOURCE_SYSTEM_MEMORY,
+     (
+     EFI_RESOURCE_ATTRIBUTE_PRESENT |
+     EFI_RESOURCE_ATTRIBUTE_INITIALIZED |
++    EFI_RESOURCE_ATTRIBUTE_TESTED |
+     EFI_RESOURCE_ATTRIBUTE_UNCACHEABLE |
+     EFI_RESOURCE_ATTRIBUTE_WRITE_COMBINEABLE |
+     EFI_RESOURCE_ATTRIBUTE_WRITE_THROUGH_CACHEABLE |
+     EFI_RESOURCE_ATTRIBUTE_WRITE_BACK_CACHEABLE
+     ),
+-    (EFI_PHYSICAL_ADDRESS)(0),
+-    (UINT64)(0xA0000)
++    // Lower 640KB, except for first 4KB where the lower coreboot pointer ("LBIO") resides
++    (EFI_PHYSICAL_ADDRESS)(0 + 0x1000),
++    (UINT64)(0xA0000 - 0x1000)
+     );
+ 
+ 
+@@ -309,7 +306,7 @@ CbPeiEntryPoint (
+   // Set cache on the physical memory
+   //
+   MtrrSetMemoryAttribute (BASE_1MB, LowMemorySize - BASE_1MB, CacheWriteBack);
+-  MtrrSetMemoryAttribute (0, 0xA0000, CacheWriteBack);
++  MtrrSetMemoryAttribute ((0 + 0x1000), (0xA0000 - 0x1000), CacheWriteBack);
+ 
+   //
+   // Create Memory Type Information HOB
+-- 
+2.14.0
+

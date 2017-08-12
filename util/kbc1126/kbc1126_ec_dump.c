@@ -49,9 +49,9 @@ void dump_fw(FILE *dst, FILE *src, long offset)
 	fread(&cksum, 2, 1, src);
 	fread(buf, len, 1, src);
 
-	for (size_t i = 0; i < len; i++) {
+	for (size_t i = 0; i < len; i++)
 		_cksum += buf[i];
-	}
+
 	if (_cksum == cksum) {
 		puts("checksum ok");
 	} else {
@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
 	if (argc != 2)
 		usage(argv[0]);
 
-	FILE *fp = fopen(argv[1], "rb+");
+	FILE *fp = fopen(argv[1], "rb");
 
 	if (fp == NULL) {
 		puts("Error opening file!");
@@ -89,8 +89,8 @@ int main(int argc, char *argv[])
 	strcat(fn1, ".fw1");
 	strcat(fn2, ".fw2");
 
-	FILE *fw1 = fopen(fn1, "wb+");
-	FILE *fw2 = fopen(fn2, "wb+");
+	FILE *fw1 = fopen(fn1, "wb");
+	FILE *fw2 = fopen(fn2, "wb");
 
 	long romsz;
 	FseekEnd(fp, -1);
@@ -103,14 +103,14 @@ int main(int argc, char *argv[])
 	}
 
 	/* read offset of fw1 and fw2 */
-	char offs[8];
+	unsigned char offs[8];
 	FseekEnd(fp, -0x100);
 	fread(offs, 8, 1, fp);
 
-	assert(offs[0] + offs[2] == '\xff');
-	assert(offs[1] + offs[3] == '\xff');
-	assert(offs[4] + offs[6] == '\xff');
-	assert(offs[5] + offs[7] == '\xff');
+	assert(offs[0] + offs[2] == 0xff);
+	assert(offs[1] + offs[3] == 0xff);
+	assert(offs[4] + offs[6] == 0xff);
+	assert(offs[5] + offs[7] == 0xff);
 	long offw1 = (offs[0] << 16) | (offs[1] << 8);
 	long offw2 = (offs[4] << 16) | (offs[5] << 8);
 

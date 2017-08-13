@@ -140,6 +140,10 @@ chip northbridge/intel/sandybridge
 					register "has_bdc_detection" = "1"
 					register "bdc_gpio_num" = "54"
 					register "bdc_gpio_lvl" = "0"
+
+					register "has_wwan_detection" = "1"
+					register "wwan_gpio_num" = "70"
+					register "wwan_gpio_lvl" = "0"
 				end
 				chip drivers/lenovo/hybrid_graphics
 					device pnp ff.f on end # dummy

@@ -172,6 +172,10 @@ chip northbridge/intel/sandybridge
 					#  BDC's connector pin14 is left floating
 					#  BDC's connector pin1 is routed to SB GPIO 54
 					register "has_bdc_detection" = "0"
+
+					register "has_wwan_detection" = "1"
+					register "wwan_gpio_num" = "70"
+					register "wwan_gpio_lvl" = "0"
 				end
 			end # LPC bridge
 			device pci 1f.2 on

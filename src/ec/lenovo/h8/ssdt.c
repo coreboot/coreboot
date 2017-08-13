@@ -46,6 +46,7 @@ void h8_ssdt_generator(struct device *dev)
 
 	/* Used by thinkpad_acpi */
 	acpigen_write_name_byte("HBDC", h8_has_bdc(dev) ? ONE_OP : ZERO_OP);
+	acpigen_write_name_byte("HWAN", h8_has_wwan(dev) ? ONE_OP : ZERO_OP);
 
 	acpigen_pop_len(); /* Scope HKEY */
 }

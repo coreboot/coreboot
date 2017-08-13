@@ -927,7 +927,7 @@ static void dll_ddr2(struct sysinfo *s)
 
 	if ((s->selected_timings.fsb_clk == FSB_CLOCK_800MHz) &&
 	    (s->selected_timings.mem_clk == MEM_CLOCK_667MHz)) {
-		i = MCHBAR8(0x180) & 0xf;
+		i = MCHBAR8(0x1c8) & 0xf;
 		i = (i + 10) % 14;
 		MCHBAR8(0x1c8) = (MCHBAR8(0x1c8) & ~0x1f) | i;
 		MCHBAR8(0x180) = MCHBAR8(0x180) | 0x10;

@@ -152,11 +152,12 @@ payloads/external/FILO/filo/build/version.h: filo
 
 # Grub
 
-grub2:
+grub2: $(obj)/config.h
 	$(MAKE) -C payloads/external/GRUB2 \
 			HOSTCC="$(HOSTCC)" \
 			CC="$(CC_x86_32)" LD="$(LD_x86_32)" \
 			OBJCOPY="$(OBJCOPY_x86_32)" STRIP="$(STRIP_x86_32)" \
+			CONFIG_DEP="$(abspath $(obj)/config.h)" \
 			CONFIG_GRUB2_MASTER=$(CONFIG_GRUB2_MASTER) \
 			CONFIG_GRUB2_REVISION=$(CONFIG_GRUB2_REVISION) \
 			CONFIG_GRUB2_REVISION_ID=$(CONFIG_GRUB2_REVISION_ID) \

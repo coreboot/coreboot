@@ -22,7 +22,7 @@ checkout:
 			git branch -f $(NAME-y) $(TAG-y) && \
 			git checkout $(NAME-y) || true
 
-config: checkout
+grub2/build/config.h: $(CONFIG_DEP) | checkout
 	echo "    CONFIG     GRUB2 $(NAME-y)"
 	rm -rf grub2/build
 	mkdir grub2/build
@@ -31,6 +31,8 @@ config: checkout
 	TARGET_CC="$(CC)" TARGET_OBJCOPY="$(OBJCOPY)" TARGET_STRIP="$(STRIP)" \
 	CFLAGS=-O2 TARGET_CFLAGS=-Os \
 	--with-platform=coreboot --enable-boot-time --disable-werror
+
+config: grub2/build/config.h checkout
 
 grub2: config
 	echo "    MAKE       GRUB2 $(NAME-y)"

@@ -155,7 +155,7 @@ payloads/external/FILO/filo/build/version.h: filo
 grub2:
 	$(MAKE) -C payloads/external/GRUB2 \
 			HOSTCC="$(HOSTCC)" \
-			CC="$(CC_x86_32)" LD="$(LD_x86_32)" OBJDUMP="$(OBJDUMP_x86_32)" \
+			CC="$(CC_x86_32)" LD="$(LD_x86_32)" \
 			OBJCOPY="$(OBJCOPY_x86_32)" STRIP="$(STRIP_x86_32)" \
 			CONFIG_GRUB2_MASTER=$(CONFIG_GRUB2_MASTER) \
 			CONFIG_GRUB2_REVISION=$(CONFIG_GRUB2_REVISION) \

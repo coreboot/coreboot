@@ -57,6 +57,9 @@ Device(EC)
 				KBLT, 1,	/* Keyboard Light */
 				    , 2,
 				USPW, 1,	/* USB Power enable */
+		Offset (0x48),
+				HPPI, 1,	/* Headphone plugged in */
+				GSTS, 1,	/* Master wireless switch */
 		Offset (0x4e),
 				WAKE, 16,
 		Offset (0x78),
@@ -288,18 +291,24 @@ Device(EC)
 		Name (_HID, EisaId ("IBM0068"))
 		Name (BTN, 0)
 		Name (BTAB, 0)
+
 		/* MASK */
 		Name (DHKN, 0x080C)
+
 		/* Effective Mask */
 		Name (EMSK, 0)
+
 		/* Effective Mask for tablet */
 		Name (ETAB, 0)
+
 		/* Device enabled. */
 		Name (EN, 0)
+
 		Method (_STA, 0, NotSerialized)
 		{
 			Return (0x0F)
 		}
+
 		/* Retrieve event. */
 		Method (MHKP, 0, NotSerialized)
 		{
@@ -317,6 +326,7 @@ Device(EC)
 			}
 			Return (Zero)
 		}
+
 		/* Report event  */
 		Method (RHK, 1, NotSerialized) {
 			ShiftLeft (One, Subtract (Arg0, 1), Local0)
@@ -325,6 +335,7 @@ Device(EC)
 				Notify (HKEY, 0x80)
 			}
 		}
+
 		/* Report tablet  */
 		Method (RTAB, 1, NotSerialized) {
 			ShiftLeft (One, Subtract (Arg0, 1), Local0)
@@ -333,6 +344,7 @@ Device(EC)
 				Notify (HKEY, 0x80)
 			}
 		}
+
 		/* Enable/disable all events.  */
 		Method (MHKC, 1, NotSerialized) {
 			If (Arg0) {
@@ -346,6 +358,7 @@ Device(EC)
 			}
 			Store (Arg0, EN)
 		}
+
 		/* Enable/disable event.  */
 		Method (MHKM, 2, NotSerialized) {
 			If (LLessEqual (Arg0, 0x20)) {
@@ -364,21 +377,25 @@ Device(EC)
 				}
 			}
 		}
+
 		/* Mask hotkey all. */
 		Method (MHKA, 0, NotSerialized)
 		{
 			Return (0x07FFFFFF)
 		}
+
 		/* Report tablet mode switch state */
 		Method (MHKG, 0, NotSerialized)
 		{
 			Return (ShiftLeft(TBSW, 3))
 		}
+
 		/* Mute audio */
 		Method (SSMS, 1, NotSerialized)
 		{
 			Store(Arg0, ALMT)
 		}
+
 		/* Control mute microphone LED */
 		Method (MMTS, 1, NotSerialized)
 		{
@@ -391,10 +408,17 @@ Device(EC)
 				TLED(0x0E)
 			}
 		}
+
 		/* Version */
 		Method (MHKV, 0, NotSerialized)
 		{
 			Return (0x0100)
+		}
+
+		/* Master wireless switch state */
+		Method (WLSW, 0, NotSerialized)
+		{
+			Return (\_SB.PCI0.LPCB.EC.GSTS)
 		}
 	}
 

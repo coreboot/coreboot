@@ -44,15 +44,6 @@ void h8_wlan_enable(int on)
 		ec_clr_bit(0x3a, 5);
 }
 
-/* Controls radio-off pin in WWAN MiniPCIe slot.  */
-static void h8_wwan_enable(int on)
-{
-	if (on)
-		ec_set_bit(0x3a, 6);
-	else
-		ec_clr_bit(0x3a, 6);
-}
-
 /* Controls radio-off pin in UWB MiniPCIe slot.  */
 static void h8_uwb_enable(int on)
 {
@@ -283,9 +274,7 @@ static void h8_enable(struct device *dev)
 	val = h8_has_bdc(dev) && h8_bluetooth_nv_enable();
 	h8_bluetooth_enable(val);
 
-	if (get_option(&val, "wwan") != CB_SUCCESS)
-		val = 1;
-
+	val = h8_has_wwan(dev) && h8_wwan_nv_enable();
 	h8_wwan_enable(val);
 
 	if (conf->has_uwb) {

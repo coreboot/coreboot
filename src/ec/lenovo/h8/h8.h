@@ -35,6 +35,10 @@ void h8_bluetooth_enable(int on);
 bool h8_bluetooth_nv_enable(void);
 bool h8_has_bdc(struct device *dev);
 
+void h8_wwan_enable(int on);
+bool h8_wwan_nv_enable(void);
+bool h8_has_wwan(struct device *dev);
+
 /* EC registers */
 #define H8_CONFIG0 0x00
 #define H8_CONFIG0_EVENTS_ENABLE	0x02

@@ -18,8 +18,6 @@
 #ifndef SUPERIO_WINBOND_W83627EHG_H
 #define SUPERIO_WINBOND_W83627EHG_H
 
-#include <arch/io.h>
-
 #define W83627EHG_FDC              0   /* Floppy */
 #define W83627EHG_PP               1   /* Parallel port */
 #define W83627EHG_SP1              2   /* Com1 */
@@ -51,8 +49,5 @@
 #define W83627EHG_GPIO3	((1 << 8) | W83627EHG_GPIO_SUSLED_V)
 #define W83627EHG_GPIO4	((2 << 8) | W83627EHG_GPIO_SUSLED_V)
 #define W83627EHG_GPIO5	((3 << 8) | W83627EHG_GPIO_SUSLED_V)
-
-void pnp_enter_ext_func_mode(pnp_devfn_t dev);
-void pnp_exit_ext_func_mode(pnp_devfn_t dev);
 
 #endif /* SUPERIO_WINBOND_W83627EHG_H */

@@ -124,9 +124,9 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	if (bist == 0)
 		bsp_apicid = init_cpus(cpu_init_detectedx, sysinfo);
 
-	pnp_enter_ext_func_mode(SERIAL_DEV);
+	pnp_enter_conf_state(SERIAL_DEV);
 	pnp_write_config(SERIAL_DEV, 0x24, 0);
-	pnp_exit_ext_func_mode(SERIAL_DEV);
+	pnp_exit_conf_state(SERIAL_DEV);
 
 	setup_mb_resource_map();
 

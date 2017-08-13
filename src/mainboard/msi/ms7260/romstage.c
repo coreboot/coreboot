@@ -126,11 +126,11 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		bsp_apicid = init_cpus(cpu_init_detectedx, sysinfo);
 
 	/* FIXME: This should be part of the Super I/O code/config. */
-	pnp_enter_ext_func_mode(SERIAL_DEV);
+	pnp_enter_conf_state(SERIAL_DEV);
 	/* Switch CLKSEL to 24MHz (default is 48MHz). Needed for serial! */
 	pnp_write_config(SERIAL_DEV, 0x24, 0);
 	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
-	pnp_exit_ext_func_mode(SERIAL_DEV);
+	pnp_exit_conf_state(SERIAL_DEV);
 
 	setup_mb_resource_map();
 	console_init();

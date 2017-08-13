@@ -129,11 +129,11 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	post_code(0x32);
 
-	pnp_enter_ext_func_mode(SERIAL_DEV);
+	pnp_enter_conf_state(SERIAL_DEV);
 	/* We have 24MHz input. */
 	reg = pnp_read_config(SERIAL_DEV, 0x24);
 	pnp_write_config(SERIAL_DEV, 0x24, (reg & 0xbf));
-	pnp_exit_ext_func_mode(SERIAL_DEV);
+	pnp_exit_conf_state(SERIAL_DEV);
 
 	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	console_init();

@@ -62,7 +62,7 @@ static void early_superio_config_w83627ehg(void)
 	pnp_devfn_t dev;
 
 	dev = DUMMY_DEV;
-	pnp_enter_ext_func_mode(dev);
+	pnp_enter_conf_state(dev);
 
 	pnp_write_config(dev, 0x24, 0xc4); // PNPCSV
 
@@ -121,7 +121,7 @@ static void early_superio_config_w83627ehg(void)
 	pnp_set_iobase(dev, PNP_IDX_IO0, 0xa00);
 	pnp_set_enable(dev, 1);
 
-	pnp_exit_ext_func_mode(dev);
+	pnp_exit_conf_state(dev);
 }
 
 static void rcba_config(void)

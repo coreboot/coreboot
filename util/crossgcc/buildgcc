@@ -411,7 +411,7 @@ generic_build()
 		if [ ! -f "$builddir/.failed" ]; then
 			touch "$success";
 		else
-			printf "${RED}failed${NC}. Check $builddir/build.log.\n"
+			printf "${RED}failed${NC}. Check '$builddir/build.log'.\n"
 			exit 1
 		fi
 		printf "${green}ok${NC}\n"

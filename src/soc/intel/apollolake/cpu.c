@@ -60,7 +60,7 @@ static const struct reg_script core_msr_script[] = {
 	REG_SCRIPT_END
 };
 
-void soc_core_init(device_t cpu, const void *microcode)
+void soc_core_init(device_t cpu)
 {
 	/* Set core MSRs */
 	reg_script_run(core_msr_script);
@@ -75,7 +75,7 @@ void soc_core_init(device_t cpu, const void *microcode)
 #if !IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_CPU_MPINIT)
 static void soc_init_core(device_t cpu)
 {
-	soc_core_init(cpu, NULL);
+	soc_core_init(cpu);
 }
 
 static struct device_operations cpu_dev_ops = {
@@ -223,7 +223,7 @@ static const struct mp_ops mp_ops = {
 	.post_mp_init = smm_southbridge_enable,
 };
 
-void soc_init_cpus(struct bus *cpu_bus, const void *microcode)
+void soc_init_cpus(struct bus *cpu_bus)
 {
 	/* Clear for take-off */
 	if (mp_init_with_smm(cpu_bus, &mp_ops))
@@ -234,7 +234,7 @@ void apollolake_init_cpus(struct device *dev)
 {
 	if (IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_CPU_MPINIT))
 		return;
-	soc_init_cpus(dev->link_list, NULL);
+	soc_init_cpus(dev->link_list);
 
 	/* Temporarily cache the memory-mapped boot media. */
 	if (IS_ENABLED(CONFIG_BOOT_DEVICE_MEMORY_MAPPED) &&

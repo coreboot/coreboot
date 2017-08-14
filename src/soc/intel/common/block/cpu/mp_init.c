@@ -30,20 +30,19 @@
 static const void *microcode_patch;
 
 /* SoC override function */
-__attribute__((weak)) void soc_core_init(device_t dev, const void *microcode)
+__attribute__((weak)) void soc_core_init(device_t dev)
 {
 	/* no-op */
 }
 
-__attribute__((weak)) void soc_init_cpus(struct bus *cpu_bus,
-				const void *microcode)
+__attribute__((weak)) void soc_init_cpus(struct bus *cpu_bus)
 {
 	/* no-op */
 }
 
-static  void init_one_cpu(device_t dev)
+static void init_one_cpu(device_t dev)
 {
-	soc_core_init(dev, microcode_patch);
+	soc_core_init(dev);
 	intel_microcode_load_unlocked(microcode_patch);
 }
 
@@ -125,19 +124,7 @@ static void init_cpus(void *unused)
 	microcode_patch = intel_microcode_find();
 	intel_microcode_load_unlocked(microcode_patch);
 
-	/*
-	 * TODO: This parameter "microcode_patch" should be removed
-	 * in this function call once the following two cases are resolved -
-	 *
-	 * 1) SGX enabling for the BSP issue gets solved, due to which
-	 * configure_sgx() function is kept inside soc/cpu.c soc_init_cpus().
-	 * 2) uCode loading after SMM relocation is deleted inside
-	 * per_cpu_smm_trigger() mp_ops callback function in soc/cpu.c,
-	 * since as per current BWG, uCode loading can be done after
-	 * all feature programmings are done. There is no specific
-	 * recommendation to do it after SMM Relocation.
-	 */
-	soc_init_cpus(dev->link_list, microcode_patch);
+	soc_init_cpus(dev->link_list);
 }
 
 /* Ensure to re-program all MTRRs based on DRAM resource settings */

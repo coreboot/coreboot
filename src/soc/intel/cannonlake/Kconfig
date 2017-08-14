@@ -56,6 +56,13 @@ config UART_DEBUG
 	select DRIVERS_UART
 	select DRIVERS_UART_8250IO
 
+config UART_FOR_CONSOLE
+	int "Index for LPSS UART port to use for console"
+	default 2 if DRIVERS_UART_8250MEM
+	help
+	    Index for LPSS UART port to use for console:
+	    0 = LPSS UART0, 1 = LPSS UART1, 2 = LPSS UART2
+
 config DCACHE_RAM_BASE
 	default 0xfef00000
 

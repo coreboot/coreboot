@@ -186,25 +186,12 @@ static void soc_lockdown(void)
 
 	if (config->chipset_lockdown == CHIPSET_LOCKDOWN_COREBOOT) {
 		 /* Bios Interface Lock */
-		pci_write_config8(PCH_DEV_LPC, BIOS_CNTL,
-				  pci_read_config8(PCH_DEV_LPC,
-						   BIOS_CNTL) | LPC_BC_BILD);
-		/* Reads back for posted write to take effect */
-		pci_read_config8(PCH_DEV_LPC, BIOS_CNTL);
-
 		fast_spi_set_bios_interface_lock_down();
 
 		/* GCS reg of DMI */
 		pcr_or8(PID_DMI, PCR_DMI_GCS, PCR_DMI_GCS_BILD);
 
 		/* Bios Lock */
-		pci_write_config8(PCH_DEV_LPC, BIOS_CNTL,
-				  pci_read_config8(PCH_DEV_LPC,
-						   BIOS_CNTL) | LPC_BC_LE);
-
-		/* Ensure an additional read back after performing lock down */
-		pci_read_config8(PCH_DEV_LPC, BIOS_CNTL);
-
 		fast_spi_set_lock_enable();
 	}
 }

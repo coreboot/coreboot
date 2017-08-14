@@ -51,6 +51,8 @@ void h8_ssdt_generator(struct device *dev)
 	acpigen_write_name_byte("HWAN", h8_has_wwan(dev) ? ONE_OP : ZERO_OP);
 	acpigen_write_name_byte("HKBL", (conf && conf->has_keyboard_backlight) ?
 				ONE_OP : ZERO_OP);
+	acpigen_write_name_byte("HUWB", (conf && conf->has_uwb) ?
+				ONE_OP : ZERO_OP);
 
 	acpigen_pop_len(); /* Scope HKEY */
 }

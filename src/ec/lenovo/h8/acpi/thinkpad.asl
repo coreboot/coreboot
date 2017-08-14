@@ -20,6 +20,7 @@ Device (HKEY)
 	External (\HBDC, IntObj)
 	External (\HWAN, IntObj)
 	External (\HKBL, IntObj)
+	External (\HUWB, IntObj)
 
 	Name (_HID, EisaId ("IBM0068"))
 
@@ -257,6 +258,37 @@ Device (HKEY)
 		If (HKBL) {
 			/* FIXME: Support 2bit brightness control */
 			Store (And(Arg0, 1), \_SB.PCI0.LPCB.EC.WWEB)
+		}
+	}
+
+	/*
+	 * Returns the current state:
+	 *  Bit 0: UWB HW present
+	 *  Bit 1: UWB radio enabled
+	 */
+	Method (GUWB, 0)
+	{
+		If (HUWB) {
+			Store (One, Local0)
+			If(\_SB.PCI0.LPCB.EC.UWBE)
+			{
+				Or(Local0, 2, Local0)
+			}
+			Return (Local0)
+		} Else {
+			Return (0)
+		}
+	}
+
+	/*
+	 * Set the current state:
+	 *  Bit 1: UWB radio enabled
+	 */
+	Method (SUWB, 1)
+	{
+		If (HUWB) {
+			ShiftRight (And(Arg0, 2), 1, Local0)
+			Store (Local0, \_SB.PCI0.LPCB.EC.UWBE)
 		}
 	}
 }

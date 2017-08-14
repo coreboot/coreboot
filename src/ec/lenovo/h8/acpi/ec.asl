@@ -46,6 +46,9 @@ Device(EC)
 		Offset (0x30),
 				    , 6,
 				ALMT, 1,	/* Audio Mute + LED */
+		Offset (0x31),
+				    , 2,
+				UWBE, 1,	/* Ultra Wideband enable */
 		Offset (0x3a),
 				AMUT, 1,	/* Audio Mute (internal use) */
 				    , 3,

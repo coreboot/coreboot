@@ -20,7 +20,7 @@
 #define HPTC_ADDR_ENABLE_BIT		(1 << 7)
 
 #define PCH_P2SB_EPMASK0		0x220
-#define PCH_P2SB_EPMASK(mask_number)	(PCH_P2SB_EPMASK0 + (mask_number * 4))
+#define PCH_P2SB_EPMASK(mask_number)	(PCH_P2SB_EPMASK0 + ((mask_number) * 4))
 
 #define PCH_P2SB_E0			0xE0
 

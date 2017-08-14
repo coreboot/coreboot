@@ -121,13 +121,12 @@ static void gettimeofday_init(void)
 #endif
 
 /**
- * Return the current time broken into a timeval structure.
+ * Return the current time expressed as seconds from 00:00:00 UTC, 1 Jan 1970.
  *
- * @param tv A pointer to a timeval structure.
- * @param tz Added for compatability - not used.
- * @return 0 for success (this function cannot return non-zero currently).
+ * @param tp When not NULL, set this to the current time in seconds.
+ * @return The current time in seconds.
  */
-int gettimeofday(struct timeval *tv, void *tz)
+time_t time(time_t *tp)
 {
 	/*
 	 * Call the gtod init when we need it - this keeps the code from
@@ -138,7 +137,22 @@ int gettimeofday(struct timeval *tv, void *tz)
 
 	update_clock();
 
-	tv->tv_sec = clock.secs;
+	if (tp)
+		*tp = clock.secs;
+
+	return clock.secs;
+}
+
+/**
+ * Return the current time broken into a timeval structure.
+ *
+ * @param tv A pointer to a timeval structure.
+ * @param tz Added for compatibility - not used.
+ * @return 0 for success (this function cannot return non-zero currently).
+ */
+int gettimeofday(struct timeval *tv, void *tz)
+{
+	tv->tv_sec = time(NULL);
 	tv->tv_usec = clock.usecs;
 
 	return 0;

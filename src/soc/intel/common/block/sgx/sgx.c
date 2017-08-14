@@ -13,11 +13,13 @@
  * GNU General Public License for more details.
  */
 
+#include <assert.h>
 #include <console/console.h>
 #include <chip.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/intel/microcode.h>
+#include <intelblocks/mp_init.h>
 #include <intelblocks/sgx.h>
 #include <soc/cpu.h>
 #include <soc/msr.h>
@@ -125,10 +127,12 @@ static void activate_sgx(void)
 	}
 }
 
-void sgx_configure(const void *microcode_patch)
+void sgx_configure(void)
 {
 	device_t dev = SA_DEV_ROOT;
+	assert(dev != NULL);
 	config_t *conf = dev->chip_info;
+	const void *microcode_patch = intel_mp_current_microcode();
 
 	if (!conf->sgx_enable || !is_sgx_supported())
 		return;

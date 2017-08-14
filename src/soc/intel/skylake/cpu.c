@@ -438,7 +438,7 @@ void soc_core_init(device_t cpu, const void *microcode)
 	enable_turbo();
 
 	/* Configure SGX */
-	sgx_configure(microcode);
+	sgx_configure();
 }
 
 static int adjust_apic_id(int index, int apic_id)
@@ -505,7 +505,7 @@ void soc_init_cpus(struct bus *cpu_bus, const void *microcode)
 	 * here to get SGX enabled on BSP. This behavior needs to root-caused
 	 * and we shall not have this redundant call.
 	 */
-	sgx_configure(microcode);
+	sgx_configure();
 }
 
 int soc_skip_ucode_update(u32 current_patch_id, u32 new_patch_id)

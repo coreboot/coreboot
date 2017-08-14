@@ -25,6 +25,6 @@ void cpu_lock_sgx_memory(void);
 /*
  * Configure SGX.
  */
-void sgx_configure(const void *microcode_patch);
+void sgx_configure(void);
 
 #endif	/* SOC_INTEL_COMMON_BLOCK_SGX_H */

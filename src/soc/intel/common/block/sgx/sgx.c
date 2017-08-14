@@ -35,27 +35,30 @@ static int is_sgx_supported(void)
 	return ((cpuid_regs.ebx & SGX_SUPPORTED) && (msr.lo & PRMRR_SUPPORTED));
 }
 
-static int configure_core_prmrr(void)
+void prmrr_core_configure(void)
 {
 	msr_t prmrr_base;
 	msr_t prmrr_mask;
 	msr_t msr;
+	device_t dev = SA_DEV_ROOT;
+	config_t *conf = dev->chip_info;
 
-	/*
-	 * PRMRR base and mask are read from the UNCORE PRMRR MSRs
-	 * that are already set in FSP-M.
-	 */
+	if (!conf->sgx_enable || !is_sgx_supported())
+		return;
+
+	/* PRMRR base and mask are read from the UNCORE PRMRR MSRs
+	 * that are already set in FSP-M. */
 	prmrr_base = rdmsr(UNCORE_PRMRR_PHYS_BASE_MSR);
 	prmrr_mask = rdmsr(UNCORE_PRMRR_PHYS_MASK_MSR);
 	if (!prmrr_base.lo) {
 		printk(BIOS_ERR, "SGX Error: Uncore PRMRR is not set!\n");
-		return -1;
+		return;
 	}
 
 	msr = rdmsr(PRMRR_PHYS_MASK_MSR);
 	/* If it is locked don't attempt to write PRMRR MSRs. */
 	if (msr.lo & PRMRR_PHYS_MASK_LOCK)
-		return 0;
+		return;
 
 	/* Program core PRMRR MSRs */
 	prmrr_base.lo |= MTRR_TYPE_WRBACK; /* cache writeback mem attrib */
@@ -63,7 +66,20 @@ static int configure_core_prmrr(void)
 	prmrr_mask.lo &= ~PRMRR_PHYS_MASK_VALID; /* Do not set the valid bit */
 	prmrr_mask.lo |= PRMRR_PHYS_MASK_LOCK; /* Lock it */
 	wrmsr(PRMRR_PHYS_MASK_MSR, prmrr_mask);
-	return 0;
+}
+
+static int is_prmrr_set(void)
+{
+	msr_t prmrr_base, prmrr_mask;
+	prmrr_base = rdmsr(PRMRR_PHYS_BASE_MSR);
+	prmrr_mask = rdmsr(PRMRR_PHYS_MASK_MSR);
+
+	/* If PRMRR base is zero and PRMRR mask is locked
+	 * then PRMRR is not set */
+	if ((prmrr_base.hi == 0) && (prmrr_base.lo == 0)
+		&& (prmrr_mask.lo & PRMRR_PHYS_MASK_LOCK))
+		return 0;
+	return 1;
 }
 
 static void enable_sgx(void)
@@ -92,10 +108,8 @@ static void lock_sgx(void)
 
 static int owner_epoch_update(void)
 {
-	/*
-	 * TODO - the Owner Epoch update mechanism is not determined yet,
-	 * for PoC just write '0's to the MSRs.
-	 */
+	/* TODO - the Owner Epoch update mechanism is not determined yet,
+	 * for PoC just write '0's to the MSRs. */
 	msr_t msr = {0, 0};
 
 	wrmsr(MSR_SGX_OWNEREPOCH0, msr);
@@ -107,11 +121,9 @@ static void activate_sgx(void)
 {
 	msr_t msr;
 
-	/*
-	 * Activate SGX feature by writing 1b to MSR 0x7A on all threads.
+	/* Activate SGX feature by writing 1b to MSR 0x7A on all threads.
 	 * BIOS must ensure bit 0 is set prior to writing to it, then read it
-	 * back and verify the bit is cleared to confirm SGX activation.
-	 */
+	 * back and verify the bit is cleared to confirm SGX activation. */
 	msr = rdmsr(MSR_BIOS_UPGD_TRIG);
 	if (msr.lo & SGX_ACTIVATE_BIT) {
 		wrmsr(MSR_BIOS_UPGD_TRIG,
@@ -127,6 +139,19 @@ static void activate_sgx(void)
 	}
 }
 
+static int is_prmrr_approved(void)
+{
+	msr_t msr;
+	msr = rdmsr(PRMRR_PHYS_MASK_MSR);
+	if (msr.lo & PRMRR_PHYS_MASK_VALID) {
+		printk(BIOS_INFO, "SGX: MCHECK aprroved SGX PRMRR\n");
+		return 1;
+	}
+
+	printk(BIOS_INFO, "SGX: MCHECK did not aprrove SGX PRMRR\n");
+	return 0;
+}
+
 void sgx_configure(void)
 {
 	device_t dev = SA_DEV_ROOT;
@@ -134,12 +159,10 @@ void sgx_configure(void)
 	config_t *conf = dev->chip_info;
 	const void *microcode_patch = intel_mp_current_microcode();
 
-	if (!conf->sgx_enable || !is_sgx_supported())
+	if (!conf->sgx_enable || !is_sgx_supported() || !is_prmrr_set()) {
+		printk(BIOS_ERR, "SGX: pre-conditions not met\n");
 		return;
-
-	/* Initialize PRMRR core MSRs */
-	if (configure_core_prmrr() < 0)
-		return;
+	}
 
 	/* Enable the SGX feature */
 	enable_sgx();
@@ -157,6 +180,7 @@ void sgx_configure(void)
 	/* Lock the SGX feature */
 	lock_sgx();
 
-	/* Activate the SGX feature */
-	activate_sgx();
+	/* Activate the SGX feature, if PRMRR config was aprroved by MCHECK */
+	if (is_prmrr_approved())
+		activate_sgx();
 }

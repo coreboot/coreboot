@@ -23,6 +23,13 @@
 void cpu_lock_sgx_memory(void);
 
 /*
+ * Configure core PRMRR.
+ * PRMRR needs to configured first on all cores and then
+ * call sgx_configure() for all cores to init SGX.
+ */
+void prmrr_core_configure(void);
+
+/*
  * Configure SGX.
  */
 void sgx_configure(void);

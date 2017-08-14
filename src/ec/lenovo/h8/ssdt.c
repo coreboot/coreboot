@@ -36,6 +36,8 @@ static char *h8_dsdt_scope(struct device *dev, const char *scope)
  */
 void h8_ssdt_generator(struct device *dev)
 {
+	struct ec_lenovo_h8_config *conf = dev->chip_info;
+
 	if (!acpi_device_path(dev))
 		return;
 
@@ -47,6 +49,8 @@ void h8_ssdt_generator(struct device *dev)
 	/* Used by thinkpad_acpi */
 	acpigen_write_name_byte("HBDC", h8_has_bdc(dev) ? ONE_OP : ZERO_OP);
 	acpigen_write_name_byte("HWAN", h8_has_wwan(dev) ? ONE_OP : ZERO_OP);
+	acpigen_write_name_byte("HKBL", (conf && conf->has_keyboard_backlight) ?
+				ONE_OP : ZERO_OP);
 
 	acpigen_pop_len(); /* Scope HKEY */
 }

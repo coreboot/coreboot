@@ -437,8 +437,8 @@ void soc_core_init(device_t cpu)
 	/* Enable Turbo */
 	enable_turbo();
 
-	/* Configure SGX */
-	sgx_configure();
+	/* Configure Core PRMRR for SGX. */
+	prmrr_core_configure();
 }
 
 static int adjust_apic_id(int index, int apic_id)
@@ -472,6 +472,8 @@ static void post_mp_init(void)
 #if IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)
 	smm_lock();
 #endif
+
+	mp_run_on_all_cpus(sgx_configure, 2000);
 }
 
 static const struct mp_ops mp_ops = {
@@ -498,14 +500,6 @@ void soc_init_cpus(struct bus *cpu_bus)
 
 	/* Thermal throttle activation offset */
 	configure_thermal_target();
-
-	/*
-	 * TODO: somehow calling configure_sgx() in cpu_core_init() is not
-	 * successful on the BSP (other threads are fine). Have to run it again
-	 * here to get SGX enabled on BSP. This behavior needs to root-caused
-	 * and we shall not have this redundant call.
-	 */
-	sgx_configure();
 }
 
 int soc_skip_ucode_update(u32 current_patch_id, u32 new_patch_id)

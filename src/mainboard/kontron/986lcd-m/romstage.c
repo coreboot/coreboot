@@ -41,23 +41,25 @@
 static void ich7_enable_lpc(void)
 {
 	int lpt_en = 0;
-	if (read_option(lpt, 0) != 0) {
-		lpt_en = 1 << 2; /* enable LPT */
-	}
+	if (read_option(lpt, 0) != 0)
+		lpt_en = LPT_LPC_EN; /* enable LPT */
+
 	/* Enable Serial IRQ */
-	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0x64, 0xd0);
+	pci_write_config8(PCI_DEV(0, 0x1f, 0), SERIRQ_CNTL, 0xd0);
 	/* Set COM1/COM2 decode range */
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x80, 0x0010);
+	pci_write_config16(PCI_DEV(0, 0x1f, 0), LPC_IO_DEC, 0x0010);
 	/* Enable COM1/COM2/KBD/SuperIO1+2 */
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x82, 0x340b | lpt_en);
+	pci_write_config16(PCI_DEV(0, 0x1f, 0), LPC_EN,  CNF2_LPC_EN
+			| CNF1_LPC_EN | KBC_LPC_EN | FDD_LPC_EN | COMA_LPC_EN
+			| COMB_LPC_EN | lpt_en);
 	/* Enable HWM at 0xa00 */
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0x84, 0x00fc0a01);
+	pci_write_config32(PCI_DEV(0, 0x1f, 0), GEN1_DEC, 0x00fc0a01);
 	/* COM3 decode */
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0x88, 0x000403e9);
+	pci_write_config32(PCI_DEV(0, 0x1f, 0), GEN2_DEC, 0x000403e9);
 	/* COM4 decode */
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0x8c, 0x000402e9);
+	pci_write_config32(PCI_DEV(0, 0x1f, 0), GEN3_DEC, 0x000402e9);
 	/* io 0x300 decode */
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0x90, 0x00000301);
+	pci_write_config32(PCI_DEV(0, 0x1f, 0), GEN4_DEC, 0x00000301);
 }
 
 /* TODO: superio code should really not be in mainboard */
@@ -186,19 +188,19 @@ static void rcba_config(void)
 	/* Set up virtual channel 0 */
 
 	/* Device 1f interrupt pin register */
-	RCBA32(0x3100) = 0x00042210;
+	RCBA32(D31IP) = 0x00042210;
 	/* Device 1d interrupt pin register */
-	RCBA32(0x310c) = 0x00214321;
+	RCBA32(D28IP) = 0x00214321;
 
 	/* dev irq route register */
-	RCBA16(0x3140) = 0x0132;
-	RCBA16(0x3142) = 0x3241;
-	RCBA16(0x3144) = 0x0237;
-	RCBA16(0x3146) = 0x3210;
-	RCBA16(0x3148) = 0x3210;
+	RCBA16(D31IR) = 0x0132;
+	RCBA16(D30IR) = 0x3241;
+	RCBA16(D29IR) = 0x0237;
+	RCBA16(D28IR) = 0x3210;
+	RCBA16(D27IR) = 0x3210;
 
 	/* Enable IOAPIC */
-	RCBA8(0x31ff) = 0x03;
+	RCBA8(OIC) = 0x03;
 
 	/* Now, this is a bit ugly. As per PCI specification, function 0 of a
 	 * device always has to be implemented. So disabling ethernet port 1
@@ -245,7 +247,7 @@ static void rcba_config(void)
 
 	reg32 |= 1;
 
-	RCBA32(0x3418) = reg32;
+	RCBA32(FD) = reg32;
 
 	/* Enable PCIe Root Port Clock Gate */
 
@@ -283,14 +285,14 @@ static void early_ich7_init(void)
 	RCBA32(0x0214) = 0x10030549;
 	RCBA32(0x0218) = 0x00020504;
 	RCBA8(0x0220) = 0xc5;
-	reg32 = RCBA32(0x3410);
+	reg32 = RCBA32(GCS);
 	reg32 |= (1 << 6);
-	RCBA32(0x3410) = reg32;
+	RCBA32(GCS) = reg32;
 	reg32 = RCBA32(0x3430);
 	reg32 &= ~(3 << 0);
 	reg32 |= (1 << 0);
 	RCBA32(0x3430) = reg32;
-	RCBA32(0x3418) |= (1 << 0);
+	RCBA32(FD) |= (1 << 0);
 	RCBA16(0x0200) = 0x2008;
 	RCBA8(0x2027) = 0x0d;
 	RCBA16(0x3e08) |= (1 << 7);

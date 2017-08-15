@@ -58,8 +58,8 @@ static void mb_lpc_setup(void)
 	RCBA16(D29IR) = 0x0237;
 
 	/* Enable IOAPIC */
-	RCBA8(0x31ff) = 0x03;
-	RCBA8(0x31ff);
+	RCBA8(OIC) = 0x03;
+	RCBA8(OIC);
 
 	reg32 = RCBA32(GCS);
 	reg32 |= (1 << 5);

@@ -78,7 +78,7 @@ static void ich7_enable_lpc(void)
 		COMB_LPC_EN | COMA_LPC_EN);
 
 	/* Decode 64 bytes at 0x0a00 to LPC for Super I/O EC and GPIO. */
-	pci_write_config32(LPC_DEV, 0x84, 0x003c0a01);
+	pci_write_config32(LPC_DEV, GEN1_DEC, 0x003c0a01);
 }
 
 void mainboard_romstage_entry(unsigned long bist)

@@ -125,6 +125,11 @@ int southbridge_detect_s3_resume(void);
 #define   COMB_LPC_EN		(1 << 1)  /* LPC_IO_DEC[6:4] */
 #define   COMA_LPC_EN		(1 << 0)  /* LPC_IO_DEC[2:0] */
 
+#define GEN1_DEC		0x84
+#define GEN2_DEC		0x88
+#define GEN3_DEC		0x8c
+#define GEN4_DEC		0x90
+
 /* PCI Configuration Space (D31:F1): IDE */
 #define INTR_LN			0x3c
 #define IDE_TIM_PRI		0x40	/* IDE timings, primary */

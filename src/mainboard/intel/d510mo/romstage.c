@@ -57,15 +57,15 @@ static void mb_gpio_init(void)
 static void nm10_enable_lpc(void)
 {
 	/* Disable Serial IRQ */
-	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0x64, 0x00);
+	pci_write_config8(PCI_DEV(0, 0x1f, 0), SERIRQ_CNTL, 0x00);
 	/* Decode range */
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x80,
-		pci_read_config16(PCI_DEV(0, 0x1f, 0), 0x80) | 0x0010);
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), LPC_EN,
-		CNF1_LPC_EN | CNF2_LPC_EN | KBC_LPC_EN | COMA_LPC_EN | COMB_LPC_EN);
+	pci_write_config16(PCI_DEV(0, 0x1f, 0), LPC_IO_DEC,
+		pci_read_config16(PCI_DEV(0, 0x1f, 0), LPC_IO_DEC) | 0x0010);
+	pci_write_config16(PCI_DEV(0, 0x1f, 0), LPC_EN, CNF1_LPC_EN
+			| CNF2_LPC_EN | KBC_LPC_EN | COMA_LPC_EN
+			| COMB_LPC_EN);
 
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x88, 0x0291);
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x8a, 0x007c);
+	pci_write_config32(PCI_DEV(0, 0x1f, 0), GEN2_DEC, 0x7c0291);
 }
 
 static void rcba_config(void)
@@ -74,29 +74,19 @@ static void rcba_config(void)
 	RCBA32(0x0014) = 0x80000001;
 	RCBA32(0x001c) = 0x03128010;
 
-	/* Device 1f interrupt pin register */
-	RCBA32(0x3100) = 0x00042210;
-	RCBA32(0x3108) = 0x10004321;
-
-	RCBA32(0x3104) = 0x00002100;
-
-	/* PCIe Interrupts */
-	RCBA32(0x310c) = 0x00214321;
-	/* HD Audio Interrupt */
-	RCBA32(0x3110) = 0x00000001;
-
 	/* dev irq route register */
-	RCBA16(0x3140) = 0x0132;
-	RCBA16(0x3142) = 0x0146;
-	RCBA16(0x3144) = 0x0237;
-	RCBA16(0x3146) = 0x3201;
-	RCBA16(0x3148) = 0x0146;
+	RCBA16(D31IR) = 0x0132;
+	RCBA16(D30IR) = 0x0146;
+	RCBA16(D29IR) = 0x0237;
+	RCBA16(D28IR) = 0x3201;
+	RCBA16(D27IR) = 0x0146;
 
 	/* Enable IOAPIC */
-	RCBA8(0x31ff) = 0x03;
+	RCBA8(OIC) = 0x03;
 
-	RCBA32(0x3418) = 0x003000e2;
-	RCBA32(0x3418) |= 1;
+	RCBA32(FD) = FD_PCIE6 | FD_PCIE5 | FD_INTLAN | FD_ACMOD | FD_ACAUD
+		| FD_PATA;
+	RCBA32(FD) |= 1;
 }
 
 void mainboard_romstage_entry(unsigned long bist)
@@ -113,7 +103,7 @@ void mainboard_romstage_entry(unsigned long bist)
 		enable_lapic();
 
 	/* Disable watchdog timer */
-	RCBA32(0x3410) = RCBA32(0x3410) | 0x20;
+	RCBA32(GCS) = RCBA32(GCS) | 0x20;
 
 	/* Set southbridge and Super I/O GPIOs. */
 	mb_gpio_init();

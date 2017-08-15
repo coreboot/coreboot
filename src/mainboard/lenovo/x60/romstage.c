@@ -41,23 +41,21 @@
 static void ich7_enable_lpc(void)
 {
 	// Enable Serial IRQ
-	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0x64, 0xd0);
+	pci_write_config8(PCI_DEV(0, 0x1f, 0), SERIRQ_CNTL, 0xd0);
 	// decode range
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x80, 0x0210);
+	pci_write_config16(PCI_DEV(0, 0x1f, 0), LPC_IO_DEC, 0x0210);
 	// decode range
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x82, 0x1f0d);
-
+	pci_write_config16(PCI_DEV(0, 0x1f, 0), LPC_EN, CNF1_LPC_EN | MC_LPC_EN
+			| KBC_LPC_EN | GAMEH_LPC_EN | GAMEL_LPC_EN | FDD_LPC_EN
+			| LPT_LPC_EN | COMA_LPC_EN);
 	/* range 0x1600 - 0x167f */
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x84, 0x1601);
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x86, 0x007c);
+	pci_write_config32(PCI_DEV(0, 0x1f, 0), GEN1_DEC, 0x007c1601);
 
-	/* range 0x15e0 - 0x10ef */
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x88, 0x15e1);
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x8a, 0x000c);
+	/* range 0x15e0 - 0x15ef */
+	pci_write_config32(PCI_DEV(0, 0x1f, 0), GEN2_DEC, 0x000c15e1);
 
 	/* range 0x1680 - 0x169f */
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x8c, 0x1681);
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x8e, 0x001c);
+	pci_write_config32(PCI_DEV(0, 0x1f, 0), GEN3_DEC, 0x001c1681);
 }
 
 static void early_superio_config(void)
@@ -83,27 +81,27 @@ static void rcba_config(void)
 	RCBA32(0x001c) = 0x03128010;
 
 	/* Device 1f interrupt pin register */
-	RCBA32(0x3100) = 0x00001230;
-	RCBA32(0x3108) = 0x40004321;
+	RCBA32(D31IP) = 0x00001230;
+	RCBA32(D29IP) = 0x40004321;
 
 	/* PCIe Interrupts */
-	RCBA32(0x310c) = 0x00004321;
+	RCBA32(D28IP) = 0x00004321;
 	/* HD Audio Interrupt */
-	RCBA32(0x3110) = 0x00000002;
+	RCBA32(D27IP) = 0x00000002;
 
 	/* dev irq route register */
-	RCBA16(0x3140) = 0x1007;
-	RCBA16(0x3142) = 0x0076;
-	RCBA16(0x3144) = 0x3210;
-	RCBA16(0x3146) = 0x7654;
-	RCBA16(0x3148) = 0x0010;
+	RCBA16(D31IR) = 0x1007;
+	RCBA16(D30IR) = 0x0076;
+	RCBA16(D29IR) = 0x3210;
+	RCBA16(D28IR) = 0x7654;
+	RCBA16(D27IR) = 0x0010;
 
 	/* Enable IOAPIC */
-	RCBA8(0x31ff) = 0x03;
+	RCBA8(OIC) = 0x03;
 
 	/* Disable unused devices */
-	RCBA32(0x3418) = FD_PCIE6 | FD_PCIE5 | FD_INTLAN | FD_ACMOD | FD_ACAUD;
-	RCBA32(0x3418) |= (1 << 0);	// Required.
+	RCBA32(FD) = FD_PCIE6 | FD_PCIE5 | FD_INTLAN | FD_ACMOD | FD_ACAUD;
+	RCBA32(FD) |= (1 << 0);	// Required.
 
 	/* Set up I/O Trap #0 for 0xfe00 (SMIC) */
 	RCBA32(0x1e84) = 0x00020001;
@@ -146,14 +144,14 @@ static void early_ich7_init(void)
 	RCBA32(0x0214) = 0x10030549;
 	RCBA32(0x0218) = 0x00020504;
 	RCBA8(0x0220) = 0xc5;
-	reg32 = RCBA32(0x3410);
+	reg32 = RCBA32(GCS);
 	reg32 |= (1 << 6);
-	RCBA32(0x3410) = reg32;
+	RCBA32(GCS) = reg32;
 	reg32 = RCBA32(0x3430);
 	reg32 &= ~(3 << 0);
 	reg32 |= (1 << 0);
 	RCBA32(0x3430) = reg32;
-	RCBA32(0x3418) |= (1 << 0);
+	RCBA32(FD) |= (1 << 0);
 	RCBA16(0x0200) = 0x2008;
 	RCBA8(0x2027) = 0x0d;
 	RCBA16(0x3e08) |= (1 << 7);

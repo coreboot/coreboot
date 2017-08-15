@@ -89,23 +89,23 @@ static void mb_gpio_init(void)
 	ite_reg_write(EC_DEV, 0x30, 0x01); // Enable
 
 	/* IRQ routing */
-	RCBA32(0x3100) = 0x00002210;
-	RCBA32(0x3104) = 0x00002100;
-	RCBA32(0x3108) = 0x10004321;
-	RCBA32(0x310c) = 0x00214321;
-	RCBA32(0x3110) = 0x00000001;
-	RCBA32(0x3140) = 0x00410032;
-	RCBA32(0x3144) = 0x32100237;
-	RCBA32(0x3148) = 0x00000000;
+	RCBA32(D31IP) = 0x00002210;
+	RCBA32(D30IP) = 0x00002100;
+	RCBA32(D29IP) = 0x10004321;
+	RCBA32(D28IP) = 0x00214321;
+	RCBA32(D27IP) = 0x00000001;
+	RCBA32(D31IR) = 0x00410032;
+	RCBA32(D29IR) = 0x32100237;
+	RCBA32(D27IR) = 0x00000000;
 
 	/* Enable IOAPIC */
-	RCBA8(0x31ff) = 0x03;
-	RCBA8(0x31ff);
+	RCBA8(OIC) = 0x03;
+	RCBA8(OIC);
 
-	RCBA32(0x3410) = 0x00190464;
+	RCBA32(GCS) = 0x00190464;
 	RCBA32(FD) = FD_PCIE6 | FD_PCIE5 | FD_PCIE4 | FD_PCIE3 | FD_ACMOD
 		| FD_ACAUD | 1;
-	RCBA32(0x341c) = 0x00000000;
+	RCBA32(CG) = 0x00000000;
 	RCBA32(0x3430) = 0x00000001;
 	RCBA32(0x3e00) = 0xff000001;
 	RCBA32(0x3e08) = 0x00000080;
@@ -119,15 +119,14 @@ static void mb_gpio_init(void)
 static void ich7_enable_lpc(void)
 {
 	/* Disable Serial IRQ */
-	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0x64, 0x00);
+	pci_write_config8(PCI_DEV(0, 0x1f, 0), SERIRQ_CNTL, 0x00);
 	/* Decode range */
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x80, 0x0010);
+	pci_write_config16(PCI_DEV(0, 0x1f, 0), LPC_IO_DEC, 0x0010);
 	pci_write_config16(PCI_DEV(0, 0x1f, 0), LPC_EN,
 		CNF1_LPC_EN | CNF2_LPC_EN | KBC_LPC_EN | FDD_LPC_EN
 			| LPT_LPC_EN | COMA_LPC_EN | COMB_LPC_EN);
 
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x88, 0x0291);
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x8a, 0x007c);
+	pci_write_config32(PCI_DEV(0, 0x1f, 0), GEN2_DEC, 0x007c0291);
 }
 
 void mainboard_romstage_entry(unsigned long bist)

@@ -107,30 +107,30 @@ static u8 msr_get_fsb(void)
 static void ich7_enable_lpc(void)
 {
 	// Enable Serial IRQ
-	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0x64, 0xd0);
+	pci_write_config8(PCI_DEV(0, 0x1f, 0), SERIRQ_CNTL, 0xd0);
 	// Set COM1/COM2 decode range
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x80, 0x0010);
+	pci_write_config16(PCI_DEV(0, 0x1f, 0), LPC_IO_DEC, 0x0010);
 	// Enable COM1
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x82, 0x140f);
+	pci_write_config16(PCI_DEV(0, 0x1f, 0), LPC_EN, CNF1_LPC_EN
+			| KBC_LPC_EN | FDD_LPC_EN | LPT_LPC_EN | COMB_LPC_EN
+			| COMA_LPC_EN);
 	// Enable SuperIO Power Management Events
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0x84, 0x000c0801);
-
-	/* range 0x15e0 - 0x10ef */
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0x88, 0x40291);
-
-
+	pci_write_config32(PCI_DEV(0, 0x1f, 0), GEN1_DEC, 0x000c0801);
+	/* range 0x290 - 0x297 */
+	pci_write_config32(PCI_DEV(0, 0x1f, 0), GEN2_DEC, 0x00040291);
 }
 
 static void rcba_config(void)
 {
 	/* Enable IOAPIC */
-	RCBA8(0x31ff) = 0x03;
+	RCBA8(OIC) = 0x03;
 
 	/* Disable unused devices */
-	RCBA32(0x3418) = 0x003c0061;
+	RCBA32(FD) = FD_PCIE6 | FD_PCIE5 | FD_PCIE4 | FD_PCIE3 | FD_ACMOD
+		| FD_ACAUD | 1;
 
 	/* Enable PCIe Root Port Clock Gate */
-	RCBA32(0x341c) = 0x00000001;
+	RCBA32(CG) = 0x00000001;
 }
 
 static void early_ich7_init(void)
@@ -165,14 +165,14 @@ static void early_ich7_init(void)
 	RCBA32(0x0214) = 0x10030509;
 	RCBA32(0x0218) = 0x00020504;
 	RCBA8(0x0220) = 0xc5;
-	reg32 = RCBA32(0x3410);
+	reg32 = RCBA32(GCS);
 	reg32 |= (1 << 6);
-	RCBA32(0x3410) = reg32;
+	RCBA32(GCS) = reg32;
 	reg32 = RCBA32(0x3430);
 	reg32 &= ~(3 << 0);
 	reg32 |= (1 << 0);
 	RCBA32(0x3430) = reg32;
-	RCBA32(0x3418) |= (1 << 0);
+	RCBA32(FD) |= (1 << 0);
 	RCBA16(0x0200) = 0x2008;
 	RCBA8(0x2027) = 0x0d;
 	RCBA16(0x3e08) |= (1 << 7);

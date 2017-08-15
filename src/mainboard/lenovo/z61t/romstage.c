@@ -45,19 +45,18 @@ static void ich7_enable_lpc(void)
 	// decode range
 	pci_write_config16(PCI_DEV(0, 0x1f, 0), LPC_IO_DEC, 0x0210);
 	// decode range
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), LPC_EN, 0x1f0d);
+	pci_write_config16(PCI_DEV(0, 0x1f, 0), LPC_EN, CNF1_LPC_EN
+			| MC_LPC_EN | KBC_LPC_EN | GAMEH_LPC_EN | GAMEL_LPC_EN
+			| FDD_LPC_EN | LPT_LPC_EN | COMA_LPC_EN);
 
 	/* range 0x1600 - 0x167f */
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x84, 0x1601);
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x86, 0x007c);
+	pci_write_config32(PCI_DEV(0, 0x1f, 0), GEN1_DEC, 0x007c1601);
 
-	/* range 0x15e0 - 0x10ef */
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x88, 0x15e1);
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x8a, 0x000c);
+	/* range 0x15e0 - 0x15ef */
+	pci_write_config32(PCI_DEV(0, 0x1f, 0), GEN2_DEC, 0x000c15e1);
 
 	/* range 0x1680 - 0x169f */
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x8c, 0x1681);
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x8e, 0x001c);
+	pci_write_config32(PCI_DEV(0, 0x1f, 0), GEN3_DEC, 0x001c1681);
 }
 
 static void early_superio_config(void)
@@ -146,7 +145,7 @@ static void early_ich7_init(void)
 	RCBA32(0x0214) = 0x10030549;
 	RCBA32(0x0218) = 0x00020504;
 	RCBA8(0x0220) = 0xc5;
-	reg32 = RCBA32(0x3410);
+	reg32 = RCBA32(GCS);
 	reg32 |= (1 << 6);
 	RCBA32(GCS) = reg32;
 	reg32 = RCBA32(0x3430);

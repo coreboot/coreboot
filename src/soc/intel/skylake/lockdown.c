@@ -16,10 +16,15 @@
 #include <arch/io.h>
 #include <bootstate.h>
 #include <chip.h>
+#include <intelblocks/pcr.h>
 #include <soc/lpc.h>
 #include <soc/pci_devs.h>
+#include <soc/pcr_ids.h>
 #include <soc/pm.h>
 #include <string.h>
+
+#define PCR_DMI_GCS		0x274C
+#define PCR_DMI_GCS_BILD  	(1 << 0)
 
 static void lpc_lockdown_config(void)
 {
@@ -55,10 +60,19 @@ static void pmc_lockdown_config(void)
 	write32(pmcbase + PMSYNC_TPR_CFG, pmsyncreg);
 }
 
+static void dmi_lockdown_config(void)
+{
+	/* GCS reg of DMI */
+	pcr_or8(PID_DMI, PCR_DMI_GCS, PCR_DMI_GCS_BILD);
+}
+
 static void platform_lockdown_config(void *unused)
 {
 	/* LPC lock down configuration */
 	lpc_lockdown_config();
+
+	/* DMI lock down configuration */
+	dmi_lockdown_config();
 
 	/* PMC lock down configuration */
 	pmc_lockdown_config();

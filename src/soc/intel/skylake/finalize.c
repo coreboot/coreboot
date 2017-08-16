@@ -35,8 +35,6 @@
 #include <soc/systemagent.h>
 #include <stdlib.h>
 
-#define PCR_DMI_GCS		0x274C
-#define PCR_DMI_GCS_BILD  	(1 << 0)
 #define PSF_BASE_ADDRESS	0xA00
 #define PCR_PSFX_T0_SHDW_PCIEN	0x1C
 #define PCR_PSFX_T0_SHDW_PCIEN_FUNDIS	(1 << 8)
@@ -167,9 +165,6 @@ static void soc_lockdown(void)
 	if (config->chipset_lockdown == CHIPSET_LOCKDOWN_COREBOOT) {
 		 /* Bios Interface Lock */
 		fast_spi_set_bios_interface_lock_down();
-
-		/* GCS reg of DMI */
-		pcr_or8(PID_DMI, PCR_DMI_GCS, PCR_DMI_GCS_BILD);
 
 		/* Bios Lock */
 		fast_spi_set_lock_enable();

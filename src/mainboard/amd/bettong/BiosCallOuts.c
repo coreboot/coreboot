@@ -79,11 +79,11 @@ AGESA_STATUS Fch_Oem_config(UINT32 Func, UINTN FchData, VOID *ConfigPtr)
 #endif
 
 		/* XHCI configuration */
-#if IS_ENABLED(CONFIG_HUDSON_XHCI_ENABLE)
-		FchParams_env->Usb.Xhci0Enable = TRUE;
-#else
-		FchParams_env->Usb.Xhci0Enable = FALSE;
-#endif
+		if (IS_ENABLED(CONFIG_HUDSON_XHCI_ENABLE))
+			FchParams_env->Usb.Xhci0Enable = TRUE;
+		else
+			FchParams_env->Usb.Xhci0Enable = FALSE;
+
 		FchParams_env->Usb.Xhci1Enable = FALSE;
 		FchParams_env->Usb.USB30PortInit = 8; /* 8: If USB3 port is unremoveable. */
 

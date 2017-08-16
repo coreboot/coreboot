@@ -18,6 +18,7 @@
 #include <arch/cpu.h>
 #include <cpu/intel/turbo.h>
 #include <cpu/x86/msr.h>
+#include <intelblocks/cpulib.h>
 #include <soc/intel/common/acpi.h>
 #include <soc/pm.h>
 
@@ -33,66 +34,6 @@
 #define PSS_LATENCY_TRANSITION		10
 #define PSS_LATENCY_BUSMASTER		10
 
-
-__attribute__((weak)) int cpu_get_coord_type(void)
-{
-	return HW_ALL;
-}
-
-__attribute__((weak)) int cpu_config_tdp_levels(void)
-{
-	return 0;
-}
-
-__attribute__((weak)) uint32_t cpu_get_min_ratio(void)
-{
-	msr_t msr;
-	/* Get bus ratio limits and calculate clock speeds */
-	msr = rdmsr(MSR_PLATFORM_INFO);
-	return ((msr.hi >> 8) & 0xff); /* Max Efficiency Ratio */
-}
-
-__attribute__((weak)) uint32_t cpu_get_max_ratio(void)
-{
-	msr_t msr;
-	uint32_t ratio_max;
-	if (cpu_config_tdp_levels()) {
-		/* Set max ratio to nominal TDP ratio */
-		msr = rdmsr(MSR_CONFIG_TDP_NOMINAL);
-		ratio_max = msr.lo & 0xff;
-	} else {
-		msr = rdmsr(MSR_PLATFORM_INFO);
-		/* Max Non-Turbo Ratio */
-		ratio_max = (msr.lo >> 8) & 0xff;
-	}
-	return ratio_max;
-}
-
-__attribute__((weak)) uint32_t cpu_get_bus_clock(void)
-{
-	/* CPU bus clock is set by default here to 100MHz.
-	 * This function returns the bus clock in KHz.
-	 */
-	return 100 * KHz;
-}
-
-__attribute__((weak)) uint32_t cpu_get_power_max(void)
-{
-	msr_t msr;
-	int power_unit;
-
-	msr = rdmsr(MSR_RAPL_POWER_UNIT);
-	power_unit = 2 << ((msr.lo & 0xf) - 1);
-	msr = rdmsr(MSR_PKG_POWER_INFO);
-	return ((msr.lo & 0x7fff) / power_unit) * 1000;
-}
-
-__attribute__((weak)) uint32_t cpu_get_max_turbo_ratio(void)
-{
-	msr_t msr;
-	msr = rdmsr(MSR_TURBO_RATIO_LIMIT);
-	return msr.lo & 0xff;
-}
 
 __attribute__((weak)) acpi_cstate_t *soc_get_cstate_map(int *entries)
 {

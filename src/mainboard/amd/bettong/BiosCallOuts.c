@@ -23,9 +23,7 @@
 #include "heapManager.h"
 #include "FchPlatform.h"
 #include "cbfs.h"
-#if IS_ENABLED(CONFIG_HUDSON_IMC_FWM)
 #include "imc.h"
-#endif
 #include "hudson.h"
 #include <stdlib.h>
 #include "northbridge/amd/pi/dimmSpd.h"
@@ -74,9 +72,8 @@ AGESA_STATUS Fch_Oem_config(UINT32 Func, UINTN FchData, VOID *ConfigPtr)
 	} else if (StdHeader->Func == AMD_INIT_ENV) {
 		FCH_DATA_BLOCK *FchParams_env = (FCH_DATA_BLOCK *)FchData;
 		printk(BIOS_DEBUG, "Fch OEM config in INIT ENV ");
-#if IS_ENABLED(CONFIG_HUDSON_IMC_FWM)
-		oem_fan_control(FchParams_env);
-#endif
+		if (IS_ENABLED(CONFIG_HUDSON_IMC_FWM))
+			oem_fan_control(FchParams_env);
 
 		/* XHCI configuration */
 		if (IS_ENABLED(CONFIG_HUDSON_XHCI_ENABLE))

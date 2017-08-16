@@ -23,9 +23,7 @@
 #include "FchPlatform.h"
 #include "cbfs.h"
 #include "gpio_ftns.h"
-#if IS_ENABLED(CONFIG_HUDSON_IMC_FWM)
 #include "imc.h"
-#endif
 #include "hudson.h"
 #include <stdlib.h>
 
@@ -55,7 +53,7 @@ const int BiosCalloutsLen = ARRAY_SIZE(BiosCallouts);
  *  software switches the I2C address.  AMD recommends using IMC
  *  to control fans, instead of HWM.
  */
-static void oem_fan_control(FCH_DATA_BLOCK *FchParams)
+void oem_fan_control(FCH_DATA_BLOCK *FchParams)
 {
 	FchParams->Imc.ImcEnable = FALSE;
 	FchParams->Hwm.HwMonitorEnable = FALSE;

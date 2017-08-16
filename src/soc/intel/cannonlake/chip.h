@@ -18,9 +18,12 @@
 #ifndef _SOC_CHIP_H_
 #define _SOC_CHIP_H_
 
+#include <intelblocks/gspi.h>
 #include <stdint.h>
 
 struct soc_intel_cannonlake_config {
+	/* GSPI */
+	struct gspi_cfg gspi[CONFIG_SOC_INTEL_COMMON_BLOCK_GSPI_MAX];
 };
 
 typedef struct soc_intel_cannonlake_config config_t;

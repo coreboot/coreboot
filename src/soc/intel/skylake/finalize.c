@@ -107,8 +107,6 @@ static void pch_finalize_script(void)
 {
 	device_t dev;
 	uint32_t reg32;
-	u16 tcobase;
-	u16 tcocnt;
 	uint8_t *pmcbase;
 	config_t *config;
 	u8 reg8;
@@ -118,12 +116,6 @@ static void pch_finalize_script(void)
 
 	/* Lock FAST_SPIBAR */
 	fast_spi_lock_bar();
-
-	/* TCO Lock down */
-	tcobase = smbus_tco_regs();
-	tcocnt = inw(tcobase + TCO1_CNT);
-	tcocnt |= TCO_LOCK;
-	outw(tcocnt, tcobase + TCO1_CNT);
 
 	/* Display me status before we hide it */
 	intel_me_status();

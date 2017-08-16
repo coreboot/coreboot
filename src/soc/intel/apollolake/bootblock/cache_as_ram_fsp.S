@@ -19,7 +19,6 @@
 #include <cpu/x86/cache.h>
 #include <cpu/x86/cr.h>
 #include <cpu/x86/post_code.h>
-#include <soc/cpu.h>
 
 #include <../../../arch/x86/walkcbfs.S>
 

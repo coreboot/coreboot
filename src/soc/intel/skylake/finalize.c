@@ -21,7 +21,6 @@
 #include <console/post_codes.h>
 #include <cpu/x86/smm.h>
 #include <device/pci.h>
-#include <intelblocks/fast_spi.h>
 #include <intelblocks/pcr.h>
 #include <reg_script.h>
 #include <spi-generic.h>
@@ -109,12 +108,6 @@ static void pch_finalize_script(void)
 	config_t *config;
 	u8 reg8;
 
-	/* Set FAST_SPI opcode menu */
-	fast_spi_set_opcode_menu();
-
-	/* Lock FAST_SPIBAR */
-	fast_spi_lock_bar();
-
 	/* Display me status before we hide it */
 	intel_me_status();
 
@@ -149,25 +142,23 @@ static void pch_finalize_script(void)
 
 static void soc_lockdown(void)
 {
+	struct soc_intel_skylake_config *config;
+	struct device *dev;
 	u8 reg8;
-	device_t dev;
-	const struct device *dev1 = dev_find_slot(0, PCH_DEVFN_LPC);
-	const struct soc_intel_skylake_config *config = dev1->chip_info;
+
+	dev = PCH_DEV_PMC;
+
+	/* Check if PMC is enabled, else return */
+	if (dev == NULL || dev->chip_info == NULL)
+		return;
+
+	config = dev->chip_info;
 
 	/* Global SMI Lock */
 	if (config->LockDownConfigGlobalSmi == 0) {
-		dev = PCH_DEV_PMC;
 		reg8 = pci_read_config8(dev, GEN_PMCON_A);
 		reg8 |= SMI_LOCK;
 		pci_write_config8(dev, GEN_PMCON_A, reg8);
-	}
-
-	if (config->chipset_lockdown == CHIPSET_LOCKDOWN_COREBOOT) {
-		 /* Bios Interface Lock */
-		fast_spi_set_bios_interface_lock_down();
-
-		/* Bios Lock */
-		fast_spi_set_lock_enable();
 	}
 }
 

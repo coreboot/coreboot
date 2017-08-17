@@ -276,13 +276,6 @@
 
 #define GPIO_MAX_NUM_PER_GROUP	32
 
-#define MISCCFG_GPE0_DW0_SHIFT 8
-#define MISCCFG_GPE0_DW0_MASK (0xf << MISCCFG_GPE0_DW0_SHIFT)
-#define MISCCFG_GPE0_DW1_SHIFT 12
-#define MISCCFG_GPE0_DW1_MASK (0xf << MISCCFG_GPE0_DW1_SHIFT)
-#define MISCCFG_GPE0_DW2_SHIFT 16
-#define MISCCFG_GPE0_DW2_MASK (0xf << MISCCFG_GPE0_DW2_SHIFT)
-
 /* Host Software Pad Ownership Register.
  * The pins in the community are divided into 3 groups :
  * GPIO 0 ~ 31, GPIO 32 ~ 63, GPIO 64 ~ 95

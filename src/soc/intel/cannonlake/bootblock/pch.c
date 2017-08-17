@@ -26,7 +26,7 @@
 #include <soc/p2sb.h>
 #include <soc/pci_devs.h>
 #include <soc/pcr_ids.h>
-#include <soc/pmc.h>
+#include <soc/pm.h>
 #include <soc/smbus.h>
 
 #define PCR_PSF3_TO_SHDW_PMC_REG_BASE	0x1400

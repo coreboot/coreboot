@@ -14,30 +14,33 @@
  */
 
 #include <arch/io.h>
+#include <arch/early_variables.h>
 #include <cpu/x86/mtrr.h>
 #include <cbmem.h>
 #include <console/console.h>
 #include <fsp/util.h>
+#include <intelblocks/pmclib.h>
 #include <memory_info.h>
 #include <soc/pm.h>
 #include <soc/romstage.h>
 #include <timestamp.h>
+
+static struct chipset_power_state power_state CAR_GLOBAL;
 
 asmlinkage void car_stage_entry(void)
 {
 	bool s3wake;
 	struct postcar_frame pcf;
 	uintptr_t top_of_ram;
-	struct chipset_power_state *ps;
+	struct chipset_power_state *ps = car_get_var_ptr(&power_state);
 
 	console_init();
 
 	/* Program MCHBAR, DMIBAR, GDXBAR and EDRAMBAR */
 	systemagent_early_init();
 
-	ps = fill_power_state();
 	timestamp_add_now(TS_START_ROMSTAGE);
-	s3wake = ps->prev_sleep_state == ACPI_S3;
+	s3wake = pmc_fill_power_state(ps) == ACPI_S3;
 	fsp_memory_init(s3wake);
 	if (postcar_frame_init(&pcf, 1 * KiB))
 		die("Unable to initialize postcar frame.\n");

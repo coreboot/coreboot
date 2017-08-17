@@ -24,6 +24,13 @@
 struct soc_intel_cannonlake_config {
 	/* GSPI */
 	struct gspi_cfg gspi[CONFIG_SOC_INTEL_COMMON_BLOCK_GSPI_MAX];
+
+	/* Gpio group routed to each dword of the GPE0 block. Values are
+	 * of the form GPP_[A:G] or GPD. */
+	uint8_t gpe0_dw0; /* GPE0_31_0 STS/EN */
+	uint8_t gpe0_dw1; /* GPE0_63_32 STS/EN */
+	uint8_t gpe0_dw2; /* GPE0_95_64 STS/EN */
+
 };
 
 typedef struct soc_intel_cannonlake_config config_t;

@@ -9,6 +9,7 @@ bootblock-$(CONFIG_DRIVERS_UART_8250MEM) += uart.c
 bootblock-y += bootblock/bootblock.c
 bootblock-y += bootblock/cpu.c
 bootblock-y += bootblock/pch.c
+bootblock-y += pmutil.c
 bootblock-y += bootblock/report_platform.c
 bootblock-y += gpio.c
 bootblock-y += gspi.c
@@ -18,6 +19,7 @@ bootblock-$(CONFIG_UART_DEBUG) += uart.c
 
 romstage-y += gspi.c
 romstage-y += memmap.c
+romstage-y += pmutil.c
 romstage-y += reset.c
 romstage-y += spi.c
 romstage-$(CONFIG_UART_DEBUG) += uart.c
@@ -25,12 +27,14 @@ romstage-$(CONFIG_UART_DEBUG) += uart.c
 ramstage-y += chip.c
 ramstage-y += gspi.c
 ramstage-y += memmap.c
+ramstage-y += pmutil.c
 ramstage-$(CONFIG_PLATFORM_USES_FSP2_0) += reset.c
 ramstage-y += spi.c
 ramstage-y += systemagent.c
 ramstage-$(CONFIG_UART_DEBUG) += uart.c
 
 postcar-y += memmap.c
+postcar-y += pmutil.c
 postcar-y += spi.c
 postcar-$(CONFIG_UART_DEBUG) += uart.c
 

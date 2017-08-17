@@ -71,9 +71,9 @@
 #define   SMI_LOCK			(1 << 4)
 #define   RTC_BATTERY_DEAD		(1 << 2)
 
-#define ETR3				0x1048
-#define   ETR3_CF9LOCK			(1 << 31)
-#define   ETR3_CF9GR			(1 << 20)
+#define ETR				0x1048
+#define   CF9_LOCK			(1 << 31)
+#define   CF9_GLB_RST			(1 << 20)
 
 #define SSML				0x104C
 #define    SSML_SSL_DS			(0 << 0)
@@ -84,6 +84,8 @@
 
 #define SSMD				0x1054
 #define    SSMD_SSD_MASK		(0xffff << 0)
+
+#define PRSTS				0x1810
 
 #define S3_PWRGATE_POL			0x1828
 #define    S3DC_GATE_SUS		(1 << 1)
@@ -109,11 +111,9 @@
 #define   PCH2CPU_TT_EN			(1 << 26)
 
 #define PCH_PWRM_ACPI_TMR_CTL		0x18FC
-#define GPIO_CFG			0x1920
-#define   GPE0_DWX_MASK			0xf
-#define   GPE0_DW0_SHIFT		0
-#define   GPE0_DW1_SHIFT		4
-#define   GPE0_DW2_SHIFT		8
+#define GPIO_GPE_CFG			0x1920
+#define  GPE0_DWX_MASK			0xf
+#define  GPE0_DW_SHIFT(x)		(4*(x))
 
 #define GBLRST_CAUSE0			0x1924
 #define   GBLRST_CAUSE0_THERMTRIP	(1 << 5)

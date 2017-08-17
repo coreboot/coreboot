@@ -1,5 +1,5 @@
 # stabilize-9430.B - Wed Mar 29, 2017
-STABLE_COMMIT_ID=5a086f5c9a5edd56d5dc81e11af10597aaab4218
+STABLE_COMMIT_ID=a843f262420f0e1a7f70d3f8f590d32a78d05ef8
 
 project_name=depthcharge
 project_dir=$(CURDIR)/depthcharge

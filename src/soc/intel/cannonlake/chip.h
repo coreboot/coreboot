@@ -108,6 +108,11 @@ struct soc_intel_cannonlake_config {
 	struct usb3_port_config usb3_ports[10];
 	uint8_t XdciEnable;
 	uint8_t SsicPortEnable;
+	/* Wake Enable Bitmap for USB2 ports */
+	uint16_t usb2_wake_enable_bitmap;
+	/* Wake Enable Bitmap for USB3 ports */
+	uint16_t usb3_wake_enable_bitmap;
+
 
 	/* SATA related */
 	uint8_t SataEnable;
@@ -194,6 +199,7 @@ struct soc_intel_cannonlake_config {
 	 * 0x02000000 - 32MiB and beyond
 	 */
 	uint32_t PrmrrSize;
+	uint8_t PmTimerDisabled;
 };
 
 typedef struct soc_intel_cannonlake_config config_t;

@@ -26,6 +26,7 @@ romstage-y += reset.c
 romstage-y += spi.c
 romstage-$(CONFIG_UART_DEBUG) += uart.c
 
+ramstage-y += acpi.c
 ramstage-y += chip.c
 ramstage-y += cpu.c
 ramstage-y += gpio.c

@@ -14,8 +14,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef CALLOUTS_AMD_AGESA_H
-#define CALLOUTS_AMD_AGESA_H
+#ifndef __CALLOUTS_AMD_AGESA_H__
+#define __CALLOUTS_AMD_AGESA_H__
 
 #include <Porting.h>
 #include <AGESA.h>
@@ -64,4 +64,4 @@ typedef struct {
 extern const BIOS_CALLOUT_STRUCT BiosCallouts[];
 extern const int BiosCalloutsLen;
 
-#endif /* CALLOUTS_AMD_AGESA_H */
+#endif /* __CALLOUTS_AMD_AGESA_H__ */

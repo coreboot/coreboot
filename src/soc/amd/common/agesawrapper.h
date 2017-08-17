@@ -13,8 +13,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef _AGESAWRAPPER_H_
-#define _AGESAWRAPPER_H_
+#ifndef __AGESAWRAPPER_H__
+#define __AGESAWRAPPER_H__
 
 #include <stdint.h>
 #include <Porting.h>
@@ -56,4 +56,4 @@ const void *agesawrapper_locate_module(const CHAR8 name[8]);
 
 void OemPostParams(AMD_POST_PARAMS *PostParams);
 
-#endif /* _AGESAWRAPPER_H_ */
+#endif /* __AGESAWRAPPER_H__ */

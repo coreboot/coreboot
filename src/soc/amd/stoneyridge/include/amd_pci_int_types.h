@@ -13,8 +13,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef AMD_PCI_INT_TYPES_H
-#define AMD_PCI_INT_TYPES_H
+#ifndef __AMD_PCI_INT_TYPES_H__
+#define __AMD_PCI_INT_TYPES_H__
 
 const char *intr_types[] = {
 	[0x00] = "INTA#\t", "INTB#\t", "INTC#\t", "INTD#\t", "INTE#\t",
@@ -34,4 +34,4 @@ const char *intr_types[] = {
 	[0x70] = "I2C0\t", "I2C1\t", "I2C2\t", "I2C3\t", "UART0\t", "UART1\t",
 };
 
-#endif /* AMD_PCI_INT_TYPES_H */
+#endif /* __AMD_PCI_INT_TYPES_H__ */

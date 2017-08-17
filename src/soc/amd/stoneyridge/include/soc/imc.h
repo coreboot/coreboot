@@ -13,8 +13,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef STONEYRIDGE_IMC_H
-#define STONEYRIDGE_IMC_H
+#ifndef __STONEYRIDGE_IMC_H__
+#define __STONEYRIDGE_IMC_H__
 
 void imc_reg_init(void);
 void enable_imc_thermal_zone(void);

@@ -13,8 +13,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef _PI_STONEYRIDGE_PCI_DEVS_H_
-#define _PI_STONEYRIDGE_PCI_DEVS_H_
+#ifndef __PI_STONEYRIDGE_PCI_DEVS_H__
+#define __PI_STONEYRIDGE_PCI_DEVS_H__
 
 #include <device/pci_def.h>
 #include <rules.h>
@@ -285,4 +285,4 @@
 #define SD_DEVID		0x7906
 #define SD_DEVFN		PCI_DEVFN(SD_DEV, SD_FUNC)
 
-#endif /* _PI_STONEYRIDGE_PCI_DEVS_H_ */
+#endif /* __PI_STONEYRIDGE_PCI_DEVS_H__ */

@@ -13,8 +13,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef PI_STONEYRIDGE_NORTHBRIDGE_H
-#define PI_STONEYRIDGE_NORTHBRIDGE_H
+#ifndef __PI_STONEYRIDGE_NORTHBRIDGE_H__
+#define __PI_STONEYRIDGE_NORTHBRIDGE_H__
 
 #include <arch/cpu.h>
 #include <arch/io.h>
@@ -30,4 +30,4 @@ void setup_uma_memory(void);
 /* todo: remove this when postcar stage is in place */
 asmlinkage void chipset_teardown_car(void);
 
-#endif /* PI_STONEYRIDGE_NORTHBRIDGE_H */
+#endif /* __PI_STONEYRIDGE_NORTHBRIDGE_H__ */

@@ -13,8 +13,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef AMD_PCI_UTIL_H
-#define AMD_PCI_UTIL_H
+#ifndef __AMD_PCI_UTIL_H__
+#define __AMD_PCI_UTIL_H__
 
 #include <stdint.h>
 #include <amd_pci_int_defs.h>
@@ -38,4 +38,4 @@ void write_pci_int_idx(u8 index, int mode, u8 data);
 void write_pci_cfg_irqs(void);
 void write_pci_int_table(void);
 
-#endif /* AMD_PCI_UTIL_H */
+#endif /* __AMD_PCI_UTIL_H__ */

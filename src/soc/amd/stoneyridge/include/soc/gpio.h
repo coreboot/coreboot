@@ -13,8 +13,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef _STONEYRIDGE_GPIO_H_
-#define _STONEYRIDGE_GPIO_H_
+#ifndef __STONEYRIDGE_GPIO_H__
+#define __STONEYRIDGE_GPIO_H__
 
 #include <soc/amd/common/amd_defs.h>
 #include <types.h>
@@ -129,4 +129,4 @@
 
 typedef uint32_t gpio_t;
 
-#endif	/* _STONEYRIDGE_GPIO_H_ */
+#endif /* __STONEYRIDGE_GPIO_H__ */

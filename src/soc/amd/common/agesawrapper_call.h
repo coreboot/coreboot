@@ -11,8 +11,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef _AGESAWRAPPER_CALL_H_
-#define _AGESAWRAPPER_CALL_H_
+#ifndef __AGESAWRAPPER_CALL_H__
+#define __AGESAWRAPPER_CALL_H__
 
 #include <stdint.h>
 #include <console/console.h>
@@ -56,4 +56,4 @@ static inline u32 do_agesawrapper(AGESA_STATUS (*func)(void), const char *name)
 
 #define AGESAWRAPPER_PRE_CONSOLE(func) agesawrapper_ ## func()
 
-#endif
+#endif /* __AGESAWRAPPER_CALL_H__ */

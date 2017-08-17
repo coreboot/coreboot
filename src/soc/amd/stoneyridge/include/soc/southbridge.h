@@ -14,8 +14,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef STONEYRIDGE_H
-#define STONEYRIDGE_H
+#ifndef __STONEYRIDGE_H__
+#define __STONEYRIDGE_H__
 
 #include <arch/io.h>
 #include <types.h>
@@ -204,4 +204,4 @@ void s3_resume_init_data(void *FchParams);
 int s3_save_nvram_early(u32 dword, int size, int  nvram_pos);
 void bootblock_fch_early_init(void);
 
-#endif /* STONEYRIDGE_H */
+#endif /* __STONEYRIDGE_H__ */

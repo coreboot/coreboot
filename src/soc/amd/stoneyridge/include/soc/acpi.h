@@ -15,8 +15,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef _SOC_STONEYRIDGE_ACPI_H_
-#define _SOC_STONEYRIDGE_ACPI_H_
+#ifndef __SOC_STONEYRIDGE_ACPI_H__
+#define __SOC_STONEYRIDGE_ACPI_H__
 
 #include <arch/acpi.h>
 
@@ -35,4 +35,4 @@ unsigned long southbridge_write_acpi_tables(device_t device,
 
 void southbridge_inject_dsdt(device_t device);
 
-#endif	/* _SOC_STONEYRIDGE_ACPI_H_ */
+#endif /* __SOC_STONEYRIDGE_ACPI_H__ */

@@ -13,8 +13,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef _DIMMSPD_H_
-#define _DIMMSPD_H_
+#ifndef __DIMMSPD_H__
+#define __DIMMSPD_H__
 
 AGESA_STATUS
 AmdMemoryReadSPD(IN UINT32 Func, IN UINTN Data,

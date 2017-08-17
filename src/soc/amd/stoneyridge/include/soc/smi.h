@@ -5,8 +5,8 @@
  * Subject to the GNU GPL v2, or (at your option) any later version.
  */
 
-#ifndef _SOUTHBRIDGE_AMD_PI_STONEYRIDGE_SMI_H
-#define _SOUTHBRIDGE_AMD_PI_STONEYRIDGE_SMI_H
+#ifndef __SOUTHBRIDGE_AMD_PI_STONEYRIDGE_SMI_H__
+#define __SOUTHBRIDGE_AMD_PI_STONEYRIDGE_SMI_H__
 
 #include <arch/io.h>
 
@@ -62,4 +62,4 @@ void enable_acpi_cmd_smi(void);
 void enable_smi_generation(void);
 #endif
 
-#endif /* _SOUTHBRIDGE_AMD_PI_STONEYRIDGE_SMI_H */
+#endif /* __SOUTHBRIDGE_AMD_PI_STONEYRIDGE_SMI_H__ */

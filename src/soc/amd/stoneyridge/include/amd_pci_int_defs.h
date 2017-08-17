@@ -13,8 +13,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef AMD_PCI_INT_DEFS_H
-#define AMD_PCI_INT_DEFS_H
+#ifndef __AMD_PCI_INT_DEFS_H__
+#define __AMD_PCI_INT_DEFS_H__
 
 /*
  * PIRQ and device routing - these define the index
@@ -72,4 +72,4 @@
 #define PIRQ_UART0	0x74
 #define PIRQ_UART1	0x75
 
-#endif /* AMD_PCI_INT_DEFS_H */
+#endif /* __AMD_PCI_INT_DEFS_H__ */

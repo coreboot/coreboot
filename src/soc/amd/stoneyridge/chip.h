@@ -13,8 +13,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef STONEYRIDGE_CHIP_H
-#define STONEYRIDGE_CHIP_H
+#ifndef __STONEYRIDGE_CHIP_H__
+#define __STONEYRIDGE_CHIP_H__
 
 #include <stdint.h>
 
@@ -32,4 +32,4 @@ typedef struct soc_amd_stoneyridge_config config_t;
 
 extern struct device_operations pci_domain_ops;
 
-#endif /* STONEYRIDGE_CHIP_H */
+#endif /* __STONEYRIDGE_CHIP_H__ */

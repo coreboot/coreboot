@@ -13,8 +13,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef AMD_PSP_H
-#define AMD_PSP_H
+#ifndef __AMD_PSP_H__
+#define __AMD_PSP_H__
 
 #include <stdint.h>
 #include <compiler.h>
@@ -94,4 +94,4 @@ struct mbox_default_buffer {	/* command-response buffer unused by command */
 /* BIOS-to-PSP functions return 0 if successful, else negative value */
 int psp_notify_dram(void);
 
-#endif /* AMD_PSP_H */
+#endif /* __AMD_PSP_H__ */

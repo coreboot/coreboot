@@ -14,8 +14,8 @@
  */
 
 
-#ifndef _AMD_SB_DEFS_H_
-#define _AMD_SB_DEFS_H_
+#ifndef __AMD_SB_DEFS_H__
+#define __AMD_SB_DEFS_H__
 
 #define AMD_SB_ACPI_MMIO_ADDR 0xfed80000ul
 

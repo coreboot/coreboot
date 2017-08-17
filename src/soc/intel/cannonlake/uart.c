@@ -79,6 +79,6 @@ void pch_uart_init(void)
 uintptr_t uart_platform_base(int idx)
 {
 	/* We can only have one serial console at a time */
-	return UART_DEBUG_BASE_ADDRESS;
+	return UART_BASE_0_ADDR(idx);
 }
 #endif

@@ -53,12 +53,10 @@ static struct smbus_bus_operations lops_smbus_bus = {
 static void pch_smbus_init(device_t dev)
 {
 	struct resource *res;
-	u16 reg16;
 
 	/* Enable clock gating */
-	reg16 = pci_read_config32(dev, 0x80);
-	reg16 &= ~((1 << 8)|(1 << 10)|(1 << 12)|(1 << 14));
-	pci_write_config32(dev, 0x80, reg16);
+	pci_update_config32(dev, 0x80,
+		~((1 << 8) | (1 << 10) | (1 << 12) | (1 << 14)), 0);
 
 	/* Set Receive Slave Address */
 	res = find_resource(dev, PCI_BASE_ADDRESS_4);

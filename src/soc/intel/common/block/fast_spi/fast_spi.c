@@ -153,6 +153,23 @@ void fast_spi_lock_bar(void)
 }
 
 /*
+ * Set FAST_SPIBAR + DLOCK (0x0C) register bits to discrete lock the
+ * FAST_SPI Protected Range (PR) registers.
+ */
+void fast_spi_pr_dlock(void)
+{
+	void *spibar = fast_spi_get_bar();
+	uint32_t dlock;
+
+	dlock = read32(spibar + SPIBAR_DLOCK);
+	dlock |= (SPIBAR_DLOCK_PR0LOCKDN | SPIBAR_DLOCK_PR1LOCKDN
+			| SPIBAR_DLOCK_PR2LOCKDN | SPIBAR_DLOCK_PR3LOCKDN
+			| SPIBAR_DLOCK_PR4LOCKDN);
+
+	write32(spibar + SPIBAR_DLOCK, dlock);
+}
+
+/*
  * Set FAST_SPIBAR Soft Reset Data Register value.
  */
 void fast_spi_set_strap_msg_data(uint32_t soft_reset_data)

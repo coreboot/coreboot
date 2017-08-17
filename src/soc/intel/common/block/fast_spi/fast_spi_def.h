@@ -34,6 +34,7 @@
 #define SPIBAR_BFPREG			0x00
 #define SPIBAR_HSFSTS_CTL		0x04
 #define SPIBAR_FADDR			0x08
+#define SPIBAR_DLOCK			0x0c
 #define SPIBAR_FDATA(n)			(0x10 + ((n) & 0xf) * 4)
 #define SPIBAR_FPR_BASE			0x84
 #define SPIBAR_FPR(n)			0x84 + (4 * n))
@@ -86,6 +87,13 @@
 
 /* Bit definitions for FADDR (0x08) register */
 #define SPIBAR_FADDR_MASK		0x7FFFFFF
+
+/* Bit definitions for DLOCK (0x0C) register */
+#define SPIBAR_DLOCK_PR0LOCKDN		(1 << 8)
+#define SPIBAR_DLOCK_PR1LOCKDN		(1 << 9)
+#define SPIBAR_DLOCK_PR2LOCKDN		(1 << 10)
+#define SPIBAR_DLOCK_PR3LOCKDN		(1 << 11)
+#define SPIBAR_DLOCK_PR4LOCKDN		(1 << 12)
 
 /* Maximum bytes of data that can fit in FDATAn (0x10) registers */
 #define SPIBAR_FDATA_FIFO_SIZE		0x40

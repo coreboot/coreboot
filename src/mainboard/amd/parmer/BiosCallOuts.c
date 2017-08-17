@@ -21,9 +21,7 @@
 #include "heapManager.h"
 #include "FchPlatform.h"
 #include "cbfs.h"
-#if IS_ENABLED(CONFIG_HUDSON_IMC_FWM)
 #include "imc.h"
-#endif
 #include <stdlib.h>
 
 const BIOS_CALLOUT_STRUCT BiosCallouts[] =
@@ -107,72 +105,70 @@ static const CODEC_TBL_LIST CodecTableList[] =
 static void oem_fan_control(FCH_DATA_BLOCK *FchParams)
 {
 	/* Enable IMC fan control. the recommand way */
-#if IS_ENABLED(CONFIG_HUDSON_IMC_FWM)
+	if (IS_ENABLED(CONFIG_HUDSON_IMC_FWM)) {
+		imc_reg_init();
 
-	imc_reg_init();
+		/* HwMonitorEnable = TRUE &&  HwmFchtsiAutoOpll ==FALSE to call FchECfancontrolservice */
+		FchParams->Hwm.HwMonitorEnable = TRUE;
+		FchParams->Hwm.HwmFchtsiAutoPoll = FALSE;/* 0 disable, 1 enable TSI Auto Polling */
 
-	/* HwMonitorEnable = TRUE &&  HwmFchtsiAutoOpll ==FALSE to call FchECfancontrolservice */
-	FchParams->Hwm.HwMonitorEnable = TRUE;
-	FchParams->Hwm.HwmFchtsiAutoPoll = FALSE;/* 0 disable, 1 enable TSI Auto Polling */
+		FchParams->Imc.ImcEnable = TRUE;
+		FchParams->Hwm.HwmControl = 1;	/* 1 IMC, 0 HWM */
+		FchParams->Imc.ImcEnableOverWrite = 1; /* 2 disable IMC , 1 enable IMC, 0 following hw strap setting */
 
-	FchParams->Imc.ImcEnable = TRUE;
-	FchParams->Hwm.HwmControl = 1;	/* 1 IMC, 0 HWM */
-	FchParams->Imc.ImcEnableOverWrite = 1; /* 2 disable IMC , 1 enable IMC, 0 following hw strap setting */
+		LibAmdMemFill(&(FchParams->Imc.EcStruct), 0, sizeof(FCH_EC), FchParams->StdHeader);
 
-	LibAmdMemFill(&(FchParams->Imc.EcStruct), 0, sizeof(FCH_EC), FchParams->StdHeader);
+		/* Thermal Zone Parameter */
+		FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg0 = 0x00;
+		FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg1 = 0x00;	/* Zone */
+		FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg2 = 0x3d; //BIT0 | BIT2 | BIT5;
+		FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg3 = 0x0e;//6 | BIT3;
+		FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg4 = 0x00;
+		FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg5 = 0x54;
+		FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg6 = 0x98;	/* SMBUS Address for SMBUS based temperature sensor such as SB-TSI and ADM1032 */
+		FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg7 = 0x02;
+		FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg8 = 0x01;	/* PWM steping rate in unit of PWM level percentage */
+		FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg9 = 0x00;
 
-	/* Thermal Zone Parameter */
-	FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg0 = 0x00;
-	FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg1 = 0x00;	/* Zone */
-	FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg2 = 0x3d; //BIT0 | BIT2 | BIT5;
-	FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg3 = 0x0e;//6 | BIT3;
-	FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg4 = 0x00;
-	FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg5 = 0x54;
-	FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg6 = 0x98;	/* SMBUS Address for SMBUS based temperature sensor such as SB-TSI and ADM1032 */
-	FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg7 = 0x02;
-	FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg8 = 0x01;	/* PWM steping rate in unit of PWM level percentage */
-	FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg9 = 0x00;
+		/* IMC Fan Policy temperature thresholds */
+		FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg0 = 0x00;
+		FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg1 = 0x00;	/* Zone */
+		FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg2 = 0x46;///80;	/*AC0 threshold in Celsius */
+		FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg3 = 0x3c;	/*AC1 threshold in Celsius */
+		FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg4 = 0x32;	/*AC2 threshold in Celsius */
+		FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg5 = 0xff;	/*AC3 threshold in Celsius, 0xFF is not define */
+		FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg6 = 0xff;	/*AC4 threshold in Celsius, 0xFF is not define */
+		FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg7 = 0xff;	/*AC5 threshold in Celsius, 0xFF is not define */
+		FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg8 = 0xff;	/*AC6 threshold in Celsius, 0xFF is not define */
+		FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg9 = 0xff;	/*AC7 lowest threshold in Celsius, 0xFF is not define */
+		FchParams->Imc.EcStruct.MsgFun83Zone0MsgRegA = 0x4b;	/*critical threshold* in Celsius, 0xFF is not define */
+		FchParams->Imc.EcStruct.MsgFun83Zone0MsgRegB = 0x00;
 
-	/* IMC Fan Policy temperature thresholds */
-	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg0 = 0x00;
-	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg1 = 0x00;	/* Zone */
-	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg2 = 0x46;///80;	/*AC0 threshold in Celsius */
-	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg3 = 0x3c;	/*AC1 threshold in Celsius */
-	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg4 = 0x32;	/*AC2 threshold in Celsius */
-	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg5 = 0xff;	/*AC3 threshold in Celsius, 0xFF is not define */
-	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg6 = 0xff;	/*AC4 threshold in Celsius, 0xFF is not define */
-	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg7 = 0xff;	/*AC5 threshold in Celsius, 0xFF is not define */
-	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg8 = 0xff;	/*AC6 threshold in Celsius, 0xFF is not define */
-	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg9 = 0xff;	/*AC7 lowest threshold in Celsius, 0xFF is not define */
-	FchParams->Imc.EcStruct.MsgFun83Zone0MsgRegA = 0x4b;	/*critical threshold* in Celsius, 0xFF is not define */
-	FchParams->Imc.EcStruct.MsgFun83Zone0MsgRegB = 0x00;
+		/* IMC Fan Policy PWM Settings */
+		FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg0 = 0x00;
+		FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg1 = 0x00;	/* Zone */
+		FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg2 = 0x5a;	/* AL0 percentage */
+		FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg3 = 0x46;	/* AL1 percentage */
+		FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg4 = 0x28;	/* AL2 percentage */
+		FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg5 = 0xff;	/* AL3 percentage */
+		FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg6 = 0xff;	/* AL4 percentage */
+		FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg7 = 0xff;	/* AL5 percentage */
+		FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg8 = 0xff;	/* AL6 percentage */
+		FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg9 = 0xff;	/* AL7 percentage */
 
-	/* IMC Fan Policy PWM Settings */
-	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg0 = 0x00;
-	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg1 = 0x00;	/* Zone */
-	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg2 = 0x5a;	/* AL0 percentage */
-	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg3 = 0x46;	/* AL1 percentage */
-	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg4 = 0x28;	/* AL2 percentage */
-	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg5 = 0xff;	/* AL3 percentage */
-	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg6 = 0xff;	/* AL4 percentage */
-	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg7 = 0xff;	/* AL5 percentage */
-	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg8 = 0xff;	/* AL6 percentage */
-	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg9 = 0xff;	/* AL7 percentage */
+		FchParams->Imc.EcStruct.IMCFUNSupportBitMap = 0x111;//BIT0 | BIT4 |BIT8;
 
-	FchParams->Imc.EcStruct.IMCFUNSupportBitMap = 0x111;//BIT0 | BIT4 |BIT8;
-
-	/* NOTE:
-	 * FchInitLateHwm will overwrite the EcStruct with EcDefaultMassege,
-	 * AGESA put EcDefaultMassege as global data in ROM, so we can't overwride it.
-	 * so we remove it from AGESA code. Please Seee FchInitLateHwm.
-	 */
-
-#else /* HWM fan control, the way not recommand */
-	FchParams->Imc.ImcEnable = FALSE;
-	FchParams->Hwm.HwMonitorEnable = TRUE;
-	FchParams->Hwm.HwmFchtsiAutoPoll = TRUE;/* 1 enable, 0 disable TSI Auto Polling */
-
-#endif /* CONFIG_HUDSON_IMC_FWM */
+		/* NOTE:
+		 * FchInitLateHwm will overwrite the EcStruct with EcDefaultMassege,
+		 * AGESA put EcDefaultMassege as global data in ROM, so we can't overwride it.
+		 * so we remove it from AGESA code. Please Seee FchInitLateHwm.
+		 */
+	} else {
+		/* HWM fan control, the way not recommand */
+		FchParams->Imc.ImcEnable = FALSE;
+		FchParams->Hwm.HwMonitorEnable = TRUE;
+		FchParams->Hwm.HwmFchtsiAutoPoll = TRUE;/* 1 enable, 0 disable TSI Auto Polling */
+	}
 }
 
 void board_FCH_InitReset(struct sysinfo *cb_NA, FCH_RESET_DATA_BLOCK *FchParams_reset)

@@ -193,6 +193,13 @@ chip soc/intel/apollolake
 				register "has_power_resource" = "1"
 				device i2c 10 on end
 			end
+			chip drivers/i2c/generic
+				register "hid" = ""MLFS0000""
+				register "desc" = ""Melfas Touchscreen""
+				register "irq" = "ACPI_IRQ_EDGE_LOW(GPIO_21_IRQ)"
+				register "probed" = "1"
+				device i2c 34 on end
+			end
 			chip drivers/i2c/hid
 				register "generic.hid" = ""WDHT0002""
 				register "generic.desc" = ""WDT Touchscreen""

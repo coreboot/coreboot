@@ -184,8 +184,8 @@ static void soc_lockdown(void)
 		pci_write_config8(dev, GEN_PMCON_A, reg8);
 	}
 
-	/* Bios Interface Lock */
-	if (config->LockDownConfigBiosInterface == 0) {
+	if (config->chipset_lockdown == CHIPSET_LOCKDOWN_COREBOOT) {
+		 /* Bios Interface Lock */
 		pci_write_config8(PCH_DEV_LPC, BIOS_CNTL,
 				  pci_read_config8(PCH_DEV_LPC,
 						   BIOS_CNTL) | LPC_BC_BILD);
@@ -196,10 +196,8 @@ static void soc_lockdown(void)
 
 		/* GCS reg of DMI */
 		pcr_or8(PID_DMI, PCR_DMI_GCS, PCR_DMI_GCS_BILD);
-	}
 
-	/* Bios Lock */
-	if (config->LockDownConfigBiosLock == 0) {
+		/* Bios Lock */
 		pci_write_config8(PCH_DEV_LPC, BIOS_CNTL,
 				  pci_read_config8(PCH_DEV_LPC,
 						   BIOS_CNTL) | LPC_BC_LE);
@@ -208,18 +206,6 @@ static void soc_lockdown(void)
 		pci_read_config8(PCH_DEV_LPC, BIOS_CNTL);
 
 		fast_spi_set_lock_enable();
-	}
-
-	/* SPIEiss */
-	if (config->LockDownConfigSpiEiss == 0) {
-		pci_write_config8(PCH_DEV_LPC, BIOS_CNTL,
-				  pci_read_config8(PCH_DEV_LPC,
-						   BIOS_CNTL) | LPC_BC_EISS);
-
-		/* Ensure an additional read back after performing lock down */
-		pci_read_config8(PCH_DEV_LPC, BIOS_CNTL);
-
-		fast_spi_set_eiss();
 	}
 }
 

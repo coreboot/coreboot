@@ -201,7 +201,6 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->SataEnable = config->EnableSata;
 	params->SataMode = config->SataMode;
 	tconfig->PchLockDownGlobalSmi = config->LockDownConfigGlobalSmi;
-	tconfig->PchLockDownBiosInterface = config->LockDownConfigBiosInterface;
 	tconfig->PchLockDownRtcLock = config->LockDownConfigRtcLock;
 	/*
 	 * To disable HECI, the Psf needs to be left unlocked
@@ -210,9 +209,19 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	 * do the changes and then lock it back in coreboot during finalize.
 	 */
 	tconfig->PchSbAccessUnlock = (config->HeciEnabled == 0) ? 1 : 0;
-
-	params->PchLockDownBiosLock = config->LockDownConfigBiosLock;
-	params->PchLockDownSpiEiss = config->LockDownConfigSpiEiss;
+	if (config->chipset_lockdown == CHIPSET_LOCKDOWN_COREBOOT) {
+		tconfig->PchLockDownBiosInterface = 0;
+		params->PchLockDownBiosLock = 0;
+		params->PchLockDownSpiEiss = 0;
+		/*
+		 * Skip Spi Flash Lockdown from inside FSP.
+		 * Making this config "0" means FSP won't set the FLOCKDN bit
+		 * of SPIBAR + 0x04 (i.e., Bit 15 of BIOS_HSFSTS_CTL).
+		 * So, it becomes coreboot's responsibility to set this bit
+		 * before end of POST for security concerns.
+		 */
+		params->SpiFlashCfgLockDown = 0;
+	}
 	params->PchSubSystemVendorId = config->PchConfigSubSystemVendorId;
 	params->PchSubSystemId = config->PchConfigSubSystemId;
 	params->PchPmWolEnableOverride = config->WakeConfigWolEnableOverride;
@@ -246,15 +255,6 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	/* Show SPI controller if enabled in devicetree.cb */
 	dev = dev_find_slot(0, PCH_DEVFN_SPI);
 	params->ShowSpiController = dev->enabled;
-
-	/*
-	 * Skip Spi Flash Lockdown from inside FSP.
-	 * Making this config "0" means FSP won't set the FLOCKDN bit of
-	 * SPIBAR + 0x04 (i.e., Bit 15 of BIOS_HSFSTS_CTL).
-	 * So, it becomes coreboot's responsibility to set this bit before
-	 * end of POST for security concerns.
-	 */
-	params->SpiFlashCfgLockDown = config->SpiFlashCfgLockDown;
 
 	/*
 	 * Send VR specific mailbox commands:

@@ -205,6 +205,9 @@ chip soc/intel/skylake
 	# Enable/Disable VMX feature
 	register "VmxEnable" = "0"
 
+	# Lock Down
+	register "chipset_lockdown" = "CHIPSET_LOCKDOWN_COREBOOT"
+
 	device cpu_cluster 0 on
 		device lapic 0 on end
 	end

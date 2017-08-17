@@ -262,29 +262,10 @@ struct soc_intel_skylake_config {
 	/* Enable SMI_LOCK bit to prevent writes to the Global SMI Enable bit.*/
 	u8 LockDownConfigGlobalSmi;
 	/*
-	 * Enable BIOS Interface Lock Down bit to prevent writes to the Backup
-	 * Control Register. Top Swap bit and the General Control and Status
-	 * Registers Boot BIOS Straps.
-	 */
-	u8 LockDownConfigBiosInterface;
-	/*
 	 * Enable RTC lower and upper 128 byte Lock bits to lock Bytes 38h-3Fh
 	 * in the upper and and lower 128-byte bank of RTC RAM.
 	 */
 	u8 LockDownConfigRtcLock;
-	/*
-	 * When enabled, the BIOS Region can only be modified from SMM after
-	 * EndOfDxe protocol is installed
-	 */
-	u8 LockDownConfigBiosLock;
-	/*
-	 * Enable InSMM.STS (EISS) in SPI If this bit is set, then WPD must be a
-	 * '1' and InSMM.STS must be '1' also in order to write to BIOS regions
-	 * of SPI Flash. If this bit is clear, then the InSMM.STS is a don't
-	 * care. The BIOS must set the EISS bit while BIOS Guard support is
-	 * enabled.
-	 */
-	u8 LockDownConfigSpiEiss;
 	/* Subsystem Vendor ID of the PCH devices*/
 	u16 PchConfigSubSystemVendorId;
 	/* Subsystem ID of the PCH devices*/
@@ -493,14 +474,16 @@ struct soc_intel_skylake_config {
 	 * 0b - Disabled
 	 */
 	u8 eist_enable;
-	/*
-	 * Skip Spi Flash Lockdown from inside FSP.
-	 * Making this config "0" means FSP won't set the FLOCKDN bit of
-	 * SPIBAR + 0x04 (i.e., Bit 15 of BIOS_HSFSTS_CTL).
-	 * So, it becomes coreboot's responsibility to set this bit before
-	 * end of POST for security concerns.
+	/* Chipset (LPC and SPI)  Lock Down
+	 * 1b - coreboot to handle lockdown
+	 * 0b - FSP to handle lockdown
 	 */
-	u8 SpiFlashCfgLockDown;
+	enum {
+		/* lock according to binary UPD settings */
+		CHIPSET_LOCKDOWN_FSP,
+		/* coreboot handles locking */
+		CHIPSET_LOCKDOWN_COREBOOT,
+	} chipset_lockdown;
 };
 
 typedef struct soc_intel_skylake_config config_t;

@@ -147,11 +147,12 @@ void soc_silicon_init_params(SILICON_INIT_UPD *params)
 	params->EnableSata = config->EnableSata;
 	params->SataMode = config->SataMode;
 	params->LockDownConfigGlobalSmi = config->LockDownConfigGlobalSmi;
-	params->LockDownConfigBiosInterface =
-		config->LockDownConfigBiosInterface;
 	params->LockDownConfigRtcLock = config->LockDownConfigRtcLock;
-	params->LockDownConfigBiosLock = config->LockDownConfigBiosLock;
-	params->LockDownConfigSpiEiss = config->LockDownConfigSpiEiss;
+	if (config->chipset_lockdown == CHIPSET_LOCKDOWN_COREBOOT) {
+		params->LockDownConfigBiosInterface = 0;
+		params->LockDownConfigBiosLock = 0;
+		params->LockDownConfigSpiEiss = 0;
+	}
 	params->PchConfigSubSystemVendorId = config->PchConfigSubSystemVendorId;
 	params->PchConfigSubSystemId = config->PchConfigSubSystemId;
 	params->WakeConfigWolEnableOverride =

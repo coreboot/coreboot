@@ -30,8 +30,8 @@ void pch_uart_read_resources(struct device *dev)
 	if (IS_ENABLED(CONFIG_UART_DEBUG) && uart_is_debug_controller(dev)) {
 		struct resource *res = find_resource(dev, PCI_BASE_ADDRESS_0);
 		/* Need to set the base and size for the resource allocator. */
-		res->base = UART_DEBUG_BASE_ADDRESS;
-		res->size = UART_DEBUG_BASE_SIZE;
+		res->base = UART_BASE_0_ADDR(CONFIG_UART_FOR_CONSOLE);
+		res->size = UART_DEBUG_BASE_0_SIZE;
 		res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED |
 			IORESOURCE_FIXED;
 	}

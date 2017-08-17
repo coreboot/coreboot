@@ -22,5 +22,5 @@ uintptr_t uart_platform_base(int idx)
 {
 	/* Same base address for all debug port usage. In reality UART2
 	 * is currently only supported. */
-	return UART_DEBUG_BASE_ADDRESS;
+	return UART_BASE_0_ADDR(idx);
 }

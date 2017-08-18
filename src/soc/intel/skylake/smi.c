@@ -15,6 +15,7 @@
  * GNU General Public License for more details.
  */
 
+#include <bootstate.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <console/console.h>
@@ -54,7 +55,7 @@ void southbridge_smm_enable_smi(void)
 {
 	printk(BIOS_DEBUG, "Enabling SMIs.\n");
 	/* Configure events */
-	enable_pm1(PWRBTN_EN | GBL_EN);
+	enable_pm1(GBL_EN);
 	disable_gpe(PME_B0_EN);
 
 	/*
@@ -88,3 +89,18 @@ void smm_setup_structures(void *gnvs, void *tcg, void *smi1)
 		  "d" (APM_CNT)
 	);
 }
+
+static void pm1_enable_pwrbtn_smi(void *unused)
+{
+	/*
+	 * Enable power button SMI only before jumping to payload. This ensures
+	 * that:
+	 * 1. Power button SMI is enabled only after coreboot is done.
+	 * 2. On resume path, power button SMI is not enabled and thus avoids
+	 * any shutdowns because of power button presses due to power button
+	 * press in resume path.
+	 */
+	update_pm1_enable(PWRBTN_EN);
+}
+
+BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_LOAD, BS_ON_EXIT, pm1_enable_pwrbtn_smi, NULL);

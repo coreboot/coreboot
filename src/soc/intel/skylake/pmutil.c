@@ -142,6 +142,22 @@ void enable_pm1(u16 events)
 	outw(events, ACPI_BASE_ADDRESS + PM1_EN);
 }
 
+/*
+ * Update supplied events in PM1_EN register. This does not disable any already
+ * set events.
+ */
+void update_pm1_enable(u16 events)
+{
+	u16 pm1_en = read_pm1_enable();
+	pm1_en |= events;
+	enable_pm1(pm1_en);
+}
+
+/* Read events set in PM1_EN register. */
+uint16_t read_pm1_enable(void)
+{
+	return inw(ACPI_BASE_ADDRESS + PM1_EN);
+}
 
 /*
  * SMI

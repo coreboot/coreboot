@@ -343,12 +343,13 @@ static void southbridge_smi_apmc(void)
 static void southbridge_smi_pm1(void)
 {
 	u16 pm1_sts = clear_pm1_status();
+	u16 pm1_en = read_pm1_enable();
 
 	/*
 	 * While OSPM is not active, poweroff immediately on a power button
 	 * event.
 	 */
-	if (pm1_sts & PWRBTN_STS) {
+	if ((pm1_sts & PWRBTN_STS) && (pm1_en & PWRBTN_EN)) {
 		/* power button pressed */
 		if (IS_ENABLED(CONFIG_ELOG_GSMI))
 			elog_add_event(ELOG_TYPE_POWER_BUTTON);

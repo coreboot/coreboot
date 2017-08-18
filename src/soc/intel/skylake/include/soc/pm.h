@@ -159,6 +159,8 @@ void disable_pm1_control(uint32_t mask);
 /* PM1 */
 uint16_t clear_pm1_status(void);
 void enable_pm1(uint16_t events);
+void update_pm1_enable(uint16_t events);
+uint16_t read_pm1_enable(void);
 uint32_t clear_smi_status(void);
 
 /* SMI */

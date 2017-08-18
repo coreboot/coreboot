@@ -54,6 +54,8 @@ Device (EC0)
 		PATC, 8,	// Programmable Auxiliary Trip Commit
 		CHGL, 8,	// Charger Current Limit
 		TBMD, 1,	// Tablet mode
+		Offset (0x0a),
+		KBLE, 1,	// Keyboard Backlight exists
 	}
 
 #if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC_ACPI_MEMMAP)

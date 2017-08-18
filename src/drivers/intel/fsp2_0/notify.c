@@ -80,7 +80,7 @@ static void fsp_notify_dummy(void *arg)
 		fsp_notify(END_OF_FIRMWARE);
 }
 
-BOOT_STATE_INIT_ENTRY(BS_DEV_RESOURCES, BS_ON_EXIT, fsp_notify_dummy,
+BOOT_STATE_INIT_ENTRY(BS_DEV_ENABLE, BS_ON_ENTRY, fsp_notify_dummy,
 						(void *) AFTER_PCI_ENUM);
 BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_LOAD, BS_ON_EXIT, fsp_notify_dummy,
 						(void *) READY_TO_BOOT);

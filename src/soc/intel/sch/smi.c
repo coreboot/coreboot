@@ -312,6 +312,10 @@ void smm_init(void)
 	smi_set_eos();
 }
 
+void smm_init_completion(void)
+{
+}
+
 void smm_lock(void)
 {
 	/* LOCK the SMM memory window and enable normal SMM.

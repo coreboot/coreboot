@@ -593,11 +593,13 @@ void initialize_cpus(struct bus *cpu_bus)
 		recover_lowest_1M();
 }
 
-/* Platform-specific code for SMI handler overrides this. */
-__attribute__((weak)) void smm_init(void)
+#if !IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)
+/* Empty stubs for platforms without SMI handlers. */
+void smm_init(void)
 {
 }
 
-__attribute__((weak)) void smm_init_completion(void)
+void smm_init_completion(void)
 {
 }
+#endif

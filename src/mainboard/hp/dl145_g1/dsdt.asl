@@ -203,27 +203,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "LXBIOS", "LXB-DSDT", 1)
 	// Optional
 	//}
 
-	// System \_Sx states
-	// Four bytes must be stored for each supported power state:
-	//  0:7  Value for PM1a_CNT.SLP_TYP register to enter this system state.
-	//  8:f  Value for PM1b_CNT.SLP_TYP register to enter this system state.
-	//       To enter any given state, OSPM must write the PM1a_CNT.SLP_TYP
-	//       register before the PM1b_CNT.SLP_TYP register.
-	// 10:1f Reserved
-	// The states are:
-	// S0 : Working
-	// S1 : Sleeping with Processor Context maintained
-	// S2 : Sleeping with Processor Context not maintained
-	// S3 : Same as S2, but more power saving (e.g. suspend to RAM)
-	// S4 : DRAM context not maintained (e.g. suspend to disk)
-	// S5 : Soft Off
-	// If only S0 and S5 are declared then no wake-up methods are needed
-	Name (\_S0, Package () { 0x00, 0x00, 0x00, 0x00 })
-	// S1 support should work, but never wakes up, so it's commented out
-	//Name (\_S1, Package () { 0x01, 0x01, 0x01, 0x01 })
-	//Name (\_S3, Package () { 0x05, 0x05, 0x05, 0x05 })
-	Name (\_S5, Package () { 0x07, 0x07, 0x07, 0x07 })
-	//Name (\_S5, Package () { 0x02, 0x02, 0x00, 0x00 })
+	#include <southbridge/amd/amd8111/acpi/sleepstates.asl>
 
 	Method (WAK, 1, NotSerialized) {}
 

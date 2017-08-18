@@ -15,6 +15,7 @@
  */
 
 #include <stdint.h>
+#include <assert.h>
 #include <console/console.h>
 #include <smp/node.h>
 #include <bootblock_common.h>
@@ -52,6 +53,10 @@ void bootblock_soc_early_init(void)
 
 void bootblock_soc_init(void)
 {
+	if (IS_ENABLED(CONFIG_STONEYRIDGE_UART))
+		assert(CONFIG_UART_FOR_CONSOLE >= 0
+					&& CONFIG_UART_FOR_CONSOLE <= 1);
+
 	u32 val = cpuid_eax(1);
 	printk(BIOS_DEBUG, "Family_Model: %08x\n", val);
 

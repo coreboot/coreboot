@@ -35,6 +35,9 @@ void configure_stoneyridge_uart(void)
 {
 	u8 byte, byte2;
 
+	if (CONFIG_UART_FOR_CONSOLE < 0 || CONFIG_UART_FOR_CONSOLE > 1)
+		return;
+
 	/* Power on the UART and AMBA devices */
 	byte = read8((void *)ACPI_MMIO_BASE + AOAC_BASE + FCH_AOAC_REG56
 					+ CONFIG_UART_FOR_CONSOLE * 2);

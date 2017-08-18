@@ -200,6 +200,13 @@ chip soc/intel/apollolake
 				register "probed" = "1"
 				device i2c 34 on end
 			end
+			chip drivers/i2c/generic
+				register "hid" = ""RAYD0001""
+				register "desc" = ""Raydium Touchscreen""
+				register "irq" = "ACPI_IRQ_EDGE_LOW(GPIO_21_IRQ)"
+				register "probed" = "1"
+				device i2c 39 on end
+			end
 			chip drivers/i2c/hid
 				register "generic.hid" = ""WDHT0002""
 				register "generic.desc" = ""WDT Touchscreen""

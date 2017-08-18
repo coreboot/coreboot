@@ -16,7 +16,7 @@
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
 
-void setup_lapic(void)
+void do_lapic_init(void)
 {
 	/* this is so interrupts work. This is very limited scope --
 	 * linux will do better later, we hope ...
@@ -26,18 +26,10 @@ void setup_lapic(void)
 	 * see the Intel mp1.4 spec, page A-3
 	 */
 
-#if NEED_LAPIC == 1
-	/* Only Pentium Pro and later have those MSR stuff */
-	msr_t msr;
-
 	printk(BIOS_INFO, "Setting up local APIC...");
 
 	/* Enable the local APIC */
-	msr = rdmsr(LAPIC_BASE_MSR);
-	msr.lo |= LAPIC_BASE_MSR_ENABLE;
-	msr.lo &= ~LAPIC_BASE_MSR_ADDR_MASK;
-	msr.lo |= LAPIC_DEFAULT_BASE;
-	wrmsr(LAPIC_BASE_MSR, msr);
+	enable_lapic();
 
 	/*
 	 * Set Task Priority to 'accept all'.
@@ -69,17 +61,5 @@ void setup_lapic(void)
 		);
 
 	printk(BIOS_DEBUG, " apic_id: 0x%02lx ", lapicid());
-
-#else /* !NEED_LAPIC */
-	/* Only Pentium Pro and later have those MSR stuff */
-	msr_t msr;
-
-	printk(BIOS_INFO, "Disabling local APIC...");
-
-	msr = rdmsr(LAPIC_BASE_MSR);
-	msr.lo &= ~LAPIC_BASE_MSR_ENABLE;
-	wrmsr(LAPIC_BASE_MSR, msr);
-#endif /* !NEED_LAPIC */
 	printk(BIOS_INFO, "done.\n");
-	post_code(0x9b);
 }

@@ -6,13 +6,6 @@
 #include <halt.h>
 #include <smp/node.h>
 
-/* See if I need to initialize the local APIC */
-#if IS_ENABLED(CONFIG_SMP) || IS_ENABLED(CONFIG_IOAPIC)
-#  define NEED_LAPIC 1
-#else
-#  define NEED_LAPIC 0
-#endif
-
 static inline __attribute__((always_inline)) unsigned long lapic_read(
 	unsigned long reg)
 {
@@ -32,12 +25,12 @@ static inline __attribute__((always_inline)) void lapic_wait_icr_idle(void)
 
 static inline void enable_lapic(void)
 {
-
 	msr_t msr;
 	msr = rdmsr(LAPIC_BASE_MSR);
 	msr.hi &= 0xffffff00;
-	msr.lo &= 0x000007ff;
-	msr.lo |= LAPIC_DEFAULT_BASE | (1 << 11);
+	msr.lo &= ~LAPIC_BASE_MSR_ADDR_MASK;
+	msr.lo |= LAPIC_DEFAULT_BASE;
+	msr.lo |= LAPIC_BASE_MSR_ENABLE;
 	wrmsr(LAPIC_BASE_MSR, msr);
 }
 
@@ -45,7 +38,7 @@ static inline void disable_lapic(void)
 {
 	msr_t msr;
 	msr = rdmsr(LAPIC_BASE_MSR);
-	msr.lo &= ~(1 << 11);
+	msr.lo &= ~LAPIC_BASE_MSR_ENABLE;
 	wrmsr(LAPIC_BASE_MSR, msr);
 }
 
@@ -146,13 +139,24 @@ static inline int lapic_remote_read(int apicid, int reg, unsigned long *pvalue)
 	return result;
 }
 
+void do_lapic_init(void);
 
-void setup_lapic(void);
+/* See if I need to initialize the local APIC */
+static inline int need_lapic_init(void)
+{
+	return IS_ENABLED(CONFIG_SMP) || IS_ENABLED(CONFIG_IOAPIC);
+}
 
-#if IS_ENABLED(CONFIG_SMP)
+static inline void setup_lapic(void)
+{
+	if (need_lapic_init())
+		do_lapic_init();
+	else
+		disable_lapic();
+}
+
 struct device;
 int start_cpu(struct device *cpu);
-#endif /* CONFIG_SMP */
 
 #endif /* !__PRE_RAM__ */
 

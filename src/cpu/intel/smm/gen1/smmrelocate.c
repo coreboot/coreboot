@@ -55,6 +55,7 @@ struct smm_relocation_params {
 
 /* This gets filled in and used during relocation. */
 static struct smm_relocation_params smm_reloc_params;
+static void *default_smm_area = NULL;
 
 static inline void write_smrr(struct smm_relocation_params *relo_params)
 {
@@ -155,6 +156,8 @@ static int install_relocation_handler(int *apic_id_map, int num_cpus,
 		.handler = &cpu_smm_do_relocation,
 		.handler_arg = (void *)relo_params,
 	};
+
+	default_smm_area = backup_default_smm_area();
 
 	if (smm_setup_relocation_handler(&smm_params))
 		return -1;
@@ -268,6 +271,11 @@ void smm_init(void)
 
 	/* Lock down the SMRAM space. */
 	smm_lock();
+}
+
+void smm_init_completion(void)
+{
+	restore_default_smm_area(default_smm_area);
 }
 
 void smm_lock(void)

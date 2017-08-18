@@ -1,7 +1,5 @@
-if BOARD_PURISM_LIBREM13_V2
-
-config BOARD_SPECIFIC_OPTIONS # dummy
-	def_bool y
+config BOARD_PURISM_BASEBOARD_LIBREM_SKL
+	def_bool n
 	select SYSTEM_TYPE_LAPTOP
 	select BOARD_ROMSIZE_KB_16384
 	select HAVE_ACPI_RESUME
@@ -11,25 +9,39 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select SERIRQ_CONTINUOUS_MODE
 	select MAINBOARD_USES_FSP2_0
 
+if BOARD_PURISM_BASEBOARD_LIBREM_SKL
+
 config IRQ_SLOT_COUNT
 	int
 	default 18
 
+config VARIANT_DIR
+	string
+	default "librem13v2" if BOARD_PURISM_LIBREM13_V2
+
+config MAINBOARD_VENDOR
+	string
+	default "Purism"
+
 config MAINBOARD_FAMILY
 	string
-	default "Librem 13"
+	default "Librem 13" if BOARD_PURISM_LIBREM13_V2
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "Librem 13 v2"
+	default "Librem 13 v2" if BOARD_PURISM_LIBREM13_V2
 
 config MAINBOARD_VERSION
 	string
-	default "2.0"
+	default "2.0" if BOARD_PURISM_LIBREM13_V2
 
 config MAINBOARD_DIR
 	string
-	default "purism/librem13v2"
+	default "purism/librem_skl"
+
+config DEVICETREE
+	string
+	default "variants/librem13v2/devicetree.cb" if BOARD_PURISM_LIBREM13_V2
 
 config MAX_CPUS
 	int

@@ -167,6 +167,15 @@ config VBOOT_EC_SLOW_UPDATE
 	  Whether the EC (or PD) is slow to update and needs to display a
 	  screen that informs the user the update is happening.
 
+config VBOOT_EC_EFS
+	bool
+	default n
+	depends on VBOOT_EC_SOFTWARE_SYNC
+	help
+	  CrosEC can support EFS: Early Firmware Selection. If it's enabled,
+	  software sync need to also support it. This setting tells vboot to
+	  perform EFS software sync.
+
 config VBOOT_PHYSICAL_DEV_SWITCH
 	bool
 	default n

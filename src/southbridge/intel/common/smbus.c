@@ -16,10 +16,17 @@
  */
 
 #include <arch/io.h>
+#include <console/console.h>
 #include <device/smbus_def.h>
 #include <stdlib.h>
 #include "smbus.h"
 
+
+#if IS_ENABLED(CONFIG_DEBUG_SMBUS)
+#define dprintk(args...) printk(BIOS_DEBUG, ##args)
+#else
+#define dprintk(args...) do {} while (0)
+#endif
 
 /* I801 command constants */
 #define I801_QUICK		(0 << 2)
@@ -256,6 +263,9 @@ int do_smbus_block_read(unsigned int smbus_base, u8 device, u8 cmd,
 		}
 	} while ((status & SMBHSTSTS_HOST_BUSY) && loops);
 
+	dprintk("%s: status = %02x, len = %d / %d, loops = %d\n",
+		__func__, status, bytes_read, slave_bytes, loops);
+
 	/* Post-check we received complete message. */
 	slave_bytes = inb(smbus_base + SMBHSTDAT0);
 	if (bytes_read < slave_bytes)
@@ -329,6 +339,9 @@ int do_smbus_block_write(unsigned int smbus_base, u8 device, u8 cmd,
 		}
 	} while ((status & SMBHSTSTS_HOST_BUSY) && loops);
 
+	dprintk("%s: status = %02x, len = %d / %d, loops = %d\n",
+		__func__, status, bytes_sent, bytes, loops);
+
 	if (bytes_sent < bytes)
 		return SMBUS_ERROR;
 
@@ -395,6 +408,9 @@ int do_i2c_block_read(unsigned int smbus_base, u8 device,
 			outb(status, smbus_base + SMBHSTSTAT);
 		}
 	} while ((status & SMBHSTSTS_HOST_BUSY) && loops);
+
+	dprintk("%s: status = %02x, len = %d / %d, loops = %d\n",
+		__func__, status, bytes_read, bytes, loops);
 
 	if (bytes_read < bytes)
 		return SMBUS_ERROR;

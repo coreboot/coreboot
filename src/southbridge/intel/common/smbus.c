@@ -65,6 +65,14 @@ static void smbus_delay(void)
 	inb(0x80);
 }
 
+static int host_completed(u8 status)
+{
+	if (status & SMBHSTSTS_HOST_BUSY)
+		return 0;
+	status &= ~(SMBHSTSTS_SMBALERT_STS | SMBHSTSTS_INUSE_STS);
+	return status != 0;
+}
+
 static int recover_master(int smbus_base, int ret)
 {
 	/* TODO: Depending of the failure, drive KILL transaction
@@ -72,6 +80,17 @@ static int recover_master(int smbus_base, int ret)
 	 */
 	printk(BIOS_ERR, "SMBus: Fatal master timeout (%d)\n", ret);
 	return ret;
+}
+
+static int cb_err_from_stat(u8 status)
+{
+	/* Ignore the "In Use" status... */
+	status &= ~(SMBHSTSTS_SMBALERT_STS | SMBHSTSTS_INUSE_STS);
+
+	if (status == SMBHSTSTS_INTR)
+		return 0;
+
+	return SMBUS_ERROR;
 }
 
 static int setup_command(unsigned int smbus_base, u8 ctrl, u8 xmitadd)
@@ -128,26 +147,28 @@ static int execute_command(unsigned int smbus_base)
 	return 0;
 }
 
-static int smbus_wait_until_done(u16 smbus_base)
+static int complete_command(unsigned int smbus_base)
 {
 	unsigned int loops = SMBUS_TIMEOUT;
-	unsigned char byte;
+	u8 status;
+
 	do {
 		smbus_delay();
-		if (--loops == 0)
-			break;
-		byte = inb(smbus_base + SMBHSTSTAT);
-	} while ((byte & SMBHSTSTS_HOST_BUSY)
-		|| (byte & ~(SMBHSTSTS_INUSE_STS | SMBHSTSTS_HOST_BUSY)) == 0);
-	return loops ? 0 : -1;
+		status = inb(smbus_base + SMBHSTSTAT);
+	} while (--loops && !host_completed(status));
+
+	if (loops == 0)
+		return recover_master(smbus_base,
+				      SMBUS_WAIT_UNTIL_DONE_TIMEOUT);
+
+	return cb_err_from_stat(status);
 }
 
 int do_smbus_read_byte(unsigned int smbus_base, u8 device,
 		unsigned int address)
 {
 	int ret;
-	unsigned char status;
-	unsigned char byte;
+	u8 byte;
 
 	/* Set up for a byte data read. */
 	ret = setup_command(smbus_base, I801_BYTE_DATA, XMIT_READ(device));
@@ -166,25 +187,18 @@ int do_smbus_read_byte(unsigned int smbus_base, u8 device,
 		return ret;
 
 	/* Poll for transaction completion */
-	if (smbus_wait_until_done(smbus_base) < 0)
-		return SMBUS_WAIT_UNTIL_DONE_TIMEOUT;
-
-	status = inb(smbus_base + SMBHSTSTAT);
-
-	/* Ignore the "In Use" status... */
-	status &= ~(SMBHSTSTS_SMBALERT_STS | SMBHSTSTS_INUSE_STS);
+	ret = complete_command(smbus_base);
+	if (ret < 0)
+		return ret;
 
 	/* Read results of transaction */
 	byte = inb(smbus_base + SMBHSTDAT0);
-	if (status != SMBHSTSTS_INTR)
-		return SMBUS_ERROR;
 	return byte;
 }
 
 int do_smbus_write_byte(unsigned int smbus_base, u8 device,
 			unsigned int address, unsigned int data)
 {
-	unsigned char status;
 	int ret;
 
 	/* Set up for a byte data write. */
@@ -204,19 +218,7 @@ int do_smbus_write_byte(unsigned int smbus_base, u8 device,
 		return ret;
 
 	/* Poll for transaction completion */
-	if (smbus_wait_until_done(smbus_base) < 0)
-		return SMBUS_WAIT_UNTIL_DONE_TIMEOUT;
-
-	status = inb(smbus_base + SMBHSTSTAT);
-
-	/* Ignore the "In Use" status... */
-	status &= ~(SMBHSTSTS_SMBALERT_STS | SMBHSTSTS_INUSE_STS);
-
-	/* Read results of transaction */
-	if (status != SMBHSTSTS_INTR)
-		return SMBUS_ERROR;
-
-	return 0;
+	return complete_command(smbus_base);
 }
 
 int do_smbus_block_read(unsigned int smbus_base, u8 device, u8 cmd,
@@ -248,12 +250,7 @@ int do_smbus_block_read(unsigned int smbus_base, u8 device, u8 cmd,
 
 	/* Poll for transaction completion */
 	do {
-		loops--;
 		status = inb(smbus_base + SMBHSTSTAT);
-		if (status & (SMBHSTSTS_FAILED | /* FAILED */
-				SMBHSTSTS_BUS_ERR | /* BUS ERR */
-				SMBHSTSTS_DEV_ERR)) /* DEV ERR */
-			return SMBUS_ERROR;
 
 		if (status & SMBHSTSTS_BYTE_DONE) { /* Byte done */
 
@@ -266,15 +263,23 @@ int do_smbus_block_read(unsigned int smbus_base, u8 device, u8 cmd,
 			 * and clears HOST_BUSY flag once the byte count
 			 * from slave is reached.
 			 */
-			outb(status, smbus_base + SMBHSTSTAT);
+			outb(SMBHSTSTS_BYTE_DONE, smbus_base + SMBHSTSTAT);
 		}
-	} while ((status & SMBHSTSTS_HOST_BUSY) && loops);
+	} while (--loops && !host_completed(status));
 
 	/* Post-check we received complete message. */
 	slave_bytes = inb(smbus_base + SMBHSTDAT0);
 
 	dprintk("%s: status = %02x, len = %d / %d, loops = %d\n",
 		__func__, status, bytes_read, slave_bytes, loops);
+
+	if (loops == 0)
+		return recover_master(smbus_base,
+				      SMBUS_WAIT_UNTIL_DONE_TIMEOUT);
+
+	ret = cb_err_from_stat(status);
+	if (ret < 0)
+		return ret;
 
 	if (bytes_read < slave_bytes)
 		return SMBUS_ERROR;
@@ -315,12 +320,7 @@ int do_smbus_block_write(unsigned int smbus_base, u8 device, u8 cmd,
 
 	/* Poll for transaction completion */
 	do {
-		loops--;
 		status = inb(smbus_base + SMBHSTSTAT);
-		if (status & (SMBHSTSTS_FAILED | /* FAILED */
-				SMBHSTSTS_BUS_ERR | /* BUS ERR */
-				SMBHSTSTS_DEV_ERR)) /* DEV ERR */
-			return SMBUS_ERROR;
 
 		if (status & SMBHSTSTS_BYTE_DONE) {
 			bytes_sent++;
@@ -331,12 +331,20 @@ int do_smbus_block_write(unsigned int smbus_base, u8 device, u8 cmd,
 			 * and clears HOST_BUSY flag once the byte count
 			 * has been reached.
 			 */
-			outb(status, smbus_base + SMBHSTSTAT);
+			outb(SMBHSTSTS_BYTE_DONE, smbus_base + SMBHSTSTAT);
 		}
-	} while ((status & SMBHSTSTS_HOST_BUSY) && loops);
+	} while (--loops && !host_completed(status));
 
 	dprintk("%s: status = %02x, len = %d / %d, loops = %d\n",
 		__func__, status, bytes_sent, bytes, loops);
+
+	if (loops == 0)
+		return recover_master(smbus_base,
+				      SMBUS_WAIT_UNTIL_DONE_TIMEOUT);
+
+	ret = cb_err_from_stat(status);
+	if (ret < 0)
+		return ret;
 
 	if (bytes_sent < bytes)
 		return SMBUS_ERROR;
@@ -373,12 +381,7 @@ int do_i2c_block_read(unsigned int smbus_base, u8 device,
 
 	/* Poll for transaction completion */
 	do {
-		loops--;
 		status = inb(smbus_base + SMBHSTSTAT);
-		if (status & (SMBHSTSTS_FAILED | /* FAILED */
-				SMBHSTSTS_BUS_ERR | /* BUS ERR */
-				SMBHSTSTS_DEV_ERR)) /* DEV ERR */
-			return SMBUS_ERROR;
 
 		if (status & SMBHSTSTS_BYTE_DONE) {
 
@@ -394,12 +397,20 @@ int do_i2c_block_read(unsigned int smbus_base, u8 device,
 					smbus_base + SMBHSTCTL);
 			}
 
-			outb(status, smbus_base + SMBHSTSTAT);
+			outb(SMBHSTSTS_BYTE_DONE, smbus_base + SMBHSTSTAT);
 		}
-	} while ((status & SMBHSTSTS_HOST_BUSY) && loops);
+	} while (--loops && !host_completed(status));
 
 	dprintk("%s: status = %02x, len = %d / %d, loops = %d\n",
 		__func__, status, bytes_read, bytes, loops);
+
+	if (loops == 0)
+		return recover_master(smbus_base,
+				      SMBUS_WAIT_UNTIL_DONE_TIMEOUT);
+
+	ret = cb_err_from_stat(status);
+	if (ret < 0)
+		return ret;
 
 	if (bytes_read < bytes)
 		return SMBUS_ERROR;

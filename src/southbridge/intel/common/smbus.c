@@ -239,6 +239,27 @@ static int block_cmd_loop(unsigned int smbus_base,
 	if (flags == (BLOCK_WRITE | BLOCK_I2C))
 		return SMBUS_ERROR;
 
+	/* Set number of bytes to transfer. */
+	/* Reset number of bytes to transfer so we notice later it
+	 * was really updated with the transaction. */
+	if (!sw_drives_nak) {
+		if (is_write_cmd)
+			outb(max_bytes, smbus_base + SMBHSTDAT0);
+		else
+			outb(0, smbus_base + SMBHSTDAT0);
+	}
+
+	/* Send first byte from buffer, bytes_sent increments after
+	 * hardware acknowledges it.
+	 */
+	if (is_write_cmd)
+		outb(*buf++, smbus_base + SMBBLKDAT);
+
+	/* Start the command */
+	ret = execute_command(smbus_base);
+	if (ret < 0)
+		return ret;
+
 	/* Poll for transaction completion */
 	do {
 		status = inb(smbus_base + SMBHSTSTAT);
@@ -301,16 +322,7 @@ int do_smbus_block_read(unsigned int smbus_base, u8 device, u8 cmd,
 	/* Set the command/address... */
 	outb(cmd, smbus_base + SMBHSTCMD);
 
-	/* Reset number of bytes to transfer so we notice later it
-	 * was really updated with the transaction. */
-	outb(0, smbus_base + SMBHSTDAT0);
-
-	/* Start the command */
-	ret = execute_command(smbus_base);
-	if (ret < 0)
-		return ret;
-
-	/* Poll for transaction completion */
+	/* Execute block transaction. */
 	ret = block_cmd_loop(smbus_base, buf, max_bytes, BLOCK_READ);
 	if (ret < 0)
 		return ret;
@@ -339,20 +351,7 @@ int do_smbus_block_write(unsigned int smbus_base, u8 device, u8 cmd,
 	/* Set the command/address... */
 	outb(cmd, smbus_base + SMBHSTCMD);
 
-	/* Set number of bytes to transfer. */
-	outb(bytes, smbus_base + SMBHSTDAT0);
-
-	/* Send first byte from buffer, bytes_sent increments after
-	 * hardware acknowledges it.
-	 */
-	outb(*buf++, smbus_base + SMBBLKDAT);
-
-	/* Start the command */
-	ret = execute_command(smbus_base);
-	if (ret < 0)
-		return ret;
-
-	/* Poll for transaction completion */
+	/* Execute block transaction. */
 	ret = block_cmd_loop(smbus_base, (u8 *)buf, bytes, BLOCK_WRITE);
 	if (ret < 0)
 		return ret;
@@ -383,12 +382,7 @@ int do_i2c_block_read(unsigned int smbus_base, u8 device,
 	/* device offset */
 	outb(offset, smbus_base + SMBHSTDAT1);
 
-	/* Start the command */
-	ret = execute_command(smbus_base);
-	if (ret < 0)
-		return ret;
-
-	/* Poll for transaction completion */
+	/* Execute block transaction. */
 	ret = block_cmd_loop(smbus_base, buf, bytes, BLOCK_READ | BLOCK_I2C);
 	if (ret < 0)
 		return ret;

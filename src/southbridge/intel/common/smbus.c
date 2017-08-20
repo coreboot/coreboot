@@ -101,19 +101,31 @@ static int setup_command(unsigned int smbus_base, u8 ctrl, u8 xmitadd)
 	return 0;
 }
 
-static int smbus_wait_until_active(u16 smbus_base)
+static int execute_command(unsigned int smbus_base)
 {
-	unsigned long loops;
-	loops = SMBUS_TIMEOUT;
+	unsigned int loops = SMBUS_TIMEOUT;
+	u8 status;
+
+	/* Start the command. */
+	outb((inb(smbus_base + SMBHSTCTL) | SMBHSTCNT_START),
+	     smbus_base + SMBHSTCTL);
+
+	/* Poll for it to start. */
 	do {
-		unsigned char val;
 		smbus_delay();
-		val = inb(smbus_base + SMBHSTSTAT);
-		if ((val & SMBHSTSTS_HOST_BUSY)) {
-			break;
-		}
-	} while (--loops);
-	return loops ? 0 : -1;
+
+		/* If we poll too slow, we could miss HOST_BUSY flag
+		 * set and detect INTR or x_ERR flags instead here.
+		 */
+		status = inb(smbus_base + SMBHSTSTAT);
+		status &= ~(SMBHSTSTS_SMBALERT_STS | SMBHSTSTS_INUSE_STS);
+	} while (--loops && status == 0);
+
+	if (loops == 0)
+		return recover_master(smbus_base,
+				      SMBUS_WAIT_UNTIL_ACTIVE_TIMEOUT);
+
+	return 0;
 }
 
 static int smbus_wait_until_done(u16 smbus_base)
@@ -149,12 +161,9 @@ int do_smbus_read_byte(unsigned int smbus_base, u8 device,
 	outb(0, smbus_base + SMBHSTDAT0);
 
 	/* Start the command */
-	outb((inb(smbus_base + SMBHSTCTL) | SMBHSTCNT_START),
-	     smbus_base + SMBHSTCTL);
-
-	/* poll for it to start */
-	if (smbus_wait_until_active(smbus_base) < 0)
-		return SMBUS_WAIT_UNTIL_ACTIVE_TIMEOUT;
+	ret = execute_command(smbus_base);
+	if (ret < 0)
+		return ret;
 
 	/* Poll for transaction completion */
 	if (smbus_wait_until_done(smbus_base) < 0)
@@ -190,12 +199,9 @@ int do_smbus_write_byte(unsigned int smbus_base, u8 device,
 	outb(data, smbus_base + SMBHSTDAT0);
 
 	/* Start the command */
-	outb((inb(smbus_base + SMBHSTCTL) | SMBHSTCNT_START),
-	     smbus_base + SMBHSTCTL);
-
-	/* poll for it to start */
-	if (smbus_wait_until_active(smbus_base) < 0)
-		return SMBUS_WAIT_UNTIL_ACTIVE_TIMEOUT;
+	ret = execute_command(smbus_base);
+	if (ret < 0)
+		return ret;
 
 	/* Poll for transaction completion */
 	if (smbus_wait_until_done(smbus_base) < 0)
@@ -236,12 +242,9 @@ int do_smbus_block_read(unsigned int smbus_base, u8 device, u8 cmd,
 	outb(0, smbus_base + SMBHSTDAT0);
 
 	/* Start the command */
-	outb((inb(smbus_base + SMBHSTCTL) | SMBHSTCNT_START),
-	     smbus_base + SMBHSTCTL);
-
-	/* poll for it to start */
-	if (smbus_wait_until_active(smbus_base) < 0)
-		return SMBUS_WAIT_UNTIL_ACTIVE_TIMEOUT;
+	ret = execute_command(smbus_base);
+	if (ret < 0)
+		return ret;
 
 	/* Poll for transaction completion */
 	do {
@@ -306,12 +309,9 @@ int do_smbus_block_write(unsigned int smbus_base, u8 device, u8 cmd,
 	outb(*buf++, smbus_base + SMBBLKDAT);
 
 	/* Start the command */
-	outb((inb(smbus_base + SMBHSTCTL) | SMBHSTCNT_START),
-	     smbus_base + SMBHSTCTL);
-
-	/* poll for it to start */
-	if (smbus_wait_until_active(smbus_base) < 0)
-		return SMBUS_WAIT_UNTIL_ACTIVE_TIMEOUT;
+	ret = execute_command(smbus_base);
+	if (ret < 0)
+		return ret;
 
 	/* Poll for transaction completion */
 	do {
@@ -367,12 +367,9 @@ int do_i2c_block_read(unsigned int smbus_base, u8 device,
 	outb(offset, smbus_base + SMBHSTDAT1);
 
 	/* Start the command */
-	outb((inb(smbus_base + SMBHSTCTL) | SMBHSTCNT_START),
-	     smbus_base + SMBHSTCTL);
-
-	/* poll for it to start */
-	if (smbus_wait_until_active(smbus_base) < 0)
-		return SMBUS_WAIT_UNTIL_ACTIVE_TIMEOUT;
+	ret = execute_command(smbus_base);
+	if (ret < 0)
+		return ret;
 
 	/* Poll for transaction completion */
 	do {

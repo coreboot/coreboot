@@ -33,6 +33,10 @@ void acpi_create_gnvs(global_nvs_t *gnvs)
 
 	/* Enable DPTF */
 	gnvs->dpte = 1;
+
+	/* Disable PMIC I2C port for ACPI for all boards except cyan */
+	if (!IS_ENABLED(CONFIG_BOARD_GOOGLE_CYAN))
+		gnvs->dev.lpss_en[LPSS_NVS_I2C2] = 0;
 }
 
 unsigned long acpi_fill_madt(unsigned long current)

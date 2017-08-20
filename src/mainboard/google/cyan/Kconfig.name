@@ -1,3 +1,7 @@
 config BOARD_GOOGLE_CYAN
 	bool "Cyan"
 	select BOARD_GOOGLE_BASEBOARD_CYAN
+
+config BOARD_GOOGLE_EDGAR
+	bool "Edgar"
+	select BOARD_GOOGLE_BASEBOARD_CYAN

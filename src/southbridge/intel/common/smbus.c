@@ -53,6 +53,10 @@
 #define SMBHSTSTS_INTR		(1 << 1)
 #define SMBHSTSTS_HOST_BUSY	(1 << 0)
 
+/* For SMBXMITADD register. */
+#define XMIT_WRITE(dev)		(((dev) << 1) | 0)
+#define XMIT_READ(dev)		(((dev) << 1) | 1)
+
 #define SMBUS_TIMEOUT		(10 * 1000 * 100)
 #define SMBUS_BLOCK_MAXLEN	32
 
@@ -61,31 +65,40 @@ static void smbus_delay(void)
 	inb(0x80);
 }
 
-static int smbus_wait_until_ready(u16 smbus_base)
+static int recover_master(int smbus_base, int ret)
 {
-	unsigned int loops = SMBUS_TIMEOUT;
-	unsigned char byte;
-	do {
-		smbus_delay();
-		if (--loops == 0)
-			break;
-		byte = inb(smbus_base + SMBHSTSTAT);
-	} while (byte & SMBHSTSTS_HOST_BUSY);
-	return loops ? 0 : -1;
+	/* TODO: Depending of the failure, drive KILL transaction
+	 * or force soft reset on SMBus master controller.
+	 */
+	printk(BIOS_ERR, "SMBus: Fatal master timeout (%d)\n", ret);
+	return ret;
 }
 
-static int smbus_wait_until_done(u16 smbus_base)
+static int setup_command(unsigned int smbus_base, u8 ctrl, u8 xmitadd)
 {
 	unsigned int loops = SMBUS_TIMEOUT;
-	unsigned char byte;
+	u8 host_busy;
+
 	do {
 		smbus_delay();
-		if (--loops == 0)
-			break;
-		byte = inb(smbus_base + SMBHSTSTAT);
-	} while ((byte & SMBHSTSTS_HOST_BUSY)
-		|| (byte & ~(SMBHSTSTS_INUSE_STS | SMBHSTSTS_HOST_BUSY)) == 0);
-	return loops ? 0 : -1;
+		host_busy = inb(smbus_base + SMBHSTSTAT) & SMBHSTSTS_HOST_BUSY;
+	} while (--loops && host_busy);
+
+	if (loops == 0)
+		return recover_master(smbus_base,
+				      SMBUS_WAIT_UNTIL_READY_TIMEOUT);
+
+	/* Clear any lingering errors, so the transaction will run. */
+	outb(inb(smbus_base + SMBHSTSTAT), smbus_base + SMBHSTSTAT);
+
+	/* Set up transaction */
+	/* Disable interrupts */
+	outb(ctrl, (smbus_base + SMBHSTCTL));
+
+	/* Set the device I'm talking to. */
+	outb(xmitadd, smbus_base + SMBXMITADD);
+
+	return 0;
 }
 
 static int smbus_wait_until_active(u16 smbus_base)
@@ -103,27 +116,34 @@ static int smbus_wait_until_active(u16 smbus_base)
 	return loops ? 0 : -1;
 }
 
+static int smbus_wait_until_done(u16 smbus_base)
+{
+	unsigned int loops = SMBUS_TIMEOUT;
+	unsigned char byte;
+	do {
+		smbus_delay();
+		if (--loops == 0)
+			break;
+		byte = inb(smbus_base + SMBHSTSTAT);
+	} while ((byte & SMBHSTSTS_HOST_BUSY)
+		|| (byte & ~(SMBHSTSTS_INUSE_STS | SMBHSTSTS_HOST_BUSY)) == 0);
+	return loops ? 0 : -1;
+}
+
 int do_smbus_read_byte(unsigned int smbus_base, u8 device,
 		unsigned int address)
 {
+	int ret;
 	unsigned char status;
 	unsigned char byte;
 
-	if (smbus_wait_until_ready(smbus_base) < 0)
-		return SMBUS_WAIT_UNTIL_READY_TIMEOUT;
-	/* Set up transaction */
-	/* Disable interrupts */
-	outb(inb(smbus_base + SMBHSTCTL) & ~SMBHSTCNT_INTREN,
-		smbus_base + SMBHSTCTL);
-	/* Set the device I'm talking to */
-	outb(((device & 0x7f) << 1) | 1, smbus_base + SMBXMITADD);
+	/* Set up for a byte data read. */
+	ret = setup_command(smbus_base, I801_BYTE_DATA, XMIT_READ(device));
+	if (ret < 0)
+		return ret;
+
 	/* Set the command/address... */
-	outb(address & 0xff, smbus_base + SMBHSTCMD);
-	/* Set up for a byte data read */
-	outb((inb(smbus_base + SMBHSTCTL) & 0xe3) | I801_BYTE_DATA,
-	     (smbus_base + SMBHSTCTL));
-	/* Clear any lingering errors, so the transaction will run */
-	outb(inb(smbus_base + SMBHSTSTAT), smbus_base + SMBHSTSTAT);
+	outb(address, smbus_base + SMBHSTCMD);
 
 	/* Clear the data byte... */
 	outb(0, smbus_base + SMBHSTDAT0);
@@ -156,25 +176,17 @@ int do_smbus_write_byte(unsigned int smbus_base, u8 device,
 			unsigned int address, unsigned int data)
 {
 	unsigned char status;
+	int ret;
 
-	if (smbus_wait_until_ready(smbus_base) < 0)
-		return SMBUS_WAIT_UNTIL_READY_TIMEOUT;
+	/* Set up for a byte data write. */
+	ret = setup_command(smbus_base, I801_BYTE_DATA, XMIT_WRITE(device));
+	if (ret < 0)
+		return ret;
 
-	/* Set up transaction */
-	/* Disable interrupts */
-	outb(inb(smbus_base + SMBHSTCTL) & ~SMBHSTCNT_INTREN,
-		smbus_base + SMBHSTCTL);
-	/* Set the device I'm talking to */
-	outb(((device & 0x7f) << 1) & ~0x01, smbus_base + SMBXMITADD);
 	/* Set the command/address... */
-	outb(address & 0xff, smbus_base + SMBHSTCMD);
-	/* Set up for a byte data read */
-	outb((inb(smbus_base + SMBHSTCTL) & 0xe3) | I801_BYTE_DATA,
-	     (smbus_base + SMBHSTCTL));
-	/* Clear any lingering errors, so the transaction will run */
-	outb(inb(smbus_base + SMBHSTSTAT), smbus_base + SMBHSTSTAT);
+	outb(address, smbus_base + SMBHSTCMD);
 
-	/* Clear the data byte... */
+	/* Set the data byte... */
 	outb(data, smbus_base + SMBHSTDAT0);
 
 	/* Start the command */
@@ -205,27 +217,19 @@ int do_smbus_block_read(unsigned int smbus_base, u8 device, u8 cmd,
 			unsigned int max_bytes, u8 *buf)
 {
 	u8 status;
-	int slave_bytes;
+	int ret, slave_bytes;
 	int bytes_read = 0;
 	unsigned int loops = SMBUS_TIMEOUT;
-	if (smbus_wait_until_ready(smbus_base) < 0)
-		return SMBUS_WAIT_UNTIL_READY_TIMEOUT;
 
 	max_bytes = MIN(SMBUS_BLOCK_MAXLEN, max_bytes);
 
-	/* Set up transaction */
-	/* Disable interrupts */
-	outb(inb(smbus_base + SMBHSTCTL) & ~SMBHSTCNT_INTREN,
-		smbus_base + SMBHSTCTL);
-	/* Set the device I'm talking to */
-	outb(((device & 0x7f) << 1) | 1, smbus_base + SMBXMITADD);
+	/* Set up for a block data read. */
+	ret = setup_command(smbus_base, I801_BLOCK_DATA, XMIT_READ(device));
+	if (ret < 0)
+		return ret;
+
 	/* Set the command/address... */
-	outb(cmd & 0xff, smbus_base + SMBHSTCMD);
-	/* Set up for a block data read */
-	outb((inb(smbus_base + SMBHSTCTL) & 0xc3) | I801_BLOCK_DATA,
-	     (smbus_base + SMBHSTCTL));
-	/* Clear any lingering errors, so the transaction will run */
-	outb(inb(smbus_base + SMBHSTSTAT), smbus_base + SMBHSTSTAT);
+	outb(cmd, smbus_base + SMBHSTCMD);
 
 	/* Reset number of bytes to transfer so we notice later it
 	 * was really updated with the transaction. */
@@ -279,30 +283,21 @@ int do_smbus_block_write(unsigned int smbus_base, u8 device, u8 cmd,
 			const unsigned int bytes, const u8 *buf)
 {
 	u8 status;
-	int bytes_sent = 0;
+	int ret, bytes_sent = 0;
 	unsigned int loops = SMBUS_TIMEOUT;
 
 	if (bytes > SMBUS_BLOCK_MAXLEN)
 		return SMBUS_ERROR;
 
-	if (smbus_wait_until_ready(smbus_base) < 0)
-		return SMBUS_WAIT_UNTIL_READY_TIMEOUT;
+	/* Set up for a block data write. */
+	ret = setup_command(smbus_base, I801_BLOCK_DATA, XMIT_WRITE(device));
+	if (ret < 0)
+		return ret;
 
-	/* Set up transaction */
-	/* Disable interrupts */
-	outb(inb(smbus_base + SMBHSTCTL) & ~SMBHSTCNT_INTREN,
-		smbus_base + SMBHSTCTL);
-	/* Set the device I'm talking to */
-	outb(((device & 0x7f) << 1) & ~0x01, smbus_base + SMBXMITADD);
 	/* Set the command/address... */
-	outb(cmd & 0xff, smbus_base + SMBHSTCMD);
-	/* Set up for a block data write */
-	outb((inb(smbus_base + SMBHSTCTL) & 0xc3) | I801_BLOCK_DATA,
-	     (smbus_base + SMBHSTCTL));
-	/* Clear any lingering errors, so the transaction will run */
-	outb(inb(smbus_base + SMBHSTSTAT), smbus_base + SMBHSTSTAT);
+	outb(cmd, smbus_base + SMBHSTCMD);
 
-	/* set number of bytes to transfer */
+	/* Set number of bytes to transfer. */
 	outb(bytes, smbus_base + SMBHSTDAT0);
 
 	/* Send first byte from buffer, bytes_sent increments after
@@ -354,27 +349,23 @@ int do_i2c_block_read(unsigned int smbus_base, u8 device,
 		unsigned int offset, const unsigned int bytes, u8 *buf)
 {
 	u8 status;
-	int bytes_read = 0;
+	int ret, bytes_read = 0;
 	unsigned int loops = SMBUS_TIMEOUT;
-	if (smbus_wait_until_ready(smbus_base) < 0)
-		return SMBUS_WAIT_UNTIL_READY_TIMEOUT;
 
-	/* Set upp transaction */
-	/* Disable interrupts */
-	outb(inb(smbus_base + SMBHSTCTL) & SMBHSTCNT_INTREN,
-		smbus_base + SMBHSTCTL);
-	/* Set the device I'm talking to */
-	outb((device & 0x7f) << 1, smbus_base + SMBXMITADD);
+	/* Set up for a i2c block data read.
+	 *
+	 * FIXME: Address parameter changes to XMIT_READ(device) with
+	 * some revision of PCH. Presumably hardware revisions that
+	 * do not have i2c block write support internally set LSB.
+	 */
+	ret = setup_command(smbus_base, I801_I2C_BLOCK_DATA,
+			    XMIT_WRITE(device));
+	if (ret < 0)
+		return ret;
 
 	/* device offset */
 	outb(offset, smbus_base + SMBHSTDAT1);
 
-	/* Set up for a i2c block data read */
-	outb((inb(smbus_base + SMBHSTCTL) & 0xc3) | I801_I2C_BLOCK_DATA,
-		(smbus_base + SMBHSTCTL));
-
-	/* Clear any lingering errors, so the transaction will run */
-	outb(inb(smbus_base + SMBHSTSTAT), smbus_base + SMBHSTSTAT);
 	/* Start the command */
 	outb((inb(smbus_base + SMBHSTCTL) | SMBHSTCNT_START),
 	     smbus_base + SMBHSTCTL);

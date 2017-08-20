@@ -337,7 +337,7 @@ int do_smbus_block_write(unsigned int smbus_base, u8 device, u8 cmd,
 
 /* Only since ICH5 */
 int do_i2c_block_read(unsigned int smbus_base, u8 device,
-		unsigned int offset, u32 bytes, u8 *buf)
+		unsigned int offset, const unsigned int bytes, u8 *buf)
 {
 	u8 status;
 	int bytes_read = 0;
@@ -379,18 +379,25 @@ int do_i2c_block_read(unsigned int smbus_base, u8 device,
 			return SMBUS_ERROR;
 
 		if (status & SMBHSTSTS_BYTE_DONE) {
-			*buf = inb(smbus_base + SMBBLKDAT);
-			buf++;
-			bytes_read++;
-			if (--bytes == 1) {
+
+			if (bytes_read < bytes) {
+				*buf++ = inb(smbus_base + SMBBLKDAT);
+				bytes_read++;
+			}
+
+			if (bytes_read + 1 >= bytes) {
 				/* indicate that next byte is the last one */
 				outb(inb(smbus_base + SMBHSTCTL)
 					| SMBHSTCNT_LAST_BYTE,
 					smbus_base + SMBHSTCTL);
 			}
+
 			outb(status, smbus_base + SMBHSTSTAT);
 		}
 	} while ((status & SMBHSTSTS_HOST_BUSY) && loops);
+
+	if (bytes_read < bytes)
+		return SMBUS_ERROR;
 
 	return bytes_read;
 }

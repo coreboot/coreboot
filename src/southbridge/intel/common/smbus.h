@@ -42,5 +42,5 @@ int do_smbus_block_write(unsigned int smbus_base, u8 device,
 			u8 cmd, unsigned int bytes, const u8 *buf);
 /* Only since ICH5 */
 int do_i2c_block_read(unsigned int smbus_base, u8 device,
-		unsigned int offset, u32 bytes, u8 *buf);
+		unsigned int offset, unsigned int bytes, u8 *buf);
 #endif

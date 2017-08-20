@@ -60,6 +60,11 @@
 #define SMBUS_TIMEOUT		(10 * 1000 * 100)
 #define SMBUS_BLOCK_MAXLEN	32
 
+/* block_cmd_loop flags */
+#define BLOCK_READ	0
+#define BLOCK_WRITE	(1 << 0)
+#define BLOCK_I2C	(1 << 1)
+
 static void smbus_delay(void)
 {
 	inb(0x80);
@@ -221,13 +226,70 @@ int do_smbus_write_byte(unsigned int smbus_base, u8 device,
 	return complete_command(smbus_base);
 }
 
+static int block_cmd_loop(unsigned int smbus_base,
+	u8 *buf, const unsigned int max_bytes, int flags)
+{
+	u8 status;
+	unsigned int loops = SMBUS_TIMEOUT;
+	int ret, bytes = 0;
+	int is_write_cmd = flags & BLOCK_WRITE;
+	int sw_drives_nak = flags & BLOCK_I2C;
+
+	/* Hardware limitations. */
+	if (flags == (BLOCK_WRITE | BLOCK_I2C))
+		return SMBUS_ERROR;
+
+	/* Poll for transaction completion */
+	do {
+		status = inb(smbus_base + SMBHSTSTAT);
+
+		if (status & SMBHSTSTS_BYTE_DONE) { /* Byte done */
+
+			if (is_write_cmd) {
+				bytes++;
+				if (bytes < max_bytes)
+					outb(*buf++, smbus_base + SMBBLKDAT);
+			} else {
+				if (bytes < max_bytes)
+					*buf++ = inb(smbus_base + SMBBLKDAT);
+				bytes++;
+
+				/* Indicate that next byte is the last one. */
+				if (sw_drives_nak && (bytes + 1 >= max_bytes)) {
+					outb(inb(smbus_base + SMBHSTCTL)
+						| SMBHSTCNT_LAST_BYTE,
+						smbus_base + SMBHSTCTL);
+				}
+
+			}
+
+			/* Engine internally completes the transaction
+			 * and clears HOST_BUSY flag once the byte count
+			 * has been reached or LAST_BYTE was set.
+			 */
+			outb(SMBHSTSTS_BYTE_DONE, smbus_base + SMBHSTSTAT);
+		}
+
+	} while (--loops && !host_completed(status));
+
+	dprintk("%s: status = %02x, len = %d / %d, loops = %d\n",
+		__func__, status, bytes, max_bytes, SMBUS_TIMEOUT - loops);
+
+	if (loops == 0)
+		return recover_master(smbus_base,
+				      SMBUS_WAIT_UNTIL_DONE_TIMEOUT);
+
+	ret = cb_err_from_stat(status);
+	if (ret < 0)
+		return ret;
+
+	return bytes;
+}
+
 int do_smbus_block_read(unsigned int smbus_base, u8 device, u8 cmd,
 			unsigned int max_bytes, u8 *buf)
 {
-	u8 status;
 	int ret, slave_bytes;
-	int bytes_read = 0;
-	unsigned int loops = SMBUS_TIMEOUT;
 
 	max_bytes = MIN(SMBUS_BLOCK_MAXLEN, max_bytes);
 
@@ -249,50 +311,22 @@ int do_smbus_block_read(unsigned int smbus_base, u8 device, u8 cmd,
 		return ret;
 
 	/* Poll for transaction completion */
-	do {
-		status = inb(smbus_base + SMBHSTSTAT);
-
-		if (status & SMBHSTSTS_BYTE_DONE) { /* Byte done */
-
-			if (bytes_read < max_bytes) {
-				*buf++ = inb(smbus_base + SMBBLKDAT);
-				bytes_read++;
-			}
-
-			/* Engine internally completes the transaction
-			 * and clears HOST_BUSY flag once the byte count
-			 * from slave is reached.
-			 */
-			outb(SMBHSTSTS_BYTE_DONE, smbus_base + SMBHSTSTAT);
-		}
-	} while (--loops && !host_completed(status));
-
-	/* Post-check we received complete message. */
-	slave_bytes = inb(smbus_base + SMBHSTDAT0);
-
-	dprintk("%s: status = %02x, len = %d / %d, loops = %d\n",
-		__func__, status, bytes_read, slave_bytes, loops);
-
-	if (loops == 0)
-		return recover_master(smbus_base,
-				      SMBUS_WAIT_UNTIL_DONE_TIMEOUT);
-
-	ret = cb_err_from_stat(status);
+	ret = block_cmd_loop(smbus_base, buf, max_bytes, BLOCK_READ);
 	if (ret < 0)
 		return ret;
 
-	if (bytes_read < slave_bytes)
+	/* Post-check we received complete message. */
+	slave_bytes = inb(smbus_base + SMBHSTDAT0);
+	if (ret < slave_bytes)
 		return SMBUS_ERROR;
 
-	return bytes_read;
+	return ret;
 }
 
 int do_smbus_block_write(unsigned int smbus_base, u8 device, u8 cmd,
 			const unsigned int bytes, const u8 *buf)
 {
-	u8 status;
-	int ret, bytes_sent = 0;
-	unsigned int loops = SMBUS_TIMEOUT;
+	int ret;
 
 	if (bytes > SMBUS_BLOCK_MAXLEN)
 		return SMBUS_ERROR;
@@ -319,46 +353,21 @@ int do_smbus_block_write(unsigned int smbus_base, u8 device, u8 cmd,
 		return ret;
 
 	/* Poll for transaction completion */
-	do {
-		status = inb(smbus_base + SMBHSTSTAT);
-
-		if (status & SMBHSTSTS_BYTE_DONE) {
-			bytes_sent++;
-			if (bytes_sent < bytes)
-				outb(*buf++, smbus_base + SMBBLKDAT);
-
-			/* Engine internally completes the transaction
-			 * and clears HOST_BUSY flag once the byte count
-			 * has been reached.
-			 */
-			outb(SMBHSTSTS_BYTE_DONE, smbus_base + SMBHSTSTAT);
-		}
-	} while (--loops && !host_completed(status));
-
-	dprintk("%s: status = %02x, len = %d / %d, loops = %d\n",
-		__func__, status, bytes_sent, bytes, loops);
-
-	if (loops == 0)
-		return recover_master(smbus_base,
-				      SMBUS_WAIT_UNTIL_DONE_TIMEOUT);
-
-	ret = cb_err_from_stat(status);
+	ret = block_cmd_loop(smbus_base, (u8 *)buf, bytes, BLOCK_WRITE);
 	if (ret < 0)
 		return ret;
 
-	if (bytes_sent < bytes)
+	if (ret < bytes)
 		return SMBUS_ERROR;
 
-	return bytes_sent;
+	return ret;
 }
 
 /* Only since ICH5 */
 int do_i2c_block_read(unsigned int smbus_base, u8 device,
 		unsigned int offset, const unsigned int bytes, u8 *buf)
 {
-	u8 status;
-	int ret, bytes_read = 0;
-	unsigned int loops = SMBUS_TIMEOUT;
+	int ret;
 
 	/* Set up for a i2c block data read.
 	 *
@@ -380,40 +389,13 @@ int do_i2c_block_read(unsigned int smbus_base, u8 device,
 		return ret;
 
 	/* Poll for transaction completion */
-	do {
-		status = inb(smbus_base + SMBHSTSTAT);
-
-		if (status & SMBHSTSTS_BYTE_DONE) {
-
-			if (bytes_read < bytes) {
-				*buf++ = inb(smbus_base + SMBBLKDAT);
-				bytes_read++;
-			}
-
-			if (bytes_read + 1 >= bytes) {
-				/* indicate that next byte is the last one */
-				outb(inb(smbus_base + SMBHSTCTL)
-					| SMBHSTCNT_LAST_BYTE,
-					smbus_base + SMBHSTCTL);
-			}
-
-			outb(SMBHSTSTS_BYTE_DONE, smbus_base + SMBHSTSTAT);
-		}
-	} while (--loops && !host_completed(status));
-
-	dprintk("%s: status = %02x, len = %d / %d, loops = %d\n",
-		__func__, status, bytes_read, bytes, loops);
-
-	if (loops == 0)
-		return recover_master(smbus_base,
-				      SMBUS_WAIT_UNTIL_DONE_TIMEOUT);
-
-	ret = cb_err_from_stat(status);
+	ret = block_cmd_loop(smbus_base, buf, bytes, BLOCK_READ | BLOCK_I2C);
 	if (ret < 0)
 		return ret;
 
-	if (bytes_read < bytes)
+	/* Post-check we received complete message. */
+	if (ret < bytes)
 		return SMBUS_ERROR;
 
-	return bytes_read;
+	return ret;
 }

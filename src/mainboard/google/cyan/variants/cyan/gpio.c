@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  */
 
-#include "irqroute.h"
+#include <mainboard/google/cyan/irqroute.h>
 #include <soc/gpio.h>
 #include <stdlib.h>
 

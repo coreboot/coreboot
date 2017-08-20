@@ -14,13 +14,7 @@
  * GNU General Public License for more details.
  */
 
-#include <cbfs.h>
-#include <console/console.h>
-#include <lib.h>
-#include <soc/gpio.h>
-#include <soc/pci_devs.h>
 #include <soc/romstage.h>
-#include <string.h>
 
 /* All FSP specific code goes in this block */
 void mainboard_romstage_entry(struct romstage_params *rp)
@@ -33,6 +27,7 @@ void mainboard_romstage_entry(struct romstage_params *rp)
 	romstage_common(rp);
 }
 
+__attribute__ ((weak))
 void mainboard_memory_init_params(struct romstage_params *params,
 	MEMORY_INIT_UPD *memory_params)
 {

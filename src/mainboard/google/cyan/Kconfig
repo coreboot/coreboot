@@ -1,7 +1,5 @@
-if BOARD_GOOGLE_CYAN
-
-config BOARD_SPECIFIC_OPTIONS
-	def_bool y
+config BOARD_GOOGLE_BASEBOARD_CYAN
+	def_bool n
 	select BOARD_ROMSIZE_KB_8192
 	select EC_GOOGLE_CHROMEEC
 	select EC_GOOGLE_CHROMEEC_MEC
@@ -13,6 +11,8 @@ config BOARD_SPECIFIC_OPTIONS
 	select MAINBOARD_HAS_LPC_TPM
 	select SOC_INTEL_BRASWELL
 	select HAVE_ACPI_RESUME
+
+if BOARD_GOOGLE_BASEBOARD_CYAN
 
 config VBOOT
 	select EC_GOOGLE_CHROMEEC_SWITCHES
@@ -33,13 +33,21 @@ config MAINBOARD_DIR
 	string
 	default google/cyan
 
+config VARIANT_DIR
+	string
+	default "cyan" if BOARD_GOOGLE_CYAN
+
 config MAINBOARD_PART_NUMBER
 	string
-	default "Cyan"
+	default "Cyan" if BOARD_GOOGLE_CYAN
 
 config MAINBOARD_VENDOR
 	string
 	default "Google"
+
+config DEVICETREE
+	string
+	default "variants/cyan/devicetree.cb" if BOARD_GOOGLE_CYAN
 
 config VGA_BIOS_FILE
 	string
@@ -61,5 +69,6 @@ config VGA_BIOS_ID
 config GBB_HWID
 	string
 	depends on CHROMEOS
-	default "CYAN TEST A-A 1829"
-endif # BOARD_GOOGLE_CYAN
+	default "CYAN TEST A-A 1829" if BOARD_GOOGLE_CYAN
+
+endif # BOARD_GOOGLE_BASEBOARD_CYAN

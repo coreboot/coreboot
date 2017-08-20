@@ -14,7 +14,9 @@
 ## GNU General Public License for more details.
 ##
 
-romstage-y += spd.c
+romstage-y += spd_util.c
+
+ramstage-y += gpio.c
 
 SPD_BIN = $(obj)/spd.bin
 

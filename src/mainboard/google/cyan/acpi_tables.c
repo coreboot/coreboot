@@ -15,19 +15,9 @@
  */
 
 #include <arch/acpi.h>
-#include <arch/acpigen.h>
 #include <arch/ioapic.h>
-#include <arch/smp/mpspec.h>
-#include <cbmem.h>
-#include <console/console.h>
-#include <device/device.h>
-#include <device/pci.h>
-#include <device/pci_ids.h>
 #include <soc/acpi.h>
-#include <soc/iomap.h>
 #include <soc/nvs.h>
-#include <string.h>
-#include <types.h>
 
 void acpi_create_gnvs(global_nvs_t *gnvs)
 {

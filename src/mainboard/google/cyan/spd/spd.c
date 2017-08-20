@@ -26,24 +26,10 @@
 #include <soc/romstage.h>
 #include <string.h>
 #include <spd_bin.h>
+#include "spd_util.h"
 
-/*
- * 0b0000 - 4GiB total - 2 x 2GiB Samsung K4B4G1646Q-HYK0 1600MHz
- * 0b0001 - 4GiB total - 2 x 2GiB Hynix  H5TC4G63CFR-PBA 1600MHz
- * 0b0010 - 2GiB total - 1 x 2GiB Samsung K4B4G1646Q-HYK0 1600MHz
- * 0b0011 - 2GiB total - 1 x 2GiB Hynix  H5TC4G63CFR-PBA 1600MHz
- * 0b0100 - 4GiB total - 2 x 2GiB Samsung K4B4G1646E-BYK0 1600MHz
- * 0b0101 - 4GiB total - 2 x 2GiB Micro MT41K256M16TW-107 1600MHz
- * 0b0110 - 2GiB total - 1 x 2GiB Samsung K4B4G1646E-BYK0 1600MHz
- * 0b0111 - 2GiB total - 1 x 2GiB Micro MT41K256M16TW-107 1600MHz
- */
-static const uint32_t dual_channel_config = (1 << 0) | (1 << 1)
-			| (1 << 4) | (1 << 5);
-
-static void *get_spd_pointer(char *spd_file_content, int total_spds, int *dual)
+__attribute__ ((weak)) uint8_t get_ramid(void)
 {
-	int ram_id = 0;
-
 	gpio_t spd_gpios[] = {
 		GP_SW_80,	/* SATA_GP3, RAMID0 */
 		GP_SW_67,	/* I2C3_SCL, RAMID1 */
@@ -51,45 +37,24 @@ static void *get_spd_pointer(char *spd_file_content, int total_spds, int *dual)
 		GP_SW_64,	/* I2C3_SDA, RAMID3 */
 	};
 
-	ram_id = gpio_base2_value(spd_gpios, ARRAY_SIZE(spd_gpios));
+	return gpio_base2_value(spd_gpios, ARRAY_SIZE(spd_gpios));
+}
+
+static void *get_spd_pointer(char *spd_file_content, int total_spds, int *dual)
+{
+	int ram_id = 0;
+	int spd_index = 0;
+
+	ram_id = get_ramid();
 	printk(BIOS_DEBUG, "ram_id=%d, total_spds: %d\n", ram_id, total_spds);
-	if (ram_id >= total_spds)
+
+	spd_index = get_variant_spd_index(ram_id, dual);
+	if (spd_index >= total_spds) {
+		printk(BIOS_ERR, "SPD index > total SPDs\n");
 		return NULL;
-
-	/* Determine if this is a single or dual channel memory system */
-	if (dual_channel_config & (1 << ram_id))
-		*dual = 1;
-
-	/* Display the RAM type */
-	switch (ram_id) {
-	case 0:
-		printk(BIOS_DEBUG, "4GiB Samsung K4B4G1646Q-HYK0 1600MHz\n");
-		break;
-	case 2:
-		printk(BIOS_DEBUG, "2GiB Samsung K4B4G1646Q-HYK0 1600MHz\n");
-		break;
-	case 1:
-		printk(BIOS_DEBUG, "4GiB Hynix  H5TC4G63CFR-PBA 1600MHz\n");
-		break;
-	case 3:
-		printk(BIOS_DEBUG, "2GiB Hynix  H5TC4G63CFR-PBA 1600MHz\n");
-		break;
-	case 4:
-		printk(BIOS_DEBUG, "4GiB Samsung K4B4G1646E-BYK0 1600MHz\n");
-		break;
-	case 5:
-		printk(BIOS_DEBUG, "4GiB Micro MT41K256M16TW-107 1600MHz\n");
-		break;
-	case 6:
-		printk(BIOS_DEBUG, "2GiB Samsung K4B4G1646E-BYK0 1600MHz\n");
-		break;
-	case 7:
-		printk(BIOS_DEBUG, "2GiB Micro MT41K256M16TW-107 1600MHz\n");
-		break;
 	}
-
 	/* Return the serial product data for the RAM */
-	return &spd_file_content[SPD_PAGE_LEN * ram_id];
+	return &spd_file_content[SPD_PAGE_LEN * spd_index];
 }
 
 /* Copy SPD data for on-board memory */

@@ -25,7 +25,7 @@
 #include <soc/pm.h>
 #include <soc/gpio.h>
 
-#include "onboard.h"
+#include <variant/onboard.h>
 
 /* The wake gpio is SUS_GPIO[0]. */
 #define WAKE_GPIO_EN SUS_GPIO_EN0

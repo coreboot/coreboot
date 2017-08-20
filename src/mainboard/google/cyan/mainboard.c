@@ -15,9 +15,7 @@
  * GNU General Public License for more details.
  */
 
-#include <bootstate.h>
 #include <device/device.h>
-#include <soc/gpio.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include "ec.h"
 

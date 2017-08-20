@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2014 Intel Corporation
+ * Copyright (C) 2017 Matt DeVillier
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,9 +13,10 @@
  * GNU General Public License for more details.
  */
 
-#include <soc/ramstage.h>
+#ifndef SPD_UTIL_H
+#define SPD_UTIL_H
 
-__attribute__ ((weak))
-void mainboard_silicon_init_params(SILICON_INIT_UPD *params)
-{
-}
+uint8_t get_ramid(void);
+int get_variant_spd_index(int ram_id, int *dual);
+
+#endif /* SPD_UTIL_H */

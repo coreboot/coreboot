@@ -17,7 +17,7 @@
 #ifndef ONBOARD_H
 #define ONBOARD_H
 
-#include "irqroute.h"
+#include <mainboard/google/cyan/irqroute.h>
 
 /*
  * Calculation of gpio based irq.
@@ -53,7 +53,7 @@
 #define BOARD_TOUCHSCREEN_NAME          "touchscreen"
 #define BOARD_TOUCHSCREEN_WAKE_GPIO     ACPI_ENABLE_WAKE_SUS_GPIO(2)
 #define BOARD_TOUCHSCREEN_I2C_BUS       0
-#define BOARD_TOUCHSCREEN_I2C_ADDR      0x4a    /* TODO(shawnn): Check this */
+#define BOARD_TOUCHSCREEN_I2C_ADDR      0x10
 
 
 /* SD CARD gpio */
@@ -64,12 +64,12 @@
 #define AUDIO_CODEC_DDN			"Maxim 98090 Codec  "
 #define AUDIO_CODEC_I2C_ADDR		0x10
 
-#define TI_SWITCH_HID           "104C227E"
-#define TI_SWITCH_CID           "104C227E"
-#define TI_SWITCH_DDN           "TI SWITCH "
+#define TI_SWITCH_HID           	"104C227E"
+#define TI_SWITCH_CID           	"104C227E"
+#define TI_SWITCH_DDN           	"TI SWITCH "
 #define TI_SWITCH_I2C_ADDR		0x3B
-
-#endif
 
 #define DPTF_CPU_PASSIVE	88
 #define DPTF_CPU_CRITICAL	90
+
+#endif

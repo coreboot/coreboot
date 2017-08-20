@@ -27,6 +27,7 @@ ramstage-y += sata.c
 ramstage-y += smbus.c
 ramstage-y += usb.c
 ramstage-y += usb_ehci.c
+ramstage-y += ../common/spi.c
 
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/hda_verb.c
 

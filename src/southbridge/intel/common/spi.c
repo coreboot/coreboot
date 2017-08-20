@@ -294,6 +294,7 @@ void spi_init(void)
 	uint8_t bios_cntl;
 	device_t dev;
 	ich9_spi_regs *ich9_spi;
+	ich7_spi_regs *ich7_spi;
 	uint16_t hsfs;
 
 #ifdef __SMM__
@@ -305,26 +306,40 @@ void spi_init(void)
 	pci_read_config_dword(dev, 0xf0, &rcba);
 	/* Bits 31-14 are the base address, 13-1 are reserved, 0 is enable. */
 	rcrb = (uint8_t *)(rcba & 0xffffc000);
-	ich9_spi = (ich9_spi_regs *)(rcrb + 0x3800);
-	cntlr.ich9_spi = ich9_spi;
-	hsfs = readw_(&ich9_spi->hsfs);
-	ichspi_lock = hsfs & HSFS_FLOCKDN;
-	cntlr.hsfs = hsfs;
-	cntlr.opmenu = ich9_spi->opmenu;
-	cntlr.menubytes = sizeof(ich9_spi->opmenu);
-	cntlr.optype = &ich9_spi->optype;
-	cntlr.addr = &ich9_spi->faddr;
-	cntlr.data = (uint8_t *)ich9_spi->fdata;
-	cntlr.databytes = sizeof(ich9_spi->fdata);
-	cntlr.status = &ich9_spi->ssfs;
-	cntlr.control = (uint16_t *)ich9_spi->ssfc;
-	cntlr.bbar = &ich9_spi->bbar;
-	cntlr.preop = &ich9_spi->preop;
+	if (IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_I82801GX)) {
+		ich7_spi = (ich7_spi_regs *)(rcrb + 0x3020);
+		cntlr.opmenu = ich7_spi->opmenu;
+		cntlr.menubytes = sizeof(ich7_spi->opmenu);
+		cntlr.optype = &ich7_spi->optype;
+		cntlr.addr = &ich7_spi->spia;
+		cntlr.data = (uint8_t *)ich7_spi->spid;
+		cntlr.databytes = sizeof(ich7_spi->spid);
+		cntlr.status = (uint8_t *)&ich7_spi->spis;
+		ichspi_lock = readw_(&ich7_spi->spis) & HSFS_FLOCKDN;
+		cntlr.control = &ich7_spi->spic;
+		cntlr.bbar = &ich7_spi->bbar;
+		cntlr.preop = &ich7_spi->preop;
+	} else {
+		ich9_spi = (ich9_spi_regs *)(rcrb + 0x3800);
+		cntlr.ich9_spi = ich9_spi;
+		hsfs = readw_(&ich9_spi->hsfs);
+		ichspi_lock = hsfs & HSFS_FLOCKDN;
+		cntlr.hsfs = hsfs;
+		cntlr.opmenu = ich9_spi->opmenu;
+		cntlr.menubytes = sizeof(ich9_spi->opmenu);
+		cntlr.optype = &ich9_spi->optype;
+		cntlr.addr = &ich9_spi->faddr;
+		cntlr.data = (uint8_t *)ich9_spi->fdata;
+		cntlr.databytes = sizeof(ich9_spi->fdata);
+		cntlr.status = &ich9_spi->ssfs;
+		cntlr.control = (uint16_t *)ich9_spi->ssfc;
+		cntlr.bbar = &ich9_spi->bbar;
+		cntlr.preop = &ich9_spi->preop;
 
-	if (cntlr.hsfs & HSFS_FDV)
-	{
-		writel_ (4, &ich9_spi->fdoc);
-		cntlr.flmap0 = readl_(&ich9_spi->fdod);
+		if (cntlr.hsfs & HSFS_FDV) {
+			writel_ (4, &ich9_spi->fdoc);
+			cntlr.flmap0 = readl_(&ich9_spi->fdod);
+		}
 	}
 
 	ich_set_bbar(0);
@@ -896,6 +911,9 @@ static int spi_flash_programmer_probe(const struct spi_slave *spi,
 					struct spi_flash *flash)
 {
 	uint32_t flcomp;
+
+	if (IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_I82801GX))
+		return spi_flash_generic_probe(spi, flash);
 
 	/* Try generic probing first if spi_is_multichip returns 0. */
 	if (!spi_is_multichip() && !spi_flash_generic_probe(spi, flash))

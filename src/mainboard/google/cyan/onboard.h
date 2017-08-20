@@ -31,7 +31,6 @@
  */
 
 #define BOARD_TOUCH_IRQ			184
-#define BOARD_PRE_EVT_TOUCH_IRQ		156
 
 /* KBD: Gpio index in N bank */
 #define BOARD_I8042_GPIO_INDEX		17
@@ -39,10 +38,8 @@
 #define BOARD_SCI_GPIO_INDEX		15
 /* Trackpad: Gpio index in N bank */
 #define BOARD_TRACKPAD_GPIO_INDEX	18
-/* Touch: Gpio index in SW bank */
-#define BOARD_TOUCH_GPIO_INDEX		76
-/* EVT Touch: Gpio index in N bank */
-#define BOARD_EVT_TOUCH_GPIO_INDEX	19
+/* Touch: Gpio index in N bank */
+#define BOARD_TOUCH_GPIO_INDEX		19
 /* TI Audio: Gpio index in SW bank */
 #define BOARD_JACK_TI_GPIO_INDEX	34
 /* MAXIM Audio: Gpio index in SE bank */
@@ -72,8 +69,6 @@
 #define TI_SWITCH_DDN           "TI SWITCH "
 #define TI_SWITCH_I2C_ADDR		0x3B
 
-#define BOARD_PRE_EVT		0x01
-#define BOARD_EVT		0x02
 #endif
 
 #define DPTF_CPU_PASSIVE	88

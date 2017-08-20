@@ -152,13 +152,6 @@ void mainboard_smi_sleep(uint8_t slp_typ)
 	/* Clear pending events that may trigger immediate wake */
 	while (google_chromeec_get_event() != 0)
 		;
-
-        if (smm_get_gnvs()->bdid == BOARD_PRE_EVT) {
-                /* Set LPC lines to low power in S3/S5. */
-                if ((slp_typ == ACPI_S3) || (slp_typ == ACPI_S5))
-                        lpc_set_low_power();
-        }
-
 #endif
 }
 

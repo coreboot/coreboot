@@ -48,30 +48,11 @@ Scope (\_SB.PCI0.I2C1)
 				)
 				Interrupt (ResourceConsumer, Edge, ActiveLow)
 				{
-					BOARD_PRE_EVT_TOUCH_IRQ
-				}
-
-			} )
-			Name(BUF1,ResourceTemplate ()
-			{
-				I2CSerialBus(
-					0x10,                     /* SlaveAddress */
-					ControllerInitiated,      /* SlaveMode */
-					400000,                   /* ConnectionSpeed */
-					AddressingMode7Bit,       /* AddressingMode */
-					"\\_SB.PCI0.I2C1",        /* ResourceSource */
-				)
-				Interrupt (ResourceConsumer, Edge, ActiveLow)
-				{
 					BOARD_TOUCH_IRQ
 				}
 
 			} )
-			If (LEqual (\BDID, BOARD_EVT)) {
-				Return (BUF1)
-			} Else {
-				Return (BUF0)
-			}
+			Return (BUF0)
 		}
 
 		Method (_STA)

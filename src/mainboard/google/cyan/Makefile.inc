@@ -22,7 +22,6 @@ romstage-$(CONFIG_ENABLE_BUILTIN_COM1) += com_init.c
 ramstage-$(CONFIG_MAINBOARD_HAS_CHROMEOS) += chromeos.c
 ramstage-$(CONFIG_MAINBOARD_HAS_CHROMEOS) += ec.c
 ramstage-$(CONFIG_MAINBOARD_HAS_CHROMEOS) += gpio.c
-ramstage-$(CONFIG_MAINBOARD_HAS_CHROMEOS) += gpio_pre_evt.c
 ramstage-y += irqroute.c
 ramstage-y += ramstage.c
 ramstage-y += w25q64.c

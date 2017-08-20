@@ -17,7 +17,6 @@
 #include "irqroute.h"
 #include <soc/gpio.h>
 #include <stdlib.h>
-#include "gpio.h"
 
 /* South East Community */
 static const struct soc_gpio_map gpse_gpio_map[] = {
@@ -249,7 +248,6 @@ static const struct soc_gpio_map  gpe_gpio_map[] = {
 
 static struct soc_gpio_config gpio_config = {
 	/* BSW */
-	/* gpio configuration for EVT board */
 	.north = gpn_gpio_map,
 	.southeast = gpse_gpio_map,
 	.southwest  = gpsw_gpio_map,
@@ -258,11 +256,5 @@ static struct soc_gpio_config gpio_config = {
 
 struct soc_gpio_config *mainboard_get_gpios(void)
 {
-	return get_override_gpios(&gpio_config);
-}
-
-__attribute__((weak)) struct soc_gpio_config *get_override_gpios(
-		struct soc_gpio_config *config)
-{
-	return config;
+	return &gpio_config;
 }

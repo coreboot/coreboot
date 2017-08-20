@@ -19,6 +19,4 @@
 
 void mainboard_silicon_init_params(SILICON_INIT_UPD *params)
 {
-	if (board_id() == BOARD_PRE_EVT)
-		params->ChvSvidConfig = SVID_CONFIG3;
 }

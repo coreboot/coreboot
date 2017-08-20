@@ -37,7 +37,7 @@ int do_smbus_read_byte(unsigned int smbus_base, u8 device,
 int do_smbus_write_byte(unsigned int smbus_base, u8 device,
 			unsigned int address, unsigned int data);
 int do_smbus_block_read(unsigned int smbus_base, u8 device,
-			u8 cmd, unsigned int bytes, u8 *buf);
+			u8 cmd, unsigned int max_bytes, u8 *buf);
 int do_smbus_block_write(unsigned int smbus_base, u8 device,
 			u8 cmd, unsigned int bytes, const u8 *buf);
 /* Only since ICH5 */

@@ -47,6 +47,7 @@
 #define SMBHSTSTS_HOST_BUSY	(1 << 0)
 
 #define SMBUS_TIMEOUT		(10 * 1000 * 100)
+#define SMBUS_BLOCK_MAXLEN 	32
 
 static void smbus_delay(void)
 {
@@ -203,7 +204,7 @@ int do_smbus_block_read(unsigned int smbus_base, u8 device, u8 cmd,
 	if (smbus_wait_until_ready(smbus_base) < 0)
 		return SMBUS_WAIT_UNTIL_READY_TIMEOUT;
 
-	max_bytes = MIN(32, max_bytes);
+	max_bytes = MIN(SMBUS_BLOCK_MAXLEN, max_bytes);
 
 	/* Set up transaction */
 	/* Disable interrupts */
@@ -243,8 +244,7 @@ int do_smbus_block_read(unsigned int smbus_base, u8 device, u8 cmd,
 		if (status & SMBHSTSTS_BYTE_DONE) { /* Byte done */
 
 			if (bytes_read < max_bytes) {
-				*buf = inb(smbus_base + SMBBLKDAT);
-				buf++;
+				*buf++ = inb(smbus_base + SMBBLKDAT);
 				bytes_read++;
 			}
 
@@ -271,7 +271,7 @@ int do_smbus_block_write(unsigned int smbus_base, u8 device, u8 cmd,
 	int bytes_sent = 0;
 	unsigned int loops = SMBUS_TIMEOUT;
 
-	if (bytes > 32)
+	if (bytes > SMBUS_BLOCK_MAXLEN)
 		return SMBUS_ERROR;
 
 	if (smbus_wait_until_ready(smbus_base) < 0)
@@ -328,6 +328,9 @@ int do_smbus_block_write(unsigned int smbus_base, u8 device, u8 cmd,
 			outb(status, smbus_base + SMBHSTSTAT);
 		}
 	} while ((status & SMBHSTSTS_HOST_BUSY) && loops);
+
+	if (bytes_sent < bytes)
+		return SMBUS_ERROR;
 
 	return bytes_sent;
 }

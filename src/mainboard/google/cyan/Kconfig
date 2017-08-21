@@ -43,11 +43,13 @@ config VARIANT_DIR
 	string
 	default "cyan" if BOARD_GOOGLE_CYAN
 	default "edgar" if BOARD_GOOGLE_EDGAR
+	default "reks" if BOARD_GOOGLE_REKS
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "Cyan" if BOARD_GOOGLE_CYAN
 	default "Edgar" if BOARD_GOOGLE_EDGAR
+	default "Reks" if BOARD_GOOGLE_REKS
 
 config MAINBOARD_VENDOR
 	string
@@ -57,6 +59,7 @@ config DEVICETREE
 	string
 	default "variants/cyan/devicetree.cb" if BOARD_GOOGLE_CYAN
 	default "variants/edgar/devicetree.cb" if BOARD_GOOGLE_EDGAR
+	default "variants/reks/devicetree.cb" if BOARD_GOOGLE_REKS
 
 config VGA_BIOS_FILE
 	string
@@ -80,5 +83,6 @@ config GBB_HWID
 	depends on CHROMEOS
 	default "CYAN TEST A-A 1829" if BOARD_GOOGLE_CYAN
 	default "EDGAR TEST A-A 2507" if BOARD_GOOGLE_EDGAR
+	default "REKS TEST A-A 3004" if BOARD_GOOGLE_REKS
 
 endif # BOARD_GOOGLE_BASEBOARD_CYAN

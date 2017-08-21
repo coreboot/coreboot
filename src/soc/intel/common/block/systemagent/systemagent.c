@@ -100,26 +100,6 @@ static void sa_get_mem_map(struct device *dev, uint64_t *values)
 }
 
 /*
- * Get DPR size incase CONFIG_SA_ENABLE_DPR is selected by SoC.
- */
-static size_t get_dpr_size(void)
-{
-	uintptr_t dpr_reg;
-	size_t size = 0;
-	/*
-	 * DMA Protected Range can be reserved below TSEG for PCODE patch
-	 * or TXT/BootGuard related data.  Rather than report a base address
-	 * the DPR register reports the TOP of the region, which is the same
-	 * as TSEG base.  The region size is reported in MiB in bits 11:4.
-	 */
-	dpr_reg = pci_read_config32(SA_DEV_ROOT, DPR);
-	if (dpr_reg & DPR_EPM)
-		size = (dpr_reg & DPR_SIZE_MASK) << 16;
-
-	return size;
-}
-
-/*
  * These are the host memory ranges that should be added:
  * - 0 -> 0xa0000: cacheable
  * - 0xc0000 -> top_of_ram : cacheable
@@ -159,7 +139,7 @@ static void sa_add_dram_resources(struct device *dev, int *resource_count)
 	int index = *resource_count;
 
 	if (IS_ENABLED(CONFIG_SA_ENABLE_DPR))
-		dpr_size = get_dpr_size();
+		dpr_size = sa_get_dpr_size();
 
 	top_of_ram = (uintptr_t)cbmem_top();
 

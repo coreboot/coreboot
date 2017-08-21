@@ -132,3 +132,55 @@ void enable_bios_reset_cpl(void)
 	bios_reset_cpl |= 3;
 	MCHBAR8(BIOS_RESET_CPL) = bios_reset_cpl;
 }
+
+uint32_t sa_get_tolud_base(void)
+{
+	/* All regions concerned for have 1 MiB alignment. */
+	return ALIGN_DOWN(pci_read_config32(SA_DEV_ROOT, TOLUD), 1*MiB);
+}
+
+static uint16_t sa_get_ggc_reg(void)
+{
+	return pci_read_config16(SA_DEV_ROOT, GGC);
+}
+
+size_t sa_get_dsm_size(void)
+{
+	return (((sa_get_ggc_reg() & G_GMS_MASK) >> G_GMS_OFFSET) * 32*MiB);
+}
+
+size_t sa_get_gsm_size(void)
+{
+	uint8_t ggms;
+
+	ggms = (sa_get_ggc_reg() & G_GGMS_MASK) >> G_GGMS_OFFSET;
+
+	/*
+	 * Size of GSM: 0x0: No Preallocated Memory 0x1: 2MB Memory
+	 * 0x2: 4MB Memory 0x3: 8MB Memory
+	 */
+	if (ggms)
+		return 1*MiB << ggms;
+	else
+		return 0;
+}
+
+/*
+ * Get DPR size in case CONFIG_SA_ENABLE_DPR is selected by SoC.
+ */
+size_t sa_get_dpr_size(void)
+{
+	uintptr_t dpr_reg;
+	size_t size = 0;
+	/*
+	 * DMA Protected Range can be reserved below TSEG for PCODE patch
+	 * or TXT/BootGuard related data.  Rather than report a base address
+	 * the DPR register reports the TOP of the region, which is the same
+	 * as TSEG base.  The region size is reported in MiB in bits 11:4.
+	 */
+	dpr_reg = pci_read_config32(SA_DEV_ROOT, DPR);
+	if (dpr_reg & DPR_EPM)
+		size = (dpr_reg & DPR_SIZE_MASK) << 16;
+
+	return size;
+}

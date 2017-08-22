@@ -28,5 +28,6 @@
 
 struct device;
 void apollolake_init_cpus(struct device *dev);
+void mainboard_devtree_update(struct device *dev);
 
 #endif /* _SOC_APOLLOLAKE_CPU_H_ */

@@ -497,6 +497,11 @@ static void glk_fsp_silicon_init_params_cb(
 	silconfig->HdaEnable = 0;
 }
 
+void __attribute__((weak)) mainboard_devtree_update(struct device *dev)
+{
+       /* Override dev tree settings per board */
+}
+
 void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 {
 	FSP_S_CONFIG *silconfig = &silupd->FspsConfig;
@@ -511,6 +516,8 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 		printk(BIOS_ERR, "BUG! Could not find SOC devicetree config\n");
 		return;
 	}
+
+	mainboard_devtree_update(dev);
 
 	cfg = dev->chip_info;
 

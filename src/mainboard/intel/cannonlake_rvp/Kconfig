@@ -23,6 +23,14 @@ config MAINBOARD_VENDOR
 	string
 	default "Intel"
 
+config MAINBOARD_FAMILY
+	string
+	default "Intel_cannonlake_rvp"
+
+config MAX_CPUS
+	int
+	default 8
+
 config DEVICETREE
 	string
 	default "variants/$(CONFIG_VARIANT_DIR)/devicetree.cb"

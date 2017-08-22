@@ -739,6 +739,17 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->x_gpe1_blk.addrh = 0x0;
 }
 
+static void lpc_final(struct device *dev)
+{
+	/* Call SMM finalize() handlers before resume */
+	if (IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)) {
+		if (IS_ENABLED(CONFIG_INTEL_CHIPSET_LOCKDOWN) ||
+		    acpi_is_wakeup_s3()) {
+			outb(APM_CNT_FINALIZE, APM_CNT);
+		}
+	}
+}
+
 static struct pci_operations pci_ops = {
 	.set_subsystem = set_subsystem,
 };
@@ -750,6 +761,7 @@ static struct device_operations device_ops = {
 	.write_acpi_tables      = acpi_write_hpet,
 	.acpi_inject_dsdt_generator = southbridge_inject_dsdt,
 	.init			= lpc_init,
+	.final			= lpc_final,
 	.enable			= pch_lpc_enable,
 	.scan_bus		= scan_lpc_bus,
 	.ops_pci		= &pci_ops,

@@ -4,3 +4,16 @@ config SOUTHBRIDGE_INTEL_COMMON_GPIO
 	def_bool n
 config SOUTHBRIDGE_INTEL_COMMON_SMBUS
 	def_bool n
+config HAVE_INTEL_CHIPSET_LOCKDOWN
+	def_bool n
+
+config INTEL_CHIPSET_LOCKDOWN
+	depends on HAVE_INTEL_CHIPSET_LOCKDOWN && HAVE_SMI_HANDLER && !CHROMEOS
+	#ChromeOS's payload seems to handle finalization on its on.
+	bool "Lock down chipset in coreboot"
+	default y
+	help
+	  Some registers within host bridge on particular chipsets should be
+	  locked down on each normal boot path (done by either coreboot or payload)
+	  and S3 resume (always done by coreboot). Select this to let coreboot
+	  to do this on normal boot path.

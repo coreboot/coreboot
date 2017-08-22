@@ -829,9 +829,12 @@ static void southbridge_fill_ssdt(device_t device)
 
 static void lpc_final(struct device *dev)
 {
-	if (CONFIG_HAVE_SMI_HANDLER && acpi_is_wakeup_s3()) {
-		/* Call SMM finalize() handlers before resume */
-		outb(0xcb, 0xb2);
+	/* Call SMM finalize() handlers before resume */
+	if (IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)) {
+		if (IS_ENABLED(CONFIG_INTEL_CHIPSET_LOCKDOWN) ||
+		    acpi_is_wakeup_s3()) {
+			outb(APM_CNT_FINALIZE, APM_CNT);
+		}
 	}
 }
 

@@ -16,5 +16,11 @@
 
 subdirs-y += spd
 
+bootblock-y += bootblock.c
+bootblock-$(CONFIG_CHROMEOS) += chromeos.c
+
+subdirs-y += variants/baseboard
+CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/variants/baseboard/include
+
 subdirs-y += variants/$(VARIANT_DIR)
 CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/variants/$(VARIANT_DIR)/include

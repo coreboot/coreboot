@@ -17,6 +17,8 @@
 #ifndef _SOC_IOMAP_H_
 #define _SOC_IOMAP_H_
 
+#include <commonlib/helpers.h>
+
 /*
  * Memory-mapped I/O registers.
  */
@@ -60,7 +62,13 @@
 #define HECI1_BASE_ADDRESS	0xfed1a000
 
 /* CPU Trace reserved memory size */
-#define TRACE_MEMORY_SIZE	0x8000000	/* 128MiB */
+#define GDXC_MOT_MEMORY_SIZE	(96*MiB)
+#define GDXC_IOT_MEMORY_SIZE	(32*MiB)
+#define PSMI_BUFFER_AREA_SIZE	(64*MiB)
+
+/* PTT registers */
+#define PTT_TXT_BASE_ADDRESS	0xfed30800
+#define PTT_PRESENT		0x00070000
 
 /*
  * I/O port address space

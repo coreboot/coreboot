@@ -207,6 +207,7 @@ void soc_get_gpe_configs(uint8_t *dw0, uint8_t *dw1, uint8_t *dw2)
 	DEVTREE_CONST struct device *dev = dev_find_slot(0, PCH_DEVFN_PMC);
 	if (!dev || !dev->chip_info) {
 		printk(BIOS_ERR, "BUG! Could not find SOC devicetree config\n");
+		return;
 	}
 	config = dev->chip_info;
 

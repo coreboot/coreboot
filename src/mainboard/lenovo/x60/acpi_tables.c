@@ -32,4 +32,7 @@ void acpi_create_gnvs(global_nvs_t *gnvs)
 	gnvs->cmap = 0x01;
 	gnvs->cmbp = 0x01;
 
+	/* Set thermal levels */
+	gnvs->tcrt = 100;
+	gnvs->tpsv = 90;
 }

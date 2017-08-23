@@ -1,0 +1,4 @@
+config DRIVERS_I2C_NCT7802Y
+	bool
+	help
+	  The NCT7802Y by Nuvoton is a Hardware Monitoring IC.

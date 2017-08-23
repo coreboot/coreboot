@@ -29,33 +29,35 @@ CONFIG_DEVICETREE:=$(call strip_quotes, $(CONFIG_DEVICETREE))
 # misleadingly named, this is the coreboot version
 ifeq ($(KERNELVERSION),)
 ifeq ($(BUILD_TIMELESS),1)
-export KERNELVERSION := TIMELESS
+KERNELVERSION := TIMELESS
 else
-export KERNELVERSION := $(strip $(if $(GIT),\
+KERNELVERSION := $(strip $(if $(GIT),\
 	$(shell git describe --dirty --always || git describe),\
 	$(if $(wildcard $(top)/.coreboot-version),\
 		$(shell cat $(top)/.coreboot-version),\
 		coreboot-unknown$(KERNELREVISION))))
 endif
 endif
+COREBOOT_EXPORTS += KERNELVERSION
 
 #######################################################################
 # Basic component discovery
 MAINBOARDDIR=$(call strip_quotes,$(CONFIG_MAINBOARD_DIR))
 VARIANT_DIR:=$(call strip_quotes,$(CONFIG_VARIANT_DIR))
-export MAINBOARDDIR
-export VARIANT_DIR
+COREBOOT_EXPORTS += MAINBOARDDIR VARIANT_DIR
 
 ## Final build results, which CBFSTOOL uses to create the final
 ## rom image file, are placed under $(objcbfs).
 ## These typically have suffixes .debug .elf .bin and .map
-export objcbfs := $(obj)/cbfs/$(CONFIG_CBFS_PREFIX)
+objcbfs := $(obj)/cbfs/$(CONFIG_CBFS_PREFIX)
+COREBOOT_EXPORTS += objcbfs
 
 ## Based on the active configuration, Makefile conditionally collects
 ## the required assembly includes and saves them in a file.
 ## Such files that do not have a clear one-to-one relation to a source
 ## file under src/ are placed and built under $(objgenerated)
-export objgenerated := $(obj)/generated
+objgenerated := $(obj)/generated
+COREBOOT_EXPORTS += objgenerated
 
 #######################################################################
 # root rule to resolve if in build mode (ie. configuration exists)
@@ -195,7 +197,8 @@ ifeq ($(CONFIG_USE_BLOBS),y)
 # unless explicitly requested and enabled through --checkout
 forgetthis:=$(if $(GIT),$(shell git submodule update --init --checkout 3rdparty/blobs))
 endif
-export UPDATED_SUBMODULES:=1
+UPDATED_SUBMODULES:=1
+COREBOOT_EXPORTS += UPDATED_SUBMODULES
 endif
 
 postcar-c-deps:=$$(OPTION_TABLE_H)
@@ -347,7 +350,8 @@ CBFS_PRERAM_COMPRESS_FLAG:=LZ4
 endif
 
 ifneq ($(CONFIG_LOCALVERSION),"")
-export COREBOOT_EXTRA_VERSION := -$(call strip_quotes,$(CONFIG_LOCALVERSION))
+COREBOOT_EXTRA_VERSION := -$(call strip_quotes,$(CONFIG_LOCALVERSION))
+COREBOOT_EXPORTS += COREBOOT_EXTRA_VERSION
 endif
 
 CPPFLAGS_common := -Isrc -Isrc/include -Isrc/commonlib/include -I$(obj)
@@ -436,6 +440,8 @@ endif
 additional-dirs := $(objutil)/cbfstool $(objutil)/romcc $(objutil)/ifdtool \
 		   $(objutil)/ifdfake $(objutil)/options $(objutil)/amdfwtool \
 		   $(objutil)/cbootimage $(objutil)/bimgtool
+
+export $(COREBOOT_EXPORTS)
 
 #######################################################################
 # generate build support files

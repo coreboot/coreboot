@@ -244,12 +244,11 @@ void generate_cpu_entries(device_t device)
 
 	printk(BIOS_DEBUG, "ACPI \\_PR report %d core(s)\n", cores);
 
-
-	/* Generate BSP \_PR.CPU0 */
+	/* Generate BSP \_PR.P000 */
 	acpigen_write_processor(0, pcontrol_blk, plen);
 	acpigen_pop_len();
 
-	/* Generate AP \_PR.CPUx */
+	/* Generate AP \_PR.Pxxx */
 	pcontrol_blk = 0;
 	plen = 0;
 	for (cpu = 1; cpu < cores; cpu++) {

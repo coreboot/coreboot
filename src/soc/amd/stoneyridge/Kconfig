@@ -292,4 +292,8 @@ config SMM_TSEG_SIZE
 	default 0x800000 if HAVE_SMI_HANDLER
 	default 0x0
 
+config ACPI_CPU_STRING
+	string
+	default "\\_PR.P%03d"
+
 endif # SOC_AMD_STONEYRIDGE_FP4 || SOC_AMD_STONEYRIDGE_FT4

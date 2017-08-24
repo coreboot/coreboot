@@ -15,7 +15,6 @@
 
 config CPU_AMD_AGESA
 	bool
-	default y if CPU_AMD_AGESA_FAMILY10
 	default y if CPU_AMD_AGESA_FAMILY12
 	default y if CPU_AMD_AGESA_FAMILY14
 	default y if CPU_AMD_AGESA_FAMILY15
@@ -82,7 +81,6 @@ config S3_DATA_SIZE
 
 endif # CPU_AMD_AGESA
 
-source src/cpu/amd/agesa/family10/Kconfig
 source src/cpu/amd/agesa/family12/Kconfig
 source src/cpu/amd/agesa/family14/Kconfig
 source src/cpu/amd/agesa/family15/Kconfig

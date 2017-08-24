@@ -16,12 +16,7 @@
 #ifndef STONEYRIDGE_IMC_H
 #define STONEYRIDGE_IMC_H
 
-#include <Porting.h>
-#include <AGESA.h>
-#include <FchCommonCfg.h>
-
 void imc_reg_init(void);
 void enable_imc_thermal_zone(void);
-void oem_fan_control(FCH_DATA_BLOCK *FchParams);
 
 #endif

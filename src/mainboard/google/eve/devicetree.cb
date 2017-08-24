@@ -277,6 +277,8 @@ chip soc/intel/skylake
 		device pci 19.2 on
 			chip drivers/i2c/max98927
 				register "interleave_mode" = "1"
+				register "vmon_slot_no" = "4"
+				register "imon_slot_no" = "5"
 				register "uid" = "0"
 				register "desc" = ""Right Speaker Amp""
 				register "name" = ""MAXR""
@@ -284,6 +286,8 @@ chip soc/intel/skylake
 			end
 			chip drivers/i2c/max98927
 				register "interleave_mode" = "1"
+				register "vmon_slot_no" = "6"
+				register "imon_slot_no" = "7"
 				register "uid" = "1"
 				register "desc" = ""Left Speaker Amp""
 				register "name" = ""MAXL""

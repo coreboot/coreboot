@@ -27,4 +27,8 @@ struct drivers_i2c_max98927_config {
 	const char *desc;
 	/* ACPI Device Name */
 	const char *name;
+	/* slot number where voltage feedback will be received */
+	unsigned int vmon_slot_no;
+	/* slot number where current feedback will be received */
+	unsigned int imon_slot_no;
 };

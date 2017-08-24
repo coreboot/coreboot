@@ -61,6 +61,8 @@ static void max98927_fill_ssdt(struct device *dev)
 	dp = acpi_dp_new_table("_DSD");
 
 	acpi_dp_add_integer(dp, "interleave_mode", config->interleave_mode);
+	acpi_dp_add_integer(dp, "vmon-slot-no", config->vmon_slot_no);
+	acpi_dp_add_integer(dp, "imon-slot-no", config->imon_slot_no);
 
 	acpi_dp_write(dp);
 

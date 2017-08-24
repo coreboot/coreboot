@@ -1,0 +1,5 @@
+config DRIVERS_I2C_LM96000
+	depends on HAVE_MONOTONIC_TIMER
+	bool
+	help
+	  Hardware-monitoring IC LM96000.

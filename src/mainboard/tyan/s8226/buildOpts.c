@@ -425,13 +425,4 @@ CONST AP_MTRR_SETTINGS ROMDATA s8226_ap_mtrr_list[] =
  * This file include MUST occur AFTER the user option selection settings
  */
 
-/*
-#if IS_ENABLED(CONFIG_CPU_AMD_AGESA_FAMILY15)
-  #define BLDOPT_REMOVE_FAMILY_10_SUPPORT         TRUE
-#endif
-#if IS_ENABLED(CONFIG_CPU_AMD_AGESA_FAMILY10)
-  #define BLDOPT_REMOVE_FAMILY_15_SUPPORT         TRUE
-#endif
-*/
-
 #include "SanMarinoInstall.h"

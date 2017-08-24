@@ -24,7 +24,7 @@
 #include <northbridge/amd/agesa/agesa_helper.h>
 #include <northbridge/amd/agesa/state_machine.h>
 
-#include "northbridge/amd/agesa/family10/reset_test.h"
+#include "northbridge/amd/agesa/family15/reset_test.h"
 #include <nb_cimx.h>
 #include <sb_cimx.h>
 

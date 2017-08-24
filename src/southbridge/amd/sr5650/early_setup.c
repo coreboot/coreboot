@@ -49,13 +49,15 @@ static void alink_ax_indx(u32 space, u32 axindc, u32 mask, u32 val)
 }
 
 
-/* family 10 only, for reg > 0xFF */
-#if IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AMDFAM10) || \
-	IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY10)
-static void set_fam10_ext_cfg_enable_bits(device_t fam10_dev, u32 reg_pos, u32 mask,
-				  u32 val)
+static void set_fam10_ext_cfg_enable_bits(device_t fam10_dev,
+	u32 reg_pos, u32 mask, u32 val)
 {
 	u32 reg_old, reg;
+
+	/* family 10 only, for reg > 0xFF */
+	if (!IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AMDFAM10))
+		return;
+
 	reg = reg_old = pci_read_config32(fam10_dev, reg_pos);
 	reg &= ~mask;
 	reg |= val;
@@ -63,10 +65,6 @@ static void set_fam10_ext_cfg_enable_bits(device_t fam10_dev, u32 reg_pos, u32 m
 		pci_write_config32(fam10_dev, reg_pos, reg);
 	}
 }
-#else
-#define set_fam10_ext_cfg_enable_bits(a, b, c, d) do {} while (0)
-#endif
-
 
 /*
 * Compliant with CIM_33's ATINB_PrepareInit
@@ -222,8 +220,7 @@ void sr5650_htinit(void)
 		/* Enable Protocol checker */
 		set_htiu_enable_bits(sr5650_f0, 0x1E, 0xFFFFFFFF, 0x7FFFFFFC);
 
-#if IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AMDFAM10) || \
-	IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY10)
+#if IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AMDFAM10)
 		/* HT3 mode, RPR 5.4.3 */
 		set_nbcfg_enable_bits(sr5650_f0, 0x9c, 0x3 << 16, 0);
 
@@ -269,7 +266,7 @@ void sr5650_htinit(void)
 		//set_fam10_ext_cfg_enable_bits(cpu_f0, 0x16C, 0x3F, 0x26);
 
 		/* HT Buffer Allocation for Ganged Links!!! */
-#endif	/* CONFIG_NORTHBRIDGE_AMD_AMDFAM10 || CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY10 */
+#endif	/* CONFIG_NORTHBRIDGE_AMD_AMDFAM10 */
 	}
 
 }
@@ -301,14 +298,15 @@ void sr5650_htinit_dect_and_enable_isochronous_link(void)
 	}
 }
 
-#if IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AMDFAM10) || \
-	IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY10)
 void fam10_optimization(void)
 {
 	device_t cpu_f0, cpu_f2, cpu_f3;
 	device_t cpu1_f0, cpu1_f2, cpu1_f3;
 	msr_t msr;
 	u32 val;
+
+	if (!IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AMDFAM10))
+		return;
 
 	printk(BIOS_INFO, "fam10_optimization()\n");
 	msr = rdmsr(0xC001001F);
@@ -329,9 +327,6 @@ void fam10_optimization(void)
 	/* TODO: HT Buffer Allocation for (un)Ganged Links */
 	/* rpr Table 5-11, 5-12 */
 }
-#else
-#define fam10_optimization() do {} while (0)
-#endif	/* CONFIG_NORTHBRIDGE_AMD_AMDFAM10 || CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY10 */
 
 /*****************************************
 * Compliant with CIM_33's ATINB_PCICFG_POR_TABLE

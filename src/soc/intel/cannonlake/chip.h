@@ -165,7 +165,7 @@ struct soc_intel_cannonlake_config {
 		CHIPSET_LOCKDOWN_COREBOOT, /* coreboot handles locking */
 	} chipset_lockdown;
 
-	uint8_t SkipMpInit;
+	uint8_t FspSkipMpInit;
 	/* VrConfig Settings for 5 domains
 	 * 0 = System Agent, 1 = IA Core, 2 = Ring,
 	 * 3 = GT unsliced,  4 = GT sliced */

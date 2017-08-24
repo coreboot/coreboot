@@ -35,6 +35,7 @@ ramstage-$(CONFIG_PLATFORM_USES_FSP2_0) += reset.c
 ramstage-y += spi.c
 ramstage-y += systemagent.c
 ramstage-$(CONFIG_UART_DEBUG) += uart.c
+ramstage-y += vr_config.c
 
 postcar-y += memmap.c
 postcar-y += pmutil.c

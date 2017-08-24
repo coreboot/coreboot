@@ -20,6 +20,7 @@
 #include <fsp/api.h>
 #include <fsp/util.h>
 #include <romstage_handoff.h>
+#include <soc/pci_devs.h>
 #include <soc/ramstage.h>
 #include <string.h>
 
@@ -68,6 +69,8 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 {
 	int i;
 	FSP_S_CONFIG *params = &supd->FspsConfig;
+	const struct device *dev = SA_DEV_ROOT;
+	const config_t *config = dev->chip_info;
 
 	/* Set USB OC pin to 0 first */
 	for (i = 0; i < ARRAY_SIZE(params->Usb2OverCurrentPin); i++) {
@@ -79,6 +82,71 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	}
 
 	mainboard_silicon_init_params(params);
+
+	/* SATA */
+	params->SataEnable = config->SataEnable;
+	params->SataMode = config->SataMode;
+	params->SataSalpSupport = config->SataSalpSupport;
+	memcpy(params->SataPortsEnable, config->SataPortsEnable,
+			sizeof(params->SataPortsEnable));
+	memcpy(params->SataPortsDevSlp, config->SataPortsDevSlp,
+			sizeof(params->SataPortsDevSlp));
+
+	/* Lan */
+	params->PchLanEnable = config->PchLanEnable;
+
+	/* Audio */
+	params->PchHdaDspEnable = config->PchHdaDspEnable;
+	params->PchHdaAudioLinkHda = config->PchHdaAudioLinkHda;
+
+	/* USB */
+	for (i = 0; i < ARRAY_SIZE(config->usb2_ports); i++) {
+		params->PortUsb20Enable[i] =
+			config->usb2_ports[i].enable;
+		params->Usb2OverCurrentPin[i] =
+			config->usb2_ports[i].ocpin;
+		params->Usb2AfePetxiset[i] =
+			config->usb2_ports[i].pre_emp_bias;
+		params->Usb2AfeTxiset[i] =
+			config->usb2_ports[i].tx_bias;
+		params->Usb2AfePredeemp[i] =
+			config->usb2_ports[i].tx_emp_enable;
+		params->Usb2AfePehalfbit[i] =
+			config->usb2_ports[i].pre_emp_bit;
+	}
+
+	for (i = 0; i < ARRAY_SIZE(config->usb3_ports); i++) {
+		params->PortUsb30Enable[i] = config->usb3_ports[i].enable;
+		params->Usb3OverCurrentPin[i] = config->usb3_ports[i].ocpin;
+		if (config->usb3_ports[i].tx_de_emp) {
+			params->Usb3HsioTxDeEmphEnable[i] = 1;
+			params->Usb3HsioTxDeEmph[i] =
+				config->usb3_ports[i].tx_de_emp;
+		}
+		if (config->usb3_ports[i].tx_downscale_amp) {
+			params->Usb3HsioTxDownscaleAmpEnable[i] = 1;
+			params->Usb3HsioTxDownscaleAmp[i] =
+				config->usb3_ports[i].tx_downscale_amp;
+		}
+	}
+
+	params->XdciEnable = config->XdciEnable;
+
+	/* eMMC and SD */
+	params->ScsEmmcEnabled = config->ScsEmmcEnabled;
+	params->ScsEmmcHs400Enabled = config->ScsEmmcHs400Enabled;
+	params->ScsSdCardEnabled = config->ScsSdCardEnabled;
+	params->ScsUfsEnabled = config->ScsUfsEnabled;
+
+	params->Heci3Enabled = config->Heci3Enabled;
+	params->Device4Enable = config->Device4Enable;
+	params->SkipMpInit = config->FspSkipMpInit;
+
+	/* VrConfig Settings for 5 domains
+	 * 0 = System Agent, 1 = IA Core, 2 = Ring,
+	 * 3 = GT unsliced,  4 = GT sliced */
+	for (i = 0; i < ARRAY_SIZE(config->domain_vr_config); i++)
+		fill_vr_domain_config(params, i, &config->domain_vr_config[i]);
 }
 
 /* Mainboard GPIO Configuration */

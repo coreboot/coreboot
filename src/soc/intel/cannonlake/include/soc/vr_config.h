@@ -66,4 +66,7 @@ enum vr_domain {
 	NUM_VR_DOMAINS
 };
 
+void fill_vr_domain_config(void *params,
+		int domain, const struct vr_config *cfg);
+
 #endif

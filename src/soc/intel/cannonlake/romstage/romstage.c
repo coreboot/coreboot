@@ -15,12 +15,15 @@
 
 #include <arch/io.h>
 #include <arch/early_variables.h>
+#include <assert.h>
+#include <chip.h>
 #include <cpu/x86/mtrr.h>
 #include <cbmem.h>
 #include <console/console.h>
 #include <fsp/util.h>
 #include <intelblocks/pmclib.h>
 #include <memory_info.h>
+#include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/romstage.h>
 #include <timestamp.h>
@@ -63,8 +66,36 @@ asmlinkage void car_stage_entry(void)
 	run_postcar_phase(&pcf);
 }
 
+static void soc_memory_init_params(FSP_M_CONFIG *m_cfg, const config_t *config)
+{
+	int i;
+	uint32_t mask = 0;
+
+	m_cfg->TsegSize = CONFIG_SMM_TSEG_SIZE;
+	m_cfg->IedSize = CONFIG_IED_REGION_SIZE;
+	m_cfg->SaGv = config->SaGv;
+	m_cfg->UserBd = BOARD_TYPE_ULT_ULX;
+	m_cfg->RMT = config->RMT;
+
+	for (i = 0; i < ARRAY_SIZE(config->PcieRpEnable); i++) {
+		if (config->PcieRpEnable[i])
+			mask |= (1 << i);
+	}
+	m_cfg->PcieRpEnableMask = mask;
+}
+
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 {
+	const struct device *dev = dev_find_slot(0, PCH_DEVFN_LPC);
+	assert(dev != NULL);
+	const config_t *config = dev->chip_info;
+	FSP_M_CONFIG *m_cfg = &mupd->FspmConfig;
+
+	soc_memory_init_params(m_cfg, config);
+
+	/* Enable SMBus controller based on config */
+	m_cfg->SmbusEnable = config->SmbusEnable;
+
 	mainboard_memory_init_params(mupd);
 }
 

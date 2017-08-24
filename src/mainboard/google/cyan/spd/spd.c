@@ -25,8 +25,7 @@
 #include <soc/gpio.h>
 #include <soc/romstage.h>
 #include <string.h>
-
-#define SPD_SIZE 256
+#include <spd_bin.h>
 
 /*
  * 0b0000 - 4GiB total - 2 x 2GiB Samsung K4B4G1646Q-HYK0 1600MHz
@@ -46,10 +45,10 @@ static void *get_spd_pointer(char *spd_file_content, int total_spds, int *dual)
 	int ram_id = 0;
 
 	gpio_t spd_gpios[] = {
-		GP_SW_80,	/* SATA_GP3,RAMID0 */
-		GP_SW_67,	/* I2C3_SCL,RAMID1 */
+		GP_SW_80,	/* SATA_GP3, RAMID0 */
+		GP_SW_67,	/* I2C3_SCL, RAMID1 */
 		GP_SE_02,	/* MF_PLT_CLK1, RAMID2 */
-		GP_SW_64,	/* I2C3_SDA RAMID3 */
+		GP_SW_64,	/* I2C3_SDA, RAMID3 */
 	};
 
 	ram_id = gpio_base2_value(spd_gpios, ARRAY_SIZE(spd_gpios));
@@ -90,7 +89,7 @@ static void *get_spd_pointer(char *spd_file_content, int total_spds, int *dual)
 	}
 
 	/* Return the serial product data for the RAM */
-	return &spd_file_content[SPD_SIZE * ram_id];
+	return &spd_file_content[SPD_PAGE_LEN * ram_id];
 }
 
 /* Copy SPD data for on-board memory */
@@ -107,7 +106,7 @@ void mainboard_fill_spd_data(struct pei_data *ps)
 	if (!spd_file)
 		die("SPD data not found.");
 
-	if (spd_file_len < SPD_SIZE)
+	if (spd_file_len < SPD_PAGE_LEN)
 		die("Missing SPD data.");
 
 	/*
@@ -115,11 +114,11 @@ void mainboard_fill_spd_data(struct pei_data *ps)
 	 * DIMMs so use the same SPD data for each DIMM.
 	 */
 	spd_content = get_spd_pointer(spd_file,
-				      spd_file_len / SPD_SIZE,
+				      spd_file_len / SPD_PAGE_LEN,
 				      &dual_channel);
 	if (IS_ENABLED(CONFIG_DISPLAY_SPD_DATA) && spd_content != NULL) {
 		printk(BIOS_DEBUG, "SPD Data:\n");
-		hexdump(spd_content, SPD_SIZE);
+		hexdump(spd_content, SPD_PAGE_LEN);
 		printk(BIOS_DEBUG, "\n");
 	}
 
@@ -144,48 +143,66 @@ void mainboard_fill_spd_data(struct pei_data *ps)
 	}
 }
 
-static void set_dimm_info(uint32_t chips, uint8_t *spd, struct dimm_info *dimm)
+static void set_dimm_info(uint8_t *spd, struct dimm_info *dimm)
 {
-	uint16_t clock_frequency;
-	uint32_t log2_chips;
+	const int spd_capmb[8] = {  1,  2,  4,  8, 16, 32, 64,  0 };
+	const int spd_ranks[8] = {  1,  2,  3,  4, -1, -1, -1, -1 };
+	const int spd_devw[8]  = {  4,  8, 16, 32, -1, -1, -1, -1 };
+	const int spd_busw[8]  = {  8, 16, 32, 64, -1, -1, -1, -1 };
+
+	int capmb = spd_capmb[spd[SPD_DENSITY_BANKS] & 7] * 256;
+	int ranks = spd_ranks[(spd[SPD_ORGANIZATION] >> 3) & 7];
+	int devw  = spd_devw[spd[SPD_ORGANIZATION] & 7];
+	int busw  = spd_busw[spd[SPD_BUS_DEV_WIDTH] & 7];
+
+	void *hob_list_ptr;
+	EFI_HOB_GUID_TYPE *hob_ptr;
+	FSP_SMBIOS_MEMORY_INFO *memory_info_hob;
+	const EFI_GUID memory_info_hob_guid = FSP_SMBIOS_MEMORY_INFO_GUID;
+
+	/* Locate the memory info HOB, presence validated by raminit */
+	hob_list_ptr = fsp_get_hob_list();
+	hob_ptr = get_next_guid_hob(&memory_info_hob_guid, hob_list_ptr);
+	if (hob_ptr != NULL) {
+		memory_info_hob = (FSP_SMBIOS_MEMORY_INFO *)(hob_ptr + 1);
+		dimm->ddr_frequency = memory_info_hob->MemoryFrequencyInMHz;
+	} else {
+		printk(BIOS_ERR, "Can't get memory info hob pointer\n");
+		dimm->ddr_frequency = 0;
+	}
 
 	/* Parse the SPD data to determine the DIMM information */
-	dimm->ddr_type = MEMORY_TYPE_DDR3;
-	dimm->dimm_size = (chips << (spd[4] & 0xf)) << (28 - 3 - 20);  /* MiB */
-	clock_frequency = 1000 * spd[11] / (spd[10] * spd[12]);	/* MHz */
-	dimm->ddr_frequency = 2 * clock_frequency;	/* Double Data Rate */
+	dimm->ddr_type = MEMORY_DEVICE_DDR3;
+	dimm->dimm_size = capmb / 8 * busw / devw * ranks;  /* MiB */
 	dimm->mod_type = spd[3] & 0xf;
 	memcpy((char *)&dimm->module_part_number[0], &spd[0x80],
 		sizeof(dimm->module_part_number) - 1);
 	dimm->mod_id = *(uint16_t *)&spd[0x94];
-	switch (chips) {
-	case 1:
-		log2_chips = 0;
-		break;
 
-	case 2:
-		log2_chips = 1;
-		break;
-
-	case 4:
-		log2_chips = 2;
-		break;
-
-	case 8:
-		log2_chips = 3;
-		break;
-
+	switch (busw) {
 	default:
-		log2_chips = 0;
+	case 8:
+		dimm->bus_width = MEMORY_BUS_WIDTH_8;
+		break;
+
+	case 16:
+		dimm->bus_width = MEMORY_BUS_WIDTH_16;
+		break;
+
+	case 32:
+		dimm->bus_width = MEMORY_BUS_WIDTH_32;
+		break;
+
+	case 64:
+		dimm->bus_width = MEMORY_BUS_WIDTH_64;
+		break;
 	}
-	dimm->bus_width = (uint8_t)(log2_chips + (spd[7] & 7) + 2 - 3);
 }
 
 void mainboard_save_dimm_info(struct romstage_params *params)
 {
 	struct dimm_info *dimm;
 	struct memory_info *mem_info;
-	uint32_t chips;
 
 	/*
 	 * Allocate CBMEM area for DIMM information used to populate SMBIOS
@@ -198,15 +215,14 @@ void mainboard_save_dimm_info(struct romstage_params *params)
 	memset(mem_info, 0, sizeof(*mem_info));
 
 	/* Describe the first channel memory */
-	chips = 4;
 	dimm = &mem_info->dimm[0];
-	set_dimm_info(chips, params->pei_data->spd_data_ch0, dimm);
+	set_dimm_info(params->pei_data->spd_data_ch0, dimm);
 	mem_info->dimm_cnt = 1;
 
 	/* Describe the second channel memory */
 	if (params->pei_data->spd_ch1_config == 1) {
 		dimm = &mem_info->dimm[1];
-		set_dimm_info(chips, params->pei_data->spd_data_ch1, dimm);
+		set_dimm_info(params->pei_data->spd_data_ch1, dimm);
 		dimm->channel_num = 1;
 		mem_info->dimm_cnt = 2;
 	}

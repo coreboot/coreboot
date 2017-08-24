@@ -284,36 +284,18 @@
 /*
  * Initialize all families to disabled
  */
-#define OPT_F10_TABLE
-#define OPT_F12_TABLE
 #define OPT_F14_TABLE
-#define OPT_F15_TABLE
 
-#define OPT_F10_ID_TABLE
-#define OPT_F12_ID_TABLE
 #define OPT_F14_ID_TABLE
-#define OPT_F15_ID_TABLE
 
 
 /*
  * Install family specific support
  */
-#if (OPTION_FAMILY10H == TRUE)
-  #include  "OptionFamily10hInstall.h"
-#endif
-
-#if (OPTION_FAMILY12H == TRUE)
-  #include  "OptionFamily12hInstall.h"
-#endif
 
 #if (OPTION_FAMILY14H == TRUE)
   #include  "OptionFamily14hInstall.h"
 #endif
-
-#if (OPTION_FAMILY15H == TRUE)
-  #include  "OptionFamily15hInstall.h"
-#endif
-
 
 /*
  * Process PCI MMIO mask
@@ -378,10 +360,7 @@ CONST OPTIONS_CONFIG_TOPOLOGY ROMDATA TopologyConfiguration =
  */
 CONST CPU_SPECIFIC_SERVICES_XLAT ROMDATA CpuSupportedFamiliesArray[] =
 {
-  OPT_F10_TABLE
-  OPT_F12_TABLE
   OPT_F14_TABLE
-  OPT_F15_TABLE
 };
 
 CONST CPU_FAMILY_SUPPORT_TABLE ROMDATA CpuSupportedFamiliesTable =
@@ -393,10 +372,7 @@ CONST CPU_FAMILY_SUPPORT_TABLE ROMDATA CpuSupportedFamiliesTable =
 
 CONST CPU_LOGICAL_ID_FAMILY_XLAT ROMDATA CpuSupportedFamilyIdArray[] =
 {
-  OPT_F10_ID_TABLE
-  OPT_F12_ID_TABLE
   OPT_F14_ID_TABLE
-  OPT_F15_ID_TABLE
 };
 
 CONST CPU_FAMILY_ID_XLAT_TABLE ROMDATA CpuSupportedFamilyIdTable =

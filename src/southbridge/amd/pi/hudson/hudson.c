@@ -26,10 +26,7 @@
 #include "hudson.h"
 #include "smbus.h"
 #include "smi.h"
-#if IS_ENABLED(CONFIG_HUDSON_IMC_FWM)
 #include "fchec.h"
-#endif
-
 
 int acpi_get_sleep_type(void)
 {
@@ -123,12 +120,11 @@ static void hudson_init(void *chip_info)
 
 static void hudson_final(void *chip_info)
 {
-#if IS_ENABLED(CONFIG_HUDSON_IMC_FWM)
-	agesawrapper_fchecfancontrolservice();
-#if !IS_ENABLED(CONFIG_ACPI_ENABLE_THERMAL_ZONE)
-	enable_imc_thermal_zone();
-#endif
-#endif
+	if (IS_ENABLED(CONFIG_HUDSON_IMC_FWM)) {
+		agesawrapper_fchecfancontrolservice();
+		if (!IS_ENABLED(CONFIG_ACPI_ENABLE_THERMAL_ZONE))
+			enable_imc_thermal_zone();
+	}
 }
 
 struct chip_operations southbridge_amd_pi_hudson_ops = {

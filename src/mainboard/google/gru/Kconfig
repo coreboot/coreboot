@@ -25,6 +25,16 @@ config GRU_HAS_TPM2
 	default n if BOARD_GOOGLE_KEVIN
 	default y
 
+config GRU_HAS_CENTERLOG_PWM
+	bool
+	default y if BOARD_GOOGLE_GRU || BOARD_GOOGLE_KEVIN || BOARD_GOOGLE_BOB
+	default n
+
+config GRU_HAS_WLAN_RESET
+	bool
+	default y if BOARD_GOOGLE_GRU || BOARD_GOOGLE_KEVIN || BOARD_GOOGLE_BOB
+	default n
+
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
 	select BOARD_ID_AUTO

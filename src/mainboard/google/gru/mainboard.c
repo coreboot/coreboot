@@ -44,7 +44,7 @@ static void configure_touchpad(void)
 /*
  * Wifi's PDN/RST line is pulled down by its (unpowered) voltage rails, but
  * this reset pin is pulled up by default. Let's drive it low as early as we
- * can. Scarlet uses a different WiFi chip that doesn't have this pin anymore.
+ * can. This only applies to boards with Marvell 8997 WiFi.
  */
 static void assert_wifi_reset(void)
 {
@@ -349,8 +349,9 @@ static void mainboard_init(device_t dev)
 	if (display_init_required())
 		configure_display();
 	setup_usb(0);
+	if (IS_ENABLED(CONFIG_GRU_HAS_WLAN_RESET))
+		assert_wifi_reset();
 	if (!IS_ENABLED(CONFIG_BOARD_GOOGLE_SCARLET)) {
-		assert_wifi_reset();		/* Scarlet: no WIFI_PD# line */
 		configure_touchpad();		/* Scarlet: works differently */
 		setup_usb(1);			/* Scarlet: only one USB port */
 		register_gpio_suspend();	/* Scarlet: all EC-controlled */

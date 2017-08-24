@@ -40,7 +40,7 @@ int kevin6_pwm_design_voltage[][2] = {
 	[PWM_REGULATOR_CENTERLOG] = {8001, 10497}
 };
 
-/* Applies for Gru rev2+ and Bob. */
+/* Applies for Gru rev2+, Bob, and Nefario. */
 int pwm_design_voltage[][2] = {
 	[PWM_REGULATOR_GPU] = {7864, 12177},
 	[PWM_REGULATOR_BIG] = {8001, 13022},
@@ -58,12 +58,15 @@ int scarlet_pwm_design_voltage[][2] = {
 int pwm_enum_to_pwm_number[] = {
 	[PWM_REGULATOR_GPU] = 0,
 	[PWM_REGULATOR_LIT] = 2,
+#if IS_ENABLED(CONFIG_GRU_HAS_CENTERLOG_PWM)
+	[PWM_REGULATOR_CENTERLOG] = 3,
+#else
+	[PWM_REGULATOR_CENTERLOG] = -1,
+#endif
 #if IS_ENABLED(CONFIG_BOARD_GOOGLE_SCARLET)
 	[PWM_REGULATOR_BIG] = 3,
-	[PWM_REGULATOR_CENTERLOG] = -1,	/* fixed regulator on Scarlet */
 #else
 	[PWM_REGULATOR_BIG] = 1,
-	[PWM_REGULATOR_CENTERLOG] = 3,
 #endif
 };
 

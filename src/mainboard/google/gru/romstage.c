@@ -41,11 +41,13 @@ static void init_dvs_outputs(void)
 	pwm_regulator_configure(PWM_REGULATOR_GPU, 900);
 	pwm_regulator_configure(PWM_REGULATOR_BIG, 900);
 
-	/* Kevin's logic rail has some ripple, so up the voltage a bit. Scarlet
-	   uses a fixed 900mV regulator for centerlogic. */
+	/*
+	 * Kevin's logic rail has some ripple, so up the voltage a bit. Newer
+	 * boards use a fixed 900mV regulator for centerlogic.
+	 */
 	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_KEVIN))
 		pwm_regulator_configure(PWM_REGULATOR_CENTERLOG, 925);
-	else if (!IS_ENABLED(CONFIG_BOARD_GOOGLE_SCARLET))
+	else if (IS_ENABLED(CONFIG_GRU_HAS_CENTERLOG_PWM))
 		pwm_regulator_configure(PWM_REGULATOR_CENTERLOG, 900);
 
 	/* Allow time for the regulators to settle */

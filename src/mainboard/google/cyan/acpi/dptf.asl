@@ -18,4 +18,6 @@
 #include <variant/acpi/dptf.asl>
 
 /* Include SoC DPTF */
+#if !IS_ENABLED(CONFIG_BOARD_GOOGLE_TERRA)
 #include <acpi/dptf/dptf.asl>
+#endif

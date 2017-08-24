@@ -33,8 +33,18 @@ Scope (\_SB)
 		 */
 		Method (_STA, 0, NotSerialized)
 		{
-			Multiply (0xf, \_SB.PCI0.LPCB.EC0.KBLE, Local0)
-			Return (Local0)
+			/* If query is unsupported, but this code is compiled
+			 * in, assume the backlight exists physically.
+			 */
+			If (LEqual (1, \_SB.PCI0.LPCB.EC0.DFUD)) {
+				Return (0xf)
+			}
+			/* If EC reports that backlight exists, trust it */
+			If (LEqual (1, \_SB.PCI0.LPCB.EC0.KBLE)) {
+				Return (0xf)
+			}
+			/* Otherwise: no device -> disable */
+			Return (0)
 		}
 
 		/* Read current backlight value */

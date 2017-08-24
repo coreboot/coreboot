@@ -47,15 +47,49 @@ Device (EC0)
 		RAMV, 8,	// EC RAM Version
 		TSTB, 8,	// Test Byte
 		TSTC, 8,	// Complement of Test Byte
-		KBLV, 8,	// Keyboard Backlight
+		KBLV, 8,	// Keyboard Backlight value
 		FAND, 8,	// Set Fan Duty Cycle
 		PATI, 8,	// Programmable Auxiliary Trip Sensor ID
 		PATT, 8,	// Programmable Auxiliary Trip Threshold
 		PATC, 8,	// Programmable Auxiliary Trip Commit
 		CHGL, 8,	// Charger Current Limit
 		TBMD, 1,	// Tablet mode
+		// DFUD must be 0 for the other 31 values to be valid
 		Offset (0x0a),
-		KBLE, 1,	// Keyboard Backlight exists
+		DFUD, 1,	// Device Features Undefined
+		FLSH, 1,	// Flash commands present
+		PFAN, 1,	// PWM Fan control present
+		KBLE, 1,	// Keyboard Backlight present
+		LTBR, 1,	// Lightbar present
+		LEDC, 1,	// LED control
+		MTNS, 1,	// Motion sensors present
+		KEYB, 1,	// EC is keyboard controller
+		PSTR, 1,	// Persistent storage
+		P80P, 1,	// EC serves I/O Port 80h
+		THRM, 1,	// EC supports thermal management
+		SBKL, 1,	// Screen backlight switch present
+		WIFI, 1,	// WIFI switch present
+		HOST, 1,	// EC monitors host events (eg SCI, SMI)
+		GPIO, 1,	// EC provides GPIO commands
+		I2CB, 1,	// EC provides I2C controller access
+		CHRG, 1,	// EC provides commands for charger control
+		BATT, 1,	// Simply Battery support
+		SBAT, 1,	// Smart Battery support
+		HANG, 1,	// EC can detect host hang
+		PMUI, 1,	// Power Information
+		DSEC, 1,	// another EC exists downstream
+		UPDC, 1,	// supports USB Power Delivery
+		UMUX, 1,	// supports USB Mux
+		MSFF, 1,	// Motion Sense has FIFO
+		TVST, 1,	// supports temporary secure vstore
+		TCMV, 1,	// USB Type C Muxing is virtual (host assisted)
+		RTCD, 1,	// EC provides an RTC device
+		FPRD, 1,	// EC provides a fingerprint reader device
+		TPAD, 1,	// EC provides a touchpad device
+		RWSG, 1,	// EC has RWSIG task enabled
+		DEVE, 1,	// EC supports device events
+		// make sure we're within our space envelope
+		Offset (0x0e),
 	}
 
 #if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC_ACPI_MEMMAP)

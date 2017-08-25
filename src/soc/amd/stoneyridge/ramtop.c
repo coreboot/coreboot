@@ -41,5 +41,7 @@ void *cbmem_top(void)
 	if (!tom.lo)
 		return 0;
 	else
-		return (void *)restore_top_of_low_cacheable();
+		/* 16MB alignment to keep MTRR usage low */
+		return (void *)ALIGN_DOWN(restore_top_of_low_cacheable()
+				- CONFIG_SMM_TSEG_SIZE, 16*MiB);
 }

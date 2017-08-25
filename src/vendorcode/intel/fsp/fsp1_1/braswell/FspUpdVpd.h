@@ -1,6 +1,6 @@
 /** @file
 
-Copyright (c) 2015, Intel Corporation. All rights reserved.<BR>
+Copyright (c) 2016, Intel Corporation. All rights reserved.<BR>
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -193,8 +193,43 @@ typedef struct {
 **/
   UINT8                       PcdCaMirrorEn;
 /** Offset 0x0043
+    DDR3 Auto Self Refresh
+    Enable/Disable DDR3 Auto Self Refresh
 **/
-  UINT8                       ReservedMemoryInitUpd[189];
+  UINT8                       PcdDdr3AutoSelfRefreshEnable;
+/** Offset 0x0044
+    Disable Auto Detect Dram for LPDDR3 memory
+    To Enable/Disable AutoDetectDram
+**/
+  UINT8                       PcdDisableAutoDetectDram;
+/** Offset 0x0045
+    Dram Width
+    Select Dram Width
+**/
+  UINT8                       PcdDramWidth;
+/** Offset 0x0046
+    Dual Rank Enable
+    To Enable/Disable DualRankDram
+**/
+  UINT8                       PcdDualRankDram;
+/** Offset 0x0047
+    Dram Density
+    Select Dram Density
+**/
+  UINT8                       PcdDramDensity;
+/** Offset 0x0048
+    Channel 0 RX ODT Limit For Rx Power Training
+    Select RX ODT Limit for Channel 0
+**/
+  UINT8                       PcdRxOdtLimitChannel0;
+/** Offset 0x0049
+    Channel 1 RX ODT Limit For Rx Power Training
+    Select RX ODT Limit for Channel 1
+**/
+  UINT8                       PcdRxOdtLimitChannel1;
+/** Offset 0x004A
+**/
+  UINT8                       ReservedMemoryInitUpd[182];
 } MEMORY_INIT_UPD;
 
 typedef struct {
@@ -441,8 +476,8 @@ typedef struct {
 **/
   UINT8                       PcdTurboMode;
 /** Offset 0x0161
-    Pnp-Power & Performance
-    select Pnp type
+    Pnp Setting Type
+    Select Pnp type
 **/
   UINT8                       PcdPnpSettings;
 /** Offset 0x0162
@@ -452,7 +487,46 @@ typedef struct {
   UINT8                       PcdSdDetectChk;
 /** Offset 0x0163
 **/
-  UINT8                       ReservedSiliconInitUpd[411];
+  UINT8                       I2C0Frequency;
+/** Offset 0x0164
+**/
+  UINT8                       I2C1Frequency;
+/** Offset 0x0165
+**/
+  UINT8                       I2C2Frequency;
+/** Offset 0x0166
+**/
+  UINT8                       I2C3Frequency;
+/** Offset 0x0167
+**/
+  UINT8                       I2C4Frequency;
+/** Offset 0x0168
+**/
+  UINT8                       I2C5Frequency;
+/** Offset 0x0169
+**/
+  UINT8                       I2C6Frequency;
+/** Offset 0x016A
+**/
+  UINT8                       D0Usb2Port0PerPortRXISet;
+/** Offset 0x016B
+**/
+  UINT8                       D0Usb2Port1PerPortRXISet;
+/** Offset 0x016C
+**/
+  UINT8                       D0Usb2Port2PerPortRXISet;
+/** Offset 0x016D
+**/
+  UINT8                       D0Usb2Port3PerPortRXISet;
+/** Offset 0x016E
+**/
+  UINT8                       D0Usb2Port4PerPortRXISet;
+/** Offset 0x016F
+**/
+  UINT8                       D0VnnBump100mV;
+/** Offset 0x170
+**/
+  UINT8                       ReservedSiliconInitUpd[398];
 } SILICON_INIT_UPD;
 
 #define FSP_UPD_SIGNATURE                0x2444505557534224        /* '$BSWUPD$' */
@@ -484,13 +558,13 @@ typedef struct _UPD_DATA_REGION {
 /** Offset 0x0100
 **/
   SILICON_INIT_UPD            SiliconInitUpd;
-/** Offset 0x02FE
+/** Offset 0x0305
 **/
   UINT16                      PcdRegionTerminator;
 } UPD_DATA_REGION;
 
 #define FSP_IMAGE_ID    0x2450534657534224        /* '$BSWFSP$' */
-#define FSP_IMAGE_REV   0x01010100
+#define FSP_IMAGE_REV   0x01010700
 
 typedef struct _VPD_DATA_REGION {
 /** Offset 0x0000

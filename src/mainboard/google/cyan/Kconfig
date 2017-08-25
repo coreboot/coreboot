@@ -41,6 +41,7 @@ config MAINBOARD_FAMILY
 
 config VARIANT_DIR
 	string
+	default "banon" if BOARD_GOOGLE_BANON
 	default "cyan" if BOARD_GOOGLE_CYAN
 	default "edgar" if BOARD_GOOGLE_EDGAR
 	default "reks" if BOARD_GOOGLE_REKS
@@ -48,6 +49,7 @@ config VARIANT_DIR
 
 config MAINBOARD_PART_NUMBER
 	string
+	default "Banon" if BOARD_GOOGLE_BANON
 	default "Cyan" if BOARD_GOOGLE_CYAN
 	default "Edgar" if BOARD_GOOGLE_EDGAR
 	default "Reks" if BOARD_GOOGLE_REKS
@@ -59,6 +61,7 @@ config MAINBOARD_VENDOR
 
 config DEVICETREE
 	string
+	default "variants/banon/devicetree.cb" if BOARD_GOOGLE_BANON
 	default "variants/cyan/devicetree.cb" if BOARD_GOOGLE_CYAN
 	default "variants/edgar/devicetree.cb" if BOARD_GOOGLE_EDGAR
 	default "variants/reks/devicetree.cb" if BOARD_GOOGLE_REKS
@@ -84,6 +87,7 @@ config VGA_BIOS_ID
 config GBB_HWID
 	string
 	depends on CHROMEOS
+	default "BANON TEST A-A 8050" if BOARD_GOOGLE_BANON
 	default "CYAN TEST A-A 1829" if BOARD_GOOGLE_CYAN
 	default "EDGAR TEST A-A 2507" if BOARD_GOOGLE_EDGAR
 	default "REKS TEST A-A 3004" if BOARD_GOOGLE_REKS

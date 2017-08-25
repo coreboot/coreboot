@@ -19,6 +19,7 @@
 
 #include <arch/acpi.h>
 #include <arch/io.h>
+#include <compiler.h>
 #include <soc/gpe.h>
 #include <soc/iomap.h>
 #include <soc/smbus.h>
@@ -151,7 +152,7 @@ struct chipset_power_state {
 	uint32_t gen_pmcon_b;
 	uint32_t gblrst_cause[2];
 	uint32_t prev_sleep_state;
-} __attribute__ ((packed));
+} __packed;
 
 /* Return the selected ACPI SCI IRQ */
 int acpi_sci_irq(void);

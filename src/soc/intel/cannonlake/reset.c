@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <compiler.h>
 #include <console/console.h>
 #include <intelblocks/cse.h>
 #include <fsp/util.h>
@@ -40,7 +41,7 @@ static int send_heci_reset_message(void)
 		u8 command;
 		u8 reserved;
 		u8 result;
-	} __attribute__ ((packed)) reply;
+	} __packed reply;
 	struct reset_message {
 		u8 group_id;
 		u8 cmd;
@@ -48,7 +49,7 @@ static int send_heci_reset_message(void)
 		u8 result;
 		u8 req_origin;
 		u8 reset_type;
-	} __attribute__ ((packed));
+	} __packed;
 	struct reset_message msg = {
 		.cmd = MKHI_GLOBAL_RESET,
 		.group_id = 0,

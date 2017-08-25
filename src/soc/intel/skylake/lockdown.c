@@ -18,6 +18,7 @@
 #include <chip.h>
 #include <soc/lpc.h>
 #include <soc/pci_devs.h>
+#include <soc/pm.h>
 #include <string.h>
 
 static void lpc_lockdown_config(void)
@@ -42,10 +43,25 @@ static void lpc_lockdown_config(void)
 	pci_read_config8(dev, BIOS_CNTL);
 }
 
+static void pmc_lockdown_config(void)
+{
+	uint8_t *pmcbase;
+	u32 pmsyncreg;
+
+	/* PMSYNC */
+	pmcbase = pmc_mmio_regs();
+	pmsyncreg = read32(pmcbase + PMSYNC_TPR_CFG);
+	pmsyncreg |= PMSYNC_LOCK;
+	write32(pmcbase + PMSYNC_TPR_CFG, pmsyncreg);
+}
+
 static void platform_lockdown_config(void *unused)
 {
 	/* LPC lock down configuration */
 	lpc_lockdown_config();
+
+	/* PMC lock down configuration */
+	pmc_lockdown_config();
 }
 
 BOOT_STATE_INIT_ENTRY(BS_DEV_RESOURCES, BS_ON_EXIT, platform_lockdown_config,

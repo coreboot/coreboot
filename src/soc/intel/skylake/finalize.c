@@ -111,7 +111,6 @@ static void pch_finalize_script(void)
 	u16 tcocnt;
 	uint8_t *pmcbase;
 	config_t *config;
-	u32 pmsyncreg;
 	u8 reg8;
 
 	/* Set FAST_SPI opcode menu */
@@ -120,22 +119,17 @@ static void pch_finalize_script(void)
 	/* Lock FAST_SPIBAR */
 	fast_spi_lock_bar();
 
-	/*TCO Lock down */
+	/* TCO Lock down */
 	tcobase = smbus_tco_regs();
 	tcocnt = inw(tcobase + TCO1_CNT);
 	tcocnt |= TCO_LOCK;
 	outw(tcocnt, tcobase + TCO1_CNT);
 
-	/* PMSYNC */
-	pmcbase = pmc_mmio_regs();
-	pmsyncreg = read32(pmcbase + PMSYNC_TPR_CFG);
-	pmsyncreg |= PMSYNC_LOCK;
-	write32(pmcbase + PMSYNC_TPR_CFG, pmsyncreg);
-
 	/* Display me status before we hide it */
 	intel_me_status();
 
 	dev = PCH_DEV_PMC;
+	pmcbase = pmc_mmio_regs();
 	config = dev->chip_info;
 
 	/*

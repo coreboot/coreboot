@@ -126,12 +126,6 @@ static void pch_finalize_script(void)
 	tcocnt |= TCO_LOCK;
 	outw(tcocnt, tcobase + TCO1_CNT);
 
-	/* Lock down ABASE and sleep stretching policy */
-	dev = PCH_DEV_PMC;
-	reg32 = pci_read_config32(dev, GEN_PMCON_B);
-	reg32 |= (SLP_STR_POL_LOCK | ACPI_BASE_LOCK);
-	pci_write_config32(dev, GEN_PMCON_B, reg32);
-
 	/* PMSYNC */
 	pmcbase = pmc_mmio_regs();
 	pmsyncreg = read32(pmcbase + PMSYNC_TPR_CFG);
@@ -141,7 +135,7 @@ static void pch_finalize_script(void)
 	/* Display me status before we hide it */
 	intel_me_status();
 
-	/* we should disable Heci1 based on the devicetree policy */
+	dev = PCH_DEV_PMC;
 	config = dev->chip_info;
 
 	/*

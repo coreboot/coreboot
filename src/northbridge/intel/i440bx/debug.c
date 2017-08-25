@@ -2,10 +2,7 @@
 #include <arch/io.h>
 #include <spd.h>
 #include "raminit.h"
-#include <spd.h>
-#include <console/console.h>
 
-#if IS_ENABLED(CONFIG_DEBUG_RAM_SETUP)
 void dump_spd_registers(void)
 {
 	int i;
@@ -44,9 +41,9 @@ void dump_pci_device(unsigned dev)
 		unsigned char val;
 		val = pci_read_config8(dev, i);
 		if ((i & 0x0f) == 0)
-			printk(BIOS_DEBUG, "%02x: %02x", i, val);
+			printk(BIOS_DEBUG, "%02x:", i);
+		printk(BIOS_DEBUG, " %02x", val);
 		if ((i & 0x0f) == 0x0f)
 			printk(BIOS_DEBUG, "\n");
 	}
 }
-#endif

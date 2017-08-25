@@ -25,7 +25,7 @@
 #include <device/pci.h>
 #endif
 #include "pch.h"
-
+#include <string.h>
 
 int pch_silicon_revision(void)
 {
@@ -255,9 +255,23 @@ static void pch_pcie_function_swap(u8 old_fn, u8 new_fn)
 }
 
 /* Update devicetree with new Root Port function number assignment */
-static void pch_pcie_devicetree_update(void)
+static void pch_pcie_devicetree_update(
+		struct southbridge_intel_bd82x6x_config *config)
 {
 	device_t dev;
+
+	/*
+	 * hotplug map should also be updated along with their
+	 * corresponding port
+	 */
+	u8 new_hotplug_map[sizeof(config->pcie_hotplug_map)];
+
+	/*
+	 * Slots that didn't move need the hotplug setting copied too,
+	 * so "new_hotplug_map" is initialized with the values of the old map.
+	 */
+	memcpy(new_hotplug_map, config->pcie_hotplug_map,
+	       sizeof(new_hotplug_map));
 
 	/* Update the function numbers in the static devicetree */
 	for (dev = all_devices; dev; dev = dev->next) {
@@ -280,9 +294,21 @@ static void pch_pcie_devicetree_update(void)
 			       PCI_FUNC(dev->path.pci.devfn),
 			       PCI_SLOT(new_devfn), PCI_FUNC(new_devfn));
 
+			/*
+			 * Copy the flag to its new position along with
+			 * the corresponding port
+			 */
+			new_hotplug_map[PCI_FUNC(new_devfn)] =
+				config->pcie_hotplug_map
+				[PCI_FUNC(dev->path.pci.devfn)];
+
 			dev->path.pci.devfn = new_devfn;
 		}
 	}
+
+	/* Copy the updated map back to its place */
+	memcpy(config->pcie_hotplug_map, new_hotplug_map,
+	       sizeof(new_hotplug_map));
 }
 
 /* Special handling for PCIe Root Port devices */
@@ -290,6 +316,9 @@ static void pch_pcie_enable(device_t dev)
 {
 	struct southbridge_intel_bd82x6x_config *config = dev->chip_info;
 	u32 reg32;
+
+	if (!config)
+		return;
 
 	/*
 	 * Save a copy of the Root Port Function Number map when
@@ -389,7 +418,7 @@ static void pch_pcie_enable(device_t dev)
 
 		/* Update static devictree with new function numbers */
 		if (config->pcie_port_coalesce)
-			pch_pcie_devicetree_update();
+			pch_pcie_devicetree_update(config);
 	}
 }
 

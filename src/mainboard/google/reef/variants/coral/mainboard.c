@@ -16,6 +16,13 @@
 #include <stdint.h>
 #include <ec/google/chromeec/ec.h>
 #include "baseboard/variants.h"
+#include <soc/cpu.h>
+#include <soc/intel/apollolake/chip.h>
+
+enum {
+	SKU_2_SANTA = 2,
+	SKU_3_SANTA = 3
+};
 
 uint8_t variant_board_sku(void)
 {
@@ -30,4 +37,23 @@ void variant_nhlt_oem_overrides(const char **oem_id,
 	*oem_id = "coral";
 	*oem_table_id = CONFIG_VARIANT_DIR;
 	*oem_revision = variant_board_sku();
+}
+
+void mainboard_devtree_update(struct device *dev)
+{
+       /* Override dev tree settings per board */
+	struct soc_intel_apollolake_config *cfg = dev->chip_info;
+	uint8_t sku_id;
+
+	sku_id = variant_board_sku();
+
+	switch (sku_id) {
+	case SKU_2_SANTA:
+	case SKU_3_SANTA:
+		cfg->usb2eye[1].Usb20PerPortPeTxiSet = 7;
+		cfg->usb2eye[1].Usb20PerPortTxiSet = 2;
+		break;
+	default:
+		break;
+	}
 }

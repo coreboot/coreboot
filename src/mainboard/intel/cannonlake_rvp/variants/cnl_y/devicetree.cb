@@ -4,6 +4,11 @@ chip soc/intel/cannonlake
 		device lapic 0 on end
 	end
 
+	# FSP configuration
+	register "SaGv" = "3"
+	register "FspSkipMpInit" = "1"
+	register "SmbusEnable" = "1"
+
 	device domain 0 on
 		device pci 00.0 on  end # Host Bridge
 		device pci 02.0 on  end # Integrated Graphics Device

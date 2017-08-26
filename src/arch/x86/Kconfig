@@ -249,3 +249,12 @@ config SKIP_MAX_REBOOT_CNT_CLEAR
 	  Set to allow the payload to control normal/fallback image recovery.
 	  Note that it is the responsibility of the payload to reset the
 	  normal boot bit to 1 after each successsful boot.
+
+config ACPI_CPU_STRING
+	string
+	default "\\_PR.CP%02d"
+	depends on HAVE_ACPI_TABLES
+	help
+	  Sets the ACPI name string in the processor scope as written by
+	  the acpigen function. Default is \_PR.CPxx. Note that you need
+	  the \ escape character in the string.

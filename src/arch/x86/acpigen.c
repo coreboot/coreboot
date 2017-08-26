@@ -338,7 +338,7 @@ void acpigen_write_scope(const char *name)
 void acpigen_write_processor(u8 cpuindex, u32 pblock_addr, u8 pblock_len)
 {
 /*
-	Processor (\_PR.CPUcpuindex, cpuindex, pblock_addr, pblock_len)
+	Processor (\_PR.CPcpuindex, cpuindex, pblock_addr, pblock_len)
 	{
 */
 	char pscope[16];
@@ -346,7 +346,7 @@ void acpigen_write_processor(u8 cpuindex, u32 pblock_addr, u8 pblock_len)
 	acpigen_write_len_f();
 
 	snprintf(pscope, sizeof(pscope),
-		 "\\_PR.CP%02d", (unsigned int) cpuindex);
+		 CONFIG_ACPI_CPU_STRING, (unsigned int) cpuindex);
 	acpigen_emit_namestring(pscope);
 	acpigen_emit_byte(cpuindex);
 	acpigen_emit_dword(pblock_addr);

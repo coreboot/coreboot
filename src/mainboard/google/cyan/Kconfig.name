@@ -2,6 +2,10 @@ config BOARD_GOOGLE_BANON
 	bool "Banon"
 	select BOARD_GOOGLE_BASEBOARD_CYAN
 
+config BOARD_GOOGLE_CELES
+	bool "Celes"
+	select BOARD_GOOGLE_BASEBOARD_CYAN
+
 config BOARD_GOOGLE_CYAN
 	bool "Cyan"
 	select BOARD_GOOGLE_BASEBOARD_CYAN

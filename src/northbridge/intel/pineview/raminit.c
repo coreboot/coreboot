@@ -396,7 +396,7 @@ static void sdram_detect_smallest_params(struct sysinfo *s)
 					mult[s->selected_timings.mem_clock]));
 	s->selected_timings.tRRD = MIN(15, DIV_ROUND_UP(maxtrrd,
 					mult[s->selected_timings.mem_clock]));
-	s->selected_timings.tRTP = MIN(15, DIV_ROUND_UP(maxtras,
+	s->selected_timings.tRTP = MIN(15, DIV_ROUND_UP(maxtrtp,
 					mult[s->selected_timings.mem_clock]));
 
 	PRINTK_DEBUG("Selected timings:\n");

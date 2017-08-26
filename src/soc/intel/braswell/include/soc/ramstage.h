@@ -101,6 +101,7 @@ void set_max_freq(void);
 void southcluster_enable_dev(device_t dev);
 void scc_enable_acpi_mode(device_t dev, int iosf_reg, int nvs_index);
 int SocStepping(void);
+void board_silicon_USB2_override(SILICON_INIT_UPD *params);
 
 extern struct pci_operations soc_pci_ops;
 

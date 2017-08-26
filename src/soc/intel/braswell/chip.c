@@ -81,6 +81,10 @@ static void enable_dev(device_t dev)
 	}
 }
 
+__attribute__((weak)) void board_silicon_USB2_override(SILICON_INIT_UPD *params)
+{
+}
+
 void soc_silicon_init_params(SILICON_INIT_UPD *params)
 {
 	device_t dev = dev_find_slot(0, PCI_DEVFN(LPC_DEV, LPC_FUNC));
@@ -170,6 +174,7 @@ void soc_silicon_init_params(SILICON_INIT_UPD *params)
 	params->I2C5Frequency = config->I2C5Frequency;
 	params->I2C6Frequency = config->I2C6Frequency;
 
+	board_silicon_USB2_override(params);
 }
 
 void soc_display_silicon_init_params(const SILICON_INIT_UPD *old,

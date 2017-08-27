@@ -92,7 +92,19 @@ chip northbridge/intel/pineview		# Northbridge
       end
       device pci 1f.1 off end
       device pci 1f.2 on end		# SATA
-      device pci 1f.3 on end		# SMbus
+      device pci 1f.3 on		# SMbus
+        chip drivers/i2c/ck505		# ICS9EPRS525
+          register "mask" = "{ 0xff, 0xff, 0xff, 0xff,
+                               0xff, 0xff, 0xff, 0xff,
+                               0xff, 0xff, 0xff, 0xff,
+                               0xff }"
+          register "regs" = "{ 0x61, 0xd9, 0xfe, 0xff,
+                               0xff, 0x00, 0x00, 0x01,
+                               0x03, 0x25, 0x83, 0x17,
+                               0x0d }"
+          device i2c 69 on end
+        end
+      end
       device pci 1f.4 off end
       device pci 1f.5 off end
       device pci 1f.6 off end

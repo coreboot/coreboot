@@ -2046,7 +2046,7 @@ static void sdram_mmap_regs(struct sysinfo *s)
 	reclaim = false;
 	tolud = MIN(0x1000 - mmiosize, tom);
 	if ((tom - tolud) > 0x40) {
-	//	reclaim = true;
+		reclaim = true;
 	}
 	if (reclaim) {
 		tolud = tolud & ~0x3f;

@@ -178,7 +178,10 @@ static u32 calculate_dram_base(void)
 
 	dev = dev_find_slot(0, PCI_DEVFN(SA_DEV_SLOT_ROOT, 0));
 	config = dev->chip_info;
-	prmrr_size = config->PrmrrSize;
+	if (IS_ENABLED(CONFIG_PLATFORM_USES_FSP1_1))
+		prmrr_size = 1*MiB;
+	else
+		prmrr_size = config->PrmrrSize;
 
 	if (prmrr_size > 0) {
 		/*

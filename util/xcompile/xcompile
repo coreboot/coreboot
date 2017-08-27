@@ -252,7 +252,7 @@ cat <<EOF
 # Clang
 CLANG_CC_${TARCH}:=${CLANG}
 CLANG_CFLAGS_${TARCH}:=${CFLAGS_CLANG}
-CLANG_CFLAGS_${TARCH}+=-no-integrated-as -Qunused-arguments -m${TWIDTH}
+CLANG_CFLAGS_${TARCH}+=-Qunused-arguments -m${TWIDTH}
 # tone down clang compiler warnings
 CLANG_CFLAGS_${TARCH}+=-Wno-unused-variable -Wno-unused-function -Wno-tautological-compare
 CLANG_CFLAGS_${TARCH}+=-Wno-shift-overflow -Wno-address-of-packed-member -Wno-initializer-overrides

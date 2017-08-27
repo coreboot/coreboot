@@ -39,6 +39,10 @@ Device(EC)
 				DKR2, 1,	/* Dock register 2 */
 		Offset (0x2a),
 				EVNT, 8,	/* write will trigger EC event */
+		Offset (0x2f),
+				    , 6,
+				FAND, 1,	/* Fan disengage */
+				FANA, 1,	/* Fan automatic mode enable */
 		Offset (0x30),
 				    , 6,
 				ALMT, 1,	/* Audio Mute + LED */

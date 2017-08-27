@@ -11,6 +11,8 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/x86/acpi/statdef.asl>
+
 Scope(\_TZ)
 {
 #if defined (EC_LENOVO_H8_ME_WORKAROUND)
@@ -56,20 +58,30 @@ External (\PPKG, MethodObj)
 			Return (\PPKG ())
 		}
 
-		Method (_CRT, 0, NotSerialized) {
+		/* Get critical temperature in degree celsius */
+		Method (GCRT, 0, NotSerialized) {
 			Store (\TCRT, Local0)
 			if (LGreater (Local0, 0)) {
-				Return (C2K (Local0))
+				Return (Local0)
 			}
-			Return (C2K (127))
+			Return (127)
+		}
+
+		/* Get passive temperature in degree celsius */
+		Method (GPSV, 0, NotSerialized) {
+			Store (\TPSV, Local0)
+			if (LGreater (Local0, 0)) {
+				Return (Local0)
+			}
+			Return (95)
+		}
+
+		Method (_CRT, 0, NotSerialized) {
+			Return (C2K (GCRT ()))
 		}
 
 		Method (_PSV, 0, NotSerialized) {
-			Store (\TPSV, Local0)
-			if (LGreater (Local0, 0)) {
-				Return (C2K(Local0))
-			}
-			Return (C2K (95))
+			Return (C2K (GPSV ()))
 		}
 
 		Method(_TMP) {
@@ -81,6 +93,51 @@ External (\PPKG, MethodObj)
 			Store (1, MEB1)
 #endif
 			Return (C2K(\_SB.PCI0.LPCB.EC.TMP0))
+		}
+
+		Method (_AC0) {
+			Store (GPSV (), Local0)
+
+			/* Active fan 10 degree below passive threshold */
+			Subtract (Local0, 10, Local0)
+
+			If (LEqual (\_SB.PCI0.LPCB.EC.FAND, 1)) {
+				/* Turn of 5 degree below trip point */
+				Subtract (Local0, 5, Local0)
+			}
+
+			Return (C2K (Local0))
+		}
+
+		Name (_AL0, Package () { FAN })
+
+		PowerResource (FPwR, 0, 0)
+		{
+			Method (_STA) {
+				If (LEqual (\_SB.PCI0.LPCB.EC.FAND, 0)) {
+					Return (Zero)
+				} Else {
+					Return (One)
+				}
+			}
+
+			Method (_ON) {
+				Store (One, \_SB.PCI0.LPCB.EC.FAND)
+				Store (Zero, \_SB.PCI0.LPCB.EC.FANA)
+				Notify (\_TZ.THM0, NOTIFY_TZ_TRIPPTCHG)
+			}
+
+			Method (_OFF) {
+				Store (Zero, \_SB.PCI0.LPCB.EC.FAND)
+				Store (One, \_SB.PCI0.LPCB.EC.FANA)
+				Notify (\_TZ.THM0, NOTIFY_TZ_TRIPPTCHG)
+			}
+		}
+
+		Device (FAN)
+		{
+			Name (_HID, EISAID ("PNP0C0B"))
+			Name (_PR0, Package () { FPwR })
 		}
 	}
 

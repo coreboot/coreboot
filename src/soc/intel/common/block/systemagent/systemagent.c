@@ -36,6 +36,13 @@ __attribute__((weak)) void soc_add_fixed_mmio_resources(struct device *dev,
 	/* no-op */
 }
 
+__attribute__((weak)) int soc_get_uncore_prmmr_base_and_mask(uint64_t *base,
+		uint64_t *mask)
+{
+	/* return failure for this dummy API */
+	return -1;
+}
+
 /*
  * Add all known fixed MMIO ranges that hang off the host bridge/memory
  * controller device.

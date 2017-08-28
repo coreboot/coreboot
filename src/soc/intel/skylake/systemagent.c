@@ -15,12 +15,14 @@
  * GNU General Public License for more details.
  */
 
+#include <cpu/x86/msr.h>
 #include <console/console.h>
 #include <delay.h>
 #include <device/device.h>
 #include <intelblocks/systemagent.h>
 #include <soc/cpu.h>
 #include <soc/iomap.h>
+#include <soc/msr.h>
 #include <soc/systemagent.h>
 
 /*
@@ -61,4 +63,15 @@ void soc_systemagent_init(struct device *dev)
 	/* Configure turbo power limits 1ms after reset complete bit */
 	mdelay(1);
 	set_power_limits(28);
+}
+
+int soc_get_uncore_prmmr_base_and_mask(uint64_t *prmrr_base,
+	uint64_t *prmrr_mask)
+{
+	msr_t msr;
+	msr = rdmsr(UNCORE_PRMRR_PHYS_BASE_MSR);
+	*prmrr_base = (uint64_t) msr.hi << 32 | msr.lo;
+	msr = rdmsr(UNCORE_PRMRR_PHYS_MASK_MSR);
+	*prmrr_mask = (uint64_t) msr.hi << 32 | msr.lo;
+	return 0;
 }

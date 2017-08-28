@@ -188,6 +188,13 @@ chip soc/intel/apollolake
 				register "has_power_resource" = "1"
 				device i2c 10 on end
 			end
+			chip drivers/i2c/generic
+				register "hid" = ""RAYD0001""
+				register "desc" = ""Raydium Touchscreen""
+				register "irq" = "ACPI_IRQ_EDGE_LOW(GPIO_21_IRQ)"
+				register "probed" = "1"
+				device i2c 39 on end
+			end
 		end	# - I2C 3
 		device pci 17.0 on
 			chip drivers/i2c/generic

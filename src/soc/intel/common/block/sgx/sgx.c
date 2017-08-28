@@ -21,6 +21,7 @@
 #include <intelblocks/mp_init.h>
 #include <intelblocks/msr.h>
 #include <intelblocks/sgx.h>
+#include <intelblocks/systemagent.h>
 #include <soc/cpu.h>
 #include <soc/pci_devs.h>
 #include <string.h>
@@ -62,33 +63,50 @@ static int is_sgx_supported(void)
 
 void prmrr_core_configure(void)
 {
-	msr_t prmrr_base;
-	msr_t prmrr_mask;
+	union {
+		uint64_t data64;
+		struct {
+			uint32_t lo;
+			uint32_t hi;
+		} data32;
+	} prmrr_base, prmrr_mask;
 	msr_t msr;
 
 	if (!soc_sgx_enabled() || !is_sgx_supported())
 		return;
-
-	/* PRMRR base and mask are read from the UNCORE PRMRR MSRs
-	 * that are already set in FSP-M. */
-	prmrr_base = rdmsr(UNCORE_PRMRR_PHYS_BASE_MSR);
-	prmrr_mask = rdmsr(UNCORE_PRMRR_PHYS_MASK_MSR);
-	if (!prmrr_base.lo) {
-		printk(BIOS_ERR, "SGX Error: Uncore PRMRR is not set!\n");
-		return;
-	}
 
 	msr = rdmsr(PRMRR_PHYS_MASK_MSR);
 	/* If it is locked don't attempt to write PRMRR MSRs. */
 	if (msr.lo & PRMRR_PHYS_MASK_LOCK)
 		return;
 
-	/* Program core PRMRR MSRs */
-	prmrr_base.lo |= MTRR_TYPE_WRBACK; /* cache writeback mem attrib */
-	wrmsr(PRMRR_PHYS_BASE_MSR, prmrr_base);
-	prmrr_mask.lo &= ~PRMRR_PHYS_MASK_VALID; /* Do not set the valid bit */
-	prmrr_mask.lo |= PRMRR_PHYS_MASK_LOCK; /* Lock it */
-	wrmsr(PRMRR_PHYS_MASK_MSR, prmrr_mask);
+	/* PRMRR base and mask are read from the UNCORE PRMRR MSRs
+	 * that are already set in FSP-M. */
+	if (soc_get_uncore_prmmr_base_and_mask(&prmrr_base.data64,
+						&prmrr_mask.data64) < 0) {
+		printk(BIOS_ERR, "SGX: Failed to get PRMRR base and mask\n");
+		return;
+	}
+
+	if (!prmrr_base.data32.lo) {
+		printk(BIOS_ERR, "SGX Error: Uncore PRMRR is not set!\n");
+		return;
+	}
+
+	printk(BIOS_INFO, "SGX: prmrr_base = 0x%llx", prmrr_base.data64);
+	printk(BIOS_INFO, "SGX: prmrr_mask = 0x%llx", prmrr_mask.data64);
+
+	/* Program core PRMRR MSRs.
+	 * - Set cache writeback mem attrib in PRMRR base MSR
+	 * - Clear the valid bit in PRMRR mask MSR
+	 * - Lock PRMRR MASK MSR */
+	prmrr_base.data32.lo |= MTRR_TYPE_WRBACK;
+	wrmsr(PRMRR_PHYS_BASE_MSR, (msr_t) {.lo = prmrr_base.data32.lo,
+					.hi = prmrr_base.data32.hi});
+	prmrr_mask.data32.lo &= ~PRMRR_PHYS_MASK_VALID;
+	prmrr_mask.data32.lo |= PRMRR_PHYS_MASK_LOCK;
+	wrmsr(PRMRR_PHYS_MASK_MSR, (msr_t) {.lo = prmrr_mask.data32.lo,
+					.hi = prmrr_mask.data32.hi});
 }
 
 static int is_prmrr_set(void)

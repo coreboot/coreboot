@@ -324,29 +324,6 @@ static void set_energy_perf_bias(u8 policy)
 	printk(BIOS_DEBUG, "cpu: energy policy set to %u\n", policy);
 }
 
-static void configure_mca(void)
-{
-	msr_t msr;
-	int i;
-	int num_banks;
-
-	msr = rdmsr(IA32_MCG_CAP);
-	num_banks = msr.lo & 0xff;
-	msr.lo = msr.hi = 0;
-	/*
-	 * TODO(adurbin): This should only be done on a cold boot. Also, some
-	 * of these banks are core vs package scope. For now every CPU clears
-	 * every bank.
-	 */
-	for (i = 0; i < num_banks; i++) {
-		/* Clear the machine check status */
-		wrmsr(IA32_MC0_STATUS + (i * 4), msr);
-		/* Initialize machine checks */
-		wrmsr(IA32_MC0_CTL + i * 4,
-			(msr_t) {.lo = 0xffffffff, .hi = 0xffffffff});
-	}
-}
-
 static void configure_c_states(void)
 {
 	msr_t msr;
@@ -410,7 +387,10 @@ static void enable_pm_timer_emulation(void)
 void soc_core_init(device_t cpu)
 {
 	/* Clear out pending MCEs */
-	configure_mca();
+	/* TODO(adurbin): This should only be done on a cold boot. Also, some
+	 * of these banks are core vs package scope. For now every CPU clears
+	 * every bank. */
+	mca_configure();
 
 	/* Enable the local CPU apics */
 	enable_lapic_tpr();

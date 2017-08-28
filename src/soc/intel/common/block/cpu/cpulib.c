@@ -296,3 +296,21 @@ uint32_t cpu_get_max_turbo_ratio(void)
 	msr = rdmsr(MSR_TURBO_RATIO_LIMIT);
 	return msr.lo & 0xff;
 }
+
+void mca_configure(void)
+{
+	msr_t msr;
+	int i;
+	int num_banks;
+
+	msr = rdmsr(IA32_MCG_CAP);
+	num_banks = msr.lo & 0xff;
+	msr.lo = msr.hi = 0;
+	for (i = 0; i < num_banks; i++) {
+		/* Clear the machine check status */
+		wrmsr(IA32_MC0_STATUS + (i * 4), msr);
+		/* Initialize machine checks */
+		wrmsr(IA32_MC0_CTL + i * 4,
+			(msr_t) {.lo = 0xffffffff, .hi = 0xffffffff});
+	}
+}

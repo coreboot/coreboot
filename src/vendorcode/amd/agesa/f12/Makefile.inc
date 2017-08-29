@@ -30,52 +30,13 @@
 # AGESA V5 Files
 AGESA_ROOT = src/vendorcode/amd/agesa/f12
 
+AGESA_AUTOINCLUDES := $(shell find $(AGESA_ROOT)/Proc -type d -exec echo -n "-I"{}" " \;)
+
 AGESA_INC  = -I$(src)/vendorcode/amd/include -I$(src)/mainboard/$(MAINBOARDDIR)
 AGESA_INC += -I$(AGESA_ROOT)
 AGESA_INC += -I$(AGESA_ROOT)/../common
-AGESA_INC += -I$(AGESA_ROOT)/Proc/CPU
-AGESA_INC += -I$(AGESA_ROOT)/Proc/CPU/Family
 AGESA_INC += -I$(AGESA_ROOT)/Include
-AGESA_INC += -I$(AGESA_ROOT)/Proc/IDS
-AGESA_INC += -I$(AGESA_ROOT)/Proc/CPU/Feature
-AGESA_INC += -I$(AGESA_ROOT)/Proc/Common
-AGESA_INC += -I$(AGESA_ROOT)/Proc/Mem
-AGESA_INC += -I$(AGESA_ROOT)/Proc/CPU/Family/0x12
-AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Nb
-AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Common
-AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Modules/GnbCommonLib
-AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB
-AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Gfx
-AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Gfx/Family
-AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Modules/GnbGfxConfig
-AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Modules/GnbGfxInitLibV1
-AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Modules/GnbSbLib
-AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Modules/GnbPcieConfig
-AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Modules/GnbNbInitLibV1
-AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Nb/Family/LN
-AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Modules/GnbCableSafe
-AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Modules/GnbPcieInitLibV1
-AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Modules/GnbPcieAlibV1
-AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Modules/GnbPcieTrainingV1
-AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Nb/Family
-AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Nb/Feature
-AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/PCIe/Family
-AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/PCIe
-AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/PCIe/Family/LN
-AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/PCIe/Feature
-AGESA_INC += -I$(AGESA_ROOT)/Proc/HT
-AGESA_INC += -I$(AGESA_ROOT)/Proc/HT/Fam12
-AGESA_INC += -I$(AGESA_ROOT)/Proc/Mem/Feat/CHINTLV
-AGESA_INC += -I$(AGESA_ROOT)/Proc/Mem/Feat/CSINTLV
-AGESA_INC += -I$(AGESA_ROOT)/Proc/Mem/Feat/ECC
-AGESA_INC += -I$(AGESA_ROOT)/Proc/Mem/Feat/IDENDIMM
-AGESA_INC += -I$(AGESA_ROOT)/Proc/Mem/Feat/INTLVRN
-AGESA_INC += -I$(AGESA_ROOT)/Proc/Mem/Feat/LVDDR3
-AGESA_INC += -I$(AGESA_ROOT)/Proc/Mem/Feat/ODTHERMAL
-AGESA_INC += -I$(AGESA_ROOT)/Proc/Mem/Main
-AGESA_INC += -I$(AGESA_ROOT)/Proc/Mem/NB/LN
-AGESA_INC += -I$(AGESA_ROOT)/Proc/Mem/Tech
-AGESA_INC += -I$(AGESA_ROOT)/Proc/Mem/Tech/DDR3
+AGESA_INC += $(AGESA_AUTOINCLUDES)
 
 CFLAGS_x86_32 += -march=k8-sse3 -mtune=k8-sse3 -fno-zero-initialized-in-bss -fno-strict-aliasing
 CFLAGS_x86_64 += -march=k8-sse3 -mtune=k8-sse3 -fno-zero-initialized-in-bss -fno-strict-aliasing

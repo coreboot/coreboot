@@ -30,39 +30,17 @@
 # AGESA V5 Files
 AGESA_ROOT = src/vendorcode/amd/agesa/f14
 
+AGESA_AUTOINCLUDES := $(shell find $(AGESA_ROOT)/Proc -type d -exec echo -n "-I"{}" " \;)
+
 AGESA_INC  = -I$(src)/vendorcode/amd/include -I$(src)/mainboard/$(MAINBOARDDIR)
 AGESA_INC += -I$(AGESA_ROOT)
 AGESA_INC += -I$(AGESA_ROOT)/../common
 AGESA_INC += -I$(AGESA_ROOT)/Include
-AGESA_INC += -I$(AGESA_ROOT)/Legacy
-AGESA_INC += -I$(AGESA_ROOT)/Proc/Common
-AGESA_INC += -I$(AGESA_ROOT)/Proc/CPU
-AGESA_INC += -I$(AGESA_ROOT)/Proc/CPU/Family
-AGESA_INC += -I$(AGESA_ROOT)/Proc/CPU/Family/0x14
-AGESA_INC += -I$(AGESA_ROOT)/Proc/CPU/Family/0x14/ON
-AGESA_INC += -I$(AGESA_ROOT)/Proc/CPU/Feature 
-AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB
-AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Common
-AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Gfx
-AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Gfx/Family
-AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Modules/GnbCommonLib
-AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Nb
-AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Nb/Family
-AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Nb/Family/0x14
-AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Nb/Feature
-AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/PCIe
-AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/PCIe/Family
-AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/PCIe/Family/0x14
-AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/PCIe/Feature
-AGESA_INC += -I$(AGESA_ROOT)/Proc/HT
-AGESA_INC += -I$(AGESA_ROOT)/Proc/IDS
-AGESA_INC += -I$(AGESA_ROOT)/Proc/Mem
-AGESA_INC += -I$(AGESA_ROOT)/Proc/Mem/NB/ON
+AGESA_INC += $(AGESA_AUTOINCLUDES)
 
 CFLAGS_x86_32 += -march=k8-sse3 -mtune=k8-sse3 -fno-zero-initialized-in-bss -fno-strict-aliasing
 CFLAGS_x86_64 += -march=k8-sse3 -mtune=k8-sse3 -fno-zero-initialized-in-bss -fno-strict-aliasing
 
-export AGESA_ROOT := $(AGESA_ROOT)
 export AGESA_INC  := $(AGESA_INC)
 CPPFLAGS_x86_32 += $(AGESA_INC)
 CPPFLAGS_x86_64 += $(AGESA_INC)

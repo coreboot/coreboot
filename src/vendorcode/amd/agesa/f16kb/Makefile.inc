@@ -30,50 +30,13 @@
 # AGESA V5 Files
 AGESA_ROOT = src/vendorcode/amd/agesa/f16kb
 
+AGESA_AUTOINCLUDES := $(shell find $(AGESA_ROOT)/Proc -type d -exec echo -n "-I"{}" " \;)
+
 AGESA_INC  = -I$(src)/vendorcode/amd/include -I$(src)/mainboard/$(MAINBOARDDIR)
 AGESA_INC += -I$(AGESA_ROOT)
 AGESA_INC += -I$(AGESA_ROOT)/../common
 AGESA_INC += -I$(AGESA_ROOT)/Include
-AGESA_INC += -I$(AGESA_ROOT)/Legacy
-AGESA_INC += -I$(AGESA_ROOT)/Proc/Common
-AGESA_INC += -I$(AGESA_ROOT)/Proc/HT
-AGESA_INC += -I$(AGESA_ROOT)/Proc/CPU
-AGESA_INC += -I$(AGESA_ROOT)/Proc/CPU/Feature
-AGESA_INC += -I$(AGESA_ROOT)/Proc/CPU/Family
-AGESA_INC += -I$(AGESA_ROOT)/Proc/CPU/Family/0x16
-AGESA_INC += -I$(AGESA_ROOT)/Proc/CPU/Family/0x16/KB
-AGESA_INC += -I$(AGESA_ROOT)/Proc/Mem
-AGESA_INC += -I$(AGESA_ROOT)/Proc/Mem/NB/KB
-AGESA_INC += -I$(AGESA_ROOT)/Proc/IDS
-AGESA_INC += -I$(AGESA_ROOT)/Proc/IDS/Family
-AGESA_INC += -I$(AGESA_ROOT)/Proc/IDS/Family/0x16
-AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB
-AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Common
-AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Modules/GnbGfxConfig
-AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Modules/GnbPcieConfig
-AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Modules/GnbGfxInitLibV1
-AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Modules/GnbPcieInitLibV1
-AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Modules/GnbNbInitLibV1
-AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Modules/GnbInitKB
-AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Modules/GnbSbLib
-AGESA_INC += -I$(AGESA_ROOT)/Proc/IDS/Family/0x16/KB
-AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Modules/GnbCommonLib
-AGESA_INC += -I$(AGESA_ROOT)/Proc/Mem/Main
-AGESA_INC += -I$(AGESA_ROOT)/Proc/IDS/Library
-AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Modules/GnbNbInitLibV4
-AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Modules/GnbTable
-AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Modules/GnbPcieInitLibV4
-AGESA_INC += -I$(AGESA_ROOT)/Proc/Fch
-AGESA_INC += -I$(AGESA_ROOT)/Proc/Fch/Common
-AGESA_INC += -I$(AGESA_ROOT)/Proc/IDS/Debug
-AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Modules/GnbPcieAspm
-AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Modules/GnbSmuLibV7
-AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Modules/GnbNbInitLibV5
-AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Modules/GnbPcieTrainingV2
-AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Modules/GnbPcieInitLibV5
-AGESA_INC += -I$(AGESA_ROOT)/Proc/Mem/Feat/CRAT
-AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Modules/GnbGfxIntTableV3
-AGESA_INC += -I$(AGESA_ROOT)/Proc/Mem/Feat/RDWR2DTRAINING
+AGESA_INC += $(AGESA_AUTOINCLUDES)
 
 AGESA_INC += -I$(src)/southbridge/amd/agesa/hudson
 
@@ -81,7 +44,6 @@ CFLAGS_x86_32 += -march=k8-sse3 -mtune=k8-sse3 -fno-zero-initialized-in-bss -fno
 CFLAGS_x86_64 += -march=k8-sse3 -mtune=k8-sse3 -fno-zero-initialized-in-bss -fno-strict-aliasing
 
 
-export AGESA_ROOT := $(AGESA_ROOT)
 export AGESA_INC  := $(AGESA_INC)
 CPPFLAGS_x86_32 += $(AGESA_INC)
 CPPFLAGS_x86_64 += $(AGESA_INC)

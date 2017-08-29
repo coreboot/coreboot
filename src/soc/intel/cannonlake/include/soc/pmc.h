@@ -105,6 +105,7 @@
 #define   DSX_EN_WAKE_PIN		(1 << 2)
 #define   DSX_EN_AC_PRESENT_PIN		(1 << 1)
 #define   DSX_EN_LAN_WAKE_PIN		(1 << 0)
+#define DSX_CFG_MASK			(0x1f << 0)
 
 #define PMSYNC_TPR_CFG			0x18C4
 #define   PCH2CPU_TPR_CFG_LOCK		(1 << 31)

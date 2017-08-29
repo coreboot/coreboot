@@ -20,6 +20,30 @@
 #include <stdint.h>
 #include <spi-generic.h>
 
+enum acpi_dp_type {
+	ACPI_DP_TYPE_UNKNOWN,
+	ACPI_DP_TYPE_INTEGER,
+	ACPI_DP_TYPE_STRING,
+	ACPI_DP_TYPE_REFERENCE,
+	ACPI_DP_TYPE_TABLE,
+	ACPI_DP_TYPE_ARRAY,
+	ACPI_DP_TYPE_CHILD,
+};
+
+struct acpi_dp {
+	enum acpi_dp_type type;
+	const char *name;
+	struct acpi_dp *next;
+	union {
+		struct acpi_dp *child;
+		struct acpi_dp *array;
+	};
+	union {
+		uint64_t integer;
+		const char *string;
+	};
+};
+
 #define ACPI_DESCRIPTOR_LARGE		(1 << 7)
 #define ACPI_DESCRIPTOR_INTERRUPT	(ACPI_DESCRIPTOR_LARGE | 9)
 #define ACPI_DESCRIPTOR_GPIO		(ACPI_DESCRIPTOR_LARGE | 12)
@@ -337,8 +361,6 @@ void acpi_device_add_power_res(
  * }
  */
 
-struct acpi_dp;
-
 /* Start a new Device Property table with provided ACPI reference */
 struct acpi_dp *acpi_dp_new_table(const char *ref);
 
@@ -369,6 +391,11 @@ struct acpi_dp *acpi_dp_add_gpio(struct acpi_dp *dp, const char *name,
 /* Add a child table of Device Properties */
 struct acpi_dp *acpi_dp_add_child(struct acpi_dp *dp, const char *name,
 				  struct acpi_dp *child);
+
+/* Add a list of Device Properties, returns the number of properties added */
+size_t acpi_dp_add_property_list(struct acpi_dp *dp,
+				 const struct acpi_dp *property_list,
+				 size_t property_count);
 
 /* Write Device Property hierarchy and clean up resources */
 void acpi_dp_write(struct acpi_dp *table);

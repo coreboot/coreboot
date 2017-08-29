@@ -74,11 +74,15 @@ void enable_pam_region(void);
 /* API to enable Power Aware Interrupt Routing through MCHBAR */
 void enable_power_aware_intr(void);
 /* API to get TOLUD base address */
-uint32_t sa_get_tolud_base(void);
+uintptr_t sa_get_tolud_base(void);
 /* API to get DSM size */
 size_t sa_get_dsm_size(void);
 /* API to get GSM size */
 size_t sa_get_gsm_size(void);
+/* API to get TSEG base address */
+uintptr_t sa_get_tseg_base(void);
+/* API to get TSEG size */
+size_t sa_get_tseg_size(void);
 /* API to get DPR size */
 size_t sa_get_dpr_size(void);
 /*

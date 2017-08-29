@@ -133,7 +133,7 @@ void enable_bios_reset_cpl(void)
 	MCHBAR8(BIOS_RESET_CPL) = bios_reset_cpl;
 }
 
-uint32_t sa_get_tolud_base(void)
+uintptr_t sa_get_tolud_base(void)
 {
 	/* All regions concerned for have 1 MiB alignment. */
 	return ALIGN_DOWN(pci_read_config32(SA_DEV_ROOT, TOLUD), 1*MiB);
@@ -147,6 +147,12 @@ static uint16_t sa_get_ggc_reg(void)
 size_t sa_get_dsm_size(void)
 {
 	return (((sa_get_ggc_reg() & G_GMS_MASK) >> G_GMS_OFFSET) * 32*MiB);
+}
+
+static uintptr_t sa_get_gsm_base(void)
+{
+	/* All regions concerned for have 1 MiB alignment. */
+	return ALIGN_DOWN(pci_read_config32(SA_DEV_ROOT, BGSM), 1*MiB);
 }
 
 size_t sa_get_gsm_size(void)
@@ -163,6 +169,17 @@ size_t sa_get_gsm_size(void)
 		return 1*MiB << ggms;
 	else
 		return 0;
+}
+
+uintptr_t sa_get_tseg_base(void)
+{
+	/* All regions concerned for have 1 MiB alignment. */
+	return ALIGN_DOWN(pci_read_config32(SA_DEV_ROOT, TSEG), 1*MiB);
+}
+
+size_t sa_get_tseg_size(void)
+{
+	return sa_get_gsm_base() - sa_get_tseg_base();
 }
 
 /*

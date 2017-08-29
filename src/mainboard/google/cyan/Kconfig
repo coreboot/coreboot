@@ -49,6 +49,7 @@ config VARIANT_DIR
 	default "kefka" if BOARD_GOOGLE_KEFKA
 	default "reks" if BOARD_GOOGLE_REKS
 	default "relm" if BOARD_GOOGLE_RELM
+	default "setzer" if BOARD_GOOGLE_SETZER
 	default "terra" if BOARD_GOOGLE_TERRA
 
 config MAINBOARD_PART_NUMBER
@@ -60,6 +61,7 @@ config MAINBOARD_PART_NUMBER
 	default "Kefka" if BOARD_GOOGLE_KEFKA
 	default "Reks" if BOARD_GOOGLE_REKS
 	default "Relm" if BOARD_GOOGLE_RELM
+	default "Setzer" if BOARD_GOOGLE_SETZER
 	default "Terra" if BOARD_GOOGLE_TERRA
 
 config MAINBOARD_VENDOR
@@ -75,6 +77,7 @@ config DEVICETREE
 	default "variants/kefka/devicetree.cb" if BOARD_GOOGLE_KEFKA
 	default "variants/reks/devicetree.cb" if BOARD_GOOGLE_REKS
 	default "variants/relm/devicetree.cb" if BOARD_GOOGLE_RELM
+	default "variants/setzer/devicetree.cb" if BOARD_GOOGLE_SETZER
 	default "variants/terra/devicetree.cb" if BOARD_GOOGLE_TERRA
 
 config VGA_BIOS_FILE
@@ -104,6 +107,7 @@ config GBB_HWID
 	default "KEFKA TEST A-A 5397" if BOARD_GOOGLE_KEFKA
 	default "REKS TEST A-A 3004" if BOARD_GOOGLE_REKS
 	default "RELM TEST A-A 2323" if BOARD_GOOGLE_RELM
+	default "SETZER TEST A-A 8721" if BOARD_GOOGLE_SETZER
 	default "TERRA TEST A-A 1650" if BOARD_GOOGLE_TERRA
 
 endif # BOARD_GOOGLE_BASEBOARD_CYAN

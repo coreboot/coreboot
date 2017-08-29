@@ -186,6 +186,14 @@ struct soc_intel_cannonlake_config {
 
 	/* Enable/Disable EIST. 1b:Enabled, 0b:Disabled */
 	uint8_t eist_enable;
+	/* Enable C6 DRAM */
+	uint8_t enable_c6dram;
+	/*
+	 * PRMRR size setting with below options
+	 * 0x00100000 - 1MiB
+	 * 0x02000000 - 32MiB and beyond
+	 */
+	uint32_t PrmrrSize;
 };
 
 typedef struct soc_intel_cannonlake_config config_t;

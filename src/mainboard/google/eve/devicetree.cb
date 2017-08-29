@@ -300,6 +300,11 @@ chip soc/intel/skylake
 				register "hid" = ""10EC5514""
 				register "name" = ""RT54""
 				register "desc" = ""Realtek RT5514""
+				register "property_count" = "1"
+				# Set the DMIC initial delay to 16ms to avoid pop noise
+				register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
+				register "property_list[0].name" = ""realtek,dmic-init-delay""
+				register "property_list[0].integer" = "16"
 				device i2c 57 on end
 			end
 		end # I2C #4

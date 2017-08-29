@@ -46,6 +46,7 @@ config VARIANT_DIR
 	default "celes" if BOARD_GOOGLE_CELES
 	default "cyan" if BOARD_GOOGLE_CYAN
 	default "edgar" if BOARD_GOOGLE_EDGAR
+	default "kefka" if BOARD_GOOGLE_KEFKA
 	default "reks" if BOARD_GOOGLE_REKS
 	default "terra" if BOARD_GOOGLE_TERRA
 
@@ -55,6 +56,7 @@ config MAINBOARD_PART_NUMBER
 	default "Celes" if BOARD_GOOGLE_CELES
 	default "Cyan" if BOARD_GOOGLE_CYAN
 	default "Edgar" if BOARD_GOOGLE_EDGAR
+	default "Kefka" if BOARD_GOOGLE_KEFKA
 	default "Reks" if BOARD_GOOGLE_REKS
 	default "Terra" if BOARD_GOOGLE_TERRA
 
@@ -68,6 +70,7 @@ config DEVICETREE
 	default "variants/celes/devicetree.cb" if BOARD_GOOGLE_CELES
 	default "variants/cyan/devicetree.cb" if BOARD_GOOGLE_CYAN
 	default "variants/edgar/devicetree.cb" if BOARD_GOOGLE_EDGAR
+	default "variants/kefka/devicetree.cb" if BOARD_GOOGLE_KEFKA
 	default "variants/reks/devicetree.cb" if BOARD_GOOGLE_REKS
 	default "variants/terra/devicetree.cb" if BOARD_GOOGLE_TERRA
 
@@ -95,6 +98,7 @@ config GBB_HWID
 	default "CELES TEST A-A 5441" if BOARD_GOOGLE_CELES
 	default "CYAN TEST A-A 1829" if BOARD_GOOGLE_CYAN
 	default "EDGAR TEST A-A 2507" if BOARD_GOOGLE_EDGAR
+	default "KEFKA TEST A-A 5397" if BOARD_GOOGLE_KEFKA
 	default "REKS TEST A-A 3004" if BOARD_GOOGLE_REKS
 	default "TERRA TEST A-A 1650" if BOARD_GOOGLE_TERRA
 

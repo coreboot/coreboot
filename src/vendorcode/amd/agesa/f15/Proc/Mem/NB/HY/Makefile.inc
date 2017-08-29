@@ -1,0 +1,11 @@
+libagesa-y += mnParTrainHy.c
+libagesa-y += mnS3hy.c
+libagesa-y += mndcthy.c
+libagesa-y += mnflowhy.c
+libagesa-y += mnhy.c
+libagesa-y += mnidendimmhy.c
+libagesa-y += mnmcthy.c
+libagesa-y += mnothy.c
+libagesa-y += mnphyhy.c
+libagesa-y += mnprotohy.c
+libagesa-y += mnreghy.c

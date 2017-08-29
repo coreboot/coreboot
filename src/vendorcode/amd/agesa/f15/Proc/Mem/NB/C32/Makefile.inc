@@ -1,0 +1,11 @@
+libagesa-y += mnParTrainc32.c
+libagesa-y += mnS3c32.c
+libagesa-y += mnc32.c
+libagesa-y += mndctc32.c
+libagesa-y += mnflowc32.c
+libagesa-y += mnidendimmc32.c
+libagesa-y += mnmctc32.c
+libagesa-y += mnotc32.c
+libagesa-y += mnphyc32.c
+libagesa-y += mnprotoc32.c
+libagesa-y += mnregc32.c

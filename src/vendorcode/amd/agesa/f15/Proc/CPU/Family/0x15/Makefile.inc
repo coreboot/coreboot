@@ -1,0 +1,11 @@
+libagesa-y += F15PstateHpcMode.c
+libagesa-y += cpuCommonF15Utilities.c
+libagesa-y += cpuF15Apm.c
+libagesa-y += cpuF15BrandId.c
+libagesa-y += cpuF15CacheDefaults.c
+libagesa-y += cpuF15Dmi.c
+libagesa-y += cpuF15MsrTables.c
+libagesa-y += cpuF15PciTables.c
+libagesa-y += cpuF15PowerCheck.c
+libagesa-y += cpuF15Utilities.c
+libagesa-y += cpuF15WheaInitDataTables.c

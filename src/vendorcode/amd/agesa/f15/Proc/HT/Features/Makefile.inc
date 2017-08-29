@@ -1,0 +1,9 @@
+libagesa-y += htFeatDynamicDiscovery.c
+libagesa-y += htFeatGanging.c
+libagesa-y += htFeatNoncoherent.c
+libagesa-y += htFeatOptimization.c
+libagesa-y += htFeatRouting.c
+libagesa-y += htFeatSets.c
+libagesa-y += htFeatSublinks.c
+libagesa-y += htFeatTrafficDistribution.c
+libagesa-y += htIds.c

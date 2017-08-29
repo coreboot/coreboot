@@ -1,0 +1,10 @@
+libagesa-y += F10MicrocodePatch010000c5.c
+libagesa-y += F10MicrocodePatch010000c5.c
+libagesa-y += F10MicrocodePatch010000d9.c
+libagesa-y += F10MicrocodePatch010000d9.c
+libagesa-y += F10RevDL3Features.c
+libagesa-y += F10RevDL3Features.c
+libagesa-y += F10RevDMsgBasedC1e.c
+libagesa-y += F10RevDMsgBasedC1e.c
+libagesa-y += F10RevDUtilities.c
+libagesa-y += F10RevDUtilities.c

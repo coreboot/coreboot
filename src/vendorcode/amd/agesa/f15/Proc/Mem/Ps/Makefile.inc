@@ -1,0 +1,13 @@
+libagesa-y += mp.c
+libagesa-y += mplribt.c
+libagesa-y += mplrnlr.c
+libagesa-y += mplrnpr.c
+libagesa-y += mpmaxfreq.c
+libagesa-y += mpmr0.c
+libagesa-y += mpodtpat.c
+libagesa-y += mprc10opspd.c
+libagesa-y += mprc2ibt.c
+libagesa-y += mprtt.c
+libagesa-y += mps2d.c
+libagesa-y += mpsao.c
+libagesa-y += mpseeds.c

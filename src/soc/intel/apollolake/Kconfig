@@ -7,6 +7,8 @@ config SOC_INTEL_GLK
 	bool
 	default n
 	select SOC_INTEL_APOLLOLAKE
+	select SOC_INTEL_COMMON_BLOCK_CPU_MPINIT
+	select SOC_INTEL_COMMON_BLOCK_SGX
 	help
 	  Intel GLK support
 

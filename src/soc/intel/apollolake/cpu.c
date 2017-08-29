@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2015-2016 Intel Corp.
+ * Copyright (C) 2015-2017 Intel Corp.
  * (Written by Andrey Petrov <andrey.petrov@intel.com> for Intel Corp.)
  * (Written by Alexandru Gagniuc <alexandrux.gagniuc@intel.com> for Intel Corp.)
  *
@@ -16,7 +16,9 @@
  * GNU General Public License for more details.
  */
 
+#include <assert.h>
 #include <console/console.h>
+#include "chip.h"
 #include <cpu/cpu.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/mp.h>
@@ -32,11 +34,13 @@
 #include <intelblocks/fast_spi.h>
 #include <intelblocks/mp_init.h>
 #include <intelblocks/msr.h>
+#include <intelblocks/sgx.h>
 #include <intelblocks/smm.h>
 #include <reg_script.h>
 #include <romstage_handoff.h>
 #include <soc/cpu.h>
 #include <soc/iomap.h>
+#include <soc/pci_devs.h>
 #include <soc/pm.h>
 
 static const struct reg_script core_msr_script[] = {
@@ -62,6 +66,12 @@ static const struct reg_script core_msr_script[] = {
 
 void soc_core_init(device_t cpu)
 {
+	/* Clear out pending MCEs */
+	/* TODO(adurbin): This should only be done on a cold boot. Also, some
+	 * of these banks are core vs package scope. For now every CPU clears
+	 * every bank. */
+	mca_configure();
+
 	/* Set core MSRs */
 	reg_script_run(core_msr_script);
 	/*
@@ -70,6 +80,10 @@ void soc_core_init(device_t cpu)
 	 * implemented in microcode.
 	*/
 	enable_pm_timer_emulation();
+
+	/* Configure Core PRMRR for SGX. */
+	if (IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_SGX))
+		prmrr_core_configure();
 }
 
 #if !IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_CPU_MPINIT)
@@ -213,6 +227,15 @@ static void relocation_handler(int cpu, uintptr_t curr_smbase,
  * the microcode on all cores before releasing them from reset. That means that
  * the BSP and all APs will come up with the same microcode revision.
  */
+
+static void post_mp_init(void)
+{
+	smm_southbridge_enable();
+
+	if (IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_SGX))
+		mp_run_on_all_cpus(sgx_configure, 2000);
+}
+
 static const struct mp_ops mp_ops = {
 	.pre_mp_init = pre_mp_init,
 	.get_cpu_count = get_cpu_count,
@@ -220,7 +243,7 @@ static const struct mp_ops mp_ops = {
 	.get_microcode_info = get_microcode_info,
 	.pre_mp_smm_init = smm_southbridge_clear_state,
 	.relocation_handler = relocation_handler,
-	.post_mp_init = smm_southbridge_enable,
+	.post_mp_init = post_mp_init,
 };
 
 void soc_init_cpus(struct bus *cpu_bus)
@@ -240,4 +263,25 @@ void apollolake_init_cpus(struct device *dev)
 	if (IS_ENABLED(CONFIG_BOOT_DEVICE_MEMORY_MAPPED) &&
 		IS_ENABLED(CONFIG_BOOT_DEVICE_SPI_FLASH))
 		fast_spi_cache_bios_region();
+}
+
+void cpu_lock_sgx_memory(void)
+{
+	/* Do nothing because MCHECK while loading microcode and enabling
+	 * IA untrusted mode takes care of necessary locking */
+}
+
+int soc_fill_sgx_param(struct sgx_param *sgx_param)
+{
+	device_t dev = SA_DEV_ROOT;
+	assert(dev != NULL);
+	config_t *conf = dev->chip_info;
+
+	if (!conf) {
+		printk(BIOS_ERR, "Failed to get chip_info for SGX param\n");
+		return -1;
+	}
+
+	sgx_param->enable = conf->sgx_enable;
+	return 0;
 }

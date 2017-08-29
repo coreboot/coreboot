@@ -35,12 +35,6 @@ config CPU_AMD_SOCKET_C32
 	help
 	  AMD C32 Socket
 
-config CPU_AMD_SOCKET_AM3R2
-	bool
-	default n
-	help
-	  AMD AM3r2 Socket
-
 config CBB
 	hex
 	default 0x0

@@ -1,0 +1,1 @@
+libagesa-y += GnbLibFeatures.c

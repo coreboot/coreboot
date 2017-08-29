@@ -58,9 +58,6 @@ AGESA_INC += -I$(AGESA_ROOT)/Proc/HT
 AGESA_INC += -I$(AGESA_ROOT)/Proc/IDS
 AGESA_INC += -I$(AGESA_ROOT)/Proc/Mem
 AGESA_INC += -I$(AGESA_ROOT)/Proc/Mem/NB/ON
-AGESA_INC += -I$(AGESA_ROOT)/Proc/Recovery/GNB
-AGESA_INC += -I$(AGESA_ROOT)/Proc/Recovery/CPU
-AGESA_INC += -I$(AGESA_ROOT)/Proc/Recovery/Mem
 
 CFLAGS_x86_32 += -march=k8-sse3 -mtune=k8-sse3 -fno-zero-initialized-in-bss -fno-strict-aliasing
 CFLAGS_x86_64 += -march=k8-sse3 -mtune=k8-sse3 -fno-zero-initialized-in-bss -fno-strict-aliasing

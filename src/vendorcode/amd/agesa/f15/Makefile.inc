@@ -49,8 +49,6 @@ AGESA_INC += -I$(AGESA_ROOT)/Proc/Mem/NB/PH
 AGESA_INC += -I$(AGESA_ROOT)/Proc/Mem/NB/RB
 AGESA_INC += -I$(AGESA_ROOT)/Proc/Mem/Feat/IDENDIMM/
 AGESA_INC += -I$(AGESA_ROOT)/Proc/Mem/Main
-AGESA_INC += -I$(AGESA_ROOT)/Proc/Recovery/CPU
-AGESA_INC += -I$(AGESA_ROOT)/Proc/Recovery/Mem
 
 ## AGESA need sse feature ##
 CFLAGS_x86_32 += -msse3 -fno-zero-initialized-in-bss -fno-strict-aliasing

@@ -22,15 +22,6 @@ CONST FUNCTION_PARAMS_INFO ROMDATA FuncParamsInfo[] =
     },
   #endif
 
-  #if AGESA_ENTRY_INIT_RECOVERY == TRUE
-    { AMD_INIT_RECOVERY,
-      sizeof (AMD_RECOVERY_PARAMS),
-      (PF_AGESA_FUNCTION) AmdInitRecoveryInitializer,
-      (PF_AGESA_DESTRUCTOR) CommonReturnAgesaSuccess,
-      AMD_INIT_POST_HANDLE
-    },
-  #endif
-
   #if AGESA_ENTRY_INIT_EARLY == TRUE
     { AMD_INIT_EARLY,
       sizeof (AMD_EARLY_PARAMS),

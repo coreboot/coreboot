@@ -34,16 +34,14 @@
 /* Required for any multi-core. */
 #define AGESA_ENTRY_LATE_RUN_AP_TASK    TRUE
 
+/* Deprecated, reference source is removed from the tree. */
+#define AGESA_ENTRY_INIT_RECOVERY                    FALSE
 
 /* Defaults below. */
 
 /*  Process user desired AGESA entry points  */
 #ifndef AGESA_ENTRY_INIT_RESET
   #define AGESA_ENTRY_INIT_RESET                     FALSE
-#endif
-
-#ifndef AGESA_ENTRY_INIT_RECOVERY
-  #define AGESA_ENTRY_INIT_RECOVERY                  FALSE
 #endif
 
 #ifndef AGESA_ENTRY_INIT_EARLY

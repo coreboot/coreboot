@@ -32,6 +32,7 @@ ramstage-y += cpu.c
 ramstage-y += gpio.c
 ramstage-y += gspi.c
 ramstage-y += gpio.c
+ramstage-y += lpc.c
 ramstage-y += memmap.c
 ramstage-y += pmc.c
 ramstage-y += pmutil.c

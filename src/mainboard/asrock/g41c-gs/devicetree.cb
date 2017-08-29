@@ -140,6 +140,12 @@ chip northbridge/intel/x4x		# Northbridge
 			end
 			device pci 1f.3 on		# SMbus
 				subsystemid 0x1849 0x27da
+				chip drivers/i2c/ck505	# W83115RG-965
+					# set SATA to fixed 100Mhz refclk
+					register "mask" = "{ 0x02 }"
+					register "regs" = "{ 0x02 }"
+				device i2c 69 on end
+				end
 			end
 			device pci 1f.4 off end
 			device pci 1f.5 off end

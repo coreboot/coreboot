@@ -92,6 +92,10 @@ config IED_REGION_SIZE
 	hex
 	default 0x400000
 
+config MAX_ROOT_PORTS
+	int
+	default 24
+
 config SMM_TSEG_SIZE
 	hex
 	default 0x800000

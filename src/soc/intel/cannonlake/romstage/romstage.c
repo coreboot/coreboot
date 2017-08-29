@@ -68,7 +68,7 @@ asmlinkage void car_stage_entry(void)
 
 static void soc_memory_init_params(FSP_M_CONFIG *m_cfg, const config_t *config)
 {
-	int i;
+	unsigned int i;
 	uint32_t mask = 0;
 
 	m_cfg->TsegSize = CONFIG_SMM_TSEG_SIZE;

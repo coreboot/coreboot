@@ -26,6 +26,7 @@
 #include <arch/io.h>
 #include <assert.h>
 #include <cbmem.h>
+#include "chip.h"
 #include <device/pci.h>
 #include <fsp/memmap.h>
 #include <intelblocks/smm.h>
@@ -34,7 +35,25 @@
 
 void *cbmem_top(void)
 {
-	return (void *)sa_get_tseg_base();
+	const struct device *dev;
+	const config_t *config;
+	void *tolum = (void *)sa_get_tseg_base();
+
+	if (!IS_ENABLED(CONFIG_SOC_INTEL_GLK))
+		return tolum;
+
+	dev = dev_find_slot(0, PCH_DEVFN_LPC);
+	assert(dev != NULL);
+	config = dev->chip_info;
+
+	if (!config)
+		die("Failed to get chip_info\n");
+
+	/* FSP allocates 2x PRMRR Size Memory for alignment */
+	if (config->sgx_enable)
+		tolum -= config->PrmrrSize * 2;
+
+	return tolum;
 }
 
 int smm_subregion(int sub, void **start, size_t *size)

@@ -320,6 +320,22 @@ static void check_full_retrain(const FSPM_UPD *mupd)
 	}
 }
 
+static void soc_memory_init_params(FSPM_UPD *mupd)
+{
+#if IS_ENABLED(CONFIG_SOC_INTEL_GLK)
+	/* Only for GLK */
+	const struct device *dev = dev_find_slot(0, PCH_DEVFN_LPC);
+	assert(dev != NULL);
+	const config_t *config = dev->chip_info;
+	FSP_M_CONFIG *m_cfg = &mupd->FspmConfig;
+
+	if (!config)
+		die("Can not find SoC devicetree\n");
+
+	m_cfg->PrmrrSize = config->PrmrrSize;
+#endif
+}
+
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 {
 	struct region_device rdev;
@@ -327,6 +343,10 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	check_full_retrain(mupd);
 
 	fill_console_params(mupd);
+
+	if (IS_ENABLED(CONFIG_SOC_INTEL_GLK))
+		soc_memory_init_params(mupd);
+
 	mainboard_memory_init_params(mupd);
 
 	/* Do NOT let FSP do any GPIO pad configuration */

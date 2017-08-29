@@ -168,7 +168,8 @@ static void spi_acpi_fill_ssdt_generator(struct device *dev)
 	if (config->has_power_resource)
 		acpi_device_add_power_res(
 			&config->reset_gpio, config->reset_delay_ms,
-			&config->enable_gpio, config->enable_delay_ms);
+			&config->enable_gpio, config->enable_delay_ms,
+			&config->stop_gpio, config->stop_delay_ms);
 
 	acpigen_pop_len(); /* Device */
 	acpigen_pop_len(); /* Scope */

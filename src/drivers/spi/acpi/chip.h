@@ -47,6 +47,11 @@ struct drivers_spi_acpi_config {
 	struct acpi_gpio enable_gpio;
 	/* Delay to be inserted after device is enabled. */
 	unsigned enable_delay_ms;
+
+	/* GPIO used to stop operation of device. */
+	struct acpi_gpio stop_gpio;
+	/* Delay to be inserted after disabling stop. */
+	unsigned stop_delay_ms;
 };
 
 #endif /* __SPI_ACPI_CHIP_H__ */

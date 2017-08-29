@@ -308,12 +308,17 @@ void acpi_device_write_spi(const struct acpi_spi *spi);
 
 /*
  * Add a basic PowerResource block for a device that includes
- * GPIOs for enable and/or reset control of the device.  Each
+ * GPIOs to control enable, reset and stop operation of the device. Each
  * GPIO is optional, but at least one must be provided.
+ *
+ * Reset - Put the device into / take the device out of reset.
+ * Enable - Enable / disable power to device.
+ * Stop - Stop / start operation of device.
  */
 void acpi_device_add_power_res(
 	struct acpi_gpio *reset, unsigned int reset_delay_ms,
-	struct acpi_gpio *enable, unsigned int enable_delay_ms);
+	struct acpi_gpio *enable, unsigned int enable_delay_ms,
+	struct acpi_gpio *stop, unsigned int stop_delay_ms);
 
 /*
  * Writing Device Properties objects via _DSD

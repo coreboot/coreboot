@@ -61,6 +61,10 @@ struct drivers_i2c_generic_config {
 	struct acpi_gpio enable_gpio;
 	/* Delay to be inserted after device is enabled. */
 	unsigned enable_delay_ms;
+	/* GPIO used to stop operation of device. */
+	struct acpi_gpio stop_gpio;
+	/* Delay to be inserted after disabling stop. */
+	unsigned stop_delay_ms;
 
 	/* Generic properties for exporting device-specific data to the OS */
 	struct acpi_dp property_list[MAX_GENERIC_PROPERTY_LIST];

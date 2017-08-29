@@ -19,6 +19,7 @@
 #include <cpu/x86/smm.h>
 #include <intelblocks/pmclib.h>
 #include <intelblocks/smm.h>
+#include <intelblocks/systemagent.h>
 #include <soc/pm.h>
 
 void smm_southbridge_clear_state(void)
@@ -76,4 +77,10 @@ void smm_setup_structures(void *gnvs, void *tcg, void *smi1)
 		  "b" ((u32)gnvs),
 		  "d" (APM_CNT)
 	);
+}
+
+void smm_region_info(void **start, size_t *size)
+{
+	*start = (void *)sa_get_tseg_base();
+	*size = sa_get_tseg_size();
 }

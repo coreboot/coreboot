@@ -30,5 +30,7 @@
  */
 void smm_southbridge_clear_state(void);
 void smm_southbridge_enable(void);
+/* API to get SMM region start and size based on Host Bridge register */
+void smm_region_info(void **start, size_t *size);
 
 #endif

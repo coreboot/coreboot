@@ -116,7 +116,8 @@ void i2c_generic_fill_ssdt(struct device *dev,
 	}
 
 	/* DSD */
-	if (config->probed || (reset_gpio_index != -1) ||
+	if (config->probed || config->property_count ||
+	    (reset_gpio_index != -1) ||
 	    (enable_gpio_index != -1) || (irq_gpio_index != -1)) {
 		dsd = acpi_dp_new_table("_DSD");
 		if (config->probed)
@@ -134,6 +135,9 @@ void i2c_generic_fill_ssdt(struct device *dev,
 			acpi_dp_add_gpio(dsd, "enable-gpios", path,
 					enable_gpio_index, 0,
 					config->enable_gpio.polarity);
+		/* Add generic property list */
+		acpi_dp_add_property_list(dsd, config->property_list,
+					  config->property_count);
 		acpi_dp_write(dsd);
 	}
 

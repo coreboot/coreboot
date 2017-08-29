@@ -19,6 +19,8 @@
 #include <arch/acpi_device.h>
 #include <device/i2c_simple.h>
 
+#define MAX_GENERIC_PROPERTY_LIST 10
+
 struct drivers_i2c_generic_config {
 	const char *hid;	/* ACPI _HID (required) */
 	const char *cid;	/* ACPI _CID */
@@ -59,6 +61,10 @@ struct drivers_i2c_generic_config {
 	struct acpi_gpio enable_gpio;
 	/* Delay to be inserted after device is enabled. */
 	unsigned enable_delay_ms;
+
+	/* Generic properties for exporting device-specific data to the OS */
+	struct acpi_dp property_list[MAX_GENERIC_PROPERTY_LIST];
+	int property_count;
 };
 
 /*

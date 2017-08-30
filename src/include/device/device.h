@@ -130,6 +130,7 @@ struct device {
 	unsigned int    enabled : 1;	/* set if we should enable the device */
 	unsigned int  initialized : 1; /* 1 if we have initialized the device */
 	unsigned int    on_mainboard : 1;
+	unsigned int    disable_pcie_aspm : 1;
 	struct pci_irq_info pci_irq_info[4];
 	u8 command;
 

@@ -377,6 +377,9 @@ static void pciexp_enable_aspm(device_t root, unsigned root_cap,
 	u16 lnkctl;
 	u32 devcap;
 
+	if (endp->disable_pcie_aspm)
+		return;
+
 	/* Get endpoint device capabilities for acceptable limits */
 	devcap = pci_read_config32(endp, endp_cap + PCI_EXP_DEVCAP);
 

@@ -38,27 +38,10 @@ size_t mmap_region_granularity(void)
 	return 8*MiB;
 }
 
-/* Returns base of requested region encoded in the system agent. */
-static inline uintptr_t system_agent_region_base(size_t reg)
-{
-	/* All regions concerned for have 1 MiB alignment. */
-	return ALIGN_DOWN(pci_read_config32(SA_DEV_ROOT, reg), 1*MiB);
-}
-
-static inline uintptr_t smm_region_start(void)
-{
-	return system_agent_region_base(TSEG);
-}
-
-static inline size_t smm_region_size(void)
-{
-	return system_agent_region_base(BGSM) - smm_region_start();
-}
-
 void smm_region(void **start, size_t *size)
 {
-	*start = (void *)smm_region_start();
-	*size = smm_region_size();
+	*start = (void *)sa_get_tseg_base();
+	*size = sa_get_tseg_size();
 }
 
 /*
@@ -76,11 +59,12 @@ int smm_subregion(int sub, void **start, size_t *size)
 {
 	uintptr_t sub_base;
 	size_t sub_size;
+	void *smm_base;
 	const size_t ied_size = CONFIG_IED_REGION_SIZE;
 	const size_t cache_size = CONFIG_SMM_RESERVED_SIZE;
 
-	sub_base = smm_region_start();
-	sub_size = smm_region_size();
+	smm_region(&smm_base, &sub_size);
+	sub_base = (uintptr_t)smm_base;
 
 	switch (sub) {
 	case SMM_SUBREGION_HANDLER:
@@ -170,7 +154,7 @@ static u32 calculate_dram_base(void)
 		dram_base -= sa_get_gsm_size();
 	}
 	/* Get TSEG size */
-	dram_base -= smm_region_size();
+	dram_base -= sa_get_tseg_size();
 
 	/* Get DPR size */
 	if (IS_ENABLED(CONFIG_SA_ENABLE_DPR))
@@ -224,7 +208,7 @@ static u32 top_of_32bit_ram(void)
 	 * PRMMR_BASE MSR. The system hangs if PRMRR_BASE MSR is read before
 	 * PRMRR_MASK MSR lock bit is set.
 	 */
-	if (smm_region_start() == 0)
+	if (sa_get_tseg_base() == 0)
 		return 0;
 
 	return calculate_dram_base();

@@ -57,6 +57,7 @@ static const struct pch_gpio_set1 pch_gpio_set1_direction = {
 	.gpio28 = GPIO_DIR_INPUT,
 };
 
+#if IS_ENABLED(CONFIG_BOARD_ASROCK_G41C_GS_R2_0)
 static const struct pch_gpio_set1 pch_gpio_set1_level = {
 	.gpio10 = GPIO_LEVEL_LOW,
 	.gpio15 = GPIO_LEVEL_LOW,
@@ -67,6 +68,18 @@ static const struct pch_gpio_set1 pch_gpio_set1_level = {
 	.gpio25 = GPIO_LEVEL_LOW,
 	.gpio27 = GPIO_LEVEL_LOW,
 };
+#else /* BOARD_ASROCK_G41C_GS */
+static const struct pch_gpio_set1 pch_gpio_set1_level = {
+	.gpio10 = GPIO_LEVEL_LOW,
+	.gpio15 = GPIO_LEVEL_LOW,
+	.gpio16 = GPIO_LEVEL_HIGH,
+	.gpio18 = GPIO_LEVEL_LOW,
+	.gpio20 = GPIO_LEVEL_HIGH,
+	.gpio24 = GPIO_LEVEL_HIGH,
+	.gpio25 = GPIO_LEVEL_LOW,
+	.gpio27 = GPIO_LEVEL_LOW,
+};
+#endif
 
 static const struct pch_gpio_set1 pch_gpio_set1_invert = {
 	.gpio0 = GPIO_INVERT,

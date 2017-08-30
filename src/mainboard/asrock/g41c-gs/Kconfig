@@ -14,7 +14,7 @@
 # GNU General Public License for more details.
 #
 
-if BOARD_ASROCK_G41C_GS_R2_0
+if BOARD_ASROCK_G41C_GS_R2_0 || BOARD_ASROCK_G41C_GS
 
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
@@ -22,7 +22,8 @@ config BOARD_SPECIFIC_OPTIONS
 	select CPU_INTEL_SOCKET_LGA775
 	select NORTHBRIDGE_INTEL_X4X
 	select SOUTHBRIDGE_INTEL_I82801GX
-	select SUPERIO_NUVOTON_NCT6776
+	select SUPERIO_NUVOTON_NCT6776 if BOARD_ASROCK_G41C_GS_R2_0
+	select SUPERIO_WINBOND_W83627DHG if BOARD_ASROCK_G41C_GS
 	select HAVE_ACPI_TABLES
 	select BOARD_ROMSIZE_KB_1024
 	select PCIEXP_ASPM
@@ -41,10 +42,20 @@ config MAINBOARD_DIR
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "G41C-GS R2.0"
+	default "G41C-GS R2.0" if BOARD_ASROCK_G41C_GS_R2_0
+	default "G41C-GS" if BOARD_ASROCK_G41C_GS
+
+config DEVICETREE
+	string
+	default "variants/g41c-gs-r2/devicetree.cb" if BOARD_ASROCK_G41C_GS_R2_0
+	default "variants/g41c-gs/devicetree.cb" if BOARD_ASROCK_G41C_GS
 
 config MAX_CPUS
 	int
 	default 4
+
+# Override the default variant behavior, since the data.vbt is the same
+config INTEL_GMA_VBT_FILE
+	default "src/mainboard/$(MAINBOARDDIR)/data.vbt"
 
 endif # BOARD_ASROCK_G41C_GS_R2_0

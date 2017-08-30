@@ -22,6 +22,8 @@
 #include <cpu/x86/bist.h>
 #include <cpu/intel/romstage.h>
 #include <superio/nuvoton/nct6776/nct6776.h>
+#include <superio/winbond/w83627dhg/w83627dhg.h>
+#include <superio/winbond/common/winbond.h>
 #include <superio/nuvoton/common/nuvoton.h>
 #include <lib.h>
 #include <arch/stages.h>
@@ -30,7 +32,8 @@
 #include <device/pnp_def.h>
 #include <timestamp.h>
 
-#define SERIAL_DEV PNP_DEV(0x2e, NCT6776_SP1)
+#define SERIAL_DEV_R2 PNP_DEV(0x2e, NCT6776_SP1)
+#define SERIAL_DEV_R1 PNP_DEV(0x2e, W83627DHG_SP1)
 #define SUPERIO_DEV PNP_DEV(0x2e, 0)
 #define LPC_DEV PCI_DEV(0, 0x1f, 0)
 
@@ -44,15 +47,19 @@ static void mb_lpc_setup(void)
 	setup_pch_gpios(&mainboard_gpio_map);
 
 	/* Set GPIOs on superio, enable UART */
-	nuvoton_pnp_enter_conf_state(SERIAL_DEV);
-	pnp_set_logical_device(SERIAL_DEV);
+	if (IS_ENABLED(CONFIG_BOARD_ASROCK_G41C_GS_R2_0)) {
+		nuvoton_pnp_enter_conf_state(SERIAL_DEV_R2);
+		pnp_set_logical_device(SERIAL_DEV_R2);
 
-	pnp_write_config(SERIAL_DEV, 0x1c, 0x80);
-	pnp_write_config(SERIAL_DEV, 0x27, 0x80);
-	pnp_write_config(SERIAL_DEV, 0x2a, 0x60);
+		pnp_write_config(SERIAL_DEV_R2, 0x1c, 0x80);
+		pnp_write_config(SERIAL_DEV_R2, 0x27, 0x80);
+		pnp_write_config(SERIAL_DEV_R2, 0x2a, 0x60);
 
-	nuvoton_pnp_exit_conf_state(SERIAL_DEV);
-
+		nuvoton_pnp_exit_conf_state(SERIAL_DEV_R2);
+		nuvoton_enable_serial(SERIAL_DEV_R2, CONFIG_TTYS0_BASE);
+	} else { /* BOARD_ASROCK_G41C_GS */
+		winbond_enable_serial(SERIAL_DEV_R1, CONFIG_TTYS0_BASE);
+	}
 	/* IRQ routing */
 	RCBA16(D31IR) = 0x0132;
 	RCBA16(D29IR) = 0x0237;
@@ -91,7 +98,6 @@ void mainboard_romstage_entry(unsigned long bist)
 	/* Set southbridge and Super I/O GPIOs. */
 	ich7_enable_lpc();
 	mb_lpc_setup();
-	nuvoton_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 
 	console_init();
 

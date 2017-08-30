@@ -24,32 +24,32 @@ int get_spd_offset(void);
 #define IOMUX_OFFSET    0xD00
 #define GPIO_OFFSET     0x1500
 
-#define IOMUX_GPIO_32   0x59    // MODESW
-#define IOMUX_GPIO_33   0x5A    // SIMSWAP
+#define IOMUX_GPIO_32   0x59    // SIMSWAP2
+#define IOMUX_GPIO_33   0x5A    // SIMSWAP3
 #define IOMUX_GPIO_49   0x40    // STRAP0
 #define IOMUX_GPIO_50   0x41    // STRAP1
-#define IOMUX_GPIO_51   0x42    // PE3 Reset
-#define IOMUX_GPIO_55   0x43    // PE4 Reset
+#define IOMUX_GPIO_51   0x42    // SIM1 Reset
+#define IOMUX_GPIO_55   0x43    // SIM2 Reset
 #define IOMUX_GPIO_57   0x44    // LED1#
 #define IOMUX_GPIO_58   0x45    // LED2#
 #define IOMUX_GPIO_59   0x46    // LED3#
-#define IOMUX_GPIO_64   0x47    // PE3_WDIS
+#define IOMUX_GPIO_64   0x47    // SIM3 Reset
 #define IOMUX_GPIO_66   0x5B    // SPKR
-#define IOMUX_GPIO_68   0x48    // PE4_WDIS
+#define IOMUX_GPIO_68   0x48    // SIMSWAP1
 #define IOMUX_GPIO_71   0x4D    // PROCHOT
 
-#define GPIO_32   0x164    // MODESW
-#define GPIO_33   0x168    // SIMSWAP
+#define GPIO_32   0x164    // SIMSWAP2
+#define GPIO_33   0x168    // SIMSWAP3
 #define GPIO_49   0x100    // STRAP0
 #define GPIO_50   0x104    // STRAP1
-#define GPIO_51   0x108    // PE3 Reset
-#define GPIO_55   0x10C    // PE4 Reset
+#define GPIO_51   0x108    // SIM1 Reset
+#define GPIO_55   0x10C    // SIM2 Reset
 #define GPIO_57   0x110    // LED1#
 #define GPIO_58   0x114    // LED2#
 #define GPIO_59   0x118    // LED3#
-#define GPIO_64   0x11C    // PE3_WDIS
+#define GPIO_64   0x11C    // SIM3 Reset
 #define GPIO_66   0x16C    // SPKR
-#define GPIO_68   0x120    // PE4_WDIS
+#define GPIO_68   0x120    // SIMSWAP1
 #define GPIO_71   0x134    // PROCHOT
 
 #define GPIO_OUTPUT_ENABLE      BIT23

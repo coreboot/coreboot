@@ -157,7 +157,6 @@ static void early_lpc_init(void)
 	//
 	// Configure output disabled, value low, pull up/down disabled
 	//
-	configure_gpio(IOMUX_GPIO_32, Function0, GPIO_32, setting);
 	configure_gpio(IOMUX_GPIO_49, Function2, GPIO_49, setting);
 	configure_gpio(IOMUX_GPIO_50, Function2, GPIO_50, setting);
 	configure_gpio(IOMUX_GPIO_71, Function0, GPIO_71, setting);
@@ -165,7 +164,6 @@ static void early_lpc_init(void)
 	// Configure output enabled, value low, pull up/down disabled
 	//
 	setting = GPIO_OUTPUT_ENABLE;
-	configure_gpio(IOMUX_GPIO_33, Function0, GPIO_33, setting);
 	configure_gpio(IOMUX_GPIO_57, Function1, GPIO_57, setting);
 	configure_gpio(IOMUX_GPIO_58, Function1, GPIO_58, setting);
 	configure_gpio(IOMUX_GPIO_59, Function3, GPIO_59, setting);
@@ -173,6 +171,8 @@ static void early_lpc_init(void)
 	// Configure output enabled, value high, pull up/down disabled
 	//
 	setting = GPIO_OUTPUT_ENABLE | GPIO_OUTPUT_VALUE;
+	configure_gpio(IOMUX_GPIO_32, Function0, GPIO_32, setting);
+	configure_gpio(IOMUX_GPIO_33, Function0, GPIO_33, setting);
 	configure_gpio(IOMUX_GPIO_51, Function2, GPIO_51, setting);
 	configure_gpio(IOMUX_GPIO_55, Function3, GPIO_55, setting);
 	configure_gpio(IOMUX_GPIO_64, Function2, GPIO_64, setting);

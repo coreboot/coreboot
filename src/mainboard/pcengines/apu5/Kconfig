@@ -1,0 +1,102 @@
+#
+# This file is part of the coreboot project.
+#
+# Copyright (C) 2012 Advanced Micro Devices, Inc.
+# Copyright (C) 2015 Kyösti Mälkki <kyosti.malkki@gmail.com>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+
+if BOARD_PCENGINES_APU5
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select CPU_AMD_PI_00730F01
+	select NORTHBRIDGE_AMD_PI_00730F01
+	select SOUTHBRIDGE_AMD_PI_AVALON
+	select SUPERIO_NUVOTON_NCT5104D
+	select HAVE_PIRQ_TABLE
+	select HAVE_MP_TABLE
+	select HAVE_ACPI_TABLES
+	select BOARD_ROMSIZE_KB_8192
+	select HUDSON_DISABLE_IMC
+	select USE_BLOBS
+	select GENERIC_SPD_BIN
+	select PXE
+
+config MAINBOARD_DIR
+	string
+	default pcengines/apu5
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "PC Engines apu5"
+
+config MAX_CPUS
+	int
+	default 4
+
+config IRQ_SLOT_COUNT
+	int
+	default 11
+
+config ONBOARD_VGA_IS_PRIMARY
+	bool
+	default y
+
+config HUDSON_LEGACY_FREE
+	bool
+	default y
+
+config AGESA_BINARY_PI_FILE
+	string
+	default "3rdparty/blobs/mainboard/pcengines/apu2/AGESA.bin"
+
+choice
+	prompt "J19 pins 1-10"
+	default APU5_PINMUX_UART_C
+
+config APU5_PINMUX_OFF_C
+	bool "disable"
+
+config APU5_PINMUX_GPIO0
+	bool "GPIO"
+
+config APU5_PINMUX_UART_C
+	bool "UART 0x3e8"
+
+endchoice
+
+choice
+	prompt "J19 pins 11-20"
+	default APU5_PINMUX_UART_D
+
+config APU5_PINMUX_OFF_D
+	bool "disable"
+
+config APU5_PINMUX_GPIO1
+	bool "GPIO"
+
+config APU5_PINMUX_UART_D
+	bool "UART 0x2e8"
+
+endchoice
+
+config DIMM_SPD_SIZE
+	int
+	default 128
+
+config FORCE_MPCIE2_CLK
+	bool "Force clock of mPCIe slot2 (GPP3 PCIe clock)  to be always on"
+	default n
+	help
+	  If no card is attached to mPCIe2 slot, say N.
+
+endif # BOARD_PCENGINES_APU5

@@ -27,3 +27,7 @@ romstage-y += OemCustomize.c
 ramstage-y += buildOpts.c
 ramstage-y += BiosCallOuts.c
 ramstage-y += OemCustomize.c
+
+# Minimal SEMA watchdog support
+romstage-y += sema.c
+ramstage-y += sema.c

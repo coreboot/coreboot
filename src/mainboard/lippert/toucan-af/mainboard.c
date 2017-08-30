@@ -27,33 +27,11 @@
 #include "SBPLATFORM.h"
 #include "OEM.h" /* SMBUS0_BASE_ADDRESS */
 #include <southbridge/amd/cimx/sb800/gpio_oem.h>
-
-/* Write data block to slave on SMBUS0. */
-#define SMB0_STATUS	((SMBUS0_BASE_ADDRESS) + 0)
-#define SMB0_CONTROL	((SMBUS0_BASE_ADDRESS) + 2)
-#define SMB0_HOSTCMD	((SMBUS0_BASE_ADDRESS) + 3)
-#define SMB0_ADDRESS	((SMBUS0_BASE_ADDRESS) + 4)
-#define SMB0_DATA0	((SMBUS0_BASE_ADDRESS) + 5)
-#define SMB0_BLOCKDATA	((SMBUS0_BASE_ADDRESS) + 7)
-static int smb_write_blk(u8 slave, u8 command, u8 length, const u8 *data)
-{
-	__outbyte(SMB0_STATUS, 0x1E);		// clear error status
-	__outbyte(SMB0_ADDRESS, slave & ~1);	// slave addr + direction = out
-	__outbyte(SMB0_HOSTCMD, command);	// or destination offset
-	__outbyte(SMB0_DATA0, length);		// sent before data
-	__inbyte(SMB0_CONTROL);			// reset block data array
-	while (length--)
-		__outbyte(SMB0_BLOCKDATA, *(data++));
-	__outbyte(SMB0_CONTROL, 0x54);		// execute block write, no IRQ
-
-	while (__inbyte(SMB0_STATUS) == 0x01);	// busy, no errors
-	return __inbyte(SMB0_STATUS) ^ 0x02;	// 0x02 = completed, no errors
-}
+#include "mainboard/lippert/frontrunner-af/sema.h"
 
 static void init(struct device *dev)
 {
 	volatile u8 *spi_base;	// base addr of Hudson's SPI host controller
-	int i;
 	printk(BIOS_DEBUG, CONFIG_MAINBOARD_PART_NUMBER " ENTER %s\n", __func__);
 
 	/* Init Hudson GPIOs. */
@@ -93,11 +71,11 @@ static void init(struct device *dev)
 
 	/* Notify the SMC we're alive and kicking, or after a while it will
 	 * effect a power cycle and switch to the alternate BIOS chip.
-	 * Should be done as late as possible. */
-	printk(BIOS_INFO, "Sending BIOS alive message\n");
-	const u8 i_am_alive[] = { 0x03 }; //bit2 = SEL_DP0: 0 = DDI2, 1 = LVDS
-	if ((i = smb_write_blk(0x50, 0x25, sizeof(i_am_alive), i_am_alive)))
-		printk(BIOS_ERR, "smb_write_blk failed: %d\n", i);
+	 * Should be done as late as possible.
+	 * Failure here does not matter if watchdog was already disabled,
+	 * by configuration or previous boot, so ignore return value.
+	 */
+	sema_send_alive();
 
 	printk(BIOS_DEBUG, CONFIG_MAINBOARD_PART_NUMBER " EXIT %s\n", __func__);
 }

@@ -2,7 +2,7 @@ Change log for PC Engines fork of coreboot
 ==========================================
 
 Releases 4.0.x are based on PC Engines 20160304 release.
-Releases 4.5.x are based on mainline support submitted in
+Releases 4.5.x and 4.6.x are based on mainline support submitted in
 [this gerrit ref](https://review.coreboot.org/#/c/14138/).
 
 ## Quick build instructions
@@ -13,6 +13,10 @@ Releases 4.5.x are based on mainline support submitted in
 3. `make`
 
 ## [Unreleased]
+
+## [v4.6.1] - 2017-08-30
+### Added
+- APU5 target
 
 ## [v4.6.0] - 2017-07-21
 ### Added
@@ -97,7 +101,8 @@ Releases 4.5.x are based on mainline support submitted in
 - turn off D4 and D5 leds on boot
 - enable power on after power failure
 
-[Unreleased]: https://github.com/pcengines/coreboot/compare/v4.6.0...coreboot-4.6.x
+[Unreleased]: https://github.com/pcengines/coreboot/compare/v4.6.1...coreboot-4.6.x
+[v4.6.1]: https://github.com/pcengines/coreboot/compare/v4.6.0...v4.6.1
 [v4.6.0]: https://github.com/pcengines/coreboot/compare/v4.5.8...v4.6.0
 [v4.5.8]: https://github.com/pcengines/coreboot/compare/v4.5.7...v4.5.8
 [v4.5.7]: https://github.com/pcengines/coreboot/compare/v4.5.6...v4.5.7

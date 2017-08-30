@@ -203,6 +203,7 @@ config UART_DEBUG
 config UART_FOR_CONSOLE
 	int "Index for LPSS UART port to use for console"
 	default 2 if DRIVERS_UART_8250MEM
+	default 0
 	help
 	    Index for LPSS UART port to use for console:
 	    0 = LPSS UART0, 1 = LPSS UART1, 2 = LPSS UART2

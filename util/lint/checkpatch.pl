@@ -59,6 +59,13 @@ my $conststructsfile = "$D/const_structs.checkpatch";
 my $color = 1;
 my $allow_c99_comments = 1;
 
+# For coreboot jenkins
+# If taint mode is enabled, Untaint the path - files must be in /bin, /usr/bin or /usr/local/bin
+if ( ${^TAINT} ) {
+    $ENV{'PATH'} = '/bin:/usr/bin:/usr/local/bin';
+    delete @ENV{ 'IFS', 'CDPATH', 'ENV', 'BASH_ENV' };
+}
+
 sub help {
 	my ($exitcode) = @_;
 
@@ -898,8 +905,9 @@ if ($git) {
 }
 
 my $vname;
-for my $filename (@ARGV) {
+for my $f (@ARGV) {
 	my $FILE;
+	my ($filename) = ($f =~ /^(.*)$/);
 	if ($git) {
 		open($FILE, '-|', "git format-patch -M --stdout -1 $filename") ||
 			die "$P: $filename: git format-patch failed - $!\n";

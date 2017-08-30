@@ -40,4 +40,7 @@
 #define MCH_DDR_POWER_LIMIT_LO	0x58e0
 #define MCH_DDR_POWER_LIMIT_HI	0x58e4
 
+#define IMRBASE			0x6A40
+#define IMRLIMIT		0x6A48
+
 #endif

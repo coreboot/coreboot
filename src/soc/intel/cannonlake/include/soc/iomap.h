@@ -65,8 +65,9 @@
 
 #define HECI1_BASE_ADDRESS		0xFEDA2000
 
-/* CPU Trace reserved memory size */
-#define TRACE_MEMORY_SIZE	0x8000000	/* 128MiB */
+/* PTT registers */
+#define PTT_TXT_BASE_ADDRESS	0xfed30800
+#define PTT_PRESENT		0x00070000
 
 /*
  * I/O port address space

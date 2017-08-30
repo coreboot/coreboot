@@ -5,6 +5,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select BOARD_ROMSIZE_KB_16384
 	select SOC_INTEL_CANNONLAKE
 	select HAVE_ACPI_TABLES
+	select MAINBOARD_HAS_CHROMEOS
 	select GENERIC_SPD_BIN
 
 config MAINBOARD_DIR
@@ -55,4 +56,7 @@ config DIMM_SPD_SIZE
 	int
 	default 512
 
+config VBOOT
+	select VBOOT_LID_SWITCH
+	select VBOOT_MOCK_SECDATA
 endif

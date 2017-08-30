@@ -19,6 +19,7 @@ bootblock-y += memmap.c
 bootblock-y += spi.c
 bootblock-$(CONFIG_UART_DEBUG) += uart.c
 
+romstage-y += gpio.c
 romstage-y += gspi.c
 romstage-y += memmap.c
 romstage-y += pmutil.c
@@ -28,6 +29,7 @@ romstage-$(CONFIG_UART_DEBUG) += uart.c
 
 ramstage-y += chip.c
 ramstage-y += cpu.c
+ramstage-y += gpio.c
 ramstage-y += gspi.c
 ramstage-y += memmap.c
 ramstage-y += pmutil.c

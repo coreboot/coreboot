@@ -45,7 +45,9 @@ postcar-y += spi.c
 postcar-$(CONFIG_UART_DEBUG) += uart.c
 
 verstage-y += gspi.c
+verstage-y += pmutil.c
 verstage-y += spi.c
+verstage-$(CONFIG_UART_DEBUG) += uart.c
 
 CPPFLAGS_common += -I$(src)/soc/intel/cannonlake/include/fsp20
 CPPFLAGS_common += -I$(src)/vendorcode/intel/fsp/fsp2_0/cannonlake

@@ -78,7 +78,6 @@ endchoice
 config ANY_TOOLCHAIN
 	bool "Allow building with any toolchain"
 	default n
-	depends on COMPILER_GCC
 	help
 	  Many toolchains break when building coreboot since it uses quite
 	  unusual linker features. Unless developers explicitely request it,

@@ -78,13 +78,6 @@ CONST PF_HtIdsGetPortOverride ROMDATA pf_HtIdsGetPortOverride = M_HTIDS_PORT_OVE
       { (UINTN) MemUReadCachelines,  "ReadCl(BufferAddr,PhyAddrLo,ClCnt)"},
       { (UINTN) MemUFlushPattern,    "FlushCl(PhyAddrLo,ClCnt)"}
     };
-  #elif (AGESA_ENTRY_INIT_RECOVERY == TRUE)
-    #include <mru.h>
-    CONST SCRIPT_FUNCTION ROMDATA ScriptFuncList[] = {
-      { (UINTN) MemRecUWrite1CL, "Write1Cl(PhyAddrLo,BufferAddr)"},
-      { (UINTN) MemRecURead1CL,  "Read1Cl(BufferAddr,PhyAddrLo)"},
-      { (UINTN) MemRecUFlushPattern,    "Flush1Cl(PhyAddrLo)"}
-    };
   #else
     CONST SCRIPT_FUNCTION ROMDATA ScriptFuncList[] = {
       { (UINTN) CommonReturnFalse, "DefRet()"},

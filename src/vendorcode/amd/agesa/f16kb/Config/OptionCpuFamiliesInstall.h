@@ -59,19 +59,6 @@
 #if AGESA_ENTRY_INIT_RESET == TRUE
 #endif
 
-#if AGESA_ENTRY_INIT_RECOVERY == TRUE
-  #undef USES_REGISTER_TABLES
-  #define USES_REGISTER_TABLES        TRUE
-  #undef BASE_FAMILY_PCI
-  #define BASE_FAMILY_PCI             TRUE
-  #undef MODEL_SPECIFIC_PCI
-  #define MODEL_SPECIFIC_PCI          TRUE
-  #undef BASE_FAMILY_MSR
-  #define BASE_FAMILY_MSR             TRUE
-  #undef MODEL_SPECIFIC_MSR
-  #define MODEL_SPECIFIC_MSR          TRUE
-#endif
-
 #if AGESA_ENTRY_INIT_EARLY == TRUE
   #undef USES_REGISTER_TABLES
   #define USES_REGISTER_TABLES        TRUE

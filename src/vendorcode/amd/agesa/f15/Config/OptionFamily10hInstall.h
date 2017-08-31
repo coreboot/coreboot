@@ -372,8 +372,6 @@ extern F_GET_EARLY_INIT_TABLE GetF10EarlyInitOnCoreTable;
       #define F10_BL_UCODE_C6
       #define F10_BL_UCODE_C8
 
-      // If a patch is required for recovery mode to function properly, add a
-      // conditional for AGESA_ENTRY_INIT_RECOVERY, and pull it in.
       #if AGESA_ENTRY_INIT_EARLY == TRUE
         #if OPTION_AM3_SOCKET_SUPPORT == TRUE
           extern  CONST MICROCODE_PATCHES ROMDATA CpuF10MicrocodePatch010000c6;

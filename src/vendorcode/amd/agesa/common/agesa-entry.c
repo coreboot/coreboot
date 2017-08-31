@@ -116,10 +116,6 @@ CONST DISPATCH_TABLE ROMDATA DispatchTable[] =
     { AMD_INIT_RESET, (IMAGE_ENTRY)AmdInitReset },
   #endif
 
-  #if AGESA_ENTRY_INIT_RECOVERY == TRUE
-    { AMD_INIT_RECOVERY, (IMAGE_ENTRY)AmdInitRecovery },
-  #endif
-
   #if AGESA_ENTRY_INIT_EARLY == TRUE
     { AMD_INIT_EARLY, (IMAGE_ENTRY)AmdInitEarly },
   #endif

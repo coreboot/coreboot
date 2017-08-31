@@ -208,7 +208,7 @@
       #endif
     #endif
 
-    #if (AGESA_ENTRY_INIT_RECOVERY == TRUE) || (AGESA_ENTRY_INIT_EARLY == TRUE)
+    #if (AGESA_ENTRY_INIT_EARLY == TRUE)
       #define F16_KB_UCODE_7000
       #define F16_KB_UCODE_7001
 

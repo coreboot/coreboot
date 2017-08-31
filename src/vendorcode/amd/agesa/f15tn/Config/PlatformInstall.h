@@ -2570,8 +2570,6 @@ CONST UINT32 ROMDATA AmdPlatformTypeCgf = CFG_AMD_PLATFORM_TYPE;
 #include  "OptionHtInstall.h"
 #include  "OptionMemory.h"
 #include  "OptionMemoryInstall.h"
-#include  "OptionMemoryRecovery.h"
-#include  "OptionMemoryRecoveryInstall.h"
 #include  "OptionCpuFeaturesInstall.h"
 #include  "OptionDmi.h"
 #include  "OptionDmiInstall.h"

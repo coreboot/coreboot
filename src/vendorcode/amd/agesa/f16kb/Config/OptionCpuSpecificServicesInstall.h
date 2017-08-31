@@ -870,7 +870,7 @@ NOTE: Members with type casting should use OvrdDfltCpuSrvc<ServiceName> instead 
 #endif
 
 // Member: (PF_CPU_SET_AP_CORE_NUMBER) SetApCoreNumber
-#if (AGESA_ENTRY_INIT_RESET == TRUE) || (AGESA_ENTRY_INIT_RECOVERY == TRUE) || (AGESA_ENTRY_INIT_EARLY == TRUE)
+#if (AGESA_ENTRY_INIT_RESET == TRUE) || (AGESA_ENTRY_INIT_EARLY == TRUE)
   #ifdef CpuSrvcSetApCoreNumber
     #define FinalCpuSrvcSetApCoreNumber                         CpuSrvcSetApCoreNumber
     extern  F_CPU_SET_AP_CORE_NUMBER                            FinalCpuSrvcSetApCoreNumber;
@@ -882,7 +882,7 @@ NOTE: Members with type casting should use OvrdDfltCpuSrvc<ServiceName> instead 
 #endif
 
 // Member: (PF_CPU_GET_AP_CORE_NUMBER) GetApCoreNumber
-#if (AGESA_ENTRY_INIT_RESET == TRUE) || (AGESA_ENTRY_INIT_RECOVERY == TRUE) || (AGESA_ENTRY_INIT_EARLY == TRUE) || \
+#if (AGESA_ENTRY_INIT_RESET == TRUE) || (AGESA_ENTRY_INIT_EARLY == TRUE) || \
     (AGESA_ENTRY_INIT_POST == TRUE) || (AGESA_ENTRY_INIT_LATE == TRUE)
   #ifdef CpuSrvcGetApCoreNumber
     #define FinalCpuSrvcGetApCoreNumber                         CpuSrvcGetApCoreNumber
@@ -895,7 +895,7 @@ NOTE: Members with type casting should use OvrdDfltCpuSrvc<ServiceName> instead 
 #endif
 
 // Member: (PF_CPU_TRANSFER_AP_CORE_NUMBER) TransferApCoreNumber
-#if (AGESA_ENTRY_INIT_RESET == TRUE) || (AGESA_ENTRY_INIT_RECOVERY == TRUE) || (AGESA_ENTRY_INIT_EARLY == TRUE)
+#if (AGESA_ENTRY_INIT_RESET == TRUE) || (AGESA_ENTRY_INIT_EARLY == TRUE)
   #ifdef CpuSrvcTransferApCoreNumber
     #define FinalCpuSrvcTransferApCoreNumber                    CpuSrvcTransferApCoreNumber
     extern  F_CPU_TRANSFER_AP_CORE_NUMBER                       FinalCpuSrvcTransferApCoreNumber;
@@ -907,7 +907,7 @@ NOTE: Members with type casting should use OvrdDfltCpuSrvc<ServiceName> instead 
 #endif
 
 // Member: (PF_CPU_GET_STORED_NODE_NUMBER) GetStoredNodeNumber
-#if (AGESA_ENTRY_INIT_RESET == TRUE) || (AGESA_ENTRY_INIT_RECOVERY == TRUE) || (AGESA_ENTRY_INIT_EARLY == TRUE) || \
+#if (AGESA_ENTRY_INIT_RESET == TRUE) || (AGESA_ENTRY_INIT_EARLY == TRUE) || \
     (AGESA_ENTRY_INIT_ENV == TRUE) || (AGESA_ENTRY_INIT_MID == TRUE) || (AGESA_ENTRY_INIT_POST == TRUE) || \
     (AGESA_ENTRY_INIT_LATE == TRUE) || (AGESA_ENTRY_INIT_S3SAVE == TRUE) || (AGESA_ENTRY_INIT_RESUME == TRUE) || \
     (AGESA_ENTRY_INIT_LATE_RESTORE == TRUE) || (AGESA_ENTRY_INIT_GENERAL_SERVICES == TRUE)
@@ -922,7 +922,7 @@ NOTE: Members with type casting should use OvrdDfltCpuSrvc<ServiceName> instead 
 #endif
 
 // Member: (PF_CORE_ID_POSITION_IN_INITIAL_APIC_ID) CoreIdPositionInInitialApicId
-#if (AGESA_ENTRY_INIT_RESET == TRUE) || (AGESA_ENTRY_INIT_RECOVERY == TRUE) || (AGESA_ENTRY_INIT_EARLY == TRUE) || \
+#if (AGESA_ENTRY_INIT_RESET == TRUE) || (AGESA_ENTRY_INIT_EARLY == TRUE) || \
     (AGESA_ENTRY_INIT_POST == TRUE) || (AGESA_ENTRY_INIT_GENERAL_SERVICES == TRUE)
   #ifdef CpuSrvcCoreIdPositionInInitialApicId
     #define FinalCpuSrvcCoreIdPositionInInitialApicId           CpuSrvcCoreIdPositionInInitialApicId
@@ -1016,7 +1016,7 @@ NOTE: Members with type casting should use OvrdDfltCpuSrvc<ServiceName> instead 
 #endif
 
 // Member: (PF_CPU_GET_FAMILY_SPECIFIC_ARRAY) GetMicroCodePatchesStruct
-#if (AGESA_ENTRY_INIT_RECOVERY == TRUE) || (AGESA_ENTRY_INIT_EARLY == TRUE)
+#if (AGESA_ENTRY_INIT_EARLY == TRUE)
   #ifdef CpuSrvcGetMicroCodePatchesStruct
     #define FinalCpuSrvcGetMicroCodePatchesStruct               CpuSrvcGetMicroCodePatchesStruct
     #ifndef EXTERN_FINALCPUSRVCGETMICROCODEPATCHESSTRUCT
@@ -1031,7 +1031,7 @@ NOTE: Members with type casting should use OvrdDfltCpuSrvc<ServiceName> instead 
 #endif
 
 // Member: (PF_CPU_GET_FAMILY_SPECIFIC_ARRAY) GetMicrocodeEquivalenceTable
-#if (AGESA_ENTRY_INIT_RECOVERY == TRUE) || (AGESA_ENTRY_INIT_EARLY == TRUE)
+#if (AGESA_ENTRY_INIT_EARLY == TRUE)
   #ifdef CpuSrvcGetMicrocodeEquivalenceTable
     #define FinalCpuSrvcGetMicrocodeEquivalenceTable            CpuSrvcGetMicrocodeEquivalenceTable
     #ifndef EXTERN_FINALCPUSRVCGETMICROCODEEQUIVALENCETABLE
@@ -1046,7 +1046,7 @@ NOTE: Members with type casting should use OvrdDfltCpuSrvc<ServiceName> instead 
 #endif
 
 // Member: (PF_CPU_GET_FAMILY_SPECIFIC_ARRAY) GetCacheInfo
-#if (AGESA_ENTRY_INIT_RESET == TRUE) || (AGESA_ENTRY_INIT_RECOVERY == TRUE) || (AGESA_ENTRY_INIT_EARLY == TRUE)
+#if (AGESA_ENTRY_INIT_RESET == TRUE) || (AGESA_ENTRY_INIT_EARLY == TRUE)
   #ifdef CpuSrvcGetCacheInfo
     #define FinalCpuSrvcGetCacheInfo                            CpuSrvcGetCacheInfo
     extern  F_CPU_GET_FAMILY_SPECIFIC_ARRAY                     FinalCpuSrvcGetCacheInfo;
@@ -1085,7 +1085,7 @@ NOTE: Members with type casting should use OvrdDfltCpuSrvc<ServiceName> instead 
 #endif
 
 // Member: (PF_CPU_GET_PLATFORM_TYPE_SPECIFIC_INFO) GetPlatformTypeSpecificInfo
-#if (AGESA_ENTRY_INIT_RECOVERY == TRUE) || (AGESA_ENTRY_INIT_EARLY == TRUE) || (AGESA_ENTRY_INIT_LATE == TRUE)
+#if (AGESA_ENTRY_INIT_EARLY == TRUE) || (AGESA_ENTRY_INIT_LATE == TRUE)
   #ifdef CpuSrvcGetPlatformTypeSpecificInfo
     #define FinalCpuSrvcGetPlatformTypeSpecificInfo             CpuSrvcGetPlatformTypeSpecificInfo
     extern  F_CPU_GET_PLATFORM_TYPE_SPECIFIC_INFO               FinalCpuSrvcGetPlatformTypeSpecificInfo;
@@ -1097,7 +1097,7 @@ NOTE: Members with type casting should use OvrdDfltCpuSrvc<ServiceName> instead 
 #endif
 
 // Member: (PF_IS_NB_PSTATE_ENABLED) IsNbPstateEnabled
-#if (AGESA_ENTRY_INIT_RECOVERY == TRUE) || (AGESA_ENTRY_INIT_EARLY == TRUE) || (AGESA_ENTRY_INIT_POST == TRUE)
+#if (AGESA_ENTRY_INIT_EARLY == TRUE) || (AGESA_ENTRY_INIT_POST == TRUE)
   #ifdef CpuSrvcIsNbPstateEnabled
     #define FinalCpuSrvcIsNbPstateEnabled                       CpuSrvcIsNbPstateEnabled
     extern  F_IS_NB_PSTATE_ENABLED                              FinalCpuSrvcIsNbPstateEnabled;
@@ -1145,7 +1145,7 @@ NOTE: Members with type casting should use OvrdDfltCpuSrvc<ServiceName> instead 
 #endif
 
 // Member: (REGISTER_TABLE **) RegisterTableList
-#if USES_REGISTER_TABLES == TRUE // (AGESA_ENTRY_INIT_RECOVERY == TRUE) || (AGESA_ENTRY_INIT_EARLY == TRUE)
+#if USES_REGISTER_TABLES == TRUE // (AGESA_ENTRY_INIT_EARLY == TRUE)
   #ifdef CpuSrvcRegisterTableList
     #define FinalCpuSrvcRegisterTableList                       CpuSrvcRegisterTableList
   #else
@@ -1156,7 +1156,7 @@ NOTE: Members with type casting should use OvrdDfltCpuSrvc<ServiceName> instead 
 #endif
 
 // Member: (TABLE_ENTRY_TYPE_DESCRIPTOR *) TableEntryTypeDescriptors
-#if USES_REGISTER_TABLES == TRUE // (AGESA_ENTRY_INIT_RECOVERY == TRUE) || (AGESA_ENTRY_INIT_EARLY == TRUE)
+#if USES_REGISTER_TABLES == TRUE // (AGESA_ENTRY_INIT_EARLY == TRUE)
   #ifdef CpuSrvcTableEntryTypeDescriptors
     #define FinalCpuSrvcTableEntryTypeDescriptors               CpuSrvcTableEntryTypeDescriptors
   #else
@@ -1216,7 +1216,7 @@ NOTE: Members with type casting should use OvrdDfltCpuSrvc<ServiceName> instead 
 #endif
 
 // Member: (BOOLEAN) PatchLoaderIsSharedByCU
-#if (AGESA_ENTRY_INIT_RECOVERY == TRUE) || (AGESA_ENTRY_INIT_EARLY == TRUE)
+#if (AGESA_ENTRY_INIT_EARLY == TRUE)
   #ifdef CpuSrvcPatchLoaderIsSharedByCU
     #define FinalCpuSrvcPatchLoaderIsSharedByCU                 CpuSrvcPatchLoaderIsSharedByCU
   #else

@@ -332,8 +332,6 @@ extern F_IS_NB_PSTATE_ENABLED F14IsNbPstateEnabled;
       #define F14_ON_UCODE_29
       #define F14_ON_UCODE_119
 
-      // If a patch is required for recovery mode to function properly, add a
-      // conditional for AGESA_ENTRY_INIT_RECOVERY, and pull it in.
       #if AGESA_ENTRY_INIT_EARLY == TRUE
         #if OPTION_EARLY_SAMPLES == TRUE
           extern  CONST MICROCODE_PATCHES ROMDATA CpuF14MicrocodePatch0500000B;
@@ -379,7 +377,7 @@ extern F_IS_NB_PSTATE_ENABLED F14IsNbPstateEnabled;
           (PF_F14_ES_GET_EARLY_INIT_TABLE) CommonAssert,
           (PF_F14_ES_POWER_PLANE_INIT) CommonAssert,
         #endif
-        #if (AGESA_ENTRY_INIT_POST == TRUE) || (AGESA_ENTRY_INIT_RESUME == TRUE) || (AGESA_ENTRY_INIT_RECOVERY == TRUE)
+        #if (AGESA_ENTRY_INIT_POST == TRUE) || (AGESA_ENTRY_INIT_RESUME == TRUE)
           F14NbPstateInitEarlySampleHook
         #else
           (PF_F14_ES_NB_PSTATE_INIT) CommonAssert
@@ -395,7 +393,7 @@ extern F_IS_NB_PSTATE_ENABLED F14IsNbPstateEnabled;
           (PF_F14_ES_GET_EARLY_INIT_TABLE) CommonAssert,
           (PF_F14_ES_POWER_PLANE_INIT) CommonAssert,
         #endif
-        #if (AGESA_ENTRY_INIT_POST == TRUE) || (AGESA_ENTRY_INIT_RESUME == TRUE) || (AGESA_ENTRY_INIT_RECOVERY == TRUE)
+        #if (AGESA_ENTRY_INIT_POST == TRUE) || (AGESA_ENTRY_INIT_RESUME == TRUE)
           (PF_F14_ES_NB_PSTATE_INIT) CommonVoid
         #else
           (PF_F14_ES_NB_PSTATE_INIT) CommonAssert

@@ -54,41 +54,14 @@
  *  Check to validate the definition
  */
 #define OPTION_HT_ASSIST_FEAT
-#define F10_HT_ASSIST_SUPPORT
-#define F15_HT_ASSIST_SUPPORT
 #define HT_ASSIST_AP_DISABLE_CACHE
 #define HT_ASSIST_AP_ENABLE_CACHE
 
 #if (OPTION_HT_ASSIST == TRUE || OPTION_ATM_MODE == TRUE)
   #if (AGESA_ENTRY_INIT_EARLY == TRUE) || (AGESA_ENTRY_INIT_POST == TRUE) || (AGESA_ENTRY_INIT_MID == TRUE) || (AGESA_ENTRY_INIT_LATE_RESTORE == TRUE)
-    #ifdef  OPTION_FAMILY10H
-      #if OPTION_FAMILY10H == TRUE
-        #if OPTION_FAMILY10H_HY == TRUE
-          extern CONST CPU_FEATURE_DESCRIPTOR ROMDATA CpuFeatureHtAssist;
-          #undef OPTION_HT_ASSIST_FEAT
-          #define OPTION_HT_ASSIST_FEAT &CpuFeatureHtAssist,
-          extern CONST HT_ASSIST_FAMILY_SERVICES ROMDATA F10HtAssist;
-          #undef F10_HT_ASSIST_SUPPORT
-          #define F10_HT_ASSIST_SUPPORT {AMD_FAMILY_10_HY, &F10HtAssist},
-        #endif
-      #endif
-    #endif
-
-    #ifdef  OPTION_FAMILY15H
-      #if OPTION_FAMILY15H == TRUE
-        extern CONST CPU_FEATURE_DESCRIPTOR ROMDATA CpuFeatureHtAssist;
-        #undef OPTION_HT_ASSIST_FEAT
-        #define OPTION_HT_ASSIST_FEAT &CpuFeatureHtAssist,
-        extern CONST HT_ASSIST_FAMILY_SERVICES ROMDATA F15HtAssist;
-        #undef F15_HT_ASSIST_SUPPORT
-        #define F15_HT_ASSIST_SUPPORT {AMD_FAMILY_15, &F15HtAssist},
-      #endif
-    #endif
 
     CONST CPU_SPECIFIC_SERVICES_XLAT ROMDATA HtAssistFamilyServiceArray[] =
     {
-      F10_HT_ASSIST_SUPPORT
-      F15_HT_ASSIST_SUPPORT
       {0, NULL}
     };
     CONST CPU_FAMILY_SUPPORT_TABLE ROMDATA HtAssistFamilyServiceTable =

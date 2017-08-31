@@ -55,38 +55,10 @@
  */
 
 #define OPTION_IO_CSTATE_FEAT
-#define F10_IO_CSTATE_SUPPORT
-#define F12_IO_CSTATE_SUPPORT
 #define F14_IO_CSTATE_SUPPORT
-#define F15_IO_CSTATE_SUPPORT
 
 #if OPTION_IO_CSTATE == TRUE
   #if (AGESA_ENTRY_INIT_EARLY == TRUE) || (AGESA_ENTRY_INIT_LATE == TRUE)
-    #ifdef OPTION_FAMILY10H
-      #if OPTION_FAMILY10H == TRUE
-        #if OPTION_FAMILY10H_PH == TRUE
-          extern CONST CPU_FEATURE_DESCRIPTOR ROMDATA CpuFeatureIoCstate;
-          #undef OPTION_IO_CSTATE_FEAT
-          #define OPTION_IO_CSTATE_FEAT &CpuFeatureIoCstate,
-          extern CONST IO_CSTATE_FAMILY_SERVICES ROMDATA F10IoCstateSupport;
-          #undef F10_IO_CSTATE_SUPPORT
-          #define F10_IO_CSTATE_SUPPORT {AMD_FAMILY_10_PH, &F10IoCstateSupport},
-        #endif
-      #endif
-    #endif
-
-    #ifdef OPTION_FAMILY12H
-      #if OPTION_FAMILY12H == TRUE
-        #if OPTION_FAMILY12H_LN == TRUE
-          extern CONST CPU_FEATURE_DESCRIPTOR ROMDATA CpuFeatureIoCstate;
-          #undef OPTION_IO_CSTATE_FEAT
-          #define OPTION_IO_CSTATE_FEAT &CpuFeatureIoCstate,
-          extern CONST IO_CSTATE_FAMILY_SERVICES ROMDATA F12IoCstateSupport;
-          #undef F12_IO_CSTATE_SUPPORT
-          #define F12_IO_CSTATE_SUPPORT {AMD_FAMILY_12_LN, &F12IoCstateSupport},
-        #endif
-      #endif
-    #endif
 
     #ifdef OPTION_FAMILY14H
       #if OPTION_FAMILY14H == TRUE
@@ -101,28 +73,12 @@
       #endif
     #endif
 
-    #ifdef OPTION_FAMILY15H
-      #if OPTION_FAMILY15H == TRUE
-        #if OPTION_FAMILY15H_OR == TRUE
-          extern CONST CPU_FEATURE_DESCRIPTOR ROMDATA CpuFeatureIoCstate;
-          #undef OPTION_IO_CSTATE_FEAT
-          #define OPTION_IO_CSTATE_FEAT &CpuFeatureIoCstate,
-          extern CONST IO_CSTATE_FAMILY_SERVICES ROMDATA F15IoCstateSupport;
-          #undef F15_IO_CSTATE_SUPPORT
-          #define F15_IO_CSTATE_SUPPORT {AMD_FAMILY_15_OR, &F15IoCstateSupport},
-        #endif
-      #endif
-    #endif
-
   #endif
 #endif
 
 CONST CPU_SPECIFIC_SERVICES_XLAT ROMDATA IoCstateFamilyServiceArray[] =
 {
-  F10_IO_CSTATE_SUPPORT
-  F12_IO_CSTATE_SUPPORT
   F14_IO_CSTATE_SUPPORT
-  F15_IO_CSTATE_SUPPORT
   {0, NULL}
 };
 

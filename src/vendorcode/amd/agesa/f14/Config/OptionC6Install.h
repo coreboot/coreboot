@@ -54,39 +54,10 @@
  *  Check to validate the definition
  */
 #define OPTION_C6_STATE_FEAT
-#define F12_C6_STATE_SUPPORT
 #define F14_C6_STATE_SUPPORT
-#define F15_C6_STATE_SUPPORT
 
 #if OPTION_C6_STATE == TRUE
   #if (AGESA_ENTRY_INIT_EARLY == TRUE) || (AGESA_ENTRY_INIT_POST == TRUE) || (AGESA_ENTRY_INIT_RESUME == TRUE) || (AGESA_ENTRY_INIT_LATE == TRUE)
-    #ifdef OPTION_FAMILY12H
-      #if OPTION_FAMILY12H == TRUE
-        #if OPTION_FAMILY12H_LN == TRUE
-          extern CONST CPU_FEATURE_DESCRIPTOR ROMDATA CpuFeatureC6State;
-          #undef OPTION_C6_STATE_FEAT
-          #define OPTION_C6_STATE_FEAT &CpuFeatureC6State,
-          extern CONST C6_FAMILY_SERVICES ROMDATA F12C6Support;
-          #undef F12_C6_STATE_SUPPORT
-          #define F12_C6_STATE_SUPPORT {AMD_FAMILY_12_LN, &F12C6Support},
-
-          #if OPTION_EARLY_SAMPLES == TRUE
-            extern F_F12_ES_C6_INIT F12C6A0Workaround;
-
-            CONST F12_ES_C6_SUPPORT ROMDATA F12EarlySampleC6Support =
-            {
-              F12C6A0Workaround
-            };
-          #else
-            CONST F12_ES_C6_SUPPORT ROMDATA F12EarlySampleC6Support =
-            {
-              (PF_F12_ES_C6_INIT) CommonVoid
-            };
-          #endif
-
-        #endif
-      #endif
-    #endif
 
     #ifdef OPTION_FAMILY14H
       #if OPTION_FAMILY14H == TRUE
@@ -119,26 +90,12 @@
       #endif
     #endif
 
-    #ifdef OPTION_FAMILY15H
-      #if OPTION_FAMILY15H == TRUE
-        #if OPTION_FAMILY15H_OR == TRUE
-          extern CONST CPU_FEATURE_DESCRIPTOR ROMDATA CpuFeatureC6State;
-          #undef OPTION_C6_STATE_FEAT
-          #define OPTION_C6_STATE_FEAT &CpuFeatureC6State,
-          extern CONST C6_FAMILY_SERVICES ROMDATA F15C6Support;
-          #undef F15_C6_STATE_SUPPORT
-          #define F15_C6_STATE_SUPPORT {AMD_FAMILY_15_OR, &F15C6Support},
-        #endif
-      #endif
-    #endif
   #endif
 #endif
 
 CONST CPU_SPECIFIC_SERVICES_XLAT ROMDATA C6FamilyServiceArray[] =
 {
-  F12_C6_STATE_SUPPORT
   F14_C6_STATE_SUPPORT
-  F15_C6_STATE_SUPPORT
   {0, NULL}
 };
 

@@ -54,30 +54,12 @@
  *  Check to validate the definition
  */
 
-#define F10_PSTATE_SERVICE_SUPPORT
-#define F12_PSTATE_SERVICE_SUPPORT
 #define F14_PSTATE_SERVICE_SUPPORT
-#define F15_PSTATE_SERVICE_SUPPORT
 
 #if ((AGESA_ENTRY_INIT_LATE == TRUE) || (AGESA_ENTRY_INIT_POST == TRUE))
   //
   //Define Pstate CPU Family service
   //
-  #ifdef OPTION_FAMILY10H
-    #if OPTION_FAMILY10H == TRUE
-      extern CONST PSTATE_CPU_FAMILY_SERVICES ROMDATA F10PstateServices;
-      #undef F10_PSTATE_SERVICE_SUPPORT
-      #define F10_PSTATE_SERVICE_SUPPORT {AMD_FAMILY_10, &F10PstateServices},
-    #endif
-  #endif
-
-  #ifdef OPTION_FAMILY12H
-    #if OPTION_FAMILY12H == TRUE
-      extern CONST PSTATE_CPU_FAMILY_SERVICES ROMDATA F12PstateServices;
-      #undef F12_PSTATE_SERVICE_SUPPORT
-      #define F12_PSTATE_SERVICE_SUPPORT {AMD_FAMILY_12, &F12PstateServices},
-    #endif
-  #endif
 
   #ifdef OPTION_FAMILY14H
     #if OPTION_FAMILY14H == TRUE
@@ -87,13 +69,6 @@
     #endif
   #endif
 
-  #ifdef OPTION_FAMILY15H
-    #if OPTION_FAMILY15H == TRUE
-      extern CONST PSTATE_CPU_FAMILY_SERVICES ROMDATA F15PstateServices;
-      #undef F15_PSTATE_SERVICE_SUPPORT
-      #define F15_PSTATE_SERVICE_SUPPORT {AMD_FAMILY_15, &F15PstateServices},
-    #endif
-  #endif
   //
   //Define ACPI Pstate objects.
   //
@@ -229,10 +204,7 @@ OPTION_PSTATE_LATE_CONFIGURATION      OptionPstateLateConfiguration = {
 
 CONST CPU_SPECIFIC_SERVICES_XLAT ROMDATA PstateCpuFamilyServiceArray[] =
 {
-  F10_PSTATE_SERVICE_SUPPORT
-  F12_PSTATE_SERVICE_SUPPORT
   F14_PSTATE_SERVICE_SUPPORT
-  F15_PSTATE_SERVICE_SUPPORT
   {0, NULL}
 };
 CONST CPU_FAMILY_SUPPORT_TABLE ROMDATA PstateFamilyServiceTable =

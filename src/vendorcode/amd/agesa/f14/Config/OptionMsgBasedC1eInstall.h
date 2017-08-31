@@ -54,59 +54,11 @@
  *  Check to validate the definition
  */
 #define OPTION_MSG_BASED_C1E_FEAT
-#define F10_MSG_BASED_C1E_SUPPORT
-#define F15_MSG_BASED_C1E_SUPPORT
 #if OPTION_MSG_BASED_C1E == TRUE
   #if (AGESA_ENTRY_INIT_EARLY == TRUE) || (AGESA_ENTRY_INIT_POST == TRUE) || (AGESA_ENTRY_INIT_RESUME == TRUE)
 
-    #ifdef OPTION_FAMILY10H
-      #if OPTION_FAMILY10H == TRUE
-        #if OPTION_FAMILY10H_HY == TRUE
-          #if (OPTION_G34_SOCKET_SUPPORT == TRUE) || (OPTION_C32_SOCKET_SUPPORT == TRUE)
-            extern CONST CPU_FEATURE_DESCRIPTOR ROMDATA CpuFeatureMsgBasedC1e;
-            #undef OPTION_MSG_BASED_C1E_FEAT
-            #define OPTION_MSG_BASED_C1E_FEAT &CpuFeatureMsgBasedC1e,
-          #endif
-        #endif
-      #endif
-    #endif
-
-    #ifdef OPTION_FAMILY15H
-      #if OPTION_FAMILY15H == TRUE
-        #if (OPTION_G34_SOCKET_SUPPORT == TRUE) || (OPTION_C32_SOCKET_SUPPORT == TRUE || OPTION_AM3_SOCKET_SUPPORT == TRUE)
-          extern CONST CPU_FEATURE_DESCRIPTOR ROMDATA CpuFeatureMsgBasedC1e;
-          #undef OPTION_MSG_BASED_C1E_FEAT
-          #define OPTION_MSG_BASED_C1E_FEAT &CpuFeatureMsgBasedC1e,
-        #endif
-      #endif
-    #endif
-
-    #ifdef OPTION_FAMILY10H
-      #if OPTION_FAMILY10H == TRUE
-        #if OPTION_FAMILY10H_HY == TRUE
-          #if (OPTION_G34_SOCKET_SUPPORT == TRUE) || (OPTION_C32_SOCKET_SUPPORT == TRUE)
-            extern CONST MSG_BASED_C1E_FAMILY_SERVICES ROMDATA F10MsgBasedC1e;
-            #undef F10_MSG_BASED_C1E_SUPPORT
-            #define F10_MSG_BASED_C1E_SUPPORT {AMD_FAMILY_10_HY, &F10MsgBasedC1e},
-          #endif
-        #endif
-      #endif
-    #endif
-
-    #ifdef OPTION_FAMILY15H
-      #if OPTION_FAMILY15H == TRUE
-        #if (OPTION_G34_SOCKET_SUPPORT == TRUE) || (OPTION_C32_SOCKET_SUPPORT == TRUE || OPTION_AM3_SOCKET_SUPPORT == TRUE)
-          extern CONST MSG_BASED_C1E_FAMILY_SERVICES ROMDATA F15MsgBasedC1e;
-          #undef F15_MSG_BASED_C1E_SUPPORT
-          #define F15_MSG_BASED_C1E_SUPPORT {AMD_FAMILY_15, &F15MsgBasedC1e},
-        #endif
-      #endif
-    #endif
-
     CONST CPU_SPECIFIC_SERVICES_XLAT ROMDATA MsgBasedC1eFamilyServiceArray[] =
     {
-      F10_MSG_BASED_C1E_SUPPORT
-      F15_MSG_BASED_C1E_SUPPORT
       {0, NULL}
     };
     CONST CPU_FAMILY_SUPPORT_TABLE ROMDATA MsgBasedC1eFamilyServiceTable =

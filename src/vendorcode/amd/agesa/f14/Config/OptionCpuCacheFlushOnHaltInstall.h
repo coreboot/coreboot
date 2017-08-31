@@ -54,63 +54,13 @@
  *  Check to validate the definition
  */
 #define OPTION_CPU_CACHE_FLUSH_ON_HALT_FEAT
-#define F10_BL_CPU_CFOH_SUPPORT
-#define F10_DA_CPU_CFOH_SUPPORT
-#define F10_CPU_CFOH_SUPPORT
-#define F15_OR_CPU_CFOH_SUPPORT
 
-#if OPTION_CPU_CFOH == TRUE
-  #if (AGESA_ENTRY_INIT_POST == TRUE) || (AGESA_ENTRY_INIT_RESUME == TRUE)
-    #ifdef OPTION_FAMILY10H
-      #if OPTION_FAMILY10H == TRUE
-        extern CONST CPU_FEATURE_DESCRIPTOR ROMDATA CpuFeatureCacheFlushOnHalt;
-        #undef OPTION_CPU_CACHE_FLUSH_ON_HALT_FEAT
-        #define OPTION_CPU_CACHE_FLUSH_ON_HALT_FEAT &CpuFeatureCacheFlushOnHalt,
-
-        #if OPTION_FAMILY10H_BL == TRUE
-          extern CONST CPU_CFOH_FAMILY_SERVICES ROMDATA F10BlCacheFlushOnHalt;
-          #undef F10_BL_CPU_CFOH_SUPPORT
-          #define F10_BL_CPU_CFOH_SUPPORT {AMD_FAMILY_10_BL, &F10BlCacheFlushOnHalt},
-        #endif
-
-        #if OPTION_FAMILY10H_DA == TRUE
-          extern CONST CPU_CFOH_FAMILY_SERVICES ROMDATA F10DaCacheFlushOnHalt;
-          #undef F10_DA_CPU_CFOH_SUPPORT
-          #define F10_DA_CPU_CFOH_SUPPORT {AMD_FAMILY_10_DA, &F10DaCacheFlushOnHalt},
-        #endif
-
-        #if (OPTION_FAMILY10H_RB == TRUE) || (OPTION_FAMILY10H_HY == TRUE) || (OPTION_FAMILY10H_PH == TRUE)
-          extern CONST CPU_CFOH_FAMILY_SERVICES ROMDATA F10CacheFlushOnHalt;
-          #undef F10_CPU_CFOH_SUPPORT
-          #define F10_CPU_CFOH_SUPPORT {AMD_FAMILY_10_RB | AMD_FAMILY_10_HY | AMD_FAMILY_10_PH, &F10CacheFlushOnHalt},
-        #endif
-      #endif
-    #endif
-
-    #ifdef OPTION_FAMILY15H
-      #if OPTION_FAMILY15H == TRUE
-        extern CONST CPU_FEATURE_DESCRIPTOR ROMDATA CpuFeatureCacheFlushOnHalt;
-        #undef OPTION_CPU_CACHE_FLUSH_ON_HALT_FEAT
-        #define OPTION_CPU_CACHE_FLUSH_ON_HALT_FEAT &CpuFeatureCacheFlushOnHalt,
-
-        #if OPTION_FAMILY15H_OR == TRUE
-          extern CONST CPU_CFOH_FAMILY_SERVICES ROMDATA F15CacheFlushOnHalt;
-          #undef F15_OR_CPU_CFOH_SUPPORT
-          #define F15_OR_CPU_CFOH_SUPPORT {AMD_FAMILY_15_OR, &F15CacheFlushOnHalt},
-        #endif
-      #endif
-    #endif
-  #endif
-#endif
 
 CONST CPU_SPECIFIC_SERVICES_XLAT ROMDATA CacheFlushOnHaltFamilyServiceArray[] =
 {
-  F10_BL_CPU_CFOH_SUPPORT
-  F10_DA_CPU_CFOH_SUPPORT
-  F10_CPU_CFOH_SUPPORT
-  F15_OR_CPU_CFOH_SUPPORT
   {0, NULL}
 };
+
 CONST CPU_FAMILY_SUPPORT_TABLE ROMDATA CacheFlushOnHaltFamilyServiceTable =
 {
   (sizeof (CacheFlushOnHaltFamilyServiceArray) / sizeof (CPU_SPECIFIC_SERVICES_XLAT)),

@@ -54,40 +54,10 @@
  *  Check to validate the definition
  */
 #define OPTION_CPB_FEAT
-#define F10_CPB_SUPPORT
-#define F12_CPB_SUPPORT
 #define F14_ON_CPB_SUPPORT
-#define F15_CPB_SUPPORT
 
 #if OPTION_CPB == TRUE
   #if (AGESA_ENTRY_INIT_EARLY == TRUE) || (AGESA_ENTRY_INIT_LATE == TRUE) || (AGESA_ENTRY_INIT_LATE_RESTORE == TRUE)
-    // Family 10h
-    #ifdef OPTION_FAMILY10H
-      #if OPTION_FAMILY10H == TRUE
-        #if OPTION_FAMILY10H_PH == TRUE
-          extern CONST CPU_FEATURE_DESCRIPTOR ROMDATA CpuFeatureCpb;
-          #undef OPTION_CPB_FEAT
-          #define OPTION_CPB_FEAT &CpuFeatureCpb,
-          extern CONST CPB_FAMILY_SERVICES ROMDATA F10CpbSupport;
-          #undef F10_CPB_SUPPORT
-          #define F10_CPB_SUPPORT {AMD_FAMILY_10_PH, &F10CpbSupport},
-        #endif
-      #endif
-    #endif
-
-    // Family 12h
-    #ifdef OPTION_FAMILY12H
-      #if OPTION_FAMILY12H == TRUE
-        #if OPTION_FAMILY12H_LN == TRUE
-          extern CONST CPU_FEATURE_DESCRIPTOR ROMDATA CpuFeatureCpb;
-          #undef OPTION_CPB_FEAT
-          #define OPTION_CPB_FEAT &CpuFeatureCpb,
-          extern CONST CPB_FAMILY_SERVICES ROMDATA F12CpbSupport;
-          #undef F12_CPB_SUPPORT
-          #define F12_CPB_SUPPORT {AMD_FAMILY_12_LN, &F12CpbSupport},
-        #endif
-      #endif
-    #endif
 
     // Family 14h
     #ifdef OPTION_FAMILY14H
@@ -103,29 +73,12 @@
       #endif
     #endif
 
-    // Family 15h
-    #ifdef OPTION_FAMILY15H
-      #if OPTION_FAMILY15H == TRUE
-        #if OPTION_FAMILY15H_OR == TRUE
-          extern CONST CPU_FEATURE_DESCRIPTOR ROMDATA CpuFeatureCpb;
-          #undef OPTION_CPB_FEAT
-          #define OPTION_CPB_FEAT &CpuFeatureCpb,
-          extern CONST CPB_FAMILY_SERVICES ROMDATA F15CpbSupport;
-          #undef F15_CPB_SUPPORT
-          #define F15_CPB_SUPPORT {AMD_FAMILY_15_OR, &F15CpbSupport},
-        #endif
-      #endif
-    #endif
-
   #endif
 #endif
 
 CONST CPU_SPECIFIC_SERVICES_XLAT ROMDATA CpbFamilyServiceArray[] =
 {
-  F10_CPB_SUPPORT
-  F12_CPB_SUPPORT
   F14_ON_CPB_SUPPORT
-  F15_CPB_SUPPORT
   {0, NULL}
 };
 

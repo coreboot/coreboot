@@ -53,7 +53,7 @@
  *  Check to validate the definition
  */
 
-#define GNB_TYPE_LN OPTION_FAMILY12H
+#define GNB_TYPE_LN FALSE
 #define GNB_TYPE_ON OPTION_FAMILY14H
 #define GNB_TYPE_KR FALSE
 #define GNB_TYPE_TN FALSE

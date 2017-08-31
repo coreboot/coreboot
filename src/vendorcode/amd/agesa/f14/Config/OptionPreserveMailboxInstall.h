@@ -54,47 +54,11 @@
  *  Check to validate the definition
  */
 #define OPTION_PRESERVE_MAILBOX_FEAT
-#define F10_PRESERVE_MAILBOX_SUPPORT
-#define F15_PRESERVE_MAILBOX_SUPPORT
 
 #if ((AGESA_ENTRY_INIT_EARLY == TRUE) || (AGESA_ENTRY_INIT_POST == TRUE))
-  #if ((OPTION_FAMILY10H == TRUE) || (OPTION_FAMILY15H == TRUE))
-    extern CONST CPU_FEATURE_DESCRIPTOR ROMDATA CpuFeaturePreserveAroundMailbox;
-    #undef OPTION_PRESERVE_MAILBOX_FEAT
-    #define OPTION_PRESERVE_MAILBOX_FEAT &CpuFeaturePreserveAroundMailbox,
-  #endif
-  #if OPTION_FAMILY10H == TRUE
-    CONST PCI_ADDR ROMDATA F10PreserveMailboxRegisters [] = {
-      MAKE_SBDFO (0, 0, 0, 3, 0x168),
-      MAKE_SBDFO (0, 0, 0, 3, 0x170),
-      ILLEGAL_SBDFO
-    };
-    CONST PRESERVE_MAILBOX_FAMILY_SERVICES ROMDATA F10PreserveMailboxServices = {
-      0,
-      TRUE,
-      (PCI_ADDR *)&F10PreserveMailboxRegisters
-    };
-    #undef F10_PRESERVE_MAILBOX_SUPPORT
-    #define F10_PRESERVE_MAILBOX_SUPPORT {AMD_FAMILY_10, &F10PreserveMailboxServices},
-  #endif
-  #if OPTION_FAMILY15H == TRUE
-    CONST PCI_ADDR ROMDATA F15PreserveMailboxRegisters [] = {
-      MAKE_SBDFO (0, 0, 0, 3, 0x168),
-      MAKE_SBDFO (0, 0, 0, 3, 0x170),
-      ILLEGAL_SBDFO
-    };
-    CONST PRESERVE_MAILBOX_FAMILY_SERVICES ROMDATA F15PreserveMailboxServices = {
-      0,
-      TRUE,
-      (PCI_ADDR *)&F15PreserveMailboxRegisters
-    };
-    #undef F15_PRESERVE_MAILBOX_SUPPORT
-    #define F15_PRESERVE_MAILBOX_SUPPORT {AMD_FAMILY_15, &F15PreserveMailboxServices},
-  #endif
+
   CONST CPU_SPECIFIC_SERVICES_XLAT ROMDATA PreserveMailboxFamilyServiceArray[] =
   {
-    F10_PRESERVE_MAILBOX_SUPPORT
-    F15_PRESERVE_MAILBOX_SUPPORT
     {0, NULL}
   };
   CONST CPU_FAMILY_SUPPORT_TABLE ROMDATA PreserveMailboxFamilyServiceTable =

@@ -51,23 +51,9 @@
  *  Check to validate the definition
  */
 #define OPTION_SW_C1E_FEAT
-#define F10_SW_C1E_SUPPORT
 #if AGESA_ENTRY_INIT_EARLY == TRUE
-  #ifdef OPTION_FAMILY10H
-    #if OPTION_FAMILY10H == TRUE
-      #if (OPTION_FAMILY10H_BL == TRUE) || (OPTION_FAMILY10H_DA == TRUE) || (OPTION_FAMILY10H_RB == TRUE) || (OPTION_FAMILY10H_PH == TRUE)
-        extern CONST CPU_FEATURE_DESCRIPTOR ROMDATA CpuFeatureSwC1e;
-        #undef OPTION_SW_C1E_FEAT
-        #define OPTION_SW_C1E_FEAT &CpuFeatureSwC1e,
-        extern CONST SW_C1E_FAMILY_SERVICES ROMDATA F10SwC1e;
-        #undef F10_SW_C1E_SUPPORT
-        #define F10_SW_C1E_SUPPORT {(AMD_FAMILY_10_BL | AMD_FAMILY_10_DA | AMD_FAMILY_10_RB | AMD_FAMILY_10_PH), &F10SwC1e},
-      #endif
-    #endif
-  #endif
   CONST CPU_SPECIFIC_SERVICES_XLAT ROMDATA SwC1eFamilyServiceArray[] =
   {
-    F10_SW_C1E_SUPPORT
     {0, NULL}
   };
   CONST CPU_FAMILY_SUPPORT_TABLE ROMDATA SwC1eFamilyServiceTable =

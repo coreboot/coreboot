@@ -71,36 +71,6 @@
       #define CPU_DMI_AP_GET_TYPE4_TYPE7
     #endif
 
-    // Family 10
-    #ifdef OPTION_FAMILY10H
-      #if OPTION_FAMILY10H == TRUE
-        extern PROC_FAMILY_TABLE ProcFamily10DmiTable;
-        #define FAM10_DMI_SUPPORT FAM10_ENABLED,
-        #define FAM10_DMI_TABLE &ProcFamily10DmiTable,
-      #else
-        #define FAM10_DMI_SUPPORT
-        #define FAM10_DMI_TABLE
-      #endif
-    #else
-      #define FAM10_DMI_SUPPORT
-      #define FAM10_DMI_TABLE
-    #endif
-
-    // Family 12
-    #ifdef OPTION_FAMILY12H
-      #if OPTION_FAMILY12H == TRUE
-        extern PROC_FAMILY_TABLE ProcFamily12DmiTable;
-        #define FAM12_DMI_SUPPORT FAM12_ENABLED,
-        #define FAM12_DMI_TABLE &ProcFamily12DmiTable,
-      #else
-        #define FAM12_DMI_SUPPORT
-        #define FAM12_DMI_TABLE
-      #endif
-    #else
-      #define FAM12_DMI_SUPPORT
-      #define FAM12_DMI_TABLE
-    #endif
-
     // Family 14
     #ifdef OPTION_FAMILY14H
       #if OPTION_FAMILY14H == TRUE
@@ -116,34 +86,13 @@
       #define FAM14_DMI_TABLE
     #endif
 
-    // Family 15
-    #ifdef OPTION_FAMILY15H
-      #if OPTION_FAMILY15H == TRUE
-        extern PROC_FAMILY_TABLE ProcFamily15DmiTable;
-        #define FAM15_DMI_SUPPORT FAM15_ENABLED,
-        #define FAM15_DMI_TABLE &ProcFamily15DmiTable,
-      #else
-        #define FAM15_DMI_SUPPORT
-        #define FAM15_DMI_TABLE
-      #endif
-    #else
-      #define FAM15_DMI_SUPPORT
-      #define FAM15_DMI_TABLE
-    #endif
-
   #else
     OPTION_DMI_FEATURE          GetDmiInfoStub;
     OPTION_DMI_RELEASE_BUFFER   ReleaseDmiBufferStub;
     #define USER_DMI_OPTION     GetDmiInfoStub
     #define USER_DMI_RELEASE_BUFFER ReleaseDmiBufferStub
-    #define FAM10_DMI_SUPPORT
-    #define FAM10_DMI_TABLE
-    #define FAM12_DMI_SUPPORT
-    #define FAM12_DMI_TABLE
     #define FAM14_DMI_SUPPORT
     #define FAM14_DMI_TABLE
-    #define FAM15_DMI_SUPPORT
-    #define FAM15_DMI_TABLE
     #define CPU_DMI_AP_GET_TYPE4_TYPE7
   #endif
 #else
@@ -151,32 +100,20 @@
   OPTION_DMI_RELEASE_BUFFER   ReleaseDmiBufferStub;
   #define USER_DMI_OPTION     GetDmiInfoStub
   #define USER_DMI_RELEASE_BUFFER ReleaseDmiBufferStub
-  #define FAM10_DMI_SUPPORT
-  #define FAM10_DMI_TABLE
-  #define FAM12_DMI_SUPPORT
-  #define FAM12_DMI_TABLE
   #define FAM14_DMI_SUPPORT
   #define FAM14_DMI_TABLE
-  #define FAM15_DMI_SUPPORT
-  #define FAM15_DMI_TABLE
   #define CPU_DMI_AP_GET_TYPE4_TYPE7
 #endif
 
 /// DMI supported families enum
 typedef enum {
-  FAM10_DMI_SUPPORT                   ///< Conditionally define F10 support
-  FAM12_DMI_SUPPORT                   ///< Conditionally define F12 support
   FAM14_DMI_SUPPORT                   ///< Conditionally define F14 support
-  FAM15_DMI_SUPPORT                   ///< Conditionally define F15 support
   NUM_DMI_FAMILIES                    ///< Number of installed families
 } AGESA_DMI_SUPPORTED_FAM;
 
 /*  Declare the Family List. An array of pointers to tables that each describe a family  */
 CONST PROC_FAMILY_TABLE ROMDATA *ProcTables[] = {
-  FAM10_DMI_TABLE
-  FAM12_DMI_TABLE
   FAM14_DMI_TABLE
-  FAM15_DMI_TABLE
   NULL
 };
 

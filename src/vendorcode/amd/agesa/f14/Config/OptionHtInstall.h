@@ -79,72 +79,24 @@
 
 /*
  * Based on user level options, set Ht internal options.
- * For now, Family 10h support will assume single module.  For multi module,
  * this will have to be changed to not set non-coherent only.
  */
 #define OPTION_HT_NON_COHERENT_ONLY FALSE
 
-#if ((OPTION_FAMILY12H == TRUE) || (OPTION_FAMILY14H == TRUE) || (OPTION_FAMILY16H == TRUE))
 /* Fusion Families do not need a non-coherent only option. */
-#else
-  // Process Family 10h and 15h by socket, applying the MultiSocket option where it is allowable.
-  #if OPTION_G34_SOCKET_SUPPORT == FALSE
-  // Hydra has coherent support, other Family 10h should follow MultiSocket support.
-    #if OPTION_MULTISOCKET == FALSE
-      #undef OPTION_HT_NON_COHERENT_ONLY
-      #define OPTION_HT_NON_COHERENT_ONLY TRUE
-    #endif
-  #endif
-#endif
 
 /*
  * Macros will generate the correct item reference based on options
  */
 #if AGESA_ENTRY_INIT_EARLY == TRUE
   // Select the interface and features
-  #if ((OPTION_FAMILY12H == TRUE) || (OPTION_FAMILY14H == TRUE) || (OPTION_FAMILY16H == TRUE))
+  #if OPTION_FAMILY14H == TRUE
     #define INTERNAL_HT_OPTION_BUILTIN_TOPOLOGIES NULL
     #define INTERNAL_HT_OPTION_FEATURES     &HtFeaturesNone
     #define INTERNAL_HT_OPTION_INTERFACE    &HtInterfaceMapsOnly
-  #else
-    // Family 10h and 15h
-    #if OPTION_HT_NON_COHERENT_ONLY == FALSE
-      #define INTERNAL_HT_OPTION_FEATURES     &HtFeaturesDefault
-      #define INTERNAL_HT_OPTION_INTERFACE    &HtInterfaceDefault
-    #else
-      #define INTERNAL_HT_OPTION_BUILTIN_TOPOLOGIES NULL
-      #define INTERNAL_HT_OPTION_FEATURES     &HtFeaturesNonCoherentOnly
-      #define INTERNAL_HT_OPTION_INTERFACE    &HtInterfaceNonCoherentOnly
-    #endif
-  #endif
-  // Select Northbridge components
-  #if OPTION_FAMILY10H == TRUE
-    #if OPTION_HT_NON_COHERENT_ONLY == TRUE
-      #define INTERNAL_HT_OPTION_FAM10_NB     &HtFam10NbNonCoherentOnly, &HtFam10RevDNbNonCoherentOnly,
-    #else
-      #define INTERNAL_HT_OPTION_FAM10_NB     &HtFam10NbDefault, &HtFam10RevDNbDefault,
-    #endif
-  #else
-    #define INTERNAL_HT_OPTION_FAM10_NB
-  #endif
-  #if OPTION_FAMILY12H == TRUE
-    #define INTERNAL_HT_OPTION_FAM12_NB     &HtFam12Nb,
-  #else
-    #define INTERNAL_HT_OPTION_FAM12_NB
-  #endif
-  #if OPTION_FAMILY14H == TRUE
     #define INTERNAL_HT_OPTION_FAM14_NB     &HtFam14Nb,
   #else
     #define INTERNAL_HT_OPTION_FAM14_NB
-  #endif
-  #if OPTION_FAMILY15H == TRUE
-    #if OPTION_HT_NON_COHERENT_ONLY == TRUE
-      #define INTERNAL_HT_OPTION_FAM15_NB     &HtFam15NbNonCoherentOnly,
-    #else
-      #define INTERNAL_HT_OPTION_FAM15_NB     &HtFam15NbDefault,
-    #endif
-  #else
-    #define INTERNAL_HT_OPTION_FAM15_NB
   #endif
 
   #define INTERNAL_ONLY_NB_LIST_ITEM INTERNAL_ONLY_HT_OPTION_SUPPORTED_NBS,
@@ -158,9 +110,6 @@
    */
   #define INTERNAL_HT_OPTION_SUPPORTED_NBS \
                                              INTERNAL_ONLY_NB_LIST_ITEM \
-                                             INTERNAL_HT_OPTION_FAM10_NB \
-                                             INTERNAL_HT_OPTION_FAM15_NB \
-                                             INTERNAL_HT_OPTION_FAM12_NB \
                                              INTERNAL_HT_OPTION_FAM14_NB
 
 #else
@@ -271,16 +220,11 @@
 
   #define OPTION_HT_INIIT_RESET_ENTRY AmdHtInitReset
 
-  #if (OPTION_FAMILY12H == TRUE) || (OPTION_FAMILY14H == TRUE)
+  #if OPTION_FAMILY14H == TRUE
     #undef OPTION_HT_INIIT_RESET_ENTRY
     #undef OPTION_HT_INIIT_RESET_CONSTRUCTOR_ENTRY
     #define OPTION_HT_INIIT_RESET_ENTRY NULL
     #define OPTION_HT_INIIT_RESET_CONSTRUCTOR_ENTRY NULL
-  #endif
-
-  #if ((OPTION_FAMILY10H == TRUE) || (OPTION_FAMILY15H == TRUE))
-    #undef OPTION_HT_INIIT_RESET_ENTRY
-    #define OPTION_HT_INIIT_RESET_ENTRY AmdHtInitReset
   #endif
 
 #endif

@@ -54,29 +54,14 @@
  *  Check to validate the definition
  */
 #define OPTION_CPU_LOW_PWR_PSTATE_FOR_PROCHOT_FEAT
-#define F15_LOW_PWR_PSTATE_SUPPORT
 
 #if OPTION_CPU_LOW_PWR_PSTATE_FOR_PROCHOT == TRUE
   #if (AGESA_ENTRY_INIT_EARLY == TRUE) || (AGESA_ENTRY_INIT_POST == TRUE) || (AGESA_ENTRY_INIT_RESUME == TRUE) || (AGESA_ENTRY_INIT_LATE == TRUE)
-    // Family 15h
-    #ifdef OPTION_FAMILY15H
-      #if OPTION_FAMILY15H == TRUE
-        #if OPTION_FAMILY15H_OR == TRUE
-          extern CONST CPU_FEATURE_DESCRIPTOR ROMDATA CpuFeatureLowPwrPstate;
-          #undef OPTION_CPU_LOW_PWR_PSTATE_FOR_PROCHOT_FEAT
-          #define OPTION_CPU_LOW_PWR_PSTATE_FOR_PROCHOT_FEAT &CpuFeatureLowPwrPstate,
-          extern CONST LOW_PWR_PSTATE_FAMILY_SERVICES ROMDATA F15LowPwrPstateSupport;
-          #undef F15_LOW_PWR_PSTATE_SUPPORT
-          #define F15_LOW_PWR_PSTATE_SUPPORT {AMD_FAMILY_15_OR, &F15LowPwrPstateSupport},
-        #endif
-      #endif
-    #endif
   #endif
 #endif
 
 CONST CPU_SPECIFIC_SERVICES_XLAT ROMDATA LowPwrPstateFamilyServiceArray[] =
 {
-  F15_LOW_PWR_PSTATE_SUPPORT
   {0, NULL}
 };
 

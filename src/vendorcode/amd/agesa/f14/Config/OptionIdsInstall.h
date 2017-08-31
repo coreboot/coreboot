@@ -57,10 +57,6 @@
 #if (IDSOPT_IDS_ENABLED == TRUE)
   #if (IDSOPT_CONTROL_ENABLED == TRUE)
     // Check for all families which include HT Features.
-    #if (OPTION_FAMILY10H == TRUE) && (AGESA_ENTRY_INIT_POST == TRUE)
-      #undef M_HTIDS_PORT_OVERRIDE_HOOK
-      #define M_HTIDS_PORT_OVERRIDE_HOOK HtIdsGetPortOverride
-    #endif
   #endif
 #endif // OPTION_IDS_LEVEL
 CONST PF_HtIdsGetPortOverride ROMDATA pf_HtIdsGetPortOverride = M_HTIDS_PORT_OVERRIDE_HOOK;
@@ -98,89 +94,8 @@ CONST PF_HtIdsGetPortOverride ROMDATA pf_HtIdsGetPortOverride = M_HTIDS_PORT_OVE
       #define OPTION_IDS_EXTEND_FEATS
     #endif
 
-    #define OPTION_IDS_FEAT_ECCCTRL\
-                OPTION_IDS_FEAT_ECCCTRL_F10 \
-                OPTION_IDS_FEAT_ECCCTRL_F12 \
-                OPTION_IDS_FEAT_ECCCTRL_F15
-
     #define OPTION_IDS_FEAT_GNB_PLATFORMCFG\
-                OPTION_IDS_FEAT_GNB_PLATFORMCFGF12 \
                 OPTION_IDS_FEAT_GNB_PLATFORMCFGF14
-
-    #define OPTION_IDS_FEAT_CPB_CTRL\
-                OPTION_IDS_FEAT_CPB_CTRL_F12
-
-    #define OPTION_IDS_FEAT_HTC_CTRL\
-                OPTION_IDS_FEAT_HTC_CTRL_F15
-
-    #define OPTION_IDS_FEAT_MEMORY_MAPPING\
-                OPTION_IDS_FEAT_MEMORY_MAPPING_F15
-
-    #define OPTION_IDS_FEAT_HT_ASSIST\
-                OPTION_IDS_FEAT_HT_ASSIST_F10HY \
-                OPTION_IDS_FEAT_HT_ASSIST_F15
-
-    #define OPTION_IDS_FEAT_ECCSYMBOLSIZE\
-                OPTION_IDS_FEAT_ECCSYMBOLSIZE_F10 \
-                OPTION_IDS_FEAT_ECCSYMBOLSIZE_F15
-
-/*----------------------------------------------------------------------------
- *                        Family 10 feat blocks
- *
- *----------------------------------------------------------------------------
- */
-    #define OPTION_IDS_FEAT_ECCSYMBOLSIZE_F10
-    #define OPTION_IDS_FEAT_ECCCTRL_F10
-    #ifdef OPTION_FAMILY10H
-      #if OPTION_FAMILY10H == TRUE
-//Ecc symbol size
-        extern CONST IDS_FEAT_STRUCT ROMDATA IdsFeatEccSymbolSizeBlockF10;
-        #undef OPTION_IDS_FEAT_ECCSYMBOLSIZE_F10
-        #define OPTION_IDS_FEAT_ECCSYMBOLSIZE_F10 &IdsFeatEccSymbolSizeBlockF10,
-
-//ECC scrub control
-        extern CONST IDS_FEAT_STRUCT ROMDATA IdsFeatEccCtrlBlockF10;
-        #undef OPTION_IDS_FEAT_ECCCTRL_F10
-        #define OPTION_IDS_FEAT_ECCCTRL_F10 &IdsFeatEccCtrlBlockF10,
-      #endif
-    #endif
-
-    //Misc Features
-    #define OPTION_IDS_FEAT_HT_ASSIST_F10HY
-    #ifdef OPTION_FAMILY10H_HY
-      #if OPTION_FAMILY10H_HY == TRUE
-        #undef OPTION_IDS_FEAT_HT_ASSIST_F10HY
-        extern CONST IDS_FEAT_STRUCT ROMDATA IdsFeatHtAssistBlockPlatformCfgF10Hy;
-
-        #define OPTION_IDS_FEAT_HT_ASSIST_F10HY \
-                    &IdsFeatHtAssistBlockPlatformCfgF10Hy,
-      #endif
-    #endif
-/*----------------------------------------------------------------------------
- *                        Family 12 feat blocks
- *
- *----------------------------------------------------------------------------
- */
-    #define OPTION_IDS_FEAT_GNB_PLATFORMCFGF12
-    #define OPTION_IDS_FEAT_ECCCTRL_F12
-    #define OPTION_IDS_FEAT_CPB_CTRL_F12
-    #ifdef OPTION_FAMILY12H
-      #if OPTION_FAMILY12H == TRUE
-        extern CONST IDS_FEAT_STRUCT ROMDATA IdsFeatGnbPlatformCfgBlockF12;
-        #undef OPTION_IDS_FEAT_GNB_PLATFORMCFGF12
-        #define OPTION_IDS_FEAT_GNB_PLATFORMCFGF12 &IdsFeatGnbPlatformCfgBlockF12,
-
-        //ECC scrub control
-        extern CONST IDS_FEAT_STRUCT ROMDATA IdsFeatEccCtrlBlockF12;
-        #undef OPTION_IDS_FEAT_ECCCTRL_F12
-        #define OPTION_IDS_FEAT_ECCCTRL_F12 &IdsFeatEccCtrlBlockF12,
-
-        #undef OPTION_IDS_FEAT_CPB_CTRL_F12
-        extern CONST IDS_FEAT_STRUCT ROMDATA IdsFeatCpbCtrlBlockF12;
-        #define OPTION_IDS_FEAT_CPB_CTRL_F12 &IdsFeatCpbCtrlBlockF12,
-
-      #endif
-    #endif
 
 /*----------------------------------------------------------------------------
  *                        Family 14 feat blocks
@@ -195,50 +110,6 @@ CONST PF_HtIdsGetPortOverride ROMDATA pf_HtIdsGetPortOverride = M_HTIDS_PORT_OVE
         #define OPTION_IDS_FEAT_GNB_PLATFORMCFGF14 &IdsFeatGnbPlatformCfgBlockF14,
       #endif
     #endif
-
-/*----------------------------------------------------------------------------
- *                        Family 15 feat blocks
- *
- *----------------------------------------------------------------------------
- */
-    #define OPTION_IDS_FEAT_HTC_CTRL_F15
-    #define OPTION_IDS_FEAT_MEMORY_MAPPING_F15
-    #define OPTION_IDS_FEAT_HT_ASSIST_F15
-    #define OPTION_IDS_FEAT_ECCCTRL_F15
-    #define OPTION_IDS_FEAT_ECCSYMBOLSIZE_F15
-    #ifdef OPTION_FAMILY15H
-      #if OPTION_FAMILY15H == TRUE
-        extern CONST IDS_FEAT_STRUCT ROMDATA IdsFeatHtcControlBlockF15;
-        extern CONST IDS_FEAT_STRUCT ROMDATA IdsFeatHtcControlLateBlockF15;
-        #undef OPTION_IDS_FEAT_HTC_CTRL_F15
-        #define OPTION_IDS_FEAT_HTC_CTRL_F15\
-                    &IdsFeatHtcControlBlockF15,\
-                    &IdsFeatHtcControlLateBlockF15,
-
-        extern CONST IDS_FEAT_STRUCT ROMDATA IdsFeatMemoryMappingPostBeforeBlockF15;
-        extern CONST IDS_FEAT_STRUCT ROMDATA IdsFeatMemoryMappingChIntlvBlockF15;
-        #undef OPTION_IDS_FEAT_MEMORY_MAPPING_F15
-        #define OPTION_IDS_FEAT_MEMORY_MAPPING_F15\
-        &IdsFeatMemoryMappingPostBeforeBlockF15,\
-        &IdsFeatMemoryMappingChIntlvBlockF15,
-
-        extern CONST IDS_FEAT_STRUCT ROMDATA IdsFeatHtAssistBlockPlatformCfgF15;
-        #undef OPTION_IDS_FEAT_HT_ASSIST_F15
-        #define OPTION_IDS_FEAT_HT_ASSIST_F15\
-        &IdsFeatHtAssistBlockPlatformCfgF15,
-
-        extern CONST IDS_FEAT_STRUCT ROMDATA IdsFeatEccCtrlBlockF15;
-        #undef OPTION_IDS_FEAT_ECCCTRL_F15
-        #define OPTION_IDS_FEAT_ECCCTRL_F15 &IdsFeatEccCtrlBlockF15,
-
-        extern CONST IDS_FEAT_STRUCT ROMDATA IdsFeatEccSymbolSizeBlockF15;
-        #undef OPTION_IDS_FEAT_ECCSYMBOLSIZE_F15
-        #define OPTION_IDS_FEAT_ECCSYMBOLSIZE_F15 &IdsFeatEccSymbolSizeBlockF15,
-
-      #endif
-    #endif
-
-
 
     CONST IDS_FEAT_STRUCT ROMDATA IdsFeatUcodeBlock =
     {

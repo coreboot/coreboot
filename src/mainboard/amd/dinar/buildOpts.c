@@ -378,4 +378,4 @@ CONST DEVICE_CAP_OVERRIDE ROMDATA MaranelloOverrideDevCap[2] =
 #include "cpuEarlyInit.h"
 #include "cpuLateInit.h"
 #include "GnbInterfaceStub.h"
-#include "PlatformInstall.h"
+#include <PlatformInstall.h>

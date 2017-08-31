@@ -27,6 +27,8 @@ AGESA_INC += -I$(AGESA_ROOT)/../common
 AGESA_INC += -I$(AGESA_ROOT)/Include
 AGESA_INC += $(AGESA_AUTOINCLUDES)
 
+BUILDOPTS_INCLUDES = -I$(AGESA_ROOT)/Config $(AGESA_INC)
+
 ## AGESA need sse feature ##
 CFLAGS_x86_32 += -msse3 -fno-zero-initialized-in-bss -fno-strict-aliasing
 CFLAGS_x86_64 += -msse3 -fno-zero-initialized-in-bss -fno-strict-aliasing

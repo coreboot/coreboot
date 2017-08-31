@@ -343,4 +343,4 @@ GPIO_CONTROL   f2a85_m_gpio[] = {
 #define DFLT_VRM_SLEW_RATE              (5000)
 
 /* Moving this include up will break AGESA. */
-#include <vendorcode/amd/agesa/f15tn/Include/PlatformInstall.h>
+#include <PlatformInstall.h>

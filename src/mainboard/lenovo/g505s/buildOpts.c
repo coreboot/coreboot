@@ -387,4 +387,4 @@ SCI_MAP_CONTROL lenovo_g505s_sci_map[] = {
 #define DFLT_VRM_SLEW_RATE              (5000)
 
 /* AGESA nonsense: this header depends on the definitions above */
-#include <vendorcode/amd/agesa/f15tn/Include/PlatformInstall.h>
+#include <PlatformInstall.h>

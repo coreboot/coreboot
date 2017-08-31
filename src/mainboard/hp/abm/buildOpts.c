@@ -353,4 +353,4 @@ GPIO_CONTROL   hp_abm_gpio[] = {
 #define DFLT_MEMORY_QUADRANK_TYPE       QUADRANK_UNBUFFERED
 #define DFLT_VRM_SLEW_RATE              (5000)
 
-#include "PlatformInstall.h"
+#include <PlatformInstall.h>

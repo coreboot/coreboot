@@ -38,6 +38,8 @@ AGESA_INC += -I$(AGESA_ROOT)/../common
 AGESA_INC += -I$(AGESA_ROOT)/Include
 AGESA_INC += $(AGESA_AUTOINCLUDES)
 
+BUILDOPTS_INCLUDES = -I$(AGESA_ROOT)/Config $(AGESA_INC)
+
 CFLAGS_x86_32 += -march=k8-sse3 -mtune=k8-sse3 -fno-zero-initialized-in-bss -fno-strict-aliasing
 CFLAGS_x86_64 += -march=k8-sse3 -mtune=k8-sse3 -fno-zero-initialized-in-bss -fno-strict-aliasing
 

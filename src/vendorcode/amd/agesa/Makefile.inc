@@ -18,4 +18,7 @@ else
 $(eval $(call create_class_compiler,libagesa,x86_64))
 endif
 
+$(obj)/romstage/mainboard/$(MAINBOARDDIR)/buildOpts.o: CPPFLAGS_x86_32 += $(BUILDOPTS_INCLUDES)
+$(obj)/ramstage/mainboard/$(MAINBOARDDIR)/buildOpts.o: CPPFLAGS_x86_32 += $(BUILDOPTS_INCLUDES)
+
 endif

@@ -218,4 +218,4 @@ CONST AP_MTRR_SETTINGS ROMDATA LlanoApMtrrSettingsList[] =
 #include "cpuEarlyInit.h"
 #include "cpuLateInit.h"
 #include "GnbInterface.h"
-#include "PlatformInstall.h"
+#include <PlatformInstall.h>

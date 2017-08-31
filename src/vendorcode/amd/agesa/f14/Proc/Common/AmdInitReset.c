@@ -249,7 +249,10 @@ AmdInitResetConstructor (
   AmdResetParams->StdHeader = *StdHeader;
 
   AmdInitResetExecutionCacheAllocateInitializer (&AmdResetParams->StdHeader, &AmdResetParams->CacheRegion[0]);
-  AmdHtResetConstructor (&AmdResetParams->StdHeader, &AmdResetParams->HtConfig);
+  // Initialize Hyper Transport input structure
+  if (HtOptionInitReset.HtResetConstructor != NULL) {
+    HtOptionInitReset.HtResetConstructor (&AmdResetParams->StdHeader, &AmdResetParams->HtConfig);
+  }
 
   return AGESA_SUCCESS;
 }

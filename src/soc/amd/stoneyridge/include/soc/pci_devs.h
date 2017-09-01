@@ -19,48 +19,6 @@
 #include <device/pci_def.h>
 #include <rules.h>
 
-/* HT Configuration */
-#define HT_DEV			0x18
-#define HT_FUNC			0
-#define HT_DEVID		0x15b0
-#define HT_DEVFN		PCI_DEVFN(HT_DEV, HT_FUNC)
-
-/* Address Maps */
-#define ADDR_DEV		0x18
-#define ADDR_FUNC		1
-#define ADDR_DEVID		0x15b1
-#define ADDR_DEVFN		PCI_DEVFN(ADDR_DEV, ADDR_FUNC)
-
-/* DRAM Configuration */
-#define DCT_DEV			0x18
-#define DCT_FUNC		2
-#define DCT_DEVID		0x15b2
-#define DCT_DEVFN		PCI_DEVFN(DCT_DEV, DCT_FUNC)
-
-/* Misc. Configuration */
-#define MISC_DEV		0x18
-#define MISC_FUNC		3
-#define MISC_DEVID		0x15b3
-#define MISC_DEVFN		PCI_DEVFN(MISC_DEV, MISC_FUNC)
-
-/* PM Configuration */
-#define PM_DEV			0x18
-#define PM_FUNC			4
-#define PM_DEVID		0x15b4
-#define PM_DEVFN		PCI_DEVFN(PM_DEV, PM_FUNC)
-#if !defined(__SIMPLE_DEVICE__)
- #include <device/device.h>
- #define DEV_D18F4 dev_find_slot(0, PM_DEVFN)
-#else
- #define DEV_D18F4 PCI_DEV(0, PM_DEV, PM_FUNC)
-#endif
-
-/* Northbridge Configuration */
-#define NB_DEV			0x18
-#define NB_FUNC			5
-#define NB_DEVID		0x15b5
-#define NB_DEVFN		PCI_DEVFN(NB_DEV, NB_FUNC)
-
 /* GNB Root Complex */
 #define GNB_DEV			0x0
 #define GNB_FUNC		0

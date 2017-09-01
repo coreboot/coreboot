@@ -161,4 +161,7 @@ void generate_cpu_entries(device_t device)
 			acpigen_pop_len();
 		}
 	}
+	/* PPKG is usually used for thermal management
+	   of the first and only package. */
+	acpigen_write_processor_package("PPKG", 0, cores_per_package);
 }

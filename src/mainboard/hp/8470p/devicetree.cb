@@ -65,7 +65,7 @@ chip northbridge/intel/sandybridge
 			register "gen4_dec" = "0x000402e9"
 			register "gpi6_routing" = "2"
 			register "p_cnt_throttling_supported" = "1"
-			register "pcie_hotplug_map" = "{ 0, 0, 1, 0, 0, 0, 0, 0 }"
+			register "pcie_hotplug_map" = "{ 0, 1, 1, 0, 0, 0, 0, 0 }"
 			register "pcie_port_coalesce" = "1"
 			register "sata_interface_speed_support" = "0x3"
 			register "sata_port_map" = "0x3b"
@@ -101,13 +101,13 @@ chip northbridge/intel/sandybridge
 			device pci 1c.0 on # PCIe Port #1
 				subsystemid 0x103c 0x179b
 			end
-			device pci 1c.1 on # PCIe Port #2
+			device pci 1c.1 on # PCIe Port #2, ExpressCard
 				subsystemid 0x103c 0x179b
 			end
-			device pci 1c.2 on # PCIe Port #3
+			device pci 1c.2 on # PCIe Port #3, SD/MMC
 				subsystemid 0x103c 0x179b
 			end
-			device pci 1c.3 on # PCIe Port #4
+			device pci 1c.3 on # PCIe Port #4, WLAN
 				subsystemid 0x103c 0x179b
 			end
 			device pci 1c.4 off # PCIe Port #5

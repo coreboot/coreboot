@@ -30,7 +30,7 @@
 #define GPIO_EC_IRQ	GPIO(1, C, 2)
 #define GPIO_P15V_EN	dead_code_t(gpio_t, "PP1500 doesn't exist on Scarlet")
 #define GPIO_P18V_AUDIO_PWREN dead_code_t(gpio_t, "doesn't exist on Scarlet")
-#define GPIO_P30V_EN	dead_code_t(gpio_t, "PP3000 doesn't exist on Scarlet")
+#define GPIO_P30V_EN	GPIO(0, B, 1)
 #define GPIO_TP_RST_L	dead_code_t(gpio_t, "don't need TP_RST_L on Scarlet")
 #define GPIO_TPM_IRQ	GPIO(1, C, 1)
 #define GPIO_WP		GPIO(0, B, 5)

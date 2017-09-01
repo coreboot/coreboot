@@ -90,36 +90,27 @@ static void register_gpio_suspend(void)
 	 * with highest voltage first.
 	 * Since register_bl31() appends to the front of the list, we need to
 	 * register them backwards, with 1.5V coming first.
+	 * 1.5V and 1.8V are EC-controlled on Scarlet, so we skip them.
 	 */
-	static struct bl31_gpio_param param_p15_en = {
-		.h = {
-			.type = PARAM_SUSPEND_GPIO,
-		},
-		.gpio = {
-			.polarity = BL31_GPIO_LEVEL_LOW,
-		},
-	};
-	param_p15_en.gpio.index = GPIO_P15V_EN.raw;
-	register_bl31_param(&param_p15_en.h);
+	if (!IS_ENABLED(CONFIG_BOARD_GOOGLE_SCARLET)) {
+		static struct bl31_gpio_param param_p15_en = {
+			.h = { .type = PARAM_SUSPEND_GPIO },
+			.gpio = { .polarity = BL31_GPIO_LEVEL_LOW },
+		};
+		param_p15_en.gpio.index = GPIO_P15V_EN.raw;
+		register_bl31_param(&param_p15_en.h);
 
-	static struct bl31_gpio_param param_p18_audio_en = {
-		.h = {
-			.type = PARAM_SUSPEND_GPIO,
-		},
-		.gpio = {
-			.polarity = BL31_GPIO_LEVEL_LOW,
-		},
-	};
-	param_p18_audio_en.gpio.index = GPIO_P18V_AUDIO_PWREN.raw;
-	register_bl31_param(&param_p18_audio_en.h);
+		static struct bl31_gpio_param param_p18_audio_en = {
+			.h = { .type = PARAM_SUSPEND_GPIO },
+			.gpio = { .polarity = BL31_GPIO_LEVEL_LOW },
+		};
+		param_p18_audio_en.gpio.index = GPIO_P18V_AUDIO_PWREN.raw;
+		register_bl31_param(&param_p18_audio_en.h);
+	}
 
 	static struct bl31_gpio_param param_p30_en = {
-		.h = {
-			.type = PARAM_SUSPEND_GPIO,
-		},
-		.gpio = {
-			.polarity = BL31_GPIO_LEVEL_LOW,
-		},
+		.h = { .type = PARAM_SUSPEND_GPIO },
+		.gpio = { .polarity = BL31_GPIO_LEVEL_LOW },
 	};
 	param_p30_en.gpio.index = GPIO_P30V_EN.raw;
 	register_bl31_param(&param_p30_en.h);
@@ -354,8 +345,8 @@ static void mainboard_init(device_t dev)
 	if (!IS_ENABLED(CONFIG_BOARD_GOOGLE_SCARLET)) {
 		configure_touchpad();		/* Scarlet: works differently */
 		setup_usb(1);			/* Scarlet: only one USB port */
-		register_gpio_suspend();	/* Scarlet: all EC-controlled */
 	}
+	register_gpio_suspend();
 	register_reset_to_bl31();
 	register_poweroff_to_bl31();
 	register_apio_suspend();

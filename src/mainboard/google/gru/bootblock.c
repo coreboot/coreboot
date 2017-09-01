@@ -48,12 +48,10 @@ void bootblock_mainboard_early_init(void)
 	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_SCARLET))
 		write32(&rk3399_grf->io_vsel, RK_SETBITS(1 << 3));
 
-	if (!IS_ENABLED(CONFIG_BOARD_GOOGLE_SCARLET)) {
-		/* Enable rails powering GPIO blocks, among other things.
-		   These are EC-controlled on Scarlet and already on. */
-		gpio_output(GPIO_P15V_EN, 1);
-		gpio_output(GPIO_P30V_EN, 1);
-	}
+	/* Enable rails powering GPIO blocks, among other things. */
+	gpio_output(GPIO_P30V_EN, 1);
+	if (!IS_ENABLED(CONFIG_BOARD_GOOGLE_SCARLET))
+		gpio_output(GPIO_P15V_EN, 1);	/* Scarlet: EC-controlled */
 
 #if IS_ENABLED(CONFIG_DRIVERS_UART)
 	_Static_assert(CONFIG_CONSOLE_SERIAL_UART_ADDRESS == UART2_BASE,

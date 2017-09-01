@@ -9,13 +9,13 @@ Else you will need to have to set the default log level at compile
 time, to do that go in "Console  --->" in make menuconfig, then set
 "Default console log level" to SPEW
 
-Rereference:
-------------
+Reference:
+----------
 [1] in make menuconfig you should have: [*] Use CMOS for configuration values
     This option is also known as CONFIG_USE_OPTION_TABLE in Kconfig.
-Information trough SSH
+Information through SSH
 ======================
-board_status.sh can gather information trough ssh with the -r
+board_status.sh can gather information through ssh with the -r
 option.
 
 When using "-r <host>", The script will attempt to log into
@@ -28,10 +28,10 @@ That can be achieved with the use of SSH keys and ssh-agent.
 board_status.sh expects the remote host to have the following
 programs in its path: cbmem, dmesg
 
-Boot log gathering trough a serial port
+Boot log gathering through a serial port
 =======================================
 When using -s </dev/xxx>, board_status.sh starts by retrieving the
-boot log trough the serial port.
+boot log through the serial port.
 
 To produce such logs, power off the board, run board_status.sh
 with the right arguments, power on the board.

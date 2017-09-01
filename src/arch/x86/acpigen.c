@@ -353,6 +353,22 @@ void acpigen_write_processor(u8 cpuindex, u32 pblock_addr, u8 pblock_len)
 	acpigen_emit_byte(pblock_len);
 }
 
+void acpigen_write_processor_package(const char *const name,
+				     const unsigned int first_core,
+				     const unsigned int core_count)
+{
+	unsigned int i;
+	char pscope[16];
+
+	acpigen_write_name(name);
+	acpigen_write_package(core_count);
+	for (i = first_core; i < first_core + core_count; ++i) {
+		snprintf(pscope, sizeof(pscope), CONFIG_ACPI_CPU_STRING, i);
+		acpigen_emit_namestring(pscope);
+	}
+	acpigen_pop_len();
+}
+
 /*
  * Generate ACPI AML code for OperationRegion
  * Arg0: Pointer to struct opregion opreg = OPREGION(rname, space, offset, len)

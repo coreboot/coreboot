@@ -219,6 +219,9 @@ typedef enum { CSD_HW_ALL = 0xfe } CSD_coord;
 void acpigen_write_CSD_package(u32 domain, u32 numprocs, CSD_coord coordtype,
 				u32 index);
 void acpigen_write_processor(u8 cpuindex, u32 pblock_addr, u8 pblock_len);
+void acpigen_write_processor_package(const char *name,
+				     unsigned int first_core,
+				     unsigned int core_count);
 void acpigen_write_TSS_package(int entries, acpi_tstate_t *tstate_list);
 void acpigen_write_TSD_package(u32 domain, u32 numprocs, PSD_coord coordtype);
 void acpigen_write_mem32fixed(int readwrite, u32 base, u32 size);

@@ -72,6 +72,14 @@ config DCACHE_RAM_SIZE
 	hex
 	default 0x10000
 
+config ENABLE_MRC_CACHE
+	bool "Use cached memory configuration"
+	default n
+	select SPI_FLASH
+	help
+	  Try to restore memory training results
+	  from non-volatile memory.
+
 config S3_DATA_POS
 	hex
 	default 0xFFFF0000

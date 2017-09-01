@@ -100,7 +100,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	enable_rs780_dev8();
 	sb800_clk_output_48Mhz();
 
-	w83627hf_set_clksel_48(PNP_DEV(0x2e, 0));
+	winbond_set_clksel_48(PNP_DEV(0x2e, 0));
 	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 
 	console_init();

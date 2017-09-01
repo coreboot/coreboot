@@ -15,7 +15,7 @@
  */
 
 /*
- * A generic romstage (pre-ram) driver for Winbond variant Super I/O chips.
+ * A generic romstage (pre-ram) driver for various Winbond Super I/O chips.
  *
  * The following is derived directly from the vendor Winbond's data-sheets:
  *
@@ -77,5 +77,16 @@ void winbond_set_pinmux(pnp_devfn_t dev, uint8_t offset, uint8_t mask, uint8_t s
 	byte &= ~mask;
 	byte |= state;
 	pnp_write_config(dev, offset, byte);
+	pnp_exit_conf_state(dev);
+}
+
+void winbond_set_clksel_48(pnp_devfn_t dev)
+{
+	u8 reg8;
+
+	pnp_enter_conf_state(dev);
+	reg8 = pnp_read_config(dev, 0x24);
+	reg8 |= (1 << 6); /* Set the clock input to 48MHz. */
+	pnp_write_config(dev, 0x24, reg8);
 	pnp_exit_conf_state(dev);
 }

@@ -33,7 +33,7 @@
 
 void mainboard_romstage_entry(unsigned long bist)
 {
-	w83627hf_set_clksel_48(DUMMY_DEV);
+	winbond_set_clksel_48(DUMMY_DEV);
 	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 
 	console_init();

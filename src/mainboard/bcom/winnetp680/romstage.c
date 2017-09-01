@@ -78,7 +78,7 @@ void main(unsigned long bist)
 	/* Enable multifunction for northbridge. */
 	pci_write_config8(ctrl.d0f0, 0x4f, 0x01);
 
-	w83697hf_set_clksel_48(SERIAL_DEV);
+	winbond_set_clksel_48(SERIAL_DEV);
 	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	console_init();
 

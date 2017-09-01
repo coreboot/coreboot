@@ -53,7 +53,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	report_bist_failure(bist);
 
 	sb7xx_51xx_enable_wideio(0, 0x1600); /* though UARTs are on the NUVOTON BMC */
-	w83627dhg_set_clksel_48(DUMMY_DEV);
+	winbond_set_clksel_48(DUMMY_DEV);
 	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	sb7xx_51xx_disable_wideio(0);
 	post_code(0x34);

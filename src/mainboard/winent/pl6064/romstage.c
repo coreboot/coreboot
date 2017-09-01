@@ -59,7 +59,7 @@ void asmlinkage mainboard_romstage_entry(unsigned long bist)
 	/* Note: must do this AFTER the early_setup! It is counting on some
 	 * early MSR setup for CS5536.
 	 */
-	w83627hf_set_clksel_48(SERIAL_DEV);
+	winbond_set_clksel_48(SERIAL_DEV);
 	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	console_init();
 

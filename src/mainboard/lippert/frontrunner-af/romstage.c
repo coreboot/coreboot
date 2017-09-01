@@ -23,15 +23,3 @@ void board_BeforeAgesa(struct sysinfo *cb)
 {
 	smscsuperio_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 }
-
-#if 0
-	post_code(0x40);
-	/* Reboots with outb(3,0x92), outb(4,0xcf9) or triple-fault all
-	 * hang, looks like DRAM re-init goes wrong, don't know why. */
-	val = agesawrapper_amdinitpost();
-	if (val == 7) /* fatal, amdinitenv below is going to hang */
-		outb(0x06, 0x0cf9); /* reset system harder instead */
-
-	post_code(0x42);
-	agesawrapper_amdinitenv();
-#endif

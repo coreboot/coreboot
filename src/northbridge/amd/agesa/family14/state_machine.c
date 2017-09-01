@@ -16,7 +16,13 @@
 #include "Porting.h"
 #include "AGESA.h"
 
+#include <arch/io.h>
 #include <cbmem.h>
+#include <device/device.h>
+#include <device/pci_def.h>
+#include <halt.h>
+#include <reset.h>
+#include <smp/node.h>
 #include <northbridge/amd/agesa/state_machine.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
 
@@ -24,6 +30,24 @@
 
 void platform_BeforeInitReset(struct sysinfo *cb, AMD_RESET_PARAMS *Reset)
 {
+	/* Reboots with outb(3,0x92), outb(4,0xcf9) or triple-fault all
+	 * would fail later in AmdInitPost(), when DRAM is already configured
+	 * and C6DramLock bit has been set.
+	 *
+	 * As a workaround, do a hard reset to clear C6DramLock bit.
+	 */
+#ifdef __SIMPLE_DEVICE__
+	pci_devfn_t dev = PCI_DEV(0, 0x18, 2);
+#else
+	struct device *dev = dev_find_slot(0, PCI_DEVFN(0x18, 2));
+#endif
+	if (boot_cpu()) {
+		u32 mct_cfg_lo = pci_read_config32(dev, 0x118);
+		if (mct_cfg_lo & (1<<19)) {
+			printk(BIOS_CRIT, "C6DramLock is set, resetting\n");
+			hard_reset();
+		}
+	}
 }
 
 void platform_BeforeInitEarly(struct sysinfo *cb, AMD_EARLY_PARAMS *Early)

@@ -11,6 +11,8 @@
  * GNU General Public License for more details.
  */
 
+#include <ec/google/chromeec/ec.h>
+#include <soc/pm.h>
 #include <smbios.h>
 #include <soc/romstage.h>
 #include <variant/onboard.h>
@@ -44,5 +46,6 @@ int variant_smbios_data(device_t dev, int *handle,
 
 void variant_romstage_entry(struct romstage_params *rp)
 {
-	/* N/A for boards other than SAMUS */
+	if (rp->power_state->prev_sleep_state != ACPI_S3)
+		google_chromeec_kbbacklight(75);
 }

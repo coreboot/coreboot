@@ -19,6 +19,7 @@
 #include <console/console.h>
 #include <cbfs.h>
 #include <fmap.h>
+#include <arch/acpi.h>
 #include <ip_checksum.h>
 #include <device/device.h>
 #include <cbmem.h>
@@ -162,6 +163,9 @@ static void update_mrc_cache(void *unused)
 	int ret;
 	struct spi_flash flash;
 
+	if (acpi_is_wakeup_s3())
+		return;
+
 	if (!current) {
 		printk(BIOS_ERR, "No MRC cache in cbmem. Can't update flash.\n");
 		return;
@@ -231,7 +235,8 @@ static void update_mrc_cache(void *unused)
 		printk(BIOS_DEBUG, "Successfully wrote MRC cache\n");
 }
 
-BOOT_STATE_INIT_ENTRY(BS_WRITE_TABLES, BS_ON_ENTRY, update_mrc_cache, NULL);
+/* Do it before chipset is locked during BS_POST_DEVICE. */
+BOOT_STATE_INIT_ENTRY(BS_DEV_INIT, BS_ON_EXIT, update_mrc_cache, NULL);
 
 struct mrc_data_container *find_current_mrc_cache(void)
 {

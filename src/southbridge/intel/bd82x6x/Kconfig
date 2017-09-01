@@ -75,29 +75,37 @@ endif
 if SOUTHBRIDGE_INTEL_BD82X6X || SOUTHBRIDGE_INTEL_C216 || SOUTHBRIDGE_INTEL_IBEXPEAK
 
 choice
-	prompt "Flash ROM locking on S3 resume"
-	default LOCK_SPI_ON_RESUME_NONE
+	prompt "Flash locking during chipset lockdown"
+	default LOCK_SPI_FLASH_NONE
 
-config LOCK_SPI_ON_RESUME_NONE
-	bool "Don't lock ROM sections on S3 resume"
+config LOCK_SPI_FLASH_NONE
+	bool "Don't lock flash sections"
 
-config LOCK_SPI_ON_RESUME_RO
-	bool "Lock all flash ROM sections on S3 resume"
+config LOCK_SPI_FLASH_RO
+	bool "Write-protect all flash sections"
 	help
-	  If the flash ROM shall be protected against write accesses from the
-	  operating system (OS), the locking procedure has to be repeated after
-	  each resume from S3. Select this if you never want to update the flash
-	  ROM from within your OS. Notice: Even with this option, the write lock
-	  has still to be enabled on the normal boot path (e.g. by the payload).
+	  Select this if you want to write-protect the whole firmware flash
+	  chip. The locking will take place during the chipset lockdown, which
+	  is either triggered by coreboot (when INTEL_CHIPSET_LOCKDOWN is set)
+	  or has to be triggered later (e.g. by the payload or the OS).
 
-config LOCK_SPI_ON_RESUME_NO_ACCESS
-	bool "Lock and disable reads all flash ROM sections on S3 resume"
+	        NOTE: If you trigger the chipset lockdown unconditionally,
+	        you won't be able to write to the flash chip using the
+	        internal programmer any more.
+
+config LOCK_SPI_FLASH_NO_ACCESS
+	bool "Write-protect all flash sections and read-protect non-BIOS sections"
 	help
-	  If the flash ROM shall be protected against all accesses from the
-	  operating system (OS), the locking procedure has to be repeated after
-	  each resume from S3. Select this if you never want to update the flash
-	  ROM from within your OS. Notice: Even with this option, the lock
-	  has still to be enabled on the normal boot path (e.g. by the payload).
+	  Select this if you want to protect the firmware flash against all
+	  further accesses (with the exception of the memory mapped BIOS re-
+	  gion which is always readable). The locking will take place during
+	  the chipset lockdown, which is either triggered by coreboot (when
+	  INTEL_CHIPSET_LOCKDOWN is set) or has to be triggered later (e.g.
+	  by the payload or the OS).
+
+	        NOTE: If you trigger the chipset lockdown unconditionally,
+	        you won't be able to write to the flash chip using the
+	        internal programmer any more.
 
 endchoice
 

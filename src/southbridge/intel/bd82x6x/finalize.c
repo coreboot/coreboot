@@ -25,12 +25,13 @@ void intel_pch_finalize_smm(void)
 	u16 tco1_cnt;
 	u16 pmbase;
 
-	if (CONFIG_LOCK_SPI_ON_RESUME_RO || CONFIG_LOCK_SPI_ON_RESUME_NO_ACCESS) {
+	if (IS_ENABLED(CONFIG_LOCK_SPI_FLASH_RO) ||
+	    IS_ENABLED(CONFIG_LOCK_SPI_FLASH_NO_ACCESS)) {
 		/* Copy flash regions from FREG0-4 to PR0-4
 		   and enable write protection bit31 */
 		int i;
 		u32 lockmask = (1 << 31);
-		if (CONFIG_LOCK_SPI_ON_RESUME_NO_ACCESS)
+		if (IS_ENABLED(CONFIG_LOCK_SPI_FLASH_NO_ACCESS))
 			lockmask |= (1 << 15);
 		for (i = 0; i < 20; i += 4)
 			RCBA32(0x3874 + i) = RCBA32(0x3854 + i) | lockmask;

@@ -108,8 +108,8 @@ volatile u8 * find_fsp ()
 
 	/* Entry point for CAR assembly routine */
 	__asm__ __volatile__ (
-		".global find_fsp\n\t"
-		"find_fsp:\n\t"
+		".global find_fsp_bypass_prologue\n\t"
+		"find_fsp_bypass_prologue:\n\t"
 	);
 #else
 	volatile u8 *fsp_ptr;

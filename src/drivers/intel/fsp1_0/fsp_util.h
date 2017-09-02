@@ -25,7 +25,7 @@ int save_mrc_data(void *hob_start);
 void * find_and_set_fastboot_cache(void);
 #endif
 
-volatile u8 * find_fsp (void);
+volatile u8 * find_fsp(void);
 void fsp_early_init(FSP_INFO_HEADER *fsp_info);
 void FspNotify(u32 Phase);
 void FspNotifyReturnPoint(EFI_STATUS Status, VOID *HobListPtr);

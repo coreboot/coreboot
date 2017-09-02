@@ -10,6 +10,9 @@ endchoice
 
 source "src/mainboard/*/Kconfig"
 
+comment "WARNING: This mainboard uses LATE_CBMEM_INIT, which is deprecated"
+	depends on LATE_CBMEM_INIT
+
 config BOARD_ROMSIZE_KB_64
 	bool
 config BOARD_ROMSIZE_KB_128

@@ -132,7 +132,7 @@ _start:
 	jnz	microcode_done
 
 	/* Determine if parallel microcode loading is allowed. */
-	cmp	$0xffffffff, microcode_lock
+	cmpl	$0xffffffff, microcode_lock
 	je	load_microcode
 
 	/* Protect microcode loading. */
@@ -153,7 +153,7 @@ load_microcode:
 	popa
 
 	/* Unconditionally unlock microcode loading. */
-	cmp	$0xffffffff, microcode_lock
+	cmpl	$0xffffffff, microcode_lock
 	je	microcode_done
 
 	xor	%eax, %eax

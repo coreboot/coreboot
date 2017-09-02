@@ -453,7 +453,7 @@ test_architecture() {
 		# but that's more of a clang limitation. Let's be optimistic
 		# that this will change in the future.
 		CLANG="${clang_prefix}clang"
-		CFLAGS_CLANG="-target ${clang_arch}-${TABI} --rtlib=${CLANG_RUNTIME} $CFLAGS_CLANG -ccc-gcc-name ${GCC}"
+		CFLAGS_CLANG="-target ${clang_arch}-${TABI} $CFLAGS_CLANG -ccc-gcc-name ${GCC}"
 	fi
 }
 

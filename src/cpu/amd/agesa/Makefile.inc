@@ -24,7 +24,7 @@ ramstage-y += s3_mtrr.c
 ifeq ($(CONFIG_AGESA_LEGACY), y)
 cpu_incs-y += $(src)/cpu/amd/agesa/cache_as_ram_legacy.inc
 else
-cpu_incs-y += $(src)/cpu/amd/agesa/cache_as_ram.inc
+cpu_incs-y += $(src)/cpu/amd/agesa/cache_as_ram.S
 romstage-y += romstage.c
 endif
 

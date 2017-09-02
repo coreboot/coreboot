@@ -16,20 +16,21 @@
 /******************************************************************************
  * AMD Generic Encapsulated Software Architecture
  *
- * $Workfile:: cache_as_ram.inc
+ * $Workfile:: cache_as_ram.S
  *
- * Description: cache_as_ram.inc - AGESA Module Entry Point for GCC complier
+ * Description: cache_as_ram.S - AGESA Module Entry Point for GCC complier
  *
  ******************************************************************************
  */
 
 #include "gcccar.inc"
 #include <cpu/x86/cache.h>
+#include <cpu/x86/post_code.h>
 
 .code32
-.globl cache_as_ram_setup, cache_as_ram_setup_out
+.globl _cache_as_ram_setup, _cache_as_ram_setup_end
 
-cache_as_ram_setup:
+_cache_as_ram_setup:
 
   /* Preserve BIST. */
   movd %eax, %mm0
@@ -130,4 +131,4 @@ disable_cache_as_ram:
 stop:
   jmp stop
 
-cache_as_ram_setup_out:
+_cache_as_ram_setup_end:

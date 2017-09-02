@@ -17,7 +17,7 @@ subdirs-$(CONFIG_CPU_AMD_PI_00630F01) += 00630F01
 subdirs-$(CONFIG_CPU_AMD_PI_00730F01) += 00730F01
 subdirs-$(CONFIG_CPU_AMD_PI_00660F01) += 00660F01
 
-cpu_incs-y += $(src)/cpu/amd/agesa/cache_as_ram.inc
+cpu_incs-y += $(src)/cpu/amd/agesa/cache_as_ram.S
 
 ifeq ($(CONFIG_BINARYPI_LEGACY_WRAPPER), y)
 romstage-y += romstage.c

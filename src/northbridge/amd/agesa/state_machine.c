@@ -326,9 +326,6 @@ static void amd_bs_ramstage_init(void *arg)
 	if (!acpi_is_wakeup_s3())
 		agesa_execute_state(cb, AMD_INIT_ENV);
 	else {
-		/* We need HEAP from CBMEM early. */
-		if (IS_ENABLED(CONFIG_LATE_CBMEM_INIT))
-			cbmem_initialize();
 		agesa_execute_state(cb, AMD_S3LATE_RESTORE);
 		fchs3earlyrestore(&cb->StdHeader);
 	}

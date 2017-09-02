@@ -71,6 +71,8 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg, const config_t *config)
 	unsigned int i;
 	uint32_t mask = 0;
 
+	/* Set IGD stolen size to 64MB. */
+	m_cfg->IgdDvmt50PreAlloc = 2;
 	m_cfg->TsegSize = CONFIG_SMM_TSEG_SIZE;
 	m_cfg->IedSize = CONFIG_IED_REGION_SIZE;
 	m_cfg->SaGv = config->SaGv;

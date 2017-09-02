@@ -25,6 +25,7 @@
 /* FIXME: The ASUS P3B-F has a Winbond W83977EF, actually. */
 #include <superio/winbond/w83977tf/w83977tf.h>
 #include <lib.h>
+#include <cbmem.h>
 
 /* FIXME: The ASUS P3B-F has a Winbond W83977EF, actually. */
 #define SERIAL_DEV PNP_DEV(0x3f0, W83977TF_SP1)
@@ -79,4 +80,5 @@ void mainboard_romstage_entry(unsigned long bist)
 	sdram_initialize();
 
 	disable_spd();
+	cbmem_initialize_empty();
 }

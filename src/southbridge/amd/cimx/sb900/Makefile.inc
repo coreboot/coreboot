@@ -22,6 +22,8 @@ romstage-y += smbus.c smbus_spd.c
 romstage-y += reset.c
 romstage-y += ramtop.c
 
+postcar-y += ramtop.c
+
 ramstage-y += cfg.c
 ramstage-y += early.c
 ramstage-y += late.c

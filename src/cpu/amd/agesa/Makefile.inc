@@ -24,10 +24,12 @@ ifeq ($(CONFIG_AGESA_LEGACY), y)
 cpu_incs-y += $(src)/cpu/amd/agesa/cache_as_ram_legacy.inc
 else
 cpu_incs-y += $(src)/cpu/amd/agesa/cache_as_ram.S
-romstage-y += romstage.c
+romstage-y += romstage.c mtrr_fixme.c
 endif
 
 romstage-$(CONFIG_AGESA_LEGACY_WRAPPER) += heapmanager.c
+
+postcar-y += cache_as_ram.S
 
 ramstage-y += heapmanager.c
 ramstage-$(CONFIG_AGESA_LEGACY_WRAPPER) += amd_late_init.c

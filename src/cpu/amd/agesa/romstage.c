@@ -18,7 +18,6 @@
 #include <cbmem.h>
 #include <cpu/amd/car.h>
 #include <cpu/x86/bist.h>
-#include <cpu/x86/mtrr.h>
 #include <console/console.h>
 #include <halt.h>
 #include <program_loading.h>
@@ -54,6 +53,7 @@ static void fill_sysinfo(struct sysinfo *cb)
 
 void * asmlinkage romstage_main(unsigned long bist)
 {
+	struct postcar_frame pcf;
 	struct sysinfo romstage_state;
 	struct sysinfo *cb = &romstage_state;
 	u8 initial_apic_id = (u8) (cpuid_ebx(1) >> 24);
@@ -100,6 +100,9 @@ void * asmlinkage romstage_main(unsigned long bist)
 
 	}
 
+	if (IS_ENABLED(CONFIG_POSTCAR_STAGE))
+		fixup_cbmem_to_UC(cb->s3resume);
+
 	cbmem_initted = !cbmem_recovery(cb->s3resume);
 
 	if (cb->s3resume && !cbmem_initted) {
@@ -107,16 +110,25 @@ void * asmlinkage romstage_main(unsigned long bist)
 		halt();
 	}
 
-	uintptr_t stack_top = romstage_ram_stack_base(HIGH_ROMSTAGE_STACK_SIZE,
-		ROMSTAGE_STACK_CBMEM);
-	stack_top += HIGH_ROMSTAGE_STACK_SIZE;
-
 	romstage_handoff_init(cb->s3resume);
 
-	printk(BIOS_DEBUG, "Move CAR stack.\n");
-	return (void*)stack_top;
+	if (!IS_ENABLED(CONFIG_POSTCAR_STAGE)) {
+		uintptr_t stack_top = romstage_ram_stack_base(
+			HIGH_ROMSTAGE_STACK_SIZE, ROMSTAGE_STACK_CBMEM);
+		stack_top += HIGH_ROMSTAGE_STACK_SIZE;
+		printk(BIOS_DEBUG, "Move CAR stack.\n");
+		return (void*)stack_top;
+	}
+
+	postcar_frame_init(&pcf, HIGH_ROMSTAGE_STACK_SIZE);
+	recover_postcar_frame(&pcf, cb->s3resume);
+
+	run_postcar_phase(&pcf);
+	/* We do not return. */
+	return NULL;
 }
 
+#if !IS_ENABLED(CONFIG_POSTCAR_STAGE)
 void asmlinkage romstage_after_car(void)
 {
 	struct sysinfo romstage_state;
@@ -131,3 +143,4 @@ void asmlinkage romstage_after_car(void)
 
 	run_ramstage();
 }
+#endif

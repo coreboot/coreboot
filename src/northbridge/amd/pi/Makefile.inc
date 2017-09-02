@@ -35,5 +35,6 @@ romstage-y += ../agesa/def_callouts.c ../agesa/eventlog.c
 ramstage-y += ../agesa/def_callouts.c ../agesa/eventlog.c ../agesa/acpi_tables.c
 
 romstage-y += ramtop.c
+postcar-y += ramtop.c
 ramstage-y += ramtop.c
 endif

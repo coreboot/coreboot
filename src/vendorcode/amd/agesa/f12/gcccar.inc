@@ -678,7 +678,11 @@ fam12_enable_stack_hook_exit:
     # This shouldn't be used with S3 resume IF the stack/cache area is
     # not reserved and over system memory.
     #--------------------------------------------------------------------------
+#if !IS_ENABLED(CONFIG_POSTCAR_STAGE)
     wbinvd
+#else
+    invd
+#endif
 
     mov     %bx, %ax                      # Restore INVD -> WBINVD bit
     _WRMSR

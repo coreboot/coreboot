@@ -17,6 +17,7 @@
 #define _AGESA_HELPER_H_
 
 #include <stddef.h>
+#include <arch/cpu.h>
 
 enum {
 	PICK_DMI,       /* DMI Interface */
@@ -53,5 +54,7 @@ void EmptyHeap(void);
 
 #define HIGH_MEMORY_SCRATCH		0x30000
 
+void fixup_cbmem_to_UC(int s3resume);
+void recover_postcar_frame(struct postcar_frame *pcf, int s3resume);
 
 #endif /* _AGESA_HELPER_H_ */

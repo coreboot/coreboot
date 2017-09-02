@@ -30,6 +30,7 @@ ramstage-$(CONFIG_SB800_IMC_FAN_CONTROL) += fan.c
 ramstage-$(CONFIG_SPI_FLASH) += spi.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += fadt.c
 
+postcar-y += ramtop.c
 romstage-y += ramtop.c
 ramstage-y += ramtop.c
 

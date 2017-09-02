@@ -24,6 +24,7 @@ ramstage-$(CONFIG_SPI_FLASH) += spi.c
 ramstage-y += resume.c ramtop.c
 
 romstage-y += ramtop.c
+postcar-y += ramtop.c
 
 romstage-y += imc.c
 ramstage-y += imc.c

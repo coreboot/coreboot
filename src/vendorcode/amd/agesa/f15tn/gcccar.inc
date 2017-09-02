@@ -1263,7 +1263,11 @@ fam15_disable_stack_remote_read_exit:
     # This shouldn't be used with S3 resume IF the stack/cache area is
     # not reserved and over system memory.
     #--------------------------------------------------------------------------
+#if !IS_ENABLED(CONFIG_POSTCAR_STAGE)
     wbinvd
+#else
+    invd
+#endif
 
     #.if (bh == 01h) || (bh == 03h)      ; Is this TN or KM?
     cmp   $01, %bh

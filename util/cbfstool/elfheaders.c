@@ -435,7 +435,8 @@ symtab_read(const struct buffer *in, struct parsed_elf *pelf,
 {
 	Elf64_Ehdr *ehdr;
 	Elf64_Shdr *shdr;
-	Elf64_Half i;
+	Elf64_Half shnum;
+	Elf64_Xword i;
 	Elf64_Xword nsyms;
 	Elf64_Sym *sym;
 	struct buffer b;
@@ -443,17 +444,17 @@ symtab_read(const struct buffer *in, struct parsed_elf *pelf,
 	ehdr = &pelf->ehdr;
 
 	shdr = NULL;
-	for (i = 0; i < ehdr->e_shnum; i++) {
-		if (pelf->shdr[i].sh_type != SHT_SYMTAB)
+	for (shnum = 0; shnum < ehdr->e_shnum; shnum++) {
+		if (pelf->shdr[shnum].sh_type != SHT_SYMTAB)
 			continue;
 
 		if (shdr != NULL) {
 			ERROR("Multiple symbol sections found. %u and %u\n",
-			      (unsigned int)(shdr - pelf->shdr), i);
+			      (unsigned int)(shdr - pelf->shdr), shnum);
 			return -1;
 		}
 
-		shdr = &pelf->shdr[i];
+		shdr = &pelf->shdr[shnum];
 	}
 
 	if (shdr == NULL) {

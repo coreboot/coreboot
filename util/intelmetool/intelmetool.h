@@ -237,6 +237,8 @@ extern int debug;
 #define PCI_DEVICE_ID_INTEL_LYNXPOINT_4 0x9C3A /* Lynx Point LP */
 #define PCI_DEVICE_ID_INTEL_WILDCAT_1 0x9CBA /* Wildcat Point LP */
 #define PCI_DEVICE_ID_INTEL_WILDCAT_2 0x9CBB /* Wildcat Point LP 2 */
+#define PCI_DEVICE_ID_INTEL_SUNRISE_H1 0xa13a /* SUNRISE Point-H 1 */
+#define PCI_DEVICE_ID_INTEL_SUNRISE_H2 0xa13b /* SUNRISE Point-H 2 */
 
 #define PCI_DEV_HAS_SUPPORTED_ME(x) ( \
 	( (x) ==  PCI_DEVICE_ID_INTEL_COUGARPOINT_1 ) || \
@@ -277,4 +279,6 @@ extern int debug;
 	( (x) ==  PCI_DEVICE_ID_INTEL_LYNXPOINT_3 ) || \
 	( (x) ==  PCI_DEVICE_ID_INTEL_LYNXPOINT_4 ) || \
 	( (x) ==  PCI_DEVICE_ID_INTEL_WILDCAT_1 ) || \
-	( (x) ==  PCI_DEVICE_ID_INTEL_WILDCAT_2))
+	( (x) ==  PCI_DEVICE_ID_INTEL_WILDCAT_2 ) || \
+	( (x) ==  PCI_DEVICE_ID_INTEL_SUNRISE_H1 ) || \
+	( (x) ==  PCI_DEVICE_ID_INTEL_SUNRISE_H2))

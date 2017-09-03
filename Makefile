@@ -308,13 +308,19 @@ define create_cc_template
 # $4 additional dependencies
 ifn$(EMPTY)def $(1)-objs_$(2)_template
 de$(EMPTY)fine $(1)-objs_$(2)_template
+ifn$(EMPTY)eq ($(filter ads adb,$(2)),)
 $$(call src-to-obj,$1,$$(1).$2): $$(1).$2 $$(call create_ada_deps,$1,$$(call src-to-ali,$1,$$(1).$2)) $(KCONFIG_AUTOHEADER) $(4)
+	@printf "    GCC        $$$$(subst $$$$(obj)/,,$$$$(@))\n"
+	$(GCC_$(1)) \
+		$$$$(ADAFLAGS_$(1)) $$$$(addprefix -I,$$$$($(1)-ada-dirs)) \
+		$(3) -c -o $$$$@ $$$$<
+el$(EMPTY)se
+$$(call src-to-obj,$1,$$(1).$2): $$(1).$2 $(KCONFIG_AUTOHEADER) $(4)
 	@printf "    CC         $$$$(subst $$$$(obj)/,,$$$$(@))\n"
 	$(CC_$(1)) \
-		$$(if $$(filter-out ads adb,$(2)), \
-		   -MMD $$$$(CPPFLAGS_$(1)) $$$$(CFLAGS_$(1)) -MT $$$$(@), \
-		   $$$$(ADAFLAGS_$(1)) $$$$(addprefix -I,$$$$($(1)-ada-dirs))) \
+		-MMD $$$$(CPPFLAGS_$(1)) $$$$(CFLAGS_$(1)) -MT $$$$(@) \
 		$(3) -c -o $$$$@ $$$$<
+end$(EMPTY)if
 en$(EMPTY)def
 end$(EMPTY)if
 endef
@@ -345,8 +351,8 @@ $$(obj)/$(1)/b__$(1).adb: $$$$(filter-out $$(obj)/$(1)/b__$(1).ali,$$$$($(1)-ali
 			-L$(1)_ada -o $$(notdir $$@) \
 			$$(subst $$(dir $$@),,$$^)
 $$(obj)/$(1)/b__$(1).o: $$(obj)/$(1)/b__$(1).adb
-	@printf "    CC         $$(subst $$(obj)/,,$$@)\n"
-	$(CC_$(1)) $$(ADAFLAGS_$(1)) -c -o $$@ $$<
+	@printf "    GCC        $$(subst $$(obj)/,,$$@)\n"
+	$(GCC_$(1)) $$(ADAFLAGS_$(1)) -c -o $$@ $$<
 $(1)-objs += $$(obj)/$(1)/b__$(1).o
 $($(1)-alis): %.ali: %.o ;
 endef

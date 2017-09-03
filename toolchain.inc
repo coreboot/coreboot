@@ -120,6 +120,7 @@ define create_class_compiler
 $(if $(2),,$(warning *** The toolchain architecture for $(1) is unknown.) \
 	$(error Check your .config file for CONFIG_ARCH_$(1)_* settings))
 CC_$(1) := $(CC_$(2))
+GCC_$(1) := $(GCC_CC_$(2))
 LD_$(1) := $(LD_$(2))
 NM_$(1) := $(NM_$(2))
 AR_$(1) := $(AR_$(2))
@@ -129,7 +130,7 @@ OBJDUMP_$(1) := $(OBJDUMP_$(2))
 STRIP_$(1) := $(STRIP_$(2))
 READELF_$(1) := $(READELF_$(2))
 CFLAGS_$(1) = $$(CFLAGS_common) $$(CFLAGS_$(2))
-ADAFLAGS_$(1) = --RTS=$$(obj)/libgnat-$(2)/ $$(ADAFLAGS_common) $$(CFLAGS_$(2))
+ADAFLAGS_$(1) = --RTS=$$(obj)/libgnat-$(2)/ $$(ADAFLAGS_common) $$(GCC_CFLAGS_$(2))
 CPPFLAGS_$(1) = $$(CPPFLAGS_common) $$(CPPFLAGS_$(2)) -D__ARCH_$(2)__
 COMPILER_RT_$(1) := $$(COMPILER_RT_$(2))
 COMPILER_RT_FLAGS_$(1) := $$(COMPILER_RT_FLAGS_$(2))

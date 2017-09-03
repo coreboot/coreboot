@@ -51,6 +51,7 @@ config VARIANT_DIR
 	default "relm" if BOARD_GOOGLE_RELM
 	default "setzer" if BOARD_GOOGLE_SETZER
 	default "terra" if BOARD_GOOGLE_TERRA
+	default "ultima" if BOARD_GOOGLE_ULTIMA
 
 config MAINBOARD_PART_NUMBER
 	string
@@ -63,6 +64,7 @@ config MAINBOARD_PART_NUMBER
 	default "Relm" if BOARD_GOOGLE_RELM
 	default "Setzer" if BOARD_GOOGLE_SETZER
 	default "Terra" if BOARD_GOOGLE_TERRA
+	default "Ultima" if BOARD_GOOGLE_ULTIMA
 
 config MAINBOARD_VENDOR
 	string
@@ -79,6 +81,7 @@ config DEVICETREE
 	default "variants/relm/devicetree.cb" if BOARD_GOOGLE_RELM
 	default "variants/setzer/devicetree.cb" if BOARD_GOOGLE_SETZER
 	default "variants/terra/devicetree.cb" if BOARD_GOOGLE_TERRA
+	default "variants/ultima/devicetree.cb" if BOARD_GOOGLE_ULTIMA
 
 config VGA_BIOS_FILE
 	string
@@ -109,5 +112,6 @@ config GBB_HWID
 	default "RELM TEST A-A 2323" if BOARD_GOOGLE_RELM
 	default "SETZER TEST A-A 8721" if BOARD_GOOGLE_SETZER
 	default "TERRA TEST A-A 1650" if BOARD_GOOGLE_TERRA
+	default "ULTIMA TEST A-A 6017" if BOARD_GOOGLE_ULTIMA
 
 endif # BOARD_GOOGLE_BASEBOARD_CYAN

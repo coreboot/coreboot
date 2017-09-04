@@ -30,23 +30,6 @@
 #include <cpu/amd/amdfam15.h>
 #include <arch/acpi.h>
 
-#include <amdlib.h>
-#include <PspBaseLib.h>
-
-void PSPProgBar3Msr(void *Buffer);
-
-void PSPProgBar3Msr(void *Buffer)
-{
-	u32 Bar3Addr;
-	u64 Tmp64;
-	/* Get Bar3 Addr */
-	Bar3Addr = PspLibPciReadPspConfig(0x20);
-	Tmp64 = Bar3Addr;
-	printk(BIOS_DEBUG, "Bar3=%llx\n", Tmp64);
-	LibAmdMsrWrite(PSP_MSR_PRIVATE_BLOCK_BAR, &Tmp64, NULL);
-	LibAmdMsrRead(PSP_MSR_PRIVATE_BLOCK_BAR, &Tmp64, NULL);
-}
-
 static void model_15_init(device_t dev)
 {
 	printk(BIOS_DEBUG, "Model 15 Init.\n");
@@ -106,7 +89,6 @@ static void model_15_init(device_t dev)
 	}
 	printk(BIOS_DEBUG, "siblings = %02d, ", siblings);
 #endif
-	PSPProgBar3Msr(NULL);
 
 	/* DisableCf8ExtCfg */
 	msr = rdmsr(NB_CFG_MSR);

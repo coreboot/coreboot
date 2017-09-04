@@ -18,6 +18,7 @@
 
 #include <compiler.h>
 
+#if !defined(__ASSEMBLER__)
 #define DOWNTO8(A) \
 	union { \
 		struct { \
@@ -57,5 +58,12 @@ struct eregs {
 	uint32_t cs;
 	uint32_t eflags;
 };
+#endif // !ASSEMBLER
+
+#if IS_ENABLED(CONFIG_COMPILER_LLVM_CLANG)
+#define ADDR32(opcode) opcode
+#else
+#define ADDR32(opcode) addr32 opcode
+#endif
 
 #endif

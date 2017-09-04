@@ -37,7 +37,7 @@
 #endif
 
 // ADDR32() macro
-#include <compiler.h>
+#include <arch/registers.h>
 
 #if IS_ENABLED(CONFIG_SMM_TSEG)
 #error "Don't use this file with TSEG."

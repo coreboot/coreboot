@@ -26,10 +26,4 @@
 #define __always_unused __attribute__((unused))
 #define __must_check __attribute__((warn_unused_result))
 
-#if IS_ENABLED(CONFIG_COMPILER_LLVM_CLANG)
-#define ADDR32(opcode) opcode
-#else
-#define ADDR32(opcode) addr32 opcode
-#endif
-
 #endif

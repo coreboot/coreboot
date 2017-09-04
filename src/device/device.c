@@ -1179,8 +1179,13 @@ void dev_initialize(void)
 	printk(BIOS_INFO, "Initializing devices...\n");
 
 #if IS_ENABLED(CONFIG_ARCH_X86)
-	/* Ensure EBDA is prepared before Option ROMs. */
-	setup_default_ebda();
+	/*
+	 * Initialize EBDA area in ramstage if early
+	 * initialization is not done.
+	 */
+	if (!IS_ENABLED(CONFIG_EARLY_EBDA_INIT))
+		/* Ensure EBDA is prepared before Option ROMs. */
+		setup_default_ebda();
 #endif
 
 	/* First call the mainboard init. */

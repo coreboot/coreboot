@@ -17,6 +17,9 @@
 #ifndef __ARCH_EBDA_H
 #define __ARCH_EBDA_H
 
+#include <stdint.h>
+#include <stddef.h>
+
 #define X86_BDA_SIZE		0x200
 #define X86_BDA_BASE		((void *)0x400)
 #define X86_EBDA_SEGMENT	((void *)0x40e)

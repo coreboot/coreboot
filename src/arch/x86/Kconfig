@@ -135,6 +135,15 @@ config PRERAM_CBMEM_CONSOLE_SIZE
 	help
 	  Increase this value if preram cbmem console is getting truncated
 
+config EARLY_EBDA_INIT
+	bool
+	default n
+	help
+	  Initialize BIOS EBDA area early in romstage to allow bootloader to
+	  use this region for storing data which can be available across
+	  various stages. If user is selecting this option then its users
+	  responsibility to perform EBDA initialization call during romstage.
+
 config PC80_SYSTEM
 	bool
 	default y if ARCH_X86

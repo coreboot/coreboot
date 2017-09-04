@@ -47,6 +47,7 @@ is
             Max_Pipe => Primary);
 
          if configs (Primary).Port /= Disabled then
+            HW.GFX.GMA.Power_Up_VGA;
             vga_io_init;
             vga_textmode_init;
 

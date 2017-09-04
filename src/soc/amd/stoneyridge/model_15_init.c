@@ -37,9 +37,6 @@ static void model_15_init(device_t dev)
 	u8 i;
 	msr_t msr;
 	int msrno;
-#if IS_ENABLED(CONFIG_LOGICAL_CPUS)
-	u32 siblings;
-#endif
 
 	disable_cache();
 	/* Enable access to AMD RdDram and WrDram extension bits */
@@ -71,30 +68,13 @@ static void model_15_init(device_t dev)
 	for (i = 0 ; i < 6 ; i++)
 		wrmsr(MCI_STATUS + (i * 4), msr);
 
-
 	/* Enable the local CPU APICs */
 	setup_lapic();
-
-#if IS_ENABLED(CONFIG_LOGICAL_CPUS)
-	siblings = cpuid_ecx(0x80000008) & 0xff;
-
-	if (siblings > 0) {
-		msr = rdmsr_amd(CPU_ID_FEATURES_MSR);
-		msr.lo |= 1 << 28;
-		wrmsr_amd(CPU_ID_FEATURES_MSR, msr);
-
-		msr = rdmsr_amd(CPU_ID_EXT_FEATURES_MSR);
-		msr.hi |= 1 << (33 - 32);
-		wrmsr_amd(CPU_ID_EXT_FEATURES_MSR, msr);
-	}
-	printk(BIOS_DEBUG, "siblings = %02d, ", siblings);
-#endif
 
 	/* DisableCf8ExtCfg */
 	msr = rdmsr(NB_CFG_MSR);
 	msr.hi &= ~(1 << (46 - 32));
 	wrmsr(NB_CFG_MSR, msr);
-
 
 	/* Write protect SMM space with SMMLOCK. */
 	msr = rdmsr(HWCR_MSR);

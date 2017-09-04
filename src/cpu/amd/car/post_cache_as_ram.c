@@ -128,6 +128,7 @@ static void vErrata343(void)
 asmlinkage void * post_cache_as_ram(void)
 {
 	uint32_t family = amd_fam1x_cpu_family();
+	int s3resume = 0;
 
 	/* Verify that the BSP didn't overrun the lower stack
 	 * boundary during romstage execution
@@ -139,12 +140,17 @@ asmlinkage void * post_cache_as_ram(void)
 	if ((*lower_stack_boundary) != 0xdeadbeef)
 		printk(BIOS_WARNING, "BSP overran lower stack boundary.  Undefined behaviour may result!\n");
 
-	int s3resume = acpi_is_wakeup_s3();
-
-	/* Boards with EARLY_CBMEM_INIT need to do this in cache_as_ram_main().
-	 */
-	if (s3resume && !IS_ENABLED(CONFIG_EARLY_CBMEM_INIT))
-		cbmem_recovery(s3resume);
+	if (IS_ENABLED(CONFIG_EARLY_CBMEM_INIT)) {
+		s3resume = acpi_is_wakeup_s3();
+	} else {
+		if (IS_ENABLED(CONFIG_HAVE_ACPI_RESUME))
+			s3resume = (acpi_get_sleep_type() == ACPI_S3);
+		/* For normal boot path, boards with LATE_CBMEM_INIT will do
+		 * cbmem_initialize_empty() late in ramstage.
+		 */
+		if (s3resume)
+			cbmem_recovery(s3resume);
+	}
 
 	prepare_romstage_ramstack(s3resume);
 

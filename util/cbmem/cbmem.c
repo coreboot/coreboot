@@ -809,10 +809,12 @@ struct cbmem_id_to_name {
 };
 static const struct cbmem_id_to_name cbmem_ids[] = { CBMEM_ID_TO_NAME_TABLE };
 
+#define MAX_STAGEx 10
 void cbmem_print_entry(int n, uint32_t id, uint64_t base, uint64_t size)
 {
 	int i;
 	const char *name;
+	char stage_x[20];
 
 	name = NULL;
 	for (i = 0; i < ARRAY_SIZE(cbmem_ids); i++) {
@@ -820,11 +822,23 @@ void cbmem_print_entry(int n, uint32_t id, uint64_t base, uint64_t size)
 			name = cbmem_ids[i].name;
 			break;
 		}
+		if (id >= CBMEM_ID_STAGEx_META &&
+			id < CBMEM_ID_STAGEx_META + MAX_STAGEx) {
+			snprintf(stage_x, sizeof(stage_x), "STAGE%d META",
+				(id - CBMEM_ID_STAGEx_META));
+			name = stage_x;
+		}
+		if (id >= CBMEM_ID_STAGEx_CACHE &&
+			id < CBMEM_ID_STAGEx_CACHE + MAX_STAGEx) {
+			snprintf(stage_x, sizeof(stage_x), "STAGE%d $  ",
+				(id - CBMEM_ID_STAGEx_CACHE));
+			name = stage_x;
+		}
 	}
 
 	printf("%2d. ", n);
 	if (name == NULL)
-		printf("%08x ", id);
+		printf("\t\t%08x", id);
 	else
 		printf("%s\t%08x", name, id);
 	printf("  %08" PRIx64 " ", base);

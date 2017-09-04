@@ -13,6 +13,9 @@
 ##
 ################################################################################
 
+-include ../../../../../.xcompile
+GCC_PREFIX?=$(CROSS_COMPILE_arm)
+
 CC = $(GCC_PREFIX)gcc
 NM = $(GCC_PREFIX)nm
 OBJCOPY = $(GCC_PREFIX)objcopy

@@ -30,22 +30,17 @@
 /* This is filled with acpi_is_wakeup() call early in ramstage. */
 static int acpi_slp_type = -1;
 
-#if IS_ENABLED(CONFIG_EARLY_CBMEM_INIT)
-int acpi_get_sleep_type(void)
-{
-	if (romstage_handoff_is_resume()) {
-		printk(BIOS_DEBUG, "S3 Resume.\n");
-		return ACPI_S3;
-	}
-	printk(BIOS_DEBUG, "Normal boot.\n");
-	return ACPI_S0;
-}
-#endif
-
 static void acpi_handoff_wakeup(void)
 {
-	if (acpi_slp_type < 0)
-		acpi_slp_type = acpi_get_sleep_type();
+	if (acpi_slp_type < 0) {
+		if (romstage_handoff_is_resume()) {
+			printk(BIOS_DEBUG, "S3 Resume.\n");
+			acpi_slp_type = ACPI_S3;
+		} else {
+			printk(BIOS_DEBUG, "Normal boot.\n");
+			acpi_slp_type = ACPI_S0;
+		}
+	}
 }
 
 int acpi_is_wakeup(void)

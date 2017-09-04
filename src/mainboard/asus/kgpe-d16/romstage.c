@@ -26,6 +26,7 @@
 #include <device/pnp_def.h>
 #include <cpu/x86/lapic.h>
 #include <console/console.h>
+#include <romstage_handoff.h>
 #include <timestamp.h>
 #include <lib.h>
 #include <spd.h>
@@ -606,6 +607,9 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		cbmem_initialize();
 	else
 		cbmem_initialize_empty();
+
+	romstage_handoff_init(s3resume);
+
 	post_code(0x41);
 
 	amdmct_cbmem_store_info(sysinfo);

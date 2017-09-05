@@ -173,6 +173,7 @@ struct soc_intel_skylake_config {
 	u8 PcieRpEnable[CONFIG_MAX_ROOT_PORTS];
 	u8 PcieRpClkReqSupport[CONFIG_MAX_ROOT_PORTS];
 	u8 PcieRpClkReqNumber[CONFIG_MAX_ROOT_PORTS];
+	u8 PcieRpAdvancedErrorReporting[CONFIG_MAX_ROOT_PORTS];
 
 	/* USB related */
 	struct usb2_port_config usb2_ports[16];

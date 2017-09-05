@@ -29,6 +29,7 @@ void stage_cache_add(int stage_id, const struct prog *stage)
 		return;
 	meta->load_addr = (uintptr_t)prog_start(stage);
 	meta->entry_addr = (uintptr_t)prog_entry(stage);
+	meta->arg = (uintptr_t)prog_entry_arg(stage);
 
 	c = cbmem_add(CBMEM_ID_STAGEx_CACHE + stage_id, prog_size(stage));
 	if (c == NULL)
@@ -63,5 +64,6 @@ void stage_cache_load_stage(int stage_id, struct prog *stage)
 	memcpy(load_addr, c, size);
 
 	prog_set_area(stage, load_addr, size);
-	prog_set_entry(stage, (void *)(uintptr_t)meta->entry_addr, NULL);
+	prog_set_entry(stage, (void *)(uintptr_t)meta->entry_addr,
+			(void *)(uintptr_t)meta->arg);
 }

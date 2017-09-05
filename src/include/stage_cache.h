@@ -37,6 +37,7 @@ void stage_cache_external_region(void **base, size_t *size);
 struct stage_cache {
 	uint64_t load_addr;
 	uint64_t entry_addr;
+	uint64_t arg;
 };
 
 #endif /* _STAGE_CACHE_H_ */

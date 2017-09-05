@@ -15,8 +15,9 @@
  */
 
 #include <console/console.h>
-#include <device/pci.h>
 #include <device/device.h>
+#include <device/pci.h>
+#include <device/pci_ids.h>
 #include <hwilib.h>
 #include <i210.h>
 #include <intelblocks/lpc_lib.h>
@@ -115,6 +116,8 @@ static void mainboard_init(void *chip_info)
 static void mainboard_final(void *chip_info)
 {
 	int status;
+	uint16_t cmd = 0;
+	device_t dev = NULL;
 
 	/**
 	 * Set up the DP2LVDS converter.
@@ -128,6 +131,14 @@ static void mainboard_final(void *chip_info)
 
 	/* Enable additional I/O decoding range on LPC for COM 3 */
 	lpc_open_pmio_window(0x3e8, 8);
+
+	/* Set Master Enable for on-board PCI device. */
+	dev = dev_find_device(PCI_VENDOR_ID_SIEMENS, 0x403f, 0);
+	if (dev) {
+		cmd = pci_read_config16(dev, PCI_COMMAND);
+		cmd |= PCI_COMMAND_MASTER;
+		pci_write_config16(dev, PCI_COMMAND, cmd);
+	}
 }
 
 struct chip_operations mainboard_ops = {

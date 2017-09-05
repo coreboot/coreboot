@@ -28,6 +28,10 @@ chip soc/intel/cannonlake
 	register "usb3_ports[4]" = "USB3_PORT_DEFAULT(OC0)"
 	register "usb3_ports[5]" = "USB3_PORT_DEFAULT(OC0)"
 
+	register "SataEnable" = "1"
+	register "SataPortsEnable[0]" = "1"
+	register "SataPortsEnable[1]" = "1"
+
 	device domain 0 on
 		device pci 00.0 on  end # Host Bridge
 		device pci 02.0 on  end # Integrated Graphics Device

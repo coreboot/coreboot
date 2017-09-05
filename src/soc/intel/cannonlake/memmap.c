@@ -91,6 +91,8 @@ static uintptr_t calculate_dram_base(void)
 	size_t imr_size;
 
 	dev = dev_find_slot(0, PCI_DEVFN(SA_DEV_SLOT_IGD, 0));
+	if (!dev)
+		die("ERROR - device not found!");
 
 	/* Read TOLUD from Host Bridge offset */
 	dram_base = sa_get_tolud_base();

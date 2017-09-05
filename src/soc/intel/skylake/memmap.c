@@ -142,6 +142,8 @@ static u32 calculate_dram_base(void)
 	size_t prmrr_size;
 
 	dev = dev_find_slot(0, PCI_DEVFN(SA_DEV_SLOT_IGD, 0));
+	if (!dev)
+		die("ERROR - device not found!");
 
 	/* Read TOLUD from Host Bridge offset */
 	dram_base = sa_get_tolud_base();
@@ -160,7 +162,6 @@ static u32 calculate_dram_base(void)
 	if (IS_ENABLED(CONFIG_SA_ENABLE_DPR))
 		dram_base -= sa_get_dpr_size();
 
-	dev = dev_find_slot(0, PCI_DEVFN(SA_DEV_SLOT_ROOT, 0));
 	config = dev->chip_info;
 	if (IS_ENABLED(CONFIG_PLATFORM_USES_FSP1_1))
 		prmrr_size = 1*MiB;

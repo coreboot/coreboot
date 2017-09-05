@@ -124,6 +124,17 @@ void *postcar_commit_mtrrs(struct postcar_frame *pcf)
 	return (void *) pcf->stack;
 }
 
+static void finalize_load(uintptr_t *stack_top_ptr, uintptr_t stack_top)
+{
+	*stack_top_ptr = stack_top;
+	/*
+	 * Signal to rest of system that another update was made to the
+	 * postcar program prior to running it.
+	 */
+	prog_segment_loaded((uintptr_t)stack_top_ptr, sizeof(uintptr_t),
+		SEG_FINAL);
+}
+
 static void load_postcar_cbfs(struct prog *prog, struct postcar_frame *pcf)
 {
 	struct rmod_stage_load rsl = {
@@ -140,14 +151,7 @@ static void load_postcar_cbfs(struct prog *prog, struct postcar_frame *pcf)
 	if (rsl.params == NULL)
 		die("No parameters found in after CAR program.\n");
 
-	*(uintptr_t *)rsl.params = pcf->stack;
-
-	/*
-	 * Signal to rest of system that another update was made to the
-	 * postcar program prior to running it.
-	 */
-	prog_segment_loaded((uintptr_t)rsl.params, sizeof(uintptr_t),
-		SEG_FINAL);
+	finalize_load(rsl.params, pcf->stack);
 
 	if (!IS_ENABLED(CONFIG_NO_STAGE_CACHE))
 		stage_cache_add(STAGE_POSTCAR, prog);
@@ -160,9 +164,11 @@ void run_postcar_phase(struct postcar_frame *pcf)
 
 	postcar_commit_mtrrs(pcf);
 
-	if (!IS_ENABLED(CONFIG_NO_STAGE_CACHE) && romstage_handoff_is_resume())
+	if (!IS_ENABLED(CONFIG_NO_STAGE_CACHE) &&
+				romstage_handoff_is_resume()) {
 		stage_cache_load_stage(STAGE_POSTCAR, &prog);
-	else
+		finalize_load(prog.arg, pcf->stack);
+	} else
 		load_postcar_cbfs(&prog, pcf);
 
 	prog_run(&prog);

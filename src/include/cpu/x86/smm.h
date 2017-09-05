@@ -37,7 +37,8 @@
  * starts @ 0x7e00
  */
 #define SMM_AMD64_ARCH_OFFSET 0x7e00
-
+#define SMM_AMD64_SAVE_STATE_OFFSET \
+	SMM_SAVE_STATE_BEGIN(SMM_AMD64_ARCH_OFFSET)
 typedef struct {
 	u16	es_selector;
 	u16	es_attributes;

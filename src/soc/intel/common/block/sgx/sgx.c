@@ -41,7 +41,13 @@ void prmrr_core_configure(void)
 	msr_t prmrr_mask;
 	msr_t msr;
 	device_t dev = SA_DEV_ROOT;
+	assert(dev != NULL);
 	config_t *conf = dev->chip_info;
+
+	if (!conf) {
+		printk(BIOS_ERR, "SGX: failed to get chip_info\n");
+		return;
+	}
 
 	if (!conf->sgx_enable || !is_sgx_supported())
 		return;
@@ -158,6 +164,11 @@ void sgx_configure(void)
 	assert(dev != NULL);
 	config_t *conf = dev->chip_info;
 	const void *microcode_patch = intel_mp_current_microcode();
+
+	if (!conf) {
+		printk(BIOS_ERR, "SGX: failed to get chip_info\n");
+		return;
+	}
 
 	if (!conf->sgx_enable || !is_sgx_supported() || !is_prmrr_set()) {
 		printk(BIOS_ERR, "SGX: pre-conditions not met\n");

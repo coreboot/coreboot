@@ -42,6 +42,8 @@ static void mainboard_init(void *chip_info)
 	gpio_configure_pads(pads, num);
 
 	mainboard_ec_init();
+
+	variant_board_ec_set_skuid();
 }
 
 /*
@@ -62,6 +64,11 @@ uint8_t __attribute__((weak)) variant_board_sku(void)
 		board_sku_num = gpio_base3_value(board_sku_gpios, num);
 
 	return board_sku_num;
+}
+
+/* Set variabnt board sku to ec by sku id */
+void __attribute__((weak)) variant_board_ec_set_skuid(void)
+{
 }
 
 const char *smbios_mainboard_sku(void)

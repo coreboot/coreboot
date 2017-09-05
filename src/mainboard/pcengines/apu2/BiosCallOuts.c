@@ -99,7 +99,12 @@ static AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr)
 
 		/* EHCI configuration */
 		FchParams->Usb.Ehci3Enable = !IS_ENABLED(CONFIG_HUDSON_XHCI_ENABLE);
+
+#if CONFIG_BOARD_PCENGINES_APU2
 		FchParams->Usb.Ehci1Enable = FALSE;	// Disable EHCI 0 (port 0 to 3)
+#else
+		FchParams->Usb.Ehci1Enable = TRUE;	// Enable EHCI 0 (port 0 to 3)
+#endif
 		FchParams->Usb.Ehci2Enable = TRUE;	// Enable EHCI 1 ( port 4 to 7) port 4 and 5 to EHCI header port 6 and 7 to PCIe slot.
 
 		/* sata configuration */

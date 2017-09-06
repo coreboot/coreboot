@@ -7,7 +7,6 @@ subdirs-y += ../../../cpu/x86/lapic
 subdirs-y += ../../../cpu/x86/mtrr
 subdirs-y += ../../../cpu/x86/tsc
 
-bootblock-$(CONFIG_DRIVERS_UART_8250MEM) += uart.c
 bootblock-y += bootblock/bootblock.c
 bootblock-y += bootblock/cpu.c
 bootblock-y += bootblock/pch.c

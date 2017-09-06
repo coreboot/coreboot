@@ -412,71 +412,29 @@ void domain_enable_resources(device_t dev)
 	printk(BIOS_DEBUG, "  ader - leaving domain_enable_resources.\n");
 }
 
-#if CONFIG_HW_MEM_HOLE_SIZEK != 0
-struct hw_mem_hole_info {
-	unsigned int hole_startk;
-	int node_id;
-};
-
-static struct hw_mem_hole_info get_hw_mem_hole_info(void)
-{
-	struct hw_mem_hole_info mem_hole;
-	mem_hole.hole_startk = CONFIG_HW_MEM_HOLE_SIZEK;
-	mem_hole.node_id = -1;
-	dram_base_mask_t d;
-	u32 hole;
-	d = get_dram_base_mask();
-	hole = pci_read_config32(dev_find_slot(0, ADDR_DEVFN), 0xf0);
-	if (hole & 2) {
-		/* We found the hole */
-		mem_hole.hole_startk = (hole & (0xff << 24)) >> 10;
-		mem_hole.node_id = 0; /* record the node # with hole */
-	}
-
-	return mem_hole;
-}
-#endif
-
 void domain_set_resources(device_t dev)
 {
 	unsigned long mmio_basek;
 	u32 pci_tolm;
+	u32 hole;
 	int idx;
 	struct bus *link;
-#if CONFIG_HW_MEM_HOLE_SIZEK != 0
-	struct hw_mem_hole_info mem_hole;
-	u32 reset_memhole = 1;
-#endif
 
 	pci_tolm = 0xffffffffUL;
 	for (link = dev->link_list ; link ; link = link->next)
 		pci_tolm = find_pci_tolm(link);
 
-	mmio_basek = pci_tolm >> 10;
-	/* Round mmio_basek to something the processor can support */
-	mmio_basek &= ~((1 << 6) - 1);
+	/* Start with alignment supportable in variable MTRR */
+	mmio_basek = ALIGN_DOWN(pci_tolm, 4 * KiB) / KiB;
 
-	/* FIXME improve mtrr.c so we don't use up all of the mtrrs with a 64M
-	 * MMIO hole. If you fix this here, please fix amdk8, too.
-	*/
-	/* Round the mmio hole to 64M */
-	mmio_basek &= ~((64 * 1024) - 1);
-
-#if CONFIG_HW_MEM_HOLE_SIZEK != 0
-	/* if the hw mem hole is already set in raminit stage, here we will
-	 * compare mmio_basek and hole_basek. if mmio_basek is bigger that
-	 * hole_basek and will use hole_basek as mmio_basek and we don't need
-	 * to reset hole.  Otherwise we reset the hole to the mmio_basek
+	/*
+	 * AGESA may have programmed the memory hole and rounded down to a
+	 * 128MB boundary.  If we find it's valid, adjust mmio_basek downward
+	 * to the hole bottom.  D18F1xF0[DramHoleBase] is granular to 16MB.
 	 */
-
-	mem_hole = get_hw_mem_hole_info();
-
-	/* Use hole_basek as mmio_basek, and no need to reset hole anymore */
-	if ((mem_hole.node_id !=  -1) && (mmio_basek > mem_hole.hole_startk)) {
-		mmio_basek = mem_hole.hole_startk;
-		reset_memhole = 0;
-	}
-#endif
+	hole = pci_read_config32(dev_find_slot(0, ADDR_DEVFN), D18F1_DRAM_HOLE);
+	if (hole & DRAM_HOLE_VALID)
+		mmio_basek = min(mmio_basek, ALIGN_DOWN(hole, 16 * MiB) / KiB);
 
 	idx = 0x10;
 	dram_base_mask_t d;

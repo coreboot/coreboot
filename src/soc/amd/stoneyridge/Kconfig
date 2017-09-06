@@ -110,14 +110,6 @@ config BOTTOMIO_POSITION
 	  option is useful when PCI peripherals requesting large address
 	  ranges are present.
 
-config HW_MEM_HOLE_SIZEK
-	hex
-	default 0x200000
-
-config HW_MEM_HOLE_SIZE_AUTO_INC
-	bool
-	default n
-
 config MMCONF_BASE_ADDRESS
 	hex
 	default 0xF8000000

@@ -86,6 +86,43 @@ static const char *soc_acpi_name(struct device *dev)
 }
 #endif
 
+static void parse_devicetree(FSP_S_CONFIG *params)
+{
+	struct device *dev = SA_DEV_ROOT;
+	if (!dev) {
+		printk(BIOS_ERR, "Could not find root device\n");
+		return;
+	}
+
+	const config_t *config = dev->chip_info;
+	const int SerialIoDev[] = {
+		PCH_DEVFN_I2C0,
+		PCH_DEVFN_I2C1,
+		PCH_DEVFN_I2C2,
+		PCH_DEVFN_I2C3,
+		PCH_DEVFN_I2C4,
+		PCH_DEVFN_I2C5,
+		PCH_DEVFN_GSPI0,
+		PCH_DEVFN_GSPI1,
+		PCH_DEVFN_GSPI2,
+		PCH_DEVFN_UART0,
+		PCH_DEVFN_UART1,
+		PCH_DEVFN_UART2
+	};
+
+	for (int i = 0; i < ARRAY_SIZE(SerialIoDev); i++) {
+		dev = dev_find_slot(0, SerialIoDev[i]);
+		if (!dev->enabled) {
+			params->SerialIoDevMode[i] = PchSerialIoDisabled;
+			continue;
+		}
+		params->SerialIoDevMode[i] = PchSerialIoPci;
+		if (config->SerialIoDevMode[i] == PchSerialIoAcpi ||
+		    config->SerialIoDevMode[i] == PchSerialIoHidden)
+			params->SerialIoDevMode[i] = config->SerialIoDevMode[i];
+	}
+}
+
 void soc_init_pre_device(void *chip_info)
 {
 	/* Perform silicon specific init. */
@@ -136,6 +173,9 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	FSP_S_CONFIG *params = &supd->FspsConfig;
 	const struct device *dev = SA_DEV_ROOT;
 	const config_t *config = dev->chip_info;
+
+	/* Parse device tree and enable/disable devices */
+	parse_devicetree(params);
 
 	/* Set USB OC pin to 0 first */
 	for (i = 0; i < ARRAY_SIZE(params->Usb2OverCurrentPin); i++) {

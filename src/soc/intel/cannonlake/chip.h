@@ -20,6 +20,7 @@
 
 #include <intelblocks/gspi.h>
 #include <stdint.h>
+#include <soc/serialio.h>
 #include <soc/usb.h>
 #include <soc/vr_config.h>
 
@@ -200,6 +201,30 @@ struct soc_intel_cannonlake_config {
 	 */
 	uint32_t PrmrrSize;
 	uint8_t PmTimerDisabled;
+	/*
+	 * SerialIO device mode selection:
+	 *
+	 * Device index:
+	 * PchSerialIoIndexI2C0
+	 * PchSerialIoIndexI2C1
+	 * PchSerialIoIndexI2C2
+	 * PchSerialIoIndexI2C3
+	 * PchSerialIoIndexI2C4
+	 * PchSerialIoIndexI2C5
+	 * PchSerialIoIndexSPI0
+	 * PchSerialIoIndexSPI1
+	 * PchSerialIoIndexSPI2
+	 * PchSerialIoIndexUART0
+	 * PchSerialIoIndexUART1
+	 * PchSerialIoIndexUART2
+	 *
+	 * Mode select:
+	 * PchSerialIoDisabled
+	 * PchSerialIoPci
+	 * PchSerialIoAcpi
+	 * PchSerialIoHidden
+	 */
+	uint8_t SerialIoDevMode[PchSerialIoIndexMAX];
 };
 
 typedef struct soc_intel_cannonlake_config config_t;

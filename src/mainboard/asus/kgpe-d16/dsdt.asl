@@ -50,6 +50,8 @@ DefinitionBlock (
 	/* HPET enable */
 	Name (HPTE, 0x1)
 
+	#include <southbridge/amd/common/acpi/sleepstates.asl>
+
 	/* The _PIC method is called by the OS to choose between interrupt
 		* routing via the i8259 interrupt controller or the APIC.
 		*

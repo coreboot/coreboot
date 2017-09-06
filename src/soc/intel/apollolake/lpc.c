@@ -83,23 +83,16 @@ void lpc_configure_pads(void)
 	gpio_configure_pads(lpc_gpios, ARRAY_SIZE(lpc_gpios));
 }
 
-static void rtc_init(void)
+int soc_get_rtc_failed(void)
 {
-	int rtc_fail;
 	const struct chipset_power_state *ps = cbmem_find(CBMEM_ID_POWER_STATE);
 
 	if (!ps) {
 		printk(BIOS_ERR, "Could not find power state in cbmem, RTC init aborted\n");
-		return;
+		return 1;
 	}
 
-	rtc_fail = !!(ps->gen_pmcon1 & RPS);
-	/* Ensure the date is set including century byte. */
-	cmos_check_update_date();
-	if (IS_ENABLED(CONFIG_VBOOT_VBNV_CMOS))
-		init_vbnv_cmos(rtc_fail);
-	else
-		cmos_init(rtc_fail);
+	return !!(ps->gen_pmcon1 & RPS);
 }
 
 void lpc_init(struct device *dev)

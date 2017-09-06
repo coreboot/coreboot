@@ -13,9 +13,11 @@
  * GNU General Public License for more details.
  */
 
-#include <soc/pcr_ids.h>
 #include <intelblocks/pcr.h>
 #include <intelblocks/rtc.h>
+#include <soc/pcr_ids.h>
+#include <pc80/mc146818rtc.h>
+#include <vboot/vbnv.h>
 
 /* RTC PCR configuration */
 #define PCR_RTC_CONF		0x3400
@@ -28,4 +30,23 @@ void enable_rtc_upper_bank(void)
 {
 	/* Enable upper 128 bytes of CMOS */
 	pcr_or32(PID_RTC, PCR_RTC_CONF, PCR_RTC_CONF_UCMOS_EN);
+}
+
+__attribute__((weak)) int soc_get_rtc_failed(void)
+{
+	return 0;
+}
+
+void rtc_init(void)
+{
+	int rtc_failed;
+
+	rtc_failed = soc_get_rtc_failed();
+	/* Ensure the date is set including century byte. */
+	cmos_check_update_date();
+
+	if (IS_ENABLED(CONFIG_VBOOT_VBNV_CMOS))
+		init_vbnv_cmos(rtc_failed);
+	else
+		cmos_init(rtc_failed);
 }

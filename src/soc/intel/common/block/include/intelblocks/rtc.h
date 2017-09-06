@@ -18,4 +18,9 @@
 
 void enable_rtc_upper_bank(void);
 
+/* Expect return rtc failed bootlean in case of coin removal */
+int soc_get_rtc_failed(void);
+
+void rtc_init(void);
+
 #endif	/* SOC_INTEL_COMMON_BLOCK_RTC_H */

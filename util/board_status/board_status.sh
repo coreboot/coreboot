@@ -441,8 +441,13 @@ cd "$coreboot_dir"
 if [ $CLOBBER_OUTPUT -eq 1 ]; then
 	rm -rf "${tmpdir}"
 else
-	echo
-	echo "output files are in ${tmpdir}/${results}"
+	if [ $UPLOAD_RESULTS -eq 1 ]; then
+		echo
+		echo "output files are in $(dirname $0)/board-status/${mainboard_dir}/${tagged_version}/${timestamp}"
+	else
+		echo
+		echo "output files are in ${tmpdir}/${results}"
+	fi
 fi
 
 exit $EXIT_SUCCESS

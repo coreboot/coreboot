@@ -44,10 +44,6 @@
 #include <Porting.h>
 #include <Topology.h>
 
-#if IS_ENABLED(CONFIG_EXT_CONF_SUPPORT)
-#error CONFIG_EXT_CONF_SUPPORT == 1 not support anymore!
-#endif
-
 typedef struct dram_base_mask {
 	u32 base; /* [47:27] at [28:8] */
 	u32 mask; /* [47:27] at [28:8] and enable at bit 0 */

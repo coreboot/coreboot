@@ -71,11 +71,6 @@ static void model_15_init(device_t dev)
 	/* Enable the local CPU APICs */
 	setup_lapic();
 
-	/* DisableCf8ExtCfg */
-	msr = rdmsr(NB_CFG_MSR);
-	msr.hi &= ~(1 << (46 - 32));
-	wrmsr(NB_CFG_MSR, msr);
-
 	/* Write protect SMM space with SMMLOCK. */
 	msr = rdmsr(HWCR_MSR);
 	msr.lo |= (1 << 0);

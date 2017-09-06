@@ -58,7 +58,6 @@ typedef struct dram_base_mask {
 } dram_base_mask_t;
 
 static unsigned int node_nums;
-static unsigned int sblink;
 static device_t __f0_dev;
 static device_t __f1_dev;
 static device_t __f2_dev;
@@ -143,18 +142,6 @@ static void f1_write_config32(unsigned int reg, u32 value)
 	pci_write_config32(__f1_dev, reg, value);
 }
 
-static void set_vga_enable_reg(u32 nodeid, u32 linkn)
-{
-	u32 val;
-
-	val =  1 | (nodeid << 4) | (linkn << 12);
-	/* Routes:
-	 * mmio 0xa0000:0xbffff
-	 * io   0x3b0:0x3bb, 0x3c0:0x3df
-	 */
-	f1_write_config32(0xf4, val);
-}
-
 static void read_resources(device_t dev)
 {
 	/*
@@ -228,9 +215,8 @@ static void create_vga_resource(device_t dev)
 	if (link == NULL)
 		return;
 
-	printk(BIOS_DEBUG, "VGA: %s link %d has VGA device\n",
-						dev_path(dev), sblink);
-	set_vga_enable_reg(0, sblink);
+	printk(BIOS_DEBUG, "VGA: %s has VGA device\n",	dev_path(dev));
+	f1_write_config32(0xf4, 1); /* Route A0000-BFFFF, IO 3B0-3BB 3C0-3DF */
 }
 
 static void set_resources(device_t dev)
@@ -605,8 +591,6 @@ void domain_set_resources(device_t dev)
 /*  first node */
 static void sysconf_init(device_t dev)
 {
-	/* don't forget sublink1 */
-	sblink = (pci_read_config32(dev, 0x64) >> 8) & 7;
 	/* NodeCnt[2:0] */
 	node_nums = ((pci_read_config32(dev, 0x60) >> 4) & 7) + 1;
 }

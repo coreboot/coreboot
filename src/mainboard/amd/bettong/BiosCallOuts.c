@@ -23,7 +23,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <northbridge/amd/pi/dimmSpd.h>
-#include <northbridge/amd/pi/agesawrapper.h>
 #include <boardid.h>
 
 #include "imc.h"

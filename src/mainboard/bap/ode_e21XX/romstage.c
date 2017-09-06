@@ -21,8 +21,6 @@
 #include <console/console.h>
 #include <cpu/amd/car.h>
 #include <northbridge/amd/agesa/state_machine.h>
-#include <northbridge/amd/pi/agesawrapper.h>
-#include <northbridge/amd/pi/agesawrapper_call.h>
 #include <cpu/x86/bist.h>
 #include <southbridge/amd/pi/hudson/hudson.h>
 #include <superio/fintek/common/fintek.h>

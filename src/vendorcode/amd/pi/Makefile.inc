@@ -110,10 +110,6 @@ endef
 
 agesa_raw_files += $(wildcard $(src)/vendorcode/amd/pi/Lib/*.[cS])
 
-ifeq ($(CONFIG_BINARYPI_LEGACY_WRAPPER),y)
-agesa_raw_files += $(wildcard $(AGESA_ROOT)/binaryPI/*.[cS])
-endif
-
 ifeq ($(CONFIG_CPU_AMD_PI_00660F01),y)
 agesa_raw_files += $(wildcard $(AGESA_ROOT)/Proc/Fch/Kern/KernImc/*.[cS])
 agesa_raw_files += $(wildcard $(AGESA_ROOT)/Proc/Fch/Common/*.[cS])

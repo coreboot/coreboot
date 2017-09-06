@@ -15,7 +15,6 @@
  */
 
 #include <AGESA.h>
-#include <northbridge/amd/pi/agesawrapper.h>
 
 
 static const PCIe_PORT_DESCRIPTOR PortList[] = {

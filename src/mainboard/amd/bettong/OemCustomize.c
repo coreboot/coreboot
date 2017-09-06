@@ -14,7 +14,6 @@
  */
 
 #include <AGESA.h>
-#include <northbridge/amd/pi/agesawrapper.h>
 #include <PlatformMemoryConfiguration.h>
 #include <boardid.h>
 

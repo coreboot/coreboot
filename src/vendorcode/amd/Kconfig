@@ -50,7 +50,6 @@ endif
 config AGESA_EXTRA_TIMESTAMPS
 	bool "Add instrumentation for AGESA calls"
 	default n
-	depends on !BINARYPI_LEGACY_WRAPPER
 	depends on DRIVERS_AMD_PI
 	help
 	  Insert additional timestamps around each entrypoint into

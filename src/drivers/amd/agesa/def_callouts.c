@@ -35,7 +35,7 @@ AGESA_STATUS GetBiosCallout (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 	AGESA_STATUS status;
 	UINTN i;
 
-	if (HAS_LEGACY_WRAPPER || ENV_RAMSTAGE) {
+	if (ENV_RAMSTAGE) {
 		/* One HeapManager serves them all. */
 		status = HeapManagerCallout(Func, Data, ConfigPtr);
 		if (status != AGESA_UNSUPPORTED)
@@ -43,7 +43,7 @@ AGESA_STATUS GetBiosCallout (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 	}
 
 #if HAS_AGESA_FCH_OEM_CALLOUT
-	if (!HAS_LEGACY_WRAPPER && Func == AGESA_FCH_OEM_CALLOUT) {
+	if (Func == AGESA_FCH_OEM_CALLOUT) {
 		agesa_fch_oem_config(Data, ConfigPtr);
 		return AGESA_SUCCESS;
 	}
@@ -120,24 +120,12 @@ AGESA_STATUS agesa_RunFuncOnAp (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 	AP_EXE_PARAMS ApExeParams;
 
 	memset(&ApExeParams, 0, sizeof(AP_EXE_PARAMS));
-
-	if (HAS_LEGACY_WRAPPER) {
-		ApExeParams.StdHeader.AltImageBasePtr = 0;
-		ApExeParams.StdHeader.CalloutPtr = &GetBiosCallout;
-		ApExeParams.StdHeader.Func = 0;
-		ApExeParams.StdHeader.ImageBasePtr = 0;
-	} else {
-		memcpy(&ApExeParams.StdHeader, StdHeader, sizeof(*StdHeader));
-	}
+	memcpy(&ApExeParams.StdHeader, StdHeader, sizeof(*StdHeader));
 
 	ApExeParams.FunctionNumber = Func;
 	ApExeParams.RelatedDataBlock = ConfigPtr;
 
-#if HAS_LEGACY_WRAPPER
-	status = AmdLateRunApTask(&ApExeParams);
-#else
 	status = module_dispatch(AMD_LATE_RUN_AP_TASK, &ApExeParams.StdHeader);
-#endif
 
 	ASSERT(status == AGESA_SUCCESS);
 	return status;

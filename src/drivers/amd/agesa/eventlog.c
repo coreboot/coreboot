@@ -180,11 +180,7 @@ static void amd_flush_eventlog(EVENT_PARAMS *Event)
 
 	do {
 		AGESA_STATUS status;
-#if HAS_LEGACY_WRAPPER
-		status = AmdReadEventLog(Event);
-#else
 		status = module_dispatch(AMD_READ_EVENT_LOG, &Event->StdHeader);
-#endif
 		if (status != AGESA_SUCCESS)
 			return;
 		if (Event->EventClass == 0)
@@ -203,16 +199,7 @@ void agesawrapper_trace(AGESA_STATUS ret, AMD_CONFIG_PARAMS *StdHeader,
 		return;
 
 	memset(&AmdEventParams, 0, sizeof(EVENT_PARAMS));
-
-	if (HAS_LEGACY_WRAPPER) {
-		AmdEventParams.StdHeader.AltImageBasePtr = 0;
-		AmdEventParams.StdHeader.CalloutPtr = &GetBiosCallout;
-		AmdEventParams.StdHeader.Func = 0;
-		AmdEventParams.StdHeader.ImageBasePtr = 0;
-		AmdEventParams.StdHeader.HeapStatus = StdHeader->HeapStatus;
-	} else {
-		memcpy(&AmdEventParams.StdHeader, StdHeader, sizeof(*StdHeader));
-	}
+	memcpy(&AmdEventParams.StdHeader, StdHeader, sizeof(*StdHeader));
 
 	amd_flush_eventlog(&AmdEventParams);
 }

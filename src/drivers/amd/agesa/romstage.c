@@ -30,9 +30,6 @@
 #if !CONFIG(POSTCAR_STAGE)
 #error "Only POSTCAR_STAGE is supported."
 #endif
-#if HAS_LEGACY_WRAPPER
-#error "LEGACY_WRAPPER code not supported"
-#endif
 
 void asmlinkage early_all_cores(void)
 {

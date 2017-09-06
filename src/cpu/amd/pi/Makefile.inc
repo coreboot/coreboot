@@ -14,9 +14,3 @@
 subdirs-$(CONFIG_CPU_AMD_PI_00630F01) += 00630F01
 subdirs-$(CONFIG_CPU_AMD_PI_00730F01) += 00730F01
 subdirs-$(CONFIG_CPU_AMD_PI_00660F01) += 00660F01
-
-ifeq ($(CONFIG_BINARYPI_LEGACY_WRAPPER), y)
-cpu_incs-y += $(src)/drivers/amd/agesa/cache_as_ram.S
-romstage-y += romstage.c
-ramstage-y += amd_late_init.c
-endif

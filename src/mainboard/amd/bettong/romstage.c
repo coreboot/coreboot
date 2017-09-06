@@ -21,8 +21,6 @@
 #include <cpu/x86/bist.h>
 #include <cpu/amd/car.h>
 #include <northbridge/amd/agesa/state_machine.h>
-#include <northbridge/amd/pi/agesawrapper.h>
-#include <northbridge/amd/pi/agesawrapper_call.h>
 #include <southbridge/amd/pi/hudson/hudson.h>
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)

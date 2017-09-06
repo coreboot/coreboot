@@ -8,6 +8,5 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx);
 void asmlinkage early_all_cores(void);
 
 void *asmlinkage romstage_main(unsigned long bist);
-void asmlinkage romstage_after_car(void);
 
 #endif

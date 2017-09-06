@@ -34,10 +34,6 @@
 #include <arch/acpigen.h>
 #include <northbridge/amd/pi/nb_common.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
-#if CONFIG(BINARYPI_LEGACY_WRAPPER)
-#include <northbridge/amd/pi/agesawrapper.h>
-#include <northbridge/amd/pi/agesawrapper_call.h>
-#endif
 
 #define MAX_NODE_NUMS MAX_NODES
 
@@ -608,16 +604,6 @@ static void domain_read_resources(struct device *dev)
 
 static void domain_enable_resources(struct device *dev)
 {
-#if CONFIG(BINARYPI_LEGACY_WRAPPER)
-	/* Must be called after PCI enumeration and resource allocation */
-	if (!acpi_is_wakeup_s3()) {
-		/* Enable MMIO on AMD CPU Address Map Controller */
-		amd_initcpuio();
-
-		agesawrapper_amdinitmid();
-	}
-	printk(BIOS_DEBUG, "  ader - leaving %s.\n", __func__);
-#endif
 }
 
 #if CONFIG_HW_MEM_HOLE_SIZEK != 0

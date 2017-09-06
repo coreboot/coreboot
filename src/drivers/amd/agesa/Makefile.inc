@@ -13,8 +13,6 @@
 
 ifeq ($(CONFIG_DRIVERS_AMD_PI),y)
 
-ifneq ($(CONFIG_BINARYPI_LEGACY_WRAPPER),y)
-
 romstage-y += romstage.c
 romstage-y += mtrr_fixme.c
 romstage-y += state_machine.c
@@ -23,12 +21,6 @@ ramstage-y += state_machine.c
 
 cpu_incs-y += $(src)/drivers/amd/agesa/cache_as_ram.S
 postcar-y += cache_as_ram.S
-
-else
-
-romstage-y += heapmanager.c
-
-endif
 
 romstage-y += def_callouts.c
 romstage-y += eventlog.c

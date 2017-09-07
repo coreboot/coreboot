@@ -40,6 +40,7 @@
 	 (const char *)&(ptr)[1] <= (base) + (limit))
 
 static int ifd_version;
+static int chipset;
 static unsigned int max_regions = 0;
 static int selected_chip = 0;
 static int platform = -1;
@@ -54,6 +55,33 @@ static const struct region_name region_names[MAX_REGIONS] = {
 	{ "Reserved", "res2", "flashregion_6_reserved.bin" },
 	{ "Reserved", "res3", "flashregion_7_reserved.bin" },
 	{ "EC", "ec", "flashregion_8_ec.bin" },
+};
+
+/* port from flashrom */
+static const char *const ich_chipset_names[] = {
+	"Unknown ICH",
+	"ICH",
+	"ICH2345",
+	"ICH6",
+	"SCH U",
+	"Atom E6xx",
+	"Atom S1220 S1240 S1260",
+	"ICH7",
+	"ICH8",
+	"ICH9",
+	"ICH10",
+	"5 series Ibex Peak",
+	"6 series Cougar Point",
+	"7 series Panther Point",
+	"8 series Lynx Point",
+	"Baytrail",
+	"8 series Lynx Point LP",
+	"8 series Wellsburg",
+	"9 series Wildcat Point",
+	"9 series Wildcat Point LP",
+	"100 series Sunrise Point",
+	"C620 series Lewisburg",
+	NULL
 };
 
 static fdbar_t *find_fd(char *image, int size)
@@ -140,6 +168,41 @@ static fmsba_t *find_fmsba(char *image, int size)
 	return PTR_IN_RANGE(fmsba, image, size) ? fmsba : NULL;
 }
 
+/* port from flashrom */
+static enum ich_chipset guess_ich_chipset(const fdbar_t *fdb)
+{
+	uint32_t iccriba = (fdb->flmap2 >> 16) & 0xff;
+	uint32_t msl = (fdb->flmap2 >> 8) & 0xff;
+	uint32_t isl = (fdb->flmap1 >> 24);
+	uint32_t nm = (fdb->flmap1 >> 8) & 0x7;
+
+	if (iccriba == 0x00) {
+		if (msl == 0 && isl <= 2)
+			return CHIPSET_ICH8;
+		else if (isl <= 2)
+			return CHIPSET_ICH9;
+		else if (isl <= 10)
+			return CHIPSET_ICH10;
+		else if (isl <= 16)
+			return CHIPSET_5_SERIES_IBEX_PEAK;
+		printf("Peculiar firmware descriptor, assuming Ibex Peak compatibility.\n");
+		return CHIPSET_5_SERIES_IBEX_PEAK;
+	} else if (iccriba < 0x31 && (fdb->flmap2 & 0xff) < 0x30) {
+		if (msl == 0 && isl <= 17)
+			return CHIPSET_BAYTRAIL;
+		else if (msl <= 1 && isl <= 18)
+			return CHIPSET_6_SERIES_COUGAR_POINT;
+		else if (msl <= 1 && isl <= 21)
+			return CHIPSET_8_SERIES_LYNX_POINT;
+		printf("Peculiar firmware descriptor, assuming Wildcat Point compatibility.\n");
+		return CHIPSET_9_SERIES_WILDCAT_POINT;
+	} else if (nm == 6) {
+		return CHIPSET_C620_SERIES_LEWISBURG;
+	} else {
+		return CHIPSET_100_SERIES_SUNRISE_POINT;
+	}
+}
+
 /*
  * Some newer platforms have re-defined the FCBA field that was used to
  * distinguish IFD v1 v/s v2. Define a list of platforms that we know do not
@@ -171,9 +234,14 @@ static int get_ifd_version_from_fcba(char *image, int size)
 {
 	int read_freq;
 	const fcba_t *fcba = find_fcba(image, size);
-	if (!fcba)
+	const fdbar_t *fdb = find_fd(image, size);
+	if (!fcba) /* a valid fcba indicates a valid fdb */
 		exit(EXIT_FAILURE);
 
+	chipset = guess_ich_chipset(fdb);
+	/* TODO: port ifd_version and max_regions
+	 * against guess_ich_chipset()
+	 */
 	read_freq = (fcba->flcomp >> 17) & 7;
 
 	switch (read_freq) {
@@ -463,6 +531,19 @@ static void dump_fpsba(const fpsba_t *fpsba)
 	for (i = 0; i < ARRAY_SIZE(fpsba->pchstrp); i++)
 		printf("PCHSTRP%u:%s 0x%08x\n", i,
 		       i < 10 ? " " : "", fpsba->pchstrp[i]);
+
+	if (ifd_version >= IFD_VERSION_2) {
+		printf("HAP bit is %sset\n",
+		       fpsba->pchstrp[0] & (1 << 16) ? "" : "not ");
+	} else if (chipset >= CHIPSET_ICH8
+		   && chipset <= CHIPSET_ICH10) {
+		printf("ICH_MeDisable bit is %sset\n",
+		       fpsba->pchstrp[0] & 1 ? "" : "not ");
+	} else {
+		printf("AltMeDisable bit is %sset\n",
+		       fpsba->pchstrp[10] & (1 << 7) ? "" : "not ");
+	}
+
 	printf("\n");
 }
 
@@ -535,6 +616,13 @@ static void dump_fmsba(const fmsba_t *fmsba)
 	printf("Found Processor Strap Section\n");
 	for (i = 0; i < ARRAY_SIZE(fmsba->data); i++)
 		printf("????:      0x%08x\n", fmsba->data[i]);
+
+	if (chipset >= CHIPSET_ICH8 && chipset <= CHIPSET_ICH10) {
+		printf("MCH_MeDisable bit is %sset\n",
+		       fmsba->data[0] & 1 ? "" : "not ");
+		printf("MCH_AltMeDisable bit is %sset\n",
+		       fmsba->data[0] & (1 << 7) ? "" : "not ");
+	}
 }
 
 static void dump_jid(uint32_t jid)
@@ -633,6 +721,7 @@ static void dump_fd(char *image, int size)
 	if (!fdb)
 		exit(EXIT_FAILURE);
 
+	printf("ICH Revision: %s\n", ich_chipset_names[chipset]);
 	printf("FLMAP0:    0x%08x\n", fdb->flmap0);
 	printf("  NR:      %d\n", (fdb->flmap0 >> 24) & 7);
 	printf("  FRBA:    0x%x\n", ((fdb->flmap0 >> 16) & 0xff) << 4);
@@ -933,6 +1022,47 @@ static void unlock_descriptor(const char *filename, char *image, int size)
 	write_image(filename, image, size);
 }
 
+/* Set the AltMeDisable (or HAP for >= IFD_VERSION_2) */
+void fpsba_set_altmedisable(fpsba_t *fpsba, fmsba_t *fmsba, bool altmedisable)
+{
+	if (ifd_version >= IFD_VERSION_2) {
+		printf("%sting the HAP bit to %s Intel ME...\n",
+		      altmedisable?"Set":"Unset",
+		      altmedisable?"disable":"enable");
+		if (altmedisable)
+			fpsba->pchstrp[0] |= (1 << 16);
+		else
+			fpsba->pchstrp[0] &= ~(1 << 16);
+	} else {
+		if (chipset >= CHIPSET_ICH8 && chipset <= CHIPSET_ICH10) {
+			printf("%sting the ICH_MeDisable, MCH_MeDisable, "
+			       "and MCH_AltMeDisable to %s Intel ME...\n",
+			       altmedisable?"Set":"Unset",
+			       altmedisable?"disable":"enable");
+			if (altmedisable) {
+				/* MCH_MeDisable */
+				fmsba->data[0] |= 1;
+				/* MCH_AltMeDisable */
+				fmsba->data[0] |= (1 << 7);
+				/* ICH_MeDisable */
+				fpsba->pchstrp[0] |= 1;
+			} else {
+				fmsba->data[0] &= ~1;
+				fmsba->data[0] &= ~(1 << 7);
+				fpsba->pchstrp[0] &= ~1;
+			}
+		} else {
+			printf("%sting the AltMeDisable to %s Intel ME...\n",
+			       altmedisable?"Set":"Unset",
+			       altmedisable?"disable":"enable");
+			if (altmedisable)
+				fpsba->pchstrp[10] |= (1 << 7);
+			else
+				fpsba->pchstrp[10] &= ~(1 << 7);
+		}
+	}
+}
+
 void inject_region(const char *filename, char *image, int size,
 		   unsigned int region_type, const char *region_fname)
 {
@@ -1200,6 +1330,8 @@ static void print_usage(const char *name)
 	       "                                      Dual Output Fast Read Support\n"
 	       "   -l | --lock                        Lock firmware descriptor and ME region\n"
 	       "   -u | --unlock                      Unlock firmware descriptor and ME region\n"
+	       "   -M | --altmedisable <0|1>          Set the AltMeDisable (or HAP for skylake or newer platform)\n"
+	       "                                      bit to disable ME\n"
 	       "   -p | --platform                    Add platform-specific quirks\n"
 	       "                                      aplk - Apollo Lake\n"
 	       "                                      cnl - Cannon Lake\n"
@@ -1217,6 +1349,7 @@ int main(int argc, char *argv[])
 	int mode_dump = 0, mode_extract = 0, mode_inject = 0, mode_spifreq = 0;
 	int mode_em100 = 0, mode_locked = 0, mode_unlocked = 0;
 	int mode_layout = 0, mode_newlayout = 0, mode_density = 0;
+	int mode_altmedisable = 0, altmedisable = 0;
 	char *region_type_string = NULL, *region_fname = NULL;
 	const char *layout_fname = NULL;
 	int region_type = -1, inputfreq = 0;
@@ -1232,6 +1365,7 @@ int main(int argc, char *argv[])
 		{"spifreq", 1, NULL, 's'},
 		{"density", 1, NULL, 'D'},
 		{"chip", 1, NULL, 'C'},
+		{"altmedisable", 1, NULL, 'M'},
 		{"em100", 0, NULL, 'e'},
 		{"lock", 0, NULL, 'l'},
 		{"unlock", 0, NULL, 'u'},
@@ -1241,7 +1375,7 @@ int main(int argc, char *argv[])
 		{0, 0, 0, 0}
 	};
 
-	while ((opt = getopt_long(argc, argv, "df:D:C:xi:n:s:p:eluvh?",
+	while ((opt = getopt_long(argc, argv, "df:D:C:M:xi:n:s:p:eluvh?",
 				  long_options, &option_index)) != EOF) {
 		switch (opt) {
 		case 'd':
@@ -1345,6 +1479,15 @@ int main(int argc, char *argv[])
 				exit(EXIT_FAILURE);
 			}
 			break;
+		case 'M':
+			mode_altmedisable = 1;
+			altmedisable = strtol(optarg, NULL, 0);
+			if (altmedisable > 1) {
+				fprintf(stderr, "error: Illegal value\n");
+				print_usage(argv[0]);
+				exit(EXIT_FAILURE);
+			}
+			break;
 		case 's':
 			// Parse the requested SPI frequency
 			inputfreq = strtol(optarg, NULL, 0);
@@ -1422,7 +1565,7 @@ int main(int argc, char *argv[])
 
 	if ((mode_dump + mode_layout + mode_extract + mode_inject +
 		mode_newlayout + (mode_spifreq | mode_em100 | mode_unlocked |
-		 mode_locked)) > 1) {
+		 mode_locked) + mode_altmedisable) > 1) {
 		fprintf(stderr, "You may not specify more than one mode.\n\n");
 		print_usage(argv[0]);
 		exit(EXIT_FAILURE);
@@ -1430,7 +1573,7 @@ int main(int argc, char *argv[])
 
 	if ((mode_dump + mode_layout + mode_extract + mode_inject +
 	     mode_newlayout + mode_spifreq + mode_em100 + mode_locked +
-	     mode_unlocked + mode_density) == 0) {
+	     mode_unlocked + mode_density + mode_altmedisable) == 0) {
 		fprintf(stderr, "You need to specify a mode.\n\n");
 		print_usage(argv[0]);
 		exit(EXIT_FAILURE);
@@ -1502,6 +1645,13 @@ int main(int argc, char *argv[])
 
 	if (mode_unlocked)
 		unlock_descriptor(filename, image, size);
+
+	if (mode_altmedisable) {
+		fpsba_t *fpsba = find_fpsba(image, size);
+		fmsba_t *fmsba = find_fmsba(image, size);
+		fpsba_set_altmedisable(fpsba, fmsba, altmedisable);
+		write_image(filename, image, size);
+	}
 
 	free(image);
 

@@ -18,8 +18,8 @@
 
 cd $(dirname $0)
 
-CROSSGCC_DATE="September 19th, 2017"
-CROSSGCC_VERSION="1.48"
+CROSSGCC_DATE="October 11th, 2017"
+CROSSGCC_VERSION="1.49"
 CROSSGCC_COMMIT=$( git describe )
 
 # default settings
@@ -38,7 +38,7 @@ THREADS=1
 GMP_VERSION=6.1.2
 MPFR_VERSION=3.1.5
 MPC_VERSION=1.0.3
-LIBELF_VERSION=0.8.13
+LIBELF_VERSION=0.170
 GCC_VERSION=6.3.0
 GCC_AUTOCONF_VERSION=2.69
 BINUTILS_VERSION=2.28
@@ -58,7 +58,7 @@ CMAKE_VERSION=3.9.0-rc3
 GMP_ARCHIVE="https://ftpmirror.gnu.org/gmp/gmp-${GMP_VERSION}.tar.xz"
 MPFR_ARCHIVE="https://ftpmirror.gnu.org/mpfr/mpfr-${MPFR_VERSION}.tar.xz"
 MPC_ARCHIVE="https://ftpmirror.gnu.org/mpc/mpc-${MPC_VERSION}.tar.gz"
-LIBELF_ARCHIVE="http://www.mr511.de/software/libelf-${LIBELF_VERSION}.tar.gz"
+LIBELF_ARCHIVE="https://sourceware.org/elfutils/ftp/${LIBELF_VERSION}/elfutils-${LIBELF_VERSION}.tar.bz2"
 GCC_ARCHIVE="https://ftpmirror.gnu.org/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.bz2"
 BINUTILS_ARCHIVE="https://ftpmirror.gnu.org/binutils/binutils-${BINUTILS_VERSION}.tar.bz2"
 GDB_ARCHIVE="https://ftpmirror.gnu.org/gdb/gdb-${GDB_VERSION}.tar.xz"
@@ -82,7 +82,7 @@ ALL_ARCHIVES="$GMP_ARCHIVE $MPFR_ARCHIVE $MPC_ARCHIVE $LIBELF_ARCHIVE \
 GMP_DIR="gmp-${GMP_VERSION}"
 MPFR_DIR="mpfr-${MPFR_VERSION}"
 MPC_DIR="mpc-${MPC_VERSION}"
-LIBELF_DIR="libelf-${LIBELF_VERSION}"
+LIBELF_DIR="elfutils-${LIBELF_VERSION}"
 GCC_DIR="gcc-${GCC_VERSION}"
 BINUTILS_DIR="binutils-${BINUTILS_VERSION}"
 GDB_DIR="gdb-${GDB_VERSION}"

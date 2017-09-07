@@ -27,7 +27,6 @@
 
 .code32
 .globl _cache_as_ram_setup, _cache_as_ram_setup_end
-.globl chipset_teardown_car
 
 _cache_as_ram_setup:
 
@@ -105,66 +104,11 @@ _cache_as_ram_setup:
 	pushl	%eax
 	call	romstage_main
 
-#if CONFIG(POSTCAR_STAGE)
-
-/* We do not return. Execution continues with run_postcar_phase()
- * calling to chipset_teardown_car below.
- */
-	jmp	postcar_entry_failure
-
-chipset_teardown_car:
-
-/*
- * Retrieve return address from stack as it will get trashed below if
- * execution is utilizing the cache-as-ram stack.
- */
-	pop	%esp
-
-#else
-
-	movl	%eax, %esp
-
-/* Register %esp is new stacktop for remaining of romstage. */
-
-#endif
-
-	/* Disable cache */
-	movl	%cr0, %eax
-	orl	$CR0_CacheDisable, %eax
-	movl	%eax, %cr0
-
-/* Register %esp is preserved in AMD_DISABLE_STACK. */
-	AMD_DISABLE_STACK
-
-#if CONFIG(POSTCAR_STAGE)
-
-	jmp	*%esp
-
-#else
-
-	/* enable cache */
-	movl	%cr0, %eax
-	andl	$0x9fffffff, %eax
-	movl	%eax, %cr0
-
-	call	romstage_after_car
-
-#endif
-
 	/* Should never see this postcode */
-	post_code(0xaf)
+	post_code(0xae)
 
 stop:
 	hlt
-	jmp	stop
-
-/* These are here for linking purposes. */
-.weak early_all_cores, romstage_main
-early_all_cores:
-romstage_main:
-postcar_entry_failure:
-	/* Should never see this postcode */
-	post_code(0xae)
 	jmp	stop
 
 _cache_as_ram_setup_end:

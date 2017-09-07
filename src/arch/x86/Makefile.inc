@@ -280,6 +280,7 @@ postcar-generic-ccopts += -D__POSTCAR__
 
 postcar-y += boot.c
 postcar-y += cbfs_and_run.c
+postcar-y += cbmem.c
 postcar-y += cpu_common.c
 postcar-y += exit_car.S
 postcar-y += memcpy.c

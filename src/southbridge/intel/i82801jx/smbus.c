@@ -61,9 +61,35 @@ static int lsmbus_write_byte(device_t dev, u8 address, u8 val)
 	return do_smbus_write_byte(res->base, device, address, val);
 }
 
+static int lsmbus_block_write(device_t dev, u8 cmd, u8 bytes, const u8 *buf)
+{
+	u16 device;
+	struct resource *res;
+	struct bus *pbus;
+
+	device = dev->path.i2c.device;
+	pbus = get_pbus_smbus(dev);
+	res = find_resource(pbus->dev, 0x20);
+	return do_smbus_block_write(res->base, device, cmd, bytes, buf);
+}
+
+static int lsmbus_block_read(device_t dev, u8 cmd, u8 bytes, u8 *buf)
+{
+	u16 device;
+	struct resource *res;
+	struct bus *pbus;
+
+	device = dev->path.i2c.device;
+	pbus = get_pbus_smbus(dev);
+	res = find_resource(pbus->dev, 0x20);
+	return do_smbus_block_read(res->base, device, cmd, bytes, buf);
+}
+
 static struct smbus_bus_operations lops_smbus_bus = {
 	.read_byte	= lsmbus_read_byte,
 	.write_byte	= lsmbus_write_byte,
+	.block_read     = lsmbus_block_read,
+	.block_write    = lsmbus_block_write,
 };
 
 static void smbus_set_subsystem(device_t dev, unsigned vendor, unsigned device)

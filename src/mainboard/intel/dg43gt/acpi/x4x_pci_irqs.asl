@@ -52,6 +52,8 @@ Method(_PRT)
 			Package() { 0x001dffff, 3, 0, 0x13 },
 			/* SMBUS/SATA/PATA	0:1f.2, 0:1f.3 */
 			Package() { 0x001fffff, 1, 0, 0x11 },
+			Package() { 0x001fffff, 2, 0, 0x12 },
+			Package() { 0x001fffff, 3, 0, 0x13 },
 		})
 	} Else {
 		Return (Package() {
@@ -86,6 +88,8 @@ Method(_PRT)
 			Package() { 0x001dffff, 3, \_SB.PCI0.LPCB.LNKD, 0 },
 			/* PATA/SATA/SMBUS		0:1f.1-3 */
 			Package() { 0x001fffff, 1, \_SB.PCI0.LPCB.LNKB, 0 },
+			Package() { 0x001fffff, 2, \_SB.PCI0.LPCB.LNKC, 0 },
+			Package() { 0x001fffff, 3, \_SB.PCI0.LPCB.LNKD, 0 },
 		})
 	}
 }

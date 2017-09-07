@@ -89,58 +89,58 @@ FIRMWARE_TYPE=CZ
 endif
 
 ###5
-CONFIG_PUBSIGNEDKEY_FILE=$(top)/$(FIRMWARE_LOCATE)/RtmPubSigned$(FIRMWARE_TYPE).key
+PUBSIGNEDKEY_FILE=$(top)/$(FIRMWARE_LOCATE)/RtmPubSigned$(FIRMWARE_TYPE).key
 ###1
 ifeq ($(CONFIG_CPU_AMD_PI_00730F01), y)
-CONFIG_PSPBTLDR_FILE=$(top)/$(FIRMWARE_LOCATE)/PspBootLoader$(FIRMWARE_TYPE).Bypass.sbin
+PSPBTLDR_FILE=$(top)/$(FIRMWARE_LOCATE)/PspBootLoader$(FIRMWARE_TYPE).Bypass.sbin
 else ifeq ($(CONFIG_CPU_AMD_PI_00660F01), y)
-CONFIG_PSPBTLDR_FILE=$(top)/$(FIRMWARE_LOCATE)/PspBootLoader_prod_$(FIRMWARE_TYPE).sbin
+PSPBTLDR_FILE=$(top)/$(FIRMWARE_LOCATE)/PspBootLoader_prod_$(FIRMWARE_TYPE).sbin
 endif
 
 ###3
 ifeq ($(CONFIG_CPU_AMD_PI_00730F01), y)
-CONFIG_PSPRCVR_FILE=$(top)/$(FIRMWARE_LOCATE)/PspRecovery$(FIRMWARE_TYPE).sbin
+PSPRCVR_FILE=$(top)/$(FIRMWARE_LOCATE)/PspRecovery$(FIRMWARE_TYPE).sbin
 else ifeq ($(CONFIG_CPU_AMD_PI_00660F01), y)
-CONFIG_PSPRCVR_FILE=$(top)/$(FIRMWARE_LOCATE)/PspRecoveryBootLoader_prod_$(FIRMWARE_TYPE).sbin
+PSPRCVR_FILE=$(top)/$(FIRMWARE_LOCATE)/PspRecoveryBootLoader_prod_$(FIRMWARE_TYPE).sbin
 endif
 
 ###2
 ifeq ($(CONFIG_CPU_AMD_PI_00730F01), y)
-CONFIG_PSPSCUREOS_FILE=$(top)/$(FIRMWARE_LOCATE)/PspSecureOs$(FIRMWARE_TYPE).sbin
+PSPSCUREOS_FILE=$(top)/$(FIRMWARE_LOCATE)/PspSecureOs$(FIRMWARE_TYPE).sbin
 else ifeq ($(CONFIG_CPU_AMD_PI_00660F01), y)
-CONFIG_PSPSCUREOS_FILE=$(top)/$(FIRMWARE_LOCATE)/PspSecureOs_prod_$(FIRMWARE_TYPE).csbin
+PSPSCUREOS_FILE=$(top)/$(FIRMWARE_LOCATE)/PspSecureOs_prod_$(FIRMWARE_TYPE).csbin
 endif
 
 ###4
-CONFIG_PSPNVRAM_FILE=$(top)/$(FIRMWARE_LOCATE)/PspNvram$(FIRMWARE_TYPE).bin
+PSPNVRAM_FILE=$(top)/$(FIRMWARE_LOCATE)/PspNvram$(FIRMWARE_TYPE).bin
 
 ###8
-CONFIG_SMUFWM_FILE=$(top)/$(FIRMWARE_LOCATE)/SmuFirmware$(FIRMWARE_TYPE).sbin
-CONFIG_SMUFWM_FN_FILE=$(top)/$(FIRMWARE_LOCATE)/SmuFirmware$(FIRMWARE_TYPE)_FN.sbin
+SMUFWM_FILE=$(top)/$(FIRMWARE_LOCATE)/SmuFirmware$(FIRMWARE_TYPE).sbin
+SMUFWM_FN_FILE=$(top)/$(FIRMWARE_LOCATE)/SmuFirmware$(FIRMWARE_TYPE)_FN.sbin
 
 ###95
-CONFIG_SMUSCS_FILE=$(top)/$(FIRMWARE_LOCATE)/SmuScs$(FIRMWARE_TYPE).bin
+SMUSCS_FILE=$(top)/$(FIRMWARE_LOCATE)/SmuScs$(FIRMWARE_TYPE).bin
 
 ###9
-CONFIG_PSPSECUREDEBUG_FILE=$(top)/$(FIRMWARE_LOCATE)/PspSecureDebug$(FIRMWARE_TYPE).Key
+PSPSECUREDEBUG_FILE=$(top)/$(FIRMWARE_LOCATE)/PspSecureDebug$(FIRMWARE_TYPE).Key
 
 ###12
 ifeq ($(CONFIG_CPU_AMD_PI_00730F01), y)
-CONFIG_PSPTRUSTLETS_FILE=$(top)/$(FIRMWARE_LOCATE)/trustlets.bin
+PSPTRUSTLETS_FILE=$(top)/$(FIRMWARE_LOCATE)/trustlets.bin
 else ifeq ($(CONFIG_CPU_AMD_PI_00660F01), y)
-CONFIG_PSPTRUSTLETS_FILE=$(top)/$(FIRMWARE_LOCATE)/PspTrustlets_prod_$(FIRMWARE_TYPE).cbin
+PSPTRUSTLETS_FILE=$(top)/$(FIRMWARE_LOCATE)/PspTrustlets_prod_$(FIRMWARE_TYPE).cbin
 endif
 
 ###13
 ifeq ($(CONFIG_CPU_AMD_PI_00730F01), y)
-CONFIG_TRUSTLETKEY_FILE=$(top)/$(FIRMWARE_LOCATE)/Trustlet.tkn.cert
+TRUSTLETKEY_FILE=$(top)/$(FIRMWARE_LOCATE)/Trustlet.tkn.cert
 else ifeq ($(CONFIG_CPU_AMD_PI_00660F01), y)
-CONFIG_TRUSTLETKEY_FILE=$(top)/$(FIRMWARE_LOCATE)/TrustletKey_prod_$(FIRMWARE_TYPE).sbin
+TRUSTLETKEY_FILE=$(top)/$(FIRMWARE_LOCATE)/TrustletKey_prod_$(FIRMWARE_TYPE).sbin
 endif
 
 ###18
 ifeq ($(CONFIG_CPU_AMD_PI_00660F01), y)
-CONFIG_SMUFIRMWARE2_FILE=$(top)/$(FIRMWARE_LOCATE)/SmuFirmware2_prod_$(FIRMWARE_TYPE).sbin
+SMUFIRMWARE2_FILE=$(top)/$(FIRMWARE_LOCATE)/SmuFirmware2_prod_$(FIRMWARE_TYPE).sbin
 endif
 
 endif
@@ -152,47 +152,47 @@ OPT_HUDSON_IMC_FWM_FILE=$(call add_opt_prefix, $(CONFIG_HUDSON_IMC_FWM_FILE), --
 OPT_HUDSON_GEC_FWM_FILE=$(call add_opt_prefix, $(CONFIG_HUDSON_GEC_FWM_FILEddd), --gec)
 
 OPT_AMD_PUBKEY_FILE=$(call add_opt_prefix, $(CONFIG_AMD_PUBKEY_FILE), --pubkey)
-OPT_PSPBTLDR_FILE=$(call add_opt_prefix, $(CONFIG_PSPBTLDR_FILE), --bootloader)
-OPT_SMUFWM_FILE=$(call add_opt_prefix, $(CONFIG_SMUFWM_FILE), --smufirmware)
-OPT_PSPRCVR_FILE=$(call add_opt_prefix, $(CONFIG_PSPRCVR_FILE), --recovery)
-OPT_PUBSIGNEDKEY_FILE=$(call add_opt_prefix, $(CONFIG_PUBSIGNEDKEY_FILE), --rtmpubkey)
-OPT_PSPSCUREOS_FILE=$(call add_opt_prefix, $(CONFIG_PSPSCUREOS_FILE), --secureos)
-OPT_PSPNVRAM_FILE=$(call add_opt_prefix, $(CONFIG_PSPNVRAM_FILE), --nvram)
-OPT_PSPSECUREDEBUG_FILE=$(call add_opt_prefix, $(CONFIG_PSPSECUREDEBUG_FILE), --securedebug)
-OPT_PSPTRUSTLETS_FILE=$(call add_opt_prefix, $(CONFIG_PSPTRUSTLETS_FILE), --trustlets)
-OPT_TRUSTLETKEY_FILE=$(call add_opt_prefix, $(CONFIG_TRUSTLETKEY_FILE), --trustletkey)
-OPT_SMUFIRMWARE2_FILE=$(call add_opt_prefix, $(CONFIG_SMUFIRMWARE2_FILE), --smufirmware2)
-OPT_SMUSCS_FILE=$(call add_opt_prefix, $(CONFIG_SMUSCS_FILE), --smuscs)
+OPT_PSPBTLDR_FILE=$(call add_opt_prefix, $(PSPBTLDR_FILE), --bootloader)
+OPT_SMUFWM_FILE=$(call add_opt_prefix, $(SMUFWM_FILE), --smufirmware)
+OPT_PSPRCVR_FILE=$(call add_opt_prefix, $(PSPRCVR_FILE), --recovery)
+OPT_PUBSIGNEDKEY_FILE=$(call add_opt_prefix, $(PUBSIGNEDKEY_FILE), --rtmpubkey)
+OPT_PSPSCUREOS_FILE=$(call add_opt_prefix, $(PSPSCUREOS_FILE), --secureos)
+OPT_PSPNVRAM_FILE=$(call add_opt_prefix, $(PSPNVRAM_FILE), --nvram)
+OPT_PSPSECUREDEBUG_FILE=$(call add_opt_prefix, $(PSPSECUREDEBUG_FILE), --securedebug)
+OPT_PSPTRUSTLETS_FILE=$(call add_opt_prefix, $(PSPTRUSTLETS_FILE), --trustlets)
+OPT_TRUSTLETKEY_FILE=$(call add_opt_prefix, $(TRUSTLETKEY_FILE), --trustletkey)
+OPT_SMUFIRMWARE2_FILE=$(call add_opt_prefix, $(SMUFIRMWARE2_FILE), --smufirmware2)
+OPT_SMUSCS_FILE=$(call add_opt_prefix, $(SMUSCS_FILE), --smuscs)
 
 $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_HUDSON_XHCI_FWM_FILE)) \
 			$(call strip_quotes, $(CONFIG_HUDSON_IMC_FWM_FILE)) \
 			$(call strip_quotes, $(CONFIG_HUDSON_GEC_FWM_FILE)) \
 			$(call strip_quotes, $(CONFIG_AMD_PUBKEY_FILE)) \
-			$(call strip_quotes, $(CONFIG_PUBSIGNEDKEY_FILE)) \
-			$(call strip_quotes, $(CONFIG_PSPBTLDR_FILE)) \
-			$(call strip_quotes, $(CONFIG_PSPRCVR_FILE)) \
-			$(call strip_quotes, $(CONFIG_PSPSCUREOS_FILE)) \
-			$(call strip_quotes, $(CONFIG_PSPNVRAM_FILE)) \
-			$(call strip_quotes, $(CONFIG_SMUFWM_FILE)) \
-			$(call strip_quotes, $(CONFIG_SMUSCS_FILE)) \
-			$(call strip_quotes, $(CONFIG_PSPSECUREDEBUG_FILE)) \
-			$(call strip_quotes, $(CONFIG_PSPTRUSTLETS_FILE)) \
-			$(call strip_quotes, $(CONFIG_TRUSTLETKEY_FILE)) \
-			$(call strip_quotes, $(CONFIG_SMUFIRMWARE2_FILE)) \
-			$(call strip_quotes, $(CONFIG_2AMD_PUBKEY_FILE)) \
-			$(call strip_quotes, $(CONFIG_2PUBSIGNEDKEY_FILE)) \
-			$(call strip_quotes, $(CONFIG_2PSPBTLDR_FILE)) \
-			$(call strip_quotes, $(CONFIG_2SMUFWM_FILE)) \
-			$(call strip_quotes, $(CONFIG_2SMUFWM_FN_FILE)) \
-			$(call strip_quotes, $(CONFIG_2PSPRCVR_FILE)) \
-			$(call strip_quotes, $(CONFIG_2PSPSCUREOS_FILE)) \
-			$(call strip_quotes, $(CONFIG_2PSPNVRAM_FILE)) \
-			$(call strip_quotes, $(CONFIG_2SMUSCS_FILE)) \
-			$(call strip_quotes, $(CONFIG_2PSPSECUREDEBUG_FILE)) \
-			$(call strip_quotes, $(CONFIG_2PSPTRUSTLETS_FILE)) \
-			$(call strip_quotes, $(CONFIG_2TRUSTLETKEY_FILE)) \
-			$(call strip_quotes, $(CONFIG_2SMUFIRMWARE2_FILE)) \
-			$(call strip_quotes, $(CONFIG_2SMUFIRMWARE2_FN_FILE)) \
+			$(call strip_quotes, $(PUBSIGNEDKEY_FILE)) \
+			$(call strip_quotes, $(PSPBTLDR_FILE)) \
+			$(call strip_quotes, $(PSPRCVR_FILE)) \
+			$(call strip_quotes, $(PSPSCUREOS_FILE)) \
+			$(call strip_quotes, $(PSPNVRAM_FILE)) \
+			$(call strip_quotes, $(SMUFWM_FILE)) \
+			$(call strip_quotes, $(SMUSCS_FILE)) \
+			$(call strip_quotes, $(PSPSECUREDEBUG_FILE)) \
+			$(call strip_quotes, $(PSPTRUSTLETS_FILE)) \
+			$(call strip_quotes, $(TRUSTLETKEY_FILE)) \
+			$(call strip_quotes, $(SMUFIRMWARE2_FILE)) \
+			$(call strip_quotes, $(AMD_PUBKEY2_FILE)) \
+			$(call strip_quotes, $(PUBSIGNEDKEY2_FILE)) \
+			$(call strip_quotes, $(PSPBTLDR2_FILE)) \
+			$(call strip_quotes, $(SMUFWM2_FILE)) \
+			$(call strip_quotes, $(SMUFWM2_FN_FILE)) \
+			$(call strip_quotes, $(PSPRCVR2_FILE)) \
+			$(call strip_quotes, $(PSPSCUREOS2_FILE)) \
+			$(call strip_quotes, $(PSPNVRAM2_FILE)) \
+			$(call strip_quotes, $(SMUSCS2_FILE)) \
+			$(call strip_quotes, $(PSPSECUREDEBUG2_FILE)) \
+			$(call strip_quotes, $(PSPTRUSTLETS2_FILE)) \
+			$(call strip_quotes, $(TRUSTLETKEY2_FILE)) \
+			$(call strip_quotes, $(SMUFIRMWARE2_2_FILE)) \
+			$(call strip_quotes, $(SMUFIRMWARE2_2_FN_FILE)) \
 			$(AMDFWTOOL)
 	rm -f $@
 	@printf "    AMDFWTOOL  $(subst $(obj)/,,$(@))\n"

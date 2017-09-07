@@ -113,15 +113,17 @@ CONFIG_PSPBTLDR_FILE=$(top)/$(FIRMWARE_LOCATE)/PspBootLoader_prod_$(FIRMWARE_TYP
 ###3
 CONFIG_PSPRCVR_FILE=$(top)/$(FIRMWARE_LOCATE)/PspRecoveryBootLoader_prod_$(FIRMWARE_TYPE).sbin
 
-###2
-CONFIG_PSPSCUREOS_FILE=$(top)/$(FIRMWARE_LOCATE)/PspSecureOs_prod_$(FIRMWARE_TYPE).csbin
-
 ###4
 CONFIG_PSPNVRAM_FILE=$(top)/$(FIRMWARE_LOCATE)/PspNvram$(FIRMWARE_TYPE).bin
 
-###8
+###8 - Check for SMU firmware named either *.sbin or *.csbin
+###    TODO: Remove *.sbin section after the blobs repo is updated.
+CONFIG_SMUFWM_FILE=$(top)/$(FIRMWARE_LOCATE)/SmuFirmware_$(FIRMWARE_TYPE).csbin
+CONFIG_SMUFWM_FN_FILE=$(top)/$(FIRMWARE_LOCATE)/SmuFirmware_$(FIRMWARE_TYPE)_FN.csbin
+ifeq ("$(wildcard $(CONFIG_SMUFWM_FILE))","")
 CONFIG_SMUFWM_FILE=$(top)/$(FIRMWARE_LOCATE)/SmuFirmware$(FIRMWARE_TYPE).sbin
 CONFIG_SMUFWM_FN_FILE=$(top)/$(FIRMWARE_LOCATE)/SmuFirmware$(FIRMWARE_TYPE)_FN.sbin
+endif
 
 ###95
 CONFIG_SMUSCS_FILE=$(top)/$(FIRMWARE_LOCATE)/SmuScs$(FIRMWARE_TYPE).bin
@@ -129,15 +131,25 @@ CONFIG_SMUSCS_FILE=$(top)/$(FIRMWARE_LOCATE)/SmuScs$(FIRMWARE_TYPE).bin
 ###9
 CONFIG_PSPSECUREDEBUG_FILE=$(top)/$(FIRMWARE_LOCATE)/PspSecureDebug$(FIRMWARE_TYPE).Key
 
+ifeq ($(CONFIG_USE_PSPSCUREOS),y)
+###2
+CONFIG_PSPSCUREOS_FILE=$(top)/$(FIRMWARE_LOCATE)/PspSecureOs_prod_$(FIRMWARE_TYPE).csbin
+
 ###12
-CONFIG_PSPTRUSTLETS_FILE=$(top)/$(FIRMWARE_LOCATE)/PspTrustlets_prod_$(FIRMWARE_TYPE).cbin
+CONFIG_PSPTRUSTLETS_FILE=$(wildcard $(top)/$(FIRMWARE_LOCATE)/PspTrustlets*_prod_$(FIRMWARE_TYPE).cbin)
 
 ###13
 CONFIG_TRUSTLETKEY_FILE=$(top)/$(FIRMWARE_LOCATE)/TrustletKey_prod_$(FIRMWARE_TYPE).sbin
+endif
 
-###18
+###18- Check for SMU firmware2 named either *.sbin or *.csbin
+###    TODO: Remove *.sbin section after the blobs repo is updated.
+CONFIG_SMUFIRMWARE2_FILE=$(top)/$(FIRMWARE_LOCATE)/SmuFirmware2_prod_$(FIRMWARE_TYPE).csbin
+CONFIG_SMUFIRMWARE2_FN_FILE=$(top)/$(FIRMWARE_LOCATE)/SmuFirmware2_prod_$(FIRMWARE_TYPE)_FN.csbin
+ifeq ("$(wildcard $(CONFIG_SMUFIRMWARE2_FILE))","")
 CONFIG_SMUFIRMWARE2_FILE=$(top)/$(FIRMWARE_LOCATE)/SmuFirmware2_prod_$(FIRMWARE_TYPE).sbin
 CONFIG_SMUFIRMWARE2_FN_FILE=$(top)/$(FIRMWARE_LOCATE)/SmuFirmware2_prod_$(FIRMWARE_TYPE)_FN.sbin
+endif
 
 add_opt_prefix=$(if $(call strip_quotes, $(1)), $(2) $(call strip_quotes, $(1)), )
 
@@ -165,11 +177,13 @@ OPT_2PSPBTLDR_FILE=$(call add_opt_prefix, $(CONFIG_2PSPBTLDR_FILE), --bootloader
 OPT_2SMUFWM_FILE=$(call add_opt_prefix, $(CONFIG_2SMUFWM_FILE), --smufirmware_2)
 OPT_2PSPRCVR_FILE=$(call add_opt_prefix, $(CONFIG_2PSPRCVR_FILE), --recovery2)
 OPT_2PUBSIGNEDKEY_FILE=$(call add_opt_prefix, $(CONFIG_2PUBSIGNEDKEY_FILE), --rtmpubkey2)
-OPT_2PSPSCUREOS_FILE=$(call add_opt_prefix, $(CONFIG_2PSPSCUREOS_FILE), --secureos2)
 OPT_2PSPNVRAM_FILE=$(call add_opt_prefix, $(CONFIG_2PSPNVRAM_FILE), --nvram2)
 OPT_2PSPSECUREDEBUG_FILE=$(call add_opt_prefix, $(CONFIG_2PSPSECUREDEBUG_FILE), --securedebug2)
+ifeq ($(CONFIG_USE_PSPSCUREOS),y)
+OPT_2PSPSCUREOS_FILE=$(call add_opt_prefix, $(CONFIG_2PSPSCUREOS_FILE), --secureos2)
 OPT_2PSPTRUSTLETS_FILE=$(call add_opt_prefix, $(CONFIG_2PSPTRUSTLETS_FILE), --trustlets2)
 OPT_2TRUSTLETKEY_FILE=$(call add_opt_prefix, $(CONFIG_2TRUSTLETKEY_FILE), --trustletkey2)
+endif
 OPT_2SMUFIRMWARE2_FILE=$(call add_opt_prefix, $(CONFIG_2SMUFIRMWARE2_FILE), --smufirmware2_2)
 OPT_2SMUSCS_FILE=$(call add_opt_prefix, $(CONFIG_2SMUSCS_FILE), --smuscs2)
 OPT_2SMUFWM_FN_FILE=$(call add_opt_prefix, $(CONFIG_2SMUFWM_FN_FILE), --smufnfirmware_2)

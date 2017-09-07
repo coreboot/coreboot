@@ -31,7 +31,6 @@
 #include <pc80/mc146818rtc.h>
 #include <spi-generic.h>
 #include <soc/iomap.h>
-#include <soc/lpc.h>
 #include <soc/nvs.h>
 #include <soc/pci_devs.h>
 #include <soc/pch.h>
@@ -403,23 +402,22 @@ static void southbridge_smi_tco(void)
 		return;
 
 	if (tco_sts & (1 << 8)) { /* BIOSWR */
-		u8 bios_cntl = pci_read_config16(PCH_DEV_SPI, BIOS_CNTL);
-
-		if (bios_cntl & 1) {
-			/*
-			 * BWE is RW, so the SMI was caused by a
-			 * write to BWE, not by a write to the BIOS
-			 *
-			 * This is the place where we notice someone
-			 * is trying to tinker with the BIOS. We are
-			 * trying to be nice and just ignore it. A more
-			 * resolute answer would be to power down the
-			 * box.
-			 */
-			printk(BIOS_DEBUG, "Switching back to RO\n");
-			pci_write_config32(PCH_DEV_SPI, BIOS_CNTL,
-					   (bios_cntl & ~1));
-		} /* No else for now? */
+		if (IS_ENABLED(CONFIG_SPI_FLASH_SMM)) {
+			if (fast_spi_wpd_status()) {
+				/*
+				 * BWE is RW, so the SMI was caused by a
+				 * write to BWE, not by a write to the BIOS
+				 *
+				 * This is the place where we notice someone
+				 * is trying to tinker with the BIOS. We are
+				 * trying to be nice and just ignore it. A more
+				 * resolute answer would be to power down the
+				 * box.
+				 */
+				printk(BIOS_DEBUG, "Switching back to RO\n");
+				fast_spi_enable_wp();
+			} /* No else for now? */
+		}
 	} else if (tco_sts & (1 << 3)) { /* TIMEOUT */
 		/* Handle TCO timeout */
 		printk(BIOS_DEBUG, "TCO Timeout.\n");

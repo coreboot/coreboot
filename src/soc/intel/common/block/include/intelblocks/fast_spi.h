@@ -74,11 +74,18 @@ void fast_spi_cache_bios_region(void);
  * Caching.
  */
 void fast_spi_early_init(uintptr_t spi_base_address);
-
 /*
  * Fast SPI flash controller structure to allow SoCs to define bus-controller
  * mapping.
  */
 extern const struct spi_ctrlr fast_spi_flash_ctrlr;
+/*
+ * Read SPI Write protect disable bit.
+ */
+bool fast_spi_wpd_status(void);
+/*
+ * Enable SPI Write protect.
+ */
+void fast_spi_enable_wp(void);
 
 #endif	/* SOC_INTEL_COMMON_BLOCK_FAST_SPI_H */

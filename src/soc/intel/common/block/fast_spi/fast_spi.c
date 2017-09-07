@@ -274,3 +274,21 @@ void fast_spi_early_init(uintptr_t spi_base_address)
 	/* Initialize SPI to allow BIOS to write/erase on flash. */
 	fast_spi_init();
 }
+
+/* Read SPI Write Protect disable status. */
+bool fast_spi_wpd_status(void)
+{
+	return pci_read_config16(PCH_DEV_SPI, SPIBAR_BIOS_CONTROL) &
+		SPIBAR_BIOS_CONTROL_WPD;
+}
+
+/* Enable SPI Write Protect. */
+void fast_spi_enable_wp(void)
+{
+	device_t dev = PCH_DEV_SPI;
+	uint8_t bios_cntl;
+
+	bios_cntl = pci_read_config8(dev, SPIBAR_BIOS_CONTROL);
+	bios_cntl &= ~SPIBAR_BIOS_CONTROL_WPD;
+	pci_write_config8(dev, SPIBAR_BIOS_CONTROL, bios_cntl);
+}

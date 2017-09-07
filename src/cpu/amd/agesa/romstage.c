@@ -31,6 +31,12 @@
 #if IS_ENABLED(CONFIG_LATE_CBMEM_INIT)
 #error "Only EARLY_CBMEM_INIT is supported."
 #endif
+#if !IS_ENABLED(CONFIG_POSTCAR_STAGE)
+#error "Only POSTCAR_STAGE is supported."
+#endif
+#if HAS_LEGACY_WRAPPER
+#error "LEGACY_WRAPPER code not supported"
+#endif
 
 void asmlinkage early_all_cores(void)
 {
@@ -47,8 +53,7 @@ static void fill_sysinfo(struct sysinfo *cb)
 	memset(cb, 0, sizeof(*cb));
 	cb->s3resume = acpi_is_wakeup_s3();
 
-	if (!HAS_LEGACY_WRAPPER)
-		agesa_set_interface(cb);
+	agesa_set_interface(cb);
 }
 
 void * asmlinkage romstage_main(unsigned long bist)
@@ -77,31 +82,25 @@ void * asmlinkage romstage_main(unsigned long bist)
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
 
-	if (!HAS_LEGACY_WRAPPER) {
+	agesa_execute_state(cb, AMD_INIT_RESET);
 
-		agesa_execute_state(cb, AMD_INIT_RESET);
+	agesa_execute_state(cb, AMD_INIT_EARLY);
 
-		agesa_execute_state(cb, AMD_INIT_EARLY);
+	timestamp_add_now(TS_BEFORE_INITRAM);
 
-		timestamp_add_now(TS_BEFORE_INITRAM);
+	if (!cb->s3resume)
+		agesa_execute_state(cb, AMD_INIT_POST);
+	else
+		agesa_execute_state(cb, AMD_INIT_RESUME);
 
-		if (!cb->s3resume)
-			agesa_execute_state(cb, AMD_INIT_POST);
-		else
-			agesa_execute_state(cb, AMD_INIT_RESUME);
+	/* FIXME: Detect if TSC frequency changed during raminit? */
+	timestamp_rescale_table(1, 4);
+	timestamp_add_now(TS_AFTER_INITRAM);
 
-		/* FIXME: Detect if TSC frequency changed during raminit? */
-		timestamp_rescale_table(1, 4);
-		timestamp_add_now(TS_AFTER_INITRAM);
-
-	} else {
-
-		agesa_main(cb);
-
-	}
-
-	if (IS_ENABLED(CONFIG_POSTCAR_STAGE))
-		fixup_cbmem_to_UC(cb->s3resume);
+	/* Work around AGESA setting all memory as WB on normal
+	 * boot path.
+	 */
+	fixup_cbmem_to_UC(cb->s3resume);
 
 	cbmem_initted = !cbmem_recovery(cb->s3resume);
 
@@ -112,14 +111,6 @@ void * asmlinkage romstage_main(unsigned long bist)
 
 	romstage_handoff_init(cb->s3resume);
 
-	if (!IS_ENABLED(CONFIG_POSTCAR_STAGE)) {
-		uintptr_t stack_top = romstage_ram_stack_base(
-			HIGH_ROMSTAGE_STACK_SIZE, ROMSTAGE_STACK_CBMEM);
-		stack_top += HIGH_ROMSTAGE_STACK_SIZE;
-		printk(BIOS_DEBUG, "Move CAR stack.\n");
-		return (void*)stack_top;
-	}
-
 	postcar_frame_init(&pcf, HIGH_ROMSTAGE_STACK_SIZE);
 	recover_postcar_frame(&pcf, cb->s3resume);
 
@@ -127,20 +118,3 @@ void * asmlinkage romstage_main(unsigned long bist)
 	/* We do not return. */
 	return NULL;
 }
-
-#if !IS_ENABLED(CONFIG_POSTCAR_STAGE)
-void asmlinkage romstage_after_car(void)
-{
-	struct sysinfo romstage_state;
-	struct sysinfo *cb = &romstage_state;
-
-	printk(BIOS_DEBUG, "CAR disabled.\n");
-
-	fill_sysinfo(cb);
-
-	if (HAS_LEGACY_WRAPPER)
-		agesa_postcar(cb);
-
-	run_ramstage();
-}
-#endif

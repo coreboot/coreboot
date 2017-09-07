@@ -20,7 +20,7 @@
 #include <rules.h>
 #include <stdint.h>
 
-int usbdebug_init(void);
+void usbdebug_init(void);
 
 void usb_tx_byte(int idx, unsigned char data);
 void usb_tx_flush(int idx);
@@ -29,6 +29,7 @@ int usb_can_rx_byte(int idx);
 
 #define __CONSOLE_USB_ENABLE__	(IS_ENABLED(CONFIG_CONSOLE_USB) && \
 	((ENV_ROMSTAGE && IS_ENABLED(CONFIG_USBDEBUG_IN_ROMSTAGE)) || \
+	 (ENV_POSTCAR && IS_ENABLED(CONFIG_USBDEBUG_IN_ROMSTAGE)) || \
 	 ENV_RAMSTAGE))
 
 #define USB_PIPE_FOR_CONSOLE 0

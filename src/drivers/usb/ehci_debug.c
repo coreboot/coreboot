@@ -599,13 +599,11 @@ next_debug_port:
 	return -10;
 }
 
-#if IS_ENABLED(CONFIG_DEBUG_USBDEBUG)
 static int dbgp_enabled(void)
 {
 	struct dbgp_pipe *globals = &dbgp_ehci_info()->ep_pipe[DBGP_SETUP_EP0];
 	return (globals->status & DBGP_EP_ENABLED);
 }
-#endif
 
 int dbgp_try_get(struct dbgp_pipe *pipe)
 {
@@ -624,7 +622,7 @@ void dbgp_put(struct dbgp_pipe *pipe)
 	pipe->status &= ~DBGP_EP_BUSY;
 }
 
-#if !defined(__PRE_RAM__) && !defined(__SMM__)
+#if ENV_RAMSTAGE
 void usbdebug_re_enable(unsigned ehci_base)
 {
 	struct ehci_debug_info *dbg_info = dbgp_ehci_info();
@@ -650,36 +648,55 @@ void usbdebug_disable(void)
 
 #endif
 
-#if !defined(__PRE_RAM__) && !defined(__SMM__)
-static int get_usbdebug_from_cbmem(struct ehci_debug_info *info)
-{
-	struct ehci_debug_info *dbg_info_cbmem;
-
-	dbg_info_cbmem = cbmem_find(CBMEM_ID_EHCI_DEBUG);
-	if (dbg_info_cbmem == NULL)
-		return -1;
-
-	memcpy(info, dbg_info_cbmem, sizeof (*info));
-	printk(BIOS_DEBUG, "EHCI debug port found in CBMEM.\n");
-
-	return 0;
-}
-
-#elif defined(__PRE_RAM__)
-static void migrate_ehci_debug(int is_recovery)
+static int usbdebug_hw_init(void)
 {
 	struct ehci_debug_info *dbg_info = dbgp_ehci_info();
-	struct ehci_debug_info *dbg_info_cbmem;
+	unsigned int ehci_base, dbg_offset;
 
-	dbg_info_cbmem = cbmem_add(CBMEM_ID_EHCI_DEBUG, sizeof(*dbg_info));
-	if (dbg_info_cbmem == NULL)
-		return;
-
-	memcpy(dbg_info_cbmem, dbg_info, sizeof(*dbg_info));
-	car_set_var(glob_dbg_info_p, dbg_info_cbmem);
+	if (ehci_debug_hw_enable(&ehci_base, &dbg_offset))
+		return -1;
+	return usbdebug_init_(ehci_base, dbg_offset, dbg_info);
 }
+
+static void migrate_ehci_debug(int is_recovery)
+{
+	struct ehci_debug_info *dbg_info_cbmem;
+	int rv;
+
+	if (ENV_ROMSTAGE) {
+		/* Move state from CAR to CBMEM. */
+		struct ehci_debug_info *dbg_info = dbgp_ehci_info();
+		dbg_info_cbmem = cbmem_add(CBMEM_ID_EHCI_DEBUG,
+					sizeof(*dbg_info));
+		if (dbg_info_cbmem == NULL)
+			return;
+		memcpy(dbg_info_cbmem, dbg_info, sizeof(*dbg_info));
+		car_set_var(glob_dbg_info_p, dbg_info_cbmem);
+		return;
+	}
+
+	if (IS_ENABLED(CONFIG_USBDEBUG_IN_ROMSTAGE)) {
+		/* Use state in CBMEM. */
+		dbg_info_cbmem = cbmem_find(CBMEM_ID_EHCI_DEBUG);
+		if (dbg_info_cbmem)
+			car_set_var(glob_dbg_info_p, dbg_info_cbmem);
+	}
+
+	/* Redo full init in ramstage if state claims we
+	 * are still not enabled. Should never happen. */
+	rv = dbgp_enabled() ? 0 : -1;
+	if (!ENV_POSTCAR && rv < 0)
+		rv = usbdebug_hw_init();
+
+	if (rv < 0)
+		printk(BIOS_DEBUG, "usbdebug: Failed hardware init\n");
+	else
+		printk(BIOS_DEBUG, "usbdebug: " ENV_STRING " starting...\n");
+}
+
 ROMSTAGE_CBMEM_INIT_HOOK(migrate_ehci_debug);
-#endif
+POSTCAR_CBMEM_INIT_HOOK(migrate_ehci_debug);
+RAMSTAGE_CBMEM_INIT_HOOK(migrate_ehci_debug);
 
 int dbgp_ep_is_active(struct dbgp_pipe *pipe)
 {
@@ -696,16 +713,18 @@ struct dbgp_pipe *dbgp_console_input(void)
 	return &dbgp_ehci_info()->ep_pipe[DBGP_CONSOLE_EPIN];
 }
 
-int usbdebug_init(void)
+void usbdebug_init(void)
 {
-	struct ehci_debug_info *dbg_info = dbgp_ehci_info();
-	unsigned int ehci_base, dbg_offset;
+	/* USB console init is done early in romstage, yet delayed to
+	 * CBMEM_INIT_HOOKs for postcar and ramstage as we recover state
+	 * from CBMEM.
+	 */
+	if (IS_ENABLED(CONFIG_USBDEBUG_IN_ROMSTAGE) && ENV_ROMSTAGE)
+		usbdebug_hw_init();
 
-#if !defined(__PRE_RAM__) && !defined(__SMM__)
-	if (!get_usbdebug_from_cbmem(dbg_info))
-		return 0;
-#endif
-	if (ehci_debug_hw_enable(&ehci_base, &dbg_offset))
-		return -1;
-	return usbdebug_init_(ehci_base, dbg_offset, dbg_info);
+	/* USB console init is done early in ramstage if it was
+	 * not done in romstage, this does not require CBMEM.
+	 */
+	if (!IS_ENABLED(CONFIG_USBDEBUG_IN_ROMSTAGE) && ENV_RAMSTAGE)
+		usbdebug_hw_init();
 }

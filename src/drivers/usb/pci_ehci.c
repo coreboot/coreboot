@@ -25,7 +25,7 @@
 #include "ehci_debug.h"
 #include "ehci.h"
 
-#if !defined(__PRE_RAM__) && !defined(__SMM__)
+#if ENV_RAMSTAGE
 static struct device_operations *ehci_drv_ops;
 static struct device_operations ehci_dbg_ops;
 #endif
@@ -81,7 +81,7 @@ void ehci_debug_select_port(unsigned int port)
 	pci_ehci_dbg_set_port(dbg_dev, port);
 }
 
-#if !defined(__PRE_RAM__) && !defined(__SMM__)
+#if ENV_RAMSTAGE
 static void pci_ehci_set_resources(struct device *dev)
 {
 	struct resource *res;

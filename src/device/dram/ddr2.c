@@ -181,17 +181,20 @@ static u32 spd_decode_tRR_time(u8 c)
 {
 	switch (c) {
 	default:
-	case 0:
+		printk(BIOS_WARNING,
+			"Unknown tRR value, using default of 15.6us.");
+		/* Fallthrough */
+	case 0x80:
 		return 15625 << 8;
-	case 1:
+	case 0x81:
 		return 15625 << 6;
-	case 2:
+	case 0x82:
 		return 15625 << 7;
-	case 3:
+	case 0x83:
 		return 15625 << 9;
-	case 4:
+	case 0x84:
 		return 15625 << 10;
-	case 5:
+	case 0x85:
 		return 15625 << 11;
 	}
 }

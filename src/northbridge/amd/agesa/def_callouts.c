@@ -37,10 +37,12 @@ AGESA_STATUS GetBiosCallout (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 	AGESA_STATUS status;
 	UINTN i;
 
-	/* One HeapManager serves them all. */
-	status = HeapManagerCallout(Func, Data, ConfigPtr);
-	if (status != AGESA_UNSUPPORTED)
-		return status;
+	if (HAS_LEGACY_WRAPPER || ENV_RAMSTAGE) {
+		/* One HeapManager serves them all. */
+		status = HeapManagerCallout(Func, Data, ConfigPtr);
+		if (status != AGESA_UNSUPPORTED)
+			return status;
+	}
 
 #if HAS_AGESA_FCH_OEM_CALLOUT
 	if (!HAS_LEGACY_WRAPPER && Func == AGESA_FCH_OEM_CALLOUT) {

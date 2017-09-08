@@ -22,9 +22,9 @@ cpu_incs-y += $(src)/cpu/amd/agesa/cache_as_ram.S
 ifeq ($(CONFIG_BINARYPI_LEGACY_WRAPPER), y)
 romstage-y += romstage.c
 ramstage-y += amd_late_init.c
+romstage-y += ../agesa/heapmanager.c
 else
 romstage-y += ../agesa/romstage.c
 endif
 
-romstage-y += ../agesa/heapmanager.c
 ramstage-y += ../agesa/heapmanager.c

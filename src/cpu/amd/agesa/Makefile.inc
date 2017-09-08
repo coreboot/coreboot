@@ -27,7 +27,8 @@ cpu_incs-y += $(src)/cpu/amd/agesa/cache_as_ram.S
 romstage-y += romstage.c
 endif
 
-romstage-y += heapmanager.c
+romstage-$(CONFIG_AGESA_LEGACY_WRAPPER) += heapmanager.c
+
 ramstage-y += heapmanager.c
 ramstage-$(CONFIG_AGESA_LEGACY_WRAPPER) += amd_late_init.c
 

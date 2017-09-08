@@ -101,7 +101,8 @@ CPPFLAGS_common += -I$(src)/soc/amd/stoneyridge
 CPPFLAGS_common += -I$(src)/soc/amd/stoneyridge/include
 CPPFLAGS_common += -I$(src)/soc/amd/stoneyridge/acpi
 
-# ROMSIG At ROMBASE + 0x20000:
+# ROMSIG Normally At ROMBASE + 0x20000
+# Overridden by CONFIG_AMD_FWM_POSITION_INDEX
 # +-----------+---------------+----------------+------------+
 # |0x55AA55AA |EC ROM Address |GEC ROM Address |USB3 ROM    |
 # +-----------+---------------+----------------+------------+
@@ -109,7 +110,10 @@ CPPFLAGS_common += -I$(src)/soc/amd/stoneyridge/acpi
 # +-----------+
 #
 # EC ROM should be 64K aligned.
-STONEYRIDGE_FWM_POSITION=$(call int-add, $(call int-subtract, 0xffffffff $(CONFIG_ROM_SIZE)) 0x20000 1)
+STONEYRIDGE_FWM_POSITION=$(call int-add, \
+	$(call int-subtract, 0xffffffff \
+	$(call int-shift-left, \
+	0x80000 $(CONFIG_AMD_FWM_POSITION_INDEX))) 0x20000 1)
 
 ### 0
 FIRMWARE_LOCATE=$(dir $(call strip_quotes, $(CONFIG_AMD_PUBKEY_FILE)))

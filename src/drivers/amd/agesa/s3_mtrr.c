@@ -19,7 +19,7 @@
 #include <cpu/amd/mtrr.h>
 #include <cpu/x86/cache.h>
 #include <string.h>
-#include "s3_resume.h"
+#include <northbridge/amd/agesa/agesa_helper.h>
 
 static void write_mtrr(u8 **p_nvram_pos, unsigned idx)
 {

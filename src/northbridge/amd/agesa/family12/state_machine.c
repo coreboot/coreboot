@@ -20,8 +20,6 @@
 #include <northbridge/amd/agesa/state_machine.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
 
-#include <cpu/amd/agesa/s3_resume.h>
-
 #include <sb_cimx.h>
 
 void platform_BeforeInitReset(struct sysinfo *cb, AMD_RESET_PARAMS *Reset)

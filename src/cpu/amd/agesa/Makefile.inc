@@ -18,20 +18,10 @@ subdirs-$(CONFIG_CPU_AMD_AGESA_FAMILY15) += family15
 subdirs-$(CONFIG_CPU_AMD_AGESA_FAMILY15_TN) += family15tn
 subdirs-$(CONFIG_CPU_AMD_AGESA_FAMILY16_KB) += family16kb
 
-ramstage-y += s3_mtrr.c
-
 ifeq ($(CONFIG_AGESA_LEGACY), y)
 cpu_incs-y += $(src)/cpu/amd/agesa/cache_as_ram_legacy.inc
-else
-cpu_incs-y += $(src)/cpu/amd/agesa/cache_as_ram.S
-romstage-y += romstage.c mtrr_fixme.c
 endif
 
-romstage-$(CONFIG_AGESA_LEGACY_WRAPPER) += heapmanager.c
-
-postcar-y += cache_as_ram.S
-
-ramstage-y += heapmanager.c
 ramstage-$(CONFIG_AGESA_LEGACY_WRAPPER) += amd_late_init.c
 
 ifeq ($(CONFIG_HAVE_ACPI_RESUME), y)

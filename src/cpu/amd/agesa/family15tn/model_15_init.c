@@ -29,7 +29,7 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/amd/amdfam15.h>
 #include <arch/acpi.h>
-#include <cpu/amd/agesa/s3_resume.h>
+#include <northbridge/amd/agesa/agesa_helper.h>
 
 static void model_15_init(device_t dev)
 {

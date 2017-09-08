@@ -15,7 +15,6 @@
 
 #include <Proc/Fch/FchPlatform.h>
 #include <Proc/Fch/Fch.h>
-#include <cpu/amd/agesa/s3_resume.h>
 #include <device/device.h>
 #include "hudson.h"
 #include "AGESA.h"

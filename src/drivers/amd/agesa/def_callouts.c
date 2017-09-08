@@ -22,8 +22,8 @@
 #include "amdlib.h"
 #include "Ids.h"
 #include <northbridge/amd/agesa/state_machine.h>
-#include "BiosCallOuts.h"
-#include "dimmSpd.h"
+#include <northbridge/amd/agesa/BiosCallOuts.h>
+#include <northbridge/amd/agesa/dimmSpd.h>
 
 #if IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_PI)
 #if IS_ENABLED(CONFIG_ARCH_ROMSTAGE_X86_64) || \

@@ -21,18 +21,9 @@ subdirs-$(CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY15) += family15
 subdirs-$(CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY15_TN) += family15tn
 subdirs-$(CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY16_KB) += family16kb
 
-romstage-y += def_callouts.c eventlog.c
-ramstage-y += def_callouts.c eventlog.c acpi_tables.c
-
 ifeq ($(CONFIG_AGESA_LEGACY_WRAPPER), y)
 romstage-y += agesawrapper.c
 ramstage-y += agesawrapper.c
-else
-romstage-y += state_machine.c
-ramstage-y += state_machine.c
 endif
-
-romstage-y += oem_s3.c
-ramstage-y += oem_s3.c
 
 endif

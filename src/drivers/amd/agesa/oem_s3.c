@@ -18,8 +18,6 @@
 #include <string.h>
 #include <cbmem.h>
 #include <program_loading.h>
-#include <cpu/amd/agesa/s3_resume.h>
-#include <northbridge/amd/agesa/agesawrapper.h>
 #include <northbridge/amd/agesa/state_machine.h>
 #include <AGESA.h>
 #include <northbridge/amd/agesa/agesa_helper.h>

@@ -712,7 +712,6 @@ static void haswell_init(struct device *cpu)
 
 /* MP initialization support. */
 static const void *microcode_patch;
-static int ht_disabled;
 
 static void pre_mp_init(void)
 {
@@ -740,8 +739,6 @@ static int get_cpu_count(void)
 	printk(BIOS_DEBUG, "CPU has %u cores, %u threads enabled.\n",
 	       num_cores, num_threads);
 
-	ht_disabled = num_threads == num_cores;
-
 	return num_threads;
 }
 
@@ -750,14 +747,6 @@ static void get_microcode_info(const void **microcode, int *parallel)
 	microcode_patch = intel_microcode_find();
 	*microcode = microcode_patch;
 	*parallel = 1;
-}
-
-static int adjust_apic_id(int index, int apic_id)
-{
-	if (ht_disabled)
-		return 2 * index;
-	else
-		return index;
 }
 
 static void per_cpu_smm_trigger(void)
@@ -784,7 +773,6 @@ static const struct mp_ops mp_ops = {
 	.get_cpu_count = get_cpu_count,
 	.get_smm_info = smm_info,
 	.get_microcode_info = get_microcode_info,
-	.adjust_cpu_apic_entry = adjust_apic_id,
 	.pre_mp_smm_init = smm_initialize,
 	.per_cpu_smm_trigger = per_cpu_smm_trigger,
 	.relocation_handler = smm_relocation_handler,

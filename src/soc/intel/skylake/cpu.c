@@ -421,16 +421,6 @@ void soc_core_init(device_t cpu)
 	prmrr_core_configure();
 }
 
-static int adjust_apic_id(int index, int apic_id)
-{
-	unsigned int num_cores, num_threads;
-
-	if (cpu_read_topology(&num_cores, &num_threads))
-		return 2 * index;
-	else
-		return index;
-}
-
 static void per_cpu_smm_trigger(void)
 {
 	/* Relocate the SMM handler. */
@@ -466,7 +456,6 @@ static const struct mp_ops mp_ops = {
 	.get_cpu_count = get_cpu_count,
 	.get_smm_info = smm_info,
 	.get_microcode_info = get_microcode_info,
-	.adjust_cpu_apic_entry = adjust_apic_id,
 	.pre_mp_smm_init = smm_initialize,
 	.per_cpu_smm_trigger = per_cpu_smm_trigger,
 	.relocation_handler = smm_relocation_handler,

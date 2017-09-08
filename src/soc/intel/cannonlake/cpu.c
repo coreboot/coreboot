@@ -200,16 +200,6 @@ void soc_core_init(device_t cpu)
 
 }
 
-static int adjust_apic_id(int index, int apic_id)
-{
-	unsigned int num_cores, num_threads;
-
-	if (cpu_read_topology(&num_cores, &num_threads))
-		return 2 * index;
-	else
-		return index;
-}
-
 static void post_mp_init(void)
 {
 	/* Set Max Ratio */
@@ -225,7 +215,6 @@ static const struct mp_ops mp_ops = {
 	.pre_mp_init = soc_fsp_load,
 	.get_cpu_count = get_cpu_count,
 	.get_microcode_info = get_microcode_info,
-	.adjust_cpu_apic_entry = adjust_apic_id,
 	.post_mp_init = post_mp_init,
 };
 

@@ -82,9 +82,6 @@ struct mp_params {
 	int num_cpus; /* Total cpus include BSP */
 	int parallel_microcode_load;
 	const void *microcode_pointer;
-	/* adjust_apic_id() is called for every potential APIC id in the
-	 * system up from 0 to CONFIG_MAX_CPUS. Return adjusted apic_id. */
-	int (*adjust_apic_id)(int index, int apic_id);
 	/* Flight plan  for APs and BSP. */
 	struct mp_flight_record *flight_plan;
 	int num_records;
@@ -133,11 +130,18 @@ static struct mp_flight_plan mp_info;
 
 struct cpu_map {
 	struct device *dev;
-	int apic_id;
+	/* Keep track of default apic ids for SMM. */
+	int default_apic_id;
 };
 
 /* Keep track of APIC and device structure for each CPU. */
 static struct cpu_map cpus[CONFIG_MAX_CPUS];
+
+static inline void add_cpu_map_entry(const struct cpu_info *info)
+{
+	cpus[info->index].dev = info->cpu;
+	cpus[info->index].default_apic_id = cpuid_ebx(1) >> 24;
+}
 
 inline void barrier_wait(atomic_t *b)
 {
@@ -218,7 +222,6 @@ static void park_this_cpu(void)
 static void asmlinkage ap_init(unsigned int cpu)
 {
 	struct cpu_info *info;
-	int apic_id;
 
 	/* Ensure the local APIC is enabled */
 	enable_lapic();
@@ -226,13 +229,15 @@ static void asmlinkage ap_init(unsigned int cpu)
 	info = cpu_info();
 	info->index = cpu;
 	info->cpu = cpus[cpu].dev;
+
+	add_cpu_map_entry(info);
 	thread_init_cpu_info_non_bsp(info);
 
-	apic_id = lapicid();
-	info->cpu->path.apic.apic_id = apic_id;
-	cpus[cpu].apic_id = apic_id;
+	/* Fix up APIC id with reality. */
+	info->cpu->path.apic.apic_id = lapicid();
 
-	printk(BIOS_INFO, "AP: slot %d apic_id %x.\n", cpu, apic_id);
+	printk(BIOS_INFO, "AP: slot %d apic_id %x.\n", cpu,
+		info->cpu->path.apic.apic_id);
 
 	/* Walk the flight plan */
 	ap_do_flight_plan();
@@ -399,16 +404,13 @@ static int allocate_cpu_devices(struct bus *cpu_bus, struct mp_params *p)
 	for (i = 1; i < max_cpus; i++) {
 		struct device_path cpu_path;
 		struct device *new;
-		int apic_id;
 
 		/* Build the CPU device path */
 		cpu_path.type = DEVICE_PATH_APIC;
 
-		/* Assuming linear APIC space allocation. */
-		apic_id = info->cpu->path.apic.apic_id + i;
-		if (p->adjust_apic_id != NULL)
-			apic_id = p->adjust_apic_id(i, apic_id);
-		cpu_path.apic.apic_id = apic_id;
+		/* Assuming linear APIC space allocation. AP will set its own
+		   APIC id in the ap_init() path above. */
+		cpu_path.apic.apic_id = info->cpu->path.apic.apic_id + i;
 
 		/* Allocate the new CPU device structure */
 		new = alloc_find_dev(cpu_bus, &cpu_path);
@@ -583,8 +585,7 @@ static void init_bsp(struct bus *cpu_bus)
 		printk(BIOS_CRIT, "BSP index(%d) != 0!\n", info->index);
 
 	/* Track BSP in cpu_map structures. */
-	cpus[info->index].dev = info->cpu;
-	cpus[info->index].apic_id = cpu_path.apic.apic_id;
+	add_cpu_map_entry(info);
 }
 
 /*
@@ -668,7 +669,7 @@ static int mp_get_apic_id(int cpu_slot)
 	if (cpu_slot >= CONFIG_MAX_CPUS || cpu_slot < 0)
 		return -1;
 
-	return cpus[cpu_slot].apic_id;
+	return cpus[cpu_slot].default_apic_id;
 }
 
 void smm_initiate_relocation_parallel(void)
@@ -1015,7 +1016,6 @@ int mp_init_with_smm(struct bus *cpu_bus, const struct mp_ops *mp_ops)
 	if (mp_state.ops.get_microcode_info != NULL)
 		mp_state.ops.get_microcode_info(&mp_params.microcode_pointer,
 			&mp_params.parallel_microcode_load);
-	mp_params.adjust_apic_id = mp_state.ops.adjust_cpu_apic_entry;
 	mp_params.flight_plan = &mp_steps[0];
 	mp_params.num_records = ARRAY_SIZE(mp_steps);
 

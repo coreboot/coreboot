@@ -58,14 +58,6 @@ struct mp_ops {
 	 */
 	void (*get_microcode_info)(const void **microcode, int *parallel);
 	/*
-	 * Optionally provide a function which adjusts the APIC id
-	 * map to CPU number. By default the CPU number and APIC id
-	 * are 1:1. To change the APIC id for a given CPU return the
-	 * new APIC id. It's called for each CPU as indicated by
-	 * get_cpu_count().
-	 */
-	int (*adjust_cpu_apic_entry)(int cpu, int cur_apic_id);
-	/*
 	 * Optionally adjust SMM handler parameters to override the default
 	 * values.  The is_perm variable indicates if the parameters to adjust
 	 * are for the relocation handler or the permanent handler. This

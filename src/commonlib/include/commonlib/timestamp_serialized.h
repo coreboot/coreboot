@@ -77,6 +77,10 @@ enum timestamp_id {
 	TS_END_COPYVPD_RO = 551,
 	TS_END_COPYVPD_RW = 552,
 
+	/* 940-950 reserved for vendorcode extensions (940-950: Intel ME) */
+	TS_ME_INFORM_DRAM_WAIT = 940,
+	TS_ME_INFORM_DRAM_DONE = 941,
+
 	/* 950+ reserved for vendorcode extensions (950-999: intel/fsp) */
 	TS_FSP_MEMORY_INIT_START = 950,
 	TS_FSP_MEMORY_INIT_END = 951,
@@ -176,6 +180,10 @@ static const struct timestamp_id_to_name {
 	{ TS_VB_VBOOT_DONE,	"finished vboot kernel verification" },
 	{ TS_KERNEL_DECOMPRESSION, "starting kernel decompression/relocation" },
 	{ TS_START_KERNEL,	"jumping to kernel" },
+
+	/* Intel ME related timestamps */
+	{ TS_ME_INFORM_DRAM_WAIT,	"waiting for ME acknowledgement of raminit"},
+	{ TS_ME_INFORM_DRAM_DONE,	"finished waiting for ME response"},
 
 	/* FSP related timestamps */
 	{ TS_FSP_MEMORY_INIT_START, "calling FspMemoryInit" },

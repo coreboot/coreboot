@@ -20,6 +20,7 @@
 #include <device/pci_ids.h>
 #include <halt.h>
 #include <string.h>
+#include <timestamp.h>
 #include "me.h"
 #include "pch.h"
 
@@ -190,6 +191,7 @@ int intel_early_me_init_done(u8 status)
 	meDID = did.uma_base | (1 << 28);// | (1 << 23);
 	pci_write_config32(PCI_DEV(0, 0x16, 0), PCI_ME_H_GS, meDID);
 
+	timestamp_add_now(TS_ME_INFORM_DRAM_WAIT);
 	udelay(1100);
 
 	/* Must wait for ME acknowledgement */
@@ -200,6 +202,7 @@ int intel_early_me_init_done(u8 status)
 		hfs = (pci_read_config32(PCI_DEV(0, 0x16, 0), PCI_ME_HFS) & 0xfe000000) >> 24;
 		millisec++;
 	}
+	timestamp_add_now(TS_ME_INFORM_DRAM_DONE);
 
 	me_fws2 = pci_read_config32(PCI_DEV(0, 0x16, 0), 0x48);
 	printk(BIOS_NOTICE, "ME: FWS2: 0x%x\n", me_fws2);

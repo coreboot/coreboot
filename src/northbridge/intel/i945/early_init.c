@@ -170,6 +170,8 @@ static void i945_setup_bars(void)
 	printk(BIOS_DEBUG, "Disabling Watchdog reboot...");
 	RCBA32(GCS) = RCBA32(GCS) | (1 << 5);	/* No reset */
 	outw((1 << 11), DEFAULT_PMBASE | 0x60 | 0x08);	/* halt timer */
+	outw((1 <<  3), DEFAULT_PMBASE | 0x60 | 0x04);	/* clear timeout */
+	outw((1 <<  1), DEFAULT_PMBASE | 0x60 | 0x06);	/* clear 2nd timeout */
 	printk(BIOS_DEBUG, " done.\n");
 
 	/* Enable upper 128bytes of CMOS */

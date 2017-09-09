@@ -75,6 +75,7 @@ static void ich7_enable_lpc(void)
 	/* Decode range */
 	pci_write_config16(PCI_DEV(0, 0x1f, 0), LPC_EN, CNF1_LPC_EN
 			| KBC_LPC_EN | LPT_LPC_EN | COMA_LPC_EN);
+	pci_write_config32(PCI_DEV(0, 0x1f, 0), GEN1_DEC, 0x000c0291);
 }
 
 void mainboard_romstage_entry(unsigned long bist)

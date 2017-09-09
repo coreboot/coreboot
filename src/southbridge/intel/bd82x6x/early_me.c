@@ -191,18 +191,26 @@ int intel_early_me_init_done(u8 status)
 	meDID = did.uma_base | (1 << 28);// | (1 << 23);
 	pci_write_config32(PCI_DEV(0, 0x16, 0), PCI_ME_H_GS, meDID);
 
-	timestamp_add_now(TS_ME_INFORM_DRAM_WAIT);
-	udelay(1100);
-
 	/* Must wait for ME acknowledgement */
-	millisec = 0;
-	hfs = (pci_read_config32(PCI_DEV(0, 0x16, 0), PCI_ME_HFS) & 0xfe000000) >> 24;
-	while ((((hfs & 0xf0) >> 4) != ME_HFS_BIOS_DRAM_ACK) && (millisec < 5000)) {
-		udelay(1000);
-		hfs = (pci_read_config32(PCI_DEV(0, 0x16, 0), PCI_ME_HFS) & 0xfe000000) >> 24;
-		millisec++;
+	if (opmode == ME_HFS_MODE_DEBUG) {
+		printk(BIOS_NOTICE,
+			"ME: ME is reporting as disabled, "
+			"so not waiting for a response.\n");
+	} else {
+		timestamp_add_now(TS_ME_INFORM_DRAM_WAIT);
+		udelay(100);
+		millisec = 0;
+		do {
+			udelay(1000);
+			hfs = (pci_read_config32(
+				PCI_DEV(0, 0x16, 0), PCI_ME_HFS) & 0xfe000000)
+				>> 24;
+			millisec++;
+		} while ((((hfs & 0xf0) >> 4) != ME_HFS_BIOS_DRAM_ACK)
+			&& (millisec <= 5000));
+		timestamp_add_now(TS_ME_INFORM_DRAM_DONE);
 	}
-	timestamp_add_now(TS_ME_INFORM_DRAM_DONE);
+
 
 	me_fws2 = pci_read_config32(PCI_DEV(0, 0x16, 0), 0x48);
 	printk(BIOS_NOTICE, "ME: FWS2: 0x%x\n", me_fws2);

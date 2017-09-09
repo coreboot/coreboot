@@ -33,7 +33,6 @@
 
 #include "sb_cimx.h"
 
-#include <northbridge/amd/agesa/agesawrapper.h>
 #include <northbridge/amd/agesa/state_machine.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
 
@@ -597,26 +596,6 @@ static void domain_set_resources(device_t dev)
 }
 
 
-static void domain_enable_resources(device_t dev)
-{
-#if IS_ENABLED(CONFIG_AGESA_LEGACY_WRAPPER)
-	printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
-
-	/* Must be called after PCI enumeration and resource allocation */
-#if IS_ENABLED(CONFIG_AMD_SB_CIMX)
-	sb_After_Pci_Init();
-	sb_Mid_Post_Init();
-#endif
-
-	/* Enable MMIO on AMD CPU Address Map Controller */
-	amd_initcpuio();
-
-	agesawrapper_amdinitmid();
-	printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
-#endif
-}
-
-
 /* Bus related code */
 
 static void cpu_bus_init(device_t dev)
@@ -757,7 +736,6 @@ struct chip_operations northbridge_amd_agesa_family12_ops = {
 static struct device_operations pci_domain_ops = {
 	.read_resources   = domain_read_resources,
 	.set_resources    = domain_set_resources,
-	.enable_resources = domain_enable_resources,
 	.init             = DEVICE_NOOP,
 	.scan_bus         = pci_domain_scan_bus,
 };

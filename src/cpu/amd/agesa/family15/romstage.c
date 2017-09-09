@@ -20,8 +20,6 @@
 #include <console/console.h>
 #include <cpu/amd/car.h>
 
-#include <northbridge/amd/agesa/agesawrapper.h>
-#include <northbridge/amd/agesa/agesa_helper.h>
 #include <northbridge/amd/agesa/state_machine.h>
 
 #include "northbridge/amd/agesa/family15/reset_test.h"
@@ -43,15 +41,8 @@ void platform_once(struct sysinfo *cb)
 	board_BeforeAgesa(cb);
 }
 
-void agesa_main(struct sysinfo *cb)
-{
-	post_code(0x37);
-	agesawrapper_amdinitreset();
-
-	post_code(0x3B);
-	agesawrapper_amdinitearly();
-
-	post_code(0x3C);
+#if 0
+	/* Was between EARLY and POST */
 
 	nb_Ht_Init();
 	post_code(0x3D);
@@ -63,16 +54,4 @@ void agesa_main(struct sysinfo *cb)
 		die("After soft_reset - shouldn't see this message!!!\n");
 	}
 
-	post_code(0x40);
-	agesawrapper_amdinitpost();
-
-	printk(BIOS_INFO, "Normal boot\n");
-}
-
-void agesa_postcar(struct sysinfo *cb)
-{
-	printk(BIOS_INFO, "Normal boot postcar\n");
-
-	post_code(0x41);
-	agesawrapper_amdinitenv();
-}
+#endif

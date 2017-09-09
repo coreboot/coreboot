@@ -14,12 +14,7 @@
  * GNU General Public License for more details.
  */
 
-#include <console/console.h>
-#include <cpu/amd/car.h>
-
-#include <northbridge/amd/agesa/agesawrapper.h>
 #include <northbridge/amd/agesa/state_machine.h>
-#include <northbridge/amd/agesa/agesa_helper.h>
 
 #include "sb_cimx.h"
 #include "SbPlatform.h"
@@ -32,31 +27,4 @@ void platform_once(struct sysinfo *cb)
 	sb_poweron_init();
 
 	board_BeforeAgesa(cb);
-}
-
-void agesa_main(struct sysinfo *cb)
-{
-	post_code(0x36);
-	agesawrapper_amdinitreset();
-
-	post_code(0x37);
-	agesawrapper_amdinitearly();
-
-	printk(BIOS_INFO, "Normal boot\n");
-
-	post_code(0x38);
-	agesawrapper_amdinitpost();
-}
-
-void agesa_postcar(struct sysinfo *cb)
-{
-	printk(BIOS_INFO, "Normal boot postcar\n");
-
-	post_code(0x39);
-	printk(BIOS_DEBUG, "sb_before_pci_init ");
-	sb_before_pci_init();
-	printk(BIOS_DEBUG, "passed.\n");
-
-	post_code(0x40);
-	agesawrapper_amdinitenv();
 }

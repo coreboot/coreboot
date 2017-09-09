@@ -13,7 +13,7 @@
 
 ifeq ($(CONFIG_DRIVERS_AMD_PI),y)
 
-ifneq ($(CONFIG_AGESA_LEGACY_WRAPPER)$(CONFIG_BINARYPI_LEGACY_WRAPPER),y)
+ifneq ($(CONFIG_BINARYPI_LEGACY_WRAPPER),y)
 
 romstage-y += romstage.c
 romstage-y += mtrr_fixme.c

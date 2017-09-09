@@ -31,7 +31,6 @@
 #include <cpu/x86/lapic.h>
 #include <cpu/amd/mtrr.h>
 
-#include <northbridge/amd/agesa/agesawrapper.h>
 #include <northbridge/amd/agesa/state_machine.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
 
@@ -580,32 +579,6 @@ static void domain_set_resources(device_t dev)
 	printk(BIOS_DEBUG, "  adsr - leaving this lovely routine.\n");
 }
 
-static void domain_enable_resources(device_t dev)
-{
-#if IS_ENABLED(CONFIG_AGESA_LEGACY_WRAPPER)
-	/* Must be called after PCI enumeration and resource allocation */
-	printk(BIOS_DEBUG, "\nFam14h - %s\n", __func__);
-
-#if IS_ENABLED(CONFIG_AMD_SB_CIMX)
-	if (!acpi_is_wakeup_s3()) {
-		sb_After_Pci_Init();
-		sb_Mid_Post_Init();
-	} else {
-		sb_After_Pci_Restore_Init();
-	}
-#endif
-
-	if (!acpi_is_wakeup_s3()) {
-		/* Enable MMIO on AMD CPU Address Map Controller */
-		amd_initcpuio();
-
-		agesawrapper_amdinitmid();
-	}
-
-	printk(BIOS_DEBUG, "  ader - leaving domain_enable_resources.\n");
-#endif
-}
-
 static const char *domain_acpi_name(const struct device *dev)
 {
 	if (dev->path.type == DEVICE_PATH_DOMAIN)
@@ -786,7 +759,6 @@ struct chip_operations northbridge_amd_agesa_family14_ops = {
 static struct device_operations pci_domain_ops = {
 	.read_resources = domain_read_resources,
 	.set_resources = domain_set_resources,
-	.enable_resources = domain_enable_resources,
 	.init = DEVICE_NOOP,
 	.scan_bus = pci_domain_scan_bus,
 	.acpi_name = domain_acpi_name,

@@ -37,7 +37,6 @@
 #include <Options.h>
 #include <Topology.h>
 
-#include <northbridge/amd/agesa/agesawrapper.h>
 #include <northbridge/amd/agesa/state_machine.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
 
@@ -629,23 +628,6 @@ static void domain_read_resources(struct device *dev)
 	pci_domain_read_resources(dev);
 }
 
-static void domain_enable_resources(device_t dev)
-{
-#if IS_ENABLED(CONFIG_AGESA_LEGACY_WRAPPER)
-	if (acpi_is_wakeup_s3())
-		agesawrapper_fchs3laterestore();
-
-	/* Must be called after PCI enumeration and resource allocation */
-	if (!acpi_is_wakeup_s3()) {
-		/* Enable MMIO on AMD CPU Address Map Controller */
-		amd_initcpuio();
-
-		agesawrapper_amdinitmid();
-	}
-	printk(BIOS_DEBUG, "  ader - leaving %s.\n", __func__);
-#endif
-}
-
 #if CONFIG_HW_MEM_HOLE_SIZEK != 0
 struct hw_mem_hole_info {
 	unsigned hole_startk;
@@ -800,7 +782,6 @@ static void domain_set_resources(struct device *dev)
 static struct device_operations pci_domain_ops = {
 	.read_resources	  = domain_read_resources,
 	.set_resources	  = domain_set_resources,
-	.enable_resources = domain_enable_resources,
 	.init		  = DEVICE_NOOP,
 	.scan_bus	  = pci_domain_scan_bus,
 	.ops_pci_bus	  = pci_bus_default_ops,

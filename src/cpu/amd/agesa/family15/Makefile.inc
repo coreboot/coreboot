@@ -22,7 +22,7 @@ subdirs-y += ../../../x86/pae
 subdirs-y += ../../../x86/smm
 
 romstage-y += fixme.c
-romstage-$(CONFIG_AGESA_NO_LEGACY) += romstage.c
+romstage-y += romstage.c
 
 ramstage-y += fixme.c
 ramstage-y += chip_name.c

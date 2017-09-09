@@ -20,8 +20,7 @@
 #include <AGESA.h>
 #include <AMD.h>
 
-#define HAS_LEGACY_WRAPPER (IS_ENABLED(CONFIG_AGESA_LEGACY_WRAPPER) || \
-	IS_ENABLED(CONFIG_BINARYPI_LEGACY_WRAPPER))
+#define HAS_LEGACY_WRAPPER IS_ENABLED(CONFIG_BINARYPI_LEGACY_WRAPPER)
 
 /* eventlog */
 const char *agesa_struct_name(int state);

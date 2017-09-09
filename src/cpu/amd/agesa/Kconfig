@@ -30,20 +30,9 @@ config CPU_AMD_AGESA
 	select UDELAY_LAPIC
 	select LAPIC_MONOTONIC_TIMER
 	select SPI_FLASH if HAVE_ACPI_RESUME
-	select POSTCAR_STAGE if !AGESA_LEGACY_WRAPPER
+	select POSTCAR_STAGE
 
 if CPU_AMD_AGESA
-
-config AGESA_LEGACY
-	def_bool n
-
-config AGESA_LEGACY_WRAPPER
-	bool
-	default AGESA_LEGACY
-
-config AGESA_NO_LEGACY
-	bool
-	default !AGESA_LEGACY
 
 config XIP_ROM_SIZE
 	hex

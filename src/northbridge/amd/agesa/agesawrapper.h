@@ -16,8 +16,7 @@
 #ifndef _AGESAWRAPPER_H_
 #define _AGESAWRAPPER_H_
 
-#if IS_ENABLED(CONFIG_AGESA_LEGACY_WRAPPER) || \
-	IS_ENABLED(CONFIG_BINARYPI_LEGACY_WRAPPER)
+#if IS_ENABLED(CONFIG_BINARYPI_LEGACY_WRAPPER)
 
 #include <stdint.h>
 #include "Porting.h"
@@ -50,20 +49,6 @@ static inline int agesawrapper_amdinitpost(void) { return -1; }
 static inline int agesawrapper_amdinitresume(void) { return -1; }
 static inline int agesawrapper_amds3laterestore(void) { return -1; }
 
-#endif
-
-#if IS_ENABLED(CONFIG_AGESA_LEGACY_WRAPPER)
-struct OEM_HOOK
-{
-	/* romstage */
-	AGESA_STATUS (*InitEarly)(AMD_EARLY_PARAMS *);
-	AGESA_STATUS (*InitPost)(AMD_POST_PARAMS *);
-
-	/* ramstage */
-	AGESA_STATUS (*InitMid)(AMD_MID_PARAMS *);
-};
-
-extern const struct OEM_HOOK OemCustomize;
 #endif
 
 #if IS_ENABLED(CONFIG_BINARYPI_LEGACY_WRAPPER)

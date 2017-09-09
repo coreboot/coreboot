@@ -464,15 +464,14 @@ static void sb800_enable(device_t dev)
 	case (0x16 << 3) | 2: /* 0:16:2 EHCI-USB3 */
 		sb_config->USBMODE.UsbMode.Ehci3 = dev->enabled;
 
-#if 1 /* FIXME: IS_ENABLED(CONFIG_AGESA_LEGACY_WRAPPER) */
-		/* call the CIMX entry at the last sb800 device,
+		/* FIXME: Find better callsites for these.
+		 * call the CIMX entry at the last sb800 device,
 		 * so make sure the mainboard devicetree is complete
 		 */
 		if (!acpi_is_wakeup_s3())
 			sb_Before_Pci_Init();
 		else
 			sb_Before_Pci_Restore_Init();
-#endif
 		break;
 
 	default:

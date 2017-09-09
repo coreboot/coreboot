@@ -263,11 +263,12 @@ int do_smbus_block_read(unsigned int smbus_base, u8 device, u8 cmd,
 		}
 	} while ((status & SMBHSTSTS_HOST_BUSY) && loops);
 
+	/* Post-check we received complete message. */
+	slave_bytes = inb(smbus_base + SMBHSTDAT0);
+
 	dprintk("%s: status = %02x, len = %d / %d, loops = %d\n",
 		__func__, status, bytes_read, slave_bytes, loops);
 
-	/* Post-check we received complete message. */
-	slave_bytes = inb(smbus_base + SMBHSTDAT0);
 	if (bytes_read < slave_bytes)
 		return SMBUS_ERROR;
 

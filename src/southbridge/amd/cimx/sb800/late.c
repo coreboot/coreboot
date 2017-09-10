@@ -37,14 +37,8 @@
 #include "pci_devs.h"
 #include <southbridge/amd/common/amd_pci_util.h>
 
-/*implement in mainboard.c*/
-void set_pcie_reset(void);
-void set_pcie_dereset(void);
-
-
 static AMDSBCFG sb_late_cfg; //global, init in sb800_cimx_config
 static AMDSBCFG *sb_config = &sb_late_cfg;
-
 
 /**
  * @brief Entry point of Southbridge CIMx callout
@@ -62,11 +56,9 @@ static u32 sb800_callout_entry(u32 func, u32 data, void* config)
 	printk(BIOS_DEBUG, "SB800 - Late.c - %s - Start.\n", __func__);
 	switch (func) {
 	case CB_SBGPP_RESET_ASSERT:
-		set_pcie_reset();
 		break;
 
 	case CB_SBGPP_RESET_DEASSERT:
-		set_pcie_dereset();
 		break;
 
 	case IMC_FIRMWARE_FAIL:

@@ -20,26 +20,6 @@
 #include <southbridge/amd/sb800/sb800.h>
 #include "SBPLATFORM.h" 	/* Platfrom Specific Definitions */
 
-
-void set_pcie_reset(void);
-void set_pcie_dereset(void);
-
-/**
- * TODO
- * SB CIMx callback
- */
-void set_pcie_reset(void)
-{
-}
-
-/**
- * TODO
- * mainboard specific SB CIMx callback
- */
-void set_pcie_dereset(void)
-{
-}
-
 /**
  * Southstation using SB GPIO 17/18 to control the Red/Green LED
  * These two LEDs can be used to show the OS booting status.

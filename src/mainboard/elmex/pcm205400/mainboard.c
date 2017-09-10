@@ -23,9 +23,6 @@
 #include <southbridge/amd/cimx/sb800/pci_devs.h>
 #include <northbridge/amd/agesa/family14/pci_devs.h>
 
-void set_pcie_reset(void);
-void set_pcie_dereset(void);
-
 /***********************************************************
  * These arrays set up the FCH PCI_INTR registers 0xC00/0xC01.
  * This table is responsible for physically routing the PIC and
@@ -119,23 +116,6 @@ static void pirq_setup(void)
 	intr_data_ptr = mainboard_intr_data;
 	picr_data_ptr = mainboard_picr_data;
 }
-
-/**
- * TODO
- * SB CIMx callback
- */
-void set_pcie_reset(void)
-{
-}
-
-/**
- * TODO
- * mainboard specific SB CIMx callback
- */
-void set_pcie_dereset(void)
-{
-}
-
 
 /**********************************************
  * Enable the dedicated functions of the board.

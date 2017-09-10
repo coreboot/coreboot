@@ -28,14 +28,6 @@
 #include "SbPlatform.h" 	/* Platform Specific Definitions */
 #include "chip.h" 		/* struct southbridge_amd_cimx_sb900_config */
 
-
-/*implement in mainboard.c*/
-//void set_pcie_assert(void);
-//void set_pcie_deassert(void);
-void set_pcie_reset(void);
-void set_pcie_dereset(void);
-
-
 #ifndef _RAMSTAGE_
 #define _RAMSTAGE_
 #endif
@@ -60,13 +52,9 @@ u32 sb900_callout_entry(u32 func, u32 data, void* config)
 	printk(BIOS_DEBUG, "SB900 - Late.c - sb900_callout_entry - Start.\n");
 	switch (func) {
 	case CB_SBGPP_RESET_ASSERT:
-		//set_pcie_assert();
-//-		set_pcie_reset();
 		break;
 
 	case CB_SBGPP_RESET_DEASSERT:
-		//set_pcie_deassert();
-//-		set_pcie_dereset();
 		break;
 
 //-	case IMC_FIRMWARE_FAIL:

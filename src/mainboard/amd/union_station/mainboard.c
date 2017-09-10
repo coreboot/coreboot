@@ -19,26 +19,6 @@
 #include <southbridge/amd/sb800/sb800.h>
 #include "SBPLATFORM.h" 	/* Platfrom Specific Definitions */
 
-void set_pcie_reset(void);
-void set_pcie_dereset(void);
-
-/**
- * TODO
- * SB CIMx callback
- */
-void set_pcie_reset(void)
-{
-}
-
-/**
- * TODO
- * mainboard specific SB CIMx callback
- */
-void set_pcie_dereset(void)
-{
-}
-
-
 /**********************************************
  * Enable the dedicated functions of the board.
  **********************************************/

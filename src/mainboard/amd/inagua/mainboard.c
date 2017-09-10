@@ -20,21 +20,8 @@
 #include "SBPLATFORM.h" 	/* Platfrom Specific Definitions */
 
 void broadcom_init(void);
-void set_pcie_reset(void);
-void set_pcie_dereset(void);
 
-/**
- * TODO
- * SB CIMx callback
- */
-void set_pcie_reset(void)
-{
-}
-
-/**
- * mainboard specific SB CIMx callback
- */
-void set_pcie_dereset(void)
+static void init_gpios(void)
 {
 	/**
 	 * GPIO32 Pcie Device DeAssert for APU
@@ -48,7 +35,7 @@ void set_pcie_dereset(void)
 	 */
 
 	/* Multi-function pins switch to GPIO0-35, these pins are shared with
-	 * PCI pins, make sure Husson PCI device is disabled.
+	 * PCI pins, make sure Hudson PCI device is disabled.
 	 */
 	RWMEM(ACPI_MMIO_BASE + PMIO_BASE + SB_PMIOA_REGEA, AccWidthUint8, ~BIT0, 1);
 
@@ -71,7 +58,7 @@ static void mainboard_enable(device_t dev)
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
 
 	/* Inagua mainboard specific setting */
-	set_pcie_dereset();
+	init_gpios();
 
 	/*
 	 * Initialize ASF registers to an arbitrary address because someone

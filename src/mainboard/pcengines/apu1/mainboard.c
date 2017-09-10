@@ -30,9 +30,6 @@
 #include <superio/nuvoton/nct5104d/nct5104d.h>
 #include "gpio_ftns.h"
 
-void set_pcie_reset(void);
-void set_pcie_dereset(void);
-
 /***********************************************************
  * These arrays set up the FCH PCI_INTR registers 0xC00/0xC01.
  * This table is responsible for physically routing the PIC and
@@ -174,22 +171,6 @@ static void config_addon_uart(void)
 	uart = dev_find_slot_pnp(SIO_PORT, NCT5104D_SP4);
 	if (uart && uart->enabled && CONFIG_UART_D_RS485)
 		pnp_raw_resource(uart, 0xf2, 0x12);
-}
-
-/**
- * TODO
- * SB CIMx callback
- */
-void set_pcie_reset(void)
-{
-}
-
-/**
- * TODO
- * mainboard specific SB CIMx callback
- */
-void set_pcie_dereset(void)
-{
 }
 
 /**********************************************

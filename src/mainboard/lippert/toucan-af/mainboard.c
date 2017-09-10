@@ -77,26 +77,6 @@ static void init(struct device *dev)
 	printk(BIOS_DEBUG, CONFIG_MAINBOARD_PART_NUMBER " EXIT %s\n", __func__);
 }
 
-void set_pcie_reset(void);
-void set_pcie_dereset(void);
-
-/**
- * TODO
- * SB CIMx callback
- */
-void set_pcie_reset(void)
-{
-}
-
-/**
- * TODO
- * mainboard specific SB CIMx callback
- */
-void set_pcie_dereset(void)
-{
-}
-
-
 /**********************************************
  * Enable the dedicated functions of the board.
  **********************************************/

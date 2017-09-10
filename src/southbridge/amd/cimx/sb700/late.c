@@ -31,14 +31,8 @@
 #include "sb700_cfg.h"                /* sb700 Cimx configuration */
 #include "chip.h"               /* struct southbridge_amd_cimx_sb700_config */
 
-
-/*implement in mainboard.c*/
-void set_pcie_reset(void);
-void set_pcie_dereset(void);
-
 static AMDSBCFG sb_late_cfg; //global, init in sb700_cimx_config
 static AMDSBCFG *sb_config = &sb_late_cfg;
-
 
 /**
  * @brief Entry point of Southbridge CIMx callout

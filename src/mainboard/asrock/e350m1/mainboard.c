@@ -20,27 +20,6 @@
 #include <southbridge/amd/cimx/cimx_util.h>
 #include "SBPLATFORM.h"
 
-//#define SMBUS_IO_BASE 0x6000
-void set_pcie_reset(void);
-void set_pcie_dereset(void);
-
-/**
- * TODO
- * SB CIMx callback
- */
-void set_pcie_reset(void)
-{
-}
-
-/**
- * TODO
- * mainboard specific SB CIMx callback
- */
-void set_pcie_dereset(void)
-{
-}
-
-
 /**********************************************
  * Enable the dedicated functions of the board.
  **********************************************/

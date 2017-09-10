@@ -21,9 +21,6 @@
 #include <southbridge/amd/agesa/hudson/pci_devs.h>
 #include <northbridge/amd/agesa/family16kb/pci_devs.h>
 
-void set_pcie_reset(void);
-void set_pcie_dereset(void);
-
 /***********************************************************
  * These arrays set up the FCH PCI_INTR registers 0xC00/0xC01.
  * This table is responsible for physically routing the PIC and
@@ -90,16 +87,6 @@ static void pirq_setup(void)
 	pirq_data_size = sizeof(mainboard_pirq_data) / sizeof(struct pirq_struct);
 	intr_data_ptr = mainboard_intr_data;
 	picr_data_ptr = mainboard_picr_data;
-}
-
-/* TODO: mainboard specific SB AGESA callback */
-void set_pcie_reset(void)
-{
-}
-
-/* TODO: mainboard specific SB AGESA callback */
-void set_pcie_dereset(void)
-{
 }
 
 /**********************************************

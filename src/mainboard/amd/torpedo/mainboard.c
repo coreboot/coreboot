@@ -19,25 +19,6 @@
 #define ONE_MB  0x100000
 //#define SMBUS_IO_BASE 0x6000
 
-void set_pcie_reset(void);
-void set_pcie_dereset(void);
-
-/**
- * TODO
- * SB CIMx callback
- */
-void set_pcie_reset(void)
-{
-}
-
-/**
- * TODO
- * mainboard specific SB CIMx callback
- */
-void set_pcie_dereset(void)
-{
-}
-
 
 /*************************************************
 * enable the dedicated function in torpedo board.

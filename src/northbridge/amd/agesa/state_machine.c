@@ -29,7 +29,6 @@
 #include <cpu/amd/agesa/s3_resume.h>
 
 #include "AMD.h"
-#include "heapManager.h"
 
 #if IS_ENABLED(CONFIG_CPU_AMD_AGESA_OPENSOURCE)
 #include "Dispatcher.h"

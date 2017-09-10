@@ -19,7 +19,6 @@
 #include <northbridge/amd/agesa/BiosCallOuts.h>
 #include <device/azalia.h>
 #include "Ids.h"
-#include "heapManager.h"
 #include "FchPlatform.h"
 #include "cbfs.h"
 #include "imc.h"

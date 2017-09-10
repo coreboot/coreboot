@@ -14,7 +14,6 @@
 
 #include "AGESA.h"
 #include "amdlib.h"
-#include "heapManager.h"
 
 #include <cbmem.h>
 #include <northbridge/amd/agesa/agesa_helper.h>

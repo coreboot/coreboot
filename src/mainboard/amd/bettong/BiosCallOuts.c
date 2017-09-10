@@ -20,7 +20,6 @@
 #include <northbridge/amd/agesa/BiosCallOuts.h>
 #include <northbridge/amd/pi/00660F01/chip.h>
 #include "Ids.h"
-#include "heapManager.h"
 #include "FchPlatform.h"
 #include "cbfs.h"
 #include "imc.h"

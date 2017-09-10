@@ -17,7 +17,6 @@
 #include <northbridge/amd/agesa/BiosCallOuts.h>
 
 #include <amdlib.h>
-#include <vendorcode/amd/agesa/f14/Proc/CPU/heapManager.h>
 #include <vendorcode/amd/cimx/sb800/SB800.h>
 #include <stdint.h>
 #include <stdlib.h>

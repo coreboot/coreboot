@@ -19,7 +19,6 @@
 #include <northbridge/amd/agesa/BiosCallOuts.h>
 #include "Ids.h"
 #include "OptionsIds.h"
-#include "heapManager.h"
 #include "FchPlatform.h"
 #include "cbfs.h"
 #include "gpio_ftns.h"

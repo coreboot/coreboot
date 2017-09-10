@@ -19,8 +19,6 @@
 #include <southbridge/amd/sb800/sb800.h>
 #include "SBPLATFORM.h" 	/* Platfrom Specific Definitions */
 
-void broadcom_init(void);
-
 static void init_gpios(void)
 {
 	/**
@@ -68,10 +66,6 @@ static void mainboard_enable(device_t dev)
 	 */
 	pm_iowrite(0x29, 0x80);
 	pm_iowrite(0x28, 0x61);
-
-	/* Upload AMD A55E GbE 'NV'RAM contents.  Still untested on Inagua.
-	 * After anyone can confirm it works please uncomment the call. */
-	//broadcom_init();
 }
 
 struct chip_operations mainboard_ops = {

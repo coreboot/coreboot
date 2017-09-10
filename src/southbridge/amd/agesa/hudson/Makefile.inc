@@ -1,3 +1,7 @@
+
+CPPFLAGS_x86_32 += -I$(src)/southbridge/amd/agesa/hudson
+CPPFLAGS_x86_64 += -I$(src)/southbridge/amd/agesa/hudson
+
 romstage-y += smbus.c smbus_spd.c
 ramstage-y += hudson.c
 ramstage-y += usb.c

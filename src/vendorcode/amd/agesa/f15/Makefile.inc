@@ -21,21 +21,26 @@ AGESA_ROOT = src/vendorcode/amd/agesa/f15
 
 AGESA_AUTOINCLUDES := $(shell find $(AGESA_ROOT)/Proc -type d -exec echo -n "-I"{}" " \;)
 
-AGESA_INC  = -I$(src)/vendorcode/amd/include -I$(src)/mainboard/$(MAINBOARDDIR)
+AGESA_INC  = -I$(src)/vendorcode/amd/include
 AGESA_INC += -I$(AGESA_ROOT)
 AGESA_INC += -I$(AGESA_ROOT)/../common
 AGESA_INC += -I$(AGESA_ROOT)/Include
-AGESA_INC += $(AGESA_AUTOINCLUDES)
 
-BUILDOPTS_INCLUDES = -I$(AGESA_ROOT)/Config $(AGESA_INC)
+BUILDOPTS_INCLUDES = -I$(AGESA_ROOT)/Config $(AGESA_INC) $(AGESA_AUTOINCLUDES)
 
 ## AGESA need sse feature ##
 CFLAGS_x86_32 += -msse3 -fno-zero-initialized-in-bss -fno-strict-aliasing
 CFLAGS_x86_64 += -msse3 -fno-zero-initialized-in-bss -fno-strict-aliasing
 
-export AGESA_INC  := $(AGESA_INC)
-CPPFLAGS_x86_32 += $(AGESA_INC)
-CPPFLAGS_x86_64 += $(AGESA_INC)
+# These are invalid, coreboot proper should not require
+# use of AGESA internal header files.
+CPPFLAGS_x86_ANY =
+CPPFLAGS_x86_ANY += -I$(AGESA_ROOT)/Proc/CPU			# heapManager.h
+CPPFLAGS_x86_ANY += -I$(AGESA_ROOT)/Proc/CPU/Family
+CPPFLAGS_x86_ANY += -I$(AGESA_ROOT)/Proc/Common			# CreateStruct.h
+
+CPPFLAGS_x86_32 += $(AGESA_INC) $(CPPFLAGS_x86_ANY)
+CPPFLAGS_x86_64 += $(AGESA_INC) $(CPPFLAGS_x86_ANY)
 
 #######################################################################
 

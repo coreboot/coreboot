@@ -11,6 +11,7 @@ subdirs-y += common
 classes-y += libagesa
 libagesa-y =
 libagesa-generic-ccopts += -D__LIBAGESA__
+libagesa-generic-ccopts += $(AGESA_INC) $(AGESA_AUTOINCLUDES)
 
 ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32),y)
 $(eval $(call create_class_compiler,libagesa,x86_32))
@@ -18,7 +19,11 @@ else
 $(eval $(call create_class_compiler,libagesa,x86_64))
 endif
 
+# buildOpts should be in libagesa
 $(obj)/romstage/mainboard/$(MAINBOARDDIR)/buildOpts.o: CPPFLAGS_x86_32 += $(BUILDOPTS_INCLUDES)
 $(obj)/ramstage/mainboard/$(MAINBOARDDIR)/buildOpts.o: CPPFLAGS_x86_32 += $(BUILDOPTS_INCLUDES)
+
+$(obj)/romstage/vendorcode/amd/agesa/common/agesa-entry.o: CPPFLAGS_x86_32 += $(BUILDOPTS_INCLUDES)
+$(obj)/ramstage/vendorcode/amd/agesa/common/agesa-entry.o: CPPFLAGS_x86_32 += $(BUILDOPTS_INCLUDES)
 
 endif

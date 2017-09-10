@@ -18,12 +18,9 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <arch/io.h>
-#include <cpu/x86/msr.h>
 #include <device/pci_def.h>
 #include <southbridge/amd/sb800/sb800.h>
 #include <arch/acpi.h>
-#include <northbridge/amd/agesa/BiosCallOuts.h>
-#include <cpu/amd/mtrr.h>
 #include "SBPLATFORM.h"
 #include "OEM.h" /* SMBUS0_BASE_ADDRESS */
 #include <southbridge/amd/cimx/sb800/gpio_oem.h>

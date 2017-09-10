@@ -13,16 +13,9 @@
  * GNU General Public License for more details.
  */
 
-#include <northbridge/amd/agesa/state_machine.h>
-#include <northbridge/amd/agesa/BiosCallOuts.h>
-
-#include <arch/acpi.h>
-#include <arch/io.h>
 #include <console/console.h>
 #include <cpu/x86/msr.h>
 #include <device/device.h>
-#include <device/pci.h>
-#include <device/pci_def.h>
 
 /*************************************************
  * enable the dedicated function in thatcher board.

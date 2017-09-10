@@ -14,18 +14,14 @@
  * GNU General Public License for more details.
  */
 
-#include <console/console.h>
-#include <device/device.h>
-#include <device/pci.h>
 #include <arch/io.h>
-#include <cpu/x86/msr.h>
-#include <device/pci_def.h>
-#include <southbridge/amd/sb800/sb800.h>
-#include <arch/acpi.h>
-#include <northbridge/amd/agesa/BiosCallOuts.h>
-#include <cpu/amd/mtrr.h>
-#include "SBPLATFORM.h"
+#include <console/console.h>
 #include <delay.h>
+#include <device/device.h>
+#include <device/pci_def.h>
+
+#include <southbridge/amd/sb800/sb800.h>
+#include "SBPLATFORM.h"
 
 void set_pcie_reset(void);
 void set_pcie_dereset(void);

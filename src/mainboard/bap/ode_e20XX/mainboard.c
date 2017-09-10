@@ -17,18 +17,11 @@
 
 #include <console/console.h>
 #include <device/device.h>
-#include <device/pci.h>
-#include <arch/io.h>
-#include <cpu/x86/msr.h>
-#include <cpu/amd/mtrr.h>
-#include <device/pci_def.h>
-#include <arch/acpi.h>
+
 #include <southbridge/amd/agesa/hudson/pci_devs.h>
 #include <southbridge/amd/agesa/hudson/amd_pci_int_defs.h>
 #include <southbridge/amd/common/amd_pci_util.h>
 #include <northbridge/amd/agesa/family16kb/pci_devs.h>
-#include <northbridge/amd/agesa/BiosCallOuts.h>
-#include <northbridge/amd/agesa/state_machine.h>
 
 /***********************************************************
  * These arrays set up the FCH PCI_INTR registers 0xC00/0xC01.

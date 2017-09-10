@@ -15,14 +15,6 @@
 
 #include <console/console.h>
 #include <device/device.h>
-#include <device/pci.h>
-#include <arch/io.h>
-#include <cpu/x86/msr.h>
-#include <cpu/amd/mtrr.h>
-#include <device/pci_def.h>
-#include <arch/acpi.h>
-#include <northbridge/amd/agesa/BiosCallOuts.h>
-#include <northbridge/amd/agesa/state_machine.h>
 
 /**********************************************
  * enable the dedicated function in mainboard.

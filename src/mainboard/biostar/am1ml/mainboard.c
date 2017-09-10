@@ -18,14 +18,6 @@
 
 #include <console/console.h>
 #include <device/device.h>
-#include <device/pci.h>
-#include <arch/io.h>
-#include <cpu/x86/msr.h>
-#include <cpu/amd/mtrr.h>
-#include <device/pci_def.h>
-#include <arch/acpi.h>
-#include <northbridge/amd/agesa/BiosCallOuts.h>
-#include <northbridge/amd/agesa/state_machine.h>
 #include <southbridge/amd/agesa/hudson/pci_devs.h>
 #include <southbridge/amd/agesa/hudson/amd_pci_int_defs.h>
 #include <southbridge/amd/common/amd_pci_util.h>

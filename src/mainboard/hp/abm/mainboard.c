@@ -16,11 +16,7 @@
 
 #include <console/console.h>
 #include <device/device.h>
-#include <device/pci.h>
-#include <arch/io.h>
-#include <arch/acpi.h>
-#include <northbridge/amd/agesa/BiosCallOuts.h>
-#include <northbridge/amd/agesa/state_machine.h>
+
 #include <southbridge/amd/common/amd_pci_util.h>
 #include <southbridge/amd/agesa/hudson/pci_devs.h>
 #include <northbridge/amd/agesa/family16kb/pci_devs.h>

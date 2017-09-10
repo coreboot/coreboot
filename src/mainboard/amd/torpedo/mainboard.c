@@ -15,11 +15,6 @@
 
 #include <console/console.h>
 #include <device/device.h>
-#include <device/pci.h>
-#include <arch/io.h>
-#include <cpu/x86/msr.h>
-#include <cpu/amd/mtrr.h>
-#include <device/pci_def.h>
 
 #define ONE_MB  0x100000
 //#define SMBUS_IO_BASE 0x6000

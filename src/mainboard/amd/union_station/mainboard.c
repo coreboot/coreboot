@@ -15,12 +15,8 @@
 
 #include <console/console.h>
 #include <device/device.h>
-#include <device/pci.h>
-#include <arch/io.h>
-#include <cpu/x86/msr.h>
-#include <device/pci_def.h>
+
 #include <southbridge/amd/sb800/sb800.h>
-#include <cpu/amd/mtrr.h>
 #include "SBPLATFORM.h" 	/* Platfrom Specific Definitions */
 
 void set_pcie_reset(void);

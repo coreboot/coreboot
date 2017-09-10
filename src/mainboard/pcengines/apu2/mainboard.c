@@ -27,8 +27,6 @@
 #include <superio/nuvoton/nct5104d/nct5104d.h>
 #include <smbios.h>
 #include <string.h>
-#include <cpu/x86/msr.h>
-#include <cpu/amd/mtrr.h>
 #include "gpio_ftns.h"
 
 #define SPD_SIZE  128

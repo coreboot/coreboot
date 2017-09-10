@@ -16,6 +16,8 @@
 #ifndef _AGESA_HUDSON_PCI_DEVS_H_
 #define _AGESA_HUDSON_PCI_DEVS_H_
 
+#include <device/pci_def.h>
+
 #define BUS0 0
 
 /* XHCI */

@@ -16,15 +16,9 @@
 
 #include <console/console.h>
 #include <device/device.h>
-#include <device/pci.h>
 #include <arch/io.h>
-#include <cpu/x86/msr.h>
-#include <device/pci_def.h>
 #include <southbridge/amd/common/amd_pci_util.h>
 #include <southbridge/amd/cimx/cimx_util.h>
-#include <arch/acpi.h>
-#include <northbridge/amd/agesa/BiosCallOuts.h>
-#include <cpu/amd/mtrr.h>
 #include "SBPLATFORM.h"
 #include <southbridge/amd/cimx/sb800/pci_devs.h>
 #include <northbridge/amd/agesa/family14/pci_devs.h>

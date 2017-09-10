@@ -24,8 +24,6 @@
  */
 #include <stdlib.h>
 #include "AGESA.h"
-#include "Filecode.h"
-#define FILECODE PLATFORM_SPECIFIC_OPTIONS_FILECODE
 //#define OPTION_HW_DQS_REC_EN_TRAINING TRUE
 /* AGESA will check the OEM configuration during preprocessing stage,
  * coreboot enable -Wundef option, so we should make sure we have all contanstand defined

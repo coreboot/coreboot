@@ -15,14 +15,11 @@
 
 #include "AGESA.h"
 #include "amdlib.h"
-#include "Ids.h"
 #include "heapManager.h"
 #include <PlatformMemoryConfiguration.h>
-#include "Filecode.h"
 
 #include <northbridge/amd/agesa/state_machine.h>
 
-#define FILECODE PROC_GNB_PCIE_FAMILY_0X15_F15PCIECOMPLEXCONFIG_FILECODE
 
 static const PCIe_PORT_DESCRIPTOR PortList [] = {
 	/* Initialize Port descriptor (PCIe port, Lanes 2-3, PCI Device Number 2, Function 4) */

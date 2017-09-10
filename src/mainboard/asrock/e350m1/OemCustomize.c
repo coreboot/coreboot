@@ -15,16 +15,13 @@
 
 #include "AGESA.h"
 #include "amdlib.h"
-#include "Ids.h"
 #include "heapManager.h"
 #include <PlatformMemoryConfiguration.h>
 #include "PlatformGnbPcieComplex.h"
-#include "Filecode.h"
 
 #include <string.h>
 #include <northbridge/amd/agesa/state_machine.h>
 
-#define FILECODE PROC_RECOVERY_MEM_NB_ON_MRNON_FILECODE
 
 /*---------------------------------------------------------------------------------------*/
 /**

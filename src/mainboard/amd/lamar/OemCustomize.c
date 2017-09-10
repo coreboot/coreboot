@@ -16,7 +16,6 @@
 
 #include <northbridge/amd/pi/agesawrapper.h>
 
-#define FILECODE PROC_GNB_PCIE_FAMILY_0X15_F15PCIECOMPLEXCONFIG_FILECODE
 
 static const PCIe_PORT_DESCRIPTOR PortList [] = {
 

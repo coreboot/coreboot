@@ -22,7 +22,6 @@
 #include <vendorcode/amd/agesa/f15tn/Proc/CPU/heapManager.h>
 #include <PlatformMemoryConfiguration.h>
 
-#define FILECODE PROC_GNB_PCIE_FAMILY_0X15_F15PCIECOMPLEXCONFIG_FILECODE
 
 /*
  * Lane ID Mapping (from Fam15h BKDG: Table 45: Lane Id Mapping)

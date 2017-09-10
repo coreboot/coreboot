@@ -21,7 +21,6 @@
 #include <PlatformMemoryConfiguration.h>
 #include "amdlib.h"
 
-#define FILECODE PROC_GNB_PCIE_FAMILY_0X12_F12PCIECOMPLEXCONFIG_FILECODE
 
 static const PCIe_PORT_DESCRIPTOR PortList [] = {
 	// Initialize Port descriptor (PCIe port, Lanes 8:15, PCI Device Number 2, ...)

@@ -17,8 +17,6 @@
 
 #include "AGESA.h"
 #include "AdvancedApi.h"
-#include "Filecode.h"
-#define FILECODE PLATFORM_SPECIFIC_OPTIONS_FILECODE
 
 /* AGESA will check the OEM configuration during preprocessing stage,
  * coreboot enable -Wundef option, so we should make sure we have all contanstand defined

@@ -17,7 +17,6 @@
 #include "amdlib.h"
 #include <northbridge/amd/agesa/agesawrapper.h>
 #include <northbridge/amd/agesa/BiosCallOuts.h>
-#include "Ids.h"
 #include <stdlib.h>
 
 const BIOS_CALLOUT_STRUCT BiosCallouts[] =

@@ -13,12 +13,10 @@
  * GNU General Public License for more details.
  */
 
-#include "Filecode.h"
 #include "Hudson-2.h"
 #include "AmdSbLib.h"
 #include "gpio.h"
 
-#define FILECODE UNASSIGNED_FILE_FILECODE
 
 #ifndef SB_GPIO_REG01
 #define SB_GPIO_REG01   1

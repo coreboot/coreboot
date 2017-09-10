@@ -16,7 +16,6 @@
 #include "AGESA.h"
 #include "amdlib.h"
 #include <northbridge/amd/agesa/BiosCallOuts.h>
-#include "Ids.h"
 #include "Hudson-2.h"
 #include <stdlib.h>
 #include <southbridge/amd/cimx/sb700/gpio_oem.h>

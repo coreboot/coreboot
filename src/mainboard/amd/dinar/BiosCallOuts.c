@@ -17,7 +17,6 @@
 #include "amdlib.h"
 #include <northbridge/amd/agesa/agesawrapper.h>
 #include <northbridge/amd/agesa/BiosCallOuts.h>
-#include "Ids.h"
 #include "SB700.h"
 #include "OEM.h"		/* SMBUS0_BASE_ADDRESS */
 #include <stdlib.h>

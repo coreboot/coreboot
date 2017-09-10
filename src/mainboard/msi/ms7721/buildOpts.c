@@ -41,7 +41,6 @@
 #include <vendorcode/amd/agesa/f15tn/Proc/Mem/mm.h>
 #include <vendorcode/amd/agesa/f15tn/Proc/Mem/mn.h>
 
-#define FILECODE PLATFORM_SPECIFIC_OPTIONS_FILECODE
 
 /*  Select the CPU family.  */
 #define INSTALL_FAMILY_10_SUPPORT FALSE

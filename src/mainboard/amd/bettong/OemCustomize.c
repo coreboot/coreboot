@@ -17,7 +17,6 @@
 #include <PlatformMemoryConfiguration.h>
 #include <boardid.h>
 
-#define FILECODE PROC_GNB_PCIE_FAMILY_0X15_F15PCIECOMPLEXCONFIG_FILECODE
 
 static const PCIe_PORT_DESCRIPTOR PortList [] = {
 	/* Initialize Port descriptor (PCIe port, Lanes 8-15, PCI Device Number 3, ...) */

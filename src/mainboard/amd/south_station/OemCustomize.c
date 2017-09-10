@@ -20,7 +20,6 @@
 #include <vendorcode/amd/agesa/f14/Proc/CPU/heapManager.h>
 #include <PlatformMemoryConfiguration.h>
 
-#define FILECODE PROC_RECOVERY_MEM_NB_ON_MRNON_FILECODE
 
 /*---------------------------------------------------------------------------------------*/
 /**

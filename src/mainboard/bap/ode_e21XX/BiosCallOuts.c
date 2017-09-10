@@ -16,7 +16,6 @@
 #include "AGESA.h"
 #include "amdlib.h"
 #include <northbridge/amd/agesa/BiosCallOuts.h>
-#include "Ids.h"
 #include "FchPlatform.h"
 #include "cbfs.h"
 #include "imc.h"

@@ -16,7 +16,6 @@
 
 #include "AGESA.h"
 #include "amdlib.h"
-#include "Ids.h"
 #include "heapManager.h"
 #include <PlatformMemoryConfiguration.h>
 #include "PlatformGnbPcieComplex.h"

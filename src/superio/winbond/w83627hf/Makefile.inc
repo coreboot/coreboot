@@ -16,5 +16,4 @@
 ## GNU General Public License for more details.
 ##
 
-romstage-$(CONFIG_SUPERIO_WINBOND_W83627HF) += early_init.c
 ramstage-$(CONFIG_SUPERIO_WINBOND_W83627HF) += superio.c

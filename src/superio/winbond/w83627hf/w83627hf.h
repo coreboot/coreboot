@@ -109,8 +109,4 @@
 #define W83627HF_XSCNF		0x15
 #define W83627HF_XWBCNF		0x16
 
-#include <arch/io.h>
-
-void w83627hf_set_clksel_48(pnp_devfn_t dev);
-
 #endif /* SUPERIO_WINBOND_W83627HF_H */

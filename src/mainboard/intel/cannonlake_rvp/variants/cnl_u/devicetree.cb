@@ -10,6 +10,24 @@ chip soc/intel/cannonlake
 	register "SmbusEnable" = "1"
 	register "ScsEmmcEnabled" = "1"
 
+	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC0)"
+	register "usb2_ports[1]" = "USB2_PORT_MID(OC0)"
+	register "usb2_ports[2]" = "USB2_PORT_MID(OC0)"
+	register "usb2_ports[3]" = "USB2_PORT_MID(OC0)"
+	register "usb2_ports[4]" = "USB2_PORT_MID(OC0)"
+	register "usb2_ports[5]" = "USB2_PORT_MID(OC0)"
+	register "usb2_ports[6]" = "USB2_PORT_MID(OC0)"
+	register "usb2_ports[7]" = "USB2_PORT_MID(OC0)"
+	register "usb2_ports[8]" = "USB2_PORT_MID(OC0)"
+	register "usb2_ports[9]" = "USB2_PORT_MID(OC0)"
+
+	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC0)"
+	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC0)"
+	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC0)"
+	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC0)"
+	register "usb3_ports[4]" = "USB3_PORT_DEFAULT(OC0)"
+	register "usb3_ports[5]" = "USB3_PORT_DEFAULT(OC0)"
+
 	device domain 0 on
 		device pci 00.0 on  end # Host Bridge
 		device pci 02.0 on  end # Integrated Graphics Device

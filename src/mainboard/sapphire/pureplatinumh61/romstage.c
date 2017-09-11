@@ -70,13 +70,6 @@ const struct southbridge_usb_port mainboard_usb_ports[] = {
 
 void mainboard_early_init(int s3resume)
 {
-	if (s3resume) {
-		/*
-		 * Raminit after S3 resume fails if started too early; a delay
-		 * of 10 ms seems to be sufficient to fix the issue.
-		 */
-		mdelay(10);
-	}
 }
 
 void mainboard_config_superio(void)

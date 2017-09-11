@@ -315,6 +315,13 @@ F:	src/acpi/
 F:	src/arch/x86/acpi/
 F:	util/acpi/
 
+LZ4 COMPRESSION
+M:	Julius Werner <jwerner@chromium.org>
+S:	Supported
+F:	src/commonlib/lz4*
+F:	payloads/libpayload/liblz4/
+F:	util/cbfstool/lz4/
+
 ARM ARCHITECTURE
 M:	Julius Werner <jwerner@chromium.org>
 S:	Supported

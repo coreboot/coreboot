@@ -187,50 +187,6 @@ clear_fixed_var_mtrr_out:
 	xorl	%eax, %eax
 	rep	stosl
 
-#if 0
-	/* Check the cache as ram. */
-	movl	$CacheBase, %esi
-	movl	$(CacheSize >> 2), %ecx
-.xin1:
-	movl	%esi, %eax
-	movl	%eax, (%esi)
-	decl	%ecx
-	je	.xout1
-	add	$4, %esi
-	jmp	.xin1
-.xout1:
-
-	movl	$CacheBase, %esi
-	// movl	$(CacheSize >> 2), %ecx
-	movl	$4, %ecx
-.xin1x:
-	movl	%esi, %eax
-
-	movl	$0x4000, %edx
-	movb	%ah, %al
-.testx1:
-	outb	%al, $0x80
-	decl	%edx
-	jnz	.testx1
-
-	movl	(%esi), %eax
-	cmpb	0xff, %al
-	je	.xin2	/* Don't show. */
-
-	movl	$0x4000, %edx
-.testx2:
-	outb	%al, $0x80
-	decl	%edx
-	jnz	.testx2
-
-.xin2:
-	decl	%ecx
-	je	.xout1x
-	add	$4, %esi
-	jmp	.xin1x
-.xout1x:
-#endif
-
 	movl	$(CacheBase + CacheSize - 4), %eax
 	movl	%eax, %esp
 lout:

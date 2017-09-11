@@ -22,9 +22,6 @@
 #include <cpu/x86/lapic_def.h>
 #include <cpu/x86/post_code.h>
 
-#define CacheSize		CONFIG_DCACHE_RAM_SIZE
-#define CacheBase		(0xd0000 - CacheSize)
-
 	/* Save the BIST result. */
 	movl	%eax, %ebp
 
@@ -128,32 +125,29 @@ clear_fixed_var_mtrr_out:
 	 */
 .endm
 
-#if CacheSize > 0x10000
+#if CONFIG_DCACHE_RAM_SIZE > 0x10000
 #error Invalid CAR size, must be at most 64k.
 #endif
-#if CacheSize < 0x1000
+#if CONFIG_DCACHE_RAM_SIZE < 0x1000
 #error Invalid CAR size, must be at least 4k. This is a processor limitation.
 #endif
-#if (CacheSize & (0x1000 - 1))
+#if (CONFIG_DCACHE_RAM_SIZE & (0x1000 - 1))
 #error Invalid CAR size, is not a multiple of 4k. This is a processor limitation.
 #endif
 
-#if CacheSize > 0x8000
+#if CONFIG_DCACHE_RAM_SIZE > 0x8000
 	/* Enable caching for 32K-64K using fixed MTRR. */
 	movl	$MTRR_FIX_4K_C0000, %ecx
-	simplemask CacheSize, 0x8000
+	simplemask CONFIG_DCACHE_RAM_SIZE, 0x8000
 	wrmsr
 #endif
 
 	/* Enable caching for 0-32K using fixed MTRR. */
 	movl	$MTRR_FIX_4K_C8000, %ecx
-	simplemask CacheSize, 0
+	simplemask CONFIG_DCACHE_RAM_SIZE, 0
 	wrmsr
 
-	/*
-	 * Enable write base caching so we can do execute in place (XIP)
-	 * on the flash ROM.
-	 */
+	/* Enable cache for our code in Flash because we do XIP here. */
 	movl	$MTRR_PHYS_BASE(1), %ecx
 	xorl	%edx, %edx
 	/*
@@ -162,7 +156,7 @@ clear_fixed_var_mtrr_out:
 	 */
 	movl	$copy_and_run, %eax
 	andl	$(~(CONFIG_XIP_ROM_SIZE - 1)), %eax
-	orl	$MTRR_TYPE_WRBACK, %eax
+	orl	$MTRR_TYPE_WRPROT, %eax
 	wrmsr
 
 	movl	$MTRR_PHYS_MASK(1), %ecx
@@ -175,33 +169,31 @@ clear_fixed_var_mtrr_out:
 	andl	$(~(CR0_CacheDisable | CR0_NoWriteThrough)), %eax
 	movl	%eax, %cr0
 
-	/* Read the range with lodsl. */
-	movl	$CacheBase, %esi
+	/* Read the CAR region. This will also fill up the cache.
+	 * IMPORTANT: This step is mandatory.
+	 */
+	movl	$CONFIG_DCACHE_RAM_BASE, %esi
 	cld
-	movl	$(CacheSize >> 2), %ecx
+	movl	$(CONFIG_DCACHE_RAM_SIZE >> 2), %ecx
 	rep	lodsl
 
-	/* Clear the range. */
-	movl	$CacheBase, %edi
-	movl	$(CacheSize >> 2), %ecx
+	/* Clear the CAR region. */
+	movl	$CONFIG_DCACHE_RAM_BASE, %edi
+	movl	$(CONFIG_DCACHE_RAM_SIZE >> 2), %ecx
 	xorl	%eax, %eax
 	rep	stosl
 
-	movl	$(CacheBase + CacheSize - 4), %eax
+	movl	$(CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE), %eax
 	movl	%eax, %esp
 lout:
 	/* Restore the BIST result. */
 	movl	%ebp, %eax
 
-	/* We need to set EBP? No need. */
-	movl	%esp, %ebp
 	pushl	%eax  /* BIST */
 	call	romstage_main
 
-	/* Save return value from romstage_main. It contains the stack to use
-	 * after cache-as-ram is torn down.
-	 */
-	movl	%eax, %ebx
+	/* Setup stack as indicated by return value from romstage_main(). */
+	movl	%eax, %esp
 
 	/* We don't need CAR from now on. */
 
@@ -210,7 +202,7 @@ lout:
 	orl	$CR0_CacheDisable, %eax
 	movl	%eax, %cr0
 
-	/* Clear sth. */
+	/* Clear the fixed MTRR we used. */
 	movl	$MTRR_FIX_4K_C8000, %ecx
 	xorl	%edx, %edx
 	xorl	%eax, %eax
@@ -222,12 +214,12 @@ lout:
 #endif
 
 	/*
-	 * Set the default memory type and disable fixed
-	 * and enable variable MTRRs.
+	 * Enable variable and disable fixed MTRRs.
+	 * Default memory type will be UC.
 	 */
 	movl	$MTRR_DEF_TYPE_MSR, %ecx
 	xorl	%edx, %edx
-	movl	$MTRR_DEF_TYPE_EN, %eax /* Enable variable and disable fixed MTRRs. */
+	movl	$MTRR_DEF_TYPE_EN, %eax
 	wrmsr
 
 	/* Enable cache. */
@@ -238,10 +230,6 @@ lout:
 __main:
 	post_code(POST_PREPARE_RAMSTAGE)
 	cld			/* Clear direction flag. */
-
-	/* Setup stack as indicated by return value from romstage_main(). */
-	movl	%ebx, %esp
-	movl	%esp, %ebp
 	call	copy_and_run
 
 .Lhlt:

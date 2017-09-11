@@ -26,16 +26,12 @@ static struct pci_operations lops_pci = {
 	.set_subsystem = pci_dev_set_subsystem,
 };
 
-static void usb_init(struct device *dev)
-{
-}
-
 static struct device_operations usb_ops = {
 	.read_resources = pci_ehci_read_resources,
 	.set_resources = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init = usb_init,
-	.scan_bus = 0,
+	.init = NULL,
+	.scan_bus = NULL,
 	.ops_pci = &lops_pci,
 };
 

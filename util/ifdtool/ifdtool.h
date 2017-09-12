@@ -140,6 +140,6 @@ typedef struct {
 } region_t;
 
 struct region_name {
-	char *pretty;
-	char *terse;
+	const char *pretty;
+	const char *terse;
 };

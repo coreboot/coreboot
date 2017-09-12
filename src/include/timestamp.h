@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2011 The ChromiumOS Authors.  All rights reserved.
+ * Copyright 2017 Siemens AG.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,11 +41,20 @@ void timestamp_add_now(enum timestamp_id id);
 /* Apply a factor of N/M to all timestamps recorded so far. */
 void timestamp_rescale_table(uint16_t N, uint16_t M);
 
+/*
+ * Get the time since boot scaled in microseconds. Therefore use the base time
+ * of the timestamps to get the initial value which is subtracted from
+ * current timestamp at call time. This will provide a more reliable value even
+ * if the TSC is not reset on soft reset or warm start.
+ */
+uint32_t get_us_since_boot(void);
+
 #else
 #define timestamp_init(base)
 #define timestamp_add(id, time)
 #define timestamp_add_now(id)
 #define timestamp_rescale_table(N, M)
+#define get_us_since_boot() 0
 #endif
 
 /* Implemented by the architecture code */

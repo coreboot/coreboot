@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2011 The ChromiumOS Authors.  All rights reserved.
+ * Copyright 2017 Siemens AG.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -325,6 +326,19 @@ void timestamp_rescale_table(uint16_t N, uint16_t M)
 		tse->entry_stamp /= M;
 		tse->entry_stamp *= N;
 	}
+}
+
+/*
+ * Get the time in microseconds since boot (or more precise: since timestamp
+ * table was initialized).
+ */
+uint32_t get_us_since_boot(void)
+{
+	struct timestamp_table *ts = timestamp_table_get();
+
+	if (ts == NULL || ts->tick_freq_mhz == 0)
+		return 0;
+	return (timestamp_get() - ts->base_time) / ts->tick_freq_mhz;
 }
 
 ROMSTAGE_CBMEM_INIT_HOOK(timestamp_sync_cache_to_cbmem)

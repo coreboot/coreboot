@@ -261,8 +261,8 @@ asmlinkage void car_stage_entry(void);
 struct postcar_frame {
 	uintptr_t stack;
 	uint32_t upper_mask;
-	int max_var_mttrs;
-	int num_var_mttrs;
+	int max_var_mtrrs;
+	int num_var_mtrrs;
 };
 
 /*

@@ -39,8 +39,8 @@ static void postcar_frame_prepare(struct postcar_frame *pcf)
 	msr = rdmsr(MTRR_CAP_MSR);
 
 	pcf->upper_mask = (1 << (cpu_phys_address_size() - 32)) - 1;
-	pcf->max_var_mttrs = msr.lo & MTRR_CAP_VCNT;
-	pcf->num_var_mttrs = 0;
+	pcf->max_var_mtrrs = msr.lo & MTRR_CAP_VCNT;
+	pcf->num_var_mtrrs = 0;
 }
 
 int postcar_frame_init(struct postcar_frame *pcf, size_t stack_size)
@@ -82,9 +82,9 @@ void postcar_frame_add_mtrr(struct postcar_frame *pcf,
 		uint32_t size_msb;
 		uint32_t mtrr_size;
 
-		if (pcf->num_var_mttrs >= pcf->max_var_mttrs) {
+		if (pcf->num_var_mtrrs >= pcf->max_var_mtrrs) {
 			printk(BIOS_ERR, "No more variable MTRRs: %d\n",
-					pcf->max_var_mttrs);
+					pcf->max_var_mtrrs);
 			return;
 		}
 
@@ -106,7 +106,7 @@ void postcar_frame_add_mtrr(struct postcar_frame *pcf,
 		stack_push(pcf, ~(mtrr_size - 1) | MTRR_PHYS_MASK_VALID);
 		stack_push(pcf, 0);
 		stack_push(pcf, addr | type);
-		pcf->num_var_mttrs++;
+		pcf->num_var_mtrrs++;
 
 		size -= mtrr_size;
 		addr += mtrr_size;
@@ -119,8 +119,8 @@ void *postcar_commit_mtrrs(struct postcar_frame *pcf)
 	 * Place the number of used variable MTRRs on stack then max number
 	 * of variable MTRRs supported in the system.
 	 */
-	stack_push(pcf, pcf->num_var_mttrs);
-	stack_push(pcf, pcf->max_var_mttrs);
+	stack_push(pcf, pcf->num_var_mtrrs);
+	stack_push(pcf, pcf->max_var_mtrrs);
 	return (void *) pcf->stack;
 }
 

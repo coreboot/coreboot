@@ -33,15 +33,15 @@ static int selected_chip = 0;
 static int platform = -1;
 
 static const struct region_name region_names[MAX_REGIONS] = {
-	{ "Flash Descriptor", "fd" },
-	{ "BIOS", "bios" },
-	{ "Intel ME", "me" },
-	{ "GbE", "gbe" },
-	{ "Platform Data", "pd" },
-	{ "Reserved", "res1" },
-	{ "Reserved", "res2" },
-	{ "Reserved", "res3" },
-	{ "EC", "ec" },
+	{ "Flash Descriptor", "fd", "flashregion_0_flashdescriptor.bin" },
+	{ "BIOS", "bios", "flashregion_1_bios.bin" },
+	{ "Intel ME", "me", "flashregion_2_intel_me.bin" },
+	{ "GbE", "gbe", "flashregion_3_gbe.bin" },
+	{ "Platform Data", "pd", "flashregion_4_platform_data.bin" },
+	{ "Reserved", "res1", "flashregion_5_reserved.bin" },
+	{ "Reserved", "res2", "flashregion_6_reserved.bin" },
+	{ "Reserved", "res3", "flashregion_7_reserved.bin" },
+	{ "EC", "ec", "flashregion_8_ec.bin" },
 };
 
 static fdbar_t *find_fd(char *image, int size)
@@ -226,24 +226,12 @@ static int region_num(const char *name)
 
 static const char *region_filename(unsigned int region_type)
 {
-	static const char *const region_filenames[MAX_REGIONS] = {
-		"flashregion_0_flashdescriptor.bin",
-		"flashregion_1_bios.bin",
-		"flashregion_2_intel_me.bin",
-		"flashregion_3_gbe.bin",
-		"flashregion_4_platform_data.bin",
-		"flashregion_5_reserved.bin",
-		"flashregion_6_reserved.bin",
-		"flashregion_7_reserved.bin",
-		"flashregion_8_ec.bin",
-	};
-
 	if (region_type >= max_regions) {
 		fprintf(stderr, "Invalid region type %d.\n", region_type);
 		exit (EXIT_FAILURE);
 	}
 
-	return region_filenames[region_type];
+	return region_names[region_type].filename;
 }
 
 static void dump_region(unsigned int num, const frba_t *frba)

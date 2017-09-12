@@ -649,8 +649,10 @@ Scope (\_SB.PCI0.I2C2)
 			ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
 			Package () {
 				Package () { "clock-frequency", 19200000 },
+				Package () { "lens-focus",
+					Package () { \_SB.PCI0.I2C2.VCM0 }
+				}
 			}
-
 		})
 
 		Name (PRT0, Package() {

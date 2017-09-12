@@ -385,7 +385,9 @@ static const struct param_info params[] = {
 	[FANSensorCfg7] = {
 		.pos[0] = {.blk_type = BLK_XIB, .offset = 0xd8, .len = 20},
 		.get_field = hwilib_read_bytes },
-
+	[LegacyDelay] = {
+		.pos[0] = {.blk_type = BLK_XIB, .offset = 0x20c, .len = 4},
+		.get_field = hwilib_read_bytes },
 };
 
 /** \brief This functions reads the given field from the first valid hwinfo

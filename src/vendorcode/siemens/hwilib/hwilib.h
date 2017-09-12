@@ -115,8 +115,8 @@ typedef enum {
 	netKind7,
 	netKind8,
 	netKind9,
-	netKind10
-
+	netKind10,
+	LegacyDelay
 } hwinfo_field_t;
 
 /* Define used values in supported fields */

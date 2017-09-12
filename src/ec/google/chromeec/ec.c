@@ -263,6 +263,27 @@ int google_chromeec_check_feature(int feature)
 	return r.flags[feature / 32] & EC_FEATURE_MASK_0(feature);
 }
 
+int google_chromeec_set_sku_id(u32 skuid)
+{
+	struct chromeec_command cmd;
+	struct ec_sku_id_info set_skuid = {
+		.sku_id = skuid
+	};
+
+	cmd.cmd_code = EC_CMD_SET_SKU_ID;
+	cmd.cmd_version = 0;
+	cmd.cmd_size_in = sizeof(set_skuid);
+	cmd.cmd_data_in = &set_skuid;
+	cmd.cmd_data_out = NULL;
+	cmd.cmd_size_out = 0;
+	cmd.cmd_dev_index = 0;
+
+	if (google_chromeec_command(&cmd) != 0)
+		return -1;
+
+	return 0;
+}
+
 #if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC_RTC)
 int rtc_get(struct rtc_time *time)
 {
@@ -389,7 +410,7 @@ u16 google_chromeec_get_board_version(void)
 u32 google_chromeec_get_sku_id(void)
 {
 	struct chromeec_command cmd;
-	struct ec_response_sku_id sku_v;
+	struct ec_sku_id_info sku_v;
 
 	cmd.cmd_code = EC_CMD_GET_SKU_ID;
 	cmd.cmd_version = 0;

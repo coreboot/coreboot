@@ -50,6 +50,7 @@ int google_chromeec_check_feature(int feature);
 uint8_t google_chromeec_calc_checksum(const uint8_t *data, int size);
 u16 google_chromeec_get_board_version(void);
 u32 google_chromeec_get_sku_id(void);
+int google_chromeec_set_sku_id(u32 skuid);
 u32 google_chromeec_get_events_b(void);
 int google_chromeec_clear_events_b(u32 mask);
 int google_chromeec_kbbacklight(int percent);

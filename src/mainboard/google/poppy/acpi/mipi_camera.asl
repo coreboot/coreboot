@@ -705,7 +705,7 @@ Scope (\_SB.PCI0.I2C2)
 
 	Device (VCM0)
 	{
-		Name (_HID, "DWDWD000")  /* _HID: Hardware ID */
+		Name (_HID, "PRP0001")  /* _HID: Hardware ID */
 		Name (_UID, Zero)  /* _UID: Unique ID */
 		Name (_DDN, "Dongwoon AF DAC") /* _DDN: DOS Device Name */
 		Name (CAMD, 0x03)
@@ -722,6 +722,13 @@ Scope (\_SB.PCI0.I2C2)
 				AddressingMode7Bit, "\\_SB.PCI0.I2C2",
 				0x00, ResourceConsumer, ,
 				)
+		})
+
+		Name (_DSD, Package () {
+			ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+			Package () {
+				Package () { "compatible", "dongwoon,dw9714" },
+			}
 		})
 
 		Name (_PR0, Package () { ^PMIC.VCMP })

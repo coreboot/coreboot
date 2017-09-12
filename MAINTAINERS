@@ -536,14 +536,14 @@ F:	*/
 # This is intended to let people know who they should contact for issues with various infrastructure pieces.
 # Hardware
 #	Owners: Stefan, Patrick
-#	Backups: 
+#	Backups:
 
 # Web Server
 #	Owners: Stefan, Patrick
 #	Backups:
 
 # Website
-#	Owners: Martin, Philipp 
+#	Owners: Martin, Philipp
 #	Backups: Patrick, Stefan
 
 # Documentation Website

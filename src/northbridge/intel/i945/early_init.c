@@ -175,7 +175,7 @@ static void i945_setup_bars(void)
 	printk(BIOS_DEBUG, " done.\n");
 
 	/* Enable upper 128bytes of CMOS */
-	RCBA32(0x3400) = (1 << 2);
+	RCBA32(RC) = (1 << 2);
 
 	printk(BIOS_DEBUG, "Setting up static northbridge registers...");
 	/* Set up all hardcoded northbridge BARs */

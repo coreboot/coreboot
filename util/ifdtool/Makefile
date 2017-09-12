@@ -18,7 +18,7 @@ PROGRAM = ifdtool
 CC      = gcc
 INSTALL = /usr/bin/install
 PREFIX  = /usr/local
-CFLAGS  = -O2 -g -Wall -W -Werror
+CFLAGS  = -O2 -g -Wall -W -Werror -I../../src/commonlib/include
 LDFLAGS =
 
 OBJS = ifdtool.o

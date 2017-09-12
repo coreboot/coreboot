@@ -60,16 +60,9 @@ typedef struct {
 // regions
 #define MAX_REGIONS 9
 #define MAX_REGIONS_OLD 5
+
 typedef struct {
-	uint32_t flreg0;
-	uint32_t flreg1;
-	uint32_t flreg2;
-	uint32_t flreg3;
-	uint32_t flreg4;
-	uint32_t flreg5;
-	uint32_t flreg6;
-	uint32_t flreg7;
-	uint32_t flreg8;
+	uint32_t flreg[MAX_REGIONS];
 } __attribute__((packed)) frba_t;
 
 // component section
@@ -80,25 +73,10 @@ typedef struct {
 } __attribute__((packed)) fcba_t;
 
 // pch strap
+#define MAX_PCHSTRP 18
+
 typedef struct {
-	uint32_t pchstrp0;
-	uint32_t pchstrp1;
-	uint32_t pchstrp2;
-	uint32_t pchstrp3;
-	uint32_t pchstrp4;
-	uint32_t pchstrp5;
-	uint32_t pchstrp6;
-	uint32_t pchstrp7;
-	uint32_t pchstrp8;
-	uint32_t pchstrp9;
-	uint32_t pchstrp10;
-	uint32_t pchstrp11;
-	uint32_t pchstrp12;
-	uint32_t pchstrp13;
-	uint32_t pchstrp14;
-	uint32_t pchstrp15;
-	uint32_t pchstrp16;
-	uint32_t pchstrp17;
+	uint32_t pchstrp[MAX_PCHSTRP];
 } __attribute__((packed)) fpsba_t;
 
 /*

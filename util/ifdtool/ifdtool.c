@@ -21,6 +21,7 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <commonlib/helpers.h>
 #include "ifdtool.h"
 
 #ifndef O_BINARY
@@ -106,7 +107,6 @@ static region_t get_region(const frba_t *frba, unsigned int region_type)
 	int base_mask;
 	int limit_mask;
 	uint32_t flreg;
-	const void *v;
 	region_t region;
 
 	if (ifd_version >= IFD_VERSION_2)
@@ -116,40 +116,12 @@ static region_t get_region(const frba_t *frba, unsigned int region_type)
 
 	limit_mask = base_mask << 16;
 
-	switch (region_type) {
-	case 0:
-		v = &frba->flreg0;
-		break;
-	case 1:
-		v = &frba->flreg1;
-		break;
-	case 2:
-		v = &frba->flreg2;
-		break;
-	case 3:
-		v = &frba->flreg3;
-		break;
-	case 4:
-		v = &frba->flreg4;
-		break;
-	case 5:
-		v = &frba->flreg5;
-		break;
-	case 6:
-		v = &frba->flreg6;
-		break;
-	case 7:
-		v = &frba->flreg7;
-		break;
-	case 8:
-		v = &frba->flreg8;
-		break;
-	default:
-		fprintf(stderr, "Invalid region type %u.\n", region_type);
+	if (region_type >= MAX_REGIONS) {
+		fprintf(stderr, "Invalid region type %d.\n", region_type);
 		exit (EXIT_FAILURE);
 	}
 
-	memmove(&flreg, v, sizeof(flreg));
+	flreg = frba->flreg[region_type];
 	region.base = (flreg & base_mask) << 12;
 	region.limit = ((flreg & limit_mask) >> 4) | 0xfff;
 	region.size = region.limit - region.base + 1;
@@ -163,31 +135,14 @@ static region_t get_region(const frba_t *frba, unsigned int region_type)
 static void set_region(frba_t *frba, unsigned int region_type,
 		       const region_t *region)
 {
-	switch (region_type) {
-	case 0:
-		frba->flreg0 = (((region->limit >> 12) & 0x7fff) << 16)
-			| ((region->base >> 12) & 0x7fff);
-		break;
-	case 1:
-		frba->flreg1 = (((region->limit >> 12) & 0x7fff) << 16)
-			| ((region->base >> 12) & 0x7fff);
-		break;
-	case 2:
-		frba->flreg2 = (((region->limit >> 12) & 0x7fff) << 16)
-			| ((region->base >> 12) & 0x7fff);
-		break;
-	case 3:
-		frba->flreg3 = (((region->limit >> 12) & 0x7fff) << 16)
-			| ((region->base >> 12) & 0x7fff);
-		break;
-	case 4:
-		frba->flreg4 = (((region->limit >> 12) & 0x7fff) << 16)
-			| ((region->base >> 12) & 0x7fff);
-		break;
-	default:
-		fprintf(stderr, "Invalid region type.\n");
+	if (region_type >= MAX_REGIONS_OLD) {
+		fprintf(stderr, "Invalid region type %u.\n", region_type);
 		exit (EXIT_FAILURE);
 	}
+
+	frba->flreg[region_type] =
+		(((region->limit >> 12) & 0x7fff) << 16) |
+		((region->base >> 12) & 0x7fff);
 }
 
 static const char *region_name(unsigned int region_type)
@@ -252,27 +207,11 @@ static void dump_region_layout(char *buf, size_t bufsize, unsigned int num,
 
 static void dump_frba(const frba_t *frba)
 {
+	unsigned int i;
 	printf("Found Region Section\n");
-	printf("FLREG0:    0x%08x\n", frba->flreg0);
-	dump_region(0, frba);
-	printf("FLREG1:    0x%08x\n", frba->flreg1);
-	dump_region(1, frba);
-	printf("FLREG2:    0x%08x\n", frba->flreg2);
-	dump_region(2, frba);
-	printf("FLREG3:    0x%08x\n", frba->flreg3);
-	dump_region(3, frba);
-	printf("FLREG4:    0x%08x\n", frba->flreg4);
-	dump_region(4, frba);
-
-	if (ifd_version >= IFD_VERSION_2) {
-		printf("FLREG5:    0x%08x\n", frba->flreg5);
-		dump_region(5, frba);
-		printf("FLREG6:    0x%08x\n", frba->flreg6);
-		dump_region(6, frba);
-		printf("FLREG7:    0x%08x\n", frba->flreg7);
-		dump_region(7, frba);
-		printf("FLREG8:    0x%08x\n", frba->flreg8);
-		dump_region(8, frba);
+	for (i = 0; i < max_regions; i++) {
+		printf("FLREG%u:    0x%08x\n", i, frba->flreg[i]);
+		dump_region(i, frba);
 	}
 }
 
@@ -419,25 +358,12 @@ static void dump_fcba(const fcba_t *fcba)
 
 static void dump_fpsba(const fpsba_t *fpsba)
 {
+	unsigned int i;
 	printf("Found PCH Strap Section\n");
-	printf("PCHSTRP0:  0x%08x\n", fpsba->pchstrp0);
-	printf("PCHSTRP1:  0x%08x\n", fpsba->pchstrp1);
-	printf("PCHSTRP2:  0x%08x\n", fpsba->pchstrp2);
-	printf("PCHSTRP3:  0x%08x\n", fpsba->pchstrp3);
-	printf("PCHSTRP4:  0x%08x\n", fpsba->pchstrp4);
-	printf("PCHSTRP5:  0x%08x\n", fpsba->pchstrp5);
-	printf("PCHSTRP6:  0x%08x\n", fpsba->pchstrp6);
-	printf("PCHSTRP7:  0x%08x\n", fpsba->pchstrp7);
-	printf("PCHSTRP8:  0x%08x\n", fpsba->pchstrp8);
-	printf("PCHSTRP9:  0x%08x\n", fpsba->pchstrp9);
-	printf("PCHSTRP10: 0x%08x\n", fpsba->pchstrp10);
-	printf("PCHSTRP11: 0x%08x\n", fpsba->pchstrp11);
-	printf("PCHSTRP12: 0x%08x\n", fpsba->pchstrp12);
-	printf("PCHSTRP13: 0x%08x\n", fpsba->pchstrp13);
-	printf("PCHSTRP14: 0x%08x\n", fpsba->pchstrp14);
-	printf("PCHSTRP15: 0x%08x\n", fpsba->pchstrp15);
-	printf("PCHSTRP16: 0x%08x\n", fpsba->pchstrp16);
-	printf("PCHSTRP17: 0x%08x\n\n", fpsba->pchstrp17);
+	for (i = 0; i < ARRAY_SIZE(fpsba->pchstrp); i++)
+		printf("PCHSTRP%u:%s 0x%08x\n", i,
+		       i < 10 ? " " : "", fpsba->pchstrp[i]);
+	printf("\n");
 }
 
 static void decode_flmstr(uint32_t flmstr)

@@ -14,13 +14,28 @@
  * GNU General Public License for more details.
  */
 
+#include <cpu/cpu.h>
 #include <cpu/x86/mp.h>
 #include <cpu/x86/mtrr.h>
+#include <cpu/x86/msr.h>
+#include <cpu/amd/amdfam15.h>
 #include <device/device.h>
 #include <soc/pci_devs.h>
 #include <soc/cpu.h>
 #include <soc/northbridge.h>
+#include <soc/smi.h>
 #include <console/console.h>
+
+/*
+ * MP and SMM loading initialization.
+ */
+struct smm_relocation_attrs {
+	uint32_t smbase;
+	uint32_t tseg_base;
+	uint32_t tseg_mask;
+};
+
+static struct smm_relocation_attrs relo_attrs;
 
 /*
  * Do essential initialization tasks before APs can be fired up -
@@ -41,9 +56,50 @@ static int get_cpu_count(void)
 	return (pci_read_config16(nb, D18F0_CPU_CNT) & CPU_CNT_MASK) + 1;
 }
 
+static void get_smm_info(uintptr_t *perm_smbase, size_t *perm_smsize,
+				size_t *smm_save_state_size)
+{
+	void *smm_base;
+	size_t smm_size;
+	void *handler_base;
+	size_t handler_size;
+
+	/* Initialize global tracking state. */
+	smm_region_info(&smm_base, &smm_size);
+	smm_subregion(SMM_SUBREGION_HANDLER, &handler_base, &handler_size);
+
+	relo_attrs.smbase = (uint32_t)smm_base;
+	relo_attrs.tseg_base = relo_attrs.smbase;
+	relo_attrs.tseg_mask = ALIGN_DOWN(~(smm_size - 1), 128 * KiB);
+	relo_attrs.tseg_mask |= SMM_TSEG_WB | SMM_TSEG_VALID;
+
+	*perm_smbase = (uintptr_t)handler_base;
+	*perm_smsize = handler_size;
+	*smm_save_state_size = sizeof(amd64_smm_state_save_area_t);
+}
+
+static void relocation_handler(int cpu, uintptr_t curr_smbase,
+				uintptr_t staggered_smbase)
+{
+	msr_t tseg_base, tseg_mask;
+	amd64_smm_state_save_area_t *smm_state;
+
+	tseg_base.lo = relo_attrs.tseg_base;
+	tseg_base.hi = 0;
+	wrmsr(MSR_TSEG_BASE, tseg_base);
+	tseg_mask.lo = relo_attrs.tseg_mask;
+	tseg_mask.hi = ((1 << (cpu_phys_address_size() - 32)) - 1);
+	wrmsr(MSR_SMM_MASK, tseg_mask);
+	smm_state = (void *)(SMM_AMD64_SAVE_STATE_OFFSET + curr_smbase);
+	smm_state->smbase = staggered_smbase;
+}
+
 static const struct mp_ops mp_ops = {
 	.pre_mp_init = pre_mp_init,
 	.get_cpu_count = get_cpu_count,
+	.get_smm_info = get_smm_info,
+	.relocation_handler = relocation_handler,
+	.post_mp_init = enable_smi_generation,
 };
 
 void stoney_init_cpus(struct device *dev)

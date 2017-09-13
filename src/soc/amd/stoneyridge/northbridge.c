@@ -415,6 +415,8 @@ void domain_set_resources(device_t dev)
 	u32 hole;
 	int idx;
 	struct bus *link;
+	void *tseg_base;
+	size_t tseg_size;
 
 	pci_tolm = 0xffffffffUL;
 	for (link = dev->link_list ; link ; link = link->next)
@@ -505,6 +507,12 @@ void domain_set_resources(device_t dev)
 	 */
 	mmio_resource(dev, 0xa0000, 0xa0000 / KiB, 0x20000 / KiB);
 	reserved_ram_resource(dev, 0xc0000, 0xc0000 / KiB, 0x40000 / KiB);
+
+	/* Reserve TSEG */
+	smm_region_info(&tseg_base, &tseg_size);
+	idx += 0x10;
+	reserved_ram_resource(dev, idx, (unsigned long)tseg_base/KiB,
+					tseg_size/KiB);
 }
 
 /*********************************************************************

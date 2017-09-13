@@ -51,6 +51,8 @@ config CPU_SPECIFIC_OPTIONS
 	select BOOTBLOCK_CONSOLE
 	select RELOCATABLE_MODULES
 	select PARALLEL_MP
+	select HAVE_SMI_HANDLER
+	select SMM_TSEG
 
 config VBOOT
 	select AMDFW_OUTSIDE_CBFS
@@ -285,6 +287,10 @@ config SMM_TSEG_SIZE
 	hex
 	default 0x800000 if SMM_TSEG && HAVE_SMI_HANDLER
 	default 0x0
+
+config SMM_RESERVED_SIZE
+	hex
+	default 0x100000
 
 config ACPI_CPU_STRING
 	string

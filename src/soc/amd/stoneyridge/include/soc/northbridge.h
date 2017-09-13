@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2015 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,6 +31,27 @@
 # define DRAM_HOIST_VALID	(1 << 1)
 # define DRAM_HOLE_VALID	(1 << 0)
 
+enum {
+	/* SMM handler area. */
+	SMM_SUBREGION_HANDLER,
+	/* SMM cache region. */
+	SMM_SUBREGION_CACHE,
+	/* Chipset specific area. */
+	SMM_SUBREGION_CHIPSET,
+	/* Total sub regions supported. */
+	SMM_SUBREGION_NUM,
+};
+
+/*
+ * Fills in the arguments for the entire SMM region covered by chipset
+ * protections. e.g. TSEG.
+ */
+void smm_region_info(void **start, size_t *size);
+/*
+ * Fills in the start and size for the requested SMM subregion. Returns
+ * 0 on susccess, < 0 on failure.
+ */
+int smm_subregion(int sub, void **start, size_t *size);
 void domain_enable_resources(device_t dev);
 void domain_read_resources(device_t dev);
 void domain_set_resources(device_t dev);

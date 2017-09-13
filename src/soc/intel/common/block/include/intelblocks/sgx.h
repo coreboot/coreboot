@@ -16,6 +16,10 @@
 #ifndef SOC_INTEL_COMMON_BLOCK_SGX_H
 #define SOC_INTEL_COMMON_BLOCK_SGX_H
 
+struct sgx_param {
+	uint8_t enable;
+};
+
 /*
  * Lock SGX memory.
  * CPU specific code needs to provide the implementation.
@@ -33,5 +37,9 @@ void prmrr_core_configure(void);
  * Configure SGX.
  */
 void sgx_configure(void);
+
+/* SOC specific API to get SGX params.
+ * returns 0, if able to get SGX params; otherwise returns -1 */
+int soc_fill_sgx_param(struct sgx_param *sgx_param);
 
 #endif	/* SOC_INTEL_COMMON_BLOCK_SGX_H */

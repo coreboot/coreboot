@@ -504,3 +504,18 @@ void cpu_lock_sgx_memory(void)
 		wrmsr(MSR_LT_LOCK_MEMORY, msr);
 	}
 }
+
+int soc_fill_sgx_param(struct sgx_param *sgx_param)
+{
+	device_t dev = SA_DEV_ROOT;
+	assert(dev != NULL);
+	config_t *conf = dev->chip_info;
+
+	if (!conf) {
+		printk(BIOS_ERR, "Failed to get chip_info for SGX param\n");
+		return -1;
+	}
+
+	sgx_param->enable = conf->sgx_enable;
+	return 0;
+}

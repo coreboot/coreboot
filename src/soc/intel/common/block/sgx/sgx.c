@@ -15,15 +15,40 @@
 
 #include <assert.h>
 #include <console/console.h>
-#include <chip.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/intel/microcode.h>
 #include <intelblocks/mp_init.h>
+#include <intelblocks/msr.h>
 #include <intelblocks/sgx.h>
 #include <soc/cpu.h>
-#include <soc/msr.h>
 #include <soc/pci_devs.h>
+#include <string.h>
+
+static bool sgx_param_valid;
+static struct sgx_param g_sgx_param;
+
+static const struct sgx_param *get_sgx_param(void)
+{
+	if (sgx_param_valid)
+		return &g_sgx_param;
+
+	memset(&g_sgx_param, 0, sizeof(g_sgx_param));
+	if (soc_fill_sgx_param(&g_sgx_param) < 0) {
+		printk(BIOS_ERR, "SGX : Failed to get soc sgx param\n");
+		return NULL;
+	}
+	sgx_param_valid = true;
+	printk(BIOS_INFO, "SGX : param.enable = %d\n", g_sgx_param.enable);
+
+	return &g_sgx_param;
+}
+
+static int soc_sgx_enabled(void)
+{
+	const struct sgx_param *sgx_param = get_sgx_param();
+	return sgx_param ? sgx_param->enable : 0;
+}
 
 static int is_sgx_supported(void)
 {
@@ -40,16 +65,8 @@ void prmrr_core_configure(void)
 	msr_t prmrr_base;
 	msr_t prmrr_mask;
 	msr_t msr;
-	device_t dev = SA_DEV_ROOT;
-	assert(dev != NULL);
-	config_t *conf = dev->chip_info;
 
-	if (!conf) {
-		printk(BIOS_ERR, "SGX: failed to get chip_info\n");
-		return;
-	}
-
-	if (!conf->sgx_enable || !is_sgx_supported())
+	if (!soc_sgx_enabled() || !is_sgx_supported())
 		return;
 
 	/* PRMRR base and mask are read from the UNCORE PRMRR MSRs
@@ -160,17 +177,9 @@ static int is_prmrr_approved(void)
 
 void sgx_configure(void)
 {
-	device_t dev = SA_DEV_ROOT;
-	assert(dev != NULL);
-	config_t *conf = dev->chip_info;
 	const void *microcode_patch = intel_mp_current_microcode();
 
-	if (!conf) {
-		printk(BIOS_ERR, "SGX: failed to get chip_info\n");
-		return;
-	}
-
-	if (!conf->sgx_enable || !is_sgx_supported() || !is_prmrr_set()) {
+	if (!soc_sgx_enabled() || !is_sgx_supported() || !is_prmrr_set()) {
 		printk(BIOS_ERR, "SGX: pre-conditions not met\n");
 		return;
 	}

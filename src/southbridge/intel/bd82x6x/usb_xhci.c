@@ -51,7 +51,7 @@ static void usb_xhci_init(struct device *dev)
 	printk(BIOS_DEBUG, "done.\n");
 }
 
-static const char *xhci_acpi_name(device_t dev)
+static const char *xhci_acpi_name(const struct device *dev)
 {
 	return "XHC";
 }

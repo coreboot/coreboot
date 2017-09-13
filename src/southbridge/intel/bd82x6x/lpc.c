@@ -814,7 +814,7 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->x_gpe1_blk.addrh = 0x0;
 }
 
-static const char *lpc_acpi_name(device_t dev)
+static const char *lpc_acpi_name(const struct device *dev)
 {
 	return "LPCB";
 }

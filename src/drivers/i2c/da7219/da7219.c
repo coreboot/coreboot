@@ -95,7 +95,7 @@ static void da7219_fill_ssdt(struct device *dev)
 	       dev->path.i2c.device, config->irq.pin);
 }
 
-static const char *da7219_acpi_name(struct device *dev)
+static const char *da7219_acpi_name(const struct device *dev)
 {
 	return DA7219_ACPI_NAME;
 }

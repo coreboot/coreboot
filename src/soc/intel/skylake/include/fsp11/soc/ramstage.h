@@ -29,7 +29,7 @@ void soc_irq_settings(FSP_SIL_UPD *params);
 void pch_enable_dev(device_t dev);
 void soc_init_pre_device(void *chip_info);
 void soc_fsp_load(void);
-const char *soc_acpi_name(struct device *dev);
+const char *soc_acpi_name(const struct device *dev);
 extern struct pci_operations soc_pci_ops;
 
 /* Get igd framebuffer bar */

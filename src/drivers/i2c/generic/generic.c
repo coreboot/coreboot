@@ -165,7 +165,7 @@ static void i2c_generic_fill_ssdt_generator(struct device *dev)
 }
 
 /* Use name specified in config or build one from I2C address */
-static const char *i2c_generic_acpi_name(struct device *dev)
+static const char *i2c_generic_acpi_name(const struct device *dev)
 {
 	struct drivers_i2c_generic_config *config = dev->chip_info;
 	static char name[5];

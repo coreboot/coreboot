@@ -136,7 +136,7 @@ static void root_dev_reset(struct bus *bus)
 }
 
 #if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
-static const char *root_dev_acpi_name(struct device *dev)
+static const char *root_dev_acpi_name(const struct device *dev)
 {
 	return "\\_SB";
 }

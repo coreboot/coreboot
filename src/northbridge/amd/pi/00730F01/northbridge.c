@@ -813,7 +813,7 @@ static void domain_set_resources(device_t dev)
 	}
 }
 
-static const char *domain_acpi_name(struct device *dev)
+static const char *domain_acpi_name(const struct device *dev)
 {
 	if (dev->path.type == DEVICE_PATH_DOMAIN)
 		return "PCI0";

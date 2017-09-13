@@ -331,7 +331,7 @@ static void azalia_init(struct device *dev)
 	pci_write_config8(dev, 0x43, reg8);
 }
 
-static const char *azalia_acpi_name(device_t dev)
+static const char *azalia_acpi_name(const struct device *dev)
 {
 	return "HDEF";
 }

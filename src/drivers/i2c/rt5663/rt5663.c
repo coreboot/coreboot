@@ -82,7 +82,7 @@ static void rt5663_fill_ssdt(struct device *dev)
 			dev->chip_ops->name, dev->path.i2c.device);
 }
 
-static const char *rt5663_acpi_name(struct device *dev)
+static const char *rt5663_acpi_name(const struct device *dev)
 {
 	return RT5663_ACPI_NAME;
 }

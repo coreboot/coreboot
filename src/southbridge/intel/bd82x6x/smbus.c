@@ -100,7 +100,7 @@ static void smbus_read_resources(device_t dev)
 	res = pci_get_resource(dev, PCI_BASE_ADDRESS_0);
 }
 
-static const char *smbus_acpi_name(device_t dev)
+static const char *smbus_acpi_name(const struct device *dev)
 {
 	return "SBUS";
 }

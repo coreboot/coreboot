@@ -24,7 +24,7 @@
 #include <string.h>
 #include "chip.h"
 
-static int spi_acpi_get_bus(struct device *dev)
+static int spi_acpi_get_bus(const struct device *dev)
 {
 	struct device *spi_dev;
 	struct device_operations *ops;
@@ -178,7 +178,7 @@ static void spi_acpi_fill_ssdt_generator(struct device *dev)
 	       config->desc ? : dev->chip_ops->name, dev_path(dev));
 }
 
-static const char *spi_acpi_name(struct device *dev)
+static const char *spi_acpi_name(const struct device *dev)
 {
 	struct drivers_spi_acpi_config *config = dev->chip_info;
 	static char name[5];

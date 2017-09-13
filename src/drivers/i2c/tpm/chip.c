@@ -65,7 +65,7 @@ static void i2c_tpm_fill_ssdt(struct device *dev)
 	       dev->chip_ops->name, dev_path(dev));
 }
 
-static const char *i2c_tpm_acpi_name(struct device *dev)
+static const char *i2c_tpm_acpi_name(const struct device *dev)
 {
 	return "TPMI";
 }

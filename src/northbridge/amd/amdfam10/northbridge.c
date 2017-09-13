@@ -645,7 +645,7 @@ static void mcf0_control_init(struct device *dev)
 }
 
 #if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
-static const char *amdfam10_northbridge_acpi_name(struct device *dev)
+static const char *amdfam10_northbridge_acpi_name(const struct device *dev)
 {
 	return "";
 }
@@ -1311,7 +1311,7 @@ static int amdfam10_get_smbios_data(device_t dev, int *handle, unsigned long *cu
 #endif
 
 #if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
-static const char *amdfam10_domain_acpi_name(struct device *dev)
+static const char *amdfam10_domain_acpi_name(const struct device *dev)
 {
 	if (dev->path.type == DEVICE_PATH_DOMAIN)
 		return "PCI0";

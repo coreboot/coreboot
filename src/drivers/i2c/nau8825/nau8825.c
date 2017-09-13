@@ -92,7 +92,7 @@ static void nau8825_fill_ssdt(struct device *dev)
 	       dev->path.i2c.device, config->irq.pin);
 }
 
-static const char *nau8825_acpi_name(struct device *dev)
+static const char *nau8825_acpi_name(const struct device *dev)
 {
 	return NAU8825_ACPI_NAME;
 }

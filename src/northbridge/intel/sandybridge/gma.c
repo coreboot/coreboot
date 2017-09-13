@@ -718,7 +718,7 @@ gma_write_acpi_tables(struct device *const dev,
 	return current;
 }
 
-static const char *gma_acpi_name(device_t dev)
+static const char *gma_acpi_name(const struct device *dev)
 {
 	return "GFX0";
 }

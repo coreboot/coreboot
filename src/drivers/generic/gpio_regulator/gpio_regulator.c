@@ -60,7 +60,7 @@ static void gpio_regulator_fill_ssdt_generator(struct device *dev)
 	acpigen_pop_len(); /* Scope */
 }
 
-static const char *gpio_regulator_acpi_name(struct device *dev)
+static const char *gpio_regulator_acpi_name(const struct device *dev)
 {
 	struct drivers_generic_gpio_regulator_config *config = dev->chip_info;
 	static char name[5];

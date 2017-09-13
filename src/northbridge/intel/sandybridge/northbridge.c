@@ -242,7 +242,7 @@ static void pci_domain_set_resources(device_t dev)
 	assign_resources(dev->link_list);
 }
 
-static const char *northbridge_acpi_name(struct device *dev)
+static const char *northbridge_acpi_name(const struct device *dev)
 {
 	if (dev->path.type == DEVICE_PATH_DOMAIN)
 		return "PCI0";

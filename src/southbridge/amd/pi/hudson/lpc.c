@@ -339,7 +339,7 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 	return current;
 }
 
-static const char *lpc_acpi_name(struct device *dev)
+static const char *lpc_acpi_name(const struct device *dev)
 {
 	if (dev->path.type != DEVICE_PATH_PCI)
 		return NULL;

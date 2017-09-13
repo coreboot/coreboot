@@ -94,7 +94,7 @@ static void usb_ehci_set_subsystem(device_t dev, unsigned vendor, unsigned devic
 	pci_write_config8(dev, 0x80, access_cntl);
 }
 
-static const char *usb_ehci_acpi_name(device_t dev)
+static const char *usb_ehci_acpi_name(const struct device *dev)
 {
 	switch (dev->path.pci.devfn) {
 	case PCI_DEVFN(0x1a, 0):

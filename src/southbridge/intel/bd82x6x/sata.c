@@ -244,7 +244,7 @@ static void sata_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 	}
 }
 
-static const char *sata_acpi_name(device_t dev)
+static const char *sata_acpi_name(const struct device *dev)
 {
 	return "SATA";
 }

@@ -195,7 +195,7 @@ static void intel_wifi_fill_ssdt(struct device *dev)
 	       dev->chip_ops ? dev->chip_ops->name : "", dev_path(dev));
 }
 
-static const char *intel_wifi_acpi_name(struct device *dev)
+static const char *intel_wifi_acpi_name(const struct device *dev)
 {
 	return "WIFI";
 }

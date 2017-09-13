@@ -285,7 +285,7 @@ static void pch_pciexp_scan_bridge(device_t dev)
 	pch_pcie_pm_late(dev);
 }
 
-static const char *pch_pcie_acpi_name(device_t dev)
+static const char *pch_pcie_acpi_name(const struct device *dev)
 {
 	ASSERT(dev);
 

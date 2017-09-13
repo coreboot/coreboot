@@ -49,7 +49,7 @@
 static void *vbt;
 static struct region_device vbt_rdev;
 
-static const char *soc_acpi_name(struct device *dev)
+static const char *soc_acpi_name(const struct device *dev)
 {
 	if (dev->path.type == DEVICE_PATH_DOMAIN)
 		return "PCI0";

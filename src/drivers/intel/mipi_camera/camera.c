@@ -74,7 +74,7 @@ static void camera_fill_ssdt(struct device *dev)
 			dev->chip_ops->name, dev->path.i2c.device);
 }
 
-static const char *camera_acpi_name(struct device *dev)
+static const char *camera_acpi_name(const struct device *dev)
 {
 	struct drivers_intel_mipi_camera_config *config = dev->chip_info;
 	return config->acpi_name;

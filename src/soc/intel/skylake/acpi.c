@@ -636,7 +636,7 @@ __attribute__((weak)) void acpi_mainboard_gnvs(global_nvs_t *gnvs)
 {
 }
 
-const char *soc_acpi_name(struct device *dev)
+const char *soc_acpi_name(const struct device *dev)
 {
 	if (dev->path.type == DEVICE_PATH_DOMAIN)
 		return "PCI0";

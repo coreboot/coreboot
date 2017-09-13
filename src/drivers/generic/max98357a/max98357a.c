@@ -66,7 +66,7 @@ static void max98357a_fill_ssdt(struct device *dev)
 	printk(BIOS_INFO, "%s: %s\n", path, dev->chip_ops->name);
 }
 
-static const char *max98357a_acpi_name(struct device *dev)
+static const char *max98357a_acpi_name(const struct device *dev)
 {
 	return MAX98357A_ACPI_NAME;
 }

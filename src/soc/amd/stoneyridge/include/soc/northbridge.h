@@ -20,12 +20,16 @@
 #include <arch/io.h>
 #include <device/device.h>
 
+/* D18F0 - HT Configuration Registers */
+#define D18F0_NODE_ID		0x60
+#define D18F0_CPU_CNT		0x62 /* BKDG defines as a field in DWORD 0x60 */
+# define CPU_CNT_MASK		0x1f /*  CpuCnt + 1 = no. CPUs */
+
 /* D18F1 - Address Map Registers */
 #define D18F1_DRAM_HOLE		0xf0
 # define DRAM_HOIST_VALID	(1 << 1)
 # define DRAM_HOLE_VALID	(1 << 0)
 
-void cpu_bus_scan(device_t dev);
 void domain_enable_resources(device_t dev);
 void domain_read_resources(device_t dev);
 void domain_set_resources(device_t dev);

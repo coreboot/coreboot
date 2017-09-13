@@ -22,7 +22,6 @@
 #include <cpu/x86/msr.h>
 #include <cpu/x86/pae.h>
 #include <pc80/mc146818rtc.h>
-#include <cpu/x86/lapic.h>
 
 #include <cpu/cpu.h>
 #include <cpu/x86/cache.h>
@@ -30,36 +29,46 @@
 #include <cpu/amd/amdfam15.h>
 #include <arch/acpi.h>
 
+static void msr_rw_dram(unsigned int reg)
+{
+#define RW_DRAM (MTRR_READ_MEM | MTRR_WRITE_MEM)
+#define ALL_RW_DRAM ((RW_DRAM << 24) | (RW_DRAM << 16) | \
+		     (RW_DRAM << 8)  | (RW_DRAM))
+
+	msr_t mtrr = rdmsr(reg);
+	mtrr.hi |= ALL_RW_DRAM;
+	mtrr.lo |= ALL_RW_DRAM;
+	wrmsr(reg, mtrr);
+}
+
 static void model_15_init(device_t dev)
 {
 	printk(BIOS_DEBUG, "Model 15 Init.\n");
 
-	u8 i;
+	int i;
 	msr_t msr;
-	int msrno;
 
 	disable_cache();
+
 	/* Enable access to AMD RdDram and WrDram extension bits */
 	msr = rdmsr(SYSCFG_MSR);
 	msr.lo |= SYSCFG_MSR_MtrrFixDramModEn;
 	msr.lo &= ~SYSCFG_MSR_MtrrFixDramEn;
 	wrmsr(SYSCFG_MSR, msr);
 
-	// BSP: make a0000-bffff UC, c0000-fffff WB
-	msr.lo = msr.hi = 0;
-	wrmsr(MTRR_FIX_16K_A0000, msr);
-	msr.lo = msr.hi = 0x1e1e1e1e;
-	wrmsr(MTRR_FIX_64K_00000, msr);
-	wrmsr(MTRR_FIX_16K_80000, msr);
-	for (msrno = MTRR_FIX_4K_C0000 ; msrno <= MTRR_FIX_4K_F8000 ; msrno++)
-		wrmsr(msrno, msr);
+	/* Send all but A0000-BFFFF to DRAM */
+	msr_rw_dram(MTRR_FIX_64K_00000);
+	msr_rw_dram(MTRR_FIX_16K_80000);
+	for (i = MTRR_FIX_4K_C0000 ; i <= MTRR_FIX_4K_F8000 ; i++)
+		msr_rw_dram(i);
 
+	/* Hide RdDram and WrDram bits, and clear Tom2ForceMemTypeWB */
 	msr = rdmsr(SYSCFG_MSR);
+	msr.lo &= ~SYSCFG_MSR_TOM2WB;
 	msr.lo &= ~SYSCFG_MSR_MtrrFixDramModEn;
 	msr.lo |= SYSCFG_MSR_MtrrFixDramEn;
 	wrmsr(SYSCFG_MSR, msr);
 
-	x86_mtrr_check();
 	x86_enable_cache();
 
 	/* zero the machine check error status registers */
@@ -67,9 +76,6 @@ static void model_15_init(device_t dev)
 	msr.hi = 0;
 	for (i = 0 ; i < 6 ; i++)
 		wrmsr(MCI_STATUS + (i * 4), msr);
-
-	/* Enable the local CPU APICs */
-	setup_lapic();
 
 	/* Write protect SMM space with SMMLOCK. */
 	msr = rdmsr(HWCR_MSR);

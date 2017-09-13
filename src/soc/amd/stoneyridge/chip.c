@@ -18,20 +18,16 @@
 #include <cpu/cpu.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <soc/southbridge.h>
+#include <soc/cpu.h>
 #include <soc/northbridge.h>
-
-static void cpu_bus_init(device_t dev)
-{
-	initialize_cpus(dev->link_list);
-}
+#include <soc/southbridge.h>
 
 struct device_operations cpu_bus_ops = {
 	.read_resources	  = DEVICE_NOOP,
 	.set_resources	  = DEVICE_NOOP,
 	.enable_resources = DEVICE_NOOP,
-	.init		  = &cpu_bus_init,
-	.scan_bus	  = cpu_bus_scan,
+	.init		  = stoney_init_cpus,
+	.scan_bus	  = NULL,
 	.acpi_fill_ssdt_generator = generate_cpu_entries,
 };
 

@@ -28,6 +28,11 @@ DefinitionBlock(
 	#include <soc/intel/cannonlake/acpi/globalnvs.asl>
 
 	Scope (\_SB) {
+		Device (PCI0)
+		{
+			#include <soc/intel/cannonlake/acpi/northbridge.asl>
+			#include <soc/intel/cannonlake/acpi/southbridge.asl>
+		}
 	}
 
 	#if IS_ENABLED(CONFIG_CHROMEOS)

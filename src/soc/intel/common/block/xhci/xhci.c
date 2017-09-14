@@ -113,7 +113,7 @@ static struct device_operations usb_xhci_ops = {
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= soc_xhci_init,
 	.ops_pci		= &pci_dev_ops_pci,
-	.scan_bus		= scan_usb_bus,
+	.scan_bus		= scan_static_bus,
 #if CONFIG(HAVE_ACPI_TABLES)
 	.acpi_name		= soc_acpi_name,
 #endif

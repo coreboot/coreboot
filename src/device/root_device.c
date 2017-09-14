@@ -65,21 +65,6 @@ void scan_lpc_bus(struct device *bus)
 	printk(BIOS_SPEW, "%s for %s done\n", __func__, dev_path(bus));
 }
 
-void scan_usb_bus(struct device *bus)
-{
-	struct bus *link;
-
-	printk(BIOS_SPEW, "%s for %s\n", __func__, dev_path(bus));
-
-	enable_static_devices(bus);
-
-	/* Scan bridges in case this device is a hub */
-	for (link = bus->link_list; link; link = link->next)
-		scan_bridges(link);
-
-	printk(BIOS_SPEW, "%s for %s done\n", __func__, dev_path(bus));
-}
-
 void scan_generic_bus(struct device *bus)
 {
 	struct device *child;
@@ -116,14 +101,17 @@ void scan_smbus(struct device *bus)
 	scan_generic_bus(bus);
 }
 
-/**
- * Scan root bus for generic systems.
+/*
+ * Default scan_bus() implementation
  *
- * This function is the default scan_bus() method of the root device.
+ * This is the default implementation for buses that can't
+ * be probed at runtime. It simply walks through the topology
+ * given by the mainboard's `devicetree.cb`.
  *
- * @param root The root device structure.
+ * First, all direct descendants of the given device are
+ * enabled. Then, downstream buses are scanned.
  */
-static void root_dev_scan_bus(struct device *bus)
+void scan_static_bus(struct device *bus)
 {
 	struct bus *link;
 
@@ -162,7 +150,7 @@ struct device_operations default_dev_ops_root = {
 	.set_resources    = DEVICE_NOOP,
 	.enable_resources = DEVICE_NOOP,
 	.init             = DEVICE_NOOP,
-	.scan_bus         = root_dev_scan_bus,
+	.scan_bus         = scan_static_bus,
 	.reset_bus        = root_dev_reset,
 #if CONFIG(HAVE_ACPI_TABLES)
 	.acpi_name        = root_dev_acpi_name,

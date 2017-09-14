@@ -85,7 +85,7 @@ static struct device_operations usb_acpi_ops = {
 	.read_resources			= DEVICE_NOOP,
 	.set_resources			= DEVICE_NOOP,
 	.enable_resources		= DEVICE_NOOP,
-	.scan_bus			= scan_usb_bus,
+	.scan_bus			= scan_static_bus,
 	.acpi_fill_ssdt_generator	= usb_acpi_fill_ssdt_generator,
 };
 

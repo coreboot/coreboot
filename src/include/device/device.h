@@ -331,7 +331,7 @@ void enable_static_devices(struct device *bus);
 void scan_smbus(struct device *bus);
 void scan_generic_bus(struct device *bus);
 void scan_lpc_bus(struct device *bus);
-void scan_usb_bus(struct device *bus);
+void scan_static_bus(struct device *bus);
 
 #endif /* !defined(__ROMCC__) */
 

@@ -75,6 +75,8 @@ void smihandler_southbridge_monitor(
 	u32 data, mask = 0;
 	u8 trap_sts;
 	int i;
+	global_nvs_t *gnvs = smm_get_gnvs();
+
 	/* TRSR - Trap Status Register */
 	trap_sts = pcr_read8(PID_PSTH, PCR_PSTH_TRPST);
 	/* Clear trap(s) in TRSR */

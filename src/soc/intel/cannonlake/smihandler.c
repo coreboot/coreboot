@@ -16,8 +16,14 @@
  */
 
 #include <intelblocks/smihandler.h>
+#include <soc/pm.h>
 
-static smi_handler_t southbridge_smi[SMI_STS_BITS] = {
+const struct smm_save_state_ops *get_smm_save_state_ops(void)
+{
+	return &em64t101_smm_ops;
+}
+
+const smi_handler_t southbridge_smi[SMI_STS_BITS] = {
 	[SMI_ON_SLP_EN_STS_BIT] = smihandler_southbridge_sleep,
 	[APM_STS_BIT] = smihandler_southbridge_apmc,
 	[PM1_STS_BIT] = smihandler_southbridge_pm1,

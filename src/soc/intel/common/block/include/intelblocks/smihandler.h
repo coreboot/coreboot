@@ -94,6 +94,21 @@ void smihandler_southbridge_gpe0(
 
 /*
  * This function should be implemented in SOC specific code to handle
+ * MC event. The default functionality is provided in
+ * soc/intel/common/block/smm/smihandler.c
+ */
+void smihandler_southbridge_mc(
+	const struct smm_save_state_ops *save_state_ops);
+
+/*
+ * This function should be implemented in SOC specific code to handle
+ * minitor event. The default functionality is provided in
+ * soc/intel/common/block/smm/smihandler.c
+ */
+void smihandler_southbridge_monitor(
+	const struct smm_save_state_ops *save_state_ops);
+/*
+ * This function should be implemented in SOC specific code to handle
  * SMI_TCO event. The default functionality is provided in
  * soc/intel/common/block/smm/smihandler.c
  */

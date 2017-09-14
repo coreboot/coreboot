@@ -21,10 +21,12 @@
 #include <cpu/intel/turbo.h>
 #include <intelblocks/cpulib.h>
 #include <intelblocks/mp_init.h>
+#include <intelblocks/smm.h>
 #include <romstage_handoff.h>
 #include <soc/cpu.h>
 #include <soc/msr.h>
 #include <soc/pci_devs.h>
+#include <soc/smm.h>
 
 static void soc_fsp_load(void)
 {
@@ -197,13 +199,27 @@ void soc_core_init(device_t cpu)
 
 	/* Enable Turbo */
 	enable_turbo();
+}
 
+static void per_cpu_smm_trigger(void)
+{
+	/* Relocate the SMM handler. */
+	smm_relocate();
 }
 
 static void post_mp_init(void)
 {
 	/* Set Max Ratio */
 	cpu_set_max_ratio();
+
+	/*
+	 * Now that all APs have been relocated as well as the BSP let SMIs
+	 * start flowing.
+	 */
+	smm_southbridge_enable();
+
+	/* Lock down the SMRAM space. */
+	smm_lock();
 }
 
 static const struct mp_ops mp_ops = {
@@ -214,7 +230,11 @@ static const struct mp_ops mp_ops = {
 	 */
 	.pre_mp_init = soc_fsp_load,
 	.get_cpu_count = get_cpu_count,
+	.get_smm_info = smm_info,
 	.get_microcode_info = get_microcode_info,
+	.pre_mp_smm_init = smm_initialize,
+	.per_cpu_smm_trigger = per_cpu_smm_trigger,
+	.relocation_handler = smm_relocation_handler,
 	.post_mp_init = post_mp_init,
 };
 

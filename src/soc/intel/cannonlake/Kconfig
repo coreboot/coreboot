@@ -80,7 +80,7 @@ config UART_DEBUG
 
 config UART_FOR_CONSOLE
 	int "Index for LPSS UART port to use for console"
-	default 2 if DRIVERS_UART_8250MEM
+	default 2 if DRIVERS_UART_8250MEM_32
 	default 0
 	help
 	    Index for LPSS UART port to use for console:

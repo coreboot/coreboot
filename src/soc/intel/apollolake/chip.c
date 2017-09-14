@@ -494,7 +494,6 @@ static void glk_fsp_silicon_init_params_cb(
 	struct soc_intel_apollolake_config *cfg, FSP_S_CONFIG *silconfig)
 {
 	silconfig->Gmm = 0;
-	silconfig->HdaEnable = 0;
 }
 
 void __attribute__((weak)) mainboard_devtree_update(struct device *dev)

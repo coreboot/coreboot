@@ -19,6 +19,7 @@
 
 #include <arch/acpi.h>
 #include <arch/io.h>
+#include <cbmem.h>
 #include <console/console.h>
 #include <cpu/x86/msr.h>
 #include <device/device.h>
@@ -26,6 +27,7 @@
 #include <device/pci_def.h>
 #include <intelblocks/msr.h>
 #include <intelblocks/pmclib.h>
+#include <intelblocks/rtc.h>
 #include <rules.h>
 #include <soc/iomap.h>
 #include <soc/cpu.h>
@@ -197,4 +199,21 @@ void enable_pm_timer_emulation(void)
 	/* Set PM1 timer IO port and enable */
 	msr.lo = EMULATE_PM_TMR_EN | (ACPI_BASE_ADDRESS + R_ACPI_PM1_TMR);
 	wrmsr(MSR_EMULATE_PM_TMR, msr);
+}
+
+static int rtc_failed(uint32_t gen_pmcon1)
+{
+	return !!(gen_pmcon1 & RPS);
+}
+
+int soc_get_rtc_failed(void)
+{
+	const struct chipset_power_state *ps = cbmem_find(CBMEM_ID_POWER_STATE);
+
+	if (!ps) {
+		printk(BIOS_ERR, "Could not find power state in cbmem, RTC init aborted\n");
+		return 1;
+	}
+
+	return rtc_failed(ps->gen_pmcon1);
 }

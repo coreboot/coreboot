@@ -14,17 +14,14 @@
  * GNU General Public License for more details.
  */
 
-#include <cbmem.h>
 #include <console/console.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <intelblocks/lpc_lib.h>
 #include <intelblocks/rtc.h>
-#include <pc80/mc146818rtc.h>
 #include <soc/gpio.h>
 #include <soc/pcr_ids.h>
 #include <soc/pm.h>
-#include <vboot/vbnv.h>
 #include "chip.h"
 
 static const struct lpc_mmio_range apl_lpc_fixed_mmio_ranges[] = {
@@ -81,18 +78,6 @@ static const struct pad_config lpc_gpios[] = {
 void lpc_configure_pads(void)
 {
 	gpio_configure_pads(lpc_gpios, ARRAY_SIZE(lpc_gpios));
-}
-
-int soc_get_rtc_failed(void)
-{
-	const struct chipset_power_state *ps = cbmem_find(CBMEM_ID_POWER_STATE);
-
-	if (!ps) {
-		printk(BIOS_ERR, "Could not find power state in cbmem, RTC init aborted\n");
-		return 1;
-	}
-
-	return !!(ps->gen_pmcon1 & RPS);
 }
 
 void lpc_init(struct device *dev)

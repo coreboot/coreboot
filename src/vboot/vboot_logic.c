@@ -310,8 +310,8 @@ void verstage_main(void)
 	/* Set up context and work buffer */
 	vb2_init_work_context(&ctx);
 
-	/* Read nvdata from a non-volatile storage. */
-	read_vbnv(ctx.nvdata);
+	/* Initialize and read nvdata from non-volatile storage. */
+	vbnv_init(ctx.nvdata);
 
 	/* Set S3 resume flag if vboot should behave differently when selecting
 	 * which slot to boot.  This is only relevant to vboot if the platform

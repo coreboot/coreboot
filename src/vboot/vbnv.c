@@ -146,3 +146,8 @@ int vboot_wants_oprom(void)
 	vbnv_setup();
 	return (vbnv_data(BOOT_OFFSET) & BOOT_OPROM_NEEDED) ? 1 : 0;
 }
+
+void vbnv_init(uint8_t *vbnv_copy)
+{
+	read_vbnv(vbnv_copy);
+}

@@ -149,5 +149,7 @@ int vboot_wants_oprom(void)
 
 void vbnv_init(uint8_t *vbnv_copy)
 {
+	if (IS_ENABLED(CONFIG_VBOOT_VBNV_CMOS))
+		vbnv_init_cmos(vbnv_copy);
 	read_vbnv(vbnv_copy);
 }

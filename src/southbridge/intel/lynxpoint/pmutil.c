@@ -24,6 +24,7 @@
 #include <device/pci.h>
 #include <device/pci_def.h>
 #include <console/console.h>
+#include <vboot/vbnv.h>
 #include "pch.h"
 
 #if IS_ENABLED(CONFIG_INTEL_LYNXPOINT_LP)
@@ -562,4 +563,9 @@ int rtc_failure(void)
 	device_t dev = dev_find_slot(0, PCI_DEVFN(31, 0));
 #endif
 	return !!(pci_read_config8(dev, GEN_PMCON_3) & RTC_BATTERY_DEAD);
+}
+
+int vbnv_cmos_failed(void)
+{
+	return rtc_failure();
 }

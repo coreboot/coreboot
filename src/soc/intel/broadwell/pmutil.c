@@ -28,6 +28,7 @@
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/gpio.h>
+#include <vboot/vbnv.h>
 
 /* Print status bits with descriptive names */
 static void print_status_bits(u32 status, const char *bit_names[])
@@ -462,4 +463,9 @@ int rtc_failure(void)
 	}
 
 	return !!rtc_failed;
+}
+
+int vbnv_cmos_failed(void)
+{
+	return rtc_failure();
 }

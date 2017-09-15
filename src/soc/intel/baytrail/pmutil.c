@@ -22,6 +22,7 @@
 #include <soc/lpc.h>
 #include <soc/pci_devs.h>
 #include <soc/pmc.h>
+#include <vboot/vbnv.h>
 
 #if defined(__SIMPLE_DEVICE__)
 
@@ -377,4 +378,9 @@ int rtc_failure(void)
 		printk(BIOS_DEBUG, "RTC failure.\n");
 
 	return rtc_fail;
+}
+
+int vbnv_cmos_failed(void)
+{
+	return rtc_failure();
 }

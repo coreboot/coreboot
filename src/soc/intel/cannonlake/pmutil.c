@@ -40,6 +40,7 @@
 #include <soc/pm.h>
 #include <soc/smbus.h>
 #include <timer.h>
+#include <vboot/vbnv.h>
 #include "chip.h"
 
 /*
@@ -206,4 +207,9 @@ int soc_get_rtc_failed(void)
 	}
 
 	return rtc_failed(ps->gen_pmcon_b);
+}
+
+int vbnv_cmos_failed(void)
+{
+	return rtc_failed(read32(pmc_mmio_regs() + GEN_PMCON_B));
 }

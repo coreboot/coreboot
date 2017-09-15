@@ -34,6 +34,7 @@
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <timer.h>
+#include <vboot/vbnv.h>
 #include "chip.h"
 
 static uintptr_t read_pmc_mmio_bar(void)
@@ -216,4 +217,9 @@ int soc_get_rtc_failed(void)
 	}
 
 	return rtc_failed(ps->gen_pmcon1);
+}
+
+int vbnv_cmos_failed(void)
+{
+	return rtc_failed(read32((void *)(read_pmc_mmio_bar() + GEN_PMCON1)));
 }

@@ -25,6 +25,7 @@
 #include "gen2.h"
 #include <spi_flash.h>
 #include <vboot/vboot_common.h>
+#include <vboot/vbnv.h>
 
 int clear_recovery_mode_switch(void)
 {
@@ -97,4 +98,10 @@ void __attribute__((weak)) vboot_platform_prepare_reboot(void)
 
 	/* Reset the TPM */
 	reg_script_run(script);
+}
+
+int vbnv_cmos_failed(void)
+{
+	/* Indicate no failure until RTC failure bits are supported. */
+	return 0;
 }

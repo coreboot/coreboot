@@ -38,6 +38,7 @@
 #include <soc/pmc.h>
 #include <soc/smbus.h>
 #include <timer.h>
+#include <vboot/vbnv.h>
 #include "chip.h"
 
 /* Print status bits with descriptive names */
@@ -557,4 +558,9 @@ int rtc_failure(void)
 	}
 
 	return !!rtc_failed;
+}
+
+int vbnv_cmos_failed(void)
+{
+	return rtc_failure();
 }

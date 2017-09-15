@@ -22,6 +22,7 @@
 #include <arch/acpi.h>
 #include <console/console.h>
 #include <rules.h>
+#include <vboot/vbnv.h>
 
 #if ENV_ROMSTAGE
 uint64_t get_initial_timestamp(void)
@@ -69,4 +70,9 @@ int rtc_failure(void)
 	device_t dev = dev_find_slot(0, PCI_DEVFN(0x1f, 0));
 #endif
 	return !!(pci_read_config8(dev, GEN_PMCON_3) & RTC_BATTERY_DEAD);
+}
+
+int vbnv_cmos_failed(void)
+{
+	return rtc_failure();
 }

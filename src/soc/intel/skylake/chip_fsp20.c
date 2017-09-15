@@ -169,6 +169,8 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	memcpy(params->PcieRpAdvancedErrorReporting,
 		config->PcieRpAdvancedErrorReporting,
 			sizeof(params->PcieRpAdvancedErrorReporting));
+	memcpy(params->PcieRpLtrEnable, config->PcieRpLtrEnable,
+	       sizeof(params->PcieRpLtrEnable));
 
 	/* disable Legacy PME */
 	memset(params->PcieRpPmSci, 0, sizeof(params->PcieRpPmSci));

@@ -169,11 +169,44 @@ struct soc_intel_skylake_config {
 	/* DCI Enable/Disable */
 	u8 PchDciEn;
 
-	/* Pcie Root Ports */
+	/*
+	 * Pcie Root Port configuration:
+	 * each element of array corresponds to
+	 * respective PCIe root port.
+	 */
+
+	/*
+	 * Enable/Disable Root Port
+	 * 0: Disable Root Port
+	 * 1: Enable Root Port
+	 */
 	u8 PcieRpEnable[CONFIG_MAX_ROOT_PORTS];
+
+	/*
+	 * Enable/Disable Clk-req support for Root Port
+	 * 0: Disable Clk-Req
+	 * 1: Enable Clk-req
+	 */
 	u8 PcieRpClkReqSupport[CONFIG_MAX_ROOT_PORTS];
+
+	/*
+	 * Clk-req source for Root Port
+	 */
 	u8 PcieRpClkReqNumber[CONFIG_MAX_ROOT_PORTS];
+
+	/*
+	 * Enable/Disable AER (Advanced Error Reporting) for Root Port
+	 * 0: Disable AER
+	 * 1: Enable AER
+	 */
 	u8 PcieRpAdvancedErrorReporting[CONFIG_MAX_ROOT_PORTS];
+
+	/*
+	 * Enable/Disable Latency Tolerance Reporting for Root Port
+	 * 0: Disable LTR
+	 * 1: Enable LTR
+	 */
+	u8 PcieRpLtrEnable[CONFIG_MAX_ROOT_PORTS];
 
 	/* USB related */
 	struct usb2_port_config usb2_ports[16];

@@ -17,10 +17,13 @@
 #include <arch/io.h>
 #include <timestamp.h>
 #include <cpu/x86/tsc.h>
+#include <device/pci_def.h>
 #include "pch.h"
 #include <arch/acpi.h>
 #include <console/console.h>
+#include <rules.h>
 
+#if ENV_ROMSTAGE
 uint64_t get_initial_timestamp(void)
 {
 	tsc_t base_time = {
@@ -55,4 +58,15 @@ int southbridge_detect_s3_resume(void)
 	}
 
 	return 0;
+}
+#endif
+
+int rtc_failure(void)
+{
+#if defined(__SIMPLE_DEVICE__)
+	device_t dev = PCI_DEV(0, 0x1f, 0);
+#else
+	device_t dev = dev_find_slot(0, PCI_DEVFN(0x1f, 0));
+#endif
+	return !!(pci_read_config8(dev, GEN_PMCON_3) & RTC_BATTERY_DEAD);
 }

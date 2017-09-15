@@ -22,11 +22,13 @@
 #define __SIMPLE_DEVICE__
 
 #include <arch/io.h>
+#include <cbmem.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_def.h>
 #include <console/console.h>
 #include <intelblocks/pmclib.h>
+#include <intelblocks/rtc.h>
 #include <halt.h>
 #include <rules.h>
 #include <stdlib.h>
@@ -187,4 +189,21 @@ void soc_get_gpe_configs(uint8_t *dw0, uint8_t *dw1, uint8_t *dw2)
 	*dw0 = config->gpe0_dw0;
 	*dw1 = config->gpe0_dw1;
 	*dw2 = config->gpe0_dw2;
+}
+
+static int rtc_failed(uint32_t gen_pmcon_b)
+{
+	return !!(gen_pmcon_b & RTC_BATTERY_DEAD);
+}
+
+int soc_get_rtc_failed(void)
+{
+	const struct chipset_power_state *ps = cbmem_find(CBMEM_ID_POWER_STATE);
+
+	if (!ps) {
+		printk(BIOS_ERR, "Could not find power state in cbmem, RTC init aborted\n");
+		return 1;
+	}
+
+	return rtc_failed(ps->gen_pmcon_b);
 }

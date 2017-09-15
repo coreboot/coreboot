@@ -26,6 +26,7 @@ ramstage-y += gpio.c
 romstage-y += reset.c
 ramstage-y += reset.c
 ramstage-y += cpu.c
+romstage-y += pmutil.c
 ramstage-y += pmutil.c
 smm-y += pmutil.c
 smm-y += smihandler.c

@@ -288,6 +288,9 @@ void southcluster_log_state(void);
 static inline void southcluster_log_state(void) {}
 #endif
 
+/* Return non-zero when RTC failure happened. */
+int rtc_failure(void);
+
 #endif /* !defined(__ASSEMBLER__) && !defined(__ACPI__) */
 
 #endif /* _BAYTRAIL_PMC_H_ */

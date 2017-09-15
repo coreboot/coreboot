@@ -33,7 +33,6 @@
 #include <soc/pci_devs.h>
 #include <soc/southbridge.h>
 #include <soc/nvs.h>
-#include <vboot/vbnv.h>
 
 static void lpc_init(device_t dev)
 {
@@ -86,10 +85,7 @@ static void lpc_init(device_t dev)
 	 * update CMOS unless it is invalid.
 	 * 1 tells cmos_init to always initialize the CMOS.
 	 */
-	if (IS_ENABLED(CONFIG_VBOOT_VBNV_CMOS))
-		init_vbnv_cmos(0);
-	else
-		cmos_init(0);
+	cmos_init(0);
 
 	/* Initialize i8259 pic */
 	setup_i8259();

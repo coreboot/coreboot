@@ -44,8 +44,6 @@
 #include <arch/acpi.h>
 #include <arch/acpigen.h>
 #include <cpu/cpu.h>
-#include <vboot/vbnv.h>
-#include <vboot/vbnv_layout.h>
 
 static void pch_enable_ioapic(struct device *dev)
 {
@@ -193,10 +191,7 @@ static void pch_rtc_init(struct device *dev)
 		printk(BIOS_DEBUG, "rtc_failed = 0x%x\n", rtc_failed);
 	}
 
-	if (IS_ENABLED(CONFIG_VBOOT_VBNV_CMOS))
-		init_vbnv_cmos(rtc_failed);
-	else
-		cmos_init(rtc_failed);
+	cmos_init(rtc_failed);
 }
 
 static const struct reg_script pch_misc_init_script[] = {

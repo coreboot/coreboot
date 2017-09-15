@@ -68,19 +68,6 @@ void save_vbnv_cmos(const uint8_t *vbnv_copy)
 		cmos_write(vbnv_copy[i], CONFIG_VBOOT_VBNV_OFFSET + 14 + i);
 }
 
-void init_vbnv_cmos(int rtc_fail)
-{
-	uint8_t vbnv[VBOOT_VBNV_BLOCK_SIZE];
-
-	if (rtc_fail)
-		read_vbnv_cmos(vbnv);
-
-	cmos_init(rtc_fail);
-
-	if (rtc_fail)
-		save_vbnv_cmos(vbnv);
-}
-
 #if IS_ENABLED(CONFIG_VBOOT_VBNV_CMOS_BACKUP_TO_FLASH)
 static void back_up_vbnv_cmos(void *unused)
 {

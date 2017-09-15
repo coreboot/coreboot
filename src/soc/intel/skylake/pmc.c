@@ -36,8 +36,6 @@
 #include <cpu/x86/smm.h>
 #include <soc/pcr_ids.h>
 #include <soc/ramstage.h>
-#include <vboot/vbnv.h>
-#include <vboot/vbnv_layout.h>
 
 static const struct reg_script pch_pmc_misc_init_script[] = {
 	/* SLP_S4=4s, SLP_S3=50ms, disable SLP_X stretching after SUS loss. */
@@ -124,10 +122,7 @@ static void pch_rtc_init(void)
 	/* Ensure the date is set including century byte. */
 	cmos_check_update_date();
 
-	if (IS_ENABLED(CONFIG_VBOOT_VBNV_CMOS))
-		init_vbnv_cmos(rtc_failed);
-	else
-		cmos_init(rtc_failed);
+	cmos_init(rtc_failed);
 }
 
 static void pch_power_options(void)

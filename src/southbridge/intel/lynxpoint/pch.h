@@ -172,6 +172,9 @@ void disable_all_gpe(void);
 void enable_gpe(u32 mask);
 void disable_gpe(u32 mask);
 
+/* Return non-zero when RTC failure happened. */
+int rtc_failure(void);
+
 #if !defined(__PRE_RAM__) && !defined(__SMM__)
 #include <device/device.h>
 #include <arch/acpi.h>

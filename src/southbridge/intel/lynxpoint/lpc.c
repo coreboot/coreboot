@@ -284,18 +284,14 @@ static void pch_power_options(device_t dev)
 
 static void pch_rtc_init(struct device *dev)
 {
-	u8 reg8;
-	int rtc_failed;
+	int rtc_failed = rtc_failure();
 
-	reg8 = pci_read_config8(dev, GEN_PMCON_3);
-	rtc_failed = reg8 & RTC_BATTERY_DEAD;
 	if (rtc_failed) {
-		reg8 &= ~RTC_BATTERY_DEAD;
-		pci_write_config8(dev, GEN_PMCON_3, reg8);
-#if IS_ENABLED(CONFIG_ELOG)
-		elog_add_event(ELOG_TYPE_RTC_RESET);
-#endif
+		if (IS_ENABLED(CONFIG_ELOG))
+			elog_add_event(ELOG_TYPE_RTC_RESET);
+		pci_update_config8(dev, GEN_PMCON_3, ~RTC_BATTERY_DEAD, 0);
 	}
+
 	printk(BIOS_DEBUG, "rtc_failed = 0x%x\n", rtc_failed);
 
 	cmos_init(rtc_failed);

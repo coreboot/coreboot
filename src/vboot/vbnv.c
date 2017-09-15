@@ -58,7 +58,7 @@ static uint8_t crc8_vbnv(const uint8_t *data, int len)
 	return (uint8_t) (crc >> 8);
 }
 
-static void reset_vbnv(uint8_t *vbnv_copy)
+void vbnv_reset(uint8_t *vbnv_copy)
 {
 	memset(vbnv_copy, 0, VBOOT_VBNV_BLOCK_SIZE);
 }
@@ -100,7 +100,7 @@ void read_vbnv(uint8_t *vbnv_copy)
 
 	/* Check data for consistency */
 	if (!verify_vbnv(vbnv_copy))
-		reset_vbnv(vbnv_copy);
+		vbnv_reset(vbnv_copy);
 }
 
 /*

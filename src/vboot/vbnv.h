@@ -28,6 +28,8 @@ void set_recovery_mode_into_vbnv(int recovery_reason);
 int vboot_wants_oprom(void);
 /* Initialize and read vbnv. This is used in the main vboot logic path. */
 void vbnv_init(uint8_t *vbnv_copy);
+/* Reset vbnv snapshot to a known state. */
+void vbnv_reset(uint8_t *vbnv_copy);
 
 /* CMOS backend */
 void read_vbnv_cmos(uint8_t *vbnv_copy);

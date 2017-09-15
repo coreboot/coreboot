@@ -180,18 +180,7 @@ static void pch_power_options(device_t dev)
 
 static void pch_rtc_init(struct device *dev)
 {
-	u8 reg8;
-	int rtc_failed;
-
-	reg8 = pci_read_config8(dev, GEN_PMCON_3);
-	rtc_failed = reg8 & RTC_BATTERY_DEAD;
-	if (rtc_failed) {
-		reg8 &= ~RTC_BATTERY_DEAD;
-		pci_write_config8(dev, GEN_PMCON_3, reg8);
-		printk(BIOS_DEBUG, "rtc_failed = 0x%x\n", rtc_failed);
-	}
-
-	cmos_init(rtc_failed);
+	cmos_init(rtc_failure());
 }
 
 static const struct reg_script pch_misc_init_script[] = {

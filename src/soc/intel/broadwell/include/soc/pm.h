@@ -155,4 +155,7 @@ void disable_gpe(uint32_t mask);
 /* Return the selected ACPI SCI IRQ */
 int acpi_sci_irq(void);
 
+/* Return non-zero when RTC failure happened. */
+int rtc_failure(void);
+
 #endif

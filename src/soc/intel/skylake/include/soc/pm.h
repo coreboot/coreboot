@@ -193,6 +193,9 @@ void pmc_set_disb(void);
 /* Initialize GPEs */
 void pmc_gpe_init(void);
 
+/* Return non-zero when RTC failure happened. */
+int rtc_failure(void);
+
 static inline int deep_s3_enabled(void)
 {
 	uint32_t deep_s3_pol;

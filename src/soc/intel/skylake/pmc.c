@@ -107,22 +107,10 @@ static void pch_set_acpi_mode(void)
 
 static void pch_rtc_init(void)
 {
-	u8 reg8;
-	int rtc_failed;
-	/*PMC Controller Device 0x1F, Func 02*/
-	device_t dev = PCH_DEV_PMC;
-	reg8 = pci_read_config8(dev, GEN_PMCON_B);
-	rtc_failed = reg8 & RTC_BATTERY_DEAD;
-	if (rtc_failed) {
-		reg8 &= ~RTC_BATTERY_DEAD;
-		pci_write_config8(dev, GEN_PMCON_B, reg8);
-		printk(BIOS_DEBUG, "rtc_failed = 0x%x\n", rtc_failed);
-	}
-
 	/* Ensure the date is set including century byte. */
 	cmos_check_update_date();
 
-	cmos_init(rtc_failed);
+	cmos_init(rtc_failure());
 }
 
 static void pch_power_options(void)

@@ -149,23 +149,8 @@ static void sc_read_resources(device_t dev)
 
 static void sc_rtc_init(void)
 {
-	uint32_t gen_pmcon1;
-	int rtc_fail;
-	struct chipset_power_state *ps = cbmem_find(CBMEM_ID_POWER_STATE);
-
-	printk(BIOS_SPEW, "%s/%s\n",
-			__FILE__, __func__);
-	if (ps != NULL)
-		gen_pmcon1 = ps->gen_pmcon1;
-	else
-		gen_pmcon1 = read32((void *)(PMC_BASE_ADDRESS + GEN_PMCON1));
-
-	rtc_fail = !!(gen_pmcon1 & RPS);
-
-	if (rtc_fail)
-		printk(BIOS_DEBUG, "RTC failure.\n");
-
-	cmos_init(rtc_fail);
+	printk(BIOS_SPEW, "%s/%s\n", __FILE__, __func__);
+	cmos_init(rtc_failure());
 }
 
 static void sc_init(device_t dev)

@@ -12,6 +12,7 @@ romstage-y += gpio_support.c
 romstage-y += iosf.c
 romstage-y += lpc_init.c
 romstage-y += memmap.c
+romstage-y += pmutil.c
 romstage-y += tsc_freq.c
 
 ramstage-y += acpi.c

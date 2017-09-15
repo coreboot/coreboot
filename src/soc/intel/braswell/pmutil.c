@@ -15,6 +15,7 @@
  */
 
 #include <arch/io.h>
+#include <cbmem.h>
 #include <console/console.h>
 #include <rules.h>
 #include <soc/iomap.h>
@@ -23,7 +24,7 @@
 #include <soc/pm.h>
 #include <stdint.h>
 
-#if ENV_SMM
+#if defined(__SIMPLE_DEVICE__)
 
 static const device_t pcu_dev = PCI_DEV(0, PCU_DEV, 0);
 
@@ -353,4 +354,23 @@ void clear_pmc_status(void)
 	/* Clear the status bits. The RPS field is cleared on a 0 write. */
 	write32((void *)(PMC_BASE_ADDRESS + GEN_PMCON1), gen_pmcon1 & ~RPS);
 	write32((void *)(PMC_BASE_ADDRESS + PRSTS), prsts);
+}
+
+int rtc_failure(void)
+{
+	uint32_t gen_pmcon1;
+	int rtc_fail;
+	struct chipset_power_state *ps = cbmem_find(CBMEM_ID_POWER_STATE);
+
+	if (ps != NULL)
+		gen_pmcon1 = ps->gen_pmcon1;
+	else
+		gen_pmcon1 = read32((u32 *)(PMC_BASE_ADDRESS + GEN_PMCON1));
+
+	rtc_fail = !!(gen_pmcon1 & RPS);
+
+	if (rtc_fail)
+		printk(BIOS_DEBUG, "RTC failure.\n");
+
+	return rtc_fail;
 }

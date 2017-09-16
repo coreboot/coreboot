@@ -363,7 +363,9 @@ else
 	cbmem_cmd="cbmem"
 fi
 
-if [ -z "$SERIAL_DEVICE" ]; then
+if [ -n "$SERIAL_DEVICE" ]; then
+	get_serial_bootlog "$SERIAL_DEVICE" "$SERIAL_PORT_SPEED" "${tmpdir}/${results}/coreboot_console.txt"
+elif [ -n "$REMOTE_HOST" ]; then
 	echo "Verifying that CBMEM is available on remote device"
 	test_cmd $REMOTE "$cbmem_cmd"
 	echo "Getting coreboot boot log"
@@ -374,7 +376,27 @@ if [ -z "$SERIAL_DEVICE" ]; then
 	echo "Getting remote dmesg"
 	cmd $REMOTE dmesg "${tmpdir}/${results}/kernel_log.txt"
 else
-	get_serial_bootlog "$SERIAL_DEVICE" "$SERIAL_PORT_SPEED" "${tmpdir}/${results}/coreboot_console.txt"
+	echo "Verifying that CBMEM is available"
+	if [ $(id -u) -ne 0 ]; then
+		sudo command -v "$cbmem_cmd" >/dev/null
+		if [ $? -ne 0 ]; then
+			echo "Failed to run $cbmem_cmd using sudo. Check \$PATH or use -c" \
+			"to specify path to cbmem binary."
+			exit $EXIT_FAILURE
+		else
+			cbmem_cmd="sudo $cbmem_cmd"
+		fi
+	else
+		test_cmd $LOCAL "$cbmem_cmd"
+	fi
+
+	echo "Getting coreboot boot log"
+	cmd $LOCAL "$cbmem_cmd -c" "${tmpdir}/${results}/coreboot_console.txt"
+	echo "Getting timestamp data"
+	cmd_nonfatal $LOCAL "$cbmem_cmd -t" "${tmpdir}/${results}/coreboot_timestamps.txt"
+
+	echo "Getting local dmesg"
+	cmd $LOCAL dmesg "${tmpdir}/${results}/kernel_log.txt"
 fi
 
 #

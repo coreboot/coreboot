@@ -1,5 +1,5 @@
 # This dockerfile is not meant to be used directly by docker.  The
-# {{}} varibles are replaced with values by the makefile.  Please generate
+# {{}} variables are replaced with values by the makefile.  Please generate
 # the docker image for this file by running:
 #
 #   make coreboot-sdk
@@ -18,15 +18,55 @@ MAINTAINER Martin Roth <martin@coreboot.org>
 RUN \
 	useradd -p locked -m coreboot && \
 	apt-get -qq update && \
-	apt-get -qqy install gcc g++ gnat-6 make patch python diffutils bison \
-		flex git doxygen ccache subversion p7zip-full unrar-free \
-		m4 wget curl bzip2 vim-common cmake xz-utils pkg-config \
-		dh-autoreconf unifont \
-		libssl1.0-dev libgmp-dev zlib1g-dev libpci-dev liblzma-dev \
-		libyaml-dev libncurses5-dev uuid-dev libusb-dev libftdi-dev \
-		libusb-1.0-0-dev libreadline-dev libglib2.0-dev libgmp-dev \
-		libelf-dev libxml2-dev libfreetype6-dev libisl-dev && \
-	apt-get clean
+	apt-get -qqy install \
+		bison \
+		bzip2 \
+		ccache \
+		cmake \
+		curl \
+		dh-autoreconf \
+		diffutils \
+		doxygen \
+		flex \
+		g++ \
+		gawk \
+		gcc \
+		git \
+		gnat-6 \
+		libelf-dev \
+		libfreetype6-dev \
+		libftdi-dev \
+		libglib2.0-dev \
+		libgmp-dev \
+		libgmp-dev \
+		libisl-dev \
+		liblzma-dev \
+		libncurses5-dev \
+		libpci-dev \
+		libreadline-dev \
+		libssl1.0-dev \
+		libusb-1.0-0-dev \
+		libusb-dev \
+		libxml2-dev \
+		libyaml-dev \
+		m4 \
+		make \
+		openssl \
+		p7zip-full \
+		patch \
+		pkg-config \
+		python \
+		qemu \
+		shellcheck \
+		subversion \
+		unifont \
+		unrar-free \
+		uuid-dev \
+		vim-common \
+		wget \
+		xz-utils \
+		zlib1g-dev \
+	&& apt-get clean
 
 RUN \
 	cd /root && \
@@ -41,7 +81,11 @@ RUN \
 RUN mkdir /home/coreboot/.ccache && \
 	chown coreboot:coreboot /home/coreboot/.ccache && \
 	mkdir /home/coreboot/cb_build && \
-	chown coreboot:coreboot /home/coreboot/cb_build
+	chown coreboot:coreboot /home/coreboot/cb_build && \
+	echo "export PATH=$PATH:/opt/xgcc/bin" >> /home/coreboot/.bashrc && \
+	echo "export SDK_VERSION={{SDK_VERSION}}" >> /home/coreboot/.bashrc && \
+	echo "export SDK_COMMIT={{DOCKER_COMMIT}}" >> /home/coreboot/.bashrc
+
 VOLUME /home/coreboot/.ccache
 
 ENV PATH $PATH:/opt/xgcc/bin

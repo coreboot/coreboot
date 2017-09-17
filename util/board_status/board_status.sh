@@ -1,6 +1,7 @@
 #!/usr/bin/env sh
 #
 #
+# See README and https://www.coreboot.org/Board_Status for instructions.
 
 EXIT_SUCCESS=0
 EXIT_FAILURE=1

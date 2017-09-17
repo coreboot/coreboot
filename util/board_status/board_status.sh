@@ -146,8 +146,7 @@ get_serial_bootlog () {
 
 	echo
 	echo "Waiting to receive boot log from $TTY"
-	echo "Press [Enter] when the boot is complete and the"
-	echo "system is ready for ssh to get the dmesg log."
+	echo "Press [Enter] when the boot is complete."
 	echo
 
 	if [ $tput_not_available -eq 0 ]; then
@@ -371,12 +370,12 @@ if [ -z "$SERIAL_DEVICE" ]; then
 	cmd $REMOTE "$cbmem_cmd -c" "${tmpdir}/${results}/coreboot_console.txt"
 	echo "Getting timestamp data"
 	cmd_nonfatal $REMOTE "$cbmem_cmd -t" "${tmpdir}/${results}/coreboot_timestamps.txt"
+
+	echo "Getting remote dmesg"
+	cmd $REMOTE dmesg "${tmpdir}/${results}/kernel_log.txt"
 else
 	get_serial_bootlog "$SERIAL_DEVICE" "$SERIAL_PORT_SPEED" "${tmpdir}/${results}/coreboot_console.txt"
 fi
-
-echo "Getting remote dmesg"
-cmd $REMOTE dmesg "${tmpdir}/${results}/kernel_log.txt"
 
 #
 # Finish up.

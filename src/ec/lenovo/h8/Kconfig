@@ -21,6 +21,13 @@ config H8_FLASH_LEDS_ON_DEATH
 	help
 	  Flash all LEDs when encountered a fatal error.
 
+config H8_SUPPORT_BT_ON_WIFI
+	bool "Support bluetooth on wifi cards"
+	default n
+	help
+	  Disable BDC detection and assume bluetooth is installed. Required for
+	  bluetooth on wifi cards, as it's not possible to detect it in coreboot.
+
 endif
 
 config H8_DOCK_EARLY_INIT

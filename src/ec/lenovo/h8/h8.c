@@ -272,7 +272,8 @@ static void h8_enable(struct device *dev)
 	if (get_option(&val, "volume") == CB_SUCCESS && !acpi_is_wakeup_s3())
 		ec_write(H8_VOLUME_CONTROL, val);
 
-	val = h8_has_bdc(dev) && h8_bluetooth_nv_enable();
+	val = (IS_ENABLED(CONFIG_H8_SUPPORT_BT_ON_WIFI) || h8_has_bdc(dev)) &&
+		h8_bluetooth_nv_enable();
 	h8_bluetooth_enable(val);
 
 	val = h8_has_wwan(dev) && h8_wwan_nv_enable();

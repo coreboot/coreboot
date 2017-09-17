@@ -103,4 +103,8 @@ void soc_add_fixed_mmio_resources(struct device *dev, int *resource_cnt);
 /* SoC specific APIs to get UNCORE PRMRR base and mask values
  * returns 0, if able to get base and mask values; otherwise returns -1 */
 int soc_get_uncore_prmmr_base_and_mask(uint64_t *base, uint64_t *mask);
+
+/* SoC call to summarize all Intel Reserve MMIO size and report to SA */
+size_t soc_reserved_mmio_size(void);
+
 #endif	/* SOC_INTEL_COMMON_BLOCK_SA_H */

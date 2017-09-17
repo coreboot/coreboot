@@ -43,6 +43,11 @@ __attribute__((weak)) int soc_get_uncore_prmmr_base_and_mask(uint64_t *base,
 	return -1;
 }
 
+__attribute__((weak)) size_t soc_reserved_mmio_size(void)
+{
+	return 0;
+}
+
 /*
  * Add all known fixed MMIO ranges that hang off the host bridge/memory
  * controller device.
@@ -141,12 +146,16 @@ static void sa_add_dram_resources(struct device *dev, int *resource_count)
 {
 	uintptr_t base_k, touud_k;
 	size_t dpr_size = 0, size_k;
+	size_t reserved_mmio_size;
 	uint64_t sa_map_values[MAX_MAP_ENTRIES];
 	uintptr_t top_of_ram;
 	int index = *resource_count;
 
 	if (IS_ENABLED(CONFIG_SA_ENABLE_DPR))
 		dpr_size = sa_get_dpr_size();
+
+        /* Get SoC reserve memory size as per user selection */
+        reserved_mmio_size = soc_reserved_mmio_size();
 
 	top_of_ram = (uintptr_t)cbmem_top();
 
@@ -162,13 +171,14 @@ static void sa_add_dram_resources(struct device *dev, int *resource_count)
 
 	sa_get_mem_map(dev, &sa_map_values[0]);
 
-	/* top_of_ram -> TSEG - DPR */
+	/* top_of_ram -> TSEG - DPR - Intel Reserve Memory Size*/
 	base_k = top_of_ram;
-	size_k = sa_map_values[SA_TSEG_REG] - dpr_size - base_k;
+	size_k = sa_map_values[SA_TSEG_REG] - dpr_size - base_k
+			- reserved_mmio_size;
 	mmio_resource(dev, index++, base_k / KiB, size_k / KiB);
 
-	/* TSEG - DPR -> BGSM */
-	base_k = sa_map_values[SA_TSEG_REG] - dpr_size;
+	/* TSEG - DPR - Intel Reserve Memory Size -> BGSM */
+	base_k = sa_map_values[SA_TSEG_REG] - dpr_size - reserved_mmio_size;
 	size_k = sa_map_values[SA_BGSM_REG] - base_k;
 	reserved_ram_resource(dev, index++, base_k / KiB, size_k / KiB);
 

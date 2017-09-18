@@ -32,7 +32,6 @@
 #include <FieldAccessors.h>
 #include <Options.h>
 #include <Topology.h>
-#include <cpu/amd/amdfam16.h>
 #include <cpuRegisters.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
 #if IS_ENABLED(CONFIG_BINARYPI_LEGACY_WRAPPER)

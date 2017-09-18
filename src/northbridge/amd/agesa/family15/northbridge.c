@@ -35,7 +35,6 @@
 #include <AGESA.h>
 #include <Options.h>
 #include <Topology.h>
-#include <cpu/amd/amdfam15.h>
 #include <cpuRegisters.h>
 
 #include <northbridge/amd/agesa/agesawrapper.h>

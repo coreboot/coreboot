@@ -20,7 +20,6 @@
 #include <cbmem.h>
 #include <chip.h>
 #include <console/console.h>
-#include <cpu/amd/amdfam15.h>
 #include <cpu/amd/mtrr.h>
 #include <cpu/cpu.h>
 #include <device/device.h>

@@ -14,10 +14,6 @@ config IRQ_SLOT_COUNT
 	int
 	default 18
 
-config MAINBOARD_VENDOR
-	string
-	default "Purism"
-
 config MAINBOARD_FAMILY
 	string
 	default "Librem 13"

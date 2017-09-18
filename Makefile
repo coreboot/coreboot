@@ -369,13 +369,16 @@ ifndef NOMKDIR
 $(shell mkdir -p $(KCONFIG_SPLITCONFIG) $(objk)/lxdialog $(additional-dirs) $(alldirs))
 endif
 
-$(obj)/project_filelist.txt: all
+$(obj)/project_filelist.txt:
+	if [ -z "$(wildcard $(obj)/coreboot.rom)" ]; then \
+		echo "*** Error: Project must be built before generating file list ***"; \
+		exit 1; \
+	fi
 	find $(obj) -name "*.d" -exec cat {} \; | \
 	  sed 's/[:\\]/ /g' | sed 's/ /\n/g' | sort | uniq | \
 	  grep -v '\.o$$' > $(obj)/project_filelist.txt
 
-filelist: clean
-	$(MAKE) $(obj)/project_filelist.txt
+filelist: $(obj)/project_filelist.txt
 	printf "\nFiles used in build:\n"
 	cat $(obj)/project_filelist.txt
 

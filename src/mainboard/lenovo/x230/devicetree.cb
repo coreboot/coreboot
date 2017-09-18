@@ -167,9 +167,11 @@ chip northbridge/intel/sandybridge
 					register "eventd_enable" = "0xff"
 					register "evente_enable" = "0x0d"
 
-					register "has_bdc_detection" = "1"
-					register "bdc_gpio_num" = "54"
-					register "bdc_gpio_lvl" = "0"
+					# BDC detection is broken on this board:
+					#  BDC shorts pin14 and pin1
+					#  BDC's connector pin14 is left floating
+					#  BDC's connector pin1 is routed to SB GPIO 54
+					register "has_bdc_detection" = "0"
 				end
 			end # LPC bridge
 			device pci 1f.2 on

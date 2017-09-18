@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2017 Intel Corp.
+ * Copyright 2017 Siemens AG.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,6 +31,9 @@ struct global_nvs_t;
 
 /* Read the scis from soc specific register. Returns int scis value */
 uint32_t soc_read_sci_irq_select(void);
+
+/* Write the scis from soc specific register. */
+void soc_write_sci_irq_select(uint32_t scis);
 
 /*
  * Calls acpi_write_hpet which creates and fills HPET table and

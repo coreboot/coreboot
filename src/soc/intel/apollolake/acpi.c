@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2016 Intel Corp.
+ * Copyright 2017 Siemens AG.
  * (Written by Lance Zhao <lijian.zhao@intel.com> for Intel Corp.)
  *
  * This program is free software; you can redistribute it and/or modify
@@ -67,6 +68,12 @@ uint32_t soc_read_sci_irq_select(void)
 {
 	uintptr_t pmc_bar = soc_read_pmc_base();
 	return read32((void *)pmc_bar + IRQ_REG);
+}
+
+void soc_write_sci_irq_select(uint32_t scis)
+{
+	uintptr_t pmc_bar = soc_read_pmc_base();
+	write32((void *)pmc_bar + IRQ_REG, scis);
 }
 
 acpi_cstate_t *soc_get_cstate_map(size_t *entries)

@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2015 - 2017 Intel Corp.
+ * Copyright 2017 Siemens AG.
  * (Written by Alexandru Gagniuc <alexandrux.gagniuc@intel.com> for Intel Corp.)
  * (Written by Andrey Petrov <andrey.petrov@intel.com> for Intel Corp.)
  *
@@ -25,6 +26,7 @@
 #include <cpu/x86/msr.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <intelblocks/acpi.h>
 #include <intelblocks/fast_spi.h>
 #include <intelblocks/msr.h>
 #include <fsp/api.h>
@@ -287,6 +289,29 @@ static void set_power_limits(void)
 	MCHBAR32(MCHBAR_RAPL_PPL + 4) =  limit.hi & ~PKG_POWER_LIMIT_EN;
 }
 
+/* Overwrites the SCI IRQ if another IRQ number is given by device tree. */
+static void set_sci_irq(void)
+{
+	static struct soc_intel_apollolake_config *cfg;
+	struct device *dev = SA_DEV_ROOT;
+	uint32_t scis;
+
+	if (!dev || !dev->chip_info) {
+		printk(BIOS_ERR, "BUG! Could not find SOC devicetree config\n");
+		return;
+	}
+
+	cfg = dev->chip_info;
+
+	/* Change only if a device tree entry exists. */
+	if (cfg->sci_irq) {
+		scis = soc_read_sci_irq_select();
+		scis &= ~SCI_IRQ_SEL;
+		scis |= (cfg->sci_irq << SCI_IRQ_ADJUST) & SCI_IRQ_SEL;
+		soc_write_sci_irq_select(scis);
+	}
+}
+
 static void soc_init(void *data)
 {
 	struct global_nvs_t *gnvs;
@@ -319,6 +344,12 @@ static void soc_init(void *data)
 
 	/* Set RAPL MSR for Package power limits*/
 	set_power_limits();
+
+	/*
+	* FSP-S routes SCI to IRQ 9. With the help of this function you can
+	* select another IRQ for SCI.
+	*/
+	set_sci_irq();
 }
 
 static void soc_final(void *data)

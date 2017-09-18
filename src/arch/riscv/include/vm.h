@@ -91,6 +91,17 @@ void flush_tlb(void);
 		);							\
 	}
 
+/*
+ * mprv_{read,write}_* - Modified privilege memory access functions.
+ *
+ * These inline functions perform a read or write memory operation with the
+ * mstatus.MPRV bit set. This causes the memory protections and translation of
+ * the previous mode (e.g. U-mode, if we're handling a trap from U-mode) to be
+ * applied.
+ *
+ * The user of these functions must make sure to avoid trap loops through
+ * unaligned memory accesses.
+ */
 DEFINE_MPRV_READ(mprv_read_u8, uint8_t, lbu)
 DEFINE_MPRV_READ(mprv_read_u16, uint16_t, lhu)
 DEFINE_MPRV_READ(mprv_read_u32, uint32_t, lwu)

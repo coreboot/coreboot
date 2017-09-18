@@ -60,7 +60,8 @@ static struct device_operations pci_domain_ops = {
 	.scan_bus         = &pci_domain_scan_bus,
 	.ops_pci_bus      = &pci_bus_default_ops,
 #if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
-	.acpi_name        = &soc_acpi_name,
+	.write_acpi_tables	= &northbridge_write_acpi_tables,
+	.acpi_name		= &soc_acpi_name,
 #endif
 };
 

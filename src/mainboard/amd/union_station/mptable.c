@@ -21,7 +21,6 @@
 #include <arch/ioapic.h>
 #include <string.h>
 #include <stdint.h>
-#include <cpu/amd/amdfam14.h>
 #include <SBPLATFORM.h>
 
 

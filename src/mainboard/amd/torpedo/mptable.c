@@ -22,7 +22,6 @@
 #include <stdint.h>
 #include <arch/cpu.h>
 #include <cpu/x86/lapic.h>
-#include <cpu/amd/amdfam12.h>
 #include "SbPlatform.h"
 
 #define IO_APIC_ID CONFIG_MAX_CPUS

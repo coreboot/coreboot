@@ -20,7 +20,6 @@
 #include <arch/ioapic.h>
 #include <arch/smp/mpspec.h>
 #include <console/console.h>
-#include <cpu/amd/amdfam14.h>
 #include <device/pci.h>
 #include <drivers/generic/ioapic/chip.h>
 #include <stdint.h>

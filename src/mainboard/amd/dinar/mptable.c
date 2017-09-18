@@ -22,7 +22,6 @@
 #include <stdint.h>
 #include <arch/cpu.h>
 #include <cpu/x86/lapic.h>
-#include <cpu/amd/amdfam15.h>
 
 static void *smp_write_config_table(void *v)
 {

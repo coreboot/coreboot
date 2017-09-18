@@ -20,7 +20,6 @@
 #include <arch/ioapic.h>
 #include <string.h>
 #include <stdint.h>
-#include <cpu/amd/amdfam15.h>
 #include <arch/cpu.h>
 #include <cpu/x86/lapic.h>
 #include <soc/southbridge.h>

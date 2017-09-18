@@ -17,7 +17,6 @@
 #include <arch/io.h>
 #include <arch/ioapic.h>
 #include <arch/smp/mpspec.h>
-#include <cpu/amd/amdfam15.h>
 #include <cpu/x86/lapic.h>
 #include <device/pci.h>
 #include <stdint.h>

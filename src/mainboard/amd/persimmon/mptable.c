@@ -21,7 +21,6 @@
 #include <arch/io.h>
 #include <string.h>
 #include <stdint.h>
-#include <cpu/amd/amdfam14.h>
 #include <SBPLATFORM.h>
 #include <southbridge/amd/common/amd_pci_util.h>
 #include <drivers/generic/ioapic/chip.h>

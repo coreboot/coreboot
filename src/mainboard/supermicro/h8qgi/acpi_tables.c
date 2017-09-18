@@ -21,7 +21,6 @@
 #include <arch/io.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <cpu/amd/amdfam10_sysconf.h>
 
 unsigned long acpi_fill_madt(unsigned long current)
 {

@@ -234,6 +234,13 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->PcieRpEnableMask = mask;
 
 	cpu_flex_override(m_cfg);
+
+	if (!config->ignore_vtd) {
+		m_cfg->PchHpetBdfValid = 1;
+		m_cfg->PchHpetBusNumber = 250;
+		m_cfg->PchHpetDeviceNumber = 15;
+		m_cfg->PchHpetFunctionNumber = 0;
+	}
 }
 
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)

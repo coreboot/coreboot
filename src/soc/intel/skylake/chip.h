@@ -113,6 +113,9 @@ struct soc_intel_skylake_config {
 	/* Estimated maximum platform power in Watts */
 	u16 psys_pmax;
 
+	/* Wether to ignore VT-d support of the SKU */
+	int ignore_vtd;
+
 	/*
 	 * The following fields come from FspUpdVpd.h.
 	 * These are configuration values that are passed to FSP during

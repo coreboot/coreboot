@@ -18,8 +18,28 @@
 #include <device/device.h>
 #include <intelblocks/systemagent.h>
 #include <soc/iomap.h>
+#include <soc/pci_devs.h>
 #include <soc/romstage.h>
 #include <soc/systemagent.h>
+#include "chip.h"
+
+static void systemagent_vtd_init(void)
+{
+	const struct device *const dev = dev_find_slot(0, SA_DEVFN_ROOT);
+	const struct soc_intel_skylake_config *config = NULL;
+
+	if (dev)
+		config = dev->chip_info;
+	if (config && config->ignore_vtd)
+		return;
+
+	const bool vtd_capable =
+		!(pci_read_config32(SA_DEV_ROOT, CAPID0_A) & VTD_DISABLE);
+	if (!vtd_capable)
+		return;
+
+	sa_set_mch_bar(soc_vtd_resources, ARRAY_SIZE(soc_vtd_resources));
+}
 
 void systemagent_early_init(void)
 {
@@ -40,6 +60,9 @@ void systemagent_early_init(void)
 	/* Set Fixed MMIO address into MCH base address */
 	sa_set_mch_bar(soc_fixed_mch_resources,
 			ARRAY_SIZE(soc_fixed_mch_resources));
+
+	systemagent_vtd_init();
+
 	/* Enable PAM registers */
 	enable_pam_region();
 }

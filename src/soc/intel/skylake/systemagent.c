@@ -15,6 +15,7 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/io.h>
 #include <cpu/x86/msr.h>
 #include <console/console.h>
 #include <delay.h>
@@ -23,7 +24,16 @@
 #include <soc/cpu.h>
 #include <soc/iomap.h>
 #include <soc/msr.h>
+#include <soc/pci_devs.h>
 #include <soc/systemagent.h>
+#include "chip.h"
+
+bool soc_is_vtd_capable(void)
+{
+	struct device *const root_dev = SA_DEV_ROOT;
+	return root_dev &&
+		!(pci_read_config32(root_dev, CAPID0_A) & VTD_DISABLE);
+}
 
 /*
  * SoC implementation
@@ -42,9 +52,14 @@ void soc_add_fixed_mmio_resources(struct device *dev, int *index)
 		{ GDXCBAR, GDXC_BASE_ADDRESS, GDXC_BASE_SIZE, "GDXCBAR" },
 		{ EDRAMBAR, EDRAM_BASE_ADDRESS, EDRAM_BASE_SIZE, "EDRAMBAR" },
 	};
+	const struct soc_intel_skylake_config *const config = dev->chip_info;
 
 	sa_add_fixed_mmio_resources(dev, index, soc_fixed_resources,
 			ARRAY_SIZE(soc_fixed_resources));
+
+	if (!(config && config->ignore_vtd) && soc_is_vtd_capable())
+		sa_add_fixed_mmio_resources(dev, index, soc_vtd_resources,
+				ARRAY_SIZE(soc_vtd_resources));
 }
 
 /*

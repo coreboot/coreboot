@@ -1107,6 +1107,20 @@ static int cbfs_compact(void)
 	return cbfs_compact_instance(&image);
 }
 
+static int cbfs_expand(void)
+{
+	struct buffer src_buf;
+
+	/* Obtain the source region. */
+	if (!partitioned_file_read_region(&src_buf, param.image_file,
+						param.region_name)) {
+		ERROR("Region not found in image: %s\n", param.source_region);
+		return 1;
+	}
+
+	return cbfs_expand_to_region(param.image_region);
+}
+
 static const struct command commands[] = {
 	{"add", "H:r:f:n:t:c:b:a:yvA:gh?", cbfs_add, true, true},
 	{"add-flat-binary", "H:r:f:n:l:e:c:b:vA:gh?", cbfs_add_flat_binary,
@@ -1127,6 +1141,7 @@ static const struct command commands[] = {
 	{"remove", "H:r:n:vh?", cbfs_remove, true, true},
 	{"update-fit", "H:r:n:x:vh?", cbfs_update_fit, true, true},
 	{"write", "r:f:i:Fudvh?", cbfs_write, true, true},
+	{"expand", "r:h?", cbfs_expand, true, true},
 };
 
 static struct option long_options[] = {
@@ -1276,6 +1291,8 @@ static void usage(char *name)
 			"Write file into same-size [or larger] raw region\n"
 	     " read [-r fmap-region] -f file                               "
 			"Extract raw region contents into binary file\n"
+	     " expand [-r fmap-region]                                     "
+			"Expand CBFS to span entire region\n"
 	     " update-fit [-r image,regions] -n MICROCODE_BLOB_NAME \\\n"
 	     "        -x EMTPY_FIT_ENTRIES                                 "
 			"Updates the FIT table with microcode entries\n"

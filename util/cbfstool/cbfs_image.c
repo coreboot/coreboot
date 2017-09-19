@@ -442,6 +442,44 @@ int cbfs_copy_instance(struct cbfs_image *image, struct buffer *dst)
 	return 0;
 }
 
+int cbfs_expand_to_region(struct buffer *region)
+{
+	if (buffer_get(region) == NULL)
+		return 1;
+
+	struct cbfs_image image;
+	memset(&image, 0, sizeof(image));
+	if (cbfs_image_from_buffer(&image, region, 0)) {
+		ERROR("reading CBFS failed!\n");
+		return 1;
+	}
+
+	uint32_t region_sz = buffer_size(region);
+
+	struct cbfs_file *entry;
+	for (entry = buffer_get(region);
+	     cbfs_is_valid_entry(&image, entry);
+	     entry = cbfs_find_next_entry(&image, entry)) {
+	     /* just iterate through */
+	}
+
+	/* entry now points to the first aligned address after the last valid
+	 * file header. That's either outside the image or exactly the place
+	 * where we need to create a new file.
+	 */
+	int last_entry_size = region_sz - ((void *)entry - buffer_get(region))
+		- cbfs_calculate_file_header_size("") - sizeof(int32_t);
+
+	if (last_entry_size > 0) {
+		cbfs_create_empty_entry(entry, CBFS_COMPONENT_NULL,
+			last_entry_size, "");
+		/* If the last entry was an empty file, merge them. */
+		cbfs_walk(&image, cbfs_merge_empty_entry, NULL);
+	}
+
+	return 0;
+}
+
 static size_t cbfs_file_entry_metadata_size(const struct cbfs_file *f)
 {
 	return ntohl(f->offset);

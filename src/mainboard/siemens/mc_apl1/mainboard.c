@@ -165,8 +165,7 @@ static void wait_for_legacy_dev(void *unused)
 	stopwatch_init_msecs_expire(&sw, (legacy_delay - us_since_boot) / 1000);
 	printk(BIOS_NOTICE, "Wait remaining %d of %d us for legacy devices...",
 			legacy_delay - us_since_boot, legacy_delay);
-	while (!stopwatch_expired(&sw))
-		;
+	stopwatch_wait_until_expired(&sw);
 	printk(BIOS_NOTICE, "done!\n");
 }
 

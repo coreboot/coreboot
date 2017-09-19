@@ -149,8 +149,7 @@ static void rx6110sa_init(struct device *dev)
 	 * Take the needed delay after a reset sequence into account before the
 	 * VLF-bit can be cleared.
 	 */
-	while (!stopwatch_expired(&sw))
-		;
+	stopwatch_wait_until_expired(&sw);
 	flags &= ~VLF_BIT;
 	rx6110sa_write(dev, FLAG_REGISTER, flags);
 

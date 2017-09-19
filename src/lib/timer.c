@@ -34,7 +34,5 @@ void udelay(unsigned int usec)
 		return;
 
 	stopwatch_init_usecs_expire(&sw, usec);
-
-	while (!stopwatch_expired(&sw))
-		;
+	stopwatch_wait_until_expired(&sw);
 }

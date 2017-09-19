@@ -166,6 +166,15 @@ static inline int stopwatch_expired(struct stopwatch *sw)
 }
 
 /*
+ * Tick and check the stopwatch as long as it has not expired.
+ */
+static inline void stopwatch_wait_until_expired(struct stopwatch *sw)
+{
+	while (!stopwatch_expired(sw))
+		;
+}
+
+/*
  * Return number of microseconds since starting the stopwatch.
  */
 static inline long stopwatch_duration_usecs(struct stopwatch *sw)

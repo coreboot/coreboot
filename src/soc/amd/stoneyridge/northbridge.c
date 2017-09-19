@@ -484,7 +484,14 @@ void domain_set_resources(device_t dev)
 				" limitk=%08llx\n", mmio_basek, basek, limitk);
 	}
 
-	add_uma_resource_below_tolm(dev, 7);
+	/* UMA is not set up yet, but infer the base & size to make cacheable */
+	uint32_t uma_base = restore_top_of_low_cacheable();
+	if (uma_base != bsp_topmem()) {
+		uint32_t uma_size = bsp_topmem() - uma_base;
+		printk(BIOS_INFO, "%s: uma size 0x%08x, memory start 0x%08x\n",
+				__func__, uma_size, uma_base);
+		reserved_ram_resource(dev, 7, uma_base / KiB, uma_size / KiB);
+	}
 
 	for (link = dev->link_list ; link ; link = link->next)
 		if (link->children)

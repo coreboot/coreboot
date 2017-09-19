@@ -1,0 +1,5 @@
+config EC_KONTRON_KEMPLD
+	bool
+	help
+	  Driver for Kontron's express module programmable logic device used
+	  on their COMexpress modules.

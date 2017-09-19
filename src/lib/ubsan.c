@@ -61,22 +61,20 @@ static void ubsan_abort(const struct ubsan_source_location *location,
 }
 
 #define ABORT_VARIANT(name, params, call) \
-__attribute__((noreturn)) \
-void __ubsan_handle_##name##_abort params; \
-__attribute__((noreturn)) \
-void __ubsan_handle_##name##_abort params { \
-	__ubsan_handle_##name call; \
-	__builtin_unreachable(); \
-}
+	__attribute__((noreturn)) void __ubsan_handle_##name##_abort params; \
+	__attribute__((noreturn)) void __ubsan_handle_##name##_abort params { \
+		__ubsan_handle_##name call; \
+		__builtin_unreachable(); \
+	}
 
 #define ABORT_VARIANT_VP(name) \
-ABORT_VARIANT(name, (void *a), (a))
+	ABORT_VARIANT(name, (void *a), (a))
 #define ABORT_VARIANT_VP_VP(name) \
-ABORT_VARIANT(name, (void *a, void *b), (a, b))
+	ABORT_VARIANT(name, (void *a, void *b), (a, b))
 #define ABORT_VARIANT_VP_IP(name) \
-ABORT_VARIANT(name, (void *a, intptr_t b), (a, b))
+	ABORT_VARIANT(name, (void *a, intptr_t b), (a, b))
 #define ABORT_VARIANT_VP_VP_VP(name) \
-ABORT_VARIANT(name, (void *a, void *b, void *c), (a, b, c))
+	ABORT_VARIANT(name, (void *a, void *b, void *c), (a, b, c))
 
 struct ubsan_type_mismatch_data {
 	struct ubsan_source_location location;

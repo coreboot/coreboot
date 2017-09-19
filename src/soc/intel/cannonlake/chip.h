@@ -21,6 +21,8 @@
 #include <intelblocks/gspi.h>
 #include <stdint.h>
 #include <soc/pch.h>
+#include <soc/gpio_defs.h>
+#include <soc/pci_devs.h>
 #include <soc/serialio.h>
 #include <soc/usb.h>
 #include <soc/vr_config.h>
@@ -245,6 +247,9 @@ struct soc_intel_cannonlake_config {
 	 * PchSerialIoHidden
 	 */
 	uint8_t SerialIoDevMode[PchSerialIoIndexMAX];
+
+	/* GPIO SD card detect pin */
+	unsigned int sdcard_cd_gpio;
 };
 
 typedef struct soc_intel_cannonlake_config config_t;

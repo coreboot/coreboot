@@ -46,6 +46,7 @@ ramstage-y += systemagent.c
 ramstage-$(CONFIG_UART_DEBUG) += uart.c
 ramstage-$(CONFIG_UART_DEBUG) += uart_pch.c
 ramstage-y += vr_config.c
+ramstage-y += sd.c
 
 smm-y += gpio.c
 smm-y += pmutil.c

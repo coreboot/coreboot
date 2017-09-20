@@ -76,6 +76,8 @@ static struct {
 			"Kabylake-Y iHDCP 2.2 Premium" },
 	{ PCI_DEVICE_ID_INTEL_SPT_LP_U_PREMIUM_HDCP22,
 			"Kabylake-U iHDCP 2.2 Premium" },
+	{ PCI_DEVICE_ID_INTEL_SPT_LP_U_BASE_HDCP22,
+			"Kabylake-U iHDCP 2.2 Base" },
 };
 
 static struct {

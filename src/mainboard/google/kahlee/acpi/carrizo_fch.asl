@@ -13,6 +13,8 @@
  * GNU General Public License for more details.
  */
 
+#include <soc/gpio.h>
+
 Device (AAHB)
 {
 	Name (_HID, "AAHB0000")
@@ -30,9 +32,10 @@ Device (AAHB)
 
 Device (GPIO)
 {
-	Name (_HID, "AMD0030")
-	Name (_CID, "AMD0030")
-	Name(_UID, 0)
+	Name (_HID, GPIO_DEVICE_NAME)
+	Name (_CID, GPIO_DEVICE_NAME)
+	Name (_UID, 0)
+	Name (_DDN, GPIO_DEVICE_DESC)
 
 	Name (_CRS, ResourceTemplate()
 	{

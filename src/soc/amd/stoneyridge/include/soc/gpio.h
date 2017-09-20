@@ -16,10 +16,12 @@
 #ifndef __STONEYRIDGE_GPIO_H__
 #define __STONEYRIDGE_GPIO_H__
 
+#define GPIO_DEVICE_NAME	"AMD0030"
+#define GPIO_DEVICE_DESC	"GPIO Controller"
+
+#ifndef __ACPI__
 #include <soc/amd/common/amd_defs.h>
 #include <types.h>
-
-#define CROS_GPIO_DEVICE_NAME	"AmdKern"
 
 #define GPIO_PIN_STS		(1 << 16)
 #define GPIO_PULLUP_ENABLE	(1 << 20)
@@ -132,5 +134,5 @@
 #define GPIO_148			148
 
 typedef uint32_t gpio_t;
-
+#endif /* __ACPI__ */
 #endif /* __STONEYRIDGE_GPIO_H__ */

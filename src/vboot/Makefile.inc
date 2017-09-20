@@ -239,17 +239,11 @@ endif
 # in the keyblock, and coreboot's vboot code clips the region_device to match,
 # which prevents any potential extension attacks.
 $(obj)/FW_MAIN_%.bin: $(obj)/coreboot.rom
+	$(CBFSTOOL) $< truncate -r $(basename $(notdir $@)) > $@.tmp.size
 	$(CBFSTOOL) $< read -r $(basename $(notdir $@)) -f $@.tmp
-	$(CBFSTOOL) $(obj)/coreboot.rom print -k -r $(basename $(notdir $@)) | \
-		tail -1 | \
-		sed "s,^(empty)[[:space:]]\(0x[0-9a-f]*\)\tnull\t.*$$,\1," \
-		> $@.tmp.size
-	if [ -n "$$(cat $@.tmp.size)" ] && [ $$( printf "%d" $$(cat $@.tmp.size)) -gt 0 ]; then \
-		head -c $$( printf "%d" $$(cat $@.tmp.size)) $@.tmp > $@.tmp2 && \
-		mv $@.tmp2 $@; \
-	else \
-		mv $@.tmp $@; \
-	fi
+	head -c $$( printf "%d" $$(cat $@.tmp.size)) $@.tmp > $@.tmp2
+	mv $@.tmp2 $@
+	rm -f $@.tmp $@.tmp.size
 
 $(obj)/VBLOCK_%.bin: $(obj)/FW_MAIN_%.bin $(FUTILITY)
 	$(FUTILITY) vbutil_firmware \

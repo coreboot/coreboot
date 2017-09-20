@@ -84,6 +84,11 @@ int cbfs_compact_instance(struct cbfs_image *image);
    Returns 0 on success, otherwise non-zero. */
 int cbfs_expand_to_region(struct buffer *region);
 
+/* Truncate a CBFS by removing a trailing "empty" file if it exists.
+   Returns 0 on success, otherwise non-zero and passes the CBFS' remaining
+   size in the size argument. */
+int cbfs_truncate_space(struct buffer *region, uint32_t *size);
+
 /* Releases the CBFS image. Returns 0 on success, otherwise non-zero. */
 int cbfs_image_delete(struct cbfs_image *image);
 

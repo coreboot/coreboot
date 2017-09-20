@@ -1121,6 +1121,23 @@ static int cbfs_expand(void)
 	return cbfs_expand_to_region(param.image_region);
 }
 
+static int cbfs_truncate(void)
+{
+	struct buffer src_buf;
+
+	/* Obtain the source region. */
+	if (!partitioned_file_read_region(&src_buf, param.image_file,
+						param.region_name)) {
+		ERROR("Region not found in image: %s\n", param.source_region);
+		return 1;
+	}
+
+	uint32_t size;
+	int result = cbfs_truncate_space(param.image_region, &size);
+	printf("0x%x\n", size);
+	return result;
+}
+
 static const struct command commands[] = {
 	{"add", "H:r:f:n:t:c:b:a:yvA:gh?", cbfs_add, true, true},
 	{"add-flat-binary", "H:r:f:n:l:e:c:b:vA:gh?", cbfs_add_flat_binary,
@@ -1142,6 +1159,7 @@ static const struct command commands[] = {
 	{"update-fit", "H:r:n:x:vh?", cbfs_update_fit, true, true},
 	{"write", "r:f:i:Fudvh?", cbfs_write, true, true},
 	{"expand", "r:h?", cbfs_expand, true, true},
+	{"truncate", "r:h?", cbfs_truncate, true, true},
 };
 
 static struct option long_options[] = {
@@ -1291,6 +1309,8 @@ static void usage(char *name)
 			"Write file into same-size [or larger] raw region\n"
 	     " read [-r fmap-region] -f file                               "
 			"Extract raw region contents into binary file\n"
+	     " truncate [-r fmap-region]                                   "
+			"Truncate CBFS and print new size on stdout\n"
 	     " expand [-r fmap-region]                                     "
 			"Expand CBFS to span entire region\n"
 	     " update-fit [-r image,regions] -n MICROCODE_BLOB_NAME \\\n"

@@ -480,6 +480,44 @@ int cbfs_expand_to_region(struct buffer *region)
 	return 0;
 }
 
+int cbfs_truncate_space(struct buffer *region, uint32_t *size)
+{
+	if (buffer_get(region) == NULL)
+		return 1;
+
+	struct cbfs_image image;
+	memset(&image, 0, sizeof(image));
+	if (cbfs_image_from_buffer(&image, region, 0)) {
+		ERROR("reading CBFS failed!\n");
+		return 1;
+	}
+
+	struct cbfs_file *entry, *trailer;
+	for (trailer = entry = buffer_get(region);
+	     cbfs_is_valid_entry(&image, entry);
+	     trailer = entry,
+	     entry = cbfs_find_next_entry(&image, entry)) {
+	     /* just iterate through */
+	}
+
+	/* trailer now points to the last valid CBFS entry's header.
+	 * If that file is empty, remove it and report its header's offset as
+	 * maximum size.
+	 */
+	if ((strlen(trailer->filename) != 0) &&
+	    (trailer->type != htonl(CBFS_COMPONENT_NULL)) &&
+	    (trailer->type != htonl(CBFS_COMPONENT_DELETED))) {
+		/* nothing to truncate. Return de-facto CBFS size in case it
+		 * was already truncated. */
+		*size = (void *)entry - buffer_get(region);
+		return 0;
+	}
+	*size = (void *)trailer - buffer_get(region);
+	memset(trailer, 0xff, buffer_size(region) - *size);
+
+	return 0;
+}
+
 static size_t cbfs_file_entry_metadata_size(const struct cbfs_file *f)
 {
 	return ntohl(f->offset);

@@ -235,3 +235,47 @@ void lpc_io_setup_comm_a_b(void)
 	/* Enable ComA and ComB Port */
 	lpc_enable_fixed_io_ranges(LPC_IOE_COMA_EN | LPC_IOE_COMB_EN);
 }
+
+static void lpc_set_gen_decode_range(
+	uint32_t gen_io_dec[LPC_NUM_GENERIC_IO_RANGES])
+{
+	size_t i;
+
+	/* Set in PCI generic decode range registers */
+	for (i = 0; i < LPC_NUM_GENERIC_IO_RANGES; i++)
+		pci_write_config32(PCH_DEV_LPC, LPC_GENERIC_IO_RANGE(i),
+			gen_io_dec[i]);
+}
+
+static void pch_lpc_interrupt_init(void)
+{
+	const struct device *dev;
+
+	dev = dev_find_slot(0, PCI_DEVFN(PCH_DEV_SLOT_LPC, 0));
+	if (!dev || !dev->chip_info)
+		return;
+
+	soc_pch_pirq_init(dev);
+}
+
+void pch_enable_lpc(void)
+{
+	/* Lookup device tree in romstage */
+	const struct device *dev;
+	uint32_t gen_io_dec[LPC_NUM_GENERIC_IO_RANGES];
+
+	dev = dev_find_slot(0, PCI_DEVFN(PCH_DEV_SLOT_LPC, 0));
+	if (!dev || !dev->chip_info)
+		return;
+
+	soc_get_gen_io_dec_range(dev, gen_io_dec);
+	lpc_set_gen_decode_range(gen_io_dec);
+	soc_setup_dmi_pcr_io_dec(gen_io_dec);
+	if (ENV_RAMSTAGE)
+		pch_lpc_interrupt_init();
+}
+
+void lpc_enable_pci_clk_cntl(void)
+{
+	pci_write_config8(PCH_DEV_LPC, LPC_PCCTL, LPC_PCCTL_CLKRUN_EN);
+}
